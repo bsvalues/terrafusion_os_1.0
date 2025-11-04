@@ -1,0 +1,179 @@
+{
+  "id": null,
+  "title": "Web Vitals Overview",
+  "tags": ["web-vitals"],
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "LCP 50th & 95th Percentiles",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.5, sum(rate(web_vitals_lcp_bucket[5m])) by (le))",
+          "legendFormat": "50p"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(web_vitals_lcp_bucket[5m])) by (le))",
+          "legendFormat": "95p"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 2.5, "color": "red" }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "TTFB 95th Percentile",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(web_vitals_ttfb_bucket[5m])) by (le))",
+          "legendFormat": "95p"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 1.0, "color": "red" }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "CLS 95th Percentile",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(web_vitals_cls_bucket[5m])) by (le))",
+          "legendFormat": "95p"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 0.1, "color": "red" }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "FCP 95th Percentile",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(web_vitals_fcp_bucket[5m])) by (le))",
+          "legendFormat": "95p"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 1.8, "color": "red" }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "FID 95th Percentile",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(web_vitals_fid_bucket[5m])) by (le))",
+          "legendFormat": "95p"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 0.1, "color": "red" }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "INP 95th Percentile",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(web_vitals_inp_bucket[5m])) by (le))",
+          "legendFormat": "95p"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 0.2, "color": "red" }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "gauge",
+      "title": "Budget Breaches (Last 24h)",
+      "targets": [
+        {
+          "expr": "sum(increase(web_vitals_budget_breaches_total[24h]))",
+          "legendFormat": "Budget Breaches"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 1, "color": "yellow" },
+              { "value": 10, "color": "red" }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "route",
+        "label": "Route",
+        "type": "query",
+        "query": "label_values(web_vitals_lcp_bucket, route)",
+        "multi": true,
+        "includeAll": true
+      },
+      {
+        "name": "device",
+        "label": "Device",
+        "type": "query",
+        "query": "label_values(web_vitals_lcp_bucket, device_type)",
+        "multi": true,
+        "includeAll": true
+      }
+    ]
+  }
+}

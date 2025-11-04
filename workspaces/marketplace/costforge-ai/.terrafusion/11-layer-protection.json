@@ -1,0 +1,94 @@
+{
+  "workspace_protection_system": {
+    "workspace_name": "costforge-ai",
+    "domain": "cost_analysis",
+    "risk_level": "medium",
+    "customization_timestamp": "2025-10-16T10:16:02.441309",
+    "eleven_layer_protection": {
+      "L1_role_scope_confirmation": {
+        "workspace_role": "costforge-ai specialized AI agent",
+        "scope_definition": "Optimize and protect cost_analysis operations",
+        "success_criteria": "Maintain medium-level security for cost_analysis",
+        "data_types_handled": [
+          "cost_data",
+          "budget_analysis",
+          "financial_projections"
+        ],
+        "protection_priorities": [
+          "budget_accuracy",
+          "cost_transparency",
+          "financial_integrity"
+        ]
+      },
+      "L2_input_sanitation_threat_modeling": {
+        "threat_model": "cost_analysis_specific_threats",
+        "input_validation": "costforge-ai_input_sanitization",
+        "injection_prevention": "cost_analysis_injection_protection",
+        "risk_level_controls": "medium"
+      },
+      "L3_data_classification": {
+        "data_types": [
+          "cost_data",
+          "budget_analysis",
+          "financial_projections"
+        ],
+        "classification_level": "medium",
+        "privacy_requirements": "cost_analysis_privacy_rules",
+        "retention_policies": "costforge-ai_data_retention",
+        "access_controls": "cost_analysis_access_matrix"
+      },
+      "L4_secrets_hygiene": {
+        "vault_integration": "costforge-ai_secret_vault",
+        "key_rotation": "cost_analysis_key_management",
+        "credential_management": "costforge-ai_credential_store",
+        "environment_separation": "medium_env_isolation"
+      },
+      "L5_environment_guardrails": {
+        "environment_controls": "costforge-ai_env_controls",
+        "blast_radius_limits": "cost_analysis_isolation",
+        "feature_flags": "costforge-ai_feature_management",
+        "deployment_gates": "medium_deployment_controls"
+      },
+      "L6_policy_compliance": {
+        "domain_regulations": "cost_analysis_compliance_framework",
+        "government_standards": [
+          "budget_accuracy",
+          "cost_transparency",
+          "financial_integrity"
+        ],
+        "audit_requirements": "costforge-ai_audit_trail",
+        "compliance_monitoring": "cost_analysis_compliance_checks"
+      },
+      "L7_dependency_license_review": {
+        "sbom_generation": "costforge-ai_software_bill_of_materials",
+        "vulnerability_scanning": "cost_analysis_vuln_checks",
+        "license_compliance": "costforge-ai_license_validation",
+        "dependency_monitoring": "medium_dependency_tracking"
+      },
+      "L8_reproducibility": {
+        "version_pinning": "costforge-ai_version_control",
+        "build_determinism": "cost_analysis_build_reproducibility",
+        "configuration_management": "costforge-ai_config_management",
+        "deployment_consistency": "medium_deployment_standards"
+      },
+      "L9_observability_hooks": {
+        "metrics_collection": "costforge-ai_domain_metrics",
+        "logging_framework": "cost_analysis_specialized_logging",
+        "tracing_system": "costforge-ai_distributed_tracing",
+        "alerting_rules": "cost_analysis_alert_configuration"
+      },
+      "L10_human_in_loop_gates": {
+        "approval_workflows": "costforge-ai_approval_matrix",
+        "review_requirements": "cost_analysis_review_gates",
+        "escalation_procedures": "medium_escalation_rules",
+        "manual_override_controls": "costforge-ai_override_procedures"
+      },
+      "L11_red_team_self_check": {
+        "adversarial_testing": "costforge-ai_penetration_testing",
+        "failure_mode_analysis": "cost_analysis_failure_scenarios",
+        "rollback_procedures": "costforge-ai_disaster_recovery",
+        "security_validation": "medium_security_assessment"
+      }
+    }
+  }
+}

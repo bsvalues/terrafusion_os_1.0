@@ -1,0 +1,12 @@
+{
+    "map": {
+        "database_path.descr": "The ArcGIS Workflow Manager (Classic) database connection file that contains the job information. If a connection is not specified, the current default ArcGIS Workflow Manager (Classic) database will be used.",
+        "database_path.title": "Input Database Path",
+        "description": "Prevents the remaining tasks in a job from starting or being created. The active task and its  task group job will still complete.",
+        "job_id.descr": "The job ID of the parent ArcGIS Workflow Manager (Classic) task group job that contains the task list derived from the Set Task List tool.",
+        "job_id.title": "Job ID",
+        "summary": "<xdoc><p>Prevents the remaining tasks in a job from starting or being created. The active task and its task group job will still complete.</p><note type=\"tip\"/><p group=\"note\">It is recommended that current Workflow Manager (Classic) users begin new projects using the services-driven version of ArcGIS Workflow Manager for ArcGIS Pro.</p></xdoc>",
+        "title": "Cancel Remaining Tasks",
+        "updated_job_id.title": "Updated Job ID"
+    }
+}

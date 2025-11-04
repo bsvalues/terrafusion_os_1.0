@@ -1,0 +1,23 @@
+{
+    "map": {
+        "description": "Generates a  report after performing an ortho mapping block adjustment on a mosaic dataset. The report is useful when evaluating the quality and accuracy of the ortho mapping products.",
+        "input_control_point_for_adjustment.descr": "The associated control points table, which may include tie points and ground control points.",
+        "input_control_point_for_adjustment.title": "Input Control Points For Adjustment",
+        "input_mosaic_dataset.descr": "The input mosaic dataset path.",
+        "input_mosaic_dataset.title": "Input Mosaic Dataset",
+        "input_solution_point.descr": "The solution point feature class.",
+        "input_solution_point.title": "Input Solution Points",
+        "input_solution_table.descr": "The associated solution point table after block adjustment.",
+        "input_solution_table.title": "Input Solution Table",
+        "output_report.descr": "The output ortho mapping report file path and name. The supported output format for a website is HTML.",
+        "output_report.title": "Output Report",
+        "report_format.descr": "<xdoc><p>Specifies the output format of the block adjustment report.</p><ul><li><span title=\"HTML\">HTML</span>—The adjustment report will be created in HTML format. This is the default.</li><li><span title=\"PDF\">PDF</span>—The adjustment report will be created in PDF format.</li><li><span title=\"JSON\">JSON</span>—The adjustment report will be created in JSON format.</li><li><span title=\"BRIEF JSON\">Brief JSON</span>—The adjustment report will be created in an abbreviated JSON format.</li></ul></xdoc>",
+        "report_format.domain.BRIEF JSON": "Brief JSON",
+        "report_format.domain.HTML": "HTML",
+        "report_format.domain.JSON": "JSON",
+        "report_format.domain.PDF": "PDF",
+        "report_format.title": "Report Format",
+        "summary": "Generates a report after performing an ortho mapping block adjustment on a mosaic dataset. The report is useful when evaluating the quality and accuracy of the ortho mapping products.",
+        "title": "Generate Block Adjustment Report"
+    }
+}

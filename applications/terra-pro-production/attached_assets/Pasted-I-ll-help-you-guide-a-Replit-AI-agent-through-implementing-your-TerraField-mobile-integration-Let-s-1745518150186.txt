@@ -1,0 +1,112 @@
+I'll help you guide a Replit AI agent through implementing your TerraField mobile integration. Let's organize this process step by step, focusing on clear instructions that will ensure successful execution.
+Project Implementation Guide for Replit AI Agent
+Step 1: Mobile Scaffold Setup
+Initialize a new Expo application in the monorepo structure at apps/terrafield-mobile using TypeScript template. Add React Navigation for routing, Realm for local storage, and link to our shared UI package.
+
+Steps:
+1. Create directory: mkdir -p apps/terrafield-mobile
+2. Initialize Expo app: cd apps/terrafield-mobile && npx create-expo-app . --template expo-template-typescript
+3. Install dependencies: yarn add @react-navigation/native @react-navigation/native-stack react-native-screens react-native-safe-area-context realm
+4. Link to shared UI: yarn add @your-org/ui@workspace:packages/ui
+5. Setup basic navigation structure with Home and ParcelDetail screens
+6. Initialize basic app structure following React Navigation guidelines
+
+Commit with message: "feat(mobile): Initialize TerraField mobile app scaffold with navigation and storage"
+Step 2: CRDT Implementation
+Create a shared CRDT package using Yjs and SyncedStore for synchronized document editing, with focus on parcel note synchronization.
+
+Steps:
+1. Create directory: mkdir -p packages/crdt
+2. Initialize package: cd packages/crdt && yarn init -y
+3. Set package.json: 
+   - name: "@your-org/crdt"
+   - main: "dist/index.js"
+   - types: "dist/index.d.ts"
+4. Install dependencies: yarn add yjs @syncedstore/core
+5. Install dev dependencies: yarn add -D typescript jest @types/jest ts-jest
+6. Create tsconfig.json with appropriate settings
+7. Implement the core functionality in src/index.ts:
+   - Export createParcelStore function that returns SyncedStore with notes property
+   - Add helper functions to encode/decode Yjs updates
+8. Create tests in src/__tests__/crdt.test.ts:
+   - Test concurrent edits resolve deterministically
+   - Test persistence of Yjs document
+
+Commit with message: "feat(crdt): Add shared CRDT implementation with Yjs for offline synchronization"
+Step 3: Offline Note Prototype
+Implement the ParcelNote screen in the mobile app to allow offline editing of parcel notes with local persistence.
+
+Steps:
+1. Create src/screens/ParcelNote.tsx:
+   - Accept parcelId as route parameter
+   - Initialize Yjs document with createParcelStore
+   - Implement Realm persistence for the Yjs document
+   - Create two-way binding between textarea and Yjs document
+   - Add sync button that calls API endpoint
+2. Update navigation to include ParcelNote screen
+3. Implement src/services/SyncService.ts:
+   - POST /mobile-sync endpoint with parcelId and encoded update
+   - Handle offline queue for sync attempts when offline
+4. Add src/components/NoteEditor.tsx with basic styling
+5. Test locally with Expo
+
+Commit with message: "feat(mobile): Add offline-capable parcel note editor with local persistence"
+Step 4: Core Sync Endpoint
+Implement the server-side endpoint to handle mobile sync requests with CRDT merging.
+
+Steps:
+1. In terrafusion-core/src/controllers/mobile.controller.ts:
+   - Add POST /mobile-sync endpoint with auth middleware
+   - Implement handling of update bytes
+   - Load existing document from Postgres
+   - Apply Yjs update using Y.applyUpdateSequential
+   - Save merged document back to database
+   - Return diff to client
+2. Create database migration:
+   - Add parcel_notes table with columns: parcel_id (PK), ydoc (bytea), updated_at
+3. Add e2e test in terrafusion-core/test/mobile-sync.e2e.ts:
+   - Test conflicting updates merge correctly
+   - Verify final state contains both edits
+
+Commit with message: "feat(core): Add mobile sync endpoint with CRDT merge capability"
+Step 5: Subscription & Billing Integration
+Add subscription control for the mobile feature with Stripe integration.
+
+Steps:
+1. Define PRODUCT_TERRAFIELD_MOBILE in environment variables
+2. Create src/guards/subscription.guard.ts:
+   - Implement SubscriptionGuard middleware
+   - Check for 'TERRAFIELD' feature flag in user subscription
+   - Return 402 Payment Required if not subscribed
+3. Apply guard to mobile-sync endpoint
+4. Update web-shell/src/pages/Marketplace.tsx:
+   - Add 'Enable Mobile' card component
+   - Connect to Stripe Checkout
+   - Display appropriate subscription status
+
+Commit with message: "feat(billing): Add subscription control for TerraField mobile access"
+Step 6: Testing Automation
+Create an automated test script to validate the end-to-end functionality.
+
+Steps:
+1. Create scripts/test-terrafield.sh:
+   - Make authenticated POST requests to /mobile-sync with conflicting updates
+   - Fetch parcel data to verify merged note contains both edits
+   - Set proper exit code based on validation
+2. Make script executable: chmod +x scripts/test-terrafield.sh
+3. Add example test data in scripts/test-data/
+
+Commit with message: "test(mobile): Add E2E test script for TerraField synchronization"
+Additional Instructions for the Agent
+Important implementation notes:
+
+1. Use proper TypeScript types throughout the implementation
+2. Follow the existing project's code style and patterns
+3. Ensure all commits pass existing CI checks
+4. Add appropriate documentation comments
+5. Keep the implementation focused on the minimal viable functionality
+6. Use the existing authentication mechanism from the main app
+7. Ensure proper error handling for network issues
+
+The goal is to deliver a working vertical slice that demonstrates offline editing and synchronization without blocking the current Horizon-1 launch.
+Would you like me to adjust any of these instructions or provide more specific implementation details for any of the steps?

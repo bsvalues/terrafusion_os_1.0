@@ -1,0 +1,11 @@
+{
+    "set": [
+        "3d analysis",
+        "3d geometry",
+        "3d set operators",
+        "closed multipatch",
+        "multipatch",
+        "set operators",
+        "solids"
+    ]
+}

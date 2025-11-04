@@ -1,0 +1,1804 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.WorkflowDesignStudio.UI</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceRangeParagraph">
+             <summary>
+            paragraph for Recurrence Yearly 
+             </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.BaseRecurrenceRangeParagraph">
+            <summary>
+            Fakery to keep VS happy w/ MVP stuff
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceRangeParagraph.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceRangeParagraph.OnLoad(System.EventArgs)">
+            <summary>
+            event that is called
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceRangeParagraph.ShowCalendar(System.Boolean)">
+            <summary>
+            method to show the calendar
+            based on the state of StartDate/EndBy Radio buttons.
+            </summary>
+            <param name="enable"></param>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceRangeParagraph.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceRangeParagraph.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceRangeParagraph.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceRangeParagraph.Data_Changed">
+            <summary>
+            Fired when any Event related data is modified
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceRangeParagraph.IsInitialLoad">
+            <summary>
+            flag to determine if this is the initial load of the view
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceRangeParagraph.NoEndDateChecked">
+            <summary>
+            Flag to determine if radio button 'No End Date' has been Checked
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceRangeParagraph.EndDate">
+            <summary>
+            Daily Interval for Scheduled Event
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailParagraph">
+            <summary>
+            Main paragraph of Event Management  Detail dialog
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.BaseEventManagementDetailParagraph">
+            <summary>
+            Fakery to keep VS happy w/ MVP stuff
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailParagraph.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailParagraph.OnLoad(System.EventArgs)">
+            <summary>
+            event that is called
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailParagraph.SaveChanges">
+            <summary>
+            Sets data on the record from all the relevant paragraphs before save
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailParagraph.SetScheduledInitialLoadValue(System.Boolean)">
+            <summary>
+            Method to set a boolean on all the relevant paragraphs to 
+            indicate if it is the initial data load on their UI fields.
+            </summary>
+            <param name="initialLoad">boolean</param>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailParagraph.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailParagraph.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailParagraph.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailParagraph.Data_Changed">
+            <summary>
+            Fired when any Event related data is modified
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailParagraph.SelectedWorkflowId">
+            <summary>
+            Workflow Id for the event
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailParagraph.SelectedMessageTyeId">
+            <summary>
+            MessageType Id for the event
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailParagraph.Record">
+            <summary>
+            Record  for this Paragraph
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailParagraph.Recurrence">
+            <summary>
+            Recurrence pattern type for the Event
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailParagraph.SaveData">
+            <summary>
+            flag to indicate to save the Event
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailParagraph.ScheduledEvent">
+            <summary>
+            Sheduled Event Record for the Paragraph
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailParagraph.MessageEvent">
+            <summary>
+            Message Event Record for the Paragraph
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailParagraph.EventType">
+            <summary>
+            flag to determine the event type
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrencePatternParagraph">
+             <summary>
+            paragraph for Recurrence Yearly 
+             </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.BaseRecurrencePatternParagraph">
+            <summary>
+            Fakery to keep VS happy w/ MVP stuff
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrencePatternParagraph.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrencePatternParagraph.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrencePatternParagraph.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrencePatternParagraph.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrencePatternParagraph.PatternDailyClick">
+            <summary>
+            Event for PatternDailyClick
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrencePatternParagraph.PatternWeeklyClick">
+            <summary>
+            Event for PatternWeeklyClick
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrencePatternParagraph.PatternMonthlyClick">
+            <summary>
+            Event for PatternMonthlyClick
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrencePatternParagraph.PatternYearlyClick">
+            <summary>
+            Event for PatternYearlyClick
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrencePatternParagraph.Data_Changed">
+            <summary>
+            Fired when any Event related data is modified
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrencePatternParagraph.IsInitialLoad">
+            <summary>
+            flag to determine if this is the initial load of the view
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrencePatternParagraph.IsDaily">
+            <summary>
+            flag to determine daily recurrence event
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrencePatternParagraph.IsWeekly">
+            <summary>
+            flag to determine weekly recurrence event
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrencePatternParagraph.IsMonthly">
+            <summary>
+            flag to determine monthly recurrence event
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrencePatternParagraph.IsYearly">
+            <summary>
+            flag to determine yearly recurrence event
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrencePatternParagraph.RadioButtonClick">
+            <summary>
+            Delegate for Click 
+            </summary>
+            /// <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailDialog">
+            <summary>
+            Main View for the Event Management  Add/Edit feature
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.BaseEventManagementDetailDialog">
+            <summary>
+            Base MVP class
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailDialog.errorString">
+            <summary>
+            Error string if any, 
+            returned from a Save operation
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailDialog.validationErrors">
+            <summary>
+            Holds validation errors, if any
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailDialog.hasValidationErrors">
+            <summary>
+            Boolean to indicate if the data to be saved has validation errors
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailDialog.warningShowedAlready">
+            <summary>
+            Boolean to indicate if a warning message has already been showed
+            to the user on 'Cancel' or 'X' click
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailDialog.dialogButtonClicked">
+            <summary>
+            Boolean to indicate if 'Cancel' butotn was clicked
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailDialog.#ctor(System.Guid)">
+            <summary>
+            Constructor 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailDialog.OnLoad(System.EventArgs)">
+            <summary>
+            event that is called on load
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailDialog.OnOkClick(System.Object,System.EventArgs)">
+            <summary>
+            Handles the Ok button click
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailDialog.OnCancelClick(System.Object,System.EventArgs)">
+            <summary>
+            Handles the Cancel button click
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailDialog.OnApplyClick(System.Object,System.EventArgs)">
+            <summary>
+            Handles Apply button click
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailDialog.OnValidationReasonListSet">
+            <summary>
+            Executed on failed validations during save.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailDialog.OnSaveChanges">
+            <summary>
+            Method to clear validation errors and save changes
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailDialog.Form_FormClosing(System.Object,System.Windows.Forms.FormClosingEventArgs)">
+            <summary>
+            If there are any unsaved changes in this View
+            prompt the user to save
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailDialog.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailDialog.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailDialog.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailDialog.Record">
+            <summary>
+            Event Record for this view 
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailDialog.EventId">
+             <summary>
+            EventId used to display the details
+             </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailDialog.ValidationErrors">
+            <summary>
+            For all validation errors found during a Save
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailDialog.SaveChanges">
+            <summary>
+            An event handler for the save-changes event. 
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailDialog.IsApplyEnabled">
+            <summary>
+            Specifies whether the apply button is currently enabled or not.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailPanel">
+            <summary>
+            Panel to display the Event Management Details 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailPanel.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailPanel.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailPanel.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDetailPanel.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.MessageBasedParagraph">
+            <summary>
+            Main paragraph of Event Management  Detail dialog
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.BaseMessageBasedParagraph">
+            <summary>
+            Fakery to keep VS happy w/ MVP stuff
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.MessageBasedParagraph.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.MessageBasedParagraph.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.MessageBasedParagraph.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.MessageBasedParagraph.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.MessageBasedParagraph.Data_Changed">
+            <summary>
+            Fired when any Event related data is modified
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.MessageBasedParagraph.IsInitialLoad">
+            <summary>
+            flag to determine if this is the initial load of the view
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.MessageBasedParagraph.Workflows">
+            <summary>
+            Available workflows
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.MessageBasedParagraph.MessageTypes">
+            <summary>
+            Available MessageTypes
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.MessageBasedParagraph.SelectedWorkflowId">
+            <summary>
+            Workflow Id for the event
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.MessageBasedParagraph.SelectedMessageTypeId">
+            <summary>
+            MessageType Id for the event
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.MessageBasedParagraph.Item">
+            <summary>
+            class to contain the items in the drop down lists since both have integer keys.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.MessageBasedParagraph.Item.Name">
+            <summary>
+            The display value of the drop down item.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.MessageBasedParagraph.Item.Value">
+            <summary>
+            The Value of the item (used for containing the key of the various combobox items) 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.MessageBasedParagraph.Item.#ctor(System.String,System.Guid)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="name"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.MessageBasedParagraph.Item.ToString">
+            <summary>
+            Generates the code displayed in the combobox
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDialog">
+            <summary>
+            Main View for the 
+            Event Management  Add/Edit feature
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.BaseEventManagementDialog">
+            <summary>
+            Base MVP class
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDialog.#ctor(System.Windows.Forms.Form)">
+            <summary>
+            Constructor 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDialog.OnLoad(System.EventArgs)">
+            <summary>
+            event that is called
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDialog.ShowEventMangeMentDetailDialog">
+            <summary>
+            Disply Event management details dialog for the selected event
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDialog.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDialog.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDialog.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDialog.RefreshView">
+            <summary>
+            For View Refresh
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDialog.EventRecords">
+            <summary>
+            Event Records
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementDialog.SelectedEventId">
+            <summary>
+            Selected EventId used to display the Details
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementPanel">
+            <summary>
+            Panel to display the Event Management UI
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementPanel.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementPanel.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementPanel.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementPanel.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementParagraph">
+            <summary>
+            Main paragraph of Event Management  dialog
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.BaseEventManagementParagraph">
+            <summary>
+            Fakery to keep VS happy w/ MVP stuff
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementParagraph.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementParagraph.OnLoad(System.EventArgs)">
+            <summary>
+            event that is called
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementParagraph.InitializeGrid">
+            <summary>
+            Sets up the grid, including the columns and the view
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementParagraph.mainView_FocusedRowChanged(System.Object,DevExpress.XtraGrid.Views.Base.FocusedRowChangedEventArgs)">
+            <summary>
+            Event handler to detect when the selected row has changed
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementParagraph.RefreshData">
+            <summary>
+            Method to load the data for this paragraph
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementParagraph.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementParagraph.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementParagraph.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementParagraph.RefreshView">
+            <summary>
+            For View Refresh
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementParagraph.NewButtonClick">
+            <summary>
+            Event to handle new button click
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementParagraph.DeleteButtonClick">
+            <summary>
+            Event for Deleting an workflow event
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementParagraph.Record">
+            <summary>
+            Data for this control
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.EventManagementParagraph.SelectedId">
+            <summary>
+            Property to contain the identity of the selected Event
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.ScheduledParagraph">
+             <summary>
+            paragraph for Recurrence Yearly 
+             </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.BaseScheduledParagraph">
+            <summary>
+            Fakery to keep VS happy w/ MVP stuff
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.ScheduledParagraph.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.ScheduledParagraph.OnLoad(System.EventArgs)">
+            <summary>
+            event that is called
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.ScheduledParagraph.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.ScheduledParagraph.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.ScheduledParagraph.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.ScheduledParagraph.RecurringCheckedChanged">
+            <summary>
+            Event for Doubleclick on Text
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.ScheduledParagraph.Data_Changed">
+            <summary>
+            Fired when any Event related data is modified
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.ScheduledParagraph.Workflows">
+            <summary>
+            Available workflows
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.ScheduledParagraph.SelectedWorkflowId">
+            <summary>
+            Workflow Id for the event
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.ScheduledParagraph.IsRecurrence">
+            <summary>
+            flag to determine recurrence event
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.ScheduledParagraph.IsInitialLoad">
+            <summary>
+            flag to determine if this is the initial load of the view
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.ScheduledParagraph.SelectedTimeOfDay">
+            <summary>
+            SelectedTimeOfDay - AM or PM
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.ScheduledParagraph.EventName">
+            <summary>
+            Name of the event
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.ScheduledParagraph.EventStartDate">
+            <summary>
+            Name of the event
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.ScheduledParagraph.EventStartTime">
+            <summary>
+            Start time of the Event
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.ScheduledParagraph.Item">
+            <summary>
+            class to contain the items in the drop down lists since both have integer keys.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.ScheduledParagraph.Item.Name">
+            <summary>
+            The display value of the drop down item.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.ScheduledParagraph.Item.Value">
+            <summary>
+            The Value of the item (used for containing the key of the various combobox items) 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.ScheduledParagraph.Item.#ctor(System.String,System.Guid)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="name"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.ScheduledParagraph.Item.ToString">
+            <summary>
+            Generates the code displayed in the combobox
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.ScheduledParagraph.CheckBoxClick">
+            <summary>
+            Delegate for Click 
+            </summary>
+            /// <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceDailyParagraph">
+             <summary>
+            paragraph for Recurrence Yearly 
+             </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.BaseRecurrenceDailyParagraph">
+            <summary>
+            Fakery to keep VS happy w/ MVP stuff
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceDailyParagraph.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceDailyParagraph.OnLoad(System.EventArgs)">
+            <summary>
+            event that is called
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceDailyParagraph.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceDailyParagraph.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceDailyParagraph.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceDailyParagraph.Data_Changed">
+            <summary>
+            Fired when any Event related data is modified
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceDailyParagraph.IsInitialLoad">
+            <summary>
+            flag to determine if this is the initial load of the view
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceDailyParagraph.DailyInterval">
+            <summary>
+            Daily Interval for Scheduled Event
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceMonthlyParagraph">
+             <summary>
+            paragraph for Recurrence Yearly 
+             </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.BaseRecurrenceMonthlyParagraph">
+            <summary>
+            Fakery to keep VS happy w/ MVP stuff
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceMonthlyParagraph.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceMonthlyParagraph.OnLoad(System.EventArgs)">
+            <summary>
+            Event to hanle paragraph Load
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceMonthlyParagraph.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceMonthlyParagraph.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceMonthlyParagraph.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceMonthlyParagraph.Data_Changed">
+            <summary>
+            Fired when any Event related data is modified
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceMonthlyParagraph.IsInitialLoad">
+            <summary>
+            flag to determine if this is the initial load of the view
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceMonthlyParagraph.MonthlyInterval">
+            <summary>
+            Recurrence pattern for the Event
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceWeeklyParagraph">
+             <summary>
+            paragraph for Recurrence Yearly 
+             </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.BaseRecurrenceWeeklyParagraph">
+            <summary>
+            Fakery to keep VS happy w/ MVP stuff
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceWeeklyParagraph.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceWeeklyParagraph.OnLoad(System.EventArgs)">
+            <summary>
+            Event to hanle paragraph Load
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceWeeklyParagraph.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceWeeklyParagraph.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceWeeklyParagraph.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceWeeklyParagraph.Data_Changed">
+            <summary>
+            Fired when any Event related data is modified
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceWeeklyParagraph.IsInitialLoad">
+            <summary>
+            flag to determine if this is the initial load of the view
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceWeeklyParagraph.WeeklyInterval">
+            <summary>
+            Recurrence pattern for the Event
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceYearlyParagraph">
+             <summary>
+            paragraph for Recurrence Yearly 
+             </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.BaseRecurrenceYearlyParagraph">
+            <summary>
+            Fakery to keep VS happy w/ MVP stuff
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceYearlyParagraph.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceYearlyParagraph.OnLoad(System.EventArgs)">
+            <summary>
+            Event to hanle paragraph Load
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceYearlyParagraph.UpdateData">
+            <summary>
+            Update Yearly Interval data on the UI during initial load
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceYearlyParagraph.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceYearlyParagraph.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceYearlyParagraph.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceYearlyParagraph.Data_Changed">
+            <summary>
+            Fired when any Event related data is modified
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceYearlyParagraph.YearlyInterval">
+            <summary>
+            Recurrence pattern for the Event
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceYearlyParagraph.IsInitialLoad">
+            <summary>
+            flag to determine if this is the initial load of the view
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceYearlyParagraph.Item">
+            <summary>
+            class to contain the items in the drop down lists since both have integer keys.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceYearlyParagraph.Item.Name">
+            <summary>
+            The display value of the drop down item.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceYearlyParagraph.Item.Value">
+            <summary>
+            The Value of the item (used for containing the key of the various combobox items) 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceYearlyParagraph.Item.#ctor(System.String,System.Int32)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="name"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.EventManagement.RecurrenceYearlyParagraph.Item.ToString">
+            <summary>
+            Generates the code displayed in the combobox
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.AboutDialog">
+            <summary>
+            Dialog to show product version details
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.AboutDialog.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.AboutDialog.okButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Event handler for when the ok button is clicked
+            </summary>
+            <param name="sender">not used</param>
+            <param name="e">not used</param>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.AboutDialog.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.AboutDialog.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.AboutDialog.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerControl">
+            <summary>
+            Interaction logic for WorkflowDesignerControl.xaml
+            </summary>
+            <summary>
+            WorkflowDesignerControl
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerControl.#ctor">
+            <summary>
+            Default Constructor for the Workflow Designer WPF Control
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerControl.StartNewWorkflow">
+            <summary>
+            Method to load an empty shell into a workflow and set the name
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerControl.Designer_ModelChanged(System.Object,System.EventArgs)">
+            <summary>
+            Event Method to handle what to do when the designer changes, used for setting an IsDirty type flag.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerControl.AddReferencedActivitesToToolbox(System.String,System.String)">
+             <summary>
+             Method to load a new assembly to the toolbox.
+             </summary>
+            <param name="ToolboxName">Display name in the toolbox</param>
+             <param name="assemblyFileName">The Filename of the assembly being added.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerControl.CreateToolbox">
+            <summary>
+            Method to add the rudimentary elements to the workflow toolbox  for (Basic, Flowchart, Collections, and Error Handling)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerControl.CreateToolboxCategory(System.String,System.Collections.Generic.List{System.Type},System.Boolean)">
+            <summary>
+            Method to create a new category for the toolbox based on the elements selected.
+            </summary>
+            <param name="categoryName"></param>
+            <param name="activities"></param>
+            <param name="isStandard"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerControl.menuSave_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Menu Item to Save the workflow.  Fires off the relative event handler
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerControl.menuSaveAs_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Menu Item to prompt the user to save a new copy of a workflow.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerControl.menuSaveNewVersion_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Menu Item to save a copy of the workflow with a new name and different version number.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerControl.menuOptions_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Menu item to prompt the user to provide details regarding the workflow.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerControl.menuDelete_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Menu item to delete a workflow.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerControl.menuCancel_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Menu Item to close the workflow.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerControl.menuRun_Click(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Menu item to run the workflow
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerControl.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerControl.ContentChanged">
+            <summary>
+            Event Handler for the Change of content
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerControl.Save_Workflow">
+            <summary>
+            Event Handler for the saving of a workflow
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerControl.Save_Workflow_As">
+            <summary>
+            event handler for saving a workflow with a new name
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerControl.Save_Workflow_NewVersion">
+            <summary>
+            event handler for saving a workflow with a new version
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerControl.Open_Workflow_Options">
+            <summary>
+            event handler for what to do when the workflow's options dialog is opened.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerControl.Delete_Workflow">
+            <summary>
+            event handler for deleting a workflow
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerControl.Cancel_Workflow">
+            <summary>
+            event handler for canceling a workflow.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerControl.Run_Activity">
+            <summary>
+            Event handler to execute the activity xaml
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerControl.SaveAsNewVersionEnabled">
+            <summary>
+            whether or not the designer will allow the user to save the workflow as a new version.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerControl.XAMLContent">
+            <summary>
+            Property to obtain the contents of the designer in XAML format.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerControl.CanImport">
+            <summary>
+            event handler for whether or not the system will allow xaml to be imported.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.WorkflowOptionsDialog">
+            <summary>
+            Simple Dialog to prompt the user to provide details regarding workflows.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowOptionsDialog.#ctor">
+            <summary>
+            Class constructor. Initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowOptionsDialog.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.WorkflowOptionsDialog.WorkflowName">
+            <summary>
+            Property to bind to the name of the workflow.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.WorkflowOptionsDialog.Description">
+            <summary>
+            Property to bind the description field
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.WorkflowOptionsDialog.WorkflowEnabled">
+            <summary>
+            Property to bind the enabled radio buttons
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView">
+            <summary>
+            The main view of the workflow designer itself.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.BaseWorkflowView">
+            <summary>
+            fake class that exists purely to keep the designer happy
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.#ctor(System.Guid)">
+            <summary>
+            Class constructor. Initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.RefreshView">
+            <summary>
+            Method to handle refreshing the display of the view.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.UpdateName">
+            <summary>
+            Method to build the Title Bar Name based on the workflow.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.Form_FormClosing(System.Object,System.ComponentModel.CancelEventArgs)">
+            <summary>
+            Method to do some cleanup before allowing the form to close.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.SetModelRecords(System.Object,System.EventArgs)">
+            <summary>
+            Unfortunate implementation method to handle updating the records
+            instance of the associated view's model when the model is first
+            initialized.
+            </summary>
+            <param name="sender">Event sender (unused here)</param>
+            <param name="e">Event arguments (unused here)</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.OnSaveChanges">
+            <summary>
+            Internal implementation function to invoke any registered
+            property change saving handler delegates. 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.WorkflowDesignerView_Load(System.Object,System.EventArgs)">
+            <summary>
+            Fires after everything has been initialized.  Used to load an existing workflow if an id has been set.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.workflowDesignerControl_ContentChanged(System.Object,System.EventArgs)">
+            <summary>
+            Method to handle the event of the contents of the workflow changing.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.workflowDesignerControl_Cancel_Workflow(System.Object,System.EventArgs)">
+            <summary>
+            Close the workflow designer.  
+            </summary>
+            <remarks>Alerts the user to save if there are any changes.</remarks>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.workflowDesignerControl_Open_Workflow_Options(System.Object,System.EventArgs)">
+            <summary>
+            Open the Options dialog.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.workflowDesignerControl_Save_Workflow_NewVersion(System.Object,System.EventArgs)">
+            <summary>
+            Method to save a new version of the workflow.
+            </summary>
+            <remarks></remarks>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.workflowDesignerControl_Save_Workflow_As(System.Object,System.EventArgs)">
+            <summary>
+            Save the workflow under a new name.    Prompts the user to give a new name for their workflow.
+            </summary>
+            <remarks>Sets the Version number back to 1.</remarks>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.workflowDesignerControl_Save_Workflow(System.Object,System.EventArgs)">
+            <summary>
+            Event Handler to save the current version of the workflow.
+            </summary>
+            <remarks>Does not allow saving of workflows that have already been executed.  Prompts user for name if none has been set.</remarks>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.UpdateOptions">
+            <summary>
+            Open the options dialog and set the options of the workflow.  
+            </summary>
+            <returns>True if the user sets a name for the workflow, false otherwise </returns>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.SaveChanges">
+            <summary>
+            Event Handler for saving changes to a workflow
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.XAMLContents_Changed">
+            <summary>
+            Event Handler for changes to the XAML
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.WorkflowId_Changed">
+            <summary>
+            Event Handler for handling when the id of a workflow changes
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.RefreshHandler">
+            <summary>
+            Event Handler for refreshing the view.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.SaveChangesAsNew">
+            <summary>
+            Event Handler for saving the changes to a workflow as a new file
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.SaveChangesAsNewVersion">
+            <summary>
+            Event Handler for saving the changes to a workflow in a new version.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.DeleteWorkflow">
+            <summary>
+            Event Handler for deleting a workflow
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.RunActivity">
+            <summary>
+            Event handler to execute the activity xaml
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.XAMLContent">
+            <summary>
+            The XAML Content of the current workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignerView.CanImport">
+            <summary>
+            Determine whether or not the workflow can be imported and overwritten
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.WorkflowBootStrapper">
+            <summary>
+            Implements a bootstrapper type suitable for initialization
+            of the workflow service bus.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowBootStrapper.IsTypeAcceptableForThisBootStrapper(System.Type)">
+            <summary>
+            Returns whether or not the specified type is applicable for
+            this bootstrapper type. We accept any types contained in the
+            TrueAutomation.WorkflowService.MessageBus namespace.
+            </summary>
+            <param name="t"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowBootStrapper.ConfigureContainer">
+            <summary>
+            Configures the Windsor container on behalf of the workflow
+            service bus.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesigner.UI.WorkflowDesignStudioApplicationMenuStrategy">
+            <summary>
+            Application Menu Strategy for the Workflow Design Studio App
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignStudioDialogService">
+            <summary>
+            A Service class in order to localize all calls to create new views to one location.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignStudioDialogService.ShowWorkflowDesigner(TAUserInterface.MdiParentBase,System.Guid)">
+            <summary>
+            Create an instance of the WorkflowDesignerView <cref>WorkflowDesignerView</cref>
+            </summary>
+            <param name="parent">the view/form that is calling this method.</param>
+            <param name="selectedWorkflowID">the Guid referrring to the workflow to open (null will create a new workflow)</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignStudioDialogService.designer_FormClosing(System.Object,System.Windows.Forms.FormClosingEventArgs)">
+            <summary>
+            Event Method to force the WorkflowsListView to refresh when the designer closes.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignStudioDialogService.ShowWorkflowsListView(TAUserInterface.MdiParentBase)">
+            <summary>
+            Opens up the Workflows list view.
+            </summary>
+            <param name="parent"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignStudioDialogService.ShowAboutDialog(System.Windows.Forms.Form)">
+            <summary>
+            Launches the About Dialog
+            </summary>
+            <param name="parent"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignStudioDialogService.ShowEventManagementDialog(TAUserInterface.MdiParentBase)">
+            <summary>
+            Opens up the Event Management view.
+            </summary>
+            <param name="parent"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowDesignStudioDialogService.ShowEventManagementDetailDialog(System.Windows.Forms.Form,System.Guid)">
+            <summary>
+            Opens up the Event Management Detail view.
+            </summary>
+            <param name="parent"></param>
+            /// <param name="eventId"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsListParagraph">
+            <summary>
+            The paragraph containing the list of available workflows
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.BaseWorkflowsListParagraph">
+            <summary>
+            MVP base class
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsListParagraph.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsListParagraph.WorkflowListMasterGridView_FocusedRowChanged(System.Object,DevExpress.XtraGrid.Views.Base.FocusedRowChangedEventArgs)">
+            <summary>
+            Handles grid toolstrip buttons'
+            enable/disable status based on selected row
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsListParagraph.GetFocusedRow">
+            <summary>
+            Method to retrieve the currently focuesed Workflow Record
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsListParagraph.GetFocusedInstanceRow">
+            <summary>
+            Method to retrieve the currently focuesed Workflow Record
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsListParagraph.GetSelectedWorkflows">
+            <summary>
+            Retreive a list of selected workflow records
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsListParagraph.WorkflowListMasterGridView_ShowFilterPopupListBox(System.Object,DevExpress.XtraGrid.Views.Grid.FilterPopupListBoxEventArgs)">
+            <summary>
+            Custom Filter for Blanks and Non Blanks
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsListParagraph.RefreshGrid">
+            <summary>
+            Method to refresh the grid.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsListParagraph.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsListParagraph.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsListParagraph.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsListParagraph.EnableWorkflow">
+            <summary>
+            Event fired when a workflow is enabled.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsListParagraph.DisableWorkflow">
+            <summary>
+            Event fired when a workflow is disabled
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsListParagraph.RunWorkflow">
+            <summary>
+            event fired to execute an instance of a workflow
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsListParagraph.PermanentlyRetire">
+            <summary>
+            event fired to permanently retire a workflow
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsListParagraph.PermanentlyDelete">
+            <summary>
+            event fired to delete a workflow
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsListParagraph.AbortWorkflow">
+            <summary>
+            event fired to abort a running instance.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsListParagraph.RefreshWFData">
+            <summary>
+            event handler for refreshing the data
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsListParagraph.RefreshWFDataFromDB">
+            <summary>
+            event handler for refreshing the data from the database
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsListParagraph.DataChanged_Changed">
+            <summary>
+            event handler for changes in data.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsListParagraph.IsDeleteEnabled">
+            <summary>
+            event handler for whether or not the currently selected workflow can be deleted.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsListParagraph.DataChanged">
+            <summary>
+            flag to determine if any of the data within a workflow has changed.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsListParagraph.Record">
+            <summary>
+            The list of workflows
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsListParagraph.SelectedWorkflowRow">
+            <summary>
+            The number of the row that is selected
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsView">
+            <summary>
+            The workflows view.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.BaseWorkflowsView">
+            <summary>
+            MVP base class
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsView.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsView.SetModelRecords(System.Object,System.EventArgs)">
+            <summary>
+            Unfortunate implementation method to handle updating the records
+            instance of the associated view's model when the model is first
+            initialized.
+            </summary>
+            <param name="sender">Event sender (unused here)</param>
+            <param name="e">Event arguments (unused here)</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsView.RefreshData">
+            <summary>
+            method to refresh the grid.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsView.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsView.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsView.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.WorkflowsView.Record">
+            <summary>
+            The list of workflows
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesigner.UI.WorkflowDesignStudioMetaComponentVerbService">
+            <summary>
+            Faked-out class to handle verbs for now
+            Used to get the menus up and going
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesigner.UI.WorkflowDesignStudioMetaComponentVerbService.verbMap">
+            <summary>
+            Map of verb ids to related actions
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesigner.UI.WorkflowDesignStudioMetaComponentVerbService.parent">
+            <summary>
+            parent form - used to get modality correct
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesigner.UI.WorkflowDesignStudioMetaComponentVerbService.#ctor(TAUserInterface.MdiParentBase)">
+            <summary>
+            Default Constructor
+            </summary>
+            <remarks>
+            Add items to the map here
+            </remarks>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesigner.UI.WorkflowDesignStudioMetaComponentVerbService.DoVerb(TAUserInterfaceService.IVerb)">
+            <summary>
+            Executes action associated with given verb
+            </summary>
+            <param name="verb">Verb to act on</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesigner.UI.WorkflowDesignStudioMetaComponentVerbService.DoVerb(TAUserInterfaceService.IVerb,System.Object)">
+            <summary>
+            ignore - not used
+            </summary>
+            <param name="verb"></param>
+            <param name="param"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesigner.UI.WorkflowDesignStudioMetaComponentVerbService.SupportsVerb(TAUserInterfaceService.IVerb)">
+            <summary>
+            ignore - not used
+            </summary>
+            <param name="verb"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesigner.UI.WorkflowDesignStudioMetaComponentVerbService.QueryCheckedState(TAUserInterfaceService.IVerb)">
+            <summary>
+            ignore - not used
+            </summary>
+            <param name="verb"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesigner.UI.WorkflowDesignStudioMetaComponentVerbService.EnableVerb(TAUserInterfaceService.IVerb)">
+            <summary>
+            ignore - not used
+            </summary>
+            <param name="verb"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesigner.UI.WorkflowDesignStudioMetaComponentVerbService.DisplayVerb(TAUserInterfaceService.IVerb)">
+            <summary>
+            ignore - not used
+            </summary>
+            <param name="verb"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesigner.UI.WorkflowDesignStudioMetaComponentVerbService.SupportsVerb(System.String)">
+            <summary>
+            ignore - not used
+            </summary>
+            <param name="verb"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesigner.UI.WorkflowDesignStudioMetaComponentVerbService.DoVerb(System.String)">
+            <summary>
+            ignore - not used
+            </summary>
+            <param name="verb"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesigner.UI.WorkflowDesignStudioMetaComponentVerbService.CreateWorkflow">
+            <summary>
+            Calls service to show an empty workflow design surface
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesigner.UI.WorkflowDesignStudioMetaComponentVerbService.ViewWorkflowList">
+            <summary>
+            calls service to show the workflow list view
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesigner.UI.WorkflowDesignStudioMetaComponentVerbService.ShowAboutDialog">
+            <summary>
+            Launch the About Dialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesigner.UI.WorkflowDesignStudioMetaComponentVerbService.ShowEventManagementDialog">
+            <summary>
+            Launch the About Dialog
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,538 @@
+// Terrafusion Agent Orchestrator - Production Ready Implementation
+// File: orchestrator/src/main.rs
+
+use std::collections::HashMap;
+use std::sync::Arc;
+use std::time::{Duration, Instant};
+use tokio::sync::{RwLock, mpsc};
+use serde::{Deserialize, Serialize};
+use uuid::Uuid;
+use chrono::{DateTime, Utc};
+use anyhow::{Result, Context};
+use tracing::{info, warn, error, instrument};
+
+// ============================================================================
+// CORE TYPES & MODELS
+// ============================================================================
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Property {
+    pub id: Uuid,
+    pub parcel_id: String,
+    pub address: String,
+    pub assessed_value: f64,
+    pub square_feet: Option<i32>,
+    pub year_built: Option<i32>,
+    pub coordinates: Option<Coordinates>,
+    pub last_assessment: DateTime<Utc>,
+    pub owner: PropertyOwner,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Coordinates {
+    pub latitude: f64,
+    pub longitude: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PropertyOwner {
+    pub name: String,
+    pub mailing_address: String,
+    pub owner_type: OwnerType,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum OwnerType {
+    Individual,
+    Corporate,
+    Government,
+    Nonprofit,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AgentTask {
+    pub id: Uuid,
+    pub agent_id: String,
+    pub property_id: Uuid,
+    pub task_type: TaskType,
+    pub parameters: serde_json::Value,
+    pub status: TaskStatus,
+    pub created_at: DateTime<Utc>,
+    pub completed_at: Option<DateTime<Utc>>,
+    pub result: Option<serde_json::Value>,
+    pub error: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum TaskType {
+    PropertyValuation,
+    ExemptionAnalysis,
+    ComplianceCheck,
+    SalesValidation,
+    NeighborhoodAnalysis,
+    CostEstimation,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum TaskStatus {
+    Pending,
+    InProgress,
+    Completed,
+    Failed,
+    Cancelled,
+}
+
+// ============================================================================
+// AGENT REGISTRY
+// ============================================================================
+
+#[derive(Debug, Clone)]
+pub struct AgentInfo {
+    pub id: String,
+    pub name: String,
+    pub description: String,
+    pub capabilities: Vec<TaskType>,
+    pub endpoint: String,
+    pub health_status: AgentHealth,
+    pub last_heartbeat: DateTime<Utc>,
+    pub active_tasks: u32,
+    pub max_concurrent_tasks: u32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum AgentHealth {
+    Healthy,
+    Degraded,
+    Unhealthy,
+    Unknown,
+}
+
+pub struct AgentRegistry {
+    agents: Arc<RwLock<HashMap<String, AgentInfo>>>,
+}
+
+impl AgentRegistry {
+    pub fn new() -> Self {
+        Self {
+            agents: Arc::new(RwLock::new(HashMap::new())),
+        }
+    }
+
+    pub async fn register_agent(&self, agent: AgentInfo) -> Result<()> {
+        let mut agents = self.agents.write().await;
+        info!("Registering agent: {} ({})", agent.name, agent.id);
+        agents.insert(agent.id.clone(), agent);
+        Ok(())
+    }
+
+    pub async fn get_available_agents(&self, task_type: &TaskType) -> Vec<AgentInfo> {
+        let agents = self.agents.read().await;
+        agents
+            .values()
+            .filter(|agent| {
+                agent.capabilities.contains(task_type) 
+                && agent.health_status != AgentHealth::Unhealthy
+                && agent.active_tasks < agent.max_concurrent_tasks
+            })
+            .cloned()
+            .collect()
+    }
+
+    pub async fn update_agent_health(&self, agent_id: &str, health: AgentHealth) -> Result<()> {
+        let mut agents = self.agents.write().await;
+        if let Some(agent) = agents.get_mut(agent_id) {
+            agent.health_status = health;
+            agent.last_heartbeat = Utc::now();
+        }
+        Ok(())
+    }
+}
+
+// ============================================================================
+// TASK ORCHESTRATOR
+// ============================================================================
+
+pub struct TaskOrchestrator {
+    agent_registry: Arc<AgentRegistry>,
+    task_queue: Arc<RwLock<HashMap<Uuid, AgentTask>>>,
+    results_sender: mpsc::UnboundedSender<AgentTask>,
+    http_client: reqwest::Client,
+}
+
+impl TaskOrchestrator {
+    pub fn new(agent_registry: Arc<AgentRegistry>) -> (Self, mpsc::UnboundedReceiver<AgentTask>) {
+        let (tx, rx) = mpsc::unbounded_channel();
+        let client = reqwest::Client::builder()
+            .timeout(Duration::from_secs(30))
+            .build()
+            .expect("Failed to create HTTP client");
+
+        let orchestrator = Self {
+            agent_registry,
+            task_queue: Arc::new(RwLock::new(HashMap::new())),
+            results_sender: tx,
+            http_client: client,
+        };
+
+        (orchestrator, rx)
+    }
+
+    #[instrument(skip(self))]
+    pub async fn submit_task(&self, mut task: AgentTask) -> Result<Uuid> {
+        task.id = Uuid::new_v4();
+        task.status = TaskStatus::Pending;
+        task.created_at = Utc::now();
+
+        let task_id = task.id;
+        let mut queue = self.task_queue.write().await;
+        queue.insert(task_id, task.clone());
+
+        info!("Task {} submitted for processing", task_id);
+        
+        // Spawn async processing
+        let orchestrator = self.clone();
+        tokio::spawn(async move {
+            if let Err(e) = orchestrator.process_task(task_id).await {
+                error!("Failed to process task {}: {:?}", task_id, e);
+            }
+        });
+
+        Ok(task_id)
+    }
+
+    async fn process_task(&self, task_id: Uuid) -> Result<()> {
+        let task = {
+            let queue = self.task_queue.read().await;
+            queue.get(&task_id).cloned()
+                .context("Task not found in queue")?
+        };
+
+        // Find available agent
+        let available_agents = self.agent_registry
+            .get_available_agents(&task.task_type)
+            .await;
+
+        if available_agents.is_empty() {
+            warn!("No available agents for task type: {:?}", task.task_type);
+            self.update_task_status(task_id, TaskStatus::Failed, 
+                Some("No available agents".to_string())).await?;
+            return Ok(());
+        }
+
+        // Select best agent (simple round-robin for now)
+        let selected_agent = &available_agents[0];
+        
+        // Update task status
+        self.update_task_status(task_id, TaskStatus::InProgress, None).await?;
+
+        // Execute task with retry logic
+        let result = self.execute_task_with_retry(&task, selected_agent).await;
+
+        match result {
+            Ok(response) => {
+                self.complete_task(task_id, response).await?;
+            }
+            Err(e) => {
+                error!("Task {} failed: {:?}", task_id, e);
+                self.update_task_status(task_id, TaskStatus::Failed, 
+                    Some(e.to_string())).await?;
+            }
+        }
+
+        Ok(())
+    }
+
+    async fn execute_task_with_retry(
+        &self, 
+        task: &AgentTask, 
+        agent: &AgentInfo
+    ) -> Result<serde_json::Value> {
+        let max_retries = 3;
+        let mut delay = Duration::from_millis(500);
+
+        for attempt in 1..=max_retries {
+            match self.execute_task(task, agent).await {
+                Ok(result) => return Ok(result),
+                Err(e) if attempt == max_retries => return Err(e),
+                Err(e) => {
+                    warn!("Attempt {} failed for task {}: {:?}", attempt, task.id, e);
+                    tokio::time::sleep(delay).await;
+                    delay *= 2; // Exponential backoff
+                }
+            }
+        }
+
+        unreachable!()
+    }
+
+    async fn execute_task(
+        &self, 
+        task: &AgentTask, 
+        agent: &AgentInfo
+    ) -> Result<serde_json::Value> {
+        let payload = serde_json::json!({
+            "task_id": task.id,
+            "task_type": task.task_type,
+            "property_id": task.property_id,
+            "parameters": task.parameters
+        });
+
+        let response = self.http_client
+            .post(&format!("{}/execute", agent.endpoint))
+            .json(&payload)
+            .send()
+            .await
+            .context("Failed to send request to agent")?;
+
+        if response.status().is_success() {
+            let result: serde_json::Value = response.json().await
+                .context("Failed to parse agent response")?;
+            Ok(result)
+        } else {
+            let error_text = response.text().await.unwrap_or_default();
+            Err(anyhow::anyhow!("Agent returned error: {}", error_text))
+        }
+    }
+
+    async fn update_task_status(
+        &self, 
+        task_id: Uuid, 
+        status: TaskStatus, 
+        error: Option<String>
+    ) -> Result<()> {
+        let mut queue = self.task_queue.write().await;
+        if let Some(task) = queue.get_mut(&task_id) {
+            task.status = status;
+            if let Some(err) = error {
+                task.error = Some(err);
+            }
+        }
+        Ok(())
+    }
+
+    async fn complete_task(&self, task_id: Uuid, result: serde_json::Value) -> Result<()> {
+        let mut queue = self.task_queue.write().await;
+        if let Some(task) = queue.get_mut(&task_id) {
+            task.status = TaskStatus::Completed;
+            task.completed_at = Some(Utc::now());
+            task.result = Some(result);
+
+            // Send result notification
+            if let Err(e) = self.results_sender.send(task.clone()) {
+                error!("Failed to send task result: {:?}", e);
+            }
+        }
+        Ok(())
+    }
+
+    pub async fn get_task_status(&self, task_id: Uuid) -> Option<AgentTask> {
+        let queue = self.task_queue.read().await;
+        queue.get(&task_id).cloned()
+    }
+}
+
+impl Clone for TaskOrchestrator {
+    fn clone(&self) -> Self {
+        Self {
+            agent_registry: Arc::clone(&self.agent_registry),
+            task_queue: Arc::clone(&self.task_queue),
+            results_sender: self.results_sender.clone(),
+            http_client: self.http_client.clone(),
+        }
+    }
+}
+
+// ============================================================================
+// HEALTH MONITORING
+// ============================================================================
+
+pub struct HealthMonitor {
+    agent_registry: Arc<AgentRegistry>,
+    http_client: reqwest::Client,
+}
+
+impl HealthMonitor {
+    pub fn new(agent_registry: Arc<AgentRegistry>) -> Self {
+        let client = reqwest::Client::builder()
+            .timeout(Duration::from_secs(5))
+            .build()
+            .expect("Failed to create health check client");
+
+        Self {
+            agent_registry,
+            http_client: client,
+        }
+    }
+
+    pub async fn start_monitoring(&self) {
+        let mut interval = tokio::time::interval(Duration::from_secs(30));
+        
+        loop {
+            interval.tick().await;
+            self.check_all_agents().await;
+        }
+    }
+
+    async fn check_all_agents(&self) {
+        let agents = {
+            let registry = self.agent_registry.agents.read().await;
+            registry.values().cloned().collect::<Vec<_>>()
+        };
+
+        for agent in agents {
+            let health = self.check_agent_health(&agent).await;
+            if let Err(e) = self.agent_registry
+                .update_agent_health(&agent.id, health).await {
+                error!("Failed to update agent health: {:?}", e);
+            }
+        }
+    }
+
+    async fn check_agent_health(&self, agent: &AgentInfo) -> AgentHealth {
+        let health_url = format!("{}/health", agent.endpoint);
+        
+        match self.http_client.get(&health_url).send().await {
+            Ok(response) if response.status().is_success() => AgentHealth::Healthy,
+            Ok(_) => AgentHealth::Degraded,
+            Err(_) => AgentHealth::Unhealthy,
+        }
+    }
+}
+
+// ============================================================================
+// MAIN APPLICATION
+// ============================================================================
+
+#[tokio::main]
+async fn main() -> Result<()> {
+    // Initialize logging
+    tracing_subscriber::fmt::init();
+
+    info!("Starting Terrafusion Agent Orchestrator");
+
+    // Initialize components
+    let agent_registry = Arc::new(AgentRegistry::new());
+    let (orchestrator, mut results_receiver) = TaskOrchestrator::new(Arc::clone(&agent_registry));
+    let health_monitor = HealthMonitor::new(Arc::clone(&agent_registry));
+
+    // Register sample agents
+    register_sample_agents(&agent_registry).await?;
+
+    // Start health monitoring
+    let health_monitor_task = {
+        let monitor = health_monitor;
+        tokio::spawn(async move {
+            monitor.start_monitoring().await;
+        })
+    };
+
+    // Start result processing
+    let results_task = tokio::spawn(async move {
+        while let Some(completed_task) = results_receiver.recv().await {
+            info!("Task {} completed successfully", completed_task.id);
+            // Here you could save to database, send notifications, etc.
+        }
+    });
+
+    // Example: Submit a sample task
+    let sample_task = AgentTask {
+        id: Uuid::new_v4(),
+        agent_id: "narrator-ai".to_string(),
+        property_id: Uuid::new_v4(),
+        task_type: TaskType::PropertyValuation,
+        parameters: serde_json::json!({
+            "assessment_type": "market_value",
+            "include_comparables": true
+        }),
+        status: TaskStatus::Pending,
+        created_at: Utc::now(),
+        completed_at: None,
+        result: None,
+        error: None,
+    };
+
+    let task_id = orchestrator.submit_task(sample_task).await?;
+    info!("Submitted sample task: {}", task_id);
+
+    // Wait for tasks to complete
+    tokio::select! {
+        _ = health_monitor_task => {
+            error!("Health monitor task ended unexpectedly");
+        }
+        _ = results_task => {
+            error!("Results task ended unexpectedly");
+        }
+        _ = tokio::signal::ctrl_c() => {
+            info!("Received shutdown signal");
+        }
+    }
+
+    info!("Terrafusion Agent Orchestrator shutting down");
+    Ok(())
+}
+
+async fn register_sample_agents(registry: &AgentRegistry) -> Result<()> {
+    let agents = vec![
+        AgentInfo {
+            id: "narrator-ai".to_string(),
+            name: "NarratorAI".to_string(),
+            description: "Generates assessment narratives and explanations".to_string(),
+            capabilities: vec![TaskType::PropertyValuation],
+            endpoint: "http://localhost:8001".to_string(),
+            health_status: AgentHealth::Healthy,
+            last_heartbeat: Utc::now(),
+            active_tasks: 0,
+            max_concurrent_tasks: 5,
+        },
+        AgentInfo {
+            id: "exemption-seer".to_string(),
+            name: "ExemptionSeer".to_string(),
+            description: "Analyzes property exemption eligibility".to_string(),
+            capabilities: vec![TaskType::ExemptionAnalysis],
+            endpoint: "http://localhost:8002".to_string(),
+            health_status: AgentHealth::Healthy,
+            last_heartbeat: Utc::now(),
+            active_tasks: 0,
+            max_concurrent_tasks: 3,
+        },
+        AgentInfo {
+            id: "sales-validator".to_string(),
+            name: "SalesValidator".to_string(),
+            description: "Validates property sales data and market analysis".to_string(),
+            capabilities: vec![TaskType::SalesValidation, TaskType::NeighborhoodAnalysis],
+            endpoint: "http://localhost:8003".to_string(),
+            health_status: AgentHealth::Healthy,
+            last_heartbeat: Utc::now(),
+            active_tasks: 0,
+            max_concurrent_tasks: 4,
+        },
+    ];
+
+    for agent in agents {
+        registry.register_agent(agent).await?;
+    }
+
+    Ok(())
+}
+
+// ============================================================================
+// CARGO.TOML DEPENDENCIES
+// ============================================================================
+
+/*
+[package]
+name = "terrafusion-orchestrator"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1.0", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+uuid = { version = "1.0", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+anyhow = "1.0"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+reqwest = { version = "0.11", features = ["json"] }
+*/

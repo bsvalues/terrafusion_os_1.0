@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<xs:schema xmlns="http://www.esri.com/schemas/ArcGIS/3.4.0" targetNamespace="http://www.esri.com/schemas/ArcGIS/3.4.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:include schemaLocation="Geodatabase.xsd" />
+  <xs:include schemaLocation="3DAnalyst.xsd" />
+  <xs:simpleType name="esriExtrusionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="esriExtrusionNone" />
+      <xs:enumeration value="esriExtrusionMinZ" />
+      <xs:enumeration value="esriExtrusionMaxZ" />
+      <xs:enumeration value="esriExtrusionBase" />
+      <xs:enumeration value="esriExtrusionAbsolute" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="esri3DFaceCulling">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="esriFaceCullingNone" />
+      <xs:enumeration value="esriFaceCullingFront" />
+      <xs:enumeration value="esriFaceCullingBack" />
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

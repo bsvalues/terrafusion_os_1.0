@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TerraFusion Playground - Frontend Validation</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #0a0e1a 0%, #1e293b 100%);
+        color: #fff;
+        min-height: 100vh;
+        padding: 2rem;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+
+      .header h1 {
+        font-size: 3rem;
+        background: linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+      }
+
+      .header p {
+        color: #9ca3af;
+        font-size: 1.1rem;
+      }
+
+      .controls {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        border-radius: 2rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 20px rgba(0, 255, 255, 0.3);
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 30px rgba(0, 255, 255, 0.5);
+      }
+
+      .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .test-grid {
+        display: grid;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .test-card {
+        background: rgba(30, 41, 59, 0.3);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(0, 255, 238, 0.2);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .test-card.success {
+        border-color: #00ffaa;
+        background: rgba(0, 255, 170, 0.1);
+      }
+
+      .test-card.error {
+        border-color: #ff4444;
+        background: rgba(255, 68, 68, 0.1);
+      }
+
+      .test-card.running {
+        border-color: #00ffee;
+        background: rgba(0, 255, 238, 0.1);
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.6;
+        }
+      }
+
+      .test-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+      }
+
+      .test-name {
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+
+      .test-status {
+        font-size: 1.5rem;
+      }
+
+      .test-message {
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+        color: #d1d5db;
+        margin-bottom: 0.5rem;
+      }
+
+      .test-data {
+        margin-top: 1rem;
+      }
+
+      .test-data summary {
+        color: #00ffee;
+        cursor: pointer;
+        font-size: 0.85rem;
+      }
+
+      .test-data summary:hover {
+        color: #00ffaa;
+      }
+
+      .test-data pre {
+        background: rgba(0, 0, 0, 0.5);
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-top: 0.5rem;
+        overflow-x: auto;
+        font-size: 0.8rem;
+        max-height: 200px;
+        overflow-y: auto;
+      }
+
+      .summary {
+        background: rgba(30, 41, 59, 0.3);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(0, 255, 238, 0.3);
+        border-radius: 1rem;
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .summary-title {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+      }
+
+      .summary-title.success {
+        background: linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .summary-stats {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .summary-message {
+        color: #00ffee;
+        margin-top: 1rem;
+      }
+
+      .run-id {
+        margin-top: 1rem;
+        font-size: 0.85rem;
+        color: #9ca3af;
+      }
+
+      .run-id code {
+        color: #00ffaa;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+      }
+
+      .performance {
+        background: rgba(30, 41, 59, 0.3);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(0, 255, 238, 0.2);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-top: 2rem;
+      }
+
+      .performance h3 {
+        color: #00ffee;
+        margin-bottom: 1rem;
+      }
+
+      .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 0.75rem;
+        font-size: 0.9rem;
+      }
+
+      .metric {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 0.5rem;
+      }
+
+      .metric-value {
+        color: #00ffaa;
+        font-family: 'Courier New', monospace;
+      }
+
+      .metric.total {
+        grid-column: 1 / -1;
+        font-weight: bold;
+        border-top: 1px solid rgba(156, 163, 175, 0.3);
+        margin-top: 0.5rem;
+        padding-top: 1rem;
+      }
+
+      .metric.total .metric-value {
+        color: #00ffee;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🧪 Playground Frontend Validation</h1>
+        <p>Government. Transcended.</p>
+      </div>
+
+      <div class="controls">
+        <button id="runTests" class="btn-primary">🚀 Run All Tests</button>
+      </div>
+
+      <div id="testGrid" class="test-grid"></div>
+
+      <div id="summary" class="summary" style="display: none">
+        <div id="summaryTitle" class="summary-title"></div>
+        <div id="summaryStats" class="summary-stats"></div>
+        <div id="summaryMessage" class="summary-message"></div>
+        <div id="runId" class="run-id"></div>
+      </div>
+
+      <div id="performance" class="performance" style="display: none">
+        <h3>⚡ Performance Metrics</h3>
+        <div id="metricGrid" class="metric-grid"></div>
+      </div>
+    </div>
+
+    <script>
+      const API_BASE = 'http://localhost:5000/api/playground';
+
+      const tests = [
+        { name: 'Health Check', id: 'health' },
+        { name: 'List Scenarios', id: 'scenarios' },
+        { name: 'Start Scenario', id: 'start' },
+        { name: 'Get Run Status', id: 'run' },
+        { name: 'List All Runs', id: 'runs' },
+      ];
+
+      let createdRunId = '';
+
+      function createTestCard(test, index) {
+        return `
+                <div id="test-${index}" class="test-card">
+                    <div class="test-header">
+                        <span class="test-name">Test ${index + 1}: ${test.name}</span>
+                        <span class="test-status" id="status-${index}">⏸️</span>
+                    </div>
+                    <div class="test-message" id="message-${index}"></div>
+                    <div class="test-data" id="data-${index}"></div>
+                </div>
+            `;
+      }
+
+      function updateTestStatus(index, status, message, data = null, duration = null) {
+        const card = document.getElementById(`test-${index}`);
+        const statusEl = document.getElementById(`status-${index}`);
+        const messageEl = document.getElementById(`message-${index}`);
+        const dataEl = document.getElementById(`data-${index}`);
+
+        card.className = `test-card ${status}`;
+
+        const statusIcons = {
+          pending: '⏸️',
+          running: '⏳',
+          success: '✅',
+          error: '❌',
+        };
+        statusEl.textContent = statusIcons[status] || '⏸️';
+
+        let displayMessage = message;
+        if (duration) {
+          displayMessage += ` (${duration}ms)`;
+        }
+        messageEl.textContent = displayMessage;
+
+        if (data) {
+          dataEl.innerHTML = `
+                    <details>
+                        <summary>View Response Data</summary>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </details>
+                `;
+        }
+      }
+
+      async function runAllTests() {
+        const button = document.getElementById('runTests');
+        button.disabled = true;
+        button.textContent = '⏳ Running Tests...';
+
+        document.getElementById('summary').style.display = 'none';
+        document.getElementById('performance').style.display = 'none';
+
+        const testGrid = document.getElementById('testGrid');
+        testGrid.innerHTML = tests.map((test, index) => createTestCard(test, index)).join('');
+
+        let passedTests = 0;
+        const durations = [];
+
+        // Test 1: Health Check
+        try {
+          updateTestStatus(0, 'running', 'Testing health endpoint...');
+          const start = Date.now();
+          const response = await fetch(`${API_BASE}/health`);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const data = await response.json();
+          const duration = Date.now() - start;
+          durations.push({ name: 'Health Check', duration });
+          updateTestStatus(0, 'success', `✅ Status: ${data.status}`, data, duration);
+          passedTests++;
+        } catch (error) {
+          updateTestStatus(0, 'error', `❌ ${error.message}`);
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        // Test 2: List Scenarios
+        try {
+          updateTestStatus(1, 'running', 'Fetching scenarios...');
+          const start = Date.now();
+          const response = await fetch(`${API_BASE}/scenarios`);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const data = await response.json();
+          const duration = Date.now() - start;
+          durations.push({ name: 'List Scenarios', duration });
+          const scenarios = data.scenarios || [];
+          updateTestStatus(
+            1,
+            'success',
+            `✅ Found ${scenarios.length} scenario(s)`,
+            data,
+            duration
+          );
+          passedTests++;
+        } catch (error) {
+          updateTestStatus(1, 'error', `❌ ${error.message}`);
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        // Test 3: Start Scenario
+        try {
+          updateTestStatus(2, 'running', 'Starting hello-world scenario...');
+          const start = Date.now();
+          const response = await fetch(`${API_BASE}/start`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              scenarioId: 'hello-world',
+              parameters: { testParam: 'championship-frontend-test' },
+            }),
+          });
+          if (!response.ok && response.status !== 202) throw new Error(`HTTP ${response.status}`);
+          const data = await response.json();
+          const duration = Date.now() - start;
+          durations.push({ name: 'Start Scenario', duration });
+          createdRunId = data.runId;
+          updateTestStatus(
+            2,
+            'success',
+            `✅ Started: ${data.scenarioId}, Run ID: ${data.runId}`,
+            data,
+            duration
+          );
+          passedTests++;
+        } catch (error) {
+          updateTestStatus(2, 'error', `❌ ${error.message}`);
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        // Test 4: Get Run Status
+        if (createdRunId) {
+          try {
+            updateTestStatus(3, 'running', `Fetching run status for ${createdRunId}...`);
+            const start = Date.now();
+            const response = await fetch(`${API_BASE}/runs/${encodeURIComponent(createdRunId)}`);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            const duration = Date.now() - start;
+            durations.push({ name: 'Get Run Status', duration });
+            updateTestStatus(
+              3,
+              'success',
+              `✅ Run status: ${data.status}, Scenario: ${data.scenarioId}`,
+              data,
+              duration
+            );
+            passedTests++;
+          } catch (error) {
+            updateTestStatus(3, 'error', `❌ ${error.message}`);
+          }
+        } else {
+          updateTestStatus(3, 'error', '❌ No run ID available from previous test');
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        // Test 5: List All Runs
+        try {
+          updateTestStatus(4, 'running', 'Listing all runs...');
+          const start = Date.now();
+          const response = await fetch(`${API_BASE}/runs`);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const data = await response.json();
+          const duration = Date.now() - start;
+          durations.push({ name: 'List All Runs', duration });
+          const runs = data.runs || [];
+          updateTestStatus(4, 'success', `✅ Found ${runs.length} run(s)`, data, duration);
+          passedTests++;
+        } catch (error) {
+          updateTestStatus(4, 'error', `❌ ${error.message}`);
+        }
+
+        // Display summary
+        const summaryEl = document.getElementById('summary');
+        const summaryTitle = document.getElementById('summaryTitle');
+        const summaryStats = document.getElementById('summaryStats');
+        const summaryMessage = document.getElementById('summaryMessage');
+        const runIdEl = document.getElementById('runId');
+
+        summaryEl.style.display = 'block';
+
+        if (passedTests === tests.length) {
+          summaryTitle.textContent = '🏆 Championship Success!';
+          summaryTitle.className = 'summary-title success';
+          summaryMessage.textContent = 'All Playground endpoints operational! 🚀';
+        } else {
+          summaryTitle.textContent = 'Test Results';
+          summaryTitle.className = 'summary-title';
+          summaryMessage.textContent = '';
+        }
+
+        summaryStats.textContent = `${passedTests}/${tests.length} Tests Passed`;
+
+        if (createdRunId) {
+          runIdEl.innerHTML = `Created Run ID: <code>${createdRunId}</code>`;
+        }
+
+        // Display performance metrics
+        if (durations.length > 0) {
+          const perfEl = document.getElementById('performance');
+          const metricGrid = document.getElementById('metricGrid');
+
+          perfEl.style.display = 'block';
+
+          const avgDuration = Math.round(
+            durations.reduce((sum, d) => sum + d.duration, 0) / durations.length
+          );
+
+          metricGrid.innerHTML =
+            durations
+              .map(
+                (d) => `
+                    <div class="metric">
+                        <span>${d.name}:</span>
+                        <span class="metric-value">${d.duration}ms</span>
+                    </div>
+                `
+              )
+              .join('') +
+            `
+                    <div class="metric total">
+                        <span>Average:</span>
+                        <span class="metric-value">${avgDuration}ms</span>
+                    </div>
+                `;
+        }
+
+        button.disabled = false;
+        button.textContent = '🚀 Run All Tests';
+      }
+
+      document.getElementById('runTests').addEventListener('click', runAllTests);
+
+      // Initialize test cards
+      document.getElementById('testGrid').innerHTML = tests
+        .map((test, index) => createTestCard(test, index))
+        .join('');
+    </script>
+  </body>
+</html>

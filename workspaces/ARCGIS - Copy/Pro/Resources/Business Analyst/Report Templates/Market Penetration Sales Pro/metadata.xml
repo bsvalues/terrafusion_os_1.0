@@ -1,0 +1,50 @@
+<DataCollection ScriptLanguage="Python" Title="Mk_Pen_Final" ReportID="">
+  <Metadata>
+    <countries>
+      <country>US</country>
+    </countries>
+    <hierarchy>census</hierarchy>
+    <coverage>US</coverage>
+    <reportType>esriReportTemplatePointAndMarketBased</reportType>
+    <creationDate>1646769779000</creationDate>
+    <lastRevisionDate>1646769825000</lastRevisionDate>
+    <description>Business Analyst Report Template</description>
+    <author>Esri</author>
+    <typekeywords>
+      <typekeyword>Business Analyst</typekeyword>
+    </typekeywords>
+  </Metadata>
+  <Parameters>
+    <Layer Name="BOUNDARIES" Alias="Boundaries Layer" LayerType="Boundaries" ShapeType="Polygon"/>
+  </Parameters>
+  <StaticImages>
+    <StaticImage Name="7q1nyco7rolr.png" Width="0" Height="0"/>
+    <StaticImage Name="lvi3u88pe26f.png" Width="0" Height="0"/>
+    <StaticImage Name="s63nse59ll13.png" Width="0" Height="0"/>
+    <StaticImage Name="z0m3g5kl8wod.png" Width="0" Height="0"/>
+    <StaticImage Name="4a81mxuezjkc.png" Width="0" Height="0"/>
+  </StaticImages>
+  <Variables>
+    <Variable Name="Copyright"/>
+    <Variable Name="Source"/>
+    <Variable Name="TrialUrlText"/>
+    <Variable Name="PhoneNumber"/>
+    <Variable Name="ProductUrl"/>
+    <Variable Name="ProductLabel"/>
+  </Variables>
+  <Calculators>
+    <Maps Name="images" UnionBy="STORE_ID">
+      <RawFields>
+        <Field Name="STORE_ID" MapTo="STORE_ID" Type="String"/>
+      </RawFields>
+      <Fields>
+        <Map Name="ImageData" Width="2542" Height="2113" DPI="300" PointBased="false" SupportCustomBasemap="true">
+          <Layers>
+            <Layer PortalItemId="{basemap:streets}" MapName="0130_Streets.*"/>
+            <StudyAreasLayer/>
+          </Layers>
+        </Map>
+      </Fields>
+    </Maps>
+  </Calculators>
+</DataCollection>

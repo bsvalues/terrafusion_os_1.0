@@ -1,0 +1,174 @@
+{
+    "type": "FunctionTool",
+    "guid": "{31273f12-1313-4c46-8293-c7449df36785}",
+    "displayname": "$rc:title",
+    "helpcontent": "5070005",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9"
+    ],
+    "attributes": [
+        "edit_session",
+        "input_data_change"
+    ],
+    "params": {
+        "in_surface": {
+            "display_order": "0",
+            "displayname": "$rc:in_surface.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTinLayer"
+                    },
+                    {
+                        "type": "GPTerrainLayer"
+                    },
+                    {
+                        "type": "GPLasDatasetLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_surface.descr"
+        },
+        "in_feature_class": {
+            "display_order": "1",
+            "displayname": "$rc:in_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:in_feature_class.descr"
+        },
+        "in_height_field": {
+            "display_order": "2",
+            "displayname": "$rc:in_height_field.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:in_height_field.descr"
+        },
+        "reference_plane": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:reference_plane.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ABOVE",
+                        "code": "$rc:reference_plane.domain.ABOVE"
+                    },
+                    {
+                        "value": "BELOW",
+                        "code": "$rc:reference_plane.domain.BELOW"
+                    },
+                    {
+                        "value": "BOTH",
+                        "code": "$rc:reference_plane.domain.BOTH"
+                    }
+                ]
+            },
+            "value": "BELOW",
+            "description": "$rc:reference_plane.descr"
+        },
+        "out_volume_field": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:out_volume_field.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "Volume",
+            "description": "$rc:out_volume_field.descr"
+        },
+        "surface_area_field": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:surface_area_field.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "SArea",
+            "description": "$rc:surface_area_field.descr"
+        },
+        "pyramid_level_resolution": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:pyramid_level_resolution.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:pyramid_level_resolution.descr"
+        },
+        "output_feature_class": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "11",
+            "displayname": "$rc:output_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "in_feature_class"
+            ]
+        },
+        "out_volume_above_field": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:out_volume_above_field.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "Above_Vol",
+            "description": "$rc:out_volume_above_field.descr"
+        },
+        "out_volume_below_field": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:out_volume_below_field.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "Below_Vol",
+            "description": "$rc:out_volume_below_field.descr"
+        },
+        "surface_area_above_field": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:surface_area_above_field.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "Above_SA",
+            "description": "$rc:surface_area_above_field.descr"
+        },
+        "surface_area_below_field": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:surface_area_below_field.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "Below_SA",
+            "description": "$rc:surface_area_below_field.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "geographicTransformations",
+        "terrainMemoryUsage",
+        "workspace"
+    ]
+}

@@ -1,0 +1,792 @@
+{% extends "base.html" %}
+
+{% block title %}{% if template %}Edit{% else %}Create{% endif %} Report Template{% endblock %}
+
+{% block head %}
+<style>
+    .section-card {
+        margin-bottom: 20px;
+        border: 1px solid #eee;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .section-header {
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #eee;
+        border-radius: 10px 10px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .section-body {
+        padding: 20px;
+    }
+    .section-field {
+        margin-bottom: 15px;
+    }
+    .add-section-btn {
+        margin: 20px 0;
+    }
+    .section-type-badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        background-color: #e9ecef;
+        color: #495057;
+    }
+    .field-list {
+        padding: 10px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        margin-top: 10px;
+    }
+    .field-item {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: #e9ecef;
+        border-radius: 20px;
+        margin: 5px;
+        font-size: 0.8rem;
+    }
+    .section-drag-handle {
+        cursor: move;
+        color: #6c757d;
+    }
+    .section-action {
+        color: #6c757d;
+        cursor: pointer;
+        margin-left: 10px;
+    }
+    .section-action:hover {
+        color: #000;
+    }
+    .delete-section {
+        color: #dc3545;
+    }
+    .delete-section:hover {
+        color: #bd2130;
+    }
+    .template-type-select {
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.3s;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    .template-type-select:hover {
+        background-color: #f8f9fa;
+    }
+    .template-type-select.selected {
+        border-color: #007bff;
+        background-color: #f0f7ff;
+    }
+    .template-type-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .template-type-icon {
+        font-size: 1.5rem;
+        margin-right: 10px;
+        color: #6c757d;
+    }
+    .template-type-name {
+        font-weight: 500;
+    }
+    .template-type-description {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>{% if template %}Edit{% else %}Create{% endif %} Report Template</h1>
+        <a href="{{ url_for('reports.reports_dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+    
+    <form method="post" id="template-form">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Template Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="form-group mb-3">
+                    <label for="name">Template Name</label>
+                    <input type="text" class="form-control" id="name" name="name" required placeholder="Enter template name" 
+                           value="{{ template.name if template else '' }}">
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="description">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter template description">{{ template.description if template else '' }}</textarea>
+                </div>
+                
+                <div class="form-group mb-4">
+                    <label>Template Type</label>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="template-type-select {% if template and template.template_type == 'property_assessment' %}selected{% endif %}" data-type="property_assessment">
+                                <div class="template-type-header">
+                                    <div class="template-type-icon"><i class="fas fa-home"></i></div>
+                                    <div class="template-type-name">Property Assessment</div>
+                                </div>
+                                <div class="template-type-description">A detailed report for individual property assessments</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="template-type-select {% if template and template.template_type == 'geospatial_analysis' %}selected{% endif %}" data-type="geospatial_analysis">
+                                <div class="template-type-header">
+                                    <div class="template-type-icon"><i class="fas fa-map-marked-alt"></i></div>
+                                    <div class="template-type-name">Geospatial Analysis</div>
+                                </div>
+                                <div class="template-type-description">Analysis of property data with geospatial insights</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="template-type-select {% if template and template.template_type == 'anomaly_report' %}selected{% endif %}" data-type="anomaly_report">
+                                <div class="template-type-header">
+                                    <div class="template-type-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                                    <div class="template-type-name">Anomaly Report</div>
+                                </div>
+                                <div class="template-type-description">Detailed analysis of property value anomalies</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="template-type-select {% if template and template.template_type == 'custom' %}selected{% endif %}" data-type="custom">
+                                <div class="template-type-header">
+                                    <div class="template-type-icon"><i class="fas fa-file-alt"></i></div>
+                                    <div class="template-type-name">Custom Template</div>
+                                </div>
+                                <div class="template-type-description">Create a fully customized report template</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <input type="hidden" id="template_type" name="template_type" value="{{ template.template_type if template else 'custom' }}">
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="tags">Tags (comma separated)</label>
+                    <input type="text" class="form-control" id="tags" name="tags" placeholder="property, assessment, commercial" 
+                           value="{{ ','.join(template.metadata.tags) if template and template.metadata and template.metadata.tags else '' }}">
+                </div>
+            </div>
+        </div>
+        
+        <h4 class="mb-3">Report Sections</h4>
+        <div id="sections-container">
+            {% if template and template.sections %}
+                {% for section in template.sections %}
+                <div class="section-card" data-section-index="{{ loop.index0 }}">
+                    <div class="section-header">
+                        <div>
+                            <i class="fas fa-grip-vertical section-drag-handle mr-2"></i>
+                            <span class="section-title">{{ section.title }}</span>
+                            <span class="section-type-badge ml-2">{{ section.section_type }}</span>
+                        </div>
+                        <div>
+                            <i class="fas fa-chevron-up section-action section-toggle"></i>
+                            <i class="fas fa-trash section-action delete-section"></i>
+                        </div>
+                    </div>
+                    <div class="section-body">
+                        <div class="section-field">
+                            <label for="section_{{ loop.index0 }}_title">Section Title</label>
+                            <input type="text" class="form-control" id="section_{{ loop.index0 }}_title" name="section_{{ loop.index0 }}_title" 
+                                   value="{{ section.title }}" required>
+                        </div>
+                        
+                        <div class="section-field">
+                            <label for="section_{{ loop.index0 }}_type">Section Type</label>
+                            <select class="form-control section-type-select" id="section_{{ loop.index0 }}_type" name="section_{{ loop.index0 }}_type" required>
+                                {% for section_type in section_types %}
+                                <option value="{{ section_type.id }}" {% if section.section_type == section_type.id %}selected{% endif %}>
+                                    {{ section_type.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text text-muted section-type-description">
+                                {% for section_type in section_types %}
+                                    {% if section.section_type == section_type.id %}
+                                        {{ section_type.description }}
+                                    {% endif %}
+                                {% endfor %}
+                            </small>
+                        </div>
+                        
+                        {% if section.section_type == 'text' %}
+                        <div class="section-field section-type-content" data-section-type="text">
+                            <label for="section_{{ loop.index0 }}_text">Text Content</label>
+                            <textarea class="form-control" id="section_{{ loop.index0 }}_text" name="section_{{ loop.index0 }}_text" rows="3">{{ section.content.text }}</textarea>
+                        </div>
+                        {% endif %}
+                        
+                        {% if section.section_type == 'property_info' %}
+                        <div class="section-field section-type-content" data-section-type="property_info">
+                            <label for="section_{{ loop.index0 }}_fields">Property Fields (comma separated)</label>
+                            <input type="text" class="form-control" id="section_{{ loop.index0 }}_fields" name="section_{{ loop.index0 }}_fields" 
+                                   value="{{ ','.join(section.content.fields) if section.content.fields else '' }}">
+                            
+                            <div class="field-list">
+                                <div class="mb-2">Available fields:</div>
+                                <span class="field-item">property_id</span>
+                                <span class="field-item">address</span>
+                                <span class="field-item">parcel_number</span>
+                                <span class="field-item">legal_description</span>
+                                <span class="field-item">property_type</span>
+                                <span class="field-item">zoning</span>
+                                <span class="field-item">year_built</span>
+                                <span class="field-item">lot_size</span>
+                                <span class="field-item">building_size</span>
+                                <span class="field-item">assessed_value</span>
+                                <span class="field-item">market_value</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if section.section_type == 'valuation' %}
+                        <div class="section-field section-type-content" data-section-type="valuation">
+                            <label for="section_{{ loop.index0 }}_fields">Valuation Fields (comma separated)</label>
+                            <input type="text" class="form-control" id="section_{{ loop.index0 }}_fields" name="section_{{ loop.index0 }}_fields" 
+                                   value="{{ ','.join(section.content.fields) if section.content.fields else '' }}">
+                            
+                            <div class="field-list">
+                                <div class="mb-2">Available fields:</div>
+                                <span class="field-item">assessed_value</span>
+                                <span class="field-item">market_value</span>
+                                <span class="field-item">land_value</span>
+                                <span class="field-item">improvement_value</span>
+                                <span class="field-item">previous_assessed_value</span>
+                                <span class="field-item">value_change_percent</span>
+                                <span class="field-item">assessment_date</span>
+                                <span class="field-item">sale_price</span>
+                                <span class="field-item">sale_date</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if section.section_type == 'table' %}
+                        <div class="section-field section-type-content" data-section-type="table">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <label for="section_{{ loop.index0 }}_columns">Table Columns (comma separated)</label>
+                                    <input type="text" class="form-control" id="section_{{ loop.index0 }}_columns" name="section_{{ loop.index0 }}_columns" 
+                                           value="{{ ','.join(section.content.columns) if section.content.columns else '' }}">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="section_{{ loop.index0 }}_data_key">Data Key</label>
+                                    <input type="text" class="form-control" id="section_{{ loop.index0 }}_data_key" name="section_{{ loop.index0 }}_data_key" 
+                                           value="{{ section.content.data_key }}">
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if section.section_type == 'map' %}
+                        <div class="section-field section-type-content" data-section-type="map">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="section_{{ loop.index0 }}_map_type">Map Type</label>
+                                    <select class="form-control" id="section_{{ loop.index0 }}_map_type" name="section_{{ loop.index0 }}_map_type">
+                                        <option value="property_location" {% if section.content.map_type == 'property_location' %}selected{% endif %}>Property Location</option>
+                                        <option value="choropleth" {% if section.content.map_type == 'choropleth' %}selected{% endif %}>Choropleth (Value Heatmap)</option>
+                                        <option value="point" {% if section.content.map_type == 'point' %}selected{% endif %}>Point Map</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="section_{{ loop.index0 }}_zoom_level">Zoom Level</label>
+                                    <input type="number" class="form-control" id="section_{{ loop.index0 }}_zoom_level" name="section_{{ loop.index0 }}_zoom_level" 
+                                           value="{{ section.content.zoom_level }}">
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if section.section_type == 'chart' %}
+                        <div class="section-field section-type-content" data-section-type="chart">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label for="section_{{ loop.index0 }}_chart_type">Chart Type</label>
+                                    <select class="form-control" id="section_{{ loop.index0 }}_chart_type" name="section_{{ loop.index0 }}_chart_type">
+                                        <option value="bar" {% if section.content.chart_type == 'bar' %}selected{% endif %}>Bar Chart</option>
+                                        <option value="line" {% if section.content.chart_type == 'line' %}selected{% endif %}>Line Chart</option>
+                                        <option value="pie" {% if section.content.chart_type == 'pie' %}selected{% endif %}>Pie Chart</option>
+                                        <option value="scatter" {% if section.content.chart_type == 'scatter' %}selected{% endif %}>Scatter Plot</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-8">
+                                    <label for="section_{{ loop.index0 }}_data_key">Data Key</label>
+                                    <input type="text" class="form-control" id="section_{{ loop.index0 }}_data_key" name="section_{{ loop.index0 }}_data_key" 
+                                           value="{{ section.content.data_key }}">
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if section.section_type == 'comparable_properties' %}
+                        <div class="section-field section-type-content" data-section-type="comparable_properties">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <label for="section_{{ loop.index0 }}_fields">Property Fields (comma separated)</label>
+                                    <input type="text" class="form-control" id="section_{{ loop.index0 }}_fields" name="section_{{ loop.index0 }}_fields" 
+                                           value="{{ ','.join(section.content.fields) if section.content.fields else '' }}">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="section_{{ loop.index0 }}_max_properties">Max Properties</label>
+                                    <input type="number" class="form-control" id="section_{{ loop.index0 }}_max_properties" name="section_{{ loop.index0 }}_max_properties" 
+                                           value="{{ section.content.max_properties }}">
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        
+        <button type="button" class="btn btn-outline-primary add-section-btn">
+            <i class="fas fa-plus"></i> Add Section
+        </button>
+        
+        <input type="hidden" id="section_count" name="section_count" value="{{ template.sections|length if template and template.sections else 0 }}">
+        
+        <div class="mt-4 d-flex justify-content-between">
+            <a href="{{ url_for('reports.reports_dashboard') }}" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">
+                {% if template %}Update{% else %}Create{% endif %} Template
+            </button>
+        </div>
+    </form>
+    
+    <!-- Section Type Templates (Hidden) -->
+    <div style="display: none;" id="section-templates">
+        <!-- Text Section Template -->
+        <div class="section-template" data-section-type="text">
+            <div class="section-field section-type-content" data-section-type="text">
+                <label for="section_INDEX_text">Text Content</label>
+                <textarea class="form-control" id="section_INDEX_text" name="section_INDEX_text" rows="3"></textarea>
+            </div>
+        </div>
+        
+        <!-- Property Info Section Template -->
+        <div class="section-template" data-section-type="property_info">
+            <div class="section-field section-type-content" data-section-type="property_info">
+                <label for="section_INDEX_fields">Property Fields (comma separated)</label>
+                <input type="text" class="form-control" id="section_INDEX_fields" name="section_INDEX_fields" value="property_id,address,parcel_number,property_type,year_built,lot_size,building_size">
+                
+                <div class="field-list">
+                    <div class="mb-2">Available fields:</div>
+                    <span class="field-item">property_id</span>
+                    <span class="field-item">address</span>
+                    <span class="field-item">parcel_number</span>
+                    <span class="field-item">legal_description</span>
+                    <span class="field-item">property_type</span>
+                    <span class="field-item">zoning</span>
+                    <span class="field-item">year_built</span>
+                    <span class="field-item">lot_size</span>
+                    <span class="field-item">building_size</span>
+                    <span class="field-item">assessed_value</span>
+                    <span class="field-item">market_value</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Valuation Section Template -->
+        <div class="section-template" data-section-type="valuation">
+            <div class="section-field section-type-content" data-section-type="valuation">
+                <label for="section_INDEX_fields">Valuation Fields (comma separated)</label>
+                <input type="text" class="form-control" id="section_INDEX_fields" name="section_INDEX_fields" value="assessed_value,market_value,land_value,improvement_value,previous_assessed_value,value_change_percent">
+                
+                <div class="field-list">
+                    <div class="mb-2">Available fields:</div>
+                    <span class="field-item">assessed_value</span>
+                    <span class="field-item">market_value</span>
+                    <span class="field-item">land_value</span>
+                    <span class="field-item">improvement_value</span>
+                    <span class="field-item">previous_assessed_value</span>
+                    <span class="field-item">value_change_percent</span>
+                    <span class="field-item">assessment_date</span>
+                    <span class="field-item">sale_price</span>
+                    <span class="field-item">sale_date</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Table Section Template -->
+        <div class="section-template" data-section-type="table">
+            <div class="section-field section-type-content" data-section-type="table">
+                <div class="row">
+                    <div class="col-md-8">
+                        <label for="section_INDEX_columns">Table Columns (comma separated)</label>
+                        <input type="text" class="form-control" id="section_INDEX_columns" name="section_INDEX_columns">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="section_INDEX_data_key">Data Key</label>
+                        <input type="text" class="form-control" id="section_INDEX_data_key" name="section_INDEX_data_key">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Map Section Template -->
+        <div class="section-template" data-section-type="map">
+            <div class="section-field section-type-content" data-section-type="map">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="section_INDEX_map_type">Map Type</label>
+                        <select class="form-control" id="section_INDEX_map_type" name="section_INDEX_map_type">
+                            <option value="property_location">Property Location</option>
+                            <option value="choropleth">Choropleth (Value Heatmap)</option>
+                            <option value="point">Point Map</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="section_INDEX_zoom_level">Zoom Level</label>
+                        <input type="number" class="form-control" id="section_INDEX_zoom_level" name="section_INDEX_zoom_level" value="15">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Chart Section Template -->
+        <div class="section-template" data-section-type="chart">
+            <div class="section-field section-type-content" data-section-type="chart">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="section_INDEX_chart_type">Chart Type</label>
+                        <select class="form-control" id="section_INDEX_chart_type" name="section_INDEX_chart_type">
+                            <option value="bar">Bar Chart</option>
+                            <option value="line">Line Chart</option>
+                            <option value="pie">Pie Chart</option>
+                            <option value="scatter">Scatter Plot</option>
+                        </select>
+                    </div>
+                    <div class="col-md-8">
+                        <label for="section_INDEX_data_key">Data Key</label>
+                        <input type="text" class="form-control" id="section_INDEX_data_key" name="section_INDEX_data_key">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Comparable Properties Section Template -->
+        <div class="section-template" data-section-type="comparable_properties">
+            <div class="section-field section-type-content" data-section-type="comparable_properties">
+                <div class="row">
+                    <div class="col-md-8">
+                        <label for="section_INDEX_fields">Property Fields (comma separated)</label>
+                        <input type="text" class="form-control" id="section_INDEX_fields" name="section_INDEX_fields" value="property_id,address,property_type,year_built,lot_size,building_size,assessed_value,sale_date,sale_price">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="section_INDEX_max_properties">Max Properties</label>
+                        <input type="number" class="form-control" id="section_INDEX_max_properties" name="section_INDEX_max_properties" value="5">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Section Type Modal -->
+    <div class="modal fade" id="sectionTypeModal" tabindex="-1" aria-labelledby="sectionTypeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sectionTypeModalLabel">Add Report Section</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="new-section-title">Section Title</label>
+                        <input type="text" class="form-control" id="new-section-title" placeholder="Enter section title">
+                    </div>
+                    
+                    <div class="form-group mt-3">
+                        <label>Section Type</label>
+                        <div class="list-group">
+                            {% for section_type in section_types %}
+                            <button type="button" class="list-group-item list-group-item-action section-type-option" data-section-type="{{ section_type.id }}">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ section_type.name }}</h6>
+                                </div>
+                                <small>{{ section_type.description }}</small>
+                            </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="add-section-btn" disabled>Add Section</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Template type selection
+        document.querySelectorAll('.template-type-select').forEach(function(element) {
+            element.addEventListener('click', function() {
+                // Remove selected class from all options
+                document.querySelectorAll('.template-type-select').forEach(function(el) {
+                    el.classList.remove('selected');
+                });
+                
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                
+                // Update hidden input with selected type
+                document.getElementById('template_type').value = this.getAttribute('data-type');
+            });
+        });
+        
+        // Section type selection in modal
+        let selectedSectionType = null;
+        document.querySelectorAll('.section-type-option').forEach(function(element) {
+            element.addEventListener('click', function() {
+                // Remove active class from all options
+                document.querySelectorAll('.section-type-option').forEach(function(el) {
+                    el.classList.remove('active');
+                });
+                
+                // Add active class to clicked option
+                this.classList.add('active');
+                
+                // Store selected section type
+                selectedSectionType = this.getAttribute('data-section-type');
+                
+                // Enable add button if title is also entered
+                const titleInput = document.getElementById('new-section-title');
+                document.getElementById('add-section-btn').disabled = !titleInput.value.trim();
+            });
+        });
+        
+        // New section title input
+        document.getElementById('new-section-title').addEventListener('input', function() {
+            // Enable add button if section type is also selected
+            document.getElementById('add-section-btn').disabled = !this.value.trim() || !selectedSectionType;
+        });
+        
+        // Add section button in modal
+        document.getElementById('add-section-btn').addEventListener('click', function() {
+            const title = document.getElementById('new-section-title').value.trim();
+            if (!title || !selectedSectionType) return;
+            
+            // Get current section count
+            const sectionCount = parseInt(document.getElementById('section_count').value);
+            
+            // Create new section
+            addSection(sectionCount, title, selectedSectionType);
+            
+            // Update section count
+            document.getElementById('section_count').value = sectionCount + 1;
+            
+            // Hide modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('sectionTypeModal'));
+            modal.hide();
+            
+            // Reset modal
+            document.getElementById('new-section-title').value = '';
+            document.querySelectorAll('.section-type-option').forEach(function(el) {
+                el.classList.remove('active');
+            });
+            selectedSectionType = null;
+            document.getElementById('add-section-btn').disabled = true;
+        });
+        
+        // Add section button
+        document.querySelector('.add-section-btn').addEventListener('click', function() {
+            // Show section type modal
+            const modal = new bootstrap.Modal(document.getElementById('sectionTypeModal'));
+            modal.show();
+        });
+        
+        // Toggle section visibility
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('section-toggle')) {
+                const header = e.target.closest('.section-header');
+                const body = header.nextElementSibling;
+                
+                if (body.style.display === 'none') {
+                    body.style.display = 'block';
+                    e.target.classList.remove('fa-chevron-down');
+                    e.target.classList.add('fa-chevron-up');
+                } else {
+                    body.style.display = 'none';
+                    e.target.classList.remove('fa-chevron-up');
+                    e.target.classList.add('fa-chevron-down');
+                }
+            }
+        });
+        
+        // Delete section
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('delete-section')) {
+                const section = e.target.closest('.section-card');
+                if (confirm('Are you sure you want to delete this section?')) {
+                    section.remove();
+                    
+                    // Update section indices
+                    updateSectionIndices();
+                }
+            }
+        });
+        
+        // Change section type
+        document.addEventListener('change', function(e) {
+            if (e.target.classList.contains('section-type-select')) {
+                const sectionCard = e.target.closest('.section-card');
+                const sectionIndex = sectionCard.getAttribute('data-section-index');
+                const newType = e.target.value;
+                
+                // Update section type in header
+                const typeDisplay = sectionCard.querySelector('.section-type-badge');
+                if (typeDisplay) {
+                    typeDisplay.textContent = newType;
+                }
+                
+                // Get section body
+                const sectionBody = sectionCard.querySelector('.section-body');
+                
+                // Remove old content block
+                const oldContent = sectionBody.querySelector('.section-type-content');
+                if (oldContent) {
+                    oldContent.remove();
+                }
+                
+                // Add new content block
+                const templateContent = document.querySelector(`#section-templates .section-template[data-section-type="${newType}"]`).innerHTML;
+                const newContent = templateContent.replace(/INDEX/g, sectionIndex);
+                
+                // Add after title and type fields
+                const lastField = sectionBody.querySelector('.section-field:last-child');
+                const contentWrapper = document.createElement('div');
+                contentWrapper.innerHTML = newContent;
+                sectionBody.insertBefore(contentWrapper, null);
+            }
+        });
+        
+        // Add a new section
+        function addSection(index, title, type) {
+            // Create section card
+            const sectionCard = document.createElement('div');
+            sectionCard.className = 'section-card';
+            sectionCard.setAttribute('data-section-index', index);
+            
+            // Create section header
+            const sectionHeader = document.createElement('div');
+            sectionHeader.className = 'section-header';
+            sectionHeader.innerHTML = `
+                <div>
+                    <i class="fas fa-grip-vertical section-drag-handle mr-2"></i>
+                    <span class="section-title">${title}</span>
+                    <span class="section-type-badge ml-2">${type}</span>
+                </div>
+                <div>
+                    <i class="fas fa-chevron-up section-action section-toggle"></i>
+                    <i class="fas fa-trash section-action delete-section"></i>
+                </div>
+            `;
+            
+            // Create section body
+            const sectionBody = document.createElement('div');
+            sectionBody.className = 'section-body';
+            
+            // Add title field
+            const titleField = document.createElement('div');
+            titleField.className = 'section-field';
+            titleField.innerHTML = `
+                <label for="section_${index}_title">Section Title</label>
+                <input type="text" class="form-control" id="section_${index}_title" name="section_${index}_title" value="${title}" required>
+            `;
+            sectionBody.appendChild(titleField);
+            
+            // Add type field
+            const typeField = document.createElement('div');
+            typeField.className = 'section-field';
+            
+            let typeOptions = '';
+            document.querySelectorAll('.section-type-option').forEach(function(option) {
+                const optionType = option.getAttribute('data-section-type');
+                const optionName = option.querySelector('h6').textContent;
+                typeOptions += `<option value="${optionType}" ${optionType === type ? 'selected' : ''}>${optionName}</option>`;
+            });
+            
+            typeField.innerHTML = `
+                <label for="section_${index}_type">Section Type</label>
+                <select class="form-control section-type-select" id="section_${index}_type" name="section_${index}_type" required>
+                    ${typeOptions}
+                </select>
+                <small class="form-text text-muted section-type-description">
+                    ${document.querySelector(`.section-type-option[data-section-type="${type}"] small`).textContent}
+                </small>
+            `;
+            sectionBody.appendChild(typeField);
+            
+            // Add type-specific content
+            const templateContent = document.querySelector(`#section-templates .section-template[data-section-type="${type}"]`).innerHTML;
+            const contentHTML = templateContent.replace(/INDEX/g, index);
+            
+            const contentWrapper = document.createElement('div');
+            contentWrapper.innerHTML = contentHTML;
+            sectionBody.appendChild(contentWrapper);
+            
+            // Add section to container
+            sectionCard.appendChild(sectionHeader);
+            sectionCard.appendChild(sectionBody);
+            document.getElementById('sections-container').appendChild(sectionCard);
+        }
+        
+        // Update section indices after deletion
+        function updateSectionIndices() {
+            const sections = document.querySelectorAll('.section-card');
+            let count = 0;
+            
+            sections.forEach(function(section, index) {
+                // Update data-section-index
+                section.setAttribute('data-section-index', index);
+                
+                // Update all field IDs and names
+                const inputs = section.querySelectorAll('input, select, textarea');
+                inputs.forEach(function(input) {
+                    const id = input.id;
+                    const name = input.name;
+                    
+                    if (id && id.match(/section_\d+/)) {
+                        const newId = id.replace(/section_\d+/, `section_${index}`);
+                        input.id = newId;
+                        
+                        // Update associated label
+                        const label = section.querySelector(`label[for="${id}"]`);
+                        if (label) {
+                            label.setAttribute('for', newId);
+                        }
+                    }
+                    
+                    if (name && name.match(/section_\d+/)) {
+                        input.name = name.replace(/section_\d+/, `section_${index}`);
+                    }
+                });
+                
+                count++;
+            });
+            
+            // Update section count
+            document.getElementById('section_count').value = count;
+        }
+    });
+</script>
+{% endblock %}

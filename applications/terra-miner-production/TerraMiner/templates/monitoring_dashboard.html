@@ -1,0 +1,511 @@
+{% extends "base.html" %}
+
+{% block title %}Monitoring Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+  <!-- Health Overview Card -->
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-md-6">
+              <h2 class="card-title">System Health</h2>
+              <p class="text-muted">Real-time health status and metrics</p>
+            </div>
+            <div class="col-md-6 text-end">
+              <h3 class="mb-0">
+                {% if health_status == 'excellent' %}
+                <span class="badge bg-success">Excellent ({{ health_score }}%)</span>
+                {% elif health_status == 'good' %}
+                <span class="badge bg-info">Good ({{ health_score }}%)</span>
+                {% elif health_status == 'fair' %}
+                <span class="badge bg-warning">Fair ({{ health_score }}%)</span>
+                {% elif health_status == 'poor' %}
+                <span class="badge bg-danger">Poor ({{ health_score }}%)</span>
+                {% else %}
+                <span class="badge bg-danger">Critical ({{ health_score }}%)</span>
+                {% endif %}
+              </h3>
+              <p class="text-muted mt-2">Last updated: {{ current_time }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Metrics and Stats Row -->
+  <div class="row mb-4">
+    <!-- Active Alerts Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-header bg-transparent border-0">
+          <h4 class="card-title">Active Alerts</h4>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div class="alert-stats">
+              <div class="alert-count mb-3">
+                <h5>Total Active: {{ alerts_summary.active.total }}</h5>
+              </div>
+              <div class="alert-breakdown">
+                <div class="mb-2 d-flex justify-content-between">
+                  <span class="text-danger">Critical:</span> 
+                  <span class="badge bg-danger">{{ alerts_summary.active.critical }}</span>
+                </div>
+                <div class="mb-2 d-flex justify-content-between">
+                  <span class="text-danger">Error:</span> 
+                  <span class="badge bg-danger">{{ alerts_summary.active.error }}</span>
+                </div>
+                <div class="mb-2 d-flex justify-content-between">
+                  <span class="text-warning">Warning:</span> 
+                  <span class="badge bg-warning">{{ alerts_summary.active.warning }}</span>
+                </div>
+                <div class="mb-2 d-flex justify-content-between">
+                  <span class="text-info">Info:</span> 
+                  <span class="badge bg-info">{{ alerts_summary.active.info }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="stats-period">
+              <p class="text-muted">Last 24h: {{ alerts_summary.last_24h }}</p>
+              <p class="text-muted">Last 7d: {{ alerts_summary.last_7d }}</p>
+            </div>
+          </div>
+          <hr>
+          {% if alerts_summary.latest %}
+          <h6>Latest Alerts</h6>
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Severity</th>
+                  <th>Message</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for alert in alerts_summary.latest %}
+                <tr>
+                  <td>
+                    {% if alert.severity == 'critical' %}
+                    <span class="badge bg-danger">Critical</span>
+                    {% elif alert.severity == 'error' %}
+                    <span class="badge bg-danger">Error</span>
+                    {% elif alert.severity == 'warning' %}
+                    <span class="badge bg-warning">Warning</span>
+                    {% else %}
+                    <span class="badge bg-info">Info</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ alert.message }}</td>
+                  <td>{{ alert.created_at.strftime('%H:%M:%S') }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <p class="text-muted">No recent alerts</p>
+          {% endif %}
+          <div class="mt-3">
+            <a href="{{ url_for('monitoring_alerts_active') }}" class="btn btn-outline-primary btn-sm">View All Alerts</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- System Performance Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-header bg-transparent border-0">
+          <h4 class="card-title">System Performance</h4>
+        </div>
+        <div class="card-body">
+          <div class="performance-metrics">
+            <!-- CPU Usage -->
+            <div class="mb-3">
+              <div class="d-flex justify-content-between mb-1">
+                <span>CPU Usage</span>
+                <span class="
+                  {% if system_metrics.performance.cpu and system_metrics.performance.cpu.metric_value > 90 %}text-danger
+                  {% elif system_metrics.performance.cpu and system_metrics.performance.cpu.metric_value > 70 %}text-warning
+                  {% else %}text-success{% endif %}
+                ">
+                  {{ system_metrics.performance.cpu.metric_value|round(1) if system_metrics.performance.cpu else 'N/A' }}%
+                </span>
+              </div>
+              <div class="progress" style="height: 8px;">
+                <div class="progress-bar 
+                  {% if system_metrics.performance.cpu and system_metrics.performance.cpu.metric_value > 90 %}bg-danger
+                  {% elif system_metrics.performance.cpu and system_metrics.performance.cpu.metric_value > 70 %}bg-warning
+                  {% else %}bg-success{% endif %}" 
+                  role="progressbar" 
+                  style="width: {{ system_metrics.performance.cpu.metric_value if system_metrics.performance.cpu else 0 }}%;" 
+                  aria-valuenow="{{ system_metrics.performance.cpu.metric_value if system_metrics.performance.cpu else 0 }}" 
+                  aria-valuemin="0" 
+                  aria-valuemax="100">
+                </div>
+              </div>
+            </div>
+            
+            <!-- Memory Usage -->
+            <div class="mb-3">
+              <div class="d-flex justify-content-between mb-1">
+                <span>Memory Usage</span>
+                <span class="
+                  {% if system_metrics.performance.memory and system_metrics.performance.memory.metric_value > 90 %}text-danger
+                  {% elif system_metrics.performance.memory and system_metrics.performance.memory.metric_value > 70 %}text-warning
+                  {% else %}text-success{% endif %}
+                ">
+                  {{ system_metrics.performance.memory.metric_value|round(1) if system_metrics.performance.memory else 'N/A' }}%
+                </span>
+              </div>
+              <div class="progress" style="height: 8px;">
+                <div class="progress-bar 
+                  {% if system_metrics.performance.memory and system_metrics.performance.memory.metric_value > 90 %}bg-danger
+                  {% elif system_metrics.performance.memory and system_metrics.performance.memory.metric_value > 70 %}bg-warning
+                  {% else %}bg-success{% endif %}" 
+                  role="progressbar" 
+                  style="width: {{ system_metrics.performance.memory.metric_value if system_metrics.performance.memory else 0 }}%;" 
+                  aria-valuenow="{{ system_metrics.performance.memory.metric_value if system_metrics.performance.memory else 0 }}" 
+                  aria-valuemin="0" 
+                  aria-valuemax="100">
+                </div>
+              </div>
+            </div>
+            
+            <!-- Disk Usage -->
+            <div class="mb-3">
+              <div class="d-flex justify-content-between mb-1">
+                <span>Disk Usage</span>
+                <span class="
+                  {% if system_metrics.performance.disk and system_metrics.performance.disk.metric_value > 90 %}text-danger
+                  {% elif system_metrics.performance.disk and system_metrics.performance.disk.metric_value > 70 %}text-warning
+                  {% else %}text-success{% endif %}
+                ">
+                  {{ system_metrics.performance.disk.metric_value|round(1) if system_metrics.performance.disk else 'N/A' }}%
+                </span>
+              </div>
+              <div class="progress" style="height: 8px;">
+                <div class="progress-bar 
+                  {% if system_metrics.performance.disk and system_metrics.performance.disk.metric_value > 90 %}bg-danger
+                  {% elif system_metrics.performance.disk and system_metrics.performance.disk.metric_value > 70 %}bg-warning
+                  {% else %}bg-success{% endif %}" 
+                  role="progressbar" 
+                  style="width: {{ system_metrics.performance.disk.metric_value if system_metrics.performance.disk else 0 }}%;" 
+                  aria-valuenow="{{ system_metrics.performance.disk.metric_value if system_metrics.performance.disk else 0 }}" 
+                  aria-valuemin="0" 
+                  aria-valuemax="100">
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <hr>
+          
+          <!-- Database Metrics -->
+          <h6>Database Metrics</h6>
+          <div class="db-metrics">
+            <div class="mb-2 d-flex justify-content-between">
+              <span>Connections:</span> 
+              <span>{{ database_metrics.connection_count.metric_value|int if database_metrics.connection_count else 'N/A' }}</span>
+            </div>
+            <div class="mb-2 d-flex justify-content-between">
+              <span>Avg Query Time:</span> 
+              <span>{{ database_metrics.query_time_avg.metric_value|round(3) if database_metrics.query_time_avg else 'N/A' }} s</span>
+            </div>
+          </div>
+          
+          <div class="mt-3">
+            <a href="{{ url_for('monitoring_system') }}" class="btn btn-outline-primary btn-sm">View System Details</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- API Performance Card -->
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-header bg-transparent border-0">
+          <h4 class="card-title">API Performance</h4>
+        </div>
+        <div class="card-body">
+          <div class="api-stats">
+            <div class="mb-3">
+              <h5>Last 24 Hours</h5>
+              <div class="row">
+                <div class="col-6">
+                  <div class="api-stat-item mb-3">
+                    <h6 class="text-muted">Total Requests</h6>
+                    <h3>{{ api_metrics.total_requests_24h|int }}</h3>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="api-stat-item mb-3">
+                    <h6 class="text-muted">Avg Response Time</h6>
+                    <h3>{{ api_metrics.avg_response_time|round(3) }} s</h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Error Rate -->
+            <div class="mb-4">
+              <div class="d-flex justify-content-between mb-1">
+                <span>Error Rate (24h)</span>
+                <span class="
+                  {% if api_metrics.error_rate > 5 %}text-danger
+                  {% elif api_metrics.error_rate > 2 %}text-warning
+                  {% else %}text-success{% endif %}
+                ">
+                  {{ api_metrics.error_rate|round(2) }}%
+                </span>
+              </div>
+              <div class="progress" style="height: 8px;">
+                <div class="progress-bar 
+                  {% if api_metrics.error_rate > 5 %}bg-danger
+                  {% elif api_metrics.error_rate > 2 %}bg-warning
+                  {% else %}bg-success{% endif %}" 
+                  role="progressbar" 
+                  style="width: {{ api_metrics.error_rate }}%;" 
+                  aria-valuenow="{{ api_metrics.error_rate }}" 
+                  aria-valuemin="0" 
+                  aria-valuemax="100">
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <hr>
+          
+          <!-- AI Performance -->
+          <h6>AI Performance</h6>
+          <div class="ai-metrics">
+            <div class="mb-2 d-flex justify-content-between">
+              <span>Requests (24h):</span> 
+              <span>{{ ai_metrics.total_requests_24h|int }}</span>
+            </div>
+            <div class="mb-2 d-flex justify-content-between">
+              <span>Avg Rating:</span> 
+              <span>
+                {{ ai_metrics.avg_rating|round(2) if ai_metrics.avg_rating else 'N/A' }}
+                {% if ai_metrics.avg_rating %}
+                  <small class="text-muted">(out of 5)</small>
+                {% endif %}
+              </span>
+            </div>
+          </div>
+          
+          <div class="mt-3">
+            <a href="{{ url_for('monitoring_api') }}" class="btn btn-outline-primary btn-sm me-2">View API Details</a>
+            <a href="{{ url_for('monitoring_ai') }}" class="btn btn-outline-primary btn-sm">View AI Details</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Property Data Analysis Row -->
+  <div class="row mb-4">
+    <!-- Property Locations Map Card -->
+    <div class="col-md-6 mb-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-header bg-transparent border-0">
+          <h4 class="card-title">Property Locations</h4>
+        </div>
+        <div class="card-body">
+          <div class="property-location-preview">
+            <div class="text-center mb-3">
+              <svg width="100%" height="180" style="background-color: #eef7fa; border-radius: 8px;">
+                <path d="M50,90 L70,50 L90,90 Z" fill="#00BCD4" stroke="#0097A7" stroke-width="2"></path>
+                <path d="M150,70 L170,30 L190,70 Z" fill="#00BCD4" stroke="#0097A7" stroke-width="2"></path>
+                <path d="M250,110 L270,70 L290,110 Z" fill="#00BCD4" stroke="#0097A7" stroke-width="2"></path>
+                <circle cx="70" cy="120" r="10" fill="#0097A7" opacity="0.8"></circle>
+                <circle cx="170" cy="100" r="10" fill="#0097A7" opacity="0.8"></circle>
+                <circle cx="270" cy="140" r="10" fill="#0097A7" opacity="0.8"></circle>
+                <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="14" fill="#546E7A">Property Map</text>
+              </svg>
+            </div>
+            <div class="property-stats mt-3">
+              <div class="row">
+                <div class="col-6">
+                  <div class="stat-item">
+                    <h6 class="text-muted">Total Properties</h6>
+                    <h3>{{ location_stats.total_properties|default('120') }}</h3>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="stat-item">
+                    <h6 class="text-muted">Cities</h6>
+                    <h3>{{ location_stats.distinct_cities|default('10') }}</h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-3 text-center">
+              <a href="{{ url_for('monitoring_locations') }}" class="btn btn-primary">View Property Map</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Price Trends Card -->
+    <div class="col-md-6 mb-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-header bg-transparent border-0">
+          <h4 class="card-title">Price Trends</h4>
+        </div>
+        <div class="card-body">
+          <div class="price-trend-preview">
+            <div class="text-center mb-3">
+              <svg width="100%" height="180" style="background-color: #eef7fa; border-radius: 8px;">
+                <!-- Fake chart for visual display only -->
+                <polyline points="20,140 60,110 100,120 140,70 180,90 220,50 260,70 300,40" 
+                          fill="none" stroke="#00BCD4" stroke-width="3"></polyline>
+                <line x1="20" y1="160" x2="300" y2="160" stroke="#546E7A" stroke-width="1"></line>
+                <line x1="20" y1="20" x2="20" y2="160" stroke="#546E7A" stroke-width="1"></line>
+                <text x="50%" y="100" dominant-baseline="middle" text-anchor="middle" font-size="14" fill="#546E7A">Price Trend Chart</text>
+              </svg>
+            </div>
+            <div class="trend-stats mt-3">
+              <div class="row">
+                <div class="col-6">
+                  <div class="stat-item">
+                    <h6 class="text-muted">Median Price</h6>
+                    <h3>{{ price_stats.median_price|default('$450K') }}</h3>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="stat-item">
+                    <h6 class="text-muted">Trend</h6>
+                    <h3 class="text-success">{{ price_stats.trend_indicator|default('+5.3%') }}</h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-3 text-center">
+              <a href="{{ url_for('monitoring_price_trends') }}" class="btn btn-primary">View Price Trends</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Jobs and Reports Row -->
+  <div class="row mb-4">
+    <!-- Job Stats Card -->
+    <div class="col-md-6 mb-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-header bg-transparent border-0">
+          <h4 class="card-title">Job Statistics</h4>
+        </div>
+        <div class="card-body">
+          <div class="row mb-4">
+            <div class="col-6">
+              <div class="job-stat-item mb-3">
+                <h6 class="text-muted">Total Jobs (30d)</h6>
+                <h3>{{ job_metrics.total_jobs_30d|int }}</h3>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="job-stat-item mb-3">
+                <h6 class="text-muted">Success Rate</h6>
+                <h3 class="{% if job_metrics.success_rate_30d < 70 %}text-danger{% elif job_metrics.success_rate_30d < 90 %}text-warning{% else %}text-success{% endif %}">
+                  {{ job_metrics.success_rate_30d|round(1) }}%
+                </h3>
+              </div>
+            </div>
+          </div>
+          
+          {% if job_metrics.latest_jobs %}
+          <h6>Latest Jobs</h6>
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Job</th>
+                  <th>Status</th>
+                  <th>Start Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for job in job_metrics.latest_jobs %}
+                <tr>
+                  <td>{{ job.job_name }}</td>
+                  <td>
+                    {% if job.status == 'completed' %}
+                    <span class="badge bg-success">Completed</span>
+                    {% elif job.status == 'failed' %}
+                    <span class="badge bg-danger">Failed</span>
+                    {% else %}
+                    <span class="badge bg-secondary">{{ job.status|title }}</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ job.start_time.strftime('%m-%d %H:%M') }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <p class="text-muted">No job data available</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Reports Card -->
+    <div class="col-md-6 mb-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-header bg-transparent border-0">
+          <h4 class="card-title">Scheduled Reports</h4>
+        </div>
+        <div class="card-body">
+          <div class="mb-4">
+            <div class="d-flex justify-content-between">
+              <h5>Active Reports</h5>
+              <span class="badge bg-primary">{{ report_metrics.total_scheduled }}</span>
+            </div>
+          </div>
+          
+          {% if report_metrics.upcoming %}
+          <h6>Upcoming Reports</h6>
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Report</th>
+                  <th>Type</th>
+                  <th>Schedule</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for report in report_metrics.upcoming %}
+                <tr>
+                  <td>{{ report.name }}</td>
+                  <td>{{ report.report_type }}</td>
+                  <td>{{ report.schedule_type }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <p class="text-muted">No scheduled reports</p>
+          {% endif %}
+          
+          <div class="mt-3">
+            <a href="{{ url_for('monitoring_reports_scheduled') }}" class="btn btn-outline-primary btn-sm me-2">Manage Reports</a>
+            <a href="{{ url_for('monitoring_reports_create') }}" class="btn btn-primary btn-sm">Create Report</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

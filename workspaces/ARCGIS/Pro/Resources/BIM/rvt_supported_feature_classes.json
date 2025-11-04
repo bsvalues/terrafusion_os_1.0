@@ -1,0 +1,399 @@
+{
+	"Architectural": {
+		"CategoryMappings": [
+			{
+				"Category": "ExteriorShell",
+				"FC": "ExteriorShell",
+				"Geometry": "Multipatch",
+				"I3SHint": 30
+			},
+			{
+				"Category": "GenericModel",
+				"FC": "GenericModel",
+				"Geometry": "Multipatch",
+				"I3SHint": 60
+			},
+			{
+				"Category": "Casework",
+				"FC": "Casework",
+				"I3SHint": 60
+			},
+			{
+				"Category": "Ceilings",
+				"FC": "Ceilings",
+				"I3SHint": 50
+			},
+			{
+				"Category": "Columns",
+				"FC": "Columns",
+				"I3SHint": 50
+			},
+			{
+				"Category": "CurtainWallPanels",
+				"FC": "CurtainWallPanels",
+				"I3SHint": 50
+			},
+			{
+				"Category": "CurtainWallMullions",
+				"FC": "CurtainWallMullions",
+				"I3SHint": 50
+			},
+			{
+				"Category": "Doors",
+				"FC": "Doors",
+				"I3SHint": 50
+			},
+			{
+				"Category": "Entourage",
+				"FC": "Entourage",
+				"I3SHint": 60
+			},
+			{
+				"Category": "Floors",
+				"FC": "Floors",
+				"I3SHint": 50
+			},
+			{
+				"Category": "Furniture",
+				"FC": "Furniture",
+				"I3SHint": 60
+			},
+			{
+				"Category": "FurnitureSystems",
+				"FC": "FurnitureSystems",
+				"I3SHint": 60
+			},
+			{
+				"Category": "LocationPoints",
+				"FC": "LocationPoints",
+				"Geometry": "Point",
+				"I3SHint": 20
+			},
+			{
+				"Category": "Mass",
+				"FC": "Mass",
+				"I3SHint": 30
+			},
+			{
+				"Category": "Parking",
+				"FC": "Parking",
+				"I3SHint": 30
+			},
+			{
+				"Category": "Planting",
+				"FC": "Planting",
+				"I3SHint": 40
+			},
+			{
+				"Category": "PlumbingFixtures",
+				"FC": "PlumbingFixtures",
+				"I3SHint": 60
+			},
+			{
+				"Category": "StairsRailing",
+				"FC": "StairsRailing",
+				"I3SHint": 50
+			},
+			{
+				"Category": "Ramps",
+				"FC": "Ramps",
+				"I3SHint": 50
+			},
+			{
+				"Category": "Roofs",
+				"FC": "Roofs",
+				"I3SHint": 30
+			},
+			{
+				"Category": "Rooms",
+				"FC": "Rooms",
+				"I3SHint": 30
+			},
+			{
+				"Category": "Site",
+				"FC": "Site",
+				"I3SHint": 20
+			},
+			{
+				"Category": "SpecialtyEquipment",
+				"FC": "SpecialtyEquipment",
+				"I3SHint": 60
+			},
+			{
+				"Category": "Stairs",
+				"FC": "Stairs",
+				"I3SHint": 50
+			},
+			{
+				"Category": "Walls",
+				"FC": "Walls",
+				"I3SHint": 50
+			},
+			{
+				"Category": "Windows",
+				"FC": "Windows",
+				"I3SHint": 50
+			}
+		]
+	},
+	"Structural": {
+		"CategoryMappings": [
+			{
+				"Category": "Beams",
+				"FC": "Beams",
+				"I3SHint": 50
+			},
+			{
+				"Category": "StructuralColumns",
+				"FC": "StructuralColumns",
+				"I3SHint": 40
+			},
+			{
+				"Category": "StructuralFoundation",
+				"FC": "StructuralFoundation",
+				"I3SHint": 30
+			},
+			{
+				"Category": "StructuralFraming",
+				"FC": "StructuralFraming",
+				"I3SHint": 40
+			},
+			{
+				"Category": "ReinforcingElements"
+			}
+		]
+	},
+	"Electrical": {
+		"CategoryMappings": [
+			{
+				"Category": "CableTray",
+				"FC": "CableTray",
+				"I3SHint": 60
+			},
+			{
+				"Category": "Hangers",
+				"Alias": "FabricationHangers",
+				"FC": "FabricationHangers"
+			},
+			{
+				"Category": "Containment",
+				"Alias": "FabricationContainment",
+				"FC": "FabricationContainment"
+			},
+			{
+				"Category": "CableTrayFitting",
+				"FC": "CableTrayFitting",
+				"I3SHint": 60
+			},
+			{
+				"Category": "CommDevices",
+				"FC": "CommDevices",
+				"I3SHint": 70
+			},
+			{
+				"Category": "Conduit",
+				"FC": "Conduit",
+				"I3SHint": 70
+			},
+			{
+				"Category": "ConduitFitting",
+				"FC": "ConduitFitting",
+				"I3SHint": 70
+			},
+			{
+				"Category": "DataDevices",
+				"FC": "DataDevices",
+				"I3SHint": 70
+			},
+			{
+				"Category": "ElectricalEquipment",
+				"FC": "ElectricalEquipment",
+				"I3SHint": 60
+			},
+			{
+				"Category": "ElectricalFixtures",
+				"FC": "ElectricalFixtures",
+				"I3SHint": 60
+			},
+			{
+				"Category": "FireAlarmDevices",
+				"FC": "FireAlarmDevices",
+				"I3SHint": 70
+			},
+			{
+				"Category": "LightingDevices",
+				"FC": "LightingDevices",
+				"I3SHint": 70
+			},
+			{
+				"Category": "LightingFixtures",
+				"FC": "LightingFixtures",
+				"I3SHint": 60
+			},
+			{
+				"Category": "NurseCallDevices",
+				"FC": "NurseCallDevices",
+				"I3SHint": 70
+			},
+			{
+				"Category": "SecurityDevices",
+				"FC": "SecurityDevices",
+				"I3SHint": 70
+			},
+			{
+				"Category": "TelephoneDevices",
+				"FC": "TelephoneDevices",
+				"I3SHint": 70
+			}
+		]
+	},
+	"Mechanical": {
+		"CategoryMappings": [
+			{
+				"Category": "MechanicalEquipment",
+				"FC": "MechanicalEquipment",
+				"I3SHint": 60
+			},
+			{
+				"Category": "AirTerminals",
+				"FC": "AirTerminals",
+				"I3SHint": 60
+			},
+			{
+				"Category": "DuctFitting",
+				"FC": "DuctFitting",
+				"I3SHint": 60
+			},
+			{
+				"Category": "Ducts",
+				"FC": "Ducts",
+				"I3SHint": 60
+			},
+			{
+				"Category": "FlexDucts",
+				"FC": "FlexDucts",
+				"I3SHint": 60
+			},
+			{
+				"Category": "DuctAccessories",
+				"FC": "DuctAccessories",
+				"I3SHint": 60
+			},
+			{
+				"Category": "FabDuct",
+				"Alias": "FabricationDuctwork",
+				"FC": "FabricationDuctwork"
+			},
+			{
+				"Category": "MechControlDevices"
+			}
+		]
+	},
+	"Piping": {
+		"CategoryMappings": [
+			{
+				"Category": "FabricationPipes",
+				"FC": "FabricationPipework",
+				"Alias": "FabricationPipework"
+			},
+			{
+				"Category": "PipeFitting",
+				"FC": "PipeFitting",
+				"I3SHint": 60
+			},
+			{
+				"Category": "Pipes",
+				"FC": "Pipes",
+				"I3SHint": 60
+			},
+			{
+				"Category": "PipeAccessory",
+				"FC": "PipeAccessory",
+				"I3SHint": 60
+			},
+			{
+				"Category": "Sprinklers",
+				"FC": "Sprinklers",
+				"I3SHint": 60
+			},
+			{
+				"Category": "FlexPipes",
+				"FC": "FlexPipes",
+				"I3SHint": 60
+			}
+		]
+	},
+	"Floorplan": {
+		"CategoryMappings": [
+			{
+				"Category": "Floorplan_Polygon",
+				"FC": "Floorplan_Polygon",
+				"Geometry": "Polygon"
+			},
+			{
+				"Category": "Floorplan_Polyline",
+				"FC": "Floorplan_Polyline",
+				"Geometry": "Polyline"
+			},
+			{
+				"Category": "Footprint",
+				"FC": "Footprint",
+				"Geometry": "Polygon",
+				"Dimension": 2
+			},
+			{
+				"Category": "PointsOfInterest",
+				"FC": "PointsOfInterest",
+				"Geometry": "Point"
+			},
+						{
+				"Category": "Areas",
+				"FC": "Areas",
+				"Geometry": "Polygon"
+			}
+		]
+	},
+	"Infrastructure": {
+		"CategoryMappings": [
+			{
+				"Category": "Roads",
+				"FC": "Roads"
+			},
+			{
+				"Category": "Tendons",
+				"FC": "Tendons",
+				"I3SHint": 40
+			},
+			{
+				"Category": "Bearings",
+				"FC": "Bearings",
+				"I3SHint": 60
+			},
+			{
+				"Category": "Piers",
+				"FC": "Piers",
+				"I3SHint": 30
+			},
+			{
+				"Category": "Abutments",
+				"FC": "Abutments",
+				"I3SHint": 40
+			},
+			{
+				"Category": "Framing",
+				"FC": "Framing",
+				"I3SHint": 40
+			},
+			{
+				"Category": "Decks",
+				"FC": "Decks",
+				"I3SHint": 40
+			},
+			{
+				"Category": "Topography",
+				"FC": "Topography",
+				"I3SHint": 20
+			}
+		]
+	}
+}

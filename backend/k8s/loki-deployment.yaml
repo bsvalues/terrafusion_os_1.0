@@ -1,0 +1,356 @@
+# ============================================================================
+# TerraFusion OS - Loki Log Aggregation
+# Government. Transcended. - Championship Centralized Logging
+# ============================================================================
+# Purpose: Deploy Loki for centralized log aggregation and analysis
+# Features: Structured log storage, LogQL queries, Grafana integration
+# Components: Loki server, retention policies, label extraction
+# Storage: Filesystem (dev) / S3/GCS (prod)
+# ============================================================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: logging
+  labels:
+    name: logging
+    compliance: fisma-high
+    environment: production
+
+---
+# ============================================================================
+# Loki Configuration
+# ============================================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: loki-config
+  namespace: logging
+  labels:
+    app.kubernetes.io/name: loki
+data:
+  loki.yaml: |
+    # ========================================================================
+    # Global Configuration
+    # ========================================================================
+    auth_enabled: false
+    
+    # ========================================================================
+    # Server Configuration
+    # ========================================================================
+    server:
+      http_listen_port: 3100
+      grpc_listen_port: 9096
+      log_level: info
+    
+    # ========================================================================
+    # Ingester Configuration (log ingestion)
+    # ========================================================================
+    ingester:
+      lifecycler:
+        address: 0.0.0.0
+        ring:
+          kvstore:
+            store: inmemory
+          replication_factor: 1
+        final_sleep: 0s
+      chunk_idle_period: 5m
+      chunk_retain_period: 30s
+      max_transfer_retries: 0
+      wal:
+        enabled: true
+        dir: /loki/wal
+    
+    # ========================================================================
+    # Schema Configuration
+    # ========================================================================
+    schema_config:
+      configs:
+        - from: 2024-01-01
+          store: boltdb-shipper
+          object_store: filesystem
+          schema: v11
+          index:
+            prefix: index_
+            period: 24h
+    
+    # ========================================================================
+    # Storage Configuration
+    # ========================================================================
+    storage_config:
+      boltdb_shipper:
+        active_index_directory: /loki/index
+        cache_location: /loki/cache
+        cache_ttl: 24h
+        shared_store: filesystem
+      filesystem:
+        directory: /loki/chunks
+    
+    # ========================================================================
+    # Compactor Configuration (index cleanup)
+    # ========================================================================
+    compactor:
+      working_directory: /loki/compactor
+      shared_store: filesystem
+      compaction_interval: 10m
+      retention_enabled: true
+      retention_delete_delay: 2h
+      retention_delete_worker_count: 150
+    
+    # ========================================================================
+    # Limits Configuration
+    # ========================================================================
+    limits_config:
+      retention_period: 168h  # 7 days
+      enforce_metric_name: false
+      reject_old_samples: true
+      reject_old_samples_max_age: 168h
+      ingestion_rate_mb: 50
+      ingestion_burst_size_mb: 100
+      max_entries_limit_per_query: 5000
+      max_query_length: 721h  # 30 days
+      max_query_parallelism: 32
+      max_streams_per_user: 10000
+      max_chunks_per_query: 2000000
+    
+    # ========================================================================
+    # Table Manager (index retention)
+    # ========================================================================
+    table_manager:
+      retention_deletes_enabled: true
+      retention_period: 168h  # 7 days
+    
+    # ========================================================================
+    # Querier Configuration
+    # ========================================================================
+    querier:
+      max_concurrent: 20
+    
+    # ========================================================================
+    # Query Frontend Configuration
+    # ========================================================================
+    query_range:
+      align_queries_with_step: true
+      max_retries: 5
+      cache_results: true
+      results_cache:
+        cache:
+          enable_fifocache: true
+          fifocache:
+            max_size_items: 1024
+            ttl: 24h
+
+---
+# ============================================================================
+# Loki Deployment
+# ============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loki
+  namespace: logging
+  labels:
+    app.kubernetes.io/name: loki
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loki
+  template:
+    metadata:
+      labels:
+        app: loki
+        app.kubernetes.io/name: loki
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3100"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        fsGroup: 10001
+      containers:
+        - name: loki
+          image: grafana/loki:2.9.3
+          args:
+            - -config.file=/etc/loki/loki.yaml
+          ports:
+            - containerPort: 3100
+              name: http
+              protocol: TCP
+            - containerPort: 9096
+              name: grpc
+              protocol: TCP
+          volumeMounts:
+            - name: loki-config
+              mountPath: /etc/loki
+            - name: loki-storage
+              mountPath: /loki
+          livenessProbe:
+            httpGet:
+              path: /ready
+              port: 3100
+            initialDelaySeconds: 45
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3100
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 2000m
+              memory: 4Gi
+      volumes:
+        - name: loki-config
+          configMap:
+            name: loki-config
+        - name: loki-storage
+          persistentVolumeClaim:
+            claimName: loki-storage
+
+---
+# ============================================================================
+# Loki Service
+# ============================================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: loki
+  namespace: logging
+  labels:
+    app.kubernetes.io/name: loki
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "3100"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3100
+      targetPort: 3100
+      protocol: TCP
+      name: http
+    - port: 9096
+      targetPort: 9096
+      protocol: TCP
+      name: grpc
+  selector:
+    app: loki
+
+---
+# ============================================================================
+# Loki PersistentVolumeClaim
+# ============================================================================
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: loki-storage
+  namespace: logging
+  labels:
+    app.kubernetes.io/name: loki
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 20Gi
+
+---
+# ============================================================================
+# Loki Ingress (NGINX Ingress Controller)
+# ============================================================================
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: loki-ingress
+  namespace: logging
+  labels:
+    app.kubernetes.io/name: loki
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - loki.terrafusion.gov
+      secretName: loki-tls
+  rules:
+    - host: loki.terrafusion.gov
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: loki
+                port:
+                  number: 3100
+
+---
+# ============================================================================
+# Production: Loki with S3/GCS Backend
+# ============================================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: loki-production-config
+  namespace: logging
+  labels:
+    app.kubernetes.io/name: loki
+    environment: production
+data:
+  loki-s3.yaml: |
+    # Production Loki configuration with S3 storage
+    storage_config:
+      aws:
+        s3: s3://us-west-2/terrafusion-logs
+        s3forcepathstyle: true
+      boltdb_shipper:
+        active_index_directory: /loki/index
+        cache_location: /loki/cache
+        shared_store: s3
+    
+    # S3 credentials (use AWS IAM roles or secrets)
+    # AWS_REGION: us-west-2
+    # AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+    # AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+
+# ============================================================================
+# Apply Instructions
+# ============================================================================
+# 1. Apply Loki deployment:
+#    kubectl apply -f loki-deployment.yaml
+#
+# 2. Verify Loki is running:
+#    kubectl get pods -n logging
+#    kubectl logs -n logging deployment/loki
+#
+# 3. Port-forward Loki API:
+#    kubectl port-forward -n logging svc/loki 3100:3100
+#
+# 4. Test Loki API:
+#    curl http://localhost:3100/ready
+#    curl http://localhost:3100/metrics
+#
+# 5. Query logs (LogQL):
+#    curl -G -s "http://localhost:3100/loki/api/v1/query_range" \
+#      --data-urlencode 'query={service="terrafusion-api"}' \
+#      --data-urlencode 'limit=100'
+#
+# 6. Integrate with Grafana:
+#    # Grafana datasource already configured in grafana-datasources.yaml
+#    # Navigate to: Explore > Select Loki datasource
+#    # Run LogQL queries: {service="terrafusion-api"} |= "error"
+# ============================================================================

@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Validates a geodatabase topology.",
+        "in_topology.descr": "The geodatabase topology that will be validated.",
+        "in_topology.title": "Input Topology",
+        "out_topology.title": "Updated Input Topology",
+        "summary": "<xdoc><p>Validates a geodatabase topology.</p><p>This tool performs the following operations:<ul><li>Cracking and clustering of feature vertices to find features that share geometry (have common coordinates)</li><li>Inserting common coordinate vertices into features that share geometry</li><li>Running a set of integrity checks to identify any violations of the rules that have been defined for the topology</li></ul></p></xdoc>",
+        "title": "Validate Topology",
+        "visible_extent.descr": "<xdoc><p>Specifies whether the Extent environment value for the topology or the full extent of the topology will be validated.<ul><li>Checked—The Extent environment value for the topology will be validated. If the environment has not been set, the full extent will be validated.</li><li>Unchecked—The full extent of the topology will be validated. This is the default.</li></ul></p></xdoc>",
+        "visible_extent.title": "Use extent environment"
+    }
+}

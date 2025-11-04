@@ -1,0 +1,31 @@
+{
+    "type": "FunctionTool",
+    "guid": "{e288872f-1bb4-49b7-9ecf-2958a201cb28}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190409",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "in_raster": {
+            "displayname": "$rc:in_raster.title",
+            "datatype": {
+                "type": "GPRasterLayer"
+            },
+            "description": "$rc:in_raster.descr"
+        },
+        "out_raster": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "GPRasterLayer"
+            },
+            "depends": [
+                "in_raster"
+            ]
+        }
+    }
+}

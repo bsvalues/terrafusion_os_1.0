@@ -1,0 +1,25 @@
+{
+    "map": {
+        "coordinate_system.descr": "The coordinate system of the input LAS data and the output polyline feature class. By default, the coordinate system that is defined in the LAS data for both horizontal and vertical coordinate systems will be used.",
+        "coordinate_system.title": "Coordinate System",
+        "description": "Creates a polyline feature class containing 2D polyline features generated from input point cloud data. The output of this tool can be refined and used as an input when populating an Indoors workspace with data to assist with creating floor-aware maps and scenes.",
+        "extent.descr": "<xdoc><p>The extent of the data that will be evaluated.</p><ul><li>Current Display Extent—The extent will be based on the active map or scene.</li><li>Draw Extent—The extent will be based on a rectangle drawn on the map or scene.</li><li>Extent of a Layer—The extent will be based on an active map layer. Choose an available layer or use the <span class=\"esri_uicontrol\">Extent of data in all layers</span> option. Each map layer has the following options:<p><ul><li>All Features—The extent of all features.</li><li>Selected Features —The extent of the selected features.</li><li>Visible Features—The extent of visible features.</li></ul></p></li><li>Browse—The extent will be based on a dataset.</li><li>Intersection of Inputs—The extent will be the intersecting extent of all inputs.</li><li>Union of Inputs—The extent will be the combined extent of all inputs.</li><li>Clipboard—The extent can be copied to and from the clipboard.<ul><li>Copy Extent—Copies the extent and coordinate system to the clipboard.</li><li>Paste Extent—Pastes the extent and coordinate system from the clipboard. If the clipboard does not include a coordinate system, the extent will use the map’s coordinate system.</li></ul></li><li>Reset Extent—The extent will be reset to the default value.</li></ul><p>When coordinates are manually provided, the coordinates must be numeric values and in the active map&apos;s coordinate system. The map may use different display units than the provided coordinates. Use a negative value sign for south and west coordinates.</p></xdoc>",
+        "extent.title": "Extent",
+        "in_point_cloud.descr": "The input LAS file or dataset containing point cloud data from which polyline features will be generated.",
+        "in_point_cloud.title": "Input Point Cloud",
+        "out_line_features.descr": "<xdoc><p>The polyline feature class that will be created to store features generated from LAS data.</p><p>If no workspace is specified, the scratch workspace will be used.</p></xdoc>",
+        "out_line_features.title": "Output Line Features",
+        "output_z_value.descr": "<xdoc><p>The z-value that will be assigned to the generated polyline features. The default is 0.</p><p>You can specify a value in meters or feet. The tool will automatically convert the value to use the unit of measure of the vertical coordinate system of the data.</p></xdoc>",
+        "output_z_value.title": "Output Z Value",
+        "params.category1": "Processing Boundary",
+        "short_feature_tolerance.descr": "<xdoc><p>The tolerance in meters or international feet by which short features will be deleted. The default is 1 meter.</p><p>Use a value of 0 to bypass preserving short features.</p></xdoc>",
+        "short_feature_tolerance.title": "Short Feature Tolerance",
+        "simplify.descr": "<xdoc><p>Specifies whether output polylines will be simplified during processing using a polyline compression algorithm to normalize generated polylines before removing extra vertices that are not necessary for retaining effective areas.</p><ul><li>Checked—Lines will be simplified. This is the default.</li><li>Unchecked—Lines will not be simplified.</li></ul></xdoc>",
+        "simplify.title": "Simplify Lines",
+        "title": "Generate Floor Plan From Point Cloud",
+        "z_ranges.descr": "<xdoc><p>One or more z-ranges of the input point cloud. Points in the specified z-ranges will be analyzed when generating the output polyline features.</p><p>If no value is specified, the full range of z-values present in the input point cloud data will be used.</p></xdoc>",
+        "z_ranges.dt.title1": "Min Z Value",
+        "z_ranges.dt.title2": "Max Z Value",
+        "z_ranges.title": "Z Ranges"
+    }
+}

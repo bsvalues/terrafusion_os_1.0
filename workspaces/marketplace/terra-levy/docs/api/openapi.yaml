@@ -1,0 +1,220 @@
+openapi: 3.0.3
+info:
+  title: Terra Levy API
+  description: Tax management and revenue operations APIs
+  version: 1.0.0
+  contact:
+    name: TerraFusion Government OS API Support
+    email: terra-levy-api@terrafusion.gov
+    url: https://docs.terrafusion.gov/marketplace/terra-levy
+  license:
+    name: Government Use License
+    url: https://terrafusion.gov/licenses/government-api
+  termsOfService: https://terrafusion.gov/terms/api-usage
+servers:
+- url: https://api.terrafusion.gov/api/v1/tax
+  description: Production TerraFusion Government API
+- url: https://staging-api.terrafusion.gov/api/v1/tax
+  description: Staging Environment
+- url: https://dev-api.terrafusion.gov/api/v1/tax
+  description: Development Environment
+paths:
+  /properties:
+    get:
+      tags:
+      - terra-levy
+      summary: Property tax information
+      description: Property tax information - Tax management and revenue operations
+        APIs
+      operationId: get__properties
+      security:
+      - OAuth2:
+        - terra-levy:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /assessments:
+    post:
+      tags:
+      - terra-levy
+      summary: Tax assessments
+      description: Tax assessments - Tax management and revenue operations APIs
+      operationId: post__assessments
+      security:
+      - OAuth2:
+        - terra-levy:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /payments:
+    post:
+      tags:
+      - terra-levy
+      summary: Tax payment processing
+      description: Tax payment processing - Tax management and revenue operations
+        APIs
+      operationId: post__payments
+      security:
+      - OAuth2:
+        - terra-levy:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /exemptions:
+    get:
+      tags:
+      - terra-levy
+      summary: Tax exemption management
+      description: Tax exemption management - Tax management and revenue operations
+        APIs
+      operationId: get__exemptions
+      security:
+      - OAuth2:
+        - terra-levy:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: object
+    HealthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - healthy
+          - degraded
+          - unhealthy
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        dependencies:
+          type: object
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
+          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          scopes:
+            terra-levy:read: Read access to terra-levy resources
+            terra-levy:write: Write access to terra-levy resources
+            terra-levy:admin: Administrative access to terra-levy
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+security:
+- OAuth2:
+  - terra-levy:read
+- ApiKey: []
+tags:
+- name: terra-levy
+  description: Terra Levy operations
+  externalDocs:
+    description: Find out more about terra-levy
+    url: https://docs.terrafusion.gov/marketplace/terra-levy

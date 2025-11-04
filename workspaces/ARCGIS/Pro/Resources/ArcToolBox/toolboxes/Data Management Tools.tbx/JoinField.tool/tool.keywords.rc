@@ -1,0 +1,22 @@
+{
+    "set": [
+        "add",
+        "attribute",
+        "column",
+        "combine",
+        "common",
+        "data",
+        "field",
+        "forever",
+        "join",
+        "joins and relates",
+        "match",
+        "move",
+        "permanent",
+        "persist",
+        "relate",
+        "share",
+        "source",
+        "table"
+    ]
+}

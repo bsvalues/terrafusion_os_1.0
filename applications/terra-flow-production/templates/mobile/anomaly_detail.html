@@ -1,0 +1,373 @@
+{% extends 'mobile_layout.html' %}
+
+{% block title %}TerraFlow | Anomaly Detail{% endblock %}
+
+{% block additionalcss %}
+<style>
+    .anomaly-header {
+        background-color: var(--bs-danger-bg-subtle);
+        border-bottom: 1px solid var(--bs-danger-border-subtle);
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .anomaly-map {
+        width: 100%;
+        height: 180px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        overflow: hidden;
+    }
+    
+    .data-row {
+        display: flex;
+        margin-bottom: 8px;
+    }
+    
+    .data-label {
+        width: 120px;
+        font-weight: 600;
+        color: #666;
+    }
+    
+    .data-value {
+        flex: 1;
+    }
+    
+    .score-indicator {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background-color: var(--bs-danger);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    
+    .score-indicator.medium {
+        background-color: var(--bs-warning);
+    }
+    
+    .score-indicator.low {
+        background-color: var(--bs-success);
+    }
+    
+    .anomaly-trend-chart {
+        height: 150px;
+        margin-top: 10px;
+        margin-bottom: 15px;
+    }
+    
+    .badge-data {
+        background-color: #dc3545;
+    }
+    
+    .badge-spatial {
+        background-color: #fd7e14;
+    }
+    
+    .badge-valuation {
+        background-color: #6f42c1;
+    }
+    
+    .badge-temporal {
+        background-color: #0dcaf0;
+    }
+    
+    .anomaly-alert {
+        background-color: var(--bs-danger-bg-subtle);
+        border-left: 4px solid var(--bs-danger);
+        padding: 10px 15px;
+        margin-bottom: 15px;
+        border-radius: 4px;
+    }
+    
+    .anomaly-alert.medium {
+        background-color: var(--bs-warning-bg-subtle);
+        border-left-color: var(--bs-warning);
+    }
+    
+    .anomaly-alert.low {
+        background-color: var(--bs-success-bg-subtle);
+        border-left-color: var(--bs-success);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mobile-container">
+    <!-- Anomaly Header -->
+    <div class="anomaly-header">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h1 class="h4 mb-1">{{ anomaly.type | capitalize }} Anomaly</h1>
+                <div class="text-muted">ID: {{ anomaly.id }}</div>
+                <div class="mt-2">
+                    <span class="badge bg-{{ anomaly.severity }}">{{ anomaly.severity | capitalize }}</span>
+                    <span class="badge badge-{{ anomaly.type }}">{{ anomaly.type | capitalize }}</span>
+                </div>
+            </div>
+            <div class="score-indicator {{ anomaly.severity }}">
+                {{ (anomaly.score * 100) | int }}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Anomaly Alert -->
+    <div class="anomaly-alert {{ anomaly.severity }}">
+        <div class="fw-bold mb-1">Anomaly Description:</div>
+        <p class="mb-0">{{ anomaly.description }}</p>
+    </div>
+    
+    <!-- Property Information -->
+    <div class="mobile-card p-3 mb-3">
+        <h5 class="mb-3">Property Information</h5>
+        
+        <div class="data-row">
+            <div class="data-label">ID</div>
+            <div class="data-value">{{ anomaly.property_id }}</div>
+        </div>
+        
+        <div class="data-row">
+            <div class="data-label">Address</div>
+            <div class="data-value">{{ anomaly.address }}</div>
+        </div>
+        
+        <div class="data-row">
+            <div class="data-label">Detected</div>
+            <div class="data-value">{{ anomaly.detected_at }}</div>
+        </div>
+        
+        <div class="mt-3">
+            <a href="/mobile/property/{{ anomaly.property_id }}" class="btn btn-outline-primary btn-sm w-100">
+                <i class="fas fa-home me-2"></i> View Property Details
+            </a>
+        </div>
+    </div>
+    
+    <!-- Anomaly Map -->
+    <div class="mobile-card p-0 mb-3">
+        <div class="anomaly-map" id="anomalyMap"></div>
+    </div>
+    
+    <!-- Anomaly Details -->
+    <div class="mobile-card p-3 mb-3">
+        <h5 class="mb-3">Anomaly Details</h5>
+        
+        <div class="data-row">
+            <div class="data-label">Type</div>
+            <div class="data-value">{{ anomaly.type | capitalize }}</div>
+        </div>
+        
+        <div class="data-row">
+            <div class="data-label">Severity</div>
+            <div class="data-value">{{ anomaly.severity | capitalize }}</div>
+        </div>
+        
+        <div class="data-row">
+            <div class="data-label">Score</div>
+            <div class="data-value">{{ (anomaly.score * 100) | int }}%</div>
+        </div>
+        
+        <div class="data-row">
+            <div class="data-label">Status</div>
+            <div class="data-value">
+                <span class="badge bg-warning">Pending Review</span>
+            </div>
+        </div>
+        
+        <div class="mt-3">
+            <div class="fw-bold mb-2">Score Trend</div>
+            <div class="anomaly-trend-chart">
+                <canvas id="anomalyTrendChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Analysis -->
+    <div class="mobile-card p-3 mb-3">
+        <h5 class="mb-3">Analysis</h5>
+        
+        <div id="anomalyAnalysis">
+            {% if anomaly.type == 'data' %}
+            <p>The data anomaly detection system identified inconsistencies in the property record that exceed normal thresholds. The property shows data values that significantly deviate from expected patterns for this property type and location.</p>
+            <ul>
+                <li>Detected unusual value in property assessment record</li>
+                <li>Value deviates more than 80% from similar properties</li>
+                <li>Inconsistency detected in square footage calculation</li>
+            </ul>
+            {% elif anomaly.type == 'spatial' %}
+            <p>The spatial analysis system detected an anomaly in the geographic representation of this property. The property boundaries show inconsistencies with adjacent properties or historical records.</p>
+            <ul>
+                <li>Boundary coordinates inconsistent with GIS database</li>
+                <li>Possible overlap with adjacent property detected</li>
+                <li>Irregular geometry that deviates from parcel records</li>
+            </ul>
+            {% elif anomaly.type == 'valuation' %}
+            <p>The valuation model detected an unusual change in the property's assessed value. The current valuation shows a significant deviation from expected trends and comparable properties.</p>
+            <ul>
+                <li>Value increased 40% in 30 days without improvements</li>
+                <li>Valuation significantly above similar properties in area</li>
+                <li>Historical trend analysis shows unusual pattern</li>
+            </ul>
+            {% elif anomaly.type == 'temporal' %}
+            <p>The temporal analysis system identified unusual patterns in the property's assessment history. The timing or sequence of changes shows irregularities that require verification.</p>
+            <ul>
+                <li>Unusual pattern of assessment date changes</li>
+                <li>Missing expected assessment period</li>
+                <li>Rapid sequential changes in property status</li>
+            </ul>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Recommendations -->
+    <div class="mobile-card p-3 mb-3">
+        <h5 class="mb-3">Recommendations</h5>
+        
+        <div id="anomalyRecommendations">
+            <div class="fw-bold mb-2">Suggested actions:</div>
+            <ol>
+                <li>Review property record for data entry errors</li>
+                <li>Compare with similar properties in the area</li>
+                <li>Verify property boundaries with survey records</li>
+                <li>Check for recent improvements or renovations</li>
+                <li>Review historical assessment patterns</li>
+            </ol>
+        </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="d-grid gap-2 mb-4">
+        <button class="btn btn-primary" id="investigateBtn">
+            <i class="fas fa-search me-2"></i> Investigate Anomaly
+        </button>
+        
+        <button class="btn btn-outline-secondary" id="reviewedBtn">
+            <i class="fas fa-check me-2"></i> Mark as Reviewed
+        </button>
+        
+        <button class="btn btn-outline-danger" id="dismissBtn">
+            <i class="fas fa-times me-2"></i> Dismiss Anomaly
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize anomaly map
+        const anomalyMap = L.map('anomalyMap').setView([46.2585, -119.2534], 16);
+        
+        // Add base layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(anomalyMap);
+        
+        // Add property marker
+        const markerColor = getMarkerColor("{{ anomaly.type }}");
+        const propertyMarker = L.circleMarker([46.2585, -119.2534], {
+            radius: 10,
+            fillColor: markerColor,
+            color: "#fff",
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.8
+        }).addTo(anomalyMap);
+        
+        propertyMarker.bindPopup("{{ anomaly.address }}").openPopup();
+        
+        // Initialize anomaly trend chart
+        const ctx = document.getElementById('anomalyTrendChart').getContext('2d');
+        const anomalyTrendChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['7 days ago', '6 days ago', '5 days ago', '4 days ago', '3 days ago', '2 days ago', 'Today'],
+                datasets: [{
+                    label: 'Anomaly Score',
+                    data: {{ anomaly.history }},
+                    backgroundColor: markerColor,
+                    borderColor: markerColor,
+                    tension: 0.3,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 1,
+                        ticks: {
+                            callback: function(value) {
+                                return (value * 100).toFixed(0) + '%';
+                            }
+                        }
+                    },
+                    x: {
+                        display: true,
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'Score: ' + (context.raw * 100).toFixed(0) + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Button event handlers
+        document.getElementById('investigateBtn').addEventListener('click', function() {
+            // In a real app, this would open the investigation interface
+            alert('Investigation feature will be available in the next update.');
+        });
+        
+        document.getElementById('reviewedBtn').addEventListener('click', function() {
+            // In a real app, this would mark the anomaly as reviewed
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-check-circle me-2"></i> Marked as Reviewed';
+            document.querySelector('.data-row .badge').classList.remove('bg-warning');
+            document.querySelector('.data-row .badge').classList.add('bg-success');
+            document.querySelector('.data-row .badge').textContent = 'Reviewed';
+        });
+        
+        document.getElementById('dismissBtn').addEventListener('click', function() {
+            // In a real app, this would dismiss the anomaly
+            if (confirm('Are you sure you want to dismiss this anomaly?')) {
+                this.disabled = true;
+                this.innerHTML = '<i class="fas fa-check-circle me-2"></i> Dismissed';
+                document.querySelector('.data-row .badge').classList.remove('bg-warning');
+                document.querySelector('.data-row .badge').classList.add('bg-secondary');
+                document.querySelector('.data-row .badge').textContent = 'Dismissed';
+            }
+        });
+        
+        // Helper functions
+        function getMarkerColor(type) {
+            switch (type) {
+                case 'data': return '#dc3545';
+                case 'spatial': return '#fd7e14';
+                case 'valuation': return '#6f42c1';
+                case 'temporal': return '#0dcaf0';
+                default: return '#6c757d';
+            }
+        }
+    });
+</script>
+{% endblock %}

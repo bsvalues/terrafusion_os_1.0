@@ -1,0 +1,16 @@
+{
+    "set": [
+        "2 to 3",
+        "analyze",
+        "deprecated",
+        "missing",
+        "pro",
+        "python",
+        "python 2",
+        "python 3",
+        "toolbox",
+        "unsupported",
+        "arcpy.mapping",
+        "arcpy.mp"
+    ]
+}

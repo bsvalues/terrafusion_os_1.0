@@ -1,0 +1,11 @@
+{
+    "set": [
+        "allocation",
+        "distance",
+        "proximity",
+        "source",
+        "spread",
+        "straight line",
+        "travel cost"
+    ]
+}

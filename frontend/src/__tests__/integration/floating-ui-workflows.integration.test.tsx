@@ -9,17 +9,8 @@ import React, { useState } from 'react';
 import { render, screen, within, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,13 +30,17 @@ import { Label } from '@/components/ui/label';
 /**
  * Icon Buttons with Tooltips
  */
-const IconButtonsWithTooltips = ({ onButtonClick }: { onButtonClick: (action: string) => void }) => {
+const IconButtonsWithTooltips = ({
+  onButtonClick,
+}: {
+  onButtonClick: (action: string) => void;
+}) => {
   return (
     <TooltipProvider>
-      <div className="flex gap-2">
+      <div className='flex gap-2'>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="outline" size="icon" onClick={() => onButtonClick('save')}>
+            <Button variant='outline' size='icon' onClick={() => onButtonClick('save')}>
               💾
             </Button>
           </TooltipTrigger>
@@ -56,7 +51,7 @@ const IconButtonsWithTooltips = ({ onButtonClick }: { onButtonClick: (action: st
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="outline" size="icon" onClick={() => onButtonClick('undo')}>
+            <Button variant='outline' size='icon' onClick={() => onButtonClick('undo')}>
               ↶
             </Button>
           </TooltipTrigger>
@@ -67,7 +62,7 @@ const IconButtonsWithTooltips = ({ onButtonClick }: { onButtonClick: (action: st
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="outline" size="icon" onClick={() => onButtonClick('redo')}>
+            <Button variant='outline' size='icon' onClick={() => onButtonClick('redo')}>
               ↷
             </Button>
           </TooltipTrigger>
@@ -83,7 +78,11 @@ const IconButtonsWithTooltips = ({ onButtonClick }: { onButtonClick: (action: st
 /**
  * Popover with Form Controls
  */
-const PopoverWithForm = ({ onSubmit }: { onSubmit: (data: { width: string; height: string }) => void }) => {
+const PopoverWithForm = ({
+  onSubmit,
+}: {
+  onSubmit: (data: { width: string; height: string }) => void;
+}) => {
   const [width, setWidth] = useState('100');
   const [height, setHeight] = useState('200');
   const [open, setOpen] = useState(false);
@@ -96,31 +95,31 @@ const PopoverWithForm = ({ onSubmit }: { onSubmit: (data: { width: string; heigh
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline">Set Dimensions</Button>
+        <Button variant='outline'>Set Dimensions</Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80">
-        <div className="space-y-4">
-          <h4 className="font-medium">Dimensions</h4>
-          <div className="space-y-2">
-            <Label htmlFor="width">Width (px)</Label>
+      <PopoverContent className='w-80'>
+        <div className='space-y-4'>
+          <h4 className='font-medium'>Dimensions</h4>
+          <div className='space-y-2'>
+            <Label htmlFor='width'>Width (px)</Label>
             <Input
-              id="width"
-              type="number"
+              id='width'
+              type='number'
               value={width}
               onChange={(e) => setWidth(e.target.value)}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="height">Height (px)</Label>
+          <div className='space-y-2'>
+            <Label htmlFor='height'>Height (px)</Label>
             <Input
-              id="height"
-              type="number"
+              id='height'
+              type='number'
               value={height}
               onChange={(e) => setHeight(e.target.value)}
             />
           </div>
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setOpen(false)}>
+          <div className='flex justify-end gap-2'>
+            <Button variant='outline' onClick={() => setOpen(false)}>
               Cancel
             </Button>
             <Button onClick={handleSubmit}>Apply</Button>
@@ -143,19 +142,11 @@ const UserMenu = ({ onAction }: { onAction: (action: string) => void }) => {
       <DropdownMenuContent>
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={() => onAction('profile')}>
-          Profile
-        </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => onAction('billing')}>
-          Billing
-        </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => onAction('settings')}>
-          Settings
-        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => onAction('profile')}>Profile</DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => onAction('billing')}>Billing</DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => onAction('settings')}>Settings</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={() => onAction('logout')}>
-          Logout
-        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => onAction('logout')}>Logout</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -171,23 +162,13 @@ const NestedDropdownMenu = ({ onAction }: { onAction: (action: string) => void }
         <Button>File</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuItem onSelect={() => onAction('new')}>
-          New File
-        </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => onAction('open')}>
-          Open File
-        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => onAction('new')}>New File</DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => onAction('open')}>Open File</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={() => onAction('save')}>
-          Save
-        </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => onAction('save-as')}>
-          Save As...
-        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => onAction('save')}>Save</DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => onAction('save-as')}>Save As...</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={() => onAction('exit')}>
-          Exit
-        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => onAction('exit')}>Exit</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -199,7 +180,7 @@ const NestedDropdownMenu = ({ onAction }: { onAction: (action: string) => void }
 const MultipleTooltips = () => {
   return (
     <TooltipProvider>
-      <div className="space-y-4">
+      <div className='space-y-4'>
         <div>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -279,7 +260,7 @@ describe('Integration: Tooltip + Button Workflow', () => {
       render(<IconButtonsWithTooltips onButtonClick={handleClick} />);
 
       const saveButton = screen.getByText('💾');
-      
+
       // Hover to show tooltip
       await user.hover(saveButton);
       await waitFor(() => {
@@ -329,7 +310,7 @@ describe('Integration: Tooltip + Button Workflow', () => {
       render(<IconButtonsWithTooltips onButtonClick={handleClick} />);
 
       const saveButton = screen.getByText('💾');
-      
+
       // Show tooltip
       await user.hover(saveButton);
       await waitFor(() => {
@@ -408,7 +389,7 @@ describe('Integration: Popover + Form Workflow', () => {
 
       await user.clear(widthInput);
       await user.type(widthInput, '300');
-      
+
       await user.clear(heightInput);
       await user.type(heightInput, '400');
 
@@ -464,7 +445,7 @@ describe('Integration: Popover + Form Workflow', () => {
       // Open and check initial values
       await user.click(screen.getByRole('button', { name: /set dimensions/i }));
       expect(screen.getByLabelText(/width \(px\)/i)).toHaveValue(100);
-      
+
       // Cancel
       await user.click(screen.getByRole('button', { name: /cancel/i }));
 

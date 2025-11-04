@@ -1,0 +1,24 @@
+{
+    "set": [
+        "ascii",
+        "attribute",
+        "coordinate",
+        "coordinates",
+        "create",
+        "create points",
+        "csv",
+        "dbf",
+        "featureclass",
+        "gps",
+        "latitude",
+        "location",
+        "longitude",
+        "new",
+        "x",
+        "x y",
+        "y",
+        "display",
+        "x&y",
+        "x,y"
+    ]
+}

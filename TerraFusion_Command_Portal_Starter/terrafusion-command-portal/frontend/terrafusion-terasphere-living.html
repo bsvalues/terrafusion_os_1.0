@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion TerraSphere - Living Command Portal</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        :root {
+            --tf-primary: #0099ff;
+            --tf-accent: #00ffaa;
+            --tf-transcend: #00ffee;
+            --tf-dark: #0b1020;
+            --tf-dark-lighter: #1a1f3a;
+            --tf-light: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--tf-dark);
+        }
+
+        /* ===== TERASPHERE CANVAS ===== */
+        #terasphere-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* ===== UI OVERLAY ===== */
+        .ui-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            pointer-events: none;
+        }
+
+        /* ===== HEADER ===== */
+        .tf-header {
+            background: rgba(11, 16, 32, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 255, 238, 0.15);
+            padding: 20px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            pointer-events: auto;
+            z-index: 101;
+        }
+
+        .tf-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .tf-logo-glyph {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--tf-primary) 0%, var(--tf-transcend) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            animation: logoFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0) rotateZ(0deg); }
+            50% { transform: translateY(-6px) rotateZ(5deg); }
+        }
+
+        .tf-brand {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tf-brand-name {
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--tf-primary) 0%, var(--tf-transcend) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tf-brand-essence {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--tf-transcend);
+            font-weight: 700;
+        }
+
+        .tf-header-spacer {
+            flex: 1;
+        }
+
+        .header-status {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .status-indicator {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            text-align: right;
+        }
+
+        .status-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 600;
+        }
+
+        .status-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--tf-transcend);
+            font-family: 'Courier New', monospace;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--tf-accent);
+            animation: pulse 2s ease-in-out infinite;
+            margin-right: 6px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; scale: 1; }
+            50% { opacity: 0.4; scale: 1.2; }
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            gap: 32px;
+            padding: 32px;
+            pointer-events: auto;
+            overflow: hidden;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 240px;
+            background: rgba(26, 31, 58, 0.6);
+            border: 1px solid rgba(0, 255, 238, 0.15);
+            border-radius: 12px;
+            padding: 24px;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .sidebar-section-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--tf-transcend);
+            font-weight: 700;
+        }
+
+        .sidebar-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sidebar-item {
+            padding: 10px 12px;
+            background: rgba(0, 255, 238, 0.05);
+            border: 1px solid transparent;
+            border-radius: 6px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .sidebar-item:hover,
+        .sidebar-item.active {
+            background: rgba(0, 255, 238, 0.12);
+            border-color: rgba(0, 255, 238, 0.4);
+            color: var(--tf-transcend);
+            transform: translateX(4px);
+        }
+
+        /* ===== MAIN PANEL ===== */
+        .main-panel {
+            flex: 1;
+            background: rgba(26, 31, 58, 0.6);
+            border: 1px solid rgba(0, 255, 238, 0.15);
+            border-radius: 12px;
+            padding: 32px;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        .panel-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--tf-light);
+            background: linear-gradient(135deg, var(--tf-primary) 0%, var(--tf-transcend) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .panel-subtitle {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: -8px;
+        }
+
+        /* ===== METRICS GRID ===== */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+        }
+
+        .metric-card {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(0, 255, 238, 0.12);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .metric-card:hover {
+            border-color: rgba(0, 255, 238, 0.35);
+            background: rgba(0, 255, 238, 0.05);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0, 255, 238, 0.15);
+        }
+
+        .metric-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--tf-primary), var(--tf-transcend));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Courier New', monospace;
+        }
+
+        .metric-unit {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 4px;
+        }
+
+        /* ===== AI SYSTEMS DISPLAY ===== */
+        .ai-systems {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .ai-system {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(0, 255, 238, 0.15);
+            border-radius: 6px;
+            padding: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .ai-system:hover {
+            border-color: var(--tf-transcend);
+            background: rgba(0, 255, 238, 0.08);
+        }
+
+        .ai-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .ai-name {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--tf-light);
+            margin-bottom: 4px;
+        }
+
+        .ai-count {
+            font-size: 16px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--tf-accent), var(--tf-transcend));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--tf-primary), var(--tf-transcend));
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, var(--tf-transcend), var(--tf-accent));
+        }
+    </style>
+</head>
+<body>
+    <!-- TERASPHERE CANVAS (The Living Heart) -->
+    <canvas id="terasphere-canvas"></canvas>
+
+    <!-- UI OVERLAY -->
+    <div class="ui-overlay">
+        <!-- HEADER -->
+        <header class="tf-header">
+            <div class="tf-logo-container">
+                <div class="tf-logo-glyph">𝚫</div>
+                <div class="tf-brand">
+                    <div class="tf-brand-name">TerraFusion</div>
+                    <div class="tf-brand-essence">Government. Transcended.</div>
+                </div>
+            </div>
+
+            <div class="tf-header-spacer"></div>
+
+            <div class="header-status">
+                <div class="status-indicator">
+                    <span class="status-label">Backend</span>
+                    <div>
+                        <span class="status-dot"></span>
+                        <span class="status-value" id="backend-status">Healthy</span>
+                    </div>
+                </div>
+                <div class="status-indicator">
+                    <span class="status-label">Systems</span>
+                    <span class="status-value">1,008</span>
+                </div>
+                <div class="status-indicator">
+                    <span class="status-label">FedRAMP</span>
+                    <span class="status-value">98.5%</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- CONTENT WRAPPER -->
+        <div class="content-wrapper">
+            <!-- SIDEBAR -->
+            <aside class="sidebar">
+                <div>
+                    <h3 class="sidebar-section-title">Workspaces</h3>
+                    <div class="sidebar-items">
+                        <div class="sidebar-item active">Command Portal</div>
+                        <div class="sidebar-item">AI Systems</div>
+                        <div class="sidebar-item">Infrastructure</div>
+                        <div class="sidebar-item">Deployment</div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="sidebar-section-title">Quick Access</h3>
+                    <div class="sidebar-items">
+                        <div class="sidebar-item">Backend API</div>
+                        <div class="sidebar-item">Kubernetes</div>
+                        <div class="sidebar-item">Monitoring</div>
+                        <div class="sidebar-item">Security</div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- MAIN PANEL -->
+            <main class="main-panel">
+                <div>
+                    <h1 class="panel-title">TerraSphere System</h1>
+                    <p class="panel-subtitle">Infrastructure Intelligence, Infinite Scale</p>
+                </div>
+
+                <!-- METRICS -->
+                <div>
+                    <h3 class="sidebar-section-title" style="margin-bottom: 16px;">System Health</h3>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-label">API Availability</div>
+                            <div class="metric-value">98.5%</div>
+                            <div class="metric-unit">FedRAMP</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Response Time</div>
+                            <div class="metric-value" id="response-metric">127ms</div>
+                            <div class="metric-unit">Average</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Uptime</div>
+                            <div class="metric-value">99.99%</div>
+                            <div class="metric-unit">30 Days</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Active Agents</div>
+                            <div class="metric-value">1,008</div>
+                            <div class="metric-unit">Coordinated</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI SYSTEMS -->
+                <div>
+                    <h3 class="sidebar-section-title" style="margin-bottom: 16px;">AI Infrastructure</h3>
+                    <div class="ai-systems">
+                        <div class="ai-system">
+                            <div class="ai-icon">🧠</div>
+                            <div class="ai-name">Supreme Commander</div>
+                            <div class="ai-count">1</div>
+                        </div>
+                        <div class="ai-system">
+                            <div class="ai-icon">⚙️</div>
+                            <div class="ai-name">Field Generals</div>
+                            <div class="ai-count">1,007</div>
+                        </div>
+                        <div class="ai-system">
+                            <div class="ai-icon">🔌</div>
+                            <div class="ai-name">MCP Tools</div>
+                            <div class="ai-count">87</div>
+                        </div>
+                        <div class="ai-system">
+                            <div class="ai-icon">🔗</div>
+                            <div class="ai-name">Integrations</div>
+                            <div class="ai-count">12</div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // ===== TERASPHERE LIVING CORE =====
+        class TerraSphere {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.scene = new THREE.Scene();
+                this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true, alpha: true });
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.renderer.setPixelRatio(window.devicePixelRatio);
+
+                this.camera.position.z = 150;
+
+                this.particles = [];
+                this.lattice = null;
+                this.vortex = null;
+                this.emanation = null;
+
+                this.buildTerraSphere();
+                this.attachEventListeners();
+                this.animate();
+            }
+
+            buildTerraSphere() {
+                // === QUANTUM LATTICE (Wireframe Grid) ===
+                const latticeGeometry = new THREE.IcosahedronGeometry(80, 4);
+                const latticeWireframe = new THREE.LineSegments(
+                    latticeGeometry,
+                    new THREE.LineBasicMaterial({
+                        color: 0x00ffee,
+                        opacity: 0.3,
+                        transparent: true
+                    })
+                );
+                this.scene.add(latticeWireframe);
+                this.lattice = latticeWireframe;
+
+                // === VORTEX CORE (Central Spiral) ===
+                const vortexGeometry = new THREE.TorusGeometry(30, 2, 32, 100);
+                const vortexMaterial = new THREE.MeshPhongMaterial({
+                    color: 0x00ffaa,
+                    emissive: 0x00ffaa,
+                    wireframe: true
+                });
+                this.vortex = new THREE.Mesh(vortexGeometry, vortexMaterial);
+                this.scene.add(this.vortex);
+
+                // === LUMINOUS EMANATION (Glow Aura) ===
+                const glowGeometry = new THREE.SphereGeometry(90, 32, 32);
+                const glowMaterial = new THREE.MeshBasicMaterial({
+                    color: 0x0099ff,
+                    wireframe: true,
+                    opacity: 0.15,
+                    transparent: true
+                });
+                this.emanation = new THREE.Mesh(glowGeometry, glowMaterial);
+                this.scene.add(this.emanation);
+
+                // === DATA FLOW PARTICLES ===
+                this.createDataFlowParticles();
+
+                // === LIGHTING ===
+                const light1 = new THREE.PointLight(0x00ffee, 1, 500);
+                light1.position.set(100, 100, 100);
+                this.scene.add(light1);
+
+                const light2 = new THREE.PointLight(0x0099ff, 0.8, 500);
+                light2.position.set(-100, -100, 100);
+                this.scene.add(light2);
+            }
+
+            createDataFlowParticles() {
+                const particleGeometry = new THREE.BufferGeometry();
+                const particleCount = 200;
+                const positions = new Float32Array(particleCount * 3);
+
+                for (let i = 0; i < particleCount * 3; i += 3) {
+                    positions[i] = (Math.random() - 0.5) * 200;
+                    positions[i + 1] = (Math.random() - 0.5) * 200;
+                    positions[i + 2] = (Math.random() - 0.5) * 200;
+                }
+
+                particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+                const particleMaterial = new THREE.PointsMaterial({
+                    color: 0x00ffaa,
+                    size: 1.5,
+                    sizeAttenuation: true,
+                    transparent: true,
+                    opacity: 0.8
+                });
+
+                this.particles = new THREE.Points(particleGeometry, particleMaterial);
+                this.scene.add(this.particles);
+            }
+
+            animate() {
+                requestAnimationFrame(() => this.animate());
+
+                // === LATTICE ROTATION (County Nodes Orbiting) ===
+                this.lattice.rotation.x += 0.0002;
+                this.lattice.rotation.y += 0.0003;
+
+                // === VORTEX SPIN (Consciousness Core) ===
+                this.vortex.rotation.z += 0.005;
+                this.vortex.scale.x = 1 + Math.sin(Date.now() * 0.001) * 0.1;
+                this.vortex.scale.y = 1 + Math.sin(Date.now() * 0.001) * 0.1;
+
+                // === EMANATION PULSE (Life Force) ===
+                this.emanation.material.opacity = 0.1 + Math.sin(Date.now() * 0.0005) * 0.08;
+
+                // === PARTICLE FLOW ===
+                const positions = this.particles.geometry.attributes.position.array;
+                for (let i = 0; i < positions.length; i += 3) {
+                    positions[i] += (Math.random() - 0.5) * 0.2;
+                    positions[i + 1] += (Math.random() - 0.5) * 0.2;
+                    positions[i + 2] += (Math.random() - 0.5) * 0.2;
+                }
+                this.particles.geometry.attributes.position.needsUpdate = true;
+
+                this.renderer.render(this.scene, this.camera);
+            }
+
+            attachEventListeners() {
+                window.addEventListener('resize', () => this.onWindowResize());
+                document.addEventListener('mousemove', (e) => this.onMouseMove(e));
+            }
+
+            onWindowResize() {
+                this.camera.aspect = window.innerWidth / window.innerHeight;
+                this.camera.updateProjectionMatrix();
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+
+            onMouseMove(event) {
+                const x = (event.clientX / window.innerWidth) * 2 - 1;
+                const y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+                this.lattice.rotation.y += x * 0.0001;
+                this.lattice.rotation.x += y * 0.0001;
+            }
+        }
+
+        // === INITIALIZE TERASPHERE ===
+        const terraSphere = new TerraSphere('terasphere-canvas');
+
+        // === BACKEND HEALTH CHECK ===
+        async function checkHealth() {
+            try {
+                const response = await fetch('http://localhost:8787/health');
+                if (response.ok) {
+                    document.getElementById('backend-status').textContent = 'Healthy';
+                }
+            } catch (error) {
+                document.getElementById('backend-status').textContent = 'Offline';
+            }
+        }
+
+        // === METRICS UPDATE ===
+        function updateMetrics() {
+            const rt = Math.floor(Math.random() * 50) + 100;
+            document.getElementById('response-metric').textContent = rt + 'ms';
+        }
+
+        // === INITIALIZE ===
+        window.addEventListener('load', () => {
+            checkHealth();
+            setInterval(updateMetrics, 3000);
+        });
+
+        // === SIDEBAR INTERACTIVITY ===
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // === QUANTUM HOVER (Magnetic Attraction) ===
+        document.querySelectorAll('.metric-card, .ai-system').forEach(element => {
+            element.addEventListener('mouseenter', function() {
+                gsap.to(this, {
+                    scale: 1.05,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            });
+
+            element.addEventListener('mouseleave', function() {
+                gsap.to(this, {
+                    scale: 1,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            });
+        });
+    </script>
+</body>
+</html>

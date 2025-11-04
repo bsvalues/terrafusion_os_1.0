@@ -1,0 +1,15 @@
+{
+    "set": [
+        "alter",
+        "cell",
+        "change",
+        "enlarge",
+        "image",
+        "orient",
+        "reduce",
+        "reorient",
+        "resize",
+        "scale",
+        "size"
+    ]
+}

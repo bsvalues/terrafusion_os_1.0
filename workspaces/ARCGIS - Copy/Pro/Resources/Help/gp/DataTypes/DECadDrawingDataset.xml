@@ -1,0 +1,5 @@
+<DataType Name="DECadDrawingDataset">
+  <DisplayName>CAD Drawing Dataset</DisplayName>
+  <Description>A vector data source mixed with feature types and symbology. The dataset is not usable for feature class-based queries or analysis.</Description>
+</DataType>
+

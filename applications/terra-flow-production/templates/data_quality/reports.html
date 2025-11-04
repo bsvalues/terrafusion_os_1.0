@@ -1,0 +1,343 @@
+{% extends "layout.html" %}
+
+{% block title %}Data Quality Reports{% endblock %}
+
+{% block styles %}
+<style>
+    .trend-up {
+        color: #28a745;
+    }
+    .trend-down {
+        color: #dc3545;
+    }
+    .trend-neutral {
+        color: #6c757d;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Data Quality Reports</h1>
+            <p class="lead">Generate, view, and download data quality reports.</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Generate New Report</h5>
+                </div>
+                <div class="card-body">
+                    <p>Create a new data quality report based on selected parameters.</p>
+                    <a href="{{ url_for('quality_report.generate_report_form') }}" class="btn btn-primary">Generate Report</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Schedule Reports</h5>
+                </div>
+                <div class="card-body">
+                    <p>Configure scheduled reports to be generated automatically.</p>
+                    <a href="#" class="btn btn-info disabled">Configure Schedules</a>
+                    <small class="text-muted d-block mt-2">This feature is coming soon.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Recent Reports</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Report Name</th>
+                                    <th>Generated</th>
+                                    <th>Quality Score</th>
+                                    <th>Issues</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if reports %}
+                                    {% for report in reports %}
+                                        <tr>
+                                            <td>{{ report.report_name }}</td>
+                                            <td>{{ report.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                            <td>
+                                                <div class="progress">
+                                                    <div class="progress-bar 
+                                                        {% if report.overall_score >= 90 %}bg-success
+                                                        {% elif report.overall_score >= 75 %}bg-info
+                                                        {% elif report.overall_score >= 60 %}bg-warning
+                                                        {% else %}bg-danger{% endif %}" 
+                                                        style="width: {{ report.overall_score }}%">
+                                                        {{ "%.1f"|format(report.overall_score) }}%
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% if report.critical_issues > 0 %}
+                                                    <span class="badge bg-danger">{{ report.critical_issues }} critical</span>
+                                                {% endif %}
+                                                {% if report.high_issues > 0 %}
+                                                    <span class="badge bg-warning text-dark">{{ report.high_issues }} high</span>
+                                                {% endif %}
+                                                {% if report.medium_issues > 0 %}
+                                                    <span class="badge bg-info text-dark">{{ report.medium_issues }} medium</span>
+                                                {% endif %}
+                                                {% if report.low_issues > 0 %}
+                                                    <span class="badge bg-secondary">{{ report.low_issues }} low</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="{{ url_for('quality_report.download_report', report_id=report.id) }}" class="btn btn-outline-primary">
+                                                        <i class="bi bi-download"></i> Download
+                                                    </a>
+                                                    <button class="btn btn-outline-info view-report-details" data-id="{{ report.id }}">
+                                                        <i class="bi bi-eye"></i> View
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center">No reports available. Generate your first report.</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Report Details Modal -->
+<div class="modal fade" id="reportDetailsModal" tabindex="-1" aria-labelledby="reportDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reportDetailsModalLabel">Report Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="reportDetails">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading report details...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="#" id="reportDownloadBtn" class="btn btn-primary">Download Report</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle View Report Details button clicks
+        const viewButtons = document.querySelectorAll('.view-report-details');
+        
+        viewButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const reportId = this.getAttribute('data-id');
+                
+                // Update the download button link
+                const downloadBtn = document.getElementById('reportDownloadBtn');
+                downloadBtn.href = "{{ url_for('quality_report.download_report', report_id=0) }}".replace('0', reportId);
+                
+                // Show the modal
+                const modal = new bootstrap.Modal(document.getElementById('reportDetailsModal'));
+                modal.show();
+                
+                // Load report details via API
+                const detailsContainer = document.getElementById('reportDetails');
+                
+                // Show loading spinner
+                detailsContainer.innerHTML = `
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading report details...</p>
+                    </div>
+                `;
+                
+                // Make API call to get report details
+                fetch(`/data-quality/reports/api/details/${reportId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to fetch report details');
+                        }
+                        return response.json();
+                    })
+                    .then(report => {
+                        // Format dates
+                        const createdDate = new Date(report.created_at);
+                        const formattedDate = createdDate.toLocaleString();
+                        
+                        // Build the HTML content
+                        let content = `
+                            <div class="text-center mb-4">
+                                <h4>${report.report_name}</h4>
+                                <p class="text-muted">Generated on ${formattedDate}</p>
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="card mb-3">
+                                        <div class="card-header">Summary</div>
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-center mb-3">
+                                                <div class="text-center">
+                                                    <div class="progress" style="height: 20px; width: 200px;">
+                                                        <div class="progress-bar 
+                                                            ${report.overall_score >= 90 ? 'bg-success' : 
+                                                            report.overall_score >= 75 ? 'bg-info' : 
+                                                            report.overall_score >= 60 ? 'bg-warning' : 'bg-danger'}" 
+                                                            style="width: ${report.overall_score}%">
+                                                            ${report.overall_score.toFixed(1)}%
+                                                        </div>
+                                                    </div>
+                                                    <p class="mt-2">Overall Quality Score</p>
+                                                </div>
+                                            </div>
+                        `;
+                        
+                        // Add summary details if available
+                        if (report.summary && Object.keys(report.summary).length > 0) {
+                            content += `<div class="row">`;
+                            
+                            // Add metrics from summary with trend indicators
+                            for (const [key, value] of Object.entries(report.summary)) {
+                                // Skip certain fields
+                                if (['overall_score'].includes(key)) continue;
+                                
+                                // Format the key for display
+                                const displayKey = key.split('_').map(word => 
+                                    word.charAt(0).toUpperCase() + word.slice(1)
+                                ).join(' ');
+                                
+                                // Get trend indicator if available
+                                let trendIndicator = '';
+                                if (value.trend) {
+                                    if (value.trend > 0) {
+                                        trendIndicator = `<i class="bi bi-arrow-up-right trend-up"></i>`;
+                                    } else if (value.trend < 0) {
+                                        trendIndicator = `<i class="bi bi-arrow-down-right trend-down"></i>`;
+                                    } else {
+                                        trendIndicator = `<i class="bi bi-arrow-right trend-neutral"></i>`;
+                                    }
+                                }
+                                
+                                // Add the metric
+                                content += `
+                                    <div class="col-6 mb-2">
+                                        <strong>${displayKey}:</strong> 
+                                        ${value.value !== undefined ? value.value : value} ${trendIndicator}
+                                    </div>
+                                `;
+                            }
+                            
+                            content += `</div>`;
+                        } else {
+                            content += `<p>This report provides a comprehensive analysis of data quality metrics across the database.</p>`;
+                        }
+                        
+                        content += `
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card mb-3">
+                                        <div class="card-header">Issues Detected</div>
+                                        <div class="card-body">
+                                            <div class="row text-center">
+                                                <div class="col">
+                                                    <div class="p-2 rounded bg-danger text-white mb-2">${report.critical_issues}</div>
+                                                    <small>Critical</small>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="p-2 rounded bg-warning text-dark mb-2">${report.high_issues}</div>
+                                                    <small>High</small>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="p-2 rounded bg-info text-white mb-2">${report.medium_issues}</div>
+                                                    <small>Medium</small>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="p-2 rounded bg-secondary text-white mb-2">${report.low_issues}</div>
+                                                    <small>Low</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        
+                        // Add recommendations if available
+                        if (report.recommendations && report.recommendations.length > 0) {
+                            content += `
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="card mb-3">
+                                            <div class="card-header">Recommendations</div>
+                                            <div class="card-body">
+                                                <ul class="list-group list-group-flush">
+                            `;
+                            
+                            // Add each recommendation
+                            report.recommendations.forEach(recommendation => {
+                                content += `<li class="list-group-item">${recommendation}</li>`;
+                            });
+                            
+                            content += `
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        
+                        // Update the container with the generated content
+                        detailsContainer.innerHTML = content;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching report details:', error);
+                        detailsContainer.innerHTML = `
+                            <div class="alert alert-danger">
+                                <h5>Error Loading Report Details</h5>
+                                <p>${error.message}</p>
+                                <p>Please try downloading the full report instead.</p>
+                            </div>
+                        `;
+                    });
+            });
+        });
+    });
+</script>
+{% endblock %}

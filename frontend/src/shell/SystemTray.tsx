@@ -40,13 +40,10 @@ export const SystemTray: React.FC = () => {
     >
       {/* Left side - System info */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-
-
         <Typography variant='caption' sx={{ color: 'rgba(255,255,255,0.7)' }}>
           Terrafusion OS 1.0
         </Typography>
         <Chip
-
           icon={<Memory />}
           label={`${systemHealth.activeModules}/${systemHealth.totalModules} modules`}
           size='small'

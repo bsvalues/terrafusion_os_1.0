@@ -1,0 +1,401 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "3330004",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_study_area": {
+            "control_guid": "{60061247-BCA8-473E-A7AF-A2026DDE1C2D}",
+            "displayname": "$rc:in_study_area.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPFeatureLayer"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Polygon"
+                        ],
+                        "featuretype": [
+                            "Simple"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:in_study_area.descr"
+        },
+        "out_features": {
+            "direction": "out",
+            "displayname": "$rc:out_features.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_features.descr"
+        },
+        "sampling_method": {
+            "type": "optional",
+            "displayname": "$rc:sampling_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "RANDOM",
+                        "code": "$rc:sampling_method.domain.RANDOM"
+                    },
+                    {
+                        "value": "STRAT_POLY",
+                        "code": "$rc:sampling_method.domain.STRAT_POLY"
+                    },
+                    {
+                        "value": "STRAT_RAST",
+                        "code": "$rc:sampling_method.domain.STRAT_RAST"
+                    },
+                    {
+                        "value": "STRAT_ID",
+                        "code": "$rc:sampling_method.domain.STRAT_ID"
+                    },
+                    {
+                        "value": "SYSTEMATIC",
+                        "code": "$rc:sampling_method.domain.SYSTEMATIC"
+                    },
+                    {
+                        "value": "CLUSTER",
+                        "code": "$rc:sampling_method.domain.CLUSTER"
+                    }
+                ]
+            },
+            "value": "RANDOM",
+            "description": "$rc:sampling_method.descr"
+        },
+        "strata_id_field": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:strata_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Text",
+                    "Date",
+                    "TimeOnly",
+                    "DateOnly"
+                ]
+            },
+            "depends": [
+                "in_study_area"
+            ],
+            "description": "$rc:strata_id_field.descr"
+        },
+        "strata_count_method": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:strata_count_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "EQUAL",
+                        "code": "$rc:strata_count_method.domain.EQUAL"
+                    },
+                    {
+                        "value": "PROP_AREA",
+                        "code": "$rc:strata_count_method.domain.PROP_AREA"
+                    },
+                    {
+                        "value": "FIELD",
+                        "code": "$rc:strata_count_method.domain.FIELD"
+                    },
+                    {
+                        "value": "PROP_FIELD",
+                        "code": "$rc:strata_count_method.domain.PROP_FIELD"
+                    }
+                ]
+            },
+            "value": "EQUAL",
+            "description": "$rc:strata_count_method.descr"
+        },
+        "bin_shape": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:bin_shape.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SQUARE",
+                        "code": "$rc:bin_shape.domain.SQUARE"
+                    },
+                    {
+                        "value": "TRIANGLE",
+                        "code": "$rc:bin_shape.domain.TRIANGLE"
+                    },
+                    {
+                        "value": "HEXAGON",
+                        "code": "$rc:bin_shape.domain.HEXAGON"
+                    },
+                    {
+                        "value": "DIAMOND",
+                        "code": "$rc:bin_shape.domain.DIAMOND"
+                    },
+                    {
+                        "value": "TRANSVERSE_HEXAGON",
+                        "code": "$rc:bin_shape.domain.TRANSVERSE_HEXAGON"
+                    },
+                    {
+                        "value": "H3_HEXAGON",
+                        "code": "$rc:bin_shape.domain.H3_HEXAGON"
+                    }
+                ]
+            },
+            "value": "HEXAGON",
+            "description": "$rc:bin_shape.descr"
+        },
+        "bin_size": {
+            "enabled": "false",
+            "type": "optional",
+            "control_guid": "{BEDF969C-20D2-4C41-96DA-32408CA72BF6}",
+            "displayname": "$rc:bin_size.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPLong"
+                    },
+                    {
+                        "type": "GPArealUnit"
+                    }
+                ]
+            },
+            "value_datatype": {
+                "type": "GPLong"
+            },
+            "value": "100",
+            "description": "$rc:bin_size.descr"
+        },
+        "h3_resolution": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:h3_resolution.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPLong",
+                        "value": "0",
+                        "code": "0"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "1",
+                        "code": "1"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "2",
+                        "code": "2"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "3",
+                        "code": "3"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "4",
+                        "code": "4"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "5",
+                        "code": "5"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "6",
+                        "code": "6"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "7",
+                        "code": "7"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "8",
+                        "code": "8"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "9",
+                        "code": "9"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "10",
+                        "code": "10"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "11",
+                        "code": "11"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "12",
+                        "code": "12"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "13",
+                        "code": "13"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "14",
+                        "code": "14"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "15",
+                        "code": "15"
+                    }
+                ]
+            },
+            "value": "7",
+            "description": "$rc:h3_resolution.descr"
+        },
+        "num_samples": {
+            "type": "optional",
+            "displayname": "$rc:num_samples.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "100",
+            "description": "$rc:num_samples.descr"
+        },
+        "num_samples_per_strata": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:num_samples_per_strata.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "100",
+            "description": "$rc:num_samples_per_strata.descr"
+        },
+        "population_field": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:population_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long"
+                ]
+            },
+            "depends": [
+                "in_study_area"
+            ],
+            "description": "$rc:population_field.descr"
+        },
+        "geometry_type": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:geometry_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "POINT",
+                        "code": "$rc:geometry_type.domain.POINT"
+                    },
+                    {
+                        "value": "POLYGON",
+                        "code": "$rc:geometry_type.domain.POLYGON"
+                    }
+                ]
+            },
+            "value": "POINT",
+            "description": "$rc:geometry_type.descr"
+        },
+        "min_distance": {
+            "type": "optional",
+            "displayname": "$rc:min_distance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "0 Meters",
+            "description": "$rc:min_distance.descr"
+        },
+        "spatial_relationship": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:spatial_relationship.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "HAVE_THEIR_CENTER_IN",
+                        "code": "$rc:spatial_relationship.domain.HAVE_THEIR_CENTER_IN"
+                    },
+                    {
+                        "value": "COMPLETELY_WITHIN",
+                        "code": "$rc:spatial_relationship.domain.COMPLETELY_WITHIN"
+                    },
+                    {
+                        "value": "INTERSECT",
+                        "code": "$rc:spatial_relationship.domain.INTERSECT"
+                    }
+                ]
+            },
+            "value": "HAVE_THEIR_CENTER_IN",
+            "description": "$rc:spatial_relationship.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "outputCoordinateSystem",
+        "randomGenerator"
+    ]
+}

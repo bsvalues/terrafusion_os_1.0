@@ -1,0 +1,21 @@
+{
+    "set": [
+        "arc",
+        "ascii",
+        "border",
+        "boundary",
+        "change",
+        "conversion",
+        "convert",
+        "csv",
+        "geometry",
+        "line",
+        "outline",
+        "planarize",
+        "polygon",
+        "polyline",
+        "split",
+        "transform",
+        "vector"
+    ]
+}

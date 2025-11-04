@@ -1,0 +1,20 @@
+{
+    "map": {
+        "adjust_footprints.descr": "<xdoc><p>Specifies whether the footprint geometry will be updated using the same transformation that was applied to the image.<ul><li>Unchecked—The footprint geometry will not be updated. This is the default.</li><li>Checked—The footprint geometry will be updated to the image geometry.</li></ul></p></xdoc>",
+        "adjust_footprints.title": "Adjust Footprints",
+        "control_point_table.descr": "The input control point feature class. This point feature class is the output of the Compute Camera Model tool or the Compute Tie Points tool.",
+        "control_point_table.title": "Control Point Table",
+        "description": "Computes a more accurate CenterZ field value based on the depth map for each image comprising a mosaic dataset. Control points and solution points are used to compute a depth map for each image comprising a mosaic dataset to improve image-to-ground (map) transformation, especially in high oblique cases.",
+        "in_mosaic_dataset.descr": "The block adjusted input mosaic dataset. The mosaic dataset must be adjusted before it is used as input for this tool. You can use an ortho mapping workflow in ArcGIS Pro, or a Reality for ArcGIS Pro workflow, to adjust the mosaic dataset.",
+        "in_mosaic_dataset.title": "Input Mosaic Dataset",
+        "out_mosaic_dataset.title": "Output Mosaic Dataset",
+        "skip_existing.descr": "<xdoc><p>Specifies whether a depth map <span class=\"esri_fieldname\">CenterZ</span> value will be computed only for rasters without a <span class=\"esri_fieldname\">CenterZ</span> value, or computed for all mosaic dataset items including those with an existing <span class=\"esri_fieldname\">CenterZ</span> value.<ul><li>Unchecked—A depth map <span class=\"esri_fieldname\">CenterZ</span> value will be computed for every mosaic dataset item, including items with an existing <span class=\"esri_fieldname\">CenterZ</span> value. This is the default.</li><li>Checked—A depth map <span class=\"esri_fieldname\">CenterZ</span> value will only be computed for rasters that do not have a <span class=\"esri_fieldname\">CenterZ</span> value.</li></ul></p></xdoc>",
+        "skip_existing.title": "Skip Existing",
+        "solution_point_table.descr": "The input solution point feature class. This point feature class is the output of the Compute Camera Model tool or the Compute Tie Points tool.",
+        "solution_point_table.title": "Solution Point Table",
+        "summary": "<xdoc><p>Computes a more accurate <span class=\"esri_fieldname\">CenterZ</span> field value based on the depth map for each image comprising a mosaic dataset. Control points and solution points are used to compute a depth map for each image comprising a mosaic dataset to improve image-to-ground (map) transformation, especially in high oblique cases.</p><p>Image inspection, typically performed in image space, allows you to discover defects, perform measurement, and generate inspection reports for rectified imagery. You can measure distance, area, and height of objects in either map space or image space, and an inspection report can be generated to share the inspection results.</p><p>An important component of the inspection workflow is the transformation from image to ground (map) space, that allows the defects, points, lines, polygons, on images to be more accurately located and measured. The image-to-ground transformation, especially for high oblique images, uses a depth map, which is the distance from the camera location to the ground location for each pixel.</p></xdoc>",
+        "title": "Compute Depth Map",
+        "where_clause.descr": "An SQL expression that will be used to select items in the mosaic dataset to include in the depth map.",
+        "where_clause.title": "Query Definition"
+    }
+}

@@ -1,0 +1,45 @@
+{
+  "name": "@terrafusion/terra-levy-elite",
+  "version": "1.0.0",
+  "description": "PhD-Level Quantum AI Power User Platform for Government Analytics",
+  "keywords": ["quantum", "ai", "analytics", "government", "phd", "research"],
+  "author": "TerraFusion OS Engineering Team",
+  "license": "PROPRIETARY",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "analytics"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\" \"npm run dev:analytics\"",
+    "dev:elite": "npm run dev && npm run quantum:optimize",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && dotnet run",
+    "dev:analytics": "cd analytics && jupyter lab",
+    "build": "npm run build:frontend && npm run build:backend",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && dotnet build",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "npm run test:frontend && npm run test:backend",
+    "test:frontend": "cd frontend && npm test",
+    "test:backend": "cd backend && dotnet test",
+    "test:integration": "playwright test",
+    "analytics:quantum": "cd analytics && python -m quantum_analytics",
+    "quantum:optimize": "node scripts/quantum-optimization.js",
+    "government:compliance": "npm run security:scan && npm run accessibility:audit",
+    "security:scan": "npm audit && snyk test",
+    "accessibility:audit": "axe-core --exit",
+    "elite:validate": "node scripts/elite-validation.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "@playwright/test": "^1.40.0",
+    "axe-core": "^4.8.0",
+    "snyk": "^1.1200.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

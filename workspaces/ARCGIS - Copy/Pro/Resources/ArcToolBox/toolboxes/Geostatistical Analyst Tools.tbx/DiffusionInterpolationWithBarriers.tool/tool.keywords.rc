@@ -1,0 +1,19 @@
+{
+    "set": [
+        "absolute",
+        "additive",
+        "bandwidth",
+        "breakline",
+        "cumulative",
+        "esda",
+        "estimate",
+        "faulted",
+        "flow",
+        "geostatistical",
+        "geostatistics",
+        "interpolate",
+        "interpolation",
+        "non euclidean",
+        "predict"
+    ]
+}

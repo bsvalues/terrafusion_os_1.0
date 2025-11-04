@@ -1,0 +1,16 @@
+{
+    "map": {
+        "description": "Configures a Utility Network pipeline feature class for use with a linear referencing system (LRS).",
+        "from_measure_field.descr": "The From measure field of the centerline feature class.",
+        "from_measure_field.title": "From Measure Field",
+        "in_feature_class.descr": "The input Utility Network feature that is also the LRS centerline feature.",
+        "in_feature_class.title": "Utility Network Feature Layer",
+        "out_feature_class.title": "Output Feature Class",
+        "route_id_field.descr": "The field in the feature class that will be mapped as the LRS Network Route ID.",
+        "route_id_field.title": "Route ID Field",
+        "summary": "<xdoc><p>Configures a Utility Network pipeline feature class for use with a linear referencing system (LRS).</p><p>After configuration, the <span class=\"esri_uicontrol\">Route ID Field</span> parameter and the measure columns can be updated as needed.</p></xdoc>",
+        "title": "Configure Utility Network Feature Class",
+        "to_measure_field.descr": "The To measure field of the centerline feature class.",
+        "to_measure_field.title": "To Measure Field"
+    }
+}

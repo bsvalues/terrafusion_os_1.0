@@ -1,0 +1,21 @@
+{
+    "set": [
+        "analysis",
+        "big data",
+        "clustering",
+        "dbscan",
+        "density based clustering",
+        "group",
+        "grouping",
+        "hdbcan",
+        "optics",
+        "simplify",
+        "space time",
+        "spatial",
+        "spatiotemporal",
+        "statistics",
+        "temporal",
+        "visualize",
+        "spatial statistics"
+    ]
+}

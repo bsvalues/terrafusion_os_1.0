@@ -1,0 +1,20 @@
+{
+    "map": {
+        "assetgroup.descr": "The asset group to which the asset type belongs.",
+        "assetgroup.title": "Asset Group",
+        "assettype.descr": "The asset type to alter the category configuration.",
+        "assettype.title": "Asset Type",
+        "category.descr": "<xdoc><p>The categories to be assigned to the asset type. The categories that are specified for this parameter will replace the current categories that are assigned to the asset type. To unassign a network category from an asset type, do not specify a category for this parameter.</p><note type=\"note\"/><p group=\"note\">The <span class=\"esri_uicontrol\">Subnetwork Controller</span> system-provided network category is only available for asset types in the device feature class and junction object table. In a domain network with a partitioned tier definition, the selected asset type must also have a directional terminal configuration assigned with a minimum of one upstream and one downstream terminal.</p></xdoc>",
+        "category.title": "Categories",
+        "description": "Assigns a network category to a feature class or table at the asset type level to be used during tracing operations.",
+        "domain_network.descr": "The domain network in the utility network that contains the network category.",
+        "domain_network.title": "Domain Network",
+        "featureclass.descr": "The utility network feature class or table to which the asset type belongs.",
+        "featureclass.title": "Input Table",
+        "in_utility_network.descr": "The utility network that contains the network category.",
+        "in_utility_network.title": "Input Utility Network",
+        "out_utility_network.title": "Updated Utility Network",
+        "summary": "<xdoc><p>Assigns a network category to a feature class or table at the asset type level to be used during tracing operations.</p><p>Categories are defined on asset types to constrain the beginning and end of several analytical traces.</p></xdoc>",
+        "title": "Set Network Category"
+    }
+}

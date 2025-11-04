@@ -1,0 +1,12 @@
+{
+    "map": {
+        "compute_matrices.descr": "<xdoc><p>Specifies whether covariance and correlation matrices are calculated.</p><ul><li>Unchecked—Only the basic statistical measures (minimum, maximum, mean, and standard deviation) will be calculated for every layer. This is the default.</li><li>Checked—In addition to the standard statistics calculated, the covariance and correlation matrices will also be determined.</li></ul></xdoc>",
+        "compute_matrices.title": "Compute covariance and correlation matrices",
+        "description": "Calculates the statistics for a set of raster bands.",
+        "in_raster_bands.descr": "<xdoc><p>The input raster bands.</p><p>They can be integer or floating point type.</p></xdoc>",
+        "in_raster_bands.title": "Input raster bands",
+        "out_stat_file.descr": "<xdoc><p>The output ASCII file containing the statistics.</p><p>A .txt extension is required.</p></xdoc>",
+        "out_stat_file.title": "Output statistics file",
+        "title": "Band Collection Statistics"
+    }
+}

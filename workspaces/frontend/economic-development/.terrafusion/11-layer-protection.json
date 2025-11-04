@@ -1,0 +1,94 @@
+{
+  "workspace_protection_system": {
+    "workspace_name": "economic-development",
+    "domain": "business_development",
+    "risk_level": "medium",
+    "customization_timestamp": "2025-10-16T10:16:02.409979",
+    "eleven_layer_protection": {
+      "L1_role_scope_confirmation": {
+        "workspace_role": "economic-development specialized AI agent",
+        "scope_definition": "Optimize and protect business_development operations",
+        "success_criteria": "Maintain medium-level security for business_development",
+        "data_types_handled": [
+          "business_data",
+          "economic_metrics",
+          "development_plans"
+        ],
+        "protection_priorities": [
+          "business_confidentiality",
+          "economic_accuracy",
+          "growth_metrics"
+        ]
+      },
+      "L2_input_sanitation_threat_modeling": {
+        "threat_model": "business_development_specific_threats",
+        "input_validation": "economic-development_input_sanitization",
+        "injection_prevention": "business_development_injection_protection",
+        "risk_level_controls": "medium"
+      },
+      "L3_data_classification": {
+        "data_types": [
+          "business_data",
+          "economic_metrics",
+          "development_plans"
+        ],
+        "classification_level": "medium",
+        "privacy_requirements": "business_development_privacy_rules",
+        "retention_policies": "economic-development_data_retention",
+        "access_controls": "business_development_access_matrix"
+      },
+      "L4_secrets_hygiene": {
+        "vault_integration": "economic-development_secret_vault",
+        "key_rotation": "business_development_key_management",
+        "credential_management": "economic-development_credential_store",
+        "environment_separation": "medium_env_isolation"
+      },
+      "L5_environment_guardrails": {
+        "environment_controls": "economic-development_env_controls",
+        "blast_radius_limits": "business_development_isolation",
+        "feature_flags": "economic-development_feature_management",
+        "deployment_gates": "medium_deployment_controls"
+      },
+      "L6_policy_compliance": {
+        "domain_regulations": "business_development_compliance_framework",
+        "government_standards": [
+          "business_confidentiality",
+          "economic_accuracy",
+          "growth_metrics"
+        ],
+        "audit_requirements": "economic-development_audit_trail",
+        "compliance_monitoring": "business_development_compliance_checks"
+      },
+      "L7_dependency_license_review": {
+        "sbom_generation": "economic-development_software_bill_of_materials",
+        "vulnerability_scanning": "business_development_vuln_checks",
+        "license_compliance": "economic-development_license_validation",
+        "dependency_monitoring": "medium_dependency_tracking"
+      },
+      "L8_reproducibility": {
+        "version_pinning": "economic-development_version_control",
+        "build_determinism": "business_development_build_reproducibility",
+        "configuration_management": "economic-development_config_management",
+        "deployment_consistency": "medium_deployment_standards"
+      },
+      "L9_observability_hooks": {
+        "metrics_collection": "economic-development_domain_metrics",
+        "logging_framework": "business_development_specialized_logging",
+        "tracing_system": "economic-development_distributed_tracing",
+        "alerting_rules": "business_development_alert_configuration"
+      },
+      "L10_human_in_loop_gates": {
+        "approval_workflows": "economic-development_approval_matrix",
+        "review_requirements": "business_development_review_gates",
+        "escalation_procedures": "medium_escalation_rules",
+        "manual_override_controls": "economic-development_override_procedures"
+      },
+      "L11_red_team_self_check": {
+        "adversarial_testing": "economic-development_penetration_testing",
+        "failure_mode_analysis": "business_development_failure_scenarios",
+        "rollback_procedures": "economic-development_disaster_recovery",
+        "security_validation": "medium_security_assessment"
+      }
+    }
+  }
+}

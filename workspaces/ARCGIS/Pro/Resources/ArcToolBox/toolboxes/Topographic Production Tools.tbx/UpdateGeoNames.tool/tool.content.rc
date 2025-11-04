@@ -1,0 +1,19 @@
+{
+    "map": {
+        "description": "Updates the name field on input features based on the information from GeoNames_FeaturesP and GEONAMES_TABLE.",
+        "in_features.descr": "<xdoc><p>The input features that will be updated. Each <span class=\"esri_uicontrol\">Input Features</span> value should have field names matching the values specified for the <span class=\"esri_uicontrol\">Named Feature ID Field</span>, <span class=\"esri_uicontrol\">Name ID Field</span>, and <span class=\"esri_uicontrol\">Name Field</span> parameters.</p></xdoc>",
+        "in_features.title": "Input Features",
+        "in_geonames_features.descr": "The input GeoNames features that identify unique named feature locations.",
+        "in_geonames_features.title": "GeoNames Features",
+        "in_geonames_table.descr": "A table containing name records related to the input GeoNames features.",
+        "in_geonames_table.title": "GeoNames Table",
+        "name_field.descr": "The field to store GeoNames name values.",
+        "name_field.title": "Name Field",
+        "name_id_field.descr": "The field to store GeoNames name identifier values.",
+        "name_id_field.title": "Name ID Field",
+        "named_feature_id_field.descr": "The field storing GeoNames named feature identifier values. These values should not be null or empty on the input features.",
+        "named_feature_id_field.title": "Named Feature ID Field",
+        "out_features.title": "Updated Features",
+        "title": "Update GeoNames"
+    }
+}

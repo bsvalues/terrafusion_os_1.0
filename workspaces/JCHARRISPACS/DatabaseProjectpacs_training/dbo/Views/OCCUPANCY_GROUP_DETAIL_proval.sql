@@ -1,0 +1,8 @@
+create view OCCUPANCY_GROUP_DETAIL_proval as
+SELECT  [ID]
+      ,[OCCUPANCY_ID]
+      ,[OCCUPANCY_GROUP_FOR_TYPE_ID]
+  FROM [mvp_cost_3Q2016].[mvp].[OCCUPANCY_GROUP_DETAIL]
+
+GO
+

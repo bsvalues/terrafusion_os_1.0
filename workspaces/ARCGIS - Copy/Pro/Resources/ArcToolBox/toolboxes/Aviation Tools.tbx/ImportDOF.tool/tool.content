@@ -1,0 +1,62 @@
+{
+    "type": "FunctionTool",
+    "guid": "{F6243FE3-8552-4511-BBCE-F882B7099A58}/ImportDOF",
+    "displayname": "$rc:title",
+    "helpcontent": "64030005",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "53",
+        "70"
+    ],
+    "params": {
+        "in_obstacle_file": {
+            "displayname": "$rc:in_obstacle_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "DAT"
+                ]
+            },
+            "description": "$rc:in_obstacle_file.descr"
+        },
+        "obstacle_features": {
+            "displayname": "$rc:obstacle_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:obstacle_features.descr"
+        },
+        "updated_obstacle_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_obstacle_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Point"
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "obstacle_features"
+            ]
+        }
+    }
+}

@@ -1,0 +1,9 @@
+{
+    "set": [
+        "geopackage",
+        "spatialite",
+        "sqllite",
+        "st_geometry",
+        "workspace"
+    ]
+}

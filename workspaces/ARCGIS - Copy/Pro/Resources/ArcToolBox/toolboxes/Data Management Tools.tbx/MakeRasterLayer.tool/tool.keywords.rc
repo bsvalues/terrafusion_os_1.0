@@ -1,0 +1,13 @@
+{
+    "set": [
+        "create",
+        "image",
+        "memory",
+        "query",
+        "sql",
+        "subset",
+        "surface",
+        "temporary",
+        "where clause"
+    ]
+}

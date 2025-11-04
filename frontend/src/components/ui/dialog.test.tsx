@@ -108,7 +108,7 @@ describe('Dialog Component', () => {
             <DialogTitle>Test Dialog</DialogTitle>
             <DialogFooter>
               <Button>Save</Button>
-              <Button variant="outline">Cancel</Button>
+              <Button variant='outline'>Cancel</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -182,7 +182,7 @@ describe('Dialog Component', () => {
             <DialogTitle>Test Dialog</DialogTitle>
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
+                <Button variant='outline'>Cancel</Button>
               </DialogClose>
             </DialogFooter>
           </DialogContent>
@@ -367,8 +367,8 @@ describe('Dialog Component', () => {
           <DialogTrigger>Open Dialog</DialogTrigger>
           <DialogContent>
             <DialogTitle>Test Dialog</DialogTitle>
-            <Input placeholder="First input" data-testid="first-input" />
-            <Input placeholder="Second input" data-testid="second-input" />
+            <Input placeholder='First input' data-testid='first-input' />
+            <Input placeholder='Second input' data-testid='second-input' />
           </DialogContent>
         </Dialog>
       );
@@ -390,8 +390,8 @@ describe('Dialog Component', () => {
           <DialogTrigger>Open Dialog</DialogTrigger>
           <DialogContent>
             <DialogTitle>Test Dialog</DialogTitle>
-            <Input placeholder="First input" data-testid="first-input" />
-            <Input placeholder="Second input" data-testid="second-input" />
+            <Input placeholder='First input' data-testid='first-input' />
+            <Input placeholder='Second input' data-testid='second-input' />
             <Button>Submit</Button>
           </DialogContent>
         </Dialog>
@@ -421,8 +421,8 @@ describe('Dialog Component', () => {
           <DialogTrigger>Open Dialog</DialogTrigger>
           <DialogContent>
             <DialogTitle>Test Dialog</DialogTitle>
-            <Button data-testid="first-btn">First</Button>
-            <Button data-testid="last-btn">Last</Button>
+            <Button data-testid='first-btn'>First</Button>
+            <Button data-testid='last-btn'>Last</Button>
           </DialogContent>
         </Dialog>
       );
@@ -451,8 +451,8 @@ describe('Dialog Component', () => {
           <DialogTrigger>Open Dialog</DialogTrigger>
           <DialogContent>
             <DialogTitle>Test Dialog</DialogTitle>
-            <Button data-testid="first-btn">First</Button>
-            <Button data-testid="last-btn">Last</Button>
+            <Button data-testid='first-btn'>First</Button>
+            <Button data-testid='last-btn'>Last</Button>
           </DialogContent>
         </Dialog>
       );
@@ -478,7 +478,7 @@ describe('Dialog Component', () => {
 
       render(
         <Dialog>
-          <DialogTrigger data-testid="trigger">Open Dialog</DialogTrigger>
+          <DialogTrigger data-testid='trigger'>Open Dialog</DialogTrigger>
           <DialogContent>
             <DialogTitle>Test Dialog</DialogTitle>
           </DialogContent>
@@ -751,19 +751,19 @@ describe('Dialog Component', () => {
                 <DialogTitle>User Information</DialogTitle>
                 <DialogDescription>Enter your details below</DialogDescription>
               </DialogHeader>
-              <form onSubmit={handleSubmit} data-testid="dialog-form">
-                <div className="space-y-4">
+              <form onSubmit={handleSubmit} data-testid='dialog-form'>
+                <div className='space-y-4'>
                   <div>
-                    <Label htmlFor="name">Name</Label>
-                    <Input id="name" placeholder="Enter name" />
+                    <Label htmlFor='name'>Name</Label>
+                    <Input id='name' placeholder='Enter name' />
                   </div>
                   <div>
-                    <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" placeholder="Enter email" />
+                    <Label htmlFor='email'>Email</Label>
+                    <Input id='email' type='email' placeholder='Enter email' />
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button type="submit">Submit</Button>
+                  <Button type='submit'>Submit</Button>
                 </DialogFooter>
               </form>
             </DialogContent>
@@ -820,15 +820,15 @@ describe('Dialog Component', () => {
             <DialogContent>
               <DialogTitle>Email Form</DialogTitle>
               <form onSubmit={handleSubmit}>
-                <div className="space-y-4">
+                <div className='space-y-4'>
                   <div>
-                    <Label htmlFor="email">Email</Label>
-                    <Input id="email" name="email" type="text" placeholder="Enter email" />
-                    {error && <p className="text-sm text-red-500">{error}</p>}
+                    <Label htmlFor='email'>Email</Label>
+                    <Input id='email' name='email' type='text' placeholder='Enter email' />
+                    {error && <p className='text-sm text-red-500'>{error}</p>}
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button type="submit">Submit</Button>
+                  <Button type='submit'>Submit</Button>
                 </DialogFooter>
               </form>
             </DialogContent>
@@ -872,9 +872,14 @@ describe('Dialog Component', () => {
           <DialogTrigger>Open Form</DialogTrigger>
           <DialogContent>
             <DialogTitle>Form Dialog</DialogTitle>
-            <form onSubmit={(e) => { e.preventDefault(); onSubmit(); }}>
-              <Input placeholder="Type here" />
-              <Button type="button">Not Submit</Button>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                onSubmit();
+              }}
+            >
+              <Input placeholder='Type here' />
+              <Button type='button'>Not Submit</Button>
             </form>
           </DialogContent>
         </Dialog>
@@ -907,11 +912,11 @@ describe('Dialog Component', () => {
             <DialogTrigger>Open Form</DialogTrigger>
             <DialogContent>
               <DialogTitle>Form Dialog</DialogTitle>
-              <Input placeholder="Some input" />
+              <Input placeholder='Some input' />
               <DialogFooter>
                 <Button onClick={() => setOpen(false)}>Save</Button>
                 <DialogClose asChild>
-                  <Button variant="outline">Cancel</Button>
+                  <Button variant='outline'>Cancel</Button>
                 </DialogClose>
               </DialogFooter>
             </DialogContent>
@@ -1002,7 +1007,7 @@ describe('Dialog Component', () => {
 
         return (
           <>
-            <div data-testid="open-state">{open ? 'Open' : 'Closed'}</div>
+            <div data-testid='open-state'>{open ? 'Open' : 'Closed'}</div>
             <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger>Toggle Dialog</DialogTrigger>
               <DialogContent>

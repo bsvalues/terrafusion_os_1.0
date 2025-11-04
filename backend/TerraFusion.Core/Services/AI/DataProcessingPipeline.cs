@@ -73,8 +73,11 @@ public class DataProcessingPipeline : IDataProcessingPipeline
             {
                 foreach (var step in request.ProcessingSteps)
                 {
-                    currentData = await ExecuteProcessingStep(step, currentData, processingId);
-                    result.ProcessedData[step.Name] = currentData;
+                    if (currentData != null)
+                    {
+                        currentData = await ExecuteProcessingStep(step, currentData, processingId);
+                        result.ProcessedData[step.Name] = currentData;
+                    }
                 }
             }
 
@@ -124,7 +127,7 @@ public class DataProcessingPipeline : IDataProcessingPipeline
 
             var transformedData = request.InputData;
 
-            if (request.Transformations != null)
+            if (request.Transformations != null && transformedData != null)
             {
                 foreach (var transformation in request.Transformations)
                 {
@@ -140,7 +143,7 @@ public class DataProcessingPipeline : IDataProcessingPipeline
                 Success = true,
                 TransformedData = transformedData,
                 TransformationTime = stopwatch.Elapsed,
-                RecordsProcessed = GetRecordCount(transformedData)
+                RecordsProcessed = transformedData != null ? GetRecordCount(transformedData) : 0
             };
         }
         catch (Exception ex)
@@ -175,7 +178,7 @@ public class DataProcessingPipeline : IDataProcessingPipeline
 
             var features = new Dictionary<string, object>();
 
-            if (request.FeatureTypes != null)
+            if (request.FeatureTypes != null && request.InputData != null)
             {
                 foreach (var featureType in request.FeatureTypes)
                 {
@@ -239,7 +242,7 @@ public class DataProcessingPipeline : IDataProcessingPipeline
 
             report.QualityChecks = qualityChecks;
             report.OverallScore = CalculateOverallQualityScore(qualityChecks);
-            report.Issues = qualityChecks.Where(c => !c.Passed).Select(c => c.IssueDescription).ToList();
+            report.Issues = qualityChecks.Where(c => !c.Passed && c.IssueDescription != null).Select(c => c.IssueDescription!).ToList();
 
             return report;
         }
@@ -307,11 +310,13 @@ public class DataProcessingPipeline : IDataProcessingPipeline
 
             var currentData = inputData;
 
-            if (pipeline.Steps != null)
+            if (pipeline.Steps != null && currentData != null)
             {
                 foreach (var step in pipeline.Steps)
                 {
-                    var stepResult = await ExecutePipelineStep(step, currentData, executionId);
+                    // Ensure non-null data before pipeline step execution
+                    var stepInput = currentData ?? new { };
+                    var stepResult = await ExecutePipelineStep(step, stepInput, executionId);
                     result.StepResults.Add(stepResult);
 
                     if (!stepResult.Success)

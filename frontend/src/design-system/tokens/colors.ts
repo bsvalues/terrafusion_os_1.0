@@ -1,9 +1,9 @@
 /**
  * TerraFusion Design System - Color Tokens
- * 
+ *
  * Comprehensive color token system following MIT/PhD-level design principles.
  * Provides type-safe, semantic color tokens for the entire application.
- * 
+ *
  * @module design-system/tokens/colors
  * @see docs/guides/FRONTEND_EXCELLENCE_IMPLEMENTATION_PLAN.md
  */
@@ -26,7 +26,7 @@ export const brandColors = {
     800: '#003d66',
     900: '#001f33',
   },
-  
+
   // Transcend Color - Premium Tier
   transcend: {
     50: '#e6fffd',
@@ -40,7 +40,7 @@ export const brandColors = {
     800: '#00665f',
     900: '#003330',
   },
-  
+
   // Accent Color - Success/Growth
   accent: {
     50: '#e6fff7',
@@ -63,42 +63,42 @@ export const brandColors = {
 export const semanticColors = {
   // Text Colors
   text: {
-    primary: '#ffffff',        // Primary text (white)
-    secondary: '#b3b3b3',      // Secondary text (gray)
-    tertiary: '#808080',       // Tertiary text (darker gray)
-    disabled: '#4d4d4d',       // Disabled text
-    inverse: '#000000',        // Inverse text (on light backgrounds)
-    link: '#0099ff',           // Links (brand primary)
-    linkHover: '#1aa3ff',      // Link hover state
+    primary: '#ffffff', // Primary text (white)
+    secondary: '#b3b3b3', // Secondary text (gray)
+    tertiary: '#808080', // Tertiary text (darker gray)
+    disabled: '#4d4d4d', // Disabled text
+    inverse: '#000000', // Inverse text (on light backgrounds)
+    link: '#0099ff', // Links (brand primary)
+    linkHover: '#1aa3ff', // Link hover state
   },
-  
+
   // Background Colors
   background: {
-    primary: '#000000',        // Primary background (black)
-    secondary: '#0a0a0a',      // Secondary background (near-black)
-    tertiary: '#1a1a1a',       // Tertiary background (dark gray)
-    elevated: '#2a2a2a',       // Elevated surfaces
+    primary: '#000000', // Primary background (black)
+    secondary: '#0a0a0a', // Secondary background (near-black)
+    tertiary: '#1a1a1a', // Tertiary background (dark gray)
+    elevated: '#2a2a2a', // Elevated surfaces
     overlay: 'rgba(0, 0, 0, 0.8)', // Modal/overlay background
-    glass: 'rgba(0, 0, 0, 0.6)',   // Glass morphism effect
+    glass: 'rgba(0, 0, 0, 0.6)', // Glass morphism effect
   },
-  
+
   // Border Colors
   border: {
-    default: '#333333',        // Default border
-    subtle: '#1a1a1a',         // Subtle border
-    strong: '#4d4d4d',         // Strong border
-    interactive: '#0099ff',    // Interactive border (brand primary)
-    focus: '#00ffee',          // Focus ring (transcend)
+    default: '#333333', // Default border
+    subtle: '#1a1a1a', // Subtle border
+    strong: '#4d4d4d', // Strong border
+    interactive: '#0099ff', // Interactive border (brand primary)
+    focus: '#00ffee', // Focus ring (transcend)
   },
-  
+
   // Surface Colors
   surface: {
-    default: '#0a0a0a',        // Default surface
-    elevated: '#1a1a1a',       // Elevated surface
-    sunken: '#000000',         // Sunken surface
-    interactive: '#2a2a2a',    // Interactive surface
-    hover: '#333333',          // Hover state
-    active: '#3d3d3d',         // Active/pressed state
+    default: '#0a0a0a', // Default surface
+    elevated: '#1a1a1a', // Elevated surface
+    sunken: '#000000', // Sunken surface
+    interactive: '#2a2a2a', // Interactive surface
+    hover: '#333333', // Hover state
+    active: '#3d3d3d', // Active/pressed state
   },
 } as const;
 
@@ -114,7 +114,7 @@ export const stateColors = {
     200: '#80ffd9',
     300: '#4dffca',
     400: '#1affbb',
-    500: '#00ffaa',  // Primary success
+    500: '#00ffaa', // Primary success
     600: '#00cc88',
     700: '#009966',
     800: '#006644',
@@ -123,7 +123,7 @@ export const stateColors = {
     background: 'rgba(0, 255, 170, 0.1)',
     border: 'rgba(0, 255, 170, 0.3)',
   },
-  
+
   // Error States
   error: {
     50: '#ffe6e6',
@@ -131,7 +131,7 @@ export const stateColors = {
     200: '#ff8080',
     300: '#ff4d4d',
     400: '#ff1a1a',
-    500: '#ff0000',  // Primary error
+    500: '#ff0000', // Primary error
     600: '#cc0000',
     700: '#990000',
     800: '#660000',
@@ -140,7 +140,7 @@ export const stateColors = {
     background: 'rgba(255, 0, 0, 0.1)',
     border: 'rgba(255, 0, 0, 0.3)',
   },
-  
+
   // Warning States
   warning: {
     50: '#fff9e6',
@@ -148,7 +148,7 @@ export const stateColors = {
     200: '#ffe080',
     300: '#ffd34d',
     400: '#ffc61a',
-    500: '#ffb900',  // Primary warning
+    500: '#ffb900', // Primary warning
     600: '#cc9400',
     700: '#996f00',
     800: '#664a00',
@@ -157,7 +157,7 @@ export const stateColors = {
     background: 'rgba(255, 185, 0, 0.1)',
     border: 'rgba(255, 185, 0, 0.3)',
   },
-  
+
   // Info States
   info: {
     50: '#e6f5ff',
@@ -165,7 +165,7 @@ export const stateColors = {
     200: '#80ccff',
     300: '#4db8ff',
     400: '#1aa3ff',
-    500: '#0099ff',  // Primary info (brand primary)
+    500: '#0099ff', // Primary info (brand primary)
     600: '#007acc',
     700: '#005c99',
     800: '#003d66',
@@ -211,7 +211,7 @@ export const componentColors = {
       text: '#ffffff',
     },
   },
-  
+
   // Input Colors
   input: {
     background: '#0a0a0a',
@@ -225,7 +225,7 @@ export const componentColors = {
       text: '#4d4d4d',
     },
   },
-  
+
   // Card Colors
   card: {
     background: '#0a0a0a',
@@ -233,7 +233,7 @@ export const componentColors = {
     hover: '#1a1a1a',
     shadow: 'rgba(0, 0, 0, 0.5)',
   },
-  
+
   // Navigation Colors
   navigation: {
     background: '#000000',
@@ -243,14 +243,14 @@ export const componentColors = {
     text: '#ffffff',
     textSecondary: '#b3b3b3',
   },
-  
+
   // Modal/Dialog Colors
   modal: {
     background: '#0a0a0a',
     overlay: 'rgba(0, 0, 0, 0.8)',
     border: '#333333',
   },
-  
+
   // Badge Colors
   badge: {
     primary: {
@@ -308,7 +308,7 @@ export function withOpacity(color: string, opacity: number): string {
   const r = parseInt(hex.substring(0, 2), 16);
   const g = parseInt(hex.substring(2, 4), 16);
   const b = parseInt(hex.substring(4, 6), 16);
-  
+
   return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 }
 

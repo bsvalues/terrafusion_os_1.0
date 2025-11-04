@@ -1,0 +1,17 @@
+{
+    "map": {
+        "associated_data.dt.title1": "From Name",
+        "associated_data.dt.title2": "Data Type",
+        "associated_data.dt.title3": "To Name",
+        "associated_data.dt.title4": "Config Keyword",
+        "associated_data.title": "Secondary Target Names",
+        "description": "Copies multiple datasets or tables.",
+        "in_data.dt.title1": "Input Data",
+        "in_data.dt.title2": "Data Type",
+        "in_data.title": "Input Data",
+        "out_data.title": "Output Data",
+        "out_data_name.title": "Output Base Name",
+        "out_path.title": "Output Location",
+        "title": "CopyMultiple"
+    }
+}

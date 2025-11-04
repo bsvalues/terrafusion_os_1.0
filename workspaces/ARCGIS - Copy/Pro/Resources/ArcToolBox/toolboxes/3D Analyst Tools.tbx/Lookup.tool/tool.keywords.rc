@@ -1,0 +1,12 @@
+{
+    "set": [
+        "attribute",
+        "common scale",
+        "field",
+        "group",
+        "raster field",
+        "reclass",
+        "reclassification",
+        "reclassify"
+    ]
+}

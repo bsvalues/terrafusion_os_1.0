@@ -1,0 +1,10 @@
+{
+    "map": {
+        "description": "Creates a composite building layer from a dataset, either a BIM file workspace or a geodatabase dataset, such as the output of the BIM File To Geodatabase tool.",
+        "in_feature_dataset.descr": "The input dataset from which the new building feature layers will be made. The building layer keeps the structure and the symbology grouped together.",
+        "in_feature_dataset.title": "Input Feature Dataset",
+        "out_layer.descr": "The name of the feature layer that will be created. The layer can be used as input to any geoprocessing tool that accepts a feature layer as input.",
+        "out_layer.title": "Output Layer",
+        "title": "Make Building Layer"
+    }
+}

@@ -1,0 +1,16 @@
+{
+    "set": [
+        "aggregate",
+        "dynamic",
+        "exploratory",
+        "parameter",
+        "query layer",
+        "range",
+        "related records",
+        "summarize",
+        "summary",
+        "temporal",
+        "time series",
+        "visualize"
+    ]
+}

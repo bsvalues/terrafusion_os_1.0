@@ -1,0 +1,108 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\FeatureTo3DByTime",
+    "displayname": "$rc:title",
+    "helpcontent": "75000003",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "date_field": {
+            "displayname": "$rc:date_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Date",
+                    "DateOnly",
+                    "TimestampOffset"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:date_field.descr"
+        },
+        "time_z_unit": {
+            "type": "optional",
+            "displayname": "$rc:time_z_unit.title",
+            "datatype": {
+                "type": "GPTimeUnit"
+            },
+            "domain": {
+                "type": "GPUnitDomain",
+                "items": [
+                    "Seconds",
+                    "Minutes",
+                    "Hours",
+                    "Days",
+                    "Weeks"
+                ]
+            },
+            "value": "1 Seconds",
+            "description": "$rc:time_z_unit.descr"
+        },
+        "base_z": {
+            "type": "optional",
+            "displayname": "$rc:base_z.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "0",
+            "description": "$rc:base_z.descr"
+        },
+        "base_date": {
+            "type": "optional",
+            "displayname": "$rc:base_date.title",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:base_date.descr"
+        }
+    },
+    "environments": [
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "ZDomain",
+        "ZResolution",
+        "ZTolerance",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "outputZValue",
+        "workspace"
+    ]
+}

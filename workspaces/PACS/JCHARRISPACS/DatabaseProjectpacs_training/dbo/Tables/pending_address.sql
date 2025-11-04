@@ -1,0 +1,42 @@
+CREATE TABLE [dbo].[pending_address] (
+    [run_id]             INT          NOT NULL,
+    [ignore_changes]     BIT          NOT NULL,
+    [acct_id]            INT          NOT NULL,
+    [addr_type_cd]       CHAR (5)     NOT NULL,
+    [primary_addr]       CHAR (1)     NULL,
+    [addr_line1]         VARCHAR (60) NULL,
+    [addr_line2]         VARCHAR (60) NULL,
+    [addr_line3]         VARCHAR (60) NULL,
+    [addr_city]          VARCHAR (50) NULL,
+    [addr_state]         VARCHAR (50) NULL,
+    [country_cd]         CHAR (5)     NULL,
+    [ml_returned_dt]     DATETIME     NULL,
+    [ml_type_cd]         CHAR (5)     NULL,
+    [ml_deliverable]     CHAR (1)     NULL,
+    [ml_return_type_cd]  CHAR (5)     NULL,
+    [ml_returned_reason] VARCHAR (50) NULL,
+    [cass_dt]            DATETIME     NULL,
+    [delivery_point]     VARCHAR (2)  NULL,
+    [carrier_route]      VARCHAR (5)  NULL,
+    [check_digit]        VARCHAR (2)  NULL,
+    [update_flag]        CHAR (1)     NULL,
+    [chg_reason_cd]      CHAR (5)     NULL,
+    [last_change_dt]     DATETIME     NULL,
+    [zip]                VARCHAR (10) NULL,
+    [cass]               VARCHAR (4)  NULL,
+    [route]              VARCHAR (2)  NULL,
+    [addr_zip]           AS           (CONVERT([varchar](10),case when len(rtrim(ltrim(isnull([cass],''))))=(4) then (rtrim(ltrim(isnull([zip],'')))+'-')+rtrim(ltrim(isnull([cass],''))) else rtrim(ltrim(isnull([zip],''))) end,(0))),
+    [zip_4_2]            AS           (CONVERT([varchar](14),case when len(rtrim(ltrim(isnull([cass],''))))=(4) AND len(rtrim(ltrim(isnull([route],''))))=(2) then [dbo].[fn_GetPOSTNETCode]((rtrim(ltrim(isnull([zip],'')))+rtrim(ltrim(isnull([cass],''))))+rtrim(ltrim(isnull([route],'')))) else '' end,(0))),
+    [is_international]   BIT          CONSTRAINT [CDF_pending_address_is_international] DEFAULT ((0)) NOT NULL,
+    CONSTRAINT [CPK_pending_address] PRIMARY KEY CLUSTERED ([acct_id] ASC, [addr_type_cd] ASC, [run_id] ASC) WITH (FILLFACTOR = 90),
+    CONSTRAINT [CFK_pending_address_acct_id] FOREIGN KEY ([acct_id]) REFERENCES [dbo].[account] ([acct_id]),
+    CONSTRAINT [CFK_pending_address_addr_type_cd] FOREIGN KEY ([addr_type_cd]) REFERENCES [dbo].[address_type] ([addr_type_cd]),
+    CONSTRAINT [CFK_pending_address_chg_reason_cd] FOREIGN KEY ([chg_reason_cd]) REFERENCES [dbo].[chg_reason] ([chg_reason_cd]),
+    CONSTRAINT [CFK_pending_address_country_cd] FOREIGN KEY ([country_cd]) REFERENCES [dbo].[country] ([country_cd]),
+    CONSTRAINT [CFK_pending_address_ml_return_type_cd] FOREIGN KEY ([ml_return_type_cd]) REFERENCES [dbo].[mail_returned_type] ([ml_return_type_cd]),
+    CONSTRAINT [CFK_pending_address_ml_type_cd] FOREIGN KEY ([ml_type_cd]) REFERENCES [dbo].[mail_type] ([ml_type_cd])
+);
+
+
+GO
+

@@ -1,0 +1,22 @@
+{
+    "map": {
+        "description": "Calculates the accuracy of a deep learning model by comparing the detected objects from the Detect Objects Using Deep Learning tool to ground truth data.",
+        "detected_class_value_field.descr": "<xdoc><p>The field in the detected objects feature class that contains the class values or class names.</p><p>If no field name is provided, a <span class=\"esri_fieldname\">Classvalue</span> or <span class=\"esri_fieldname\">Value</span> field will be used. If these fields do not exist, all records will be identified as belonging to one class.</p><p>The class values or class names must match those in the ground reference feature class exactly.</p></xdoc>",
+        "detected_class_value_field.title": "Detected Class Value Field",
+        "detected_features.descr": "The polygon feature class containing the objects detected from the Detect Objects Using Deep Learning tool.",
+        "detected_features.title": "Detected Features",
+        "ground_truth_class_value_field.descr": "<xdoc><p>The field in the ground truth feature class that contains the class values.</p><p>If no field name is provided, a <span class=\"esri_fieldname\">Classvalue</span> or <span class=\"esri_fieldname\">Value</span> field will be used. If these fields do not exist, all records will be identified as belonging to one class.</p><p>The class values or class names must match those in the detected objects feature class exactly.</p></xdoc>",
+        "ground_truth_class_value_field.title": "Ground Truth Class Value Field",
+        "ground_truth_features.descr": "The polygon feature class containing ground truth data.",
+        "ground_truth_features.title": "Ground Truth Features",
+        "mask_features.descr": "A polygon feature class that delineates the area or areas where accuracy will be computed. Only the features that intersect the mask will be assessed for accuracy.",
+        "mask_features.title": "Mask Features",
+        "min_iou.descr": "The IoU ratio that will be used as a threshold to evaluate the accuracy of the object detection model. The numerator is the area of overlap between the predicted bounding box and the ground reference bounding box. The denominator is the area of union or the area encompassed by both bounding boxes. The IoU ranges from 0 to 1.",
+        "min_iou.title": "Minimum Intersection Over Union (IoU)",
+        "out_accuracy_report.descr": "The name of the output accuracy report. The report is a PDF document containing accuracy metrics and charts.",
+        "out_accuracy_report.title": "Output Accuracy Report",
+        "out_accuracy_table.descr": "The output accuracy table.",
+        "out_accuracy_table.title": "Output Accuracy Table",
+        "title": "Compute Accuracy For Object Detection"
+    }
+}

@@ -1,0 +1,678 @@
+# TerraFusion OS - Data Warehouse & Analytics Platform
+# REAL-TIME BUSINESS INTELLIGENCE FOR GOVERNMENT OPERATIONS
+# Quantum-Ready Data Platform with ML-Powered Insights
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrafusion-analytics
+  labels:
+    security.level: high
+    compliance: fisma-high
+    tier: analytics-platform
+
+---
+# TimescaleDB for Time-Series Data Warehouse
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: timescaledb
+  namespace: terrafusion-analytics
+spec:
+  serviceName: timescaledb
+  replicas: 2
+  selector:
+    matchLabels:
+      app: timescaledb
+  template:
+    metadata:
+      labels:
+        app: timescaledb
+    spec:
+      serviceAccountName: analytics-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        fsGroup: 999
+      containers:
+      - name: timescaledb
+        image: timescale/timescaledb-ha:pg15-latest
+        ports:
+        - containerPort: 5432
+          name: postgres
+        env:
+        - name: POSTGRES_DB
+          value: terrafusion_analytics
+        - name: POSTGRES_USER
+          value: analytics_admin
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: analytics-secrets
+              key: timescaledb-password
+        - name: TS_TUNE_MEMORY
+          value: "8GB"
+        - name: TS_TUNE_NUM_CPUS
+          value: "4"
+        - name: TS_TUNE_MAX_CONNS
+          value: "200"
+        - name: TS_TUNE_MAX_BG_WORKERS
+          value: "16"
+        - name: TS_TUNE_LOG_STATEMENTS
+          value: "mod"
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - CHOWN
+            - DAC_OVERRIDE
+            - SETGID
+            - SETUID
+        resources:
+          requests:
+            memory: 8Gi
+            cpu: 2000m
+          limits:
+            memory: 16Gi
+            cpu: 4000m
+        volumeMounts:
+        - name: timescaledb-data
+          mountPath: /var/lib/postgresql/data
+        - name: timescaledb-config
+          mountPath: /etc/postgresql/postgresql.conf
+          subPath: postgresql.conf
+      volumes:
+      - name: timescaledb-config
+        configMap:
+          name: timescaledb-config
+  volumeClaimTemplates:
+  - metadata:
+      name: timescaledb-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: fast-ssd-encrypted
+      resources:
+        requests:
+          storage: 1Ti
+
+---
+# TimescaleDB Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: timescaledb-config
+  namespace: terrafusion-analytics
+data:
+  postgresql.conf: |
+    # Government Performance Tuning
+    shared_preload_libraries = 'timescaledb,pg_stat_statements'
+    
+    # Memory Configuration
+    shared_buffers = 2GB
+    effective_cache_size = 12GB
+    work_mem = 64MB
+    maintenance_work_mem = 1GB
+    
+    # Connection Settings
+    max_connections = 200
+    max_worker_processes = 16
+    max_parallel_workers = 8
+    max_parallel_workers_per_gather = 4
+    
+    # Write-Ahead Logging
+    wal_level = replica
+    wal_buffers = 16MB
+    checkpoint_completion_target = 0.9
+    checkpoint_timeout = 15min
+    max_wal_size = 4GB
+    min_wal_size = 1GB
+    
+    # Query Planning
+    random_page_cost = 1.1
+    effective_io_concurrency = 200
+    
+    # Logging for Government Compliance
+    log_destination = 'stderr'
+    logging_collector = on
+    log_directory = '/var/log/postgresql'
+    log_filename = 'postgresql-%Y-%m-%d.log'
+    log_statement = 'mod'
+    log_duration = on
+    log_line_prefix = '%t [%p-%l] %q%u@%d '
+    log_lock_waits = on
+    log_temp_files = 0
+    
+    # TimescaleDB Settings
+    timescaledb.max_background_workers = 16
+    timescaledb.telemetry_level = off
+
+---
+# ClickHouse for OLAP Analytics
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: clickhouse
+  namespace: terrafusion-analytics
+spec:
+  serviceName: clickhouse
+  replicas: 3
+  selector:
+    matchLabels:
+      app: clickhouse
+  template:
+    metadata:
+      labels:
+        app: clickhouse
+    spec:
+      serviceAccountName: analytics-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        fsGroup: 101
+      containers:
+      - name: clickhouse
+        image: clickhouse/clickhouse-server:23.8.4-alpine
+        ports:
+        - containerPort: 8123
+          name: http
+        - containerPort: 9000
+          name: native
+        - containerPort: 9009
+          name: inter-server
+        env:
+        - name: CLICKHOUSE_USER
+          value: analytics_admin
+        - name: CLICKHOUSE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: analytics-secrets
+              key: clickhouse-password
+        - name: CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT
+          value: "1"
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            memory: 4Gi
+            cpu: 2000m
+          limits:
+            memory: 8Gi
+            cpu: 4000m
+        volumeMounts:
+        - name: clickhouse-data
+          mountPath: /var/lib/clickhouse
+        - name: clickhouse-config
+          mountPath: /etc/clickhouse-server/config.xml
+          subPath: config.xml
+        - name: clickhouse-users
+          mountPath: /etc/clickhouse-server/users.xml
+          subPath: users.xml
+      volumes:
+      - name: clickhouse-config
+        configMap:
+          name: clickhouse-config
+      - name: clickhouse-users
+        configMap:
+          name: clickhouse-users
+  volumeClaimTemplates:
+  - metadata:
+      name: clickhouse-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: fast-ssd-encrypted
+      resources:
+        requests:
+          storage: 500Gi
+
+---
+# ClickHouse Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clickhouse-config
+  namespace: terrafusion-analytics
+data:
+  config.xml: |
+    <?xml version="1.0"?>
+    <clickhouse>
+        <logger>
+            <level>information</level>
+            <log>/var/log/clickhouse-server/clickhouse-server.log</log>
+            <errorlog>/var/log/clickhouse-server/clickhouse-server.err.log</errorlog>
+            <size>1000M</size>
+            <count>10</count>
+        </logger>
+        
+        <http_port>8123</http_port>
+        <tcp_port>9000</tcp_port>
+        <interserver_http_port>9009</interserver_http_port>
+        
+        <listen_host>0.0.0.0</listen_host>
+        
+        <max_connections>4096</max_connections>
+        <keep_alive_timeout>3</keep_alive_timeout>
+        <max_concurrent_queries>100</max_concurrent_queries>
+        <uncompressed_cache_size>8589934592</uncompressed_cache_size>
+        <mark_cache_size>5368709120</mark_cache_size>
+        
+        <path>/var/lib/clickhouse/</path>
+        <tmp_path>/var/lib/clickhouse/tmp/</tmp_path>
+        <user_files_path>/var/lib/clickhouse/user_files/</user_files_path>
+        <format_schema_path>/var/lib/clickhouse/format_schemas/</format_schema_path>
+        
+        <users_config>users.xml</users_config>
+        <default_profile>default</default_profile>
+        <default_database>default</default_database>
+        
+        <timezone>America/Los_Angeles</timezone>
+        
+        <mlock_executable>false</mlock_executable>
+        
+        <remote_servers>
+            <terrafusion_cluster>
+                <shard>
+                    <replica>
+                        <host>clickhouse-0.clickhouse</host>
+                        <port>9000</port>
+                    </replica>
+                </shard>
+                <shard>
+                    <replica>
+                        <host>clickhouse-1.clickhouse</host>
+                        <port>9000</port>
+                    </replica>
+                </shard>
+                <shard>
+                    <replica>
+                        <host>clickhouse-2.clickhouse</host>
+                        <port>9000</port>
+                    </replica>
+                </shard>
+            </terrafusion_cluster>
+        </remote_servers>
+        
+        <macros>
+            <cluster>terrafusion_cluster</cluster>
+        </macros>
+        
+        <builtin_dictionaries_reload_interval>3600</builtin_dictionaries_reload_interval>
+        <max_session_timeout>3600</max_session_timeout>
+        <default_session_timeout>60</default_session_timeout>
+        
+        <query_log>
+            <database>system</database>
+            <table>query_log</table>
+            <partition_by>toYYYYMM(event_date)</partition_by>
+            <flush_interval_milliseconds>7500</flush_interval_milliseconds>
+        </query_log>
+        
+        <trace_log>
+            <database>system</database>
+            <table>trace_log</table>
+            <partition_by>toYYYYMM(event_date)</partition_by>
+            <flush_interval_milliseconds>7500</flush_interval_milliseconds>
+        </trace_log>
+    </clickhouse>
+
+---
+# Apache Superset for Business Intelligence
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: superset
+  namespace: terrafusion-analytics
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: superset
+  template:
+    metadata:
+      labels:
+        app: superset
+    spec:
+      serviceAccountName: analytics-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      initContainers:
+      - name: superset-init
+        image: apache/superset:3.0.0
+        command:
+        - sh
+        - -c
+        - |
+          superset db upgrade
+          superset init
+          superset load_examples
+        env:
+        - name: SUPERSET_CONFIG_PATH
+          value: /app/pythonpath/superset_config.py
+        - name: DATABASE_URL
+          value: postgresql://analytics_admin:$(TIMESCALEDB_PASSWORD)@timescaledb:5432/terrafusion_analytics
+        - name: TIMESCALEDB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: analytics-secrets
+              key: timescaledb-password
+        - name: SUPERSET_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: analytics-secrets
+              key: superset-secret-key
+        volumeMounts:
+        - name: superset-config
+          mountPath: /app/pythonpath/superset_config.py
+          subPath: superset_config.py
+      containers:
+      - name: superset
+        image: apache/superset:3.0.0
+        ports:
+        - containerPort: 8088
+          name: http
+        env:
+        - name: SUPERSET_CONFIG_PATH
+          value: /app/pythonpath/superset_config.py
+        - name: DATABASE_URL
+          value: postgresql://analytics_admin:$(TIMESCALEDB_PASSWORD)@timescaledb:5432/terrafusion_analytics
+        - name: TIMESCALEDB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: analytics-secrets
+              key: timescaledb-password
+        - name: SUPERSET_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: analytics-secrets
+              key: superset-secret-key
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            memory: 2Gi
+            cpu: 1000m
+          limits:
+            memory: 4Gi
+            cpu: 2000m
+        volumeMounts:
+        - name: superset-config
+          mountPath: /app/pythonpath/superset_config.py
+          subPath: superset_config.py
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8088
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8088
+          initialDelaySeconds: 30
+          periodSeconds: 10
+      volumes:
+      - name: superset-config
+        configMap:
+          name: superset-config
+
+---
+# Superset Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: superset-config
+  namespace: terrafusion-analytics
+data:
+  superset_config.py: |
+    import os
+    from celery import Celery
+    
+    # Superset specific config
+    ROW_LIMIT = 5000
+    SUPERSET_WEBSERVER_PORT = 8088
+    SUPERSET_WEBSERVER_TIMEOUT = 60
+    
+    # Flask App Builder configuration
+    SECRET_KEY = os.environ.get('SUPERSET_SECRET_KEY')
+    
+    # Database configuration
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_pre_ping': True,
+        'pool_recycle': 300,
+        'pool_timeout': 20,
+        'max_overflow': 0,
+    }
+    
+    # Redis for caching
+    CACHE_CONFIG = {
+        'CACHE_TYPE': 'redis',
+        'CACHE_DEFAULT_TIMEOUT': 300,
+        'CACHE_KEY_PREFIX': 'superset_',
+        'CACHE_REDIS_HOST': 'airflow-redis.terrafusion-airflow',
+        'CACHE_REDIS_PORT': 6379,
+        'CACHE_REDIS_DB': 1,
+    }
+    
+    # Celery configuration for async queries
+    class CeleryConfig(object):
+        BROKER_URL = 'redis://airflow-redis.terrafusion-airflow:6379/0'
+        CELERY_IMPORTS = ('superset.sql_lab',)
+        CELERY_RESULT_BACKEND = 'redis://airflow-redis.terrafusion-airflow:6379/0'
+        CELERYD_LOG_LEVEL = 'INFO'
+        CELERYD_PREFETCH_MULTIPLIER = 10
+        CELERY_ACKS_LATE = True
+        CELERY_ANNOTATIONS = {
+            'sql_lab.get_sql_results': {
+                'rate_limit': '100/s',
+            },
+            'email_reports.send': {
+                'rate_limit': '1/s',
+                'time_limit': 120,
+                'soft_time_limit': 150,
+                'ignore_result': True,
+            },
+        }
+        CELERYBEAT_SCHEDULE = {
+            'email_reports.schedule_hourly': {
+                'task': 'email_reports.schedule_hourly',
+                'schedule': crontab(minute=1, hour='*'),
+            },
+        }
+    
+    CELERY_CONFIG = CeleryConfig
+    
+    # Feature flags
+    FEATURE_FLAGS = {
+        'ENABLE_TEMPLATE_PROCESSING': True,
+        'ENABLE_JAVASCRIPT_CONTROLS': True,
+        'DASHBOARD_NATIVE_FILTERS': True,
+        'DASHBOARD_CROSS_FILTERS': True,
+        'GLOBAL_ASYNC_QUERIES': True,
+    }
+    
+    # Security configuration
+    AUTH_TYPE = AUTH_DB
+    AUTH_ROLE_ADMIN = 'Admin'
+    AUTH_ROLE_PUBLIC = 'Public'
+    
+    # Government compliance
+    ENABLE_PROXY_FIX = True
+    WTF_CSRF_ENABLED = True
+    WTF_CSRF_TIME_LIMIT = None
+    TALISMAN_ENABLED = True
+    TALISMAN_CONFIG = {
+        'content_security_policy': {
+            'default-src': "'self'",
+            'script-src': "'self' 'unsafe-inline' 'unsafe-eval'",
+            'style-src': "'self' 'unsafe-inline'",
+            'img-src': "'self' data: blob:",
+            'connect-src': "'self'",
+            'frame-src': "'self'",
+        }
+    }
+
+---
+# Analytics Secrets
+apiVersion: v1
+kind: Secret
+metadata:
+  name: analytics-secrets
+  namespace: terrafusion-analytics
+type: Opaque
+data:
+  timescaledb-password: dGVycmFmdXNpb25fdGltZXNjYWxlZGJfcGFzcw== # terrafusion_timescaledb_pass
+  clickhouse-password: dGVycmFmdXNpb25fY2xpY2tob3VzZV9wYXNz # terrafusion_clickhouse_pass
+  superset-secret-key: dGVycmFmdXNpb25fc3VwZXJzZXRfc2VjcmV0X2tleV9mb3JfZ292ZXJubWVudA== # terrafusion_superset_secret_key_for_government
+
+---
+# Services
+apiVersion: v1
+kind: Service
+metadata:
+  name: timescaledb
+  namespace: terrafusion-analytics
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5432
+    targetPort: 5432
+    protocol: TCP
+    name: postgres
+  selector:
+    app: timescaledb
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clickhouse
+  namespace: terrafusion-analytics
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8123
+    targetPort: 8123
+    protocol: TCP
+    name: http
+  - port: 9000
+    targetPort: 9000
+    protocol: TCP
+    name: native
+  selector:
+    app: clickhouse
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: superset
+  namespace: terrafusion-analytics
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8088
+    targetPort: 8088
+    protocol: TCP
+    name: http
+  selector:
+    app: superset
+
+---
+# ServiceAccount
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: analytics-service-account
+  namespace: terrafusion-analytics
+
+---
+# Network Policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: analytics-network-policy
+  namespace: terrafusion-analytics
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow from TerraFusion services
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: terrafusion-system
+    ports:
+    - protocol: TCP
+      port: 8088  # Superset
+    - protocol: TCP
+      port: 8123  # ClickHouse HTTP
+  # Allow from Airflow namespace
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: terrafusion-airflow
+    ports:
+    - protocol: TCP
+      port: 5432  # TimescaleDB
+    - protocol: TCP
+      port: 8123  # ClickHouse HTTP
+    - protocol: TCP
+      port: 9000  # ClickHouse Native
+  # Allow internal communication
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: terrafusion-analytics
+    ports:
+    - protocol: TCP
+      port: 5432
+    - protocol: TCP
+      port: 8123
+    - protocol: TCP
+      port: 9000
+    - protocol: TCP
+      port: 9009
+    - protocol: TCP
+      port: 8088
+  egress:
+  # Allow to external systems
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 80
+  # Allow to Kafka for data ingestion
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: terrafusion-streaming
+    ports:
+    - protocol: TCP
+      port: 9092
+    - protocol: TCP
+      port: 9093
+  # Allow to Redis (in Airflow namespace)
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: terrafusion-airflow
+    ports:
+    - protocol: TCP
+      port: 6379

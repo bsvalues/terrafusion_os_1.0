@@ -1,0 +1,228 @@
+{
+    "type": "FunctionTool",
+    "guid": "{43e1a789-981d-44a9-a2b9-186db96a6ba3}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190004",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "out_raster_collection": {
+            "direction": "out",
+            "display_order": "0",
+            "displayname": "$rc:out_raster_collection.title",
+            "datatype": {
+                "type": "DEMosaicDataset"
+            },
+            "description": "$rc:out_raster_collection.descr"
+        },
+        "collection_builder": {
+            "display_order": "1",
+            "displayname": "$rc:collection_builder.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SIMPLE_COLLECTION",
+                        "code": "$rc:collection_builder.domain.SIMPLE_COLLECTION"
+                    }
+                ]
+            },
+            "description": "$rc:collection_builder.descr"
+        },
+        "collection_builder_arguments": {
+            "display_order": "2",
+            "control_guid": "{F604736F-06D8-47CD-AC15-7055F7FCDAC0}",
+            "displayname": "$rc:collection_builder_arguments.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:collection_builder_arguments.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:collection_builder_arguments.dt.title2"
+                    }
+                ]
+            },
+            "description": "$rc:collection_builder_arguments.descr"
+        },
+        "raster_function": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:raster_function.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFile"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "rft.xml",
+                            "rft.json",
+                            "rft",
+                            "xml",
+                            "json"
+                        ]
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "description": "$rc:raster_function.descr"
+        },
+        "raster_function_arguments": {
+            "type": "optional",
+            "display_order": "4",
+            "control_guid": "{F604736F-06D8-47CD-AC15-7055F7FCDAC0}",
+            "displayname": "$rc:raster_function_arguments.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:raster_function_arguments.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:raster_function_arguments.dt.title2"
+                    }
+                ]
+            },
+            "description": "$rc:raster_function_arguments.descr"
+        },
+        "collection_properties": {
+            "type": "optional",
+            "display_order": "5",
+            "control_guid": "{F604736F-06D8-47CD-AC15-7055F7FCDAC0}",
+            "displayname": "$rc:collection_properties.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:collection_properties.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:collection_properties.dt.title2"
+                    }
+                ]
+            },
+            "description": "$rc:collection_properties.descr"
+        },
+        "generate_rasters": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:generate_rasters.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "GENERATE_RASTERS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_GENERATE_RASTERS"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:generate_rasters.descr"
+        },
+        "out_workspace": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:out_workspace.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFolder"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "description": "$rc:out_workspace.descr"
+        },
+        "format": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:format.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "TIFF",
+                        "code": "$rc:format.domain.TIFF"
+                    },
+                    {
+                        "value": "IMAGINE Image",
+                        "code": "$rc:format.domain.IMAGINE Image"
+                    },
+                    {
+                        "value": "CRF",
+                        "code": "$rc:format.domain.CRF"
+                    },
+                    {
+                        "value": "MRF",
+                        "code": "$rc:format.domain.MRF"
+                    }
+                ]
+            },
+            "value": "CRF",
+            "description": "$rc:format.descr"
+        },
+        "out_base_name": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:out_base_name.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:out_base_name.descr"
+        }
+    },
+    "environments": [
+        "parallelProcessingFactor",
+        "pyramid",
+        "rasterStatistics"
+    ]
+}

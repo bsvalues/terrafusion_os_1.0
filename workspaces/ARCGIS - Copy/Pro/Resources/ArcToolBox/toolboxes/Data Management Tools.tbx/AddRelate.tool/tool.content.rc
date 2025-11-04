@@ -1,0 +1,23 @@
+{
+    "map": {
+        "cardinality.descr": "<xdoc><p>Specifies the cardinality of the relationship.</p><ul><li><span title=\"ONE_TO_ONE\">One to one</span>—The relationship between the input table and related table will be one to one. For example, one record in the input table will have only one matching record in the related table.</li><li><span title=\"ONE_TO_MANY\">One to many</span>—The relationship between the input table and related table will be one to many. For example, one record in the input table can have multiple matching records in the related table. This is the default.</li><li><span title=\"MANY_TO_MANY\">Many to many</span>—The relationship between the input table and related table will be many to many. For example, many records with the same value in the input table can have multiple matching records in the related table.</li></ul></xdoc>",
+        "cardinality.domain.MANY_TO_MANY": "Many to many",
+        "cardinality.domain.ONE_TO_MANY": "One to many",
+        "cardinality.domain.ONE_TO_ONE": "One to one",
+        "cardinality.title": "Cardinality",
+        "description": "Relates a layer to another layer or table based on a field value. Feature layers, table views, subtype value layers or tables, and raster layers with a raster attribute table are supported.",
+        "in_field.descr": "The primary key field in the input layer or table view on which the relate will be based.",
+        "in_field.title": "Input Relate Field",
+        "in_layer_or_view.descr": "The layer or table view to which the relate table will be related.",
+        "in_layer_or_view.title": "Layer Name or Table View",
+        "out_layer_or_view.title": "Updated Input Layer or Table View",
+        "relate_field.descr": "The foreign key field in the relate table that will be used to match the primary key.",
+        "relate_field.title": "Output Relate Field",
+        "relate_name.descr": "The unique name of a relate.",
+        "relate_name.title": "Relate Name",
+        "relate_table.descr": "The table or table view to be related to the input layer or table view.",
+        "relate_table.title": "Relate Table",
+        "summary": "<xdoc><p>Relates a layer to another layer or table based on a field value. Feature layers, table views, subtype value layers or tables, and raster layers with a raster attribute table are supported.</p><p>The records in the <span class=\"esri_uicontrol\">Relate Table</span> parameter value are matched to the records in the input <span class=\"esri_uicontrol\">Layer Name or Table View</span> parameter value. A match occurs when a field value in the <span class=\"esri_uicontrol\">Input Relate Field</span> parameter value and a field value in the <span class=\"esri_uicontrol\">Output Relate Field</span> parameter value are equal.</p></xdoc>",
+        "title": "Add Relate"
+    }
+}

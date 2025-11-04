@@ -1,0 +1,3275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MgcpMetadataConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="0">
+	<MgcpMetadataConfig version="2" revision="0">
+		<MgcpMetadataProperties>
+			<CodeSpaceVersion>MGCP_v2_r0</CodeSpaceVersion>
+			<SubregionCatalogue>MGCP_FeatureCatalogue_TRD2.0_20070425.xml</SubregionCatalogue>
+			<SourceFields source="SOURCE" sourceDate="SOURCE_DATE" sourceId="SOURCE_IDENTIFIER" sourceScale="SOURCE_SCALE" sourceVerticalType="" />
+		</MgcpMetadataProperties>
+		<DfddToSourceId>
+			<MgcpMetadataListItem key="0" value="unk"/>
+			<MgcpMetadataListItem key="1" value="adrg"/>
+			<MgcpMetadataListItem key="2" value="aafif"/>
+			<MgcpMetadataListItem key="3" value="chum"/>
+			<MgcpMetadataListItem key="4" value="city"/>
+			<MgcpMetadataListItem key="5" value="combat"/>
+			<MgcpMetadataListItem key="6" value="cadrg"/>
+			<MgcpMetadataListItem key="7" value="cib1"/>
+			<MgcpMetadataListItem key="8" value="cib5"/>
+			<MgcpMetadataListItem key="9" value="qbrd"/>
+			<MgcpMetadataListItem key="10" value="dnc"/>
+			<MgcpMetadataListItem key="11" value="dpf"/>
+			<MgcpMetadataListItem key="16" value="dtop1"/>
+			<MgcpMetadataListItem key="17" value="dtop2"/>
+			<MgcpMetadataListItem key="18" value="dtop3"/>
+			<MgcpMetadataListItem key="19" value="dtop4"/>
+			<MgcpMetadataListItem key="20" value="dtop5"/>
+			<MgcpMetadataListItem key="21" value="dvof"/>
+			<MgcpMetadataListItem key="22" value="ffd"/>
+			<MgcpMetadataListItem key="24" value="cover"/>
+			<MgcpMetadataListItem key="25" value="names"/>
+			<MgcpMetadataListItem key="26" value="field"/>
+			<MgcpMetadataListItem key="27" value="icm"/>
+			<MgcpMetadataListItem key="28" value="ikonos"/>
+			<MgcpMetadataListItem key="29" value="ntm"/>
+			<MgcpMetadataListItem key="30" value="imag"/>
+			<MgcpMetadataListItem key="31" value="itd"/>
+			<MgcpMetadataListItem key="32" value="ivd"/>
+			<MgcpMetadataListItem key="33" value="ibd"/>
+			<MgcpMetadataListItem key="34" value="jog"/>
+			<MgcpMetadataListItem key="35" value="landsat"/>
+			<MgcpMetadataListItem key="36" value="lwd"/>
+			<MgcpMetadataListItem key="37" value="mcg"/>
+			<MgcpMetadataListItem key="38" value="msd1"/>
+			<MgcpMetadataListItem key="39" value="msd2"/>
+			<MgcpMetadataListItem key="40" value="msd3"/>
+			<MgcpMetadataListItem key="41" value="msd4"/>
+			<MgcpMetadataListItem key="42" value="msd5"/>
+			<MgcpMetadataListItem key="43" value="midb"/>
+			<MgcpMetadataListItem key="44" value="natdat"/>
+			<MgcpMetadataListItem key="45" value="natmap"/>
+			<MgcpMetadataListItem key="46" value="med"/>
+			<MgcpMetadataListItem key="47" value="nate"/>
+			<MgcpMetadataListItem key="48" value="plan"/>
+			<MgcpMetadataListItem key="49" value="refmap"/>
+			<MgcpMetadataListItem key="50" value="srtm"/>
+			<MgcpMetadataListItem key="51" value="sitmap"/>
+			<MgcpMetadataListItem key="52" value="tod0"/>
+			<MgcpMetadataListItem key="53" value="tod1"/>
+			<MgcpMetadataListItem key="54" value="tod2"/>
+			<MgcpMetadataListItem key="55" value="tod3"/>
+			<MgcpMetadataListItem key="56" value="tod4"/>
+			<MgcpMetadataListItem key="57" value="tod5"/>
+			<MgcpMetadataListItem key="58" value="tlm"/>
+			<MgcpMetadataListItem key="59" value="und"/>
+			<MgcpMetadataListItem key="60" value="uvmap"/>
+			<MgcpMetadataListItem key="61" value="vitd"/>
+			<MgcpMetadataListItem key="62" value="vmap0"/>
+			<MgcpMetadataListItem key="63" value="vmap1"/>
+			<MgcpMetadataListItem key="64" value="vmap2"/>
+			<MgcpMetadataListItem key="65" value="wvspls"/>
+			<MgcpMetadataListItem key="66" value="qbrdmm"/>
+			<MgcpMetadataListItem key="67" value="qbrdms"/>
+			<MgcpMetadataListItem key="68" value="qbrdpm"/>
+			<MgcpMetadataListItem key="69" value="qbrdps"/>
+			<MgcpMetadataListItem key="70" value="ikonmm"/>
+			<MgcpMetadataListItem key="71" value="ikonms"/>
+			<MgcpMetadataListItem key="72" value="ikonpm"/>
+			<MgcpMetadataListItem key="73" value="ikonps"/>
+			<MgcpMetadataListItem key="74" value="spt10"/>
+			<MgcpMetadataListItem key="75" value="spt5"/>
+			<MgcpMetadataListItem key="76" value="spt5mm"/>
+			<MgcpMetadataListItem key="77" value="spt5ms"/>
+			<MgcpMetadataListItem key="78" value="spt5pm"/>
+			<MgcpMetadataListItem key="79" value="spt5ps"/>
+			<MgcpMetadataListItem key="80" value="spt2pm"/>
+			<MgcpMetadataListItem key="81" value="spt2mm"/>
+			<MgcpMetadataListItem key="82" value="spt5m"/>
+			<MgcpMetadataListItem key="83" value="spt5s"/>
+			<MgcpMetadataListItem key="84" value="spt10mm"/>
+			<MgcpMetadataListItem key="85" value="spthrg"/>
+			<MgcpMetadataListItem key="86" value="btm25"/>
+			<MgcpMetadataListItem key="87" value="btm50"/>
+			<MgcpMetadataListItem key="88" value="btm100"/>
+			<MgcpMetadataListItem key="89" value="bto25"/>
+			<MgcpMetadataListItem key="90" value="bto50"/>
+			<MgcpMetadataListItem key="91" value="bto100"/>
+			<MgcpMetadataListItem key="92" value="bvd"/>
+			<MgcpMetadataListItem key="93" value="bvd25"/>
+			<MgcpMetadataListItem key="94" value="bvd50"/>
+			<MgcpMetadataListItem key="95" value="bvd100"/>
+			<MgcpMetadataListItem key="996" value="mult"/>
+			<MgcpMetadataListItem key="999" value="other"/>
+			<MgcpMetadataListItem key="1001" value="frimag"/>
+			<MgcpMetadataListItem key="1002" value="frsnsr"/>
+			<MgcpMetadataListItem key="1003" value="asrp"/>
+			<MgcpMetadataListItem key="1004" value="gaz"/>
+			<MgcpMetadataListItem key="1005" value="www"/>
+			<MgcpMetadataListItem key="1006" value="orbvu3"/>
+			<MgcpMetadataListItem key="1007" value="vmap2i"/>
+		</DfddToSourceId>
+		<DfddToAccuracyEvalMethodId>
+			<MgcpMetadataListItem key="0" value="UNK"/>
+			<MgcpMetadataListItem key="1" value="ACA"/>
+			<MgcpMetadataListItem key="2" value="ACS"/>
+			<MgcpMetadataListItem key="4" value="ANA"/>
+			<MgcpMetadataListItem key="5" value="ANS"/>
+			<MgcpMetadataListItem key="15" value="EMC"/>
+			<MgcpMetadataListItem key="21" value="FZD"/>
+			<MgcpMetadataListItem key="998" value="NA"/>
+		</DfddToAccuracyEvalMethodId>
+		<SourceIdToDfdd>
+			<MgcpMetadataListItem key="unk" value="0" />
+			<MgcpMetadataListItem key="adrg" value="1" />
+			<MgcpMetadataListItem key="aafif" value="2" />
+			<MgcpMetadataListItem key="chum" value="3" />
+			<MgcpMetadataListItem key="city" value="4" />
+			<MgcpMetadataListItem key="combat" value="5" />
+			<MgcpMetadataListItem key="cadrg" value="6" />
+			<MgcpMetadataListItem key="cib1" value="7" />
+			<MgcpMetadataListItem key="cib5" value="8" />
+			<MgcpMetadataListItem key="qbrd" value="9"/>
+			<MgcpMetadataListItem key="dnc" value="10" />
+			<MgcpMetadataListItem key="dpf" value="11" />
+			<MgcpMetadataListItem key="dtop1" value="16" />
+			<MgcpMetadataListItem key="dtop2" value="17" />
+			<MgcpMetadataListItem key="dtop3" value="18" />
+			<MgcpMetadataListItem key="dtop4" value="19" />
+			<MgcpMetadataListItem key="dtop5" value="20" />
+			<MgcpMetadataListItem key="dvof" value="21" />
+			<MgcpMetadataListItem key="ffd" value="22" />
+			<MgcpMetadataListItem key="cover" value="24" />
+			<MgcpMetadataListItem key="names" value="25" />
+			<MgcpMetadataListItem key="field" value="26" />
+			<MgcpMetadataListItem key="icm" value="27" />
+			<MgcpMetadataListItem key="ikonos" value="28"/>
+			<MgcpMetadataListItem key="ntm" value="29" />
+			<MgcpMetadataListItem key="imag" value="30" />
+			<MgcpMetadataListItem key="itd" value="31" />
+			<MgcpMetadataListItem key="ivd" value="32" />
+			<MgcpMetadataListItem key="ibd" value="33" />
+			<MgcpMetadataListItem key="jog" value="34" />
+			<MgcpMetadataListItem key="landsat" value="35"/>
+			<MgcpMetadataListItem key="lwd" value="36" />
+			<MgcpMetadataListItem key="mcg" value="37" />
+			<MgcpMetadataListItem key="msd1" value="38" />
+			<MgcpMetadataListItem key="msd2" value="39" />
+			<MgcpMetadataListItem key="msd3" value="40" />
+			<MgcpMetadataListItem key="msd4" value="41" />
+			<MgcpMetadataListItem key="msd5" value="42" />
+			<MgcpMetadataListItem key="midb" value="43" />
+			<MgcpMetadataListItem key="natdat" value="44" />
+			<MgcpMetadataListItem key="natmap" value="45" />
+			<MgcpMetadataListItem key="med" value="46" />
+			<MgcpMetadataListItem key="nate" value="47" />
+			<MgcpMetadataListItem key="plan" value="48" />
+			<MgcpMetadataListItem key="refmap" value="49"/>
+			<MgcpMetadataListItem key="srtm" value="50" />
+			<MgcpMetadataListItem key="sitmap" value="51" />
+			<MgcpMetadataListItem key="tod0" value="52" />
+			<MgcpMetadataListItem key="tod1" value="53" />
+			<MgcpMetadataListItem key="tod2" value="54" />
+			<MgcpMetadataListItem key="tod3" value="55" />
+			<MgcpMetadataListItem key="tod4" value="56" />
+			<MgcpMetadataListItem key="tod5" value="57" />
+			<MgcpMetadataListItem key="tlm" value="58"/>
+			<MgcpMetadataListItem key="und" value="59" />
+			<MgcpMetadataListItem key="uvmap" value="60" />
+			<MgcpMetadataListItem key="vitd" value="61" />
+			<MgcpMetadataListItem key="vmap0" value="62" />
+			<MgcpMetadataListItem key="vmap1" value="63" />
+			<MgcpMetadataListItem key="vmap2" value="64" />
+			<MgcpMetadataListItem key="wvspls" value="65" />
+			<MgcpMetadataListItem key="qbrdmm" value="66"/>
+			<MgcpMetadataListItem key="qbrdms" value="67"/>
+			<MgcpMetadataListItem key="qbrdpm" value="68"/>
+			<MgcpMetadataListItem key="qbrdps" value="69"/>
+			<MgcpMetadataListItem key="ikonmm" value="70"/>
+			<MgcpMetadataListItem key="ikonms" value="71"/>
+			<MgcpMetadataListItem key="ikonpm" value="72"/>
+			<MgcpMetadataListItem key="ikonps" value="73"/>
+			<MgcpMetadataListItem key="spt10" value="74"/>
+			<MgcpMetadataListItem key="spt5" value="75"/>
+			<MgcpMetadataListItem key="spt5mm" value="76"/>
+			<MgcpMetadataListItem key="spt5ms" value="77"/>
+			<MgcpMetadataListItem key="spt5pm" value="78"/>
+			<MgcpMetadataListItem key="spt5ps" value="79"/>
+			<MgcpMetadataListItem key="spt2pm" value="80"/>
+			<MgcpMetadataListItem key="spt2mm" value="81"/>
+			<MgcpMetadataListItem key="spt5m" value="82"/>
+			<MgcpMetadataListItem key="spt5s" value="83"/>
+			<MgcpMetadataListItem key="spt10mm" value="84"/>
+			<MgcpMetadataListItem key="spthrg" value="85" />
+			<MgcpMetadataListItem key="btm25" value="86"/>
+			<MgcpMetadataListItem key="btm50" value="87"/>
+			<MgcpMetadataListItem key="btm100" value="88"/>
+			<MgcpMetadataListItem key="bto25" value="89"/>
+			<MgcpMetadataListItem key="bto50" value="90"/>
+			<MgcpMetadataListItem key="bto100" value="91"/>
+			<MgcpMetadataListItem key="bvd" value="92" />
+			<MgcpMetadataListItem key="bvd25" value="93" />
+			<MgcpMetadataListItem key="bvd50" value="94" />
+			<MgcpMetadataListItem key="bvd100" value="95" />
+			<MgcpMetadataListItem key="mult" value="996" />
+			<MgcpMetadataListItem key="other" value="999" />
+			<MgcpMetadataListItem key="frimag" value="1001"/>
+			<MgcpMetadataListItem key="frsnsr" value="1002"/>
+			<MgcpMetadataListItem key="asrp" value="1003"/>
+			<MgcpMetadataListItem key="gaz" value="1004"/>
+			<MgcpMetadataListItem key="www" value="1005"/>
+			<MgcpMetadataListItem key="orbvu3" value="1006"/>
+			<MgcpMetadataListItem key="vmap2i" value="1007"/>
+		</SourceIdToDfdd>
+	</MgcpMetadataConfig>
+	<MgcpMetadataConfig version="3" revision="0">
+		<MgcpMetadataProperties>
+			<CodeSpaceVersion>MGCP_v3_r0</CodeSpaceVersion>
+			<SubregionCatalogue>MGCP_FeatureCatalogue_TRD3.0_20091103.xml</SubregionCatalogue>
+			<SourceFields source="SOURCE" sourceDate="SOURCE_DATE" sourceId="SOURCE_IDENTIFIER" sourceScale="SOURCE_SCALE" sourceVerticalType="" />
+		</MgcpMetadataProperties>
+		<DfddToSourceId>
+			<MgcpMetadataListItem key="0" value="unk" />
+			<MgcpMetadataListItem key="1" value="adrg" />
+			<MgcpMetadataListItem key="2" value="aafif" />
+			<MgcpMetadataListItem key="3" value="chum" />
+			<MgcpMetadataListItem key="4" value="city" />
+			<MgcpMetadataListItem key="5" value="combat" />
+			<MgcpMetadataListItem key="6" value="cadrg" />
+			<MgcpMetadataListItem key="7" value="cib1" />
+			<MgcpMetadataListItem key="8" value="cib5" />
+			<MgcpMetadataListItem key="10" value="dnc" />
+			<MgcpMetadataListItem key="11" value="dpf" />
+			<MgcpMetadataListItem key="16" value="dtop1" />
+			<MgcpMetadataListItem key="17" value="dtop2" />
+			<MgcpMetadataListItem key="18" value="dtop3" />
+			<MgcpMetadataListItem key="19" value="dtop4" />
+			<MgcpMetadataListItem key="20" value="dtop5" />
+			<MgcpMetadataListItem key="21" value="dvof" />
+			<MgcpMetadataListItem key="22" value="ffd" />
+			<MgcpMetadataListItem key="24" value="cover" />
+			<MgcpMetadataListItem key="25" value="names" />
+			<MgcpMetadataListItem key="26" value="field" />
+			<MgcpMetadataListItem key="27" value="icm" />
+			<MgcpMetadataListItem key="29" value="ntm" />
+			<MgcpMetadataListItem key="30" value="imag" />
+			<MgcpMetadataListItem key="31" value="itd" />
+			<MgcpMetadataListItem key="32" value="ivd" />
+			<MgcpMetadataListItem key="33" value="ibd" />
+			<MgcpMetadataListItem key="34" value="jog" />
+			<MgcpMetadataListItem key="36" value="lwd" />
+			<MgcpMetadataListItem key="37" value="mcg" />
+			<MgcpMetadataListItem key="38" value="msd1" />
+			<MgcpMetadataListItem key="39" value="msd2" />
+			<MgcpMetadataListItem key="40" value="msd3" />
+			<MgcpMetadataListItem key="41" value="msd4" />
+			<MgcpMetadataListItem key="42" value="msd5" />
+			<MgcpMetadataListItem key="43" value="midb" />
+			<MgcpMetadataListItem key="44" value="natdat" />
+			<MgcpMetadataListItem key="45" value="natmap" />
+			<MgcpMetadataListItem key="46" value="med" />
+			<MgcpMetadataListItem key="47" value="nate" />
+			<MgcpMetadataListItem key="48" value="plan" />
+			<MgcpMetadataListItem key="50" value="srtm" />
+			<MgcpMetadataListItem key="51" value="sitmap" />
+			<MgcpMetadataListItem key="52" value="tod0" />
+			<MgcpMetadataListItem key="53" value="tod1" />
+			<MgcpMetadataListItem key="54" value="tod2" />
+			<MgcpMetadataListItem key="55" value="tod3" />
+			<MgcpMetadataListItem key="56" value="tod4" />
+			<MgcpMetadataListItem key="57" value="tod5" />
+			<MgcpMetadataListItem key="59" value="und" />
+			<MgcpMetadataListItem key="60" value="uvmap" />
+			<MgcpMetadataListItem key="61" value="vitd" />
+			<MgcpMetadataListItem key="62" value="vmap0" />
+			<MgcpMetadataListItem key="63" value="vmap1" />
+			<MgcpMetadataListItem key="64" value="vmap2" />
+			<MgcpMetadataListItem key="65" value="wvspls" />
+			<MgcpMetadataListItem key="85" value="spthrg" />
+			<MgcpMetadataListItem key="92" value="VectorData" />
+			<MgcpMetadataListItem key="93" value="25kVectorData" />
+			<MgcpMetadataListItem key="94" value="50kVectorData" />
+			<MgcpMetadataListItem key="95" value="100kVectorData" />
+			<MgcpMetadataListItem key="110" value="VeryHighResCommMonoImage" />
+			<MgcpMetadataListItem key="111" value="VeryHighResCommStereoImage" />
+			<MgcpMetadataListItem key="112" value="HighResCommMonoImage" />
+			<MgcpMetadataListItem key="113" value="HighResCommStereoImage" />
+			<MgcpMetadataListItem key="114" value="MediumResCommMonoImage" />
+			<MgcpMetadataListItem key="115" value="MediumResCommStereoImage" />
+			<MgcpMetadataListItem key="116" value="LowResCommMonoImage" />
+			<MgcpMetadataListItem key="117" value="LowResCommStereoImage" />
+			<MgcpMetadataListItem key="118" value="MapOneToTwentyFiveK" />
+			<MgcpMetadataListItem key="119" value="MapOneToFiftyK" />
+			<MgcpMetadataListItem key="120" value="MapOneToHundredK" />
+			<MgcpMetadataListItem key="121" value="RoutingData" />
+			<MgcpMetadataListItem key="996" value="mult" />
+			<MgcpMetadataListItem key="997" value="N_P" />
+			<MgcpMetadataListItem key="998" value="N_A" />
+			<MgcpMetadataListItem key="999" value="other" />
+		</DfddToSourceId>
+		<DfddToAccuracyEvalMethodId>
+			<MgcpMetadataListItem key="0" value="UNK"/>
+			<MgcpMetadataListItem key="1" value="ACA"/>
+			<MgcpMetadataListItem key="2" value="ACS"/>
+			<MgcpMetadataListItem key="4" value="ANA"/>
+			<MgcpMetadataListItem key="5" value="ANS"/>
+			<MgcpMetadataListItem key="15" value="EMC"/>
+			<MgcpMetadataListItem key="21" value="FZD"/>
+			<MgcpMetadataListItem key="998" value="NA"/>
+		</DfddToAccuracyEvalMethodId>
+		<AgencyCodeConversion>
+			<!-- from version 2 -->
+			<MgcpMetadataListItem key="MSHDF" value="GEOS_HDF"/>
+			<MgcpMetadataListItem key="SMD-RIS" value="DGS-II_DIV"/>
+			<MgcpMetadataListItem key="JGSF" value="GIO"/>
+			<MgcpMetadataListItem key="ZGW SG WP" value="ZGW_SG_WP"/>
+			<MgcpMetadataListItem key="GMC" value="GCM"/>
+			<MgcpMetadataListItem key="DGCDGI" value="DGC_ICG"/>
+		</AgencyCodeConversion>
+		<SourceIdToDfdd>
+			<!-- version 3 -->
+			<MgcpMetadataListItem key="unk" value="0" />
+			<MgcpMetadataListItem key="adrg" value="1" />
+			<MgcpMetadataListItem key="aafif" value="2" />
+			<MgcpMetadataListItem key="chum" value="3" />
+			<MgcpMetadataListItem key="city" value="4" />
+			<MgcpMetadataListItem key="combat" value="5" />
+			<MgcpMetadataListItem key="cadrg" value="6" />
+			<MgcpMetadataListItem key="cib1" value="7" />
+			<MgcpMetadataListItem key="cib5" value="8" />
+			<MgcpMetadataListItem key="dnc" value="10" />
+			<MgcpMetadataListItem key="dpf" value="11" />
+			<MgcpMetadataListItem key="dtop1" value="16" />
+			<MgcpMetadataListItem key="dtop2" value="17" />
+			<MgcpMetadataListItem key="dtop3" value="18" />
+			<MgcpMetadataListItem key="dtop4" value="19" />
+			<MgcpMetadataListItem key="dtop5" value="20" />
+			<MgcpMetadataListItem key="dvof" value="21" />
+			<MgcpMetadataListItem key="ffd" value="22" />
+			<MgcpMetadataListItem key="cover" value="24" />
+			<MgcpMetadataListItem key="names" value="25" />
+			<MgcpMetadataListItem key="field" value="26" />
+			<MgcpMetadataListItem key="icm" value="27" />
+			<MgcpMetadataListItem key="ntm" value="29" />
+			<MgcpMetadataListItem key="imag" value="30" />
+			<MgcpMetadataListItem key="itd" value="31" />
+			<MgcpMetadataListItem key="ivd" value="32" />
+			<MgcpMetadataListItem key="ibd" value="33" />
+			<MgcpMetadataListItem key="jog" value="34" />
+			<MgcpMetadataListItem key="lwd" value="36" />
+			<MgcpMetadataListItem key="mcg" value="37" />
+			<MgcpMetadataListItem key="msd1" value="38" />
+			<MgcpMetadataListItem key="msd2" value="39" />
+			<MgcpMetadataListItem key="msd3" value="40" />
+			<MgcpMetadataListItem key="msd4" value="41" />
+			<MgcpMetadataListItem key="msd5" value="42" />
+			<MgcpMetadataListItem key="midb" value="43" />
+			<MgcpMetadataListItem key="natdat" value="44" />
+			<MgcpMetadataListItem key="natmap" value="45" />
+			<MgcpMetadataListItem key="med" value="46" />
+			<MgcpMetadataListItem key="nate" value="47" />
+			<MgcpMetadataListItem key="plan" value="48" />
+			<MgcpMetadataListItem key="srtm" value="50" />
+			<MgcpMetadataListItem key="sitmap" value="51" />
+			<MgcpMetadataListItem key="tod0" value="52" />
+			<MgcpMetadataListItem key="tod1" value="53" />
+			<MgcpMetadataListItem key="tod2" value="54" />
+			<MgcpMetadataListItem key="tod3" value="55" />
+			<MgcpMetadataListItem key="tod4" value="56" />
+			<MgcpMetadataListItem key="tod5" value="57" />
+			<MgcpMetadataListItem key="und" value="59" />
+			<MgcpMetadataListItem key="uvmap" value="60" />
+			<MgcpMetadataListItem key="vitd" value="61" />
+			<MgcpMetadataListItem key="vmap0" value="62" />
+			<MgcpMetadataListItem key="vmap1" value="63" />
+			<MgcpMetadataListItem key="vmap2" value="64" />
+			<MgcpMetadataListItem key="wvspls" value="65" />
+			<MgcpMetadataListItem key="spthrg" value="85" />
+			<MgcpMetadataListItem key="vectordata" value="92" />
+			<MgcpMetadataListItem key="25kvectordata" value="93" />
+			<MgcpMetadataListItem key="50kvectordata" value="94" />
+			<MgcpMetadataListItem key="100kvectordata" value="95" />
+			<MgcpMetadataListItem key="veryhighrescommmonoimage" value="110" />
+			<MgcpMetadataListItem key="veryhighrescommstereoimage" value="111" />
+			<MgcpMetadataListItem key="highrescommmonoimage" value="112" />
+			<MgcpMetadataListItem key="highrescommstereoimage" value="113" />
+			<MgcpMetadataListItem key="mediumrescommmonoimage" value="114" />
+			<MgcpMetadataListItem key="mediumrescommstereoimage" value="115" />
+			<MgcpMetadataListItem key="lowrescommmonoimage" value="116" />
+			<MgcpMetadataListItem key="lowrescommstereoimage" value="117" />
+			<MgcpMetadataListItem key="maponetotwentyfivek" value="118" />
+			<MgcpMetadataListItem key="maponetofiftyk" value="119" />
+			<MgcpMetadataListItem key="maponetohundredk" value="120" />
+			<MgcpMetadataListItem key="routingdata" value="121" />
+			<MgcpMetadataListItem key="mult" value="996" />
+			<MgcpMetadataListItem key="n_p" value="997" />
+			<MgcpMetadataListItem key="n_a" value="998" />
+			<MgcpMetadataListItem key="other" value="999" />
+			<!-- version 2 -->
+			<MgcpMetadataListItem key="qbrd" value="9"/>
+			<MgcpMetadataListItem key="ikonos" value="28"/>
+			<MgcpMetadataListItem key="landsat" value="35"/>
+			<MgcpMetadataListItem key="refmap" value="49"/>
+			<MgcpMetadataListItem key="tlm" value="58"/>
+			<MgcpMetadataListItem key="qbrdmm" value="66"/>
+			<MgcpMetadataListItem key="qbrdms" value="67"/>
+			<MgcpMetadataListItem key="qbrdpm" value="68"/>
+			<MgcpMetadataListItem key="qbrdps" value="69"/>
+			<MgcpMetadataListItem key="ikonmm" value="70"/>
+			<MgcpMetadataListItem key="ikonms" value="71"/>
+			<MgcpMetadataListItem key="ikonpm" value="72"/>
+			<MgcpMetadataListItem key="ikonps" value="73"/>
+			<MgcpMetadataListItem key="spt10" value="74"/>
+			<MgcpMetadataListItem key="spt5" value="75"/>
+			<MgcpMetadataListItem key="spt5mm" value="76"/>
+			<MgcpMetadataListItem key="spt5ms" value="77"/>
+			<MgcpMetadataListItem key="spt5pm" value="78"/>
+			<MgcpMetadataListItem key="spt5ps" value="79"/>
+			<MgcpMetadataListItem key="spt2pm" value="80"/>
+			<MgcpMetadataListItem key="spt2mm" value="81"/>
+			<MgcpMetadataListItem key="spt5m" value="82"/>
+			<MgcpMetadataListItem key="spt5s" value="83"/>
+			<MgcpMetadataListItem key="spt10mm" value="84"/>
+			<MgcpMetadataListItem key="btm25" value="86"/>
+			<MgcpMetadataListItem key="btm50" value="87"/>
+			<MgcpMetadataListItem key="btm100" value="88"/>
+			<MgcpMetadataListItem key="bto25" value="89"/>
+			<MgcpMetadataListItem key="bto50" value="90"/>
+			<MgcpMetadataListItem key="bto100" value="91"/>
+			<MgcpMetadataListItem key="bvd" value="92" />
+			<MgcpMetadataListItem key="bvd25" value="93" />
+			<MgcpMetadataListItem key="bvd50" value="94" />
+			<MgcpMetadataListItem key="bvd100" value="95" />
+			<MgcpMetadataListItem key="frimag" value="1001"/>
+			<MgcpMetadataListItem key="frsnsr" value="1002"/>
+			<MgcpMetadataListItem key="asrp" value="1003"/>
+			<MgcpMetadataListItem key="gaz" value="1004"/>
+			<MgcpMetadataListItem key="www" value="1005"/>
+			<MgcpMetadataListItem key="orbvu3" value="1006"/>
+			<MgcpMetadataListItem key="vmap2i" value="1007"/>
+		</SourceIdToDfdd>
+	</MgcpMetadataConfig>
+	<MgcpMetadataConfig version="4" revision="0">
+		<MgcpMetadataProperties>
+			<CodeSpaceVersion>MGCP_v4_r0</CodeSpaceVersion>
+			<SubregionCatalogue>MGCP_FeatureCatalogue_TRD4.0_20121231.xml</SubregionCatalogue>
+			<SourceFields source="SSRCTY" sourceDate="SSRCDT" sourceId="SSRCID" sourceScale="SSRCSC" sourceVerticalType="SSVSCC" />
+		</MgcpMetadataProperties>
+		<DfddToSourceId>
+			<MgcpMetadataListItem key="0" value="unk" />
+			<MgcpMetadataListItem key="1" value="ngaArcDigRasterGraphic" />
+			<MgcpMetadataListItem key="2" value="ngaAutoAirFacInfoFile" />
+			<MgcpMetadataListItem key="3" value="ngaChartUpdateManual" />
+			<MgcpMetadataListItem key="4" value="ngaCityGraphic" />
+			<MgcpMetadataListItem key="5" value="ngaCombatChart" />
+			<MgcpMetadataListItem key="6" value="ngaCompressedAdrg" />
+			<MgcpMetadataListItem key="7" value="ngaControlledImageBase1" />
+			<MgcpMetadataListItem key="8" value="ngaControlledImageBase5" />
+			<MgcpMetadataListItem key="10" value="ngaDigitalNauticalChart" />
+			<MgcpMetadataListItem key="11" value="ngaDigitalPrintFile" />
+			<MgcpMetadataListItem key="16" value="ngaDigitalTopoData1" />
+			<MgcpMetadataListItem key="17" value="ngaDigitalTopoData2" />
+			<MgcpMetadataListItem key="18" value="ngaDigitalTopoData3" />
+			<MgcpMetadataListItem key="19" value="ngaDigitalTopoData4" />
+			<MgcpMetadataListItem key="20" value="ngaDigitalTopoData5" />
+			<MgcpMetadataListItem key="21" value="ngaDigitalVertObstruction" />
+			<MgcpMetadataListItem key="22" value="ngaFoundationFeatureData" />
+			<MgcpMetadataListItem key="24" value="ngaGeoLandCover" />
+			<MgcpMetadataListItem key="25" value="ngaGeoNames" />
+			<MgcpMetadataListItem key="26" value="gpsBasedFieldCollect" />
+			<MgcpMetadataListItem key="27" value="ngaImageCityMap" />
+			<MgcpMetadataListItem key="29" value="usNtmImagery" />
+			<MgcpMetadataListItem key="30" value="imageryUnspecified" />
+			<MgcpMetadataListItem key="31" value="ngaInterimTerrainData" />
+			<MgcpMetadataListItem key="32" value="ngaInterimVectorData" />
+			<MgcpMetadataListItem key="33" value="ngaInternationalBoundary" />
+			<MgcpMetadataListItem key="34" value="ngaJointOperatGraphic" />
+			<MgcpMetadataListItem key="36" value="ngaLittoralWarfareData" />
+			<MgcpMetadataListItem key="37" value="mapChartOrGeodeticData" />
+			<MgcpMetadataListItem key="38" value="ngaMissionSpecificData1" />
+			<MgcpMetadataListItem key="39" value="ngaMissionSpecificData2" />
+			<MgcpMetadataListItem key="40" value="ngaMissionSpecificData3" />
+			<MgcpMetadataListItem key="41" value="ngaMissionSpecificData4" />
+			<MgcpMetadataListItem key="42" value="ngaMissionSpecificData5" />
+			<MgcpMetadataListItem key="43" value="usModernizedIntegratedDB" />
+			<MgcpMetadataListItem key="44" value="nativeData" />
+			<MgcpMetadataListItem key="45" value="nativeMap" />
+			<MgcpMetadataListItem key="46" value="ngaMedicalFacilities" />
+			<MgcpMetadataListItem key="47" value="ngaNominalAttTopoEvalMap" />
+			<MgcpMetadataListItem key="48" value="ngaPlanningGraphic" />
+			<MgcpMetadataListItem key="50" value="usShuttleRadarTopoMission" />
+			<MgcpMetadataListItem key="51" value="siteMap" />
+			<MgcpMetadataListItem key="52" value="ngaTacticalOceanData0" />
+			<MgcpMetadataListItem key="53" value="ngaTacticalOceanData1" />
+			<MgcpMetadataListItem key="54" value="ngaTacticalOceanData2" />
+			<MgcpMetadataListItem key="55" value="ngaTacticalOceanData3" />
+			<MgcpMetadataListItem key="56" value="ngaTacticalOceanData4" />
+			<MgcpMetadataListItem key="57" value="ngaTacticalOceanData5" />
+			<MgcpMetadataListItem key="59" value="unitedNationsData" />
+			<MgcpMetadataListItem key="60" value="ngaUrbanVectorMap" />
+			<MgcpMetadataListItem key="61" value="ngaVectorInterimTerrain" />
+			<MgcpMetadataListItem key="62" value="ngaVectorMap0" />
+			<MgcpMetadataListItem key="63" value="ngaVectorMap1" />
+			<MgcpMetadataListItem key="64" value="ngaVectorMap2" />
+			<MgcpMetadataListItem key="65" value="ngaWorldVectorShorePlus" />
+			<MgcpMetadataListItem key="85" value="spotHrgDtm" />
+			<MgcpMetadataListItem key="92" value="vectorData" />
+			<MgcpMetadataListItem key="93" value="vectorData25k" />
+			<MgcpMetadataListItem key="94" value="vectorData50k" />
+			<MgcpMetadataListItem key="95" value="vectorData100k" />
+			<MgcpMetadataListItem key="110" value="veryHighResCommMonoImage" />
+			<MgcpMetadataListItem key="111" value="veryHighResCommStereoImage" />
+			<MgcpMetadataListItem key="112" value="highResCommMonoImage" />
+			<MgcpMetadataListItem key="113" value="highResCommStereoImage" />
+			<MgcpMetadataListItem key="114" value="mediumResCommMonoImage" />
+			<MgcpMetadataListItem key="115" value="mediumResCommStereoImage" />
+			<MgcpMetadataListItem key="116" value="lowResCommMonoImage" />
+			<MgcpMetadataListItem key="117" value="lowResCommStereoImage" />
+			<MgcpMetadataListItem key="118" value="mapOneToTwentyFiveK" />
+			<MgcpMetadataListItem key="119" value="mapOneToFiftyK" />
+			<MgcpMetadataListItem key="120" value="mapOneToHundredK" />
+			<MgcpMetadataListItem key="121" value="routingData" />
+			<MgcpMetadataListItem key="996" value="MULT" />
+			<MgcpMetadataListItem key="997" value="N_P" />
+			<MgcpMetadataListItem key="998" value="N_A" />
+			<MgcpMetadataListItem key="999" value="OTH" />
+		</DfddToSourceId>
+		<DfddToAccuracyEvalMethodId>
+			<MgcpMetadataListItem key="0" value="UNK" />
+			<MgcpMetadataListItem key="1" value="geodeticSurveyAdequate" />
+			<MgcpMetadataListItem key="2" value="geodeticSurveySmall" />
+			<MgcpMetadataListItem key="4" value="photogrammGdasAdequate" />
+			<MgcpMetadataListItem key="5" value="photogrammGdasSmall" />
+			<MgcpMetadataListItem key="15" value="productSpecification" />
+			<MgcpMetadataListItem key="21" value="evaluationDeferred" />
+			<MgcpMetadataListItem key="998" value="N_A" />
+		</DfddToAccuracyEvalMethodId>
+		<DfddToVerticalTypeId>
+			<MgcpMetadataListItem key="0" value="UNK" />
+			<MgcpMetadataListItem key="1" value="interpolatedDted1" />
+			<MgcpMetadataListItem key="2" value="interpolatedDted2" />
+			<MgcpMetadataListItem key="3" value="noElevations" />
+			<MgcpMetadataListItem key="4" value="reflectiveSurface" />
+			<MgcpMetadataListItem key="5" value="stereoscopicImagery" />
+			<MgcpMetadataListItem key="6" value="tinData" />
+			<MgcpMetadataListItem key="7" value="interpolatedSrtm1" />
+		</DfddToVerticalTypeId>
+		<AgencyCodeConversion>
+			<!-- from version 2 -->
+			<MgcpMetadataListItem key="MSHDF" value="GEOS_HDF"/>
+			<MgcpMetadataListItem key="SMD-RIS" value="DGS-II_DIV"/>
+			<MgcpMetadataListItem key="JGSF" value="GIO"/>
+			<MgcpMetadataListItem key="ZGW SG WP" value="STSZRP"/>
+			<MgcpMetadataListItem key="GMC" value="GCM"/>
+			<MgcpMetadataListItem key="DGCDGI" value="DGC_ICG"/>
+			<!-- from version 3 -->
+			<MgcpMetadataListItem key="CEGET" value="SCC" />
+			<MgcpMetadataListItem key="EMABGI" value="EMA_BGHOM" />
+			<MgcpMetadataListItem key="ZGW_SG_WP" value="STSZRP" />
+		</AgencyCodeConversion>
+		<!-- This is needed to support importing multiple TRD versions -->
+		<SourceIdToDfdd>
+			<!-- version 4 -->
+			<MgcpMetadataListItem key="unk" value="0" />
+			<MgcpMetadataListItem key="ngaarcdigrastergraphic" value="1" />
+			<MgcpMetadataListItem key="ngaautoairfacinfofile" value="2" />
+			<MgcpMetadataListItem key="ngachartupdatemanual" value="3" />
+			<MgcpMetadataListItem key="ngacitygraphic" value="4" />
+			<MgcpMetadataListItem key="ngacombatchart" value="5" />
+			<MgcpMetadataListItem key="ngacompressedadrg" value="6" />
+			<MgcpMetadataListItem key="ngacontrolledimagebase1" value="7" />
+			<MgcpMetadataListItem key="ngacontrolledimagebase5" value="8" />
+			<MgcpMetadataListItem key="ngadigitalnauticalchart" value="10" />
+			<MgcpMetadataListItem key="ngadigitalprintfile" value="11" />
+			<MgcpMetadataListItem key="ngadigitaltopodata1" value="16" />
+			<MgcpMetadataListItem key="ngadigitaltopodata2" value="17" />
+			<MgcpMetadataListItem key="ngadigitaltopodata3" value="18" />
+			<MgcpMetadataListItem key="ngadigitaltopodata4" value="19" />
+			<MgcpMetadataListItem key="ngadigitaltopodata5" value="20" />
+			<MgcpMetadataListItem key="ngadigitalvertobstruction" value="21" />
+			<MgcpMetadataListItem key="ngafoundationfeaturedata" value="22" />
+			<MgcpMetadataListItem key="ngageolandcover" value="24" />
+			<MgcpMetadataListItem key="ngageonames" value="25" />
+			<MgcpMetadataListItem key="gpsbasedfieldcollect" value="26" />
+			<MgcpMetadataListItem key="ngaimagecitymap" value="27" />
+			<MgcpMetadataListItem key="usntmimagery" value="29" />
+			<MgcpMetadataListItem key="imageryunspecified" value="30" />
+			<MgcpMetadataListItem key="ngainterimterraindata" value="31" />
+			<MgcpMetadataListItem key="ngainterimvectordata" value="32" />
+			<MgcpMetadataListItem key="ngainternationalboundary" value="33" />
+			<MgcpMetadataListItem key="ngajointoperatgraphic" value="34" />
+			<MgcpMetadataListItem key="ngalittoralwarfaredata" value="36" />
+			<MgcpMetadataListItem key="mapchartorgeodeticdata" value="37" />
+			<MgcpMetadataListItem key="ngamissionspecificdata1" value="38" />
+			<MgcpMetadataListItem key="ngamissionspecificdata2" value="39" />
+			<MgcpMetadataListItem key="ngamissionspecificdata3" value="40" />
+			<MgcpMetadataListItem key="ngamissionspecificdata4" value="41" />
+			<MgcpMetadataListItem key="ngamissionspecificdata5" value="42" />
+			<MgcpMetadataListItem key="usmodernizedintegrateddb" value="43" />
+			<MgcpMetadataListItem key="nativedata" value="44" />
+			<MgcpMetadataListItem key="nativemap" value="45" />
+			<MgcpMetadataListItem key="ngamedicalfacilities" value="46" />
+			<MgcpMetadataListItem key="nganominalatttopoevalmap" value="47" />
+			<MgcpMetadataListItem key="ngaplanninggraphic" value="48" />
+			<MgcpMetadataListItem key="usshuttleradartopomission" value="50" />
+			<MgcpMetadataListItem key="sitemap" value="51" />
+			<MgcpMetadataListItem key="ngatacticaloceandata0" value="52" />
+			<MgcpMetadataListItem key="ngatacticaloceandata1" value="53" />
+			<MgcpMetadataListItem key="ngatacticaloceandata2" value="54" />
+			<MgcpMetadataListItem key="ngatacticaloceandata3" value="55" />
+			<MgcpMetadataListItem key="ngatacticaloceandata4" value="56" />
+			<MgcpMetadataListItem key="ngatacticaloceandata5" value="57" />
+			<MgcpMetadataListItem key="unitednationsdata" value="59" />
+			<MgcpMetadataListItem key="ngaurbanvectormap" value="60" />
+			<MgcpMetadataListItem key="ngavectorinterimterrain" value="61" />
+			<MgcpMetadataListItem key="ngavectormap0" value="62" />
+			<MgcpMetadataListItem key="ngavectormap1" value="63" />
+			<MgcpMetadataListItem key="ngavectormap2" value="64" />
+			<MgcpMetadataListItem key="ngaworldvectorshoreplus" value="65" />
+			<MgcpMetadataListItem key="spothrgdtm" value="85" />
+			<MgcpMetadataListItem key="vectordata" value="92" />
+			<MgcpMetadataListItem key="vectordata25k" value="93" />
+			<MgcpMetadataListItem key="vectordata50k" value="94" />
+			<MgcpMetadataListItem key="vectordata100k" value="95" />
+			<MgcpMetadataListItem key="veryhighrescommmonoimage" value="110" />
+			<MgcpMetadataListItem key="veryhighrescommstereoimage" value="111" />
+			<MgcpMetadataListItem key="highrescommmonoimage" value="112" />
+			<MgcpMetadataListItem key="highrescommstereoimage" value="113" />
+			<MgcpMetadataListItem key="mediumrescommmonoimage" value="114" />
+			<MgcpMetadataListItem key="mediumrescommstereoimage" value="115" />
+			<MgcpMetadataListItem key="lowrescommmonoimage" value="116" />
+			<MgcpMetadataListItem key="lowrescommstereoimage" value="117" />
+			<MgcpMetadataListItem key="maponetotwentyfivek" value="118" />
+			<MgcpMetadataListItem key="maponetofiftyk" value="119" />
+			<MgcpMetadataListItem key="maponetohundredk" value="120" />
+			<MgcpMetadataListItem key="routingdata" value="121" />
+			<MgcpMetadataListItem key="mult" value="996" />
+			<MgcpMetadataListItem key="n_p" value="997" />
+			<MgcpMetadataListItem key="n_a" value="998" />
+			<MgcpMetadataListItem key="oth" value="999" />
+			<!-- version 3 -->
+			<MgcpMetadataListItem key="adrg" value="1" />
+			<MgcpMetadataListItem key="aafif" value="2" />
+			<MgcpMetadataListItem key="chum" value="3" />
+			<MgcpMetadataListItem key="city" value="4" />
+			<MgcpMetadataListItem key="combat" value="5" />
+			<MgcpMetadataListItem key="cadrg" value="6" />
+			<MgcpMetadataListItem key="cib1" value="7" />
+			<MgcpMetadataListItem key="cib5" value="8" />
+			<MgcpMetadataListItem key="dnc" value="10" />
+			<MgcpMetadataListItem key="dpf" value="11" />
+			<MgcpMetadataListItem key="dtop1" value="16" />
+			<MgcpMetadataListItem key="dtop2" value="17" />
+			<MgcpMetadataListItem key="dtop3" value="18" />
+			<MgcpMetadataListItem key="dtop4" value="19" />
+			<MgcpMetadataListItem key="dtop5" value="20" />
+			<MgcpMetadataListItem key="dvof" value="21" />
+			<MgcpMetadataListItem key="ffd" value="22" />
+			<MgcpMetadataListItem key="cover" value="24" />
+			<MgcpMetadataListItem key="names" value="25" />
+			<MgcpMetadataListItem key="field" value="26" />
+			<MgcpMetadataListItem key="icm" value="27" />
+			<MgcpMetadataListItem key="ntm" value="29" />
+			<MgcpMetadataListItem key="imag" value="30" />
+			<MgcpMetadataListItem key="itd" value="31" />
+			<MgcpMetadataListItem key="ivd" value="32" />
+			<MgcpMetadataListItem key="ibd" value="33" />
+			<MgcpMetadataListItem key="jog" value="34" />
+			<MgcpMetadataListItem key="lwd" value="36" />
+			<MgcpMetadataListItem key="mcg" value="37" />
+			<MgcpMetadataListItem key="msd1" value="38" />
+			<MgcpMetadataListItem key="msd2" value="39" />
+			<MgcpMetadataListItem key="msd3" value="40" />
+			<MgcpMetadataListItem key="msd4" value="41" />
+			<MgcpMetadataListItem key="msd5" value="42" />
+			<MgcpMetadataListItem key="midb" value="43" />
+			<MgcpMetadataListItem key="natdat" value="44" />
+			<MgcpMetadataListItem key="natmap" value="45" />
+			<MgcpMetadataListItem key="med" value="46" />
+			<MgcpMetadataListItem key="nate" value="47" />
+			<MgcpMetadataListItem key="plan" value="48" />
+			<MgcpMetadataListItem key="srtm" value="50" />
+			<MgcpMetadataListItem key="sitmap" value="51" />
+			<MgcpMetadataListItem key="tod0" value="52" />
+			<MgcpMetadataListItem key="tod1" value="53" />
+			<MgcpMetadataListItem key="tod2" value="54" />
+			<MgcpMetadataListItem key="tod3" value="55" />
+			<MgcpMetadataListItem key="tod4" value="56" />
+			<MgcpMetadataListItem key="tod5" value="57" />
+			<MgcpMetadataListItem key="und" value="59" />
+			<MgcpMetadataListItem key="uvmap" value="60" />
+			<MgcpMetadataListItem key="vitd" value="61" />
+			<MgcpMetadataListItem key="vmap0" value="62" />
+			<MgcpMetadataListItem key="vmap1" value="63" />
+			<MgcpMetadataListItem key="vmap2" value="64" />
+			<MgcpMetadataListItem key="wvspls" value="65" />
+			<MgcpMetadataListItem key="spthrg" value="85" />
+			<MgcpMetadataListItem key="25kvectordata" value="93" />
+			<MgcpMetadataListItem key="50kvectordata" value="94" />
+			<MgcpMetadataListItem key="100kvectordata" value="95" />
+			<MgcpMetadataListItem key="other" value="999" />
+			<!-- version 2 -->
+			<MgcpMetadataListItem key="qbrd" value="9"/>
+			<MgcpMetadataListItem key="ikonos" value="28"/>
+			<MgcpMetadataListItem key="landsat" value="35"/>
+			<MgcpMetadataListItem key="refmap" value="49"/>
+			<MgcpMetadataListItem key="tlm" value="58"/>
+			<MgcpMetadataListItem key="qbrdmm" value="66"/>
+			<MgcpMetadataListItem key="qbrdms" value="67"/>
+			<MgcpMetadataListItem key="qbrdpm" value="68"/>
+			<MgcpMetadataListItem key="qbrdps" value="69"/>
+			<MgcpMetadataListItem key="ikonmm" value="70"/>
+			<MgcpMetadataListItem key="ikonms" value="71"/>
+			<MgcpMetadataListItem key="ikonpm" value="72"/>
+			<MgcpMetadataListItem key="ikonps" value="73"/>
+			<MgcpMetadataListItem key="spt10" value="74"/>
+			<MgcpMetadataListItem key="spt5" value="75"/>
+			<MgcpMetadataListItem key="spt5mm" value="76"/>
+			<MgcpMetadataListItem key="spt5ms" value="77"/>
+			<MgcpMetadataListItem key="spt5pm" value="78"/>
+			<MgcpMetadataListItem key="spt5ps" value="79"/>
+			<MgcpMetadataListItem key="spt2pm" value="80"/>
+			<MgcpMetadataListItem key="spt2mm" value="81"/>
+			<MgcpMetadataListItem key="spt5m" value="82"/>
+			<MgcpMetadataListItem key="spt5s" value="83"/>
+			<MgcpMetadataListItem key="spt10mm" value="84"/>
+			<MgcpMetadataListItem key="btm25" value="86"/>
+			<MgcpMetadataListItem key="btm50" value="87"/>
+			<MgcpMetadataListItem key="btm100" value="88"/>
+			<MgcpMetadataListItem key="bto25" value="89"/>
+			<MgcpMetadataListItem key="bto50" value="90"/>
+			<MgcpMetadataListItem key="bto100" value="91"/>
+			<MgcpMetadataListItem key="bvd" value="92" />
+			<MgcpMetadataListItem key="bvd25" value="93" />
+			<MgcpMetadataListItem key="bvd50" value="94" />
+			<MgcpMetadataListItem key="bvd100" value="95" />
+			<MgcpMetadataListItem key="frimag" value="1001"/>
+			<MgcpMetadataListItem key="frsnsr" value="1002"/>
+			<MgcpMetadataListItem key="asrp" value="1003"/>
+			<MgcpMetadataListItem key="gaz" value="1004"/>
+			<MgcpMetadataListItem key="www" value="1005"/>
+			<MgcpMetadataListItem key="orbvu3" value="1006"/>
+			<MgcpMetadataListItem key="vmap2i" value="1007"/>
+		</SourceIdToDfdd>
+	</MgcpMetadataConfig>
+  <MgcpMetadataConfig version="4" revision="1">
+    <MgcpMetadataProperties>
+      <CodeSpaceVersion>MGCP_v4_r1</CodeSpaceVersion>
+      <SubregionCatalogue>MGCP_FeatureCatalogue_TRD4.1_20130628.xml</SubregionCatalogue>
+      <SourceFields source="SSRCTY" sourceDate="SSRCDT" sourceId="SSRCID" sourceScale="SSRCSC" sourceVerticalType="SSVSCC" />
+    </MgcpMetadataProperties>
+    <DfddToSourceId>
+      <MgcpMetadataListItem key="0" value="unk" />
+      <MgcpMetadataListItem key="1" value="ngaArcDigRasterGraphic" />
+      <MgcpMetadataListItem key="2" value="ngaAutoAirFacInfoFile" />
+      <MgcpMetadataListItem key="3" value="ngaChartUpdateManual" />
+      <MgcpMetadataListItem key="4" value="ngaCityGraphic" />
+      <MgcpMetadataListItem key="5" value="ngaCombatChart" />
+      <MgcpMetadataListItem key="6" value="ngaCompressedAdrg" />
+      <MgcpMetadataListItem key="7" value="ngaControlledImageBase1" />
+      <MgcpMetadataListItem key="8" value="ngaControlledImageBase5" />
+      <MgcpMetadataListItem key="10" value="ngaDigitalNauticalChart" />
+      <MgcpMetadataListItem key="11" value="ngaDigitalPrintFile" />
+      <MgcpMetadataListItem key="16" value="ngaDigitalTopoData1" />
+      <MgcpMetadataListItem key="17" value="ngaDigitalTopoData2" />
+      <MgcpMetadataListItem key="18" value="ngaDigitalTopoData3" />
+      <MgcpMetadataListItem key="19" value="ngaDigitalTopoData4" />
+      <MgcpMetadataListItem key="20" value="ngaDigitalTopoData5" />
+      <MgcpMetadataListItem key="21" value="ngaDigitalVertObstruction" />
+      <MgcpMetadataListItem key="22" value="ngaFoundationFeatureData" />
+      <MgcpMetadataListItem key="24" value="ngaGeoLandCover" />
+      <MgcpMetadataListItem key="25" value="ngaGeoNames" />
+      <MgcpMetadataListItem key="26" value="gpsBasedFieldCollect" />
+      <MgcpMetadataListItem key="27" value="ngaImageCityMap" />
+      <MgcpMetadataListItem key="29" value="usNtmImagery" />
+      <MgcpMetadataListItem key="30" value="imageryUnspecified" />
+      <MgcpMetadataListItem key="31" value="ngaInterimTerrainData" />
+      <MgcpMetadataListItem key="32" value="ngaInterimVectorData" />
+      <MgcpMetadataListItem key="33" value="ngaInternationalBoundary" />
+      <MgcpMetadataListItem key="34" value="ngaJointOperatGraphic" />
+      <MgcpMetadataListItem key="36" value="ngaLittoralWarfareData" />
+      <MgcpMetadataListItem key="37" value="mapChartOrGeodeticData" />
+      <MgcpMetadataListItem key="38" value="ngaMissionSpecificData1" />
+      <MgcpMetadataListItem key="39" value="ngaMissionSpecificData2" />
+      <MgcpMetadataListItem key="40" value="ngaMissionSpecificData3" />
+      <MgcpMetadataListItem key="41" value="ngaMissionSpecificData4" />
+      <MgcpMetadataListItem key="42" value="ngaMissionSpecificData5" />
+      <MgcpMetadataListItem key="43" value="usModernizedIntegratedDB" />
+      <MgcpMetadataListItem key="44" value="nativeData" />
+      <MgcpMetadataListItem key="45" value="nativeMap" />
+      <MgcpMetadataListItem key="46" value="ngaMedicalFacilities" />
+      <MgcpMetadataListItem key="47" value="ngaNominalAttTopoEvalMap" />
+      <MgcpMetadataListItem key="48" value="ngaPlanningGraphic" />
+      <MgcpMetadataListItem key="50" value="usShuttleRadarTopoMission" />
+      <MgcpMetadataListItem key="51" value="siteMap" />
+      <MgcpMetadataListItem key="52" value="ngaTacticalOceanData0" />
+      <MgcpMetadataListItem key="53" value="ngaTacticalOceanData1" />
+      <MgcpMetadataListItem key="54" value="ngaTacticalOceanData2" />
+      <MgcpMetadataListItem key="55" value="ngaTacticalOceanData3" />
+      <MgcpMetadataListItem key="56" value="ngaTacticalOceanData4" />
+      <MgcpMetadataListItem key="57" value="ngaTacticalOceanData5" />
+      <MgcpMetadataListItem key="59" value="unitedNationsData" />
+      <MgcpMetadataListItem key="60" value="ngaUrbanVectorMap" />
+      <MgcpMetadataListItem key="61" value="ngaVectorInterimTerrain" />
+      <MgcpMetadataListItem key="62" value="ngaVectorMap0" />
+      <MgcpMetadataListItem key="63" value="ngaVectorMap1" />
+      <MgcpMetadataListItem key="64" value="ngaVectorMap2" />
+      <MgcpMetadataListItem key="65" value="ngaWorldVectorShorePlus" />
+      <MgcpMetadataListItem key="85" value="spotHrgDtm" />
+      <MgcpMetadataListItem key="92" value="vectorData" />
+      <MgcpMetadataListItem key="93" value="vectorData25k" />
+      <MgcpMetadataListItem key="94" value="vectorData50k" />
+      <MgcpMetadataListItem key="95" value="vectorData100k" />
+      <MgcpMetadataListItem key="110" value="veryHighResCommMonoImage" />
+      <MgcpMetadataListItem key="111" value="veryHighResCommStereoImage" />
+      <MgcpMetadataListItem key="112" value="highResCommMonoImage" />
+      <MgcpMetadataListItem key="113" value="highResCommStereoImage" />
+      <MgcpMetadataListItem key="114" value="mediumResCommMonoImage" />
+      <MgcpMetadataListItem key="115" value="mediumResCommStereoImage" />
+      <MgcpMetadataListItem key="116" value="lowResCommMonoImage" />
+      <MgcpMetadataListItem key="117" value="lowResCommStereoImage" />
+      <MgcpMetadataListItem key="118" value="mapOneToTwentyFiveK" />
+      <MgcpMetadataListItem key="119" value="mapOneToFiftyK" />
+      <MgcpMetadataListItem key="120" value="mapOneToHundredK" />
+      <MgcpMetadataListItem key="121" value="routingData" />
+      <MgcpMetadataListItem key="996" value="MULT" />
+      <MgcpMetadataListItem key="997" value="N_P" />
+      <MgcpMetadataListItem key="998" value="N_A" />
+      <MgcpMetadataListItem key="999" value="OTH" />
+    </DfddToSourceId>
+    <DfddToAccuracyEvalMethodId>
+      <MgcpMetadataListItem key="0" value="UNK" />
+      <MgcpMetadataListItem key="1" value="geodeticSurveyAdequate" />
+      <MgcpMetadataListItem key="2" value="geodeticSurveySmall" />
+      <MgcpMetadataListItem key="4" value="photogrammGdasAdequate" />
+      <MgcpMetadataListItem key="5" value="photogrammGdasSmall" />
+      <MgcpMetadataListItem key="15" value="productSpecification" />
+      <MgcpMetadataListItem key="21" value="evaluationDeferred" />
+      <MgcpMetadataListItem key="998" value="N_A" />
+    </DfddToAccuracyEvalMethodId>
+    <DfddToVerticalTypeId>
+      <MgcpMetadataListItem key="0" value="UNK" />
+      <MgcpMetadataListItem key="1" value="interpolatedDted1" />
+      <MgcpMetadataListItem key="2" value="interpolatedDted2" />
+      <MgcpMetadataListItem key="3" value="noElevations" />
+      <MgcpMetadataListItem key="4" value="reflectiveSurface" />
+      <MgcpMetadataListItem key="5" value="stereoscopicImagery" />
+      <MgcpMetadataListItem key="6" value="tinData" />
+      <MgcpMetadataListItem key="7" value="interpolatedSrtm1" />
+    </DfddToVerticalTypeId>
+    <AgencyCodeConversion>
+      <!-- from version 2 -->
+      <MgcpMetadataListItem key="MSHDF" value="GEOS_HDF"/>
+      <MgcpMetadataListItem key="SMD-RIS" value="DGS-II_DIV"/>
+      <MgcpMetadataListItem key="JGSF" value="GNZ"/>
+      <MgcpMetadataListItem key="ZGW SG WP" value="STSZRP"/>
+      <MgcpMetadataListItem key="GMC" value="GCM"/>
+      <MgcpMetadataListItem key="DGCDGI" value="DGC_JFIC"/>
+      <!-- from version 3 -->
+      <MgcpMetadataListItem key="CEGET" value="SCC" />
+      <MgcpMetadataListItem key="EMABGI" value="EMA_BGHOM" />
+      <MgcpMetadataListItem key="ZGW_SG_WP" value="STSZRP" />
+      <!-- from version 4.0 -->
+      <MgcpMetadataListItem key="DGC_ICG" value="DGC_JFIC" />
+      <MgcpMetadataListItem key="DIGO" value="AGO" />
+      <MgcpMetadataListItem key="GIO" value="GNZ" />
+      <MgcpMetadataListItem key="SGeoW" value="STSZRP" />
+    </AgencyCodeConversion>
+    <!-- This is needed to support importing multiple TRD versions -->
+    <SourceIdToDfdd>
+      <!-- version 4 -->
+      <MgcpMetadataListItem key="unk" value="0" />
+      <MgcpMetadataListItem key="ngaarcdigrastergraphic" value="1" />
+      <MgcpMetadataListItem key="ngaautoairfacinfofile" value="2" />
+      <MgcpMetadataListItem key="ngachartupdatemanual" value="3" />
+      <MgcpMetadataListItem key="ngacitygraphic" value="4" />
+      <MgcpMetadataListItem key="ngacombatchart" value="5" />
+      <MgcpMetadataListItem key="ngacompressedadrg" value="6" />
+      <MgcpMetadataListItem key="ngacontrolledimagebase1" value="7" />
+      <MgcpMetadataListItem key="ngacontrolledimagebase5" value="8" />
+      <MgcpMetadataListItem key="ngadigitalnauticalchart" value="10" />
+      <MgcpMetadataListItem key="ngadigitalprintfile" value="11" />
+      <MgcpMetadataListItem key="ngadigitaltopodata1" value="16" />
+      <MgcpMetadataListItem key="ngadigitaltopodata2" value="17" />
+      <MgcpMetadataListItem key="ngadigitaltopodata3" value="18" />
+      <MgcpMetadataListItem key="ngadigitaltopodata4" value="19" />
+      <MgcpMetadataListItem key="ngadigitaltopodata5" value="20" />
+      <MgcpMetadataListItem key="ngadigitalvertobstruction" value="21" />
+      <MgcpMetadataListItem key="ngafoundationfeaturedata" value="22" />
+      <MgcpMetadataListItem key="ngageolandcover" value="24" />
+      <MgcpMetadataListItem key="ngageonames" value="25" />
+      <MgcpMetadataListItem key="gpsbasedfieldcollect" value="26" />
+      <MgcpMetadataListItem key="ngaimagecitymap" value="27" />
+      <MgcpMetadataListItem key="usntmimagery" value="29" />
+      <MgcpMetadataListItem key="imageryunspecified" value="30" />
+      <MgcpMetadataListItem key="ngainterimterraindata" value="31" />
+      <MgcpMetadataListItem key="ngainterimvectordata" value="32" />
+      <MgcpMetadataListItem key="ngainternationalboundary" value="33" />
+      <MgcpMetadataListItem key="ngajointoperatgraphic" value="34" />
+      <MgcpMetadataListItem key="ngalittoralwarfaredata" value="36" />
+      <MgcpMetadataListItem key="mapchartorgeodeticdata" value="37" />
+      <MgcpMetadataListItem key="ngamissionspecificdata1" value="38" />
+      <MgcpMetadataListItem key="ngamissionspecificdata2" value="39" />
+      <MgcpMetadataListItem key="ngamissionspecificdata3" value="40" />
+      <MgcpMetadataListItem key="ngamissionspecificdata4" value="41" />
+      <MgcpMetadataListItem key="ngamissionspecificdata5" value="42" />
+      <MgcpMetadataListItem key="usmodernizedintegrateddb" value="43" />
+      <MgcpMetadataListItem key="nativedata" value="44" />
+      <MgcpMetadataListItem key="nativemap" value="45" />
+      <MgcpMetadataListItem key="ngamedicalfacilities" value="46" />
+      <MgcpMetadataListItem key="nganominalatttopoevalmap" value="47" />
+      <MgcpMetadataListItem key="ngaplanninggraphic" value="48" />
+      <MgcpMetadataListItem key="usshuttleradartopomission" value="50" />
+      <MgcpMetadataListItem key="sitemap" value="51" />
+      <MgcpMetadataListItem key="ngatacticaloceandata0" value="52" />
+      <MgcpMetadataListItem key="ngatacticaloceandata1" value="53" />
+      <MgcpMetadataListItem key="ngatacticaloceandata2" value="54" />
+      <MgcpMetadataListItem key="ngatacticaloceandata3" value="55" />
+      <MgcpMetadataListItem key="ngatacticaloceandata4" value="56" />
+      <MgcpMetadataListItem key="ngatacticaloceandata5" value="57" />
+      <MgcpMetadataListItem key="unitednationsdata" value="59" />
+      <MgcpMetadataListItem key="ngaurbanvectormap" value="60" />
+      <MgcpMetadataListItem key="ngavectorinterimterrain" value="61" />
+      <MgcpMetadataListItem key="ngavectormap0" value="62" />
+      <MgcpMetadataListItem key="ngavectormap1" value="63" />
+      <MgcpMetadataListItem key="ngavectormap2" value="64" />
+      <MgcpMetadataListItem key="ngaworldvectorshoreplus" value="65" />
+      <MgcpMetadataListItem key="spothrgdtm" value="85" />
+      <MgcpMetadataListItem key="vectordata" value="92" />
+      <MgcpMetadataListItem key="vectordata25k" value="93" />
+      <MgcpMetadataListItem key="vectordata50k" value="94" />
+      <MgcpMetadataListItem key="vectordata100k" value="95" />
+      <MgcpMetadataListItem key="veryhighrescommmonoimage" value="110" />
+      <MgcpMetadataListItem key="veryhighrescommstereoimage" value="111" />
+      <MgcpMetadataListItem key="highrescommmonoimage" value="112" />
+      <MgcpMetadataListItem key="highrescommstereoimage" value="113" />
+      <MgcpMetadataListItem key="mediumrescommmonoimage" value="114" />
+      <MgcpMetadataListItem key="mediumrescommstereoimage" value="115" />
+      <MgcpMetadataListItem key="lowrescommmonoimage" value="116" />
+      <MgcpMetadataListItem key="lowrescommstereoimage" value="117" />
+      <MgcpMetadataListItem key="maponetotwentyfivek" value="118" />
+      <MgcpMetadataListItem key="maponetofiftyk" value="119" />
+      <MgcpMetadataListItem key="maponetohundredk" value="120" />
+      <MgcpMetadataListItem key="routingdata" value="121" />
+      <MgcpMetadataListItem key="mult" value="996" />
+      <MgcpMetadataListItem key="n_p" value="997" />
+      <MgcpMetadataListItem key="n_a" value="998" />
+      <MgcpMetadataListItem key="oth" value="999" />
+      <!-- version 3 -->
+      <MgcpMetadataListItem key="adrg" value="1" />
+      <MgcpMetadataListItem key="aafif" value="2" />
+      <MgcpMetadataListItem key="chum" value="3" />
+      <MgcpMetadataListItem key="city" value="4" />
+      <MgcpMetadataListItem key="combat" value="5" />
+      <MgcpMetadataListItem key="cadrg" value="6" />
+      <MgcpMetadataListItem key="cib1" value="7" />
+      <MgcpMetadataListItem key="cib5" value="8" />
+      <MgcpMetadataListItem key="dnc" value="10" />
+      <MgcpMetadataListItem key="dpf" value="11" />
+      <MgcpMetadataListItem key="dtop1" value="16" />
+      <MgcpMetadataListItem key="dtop2" value="17" />
+      <MgcpMetadataListItem key="dtop3" value="18" />
+      <MgcpMetadataListItem key="dtop4" value="19" />
+      <MgcpMetadataListItem key="dtop5" value="20" />
+      <MgcpMetadataListItem key="dvof" value="21" />
+      <MgcpMetadataListItem key="ffd" value="22" />
+      <MgcpMetadataListItem key="cover" value="24" />
+      <MgcpMetadataListItem key="names" value="25" />
+      <MgcpMetadataListItem key="field" value="26" />
+      <MgcpMetadataListItem key="icm" value="27" />
+      <MgcpMetadataListItem key="ntm" value="29" />
+      <MgcpMetadataListItem key="imag" value="30" />
+      <MgcpMetadataListItem key="itd" value="31" />
+      <MgcpMetadataListItem key="ivd" value="32" />
+      <MgcpMetadataListItem key="ibd" value="33" />
+      <MgcpMetadataListItem key="jog" value="34" />
+      <MgcpMetadataListItem key="lwd" value="36" />
+      <MgcpMetadataListItem key="mcg" value="37" />
+      <MgcpMetadataListItem key="msd1" value="38" />
+      <MgcpMetadataListItem key="msd2" value="39" />
+      <MgcpMetadataListItem key="msd3" value="40" />
+      <MgcpMetadataListItem key="msd4" value="41" />
+      <MgcpMetadataListItem key="msd5" value="42" />
+      <MgcpMetadataListItem key="midb" value="43" />
+      <MgcpMetadataListItem key="natdat" value="44" />
+      <MgcpMetadataListItem key="natmap" value="45" />
+      <MgcpMetadataListItem key="med" value="46" />
+      <MgcpMetadataListItem key="nate" value="47" />
+      <MgcpMetadataListItem key="plan" value="48" />
+      <MgcpMetadataListItem key="srtm" value="50" />
+      <MgcpMetadataListItem key="sitmap" value="51" />
+      <MgcpMetadataListItem key="tod0" value="52" />
+      <MgcpMetadataListItem key="tod1" value="53" />
+      <MgcpMetadataListItem key="tod2" value="54" />
+      <MgcpMetadataListItem key="tod3" value="55" />
+      <MgcpMetadataListItem key="tod4" value="56" />
+      <MgcpMetadataListItem key="tod5" value="57" />
+      <MgcpMetadataListItem key="und" value="59" />
+      <MgcpMetadataListItem key="uvmap" value="60" />
+      <MgcpMetadataListItem key="vitd" value="61" />
+      <MgcpMetadataListItem key="vmap0" value="62" />
+      <MgcpMetadataListItem key="vmap1" value="63" />
+      <MgcpMetadataListItem key="vmap2" value="64" />
+      <MgcpMetadataListItem key="wvspls" value="65" />
+      <MgcpMetadataListItem key="spthrg" value="85" />
+      <MgcpMetadataListItem key="25kvectordata" value="93" />
+      <MgcpMetadataListItem key="50kvectordata" value="94" />
+      <MgcpMetadataListItem key="100kvectordata" value="95" />
+      <MgcpMetadataListItem key="other" value="999" />
+      <!-- version 2 -->
+      <MgcpMetadataListItem key="qbrd" value="9"/>
+      <MgcpMetadataListItem key="ikonos" value="28"/>
+      <MgcpMetadataListItem key="landsat" value="35"/>
+      <MgcpMetadataListItem key="refmap" value="49"/>
+      <MgcpMetadataListItem key="tlm" value="58"/>
+      <MgcpMetadataListItem key="qbrdmm" value="66"/>
+      <MgcpMetadataListItem key="qbrdms" value="67"/>
+      <MgcpMetadataListItem key="qbrdpm" value="68"/>
+      <MgcpMetadataListItem key="qbrdps" value="69"/>
+      <MgcpMetadataListItem key="ikonmm" value="70"/>
+      <MgcpMetadataListItem key="ikonms" value="71"/>
+      <MgcpMetadataListItem key="ikonpm" value="72"/>
+      <MgcpMetadataListItem key="ikonps" value="73"/>
+      <MgcpMetadataListItem key="spt10" value="74"/>
+      <MgcpMetadataListItem key="spt5" value="75"/>
+      <MgcpMetadataListItem key="spt5mm" value="76"/>
+      <MgcpMetadataListItem key="spt5ms" value="77"/>
+      <MgcpMetadataListItem key="spt5pm" value="78"/>
+      <MgcpMetadataListItem key="spt5ps" value="79"/>
+      <MgcpMetadataListItem key="spt2pm" value="80"/>
+      <MgcpMetadataListItem key="spt2mm" value="81"/>
+      <MgcpMetadataListItem key="spt5m" value="82"/>
+      <MgcpMetadataListItem key="spt5s" value="83"/>
+      <MgcpMetadataListItem key="spt10mm" value="84"/>
+      <MgcpMetadataListItem key="btm25" value="86"/>
+      <MgcpMetadataListItem key="btm50" value="87"/>
+      <MgcpMetadataListItem key="btm100" value="88"/>
+      <MgcpMetadataListItem key="bto25" value="89"/>
+      <MgcpMetadataListItem key="bto50" value="90"/>
+      <MgcpMetadataListItem key="bto100" value="91"/>
+      <MgcpMetadataListItem key="bvd" value="92" />
+      <MgcpMetadataListItem key="bvd25" value="93" />
+      <MgcpMetadataListItem key="bvd50" value="94" />
+      <MgcpMetadataListItem key="bvd100" value="95" />
+      <MgcpMetadataListItem key="frimag" value="1001"/>
+      <MgcpMetadataListItem key="frsnsr" value="1002"/>
+      <MgcpMetadataListItem key="asrp" value="1003"/>
+      <MgcpMetadataListItem key="gaz" value="1004"/>
+      <MgcpMetadataListItem key="www" value="1005"/>
+      <MgcpMetadataListItem key="orbvu3" value="1006"/>
+      <MgcpMetadataListItem key="vmap2i" value="1007"/>
+    </SourceIdToDfdd>
+  </MgcpMetadataConfig>
+  <MgcpMetadataConfig version="4" revision="2">
+    <MgcpMetadataProperties>
+      <CodeSpaceVersion>MGCP_v4_r2</CodeSpaceVersion>
+      <SubregionCatalogue>MGCP_FeatureCatalogue_TRD4.2_20140620.xml</SubregionCatalogue>
+      <SourceFields source="SSRCTY" sourceDate="SSRCDT" sourceId="SSRCID" sourceScale="SSRCSC" sourceVerticalType="SSVSCC" />
+    </MgcpMetadataProperties>
+    <DfddToSourceId>
+      <MgcpMetadataListItem key="0" value="unk" />
+      <MgcpMetadataListItem key="1" value="ngaArcDigRasterGraphic" />
+      <MgcpMetadataListItem key="2" value="ngaAutoAirFacInfoFile" />
+      <MgcpMetadataListItem key="3" value="ngaChartUpdateManual" />
+      <MgcpMetadataListItem key="4" value="ngaCityGraphic" />
+      <MgcpMetadataListItem key="5" value="ngaCombatChart" />
+      <MgcpMetadataListItem key="6" value="ngaCompressedAdrg" />
+      <MgcpMetadataListItem key="7" value="ngaControlledImageBase1" />
+      <MgcpMetadataListItem key="8" value="ngaControlledImageBase5" />
+      <MgcpMetadataListItem key="10" value="ngaDigitalNauticalChart" />
+      <MgcpMetadataListItem key="11" value="ngaDigitalPrintFile" />
+      <MgcpMetadataListItem key="16" value="ngaDigitalTopoData1" />
+      <MgcpMetadataListItem key="17" value="ngaDigitalTopoData2" />
+      <MgcpMetadataListItem key="18" value="ngaDigitalTopoData3" />
+      <MgcpMetadataListItem key="19" value="ngaDigitalTopoData4" />
+      <MgcpMetadataListItem key="20" value="ngaDigitalTopoData5" />
+      <MgcpMetadataListItem key="21" value="ngaDigitalVertObstruction" />
+      <MgcpMetadataListItem key="22" value="ngaFoundationFeatureData" />
+      <MgcpMetadataListItem key="24" value="ngaGeoLandCover" />
+      <MgcpMetadataListItem key="25" value="ngaGeoNames" />
+      <MgcpMetadataListItem key="26" value="gpsBasedFieldCollect" />
+      <MgcpMetadataListItem key="27" value="ngaImageCityMap" />
+      <MgcpMetadataListItem key="29" value="usNtmImagery" />
+      <MgcpMetadataListItem key="30" value="imageryUnspecified" />
+      <MgcpMetadataListItem key="31" value="ngaInterimTerrainData" />
+      <MgcpMetadataListItem key="32" value="ngaInterimVectorData" />
+      <MgcpMetadataListItem key="33" value="ngaInternationalBoundary" />
+      <MgcpMetadataListItem key="34" value="ngaJointOperatGraphic" />
+      <MgcpMetadataListItem key="36" value="ngaLittoralWarfareData" />
+      <MgcpMetadataListItem key="37" value="mapChartOrGeodeticData" />
+      <MgcpMetadataListItem key="38" value="ngaMissionSpecificData1" />
+      <MgcpMetadataListItem key="39" value="ngaMissionSpecificData2" />
+      <MgcpMetadataListItem key="40" value="ngaMissionSpecificData3" />
+      <MgcpMetadataListItem key="41" value="ngaMissionSpecificData4" />
+      <MgcpMetadataListItem key="42" value="ngaMissionSpecificData5" />
+      <MgcpMetadataListItem key="43" value="usModernizedIntegratedDB" />
+      <MgcpMetadataListItem key="44" value="nativeData" />
+      <MgcpMetadataListItem key="45" value="nativeMap" />
+      <MgcpMetadataListItem key="46" value="ngaMedicalFacilities" />
+      <MgcpMetadataListItem key="47" value="ngaNominalAttTopoEvalMap" />
+      <MgcpMetadataListItem key="48" value="ngaPlanningGraphic" />
+      <MgcpMetadataListItem key="50" value="usShuttleRadarTopoMission" />
+      <MgcpMetadataListItem key="51" value="siteMap" />
+      <MgcpMetadataListItem key="52" value="ngaTacticalOceanData0" />
+      <MgcpMetadataListItem key="53" value="ngaTacticalOceanData1" />
+      <MgcpMetadataListItem key="54" value="ngaTacticalOceanData2" />
+      <MgcpMetadataListItem key="55" value="ngaTacticalOceanData3" />
+      <MgcpMetadataListItem key="56" value="ngaTacticalOceanData4" />
+      <MgcpMetadataListItem key="57" value="ngaTacticalOceanData5" />
+      <MgcpMetadataListItem key="59" value="unitedNationsData" />
+      <MgcpMetadataListItem key="60" value="ngaUrbanVectorMap" />
+      <MgcpMetadataListItem key="61" value="ngaVectorInterimTerrain" />
+      <MgcpMetadataListItem key="62" value="ngaVectorMap0" />
+      <MgcpMetadataListItem key="63" value="ngaVectorMap1" />
+      <MgcpMetadataListItem key="64" value="ngaVectorMap2" />
+      <MgcpMetadataListItem key="65" value="ngaWorldVectorShorePlus" />
+      <MgcpMetadataListItem key="85" value="spotHrgDtm" />
+      <MgcpMetadataListItem key="92" value="vectorData" />
+      <MgcpMetadataListItem key="93" value="vectorData25k" />
+      <MgcpMetadataListItem key="94" value="vectorData50k" />
+      <MgcpMetadataListItem key="95" value="vectorData100k" />
+      <MgcpMetadataListItem key="110" value="veryHighResCommMonoImage" />
+      <MgcpMetadataListItem key="111" value="veryHighResCommStereoImage" />
+      <MgcpMetadataListItem key="112" value="highResCommMonoImage" />
+      <MgcpMetadataListItem key="113" value="highResCommStereoImage" />
+      <MgcpMetadataListItem key="114" value="mediumResCommMonoImage" />
+      <MgcpMetadataListItem key="115" value="mediumResCommStereoImage" />
+      <MgcpMetadataListItem key="116" value="lowResCommMonoImage" />
+      <MgcpMetadataListItem key="117" value="lowResCommStereoImage" />
+      <MgcpMetadataListItem key="118" value="mapOneToTwentyFiveK" />
+      <MgcpMetadataListItem key="119" value="mapOneToFiftyK" />
+      <MgcpMetadataListItem key="120" value="mapOneToHundredK" />
+      <MgcpMetadataListItem key="121" value="routingData" />
+      <MgcpMetadataListItem key="996" value="MULT" />
+      <MgcpMetadataListItem key="997" value="N_P" />
+      <MgcpMetadataListItem key="998" value="N_A" />
+      <MgcpMetadataListItem key="999" value="OTH" />
+    </DfddToSourceId>
+    <DfddToAccuracyEvalMethodId>
+      <MgcpMetadataListItem key="0" value="UNK" />
+      <MgcpMetadataListItem key="1" value="geodeticSurveyAdequate" />
+      <MgcpMetadataListItem key="2" value="geodeticSurveySmall" />
+      <MgcpMetadataListItem key="4" value="photogrammGdasAdequate" />
+      <MgcpMetadataListItem key="5" value="photogrammGdasSmall" />
+      <MgcpMetadataListItem key="15" value="productSpecification" />
+      <MgcpMetadataListItem key="21" value="evaluationDeferred" />
+      <MgcpMetadataListItem key="998" value="N_A" />
+    </DfddToAccuracyEvalMethodId>
+    <DfddToVerticalTypeId>
+      <MgcpMetadataListItem key="0" value="UNK" />
+      <MgcpMetadataListItem key="1" value="interpolatedDted1" />
+      <MgcpMetadataListItem key="2" value="interpolatedDted2" />
+      <MgcpMetadataListItem key="3" value="noElevations" />
+      <MgcpMetadataListItem key="4" value="reflectiveSurface" />
+      <MgcpMetadataListItem key="5" value="stereoscopicImagery" />
+      <MgcpMetadataListItem key="6" value="tinData" />
+      <MgcpMetadataListItem key="7" value="interpolatedSrtm1" />
+    </DfddToVerticalTypeId>
+    <AgencyCodeConversion>
+      <!-- from version 2 -->
+      <MgcpMetadataListItem key="MSHDF" value="GEOS_HDF"/>
+      <MgcpMetadataListItem key="SMD-RIS" value="DGS-II_DIV"/>
+      <MgcpMetadataListItem key="JGSF" value="GNZ"/>
+      <MgcpMetadataListItem key="ZGW SG WP" value="STSZRP"/>
+      <MgcpMetadataListItem key="GMC" value="GCM"/>
+      <MgcpMetadataListItem key="DGCDGI" value="DGC_JFIC"/>
+      <!-- from version 3 -->
+      <MgcpMetadataListItem key="CEGET" value="SCC" />
+      <MgcpMetadataListItem key="EMABGI" value="EMA_BGHOM" />
+      <MgcpMetadataListItem key="ZGW_SG_WP" value="STSZRP" />
+      <!-- from version 4.0 -->
+      <MgcpMetadataListItem key="DGC_ICG" value="DGC_JFIC" />
+      <MgcpMetadataListItem key="DIGO" value="AGO" />
+      <MgcpMetadataListItem key="GIO" value="GNZ" />
+      <MgcpMetadataListItem key="SGeoW" value="STSZRP" />
+      <!-- from version 4.1 -->
+      <MgcpMetadataListItem key="BGIO" value="BGIC" />
+    </AgencyCodeConversion>
+    <!-- This is needed to support importing multiple TRD versions -->
+    <SourceIdToDfdd>
+      <!-- version 4 -->
+      <MgcpMetadataListItem key="unk" value="0" />
+      <MgcpMetadataListItem key="ngaarcdigrastergraphic" value="1" />
+      <MgcpMetadataListItem key="ngaautoairfacinfofile" value="2" />
+      <MgcpMetadataListItem key="ngachartupdatemanual" value="3" />
+      <MgcpMetadataListItem key="ngacitygraphic" value="4" />
+      <MgcpMetadataListItem key="ngacombatchart" value="5" />
+      <MgcpMetadataListItem key="ngacompressedadrg" value="6" />
+      <MgcpMetadataListItem key="ngacontrolledimagebase1" value="7" />
+      <MgcpMetadataListItem key="ngacontrolledimagebase5" value="8" />
+      <MgcpMetadataListItem key="ngadigitalnauticalchart" value="10" />
+      <MgcpMetadataListItem key="ngadigitalprintfile" value="11" />
+      <MgcpMetadataListItem key="ngadigitaltopodata1" value="16" />
+      <MgcpMetadataListItem key="ngadigitaltopodata2" value="17" />
+      <MgcpMetadataListItem key="ngadigitaltopodata3" value="18" />
+      <MgcpMetadataListItem key="ngadigitaltopodata4" value="19" />
+      <MgcpMetadataListItem key="ngadigitaltopodata5" value="20" />
+      <MgcpMetadataListItem key="ngadigitalvertobstruction" value="21" />
+      <MgcpMetadataListItem key="ngafoundationfeaturedata" value="22" />
+      <MgcpMetadataListItem key="ngageolandcover" value="24" />
+      <MgcpMetadataListItem key="ngageonames" value="25" />
+      <MgcpMetadataListItem key="gpsbasedfieldcollect" value="26" />
+      <MgcpMetadataListItem key="ngaimagecitymap" value="27" />
+      <MgcpMetadataListItem key="usntmimagery" value="29" />
+      <MgcpMetadataListItem key="imageryunspecified" value="30" />
+      <MgcpMetadataListItem key="ngainterimterraindata" value="31" />
+      <MgcpMetadataListItem key="ngainterimvectordata" value="32" />
+      <MgcpMetadataListItem key="ngainternationalboundary" value="33" />
+      <MgcpMetadataListItem key="ngajointoperatgraphic" value="34" />
+      <MgcpMetadataListItem key="ngalittoralwarfaredata" value="36" />
+      <MgcpMetadataListItem key="mapchartorgeodeticdata" value="37" />
+      <MgcpMetadataListItem key="ngamissionspecificdata1" value="38" />
+      <MgcpMetadataListItem key="ngamissionspecificdata2" value="39" />
+      <MgcpMetadataListItem key="ngamissionspecificdata3" value="40" />
+      <MgcpMetadataListItem key="ngamissionspecificdata4" value="41" />
+      <MgcpMetadataListItem key="ngamissionspecificdata5" value="42" />
+      <MgcpMetadataListItem key="usmodernizedintegrateddb" value="43" />
+      <MgcpMetadataListItem key="nativedata" value="44" />
+      <MgcpMetadataListItem key="nativemap" value="45" />
+      <MgcpMetadataListItem key="ngamedicalfacilities" value="46" />
+      <MgcpMetadataListItem key="nganominalatttopoevalmap" value="47" />
+      <MgcpMetadataListItem key="ngaplanninggraphic" value="48" />
+      <MgcpMetadataListItem key="usshuttleradartopomission" value="50" />
+      <MgcpMetadataListItem key="sitemap" value="51" />
+      <MgcpMetadataListItem key="ngatacticaloceandata0" value="52" />
+      <MgcpMetadataListItem key="ngatacticaloceandata1" value="53" />
+      <MgcpMetadataListItem key="ngatacticaloceandata2" value="54" />
+      <MgcpMetadataListItem key="ngatacticaloceandata3" value="55" />
+      <MgcpMetadataListItem key="ngatacticaloceandata4" value="56" />
+      <MgcpMetadataListItem key="ngatacticaloceandata5" value="57" />
+      <MgcpMetadataListItem key="unitednationsdata" value="59" />
+      <MgcpMetadataListItem key="ngaurbanvectormap" value="60" />
+      <MgcpMetadataListItem key="ngavectorinterimterrain" value="61" />
+      <MgcpMetadataListItem key="ngavectormap0" value="62" />
+      <MgcpMetadataListItem key="ngavectormap1" value="63" />
+      <MgcpMetadataListItem key="ngavectormap2" value="64" />
+      <MgcpMetadataListItem key="ngaworldvectorshoreplus" value="65" />
+      <MgcpMetadataListItem key="spothrgdtm" value="85" />
+      <MgcpMetadataListItem key="vectordata" value="92" />
+      <MgcpMetadataListItem key="vectordata25k" value="93" />
+      <MgcpMetadataListItem key="vectordata50k" value="94" />
+      <MgcpMetadataListItem key="vectordata100k" value="95" />
+      <MgcpMetadataListItem key="veryhighrescommmonoimage" value="110" />
+      <MgcpMetadataListItem key="veryhighrescommstereoimage" value="111" />
+      <MgcpMetadataListItem key="highrescommmonoimage" value="112" />
+      <MgcpMetadataListItem key="highrescommstereoimage" value="113" />
+      <MgcpMetadataListItem key="mediumrescommmonoimage" value="114" />
+      <MgcpMetadataListItem key="mediumrescommstereoimage" value="115" />
+      <MgcpMetadataListItem key="lowrescommmonoimage" value="116" />
+      <MgcpMetadataListItem key="lowrescommstereoimage" value="117" />
+      <MgcpMetadataListItem key="maponetotwentyfivek" value="118" />
+      <MgcpMetadataListItem key="maponetofiftyk" value="119" />
+      <MgcpMetadataListItem key="maponetohundredk" value="120" />
+      <MgcpMetadataListItem key="routingdata" value="121" />
+      <MgcpMetadataListItem key="mult" value="996" />
+      <MgcpMetadataListItem key="n_p" value="997" />
+      <MgcpMetadataListItem key="n_a" value="998" />
+      <MgcpMetadataListItem key="oth" value="999" />
+      <!-- version 3 -->
+      <MgcpMetadataListItem key="adrg" value="1" />
+      <MgcpMetadataListItem key="aafif" value="2" />
+      <MgcpMetadataListItem key="chum" value="3" />
+      <MgcpMetadataListItem key="city" value="4" />
+      <MgcpMetadataListItem key="combat" value="5" />
+      <MgcpMetadataListItem key="cadrg" value="6" />
+      <MgcpMetadataListItem key="cib1" value="7" />
+      <MgcpMetadataListItem key="cib5" value="8" />
+      <MgcpMetadataListItem key="dnc" value="10" />
+      <MgcpMetadataListItem key="dpf" value="11" />
+      <MgcpMetadataListItem key="dtop1" value="16" />
+      <MgcpMetadataListItem key="dtop2" value="17" />
+      <MgcpMetadataListItem key="dtop3" value="18" />
+      <MgcpMetadataListItem key="dtop4" value="19" />
+      <MgcpMetadataListItem key="dtop5" value="20" />
+      <MgcpMetadataListItem key="dvof" value="21" />
+      <MgcpMetadataListItem key="ffd" value="22" />
+      <MgcpMetadataListItem key="cover" value="24" />
+      <MgcpMetadataListItem key="names" value="25" />
+      <MgcpMetadataListItem key="field" value="26" />
+      <MgcpMetadataListItem key="icm" value="27" />
+      <MgcpMetadataListItem key="ntm" value="29" />
+      <MgcpMetadataListItem key="imag" value="30" />
+      <MgcpMetadataListItem key="itd" value="31" />
+      <MgcpMetadataListItem key="ivd" value="32" />
+      <MgcpMetadataListItem key="ibd" value="33" />
+      <MgcpMetadataListItem key="jog" value="34" />
+      <MgcpMetadataListItem key="lwd" value="36" />
+      <MgcpMetadataListItem key="mcg" value="37" />
+      <MgcpMetadataListItem key="msd1" value="38" />
+      <MgcpMetadataListItem key="msd2" value="39" />
+      <MgcpMetadataListItem key="msd3" value="40" />
+      <MgcpMetadataListItem key="msd4" value="41" />
+      <MgcpMetadataListItem key="msd5" value="42" />
+      <MgcpMetadataListItem key="midb" value="43" />
+      <MgcpMetadataListItem key="natdat" value="44" />
+      <MgcpMetadataListItem key="natmap" value="45" />
+      <MgcpMetadataListItem key="med" value="46" />
+      <MgcpMetadataListItem key="nate" value="47" />
+      <MgcpMetadataListItem key="plan" value="48" />
+      <MgcpMetadataListItem key="srtm" value="50" />
+      <MgcpMetadataListItem key="sitmap" value="51" />
+      <MgcpMetadataListItem key="tod0" value="52" />
+      <MgcpMetadataListItem key="tod1" value="53" />
+      <MgcpMetadataListItem key="tod2" value="54" />
+      <MgcpMetadataListItem key="tod3" value="55" />
+      <MgcpMetadataListItem key="tod4" value="56" />
+      <MgcpMetadataListItem key="tod5" value="57" />
+      <MgcpMetadataListItem key="und" value="59" />
+      <MgcpMetadataListItem key="uvmap" value="60" />
+      <MgcpMetadataListItem key="vitd" value="61" />
+      <MgcpMetadataListItem key="vmap0" value="62" />
+      <MgcpMetadataListItem key="vmap1" value="63" />
+      <MgcpMetadataListItem key="vmap2" value="64" />
+      <MgcpMetadataListItem key="wvspls" value="65" />
+      <MgcpMetadataListItem key="spthrg" value="85" />
+      <MgcpMetadataListItem key="25kvectordata" value="93" />
+      <MgcpMetadataListItem key="50kvectordata" value="94" />
+      <MgcpMetadataListItem key="100kvectordata" value="95" />
+      <MgcpMetadataListItem key="other" value="999" />
+      <!-- version 2 -->
+      <MgcpMetadataListItem key="qbrd" value="9"/>
+      <MgcpMetadataListItem key="ikonos" value="28"/>
+      <MgcpMetadataListItem key="landsat" value="35"/>
+      <MgcpMetadataListItem key="refmap" value="49"/>
+      <MgcpMetadataListItem key="tlm" value="58"/>
+      <MgcpMetadataListItem key="qbrdmm" value="66"/>
+      <MgcpMetadataListItem key="qbrdms" value="67"/>
+      <MgcpMetadataListItem key="qbrdpm" value="68"/>
+      <MgcpMetadataListItem key="qbrdps" value="69"/>
+      <MgcpMetadataListItem key="ikonmm" value="70"/>
+      <MgcpMetadataListItem key="ikonms" value="71"/>
+      <MgcpMetadataListItem key="ikonpm" value="72"/>
+      <MgcpMetadataListItem key="ikonps" value="73"/>
+      <MgcpMetadataListItem key="spt10" value="74"/>
+      <MgcpMetadataListItem key="spt5" value="75"/>
+      <MgcpMetadataListItem key="spt5mm" value="76"/>
+      <MgcpMetadataListItem key="spt5ms" value="77"/>
+      <MgcpMetadataListItem key="spt5pm" value="78"/>
+      <MgcpMetadataListItem key="spt5ps" value="79"/>
+      <MgcpMetadataListItem key="spt2pm" value="80"/>
+      <MgcpMetadataListItem key="spt2mm" value="81"/>
+      <MgcpMetadataListItem key="spt5m" value="82"/>
+      <MgcpMetadataListItem key="spt5s" value="83"/>
+      <MgcpMetadataListItem key="spt10mm" value="84"/>
+      <MgcpMetadataListItem key="btm25" value="86"/>
+      <MgcpMetadataListItem key="btm50" value="87"/>
+      <MgcpMetadataListItem key="btm100" value="88"/>
+      <MgcpMetadataListItem key="bto25" value="89"/>
+      <MgcpMetadataListItem key="bto50" value="90"/>
+      <MgcpMetadataListItem key="bto100" value="91"/>
+      <MgcpMetadataListItem key="bvd" value="92" />
+      <MgcpMetadataListItem key="bvd25" value="93" />
+      <MgcpMetadataListItem key="bvd50" value="94" />
+      <MgcpMetadataListItem key="bvd100" value="95" />
+      <MgcpMetadataListItem key="frimag" value="1001"/>
+      <MgcpMetadataListItem key="frsnsr" value="1002"/>
+      <MgcpMetadataListItem key="asrp" value="1003"/>
+      <MgcpMetadataListItem key="gaz" value="1004"/>
+      <MgcpMetadataListItem key="www" value="1005"/>
+      <MgcpMetadataListItem key="orbvu3" value="1006"/>
+      <MgcpMetadataListItem key="vmap2i" value="1007"/>
+    </SourceIdToDfdd>
+  </MgcpMetadataConfig>
+  <MgcpMetadataConfig version="4" revision="3">
+    <MgcpMetadataProperties>
+      <CodeSpaceVersion>MGCP_v4_r3</CodeSpaceVersion>
+      <SubregionCatalogue>MGCP_FeatureCatalogue_TRD4.3_20150701.xml</SubregionCatalogue>
+      <SourceFields source="SSRCTY" sourceDate="SSRCDT" sourceId="SSRCID" sourceScale="SSRCSC" sourceVerticalType="SSVSCC" />
+    </MgcpMetadataProperties>
+    <DfddToSourceId>
+      <MgcpMetadataListItem key="0" value="unk" />
+      <MgcpMetadataListItem key="1" value="ngaArcDigRasterGraphic" />
+      <MgcpMetadataListItem key="2" value="ngaAutoAirFacInfoFile" />
+      <MgcpMetadataListItem key="3" value="ngaChartUpdateManual" />
+      <MgcpMetadataListItem key="4" value="ngaCityGraphic" />
+      <MgcpMetadataListItem key="5" value="ngaCombatChart" />
+      <MgcpMetadataListItem key="6" value="ngaCompressedAdrg" />
+      <MgcpMetadataListItem key="7" value="ngaControlledImageBase1" />
+      <MgcpMetadataListItem key="8" value="ngaControlledImageBase5" />
+      <MgcpMetadataListItem key="10" value="ngaDigitalNauticalChart" />
+      <MgcpMetadataListItem key="11" value="ngaDigitalPrintFile" />
+      <MgcpMetadataListItem key="16" value="ngaDigitalTopoData1" />
+      <MgcpMetadataListItem key="17" value="ngaDigitalTopoData2" />
+      <MgcpMetadataListItem key="18" value="ngaDigitalTopoData3" />
+      <MgcpMetadataListItem key="19" value="ngaDigitalTopoData4" />
+      <MgcpMetadataListItem key="20" value="ngaDigitalTopoData5" />
+      <MgcpMetadataListItem key="21" value="ngaDigitalVertObstruction" />
+      <MgcpMetadataListItem key="22" value="ngaFoundationFeatureData" />
+      <MgcpMetadataListItem key="24" value="ngaGeoLandCover" />
+      <MgcpMetadataListItem key="25" value="ngaGeoNames" />
+      <MgcpMetadataListItem key="26" value="gpsBasedFieldCollect" />
+      <MgcpMetadataListItem key="27" value="ngaImageCityMap" />
+      <MgcpMetadataListItem key="29" value="usNtmImagery" />
+      <MgcpMetadataListItem key="30" value="imageryUnspecified" />
+      <MgcpMetadataListItem key="31" value="ngaInterimTerrainData" />
+      <MgcpMetadataListItem key="32" value="ngaInterimVectorData" />
+      <MgcpMetadataListItem key="33" value="ngaInternationalBoundary" />
+      <MgcpMetadataListItem key="34" value="ngaJointOperatGraphic" />
+      <MgcpMetadataListItem key="36" value="ngaLittoralWarfareData" />
+      <MgcpMetadataListItem key="37" value="mapChartOrGeodeticData" />
+      <MgcpMetadataListItem key="38" value="ngaMissionSpecificData1" />
+      <MgcpMetadataListItem key="39" value="ngaMissionSpecificData2" />
+      <MgcpMetadataListItem key="40" value="ngaMissionSpecificData3" />
+      <MgcpMetadataListItem key="41" value="ngaMissionSpecificData4" />
+      <MgcpMetadataListItem key="42" value="ngaMissionSpecificData5" />
+      <MgcpMetadataListItem key="43" value="usModernizedIntegratedDB" />
+      <MgcpMetadataListItem key="44" value="nativeData" />
+      <MgcpMetadataListItem key="45" value="nativeMap" />
+      <MgcpMetadataListItem key="46" value="ngaMedicalFacilities" />
+      <MgcpMetadataListItem key="47" value="ngaNominalAttTopoEvalMap" />
+      <MgcpMetadataListItem key="48" value="ngaPlanningGraphic" />
+      <MgcpMetadataListItem key="50" value="usShuttleRadarTopoMission" />
+      <MgcpMetadataListItem key="51" value="siteMap" />
+      <MgcpMetadataListItem key="52" value="ngaTacticalOceanData0" />
+      <MgcpMetadataListItem key="53" value="ngaTacticalOceanData1" />
+      <MgcpMetadataListItem key="54" value="ngaTacticalOceanData2" />
+      <MgcpMetadataListItem key="55" value="ngaTacticalOceanData3" />
+      <MgcpMetadataListItem key="56" value="ngaTacticalOceanData4" />
+      <MgcpMetadataListItem key="57" value="ngaTacticalOceanData5" />
+      <MgcpMetadataListItem key="59" value="unitedNationsData" />
+      <MgcpMetadataListItem key="60" value="ngaUrbanVectorMap" />
+      <MgcpMetadataListItem key="61" value="ngaVectorInterimTerrain" />
+      <MgcpMetadataListItem key="62" value="ngaVectorMap0" />
+      <MgcpMetadataListItem key="63" value="ngaVectorMap1" />
+      <MgcpMetadataListItem key="64" value="ngaVectorMap2" />
+      <MgcpMetadataListItem key="65" value="ngaWorldVectorShorePlus" />
+      <MgcpMetadataListItem key="85" value="spotHrgDtm" />
+      <MgcpMetadataListItem key="92" value="vectorData" />
+      <MgcpMetadataListItem key="93" value="vectorData25k" />
+      <MgcpMetadataListItem key="94" value="vectorData50k" />
+      <MgcpMetadataListItem key="95" value="vectorData100k" />
+      <MgcpMetadataListItem key="110" value="veryHighResCommMonoImage" />
+      <MgcpMetadataListItem key="111" value="veryHighResCommStereoImage" />
+      <MgcpMetadataListItem key="112" value="highResCommMonoImage" />
+      <MgcpMetadataListItem key="113" value="highResCommStereoImage" />
+      <MgcpMetadataListItem key="114" value="mediumResCommMonoImage" />
+      <MgcpMetadataListItem key="115" value="mediumResCommStereoImage" />
+      <MgcpMetadataListItem key="116" value="lowResCommMonoImage" />
+      <MgcpMetadataListItem key="117" value="lowResCommStereoImage" />
+      <MgcpMetadataListItem key="118" value="mapOneToTwentyFiveK" />
+      <MgcpMetadataListItem key="119" value="mapOneToFiftyK" />
+      <MgcpMetadataListItem key="120" value="mapOneToHundredK" />
+      <MgcpMetadataListItem key="121" value="routingData" />
+      <MgcpMetadataListItem key="996" value="MULT" />
+      <MgcpMetadataListItem key="997" value="N_P" />
+      <MgcpMetadataListItem key="998" value="N_A" />
+      <MgcpMetadataListItem key="999" value="OTH" />
+    </DfddToSourceId>
+    <DfddToAccuracyEvalMethodId>
+      <MgcpMetadataListItem key="0" value="UNK" />
+      <MgcpMetadataListItem key="1" value="geodeticSurveyAdequate" />
+      <MgcpMetadataListItem key="2" value="geodeticSurveySmall" />
+      <MgcpMetadataListItem key="4" value="photogrammGdasAdequate" />
+      <MgcpMetadataListItem key="5" value="photogrammGdasSmall" />
+      <MgcpMetadataListItem key="15" value="productSpecification" />
+      <MgcpMetadataListItem key="21" value="evaluationDeferred" />
+      <MgcpMetadataListItem key="998" value="N_A" />
+    </DfddToAccuracyEvalMethodId>
+    <DfddToVerticalTypeId>
+      <MgcpMetadataListItem key="0" value="UNK" />
+      <MgcpMetadataListItem key="1" value="interpolatedDted1" />
+      <MgcpMetadataListItem key="2" value="interpolatedDted2" />
+      <MgcpMetadataListItem key="3" value="noElevations" />
+      <MgcpMetadataListItem key="4" value="reflectiveSurface" />
+      <MgcpMetadataListItem key="5" value="stereoscopicImagery" />
+      <MgcpMetadataListItem key="6" value="tinData" />
+      <MgcpMetadataListItem key="7" value="interpolatedSrtm1" />
+    </DfddToVerticalTypeId>
+    <AgencyCodeConversion>
+      <!-- from version 2 -->
+      <MgcpMetadataListItem key="MSHDF" value="GEOS_HDF"/>
+      <MgcpMetadataListItem key="SMD-RIS" value="DGS-II_DIV"/>
+      <MgcpMetadataListItem key="JGSF" value="GNZ"/>
+      <MgcpMetadataListItem key="ZGW SG WP" value="STSZRP"/>
+      <MgcpMetadataListItem key="GMC" value="GCM"/>
+      <MgcpMetadataListItem key="DGCDGI" value="DGC_JFIC"/>
+      <!-- from version 3 -->
+      <MgcpMetadataListItem key="CEGET" value="SCC" />
+      <MgcpMetadataListItem key="EMABGI" value="EMA_BGHOM" />
+      <MgcpMetadataListItem key="ZGW_SG_WP" value="STSZRP" />
+      <!-- from version 4.0 -->
+      <MgcpMetadataListItem key="DGC_ICG" value="DGC_JFIC" />
+      <MgcpMetadataListItem key="DIGO" value="AGO" />
+      <MgcpMetadataListItem key="GIO" value="GNZ" />
+      <MgcpMetadataListItem key="SGeoW" value="STSZRP" />
+      <!-- from version 4.1 -->
+      <MgcpMetadataListItem key="BGIO" value="BGIC" />
+      <!-- from version 4.3 -->
+      <MgcpMetadataListItem key="RNLAGA" value="DGA" />
+    </AgencyCodeConversion>
+    <!-- This is needed to support importing multiple TRD versions -->
+    <SourceIdToDfdd>
+      <!-- version 4 -->
+      <MgcpMetadataListItem key="unk" value="0" />
+      <MgcpMetadataListItem key="ngaarcdigrastergraphic" value="1" />
+      <MgcpMetadataListItem key="ngaautoairfacinfofile" value="2" />
+      <MgcpMetadataListItem key="ngachartupdatemanual" value="3" />
+      <MgcpMetadataListItem key="ngacitygraphic" value="4" />
+      <MgcpMetadataListItem key="ngacombatchart" value="5" />
+      <MgcpMetadataListItem key="ngacompressedadrg" value="6" />
+      <MgcpMetadataListItem key="ngacontrolledimagebase1" value="7" />
+      <MgcpMetadataListItem key="ngacontrolledimagebase5" value="8" />
+      <MgcpMetadataListItem key="ngadigitalnauticalchart" value="10" />
+      <MgcpMetadataListItem key="ngadigitalprintfile" value="11" />
+      <MgcpMetadataListItem key="ngadigitaltopodata1" value="16" />
+      <MgcpMetadataListItem key="ngadigitaltopodata2" value="17" />
+      <MgcpMetadataListItem key="ngadigitaltopodata3" value="18" />
+      <MgcpMetadataListItem key="ngadigitaltopodata4" value="19" />
+      <MgcpMetadataListItem key="ngadigitaltopodata5" value="20" />
+      <MgcpMetadataListItem key="ngadigitalvertobstruction" value="21" />
+      <MgcpMetadataListItem key="ngafoundationfeaturedata" value="22" />
+      <MgcpMetadataListItem key="ngageolandcover" value="24" />
+      <MgcpMetadataListItem key="ngageonames" value="25" />
+      <MgcpMetadataListItem key="gpsbasedfieldcollect" value="26" />
+      <MgcpMetadataListItem key="ngaimagecitymap" value="27" />
+      <MgcpMetadataListItem key="usntmimagery" value="29" />
+      <MgcpMetadataListItem key="imageryunspecified" value="30" />
+      <MgcpMetadataListItem key="ngainterimterraindata" value="31" />
+      <MgcpMetadataListItem key="ngainterimvectordata" value="32" />
+      <MgcpMetadataListItem key="ngainternationalboundary" value="33" />
+      <MgcpMetadataListItem key="ngajointoperatgraphic" value="34" />
+      <MgcpMetadataListItem key="ngalittoralwarfaredata" value="36" />
+      <MgcpMetadataListItem key="mapchartorgeodeticdata" value="37" />
+      <MgcpMetadataListItem key="ngamissionspecificdata1" value="38" />
+      <MgcpMetadataListItem key="ngamissionspecificdata2" value="39" />
+      <MgcpMetadataListItem key="ngamissionspecificdata3" value="40" />
+      <MgcpMetadataListItem key="ngamissionspecificdata4" value="41" />
+      <MgcpMetadataListItem key="ngamissionspecificdata5" value="42" />
+      <MgcpMetadataListItem key="usmodernizedintegrateddb" value="43" />
+      <MgcpMetadataListItem key="nativedata" value="44" />
+      <MgcpMetadataListItem key="nativemap" value="45" />
+      <MgcpMetadataListItem key="ngamedicalfacilities" value="46" />
+      <MgcpMetadataListItem key="nganominalatttopoevalmap" value="47" />
+      <MgcpMetadataListItem key="ngaplanninggraphic" value="48" />
+      <MgcpMetadataListItem key="usshuttleradartopomission" value="50" />
+      <MgcpMetadataListItem key="sitemap" value="51" />
+      <MgcpMetadataListItem key="ngatacticaloceandata0" value="52" />
+      <MgcpMetadataListItem key="ngatacticaloceandata1" value="53" />
+      <MgcpMetadataListItem key="ngatacticaloceandata2" value="54" />
+      <MgcpMetadataListItem key="ngatacticaloceandata3" value="55" />
+      <MgcpMetadataListItem key="ngatacticaloceandata4" value="56" />
+      <MgcpMetadataListItem key="ngatacticaloceandata5" value="57" />
+      <MgcpMetadataListItem key="unitednationsdata" value="59" />
+      <MgcpMetadataListItem key="ngaurbanvectormap" value="60" />
+      <MgcpMetadataListItem key="ngavectorinterimterrain" value="61" />
+      <MgcpMetadataListItem key="ngavectormap0" value="62" />
+      <MgcpMetadataListItem key="ngavectormap1" value="63" />
+      <MgcpMetadataListItem key="ngavectormap2" value="64" />
+      <MgcpMetadataListItem key="ngaworldvectorshoreplus" value="65" />
+      <MgcpMetadataListItem key="spothrgdtm" value="85" />
+      <MgcpMetadataListItem key="vectordata" value="92" />
+      <MgcpMetadataListItem key="vectordata25k" value="93" />
+      <MgcpMetadataListItem key="vectordata50k" value="94" />
+      <MgcpMetadataListItem key="vectordata100k" value="95" />
+      <MgcpMetadataListItem key="veryhighrescommmonoimage" value="110" />
+      <MgcpMetadataListItem key="veryhighrescommstereoimage" value="111" />
+      <MgcpMetadataListItem key="highrescommmonoimage" value="112" />
+      <MgcpMetadataListItem key="highrescommstereoimage" value="113" />
+      <MgcpMetadataListItem key="mediumrescommmonoimage" value="114" />
+      <MgcpMetadataListItem key="mediumrescommstereoimage" value="115" />
+      <MgcpMetadataListItem key="lowrescommmonoimage" value="116" />
+      <MgcpMetadataListItem key="lowrescommstereoimage" value="117" />
+      <MgcpMetadataListItem key="maponetotwentyfivek" value="118" />
+      <MgcpMetadataListItem key="maponetofiftyk" value="119" />
+      <MgcpMetadataListItem key="maponetohundredk" value="120" />
+      <MgcpMetadataListItem key="routingdata" value="121" />
+      <MgcpMetadataListItem key="mult" value="996" />
+      <MgcpMetadataListItem key="n_p" value="997" />
+      <MgcpMetadataListItem key="n_a" value="998" />
+      <MgcpMetadataListItem key="oth" value="999" />
+      <!-- version 3 -->
+      <MgcpMetadataListItem key="adrg" value="1" />
+      <MgcpMetadataListItem key="aafif" value="2" />
+      <MgcpMetadataListItem key="chum" value="3" />
+      <MgcpMetadataListItem key="city" value="4" />
+      <MgcpMetadataListItem key="combat" value="5" />
+      <MgcpMetadataListItem key="cadrg" value="6" />
+      <MgcpMetadataListItem key="cib1" value="7" />
+      <MgcpMetadataListItem key="cib5" value="8" />
+      <MgcpMetadataListItem key="dnc" value="10" />
+      <MgcpMetadataListItem key="dpf" value="11" />
+      <MgcpMetadataListItem key="dtop1" value="16" />
+      <MgcpMetadataListItem key="dtop2" value="17" />
+      <MgcpMetadataListItem key="dtop3" value="18" />
+      <MgcpMetadataListItem key="dtop4" value="19" />
+      <MgcpMetadataListItem key="dtop5" value="20" />
+      <MgcpMetadataListItem key="dvof" value="21" />
+      <MgcpMetadataListItem key="ffd" value="22" />
+      <MgcpMetadataListItem key="cover" value="24" />
+      <MgcpMetadataListItem key="names" value="25" />
+      <MgcpMetadataListItem key="field" value="26" />
+      <MgcpMetadataListItem key="icm" value="27" />
+      <MgcpMetadataListItem key="ntm" value="29" />
+      <MgcpMetadataListItem key="imag" value="30" />
+      <MgcpMetadataListItem key="itd" value="31" />
+      <MgcpMetadataListItem key="ivd" value="32" />
+      <MgcpMetadataListItem key="ibd" value="33" />
+      <MgcpMetadataListItem key="jog" value="34" />
+      <MgcpMetadataListItem key="lwd" value="36" />
+      <MgcpMetadataListItem key="mcg" value="37" />
+      <MgcpMetadataListItem key="msd1" value="38" />
+      <MgcpMetadataListItem key="msd2" value="39" />
+      <MgcpMetadataListItem key="msd3" value="40" />
+      <MgcpMetadataListItem key="msd4" value="41" />
+      <MgcpMetadataListItem key="msd5" value="42" />
+      <MgcpMetadataListItem key="midb" value="43" />
+      <MgcpMetadataListItem key="natdat" value="44" />
+      <MgcpMetadataListItem key="natmap" value="45" />
+      <MgcpMetadataListItem key="med" value="46" />
+      <MgcpMetadataListItem key="nate" value="47" />
+      <MgcpMetadataListItem key="plan" value="48" />
+      <MgcpMetadataListItem key="srtm" value="50" />
+      <MgcpMetadataListItem key="sitmap" value="51" />
+      <MgcpMetadataListItem key="tod0" value="52" />
+      <MgcpMetadataListItem key="tod1" value="53" />
+      <MgcpMetadataListItem key="tod2" value="54" />
+      <MgcpMetadataListItem key="tod3" value="55" />
+      <MgcpMetadataListItem key="tod4" value="56" />
+      <MgcpMetadataListItem key="tod5" value="57" />
+      <MgcpMetadataListItem key="und" value="59" />
+      <MgcpMetadataListItem key="uvmap" value="60" />
+      <MgcpMetadataListItem key="vitd" value="61" />
+      <MgcpMetadataListItem key="vmap0" value="62" />
+      <MgcpMetadataListItem key="vmap1" value="63" />
+      <MgcpMetadataListItem key="vmap2" value="64" />
+      <MgcpMetadataListItem key="wvspls" value="65" />
+      <MgcpMetadataListItem key="spthrg" value="85" />
+      <MgcpMetadataListItem key="25kvectordata" value="93" />
+      <MgcpMetadataListItem key="50kvectordata" value="94" />
+      <MgcpMetadataListItem key="100kvectordata" value="95" />
+      <MgcpMetadataListItem key="other" value="999" />
+      <!-- version 2 -->
+      <MgcpMetadataListItem key="qbrd" value="9"/>
+      <MgcpMetadataListItem key="ikonos" value="28"/>
+      <MgcpMetadataListItem key="landsat" value="35"/>
+      <MgcpMetadataListItem key="refmap" value="49"/>
+      <MgcpMetadataListItem key="tlm" value="58"/>
+      <MgcpMetadataListItem key="qbrdmm" value="66"/>
+      <MgcpMetadataListItem key="qbrdms" value="67"/>
+      <MgcpMetadataListItem key="qbrdpm" value="68"/>
+      <MgcpMetadataListItem key="qbrdps" value="69"/>
+      <MgcpMetadataListItem key="ikonmm" value="70"/>
+      <MgcpMetadataListItem key="ikonms" value="71"/>
+      <MgcpMetadataListItem key="ikonpm" value="72"/>
+      <MgcpMetadataListItem key="ikonps" value="73"/>
+      <MgcpMetadataListItem key="spt10" value="74"/>
+      <MgcpMetadataListItem key="spt5" value="75"/>
+      <MgcpMetadataListItem key="spt5mm" value="76"/>
+      <MgcpMetadataListItem key="spt5ms" value="77"/>
+      <MgcpMetadataListItem key="spt5pm" value="78"/>
+      <MgcpMetadataListItem key="spt5ps" value="79"/>
+      <MgcpMetadataListItem key="spt2pm" value="80"/>
+      <MgcpMetadataListItem key="spt2mm" value="81"/>
+      <MgcpMetadataListItem key="spt5m" value="82"/>
+      <MgcpMetadataListItem key="spt5s" value="83"/>
+      <MgcpMetadataListItem key="spt10mm" value="84"/>
+      <MgcpMetadataListItem key="btm25" value="86"/>
+      <MgcpMetadataListItem key="btm50" value="87"/>
+      <MgcpMetadataListItem key="btm100" value="88"/>
+      <MgcpMetadataListItem key="bto25" value="89"/>
+      <MgcpMetadataListItem key="bto50" value="90"/>
+      <MgcpMetadataListItem key="bto100" value="91"/>
+      <MgcpMetadataListItem key="bvd" value="92" />
+      <MgcpMetadataListItem key="bvd25" value="93" />
+      <MgcpMetadataListItem key="bvd50" value="94" />
+      <MgcpMetadataListItem key="bvd100" value="95" />
+      <MgcpMetadataListItem key="frimag" value="1001"/>
+      <MgcpMetadataListItem key="frsnsr" value="1002"/>
+      <MgcpMetadataListItem key="asrp" value="1003"/>
+      <MgcpMetadataListItem key="gaz" value="1004"/>
+      <MgcpMetadataListItem key="www" value="1005"/>
+      <MgcpMetadataListItem key="orbvu3" value="1006"/>
+      <MgcpMetadataListItem key="vmap2i" value="1007"/>
+    </SourceIdToDfdd>
+  </MgcpMetadataConfig>
+  <MgcpMetadataConfig version="4" revision="4">
+    <MgcpMetadataProperties>
+      <CodeSpaceVersion>MGCP_v4_r4</CodeSpaceVersion>
+      <SubregionCatalogue>MGCP_FeatureCatalogue_TRD4_v4.4_20161231.xml</SubregionCatalogue>
+      <SourceFields source="SSRCTY" sourceDate="SSRCDT" sourceId="SSRCID" sourceScale="SSRCSC" sourceVerticalType="SSVSCC" />
+    </MgcpMetadataProperties>
+    <DfddToSourceId>
+      <MgcpMetadataListItem key="0" value="unk" />
+      <MgcpMetadataListItem key="1" value="ngaArcDigRasterGraphic" />
+      <MgcpMetadataListItem key="2" value="ngaAutoAirFacInfoFile" />
+      <MgcpMetadataListItem key="3" value="ngaChartUpdateManual" />
+      <MgcpMetadataListItem key="4" value="ngaCityGraphic" />
+      <MgcpMetadataListItem key="5" value="ngaCombatChart" />
+      <MgcpMetadataListItem key="6" value="ngaCompressedAdrg" />
+      <MgcpMetadataListItem key="7" value="ngaControlledImageBase1" />
+      <MgcpMetadataListItem key="8" value="ngaControlledImageBase5" />
+      <MgcpMetadataListItem key="10" value="ngaDigitalNauticalChart" />
+      <MgcpMetadataListItem key="11" value="ngaDigitalPrintFile" />
+      <MgcpMetadataListItem key="16" value="ngaDigitalTopoData1" />
+      <MgcpMetadataListItem key="17" value="ngaDigitalTopoData2" />
+      <MgcpMetadataListItem key="18" value="ngaDigitalTopoData3" />
+      <MgcpMetadataListItem key="19" value="ngaDigitalTopoData4" />
+      <MgcpMetadataListItem key="20" value="ngaDigitalTopoData5" />
+      <MgcpMetadataListItem key="21" value="ngaDigitalVertObstruction" />
+      <MgcpMetadataListItem key="22" value="ngaFoundationFeatureData" />
+      <MgcpMetadataListItem key="24" value="ngaGeoLandCover" />
+      <MgcpMetadataListItem key="25" value="ngaGeoNames" />
+      <MgcpMetadataListItem key="26" value="gpsBasedFieldCollect" />
+      <MgcpMetadataListItem key="27" value="ngaImageCityMap" />
+      <MgcpMetadataListItem key="29" value="usNtmImagery" />
+      <MgcpMetadataListItem key="30" value="imageryUnspecified" />
+      <MgcpMetadataListItem key="31" value="ngaInterimTerrainData" />
+      <MgcpMetadataListItem key="32" value="ngaInterimVectorData" />
+      <MgcpMetadataListItem key="33" value="ngaInternationalBoundary" />
+      <MgcpMetadataListItem key="34" value="ngaJointOperatGraphic" />
+      <MgcpMetadataListItem key="36" value="ngaLittoralWarfareData" />
+      <MgcpMetadataListItem key="37" value="mapChartOrGeodeticData" />
+      <MgcpMetadataListItem key="38" value="ngaMissionSpecificData1" />
+      <MgcpMetadataListItem key="39" value="ngaMissionSpecificData2" />
+      <MgcpMetadataListItem key="40" value="ngaMissionSpecificData3" />
+      <MgcpMetadataListItem key="41" value="ngaMissionSpecificData4" />
+      <MgcpMetadataListItem key="42" value="ngaMissionSpecificData5" />
+      <MgcpMetadataListItem key="43" value="usModernizedIntegratedDB" />
+      <MgcpMetadataListItem key="44" value="nativeData" />
+      <MgcpMetadataListItem key="45" value="nativeMap" />
+      <MgcpMetadataListItem key="46" value="ngaMedicalFacilities" />
+      <MgcpMetadataListItem key="47" value="ngaNominalAttTopoEvalMap" />
+      <MgcpMetadataListItem key="48" value="ngaPlanningGraphic" />
+      <MgcpMetadataListItem key="50" value="usShuttleRadarTopoMission" />
+      <MgcpMetadataListItem key="51" value="siteMap" />
+      <MgcpMetadataListItem key="52" value="ngaTacticalOceanData0" />
+      <MgcpMetadataListItem key="53" value="ngaTacticalOceanData1" />
+      <MgcpMetadataListItem key="54" value="ngaTacticalOceanData2" />
+      <MgcpMetadataListItem key="55" value="ngaTacticalOceanData3" />
+      <MgcpMetadataListItem key="56" value="ngaTacticalOceanData4" />
+      <MgcpMetadataListItem key="57" value="ngaTacticalOceanData5" />
+      <MgcpMetadataListItem key="59" value="unitedNationsData" />
+      <MgcpMetadataListItem key="60" value="ngaUrbanVectorMap" />
+      <MgcpMetadataListItem key="61" value="ngaVectorInterimTerrain" />
+      <MgcpMetadataListItem key="62" value="ngaVectorMap0" />
+      <MgcpMetadataListItem key="63" value="ngaVectorMap1" />
+      <MgcpMetadataListItem key="64" value="ngaVectorMap2" />
+      <MgcpMetadataListItem key="65" value="ngaWorldVectorShorePlus" />
+      <MgcpMetadataListItem key="85" value="spotHrgDtm" />
+      <MgcpMetadataListItem key="92" value="vectorData" />
+      <MgcpMetadataListItem key="93" value="vectorData25k" />
+      <MgcpMetadataListItem key="94" value="vectorData50k" />
+      <MgcpMetadataListItem key="95" value="vectorData100k" />
+      <MgcpMetadataListItem key="110" value="veryHighResCommMonoImage" />
+      <MgcpMetadataListItem key="111" value="veryHighResCommStereoImage" />
+      <MgcpMetadataListItem key="112" value="highResCommMonoImage" />
+      <MgcpMetadataListItem key="113" value="highResCommStereoImage" />
+      <MgcpMetadataListItem key="114" value="mediumResCommMonoImage" />
+      <MgcpMetadataListItem key="115" value="mediumResCommStereoImage" />
+      <MgcpMetadataListItem key="116" value="lowResCommMonoImage" />
+      <MgcpMetadataListItem key="117" value="lowResCommStereoImage" />
+      <MgcpMetadataListItem key="118" value="mapOneToTwentyFiveK" />
+      <MgcpMetadataListItem key="119" value="mapOneToFiftyK" />
+      <MgcpMetadataListItem key="120" value="mapOneToHundredK" />
+      <MgcpMetadataListItem key="121" value="routingData" />
+      <MgcpMetadataListItem key="996" value="MULT" />
+      <MgcpMetadataListItem key="997" value="N_P" />
+      <MgcpMetadataListItem key="998" value="N_A" />
+      <MgcpMetadataListItem key="999" value="OTH" />
+    </DfddToSourceId>
+    <DfddToAccuracyEvalMethodId>
+      <MgcpMetadataListItem key="0" value="UNK" />
+      <MgcpMetadataListItem key="1" value="geodeticSurveyAdequate" />
+      <MgcpMetadataListItem key="2" value="geodeticSurveySmall" />
+      <MgcpMetadataListItem key="4" value="photogrammGdasAdequate" />
+      <MgcpMetadataListItem key="5" value="photogrammGdasSmall" />
+      <MgcpMetadataListItem key="15" value="productSpecification" />
+      <MgcpMetadataListItem key="21" value="evaluationDeferred" />
+      <MgcpMetadataListItem key="998" value="N_A" />
+    </DfddToAccuracyEvalMethodId>
+    <DfddToVerticalTypeId>
+      <MgcpMetadataListItem key="0" value="UNK" />
+      <MgcpMetadataListItem key="1" value="interpolatedDted1" />
+      <MgcpMetadataListItem key="2" value="interpolatedDted2" />
+      <MgcpMetadataListItem key="3" value="noElevations" />
+      <MgcpMetadataListItem key="4" value="reflectiveSurface" />
+      <MgcpMetadataListItem key="5" value="stereoscopicImagery" />
+      <MgcpMetadataListItem key="6" value="tinData" />
+      <MgcpMetadataListItem key="7" value="interpolatedSrtm1" />
+    </DfddToVerticalTypeId>
+    <AgencyCodeConversion>
+      <!-- from version 2 -->
+      <MgcpMetadataListItem key="MSHDF" value="GEOS_HDF"/>
+      <MgcpMetadataListItem key="SMD-RIS" value="DGS-II_DIV"/>
+      <MgcpMetadataListItem key="JGSF" value="GNZ"/>
+      <MgcpMetadataListItem key="ZGW SG WP" value="STSZRP"/>
+      <MgcpMetadataListItem key="GMC" value="GCM"/>
+      <MgcpMetadataListItem key="DGCDGI" value="DGC_JFIC"/>
+      <!-- from version 3 -->
+      <MgcpMetadataListItem key="CEGET" value="SCC" />
+      <MgcpMetadataListItem key="EMABGI" value="EMA_BGHOM" />
+      <MgcpMetadataListItem key="ZGW_SG_WP" value="STSZRP" />
+      <!-- from version 4.0 -->
+      <MgcpMetadataListItem key="DGC_ICG" value="DGC_JFIC" />
+      <MgcpMetadataListItem key="DIGO" value="AGO" />
+      <MgcpMetadataListItem key="GIO" value="GNZ" />
+      <MgcpMetadataListItem key="SGeoW" value="STSZRP" />
+      <!-- from version 4.1 -->
+      <MgcpMetadataListItem key="BGIO" value="BGIC" />
+      <!-- from version 4.3 -->
+      <MgcpMetadataListItem key="RNLAGA" value="DGA" />
+      <!-- from version 4.4 -->
+      <MgcpMetadataListItem key="MGD" value="MoD_HRV" />
+      <MgcpMetadataListItem key="IGEOE" value="CIGEOE" />
+    </AgencyCodeConversion>
+    <!-- This is needed to support importing multiple TRD versions -->
+    <SourceIdToDfdd>
+      <!-- version 4 -->
+      <MgcpMetadataListItem key="unk" value="0" />
+      <MgcpMetadataListItem key="ngaarcdigrastergraphic" value="1" />
+      <MgcpMetadataListItem key="ngaautoairfacinfofile" value="2" />
+      <MgcpMetadataListItem key="ngachartupdatemanual" value="3" />
+      <MgcpMetadataListItem key="ngacitygraphic" value="4" />
+      <MgcpMetadataListItem key="ngacombatchart" value="5" />
+      <MgcpMetadataListItem key="ngacompressedadrg" value="6" />
+      <MgcpMetadataListItem key="ngacontrolledimagebase1" value="7" />
+      <MgcpMetadataListItem key="ngacontrolledimagebase5" value="8" />
+      <MgcpMetadataListItem key="ngadigitalnauticalchart" value="10" />
+      <MgcpMetadataListItem key="ngadigitalprintfile" value="11" />
+      <MgcpMetadataListItem key="ngadigitaltopodata1" value="16" />
+      <MgcpMetadataListItem key="ngadigitaltopodata2" value="17" />
+      <MgcpMetadataListItem key="ngadigitaltopodata3" value="18" />
+      <MgcpMetadataListItem key="ngadigitaltopodata4" value="19" />
+      <MgcpMetadataListItem key="ngadigitaltopodata5" value="20" />
+      <MgcpMetadataListItem key="ngadigitalvertobstruction" value="21" />
+      <MgcpMetadataListItem key="ngafoundationfeaturedata" value="22" />
+      <MgcpMetadataListItem key="ngageolandcover" value="24" />
+      <MgcpMetadataListItem key="ngageonames" value="25" />
+      <MgcpMetadataListItem key="gpsbasedfieldcollect" value="26" />
+      <MgcpMetadataListItem key="ngaimagecitymap" value="27" />
+      <MgcpMetadataListItem key="usntmimagery" value="29" />
+      <MgcpMetadataListItem key="imageryunspecified" value="30" />
+      <MgcpMetadataListItem key="ngainterimterraindata" value="31" />
+      <MgcpMetadataListItem key="ngainterimvectordata" value="32" />
+      <MgcpMetadataListItem key="ngainternationalboundary" value="33" />
+      <MgcpMetadataListItem key="ngajointoperatgraphic" value="34" />
+      <MgcpMetadataListItem key="ngalittoralwarfaredata" value="36" />
+      <MgcpMetadataListItem key="mapchartorgeodeticdata" value="37" />
+      <MgcpMetadataListItem key="ngamissionspecificdata1" value="38" />
+      <MgcpMetadataListItem key="ngamissionspecificdata2" value="39" />
+      <MgcpMetadataListItem key="ngamissionspecificdata3" value="40" />
+      <MgcpMetadataListItem key="ngamissionspecificdata4" value="41" />
+      <MgcpMetadataListItem key="ngamissionspecificdata5" value="42" />
+      <MgcpMetadataListItem key="usmodernizedintegrateddb" value="43" />
+      <MgcpMetadataListItem key="nativedata" value="44" />
+      <MgcpMetadataListItem key="nativemap" value="45" />
+      <MgcpMetadataListItem key="ngamedicalfacilities" value="46" />
+      <MgcpMetadataListItem key="nganominalatttopoevalmap" value="47" />
+      <MgcpMetadataListItem key="ngaplanninggraphic" value="48" />
+      <MgcpMetadataListItem key="usshuttleradartopomission" value="50" />
+      <MgcpMetadataListItem key="sitemap" value="51" />
+      <MgcpMetadataListItem key="ngatacticaloceandata0" value="52" />
+      <MgcpMetadataListItem key="ngatacticaloceandata1" value="53" />
+      <MgcpMetadataListItem key="ngatacticaloceandata2" value="54" />
+      <MgcpMetadataListItem key="ngatacticaloceandata3" value="55" />
+      <MgcpMetadataListItem key="ngatacticaloceandata4" value="56" />
+      <MgcpMetadataListItem key="ngatacticaloceandata5" value="57" />
+      <MgcpMetadataListItem key="unitednationsdata" value="59" />
+      <MgcpMetadataListItem key="ngaurbanvectormap" value="60" />
+      <MgcpMetadataListItem key="ngavectorinterimterrain" value="61" />
+      <MgcpMetadataListItem key="ngavectormap0" value="62" />
+      <MgcpMetadataListItem key="ngavectormap1" value="63" />
+      <MgcpMetadataListItem key="ngavectormap2" value="64" />
+      <MgcpMetadataListItem key="ngaworldvectorshoreplus" value="65" />
+      <MgcpMetadataListItem key="spothrgdtm" value="85" />
+      <MgcpMetadataListItem key="vectordata" value="92" />
+      <MgcpMetadataListItem key="vectordata25k" value="93" />
+      <MgcpMetadataListItem key="vectordata50k" value="94" />
+      <MgcpMetadataListItem key="vectordata100k" value="95" />
+      <MgcpMetadataListItem key="veryhighrescommmonoimage" value="110" />
+      <MgcpMetadataListItem key="veryhighrescommstereoimage" value="111" />
+      <MgcpMetadataListItem key="highrescommmonoimage" value="112" />
+      <MgcpMetadataListItem key="highrescommstereoimage" value="113" />
+      <MgcpMetadataListItem key="mediumrescommmonoimage" value="114" />
+      <MgcpMetadataListItem key="mediumrescommstereoimage" value="115" />
+      <MgcpMetadataListItem key="lowrescommmonoimage" value="116" />
+      <MgcpMetadataListItem key="lowrescommstereoimage" value="117" />
+      <MgcpMetadataListItem key="maponetotwentyfivek" value="118" />
+      <MgcpMetadataListItem key="maponetofiftyk" value="119" />
+      <MgcpMetadataListItem key="maponetohundredk" value="120" />
+      <MgcpMetadataListItem key="routingdata" value="121" />
+      <MgcpMetadataListItem key="mult" value="996" />
+      <MgcpMetadataListItem key="n_p" value="997" />
+      <MgcpMetadataListItem key="n_a" value="998" />
+      <MgcpMetadataListItem key="oth" value="999" />
+      <!-- version 3 -->
+      <MgcpMetadataListItem key="adrg" value="1" />
+      <MgcpMetadataListItem key="aafif" value="2" />
+      <MgcpMetadataListItem key="chum" value="3" />
+      <MgcpMetadataListItem key="city" value="4" />
+      <MgcpMetadataListItem key="combat" value="5" />
+      <MgcpMetadataListItem key="cadrg" value="6" />
+      <MgcpMetadataListItem key="cib1" value="7" />
+      <MgcpMetadataListItem key="cib5" value="8" />
+      <MgcpMetadataListItem key="dnc" value="10" />
+      <MgcpMetadataListItem key="dpf" value="11" />
+      <MgcpMetadataListItem key="dtop1" value="16" />
+      <MgcpMetadataListItem key="dtop2" value="17" />
+      <MgcpMetadataListItem key="dtop3" value="18" />
+      <MgcpMetadataListItem key="dtop4" value="19" />
+      <MgcpMetadataListItem key="dtop5" value="20" />
+      <MgcpMetadataListItem key="dvof" value="21" />
+      <MgcpMetadataListItem key="ffd" value="22" />
+      <MgcpMetadataListItem key="cover" value="24" />
+      <MgcpMetadataListItem key="names" value="25" />
+      <MgcpMetadataListItem key="field" value="26" />
+      <MgcpMetadataListItem key="icm" value="27" />
+      <MgcpMetadataListItem key="ntm" value="29" />
+      <MgcpMetadataListItem key="imag" value="30" />
+      <MgcpMetadataListItem key="itd" value="31" />
+      <MgcpMetadataListItem key="ivd" value="32" />
+      <MgcpMetadataListItem key="ibd" value="33" />
+      <MgcpMetadataListItem key="jog" value="34" />
+      <MgcpMetadataListItem key="lwd" value="36" />
+      <MgcpMetadataListItem key="mcg" value="37" />
+      <MgcpMetadataListItem key="msd1" value="38" />
+      <MgcpMetadataListItem key="msd2" value="39" />
+      <MgcpMetadataListItem key="msd3" value="40" />
+      <MgcpMetadataListItem key="msd4" value="41" />
+      <MgcpMetadataListItem key="msd5" value="42" />
+      <MgcpMetadataListItem key="midb" value="43" />
+      <MgcpMetadataListItem key="natdat" value="44" />
+      <MgcpMetadataListItem key="natmap" value="45" />
+      <MgcpMetadataListItem key="med" value="46" />
+      <MgcpMetadataListItem key="nate" value="47" />
+      <MgcpMetadataListItem key="plan" value="48" />
+      <MgcpMetadataListItem key="srtm" value="50" />
+      <MgcpMetadataListItem key="sitmap" value="51" />
+      <MgcpMetadataListItem key="tod0" value="52" />
+      <MgcpMetadataListItem key="tod1" value="53" />
+      <MgcpMetadataListItem key="tod2" value="54" />
+      <MgcpMetadataListItem key="tod3" value="55" />
+      <MgcpMetadataListItem key="tod4" value="56" />
+      <MgcpMetadataListItem key="tod5" value="57" />
+      <MgcpMetadataListItem key="und" value="59" />
+      <MgcpMetadataListItem key="uvmap" value="60" />
+      <MgcpMetadataListItem key="vitd" value="61" />
+      <MgcpMetadataListItem key="vmap0" value="62" />
+      <MgcpMetadataListItem key="vmap1" value="63" />
+      <MgcpMetadataListItem key="vmap2" value="64" />
+      <MgcpMetadataListItem key="wvspls" value="65" />
+      <MgcpMetadataListItem key="spthrg" value="85" />
+      <MgcpMetadataListItem key="25kvectordata" value="93" />
+      <MgcpMetadataListItem key="50kvectordata" value="94" />
+      <MgcpMetadataListItem key="100kvectordata" value="95" />
+      <MgcpMetadataListItem key="other" value="999" />
+      <!-- version 2 -->
+      <MgcpMetadataListItem key="qbrd" value="9"/>
+      <MgcpMetadataListItem key="ikonos" value="28"/>
+      <MgcpMetadataListItem key="landsat" value="35"/>
+      <MgcpMetadataListItem key="refmap" value="49"/>
+      <MgcpMetadataListItem key="tlm" value="58"/>
+      <MgcpMetadataListItem key="qbrdmm" value="66"/>
+      <MgcpMetadataListItem key="qbrdms" value="67"/>
+      <MgcpMetadataListItem key="qbrdpm" value="68"/>
+      <MgcpMetadataListItem key="qbrdps" value="69"/>
+      <MgcpMetadataListItem key="ikonmm" value="70"/>
+      <MgcpMetadataListItem key="ikonms" value="71"/>
+      <MgcpMetadataListItem key="ikonpm" value="72"/>
+      <MgcpMetadataListItem key="ikonps" value="73"/>
+      <MgcpMetadataListItem key="spt10" value="74"/>
+      <MgcpMetadataListItem key="spt5" value="75"/>
+      <MgcpMetadataListItem key="spt5mm" value="76"/>
+      <MgcpMetadataListItem key="spt5ms" value="77"/>
+      <MgcpMetadataListItem key="spt5pm" value="78"/>
+      <MgcpMetadataListItem key="spt5ps" value="79"/>
+      <MgcpMetadataListItem key="spt2pm" value="80"/>
+      <MgcpMetadataListItem key="spt2mm" value="81"/>
+      <MgcpMetadataListItem key="spt5m" value="82"/>
+      <MgcpMetadataListItem key="spt5s" value="83"/>
+      <MgcpMetadataListItem key="spt10mm" value="84"/>
+      <MgcpMetadataListItem key="btm25" value="86"/>
+      <MgcpMetadataListItem key="btm50" value="87"/>
+      <MgcpMetadataListItem key="btm100" value="88"/>
+      <MgcpMetadataListItem key="bto25" value="89"/>
+      <MgcpMetadataListItem key="bto50" value="90"/>
+      <MgcpMetadataListItem key="bto100" value="91"/>
+      <MgcpMetadataListItem key="bvd" value="92" />
+      <MgcpMetadataListItem key="bvd25" value="93" />
+      <MgcpMetadataListItem key="bvd50" value="94" />
+      <MgcpMetadataListItem key="bvd100" value="95" />
+      <MgcpMetadataListItem key="frimag" value="1001"/>
+      <MgcpMetadataListItem key="frsnsr" value="1002"/>
+      <MgcpMetadataListItem key="asrp" value="1003"/>
+      <MgcpMetadataListItem key="gaz" value="1004"/>
+      <MgcpMetadataListItem key="www" value="1005"/>
+      <MgcpMetadataListItem key="orbvu3" value="1006"/>
+      <MgcpMetadataListItem key="vmap2i" value="1007"/>
+    </SourceIdToDfdd>
+  </MgcpMetadataConfig>
+  <MgcpMetadataConfig version="4" revision="5">
+    <MgcpMetadataProperties>
+      <CodeSpaceVersion>MGCP_v4_r5</CodeSpaceVersion>
+      <SubregionCatalogue>MGCP_FeatureCatalogue_TRD4_v4.5_20190208.xml</SubregionCatalogue>
+      <SourceFields source="SSRCTY" sourceDate="SSRCDT" sourceId="SSRCID" sourceScale="SSRCSC" sourceVerticalType="SSVSCC" />
+    </MgcpMetadataProperties>
+    <DfddToSourceId>
+      <MgcpMetadataListItem key="0" value="unk" />
+      <MgcpMetadataListItem key="1" value="ngaArcDigRasterGraphic" />
+      <MgcpMetadataListItem key="2" value="ngaAutoAirFacInfoFile" />
+      <MgcpMetadataListItem key="3" value="ngaChartUpdateManual" />
+      <MgcpMetadataListItem key="4" value="ngaCityGraphic" />
+      <MgcpMetadataListItem key="5" value="ngaCombatChart" />
+      <MgcpMetadataListItem key="6" value="ngaCompressedAdrg" />
+      <MgcpMetadataListItem key="7" value="ngaControlledImageBase1" />
+      <MgcpMetadataListItem key="8" value="ngaControlledImageBase5" />
+      <MgcpMetadataListItem key="10" value="ngaDigitalNauticalChart" />
+      <MgcpMetadataListItem key="11" value="ngaDigitalPrintFile" />
+      <MgcpMetadataListItem key="16" value="ngaDigitalTopoData1" />
+      <MgcpMetadataListItem key="17" value="ngaDigitalTopoData2" />
+      <MgcpMetadataListItem key="18" value="ngaDigitalTopoData3" />
+      <MgcpMetadataListItem key="19" value="ngaDigitalTopoData4" />
+      <MgcpMetadataListItem key="20" value="ngaDigitalTopoData5" />
+      <MgcpMetadataListItem key="21" value="ngaDigitalVertObstruction" />
+      <MgcpMetadataListItem key="22" value="ngaFoundationFeatureData" />
+      <MgcpMetadataListItem key="24" value="ngaGeoLandCover" />
+      <MgcpMetadataListItem key="25" value="ngaGeoNames" />
+      <MgcpMetadataListItem key="26" value="gpsBasedFieldCollect" />
+      <MgcpMetadataListItem key="27" value="ngaImageCityMap" />
+      <MgcpMetadataListItem key="29" value="usNtmImagery" />
+      <MgcpMetadataListItem key="30" value="imageryUnspecified" />
+      <MgcpMetadataListItem key="31" value="ngaInterimTerrainData" />
+      <MgcpMetadataListItem key="32" value="ngaInterimVectorData" />
+      <MgcpMetadataListItem key="33" value="ngaInternationalBoundary" />
+      <MgcpMetadataListItem key="34" value="ngaJointOperatGraphic" />
+      <MgcpMetadataListItem key="36" value="ngaLittoralWarfareData" />
+      <MgcpMetadataListItem key="37" value="mapChartOrGeodeticData" />
+      <MgcpMetadataListItem key="38" value="ngaMissionSpecificData1" />
+      <MgcpMetadataListItem key="39" value="ngaMissionSpecificData2" />
+      <MgcpMetadataListItem key="40" value="ngaMissionSpecificData3" />
+      <MgcpMetadataListItem key="41" value="ngaMissionSpecificData4" />
+      <MgcpMetadataListItem key="42" value="ngaMissionSpecificData5" />
+      <MgcpMetadataListItem key="43" value="usModernizedIntegratedDB" />
+      <MgcpMetadataListItem key="44" value="nativeData" />
+      <MgcpMetadataListItem key="45" value="nativeMap" />
+      <MgcpMetadataListItem key="46" value="ngaMedicalFacilities" />
+      <MgcpMetadataListItem key="47" value="ngaNominalAttTopoEvalMap" />
+      <MgcpMetadataListItem key="48" value="ngaPlanningGraphic" />
+      <MgcpMetadataListItem key="50" value="usShuttleRadarTopoMission" />
+      <MgcpMetadataListItem key="51" value="siteMap" />
+      <MgcpMetadataListItem key="52" value="ngaTacticalOceanData0" />
+      <MgcpMetadataListItem key="53" value="ngaTacticalOceanData1" />
+      <MgcpMetadataListItem key="54" value="ngaTacticalOceanData2" />
+      <MgcpMetadataListItem key="55" value="ngaTacticalOceanData3" />
+      <MgcpMetadataListItem key="56" value="ngaTacticalOceanData4" />
+      <MgcpMetadataListItem key="57" value="ngaTacticalOceanData5" />
+      <MgcpMetadataListItem key="59" value="unitedNationsData" />
+      <MgcpMetadataListItem key="60" value="ngaUrbanVectorMap" />
+      <MgcpMetadataListItem key="61" value="ngaVectorInterimTerrain" />
+      <MgcpMetadataListItem key="62" value="ngaVectorMap0" />
+      <MgcpMetadataListItem key="63" value="ngaVectorMap1" />
+      <MgcpMetadataListItem key="64" value="ngaVectorMap2" />
+      <MgcpMetadataListItem key="65" value="ngaWorldVectorShorePlus" />
+      <MgcpMetadataListItem key="85" value="spotHrgDtm" />
+      <MgcpMetadataListItem key="92" value="vectorData" />
+      <MgcpMetadataListItem key="93" value="vectorData25k" />
+      <MgcpMetadataListItem key="94" value="vectorData50k" />
+      <MgcpMetadataListItem key="95" value="vectorData100k" />
+      <MgcpMetadataListItem key="110" value="veryHighResCommMonoImage" />
+      <MgcpMetadataListItem key="111" value="veryHighResCommStereoImage" />
+      <MgcpMetadataListItem key="112" value="highResCommMonoImage" />
+      <MgcpMetadataListItem key="113" value="highResCommStereoImage" />
+      <MgcpMetadataListItem key="114" value="mediumResCommMonoImage" />
+      <MgcpMetadataListItem key="115" value="mediumResCommStereoImage" />
+      <MgcpMetadataListItem key="116" value="lowResCommMonoImage" />
+      <MgcpMetadataListItem key="117" value="lowResCommStereoImage" />
+      <MgcpMetadataListItem key="118" value="mapOneToTwentyFiveK" />
+      <MgcpMetadataListItem key="119" value="mapOneToFiftyK" />
+      <MgcpMetadataListItem key="120" value="mapOneToHundredK" />
+      <MgcpMetadataListItem key="121" value="routingData" />
+      <MgcpMetadataListItem key="996" value="MULT" />
+      <MgcpMetadataListItem key="997" value="N_P" />
+      <MgcpMetadataListItem key="998" value="N_A" />
+      <MgcpMetadataListItem key="999" value="OTH" />
+    </DfddToSourceId>
+    <DfddToAccuracyEvalMethodId>
+      <MgcpMetadataListItem key="0" value="UNK" />
+      <MgcpMetadataListItem key="1" value="geodeticSurveyAdequate" />
+      <MgcpMetadataListItem key="2" value="geodeticSurveySmall" />
+      <MgcpMetadataListItem key="4" value="photogrammGdasAdequate" />
+      <MgcpMetadataListItem key="5" value="photogrammGdasSmall" />
+      <MgcpMetadataListItem key="15" value="productSpecification" />
+      <MgcpMetadataListItem key="21" value="evaluationDeferred" />
+      <MgcpMetadataListItem key="998" value="N_A" />
+    </DfddToAccuracyEvalMethodId>
+    <DfddToVerticalTypeId>
+      <MgcpMetadataListItem key="0" value="UNK" />
+      <MgcpMetadataListItem key="1" value="interpolatedDted1" />
+      <MgcpMetadataListItem key="2" value="interpolatedDted2" />
+      <MgcpMetadataListItem key="3" value="noElevations" />
+      <MgcpMetadataListItem key="4" value="reflectiveSurface" />
+      <MgcpMetadataListItem key="5" value="stereoscopicImagery" />
+      <MgcpMetadataListItem key="6" value="tinData" />
+      <MgcpMetadataListItem key="7" value="interpolatedSrtm1" />
+    </DfddToVerticalTypeId>
+    <AgencyCodeConversion>
+      <!-- from version 2 -->
+      <MgcpMetadataListItem key="MSHDF" value="GEOS_HDF"/>
+      <MgcpMetadataListItem key="SMD-RIS" value="DGS-II_DIV"/>
+      <MgcpMetadataListItem key="JGSF" value="GNZ"/>
+      <MgcpMetadataListItem key="ZGW SG WP" value="STSZRP"/>
+      <MgcpMetadataListItem key="GMC" value="GCM"/>
+      <MgcpMetadataListItem key="DGCDGI" value="DGC_JFIC"/>
+      <!-- from version 3 -->
+      <MgcpMetadataListItem key="CEGET" value="SCC" />
+      <MgcpMetadataListItem key="EMABGI" value="EMA_BGHOM" />
+      <MgcpMetadataListItem key="ZGW_SG_WP" value="STSZRP" />
+      <!-- from version 4.0 -->
+      <MgcpMetadataListItem key="DGC_ICG" value="DGC_JFIC" />
+      <MgcpMetadataListItem key="DIGO" value="AGO" />
+      <MgcpMetadataListItem key="GIO" value="GNZ" />
+      <MgcpMetadataListItem key="SGeoW" value="STSZRP" />
+      <!-- from version 4.1 -->
+      <MgcpMetadataListItem key="BGIO" value="BGIC" />
+      <!-- from version 4.3 -->
+      <MgcpMetadataListItem key="RNLAGA" value="DGA" />
+      <!-- from version 4.4 -->
+      <MgcpMetadataListItem key="MGD" value="MoD_HRV" />
+      <MgcpMetadataListItem key="IGEOE" value="CIGEOE" />
+    </AgencyCodeConversion>
+    <!-- This is needed to support importing multiple TRD versions -->
+    <SourceIdToDfdd>
+      <!-- version 4 -->
+      <MgcpMetadataListItem key="unk" value="0" />
+      <MgcpMetadataListItem key="ngaarcdigrastergraphic" value="1" />
+      <MgcpMetadataListItem key="ngaautoairfacinfofile" value="2" />
+      <MgcpMetadataListItem key="ngachartupdatemanual" value="3" />
+      <MgcpMetadataListItem key="ngacitygraphic" value="4" />
+      <MgcpMetadataListItem key="ngacombatchart" value="5" />
+      <MgcpMetadataListItem key="ngacompressedadrg" value="6" />
+      <MgcpMetadataListItem key="ngacontrolledimagebase1" value="7" />
+      <MgcpMetadataListItem key="ngacontrolledimagebase5" value="8" />
+      <MgcpMetadataListItem key="ngadigitalnauticalchart" value="10" />
+      <MgcpMetadataListItem key="ngadigitalprintfile" value="11" />
+      <MgcpMetadataListItem key="ngadigitaltopodata1" value="16" />
+      <MgcpMetadataListItem key="ngadigitaltopodata2" value="17" />
+      <MgcpMetadataListItem key="ngadigitaltopodata3" value="18" />
+      <MgcpMetadataListItem key="ngadigitaltopodata4" value="19" />
+      <MgcpMetadataListItem key="ngadigitaltopodata5" value="20" />
+      <MgcpMetadataListItem key="ngadigitalvertobstruction" value="21" />
+      <MgcpMetadataListItem key="ngafoundationfeaturedata" value="22" />
+      <MgcpMetadataListItem key="ngageolandcover" value="24" />
+      <MgcpMetadataListItem key="ngageonames" value="25" />
+      <MgcpMetadataListItem key="gpsbasedfieldcollect" value="26" />
+      <MgcpMetadataListItem key="ngaimagecitymap" value="27" />
+      <MgcpMetadataListItem key="usntmimagery" value="29" />
+      <MgcpMetadataListItem key="imageryunspecified" value="30" />
+      <MgcpMetadataListItem key="ngainterimterraindata" value="31" />
+      <MgcpMetadataListItem key="ngainterimvectordata" value="32" />
+      <MgcpMetadataListItem key="ngainternationalboundary" value="33" />
+      <MgcpMetadataListItem key="ngajointoperatgraphic" value="34" />
+      <MgcpMetadataListItem key="ngalittoralwarfaredata" value="36" />
+      <MgcpMetadataListItem key="mapchartorgeodeticdata" value="37" />
+      <MgcpMetadataListItem key="ngamissionspecificdata1" value="38" />
+      <MgcpMetadataListItem key="ngamissionspecificdata2" value="39" />
+      <MgcpMetadataListItem key="ngamissionspecificdata3" value="40" />
+      <MgcpMetadataListItem key="ngamissionspecificdata4" value="41" />
+      <MgcpMetadataListItem key="ngamissionspecificdata5" value="42" />
+      <MgcpMetadataListItem key="usmodernizedintegrateddb" value="43" />
+      <MgcpMetadataListItem key="nativedata" value="44" />
+      <MgcpMetadataListItem key="nativemap" value="45" />
+      <MgcpMetadataListItem key="ngamedicalfacilities" value="46" />
+      <MgcpMetadataListItem key="nganominalatttopoevalmap" value="47" />
+      <MgcpMetadataListItem key="ngaplanninggraphic" value="48" />
+      <MgcpMetadataListItem key="usshuttleradartopomission" value="50" />
+      <MgcpMetadataListItem key="sitemap" value="51" />
+      <MgcpMetadataListItem key="ngatacticaloceandata0" value="52" />
+      <MgcpMetadataListItem key="ngatacticaloceandata1" value="53" />
+      <MgcpMetadataListItem key="ngatacticaloceandata2" value="54" />
+      <MgcpMetadataListItem key="ngatacticaloceandata3" value="55" />
+      <MgcpMetadataListItem key="ngatacticaloceandata4" value="56" />
+      <MgcpMetadataListItem key="ngatacticaloceandata5" value="57" />
+      <MgcpMetadataListItem key="unitednationsdata" value="59" />
+      <MgcpMetadataListItem key="ngaurbanvectormap" value="60" />
+      <MgcpMetadataListItem key="ngavectorinterimterrain" value="61" />
+      <MgcpMetadataListItem key="ngavectormap0" value="62" />
+      <MgcpMetadataListItem key="ngavectormap1" value="63" />
+      <MgcpMetadataListItem key="ngavectormap2" value="64" />
+      <MgcpMetadataListItem key="ngaworldvectorshoreplus" value="65" />
+      <MgcpMetadataListItem key="spothrgdtm" value="85" />
+      <MgcpMetadataListItem key="vectordata" value="92" />
+      <MgcpMetadataListItem key="vectordata25k" value="93" />
+      <MgcpMetadataListItem key="vectordata50k" value="94" />
+      <MgcpMetadataListItem key="vectordata100k" value="95" />
+      <MgcpMetadataListItem key="veryhighrescommmonoimage" value="110" />
+      <MgcpMetadataListItem key="veryhighrescommstereoimage" value="111" />
+      <MgcpMetadataListItem key="highrescommmonoimage" value="112" />
+      <MgcpMetadataListItem key="highrescommstereoimage" value="113" />
+      <MgcpMetadataListItem key="mediumrescommmonoimage" value="114" />
+      <MgcpMetadataListItem key="mediumrescommstereoimage" value="115" />
+      <MgcpMetadataListItem key="lowrescommmonoimage" value="116" />
+      <MgcpMetadataListItem key="lowrescommstereoimage" value="117" />
+      <MgcpMetadataListItem key="maponetotwentyfivek" value="118" />
+      <MgcpMetadataListItem key="maponetofiftyk" value="119" />
+      <MgcpMetadataListItem key="maponetohundredk" value="120" />
+      <MgcpMetadataListItem key="routingdata" value="121" />
+      <MgcpMetadataListItem key="mult" value="996" />
+      <MgcpMetadataListItem key="n_p" value="997" />
+      <MgcpMetadataListItem key="n_a" value="998" />
+      <MgcpMetadataListItem key="oth" value="999" />
+      <!-- version 3 -->
+      <MgcpMetadataListItem key="adrg" value="1" />
+      <MgcpMetadataListItem key="aafif" value="2" />
+      <MgcpMetadataListItem key="chum" value="3" />
+      <MgcpMetadataListItem key="city" value="4" />
+      <MgcpMetadataListItem key="combat" value="5" />
+      <MgcpMetadataListItem key="cadrg" value="6" />
+      <MgcpMetadataListItem key="cib1" value="7" />
+      <MgcpMetadataListItem key="cib5" value="8" />
+      <MgcpMetadataListItem key="dnc" value="10" />
+      <MgcpMetadataListItem key="dpf" value="11" />
+      <MgcpMetadataListItem key="dtop1" value="16" />
+      <MgcpMetadataListItem key="dtop2" value="17" />
+      <MgcpMetadataListItem key="dtop3" value="18" />
+      <MgcpMetadataListItem key="dtop4" value="19" />
+      <MgcpMetadataListItem key="dtop5" value="20" />
+      <MgcpMetadataListItem key="dvof" value="21" />
+      <MgcpMetadataListItem key="ffd" value="22" />
+      <MgcpMetadataListItem key="cover" value="24" />
+      <MgcpMetadataListItem key="names" value="25" />
+      <MgcpMetadataListItem key="field" value="26" />
+      <MgcpMetadataListItem key="icm" value="27" />
+      <MgcpMetadataListItem key="ntm" value="29" />
+      <MgcpMetadataListItem key="imag" value="30" />
+      <MgcpMetadataListItem key="itd" value="31" />
+      <MgcpMetadataListItem key="ivd" value="32" />
+      <MgcpMetadataListItem key="ibd" value="33" />
+      <MgcpMetadataListItem key="jog" value="34" />
+      <MgcpMetadataListItem key="lwd" value="36" />
+      <MgcpMetadataListItem key="mcg" value="37" />
+      <MgcpMetadataListItem key="msd1" value="38" />
+      <MgcpMetadataListItem key="msd2" value="39" />
+      <MgcpMetadataListItem key="msd3" value="40" />
+      <MgcpMetadataListItem key="msd4" value="41" />
+      <MgcpMetadataListItem key="msd5" value="42" />
+      <MgcpMetadataListItem key="midb" value="43" />
+      <MgcpMetadataListItem key="natdat" value="44" />
+      <MgcpMetadataListItem key="natmap" value="45" />
+      <MgcpMetadataListItem key="med" value="46" />
+      <MgcpMetadataListItem key="nate" value="47" />
+      <MgcpMetadataListItem key="plan" value="48" />
+      <MgcpMetadataListItem key="srtm" value="50" />
+      <MgcpMetadataListItem key="sitmap" value="51" />
+      <MgcpMetadataListItem key="tod0" value="52" />
+      <MgcpMetadataListItem key="tod1" value="53" />
+      <MgcpMetadataListItem key="tod2" value="54" />
+      <MgcpMetadataListItem key="tod3" value="55" />
+      <MgcpMetadataListItem key="tod4" value="56" />
+      <MgcpMetadataListItem key="tod5" value="57" />
+      <MgcpMetadataListItem key="und" value="59" />
+      <MgcpMetadataListItem key="uvmap" value="60" />
+      <MgcpMetadataListItem key="vitd" value="61" />
+      <MgcpMetadataListItem key="vmap0" value="62" />
+      <MgcpMetadataListItem key="vmap1" value="63" />
+      <MgcpMetadataListItem key="vmap2" value="64" />
+      <MgcpMetadataListItem key="wvspls" value="65" />
+      <MgcpMetadataListItem key="spthrg" value="85" />
+      <MgcpMetadataListItem key="25kvectordata" value="93" />
+      <MgcpMetadataListItem key="50kvectordata" value="94" />
+      <MgcpMetadataListItem key="100kvectordata" value="95" />
+      <MgcpMetadataListItem key="other" value="999" />
+      <!-- version 2 -->
+      <MgcpMetadataListItem key="qbrd" value="9"/>
+      <MgcpMetadataListItem key="ikonos" value="28"/>
+      <MgcpMetadataListItem key="landsat" value="35"/>
+      <MgcpMetadataListItem key="refmap" value="49"/>
+      <MgcpMetadataListItem key="tlm" value="58"/>
+      <MgcpMetadataListItem key="qbrdmm" value="66"/>
+      <MgcpMetadataListItem key="qbrdms" value="67"/>
+      <MgcpMetadataListItem key="qbrdpm" value="68"/>
+      <MgcpMetadataListItem key="qbrdps" value="69"/>
+      <MgcpMetadataListItem key="ikonmm" value="70"/>
+      <MgcpMetadataListItem key="ikonms" value="71"/>
+      <MgcpMetadataListItem key="ikonpm" value="72"/>
+      <MgcpMetadataListItem key="ikonps" value="73"/>
+      <MgcpMetadataListItem key="spt10" value="74"/>
+      <MgcpMetadataListItem key="spt5" value="75"/>
+      <MgcpMetadataListItem key="spt5mm" value="76"/>
+      <MgcpMetadataListItem key="spt5ms" value="77"/>
+      <MgcpMetadataListItem key="spt5pm" value="78"/>
+      <MgcpMetadataListItem key="spt5ps" value="79"/>
+      <MgcpMetadataListItem key="spt2pm" value="80"/>
+      <MgcpMetadataListItem key="spt2mm" value="81"/>
+      <MgcpMetadataListItem key="spt5m" value="82"/>
+      <MgcpMetadataListItem key="spt5s" value="83"/>
+      <MgcpMetadataListItem key="spt10mm" value="84"/>
+      <MgcpMetadataListItem key="btm25" value="86"/>
+      <MgcpMetadataListItem key="btm50" value="87"/>
+      <MgcpMetadataListItem key="btm100" value="88"/>
+      <MgcpMetadataListItem key="bto25" value="89"/>
+      <MgcpMetadataListItem key="bto50" value="90"/>
+      <MgcpMetadataListItem key="bto100" value="91"/>
+      <MgcpMetadataListItem key="bvd" value="92" />
+      <MgcpMetadataListItem key="bvd25" value="93" />
+      <MgcpMetadataListItem key="bvd50" value="94" />
+      <MgcpMetadataListItem key="bvd100" value="95" />
+      <MgcpMetadataListItem key="frimag" value="1001"/>
+      <MgcpMetadataListItem key="frsnsr" value="1002"/>
+      <MgcpMetadataListItem key="asrp" value="1003"/>
+      <MgcpMetadataListItem key="gaz" value="1004"/>
+      <MgcpMetadataListItem key="www" value="1005"/>
+      <MgcpMetadataListItem key="orbvu3" value="1006"/>
+      <MgcpMetadataListItem key="vmap2i" value="1007"/>
+    </SourceIdToDfdd>
+  </MgcpMetadataConfig>
+  <MgcpMetadataConfig version="4" revision="5.1">
+    <MgcpMetadataProperties>
+      <CodeSpaceVersion>MGCP_v4_r5.1</CodeSpaceVersion>
+      <SubregionCatalogue>MGCP_FeatureCatalogue_TRD4_v4.5.1_20190705.xml</SubregionCatalogue>
+      <SourceFields source="SSRCTY" sourceDate="SSRCDT" sourceId="SSRCID" sourceScale="SSRCSC" sourceVerticalType="SSVSCC" />
+    </MgcpMetadataProperties>
+    <DfddToSourceId>
+      <MgcpMetadataListItem key="0" value="unk" />
+      <MgcpMetadataListItem key="1" value="ngaArcDigRasterGraphic" />
+      <MgcpMetadataListItem key="2" value="ngaAutoAirFacInfoFile" />
+      <MgcpMetadataListItem key="3" value="ngaChartUpdateManual" />
+      <MgcpMetadataListItem key="4" value="ngaCityGraphic" />
+      <MgcpMetadataListItem key="5" value="ngaCombatChart" />
+      <MgcpMetadataListItem key="6" value="ngaCompressedAdrg" />
+      <MgcpMetadataListItem key="7" value="ngaControlledImageBase1" />
+      <MgcpMetadataListItem key="8" value="ngaControlledImageBase5" />
+      <MgcpMetadataListItem key="10" value="ngaDigitalNauticalChart" />
+      <MgcpMetadataListItem key="11" value="ngaDigitalPrintFile" />
+      <MgcpMetadataListItem key="16" value="ngaDigitalTopoData1" />
+      <MgcpMetadataListItem key="17" value="ngaDigitalTopoData2" />
+      <MgcpMetadataListItem key="18" value="ngaDigitalTopoData3" />
+      <MgcpMetadataListItem key="19" value="ngaDigitalTopoData4" />
+      <MgcpMetadataListItem key="20" value="ngaDigitalTopoData5" />
+      <MgcpMetadataListItem key="21" value="ngaDigitalVertObstruction" />
+      <MgcpMetadataListItem key="22" value="ngaFoundationFeatureData" />
+      <MgcpMetadataListItem key="24" value="ngaGeoLandCover" />
+      <MgcpMetadataListItem key="25" value="ngaGeoNames" />
+      <MgcpMetadataListItem key="26" value="gpsBasedFieldCollect" />
+      <MgcpMetadataListItem key="27" value="ngaImageCityMap" />
+      <MgcpMetadataListItem key="29" value="usNtmImagery" />
+      <MgcpMetadataListItem key="30" value="imageryUnspecified" />
+      <MgcpMetadataListItem key="31" value="ngaInterimTerrainData" />
+      <MgcpMetadataListItem key="32" value="ngaInterimVectorData" />
+      <MgcpMetadataListItem key="33" value="ngaInternationalBoundary" />
+      <MgcpMetadataListItem key="34" value="ngaJointOperatGraphic" />
+      <MgcpMetadataListItem key="36" value="ngaLittoralWarfareData" />
+      <MgcpMetadataListItem key="37" value="mapChartOrGeodeticData" />
+      <MgcpMetadataListItem key="38" value="ngaMissionSpecificData1" />
+      <MgcpMetadataListItem key="39" value="ngaMissionSpecificData2" />
+      <MgcpMetadataListItem key="40" value="ngaMissionSpecificData3" />
+      <MgcpMetadataListItem key="41" value="ngaMissionSpecificData4" />
+      <MgcpMetadataListItem key="42" value="ngaMissionSpecificData5" />
+      <MgcpMetadataListItem key="43" value="usModernizedIntegratedDB" />
+      <MgcpMetadataListItem key="44" value="nativeData" />
+      <MgcpMetadataListItem key="45" value="nativeMap" />
+      <MgcpMetadataListItem key="46" value="ngaMedicalFacilities" />
+      <MgcpMetadataListItem key="47" value="ngaNominalAttTopoEvalMap" />
+      <MgcpMetadataListItem key="48" value="ngaPlanningGraphic" />
+      <MgcpMetadataListItem key="50" value="usShuttleRadarTopoMission" />
+      <MgcpMetadataListItem key="51" value="siteMap" />
+      <MgcpMetadataListItem key="52" value="ngaTacticalOceanData0" />
+      <MgcpMetadataListItem key="53" value="ngaTacticalOceanData1" />
+      <MgcpMetadataListItem key="54" value="ngaTacticalOceanData2" />
+      <MgcpMetadataListItem key="55" value="ngaTacticalOceanData3" />
+      <MgcpMetadataListItem key="56" value="ngaTacticalOceanData4" />
+      <MgcpMetadataListItem key="57" value="ngaTacticalOceanData5" />
+      <MgcpMetadataListItem key="59" value="unitedNationsData" />
+      <MgcpMetadataListItem key="60" value="ngaUrbanVectorMap" />
+      <MgcpMetadataListItem key="61" value="ngaVectorInterimTerrain" />
+      <MgcpMetadataListItem key="62" value="ngaVectorMap0" />
+      <MgcpMetadataListItem key="63" value="ngaVectorMap1" />
+      <MgcpMetadataListItem key="64" value="ngaVectorMap2" />
+      <MgcpMetadataListItem key="65" value="ngaWorldVectorShorePlus" />
+      <MgcpMetadataListItem key="85" value="spotHrgDtm" />
+      <MgcpMetadataListItem key="92" value="vectorData" />
+      <MgcpMetadataListItem key="93" value="vectorData25k" />
+      <MgcpMetadataListItem key="94" value="vectorData50k" />
+      <MgcpMetadataListItem key="95" value="vectorData100k" />
+      <MgcpMetadataListItem key="110" value="veryHighResCommMonoImage" />
+      <MgcpMetadataListItem key="111" value="veryHighResCommStereoImage" />
+      <MgcpMetadataListItem key="112" value="highResCommMonoImage" />
+      <MgcpMetadataListItem key="113" value="highResCommStereoImage" />
+      <MgcpMetadataListItem key="114" value="mediumResCommMonoImage" />
+      <MgcpMetadataListItem key="115" value="mediumResCommStereoImage" />
+      <MgcpMetadataListItem key="116" value="lowResCommMonoImage" />
+      <MgcpMetadataListItem key="117" value="lowResCommStereoImage" />
+      <MgcpMetadataListItem key="118" value="mapOneToTwentyFiveK" />
+      <MgcpMetadataListItem key="119" value="mapOneToFiftyK" />
+      <MgcpMetadataListItem key="120" value="mapOneToHundredK" />
+      <MgcpMetadataListItem key="121" value="routingData" />
+      <MgcpMetadataListItem key="996" value="MULT" />
+      <MgcpMetadataListItem key="997" value="N_P" />
+      <MgcpMetadataListItem key="998" value="N_A" />
+      <MgcpMetadataListItem key="999" value="OTH" />
+    </DfddToSourceId>
+    <DfddToAccuracyEvalMethodId>
+      <MgcpMetadataListItem key="0" value="UNK" />
+      <MgcpMetadataListItem key="1" value="geodeticSurveyAdequate" />
+      <MgcpMetadataListItem key="2" value="geodeticSurveySmall" />
+      <MgcpMetadataListItem key="4" value="photogrammGdasAdequate" />
+      <MgcpMetadataListItem key="5" value="photogrammGdasSmall" />
+      <MgcpMetadataListItem key="15" value="productSpecification" />
+      <MgcpMetadataListItem key="21" value="evaluationDeferred" />
+      <MgcpMetadataListItem key="998" value="N_A" />
+    </DfddToAccuracyEvalMethodId>
+    <DfddToVerticalTypeId>
+      <MgcpMetadataListItem key="0" value="UNK" />
+      <MgcpMetadataListItem key="1" value="interpolatedDted1" />
+      <MgcpMetadataListItem key="2" value="interpolatedDted2" />
+      <MgcpMetadataListItem key="3" value="noElevations" />
+      <MgcpMetadataListItem key="4" value="reflectiveSurface" />
+      <MgcpMetadataListItem key="5" value="stereoscopicImagery" />
+      <MgcpMetadataListItem key="6" value="tinData" />
+      <MgcpMetadataListItem key="7" value="interpolatedSrtm1" />
+    </DfddToVerticalTypeId>
+    <AgencyCodeConversion>
+      <!-- from version 2 -->
+      <MgcpMetadataListItem key="MSHDF" value="GEOS_HDF"/>
+      <MgcpMetadataListItem key="SMD-RIS" value="DGS-II_DIV"/>
+      <MgcpMetadataListItem key="JGSF" value="GNZ"/>
+      <MgcpMetadataListItem key="ZGW SG WP" value="STSZRP"/>
+      <MgcpMetadataListItem key="GMC" value="GCM"/>
+      <MgcpMetadataListItem key="DGCDGI" value="DGC_JFIC"/>
+      <!-- from version 3 -->
+      <MgcpMetadataListItem key="CEGET" value="SCC" />
+      <MgcpMetadataListItem key="EMABGI" value="EMA_BGHOM" />
+      <MgcpMetadataListItem key="ZGW_SG_WP" value="STSZRP" />
+      <!-- from version 4.0 -->
+      <MgcpMetadataListItem key="DGC_ICG" value="DGC_JFIC" />
+      <MgcpMetadataListItem key="DIGO" value="AGO" />
+      <MgcpMetadataListItem key="GIO" value="GNZ" />
+      <MgcpMetadataListItem key="SGeoW" value="STSZRP" />
+      <!-- from version 4.1 -->
+      <MgcpMetadataListItem key="BGIO" value="BGIC" />
+      <!-- from version 4.3 -->
+      <MgcpMetadataListItem key="RNLAGA" value="DGA" />
+      <!-- from version 4.4 -->
+      <MgcpMetadataListItem key="MGD" value="MoD_HRV" />
+      <MgcpMetadataListItem key="IGEOE" value="CIGEOE" />
+    </AgencyCodeConversion>
+    <!-- This is needed to support importing multiple TRD versions -->
+    <SourceIdToDfdd>
+      <!-- version 4 -->
+      <MgcpMetadataListItem key="unk" value="0" />
+      <MgcpMetadataListItem key="ngaarcdigrastergraphic" value="1" />
+      <MgcpMetadataListItem key="ngaautoairfacinfofile" value="2" />
+      <MgcpMetadataListItem key="ngachartupdatemanual" value="3" />
+      <MgcpMetadataListItem key="ngacitygraphic" value="4" />
+      <MgcpMetadataListItem key="ngacombatchart" value="5" />
+      <MgcpMetadataListItem key="ngacompressedadrg" value="6" />
+      <MgcpMetadataListItem key="ngacontrolledimagebase1" value="7" />
+      <MgcpMetadataListItem key="ngacontrolledimagebase5" value="8" />
+      <MgcpMetadataListItem key="ngadigitalnauticalchart" value="10" />
+      <MgcpMetadataListItem key="ngadigitalprintfile" value="11" />
+      <MgcpMetadataListItem key="ngadigitaltopodata1" value="16" />
+      <MgcpMetadataListItem key="ngadigitaltopodata2" value="17" />
+      <MgcpMetadataListItem key="ngadigitaltopodata3" value="18" />
+      <MgcpMetadataListItem key="ngadigitaltopodata4" value="19" />
+      <MgcpMetadataListItem key="ngadigitaltopodata5" value="20" />
+      <MgcpMetadataListItem key="ngadigitalvertobstruction" value="21" />
+      <MgcpMetadataListItem key="ngafoundationfeaturedata" value="22" />
+      <MgcpMetadataListItem key="ngageolandcover" value="24" />
+      <MgcpMetadataListItem key="ngageonames" value="25" />
+      <MgcpMetadataListItem key="gpsbasedfieldcollect" value="26" />
+      <MgcpMetadataListItem key="ngaimagecitymap" value="27" />
+      <MgcpMetadataListItem key="usntmimagery" value="29" />
+      <MgcpMetadataListItem key="imageryunspecified" value="30" />
+      <MgcpMetadataListItem key="ngainterimterraindata" value="31" />
+      <MgcpMetadataListItem key="ngainterimvectordata" value="32" />
+      <MgcpMetadataListItem key="ngainternationalboundary" value="33" />
+      <MgcpMetadataListItem key="ngajointoperatgraphic" value="34" />
+      <MgcpMetadataListItem key="ngalittoralwarfaredata" value="36" />
+      <MgcpMetadataListItem key="mapchartorgeodeticdata" value="37" />
+      <MgcpMetadataListItem key="ngamissionspecificdata1" value="38" />
+      <MgcpMetadataListItem key="ngamissionspecificdata2" value="39" />
+      <MgcpMetadataListItem key="ngamissionspecificdata3" value="40" />
+      <MgcpMetadataListItem key="ngamissionspecificdata4" value="41" />
+      <MgcpMetadataListItem key="ngamissionspecificdata5" value="42" />
+      <MgcpMetadataListItem key="usmodernizedintegrateddb" value="43" />
+      <MgcpMetadataListItem key="nativedata" value="44" />
+      <MgcpMetadataListItem key="nativemap" value="45" />
+      <MgcpMetadataListItem key="ngamedicalfacilities" value="46" />
+      <MgcpMetadataListItem key="nganominalatttopoevalmap" value="47" />
+      <MgcpMetadataListItem key="ngaplanninggraphic" value="48" />
+      <MgcpMetadataListItem key="usshuttleradartopomission" value="50" />
+      <MgcpMetadataListItem key="sitemap" value="51" />
+      <MgcpMetadataListItem key="ngatacticaloceandata0" value="52" />
+      <MgcpMetadataListItem key="ngatacticaloceandata1" value="53" />
+      <MgcpMetadataListItem key="ngatacticaloceandata2" value="54" />
+      <MgcpMetadataListItem key="ngatacticaloceandata3" value="55" />
+      <MgcpMetadataListItem key="ngatacticaloceandata4" value="56" />
+      <MgcpMetadataListItem key="ngatacticaloceandata5" value="57" />
+      <MgcpMetadataListItem key="unitednationsdata" value="59" />
+      <MgcpMetadataListItem key="ngaurbanvectormap" value="60" />
+      <MgcpMetadataListItem key="ngavectorinterimterrain" value="61" />
+      <MgcpMetadataListItem key="ngavectormap0" value="62" />
+      <MgcpMetadataListItem key="ngavectormap1" value="63" />
+      <MgcpMetadataListItem key="ngavectormap2" value="64" />
+      <MgcpMetadataListItem key="ngaworldvectorshoreplus" value="65" />
+      <MgcpMetadataListItem key="spothrgdtm" value="85" />
+      <MgcpMetadataListItem key="vectordata" value="92" />
+      <MgcpMetadataListItem key="vectordata25k" value="93" />
+      <MgcpMetadataListItem key="vectordata50k" value="94" />
+      <MgcpMetadataListItem key="vectordata100k" value="95" />
+      <MgcpMetadataListItem key="veryhighrescommmonoimage" value="110" />
+      <MgcpMetadataListItem key="veryhighrescommstereoimage" value="111" />
+      <MgcpMetadataListItem key="highrescommmonoimage" value="112" />
+      <MgcpMetadataListItem key="highrescommstereoimage" value="113" />
+      <MgcpMetadataListItem key="mediumrescommmonoimage" value="114" />
+      <MgcpMetadataListItem key="mediumrescommstereoimage" value="115" />
+      <MgcpMetadataListItem key="lowrescommmonoimage" value="116" />
+      <MgcpMetadataListItem key="lowrescommstereoimage" value="117" />
+      <MgcpMetadataListItem key="maponetotwentyfivek" value="118" />
+      <MgcpMetadataListItem key="maponetofiftyk" value="119" />
+      <MgcpMetadataListItem key="maponetohundredk" value="120" />
+      <MgcpMetadataListItem key="routingdata" value="121" />
+      <MgcpMetadataListItem key="mult" value="996" />
+      <MgcpMetadataListItem key="n_p" value="997" />
+      <MgcpMetadataListItem key="n_a" value="998" />
+      <MgcpMetadataListItem key="oth" value="999" />
+      <!-- version 3 -->
+      <MgcpMetadataListItem key="adrg" value="1" />
+      <MgcpMetadataListItem key="aafif" value="2" />
+      <MgcpMetadataListItem key="chum" value="3" />
+      <MgcpMetadataListItem key="city" value="4" />
+      <MgcpMetadataListItem key="combat" value="5" />
+      <MgcpMetadataListItem key="cadrg" value="6" />
+      <MgcpMetadataListItem key="cib1" value="7" />
+      <MgcpMetadataListItem key="cib5" value="8" />
+      <MgcpMetadataListItem key="dnc" value="10" />
+      <MgcpMetadataListItem key="dpf" value="11" />
+      <MgcpMetadataListItem key="dtop1" value="16" />
+      <MgcpMetadataListItem key="dtop2" value="17" />
+      <MgcpMetadataListItem key="dtop3" value="18" />
+      <MgcpMetadataListItem key="dtop4" value="19" />
+      <MgcpMetadataListItem key="dtop5" value="20" />
+      <MgcpMetadataListItem key="dvof" value="21" />
+      <MgcpMetadataListItem key="ffd" value="22" />
+      <MgcpMetadataListItem key="cover" value="24" />
+      <MgcpMetadataListItem key="names" value="25" />
+      <MgcpMetadataListItem key="field" value="26" />
+      <MgcpMetadataListItem key="icm" value="27" />
+      <MgcpMetadataListItem key="ntm" value="29" />
+      <MgcpMetadataListItem key="imag" value="30" />
+      <MgcpMetadataListItem key="itd" value="31" />
+      <MgcpMetadataListItem key="ivd" value="32" />
+      <MgcpMetadataListItem key="ibd" value="33" />
+      <MgcpMetadataListItem key="jog" value="34" />
+      <MgcpMetadataListItem key="lwd" value="36" />
+      <MgcpMetadataListItem key="mcg" value="37" />
+      <MgcpMetadataListItem key="msd1" value="38" />
+      <MgcpMetadataListItem key="msd2" value="39" />
+      <MgcpMetadataListItem key="msd3" value="40" />
+      <MgcpMetadataListItem key="msd4" value="41" />
+      <MgcpMetadataListItem key="msd5" value="42" />
+      <MgcpMetadataListItem key="midb" value="43" />
+      <MgcpMetadataListItem key="natdat" value="44" />
+      <MgcpMetadataListItem key="natmap" value="45" />
+      <MgcpMetadataListItem key="med" value="46" />
+      <MgcpMetadataListItem key="nate" value="47" />
+      <MgcpMetadataListItem key="plan" value="48" />
+      <MgcpMetadataListItem key="srtm" value="50" />
+      <MgcpMetadataListItem key="sitmap" value="51" />
+      <MgcpMetadataListItem key="tod0" value="52" />
+      <MgcpMetadataListItem key="tod1" value="53" />
+      <MgcpMetadataListItem key="tod2" value="54" />
+      <MgcpMetadataListItem key="tod3" value="55" />
+      <MgcpMetadataListItem key="tod4" value="56" />
+      <MgcpMetadataListItem key="tod5" value="57" />
+      <MgcpMetadataListItem key="und" value="59" />
+      <MgcpMetadataListItem key="uvmap" value="60" />
+      <MgcpMetadataListItem key="vitd" value="61" />
+      <MgcpMetadataListItem key="vmap0" value="62" />
+      <MgcpMetadataListItem key="vmap1" value="63" />
+      <MgcpMetadataListItem key="vmap2" value="64" />
+      <MgcpMetadataListItem key="wvspls" value="65" />
+      <MgcpMetadataListItem key="spthrg" value="85" />
+      <MgcpMetadataListItem key="25kvectordata" value="93" />
+      <MgcpMetadataListItem key="50kvectordata" value="94" />
+      <MgcpMetadataListItem key="100kvectordata" value="95" />
+      <MgcpMetadataListItem key="other" value="999" />
+      <!-- version 2 -->
+      <MgcpMetadataListItem key="qbrd" value="9"/>
+      <MgcpMetadataListItem key="ikonos" value="28"/>
+      <MgcpMetadataListItem key="landsat" value="35"/>
+      <MgcpMetadataListItem key="refmap" value="49"/>
+      <MgcpMetadataListItem key="tlm" value="58"/>
+      <MgcpMetadataListItem key="qbrdmm" value="66"/>
+      <MgcpMetadataListItem key="qbrdms" value="67"/>
+      <MgcpMetadataListItem key="qbrdpm" value="68"/>
+      <MgcpMetadataListItem key="qbrdps" value="69"/>
+      <MgcpMetadataListItem key="ikonmm" value="70"/>
+      <MgcpMetadataListItem key="ikonms" value="71"/>
+      <MgcpMetadataListItem key="ikonpm" value="72"/>
+      <MgcpMetadataListItem key="ikonps" value="73"/>
+      <MgcpMetadataListItem key="spt10" value="74"/>
+      <MgcpMetadataListItem key="spt5" value="75"/>
+      <MgcpMetadataListItem key="spt5mm" value="76"/>
+      <MgcpMetadataListItem key="spt5ms" value="77"/>
+      <MgcpMetadataListItem key="spt5pm" value="78"/>
+      <MgcpMetadataListItem key="spt5ps" value="79"/>
+      <MgcpMetadataListItem key="spt2pm" value="80"/>
+      <MgcpMetadataListItem key="spt2mm" value="81"/>
+      <MgcpMetadataListItem key="spt5m" value="82"/>
+      <MgcpMetadataListItem key="spt5s" value="83"/>
+      <MgcpMetadataListItem key="spt10mm" value="84"/>
+      <MgcpMetadataListItem key="btm25" value="86"/>
+      <MgcpMetadataListItem key="btm50" value="87"/>
+      <MgcpMetadataListItem key="btm100" value="88"/>
+      <MgcpMetadataListItem key="bto25" value="89"/>
+      <MgcpMetadataListItem key="bto50" value="90"/>
+      <MgcpMetadataListItem key="bto100" value="91"/>
+      <MgcpMetadataListItem key="bvd" value="92" />
+      <MgcpMetadataListItem key="bvd25" value="93" />
+      <MgcpMetadataListItem key="bvd50" value="94" />
+      <MgcpMetadataListItem key="bvd100" value="95" />
+      <MgcpMetadataListItem key="frimag" value="1001"/>
+      <MgcpMetadataListItem key="frsnsr" value="1002"/>
+      <MgcpMetadataListItem key="asrp" value="1003"/>
+      <MgcpMetadataListItem key="gaz" value="1004"/>
+      <MgcpMetadataListItem key="www" value="1005"/>
+      <MgcpMetadataListItem key="orbvu3" value="1006"/>
+      <MgcpMetadataListItem key="vmap2i" value="1007"/>
+    </SourceIdToDfdd>
+  </MgcpMetadataConfig>
+  <MgcpMetadataConfig version="4" revision="6">
+    <MgcpMetadataProperties>
+      <CodeSpaceVersion>MGCP_v4_r6</CodeSpaceVersion>
+      <SubregionCatalogue>MGCP_FeatureCatalogue_TRD4_v4.6_20210129.xml</SubregionCatalogue>
+      <SourceFields source="SSRCTY" sourceDate="SSRCDT" sourceId="SSRCID" sourceScale="SSRCSC" sourceVerticalType="SSVSCC" />
+    </MgcpMetadataProperties>
+    <DfddToSourceId>
+      <MgcpMetadataListItem key="0" value="unk" />
+      <MgcpMetadataListItem key="1" value="ngaArcDigRasterGraphic" />
+      <MgcpMetadataListItem key="2" value="ngaAutoAirFacInfoFile" />
+      <MgcpMetadataListItem key="3" value="ngaChartUpdateManual" />
+      <MgcpMetadataListItem key="4" value="ngaCityGraphic" />
+      <MgcpMetadataListItem key="5" value="ngaCombatChart" />
+      <MgcpMetadataListItem key="6" value="ngaCompressedAdrg" />
+      <MgcpMetadataListItem key="7" value="ngaControlledImageBase1" />
+      <MgcpMetadataListItem key="8" value="ngaControlledImageBase5" />
+      <MgcpMetadataListItem key="10" value="ngaDigitalNauticalChart" />
+      <MgcpMetadataListItem key="11" value="ngaDigitalPrintFile" />
+      <MgcpMetadataListItem key="16" value="ngaDigitalTopoData1" />
+      <MgcpMetadataListItem key="17" value="ngaDigitalTopoData2" />
+      <MgcpMetadataListItem key="18" value="ngaDigitalTopoData3" />
+      <MgcpMetadataListItem key="19" value="ngaDigitalTopoData4" />
+      <MgcpMetadataListItem key="20" value="ngaDigitalTopoData5" />
+      <MgcpMetadataListItem key="21" value="ngaDigitalVertObstruction" />
+      <MgcpMetadataListItem key="22" value="ngaFoundationFeatureData" />
+      <MgcpMetadataListItem key="24" value="ngaGeoLandCover" />
+      <MgcpMetadataListItem key="25" value="ngaGeoNames" />
+      <MgcpMetadataListItem key="26" value="gpsBasedFieldCollect" />
+      <MgcpMetadataListItem key="27" value="ngaImageCityMap" />
+      <MgcpMetadataListItem key="29" value="usNtmImagery" />
+      <MgcpMetadataListItem key="30" value="imageryUnspecified" />
+      <MgcpMetadataListItem key="31" value="ngaInterimTerrainData" />
+      <MgcpMetadataListItem key="32" value="ngaInterimVectorData" />
+      <MgcpMetadataListItem key="33" value="ngaInternationalBoundary" />
+      <MgcpMetadataListItem key="34" value="ngaJointOperatGraphic" />
+      <MgcpMetadataListItem key="36" value="ngaLittoralWarfareData" />
+      <MgcpMetadataListItem key="37" value="mapChartOrGeodeticData" />
+      <MgcpMetadataListItem key="38" value="ngaMissionSpecificData1" />
+      <MgcpMetadataListItem key="39" value="ngaMissionSpecificData2" />
+      <MgcpMetadataListItem key="40" value="ngaMissionSpecificData3" />
+      <MgcpMetadataListItem key="41" value="ngaMissionSpecificData4" />
+      <MgcpMetadataListItem key="42" value="ngaMissionSpecificData5" />
+      <MgcpMetadataListItem key="43" value="usModernizedIntegratedDB" />
+      <MgcpMetadataListItem key="44" value="nativeData" />
+      <MgcpMetadataListItem key="45" value="nativeMap" />
+      <MgcpMetadataListItem key="46" value="ngaMedicalFacilities" />
+      <MgcpMetadataListItem key="47" value="ngaNominalAttTopoEvalMap" />
+      <MgcpMetadataListItem key="48" value="ngaPlanningGraphic" />
+      <MgcpMetadataListItem key="50" value="usShuttleRadarTopoMission" />
+      <MgcpMetadataListItem key="51" value="siteMap" />
+      <MgcpMetadataListItem key="52" value="ngaTacticalOceanData0" />
+      <MgcpMetadataListItem key="53" value="ngaTacticalOceanData1" />
+      <MgcpMetadataListItem key="54" value="ngaTacticalOceanData2" />
+      <MgcpMetadataListItem key="55" value="ngaTacticalOceanData3" />
+      <MgcpMetadataListItem key="56" value="ngaTacticalOceanData4" />
+      <MgcpMetadataListItem key="57" value="ngaTacticalOceanData5" />
+      <MgcpMetadataListItem key="59" value="unitedNationsData" />
+      <MgcpMetadataListItem key="60" value="ngaUrbanVectorMap" />
+      <MgcpMetadataListItem key="61" value="ngaVectorInterimTerrain" />
+      <MgcpMetadataListItem key="62" value="ngaVectorMap0" />
+      <MgcpMetadataListItem key="63" value="ngaVectorMap1" />
+      <MgcpMetadataListItem key="64" value="ngaVectorMap2" />
+      <MgcpMetadataListItem key="65" value="ngaWorldVectorShorePlus" />
+      <MgcpMetadataListItem key="85" value="spotHrgDtm" />
+      <MgcpMetadataListItem key="92" value="vectorData" />
+      <MgcpMetadataListItem key="93" value="vectorData25k" />
+      <MgcpMetadataListItem key="94" value="vectorData50k" />
+      <MgcpMetadataListItem key="95" value="vectorData100k" />
+      <MgcpMetadataListItem key="110" value="veryHighResCommMonoImage" />
+      <MgcpMetadataListItem key="111" value="veryHighResCommStereoImage" />
+      <MgcpMetadataListItem key="112" value="highResCommMonoImage" />
+      <MgcpMetadataListItem key="113" value="highResCommStereoImage" />
+      <MgcpMetadataListItem key="114" value="mediumResCommMonoImage" />
+      <MgcpMetadataListItem key="115" value="mediumResCommStereoImage" />
+      <MgcpMetadataListItem key="116" value="lowResCommMonoImage" />
+      <MgcpMetadataListItem key="117" value="lowResCommStereoImage" />
+      <MgcpMetadataListItem key="118" value="mapOneToTwentyFiveK" />
+      <MgcpMetadataListItem key="119" value="mapOneToFiftyK" />
+      <MgcpMetadataListItem key="120" value="mapOneToHundredK" />
+      <MgcpMetadataListItem key="121" value="routingData" />
+      <MgcpMetadataListItem key="996" value="MULT" />
+      <MgcpMetadataListItem key="997" value="N_P" />
+      <MgcpMetadataListItem key="998" value="N_A" />
+      <MgcpMetadataListItem key="999" value="OTH" />
+    </DfddToSourceId>
+    <DfddToAccuracyEvalMethodId>
+      <MgcpMetadataListItem key="0" value="UNK" />
+      <MgcpMetadataListItem key="1" value="geodeticSurveyAdequate" />
+      <MgcpMetadataListItem key="2" value="geodeticSurveySmall" />
+      <MgcpMetadataListItem key="4" value="photogrammGdasAdequate" />
+      <MgcpMetadataListItem key="5" value="photogrammGdasSmall" />
+      <MgcpMetadataListItem key="15" value="productSpecification" />
+      <MgcpMetadataListItem key="21" value="evaluationDeferred" />
+      <MgcpMetadataListItem key="998" value="N_A" />
+    </DfddToAccuracyEvalMethodId>
+    <DfddToVerticalTypeId>
+      <MgcpMetadataListItem key="0" value="UNK" />
+      <MgcpMetadataListItem key="1" value="interpolatedDted1" />
+      <MgcpMetadataListItem key="2" value="interpolatedDted2" />
+      <MgcpMetadataListItem key="3" value="noElevations" />
+      <MgcpMetadataListItem key="4" value="reflectiveSurface" />
+      <MgcpMetadataListItem key="5" value="stereoscopicImagery" />
+      <MgcpMetadataListItem key="6" value="tinData" />
+      <MgcpMetadataListItem key="7" value="interpolatedSrtm1" />
+    </DfddToVerticalTypeId>
+    <AgencyCodeConversion>
+      <!-- from version 2 -->
+      <MgcpMetadataListItem key="MSHDF" value="GEOS_HDF"/>
+      <MgcpMetadataListItem key="SMD-RIS" value="DGS-II_DIV"/>
+      <MgcpMetadataListItem key="JGSF" value="GNZ"/>
+      <MgcpMetadataListItem key="ZGW SG WP" value="STSZRP"/>
+      <MgcpMetadataListItem key="GMC" value="GCM"/>
+      <MgcpMetadataListItem key="DGCDGI" value="DGC_JFIC"/>
+      <!-- from version 3 -->
+      <MgcpMetadataListItem key="CEGET" value="SCC" />
+      <MgcpMetadataListItem key="EMABGI" value="EMA_BGHOM" />
+      <MgcpMetadataListItem key="ZGW_SG_WP" value="STSZRP" />
+      <!-- from version 4.0 -->
+      <MgcpMetadataListItem key="DGC_ICG" value="DGC_JFIC" />
+      <MgcpMetadataListItem key="DIGO" value="AGO" />
+      <MgcpMetadataListItem key="GIO" value="GNZ" />
+      <MgcpMetadataListItem key="SGeoW" value="STSZRP" />
+      <!-- from version 4.1 -->
+      <MgcpMetadataListItem key="BGIO" value="BGIC" />
+      <!-- from version 4.3 -->
+      <MgcpMetadataListItem key="RNLAGA" value="DGA" />
+      <!-- from version 4.4 -->
+      <MgcpMetadataListItem key="MGD" value="MoD_HRV" />
+      <MgcpMetadataListItem key="IGEOE" value="CIGEOE" />
+    </AgencyCodeConversion>
+    <!-- This is needed to support importing multiple TRD versions -->
+    <SourceIdToDfdd>
+      <!-- version 4 -->
+      <MgcpMetadataListItem key="unk" value="0" />
+      <MgcpMetadataListItem key="ngaarcdigrastergraphic" value="1" />
+      <MgcpMetadataListItem key="ngaautoairfacinfofile" value="2" />
+      <MgcpMetadataListItem key="ngachartupdatemanual" value="3" />
+      <MgcpMetadataListItem key="ngacitygraphic" value="4" />
+      <MgcpMetadataListItem key="ngacombatchart" value="5" />
+      <MgcpMetadataListItem key="ngacompressedadrg" value="6" />
+      <MgcpMetadataListItem key="ngacontrolledimagebase1" value="7" />
+      <MgcpMetadataListItem key="ngacontrolledimagebase5" value="8" />
+      <MgcpMetadataListItem key="ngadigitalnauticalchart" value="10" />
+      <MgcpMetadataListItem key="ngadigitalprintfile" value="11" />
+      <MgcpMetadataListItem key="ngadigitaltopodata1" value="16" />
+      <MgcpMetadataListItem key="ngadigitaltopodata2" value="17" />
+      <MgcpMetadataListItem key="ngadigitaltopodata3" value="18" />
+      <MgcpMetadataListItem key="ngadigitaltopodata4" value="19" />
+      <MgcpMetadataListItem key="ngadigitaltopodata5" value="20" />
+      <MgcpMetadataListItem key="ngadigitalvertobstruction" value="21" />
+      <MgcpMetadataListItem key="ngafoundationfeaturedata" value="22" />
+      <MgcpMetadataListItem key="ngageolandcover" value="24" />
+      <MgcpMetadataListItem key="ngageonames" value="25" />
+      <MgcpMetadataListItem key="gpsbasedfieldcollect" value="26" />
+      <MgcpMetadataListItem key="ngaimagecitymap" value="27" />
+      <MgcpMetadataListItem key="usntmimagery" value="29" />
+      <MgcpMetadataListItem key="imageryunspecified" value="30" />
+      <MgcpMetadataListItem key="ngainterimterraindata" value="31" />
+      <MgcpMetadataListItem key="ngainterimvectordata" value="32" />
+      <MgcpMetadataListItem key="ngainternationalboundary" value="33" />
+      <MgcpMetadataListItem key="ngajointoperatgraphic" value="34" />
+      <MgcpMetadataListItem key="ngalittoralwarfaredata" value="36" />
+      <MgcpMetadataListItem key="mapchartorgeodeticdata" value="37" />
+      <MgcpMetadataListItem key="ngamissionspecificdata1" value="38" />
+      <MgcpMetadataListItem key="ngamissionspecificdata2" value="39" />
+      <MgcpMetadataListItem key="ngamissionspecificdata3" value="40" />
+      <MgcpMetadataListItem key="ngamissionspecificdata4" value="41" />
+      <MgcpMetadataListItem key="ngamissionspecificdata5" value="42" />
+      <MgcpMetadataListItem key="usmodernizedintegrateddb" value="43" />
+      <MgcpMetadataListItem key="nativedata" value="44" />
+      <MgcpMetadataListItem key="nativemap" value="45" />
+      <MgcpMetadataListItem key="ngamedicalfacilities" value="46" />
+      <MgcpMetadataListItem key="nganominalatttopoevalmap" value="47" />
+      <MgcpMetadataListItem key="ngaplanninggraphic" value="48" />
+      <MgcpMetadataListItem key="usshuttleradartopomission" value="50" />
+      <MgcpMetadataListItem key="sitemap" value="51" />
+      <MgcpMetadataListItem key="ngatacticaloceandata0" value="52" />
+      <MgcpMetadataListItem key="ngatacticaloceandata1" value="53" />
+      <MgcpMetadataListItem key="ngatacticaloceandata2" value="54" />
+      <MgcpMetadataListItem key="ngatacticaloceandata3" value="55" />
+      <MgcpMetadataListItem key="ngatacticaloceandata4" value="56" />
+      <MgcpMetadataListItem key="ngatacticaloceandata5" value="57" />
+      <MgcpMetadataListItem key="unitednationsdata" value="59" />
+      <MgcpMetadataListItem key="ngaurbanvectormap" value="60" />
+      <MgcpMetadataListItem key="ngavectorinterimterrain" value="61" />
+      <MgcpMetadataListItem key="ngavectormap0" value="62" />
+      <MgcpMetadataListItem key="ngavectormap1" value="63" />
+      <MgcpMetadataListItem key="ngavectormap2" value="64" />
+      <MgcpMetadataListItem key="ngaworldvectorshoreplus" value="65" />
+      <MgcpMetadataListItem key="spothrgdtm" value="85" />
+      <MgcpMetadataListItem key="vectordata" value="92" />
+      <MgcpMetadataListItem key="vectordata25k" value="93" />
+      <MgcpMetadataListItem key="vectordata50k" value="94" />
+      <MgcpMetadataListItem key="vectordata100k" value="95" />
+      <MgcpMetadataListItem key="veryhighrescommmonoimage" value="110" />
+      <MgcpMetadataListItem key="veryhighrescommstereoimage" value="111" />
+      <MgcpMetadataListItem key="highrescommmonoimage" value="112" />
+      <MgcpMetadataListItem key="highrescommstereoimage" value="113" />
+      <MgcpMetadataListItem key="mediumrescommmonoimage" value="114" />
+      <MgcpMetadataListItem key="mediumrescommstereoimage" value="115" />
+      <MgcpMetadataListItem key="lowrescommmonoimage" value="116" />
+      <MgcpMetadataListItem key="lowrescommstereoimage" value="117" />
+      <MgcpMetadataListItem key="maponetotwentyfivek" value="118" />
+      <MgcpMetadataListItem key="maponetofiftyk" value="119" />
+      <MgcpMetadataListItem key="maponetohundredk" value="120" />
+      <MgcpMetadataListItem key="routingdata" value="121" />
+      <MgcpMetadataListItem key="mult" value="996" />
+      <MgcpMetadataListItem key="n_p" value="997" />
+      <MgcpMetadataListItem key="n_a" value="998" />
+      <MgcpMetadataListItem key="oth" value="999" />
+      <!-- version 3 -->
+      <MgcpMetadataListItem key="adrg" value="1" />
+      <MgcpMetadataListItem key="aafif" value="2" />
+      <MgcpMetadataListItem key="chum" value="3" />
+      <MgcpMetadataListItem key="city" value="4" />
+      <MgcpMetadataListItem key="combat" value="5" />
+      <MgcpMetadataListItem key="cadrg" value="6" />
+      <MgcpMetadataListItem key="cib1" value="7" />
+      <MgcpMetadataListItem key="cib5" value="8" />
+      <MgcpMetadataListItem key="dnc" value="10" />
+      <MgcpMetadataListItem key="dpf" value="11" />
+      <MgcpMetadataListItem key="dtop1" value="16" />
+      <MgcpMetadataListItem key="dtop2" value="17" />
+      <MgcpMetadataListItem key="dtop3" value="18" />
+      <MgcpMetadataListItem key="dtop4" value="19" />
+      <MgcpMetadataListItem key="dtop5" value="20" />
+      <MgcpMetadataListItem key="dvof" value="21" />
+      <MgcpMetadataListItem key="ffd" value="22" />
+      <MgcpMetadataListItem key="cover" value="24" />
+      <MgcpMetadataListItem key="names" value="25" />
+      <MgcpMetadataListItem key="field" value="26" />
+      <MgcpMetadataListItem key="icm" value="27" />
+      <MgcpMetadataListItem key="ntm" value="29" />
+      <MgcpMetadataListItem key="imag" value="30" />
+      <MgcpMetadataListItem key="itd" value="31" />
+      <MgcpMetadataListItem key="ivd" value="32" />
+      <MgcpMetadataListItem key="ibd" value="33" />
+      <MgcpMetadataListItem key="jog" value="34" />
+      <MgcpMetadataListItem key="lwd" value="36" />
+      <MgcpMetadataListItem key="mcg" value="37" />
+      <MgcpMetadataListItem key="msd1" value="38" />
+      <MgcpMetadataListItem key="msd2" value="39" />
+      <MgcpMetadataListItem key="msd3" value="40" />
+      <MgcpMetadataListItem key="msd4" value="41" />
+      <MgcpMetadataListItem key="msd5" value="42" />
+      <MgcpMetadataListItem key="midb" value="43" />
+      <MgcpMetadataListItem key="natdat" value="44" />
+      <MgcpMetadataListItem key="natmap" value="45" />
+      <MgcpMetadataListItem key="med" value="46" />
+      <MgcpMetadataListItem key="nate" value="47" />
+      <MgcpMetadataListItem key="plan" value="48" />
+      <MgcpMetadataListItem key="srtm" value="50" />
+      <MgcpMetadataListItem key="sitmap" value="51" />
+      <MgcpMetadataListItem key="tod0" value="52" />
+      <MgcpMetadataListItem key="tod1" value="53" />
+      <MgcpMetadataListItem key="tod2" value="54" />
+      <MgcpMetadataListItem key="tod3" value="55" />
+      <MgcpMetadataListItem key="tod4" value="56" />
+      <MgcpMetadataListItem key="tod5" value="57" />
+      <MgcpMetadataListItem key="und" value="59" />
+      <MgcpMetadataListItem key="uvmap" value="60" />
+      <MgcpMetadataListItem key="vitd" value="61" />
+      <MgcpMetadataListItem key="vmap0" value="62" />
+      <MgcpMetadataListItem key="vmap1" value="63" />
+      <MgcpMetadataListItem key="vmap2" value="64" />
+      <MgcpMetadataListItem key="wvspls" value="65" />
+      <MgcpMetadataListItem key="spthrg" value="85" />
+      <MgcpMetadataListItem key="25kvectordata" value="93" />
+      <MgcpMetadataListItem key="50kvectordata" value="94" />
+      <MgcpMetadataListItem key="100kvectordata" value="95" />
+      <MgcpMetadataListItem key="other" value="999" />
+      <!-- version 2 -->
+      <MgcpMetadataListItem key="qbrd" value="9"/>
+      <MgcpMetadataListItem key="ikonos" value="28"/>
+      <MgcpMetadataListItem key="landsat" value="35"/>
+      <MgcpMetadataListItem key="refmap" value="49"/>
+      <MgcpMetadataListItem key="tlm" value="58"/>
+      <MgcpMetadataListItem key="qbrdmm" value="66"/>
+      <MgcpMetadataListItem key="qbrdms" value="67"/>
+      <MgcpMetadataListItem key="qbrdpm" value="68"/>
+      <MgcpMetadataListItem key="qbrdps" value="69"/>
+      <MgcpMetadataListItem key="ikonmm" value="70"/>
+      <MgcpMetadataListItem key="ikonms" value="71"/>
+      <MgcpMetadataListItem key="ikonpm" value="72"/>
+      <MgcpMetadataListItem key="ikonps" value="73"/>
+      <MgcpMetadataListItem key="spt10" value="74"/>
+      <MgcpMetadataListItem key="spt5" value="75"/>
+      <MgcpMetadataListItem key="spt5mm" value="76"/>
+      <MgcpMetadataListItem key="spt5ms" value="77"/>
+      <MgcpMetadataListItem key="spt5pm" value="78"/>
+      <MgcpMetadataListItem key="spt5ps" value="79"/>
+      <MgcpMetadataListItem key="spt2pm" value="80"/>
+      <MgcpMetadataListItem key="spt2mm" value="81"/>
+      <MgcpMetadataListItem key="spt5m" value="82"/>
+      <MgcpMetadataListItem key="spt5s" value="83"/>
+      <MgcpMetadataListItem key="spt10mm" value="84"/>
+      <MgcpMetadataListItem key="btm25" value="86"/>
+      <MgcpMetadataListItem key="btm50" value="87"/>
+      <MgcpMetadataListItem key="btm100" value="88"/>
+      <MgcpMetadataListItem key="bto25" value="89"/>
+      <MgcpMetadataListItem key="bto50" value="90"/>
+      <MgcpMetadataListItem key="bto100" value="91"/>
+      <MgcpMetadataListItem key="bvd" value="92" />
+      <MgcpMetadataListItem key="bvd25" value="93" />
+      <MgcpMetadataListItem key="bvd50" value="94" />
+      <MgcpMetadataListItem key="bvd100" value="95" />
+      <MgcpMetadataListItem key="frimag" value="1001"/>
+      <MgcpMetadataListItem key="frsnsr" value="1002"/>
+      <MgcpMetadataListItem key="asrp" value="1003"/>
+      <MgcpMetadataListItem key="gaz" value="1004"/>
+      <MgcpMetadataListItem key="www" value="1005"/>
+      <MgcpMetadataListItem key="orbvu3" value="1006"/>
+      <MgcpMetadataListItem key="vmap2i" value="1007"/>
+    </SourceIdToDfdd>
+  </MgcpMetadataConfig>
+  <MuvdMetadataConfig version="1" revision="1">
+    <MuvdMetadataProperties>
+      <CodeSpaceVersion>MUVD_v1_r1</CodeSpaceVersion>
+      <SubregionCatalogue description="MUVD Feature Catalogue">MUVD_Feature_Catalogue_UTRD1_v1.1_20211231.xml</SubregionCatalogue>
+      <SourceFields source="RSSRCD" sourceDate="RSSRCDAT" sourceId="RSSRCI" sourceScale="RSSRCES" sourceVerticalType="" />
+    </MuvdMetadataProperties>
+		<CatalogueFileToDescription>
+		</CatalogueFileToDescription>
+    <DfddToSourceId>
+      <MuvdMetadataListItem key="0" value="unk" />
+      <MuvdMetadataListItem key="1" value="ngaArcDigRasterGraphic" />
+      <MuvdMetadataListItem key="2" value="ngaAutoAirFacInfoFile" />
+      <MuvdMetadataListItem key="3" value="ngaChartUpdateManual" />
+      <MuvdMetadataListItem key="4" value="ngaCityGraphic" />
+      <MuvdMetadataListItem key="5" value="ngaCombatChart" />
+      <MuvdMetadataListItem key="6" value="ngaCompressedAdrg" />
+      <MuvdMetadataListItem key="7" value="ngaControlledImageBase1" />
+      <MuvdMetadataListItem key="8" value="ngaControlledImageBase5" />
+      <MuvdMetadataListItem key="10" value="ngaDigitalNauticalChart" />
+      <MuvdMetadataListItem key="11" value="ngaDigitalPrintFile" />
+      <MuvdMetadataListItem key="16" value="ngaDigitalTopoData1" />
+      <MuvdMetadataListItem key="17" value="ngaDigitalTopoData2" />
+      <MuvdMetadataListItem key="18" value="ngaDigitalTopoData3" />
+      <MuvdMetadataListItem key="19" value="ngaDigitalTopoData4" />
+      <MuvdMetadataListItem key="20" value="ngaDigitalTopoData5" />
+      <MuvdMetadataListItem key="21" value="ngaDigitalVertObstruction" />
+      <MuvdMetadataListItem key="22" value="ngaFoundationFeatureData" />
+      <MuvdMetadataListItem key="24" value="ngaGeoLandCover" />
+      <MuvdMetadataListItem key="25" value="ngaGeoNames" />
+      <MuvdMetadataListItem key="26" value="gpsBasedFieldCollect" />
+      <MuvdMetadataListItem key="27" value="ngaImageCityMap" />
+      <MuvdMetadataListItem key="29" value="usNtmImagery" />
+      <MuvdMetadataListItem key="30" value="imageryUnspecified" />
+      <MuvdMetadataListItem key="31" value="ngaInterimTerrainData" />
+      <MuvdMetadataListItem key="32" value="ngaInterimVectorData" />
+      <MuvdMetadataListItem key="33" value="ngaInternationalBoundary" />
+      <MuvdMetadataListItem key="34" value="ngaJointOperatGraphic" />
+      <MuvdMetadataListItem key="36" value="ngaLittoralWarfareData" />
+      <MuvdMetadataListItem key="37" value="mapChartOrGeodeticData" />
+      <MuvdMetadataListItem key="38" value="ngaMissionSpecificData1" />
+      <MuvdMetadataListItem key="39" value="ngaMissionSpecificData2" />
+      <MuvdMetadataListItem key="40" value="ngaMissionSpecificData3" />
+      <MuvdMetadataListItem key="41" value="ngaMissionSpecificData4" />
+      <MuvdMetadataListItem key="42" value="ngaMissionSpecificData5" />
+      <MuvdMetadataListItem key="43" value="usModernizedIntegratedDB" />
+      <MuvdMetadataListItem key="44" value="nativeData" />
+      <MuvdMetadataListItem key="45" value="nativeMap" />
+      <MuvdMetadataListItem key="46" value="ngaMedicalFacilities" />
+      <MuvdMetadataListItem key="47" value="ngaNominalAttTopoEvalMap" />
+      <MuvdMetadataListItem key="48" value="ngaPlanningGraphic" />
+      <MuvdMetadataListItem key="50" value="usShuttleRadarTopoMission" />
+      <MuvdMetadataListItem key="51" value="siteMap" />
+      <MuvdMetadataListItem key="52" value="ngaTacticalOceanData0" />
+      <MuvdMetadataListItem key="53" value="ngaTacticalOceanData1" />
+      <MuvdMetadataListItem key="54" value="ngaTacticalOceanData2" />
+      <MuvdMetadataListItem key="55" value="ngaTacticalOceanData3" />
+      <MuvdMetadataListItem key="56" value="ngaTacticalOceanData4" />
+      <MuvdMetadataListItem key="57" value="ngaTacticalOceanData5" />
+      <MuvdMetadataListItem key="59" value="unitedNationsData" />
+      <MuvdMetadataListItem key="60" value="ngaUrbanVectorMap" />
+      <MuvdMetadataListItem key="61" value="ngaVectorInterimTerrain" />
+      <MuvdMetadataListItem key="62" value="ngaVectorMap0" />
+      <MuvdMetadataListItem key="63" value="ngaVectorMap1" />
+      <MuvdMetadataListItem key="64" value="ngaVectorMap2" />
+      <MuvdMetadataListItem key="65" value="ngaWorldVectorShorePlus" />
+      <MuvdMetadataListItem key="85" value="spotHrgDtm" />
+      <MuvdMetadataListItem key="92" value="vectorData" />
+      <MuvdMetadataListItem key="93" value="vectorData25k" />
+      <MuvdMetadataListItem key="94" value="vectorData50k" />
+      <MuvdMetadataListItem key="95" value="vectorData100k" />
+      <MuvdMetadataListItem key="110" value="veryHighResCommMonoImage" />
+      <MuvdMetadataListItem key="111" value="veryHighResCommStereoImage" />
+      <MuvdMetadataListItem key="112" value="highResCommMonoImage" />
+      <MuvdMetadataListItem key="113" value="highResCommStereoImage" />
+      <MuvdMetadataListItem key="114" value="mediumResCommMonoImage" />
+      <MuvdMetadataListItem key="115" value="mediumResCommStereoImage" />
+      <MuvdMetadataListItem key="116" value="lowResCommMonoImage" />
+      <MuvdMetadataListItem key="117" value="lowResCommStereoImage" />
+      <MuvdMetadataListItem key="118" value="mapOneToTwentyFiveK" />
+      <MuvdMetadataListItem key="119" value="mapOneToFiftyK" />
+      <MuvdMetadataListItem key="120" value="mapOneToHundredK" />
+      <MuvdMetadataListItem key="121" value="routingData" />
+      <MuvdMetadataListItem key="996" value="MULT" />
+      <MuvdMetadataListItem key="997" value="N_P" />
+      <MuvdMetadataListItem key="998" value="N_A" />
+      <MuvdMetadataListItem key="999" value="OTH" />
+    </DfddToSourceId>
+    <DfddToAccuracyEvalMethodId>
+      <MuvdMetadataListItem key="0" value="UNK" />
+      <MuvdMetadataListItem key="1" value="geodeticSurveyAdequate" />
+      <MuvdMetadataListItem key="2" value="geodeticSurveySmall" />
+      <MuvdMetadataListItem key="4" value="photogrammGdasAdequate" />
+      <MuvdMetadataListItem key="5" value="photogrammGdasSmall" />
+      <MuvdMetadataListItem key="15" value="productSpecification" />
+      <MuvdMetadataListItem key="21" value="evaluationDeferred" />
+      <MuvdMetadataListItem key="998" value="N_A" />
+    </DfddToAccuracyEvalMethodId>
+    <DfddToVerticalTypeId>
+      <MuvdMetadataListItem key="0" value="UNK" />
+      <MuvdMetadataListItem key="1" value="interpolatedDted1" />
+      <MuvdMetadataListItem key="2" value="interpolatedDted2" />
+      <MuvdMetadataListItem key="3" value="noElevations" />
+      <MuvdMetadataListItem key="4" value="reflectiveSurface" />
+      <MuvdMetadataListItem key="5" value="stereoscopicImagery" />
+      <MuvdMetadataListItem key="6" value="tinData" />
+      <MuvdMetadataListItem key="7" value="interpolatedSrtm1" />
+    </DfddToVerticalTypeId>
+    <AgencyCodeConversion>
+      <MuvdMetadataListItem key="MSHDF" value="GEOS_HDF"/>
+      <MuvdMetadataListItem key="SMD-RIS" value="DGS-II_DIV"/>
+      <MuvdMetadataListItem key="JGSF" value="GNZ"/>
+      <MuvdMetadataListItem key="ZGW SG WP" value="STSZRP"/>
+      <MuvdMetadataListItem key="GMC" value="GCM"/>
+      <MuvdMetadataListItem key="DGCDGI" value="DGC_JFIC"/>
+      <MuvdMetadataListItem key="CEGET" value="SCC" />
+      <MuvdMetadataListItem key="EMABGI" value="EMA_BGHOM" />
+      <MuvdMetadataListItem key="ZGW_SG_WP" value="STSZRP" />
+      <MuvdMetadataListItem key="DGC_ICG" value="DGC_JFIC" />
+      <MuvdMetadataListItem key="DIGO" value="AGO" />
+      <MuvdMetadataListItem key="GIO" value="GNZ" />
+      <MuvdMetadataListItem key="SGeoW" value="STSZRP" />
+      <MuvdMetadataListItem key="BGIO" value="BGIC" />
+      <MuvdMetadataListItem key="RNLAGA" value="DGA" />
+      <MuvdMetadataListItem key="MGD" value="MoD_HRV" />
+      <MuvdMetadataListItem key="IGEOE" value="CIGEOE" />
+    </AgencyCodeConversion>
+    <SourceIdToDfdd>
+      <MuvdMetadataListItem key="unk" value="0" />
+      <MuvdMetadataListItem key="ngaarcdigrastergraphic" value="1" />
+      <MuvdMetadataListItem key="ngaautoairfacinfofile" value="2" />
+      <MuvdMetadataListItem key="ngachartupdatemanual" value="3" />
+      <MuvdMetadataListItem key="ngacitygraphic" value="4" />
+      <MuvdMetadataListItem key="ngacombatchart" value="5" />
+      <MuvdMetadataListItem key="ngacompressedadrg" value="6" />
+      <MuvdMetadataListItem key="ngacontrolledimagebase1" value="7" />
+      <MuvdMetadataListItem key="ngacontrolledimagebase5" value="8" />
+      <MuvdMetadataListItem key="ngadigitalnauticalchart" value="10" />
+      <MuvdMetadataListItem key="ngadigitalprintfile" value="11" />
+      <MuvdMetadataListItem key="ngadigitaltopodata1" value="16" />
+      <MuvdMetadataListItem key="ngadigitaltopodata2" value="17" />
+      <MuvdMetadataListItem key="ngadigitaltopodata3" value="18" />
+      <MuvdMetadataListItem key="ngadigitaltopodata4" value="19" />
+      <MuvdMetadataListItem key="ngadigitaltopodata5" value="20" />
+      <MuvdMetadataListItem key="ngadigitalvertobstruction" value="21" />
+      <MuvdMetadataListItem key="ngafoundationfeaturedata" value="22" />
+      <MuvdMetadataListItem key="ngageolandcover" value="24" />
+      <MuvdMetadataListItem key="ngageonames" value="25" />
+      <MuvdMetadataListItem key="gpsbasedfieldcollect" value="26" />
+      <MuvdMetadataListItem key="ngaimagecitymap" value="27" />
+      <MuvdMetadataListItem key="usntmimagery" value="29" />
+      <MuvdMetadataListItem key="imageryunspecified" value="30" />
+      <MuvdMetadataListItem key="ngainterimterraindata" value="31" />
+      <MuvdMetadataListItem key="ngainterimvectordata" value="32" />
+      <MuvdMetadataListItem key="ngainternationalboundary" value="33" />
+      <MuvdMetadataListItem key="ngajointoperatgraphic" value="34" />
+      <MuvdMetadataListItem key="ngalittoralwarfaredata" value="36" />
+      <MuvdMetadataListItem key="mapchartorgeodeticdata" value="37" />
+      <MuvdMetadataListItem key="ngamissionspecificdata1" value="38" />
+      <MuvdMetadataListItem key="ngamissionspecificdata2" value="39" />
+      <MuvdMetadataListItem key="ngamissionspecificdata3" value="40" />
+      <MuvdMetadataListItem key="ngamissionspecificdata4" value="41" />
+      <MuvdMetadataListItem key="ngamissionspecificdata5" value="42" />
+      <MuvdMetadataListItem key="usmodernizedintegrateddb" value="43" />
+      <MuvdMetadataListItem key="nativedata" value="44" />
+      <MuvdMetadataListItem key="nativemap" value="45" />
+      <MuvdMetadataListItem key="ngamedicalfacilities" value="46" />
+      <MuvdMetadataListItem key="nganominalatttopoevalmap" value="47" />
+      <MuvdMetadataListItem key="ngaplanninggraphic" value="48" />
+      <MuvdMetadataListItem key="usshuttleradartopomission" value="50" />
+      <MuvdMetadataListItem key="sitemap" value="51" />
+      <MuvdMetadataListItem key="ngatacticaloceandata0" value="52" />
+      <MuvdMetadataListItem key="ngatacticaloceandata1" value="53" />
+      <MuvdMetadataListItem key="ngatacticaloceandata2" value="54" />
+      <MuvdMetadataListItem key="ngatacticaloceandata3" value="55" />
+      <MuvdMetadataListItem key="ngatacticaloceandata4" value="56" />
+      <MuvdMetadataListItem key="ngatacticaloceandata5" value="57" />
+      <MuvdMetadataListItem key="unitednationsdata" value="59" />
+      <MuvdMetadataListItem key="ngaurbanvectormap" value="60" />
+      <MuvdMetadataListItem key="ngavectorinterimterrain" value="61" />
+      <MuvdMetadataListItem key="ngavectormap0" value="62" />
+      <MuvdMetadataListItem key="ngavectormap1" value="63" />
+      <MuvdMetadataListItem key="ngavectormap2" value="64" />
+      <MuvdMetadataListItem key="ngaworldvectorshoreplus" value="65" />
+      <MuvdMetadataListItem key="spothrgdtm" value="85" />
+      <MuvdMetadataListItem key="vectordata" value="92" />
+      <MuvdMetadataListItem key="vectordata25k" value="93" />
+      <MuvdMetadataListItem key="vectordata50k" value="94" />
+      <MuvdMetadataListItem key="vectordata100k" value="95" />
+      <MuvdMetadataListItem key="veryhighrescommmonoimage" value="110" />
+      <MuvdMetadataListItem key="veryhighrescommstereoimage" value="111" />
+      <MuvdMetadataListItem key="highrescommmonoimage" value="112" />
+      <MuvdMetadataListItem key="highrescommstereoimage" value="113" />
+      <MuvdMetadataListItem key="mediumrescommmonoimage" value="114" />
+      <MuvdMetadataListItem key="mediumrescommstereoimage" value="115" />
+      <MuvdMetadataListItem key="lowrescommmonoimage" value="116" />
+      <MuvdMetadataListItem key="lowrescommstereoimage" value="117" />
+      <MuvdMetadataListItem key="maponetotwentyfivek" value="118" />
+      <MuvdMetadataListItem key="maponetofiftyk" value="119" />
+      <MuvdMetadataListItem key="maponetohundredk" value="120" />
+      <MuvdMetadataListItem key="routingdata" value="121" />
+      <MuvdMetadataListItem key="mult" value="996" />
+      <MuvdMetadataListItem key="n_p" value="997" />
+      <MuvdMetadataListItem key="n_a" value="998" />
+      <MuvdMetadataListItem key="oth" value="999" />
+    </SourceIdToDfdd>
+  </MuvdMetadataConfig>
+	<SourceDfddCodeConversionV2ToV3>
+		<MgcpMetadataListItem key="9" value="30"/>
+		<MgcpMetadataListItem key="28" value="30"/>
+		<MgcpMetadataListItem key="35" value="30"/>
+		<MgcpMetadataListItem key="49" value="999"/>
+		<MgcpMetadataListItem key="58" value="119"/>
+		<MgcpMetadataListItem key="66" value="112"/>
+		<MgcpMetadataListItem key="67" value="113"/>
+		<MgcpMetadataListItem key="68" value="110"/>
+		<MgcpMetadataListItem key="69" value="111"/>
+		<MgcpMetadataListItem key="70" value="112"/>
+		<MgcpMetadataListItem key="71" value="113"/>
+		<MgcpMetadataListItem key="72" value="110"/>
+		<MgcpMetadataListItem key="73" value="111"/>
+		<MgcpMetadataListItem key="74" value="114"/>
+		<MgcpMetadataListItem key="75" value="114"/>
+		<MgcpMetadataListItem key="76" value="112"/>
+		<MgcpMetadataListItem key="77" value="113"/>
+		<MgcpMetadataListItem key="78" value="112"/>
+		<MgcpMetadataListItem key="79" value="113"/>
+		<MgcpMetadataListItem key="80" value="112"/>
+		<MgcpMetadataListItem key="81" value="112"/>
+		<MgcpMetadataListItem key="82" value="112"/>
+		<MgcpMetadataListItem key="83" value="113"/>
+		<MgcpMetadataListItem key="84" value="114"/>
+		<MgcpMetadataListItem key="86" value="118"/>
+		<MgcpMetadataListItem key="87" value="119"/>
+		<MgcpMetadataListItem key="88" value="120"/>
+		<MgcpMetadataListItem key="89" value="118"/>
+		<MgcpMetadataListItem key="90" value="119"/>
+		<MgcpMetadataListItem key="91" value="120"/>
+		<MgcpMetadataListItem key="103" value="30"/>
+		<MgcpMetadataListItem key="105" value="30"/>
+		<MgcpMetadataListItem key="108" value="121"/>
+		<MgcpMetadataListItem key="1001" value="30"/>
+		<MgcpMetadataListItem key="1002" value="30"/>
+		<MgcpMetadataListItem key="1003" value="999"/>
+		<MgcpMetadataListItem key="1004" value="999"/>
+		<MgcpMetadataListItem key="1005" value="999"/>
+		<MgcpMetadataListItem key="1006" value="999"/>
+		<MgcpMetadataListItem key="1007" value="999"/>
+	</SourceDfddCodeConversionV2ToV3>
+	<ImageryDfddCodes>
+		<MgcpMetadataListItem key="1" value="NGA Arc Digitized Raster Graphic"/>
+		<MgcpMetadataListItem key="4" value="NGA City Graphic"/>
+		<MgcpMetadataListItem key="5" value="NGA Combat Chart"/>
+		<MgcpMetadataListItem key="6" value="NGA Compressed Arc Digitized Raster Graphic"/>
+		<MgcpMetadataListItem key="7" value="Controlled Imagery Base 1 Metre"/>
+		<MgcpMetadataListItem key="8" value="Controlled Imagery Base 5 Metre"/>
+		<MgcpMetadataListItem key="9" value="QuickBird Imagery"/>
+		<MgcpMetadataListItem key="10" value="NGA Digital Nautical Chart"/>
+		<MgcpMetadataListItem key="11" value="NGA Digital Print File"/>
+		<MgcpMetadataListItem key="16" value="NGA Digital Topographic Data Level 1"/>
+		<MgcpMetadataListItem key="17" value="NGA Digital Topographic Data Level 2"/>
+		<MgcpMetadataListItem key="18" value="NGA Digital Topographic Data Level 3"/>
+		<MgcpMetadataListItem key="19" value="NGA Digital Topographic Data Level 4"/>
+		<MgcpMetadataListItem key="20" value="NGA Digital Topographic Data Level 5"/>
+		<MgcpMetadataListItem key="22" value="NGA Foundation Feature Data"/>
+		<MgcpMetadataListItem key="26" value="GPS-based Field Collected Open Source Data"/>
+		<MgcpMetadataListItem key="27" value="NGA Image City Map"/>
+		<MgcpMetadataListItem key="28" value="IKONOS Satellite Imagery"/>
+		<MgcpMetadataListItem key="29" value="NTM Imagery"/>
+		<MgcpMetadataListItem key="31" value="NGA Interim Terrain Data"/>
+		<MgcpMetadataListItem key="34" value="NGA Joint Operational Graphic"/>
+		<MgcpMetadataListItem key="35" value="LANDSAT Satellite Imagery"/>
+		<MgcpMetadataListItem key="36" value="NGA Littoral Warfare Data"/>
+		<MgcpMetadataListItem key="37" value="Mapping Charting and Geodetic Data"/>
+		<MgcpMetadataListItem key="38" value="NGA Mission Specific Data Level 1"/>
+		<MgcpMetadataListItem key="39" value="NGA Mission Specific Data Level 2"/>
+		<MgcpMetadataListItem key="40" value="NGA Mission Specific Data Level 3"/>
+		<MgcpMetadataListItem key="41" value="NGA Mission Specific Data Level 4"/>
+		<MgcpMetadataListItem key="42" value="NGA Mission Specific Data Level 5"/>
+		<MgcpMetadataListItem key="44" value="Native Data Source"/>
+		<MgcpMetadataListItem key="45" value="Native Map Source"/>
+		<MgcpMetadataListItem key="46" value="NGA GIS Medical Facilities Database"/>
+		<MgcpMetadataListItem key="47" value="NGA Nominally Attributed Topographic Elevation Map"/>
+		<MgcpMetadataListItem key="48" value="NGA Planning Graphic"/>
+		<MgcpMetadataListItem key="50" value="Shuttle Radar Topographic Mission"/>
+		<MgcpMetadataListItem key="51" value="Site Map"/>
+		<MgcpMetadataListItem key="59" value="United Nations Data"/>
+		<MgcpMetadataListItem key="60" value="NGA Urban Vector Map"/>
+		<MgcpMetadataListItem key="61" value="NGA Vector Interim Terrain Data"/>
+		<MgcpMetadataListItem key="62" value="NGA Vector Map Level 0"/>
+		<MgcpMetadataListItem key="63" value="NGA Vector Map Level 1"/>
+		<MgcpMetadataListItem key="64" value="NGA Vector Map Level 2"/>
+		<MgcpMetadataListItem key="65" value="NGA World Vector Shoreline Plus"/>
+		<MgcpMetadataListItem key="66" value="QuickBird Multispectral Monoscopic Imagery"/>
+		<MgcpMetadataListItem key="67" value="QuickBird Multispectral Stereoscopic Imagery"/>
+		<MgcpMetadataListItem key="68" value="QuickBird Panchromatic Monoscopic Imagery"/>
+		<MgcpMetadataListItem key="69" value="QuickBird Panchromatic Stereoscopic Imagery"/>
+		<MgcpMetadataListItem key="70" value="Ikonos Multispectral Monoscopic Imagery"/>
+		<MgcpMetadataListItem key="71" value="Ikonos Multispectral Stereoscopic Imagery"/>
+		<MgcpMetadataListItem key="72" value="Ikonos Panchromatic Monoscopic Imagery"/>
+		<MgcpMetadataListItem key="73" value="Ikonos Panchromatic Stereoscopic Imagery"/>
+		<MgcpMetadataListItem key="74" value="SPOT 10m Imagery"/>
+		<MgcpMetadataListItem key="75" value="SPOT 5m Imagery"/>
+		<MgcpMetadataListItem key="76" value="SPOT 5m Multispectral Monoscopic Imagery"/>
+		<MgcpMetadataListItem key="77" value="SPOT 5m Multispectral Stereoscopic Imagery"/>
+		<MgcpMetadataListItem key="78" value="SPOT 5m Panchromatic Monoscopic Imagery"/>
+		<MgcpMetadataListItem key="79" value="SPOT 5m Panchromatic Stereoscopic Imagery"/>
+		<MgcpMetadataListItem key="80" value="SPOT 2.5m Panchromatic Monoscopic Imagery"/>
+		<MgcpMetadataListItem key="81" value="SPOT 2.5m Multispectral Monoscopic Imagery"/>
+		<MgcpMetadataListItem key="82" value="SPOT 5m Monoscopic Imagery"/>
+		<MgcpMetadataListItem key="83" value="SPOT 5m Stereoscopic Imagery"/>
+		<MgcpMetadataListItem key="84" value="SPOT 10m Multispectral Monoscopic Imagery"/>
+		<MgcpMetadataListItem key="85" value="SPOT 5 High Resolution Geometric Digital Terrain Model"/>
+		<MgcpMetadataListItem key="93" value="1:25k Vector Data"/>
+		<MgcpMetadataListItem key="94" value="1:50k Vector Data"/>
+		<MgcpMetadataListItem key="95" value="1:100k Vector Data"/>
+		<MgcpMetadataListItem key="110" value="Very High Resolution Commerical Monoscopic Imagery"/>
+		<MgcpMetadataListItem key="111" value="Very High Resolution Commerical Stereoscopic Imagery"/>
+		<MgcpMetadataListItem key="112" value="High Resolution Commerical Monoscopic Imagery"/>
+		<MgcpMetadataListItem key="113" value="High Resolution Commerical Stereoscopic Imagery"/>
+		<MgcpMetadataListItem key="114" value="Medium Resolution Commerical Monoscopic Imagery"/>
+		<MgcpMetadataListItem key="115" value="Medium esolution Commerical Stereoscopic Imagery"/>
+		<MgcpMetadataListItem key="116" value="Low Resolution Commerical Monoscopic Imagery"/>
+		<MgcpMetadataListItem key="117" value="Low Resolution Commerical Stereoscopic Imagery"/>
+		<MgcpMetadataListItem key="118" value="1:25k Map"/>
+		<MgcpMetadataListItem key="119" value="1:50k Map"/>
+		<MgcpMetadataListItem key="120" value="1:100k Map"/>
+		<MgcpMetadataListItem key="121" value="Routing Data"/>
+		<MgcpMetadataListItem key="999" value="Other"/>
+		<MgcpMetadataListItem key="1001" value="FR Image Product"/>
+		<MgcpMetadataListItem key="1006" value="OrbView3"/>
+	</ImageryDfddCodes>  
+</MgcpMetadataConfiguration>

@@ -1,0 +1,15 @@
+{
+    "map": {
+        "description": "Creates a database sequence in a geodatabase. You can use the sequences in custom applications that access the geodatabase.",
+        "in_workspace.descr": "<xdoc><p>The file, mobile, or enterprise geodatabase in which the sequence will be created. For an enterprise geodatabase, the workspace is the database connection file (.sde) to connect to the enterprise geodatabase in which you want to create a sequence or the path to the file geodatabase (including the file geodatabase name).</p><p>For database connections, the user specified in the database connection will be the owner of the sequence and must have the following permissions in the database:<ul><li>Db2—CREATEIN privilege on their schema</li><li>Oracle—CREATE SEQUENCE system privilege</li><li>PostgreSQL—Authority on their schema</li><li>SAP HANA—Must be a standard user</li><li>SQL Server—CREATE SEQUENCE privilege and ALTER OR CONTROL permission on their schema</li></ul></p></xdoc>",
+        "in_workspace.title": "Input Workspace",
+        "out_workspace.title": "Created sequence in geodatabase",
+        "seq_inc_value.descr": "Describes how the sequence numbers will increment. For example, if the sequence starts at 10 and the increment value is 5, the next value in the sequence is 15, and the next value after that is 20. If you do not specify an increment value, sequence values will increment by 1.",
+        "seq_inc_value.title": "Sequence Increment Value",
+        "seq_name.descr": "The name that will be assigned to the database sequence. For enterprise geodatabases, the name must meet sequence name requirements for the database platform you're using and must be unique in the database. For file geodatabases, the name must be unique to the file geodatabase. It is important that you remember this name, as it is the name you use in your custom applications and expressions to invoke the sequence.",
+        "seq_name.title": "Sequence Name",
+        "seq_start_id.descr": "The starting number of the sequence. If you do not provide a starting number, the sequence starts with 1. If you do provide a starting number, it must be greater than 0.",
+        "seq_start_id.title": "Sequence Start ID",
+        "title": "Create Database Sequence"
+    }
+}

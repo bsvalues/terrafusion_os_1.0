@@ -1,0 +1,32 @@
+{
+    "map": {
+        "alignment_attribute.title": "Alignment Attribute",
+        "branch_values.title": "Branch Values",
+        "breakpoint_angle.title": "Break Point angle (in degree)",
+        "compression_ratio.title": "Ratio (%)",
+        "description": "Add the relative mainline layout to a diagram template",
+        "excluded_values.title": "Excluded Values",
+        "in_utility_network.title": "Input Network",
+        "initial_distances.domain.FROM_ATTRIBUTE_EDGE": "FROM_ATTRIBUTE_EDGE",
+        "initial_distances.domain.FROM_CURRENT_EDGE_GEOMETRY": "FROM_CURRENT_EDGE_GEOMETRY",
+        "initial_distances.title": "Initial Distances",
+        "is_active.title": "Active",
+        "is_compressing.title": "Compression along the direction",
+        "length_attribute.title": "Length Attribute",
+        "line_attribute.title": "Line Attribute",
+        "mainline_direction.domain.FROM_LEFT_TO_RIGHT": "FROM_LEFT_TO_RIGHT",
+        "mainline_direction.domain.FROM_TOP_TO_BOTTOM": "FROM_TOP_TO_BOTTOM",
+        "mainline_direction.title": "Direction",
+        "mainline_values.title": "Mainline Values",
+        "minimal_distance.title": "Minimal Distance",
+        "offset_between_branches.title": "Offset Between Branches",
+        "out_template_name.title": "Output Diagram Template",
+        "out_utility_network.title": "Output Network",
+        "params.category1": "Line Classification",
+        "params.category2": "Line Compression",
+        "params.category3": "Advanced Options",
+        "template_name.title": "Input Diagram Template",
+        "title": "Add Relative Mainline Layout",
+        "type_attribute.title": "Type Attribute"
+    }
+}

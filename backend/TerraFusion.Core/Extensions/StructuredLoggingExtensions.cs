@@ -18,8 +18,8 @@ namespace TerraFusion.Core.Extensions;
 public static class StructuredLoggingExtensions
 {
     public static IServiceCollection AddStructuredLogging(
-        this IServiceCollection services, 
-        IConfiguration configuration, 
+        this IServiceCollection services,
+        IConfiguration configuration,
         IHostEnvironment environment)
     {
         // Configure Serilog
@@ -66,9 +66,9 @@ public static class StructuredLoggingExtensions
         var appInsightsKey = configuration["ApplicationInsights:InstrumentationKey"];
         if (!string.IsNullOrEmpty(appInsightsKey))
         {
-            // loggerConfig.WriteTo.ApplicationInsights(appInsightsKey, 
+            // loggerConfig.WriteTo.ApplicationInsights(appInsightsKey,
             //     Serilog.Sinks.ApplicationInsights.TelemetryConverters.TraceTelemetryConverter.Instance);
-            
+
             // Alternative: Use structured logging to Application Insights via ILogger
             loggerConfig.Enrich.WithProperty("ApplicationInsightsKey", appInsightsKey);
         }
@@ -118,7 +118,7 @@ public class StructuredLogger : IStructuredLogger
     public void LogApiRequest(string method, string path, TimeSpan duration, int statusCode, string? userId = null)
     {
         var context = _logEnricher.EnrichApiRequest(method, path, duration, statusCode, userId);
-        
+
         _logger.Information("API Request: {Method} {Path} completed in {Duration}ms with status {StatusCode}",
             method, path, duration.TotalMilliseconds, statusCode);
 
@@ -129,7 +129,7 @@ public class StructuredLogger : IStructuredLogger
     public void LogBusinessEvent(string eventName, object eventData, string? userId = null)
     {
         var context = _logEnricher.EnrichBusinessEvent(eventName, eventData, userId);
-        
+
         _logger.Information("Business Event: {EventName} {@EventData}", eventName, eventData);
 
         // Track business metrics
@@ -147,7 +147,7 @@ public class StructuredLogger : IStructuredLogger
     public void LogError(Exception exception, string message, object? context = null)
     {
         var enrichedContext = _logEnricher.EnrichError(exception, message, context);
-        
+
         _logger.Error(exception, "Error: {Message} {@Context}", message, context);
 
         // Track exception with telemetry
@@ -157,18 +157,21 @@ public class StructuredLogger : IStructuredLogger
     public void LogPerformanceMetric(string metricName, double value, Dictionary<string, object>? properties = null)
     {
         var context = _logEnricher.EnrichPerformanceMetric(metricName, value, properties);
-        
+
         _logger.Information("Performance Metric: {MetricName} = {Value} {@Properties}", metricName, value, properties);
 
         // Track custom metric
-        var stringProperties = properties?.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.ToString()) ?? new Dictionary<string, string>();
+        var stringProperties = properties?
+            .Where(kvp => kvp.Value != null && kvp.Value.ToString() != null)
+            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.ToString()!)
+            ?? new Dictionary<string, string>();
         _telemetryService.TrackMetric(metricName, value, stringProperties);
     }
 
     public void LogSecurityEvent(string eventType, string description, string? userId = null, object? context = null)
     {
         var enrichedContext = _logEnricher.EnrichSecurityEvent(eventType, description, userId, context);
-        
+
         _logger.Warning("Security Event: {EventType} - {Description} {@Context}", eventType, description, context);
 
         // Track security events
@@ -182,7 +185,7 @@ public class StructuredLogger : IStructuredLogger
     public void LogDatabaseOperation(string operation, string table, TimeSpan duration, bool success)
     {
         var context = _logEnricher.EnrichDatabaseOperation(operation, table, duration, success);
-        
+
         _logger.Information("Database Operation: {Operation} on {Table} completed in {Duration}ms, Success: {Success}",
             operation, table, duration.TotalMilliseconds, success);
 
@@ -193,7 +196,7 @@ public class StructuredLogger : IStructuredLogger
     public void LogCacheOperation(string operation, string key, TimeSpan duration, bool hit)
     {
         var context = _logEnricher.EnrichCacheOperation(operation, key, duration, hit);
-        
+
         _logger.Debug("Cache Operation: {Operation} for key {Key} completed in {Duration}ms, Hit: {Hit}",
             operation, key, duration.TotalMilliseconds, hit);
 
@@ -204,7 +207,7 @@ public class StructuredLogger : IStructuredLogger
     public void LogSystemHealth(string component, string status, object? metrics = null)
     {
         var context = _logEnricher.EnrichSystemHealth(component, status, metrics);
-        
+
         _logger.Information("System Health: {Component} is {Status} {@Metrics}", component, status, metrics);
 
         // Track availability
@@ -247,8 +250,8 @@ public class LogEnricher : ILogEnricher
             ["StatusCode"] = statusCode,
             ["UserId"] = userId ?? "Anonymous",
             ["Timestamp"] = DateTimeOffset.UtcNow,
-            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString(),
-            ["SpanId"] = System.Diagnostics.Activity.Current?.SpanId.ToString()
+            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString() ?? "N/A",
+            ["SpanId"] = System.Diagnostics.Activity.Current?.SpanId.ToString() ?? "N/A"
         };
     }
 
@@ -261,7 +264,7 @@ public class LogEnricher : ILogEnricher
             ["EventData"] = eventData,
             ["UserId"] = userId ?? "Anonymous",
             ["Timestamp"] = DateTimeOffset.UtcNow,
-            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString()
+            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString() ?? "N/A"
         };
     }
 
@@ -273,10 +276,10 @@ public class LogEnricher : ILogEnricher
             ["ExceptionType"] = exception.GetType().Name,
             ["Message"] = message,
             ["StackTrace"] = exception.StackTrace ?? "",
-            ["InnerException"] = exception.InnerException?.Message,
-            ["Context"] = context,
+            ["InnerException"] = exception.InnerException?.Message ?? string.Empty,
+            ["Context"] = context ?? new object(),
             ["Timestamp"] = DateTimeOffset.UtcNow,
-            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString()
+            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString() ?? "N/A"
         };
     }
 
@@ -288,7 +291,7 @@ public class LogEnricher : ILogEnricher
             ["MetricName"] = metricName,
             ["Value"] = value,
             ["Timestamp"] = DateTimeOffset.UtcNow,
-            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString()
+            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString() ?? "N/A"
         };
 
         if (properties != null)
@@ -310,9 +313,9 @@ public class LogEnricher : ILogEnricher
             ["EventType"] = eventType,
             ["Description"] = description,
             ["UserId"] = userId ?? "Anonymous",
-            ["Context"] = context,
+            ["Context"] = context ?? new object(),
             ["Timestamp"] = DateTimeOffset.UtcNow,
-            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString(),
+            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString() ?? "N/A",
             ["Severity"] = "Warning"
         };
     }
@@ -327,7 +330,7 @@ public class LogEnricher : ILogEnricher
             ["DurationMs"] = duration.TotalMilliseconds,
             ["Success"] = success,
             ["Timestamp"] = DateTimeOffset.UtcNow,
-            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString()
+            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString() ?? "N/A"
         };
     }
 
@@ -341,7 +344,7 @@ public class LogEnricher : ILogEnricher
             ["DurationMs"] = duration.TotalMilliseconds,
             ["Hit"] = hit,
             ["Timestamp"] = DateTimeOffset.UtcNow,
-            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString()
+            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString() ?? "none"
         };
     }
 
@@ -352,9 +355,9 @@ public class LogEnricher : ILogEnricher
             ["LogType"] = "SystemHealth",
             ["Component"] = component,
             ["Status"] = status,
-            ["Metrics"] = metrics,
+            ["Metrics"] = metrics ?? "none",
             ["Timestamp"] = DateTimeOffset.UtcNow,
-            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString()
+            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString() ?? "none"
         };
     }
 
@@ -364,9 +367,9 @@ public class LogEnricher : ILogEnricher
         {
             ["LogType"] = "OperationScope",
             ["Operation"] = operation,
-            ["Context"] = context,
+            ["Context"] = context ?? "none",
             ["Timestamp"] = DateTimeOffset.UtcNow,
-            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString()
+            ["TraceId"] = System.Diagnostics.Activity.Current?.TraceId.ToString() ?? "none"
         };
     }
 }
@@ -381,7 +384,7 @@ public class TerraFusionLogEnricher : ILogEventEnricher
         logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("Application", "TerraFusion"));
         logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("Version", GetApplicationVersion()));
         logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("Environment", Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Unknown"));
-        
+
         // Add correlation ID if available
         var activity = System.Diagnostics.Activity.Current;
         if (activity != null)
@@ -424,7 +427,7 @@ public class LoggingBackgroundService : BackgroundService
             {
                 // Log system health metrics every 5 minutes
                 await LogSystemHealthAsync();
-                
+
                 // Clean up old log files (keep last 30 days)
                 await CleanupOldLogsAsync();
 

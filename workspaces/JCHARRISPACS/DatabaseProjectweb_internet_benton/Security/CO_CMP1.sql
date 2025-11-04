@@ -1,0 +1,6 @@
+CREATE LOGIN [CO\CMP1]
+    FROM WINDOWS WITH DEFAULT_LANGUAGE = [us_english];
+
+
+GO
+

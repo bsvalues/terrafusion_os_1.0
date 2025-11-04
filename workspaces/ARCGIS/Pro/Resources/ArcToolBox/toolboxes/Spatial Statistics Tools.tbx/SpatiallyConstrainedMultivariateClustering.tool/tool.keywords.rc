@@ -1,0 +1,31 @@
+{
+    "set": [
+        "aggregate",
+        "box plot",
+        "classify",
+        "cluster",
+        "clustering",
+        "compact",
+        "constraint",
+        "contiguity",
+        "contiguous",
+        "data space",
+        "divide",
+        "group",
+        "grouping",
+        "grouping analysis",
+        "heterogeneity",
+        "heuristic",
+        "homogeneity",
+        "like",
+        "machine learning",
+        "partition",
+        "pattern",
+        "permutation",
+        "regionalisation",
+        "same",
+        "similar",
+        "spanning tree",
+        "unsupervised machine learning"
+    ]
+}

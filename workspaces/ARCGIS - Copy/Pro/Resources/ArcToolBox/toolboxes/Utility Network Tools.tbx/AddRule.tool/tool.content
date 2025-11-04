@@ -1,0 +1,197 @@
+{
+    "type": "FunctionTool",
+    "guid": "{d1d0d718-7223-4f2e-b176-9a583b71c904}",
+    "displayname": "$rc:title",
+    "helpcontent": "61010005",
+    "description": "$rc:description",
+    "product": "200",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "block_add_to_map"
+    ],
+    "params": {
+        "in_utility_network": {
+            "display_order": "0",
+            "displayname": "$rc:in_utility_network.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    },
+                    {
+                        "type": "GPUtilityNetworkLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_utility_network.descr"
+        },
+        "rule_type": {
+            "display_order": "1",
+            "displayname": "$rc:rule_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "JUNCTION_JUNCTION_CONNECTIVITY",
+                        "code": "$rc:rule_type.domain.JUNCTION_JUNCTION_CONNECTIVITY"
+                    },
+                    {
+                        "value": "JUNCTION_EDGE_CONNECTIVITY",
+                        "code": "$rc:rule_type.domain.JUNCTION_EDGE_CONNECTIVITY"
+                    },
+                    {
+                        "value": "CONTAINMENT",
+                        "code": "$rc:rule_type.domain.CONTAINMENT"
+                    },
+                    {
+                        "value": "STRUCTURAL_ATTACHMENT",
+                        "code": "$rc:rule_type.domain.STRUCTURAL_ATTACHMENT"
+                    },
+                    {
+                        "value": "EDGE_JUNCTION_EDGE_CONNECTIVITY",
+                        "code": "$rc:rule_type.domain.EDGE_JUNCTION_EDGE_CONNECTIVITY"
+                    }
+                ]
+            },
+            "description": "$rc:rule_type.descr"
+        },
+        "from_class": {
+            "display_order": "2",
+            "displayname": "$rc:from_class.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:from_class.descr"
+        },
+        "from_assetgroup": {
+            "display_order": "3",
+            "displayname": "$rc:from_assetgroup.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "from_class"
+            ],
+            "description": "$rc:from_assetgroup.descr"
+        },
+        "from_assettype": {
+            "display_order": "4",
+            "displayname": "$rc:from_assettype.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "from_assetgroup"
+            ],
+            "description": "$rc:from_assettype.descr"
+        },
+        "to_class": {
+            "display_order": "6",
+            "displayname": "$rc:to_class.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:to_class.descr"
+        },
+        "to_assetgroup": {
+            "display_order": "7",
+            "displayname": "$rc:to_assetgroup.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "to_class"
+            ],
+            "description": "$rc:to_assetgroup.descr"
+        },
+        "to_assettype": {
+            "display_order": "8",
+            "displayname": "$rc:to_assettype.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "to_assetgroup"
+            ],
+            "description": "$rc:to_assettype.descr"
+        },
+        "from_terminal": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:from_terminal.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "from_assettype"
+            ],
+            "description": "$rc:from_terminal.descr"
+        },
+        "to_terminal": {
+            "type": "optional",
+            "displayname": "$rc:to_terminal.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "to_assettype"
+            ],
+            "description": "$rc:to_terminal.descr"
+        },
+        "via_class": {
+            "type": "optional",
+            "displayname": "$rc:via_class.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:via_class.descr"
+        },
+        "via_assetgroup": {
+            "type": "optional",
+            "displayname": "$rc:via_assetgroup.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "via_class"
+            ],
+            "description": "$rc:via_assetgroup.descr"
+        },
+        "via_assettype": {
+            "type": "optional",
+            "displayname": "$rc:via_assettype.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "via_assetgroup"
+            ],
+            "description": "$rc:via_assettype.descr"
+        },
+        "via_terminal": {
+            "type": "optional",
+            "displayname": "$rc:via_terminal.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "via_assettype"
+            ],
+            "description": "$rc:via_terminal.descr"
+        },
+        "out_utility_network": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_utility_network.title",
+            "datatype": {
+                "type": "DEUtilityNetwork"
+            }
+        }
+    }
+}

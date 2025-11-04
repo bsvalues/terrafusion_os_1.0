@@ -1,0 +1,27 @@
+{
+    "map": {
+        "data_type.descr": "<xdoc><p>Specifies the type of numeric values that will be stored in the output raster.</p><ul><li><span title=\"FLOAT\">Floating Point</span>—The output raster will use 32-bit floating point, which supports values ranging from -3.402823466e+38 to 3.402823466e+38. This is the default.</li><li><span title=\"INT\">Integer</span>—The output raster will use an appropriate integer bit depth. This option will round z-values to the nearest whole number and write an integer to each raster cell value.</li></ul></xdoc>",
+        "data_type.domain.FLOAT": "Floating Point",
+        "data_type.domain.INT": "Integer",
+        "data_type.title": "Output Data Type",
+        "description": "Interpolates a raster using z-values from  a terrain dataset.",
+        "in_terrain.descr": "The terrain dataset that will be processed.",
+        "in_terrain.title": "Input Terrain",
+        "method.descr": "<xdoc><p>The interpolation method that will be used to calculate cell values.</p><ul><li><span title=\"LINEAR\">Linear</span>—Applies a distance based weight to the Z of each node in the triangle encompassing the center of a given cell, then sums the weighted values to assign the cell value. This is the default.</li><li><span title=\"NATURAL_NEIGHBORS\">Natural Neighbors</span>—Applies an area based weighting scheme that uses Voronoi polygons to determine cell values.</li></ul></xdoc>",
+        "method.domain.LINEAR": "Linear",
+        "method.domain.NATURAL_NEIGHBORS": "Natural Neighbors",
+        "method.title": "Method",
+        "out_raster.descr": "<xdoc><p>The location and name of the output raster. When storing a raster dataset in a geodatabase or in a folder such as an Esri Grid, do not add a file extension to the name of the raster dataset. A file extension can be provided to define the raster&apos;s format when storing it in a folder, such as .tif to generate a GeoTIFF or .img to generate an ERDAS IMAGINE format file.</p><p>If the raster is stored as a .tif file or in a geodatabase, the raster compression type and quality can be specified using geoprocessing environment settings.</p></xdoc>",
+        "out_raster.title": "Output Raster",
+        "pyramid_level_resolution.descr": "The z-tolerance or window-size resolution of the terrain pyramid level that will be used. The default is 0, or full resolution.",
+        "pyramid_level_resolution.title": "Pyramid Level Resolution",
+        "sample_distance.descr": "<xdoc><p>The sampling method and distance used to define the cell size of the output raster.</p><ul><li><span title=\"OBSERVATIONS\">Observations</span>—Defines the number of cells that divide the longest side of the output raster. This method is used by default with the value of 250.</li><li><span title=\"CELLSIZE\">Cell Size</span>—Defines the cell size of the output raster.</li></ul></xdoc>",
+        "sample_distance.domain.CELLSIZE": "Cell Size",
+        "sample_distance.domain.OBSERVATIONS": "Observations",
+        "sample_distance.title": "Sampling Distance",
+        "sample_value.descr": "<xdoc><p>The value that corresponds with the <span class=\"esri_uicontrol\">Sampling Distance</span> for specifying the output raster&apos;s cell size.</p></xdoc>",
+        "sample_value.title": "Sampling Value",
+        "summary": "Interpolates a raster using z-values from a terrain dataset.",
+        "title": "Terrain To Raster"
+    }
+}

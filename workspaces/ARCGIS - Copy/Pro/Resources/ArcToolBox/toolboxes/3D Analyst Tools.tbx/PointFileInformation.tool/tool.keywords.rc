@@ -1,0 +1,20 @@
+{
+    "set": [
+        "3d feature class",
+        "3d files",
+        "3d point information",
+        "ascii",
+        "las",
+        "las files",
+        "lidar",
+        "point count",
+        "point file information",
+        "point spacing",
+        "xyz",
+        "xyz data",
+        "z max",
+        "z maximum",
+        "z min",
+        "z minimum"
+    ]
+}

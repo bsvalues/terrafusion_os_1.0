@@ -1,0 +1,175 @@
+[2025-11-03 19:11:57] [INFO] ==================================================
+[2025-11-03 19:11:57] [INFO] TerraFusion Elite Government OS Engineering Agent
+[2025-11-03 19:11:57] [INFO] MEDIUM Priority Systems Migration - Batch 1 (10 systems)
+[2025-11-03 19:11:57] [INFO] ==================================================
+[2025-11-03 19:11:57] [INFO] ===========================================
+[2025-11-03 19:11:57] [INFO] Starting migration: TerraFusionBuild_ACTUAL
+[2025-11-03 19:11:57] [INFO] Foundation Value: +0.07
+[2025-11-03 19:11:57] [INFO] Target: terra-build-actual
+[2025-11-03 19:11:57] [INFO] ✅ Source verified: C:\Users\bsval\OneDrive\Desktop\from D\TerraFusionBuild_ACTUAL
+[2025-11-03 19:12:24] [INFO] Source analysis: 59819 files, 2355.81 MB
+[2025-11-03 19:12:24] [WARN] WARNING: Target directory already exists. Backing up...
+[2025-11-03 19:12:24] [INFO] Backup created: C:\Users\bsval\terrafusion_os_1.0\applications\terra-build-actual-backup-20251103-191224
+[2025-11-03 19:12:24] [INFO] ✅ Target directory created: C:\Users\bsval\terrafusion_os_1.0\applications\terra-build-actual
+[2025-11-03 19:12:24] [INFO] Copying files...
+[2025-11-03 19:29:35] [INFO] Copy completed in 1031.1 seconds
+[2025-11-03 19:29:42] [INFO] Target analysis: 59819 files, 2355.81 MB
+[2025-11-03 19:29:42] [INFO] ✅ Verification passed: 59819 files copied successfully
+[2025-11-03 19:29:43] [INFO] Technology markers:
+[2025-11-03 19:29:43] [INFO]   - Node.js (package.json found)
+[2025-11-03 19:29:43] [INFO] ✅ Migration manifest created: C:\Users\bsval\terrafusion_os_1.0\applications\terra-build-actual\.migration-manifest.json
+[2025-11-03 19:29:43] [INFO] ✅✅✅ MIGRATION COMPLETE: TerraFusionBuild_ACTUAL
+[2025-11-03 19:29:43] [INFO] ===========================================
+[2025-11-03 19:29:47] [INFO] ===========================================
+[2025-11-03 19:29:47] [INFO] Starting migration: TerraFusionPlayground-main
+[2025-11-03 19:29:47] [INFO] Foundation Value: +0.07
+[2025-11-03 19:29:47] [INFO] Target: terra-playground-main
+[2025-11-03 19:29:47] [INFO] ✅ Source verified: C:\Users\bsval\OneDrive\Desktop\from D\TerraFusionPlayground-main
+[2025-11-03 19:29:48] [INFO] Source analysis: 1433 files, 46.27 MB
+[2025-11-03 19:29:48] [INFO] ✅ Target directory created: C:\Users\bsval\terrafusion_os_1.0\applications\terra-playground-main
+[2025-11-03 19:29:48] [INFO] Copying files...
+[2025-11-03 19:30:23] [INFO] Copy completed in 35.3 seconds
+[2025-11-03 19:30:23] [INFO] Target analysis: 1433 files, 46.27 MB
+[2025-11-03 19:30:23] [INFO] ✅ Verification passed: 1433 files copied successfully
+[2025-11-03 19:30:23] [INFO] Technology markers:
+[2025-11-03 19:30:23] [INFO]   - Node.js (package.json found)
+[2025-11-03 19:30:23] [INFO] ✅ Migration manifest created: C:\Users\bsval\terrafusion_os_1.0\applications\terra-playground-main\.migration-manifest.json
+[2025-11-03 19:30:23] [INFO] ✅✅✅ MIGRATION COMPLETE: TerraFusionPlayground-main
+[2025-11-03 19:30:23] [INFO] ===========================================
+[2025-11-03 19:30:23] [INFO] ===========================================
+[2025-11-03 19:30:23] [INFO] Starting migration: TerraFusionPrimeView_PRODUCTION
+[2025-11-03 19:30:23] [INFO] Foundation Value: +0.07
+[2025-11-03 19:30:23] [INFO] Target: terra-primeview-production
+[2025-11-03 19:30:23] [INFO] ✅ Source verified: C:\Users\bsval\OneDrive\Desktop\from D\TerraFusionPrimeView_PRODUCTION
+[2025-11-03 19:30:23] [INFO] Source analysis: 193 files, 1.71 MB
+[2025-11-03 19:30:23] [INFO] ✅ Target directory created: C:\Users\bsval\terrafusion_os_1.0\applications\terra-primeview-production
+[2025-11-03 19:30:23] [INFO] Copying files...
+[2025-11-03 19:30:28] [INFO] Copy completed in 4.9 seconds
+[2025-11-03 19:30:28] [INFO] Target analysis: 193 files, 1.71 MB
+[2025-11-03 19:30:28] [INFO] ✅ Verification passed: 193 files copied successfully
+[2025-11-03 19:30:28] [INFO] Technology markers:
+[2025-11-03 19:30:28] [INFO]   - Node.js (package.json found)
+[2025-11-03 19:30:28] [INFO] ✅ Migration manifest created: C:\Users\bsval\terrafusion_os_1.0\applications\terra-primeview-production\.migration-manifest.json
+[2025-11-03 19:30:28] [INFO] ✅✅✅ MIGRATION COMPLETE: TerraFusionPrimeView_PRODUCTION
+[2025-11-03 19:30:28] [INFO] ===========================================
+[2025-11-03 19:30:28] [INFO] ===========================================
+[2025-11-03 19:30:28] [INFO] Starting migration: TerraFusionV0Demo_PRODUCTION
+[2025-11-03 19:30:28] [INFO] Foundation Value: +0.07
+[2025-11-03 19:30:28] [INFO] Target: terra-v0demo-production
+[2025-11-03 19:30:28] [INFO] ✅ Source verified: C:\Users\bsval\OneDrive\Desktop\from D\TerraFusionV0Demo_PRODUCTION
+[2025-11-03 19:30:29] [INFO] Source analysis: 190 files, 1.39 MB
+[2025-11-03 19:30:29] [INFO] ✅ Target directory created: C:\Users\bsval\terrafusion_os_1.0\applications\terra-v0demo-production
+[2025-11-03 19:30:29] [INFO] Copying files...
+[2025-11-03 19:30:32] [INFO] Copy completed in 3.9 seconds
+[2025-11-03 19:30:33] [INFO] Target analysis: 190 files, 1.39 MB
+[2025-11-03 19:30:33] [INFO] ✅ Verification passed: 190 files copied successfully
+[2025-11-03 19:30:33] [INFO] Technology markers:
+[2025-11-03 19:30:33] [INFO]   - Node.js (package.json found)
+[2025-11-03 19:30:33] [INFO] ✅ Migration manifest created: C:\Users\bsval\terrafusion_os_1.0\applications\terra-v0demo-production\.migration-manifest.json
+[2025-11-03 19:30:33] [INFO] ✅✅✅ MIGRATION COMPLETE: TerraFusionV0Demo_PRODUCTION
+[2025-11-03 19:30:33] [INFO] ===========================================
+[2025-11-03 19:30:33] [INFO] ===========================================
+[2025-11-03 19:30:33] [INFO] Starting migration: TerraFusionProf_PRODUCTION
+[2025-11-03 19:30:33] [INFO] Foundation Value: +0.069
+[2025-11-03 19:30:33] [INFO] Target: terra-prof-production
+[2025-11-03 19:30:33] [INFO] ✅ Source verified: C:\Users\bsval\OneDrive\Desktop\from D\TerraFusionProf_PRODUCTION
+[2025-11-03 19:30:34] [INFO] Source analysis: 3966 files, 977.92 MB
+[2025-11-03 19:30:34] [INFO] ✅ Target directory created: C:\Users\bsval\terrafusion_os_1.0\applications\terra-prof-production
+[2025-11-03 19:30:34] [INFO] Copying files...
+[2025-11-03 19:31:32] [INFO] Copy completed in 58.4 seconds
+[2025-11-03 19:31:33] [INFO] Target analysis: 3966 files, 977.92 MB
+[2025-11-03 19:31:33] [INFO] ✅ Verification passed: 3966 files copied successfully
+[2025-11-03 19:31:33] [INFO] Technology markers:
+[2025-11-03 19:31:33] [INFO]   - Node.js (package.json found)
+[2025-11-03 19:31:33] [INFO] ✅ Migration manifest created: C:\Users\bsval\terrafusion_os_1.0\applications\terra-prof-production\.migration-manifest.json
+[2025-11-03 19:31:33] [INFO] ✅✅✅ MIGRATION COMPLETE: TerraFusionProf_PRODUCTION
+[2025-11-03 19:31:33] [INFO] ===========================================
+[2025-11-03 19:31:33] [INFO] ===========================================
+[2025-11-03 19:31:33] [INFO] Starting migration: TerraFusionAssistant_PRODUCTION
+[2025-11-03 19:31:33] [INFO] Foundation Value: +0.068
+[2025-11-03 19:31:33] [INFO] Target: terra-assistant-production
+[2025-11-03 19:31:33] [INFO] ✅ Source verified: C:\Users\bsval\OneDrive\Desktop\from D\TerraFusionAssistant_PRODUCTION
+[2025-11-03 19:31:34] [INFO] Source analysis: 3270 files, 167.94 MB
+[2025-11-03 19:31:34] [INFO] ✅ Target directory created: C:\Users\bsval\terrafusion_os_1.0\applications\terra-assistant-production
+[2025-11-03 19:31:34] [INFO] Copying files...
+[2025-11-03 19:32:28] [INFO] Copy completed in 53.6 seconds
+[2025-11-03 19:32:28] [INFO] Target analysis: 3270 files, 167.94 MB
+[2025-11-03 19:32:28] [INFO] ✅ Verification passed: 3270 files copied successfully
+[2025-11-03 19:32:28] [INFO] Technology markers:
+[2025-11-03 19:32:28] [INFO] ✅ Migration manifest created: C:\Users\bsval\terrafusion_os_1.0\applications\terra-assistant-production\.migration-manifest.json
+[2025-11-03 19:32:28] [INFO] ✅✅✅ MIGRATION COMPLETE: TerraFusionAssistant_PRODUCTION
+[2025-11-03 19:32:28] [INFO] ===========================================
+[2025-11-03 19:32:29] [INFO] ===========================================
+[2025-11-03 19:32:29] [INFO] Starting migration: TerraFusionGama_PRODUCTION
+[2025-11-03 19:32:29] [INFO] Foundation Value: +0.067
+[2025-11-03 19:32:29] [INFO] Target: terra-gama-production
+[2025-11-03 19:32:29] [INFO] ✅ Source verified: C:\Users\bsval\OneDrive\Desktop\from D\TerraFusionGama_PRODUCTION
+[2025-11-03 19:32:37] [INFO] Source analysis: 76829 files, 785.29 MB
+[2025-11-03 19:32:37] [INFO] ✅ Target directory created: C:\Users\bsval\terrafusion_os_1.0\applications\terra-gama-production
+[2025-11-03 19:32:37] [INFO] Copying files...
+[2025-11-03 19:54:31] [INFO] Copy completed in 1314 seconds
+[2025-11-03 19:54:38] [INFO] Target analysis: 76829 files, 785.29 MB
+[2025-11-03 19:54:38] [INFO] ✅ Verification passed: 76829 files copied successfully
+[2025-11-03 19:54:39] [INFO] Technology markers:
+[2025-11-03 19:54:39] [INFO]   - Node.js (package.json found)
+[2025-11-03 19:54:39] [INFO]   - Python (requirements.txt found)
+[2025-11-03 19:54:39] [INFO] ✅ Migration manifest created: C:\Users\bsval\terrafusion_os_1.0\applications\terra-gama-production\.migration-manifest.json
+[2025-11-03 19:54:39] [INFO] ✅✅✅ MIGRATION COMPLETE: TerraFusionGama_PRODUCTION
+[2025-11-03 19:54:39] [INFO] ===========================================
+[2025-11-03 19:54:42] [INFO] ===========================================
+[2025-11-03 19:54:42] [INFO] Starting migration: TerraFusionEcosystem_PRODUCTION
+[2025-11-03 19:54:42] [INFO] Foundation Value: +0.066
+[2025-11-03 19:54:42] [INFO] Target: terra-ecosystem-production
+[2025-11-03 19:54:42] [INFO] ✅ Source verified: C:\Users\bsval\OneDrive\Desktop\from D\TerraFusionEcosystem_PRODUCTION
+[2025-11-03 19:54:42] [INFO] Source analysis: 2 files, 0.02 MB
+[2025-11-03 19:54:42] [INFO] ✅ Target directory created: C:\Users\bsval\terrafusion_os_1.0\applications\terra-ecosystem-production
+[2025-11-03 19:54:42] [INFO] Copying files...
+[2025-11-03 19:54:43] [INFO] Copy completed in 0 seconds
+[2025-11-03 19:54:43] [INFO] Target analysis: 2 files, 0.02 MB
+[2025-11-03 19:54:43] [INFO] ✅ Verification passed: 2 files copied successfully
+[2025-11-03 19:54:43] [INFO] Technology markers:
+[2025-11-03 19:54:43] [INFO] ✅ Migration manifest created: C:\Users\bsval\terrafusion_os_1.0\applications\terra-ecosystem-production\.migration-manifest.json
+[2025-11-03 19:54:43] [INFO] ✅✅✅ MIGRATION COMPLETE: TerraFusionEcosystem_PRODUCTION
+[2025-11-03 19:54:43] [INFO] ===========================================
+[2025-11-03 19:54:43] [INFO] ===========================================
+[2025-11-03 19:54:43] [INFO] Starting migration: TerraFusionProPlus_PRODUCTION
+[2025-11-03 19:54:43] [INFO] Foundation Value: +0.062
+[2025-11-03 19:54:43] [INFO] Target: terra-proplus-production
+[2025-11-03 19:54:43] [INFO] ✅ Source verified: C:\Users\bsval\OneDrive\Desktop\from D\TerraFusionProPlus_PRODUCTION
+[2025-11-03 19:54:46] [INFO] Source analysis: 32033 files, 282.32 MB
+[2025-11-03 19:54:46] [INFO] ✅ Target directory created: C:\Users\bsval\terrafusion_os_1.0\applications\terra-proplus-production
+[2025-11-03 19:54:46] [INFO] Copying files...
+[2025-11-03 20:02:46] [INFO] Copy completed in 479.8 seconds
+[2025-11-03 20:02:48] [INFO] Target analysis: 32033 files, 282.32 MB
+[2025-11-03 20:02:48] [INFO] ✅ Verification passed: 32033 files copied successfully
+[2025-11-03 20:02:49] [INFO] Technology markers:
+[2025-11-03 20:02:49] [INFO]   - Node.js (package.json found)
+[2025-11-03 20:02:49] [INFO] ✅ Migration manifest created: C:\Users\bsval\terrafusion_os_1.0\applications\terra-proplus-production\.migration-manifest.json
+[2025-11-03 20:02:49] [INFO] ✅✅✅ MIGRATION COMPLETE: TerraFusionProPlus_PRODUCTION
+[2025-11-03 20:02:49] [INFO] ===========================================
+[2025-11-03 20:02:50] [INFO] ===========================================
+[2025-11-03 20:02:50] [INFO] Starting migration: TerraMiner_PRODUCTION
+[2025-11-03 20:02:50] [INFO] Foundation Value: +0.06
+[2025-11-03 20:02:50] [INFO] Target: terra-miner-production
+[2025-11-03 20:02:50] [INFO] ✅ Source verified: C:\Users\bsval\OneDrive\Desktop\from D\TerraMiner_PRODUCTION
+[2025-11-03 20:02:56] [INFO] Source analysis: 53725 files, 933.05 MB
+[2025-11-03 20:02:56] [INFO] ✅ Target directory created: C:\Users\bsval\terrafusion_os_1.0\applications\terra-miner-production
+[2025-11-03 20:02:56] [INFO] Copying files...
+[2025-11-03 20:14:35] [INFO] Copy completed in 699.2 seconds
+[2025-11-03 20:14:40] [INFO] Target analysis: 53725 files, 933.05 MB
+[2025-11-03 20:14:40] [INFO] ✅ Verification passed: 53725 files copied successfully
+[2025-11-03 20:14:41] [INFO] Technology markers:
+[2025-11-03 20:14:41] [INFO] ✅ Migration manifest created: C:\Users\bsval\terrafusion_os_1.0\applications\terra-miner-production\.migration-manifest.json
+[2025-11-03 20:14:41] [INFO] ✅✅✅ MIGRATION COMPLETE: TerraMiner_PRODUCTION
+[2025-11-03 20:14:41] [INFO] ===========================================
+[2025-11-03 20:14:44] [INFO] ==================================================
+[2025-11-03 20:14:44] [INFO] MIGRATION SUMMARY - MEDIUM PRIORITY BATCH 1
+[2025-11-03 20:14:44] [INFO] Total Systems: 10
+[2025-11-03 20:14:44] [INFO] Successful: 10
+[2025-11-03 20:14:44] [INFO] Failed: 0
+[2025-11-03 20:14:44] [INFO] Total Files Migrated: 231470
+[2025-11-03 20:14:44] [INFO] Total Size: 5551.72 MB (5.42 GB)
+[2025-11-03 20:14:44] [INFO] Foundation Value Added: +0.672
+[2025-11-03 20:14:44] [INFO] Total Duration: 62.8 minutes
+[2025-11-03 20:14:44] [INFO] Log file: migration-log-medium-batch1-20251103-191157.txt
+[2025-11-03 20:14:44] [INFO] ==================================================

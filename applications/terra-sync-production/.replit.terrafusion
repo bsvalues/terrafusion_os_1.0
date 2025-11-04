@@ -1,0 +1,32 @@
+modules = ["python-3.11", "postgresql-16", "nodejs-20", "python3"]
+
+[nix]
+channel = "stable-24_05"
+packages = ["cyrus_sasl", "jq", "libxcrypt", "libyaml", "nats-server", "openldap", "openssl", "postgresql", "unixODBC", "rustc", "cargo"]
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["sh", "-c", "gunicorn --bind 0.0.0.0:5001 main:app"]
+build = ["sh", "-c", "python -m pip install -r requirements.txt"]
+
+[workflows]
+runButton = "Run TerraFusion Platform"
+
+[[workflows.workflow]]
+name = "TerraFusion Platform"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python run_terrafusion.py"
+waitForPort = 5001
+
+[[ports]]
+localPort = 5001
+externalPort = 80

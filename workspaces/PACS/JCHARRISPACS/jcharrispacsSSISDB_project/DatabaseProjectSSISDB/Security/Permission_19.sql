@@ -1,0 +1,5 @@
+GRANT VIEW DEFINITION TO [AllSchemaOwner];
+
+
+GO
+

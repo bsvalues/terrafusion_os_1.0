@@ -1,0 +1,158 @@
+{
+  "$extends": "./master-workspace.template.json",
+  "folders": [
+    {
+      "path": ".",
+      "name": "🚀 ${workspaceName} Backend - Championship Excellence"
+    },
+    {
+      "path": "../SDK",
+      "name": "📦 Platform SDK (shared)"
+    },
+    {
+      "path": "../tests/backend/${workspaceName}",
+      "name": "🧪 Backend Test Suite"
+    },
+    {
+      "path": "../docs/backend/${workspaceName}",
+      "name": "📚 Backend Documentation"
+    },
+    {
+      "path": "../config",
+      "name": "⚙️ Configuration (shared)"
+    },
+    {
+      "path": "../infrastructure",
+      "name": "🏗️ Infrastructure & Deployment"
+    },
+    {
+      "path": "../monitoring/backend",
+      "name": "📊 Performance & Security Monitoring"
+    }
+  ],
+  "settings": {
+    "python.analysis.typeCheckingMode": "strict",
+    "python.analysis.autoImportCompletions": true,
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "rust-analyzer.check.command": "clippy",
+    "rust-analyzer.cargo.allFeatures": true,
+    "rust-analyzer.completion.addCallParenthesis": true,
+    "dotnet.defaultSolution": "./backend.sln",
+    "omnisharp.enableEditorConfigSupport": true,
+    "omnisharp.enableRoslynAnalyzers": true,
+    "terrafusion.backend": {
+      "architecture": "Microservices + Event-Driven",
+      "coreStack": ".NET 8 + Rust + Python + SignalR",
+      "performance": "Championship Excellence - <50ms API, <100ms processing",
+      "testing": "≥90% critical path coverage required",
+      "deployment": "Reversible PRs with feature flags",
+      "monitoring": "Real-time performance and error tracking",
+      "security": "Zero-trust architecture"
+    },
+    "terrafusion.compliance": {
+      "fismaMode": "HIGH",
+      "nist80053": true,
+      "auditTrail": "comprehensive",
+      "securityScanning": "continuous",
+      "accessControl": "role-based",
+      "dataEncryption": "end-to-end"
+    },
+    "terrafusion.ai.agentTypes": {
+      "developmentLead": true,
+      "codeGenerator": true,
+      "testAutomation": true,
+      "qaLead": true,
+      "securityAnalyst": true,
+      "performanceOptimizer": true,
+      "devOpsSpecialist": true,
+      "apiDocumentationGenerator": true
+    },
+    "terrafusion.performance": {
+      "apiResponseTime": "<50ms",
+      "databaseQueryTime": "<10ms",
+      "memoryUsage": "optimized",
+      "cpuUtilization": "efficient",
+      "errorRate": "<0.1%",
+      "uptime": "99.9%+"
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "rust-lang.rust-analyzer",
+      "ms-dotnettools.csharp",
+      "ms-dotnettools.csdevkit",
+      "ms-python.black-formatter",
+      "ms-python.isort",
+      "ms-python.flake8",
+      "vadimcn.vscode-lldb",
+      "tamasfe.even-better-toml",
+      "redhat.vscode-yaml",
+      "ms-azuretools.vscode-docker",
+      "ms-kubernetes-tools.vscode-kubernetes-tools"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build Solution",
+        "type": "shell",
+        "command": "dotnet",
+        "args": ["build"],
+        "group": "build",
+        "presentation": {
+          "reveal": "always",
+          "panel": "shared"
+        },
+        "problemMatcher": "$msCompile"
+      },
+      {
+        "label": "Run Tests",
+        "type": "shell",
+        "command": "dotnet",
+        "args": ["test", "--coverage"],
+        "group": "test",
+        "presentation": {
+          "reveal": "always",
+          "panel": "shared"
+        }
+      },
+      {
+        "label": "Security Scan",
+        "type": "shell",
+        "command": "dotnet",
+        "args": ["tool", "run", "security-scan"],
+        "group": "test",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "label": "Performance Benchmark",
+        "type": "shell",
+        "command": "dotnet",
+        "args": ["run", "--project", "PerformanceTests"],
+        "group": "test",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "label": "Database Migration",
+        "type": "shell",
+        "command": "dotnet",
+        "args": ["ef", "database", "update"],
+        "group": "build",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      }
+    ]
+  }
+}

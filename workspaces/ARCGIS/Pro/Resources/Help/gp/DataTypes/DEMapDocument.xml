@@ -1,0 +1,5 @@
+<DataType Name="DEMapDocument">
+  <DisplayName>ArcMap Document</DisplayName>
+  <Description>A file that contains one map, its layout, and its associated layers, tables, charts, and reports.</Description>
+</DataType>
+

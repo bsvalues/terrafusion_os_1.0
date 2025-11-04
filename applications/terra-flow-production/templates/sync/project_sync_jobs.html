@@ -1,0 +1,403 @@
+{% extends 'base.html' %}
+
+{% block title %}Project Sync Jobs{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6>Project Sync Jobs</h6>
+                        <p class="text-sm mb-0">
+                            {% if status %}
+                                Showing {{ jobs|length }} {{ status }} jobs
+                            {% else %}
+                                Showing {{ jobs|length }} jobs
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('project_sync.dashboard') }}" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+                        </a>
+                        <a href="{{ url_for('project_sync.run_sync') }}" class="btn btn-sm btn-primary ms-2">
+                            <i class="fas fa-plus me-2"></i> New Sync Job
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="card-body px-0 pt-0 pb-2">
+                    <!-- Filters -->
+                    <div class="p-3">
+                        <form method="GET" action="{{ url_for('project_sync.job_list') }}" class="row g-3">
+                            <div class="col-md-3">
+                                <label for="status" class="form-label">Status</label>
+                                <select class="form-select" id="status" name="status">
+                                    <option value="" {% if not status %}selected{% endif %}>All Statuses</option>
+                                    <option value="pending" {% if status == 'pending' %}selected{% endif %}>Pending</option>
+                                    <option value="running" {% if status == 'running' %}selected{% endif %}>Running</option>
+                                    <option value="completed" {% if status == 'completed' %}selected{% endif %}>Completed</option>
+                                    <option value="failed" {% if status == 'failed' %}selected{% endif %}>Failed</option>
+                                    <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="date_from" class="form-label">From Date</label>
+                                <input type="date" class="form-control" id="date_from" name="date_from" value="{{ date_from or '' }}">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="date_to" class="form-label">To Date</label>
+                                <input type="date" class="form-control" id="date_to" name="date_to" value="{{ date_to or '' }}">
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-filter me-2"></i> Apply Filters
+                                </button>
+                                <a href="{{ url_for('project_sync.job_list') }}" class="btn btn-outline-secondary ms-2">
+                                    <i class="fas fa-times me-2"></i> Clear
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="table-responsive p-0">
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Job ID</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Name</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Status</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Progress</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Created</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Duration</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Errors</th>
+                                    <th class="text-secondary opacity-7"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for job in jobs %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{{ job.job_id[:8] }}...</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">{{ job.name }}</p>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-sm bg-gradient-{{ 
+                                            'success' if job.status == 'completed' 
+                                            else 'danger' if job.status == 'failed' 
+                                            else 'warning' if job.status == 'cancelled' 
+                                            else 'info' if job.status == 'running'
+                                            else 'secondary'
+                                        }}">
+                                            {{ job.status }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if job.total_records > 0 %}
+                                            <span class="me-2 text-xs font-weight-bold">{{ (job.processed_records / job.total_records * 100)|round|int }}%</span>
+                                            <div>
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-gradient-{{ 
+                                                        'success' if job.status == 'completed' 
+                                                        else 'danger' if job.status == 'failed' 
+                                                        else 'info' 
+                                                    }}" role="progressbar" aria-valuenow="{{ (job.processed_records / job.total_records * 100)|round|int }}" 
+                                                    aria-valuemin="0" aria-valuemax="100" style="width: {{ (job.processed_records / job.total_records * 100)|round|int }}%;"></div>
+                                                </div>
+                                            </div>
+                                            {% else %}
+                                            <span class="text-xs font-weight-bold">N/A</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="text-secondary text-xs font-weight-bold">
+                                            {{ job.created_at.strftime('%Y-%m-%d %H:%M:%S') }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="text-secondary text-xs font-weight-bold">
+                                            {% if job.duration_seconds %}
+                                                {{ (job.duration_seconds / 60)|round|int }} min {{ job.duration_seconds % 60 }} sec
+                                            {% elif job.status == 'running' and job.start_time %}
+                                                Running
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if job.error_records > 0 %}
+                                            <span class="text-danger text-xs font-weight-bold">
+                                                {{ job.error_records }}
+                                            </span>
+                                        {% else %}
+                                            <span class="text-secondary text-xs">0</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="align-middle">
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ url_for('project_sync.job_details', job_id=job.job_id) }}" class="btn btn-link text-primary mb-0">
+                                                <i class="fas fa-eye text-xs"></i>
+                                            </a>
+                                            {% if job.status == 'running' %}
+                                            <form method="POST" action="{{ url_for('project_sync.cancel_job', job_id=job.job_id) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel this job?');">
+                                                <button type="submit" class="btn btn-link text-danger mb-0">
+                                                    <i class="fas fa-stop text-xs"></i>
+                                                </button>
+                                            </form>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="8" class="text-center py-4">
+                                        <p class="text-secondary mb-0">No jobs found with current filters</p>
+                                        <a href="{{ url_for('project_sync.run_sync') }}" class="btn btn-sm btn-primary mt-3">
+                                            <i class="fas fa-plus me-2"></i> Start New Sync Job
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    {% if pagination.pages > 1 %}
+                    <div class="p-3">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item {{ 'disabled' if pagination.page == 1 else '' }}">
+                                    <a class="page-link" href="{{ url_for('project_sync.job_list', page=pagination.prev_num, status=status, date_from=date_from, date_to=date_to) }}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                
+                                {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                                    {% if page_num %}
+                                        <li class="page-item {{ 'active' if page_num == pagination.page else '' }}">
+                                            <a class="page-link" href="{{ url_for('project_sync.job_list', page=page_num, status=status, date_from=date_from, date_to=date_to) }}">
+                                                {{ page_num }}
+                                            </a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item disabled">
+                                            <span class="page-link">…</span>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                <li class="page-item {{ 'disabled' if pagination.page == pagination.pages else '' }}">
+                                    <a class="page-link" href="{{ url_for('project_sync.job_list', page=pagination.next_num, status=status, date_from=date_from, date_to=date_to) }}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Job Statistics -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header pb-0">
+                    <h6>Job Statistics</h6>
+                </div>
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="p-4">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="card bg-gradient-success border-0 mb-4">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-8">
+                                                <div class="numbers">
+                                                    <p class="text-sm mb-0 text-white text-uppercase font-weight-bold">Completed Jobs</p>
+                                                    <h5 class="font-weight-bolder text-white mb-0">
+                                                        {{ jobs|selectattr('status', 'equalto', 'completed')|list|length }}
+                                                    </h5>
+                                                </div>
+                                            </div>
+                                            <div class="col-4 text-end">
+                                                <div class="icon icon-shape bg-white shadow text-center border-radius-md">
+                                                    <i class="fas fa-check text-success text-lg opacity-10" aria-hidden="true"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <div class="card bg-gradient-info border-0 mb-4">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-8">
+                                                <div class="numbers">
+                                                    <p class="text-sm mb-0 text-white text-uppercase font-weight-bold">Running Jobs</p>
+                                                    <h5 class="font-weight-bolder text-white mb-0">
+                                                        {{ jobs|selectattr('status', 'equalto', 'running')|list|length }}
+                                                    </h5>
+                                                </div>
+                                            </div>
+                                            <div class="col-4 text-end">
+                                                <div class="icon icon-shape bg-white shadow text-center border-radius-md">
+                                                    <i class="fas fa-sync-alt text-info text-lg opacity-10" aria-hidden="true"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <div class="card bg-gradient-danger border-0 mb-4">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-8">
+                                                <div class="numbers">
+                                                    <p class="text-sm mb-0 text-white text-uppercase font-weight-bold">Failed Jobs</p>
+                                                    <h5 class="font-weight-bolder text-white mb-0">
+                                                        {{ jobs|selectattr('status', 'equalto', 'failed')|list|length }}
+                                                    </h5>
+                                                </div>
+                                            </div>
+                                            <div class="col-4 text-end">
+                                                <div class="icon icon-shape bg-white shadow text-center border-radius-md">
+                                                    <i class="fas fa-times text-danger text-lg opacity-10" aria-hidden="true"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <div class="card bg-gradient-warning border-0 mb-4">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-8">
+                                                <div class="numbers">
+                                                    <p class="text-sm mb-0 text-white text-uppercase font-weight-bold">Cancelled Jobs</p>
+                                                    <h5 class="font-weight-bolder text-white mb-0">
+                                                        {{ jobs|selectattr('status', 'equalto', 'cancelled')|list|length }}
+                                                    </h5>
+                                                </div>
+                                            </div>
+                                            <div class="col-4 text-end">
+                                                <div class="icon icon-shape bg-white shadow text-center border-radius-md">
+                                                    <i class="fas fa-ban text-warning text-lg opacity-10" aria-hidden="true"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Additional metrics if needed -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header pb-0">
+                                        <h6 class="mb-0">Records Processed</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="chart">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h5 class="mb-1 text-primary font-weight-bold">
+                                                        {{ jobs|sum(attribute='processed_records') }}
+                                                    </h5>
+                                                    <p class="text-sm mb-0">Total records processed</p>
+                                                </div>
+                                                <div>
+                                                    <h5 class="mb-1 text-danger font-weight-bold">
+                                                        {{ jobs|sum(attribute='error_records') }}
+                                                    </h5>
+                                                    <p class="text-sm mb-0">Total error records</p>
+                                                </div>
+                                                <div>
+                                                    <h5 class="mb-1 text-success font-weight-bold">
+                                                        {% if jobs|sum(attribute='processed_records') > 0 %}
+                                                            {{ ((jobs|sum(attribute='processed_records') - jobs|sum(attribute='error_records')) / jobs|sum(attribute='processed_records') * 100)|round|int }}%
+                                                        {% else %}
+                                                            0%
+                                                        {% endif %}
+                                                    </h5>
+                                                    <p class="text-sm mb-0">Success rate</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header pb-0">
+                                        <h6 class="mb-0">Average Performance</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="chart">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h5 class="mb-1 font-weight-bold">
+                                                        {% set completed_jobs = jobs|selectattr('status', 'equalto', 'completed')|list %}
+                                                        {% if completed_jobs|length > 0 %}
+                                                            {{ (completed_jobs|sum(attribute='duration_seconds') / completed_jobs|length / 60)|round|int }} min
+                                                        {% else %}
+                                                            N/A
+                                                        {% endif %}
+                                                    </h5>
+                                                    <p class="text-sm mb-0">Average job duration</p>
+                                                </div>
+                                                <div>
+                                                    <h5 class="mb-1 font-weight-bold">
+                                                        {% if completed_jobs|length > 0 %}
+                                                            {{ (completed_jobs|sum(attribute='processed_records') / completed_jobs|length)|round|int }}
+                                                        {% else %}
+                                                            N/A
+                                                        {% endif %}
+                                                    </h5>
+                                                    <p class="text-sm mb-0">Avg. records per job</p>
+                                                </div>
+                                                <div>
+                                                    <h5 class="mb-1 font-weight-bold">
+                                                        {% if completed_jobs|length > 0 and completed_jobs|sum(attribute='duration_seconds') > 0 %}
+                                                            {{ (completed_jobs|sum(attribute='processed_records') / (completed_jobs|sum(attribute='duration_seconds') / 60))|round|int }}
+                                                        {% else %}
+                                                            N/A
+                                                        {% endif %}
+                                                    </h5>
+                                                    <p class="text-sm mb-0">Records per minute</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

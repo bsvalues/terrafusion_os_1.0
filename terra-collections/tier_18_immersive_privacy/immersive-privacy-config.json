@@ -1,0 +1,70 @@
+{
+  "workspace": "terra-collections",
+  "visualization_framework": "immersive_privacy_v1",
+  "deployment_date": "2025-10-16T11:58:30.329276",
+  "3d_landscape": {
+    "enabled": true,
+    "terrain_type": "privacy_topology",
+    "scale": "1:1000000",
+    "update_frequency_seconds": 5,
+    "data_points": {
+      "queries": "blue_nodes",
+      "epsilon_spent": "red_gradients",
+      "risk_score": "yellow_heat",
+      "compliance_status": "green_checkmarks"
+    }
+  },
+  "vr_environment": {
+    "enabled": true,
+    "platforms": [
+      "Meta Quest 3",
+      "HTC Vive Pro",
+      "Valve Index"
+    ],
+    "experience_type": "privacy_command_center",
+    "immersion_level": "full_6dof",
+    "spatial_audio": true,
+    "haptic_feedback": true
+  },
+  "ar_compliance_interface": {
+    "enabled": true,
+    "platforms": [
+      "iOS",
+      "Android",
+      "HoloLens 2"
+    ],
+    "features": {
+      "real_time_privacy_overlay": true,
+      "compliance_score_display": true,
+      "risk_heat_mapping": true,
+      "policy_violation_alerts": true
+    }
+  },
+  "interactive_dashboards": {
+    "real_time_privacy_metrics": true,
+    "federated_learning_visualization": true,
+    "homomorphic_encryption_status": true,
+    "data_minimization_tracking": true,
+    "risk_assessment_live_feed": true
+  },
+  "metaverse_integration": {
+    "enabled": true,
+    "platforms": [
+      "Decentraland",
+      "The Sandbox",
+      "Roblox"
+    ],
+    "features": {
+      "privacy_embassy": true,
+      "collaborative_spaces": true,
+      "ai_privacy_advisors": true,
+      "citizen_privacy_education": true
+    }
+  },
+  "accessibility": {
+    "screen_readers": true,
+    "haptic_alternatives": true,
+    "voice_controls": true,
+    "keyboard_navigation": true
+  }
+}

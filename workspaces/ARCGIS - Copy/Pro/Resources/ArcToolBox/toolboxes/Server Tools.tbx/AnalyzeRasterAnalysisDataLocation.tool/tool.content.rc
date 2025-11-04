@@ -1,0 +1,8 @@
+{
+    "map": {
+        "description": "Analyze input data locations in a Raster Analysis task.",
+        "in_task.title": "Input Raster Analysis Task",
+        "out_data_location.title": "Output Data Location Analysis Results",
+        "title": "Analyze Raster Analysis Data Location"
+    }
+}

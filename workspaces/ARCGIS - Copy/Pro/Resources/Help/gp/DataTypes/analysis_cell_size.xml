@@ -1,0 +1,5 @@
+<DataType Name="analysis_cell_size">
+  <DisplayName>Analysis Cell Size</DisplayName>
+  <Description>The cell size used by raster tools.</Description>
+</DataType>
+

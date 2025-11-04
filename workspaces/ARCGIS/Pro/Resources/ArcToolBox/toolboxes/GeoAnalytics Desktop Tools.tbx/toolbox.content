@@ -1,0 +1,68 @@
+{
+    "version": "1.0",
+    "alias": "gapro",
+    "displayname": "$rc:title",
+    "description": "$rc:descr",
+    "helpcontext": "69000000",
+    "toolsets": {
+        "$rc:toolset2.name": {
+            "tools": [
+                "CalculateDensity",
+                "FindHotSpots",
+                "FindPointClusters",
+                "Forest",
+                "GeneralizedLinearRegression"
+            ]
+        },
+        "$rc:toolset4.name": {
+            "tools": [
+                "CalculateMotionStatistics"
+            ]
+        },
+        "$rc:toolset7.name": {
+            "tools": [
+                "DetectIncidents",
+                "FindDwellLocations",
+                "FindSimilarLocations"
+            ]
+        },
+        "$rc:toolset3.name": {
+            "tools": [
+                "CalculateField",
+                "ClipLayer",
+                "DissolveBoundaries",
+                "OverlayLayers"
+            ]
+        },
+        "$rc:toolset1.name": {
+            "tools": [
+                "AggregatePoints",
+                "DescribeDataset",
+                "JoinFeatures",
+                "ReconstructTracks",
+                "SummarizeAttributes",
+                "SummarizeCenterAndDispersion",
+                "SummarizeWithin"
+            ]
+        },
+        "$rc:toolset6.name": {
+            "tools": [
+                "CreateBuffers",
+                "GroupByProximity",
+                "SnapTracks",
+                "TraceProximityEvents"
+            ]
+        },
+        "$rc:toolset5.name": {
+            "tools": [
+                "CopyDatasetFromBDC",
+                "CreateBDC",
+                "DuplicateDatasetFromBDC",
+                "PreviewDatasetFromBDC",
+                "RefreshBDC",
+                "RemoveDatasetFromBDC",
+                "UpdateBDCDatasetProperties"
+            ]
+        }
+    }
+}

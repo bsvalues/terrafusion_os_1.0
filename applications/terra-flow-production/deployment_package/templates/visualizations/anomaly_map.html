@@ -1,0 +1,160 @@
+{% extends 'layout.html' %}
+
+{% block title %}Geospatial Anomaly Visualization{% endblock %}
+
+{% block styles %}
+  {{ super() }}
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/anomaly_map.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <h1 class="display-5">Geospatial Anomaly Visualization</h1>
+      <p class="lead">Real-time visualization of data anomalies in Benton County property assessment data</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Map Control Panel -->
+    <div class="col-md-3">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">Map Controls</h5>
+        </div>
+        <div class="card-body">
+          <form id="mapControlForm">
+            <!-- Time Period -->
+            <div class="mb-3">
+              <label for="timePeriod" class="form-label">Time Period</label>
+              <select class="form-select" id="timePeriod">
+                <option value="1">Last 24 Hours</option>
+                <option value="7" selected>Last 7 Days</option>
+                <option value="30">Last 30 Days</option>
+                <option value="90">Last 90 Days</option>
+              </select>
+            </div>
+            
+            <!-- Severity Filter -->
+            <div class="mb-3">
+              <label class="form-label">Severity</label>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="critical" id="criticalCheck" checked>
+                <label class="form-check-label text-danger" for="criticalCheck">
+                  Critical
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="high" id="highCheck" checked>
+                <label class="form-check-label text-warning" for="highCheck">
+                  High
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="medium" id="mediumCheck" checked>
+                <label class="form-check-label text-info" for="mediumCheck">
+                  Medium
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="low" id="lowCheck">
+                <label class="form-check-label text-success" for="lowCheck">
+                  Low
+                </label>
+              </div>
+            </div>
+            
+            <!-- Anomaly Type Filter -->
+            <div class="mb-3">
+              <label class="form-label">Anomaly Type</label>
+              <div id="anomalyTypeFilters">
+                <!-- Dynamic content will be added here -->
+                <div class="d-flex justify-content-center my-3">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Update Button -->
+            <div class="d-grid">
+              <button type="button" class="btn btn-primary" id="updateMapBtn">
+                <i class="bi bi-arrow-repeat"></i> Update Map
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Statistics Panel -->
+      <div class="card mt-3">
+        <div class="card-header bg-info text-white">
+          <h5 class="mb-0">Statistics</h5>
+        </div>
+        <div class="card-body" id="statistics-panel">
+          <div class="d-flex justify-content-center my-3">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real-time Updates Toggle -->
+      <div class="card mt-3">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0">Real-time Updates</h5>
+        </div>
+        <div class="card-body">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="realtimeToggle" checked>
+            <label class="form-check-label" for="realtimeToggle">Enable Real-time Updates</label>
+          </div>
+          <div class="mt-2 small" id="lastUpdateTime">Last update: Never</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Map and Details -->
+    <div class="col-md-9">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-body p-0">
+              <div id="anomaly-map" style="height: 600px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selected Anomaly Details -->
+      <div class="row mt-3">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header bg-secondary text-white">
+              <h5 class="mb-0">Anomaly Details</h5>
+            </div>
+            <div class="card-body" id="anomaly-details">
+              <p class="text-muted text-center">Select an anomaly on the map to view details</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+  <script src="{{ url_for('static', filename='js/anomaly_map.js') }}"></script>
+{% endblock %}

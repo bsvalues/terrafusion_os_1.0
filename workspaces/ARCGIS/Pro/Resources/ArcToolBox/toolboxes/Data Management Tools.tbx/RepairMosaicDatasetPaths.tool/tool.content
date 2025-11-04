@@ -1,0 +1,77 @@
+{
+    "type": "FunctionTool",
+    "guid": "{70d43539-5efd-4f0d-a19d-2bc9c40558e4}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190528",
+    "description": "$rc:description",
+    "product": "200",
+    "categories": [
+        "{0a2ad811-7215-4a95-92f3-9c29de502e9b}"
+    ],
+    "attributes": [
+        "mCPU",
+        "no_data_change"
+    ],
+    "params": {
+        "in_mosaic_dataset": {
+            "display_order": "0",
+            "displayname": "$rc:in_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_mosaic_dataset.descr"
+        },
+        "paths_list": {
+            "display_order": "2",
+            "control_guid": "{F604736F-06D8-47CD-AC15-7055F7FCDAC1}",
+            "displayname": "$rc:paths_list.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPVariant",
+                        "displayname": "$rc:paths_list.dt.title1"
+                    },
+                    {
+                        "type": "GPVariant",
+                        "displayname": "$rc:paths_list.dt.title2"
+                    }
+                ]
+            },
+            "description": "$rc:paths_list.descr"
+        },
+        "where_clause": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:where_clause.title",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "in_mosaic_dataset"
+            ],
+            "description": "$rc:where_clause.descr"
+        },
+        "out_mosaic_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "3",
+            "displayname": "$rc:out_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPMosaicLayer"
+            },
+            "depends": [
+                "in_mosaic_dataset"
+            ]
+        }
+    },
+    "environments": [
+        "extent",
+        "parallelProcessingFactor"
+    ]
+}

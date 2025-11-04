@@ -1,0 +1,169 @@
+{
+    "type": "FunctionTool",
+    "guid": "{5077a819-ac31-4c5b-8eff-d6a1f76abee4}",
+    "displayname": "$rc:title",
+    "helpcontent": "6010003",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "credits"
+    ],
+    "params": {
+        "in_table": {
+            "control_guid": "{330553E6-A5FD-11D5-A682-0008C711C8C1}",
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "domain": {
+                "type": "GPBrowseFiltersDomain",
+                "filters": [
+                    "esri_browseDialogFilters_gt_tables"
+                ]
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "address_locator": {
+            "displayname": "$rc:address_locator.title",
+            "datatype": {
+                "type": "DEAddressLocator"
+            },
+            "description": "$rc:address_locator.descr"
+        },
+        "in_address_fields": {
+            "control_guid": "{B531F546-E6D8-46A2-A16D-8995C86C437C}",
+            "displayname": "$rc:in_address_fields.title",
+            "datatype": {
+                "type": "GPFieldInfo"
+            },
+            "description": "$rc:in_address_fields.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "domain": {
+                "type": "GPBrowseFiltersDomain",
+                "filters": [
+                    "esri_browseDialogFilters_geodatabaseItems_featureClasses"
+                ]
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "out_relationship_type": {
+            "type": "optional",
+            "displayname": "$rc:out_relationship_type.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "DYNAMIC"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "STATIC"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:out_relationship_type.descr"
+        },
+        "country": {
+            "type": "optional",
+            "control_guid": "{B548E034-E013-43CB-B0FA-5612CDF240EF}",
+            "displayname": "$rc:country.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:country.descr"
+        },
+        "location_type": {
+            "type": "optional",
+            "displayname": "$rc:location_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ROUTING_LOCATION",
+                        "code": "$rc:location_type.domain.ROUTING_LOCATION"
+                    },
+                    {
+                        "value": "ADDRESS_LOCATION",
+                        "code": "$rc:location_type.domain.ADDRESS_LOCATION"
+                    }
+                ]
+            },
+            "value": "ROUTING_LOCATION",
+            "description": "$rc:location_type.descr"
+        },
+        "category": {
+            "enabled": "false",
+            "type": "optional",
+            "control_guid": "{AAB40D7F-3877-4034-B5D2-545327D2A956}",
+            "displayname": "$rc:category.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "description": "$rc:category.descr"
+        },
+        "output_fields": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:output_fields.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ALL",
+                        "code": "$rc:output_fields.domain.ALL"
+                    },
+                    {
+                        "value": "MINIMAL",
+                        "code": "$rc:output_fields.domain.MINIMAL"
+                    },
+                    {
+                        "value": "MINIMAL_AND_USER",
+                        "code": "$rc:output_fields.domain.MINIMAL_AND_USER"
+                    },
+                    {
+                        "value": "LOCATION_ONLY",
+                        "code": "$rc:output_fields.domain.LOCATION_ONLY"
+                    }
+                ]
+            },
+            "value": "ALL",
+            "category": "$rc:params.category1",
+            "description": "$rc:output_fields.descr"
+        }
+    },
+    "environments": [
+        "configKeyword",
+        "outputCoordinateSystem"
+    ]
+}

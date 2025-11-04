@@ -1,0 +1,9 @@
+{
+    "set": [
+        "-1",
+        "negative",
+        "sign",
+        "unary -",
+        "unary minus"
+    ]
+}

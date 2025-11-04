@@ -1,0 +1,8 @@
+{
+    "set": [
+        "airspace",
+        "airspacearea",
+        "areas",
+        "generate"
+    ]
+}

@@ -1,0 +1,22 @@
+{
+    "map": {
+        "description": "Loads GeoNames data into a feature class and table. The feature class is composed of point features, and the table contains fields with information concerning the naming conventions used for the features. The feature class contains the Unique Feature Identifier (UFI) and Unique Name Identifier (UNI) fields, which match the same fields in the GeoNames table.",
+        "in_allow_duplicates.descr": "<xdoc><p>Specifies whether duplicate features will be imported to the GeoNames feature class.</p><ul><li>Checked—Features with the same geometry and attributes will be imported.</li><li>Unchecked—Features with the same geometry and attributes will not be imported. This is the default.</li></ul></xdoc>",
+        "in_allow_duplicates.title": "Allow Duplicates",
+        "in_feature_class.descr": "The GeoNames feature class. This feature class is in the working database.",
+        "in_feature_class.title": "GeoNames Feature Class Name",
+        "in_source.descr": "The path to the source file containing the GeoNames information. This must be a properly formatted GeoNames file.",
+        "in_source.title": "GeoNames Source File",
+        "in_table.descr": "The GeoNames table. This table is in the working database.",
+        "in_table.title": "GeoNames Table Name",
+        "match_fields.descr": "Specific fields in the GeoNames source file that will be mapped to fields in the GeoNames feature class and table.",
+        "match_fields.dt.title1": "Mapping Field",
+        "match_fields.dt.title2": "Source Field",
+        "match_fields.dt.title3": "Target Field",
+        "match_fields.title": "Matching Fields",
+        "out_featureclass.title": "Out feature class",
+        "out_table.title": "Out table",
+        "params.category1": "Matching Fields Options",
+        "title": "GeoNames To Geodatabase"
+    }
+}

@@ -1,0 +1,9 @@
+{
+    "set": [
+        "estimate",
+        "geostatistics",
+        "interpolation",
+        "predict",
+        "z value"
+    ]
+}

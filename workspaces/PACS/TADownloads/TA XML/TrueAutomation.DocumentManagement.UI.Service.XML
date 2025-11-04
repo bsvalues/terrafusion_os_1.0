@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.DocumentManagement.UI.Service</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.DocumentManagement.UI.Service.IDocumentManagementDialogService">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Service.IDocumentManagementDialogService.ShowDocumentView(System.Windows.Forms.Form,System.Guid,System.Boolean)">
+            <summary>
+             Launches the DocumentView Dialog for edit
+            </summary>
+            <param name="parent">Parent form for modality</param>
+            <param name="documentId">Id of the current document</param>
+            <param name="showMaximized">Dialog display mode - True means Maximized</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Service.IDocumentManagementDialogService.ShowDocumentView(System.Windows.Forms.Form,System.Guid,System.Boolean,TrueAutomation.AccessControl.DTOs.ACLType,System.String,System.String)">
+            <summary>
+             Launches the DocumentView Dialog with specific permissions for a new document
+            </summary>
+            <param name="parent">Parent form for modality</param>
+            <param name="documentId">Id of the current document</param>
+            <param name="showMaximized">Dialog display mode - True means Maximized</param>
+            <param name="permission">Default Permission to apply</param>
+            <param name="fileName">Name of the file to be opened, if new</param>
+            <param name="filePath">Path of the file to be opened, if new</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Service.IDocumentManagementDialogService.SetCurrentLoggedInUserByExternalId(System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <param name="system"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Service.IDocumentManagementDialogService.SetCurrentLoggedInUserGroupByExternalId(System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <param name="system"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Service.IDocumentManagementDialogService.AddDocument(System.String,System.String,System.Byte[])">
+            <summary>
+            Adds the document to the Document Repository
+            </summary>
+            <param name="filePath">The file path.</param>
+            <param name="fileName">File Name</param>
+            <param name="thumbnail">The thumbnail.</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Service.IDocumentManagementDialogService.AddDocumentFile(TrueAutomation.DocumentManagement.DTOs.DocumentDTO,System.String,System.String,System.Byte[])">
+            <summary>
+            Adds the document to the Document Repository
+            </summary>
+            <param name="documentDTO">Document DTO</param>
+            <param name="filePath">The file path.</param>
+            <param name="fileName"></param>
+            <param name="thumbnail">The thumbnail.</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Service.IDocumentManagementDialogService.DeleteDocumentById(System.Guid,System.String,System.Guid)">
+            <summary>
+            
+            </summary>
+            <param name="documentId"></param>
+            <param name="system"></param>
+            <param name="userId">Guid of User deleting the document</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Service.IDocumentManagementDialogService.DeleteDocumentVersion(System.Guid,System.Int32,System.Guid)">
+            <summary>
+            Method to delete a specific version of the document.
+            </summary>
+            <param name="documentId">Document Guid</param>
+            <param name="versionNumber">Version number to delete</param>
+            <param name="userId">Guid of User deleting the document</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Service.IDocumentManagementDialogService.GetMostRecentDocumentContents(System.Guid)">
+            <summary>
+            Get the contents of a the most recent version of a document
+            </summary>
+            <param name="documentId">Id of the current document</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Service.IDocumentManagementDialogService.isReadAllowed(System.Guid)">
+            <summary>
+             Check if the user can read the document
+            </summary>
+            <param name="documentId">Id of the current document</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Service.IDocumentManagementDialogService.isWriteAllowed(System.Guid)">
+            <summary>
+             Check if the user can write the document
+            </summary>
+            <param name="documentId">Id of the current document</param>
+            <returns></returns>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Service.IDocumentManagementDialogService.CurrentLoggedInUserName">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Service.IDocumentManagementDialogService.CurrentLoggedInUserExternalId">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Service.IDocumentManagementDialogService.CurrentLoggedInUserGroupExternalId">
+            <summary>
+            
+            </summary>
+        </member>
+    </members>
+</doc>

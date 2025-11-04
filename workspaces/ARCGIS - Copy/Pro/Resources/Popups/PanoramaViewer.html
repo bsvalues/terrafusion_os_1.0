@@ -1,0 +1,59 @@
+﻿<!-- saved from url=(0014)about:internet -->
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" --FLOW_DIRECTION-->
+   <head>
+      <meta charset="utf-8">
+      <title>Panorama Viewer</title>
+   </head>
+   <body onload="BodyLoaded();" style="width: 100%; height: 100%; margin: 0; overflow-x: hidden; overflow-y: hidden;">
+      <canvas id="canvas" style="width: 100%; height: 100%; margin: 0; overflow-x: hidden; overflow-y: hidden;"/>
+      <script type="text/javascript" src="--RESOURCE_PATH--/esri/three.min.js"></script>
+      <script type="text/javascript" src="--RESOURCE_PATH--/esri/Panorama.js"></script>
+      <script>
+         function BodyLoaded() {
+           document.addEventListener('contextmenu', e => {
+             e.preventDefault();
+             var sel = window.getSelection().toString();
+             var obj = new Object();
+             obj.method = "ShowContextMenu";
+             obj.param1 = e.pageX;
+             obj.param2 = e.pageY;
+             obj.param3 = (sel != null && sel.length > 0); //has selection
+             window.chrome.webview.postMessage(JSON.stringify(obj));
+           });
+         
+           var methodName = "SetImageData";
+           window.chrome.webview.addEventListener('message', function (e) {
+             var message = JSON.parse(e.data);
+             if (message == null || message.method == null || message.method.toLowerCase() != methodName.toLowerCase())
+               return;
+         
+             var imageData = message.param1;
+             RenderPanorama(imageData);
+           });
+         
+           var obj = new Object();
+           obj.method = "GetImageData";
+           obj.param1 = "GetImageData";
+           window.chrome.webview.postMessage(JSON.stringify(obj));
+         }
+         
+         function RenderPanorama(imageData) {
+           var canvas = document.getElementById('canvas');
+           var panorama = new Panorama();
+           panorama.init(canvas, imageData);
+           // Render Loop
+           var render = function () {
+             requestAnimationFrame(render);
+             // Fill the window
+             canvas.width = window.innerWidth;
+             canvas.height = window.innerHeight;
+             // Render the scene
+             panorama.render();
+           };
+         
+           render();
+         }
+      </script>
+   </body>
+</html>

@@ -1,0 +1,18 @@
+{
+    "map": {
+        "connecting_features.descr": "The features that will be used to refine the tapering of wide areas. The polygons will be tapered toward the touch point or the shared boundary of a connecting feature.",
+        "connecting_features.title": "Connecting Features",
+        "description": "Splits a polygon based on its width and classifies each portion as narrow or wide based on its width and length.",
+        "in_features.descr": "The features to be split.",
+        "in_features.title": "Input Features",
+        "min_length.descr": "The length used to classify the split polygons as short or long.",
+        "min_length.title": "Minimum Length",
+        "min_width.descr": "<xdoc><p>The width used to split and classify polygons as narrow or wide. Polygons will be split at any location where the edge-to-edge distance is equal to the <span class=\"esri_uicontrol\">Minimum Width</span>.</p></xdoc>",
+        "min_width.title": "Minimum Width",
+        "out_feature_class.descr": "The output feature class containing the results.",
+        "out_feature_class.title": "Output Feature Class",
+        "taper_length.descr": "The distance the end of the split feature will extend to provide a more natural break.",
+        "taper_length.title": "Taper Length",
+        "title": "Identify Narrow Polygons"
+    }
+}

@@ -1,0 +1,79 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: terrafusion-api-prod
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"  # Deploy after infrastructure
+    notifications.argoproj.io/subscribe.on-deployed.slack: terrafusion-deployments
+    notifications.argoproj.io/subscribe.on-health-degraded.slack: terrafusion-alerts
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: terrafusion
+  
+  source:
+    repoURL: https://github.com/terrafusion/terrafusion-os
+    targetRevision: main
+    path: backend/helm/terrafusion-api
+    helm:
+      releaseName: terrafusion-api
+      valueFiles:
+        - values.yaml
+      parameters:
+        - name: global.environment
+          value: production
+        - name: image.tag
+          value: "1.0.0"
+        - name: replicaCount
+          value: "3"
+        - name: autoscaling.enabled
+          value: "true"
+        - name: autoscaling.minReplicas
+          value: "3"
+        - name: autoscaling.maxReplicas
+          value: "20"
+      
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: terrafusion
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+      - RespectIgnoreDifferences=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
+    - group: autoscaling
+      kind: HorizontalPodAutoscaler
+      jsonPointers:
+        - /spec/minReplicas
+        - /spec/maxReplicas
+  
+  revisionHistoryLimit: 10
+  
+  info:
+    - name: 'Environment'
+      value: 'Production'
+    - name: 'Service'
+      value: 'TerraFusion API'
+    - name: 'Port'
+      value: '5000'
+    - name: 'Documentation'
+      value: 'https://docs.terrafusion.gov/api'

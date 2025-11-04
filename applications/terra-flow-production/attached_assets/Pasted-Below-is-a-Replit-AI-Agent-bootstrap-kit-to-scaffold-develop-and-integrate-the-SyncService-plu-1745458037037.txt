@@ -1,0 +1,128 @@
+Below is a **Replit AI Agent bootstrap kit** to scaffold, develop, and integrate the SyncService plugin into your Terrafusion monorepo. It includes the necessary workspace config, Agent prompts, and workflow definitions so Replit’s Agent can autonomously generate, test, and deploy your service.
+
+---
+
+In brief, you’ll:
+
+1. **Configure your Repl** with `.replit` & `replit.nix` to support FastAPI, Poetry, and Nx citeturn0search18.  
+2. **Define high-level Agent prompts** that describe your SyncService requirements—schema, APIs, and integration points citeturn0search0turn0search1.  
+3. **Leverage Replit Workflows** to automate common tasks (install deps, run tests, deploy) with a single click citeturn0search25.  
+4. **Use LangChain tools** within your Agent prompt to call OpenAPI functions, scaffold files, and commit PRs citeturn0search16turn0search5.  
+5. **Trigger a dry-run** via the `/sync/incremental` endpoint and validate end-to-end data flow citeturn0search10.
+
+---
+
+## 1. Repl Configuration
+
+### 1.1 `.replit` File  
+```ini
+run = "nx serve backend-sync"
+language = "bash"
+entrypoint = "bash start.sh"
+```
+This tells Replit to use Nx’s serve target for your SyncService plugin citeturn0search18.
+
+### 1.2 `replit.nix`  
+```nix
+{ pkgs }: {
+  deps = [
+    pkgs.python39
+    pkgs.nodejs-18_x
+    pkgs.poetry
+    pkgs.postgresql
+  ];
+  devShell = {
+    shellHook = ''
+      export POETRY_VIRTUALENVS_IN_PROJECT=true
+      poetry install
+      npm install
+    '';
+  };
+}
+```
+Ensures Poetry, Node.js, Postgres CLI, and Nx are available in the container citeturn0search18.
+
+---
+
+## 2. Agent Prompt Templates
+
+### 2.1 Bootstrap Prompt  
+```text
+You are a Replit AI Agent tasked with creating a SyncService plugin for Terrafusion.
+1. Scaffold a FastAPI project under apps/backend/syncservice with Poetry support.
+2. Add `/sync/full`, `/sync/incremental`, and `/health` endpoints.
+3. Configure Nx `project.json` to run tests and serve the app.
+4. Generate `manifest.yaml` declaring CPU/memory quotas.
+5. Commit all files and open a PR against the main monorepo.
+```
+This high-level instruction leverages Replit Agent’s natural-language build capabilities citeturn0search0turn0search1.
+
+### 2.2 File Generation Prompt  
+```text
+Generate a `main.py` for FastAPI that:
+- Reads CDC deltas from SQL Server.
+- Transforms records per `field-mapping.yaml`.
+- Validates and writes to Postgres.
+- Emits NATS events and records to `sync_audit`.
+Include Pydantic models and example unit tests.
+```
+Leverages Replit Agent + LangChain to scaffold complex code units citeturn0search5turn0search16.
+
+### 2.3 CI/CD Prompt  
+```text
+Create `.github/workflows/ci.yml` that:
+- Installs Nix environment, Poetry deps, npm packages.
+- Runs `nx affected:test,serve`.
+- Deploys to staging with `terraform plan` and `helm upgrade --install`.
+```
+Automates your entire pipeline via Replit Workflows and GitHub Actions citeturn0search25.
+
+---
+
+## 3. Replit Workflows
+
+In the Replit sidebar, under **Workflows**, define:
+
+| Command       | Shell Script                       |
+|---------------|------------------------------------|
+| **Install**   | `poetry install && npm ci`         |
+| **Test**      | `nx affected --target=test`        |
+| **Serve**     | `nx serve backend-sync --host 0.0.0.0` |
+| **Deploy**    | `terraform apply -auto-approve && helm upgrade ...` |
+
+One-click execution standardizes developer experience citeturn0search25.
+
+---
+
+## 4. LangChain Tool Integration
+
+Install and configure a LangChain tool to call your own OpenAPI:
+
+```python
+from langchain.agents import ReplitTool
+
+sync_tool = ReplitTool(
+    name="sync_service",
+    description="Calls Terrafusion SyncService endpoints",
+    func=lambda url, data: requests.post(f"{url}/sync/incremental", json=data)
+)
+```
+Embed this tool in your Agent’s toolset so it can dynamically test endpoints and generate code based on live API schemas citeturn0search16.
+
+---
+
+## 5. Dry-Run & Validation
+
+After generating code:
+
+1. **Run** `curl -X POST https://<your-repl>/sync/incremental`.  
+2. **Inspect** the response JSON for `{"count": ..., "timestamp": ...}`.  
+3. **Verify** records in your Postgres shell on Replit.  
+4. **Check** health endpoints: `GET /health/live` & `/health/ready`.  
+5. **Review** the PR opened by Agent in your GitHub repo.
+
+This completes the initial bootstrap using Replit AI Agent, setting you up for iterative enhancements and full integration into Terrafusion’s Nx-driven plugin ecosystem citeturn0search10.
+
+---
+
+**Next**, you can refine the Agent prompts to add the Conflict Resolver, NATS publish hooks, and GraphQL resolvers—each as discrete Agent tasks—continuing your fully AI-driven development workflow.

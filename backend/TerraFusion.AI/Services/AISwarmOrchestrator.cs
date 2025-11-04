@@ -1,7 +1,9 @@
 using System.Text.Json;
-using TerraFusion.AI.Interfaces;
+using System.Threading.Tasks;
+using TerraFusion.AI.Interfaces; // Removed static using
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+// using static TerraFusion.AI.Interfaces.IAISwarmOrchestrator; // Removed static using
 
 namespace TerraFusion.AI.Services
 {
@@ -46,7 +48,7 @@ namespace TerraFusion.AI.Services
                 var claudeStatus = claudeTask.Result;
                 var gaugeStatus = gaugeTask.Result;
 
-                var swarmStatus = new AISwarmStatus
+                var swarmStatus = new Interfaces.AISwarmStatus
                 {
                     SupremeCommander = "Supreme Commander Claude",
                     TotalAgentsManaged = 1269, // Mock value since JsonElement.Get doesn't exist
@@ -100,7 +102,7 @@ namespace TerraFusion.AI.Services
                     var result = JsonSerializer.Deserialize<JsonElement>(responseContent);
                     var endTime = DateTime.UtcNow;
 
-                    return new CountyOptimizationResult
+                    return new Interfaces.CountyOptimizationResult
                     {
                         Success = true,
                         CountyId = countyId,
@@ -113,7 +115,7 @@ namespace TerraFusion.AI.Services
                 else
                 {
                     _logger.LogWarning("County optimization failed for {CountyId}: {StatusCode}", countyId, response.StatusCode);
-                    return new CountyOptimizationResult
+                    return new Interfaces.CountyOptimizationResult
                     {
                         Success = false,
                         CountyId = countyId,
@@ -124,7 +126,7 @@ namespace TerraFusion.AI.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error optimizing county {CountyId}", countyId);
-                return new CountyOptimizationResult
+                return new Interfaces.CountyOptimizationResult
                 {
                     Success = false,
                     CountyId = countyId,
@@ -133,7 +135,7 @@ namespace TerraFusion.AI.Services
             }
         }
 
-        public async Task<WorkflowExecutionResult> ExecuteWorkflowAsync(string workflowId, Dictionary<string, object>? parameters = null)
+        public async Task<Interfaces.WorkflowExecutionResult> ExecuteWorkflowAsync(string workflowId, Dictionary<string, object>? parameters = null)
         {
             try
             {
@@ -157,7 +159,7 @@ namespace TerraFusion.AI.Services
                     var result = JsonSerializer.Deserialize<JsonElement>(responseContent);
                     var endTime = DateTime.UtcNow;
 
-                    return new WorkflowExecutionResult
+                    return new Interfaces.WorkflowExecutionResult
                     {
                         Success = true,
                         WorkflowId = workflowId,
@@ -169,7 +171,7 @@ namespace TerraFusion.AI.Services
                 else
                 {
                     _logger.LogWarning("Workflow execution failed for {WorkflowId}: {StatusCode}", workflowId, response.StatusCode);
-                    return new WorkflowExecutionResult
+                    return new Interfaces.WorkflowExecutionResult
                     {
                         Success = false,
                         WorkflowId = workflowId,
@@ -180,7 +182,7 @@ namespace TerraFusion.AI.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error executing workflow {WorkflowId}", workflowId);
-                return new WorkflowExecutionResult
+                return new Interfaces.WorkflowExecutionResult
                 {
                     Success = false,
                     WorkflowId = workflowId,
@@ -189,7 +191,7 @@ namespace TerraFusion.AI.Services
             }
         }
 
-        public async Task<AIPerformanceMetrics> GetPerformanceMetricsAsync()
+        public async Task<Interfaces.AIPerformanceMetrics> GetPerformanceMetricsAsync()
         {
             try
             {
@@ -201,23 +203,23 @@ namespace TerraFusion.AI.Services
 
                 await Task.WhenAll(gaugePerformanceTask, claudeAgentsTask);
 
-                return new AIPerformanceMetrics
+                return new Interfaces.AIPerformanceMetrics
                 {
-                    SwarmCoordination = new SwarmCoordinationMetrics
+                    SwarmCoordination = new Interfaces.SwarmCoordinationMetrics
                     {
                         SupremeCommander = "Claude",
                         TotalAgentsManaged = 1269,
                         CoordinationEfficiency = "97.6%",
                         ResponseTime = "1.0ms average"
                     },
-                    GaugeTheoryPerformance = new GaugeTheoryMetrics
+                    GaugeTheoryPerformance = new Interfaces.GaugeTheoryMetrics
                     {
                         SpecialistAgents = 8,
                         QuantumAcceleration = 379.2,
                         OptimizationSuccessRate = 0.976,
                         FieldStability = "95.8%"
                     },
-                    SystemMetrics = new SystemMetrics
+                    SystemMetrics = new Interfaces.SystemMetrics
                     {
                         ApiHealthScore = 100,
                         SwarmCoordinationScore = 100,
@@ -242,7 +244,7 @@ namespace TerraFusion.AI.Services
                 // Simulate agent deployment to TerraFusion module
                 await System.Threading.Tasks.Task.Delay(1000); // Simulate deployment time
 
-                return new ModuleDeploymentResult
+                return new Interfaces.ModuleDeploymentResult
                 {
                     Success = true,
                     ModuleId = moduleId,
@@ -253,7 +255,7 @@ namespace TerraFusion.AI.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error deploying agents to module {ModuleId}", moduleId);
-                return new ModuleDeploymentResult
+                return new Interfaces.ModuleDeploymentResult
                 {
                     Success = false,
                     ModuleId = moduleId,
@@ -397,7 +399,7 @@ namespace TerraFusion.AI.Services
             }
         }
 
-        private async Task<JsonElement?> GetClaudeFlowStatusAsync()
+        private async System.Threading.Tasks.Task<JsonElement?> GetClaudeFlowStatusAsync()
         {
             try
             {
@@ -416,7 +418,7 @@ namespace TerraFusion.AI.Services
             return null;
         }
 
-        private async Task<JsonElement?> GetGaugeTheoryStatusAsync()
+        private async System.Threading.Tasks.Task<JsonElement?> GetGaugeTheoryStatusAsync()
         {
             try
             {
@@ -434,7 +436,7 @@ namespace TerraFusion.AI.Services
             return null;
         }
 
-        private async Task<JsonElement?> GetGaugeTheoryPerformanceAsync()
+        private async System.Threading.Tasks.Task<JsonElement?> GetGaugeTheoryPerformanceAsync()
         {
             try
             {
@@ -452,7 +454,7 @@ namespace TerraFusion.AI.Services
             return null;
         }
 
-        private async Task<JsonElement?> GetClaudeFlowAgentsAsync()
+        private async System.Threading.Tasks.Task<JsonElement?> GetClaudeFlowAgentsAsync()
         {
             try
             {

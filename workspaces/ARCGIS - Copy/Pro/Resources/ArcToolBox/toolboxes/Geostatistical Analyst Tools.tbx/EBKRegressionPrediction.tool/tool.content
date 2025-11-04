@@ -1,0 +1,325 @@
+{
+    "type": "FunctionTool",
+    "guid": "{c0be40b6-ef14-4495-8d5d-0b40eba0754a}",
+    "displayname": "$rc:title",
+    "helpcontent": "11000027",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "6"
+    ],
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_features": {
+            "display_order": "0",
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "dependent_field": {
+            "display_order": "1",
+            "displayname": "$rc:dependent_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "BigInteger",
+                    "Float",
+                    "Double"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:dependent_field.descr"
+        },
+        "in_explanatory_rasters": {
+            "display_order": "2",
+            "displayname": "$rc:in_explanatory_rasters.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "GPRasterLayer"
+                        },
+                        {
+                            "type": "GPMosaicLayer"
+                        }
+                    ]
+                }
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "true",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "analysis_cell_size",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Geometry"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_explanatory_rasters.descr"
+        },
+        "out_ga_layer": {
+            "direction": "out",
+            "display_order": "3",
+            "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}",
+            "displayname": "$rc:out_ga_layer.title",
+            "datatype": {
+                "type": "GPGALayer"
+            },
+            "description": "$rc:out_ga_layer.descr"
+        },
+        "out_raster": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "4",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_raster.descr"
+        },
+        "out_diagnostic_feature_class": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "5",
+            "displayname": "$rc:out_diagnostic_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_diagnostic_feature_class.descr"
+        },
+        "measurement_error_field": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:measurement_error_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "BigInteger",
+                    "Float",
+                    "Double"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:measurement_error_field.descr"
+        },
+        "min_cumulative_variance": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:min_cumulative_variance.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "99.989999999999995"
+            },
+            "value": "95",
+            "description": "$rc:min_cumulative_variance.descr"
+        },
+        "in_subset_features": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:in_subset_features.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:in_subset_features.descr"
+        },
+        "transformation_type": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:transformation_type.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NONE",
+                        "code": "$rc:transformation_type.domain.NONE"
+                    },
+                    {
+                        "value": "EMPIRICAL",
+                        "code": "$rc:transformation_type.domain.EMPIRICAL"
+                    },
+                    {
+                        "value": "LOGEMPIRICAL",
+                        "code": "$rc:transformation_type.domain.LOGEMPIRICAL"
+                    }
+                ]
+            },
+            "value": "NONE",
+            "description": "$rc:transformation_type.descr"
+        },
+        "semivariogram_model_type": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:semivariogram_model_type.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "EXPONENTIAL",
+                        "code": "$rc:semivariogram_model_type.domain.EXPONENTIAL"
+                    },
+                    {
+                        "value": "NUGGET",
+                        "code": "$rc:semivariogram_model_type.domain.NUGGET"
+                    },
+                    {
+                        "value": "WHITTLE",
+                        "code": "$rc:semivariogram_model_type.domain.WHITTLE"
+                    },
+                    {
+                        "value": "K_BESSEL",
+                        "code": "$rc:semivariogram_model_type.domain.K_BESSEL"
+                    }
+                ]
+            },
+            "value": "EXPONENTIAL",
+            "description": "$rc:semivariogram_model_type.descr"
+        },
+        "max_local_points": {
+            "type": "optional",
+            "display_order": "11",
+            "displayname": "$rc:max_local_points.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "20",
+                "max": "1000"
+            },
+            "value": "100",
+            "description": "$rc:max_local_points.descr"
+        },
+        "overlap_factor": {
+            "type": "optional",
+            "display_order": "12",
+            "displayname": "$rc:overlap_factor.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "1",
+                "max": "5"
+            },
+            "value": "1",
+            "description": "$rc:overlap_factor.descr"
+        },
+        "number_simulations": {
+            "type": "optional",
+            "display_order": "13",
+            "displayname": "$rc:number_simulations.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "30",
+                "max": "10000"
+            },
+            "value": "100",
+            "description": "$rc:number_simulations.descr"
+        },
+        "search_neighborhood": {
+            "type": "optional",
+            "display_order": "14",
+            "displayname": "$rc:search_neighborhood.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPGASearchNeighborhood"
+            },
+            "domain": {
+                "type": "GPGASearchNeighborhoodDomain",
+                "chordaldistance": "true",
+                "neighbourtype": [
+                    "StandardCircular",
+                    "SmoothCircular"
+                ]
+            },
+            "value": "NBRTYPE=StandardCircular RADIUS=nan ANGLE=0 NBR_MAX=15 NBR_MIN=10 SECTOR_TYPE=ONE_SECTOR",
+            "description": "$rc:search_neighborhood.descr"
+        }
+    },
+    "environments": [
+        "cellSize",
+        "coincidentPoints",
+        "extent",
+        "geographicTransformations",
+        "mask",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "scratchWorkspace",
+        "snapRaster",
+        "workspace"
+    ]
+}

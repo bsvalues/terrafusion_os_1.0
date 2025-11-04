@@ -1,0 +1,16 @@
+{
+    "map": {
+        "description": "Exports a Multinational Geospatial Co-production Program (MGCP) or  MGCP Urban Vector Data (MUVD) metadata dataset (Cell or ResourceSrf, Subregion, and Source feature classes) to an .xml file.",
+        "export_location.descr": "The directory where the metadata .xml files will be created.",
+        "export_location.title": "Export Location",
+        "in_cell_features.descr": "The MGCP Cell or ResourceSrf feature layer that will be exported.",
+        "in_cell_features.title": "Cell or ResourceSrf Features",
+        "metadata_type.descr": "<xdoc><p>Specifies the type of metadata that will be exported.</p><ul><li><span title=\"MGCP\">MGCP</span>—Multinational Geospatial Co-production Program metadata will be exported. This is the default.</li><li><span title=\"MUVD\">MUVD</span>—MGCP Urban Vector Data metadata will be exported.</li></ul></xdoc>",
+        "metadata_type.domain.MGCP": "MGCP",
+        "metadata_type.domain.MUVD": "MUVD",
+        "metadata_type.title": "Metadata Type",
+        "out_export_location.title": "Output Export Location",
+        "summary": "Exports a Multinational Geospatial Co-production Program (MGCP) or MGCP Urban Vector Data (MUVD) metadata dataset (Cell or ResourceSrf, Subregion, and Source feature classes) to an .xml file.",
+        "title": "Export MGCP Metadata"
+    }
+}

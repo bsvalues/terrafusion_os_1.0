@@ -1,0 +1,286 @@
+{% extends 'layout.html' %}
+
+{% block title %}Table Configurations{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Table Configurations</h1>
+        <div>
+            <a href="{{ url_for('sync.index') }}" class="btn btn-outline-primary me-2">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTableModal">
+                <i class="fas fa-plus"></i> Add Table
+            </button>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">Configured Tables</h5>
+        </div>
+        <div class="card-body">
+            {% if tables %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Order</th>
+                            <th>Type</th>
+                            <th>Join Table</th>
+                            <th>Is Flat</th>
+                            <th>Is Lookup</th>
+                            <th>Is Controller</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for table in tables %}
+                        <tr>
+                            <td>{{ table.name }}</td>
+                            <td>{{ table.order }}</td>
+                            <td>
+                                {% if table.is_lookup %}
+                                <span class="badge bg-info">Lookup</span>
+                                {% elif table.is_controller %}
+                                <span class="badge bg-primary">Controller</span>
+                                {% elif table.is_flat %}
+                                <span class="badge bg-success">Flat</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Standard</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ table.join_table or '-' }}</td>
+                            <td>
+                                <span class="badge {% if table.is_flat %}bg-success{% else %}bg-secondary{% endif %}">
+                                    {{ 'Yes' if table.is_flat else 'No' }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge {% if table.is_lookup %}bg-success{% else %}bg-secondary{% endif %}">
+                                    {{ 'Yes' if table.is_lookup else 'No' }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge {% if table.is_controller %}bg-success{% else %}bg-secondary{% endif %}">
+                                    {{ 'Yes' if table.is_controller else 'No' }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{{ url_for('sync.table_details', table_name=table.name) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-info-circle"></i> Details
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-outline-warning" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#editTableModal" 
+                                            data-table-name="{{ table.name }}">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#deleteTableModal" 
+                                            data-table-name="{{ table.name }}">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-center">No tables have been configured. Click "Add Table" to create one.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Add Table Modal -->
+<div class="modal fade" id="addTableModal" tabindex="-1" aria-labelledby="addTableModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="addTableModalLabel">Add Table Configuration</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('sync.configuration') }}" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="tableName" class="form-label">Table Name</label>
+                        <input type="text" class="form-control" id="tableName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="order" class="form-label">Processing Order</label>
+                        <input type="number" class="form-control" id="order" name="order" value="0" min="0" required>
+                        <div class="form-text">Lower numbers are processed first.</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="isFlat" name="is_flat" value="1" checked>
+                                <label class="form-check-label" for="isFlat">
+                                    Is Flat Table
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="isLookup" name="is_lookup" value="1">
+                                <label class="form-check-label" for="isLookup">
+                                    Is Lookup Table
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="isController" name="is_controller" value="1">
+                                <label class="form-check-label" for="isController">
+                                    Is Controller Table
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="joinTable" class="form-label">Join Table (Optional)</label>
+                        <input type="text" class="form-control" id="joinTable" name="join_table">
+                    </div>
+                    <div class="mb-3">
+                        <label for="joinSQL" class="form-label">Join SQL (Optional)</label>
+                        <textarea class="form-control" id="joinSQL" name="join_sql" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="orderBySQL" class="form-label">Order By SQL (Optional)</label>
+                        <input type="text" class="form-control" id="orderBySQL" name="order_by_sql">
+                        <div class="form-text">Example: property_id ASC</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Table</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Table Modal -->
+<div class="modal fade" id="editTableModal" tabindex="-1" aria-labelledby="editTableModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="editTableModalLabel">Edit Table Configuration</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('sync.configuration') }}" method="post" id="editTableForm">
+                <div class="modal-body">
+                    <input type="hidden" name="_method" value="put">
+                    <input type="hidden" id="editTableName" name="name">
+                    
+                    <div class="mb-3">
+                        <label for="editOrder" class="form-label">Processing Order</label>
+                        <input type="number" class="form-control" id="editOrder" name="order" min="0" required>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="editIsFlat" name="is_flat" value="1">
+                                <label class="form-check-label" for="editIsFlat">
+                                    Is Flat Table
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="editIsLookup" name="is_lookup" value="1">
+                                <label class="form-check-label" for="editIsLookup">
+                                    Is Lookup Table
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="editIsController" name="is_controller" value="1">
+                                <label class="form-check-label" for="editIsController">
+                                    Is Controller Table
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editJoinTable" class="form-label">Join Table (Optional)</label>
+                        <input type="text" class="form-control" id="editJoinTable" name="join_table">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editJoinSQL" class="form-label">Join SQL (Optional)</label>
+                        <textarea class="form-control" id="editJoinSQL" name="join_sql" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editOrderBySQL" class="form-label">Order By SQL (Optional)</label>
+                        <input type="text" class="form-control" id="editOrderBySQL" name="order_by_sql">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Table Modal -->
+<div class="modal fade" id="deleteTableModal" tabindex="-1" aria-labelledby="deleteTableModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteTableModalLabel">Delete Table Configuration</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('sync.configuration') }}" method="post" id="deleteTableForm">
+                <div class="modal-body">
+                    <input type="hidden" name="_method" value="delete">
+                    <input type="hidden" id="deleteTableName" name="name">
+                    
+                    <p>Are you sure you want to delete the table configuration for <strong id="deleteTableNameDisplay"></strong>?</p>
+                    <p class="text-danger">This action cannot be undone and will remove all associated field configurations and primary key columns.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete Table</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Setup for edit modal
+    var editTableModal = document.getElementById('editTableModal');
+    editTableModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var tableName = button.getAttribute('data-table-name');
+        
+        // Update form fields
+        document.getElementById('editTableName').value = tableName;
+        
+        // In a real app, you would fetch the table details via AJAX here
+        // and populate the form fields with the current values
+    });
+    
+    // Setup for delete modal
+    var deleteTableModal = document.getElementById('deleteTableModal');
+    deleteTableModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var tableName = button.getAttribute('data-table-name');
+        
+        document.getElementById('deleteTableName').value = tableName;
+        document.getElementById('deleteTableNameDisplay').textContent = tableName;
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,68 @@
+{{/*
+============================================================================
+TerraFusion Consciousness Engine - HorizontalPodAutoscaler Template
+Government. Transcended. - AI Load-Based Autoscaling (5-50 replicas)
+============================================================================
+*/}}
+
+{{- if .Values.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "terrafusion-consciousness.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "terrafusion-consciousness.labels" . | nindent 4 }}
+    terrafusion.io/component: consciousness
+    terrafusion.io/tier: ai
+  annotations:
+    description: "TerraFusion Consciousness Engine Autoscaling"
+    compliance: "FISMA-High"
+    ai-agents: "50000"
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "terrafusion-consciousness.fullname" . }}
+  minReplicas: {{ .Values.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.autoscaling.maxReplicas }}
+  metrics:
+    # CPU utilization target
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.autoscaling.targetCPUUtilizationPercentage }}
+    
+    # Memory utilization target
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.autoscaling.targetMemoryUtilizationPercentage }}
+    
+    # Custom AI metrics (requires Prometheus Adapter)
+    - type: Pods
+      pods:
+        metric:
+          name: ai_agent_queue_depth
+        target:
+          type: AverageValue
+          averageValue: "1000"
+    
+    - type: Pods
+      pods:
+        metric:
+          name: ml_model_inference_latency
+        target:
+          type: AverageValue
+          averageValue: "100"  # 100ms target
+  
+  behavior:
+    scaleDown:
+      {{- toYaml .Values.autoscaling.behavior.scaleDown | nindent 6 }}
+    scaleUp:
+      {{- toYaml .Values.autoscaling.behavior.scaleUp | nindent 6 }}
+{{- end }}

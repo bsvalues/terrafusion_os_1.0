@@ -1,0 +1,70 @@
+{
+    "type": "FunctionTool",
+    "guid": "{1f316d1b-61c3-4e1b-9d2d-53c8a1b3282c}",
+    "displayname": "$rc:title",
+    "helpcontent": "8100002",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10"
+    ],
+    "params": {
+        "expression_string": {
+            "display_order": "0",
+            "displayname": "$rc:expression_string.title",
+            "datatype": {
+                "type": "GPSAMapAlgebraExp"
+            }
+        },
+        "out_raster": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            }
+        },
+        "in_data": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:in_data.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPSAGeoData"
+                }
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "false",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "GPRasterFormulated",
+                    "DEFeatureClass",
+                    "GPFeatureLayer",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            }
+        }
+    }
+}

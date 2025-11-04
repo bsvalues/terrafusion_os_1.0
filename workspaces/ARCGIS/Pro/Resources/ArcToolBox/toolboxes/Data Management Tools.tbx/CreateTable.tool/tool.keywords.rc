@@ -1,0 +1,11 @@
+{
+    "set": [
+        "dbase",
+        "dbf",
+        "empty",
+        "geodatabase",
+        "info",
+        "new",
+        "tbl"
+    ]
+}

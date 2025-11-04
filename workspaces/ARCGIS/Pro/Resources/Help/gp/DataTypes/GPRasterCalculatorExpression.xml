@@ -1,0 +1,5 @@
+<DataType Name="GPRasterCalculatorExpression">
+  <DisplayName>Raster Calculator Expression</DisplayName>
+  <Description>A raster calculator expression.</Description>
+</DataType>
+

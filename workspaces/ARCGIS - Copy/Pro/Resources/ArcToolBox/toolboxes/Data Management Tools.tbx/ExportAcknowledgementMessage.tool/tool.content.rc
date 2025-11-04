@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Creates an output acknowledgement file to acknowledge the reception of previously received data change messages.",
+        "in_geodatabase.descr": "Specifies the replica geodatabase from which to export the acknowledgement message. The geodatabase may be local or remote.",
+        "in_geodatabase.title": "Export from Replica Geodatabase",
+        "in_replica.descr": "The replica from which the acknowledgement message will be exported.",
+        "in_replica.title": "Replica",
+        "out_acknowledgement_file.descr": "Specifies the delta file to export to.",
+        "out_acknowledgement_file.title": "Output Acknowledgement File",
+        "title": "Export Acknowledgement Message"
+    }
+}

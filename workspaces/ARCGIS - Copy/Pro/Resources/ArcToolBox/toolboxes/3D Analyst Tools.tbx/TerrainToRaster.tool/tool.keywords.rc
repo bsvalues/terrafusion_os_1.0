@@ -1,0 +1,15 @@
+{
+    "set": [
+        "convert",
+        "edit",
+        "interpolation",
+        "lidar",
+        "linear",
+        "mass points",
+        "natural neighbors",
+        "points",
+        "raster",
+        "terrain",
+        "terrain dataset"
+    ]
+}

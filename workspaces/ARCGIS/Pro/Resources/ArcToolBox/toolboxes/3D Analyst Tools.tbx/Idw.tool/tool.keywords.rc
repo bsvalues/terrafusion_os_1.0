@@ -1,0 +1,15 @@
+{
+    "set": [
+        "barrier",
+        "breakline",
+        "estimate",
+        "faulted",
+        "interpolate",
+        "interpolation",
+        "interpolator",
+        "inverse distance weighting",
+        "predict",
+        "raster",
+        "surface"
+    ]
+}

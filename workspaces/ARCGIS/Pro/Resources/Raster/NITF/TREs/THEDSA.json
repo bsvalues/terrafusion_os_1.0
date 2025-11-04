@@ -1,0 +1,8 @@
+{
+  "TRE": "THEDSA",
+  "Source": ["STDI-0002-1 v2021.1, Appendix Q: Retired"],
+  "Name": "Terrain Height Error Data (THED) from the Shuttle Radar Topography Mission (SRTM), Version A",
+  "Description": "This data extension segment is retired per the NITF Technical Board, and is included for documentation purposes only within ArcGIS Pro.",
+  "Size": 99,
+  "Fields" : {}        
+}

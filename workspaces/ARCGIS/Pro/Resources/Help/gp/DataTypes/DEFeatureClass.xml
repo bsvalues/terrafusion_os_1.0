@@ -1,0 +1,5 @@
+<DataType Name="DEFeatureClass">
+  <DisplayName>Feature Class</DisplayName>
+  <Description>A collection of spatial data with the same shape type: point, multipoint, polyline, and polygon.</Description>
+</DataType>
+

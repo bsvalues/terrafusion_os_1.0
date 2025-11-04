@@ -1,0 +1,84 @@
+{
+    "type": "FunctionTool",
+    "guid": "{5b188a0a-22a2-455b-9d7d-17afbe7e5dbb}",
+    "displayname": "$rc:title",
+    "helpcontent": "3010007",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "input_workspace": {
+            "displayname": "$rc:input_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "domain": {
+                "type": "GPWorkspaceDomain",
+                "workspacetype": [
+                    "Local Database",
+                    "Remote Database"
+                ]
+            },
+            "description": "$rc:input_workspace.descr"
+        },
+        "input_prerequisite_check": {
+            "displayname": "$rc:input_prerequisite_check.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "PREREQUISITE_CHECK"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_PREREQUISITE_CHECK"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:input_prerequisite_check.descr"
+        },
+        "input_upgradegdb_check": {
+            "displayname": "$rc:input_upgradegdb_check.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "UPGRADE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_UPGRADE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:input_upgradegdb_check.descr"
+        },
+        "out_workspace": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "depends": [
+                "input_workspace"
+            ]
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

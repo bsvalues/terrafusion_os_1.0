@@ -1,0 +1,22 @@
+{
+    "version": "1.0",
+    "alias": "Reviewer",
+    "displayname": "$rc:title",
+    "description": "$rc:descr",
+    "helpcontext": "47000000",
+    "toolsets": {
+        "$rc:toolset2.name": {
+            "tools": [
+                "ExecuteReviewerBatchJob",
+                "WriteToReviewerTable"
+            ]
+        },
+        "$rc:toolset1.name": {
+            "tools": [
+                "CreateReviewerSession",
+                "DeleteReviewerSession",
+                "EnableDataReviewer"
+            ]
+        }
+    }
+}

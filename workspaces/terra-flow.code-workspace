@@ -1,0 +1,418 @@
+{
+  "folders": [
+    {
+      "path": "../terra-flow/api",
+      "name": "🌐 TerraFlow API"
+    },
+    {
+      "path": "../terra-flow/workflow-engine",
+      "name": "⚡ Workflow Engine Core"
+    },
+    {
+      "path": "../terra-flow/property-assessment",
+      "name": "🏠 Property Assessment Workflows"
+    },
+    {
+      "path": "../terra-flow/tax-levy",
+      "name": "💰 Tax Levy Processing"
+    },
+    {
+      "path": "../terra-flow/compliance-workflows",
+      "name": "📋 Compliance & Appeals"
+    },
+    {
+      "path": "../terra-flow/automation-scripts",
+      "name": "🤖 Automation Scripts"
+    },
+    {
+      "path": "../terra-flow/testing",
+      "name": "🧪 TerraFlow Tests"
+    },
+    {
+      "path": "../SDK",
+      "name": "📦 Platform SDK (read-only)"
+    },
+    {
+      "path": "../backend",
+      "name": "🔧 Shared Backend (read-only)"
+    },
+    {
+      "path": "../docs/terra-flow",
+      "name": "📚 TerraFlow Docs"
+    },
+    {
+      "path": "../config",
+      "name": "⚙️ Config (shared)"
+    },
+    {
+      "path": "../docs/terra_flow",
+      "name": "📚 Terra-Flow Docs"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/.git": true,
+      "**/obj": true,
+      "**/bin": true,
+      "**/__pycache__": true,
+      "**/.pytest_cache": true,
+      "**/.venv": true,
+      "../marketplace": true,
+      "../frontend": true,
+      "../os-platform": true,
+      "../terrafusion-cos": true,
+      "../costforge-ai": true,
+      "../terra-sync": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/package-lock.json": true,
+      "**/.venv": true,
+      "../marketplace": true,
+      "../frontend": true,
+      "../os-platform": true,
+      "../costforge-ai": true,
+      "../terra-sync": true
+    },
+    "typescript.preferences.includePackageJsonAutoImports": "on",
+    "typescript.suggest.autoImports": true,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "eslint.workingDirectories": [
+      "./terra-flow/api",
+      "./terra-flow/workflow-engine"
+    ],
+    "terrafusion.sync": {
+      "autoSync": true,
+      "syncInterval": 20,
+      "conflictResolution": "prompt",
+      "sharedState": {
+        "backend": "read-only",
+        "sdk": "read-only",
+        "config": "shared-write"
+      },
+      "workflowStatePersistence": true
+    },
+    "terrafusion.workflows": {
+      "maxConcurrentWorkflows": 100,
+      "workflowTimeout": 300,
+      "enableStatePersistence": true,
+      "stateRetentionDays": 90,
+      "enableAuditTrail": true,
+      "auditRetentionDays": 365
+    },
+    "terrafusion.compliance": {
+      "fismaMode": "MODERATE",
+      "nist80053": true,
+      "section508": true,
+      "auditTrail": "comprehensive",
+      "workflowValidation": true
+    },
+    "terrafusion.government": {
+      "propertyAssessmentWorkflow": true,
+      "taxLevyWorkflow": true,
+      "complianceWorkflow": true,
+      "appealWorkflow": true,
+      "citizenServicesIntegration": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-vscode.vscode-typescript-next",
+      "streetsidesoftware.code-spell-checker",
+      "usernamehw.errorlens",
+      "eamodio.gitlens",
+      "ms-vscode.vscode-json",
+      "ms-azuretools.vscode-docker",
+      "redhat.vscode-yaml",
+      "bierner.markdown-mermaid",
+      "hediet.vscode-drawio",
+      "gruntfuggly.todo-tree"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Start TerraFlow API",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/terra-flow/api",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "console": "integratedTerminal",
+        "env": {
+          "TERRAFUSION_SERVICE": "terra-flow",
+          "WORKFLOW_ENGINE": "true"
+        }
+      },
+      {
+        "name": "Start Workflow Engine",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/terra-flow/workflow-engine",
+        "program": "index.js",
+        "console": "integratedTerminal",
+        "env": {
+          "NODE_ENV": "development",
+          "WORKFLOW_DEBUG": "true",
+          "MAX_CONCURRENT_WORKFLOWS": "100"
+        }
+      },
+      {
+        "name": "Debug Property Assessment Workflow",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/terra-flow/property-assessment",
+        "program": "assessment-workflow.js",
+        "console": "integratedTerminal",
+        "args": [
+          "--debug",
+          "--test-mode"
+        ],
+        "env": {
+          "ASSESSMENT_DEBUG": "true",
+          "TEST_PARCELS": "10"
+        }
+      },
+      {
+        "name": "Debug Tax Levy Workflow",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/terra-flow/tax-levy",
+        "program": "levy-workflow.js",
+        "console": "integratedTerminal",
+        "args": [
+          "--debug",
+          "--dry-run"
+        ],
+        "env": {
+          "TAX_LEVY_DEBUG": "true",
+          "FISCAL_YEAR": "2025"
+        }
+      },
+      {
+        "name": "Debug Compliance Workflow",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/terra-flow/compliance-workflows",
+        "program": "compliance-engine.js",
+        "console": "integratedTerminal",
+        "env": {
+          "COMPLIANCE_DEBUG": "true",
+          "FISMA_MODE": "MODERATE"
+        }
+      }
+    ],
+    "compounds": [
+      {
+        "name": "Start Full TerraFlow System",
+        "configurations": [
+          "Start TerraFlow API",
+          "Start Workflow Engine"
+        ],
+        "presentation": {
+          "hidden": false,
+          "group": "terra-flow",
+          "order": 1
+        }
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build TerraFlow",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "build:terra-flow"
+        ],
+        "problemMatcher": [
+          "$tsc"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Test TerraFlow",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "test:terra-flow"
+        ],
+        "problemMatcher": [],
+        "group": {
+          "kind": "test",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Install Dependencies",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "install"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/terra-flow"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Validate Workflow Definitions",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "validate-workflows"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/terra-flow/workflow-engine"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Test Property Assessment Workflow",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "test:assessment",
+          "--",
+          "--parcels=100"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/terra-flow/property-assessment"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Test Tax Levy Workflow",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "test:levy",
+          "--",
+          "--dry-run"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/terra-flow/tax-levy"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Run Compliance Validation",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "validate:compliance"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/terra-flow/compliance-workflows"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Generate Workflow Documentation",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "docs:generate"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/terra-flow"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Sync with Backend Changes",
+        "type": "shell",
+        "command": "./SDK/tools/sync-backend-changes.sh",
+        "args": [
+          "--service=terra-flow"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Validate Integration",
+        "type": "shell",
+        "command": "./SDK/tools/validate-integration.sh",
+        "args": [
+          "--service=terra-flow",
+          "--workflow-validation"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Security Compliance Scan",
+        "type": "shell",
+        "command": "./SDK/tools/security-scan.sh",
+        "args": [
+          "--service=terra-flow",
+          "--fisma-moderate",
+          "--workflow-security"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Performance Benchmark",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "benchmark",
+          "--",
+          "--workflows=100",
+          "--target-latency=100ms"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/terra-flow/testing"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Deploy to Staging",
+        "type": "shell",
+        "command": "./SDK/tools/deploy-staging.sh",
+        "args": [
+          "--service=terra-flow",
+          "--workflow-ready"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      }
+    ]
+  }
+}

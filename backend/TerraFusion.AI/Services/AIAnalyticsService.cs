@@ -4,7 +4,7 @@ namespace TerraFusion.AI.Services
 {
     public class AIAnalyticsService : IAIAnalyticsService
     {
-        public Task<AIAnalyticsDataDto> GetAnalyticsDataAsync()
+        public System.Threading.Tasks.Task<AIAnalyticsDataDto> GetAnalyticsDataAsync()
         {
             // Mock data for development purposes
             var mockData = new AIAnalyticsDataDto

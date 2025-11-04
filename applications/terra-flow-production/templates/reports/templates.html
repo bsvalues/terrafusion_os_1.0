@@ -1,0 +1,491 @@
+{% extends "base.html" %}
+
+{% block title %}Report Templates{% endblock %}
+
+{% block head %}
+<style>
+    .template-card {
+        height: 100%;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .template-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .template-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 15px;
+    }
+    .template-icon {
+        font-size: 2rem;
+        margin-bottom: 15px;
+        color: #6c757d;
+    }
+    .template-badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+    }
+    .badge-property {
+        background-color: #e3f7ea;
+        color: #1d8348;
+    }
+    .badge-geospatial {
+        background-color: #e3f2fd;
+        color: #0d6efd;
+    }
+    .badge-anomaly {
+        background-color: #feebef;
+        color: #d9534f;
+    }
+    .badge-custom {
+        background-color: #f5f5f5;
+        color: #6c757d;
+    }
+    .template-meta {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-bottom: 10px;
+    }
+    .template-tag {
+        display: inline-block;
+        padding: 2px 8px;
+        background-color: #f8f9fa;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        margin-right: 5px;
+        margin-bottom: 5px;
+        color: #6c757d;
+    }
+    .template-description {
+        color: #6c757d;
+        margin-bottom: 15px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .template-section {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        font-size: 0.85rem;
+        margin-right: 5px;
+        margin-bottom: 5px;
+    }
+    .template-action {
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background-color: #f8f9fa;
+        color: #6c757d;
+        margin-left: 5px;
+        transition: background-color 0.3s;
+        cursor: pointer;
+    }
+    .template-action:hover {
+        background-color: #e9ecef;
+        color: #495057;
+    }
+    .action-edit:hover {
+        background-color: #ffeeba;
+        color: #856404;
+    }
+    .action-delete:hover {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+    .action-clone:hover {
+        background-color: #d1ecf1;
+        color: #0c5460;
+    }
+    .action-generate:hover {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    .filters {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+    }
+    .filter-tag {
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    .filter-tag:hover {
+        background-color: #e9ecef;
+    }
+    .filter-tag.active {
+        background-color: #007bff;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Report Templates</h1>
+        <a href="{{ url_for('reports.reports_dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+    
+    <div class="filters">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="template-search" placeholder="Search templates...">
+                    <button class="btn btn-outline-secondary" type="button" id="search-button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex align-items-center">
+                    <span class="me-2">Filter by type:</span>
+                    <span class="template-tag filter-tag active" data-filter="all">All</span>
+                    <span class="template-tag filter-tag badge-property" data-filter="property_assessment">Property</span>
+                    <span class="template-tag filter-tag badge-geospatial" data-filter="geospatial_analysis">Geospatial</span>
+                    <span class="template-tag filter-tag badge-anomaly" data-filter="anomaly_report">Anomaly</span>
+                    <span class="template-tag filter-tag badge-custom" data-filter="custom">Custom</span>
+                </div>
+            </div>
+        </div>
+        <div class="mt-3">
+            <div class="d-flex align-items-center">
+                <span class="me-2">Sort by:</span>
+                <select class="form-select form-select-sm" id="sort-select" style="width: auto;">
+                    <option value="name">Name</option>
+                    <option value="created" selected>Created Date</option>
+                    <option value="modified">Modified Date</option>
+                    <option value="type">Template Type</option>
+                </select>
+                <div class="ms-3">
+                    <span class="template-tag filter-tag active" data-sort="desc">Newest First</span>
+                    <span class="template-tag filter-tag" data-sort="asc">Oldest First</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mb-4 text-end">
+        <a href="{{ url_for('reports.create_template_route') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Create Template
+        </a>
+    </div>
+    
+    <div class="row" id="templates-container">
+        {% if templates %}
+            {% for template in templates %}
+            <div class="col-md-6 col-lg-4 mb-4 template-item" data-type="{{ template.template_type }}">
+                <div class="card template-card">
+                    <div class="card-body">
+                        <div class="template-header">
+                            <div>
+                                {% if template.template_type == 'property_assessment' %}
+                                <div class="template-icon"><i class="fas fa-home"></i></div>
+                                <span class="template-badge badge-property">Property Assessment</span>
+                                {% elif template.template_type == 'geospatial_analysis' %}
+                                <div class="template-icon"><i class="fas fa-map-marked-alt"></i></div>
+                                <span class="template-badge badge-geospatial">Geospatial Analysis</span>
+                                {% elif template.template_type == 'anomaly_report' %}
+                                <div class="template-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                                <span class="template-badge badge-anomaly">Anomaly Report</span>
+                                {% else %}
+                                <div class="template-icon"><i class="fas fa-file-alt"></i></div>
+                                <span class="template-badge badge-custom">Custom</span>
+                                {% endif %}
+                            </div>
+                            <div class="template-actions">
+                                <a href="{{ url_for('reports.generate_report') }}?template_id={{ template.template_id }}" 
+                                   class="template-action action-generate" title="Generate Report">
+                                    <i class="fas fa-file-export"></i>
+                                </a>
+                                <a href="{{ url_for('reports.edit_template', template_id=template.template_id) }}" 
+                                   class="template-action action-edit" title="Edit Template">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="#" class="template-action action-clone" 
+                                   data-bs-toggle="modal" data-bs-target="#cloneModal" 
+                                   data-template-id="{{ template.template_id }}" 
+                                   data-template-name="{{ template.name }}" title="Clone Template">
+                                    <i class="fas fa-clone"></i>
+                                </a>
+                                <a href="#" class="template-action action-delete" 
+                                   data-bs-toggle="modal" data-bs-target="#deleteModal" 
+                                   data-template-id="{{ template.template_id }}" 
+                                   data-template-name="{{ template.name }}" title="Delete Template">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <h5 class="card-title">{{ template.name }}</h5>
+                        <div class="template-meta">
+                            <div>
+                                {% if template.metadata and template.metadata.created_at %}
+                                Created: {{ template.metadata.created_at.split('T')[0] if 'T' in template.metadata.created_at else template.metadata.created_at }}
+                                {% endif %}
+                            </div>
+                            <div>
+                                {% if template.metadata and template.metadata.modified_at %}
+                                Modified: {{ template.metadata.modified_at.split('T')[0] if 'T' in template.metadata.modified_at else template.metadata.modified_at }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <p class="template-description">{{ template.description }}</p>
+                        
+                        {% if template.metadata and template.metadata.tags %}
+                        <div class="template-tags mb-3">
+                            {% for tag in template.metadata.tags %}
+                                {% if tag %}
+                                <span class="template-tag">{{ tag }}</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="template-sections">
+                            <div class="mb-1">Sections:</div>
+                            {% if template.sections %}
+                                {% for section in template.sections[:3] %}
+                                <span class="template-section">{{ section.title }}</span>
+                                {% endfor %}
+                                
+                                {% if template.sections|length > 3 %}
+                                <span class="template-section">+{{ template.sections|length - 3 }} more</span>
+                                {% endif %}
+                            {% else %}
+                            <span class="text-muted">No sections defined</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-footer text-center">
+                        <a href="{{ url_for('reports.view_template', template_id=template.template_id) }}" class="btn btn-outline-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info text-center py-5">
+                    <i class="fas fa-file-alt fa-3x mb-3"></i>
+                    <h4>No Templates Found</h4>
+                    <p>You don't have any report templates yet.</p>
+                    <a href="{{ url_for('reports.create_template_route') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Create Your First Template
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Clone Template Modal -->
+<div class="modal fade" id="cloneModal" tabindex="-1" aria-labelledby="cloneModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cloneModalLabel">Clone Template</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="" method="post" id="clone-form">
+                <div class="modal-body">
+                    <p>You are about to clone <strong id="clone-template-name"></strong>.</p>
+                    <div class="form-group">
+                        <label for="new-name">New Template Name</label>
+                        <input type="text" class="form-control" id="new-name" name="new_name" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Clone Template</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Template Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Delete Template</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="" method="post" id="delete-form">
+                <div class="modal-body">
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle"></i> Warning
+                    </div>
+                    <p>You are about to delete <strong id="delete-template-name"></strong>. This action cannot be undone.</p>
+                    <p>All reports generated from this template will still be available, but you won't be able to generate new reports using this template.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete Template</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle clone modal
+        document.querySelectorAll('.action-clone').forEach(function(element) {
+            element.addEventListener('click', function() {
+                const templateId = this.getAttribute('data-template-id');
+                const templateName = this.getAttribute('data-template-name');
+                
+                document.getElementById('clone-template-name').textContent = templateName;
+                document.getElementById('new-name').value = `Copy of ${templateName}`;
+                document.getElementById('clone-form').action = `/reports/templates/${templateId}/clone`;
+            });
+        });
+        
+        // Handle delete modal
+        document.querySelectorAll('.action-delete').forEach(function(element) {
+            element.addEventListener('click', function() {
+                const templateId = this.getAttribute('data-template-id');
+                const templateName = this.getAttribute('data-template-name');
+                
+                document.getElementById('delete-template-name').textContent = templateName;
+                document.getElementById('delete-form').action = `/reports/templates/${templateId}/delete`;
+            });
+        });
+        
+        // Filter templates by type
+        document.querySelectorAll('.filter-tag[data-filter]').forEach(function(element) {
+            element.addEventListener('click', function() {
+                // Update active state
+                document.querySelectorAll('.filter-tag[data-filter]').forEach(function(el) {
+                    el.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // Get filter
+                const filter = this.getAttribute('data-filter');
+                
+                // Apply filter
+                const templates = document.querySelectorAll('.template-item');
+                templates.forEach(function(template) {
+                    if (filter === 'all' || template.getAttribute('data-type') === filter) {
+                        template.style.display = '';
+                    } else {
+                        template.style.display = 'none';
+                    }
+                });
+            });
+        });
+        
+        // Sort direction
+        document.querySelectorAll('.filter-tag[data-sort]').forEach(function(element) {
+            element.addEventListener('click', function() {
+                // Update active state
+                document.querySelectorAll('.filter-tag[data-sort]').forEach(function(el) {
+                    el.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // Apply sort with current sort field
+                applySort();
+            });
+        });
+        
+        // Sort select
+        document.getElementById('sort-select').addEventListener('change', function() {
+            applySort();
+        });
+        
+        // Search
+        document.getElementById('search-button').addEventListener('click', function() {
+            applySearch();
+        });
+        
+        document.getElementById('template-search').addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                applySearch();
+            }
+        });
+        
+        // Apply search filter
+        function applySearch() {
+            const searchQuery = document.getElementById('template-search').value.toLowerCase();
+            
+            // Apply search filter
+            const templates = document.querySelectorAll('.template-item');
+            templates.forEach(function(template) {
+                const templateName = template.querySelector('.card-title').textContent.toLowerCase();
+                const templateDescription = template.querySelector('.template-description').textContent.toLowerCase();
+                
+                if (templateName.includes(searchQuery) || templateDescription.includes(searchQuery)) {
+                    template.style.display = '';
+                } else {
+                    template.style.display = 'none';
+                }
+            });
+        }
+        
+        // Function to sort templates
+        function applySort() {
+            const sortField = document.getElementById('sort-select').value;
+            const sortDirection = document.querySelector('.filter-tag[data-sort].active').getAttribute('data-sort');
+            
+            const templates = Array.from(document.querySelectorAll('.template-item'));
+            const container = document.getElementById('templates-container');
+            
+            templates.sort(function(a, b) {
+                let valueA, valueB;
+                
+                if (sortField === 'name') {
+                    valueA = a.querySelector('.card-title').textContent;
+                    valueB = b.querySelector('.card-title').textContent;
+                } else if (sortField === 'created' || sortField === 'modified') {
+                    // Get date from metadata
+                    const metaA = a.querySelector('.template-meta');
+                    const metaB = b.querySelector('.template-meta');
+                    
+                    if (sortField === 'created') {
+                        valueA = metaA.childNodes[1].textContent.replace('Created: ', '');
+                        valueB = metaB.childNodes[1].textContent.replace('Created: ', '');
+                    } else {
+                        valueA = metaA.childNodes[3].textContent.replace('Modified: ', '');
+                        valueB = metaB.childNodes[3].textContent.replace('Modified: ', '');
+                    }
+                } else if (sortField === 'type') {
+                    valueA = a.getAttribute('data-type');
+                    valueB = b.getAttribute('data-type');
+                }
+                
+                // Compare values
+                if (valueA < valueB) {
+                    return sortDirection === 'asc' ? -1 : 1;
+                }
+                if (valueA > valueB) {
+                    return sortDirection === 'asc' ? 1 : -1;
+                }
+                return 0;
+            });
+            
+            // Reorder elements
+            templates.forEach(function(template) {
+                container.appendChild(template);
+            });
+        }
+    });
+</script>
+{% endblock %}

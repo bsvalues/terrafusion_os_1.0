@@ -1,0 +1,64 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "3060004",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "Input_Table": {
+            "displayname": "$rc:input_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:input_table.descr"
+        },
+        "Unique_ID_Fields": {
+            "type": "optional",
+            "control_guid": "{C15EC6FA-35EF-4204-90FB-01E7B4DD6862}",
+            "displayname": "$rc:unique_id_fields.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "depends": [
+                "Input_Table"
+            ],
+            "description": "$rc:unique_id_fields.descr"
+        },
+        "Start_Date_Field": {
+            "displayname": "$rc:start_date_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "depends": [
+                "Input_Table"
+            ],
+            "description": "$rc:start_date_field.descr"
+        },
+        "End_Date_Field": {
+            "displayname": "$rc:end_date_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "depends": [
+                "Input_Table"
+            ],
+            "description": "$rc:end_date_field.descr"
+        },
+        "Output_Table": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "value": "Output Table"
+        }
+    }
+}

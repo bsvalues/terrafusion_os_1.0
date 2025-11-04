@@ -1,0 +1,770 @@
+{% extends "base.html" %}
+
+{% block title %}Generate Report{% endblock %}
+
+{% block head %}
+<style>
+    .template-card {
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.3s;
+        height: 100%;
+    }
+    .template-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .template-card.selected {
+        border-color: #007bff;
+        background-color: #f8f9fa;
+    }
+    .template-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        color: #6c757d;
+    }
+    .template-type {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        margin-bottom: 10px;
+    }
+    .type-property {
+        background-color: #e3f7ea;
+        color: #1d8348;
+    }
+    .type-geospatial {
+        background-color: #e3f2fd;
+        color: #0d6efd;
+    }
+    .type-anomaly {
+        background-color: #feebef;
+        color: #d9534f;
+    }
+    .type-custom {
+        background-color: #f5f5f5;
+        color: #6c757d;
+    }
+    .step-container {
+        display: none;
+    }
+    .step-container.active {
+        display: block;
+    }
+    .step-header {
+        margin-bottom: 30px;
+    }
+    .step-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #6c757d;
+        color: white;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+    .step-active .step-number {
+        background-color: #007bff;
+    }
+    .step-title {
+        font-size: 1.25rem;
+        font-weight: 500;
+    }
+    .step-nav {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+    .format-option {
+        display: inline-block;
+        text-align: center;
+        margin-right: 15px;
+        margin-bottom: 15px;
+        padding: 15px;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .format-option:hover {
+        background-color: #f8f9fa;
+    }
+    .format-option.selected {
+        border-color: #007bff;
+        background-color: #f0f7ff;
+    }
+    .format-icon {
+        font-size: 2rem;
+        margin-bottom: 10px;
+        color: #6c757d;
+    }
+    .format-pdf .format-icon {
+        color: #dc3545;
+    }
+    .format-html .format-icon {
+        color: #0d6efd;
+    }
+    .format-csv .format-icon {
+        color: #28a745;
+    }
+    .format-json .format-icon {
+        color: #fd7e14;
+    }
+    .format-excel .format-icon {
+        color: #20c997;
+    }
+    .progress-container {
+        margin-bottom: 30px;
+    }
+    .progress {
+        height: 8px;
+        background-color: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    .progress-bar {
+        background-color: #007bff;
+        width: 0%;
+        height: 100%;
+        transition: width 0.3s;
+    }
+    .progress-steps {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 5px;
+    }
+    .progress-step {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+    .progress-step.active {
+        color: #007bff;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Generate Report</h1>
+        <a href="{{ url_for('reports.reports_dashboard') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+    
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div class="progress-steps">
+            <div class="progress-step active" data-step="1">Select Template</div>
+            <div class="progress-step" data-step="2">Configure Data</div>
+            <div class="progress-step" data-step="3">Export Options</div>
+            <div class="progress-step" data-step="4">Generate</div>
+        </div>
+    </div>
+    
+    <!-- Step 1: Select Template -->
+    <div class="step-container active" id="step-1">
+        <div class="step-header">
+            <span class="step-number">1</span>
+            <span class="step-title">Select a Report Template</span>
+        </div>
+        
+        <div class="row">
+            {% if templates %}
+                {% for template in templates %}
+                <div class="col-md-4 mb-4">
+                    <div class="card template-card" data-template-id="{{ template.template_id }}" data-template-type="{{ template.template_type }}">
+                        <div class="card-body text-center">
+                            {% if template.template_type == 'property_assessment' %}
+                                <div class="template-icon"><i class="fas fa-home"></i></div>
+                                <div class="template-type type-property">Property Assessment</div>
+                            {% elif template.template_type == 'geospatial_analysis' %}
+                                <div class="template-icon"><i class="fas fa-map-marked-alt"></i></div>
+                                <div class="template-type type-geospatial">Geospatial Analysis</div>
+                            {% elif template.template_type == 'anomaly_report' %}
+                                <div class="template-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                                <div class="template-type type-anomaly">Anomaly Report</div>
+                            {% else %}
+                                <div class="template-icon"><i class="fas fa-file-alt"></i></div>
+                                <div class="template-type type-custom">Custom</div>
+                            {% endif %}
+                            
+                            <h5 class="card-title">{{ template.name }}</h5>
+                            <p class="card-text text-muted">{{ template.description }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> No templates available. Please create a template first.
+                    </div>
+                    <a href="{{ url_for('reports.create_template_route') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Create Template
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="step-nav text-right">
+            <button id="next-step-1" class="btn btn-primary" disabled>
+                Next <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Step 2: Configure Data -->
+    <div class="step-container" id="step-2">
+        <div class="step-header">
+            <span class="step-number">2</span>
+            <span class="step-title">Configure Report Data</span>
+        </div>
+        
+        <!-- Property Assessment Data Forms -->
+        <div class="data-form" id="data-property_assessment" style="display: none;">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Property Assessment Report</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-group mb-3">
+                        <label for="property-id">Property ID</label>
+                        <input type="text" class="form-control" id="property-id" placeholder="Enter property ID">
+                        <small class="form-text text-muted">The system will load property data based on this ID.</small>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="include-comparables" checked>
+                        <label class="form-check-label" for="include-comparables">
+                            Include comparable properties
+                        </label>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="assessment-date">Assessment Date</label>
+                        <input type="date" class="form-control" id="assessment-date">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Geospatial Analysis Data Forms -->
+        <div class="data-form" id="data-geospatial_analysis" style="display: none;">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Geospatial Analysis Report</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-group mb-3">
+                        <label for="area-id">Area ID or Boundary</label>
+                        <input type="text" class="form-control" id="area-id" placeholder="Enter area ID or boundary description">
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="analysis-layer">Data Layer</label>
+                        <select class="form-control" id="analysis-layer">
+                            <option value="assessed_value">Assessed Value</option>
+                            <option value="market_value">Market Value</option>
+                            <option value="land_value">Land Value</option>
+                            <option value="property_type">Property Type Distribution</option>
+                            <option value="year_built">Year Built</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="analysis-date">Analysis Date</label>
+                        <input type="date" class="form-control" id="analysis-date">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Anomaly Report Data Forms -->
+        <div class="data-form" id="data-anomaly_report" style="display: none;">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Property Value Anomaly Report</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-group mb-3">
+                        <label for="anomaly-area">Analysis Area</label>
+                        <select class="form-control" id="anomaly-area">
+                            <option value="all">All Areas</option>
+                            <option value="north">North County</option>
+                            <option value="south">South County</option>
+                            <option value="east">East County</option>
+                            <option value="west">West County</option>
+                            <option value="custom">Custom Boundary</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="anomaly-threshold">Anomaly Threshold</label>
+                        <select class="form-control" id="anomaly-threshold">
+                            <option value="high">High (Only significant anomalies)</option>
+                            <option value="medium" selected>Medium (Default threshold)</option>
+                            <option value="low">Low (Include minor anomalies)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="anomaly-date-range">Data Date Range</label>
+                        <div class="row">
+                            <div class="col">
+                                <input type="date" class="form-control" id="anomaly-date-start">
+                            </div>
+                            <div class="col-auto">to</div>
+                            <div class="col">
+                                <input type="date" class="form-control" id="anomaly-date-end">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Custom Template Data Form -->
+        <div class="data-form" id="data-custom" style="display: none;">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Custom Report</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-group mb-3">
+                        <label for="custom-data-source">Data Source</label>
+                        <select class="form-control" id="custom-data-source">
+                            <option value="property">Property Database</option>
+                            <option value="sales">Sales Database</option>
+                            <option value="assessments">Assessments Database</option>
+                            <option value="custom">Custom Data (JSON)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group mb-3" id="custom-json-input" style="display: none;">
+                        <label for="custom-json">Custom JSON Data</label>
+                        <textarea class="form-control" id="custom-json" rows="5" placeholder='{"key": "value"}'></textarea>
+                        <small class="form-text text-muted">Enter valid JSON data for the report.</small>
+                    </div>
+                    
+                    <div class="form-group mb-3" id="custom-query-input">
+                        <label for="custom-query">Data Query</label>
+                        <input type="text" class="form-control" id="custom-query" placeholder="Enter query or ID">
+                        <small class="form-text text-muted">Enter a search query or ID to retrieve data.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="step-nav d-flex justify-content-between">
+            <button id="prev-step-2" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Previous
+            </button>
+            <button id="next-step-2" class="btn btn-primary">
+                Next <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Step 3: Export Options -->
+    <div class="step-container" id="step-3">
+        <div class="step-header">
+            <span class="step-number">3</span>
+            <span class="step-title">Export Options</span>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Report Options</h5>
+            </div>
+            <div class="card-body">
+                <div class="form-group mb-4">
+                    <label for="report-title">Report Title</label>
+                    <input type="text" class="form-control" id="report-title" placeholder="Enter report title">
+                </div>
+                
+                <div class="form-group mb-4">
+                    <label>Export Format</label>
+                    <div class="d-flex flex-wrap mt-2">
+                        <div class="format-option format-pdf selected" data-format="pdf">
+                            <div class="format-icon"><i class="far fa-file-pdf"></i></div>
+                            <div>PDF</div>
+                        </div>
+                        <div class="format-option format-html" data-format="html">
+                            <div class="format-icon"><i class="far fa-file-code"></i></div>
+                            <div>HTML</div>
+                        </div>
+                        <div class="format-option format-csv" data-format="csv">
+                            <div class="format-icon"><i class="far fa-file-alt"></i></div>
+                            <div>CSV</div>
+                        </div>
+                        <div class="format-option format-json" data-format="json">
+                            <div class="format-icon"><i class="far fa-file-code"></i></div>
+                            <div>JSON</div>
+                        </div>
+                        <div class="format-option format-excel" data-format="xlsx">
+                            <div class="format-icon"><i class="far fa-file-excel"></i></div>
+                            <div>Excel</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="include-metadata" checked>
+                    <label class="form-check-label" for="include-metadata">
+                        Include report metadata
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="step-nav d-flex justify-content-between">
+            <button id="prev-step-3" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Previous
+            </button>
+            <button id="next-step-3" class="btn btn-primary">
+                Next <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Step 4: Generate Report -->
+    <div class="step-container" id="step-4">
+        <div class="step-header">
+            <span class="step-number">4</span>
+            <span class="step-title">Generate Report</span>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Confirm Report Generation</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Please review your report configuration before generating.
+                </div>
+                
+                <h6>Report Summary</h6>
+                <dl class="row mb-4">
+                    <dt class="col-sm-3">Template:</dt>
+                    <dd class="col-sm-9" id="summary-template">-</dd>
+                    
+                    <dt class="col-sm-3">Report Title:</dt>
+                    <dd class="col-sm-9" id="summary-title">-</dd>
+                    
+                    <dt class="col-sm-3">Export Format:</dt>
+                    <dd class="col-sm-9" id="summary-format">-</dd>
+                    
+                    <dt class="col-sm-3">Data Source:</dt>
+                    <dd class="col-sm-9" id="summary-data">-</dd>
+                </dl>
+                
+                <div id="generation-status" style="display: none;">
+                    <div class="progress mb-3">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
+                    </div>
+                    <p class="text-center" id="generation-message">Generating report...</p>
+                </div>
+                
+                <div id="generation-result" style="display: none;">
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i> Report generated successfully!
+                    </div>
+                    <div class="text-center">
+                        <a href="#" id="download-report" class="btn btn-primary">
+                            <i class="fas fa-download"></i> Download Report
+                        </a>
+                        <a href="{{ url_for('reports.exports') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-history"></i> View Export History
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="step-nav d-flex justify-content-between">
+            <button id="prev-step-4" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Previous
+            </button>
+            <button id="generate-report" class="btn btn-success">
+                <i class="fas fa-file-export"></i> Generate Report
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let currentStep = 1;
+        let selectedTemplate = null;
+        let selectedTemplateType = null;
+        let selectedFormat = 'pdf';
+        
+        // Update progress bar
+        function updateProgress(step) {
+            const percent = (step - 1) * 100 / 3;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+            
+            // Update step indicators
+            document.querySelectorAll('.progress-step').forEach(el => {
+                const stepNum = parseInt(el.getAttribute('data-step'));
+                if (stepNum <= step) {
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            });
+        }
+        
+        // Show a specific step
+        function showStep(step) {
+            document.querySelectorAll('.step-container').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.getElementById(`step-${step}`).classList.add('active');
+            currentStep = step;
+            updateProgress(step);
+        }
+        
+        // Template selection
+        document.querySelectorAll('.template-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Deselect all templates
+                document.querySelectorAll('.template-card').forEach(c => {
+                    c.classList.remove('selected');
+                });
+                
+                // Select this template
+                this.classList.add('selected');
+                selectedTemplate = this.getAttribute('data-template-id');
+                selectedTemplateType = this.getAttribute('data-template-type');
+                
+                // Enable next button
+                document.getElementById('next-step-1').removeAttribute('disabled');
+            });
+        });
+        
+        // Step 1 next button
+        document.getElementById('next-step-1').addEventListener('click', function() {
+            // Show the appropriate data form based on template type
+            document.querySelectorAll('.data-form').forEach(form => {
+                form.style.display = 'none';
+            });
+            
+            const formId = `data-${selectedTemplateType}`;
+            const form = document.getElementById(formId);
+            if (form) {
+                form.style.display = 'block';
+            } else {
+                // Fallback to custom form if specific form doesn't exist
+                document.getElementById('data-custom').style.display = 'block';
+            }
+            
+            showStep(2);
+        });
+        
+        // Step 2 previous button
+        document.getElementById('prev-step-2').addEventListener('click', function() {
+            showStep(1);
+        });
+        
+        // Step 2 next button
+        document.getElementById('next-step-2').addEventListener('click', function() {
+            showStep(3);
+        });
+        
+        // Step 3 previous button
+        document.getElementById('prev-step-3').addEventListener('click', function() {
+            showStep(2);
+        });
+        
+        // Step 3 next button
+        document.getElementById('next-step-3').addEventListener('click', function() {
+            // Update summary
+            const templateName = document.querySelector('.template-card.selected .card-title').textContent;
+            const reportTitle = document.getElementById('report-title').value || templateName;
+            
+            document.getElementById('summary-template').textContent = templateName;
+            document.getElementById('summary-title').textContent = reportTitle;
+            document.getElementById('summary-format').textContent = selectedFormat.toUpperCase();
+            
+            // Set data source summary based on template type
+            let dataSource = 'Custom';
+            if (selectedTemplateType === 'property_assessment') {
+                const propertyId = document.getElementById('property-id').value || 'Not specified';
+                dataSource = `Property ID: ${propertyId}`;
+            } else if (selectedTemplateType === 'geospatial_analysis') {
+                const areaId = document.getElementById('area-id').value || 'Not specified';
+                const layer = document.getElementById('analysis-layer').options[document.getElementById('analysis-layer').selectedIndex].text;
+                dataSource = `Area: ${areaId}, Layer: ${layer}`;
+            } else if (selectedTemplateType === 'anomaly_report') {
+                const area = document.getElementById('anomaly-area').options[document.getElementById('anomaly-area').selectedIndex].text;
+                const threshold = document.getElementById('anomaly-threshold').options[document.getElementById('anomaly-threshold').selectedIndex].text;
+                dataSource = `Area: ${area}, Threshold: ${threshold}`;
+            }
+            
+            document.getElementById('summary-data').textContent = dataSource;
+            
+            showStep(4);
+        });
+        
+        // Step 4 previous button
+        document.getElementById('prev-step-4').addEventListener('click', function() {
+            showStep(3);
+        });
+        
+        // Format selection
+        document.querySelectorAll('.format-option').forEach(option => {
+            option.addEventListener('click', function() {
+                // Deselect all formats
+                document.querySelectorAll('.format-option').forEach(o => {
+                    o.classList.remove('selected');
+                });
+                
+                // Select this format
+                this.classList.add('selected');
+                selectedFormat = this.getAttribute('data-format');
+            });
+        });
+        
+        // Custom data source change
+        document.getElementById('custom-data-source').addEventListener('change', function() {
+            if (this.value === 'custom') {
+                document.getElementById('custom-json-input').style.display = 'block';
+                document.getElementById('custom-query-input').style.display = 'none';
+            } else {
+                document.getElementById('custom-json-input').style.display = 'none';
+                document.getElementById('custom-query-input').style.display = 'block';
+            }
+        });
+        
+        // Generate report button
+        document.getElementById('generate-report').addEventListener('click', function() {
+            // Get report data based on template type
+            let reportData = {};
+            
+            if (selectedTemplateType === 'property_assessment') {
+                const propertyId = document.getElementById('property-id').value;
+                const includeComparables = document.getElementById('include-comparables').checked;
+                const assessmentDate = document.getElementById('assessment-date').value;
+                
+                reportData = {
+                    property_id: propertyId,
+                    include_comparables: includeComparables,
+                    assessment_date: assessmentDate
+                };
+            } else if (selectedTemplateType === 'geospatial_analysis') {
+                const areaId = document.getElementById('area-id').value;
+                const layer = document.getElementById('analysis-layer').value;
+                const analysisDate = document.getElementById('analysis-date').value;
+                
+                reportData = {
+                    area_id: areaId,
+                    layer: layer,
+                    analysis_date: analysisDate
+                };
+            } else if (selectedTemplateType === 'anomaly_report') {
+                const area = document.getElementById('anomaly-area').value;
+                const threshold = document.getElementById('anomaly-threshold').value;
+                const startDate = document.getElementById('anomaly-date-start').value;
+                const endDate = document.getElementById('anomaly-date-end').value;
+                
+                reportData = {
+                    area: area,
+                    threshold: threshold,
+                    date_range: {
+                        start: startDate,
+                        end: endDate
+                    }
+                };
+            } else {
+                // Custom template
+                const dataSource = document.getElementById('custom-data-source').value;
+                
+                if (dataSource === 'custom') {
+                    try {
+                        const jsonData = JSON.parse(document.getElementById('custom-json').value);
+                        reportData = jsonData;
+                    } catch (e) {
+                        alert('Invalid JSON data. Please check your input.');
+                        return;
+                    }
+                } else {
+                    const query = document.getElementById('custom-query').value;
+                    reportData = {
+                        source: dataSource,
+                        query: query
+                    };
+                }
+            }
+            
+            // Show generation status
+            this.disabled = true;
+            document.getElementById('prev-step-4').disabled = true;
+            document.getElementById('generation-status').style.display = 'block';
+            
+            // Get report title
+            const reportTitle = document.getElementById('report-title').value || 
+                               document.querySelector('.template-card.selected .card-title').textContent;
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Hide status, show result
+                document.getElementById('generation-status').style.display = 'none';
+                document.getElementById('generation-result').style.display = 'block';
+                
+                // Set download link (in a real app, this would be the actual download URL)
+                document.getElementById('download-report').href = `/reports/downloads/sample-${Date.now()}.${selectedFormat}`;
+            }, 2000);
+            
+            // In a real app, you would make an API call like this:
+            /*
+            fetch('/reports/api/reports/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    template_id: selectedTemplate,
+                    data: reportData,
+                    export_format: selectedFormat,
+                    report_title: reportTitle,
+                    include_metadata: document.getElementById('include-metadata').checked
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Hide status, show result
+                document.getElementById('generation-status').style.display = 'none';
+                document.getElementById('generation-result').style.display = 'block';
+                
+                // Set download link
+                document.getElementById('download-report').href = data.download_url;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('generation-status').style.display = 'none';
+                alert('An error occurred while generating the report. Please try again.');
+                
+                // Re-enable buttons
+                document.getElementById('generate-report').disabled = false;
+                document.getElementById('prev-step-4').disabled = false;
+            });
+            */
+        });
+        
+        // Initialize first step
+        updateProgress(1);
+    });
+</script>
+{% endblock %}

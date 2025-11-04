@@ -1,0 +1,5 @@
+<DataType Name="GPTraceNetworkLayer">
+  <DisplayName>Trace Network Layer</DisplayName>
+  <Description>Trace network layer</Description>
+</DataType>
+

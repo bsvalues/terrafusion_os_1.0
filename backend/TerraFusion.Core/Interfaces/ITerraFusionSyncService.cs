@@ -30,7 +30,7 @@ public interface ITerraFusionSyncService
     // Real-time monitoring
     Task<SyncMetrics> GetSyncMetricsAsync();
     Task<IEnumerable<SyncEvent>> GetRecentSyncEventsAsync(int count = 50);
-    
+
     // Data orchestration
     Task<OrchestrationStatus> GetOrchestrationStatusAsync();
     Task<bool> RestartOrchestrationAsync();
@@ -49,6 +49,15 @@ public class SyncResult
     public List<string> Errors { get; set; } = new();
     public TimeSpan Duration { get; set; }
     public string? CountyName { get; set; }
+    public DateTime SyncTime { get; set; }
+
+    // Additional properties for Harris PACS integration
+    public string Message { get; set; } = string.Empty;
+    public List<string> SyncOperations { get; set; } = new();
+    public bool AITrainingDataUpdated { get; set; }
+    public int TotalRecordsSynced { get; set; }
+    public TimeSpan SyncDuration { get; set; }
+    public DateTime SyncTimestamp { get; set; }
 }
 
 public class SyncStatus

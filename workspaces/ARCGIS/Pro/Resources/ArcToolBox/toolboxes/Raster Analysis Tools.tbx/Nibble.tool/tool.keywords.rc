@@ -1,0 +1,7 @@
+{
+    "set": [
+        "generalization",
+        "replace cells",
+        "simplify"
+    ]
+}

@@ -1,0 +1,13 @@
+{
+    "map": {
+        "description": "Extends line segments to the first intersecting feature within a specified distance. If no intersecting feature is within the specified distance, the line segment will not be extended. Tool use is intended for quality control tasks such as cleaning up topology errors in features that were digitized without having set proper snapping environments.",
+        "extend_to.descr": "<xdoc><p>Specifies whether line segments can be extended to other extended line segments within the specified extend length.</p><ul><li>Checked—Line segments can be extended to other extended line segments as well as existing line features. This is the default.</li><li>Unchecked—Line segments can only be extended to existing line features.</li></ul></xdoc>",
+        "extend_to.title": "Extend to Extensions",
+        "in_features.descr": "The line input features to be extended.",
+        "in_features.title": "Input Features",
+        "length.descr": "The maximum distance a line segment can be extended to an intersecting feature.",
+        "length.title": "Extend Length",
+        "out_feature_class.title": "Updated Input Features",
+        "title": "Extend Line"
+    }
+}

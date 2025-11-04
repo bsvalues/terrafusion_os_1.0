@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Adds a target site to a Suitability Analysis group layer.",
+        "in_analysis_layer.descr": "The Suitability Analysis layer that will be used in the analysis.",
+        "in_analysis_layer.title": "Input Suitability Analysis Layer",
+        "out_analysis_layer.title": "Output Suitability Analysis Layer",
+        "summary": "<xdoc><p>Adds a target site to a Suitability Analysis group layer.</p><p>A target site is typically a trade area around a high-performing location, such as a store or clinic. Criteria values in the target site are used to score candidate sites that are closest in value to the target site.</p></xdoc>",
+        "target_site_feature_id.descr": "The feature from the target site layer that will be added to the group layer as the target site.",
+        "target_site_feature_id.title": "Target Site Feature ID",
+        "target_site_layer.descr": "The layer that contains the target site.",
+        "target_site_layer.title": "Target Site Layer",
+        "title": "Set Target Site"
+    }
+}

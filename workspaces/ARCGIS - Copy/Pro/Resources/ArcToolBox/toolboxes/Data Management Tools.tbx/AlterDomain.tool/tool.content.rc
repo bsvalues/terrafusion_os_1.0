@@ -1,0 +1,27 @@
+{
+    "map": {
+        "description": "Alters the properties of an existing attribute domain in a workspace.",
+        "domain_name.descr": "The name of the domain the will be altered.",
+        "domain_name.title": "Domain Name",
+        "in_workspace.descr": "The geodatabase that contains the domain that will be altered.",
+        "in_workspace.title": "Input Workspace",
+        "merge_policy.descr": "<xdoc><p>Specifies the merge policy that will be used for the domain. When two features are merged into a single feature, merge policies will control attribute values in the new feature. This parameter is only applicable to range domains, as coded value domains can only use the default merge policy.</p><ul><li><span title=\"DEFAULT\">Use the attribute&apos;s default value</span>—The attribute of the resulting feature will be the default value of the attribute of the given feature class or subtype. This option only applies to nonnumeric fields and coded value domains.</li><li><span title=\"SUM_VALUES\">Sum of the values</span>—The attribute of the resulting feature will be on the sum of the values from the original feature&apos;s attribute. This option only applies to range domains.</li><li><span title=\"AREA_WEIGHTED\">Area weighted average</span>—The attribute of the resulting feature will be the weighted average of the attribute values of the original features. The average is based on the original feature&apos;s geometry. This option only applies to range domains.</li></ul></xdoc>",
+        "merge_policy.domain.AREA_WEIGHTED": "Area weighted average",
+        "merge_policy.domain.DEFAULT": "Use the attribute's default value",
+        "merge_policy.domain.SUM_VALUES": "Sum of the values",
+        "merge_policy.title": "New Merge Policy",
+        "new_domain_description.descr": "The new description of the domain.",
+        "new_domain_description.title": "New Domain Description",
+        "new_domain_name.descr": "The new name of the domain.",
+        "new_domain_name.title": "New Domain Name",
+        "new_domain_owner.descr": "The name of the database user that the domain ownership will be transferred to. Ensure that the new domain owner exists in the database; the tool does not check the validity of the owner name specified. This parameter is not applicable for domains created in a file geodatabase.",
+        "new_domain_owner.title": "New Domain Owner",
+        "out_workspace.title": "Updated Input Workspace",
+        "split_policy.descr": "<xdoc><p>Specifies the split policy that will used for the domain. The behavior of an attribute&apos;s values when a feature is split is controlled by its split policy.</p><ul><li><span title=\"DEFAULT\">Use the attribute&apos;s default value</span>—The attributes of the two resulting features will be the default value of the attribute of the given feature class or subtype.</li><li><span title=\"DUPLICATE\">Duplicate attribute values</span>—The attribute of the two resulting features will be a copy of the original object&apos;s attribute value.</li><li><span title=\"GEOMETRY_RATIO\">Use geometric ratio</span>—The attributes of resulting features will be a ratio of the original feature&apos;s value. The ratio is based on the proportion into which the original geometry is divided. If the geometry is divided equally, the attribute of each new feature will be one-half the value of the original object&apos;s attribute. This option only applies to range domains.</li></ul></xdoc>",
+        "split_policy.domain.DEFAULT": "Use the attribute's default value",
+        "split_policy.domain.DUPLICATE": "Duplicate attribute values",
+        "split_policy.domain.GEOMETRY_RATIO": "Use geometric ratio",
+        "split_policy.title": "New Split Policy",
+        "title": "Alter Domain"
+    }
+}

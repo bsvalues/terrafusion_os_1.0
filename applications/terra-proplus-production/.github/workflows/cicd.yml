@@ -1,0 +1,184 @@
+name: TerraFusionProfessional CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - staging
+          - production
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  validate:
+    name: Validate and Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint code
+        run: npm run lint
+
+      - name: Run unit tests
+        run: npm run test
+
+      - name: Check for security vulnerabilities
+        run: npm audit --production
+
+  build:
+    name: Build and Push
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image_tag: ${{ steps.tag.outputs.tag }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Generate image tag
+        id: tag
+        run: |
+          SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-8)
+          echo "tag=$SHORT_SHA-$(date +'%Y%m%d%H%M%S')" >> $GITHUB_OUTPUT
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy-development:
+    name: Deploy to Development
+    needs: build
+    if: github.ref == 'refs/heads/develop' || github.event.inputs.environment == 'development'
+    runs-on: ubuntu-latest
+    environment: development
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Kubernetes CLI
+        uses: azure/setup-kubectl@v3
+
+      - name: Configure Kubernetes credentials
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG_DEV }}
+
+      - name: Update Kubernetes deployment
+        run: |
+          sed -i "s|image:.*|image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image_tag }}|g" helm/terrafusion/values-dev.yaml
+          helm upgrade --install terrafusion-api ./helm/terrafusion -f helm/terrafusion/values-dev.yaml --namespace terrafusion-dev
+
+      - name: Run database migrations
+        run: |
+          kubectl exec -it deployment/terrafusion-api -n terrafusion-dev -- npm run db:push
+
+      - name: Verify deployment
+        run: |
+          kubectl rollout status deployment/terrafusion-api -n terrafusion-dev --timeout=300s
+
+  deploy-staging:
+    name: Deploy to Staging
+    needs: [build, deploy-development]
+    if: github.ref == 'refs/heads/main' || github.event.inputs.environment == 'staging'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Kubernetes CLI
+        uses: azure/setup-kubectl@v3
+
+      - name: Configure Kubernetes credentials
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG_STAGING }}
+
+      - name: Update Kubernetes deployment
+        run: |
+          sed -i "s|image:.*|image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image_tag }}|g" helm/terrafusion/values-staging.yaml
+          helm upgrade --install terrafusion-api ./helm/terrafusion -f helm/terrafusion/values-staging.yaml --namespace terrafusion-staging
+
+      - name: Run database migrations
+        run: |
+          kubectl exec -it deployment/terrafusion-api -n terrafusion-staging -- npm run db:push
+
+      - name: Verify deployment
+        run: |
+          kubectl rollout status deployment/terrafusion-api -n terrafusion-staging --timeout=300s
+
+  deploy-production:
+    name: Deploy to Production
+    needs: [build, deploy-staging]
+    if: github.event.inputs.environment == 'production'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Kubernetes CLI
+        uses: azure/setup-kubectl@v3
+
+      - name: Configure Kubernetes credentials
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG_PROD }}
+
+      - name: Update Kubernetes deployment
+        run: |
+          sed -i "s|image:.*|image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image_tag }}|g" helm/terrafusion/values-prod.yaml
+          helm upgrade --install terrafusion-api ./helm/terrafusion -f helm/terrafusion/values-prod.yaml --namespace terrafusion-prod
+
+      - name: Run database migrations
+        run: |
+          kubectl exec -it deployment/terrafusion-api -n terrafusion-prod -- npm run db:push
+
+      - name: Verify deployment
+        run: |
+          kubectl rollout status deployment/terrafusion-api -n terrafusion-prod --timeout=300s

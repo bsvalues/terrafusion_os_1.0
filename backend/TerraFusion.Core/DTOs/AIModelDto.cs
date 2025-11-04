@@ -7,32 +7,34 @@ namespace TerraFusion.Core.DTOs;
 public class AIModelDto
 {
     public int Id { get; set; }
-    
+    public string ModelId { get; set; } = "";
+    public string ModelName { get; set; } = "";
+
     [Required]
     [StringLength(100)]
     public string Name { get; set; } = string.Empty;
-    
+
     [StringLength(500)]
     public string? Description { get; set; }
-    
+
     [Required]
     public AIModelType Type { get; set; }
-    
+
     [Required]
     public AIModelStatus Status { get; set; }
-    
+
     [StringLength(20)]
     public string? Version { get; set; }
-    
+
     [Range(0, 1)]
     public decimal Accuracy { get; set; }
-    
+
     [Range(0, int.MaxValue)]
     public int TrainingDataSize { get; set; }
-    
+
     [StringLength(500)]
     public string? ModelPath { get; set; }
-    
+
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public DateTime? LastTrainedAt { get; set; }
@@ -49,7 +51,12 @@ public class AIModelHealthDto
     public int RequestsPerMinute { get; set; }
     public decimal AverageResponseTime { get; set; }
     public DateTime LastHealthCheck { get; set; }
+    public DateTime LastUpdated { get; set; }
     public bool IsResponding { get; set; }
+    public bool IsHealthy { get; set; }
+    public decimal Accuracy { get; set; }
+    public int PredictionsToday { get; set; }
+    public decimal ErrorRate { get; set; }
     public string? ErrorMessage { get; set; }
 }
 
@@ -57,22 +64,27 @@ public class PredictionInputDto
 {
     [Required]
     public Dictionary<string, object> Features { get; set; } = new();
-    
+
     [StringLength(50)]
     public string? RequestId { get; set; }
+
+    // Added missing properties required by AICommandService
+    public string ModelId { get; set; } = string.Empty;
+    public Dictionary<string, object> InputData { get; set; } = new();
+    public DateTime RequestedAt { get; set; } = DateTime.UtcNow;
 }
 
 public class PredictionResultDto
 {
     [StringLength(50)]
     public string? RequestId { get; set; }
-    
+
     [Required]
     public Dictionary<string, object> Predictions { get; set; } = new();
-    
+
     [Range(0, 1)]
     public decimal Confidence { get; set; }
-    
+
     public TimeSpan ProcessingTime { get; set; }
     public DateTime Timestamp { get; set; }
     public Guid ModelId { get; set; }
@@ -82,6 +94,13 @@ public class PredictionResultDto
     public Dictionary<string, object> InputData { get; set; } = new();
     public string PredictionId { get; set; } = Guid.NewGuid().ToString();
     public Dictionary<string, object> Results { get; set; } = new();
+
+    // Added missing properties required by AICommandService
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public DateTime ProcessedAt { get; set; } = DateTime.UtcNow;
+    public Dictionary<string, object> Result { get; set; } = new();
+    public bool Success { get; set; } = true;
+    public string? ErrorMessage { get; set; }
 }
 
 public class BatchPredictionResultDto
@@ -100,16 +119,16 @@ public class TrainingConfigDto
 {
     [Required]
     public Dictionary<string, object> Parameters { get; set; } = new();
-    
+
     [StringLength(500)]
     public string? DatasetPath { get; set; }
-    
+
     [Range(1, 10000)]
     public int Epochs { get; set; } = 100;
-    
+
     [Range(0.0001, 1)]
     public decimal LearningRate { get; set; } = 0.001m;
-    
+
     [Range(1, 1000)]
     public int BatchSize { get; set; } = 32;
 }

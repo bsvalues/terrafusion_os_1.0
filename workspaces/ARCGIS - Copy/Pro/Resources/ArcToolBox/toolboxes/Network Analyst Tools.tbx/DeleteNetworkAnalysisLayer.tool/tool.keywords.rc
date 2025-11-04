@@ -1,0 +1,19 @@
+{
+    "set": [
+        "closest facility",
+        "delete",
+        "location-allocation",
+        "na layer",
+        "network analysis layer",
+        "network analyst layer",
+        "od cost matrix",
+        "route",
+        "service area",
+        "vrp",
+        "vehicle routing problem",
+        "analysis dataset",
+        "feature dataset",
+        "sublayer",
+        "sublayers"
+    ]
+}

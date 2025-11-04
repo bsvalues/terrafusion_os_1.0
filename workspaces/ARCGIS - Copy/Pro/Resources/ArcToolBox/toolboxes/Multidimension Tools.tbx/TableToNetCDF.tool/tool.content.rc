@@ -1,0 +1,20 @@
+{
+    "map": {
+        "description": "Converts a table to a netCDF file.",
+        "fields_to_dimensions.descr": "<xdoc><p>The field or fields that will be used to create dimensions in the netCDF file.</p><ul><li>Field—A field in the input table.</li><li>Dimension—The netCDF dimension name</li><li>Units—The units of the data represented by the field</li></ul></xdoc>",
+        "fields_to_dimensions.dt.title1": "Field",
+        "fields_to_dimensions.dt.title2": "Dimension",
+        "fields_to_dimensions.dt.title3": "Units",
+        "fields_to_dimensions.title": "Fields to Dimensions",
+        "fields_to_variables.descr": "<xdoc><p>The field or fields that will be used to create variables in the netCDF file.</p><ul><li>Field—A field in the input feature attribute table.</li><li>Variable—The netCDF variable name</li><li>Units—The units of the data represented by the field</li></ul></xdoc>",
+        "fields_to_variables.dt.title1": "Field",
+        "fields_to_variables.dt.title2": "Variable",
+        "fields_to_variables.dt.title3": "Units",
+        "fields_to_variables.title": "Fields to Variables",
+        "in_table.descr": "The input table.",
+        "in_table.title": "Input Table",
+        "out_netcdf_file.descr": "The output netCDF file. The file name must have an .nc extension.",
+        "out_netcdf_file.title": "Output netCDF File",
+        "title": "Table to NetCDF"
+    }
+}

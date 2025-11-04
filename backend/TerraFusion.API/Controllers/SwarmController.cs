@@ -28,14 +28,14 @@ public class SwarmController : ControllerBase
         try
         {
             var swarmStatus = await _aiOrchestrator.GetAISwarmStatusAsync();
-            
+
             // Load static swarm data from the JSON file
             var swarmDataPath = "C:\\Users\\bsval\\terrafusion_os_1.0\\data\\ai-swarm\\swarm_status.json";
             var claudeFlowPath = "C:\\Users\\bsval\\terrafusion_os_1.0\\data\\ai-swarm\\claude-flow-integration.json";
-            
-            object swarmData = null;
-            object claudeFlowData = null;
-            
+
+            object? swarmData = null;
+            object? claudeFlowData = null;
+
             try
             {
                 if (System.IO.File.Exists(swarmDataPath))
@@ -43,7 +43,7 @@ public class SwarmController : ControllerBase
                     var swarmJson = await System.IO.File.ReadAllTextAsync(swarmDataPath);
                     swarmData = JsonSerializer.Deserialize<object>(swarmJson);
                 }
-                
+
                 if (System.IO.File.Exists(claudeFlowPath))
                 {
                     var claudeFlowJson = await System.IO.File.ReadAllTextAsync(claudeFlowPath);
@@ -121,12 +121,12 @@ public class SwarmController : ControllerBase
                 });
             }
 
-            _logger.LogInformation("Executing AI command {Command} on module {Module}", 
+            _logger.LogInformation("Executing AI command {Command} on module {Module}",
                 request.Command, request.Module);
 
             var result = await _aiOrchestrator.ExecuteAICommandAsync(
-                request.Module, 
-                request.Command, 
+                request.Module,
+                request.Command,
                 request.Parameters ?? new object());
 
             if (result.Success)
@@ -159,9 +159,9 @@ public class SwarmController : ControllerBase
         try
         {
             _logger.LogInformation("Starting AI module: {ModuleName}", moduleName);
-            
+
             var success = await _aiOrchestrator.StartAIModuleAsync(moduleName);
-            
+
             if (success)
             {
                 return Ok(new
@@ -202,9 +202,9 @@ public class SwarmController : ControllerBase
         try
         {
             _logger.LogInformation("Stopping AI module: {ModuleName}", moduleName);
-            
+
             var success = await _aiOrchestrator.StopAIModuleAsync(moduleName);
-            
+
             if (success)
             {
                 return Ok(new
@@ -245,12 +245,12 @@ public class SwarmController : ControllerBase
         try
         {
             var claudeFlowPath = "C:\\Users\\bsval\\terrafusion_os_1.0\\data\\ai-swarm\\claude-flow-integration.json";
-            
+
             if (System.IO.File.Exists(claudeFlowPath))
             {
                 var claudeFlowJson = await System.IO.File.ReadAllTextAsync(claudeFlowPath);
                 var claudeFlowData = JsonSerializer.Deserialize<object>(claudeFlowJson);
-                
+
                 return Ok(new
                 {
                     mcpIntegration = claudeFlowData,

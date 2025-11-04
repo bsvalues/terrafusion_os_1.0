@@ -1,0 +1,62 @@
+{
+    "type": "FunctionTool",
+    "guid": "{b291b813-3a0a-4a79-a36c-bebadc94a77c}",
+    "displayname": "$rc:title",
+    "helpcontent": "13010020",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "attributes": [
+        "param_nocount:in_network_analysis_layer"
+    ],
+    "params": {
+        "in_network_analysis_layer": {
+            "displayname": "$rc:in_network_analysis_layer.title",
+            "datatype": {
+                "type": "GPNALayer"
+            },
+            "description": "$rc:in_network_analysis_layer.descr"
+        },
+        "parameterized_attribute": {
+            "displayname": "$rc:parameterized_attribute.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:parameterized_attribute.descr"
+        },
+        "attribute_parameter_name": {
+            "displayname": "$rc:attribute_parameter_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:attribute_parameter_name.descr"
+        },
+        "attribute_parameter_value": {
+            "type": "optional",
+            "displayname": "$rc:attribute_parameter_value.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:attribute_parameter_value.descr"
+        },
+        "output_layer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_layer.title",
+            "datatype": {
+                "type": "GPNALayer"
+            }
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

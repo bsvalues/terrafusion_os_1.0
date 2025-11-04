@@ -1,0 +1,18 @@
+{
+    "map": {
+        "clear_value.descr": "<xdoc><p>Specifies whether the default value for either the field or the subtype will be cleared. The <span class=\"esri_uicontrol\">Default Value</span> parameter must be empty to clear the default value of the field. To clear the default value for the subtype, leave the <span class=\"esri_uicontrol\">Default Value</span> parameter empty and specify the subtype to be cleared.</p><ul><li>Checked—The default value will be cleared (set to null). The default value parameter must be empty.</li><li>Unchecked—The default value will not be cleared. This is the default.</li></ul></xdoc>",
+        "clear_value.title": "Clear Value",
+        "default_value.descr": "The default value to be added to each new table or feature class. The value entered must match the data type of the field. If the field chosen has a coded value domain assigned to it, the values from the coded domain will be included in the parameter value list..",
+        "default_value.title": "Default Value",
+        "description": "Creates a default value for a specified field.  When a new row is added to the table or feature class, the specified field will be set to this default value.",
+        "field_name.descr": "The field to which the default value will be added each time a new row is added to the table or feature class.",
+        "field_name.title": "Field Name",
+        "in_table.descr": "The input table or feature class that will have a default value added to one of its fields.",
+        "in_table.title": "Input Table",
+        "out_table.title": "Updated Input Table",
+        "subtype_code.descr": "The subtypes that can participate in the default value.",
+        "subtype_code.title": "Subtype",
+        "summary": "Creates a default value for a specified field. When a new row is added to the table or feature class, the specified field will be set to this default value.",
+        "title": "Assign Default To Field"
+    }
+}

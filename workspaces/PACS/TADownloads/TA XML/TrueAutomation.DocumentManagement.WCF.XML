@@ -1,0 +1,406 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.DocumentManagement.WCF</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.DocumentManagement.WCF.DocumentManagementService">
+            <summary>
+            This service is used to manage documents - Create, Update, Find and Delete -
+            in an abstracted storage.
+            </summary> 
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.WCF.IDocumentManagementService">
+            <summary>
+            This service is used to manage documents - Create, Update, Find and Delete -
+            in an abstracted storage.
+            </summary> 
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.IDocumentManagementService.CreateSecurityDescriptor(TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO)">
+            <summary>
+            Creates a SecurityDescriptor
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to create.</param>
+            <returns>the created SecurityDescriptor DTO</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.IDocumentManagementService.UpdateSecurityDescriptor(TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO)">
+            <summary>
+            Updates an existing user record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to update.</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.IDocumentManagementService.DeleteSecurityDescriptorById(System.Guid)">
+            <summary>
+            Deletes an existing user record from the id.
+            </summary>
+            <param name="id">The id containing the
+            parameters for the user to delete.</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.IDocumentManagementService.DeleteSecurityDescriptor(TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO)">
+            <summary>
+            Deletes an existing user record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to delete.</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.IDocumentManagementService.GetSecurityDescriptors">
+            <summary>
+            Returns a list of all users in the database.
+            </summary>
+            <returns>A list containing a data transfer object for each
+            user in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.IDocumentManagementService.GetSecurityDescriptor(System.Guid)">
+            <summary>
+            Returns the user with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified user,
+            or null if no such user was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.IDocumentManagementService.CheckServiceAvailable">
+            <summary>
+            If this functions returns, then the service is available.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.IDocumentManagementService.PutFile(TrueAutomation.DocumentManagement.DTOs.DocumentDTO)">
+            <summary>
+            Saves the Document (if new), or a specific version of the Document.
+            Returns the saved DocumentDTO with Metadata, Thumbnail and 
+            Annotations info for the latest/specific version of the document.
+            </summary>
+            <param name="doc">Document DTO</param>
+            <returns>A data transfer object for the specified Document,
+            or null if no such Document was saved.</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.IDocumentManagementService.GetFile(TrueAutomation.DocumentManagement.DTOs.DocumentDTO)">
+            <summary>
+            Returns a DocumentDTO with only Metadata and Thumbnail info
+            for all versions of the document for the given Document Guid.
+            </summary>
+            <param name="doc">Document DTO</param>
+            <returns>A data transfer object for the specified Document,
+            or null if no such Document was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.IDocumentManagementService.FindFile(TrueAutomation.Core.DTO.CriteriaDTO)">
+            <summary>
+            Returns a list of files / documents based on the lookup criteria information
+            </summary>
+            <param name="criteriaDTO">Search Criteria</param>
+            <returns>A list containing a data transfer object for each matching document in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.IDocumentManagementService.DeleteFile(TrueAutomation.DocumentManagement.DTOs.DocumentDTO)">
+            <summary>
+            Deletes an existing Document / Version record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the Document/Version to delete.</param>`
+            <exception cref="T:System.ServiceModel.FaultException`1">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.CreateSecurityDescriptor(TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO)">
+            <summary>
+            Creates a Security Descriptor record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the Security Descriptor to create.</param>
+            <returns>the newly created SecurityDescriptorDTO</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.UpdateSecurityDescriptor(TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO)">
+            <summary>
+            Updates an existing Security Descriptor record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the Security Descriptor to update.</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.DeleteSecurityDescriptorById(System.Guid)">
+            <summary>
+            Deletes an existing Security Descriptor record from the id.
+            </summary>
+            <param name="id">The id containing the
+            parameters for the Security Descriptor to delete.</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.DeleteSecurityDescriptor(TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO)">
+            <summary>
+            Deletes an existing Security Descriptor record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the Security Descriptor to delete.</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.GetSecurityDescriptors">
+            <summary>
+            Returns a list of all Security Descriptors in the database.
+            </summary>
+            <returns>A list containing a data transfer object for each
+            Security Descriptor in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.GetSecurityDescriptor(System.Guid)">
+            <summary>
+            Returns the Security Descriptor with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified securityDescriptor,
+            or null if no such securityDescriptor was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.GetSecurityDescriptorById(System.Guid)">
+            <summary>
+            Helper Method to return a domain object of a Security Descriptor by it's id
+            </summary>
+            <param name="id">guid value of the id of the Security Descriptor</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.GetAllSecurityDescriptors">
+            <summary>
+            Helper method to get a list of all SecurityDescriptors values
+            </summary>	
+            <returns>returns a list of all SecurityDescriptors</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.CreateSecurityDescriptorFromDTO(TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO)">
+            <summary>
+            Helper method to create a Security Descriptor domain object from a Security Descriptor DTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the Security Descriptor</param>
+            <returns>SecurityDescriptor</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.CreateUpdateSecurityDescriptorEntryFromDTO(TrueAutomation.AccessControl.DTOs.SecurityDescriptorEntryDTO)">
+            <summary>
+            Method to create or update a SecurityDescriptorEntry from the DTO
+            </summary>
+            <param name="dto">SecurityDescriptorEntryDTO</param>
+            <returns>SecurityDescriptorEntry</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.VerifyACLEntryDeletesInIncomingSecurityDescriptorDTO(TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO,TrueAutomation.AccessControl.Domain.SecurityDescriptor)">
+            <summary>
+            Verify if any users have been deleted from the existing Security Descriptor and 
+            delete their corresponding ACL Entries from all the Security Descriptor Entries
+            </summary>
+            <param name="incomingDTO">Updated Incoming SecurityDescriptorDTO</param>
+            <param name="secDesc">Existing SecurityDescriptor</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.DeleteACLEntriesForUser(TrueAutomation.AccessControl.Domain.SecurityDescriptorEntry,System.Collections.Generic.List{System.Guid})">
+            <summary>
+            Method to delete ACL Entries corresponding to a deleted user in a security descriptor
+            </summary>
+            <param name="sdEntry">SecurityDescriptorEntry</param>
+            <param name="userIds">Guids of deleted users</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.GetSecurityDescriptorEntryById(System.Guid)">
+            <summary>
+            Helper Method to return a domain object of a SecurityDescriptorEntry by it's id
+            </summary>
+            <param name="id">guid value of the id of the SecurityDescriptorEntry</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.GetACLById(System.Guid)">
+            <summary>
+            Helper Method to return a domain object of an acl by it's id
+            </summary>
+            <param name="id">guid value of the id of the ACL</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.CreateACLFromDTO(TrueAutomation.AccessControl.DTOs.ACLDTO)">
+            <summary>
+            Method to create ACL from supplied DTO
+            </summary>
+            <param name="dto">ACLDTO</param>
+            <returns>ACL</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.GetACLEntryById(System.Guid)">
+            <summary>
+            Helper Method to return a domain object of a ACL Entry by it's id
+            </summary>
+            <param name="id">guid value of the id of the ACL Entry</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.CreateACLEntryFromDTO(TrueAutomation.AccessControl.DTOs.ACLEntryDTO)">
+            <summary>
+            Method to create a new ACL Entry from the supplied DTO
+            </summary>
+            <param name="dto">ACLEntryDTO</param>
+            <returns>ACLEntry</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.UpdateACLFromDTO(TrueAutomation.AccessControl.DTOs.ACLDTO)">
+            <summary>
+            Helper method to update an ACL domain object from an ACL DTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the ACL</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.UpdateACLEntryFromDTO(TrueAutomation.AccessControl.DTOs.ACLEntryDTO)">
+            <summary>
+            Helper method to update a ACL Entry domain object from a ACL Entry DTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the ACLEntry</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.GetPermissionById(System.Guid)">
+            <summary>
+            Helper Method to return a domain object of a access type by it's id
+            </summary>
+            <param name="id">string value of the id of the access type</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.CreatePermissionFromDTO(TrueAutomation.AccessControl.DTOs.PermissionDTO)">
+            <summary>
+            Helper method to create a access type domain object from a access type DTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the access type</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.UpdateSecurityDescriptorFromDTO(TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO)">
+            <summary>
+            Helper method to update a Security Descriptor domain object from a Security Descriptor DTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the SecurityDescriptor</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.DeleteSecurityDescriptorFromDTO(TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO)">
+            <summary>
+            Helper method to delete a Security Descriptor based on it's dto
+            </summary>
+            <param name="dto">A DTO of the Security Descriptor</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.DeleteACLEntryFromDTO(TrueAutomation.AccessControl.DTOs.ACLEntryDTO)">
+            <summary>
+            Helper method to delete a ACL Entry based on it's dto
+            </summary>
+            <param name="dto">A DTO of the ACL Entry</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.CheckServiceAvailable">
+            <summary>
+            If this functions returns, then the service is available.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.GetFile(TrueAutomation.DocumentManagement.DTOs.DocumentDTO)">
+            <summary>
+            Returns a DocumentDTO with only Metadata and Thumbnail info
+            for all versions of the document for the given Document Guid.
+            </summary>
+            <param name="doc">Document DTO</param>
+            <returns>A data transfer object for the specified Document,
+            or null if no such Document was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.FindFile(TrueAutomation.Core.DTO.CriteriaDTO)">
+            <summary>
+            Returns a list of files / documents based on the lookup criteria information
+            </summary>
+            <param name="criteriaDTO">Search Criteria</param>
+            <returns>A list containing a data transfer object for each matching document in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.DeleteFile(TrueAutomation.DocumentManagement.DTOs.DocumentDTO)">
+            <summary>
+            Deletes an existing Document / Version record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the Document/Version to delete.</param>`
+            <exception cref="T:System.ServiceModel.FaultException`1">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.PutFile(TrueAutomation.DocumentManagement.DTOs.DocumentDTO)">
+            <summary>
+            Saves the Document (if new), or a specific version of the Document.
+            Returns the saved DocumentDTO with Metadata, Thumbnail and 
+            Annotations info for the latest/specific version of the document.
+            </summary>
+            <param name="modifiedDoc">Document DTO</param>
+            <returns>A data transfer object for the specified Document,
+            or null if no such Document was saved.</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.DeleteDocumentThumbnail(System.Guid)">
+            <summary>
+            Removes the document thumbnail for the given Id from the database.
+            </summary>
+            <param name="thumbnailId"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.DeleteDocumentVersion(System.Int32)">
+            <summary>
+            Removes the document file, thumbnail and Annotations
+            for a given version of a document from the database
+            </summary>
+            <param name="versionId"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.HasOwnerPermission(TrueAutomation.DocumentManagement.DTOs.DocumentDTO)">
+            <summary>
+            Determine if Document's Security Descriptor has the 
+            Current Party with OWNER 'Allow' permission
+            </summary>
+            <returns>true if there is OWNER permission</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.GetDocumentVersionCriteria(System.Guid,System.Int32)">
+            <summary>
+            Builds a CriteriaDTO for the given DocumentID and Version Number
+            </summary>
+            <param name="documentId">Document DTO Id for which the Version is retrieved</param>
+            <param name="versionNumber">Version Number of the document</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.GetDocVersionByVersionNumber(System.Guid,System.Int32)">
+            <summary>
+            Retrieves the Document version entity based on the Version Number and Document Id
+            </summary>
+            <param name="documentId">Document DTO Id for which the Version is retrieved</param>
+            <param name="versionNumber">Version Number of the document</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.BuildVersion(TrueAutomation.DocumentManagement.Domain.Document,TrueAutomation.DocumentManagement.DTOs.DocumentVersionDTO)">
+            <summary>
+            Build a Document Version with the supplied parameters
+            </summary>
+            <param name="document">The Document into which the version is to be saved</param>
+            <param name="latestVersionDTO"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.GetDomainAnnotations(System.Collections.Generic.List{TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO},TrueAutomation.DocumentManagement.Domain.DocumentVersion)">
+            <summary>
+            Converts AnnotationDTOs list into its corresponding domain object list
+            </summary>
+            <param name="annotationDTOs">AnnotationDTOs list</param>
+            <param name="version">Document Version to which the annotations belong</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.CompareHash(System.Byte[],System.Byte[])">
+            <summary>
+            Compares the HashValue of the file version present in the DB
+            with the computed hash of the incoming file version contents.
+            </summary>
+            <param name="dbHashValue">Hash Value</param>
+            <param name="incomingHashValue">Byte Contents of the file</param>
+            <returns>True if contents are same</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.DeleteDocumentFile(System.Guid)">
+            <summary>
+            Removes all document chunks for a given version from the database
+            </summary>
+            <param name="documentFileId"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.DeleteDocumentFromDTO(TrueAutomation.DocumentManagement.DTOs.DocumentDTO)">
+            <summary>
+            Helper method to delete a Document based on it's dto
+            </summary>
+            <param name="dto">A DTO of the Document</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.DocumentManagementService.GetDocumentById(System.Guid)">
+            <summary>
+            Helper Method to return a domain object of a Document by it's id
+            </summary>
+            <param name="id">guid value of the id of the Document</param>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.WCF.Windsor.Installer">
+            <summary>
+            Class to register all our service-related types
+            with the supplied Windsor IoC container.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.WCF.Windsor.Installer.Install(Castle.Windsor.IWindsorContainer,Castle.MicroKernel.SubSystems.Configuration.IConfigurationStore)">
+            <summary>
+            Registers all our service-related types with the
+            supplied Windsor IoC container.
+            </summary>
+            <param name="container">The container into which to register
+            the service types.</param>
+            <param name="store">Configuration store parameter -- unused in
+            this implementation.</param>
+        </member>
+    </members>
+</doc>

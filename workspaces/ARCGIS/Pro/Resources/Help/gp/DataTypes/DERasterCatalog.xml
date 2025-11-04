@@ -1,0 +1,5 @@
+<DataType Name="DERasterCatalog">
+  <DisplayName>Raster Catalog</DisplayName>
+  <Description>A collection of raster datasets defined in a table. Each table record defines an individual raster dataset in the catalog.</Description>
+</DataType>
+

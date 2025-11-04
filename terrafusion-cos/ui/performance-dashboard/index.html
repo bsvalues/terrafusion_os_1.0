@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TerraFusion cOS - Championship Performance Monitor</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <!-- Header -->
+      <header class="dashboard-header">
+        <div class="header-content">
+          <div class="header-left">
+            <h1>🏆 TerraFusion cOS</h1>
+            <p class="subtitle">Championship Performance Monitor</p>
+          </div>
+          <div class="header-right">
+            <div class="system-status">
+              <div id="systemStatus" class="status-indicator championship">
+                <span class="status-dot"></span>
+                <span class="status-text">CHAMPIONSHIP</span>
+              </div>
+              <div class="last-updated">Last Updated: <span id="lastUpdated">--:--:--</span></div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Primary Metrics Grid -->
+      <section class="metrics-grid">
+        <!-- P95 Latency Card -->
+        <div class="metric-card championship-card">
+          <div class="metric-header">
+            <h3>⚡ P95 Latency</h3>
+            <span class="metric-target">Target: &lt;10ms</span>
+          </div>
+          <div class="metric-value-container">
+            <div class="metric-value">
+              <span id="p95Latency" class="value-number">0.00</span>
+              <span class="value-unit">ms</span>
+            </div>
+            <div id="p95Status" class="metric-status championship">
+              <span class="status-icon">✅</span>
+              <span class="status-label">Championship</span>
+            </div>
+          </div>
+          <div class="metric-chart">
+            <canvas id="p95Chart"></canvas>
+          </div>
+        </div>
+
+        <!-- Uptime Card -->
+        <div class="metric-card championship-card">
+          <div class="metric-header">
+            <h3>🛡️ System Uptime</h3>
+            <span class="metric-target">Target: 99.999%</span>
+          </div>
+          <div class="metric-value-container">
+            <div class="metric-value">
+              <span id="uptimeValue" class="value-number">100.000</span>
+              <span class="value-unit">%</span>
+            </div>
+            <div id="uptimeStatus" class="metric-status championship">
+              <span class="status-icon">✅</span>
+              <span class="status-label">Championship</span>
+            </div>
+          </div>
+          <div class="uptime-bar-container">
+            <div class="uptime-bar">
+              <div id="uptimeBarFill" class="uptime-bar-fill" style="width: 100%"></div>
+            </div>
+            <div class="uptime-details">
+              <span>Operational: <strong id="uptimeHours">0h</strong></span>
+              <span>Downtime: <strong id="downtimeMinutes">0m</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error Rate Card -->
+        <div class="metric-card">
+          <div class="metric-header">
+            <h3>🎯 Error Rate</h3>
+            <span class="metric-target">Target: &lt;0.1%</span>
+          </div>
+          <div class="metric-value-container">
+            <div class="metric-value">
+              <span id="errorRate" class="value-number">0.000</span>
+              <span class="value-unit">%</span>
+            </div>
+            <div id="errorStatus" class="metric-status excellent">
+              <span class="status-icon">✅</span>
+              <span class="status-label">Excellent</span>
+            </div>
+          </div>
+          <div class="metric-detail">
+            <span>Success: <strong id="successCount">0</strong></span>
+            <span>Failures: <strong id="failureCount">0</strong></span>
+          </div>
+        </div>
+
+        <!-- Response Times Card -->
+        <div class="metric-card">
+          <div class="metric-header">
+            <h3>📊 Response Times</h3>
+            <span class="metric-target">Multi-percentile tracking</span>
+          </div>
+          <div class="response-percentiles">
+            <div class="percentile-item">
+              <span class="percentile-label">P50</span>
+              <span id="p50Latency" class="percentile-value">0.00ms</span>
+            </div>
+            <div class="percentile-item">
+              <span class="percentile-label">P95</span>
+              <span id="p95Latency2" class="percentile-value">0.00ms</span>
+            </div>
+            <div class="percentile-item">
+              <span class="percentile-label">P99</span>
+              <span id="p99Latency" class="percentile-value">0.00ms</span>
+            </div>
+            <div class="percentile-item">
+              <span class="percentile-label">MAX</span>
+              <span id="maxLatency" class="percentile-value">0.00ms</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Service Health Grid -->
+      <section class="services-section">
+        <h2 class="section-title">🔧 Service Health & Operations</h2>
+        <div id="servicesGrid" class="services-grid">
+          <!-- Service cards will be dynamically generated -->
+        </div>
+      </section>
+
+      <!-- Alerts Section -->
+      <section class="alerts-section">
+        <div class="section-header">
+          <h2 class="section-title">🚨 Active Alerts</h2>
+          <div class="alerts-filter">
+            <button class="filter-btn active" data-severity="all">All</button>
+            <button class="filter-btn" data-severity="critical">Critical</button>
+            <button class="filter-btn" data-severity="warning">Warning</button>
+            <button class="filter-btn" data-severity="info">Info</button>
+          </div>
+        </div>
+        <div id="alertsContainer" class="alerts-container">
+          <div class="no-alerts">
+            <span class="success-icon">✅</span>
+            <p>No active alerts - System running optimally!</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Real-time Activity Feed -->
+      <section class="activity-section">
+        <h2 class="section-title">📡 Real-time Activity Feed</h2>
+        <div id="activityFeed" class="activity-feed">
+          <!-- Activity items will be dynamically added -->
+        </div>
+      </section>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="dashboard.js"></script>
+  </body>
+</html>

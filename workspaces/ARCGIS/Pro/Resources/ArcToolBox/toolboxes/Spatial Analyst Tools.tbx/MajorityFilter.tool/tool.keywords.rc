@@ -1,0 +1,15 @@
+{
+    "set": [
+        "clean",
+        "contiguous",
+        "filter",
+        "generalize",
+        "heterogeneous",
+        "image processing",
+        "kernel",
+        "salt and pepper",
+        "simplify",
+        "smooth",
+        "speckle"
+    ]
+}

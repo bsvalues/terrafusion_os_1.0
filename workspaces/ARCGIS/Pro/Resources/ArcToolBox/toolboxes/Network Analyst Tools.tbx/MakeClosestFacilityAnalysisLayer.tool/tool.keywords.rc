@@ -1,0 +1,11 @@
+{
+    "set": [
+        "closest facility",
+        "navigation",
+        "near",
+        "nearest",
+        "network",
+        "properties",
+        "proximity"
+    ]
+}

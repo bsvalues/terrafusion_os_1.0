@@ -1,0 +1,298 @@
+{
+    "type": "FunctionTool",
+    "guid": "{ab9214fc-9802-4195-b642-8e2c2809aeeb}",
+    "displayname": "$rc:title",
+    "helpcontent": "66130009",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "58",
+        "86"
+    ],
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_multidimensional_raster": {
+            "display_order": "0",
+            "displayname": "$rc:in_multidimensional_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "DEMosaicDataset"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "DEFile"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPBrowseFiltersDomain",
+                        "filters": [
+                            "esri_browseDialogFilters_netcdf",
+                            "  esri_browseDialogFilters_GRIB_files",
+                            "esri_browseDialogFilters_rasters",
+                            "esri_browseDialogFilters_acsFiles"
+                        ]
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "nc",
+                            "nc4",
+                            "zgroup",
+                            "zarray",
+                            "zarr"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:in_multidimensional_raster.descr"
+        },
+        "out_multidimensional_raster": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_multidimensional_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_multidimensional_raster.descr"
+        },
+        "processing_band": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:processing_band.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:processing_band.descr"
+        },
+        "snapping_date": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:snapping_date.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "06-30",
+            "description": "$rc:snapping_date.descr"
+        },
+        "max_num_segments": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:max_num_segments.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "1"
+                }
+            },
+            "value": "5",
+            "description": "$rc:max_num_segments.descr"
+        },
+        "vertex_count_overshoot": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:vertex_count_overshoot.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "1"
+                }
+            },
+            "value": "2",
+            "description": "$rc:vertex_count_overshoot.descr"
+        },
+        "spike_threshold": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:spike_threshold.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0.9",
+            "description": "$rc:spike_threshold.descr"
+        },
+        "recovery_threshold": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:recovery_threshold.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0.25",
+            "description": "$rc:recovery_threshold.descr"
+        },
+        "prevent_one_year_recovery": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:prevent_one_year_recovery.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "PREVENT_ONE_YEAR_RECOVERY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "ALLOW_ONE_YEAR_RECOVERY"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:prevent_one_year_recovery.descr"
+        },
+        "recovery_trend": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:recovery_trend.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "INCREASING_TREND"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DECREASING_TREND"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:recovery_trend.descr"
+        },
+        "min_num_observations": {
+            "type": "optional",
+            "display_order": "11",
+            "displayname": "$rc:min_num_observations.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "2"
+                }
+            },
+            "value": "6",
+            "category": "$rc:params.category1",
+            "description": "$rc:min_num_observations.descr"
+        },
+        "best_model_proportion": {
+            "type": "optional",
+            "display_order": "12",
+            "displayname": "$rc:best_model_proportion.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "1.25",
+            "description": "$rc:best_model_proportion.descr"
+        },
+        "pvalue_threshold": {
+            "type": "optional",
+            "display_order": "13",
+            "displayname": "$rc:pvalue_threshold.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0.01",
+            "description": "$rc:pvalue_threshold.descr"
+        },
+        "output_other_bands": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:output_other_bands.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "INCLUDE_OTHER_BANDS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "EXCLUDE_OTHER_BANDS"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:output_other_bands.descr"
+        }
+    },
+    "environments": [
+        "cellSize",
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "nodata",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "pyramid",
+        "rasterStatistics",
+        "resamplingMethod",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

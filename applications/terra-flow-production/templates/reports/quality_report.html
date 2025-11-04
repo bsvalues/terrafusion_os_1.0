@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Benton County TerraFlow - Data Quality Report</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      color: #333;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .header img {
+      max-width: 150px;
+      margin-bottom: 10px;
+    }
+    h1 {
+      color: #2c3e50;
+      margin: 0;
+      font-size: 24px;
+    }
+    h2 {
+      color: #3498db;
+      font-size: 18px;
+      margin-top: 25px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 5px;
+    }
+    .summary-box {
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 15px;
+      margin: 15px 0;
+    }
+    .score {
+      font-size: 36px;
+      font-weight: bold;
+      text-align: center;
+      margin: 10px 0;
+    }
+    .score.high {
+      color: #27ae60;
+    }
+    .score.medium {
+      color: #f39c12;
+    }
+    .score.low {
+      color: #e74c3c;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .severity-critical {
+      color: #c0392b;
+      font-weight: bold;
+    }
+    .severity-high {
+      color: #e74c3c;
+    }
+    .severity-medium {
+      color: #f39c12;
+    }
+    .severity-low {
+      color: #27ae60;
+    }
+    .footer {
+      margin-top: 30px;
+      font-size: 12px;
+      text-align: center;
+      color: #7f8c8d;
+      border-top: 1px solid #eee;
+      padding-top: 10px;
+    }
+    .chart-container {
+      width: 100%;
+      height: 300px;
+      margin: 20px 0;
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+    .info-box {
+      flex: 1;
+      margin: 0 10px;
+      padding: 10px;
+      background-color: #f0f7fa;
+      border-radius: 5px;
+      text-align: center;
+    }
+    .info-box h3 {
+      margin: 0 0 5px 0;
+      font-size: 14px;
+      color: #2980b9;
+    }
+    .info-box p {
+      margin: 0;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .trend-indicator {
+      display: inline-block;
+      margin-left: 5px;
+    }
+    .trend-up {
+      color: #27ae60;
+    }
+    .trend-down {
+      color: #e74c3c;
+    }
+    .trend-flat {
+      color: #7f8c8d;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Benton County TerraFlow</h1>
+    <h2>Data Quality Assessment Report</h2>
+    <p><small>TerraFusion Platform</small></p>
+    <p>Generated on {{ report_date }}</p>
+  </div>
+  
+  <div class="summary-box">
+    <h2>Quality Score Summary</h2>
+    <div class="score {% if summary.overall_score >= 90 %}high{% elif summary.overall_score >= 75 %}medium{% else %}low{% endif %}">
+      {{ "%.1f"|format(summary.overall_score) }}%
+    </div>
+    <div class="info-row">
+      <div class="info-box">
+        <h3>Critical Issues</h3>
+        <p>{{ summary.critical_issues }}
+          {% if summary.critical_trend < 0 %}
+          <span class="trend-indicator trend-down">↓</span>
+          {% elif summary.critical_trend > 0 %}
+          <span class="trend-indicator trend-up">↑</span>
+          {% else %}
+          <span class="trend-indicator trend-flat">→</span>
+          {% endif %}
+        </p>
+      </div>
+      <div class="info-box">
+        <h3>High Issues</h3>
+        <p>{{ summary.high_issues }}
+          {% if summary.high_trend < 0 %}
+          <span class="trend-indicator trend-down">↓</span>
+          {% elif summary.high_trend > 0 %}
+          <span class="trend-indicator trend-up">↑</span>
+          {% else %}
+          <span class="trend-indicator trend-flat">→</span>
+          {% endif %}
+        </p>
+      </div>
+      <div class="info-box">
+        <h3>Medium Issues</h3>
+        <p>{{ summary.medium_issues }}
+          {% if summary.medium_trend < 0 %}
+          <span class="trend-indicator trend-down">↓</span>
+          {% elif summary.medium_trend > 0 %}
+          <span class="trend-indicator trend-up">↑</span>
+          {% else %}
+          <span class="trend-indicator trend-flat">→</span>
+          {% endif %}
+        </p>
+      </div>
+      <div class="info-box">
+        <h3>Low Issues</h3>
+        <p>{{ summary.low_issues }}
+          {% if summary.low_trend < 0 %}
+          <span class="trend-indicator trend-down">↓</span>
+          {% elif summary.low_trend > 0 %}
+          <span class="trend-indicator trend-up">↑</span>
+          {% else %}
+          <span class="trend-indicator trend-flat">→</span>
+          {% endif %}
+        </p>
+      </div>
+    </div>
+  </div>
+  
+  {% if options.include_anomalies %}
+  <h2>Anomaly Summary</h2>
+  {% if anomaly_summary|length > 0 %}
+  <table>
+    <thead>
+      <tr>
+        <th>Table</th>
+        <th>Anomalies</th>
+        <th>Most Common Type</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for anomaly in anomaly_summary %}
+      <tr>
+        <td>{{ anomaly.table_name }}</td>
+        <td>{{ anomaly.count }}</td>
+        <td>{{ anomaly.most_common_type }}</td>
+        <td>{{ anomaly.status }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>No anomalies found in the selected time period.</p>
+  {% endif %}
+  
+  <h2>Recent Anomalies</h2>
+  {% if recent_anomalies|length > 0 %}
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Table</th>
+        <th>Field</th>
+        <th>Type</th>
+        <th>Severity</th>
+        <th>Detected</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for anomaly in recent_anomalies %}
+      <tr>
+        <td>{{ anomaly.id }}</td>
+        <td>{{ anomaly.table_name }}</td>
+        <td>{{ anomaly.field_name }}</td>
+        <td>{{ anomaly.anomaly_type }}</td>
+        <td class="severity-{{ anomaly.severity }}">{{ anomaly.severity }}</td>
+        <td>{{ anomaly.detected_at }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>No recent anomalies found in the selected time period.</p>
+  {% endif %}
+  {% endif %}
+  
+  <h2>Data Quality Issues by Table</h2>
+  {% if table_metrics|length > 0 %}
+  <table>
+    <thead>
+      <tr>
+        <th>Table</th>
+        <th>Completeness</th>
+        <th>Accuracy</th>
+        <th>Consistency</th>
+        <th>Overall</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for table in table_metrics %}
+      <tr>
+        <td>{{ table.name }}</td>
+        <td>{{ "%.1f"|format(table.completeness) }}%</td>
+        <td>{{ "%.1f"|format(table.accuracy) }}%</td>
+        <td>{{ "%.1f"|format(table.consistency) }}%</td>
+        <td>{{ "%.1f"|format(table.overall) }}%</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>No table metrics available for the selected time period.</p>
+  {% endif %}
+  
+  {% if options.include_recommendations %}
+  <h2>Recommendation Summary</h2>
+  {% if recommendations|length > 0 %}
+  <ul>
+    {% for recommendation in recommendations %}
+    <li>{{ recommendation }}</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No recommendations available for the selected time period.</p>
+  {% endif %}
+  {% endif %}
+  
+  <div class="footer">
+    <p>This report was automatically generated by the TerraFlow Data Quality Agent.</p>
+    <p>TerraFusion Platform</p>
+    <p>Report ID: {{ report_id }} | Version: {{ version }}</p>
+  </div>
+</body>
+</html>

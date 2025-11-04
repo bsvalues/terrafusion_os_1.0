@@ -1,0 +1,136 @@
+## Kibana Helm chart values for TerraFusionPro
+
+# Elasticsearch connection
+elasticsearchHosts: "http://elasticsearch-master:9200"
+
+# Kibana replica count for availability
+replicas: 2
+
+# Resource limits
+resources:
+  requests:
+    cpu: "250m"
+    memory: "512Mi"
+  limits:
+    cpu: "500m"
+    memory: "1Gi"
+
+# Security settings
+extraEnvs:
+  - name: "ELASTICSEARCH_USERNAME"
+    value: "kibana"
+  - name: "ELASTICSEARCH_PASSWORD"
+    valueFrom:
+      secretKeyRef:
+        name: kibana-credentials
+        key: password
+  - name: "XPACK_SECURITY_ENABLED"
+    value: "true"
+  - name: "XPACK_REPORTING_ENABLED"
+    value: "true"
+  - name: "XPACK_MONITORING_ENABLED"
+    value: "true"
+
+# Default Kibana configuration
+kibanaConfig:
+  kibana.yml: |
+    server.name: kibana
+    server.host: "0.0.0.0"
+    elasticsearch:
+      hosts: [ "http://elasticsearch-master:9200" ]
+      username: ${ELASTICSEARCH_USERNAME}
+      password: ${ELASTICSEARCH_PASSWORD}
+    xpack.monitoring.ui.container.elasticsearch.enabled: true
+    xpack.reporting.capture.browser.chromium.disableSandbox: true
+    xpack.security.enabled: true
+    xpack.spaces.enabled: true
+    
+# Health check settings
+healthCheckPath: "/app/kibana"
+livenessProbe:
+  initialDelaySeconds: 60
+  periodSeconds: 30
+readinessProbe:
+  initialDelaySeconds: 60
+  periodSeconds: 30
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 5601
+  
+# Ingress configuration
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - host: kibana.terrafusionpro.com
+      paths:
+        - path: /
+  tls:
+    - secretName: kibana-tls
+      hosts:
+        - kibana.terrafusionpro.com
+
+# Pod security context
+podSecurityContext:
+  fsGroup: 1000
+
+# Container security context
+securityContext:
+  capabilities:
+    drop:
+      - ALL
+  runAsNonRoot: true
+  runAsUser: 1000
+
+# Dashboard imports
+dashboardImport:
+  enabled: true
+  timeout: 60
+  xpackauth:
+    enabled: true
+    username: ${ELASTICSEARCH_USERNAME}
+    password: ${ELASTICSEARCH_PASSWORD}
+  dashboards:
+    - id: 'microservices-logs'
+      name: 'TerraFusionPro Microservices Logs'
+      title: 'TerraFusionPro Microservices Logs'
+      links:
+        - title: TerraFusionPro Dashboards
+          url: https://terrafusionpro.internal/dashboards
+    - id: 'kubernetes-logs'
+      name: 'Kubernetes Logs'
+      title: 'Kubernetes Logs'
+      links:
+        - title: TerraFusionPro Monitoring
+          url: https://monitoring.terrafusionpro.com
+    - id: 'api-gateway-logs'
+      name: 'API Gateway Logs'
+      title: 'TerraFusionPro API Gateway Logs'
+    - id: 'database-logs'
+      name: 'Database Logs'
+      title: 'TerraFusionPro Database Logs'
+
+# Lifecycle
+lifecycle:
+  postStart:
+    exec:
+      command:
+        - bash
+        - -c
+        - |
+          #!/bin/bash
+          # Wait for Kibana to be available
+          until curl -s http://localhost:5601; do
+            echo "Waiting for Kibana to be available..."
+            sleep 10
+          done
+          # Create index patterns for logs
+          curl -X POST -H "Content-Type: application/json" -H "kbn-xsrf: true" \
+            "http://localhost:5601/api/saved_objects/index-pattern/terrafusionpro-*" \
+            -u "${ELASTICSEARCH_USERNAME}:${ELASTICSEARCH_PASSWORD}" \
+            -d '{"attributes":{"title":"terrafusionpro-*","timeFieldName":"@timestamp"}}'

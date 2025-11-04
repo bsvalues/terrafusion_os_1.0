@@ -1,0 +1,113 @@
+{
+    "type": "FunctionTool",
+    "guid": "{45b74452-57ba-4be7-a32f-44402f4bf09e}",
+    "displayname": "$rc:title",
+    "helpcontent": "17000011",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "multiref"
+    ],
+    "params": {
+        "in_mosaic_dataset": {
+            "display_order": "0",
+            "displayname": "$rc:in_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPMosaicLayer"
+            },
+            "description": "$rc:in_mosaic_dataset.descr"
+        },
+        "variable_field": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:variable_field.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:variable_field.descr"
+        },
+        "dimension_fields": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:dimension_fields.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:dimension_fields.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:dimension_fields.dt.title2"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:dimension_fields.dt.title3"
+                    }
+                ]
+            },
+            "description": "$rc:dimension_fields.descr"
+        },
+        "variable_desc_units": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:variable_desc_units.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:variable_desc_units.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:variable_desc_units.dt.title2"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:variable_desc_units.dt.title3"
+                    }
+                ]
+            },
+            "description": "$rc:variable_desc_units.descr"
+        },
+        "out_mosaic_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "5",
+            "displayname": "$rc:out_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPMosaicLayer"
+            },
+            "depends": [
+                "in_mosaic_dataset"
+            ]
+        },
+        "delete_multidimensional_info": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:delete_multidimensional_info.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "DELETE_MULTIDIMENSIONAL_INFO"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_DELETE_MULTIDIMENSIONAL_INFO"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:delete_multidimensional_info.descr"
+        }
+    }
+}

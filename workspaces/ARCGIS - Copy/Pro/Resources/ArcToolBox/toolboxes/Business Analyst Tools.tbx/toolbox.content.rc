@@ -1,0 +1,13 @@
+{
+    "map": {
+        "descr": "The Business Analyst toolbox contains sets of tools that perform GIS operations fundamental to market analysis.  With the tools in this toolbox, you can perform demographic reporting, review customer and competitor distributions, identify key trade areas, and visualize data variables.",
+        "title": "Business Analyst Tools",
+        "toolset1.name": "Suitability Analysis",
+        "toolset2.name": "Target Marketing",
+        "toolset3.name": "Trade Areas",
+        "toolset4.name": "Analysis",
+        "toolset5.name": "Statistical Data Collections",
+        "toolset6.name": "Modeling",
+        "toolset7.name": "Reports"
+    }
+}

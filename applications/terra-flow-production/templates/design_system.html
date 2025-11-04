@@ -1,0 +1,1525 @@
+{% extends "base.html" %}
+
+{% block title %}TerraFusion Design System{% endblock %}
+
+{% block styles %}
+<style>
+    .design-system-section {
+        margin-bottom: 4rem;
+        padding-top: 2rem;
+    }
+    
+    .design-system-section h2 {
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid var(--gray-200);
+        padding-bottom: 0.5rem;
+    }
+    
+    .component-demo {
+        background-color: var(--gray-100);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .component-code {
+        background-color: var(--gray-900);
+        color: var(--gray-100);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        font-family: monospace;
+        overflow: auto;
+        max-height: 300px;
+    }
+    
+    .color-swatch {
+        display: inline-block;
+        width: 100px;
+        height: 100px;
+        margin-right: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .color-label {
+        font-size: 0.8rem;
+        margin-top: 0.5rem;
+        display: block;
+    }
+    
+    .typography-demo {
+        margin-bottom: 1.5rem;
+    }
+    
+    .component-controls {
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        background-color: var(--gray-200);
+        border-radius: 0.5rem;
+    }
+    
+    .component-controls button {
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="mb-3">TerraFusion Design System</h1>
+            <p class="lead">
+                A unified design system to ensure consistency and quality across the TerraFusion platform.
+            </p>
+            
+            <nav>
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <button class="nav-link active" id="nav-intro-tab" data-bs-toggle="tab" data-bs-target="#nav-intro" type="button" role="tab" aria-controls="nav-intro" aria-selected="true">Introduction</button>
+                    <button class="nav-link" id="nav-colors-tab" data-bs-toggle="tab" data-bs-target="#nav-colors" type="button" role="tab" aria-controls="nav-colors" aria-selected="false">Colors & Typography</button>
+                    <button class="nav-link" id="nav-components-tab" data-bs-toggle="tab" data-bs-target="#nav-components" type="button" role="tab" aria-controls="nav-components" aria-selected="false">Core Components</button>
+                    <button class="nav-link" id="nav-notifications-tab" data-bs-toggle="tab" data-bs-target="#nav-notifications" type="button" role="tab" aria-controls="nav-notifications" aria-selected="false">Notifications</button>
+                    <button class="nav-link" id="nav-loading-tab" data-bs-toggle="tab" data-bs-target="#nav-loading" type="button" role="tab" aria-controls="nav-loading" aria-selected="false">Loading</button>
+                    <button class="nav-link" id="nav-errors-tab" data-bs-toggle="tab" data-bs-target="#nav-errors" type="button" role="tab" aria-controls="nav-errors" aria-selected="false">Error Handling</button>
+                    <button class="nav-link" id="nav-data-states-tab" data-bs-toggle="tab" data-bs-target="#nav-data-states" type="button" role="tab" aria-controls="nav-data-states" aria-selected="false">Data States</button>
+                    <button class="nav-link" id="nav-form-validation-tab" data-bs-toggle="tab" data-bs-target="#nav-form-validation" type="button" role="tab" aria-controls="nav-form-validation" aria-selected="false">Form Validation</button>
+                </div>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="tab-content" id="nav-tabContent">
+        <!-- Introduction -->
+        <div class="tab-pane fade show active" id="nav-intro" role="tabpanel" aria-labelledby="nav-intro-tab">
+            <div class="design-system-section">
+                <h2>Introduction</h2>
+                <p>
+                    The TerraFusion Design System is a comprehensive set of design standards, components, and best practices 
+                    that ensures a consistent and high-quality user experience across the TerraFusion platform. This system 
+                    is designed to be flexible, accessible, and maintainable, allowing for rapid development without 
+                    compromising on quality.
+                </p>
+                
+                <div class="alert alert-info mb-4">
+                    <h5>Additional Resources:</h5>
+                    <ul class="mb-0">
+                        <li><a href="{{ url_for('form_components_demo') }}" class="alert-link">Form Components Demo</a> - Interactive demo of standardized form components</li>
+                    </ul>
+                </div>
+                
+                <h3 class="mt-4 mb-3">Design Principles</h3>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h4 class="card-title">Clarity</h4>
+                                <p class="card-text">
+                                    Eliminate ambiguity. Enable users to see, understand, and act with confidence.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h4 class="card-title">Efficiency</h4>
+                                <p class="card-text">
+                                    Streamline workflows. Help users complete tasks with minimal effort.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h4 class="card-title">Consistency</h4>
+                                <p class="card-text">
+                                    Create familiarity through standardized components and patterns.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h4 class="card-title">Accessibility</h4>
+                                <p class="card-text">
+                                    Design for all abilities, ensuring everyone can use our products successfully.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 class="mt-4 mb-3">How to Use This System</h3>
+                <p>
+                    This documentation provides comprehensive guidance on using the TerraFusion Design System. Developers 
+                    and designers should refer to this documentation when implementing UI components or designing new 
+                    interfaces. The system includes:
+                </p>
+                <ul>
+                    <li>Visual language (colors, typography, spacing)</li>
+                    <li>Reusable UI components</li>
+                    <li>Interaction patterns</li>
+                    <li>Implementation guidelines</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Colors & Typography -->
+        <div class="tab-pane fade" id="nav-colors" role="tabpanel" aria-labelledby="nav-colors-tab">
+            <div class="design-system-section">
+                <h2>Colors & Typography</h2>
+                
+                <h3 class="mb-3">Color Palette</h3>
+                <p>
+                    Our color system uses a thoughtful palette that communicates our brand identity while ensuring accessibility.
+                </p>
+                
+                <h4 class="mt-4">Primary Colors</h4>
+                <div class="mb-4">
+                    <div class="color-swatch" style="background-color: #0d6efd;">
+                        <span class="color-label text-white">Primary<br>#0d6efd</span>
+                    </div>
+                    <div class="color-swatch" style="background-color: #6610f2;">
+                        <span class="color-label text-white">Purple<br>#6610f2</span>
+                    </div>
+                    <div class="color-swatch" style="background-color: #0dcaf0;">
+                        <span class="color-label">Info<br>#0dcaf0</span>
+                    </div>
+                    <div class="color-swatch" style="background-color: #198754;">
+                        <span class="color-label text-white">Success<br>#198754</span>
+                    </div>
+                    <div class="color-swatch" style="background-color: #ffc107;">
+                        <span class="color-label">Warning<br>#ffc107</span>
+                    </div>
+                    <div class="color-swatch" style="background-color: #dc3545;">
+                        <span class="color-label text-white">Danger<br>#dc3545</span>
+                    </div>
+                </div>
+                
+                <h4 class="mt-4">Neutral Colors</h4>
+                <div class="mb-4">
+                    <div class="color-swatch" style="background-color: #f8f9fa;">
+                        <span class="color-label">Gray-100<br>#f8f9fa</span>
+                    </div>
+                    <div class="color-swatch" style="background-color: #e9ecef;">
+                        <span class="color-label">Gray-200<br>#e9ecef</span>
+                    </div>
+                    <div class="color-swatch" style="background-color: #dee2e6;">
+                        <span class="color-label">Gray-300<br>#dee2e6</span>
+                    </div>
+                    <div class="color-swatch" style="background-color: #adb5bd;">
+                        <span class="color-label">Gray-500<br>#adb5bd</span>
+                    </div>
+                    <div class="color-swatch" style="background-color: #6c757d;">
+                        <span class="color-label text-white">Gray-600<br>#6c757d</span>
+                    </div>
+                    <div class="color-swatch" style="background-color: #343a40;">
+                        <span class="color-label text-white">Gray-800<br>#343a40</span>
+                    </div>
+                    <div class="color-swatch" style="background-color: #212529;">
+                        <span class="color-label text-white">Gray-900<br>#212529</span>
+                    </div>
+                </div>
+                
+                <h3 class="mt-5 mb-3">Typography</h3>
+                <p>
+                    Typography is a fundamental element of our design system, providing clarity and hierarchy.
+                </p>
+                
+                <div class="typography-demo">
+                    <h1>Heading 1 (2.5rem/40px)</h1>
+                    <h2>Heading 2 (2rem/32px)</h2>
+                    <h3>Heading 3 (1.75rem/28px)</h3>
+                    <h4>Heading 4 (1.5rem/24px)</h4>
+                    <h5>Heading 5 (1.25rem/20px)</h5>
+                    <h6>Heading 6 (1rem/16px)</h6>
+                    
+                    <p class="lead mt-4">
+                        Lead paragraph (1.25rem/20px). Used for introductory text that you want to emphasize.
+                    </p>
+                    
+                    <p>
+                        Regular paragraph (1rem/16px). The quick brown fox jumps over the lazy dog. This is the standard 
+                        paragraph style used throughout the application for body copy.
+                    </p>
+                    
+                    <p class="small">
+                        Small text (0.875rem/14px). Used for secondary information, helper text, and notes.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Core Components -->
+        <div class="tab-pane fade" id="nav-components" role="tabpanel" aria-labelledby="nav-components-tab">
+            <div class="design-system-section">
+                <h2>Core Components</h2>
+                <p>
+                    TerraFusion uses a combination of standard Bootstrap components and custom components. 
+                    Here are some of our most commonly used components:
+                </p>
+                
+                <h3 class="mt-4 mb-3">Buttons</h3>
+                <div class="component-demo">
+                    <button type="button" class="btn btn-primary">Primary</button>
+                    <button type="button" class="btn btn-secondary">Secondary</button>
+                    <button type="button" class="btn btn-success">Success</button>
+                    <button type="button" class="btn btn-danger">Danger</button>
+                    <button type="button" class="btn btn-warning">Warning</button>
+                    <button type="button" class="btn btn-info">Info</button>
+                    <button type="button" class="btn btn-light">Light</button>
+                    <button type="button" class="btn btn-dark">Dark</button>
+                    <button type="button" class="btn btn-link">Link</button>
+                </div>
+                
+                <h4 class="mt-3 mb-2">Button Sizes</h4>
+                <div class="component-demo">
+                    <button type="button" class="btn btn-primary btn-lg">Large</button>
+                    <button type="button" class="btn btn-primary">Regular</button>
+                    <button type="button" class="btn btn-primary btn-sm">Small</button>
+                </div>
+                
+                <h4 class="mt-3 mb-2">Button States</h4>
+                <div class="component-demo">
+                    <button type="button" class="btn btn-primary">Normal</button>
+                    <button type="button" class="btn btn-primary active">Active</button>
+                    <button type="button" class="btn btn-primary" disabled>Disabled</button>
+                    <button type="button" class="btn btn-primary btn-loading">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        Loading...
+                    </button>
+                </div>
+                
+                <h3 class="mt-4 mb-3">Forms</h3>
+                <div class="component-demo">
+                    <form>
+                        <div class="mb-3">
+                            <label for="exampleInput1" class="form-label">Text Input</label>
+                            <input type="text" class="form-control" id="exampleInput1" placeholder="Enter text">
+                            <div class="form-text">Helper text provides additional guidance.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="exampleSelect1" class="form-label">Select Menu</label>
+                            <select class="form-select" id="exampleSelect1">
+                                <option selected>Choose an option</option>
+                                <option value="1">Option One</option>
+                                <option value="2">Option Two</option>
+                                <option value="3">Option Three</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="exampleCheck1">
+                                <label class="form-check-label" for="exampleCheck1">Checkbox example</label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                                <label class="form-check-label" for="flexSwitchCheckDefault">Toggle switch</label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="exampleRange" class="form-label">Range Input</label>
+                            <input type="range" class="form-range" id="exampleRange">
+                        </div>
+                    </form>
+                </div>
+                
+                <h3 class="mt-4 mb-3">Cards</h3>
+                <div class="component-demo">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    Simple Card
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">Card Title</h5>
+                                    <p class="card-text">This is a basic card with a header, body, and footer.</p>
+                                </div>
+                                <div class="card-footer text-muted">
+                                    Card Footer
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <img src="https://via.placeholder.com/300x150" class="card-img-top" alt="Placeholder image">
+                                <div class="card-body">
+                                    <h5 class="card-title">Card with Image</h5>
+                                    <p class="card-text">This card includes an image at the top and an action button.</p>
+                                    <button class="btn btn-primary">Action</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title">Information Card</h5>
+                                    <p class="card-text">A simple card with a light background for informational content.</p>
+                                    <ul class="list-group list-group-flush mb-3">
+                                        <li class="list-group-item bg-light">Item One</li>
+                                        <li class="list-group-item bg-light">Item Two</li>
+                                    </ul>
+                                    <a href="#" class="card-link">Card link</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 class="mt-4 mb-3">Alerts</h3>
+                <div class="component-demo">
+                    <div class="alert alert-primary" role="alert">
+                        A primary alert for information that's not critical.
+                    </div>
+                    <div class="alert alert-success" role="alert">
+                        A success alert indicating a positive action.
+                    </div>
+                    <div class="alert alert-warning" role="alert">
+                        A warning alert to highlight something that needs attention.
+                    </div>
+                    <div class="alert alert-danger" role="alert">
+                        A danger alert for critical or error information.
+                    </div>
+                    <div class="alert alert-info" role="alert">
+                        <h4 class="alert-heading">Complex Alert</h4>
+                        <p>This alert includes multiple elements and a dismissible option.</p>
+                        <hr>
+                        <p class="mb-0">Additional information can be added as needed.</p>
+                        <button type="button" class="btn-close float-end" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Notifications -->
+        <div class="tab-pane fade" id="nav-notifications" role="tabpanel" aria-labelledby="nav-notifications-tab">
+            <div class="design-system-section">
+                <h2>Notification System</h2>
+                <p>
+                    The TerraFusion Notification System provides a consistent way to display 
+                    notifications, alerts, and messages to users.
+                </p>
+                
+                <div class="component-controls">
+                    <h4>Try it:</h4>
+                    <button type="button" class="btn btn-info" id="showInfoNotification">
+                        Show Info Notification
+                    </button>
+                    <button type="button" class="btn btn-success" id="showSuccessNotification">
+                        Show Success Notification
+                    </button>
+                    <button type="button" class="btn btn-warning" id="showWarningNotification">
+                        Show Warning Notification
+                    </button>
+                    <button type="button" class="btn btn-danger" id="showErrorNotification">
+                        Show Error Notification
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="showPersistentNotification">
+                        Show Persistent Notification
+                    </button>
+                </div>
+                
+                <h3 class="mt-4 mb-3">Usage</h3>
+                <div class="component-code">
+<pre>// Show a notification
+terraFusionNotifications.info('Information message');
+terraFusionNotifications.success('Success message');
+terraFusionNotifications.warning('Warning message');
+terraFusionNotifications.error('Error message');
+
+// Show a notification with options
+terraFusionNotifications.show({
+  message: 'Custom notification',
+  type: 'info', // 'info', 'success', 'warning', 'error'
+  icon: 'fas fa-info-circle',
+  duration: 5000, // milliseconds
+  closable: true,
+  position: 'top-right', // 'top-right', 'top-left', 'bottom-right', 'bottom-left'
+  animationDuration: 300 // milliseconds
+});</pre>
+                </div>
+                
+                <h3 class="mt-4 mb-3">Common Use Cases</h3>
+                <ul>
+                    <li><strong>Success:</strong> After successful form submission, data saving, or operation completion</li>
+                    <li><strong>Error:</strong> When an operation fails or validation errors occur</li>
+                    <li><strong>Warning:</strong> For potential issues or attention-needed scenarios</li>
+                    <li><strong>Info:</strong> For general information, tips, or updates</li>
+                </ul>
+                
+                <h3 class="mt-4 mb-3">Accessibility Considerations</h3>
+                <ul>
+                    <li>Notifications are announced to screen readers</li>
+                    <li>Color is not the only way to convey the notification type</li>
+                    <li>Notifications can be dismissed with keyboard</li>
+                    <li>Notifications do not interfere with keyboard navigation</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Loading -->
+        <div class="tab-pane fade" id="nav-loading" role="tabpanel" aria-labelledby="nav-loading-tab">
+            <div class="design-system-section">
+                <h2>Loading Indicators</h2>
+                <p>
+                    Loading indicators provide visual feedback when content is being loaded or an operation is in progress.
+                </p>
+                
+                <div class="component-controls">
+                    <h4>Try it:</h4>
+                    <button type="button" class="btn btn-primary" id="showPageLoader">
+                        Show Page Loader (2s)
+                    </button>
+                    <button type="button" class="btn btn-primary" id="showContainerLoader">
+                        Show Container Loader (2s)
+                    </button>
+                    <button type="button" class="btn btn-primary" id="showButtonLoader">
+                        Show Button Loader (2s)
+                    </button>
+                    <button type="button" class="btn btn-primary" id="showSkeletonLoader">
+                        Show Skeleton Loader (2s)
+                    </button>
+                </div>
+                
+                <div class="my-4" id="loaderDemoContainer">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Loader Demo Container</h5>
+                            <p class="card-text">This container will display a loader when the button above is clicked.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="my-4" id="skeletonDemoContainer">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Skeleton Loader Demo</h5>
+                            <p class="card-text">This will display a skeleton loader when the button above is clicked.</p>
+                            <table class="table" id="skeletonTable">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Sample Data</td>
+                                        <td>Active</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Another Entry</td>
+                                        <td>Inactive</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 class="mt-4 mb-3">Usage</h3>
+                <div class="component-code">
+<pre>// Show a page loader
+terraFusionLoaders.showPageLoader();
+
+// Show a container loader
+terraFusionLoaders.showContainerLoader('containerElementId', {
+  message: 'Loading data...',
+  size: 'md', // 'sm', 'md', 'lg'
+  overlay: true,
+  spinner: 'border' // 'border', 'grow'
+});
+
+// Show a button loader
+terraFusionLoaders.showButtonLoader('buttonElementId', {
+  disableButton: true,
+  originalText: 'Click Me',
+  loadingText: 'Loading...'
+});
+
+// Show a skeleton loader
+terraFusionLoaders.showSkeletonLoader('tableElementId', {
+  rows: 5,
+  columns: 3
+});
+
+// Hide loaders
+terraFusionLoaders.hidePageLoader();
+terraFusionLoaders.hideContainerLoader('containerElementId');
+terraFusionLoaders.hideButtonLoader('buttonElementId');
+terraFusionLoaders.hideSkeletonLoader('tableElementId');</pre>
+                </div>
+                
+                <h3 class="mt-4 mb-3">Best Practices</h3>
+                <ul>
+                    <li>Show a loader for any operation that takes more than 300ms</li>
+                    <li>Use skeleton loaders for content-heavy components</li>
+                    <li>Include meaningful loading messages to describe what's happening</li>
+                    <li>Ensure loading indicators are accessible and properly announced to screen readers</li>
+                    <li>Use appropriate loader sizes based on the context</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Error Handling -->
+        <div class="tab-pane fade" id="nav-errors" role="tabpanel" aria-labelledby="nav-errors-tab">
+            <div class="design-system-section">
+                <h2>Error Handling</h2>
+                <p>
+                    The Error Handling System provides a consistent approach to displaying and managing errors across the application.
+                </p>
+                
+                <div class="component-controls">
+                    <h4>Try it:</h4>
+                    <button type="button" class="btn btn-danger" id="showSimpleError">
+                        Show Simple Error
+                    </button>
+                    <button type="button" class="btn btn-danger" id="showDetailedError">
+                        Show Detailed Error
+                    </button>
+                    <button type="button" class="btn btn-danger" id="showValidationError">
+                        Show Validation Error
+                    </button>
+                    <button type="button" class="btn btn-danger" id="showApiError">
+                        Show API Error
+                    </button>
+                    <button type="button" class="btn btn-danger" id="triggerGlobalError">
+                        Trigger Global Error
+                    </button>
+                </div>
+                
+                <div class="my-4 p-3 border rounded" id="errorDemoContainer">
+                    <h5>Error Demo Container</h5>
+                    <p>This container will display various error messages when the buttons above are clicked.</p>
+                </div>
+                
+                <div id="global-error-container"></div>
+                
+                <h3 class="mt-4 mb-3">Usage</h3>
+                <div class="component-code">
+<pre>// Show a simple error
+terraFusionErrors.showError('containerElementId', 'Error message');
+
+// Show a detailed error
+terraFusionErrors.showError('containerElementId', 'Error message', {
+  details: 'Detailed error information or stack trace',
+  source: 'API Endpoint',
+  onRetry: function() {
+    // Code to retry the operation
+  },
+  onDismiss: function() {
+    // Code to run when error is dismissed
+  }
+});
+
+// Show an API error
+terraFusionErrors.showApiError('containerElementId', errorObject);
+
+// Show a validation error
+terraFusionErrors.showValidationError('containerElementId', {
+  field1: 'Error message for field1',
+  field2: 'Error message for field2'
+});
+
+// Show a not found error
+terraFusionErrors.showNotFoundError('containerElementId', 'User', '123');
+
+// Show an authorization error
+terraFusionErrors.showAuthorizationError('containerElementId', 'You do not have permission to perform this action');
+
+// Clear errors
+terraFusionErrors.clearErrors('containerElementId');
+terraFusionErrors.clearAllErrors();</pre>
+                </div>
+                
+                <h3 class="mt-4 mb-3">Error States</h3>
+                <ul>
+                    <li><strong>Simple Errors:</strong> Brief messages with minimal details</li>
+                    <li><strong>Detailed Errors:</strong> Errors with additional context and retry options</li>
+                    <li><strong>Validation Errors:</strong> Field-specific errors from form validation</li>
+                    <li><strong>API Errors:</strong> Errors from backend API calls with response details</li>
+                    <li><strong>Authorization Errors:</strong> Permission or access-related errors</li>
+                    <li><strong>Not Found Errors:</strong> Resource not found errors with resource type and ID</li>
+                </ul>
+                
+                <h3 class="mt-4 mb-3">Best Practices</h3>
+                <ul>
+                    <li>Provide clear, actionable error messages</li>
+                    <li>Include retry options when appropriate</li>
+                    <li>Make error messages accessible to screen readers</li>
+                    <li>For technical errors, show user-friendly messages but provide details for troubleshooting</li>
+                    <li>Group related errors together instead of showing multiple separate errors</li>
+                    <li>Ensure error components don't interfere with the user's ability to recover</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Data States -->
+        <div class="tab-pane fade" id="nav-data-states" role="tabpanel" aria-labelledby="nav-data-states-tab">
+            <div class="design-system-section">
+                <h2>Data State Management</h2>
+                <p>
+                    The Data State Manager provides a consistent approach to managing and displaying data states 
+                    across the application.
+                </p>
+                
+                <div class="component-controls">
+                    <h4>Try it:</h4>
+                    <button type="button" class="btn btn-primary" id="dataStateInitial">
+                        Initial
+                    </button>
+                    <button type="button" class="btn btn-info" id="dataStateLoading">
+                        Loading
+                    </button>
+                    <button type="button" class="btn btn-success" id="dataStateSuccess">
+                        Success
+                    </button>
+                    <button type="button" class="btn btn-danger" id="dataStateError">
+                        Error
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="dataStateEmpty">
+                        Empty
+                    </button>
+                    <button type="button" class="btn btn-warning" id="dataStateModified">
+                        Modified
+                    </button>
+                    <button type="button" class="btn btn-primary" id="dataStateSaving">
+                        Saving
+                    </button>
+                    <button type="button" class="btn btn-dark" id="dataStateOffline">
+                        Offline
+                    </button>
+                </div>
+                
+                <div class="my-4" id="dataStateDemoContainer">
+                    <h5>Data State Demo</h5>
+                    <p>Click the buttons above to see different data states in action.</p>
+                    <table class="table" id="dataStateTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Sample Data</td>
+                                <td>Active</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Another Entry</td>
+                                <td>Inactive</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h3 class="mt-4 mb-3">Usage</h3>
+                <div class="component-code">
+<pre>// Register a container for data state management
+const dataManager = terraFusionDataStates.register('containerElementId', {
+  // Optional custom states and transitions
+  states: {
+    // Custom state definitions
+    customState: {
+      icon: 'fas fa-custom-icon',
+      title: 'Custom State',
+      message: 'Custom state message',
+      showInToolbar: true,
+      actionLabel: 'Action',
+      actionIcon: 'fas fa-action'
+    }
+  },
+  transitions: {
+    // Custom state transitions
+    success: ['customState']
+  },
+  stateDisplayOptions: {
+    showToolbar: true,
+    showPlaceholder: true,
+    toolbarPosition: 'top',
+    toolbarStyle: 'standard',
+    animateTransitions: true,
+    announceStateChanges: true
+  },
+  callbacks: {
+    onStateChange: function(newState, oldState, data) {
+      console.log(`State changed from ${oldState} to ${newState}`);
+    },
+    onAction: function(state, data) {
+      console.log(`Action clicked for state: ${state}`);
+    }
+  }
+});
+
+// Set data state
+dataManager.setState('loading', 'Loading user data...');
+dataManager.setState('success', { name: 'John Doe', id: 123 });
+dataManager.setState('error', 'Failed to load data');
+
+// Get current state and data
+const currentState = dataManager.getState();
+const currentData = dataManager.getData();
+
+// Check if a transition is valid
+if (dataManager.isValidTransition('modified')) {
+  dataManager.setState('modified');
+}
+
+// Reset to initial state
+dataManager.reset();
+
+// Start loading with a promise-like interface
+dataManager.startLoading('Loading data...')
+  .success(responseData)
+  .error(errorObject);</pre>
+                </div>
+                
+                <h3 class="mt-4 mb-3">Data States</h3>
+                <ul>
+                    <li><strong>Initial:</strong> Ready to load data</li>
+                    <li><strong>Loading:</strong> Data is being fetched or processed</li>
+                    <li><strong>Success:</strong> Data loaded successfully</li>
+                    <li><strong>Error:</strong> An error occurred while loading data</li>
+                    <li><strong>Empty:</strong> No data is available</li>
+                    <li><strong>Modified:</strong> Data has been modified but not saved</li>
+                    <li><strong>Saving:</strong> Data is being saved</li>
+                    <li><strong>Syncing:</strong> Data is being synchronized with server</li>
+                    <li><strong>Offline:</strong> Working in offline mode</li>
+                    <li><strong>Stale:</strong> Data may be outdated</li>
+                    <li><strong>Filtered:</strong> Data is being filtered</li>
+                    <li><strong>Partial:</strong> Only partial data is loaded</li>
+                </ul>
+                
+                <h3 class="mt-4 mb-3">Best Practices</h3>
+                <ul>
+                    <li>Always show the current data state to users</li>
+                    <li>Use consistent state transitions throughout the application</li>
+                    <li>Provide clear actions for states that require user intervention</li>
+                    <li>Ensure state changes are accessible and properly announced to screen readers</li>
+                    <li>Use appropriate loading states for long-running operations</li>
+                    <li>Connect data state management to forms and tables for automatic state handling</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Form Validation -->
+        <div class="tab-pane fade" id="nav-form-validation" role="tabpanel" aria-labelledby="nav-form-validation-tab">
+            <div class="design-system-section">
+                <h2>Form Validation</h2>
+                <p>
+                    The Form Validation System provides a consistent approach to form validation across the application.
+                </p>
+                
+                <div class="component-controls">
+                    <h4>Try it:</h4>
+                    <button type="button" class="btn btn-primary" id="showBasicValidation">
+                        Basic Validation Demo
+                    </button>
+                    <button type="button" class="btn btn-primary" id="showComplexValidation">
+                        Complex Validation Demo
+                    </button>
+                    <button type="button" class="btn btn-primary" id="showInlineValidation">
+                        Inline Validation Demo
+                    </button>
+                    <button type="button" class="btn btn-danger" id="resetValidationForm">
+                        Reset Forms
+                    </button>
+                </div>
+                
+                <div class="my-4 p-4 border rounded" id="validationDemoContainer">
+                    <!-- Basic Validation Form -->
+                    <div id="basicValidationForm" style="display: none;">
+                        <h4>Basic Validation Form</h4>
+                        <form id="simpleForm" class="needs-validation" novalidate>
+                            <div class="mb-3">
+                                <label for="simpleUsername" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="simpleUsername" name="username" required>
+                                <div class="invalid-feedback">
+                                    Please enter a username.
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="simpleEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="simpleEmail" name="email" required>
+                                <div class="invalid-feedback">
+                                    Please enter a valid email address.
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="simplePassword" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="simplePassword" name="password" required>
+                                <div class="invalid-feedback">
+                                    Please enter a password.
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                    
+                    <!-- Complex Validation Form -->
+                    <div id="complexValidationForm" style="display: none;">
+                        <h4>Complex Validation Form</h4>
+                        <form id="advancedForm" class="needs-validation" novalidate>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="firstName" class="form-label">First Name</label>
+                                    <input type="text" class="form-control" id="firstName" name="firstName" required>
+                                    <div class="invalid-feedback">
+                                        First name is required.
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="lastName" class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" id="lastName" name="lastName" required>
+                                    <div class="invalid-feedback">
+                                        Last name is required.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="complexEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="complexEmail" name="email" required>
+                                <div class="invalid-feedback">
+                                    Please enter a valid email address.
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="123-456-7890">
+                                <div class="invalid-feedback">
+                                    Please enter a valid phone number (format: 123-456-7890).
+                                </div>
+                                <div class="form-text">Format: 123-456-7890</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" required minlength="8">
+                                <div class="invalid-feedback">
+                                    Password must be at least 8 characters.
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                                <div class="invalid-feedback">
+                                    Passwords do not match.
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="ageRange" class="form-label">Age Range</label>
+                                <select class="form-select" id="ageRange" name="ageRange" required>
+                                    <option value="">Select an age range</option>
+                                    <option value="18-24">18-24</option>
+                                    <option value="25-34">25-34</option>
+                                    <option value="35-44">35-44</option>
+                                    <option value="45-54">45-54</option>
+                                    <option value="55+">55+</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Please select an age range.
+                                </div>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
+                                <label class="form-check-label" for="terms">I agree to the terms and conditions</label>
+                                <div class="invalid-feedback">
+                                    You must agree before submitting.
+                                </div>
+                            </div>
+                            <div class="tf-validation-error-container" id="complexFormErrors" style="display: none;"></div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                    
+                    <!-- Inline Validation Form -->
+                    <div id="inlineValidationForm" style="display: none;">
+                        <h4>Inline Validation Form</h4>
+                        <form id="inlineForm" class="needs-validation" novalidate>
+                            <div class="row g-3 align-items-center mb-3">
+                                <div class="col-auto">
+                                    <label for="inlineUsername" class="col-form-label">Username</label>
+                                </div>
+                                <div class="col-auto">
+                                    <input type="text" id="inlineUsername" name="username" class="form-control" required>
+                                </div>
+                                <div class="col-auto">
+                                    <span class="form-text">
+                                        Must be 3-20 characters long.
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row g-3 align-items-center mb-3">
+                                <div class="col-auto">
+                                    <label for="inlineEmail" class="col-form-label">Email</label>
+                                </div>
+                                <div class="col-auto">
+                                    <input type="email" id="inlineEmail" name="email" class="form-control" required>
+                                </div>
+                                <div class="col-auto">
+                                    <span class="form-text">
+                                        Enter a valid email address.
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row g-3 align-items-center mb-3">
+                                <div class="col-auto">
+                                    <label for="inlineAge" class="col-form-label">Age</label>
+                                </div>
+                                <div class="col-auto">
+                                    <input type="number" id="inlineAge" name="age" class="form-control" min="18" max="100" required>
+                                </div>
+                                <div class="col-auto">
+                                    <span class="form-text">
+                                        Must be between 18-100.
+                                    </span>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <h3 class="mt-4 mb-3">Usage</h3>
+                <div class="component-code">
+<pre>// Register a form for validation
+const formValidator = terraFusionForms.register('myFormId', {
+  validateOnInput: true,
+  validateOnBlur: true,
+  validateOnSubmit: true,
+  showValidationMessages: true,
+  preventSubmitOnError: true,
+  scrollToFirstError: true,
+  customErrorContainer: null,
+  errorClass: 'is-invalid',
+  successClass: 'is-valid'
+}, {
+  // Validation rules for form fields
+  username: {
+    required: true,
+    minLength: 3,
+    maxLength: 20
+  },
+  email: {
+    required: true,
+    email: true
+  },
+  password: {
+    required: true,
+    minLength: 8,
+    pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$'
+  },
+  confirmPassword: {
+    required: true,
+    equalTo: '#password'
+  }
+});
+
+// Validate the entire form
+const isValid = formValidator.validate();
+
+// Validate a specific field
+formValidator.validateField('username');
+
+// Check if form has errors
+if (formValidator.hasErrors()) {
+  console.log(formValidator.getErrors());
+}
+
+// Reset validation state
+formValidator.reset();
+
+// Add custom validator
+formValidator.addValidator('customRule', {
+  validate: function(value, param) {
+    // Return true if valid, false if invalid
+    return value.toString().includes(param);
+  },
+  message: 'Value must include "{0}"'
+});</pre>
+                </div>
+                
+                <h3 class="mt-4 mb-3">Default Validators</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>required</code></td>
+                            <td>Field must have a value</td>
+                            <td><code>required: true</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>email</code></td>
+                            <td>Field must be a valid email address</td>
+                            <td><code>email: true</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>minLength</code></td>
+                            <td>Field must have at least specified number of characters</td>
+                            <td><code>minLength: 8</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>maxLength</code></td>
+                            <td>Field must have no more than specified number of characters</td>
+                            <td><code>maxLength: 50</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>pattern</code></td>
+                            <td>Field must match the specified regex pattern</td>
+                            <td><code>pattern: '\\d{3}-\\d{3}-\\d{4}'</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>numeric</code></td>
+                            <td>Field must be a valid number</td>
+                            <td><code>numeric: true</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>integer</code></td>
+                            <td>Field must be a valid integer</td>
+                            <td><code>integer: true</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>min</code></td>
+                            <td>Field value must be greater than or equal to the specified value</td>
+                            <td><code>min: 18</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>max</code></td>
+                            <td>Field value must be less than or equal to the specified value</td>
+                            <td><code>max: 100</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>equalTo</code></td>
+                            <td>Field value must be equal to the value of another field</td>
+                            <td><code>equalTo: '#password'</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3 class="mt-4 mb-3">Best Practices</h3>
+                <ul>
+                    <li>Provide clear, actionable error messages</li>
+                    <li>Validate in real-time for immediate user feedback</li>
+                    <li>Group related validation errors together for better understanding</li>
+                    <li>Use appropriate validation rules for different types of fields</li>
+                    <li>Include helper text to guide users on expected input format</li>
+                    <li>Ensure validation is accessible to all users including those using screen readers</li>
+                    <li>Provide visual cues (like colors and icons) but don't rely solely on them</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Notification Demos
+    document.getElementById('showInfoNotification').addEventListener('click', function() {
+      terraFusionNotifications.info('This is an information notification');
+    });
+    
+    document.getElementById('showSuccessNotification').addEventListener('click', function() {
+      terraFusionNotifications.success('Operation completed successfully');
+    });
+    
+    document.getElementById('showWarningNotification').addEventListener('click', function() {
+      terraFusionNotifications.warning('Please review your changes before proceeding');
+    });
+    
+    document.getElementById('showErrorNotification').addEventListener('click', function() {
+      terraFusionNotifications.error('An error occurred while processing your request');
+    });
+    
+    document.getElementById('showPersistentNotification').addEventListener('click', function() {
+      terraFusionNotifications.show({
+        message: 'This notification will not auto-dismiss',
+        type: 'info',
+        duration: 0,
+        closable: true
+      });
+    });
+    
+    // Loading Indicator Demos
+    document.getElementById('showPageLoader').addEventListener('click', function() {
+      terraFusionLoaders.showPageLoader();
+      setTimeout(function() {
+        terraFusionLoaders.hidePageLoader();
+      }, 2000);
+    });
+    
+    document.getElementById('showContainerLoader').addEventListener('click', function() {
+      terraFusionLoaders.showContainerLoader('loaderDemoContainer', {
+        message: 'Loading container data...'
+      });
+      setTimeout(function() {
+        terraFusionLoaders.hideContainerLoader('loaderDemoContainer');
+      }, 2000);
+    });
+    
+    document.getElementById('showButtonLoader').addEventListener('click', function() {
+      const btn = document.getElementById('showButtonLoader');
+      terraFusionLoaders.showButtonLoader('showButtonLoader', {
+        disableButton: true,
+        originalText: btn.textContent,
+        loadingText: 'Loading...'
+      });
+      setTimeout(function() {
+        terraFusionLoaders.hideButtonLoader('showButtonLoader');
+      }, 2000);
+    });
+    
+    document.getElementById('showSkeletonLoader').addEventListener('click', function() {
+      const table = document.getElementById('skeletonTable');
+      terraFusionLoaders.showSkeletonLoader('skeletonTable', {
+        rows: 3,
+        columns: 3
+      });
+      setTimeout(function() {
+        terraFusionLoaders.hideSkeletonLoader('skeletonTable');
+      }, 2000);
+    });
+    
+    // Error Handling Demos
+    document.getElementById('showSimpleError').addEventListener('click', function() {
+      terraFusionErrors.showError('errorDemoContainer', 'A simple error occurred');
+    });
+    
+    document.getElementById('showDetailedError').addEventListener('click', function() {
+      terraFusionErrors.showError('errorDemoContainer', 'A detailed error occurred', {
+        details: 'Error ID: ERR12345\nTimestamp: ' + new Date().toISOString() + '\nMore details about this error can be found in the logs.',
+        source: 'DataProcessingService',
+        onRetry: function() {
+          terraFusionNotifications.info('Retrying operation...');
+          terraFusionErrors.clearErrors('errorDemoContainer');
+        }
+      });
+    });
+    
+    document.getElementById('showValidationError').addEventListener('click', function() {
+      terraFusionErrors.showValidationError('errorDemoContainer', {
+        'username': 'Username must be at least 5 characters long',
+        'email': 'Please enter a valid email address',
+        'password': 'Password must contain at least one number and one uppercase letter'
+      });
+    });
+    
+    document.getElementById('showApiError').addEventListener('click', function() {
+      const mockResponse = {
+        status: 403,
+        statusText: 'Forbidden',
+        headers: {
+          get: function(name) {
+            if (name === 'content-type') return 'application/json';
+            return '';
+          }
+        },
+        clone: function() {
+          return {
+            json: function() {
+              return Promise.resolve({
+                error: 'Access Denied',
+                message: 'You do not have permission to access this resource',
+                code: 'PERMISSION_DENIED',
+                requestId: 'req-12345'
+              });
+            },
+            text: function() {
+              return Promise.resolve(JSON.stringify({
+                error: 'Access Denied',
+                message: 'You do not have permission to access this resource',
+                code: 'PERMISSION_DENIED',
+                requestId: 'req-12345'
+              }));
+            }
+          };
+        }
+      };
+      
+      terraFusionErrors.showApiError('errorDemoContainer', mockResponse);
+    });
+    
+    document.getElementById('triggerGlobalError').addEventListener('click', function() {
+      // Create a custom error event
+      const errorEvent = new CustomEvent('tf:error', {
+        detail: {
+          message: 'A global error occurred',
+          details: 'This is a global error that should be handled by the global error handler',
+          source: 'Design System Demo'
+        }
+      });
+      document.dispatchEvent(errorEvent);
+    });
+    
+    // Data State Management Demos
+    const dataStateManager = terraFusionDataStates.register('dataStateDemoContainer', {
+      callbacks: {
+        onAction: function(state) {
+          terraFusionNotifications.info(`Action clicked for state: ${state}`);
+          
+          if (state === 'empty') {
+            dataStateManager.setState('loading', 'Loading data...');
+            setTimeout(function() {
+              dataStateManager.setState('success');
+            }, 1500);
+          } else if (state === 'error') {
+            dataStateManager.setState('loading', 'Retrying...');
+            setTimeout(function() {
+              dataStateManager.setState('success');
+            }, 1500);
+          } else if (state === 'modified') {
+            dataStateManager.setState('saving', 'Saving changes...');
+            setTimeout(function() {
+              dataStateManager.setState('success', 'Changes saved successfully');
+              terraFusionNotifications.success('Changes saved successfully');
+            }, 1500);
+          } else if (state === 'offline') {
+            dataStateManager.setState('syncing', 'Connecting and syncing data...');
+            setTimeout(function() {
+              dataStateManager.setState('success', 'Connected and synced successfully');
+              terraFusionNotifications.success('Connected successfully');
+            }, 1500);
+          }
+        }
+      }
+    });
+    
+    document.getElementById('dataStateInitial').addEventListener('click', function() {
+      dataStateManager.setState('initial');
+    });
+    
+    document.getElementById('dataStateLoading').addEventListener('click', function() {
+      dataStateManager.setState('loading', 'Loading data...');
+    });
+    
+    document.getElementById('dataStateSuccess').addEventListener('click', function() {
+      dataStateManager.setState('success', 'Data loaded successfully');
+    });
+    
+    document.getElementById('dataStateError').addEventListener('click', function() {
+      dataStateManager.setState('error', 'Failed to load data from server');
+    });
+    
+    document.getElementById('dataStateEmpty').addEventListener('click', function() {
+      dataStateManager.setState('empty', 'No data available');
+    });
+    
+    document.getElementById('dataStateModified').addEventListener('click', function() {
+      dataStateManager.setState('modified', 'Data has been modified');
+    });
+    
+    document.getElementById('dataStateSaving').addEventListener('click', function() {
+      dataStateManager.setState('saving', 'Saving changes...');
+    });
+    
+    document.getElementById('dataStateOffline').addEventListener('click', function() {
+      dataStateManager.setState('offline', 'Working in offline mode');
+    });
+    
+    // Form Validation Demos
+    if (document.getElementById('showBasicValidation')) {
+      document.getElementById('showBasicValidation').addEventListener('click', function() {
+        document.getElementById('basicValidationForm').style.display = 'block';
+        document.getElementById('complexValidationForm').style.display = 'none';
+        document.getElementById('inlineValidationForm').style.display = 'none';
+        
+        // Initialize basic form validation
+        const simpleFormValidator = terraFusionForms.register('simpleForm', {
+          validateOnInput: true,
+          validateOnBlur: true
+        }, {
+          username: {
+            required: true,
+            minLength: 3
+          },
+          email: {
+            required: true,
+            email: true
+          },
+          password: {
+            required: true,
+            minLength: 6
+          }
+        });
+        
+        // Set up form submission
+        document.getElementById('simpleForm').addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          if (simpleFormValidator.validate()) {
+            terraFusionNotifications.success('Form submitted successfully!');
+          } else {
+            terraFusionNotifications.error('Please fix the validation errors.');
+          }
+        });
+      });
+    }
+    
+    if (document.getElementById('showComplexValidation')) {
+      document.getElementById('showComplexValidation').addEventListener('click', function() {
+        document.getElementById('basicValidationForm').style.display = 'none';
+        document.getElementById('complexValidationForm').style.display = 'block';
+        document.getElementById('inlineValidationForm').style.display = 'none';
+        
+        // Initialize complex form validation
+        const advancedFormValidator = terraFusionForms.register('advancedForm', {
+          validateOnInput: true,
+          validateOnBlur: true,
+          customErrorContainer: '#complexFormErrors'
+        }, {
+          firstName: {
+            required: true
+          },
+          lastName: {
+            required: true
+          },
+          email: {
+            required: true,
+            email: true
+          },
+          phone: {
+            pattern: '[0-9]{3}-[0-9]{3}-[0-9]{4}'
+          },
+          password: {
+            required: true,
+            minLength: 8,
+            pattern: {
+              value: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$',
+              message: 'Password must contain at least one lowercase letter, one uppercase letter, and one number'
+            }
+          },
+          confirmPassword: {
+            required: true,
+            equalTo: '#password'
+          },
+          ageRange: {
+            required: true
+          },
+          terms: {
+            required: true
+          }
+        });
+        
+        // Set up form submission
+        document.getElementById('advancedForm').addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          if (advancedFormValidator.validate()) {
+            terraFusionNotifications.success('Form submitted successfully!');
+          } else {
+            terraFusionNotifications.error('Please fix the validation errors.');
+          }
+        });
+        
+        // Add custom validation for confirm password
+        document.getElementById('confirmPassword').addEventListener('input', function() {
+          const password = document.getElementById('password').value;
+          const confirmPassword = this.value;
+          
+          if (password !== confirmPassword) {
+            advancedFormValidator.setRules({
+              confirmPassword: {
+                required: true,
+                equalTo: {
+                  value: '#password',
+                  message: 'Passwords do not match'
+                }
+              }
+            });
+          }
+        });
+      });
+    }
+    
+    if (document.getElementById('showInlineValidation')) {
+      document.getElementById('showInlineValidation').addEventListener('click', function() {
+        document.getElementById('basicValidationForm').style.display = 'none';
+        document.getElementById('complexValidationForm').style.display = 'none';
+        document.getElementById('inlineValidationForm').style.display = 'block';
+        
+        // Initialize inline form validation
+        const inlineFormValidator = terraFusionForms.register('inlineForm', {
+          validateOnInput: true,
+          validateOnBlur: true,
+          showValidationMessages: true
+        }, {
+          username: {
+            required: true,
+            minLength: 3,
+            maxLength: 20
+          },
+          email: {
+            required: true,
+            email: true
+          },
+          age: {
+            required: true,
+            numeric: true,
+            min: 18,
+            max: 100
+          }
+        });
+        
+        // Set up form submission
+        document.getElementById('inlineForm').addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          if (inlineFormValidator.validate()) {
+            terraFusionNotifications.success('Form submitted successfully!');
+          } else {
+            terraFusionNotifications.error('Please fix the validation errors.');
+          }
+        });
+      });
+    }
+    
+    if (document.getElementById('resetValidationForm')) {
+      document.getElementById('resetValidationForm').addEventListener('click', function() {
+        document.getElementById('basicValidationForm').style.display = 'none';
+        document.getElementById('complexValidationForm').style.display = 'none';
+        document.getElementById('inlineValidationForm').style.display = 'none';
+        
+        // Reset all forms
+        if (document.getElementById('simpleForm')) {
+          document.getElementById('simpleForm').reset();
+        }
+        if (document.getElementById('advancedForm')) {
+          document.getElementById('advancedForm').reset();
+        }
+        if (document.getElementById('inlineForm')) {
+          document.getElementById('inlineForm').reset();
+        }
+        
+        terraFusionNotifications.info('All forms have been reset');
+      });
+    }
+  });
+</script>
+{% endblock %}

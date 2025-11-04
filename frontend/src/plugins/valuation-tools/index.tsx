@@ -44,32 +44,21 @@ function ValuationToolsPlugin({ context }: { context: any }) {
   return (
     <div className={styles.root}>
       <div className={styles.header}>
-
-
         <div className={styles.title}>Valuation Tools</div>
-        <div
-
-className={styles.subtitle}>AI-Powered Property Assessment & MRA Integration</div>
+        <div className={styles.subtitle}>AI-Powered Property Assessment & MRA Integration</div>
       </div>
 
       <div className={styles.info}>
-
-
         <div>County: {context.countyConfig?.countyId ?? 'unknown'}</div>
-        <div
-
->Legacy: {context.countyConfig?.legacySystem ?? 'unknown'}</div>
+        <div>Legacy: {context.countyConfig?.legacySystem ?? 'unknown'}</div>
         <div>Session: {context.sessionId ?? 'none'}</div>
       </div>
 
       <div className={styles.controls}>
         <div className={styles.inputGroup}>
-
-
           <label className={styles.label}>Property ID:</label>
           <input
-
-type='text'
+            type='text'
             placeholder='Enter Property ID (optional)'
             value={propertyId}
             onChange={(e) => setPropertyId(e.target.value)}
@@ -78,19 +67,16 @@ type='text'
         </div>
 
         <div className={styles.inputGroup}>
-
-
           <label className={styles.label}>Assessment Type:</label>
           <select
-
-value={selectedTool} 
+            value={selectedTool}
             onChange={(e) => setSelectedTool(e.target.value)}
-            title="Select valuation tool"
+            title='Select valuation tool'
             style={{
               padding: '8px 12px',
               border: '1px solid #ddd',
               borderRadius: '4px',
-              backgroundColor: '#fff'
+              backgroundColor: '#fff',
             }}
           >
             <option value='timber'>Timber Land</option>
@@ -98,15 +84,11 @@ value={selectedTool}
         </div>
 
         <div className={styles.actions}>
-
-
           <button className={styles.button} onClick={handleRunValuation} disabled={loading}>
             {loading ? 'Processing...' : 'Run AI Valuation'}
           </button>
 
-          <button
-
-className={styles.buttonSecondary} onClick={handleMRAAccess} disabled={loading}>
+          <button className={styles.buttonSecondary} onClick={handleMRAAccess} disabled={loading}>
             {loading ? 'Accessing...' : 'Access MRA Data'}
           </button>
         </div>
@@ -114,12 +96,8 @@ className={styles.buttonSecondary} onClick={handleMRAAccess} disabled={loading}>
 
       {valuation && (
         <div className={styles.results}>
-
-
           <div className={styles.resultsTitle}>Valuation Results:</div>
-          <pre
-
-className={styles.resultsData}>{JSON.stringify(valuation, null, 2)}</pre>
+          <pre className={styles.resultsData}>{JSON.stringify(valuation, null, 2)}</pre>
         </div>
       )}
     </div>

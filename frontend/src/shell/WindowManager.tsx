@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog,
+import {
+  Dialog,
   DialogTitle,
   DialogContent,
   IconButton,
   Box,
   Typography,
-  CircularProgress } from '@mui/material';
+  CircularProgress,
+} from '@mui/material';
 import { Close, Minimize, Fullscreen } from '@mui/icons-material';
 
 interface WindowManagerProps {
@@ -74,15 +76,11 @@ export const WindowManager: React.FC<WindowManagerProps> = ({ activeModule, onCl
           py: 1,
         }}
       >
-
-
         <Typography variant='h6' sx={{ color: 'white' }}>
           {getModuleDisplayName(activeModule)}
         </Typography>
 
-        <Box
-
-sx={{ display: 'flex', gap: 1 }}>
+        <Box sx={{ display: 'flex', gap: 1 }}>
           <IconButton
             size='small'
             sx={{ color: 'rgba(255,255,255,0.7)' }}
@@ -90,25 +88,18 @@ sx={{ display: 'flex', gap: 1 }}>
               /* Minimize functionality */
             }}
           >
-
-
             <Minimize />
           </IconButton>
 
           <IconButton
-
-size='small'
+            size='small'
             sx={{ color: 'rgba(255,255,255,0.7)' }}
             onClick={() => setIsMaximized(!isMaximized)}
           >
-
-
             <Fullscreen />
           </IconButton>
 
-          <IconButton
-
-size='small' sx={{ color: 'rgba(255,255,255,0.7)' }} onClick={onClose}>
+          <IconButton size='small' sx={{ color: 'rgba(255,255,255,0.7)' }} onClick={onClose}>
             <Close />
           </IconButton>
         </Box>
@@ -137,13 +128,10 @@ size='small' sx={{ color: 'rgba(255,255,255,0.7)' }} onClick={onClose}>
           >
             <CircularProgress size={60} />
 
-
             <Typography variant='h6' sx={{ color: 'white' }}>
               Loading {getModuleDisplayName(activeModule)}...
             </Typography>
-            <Typography
-
-variant='body2' sx={{ color: 'rgba(255,255,255,0.7)' }}>
+            <Typography variant='body2' sx={{ color: 'rgba(255,255,255,0.7)' }}>
               Initializing module components and AI services
             </Typography>
           </Box>
@@ -158,15 +146,12 @@ variant='body2' sx={{ color: 'rgba(255,255,255,0.7)' }}>
               p: 4,
             }}
           >
-
-
             <Typography variant='h4' gutterBottom sx={{ color: 'white' }}>
               {getModuleDisplayName(activeModule)}
             </Typography>
 
             <Typography
-
-variant='body1'
+              variant='body1'
               sx={{ color: 'rgba(255,255,255,0.8)', mb: 3, textAlign: 'center' }}
             >
               Module loaded successfully. This is where the actual module content would be rendered.

@@ -1,0 +1,14 @@
+{
+    "set": [
+        "copy",
+        "create",
+        "expression",
+        "memory",
+        "query",
+        "select",
+        "sql",
+        "subset",
+        "temporary",
+        "where clause"
+    ]
+}

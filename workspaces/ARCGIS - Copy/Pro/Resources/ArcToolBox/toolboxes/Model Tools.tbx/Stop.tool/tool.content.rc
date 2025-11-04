@@ -1,0 +1,14 @@
+{
+    "map": {
+        "condition.descr": "<xdoc><p>Specifies whether the iteration will run until all the inputs values are true or all the input values are false.</p><ul><li><span title=\"TRUE\">True</span>—The iteration will run until all the input values are true. This is the default.</li><li><span title=\"FALSE\">False</span>—The iteration will run until all the input values are false.</li></ul></xdoc>",
+        "condition.domain.FALSE": "False",
+        "condition.domain.TRUE": "True",
+        "condition.title": "Stop when inputs are",
+        "continue.title": "Continue",
+        "description": "Exits a model out of the iteration loop if the input values are set to true or set to false.  For the set of input values, iteration will continue if all the inputs are true and stop if any one of the inputs is false. It is functionally similar to the While tool but is useful to stop a model if there is one While iterator in a model and no additional iterators can be added.",
+        "in_values.descr": "The values that will be checked before the model iteration will stop.",
+        "in_values.title": "Input Values",
+        "summary": "Exits a model out of the iteration loop if the input values are set to true or set to false. For the set of input values, iteration will continue if all the inputs are true and stop if any one of the inputs is false. It is functionally similar to the While tool but is useful to stop a model if there is one While iterator in a model and no additional iterators can be added.",
+        "title": "Stop"
+    }
+}

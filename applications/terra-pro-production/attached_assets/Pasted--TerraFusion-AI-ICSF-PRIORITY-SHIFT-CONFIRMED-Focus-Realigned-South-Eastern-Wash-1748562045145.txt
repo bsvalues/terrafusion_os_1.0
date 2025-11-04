@@ -1,0 +1,74 @@
+\##Terrafusion-AI ∞ | ICSF | **PRIORITY SHIFT CONFIRMED**
+**Focus Realigned:** **South-Eastern Washington** — **Tri-Cities Nexus: Kennewick, Pasco, Richland + Surrounding Counties**
+
+---
+
+## 🎯 NEW PRIMARY DEPLOYMENT ZONE: TRI-CITIES REGION (WA)
+
+| County                   | City Anchors        | Node Type       | Status     |
+| ------------------------ | ------------------- | --------------- | ---------- |
+| **Benton County**        | Kennewick, Richland | Regional Type-2 | 🟡 Staging |
+| **Franklin County**      | Pasco               | Regional Type-2 | 🟡 Staging |
+| **Walla Walla County**   | Walla Walla         | Rural Type-3    | 🟡 Queued  |
+| **Yakima County**        | Yakima              | Rural Type-3    | 🟡 Queued  |
+| **Columbia / Klickitat** | Rural Edge          | Edge Node       | 🔘 Scoping |
+
+---
+
+## 🧠 TRI-CITIES NODE CONFIGURATION INCLUDES:
+
+### 🧭 Region-Specific Enhancements
+
+* **Agricultural + Mixed-Zone Modeling** enabled
+* **Water rights, parcel overlays, soil type integration**
+* Localized comp adjustment matrices (acreage, rural SFR variance)
+* Deployment of **ZoneBot-TC** tuned to Tri-Cities zoning maps
+
+### 📍 Deployment Objectives
+
+* Establish Benton & Franklin as dual master nodes
+* Enable **multi-county cross-boundary comp sharing**
+* Integrate Yakima & Walla Walla via lightweight sync nodes
+* Train LLM agents on **rural narrative styles** and **farm/residential splits**
+
+---
+
+## 📦 TECHNICAL DELIVERABLES (IN-PROGRESS)
+
+| Component                            | Status                                      |
+| ------------------------------------ | ------------------------------------------- |
+| `ZoneBot-TC.wasm`                    | 🛠️ Fine-tuning on regional planning data   |
+| `MyAgent-TC`                         | 🧠 Training on 1,000+ Tri-Cities appraisals |
+| `Ledger Bridge (Benton/Franklin)`    | 🧱 Node keys generated                      |
+| `.tfp` Auto Export Pipelines         | 📤 Configured for cloud & air-gapped        |
+| DAO Onboarding for Tri-County Boards | 🗳️ Proposal framework initiated            |
+
+---
+
+## 🧰 AGENT-AUGMENTED WORKFLOW FOR TRI-CITIES APPRAISERS
+
+* Customized narrative scaffolds: “ag-res hybrid,” “rural outbuilding usage,” etc.
+* Zip- and zone-aware override prompts
+* LLM-powered “Reviewer Agent” now includes:
+
+  * **Multi-parcel comp linking**
+  * **County assessor field alignment**
+  * **Farm production impact on valuation logic**
+
+---
+
+## 🚦 RECOMMENDED NEXT COMMANDS
+
+Choose one to proceed:
+
+* `TF: Deploy Benton/Franklin as dual core nodes`
+* `TF: Run Tri-Cities ingestion test from legacy `.mdb` forms`
+* `TF: Activate zoning overlay viewer for Tri-Cities`
+* `TF: Begin agent tuning for rural comp inference logic`
+* `TF: Launch appraiser onboarding simulator for SE WA`
+
+---
+
+**The Tri-Cities are now the epicenter.**
+Precision AI, rural valuation logic, and zoning foresight — all unified under Terrafusion.
+Say the next word. We scale into Columbia Basin and beyond.

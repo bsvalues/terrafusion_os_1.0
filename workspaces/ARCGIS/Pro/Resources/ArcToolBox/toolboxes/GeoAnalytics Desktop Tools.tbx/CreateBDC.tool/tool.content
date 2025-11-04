@@ -1,0 +1,115 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "69000024",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "spark"
+    ],
+    "params": {
+        "bdc_location": {
+            "displayname": "$rc:bdc_location.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:bdc_location.descr"
+        },
+        "bdc_name": {
+            "displayname": "$rc:bdc_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:bdc_name.descr"
+        },
+        "connection_type": {
+            "enabled": "false",
+            "displayname": "$rc:connection_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "FOLDER",
+                        "code": "$rc:connection_type.domain.FOLDER"
+                    }
+                ]
+            },
+            "value": "FOLDER",
+            "description": "$rc:connection_type.descr"
+        },
+        "data_source_folder": {
+            "type": "optional",
+            "displayname": "$rc:data_source_folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:data_source_folder.descr"
+        },
+        "visible_geometry": {
+            "type": "optional",
+            "displayname": "$rc:visible_geometry.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "GEOMETRY_VISIBLE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "GEOMETRY_NOT_VISIBLE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:visible_geometry.descr"
+        },
+        "visible_time": {
+            "type": "optional",
+            "displayname": "$rc:visible_time.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "TIME_VISIBLE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "TIME_NOT_VISIBLE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:visible_time.descr"
+        },
+        "output_bdc": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_bdc.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "bdc",
+                    "mfc"
+                ]
+            }
+        }
+    }
+}

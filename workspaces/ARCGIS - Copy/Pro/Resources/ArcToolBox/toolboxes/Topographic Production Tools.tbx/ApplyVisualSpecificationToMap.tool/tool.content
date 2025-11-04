@@ -1,0 +1,52 @@
+{
+    "type": "FunctionTool",
+    "guid": "{26B17338-CB00-45A9-AB9C-858C2E0122C9}/ApplyVisualSpecificationToMap",
+    "displayname": "$rc:title",
+    "helpcontent": "46110001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "46",
+        "49"
+    ],
+    "params": {
+        "in_map": {
+            "displayname": "$rc:in_map.title",
+            "datatype": {
+                "type": "GPMap"
+            },
+            "description": "$rc:in_map.descr"
+        },
+        "vs_workspace": {
+            "displayname": "$rc:vs_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "description": "$rc:vs_workspace.descr"
+        },
+        "specification": {
+            "displayname": "$rc:specification.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:specification.descr"
+        },
+        "in_style_file": {
+            "type": "optional",
+            "control_guid": "{AD09F151-1315-46C6-B4F9-1B803C8E2218}",
+            "displayname": "$rc:in_style_file.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:in_style_file.descr"
+        },
+        "updated_map": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_map.title",
+            "datatype": {
+                "type": "GPMap"
+            }
+        }
+    }
+}

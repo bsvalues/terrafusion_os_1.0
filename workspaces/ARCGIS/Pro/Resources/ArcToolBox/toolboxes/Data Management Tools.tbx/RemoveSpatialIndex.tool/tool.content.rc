@@ -1,0 +1,10 @@
+{
+    "map": {
+        "description": "Deletes the spatial index from a shapefile or file geodatabase, mobile geodatabase, or an enterprise geodatabase feature class.",
+        "in_features.descr": "The shapefile or file geodatabase, mobile geodatabase, or an enterprise geodatabase feature class from which a spatial index will be removed.",
+        "in_features.title": "Input Features",
+        "out_feature_class.title": "Updated Dataset",
+        "summary": "<xdoc><p>Deletes the spatial index from a shapefile or file geodatabase, mobile geodatabase, or an enterprise geodatabase feature class.</p><p>Spatial indexes are used by ArcGIS to quickly locate features that match a spatial query.</p></xdoc>",
+        "title": "Remove Spatial Index"
+    }
+}

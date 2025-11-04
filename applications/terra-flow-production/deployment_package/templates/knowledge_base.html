@@ -1,0 +1,529 @@
+{% extends "base.html" %}
+
+{% block title %}Knowledge Base{% endblock %}
+
+{% block styles %}
+<style>
+  .tag-badge {
+    margin-right: 5px;
+    cursor: pointer;
+  }
+  .entry-card {
+    transition: transform .2s;
+    margin-bottom: 20px;
+  }
+  .entry-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  .tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .tag-filter {
+    margin-right: 8px;
+    margin-bottom: 8px;
+  }
+  .knowledge-filters {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+  }
+  .search-box {
+    margin-bottom: 15px;
+  }
+  .entry-content {
+    max-height: 150px;
+    overflow: hidden;
+    position: relative;
+  }
+  .entry-content.expanded {
+    max-height: none;
+  }
+  .fade-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    background: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1));
+  }
+  .agent-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 5px;
+  }
+  .type-badge {
+    font-size: 0.8em;
+  }
+  .rating-stars {
+    color: #ffc107;
+    margin-left: 10px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <h1>Knowledge Base <small class="text-muted">{{ total_entries }} entries</small></h1>
+      <p class="lead">Collective intelligence from all system agents</p>
+      
+      {% if error %}
+      <div class="alert alert-danger">{{ error }}</div>
+      {% endif %}
+    </div>
+  </div>
+  
+  <div class="row">
+    <!-- Left column - filters -->
+    <div class="col-md-3">
+      <div class="knowledge-filters">
+        <h5>Search</h5>
+        <div class="search-box">
+          <input type="text" id="kb-search" class="form-control" placeholder="Search knowledge...">
+        </div>
+        
+        <h5>Filter by Type</h5>
+        <div class="type-filters mb-3">
+          {% for type, count in type_counts.items() %}
+          <div class="form-check">
+            <input class="form-check-input type-filter" type="checkbox" value="{{ type }}" id="type-{{ type }}">
+            <label class="form-check-label" for="type-{{ type }}">
+              {{ type }} <span class="badge bg-secondary">{{ count }}</span>
+            </label>
+          </div>
+          {% endfor %}
+        </div>
+        
+        <h5>Filter by Tags</h5>
+        <div class="tag-cloud">
+          {% for tag in tags %}
+          <span class="badge bg-light text-dark tag-filter" data-tag="{{ tag }}">
+            {{ tag }} <span class="badge bg-secondary">{{ tag_counts[tag] }}</span>
+          </span>
+          {% endfor %}
+        </div>
+        
+        <button id="reset-filters" class="btn btn-outline-secondary btn-sm mt-2">Reset Filters</button>
+      </div>
+    </div>
+    
+    <!-- Right column - entries -->
+    <div class="col-md-9">
+      <div id="entries-container">
+        {% if entries %}
+          {% for entry in entries %}
+          <div class="card entry-card" data-id="{{ entry.id }}" data-type="{{ entry.entry_type }}" data-tags="{{ entry.tags|join(',') }}">
+            <div class="card-header bg-{{ entry_type_colors.get(entry.entry_type, 'light') }}">
+              <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">{{ entry.title }}</h5>
+                <span class="badge bg-{{ entry_type_colors.get(entry.entry_type, 'secondary') }} type-badge">{{ entry.entry_type }}</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="entry-content">
+                <p>{{ entry.content }}</p>
+                <div class="fade-overlay"></div>
+              </div>
+              <button class="btn btn-link btn-sm expand-btn p-0 mt-2">Read more</button>
+              
+              <div class="entry-tags mt-3">
+                {% for tag in entry.tags %}
+                <span class="badge bg-light text-dark tag-badge">{{ tag }}</span>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="card-footer text-muted">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <img src="/static/img/agent-icon.svg" alt="Agent" class="agent-icon">
+                  <small>{{ entry.source_agent_id }}</small>
+                </div>
+                <div>
+                  <small>{{ entry.created_at|timestamp_to_date }}</small>
+                  {% if entry.rating > 0 %}
+                  <small class="rating-stars">
+                    {% for i in range(5) %}
+                      {% if i < entry.rating|int %}
+                      ★
+                      {% else %}
+                      ☆
+                      {% endif %}
+                    {% endfor %}
+                    ({{ entry.rating_count }})
+                  </small>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="alert alert-info">No knowledge entries available.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Entry Details Modal -->
+<div class="modal fade" id="entryModal" tabindex="-1" aria-labelledby="entryModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="entryModalLabel">Entry Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="entry-modal-content">
+        <div class="text-center">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="rate-entry-btn">Rate This Entry</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Rating Modal -->
+<div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ratingModalLabel">Rate Knowledge Entry</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="rating-form">
+          <input type="hidden" id="rated-entry-id">
+          <div class="mb-3">
+            <label class="form-label">Rating</label>
+            <div class="rating-input">
+              <div class="btn-group" role="group">
+                {% for i in range(1, 6) %}
+                <input type="radio" class="btn-check" name="rating" id="rating{{ i }}" value="{{ i }}" {% if i == 5 %}checked{% endif %}>
+                <label class="btn btn-outline-warning" for="rating{{ i }}">{{ i }}</label>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="feedback-text" class="form-label">Feedback (optional)</label>
+            <textarea class="form-control" id="feedback-text" rows="3" placeholder="Share your thoughts about this entry..."></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="submit-rating-btn">Submit Rating</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Track current filters
+    let activeTagFilters = new Set();
+    let activeTypeFilters = new Set();
+    let searchQuery = '';
+    
+    // Handle expand/collapse content
+    document.querySelectorAll('.expand-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const content = this.parentNode.querySelector('.entry-content');
+        const overlay = content.querySelector('.fade-overlay');
+        
+        if (content.classList.contains('expanded')) {
+          content.classList.remove('expanded');
+          overlay.style.display = 'block';
+          this.textContent = 'Read more';
+        } else {
+          content.classList.add('expanded');
+          overlay.style.display = 'none';
+          this.textContent = 'Show less';
+        }
+      });
+    });
+    
+    // Handle tag filters
+    document.querySelectorAll('.tag-filter').forEach(tag => {
+      tag.addEventListener('click', function() {
+        const tagValue = this.getAttribute('data-tag');
+        
+        if (activeTagFilters.has(tagValue)) {
+          activeTagFilters.delete(tagValue);
+          this.classList.remove('bg-primary');
+          this.classList.add('bg-light');
+          this.classList.remove('text-white');
+          this.classList.add('text-dark');
+        } else {
+          activeTagFilters.add(tagValue);
+          this.classList.remove('bg-light');
+          this.classList.add('bg-primary');
+          this.classList.remove('text-dark');
+          this.classList.add('text-white');
+        }
+        
+        applyFilters();
+      });
+    });
+    
+    // Handle type filters
+    document.querySelectorAll('.type-filter').forEach(checkbox => {
+      checkbox.addEventListener('change', function() {
+        const typeValue = this.value;
+        
+        if (this.checked) {
+          activeTypeFilters.add(typeValue);
+        } else {
+          activeTypeFilters.delete(typeValue);
+        }
+        
+        applyFilters();
+      });
+    });
+    
+    // Handle search
+    const searchInput = document.getElementById('kb-search');
+    searchInput.addEventListener('input', function() {
+      searchQuery = this.value.toLowerCase();
+      applyFilters();
+    });
+    
+    // Reset filters
+    document.getElementById('reset-filters').addEventListener('click', function() {
+      activeTagFilters.clear();
+      activeTypeFilters.clear();
+      searchQuery = '';
+      
+      // Reset UI
+      document.querySelectorAll('.tag-filter').forEach(tag => {
+        tag.classList.remove('bg-primary');
+        tag.classList.add('bg-light');
+        tag.classList.remove('text-white');
+        tag.classList.add('text-dark');
+      });
+      
+      document.querySelectorAll('.type-filter').forEach(checkbox => {
+        checkbox.checked = false;
+      });
+      
+      document.getElementById('kb-search').value = '';
+      
+      applyFilters();
+    });
+    
+    // Apply all filters
+    function applyFilters() {
+      document.querySelectorAll('.entry-card').forEach(card => {
+        const tags = card.getAttribute('data-tags').split(',');
+        const type = card.getAttribute('data-type');
+        const title = card.querySelector('h5').textContent.toLowerCase();
+        const content = card.querySelector('.entry-content p').textContent.toLowerCase();
+        
+        // Check tag filter
+        const passTagFilter = activeTagFilters.size === 0 || 
+                             tags.some(tag => activeTagFilters.has(tag));
+        
+        // Check type filter
+        const passTypeFilter = activeTypeFilters.size === 0 || 
+                              activeTypeFilters.has(type);
+        
+        // Check search filter
+        const passSearchFilter = searchQuery === '' || 
+                                title.includes(searchQuery) || 
+                                content.includes(searchQuery);
+        
+        // Show/hide based on all filters
+        if (passTagFilter && passTypeFilter && passSearchFilter) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+    
+    // Handle entry click to open modal
+    document.querySelectorAll('.entry-card').forEach(card => {
+      card.addEventListener('click', function(e) {
+        // Don't open modal if clicking expand button or tag badge
+        if (e.target.classList.contains('expand-btn') || 
+            e.target.classList.contains('tag-badge')) {
+          return;
+        }
+        
+        const entryId = this.getAttribute('data-id');
+        loadEntryDetails(entryId);
+      });
+    });
+    
+    // Load entry details into modal
+    function loadEntryDetails(entryId) {
+      const modalContent = document.getElementById('entry-modal-content');
+      modalContent.innerHTML = `
+        <div class="text-center">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('rated-entry-id').value = entryId;
+      
+      // Show the modal
+      const entryModal = new bootstrap.Modal(document.getElementById('entryModal'));
+      entryModal.show();
+      
+      // Fetch entry details
+      fetch(`/knowledge/entry/${entryId}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            const entry = data.entry;
+            const related = data.related || [];
+            
+            let tagsHtml = '';
+            entry.tags.forEach(tag => {
+              tagsHtml += `<span class="badge bg-light text-dark me-1">${tag}</span>`;
+            });
+            
+            let relatedHtml = '';
+            if (related.length > 0) {
+              relatedHtml = `
+                <h5 class="mt-4">Related Knowledge</h5>
+                <ul class="list-group">
+                  ${related.map(rel => `
+                    <li class="list-group-item">
+                      <a href="#" class="related-entry-link" data-id="${rel.id}">${rel.title}</a>
+                      <span class="badge bg-${entry_type_colors[rel.entry_type] || 'secondary'} float-end">${rel.entry_type}</span>
+                    </li>
+                  `).join('')}
+                </ul>
+              `;
+            }
+            
+            let ratingHtml = '';
+            if (entry.rating > 0) {
+              ratingHtml = `
+                <div class="mb-3">
+                  <strong>Rating:</strong> 
+                  <span class="rating-stars">
+                    ${Array(5).fill(0).map((_, i) => i < Math.round(entry.rating) ? '★' : '☆').join('')}
+                  </span>
+                  <small>(${entry.rating.toFixed(1)}/5 from ${entry.rating_count} ratings)</small>
+                </div>
+              `;
+            }
+            
+            modalContent.innerHTML = `
+              <div class="entry-detail">
+                <h4>${entry.title}</h4>
+                <div class="mb-3">
+                  <span class="badge bg-${entry_type_colors[entry.entry_type] || 'secondary'}">${entry.entry_type}</span>
+                  <small class="text-muted ms-2">
+                    Added by ${entry.source_agent_id} on ${new Date(entry.created_at * 1000).toLocaleString()}
+                  </small>
+                </div>
+                
+                ${ratingHtml}
+                
+                <div class="entry-content-full mb-3">
+                  <p>${entry.content.replace(/\n/g, '<br>')}</p>
+                </div>
+                
+                <div class="entry-metadata mb-3">
+                  <strong>Tags:</strong> ${tagsHtml}
+                </div>
+                
+                ${relatedHtml}
+              </div>
+            `;
+            
+            // Add event listeners to related entry links
+            document.querySelectorAll('.related-entry-link').forEach(link => {
+              link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const relatedId = this.getAttribute('data-id');
+                loadEntryDetails(relatedId);
+              });
+            });
+          } else {
+            modalContent.innerHTML = `
+              <div class="alert alert-danger">
+                ${data.error || 'Failed to load entry details.'}
+              </div>
+            `;
+          }
+        })
+        .catch(error => {
+          console.error('Error loading entry details:', error);
+          modalContent.innerHTML = `
+            <div class="alert alert-danger">
+              An error occurred while loading entry details.
+            </div>
+          `;
+        });
+    }
+    
+    // Handle rating button
+    document.getElementById('rate-entry-btn').addEventListener('click', function() {
+      // Hide entry modal
+      bootstrap.Modal.getInstance(document.getElementById('entryModal')).hide();
+      
+      // Show rating modal
+      const ratingModal = new bootstrap.Modal(document.getElementById('ratingModal'));
+      ratingModal.show();
+    });
+    
+    // Handle submit rating
+    document.getElementById('submit-rating-btn').addEventListener('click', function() {
+      const entryId = document.getElementById('rated-entry-id').value;
+      const ratingValue = document.querySelector('input[name="rating"]:checked').value;
+      const feedbackText = document.getElementById('feedback-text').value;
+      
+      // Submit rating
+      fetch('/knowledge/rate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          entry_id: entryId,
+          rating: parseFloat(ratingValue),
+          feedback: feedbackText
+        })
+      })
+        .then(response => response.json())
+        .then(data => {
+          // Hide rating modal
+          bootstrap.Modal.getInstance(document.getElementById('ratingModal')).hide();
+          
+          if (data.success) {
+            // Show success message
+            alert('Thank you for your feedback!');
+            
+            // Reload the page to show updated ratings
+            window.location.reload();
+          } else {
+            alert(data.error || 'Failed to submit rating.');
+          }
+        })
+        .catch(error => {
+          console.error('Error submitting rating:', error);
+          alert('An error occurred while submitting your rating.');
+        });
+    });
+  });
+</script>
+{% endblock %}

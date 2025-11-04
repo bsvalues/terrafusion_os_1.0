@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: report-service
+  namespace: terrafusionpro
+  labels:
+    app: report-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: report-service
+  template:
+    metadata:
+      labels:
+        app: report-service
+    spec:
+      containers:
+      - name: report-service
+        image: terrafusionpro/report-service:latest
+        ports:
+        - containerPort: 5004
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: SERVICE_PORT
+          value: "5004"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: terrafusionpro-secrets
+              key: database-url
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5004
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5004
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 200m
+            memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: report-service
+  namespace: terrafusionpro
+spec:
+  selector:
+    app: report-service
+  ports:
+  - port: 5004
+    targetPort: 5004
+  type: ClusterIP

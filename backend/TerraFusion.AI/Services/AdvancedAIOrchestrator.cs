@@ -69,7 +69,7 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Initialize the complete advanced AI system
         /// </summary>
-        public async Task<bool> InitializeAdvancedAISystem()
+        public async System.Threading.Tasks.Task<bool> InitializeAdvancedAISystem()
         {
             _logger.LogInformation("🌟 Initializing Advanced AI System...");
             
@@ -145,7 +145,7 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Process advanced AI request with multi-modal capabilities
         /// </summary>
-        public async Task<AdvancedAIResponse> ProcessAdvancedRequest(AdvancedAIRequest request)
+        public async System.Threading.Tasks.Task<AdvancedAIResponse> ProcessAdvancedRequest(AdvancedAIRequest request)
         {
             _logger.LogInformation($"🧠 Processing Advanced AI Request: {request.RequestType}");
             
@@ -229,7 +229,7 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Get comprehensive AI system metrics
         /// </summary>
-        public async Task<AdvancedAIMetrics> GetAdvancedMetrics()
+        public async System.Threading.Tasks.Task<AdvancedAIMetrics> GetAdvancedMetrics()
         {
             _logger.LogInformation("📊 Gathering Advanced AI Metrics...");
             
@@ -261,7 +261,7 @@ namespace TerraFusion.AI.Services
         }
         
         // Private methods for orchestration loops
-        private async Task AdvancedOrchestrationLoop()
+        private async System.Threading.Tasks.Task AdvancedOrchestrationLoop()
         {
             _logger.LogInformation("🎼 Advanced AI Orchestration Loop Started");
             
@@ -294,7 +294,7 @@ namespace TerraFusion.AI.Services
             }
         }
         
-        private async Task PerformanceOptimizationLoop()
+        private async System.Threading.Tasks.Task PerformanceOptimizationLoop()
         {
             _logger.LogInformation("⚡ Performance Optimization Loop Started");
             
@@ -332,7 +332,7 @@ namespace TerraFusion.AI.Services
             }
         }
         
-        private async Task EthicalMonitoringLoop()
+        private async System.Threading.Tasks.Task EthicalMonitoringLoop()
         {
             _logger.LogInformation("🛡️ Ethical Monitoring Loop Started");
             
@@ -365,7 +365,7 @@ namespace TerraFusion.AI.Services
             }
         }
         
-        private async Task EmergentIntelligenceLoop()
+        private async System.Threading.Tasks.Task EmergentIntelligenceLoop()
         {
             _logger.LogInformation("🧬 Emergent Intelligence Loop Started");
             
@@ -416,48 +416,48 @@ namespace TerraFusion.AI.Services
         }
         
         // Helper methods (implementation details)
-        private async Task<int> GetTotalAgentCount() => await _emergentEngine.GetTotalAgentCount();
-        private async Task<int> GetActiveAgentCount() => await _emergentEngine.GetActiveAgentCount();
-        private async Task<double> GetQuantumAdvantage() => await _quantumService.GetQuantumAdvantage();
-        private async Task<double> GetCurrentPerformanceMultiplier() => await CalculateCurrentPerformance();
+        private async System.Threading.Tasks.Task<int> GetTotalAgentCount() => await _emergentEngine.GetTotalAgentCount();
+        private async System.Threading.Tasks.Task<int> GetActiveAgentCount() => await _emergentEngine.GetActiveAgentCount();
+        private async System.Threading.Tasks.Task<double> GetQuantumAdvantage() => await _quantumService.GetQuantumAdvantage();
+        private async System.Threading.Tasks.Task<double> GetCurrentPerformanceMultiplier() => await CalculateCurrentPerformance();
         
         // Placeholder implementations for complex operations
-        private async Task<AdvancedAIResponse> ProcessPropertyValuationRequest(AdvancedAIRequest request)
+        private async System.Threading.Tasks.Task<AdvancedAIResponse> ProcessPropertyValuationRequest(AdvancedAIRequest request)
         {
             // Implementation would integrate with quantum-enhanced valuation models
             await Task.Delay(1); // Placeholder
             return new AdvancedAIResponse { Status = AIResponseStatus.Success.ToString() };
         }
         
-        private async Task<AdvancedAIResponse> ProcessPolicyAnalysisRequest(AdvancedAIRequest request)
+        private async System.Threading.Tasks.Task<AdvancedAIResponse> ProcessPolicyAnalysisRequest(AdvancedAIRequest request)
         {
             // Implementation would use multi-modal LLMs for policy analysis
             await Task.Delay(1); // Placeholder
             return new AdvancedAIResponse { Status = AIResponseStatus.Success.ToString() };
         }
         
-        private async Task<AdvancedAIResponse> ProcessQuantumOptimizationRequest(AdvancedAIRequest request)
+        private async System.Threading.Tasks.Task<AdvancedAIResponse> ProcessQuantumOptimizationRequest(AdvancedAIRequest request)
         {
             // Implementation would leverage quantum computing for optimization
             await Task.Delay(1); // Placeholder
             return new AdvancedAIResponse { Status = AIResponseStatus.Success.ToString() };
         }
         
-        private async Task<AdvancedAIResponse> ProcessEmergentPatternRequest(AdvancedAIRequest request)
+        private async System.Threading.Tasks.Task<AdvancedAIResponse> ProcessEmergentPatternRequest(AdvancedAIRequest request)
         {
             // Implementation would analyze emergent patterns in the swarm
             await Task.Delay(1); // Placeholder
             return new AdvancedAIResponse { Status = AIResponseStatus.Success.ToString() };
         }
         
-        private async Task<AdvancedAIResponse> ProcessKnowledgeSynthesisRequest(AdvancedAIRequest request)
+        private async System.Threading.Tasks.Task<AdvancedAIResponse> ProcessKnowledgeSynthesisRequest(AdvancedAIRequest request)
         {
             // Implementation would synthesize knowledge across domains
             await Task.Delay(1); // Placeholder
             return new AdvancedAIResponse { Status = AIResponseStatus.Success.ToString() };
         }
         
-        private async Task<AdvancedAIResponse> ProcessGeneralAIRequest(AdvancedAIRequest request)
+        private async System.Threading.Tasks.Task<AdvancedAIResponse> ProcessGeneralAIRequest(AdvancedAIRequest request)
         {
             // Implementation would handle general AI requests
             await Task.Delay(1); // Placeholder
@@ -465,29 +465,29 @@ namespace TerraFusion.AI.Services
         }
         
         // Additional helper methods...
-        private async Task CoordinateMultiModalProcessing() => await Task.Delay(1);
-        private async Task BalanceQuantumClassicalResources() => await Task.Delay(1);
-        private async Task OrchestrateEmergentEvolution() => await Task.Delay(1);
-        private async Task CoordinateCrossDomainLearning() => await Task.Delay(1);
-        private async Task<PerformanceAnalysis> AnalyzeCurrentPerformance() => new PerformanceAnalysis();
-        private async Task<List<OptimizationOpportunity>> IdentifyOptimizationOpportunities(PerformanceAnalysis analysis) => new List<OptimizationOpportunity>();
-        private async Task ApplyOptimization(OptimizationOpportunity opportunity) => await Task.Delay(1);
-        private async Task UpdatePerformanceMetrics() => await Task.Delay(1);
-        private async Task CheckForEmergingEthicalConcerns() => await Task.Delay(1);
-        private async Task<List<TerraFusion.AI.DTOs.EmergentPattern>> ValidateBeneficialEmergence(List<TerraFusion.AI.DTOs.EmergentPattern> patterns) => patterns;
-        private async Task IntegrateBeneficialCapabilities(List<TerraFusion.AI.DTOs.EmergentPattern> patterns) => await Task.Delay(1);
-        private async Task ReportEmergentEvolution(List<TerraFusion.AI.DTOs.EmergentPattern> patterns) => await Task.Delay(1);
+        private async System.Threading.Tasks.Task CoordinateMultiModalProcessing() => await Task.Delay(1);
+        private async System.Threading.Tasks.Task BalanceQuantumClassicalResources() => await Task.Delay(1);
+        private async System.Threading.Tasks.Task OrchestrateEmergentEvolution() => await Task.Delay(1);
+        private async System.Threading.Tasks.Task CoordinateCrossDomainLearning() => await Task.Delay(1);
+        private async System.Threading.Tasks.Task<PerformanceAnalysis> AnalyzeCurrentPerformance() => new PerformanceAnalysis();
+        private async System.Threading.Tasks.Task<List<OptimizationOpportunity>> IdentifyOptimizationOpportunities(PerformanceAnalysis analysis) => new List<OptimizationOpportunity>();
+        private async System.Threading.Tasks.Task ApplyOptimization(OptimizationOpportunity opportunity) => await Task.Delay(1);
+        private async System.Threading.Tasks.Task UpdatePerformanceMetrics() => await Task.Delay(1);
+        private async System.Threading.Tasks.Task CheckForEmergingEthicalConcerns() => await Task.Delay(1);
+        private async System.Threading.Tasks.Task<List<TerraFusion.AI.DTOs.EmergentPattern>> ValidateBeneficialEmergence(List<TerraFusion.AI.DTOs.EmergentPattern> patterns) => patterns;
+        private async System.Threading.Tasks.Task IntegrateBeneficialCapabilities(List<TerraFusion.AI.DTOs.EmergentPattern> patterns) => await Task.Delay(1);
+        private async System.Threading.Tasks.Task ReportEmergentEvolution(List<TerraFusion.AI.DTOs.EmergentPattern> patterns) => await Task.Delay(1);
         
         // Metric calculation methods
-        private async Task<double> CalculateAgentUtilization() => 0.85; // 85% utilization
-        private async Task<double> CalculateAverageResponseTime() => 15.5; // 15.5ms average
-        private async Task<double> CalculateThroughput() => 50000; // 50K operations/second
-        private async Task<double> CalculateOverallAccuracy() => 0.995; // 99.5% accuracy
-        private async Task<double> CalculateModelQualityScore() => 0.92; // 92% quality score
-        private async Task<double> CalculateAveragePredictionConfidence() => 0.88; // 88% confidence
-        private async Task<double> CalculateCurrentPerformance() => 5500; // 5500x improvement
-        private async Task<double> CalculateConfidenceScore(AdvancedAIResponse response) => 0.85;
-        private async Task<QualityMetrics> CalculateQualityMetrics(AdvancedAIResponse response) => new QualityMetrics();
+        private async System.Threading.Tasks.Task<double> CalculateAgentUtilization() => 0.85; // 85% utilization
+        private async System.Threading.Tasks.Task<double> CalculateAverageResponseTime() => 15.5; // 15.5ms average
+        private async System.Threading.Tasks.Task<double> CalculateThroughput() => 50000; // 50K operations/second
+        private async System.Threading.Tasks.Task<double> CalculateOverallAccuracy() => 0.995; // 99.5% accuracy
+        private async System.Threading.Tasks.Task<double> CalculateModelQualityScore() => 0.92; // 92% quality score
+        private async System.Threading.Tasks.Task<double> CalculateAveragePredictionConfidence() => 0.88; // 88% confidence
+        private async System.Threading.Tasks.Task<double> CalculateCurrentPerformance() => 5500; // 5500x improvement
+        private async System.Threading.Tasks.Task<double> CalculateConfidenceScore(AdvancedAIResponse response) => 0.85;
+        private async System.Threading.Tasks.Task<QualityMetrics> CalculateQualityMetrics(AdvancedAIResponse response) => new QualityMetrics();
 
         
         public void Dispose()

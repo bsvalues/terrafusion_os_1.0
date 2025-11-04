@@ -188,7 +188,7 @@ public class RolePermissionService : IRolePermissionService
         }
     }
 
-    public async Task<List<Role>> GetAllRolesAsync()
+    public Task<List<Role>> GetAllRolesAsync()
     {
         try
         {
@@ -207,12 +207,12 @@ public class RolePermissionService : IRolePermissionService
                 roles.Add(role);
             }
 
-            return roles;
+            return Task.FromResult(roles);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to get all roles");
-            return new List<Role>();
+            return Task.FromResult(new List<Role>());
         }
     }
 

@@ -1,0 +1,20 @@
+{
+    "set": [
+        "bus",
+        "delivery",
+        "depot",
+        "distribute",
+        "driver",
+        "fleet",
+        "layer",
+        "make vrp",
+        "network analyst layer",
+        "order",
+        "pickup",
+        "route",
+        "route layer",
+        "school",
+        "truck",
+        "vrp"
+    ]
+}

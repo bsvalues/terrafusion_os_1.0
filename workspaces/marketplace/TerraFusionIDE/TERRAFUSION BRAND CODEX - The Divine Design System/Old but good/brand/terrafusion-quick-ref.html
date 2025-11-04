@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion - Brand Quick Reference</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', -apple-system, system-ui, sans-serif;
+            background: linear-gradient(135deg, #0b1020 0%, #0a0f1c 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        .orb {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: radial-gradient(circle, #00ffee 0%, rgba(0,255,238,0.5) 50%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h1 {
+            font-size: 48px;
+            font-weight: 300;
+            background: linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .tagline {
+            font-size: 24px;
+            color: #00ffee;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+        
+        .card {
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0,255,238,0.2);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            animation: slideUp 0.6s ease-out backwards;
+        }
+        
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+        .card:nth-child(5) { animation-delay: 0.5s; }
+        .card:nth-child(6) { animation-delay: 0.6s; }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,255,238,0.2);
+            border-color: #00ffee;
+        }
+        
+        .card h2 {
+            font-size: 18px;
+            color: #00ffee;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        
+        .color-palette {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .color-swatch {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            flex: 1;
+            min-width: 140px;
+        }
+        
+        .color-box {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .color-info {
+            flex: 1;
+        }
+        
+        .color-name {
+            font-size: 12px;
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .color-hex {
+            font-size: 11px;
+            font-family: 'Cascadia Code', monospace;
+            color: rgba(255,255,255,0.5);
+        }
+        
+        .font-stack {
+            font-family: 'Cascadia Code', monospace;
+            font-size: 13px;
+            background: rgba(0,153,255,0.1);
+            padding: 12px;
+            border-radius: 8px;
+            color: #00ffee;
+            margin: 8px 0;
+        }
+        
+        .tagline-list {
+            list-style: none;
+        }
+        
+        .tagline-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 14px;
+            color: rgba(255,255,255,0.9);
+        }
+        
+        .tagline-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .tagline-list strong {
+            color: #00ffaa;
+        }
+        
+        .metric {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            margin: 12px 0;
+        }
+        
+        .metric-value {
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00ffee, #00ffaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .metric-label {
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+        }
+        
+        .animation-demo {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        
+        .demo-box {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #0099ff, #00ffee);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
+        .demo-pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .demo-glow {
+            box-shadow: 0 0 30px rgba(0,255,238,0.8);
+        }
+        
+        .demo-scan::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: scan 2s linear infinite;
+        }
+        
+        @keyframes scan {
+            to { left: 100%; }
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 20px;
+            border-top: 1px solid rgba(0,255,238,0.2);
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+        }
+        
+        .footer .motto {
+            color: #00ffee;
+            font-size: 16px;
+            margin-top: 10px;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="orb"></div>
+            <h1>TerraFusion</h1>
+            <div class="tagline">Government. Transcended.</div>
+        </div>
+        
+        <div class="grid">
+            <!-- Color Palette Card -->
+            <div class="card">
+                <h2>🎨 Core Colors</h2>
+                <div class="color-palette">
+                    <div class="color-swatch">
+                        <div class="color-box" style="background: #0099ff;"></div>
+                        <div class="color-info">
+                            <div class="color-name">Trust Blue</div>
+                            <div class="color-hex">#0099ff</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-box" style="background: #00ffee;"></div>
+                        <div class="color-info">
+                            <div class="color-name">Transcend</div>
+                            <div class="color-hex">#00ffee</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-box" style="background: #00ffaa;"></div>
+                        <div class="color-info">
+                            <div class="color-name">Success</div>
+                            <div class="color-hex">#00ffaa</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-box" style="background: #0b1020;"></div>
+                        <div class="color-info">
+                            <div class="color-name">Deep Space</div>
+                            <div class="color-hex">#0b1020</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-box" style="background: #ff4444;"></div>
+                        <div class="color-info">
+                            <div class="color-name">Alert</div>
+                            <div class="color-hex">#ff4444</div>
+                        </div>
+                    </div>
+                    <div class="color-swatch">
+                        <div class="color-box" style="background: #ffaa00;"></div>
+                        <div class="color-info">
+                            <div class="color-name">Warning</div>
+                            <div class="color-hex">#ffaa00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Typography Card -->
+            <div class="card">
+                <h2>📝 Typography</h2>
+                <div class="font-stack">
+                    Display: 'Segoe UI', system-ui
+                </div>
+                <div class="font-stack">
+                    Mono: 'Cascadia Code', monospace
+                </div>
+                <div style="margin-top: 16px;">
+                    <div style="font-size: 24px; font-weight: 300;">Display Text</div>
+                    <div style="font-size: 16px; font-weight: 400;">Body Text</div>
+                    <div style="font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #00ffee;">OVERLINE TEXT</div>
+                </div>
+            </div>
+            
+            <!-- Brand Messages Card -->
+            <div class="card">
+                <h2>💬 Core Messages</h2>
+                <ul class="tagline-list">
+                    <li><strong>Tagline:</strong> Government. Transcended.</li>
+                    <li><strong>Slogan:</strong> Turn Complexity into Clarity.</li>
+                    <li><strong>Mission:</strong> We do it right the first time.</li>
+                    <li><strong>Promise:</strong> 379 million times faster.</li>
+                </ul>
+            </div>
+            
+            <!-- Key Metrics Card -->
+            <div class="card">
+                <h2>📊 Key Metrics</h2>
+                <div class="metric">
+                    <span class="metric-value">379M×</span>
+                    <span class="metric-label">Faster Processing</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-value">98.7%</span>
+                    <span class="metric-label">Accuracy Rate</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-value">99.99%</span>
+                    <span class="metric-label">Uptime</span>
+                </div>
+            </div>
+            
+            <!-- Animation Styles Card -->
+            <div class="card">
+                <h2>✨ Animation Styles</h2>
+                <div class="animation-demo">
+                    <div class="demo-box demo-pulse">PULSE</div>
+                    <div class="demo-box demo-glow">GLOW</div>
+                    <div class="demo-box demo-scan" style="position: relative; overflow: hidden;">SCAN</div>
+                </div>
+                <div style="margin-top: 16px; font-size: 13px; color: rgba(255,255,255,0.6);">
+                    Standard timing: 300ms cubic-bezier(0.4, 0, 0.2, 1)
+                </div>
+            </div>
+            
+            <!-- Module Taglines Card -->
+            <div class="card">
+                <h2>🚀 Module Taglines</h2>
+                <ul class="tagline-list">
+                    <li><strong>Terra Agent:</strong> Property Intelligence. Transcended.</li>
+                    <li><strong>CostForge AI:</strong> Valuation. Transcended.</li>
+                    <li><strong>Terra Flow:</strong> Workflows. Transcended.</li>
+                    <li><strong>GISPro:</strong> Mapping. Transcended.</li>
+                    <li><strong>Terra Levy:</strong> Tax Management. Transcended.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div>TerraFusion Brand Guidelines v1.0</div>
+            <div class="motto">We do it right the first time.</div>
+        </div>
+    </div>
+</body>
+</html>

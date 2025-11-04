@@ -1,0 +1,21 @@
+{
+    "set": [
+        "aggregate",
+        "attribute join",
+        "big data",
+        "expression",
+        "fields",
+        "left join",
+        "near",
+        "nearest",
+        "relate",
+        "simplify",
+        "spatial join",
+        "spatiotemporal",
+        "summary",
+        "temporal join",
+        "time join",
+        "time near",
+        "visualize"
+    ]
+}

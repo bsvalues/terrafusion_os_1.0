@@ -1,0 +1,408 @@
+{
+  "TRE": "CSEXRA",
+  "Source": [
+    "STDI-0006 Apr2014, 3.5"
+  ],
+  "Name": "Exploitation Reference Data",
+  "Description": "The Exploitation Reference Data TRE (CSEXRA) provides exploitation support data -- acquisition, environment, and performance parameters. This TRE contains data about preprocessed imagery.",
+  "Size": 132,
+  "Fields": {
+    "SENSOR": {
+      "Name": "The Sensor Type",
+      "Description": "This field represents the sensor associated with this instance of the TRE.",
+      "Size": 132,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [
+            "PAN",
+            "MS"
+          ]
+        }
+      ]
+    },
+    "TIME_FIRST_LINE_IMAGE": {
+      "Name": "Time of the First Line of Image (Synthetic Array)",
+      "Description": "This field represents the time of the first line of the image. The value represents the time of the first image line (top) which is actually the last scan line in the chronological order.",
+      "Size": 12,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["seconds"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0.000000
+          ,
+          "Max": 86400.000000
+        }
+      ]
+    },
+    "TIME_IMAGE_DURATION": {
+      "Name": "Image Duration Time",
+      "Description": "This field represents the time Difference in seconds between the first line, synthetic array, and the last line, synthetic array. A preceeding hyphen/minus (0x2D) flag applied to the time duration value indicates a reverse chronological ordering of the attitude, ephemeris and image data.",
+      "Size": 12,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [
+        "seconds"
+      ],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9999.999999,
+          "Max": 86400.000000
+        }
+      ]
+    },
+    "MAX_GSD": {
+      "Name": "Maximum Mean Ground Sample Distance (GSD)",
+      "Description": "This field represents the predicted maximum mean ground sample distance (GSD) for the primary target.",
+      "Size": 5,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [
+        "inches"
+      ],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 999.9
+        }
+      ]
+    },
+    "ALONG_SCAN_GSD": {
+      "Name": "Along Scan Ground Sample Distance (GSD)",
+      "Description": "This field represents the measured along scan ground sample distance for the primary target. N/A indicates data is not available at the dataset creation time.",
+      "Size": 5,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [
+        "inches"
+      ],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 999.9
+        }
+      ]
+    },
+    "CROSS_SCAN_GSD": {
+      "Name": "Cross Scan Ground Sample Distance (GSD)",
+      "Description": "This field represents the measured cross scan ground sample distance for the primary target. N/A indicates data is not available at the dataset creation time.",
+      "Size": 5,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [
+        "inches"
+      ],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 999.9
+        }
+      ]
+    },
+    "GEO_MEAN_GSD": {
+      "Name": "Geometric Mean GSD",
+      "Description": "This field represents the measured geometric mean ground sample distance for the primary target. N/A means data is not available at the dataset creation time.",
+      "Size": 5,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [
+        "inches"
+      ],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 999.9
+        }
+      ]
+    },
+    "A_S_VERT_GSD": {
+      "Name": "Along Scan Vertical GSD",
+      "Description": "This field represents the measured along scan vertical ground sample distance for the primary target. N/A indicates data is not available at dataset creation time.",
+      "Size": 5,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [
+        "inches"
+      ],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 999.9
+        }
+      ]
+    },
+    "C_S_VERT_GSD": {
+      "Name": "Cross Scan Vertical GSD",
+      "Description": "This field represents the measured cross scan vertical ground sample distance for the primary target. N/A indicates data is not available at dataset creation time.",
+      "Size": 5,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [
+        "inches"
+      ],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 999.9
+        }
+      ]
+    },
+    "GEO_MEAN_VERT_GSD": {
+      "Name": "Geometric Mean Vertical GSD",
+      "Description": "This field represents the measured geometric mean vertical ground sample distance for the primary target. N/A indicates data is not available at dataset creation time.",
+      "Size": 5,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [
+        "inches"
+      ],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 999.9
+        }
+      ]
+    },
+    "GSD_BETA_ANGLE": {
+      "Name": "GSD Beta Angle",
+      "Description": "This field represents the angle on ground (Earth Tangent Plane) between along scan and cross scan directions.",
+      "Size": 5,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [
+        "inches"
+      ],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 180
+        }
+      ]
+    },
+    "DYNAMIC_RANGE": {
+      "Name": "Dynamic Range of Pixels in Image",
+      "Description": "This field represents the dynamic range extent of pixel values in the image.",
+      "Size": 5,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 2047
+        }
+      ]
+    },
+    "NUM_LINES": {
+      "Name": "Number of Lines",
+      "Description": "This field represents the number of lines in the dataset (standard array) for the output product.",
+      "Size": 7,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [
+        "lines"
+      ],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 101,
+          "Max": 9999999
+        }
+      ]
+    },
+    "NUM_SAMPLES": {
+      "Name": "Number of Samples",
+      "Description": "This field represents the number of samples per line in the dataset for the output product.",
+      "Size": 7,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [
+        "lines"
+      ],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 101,
+          "Max": 9999999
+        }
+      ]
+    },
+    "ANGLE_TO_NORTH": {
+      "Name": "Nominal Angle to True North",
+      "Description": "This field represents the angle in degrees, measured clockwise, from the first row of the image to true north at image start time. The value represents the angle to north when the image was collected and is in the opposite direction (180 degrees; reversed) of north in the image.",
+      "Size": 7,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["degrees"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 360
+        }
+      ]
+    },
+    "OBLIQUITY_ANGLE": {
+      "Name": "Nominal Obliquity angle",
+      "Description": "This is the obliquity angle measured from target local vertical. I.e., the angle between the local north-earth-down (NED) horizontal and the optical axis of the image at time of closest approach.",
+      "Size": 6,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [
+        "degrees"
+      ],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 90
+        }
+      ]
+    },
+    "AZ_OF_OBLIQUITY": {
+      "Name": "Azimuth of Obliquity",
+      "Description": "This is the azimuth of the target-SV line-of-sight vector projected in the target local horizontal plane, measured clockwise from true north, computed at image start time.  The velocity control point on the focal plane is projected to this azimuth projection in the target local horizonal plane.",
+      "Size": 7,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [
+        "degrees"
+      ],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 360
+        }
+      ]
+    },
+    "GRD_COVER": {
+      "Name": "Ground Cover",
+      "Description": "This indicates the presence of snow or no snow.",
+      "Size": 1,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [
+            "1",
+            "0",
+            "9"
+          ]
+        }
+      ]
+    },
+    "SNOW_DEPTH_CAT": {
+      "Name": "Snow Depth Category",
+      "Description": "This provides the weighted average of the snow depth values for all of the grids that overlap the tasked image area.",
+      "Size": 1,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "9"
+          ]
+        }
+      ]
+    },
+    "SUN_AZIMUTH": {
+      "Name": "Sun Azimuth Angle",
+      "Description": "This is the azimuth of the target-sun line-of-sight vector projected in the target local horizontal plane, measured clockwise from True North, calculated at Image Start Time.",
+      "Size": 7,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["degrees"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 360
+        }
+      ]
+    },
+    "SUN_ELEVATION": {
+      "Name": "Sun Elevation Angle",
+      "Description": "This is the sun elevation angle from the local target plane to the sun calculated at Image_Start_Time, where the local target plane is referenced by the Target Centered - Earth Fixed, ST coordinate frame.",
+      "Size": 7,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["degrees"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -90,
+          "Max": 90
+        }
+      ]
+    },
+    "PREDICTED_NIIRS": {
+      "Name": "Predicted NIIRS",
+      "Description": "This is the NIIRS value of the image.",
+      "Size": 3,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": ["NIIRS"],
+    "Values": [
+      {
+        "Type": "Range",
+        "Min": 0,
+        "Max": 9
+      }
+    ]
+  },
+  "CIRCL_ERR": {
+    "Name": "Circular Error",
+    "Description": "This is the predicted CE/90 in the geolocation in the scene.",
+    "Size": 3,
+    "Format": "BCS-N",
+    "Type": "R",
+    "Units": ["feet"],
+    "Values": [
+      {
+        "Type": "Range",
+        "Min": 0,
+        "Max": 999
+      }
+    ]
+  },
+  "LINEAR_ERR": {
+    "Name": "Linear Error",
+    "Description": "This is the predicted LE/90 in the geolocation in the scene.",
+    "Size": 3,
+    "Format": "BCS-N",
+    "Type": "R",
+    "Units": ["feet"],
+    "Values": [
+      {
+        "Type": "Range",
+        "Min": 0,
+        "Max": 999
+      }
+    ]
+  }
+}
+}

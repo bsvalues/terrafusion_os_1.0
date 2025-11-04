@@ -1,0 +1,94 @@
+{
+  "workspace_protection_system": {
+    "workspace_name": "citizen-services",
+    "domain": "citizen_engagement",
+    "risk_level": "high",
+    "customization_timestamp": "2025-10-16T10:16:02.403113",
+    "eleven_layer_protection": {
+      "L1_role_scope_confirmation": {
+        "workspace_role": "citizen-services specialized AI agent",
+        "scope_definition": "Optimize and protect citizen_engagement operations",
+        "success_criteria": "Maintain high-level security for citizen_engagement",
+        "data_types_handled": [
+          "PII",
+          "citizen_records",
+          "service_requests"
+        ],
+        "protection_priorities": [
+          "data_privacy",
+          "accessibility",
+          "service_availability"
+        ]
+      },
+      "L2_input_sanitation_threat_modeling": {
+        "threat_model": "citizen_engagement_specific_threats",
+        "input_validation": "citizen-services_input_sanitization",
+        "injection_prevention": "citizen_engagement_injection_protection",
+        "risk_level_controls": "high"
+      },
+      "L3_data_classification": {
+        "data_types": [
+          "PII",
+          "citizen_records",
+          "service_requests"
+        ],
+        "classification_level": "high",
+        "privacy_requirements": "citizen_engagement_privacy_rules",
+        "retention_policies": "citizen-services_data_retention",
+        "access_controls": "citizen_engagement_access_matrix"
+      },
+      "L4_secrets_hygiene": {
+        "vault_integration": "citizen-services_secret_vault",
+        "key_rotation": "citizen_engagement_key_management",
+        "credential_management": "citizen-services_credential_store",
+        "environment_separation": "high_env_isolation"
+      },
+      "L5_environment_guardrails": {
+        "environment_controls": "citizen-services_env_controls",
+        "blast_radius_limits": "citizen_engagement_isolation",
+        "feature_flags": "citizen-services_feature_management",
+        "deployment_gates": "high_deployment_controls"
+      },
+      "L6_policy_compliance": {
+        "domain_regulations": "citizen_engagement_compliance_framework",
+        "government_standards": [
+          "data_privacy",
+          "accessibility",
+          "service_availability"
+        ],
+        "audit_requirements": "citizen-services_audit_trail",
+        "compliance_monitoring": "citizen_engagement_compliance_checks"
+      },
+      "L7_dependency_license_review": {
+        "sbom_generation": "citizen-services_software_bill_of_materials",
+        "vulnerability_scanning": "citizen_engagement_vuln_checks",
+        "license_compliance": "citizen-services_license_validation",
+        "dependency_monitoring": "high_dependency_tracking"
+      },
+      "L8_reproducibility": {
+        "version_pinning": "citizen-services_version_control",
+        "build_determinism": "citizen_engagement_build_reproducibility",
+        "configuration_management": "citizen-services_config_management",
+        "deployment_consistency": "high_deployment_standards"
+      },
+      "L9_observability_hooks": {
+        "metrics_collection": "citizen-services_domain_metrics",
+        "logging_framework": "citizen_engagement_specialized_logging",
+        "tracing_system": "citizen-services_distributed_tracing",
+        "alerting_rules": "citizen_engagement_alert_configuration"
+      },
+      "L10_human_in_loop_gates": {
+        "approval_workflows": "citizen-services_approval_matrix",
+        "review_requirements": "citizen_engagement_review_gates",
+        "escalation_procedures": "high_escalation_rules",
+        "manual_override_controls": "citizen-services_override_procedures"
+      },
+      "L11_red_team_self_check": {
+        "adversarial_testing": "citizen-services_penetration_testing",
+        "failure_mode_analysis": "citizen_engagement_failure_scenarios",
+        "rollback_procedures": "citizen-services_disaster_recovery",
+        "security_validation": "high_security_assessment"
+      }
+    }
+  }
+}

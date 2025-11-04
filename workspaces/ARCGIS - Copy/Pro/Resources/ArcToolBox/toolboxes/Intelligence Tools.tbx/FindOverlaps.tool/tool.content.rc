@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Finds overlapping areas in a feature class and provides a count for the number of overlaps.",
+        "group_field.descr": "<xdoc><p>The <span class=\"esri_uicontrol\">Input Features</span> group field.</p></xdoc>",
+        "group_field.title": "Group Field",
+        "in_features.descr": "The input polygon features for which overlaps will be computed.",
+        "in_features.title": "Input Features",
+        "out_centroid.descr": "<xdoc><p>The output centroid locations of the <span class=\"esri_uicontrol\">Output Intersections</span> features.</p></xdoc>",
+        "out_centroid.title": "Output Centroids",
+        "out_intersection.descr": "The output intersection areas.",
+        "out_intersection.title": "Output Intersections",
+        "title": "Find Overlaps"
+    }
+}

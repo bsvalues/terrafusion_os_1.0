@@ -1,0 +1,847 @@
+{% extends "unified_base.html" %}
+
+{% from "components/ui_components.html" import card, chart_container, icon_button, tabs %}
+{% from "components/data_components.html" import ai_metrics_card %}
+
+{% block title %}AI Demonstration - TerraMiner{% endblock %}
+
+{% block page_title %}AI Capabilities Demo{% endblock %}
+
+{% block page_actions %}
+<a href="{{ url_for('property_search') }}" class="btn btn-outline-success me-2">
+    <i class="bi bi-house me-1"></i>
+    Benton County Search
+</a>
+<button type="button" class="btn btn-outline-secondary me-2" id="resetDemoBtn">
+    <i class="bi bi-arrow-counterclockwise me-1"></i>
+    Reset Demo
+</button>
+<button type="button" class="btn btn-primary" id="explainAIBtn">
+    <i class="bi bi-lightbulb me-1"></i>
+    How It Works
+</button>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        {% call card(title="TerraMiner AI System", subtitle="Intelligent real estate market analysis") %}
+            <p class="mb-4">
+                Our AI system combines natural language processing, machine learning, and real estate domain knowledge 
+                to provide intelligent insights, predictions, and automated analysis of property data.
+            </p>
+            <div class="alert alert-primary">
+                <i class="bi bi-info-circle-fill me-2"></i>
+                This demo showcases the key AI capabilities of TerraMiner. Try out the different features below.
+            </div>
+        {% endcall %}
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6 col-xl-3 mb-4 mb-xl-0">
+        <div class="card h-100 bg-dark border-secondary">
+            <div class="card-body text-center py-4">
+                <div class="feature-icon mb-3">
+                    <i class="bi bi-chat-square-text text-primary" style="font-size: 3rem;"></i>
+                </div>
+                <h5 class="card-title">Natural Language Market Analysis</h5>
+                <p class="card-text text-muted">Ask questions about any property or market in natural language and get detailed analyses.</p>
+                <button class="btn btn-primary mt-3 demo-btn" data-feature="nlp">
+                    <i class="bi bi-play-fill me-1"></i>
+                    Try Demo
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3 mb-4 mb-xl-0">
+        <div class="card h-100 bg-dark border-secondary">
+            <div class="card-body text-center py-4">
+                <div class="feature-icon mb-3">
+                    <i class="bi bi-graph-up-arrow text-info" style="font-size: 3rem;"></i>
+                </div>
+                <h5 class="card-title">Price Prediction Engine</h5>
+                <p class="card-text text-muted">Advanced ML models predict future property values based on historical trends and market factors.</p>
+                <button class="btn btn-primary mt-3 demo-btn" data-feature="prediction">
+                    <i class="bi bi-play-fill me-1"></i>
+                    Try Demo
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3 mb-4 mb-md-0">
+        <div class="card h-100 bg-dark border-secondary">
+            <div class="card-body text-center py-4">
+                <div class="feature-icon mb-3">
+                    <i class="bi bi-camera text-success" style="font-size: 3rem;"></i>
+                </div>
+                <h5 class="card-title">Property Image Analysis</h5>
+                <p class="card-text text-muted">Computer vision algorithms that can identify property features, condition issues, and renovation potential.</p>
+                <button class="btn btn-primary mt-3 demo-btn" data-feature="vision">
+                    <i class="bi bi-play-fill me-1"></i>
+                    Try Demo
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="card h-100 bg-dark border-secondary">
+            <div class="card-body text-center py-4">
+                <div class="feature-icon mb-3">
+                    <i class="bi bi-mic text-warning" style="font-size: 3rem;"></i>
+                </div>
+                <h5 class="card-title">Voice Property Search</h5>
+                <p class="card-text text-muted">Search for properties using natural voice commands and get personalized recommendations.</p>
+                <button class="btn btn-primary mt-3 demo-btn" data-feature="voice">
+                    <i class="bi bi-play-fill me-1"></i>
+                    Try Demo
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Demo Area -->
+<div class="row">
+    <div class="col-md-12">
+        {% call card(title="AI Demo Playground", subtitle="Interactive demonstration") %}
+            <div id="demoContainer" class="p-5 text-center">
+                <i class="bi bi-robot text-muted" style="font-size: 5rem;"></i>
+                <h4 class="mt-3">Select a feature above to begin the demo</h4>
+                <p class="text-muted">Click any of the AI capability cards to load an interactive demonstration.</p>
+            </div>
+            
+            <!-- NLP Demo Content (Hidden Initially) -->
+            <div id="nlpDemo" class="demo-content" style="display: none;">
+                <h4 class="mb-3">Natural Language Market Analysis</h4>
+                <p class="mb-4">Ask any question about real estate markets or specific properties to get instant insights.</p>
+                
+                <div class="input-group mb-4">
+                    <input type="text" class="form-control" id="nlpQuery" placeholder="Try: 'What's the average price in San Francisco?' or 'How is the market trending in Austin?'">
+                    <button class="btn btn-primary" type="button" id="nlpSubmit">
+                        <i class="bi bi-send me-1"></i>
+                        Ask
+                    </button>
+                </div>
+                
+                <div class="conversation-container border border-secondary rounded p-3 mb-4" style="height: 350px; overflow-y: auto;">
+                    <div class="conversation-messages">
+                        <div class="message system-message mb-3">
+                            <div class="message-content bg-dark border border-secondary rounded p-3">
+                                <p class="mb-0">Hello! I'm the TerraMiner AI assistant. How can I help you with real estate market information today?</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="demo-actions text-center">
+                    <button class="btn btn-outline-secondary" id="nlpReset">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i>
+                        Reset Conversation
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Price Prediction Demo Content (Hidden Initially) -->
+            <div id="predictionDemo" class="demo-content" style="display: none;">
+                <h4 class="mb-3">Price Prediction Engine</h4>
+                <p class="mb-4">Select a location and property type to see price predictions for the next 12 months.</p>
+                
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="predictionLocation" class="form-label">Location</label>
+                            <select class="form-select" id="predictionLocation">
+                                <option value="sanfrancisco">San Francisco, CA</option>
+                                <option value="newyork">New York, NY</option>
+                                <option value="austin">Austin, TX</option>
+                                <option value="seattle">Seattle, WA</option>
+                                <option value="miami">Miami, FL</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="propertyType" class="form-label">Property Type</label>
+                            <select class="form-select" id="propertyType">
+                                <option value="singlefamily">Single Family Home</option>
+                                <option value="condo">Condominium</option>
+                                <option value="townhouse">Townhouse</option>
+                                <option value="multifamily">Multi-Family</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="bedrooms" class="form-label">Bedrooms</label>
+                            <select class="form-select" id="bedrooms">
+                                <option value="1">1+ Bedroom</option>
+                                <option value="2" selected>2+ Bedrooms</option>
+                                <option value="3">3+ Bedrooms</option>
+                                <option value="4">4+ Bedrooms</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mb-4">
+                    <button class="btn btn-primary" id="generatePrediction">
+                        <i class="bi bi-graph-up-arrow me-1"></i>
+                        Generate Prediction
+                    </button>
+                </div>
+                
+                <div class="prediction-results" style="display: none;">
+                    <div style="height: 350px;">
+                        <canvas id="pricePredictionChart"></canvas>
+                    </div>
+                    
+                    <div class="prediction-summary alert alert-info mt-4">
+                        <h5 class="alert-heading">Prediction Summary</h5>
+                        <p class="prediction-text mb-0">Based on our analysis, prices for this property type in San Francisco are expected to increase by approximately 4.2% over the next 12 months, with the most significant growth occurring during the spring season.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Vision Demo Content (Hidden Initially) -->
+            <div id="visionDemo" class="demo-content" style="display: none;">
+                <h4 class="mb-3">Property Image Analysis</h4>
+                <p class="mb-4">Upload a property image or select from our samples to see what our AI can identify.</p>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="upload-container border border-secondary rounded p-4 text-center mb-3">
+                            <i class="bi bi-cloud-upload text-muted d-block mb-3" style="font-size: 3rem;"></i>
+                            <p class="mb-3">Drag & drop an image or click to browse</p>
+                            <input type="file" id="imageUpload" class="d-none" accept="image/*">
+                            <button class="btn btn-outline-primary" id="uploadTrigger">
+                                <i class="bi bi-upload me-1"></i>
+                                Select Image
+                            </button>
+                        </div>
+                        
+                        <div class="sample-images">
+                            <p class="text-muted mb-2">Or select a sample image:</p>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button class="btn btn-sm btn-outline-secondary sample-image-btn" data-sample="sample1">
+                                    Modern House
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary sample-image-btn" data-sample="sample2">
+                                    Victorian Home
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary sample-image-btn" data-sample="sample3">
+                                    Condo Interior
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary sample-image-btn" data-sample="sample4">
+                                    Kitchen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="vision-results border border-secondary rounded p-3 text-center" style="min-height: 300px;">
+                            <div class="initial-state">
+                                <i class="bi bi-image text-muted d-block mb-2" style="font-size: 3rem;"></i>
+                                <p class="text-muted">Analysis results will appear here</p>
+                            </div>
+                            <div class="results-state" style="display: none;">
+                                <div class="image-preview mb-3 text-center">
+                                    <img id="analyzedImage" src="" alt="Analyzed Property" class="img-fluid rounded" style="max-height: 250px;">
+                                </div>
+                                <div class="analysis-results text-start">
+                                    <h5 class="mb-3">AI Analysis Results:</h5>
+                                    <ul class="list-group list-group-flush bg-dark vision-results-list">
+                                        <!-- Results will be populated here -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Voice Demo Content (Hidden Initially) -->
+            <div id="voiceDemo" class="demo-content" style="display: none;">
+                <h4 class="mb-3">Voice Property Search</h4>
+                <p class="mb-4">Speak naturally to search for properties and get recommendations based on your criteria.</p>
+                
+                <div class="text-center mb-4">
+                    <button class="btn btn-lg btn-primary rounded-circle voice-record-btn" id="voiceRecordBtn" style="width: 80px; height: 80px;">
+                        <i class="bi bi-mic-fill" style="font-size: 2rem;"></i>
+                    </button>
+                    <p class="mt-2 text-muted">Click the microphone and speak your property search criteria</p>
+                    <p class="voice-status text-primary mt-3" style="display: none;">Listening...</p>
+                </div>
+                
+                <div class="voice-results" style="display: none;">
+                    <div class="alert alert-info mb-4">
+                        <h5 class="alert-heading">I understood:</h5>
+                        <p class="voice-transcription mb-0">"I'm looking for a three-bedroom house in Austin with a pool and a garage, under $500,000."</p>
+                    </div>
+                    
+                    <div class="search-results">
+                        <h5 class="mb-3">Here's what I found for you:</h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100 bg-dark border-secondary">
+                                    <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Property">
+                                    <div class="card-body">
+                                        <h5 class="card-title">$475,000</h5>
+                                        <p class="card-text">3 bed, 2 bath • Austin, TX</p>
+                                        <p class="card-text small text-muted">Modern home with pool and 2-car garage</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100 bg-dark border-secondary">
+                                    <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Property">
+                                    <div class="card-body">
+                                        <h5 class="card-title">$450,000</h5>
+                                        <p class="card-text">3 bed, 2.5 bath • Austin, TX</p>
+                                        <p class="card-text small text-muted">Ranch-style with pool and attached garage</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100 bg-dark border-secondary">
+                                    <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="Property">
+                                    <div class="card-body">
+                                        <h5 class="card-title">$499,900</h5>
+                                        <p class="card-text">4 bed, 3 bath • Austin, TX</p>
+                                        <p class="card-text small text-muted">New construction with pool and 3-car garage</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endcall %}
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        {{ ai_metrics_card(ai_metrics, loading=false, error=false) }}
+    </div>
+</div>
+
+<!-- How It Works Modal -->
+<div class="modal fade" id="howItWorksModal" tabindex="-1" aria-labelledby="howItWorksModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark text-light border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title" id="howItWorksModalLabel">How TerraMiner AI Works</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <div class="p-3 border border-primary rounded">
+                            <h5><i class="bi bi-braces-asterisk me-2 text-primary"></i>Data Processing Pipeline</h5>
+                            <p class="mb-0">Our system collects and processes millions of real estate data points from multiple sources including MLS listings, public records, and economic indicators.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border border-info rounded">
+                            <h5><i class="bi bi-diagram-3 me-2 text-info"></i>Machine Learning Models</h5>
+                            <p class="mb-0">We employ a variety of supervised and unsupervised learning algorithms including gradient boosting, neural networks, and time series forecasting.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <div class="p-3 border border-success rounded">
+                            <h5><i class="bi bi-cpu me-2 text-success"></i>Natural Language Processing</h5>
+                            <p class="mb-0">Advanced NLP techniques allow our system to understand and respond to complex natural language queries about real estate markets and properties.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 border border-warning rounded">
+                            <h5><i class="bi bi-camera me-2 text-warning"></i>Computer Vision</h5>
+                            <p class="mb-0">Our image analysis algorithms can identify property features, assess condition, and even detect renovation potential from property photographs.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="system-diagram text-center mb-4">
+                    <h5 class="mb-3">TerraMiner AI System Architecture</h5>
+                    <div class="p-3 border border-secondary rounded">
+                        <img src="{{ url_for('static', filename='img/ai_system_diagram.svg') }}" alt="AI System Architecture" class="img-fluid">
+                    </div>
+                </div>
+                
+                <div class="alert alert-primary">
+                    <h5 class="alert-heading">Continuous Learning</h5>
+                    <p class="mb-0">Our AI system continuously improves through feedback loops and regular retraining on new market data, ensuring predictions and insights stay accurate over time.</p>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="{{ url_for('ai_advanced_analytics') }}" class="btn btn-primary">
+                    <i class="bi bi-arrow-right me-1"></i>
+                    Explore Advanced Analytics
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Demo feature selector
+    const demoButtons = document.querySelectorAll('.demo-btn');
+    const demoContents = document.querySelectorAll('.demo-content');
+    const defaultContainer = document.getElementById('demoContainer');
+    
+    demoButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const feature = this.getAttribute('data-feature');
+            
+            // Hide default container
+            defaultContainer.style.display = 'none';
+            
+            // Hide all demo contents
+            demoContents.forEach(content => {
+                content.style.display = 'none';
+            });
+            
+            // Show selected feature demo
+            document.getElementById(feature + 'Demo').style.display = 'block';
+            
+            // Initialize feature specific content
+            initFeature(feature);
+        });
+    });
+    
+    // Reset demo button
+    document.getElementById('resetDemoBtn').addEventListener('click', function() {
+        // Hide all demo contents
+        demoContents.forEach(content => {
+            content.style.display = 'none';
+        });
+        
+        // Show default container
+        defaultContainer.style.display = 'block';
+    });
+    
+    // How it works button
+    document.getElementById('explainAIBtn').addEventListener('click', function() {
+        const modal = new bootstrap.Modal(document.getElementById('howItWorksModal'));
+        modal.show();
+    });
+    
+    // Feature specific initializations
+    function initFeature(feature) {
+        switch(feature) {
+            case 'nlp':
+                initNLPDemo();
+                break;
+            case 'prediction':
+                initPredictionDemo();
+                break;
+            case 'vision':
+                initVisionDemo();
+                break;
+            case 'voice':
+                initVoiceDemo();
+                break;
+        }
+    }
+    
+    // NLP Demo
+    function initNLPDemo() {
+        const nlpSubmit = document.getElementById('nlpSubmit');
+        const nlpQuery = document.getElementById('nlpQuery');
+        const conversationContainer = document.querySelector('.conversation-messages');
+        const nlpReset = document.getElementById('nlpReset');
+        
+        nlpSubmit.addEventListener('click', function() {
+            const query = nlpQuery.value.trim();
+            
+            if (!query) return;
+            
+            // Add user message
+            addMessage(query, 'user');
+            
+            // Clear input
+            nlpQuery.value = '';
+            
+            // Simulate AI thinking
+            setTimeout(() => {
+                // Add AI response based on query
+                let response = "";
+                
+                if (query.toLowerCase().includes('san francisco') || query.toLowerCase().includes('sf')) {
+                    response = "The average home price in San Francisco is currently $1.2M, which represents a 2.3% increase over the past year. The market is competitive with homes receiving an average of 3 offers and selling in about 29 days.";
+                } else if (query.toLowerCase().includes('austin')) {
+                    response = "The Austin real estate market is very active right now. Median home prices have increased by 8.4% year-over-year to $550,000. The market is favoring sellers with homes selling in an average of 20 days.";
+                } else if (query.toLowerCase().includes('price') || query.toLowerCase().includes('cost')) {
+                    response = "Property prices vary significantly by location. Currently, the national median home price is $375,000, up 4.2% from last year. Would you like information about a specific city?";
+                } else if (query.toLowerCase().includes('trend') || query.toLowerCase().includes('forecast')) {
+                    response = "Based on current data, we're projecting a moderate 3-5% increase in home values nationally over the next 12 months. However, some markets in the Southeast and Mountain West regions are expected to see gains of 7-10%.";
+                } else {
+                    response = "I'd be happy to help you with that question. Could you provide a bit more specific information about which location or market aspect you're interested in?";
+                }
+                
+                addMessage(response, 'system');
+            }, 1500);
+        });
+        
+        // Add message to conversation
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message mb-3`;
+            
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content bg-dark border border-secondary rounded p-3';
+            
+            if (sender === 'user') {
+                messageContent.className += ' ms-auto';
+                messageContent.style.maxWidth = '80%';
+                messageContent.style.backgroundColor = 'var(--tf-bg-secondary)';
+            } else {
+                messageContent.style.maxWidth = '80%';
+            }
+            
+            messageContent.innerHTML = `<p class="mb-0">${text}</p>`;
+            messageDiv.appendChild(messageContent);
+            
+            conversationContainer.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            const container = document.querySelector('.conversation-container');
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        // Reset conversation
+        nlpReset.addEventListener('click', function() {
+            conversationContainer.innerHTML = `
+                <div class="message system-message mb-3">
+                    <div class="message-content bg-dark border border-secondary rounded p-3">
+                        <p class="mb-0">Hello! I'm the TerraMiner AI assistant. How can I help you with real estate market information today?</p>
+                    </div>
+                </div>
+            `;
+        });
+        
+        // Enter key handler
+        nlpQuery.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                nlpSubmit.click();
+            }
+        });
+    }
+    
+    // Price Prediction Demo
+    function initPredictionDemo() {
+        const generateBtn = document.getElementById('generatePrediction');
+        const resultsContainer = document.querySelector('.prediction-results');
+        let predictionChart = null;
+        
+        generateBtn.addEventListener('click', function() {
+            // Show loading state
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i> Generating...';
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                // Get values
+                const location = document.getElementById('predictionLocation').value;
+                const propertyType = document.getElementById('propertyType').value;
+                const bedrooms = document.getElementById('bedrooms').value;
+                
+                // Generate prediction data
+                const months = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
+                
+                // Base values for different locations
+                const baseValues = {
+                    'sanfrancisco': 1200000,
+                    'newyork': 900000,
+                    'austin': 550000,
+                    'seattle': 750000,
+                    'miami': 480000
+                };
+                
+                // Property type multipliers
+                const propertyMultipliers = {
+                    'singlefamily': 1.0,
+                    'condo': 0.8,
+                    'townhouse': 0.85,
+                    'multifamily': 1.5
+                };
+                
+                // Bedroom multipliers
+                const bedroomMultipliers = {
+                    '1': 0.7,
+                    '2': 1.0,
+                    '3': 1.25,
+                    '4': 1.5
+                };
+                
+                // Calculate base price
+                const basePrice = baseValues[location] * propertyMultipliers[propertyType] * bedroomMultipliers[bedrooms];
+                
+                // Generate price data with some randomness for realistic variation
+                const historicalData = [basePrice * 0.96, basePrice * 0.97, basePrice * 0.98, basePrice * 0.99];
+                const currentPrice = basePrice;
+                const predictedData = [];
+                
+                // Add some market seasonality and randomness
+                for (let i = 0; i < 7; i++) {
+                    const seasonalFactor = 1 + (Math.sin(i / 6 * Math.PI) * 0.02); // Seasonal variation
+                    const trendFactor = 1 + (i * 0.006); // Upward trend
+                    const randomFactor = 1 + (Math.random() * 0.01 - 0.005); // Random noise
+                    predictedData.push(basePrice * seasonalFactor * trendFactor * randomFactor);
+                }
+                
+                // Combine data
+                const allData = [...historicalData, currentPrice, ...predictedData];
+                
+                // Create chart labels
+                const chartLabels = [];
+                for (let i = 0; i < 12; i++) {
+                    chartLabels.push(months[i]);
+                }
+                
+                // Create chart datasets
+                const datasets = [
+                    {
+                        label: 'Historical Price',
+                        data: [...historicalData, currentPrice, ...Array(7).fill(null)],
+                        borderColor: 'rgba(66, 232, 220, 1.0)',
+                        backgroundColor: 'rgba(66, 232, 220, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true,
+                        pointRadius: 3
+                    },
+                    {
+                        label: 'Predicted Price',
+                        data: [...Array(5).fill(null), ...predictedData],
+                        borderColor: 'rgba(255, 193, 7, 1.0)',
+                        backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        tension: 0.3,
+                        fill: true,
+                        pointRadius: 0
+                    }
+                ];
+                
+                // Create or update chart
+                if (predictionChart) {
+                    predictionChart.data.labels = chartLabels;
+                    predictionChart.data.datasets = datasets;
+                    predictionChart.update();
+                } else {
+                    predictionChart = createChart('pricePredictionChart', 'line', {
+                        labels: chartLabels,
+                        datasets: datasets
+                    }, {
+                        scales: {
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Price ($)'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return '$' + value.toLocaleString();
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.dataset.label + ': $' + context.raw.toLocaleString();
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+                
+                // Update prediction summary
+                const priceDiff = predictedData[6] - currentPrice;
+                const priceDiffPercent = (priceDiff / currentPrice * 100).toFixed(1);
+                const locationName = document.getElementById('predictionLocation').options[document.getElementById('predictionLocation').selectedIndex].text;
+                const propertyTypeName = document.getElementById('propertyType').options[document.getElementById('propertyType').selectedIndex].text;
+                
+                document.querySelector('.prediction-text').textContent = 
+                    `Based on our analysis, prices for ${propertyTypeName.toLowerCase()}s in ${locationName} are expected to ${priceDiff > 0 ? 'increase' : 'decrease'} by approximately ${Math.abs(priceDiffPercent)}% over the next 7 months, with the most significant ${priceDiff > 0 ? 'growth' : 'decline'} occurring during the ${priceDiff > 0 ? 'spring' : 'winter'} season.`;
+                
+                // Show results
+                resultsContainer.style.display = 'block';
+                
+                // Restore button
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = '<i class="bi bi-graph-up-arrow me-1"></i> Generate Prediction';
+            }, 2000);
+        });
+    }
+    
+    // Vision Demo
+    function initVisionDemo() {
+        const uploadTrigger = document.getElementById('uploadTrigger');
+        const imageUpload = document.getElementById('imageUpload');
+        const sampleButtons = document.querySelectorAll('.sample-image-btn');
+        const initialState = document.querySelector('.vision-results .initial-state');
+        const resultsState = document.querySelector('.vision-results .results-state');
+        const analyzedImage = document.getElementById('analyzedImage');
+        const resultsListContainer = document.querySelector('.vision-results-list');
+        
+        // Upload trigger
+        uploadTrigger.addEventListener('click', function() {
+            imageUpload.click();
+        });
+        
+        // Image upload
+        imageUpload.addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    analyzeImage(e.target.result, 'uploaded');
+                }
+                
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+        
+        // Sample image buttons
+        sampleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const sample = this.getAttribute('data-sample');
+                const sampleImageUrl = `https://via.placeholder.com/800x600?text=${sample}`;
+                
+                analyzeImage(sampleImageUrl, sample);
+            });
+        });
+        
+        // Analyze image
+        function analyzeImage(imageUrl, type) {
+            // Show loading state
+            initialState.style.display = 'none';
+            resultsState.style.display = 'block';
+            analyzedImage.src = imageUrl;
+            resultsListContainer.innerHTML = `
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Analyzing image...</p>
+                </div>
+            `;
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                // Generate results based on sample type
+                let results = [];
+                
+                if (type === 'sample1') {
+                    results = [
+                        { feature: 'Property Type', value: 'Modern Single Family Home', confidence: 0.98 },
+                        { feature: 'Architectural Style', value: 'Contemporary', confidence: 0.95 },
+                        { feature: 'Estimated Size', value: '2,800-3,200 sq ft', confidence: 0.85 },
+                        { feature: 'Features Detected', value: 'Open Floor Plan, Large Windows, Flat Roof', confidence: 0.92 },
+                        { feature: 'Exterior Condition', value: 'Excellent', confidence: 0.94 },
+                        { feature: 'Landscaping', value: 'Well-maintained, Minimalist', confidence: 0.87 }
+                    ];
+                } else if (type === 'sample2') {
+                    results = [
+                        { feature: 'Property Type', value: 'Victorian Single Family Home', confidence: 0.96 },
+                        { feature: 'Architectural Style', value: 'Queen Anne Victorian', confidence: 0.93 },
+                        { feature: 'Estimated Size', value: '2,400-2,800 sq ft', confidence: 0.82 },
+                        { feature: 'Features Detected', value: 'Ornate Details, Bay Windows, Turret', confidence: 0.91 },
+                        { feature: 'Exterior Condition', value: 'Good, Some Wear', confidence: 0.88 },
+                        { feature: 'Renovation Potential', value: 'Medium - Restore Period Details', confidence: 0.85 }
+                    ];
+                } else if (type === 'sample3') {
+                    results = [
+                        { feature: 'Property Type', value: 'Condominium - Living Room', confidence: 0.97 },
+                        { feature: 'Design Style', value: 'Modern/Minimalist', confidence: 0.94 },
+                        { feature: 'Estimated Size', value: '1,000-1,200 sq ft (entire unit)', confidence: 0.75 },
+                        { feature: 'Features Detected', value: 'Open Concept, Hardwood Floors, Large Windows', confidence: 0.92 },
+                        { feature: 'Interior Condition', value: 'Excellent', confidence: 0.96 },
+                        { feature: 'Natural Light', value: 'Abundant', confidence: 0.93 }
+                    ];
+                } else if (type === 'sample4') {
+                    results = [
+                        { feature: 'Room Type', value: 'Kitchen', confidence: 0.99 },
+                        { feature: 'Kitchen Style', value: 'Modern Farmhouse', confidence: 0.92 },
+                        { feature: 'Estimated Size', value: '150-200 sq ft', confidence: 0.80 },
+                        { feature: 'Features Detected', value: 'Island, Quartz Countertops, Stainless Appliances', confidence: 0.94 },
+                        { feature: 'Condition', value: 'Excellent/Recently Renovated', confidence: 0.95 },
+                        { feature: 'Upgrade Potential', value: 'Low - Already High-End', confidence: 0.91 }
+                    ];
+                } else {
+                    // Generic results for uploaded images
+                    results = [
+                        { feature: 'Property Type', value: 'Residential Building', confidence: 0.88 },
+                        { feature: 'Architectural Style', value: 'Modern', confidence: 0.76 },
+                        { feature: 'Estimated Size', value: 'Unable to determine accurately', confidence: 0.55 },
+                        { feature: 'Features Detected', value: 'Windows, Door, Roof', confidence: 0.82 },
+                        { feature: 'Condition', value: 'Good', confidence: 0.75 },
+                        { feature: 'Analysis Note', value: 'For more accurate results, try using a clearer image showing the full property', confidence: 1.0 }
+                    ];
+                }
+                
+                // Generate HTML for results
+                let resultsHTML = '';
+                results.forEach(result => {
+                    resultsHTML += `
+                        <li class="list-group-item bg-dark border-secondary">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <strong>${result.feature}:</strong> ${result.value}
+                                </div>
+                                <span class="badge ${result.confidence > 0.9 ? 'text-bg-success' : result.confidence > 0.8 ? 'text-bg-info' : 'text-bg-secondary'}">
+                                    ${Math.round(result.confidence * 100)}% confidence
+                                </span>
+                            </div>
+                        </li>
+                    `;
+                });
+                
+                // Update results
+                resultsListContainer.innerHTML = resultsHTML;
+            }, 2000);
+        }
+    }
+    
+    // Voice Demo
+    function initVoiceDemo() {
+        const voiceRecordBtn = document.getElementById('voiceRecordBtn');
+        const voiceStatus = document.querySelector('.voice-status');
+        const voiceResults = document.querySelector('.voice-results');
+        
+        voiceRecordBtn.addEventListener('click', function() {
+            // Simulate voice recording
+            voiceStatus.style.display = 'block';
+            voiceResults.style.display = 'none';
+            
+            // Change button appearance
+            voiceRecordBtn.classList.add('btn-danger');
+            voiceRecordBtn.classList.remove('btn-primary');
+            
+            // Simulate recording delay
+            setTimeout(() => {
+                // End recording
+                voiceStatus.style.display = 'none';
+                voiceResults.style.display = 'block';
+                
+                // Restore button
+                voiceRecordBtn.classList.remove('btn-danger');
+                voiceRecordBtn.classList.add('btn-primary');
+            }, 3000);
+        });
+    }
+});
+</script>
+{% endblock %}

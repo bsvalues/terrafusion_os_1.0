@@ -1,0 +1,108 @@
+{
+    "type": "FunctionTool",
+    "guid": "{33CA4A60-4D2E-4583-8844-3D0A75F6D305}/CreateJobs",
+    "displayname": "$rc:title",
+    "helpcontent": "35020001",
+    "description": "$rc:description",
+    "product": "200",
+    "extensions": [
+        "40"
+    ],
+    "params": {
+        "Input_DatabasePath": {
+            "displayname": "$rc:input_databasepath.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "jtc"
+                ]
+            },
+            "description": "$rc:input_databasepath.descr"
+        },
+        "Job_Types": {
+            "displayname": "$rc:job_types.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:job_types.descr"
+        },
+        "Number_of_Jobs": {
+            "displayname": "$rc:number_of_jobs.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:number_of_jobs.descr"
+        },
+        "Users": {
+            "type": "optional",
+            "displayname": "$rc:users.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:users.descr"
+        },
+        "Priority_of_Jobs": {
+            "type": "optional",
+            "displayname": "$rc:priority_of_jobs.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:priority_of_jobs.descr"
+        },
+        "Feature_Layer_AOI": {
+            "type": "optional",
+            "displayname": "$rc:feature_layer_aoi.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:feature_layer_aoi.descr"
+        },
+        "Union_option": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:union_option.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "UNION"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_UNION"
+                    }
+                ]
+            },
+            "depends": [
+                "Feature_Layer_AOI"
+            ],
+            "description": "$rc:union_option.descr"
+        },
+        "Job_ID": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:job_id.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            }
+        }
+    }
+}

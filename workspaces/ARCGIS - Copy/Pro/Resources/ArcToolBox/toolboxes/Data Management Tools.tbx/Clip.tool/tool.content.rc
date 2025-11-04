@@ -1,0 +1,20 @@
+{
+    "map": {
+        "clipping_geometry.descr": "<xdoc><p>Specifies whether the minimum bounding rectangle or the geometry of the specified feature class will be used to clip the data.<ul><li>Checked—The geometry of the specified feature class will be used to clip the data. The pixel depth of the output may be increased; ensure that the output format can support the proper pixel depth.</li><li>Unchecked—The minimum bounding rectangle will be used to clip the data. This is the default.</li></ul></p></xdoc>",
+        "clipping_geometry.title": "Use Input Features for Clipping Geometry",
+        "description": "Cuts out a portion of a raster dataset, mosaic dataset, or image service layer.",
+        "in_raster.descr": "The raster dataset, mosaic dataset, or image service to be clipped.",
+        "in_raster.title": "Input Raster",
+        "in_template_dataset.descr": "<xdoc><p>A raster dataset or feature class that will be used as the extent. The clip output includes pixels that intersect the minimum bounding rectangle.</p><p>If a feature class is used as the output extent and you want to clip the raster based on the polygon features, check the <span class=\"esri_uicontrol\">Use Input Features for Clipping Geometry</span> parameter. When this parameter is checked, the pixel depth of the output may be promoted. Ensure that the output format can support the proper pixel depth.</p></xdoc>",
+        "in_template_dataset.title": "Output Extent",
+        "maintain_clipping_extent.descr": "<xdoc><p>Specifies the extent that will be used in the clipping output.<ul><li>Checked—The number of columns and rows will be adjusted and the pixels will be resampled to exactly match the clipping extent specified.</li><li>Unchecked—The cell alignment of the input raster will be maintained and the output extent will be adjusted accordingly. This is the default.</li></ul></p></xdoc>",
+        "maintain_clipping_extent.title": "Maintain Clipping Extent",
+        "nodata_value.descr": "The value for pixels to be considered as NoData.",
+        "nodata_value.title": "NoData Value",
+        "out_raster.descr": "<xdoc><p>The name, location, and format of the dataset being created. Ensure that it can support the necessary bit depth.</p><p>When storing the raster dataset in a file format, specify the file extension as follows:</p><ul><li>.bil—Esri BIL</li><li>.bip—Esri BIP</li><li>.bmp—BMP</li><li>.bsq—Esri BSQ</li><li>.dat—ENVI DAT</li><li>.gif—GIF</li><li>.img—ERDAS IMAGINE</li><li>.jpg—JPEG</li><li>.jp2—JPEG 2000</li><li>.png—PNG</li><li>.tif—TIFF</li><li>.mrf—MRF</li><li>.crf—CRF</li><li>No extension for Esri Grid</li></ul><p>When storing a raster dataset in a geodatabase, do not add a file extension to the name of the raster dataset.</p><p>When storing a raster dataset to a JPEG format file, a JPEG 2000 format file, a TIFF format file, or a geodatabase, you can specify <span class=\"esri_uicontrol\">Compression Type</span> and <span class=\"esri_uicontrol\">Compression Quality</span> values in the geoprocessing environments.</p></xdoc>",
+        "out_raster.title": "Output Raster Dataset",
+        "rectangle.descr": "<xdoc><p>The four coordinates that define the extent of the bounding box that will be used to clip the raster.</p><p>If the <span class=\"esri_uicontrol\">Output Extent</span> parameter is set, it will automatically populate the x-min, y-min, x-max, and y-max values. Use the <span class=\"esri_uicontrol\">Reset</span> button  to reset the rectangle extent to the extent of the input raster dataset.</p><p>If the value specified is not aligned with the input raster dataset, the tool verifies that the proper alignment is used. This may cause the output to have a slightly different extent than specified.</p></xdoc>",
+        "rectangle.title": "Rectangle",
+        "title": "Clip Raster"
+    }
+}

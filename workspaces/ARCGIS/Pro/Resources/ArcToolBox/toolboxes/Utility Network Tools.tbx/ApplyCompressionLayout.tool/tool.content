@@ -1,0 +1,111 @@
+{
+    "type": "FunctionTool",
+    "guid": "{dcff48b4-fe6b-4b95-94ea-babf214c85d9}",
+    "displayname": "$rc:title",
+    "helpcontent": "71020002",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "block_add_to_map"
+    ],
+    "params": {
+        "in_network_diagram_layer": {
+            "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}",
+            "displayname": "$rc:in_network_diagram_layer.title",
+            "datatype": {
+                "type": "GPDiagramLayer"
+            }
+        },
+        "are_containers_preserved": {
+            "type": "optional",
+            "displayname": "$rc:are_containers_preserved.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "PRESERVE_CONTAINERS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "IGNORE_CONTAINERS"
+                    }
+                ]
+            },
+            "value": "true"
+        },
+        "grouping_distance_absolute": {
+            "type": "optional",
+            "displayname": "$rc:grouping_distance_absolute.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_network_diagram_layer"
+            ],
+            "value": "20 Unknown"
+        },
+        "vertices_removal_rule": {
+            "type": "optional",
+            "displayname": "$rc:vertices_removal_rule.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ALL",
+                        "code": "$rc:vertices_removal_rule.domain.ALL"
+                    },
+                    {
+                        "value": "OUTER",
+                        "code": "$rc:vertices_removal_rule.domain.OUTER"
+                    },
+                    {
+                        "value": "OUTER_EXCEPT_FIRST",
+                        "code": "$rc:vertices_removal_rule.domain.OUTER_EXCEPT_FIRST"
+                    }
+                ]
+            },
+            "value": "OUTER"
+        },
+        "out_network_diagram_layer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_network_diagram_layer.title",
+            "datatype": {
+                "type": "GPDiagramLayer"
+            }
+        },
+        "run_async": {
+            "type": "optional",
+            "displayname": "$rc:run_async.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "RUN_ASYNCHRONOUSLY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "RUN_SYNCHRONOUSLY"
+                    }
+                ]
+            },
+            "value": "false"
+        }
+    }
+}

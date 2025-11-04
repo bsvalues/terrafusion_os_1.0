@@ -1,0 +1,22 @@
+{
+    "map": {
+        "config_keyword.descr": "The configuration keyword that determines the storage parameters of the table in an enterprise geodatabase.",
+        "config_keyword.title": "Configuration Keyword",
+        "description": "Creates a geodatabase table or a dBASE table.",
+        "oid_type.descr": "<xdoc><p>Specifies whether the output Object ID field will be 32 bit or 64 bit.</p><ul><li><span title=\"SAME_AS_TEMPLATE\">Same as template</span>—The output Object ID field type (32 bit or 64 bit) will be the same as the Object ID field of the first template dataset. This is the default.</li><li><span title=\"64_BIT\">64-bit</span>—The output Object ID field will be 64 bit.</li><li><span title=\"32_BIT\">32-bit</span>—The output Object ID field will be 32 bit.</li></ul></xdoc>",
+        "oid_type.domain.32_BIT": "32-bit",
+        "oid_type.domain.64_BIT": "64-bit",
+        "oid_type.domain.SAME_AS_TEMPLATE": "Same as template",
+        "oid_type.title": "OID Type",
+        "out_alias.descr": "The alternate name of the output table that will be created.",
+        "out_alias.title": "Table Alias Name",
+        "out_name.descr": "The name of the table that will be created.",
+        "out_name.title": "Table Name",
+        "out_path.descr": "The workspace where the output table will be created.",
+        "out_path.title": "Table Location",
+        "out_table.title": "Output Table",
+        "template.descr": "One or more datasets from which the attribute schema will be used to define the output table. Fields in the template datasets will be added to the output table.",
+        "template.title": "Template Datasets",
+        "title": "Create Table"
+    }
+}

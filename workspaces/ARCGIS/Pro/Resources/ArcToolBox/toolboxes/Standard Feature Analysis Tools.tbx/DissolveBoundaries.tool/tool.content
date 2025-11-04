@@ -1,0 +1,123 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "53020001",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "inputLayer": {
+            "displayname": "$rc:inputlayer.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "description": "$rc:inputlayer.descr"
+        },
+        "outputName": {
+            "displayname": "$rc:outputname.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:outputname.descr"
+        },
+        "dissolveFields": {
+            "type": "optional",
+            "displayname": "$rc:dissolvefields.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Date"
+                ]
+            },
+            "depends": [
+                "inputLayer"
+            ],
+            "description": "$rc:dissolvefields.descr"
+        },
+        "summaryFields": {
+            "type": "optional",
+            "displayname": "$rc:summaryfields.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:summaryfields.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:summaryfields.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Short",
+                            "Long",
+                            "Float",
+                            "Double"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "SUM",
+                                "code": "$rc:summaryfields.domain.item2.SUM"
+                            },
+                            {
+                                "value": "MEAN",
+                                "code": "$rc:summaryfields.domain.item2.MEAN"
+                            },
+                            {
+                                "value": "MIN",
+                                "code": "$rc:summaryfields.domain.item2.MIN"
+                            },
+                            {
+                                "value": "MAX",
+                                "code": "$rc:summaryfields.domain.item2.MAX"
+                            },
+                            {
+                                "value": "STDDEV",
+                                "code": "$rc:summaryfields.domain.item2.STDDEV"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "inputLayer"
+            ],
+            "description": "$rc:summaryfields.descr"
+        },
+        "output": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    },
+    "environments": [
+        "extent"
+    ]
+}

@@ -1,0 +1,23 @@
+{
+    "set": [
+        "amd",
+        "collection",
+        "combine",
+        "geoeye",
+        "ikonos",
+        "image service",
+        "ingest",
+        "isdef",
+        "landsat",
+        "load",
+        "mosaic dataset",
+        "quickbird",
+        "radarsat",
+        "raster type",
+        "reference",
+        "sensor",
+        "service",
+        "spot",
+        "worldview"
+    ]
+}

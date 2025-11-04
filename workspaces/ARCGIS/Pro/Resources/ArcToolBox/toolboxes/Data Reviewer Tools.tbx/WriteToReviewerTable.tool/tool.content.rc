@@ -1,0 +1,33 @@
+{
+    "map": {
+        "description": "Writes a feature class, feature layer,  table, or table view to the Reviewer workspace.",
+        "in_check_title.descr": "<xdoc><p>The text that will populate the <span class=\"esri_uicontrol\">Check Title</span> result in the <span class=\"esri_uicontrol\">Reviewer Results</span> pane. This value is used to describe the error condition detected on the feature or table record. The parameter value can be derived from a specified value or a field from the input.</p></xdoc>",
+        "in_check_title.title": "Check Title",
+        "in_features.descr": "The features or table records that will be written to the Reviewer workspace.",
+        "in_features.title": "Input Features",
+        "in_field.descr": "<xdoc><p>The field that contains identifiers for the features. The value from this field will populate the <span class=\"esri_uicontrol\">ID</span> result in the <span class=\"esri_uicontrol\">Reviewer Results</span> pane. The field you provide must have a data type of Long.</p></xdoc>",
+        "in_field.title": "ID Field",
+        "in_notes.descr": "<xdoc><p>The text that populates the <span class=\"esri_fieldname\">Notes</span> field in the Reviewer table. The notes are used to provide a more specific description of the feature or table record. The parameter value can be derived from a specified value or a field from the input.</p></xdoc>",
+        "in_notes.title": "Notes",
+        "in_origin_table_name.descr": "<xdoc><p>The string or field value that will be used to populate the <span class=\"esri_uicontrol\">Source</span> result in the <span class=\"esri_uicontrol\">Reviewer Results</span> pane for each record that is written. This is typically the name of the feature class or table. The parameter value can be derived from a specified value or a field from the input.</p></xdoc>",
+        "in_origin_table_name.title": "Origin Table Name (Value or Field)",
+        "in_review_status.descr": "<xdoc><p>A status string that will be associated with the group of records written to the Reviewer workspace. The default is <span class=\"esri_uicontrol\">Write GP Results to Reviewer Table</span>. The parameter value can be derived from a specified value or a field from the input.</p></xdoc>",
+        "in_review_status.title": "Review Status",
+        "in_reviewer_workspace.descr": "The path to the Reviewer workspace where the features or table records will be written.",
+        "in_reviewer_workspace.title": "Reviewer Workspace",
+        "in_session.descr": "The Reviewer session ID where the features or table records will be written. Use the full session ID format: Session 1 : Session 1.",
+        "in_session.title": "Session",
+        "in_severity.descr": "<xdoc><p>A numeric value that represents the significance of the features or table records that have been written to the Reviewer workspace. The values range from 5 (low priority) to 1 (high priority). This value will populate the <span class=\"esri_uicontrol\">Severity</span> result in the <span class=\"esri_uicontrol\">Reviewer Results</span> pane. The parameter value can be derived from a specified value or a field from the input.</p></xdoc>",
+        "in_severity.domain.item1.1": "1",
+        "in_severity.domain.item1.2": "2",
+        "in_severity.domain.item1.3": "3",
+        "in_severity.domain.item1.4": "4",
+        "in_severity.domain.item1.5": "5",
+        "in_severity.title": "Severity",
+        "in_subtype.descr": "<xdoc><p>The feature class subtype to which the features belong. The value from this parameter will populate the <span class=\"esri_uicontrol\">Subtype</span> result in the <span class=\"esri_uicontrol\">Reviewer Results</span> pane. The parameter value can be derived from a specified value or a field from the input.</p></xdoc>",
+        "in_subtype.title": "Subtype",
+        "revtablemain_view.title": "REVTABLEMAIN",
+        "summary": "<xdoc><p>Writes a feature class, feature layer, table, or table view to the Reviewer workspace.</p><note type=\"legacy\"/><p group=\"note\">ArcMap-based Reviewer workflows will soon be deprecated. It is recommended that current users begin converting their workflows from Reviewer batch jobs to ArcGIS Pro attribute rules.</p></xdoc>",
+        "title": "Write To Reviewer Table"
+    }
+}

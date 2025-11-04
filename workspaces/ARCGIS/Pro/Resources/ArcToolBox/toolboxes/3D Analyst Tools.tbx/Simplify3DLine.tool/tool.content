@@ -1,0 +1,141 @@
+{
+    "type": "FunctionTool",
+    "guid": "{6175f571-956d-433c-9f0f-d20841129b26}",
+    "displayname": "$rc:title",
+    "helpcontent": "5010004",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9"
+    ],
+    "params": {
+        "in_features": {
+            "display_order": "0",
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "tolerance": {
+            "display_order": "2",
+            "displayname": "$rc:tolerance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Kilometers",
+                        "code": "Kilometers"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Meters",
+                        "code": "Meters"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Decimeters",
+                        "code": "Decimeters"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Centimeters",
+                        "code": "Centimeters"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Millimeters",
+                        "code": "Millimeters"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "NauticalMiles",
+                        "code": "Nautical Miles"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Miles",
+                        "code": "Miles"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Yards",
+                        "code": "Yards"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Feet",
+                        "code": "Feet"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Inches",
+                        "code": "Inches"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "NauticalMilesInt",
+                        "code": "NauticalMilesInt"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "MilesInt",
+                        "code": "MilesInt"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "YardsInt",
+                        "code": "YardsInt"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "FeetInt",
+                        "code": "FeetInt"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "InchesInt",
+                        "code": "InchesInt"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Unknown",
+                        "code": "Unknown"
+                    }
+                ]
+            },
+            "description": "$rc:tolerance.descr"
+        }
+    },
+    "environments": [
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "ZDomain",
+        "ZResolution",
+        "ZTolerance",
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "workspace"
+    ]
+}

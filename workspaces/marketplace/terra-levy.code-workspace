@@ -1,0 +1,184 @@
+{
+  "folders": [
+    {
+      "path": "../../marketplace/terra-levy",
+      "name": "💰 Terra Levy (Property Tax)"
+    },
+    {
+      "path": "../../platform/sdk",
+      "name": "📦 Platform SDK (read-only)"
+    },
+    {
+      "path": "../../platform/design-system",
+      "name": "🎨 Design System (read-only)"
+    },
+    {
+      "path": "../../tests/marketplace/terra-levy",
+      "name": "🧪 Tests"
+    },
+    {
+      "path": "../../docs/marketplace/terra-levy.md",
+      "name": "📚 Terra Levy Docs"
+    },
+    {
+      "path": "../../../OneDrive/Desktop/TerraFusionMono/TerraFusionMono/TerraLevy"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "../../frontend": true,
+      "../../backend": true,
+      "../../os-platform": true,
+      "../../terrafusion-cos": true,
+      "../../marketplace/*": true,
+      "!../../marketplace/terra-levy": false
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "../../frontend": true,
+      "../../backend": true,
+      "../../os-platform": true,
+      "../../marketplace/*": true,
+      "!../../marketplace/terra-levy": false
+    },
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "eslint.workingDirectories": [
+      "./marketplace/terra-levy"
+    ],
+    "[typescript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[python]": {
+      "editor.defaultFormatter": "ms-python.black-formatter"
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "ms-python.black-formatter",
+      "bradlc.vscode-tailwindcss",
+      "streetsidesoftware.code-spell-checker",
+      "usernamehw.errorlens",
+      "eamodio.gitlens"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Start Terra Levy Frontend",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/terra-levy/frontend",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "console": "integratedTerminal"
+      },
+      {
+        "name": "Start Terra Levy Backend",
+        "type": "python",
+        "request": "launch",
+        "program": "${workspaceFolder}/marketplace/terra-levy/backend/main.py",
+        "console": "integratedTerminal",
+        "cwd": "${workspaceFolder}/marketplace/terra-levy/backend"
+      },
+      {
+        "name": "Start Terra Levy MCP Server",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/terra-levy/mcp-server",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "console": "integratedTerminal"
+      }
+    ],
+    "compounds": [
+      {
+        "name": "Start Full Terra Levy Stack",
+        "configurations": [
+          "Start Terra Levy Backend",
+          "Start Terra Levy Frontend",
+          "Start Terra Levy MCP Server"
+        ],
+        "presentation": {
+          "hidden": false,
+          "group": "terra-levy",
+          "order": 1
+        }
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build Terra Levy",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "build"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/terra-levy"
+        },
+        "problemMatcher": [
+          "$tsc"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Test Terra Levy",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "test"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/terra-levy"
+        },
+        "problemMatcher": [],
+        "group": {
+          "kind": "test",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Run Tax Calculation Tests",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "-m",
+          "pytest",
+          "tests/tax_calculations/"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/terra-levy"
+        },
+        "problemMatcher": []
+      }
+    ]
+  }
+}
+

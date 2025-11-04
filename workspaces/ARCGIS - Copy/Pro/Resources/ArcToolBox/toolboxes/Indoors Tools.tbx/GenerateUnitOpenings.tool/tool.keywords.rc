@@ -1,0 +1,16 @@
+{
+    "set": [
+        "details",
+        "door",
+        "egress",
+        "entrance",
+        "entryway",
+        "generate",
+        "imdf",
+        "indoor",
+        "indoors",
+        "indoors to imdf",
+        "opening",
+        "unit"
+    ]
+}

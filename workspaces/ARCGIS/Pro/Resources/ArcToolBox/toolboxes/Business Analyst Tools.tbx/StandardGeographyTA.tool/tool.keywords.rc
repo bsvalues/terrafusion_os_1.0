@@ -1,0 +1,20 @@
+{
+    "set": [
+        "area",
+        "block group",
+        "boundary",
+        "cbsa",
+        "census subdivisions",
+        "census tract",
+        "county",
+        "dma",
+        "geographies",
+        "geography",
+        "nation",
+        "state",
+        "subdivisions",
+        "trade",
+        "trade area",
+        "zip code"
+    ]
+}

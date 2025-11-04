@@ -1,0 +1,15 @@
+{
+    "set": [
+        "azimuth",
+        "geodesic",
+        "geodesy",
+        "geometry",
+        "great circle",
+        "length",
+        "loxodrome",
+        "normal section",
+        "rhumb",
+        "true earth",
+        "vector"
+    ]
+}

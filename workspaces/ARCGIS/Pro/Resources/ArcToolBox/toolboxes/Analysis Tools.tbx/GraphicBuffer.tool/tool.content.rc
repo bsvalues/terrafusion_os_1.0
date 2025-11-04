@@ -1,0 +1,27 @@
+{
+    "map": {
+        "buffer_distance_or_field.descr": "<xdoc><p>The distance around the input features that will be buffered. Distances can be provided as either a value representing a linear distance or a field from the input features that contains the distance to buffer each feature.</p><p>If linear units are not specified or are entered as Unknown, the linear unit of the input features&apos; spatial reference will be used.</p></xdoc>",
+        "buffer_distance_or_field.title": "Distance [value or field]",
+        "description": "Creates buffer polygons around input features to a specified distance. A number of cartographic shapes are available for buffer ends (caps) and corners (joins) when the buffer is generated around the feature.",
+        "in_features.descr": "The input point, line, or polygon features that will be buffered.",
+        "in_features.title": "Input Features",
+        "line_caps.descr": "<xdoc><p>Specifies the type of caps (ends) of the input features that will be buffered. This parameter is only supported for point and polygon features.</p><ul><li><span title=\"SQUARE\">Square</span>—The output buffer will have a square cap around the end of the input segment. This is the default.</li><li><span title=\"BUTT\">Butt</span>—The output buffer will have a cap perpendicular to the end of the input segment.</li><li><span title=\"ROUND\">Round</span>—The output buffer will have a cap that is round at the end of the input segment.</li></ul></xdoc>",
+        "line_caps.domain.BUTT": "Butt",
+        "line_caps.domain.ROUND": "Round",
+        "line_caps.domain.SQUARE": "Square",
+        "line_caps.title": "Caps Type",
+        "line_joins.descr": "<xdoc><p>Specifies the shape of the buffer at corners where two segments join. This parameter is only supported for line and polygon features.</p><ul><li><span title=\"MITER\">Miter</span>—The output buffer feature will be a square or sharp shape around corners. For example, a square input polygon feature will have a square buffer feature. This is the default.</li><li><span title=\"BEVEL\">Bevel</span>—The output buffer feature for inner corners will be squared, and the outer corner will be cut perpendicular to the farthest point of the corner.</li><li><span title=\"ROUND\">Round</span>—The output buffer feature for inner corners will be squared, and the outer corner will be round.</li></ul></xdoc>",
+        "line_joins.domain.BEVEL": "Bevel",
+        "line_joins.domain.MITER": "Miter",
+        "line_joins.domain.ROUND": "Round",
+        "line_joins.title": "Join Type",
+        "max_deviation.descr": "<xdoc><p>The maximum distance the output buffer boundary will deviate from the true buffer boundary.</p><p>While the true boundary of the buffer is a curve, the output boundary will be densified. Use this parameter to control how the output polygon boundary approximates the true buffer boundary.</p><p>If this parameter is not set or is set to 0, the tool will identify the maximum deviation. It is recommended that you use the default value. Performance degradation in the tool and in subsequent analyses may result from using a maximum offset deviation that is too small.</p></xdoc>",
+        "max_deviation.title": "Maximum Offset Deviation",
+        "miter_limit.descr": "<xdoc><p>Where line segments meet at a sharp angle and the <span class=\"esri_uicontrol\">Join Type</span> parameter value has been specified as <span class=\"esri_uicontrol\">Miter</span>, this parameter can be used to control how sharp corners in buffer output come to a point. In some cases, the outer angle where two lines join is quite large when using the <span class=\"esri_uicontrol\">Miter</span> option. This may cause the point of the corner to extend farther than intended.</p></xdoc>",
+        "miter_limit.title": "Miter Limit",
+        "out_feature_class.descr": "The feature class containing the output buffers.",
+        "out_feature_class.title": "Output Feature Class",
+        "summary": "<xdoc><p>Creates buffer polygons around input features to a specified distance. A number of cartographic shapes are available for buffer ends (caps) and corners (joins) when the buffer is generated around the feature.</p><p>Alternate tools are available for buffer operations. See the Pairwise Buffer and Buffer tool documentation for details.</p></xdoc>",
+        "title": "Graphic Buffer"
+    }
+}

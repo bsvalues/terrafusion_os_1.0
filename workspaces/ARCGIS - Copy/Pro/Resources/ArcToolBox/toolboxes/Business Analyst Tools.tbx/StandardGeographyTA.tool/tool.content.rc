@@ -1,0 +1,26 @@
+{
+    "map": {
+        "description": "Creates trade areas based on predefined named statistical areas. This tool does not consume credits.",
+        "dissolve_output.descr": "<xdoc><p>Specifies whether the output will be dissolved based on the <span class=\"esri_uicontrol\">Group Field</span> parameter value.</p><ul><li>Checked—The output will be dissolved.</li><li>Unchecked—The output will not be dissolved. This is the default.</li></ul></xdoc>",
+        "dissolve_output.title": "Dissolve Output Features",
+        "geography_key_field.descr": "<xdoc><p>A field in the <span class=\"esri_uicontrol\">Geography IDs Table</span> parameter value that identifies the records that will be included in the output.</p></xdoc>",
+        "geography_key_field.title": "Geography Key Field",
+        "geography_level.descr": "The geography level that will be used to define the trade area.",
+        "geography_level.title": "Geography Level",
+        "group_field.descr": "The field that will be used to perform a group by operation.",
+        "group_field.title": "Group Field",
+        "ids_list.descr": "The input list of comma-separated geography IDs.",
+        "ids_list.title": "Geography IDs List",
+        "in_ids_table.descr": "The input table with IDs that will be used to select geographies that will define the trade area.",
+        "in_ids_table.title": "Geography IDs Table",
+        "input_type.descr": "<xdoc><p>Specifies whether the geography IDs will be from a table or a list.</p><ul><li><span title=\"TABLE\">Table</span>—The input IDs will be from a table.</li><li><span title=\"LIST\">List</span>—The input IDs will be from a list. This is the default.</li></ul></xdoc>",
+        "input_type.domain.LIST": "List",
+        "input_type.domain.TABLE": "Table",
+        "input_type.title": "Input Type",
+        "out_feature_class.descr": "The output feature containing the trade area.",
+        "out_feature_class.title": "Output Feature Class",
+        "summarize_duplicates.descr": "<xdoc><p>Specifies whether duplicate fields in the table containing matching geography IDs will be summarized.</p><ul><li>Checked—The numeric fields for all duplicate records will be summarized.</li><li>Unchecked—The data of the first record will be appended. Other records will be ignored. This is the default.</li></ul></xdoc>",
+        "summarize_duplicates.title": "Summarize Duplicate IDs",
+        "title": "Generate Standard Geography Trade Areas"
+    }
+}

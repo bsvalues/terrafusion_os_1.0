@@ -20,19 +20,19 @@ describe('Button Component', () => {
     });
 
     it('renders button with destructive variant', () => {
-      render(<Button variant="destructive">Delete</Button>);
+      render(<Button variant='destructive'>Delete</Button>);
       const button = screen.getByRole('button');
       expect(button).toHaveClass('bg-destructive');
     });
 
     it('renders button with outline variant', () => {
-      render(<Button variant="outline">Outline</Button>);
+      render(<Button variant='outline'>Outline</Button>);
       const button = screen.getByRole('button');
       expect(button).toHaveClass('border');
     });
 
     it('renders button with ghost variant', () => {
-      render(<Button variant="ghost">Ghost</Button>);
+      render(<Button variant='ghost'>Ghost</Button>);
       const button = screen.getByRole('button');
       expect(button).toHaveClass('hover:bg-accent');
     });
@@ -40,25 +40,25 @@ describe('Button Component', () => {
 
   describe('Sizes', () => {
     it('renders small button', () => {
-      render(<Button size="sm">Small</Button>);
+      render(<Button size='sm'>Small</Button>);
       const button = screen.getByRole('button');
       expect(button).toHaveClass('h-9');
     });
 
     it('renders default size button', () => {
-      render(<Button size="default">Default</Button>);
+      render(<Button size='default'>Default</Button>);
       const button = screen.getByRole('button');
       expect(button).toHaveClass('h-10');
     });
 
     it('renders large button', () => {
-      render(<Button size="lg">Large</Button>);
+      render(<Button size='lg'>Large</Button>);
       const button = screen.getByRole('button');
       expect(button).toHaveClass('h-11');
     });
 
     it('renders icon button', () => {
-      render(<Button size="icon">X</Button>);
+      render(<Button size='icon'>X</Button>);
       const button = screen.getByRole('button');
       expect(button).toHaveClass('h-10', 'w-10');
     });
@@ -74,11 +74,15 @@ describe('Button Component', () => {
 
     it('does not trigger onClick when disabled', async () => {
       const handleClick = jest.fn();
-      render(<Button disabled onClick={handleClick}>Disabled</Button>);
-      
+      render(
+        <Button disabled onClick={handleClick}>
+          Disabled
+        </Button>
+      );
+
       const button = screen.getByRole('button');
       await userEvent.click(button);
-      
+
       expect(handleClick).not.toHaveBeenCalled();
     });
   });
@@ -87,72 +91,72 @@ describe('Button Component', () => {
     it('triggers onClick handler when clicked', async () => {
       const handleClick = jest.fn();
       render(<Button onClick={handleClick}>Click me</Button>);
-      
+
       const button = screen.getByRole('button');
       await userEvent.click(button);
-      
+
       expect(handleClick).toHaveBeenCalledTimes(1);
     });
 
     it('can be clicked multiple times', async () => {
       const handleClick = jest.fn();
       render(<Button onClick={handleClick}>Click me</Button>);
-      
+
       const button = screen.getByRole('button');
       await userEvent.click(button);
       await userEvent.click(button);
       await userEvent.click(button);
-      
+
       expect(handleClick).toHaveBeenCalledTimes(3);
     });
 
     it('can be focused with keyboard', async () => {
       render(<Button>Focus me</Button>);
-      
+
       const button = screen.getByRole('button');
       await userEvent.tab();
-      
+
       expect(button).toHaveFocus();
     });
 
     it('can be activated with Enter key', async () => {
       const handleClick = jest.fn();
       render(<Button onClick={handleClick}>Press Enter</Button>);
-      
+
       const button = screen.getByRole('button');
       button.focus();
       await userEvent.keyboard('{Enter}');
-      
+
       expect(handleClick).toHaveBeenCalledTimes(1);
     });
 
     it('can be activated with Space key', async () => {
       const handleClick = jest.fn();
       render(<Button onClick={handleClick}>Press Space</Button>);
-      
+
       const button = screen.getByRole('button');
       button.focus();
       await userEvent.keyboard(' ');
-      
+
       expect(handleClick).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('Custom Props', () => {
     it('accepts custom className', () => {
-      render(<Button className="custom-class">Custom</Button>);
+      render(<Button className='custom-class'>Custom</Button>);
       const button = screen.getByRole('button');
       expect(button).toHaveClass('custom-class');
     });
 
     it('accepts type attribute', () => {
-      render(<Button type="submit">Submit</Button>);
+      render(<Button type='submit'>Submit</Button>);
       const button = screen.getByRole('button');
       expect(button).toHaveAttribute('type', 'submit');
     });
 
     it('accepts aria-label', () => {
-      render(<Button aria-label="Close dialog">X</Button>);
+      render(<Button aria-label='Close dialog'>X</Button>);
       const button = screen.getByRole('button', { name: /close dialog/i });
       expect(button).toBeInTheDocument();
     });
@@ -173,11 +177,11 @@ describe('Button Component', () => {
     it('is keyboard accessible', async () => {
       const handleClick = jest.fn();
       render(<Button onClick={handleClick}>Accessible</Button>);
-      
+
       await userEvent.tab();
       const button = screen.getByRole('button');
       expect(button).toHaveFocus();
-      
+
       await userEvent.keyboard('{Enter}');
       expect(handleClick).toHaveBeenCalled();
     });

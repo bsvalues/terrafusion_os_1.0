@@ -1,0 +1,11 @@
+{
+    "set": [
+        "angle",
+        "gradient",
+        "maximum rate of change",
+        "percent",
+        "relief",
+        "steepness",
+        "z-factor"
+    ]
+}

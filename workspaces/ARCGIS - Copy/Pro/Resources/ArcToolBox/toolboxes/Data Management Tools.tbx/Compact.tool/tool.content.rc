@@ -1,0 +1,9 @@
+{
+    "map": {
+        "description": "Compacts a file or mobile geodatabase, SQLite database, or Open Geospatial Consortium (OGC) GeoPackage file. Compacting rearranges data storage, often reducing the file's size and improving performance.",
+        "in_workspace.descr": "The file or mobile geodatabase, SQLite database, or GeoPackage that will be compacted.",
+        "in_workspace.title": "Input Workspace",
+        "out_workspace.title": "Updated Input Workspace",
+        "title": "Compact"
+    }
+}

@@ -1,0 +1,25 @@
+{
+    "map": {
+        "area_of_interest.descr": "<xdoc><p>An area of interest (polygon) that determines what geography the status report will cover. This parameter is only applicable when building a custom status using the <span class=\"esri_uicontrol\">Rebuild bundle status</span> option.</p></xdoc>",
+        "area_of_interest.title": "Area Of Interest",
+        "description": "Manages internal data kept by the server about the built tiles in a map or image service cache.",
+        "input_service.descr": "<xdoc><p>The map image layer for which the cache status will be modified.. You can choose it by browsing to the desired service in Portal or you can drag and drop a web tile layer from the <span class=\"esri_uicontrol\">Catalog</span> pane <span class=\"esri_uicontrol\">Portal</span> tab to supply this parameter.</p></xdoc>",
+        "input_service.title": "Input Service",
+        "manage_mode.descr": "<xdoc><ul><li><span title=\"DELETE_CACHE_STATUS\">Delete cache status</span>—Deletes the status information used by the server.</li><li><span title=\"REBUILD_CACHE_STATUS\">Rebuild cache status</span>—Deletes, then rebuilds the status information used by the server.</li><li><span title=\"REPORT_BUNDLE_STATUS\">Rebuild bundle status</span>—Creates status information in a new file geodatabase named Status.gdb in a folder you specify in the <span class=\"esri_uicontrol\">Output Folder</span> parameter. This option is used when you want to create a custom status report for a particular area of interest or set of scales.</li></ul></xdoc>",
+        "manage_mode.domain.DELETE_CACHE_STATUS": "Delete cache status",
+        "manage_mode.domain.REBUILD_CACHE_STATUS": "Rebuild cache status",
+        "manage_mode.domain.REPORT_BUNDLE_STATUS": "Rebuild bundle status",
+        "manage_mode.title": "Manage Mode",
+        "num_of_caching_service_instances.descr": "Defines the number of instances that will be used to update/generate the tiles. The value for this parameter is set to unlimited (-1) and cannot be modified.",
+        "num_of_caching_service_instances.title": "Number of caching service instances",
+        "output_folder.title": "Output Map Service URL",
+        "params.category1": "Area of Interest (Envelope)",
+        "report_extent.descr": "<xdoc><p>A rectangular extent defining the area for which the status will be built. This parameter is only applicable when building a custom status using the <span class=\"esri_uicontrol\">Rebuild bundle status</span> option.</p><p>Note that the <span class=\"esri_uicontrol\">Area Of Interest</span> parameter allows you to specify an area of interest that is nonrectangular.</p><ul><li>Current Display Extent—The extent will be based on the active map or scene.</li><li>Draw Extent—The extent will be based on a rectangle drawn on the map or scene.</li><li>Extent of a Layer—The extent will be based on an active map layer. Choose an available layer or use the <span class=\"esri_uicontrol\">Extent of data in all layers</span> option. Each map layer has the following options:<p><ul><li>All Features—The extent of all features.</li><li>Selected Features —The extent of the selected features.</li><li>Visible Features—The extent of visible features.</li></ul></p></li><li>Browse—The extent will be based on a dataset.</li><li>Clipboard—The extent can be copied to and from the clipboard.<ul><li>Copy Extent—Copies the extent and coordinate system to the clipboard.</li><li>Paste Extent—Pastes the extent and coordinate system from the clipboard. If the clipboard does not include a coordinate system, the extent will use the map’s coordinate system.</li></ul></li><li>Reset Extent—The extent will be reset to the default value.</li></ul><p>When coordinates are manually provided, the coordinates must be numeric values and in the active map&apos;s coordinate system. The map may use different display units than the provided coordinates. Use a negative value sign for south and west coordinates.</p></xdoc>",
+        "report_extent.title": "Report Extent",
+        "report_folder.descr": "<xdoc><p>Output folder for the Status.gdb. This parameter is only applicable when building a custom status using the <span class=\"esri_uicontrol\">Rebuild bundle status</span> option.</p></xdoc>",
+        "report_folder.title": "Output Folder",
+        "scales.descr": "<xdoc><p>The scale levels for which the status will be modified. This parameter is only applicable when building a custom status using the <span class=\"esri_uicontrol\">Rebuild bundle status</span> option for the <span class=\"esri_uicontrol\">Manage Mode</span> parameter.</p></xdoc>",
+        "scales.title": "Scales",
+        "title": "Manage Map Server Cache Status"
+    }
+}

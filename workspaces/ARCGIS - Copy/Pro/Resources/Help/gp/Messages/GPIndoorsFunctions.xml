@@ -1,0 +1,526 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Messages STARTID="180001">
+
+<!-- Indoors range is 180001 to 190000-->
+<!-- License--><!-- 180001 to 180025-->
+<Message><ID>180001</ID><Description>You must have at least the Standard License to run this tool.</Description></Message> <!-- ERROR -->
+<Message><ID>180002</ID><Description>You must have an Advanced License to run this tool.</Description></Message> <!-- ERROR -->
+<Message><ID>180003</ID><Description>You must have an Advanced license and a 3D Analyst license to run this tool.</Description></Message> <!-- ERROR -->
+<Message><ID>180004</ID><Description>You must have an Advanced license, a Spatial Analyst license, and a 3D Analyst license to run this tool.</Description></Message> <!-- ERROR -->
+<Message><ID>180005</ID><Description>A Desktop license is not available or could not be initialized.</Description></Message> <!-- ERROR -->
+<Message><ID>180006</ID><Description>You must have an Advanced license, a Network Analyst license, and a 3D Analyst license to run this tool.</Description></Message> <!-- ERROR -->
+<Message><ID>180007</ID><Description>The Active Portal must have a valid Indoors license to run this tool.</Description></Message>  <!-- ERROR -->
+<Message><ID>180008</ID><Description>You must have a 3D Analyst license and either a Spatial Analyst or an Image Analyst license to run this tool.</Description></Message>  <!-- ERROR -->
+
+  <!-- Create Indoors Database--><!-- 180026 to 180050-->
+<Message><ID>180026</ID><Description>ArcGIS Indoors schema files are missing. Unable to create the Indoors database.</Description></Message> <!-- ERROR -->
+<Message><ID>180027</ID><Description>Creating the Indoors feature dataset...</Description></Message>
+<Message><ID>180028</ID><Description>Creating the Network feature dataset...</Description></Message>
+<Message><ID>180029</ID><Description>Creating the Areas table...</Description></Message>
+<Message><ID>180030</ID><Description>Creating the Indoors Configuration table...</Description></Message>
+<Message><ID>180031</ID><Description>Target workspace has an existing Indoors schema item. Choose a different target workspace.</Description></Message> <!-- ERROR -->
+<Message><ID>180032</ID><Description>Target workspace has an older version of ArcGIS Indoors schema that is not supported. Unable to create Indoors network.</Description></Message> <!-- ERROR -->
+<Message><ID>180033</ID><Description>The target geodatabase contains an Indoors dataset with a coordinate system that does not match the selected coordinate system.</Description></Message> <!-- ERROR -->
+<Message><ID>180034</ID><Description>Target geodatabase contains an Indoors dataset with a coordinate system that does not match the default coordinate system.</Description></Message> <!-- ERROR -->
+<Message><ID>180035</ID><Description>The target geodatabase already contains an Indoors dataset. Choose the Create Indoors Network option to create the Network and PrelimNetwork datasets in the target geodatabase.</Description></Message> <!-- ERROR -->
+<Message><ID>180036</ID><Description>Creating the Area Roles table...</Description></Message> <!-- Message -->
+<Message><ID>180037</ID><Description>Creating attribute rules...</Description></Message> <!-- INFO -->
+<Message><ID>180038</ID><Description>Creating Level ID field in the error datasets...</Description></Message> <!-- INFO -->
+<Message><ID>180039</ID><Description>Unable to add Level ID field to GDB Validation Error tables.</Description></Message> <!-- ERROR -->
+<Message><ID>180040</ID><Description>Enterprise geodatabase must use branch versioning in order to add attribute rules.</Description></Message> <!-- ERROR -->
+<Message><ID>180041</ID><Description>Creating security constraint rule for %s...</Description></Message> <!-- INFO -->
+<Message><ID>180042</ID><Description>Creating editor tracking fields...</Description></Message> <!-- INFO -->
+<Message><ID>180043</ID><Description>Creating editor tracking fields for %s...</Description></Message>	<!-- INFO -->
+
+	<!-- Generate Indoors Pathways--><!-- 180051 to 180100-->
+<Message><ID>180051</ID><Description>Unable to find required Indoors fields.</Description></Message> <!-- ERROR -->
+<Message><ID>180052</ID><Description>Unable to verify Indoors field types.</Description></Message> <!-- ERROR -->
+<Message><ID>180053</ID><Description>Unable to verify the scratch workspace.</Description></Message> <!-- ERROR -->
+<Message><ID>180054</ID><Description>Unable to create the scratch workspace.</Description></Message> <!-- ERROR -->
+<Message><ID>180055</ID><Description>Unable to generate the facility footprint.</Description></Message> <!-- ERROR -->
+<Message><ID>180056</ID><Description>Unable to generate the minimum bounding geometry.</Description></Message> <!-- ERROR -->
+<Message><ID>180057</ID><Description>Unable to rotate the XY position.</Description></Message> <!-- ERROR -->
+<Message><ID>180058</ID><Description>Unable to rotate the polygon.</Description></Message> <!-- ERROR -->
+<Message><ID>180059</ID><Description>Unable to validate the rotated minimum bounding geometry.</Description></Message> <!-- ERROR -->
+<Message><ID>180060</ID><Description>Unable to generate the rotated minimum bounding geometry.</Description></Message> <!-- ERROR -->
+<Message><ID>180061</ID><Description>Unable to get the origin point of the bounding geometry.</Description></Message> <!-- ERROR -->
+<Message><ID>180062</ID><Description>Unable to calculate the distance of the X and Y axis.</Description></Message> <!-- ERROR -->
+<Message><ID>180063</ID><Description>Unable to get the number of rows and columns.</Description></Message> <!-- ERROR -->
+<Message><ID>180064</ID><Description>Unable to get the Y axis point of the bounding geometry.</Description></Message> <!-- ERROR -->
+<Message><ID>180065</ID><Description>Unable to create internal lines for pathway generation.</Description></Message> <!-- ERROR -->
+<Message><ID>180066</ID><Description>Unable to create the template pathways.</Description></Message> <!-- ERROR -->
+<Message><ID>180067</ID><Description>Unable to get the level attributes.</Description></Message> <!-- ERROR -->
+<Message><ID>180068</ID><Description>Unable to create the level pathways.</Description></Message> <!-- ERROR -->
+<Message><ID>180069</ID><Description>%s has no features to be processed.</Description></Message> <!-- ERROR -->
+<Message><ID>180070</ID><Description>Error generating template pathways.</Description></Message> <!-- ERROR -->
+<Message><ID>180071</ID><Description>Facility %s has no levels with detail lines to define barriers in traversable spaces and will be skipped…</Description></Message> <!-- WARNING -->
+<Message><ID>180072</ID><Description>Level %s has no detail lines to define barriers in traversable spaces and will be skipped…</Description></Message> <!-- WARNING -->
+<Message><ID>180073</ID><Description>Generating pathways for %1 facilities and a total of %2 unique levels…</Description></Message>
+<Message><ID>180074</ID><Description>Generating pathways for 1 facility and a total of %i unique levels…</Description></Message>
+<Message><ID>180075</ID><Description>Invalid field type for %1 in %2</Description></Message> <!-- ERROR -->
+<Message><ID>180076</ID><Description>Beginning pathway generation for facility %s…</Description></Message>
+<Message><ID>180077</ID><Description>Refining lattice for level %s…</Description></Message>
+<Message><ID>180078</ID><Description>Loading preliminary pathways into %s…</Description></Message>
+<Message><ID>180079</ID><Description>Generating pathways using a calculated lattice rotation of %s…</Description></Message>
+<Message><ID>180080</ID><Description>Generating pathways using a user supplied lattice rotation of %s…</Description></Message>
+
+<!-- Configure Indoor Positioning--><!-- 180101 to 180125-->
+<Message><ID>180101</ID><Description>Invalid Indoors geodatabase.</Description></Message> <!-- ERROR -->
+<Message><ID>180102</ID><Description>Unable to create cypher.</Description></Message> <!-- ERROR -->
+<Message><ID>180103</ID><Description>Unable to write keys to Indoors Configuration table.</Description></Message> <!-- ERROR -->
+<Message><ID>180104</ID><Description>Unable to write building ID to Indoors Configuration table.</Description></Message> <!-- ERROR -->
+<Message><ID>180105</ID><Description>Indoor positioning configuration information successfully written to the geodatabase.</Description></Message>
+
+<!-- Floorplans to indoors --><!-- 180126 to 180175-->
+<Message><ID>180126</ID><Description>Invalid Indoors geodatabase. The input geodatabase is missing required Indoors feature classes.</Description></Message> <!-- ERROR -->
+<Message><ID>180127</ID><Description>Invalid value in worksheet: %1. Worksheet named %2 not found.</Description></Message> <!-- ERROR -->
+<Message><ID>180128</ID><Description>Retrieving floorplan mapping details from input excel file...</Description></Message>
+<Message><ID>180129</ID><Description>Validating worksheet: %s...</Description></Message>
+<Message><ID>180130</ID><Description>Column: %1 does not exist in worksheet: %2.</Description></Message> <!-- ERROR -->
+<Message><ID>180131</ID><Description>Failed to import column: %1 into table: %2 for processing.</Description></Message> <!-- ERROR -->
+<Message><ID>180132</ID><Description>Tool requires either %1 or %2 to be populated with a valid value in the input mapping file for import.</Description></Message> <!-- ERROR -->
+<Message><ID>180133</ID><Description>Retrieving facility properties from input excel file...</Description></Message>
+<Message><ID>180134</ID><Description>Invalid value: %1 in worksheet: %2.</Description></Message> <!-- ERROR -->
+<Message><ID>180135</ID><Description>Column: %1 is a required column in worksheet: %2.</Description></Message> <!-- ERROR -->
+<Message><ID>180136</ID><Description>Invalid datatype for value in column: %1. Input value must be of datatype: %2.</Description></Message> <!-- ERROR -->
+<Message><ID>180137</ID><Description>Column: %1 in worksheet: %2 is expected to have a value of either Y or N.</Description></Message> <!-- ERROR -->
+<Message><ID>180138</ID><Description>Retrieving level properties from input excel file...</Description></Message>
+<Message><ID>180139</ID><Description>Length of value for column: %1 in worksheet: %2 cannot be greater than 4 characters.</Description></Message> <!-- ERROR -->
+<Message><ID>180140</ID><Description>Facility: %1 referenced in Level Properties worksheet is not present in Facility Properties worksheet.</Description></Message> <!-- ERROR -->
+<Message><ID>180141</ID><Description>Importing %s features from CAD source files for processing...</Description></Message>
+<Message><ID>180142</ID><Description>No data imported from DETAILS layers mapped from CAD source files.</Description></Message> <!-- WARNING -->
+<Message><ID>180143</ID><Description>User has chosen to merge levels to construct their Facility feature. Skipping import of FACILITIES.</Description></Message>
+<Message><ID>180144</ID><Description>User has defined UNIT_LINES layers but has set CLOSE_DOORS to N in the Level Properties worksheet. Skipping import of OPENINGS.</Description></Message> <!-- WARNING -->
+<Message><ID>180145</ID><Description>Beginning import of CAD data for level %s in facility %s for processing…</Description></Message>
+<Message><ID>180146</ID><Description>Skipping import of CAD data for level %s…</Description></Message>
+<Message><ID>180147</ID><Description>No data imported from %s layers mapped from CAD source files.</Description></Message> <!-- WARNING -->
+<Message><ID>180148</ID><Description>Applying annotation to %s...</Description></Message>
+<Message><ID>180149</ID><Description>User has not identified any %1 annotation layers to import. %2 will be calculated automatically.</Description></Message> <!-- WARNING -->
+<Message><ID>180150</ID><Description>%s will be applied from CAD annotation.</Description></Message>
+<Message><ID>180151</ID><Description>%s will be applied from BLOCK annotation.</Description></Message>
+<Message><ID>180152</ID><Description>%s will be applied from MULTI-LINE annotation.</Description></Message>
+<Message><ID>180153</ID><Description>User has not identified any UNIT_USE_TYPE annotation layers to import. USE_TYPE for UNITS will not be calculated.</Description></Message> <!-- WARNING -->
+<Message><ID>180154</ID><Description>Merging Levels to construct Facility features...</Description></Message>
+<Message><ID>180155</ID><Description>Successfully added %s features to the Indoors geodatabase.</Description></Message>
+<Message><ID>180156</ID><Description>No %s features to be added to the Indoors geodatabase.</Description></Message> <!-- WARNING -->
+<Message><ID>180157</ID><Description>User has not identified any ZONE_NAME annotation layers to import. NAME for ZONES will not be calculated.</Description></Message> <!-- WARNING -->
+<Message><ID>180158</ID><Description>Facility: %1 referenced in Facility Properties worksheet is not present in Level Properties worksheet.</Description></Message> <!-- ERROR -->
+<Message><ID>180159</ID><Description>%1 will be skipped. %2 is empty or does not exist.</Description></Message> <!-- WARNING -->
+<Message><ID>180160</ID><Description>Validation on %1 sheet in excel has failed. Please verify that all paths and Level ID's are accurate.</Description></Message> <!-- ERROR -->
+<Message><ID>180161</ID><Description>Level Properties sheet can not have SOURCE_PATH column.</Description></Message> <!-- ERROR -->
+<Message><ID>180162</ID><Description>User has not defined %1 OPENINGS layers to import in CAD Layer to FC Mapping worksheet but has set the CLOSE_DOORS property to "Y" in the Level Properties worksheet. Skipping import of OPENINGS.</Description></Message> <!-- WARNING -->
+<Message><ID>180163</ID><Description>Units data was imported from UNITS layers mapped from CAD source files. Values in the OPENINGS and CLOSE_DOORS columns were ignored.</Description></Message> <!-- WARNING -->
+<Message><ID>180164</ID><Description>Unable to find source annotation: %1 in worksheet: Annotation to Field. Skipping annotation mapping.</Description></Message>
+<Message><ID>180165</ID><Description>Invalid target field name: %1 in worksheet: Annotation To Field. Skipping annotation mapping for the targeted field.</Description></Message>
+<Message><ID>180166</ID><Description>Assigning annotation for level %1 to field %2</Description></Message>
+<Message><ID>180167</ID><Description>Annotation field %1 does not exist in annotation layer %2</Description></Message>
+<Message><ID>180168</ID><Description>The index specified for %1 is out of range for one or more annotations. In such cases a Null value will be assigned to the target field.</Description></Message>
+<Message><ID>180169</ID><Description>Input Excel Template File can not have both "CAD Layer to FC Mapping" and "Layer to Feature Class" worksheets.</Description></Message>
+<Message><ID>180170</ID><Description> Invalid target feature class: %1 in worksheet: %2. Skipping annotation mapping.</Description></Message>
+<Message><ID>180171</ID><Description>One or more values in source annotation %1 are not valid for target field %2. Invalid values may be rounded, truncated, or skipped.</Description></Message>
+<Message><ID>180172</ID><Description>No annotation text found in SOURCE_ANNOTATION layer: %1</Description></Message>
+<Message><ID>180173</ID><Description>In Annotation to Field worksheet, delimiter specified for %1 was not found in any of the CAD annotation.</Description></Message>
+<Message><ID>180174</ID><Description>In Annotation to Field worksheet, index position specified for %1 does not exist in any of the CAD annotation.</Description></Message>
+<Message><ID>180175</ID><Description>Invalid target field data type: %1 in worksheet: %2. Skipping annotation mapping for the targeted field.</Description></Message>
+<Message><ID>180526</ID><Description>Removed %1 features from %2 as they do not exist in updated CAD data.</Description></Message>
+<Message><ID>180527</ID><Description>Imported %1 %2 features.</Description></Message>
+<Message><ID>180528</ID><Description>Updated %1 %2 features.</Description></Message>
+<Message><ID>180529</ID><Description>Existing feature with ID: %1 was removed because no matching feature was found in the input CAD data.</Description></Message>
+<Message><ID>180530</ID><Description>The value in the %1 column of the %2 worksheet cannot exceed 2 characters in length.</Description></Message> <!-- ERROR -->
+
+<!-- Thin Indoors Pathways--><!-- 180176 to 180225-->
+<Message><ID>180176</ID><Description>Validating tool inputs.</Description></Message> <!-- Info -->
+<Message><ID>180177</ID><Description>Applying elevator delay to thinned pathways for facility %1.</Description></Message> <!-- Info --> 
+<Message><ID>180178</ID><Description>Updated pathways to connect to transitions.</Description></Message> <!-- Info --> 
+<Message><ID>180179</ID><Description>Number of elevator units in facility: %1</Description></Message> <!-- Info --> 
+<Message><ID>180180</ID><Description>Adding elevator delay for vertical order: %1</Description></Message> <!-- Info --> 
+<Message><ID>180181</ID><Description>Number of elevator units for current level: %1</Description></Message> <!-- Info --> 
+<Message><ID>180182</ID><Description>Failed to find valid DELAY attribute value in input pathways.</Description></Message> <!-- Error --> 
+<Message><ID>180183</ID><Description>Elevator delay applied to thinned pathways is: %1</Description></Message> <!-- Info --> 
+<Message><ID>180184</ID><Description>Number of pathways crossing elevator units: %1</Description></Message> <!-- Info --> 
+<Message><ID>180185</ID><Description>Updating target pathways and transitions.</Description></Message> <!-- Info --> 
+<Message><ID>180186</ID><Description>Processing level: %1</Description></Message> <!-- Info --> 
+<Message><ID>180187</ID><Description>Adding points as locations from %1</Description></Message> <!-- Info --> 
+<Message><ID>180188</ID><Description>Solving level %1</Description></Message> <!-- Info --> 
+<Message><ID>180189</ID><Description>Solving took %1 seconds.</Description></Message> <!-- Info --> 
+<Message><ID>180190</ID><Description>Copying features from network sources.</Description></Message> <!-- Info --> 
+<Message><ID>180191</ID><Description>Repairing geometry and deleting identical pathway features.</Description></Message> <!-- Info --> 
+<Message><ID>180192</ID><Description>Deleting intermediate data.</Description></Message> <!-- Info --> 
+<Message><ID>180193</ID><Description>There were no points found for facility: %1</Description></Message> <!-- Info --> 
+<Message><ID>180194</ID><Description>Pathways thinned successfully.</Description></Message> <!-- Info --> 
+<Message><ID>180195</ID><Description>Dissolving Pathways by angle.</Description></Message> <!-- Info --> 
+<Message><ID>180196</ID><Description>Adding back z values.</Description></Message> <!-- Info --> 
+<Message><ID>180197</ID><Description>Creating points for transition features.</Description></Message> <!-- Info --> 
+<Message><ID>180198</ID><Description>Messages from the Build Network geoprocessing tool...</Description></Message> <!-- Info --> 
+<Message><ID>180199</ID><Description>No elevator delay applied as %1 field was not found in target pathways.</Description></Message> <!-- Warning --> 
+<Message><ID>180200</ID><Description>No elevator delay applied as %1 field was not found in input pathways.</Description></Message> <!-- wARNING --> 
+<Message><ID>180201</ID><Description>An insufficient number of points were found for facility %1, level %2. Points may not have z values populated properly, or no point is within search tolerance of Pathways features.</Description></Message> <!-- Warning --> 
+<Message><ID>180202</ID><Description>Joining back attributes.</Description></Message> <!-- Info --> 
+<Message><ID>180203</ID><Description>Unable to generate transition points.</Description></Message> <!-- ERROR --> 
+<Message><ID>180204</ID><Description>Unable to load thinning template.</Description></Message> <!-- ERROR --> 
+<Message><ID>180205</ID><Description>Target pathways dataset is part of a network dataset. Please delete the network dataset to proceed.</Description></Message> <!-- ERROR --> 
+<Message><ID>180206</ID><Description>Target pathways must belong to Network dataset.</Description></Message> <!-- ERROR --> 
+<Message><ID>180207</ID><Description>Unable to connect input pathways to transitions.</Description></Message> <!-- ERROR --> 
+<Message><ID>180208</ID><Description>Unable to apply elevator delay to pathways.</Description></Message> <!-- ERROR --> 
+<Message><ID>180209</ID><Description>Unable to append pathways.</Description></Message> <!-- ERROR --> 
+<Message><ID>180210</ID><Description>Unable to load thinned pathways.</Description></Message> <!-- ERROR --> 
+<Message><ID>180211</ID><Description>Unable to delete existing data from target pathways and transitions.</Description></Message> <!-- ERROR --> 
+<Message><ID>180212</ID><Description>Unable to thin input pathways.</Description></Message> <!-- ERROR --> 
+<Message><ID>180213</ID><Description>Unable to apply elevator delay because Units feature class was not found.</Description></Message> <!-- ERROR --> 
+<Message><ID>180214</ID><Description>Input Pathway Features and Input Transition Features must be feature classes.</Description></Message> <!-- ERROR --> 
+<Message><ID>180215</ID><Description>%1 is not a valid routing location.</Description></Message> <!-- ERROR -->
+<Message><ID>180216</ID><Description>Input pathway and/or transition features are not contained in PrelimNetwork feature dataset.</Description></Message> <!-- ERROR -->
+<Message><ID>180217</ID><Description>Target pathways and/or transitions feature classes are not contained in Network feature dataset.</Description></Message> <!-- ERROR -->
+<Message><ID>180218</ID><Description>Routable Location %1 must be either floor aware or have LEVEL_ID field.</Description></Message> <!-- ERROR -->
+<Message><ID>180219</ID><Description>Features in Routable Location %1 do not match with LEVEL_ID field in input level features.</Description></Message> <!-- WARNING -->
+
+
+    <!-- Classify Indoors Pathways--><!-- 180325 to 180350-->
+<Message><ID>180325</ID><Description>No facility found!</Description></Message>
+<Message><ID>180326</ID><Description>Classifying pathways in facility %s</Description></Message>
+<Message><ID>180327</ID><Description>No levels found!</Description></Message>
+<Message><ID>180328</ID><Description>Processing level %s</Description></Message>
+<Message><ID>180329</ID><Description>No pathways found in selected units.</Description></Message>
+<Message><ID>180330</ID><Description>Adding target pathways layer to map %s</Description></Message>
+<Message><ID>180331</ID><Description>No feature found in unit layer.</Description></Message> <!-- ERROR -->
+<Message><ID>180332</ID><Description>No feature found in pathways layer.</Description></Message> <!-- ERROR -->
+<Message><ID>180333</ID><Description>Failed to classify facility %s</Description></Message> <!-- WARNING -->
+<Message><ID>180334</ID><Description>Failed to classify pathways!</Description></Message> <!-- ERROR -->
+<Message><ID>180335</ID><Description>Failed to copy pathways features.</Description></Message> <!-- ERROR -->
+<Message><ID>180336</ID><Description>Spatial reference of unit and pathways features do not match.</Description></Message> <!-- ERROR -->
+<Message><ID>180337</ID><Description>%s field not found in unit layer.</Description></Message> <!-- ERROR -->
+<Message><ID>180338</ID><Description>%s field not found in pathways layer.</Description></Message> <!-- ERROR -->
+<Message><ID>180339</ID><Description>Input is not a feature layer.</Description></Message> <!-- ERROR -->
+<Message><ID>180340</ID><Description>No unit features selected. Select features and try again.</Description></Message> <!-- ERROR -->
+<Message><ID>180341</ID><Description>Select a feature layer.</Description></Message> <!-- ERROR -->
+
+<!-- Generate Building Entryways--><!-- 180251 to 180275-->
+<Message><ID>180251</ID><Description>The input is missing required Indoors fields.</Description></Message> <!-- ERROR -->
+<Message><ID>180252</ID><Description>Unable to append entryway features to: %s.</Description></Message> <!-- ERROR -->
+<Message><ID>180253</ID><Description>Unable to identify levels to be processed.</Description></Message> <!-- ERROR -->
+<Message><ID>180254</ID><Description>Staging entryways for level: %s...</Description></Message>
+<Message><ID>180255</ID><Description>No door features identified. Skipping generation of entryways for level.</Description></Message> <!-- WARNING -->
+<Message><ID>180256</ID><Description>No entryways created for level.</Description></Message> <!-- WARNING -->
+<Message><ID>180257</ID><Description>Completed staging of entryways for level.</Description></Message>
+<Message><ID>180258</ID><Description>Deleting existing entryways...</Description></Message>
+<Message><ID>180259</ID><Description>No entryways identified for deletion.</Description></Message> <!-- WARNING -->
+<Message><ID>180260</ID><Description>Completed generating entryways for level: %s.</Description></Message>
+<Message><ID>180261</ID><Description>Input layer requires at least one door feature be selected. Select one or more input door features and try again.</Description></Message> <!-- ERROR -->
+<Message><ID>180262</ID><Description>Field name %1 cannot be same as Level ID Field input.</Description></Message> <!-- ERROR -->
+<Message><ID>180263</ID><Description>Field name %1 must be type Text and have %2 length.</Description></Message> <!-- ERROR -->
+
+<!-- Generate Occupant Features--><!-- 180226 to 180250-->
+<Message><ID>180226</ID><Description>A geometry field was used as a join field.</Description></Message> <!-- ERROR -->
+<Message><ID>180227</ID><Description>Unable to overwrite output: %s</Description></Message> <!-- ERROR -->
+<Message><ID>180228</ID><Description>%s is missing required EMAIL or KNOWNAS fields.</Description></Message> <!-- ERROR -->
+<Message><ID>180229</ID><Description>%s is missing optional CONTACT_PHONE or CONTACT_EXTENSION fields.</Description></Message> <!-- WARNING -->
+<Message><ID>180230</ID><Description>Tables to join must reside in the same workspace.</Description></Message> <!-- ERROR -->
+<Message><ID>180231</ID><Description>Tool found no matching occupant records. Unable to generate occupant features.</Description></Message> <!-- ERROR -->
+<Message><ID>180232</ID><Description>Attempting to generate occupant features...</Description></Message>
+<Message><ID>180233</ID><Description>Unable to match occupant record: %s.</Description></Message> <!-- WARNING -->
+<Message><ID>180234</ID><Description>Join field is NULL for occupant record: %s.</Description></Message> <!-- WARNING -->
+<Message><ID>180235</ID><Description>Complete list of unmatched occupant records can be found here: %s.</Description></Message> <!-- WARNING -->
+<Message><ID>180236</ID><Description>ASSIGNMENT_TYPE field not found in input unit features. ASSIGNMENT_TYPE will not be calculated.</Description></Message> <!-- WARNING -->
+<Message><ID>180237</ID><Description>Generated %i occupant features.</Description></Message>
+<Message><ID>180238</ID><Description>Found %i records in occupant table.</Description></Message>
+<Message><ID>180239</ID><Description>The input table had both TEAM and ORG_LEVEL_1 fields. Copied values from the input table ORG_LEVEL_1 field to the output points.</Description></Message> <!-- WARNING -->
+<Message><ID>180240</ID><Description>The input table had both DEPARTMENT and ORG_LEVEL_2 fields. Copied values from the input table ORG_LEVEL_2 field to the output points.</Description></Message> <!-- WARNING -->
+<Message><ID>180421</ID><Description>Missing projection file (.prj) for the BIM data.</Description></Message>	<!-- ERROR -->
+
+<!-- Generate Floor Transitions--><!-- 180276 - 180325-->
+<Message><ID>180276</ID><Description>No transition unit feature found.</Description></Message> <!-- INFO -->
+<Message><ID>180277</ID><Description>Processing unit: %1</Description></Message> <!-- INFO -->
+<Message><ID>180278</ID><Description>%1 - %2: stairway transition created.</Description></Message> <!-- INFO -->
+<Message><ID>180279</ID><Description>%1 - %2: elevator transition created.</Description></Message> <!-- INFO -->
+<Message><ID>180280</ID><Description>Found preliminary network dataset at: %1</Description></Message> <!-- INFO -->
+<Message><ID>180281</ID><Description>Processing facility %1</Description></Message> <!-- INFO -->
+<Message><ID>180282</ID><Description>Creating elevator transition lines for facility %1</Description></Message> <!-- INFO -->
+<Message><ID>180283</ID><Description>Assigning elevator delays to pathways for facility %1</Description></Message> <!-- INFO -->
+<Message><ID>180284</ID><Description>Creating stairway transition lines for facility %1</Description></Message> <!-- INFO -->
+<Message><ID>180285</ID><Description>Applying elevator delay to vertical order %1</Description></Message> <!-- INFO -->
+<Message><ID>180286</ID><Description>Number of pathways crossing elevator units %1</Description></Message> <!-- INFO -->
+<Message><ID>180287</ID><Description>Number of elevator units in facility %1</Description></Message> <!-- INFO -->
+<Message><ID>180288</ID><Description>Adding elevator delay for vertical order %1</Description></Message> <!-- INFO -->
+<Message><ID>180289</ID><Description>Number of elevator units for current level %1</Description></Message> <!-- INFO -->
+<Message><ID>180290</ID><Description>Failed to find valid DELAY attribute value in prelim pathways</Description></Message> <!-- INFO -->
+<Message><ID>180291</ID><Description>Elevator delay applied to thinned pathways is %1</Description></Message> <!-- INFO -->
+<Message><ID>180293</ID><Description>Splitting pathways...</Description></Message> <!-- INFO -->
+<Message><ID>180294</ID><Description>Calculating fields to assign elevator delay...</Description></Message> <!-- INFO -->
+<Message><ID>180295</ID><Description>Assembling pathways...</Description></Message> <!-- INFO -->
+<Message><ID>180296</ID><Description>FacilityID is null</Description></Message> <!-- INFO -->
+<Message><ID>180297</ID><Description>Failed to get at least two unit features to create a transition feature.</Description></Message> <!-- WARNING -->
+<Message><ID>180298</ID><Description>Transition lines could not be generated for Unit ID: %1. Unable to locate unit features that coincide vertically on levels above.</Description></Message> <!-- WARNING -->
+<Message><ID>180299</ID><Description>Failed to create floor transitions.</Description></Message> <!-- WARNING -->
+<Message><ID>180300</ID><Description>Delay could not be applied as elevator transition feature is not defined. A value must be provided for elevator_unit_exp parameter to apply delay.</Description></Message> <!-- WARNING -->
+<Message><ID>180301</ID><Description>No elevator delay applied as %1 field was not found in input pathways.</Description></Message> <!-- WARNING -->
+<Message><ID>180302</ID><Description>No elevator delay applied as %1 field was not found in thinned pathways.</Description></Message> <!-- WARNING -->
+<Message><ID>180303</ID><Description>No elevator delay applied as %1 field was not found in prelim pathways.</Description></Message> <!-- INFO -->
+<Message><ID>180304</ID><Description>Failed to get levels to create transition feature.</Description></Message> <!-- ERROR -->
+<Message><ID>180305</ID><Description>Level value is null.</Description></Message> <!-- ERROR -->
+<Message><ID>180306</ID><Description>Unit attribute value in %1 field is null.</Description></Message> <!-- ERROR -->
+<Message><ID>180307</ID><Description>%1 feature class not found.</Description></Message> <!-- ERROR -->
+<Message><ID>180308</ID><Description>%1 has no features.</Description></Message> <!-- ERROR -->
+<Message><ID>180309</ID><Description>%1 field not found in %2.</Description></Message> <!-- ERROR -->
+<Message><ID>180310</ID><Description>Cannot generate floor transitions. No expression defined for either stairway_unit_exp or elevator_unit_exp parameters. At least one entry must be provided.</Description></Message> <!-- ERROR -->
+<Message><ID>180311</ID><Description>Please delete existing network dataset and try again.</Description></Message> <!-- ERROR -->
+<Message><ID>180312</ID><Description>Failed to append pathways.</Description></Message> <!-- ERROR -->
+<Message><ID>180313</ID><Description>Unit's vertical order values are invalid because they are not defined uniquely for each level.</Description></Message> <!-- ERROR -->
+<Message><ID>180314</ID><Description>Unit's relative elevation values are invalid because they are not defined uniquely for each level.</Description></Message> <!-- ERROR -->
+<Message><ID>180315</ID><Description>Unit's level name values are invalid because they are not defined uniquely for each level.</Description></Message> <!-- ERROR -->
+<Message><ID>180316</ID><Description>Pathways vertical order values are invalid because they are not defined uniquely for each level.</Description></Message> <!-- ERROR -->
+<Message><ID>180317</ID><Description>Failed to generate floor transitions.</Description></Message> <!-- ERROR -->
+
+<!-- Generate Unit Openings --><!-- 180351 to 180400 -->  
+<Message><ID>180351</ID><Description>Missing required Input Units parameter.</Description></Message> <!-- ERROR -->
+<Message><ID>180352</ID><Description>Invalid feature class selected for the Input Units parameter.</Description></Message> <!-- ERROR -->
+<Message><ID>180353</ID><Description>Insufficent permissions for accessing the Input Units feature class.</Description></Message> <!-- ERROR -->
+<Message><ID>180354</ID><Description>Input Units feature class is missing required fields %s.</Description></Message> <!-- ERROR -->
+
+	
+<Message><ID>180355</ID><Description>Missing required query expression for extracting Door features from the Input Details feature class.</Description></Message><!-- ERROR -->
+<Message><ID>180356</ID><Description>Missing required Input Details parameter.</Description></Message><!-- ERROR -->
+<Message><ID>180357</ID><Description>Invalid feature class selected for the Input Details parameter.</Description></Message><!-- ERROR -->
+<Message><ID>180358</ID><Description>Insufficent permissions for accessing the Input Details feature class.</Description></Message><!-- ERROR -->
+<Message><ID>180359</ID><Description>Input Details feature class is missing required fields %s.</Description></Message><!-- ERROR -->
+<Message><ID>180360</ID><Description>Missing required query expression for extracting Wall features from the Input Details feature class.</Description></Message><!-- ERROR -->
+<Message><ID>180361</ID><Description>Missing required Target Openings parameter.</Description></Message><!-- ERROR -->
+<Message><ID>180362</ID><Description>Invalid feature class selected for the Target Openings parameter.</Description></Message><!-- ERROR -->
+<Message><ID>180363</ID><Description>Insufficient permissions for accessing and/or writing to the Target Openings feature class.</Description></Message><!-- ERROR -->
+<Message><ID>180364</ID><Description>Target Openings feature class is missing required fields %s.</Description></Message><!-- ERROR -->
+<Message><ID>180365</ID><Description>Invalid value for Wall Thickness Tolerance parameter value.</Description></Message><!-- ERROR -->
+<Message><ID>180366</ID><Description>Insufficient permissions for accessing layer metadata.</Description></Message><!-- ERROR -->
+<Message><ID>180367</ID><Description>Input feature classes must be from the same geodatabase.</Description></Message><!-- ERROR -->
+<Message><ID>180368</ID><Description>Input feature classes must use the same spatial reference.</Description></Message><!-- ERROR -->
+<Message><ID>180369</ID><Description>No openings were created.</Description></Message><!-- ERROR -->
+<Message><ID>180370</ID><Description>Unable to write to output results file.</Description></Message><!-- ERROR -->
+<Message><ID>180371</ID><Description>No wall features available on the Input Doors feature class for the current facility and level.</Description></Message><!-- ERROR -->
+<Message><ID>180372</ID><Description>Input feature classes must all use the same type of versioning.</Description></Message><!-- ERROR -->
+<Message><ID>180373</ID><Description>Unknown error validating input feature classes have consistent database properties.</Description></Message><!-- ERROR -->
+<Message><ID>180374</ID><Description>Unknown error. Please contact Esri Technical Support.</Description></Message><!-- ERROR -->
+<Message><ID>180375</ID><Description>Tolerance units must be inches, feet, centimeters, or meters.</Description></Message> <!-- ERROR -->
+<Message><ID>180376</ID><Description>Wall thickness tolerance must be greater than zero but less than 2 meters or 6 feet.</Description></Message> <!-- ERROR -->
+<Message><ID>180377</ID><Description>Error creating scratch feature class for generating unit openings.</Description></Message>  <!-- ERROR -->
+<Message><ID>180378</ID><Description>The Input Details feature layer must use a projected coordinate system.</Description></Message> <!-- ERROR -->
+<Message><ID>180379</ID><Description>Error creating buffered doors.</Description></Message>  <!-- ERROR -->
+<Message><ID>180380</ID><Description>Error dissolving buffered door features.</Description></Message>  <!-- ERROR -->
+<Message><ID>180381</ID><Description>Selected door features do not include the required USE_TYPE values.</Description></Message>  <!-- ERROR -->
+<Message><ID>180382</ID><Description>Error creating where clause with proper facility and level values.</Description></Message>  <!-- ERROR -->
+<Message><ID>180383</ID><Description>Error creating buffers for identifying individual physical doors.</Description></Message>  <!-- ERROR -->
+<Message><ID>180384</ID><Description>Error creating openings for units on a specific level within a facility.</Description></Message>  <!-- ERROR -->
+<Message><ID>180385</ID><Description>Error creating buffers on wall features.</Description></Message>  <!-- ERROR -->
+<Message><ID>180386</ID><Description>The input details feature class appears to contain only a single door feature for the current facility and level.  The input doors must be individual features in order to use this tool.</Description></Message>	<!-- ERROR -->
+<Message><ID>180387</ID><Description>The input details feature class appears to contain only a single wall feature for the current facility and level.  The input walls must be individual features in order to use this tool.</Description></Message>	<!-- ERROR -->
+  
+<!-- BIM Floorplan To Indoors Dataset-->
+<Message><ID>180400</ID><Description>Invalid Input BIM File Workspace</Description></Message>	<!-- ERROR -->
+<Message><ID>180401</ID><Description>Missing required Input BIM File Workspace</Description></Message>	<!-- ERROR -->
+<Message><ID>180402</ID><Description>Invalid Indoor Dataset.</Description></Message>	<!-- ERROR -->
+<Message><ID>180403</ID><Description>Missing required Target Indoor Dataset input.</Description></Message>	<!-- ERROR -->
+<Message><ID>180404</ID><Description>Facilities feature class in Indoor Dataset is missing required fields %s.</Description></Message>	<!-- ERROR -->
+<Message><ID>180405</ID><Description>Levels feature class in Indoor Dataset is missing required fields %s.</Description></Message>	<!-- ERROR -->
+<Message><ID>180406</ID><Description>Units feature class in Indoor Dataset is missing required fields %s.</Description></Message>	<!-- ERROR -->
+<Message><ID>180407</ID><Description>Details feature class in Indoor Dataset is missing required fields %s.</Description></Message>	<!-- ERROR -->
+<Message><ID>180408</ID><Description>Missing required Input Building Name.</Description></Message>	<!-- ERROR -->
+<Message><ID>180409</ID><Description>Missing required feature classes in Target Indoor Dataset.</Description></Message>	<!-- ERROR -->
+<Message><ID>180410</ID><Description>Missing required fields in BIM Floorplan Polygon Layer.</Description></Message>	<!-- ERROR -->
+<Message><ID>180411</ID><Description>Missing required fields in BIM Floorplan Polyline Layer.</Description></Message>	<!-- ERROR -->
+<Message><ID>180412</ID><Description>Missing required floors domain on the Building Level field of the Input BIM Floorplan Polygon Layer.</Description>	</Message>	<!-- ERROR -->
+<Message><ID>180413</ID><Description>Could not open BIM file.</Description></Message>	<!-- ERROR -->
+<Message><ID>180414</ID><Description>Could not access Floorplan dataset from the BIM file.</Description></Message>	<!-- ERROR -->
+<Message><ID>180415</ID><Description>Missing required feature class in BIM workspace.</Description></Message>	<!-- ERROR -->
+<Message><ID>180416</ID><Description>The Indoor Dataset requires a projected spatial reference system for calculating area.</Description></Message>	<!-- ERROR -->
+<Message><ID>180417</ID><Description>Missing required Z values in the input BIM data.</Description></Message>	<!-- ERROR -->
+<Message><ID>180418</ID><Description>Invalid floor selected for the Ground Floor.</Description></Message>	<!-- ERROR -->
+<Message><ID>180419</ID><Description>Missing georeference file for BIM data.</Description></Message>	<!-- ERROR -->
+<Message><ID>180420</ID><Description>Unable to get exclusive access to Indoor layers for updating existing features.  Remove Indoor layers from target Indoor dataset from project.</Description></Message>	<!-- ERROR -->
+<Message><ID>180422</ID><Description>Invalid BIM Rooms layer.</Description></Message>	<!-- ERROR -->
+<Message><ID>180423</ID><Description>Rooms layer data source does not match the source .rvt file</Description></Message>	<!-- ERROR -->
+<Message><ID>180424</ID><Description>Input field mappings has fields from Units feature class that cannot be overwritten.</Description></Message>	<!-- ERROR -->
+<Message><ID>180425</ID><Description>Intersecting feature found in Facilities feature class with a different Facility ID or Name. Please pass the same Facility ID and Name to update or check the Allow insert of new overlapping facility option.</Description></Message>	<!-- ERROR -->
+<Message><ID>180426</ID><Description>Input Facility ID and Name values do not match with existing facility feature.</Description></Message>	<!-- ERROR -->
+<Message><ID>180427</ID><Description>Facility ID cannot contain spaces.</Description></Message>	<!-- ERROR -->
+<Message><ID>180428</ID><Description>Input Occupants layer is missing UNIT_ID field.</Description></Message>	<!-- ERROR -->
+<Message><ID>180429</ID><Description>Target features are not from the same workspace as other target features.</Description></Message>	<!-- ERROR -->
+<Message><ID>180430</ID><Description>More than one Design Option from the same Option Set is selected. This may result in the import of overlapping or redundant features.</Description></Message>	<!-- WARNING -->
+<Message><ID>180431</ID><Description>Revit option set names and design option names with single quotes (') are not allowed.</Description></Message><!-- ERROR -->
+<Message><ID>180432</ID><Description>Syntax error in parsing Design Options: %s</Description></Message><!-- ERROR -->
+<Message><ID>180433</ID><Description>Input BIM does not have specified Design Options: %s</Description></Message><!-- ERROR -->
+<Message><ID>180434</ID><Description>Unable to import the following detail features: %s</Description></Message><!-- WARNING -->
+<Message><ID>180492</ID><Description>Unsupported BIM File.</Description></Message><!-- ERROR -->
+
+<!--Create Indoor Dataset -->	
+<Message><ID>180476</ID><Description>Target geodatabase has existing Indoor Dataset feature classes. Select a different workspace or remove these feature classes to continue.</Description></Message><!-- ERROR -->
+<Message><ID>180477</ID><Description>Input spatial reference must have a vertical coordinate system.</Description></Message><!-- ERROR -->
+<Message><ID>180478</ID><Description>Invalid target geodatabase input.</Description></Message><!-- ERROR -->
+<Message><ID>180479</ID><Description>Invalid dataset.  The existing dataset's spatial reference does not have a vertical coordinate system.</Description></Message><!-- ERROR -->
+<Message><ID>180480</ID><Description>Target geodatabase has existing Indoor 3D Dataset feature classes. Select a different workspace or remove these feature classes to continue.</Description></Message><!-- ERROR -->
+<Message><ID>180481</ID><Description>Coordinate System does not match the existing %s feature dataset's coordinate system.</Description></Message><!-- ERROR -->
+<Message><ID>180482</ID><Description>Could not enable editor tracking on target dataset. Attribute rules will not be created.</Description></Message>
+<Message><ID>180483</ID><Description>Failed to create attribute rules for target dataset.</Description></Message>
+<!-- ERROR -->
+<Message><ID>180484</ID><Description>Target 3D features have missing fields: %s</Description></Message><!-- ERROR -->
+<Message><ID>180485</ID><Description>Failed to update spatial index for %s.</Description></Message><!-- ERROR -->
+<Message><ID>180486</ID><Description>Units of measure for horizontal and vertical coordinate systems of Indoors 3D dataset do not match. Imported features may not vertically align.</Description></Message><!-- WARNING -->
+<Message><ID>180487</ID><Description>One or more selected linked files do not exist in the location specified in the host file. Unselect or move to %1 the following files: %2</Description></Message><!-- ERROR -->
+<Message><ID>180488</ID><Description>There was an error importing linked files.</Description></Message><!-- ERROR -->
+<Message><ID>180489</ID><Description>Missing spatial reference for input linked file(s).</Description></Message><!-- ERROR -->
+<Message><ID>180490</ID><Description>Multiple inputs for Room layers are only allowed when importing linked files.</Description></Message><!-- ERROR -->
+<Message><ID>180491</ID><Description>Selected Rooms layer has no data. Field mapping from this layer will be skipped.</Description></Message><!-- ERROR -->
+<Message><ID>180492</ID><Description>Level %1 and level %2 in the linked revit file have the same elevation that cannot be imported to the Indoors model. Please update Floors To Import parameter and try again.</Description></Message><!-- ERROR -->
+  <!--Create Indoor Network Dataset -->
+<Message><ID>180500</ID><Description>Target geodatabase has existing Indoor Network Dataset feature classes. Select a different workspace or remove these feature classes to continue.</Description></Message><!-- ERROR -->
+<Message><ID>180501</ID><Description>Target geodatabase has existing Prelim Indoor Network Dataset feature classes. Select a different workspace or remove these feature classes to continue.</Description></Message><!-- ERROR -->
+<Message><ID>180502</ID><Description>Target geodatabase has existing %s feature dataset. Please use a different name.</Description></Message><!-- ERROR -->
+
+
+  <!--Update Occupant Features -->
+<Message><ID>180551</ID><Description>%1 is missing required field(s) %2.</Description></Message><!-- ERROR -->
+<Message><ID>180552</ID><Description>Datatypes for identifier fields of occupant features and table do not match.</Description></Message><!-- ERROR -->
+<Message><ID>180553</ID><Description>Occupant table Identifier field must be set.</Description></Message><!-- ERROR -->
+<Message><ID>180554</ID><Description>Occupant features Identifier field must be set.</Description></Message><!-- ERROR -->
+<Message><ID>180555</ID><Description>%1 contains the full list of new occupants.</Description></Message><!-- INFO -->
+<Message><ID>180556</ID><Description>Input field mappings has fields from Occupants feature class that cannot be overwritten.</Description></Message><!-- ERROR -->
+<Message><ID>180557</ID><Description>Cannot map source '%1' to target '%2'. Fields have different types.</Description></Message><!-- ERROR -->
+<Message><ID>180558</ID><Description>%1 contains the full list of deleted occupants.</Description></Message><!-- INFO -->
+<Message><ID>180559</ID><Description>Unit Identifier field must be set.</Description></Message><!-- ERROR -->
+<Message><ID>180560</ID><Description>Occupant Identifier field in input occupant table is empty or null.</Description></Message><!-- ERROR -->
+<Message><ID>180561</ID><Description>Input occupants have duplicate seating assignments.</Description></Message><!-- ERROR -->
+<Message><ID>180562</ID><Description>Unit Identifier field for input Unit features has null or empty values.</Description></Message><!-- ERROR -->
+<Message><ID>180563</ID><Description>Occupant Identifier field in target occupant features has null or empty values.</Description></Message><!-- ERROR -->
+<Message><ID>180564</ID><Description>%1 does not have unique values for %2.</Description></Message><!-- ERROR -->
+<Message><ID>180565</ID><Description>Duplicate input occupants not allowed when multiple unit identifiers are selected.</Description></Message><!-- ERROR -->
+<Message><ID>180566</ID><Description>%1 contains the full list of unassigned occupants.</Description></Message><!-- INFO -->
+<Message><ID>180567</ID><Description>The Target Occupants Features dataset does not contain any features and no input occupant table was provided.</Description></Message><!-- ERROR -->
+<Message><ID>180568</ID><Description>%1 could not be assigned to '%2' because the unit's ASSIGNMENT_TYPE value is not None or Office, or the unit does not exist in the input Units layer.</Description></Message>	<!-- ERROR -->
+<Message><ID>180569</ID><Description>Invalid Occupant Attributes Mapping parameter value. Cannot map to field: '%s' because it is set as the Occupant Identifier.</Description></Message><!-- ERROR -->
+<Message><ID>180570</ID><Description>Home Office Identifier did not match any rows in the Input Occupant Table. No home offices were assigned.</Description></Message><!-- INFO -->
+<Message><ID>180571</ID><Description>%s query is invalid.</Description></Message><!-- ERROR -->
+
+<!--CAD Import Tool -->
+<Message><ID>180590</ID><Description>Error importing CAD data.</Description></Message>	<!-- ERROR -->
+<Message><ID>180591</ID><Description>%1: %2 is not found in the Source CAD Data.</Description></Message>	<!-- ERROR -->
+<Message><ID>180592</ID><Description>The Source CAD Data parameter value is not a CAD file.</Description></Message>	<!-- ERROR -->
+<Message><ID>180593</ID><Description>Coordinate System for the input CAD does not match the target Indoor feature classes. Imported data will be projected.</Description></Message>	<!-- Message -->
+<Message><ID>180594</ID><Description>At least one Source CAD layer for Units must be selected.</Description></Message>	<!-- Error -->
+<Message><ID>180595</ID><Description>At least one Source layer for Units must be selected.</Description></Message>	<!-- Error -->
+<Message><ID>180596</ID><Description>%1: %2 is not from the Source CAD Data.</Description></Message>	<!-- Error -->
+<Message><ID>180597</ID><Description>Source layers for Units must be set.</Description></Message>	<!-- Error -->
+<Message><ID>180598</ID><Description>Target Field in CAD annotation mapping is mapped to Block entity type but no Block Attribute specified.</Description></Message>	<!-- Error -->
+<Message><ID>180599</ID><Description>Target Field in CAD annotation mapping cannot have Text and Block entity mapping.</Description></Message>	<!-- Error -->
+<Message><ID>180600</ID><Description>Source CAD layer must be selected for Target Field.</Description></Message><!-- Error -->
+<Message><ID>180601</ID><Description>Could not map or convert value(s) for Indoor field %1 from CAD annotation.</Description></Message>
+<!-- Warning -->
+<Message><ID>180602</ID><Description>Geometry type for input '%1' is not polyline.</Description></Message><!-- Error -->
+<Message><ID>180603</ID><Description>Invalid target field: %1. Skipping annotation mapping for the targeted field.</Description></Message><!-- WARNING -->
+<Message><ID>180604</ID><Description>Invalid '%s' parameter value. Value must be an integer.</Description></Message><!-- ERROR -->
+<Message><ID>180605</ID><Description>Source CAD Data spatial references do not match.</Description></Message><!-- ERROR -->
+<Message><ID>180606</ID><Description>%s: Duplicate inputs are not allowed.</Description></Message><!-- ERROR -->
+<Message><ID>180607</ID><Description>One or more layer or annotation configurations could not be mapped from the Source CAD Data input.</Description></Message><!-- ERROR -->
+<Message><ID>180608</ID><Description>Invalid floor plan configuration file.</Description></Message><!-- ERROR -->
+<Message><ID>180609</ID><Description>One or more CAD handles could not be mapped to Target Field: '%1' in Target Indoor Layer: '%2'.</Description></Message><!-- WARNING -->
+<Message><ID>180610</ID><Description> No input was provided for parameter: 'Source CAD Layers For %s'. Handle information could not be mapped.</Description></Message><!-- WARNING -->
+<Message><ID>180611</ID><Description>Gap tolerance must be less than 25 Millimeters or 1 Inch.</Description></Message><!-- Error -->
+<!-- Upgrade Indoors Database -->
+<Message><ID>180650</ID><Description>Target geodatabase does not have Indoor Dataset feature classes. Select a different workspace to continue.</Description></Message><!-- ERROR -->
+<Message><ID>180651</ID><Description>Feature classes [%1] and [%2] should belong to the same dataset.</Description></Message><!-- ERROR -->
+<Message><ID>180652</ID><Description>Enterprise geodatabase must use branch versioning in order to upgrade attribute rules.</Description></Message> <!-- ERROR -->
+<Message><ID>180653</ID><Description>Upgrading Indoors database schema for feature services is not supported.</Description></Message> <!-- ERROR -->
+<Message><ID>180654</ID><Description>Input Indoors database must be either a file geodatabase or an enterprise geodatabase.</Description></Message> <!-- ERROR -->
+<Message><ID>180655</ID><Description>Failed to acquire exclusive lock.</Description></Message> <!-- ERROR -->
+<Message><ID>180656</ID><Description>Field: [%2] in the [%1] table could not be changed from [Nullable] to [Non-Nullable] due to existing data.</Description></Message><!-- WARNING -->
+<Message><ID>180657</ID><Description>Field: [%2] in the [%1] feature class could not be changed from [Nullable] to [Non-Nullable] due to existing data.</Description></Message><!-- WARNING -->
+<Message><ID>180658</ID><Description>Field: [%2] will be added to table [%1] as [Nullable] instead of [Non-Nullable] due to existing data.</Description></Message><!-- WARNING -->
+<Message><ID>180659</ID><Description>Field: [%2] will be added to feature class [%1] as [Nullable] instead of [Non-Nullable] due to existing data.</Description></Message><!-- WARNING -->
+<Message><ID>180660</ID><Description>Domain: [%s] is expected to be Coded Value Domain, could not be upgraded.</Description></Message><!-- WARNING -->
+<Message><ID>180661</ID><Description>Domain: [%1] is expected to have [%2] field type, could not be upgraded.</Description></Message><!-- WARNING -->
+<Message><ID>180662</ID><Description>Field: [%2] in the [%1] table is expected to be [%3] type, could not be upgraded.</Description></Message><!-- WARNING -->
+<Message><ID>180663</ID><Description>Field: [%2] in the [%1] feature class is expected to be [%3] type, could not be upgraded.</Description></Message><!-- WARNING -->
+<Message><ID>180664</ID><Description>Domain name for field [%2] in the [%1] table is expected to be [%3], could not be upgraded.</Description></Message><!-- WARNING -->
+<Message><ID>180665</ID><Description>Domain name for field [%2] in the [%1] feature class is expected to be [%3], could not be upgraded.</Description></Message><!-- WARNING -->
+<Message><ID>180666</ID><Description>Default value for field [%2] in the [%1] table is expected to be [%3], could not be upgraded.</Description></Message><!-- WARNING -->
+<Message><ID>180667</ID><Description>Default value for field [%2] in the [%1] feature class is expected to be [%3], could not be upgraded.</Description></Message><!-- WARNING -->
+<Message><ID>180668</ID><Description>[%s] is expected to be a table, could not be upgraded.</Description></Message><!-- WARNING -->
+<Message><ID>180669</ID><Description>[%s] is expected to be a feature class, could not be upgraded.</Description></Message><!-- WARNING -->
+<Message><ID>180670</ID><Description>Feature class: [%1] is expected to have [%2] geometry type, could not be upgraded.</Description></Message><!-- WARNING -->
+<Message><ID>180671</ID><Description>No Indoors attribute rules found in the [Sites, Facilities, Levels, Units, or Details] feature classes. Skipped upgrading.</Description></Message><!-- WARNING -->
+<Message><ID>180672</ID><Description>Could not populate LEVEL_ID for all %s features.</Description></Message><!-- WARNING -->
+<Message><ID>180673</ID><Description>Attribute rules could not be upgraded for [%s] feature classes.</Description></Message><!-- WARNING -->
+<Message><ID>180674</ID><Description>Security attribute rules could not be upgraded for the [%s] feature class.</Description></Message><!-- WARNING -->
+<Message><ID>180705</ID><Description>Attribute rules could not be added for the [%s] feature class(es).</Description></Message><!-- WARNING -->
+<Message><ID>180706</ID><Description>Attribute rules could not be upgraded for the [%s] feature class(es).</Description></Message><!-- WARNING -->
+<Message><ID>180707</ID><Description>Security attribute rule could not be added to [%s] feature class.</Description></Message><!-- WARNING -->
+<Message><ID>180708</ID><Description>Security attribute rule could not be upgraded for [%s] feature class.</Description></Message><!-- WARNING -->
+<Message><ID>180709</ID><Description>Field: [%2] in the [%1] table will not be changed from [Nullable] to [Non-Nullable] due to existing data.</Description></Message><!-- WARNING -->
+<Message><ID>180710</ID><Description>Field: [%2] in the [%1] feature class will not be changed from [Nullable] to [Non-Nullable] due to existing data.</Description></Message><!-- WARNING -->
+<Message><ID>180711</ID><Description>Domain: [%s] is expected to be Coded Value Domain, will not be upgraded.</Description></Message><!-- WARNING -->
+<Message><ID>180712</ID><Description>Domain: [%1] is expected to have [%2] field type, will not be upgraded.</Description></Message><!-- WARNING -->
+<Message><ID>180713</ID><Description>Field: [%2] in the [%1] table is expected to be [%3] type, will not be upgraded.</Description></Message><!-- WARNING -->
+<Message><ID>180714</ID><Description>Field: [%2] in the [%1] feature class is expected to be [%3] type, will not be upgraded.</Description></Message><!-- WARNING -->
+<Message><ID>180715</ID><Description>Domain name for field [%2] in the [%1] table is expected to be [%3], will not be upgraded.</Description></Message><!-- WARNING -->
+<Message><ID>180716</ID><Description>Domain name for field [%2] in the [%1] feature class is expected to be [%3], will not be upgraded.</Description></Message><!-- WARNING -->
+<Message><ID>180717</ID><Description>Default value for field [%2] in the [%1] table is expected to be [%3], will not be upgraded.</Description></Message><!-- WARNING -->
+<Message><ID>180718</ID><Description>Default value for field [%2] in the [%1] feature class is expected to be [%3], will not be upgraded.</Description></Message><!-- WARNING -->
+<Message><ID>180719</ID><Description>[%s] is expected to be a feature class, will not be upgraded.</Description></Message><!-- WARNING -->
+<Message><ID>180720</ID><Description>[%s] is expected to be a table, will not be upgraded.</Description></Message><!-- WARNING -->
+<Message><ID>180721</ID><Description>Feature class: [%1] is expected to have [%2] geometry type, will not be upgraded.</Description></Message><!-- WARNING -->
+<!--IFC Import Tool-->
+<Message><ID>180675</ID><Description>Input BIM file is not a valid IFC file.</Description></Message>	<!-- ERROR -->
+<Message><ID>180676</ID><Description>Input Floorplan layer is not valid.</Description></Message>	<!-- ERROR -->
+<Message><ID>180677</ID><Description>Invalid Data in the Floorplan Layer.</Description></Message>	<!-- ERROR -->
+<Message><ID>180678</ID><Description>Cannot map source field '%1' to target field '%2'. Source field is not valid or does not exist.</Description></Message>	<!-- WARNING -->
+<Message><ID>180679</ID><Description>One or more values in source field '%1' are not valid for target field '%2'. Invalid values may be rounded, truncated, or skipped.</Description></Message>	<!-- WARNING -->
+<Message><ID>180680</ID><Description>Cannot map source field '%1' to target field '%2'. Fields have different data types.</Description></Message>	<!-- WARNING -->
+<Message><ID>180681</ID><Description>Cannot map source field '%1' to target field '%2'. Target field '%2' is not valid or does not exist.</Description></Message>	<!-- WARNING -->
+<Message><ID>180682</ID><Description>Input floorplan layers must come from the same dataset.</Description></Message><!-- ERROR -->
+<Message><ID>180683</ID><Description>Input BIM File Workspace is not an IFC file.</Description></Message><!-- ERROR -->
+<Message><ID>180684</ID><Description>Input floorplan layers have a different spatial reference than source IFC file.</Description></Message><!-- WARNING -->
+<Message><ID>180685</ID><Description>Roof or associated roof elements are not present in the Input Floorplan Polygon Layer and will not be imported.</Description></Message><!-- WARNING -->
+<!--Import Indoor Photos Tool-->
+<Message><ID>180750</ID><Description>%1 feature layer is missing required fields: %2.</Description></Message><!-- ERROR -->
+<Message><ID>180751</ID><Description>%s feature layer has no features to be processed.</Description></Message><!-- WARNING -->
+<Message><ID>180752</ID><Description>Spatial references of %1 and %2 feature layers are different.</Description></Message><!-- ERROR -->
+<Message><ID>180753</ID><Description>%s feature layer is not editable.</Description></Message><!-- ERROR -->
+<Message><ID>180754</ID><Description>Target oriented imagery dataset or layer is not z-enabled.</Description></Message><!-- ERROR -->
+<Message><ID>180755</ID><Description>Input data is not a supported file type.</Description></Message><!-- ERROR -->
+<Message><ID>180756</ID><Description>Found %s embedded photos with unsupported representations.</Description></Message><!-- ERROR -->
+<Message><ID>180757</ID><Description>%1 field %2 was not found and will not be populated.</Description></Message><!-- WARNING -->
+<Message><ID>180758</ID><Description>%s is not locally sourced.</Description></Message><!-- ERROR -->
+<Message><ID>180759</ID><Description>Input Data is positioned outside of the x,y domain of the Target Oriented Imagery.</Description></Message><!-- ERROR -->
+<Message><ID>180760</ID><Description>No images were found in the input data.</Description></Message><!-- WARNING -->
+<Message><ID>180761</ID><Description>No supported images found.</Description></Message><!-- WARNING -->
+<Message><ID>180762</ID><Description>An input coordinate system was not specified. The Input Data was not projected.</Description></Message>
+<Message><ID>180763</ID><Description>No LEVEL_ID assigned to imported images.</Description></Message>
+<Message><ID>180764</ID><Description>%1 has no vertical coordinate system defined. Using %2 as the vertical unit of measure for elevation comparison.</Description></Message><!-- WARNING -->
+<Message><ID>180765</ID><Description>Attachments must be enabled for oriented imagery layer.</Description></Message><!-- ERROR -->
+<Message><ID>180766</ID><Description>Failed to create Level ID field in target oriented imagery layer.</Description></Message><!-- ERROR -->
+<!--Generate Floor Plan from Point Cloud Tool-->
+<Message><ID>180825</ID><Description>Invalid input point cloud.</Description></Message><!-- ERROR -->
+<Message><ID>180826</ID><Description>Invalid output feature class.</Description></Message><!-- ERROR -->
+<Message><ID>180827</ID><Description>Input processing Z range '%s' is invalid. Max Z must be greater than Min Z.</Description></Message><!-- ERROR -->
+<Message><ID>180828</ID><Description>Output workspace is not supported. This tool only supports file and enterprise geodatabases.</Description></Message><!-- ERROR -->
+<Message><ID>180829</ID><Description>Failed to create output feature class %s.</Description></Message><!-- ERROR -->
+<Message><ID>180830</ID><Description>Input processing Z range '%s' is outside the input point cloud's Z extent.</Description></Message><!-- ERROR -->
+<Message><ID>180831</ID><Description>No data found to process.</Description></Message><!-- ERROR -->
+<Message><ID>180832</ID><Description>No data found to process in Z range '%s'.</Description></Message><!-- WARNING -->
+<Message><ID>180833</ID><Description>The Coordinate System parameter is ignored when the input point cloud has a coordinate system.</Description></Message><!-- WARNING -->
+<Message><ID>180835</ID><Description>Input processing extent is invalid.</Description></Message><!-- WARNING -->
+<Message><ID>180836</ID><Description>Input point cloud has Key-point flag set.</Description></Message><!-- ERROR -->
+<Message><ID>180837</ID><Description>Error generating floor plan from point cloud.</Description></Message><!-- ERROR -->
+<!--Generate Indoor Network Features Tool-->
+<Message><ID>181000</ID><Description>%1 parameter value: %2 is invalid. Input layer must have a field named LEVEL_ID or be a floor-aware map layer.</Description></Message><!-- Error -->
+<Message><ID>181001</ID><Description>No indoor pathways were generated on level: %1 in facility: %2.</Description></Message><!-- WARNING -->
+<Message><ID>181002</ID><Description>The NAME_SHORT field value is empty for one or more input Levels features, the LEVEL_NUMBER field value will be used instead.</Description></Message><!-- WARNING -->
+<Message><ID>181003</ID><Description>%s cannot be negative.</Description></Message><!-- ERROR -->
+<Message><ID>181004</ID><Description>A facilities layer could not be found in the same workspace as input levels features. Facility Name field will not be populated for generated pathways.</Description></Message><!-- WARNING -->
+<Message><ID>181005</ID><Description>An invalid SQL statement was used in %s.</Description></Message><!-- ERROR -->
+<Message><ID>181006</ID><Description>%s has unknown vertical coordinate system, generated pathway features will not be projected.</Description></Message><!-- WARNING -->
+<Message><ID>181007</ID><Description>Unable to generate transitions for facility %s, could not find associated pathways.</Description></Message><!-- WARNING -->
+<Message><ID>181008</ID><Description>Unable to generate Transitions without the Target Floor Transitions feature layer.</Description></Message><!-- WARNING -->
+<Message><ID>181009</ID><Description>Unable to generate transitions for facility %s, at least two levels are required.</Description></Message><!-- WARNING -->
+
+<!--Import Features to Indoors Tool-->
+<Message><ID>180900</ID><Description>Error importing polyline features.</Description></Message>	<!-- ERROR -->
+<Message><ID>180901</ID><Description>No polygon features were generated from input data.</Description></Message><!-- WARNING -->
+<Message><ID>180902</ID><Description>Input features have different Z values. Input features must be at the same elevation.</Description></Message><!-- ERROR -->
+<Message><ID>180903</ID><Description>Input vertical order either conflicts with another level's value or does not match the existing value for level %s.</Description></Message><!-- ERROR -->
+</Messages>

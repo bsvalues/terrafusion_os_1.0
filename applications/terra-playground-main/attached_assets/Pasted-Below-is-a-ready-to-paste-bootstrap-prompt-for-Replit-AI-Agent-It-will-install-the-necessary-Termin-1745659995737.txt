@@ -1,0 +1,142 @@
+Below is a ready-to-paste bootstrap prompt for Replit AI Agent. It will install the necessary Terminus packages, generate the health-monitoring files in your AI Core package, wire them into your NestJS app, and verify readiness/liveness endpoints.
+
+⸻
+
+	1.	Install Terminus & HTTP dependencies
+
+pnpm add @nestjs/terminus @godaddy/terminus @nestjs/axios axios
+
+This pulls in the NestJS Terminus module (which itself wraps GoDaddy’s Terminus) and the HTTP utilities for built-in indicators  ￼.
+	2.	Scaffold AgentHealthIndicator
+
+# Create health directory
+mkdir -p packages/ai-core/src/health
+
+# Generate indicator file
+cat > packages/ai-core/src/health/agent-health.indicator.ts << 'EOF'
+import { Injectable } from '@nestjs/common';
+import { HealthIndicator, HealthIndicatorResult, HealthCheckError } from '@nestjs/terminus';
+import { AgentService } from '../services/agent.service';
+
+@Injectable()
+export class AgentHealthIndicator extends HealthIndicator {
+  constructor(private readonly agentService: AgentService) {
+    super();
+  }
+
+  async isHealthy(key: string): Promise<HealthIndicatorResult> {
+    let isUp = false;
+    try {
+      await this.agentService.ping();
+      isUp = true;
+    } catch {
+      isUp = false;
+    }
+    const result = this.getStatus(key, isUp, {
+      lastChecked: new Date().toISOString(),
+      error: isUp ? undefined : 'Ping failed',
+    });
+    if (!isUp) {
+      throw new HealthCheckError('AI Agent is down', result);
+    }
+    return result;
+  }
+}
+EOF
+
+This custom indicator extends HealthIndicator and uses getStatus(...) to build health results, throwing a HealthCheckError on failure  ￼.
+	3.	Scaffold Health Controller
+
+cat > packages/ai-core/src/health/health.controller.ts << 'EOF'
+import { Controller, Get } from '@nestjs/common';
+import { HealthCheck, HealthCheckService, HealthCheckResult } from '@nestjs/terminus';
+import { AgentHealthIndicator } from './agent-health.indicator';
+import { TypeOrmHealthIndicator } from '@nestjs/terminus';
+
+@Controller('health')
+export class HealthController {
+  constructor(
+    private health: HealthCheckService,
+    private agentIndicator: AgentHealthIndicator,
+    private dbIndicator: TypeOrmHealthIndicator,
+  ) {}
+
+  @Get('readiness')
+  @HealthCheck()
+  readiness(): Promise<HealthCheckResult> {
+    return this.health.check([
+      () => this.dbIndicator.pingCheck('database', { timeout: 1500 }),
+      () => this.agentIndicator.isHealthy('ai-agent'),
+    ]);
+  }
+
+  @Get('liveness')
+  @HealthCheck()
+  liveness(): Promise<HealthCheckResult> {
+    return this.health.check([
+      () => this.agentIndicator.isHealthy('ai-agent'),
+    ]);
+  }
+}
+EOF
+
+Defines /health/readiness (DB + Agent) and /health/liveness (Agent only) probes using @HealthCheck()  ￼.
+	4.	Scaffold Health Module
+
+cat > packages/ai-core/src/health/health.module.ts << 'EOF'
+import { Module } from '@nestjs/common';
+import { TerminusModule } from '@nestjs/terminus';
+import { HttpModule } from '@nestjs/axios';
+import { HealthController } from './health.controller';
+import { AgentHealthIndicator } from './agent-health.indicator';
+
+@Module({
+  imports: [TerminusModule, HttpModule],
+  controllers: [HealthController],
+  providers: [AgentHealthIndicator],
+})
+export class HealthModule {}
+EOF
+
+Imports TerminusModule (which itself registers core health services) and our custom indicator  ￼.
+	5.	Register in AppModule
+
+# Append import in your NestJS AppModule (e.g., apps/terrafusion-core/src/app.module.ts)
+apply_patch << 'EOF'
+*** Begin Patch
+*** Update File: apps/terrafusion-core/src/app.module.ts
+@@
+-import { /*...*/ } from '@nestjs/common';
++import { /*...*/ } from '@nestjs/common';
++import { HealthModule } from '../../../packages/ai-core/src/health/health.module';
+
+ @Module({
+   imports: [
+-    /* existing modules */
++    /* existing modules */,
++    HealthModule,
+   ],
+*** End Patch
+EOF
+
+Ensures the health endpoints and indicator are wired into the main application context  ￼.
+	6.	Verify Endpoints
+
+# Start the app
+pnpm run start:dev
+
+# In Replit shell or REST client:
+curl -i http://localhost:3000/health/readiness
+curl -i http://localhost:3000/health/liveness
+
+You should see HTTP 200 with JSON status ok when healthy, or 503 if the agent ping fails  ￼.
+
+⸻
+
+Commit & Push
+
+git add .
+git commit -m "feat(ai-core): add Terminus health checks for AI agent liveness/readiness"
+git push
+
+This completes the bootstrap for NestJS health checks using Terminus, resolving the missing getStatus errors and exposing robust liveness/readiness probes.

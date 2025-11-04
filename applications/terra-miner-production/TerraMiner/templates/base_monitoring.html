@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Monitoring Dashboard{% endblock %} | TerraMiner</title>
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/static/css/terraminer.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        .navbar-brand {
+            font-weight: 600;
+        }
+        .sidebar {
+            min-height: calc(100vh - 56px);
+        }
+        .main-content {
+            padding: 1.5rem;
+        }
+        .card {
+            margin-bottom: 1.5rem;
+        }
+        .metric-card {
+            text-align: center;
+            border-radius: 0.5rem;
+        }
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 600;
+        }
+        .metric-label {
+            font-size: 0.875rem;
+            opacity: 0.7;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        .alert-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 0.75rem;
+        }
+        .table-responsive {
+            margin-bottom: 1rem;
+        }
+        .stat-card {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+        .stat-card .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .stat-card .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        .stat-card .stat-label {
+            font-size: 0.875rem;
+            opacity: 0.7;
+        }
+        .alert-high {
+            border-left: 4px solid var(--bs-danger);
+        }
+        .alert-medium {
+            border-left: 4px solid var(--bs-warning);
+        }
+        .alert-low {
+            border-left: 4px solid var(--bs-info);
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-gem me-2"></i> 
+                <span class="text-white">Terra</span><span class="text-accent">Miner</span>
+                <span class="badge ms-2 rounded-pill" style="background-color: var(--tf-dark-gray); font-size: 0.65rem; color: var(--tf-teal);">
+                    TerraFusion
+                </span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/monitoring/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/monitoring/metrics"><i class="bi bi-graph-up"></i> Metrics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/monitoring/alerts"><i class="bi bi-exclamation-triangle"></i> Alerts</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/monitoring/reports"><i class="bi bi-file-text"></i> Reports</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/property/search"><i class="bi bi-house"></i> Benton County Search</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ai/integration-automation"><i class="bi bi-gear"></i> Automation</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <span class="navbar-text me-3" id="system-status">
+                        <i class="bi bi-circle-fill text-success"></i> System Operational
+                    </span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 p-0 bg-body-tertiary sidebar">
+                <div class="p-3">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-speedometer2 me-2"></i>
+                        <h5 class="mb-0">Monitoring</h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="/monitoring/dashboard" class="list-group-item list-group-item-action {% if request.path == '/monitoring/dashboard' %}active{% endif %}">
+                            <i class="bi bi-house me-2"></i> Overview
+                        </a>
+                        <a href="/monitoring/system" class="list-group-item list-group-item-action {% if request.path == '/monitoring/system' %}active{% endif %}">
+                            <i class="bi bi-cpu me-2"></i> System
+                        </a>
+                        <a href="/monitoring/api" class="list-group-item list-group-item-action {% if request.path == '/monitoring/api' %}active{% endif %}">
+                            <i class="bi bi-hdd-network me-2"></i> API Performance
+                        </a>
+                        <a href="/monitoring/database" class="list-group-item list-group-item-action {% if request.path == '/monitoring/database' %}active{% endif %}">
+                            <i class="bi bi-database me-2"></i> Database
+                        </a>
+                        <a href="/monitoring/ai" class="list-group-item list-group-item-action {% if request.path == '/monitoring/ai' %}active{% endif %}">
+                            <i class="bi bi-robot me-2"></i> AI Performance
+                        </a>
+                    </div>
+                    
+                    <div class="d-flex align-items-center mt-4 mb-3">
+                        <i class="bi bi-bell me-2"></i>
+                        <h5 class="mb-0">Alerts</h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="/monitoring/alerts/active" class="list-group-item list-group-item-action {% if request.path == '/monitoring/alerts/active' %}active{% endif %}">
+                            <i class="bi bi-exclamation-circle me-2"></i> Active Alerts
+                            <span class="badge bg-danger float-end" id="active-alerts-count">0</span>
+                        </a>
+                        <a href="/monitoring/alerts/history" class="list-group-item list-group-item-action {% if request.path == '/monitoring/alerts/history' %}active{% endif %}">
+                            <i class="bi bi-clock-history me-2"></i> Alert History
+                        </a>
+                    </div>
+                    
+                    <div class="d-flex align-items-center mt-4 mb-3">
+                        <i class="bi bi-file-earmark-text me-2"></i>
+                        <h5 class="mb-0">Reports</h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="/monitoring/reports/scheduled" class="list-group-item list-group-item-action {% if request.path == '/monitoring/reports/scheduled' %}active{% endif %}">
+                            <i class="bi bi-calendar-check me-2"></i> Scheduled Reports
+                        </a>
+                        <a href="/monitoring/reports/create" class="list-group-item list-group-item-action {% if request.path == '/monitoring/reports/create' %}active{% endif %}">
+                            <i class="bi bi-plus-circle me-2"></i> Create Report
+                        </a>
+                        <a href="/monitoring/reports/history" class="list-group-item list-group-item-action {% if request.path == '/monitoring/reports/history' %}active{% endif %}">
+                            <i class="bi bi-clock-history me-2"></i> Report History
+                        </a>
+                    </div>
+                    
+                    <div class="d-flex align-items-center mt-4 mb-3">
+                        <i class="bi bi-house me-2"></i>
+                        <h5 class="mb-0">Property Search</h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="/property/search" class="list-group-item list-group-item-action {% if request.path == '/property/search' %}active{% endif %}">
+                            <i class="bi bi-search me-2"></i> Benton County Search
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">{% block page_title %}Monitoring Dashboard{% endblock %}</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        {% block page_actions %}
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="refresh-btn">
+                                <i class="bi bi-arrow-clockwise"></i> Refresh
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="export-btn">
+                                <i class="bi bi-download"></i> Export
+                            </button>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="timerangeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-calendar3"></i> Last 7 Days
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="timerangeDropdown">
+                                <li><a class="dropdown-item" href="#" data-range="1">Last 24 Hours</a></li>
+                                <li><a class="dropdown-item" href="#" data-range="7">Last 7 Days</a></li>
+                                <li><a class="dropdown-item" href="#" data-range="30">Last 30 Days</a></li>
+                                <li><a class="dropdown-item" href="#" data-range="90">Last 90 Days</a></li>
+                            </ul>
+                        </div>
+                        {% endblock %}
+                    </div>
+                </div>
+
+                <!-- Main content area -->
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Shared monitoring functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Time range selection
+            const timerangeDropdown = document.getElementById('timerangeDropdown');
+            const timerangeItems = document.querySelectorAll('[data-range]');
+            
+            timerangeItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const days = this.getAttribute('data-range');
+                    const text = this.textContent;
+                    
+                    // Update dropdown button text
+                    timerangeDropdown.innerHTML = `<i class="bi bi-calendar3"></i> ${text}`;
+                    
+                    // Trigger data refresh with new time range
+                    if (typeof updateDashboardData === 'function') {
+                        updateDashboardData(days);
+                    }
+                });
+            });
+            
+            // Refresh button
+            const refreshBtn = document.getElementById('refresh-btn');
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', function() {
+                    if (typeof updateDashboardData === 'function') {
+                        updateDashboardData();
+                    }
+                });
+            }
+            
+            // System status check
+            function checkSystemStatus() {
+                fetch('/api/monitoring/health')
+                    .then(response => response.json())
+                    .then(data => {
+                        const statusElement = document.getElementById('system-status');
+                        if (data.status === 'operational') {
+                            statusElement.innerHTML = '<i class="bi bi-circle-fill text-success"></i> System Operational';
+                        } else {
+                            statusElement.innerHTML = '<i class="bi bi-circle-fill text-danger"></i> System Degraded';
+                        }
+                    })
+                    .catch(error => {
+                        const statusElement = document.getElementById('system-status');
+                        statusElement.innerHTML = '<i class="bi bi-circle-fill text-danger"></i> Monitoring Error';
+                    });
+            }
+            
+            // Check active alerts
+            function checkActiveAlerts() {
+                fetch('/api/alerts?status=active')
+                    .then(response => response.json())
+                    .then(data => {
+                        const alertCountElement = document.getElementById('active-alerts-count');
+                        if (data.status === 'success' && data.alerts) {
+                            alertCountElement.textContent = data.alerts.length;
+                            
+                            if (data.alerts.length > 0) {
+                                alertCountElement.classList.add('bg-danger');
+                                alertCountElement.classList.remove('bg-secondary');
+                            } else {
+                                alertCountElement.classList.remove('bg-danger');
+                                alertCountElement.classList.add('bg-secondary');
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error checking alerts:', error);
+                    });
+            }
+            
+            // Initial check
+            checkSystemStatus();
+            checkActiveAlerts();
+            
+            // Schedule periodic checks
+            setInterval(checkSystemStatus, 60000); // Every minute
+            setInterval(checkActiveAlerts, 30000); // Every 30 seconds
+        });
+    </script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

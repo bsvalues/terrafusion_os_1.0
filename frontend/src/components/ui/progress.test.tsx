@@ -19,7 +19,7 @@ describe('Progress', () => {
     });
 
     it('renders with custom className', () => {
-      const { container } = render(<Progress value={50} className="custom-progress" />);
+      const { container } = render(<Progress value={50} className='custom-progress' />);
       const progressBar = container.firstChild;
       expect(progressBar).toHaveClass('custom-progress');
     });
@@ -99,41 +99,41 @@ describe('Progress', () => {
 
   describe('ARIA and Accessibility', () => {
     it('has progressbar role', () => {
-      render(<Progress value={50} aria-label="Loading" />);
+      render(<Progress value={50} aria-label='Loading' />);
       const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toBeInTheDocument();
     });
 
     it('has aria-valuemin attribute', () => {
-      render(<Progress value={50} aria-label="Loading" />);
+      render(<Progress value={50} aria-label='Loading' />);
       const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toHaveAttribute('aria-valuemin', '0');
     });
 
     it('has aria-valuemax attribute', () => {
-      render(<Progress value={50} aria-label="Loading" />);
+      render(<Progress value={50} aria-label='Loading' />);
       const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toHaveAttribute('aria-valuemax', '100');
     });
 
     it('has aria-valuenow attribute', () => {
-      render(<Progress value={50} aria-label="Loading" />);
+      render(<Progress value={50} aria-label='Loading' />);
       const progressBar = screen.getByRole('progressbar');
       expect(progressBar).toHaveAttribute('aria-valuenow', '50');
     });
 
     it('updates aria-valuenow when value changes', () => {
-      const { rerender } = render(<Progress value={25} aria-label="Loading" />);
+      const { rerender } = render(<Progress value={25} aria-label='Loading' />);
       let progressBar = screen.getByRole('progressbar');
       expect(progressBar).toHaveAttribute('aria-valuenow', '25');
 
-      rerender(<Progress value={75} aria-label="Loading" />);
+      rerender(<Progress value={75} aria-label='Loading' />);
       progressBar = screen.getByRole('progressbar');
       expect(progressBar).toHaveAttribute('aria-valuenow', '75');
     });
 
     it('supports aria-label', () => {
-      render(<Progress value={50} aria-label="Upload progress" />);
+      render(<Progress value={50} aria-label='Upload progress' />);
       const progressBar = screen.getByRole('progressbar', { name: /upload progress/i });
       expect(progressBar).toBeInTheDocument();
     });
@@ -141,8 +141,8 @@ describe('Progress', () => {
     it('supports aria-labelledby', () => {
       render(
         <div>
-          <div id="progress-label">Loading content</div>
-          <Progress value={50} aria-labelledby="progress-label" />
+          <div id='progress-label'>Loading content</div>
+          <Progress value={50} aria-labelledby='progress-label' />
         </div>
       );
       const progressBar = screen.getByRole('progressbar');
@@ -150,19 +150,19 @@ describe('Progress', () => {
     });
 
     it('has no accessibility violations at 0%', async () => {
-      const { container } = render(<Progress value={0} aria-label="Progress" />);
+      const { container } = render(<Progress value={0} aria-label='Progress' />);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
 
     it('has no accessibility violations at 50%', async () => {
-      const { container } = render(<Progress value={50} aria-label="Progress" />);
+      const { container } = render(<Progress value={50} aria-label='Progress' />);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
 
     it('has no accessibility violations at 100%', async () => {
-      const { container } = render(<Progress value={100} aria-label="Progress" />);
+      const { container } = render(<Progress value={100} aria-label='Progress' />);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
@@ -196,27 +196,25 @@ describe('Progress', () => {
 
   describe('Custom Styling', () => {
     it('applies custom height', () => {
-      const { container } = render(<Progress value={50} className="h-4" />);
+      const { container } = render(<Progress value={50} className='h-4' />);
       const progressBar = container.firstChild;
       expect(progressBar).toHaveClass('h-4');
     });
 
     it('applies custom width', () => {
-      const { container } = render(<Progress value={50} className="w-1/2" />);
+      const { container } = render(<Progress value={50} className='w-1/2' />);
       const progressBar = container.firstChild;
       expect(progressBar).toHaveClass('w-1/2');
     });
 
     it('applies custom colors', () => {
-      const { container } = render(
-        <Progress value={50} className="bg-slate-200" />
-      );
+      const { container } = render(<Progress value={50} className='bg-slate-200' />);
       const progressBar = container.firstChild;
       expect(progressBar).toHaveClass('bg-slate-200');
     });
 
     it('applies rounded variants', () => {
-      const { container } = render(<Progress value={50} className="rounded-lg" />);
+      const { container } = render(<Progress value={50} className='rounded-lg' />);
       const progressBar = container.firstChild;
       expect(progressBar).toHaveClass('rounded-lg');
     });
@@ -224,25 +222,25 @@ describe('Progress', () => {
 
   describe('Real-world Use Cases', () => {
     it('renders file upload progress', () => {
-      render(<Progress value={65} aria-label="File upload: 65%" />);
+      render(<Progress value={65} aria-label='File upload: 65%' />);
       const progress = screen.getByRole('progressbar');
       expect(progress).toHaveAttribute('aria-valuenow', '65');
     });
 
     it('renders loading indicator', () => {
-      render(<Progress value={30} aria-label="Loading content" />);
+      render(<Progress value={30} aria-label='Loading content' />);
       const progress = screen.getByRole('progressbar', { name: /loading content/i });
       expect(progress).toBeInTheDocument();
     });
 
     it('renders form completion progress', () => {
-      render(<Progress value={75} aria-label="Form completion: 3 of 4 steps" />);
+      render(<Progress value={75} aria-label='Form completion: 3 of 4 steps' />);
       const progress = screen.getByRole('progressbar');
       expect(progress).toHaveAttribute('aria-valuenow', '75');
     });
 
     it('renders download progress', () => {
-      render(<Progress value={42} aria-label="Downloading: 42%" />);
+      render(<Progress value={42} aria-label='Downloading: 42%' />);
       const progress = screen.getByRole('progressbar');
       expect(progress).toHaveAttribute('aria-valuenow', '42');
     });

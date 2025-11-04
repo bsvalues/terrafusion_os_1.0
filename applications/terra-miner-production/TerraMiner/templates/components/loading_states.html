@@ -1,0 +1,82 @@
+{% macro spinner(size="md", color="primary", centered=true, message="") %}
+<div class="{% if centered %}text-center{% endif %} py-3">
+    <div class="spinner-border text-{{ color }} spinner-border-{{ size }}" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+    {% if message %}
+    <p class="mt-2 {% if ui_template == 'unified' %}text-light{% else %}text-muted{% endif %}">{{ message }}</p>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{% macro skeleton_text(lines=1, width="100%", height="1.2rem") %}
+<div>
+    {% for i in range(lines) %}
+    <div class="skeleton-loader mb-2" style="width: {{ width if not loop.index % 3 else '75%' if not loop.index % 2 else '90%' }}; height: {{ height }};"></div>
+    {% endfor %}
+</div>
+{% endmacro %}
+
+{% macro skeleton_card(header=true) %}
+<div class="card {% if ui_template == 'unified' %}bg-dark-blue border-0 shadow{% endif %} mb-4">
+    {% if header %}
+    <div class="card-header {% if ui_template == 'unified' %}bg-blue{% endif %}">
+        <div class="skeleton-loader" style="width: 70%; height: 1.5rem;"></div>
+    </div>
+    {% endif %}
+    <div class="card-body">
+        {{ skeleton_text(4) }}
+    </div>
+</div>
+{% endmacro %}
+
+{% macro skeleton_table(rows=5, columns=4) %}
+<div class="skeleton-loader mb-4" style="height: 3rem;"></div>
+{% for i in range(rows) %}
+<div class="d-flex mb-3">
+    {% for j in range(columns) %}
+    <div class="skeleton-loader me-2" style="width: {{ 100 // columns }}%; height: 1.5rem;"></div>
+    {% endfor %}
+</div>
+{% endfor %}
+{% endmacro %}
+
+{% macro skeleton_list(items=5) %}
+<div class="list-group mb-4">
+    {% for i in range(items) %}
+    <div class="list-group-item {% if ui_template == 'unified' %}bg-blue border-dark{% endif %}">
+        <div class="skeleton-loader" style="width: 90%; height: 1.2rem;"></div>
+    </div>
+    {% endfor %}
+</div>
+{% endmacro %}
+
+{% macro skeleton_chart() %}
+<div class="chart-container">
+    <div class="skeleton-loader mb-3" style="width: 50%; height: 1.5rem;"></div>
+    <div class="skeleton-loader" style="width: 100%; height: 200px;"></div>
+</div>
+{% endmacro %}
+
+{% macro skeleton_property_card() %}
+<div class="card h-100 {% if ui_template == 'unified' %}bg-dark-blue border-0 shadow{% endif %}">
+    <div class="row g-0">
+        <div class="col-md-5">
+            <div class="skeleton-loader" style="width: 100%; height: 200px;"></div>
+        </div>
+        <div class="col-md-7">
+            <div class="card-body">
+                <div class="skeleton-loader mb-2" style="width: 80%; height: 1.5rem;"></div>
+                <div class="skeleton-loader mb-3" style="width: 60%; height: 1rem;"></div>
+                <div class="skeleton-loader mb-4" style="width: 50%; height: 1.8rem;"></div>
+                <div class="d-flex justify-content-between mb-3">
+                    <div class="skeleton-loader" style="width: 30%; height: 1rem;"></div>
+                    <div class="skeleton-loader" style="width: 30%; height: 1rem;"></div>
+                    <div class="skeleton-loader" style="width: 30%; height: 1rem;"></div>
+                </div>
+                <div class="skeleton-loader" style="width: 100%; height: 2rem;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endmacro %}

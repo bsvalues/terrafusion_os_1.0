@@ -1,0 +1,26 @@
+{{/*
+============================================================================
+TerraFusion API - PodDisruptionBudget Template
+Government. Transcended. - Ensure Minimum Availability During Disruptions
+============================================================================
+*/}}
+
+{{- if .Values.podDisruptionBudget.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "terrafusion-api.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "terrafusion-api.labels" . | nindent 4 }}
+    terrafusion.io/component: api
+    terrafusion.io/tier: core
+  annotations:
+    description: "TerraFusion API PodDisruptionBudget - ensures 99.9% availability"
+    compliance: "FISMA-High"
+spec:
+  minAvailable: {{ .Values.podDisruptionBudget.minAvailable }}
+  selector:
+    matchLabels:
+      {{- include "terrafusion-api.selectorLabels" . | nindent 6 }}
+{{- end }}

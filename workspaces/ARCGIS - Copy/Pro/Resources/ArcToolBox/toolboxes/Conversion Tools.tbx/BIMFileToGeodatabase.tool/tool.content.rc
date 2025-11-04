@@ -1,0 +1,20 @@
+{
+    "map": {
+        "description": "Imports the contents of one or more BIM file workspaces into a single geodatabase feature dataset.",
+        "identifier.descr": "A unique building identifier that will be added to all output feature classes. The identifier allows you to add unique names to each building to be used at a later time.",
+        "identifier.title": "Identifier",
+        "in_bim_file_workspace.descr": "The BIM file or files that will be converted to geodatabase feature classes.",
+        "in_bim_file_workspace.title": "Input BIM File Workspace",
+        "include_floorplan.descr": "<xdoc><p>Specifies whether the output dataset will include the floorplan feature classes.<ul><li>Checked—The output dataset will include the floorplan feature classes.</li><li>Unchecked—The output dataset will exclude the floorplan feature classes.</li></ul></p></xdoc>",
+        "include_floorplan.title": "Include Floorplan Feature Classes",
+        "out_dataset_name.descr": "The building dataset name.",
+        "out_dataset_name.title": "Dataset",
+        "out_feature_dataset.title": "Output Feature Dataset",
+        "out_featureclass_dataset.title": "Output Feature Class",
+        "out_gdb_path.descr": "The geodatabase where the output feature dataset will be created. This must be an existing geodatabase.",
+        "out_gdb_path.title": "Output Geodatabase",
+        "spatial_reference.descr": "<xdoc><p>The spatial reference of the output feature dataset.</p><p>To control other aspects of the spatial reference, such as the x,y-, z-, and m-domains, resolutions, and tolerances, set the appropriate geoprocessing environments.</p></xdoc>",
+        "spatial_reference.title": "Spatial Reference",
+        "title": "BIM File To Geodatabase"
+    }
+}

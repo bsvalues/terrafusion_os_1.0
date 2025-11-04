@@ -1,0 +1,30 @@
+{
+    "set": [
+        "add rule",
+        "associate",
+        "attributed",
+        "cardinality",
+        "complex",
+        "composite",
+        "connect",
+        "destination",
+        "feature",
+        "geodatabase",
+        "join",
+        "key",
+        "link",
+        "many",
+        "one",
+        "origin",
+        "relate",
+        "relationship",
+        "relationship class",
+        "relationship class rules",
+        "relationship classes",
+        "relationship rule",
+        "relationship rules",
+        "rule",
+        "simple",
+        "subtypes"
+    ]
+}

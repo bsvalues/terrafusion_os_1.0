@@ -1,0 +1,47 @@
+{
+    "version": "1.0",
+    "alias": "intelligence",
+    "displayname": "$rc:title",
+    "description": "$rc:descr",
+    "helpcontext": "73000000",
+    "toolsets": {
+        "$rc:toolset4.name": {
+            "tools": [
+                "FindOverlaps"
+            ]
+        },
+        "$rc:toolset5.name": {
+            "tools": [
+                "GenerateBlindSpotAreas",
+                "GenerateCoverageAreas"
+            ]
+        },
+        "$rc:toolset3.name": {
+            "tools": [
+                "DOFToObstacleFeatures",
+                "DropZones",
+                "GenerateHLZSuitability",
+                "GenerateObstacleFeatures",
+                "LeastCostPath"
+            ]
+        },
+        "$rc:toolset1.name": {
+            "tools": [
+                "BatchImportData",
+                "CreateLocationFileFromTextFile",
+                "MilitaryRasterToMosaicDataset",
+                "PointsToTrackSegments"
+            ]
+        },
+        "$rc:toolset2.name": {
+            "tools": [
+                "ClassifyMovementEvents",
+                "CompareAreas",
+                "FindCotravelers",
+                "FindFrequentedLocations",
+                "FindMeetingLocations",
+                "SelectMovementTracks"
+            ]
+        }
+    }
+}

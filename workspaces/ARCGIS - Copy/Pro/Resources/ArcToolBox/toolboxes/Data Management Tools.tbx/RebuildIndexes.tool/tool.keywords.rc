@@ -1,0 +1,9 @@
+{
+    "set": [
+        "arcsde",
+        "geodatabase administration",
+        "indexes",
+        "rebuild",
+        "statistics"
+    ]
+}

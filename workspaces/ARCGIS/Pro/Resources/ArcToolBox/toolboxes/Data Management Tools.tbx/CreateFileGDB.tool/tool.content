@@ -1,0 +1,69 @@
+{
+    "type": "FunctionTool",
+    "guid": "{7588753f-9c4b-40f3-81ab-e53f319894ee}",
+    "displayname": "$rc:title",
+    "helpcontent": "3180005",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "out_folder_path": {
+            "displayname": "$rc:out_folder_path.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:out_folder_path.descr"
+        },
+        "out_name": {
+            "displayname": "$rc:out_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:out_name.descr"
+        },
+        "out_version": {
+            "type": "optional",
+            "displayname": "$rc:out_version.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "CURRENT",
+                        "code": "$rc:out_version.domain.CURRENT"
+                    },
+                    {
+                        "value": "10.0",
+                        "code": "$rc:out_version.domain.10.0"
+                    },
+                    {
+                        "value": "9.3",
+                        "code": "$rc:out_version.domain.9.3"
+                    },
+                    {
+                        "value": "9.2",
+                        "code": "$rc:out_version.domain.9.2"
+                    }
+                ]
+            },
+            "value": "CURRENT",
+            "description": "$rc:out_version.descr"
+        },
+        "out_file_gdb": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_file_gdb.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            }
+        }
+    },
+    "environments": [
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

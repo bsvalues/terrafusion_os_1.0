@@ -1,0 +1,32 @@
+create view income_factors_proval as 
+SELECT  [version_num]
+      ,[msn]
+      ,[table_type]
+      ,[year_group]
+      ,[use_code]
+      ,[submkt_area]
+      ,[neighborhood]
+      ,[prop_type]
+      ,[prop_sub_type]
+      ,[rent_class]
+      ,[descript]
+      ,[unit_of_measure]
+      ,[rate_period]
+      ,[expense_type]
+      ,[df1]
+      ,[df2]
+      ,[df3]
+      ,[df4]
+      ,[df5]
+      ,[df6]
+      ,[df7]
+      ,[df8]
+      ,[df9]
+      ,[df10]
+      ,[status]
+      ,[last_update]
+  FROM [cnv_src_benton_2_14_2017].[dbo].[income_factors]
+  where status= 'a'
+
+GO
+

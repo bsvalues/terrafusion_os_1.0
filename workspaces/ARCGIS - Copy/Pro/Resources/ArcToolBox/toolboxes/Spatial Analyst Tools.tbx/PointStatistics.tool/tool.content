@@ -1,0 +1,203 @@
+{
+    "type": "FunctionTool",
+    "guid": "{bac34418-7cb5-4b16-b0c6-b40f4bfc719b}",
+    "displayname": "$rc:title",
+    "helpcontent": "8130006",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10"
+    ],
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "params": {
+        "in_point_features": {
+            "displayname": "$rc:in_point_features.title",
+            "datatype": {
+                "type": "GPSAGeoData"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "false",
+                "singleband": "false",
+                "datatype": [
+                    "DEFeatureClass",
+                    "GPFeatureLayer",
+                    "GPTableView",
+                    "DETextFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Geometry"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_point_features.descr"
+        },
+        "field": {
+            "displayname": "$rc:field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Geometry"
+                ]
+            },
+            "depends": [
+                "in_point_features"
+            ],
+            "description": "$rc:field.descr"
+        },
+        "out_raster": {
+            "direction": "out",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_raster.descr"
+        },
+        "cell_size": {
+            "type": "optional",
+            "displayname": "$rc:cell_size.title",
+            "datatype": {
+                "type": "analysis_cell_size"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "false",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "analysis_cell_size",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:cell_size.descr"
+        },
+        "neighborhood": {
+            "type": "optional",
+            "displayname": "$rc:neighborhood.title",
+            "datatype": {
+                "type": "GPSANeighborhood"
+            },
+            "domain": {
+                "type": "GPSANeighborhoodDomain",
+                "neighbourtype": [
+                    "Rectangle",
+                    "Circle",
+                    "Annulus",
+                    "Wedge"
+                ]
+            },
+            "depends": [
+                "in_point_features"
+            ],
+            "value": "Rectangle 3 3 CELL",
+            "description": "$rc:neighborhood.descr"
+        },
+        "statistics_type": {
+            "type": "optional",
+            "displayname": "$rc:statistics_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MEAN",
+                        "code": "$rc:statistics_type.domain.MEAN"
+                    },
+                    {
+                        "value": "MAJORITY",
+                        "code": "$rc:statistics_type.domain.MAJORITY"
+                    },
+                    {
+                        "value": "MAXIMUM",
+                        "code": "$rc:statistics_type.domain.MAXIMUM"
+                    },
+                    {
+                        "value": "MEDIAN",
+                        "code": "$rc:statistics_type.domain.MEDIAN"
+                    },
+                    {
+                        "value": "MINIMUM",
+                        "code": "$rc:statistics_type.domain.MINIMUM"
+                    },
+                    {
+                        "value": "MINORITY",
+                        "code": "$rc:statistics_type.domain.MINORITY"
+                    },
+                    {
+                        "value": "RANGE",
+                        "code": "$rc:statistics_type.domain.RANGE"
+                    },
+                    {
+                        "value": "STD",
+                        "code": "$rc:statistics_type.domain.STD"
+                    },
+                    {
+                        "value": "SUM",
+                        "code": "$rc:statistics_type.domain.SUM"
+                    },
+                    {
+                        "value": "VARIETY",
+                        "code": "$rc:statistics_type.domain.VARIETY"
+                    }
+                ]
+            },
+            "depends": [
+                "field"
+            ],
+            "value": "MEAN",
+            "description": "$rc:statistics_type.descr"
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "cellSize",
+        "cellSizeProjectionMethod",
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

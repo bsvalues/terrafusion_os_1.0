@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Describes the contents and diagnostics of a spatial statistics model file.",
+        "explanatory_distance_features.title": "Explanatory Training Distance Features",
+        "explanatory_rasters.title": "Explanatory Training Rasters",
+        "explanatory_variables.title": "Explanatory Training Variables",
+        "input_model.descr": "The spatial statistics model file that will be described.",
+        "input_model.title": "Input Model File",
+        "title": "Describe Spatial Statistics Model File"
+    }
+}

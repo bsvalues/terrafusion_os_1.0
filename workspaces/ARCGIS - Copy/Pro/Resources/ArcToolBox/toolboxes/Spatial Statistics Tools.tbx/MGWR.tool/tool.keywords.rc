@@ -1,0 +1,13 @@
+{
+    "set": [
+        "coefficient",
+        "correlation",
+        "gwr",
+        "ols",
+        "explain",
+        "explanatory",
+        "gradient",
+        "predict",
+        "prediction"
+    ]
+}

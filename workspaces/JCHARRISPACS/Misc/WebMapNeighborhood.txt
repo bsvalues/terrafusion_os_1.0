@@ -1,0 +1,1021 @@
+0         |Default                                                                                             
+11000     |11000 - Reval 1 Land                                                                                
+11010     |11010 - Island View                                                                                 
+11011     |11011 - Island View Single Level                                                                    
+11012     |11012 - Island View Multi Level                                                                     
+11013     |11013 - Island View Condo/Townhome/Patio Home                                                       
+11014     |11014 - Island View Manufactured                                                                    
+11020     |11020 - The Ridge                                                                                   
+11021     |11021 - The Ridge Single Level                                                                      
+11022     |11022 - The Ridge Multi Level                                                                       
+11023     |11023 - The Ridge Condo/Townhome/Patio Home                                                         
+11024     |11024 - The Ridge Manufactured                                                                      
+11030     |11030 - Tri-City Heights                                                                            
+11031     |11031 - Tri-City Heights Single Level                                                               
+11032     |11032 - Tri-City Heights Multi Level                                                                
+11033     |11033 - Tri-City Heights Condo/Townhome/Patio Home                                                  
+11034     |11034 - Tri-City Heights Manufactured                                                               
+11040     |11040 - Fountain Hills/Kennewick Park                                                               
+11041     |11041 - Fountain Hills/Kennewick Park Single Level                                                  
+11042     |11042 - Fountain Hills/Kennewick Park Multi Level                                                   
+11043     |11043 - Fountain Hills/Kennewick Park Condo/Townhome/Patio Home                                     
+11044     |11044 - Fountain Hills/Kennewick Park Manufactured                                                  
+11050     |11050 - Park Vista                                                                                  
+11051     |11051 - Park Vista Single Level                                                                     
+11052     |11052 - Park Vista Multi Level                                                                      
+11053     |11053 - Park Vista Condo/Townhome/Patio Home                                                        
+11054     |11054 - Park Vista Manufactured                                                                     
+11060     |11060 - Cherry View Heights                                                                         
+11061     |11061 - Cherry View Heights Single Level                                                            
+11062     |11062 - Cherry View Heights Multi Level                                                             
+11063     |11063 - Cherry View Heights Condo/Townhome/Patio Home                                               
+11064     |11064 - Cherry View Heights Manufactured                                                            
+11070     |11070 - The Highlands                                                                               
+11071     |11071 - The Highlands Single Level                                                                  
+11072     |11072 - The Highlands Multi Level                                                                   
+11073     |11073 - The Highlands Condo/Townhome/Patio Home                                                     
+11074     |11074 - The Highlands Manufactured                                                                  
+11080     |11080 - Hansen Park/Hidden Estates                                                                  
+11081     |11081 - Hansen Park/Hidden Estates Single Level                                                     
+11082     |11082 - Hansen Park/Hidden Estates Multi Level                                                      
+11083     |11083 - Hansen Park/Hidden Estates Condo/Townhome/Patio Home                                        
+11084     |11084 - Hansen Park/Hidden Estates Manufactured                                                     
+11090     |11090 - Ranchette Estates                                                                           
+11091     |11091 - Ranchette Estates Single Level                                                              
+11092     |11092 - Ranchette Estates Multi Level                                                               
+11093     |11093 - Ranchette Estates Condo/Townhome/Patio Home                                                 
+11094     |11094 - Ranchette Estates Manufactured                                                              
+11100     |11100 - Highland Vista                                                                              
+11101     |11101 - Highland Vista Single Level                                                                 
+11102     |11102 - Highland Vista Multi Level                                                                  
+11103     |11103 - Highland Vista Condo/Townhome/Patio Home                                                    
+11104     |11104 - Highland Vista Manufactured                                                                 
+11110     |11110 - Belaire                                                                                     
+11111     |11111 - Belaire Single Level                                                                        
+11112     |11112 - Belaire Multi Level                                                                         
+11113     |11113 - Belaire Condo/Townhome/Patio Home                                                           
+11114     |11114 - Belaire Manufactured                                                                        
+11120     |11120 - Windsong                                                                                    
+11121     |11121 - Windsong Single Level                                                                       
+11122     |11122 - Windsong Multi Level                                                                        
+11123     |11123 - Windsong Condo/Townhome/Patio Home                                                          
+11124     |11124 - Windsong Manufactured                                                                       
+11130     |11130 - Southcliffe                                                                                 
+11131     |11131 - Southcliffe Single Level                                                                    
+11132     |11132 - Southcliffe Multi Level                                                                     
+11133     |11133 - Southcliffe Condo/Townhome/Patio Home                                                       
+11134     |11134 - Southcliffe Manufactured                                                                    
+11140     |11140 - Creekstone/Panoramic Heights                                                                
+11141     |11141 - Creekstone/Panoramic Heights Single Level                                                   
+11142     |11142 - Creekstone/Panoramic Heights Multi Level                                                    
+11143     |11143 - Creekstone/Panoramic Heights Condo/Townhome/Patio Home                                      
+11144     |11144 - Creekstone/Panoramic Heights Manufactured                                                   
+11150     |11150 - Lincoln Meadows/Union West                                                                  
+11151     |11151 - Lincoln Meadows/Union West Single Level                                                     
+11152     |11152 - Lincoln Meadows/Union West Multi Level                                                      
+11153     |11153 - Lincoln Meadows/Union West Condo/Townhome/Patio Home                                        
+11154     |11154 - Lincoln Meadows/Union West Manufactured                                                     
+11160     |11160 - Cherry Blossom                                                                              
+11161     |11161 - Cherry Blossom Single Level                                                                 
+11162     |11162 - Cherry Blossom Multi Level                                                                  
+11163     |11163 - Cherry Blossom Condo/Townhome/Patio Home                                                    
+11164     |11164 - Cherry Blossom Manufactured                                                                 
+12000     |12000 - Reval 2 Land                                                                                
+12010     |12010 - Hawthorne                                                                                   
+12011     |12011 - Hawthorne Single Level                                                                      
+12012     |12012 - Hawthorne Multi Level                                                                       
+12013     |12013 - Hawthorne Condo/Townhome/Patio Home                                                         
+12014     |12014 - Hawthorne Manufactured                                                                      
+12020     |12020 - Bridge to Bridge                                                                            
+12021     |12021 - Bridge to Bridge Single Level                                                               
+12022     |12022 - Bridge to Bridge Multi Level                                                                
+12023     |12023 - Bridge to Bridge Condo/Townhome/Patio Home                                                  
+12024     |12024 - Bridge to Bridge Manufactured                                                               
+12030     |12030 - Vista Homes                                                                                 
+12031     |12031 - Vista Homes Single Level                                                                    
+12032     |12032 - Vista Homes Multi Level                                                                     
+12033     |12033 - Vista Homes Condo/Townhome/Patio Home                                                       
+12034     |12034 - Vista Homes Manufactured                                                                    
+12040     |12040 - Downtown Kennewick                                                                          
+12041     |12041 - Downtown Kennewick Single Level                                                             
+12042     |12042 - Downtown Kennewick Multi Level                                                              
+12043     |12043 - Downtown Kennewick Condo/Townhome Patio Home                                                
+12044     |12044 - Downtown Kennewick Manufactured                                                             
+12050     |12050 - Zintel Canyon/Kennewick Garden                                                              
+12051     |12051 - Zintel Canyon/Kennewick Garden Single Level                                                 
+12052     |12052 - Zintel Canyon/Kennewick Garden Multi Level                                                  
+12053     |12053 - Zintel Canyon/Kennewick Garden Condo/Townhome/Patio Home                                    
+12054     |12054 - Zintel Canyon/Kennewick Garden Manufactured                                                 
+12060     |12060 - Park Hills                                                                                  
+12061     |12061 - Park Hills Single Level                                                                     
+12062     |12062 - Park Hills Multi Level                                                                      
+12063     |12063 - Park Hills Condo/Townhome/Patio Home                                                        
+12064     |12064 - Park Hills Manufactured                                                                     
+12070     |12070 - South Gum                                                                                   
+12071     |12071 - South Gum Single Level                                                                      
+12072     |12072 - South Gum Multi Level                                                                       
+12073     |12073 - South Gum Condo/Townhome/Patio Home                                                         
+12074     |12074 - South Gum Manufactured                                                                      
+12080     |12080 - Ohrt's                                                                                      
+12081     |12081 - Ohrt's Single Level                                                                         
+12082     |12082 - Ohrt's Multi Level                                                                          
+12083     |12083 - Ohrt's Condo/Townhome/Patio Home                                                            
+12084     |12084 - Ohrt's Manufactured                                                                         
+12090     |12090 - Columbia Rancho/Elliot Lake                                                                 
+12091     |12091 - Columbia Rancho/Elliot Lake Single Level                                                    
+12092     |12092 - Columbia Rancho/Elliot Lake Multi Level                                                     
+12093     |12092 - Columbia Rancho/Elliot Lake Condo/Townhome/Patio Home                                       
+12094     |12094 - Columbia Rancho/Elliot Lake Manufactured                                                    
+12100     |12100 - South of 45th                                                                               
+12101     |12101 - South of 45th Single Level                                                                  
+12102     |12102 - South of 45th Multi Level                                                                   
+12103     |12103 - South of 45th Condo/Townhome/Patio Home                                                     
+12104     |12104 - South of 45th Manufactured                                                                  
+12110     |12110 - Nine Canyon                                                                                 
+12111     |12111 - Nine Canyon Single Level                                                                    
+12112     |12112 - Nine Canyon Multi Level                                                                     
+12113     |12113 - Nine Canyon Condo/Townhome/Patio Home                                                       
+12114     |12114 - Nine Canyon Manufactured                                                                    
+12120     |12120 - Finley Road                                                                                 
+12121     |12121 - Finley Road Single Level                                                                    
+12122     |12122 - Finley Road Multi Level                                                                     
+12123     |12123 - Finley Road Condo/Townhome/Patio Home                                                       
+12124     |12124 - Finley Road Manufactured                                                                    
+12130     |12130 - Finley                                                                                      
+12131     |12131 - Finley Single Level                                                                         
+12132     |12132 - Finley Multi Level                                                                          
+12133     |12133 - Finley Condo/Townhome/Patio Home                                                            
+12134     |12134 - Finley Manufactured                                                                         
+12999     |12999 - Reval 2 MH on Leased Land                                                                   
+13000     |13000 - Reval 3 Land                                                                                
+13010     |13010 - West Vineyard/West Village                                                                  
+13011     |13011 - West Vineyard/West Village Single Level                                                     
+13012     |13012 - West Vineyard/West Village Multi Level                                                      
+13013     |13013 - West Vineyard/West Village Condo/Townhome/Patio Home                                        
+13014     |13014 - West Vineyard/West Village Manufactured                                                     
+13020     |13020 - Crested Hills/Meadow Hills                                                                  
+13021     |13021 - Crested Hills/Meadow Hills Single Level                                                     
+13022     |13022 - Crested Hills/Meadow Hills Multi Level                                                      
+13023     |13023 - Crested Hills/Meadow Hills Condo/Townhome/Patio Home                                        
+13024     |13024 - Crested Hills/Meadow Hills Manufactured                                                     
+13030     |13030 - Skyline Meadows                                                                             
+13031     |13031 - Skyline Meadows Single Level                                                                
+13032     |13032 - Skyline Meadows Multi Level                                                                 
+13033     |13033 - Skyline Meadows Condo/Townhome/Patio Home                                                   
+13034     |13034 - Skyline Meadows Manufactured                                                                
+13040     |13040 - Meadow Springs                                                                              
+13041     |13041 - Meadow Springs Single Level                                                                 
+13042     |13042 - Meadow Springs Multi Level                                                                  
+13043     |13043 - Meadow Springs Condo/Townhome/Patio Home                                                    
+13044     |13044 - Meadow Springs Manufactured                                                                 
+13050     |13050 - Meadows East                                                                                
+13051     |13051 - Meadows East Single Level                                                                   
+13052     |13052 - Meadows East Multi Level                                                                    
+13053     |13053 - Meadows East Condo/Townhome/Patio Home                                                      
+13054     |13054 - Meadows East Manufactured                                                                   
+13060     |13060 - Willowbrook                                                                                 
+13061     |13061 - Willowbrook Single Level                                                                    
+13062     |13062 - Willowbrook Multi Level                                                                     
+13063     |13063 - Willowbrook Condo/Townhome/Patio Home                                                       
+13064     |13064 - Willowbrook Manufactured                                                                    
+13070     |13070 - The Heights                                                                                 
+13071     |13071 - The Heights Single Level                                                                    
+13072     |13072 - The Heights Multi Level                                                                     
+13073     |13073 - The Heights Condo/Townhome/Patio Home                                                       
+13074     |13074 - The Heights Manufactured                                                                    
+13080     |13080 - The Ridge at Reata West                                                                     
+13081     |13081 - The Ridge at Reata West Single Level                                                        
+13082     |13082 - The Ridge at Reata West Multi Level                                                         
+13083     |13083 - The Ridge at Reata West Condo/Townhome/Patio Home                                           
+13084     |13084 - The Ridge at Reata West Manufactured                                                        
+13090     |13090 - Reata Ridge                                                                                 
+13091     |13091 - Reata Ridge Single Level                                                                    
+13092     |13092 - Reata Ridge Multi Level                                                                     
+13093     |13093 - Reata Ridge Condo/Townhome/Patio Home                                                       
+13094     |13094 - Reata Ridge Manufactured                                                                    
+13100     |13100 - Reata                                                                                       
+13101     |13101 - Reata Single Level                                                                          
+13102     |13102 - Reata Multi Level                                                                           
+13103     |13103 - Reata Condo/Townhome/Patio Home                                                             
+13104     |13104 - Reata Manufactured                                                                          
+13110     |13110 - Clearwater Creek                                                                            
+13111     |13111 - Clearwater Creek Single Level                                                               
+13112     |13112 - Clearwater Creek Multi Level                                                                
+13113     |13113 - Clearwater Creek Condo/Townhome/Patio Home                                                  
+13114     |13114 - Clearwater Creek Manufactured                                                               
+13120     |13120 - Summitview                                                                                  
+13121     |13121 - Summitview Single Level                                                                     
+13122     |13122 - Summitview Multi Level                                                                      
+13123     |13123 - Summitview Condo/Townhome/Patio Home                                                        
+13124     |13124 - Summitview Manufactured                                                                     
+13130     |13130 - Cottonwood Springs                                                                          
+13131     |13131 - Cottonwood Springs Single Level                                                             
+13132     |13132 - Cottonwood Springs Multi Level                                                              
+13133     |13133 - Cottonwood Springs Condo/Townhome/Patio Home                                                
+13134     |13134 - Cottonwood Springs Manufactured                                                             
+13140     |13140 - Bridgewater Park/Canyon Ranch                                                               
+13141     |13141 - Bridgewater Park/Canyon Ranch Single Level                                                  
+13142     |13142 - Bridgewater Park/Canyon Ranch Multi Level                                                   
+13143     |13143 - Bridgewater Park/Canyon Ranch Condo/Townhome/Patio Home                                     
+13144     |13144 - Bridgewater Park/Canyon Ranch Manufactured                                                  
+13150     |13150 - North of Canal                                                                              
+13151     |13151 - North of Canal Single Level                                                                 
+13152     |13152 - North of Canal Multi Level                                                                  
+13153     |13153 - North of Canal Condo/Townhome/Patio Home                                                    
+13154     |13154 - North of Canal Manufactured                                                                 
+13160     |13160 - South of Canal                                                                              
+13161     |13161 - South of Canal Single Level                                                                 
+13162     |13162 - South of Canal Multi Level                                                                  
+13163     |13163 - South of Canal Condo/Townhome/Patio Home                                                    
+13164     |13164 - South of Canal Manufactured                                                                 
+13170     |13170 - Southridge                                                                                  
+13171     |13171 - Southridge Single Level                                                                     
+13172     |13172 - Southridge Multi Level                                                                      
+13173     |13173 - Southridge Condo/Townhome/Patio Home                                                        
+13174     |13174 - Southridge Manufactured                                                                     
+13180     |13180 - Canyon Lakes                                                                                
+13181     |13181 - Canyon Lakes Single Level                                                                   
+13182     |13182 - Canyon Lakes Multi Level                                                                    
+13183     |13183 - Canyon Lakes Condo/Townhome/Patio Home                                                      
+13184     |13184 - Canyon Lakes Manufactured                                                                   
+13190     |13190 - Inspiration Estates                                                                         
+13191     |13191 - Inspiration Estates Single Level                                                            
+13192     |13192 - Inspiration Estates Multi Level                                                             
+13193     |13193 - Inspiration Estates Condo/Townhome/Patio Home                                               
+13194     |13194 - Inspiration Estates Manufactured                                                            
+132453    |extreme rural finley                                                                                
+133572    |Patterson                                                                                           
+133572 400|133572 - Patterson - Manufactured Older 1985                                                        
+133572 401|133572 - Patterson - Manufactured Newer 1986                                                        
+133572 SB |133572 - Patterson - Stick Built                                                                    
+133582    |Plymouth                                                                                            
+133582 400|133582 - Plymouth - Manufactured Older 1985                                                         
+133582 401|133582 - Plymouth Manufactured Newer 1986                                                           
+133582 SB |133582 - Plymouth - Stick Built                                                                     
+133814    |133814 Southridge                                                                                   
+133852    |finley                                                                                              
+134774 140|134774 Meadow Springs - Rambler with Basement                                                       
+134819    |134819 Canyon Lakes                                                                                 
+134819 100|134819 Canyon Lakes - One Story                                                                     
+134819 140|134819 Canyon Lakes - Rambler with Basement                                                         
+134819 200|134819 Canyon Lakes - Two Story                                                                     
+134961    |134961 South of Canal                                                                               
+134961 001|134961 South of Canal - Bare Land                                                                   
+134961 100|134961 South of Canal - One Story                                                                   
+134961 140|134961 South of Canal - Rambler with Basement                                                       
+134961 160|134961 South of Canal - Rambler with Basement with Bonus                                            
+134961 200|134961 South of Canal - Two Story                                                                   
+134962    |North of Canal                                                                                      
+134962 DW |134962 Double Wide                                                                                  
+134965    |Reata Ridge                                                                                         
+134965 140|134965 Reata Ridge - Rambler with Basement                                                          
+134965 200|134965 Reata Ridge - Two Story                                                                      
+134965 220|134965 Reata Ridge - Two Story with Basement                                                        
+134966    |The Ridge at Reata West                                                                             
+135771    |Meadows East                                                                                        
+135772    |The Heights                                                                                         
+135773    |Clearwater Creek                                                                                    
+135774    |Willowbrook                                                                                         
+140000    |                                                                                                    
+143414    |143414 Benton City                                                                                  
+143414 001|143414 Benton City - Bare Land                                                                      
+143414 100|143414 Benton City - One Story                                                                      
+143414 120|143414 Benton City - One Story with Bonus                                                           
+143414 140|143414 Benton City - Rambler with Basement                                                          
+143414 141|143414 Benton City - Rambler with Basement >2000                                                    
+143414 160|143414 Benton City - Rambler with Basement with Bonus                                               
+143414 200|143414 Benton City - Two Story                                                                      
+143414 220|143414 Benton City - Two Story with Basement                                                        
+143414 240|143414 Benton City - Split-Entry                                                                    
+143414 260|143414 Benton City - Tri-Level                                                                      
+143414 300|143414 Benton City - One and One Half Story                                                         
+143414 320|143414 Benton City - One and One Half Story with Basement                                           
+143414 400|143414 Benton City - Single Wide                                                                    
+143414 401|143414 Benton City - Double Wide                                                                    
+143414 402|143414 Benton City - Triple Wide                                                                    
+143414 411|143414 Benton City - Manufactured => 2003                                                           
+143414 600|143414 Benton City - Duplex                                                                         
+143414 620|143414 Benton City - Triplex                                                                        
+143414 800|143414 Benton City - Outbuildings Only                                                              
+143422    |143422 Benton City                                                                                  
+143422 001|143422 Benton City - Bare Land                                                                      
+143422 100|143422 Benton City - One Story                                                                      
+143422 120|143422 Benton City - One Story with Bonus                                                           
+143422 140|143422 Benton City - Rambler with Basement                                                          
+143422 141|143422 Benton City - Rambler with Basement >2000 sf                                                 
+143422 160|143422 Benton City - Rambler with Basement with Bonus                                               
+143422 200|143422 Benton City - Two Story                                                                      
+143422 220|143422 Benton City - Two Story with Basement                                                        
+143422 240|143422 Benton City - Split-Entry                                                                    
+143422 260|143422 Benton City - Tri-Level                                                                      
+143422 300|143422 Benton City - One and One Half Story                                                         
+143422 400|143422 Benton City - Single Wide                                                                    
+143422 401|143422 Benton City - Double Wide                                                                    
+143422 402|143422 Benton City - Triple Wide                                                                    
+143422 411|143422 Benton City - Manufactured => 2003                                                           
+143422 800|143422 Benton City - Outbuildings Only                                                              
+143561    |                                                                                                    
+143561 001|143561 Outlying Prosser - Bare Land                                                                 
+143561 100|143561 Outlying Prosser - One Story                                                                 
+143561 101|143561 Outlying Prosser - One Story > 3000 sf                                                       
+143561 120|143561 Outlying Prosser - One Story with Bonus                                                      
+143561 140|143561 Outlying Prosser - Rambler with Basement                                                     
+143561 200|143561 Outlying Prosser - Two Story                                                                 
+143561 220|143561 Outlying Prosser - Two Story with Basement                                                   
+143561 240|143561 Outlying Prosser - Split-Entry                                                               
+143561 260|143561 Outlying Prosser - Tri-Level                                                                 
+143561 300|143561 Outlying Prosser - One and One Half Story                                                    
+143561 320|143561 Outlying Prosser - One and One Half Story with Basement                                      
+143561 400|143561 Outlying Prosser - Single Wide                                                               
+143561 401|143561 Outlying Prosser - Double Wide                                                               
+143561 402|143561 Outlying Prosser - Triple Wide                                                               
+143561 600|143561 Outlying Prosser - Duplex                                                                    
+143561 800|143561 Outlying Prosser - Outbuildings Only                                                         
+143569    |S OIE North of River                                                                                
+143675    |143675 Sophie Rae Estates                                                                           
+143676    |Richards Road Area                                                                                  
+143676 001|143676 Richards Road Area - Bare Land                                                               
+143676 100|143676 Richards Road Area - One Story                                                               
+143676 120|143676 Richards Road Area - One Story with Bonus                                                    
+143676 140|143676 Richards Road Area - Rambler with Basement                                                   
+143676 200|143676 Richards Road Area - Two Story                                                               
+143676 220|143676 Richards Road Area - Two Story with Basement                                                 
+143676 240|143676 Richards Road Area - Split-Entry                                                             
+143676 260|143676 Richards Road Area - Tri-Level                                                               
+143676 300|143676 Richards Road Area - One and One Half Story                                                  
+143676 320|143676 Richards Road Area - One and One Half Story with Basement                                    
+143676 400|143676 Richards Road Area - Single Wide                                                             
+143676 401|143676 Richards Road Area - Double Wide                                                             
+143676 402|143676 Richards Road Area - Triple Wide                                                             
+143676 800|143676 Richards Road Area - Outbuildings Only                                                       
+143677    |                                                                                                    
+143677 001|143677 Prosser - Bare Land                                                                          
+143677 100|143677 Prosser - One Story                                                                          
+143677 120|143677 Prosser - One Story with Bonus                                                               
+143677 140|143677 Prosser - Rambler with Basement                                                              
+143677 160|143677 Prosser - Rambler with Basement with Bonus                                                   
+143677 200|143677 Prosser - Two Story                                                                          
+143677 220|143677 Prosser - Two Story with Basement                                                            
+143677 240|143677 Prosser - Split-Entry                                                                        
+143677 260|143677 Prosser - Tri-Level                                                                          
+143677 300|143677 Prosser - One and One Half Story                                                             
+143677 320|143677 Prosser - One and One Half Story with Basement                                               
+143677 400|143677 Prosser - Single Wide                                                                        
+143677 401|143677 Prosser - Double Wide                                                                        
+143677 402|143677 Prosser - Triple Wide                                                                        
+143677 500|143677 Prosser - Condominium                                                                        
+143677 600|143677 Prosser - Duplex                                                                             
+143677 620|143677 Prosser - Triplex                                                                            
+143677 800|143677 Prosser - Outbuildings Only                                                                  
+150000    |150000 Development Land                                                                             
+150001    |150001 Ruppert & Demoss Road                                                                        
+150001 400|150001 Ruppert & Demoss Road - Manufactured                                                         
+150001 401|150001 Ruppert & Demoss Road - Manufactured >2003                                                   
+150002    |150002 Red Mountain                                                                                 
+150002 400|150002 Red Mountain - Manufactured                                                                  
+150002 401|150002 Red Mountain - Manufactured >2003                                                            
+150003    |150003 Valley View Estates                                                                          
+150003 400|150003 Valley View Estates - Manufactured                                                           
+150003 401|150003 Valley View Estates - Manufactured >2003                                                     
+150004    |150004 Harrington Road                                                                              
+150004 400|150004 Harrington Road - Manufactured                                                               
+150004 401|150004 Harrington Road - Manufactured >2003                                                         
+150005    |150005 Canal Drive                                                                                  
+150005 400|150005 Canal Drive - Manufactured                                                                   
+150005 401|150005 Canal Drive - Manufactured >2003                                                             
+150006    |150006 Paradise Way                                                                                 
+150007    |150007 Bombing Range                                                                                
+150007 400|150007 Bombing Range - Manufactured                                                                 
+150008    |150008 Kingview                                                                                     
+150009    |150009 Cherry Hill Estates                                                                          
+150010    |150010 Riverside                                                                                    
+150010 400|150010 Riverside - Manufactured                                                                     
+150010 401|150010 Riverside - Manufactured >2003                                                               
+150011    |150011 Van Giesen                                                                                   
+150012    |150012 Tanglewood                                                                                   
+150012 400|150012 Tanglewood - Manufactured                                                                    
+150013    |150013 The Lakes                                                                                    
+150014    |150014 Glenbrook                                                                                    
+150014 400|150014 Glenbrook - Manufactured                                                                     
+150014 401|150014 Glenbrook - Manufactured >2003                                                               
+150015    |150015 Candy Mountain                                                                               
+150016    |150016 Dallas Road                                                                                  
+150016 400|150016 Dallas Road - Manufactured                                                                   
+150016 401|150016 Dallas Road - Manufactured >2003                                                             
+150017    |150017 White Bluffs                                                                                 
+150018    |150018 Hearthstone                                                                                  
+150018 500|150018 - Hearthstone Townhomes                                                                      
+150019    |150019 Horizon Heights                                                                              
+150020    |150020 Country Ridge                                                                                
+150021    |150021 Horn Rapids                                                                                  
+150022    |150022 Horn Creek                                                                                   
+160000    |160000 - Reval 6 Bare Land                                                                          
+160001    |160001 - Willow Pointe                                                                              
+160002    |160002 - University Park                                                                            
+160002 520|160002 University Park - Townhome and Patio Home                                                    
+160003    |160003 - Rivercrest Terrace                                                                         
+160003 900|160003 - Rivercrest Terrace River Lots                                                              
+160004    |160004 - Carriage Hills/Richland Village                                                            
+160004 200|160004 - Carriage Hills/Richland Village                                                            
+160004 500|160004 - Carriage Hills/Richland Village Condo/Townhome                                             
+160004 900|160004 - Carriage Hills/Richland Village 101-1,000 sf                                               
+160005    |160005 - Garden Park                                                                                
+160005 901|160005 - Garden Park 101 - 1,500 sf                                                                 
+160005 902|160005 - Garden Park 1,501 - 2,000 sf                                                               
+160005 903|160005 - Garden Park 2,001 - 3,000 sf                                                               
+160006    |160006 - East Historic Richland                                                                     
+160006 901|160006 - East Historic Richland 101 - 1,500 sf                                                      
+160006 902|160006 - East Historic Richland 1,501 - 2,000 sf                                                    
+160006 903|160006 - East Historic Richland 2,001 - 3,000 sf                                                    
+160007    |160007 - West Historic Richland                                                                     
+160007 900|160007 - West Historic Richland 101 - 1,000 sf                                                      
+160007 901|160007 - West Historic Richland 1,001 - 1,500 sf                                                    
+160007 902|160007 - West Historic Richland 1,501 - 2,000 sf                                                    
+160007 903|160007 - West Historic Richland 2,001 - 3,000 sf                                                    
+160008    |160008 - North Historic Richland                                                                    
+160008 500|160008 North Historic Richland - Condominium                                                        
+160008 900|160008 - North Historic Richland 101 - 1,000 sf                                                     
+160008 901|160008 - North Historic Richland 1,001 - 1,500 sf                                                   
+160008 902|160008 - North Historic Richland 1,501 - 2,000 sf                                                   
+160008 903|160008 - North Historic Richland 2,001 - 3,000 sf                                                   
+160009    |160009 - Central Historic Richland                                                                  
+160009 900|160009 - Central Historic Richland 101 - 1,000 sf                                                   
+160009 901|160009 - Central Historic Richland 1,001 - 1,500 sf                                                 
+160009 902|160009 - Central Historic Richland 1,501 - 2,000 sf                                                 
+160009 903|160009 - Central Historic Richland 2,001 - 3,000 sf                                                 
+160010    |160010- Columbia Heights                                                                            
+160010 900|160010 - Columbia Heights 101 - 1,000 sf                                                            
+160010 901|160010 - Columbia Heights 1,001 - 1,500 sf                                                          
+160010 902|160010 - Columbia Heights 1,501 - 2,000 sf                                                          
+160010 903|160010 - Columbia Heights 2,001 - 3,000 sf                                                          
+160011    |160011 - South Historic Richland                                                                    
+160011 900|160011 - South Historic Richland 101 - 1,000 sf                                                     
+160011 901|160011 - South Historic Richland 1,001 - 1,500 sf                                                   
+160011 902|160011 - South Historic Richland 1,501 - 2,000 sf                                                   
+160011 903|160011 - South Historic Richland 2,001 - 3,000 sf                                                   
+160012    |160012 - Columbia Point/River Walk Village                                                          
+160013    |160013 - Hills West/Heritage Hills                                                                  
+160013 1  |160013 - Hills West/Heritage Hills 1 Single Level                                                   
+160013 2  |160013 - Hills West/Heritage Hills 2 Multi-Level                                                    
+160013 3  |160013 - Hills West/Heritage Hills 3 Condo/Townhome                                                 
+160013 4  |160013 - Hills West/Heritage Hills 4 Manufactured Home                                              
+160014    |160014 - Tapteal West                                                                               
+160014 1  |160014 - Tapteal West 1 Single Level                                                                
+160014 2  |160014 - Tapteal West 2 Multi-Level                                                                 
+160014 4  |160014 - Tapteal West 4 Manufactured Home                                                           
+160014 500|160014 Tapteal West - Condominium                                                                   
+160015    |160015 - Applewood Estates                                                                          
+160016    |160016 - Cherrywood Estates                                                                         
+160017    |160017 - Westcliffe                                                                                 
+160018    |160018 - Badger Mountain Village                                                                    
+160019    |160019 - Aspen Meadows/Lexington Heights                                                            
+160020    |160020 - Sagewood Meadows/Badger Park Estates                                                       
+170000    |test parcel for new plats                                                                           
+199999    |                                                                                                    
+2000      |Neghborhood 2                                                                                       
+340000    |                                                                                                    
+400001    |                                                                                                    
+410000    |                                                                                                    
+410005    |Saltz Overnighter RV - Kenn                                                                         
+410100R3MP|MFH Park R3 Avg                                                                                     
+41010MFHPK|Reval 3 Avg MFH Park                                                                                
+410999    |MH Dealer in Reval 1                                                                                
+413003    |Columbia Mobile Village - Kenn                                                                      
+413004    |Homestead MHP - Kennewick                                                                           
+413010    |Trailer City Park - Kennewick                                                                       
+413012    |Highland Trailer Court - Kenn                                                                       
+414001    |Whispering Winds MHP- Kenn                                                                          
+414002    |Nelson's MHP - Kennewick                                                                            
+414011    |Hambrook MH Park
+Hambrook MFH Park                                                                 
+414011NDW |Hambrook MFH Park N DW                                                                              
+414016    |Maxey's MHP - Kennewick                                                                             
+415001    |Whispering Winds MHP- Kenn                                                                          
+415008    |Sun Meadows                                                                                         
+415008DW  |Sun Meadows MHP DW
+Sun Meadows MHP DW                                                              
+415008SW  |Sun Meadows MHP SW                                                                                  
+415009    |Santiago Estates Cherry Hill                                                                        
+415009DW  |Santiago Estates Cherry Hill DW                                                                     
+415009NDW |Santiago Estates Cherry Hill NDWMFH                                                                 
+415011    |Hambrook MHP - Kennewick                                                                            
+415013    |Hood Ave MHP - Kennewick                                                                            
+415014    |Volland Manor MHP - Kennewick                                                                       
+415015    |Willapa Village MHP- Kennewick                                                                      
+415016    |Maxey's MHP - Kennewick                                                                             
+416006    |Greenbrier Village - Kenn                                                                           
+416006NDW |Greenbrier Village N DW MFH                                                                         
+416006NSW |Greenbrier VillageNSW                                                                               
+416006SW  |Greenbrier Village SW MFH                                                                           
+416008    |Sun Meadows MHP - Kennewick                                                                         
+416009    |Santiago Est Cherry Hill -Kenn                                                                      
+416064    |Santiago Bridgewater Estates                                                                        
+416066    |Quinault Mobile Home Park                                                                           
+417007    |Desert Pines MHP - Kennewick                                                                        
+417007NDW |Desert Pines MFH Park N DW                                                                          
+417064    |Santiago Bridgewater Est- Kenn                                                                      
+420000    |Finley R2 MFH on Leased Lots 1                                                                      
+420000NDW |Finley 2013Plus DWMFH on leased lots                                                                
+420001    |Finley R2 MFH on Leased Lots                                                                        
+42000DW   |Finley R2 DWMFH on Leased lots                                                                      
+420999    |MH Dealer Offices in Reval 2                                                                        
+423017    |Mac's Trailer Park- Kennewick                                                                       
+423018    |Mecca Trailer Park- Kennewick                                                                       
+423019    |Cloverleaf Trailer Park- Kenn                                                                       
+423023    |Willow Trailer Court - Kenn                                                                         
+423024    |Columbia Drive MHP- Kennewick                                                                       
+423031    |Kelley Estates                                                                                      
+423031DW  |Kelley Estates DW MFH                                                                               
+423032    |Hamilton's Rv Park                                                                                  
+423032DW  |Hamiltons RV Park DW MFH                                                                            
+423344    |                                                                                                    
+424020    |Vincent Village MHP- Kennewick                                                                      
+424021    |Metz MHP - Kennewick                                                                                
+424021DW  |Metz MHP DW MFH                                                                                     
+424021NDW |Metz MHP Double Wide 2014+                                                                          
+424021NSWL|Mets MFH Park Sigle wide w/ loft 2014+                                                              
+424022    |Washington Square                                                                                   
+424022DW  |Washington Square MFHP DW                                                                           
+424025    |Riverside                                                                                           
+424025DW  |Riverside DW                                                                                        
+424027    |Country River Estates                                                                               
+424027DW  |Country River Estates DW                                                                            
+424028    |Homestead MH (Bowles Rd)                                                                            
+424028DW  |Homestead DW MFH                                                                                    
+424028DWN |Homestead MH Bowles Rd DW 2012+                                                                     
+424029    |                                                                                                    
+424030    |Santiago Country View Estates                                                                       
+424030DWM |Santiago Country View Est DW 1990-2006                                                              
+424030DWN |Santiago Country View Est DW 2007+                                                                  
+424030DWO |Santiago Country View Estates DW <1989                                                              
+424030SW90|Santiago County View Estates SW 90s                                                                 
+424030SWN |Santiago Country View Est SW 2014+                                                                  
+424031    |Kelley Estates (Meadowlark Est                                                                      
+425022    |Washington Square MHP- Kenn                                                                         
+425025    |Riverside MHP - Kennewick                                                                           
+425027    |Country River Estates                                                                               
+425028    |Homestead Mh Com (Alderwood)                                                                        
+425029    |Paul's Trailer Court                                                                                
+42999     |MH Dealer Offices in Reval 2                                                                        
+430000    |Mobile Homes                                                                                        
+430888    |MH Office (Not a MH Dealer)                                                                         
+430999    |MH Dealer Offices in Reval 3                                                                        
+433003    |Columbia Mobile Village                                                                             
+433004    |Homestead Mh Park                                                                                   
+433032    |Hamilton's MHP - Kennewick                                                                          
+433033    |Columbia Mobile Village                                                                             
+434002    |Nelson's Fredrock                                                                                   
+434026    |Chinook MH Park                                                                                     
+434030    |MH park                                                                                             
+434031    |Kelley Estates - Kennewick                                                                          
+435001    |Whispering Winds                                                                                    
+435003    |REVAL 3 MH                                                                                          
+435013    |Hood Ave Mh Park                                                                                    
+435016    |Maxey's Mh Park                                                                                     
+435026    |Chinook MHP - Kennewick                                                                             
+435027    |Country River Estates - Kenn                                                                        
+435028    |Homestead MH Community - Kenn                                                                       
+435029    |Paul's Trailer Court - Kenn                                                                         
+435030    |Santiago Country View Est-Kenn                                                                      
+436008    |Sun Meadows Mh Park                                                                                 
+436009    |Santiago Estates Cherry Hill                                                                        
+440000    |Mobile Homes                                                                                        
+443033    |                                                                                                    
+443036    |Horse Heaven MHP - Prosser                                                                          
+443041    |Westward Ho MHP - Benton City                                                                       
+443045    |Elm Grove RV Park- Benton City                                                                      
+444033    |Sanders Lower Valley MHP-Pross                                                                      
+444035    |Riverview MHP - Prosser                                                                             
+444037    |Brown's MHP - Prosser                                                                               
+444038    |Galliher's MHP - Prosser                                                                            
+444040    |Hillview MHP - Prosser                                                                              
+444043    |Hillview MHP - Benton City                                                                          
+444046    |Green Acres MHP - Benton City                                                                       
+444047    |Beach's RV Park                                                                                     
+445034    |Foothill Estates - Prosser                                                                          
+445040    |Hillview MHP - Prosser                                                                              
+445044    |Rivercrest Manor - Benton City                                                                      
+445046    |                                                                                                    
+445047    |Beach RV Park - Benton City                                                                         
+446008    |                                                                                                    
+446039    |Wine Country Villa                                                                                  
+446042    |9th Street Park - Benton City                                                                       
+446043    |REVAL 4 MH                                                                                          
+446063    |Village Park MHP - Prosser                                                                          
+446065    |Wine Country Villa II                                                                               
+447039    |Wine Country Villa - Prosser                                                                        
+447065    |Wine Country Villa 2 - Prosser                                                                      
+450000    |REVAL 5 MH                                                                                          
+450048    |Raceway RV Park - W Richland                                                                        
+450510    |REVAL 5 MH                                                                                          
+453019    |                                                                                                    
+453052    |Richland West                                                                                       
+453054    |R & H MHP - W Richland                                                                              
+453059    |Shady Lane                                                                                          
+454049    |Kiona Village MHP- Benton City                                                                      
+454051    |Morton's MHP - W Richland                                                                           
+454052    |Richland West MHP - W Richland                                                                      
+454055    |Shadow Mountain MHP - Richland                                                                      
+454058    |Twin Bridges MHP - W Richland                                                                       
+454059    |Shady Lane MHP - W Richland                                                                         
+455050    |Desert View MHP - W Richland                                                                        
+455050 400|455050 - SW Desert View MH Park                                                                     
+455050 401|455050 - SW Desert View MH Park After 1990                                                          
+455050 402|455050 402 - DW Desert View MH Park Prior to 1976                                                   
+45505020DW|DESERT VIEW MFH PK  2000 DW                                                                         
+45505070DW|DESERT VIEW MFH PK 1970 DW                                                                          
+45505070SW|DESERT VIEW MFH PK 1970SW                                                                           
+45505080DW|DESERT VIEW MFH PK 1980 DW                                                                          
+45505080SW|DESERT VIEW MFH PK 1980 SW                                                                          
+45505090DW|DESERT VIEW MFH PK 1990 DW                                                                          
+45505090SW|DESERT VIEW MFH PARK 1990 SW                                                                        
+455053    |Royal Crest Mobile Manor-WRich                                                                      
+455056    |Desert Gold RV Park - Richland                                                                      
+455057    |Santiago Sunset Estates - Kenn                                                                      
+460000    |                                                                                                    
+460999    |MH Dealer Offices in Reval 6                                                                        
+464055    |Shadow Mountain                                                                                     
+465056    |Desert Gold                                                                                         
+465057    |Santiago Sunset Estates                                                                             
+465057 SW |Santiago Sunset Estates MHP SW                                                                      
+465057 SW2|Santiago Sunset Estates MFH Blt before '2013'                                                       
+466060    |The Hills MHP - Richland                                                                            
+466060 SW |The Hills MFH Park SW MFH
+The Hills MFH Park SW                                                    
+466061    |Richland MHP - Richland                                                                             
+466061 DW1|Richland MHP blt after '2013'
+Richland MHP BLT after '2013'                                        
+466061 DW2|Richland MHP DW Blt before '2013'                                                                   
+466062    |Alyson Manor MHP SW Blt before '2013' - Richland                                                    
+466062 DW1|Alyson Manor MHP Blt after '2013'                                                                   
+466062 DW2|Alyson Manor MHP Blt before '2013'
+Alyson Manor Built before '2013'                                
+466062 SW2|Alyson Manor Blt After '2013'                                                                       
+466062SW2 |Richland MFH Park SW After '2013'                                                                   
+510000    |WEST KENNEWICK FARM                                                                                 
+520000    |REVAL 2 FARM                                                                                        
+520100    |                                                                                                    
+52100 001 |52100 001 - Rural Finley Land Only                                                                  
+52100 010 |52100 010 - Rural Finley Outbuildings                                                               
+52100 100 |52100 100 - Rural Finley One Story                                                                  
+52100 120 |52100 120 - Rural Finley One Story with Bonus                                                       
+52100 140 |52100 140 - Rural Finley Rambler with Basement                                                      
+52100 200 |52100 200 - Rural Finley Two Story and Two Story with Basement                                      
+52100 240 |52100 240 - Rural Finley Split Level and Tri Level                                                  
+52100 300 |52100 300 - Rural Finley One and One Half Story                                                     
+52100 400 |52100 400 - Rural Finley Singlewide                                                                 
+52100 401 |52100 401 - Rural Finley Doublewide Newer then 1990                                                 
+52100 401B|52100 401B - Rural Finley Doublewide Older then 1990                                                
+52100 401C|52100 401C - Rural Finley Doublewide Older then 1980                                                
+52100 402 |52100 402 - Rural Finley Triplewide                                                                 
+52100 4MH |52100 4MH - Rural Finley Manufactured Home taxed ast Personal Property                              
+530000    |Reval  3 Farm                                                                                       
+530100    |Finley                                                                                              
+530200    |Badger Road                                                                                         
+530200 001|530200 001 - Badger Road Land Only                                                                  
+530200 002|530200 002 - Badger Road Production Land                                                            
+530200 100|530200 100 - Badger Road One Story                                                                  
+530200 120|530200 120 - Badger Road One Story with Bonus                                                       
+530200 140|530200 140 - Badger Road Rambler with Basement                                                      
+530200 200|530200 200 - Two Story and Two Story with Basement                                                  
+530200 240|530200 240 - Badger Road Split Level and Tri Level                                                  
+530200 300|530200 300 - One and One Half Story                                                                 
+530200 340|530200 340 - One and One Half Story with Basement                                                   
+530200 400|530200 400 - Badger Road Singlewide                                                                 
+530200 401|530200 401 - Badger Road Doublewide                                                                 
+530200 402|530200 402 - Badger Road Triplewide                                                                 
+530200 4MH|530200 4MH - Manufactured Home taxed as Personal Property                                           
+530300    |Horse Heaven                                                                                        
+530300 001|530300 001 - Horse Heaven Hills Land                                                                
+530300 002|530300 002 - HH Hills Production Land                                                               
+530300 100|530300 100 - HH Hills One Story                                                                     
+530300 120|530300 120 - HH Hills One Story with Bonus                                                          
+530300 140|530300 140 - HH Hills Rambler with Basement                                                         
+530300 200|530300 200 - HH Hills 2 Story and 2 Story w Bsmnt                                                   
+530300 240|530300 240 - HH Hills Split Level and Tri Level                                                     
+530300 300|530300 300 - HH Hills 1 1/2 Story and 1 1/2 Story w Bsmnt                                           
+530300 405|530300 405 - Horse Heaven PP Singlewide                                                             
+530300 410|530300 410 - Horse Heaven PP Doublewide                                                             
+530300 420|530300 420 - Horse Heaven PP Triplewide                                                             
+530300 4MH|530300 4MH - Manufactured Home taxed as Personal property.                                          
+530300 500|530300 500 - HH Hills Outbuildings                                                                  
+530300 600|530300 600 - HH Hills Potato Storage                                                                
+530400    |Paterson                                                                                            
+530500    |Plymouth                                                                                            
+530500-Ind|530500-Plymouth Industrial                                                                          
+530501    |Plymouth North of SR 14                                                                             
+532453    |532453 Rural Finley                                                                                 
+532453 100|532453 100 - Rural Finley One Story                                                                 
+532453 120|532453 120 - Rural Finley One Story with Bonus                                                      
+532453 140|532453 140 - Rural Finley Rambler with Basement                                                     
+532453 200|532453 200 - Rural Finley Two Story and Two Story with Basement                                     
+532453 240|532453 240 - Rural Finley Split Level and Tri Levels                                                
+532453 300|532453 300 - Rural Finley One and One half Story                                                    
+532453 400|532453 400 - Rural Finley Singlewides                                                               
+532453 401|532453 401 - Rural Finley Doublewides                                                               
+532453 402|532453 402 - Rural Finley Triplewides                                                               
+532453 4MH|532453 4MH - Rural Finley Manufactured Home taxed as personal property                              
+533582    |533582 - Plymouth Paterson Stick Built                                                              
+533582 200|533582 200 - Plymouth Paterson Two Story and Two Story with Basement                                
+533582 400|553582 400 - Plymouth Paterson Singlewide                                                           
+533582 401|533582 401 - Plymouth Paterson Doublewide newer 1990                                                
+533582 4MH|533582 4MH - Manufactured homes classified as Personal Property                                     
+533582 DWB|533528 DWB - Plymouth Paterson Doublewide older then 1990                                           
+540000    |Farm Reval 4                                                                                        
+540001    |Farm Reval 4                                                                                        
+540010    |Reval 4 Farm - Res                                                                                  
+540014    |                                                                                                    
+540015    |                                                                                                    
+540016    |                                                                                                    
+540020    |Reval 4 Farm - Res                                                                                  
+540021    |Reval 4 Farm - Res                                                                                  
+540024    |                                                                                                    
+540025    |                                                                                                    
+540026    |                                                                                                    
+540030    |Reval 4 Farm - Res                                                                                  
+540031    |Reval 4  Farm - Res                                                                                 
+540040    |Reval 4  Farm - Res                                                                                 
+540041    |Reval 4  Farm - Res                                                                                 
+540042    |                                                                                                    
+540042 4MH|540042 4MH - Manufactured Home taxed as Personal Property                                           
+540043    |                                                                                                    
+540043 4MH|540043 4MH - Manufactured Home taxed as Personal Property                                           
+540044    |                                                                                                    
+540044 4MH|540044 4MH - Manufactured Home taxed as Personal Property                                           
+540050    |Reval 4 Farm - Res                                                                                  
+540051    |Reval 4 Farm - Res                                                                                  
+540052    |                                                                                                    
+540053    |                                                                                                    
+540060    |Reval 4  Farm - Res                                                                                 
+540070    |Reval 4  Farm - Res                                                                                 
+540100    |Rattlesnake Hills                                                                                   
+540999    |Residential/Ag Neighborhood                                                                         
+540999 4MH|540999 4MH - Manufactured Home taxed as Personal Property                                           
+540999-200|540999 - 200 - Two Story and Two Story with Basement                                                
+550000    |REVAL 5 FARM                                                                                        
+550000 100|550000 Farm - One Story                                                                             
+550000 200|550000 Farm - Two Story                                                                             
+550000 220|550000 Farm - Two Story with Basement                                                               
+550000 240|550000 Farm - Rambler with Basement                                                                 
+550000 260|550000 Farm - Spilt Level                                                                           
+550000 400|550000 Farm - Single Wide                                                                           
+550000 401|550000 Farm - Double Wide                                                                           
+550000 800|550000 Farm - Outbuildings                                                                          
+550100-WR |West Richland off West Keene                                                                        
+550200    |Badger Canyon                                                                                       
+550200 100|550200 Badger Canyon - One Story                                                                    
+550200 200|550200 Badger Canyon - Two Story                                                                    
+550200 220|550200 Badger Canyon - Two Story with Basement                                                      
+550200 240|550200 Badger Canyon - Rambler with Basement                                                        
+550200 400|550200 Badger Canyon - Single Wide                                                                  
+550200 401|550200 Badger Canyon - Double Wide                                                                  
+550200 402|550200 Badger Canyon - Triple Wide                                                                  
+550300    |Red Mountain Farm                                                                                   
+550300 100|550300 Red Mountain - One Story                                                                     
+550300 120|550300 Red Mountain - One Story with Bonus                                                          
+550300 140|550300 Red Mountain - Rambler with Basement                                                         
+550300 200|550300 Red Mountain - Two Story                                                                     
+550300 220|550300 Red Mountain - Two Story with Basement                                                       
+550300 240|550300 Red Mountain - Spilt Level                                                                   
+550300 260|550300 Red Mountain - Tri Level                                                                     
+550300 400|550300 Red Mountain - Single Wide                                                                   
+550300 401|550300 Red Mountain - Double Wide                                                                   
+550300 402|550300 Red Mountain - Triple Wide                                                                   
+550300 403|550300 Red Mountain - Manufactured Home PP                                                          
+550300 800|550300 Red Mountain - Outbuildings                                                                  
+550300 Win|550300 Red Mountain - Winery                                                                        
+550900    |Richland Industrial Park-Farm                                                                       
+560000    |                                                                                                    
+600000    |COMMERCIAL                                                                                          
+600280    |COMMERCIAL                                                                                          
+600285    |COMMERCIAL                                                                                          
+600290    |                                                                                                    
+600610    |Commercial                                                                                          
+605100    |County Industrial Land                                                                              
+610101    |Columbia Center Boulevard                                                                           
+610101AL  |KENNEWICK MALL ASSISTED LIVING                                                                      
+610101APT |KENNEWICK MALL APTS                                                                                 
+610101GC  |KENNEWICK MALL GEN COMM                                                                             
+610101H   |KENNEWICK Econ. Lim. Svc. Hotel                                                                     
+610101MHP |KENNEWICK MALL MHP                                                                                  
+610101MS  |W Kennewick Mini Stg                                                                                
+610101OFF |KENNEWICK MALL OFFICE                                                                               
+610101R   |KENNEWICK MALL RETAIL                                                                               
+610101WHSE|KENNEWICK MALL WHSE                                                                                 
+610102    |Columbia Center Boulevard II                                                                        
+610102R   |Kennewick Col Ctr Blvd Retail                                                                       
+610103    |Columbia Center Blvd. North                                                                         
+610103 4PL|KENNEWICK 4 PLEX                                                                                    
+610103AL  |KENNEWICK ASSISTED LIVING                                                                           
+610103APT |KENNEWICK APTS 1.1                                                                                  
+610103GC  |KENNEWICK GEN COMM                                                                                  
+610103H   |KENNEWICK LS 
+Kennewick LS HOTEL                                                                   
+610103MHP |KENNEWICK MHP                                                                                       
+610103MST |Kennewick Mini Stg                                                                                  
+610103OFF |KENNEWICK OFFICE                                                                                    
+610103R   |KENNEWICK RETAIL                                                                                    
+610103WHSE|KENNEWICK WAREHOUSE                                                                                 
+610110    |Tapteal Drive                                                                                       
+610200    |Canal Drive                                                                                         
+610220    |Colonade Business Park                                                                              
+610240    |Westhaven                                                                                           
+610250    |Kennewick Industrial Park, KIP                                                                      
+610250AL  |KENNEWICK VISTA ASSIST LIVING                                                                       
+610250GC  |KENNEWICK VISTA GEN COMM                                                                            
+610250H   |KENNEWICK Lim. Svc. Hotels                                                                          
+610250MAN |KENNEWICK VISTA WHSE                                                                                
+610250OFF |KENNEWICK VISTA OFFICE                                                                              
+610250R   |KENNEWICK VISTA RETAIL                                                                              
+610301    |Gage Boulevard                                                                                      
+610302    |Victoria                                                                                            
+610303    |West Gage Blvd                                                                                      
+610304    |Columbia Center West                                                                                
+610310    |Center Parkway & Surrounds                                                                          
+610330    |Steptoe Street                                                                                      
+610500    |Richland Wye                                                                                        
+610501    |Clearwater Extension                                                                                
+610501R   |E Clearwater Retail                                                                                 
+610502    |Clearwater Ext Secondary land                                                                       
+610502M   |E Richland Whse & Manuf                                                                             
+610502MS  |E Richland Mini Stg                                                                                 
+610502RVP |Kennewick RV Park I82                                                                               
+611000    |Apts Area 1.0                                                                                       
+611001    |Apts Area 1.1                                                                                       
+611002    |Apts Area 1.2                                                                                       
+611003    |Apts - Richland Y Riverview                                                                         
+612101    |West Kennewick 4 Plex's                                                                             
+620100    |Gum Street Industrial District                                                                      
+620150    |Oak Street Industrial District                                                                      
+620200    |Downtown Kennewick Core                                                                             
+620200FR  |E Kennewick Fuel Retail                                                                             
+620200MS  |E Kennewick Mini stg                                                                                
+620200OFF |E Kennewick Office
+                                                                                
+620200R   |E Kennewick Retail                                                                                  
+620200WHSE|E Kennewick Warehouse                                                                               
+620250    |KGH District                                                                                        
+620260    |Kennewick Ave & Vineyard                                                                            
+620260FFR |E Kennewick Fast Food Rest                                                                          
+620260RST |E Kennewick Restaurant                                                                              
+620300    |East Kennewick Suburban Comm.                                                                       
+620300PS  |E Kennewick Public Services                                                                         
+620310    |Washington St. S. of 10th                                                                           
+620350    |East Kennewick Rural Comm.                                                                          
+620370    |Finley Industrial                                                                                   
+620380    |Finley Surrounds                                                                                    
+620400    |Columbia Drive                                                                                      
+620410    |Clover Island                                                                                       
+620420    |Middlebelt                                                                                          
+620430    |Railroad                                                                                            
+621000    |Apts Area 2.0                                                                                       
+621000AL  |E Kennewick Assisted Living                                                                         
+621000G   |E Kennewick Golf                                                                                    
+621000MHP |E Kennewick Manuf Home Park                                                                         
+621000N   |Apts Area 2.0 Newer Construction                                                                    
+621000NM  |Apts Area 2.0 N-MKT                                                                                 
+621000PA  |E Kennewick Public Assembly                                                                         
+621001    |Apts Area 2.1                                                                                       
+621002    |Apts Area 2.2                                                                                       
+621003    |Apts Area 2.0 Non-Mkt                                                                               
+621400    |East Kennewick M.F. 5+ Units                                                                        
+622000    |East Kennewick 4-Plex's                                                                             
+622000DB  |East Kennewick 4-Plex w/ Daylight Bsmnt                                                             
+622000N   |E Kennewick Newer 4 plexes
+E Kennewick Newer 4 plexes                                              
+630101    |Clearwater Avenue                                                                                   
+630150    |Clearwater Periphery propertie                                                                      
+630200    |Vista Way                                                                                           
+630260    |Kennewick Avenue                                                                                    
+630300    |Edison Street                                                                                       
+630310    |Central Canal Drive                                                                                 
+630350    |Central Kennewick Suburban Com                                                                      
+630401    |395 & 27th East                                                                                     
+630402    |395 Central Corridor                                                                                
+630403    |395 Northern Corridor                                                                               
+630404    |395 & Falls Street                                                                                  
+630420    |Union Street 10th - 27th                                                                            
+630420MS  |E Kennewick & 27th Mini Stg.                                                                        
+630430    |Canyon Lakes                                                                                        
+630450    |Ely Public Works East of 395                                                                        
+630510    |Union Loop                                                                                          
+630511    |Southridge                                                                                          
+630511RE  |Southridge Restaurant/Hospitality                                                                   
+631000    |Apts Area 3.0                                                                                       
+631000NMKT|Apartments Area 3.0 NON-MKT                                                                         
+631001    |Apts Area 3.1                                                                                       
+631001NMKT|Apts Area 3.1 Non-MKT                                                                               
+631002    |Apts Area 3.2                                                                                       
+631002MFHP|Kennewick Col Ctr Blvd MFHP                                                                         
+632000    |Central Kennewick 4-Plex's                                                                          
+633000MHP |Kennewick 395 MFH Park                                                                              
+633001MHP |East Kennewick MFH Park                                                                             
+640100    |Port District in Prosser                                                                            
+640150    |Sheridan / Industrial District                                                                      
+640200    |Downtown District of Prosser                                                                        
+640210    |Exit 80 Prosser                                                                                     
+640250    |Wine Country Road Prosser                                                                           
+640250H   |Prosser Lim Svc Hotel                                                                               
+640250HE  |Prosser Econ Lim. Svc. Hotel                                                                        
+640260    |East Wine Country Road Prosser                                                                      
+640270    |Old Inland Empire Hwy                                                                               
+640280    |OIE / North River Road                                                                              
+640300    |Prosser Suburbs                                                                                     
+640300MS  |Prosser/Benton City Mini Stg                                                                        
+640400    |West Prosser                                                                                        
+640410    |Unassigned at this time                                                                             
+640650    |Whitstran                                                                                           
+640700    |Benton City Central District                                                                        
+640700A   |Benton City Interchange                                                                             
+640701    |Downtown Benton City Core                                                                           
+640702    |Benton City Secondary                                                                               
+640703    |Benton City Outlying                                                                                
+640704    |Benton City M.H.P.                                                                                  
+641000    |Apts Area 4.0                                                                                       
+6410004PLX|Apts Area 4 4Plex                                                                                   
+641001    |Reval 4 MHP and RVP                                                                                 
+650100    |Van Giesen West Richland                                                                            
+650101    |Van Giesen W. Richland East                                                                         
+650102    |Van Giesen W. Richland West                                                                         
+650102MS  |W Richland Mini Stg                                                                                 
+650102RT  |Ranchland Townhomes & 4plx Keene                                                                    
+650130    |West Richland Secondary                                                                             
+650150    |W. Richland Suburban Comm.                                                                          
+650200    |Bombing Range and Kennedy                                                                           
+650200MS  |W Richland Kennedy Mini Stg                                                                         
+650200PS  |West Richland Public Service                                                                        
+650210    |Red Mountain Commercial                                                                             
+650900    |Van Giesen Lowlands                                                                                 
+651000    |Apts Area 5.0                                                                                       
+651001    |Apts Area 5.1 W Richland                                                                            
+651004    |West Richland 4 plex Properties                                                                     
+651100    |W. Richland Mobile Home Parks                                                                       
+660100    |George Washington Way                                                                               
+660100FF  |Richland Fast Food                                                                                  
+660100PA  |Richland Parks & Rec                                                                                
+660100R   |Richland Retail                                                                                     
+660100RE  |Richland Restaurant                                                                                 
+660110    |Columbia Point                                                                                      
+660110A   |Richland Apts                                                                                       
+660110EH  |Richland Lim Svc Econ Hotel                                                                         
+660110FH  |Richland Full Service Hotels                                                                        
+660110H   |Richland Limited Svc Hotels                                                                         
+660201    |Jadwin Corridor                                                                                     
+660201AL  |Richland Assisted & Independant Living Facilities                                                   
+660202    |Richland Uptown Center                                                                              
+660203    |The Parkway in Richland                                                                             
+660210    |Richland Hospital District                                                                          
+660220    |Lee & Stevens Blvd                                                                                  
+660300    |Richland Suburban Commercial                                                                        
+660501    |Wellsian Way                                                                                        
+660501Manu|Richland Manufacturing                                                                              
+660501MS  |Richland Mini Storage                                                                               
+660502    |Aaron Way                                                                                           
+660502RWWC|Richland Wellsian way Condo Mini Stg                                                                
+660503    |Richland Ind. at the Delta                                                                          
+661000    |Apts Area 6.0                                                                                       
+661000A   |Area 6.0                                                                                            
+661001    |Apts Area 6.1                                                                                       
+661002    |Apts Area 6.2                                                                                       
+661003    |Richand Apts North & River                                                                          
+661100    |Richland Apartments                                                                                 
+662100    |Richland Four Plex Properties                                                                       
+662100TR  |Richland Transportation                                                                             
+666100    |Richland Mobile Home Parks                                                                          
+670050    |ByPass Highway                                                                                      
+670100    |Richland Airport                                                                                    
+670111    |North Richland Office Campus                                                                        
+670111M   |Richland Manufacturing                                                                              
+670112    |Saint & Stevens Intersection                                                                        
+67011OFF  |Richland Office                                                                                     
+670140    |Horne Road Park Area                                                                                
+670150    |Horn Rapids Industrial Park                                                                         
+670150CMS |Richland Ind Condo Mini Storage                                                                     
+670150MS  |Richland Ind Mini Stg                                                                               
+670200    |Horn Rapids Community                                                                               
+680100    |City View                                                                                           
+680100MS  |QGate/W Richalnd Mini Stg                                                                           
+680110    |Queensgate Victorian Village                                                                        
+680120    |Queensgate Drive                                                                                    
+680130    |Tulip Ln & Jericho Rd West                                                                          
+680200    |Meadow Springs                                                                                      
+680250    |Keene Rd                                                                                            
+680990    |Richland S. Res Influence                                                                           
+690100    |Yakima River Wetlands                                                                               
+690150    |Antenne Site                                                                                        
+690400    |Plymouth                                                                                            
+690401MFHP|Plymouth MFH Park                                                                                   
+690500    |Patterson                                                                                           
+700409    |                                                                                                    
+800000    |Industrial                                                                                          
+800999    |Industrial                                                                                          
+820370    |Industrial  Finley  District                                                                        
+840100    |Industrial at Port of Prosser                                                                       
+840150    |Industrial at Sheridan Prosser                                                                      
+870111    |Industrial at N. Richland Camp                                                                      
+870150    |Industrial in Horn Rapids Ind.                                                                      
+930000    |SCHOOL PROPERTY                                                                                     
+999999    |TESTING                                                                                             
+CAD       |Temporary Hood Code                                                                                 
+
+(1011 rows affected)

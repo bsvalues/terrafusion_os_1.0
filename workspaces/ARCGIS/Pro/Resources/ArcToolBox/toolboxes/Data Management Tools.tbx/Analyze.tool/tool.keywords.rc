@@ -1,0 +1,18 @@
+{
+    "set": [
+        "business",
+        "database",
+        "db2",
+        "delta",
+        "index",
+        "informix",
+        "oracle",
+        "rdbms",
+        "relational",
+        "sql",
+        "statistics",
+        "system",
+        "tbl",
+        "update"
+    ]
+}

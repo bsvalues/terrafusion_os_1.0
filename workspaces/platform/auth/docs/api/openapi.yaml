@@ -1,0 +1,217 @@
+openapi: 3.0.3
+info:
+  title: Auth API
+  description: Authentication and authorization APIs
+  version: 1.0.0
+  contact:
+    name: TerraFusion Government OS API Support
+    email: auth-api@terrafusion.gov
+    url: https://docs.terrafusion.gov/platform/auth
+  license:
+    name: Government Use License
+    url: https://terrafusion.gov/licenses/government-api
+  termsOfService: https://terrafusion.gov/terms/api-usage
+servers:
+- url: https://api.terrafusion.gov/api/v1/auth
+  description: Production TerraFusion Government API
+- url: https://staging-api.terrafusion.gov/api/v1/auth
+  description: Staging Environment
+- url: https://dev-api.terrafusion.gov/api/v1/auth
+  description: Development Environment
+paths:
+  /login:
+    post:
+      tags:
+      - auth
+      summary: User authentication
+      description: User authentication - Authentication and authorization APIs
+      operationId: post__login
+      security:
+      - OAuth2:
+        - auth:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /token:
+    post:
+      tags:
+      - auth
+      summary: Token generation
+      description: Token generation - Authentication and authorization APIs
+      operationId: post__token
+      security:
+      - OAuth2:
+        - auth:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /authorize:
+    get:
+      tags:
+      - auth
+      summary: Authorization check
+      description: Authorization check - Authentication and authorization APIs
+      operationId: get__authorize
+      security:
+      - OAuth2:
+        - auth:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /logout:
+    post:
+      tags:
+      - auth
+      summary: User logout
+      description: User logout - Authentication and authorization APIs
+      operationId: post__logout
+      security:
+      - OAuth2:
+        - auth:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: object
+    HealthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - healthy
+          - degraded
+          - unhealthy
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        dependencies:
+          type: object
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
+          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          scopes:
+            auth:read: Read access to auth resources
+            auth:write: Write access to auth resources
+            auth:admin: Administrative access to auth
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+security:
+- OAuth2:
+  - auth:read
+- ApiKey: []
+tags:
+- name: auth
+  description: Auth operations
+  externalDocs:
+    description: Find out more about auth
+    url: https://docs.terrafusion.gov/platform/auth

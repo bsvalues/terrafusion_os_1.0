@@ -1,0 +1,21 @@
+[project]
+name = "repl-nix-workspace"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.11"
+dependencies = [
+    "aiohttp>=3.12.4",
+    "fastapi>=0.115.12",
+    "flask>=3.1.1",
+    "flask-login>=0.6.3",
+    "flask-sqlalchemy>=3.1.1",
+    "gunicorn>=23.0.0",
+    "psycopg2-binary>=2.9.10",
+    "pyjwt>=2.10.1",
+    "python-dotenv>=1.1.0",
+    "requests>=2.32.3",
+    "shapely>=2.1.1",
+    "sqlalchemy>=2.0.41",
+    "uvicorn>=0.34.2",
+    "werkzeug>=3.1.3",
+]

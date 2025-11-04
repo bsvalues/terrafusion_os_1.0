@@ -1,0 +1,16 @@
+{
+    "set": [
+        "hallway",
+        "indoor",
+        "indoors",
+        "interior",
+        "network",
+        "optimize",
+        "path",
+        "pathway",
+        "route",
+        "thin",
+        "walking",
+        "walkway"
+    ]
+}

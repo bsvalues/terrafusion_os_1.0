@@ -1,0 +1,190 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\ClassifyMovementEvents",
+    "displayname": "$rc:title",
+    "helpcontent": "73060004",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "spark"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "id_field": {
+            "displayname": "$rc:id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:id_field.descr"
+        },
+        "out_featureclass": {
+            "direction": "out",
+            "displayname": "$rc:out_featureclass.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_featureclass.descr"
+        },
+        "curvature": {
+            "type": "optional",
+            "displayname": "$rc:curvature.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "15",
+            "description": "$rc:curvature.descr"
+        },
+        "number_of_points": {
+            "type": "optional",
+            "displayname": "$rc:number_of_points.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "1",
+            "description": "$rc:number_of_points.descr"
+        },
+        "regions_of_interest": {
+            "type": "optional",
+            "displayname": "$rc:regions_of_interest.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:regions_of_interest.descr"
+        },
+        "roi_id_field": {
+            "type": "optional",
+            "displayname": "$rc:roi_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "regions_of_interest"
+            ],
+            "description": "$rc:roi_id_field.descr"
+        },
+        "include_turn_ids": {
+            "type": "optional",
+            "displayname": "$rc:include_turn_ids.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "INCLUDE_TURN_IDS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_TURN_IDS"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:include_turn_ids.descr"
+        },
+        "exclude_non_turn_events": {
+            "type": "optional",
+            "displayname": "$rc:exclude_non_turn_events.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ONLY_TURN_EVENTS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "ALL_FEATURES"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:exclude_non_turn_events.descr"
+        },
+        "turn_events_representation": {
+            "type": "optional",
+            "displayname": "$rc:turn_events_representation.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ALL_FEATURES",
+                        "code": "$rc:turn_events_representation.domain.ALL_FEATURES"
+                    },
+                    {
+                        "value": "TURN_MIDPOINT",
+                        "code": "$rc:turn_events_representation.domain.TURN_MIDPOINT"
+                    }
+                ]
+            },
+            "value": "ALL_FEATURES",
+            "description": "$rc:turn_events_representation.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "workspace"
+    ]
+}

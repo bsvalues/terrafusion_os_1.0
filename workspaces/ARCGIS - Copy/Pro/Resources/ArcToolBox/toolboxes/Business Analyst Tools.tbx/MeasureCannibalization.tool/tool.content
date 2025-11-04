@@ -1,0 +1,192 @@
+{
+    "type": "FunctionTool",
+    "guid": "{33724566-2738-4FE2-903A-A8C439127E50}/MeasureCannibalization",
+    "displayname": "$rc:title",
+    "helpcontent": "62030006",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "33",
+        "35"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "area_id_field": {
+            "displayname": "$rc:area_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text",
+                    "Short",
+                    "BigInteger",
+                    "Long",
+                    "GUID",
+                    "GlobalID"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:area_id_field.descr"
+        },
+        "area_description_field": {
+            "displayname": "$rc:area_description_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:area_description_field.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "featuretype.rule": "AsSpecified",
+                "featuretype": "Simple",
+                "geometrytype.rule": "AsSpecified",
+                "geometrytype": "Polygon",
+                "extenttype.rule": "Union",
+                "fields.rule": "None",
+                "clonedependency": "true",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "store_id_field": {
+            "type": "optional",
+            "displayname": "$rc:store_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text",
+                    "Short",
+                    "BigInteger",
+                    "Long",
+                    "GUID",
+                    "GlobalID"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:store_id_field.descr"
+        },
+        "create_report": {
+            "type": "optional",
+            "displayname": "$rc:create_report.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CREATE_REPORT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_CREATE_REPORT"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:create_report.descr"
+        },
+        "report_title": {
+            "type": "optional",
+            "displayname": "$rc:report_title.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "Measure Cannibalization",
+            "description": "$rc:report_title.descr"
+        },
+        "report_folder": {
+            "type": "optional",
+            "displayname": "$rc:report_folder.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:report_folder.descr"
+        },
+        "report_format": {
+            "type": "optional",
+            "displayname": "$rc:report_format.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "description": "$rc:report_format.descr"
+        },
+        "output_report": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_report.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "DEFile"
+                }
+            }
+        },
+        "variables": {
+            "type": "optional",
+            "control_guid": "{C3227C61-E4D3-4D26-B7F7-4C3FF17BA2D9}",
+            "displayname": "$rc:variables.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "description": "$rc:variables.descr"
+        }
+    },
+    "environments": [
+        "baDataSource",
+        "geographicTransformations",
+        "workspace"
+    ]
+}

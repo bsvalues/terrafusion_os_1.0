@@ -1,0 +1,76 @@
+{
+    "type": "FunctionTool",
+    "guid": "{390cef6f-278c-40a5-bd15-c1bdb658e793}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190405",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_raster": {
+            "displayname": "$rc:in_raster.title",
+            "datatype": {
+                "type": "GPRasterLayer"
+            },
+            "description": "$rc:in_raster.descr"
+        },
+        "overwrite": {
+            "type": "optional",
+            "displayname": "$rc:overwrite.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "Overwrite"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NONE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:overwrite.descr"
+        },
+        "out_raster": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "GPRasterLayer"
+            },
+            "depends": [
+                "in_raster"
+            ]
+        },
+        "convert_colormap": {
+            "type": "optional",
+            "displayname": "$rc:convert_colormap.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ConvertColormap"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NONE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:convert_colormap.descr"
+        }
+    }
+}

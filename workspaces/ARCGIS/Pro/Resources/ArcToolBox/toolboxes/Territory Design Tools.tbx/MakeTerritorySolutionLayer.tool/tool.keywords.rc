@@ -1,0 +1,12 @@
+{
+    "set": [
+        "alignment",
+        "barriers",
+        "constraints",
+        "dataset",
+        "hierarchy",
+        "layer",
+        "level",
+        "project"
+    ]
+}

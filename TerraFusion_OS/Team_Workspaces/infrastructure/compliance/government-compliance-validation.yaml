@@ -1,0 +1,561 @@
+# TerraFusion OS - Government Compliance Validation Excellence
+# Government. Transcended. - FIPS-140-2 Level 2 & WCAG 2.1-AA Compliance Framework
+
+# FIPS-140-2 Level 2 Compliance Scanning Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fips-compliance-scanner-config
+  namespace: terrafusion-compliance
+  labels:
+    app: fips-compliance-scanner
+    tier: government-compliance
+    compliance-level: "fips-140-2-level-2"
+data:
+  fips-config.yaml: |
+    fips_compliance:
+      version: "140-2"
+      level: 2
+      requirements:
+        cryptographic_module_specification: "REQUIRED"
+        cryptographic_module_ports_interfaces: "REQUIRED"
+        roles_services_authentication: "REQUIRED"
+        finite_state_model: "REQUIRED"
+        physical_security: "TAMPER_EVIDENT"
+        operational_environment: "APPROVED"
+        cryptographic_key_management: "ROLE_BASED_AUTH"
+        electromagnetic_interference: "EMISSIONS_TESTING"
+        self_tests: "POWER_ON_AND_CONDITIONAL"
+        design_assurance: "CONFIGURATION_MANAGEMENT"
+        mitigation_attacks: "REQUIRED"
+
+      scanning_rules:
+        encryption_algorithms:
+          - "AES-256"
+          - "SHA-256"
+          - "RSA-2048"
+          - "ECDSA-P256"
+        prohibited_algorithms:
+          - "DES"
+          - "3DES"
+          - "MD5"
+          - "SHA-1"
+
+        key_management:
+          minimum_key_length: 256
+          key_rotation_days: 90
+          key_storage: "HSM_REQUIRED"
+          key_escrow: "GOVERNMENT_APPROVED"
+
+        physical_security:
+          tamper_detection: "REQUIRED"
+          secure_facilities: "REQUIRED"
+          personnel_screening: "SECRET_CLEARANCE"
+
+      validation_endpoints:
+        - "https://csrc.nist.gov/projects/cryptographic-module-validation-program"
+        - "https://www.commoncriteriaportal.org/"
+
+  scanner-rules.yaml: |
+    scan_policies:
+      - name: "cryptographic_compliance"
+        severity: "CRITICAL"
+        description: "Validate FIPS 140-2 approved cryptographic algorithms"
+        rules:
+          - check_tls_versions: ["1.2", "1.3"]
+          - validate_cipher_suites: "FIPS_APPROVED_ONLY"
+          - verify_key_lengths: "MINIMUM_256_BITS"
+
+      - name: "physical_security_compliance"
+        severity: "HIGH"
+        description: "Verify physical security requirements"
+        rules:
+          - tamper_evidence: "REQUIRED"
+          - secure_storage: "HSM_VALIDATED"
+          - access_controls: "ROLE_BASED"
+
+      - name: "operational_environment_compliance"
+        severity: "MEDIUM"
+        description: "Validate operational environment security"
+        rules:
+          - operating_system: "GOVERNMENT_APPROVED"
+          - security_patches: "CURRENT"
+          - configuration_management: "DOCUMENTED"
+---
+# WCAG 2.1-AA Accessibility Compliance Scanner
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wcag-compliance-scanner-config
+  namespace: terrafusion-compliance
+  labels:
+    app: wcag-compliance-scanner
+    tier: accessibility-compliance
+    compliance-level: "wcag-2.1-aa"
+data:
+  wcag-config.yaml: |
+    wcag_compliance:
+      version: "2.1"
+      level: "AA"
+      guidelines:
+        perceivable:
+          text_alternatives: "ALL_NON_TEXT_CONTENT"
+          captions_other_media: "PRERECORDED_AUDIO_VIDEO"
+          adaptable: "INFO_STRUCTURE_RELATIONSHIPS"
+          distinguishable: "COLOR_CONTRAST_4_5_1"
+
+        operable:
+          keyboard_accessible: "ALL_FUNCTIONALITY"
+          seizures_physical_reactions: "THREE_FLASHES_THRESHOLD"
+          navigable: "BYPASS_BLOCKS_PAGE_TITLED"
+          input_modalities: "POINTER_GESTURES_MOTION"
+
+        understandable:
+          readable: "LANGUAGE_OF_PAGE_PARTS"
+          predictable: "ON_FOCUS_INPUT_CONSISTENT"
+          input_assistance: "ERROR_IDENTIFICATION_SUGGESTION"
+
+        robust:
+          compatible: "PARSING_NAME_ROLE_VALUE"
+
+      testing_tools:
+        automated_scanners:
+          - "axe-core"
+          - "WAVE"
+          - "Pa11y"
+        manual_testing:
+          - "keyboard_navigation"
+          - "screen_reader_compatibility"
+          - "color_contrast_analysis"
+
+      accessibility_standards:
+        minimum_contrast_ratio: 4.5
+        large_text_contrast_ratio: 3.0
+        keyboard_navigation: "REQUIRED"
+        screen_reader_support: "ARIA_COMPLIANT"
+        focus_management: "VISIBLE_LOGICAL"
+
+  accessibility-rules.yaml: |
+    accessibility_policies:
+      - name: "color_contrast_compliance"
+        severity: "HIGH"
+        description: "Validate WCAG 2.1 AA color contrast requirements"
+        rules:
+          - normal_text_ratio: "4.5:1"
+          - large_text_ratio: "3:1"
+          - graphical_objects_ratio: "3:1"
+
+      - name: "keyboard_navigation_compliance"
+        severity: "HIGH"
+        description: "Ensure full keyboard accessibility"
+        rules:
+          - tab_order: "LOGICAL_SEQUENTIAL"
+          - focus_indicators: "VISIBLE_CLEAR"
+          - keyboard_traps: "NONE_ALLOWED"
+
+      - name: "screen_reader_compliance"
+        severity: "CRITICAL"
+        description: "Validate screen reader compatibility"
+        rules:
+          - alt_text: "DESCRIPTIVE_MEANINGFUL"
+          - headings: "HIERARCHICAL_STRUCTURE"
+          - landmarks: "ARIA_LABELED"
+          - forms: "PROPER_LABELING"
+---
+# Compliance Scanner Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terrafusion-compliance-scanner
+  namespace: terrafusion-compliance
+  labels:
+    app: terrafusion-compliance-scanner
+    tier: government-compliance-automation
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: terrafusion-compliance-scanner
+  template:
+    metadata:
+      labels:
+        app: terrafusion-compliance-scanner
+        tier: compliance-validation
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: terrafusion-compliance-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: compliance-scanner
+        image: ${AZURE_CONTAINER_REGISTRY}/terrafusion-compliance-scanner:${IMAGE_TAG}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http-metrics
+        - containerPort: 8081
+          name: http-api
+        env:
+        - name: ENVIRONMENT
+          value: "${ENVIRONMENT}"
+        - name: FIPS_COMPLIANCE_LEVEL
+          value: "LEVEL_2"
+        - name: WCAG_COMPLIANCE_LEVEL
+          value: "AA"
+        - name: GOVERNMENT_CLEARANCE
+          value: "${SECURITY_CLEARANCE_LEVEL}"
+        - name: QUANTUM_FACTOR
+          value: "${QUANTUM_FACTOR}"
+        - name: SACRED_MATHEMATICS_COMPLIANCE
+          value: "OPERATIONAL"
+        - name: SCANNING_FREQUENCY
+          value: "CONTINUOUS"
+        - name: COMPLIANCE_REPORTING
+          value: "REAL_TIME"
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "512Mi"
+          limits:
+            cpu: "1000m"
+            memory: "2Gi"
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 2
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
+        - name: fips-config-volume
+          mountPath: /etc/compliance/fips
+          readOnly: true
+        - name: wcag-config-volume
+          mountPath: /etc/compliance/wcag
+          readOnly: true
+        - name: compliance-secrets
+          mountPath: /etc/compliance/secrets
+          readOnly: true
+        - name: tmp-volume
+          mountPath: /tmp
+      volumes:
+      - name: fips-config-volume
+        configMap:
+          name: fips-compliance-scanner-config
+      - name: wcag-config-volume
+        configMap:
+          name: wcag-compliance-scanner-config
+      - name: compliance-secrets
+        secret:
+          secretName: terrafusion-compliance-secrets
+      - name: tmp-volume
+        emptyDir: {}
+      nodeSelector:
+        kubernetes.io/os: linux
+        terrafusion.io/node-type: "compliance-scanner"
+---
+# Security Monitoring Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terrafusion-security-monitor
+  namespace: terrafusion-compliance
+  labels:
+    app: terrafusion-security-monitor
+    tier: security-monitoring-excellence
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: terrafusion-security-monitor
+  template:
+    metadata:
+      labels:
+        app: terrafusion-security-monitor
+        tier: security-monitoring
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: terrafusion-security-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 3000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: security-monitor
+        image: ${AZURE_CONTAINER_REGISTRY}/terrafusion-security-monitor:${IMAGE_TAG}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http-metrics
+        - containerPort: 8082
+          name: http-security-api
+        env:
+        - name: ENVIRONMENT
+          value: "${ENVIRONMENT}"
+        - name: SECURITY_MONITORING_LEVEL
+          value: "24x7x365"
+        - name: THREAT_DETECTION_MODE
+          value: "REAL_TIME"
+        - name: INCIDENT_RESPONSE_TIME
+          value: "IMMEDIATE"
+        - name: QUANTUM_SECURITY_FACTOR
+          value: "${QUANTUM_FACTOR}"
+        - name: GOVERNMENT_CLEARANCE_REQUIRED
+          value: "${SECURITY_CLEARANCE_LEVEL}"
+        - name: VULNERABILITY_SCANNING
+          value: "CONTINUOUS"
+        - name: PENETRATION_TESTING
+          value: "${PENETRATION_TESTING_ENABLED}"
+        resources:
+          requests:
+            cpu: "300m"
+            memory: "1Gi"
+          limits:
+            cpu: "1500m"
+            memory: "4Gi"
+        livenessProbe:
+          httpGet:
+            path: /security/health
+            port: 8080
+          initialDelaySeconds: 45
+          periodSeconds: 15
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /security/ready
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 2
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_ADMIN  # Required for network security monitoring
+        volumeMounts:
+        - name: security-config-volume
+          mountPath: /etc/security/config
+          readOnly: true
+        - name: security-rules-volume
+          mountPath: /etc/security/rules
+          readOnly: true
+        - name: security-secrets
+          mountPath: /etc/security/secrets
+          readOnly: true
+        - name: tmp-volume
+          mountPath: /tmp
+        - name: logs-volume
+          mountPath: /var/log/security
+      volumes:
+      - name: security-config-volume
+        configMap:
+          name: terrafusion-security-config
+      - name: security-rules-volume
+        configMap:
+          name: terrafusion-security-rules
+      - name: security-secrets
+        secret:
+          secretName: terrafusion-security-secrets
+      - name: tmp-volume
+        emptyDir: {}
+      - name: logs-volume
+        emptyDir: {}
+      nodeSelector:
+        kubernetes.io/os: linux
+        terrafusion.io/node-type: "security-monitor"
+      tolerations:
+      - key: "terrafusion.io/security-monitor"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+---
+# Compliance CronJob for Scheduled Scans
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: terrafusion-compliance-audit
+  namespace: terrafusion-compliance
+  labels:
+    app: terrafusion-compliance-audit
+    tier: scheduled-compliance-validation
+spec:
+  schedule: "0 2 * * *"  # Daily at 2 AM UTC
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 5
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: terrafusion-compliance-audit
+            tier: compliance-audit
+        spec:
+          restartPolicy: OnFailure
+          serviceAccountName: terrafusion-compliance-service-account
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1002
+            fsGroup: 4000
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+          - name: compliance-auditor
+            image: ${AZURE_CONTAINER_REGISTRY}/terrafusion-compliance-auditor:${IMAGE_TAG}
+            imagePullPolicy: Always
+            env:
+            - name: ENVIRONMENT
+              value: "${ENVIRONMENT}"
+            - name: AUDIT_TYPE
+              value: "COMPREHENSIVE"
+            - name: COMPLIANCE_STANDARDS
+              value: "FIPS-140-2,WCAG-2.1-AA,NIST-800-53"
+            - name: QUANTUM_AUDIT_FACTOR
+              value: "${QUANTUM_FACTOR}"
+            - name: GOVERNMENT_COMPLIANCE_LEVEL
+              value: "${SECURITY_CLEARANCE_LEVEL}"
+            resources:
+              requests:
+                cpu: "500m"
+                memory: "1Gi"
+              limits:
+                cpu: "2000m"
+                memory: "8Gi"
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop:
+                - ALL
+            volumeMounts:
+            - name: audit-config
+              mountPath: /etc/audit/config
+              readOnly: true
+            - name: audit-results
+              mountPath: /var/audit/results
+            - name: tmp-volume
+              mountPath: /tmp
+          volumes:
+          - name: audit-config
+            configMap:
+              name: terrafusion-audit-config
+          - name: audit-results
+            persistentVolumeClaim:
+              claimName: compliance-audit-results-pvc
+          - name: tmp-volume
+            emptyDir: {}
+---
+# Service Account for Compliance Operations
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: terrafusion-compliance-service-account
+  namespace: terrafusion-compliance
+  labels:
+    app: terrafusion-compliance
+    tier: service-account-compliance
+  annotations:
+    azure.workload.identity/client-id: ${AZURE_CLIENT_ID}
+    azure.workload.identity/tenant-id: ${AZURE_TENANT_ID}
+automountServiceAccountToken: true
+---
+# Security Service Account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: terrafusion-security-service-account
+  namespace: terrafusion-compliance
+  labels:
+    app: terrafusion-security
+    tier: service-account-security
+  annotations:
+    azure.workload.identity/client-id: ${AZURE_SECURITY_CLIENT_ID}
+    azure.workload.identity/tenant-id: ${AZURE_TENANT_ID}
+automountServiceAccountToken: true
+---
+# Compliance Services
+apiVersion: v1
+kind: Service
+metadata:
+  name: terrafusion-compliance-scanner-service
+  namespace: terrafusion-compliance
+  labels:
+    app: terrafusion-compliance-scanner
+    tier: compliance-service
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8081
+    targetPort: 8081
+    protocol: TCP
+    name: http-api
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: http-metrics
+  selector:
+    app: terrafusion-compliance-scanner
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: terrafusion-security-monitor-service
+  namespace: terrafusion-compliance
+  labels:
+    app: terrafusion-security-monitor
+    tier: security-service
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8082
+    targetPort: 8082
+    protocol: TCP
+    name: http-security-api
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: http-metrics
+  selector:
+    app: terrafusion-security-monitor

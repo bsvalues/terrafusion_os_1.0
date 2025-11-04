@@ -1,0 +1,22 @@
+{
+    "set": [
+        "barrier",
+        "boundary",
+        "cartographic finishing",
+        "conflict",
+        "contextual",
+        "deconflict",
+        "displace",
+        "displacement",
+        "move",
+        "overlap",
+        "pattern",
+        "remove",
+        "representation",
+        "symbol",
+        "symbol conflict",
+        "symbol to point",
+        "symbolized",
+        "symbology"
+    ]
+}

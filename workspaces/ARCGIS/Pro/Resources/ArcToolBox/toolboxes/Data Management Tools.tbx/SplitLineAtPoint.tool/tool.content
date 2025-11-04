@@ -1,0 +1,72 @@
+{
+    "type": "FunctionTool",
+    "guid": "{e8177a94-347c-48f5-ba50-08b619391cfb}",
+    "displayname": "$rc:title",
+    "helpcontent": "3050024",
+    "description": "$rc:description",
+    "product": "300",
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "point_features": {
+            "displayname": "$rc:point_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Multipoint",
+                    "Point"
+                ]
+            },
+            "description": "$rc:point_features.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "search_radius": {
+            "type": "optional",
+            "displayname": "$rc:search_radius.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:search_radius.descr"
+        }
+    },
+    "environments": [
+        "MDomain",
+        "MResolution",
+        "MTolerance",
+        "XYResolution",
+        "XYTolerance",
+        "ZDomain",
+        "ZResolution",
+        "ZTolerance",
+        "extent",
+        "outputCoordinateSystem",
+        "outputMFlag",
+        "outputZFlag",
+        "outputZValue",
+        "workspace"
+    ]
+}

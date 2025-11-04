@@ -1,0 +1,56 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "68010002",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_unit_features": {
+            "displayname": "$rc:in_unit_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_unit_features.descr"
+        },
+        "target_pathways": {
+            "displayname": "$rc:target_pathways.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:target_pathways.descr"
+        },
+        "updated_pathways": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_pathways.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "depends": [
+                "target_pathways"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    }
+}

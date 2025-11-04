@@ -1,0 +1,1649 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.Core.Persistence.NHibernate</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.AbortTransactionException">
+            <summary>
+            Custom transaction that can be thrown to explicitly end and
+            rollback a transaction.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.Persistence.NHibernate.BaseTransactionManager.transactionDepth">
+            <summary>
+            The current transaction depth.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.BaseTransactionManager.Name">
+            <summary>
+            The name of this transaction manager instance.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.BaseTransactionManager.TransactionDepth">
+            <summary>
+            The current nested transaction depth.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.BaseTransactionManager.IsTransactionActive(System.String)">
+            <summary>
+            Returns whether or not there's an active transaction for
+            the specified factory key.
+            </summary>
+            <param name="factoryKey">The factory key for which to check
+            whether there's an active transaction.</param>
+            <returns>True if there's an active transaction for the
+            specified factory key, otherwise false.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.BaseTransactionManager.PushTransaction(System.String,System.Object)">
+            <summary>
+            Pushes a new transaction onto the stack for the specified
+            session factory key.
+            </summary>
+            <param name="factoryKey">The session factory key.</param>
+            <param name="transactionState">The current transaction state.</param>
+            <returns>The updated transaction state.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.BaseTransactionManager.PopTransaction(System.String,System.Object)">
+            <summary>
+            Pops a new transaction off the stack for the specified
+            session factory key.
+            </summary>
+            <param name="factoryKey">The session factory key.</param>
+            <param name="transactionState">The current transaction state.</param>
+            <returns>The updated transaction state.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.BaseTransactionManager.CommitTransaction(System.String,System.Object)">
+            <summary>
+            Commits the current transaction for the specified
+            session factory key.
+            </summary>
+            <param name="factoryKey">The session factory key.</param>
+            <param name="transactionState">The current transaction state.</param>
+            <returns>The updated transaction state.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.BaseTransactionManager.RollbackTransaction(System.String,System.Object)">
+            <summary>
+            Rolls back the current transaction for the specified
+            session factory key.
+            </summary>
+            <param name="factoryKey">The session factory key.</param>
+            <param name="transactionState">The current transaction state.</param>
+            <returns>The updated transaction state.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.BaseTransactionManager.Log(System.String)">
+            <summary>
+            Utility function for logging transaction manager activities.
+            </summary>
+            <param name="message">The message to log,</param>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.ConfigurationFileCache">
+            <summary>
+            File cache implementation of
+            <see cref="T:TrueAutomation.Core.Persistence.NHibernate.IConfigurationCache"/>.
+            Saves and loads a serialized version of <see cref="T:NHibernate.Cfg.Configuration"/> to
+            a temporary file location.
+            </summary>
+            <remarks>Seralizing a <see cref="T:NHibernate.Cfg.Configuration"/> object requires that
+            all components making up the Configuration object be Serializable.
+            This includes any custom NHibernate user types implementing
+            <see cref="T:NHibernate.UserTypes.IUserType"/>.</remarks>
+        </member>
+        <member name="F:TrueAutomation.Core.Persistence.NHibernate.ConfigurationFileCache.dependentFilePaths">
+            <summary>
+            A list of files on which the cached configuration is dependent.
+            If any of these files are newer than the cache file then the
+            cache file may be out of date.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.ConfigurationFileCache.#ctor">
+            <summary>
+            Initializes new instance of the NHibernateConfigurationFileCache
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.ConfigurationFileCache.#ctor(System.String[])">
+            <summary>
+            Initializes a new instance of the ConfigurationFileCache using the 
+            specified list of dependent paths.
+            </summary>
+            <param name="dependentFilePaths">A list of files on which the cached
+            configuration is dependent.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.ConfigurationFileCache.LoadConfiguration(System.String,System.String,System.String[])">
+            <summary>
+            Load the <see cref="T:NHibernate.Cfg.Configuration"/> object from a cache.
+            </summary>
+            <param name="configKey">A key value to provide a unique name to
+            the cached <see cref="T:NHibernate.Cfg.Configuration"/>.</param>
+            <param name="configPath">The path to an NHibernate configuration
+            xml file. This is used to determine if the cached
+            <param name="mappingAssemblies">An array of strings specifying the
+            list of assemblies containing mapping information for the classes
+            represented by this NHibernate repository.</param>
+            <see cref="T:NHibernate.Cfg.Configuration"/> is out of date or not.</param>
+            <returns>If an up to date cached object is available, a
+            <see cref="T:NHibernate.Cfg.Configuration"/> object, otherwise null.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.ConfigurationFileCache.SaveConfiguration(System.String,NHibernate.Cfg.Configuration)">
+            <summary>
+            Save the <see cref="T:NHibernate.Cfg.Configuration"/> object to cache to a
+            temporary file.
+            </summary>
+            <param name="configKey">A key value to provide a unique name
+            to the cached <see cref="T:NHibernate.Cfg.Configuration"/>.</param>
+            <param name="config">Configuration object to save.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.ConfigurationFileCache.CachedConfigPath(System.String)">
+            <summary>
+            Provides a unique temporary file path/name for the cache file.
+            </summary>
+            <param name="configKey">A key value to provide a unique name
+            to the cached <see cref="T:NHibernate.Cfg.Configuration"/>.</param>
+            <returns>Full file path.</returns>
+            <remarks>The hash value is intended to avoid the file from
+            conflicting with other applications also using this cache feature.
+            </remarks>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.ConfigurationFileCache.GetMaxDependencyTime">
+            <summary>
+            Returns the latest file write time from the list of dependent
+            file paths.
+            </summary>
+            <returns>Latest file write time, or '1/1/1980' if
+            the list is empty.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.ConfigurationFileCache.IsCachedConfigCurrent(System.String,System.String)">
+            <summary>
+            Tests whether an existing cached configuration file is out
+            of date or not.
+            </summary>
+            <param name="cachePath">Location of the cached configuration file
+            </param>
+            <param name="configPath"></param>
+            <returns>False if the cached config file is out of date,
+            otherwise true.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown if the cachePath
+            or configPath parameters are null.</exception>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.ConfigurationFileCache.AppendToDependentFilePaths(System.String)">
+            <summary>
+            Appends the given file path to the list of dependent file paths.
+            </summary>
+            <param name="path">Dependent file path to append.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.ConfigurationFileCache.AppendToDependentFilePaths(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Appends the given list of file paths to the internal list of
+            dependent file paths.
+            </summary>
+            <param name="paths">a list of dependent file paths.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.ConfigurationFileCache.FindFile(System.String)">
+            <summary>
+            Tests whether the file or assembly name exists either in the
+            application folder or elsewhere.
+            </summary>
+            <param name="path">Path or file name to test for existence.</param>
+            <returns>Full path of the file.</returns>
+            <remarks>If the path parameter does not end with ".dll" it
+            is appended and tested to see whether the dll file exists.</remarks>
+            <exception cref="T:System.IO.FileNotFoundException">Thrown if the file is
+            not found.</exception>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.Config.DatabaseConfigurationElement">
+            <summary>
+            Encapsulates a single database-related configuration element
+            in an application-level configuration file.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.Config.DatabaseConfigurationElement.SettingsFile">
+            <summary>
+            Gets or sets the name of the configuration file for this
+            database connection descriptor.
+            </summary>
+            <value>The name of the configuration file for this database
+            element.</value>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.Config.DatabaseConfigurationElement.MappingAssemblies">
+            <summary>
+            Returns the list of mapping assembly configuration elements.
+            </summary>
+            <value>The list of mapping assembly configuration elements.</value>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.Config.DatabasesConfigurationSection">
+            <summary>
+            Encapsulates the databases configuration section in an
+            application's configuration file.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.Config.DatabasesConfigurationSection.Databases">
+            <summary>
+            Returns the collection of database-related configuration
+            elements in the "databases" section of the application
+            configuration file.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.Config.MappingAssemblyConfigurationElement">
+            <summary>
+            Encapsulates a single mapping assembly-related configuration element
+            in an application-level configuration file.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.Config.MappingAssemblyConfigurationElement.Assembly">
+            <summary>
+            Gets or sets the name of this mapping assembly configuration element.
+            </summary>
+            <value>The name of the configuration element.</value>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.Config.RepositoryConfigurationElement">
+            <summary>
+            Encapsulates a single repository-related configuration element
+            in an application-level configuration file.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.Config.RepositoryConfigurationElement.RepositoryAssembly">
+            <summary>
+            Gets or sets the name of the assembly containing any custom
+            repository implementation types.
+            </summary>
+            <value>The name of the assembly containing any custom
+            repository implementation types.</value>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.Config.RepositoryConfigurationElement.ServiceDescriptor">
+            <summary>
+            Gets or sets the name of the assembly containing any repository
+            service descriptor interfaces.
+            </summary>
+            <value>The name of the assembly containing any custom
+            repository service descriptor interfaces.</value>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.Config.RepositoriesConfigurationSection">
+            <summary>
+            Encapsulates the repositories configuration section in an
+            application's configuration file.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.Config.RepositoriesConfigurationSection.Repositories">
+            <summary>
+            Returns the collection of repository-related configuration
+            elements in the "repositories" section of the application
+            configuration file.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.CriteriaCreator.CreateCriteria(TrueAutomation.Core.DTO.CriteriaDTO)">
+            <summary>
+            Builds the criteria needed to find information for a task.
+            </summary>
+            <param name="dto">DTO Containing a binary tree representation of search terms</param>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.EntityDuplicateChecker">
+            <summary>
+            Provides an NHibernate-specific class for checking whether a
+            duplicate exists of an existing entity.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.Persistence.NHibernate.EntityDuplicateChecker.UNINITIALIZED_TIMESTAMP">
+            <summary>
+            Represents an uninitialized timestamp value, mostly for
+            the sake of convenience.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.EntityDuplicateChecker.DoesDuplicateExist``1(TrueAutomation.Core.Domain.IEntityWithId{``0})">
+            <summary>
+            Returns whether or not a duplicate entity exists for the
+            specified typed entity. A duplicate entity is a different
+            instance of the entity with the same ID value.
+            </summary>
+            <typeparam name="T">The type of the entity to be checked for
+            duplicate values.</typeparam>
+            <param name="entity">The entity to check for a duplicate value.</param>
+            <returns>True if a duplicate entity exists for the specified
+            entity.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.EntityDuplicateChecker.AppendSignaturePropertyCriteria``1(NHibernate.ICriteria,TrueAutomation.Core.Domain.IEntityWithId{``0})">
+            <summary>
+            Appends the signature properties of a specified entity to
+            the supplied set of NHibernate criteria.
+            </summary>
+            <typeparam name="T">The id type of the entity.</typeparam>
+            <param name="criteria">The criteria to which to append the
+            signature property values of the supplied entity.</param>
+            <param name="entity">The entity from which to append the
+            signature property values.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.EntityDuplicateChecker.AppendStringPropertyCriteria(NHibernate.ICriteria,System.Reflection.PropertyInfo,System.Object)">
+            <summary>
+            Appends a string property value to the specified NHibernate
+            matching criteria.
+            </summary>
+            <param name="criteria">The NHibernate criteria to which to
+            append the specified string property value.</param>
+            <param name="signatureProperty">The signature property to append
+            to the supplied NHibernate criteria.</param>
+            <param name="propertyValue">The value of the supplied signature
+            property to append to the supplied NHibernate criteria.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.EntityDuplicateChecker.AppendDateTimePropertyCriteria(NHibernate.ICriteria,System.Reflection.PropertyInfo,System.Object)">
+            <summary>
+            Appends a timestamp property value to the specified NHibernate
+            matching criteria.
+            </summary>
+            <param name="criteria">The NHibernate criteria to which to
+            append the specified string property value.</param>
+            <param name="signatureProperty">The signature property to append
+            to the supplied NHibernate criteria.</param>
+            <param name="propertyValue">The value of the supplied signature
+            property to append to the supplied NHibernate criteria.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.EntityDuplicateChecker.AppendValuePropertyCriteria(NHibernate.ICriteria,System.Reflection.PropertyInfo,System.Object)">
+            <summary>
+            Appends a string property value to the specified NHibernate
+            matching criteria.
+            </summary>
+            <param name="criteria">The NHibernate criteria to which to
+            append the specified string property value.</param>
+            <param name="signatureProperty">The signature property to append
+            to the supplied NHibernate criteria.</param>
+            <param name="propertyValue">The value of the supplied signature
+            property to append to the supplied NHibernate criteria.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.EntityDuplicateChecker.AppendEntityCriteria``1(NHibernate.ICriteria,System.Reflection.PropertyInfo,System.Object)">
+            <summary>
+            Appends a string property value to the specified NHibernate
+            matching criteria.
+            </summary>
+            <typeparam name="T">The identifier type for the entity with
+            which the supplied signature value is associated.</typeparam>
+            <param name="criteria">The NHibernate criteria to which to
+            append the specified string property value.</param>
+            <param name="signatureProperty">The signature property to append
+            to the supplied NHibernate criteria.</param>
+            <param name="propertyValue">The value of the supplied signature
+            property to append to the supplied NHibernate criteria.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.EntityDuplicateChecker.GetSessionFor(System.Object)">
+            <summary>
+            Returns the NHibernate session for the specified entity.
+            </summary>
+            <param name="entity">The entity for which to return the
+            corresponding NHibernate session.</param>
+            <returns>The NHibernate session with which the specified
+            entity is associated.</returns>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.IAutoPersistenceModelGenerator">
+            <summary>
+            Defines an interface for generator classes that can create
+            an auto-persistence model.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.IAutoPersistenceModelGenerator.GenerateAutoPersistenceModel">
+            <summary>
+            Generates a Fluent NHibernate auto-persistence model
+            to specify the auto-mapping persistence behavior for
+            an assembly or application.
+            </summary>
+            <returns>An auto-persistence model specifying the a
+            set of auto-mapping behaviors and conventions.</returns>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.IHasTransactionSettings">
+            <summary>
+            Interface to be implemented by classes that have transaction
+            settings associated with them. This is primarily intended to
+            be used by the TransactionAttribute class to store its
+            configuration settings.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.IHasTransactionSettings.Settings">
+            <summary>
+            The transaction settings associated with this object.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.IMappingGenerator">
+            <summary>
+            Defines an interface for NHibernate object mapping generators,
+            which can generate an XML-based mapping for the associated
+            entity mappings.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.IMappingGenerator.MappingFilename">
+            <summary>
+            The filename for the generated mapping file
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.IMappingGenerator.GenerateMapping">
+            <summary>
+            Generates the XML-based mapping file describing the mappings
+            that are known to the mapping generator.
+            </summary>
+            <returns>An XML document describing the associated object
+            mappings.</returns>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.ITransactionManager.Name">
+            <summary>
+            The name of this transaction manager instance.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.ITransactionManager.TransactionDepth">
+            <summary>
+            The current nested transaction depth.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.ITransactionManager.IsTransactionActive(System.String)">
+            <summary>
+            Returns whether or not there's an active transaction for
+            the specified factory key.
+            </summary>
+            <param name="factoryKey">The factory key for which to check
+            whether there's an active transaction.</param>
+            <returns>True if there's an active transaction for the
+            specified factory key, otherwise false.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.ITransactionManager.PushTransaction(System.String,System.Object)">
+            <summary>
+            Pushes a new transaction onto the stack for the specified
+            session factory key.
+            </summary>
+            <param name="factoryKey">The session factory key.</param>
+            <param name="transactionState">The current transaction state.</param>
+            <returns>The updated transaction state.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.ITransactionManager.PopTransaction(System.String,System.Object)">
+            <summary>
+            Pops a new transaction off the stack for the specified
+            session factory key.
+            </summary>
+            <param name="factoryKey">The session factory key.</param>
+            <param name="transactionState">The current transaction state.</param>
+            <returns>The updated transaction state.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.ITransactionManager.CommitTransaction(System.String,System.Object)">
+            <summary>
+            Commits the current transaction for the specified
+            session factory key.
+            </summary>
+            <param name="factoryKey">The session factory key.</param>
+            <param name="transactionState">The current transaction state.</param>
+            <returns>The updated transaction state.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.ITransactionManager.RollbackTransaction(System.String,System.Object)">
+            <summary>
+            Rolls back the current transaction for the specified
+            session factory key.
+            </summary>
+            <param name="factoryKey">The session factory key.</param>
+            <param name="transactionState">The current transaction state.</param>
+            <returns>The updated transaction state.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.IUnitOfWorkSessionStorage.EndUnitOfWork(System.Boolean)">
+            <summary>
+            End the current unit of work, by clearing and optionally closing
+            any associated sessions.
+            </summary>
+            <param name="closeSessions">True to close any current sessions,
+            otherwise false to simply clear and re-use the existing sessions.
+            </param>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.MappingGeneratorUtil.GetMappingGenerators">
+            <summary>
+            Utility function to return the list of mapping generators
+            in the current assembly.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.DatabaseContext">
+            <summary>
+            Implements an NHibernate-based database context class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.DatabaseContext.#ctor(System.String)">
+            <summary>
+            Class constructor for the NHibernate-based database context.
+            </summary>
+            <param name="factoryKey">The factory key identifying the object
+            factory with which this database context is associated.</param>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.DatabaseContext.FactoryKey">
+            <summary>
+            The factory key identifying the object factory identifying the
+            object factory with which this database context is associated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.DatabaseContext.Session">
+            <summary>
+            Returns the current session for the associated factory key.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.DatabaseContext.CommitChanges">
+            <summary>
+            Flushes everything that has been changed in this database
+            context since the last commit.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.DatabaseContext.BeginTransaction">
+            <summary>
+            Begins a database transaction in the current NHibernate session.
+            </summary>
+            <returns>A transaction object corresponding to the transaction
+            that was created in the current session.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.DatabaseContext.CommitTransaction">
+            <summary>
+            Commits the current transaction in the current NHibernate session.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.DatabaseContext.RollbackTransaction">
+            <summary>
+            Rolls back the current transaction in the current NHibernate session.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.Persistence.NHibernate.DefaultSessionStorage.storage">
+            <summary>
+            A lookup table mapping factory key strings to their
+            corresponding ISession instances.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.DefaultSessionStorage.#ctor">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.DefaultSessionStorage.GetSessionForKey(System.String)">
+            <summary>
+            Returns the session associated with the specified factoryKey or
+            null if the specified factoryKey is not found.
+            </summary>
+            <param name="factoryKey"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.DefaultSessionStorage.SetSessionForKey(System.String,NHibernate.ISession)">
+            <summary>
+            Sets the repository session for the specified factory key.
+            If a session already exists by the specified factoryKey, 
+            it gets overwritten by the new session passed in.
+            </summary>
+            <param name="factoryKey">The factory key identifying the
+            repository session to return.</param>
+            <param name="session">The session to associate with the
+            specified factory key.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.DefaultSessionStorage.GetAllSessions">
+            <summary>
+            Returns a list of all sessions managed by this storage class.
+            </summary>
+            <returns>The complete list of sessions managed by this storage class.
+            </returns>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.IConfigurationCache">
+            <summary>
+            Defines an interface for providing caching capability for
+            an NHibernate <see cref="T:NHibernate.Cfg.Configuration"/> object.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.IConfigurationCache.LoadConfiguration(System.String,System.String,System.String[])">
+            <summary>
+            Loads an NHibernate <see cref="T:NHibernate.Cfg.Configuration"/> object from a cache.
+            </summary>
+            <param name="configKey">The key value to provide a unique name
+            to the cached <see cref="T:NHibernate.Cfg.Configuration"/>.</param>
+            <param name="configPath">Path to an NHibernate configuration xml file.
+            This is used to determine whether the cached
+            <param name="mappingAssemblies">An array of strings specifying the
+            list of assemblies containing mapping information for the classes
+            represented by this NHibernate repository.</param>
+            <see cref="T:NHibernate.Cfg.Configuration"/> is out of date or not.</param>
+            <returns>If an up to date cached object is available, a
+            <see cref="T:NHibernate.Cfg.Configuration"/> object, otherwise null.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.IConfigurationCache.SaveConfiguration(System.String,NHibernate.Cfg.Configuration)">
+            <summary>
+            Saves the <see cref="T:NHibernate.Cfg.Configuration"/> object to a cache.
+            </summary>
+            <param name="configKey">The key value to provide a unique name to
+            the cached <see cref="T:NHibernate.Cfg.Configuration"/>.</param>
+            <param name="config">The configuration object to save.</param>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.INHibernateRepositoryWithId`2">
+            <summary>
+            Defines an interface for an NHibernate-based repository, which
+            adds NHibernate-specific functionality to the standard
+            <see cref="T:TrueAutomation.Core.Persistence.IRepository`1"/>
+            interface.
+            </summary>
+            <typeparam name="T">The type of item with which this repository
+            is associated.</typeparam>
+            <typeparam name="IdT">The type of id value that identifies any
+            objects of type T.</typeparam>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.INHibernateRepositoryWithId`2.Get(`1,TrueAutomation.Core.Persistence.NHibernate.LockingMode)">
+            <summary>
+            Returns the object of type T matching the specified object ID.
+            Returns null if no object is found matching the provided id.
+            </summary>
+            <param name="id">The id of the object to retrieve.</param>
+            <param name="lockMode">The locking mode to use for the
+            lookup operation.</param>
+            <returns>The object matching the provided id, or null if no
+            matching object was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.INHibernateRepositoryWithId`2.Load(`1)">
+            <summary>
+            Loads and returns the object with the specified id. Throws an
+            exception if a row is not found matching the provided id.
+            </summary>
+            <param name="id">The id of the object to load.</param>
+            <returns>The object matching the provided id.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.INHibernateRepositoryWithId`2.Load(`1,TrueAutomation.Core.Persistence.NHibernate.LockingMode)">
+            <summary>
+            Loads and returns the object with the specified id. Throws an
+            exception if a row is not found matching the provided id.
+            </summary>
+            <param name="id">The id of the object to load.</param>
+            <param name="lockMode">The locking mode to use for the
+            load operation.</param>
+            <returns>The object matching the provided id.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.INHibernateRepositoryWithId`2.FindAll(`0,System.String[])">
+            <summary>
+            Returns zero or more objects matching the example object provided.
+            </summary>
+            <param name="example">The example instance to use as a basis
+            for matching.</param>
+            <param name="propertiesToExclude">The properties of the example
+            object instance to exclude for the purposes of matching.</param>
+            <returns>A list of any objects matching the specified example
+            object instance.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.INHibernateRepositoryWithId`2.FindOne(`0,System.String[])">
+            <summary>
+            Locates a single object instance using the example provided.
+            </summary>
+            <param name="example">The example instance to use as a basis
+            for matching.</param>
+            <param name="propertiesToExclude">The properties of the example
+            object instance to exclude for the purposes of matching.</param>
+            <returns>The single matching object instance based on the
+            supplied example object instance.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.INHibernateRepositoryWithId`2.Save(`0)">
+            <summary>
+            Saves the specified entity to the repository. This is required to
+            add objects with assigned ID values to the repository.
+            </summary>
+            <param name="entity">The entity to save in the repository.</param>
+            <returns>The saved entity in the repository.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.INHibernateRepositoryWithId`2.Update(`0)">
+            <summary>
+            Updates the specified entity in the repository.
+            </summary>
+            <param name="entity">The entity to be updated in the repository.
+            </param>
+            <returns>The updated entity in the repository.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.INHibernateRepositoryWithId`2.Evict(`0)">
+            <summary>
+            Dissasociates the entity from the repository so that changes made to
+            it are not automatically saved to the database. More precisely, this
+            removes the entity from the <see cref="T:NHibernate.ISession" />'s cache.
+            </summary>
+            <param name="entity">The entity to evict from the repository.</param>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.INHibernateRepository`1">
+            <summary>
+            Extends the basic data repository interface with an interface that
+            supports a number of NHibernate specific methods.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.ISessionStorage">
+            <summary>
+            Defines an interface for classes that manage the storage of
+            repository session instances.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.ISessionStorage.GetSessionForKey(System.String)">
+            <summary>
+            Returns the session instance for the specified factory key.
+            </summary>
+            <param name="factoryKey">The factory key identifying the
+            repository session to return.</param>
+            <returns>The repository session for the specified factory key.
+            </returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.ISessionStorage.SetSessionForKey(System.String,NHibernate.ISession)">
+            <summary>
+            Sets the repository session for the specified factory key.
+            </summary>
+            <param name="factoryKey">The factory key identifying the
+            repository session to return.</param>
+            <param name="session">The session to associate with the
+            specified factory key.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.ISessionStorage.GetAllSessions">
+            <summary>
+            Returns a list of all sessions managed by this storage class.
+            </summary>
+            <returns>The complete list of sessions managed by this storage class.
+            </returns>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.LockingMode">
+            <summary>
+            Provides an NHibernate.LockMode facade so as to avoid a direct
+            dependency on the NHibernate DLL.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.NHibernateInitializer">
+            <summary>
+            Simple singleton class used to wrap the initialization of NHibernate.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.Persistence.NHibernate.NHibernateInitializer.syncLock">
+            <summary>
+            Synchronization object for thread safety.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.Persistence.NHibernate.NHibernateInitializer.instance">
+            <summary>
+            The singleton instance of the NHibernate initializer class.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.Persistence.NHibernate.NHibernateInitializer.nHibernateSessionIsLoaded">
+            <summary>
+            Internal status flag indicating whether or not NHibernate
+            has been initialized.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateInitializer.#ctor">
+            <summary>
+            Class constructor. Initializes a new instance of the NHibernate
+            initializer class.
+            </summary>
+            <remarks>This is protected in order to enforce singleton usage.
+            </remarks>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateInitializer.Instance">
+            <summary>
+            Returns the singleton instance of the NHibernate initializer class.
+            </summary>
+            <returns>The singleton class instance.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateInitializer.InitializeNHibernateOnce(System.Action)">
+            <summary>
+            This is the method which should be provided with a delegate to
+            intialize the NHibernateSession; e.g.,
+            NHibernateInitializer.Instance().InitializeNHibernateOnce(() =>
+            																		InitializeNHibernateSession());
+            where InitializeNHibernateSession() is a method which calls
+            NHibernateSession.Init().
+            </summary>
+            <param name="initMethod">The initializer delegate for the global
+            NHibernateSession.</param>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.NHibernateRepositoryWithId`2">
+            <summary>
+            Provides an NHobernate-based repository for objects of type T
+            identified by type IdT.
+            </summary>
+            <typeparam name="T">The type of item with which this repository
+            is associated.</typeparam>
+            <typeparam name="IdT">The type of id value that identifies any
+            objects of type T.</typeparam>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateRepositoryWithId`2.Get(`1,TrueAutomation.Core.Persistence.NHibernate.LockingMode)">
+            <summary>
+            Returns the object of type T matching the specified object ID.
+            Returns null if no object is found matching the provided id.
+            </summary>
+            <param name="id">The id of the object to retrieve.</param>
+            <param name="lockMode">The locking mode to use for the
+            lookup operation.</param>
+            <returns>The object matching the provided id, or null if no
+            matching object was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateRepositoryWithId`2.Load(`1)">
+            <summary>
+            Loads and returns the object with the specified id. Throws an
+            exception if a row is not found matching the provided id.
+            </summary>
+            <param name="id">The id of the object to load.</param>
+            <returns>The object matching the provided id.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateRepositoryWithId`2.Load(`1,TrueAutomation.Core.Persistence.NHibernate.LockingMode)">
+            <summary>
+            Loads and returns the object with the specified id. Throws an
+            exception if a row is not found matching the provided id.
+            </summary>
+            <param name="id">The id of the object to load.</param>
+            <param name="lockMode">The locking mode to use for the
+            load operation.</param>
+            <returns>The object matching the provided id.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateRepositoryWithId`2.FindAll(`0,System.String[])">
+            <summary>
+            Returns zero or more objects matching the example object provided.
+            </summary>
+            <param name="exampleInstance">The example instance to use as a basis
+            for matching.</param>
+            <param name="propertiesToExclude">The properties of the example
+            object instance to exclude for the purposes of matching.</param>
+            <returns>A list of any objects matching the specified example
+            object instance.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateRepositoryWithId`2.FindOne(`0,System.String[])">
+            <summary>
+            Locates a single object instance using the example provided.
+            </summary>
+            <param name="exampleInstance">The example instance to use as a basis
+            for matching.</param>
+            <param name="propertiesToExclude">The properties of the example
+            object instance to exclude for the purposes of matching.</param>
+            <returns>The single matching object instance based on the
+            supplied example object instance.</returns>
+            <exception cref="T:NHibernate.NonUniqueResultException" />
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateRepositoryWithId`2.Save(`0)">
+            <summary>
+            Saves the specified entity to the repository. This is required to
+            add objects with assigned ID values to the repository.
+            </summary>
+            <param name="entity">The entity to save in the repository.</param>
+            <returns>The saved entity in the repository.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateRepositoryWithId`2.Update(`0)">
+            <summary>
+            Updates the specified entity in the repository.
+            </summary>
+            <param name="entity">The entity to be updated in the repository.
+            </param>
+            <returns>The updated entity in the repository.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateRepositoryWithId`2.Evict(`0)">
+            <summary>
+            Dissasociates the entity from the repository so that changes made to
+            it are not automatically saved to the database. More precisely, this
+            removes the entity from the <see cref="T:NHibernate.ISession" />'s cache.
+            </summary>
+            <param name="entity">The entity to evict from the repository.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateRepositoryWithId`2.ExecuteQuery(System.String)">
+            <summary>
+            Execute the query string
+            and return the results as list
+            </summary>
+            <param name="sqlString"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateRepositoryWithId`2.ConvertFrom(TrueAutomation.Core.Persistence.NHibernate.LockingMode)">
+            <summary>
+            Translates a domain layer lock mode into an NHibernate lock mode via reflection.  This is 
+            provided to facilitate developing the domain layer without a direct dependency on the 
+            NHibernate assembly.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.NHibernateRepository`1">
+            <summary>
+            Provides an NHobernate-based repository for objects of type T
+            identified by a simple integer type.
+            </summary>
+            <typeparam name="T">The type of item with which this repository
+            is associated.</typeparam>
+        </member>
+        <member name="F:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.configurationCache">
+            <summary>
+            A local configuration cache for this NHibernate session.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.DefaultFactoryKey">
+            <summary>
+            The default factory key used if only one database is being
+            communicated with.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.RegisteredInterceptor">
+            <summary>
+            The interceptor currently registered with this NHibernate session.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.sessionFactories">
+            <summary>
+            Maintains a dictionary of NHibernate session factories, one per
+            database. The key is the "factory key" used to look up the associated
+            database, and used to decorate respective repositories. If only one
+            database is being used, this dictionary contains a single factory
+            with a key of <see cref="F:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.DefaultFactoryKey" />.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.Storage">
+            <summary>
+            An application-specific implementation of ISessionStorage must be
+            set up either through <see cref="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.InitStorage(TrueAutomation.Core.Persistence.NHibernate.ISessionStorage)" /> or one of the
+            <c>Init</c> overloads. 
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.ValidatorEngine">
+            <summary>
+            Provides an access to configured<see cref="P:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.ValidatorEngine"/>.
+            </summary>
+            <value>The validator engine.</value>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.ConfigurationCache">
+            <summary>
+            Provides access to the <see cref="T:TrueAutomation.Core.Persistence.NHibernate.IConfigurationCache"/> object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.Current">
+            <summary>
+            Used to get the current NHibernate session if you're communicating
+            with a single database. When communicating with multiple databases,
+            invoke <see cref="M:CurrentFor()" /> instead.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.Init(TrueAutomation.Core.Persistence.NHibernate.ISessionStorage,System.String[])">
+            <summary>
+            Initializes the NHibernate session.
+            </summary>
+            <param name="storage">The session storage class used to manage
+            sessions on behalf of this class.</param>
+            <param name="mappingAssemblies">The list of assemblies to use for
+            mapping classes into this NHibernate session mnager.</param>
+            <returns>An NHibernate <see cref="T:NHibernate.Cfg.Configuration"/> corresponding
+            to this session manager.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.Init(TrueAutomation.Core.Persistence.NHibernate.ISessionStorage,System.String[],System.String)">
+            <summary>
+            Initializes the NHibernate session.
+            </summary>
+            <param name="storage">The session storage class used to manage
+            sessions on behalf of this class.</param>
+            <param name="mappingAssemblies">The list of assemblies to use for
+            mapping classes into this NHibernate session mnager.</param>
+            <param name="cfgFile">The path to the configuration file that
+            describes the configuration of this session manager.</param>
+            <returns>An NHibernate <see cref="T:NHibernate.Cfg.Configuration"/> corresponding
+            to this session manager.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.Init(TrueAutomation.Core.Persistence.NHibernate.ISessionStorage,System.String[],System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Initializes the NHibernate session.
+            </summary>
+            <param name="storage">The session storage class used to manage
+            sessions on behalf of this class.</param>
+            <param name="mappingAssemblies">The list of assemblies to use for
+            mapping classes into this NHibernate session mnager.</param>
+            <param name="cfgProperties">A lookup table of configuration
+            properties to associate with this session manager.</param>
+            <returns>An NHibernate <see cref="T:NHibernate.Cfg.Configuration"/> corresponding
+            to this session manager.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.Init(TrueAutomation.Core.Persistence.NHibernate.ISessionStorage,System.String[],System.String,System.String)">
+            <summary>
+            Initializes the NHibernate session.
+            </summary>
+            <param name="storage">The session storage class used to manage
+            sessions on behalf of this class.</param>
+            <param name="mappingAssemblies">The list of assemblies to use for
+            mapping classes into this NHibernate session mnager.</param>
+            <param name="cfgFile">The path to the configuration file that
+            describes the configuration of this session manager.</param>
+            <param name="validatorCfgFile">The path to the NHibernate
+            validator configuration file.</param>
+            <returns>An NHibernate <see cref="T:NHibernate.Cfg.Configuration"/> corresponding
+            to this session manager.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.Init(TrueAutomation.Core.Persistence.NHibernate.ISessionStorage,System.String[],FluentNHibernate.Automapping.AutoPersistenceModel)">
+            <summary>
+            Initializes the NHibernate session.
+            </summary>
+            <param name="storage">The session storage class used to manage
+            sessions on behalf of this class.</param>
+            <param name="mappingAssemblies">The list of assemblies to use for
+            mapping classes into this NHibernate session mnager.</param>
+            <param name="autoPersistenceModel">The fluent NHibernate
+            persistence model to use with this session manager.</param>
+            <returns>An NHibernate <see cref="T:NHibernate.Cfg.Configuration"/> corresponding
+            to this session manager.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.Init(TrueAutomation.Core.Persistence.NHibernate.ISessionStorage,System.String[],FluentNHibernate.Automapping.AutoPersistenceModel,System.String)">
+            <summary>
+            Initializes the NHibernate session.
+            </summary>
+            <param name="storage">The session storage class used to manage
+            sessions on behalf of this class.</param>
+            <param name="mappingAssemblies">The list of assemblies to use for
+            mapping classes into this NHibernate session mnager.</param>
+            <param name="autoPersistenceModel">The fluent NHibernate
+            persistence model to use with this session manager.</param>
+            <param name="cfgFile">The name of the configuration file containing
+            NHibernate configuration information.</param>
+            <returns>An NHibernate <see cref="T:NHibernate.Cfg.Configuration"/> corresponding
+            to this session manager.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.Init(TrueAutomation.Core.Persistence.NHibernate.ISessionStorage,System.String[],FluentNHibernate.Automapping.AutoPersistenceModel,System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Initializes the NHibernate session.
+            </summary>
+            <param name="storage">The session storage class used to manage
+            sessions on behalf of this class.</param>
+            <param name="mappingAssemblies">The list of assemblies to use for
+            mapping classes into this NHibernate session mnager.</param>
+            <param name="autoPersistenceModel">The fluent NHibernate
+            persistence model to use with this session manager.</param>
+            <param name="cfgProperties">A lookup table of configuration
+            properties to associate with this session manager.</param>
+            <returns>An NHibernate <see cref="T:NHibernate.Cfg.Configuration"/> corresponding
+            to this session manager.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.Init(TrueAutomation.Core.Persistence.NHibernate.ISessionStorage,System.String[],FluentNHibernate.Automapping.AutoPersistenceModel,System.String,System.String)">
+            <summary>
+            Initializes the NHibernate session.
+            </summary>
+            <param name="storage">The session storage class used to manage
+            sessions on behalf of this class.</param>
+            <param name="mappingAssemblies">The list of assemblies to use for
+            mapping classes into this NHibernate session mnager.</param>
+            <param name="autoPersistenceModel">The fluent NHibernate
+            persistence model to use with this session manager.</param>
+            <param name="cfgFile">The path to the configuration file that
+            describes the configuration of this session manager.</param>
+            <param name="validatorCfgFile">The path to the NHibernate
+            validator configuration file.</param>
+            <returns>An NHibernate <see cref="T:NHibernate.Cfg.Configuration"/> corresponding
+            to this session manager.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.Init(TrueAutomation.Core.Persistence.NHibernate.ISessionStorage,System.String[],FluentNHibernate.Automapping.AutoPersistenceModel,System.String,System.Collections.Generic.IDictionary{System.String,System.String},System.String)">
+            <summary>
+            Initializes the NHibernate session.
+            </summary>
+            <param name="storage">The session storage class used to manage
+            sessions on behalf of this class.</param>
+            <param name="mappingAssemblies">The list of assemblies to use for
+            mapping classes into this NHibernate session mnager.</param>
+            <param name="autoPersistenceModel">The fluent NHibernate
+            persistence model to use with this session manager.</param>
+            <param name="cfgFile">The path to the configuration file that
+            describes the configuration of this session manager.</param>
+            <param name="cfgProperties">A lookup table of configuration
+            properties to associate with this session manager.</param>
+            <param name="validatorCfgFile">The path to the NHibernate
+            validator configuration file.</param>
+            <returns>An NHibernate <see cref="T:NHibernate.Cfg.Configuration"/> corresponding
+            to this session manager.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.Init(TrueAutomation.Core.Persistence.NHibernate.ISessionStorage,System.String[],FluentNHibernate.Automapping.AutoPersistenceModel,System.String,System.Collections.Generic.IDictionary{System.String,System.String},System.String,FluentNHibernate.Cfg.Db.IPersistenceConfigurer)">
+            <summary>
+            Initializes the NHibernate session.
+            </summary>
+            <param name="storage">The session storage class used to manage
+            sessions on behalf of this class.</param>
+            <param name="mappingAssemblies">The list of assemblies to use for
+            mapping classes into this NHibernate session mnager.</param>
+            <param name="autoPersistenceModel">The fluent NHibernate
+            persistence model to use with this session manager.</param>
+            <param name="cfgFile">The path to the configuration file that
+            describes the configuration of this session manager.</param>
+            <param name="cfgProperties">A lookup table of configuration
+            properties to associate with this session manager.</param>
+            <param name="validatorCfgFile">The path to the NHibernate
+            validator configuration file.</param>
+            <param name="persistenceConfigurer">A persistence configurer
+            instance to use with this session manager.</param>
+            <returns>An NHibernate <see cref="T:NHibernate.Cfg.Configuration"/> corresponding
+            to this session manager.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.IsConfiguredForMultipleDatabases">
+            <summary>
+            Returns whether or not the session manager is currently
+            configured for use with multiple databases.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.InitStorage(TrueAutomation.Core.Persistence.NHibernate.ISessionStorage)">
+            <summary>
+            Initializes the session storage for the NHibernate session
+            manager.
+            </summary>
+            <param name="storage">The session storage class for use by
+            this NHibernate session manager.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.AddConfiguration(System.String,System.String[],FluentNHibernate.Automapping.AutoPersistenceModel,System.String,System.Collections.Generic.IDictionary{System.String,System.String},System.String,FluentNHibernate.Cfg.Db.IPersistenceConfigurer)">
+            <summary>
+            Adds a configuration to the session manager.
+            </summary>
+            <param name="factoryKey">The factory key to which this configuration
+            applies.</param>
+            <param name="mappingAssemblies">The set of mapping assemblies for
+            object lookups by this configuration.</param>
+            <param name="autoPersistenceModel">The automatic persistence model
+            for use by this configuration.</param>
+            <param name="cfgFile">The configuration file applicable to this
+            configuration.</param>
+            <param name="cfgProperties">The set of configuration properties
+            applicable to this configuration.</param>
+            <param name="validatorCfgFile">The path to the NHibernate
+            validator configuration file for this configuration.</param>
+            <param name="persistenceConfigurer">A persistence configurer
+            instance to use with this configuration of the session manager.
+            </param>
+            <returns>A <see cref="T:NHibernate.Cfg.Configuration"/> instance applicable for
+            this configuration of the session manager.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.AddConfiguration(System.String,System.String[],FluentNHibernate.Automapping.AutoPersistenceModel,NHibernate.Cfg.Configuration,System.String,FluentNHibernate.Cfg.Db.IPersistenceConfigurer)">
+            <summary>
+            Adds a configuration to the session manager.
+            </summary>
+            <param name="factoryKey">The factory key to which this configuration
+            applies.</param>
+            <param name="mappingAssemblies">The set of mapping assemblies for
+            object lookups by this configuration.</param>
+            <param name="autoPersistenceModel">The automatic persistence model
+            for use by this configuration.</param>
+            <param name="cfg">The configuration file applicable to this
+            configuration.</param>
+            <param name="validatorCfgFile">The path to the NHibernate
+            validator configuration file for this configuration.</param>
+            <param name="persistenceConfigurer">A persistence configurer
+            instance to use with this configuration of the session manager.
+            </param>
+            <returns>A <see cref="T:NHibernate.Cfg.Configuration"/> instance applicable for
+            this configuration of the session manager.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.AddConfiguration(System.String,NHibernate.ISessionFactory,NHibernate.Cfg.Configuration,System.String)">
+            <summary>
+            Adds a configuration to the session manager.
+            </summary>
+            <param name="factoryKey">The factory key to which this configuration
+            applies.</param>
+            <param name="sessionFactory">The session factory to use for this
+            configuration of the NHibernate session manager.</param>
+            <param name="cfg">The configuration applicable to this factory key.
+            </param>
+            <param name="validatorCfgFile">The path to the NHibernate
+            validator configuration file for this configuration.</param>
+            <returns>A <see cref="T:NHibernate.Cfg.Configuration"/> instance applicable for
+            this configuration of the session manager.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.RegisterInterceptor(NHibernate.IInterceptor)">
+            <summary>
+            Registers an interceptor for use with this session manager.
+            </summary>
+            <param name="interceptor"></param>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.CurrentFor(System.String)">
+            <summary>
+            Used to get the current NHibernate session associated with a factory
+            key; i.e., the key associated with an NHibernate session factory for
+            a specific database.
+            
+            If you're only communicating with one database, you should call
+            <see cref="P:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.Current" /> instead.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.CloseAllSessions">
+            <summary>
+            This method is used by application-specific session storage
+            implementations. Its job is to walk through existing cached sessions
+            and call Close() on each one.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.Reset">
+            <summary>
+            This method will reset this object back to its original state
+            before it was configured.
+            </summary>
+            <remarks>You probably have no reason to call this unless you're
+            writing unit tests against the session manager.</remarks>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.GetSessionFactoryFor(System.String)">
+            <summary>
+            Return an ISessionFactory based on the specified factory key.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.RemoveSessionFactoryFor(System.String)">
+            <summary>
+            Removes the session factory for the specified factory key.
+            </summary>
+            <param name="factoryKey">The factory key for which to remove
+            the corresponding session factory.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.GetDefaultSessionFactory">
+            <summary>
+            Returns the default ISessionFactory using the DefaultFactoryKey.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.CreateSessionFactoryFor(System.String[],FluentNHibernate.Automapping.AutoPersistenceModel,NHibernate.Cfg.Configuration,FluentNHibernate.Cfg.Db.IPersistenceConfigurer)">
+            <summary>
+            Creates a new session factory for the specified set of configuration
+            options.
+            </summary>
+            <param name="mappingAssemblies">The set of mapping assemblies in
+            which to look up objects in this configuration.</param>
+            <param name="autoPersistenceModel">The auto persistence model to
+            use with this session factory.</param>
+            <param name="cfg">The NHibernate configuration associated with
+            this session factory.</param>
+            <param name="persistenceConfigurer">The persistence configurer to
+            use with this session factory.</param>
+            <returns>A session factory for the specified combination of
+            configuration options.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.SanitizeAssemblyName(System.String)">
+            <summary>
+            Utility function to create a load-ready assembly name from a
+            simple assembly name.
+            </summary>
+            <param name="assemblyName">The assembly name for which to return
+            the load-ready name.</param>
+            <returns>The load-ready name for the specified assembly name.
+            This method will trim any whitespace and add the missing .DLL
+            suffix if it's not present.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.ConfigureNHibernate(System.String,System.Collections.Generic.IDictionary{System.String,System.String})">
+            <summary>
+            Configures NHibernate using the specified configuration file
+            and/or set of configuration properties.
+            </summary>
+            <param name="cfgFile">The path to the configuration file to
+            use to configure NHibernate.</param>
+            <param name="cfgProperties">A lookup table of NHibernate configuration
+            options to use to configure NHibernate.</param>
+            <returns>An NHibernate <see cref="T:NHibernate.Cfg.Configuration"/> corresponding
+            to the supplied configuration options.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.NHibernateSession.ConfigureNHibernateValidator(NHibernate.Cfg.Configuration,System.String)">
+            <summary>
+            Configures the NHibernate validator settings.
+            </summary>
+            <param name="cfg">The NHibernate configuration for which to
+            configure the validator settings.</param>
+            <param name="validatorCfgFile">The path to the configuration file to
+            use to configure NHibernate.</param>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.Repository`1">
+            <summary>
+            Provides an NHibernate-based implementation of the
+            <see cref="T:TrueAutomation.Core.Persistence.IRepository`1"/> interface
+            for objects whose ID type is a simple integer value.
+            </summary>
+            <typeparam name="T">The type of object managed by this repository
+            type.</typeparam>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.RepositoryWithId`2">
+            <summary>
+            Provides an NHibernate-based implementation of the
+            <see cref="T:TrueAutomation.Core.Persistence.IRepository`1"/> interface.
+            </summary>
+            <typeparam name="T">The type of object managed by this repository
+            type.</typeparam>
+            <typeparam name="IdT">The identifier type that identifies objects
+            of type T.</typeparam>
+        </member>
+        <member name="F:TrueAutomation.Core.Persistence.NHibernate.RepositoryWithId`2.context">
+            <summary>
+            The database context with which this repository is associated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.RepositoryWithId`2.Session">
+            <summary>
+            Returns the NHibernate session associated with this repository.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.RepositoryWithId`2.DatabaseContext">
+            <summary>
+            Provides a handle to the application-wide database context in order
+            to perform activities such as committing any pending changes,
+            beginning a transaction, rolling back a transaction, etc.
+            </summary>
+            <returns>The database context with which this repository is
+            associated.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.RepositoryWithId`2.Get(`1)">
+            <summary>
+            Returns the object of type T with the specified ID value.
+            </summary>
+            <returns>Returns the object of type T with the specified ID value,
+            or null if a row is not found matching the provided id.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.RepositoryWithId`2.GetAll">
+            <summary>
+            Returns all items of a given type.
+            </summary>
+            <returns>A list of all the objects managed by this repository.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.RepositoryWithId`2.GetBaseCriteria">
+            <summary>
+            Determines what to retrieve for this repository
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.RepositoryWithId`2.FindAll(System.Collections.Generic.IDictionary{System.String,System.Object})">
+            <summary>
+            Looks for zero or more instances of the item type managed by this
+            repository type using the <see cref="T:IDictionary{string, object}"/>
+            provided.
+            The key of the collection should be the property name and the value
+            should be the value of the property to use as a filter.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.RepositoryWithId`2.FindOne(System.Collections.Generic.IDictionary{System.String,System.Object})">
+            <summary>
+            Looks for a single instance of the item type managed by this
+            repository type using the property/values provided.
+            </summary>
+            <returns>The matching item instance, or null if no matching
+            item was found in the repository.</returns>
+            <exception cref="T:NHibernate.NonUniqueResultException" />
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.RepositoryWithId`2.SaveOrUpdate(`0)">
+            <summary>
+            For entities with automatatically generated id values, SaveOrUpdate
+            may be called when saving or updating an entity. Updating also allows
+            you to commit changes to a detached object.
+            </summary>
+            <returns>The entity that was saved or updated.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.RepositoryWithId`2.Delete(`0)">
+            <summary>
+            Deletes the specified entity from the repository.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.SearchableRepository`1.FindByCriteria(TrueAutomation.Core.DTO.CriteriaDTO)">
+            <summary>
+            Returns a list of items based on searchable criteria
+            </summary>
+            <param name="searchCriteria">Criteria to search on</param>
+            <returns>List of Items matchinh this file as name</returns>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.SearchableRepository_WithId`2">
+            <summary>
+            Searchable Repository class for Document Management
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.SearchableRepository_WithId`2.FindByCriteria(TrueAutomation.Core.DTO.CriteriaDTO)">
+            <summary>
+            Returns a list of items based on searchable criteria
+            </summary>
+            <param name="searchCriteria">Criteria to search on</param>
+            <returns>List of Items matchinh this file as name</returns>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.SessionFactoryAttribute">
+            <summary>
+            Provides the ability to decorate repository classes with an
+            attribute defining the factory key for the given repository;
+            accordingly, the respective session factory will be used to 
+            communicate with the database. This allows you to declare different
+            repositories to communicate with different databases.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.Persistence.NHibernate.SessionFactoryAttribute.FactoryKey">
+            <summary>
+            The factory key associated with the repository.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.SessionFactoryAttribute.#ctor(System.String)">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+            <param name="factoryKey">The factory key associated with the
+            repository instance.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.SessionFactoryAttribute.GetKeyFrom(System.Object)">
+            <summary>
+            Global method to retrieve the factory key from an object, as
+            defined in its SessionFactoryAttribute, if available.  Defaults to
+            the DefaultFactoryKey if not found.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.TransactionAttribute">
+            <summary>
+            Defines an attribute that's used to indicate whether a
+            particular operation should be treated as a transaction
+            with respect to an NHibernate-based data repository.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.Persistence.NHibernate.TransactionAttribute.settings">
+            <summary>
+            The transaction settings associated with this transaction.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.TransactionAttribute.#ctor">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.TransactionAttribute.FactoryKey">
+            <summary>
+            The NHibernate session factory key with which this transaction
+            is associated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.TransactionAttribute.ReturnValue">
+            <summary>
+            The return value from the transaction.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.TransactionAttribute.CloseSessions">
+            <summary>
+            Indicates whether any NHibernate session should be
+            closed at the end of this transaction or not.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.TransactionAttribute.IsSilent">
+            <summary>
+            Indicates whether any exceptions encountered during
+            the transaction should be processed silently or not.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.TransactionAttribute.Settings">
+            <summary>
+            The transaction settings associated with this object.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.TransactionManager">
+            <summary>
+            Implements a simple transaction manager for NHibernate
+            transactions.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.TransactionManager.Name">
+            <summary>
+            The name of this transaction manager instance.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.TransactionManager.IsTransactionActive(System.String)">
+            <summary>
+            Returns whether or not there's an active transaction for
+            the specified factory key.
+            </summary>
+            <param name="factoryKey">The factory key for which to check
+            whether there's an active transaction.</param>
+            <returns>True if there's an active transaction for the
+            specified factory key, otherwise false.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.TransactionManager.PushTransaction(System.String,System.Object)">
+            <summary>
+            Pushes a new transaction onto the stack for the specified
+            session factory key.
+            </summary>
+            <param name="factoryKey">The session factory key.</param>
+            <param name="transactionState">The current transaction state.</param>
+            <returns>The updated transaction state.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.TransactionManager.CommitTransaction(System.String,System.Object)">
+            <summary>
+            Commits the current transaction for the specified
+            session factory key.
+            </summary>
+            <param name="factoryKey">The session factory key.</param>
+            <param name="transactionState">The current transaction state.</param>
+            <returns>The updated transaction state.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.TransactionManager.RollbackTransaction(System.String,System.Object)">
+            <summary>
+            Rolls back the current transaction for the specified
+            session factory key.
+            </summary>
+            <param name="factoryKey">The session factory key.</param>
+            <param name="transactionState">The current transaction state.</param>
+            <returns>The updated transaction state.</returns>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.TransactionSettings">
+            <summary>
+            Stores basic information about a transaction, including the
+            NHibernate session factory key to use and how exceptions should
+            be dealt with.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.TransactionSettings.FactoryKey">
+            <summary>
+            The factory key corresponding to the session on
+            which we want to create a transaction.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.TransactionSettings.ReturnValue">
+            <summary>
+            The return value to use when the transaction is interrupted
+            by an <see cref="T:TrueAutomation.Core.Persistence.NHibernate.AbortTransactionException"/> exception, or
+            when silent behavior is specified.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.TransactionSettings.CloseSessions">
+            <summary>
+            Indicates whether any NHibernate session should be
+            closed at the end of this transaction or not.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.NHibernate.TransactionSettings.IsSilent">
+            <summary>
+            Indicates whether any exceptions encountered during
+            the transaction should be processed silently or not.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.Windsor.Installer">
+            <summary>
+            Implements an installer for the Castle Windsor IoC container.
+            This class registers all the transaction-related facilities
+            in the <see cref="N:TrueAutomation.Core.Persistence.NHibernate"/>
+            namespace.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.Windsor.Installer.Install(Castle.Windsor.IWindsorContainer,Castle.MicroKernel.SubSystems.Configuration.IConfigurationStore)">
+            <summary>
+            Registers all our transaction-related facility types with the
+            supplied Windsor IoC container.
+            </summary>
+            <param name="container">The container into which to register
+            the transaction facility types.</param>
+            <param name="store">Configuration store parameter -- unused in
+            this implementation.</param>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.Windsor.TransactionFacility">
+            <summary>
+            Implements a Castle facility for inserting transaction
+            interceptors based on the presence of the
+            <see cref="T:TrueAutomation.Core.Persistence.NHibernate.TransactionAttribute"/>
+            decorator on a class or method.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.Windsor.TransactionFacility.#ctor">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.Windsor.TransactionFacility.GetAttributes(Castle.MicroKernel.IHandler)">
+            <summary>
+            Abstract method intended to return a list of attributes that
+            are relevant to this interceptor facility class for the
+            target object specified in the supplied handler.
+            </summary>
+            <param name="handler">The handler specifying the component
+            that's currently being registered and additional context
+            information.</param>
+            <returns>A list of attributes on the target object that are
+            relevant to this interceptor facility.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.Windsor.TransactionFacility.AddClassLevelAttributes(System.Collections.Generic.List{System.Attribute},Castle.MicroKernel.IHandler)">
+            <summary>
+            Adds any
+            <see cref="T:TrueAutomation.Core.Persistence.NHibernate.TransactionAttribute"/>
+            attributes specified on the target object in the supplied handler
+            context to the supplied list of attributes.
+            </summary>
+            <param name="attributes">The list of attributes to which any
+            class-level transaction attributes should be added.</param>
+            <param name="handler">The handler specifying the component
+            that's currently being registered and additional context
+            information.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.Windsor.TransactionFacility.AddMethodLevelAttributes(System.Collections.Generic.List{System.Attribute},Castle.MicroKernel.IHandler)">
+            <summary>
+            Adds any
+            <see cref="T:TrueAutomation.Core.Persistence.NHibernate.TransactionAttribute"/>
+            attributes specified on the target object in the supplied handler
+            context to the supplied list of attributes.
+            </summary>
+            <param name="attributes">The list of attributes to which any
+            class-level transaction attributes should be added.</param>
+            <param name="handler">The handler specifying the component
+            that's currently being registered and additional context
+            information.</param>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.Windsor.TransactionInterceptor">
+            <summary>
+            Implements a Castle interceptor for classes that make use of
+            the <see cref="T:TrueAutomation.Core.Persistence.NHibernate.TransactionAttribute"/> decorator. This interceptor
+            injects transaction-related semantics around the call to handle
+            automatic transaction initialization, commit, and rollback on
+            errors.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.Persistence.NHibernate.Windsor.TransactionInterceptor.transactionManager">
+            <summary>
+            The transaction manager to use for managing transactions.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.Windsor.TransactionInterceptor.#ctor(TrueAutomation.Core.Persistence.NHibernate.ITransactionManager)">
+            <summary>
+            Class constructor -- initializes an instance of the
+            transaction interceptor class.
+            </summary>
+            <param name="transactionManager">The transaction manager
+            to use for managing transactions.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.Windsor.TransactionInterceptor.GetAttributeType">
+            <summary>
+            Returns the type of attribute we care about; in this case
+            that's a <see cref="T:TrueAutomation.Core.Persistence.NHibernate.TransactionAttribute"/>.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.NHibernate.Windsor.TransactionInterceptor.GetTransactionSettings(TrueAutomation.Core.Persistence.NHibernate.IHasTransactionSettings[],TrueAutomation.Core.Persistence.NHibernate.IHasTransactionSettings[])">
+            <summary>
+            Returns the transaction settings applicable to the current
+            target method invocation, based on the collection of method
+            and class-level TransactionAttribute settings decorating
+            the method.
+            
+            If any method-level attributes are specified, then we take
+            the last (i.e. newest) one in the list. If there are no method
+            attributes, then we take the last (i.e. newest) one specified
+            at the class level, if any.
+            </summary>
+            <param name="methodAttributes">The list of method-level attributes
+            decorating the target method invocation.</param>
+            <param name="classAttributes">The list of class-level attributes
+            decorating the target class.</param>
+            <returns>The <see cref="T:TrueAutomation.Core.Persistence.NHibernate.TransactionSettings"/> instance most
+            applicable to the current method invocation, otherwise null if
+            there are no TransactionAttribute attributes specified.</returns>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.NHibernate.Windsor.TransactionInterceptorSelector">
+            <summary>
+            Implements an interceptor selector class that removes any
+            <see cref="T:TrueAutomation.Core.Persistence.NHibernate.Windsor.TransactionInterceptor"/>
+            interceptors for methods without a corresponding
+            <see cref="T:TrueAutomation.Core.Persistence.NHibernate.TransactionAttribute"/>.
+            </summary>
+        </member>
+    </members>
+</doc>

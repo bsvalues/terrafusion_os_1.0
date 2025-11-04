@@ -8,9 +8,7 @@ import { createTheme } from '@mui/material/styles';
 // CSS Custom Properties Integration
 const getCSSVar = (property: string): string => {
   if (typeof window === 'undefined') return '';
-  return getComputedStyle(document.documentElement)
-    .getPropertyValue(property)
-    .trim();
+  return getComputedStyle(document.documentElement).getPropertyValue(property).trim();
 };
 
 // Championship Design Tokens (synced with CSS)
@@ -30,7 +28,7 @@ export const championshipTokens = {
       success: 'var(--tf-gradient-success)',
     },
   },
-  
+
   spacing: {
     xs: 'var(--tf-space-xs, 4px)',
     sm: 'var(--tf-space-sm, 8px)',
@@ -39,7 +37,7 @@ export const championshipTokens = {
     xl: 'var(--tf-space-xl, 32px)',
     '2xl': 'var(--tf-space-2xl, 48px)',
   },
-  
+
   radius: {
     sm: 'var(--tf-radius-sm, 8px)',
     md: 'var(--tf-radius-md, 12px)',
@@ -47,13 +45,13 @@ export const championshipTokens = {
     xl: 'var(--tf-radius-xl, 24px)',
     full: 'var(--tf-radius-full, 50px)',
   },
-  
+
   shadows: {
     glow: 'var(--tf-shadow-glow)',
     subtle: 'var(--tf-shadow-subtle)',
     elevated: 'var(--tf-shadow-elevated)',
   },
-  
+
   transitions: {
     default: 'var(--tf-transition)',
     fast: 'var(--tf-transition-fast)',
@@ -86,7 +84,7 @@ export const muiTheme = createTheme({
       main: '#ffaa00', // tf-caution-amber
     },
   },
-  
+
   typography: {
     fontFamily: 'var(--tf-font-primary)',
     h1: {
@@ -107,7 +105,7 @@ export const muiTheme = createTheme({
       fontWeight: 600,
     },
   },
-  
+
   components: {
     MuiButton: {
       styleOverrides: {
@@ -149,7 +147,7 @@ export const muiTheme = createTheme({
         },
       },
     },
-    
+
     MuiCard: {
       styleOverrides: {
         root: {
@@ -186,7 +184,7 @@ export const muiTheme = createTheme({
       },
     },
   },
-  
+
   breakpoints: {
     values: {
       xs: 0,
@@ -201,7 +199,7 @@ export const muiTheme = createTheme({
 // Styled-Components Theme Provider
 export const styledTheme = {
   ...championshipTokens,
-  
+
   // Container Query Breakpoints
   containerQueries: {
     sm: '(min-width: 320px)',
@@ -209,7 +207,7 @@ export const styledTheme = {
     lg: '(min-width: 640px)',
     xl: '(min-width: 800px)',
   },
-  
+
   // Animation Curves
   animations: {
     transcendPulse: '3s ease-in-out infinite',
@@ -217,7 +215,7 @@ export const styledTheme = {
     glowPulse: '2s ease-in-out infinite',
     scanLine: '2s linear infinite',
   },
-  
+
   // Glass Morphism Presets
   glass: {
     light: {
@@ -243,13 +241,13 @@ export const updateCSSVariable = (property: string, value: string): void => {
 // Performance-Optimized Style Injection
 export const injectCriticalCSS = (css: string): void => {
   if (typeof window === 'undefined') return;
-  
+
   const existingStyle = document.querySelector('#critical-css');
   if (existingStyle) {
     existingStyle.textContent = css;
     return;
   }
-  
+
   const style = document.createElement('style');
   style.id = 'critical-css';
   style.textContent = css;

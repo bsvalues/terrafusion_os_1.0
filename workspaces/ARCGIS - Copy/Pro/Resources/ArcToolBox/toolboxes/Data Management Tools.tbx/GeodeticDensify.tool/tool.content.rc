@@ -1,0 +1,18 @@
+{
+    "map": {
+        "description": "Creates new features by replacing the segments of the input features with densified approximations of geodesic segments. The following types of geodesic segments can be constructed: geodesic, great elliptic, loxodrome, and normal section.",
+        "distance.descr": "The distance between vertices along the output geodesic segment. The default value is 50 kilometers.",
+        "distance.title": "Distance",
+        "geodetic_type.descr": "<xdoc><p>Specifies the type of geodetic segments that will be created. Geodetic calculations are performed on the ellipsoid associated with the input data&apos;s coordinate system.</p><ul><li><span title=\"GEODESIC\">Geodesic</span>—The segments will be the shortest distance between two points on the surface of the spheroid (ellipsoid).</li><li><span title=\"LOXODROME\">Loxodrome</span>—The segments will be the line of equal azimuth (from a pole) connecting the two points.</li><li><span title=\"GREAT_ELLIPTIC\">Great elliptic</span>— The segments will be the line made by the intersection of a plane that contains the center of the spheroid and the two points.</li><li><span title=\"NORMAL_SECTION\">Normal section</span>—The segments will be the line made by the intersection of a plane that contains the center of the spheroid and is perpendicular to the surface at the first point.</li></ul></xdoc>",
+        "geodetic_type.domain.GEODESIC": "Geodesic",
+        "geodetic_type.domain.GREAT_ELLIPTIC": "Great elliptic",
+        "geodetic_type.domain.LOXODROME": "Loxodrome",
+        "geodetic_type.domain.NORMAL_SECTION": "Normal section",
+        "geodetic_type.title": "Geodetic Type",
+        "in_features.descr": "The input line or polygon features.",
+        "in_features.title": "Input Features",
+        "out_feature_class.descr": "The output feature class containing the densified geodesic features.",
+        "out_feature_class.title": "Output Feature Class",
+        "title": "Geodetic Densify"
+    }
+}

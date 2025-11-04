@@ -1,0 +1,11 @@
+{
+    "map": {
+        "cxml_file.descr": "The .cxml file that contains rules for applying symbology.",
+        "cxml_file.title": "Symbology CXML File",
+        "description": "Applies maritime paper chart symbols to layers based on a CXML format file that contains rules.",
+        "target_features.descr": "The input point, line, or polygon features.",
+        "target_features.title": "Target Features",
+        "title": "Apply Maritime Symbology",
+        "updated_features.title": "Updated Features"
+    }
+}

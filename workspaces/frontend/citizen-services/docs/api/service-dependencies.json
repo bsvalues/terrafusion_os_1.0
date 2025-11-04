@@ -1,0 +1,82 @@
+{
+  "dependencies": {
+    "required": [
+      {
+        "service": "auth",
+        "purpose": "Authentication and authorization",
+        "sla": "99.9%"
+      },
+      {
+        "service": "monitoring",
+        "purpose": "Health monitoring and metrics",
+        "sla": "99.5%"
+      },
+      {
+        "service": "security",
+        "purpose": "Threat detection and security scanning",
+        "sla": "99.9%"
+      }
+    ],
+    "optional": [
+      {
+        "service": "api",
+        "purpose": "API gateway and routing",
+        "sla": "99.9%"
+      },
+      {
+        "service": "ai-systems",
+        "purpose": "AI/ML capabilities and inference",
+        "sla": "99.5%"
+      }
+    ],
+    "data_sources": [
+      {
+        "service": "property-workbench",
+        "purpose": "Property data access",
+        "required": false
+      },
+      {
+        "service": "terra-levy",
+        "purpose": "Tax information access",
+        "required": false
+      },
+      {
+        "service": "terra-justice",
+        "purpose": "Legal case data access",
+        "required": false
+      }
+    ],
+    "consumers": []
+  },
+  "provides": {
+    "services": [
+      {
+        "name": "citizen-services-api",
+        "description": "Citizen engagement and service delivery APIs",
+        "base_path": "/api/v1/citizen-services",
+        "security_level": "HIGH"
+      }
+    ],
+    "data_endpoints": [
+      "/services",
+      "/services/{id}/apply",
+      "/applications/{id}",
+      "/feedback"
+    ],
+    "integration_points": [
+      "/api/v1/citizen-services/integration"
+    ]
+  },
+  "communication_patterns": {
+    "sync_apis": true,
+    "async_messaging": false,
+    "event_streaming": false,
+    "batch_processing": false
+  },
+  "sla_requirements": {
+    "response_time": "100ms",
+    "availability": "99.9%",
+    "throughput": "100 requests/minute per user",
+    "error_rate": "<0.1%"
+  }
+}

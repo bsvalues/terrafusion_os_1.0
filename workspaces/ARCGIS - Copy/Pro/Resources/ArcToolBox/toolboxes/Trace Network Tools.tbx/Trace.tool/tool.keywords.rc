@@ -1,0 +1,11 @@
+{
+    "set": [
+        "connected",
+        "downstream",
+        "network",
+        "shortest path",
+        "trace",
+        "trace network",
+        "upstream"
+    ]
+}

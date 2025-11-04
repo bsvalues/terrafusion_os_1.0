@@ -1,0 +1,497 @@
+<?xml version="1.0"?>
+<doc processed="true">
+  <assembly>
+    <name>Leadtools.Windows.Media.TransitionBase</name>
+  </assembly>
+  <members>
+    <member name="T:Leadtools.Windows.Media.Transitions.TransitionBase">
+      <summary>
+            Base class for all transition classes.
+            </summary>
+      <noremarks />
+      <XAMLObject>
+            This class is abstract; see Inheritance Hierarchy for derived non-abstract classes usable in XAML.
+            </XAMLObject>
+      <noexample />
+      <noXAMLExample />
+      <wpf>yes</wpf>
+    </member>
+    <member name="F:Leadtools.Windows.Media.Transitions.TransitionBase.AccelerationRatioProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.AccelerationRatio" /> dependency property. 
+            </summary>
+      <value>The identifier for the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.AccelerationRatio" /> dependency property.</value>
+      <XAMLSyntax>Fields cannot be used in XAML.</XAMLSyntax>
+      <noremarks />
+      <noexample />
+      <wpf>yes</wpf>
+    </member>
+    <member name="F:Leadtools.Windows.Media.Transitions.TransitionBase.AutoReverseProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.AutoReverse" /> dependency property. 
+            </summary>
+      <value>The identifier for the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.AutoReverse" /> dependency property.</value>
+      <XAMLSyntax>Fields cannot be used in XAML.</XAMLSyntax>
+      <noremarks />
+      <noexample />
+      <wpf>yes</wpf>
+    </member>
+    <member name="F:Leadtools.Windows.Media.Transitions.TransitionBase.BeginTimeProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.BeginTime" /> dependency property. 
+            </summary>
+      <value>The identifier for the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.BeginTime" /> dependency property.</value>
+      <XAMLSyntax>Fields cannot be used in XAML.</XAMLSyntax>
+      <noremarks />
+      <noexample />
+      <wpf>yes</wpf>
+    </member>
+    <member name="F:Leadtools.Windows.Media.Transitions.TransitionBase.DecelerationRatioProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.DecelerationRatio" /> dependency property. 
+            </summary>
+      <value>The identifier for the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.DecelerationRatio" /> dependency property.</value>
+      <XAMLSyntax>Fields cannot be used in XAML.</XAMLSyntax>
+      <noremarks />
+      <noexample />
+      <wpf>yes</wpf>
+    </member>
+    <member name="F:Leadtools.Windows.Media.Transitions.TransitionBase.DurationProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.Duration" /> dependency property. 
+            </summary>
+      <value>The identifier for the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.Duration" /> dependency property.</value>
+      <XAMLSyntax>Fields cannot be used in XAML.</XAMLSyntax>
+      <noremarks />
+      <noexample />
+      <wpf>yes</wpf>
+    </member>
+    <member name="F:Leadtools.Windows.Media.Transitions.TransitionBase.FillBehaviorProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.FillBehavior" /> dependency property. 
+            </summary>
+      <value>The identifier for the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.FillBehavior" /> dependency property.</value>
+      <XAMLSyntax>Fields cannot be used in XAML.</XAMLSyntax>
+      <noremarks />
+      <noexample />
+      <wpf>yes</wpf>
+    </member>
+    <member name="F:Leadtools.Windows.Media.Transitions.TransitionBase.FillProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.Fill" /> dependency property. 
+            </summary>
+      <value>The identifier for the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.Fill" /> dependency property.</value>
+      <XAMLSyntax>Fields cannot be used in XAML.</XAMLSyntax>
+      <noremarks />
+      <noexample />
+      <wpf>yes</wpf>
+    </member>
+    <member name="F:Leadtools.Windows.Media.Transitions.TransitionBase.OutBrushProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.OutBrush" /> dependency property. 
+            </summary>
+      <value>The identifier for the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.OutBrush" /> dependency property.</value>
+      <XAMLSyntax>Fields cannot be used in XAML.</XAMLSyntax>
+      <noremarks />
+      <noexample />
+      <wpf>yes</wpf>
+    </member>
+    <member name="F:Leadtools.Windows.Media.Transitions.TransitionBase.GrainProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.Grain" /> dependency property. 
+            </summary>
+      <value>The identifier for the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.Grain" /> dependency property.</value>
+      <XAMLSyntax>Fields cannot be used in XAML.</XAMLSyntax>
+      <noremarks />
+      <noexample />
+      <wpf>yes</wpf>
+    </member>
+    <member name="F:Leadtools.Windows.Media.Transitions.TransitionBase.RepeatBehaviorProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.RepeatBehavior" /> dependency property. 
+            </summary>
+      <value>The identifier for the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.RepeatBehavior" /> dependency property.</value>
+      <XAMLSyntax>Fields cannot be used in XAML.</XAMLSyntax>
+      <noremarks />
+      <noexample />
+      <wpf>yes</wpf>
+    </member>
+    <member name="F:Leadtools.Windows.Media.Transitions.TransitionBase.SpeedRatioProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.SpeedRatio" /> dependency property. 
+            </summary>
+      <value>The identifier for the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.SpeedRatio" /> dependency property.</value>
+      <XAMLSyntax>Fields cannot be used in XAML.</XAMLSyntax>
+      <noremarks />
+      <noexample />
+      <wpf>yes</wpf>
+    </member>
+    <member name="F:Leadtools.Windows.Media.Transitions.TransitionBase.TargetObjectProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.TargetObject" /> dependency property. 
+            </summary>
+      <value>The identifier for the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.TargetObject" /> dependency property.</value>
+      <XAMLSyntax>Fields cannot be used in XAML.</XAMLSyntax>
+      <noremarks />
+      <noexample />
+      <wpf>yes</wpf>
+    </member>
+    <member name="M:Leadtools.Windows.Media.Transitions.TransitionBase.#ctor">
+      <summary>
+            Initializes a new instance of the <see cref="T:Leadtools.Windows.Media.Transitions.TransitionBase" /> class.
+            </summary>
+      <noremarks />
+      <noexample />
+      <wpf>yes</wpf>
+    </member>
+    <member name="M:Leadtools.Windows.Media.Transitions.TransitionBase.Begin">
+      <summary>
+            Apply a transition to its <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.TargetObject" />.
+            </summary>
+      <remarks>
+      </remarks>
+      <example>For an example, refer to <see cref="T:Leadtools.Windows.Media.Transitions.BlindTransition" />.</example>
+      <noXAMLExample />
+      <wpf>yes</wpf>
+    </member>
+    <member name="M:Leadtools.Windows.Media.Transitions.TransitionBase.End">
+      <summary>
+            Stops a transition.
+            </summary>
+      <remarks>
+      </remarks>
+            This example will create a <see cref="T:Leadtools.Windows.Media.Transitions.BlindTransition" /> an stop it after 2 seconds"
+            <!--BlindTransition.End--><noXAMLExample /><wpf>yes</wpf></member>
+    <member name="M:Leadtools.Windows.Media.Transitions.TransitionBase.OnOutBrushChanged(System.Windows.RoutedPropertyChangedEventArgs{System.Windows.Media.DrawingBrush})">
+      <summary>
+            Raises the <see cref="E:Leadtools.Windows.Media.Transitions.TransitionBase.OutBrushChanged_EV">Leadtools.Windows.Media.Transitions.TransitionBase.OutBrushChanged</see> event.
+            </summary>
+      <param name="e">A <see cref="T:System.Windows.RoutedPropertyChangedEventArgs`1" /> that contains the event data.</param>
+      <remarks>
+        <para>Raising an event invokes the event handler through a delegate.</para>
+        <para>The <see cref="M:Leadtools.Windows.Media.Transitions.TransitionBase.OnOutBrushChanged(System.Windows.RoutedPropertyChangedEventArgs{System.Windows.Media.DrawingBrush})" /> method also allows derived classes to handle the event without attaching a delegate. This is the preferred technique for handling the event in a derived class.</para>
+        <para>
+          <strong>Notes to Inheritors:</strong> When overriding <see cref="M:Leadtools.Windows.Media.Transitions.TransitionBase.OnOutBrushChanged(System.Windows.RoutedPropertyChangedEventArgs{System.Windows.Media.DrawingBrush})" /> in a derived class, be sure to call the base class's <see cref="M:Leadtools.Windows.Media.Transitions.TransitionBase.OnOutBrushChanged(System.Windows.RoutedPropertyChangedEventArgs{System.Windows.Media.DrawingBrush})" /> method so that registered delegates receive the event.</para>
+      </remarks>
+      <noexample />
+      <noXAMLExample />
+    </member>
+    <member name="E:Leadtools.Windows.Media.Transitions.TransitionBase.Completed">
+      <summary>
+            Add/Remove the <see cref="E:System.Windows.Media.Animation.Timeline.Completed" /> for the internal <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.Storyboard" /> object.
+            </summary>
+      <Attributes>&lt;object Completed="EventHandler" ...</Attributes>
+      <noRoutedEvents />
+      <noremarks />
+      <noexample />
+      <noXAMLExample />
+      <wpf>yes</wpf>
+    </member>
+    <member name="P:Leadtools.Windows.Media.Transitions.TransitionBase.AutoReverse">
+      <summary>
+            Gets or sets the <see cref="P:System.Windows.Media.Animation.Timeline.AutoReverse" /> for the internal <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.Storyboard" /> object.
+            </summary>
+      <value>refer to <see cref="P:System.Windows.Media.Animation.Timeline.AutoReverse" /> value.</value>
+      <noremarks />
+      <noexample />
+      <noXAMLExample />
+      <wpf>yes</wpf>
+      <noXAMLSyntax />
+      <noXAMLValues />
+      <noAttributes />
+      <noXAMLUsage />
+      <noDependencies />
+    </member>
+    <member name="P:Leadtools.Windows.Media.Transitions.TransitionBase.Fill">
+      <summary>
+            Gets or sets the filled brush to be used to generate the animated <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.OutBrush" /> brush. This is a dependency property.
+            </summary>
+      <value>The brush to be used when applying a transition to a framework element.</value>
+      <XAMLSyntax>For XAML information, see the Brush type.</XAMLSyntax>
+      <Dependencies>
+        <table>
+          <tr>
+            <td>
+              <p>Identifier field</p>
+            </td>
+            <td>
+              <p>
+                <see cref="F:Leadtools.Windows.Media.Transitions.TransitionBase.FillProperty" />
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <p>Metadata properties set to true</p>
+            </td>
+            <td>
+              <p>None</p>
+            </td>
+          </tr>
+        </table>
+      </Dependencies>
+      <noAttributes />
+      <noXAMLValues />
+      <noXAMLUsage />
+      <noremarks />
+      <example>For an example, refer to <see cref="T:Leadtools.Windows.Media.Transitions.BlindTransition" />.</example>
+      <XAMLExample>For an example, refer to <see cref="T:Leadtools.Windows.Media.Transitions.BlindTransition" />.</XAMLExample>
+      <wpf>yes</wpf>
+      <wpf>yes</wpf>
+      <wpf>yes</wpf>
+    </member>
+    <member name="P:Leadtools.Windows.Media.Transitions.TransitionBase.AccelerationRatio">
+      <summary>
+            Gets or sets the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.AccelerationRatio" /> for the internal <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.Storyboard" /> object.
+            </summary>
+      <value>refer to <see cref="P:System.Windows.Media.Animation.Timeline.AccelerationRatio" /> value.</value>
+      <noremarks />
+      <noexample />
+      <noXAMLExample />
+      <wpf>yes</wpf>
+      <noXAMLSyntax />
+      <noXAMLValues />
+      <noAttributes />
+      <noXAMLUsage />
+      <noDependencies />
+    </member>
+    <member name="P:Leadtools.Windows.Media.Transitions.TransitionBase.DecelerationRatio">
+      <summary>
+            Gets or sets the <see cref="P:System.Windows.Media.Animation.Timeline.DecelerationRatio" /> for the internal <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.Storyboard" /> object.
+            </summary>
+      <value>refer to <see cref="P:System.Windows.Media.Animation.Timeline.DecelerationRatio" /> value.</value>
+      <noremarks />
+      <noexample />
+      <noXAMLExample />
+      <wpf>yes</wpf>
+      <noXAMLSyntax />
+      <noXAMLValues />
+      <noAttributes />
+      <noXAMLUsage />
+      <noDependencies />
+    </member>
+    <member name="P:Leadtools.Windows.Media.Transitions.TransitionBase.Grain">
+      <summary>
+            Gets or sets the Graining size. This is the smallest unit 
+            to be updated when applying a transition.
+            </summary>
+      <value>Specifies the graining size. The smallest value is 5.</value>
+      <noremarks />
+      <noXAMLSyntax />
+      <noXAMLValues />
+      <noAttributes />
+      <noXAMLUsage />
+      <noDependencies />
+      <example>
+            For an example, refer to <see cref="T:Leadtools.Windows.Media.Transitions.BlindTransition" /> example.
+            </example>
+      <XAMLExample>For an example, refer to <see cref="T:Leadtools.Windows.Media.Transitions.BlindTransition" /> example.</XAMLExample>
+      <wpf>yes</wpf>
+      <wpf>yes</wpf>
+      <wpf>yes</wpf>
+    </member>
+    <member name="P:Leadtools.Windows.Media.Transitions.TransitionBase.SpeedRatio">
+      <summary>
+            Gets or sets the <see cref="P:System.Windows.Media.Animation.Timeline.SpeedRatio" /> for the internal <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.Storyboard" /> object.
+            </summary>
+      <value>refer to <see cref="P:System.Windows.Media.Animation.Timeline.SpeedRatio" /> value.</value>
+      <noremarks />
+      <noexample />
+      <noXAMLExample />
+      <wpf>yes</wpf>
+      <noXAMLSyntax />
+      <noXAMLValues />
+      <noAttributes />
+      <noXAMLUsage />
+      <noDependencies />
+    </member>
+    <member name="P:Leadtools.Windows.Media.Transitions.TransitionBase.OutBrush">
+      <summary>
+            Gets an animated brush created from the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.Fill" /> and  <see cref="P:Leadtools.Windows.Media.Transitions.PushTransition.Push" /> if the tranisition type is PushTransition to be used to fill any element. This is a dependency property.
+            </summary>
+      <value>The animated brush to be used when applying a transition to a framework element.</value>
+      <XAMLSyntax>For XAML information, see the Brush type.</XAMLSyntax>
+      <Dependencies>
+        <table>
+          <tr>
+            <td>
+              <p>Identifier field</p>
+            </td>
+            <td>
+              <p>
+                <see cref="F:Leadtools.Windows.Media.Transitions.TransitionBase.OutBrushProperty" />
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <p>Metadata properties set to true</p>
+            </td>
+            <td>
+              <p>None</p>
+            </td>
+          </tr>
+        </table>
+      </Dependencies>
+      <noAttributes />
+      <noXAMLValues />
+      <noXAMLUsage />
+      <noremarks />
+      <example>
+            This example will create a <see cref="T:Leadtools.Windows.Media.Transitions.BlindTransition" /> and apply it to a Rectangle shape.
+            <!--BlindTransition.OutBrush--></example>
+      <XAMLExample>
+            This example will create a <see cref="T:Leadtools.Windows.Media.Transitions.BlindTransition" /> and apply it to a Rectangle shape.
+            <!--BlindTransition.OutBrush--></XAMLExample>
+      <wpf>yes</wpf>
+      <wpf>yes</wpf>
+      <wpf>yes</wpf>
+    </member>
+    <member name="P:Leadtools.Windows.Media.Transitions.TransitionBase.Duration">
+      <summary>
+            Gets or sets the <see cref="P:System.Windows.Media.Animation.Timeline.Duration" /> for the internal <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.Storyboard" /> object.
+            </summary>
+      <value>refer to <see cref="P:System.Windows.Media.Animation.Timeline.Duration" /> value.</value>
+      <noremarks />
+      <noexample />
+      <noXAMLExample />
+      <wpf>yes</wpf>
+      <noXAMLSyntax />
+      <noXAMLValues />
+      <noAttributes />
+      <noXAMLUsage />
+      <noDependencies />
+    </member>
+    <member name="P:Leadtools.Windows.Media.Transitions.TransitionBase.FillBehavior">
+      <summary>
+            Gets or sets the <see cref="P:System.Windows.Media.Animation.Timeline.FillBehavior" /> for the internal <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.Storyboard" /> object.
+            </summary>
+      <value>refer to <see cref="P:System.Windows.Media.Animation.Timeline.FillBehavior" /> value.</value>
+      <noremarks />
+      <noexample />
+      <noXAMLExample />
+      <wpf>yes</wpf>
+      <noXAMLSyntax />
+      <noXAMLValues />
+      <noAttributes />
+      <noXAMLUsage />
+      <noDependencies />
+    </member>
+    <member name="P:Leadtools.Windows.Media.Transitions.TransitionBase.TargetObject">
+      <summary>
+            Gets or set a framework element to apply a transition to it. This is a dependency property.
+            </summary>
+      <value>The brush for the shadow for the frame that you add to the ImageViewer or RasterImageViewer control.</value>
+      <XAMLSyntax>For XAML information, see the Brush type.</XAMLSyntax>
+      <Dependencies>
+        <table>
+          <tr>
+            <td>
+              <p>Identifier field</p>
+            </td>
+            <td>
+              <p>
+                <see cref="F:Leadtools.Windows.Media.Transitions.TransitionBase.TargetObjectProperty" />
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <p>Metadata properties set to true</p>
+            </td>
+            <td>
+              <p>None</p>
+            </td>
+          </tr>
+        </table>
+      </Dependencies>
+      <Attributes>&lt;object TargetObject="<see cref="T:System.Windows.FrameworkElement" />" .../&gt;</Attributes>
+      <noXAMLValues />
+      <noXAMLUsage />
+      <remarks>
+            No need to set this property if you want to apply a transition to a <see cref="T:Leadtools.Windows.Controls.ImageViewer" />.
+            When set the <see cref="P:Leadtools.Windows.Controls.ImageViewer.Transition" /> property the TargetObject will be set internally.
+            </remarks>
+      <example>For an example, refer to <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.OutBrush" />.</example>
+      <XAMLExample>For an example, refer to <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.OutBrush" />.</XAMLExample>
+      <wpf>yes</wpf>
+      <wpf>yes</wpf>
+      <wpf>yes</wpf>
+    </member>
+    <member name="P:Leadtools.Windows.Media.Transitions.TransitionBase.BeginTime">
+      <summary>
+            Gets or sets the <see cref="P:System.Windows.Media.Animation.Timeline.BeginTime" /> for the internal <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.Storyboard" /> object.
+            </summary>
+      <value>refer to <see cref="P:System.Windows.Media.Animation.Timeline.BeginTime" /> value.</value>
+      <noremarks />
+      <noexample />
+      <noXAMLExample />
+      <wpf>yes</wpf>
+      <noXAMLSyntax />
+      <noXAMLValues />
+      <noAttributes />
+      <noXAMLUsage />
+      <noDependencies />
+    </member>
+    <member name="P:Leadtools.Windows.Media.Transitions.TransitionBase.RepeatBehavior">
+      <summary>
+            Gets or sets the <see cref="P:System.Windows.Media.Animation.Timeline.RepeatBehavior" /> for the internal <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.Storyboard" /> object.
+            </summary>
+      <value>refer to <see cref="P:System.Windows.Media.Animation.Timeline.RepeatBehavior" /> value.</value>
+      <noremarks />
+      <noexample />
+      <noXAMLExample />
+      <wpf>yes</wpf>
+      <noXAMLSyntax />
+      <noXAMLValues />
+      <noAttributes />
+      <noXAMLUsage />
+      <noDependencies />
+    </member>
+    <member name="P:Leadtools.Windows.Media.Transitions.TransitionBase.RegisteredName">
+      <summary>
+            For internal use by LEADTOOLS.
+            </summary>
+      <noremarks />
+      <noexample />
+      <noXAMLSyntax />
+      <noXAMLValues />
+      <noXAMLExample />
+      <noAttributes />
+      <noDependencies />
+      <noXAMLUsage />
+      <value>
+      </value>
+      <wpf>yes</wpf>
+    </member>
+    <member name="P:Leadtools.Windows.Media.Transitions.TransitionBase.Storyboard">
+      <summary>
+            For internal use by LEADTOOLS.
+            </summary>
+      <noremarks />
+      <noexample />
+      <noXAMLSyntax />
+      <noXAMLValues />
+      <noXAMLExample />
+      <noAttributes />
+      <noDependencies />
+      <noXAMLUsage />
+      <value>
+      </value>
+      <wpf>yes</wpf>
+    </member>
+    <member name="E:Leadtools.Windows.Media.Transitions.TransitionBase.OutBrushChanged">
+      <summary>
+            Occurs when the value of the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.OutBrush" /> property changes.
+            </summary>
+      <event>The event handler receives an argument of type <see cref="T:System.EventArgs" />.</event>
+      <remarks>
+        <para>This event is raised if the <see cref="P:Leadtools.Windows.Media.Transitions.TransitionBase.OutBrush" /> property is changed by either a programmatic modification or user interaction.</para>
+      </remarks>
+      <noAttributes />
+      <noRoutedEvents />
+      <noexample />
+      <noXAMLExample />
+    </member>
+  </members>
+</doc>

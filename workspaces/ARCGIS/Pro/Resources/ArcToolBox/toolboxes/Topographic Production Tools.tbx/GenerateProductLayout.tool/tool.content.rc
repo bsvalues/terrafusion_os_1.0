@@ -1,0 +1,31 @@
+{
+    "map": {
+        "aoi_layer.descr": "A polygon feature layer that describes the processing extent. The feature layer must have only one feature selected or must be a feature class with only one feature.",
+        "aoi_layer.title": "Area Of Interest",
+        "description": "Automates the process of producing a layout or map based on a standard specification.",
+        "export_file.descr": "<xdoc><p>A file that defines a set of parameter values for the specified <span class=\"esri_uicontrol\">Output Type</span> parameter value.</p></xdoc>",
+        "export_file.title": "Preset File",
+        "geodatabase.descr": "The input geodatabase that contains the features for the final map product. The schema of the workspace must match the schema of the product selected.",
+        "geodatabase.title": "Input Geodatabase",
+        "out_template.title": "Output File",
+        "output_location.descr": "The folder path to which the output file will be written.",
+        "output_location.title": "Output Location",
+        "output_type.descr": "<xdoc><p>Specifies the type of output.</p><ul><li><span title=\"PAGX\">PAGX</span>—A layout file will be created. This is the default.</li><li><span title=\"APRX\">APRX</span>—An ArcGIS Pro project file will be created.</li><li><span title=\"PDF\">PDF</span>—A .pdf file will be created.</li><li><span title=\"TIFF\">TIFF</span>—A .tiff file will be created.</li><li><span title=\"PPKX\">PPKX</span>—An ArcGIS Pro packaged project file will be created.</li></ul></xdoc>",
+        "output_type.domain.APRX": "APRX",
+        "output_type.domain.PAGX": "PAGX",
+        "output_type.domain.PDF": "PDF",
+        "output_type.domain.PPKX": "PPKX",
+        "output_type.domain.TIFF": "TIFF",
+        "output_type.title": "Output Type",
+        "product.descr": "<xdoc><p>Specifies the supported map product that will be used.</p><ul><li><span title=\"MTM50\">MTM50</span>—An MGCP Topographic Map at 1:50,000 cartographic product scale will be used.</li><li><span title=\"MTM100\">MTM100</span>—A MGCP Topographic Map at 1:100,000 cartographic product scale will be used.</li><li><span title=\"TM25\">TM25</span>—A Topographic Map at 1:25,000 cartographic product scale will be used.</li><li><span title=\"TM50\">TM50</span>—A Topographic Map at 1:50,000 cartographic product scale will be used.</li><li><span title=\"TM100\">TM100</span>—A Topographic Map at 1:100,000 cartographic product scale will be used.</li><li><span title=\"JOGA\">JOGA</span>—A Joint Operations Graphic at 1:250,000 cartographic product scale will be used.</li><li><span title=\"CTM50\">CTM50</span>—A Civilian Topographic map at 1:50,000 cartographic product scale will be used.</li></ul></xdoc>",
+        "product.title": "Product",
+        "rasters.descr": "The input rasters used if the product requires an elevation guide surround element to calculate the elevation bands and spot height features. If you specify more than one raster, the rasters must have the same cell size, band number, and pixel type. If no raster is specified, the elevation guide data frame will not be processed and a warning will appear.",
+        "rasters.title": "Input Rasters",
+        "summary": "<xdoc><p>Automates the process of producing a layout or map based on a standard specification.</p><note type=\"note\"/><p group=\"note\">A product file installer is available for ArcGIS Production Mapping and ArcGIS Defense Mapping. The product files contain predefined layout PAGX templates that can be used for cartographic production.</p><p group=\"note\">Learn more about Defense Mapping product files and Production Mapping product files.</p></xdoc>",
+        "template.descr": "The layout template to be used. If no layout template is specified, the default layout template for the product will be used.",
+        "template.title": "Layout Template",
+        "title": "Generate Product Layout",
+        "version.descr": "The supported versions of the selected product.",
+        "version.title": "Version"
+    }
+}

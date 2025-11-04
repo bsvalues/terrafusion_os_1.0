@@ -1,0 +1,119 @@
+{
+    "type": "FunctionTool",
+    "guid": "{ce7b6b57-3f79-47d6-995e-8cafbb2f28dc}",
+    "displayname": "$rc:title",
+    "helpcontent": "8050003",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10"
+    ],
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_raster": {
+            "displayname": "$rc:in_raster.title",
+            "datatype": {
+                "type": "GPSAGeoData"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "true",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_raster.descr"
+        },
+        "out_raster": {
+            "direction": "out",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_raster.descr"
+        },
+        "number_cells": {
+            "displayname": "$rc:number_cells.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "false"
+            },
+            "description": "$rc:number_cells.descr"
+        },
+        "zone_values": {
+            "displayname": "$rc:zone_values.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPLong"
+                }
+            },
+            "description": "$rc:zone_values.descr"
+        },
+        "expand_method": {
+            "type": "optional",
+            "displayname": "$rc:expand_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MORPHOLOGICAL",
+                        "code": "$rc:expand_method.domain.MORPHOLOGICAL"
+                    },
+                    {
+                        "value": "DISTANCE",
+                        "code": "$rc:expand_method.domain.DISTANCE"
+                    }
+                ]
+            },
+            "value": "MORPHOLOGICAL",
+            "description": "$rc:expand_method.descr"
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "cellSize",
+        "cellSizeProjectionMethod",
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "mask",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

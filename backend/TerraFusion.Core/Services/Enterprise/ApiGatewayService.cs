@@ -345,16 +345,16 @@ public class ApiGatewayService : IApiGatewayService
         }
     }
 
-    public async Task<List<ApiRegistration>> GetRegisteredApisAsync()
+    public Task<List<ApiRegistration>> GetRegisteredApisAsync()
     {
         try
         {
-            return _registeredApis.Values.ToList();
+            return Task.FromResult(_registeredApis.Values.ToList());
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to get registered APIs");
-            return new List<ApiRegistration>();
+            return Task.FromResult(new List<ApiRegistration>());
         }
     }
 

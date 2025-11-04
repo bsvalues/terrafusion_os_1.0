@@ -1,0 +1,13 @@
+{
+    "map": {
+        "aggregation_distance.descr": "The distance between points that will be clustered.",
+        "aggregation_distance.title": "Aggregation Distance",
+        "description": "Creates polygon features around clusters of proximate point features.",
+        "in_features.descr": "The input point features that will be assessed for proximity and clustering.",
+        "in_features.title": "Input Features",
+        "out_feature_class.descr": "The feature class created to hold the polygons that represent the point clusters.",
+        "out_feature_class.title": "Output Feature Class",
+        "out_table.title": "Relationship Table",
+        "title": "Aggregate Points"
+    }
+}

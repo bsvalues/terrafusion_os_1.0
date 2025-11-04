@@ -1,0 +1,8 @@
+{
+    "set": [
+        "accumulative",
+        "cost",
+        "distance",
+        "proximity"
+    ]
+}

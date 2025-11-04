@@ -1,0 +1,9 @@
+{
+    "set": [
+        "enable",
+        "network",
+        "topology",
+        "trace",
+        "trace network"
+    ]
+}

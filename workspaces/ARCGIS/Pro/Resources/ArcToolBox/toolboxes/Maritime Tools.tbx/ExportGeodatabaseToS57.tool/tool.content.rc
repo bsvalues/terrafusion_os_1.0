@@ -1,0 +1,31 @@
+{
+    "map": {
+        "clip_data_option.descr": "<xdoc><p>Specifies whether the export process will clip data that crosses an M_CSCL feature.</p><ul><li>Checked—Features in the source database that cross the boundary of an M_CSCL feature will be clipped to the boundary in the exported file.</li><li>Unchecked—Features in the source database that cross the boundary of an M_CSCL feature will not be clipped to the boundary in the exported file. The features will remain intact in the output. This is the default.</li></ul></xdoc>",
+        "clip_data_option.title": "Clip Features at M_CSCL",
+        "description": "Exports hydrographic data from an ArcGIS Maritime geodatabase to an S-57 file.",
+        "export_type.descr": "<xdoc><p>Specifies the type of file that will be created during export.</p><ul><li><span title=\"NEW_DATASET\">New Dataset</span>— A new dataset including information that has not been previously distributed by updates will be created.</li><li><span title=\"NEW_EDITION\">New Edition</span>— A new edition of a dataset including information that has not been previously distributed by updates will be created.</li><li><span title=\"UPDATE\">Update</span>— Changes to a dataset since the last export will be reflected in the file.</li><li><span title=\"REISSUE\">Reissue</span>— A reissue of a dataset including all the updates applied to the original dataset up to the date of reissue will be created. A reissue does not contain information that has not been previously issued by updates.</li><li><span title=\"CANCEL\">Cancel</span>— When a dataset is deleted, an updated cell file is created containing only the Dataset General Information record with the <span class=\"esri_fieldname\">Dataset Identifier (DSID)</span> field. In this case, the <span class=\"esri_fieldname\">Edition Number (EDTN)</span> subfield must be set to 0.</li></ul></xdoc>",
+        "export_type.domain.CANCEL": "Cancel",
+        "export_type.domain.NEW_DATASET": "New Dataset",
+        "export_type.domain.NEW_EDITION": "New Edition",
+        "export_type.domain.REISSUE": "Reissue",
+        "export_type.domain.UPDATE": "Update",
+        "export_type.title": "Export Type",
+        "in_feature_catalogue.descr": "An .xml file that follows the S-100 Feature Catalogue format as defined by the IHO. It describes the content of a data product and its specifications. The default file location for S-100 catalogue files is <installation location>\\ArcGIS Maritime\\Product Files\\<version>\\S-101\\, provided the Maritime product files are installed.",
+        "in_feature_catalogue.title": "S-100 Feature Catalogue",
+        "in_product_config.descr": "The configuration file that will be used to export the product.",
+        "in_product_config.title": "Product Configuration File",
+        "in_scamin_file.descr": "A custom configuration file that contains the rules for calculating a feature's SCAMIN value that overrides the default value. For additional information, refer to Scale Minimum: Radar Range method.",
+        "in_scamin_file.title": "SCAMIN Configuration File",
+        "in_source_gdb.descr": "The database from which the product will be exported.",
+        "in_source_gdb.title": "Source Geodatabase",
+        "out_file.title": "Output File",
+        "out_location.descr": "The location containing the output export package.",
+        "out_location.title": "Output Location",
+        "product.descr": "The name of the product that will be exported. This product metadata entry must exist in the ProductDefinitions table, and the related extents must be present in the ProductCoverage feature class in the workspace.",
+        "product.title": "S-57 Product",
+        "sample_export.descr": "<xdoc><p>Specifies whether the product will be exported as a sample.</p><ul><li>Checked—The exported cell is not stored in the ProductExports table and the metadata information will not be updated in the ProductDefinitions table.</li><li>Unchecked—The exported cell is stored in the ProductExports table as a BLOB, and the edition, update, and other metadata in the ProductDefinitions table will be updated. This is the default.</li></ul></xdoc>",
+        "sample_export.title": "Sample Export",
+        "summary": "<xdoc><p>Exports hydrographic data from an ArcGIS Maritime geodatabase to an S-57 file.</p><p>The following processes will run automatically:<ul><li>Extract data</li><li>Clip data at boundary of the product coverage polygon</li><li>Group soundings</li><li>Generate FE Name</li><li>Generate or update primitives</li><li>Calculate SCAMIN</li></ul></p></xdoc>",
+        "title": "Export Geodatabase To S-57"
+    }
+}

@@ -1,0 +1,102 @@
+Project Context and Goal:
+Prepare GeoAssessmentPro—a geographic property assessment tool for the Benton County Assessor’s Office—for a compelling live demo within 24 hours. Focus on polishing the mapping interface, spatial data overlays, and assessment analytics so that the demo highlights the application’s capability to visually and accurately assess property data using authentic Benton County standards.
+
+IMPORTANT: All necessary geo-related property data is already provided in the existing files/attached_assets. Do not fetch external data unless a specific data point is missing. Work exclusively with authentic Benton County, Washington data and standards.
+
+Structured Plan:
+
+DEMO ENVIRONMENT SETUP (3 hours)
+
+Data Preparation:
+
+Use the provided geographical and property data from the existing files/attached_assets.
+
+Select 10 diverse geographic property examples:
+
+3 residential parcels from different neighborhoods
+
+3 commercial zones reflecting varied commercial districts
+
+2 agricultural land parcels typical of Benton County
+
+2 special-purpose locations (e.g., public facilities or unique zoning cases)
+
+User Setup:
+
+Create 3 demo user accounts (e.g., Admin, Assessor, Viewer).
+
+Project Configuration:
+
+Set up 2 sample collaborative projects that showcase grouping of properties over a mapped area and corresponding assessment layers.
+
+CORE DEMO PATHWAY OPTIMIZATION (5 hours)
+
+Refine the geo-assessment workflow by:
+
+Enhancing the mapping interface to accurately display property boundaries, zoning overlays, and geographical markers.
+
+Streamlining the process that calculates property assessments based on location-specific variables.
+
+Integrating spatial analytics (e.g., heat maps of valuation, distance-based adjustment factors) into the workflow.
+
+Ensuring that interactive elements (clickable properties, dynamic tooltips) work smoothly to reflect the underlying data.
+
+VISUAL ENHANCEMENT (6 hours)
+
+Develop a polished dashboard that combines map views with analytical summary panels.
+
+Implement clear and professional visualizations:
+
+Map overlays highlighting property classifications.
+
+Graphs/charts that compare assessment metrics across regions.
+
+Standardize the UI styling across the application using the current design system (e.g., shadcn UI, TailwindCSS).
+
+Optimize the interface for demo presentation with responsive design and smooth transitions.
+
+PERFORMANCE OPTIMIZATION (4 hours)
+
+Optimize key database and mapping queries used in the demo flows.
+
+Implement caching for spatial data and commonly accessed map layers.
+
+Add robust error handling and ensure the mapping functionalities remain responsive during high-load demo scenarios.
+
+Test and ensure fluid transitions between the map view and detailed property assessment pages.
+
+DEMO MATERIALS (3 hours)
+
+Develop a step-by-step demo script that outlines the key features, such as:
+
+The geospatial overview of Benton County.
+
+A live walkthrough of selecting a property and viewing its assessment details.
+
+Comparison across different property types and how zoning/region affects valuations.
+
+Prepare talking points that emphasize the real-world impact and accuracy improvements provided by GeoAssessmentPro.
+
+Document all demo access credentials and initial starting points for quick reference.
+
+TESTING AND DEPLOYMENT (3 hours)
+
+Run thorough tests of all demo-specific workflows, especially around the mapping interface and spatial data interactions.
+
+Deploy the demo version to a stable Replit environment.
+
+Prepare fallback options (e.g., pre-captured screenshots or short video clips) in case any interactive map elements encounter issues during the live demo.
+
+Data Instructions:
+
+Data Source:
+Use only the geographical property data and related assets already provided in the files/attached_assets.
+
+Compliance:
+Ensure all property examples, map layers, and assessment factors adhere to established Benton County, Washington standards.
+
+Methodology:
+Utilize the existing spatial data processing and property assessment calculation methods—preserving current classifications, region-specific factors, and established adjustment models.
+
+Progress Updates:
+After completing each major section, please provide a brief progress update along with key screenshots or visual evidence (e.g., dashboard view, map interface enhancements) of the improvements. This will help in tracking progress and confirming that the demo environment is being set up as expected.

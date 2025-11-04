@@ -1,0 +1,18 @@
+{
+    "map": {
+        "description": "Uses an isodata clustering algorithm to determine the characteristics of the natural groupings of cells in multidimensional attribute space and stores the results in an output ASCII signature file.",
+        "in_raster_bands.descr": "<xdoc><p>The input raster bands.</p><p>They can be integer or floating point type.</p></xdoc>",
+        "in_raster_bands.title": "Input raster bands",
+        "min_class_size.descr": "<xdoc><p>Minimum number of cells in a valid class.</p><p>The default is 20.</p></xdoc>",
+        "min_class_size.title": "Minimum class size",
+        "number_classes.descr": "Number of classes into which to group the cells.",
+        "number_classes.title": "Number of classes",
+        "number_iterations.descr": "<xdoc><p>Number of iterations of the clustering process to run.</p><p>The default is 20.</p></xdoc>",
+        "number_iterations.title": "Number of iterations",
+        "out_signature_file.descr": "<xdoc><p>The output signature file.</p><p>A .gsg extension must be specified.</p></xdoc>",
+        "out_signature_file.title": "Output signature file",
+        "sample_interval.descr": "<xdoc><p>The interval to be used for sampling.</p><p>The default is 10.</p></xdoc>",
+        "sample_interval.title": "Sample interval",
+        "title": "Iso Cluster"
+    }
+}

@@ -1,0 +1,36 @@
+[project]
+name = "repl-nix-workspace"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.11"
+dependencies = [
+    "anthropic>=0.49.0",
+    "beautifulsoup4>=4.13.4",
+    "email-validator>=2.2.0",
+    "flask-wtf>=1.2.2",
+    "flask>=3.1.0",
+    "flask-sqlalchemy>=3.1.1",
+    "gunicorn>=23.0.0",
+    "openai>=1.75.0",
+    "openpyxl>=3.1.5",
+    "pandas>=2.2.3",
+    "psutil>=7.0.0",
+    "psycopg2-binary>=2.9.10",
+    "requests>=2.32.3",
+    "schedule>=1.2.2",
+    "selenium>=4.31.0",
+    "sendgrid>=6.11.0",
+    "slack-sdk>=3.35.0",
+    "sqlalchemy>=2.0.40",
+    "trafilatura>=2.0.0",
+    "twilio>=9.5.2",
+    "webdriver-manager>=4.0.2",
+    "werkzeug>=3.1.3",
+    "xlsxwriter>=3.2.3",
+    "flask-login>=0.6.3",
+    "pyodbc>=5.2.0",
+    "fastapi>=0.115.12",
+    "uvicorn>=0.34.2",
+    "aipolabs>=0.0.1b7",
+    "python-dotenv>=1.1.0",
+]

@@ -1,0 +1,64 @@
+# ============================================================================
+# TerraFusion Platform - Helm Ignore File
+# Government. Transcended. - Exclude Files from Chart Packaging
+# ============================================================================
+
+# Development files
+.DS_Store
+.git/
+.gitignore
+.gitattributes
+.vscode/
+.idea/
+
+# CI/CD files
+.github/
+.gitlab-ci.yml
+Jenkinsfile
+azure-pipelines.yml
+
+# Documentation (keep only essential docs)
+*.md
+!README.md
+!CHANGELOG.md
+
+# Test files
+test/
+tests/
+*_test.yaml
+*.test.yaml
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Build artifacts
+dist/
+build/
+target/
+*.tar.gz
+*.zip
+
+# Editor files
+*.sublime-*
+*.code-workspace
+
+# OS files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Secrets
+*secret*
+*password*
+*.key
+*.pem
+*.crt
+
+# Helm dependencies
+charts/*.tgz
+
+# Draft plugin
+.draft/

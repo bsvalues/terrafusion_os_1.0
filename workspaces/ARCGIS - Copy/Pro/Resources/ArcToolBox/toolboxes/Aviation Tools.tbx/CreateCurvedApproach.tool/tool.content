@@ -1,0 +1,154 @@
+{
+    "type": "FunctionTool",
+    "guid": "{F6243FE3-8552-4511-BBCE-F882B7099A58}/CreateCurvedApproach",
+    "displayname": "$rc:title",
+    "helpcontent": "49000006",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "53",
+        "70"
+    ],
+    "params": {
+        "in_runway_features": {
+            "display_order": "1",
+            "displayname": "$rc:in_runway_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_runway_features.descr"
+        },
+        "in_flightpath_features": {
+            "displayname": "$rc:in_flightpath_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_flightpath_features.descr"
+        },
+        "target_ois_features": {
+            "displayname": "$rc:target_ois_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Polygon",
+                            "MultiPatch"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:target_ois_features.descr"
+        },
+        "specification": {
+            "displayname": "$rc:specification.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ETOD",
+                        "code": "$rc:specification.domain.ETOD"
+                    },
+                    {
+                        "value": "OLS",
+                        "code": "$rc:specification.domain.OLS"
+                    },
+                    {
+                        "value": "FAR77",
+                        "code": "$rc:specification.domain.FAR77"
+                    },
+                    {
+                        "value": "18B",
+                        "code": "$rc:specification.domain.18B"
+                    },
+                    {
+                        "value": "13SURFACES",
+                        "code": "$rc:specification.domain.13SURFACES"
+                    }
+                ]
+            },
+            "description": "$rc:specification.descr"
+        },
+        "runway_classification": {
+            "displayname": "$rc:runway_classification.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "depends": [
+                "specification"
+            ],
+            "description": "$rc:runway_classification.descr"
+        },
+        "out_ois_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_ois_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Polygon",
+                            "MultiPatch"
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "target_ois_features"
+            ]
+        },
+        "custom_json_file": {
+            "type": "optional",
+            "displayname": "$rc:custom_json_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "json"
+                ]
+            },
+            "description": "$rc:custom_json_file.descr"
+        },
+        "threshold_offset": {
+            "type": "optional",
+            "displayname": "$rc:threshold_offset.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:threshold_offset.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

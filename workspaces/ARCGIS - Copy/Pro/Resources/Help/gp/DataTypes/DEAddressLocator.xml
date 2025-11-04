@@ -1,0 +1,5 @@
+<DataType Name="DEAddressLocator">
+  <DisplayName>Address Locator</DisplayName>
+  <Description>A dataset used for geocoding that stores the address attributes, associated indexes, and rules that define the process for translating nonspatial descriptions of places to spatial data.</Description>
+</DataType>
+

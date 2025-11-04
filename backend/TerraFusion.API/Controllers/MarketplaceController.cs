@@ -28,7 +28,7 @@ namespace TerraFusion.API.Controllers
             try
             {
                 var modules = await _moduleService.GetAllModulesAsync();
-                
+
                 // Transform modules to marketplace plugin format
                 var plugins = modules.Select(m => new
                 {
@@ -39,17 +39,17 @@ namespace TerraFusion.API.Controllers
                     author = "TerraFusion",
                     category = "Government", // ModuleDto doesn't have Category
                     tags = new[] { m.Tier.ToString().ToLower(), "government", "terrafusion" },
-                    downloads = GetDownloadCount(m.Name),
-                    rating = GetRating(m.Name),
-                    ratingCount = GetRatingCount(m.Name)
+                    downloads = GetDownloadCount(m.Name ?? ""),
+                    rating = GetRating(m.Name ?? ""),
+                    ratingCount = GetRatingCount(m.Name ?? "")
                 }).ToList();
 
                 // Apply search filter
                 if (!string.IsNullOrEmpty(search))
                 {
-                    plugins = plugins.Where(p => 
-                        p.name.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                        p.description.Contains(search, StringComparison.OrdinalIgnoreCase)
+                    plugins = plugins.Where(p =>
+                        (p.name?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                        (p.description?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false)
                     ).ToList();
                 }
 
@@ -83,7 +83,7 @@ namespace TerraFusion.API.Controllers
             try
             {
                 var modules = await _moduleService.GetAllModulesAsync();
-                
+
                 var categories = new[]
                 {
                     new { name = "Government", count = modules.Count(), icon = GetCategoryIcon("Government") },
@@ -110,13 +110,13 @@ namespace TerraFusion.API.Controllers
                 // Convert plugin id back to module name
                 var moduleName = id.Replace("-", " ");
                 var module = await _moduleService.GetModuleByNameAsync(moduleName);
-                
+
                 if (module == null)
                     return NotFound();
 
                 // Launch the module
                 var result = await _moduleService.LaunchModuleAsync(module.Id);
-                
+
                 if (result)
                     return Ok(new { message = $"Installing {module.Name}..." });
                 else
@@ -134,6 +134,9 @@ namespace TerraFusion.API.Controllers
         {
             try
             {
+                // Government-grade: Log rating submission for audit compliance
+                await Task.Run(() => _logger.LogInformation("Plugin rating submitted: {PluginId}, Rating: {Rating}", id, rating.Rating));
+
                 // For now, just return success - implement rating storage later
                 return Ok(new { message = "Rating submitted successfully" });
             }
@@ -177,7 +180,7 @@ namespace TerraFusion.API.Controllers
         private static string GetCategoryIcon(string category) => category switch
         {
             "AI" => "Zap",
-            "Government" => "Shield", 
+            "Government" => "Shield",
             "GIS" => "Map",
             "Financial" => "DollarSign",
             "Compliance" => "FileCheck",

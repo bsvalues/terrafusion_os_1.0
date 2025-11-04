@@ -1,0 +1,416 @@
+{
+  "folders": [
+    {
+      "path": "../os-platform/validation",
+      "name": "✅ Workspace Validation"
+    },
+    {
+      "path": "../os-platform/testing-suite",
+      "name": "🧪 Testing Suite"
+    },
+    {
+      "path": "../os-platform/integration",
+      "name": "🔗 Integration Layer"
+    },
+    {
+      "path": "../os-platform/quality-assurance",
+      "name": "🏅 Quality Assurance"
+    },
+    {
+      "path": "../ops/validation",
+      "name": "📋 Operations Validation"
+    },
+    {
+      "path": "../ops/health",
+      "name": "💓 Health Monitoring"
+    },
+    {
+      "path": "../docs/validation",
+      "name": "📚 Validation Docs"
+    },
+    {
+      "path": "../SDK/tools",
+      "name": "🔧 SDK Validation Tools"
+    },
+    {
+      "path": "../config",
+      "name": "⚙️ Config (shared)"
+    },
+    {
+      "path": "../SDK",
+      "name": "📦 Platform SDK (read-only)"
+    },
+    {
+      "path": "../backend",
+      "name": "🔧 Shared Backend (read-only)"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/out": true,
+      "**/.pytest_cache": true,
+      "../marketplace": true,
+      "../frontend": true,
+      "../backend": true,
+      "../terrafusion-cos": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/out": true,
+      "../marketplace": true,
+      "../frontend": true,
+      "../backend": true
+    },
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "python.defaultInterpreter": "./os-platform/validation/.venv/bin/python",
+    "terrafusion.sync": {
+      "autoSync": true,
+      "syncInterval": 15,
+      "conflictResolution": "validation-priority",
+      "sharedState": {
+        "backend": "read-only",
+        "sdk": "read-only",
+        "config": "shared-write"
+      },
+      "validationIntegration": true
+    },
+    "terrafusion.validation": {
+      "enableWorkspaceValidation": true,
+      "testingSuite": true,
+      "integrationTesting": true,
+      "qualityAssurance": true,
+      "operationsValidation": true,
+      "healthMonitoring": true,
+      "complianceChecks": true,
+      "performanceValidation": true
+    },
+    "terrafusion.testing": {
+      "frameworkType": "comprehensive",
+      "coverageTarget": 95,
+      "automatedTesting": true,
+      "integrationTesting": true,
+      "e2eTesting": true,
+      "performanceTesting": true,
+      "securityTesting": true,
+      "complianceTesting": true
+    },
+    "terrafusion.compliance": {
+      "fismaMode": "HIGH",
+      "nist80053": true,
+      "validationStandards": true,
+      "testingCompliance": true,
+      "qaStandards": true,
+      "auditTrail": "comprehensive"
+    },
+    "terrafusion.quality": {
+      "codeQuality": "enterprise",
+      "testingStandards": "government",
+      "performanceStandards": true,
+      "securityStandards": true,
+      "documentationStandards": true,
+      "accessibilityStandards": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-python.debugpy",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-vscode.vscode-typescript-next",
+      "streetsidesoftware.code-spell-checker",
+      "ms-azuretools.vscode-docker",
+      "ms-vscode.test-adapter-converter",
+      "redhat.vscode-yaml",
+      "ms-vscode.vscode-json",
+      "usernamehw.errorlens",
+      "github.vscode-github-actions",
+      "ms-vscode.azure-account"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Start Workspace Validation",
+        "type": "debugpy",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/os-platform/validation",
+        "program": "workspace_validator.py",
+        "console": "integratedTerminal",
+        "env": {
+          "TERRAFUSION_SERVICE": "validation",
+          "VALIDATION_MODE": "comprehensive",
+          "WORKSPACE_COUNT": "31"
+        }
+      },
+      {
+        "name": "Debug Testing Suite",
+        "type": "debugpy",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/os-platform/testing-suite",
+        "program": "test_runner.py",
+        "console": "integratedTerminal",
+        "env": {
+          "TEST_DEBUG": "true",
+          "COVERAGE_TARGET": "95"
+        }
+      },
+      {
+        "name": "Debug Integration Tests",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/os-platform/integration",
+        "program": "integration_tester.js",
+        "console": "integratedTerminal",
+        "env": {
+          "INTEGRATION_DEBUG": "true",
+          "TEST_MODE": "full"
+        }
+      },
+      {
+        "name": "Start Quality Assurance",
+        "type": "debugpy",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/os-platform/quality-assurance",
+        "program": "qa_controller.py",
+        "console": "integratedTerminal",
+        "env": {
+          "QA_DEBUG": "true",
+          "QUALITY_MODE": "enterprise"
+        }
+      },
+      {
+        "name": "Debug Health Monitor",
+        "type": "debugpy",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/ops/health",
+        "program": "health_monitor.py",
+        "console": "integratedTerminal",
+        "env": {
+          "HEALTH_DEBUG": "true",
+          "MONITORING_MODE": "ecosystem"
+        }
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build Validation Platform",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "build:validation"
+        ],
+        "problemMatcher": [
+          "$tsc"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Test Validation Platform",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "test:validation"
+        ],
+        "problemMatcher": [],
+        "group": {
+          "kind": "test",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Validate All 31 Workspaces",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "validate_all_workspaces.py",
+          "--comprehensive"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/os-platform/validation"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Run Comprehensive Test Suite",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "run_all_tests.py",
+          "--coverage",
+          "95"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/os-platform/testing-suite"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Execute Integration Tests",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "test:integration"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/os-platform/integration"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Run Quality Assurance Check",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "qa_check.py",
+          "--standard",
+          "${input:qaStandard}"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/os-platform/quality-assurance"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Generate Health Report",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "generate_workspace_health.py",
+          "all-workspaces"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/ops/health"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Validate Government Compliance",
+        "type": "shell",
+        "command": "./compliance-check.sh",
+        "args": [
+          "--all-workspaces",
+          "--level=FISMA_HIGH"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/SDK/tools"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Performance Validation",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "performance_validator.py",
+          "--benchmark",
+          "${input:performanceBenchmark}"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/os-platform/validation"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Security Validation",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "security_validator.py",
+          "--scan",
+          "comprehensive"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/os-platform/validation"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "AI Swarm Validation",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "validate_ai_swarm.py",
+          "--agents",
+          "1008"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/os-platform/validation"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Ecosystem Integration Check",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "ecosystem_integration.py",
+          "--workspaces",
+          "31"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/os-platform/integration"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      }
+    ]
+  },
+  "inputs": [
+    {
+      "id": "qaStandard",
+      "description": "Select QA standard:",
+      "default": "enterprise",
+      "type": "pickString",
+      "options": [
+        "enterprise",
+        "government",
+        "iso-9001",
+        "cmmi",
+        "agile",
+        "devops"
+      ]
+    },
+    {
+      "id": "performanceBenchmark",
+      "description": "Select performance benchmark:",
+      "default": "government-services",
+      "type": "pickString",
+      "options": [
+        "government-services",
+        "enterprise-grade",
+        "high-throughput",
+        "low-latency",
+        "scalability",
+        "reliability"
+      ]
+    }
+  ]
+}

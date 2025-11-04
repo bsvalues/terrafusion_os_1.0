@@ -1,0 +1,439 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion_Build - TerraFusion Intelligence That Counties Envy</title>
+    <link rel="icon" type="image/svg+xml" href="/static/terrafusion-favicon.svg">
+    <style>
+        
+/* TerraFusion Brand System - Official Implementation */
+:root {
+  /* Primary Brand Colors */
+  --tf-cosmic-blue: #0891b2;
+  --tf-quantum-teal: #00d2ff;
+  --tf-neural-purple: #667eea;
+  --tf-stellar-white: #ffffff;
+  --tf-deep-space: #0a0f1c;
+  --tf-dark-teal: #1a2f3a;
+  --tf-accent-cyan: #22d3ee;
+  
+  /* Glass Morphism Effects */
+  --tf-glass-bg: rgba(255, 255, 255, 0.05);
+  --tf-glass-border: rgba(0, 210, 255, 0.2);
+  --tf-backdrop-blur: blur(15px);
+  
+  /* Typography */
+  --tf-font-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --tf-font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  
+  /* Gradients */
+  --tf-gradient-primary: linear-gradient(135deg, var(--tf-quantum-teal), var(--tf-cosmic-blue));
+  --tf-gradient-secondary: linear-gradient(135deg, var(--tf-cosmic-blue), var(--tf-neural-purple));
+  --tf-gradient-accent: linear-gradient(135deg, var(--tf-quantum-teal), var(--tf-accent-cyan));
+  
+  /* Shadows */
+  --tf-shadow-glow: 0 0 30px rgba(0, 210, 255, 0.3);
+  --tf-shadow-deep: 0 20px 40px rgba(10, 15, 28, 0.4);
+  --tf-shadow-subtle: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* TerraFusion Navigation Bar */
+.tf-navbar {
+  background: rgba(10, 15, 28, 0.95);
+  backdrop-filter: var(--tf-backdrop-blur);
+  border-bottom: 1px solid var(--tf-glass-border);
+  padding: 1rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.tf-navbar-brand {
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: var(--tf-gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tf-navbar-brand:hover {
+  filter: drop-shadow(var(--tf-shadow-glow));
+}
+
+/* TerraFusion Cards */
+.tf-card {
+  background: var(--tf-glass-bg);
+  backdrop-filter: var(--tf-backdrop-blur);
+  border: 2px solid var(--tf-glass-border);
+  border-radius: 20px;
+  padding: 2rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.tf-card:hover {
+  border-color: var(--tf-quantum-teal);
+  box-shadow: var(--tf-shadow-glow);
+  transform: translateY(-5px);
+}
+
+.tf-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--tf-gradient-primary);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.tf-card:hover::before {
+  opacity: 1;
+}
+
+/* TerraFusion Buttons */
+.tf-btn-primary {
+  background: var(--tf-gradient-primary);
+  color: var(--tf-stellar-white);
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.tf-btn-primary:hover {
+  box-shadow: var(--tf-shadow-glow);
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+.tf-btn-secondary {
+  background: transparent;
+  color: var(--tf-quantum-teal);
+  border: 2px solid var(--tf-quantum-teal);
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.tf-btn-secondary:hover {
+  background: var(--tf-quantum-teal);
+  color: var(--tf-deep-space);
+  box-shadow: var(--tf-shadow-glow);
+}
+
+/* TerraFusion Typography */
+.tf-title {
+  font-size: 3rem;
+  font-weight: 900;
+  background: var(--tf-gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 1rem;
+  letter-spacing: -1px;
+}
+
+.tf-subtitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--tf-quantum-teal);
+  margin-bottom: 1rem;
+}
+
+.tf-tagline {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--tf-accent-cyan);
+  font-style: italic;
+  opacity: 0.9;
+}
+
+/* TerraFusion Logo Animations */
+@keyframes tf-glow-pulse {
+  0%, 100% { 
+    filter: drop-shadow(0 0 20px rgba(0, 210, 255, 0.5));
+  }
+  50% { 
+    filter: drop-shadow(0 0 40px rgba(0, 210, 255, 0.8));
+  }
+}
+
+@keyframes tf-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.tf-logo-animated {
+  animation: tf-glow-pulse 3s ease-in-out infinite;
+}
+
+.tf-logo-rotating {
+  animation: tf-rotate 8s linear infinite;
+}
+
+/* TerraFusion Dashboard Styles */
+.tf-dashboard {
+  background: radial-gradient(ellipse at center, var(--tf-deep-space) 0%, #1a2332 35%, #2a3441 100%);
+  min-height: 100vh;
+  color: var(--tf-stellar-white);
+  font-family: var(--tf-font-primary);
+}
+
+.tf-metric-card {
+  background: var(--tf-glass-bg);
+  backdrop-filter: var(--tf-backdrop-blur);
+  border: 1px solid var(--tf-glass-border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.tf-metric-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: var(--tf-gradient-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+.tf-metric-label {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .tf-title {
+    font-size: 2rem;
+  }
+  
+  .tf-navbar {
+    padding: 0.5rem 1rem;
+  }
+  
+  .tf-card {
+    padding: 1rem;
+  }
+}
+
+/* TerraFusion Intelligence That Counties Envy Signature */
+.tf-signature {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--tf-glass-bg);
+  backdrop-filter: var(--tf-backdrop-blur);
+  border: 1px solid var(--tf-glass-border);
+  border-radius: 12px;
+  padding: 8px 16px;
+  font-size: 0.8rem;
+  color: var(--tf-quantum-teal);
+  font-weight: 500;
+  opacity: 0.8;
+  z-index: 1000;
+}
+
+        
+        /* Application-specific overrides */
+        .app-header {
+            background: var(--tf-glass-bg);
+            backdrop-filter: var(--tf-backdrop-blur);
+            border-bottom: 2px solid var(--tf-glass-border);
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .app-logo {
+            max-width: 300px;
+            height: auto;
+            margin-bottom: 1rem;
+        }
+        
+        .app-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--tf-gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .app-description {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body class="tf-dashboard">
+    <!-- TerraFusion Navigation -->
+    <nav class="tf-navbar">
+        <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto;">
+            <a href="/" class="tf-navbar-brand">
+                
+<svg id="terrafusion-logo" width="240" height="60" viewBox="0 0 240 60" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="tfGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d2ff;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#0891b2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#667eea;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- TerraFusion Text -->
+  <text x="20" y="35" font-family="'Segoe UI', sans-serif" font-size="24" font-weight="700" 
+        fill="url(#tfGradient)" filter="url(#glow)">TerraFusion</text>
+  
+  <!-- Tagline -->
+  <text x="20" y="52" font-family="'Segoe UI', sans-serif" font-size="10" font-weight="500" 
+        fill="#00d2ff" opacity="0.9">Intelligence That Counties Envy</text>
+  
+  <!-- Geometric Elements -->
+  <circle cx="200" cy="20" r="8" fill="none" stroke="#00d2ff" stroke-width="2" opacity="0.6">
+    <animate attributeName="r" values="8;12;8" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  
+  <polygon points="210,15 220,25 210,35 200,25" fill="none" stroke="#0891b2" stroke-width="2" opacity="0.7">
+    <animateTransform attributeName="transform" type="rotate" values="0 210 25;360 210 25" dur="8s" repeatCount="indefinite"/>
+  </polygon>
+  
+  <rect x="225" y="18" width="10" height="14" fill="none" stroke="#667eea" stroke-width="2" opacity="0.5" rx="2">
+    <animate attributeName="height" values="14;20;14" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="y" values="18;15;18" dur="4s" repeatCount="indefinite"/>
+  </rect>
+</svg>
+        
+            </a>
+            <div style="display: flex; gap: 2rem;">
+                <a href="/" style="color: rgba(255,255,255,0.8); text-decoration: none;">Dashboard</a>
+                <a href="/ai/valuation" style="color: rgba(255,255,255,0.8); text-decoration: none;">AI Valuation</a>
+                <a href="/portfolio/analytics" style="color: rgba(255,255,255,0.8); text-decoration: none;">Analytics</a>
+                <a href="/market/intelligence" style="color: rgba(255,255,255,0.8); text-decoration: none;">Intelligence</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Application Header -->
+    <header class="app-header">
+        <div class="tf-logo-animated">
+            
+<svg id="terrafusion-logo" width="240" height="60" viewBox="0 0 240 60" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="tfGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d2ff;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#0891b2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#667eea;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- TerraFusion Text -->
+  <text x="20" y="35" font-family="'Segoe UI', sans-serif" font-size="24" font-weight="700" 
+        fill="url(#tfGradient)" filter="url(#glow)">TerraFusion</text>
+  
+  <!-- Tagline -->
+  <text x="20" y="52" font-family="'Segoe UI', sans-serif" font-size="10" font-weight="500" 
+        fill="#00d2ff" opacity="0.9">Intelligence That Counties Envy</text>
+  
+  <!-- Geometric Elements -->
+  <circle cx="200" cy="20" r="8" fill="none" stroke="#00d2ff" stroke-width="2" opacity="0.6">
+    <animate attributeName="r" values="8;12;8" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  
+  <polygon points="210,15 220,25 210,35 200,25" fill="none" stroke="#0891b2" stroke-width="2" opacity="0.7">
+    <animateTransform attributeName="transform" type="rotate" values="0 210 25;360 210 25" dur="8s" repeatCount="indefinite"/>
+  </polygon>
+  
+  <rect x="225" y="18" width="10" height="14" fill="none" stroke="#667eea" stroke-width="2" opacity="0.5" rx="2">
+    <animate attributeName="height" values="14;20;14" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="y" values="18;15;18" dur="4s" repeatCount="indefinite"/>
+  </rect>
+</svg>
+        
+        </div>
+        <h1 class="app-title">TerraFusion_Build</h1>
+        <p class="app-description">Enterprise-grade property intelligence powered by TerraFusion</p>
+    </header>
+
+    <!-- Main Content Container -->
+    <main style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+        <!-- Content will be injected here -->
+        {{ content }}
+    </main>
+
+    <!-- TerraFusion Signature -->
+    <div class="tf-signature">
+        Intelligence That Counties Envy
+    </div>
+
+    <script>
+        // TerraFusion Brand Enhancement Scripts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add glow effect to interactive elements
+            const cards = document.querySelectorAll('.tf-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.boxShadow = 'var(--tf-shadow-glow)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.boxShadow = 'none';
+                });
+            });
+            
+            // Logo animation enhancement
+            const logo = document.querySelector('#terrafusion-logo');
+            if (logo) {
+                logo.addEventListener('mouseenter', function() {
+                    this.style.filter = 'drop-shadow(0 0 20px rgba(0, 210, 255, 0.8))';
+                });
+                logo.addEventListener('mouseleave', function() {
+                    this.style.filter = 'none';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+        

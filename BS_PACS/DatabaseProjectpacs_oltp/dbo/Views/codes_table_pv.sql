@@ -1,0 +1,25 @@
+create view codes_table_pv as 
+SELECT  [tbl_type_code]
+      ,[tbl_element]
+      ,[tbl_element_desc]
+      ,[field_1]
+      ,[field_2]
+      ,[field_3]
+      ,[value_key]
+      ,[value_flag]
+      ,[code_status]
+      ,[extra_1]
+      ,[extra_2]
+      ,[extra_3]
+      ,[extra_4]
+      ,[num_1]
+      ,[num_2]
+      ,[num_3]
+      ,[num_4]
+      ,[CodesToSysType]
+      ,[extra_int1]
+      ,[extra_int2]
+  FROM [cnv_src_benton_2_14_2017].[dbo].[codes_table]
+
+GO
+

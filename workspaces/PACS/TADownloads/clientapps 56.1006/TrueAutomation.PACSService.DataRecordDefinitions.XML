@@ -1,0 +1,874 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.PACSService.DataRecordDefinitions</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.CertificateOfDelinquencyReportRecord">
+            <summary>
+            Data Record for CertificateOfDelinquencyReportRecord
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.CertificateOfDelinquencyReportRecord.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.CertificateOfDelinquencyReportRecord.#ctor(TrueAutomation.TaskService.DTOs.DataRecordDTO)">
+            <summary>
+            Constructor to set Data Record
+            </summary>
+            <param name="record">Data Record</param>
+        </member>
+        <member name="F:TrueAutomation.PACSService.DataRecordDefinitions.CertificateOfDelinquencyReportRecord.keyPropIDs">
+            <summary>
+            PropIDs Items - KeyField
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.CertificateOfDelinquencyReportRecord.PropIDs">
+            <summary>
+            Property IDs
+            Create a list containing 1 Property Id - The case similar to generating the report from Command Menu of the Property view screen.
+            Create an empty list - The case where the generic report is generated from the Report menu.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.CertificateOfDelinquencyReportRecord.FromPropertyView">
+            <summary>
+            Flag to determine condition of report for a property or generic.
+            True - The case similar to generating the report from Command Menu of the Property view screen.
+            False - The case where the generic report is generated from the Report menu.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.CertificateOfDelinquencyReportRecord.DataRecord">
+            <summary>
+            DataRecord for Certificate Of Delinquency Report
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.CertificateOfDelinquencyReportDataRecordDefinition">
+            <summary>
+            Data Record Definition that defines CertificateOfDelinquency Report dilaog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.CertificateOfDelinquencyReportDataRecordDefinition.GetDefinition">
+            <summary>
+            Gets the Data Record Definition that defines Certificate Of Delinquency Report
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.GenerateRefundsInMassRecord">
+            <summary>
+            Data Record for GenerateRefundsInMass
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.PACSService.DataRecordDefinitions.GenerateRefundsInMassRecord.keyItemsToRefund">
+            <summary>
+            Refund Items - KeyField
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.GenerateRefundsInMassRecord.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.GenerateRefundsInMassRecord.#ctor(TrueAutomation.TaskService.DTOs.DataRecordDTO)">
+            <summary>
+            Constructor to set Data Record
+            </summary>
+            <param name="record">Data Record</param>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.GenerateRefundsInMassRecord.ItemsToRefund">
+            <summary>
+            FilePath
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.GenerateRefundsInMassRecord.DataRecord">
+            <summary>
+            DataRecord for Custom Web Browser
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.GenerateRefundsInMassRecordDefinition">
+            <summary>
+            Data Record Definition that defines GenerateRefundsInMass
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.GenerateRefundsInMassRecordDefinition.GetDefinition">
+            <summary>
+            Gets the Data Record Definition that defines the Custom Web Browser
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.ImportedInternetAndOnlineBankRecord">
+            <summary>
+            Data Record for InternetAndOnlineBankReportDialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.ImportedInternetAndOnlineBankRecord.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.ImportedInternetAndOnlineBankRecord.#ctor(TrueAutomation.TaskService.DTOs.DataRecordDTO)">
+            <summary>
+            Constructor to set Data Record
+            </summary>
+            <param name="record">Data Record</param>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.ImportedInternetAndOnlineBankRecord.RunID">
+            <summary>
+            RunID
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.ImportedInternetAndOnlineBankRecord.DataRecord">
+            <summary>
+            DataRecord for Imported Internet and Online Bank Payment Report
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.ImportedInternetAndOnlineBankRecordDataRecordDefinition">
+            <summary>
+            Data Record Definition that defines InternetAndOnlineBankReportDialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.ImportedInternetAndOnlineBankRecordDataRecordDefinition.GetDefinition">
+            <summary>
+            Gets the Data Record Definition that defines InternetAndOnlineBankReportDialog
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.SupplementStatementRecord">
+            <summary>
+            Data Record for PrintLevyStatementsWizard to Print Supplement Statements.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.SupplementStatementRecord.#ctor(TrueAutomation.TaskService.DTOs.DataRecordDTO)">
+            <summary>
+            Constructor for setting  the DataRecord
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.SupplementStatementRecord.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.SupplementStatementRecord.SuppGroupId">
+            <summary>
+            SuppGroupId
+            </summary>
+            <remarks>
+            Supplement Group  Id
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.SupplementStatementRecord.StatementGroupId">
+            <summary>
+            StatementGroupId
+            </summary>
+            <remarks>
+            Statement Group  Id
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.SupplementStatementRecord.RunId">
+            <summary>
+            RunId
+            </summary>
+            <remarks>
+            Run Id
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.SupplementStatementRecord.Year">
+            <summary>
+            Year
+            </summary>
+            <remarks>
+            Tax Year
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.SupplementStatementRecord.DataRecord">
+            <summary>
+            Data Record to Print Supplement Statements
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.SupplementStatementRecordDefinition">
+            <summary>
+            Data Record Definition for PrintLevyStatementsWizard to Print Supplement Statements.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.SupplementStatementRecordDefinition.GetDefinition">
+            <summary>
+            Data Record Definition for PrintLevyStatementsWizard to Print Supplement Statements.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.WorkflowPropertySearchRecord">
+            <summary>
+            Data Record for PropertySearch
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.WorkflowPropertySearchRecord.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.WorkflowPropertySearchRecord.#ctor(TrueAutomation.TaskService.DTOs.DataRecordDTO)">
+            <summary>
+            Constructor to set Data Record
+            </summary>
+            <param name="record">Data Record</param>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.WorkflowPropertySearchRecord.PropertyIds">
+            <summary>
+            PropertyIds for the Search
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.WorkflowPropertySearchRecord.Year">
+            <summary>
+            Year for which properties need to be displayed
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.WorkflowPropertySearchRecord.DataRecord">
+            <summary>
+            DataRecord for Propety Search
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.WorkflowPropertySearchRecordDefinition">
+            <summary>
+            Data Record Definition that defines PropertySearch
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.WorkflowPropertySearchRecordDefinition.GetDefinition">
+            <summary>
+            Gets the Data Record Definition that defines Electronic REET Processing Wizard
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.CustomWebBrowserRecord">
+            <summary>
+            Data Record for CustomWebBrowser
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.CustomWebBrowserRecord.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.CustomWebBrowserRecord.#ctor(TrueAutomation.TaskService.DTOs.DataRecordDTO)">
+            <summary>
+            Constructor to set Data Record
+            </summary>
+            <param name="record">Data Record</param>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.CustomWebBrowserRecord.URL">
+            <summary>
+            FilePath
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.CustomWebBrowserRecord.DataRecord">
+            <summary>
+            DataRecord for Custom Web Browser
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.CustomWebBrowserRecordDefinition">
+            <summary>
+            Data Record Definition that defines CustomWebBrowser
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.CustomWebBrowserRecordDefinition.GetDefinition">
+            <summary>
+            Gets the Data Record Definition that defines the Custom Web Browser
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.MonitorViewRecord">
+            <summary>
+            Data Record for MonitorViewRecord
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.MonitorViewRecord.#ctor(TrueAutomation.TaskService.DTOs.DataRecordDTO)">
+            <summary>
+            Constructor to set Data Record
+            </summary>
+            <param name="dataRecord">Data Record</param>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.MonitorViewRecord.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.MonitorViewRecord.DataRecord">
+            <summary>
+            DataRecord for daily batch
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.MonitorViewRecord.MonitorID">
+            <summary>
+            Get or set the list of monitor IDs to use
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.MonitorViewRecordDefinition">
+            <summary>
+            Data Record Definition for the MonitorViewRecordDefinition
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.MonitorViewRecordDefinition.GetDefinition">
+            <summary>
+            Gets the Data Record Definition that defines DailyBatchDetailsDialog
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.OwnershipTransferRecord">
+            <summary>
+            Data Record for OwnershipTransferWizard
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.OwnershipTransferRecord.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.OwnershipTransferRecord.#ctor(TrueAutomation.TaskService.DTOs.DataRecordDTO)">
+            <summary>
+            Constructor to set Data Record
+            </summary>
+            <param name="record">Data Record</param>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.OwnershipTransferRecord.Id">
+            <summary>
+            Id. This could be the REETId or the PropId
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.OwnershipTransferRecord.OwnershipTransferType">
+            <summary>
+            This should be either reetID, propID or propRec
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.OwnershipTransferRecord.DataRecord">
+            <summary>
+            DataRecord for Electronic REET Processing Wizard
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.OwnershipTransferDataRecordDefinition">
+            <summary>
+            Data Record Definition that defines ElectronicREETProcessingWizard
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.OwnershipTransferDataRecordDefinition.GetDefinition">
+            <summary>
+            Gets the Data Record Definition that defines Electronic REET Processing Wizard
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.SupplementGroupRecord">
+            <summary>
+            Data Record for PayImportedPaymentRunDialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.SupplementGroupRecord.#ctor(TrueAutomation.TaskService.DTOs.DataRecordDTO)">
+            <summary>
+            Constructor for setting  the DataRecord
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.SupplementGroupRecord.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.SupplementGroupRecord.Id">
+            <summary>
+            Id
+            </summary>
+            <remarks>
+            Supplement Group  Id
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.SupplementGroupRecord.Comments">
+            <summary>
+            Comments
+            </summary>
+            <remarks>
+            Comments for the Supplement Group
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.SupplementGroupRecord.MessageType">
+            <summary>
+            MessageType
+            </summary>
+            <remarks>
+            MessageType for the supplement Group
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.SupplementGroupRecord.DataRecord">
+            <summary>
+            DataRecord for Payment Import
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.SupplementGroupDataRecordDefinition">
+            <summary>
+            Data Record Definition for the PayImportedPaymentRunDialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.SupplementGroupDataRecordDefinition.GetDefinition">
+            <summary>
+            Data record definition for the PayImportedPaymentRunDialog
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.DailyREETCollectionsRecapReportRecord">
+            <summary>
+            Data Record for DailyREETCollectionsRecapReportRecord
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.DailyREETCollectionsRecapReportRecord.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.DailyREETCollectionsRecapReportRecord.#ctor(TrueAutomation.TaskService.DTOs.DataRecordDTO)">
+            <summary>
+            Constructor to set Data Record
+            </summary>
+            <param name="record">Data Record</param>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.DailyREETCollectionsRecapReportRecord.DataRecord">
+            <summary>
+            DataRecord for Daily REET Collections Recap Report
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.DailyREETCollectionsRecapReportDataRecordDefinition">
+            <summary>
+            Data Record Definition that defines DailyREETCollectionsRecapReportDialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.DailyREETCollectionsRecapReportDataRecordDefinition.GetDefinition">
+            <summary>
+            Gets the Data Record Definition that defines DailyREETCollectionsRecapReportDialog
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.ElectronicREETRecord">
+            <summary>
+            Data Record for ElectronicREETProcessingWizard
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.ElectronicREETRecord.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.ElectronicREETRecord.#ctor(TrueAutomation.TaskService.DTOs.DataRecordDTO)">
+            <summary>
+            Constructor to set Data Record
+            </summary>
+            <param name="record">Data Record</param>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.ElectronicREETRecord.FilePath">
+            <summary>
+            FilePath
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.ElectronicREETRecord.DataRecord">
+            <summary>
+            DataRecord for Electronic REET Processing Wizard
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.ElectronicREETDataRecordDefinition">
+            <summary>
+            Data Record Definition that defines ElectronicREETProcessingWizard
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.ElectronicREETDataRecordDefinition.GetDefinition">
+            <summary>
+            Gets the Data Record Definition that defines Electronic REET Processing Wizard
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.ExciseDetailReportRecord">
+            <summary>
+            Data Record for ExciseDetailReport Dialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.ExciseDetailReportRecord.#ctor(TrueAutomation.TaskService.DTOs.DataRecordDTO)">
+            <summary>
+            Constructor for setting  the DataRecord
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.ExciseDetailReportRecord.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.ExciseDetailReportRecord.DataRecord">
+            <summary>
+            DataRecord for ExciseDetailReportRecord
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.ExciseDetailDataRecordDefinition">
+            <summary>
+            Data Record Definition for the ExciseDetailReportRecord dialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.ExciseDetailDataRecordDefinition.GetDefinition">
+            <summary>
+            Data record definition for the ExciseDetailReportRecord
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.ImportedMortgagePaymentRecord">
+            <summary>
+            Data Record for ImportedMortgagePaymentsReportDialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.ImportedMortgagePaymentRecord.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.ImportedMortgagePaymentRecord.#ctor(TrueAutomation.TaskService.DTOs.DataRecordDTO)">
+            <summary>
+            Constructor to set Data Record
+            </summary>
+            <param name="record">Data Record</param>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.ImportedMortgagePaymentRecord.RunID">
+            <summary>
+            RunID
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.ImportedMortgagePaymentRecord.DataRecord">
+            <summary>
+            DataRecord for Imported Mortgage Payment Report
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.ImportedMortgagePaymentDataRecordDefinition">
+            <summary>
+            Data Record Definition for the ImportedMortgagePaymentsReportDialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.ImportedMortgagePaymentDataRecordDefinition.GetDefinition">
+            <summary>
+            Gets Data Record Definition for the ImportedMortgagePaymentsReportDialog
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.ImportedPaymentReceiptReportRecord">
+            <summary>
+            Data Record for ImportedPaymentReceiptReportDialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.ImportedPaymentReceiptReportRecord.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.ImportedPaymentReceiptReportRecord.#ctor(TrueAutomation.TaskService.DTOs.DataRecordDTO)">
+            <summary>
+            Constructor to set Data Record
+            </summary>
+            <param name="record">Data Record</param>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.ImportedPaymentReceiptReportRecord.PaymentRunID">
+            <summary>
+            PaymentRunID
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.ImportedPaymentReceiptReportRecord.ReportTitle">
+            <summary>
+            ReportTitle
+            </summary>		
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.ImportedPaymentReceiptReportRecord.PaymentType">
+            <summary>
+            PaymentType
+            </summary>		
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.ImportedPaymentReceiptReportRecord.DataRecord">
+            <summary>
+            DataRecord for Imported Payment Receipt Report
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.ImportedPaymentReceiptReportDataRecordDefinition">
+            <summary>
+            Data Record Definition for the ImportedPaymentReceiptReportDialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.ImportedPaymentReceiptReportDataRecordDefinition.GetDefinition">
+            <summary>
+            Gets the Data Record Definition for the ImportedPaymentReceiptReportDialog
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.ImportedRemittanceReportRecord">
+            <summary>
+            Data Record for RemittanceReportDialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.ImportedRemittanceReportRecord.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.ImportedRemittanceReportRecord.#ctor(TrueAutomation.TaskService.DTOs.DataRecordDTO)">
+            <summary>
+            Constructor to set Data Record
+            </summary>
+            <param name="record">Data Record</param>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.ImportedRemittanceReportRecord.RunID">
+            <summary>
+            RunID
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.ImportedRemittanceReportRecord.DataRecord">
+            <summary>
+            DataRecord for Imported Remittance Payment Report
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.ImportedRemittanceReportDataRecordDefinition">
+            <summary>
+            Data Record Definition that defines RemittanceReportDialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.ImportedRemittanceReportDataRecordDefinition.GetDefinition">
+            <summary>
+            Gets the Data Record Definition that defines RemittanceReportDialog
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.PayImportedPaymentRunRecord">
+            <summary>
+            Data Record for PayImportedPaymentRunDialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.PayImportedPaymentRunRecord.#ctor(TrueAutomation.TaskService.DTOs.DataRecordDTO)">
+            <summary>
+            Constructor for setting  the DataRecord
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.PayImportedPaymentRunRecord.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.PayImportedPaymentRunRecord.RunID">
+            <summary>
+            runId
+            </summary>
+            <remarks>
+            runId in PACS DB
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.PayImportedPaymentRunRecord.AcceptCount">
+            <summary>
+            AcceptCount
+            </summary>		
+            <remarks>
+            From PACS DB - AcceptCount
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.PayImportedPaymentRunRecord.FileType">
+            <summary>
+            FileType
+            </summary>		
+            <remarks>
+            From PACS DB - FileType
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.PayImportedPaymentRunRecord.RecordCount">
+            <summary>
+            RecordCount
+            </summary>		
+            <remarks>
+            From PACS DB - RecordCount
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.PayImportedPaymentRunRecord.PaymentSourceId">
+            <summary>
+            PaymentSourceId
+            </summary>
+            <remarks>
+            From PACS DB - PaymentSourceId
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.PayImportedPaymentRunRecord.AmountPaid">
+            <summary>
+            AmountPaid
+            </summary>
+            <remarks>
+            From PACS DB - AmountPaid
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.PayImportedPaymentRunRecord.DataRecord">
+            <summary>
+            DataRecord for Payment Import
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.PayImportedPaymentRunDataRecordDefinition">
+            <summary>
+            Data Record Definition for the PayImportedPaymentRunDialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.PayImportedPaymentRunDataRecordDefinition.GetDefinition">
+            <summary>
+            Data record definition for the PayImportedPaymentRunDialog
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.REETExciseNumberReportRecord">
+            <summary>
+            Data Record for REETExciseNumberReport Dialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.REETExciseNumberReportRecord.#ctor(TrueAutomation.TaskService.DTOs.DataRecordDTO)">
+            <summary>
+            Constructor for setting  the DataRecord
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.REETExciseNumberReportRecord.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.REETExciseNumberReportRecord.DataRecord">
+            <summary>
+            DataRecord for REETExciseNumberReport
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.REETExciseNumberDataRecordDefinition">
+            <summary>
+            Data Record Definition for the REETExciseNumberReport dialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.REETExciseNumberDataRecordDefinition.GetDefinition">
+            <summary>
+            Data record definition for the REETExciseNumberReport
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.REETRateDetailReportRecord">
+            <summary>
+            Data Record for REETRateDetailReport Dialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.REETRateDetailReportRecord.#ctor(TrueAutomation.TaskService.DTOs.DataRecordDTO)">
+            <summary>
+            Constructor for setting  the DataRecord
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.REETRateDetailReportRecord.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.REETRateDetailReportRecord.RateId">
+            <summary>
+            The REET Rate ID
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.REETRateDetailReportRecord.DataRecord">
+            <summary>
+            DataRecord for REETRateDetailReport
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.REETRateDetailReportDataRecordDefinition">
+            <summary>
+            Data Record Definition for the REETRateDetailReport dialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.REETRateDetailReportDataRecordDefinition.GetDefinition">
+            <summary>
+            Data record definition for the REETRateDetailReport
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.REETRateSummaryReportRecord">
+            <summary>
+            Data Record for REETRateSummaryReport Dialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.REETRateSummaryReportRecord.#ctor(TrueAutomation.TaskService.DTOs.DataRecordDTO)">
+            <summary>
+            Constructor for setting  the DataRecord
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.REETRateSummaryReportRecord.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.REETRateSummaryReportRecord.TaxDistrictID">
+            <summary>
+            The Tax District ID
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.REETRateSummaryReportRecord.TaxDistrictDescription">
+            <summary>
+            TaxDistrictDescription
+            </summary>		
+            <remarks>
+            The Tax District Description
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.REETRateSummaryReportRecord.DataRecord">
+            <summary>
+            DataRecord for REETRateSummaryReport
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.REETRateSummaryReportDataRecordDefinition">
+            <summary>
+            Data Record Definition for the REETRateSummaryReport dialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.REETRateSummaryReportDataRecordDefinition.GetDefinition">
+            <summary>
+            Data record definition for the REETRateSummaryReport
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.StatementOfTaxesCollectedReportRecord">
+            <summary>
+            Data Record for StatementOfTaxesCollected Dialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.StatementOfTaxesCollectedReportRecord.#ctor(TrueAutomation.TaskService.DTOs.DataRecordDTO)">
+            <summary>
+            Constructor for setting  the DataRecord
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.StatementOfTaxesCollectedReportRecord.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.StatementOfTaxesCollectedReportRecord.DataRecord">
+            <summary>
+            DataRecord for StatementOfTaxesCollectedReport
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.StatementOfTaxesCollectedDataRecordDefinition">
+            <summary>
+            Data Record Definition for the StatementOfTaxesCollected dialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.StatementOfTaxesCollectedDataRecordDefinition.GetDefinition">
+            <summary>
+            Data record definition for the StatementOfTaxesCollectedReport
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.ValidateEventMappingRecord">
+            <summary>
+            Data Record for Validate Event Mapping Report
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.ValidateEventMappingRecord.#ctor(TrueAutomation.TaskService.DTOs.DataRecordDTO)">
+            <summary>
+            Constructor for setting  the DataRecord
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.ValidateEventMappingRecord.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.ValidateEventMappingRecord.DatasetID">
+            <summary>
+            DatasetID
+            </summary>
+            <remarks>
+            Dataset ID that shows the validation errors
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DataRecordDefinitions.ValidateEventMappingRecord.DataRecord">
+            <summary>
+            DataRecord for Validate Event Mapping Report
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DataRecordDefinitions.ValidateEventMappingRecordDefinition">
+            <summary>
+            Data Record Definition for the Validate Event Mapping Report
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DataRecordDefinitions.ValidateEventMappingRecordDefinition.GetDefinition">
+            <summary>
+            Data record definition for ValidateEventMappingRecord
+            </summary>
+        </member>
+    </members>
+</doc>

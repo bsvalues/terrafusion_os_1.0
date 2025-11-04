@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apollo-gateway
+  labels:
+    app: apollo-gateway
+    part-of: terrafusionpro
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: apollo-gateway
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: apollo-gateway
+    spec:
+      containers:
+      - name: apollo-gateway
+        image: ${DOCKER_REGISTRY}/terrafusionpro/apollo-gateway:${VERSION}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 4000
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: "512Mi"
+          requests:
+            cpu: "0.2"
+            memory: "256Mi"
+        env:
+        - name: ENVIRONMENT
+          value: "production"
+        - name: PORT
+          value: "4000"
+        - name: HOST
+          value: "0.0.0.0"
+        - name: USER_SERVICE_URL
+          value: "http://user-service:5004/graphql"
+        - name: PROPERTY_SERVICE_URL
+          value: "http://property-service:5003/graphql"
+        - name: FORM_SERVICE_URL
+          value: "http://form-service:5005/graphql"
+        - name: REPORT_SERVICE_URL
+          value: "http://report-service:5007/graphql"
+        - name: ANALYSIS_SERVICE_URL
+          value: "http://analysis-service:5006/graphql"
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: terrafusionpro-jwt
+              key: secret
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 4001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 4001
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apollo-gateway
+  labels:
+    app: apollo-gateway
+    part-of: terrafusionpro
+spec:
+  selector:
+    app: apollo-gateway
+  ports:
+  - port: 4000
+    targetPort: 4000
+    name: graphql
+  - port: 4001
+    targetPort: 4001
+    name: health
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: apollo-gateway-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+  - hosts:
+    - graphql.terrafusionpro.com
+    secretName: terrafusionpro-graphql-tls
+  rules:
+  - host: graphql.terrafusionpro.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: apollo-gateway
+            port:
+              number: 4000

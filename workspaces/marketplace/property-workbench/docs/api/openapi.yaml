@@ -1,0 +1,219 @@
+openapi: 3.0.3
+info:
+  title: Property Workbench API
+  description: Property management and valuation APIs
+  version: 1.0.0
+  contact:
+    name: TerraFusion Government OS API Support
+    email: property-workbench-api@terrafusion.gov
+    url: https://docs.terrafusion.gov/marketplace/property-workbench
+  license:
+    name: Government Use License
+    url: https://terrafusion.gov/licenses/government-api
+  termsOfService: https://terrafusion.gov/terms/api-usage
+servers:
+- url: https://api.terrafusion.gov/api/v1/property
+  description: Production TerraFusion Government API
+- url: https://staging-api.terrafusion.gov/api/v1/property
+  description: Staging Environment
+- url: https://dev-api.terrafusion.gov/api/v1/property
+  description: Development Environment
+paths:
+  /properties:
+    get:
+      tags:
+      - property-workbench
+      summary: Property information
+      description: Property information - Property management and valuation APIs
+      operationId: get__properties
+      security:
+      - OAuth2:
+        - property-workbench:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /valuations:
+    post:
+      tags:
+      - property-workbench
+      summary: Property valuations
+      description: Property valuations - Property management and valuation APIs
+      operationId: post__valuations
+      security:
+      - OAuth2:
+        - property-workbench:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /ownership:
+    get:
+      tags:
+      - property-workbench
+      summary: Property ownership records
+      description: Property ownership records - Property management and valuation
+        APIs
+      operationId: get__ownership
+      security:
+      - OAuth2:
+        - property-workbench:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /transfers:
+    post:
+      tags:
+      - property-workbench
+      summary: Property transfer processing
+      description: Property transfer processing - Property management and valuation
+        APIs
+      operationId: post__transfers
+      security:
+      - OAuth2:
+        - property-workbench:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: object
+    HealthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - healthy
+          - degraded
+          - unhealthy
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        dependencies:
+          type: object
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
+          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          scopes:
+            property-workbench:read: Read access to property-workbench resources
+            property-workbench:write: Write access to property-workbench resources
+            property-workbench:admin: Administrative access to property-workbench
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+security:
+- OAuth2:
+  - property-workbench:read
+- ApiKey: []
+tags:
+- name: property-workbench
+  description: Property Workbench operations
+  externalDocs:
+    description: Find out more about property-workbench
+    url: https://docs.terrafusion.gov/marketplace/property-workbench

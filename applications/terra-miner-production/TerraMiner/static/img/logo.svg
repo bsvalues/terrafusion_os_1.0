@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background shape -->
+  <rect width="48" height="48" rx="8" fill="#0EA5E9" fill-opacity="0.1"/>
+  
+  <!-- Main Logo Shape - Stylized Building/Graph -->
+  <path d="M24 6L38 14V34L24 42L10 34V14L24 6Z" stroke="#0EA5E9" stroke-width="2" fill="white" fill-opacity="0.7"/>
+  
+  <!-- Windows/Data points -->
+  <rect x="17" y="18" width="4" height="4" fill="#0EA5E9"/>
+  <rect x="27" y="18" width="4" height="4" fill="#0EA5E9"/>
+  <rect x="17" y="26" width="4" height="4" fill="#0EA5E9"/>
+  <rect x="27" y="26" width="4" height="4" fill="#0EA5E9"/>
+  
+  <!-- Roof line -->
+  <path d="M10 14L24 6L38 14" stroke="#0EA5E9" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Graph line overlay -->
+  <path d="M14 32L20 28L26 30L34 24" stroke="#0369A1" stroke-width="2" stroke-linecap="round"/>
+</svg>

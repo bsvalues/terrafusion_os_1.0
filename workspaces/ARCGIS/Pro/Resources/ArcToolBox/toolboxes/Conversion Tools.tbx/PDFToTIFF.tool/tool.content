@@ -1,0 +1,185 @@
+{
+    "type": "FunctionTool",
+    "guid": "{8379cb6d-dcc4-4bef-9dbc-7f57bbd0af09}",
+    "displayname": "$rc:title",
+    "helpcontent": "2220001",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_pdf_file": {
+            "display_order": "0",
+            "displayname": "$rc:in_pdf_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "pdf"
+                ]
+            },
+            "description": "$rc:in_pdf_file.descr"
+        },
+        "out_tiff_file": {
+            "direction": "out",
+            "displayname": "$rc:out_tiff_file.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_tiff_file.descr"
+        },
+        "pdf_password": {
+            "type": "optional",
+            "displayname": "$rc:pdf_password.title",
+            "datatype": {
+                "type": "GPEncryptedString"
+            },
+            "description": "$rc:pdf_password.descr"
+        },
+        "pdf_page_number": {
+            "type": "optional",
+            "displayname": "$rc:pdf_page_number.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "value": "1",
+            "description": "$rc:pdf_page_number.descr"
+        },
+        "pdf_map": {
+            "type": "optional",
+            "displayname": "$rc:pdf_map.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:pdf_map.descr"
+        },
+        "clip_option": {
+            "type": "optional",
+            "displayname": "$rc:clip_option.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CLIP_TO_MAP"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_CLIP"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:clip_option.descr"
+        },
+        "resolution": {
+            "type": "optional",
+            "displayname": "$rc:resolution.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "false",
+                "low": {
+                    "inclusive": "false",
+                    "val": "95"
+                },
+                "high": {
+                    "allow": "true",
+                    "val": "3000"
+                }
+            },
+            "value": "250",
+            "description": "$rc:resolution.descr"
+        },
+        "color_mode": {
+            "type": "optional",
+            "displayname": "$rc:color_mode.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "RGB_TRUE_COLOR",
+                        "code": "$rc:color_mode.domain.RGB_TRUE_COLOR"
+                    }
+                ]
+            },
+            "value": "RGB_TRUE_COLOR",
+            "description": "$rc:color_mode.descr"
+        },
+        "tiff_compression": {
+            "type": "optional",
+            "displayname": "$rc:tiff_compression.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "JPEG",
+                        "code": "$rc:tiff_compression.domain.JPEG"
+                    },
+                    {
+                        "value": "LZW",
+                        "code": "$rc:tiff_compression.domain.LZW"
+                    },
+                    {
+                        "value": "PACK_BITS",
+                        "code": "$rc:tiff_compression.domain.PACK_BITS"
+                    },
+                    {
+                        "value": "DEFLATE",
+                        "code": "$rc:tiff_compression.domain.DEFLATE"
+                    },
+                    {
+                        "value": "NONE",
+                        "code": "$rc:tiff_compression.domain.NONE"
+                    }
+                ]
+            },
+            "value": "LZW",
+            "description": "$rc:tiff_compression.descr"
+        },
+        "geotiff_tags": {
+            "type": "optional",
+            "displayname": "$rc:geotiff_tags.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "GEOTIFF_TAGS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_GEOTIFF_TAGS"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:geotiff_tags.descr"
+        }
+    },
+    "environments": [
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

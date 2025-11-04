@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Overwrites the contents of a network diagram with the network elements currently selected in the specified map. These network elements become the new initial content of the diagram.",
+        "in_network_diagram_layer.descr": "The network diagram that will be overwritten.",
+        "in_network_diagram_layer.title": "Input Network Diagram Layer",
+        "map.descr": "The map referencing the set of selected network elements that will be used to overwrite the input network diagram.",
+        "map.title": "Input Map",
+        "out_network_diagram_layer.title": "Output Network Diagram",
+        "summary": "<xdoc><p>Overwrites the contents of a network diagram with the network elements currently selected in the specified map. These network elements become the new initial content of the diagram.</p><note type=\"caution\"/><p group=\"note\">If you have an open edit session, you must save your edits prior to running this tool. This ensures that the diagram reflects the latest changes made to the network topology in the database. If you fail to save your edits, the edits will not be reflected in the diagram.</p></xdoc>",
+        "title": "Overwrite Diagram"
+    }
+}

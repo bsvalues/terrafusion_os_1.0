@@ -1,0 +1,123 @@
+{
+  "TRE": "CSCCGA",
+  "Source": ["STDI-0006 Apr2014, 6.1"],
+  "Name": "Cloud Cover Grid Data",
+  "Description": "The Cloud Cover Grid Data TRE (CSCCGA) provides support data that identifies which image segment and sensors were used to create the cloud grid. CSCCGA also geometrically registers the cloud grid to the pixel grid of one of the image segments.",
+  "Size": 60,
+  "Fields": {
+    "CCG_SOURCE" : {
+      "Name": "Cloud Cover",
+      "Description": "This field shows the concatenation of all sensors used to create cloud cover grid separated by commas.",
+      "Size": 18,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["PAN", "MS", "CAVIS", "SWIR"]
+        }        
+      ]
+    },
+    "REG_SENSOR": {
+      "Name": "Image Segment Sensor to which Cloud Cover Grid is registered",
+      "Description": "This field shows the image Segment Sensor to which Cloud Cover Grid is registered CCG is always registered to the main image in the dataset.",
+      "Size": 6,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["PAN", "MS", "CAVIS", "SWIR"]
+        }
+      ]
+    },
+    "ORIGIN_LINE": {
+      "Name": "Cloud Cover Grid Origin - Line",
+      "Description": "This field speecifies the cloud Cover Grid Origin, line (Corresponding line in registered image segment).",
+      "Size": 5,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["lines"],
+      "Values": [
+        {
+          "Type": "Integer"          
+        }
+      ]
+    },
+    "ORIGIN_SAMPLE": {
+      "Name": "Cloud Cover Grid Origin - Sample (Corresponding sample in registered image segment",
+      "Description": "This field speecifies the cloud Cover Grid Origin, Sample (Corresponding line in registered image segment).",
+      "Size": 5,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["samples"],
+      "Values": [
+        {
+          "Type": "Integer"          
+        }
+      ]
+    },
+    "AS_CELL_SIZE": {
+      "Name": "Along Scan Cell Size",
+      "Description": "This field specifies the Along Scan Cell Size, Lines (Cloud Cover Grid spacing in registered image segment lines).",
+      "Size": 7,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["lines"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 9999999
+        }
+      ]
+    },
+    "CS_CELL_SIZE": {
+      "Name": "Cross Scan Cell Size",
+      "Description": "This field specifies the Cross Scan Cell Size, Samples (Cloud Cover Grid spacing in registered image segment samples).",
+      "Size": 5,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["samples"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 99999
+        }
+      ]
+    },
+    "CCG_MAX_LINE": {
+      "Name": "Number of Rows in CC Grid",
+      "Description": "This field specifies the number of rows in the CC Grid (Number of Cells in lines direction.",
+      "Size": 7,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["lines"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 9999999
+        }
+      ]
+    },
+    "CCG_MAX_SAMPLE": {
+      "Name": "Number of Columns in CC Grid",
+      "Description": "This field specifies the number of columns in the CC Grid (Number of Cells in the sample direction).",
+      "Size": 5,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["columns"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 99999
+        }
+      ]
+    }    
+  }
+}

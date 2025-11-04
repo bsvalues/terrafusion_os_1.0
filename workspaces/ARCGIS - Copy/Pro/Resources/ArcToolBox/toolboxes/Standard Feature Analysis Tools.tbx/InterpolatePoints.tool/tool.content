@@ -1,0 +1,219 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "53010003",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "inputLayer": {
+            "displayname": "$rc:inputlayer.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Multipoint"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:inputlayer.descr"
+        },
+        "outputName": {
+            "displayname": "$rc:outputname.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:outputname.descr"
+        },
+        "field": {
+            "type": "optional",
+            "displayname": "$rc:field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double"
+                ]
+            },
+            "depends": [
+                "inputLayer"
+            ],
+            "description": "$rc:field.descr"
+        },
+        "interpolateOption": {
+            "type": "optional",
+            "displayname": "$rc:interpolateoption.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "1",
+                        "code": "$rc:interpolateoption.domain.1"
+                    },
+                    {
+                        "value": "5",
+                        "code": "$rc:interpolateoption.domain.5"
+                    },
+                    {
+                        "value": "9",
+                        "code": "$rc:interpolateoption.domain.9"
+                    }
+                ]
+            },
+            "value": "5",
+            "description": "$rc:interpolateoption.descr"
+        },
+        "outputPredictionError": {
+            "type": "optional",
+            "displayname": "$rc:outputpredictionerror.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "OUTPUT_ERROR"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_ERROR"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:outputpredictionerror.descr"
+        },
+        "classificationType": {
+            "type": "optional",
+            "displayname": "$rc:classificationtype.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "EQUALAREA",
+                        "code": "$rc:classificationtype.domain.EQUALAREA"
+                    },
+                    {
+                        "value": "EQUALINTERVAL",
+                        "code": "$rc:classificationtype.domain.EQUALINTERVAL"
+                    },
+                    {
+                        "value": "GEOMETRICINTERVAL",
+                        "code": "$rc:classificationtype.domain.GEOMETRICINTERVAL"
+                    },
+                    {
+                        "value": "MANUAL",
+                        "code": "$rc:classificationtype.domain.MANUAL"
+                    }
+                ]
+            },
+            "value": "GEOMETRICINTERVAL",
+            "description": "$rc:classificationtype.descr"
+        },
+        "numClasses": {
+            "type": "optional",
+            "displayname": "$rc:numclasses.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "32"
+            },
+            "value": "10",
+            "description": "$rc:numclasses.descr"
+        },
+        "classBreaks": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:classbreaks.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPDouble"
+                }
+            },
+            "description": "$rc:classbreaks.descr"
+        },
+        "boundingPolygonLayer": {
+            "type": "optional",
+            "displayname": "$rc:boundingpolygonlayer.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "description": "$rc:boundingpolygonlayer.descr"
+        },
+        "predictAtPointLayer": {
+            "type": "optional",
+            "displayname": "$rc:predictatpointlayer.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "description": "$rc:predictatpointlayer.descr"
+        },
+        "outputLayer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:outputlayer.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "outputPredictionErrorLayer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:outputpredictionerrorlayer.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "outputPredictedPointsLayer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:outputpredictedpointslayer.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    },
+    "environments": [
+        "extent"
+    ]
+}

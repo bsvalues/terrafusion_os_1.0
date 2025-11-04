@@ -1,0 +1,15 @@
+{
+    "map": {
+        "create_attribute_rules.descr": "<xdoc><p>Specifies whether attribute rules and the associated fields and error datasets will be created in the Indoors database. These attribute rules include validation checks to use in quality control workflows for floor plan data. The target geodatabase must be a file geodatabase or an enterprise geodatabase configured for branch versioning.</p><ul><li>Checked—Attribute rules will be created. This is the default.</li><li>Unchecked—Attribute rules will not be created.</li></ul></xdoc>",
+        "create_attribute_rules.title": "Create Attribute Rules",
+        "description": "Creates an indoor dataset containing the necessary feature classes to maintain floor plan data using a streamlined schema that conforms to the ArcGIS Indoors Information Model.",
+        "indoor_dataset_name.descr": "The unique name of the output indoor dataset. The default is Indoor.",
+        "indoor_dataset_name.title": "Indoor Dataset Name",
+        "output_dataset.title": "Output Dataset",
+        "spatial_reference.descr": "The horizontal and vertical coordinate system of the output indoor dataset.",
+        "spatial_reference.title": "Coordinate System",
+        "target_gdb.descr": "The target file or enterprise geodatabase that will contain the output indoor dataset.",
+        "target_gdb.title": "Target Geodatabase",
+        "title": "Create Indoor Dataset"
+    }
+}

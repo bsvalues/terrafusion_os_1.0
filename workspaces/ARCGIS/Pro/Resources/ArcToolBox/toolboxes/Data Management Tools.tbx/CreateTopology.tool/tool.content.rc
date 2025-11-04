@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Creates a topology. The topology will not contain any feature classes or rules.",
+        "in_cluster_tolerance.descr": "The cluster tolerance to be set on the topology. The larger the value, the more likely vertices will be to cluster together.",
+        "in_cluster_tolerance.title": "Cluster Tolerance",
+        "in_dataset.descr": "The feature dataset in which the topology will be created.",
+        "in_dataset.title": "Input Feature Dataset",
+        "out_name.descr": "The name of the topology to be created. This name must be unique across the entire geodatabase.",
+        "out_name.title": "Output Topology",
+        "out_topology.title": "Output Topology",
+        "summary": "<xdoc><p>Creates a topology. The topology will not contain any feature classes or rules.</p><p>Use the Add Feature Class To Topology and the Add Rule To Topology tools to add feature classes and rules to the topology.</p></xdoc>",
+        "title": "Create Topology"
+    }
+}

@@ -1,0 +1,69 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "2040008",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "Input_Rasters": {
+            "displayname": "$rc:input_rasters.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "DERasterDataset"
+                        },
+                        {
+                            "type": "GPRasterLayer"
+                        }
+                    ]
+                }
+            },
+            "description": "$rc:input_rasters.descr"
+        },
+        "Output_Geodatabase": {
+            "displayname": "$rc:output_geodatabase.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "description": "$rc:output_geodatabase.descr"
+        },
+        "Configuration_Keyword": {
+            "type": "optional",
+            "displayname": "$rc:configuration_keyword.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:configuration_keyword.descr"
+        },
+        "Derived_Geodatabase": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:derived_geodatabase.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "schema": {
+                "type": "GPContainerSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    },
+    "environments": [
+        "XYDomain",
+        "ZDomain",
+        "ZResolution",
+        "compression",
+        "configKeyword",
+        "extent",
+        "outputCoordinateSystem",
+        "outputZFlag",
+        "pyramid",
+        "rasterStatistics",
+        "scratchWorkspace",
+        "tileSize",
+        "workspace"
+    ]
+}

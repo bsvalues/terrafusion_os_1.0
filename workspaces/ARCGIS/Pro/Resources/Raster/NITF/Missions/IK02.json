@@ -1,0 +1,53 @@
+{
+  "SensorName" : "IKONOS-2",
+  "PanWeights" : [ 0.378, 0.211, 0.0, 0.411 ],
+  "Properties" : {
+    "BandDefinitionKeyword" : "IKONOS",
+    "BandDefinitionFriendlyName" : "IKONOS_4BANDS",
+    "MsToPanWeightsGramSchmidt" : "0.378 0.211 0.0  0.411",
+    "MsToPanWeightsEsri" : "0.85  0.65  0.35 0.9"
+  },
+  "Bands" : {
+    "Pan" : [
+      {
+        "BandName" : "Panchromatic",
+        "SolarIrradiance" : 1375.8,
+        "WavelengthMin" : 526.0,
+        "WavelengthMax" : 929.0
+      }
+    ],
+    "MS" : [
+      {
+        "BandName" : "Blue",
+        "SolarIrradiance" : 1930.9,
+        "WavelengthMin" : 445.0,
+        "WavelengthMax" : 516.0
+      },
+      {
+        "BandName" : "Green", 
+        "SolarIrradiance" : 1854.8,
+        "WavelengthMin" : 506.0,
+        "WavelengthMax" : 595.0
+      },
+      {
+        "BandName" : "Red",
+        "SolarIrradiance" : 1556.5,
+        "WavelengthMin" : 632.0,
+        "WavelengthMax" : 698.0
+      },
+      {
+        "BandName" : "NearInfrared",
+        "SolarIrradiance" : 1156.9,
+        "WavelengthMin" : 757.0,
+        "WavelengthMax" : 863.0
+      }
+    ],
+    "Cloud": [
+      {
+        "BandName": "Clouds"
+      }
+    ]
+  },
+  "AttributeMap" : [
+  ]
+}

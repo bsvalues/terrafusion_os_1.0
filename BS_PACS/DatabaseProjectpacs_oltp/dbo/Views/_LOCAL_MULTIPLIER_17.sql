@@ -1,0 +1,10 @@
+create view _LOCAL_MULTIPLIER_17 as 
+SELECT  [ID]
+      ,[LOCATION_ID]
+      ,[CONSTRUCTION_CLASS_ID]
+      ,[MULTIPLIER_VALUE]
+      ,[REGIONAL_MULTIPLIER]
+  FROM [mvp_cost_3Q2016].[mvp].[LOCAL_MULTIPLIER]
+
+GO
+

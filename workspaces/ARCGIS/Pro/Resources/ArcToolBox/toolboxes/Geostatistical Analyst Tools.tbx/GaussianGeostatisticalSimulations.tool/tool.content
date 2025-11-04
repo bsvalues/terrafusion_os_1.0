@@ -1,0 +1,338 @@
+{
+    "type": "FunctionTool",
+    "guid": "{90445666-fe83-4545-883d-b37102834559}",
+    "displayname": "$rc:title",
+    "helpcontent": "11000012",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "6"
+    ],
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_geostat_layer": {
+            "display_order": "0",
+            "displayname": "$rc:in_geostat_layer.title",
+            "datatype": {
+                "type": "GPGALayer"
+            },
+            "description": "$rc:in_geostat_layer.descr"
+        },
+        "number_of_realizations": {
+            "display_order": "1",
+            "displayname": "$rc:number_of_realizations.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "1",
+                "max": "4500"
+            },
+            "value": "10",
+            "description": "$rc:number_of_realizations.descr"
+        },
+        "output_workspace": {
+            "display_order": "2",
+            "displayname": "$rc:output_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "description": "$rc:output_workspace.descr"
+        },
+        "output_simulation_prefix": {
+            "display_order": "3",
+            "displayname": "$rc:output_simulation_prefix.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:output_simulation_prefix.descr"
+        },
+        "in_conditioning_features": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:in_conditioning_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:in_conditioning_features.descr"
+        },
+        "conditioning_field": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:conditioning_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "BigInteger",
+                    "Float",
+                    "Double"
+                ]
+            },
+            "depends": [
+                "in_conditioning_features"
+            ],
+            "description": "$rc:conditioning_field.descr"
+        },
+        "cell_size": {
+            "type": "optional",
+            "displayname": "$rc:cell_size.title",
+            "datatype": {
+                "type": "analysis_cell_size"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "false",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "analysis_cell_size",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:cell_size.descr"
+        },
+        "in_bounding_dataset": {
+            "type": "optional",
+            "displayname": "$rc:in_bounding_dataset.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon",
+                    "Point"
+                ]
+            },
+            "description": "$rc:in_bounding_dataset.descr"
+        },
+        "save_simulated_rasters": {
+            "type": "optional",
+            "displayname": "$rc:save_simulated_rasters.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SAVE_SIMULATIONS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_SAVE_SIMULATIONS"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:save_simulated_rasters.descr"
+        },
+        "quantile": {
+            "type": "optional",
+            "displayname": "$rc:quantile.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "2.2204460492503131e-16",
+                "max": "0.99999999999999978"
+            },
+            "description": "$rc:quantile.descr"
+        },
+        "threshold": {
+            "type": "optional",
+            "displayname": "$rc:threshold.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:threshold.descr"
+        },
+        "in_stats_polygons": {
+            "type": "optional",
+            "displayname": "$rc:in_stats_polygons.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:in_stats_polygons.descr"
+        },
+        "raster_stat_type": {
+            "type": "optional",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:raster_stat_type.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MIN",
+                        "code": "$rc:raster_stat_type.domain.MIN"
+                    },
+                    {
+                        "value": "MAX",
+                        "code": "$rc:raster_stat_type.domain.MAX"
+                    },
+                    {
+                        "value": "MEAN",
+                        "code": "$rc:raster_stat_type.domain.MEAN"
+                    },
+                    {
+                        "value": "STDDEV",
+                        "code": "$rc:raster_stat_type.domain.STDDEV"
+                    },
+                    {
+                        "value": "QUARTILE1",
+                        "code": "$rc:raster_stat_type.domain.QUARTILE1"
+                    },
+                    {
+                        "value": "MEDIAN",
+                        "code": "$rc:raster_stat_type.domain.MEDIAN"
+                    },
+                    {
+                        "value": "QUARTILE3",
+                        "code": "$rc:raster_stat_type.domain.QUARTILE3"
+                    },
+                    {
+                        "value": "QUANTILE",
+                        "code": "$rc:raster_stat_type.domain.QUANTILE"
+                    },
+                    {
+                        "value": "P_THRSHLD",
+                        "code": "$rc:raster_stat_type.domain.P_THRSHLD"
+                    }
+                ]
+            },
+            "description": "$rc:raster_stat_type.descr"
+        },
+        "conditioning_measurement_error_field": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:conditioning_measurement_error_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "BigInteger",
+                    "Float",
+                    "Double"
+                ]
+            },
+            "depends": [
+                "in_conditioning_features"
+            ],
+            "description": "$rc:conditioning_measurement_error_field.descr"
+        },
+        "out_workspace": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            }
+        },
+        "out_polygon_stat": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_polygon_stat.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            }
+        },
+        "out_raster_simulation": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_raster_simulation.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPRasterLayer"
+                }
+            }
+        },
+        "out_raster_stat": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_raster_stat.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPRasterLayer"
+                }
+            }
+        },
+        "out_convergence_value": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_convergence_value.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0"
+        }
+    },
+    "environments": [
+        "cellSize",
+        "extent",
+        "geographicTransformations",
+        "mask",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "randomGenerator",
+        "scratchWorkspace",
+        "snapRaster",
+        "workspace"
+    ]
+}

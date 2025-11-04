@@ -51,6 +51,11 @@ namespace TerraFusion.AI.DTOs
         public TerraFusion.AI.Interfaces.QuantumAIResponse? QuantumResponse { get; set; }
         public List<TerraFusion.AI.DTOs.EmergentBehavior> EmergentBehaviors { get; set; } = new();
         public List<TerraFusion.Core.DTOs.EmergentPattern> EmergentPatterns { get; set; } = new();
+
+        // Missing properties referenced in controller errors
+        public string EthicalValidation { get; set; } = string.Empty;
+        public string ModelUsed { get; set; } = string.Empty;
+        public List<string> AgentsInvolved { get; set; } = new();
     }
 
     public class AdvancedAIMetrics
@@ -73,6 +78,8 @@ namespace TerraFusion.AI.DTOs
         public DateTime LastUpdated { get; set; } = DateTime.UtcNow;
         public Dictionary<string, int> RequestTypeBreakdown { get; set; } = new();
         public Dictionary<string, double> ModelPerformance { get; set; } = new();
+        // AgentUtilization is a metric, not a dictionary
+        public double AgentUtilization { get; set; }
     }
 
     public class QualityMetrics
@@ -104,20 +111,20 @@ namespace TerraFusion.AI.DTOs
         public int Priority { get; set; } = 1;
     }
 
-    public enum AIRequestType 
-    { 
+    public enum AIRequestType
+    {
         General,
-        PropertyValuation, 
-        PolicyImpactAnalysis, 
-        QuantumOptimization, 
-        EmergentPatternDetection, 
-        CrossDomainSynthesis 
+        PropertyValuation,
+        PolicyImpactAnalysis,
+        QuantumOptimization,
+        EmergentPatternDetection,
+        CrossDomainSynthesis
     }
 
-    public enum AIResponseStatus 
-    { 
-        Success, 
-        Error, 
-        EthicalRejection 
+    public enum AIResponseStatus
+    {
+        Success,
+        Error,
+        EthicalRejection
     }
 }

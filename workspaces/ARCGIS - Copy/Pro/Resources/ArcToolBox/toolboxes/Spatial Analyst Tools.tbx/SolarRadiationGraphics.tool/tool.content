@@ -1,0 +1,303 @@
+{
+    "type": "FunctionTool",
+    "guid": "{11554d12-c5e9-4b1b-8d73-012e99bdd0d0}",
+    "displayname": "$rc:title",
+    "helpcontent": "8190003",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10"
+    ],
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "params": {
+        "in_surface_raster": {
+            "display_order": "0",
+            "displayname": "$rc:in_surface_raster.title",
+            "datatype": {
+                "type": "GPSAGeoData"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "true",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_surface_raster.descr"
+        },
+        "out_viewshed_raster": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_viewshed_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_viewshed_raster.descr"
+        },
+        "in_points_feature_or_table": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:in_points_feature_or_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "false",
+                "singleband": "false",
+                "datatype": [
+                    "DEFeatureClass",
+                    "GPFeatureLayer",
+                    "GPTableView",
+                    "DETextFile",
+                    "DETable"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Geometry"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_points_feature_or_table.descr"
+        },
+        "sky_size": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:sky_size.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "false",
+                "low": {
+                    "inclusive": "true",
+                    "val": "100"
+                },
+                "high": {
+                    "allow": "true",
+                    "val": "10000"
+                }
+            },
+            "value": "200",
+            "description": "$rc:sky_size.descr"
+        },
+        "height_offset": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:height_offset.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "false",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                }
+            },
+            "value": "0",
+            "description": "$rc:height_offset.descr"
+        },
+        "calculation_directions": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:calculation_directions.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "false",
+                "low": {
+                    "inclusive": "true",
+                    "val": "8"
+                },
+                "high": {
+                    "allow": "true",
+                    "val": "360"
+                }
+            },
+            "value": "32",
+            "description": "$rc:calculation_directions.descr"
+        },
+        "latitude": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:latitude.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "false",
+                "low": {
+                    "inclusive": "true",
+                    "val": "-90"
+                },
+                "high": {
+                    "allow": "true",
+                    "val": "90"
+                }
+            },
+            "depends": [
+                "in_surface_raster"
+            ],
+            "category": "$rc:params.category1",
+            "description": "$rc:latitude.descr"
+        },
+        "time_configuration": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:time_configuration.title",
+            "datatype": {
+                "type": "GPSATimeConfiguration"
+            },
+            "depends": [
+                "in_surface_raster"
+            ],
+            "value": "MultiDays 2024 5 160",
+            "category": "$rc:params.category1",
+            "description": "$rc:time_configuration.descr"
+        },
+        "day_interval": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:day_interval.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "false",
+                "low": {
+                    "inclusive": "true",
+                    "val": "1"
+                }
+            },
+            "depends": [
+                "time_configuration"
+            ],
+            "value": "14",
+            "category": "$rc:params.category1",
+            "description": "$rc:day_interval.descr"
+        },
+        "hour_interval": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:hour_interval.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "false"
+            },
+            "value": "0.5",
+            "category": "$rc:params.category1",
+            "description": "$rc:hour_interval.descr"
+        },
+        "out_sunmap_raster": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "10",
+            "displayname": "$rc:out_sunmap_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "depends": [
+                "time_configuration"
+            ],
+            "category": "$rc:params.category1",
+            "description": "$rc:out_sunmap_raster.descr"
+        },
+        "zenith_divisions": {
+            "type": "optional",
+            "display_order": "11",
+            "displayname": "$rc:zenith_divisions.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "false",
+                "low": {
+                    "inclusive": "true",
+                    "val": "1"
+                }
+            },
+            "value": "8",
+            "category": "$rc:params.category2",
+            "description": "$rc:zenith_divisions.descr"
+        },
+        "azimuth_divisions": {
+            "type": "optional",
+            "display_order": "12",
+            "displayname": "$rc:azimuth_divisions.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "false"
+            },
+            "value": "8",
+            "category": "$rc:params.category2",
+            "description": "$rc:azimuth_divisions.descr"
+        },
+        "out_skymap_raster": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "13",
+            "displayname": "$rc:out_skymap_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "category": "$rc:params.category2",
+            "description": "$rc:out_skymap_raster.descr"
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "cellSize",
+        "cellSizeProjectionMethod",
+        "compression",
+        "configKeyword",
+        "extent",
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

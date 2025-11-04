@@ -1,0 +1,99 @@
+version: "3.8"
+
+services:
+  # Rust Backend (API Server)
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: tf-ide-backend
+    ports:
+      - "8787:8787"
+    environment:
+      - RUST_LOG=info
+      - LOG_LEVEL=info
+      - PORT=8787
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/terrafusion
+      - REDIS_URL=redis://redis:6379
+      - WORKSPACE_ROOT=/workspaces
+      - REPO_ROOT=/workspaces
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - terrafusion-network
+    volumes:
+      - ../../marketplace:/workspaces/marketplace
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8787/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  # React Frontend (Development Server)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NODE_ENV: development
+    container_name: tf-ide-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8787
+      - NODE_ENV=development
+    depends_on:
+      - backend
+    networks:
+      - terrafusion-network
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+    restart: unless-stopped
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: tf-ide-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=terrafusion
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - terrafusion-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: tf-ide-redis
+    ports:
+      - "6380:6379"
+    networks:
+      - terrafusion-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+networks:
+  terrafusion-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+    driver: local

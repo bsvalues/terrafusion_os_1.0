@@ -1,0 +1,13 @@
+{
+    "map": {
+        "description": "Overlays several rasters, multiplying each by their given weight and summing them together.",
+        "in_rasters.descr": "<xdoc><p>The weighted sum table allows you to apply different weights to individual input rasters before they are summed together.</p><ul><li>Raster—The raster being weighted.</li><li>Field—The field of the raster to use for weighting.</li><li>Weight—The weight value by which to multiply the raster. It can be any positive or negative decimal value.</li></ul></xdoc>",
+        "in_rasters.dt.title1": "Raster",
+        "in_rasters.dt.title2": "Field",
+        "in_rasters.dt.title3": "Weight",
+        "in_rasters.title": "Input rasters",
+        "out_raster.descr": "<xdoc><p>The output weighted raster.</p><p>It will be of floating-point type.</p></xdoc>",
+        "out_raster.title": "Output raster",
+        "title": "Weighted Sum"
+    }
+}

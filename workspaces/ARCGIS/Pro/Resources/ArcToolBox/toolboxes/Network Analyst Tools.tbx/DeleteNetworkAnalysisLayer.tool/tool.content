@@ -1,0 +1,32 @@
+{
+    "type": "FunctionTool",
+    "displayname": "$rc:title",
+    "helpcontent": "13010028",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "param_nocount:in_network_analysis_layers"
+    ],
+    "tool_Execute": "NetworkAnalyst.dll/DeleteNetworkAnalysisLayer_Execute",
+    "tool_UpdateMessages": "NetworkAnalyst.dll/DeleteNetworkAnalysisLayer_UpdateMessages",
+    "params": {
+        "in_network_analysis_layers": {
+            "displayname": "$rc:in_network_analysis_layers.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPNALayer"
+                }
+            },
+            "description": "$rc:in_network_analysis_layers.descr"
+        },
+        "delete_succeeded": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:delete_succeeded.title",
+            "datatype": {
+                "type": "GPBoolean"
+            }
+        }
+    }
+}

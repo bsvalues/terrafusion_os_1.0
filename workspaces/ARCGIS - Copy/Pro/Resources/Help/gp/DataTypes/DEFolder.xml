@@ -1,0 +1,5 @@
+<DataType Name="DEFolder">
+  <DisplayName>Folder</DisplayName>
+  <Description>Specifies a location on disk where data is stored.</Description>
+</DataType>
+

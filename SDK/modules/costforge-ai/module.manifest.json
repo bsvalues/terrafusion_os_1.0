@@ -1,0 +1,66 @@
+{
+  "name": "costforge-ai",
+  "version": "1.0.0",
+  "displayName": "Costforge Ai",
+  "description": "Custom ai module for TerraFusion OS",
+  "type": "ai-module",
+  "tier": "tier1",
+  "priority": "normal",
+  "status": "development",
+  "capabilities": [
+    "data-processing",
+    "api-integration",
+    "ai-integration"
+  ],
+  "components": [],
+  "dependencies": [
+    "government-edition",
+    "ai-command-brain"
+  ],
+  "configuration": {
+    "environment": {
+      "MODULE_ENABLED": "true",
+      "AI_INTEGRATION_ENABLED": "true"
+    },
+    "resources": {
+      "memory": "1GB",
+      "cpu": "1 core",
+      "storage": "500MB"
+    }
+  },
+  "api": {
+    "endpoints": [
+      "/api/costforge-ai/health",
+      "/api/costforge-ai/metrics"
+    ],
+    "events": [
+      "module-initialized",
+      "data-processed"
+    ]
+  },
+  "security": {
+    "authentication": "required",
+    "authorization": "rbac",
+    "encryption": "aes-256"
+  },
+  "monitoring": {
+    "metrics": [
+      "requests_total",
+      "response_time",
+      "error_rate"
+    ],
+    "alerts": [
+      "high_error_rate",
+      "slow_response"
+    ]
+  },
+  "testing": {
+    "unitTests": "npm run test:unit",
+    "integrationTests": "npm run test:integration",
+    "coverage": ">80%"
+  },
+  "createdAt": "2025-10-19T00:43:17.000Z",
+  "updatedAt": "2025-10-19T00:43:17.000Z",
+  "author": "TerraFusion Developer",
+  "license": "Proprietary"
+}

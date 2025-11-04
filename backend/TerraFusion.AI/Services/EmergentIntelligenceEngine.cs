@@ -20,24 +20,24 @@ namespace TerraFusion.AI.Services
     {
         private readonly ILogger<EmergentIntelligenceEngine> _logger;
         private readonly IConfiguration _configuration;
-        
+
         // Agent Hierarchy Management
         private readonly ConcurrentDictionary<string, SwarmAgent> _allAgents;
         private readonly ConcurrentDictionary<AgentTier, List<SwarmAgent>> _agentsByTier;
         private readonly ConcurrentDictionary<string, SwarmNetwork> _swarmNetworks;
-        
+
         // Emergent Behavior Tracking
         private readonly ConcurrentQueue<EmergentBehavior> _recentBehaviors;
         private readonly ConcurrentDictionary<string, TerraFusion.AI.DTOs.EmergentPattern> _discoveredPatterns;
         private readonly ConcurrentDictionary<string, CollectiveMemory> _collectiveKnowledge;
-        
+
         // System State
         private int _targetAgentCount;
         private int _currentActiveAgents;
         private double _swarmCoherence;
         private double _collectiveIntelligenceScore;
         private readonly CancellationTokenSource _cancellationTokenSource;
-        
+
         // Performance Metrics
         private readonly Dictionary<string, double> _emergentMetrics;
         private DateTime _lastEvolutionCycle;
@@ -49,7 +49,7 @@ namespace TerraFusion.AI.Services
         {
             _logger = logger;
             _configuration = configuration;
-            
+
             _allAgents = new ConcurrentDictionary<string, SwarmAgent>();
             _agentsByTier = new ConcurrentDictionary<AgentTier, List<SwarmAgent>>();
             _swarmNetworks = new ConcurrentDictionary<string, SwarmNetwork>();
@@ -58,7 +58,7 @@ namespace TerraFusion.AI.Services
             _collectiveKnowledge = new ConcurrentDictionary<string, CollectiveMemory>();
             _emergentMetrics = new Dictionary<string, double>();
             _cancellationTokenSource = new CancellationTokenSource();
-            
+
             _lastEvolutionCycle = DateTime.UtcNow;
             _emergentCapabilityCount = 0;
         }
@@ -66,44 +66,44 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Initialize the 50,000-agent swarm intelligence system
         /// </summary>
-        public async Task<bool> InitializeSwarmIntelligence(int targetAgentCount)
+        public async System.Threading.Tasks.Task<bool> InitializeSwarmIntelligence(int targetAgentCount)
         {
             _logger.LogInformation("🧬 Initializing Emergent Intelligence Engine...");
             _logger.LogInformation($"🎯 Target Agent Count: {targetAgentCount:N0}");
-            
+
             _targetAgentCount = targetAgentCount;
-            
+
             try
             {
                 // Phase 1: Initialize Agent Hierarchy
                 _logger.LogInformation("📋 Phase 1: Creating Agent Hierarchy");
                 await InitializeAgentHierarchy();
-                
+
                 // Phase 2: Establish Network Connections
                 _logger.LogInformation("🕸️ Phase 2: Establishing Swarm Networks");
                 await EstablishSwarmNetworks();
-                
+
                 // Phase 3: Initialize Collective Memory
                 _logger.LogInformation("🧠 Phase 3: Initializing Collective Memory");
                 await InitializeCollectiveMemory();
-                
+
                 // Phase 4: Start Emergent Behavior Detection
                 _logger.LogInformation("🔍 Phase 4: Starting Emergent Behavior Detection");
                 await StartEmergentBehaviorDetection();
-                
+
                 // Phase 5: Begin Evolution Cycles
                 _logger.LogInformation("🔄 Phase 5: Beginning Evolution Cycles");
                 _ = Task.Run(EvolutionaryLoop, _cancellationTokenSource.Token);
                 _ = Task.Run(CollectiveIntelligenceLoop, _cancellationTokenSource.Token);
                 _ = Task.Run(EmergentPatternAnalysisLoop, _cancellationTokenSource.Token);
-                
+
                 _currentActiveAgents = _allAgents.Values.Count(a => a.IsActive);
-                
+
                 _logger.LogInformation("✅ Emergent Intelligence Engine Successfully Initialized");
                 _logger.LogInformation($"📊 Active Agents: {_currentActiveAgents:N0}/{_targetAgentCount:N0}");
                 _logger.LogInformation($"🧬 Swarm Networks: {_swarmNetworks.Count:N0}");
                 _logger.LogInformation($"💭 Collective Knowledge Base: {_collectiveKnowledge.Count:N0} memories");
-                
+
                 return true;
             }
             catch (Exception ex)
@@ -116,7 +116,7 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Get total agent count in the swarm
         /// </summary>
-        public async Task<int> GetTotalAgentCount()
+        public async System.Threading.Tasks.Task<int> GetTotalAgentCount()
         {
             await Task.CompletedTask;
             return _allAgents.Count;
@@ -125,7 +125,7 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Get currently active agent count
         /// </summary>
-        public async Task<int> GetActiveAgentCount()
+        public async System.Threading.Tasks.Task<int> GetActiveAgentCount()
         {
             await Task.CompletedTask;
             return _allAgents.Values.Count(a => a.IsActive);
@@ -134,7 +134,7 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Get swarm coherence score (0.0 to 1.0)
         /// </summary>
-        public async Task<double> GetSwarmCoherence()
+        public async System.Threading.Tasks.Task<double> GetSwarmCoherence()
         {
             await Task.CompletedTask;
             return _swarmCoherence;
@@ -143,7 +143,7 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Get collective intelligence score (0.0 to 1.0)
         /// </summary>
-        public async Task<double> GetCollectiveIntelligenceScore()
+        public async System.Threading.Tasks.Task<double> GetCollectiveIntelligenceScore()
         {
             await Task.CompletedTask;
             return _collectiveIntelligenceScore;
@@ -152,7 +152,7 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Get count of emergent capabilities discovered
         /// </summary>
-        public async Task<int> GetEmergentCapabilityCount()
+        public async System.Threading.Tasks.Task<int> GetEmergentCapabilityCount()
         {
             await Task.CompletedTask;
             return _emergentCapabilityCount;
@@ -161,53 +161,53 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Detect emergent behaviors in the swarm
         /// </summary>
-        public async Task<List<EmergentBehavior>> DetectEmergentBehaviors()
+        public async System.Threading.Tasks.Task<List<EmergentBehavior>> DetectEmergentBehaviors()
         {
             _logger.LogInformation("🔍 Detecting Emergent Behaviors...");
-            
+
             var behaviors = new List<EmergentBehavior>();
             var detectionStartTime = DateTime.UtcNow;
-            
+
             try
             {
                 // Analyze agent interaction patterns
                 var interactionPatterns = await AnalyzeAgentInteractions();
-                
+
                 // Detect coordination behaviors
                 var coordinationBehaviors = await DetectCoordinationBehaviors(interactionPatterns);
                 behaviors.AddRange(coordinationBehaviors);
-                
+
                 // Detect specialization behaviors
                 var specializationBehaviors = await DetectSpecializationBehaviors();
                 behaviors.AddRange(specializationBehaviors);
-                
+
                 // Detect adaptation behaviors
                 var adaptationBehaviors = await DetectAdaptationBehaviors();
                 behaviors.AddRange(adaptationBehaviors);
-                
+
                 // Detect innovation behaviors
                 var innovationBehaviors = await DetectInnovationBehaviors();
                 behaviors.AddRange(innovationBehaviors);
-                
+
                 // Detect optimization behaviors
                 var optimizationBehaviors = await DetectOptimizationBehaviors();
                 behaviors.AddRange(optimizationBehaviors);
-                
+
                 // Store detected behaviors
                 foreach (var behavior in behaviors)
                 {
                     _recentBehaviors.Enqueue(behavior);
-                    
+
                     // Keep only recent behaviors (last 1000)
                     while (_recentBehaviors.Count > 1000)
                     {
                         _recentBehaviors.TryDequeue(out _);
                     }
                 }
-                
+
                 var detectionTime = (DateTime.UtcNow - detectionStartTime).TotalMilliseconds;
                 _logger.LogInformation($"✅ Detected {behaviors.Count} emergent behaviors in {detectionTime:F1}ms");
-                
+
                 return behaviors;
             }
             catch (Exception ex)
@@ -220,65 +220,65 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Analyze emergent patterns from detected behaviors
         /// </summary>
-        public async Task<List<TerraFusion.AI.DTOs.EmergentPattern>> AnalyzeEmergentPatterns(List<EmergentBehavior> behaviors)
+        public async System.Threading.Tasks.Task<List<TerraFusion.AI.DTOs.EmergentPattern>> AnalyzeEmergentPatterns(List<EmergentBehavior> behaviors)
         {
             _logger.LogInformation($"🧩 Analyzing {behaviors.Count} behaviors for emergent patterns...");
-            
+
             var patterns = new List<TerraFusion.AI.DTOs.EmergentPattern>();
             var analysisStartTime = DateTime.UtcNow;
-            
+
             try
             {
                 // Group behaviors by type
                 var behaviorsByType = behaviors.GroupBy(b => b.Type).ToList();
-                
+
                 foreach (var typeGroup in behaviorsByType)
                 {
                     // Analyze behavioral patterns within each type
                     var typePatterns = await AnalyzeBehavioralPatterns(typeGroup.ToList());
                     patterns.AddRange(typePatterns);
-                    
+
                     // Look for performance patterns
                     var performancePatterns = await AnalyzePerformancePatterns(typeGroup.ToList());
                     patterns.AddRange(performancePatterns);
-                    
+
                     // Look for learning patterns
                     var learningPatterns = await AnalyzeLearningPatterns(typeGroup.ToList());
                     patterns.AddRange(learningPatterns);
-                    
+
                     // Look for coordination patterns
                     var coordinationPatterns = await AnalyzeCoordinationPatterns(typeGroup.ToList());
                     patterns.AddRange(coordinationPatterns);
                 }
-                
+
                 // Cross-type emergent patterns
                 var crossTypePatterns = await AnalyzeCrossTypePatterns(behaviors);
                 patterns.AddRange(crossTypePatterns);
-                
+
                 // Validate and score patterns
                 var validatedPatterns = await ValidateAndScorePatterns(patterns);
-                
+
                 // Store discovered patterns
                 foreach (var pattern in validatedPatterns.Where(p => p.SignificanceScore > 0.7))
                 {
                     _discoveredPatterns[pattern.PatternId] = pattern;
-                    
+
                     if (pattern.IsBeneficial && pattern.SignificanceScore > 0.9)
                     {
                         _emergentCapabilityCount++;
                         _logger.LogInformation($"🌟 Discovered high-value emergent pattern: {pattern.Description}");
                     }
                 }
-                
+
                 var analysisTime = (DateTime.UtcNow - analysisStartTime).TotalMilliseconds;
                 _logger.LogInformation($"✅ Analyzed patterns in {analysisTime:F1}ms, found {validatedPatterns.Count} significant patterns");
-                
+
                 return validatedPatterns;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "❌ Error analyzing emergent patterns");
-                return new List<EmergentPattern>();
+                return new List<TerraFusion.AI.DTOs.EmergentPattern>();
             }
         }
 
@@ -287,7 +287,7 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Initialize the hierarchical agent structure
         /// </summary>
-        private async Task InitializeAgentHierarchy()
+        private async System.Threading.Tasks.Task InitializeAgentHierarchy()
         {
             var hierarchyDefinition = new Dictionary<AgentTier, (int count, string description, double capability)>
             {
@@ -296,14 +296,14 @@ namespace TerraFusion.AI.Services
                 [AgentTier.DomainGenerals] = (1000, "Specialized mastery", 0.90),
                 [AgentTier.ProcessCoordinators] = (3000, "Workflow optimization", 0.85),
                 [AgentTier.ExpertSpecialists] = (10000, "Deep knowledge systems", 0.80),
-                [AgentTier.AdaptiveExecutors] = (20000, "Dynamic task completion", 0.75),
+                [AgentTier.AdaptiveExecutors] = (20000, "Dynamic System.Threading.Tasks.Task completion", 0.75),
                 [AgentTier.MicroOptimizers] = (15780, "Granular perfection", 0.70)
             };
-            
+
             foreach (var tier in hierarchyDefinition)
             {
                 var tierAgents = new List<SwarmAgent>();
-                
+
                 for (int i = 0; i < tier.Value.count; i++)
                 {
                     var agent = new SwarmAgent
@@ -319,15 +319,15 @@ namespace TerraFusion.AI.Services
                         KnowledgeBase = await InitializeAgentKnowledge(tier.Key),
                         NetworkConnections = new List<string>()
                     };
-                    
+
                     _allAgents[agent.AgentId] = agent;
                     tierAgents.Add(agent);
                 }
-                
+
                 _agentsByTier[tier.Key] = tierAgents;
                 _logger.LogInformation($"✅ Created {tier.Value.count:N0} agents in {tier.Key} tier");
             }
-            
+
             var totalAgents = hierarchyDefinition.Values.Sum(x => x.count);
             _logger.LogInformation($"✅ Agent hierarchy initialized: {totalAgents:N0} agents across {hierarchyDefinition.Count} tiers");
         }
@@ -335,10 +335,10 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Establish network connections between agents
         /// </summary>
-        private async Task EstablishSwarmNetworks()
+        private async System.Threading.Tasks.Task EstablishSwarmNetworks()
         {
             var networks = new Dictionary<string, SwarmNetwork>();
-            
+
             // Create hierarchical networks
             foreach (var tier in _agentsByTier)
             {
@@ -353,10 +353,10 @@ namespace TerraFusion.AI.Services
                     ConnectionStrength = CalculateConnectionStrength(tier.Key),
                     CommunicationProtocol = await DetermineOptimalProtocol(tier.Key)
                 };
-                
+
                 networks[network.NetworkId] = network;
             }
-            
+
             // Create cross-tier coordination networks
             var coordinationNetwork = new SwarmNetwork
             {
@@ -370,30 +370,30 @@ namespace TerraFusion.AI.Services
                 CommunicationProtocol = "QuantumSync"
             };
             networks[coordinationNetwork.NetworkId] = coordinationNetwork;
-            
+
             // Create specialization networks
             var specializationNetworks = await CreateSpecializationNetworks();
             foreach (var specNetwork in specializationNetworks)
             {
                 networks[specNetwork.NetworkId] = specNetwork;
             }
-            
+
             // Store all networks
             foreach (var network in networks)
             {
                 _swarmNetworks[network.Key] = network.Value;
             }
-            
+
             // Establish agent connections
             await EstablishAgentConnections(networks.Values.ToList());
-            
+
             _logger.LogInformation($"✅ Swarm networks established: {networks.Count} networks");
         }
 
         /// <summary>
         /// Initialize collective memory system
         /// </summary>
-        private async Task InitializeCollectiveMemory()
+        private async System.Threading.Tasks.Task InitializeCollectiveMemory()
         {
             var memoryCategories = new[]
             {
@@ -408,7 +408,7 @@ namespace TerraFusion.AI.Services
                 "emergent-solutions",
                 "collective-insights"
             };
-            
+
             foreach (var category in memoryCategories)
             {
                 var memory = new CollectiveMemory
@@ -423,59 +423,59 @@ namespace TerraFusion.AI.Services
                     ContributingAgents = new List<string>(),
                     ValidationStatus = ValidationStatus.Validated
                 };
-                
+
                 _collectiveKnowledge[category] = memory;
             }
-            
+
             _logger.LogInformation($"✅ Collective memory initialized with {memoryCategories.Length} categories");
         }
 
         /// <summary>
         /// Start emergent behavior detection systems
         /// </summary>
-        private async Task StartEmergentBehaviorDetection()
+        private async System.Threading.Tasks.Task StartEmergentBehaviorDetection()
         {
             // Initialize behavior detection algorithms
             await InitializeBehaviorDetectors();
-            
+
             // Start monitoring systems
             await StartMonitoringSystems();
-            
+
             _logger.LogInformation("✅ Emergent behavior detection systems started");
         }
 
         /// <summary>
         /// Main evolutionary loop for swarm intelligence
         /// </summary>
-        private async Task EvolutionaryLoop()
+        private async System.Threading.Tasks.Task EvolutionaryLoop()
         {
             _logger.LogInformation("🔄 Evolutionary Loop Started");
-            
+
             while (!_cancellationTokenSource.Token.IsCancellationRequested)
             {
                 try
                 {
                     _logger.LogInformation("🧬 Beginning evolution cycle...");
-                    
+
                     // Analyze swarm performance
                     var performance = await AnalyzeSwarmPerformance();
-                    
+
                     // Identify improvement opportunities
                     var improvements = await IdentifyImprovementOpportunities(performance);
-                    
+
                     // Apply evolutionary changes
                     await ApplyEvolutionaryChanges(improvements);
-                    
+
                     // Update swarm coherence
                     _swarmCoherence = await CalculateSwarmCoherence();
-                    
+
                     // Update collective intelligence
                     _collectiveIntelligenceScore = await CalculateCollectiveIntelligence();
-                    
+
                     _lastEvolutionCycle = DateTime.UtcNow;
-                    
+
                     _logger.LogInformation($"✅ Evolution cycle complete - Coherence: {_swarmCoherence:P1}, Intelligence: {_collectiveIntelligenceScore:P1}");
-                    
+
                     await Task.Delay(TimeSpan.FromMinutes(15), _cancellationTokenSource.Token);
                 }
                 catch (OperationCanceledException)
@@ -492,26 +492,26 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Collective intelligence monitoring loop
         /// </summary>
-        private async Task CollectiveIntelligenceLoop()
+        private async System.Threading.Tasks.Task CollectiveIntelligenceLoop()
         {
             _logger.LogInformation("🧠 Collective Intelligence Loop Started");
-            
+
             while (!_cancellationTokenSource.Token.IsCancellationRequested)
             {
                 try
                 {
                     // Monitor knowledge sharing
                     await MonitorKnowledgeSharing();
-                    
+
                     // Facilitate collective problem solving
                     await FacilitateCollectiveProblemSolving();
-                    
+
                     // Update collective memory
                     await UpdateCollectiveMemory();
-                    
+
                     // Optimize knowledge distribution
                     await OptimizeKnowledgeDistribution();
-                    
+
                     await Task.Delay(TimeSpan.FromMinutes(10), _cancellationTokenSource.Token);
                 }
                 catch (OperationCanceledException)
@@ -528,29 +528,29 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Emergent pattern analysis loop
         /// </summary>
-        private async Task EmergentPatternAnalysisLoop()
+        private async System.Threading.Tasks.Task EmergentPatternAnalysisLoop()
         {
             _logger.LogInformation("🧩 Emergent Pattern Analysis Loop Started");
-            
+
             while (!_cancellationTokenSource.Token.IsCancellationRequested)
             {
                 try
                 {
                     // Collect recent behaviors
                     var recentBehaviors = _recentBehaviors.ToList();
-                    
+
                     if (recentBehaviors.Any())
                     {
                         // Analyze for new patterns
                         var patterns = await AnalyzeEmergentPatterns(recentBehaviors);
-                        
+
                         // Integrate beneficial patterns
                         await IntegrateBeneficialPatterns(patterns.Where(p => p.IsBeneficial).ToList());
-                        
+
                         // Report significant discoveries
                         await ReportSignificantDiscoveries(patterns.Where(p => p.SignificanceScore > 0.9).ToList());
                     }
-                    
+
                     await Task.Delay(TimeSpan.FromMinutes(20), _cancellationTokenSource.Token);
                 }
                 catch (OperationCanceledException)
@@ -568,7 +568,7 @@ namespace TerraFusion.AI.Services
 
         #region Helper Methods (Placeholders for Complex Operations)
 
-        private async Task<List<string>> GenerateSpecializationAreas(AgentTier tier)
+        private async System.Threading.Tasks.Task<List<string>> GenerateSpecializationAreas(AgentTier tier)
         {
             // Generate specialization areas based on tier
             var specializations = tier switch
@@ -578,16 +578,16 @@ namespace TerraFusion.AI.Services
                 AgentTier.DomainGenerals => new[] { "Property Assessment", "Legal Compliance", "Financial Analysis" },
                 AgentTier.ProcessCoordinators => new[] { "Workflow Optimization", "Process Automation", "Quality Control" },
                 AgentTier.ExpertSpecialists => new[] { "Technical Expertise", "Data Analysis", "Specialized Knowledge" },
-                AgentTier.AdaptiveExecutors => new[] { "Task Execution", "Adaptive Processing", "Dynamic Response" },
+                AgentTier.AdaptiveExecutors => new[] { "System.Threading.Tasks.Task Execution", "Adaptive Processing", "Dynamic Response" },
                 AgentTier.MicroOptimizers => new[] { "Detail Optimization", "Granular Analysis", "Precision Tasks" },
                 _ => new[] { "General Purpose" }
             };
-            
+
             await Task.CompletedTask;
             return specializations.ToList();
         }
 
-        private async Task<Dictionary<string, object>> InitializeAgentKnowledge(AgentTier tier)
+        private async System.Threading.Tasks.Task<Dictionary<string, object>> InitializeAgentKnowledge(AgentTier tier)
         {
             await Task.CompletedTask;
             return new Dictionary<string, object>
@@ -613,7 +613,7 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        private async Task<string> DetermineOptimalProtocol(AgentTier tier)
+        private async System.Threading.Tasks.Task<string> DetermineOptimalProtocol(AgentTier tier)
         {
             await Task.CompletedTask;
             return tier switch
@@ -627,7 +627,7 @@ namespace TerraFusion.AI.Services
         private List<string> SelectCoordinationAgents()
         {
             var coordinationAgents = new List<string>();
-            
+
             foreach (var tier in _agentsByTier)
             {
                 // Select top performers from each tier for coordination
@@ -636,53 +636,53 @@ namespace TerraFusion.AI.Services
                     .OrderByDescending(a => a.CapabilityLevel)
                     .Take(selectedCount)
                     .Select(a => a.AgentId);
-                    
+
                 coordinationAgents.AddRange(selected);
             }
-            
+
             return coordinationAgents;
         }
 
         // Placeholder implementations for complex operations
-        private async Task<List<SwarmNetwork>> CreateSpecializationNetworks() => new List<SwarmNetwork>();
-        private async Task EstablishAgentConnections(List<SwarmNetwork> networks) => await Task.Delay(1);
-        private async Task<List<KnowledgeEntry>> LoadInitialKnowledge(string category) => new List<KnowledgeEntry>();
-        private async Task InitializeBehaviorDetectors() => await Task.Delay(1);
-        private async Task StartMonitoringSystems() => await Task.Delay(1);
-        private async Task<SwarmPerformance> AnalyzeSwarmPerformance() => new SwarmPerformance();
-        private async Task<List<ImprovementOpportunity>> IdentifyImprovementOpportunities(SwarmPerformance performance) => new List<ImprovementOpportunity>();
-        private async Task ApplyEvolutionaryChanges(List<ImprovementOpportunity> improvements) => await Task.Delay(1);
-        private async Task<double> CalculateSwarmCoherence() => 0.88 + (new Random().NextDouble() * 0.10); // 88-98%
-        private async Task<double> CalculateCollectiveIntelligence() => 0.85 + (new Random().NextDouble() * 0.12); // 85-97%
-        private async Task MonitorKnowledgeSharing() => await Task.Delay(1);
-        private async Task FacilitateCollectiveProblemSolving() => await Task.Delay(1);
-        private async Task UpdateCollectiveMemory() => await Task.Delay(1);
-        private async Task OptimizeKnowledgeDistribution() => await Task.Delay(1);
-        private async Task IntegrateBeneficialPatterns(List<TerraFusion.AI.DTOs.EmergentPattern> patterns) => await Task.Delay(1);
-        private async Task ReportSignificantDiscoveries(List<TerraFusion.AI.DTOs.EmergentPattern> patterns) => await Task.Delay(1);
+        private async System.Threading.Tasks.Task<List<SwarmNetwork>> CreateSpecializationNetworks() => new List<SwarmNetwork>();
+        private async System.Threading.Tasks.Task EstablishAgentConnections(List<SwarmNetwork> networks) => await Task.Delay(1);
+        private async System.Threading.Tasks.Task<List<KnowledgeEntry>> LoadInitialKnowledge(string category) => new List<KnowledgeEntry>();
+        private async System.Threading.Tasks.Task InitializeBehaviorDetectors() => await Task.Delay(1);
+        private async System.Threading.Tasks.Task StartMonitoringSystems() => await Task.Delay(1);
+        private async System.Threading.Tasks.Task<SwarmPerformance> AnalyzeSwarmPerformance() => new SwarmPerformance();
+        private async System.Threading.Tasks.Task<List<ImprovementOpportunity>> IdentifyImprovementOpportunities(SwarmPerformance performance) => new List<ImprovementOpportunity>();
+        private async System.Threading.Tasks.Task ApplyEvolutionaryChanges(List<ImprovementOpportunity> improvements) => await Task.Delay(1);
+        private async System.Threading.Tasks.Task<double> CalculateSwarmCoherence() => 0.88 + (new Random().NextDouble() * 0.10); // 88-98%
+        private async System.Threading.Tasks.Task<double> CalculateCollectiveIntelligence() => 0.85 + (new Random().NextDouble() * 0.12); // 85-97%
+        private async System.Threading.Tasks.Task MonitorKnowledgeSharing() => await Task.Delay(1);
+        private async System.Threading.Tasks.Task FacilitateCollectiveProblemSolving() => await Task.Delay(1);
+        private async System.Threading.Tasks.Task UpdateCollectiveMemory() => await Task.Delay(1);
+        private async System.Threading.Tasks.Task OptimizeKnowledgeDistribution() => await Task.Delay(1);
+        private async System.Threading.Tasks.Task IntegrateBeneficialPatterns(List<TerraFusion.AI.DTOs.EmergentPattern> patterns) => await Task.Delay(1);
+        private async System.Threading.Tasks.Task ReportSignificantDiscoveries(List<TerraFusion.AI.DTOs.EmergentPattern> patterns) => await Task.Delay(1);
 
         // Behavior detection methods
-        private async Task<List<AgentInteraction>> AnalyzeAgentInteractions() => new List<AgentInteraction>();
-        private async Task<List<EmergentBehavior>> DetectCoordinationBehaviors(List<AgentInteraction> interactions) => CreateSampleBehaviors(EmergentBehaviorType.Coordination);
-        private async Task<List<EmergentBehavior>> DetectSpecializationBehaviors() => CreateSampleBehaviors(EmergentBehaviorType.Specialization);
-        private async Task<List<EmergentBehavior>> DetectAdaptationBehaviors() => CreateSampleBehaviors(EmergentBehaviorType.Adaptation);
-        private async Task<List<EmergentBehavior>> DetectInnovationBehaviors() => CreateSampleBehaviors(EmergentBehaviorType.Innovation);
-        private async Task<List<EmergentBehavior>> DetectOptimizationBehaviors() => CreateSampleBehaviors(EmergentBehaviorType.Optimization);
+        private async System.Threading.Tasks.Task<List<AgentInteraction>> AnalyzeAgentInteractions() => new List<AgentInteraction>();
+        private async System.Threading.Tasks.Task<List<EmergentBehavior>> DetectCoordinationBehaviors(List<AgentInteraction> interactions) => CreateSampleBehaviors(EmergentBehaviorType.Coordination);
+        private async System.Threading.Tasks.Task<List<EmergentBehavior>> DetectSpecializationBehaviors() => CreateSampleBehaviors(EmergentBehaviorType.Learning);
+        private async System.Threading.Tasks.Task<List<EmergentBehavior>> DetectAdaptationBehaviors() => CreateSampleBehaviors(EmergentBehaviorType.Adaptation);
+        private async System.Threading.Tasks.Task<List<EmergentBehavior>> DetectInnovationBehaviors() => CreateSampleBehaviors(EmergentBehaviorType.Emergence);
+        private async System.Threading.Tasks.Task<List<EmergentBehavior>> DetectOptimizationBehaviors() => CreateSampleBehaviors(EmergentBehaviorType.Optimization);
 
         // Pattern analysis methods
-        private async Task<List<TerraFusion.AI.DTOs.EmergentPattern>> AnalyzeBehavioralPatterns(List<EmergentBehavior> behaviors) => CreateSamplePatterns(PatternType.Behavioral, behaviors.Count);
-        private async Task<List<TerraFusion.AI.DTOs.EmergentPattern>> AnalyzePerformancePatterns(List<EmergentBehavior> behaviors) => CreateSamplePatterns(PatternType.Performance, behaviors.Count);
-        private async Task<List<TerraFusion.AI.DTOs.EmergentPattern>> AnalyzeLearningPatterns(List<EmergentBehavior> behaviors) => CreateSamplePatterns(PatternType.Learning, behaviors.Count);
-        private async Task<List<TerraFusion.AI.DTOs.EmergentPattern>> AnalyzeCoordinationPatterns(List<EmergentBehavior> behaviors) => CreateSamplePatterns(PatternType.Coordination, behaviors.Count);
-        private async Task<List<TerraFusion.AI.DTOs.EmergentPattern>> AnalyzeCrossTypePatterns(List<EmergentBehavior> behaviors) => CreateSamplePatterns(PatternType.Emergence, behaviors.Count);
-        private async Task<List<TerraFusion.AI.DTOs.EmergentPattern>> ValidateAndScorePatterns(List<TerraFusion.AI.DTOs.EmergentPattern> patterns) => patterns.Where(p => p.SignificanceScore > 0.5).ToList();
+        private async System.Threading.Tasks.Task<List<TerraFusion.AI.DTOs.EmergentPattern>> AnalyzeBehavioralPatterns(List<EmergentBehavior> behaviors) => CreateSamplePatterns(PatternType.Coordination, behaviors.Count);
+        private async System.Threading.Tasks.Task<List<TerraFusion.AI.DTOs.EmergentPattern>> AnalyzePerformancePatterns(List<EmergentBehavior> behaviors) => CreateSamplePatterns(PatternType.Trend, behaviors.Count);
+        private async System.Threading.Tasks.Task<List<TerraFusion.AI.DTOs.EmergentPattern>> AnalyzeLearningPatterns(List<EmergentBehavior> behaviors) => CreateSamplePatterns(PatternType.Emergence, behaviors.Count);
+        private async System.Threading.Tasks.Task<List<TerraFusion.AI.DTOs.EmergentPattern>> AnalyzeCoordinationPatterns(List<EmergentBehavior> behaviors) => CreateSamplePatterns(PatternType.Coordination, behaviors.Count);
+        private async System.Threading.Tasks.Task<List<TerraFusion.AI.DTOs.EmergentPattern>> AnalyzeCrossTypePatterns(List<EmergentBehavior> behaviors) => CreateSamplePatterns(PatternType.Emergence, behaviors.Count);
+        private async System.Threading.Tasks.Task<List<TerraFusion.AI.DTOs.EmergentPattern>> ValidateAndScorePatterns(List<TerraFusion.AI.DTOs.EmergentPattern> patterns) => patterns.Where(p => p.SignificanceScore > 0.5).ToList();
 
         private List<EmergentBehavior> CreateSampleBehaviors(EmergentBehaviorType type)
         {
             var random = new Random();
             var count = random.Next(1, 6); // 1-5 behaviors per type
             var behaviors = new List<EmergentBehavior>();
-            
+
             for (int i = 0; i < count; i++)
             {
                 behaviors.Add(new EmergentBehavior
@@ -695,18 +695,18 @@ namespace TerraFusion.AI.Services
                     Type = type
                 });
             }
-            
+
             return behaviors;
         }
 
         private List<TerraFusion.AI.DTOs.EmergentPattern> CreateSamplePatterns(PatternType type, int basedOnBehaviorCount)
         {
             if (basedOnBehaviorCount < 2) return new List<TerraFusion.AI.DTOs.EmergentPattern>();
-            
+
             var patterns = new List<TerraFusion.AI.DTOs.EmergentPattern>();
             var random = new Random();
             var count = Math.Min(basedOnBehaviorCount / 2, 3); // Create patterns based on behavior density
-            
+
             for (int i = 0; i < count; i++)
             {
                 patterns.Add(new TerraFusion.AI.DTOs.EmergentPattern
@@ -719,7 +719,7 @@ namespace TerraFusion.AI.Services
                     IsBeneficial = random.NextDouble() > 0.3 // 70% chance of being beneficial
                 });
             }
-            
+
             return patterns;
         }
 
@@ -808,12 +808,12 @@ namespace TerraFusion.AI.Services
         #endregion
 
         // Missing interface implementations
-        public async Task InitializeSwarmAsync(int agentCount)
+        public async System.Threading.Tasks.Task InitializeSwarmAsync(int agentCount)
         {
             await InitializeSwarmIntelligence(agentCount);
         }
 
-        public async Task<TerraFusion.AI.DTOs.SwarmOptimizationResult> OptimizeSwarmAsync(SwarmOptimizationRequest request)
+        public async System.Threading.Tasks.Task<TerraFusion.AI.DTOs.SwarmOptimizationResult> OptimizeSwarmAsync(SwarmOptimizationRequest request)
         {
             _logger.LogInformation($"Optimizing swarm with request: {request.OptimizationType}");
             await Task.Delay(200); // Simulate optimization
@@ -834,7 +834,7 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        public async Task<EmergentIntelligenceMetrics> GetMetricsAsync()
+        public async System.Threading.Tasks.Task<EmergentIntelligenceMetrics> GetMetricsAsync()
         {
             return new EmergentIntelligenceMetrics
             {

@@ -1,0 +1,16 @@
+{
+    "map": {
+        "block_field.descr": "The field in the attribute table that you want to use to group images. Only date, numeric, and string fields can be specified as Block fields.",
+        "block_field.title": "Block Field",
+        "description": "Groups multiple items in a mosaic dataset together as one item.",
+        "in_mosaic_dataset.descr": "The mosaic dataset that has the items that you want to merge.",
+        "in_mosaic_dataset.title": "Mosaic Dataset",
+        "max_rows_per_merged_items.descr": "Limits the number of items to merge. If the maximum is exceeded, the tool will create multiple merged items. The default is 1,000 rows.",
+        "max_rows_per_merged_items.title": "Maximum Allowed Rows Per Merged Item",
+        "out_mosaic_dataset.title": "Updated Mosaic Dataset",
+        "params.category1": "Advanced Options",
+        "title": "Merge Mosaic Dataset Items",
+        "where_clause.descr": "An SQL expression to select specific rasters to merge in the mosaic dataset.",
+        "where_clause.title": "Query Definition"
+    }
+}

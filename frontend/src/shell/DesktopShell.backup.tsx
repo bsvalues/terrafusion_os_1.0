@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { AppBar,
+import {
+  AppBar,
   Toolbar,
   Typography,
   Box,
@@ -14,15 +15,18 @@ import { AppBar,
   ListItemIcon,
   ListItemText,
   Avatar,
-  Chip } from '@mui/material';
-import { Dashboard,
+  Chip,
+} from '@mui/material';
+import {
+  Dashboard,
   Settings,
   Notifications,
   AccountCircle,
   Apps,
   Memory,
   Speed,
-  Security } from '@mui/icons-material';
+  Security,
+} from '@mui/icons-material';
 
 import { useSystemHealth } from '../hooks/useSystemHealth';
 import { useModules } from '../hooks/useModules';
@@ -112,7 +116,6 @@ export const DesktopShell: React.FC = () => {
               color={getStatusColor(systemHealth.memoryStatus)}
             />
 
-
             <Chip
               icon={<Speed />}
               label={`${systemHealth.cpu}%`}
@@ -172,8 +175,6 @@ export const DesktopShell: React.FC = () => {
                 }}
               >
                 <CardContent>
-
-
                   <Typography
                     variant='h4'
                     gutterBottom
@@ -188,8 +189,7 @@ export const DesktopShell: React.FC = () => {
                     Government AI Operating System
                   </Typography>
                   <Typography
-
-variant='body1'
+                    variant='body1'
                     sx={{
                       color: 'rgba(255,255,255,0.9)',
                       fontWeight: 500,
@@ -217,14 +217,10 @@ variant='body1'
                 }}
               >
                 <CardContent>
-
-
                   <Typography variant='h6' gutterBottom sx={{ color: 'white' }}>
                     System Status
                   </Typography>
-                  <Box
-
-sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <Chip
                       icon={<Apps />}
                       label={`${modules.filter((m) => m.status === 'active').length} Active Modules`}
@@ -270,33 +266,21 @@ sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
         <List>
           <ListItem>
             <ListItemIcon>
-
-
               <Dashboard sx={{ color: 'white' }} />
             </ListItemIcon>
-            <ListItemText
-
-primary='System Dashboard' primaryTypographyProps={{ color: 'white' }} />
+            <ListItemText primary='System Dashboard' primaryTypographyProps={{ color: 'white' }} />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-
-
               <Apps sx={{ color: 'white' }} />
             </ListItemIcon>
-            <ListItemText
-
-primary='Module Manager' primaryTypographyProps={{ color: 'white' }} />
+            <ListItemText primary='Module Manager' primaryTypographyProps={{ color: 'white' }} />
           </ListItem>
           <ListItem>
             <ListItemIcon>
-
-
               <AccountCircle sx={{ color: 'white' }} />
             </ListItemIcon>
-            <ListItemText
-
-primary='User Settings' primaryTypographyProps={{ color: 'white' }} />
+            <ListItemText primary='User Settings' primaryTypographyProps={{ color: 'white' }} />
           </ListItem>
         </List>
       </Drawer>

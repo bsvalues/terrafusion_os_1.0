@@ -1,0 +1,17 @@
+{
+    "map": {
+        "description": "Finds water bodies using input synthetic aperture radar (SAR) data and a DEM.",
+        "geoid.descr": "<xdoc><p>Specifies whether the vertical reference system of the input DEM will be transformed to ellipsoidal height. Most elevation datasets are referenced to sea level orthometric height, so a correction is required in these cases to convert to ellipsoidal height.<ul><li>Checked—A geoid correction will be made to convert orthometric height to ellipsoidal height (based on EGM96 geoid). This is the default.</li><li>Unchecked—No geoid correction will be made. Use this option only if the DEM is provided in ellipsoidal height.</li></ul></p></xdoc>",
+        "geoid.title": "Apply geoid correction",
+        "in_dem_raster.descr": "<xdoc><p>The input DEM.</p><p>If the input radar data is not orthorectified, this DEM will be used to orthorectify it.</p><p>This DEM will also be used to optimize the polygon construction.</p></xdoc>",
+        "in_dem_raster.title": "DEM Raster",
+        "in_radar_data.descr": "The input radar data.",
+        "in_radar_data.title": "Input Radar Data",
+        "min_area.descr": "The minimum area to extract as a water body. The default value is 50,000 square meters.",
+        "min_area.title": "Minimum Area",
+        "out_feature_class.descr": "The output polygon feature class that depicts water and land polygons.",
+        "out_feature_class.title": "Output Feature Class",
+        "summary": "<xdoc><p>Finds water bodies using input synthetic aperture radar (SAR) data and a DEM.</p><p>The tool uses the input radar backscatter to determine whether pixels should be classified as water; then creates polygons for water areas. The tool will also create polygons for areas that are not water, which will be considered land areas.</p></xdoc>",
+        "title": "Extract Water"
+    }
+}

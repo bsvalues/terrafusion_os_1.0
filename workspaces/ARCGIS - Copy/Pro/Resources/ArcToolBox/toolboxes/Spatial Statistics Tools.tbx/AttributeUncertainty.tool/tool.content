@@ -1,0 +1,368 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\AttributeUncertainty",
+    "displayname": "$rc:title",
+    "helpcontent": "9020001",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "out_features": {
+            "direction": "out",
+            "displayname": "$rc:out_features.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_features.descr"
+        },
+        "out_simulation_table": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_simulation_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_simulation_table.descr"
+        },
+        "analysis_input_features": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:analysis_input_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:analysis_input_features.descr"
+        },
+        "uncertainty_measure": {
+            "type": "optional",
+            "displayname": "$rc:uncertainty_measure.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MOE",
+                        "code": "$rc:uncertainty_measure.domain.MOE"
+                    },
+                    {
+                        "value": "CONFIDENCE_BOUNDS",
+                        "code": "$rc:uncertainty_measure.domain.CONFIDENCE_BOUNDS"
+                    },
+                    {
+                        "value": "PERCENTAGE",
+                        "code": "$rc:uncertainty_measure.domain.PERCENTAGE"
+                    }
+                ]
+            },
+            "value": "MOE",
+            "description": "$rc:uncertainty_measure.descr"
+        },
+        "moe_field": {
+            "type": "optional",
+            "control_guid": "{1AA9A769-D3F3-4EB0-85CB-CC07C79313C8}",
+            "displayname": "$rc:moe_field.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:moe_field.dt.title1",
+                        "readonly": "true"
+                    },
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:moe_field.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Double",
+                            "Float",
+                            "Short",
+                            "Long",
+                            "BigInteger"
+                        ]
+                    },
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Double",
+                            "Float",
+                            "Short",
+                            "Long",
+                            "BigInteger"
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "analysis_input_features"
+            ],
+            "description": "$rc:moe_field.descr"
+        },
+        "confidence_bound_field": {
+            "type": "optional",
+            "control_guid": "{1AA9A769-D3F3-4EB0-85CB-CC07C79313C8}",
+            "displayname": "$rc:confidence_bound_field.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:confidence_bound_field.dt.title1",
+                        "readonly": "true"
+                    },
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:confidence_bound_field.dt.title2"
+                    },
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:confidence_bound_field.dt.title3"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Double",
+                            "Float",
+                            "Short",
+                            "Long",
+                            "BigInteger"
+                        ]
+                    },
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Double",
+                            "Float",
+                            "Short",
+                            "Long",
+                            "BigInteger"
+                        ]
+                    },
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Double",
+                            "Float",
+                            "Short",
+                            "Long",
+                            "BigInteger"
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "analysis_input_features"
+            ],
+            "description": "$rc:confidence_bound_field.descr"
+        },
+        "randomize_pct": {
+            "type": "optional",
+            "control_guid": "{1AA9A769-D3F3-4EB0-85CB-CC07C79313C8}",
+            "displayname": "$rc:randomize_pct.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:randomize_pct.dt.title1",
+                        "readonly": "true"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:randomize_pct.dt.title2"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:randomize_pct.dt.title3"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Double",
+                            "Float",
+                            "Short",
+                            "Long",
+                            "BigInteger"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "depends": [
+                "analysis_input_features"
+            ],
+            "description": "$rc:randomize_pct.descr"
+        },
+        "num_simulations": {
+            "type": "optional",
+            "displayname": "$rc:num_simulations.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "10",
+                "max": "1000"
+            },
+            "value": "30",
+            "description": "$rc:num_simulations.descr"
+        },
+        "simulation_method": {
+            "type": "optional",
+            "displayname": "$rc:simulation_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NORMAL",
+                        "code": "$rc:simulation_method.domain.NORMAL"
+                    },
+                    {
+                        "value": "UNIFORM",
+                        "code": "$rc:simulation_method.domain.UNIFORM"
+                    },
+                    {
+                        "value": "TRIANGULAR",
+                        "code": "$rc:simulation_method.domain.TRIANGULAR"
+                    }
+                ]
+            },
+            "value": "NORMAL",
+            "description": "$rc:simulation_method.descr"
+        },
+        "output_workspace": {
+            "type": "optional",
+            "displayname": "$rc:output_workspace.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "description": "$rc:output_workspace.descr"
+        },
+        "sim_data_limits": {
+            "type": "optional",
+            "control_guid": "{1AA9A769-D3F3-4EB0-85CB-CC07C79313C8}",
+            "displayname": "$rc:sim_data_limits.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:sim_data_limits.dt.title1",
+                        "readonly": "true"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:sim_data_limits.dt.title2"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:sim_data_limits.dt.title3"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Double",
+                            "Float",
+                            "Short",
+                            "Long",
+                            "BigInteger"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "depends": [
+                "analysis_input_features"
+            ],
+            "description": "$rc:sim_data_limits.descr"
+        },
+        "moe_conf_level": {
+            "type": "optional",
+            "displayname": "$rc:moe_conf_level.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "50",
+                "max": "99"
+            },
+            "value": "90",
+            "description": "$rc:moe_conf_level.descr"
+        },
+        "out_group_layer": {
+            "enabled": "false",
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_group_layer.title",
+            "datatype": {
+                "type": "GPGroupLayer"
+            }
+        },
+        "out_workspace": {
+            "type": "derived",
+            "displayname": "$rc:out_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            }
+        }
+    },
+    "environments": [
+        "outputCoordinateSystem",
+        "randomGenerator"
+    ]
+}

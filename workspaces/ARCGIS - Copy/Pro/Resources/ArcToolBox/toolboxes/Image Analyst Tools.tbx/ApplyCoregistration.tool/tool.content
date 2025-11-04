@@ -1,0 +1,119 @@
+{
+    "type": "FunctionTool",
+    "guid": "{7f85861c-1b7e-4fdb-b340-c03b47719f7f}",
+    "displayname": "$rc:title",
+    "helpcontent": "66160020",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "86"
+    ],
+    "params": {
+        "in_reference_radar_data": {
+            "display_order": "0",
+            "displayname": "$rc:in_reference_radar_data.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_reference_radar_data.descr"
+        },
+        "in_secondary_radar_data": {
+            "display_order": "1",
+            "displayname": "$rc:in_secondary_radar_data.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_secondary_radar_data.descr"
+        },
+        "out_secondary_radar_data": {
+            "direction": "out",
+            "display_order": "2",
+            "displayname": "$rc:out_secondary_radar_data.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_secondary_radar_data.descr"
+        },
+        "in_dem_raster": {
+            "display_order": "3",
+            "displayname": "$rc:in_dem_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_dem_raster.descr"
+        },
+        "geoid": {
+            "type": "optional",
+            "displayname": "$rc:geoid.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "GEOID"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NONE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:geoid.descr"
+        },
+        "polarization_bands": {
+            "type": "optional",
+            "display_order": "5",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:polarization_bands.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "description": "$rc:polarization_bands.descr"
+        }
+    },
+    "environments": [
+        "cellAlignment",
+        "compression",
+        "nodata",
+        "pyramid",
+        "rasterStatistics",
+        "resamplingMethod",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

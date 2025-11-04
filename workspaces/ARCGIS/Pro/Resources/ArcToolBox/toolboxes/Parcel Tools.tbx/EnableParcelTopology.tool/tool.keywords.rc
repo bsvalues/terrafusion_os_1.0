@@ -1,0 +1,10 @@
+{
+    "set": [
+        "administer",
+        "administrator",
+        "disable topology",
+        "enable topology",
+        "parcel fabric",
+        "parcel topology"
+    ]
+}

@@ -1,0 +1,11 @@
+{
+    "set": [
+        "estimate",
+        "interpolate",
+        "interpolation",
+        "interpolator",
+        "logistic",
+        "predict",
+        "surface"
+    ]
+}

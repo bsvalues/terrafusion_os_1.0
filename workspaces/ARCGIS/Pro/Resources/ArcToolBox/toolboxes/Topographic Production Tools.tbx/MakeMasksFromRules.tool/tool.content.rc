@@ -1,0 +1,13 @@
+{
+    "map": {
+        "description": "Creates polygon masks for features based on color rules.",
+        "in_map.descr": "The map containing symbolized features.",
+        "in_map.title": "Input Map",
+        "out_feature_dataset.descr": "The output feature dataset. The tool will create a feature dataset containing polygon feature classes that will be used for masking. The spatial reference for the feature dataset will be taken from the map for which masks are generated.",
+        "out_feature_dataset.title": "Output Feature Dataset",
+        "rule_file.descr": "The .xml file containing rules that define how features will be masked based on colors and symbol parts.",
+        "rule_file.title": "Rule File",
+        "summary": "<xdoc><p>Creates polygon masks for features based on color rules.</p><note type=\"note\"/><p group=\"note\">A product file installer is available for ArcGIS Production Mapping and ArcGIS Defense Mapping. The product files contain predefined XML masking rule files that can be used for cartographic production.</p><p group=\"note\">Learn more about Defense Mapping product files and Production Mapping product files.</p></xdoc>",
+        "title": "Make Masks From Rules"
+    }
+}

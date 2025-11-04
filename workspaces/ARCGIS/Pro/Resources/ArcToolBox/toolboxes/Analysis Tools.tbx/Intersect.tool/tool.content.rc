@@ -1,0 +1,25 @@
+{
+    "map": {
+        "cluster_tolerance.descr": "<xdoc><p>The minimum distance separating all feature coordinates (nodes and vertices) as well as the distance a coordinate can move in x or y (or both).</p><note type=\"caution\"/><p group=\"note\">Changing this parameter&apos;s value may cause failure or unexpected results. It is recommended that you do not modify this parameter. It has been removed from view on the tool dialog box. By default, the input feature class&apos;s spatial reference x,y tolerance property is used.</p></xdoc>",
+        "cluster_tolerance.title": "XY Tolerance",
+        "description": "Computes a geometric intersection of the input features. Features or portions of features that overlap in all layers or feature classes will be written to the output feature class.",
+        "in_features.descr": "A list of the input feature classes or layers. When the distance between features is less than the cluster tolerance, the features with the lower rank will snap to the feature with the higher rank. The highest rank is 1.",
+        "in_features.dt.title1": "Features",
+        "in_features.dt.title2": "Ranks",
+        "in_features.title": "Input Features",
+        "join_attributes.descr": "<xdoc><p>Specifies the attributes from the input features that will be transferred to the output feature class.</p><ul><li><span title=\"ALL\">All attributes</span>—All the attributes from the input features will be transferred to the output feature class. This is the default.</li><li><span title=\"NO_FID\">All attributes except feature IDs</span>—All the attributes except the FID attribute from the input features will be transferred to the output feature class.</li><li><span title=\"ONLY_FID\">Only feature IDs</span>—Only the FID attribute from the input features will be transferred to the output feature class.</li></ul></xdoc>",
+        "join_attributes.domain.ALL": "All attributes",
+        "join_attributes.domain.NO_FID": "All attributes except feature IDs",
+        "join_attributes.domain.ONLY_FID": "Only feature IDs",
+        "join_attributes.title": "Attributes To Join",
+        "out_feature_class.descr": "The output feature class.",
+        "out_feature_class.title": "Output Feature Class",
+        "output_type.descr": "<xdoc><p>Specifies the type of intersections that will be returned.</p><ul><li><span title=\"INPUT\">Same as input</span>—The intersections returned will be the same geometry type as the input features with the lowest dimension geometry. If all inputs are polygons, the output feature class will contain polygons. If one or more of the inputs are lines and none of the inputs are points, the output will be line. If one or more of the inputs are points, the output feature class will contain points. This is the default.</li><li><span title=\"LINE\">Line</span>—The intersections returned will be line. This is only valid if none of the inputs are points.</li><li><span title=\"POINT\">Point</span>—The intersections returned will be point. If the inputs are line or polygon, the output will be a multipoint feature class.</li></ul></xdoc>",
+        "output_type.domain.INPUT": "Same as input",
+        "output_type.domain.LINE": "Line",
+        "output_type.domain.POINT": "Point",
+        "output_type.title": "Output Type",
+        "summary": "<xdoc><p>Computes a geometric intersection of the input features. Features or portions of features that overlap in all layers or feature classes will be written to the output feature class.</p><p>An alternate tool is available for intersect operations. See the Pairwise Intersect tool documentation for details.</p><p>The Pairwise Intersect tool is similar to this tool in that geometric intersections are computed, but it is different in that intersections are computed on pairs of features rather than all combinations of features.</p></xdoc>",
+        "title": "Intersect"
+    }
+}

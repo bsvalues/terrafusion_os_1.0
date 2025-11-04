@@ -1,14 +1,14 @@
 /**
  * TerraFusion Design System - Token System
- * 
+ *
  * Central export for all design tokens. Import from this file to access
  * any token in the system with full TypeScript support.
- * 
+ *
  * @module design-system/tokens
  * @example
  * ```typescript
  * import { tokens } from '@/design-system/tokens';
- * 
+ *
  * const primaryColor = tokens.colors.brand.primary[500];
  * const spacing = tokens.spacing[4];
  * const shadow = tokens.shadows.box.lg;
@@ -16,14 +16,38 @@
  */
 
 // Import all token modules
-export { colors, brandColors, semanticColors, stateColors, componentColors, gradients, withOpacity, themeColor } from './colors';
+export {
+  colors,
+  brandColors,
+  semanticColors,
+  stateColors,
+  componentColors,
+  gradients,
+  withOpacity,
+  themeColor,
+} from './colors';
 export type { BrandColor, SemanticColor, StateColor, ComponentColor, GradientName } from './colors';
 
 export { default as spacing, semanticSpacing, gap, inset, stack } from './spacing';
 export type { SpacingScale, SemanticSpacing, GapSize, InsetSize, StackSize } from './spacing';
 
-export { typography, fontFamily, fontSize, fontWeight, lineHeight, letterSpacing, textStyles } from './typography';
-export type { FontFamily, FontSize, FontWeight, LineHeight, LetterSpacing, TextStyle } from './typography';
+export {
+  typography,
+  fontFamily,
+  fontSize,
+  fontWeight,
+  lineHeight,
+  letterSpacing,
+  textStyles,
+} from './typography';
+export type {
+  FontFamily,
+  FontSize,
+  FontWeight,
+  LineHeight,
+  LetterSpacing,
+  TextStyle,
+} from './typography';
 
 export { motion, duration, easing, transition, keyframes, animation, spring } from './motion';
 export type { Duration, Easing, Transition, Keyframe, Animation, Spring } from './motion';

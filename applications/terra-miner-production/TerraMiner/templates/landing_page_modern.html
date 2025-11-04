@@ -1,0 +1,171 @@
+{% extends "new_unified_base.html" %}
+
+{% block title %}TerraMiner - Real Estate Intelligence Platform{% endblock %}
+
+{% block head_extras %}
+<style>
+    .feature-card {
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    .hero-section {
+        background: linear-gradient(90deg, #075985 0%, #0369a1 100%);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section text-white py-16 mb-12">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-8 md:mb-0">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">Real Estate Intelligence Platform</h1>
+                <p class="text-xl mb-6">Comprehensive market insights through intelligent data processing and interactive exploration tools.</p>
+                <div class="flex flex-wrap gap-4">
+                    <a href="{{ url_for('property_search') }}" class="btn-primary px-6 py-3">Find Properties</a>
+                    <a href="{{ url_for('monitoring_dashboard') }}" class="btn-secondary px-6 py-3">View Dashboard</a>
+                </div>
+            </div>
+            <div class="md:w-1/2 flex justify-center">
+                <img src="{{ url_for('static', filename='img/hero-illustration.svg') }}" alt="Real Estate Intelligence" class="max-w-full h-auto">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Features Section -->
+<div class="container mx-auto px-4 mb-16">
+    <h2 class="text-3xl font-bold text-center mb-12">Explore Key Features</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Property Search -->
+        <div class="feature-card card rounded-xl overflow-hidden">
+            <div class="p-6">
+                <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Property Search</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-4">Find properties that match your specific criteria with our powerful search tools.</p>
+                <a href="{{ url_for('property_search') }}" class="btn-link inline-flex items-center">
+                    Search Properties
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Market Analysis -->
+        <div class="feature-card card rounded-xl overflow-hidden">
+            <div class="p-6">
+                <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Market Analysis</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-4">Visualize market trends and price analysis to make informed decisions.</p>
+                <a href="{{ url_for('monitoring_price_trends') }}" class="btn-link inline-flex items-center">
+                    View Market Trends
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Property Comparison -->
+        <div class="feature-card card rounded-xl overflow-hidden">
+            <div class="p-6">
+                <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Property Comparison</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-4">Compare properties side-by-side to identify the best opportunities.</p>
+                <a href="{{ url_for('property_comparison') }}" class="btn-link inline-flex items-center">
+                    Compare Properties
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Secondary Features Section -->
+<div class="bg-gray-50 dark:bg-gray-800 py-16">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-12">Advanced Tools</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Data Reports -->
+            <div class="bg-white dark:bg-gray-700 rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-semibold mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Reports & Analytics
+                </h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-4">Generate comprehensive reports and analytics for your properties and market areas.</p>
+                <div class="flex flex-wrap gap-4">
+                    <a href="{{ url_for('reports') }}" class="btn-secondary btn-sm">View Reports</a>
+                    <a href="{{ url_for('monitoring_reports_scheduled') }}" class="btn-outline btn-sm">Scheduled Reports</a>
+                </div>
+            </div>
+            
+            <!-- AI Tools -->
+            <div class="bg-white dark:bg-gray-700 rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-semibold mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    AI-Powered Tools
+                </h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-4">Leverage our AI tools to get property insights, valuations, and market predictions.</p>
+                <div class="flex flex-wrap gap-4">
+                    <a href="{{ url_for('ai_demo') }}" class="btn-secondary btn-sm">AI Demo</a>
+                    <a href="{{ url_for('agent_tools_page') }}" class="btn-outline btn-sm">Agent Tools</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Admin Features (only shown to admins) -->
+<div class="container mx-auto px-4 py-16">
+    <div class="border-t border-gray-200 dark:border-gray-700 pt-12">
+        <h2 class="text-2xl font-bold mb-8">Administration & Monitoring</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <a href="{{ url_for('monitoring_dashboard') }}" class="card p-6 hover:shadow-md">
+                <h3 class="text-lg font-semibold mb-2">System Dashboard</h3>
+                <p class="text-gray-600 dark:text-gray-300">Monitor system health and performance metrics.</p>
+            </a>
+            
+            <a href="{{ url_for('monitoring_database') }}" class="card p-6 hover:shadow-md">
+                <h3 class="text-lg font-semibold mb-2">Database</h3>
+                <p class="text-gray-600 dark:text-gray-300">Monitor database performance and status.</p>
+            </a>
+            
+            <a href="{{ url_for('monitoring_alerts_active') }}" class="card p-6 hover:shadow-md">
+                <h3 class="text-lg font-semibold mb-2">Active Alerts</h3>
+                <p class="text-gray-600 dark:text-gray-300">View and manage system alerts.</p>
+            </a>
+            
+            <a href="{{ url_for('settings') }}" class="card p-6 hover:shadow-md">
+                <h3 class="text-lg font-semibold mb-2">Settings</h3>
+                <p class="text-gray-600 dark:text-gray-300">Configure system settings and preferences.</p>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

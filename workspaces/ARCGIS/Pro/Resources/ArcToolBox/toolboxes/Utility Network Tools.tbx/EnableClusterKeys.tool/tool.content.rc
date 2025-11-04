@@ -1,0 +1,8 @@
+{
+    "map": {
+        "description": "Enable Cluster Keys",
+        "in_utility_network.title": "Input Utility Network",
+        "out_utility_network.title": "Output Utility Network",
+        "title": "Enable Cluster Keys"
+    }
+}

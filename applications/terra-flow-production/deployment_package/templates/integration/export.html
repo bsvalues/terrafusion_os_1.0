@@ -1,0 +1,394 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h5>Export Assessment Data</h5>
+                    <p class="text-sm">Export data from the system to various formats for use in external systems</p>
+                </div>
+                <div class="card-body">
+                    <div id="alertContainer"></div>
+                    
+                    <form id="exportForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="data_type" class="form-control-label">Data Type</label>
+                                    <select class="form-control" id="data_type" name="data_type" required>
+                                        <option value="">Select a data type...</option>
+                                        <option value="property">Property Data</option>
+                                        <option value="sales">Sales Data</option>
+                                        <option value="valuation">Valuation Data</option>
+                                    </select>
+                                    <small class="form-text text-muted">
+                                        Type of data to export
+                                    </small>
+                                </div>
+                                
+                                <div class="form-group mt-3">
+                                    <label for="schema-info">Schema Information</label>
+                                    <div class="card">
+                                        <div class="card-body p-3" id="schema-info">
+                                            <p class="text-muted mb-0">Select a data type to view schema information</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="export_format" class="form-control-label">Export Format</label>
+                                    <select class="form-control" id="export_format" name="export_format" required>
+                                        <option value="">Select a format...</option>
+                                        <option value="csv">CSV</option>
+                                        <option value="excel">Excel</option>
+                                        <option value="json">JSON</option>
+                                        <option value="geojson">GeoJSON (Property data only)</option>
+                                        <option value="sqlite">SQLite</option>
+                                    </select>
+                                    <small class="form-text text-muted">
+                                        Format to export data in
+                                    </small>
+                                </div>
+                                
+                                <div class="form-group mt-3">
+                                    <label>Filters</label>
+                                    <div class="card">
+                                        <div class="card-body p-3">
+                                            <div id="filters-container">
+                                                <div class="text-muted mb-2">Add filters to limit the exported data</div>
+                                                
+                                                <div class="filter-row mb-2">
+                                                    <div class="row">
+                                                        <div class="col-4">
+                                                            <select class="form-control form-control-sm filter_field" name="filter_field">
+                                                                <option value="">Select field...</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-3">
+                                                            <select class="form-control form-control-sm filter_operator" name="filter_operator">
+                                                                <option value="equals">equals</option>
+                                                                <option value="in">in (comma-separated)</option>
+                                                                <option value="min">min value</option>
+                                                                <option value="max">max value</option>
+                                                                <option value="like">contains</option>
+                                                                <option value="not">not equal to</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-4">
+                                                            <input type="text" class="form-control form-control-sm filter_value" name="filter_value" placeholder="Value">
+                                                        </div>
+                                                        <div class="col-1">
+                                                            <button type="button" class="btn btn-sm btn-link text-danger remove-filter">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <button type="button" class="btn btn-sm btn-outline-secondary" id="add-filter">
+                                                    <i class="fas fa-plus me-1"></i> Add Filter
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group d-flex justify-content-between mt-4">
+                            <a href="{{ url_for('integration.index') }}" class="btn btn-secondary">Back to Dashboard</a>
+                            <button type="submit" class="btn btn-primary" id="exportButton">
+                                <i class="fas fa-file-export me-2"></i> Export Data
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card mb-4" id="resultsCard" style="display: none;">
+                <div class="card-header pb-0">
+                    <h5>Export Results</h5>
+                </div>
+                <div class="card-body">
+                    <div id="resultsContainer">
+                        <div class="text-center p-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Exporting data...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header pb-0">
+                    <h5>Export Information</h5>
+                </div>
+                <div class="card-body">
+                    <p>Data exports provide standardized extracts of assessment data for use in other systems. Key aspects of data exports:</p>
+                    <ul>
+                        <li><strong>Washington State Standards</strong> - Exports conform to Washington State data standards where applicable</li>
+                        <li><strong>Data Sanitization</strong> - Personal identifying information is sanitized according to configured rules</li>
+                        <li><strong>Metadata Inclusion</strong> - Exports include metadata about their creation, source, and schema</li>
+                        <li><strong>Multiple Formats</strong> - Data can be exported in various formats for different use cases</li>
+                    </ul>
+                    
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Export History:</strong> All exports are logged and can be accessed from the <a href="{{ url_for('integration.exports') }}">Exports</a> page.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Field schemas for different data types
+    const schemas = {{ schemas|tojson }};
+    
+    $(document).ready(function() {
+        // Update schema info when data type changes
+        $('#data_type').change(function() {
+            const dataType = $(this).val();
+            
+            if (dataType && schemas[dataType]) {
+                updateSchemaInfo(dataType);
+                updateFilterFields(dataType);
+            } else {
+                $('#schema-info').html('<p class="text-muted mb-0">Select a data type to view schema information</p>');
+                $('.filter_field').html('<option value="">Select field...</option>');
+            }
+        });
+        
+        // Add filter button
+        $('#add-filter').click(function() {
+            const dataType = $('#data_type').val();
+            if (!dataType) {
+                showAlert('warning', 'Please select a data type first');
+                return;
+            }
+            
+            const filterRow = $('.filter-row').first().clone();
+            filterRow.find('input, select').val('');
+            $('#add-filter').before(filterRow);
+            
+            // Update the fields dropdown with the current data type
+            updateFilterFields(dataType, filterRow.find('.filter_field'));
+        });
+        
+        // Remove filter button
+        $(document).on('click', '.remove-filter', function() {
+            if ($('.filter-row').length > 1) {
+                $(this).closest('.filter-row').remove();
+            } else {
+                // If this is the last filter, just clear it
+                $(this).closest('.filter-row').find('input, select').val('');
+            }
+        });
+        
+        // Export form submission
+        $('#exportForm').submit(function(e) {
+            e.preventDefault();
+            
+            const dataType = $('#data_type').val();
+            const exportFormat = $('#export_format').val();
+            
+            if (!dataType) {
+                showAlert('danger', 'Please select a data type');
+                return;
+            }
+            
+            if (!exportFormat) {
+                showAlert('danger', 'Please select an export format');
+                return;
+            }
+            
+            // Collect filters
+            const filters = [];
+            $('.filter-row').each(function() {
+                const field = $(this).find('.filter_field').val();
+                const operator = $(this).find('.filter_operator').val();
+                const value = $(this).find('.filter_value').val();
+                
+                if (field && value) {
+                    filters.push({
+                        field,
+                        operator,
+                        value
+                    });
+                }
+            });
+            
+            // Disable form and show results card
+            $('#exportButton').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i> Exporting...');
+            $('#resultsCard').show();
+            
+            // Submit export request
+            $.ajax({
+                url: '{{ url_for("integration.export") }}',
+                type: 'POST',
+                data: {
+                    data_type: dataType,
+                    export_format: exportFormat,
+                    filter_field: $('.filter_field').map(function() { return $(this).val(); }).get(),
+                    filter_operator: $('.filter_operator').map(function() { return $(this).val(); }).get(),
+                    filter_value: $('.filter_value').map(function() { return $(this).val(); }).get()
+                },
+                success: function(response) {
+                    $('#exportButton').prop('disabled', false).html('<i class="fas fa-file-export me-2"></i> Export Data');
+                    
+                    if (response.status === 'success') {
+                        showAlert('success', 'Export completed successfully');
+                        showResults(response);
+                    } else if (response.status === 'warning') {
+                        showAlert('warning', response.message);
+                        $('#resultsContainer').html(`
+                            <div class="alert alert-warning">
+                                <h6 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i> Warning</h6>
+                                <p>${response.message}</p>
+                            </div>
+                        `);
+                    } else {
+                        showAlert('danger', 'Export failed: ' + response.message);
+                        $('#resultsContainer').html(`
+                            <div class="alert alert-danger">
+                                <h6 class="alert-heading"><i class="fas fa-times-circle me-2"></i> Export Failed</h6>
+                                <p>${response.message}</p>
+                            </div>
+                        `);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    $('#exportButton').prop('disabled', false).html('<i class="fas fa-file-export me-2"></i> Export Data');
+                    showAlert('danger', 'An error occurred: ' + error);
+                    $('#resultsContainer').html(`
+                        <div class="alert alert-danger">
+                            <h6 class="alert-heading"><i class="fas fa-times-circle me-2"></i> Error</h6>
+                            <p>An error occurred during export: ${error}</p>
+                        </div>
+                    `);
+                }
+            });
+        });
+        
+        // Helper functions
+        function showAlert(type, message) {
+            $('#alertContainer').html(`
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `);
+        }
+        
+        function updateSchemaInfo(dataType) {
+            const schema = schemas[dataType];
+            
+            let schemaHtml = `
+                <h6 class="text-uppercase text-muted ls-1 mb-1">Schema for ${dataType}</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Field</th>
+                                <th>Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            for (const [field, type] of Object.entries(schema)) {
+                schemaHtml += `
+                    <tr>
+                        <td>${field}</td>
+                        <td><code>${type}</code></td>
+                    </tr>
+                `;
+            }
+            
+            schemaHtml += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            $('#schema-info').html(schemaHtml);
+        }
+        
+        function updateFilterFields(dataType, selector) {
+            const schema = schemas[dataType];
+            const fields = Object.keys(schema);
+            
+            let optionsHtml = '<option value="">Select field...</option>';
+            
+            fields.forEach(field => {
+                optionsHtml += `<option value="${field}">${field}</option>`;
+            });
+            
+            if (selector) {
+                selector.html(optionsHtml);
+            } else {
+                $('.filter_field').html(optionsHtml);
+            }
+        }
+        
+        function showResults(data) {
+            const dataType = $('#data_type').val();
+            const exportFormat = $('#export_format').val();
+            
+            let resultHtml = `
+                <div class="alert alert-success mb-4">
+                    <h6 class="alert-heading"><i class="fas fa-check-circle me-2"></i> Export Successful</h6>
+                    <p>${dataType} data exported successfully to ${exportFormat} format.</p>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th>Data Type:</th>
+                                <td>${data.data_type}</td>
+                            </tr>
+                            <tr>
+                                <th>Format:</th>
+                                <td>${data.format}</td>
+                            </tr>
+                            <tr>
+                                <th>Records:</th>
+                                <td>${data.records}</td>
+                            </tr>
+                            <tr>
+                                <th>Timestamp:</th>
+                                <td>${data.timestamp}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            // Add download link if available
+            if (data.file_path) {
+                resultHtml += `
+                    <div class="text-center mt-4">
+                        <a href="/integration/exports/${data.file_path}" class="btn btn-primary">
+                            <i class="fas fa-download me-2"></i> Download File
+                        </a>
+                    </div>
+                `;
+            }
+            
+            $('#resultsContainer').html(resultHtml);
+        }
+    });
+</script>
+{% endblock %}

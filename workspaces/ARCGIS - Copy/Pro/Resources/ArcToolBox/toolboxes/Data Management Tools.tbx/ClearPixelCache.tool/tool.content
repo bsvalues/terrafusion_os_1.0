@@ -1,0 +1,39 @@
+{
+    "type": "FunctionTool",
+    "guid": "{e11129b1-14ae-4abf-bb72-b376e3c759c8}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190010",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_mosaic_dataset": {
+            "display_order": "0",
+            "displayname": "$rc:in_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPMosaicLayer"
+            },
+            "description": "$rc:in_mosaic_dataset.descr"
+        },
+        "generated_before": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:generated_before.title",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:generated_before.descr"
+        },
+        "out_mosaic_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "2",
+            "displayname": "$rc:out_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPMosaicLayer"
+            },
+            "depends": [
+                "in_mosaic_dataset"
+            ]
+        }
+    }
+}

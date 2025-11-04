@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.formService.name }}
+  labels:
+    app: {{ .Values.formService.name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ .Values.formService.name }}
+spec:
+  replicas: {{ .Values.formService.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.formService.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.formService.name }}
+    spec:
+      {{- if .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range .Values.global.imagePullSecrets }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      containers:
+      - name: {{ .Values.formService.name }}
+        image: "{{ .Values.global.imageRegistry }}{{ .Values.formService.image.repository }}:{{ .Values.formService.image.tag | default .Values.global.imageTag }}"
+        imagePullPolicy: {{ .Values.formService.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.formService.port }}
+        env:
+        - name: NODE_ENV
+          value: {{ .Values.global.environment }}
+        - name: PORT
+          value: "{{ .Values.formService.port }}"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-db-credentials
+              key: database-url
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.formService.port }}
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.formService.port }}
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        resources:
+          {{- toYaml .Values.formService.resources | nindent 10 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.formService.name }}
+  labels:
+    app: {{ .Values.formService.name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ .Values.formService.name }}
+spec:
+  type: {{ .Values.formService.service.type }}
+  ports:
+  - port: {{ .Values.formService.service.port }}
+    targetPort: {{ .Values.formService.port }}
+    protocol: TCP
+    name: http
+  selector:
+    app: {{ .Values.formService.name }}
+---
+{{- if .Values.formService.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Values.formService.name }}
+  labels:
+    app: {{ .Values.formService.name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ .Values.formService.name }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Values.formService.name }}
+  minReplicas: {{ .Values.formService.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.formService.autoscaling.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.formService.autoscaling.targetCPUUtilizationPercentage }}
+{{- end }}

@@ -1,0 +1,449 @@
+{% extends "base.html" %}
+
+{% block title %}Price Trends | TerraMiner{% endblock %}
+
+{% block additional_styles %}
+<style>
+  :root {
+    --primary: #0e1b4d;
+    --primary-light: #192f83;
+    --accent: #00b4d8;
+    --accent-light: #48cae4;
+    --accent-dark: #0077b6;
+    --success: #4ade80;
+    --error: #ef4444;
+    --text-light: rgba(255, 255, 255, 0.85);
+    --text-muted: rgba(255, 255, 255, 0.6);
+    --border-color: rgba(0, 180, 216, 0.3);
+  }
+
+  .trend-card {
+    border-radius: 0.75rem;
+    border: 1px solid var(--border-color);
+    background-color: rgba(14, 27, 77, 0.7);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    height: 100%;
+  }
+  
+  .trend-card:hover {
+    box-shadow: 0 0 20px rgba(0, 180, 216, 0.4);
+    transform: translateY(-5px);
+  }
+  
+  .trend-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    border-bottom: 2px solid var(--accent);
+    padding: 1.25rem;
+  }
+  
+  .trend-content {
+    padding: 1.5rem;
+  }
+  
+  .trend-city {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--text-light);
+  }
+  
+  .trend-state {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+  
+  .trend-metric {
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+  }
+  
+  .trend-metric:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+  
+  .trend-metric-label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+  }
+  
+  .trend-metric-value {
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: var(--accent);
+  }
+  
+  .trend-change {
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    display: inline-block;
+  }
+  
+  .trend-up {
+    background-color: rgba(74, 222, 128, 0.1);
+    color: var(--success);
+  }
+  
+  .trend-down {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--error);
+  }
+  
+  .trend-filter {
+    background: linear-gradient(180deg, rgba(14, 27, 77, 0.9) 0%, rgba(25, 47, 131, 0.7) 100%);
+    border-radius: 0.75rem;
+    padding: 1.75rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .trend-filter h5 {
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 1.25rem;
+    position: relative;
+    padding-bottom: 0.5rem;
+  }
+  
+  .trend-filter h5:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 2px;
+    background-color: var(--accent);
+  }
+  
+  .chart-container {
+    position: relative;
+    height: 300px;
+    margin-top: 1.5rem;
+  }
+  
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    text-align: center;
+    padding: 3rem;
+    background: linear-gradient(135deg, rgba(14, 27, 77, 0.6) 0%, rgba(25, 47, 131, 0.4) 100%);
+    border-radius: 0.75rem;
+    border: 1px dashed var(--border-color);
+    box-shadow: inset 0 0 20px rgba(0, 180, 216, 0.1);
+  }
+  
+  .empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    color: var(--accent);
+    opacity: 0.8;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+  <div class="row">
+    <div class="col-12">
+      <h1 class="display-5 mb-4">
+        <i class="feather icon-trending-up text-primary me-2"></i>
+        Price Trends
+      </h1>
+      
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/monitoring/dashboard">Dashboard</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Price Trends</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+  
+  <div class="row">
+    <div class="col-lg-3 mb-4">
+      <!-- Filters Section -->
+      <div class="trend-filter">
+        <h5>Filter Price Trends</h5>
+        
+        <form id="trendFilterForm" action="/monitoring/price-trends" method="GET">
+          <div class="mb-3">
+            <label class="form-label">State</label>
+            <select class="form-select" id="stateFilter" name="state">
+              <option value="">All States</option>
+              {% for state in states %}
+              <option value="{{ state }}" {% if selected_state == state %}selected{% endif %}>{{ state }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">City</label>
+            <select class="form-select" id="cityFilter" name="city">
+              <option value="">All Cities</option>
+              {% for city in cities %}
+              <option value="{{ city }}" {% if selected_city == city %}selected{% endif %}>{{ city }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">Time Period</label>
+            <select class="form-select" id="periodFilter" name="period">
+              <option value="1" {% if period == 1 %}selected{% endif %}>Last Month</option>
+              <option value="3" {% if period == 3 %}selected{% endif %}>Last 3 Months</option>
+              <option value="6" {% if period == 6 %}selected{% endif %}>Last 6 Months</option>
+              <option value="12" {% if period == 12 %}selected{% endif %}>Last Year</option>
+            </select>
+          </div>
+          
+          <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-primary">
+              <i class="feather icon-filter me-1"></i> Apply Filters
+            </button>
+          </div>
+        </form>
+      </div>
+      
+      <!-- Market Summary -->
+      <div class="trend-filter">
+        <h5>Market Summary</h5>
+        
+        <div class="trend-metric">
+          <div class="trend-metric-label">Average Median Price</div>
+          <div class="trend-metric-value">${{ avg_median_price | default('N/A') }}</div>
+        </div>
+        
+        <div class="trend-metric">
+          <div class="trend-metric-label">Average Price Change</div>
+          <div>
+            {% if avg_price_change is defined and avg_price_change is not none %}
+              {% if avg_price_change > 0 %}
+              <span class="trend-change trend-up">+{{ avg_price_change }}%</span>
+              {% elif avg_price_change < 0 %}
+              <span class="trend-change trend-down">{{ avg_price_change }}%</span>
+              {% else %}
+              <span class="trend-change">0%</span>
+              {% endif %}
+            {% else %}
+              <span>N/A</span>
+            {% endif %}
+          </div>
+        </div>
+        
+        <div class="trend-metric">
+          <div class="trend-metric-label">Total Properties Sold</div>
+          <div class="trend-metric-value">{{ total_properties_sold | default('N/A') }}</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-9">
+      {% if price_trends %}
+      <!-- Price Trend Chart -->
+      <div class="card bg-dark mb-4">
+        <div class="card-header">
+          <h5 class="card-title mb-0">
+            <i class="feather icon-activity me-2"></i>
+            Price Trend Analysis
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="chart-container">
+            <canvas id="priceTrendChart"></canvas>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Price Trend Cards -->
+      <div class="row">
+        {% for trend in price_trends %}
+        <div class="col-md-4 mb-4">
+          <div class="trend-card">
+            <div class="trend-header">
+              <div class="trend-city">{{ trend.city }}</div>
+              <div class="trend-state">{{ trend.state }}</div>
+              {% if trend.zip_code %}
+              <div class="small text-muted">ZIP: {{ trend.zip_code }}</div>
+              {% endif %}
+            </div>
+            
+            <div class="trend-content">
+              <div class="trend-metric">
+                <div class="trend-metric-label">Median Price</div>
+                <div class="trend-metric-value">${{ (trend.median_price / 100) | int }}</div>
+                {% if trend.price_change is defined and trend.price_change is not none %}
+                  {% if trend.price_change > 0 %}
+                  <div><span class="trend-change trend-up">+{{ trend.price_change }}%</span> from previous month</div>
+                  {% elif trend.price_change < 0 %}
+                  <div><span class="trend-change trend-down">{{ trend.price_change }}%</span> from previous month</div>
+                  {% else %}
+                  <div><span class="trend-change">0%</span> change from previous month</div>
+                  {% endif %}
+                {% endif %}
+              </div>
+              
+              <div class="trend-metric">
+                <div class="trend-metric-label">Properties Sold</div>
+                <div class="trend-metric-value">{{ trend.properties_sold | default('N/A') }}</div>
+              </div>
+              
+              <div class="trend-metric">
+                <div class="trend-metric-label">Days on Market</div>
+                <div class="trend-metric-value">{{ trend.days_on_market | default('N/A') }}</div>
+              </div>
+              
+              <div class="trend-metric">
+                <div class="trend-metric-label">Price per Sq Ft</div>
+                <div class="trend-metric-value">${{ (trend.price_per_sqft / 100) | int }}</div>
+              </div>
+              
+              <div class="d-grid mt-3">
+                <a href="/property/comparison?city={{ trend.city }}&state={{ trend.state }}" class="btn btn-outline-primary btn-sm">
+                  <i class="feather icon-repeat me-1"></i> Compare Properties
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      
+      {% else %}
+      <!-- Empty State -->
+      <div class="empty-state">
+        <div class="empty-icon">
+          <i class="feather icon-trending-up"></i>
+        </div>
+        <h4>No Price Trend Data Available</h4>
+        <p class="mb-4">Try changing your filter settings or check back later as new data is added.</p>
+        <a href="/monitoring/dashboard" class="btn btn-primary">
+          <i class="feather icon-home me-1"></i> Back to Dashboard
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Only initialize chart if price trends data exists
+  {% if price_trends %}
+  document.addEventListener('DOMContentLoaded', function() {
+    // Get price trend data
+    const priceTrendData = {
+      labels: [{% for trend in price_trends %}'{{ trend.city }}'{% if not loop.last %}, {% endif %}{% endfor %}],
+      medianPrices: [{% for trend in price_trends %}{{ (trend.median_price / 100) | int }}{% if not loop.last %}, {% endif %}{% endfor %}],
+      priceChanges: [{% for trend in price_trends %}{{ trend.price_change | default(0) }}{% if not loop.last %}, {% endif %}{% endfor %}]
+    };
+    
+    // Initialize chart
+    const ctx = document.getElementById('priceTrendChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: priceTrendData.labels,
+        datasets: [
+          {
+            label: 'Median Price ($)',
+            data: priceTrendData.medianPrices,
+            backgroundColor: 'rgba(0, 180, 216, 0.7)',
+            borderColor: 'rgba(0, 180, 216, 1)',
+            borderWidth: 1,
+            yAxisID: 'y-axis-1'
+          },
+          {
+            label: 'Price Change (%)',
+            data: priceTrendData.priceChanges,
+            backgroundColor: function(context) {
+              const value = context.dataset.data[context.dataIndex];
+              return value >= 0 ? 'rgba(74, 222, 128, 0.7)' : 'rgba(239, 68, 68, 0.7)';
+            },
+            borderColor: function(context) {
+              const value = context.dataset.data[context.dataIndex];
+              return value >= 0 ? 'rgba(74, 222, 128, 1)' : 'rgba(239, 68, 68, 1)';
+            },
+            borderWidth: 1,
+            type: 'line',
+            yAxisID: 'y-axis-2'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            ticks: {
+              color: 'rgba(255, 255, 255, 0.7)'
+            },
+            grid: {
+              color: 'rgba(255, 255, 255, 0.1)'
+            }
+          },
+          'y-axis-1': {
+            type: 'linear',
+            position: 'left',
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Median Price ($)',
+              color: 'rgba(0, 180, 216, 1)'
+            },
+            ticks: {
+              color: 'rgba(255, 255, 255, 0.7)',
+              callback: function(value) {
+                return '$' + value;
+              }
+            },
+            grid: {
+              color: 'rgba(255, 255, 255, 0.1)'
+            }
+          },
+          'y-axis-2': {
+            type: 'linear',
+            position: 'right',
+            beginAtZero: false,
+            title: {
+              display: true,
+              text: 'Price Change (%)',
+              color: 'rgba(74, 222, 128, 1)'
+            },
+            ticks: {
+              color: 'rgba(255, 255, 255, 0.7)',
+              callback: function(value) {
+                return value + '%';
+              }
+            },
+            grid: {
+              drawOnChartArea: false
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            labels: {
+              color: 'rgba(255, 255, 255, 0.8)'
+            }
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false
+          }
+        }
+      }
+    });
+  });
+  {% endif %}
+</script>
+{% endblock %}

@@ -1,0 +1,33 @@
+{
+    "map": {
+        "decimal_separator.descr": "<xdoc><p>The decimal character that will be used in the text file to differentiate the integer of a number from its fractional part.</p><ul><li><span title=\"DECIMAL_POINT\">Point</span>—A point will be used as the decimal character. This is the default.</li><li><span title=\"DECIMAL_COMMA\">Comma</span>—A comma will be used as the decimal character.</li></ul></xdoc>",
+        "decimal_separator.domain.DECIMAL_COMMA": "Comma",
+        "decimal_separator.domain.DECIMAL_POINT": "Point",
+        "decimal_separator.title": "Decimal Separator",
+        "description": "Creates polygon or multipatch output that captures the spatial extent and statistical information about one or more ASCII or LAS format point files.",
+        "extrude_geometry.descr": "<xdoc><p>Specifies whether the output will be created as a 2D polygon or multipatch feature class with extruded features that reflect the elevation range in each file.</p><ul><li>Unchecked—The output will be created as a 2D polygon feature class. This is the default.</li><li>Checked—The output will be created as a multipatch feature class.</li></ul></xdoc>",
+        "extrude_geometry.title": "Extrude Geometry Shapes",
+        "file_suffix.descr": "The suffix of the files that will be imported when a folder is specified in the input.",
+        "file_suffix.title": "File Suffix",
+        "folder_recursion.descr": "<xdoc><p>Specifies whether data in subfolders will be used to generate results. The tool scans subfolders when an input folder is selected containing data in a subfolders directory. The output feature class will be generated with a row for each file in the directory structure.</p><ul><li>Unchecked—Only the data in the input folder will be used to generate results. This is the default.</li><li>Checked—Any data in the input folder and its subdirectories will be used to generate results.</li></ul></xdoc>",
+        "folder_recursion.title": "Include Subfolders",
+        "improve_las_point_spacing.descr": "<xdoc><p>Specifies whether enhanced assessment of the point spacing in .las files, which can reduce over-estimation caused by irregular data distribution, will be used.</p><ul><li>Unchecked—A regular point spacing estimate will be used for .las files in which the extent is equally divided by the number of points. This is the default.</li><li>Checked—Binning will be used to obtain a more precise point spacing estimate for .las files. This option may increase tool run time.</li></ul></xdoc>",
+        "improve_las_point_spacing.title": "Improve LAS files point spacing estimate",
+        "in_file_type.descr": "<xdoc><p>Specifies the format of the input files.</p><ul><li><span title=\"LAS\">LAS format lidar</span>—The format of the input files is LAS format lidar, which includes .las, .zlas, and .laz files.</li><li><span title=\"XYZ\">ASCII file with XYZ</span>—The format of the input files is ASCII files with XYZ.</li><li><span title=\"XYZI\">ASCII file with XYZI</span>—The format of the input files is ASCII files with XYZI.</li><li><span title=\"GENERATE\">ASCII file in Generate format</span>—The format of the input files is ASCII files in Generate format.</li></ul></xdoc>",
+        "in_file_type.domain.GENERATE": "ASCII file in Generate format",
+        "in_file_type.domain.LAS": "LAS format lidar",
+        "in_file_type.domain.XYZ": "ASCII file with XYZ",
+        "in_file_type.domain.XYZI": "ASCII file with XYZI",
+        "in_file_type.title": "File Format",
+        "input.descr": "<xdoc><p>The point data that will be processed. Supported inputs include LAS datasets, .las, .zlas, and .laz files, and ASCII files containing point records. One or more folders containing the files can also be specified as input. When a folder is included, the file suffix of the point files must be specified in the <span class=\"esri_uicontrol\">File Suffix</span> parameter.</p></xdoc>",
+        "input.title": "Point Data",
+        "input_coordinate_system.descr": "The coordinate system of the input data.",
+        "input_coordinate_system.title": "Coordinate System",
+        "min_point_spacing.title": "Average Point Spacing",
+        "out_feature_class.descr": "The feature class that will be produced.",
+        "out_feature_class.title": "Output Feature Class",
+        "summarize_by_class_code.descr": "<xdoc><p>Specifies whether the output will summarize .las or .zlas files by class codes or by file. This parameter is not supported for .laz files.</p><ul><li>Unchecked—Each output feature will represent all the data in the .las or .zlas file. This is the default.</li><li>Checked—Each output feature will represent a single class code in the input .las or .zlas file. This option will require a complete scan of the input files.</li></ul></xdoc>",
+        "summarize_by_class_code.title": "Summarize by class code",
+        "title": "Point File Information"
+    }
+}

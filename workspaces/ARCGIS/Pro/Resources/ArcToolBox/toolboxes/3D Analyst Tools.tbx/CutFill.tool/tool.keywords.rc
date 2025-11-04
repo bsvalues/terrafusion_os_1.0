@@ -1,0 +1,14 @@
+{
+    "set": [
+        "added",
+        "cut",
+        "cutfill",
+        "deposition",
+        "erosion",
+        "fill",
+        "landfill",
+        "removed",
+        "volume",
+        "z-factor"
+    ]
+}

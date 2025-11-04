@@ -1,0 +1,11 @@
+{
+    "set": [
+        "hlz",
+        "helicopter landing zones",
+        "land cover",
+        "land use",
+        "obstacles",
+        "obstructions",
+        "slope"
+    ]
+}

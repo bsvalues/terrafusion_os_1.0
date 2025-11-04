@@ -1,0 +1,9 @@
+{
+    "map": {
+        "description": "Removes the raster attribute table associated with a raster dataset.",
+        "in_raster.descr": "The raster dataset containing the attribute table you want to remove.",
+        "in_raster.title": "Input Raster",
+        "out_raster.title": "Updated Input Raster",
+        "title": "Delete Raster Attribute Table"
+    }
+}

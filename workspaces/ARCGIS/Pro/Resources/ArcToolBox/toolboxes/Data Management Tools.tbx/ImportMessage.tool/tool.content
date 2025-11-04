@@ -1,0 +1,188 @@
+{
+    "type": "FunctionTool",
+    "guid": "{ceabb211-dbf1-4e67-a255-7e6e4e8b8c72}",
+    "displayname": "$rc:title",
+    "helpcontent": "3220007",
+    "description": "$rc:description",
+    "product": "200",
+    "categories": [
+        "{0a2ad811-7215-4a95-92f3-9c29de502e9b}"
+    ],
+    "params": {
+        "in_geodatabase": {
+            "displayname": "$rc:in_geodatabase.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEWorkspace"
+                    },
+                    {
+                        "type": "DEGeoDataServer"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPBrowseFiltersDomain",
+                        "filters": [
+                            "esri_browseDialogFilters_geodatabases_file",
+                            "esri_browseDialogFilters_geodatabases_egdb_file"
+                        ]
+                    },
+                    {
+                        "type": "GPBrowseFiltersDomain",
+                        "filters": [
+                            "esri_browseDialogFilters_services_geodata"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:in_geodatabase.descr"
+        },
+        "source_delta_file": {
+            "displayname": "$rc:source_delta_file.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEWorkspace"
+                    },
+                    {
+                        "type": "DEFile"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPBrowseFiltersDomain",
+                        "filters": [
+                            "esri_browseDialogFilters_geodatabases_file"
+                        ]
+                    },
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "xml"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:source_delta_file.descr"
+        },
+        "output_acknowledgement_file": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:output_acknowledgement_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "xml"
+                ]
+            },
+            "description": "$rc:output_acknowledgement_file.descr"
+        },
+        "conflict_policy": {
+            "type": "optional",
+            "displayname": "$rc:conflict_policy.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MANUAL",
+                        "code": "$rc:conflict_policy.domain.MANUAL"
+                    },
+                    {
+                        "value": "IN_FAVOR_OF_IMPORTED_CHANGES",
+                        "code": "$rc:conflict_policy.domain.IN_FAVOR_OF_IMPORTED_CHANGES"
+                    },
+                    {
+                        "value": "IN_FAVOR_OF_DATABASE",
+                        "code": "$rc:conflict_policy.domain.IN_FAVOR_OF_DATABASE"
+                    }
+                ]
+            },
+            "value": "MANUAL",
+            "description": "$rc:conflict_policy.descr"
+        },
+        "conflict_definition": {
+            "type": "optional",
+            "displayname": "$rc:conflict_definition.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "BY_OBJECT",
+                        "code": "$rc:conflict_definition.domain.BY_OBJECT"
+                    },
+                    {
+                        "value": "BY_ATTRIBUTE",
+                        "code": "$rc:conflict_definition.domain.BY_ATTRIBUTE"
+                    }
+                ]
+            },
+            "value": "BY_OBJECT",
+            "description": "$rc:conflict_definition.descr"
+        },
+        "reconcile_with_parent_version": {
+            "type": "optional",
+            "displayname": "$rc:reconcile_with_parent_version.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "RECONCILE "
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_RECONCILE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:reconcile_with_parent_version.descr"
+        },
+        "out_geodatabase": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_geodatabase.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEWorkspace"
+                    },
+                    {
+                        "type": "DEGeoDataServer"
+                    }
+                ]
+            },
+            "depends": [
+                "in_geodatabase"
+            ]
+        }
+    },
+    "environments": [
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

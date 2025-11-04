@@ -1,0 +1,98 @@
+{
+    "type": "FunctionTool",
+    "guid": "{26B17338-CB00-45A9-AB9C-858C2E0122C9}/RemoveCutbackVertices",
+    "displayname": "$rc:title",
+    "helpcontent": "43120003",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "46",
+        "49"
+    ],
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline",
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "minimum_angle": {
+            "displayname": "$rc:minimum_angle.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:minimum_angle.descr"
+        },
+        "removal_method": {
+            "type": "optional",
+            "displayname": "$rc:removal_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SEQUENTIAL",
+                        "code": "$rc:removal_method.domain.SEQUENTIAL"
+                    },
+                    {
+                        "value": "ALL",
+                        "code": "$rc:removal_method.domain.ALL"
+                    }
+                ]
+            },
+            "value": "SEQUENTIAL",
+            "description": "$rc:removal_method.descr"
+        },
+        "skip_coincident_vertices": {
+            "type": "optional",
+            "displayname": "$rc:skip_coincident_vertices.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "SKIP_COINCIDENT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "REMOVE_COINCIDENT"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:skip_coincident_vertices.descr"
+        },
+        "updated_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "in_features"
+            ]
+        }
+    }
+}

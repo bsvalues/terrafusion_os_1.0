@@ -1,0 +1,208 @@
+{
+    "TRE": "ENGRDA",
+    "Source": ["STDI-0002-1 v2021.1, Appendix N: ENGRDA"],
+    "Name": "Engineering Support Data",
+    "Description": "The Engineering data extension is intended to address the support of specialized system data not supported by the core NITF standard or the collection of support data extensions.  Engineering data support is relevant to any real-time sensor system where NITF is the direct output format. The extension has application to both airborne and ground systems for the storage of information specific to the collecting systems.",
+    "Size": 47,
+    "Fields": {
+      "RESRC" : {
+        "Name": "Unique Source System Name",
+        "Description": "This field shall be utilized to indicate the Unique System name that has generated this Engineering Data. It is preferred that this field be populated with the same System Identifier as used in the ACFT SDE, SENSOR_ID field, left justified within the field. If unavailable, or considered non-unique, additional user defined characters should be added to the right of the SENSOR_ID within the field or replacing it entirely. A BCS space (0x20) shall be utilized to separate additional characters from the SENSOR_ID if incorporated. The entire name shall be left justified within the field and BCS space filled to the field size.",
+        "Size": 20,
+        "Format": "BCS-A",
+        "Type": "R",
+        "Units": [],
+        "Values": [
+          {
+            "Type": "Value",
+            "Values": ["*"]
+          }
+        ]
+      },
+      "RECNT": {
+        "Name": "Record Entry Count",
+        "Description": "This field represents the count of the number of Engineering Data Elements included in the TRE. The length of this field shall not cause any other NITF field length limits to be exceeded, but is otherwise fully user-defined.",
+        "Size": 3,
+        "Format": "BCS-N",
+        "Type": "R",
+        "Units": [],
+        "Values": [
+          {
+            "Type": "Range",
+            "Min": 1,
+            "Max": 999
+          }
+        ]
+      },
+      "REDATA": {
+        "Name": "User Defined Data",
+        "Description": "This field shows that each element of Engineering data is represented by a set of data.",
+        "Size": 0,
+        "Format": "BCS-N",
+        "Type": "R",
+        "Units": [],
+        "Values": [
+          {
+            "Type": "Value",
+            "Values": ["*"]
+          }
+        ]
+      },
+      "ENGLN_<REDATA>": {
+        "Name": "Engineering Data Label Length",
+        "Description": "This field shows the length in bytes of the label associated with the Engineering data element.",
+        "Size": 2,
+        "Format": "BCS-N",
+        "Type": "R",
+        "Units": [],
+        "Values": [
+          {
+            "Type": "Range",
+            "Min": 1,
+            "Max": 99
+          }
+        ]
+      },
+      "ENGLBL_<REDATA>": {
+        "Name": "Engineering Data Label",
+        "Description": "This field represents a unique string used to identify the Engineering data incorporated in the record. No terminator characters (0x0A OR 0x0D shall be incorporated. NOTE: Field length defined by <ENGLN_REDATA>.",
+        "Size": 2,
+        "Format": "BCS-A",
+        "Type": "R",
+        "Units": [],
+        "Values": [
+          {
+            "Type": "Value",
+            "Values": ["*"]
+          }
+        ]
+      },
+      "ENGMTXC_<REDATA>": {
+        "Name": "Engineering Matrix Data Column Count",
+        "Description": "This field represents the count of the number of elements in each row of the matrix data (C). The value of this field also represents the number of data elements in a one dimensional array or sequence of single values recorded as a simple array. All members of a data row are represented in a single data type (ENGTYP) that defines the data. The length of this field shall not cause any other NITF field lenth limits to be exceeded, but is otherwise fullly user-defined.",
+        "Size": 4,
+        "Format": "BCS-N",
+        "Type": "R",
+        "Units": [],
+        "Values": [
+          {
+            "Type": "Range",
+            "Min": 1,
+            "Max": 9999
+          }
+        ]
+      },
+      "ENGMTXR_<REDATA>": {
+        "Name": "Engineering Matrix Data Row Count",
+        "Description": "This field represents the count of the number of rows in the matrix data (R). Members of the (1 to C) x R sized matrix are then represented as a single vector of values in the C x R ordering of elements. The length of this field shall not cause any other NITF field length limits to be exceeded, but is otherwise fully user-defined.",
+        "Size": 4,
+        "Format": "BCS-N",
+        "Type": "R",
+        "Units": [],
+        "Values": [
+          {
+            "Type": "Value",
+            "Values": ["*"]
+          }
+        ]
+      },      
+      "ENGTYP_<REDATA>": {
+        "Name": "Value Type of Engineering Data Element",
+        "Description": "This field represents a flag indicating data type.",
+        "Size": 1,
+        "Format": "BCS-A",
+        "Type": "R",
+        "Units": [],
+        "Values": [
+          {
+            "Type": "Value",
+            "Values": {
+               "B": "Binary data",
+               "I": "Unsigned Integer data",
+               "S": "Signed Integer data",
+               "R": "Real Number (floating point) data",
+               "C": "Complex data (pair of real data elements",
+               "A": "BCS, Alpha numeric character data",
+               "*": "For real data see ANSI/IEEE-754-1985 for real data"
+            }
+          }
+        ]
+      },
+      "ENGDTS_<REDATA>": {
+        "Name": "Engineering Data Element Size",
+        "Description": "This field represents the count of bytes utilized to represent the basic data element within the record. The size is defined by the ENGTYPn descriptor, this field allows for direct access to the data without knowing or parsing the ENGTPYn field, allowing for a byte oriented hex print out of the data in datum sized groups. In the case of BCS data representation, this field shall be 1.",
+        "Size": 1,
+        "Format": "BCS-N",
+        "Type": "R",
+        "Units": [],
+        "Values": [
+          {
+            "Type": "Value",
+            "Values": ["*"]
+          }
+        ]
+      },
+      "ENGDATU_<REDATA>": {
+        "Name": "Engineering Data Units",
+        "Description": "This field defines units that should be applied to the data presented in this nth Engineering data packet.",
+        "Size": 2,
+        "Format": "BCS-A",
+        "Type": "R",
+        "Units": [],
+        "Values": [
+          {
+            "Type": "Value",
+            "Values": {
+               "ft": "feet",
+               "m": "meters",
+               "in": "inches",
+               "mm": "millimeters",
+               "mi": "miles",
+               "km": "kilometers",
+               "kt": "knots",
+               "NA": "Not Applicable",
+               "tC": "Celcius",
+               "tF": "Fahrenheit",
+               "tK": "kelvin",
+               "Va": "Voltage DC",
+               "Vd": "Voltage DC",
+               "mA": "Current",
+               "uA": "Current",
+               "A": "Current",
+               "UD": "Undefined"             
+           }
+         }
+       ]
+     },
+     "ENGDATC_<REDATA>": {
+      "Name": "Engineering Data Count",
+      "Description": "This field represents the count of engineering data symbols in this nth record. All members of a matrix data definition shall have the same number of symbols defined per matrix row. For BCS representations this field shall represent the count of bytes/characters contained within ENGDATAn. When data represented requires in excess of 99932 bytes of storage, the data shall be broken into separate TRE or the entire TRE shall be located to the TRE Overflow DES. Under no circumstance shall the length of this field cause any other NITF field length limits to be exceeded, but is otherwise fully user-defined.",
+      "Size": 8,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 99999932
+        }
+      ]
+    },
+    "ENGDATA_<REDATA>": {
+      "Name": "Engineering Data",
+      "Description": "This field represents the ngineering data associated with the defined Data Label and Data Value Type. The field length is defined by <ENGDATC_REDATA>.",
+      "Size": 8,
+      "Format": "BCS-AN",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 99999932
+        }
+      ]
+    }
+  }
+}

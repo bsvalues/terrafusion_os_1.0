@@ -1,0 +1,138 @@
+/* $id: st_Domain_Methods.sts,v 1.2 2005/03/30 22:13:05 Kevin Watt exp $ */
+CREATE OR REPLACE Type st_domain_methods Authid current_user AS object
+        --C_Type_Release 1001
+(
+  curs_select    number,
+  cur_own        varchar2(128),
+  cur_tab        varchar2(128),
+  cur_col        varchar2(128),
+  cur_geom       &1..st_geometry,
+  cur_op         varchar2(30),
+  cur_mat        varchar2(9),
+  cur_dist       number,
+  curs_sel_cnt   number,
+  static Function odcigetinterfaces (ifclist Out sys.odciobjectlist)
+           Return number,
+  static Function odciindexstart(sctx IN Out &1..st_domain_methods,
+                                 ia          sys.odciindexinfo,
+                                 op          sys.odcipredinfo, 
+                                 qi          sys.odciqueryinfo,
+                                 strt        number,
+                                 stop        number,
+                                 minx        number,
+                                 miny        number,
+                                 maxx        number,
+                                 maxy        number,
+                                 env         sys.odcienv)
+           Return number,
+  static Function odciindexstart(sctx IN Out &1..st_domain_methods,
+                                 ia          sys.odciindexinfo,
+                                 op          sys.odcipredinfo, 
+                                 qi          sys.odciqueryinfo,
+                                 strt        number,
+                                 stop        number,
+                                 srch_shape  &1..st_geometry,
+                                 env         sys.odcienv)
+           Return number,
+  static Function odciindexstart(sctx IN Out &1..st_domain_methods,
+                                 ia          sys.odciindexinfo,
+                                 op          sys.odcipredinfo, 
+                                 qi          sys.odciqueryinfo,
+                                 strt        number,
+                                 stop        number,
+                                 srch_shape  &1..st_geometry,
+                                 distance    number,
+                                 env         sys.odcienv)
+           Return number,
+  static Function odciindexstart(sctx IN Out &1..st_domain_methods,
+                                 ia          sys.odciindexinfo,
+                                 op          sys.odcipredinfo, 
+                                 qi          sys.odciqueryinfo,
+                                 strt        number,
+                                 stop        number,
+                                 srch_shape  &1..st_geometry,
+                                 matrix      varchar2,
+                                 env         sys.odcienv)
+           Return number,
+  static Function odciindexstart(sctx IN Out &1..st_domain_methods,
+                                 ia          sys.odciindexinfo,
+                                 op          sys.odcipredinfo, 
+                                 qi          sys.odciqueryinfo,
+                                 strt        number,
+                                 stop        number,
+                                 minx        number,
+                                 miny        number,
+                                 maxx        number,
+                                 maxy        number,
+                                 orderby     varchar2,
+                                 env         sys.odcienv)
+           Return number,         
+  member Function odciindexfetch (self IN OUT SDE.st_domain_methods,
+                                  nrows  number,
+                                  rids   Out sys.odciridlist,
+                                  env    sys.odcienv)
+           Return number,
+  member Function odciindexclose (env sys.odcienv)
+           Return number,
+  static Function odciindexcreate (ia sys.odciindexinfo, 
+                                   parms varchar2,
+                                   env sys.odcienv)
+           Return number,
+  static Function odciindexdrop (ia sys.odciindexinfo, 
+                                 env sys.odcienv)
+           Return number,
+  static Function odciindexinsert (ia sys.odciindexinfo,
+                                   rid varchar2,
+                                   newval &1..st_geometry,
+                                   env sys.odcienv)
+           Return number,
+  static Function odciindexdelete (ia sys.odciindexinfo,
+                                   rid varchar2,
+                                   oldval &1..st_geometry,
+                                   env sys.odcienv)
+           Return number,
+  static Function odciindexupdate (ia sys.odciindexinfo,
+                                   rid varchar2,
+                                   oldval &1..st_geometry,
+                                   newval &1..st_geometry,
+                                   env sys.odcienv)
+           Return number,
+  static Function odciindexalter(ia sys.odciindexinfo,
+                                   parms IN Out varchar2,
+                                   alter_option number,
+                                   env sys.odcienv)
+           Return number,
+  static Function odciindexgetmetadata(ia sys.odciindexinfo, 
+                                       expversion  varchar2, 
+                                       newblock Out pls_integer, 
+                                       env sys.odcienv)
+           Return varchar2,
+  static Function odciindexexchangepartition(ia sys.odciindexinfo,
+                                             ia1 sys.odciindexinfo, 
+                                             env sys.odcienv)
+           Return number,
+  static Function odciindexmergepartition(ia sys.odciindexinfo,
+                                          part_name1 sys.odcipartinfo, 
+                                          part_name2 sys.odcipartinfo, 
+                                          parms varchar2, env sys.odcienv) 
+           Return number,
+  static Function odciindexsplitpartition(ia sys.odciindexinfo,
+                                          part_name1 sys.odcipartinfo, 
+                                          part_name2 sys.odcipartinfo, 
+                                          parms varchar2, 
+                                          env sys.odcienv) 
+           Return number,
+  static Function odciindexutilcleanup (CONTEXT pls_integer)
+           Return number,
+  static Function odciindexutilgettablenames(ia sys.odciindexinfo,
+                                             read_only pls_integer,
+                                             version varchar2,
+                                             CONTEXT Out pls_integer)
+           Return boolean,
+  static Function odciindextruncate (ia sys.odciindexinfo,
+                                     env sys.odcienv)
+           Return number,
+  static Function get_release 
+           Return number
+);
+/

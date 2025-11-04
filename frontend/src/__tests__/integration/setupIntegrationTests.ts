@@ -1,6 +1,6 @@
 /**
  * Integration Test Setup
- * 
+ *
  * This file runs before all integration tests to configure the test environment.
  * It extends the base setupTests.ts with integration-specific configurations.
  */

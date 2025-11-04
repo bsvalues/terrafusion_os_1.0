@@ -1,0 +1,61 @@
+# PostgreSQL logical backups (pg_dump) to a PVC for secure retention.
+# Requirements:
+# - A Secret "postgres-backup-credentials" in the target namespace with keys:
+#   POSTGRES_HOST, POSTGRES_PORT, POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD
+# - A PersistentVolumeClaim named "db-backups" (RWX preferred)
+# - Network policy allowing egress to the database endpoint
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  namespace: terrafusion
+  labels:
+    app.kubernetes.io/name: postgres-backup
+    app.kubernetes.io/part-of: terrafusion-os
+spec:
+  schedule: "0 */6 * * *"  # Every 6 hours to meet RPO 1h with Velero + DB every 6h
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            fsGroup: 1000
+          containers:
+            - name: backup
+              image: postgres:16
+              imagePullPolicy: IfNotPresent
+              envFrom:
+                - secretRef:
+                    name: postgres-backup-credentials
+              command: ["/bin/bash","-lc"]
+              args:
+                - |
+                  set -euo pipefail
+                  ts=$(date +"%Y%m%d-%H%M%S")
+                  file="/backups/${POSTGRES_DB}-${ts}.sql.gz"
+                  echo "[pg-backup] starting dump to $file"
+                  pg_dump \
+                    -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" \
+                    -U "$POSTGRES_USER" "$POSTGRES_DB" | gzip > "$file"
+                  echo "[pg-backup] completed: $file"
+              volumeMounts:
+                - name: backups
+                  mountPath: /backups
+              resources:
+                requests:
+                  cpu: "100m"
+                  memory: "256Mi"
+                limits:
+                  cpu: "500m"
+                  memory: "512Mi"
+          volumes:
+            - name: backups
+              persistentVolumeClaim:
+                claimName: db-backups

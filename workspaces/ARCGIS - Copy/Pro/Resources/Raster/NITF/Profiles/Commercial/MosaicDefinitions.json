@@ -1,0 +1,423 @@
+{
+  "IDs": {
+    "ItemURI-Base": {
+      "Path": "$uri.path$/$uri.profile$##@{LayerObject}",
+      "Key": "",
+      "Tag": "Dataset",
+      "Group": "@{Mission}-$/Images/0/IDATIM$",
+      "DisplayName": "$uri.stem$:$%i$",
+      "ProductName": "$/FileHeader/TREs/CSDIDA/PRODUCT_ID$",
+      "SourceTimeStamp": "$uri.modifiedDateTime$",
+      "AuxiliaryPaths": [],
+      "Properties": {
+        "ImageRepresentation": "MONO",
+        "ImageCategory": "VIS",
+        "SensorName": "Properties.json#SensorName-Property"
+      }
+    },
+    "MosaicDefinition-Base": {
+      "ItemURI": {
+        "ref": "#ItemURI-Base"
+      },
+      "Footprint": "$/Feature/IMAGE_SHAPE/Shape$",
+      "ProcessingTemplate": "Default",
+      "Variables": {
+        "DefaultMaximumInput": 2047.0,
+        "Pan.Min": 0.0
+      },
+      "Properties": {}
+    },
+    
+    "MosaicDefinition-Default-Base": {
+      "@Variables": {
+        "LayerObject": "Primary"
+      },
+      "ref": "#MosaicDefinition-Base"
+    },
+    "MosaicDefinition-Catalog-Base": {
+      "@Variables": {
+        "LayerObject": "Layer_Image_Catalog_@{LayerObjectType}"
+      },
+      "ref": "#MosaicDefinition-Base",
+      "ProcessingTemplate": "Catalog"
+    },
+    
+    "Tag-Pan": "Pan",
+    "Tag-RGB": "RGB",
+    "Tag-MS": "MS",
+    "Tag-SWIR": "SWIR",
+    "Tag-CAVIS": "CAVIS",
+    "Tag-Pansharpened": "Pansharpened",
+    
+    "ProductName-BasicPanchromatic": "BasicPanchromatic",
+    "ProductName-GeoPanchromatic": "GeoPanchromatic",
+    "ProductName-OrthoPanchromatic": "OrthoPanchromatic",
+    "ProductName-BasicRGB": "BasicRGB",
+    "ProductName-GeoRGB": "GeoRGB",
+    "ProductName-OrthoRGB": "OrthoRGB",
+    "ProductName-BasicMSI": "BasicMSI",
+    "ProductName-GeoMSI": "GeoMSI",
+    "ProductName-OrthoMSI": "OrthoMSI",
+    "ProductName-BasicPansharpened": "BasicPansharpened",
+    "ProductName-GeoPansharpened": "GeoPansharpened",
+    "ProductName-OrthoPansharpened": "OrthoPansharpened",
+    "ProductName-BasicSWIR": "BasicSWIR",
+    "ProductName-GeoSWIR": "GeoSWIR",
+    "ProductName-OrthoSWIR": "OrthoSWIR",
+    "ProductName-BasicCAVIS": "BasicCAVIS",
+    "ProductName-GeoCAVIS": "GeoCAVIS",
+    "ProductName-OrthoCAVIS": "OrthoCAVIS",
+    
+    "MosaicDefinition-Catalog-Generic-Pan": {
+      "@Variables": {
+        "LayerObjectType": "Panchromatic-Basic"
+      },
+      "ref": "#MosaicDefinition-Catalog-Base",
+      "Match": "MatchRules.json#MatchRules-ImageIsPan"
+    },
+    "MosaicDefinition-Catalog-Generic-MSI4": {
+      "@Variables": {
+        "LayerObjectType": "Multispectral4Bands-Basic"
+      },
+      "ref": "#MosaicDefinition-Catalog-Base",
+      "Match": "MatchRules.json#MatchRules-ImageIsMSI4Bands"
+    },
+    
+    "MosaicDefinition-Default-BasicPan": {
+      "ref": "#MosaicDefinition-Default-Base",
+      "ItemURI": {
+        "Tag": "#Tag-Pan",
+        "ProductName": "#ProductName-BasicPanchromatic"
+      }
+    },
+    "MosaicDefinition-Catalog-BasicPan": {
+      "@Variables": {
+        "LayerObjectType": "Panchromatic-Basic"
+      },
+      "ref": "#MosaicDefinition-Catalog-Base",
+      "ItemURI": {
+        "Tag": "#Tag-Pan",
+        "ProductName": "#ProductName-BasicPanchromatic"
+      }
+    },
+    "MosaicDefinition-Default-BasicRGB": {
+      "ref": "#MosaicDefinition-Default-Base",
+      "ItemURI": {
+        "Tag": "#Tag-RGB",
+        "ProductName": "#ProductName-BasicRGB"
+      }
+    },
+    "MosaicDefinition-Catalog-BasicRGB": {
+      "@Variables": {
+        "LayerObjectType": "Multispectral3Bands-RGB"
+      },
+      "ref": "#MosaicDefinition-Catalog-Base",
+      "ItemURI": {
+        "Tag": "#Tag-RGB",
+        "ProductName": "#ProductName-BasicRGB"
+      }
+    },
+    "MosaicDefinition-Default-BasicMSI": {
+      "ref": "#MosaicDefinition-Default-Base",
+      "ItemURI": {
+        "Tag": "#Tag-MS",
+        "ProductName": "#ProductName-BasicMSI"
+      }
+    },
+    "MosaicDefinition-Catalog-BasicMSI4": {
+      "@Variables": {
+        "LayerObjectType": "Multispectral4Bands-Basic"
+      },
+      "ref": "#MosaicDefinition-Catalog-Base",
+      "ItemURI": {
+        "Tag": "#Tag-MS",
+        "ProductName": "#ProductName-BasicMSI"
+      }
+    },
+    "MosaicDefinition-Catalog-BasicMSI8": {
+      "@Variables": {
+        "LayerObjectType": "Multispectral8Bands-Basic"
+      },
+      "ref": "#MosaicDefinition-Catalog-Base",
+      "ItemURI": {
+        "Tag": "#Tag-MS",
+        "ProductName": "#ProductName-BasicMSI"
+      }
+    },
+    "MosaicDefinition-Default-BasicPS": {
+      "ref": "#MosaicDefinition-Default-Base",
+      "ItemURI": {
+        "Tag": "#Tag-Pansharpened",
+        "ProductName": "#ProductName-BasicPansharpened"
+      }
+    },
+    "MosaicDefinition-Catalog-BasicPS": {
+      "@Variables": {
+        "LayerObjectType": "Multispectral3Bands-Psh"
+      },
+      "ref": "#MosaicDefinition-Catalog-Base",
+      "ItemURI": {
+        "Tag": "#Tag-Pansharpened",
+        "ProductName": "#ProductName-BasicPansharpened"
+      }
+    },
+    "MosaicDefinition-Default-BasicSWIR": {
+      "ref": "#MosaicDefinition-Default-Base",
+      "ItemURI": {
+        "Tag": "#Tag-SWIR",
+        "ProductName": "#ProductName-BasicSWIR"
+      }
+    },
+    "MosaicDefinition-Catalog-BasicSWIR": {
+      "@Variables": {
+        "LayerObjectType": "SWIR8"
+      },
+      "ref": "#MosaicDefinition-Catalog-Base",
+      "ItemURI": {
+        "Tag": "#Tag-SWIR",
+        "ProductName": "#ProductName-BasicSWIR"
+      }
+    },
+    "MosaicDefinition-Default-BasicCAVIS": {
+      "ref": "#MosaicDefinition-Default-Base",
+      "ItemURI": {
+        "Tag": "#Tag-CAVIS",
+        "ProductName": "#ProductName-BasicCAVIS"
+      }
+    },
+    "MosaicDefinition-Catalog-BasicCAVIS": {
+      "@Variables": {
+        "LayerObjectType": "CAVIS6"
+      },
+      "ref": "#MosaicDefinition-Catalog-Base",
+      "ItemURI": {
+        "Tag": "#Tag-CAVIS",
+        "ProductName": "#ProductName-BasicCAVIS"
+      }
+    },
+    "MosaicDefinition-Default-GeoPan": {
+      "ref": "#MosaicDefinition-Default-Base",
+      "ItemURI": {
+        "Tag": "#Tag-Pan",
+        "ProductName": "#ProductName-GeoPanchromatic"
+      }
+    },
+    "MosaicDefinition-Catalog-GeoPan": {
+      "@Variables": {
+        "LayerObjectType": "Panchromatic-Basic"
+      },
+      "ref": "#MosaicDefinition-Catalog-Base",
+      "ItemURI": {
+        "Tag": "#Tag-Pan",
+        "ProductName": "#ProductName-GeoPanchromatic"
+      }
+    },
+    "MosaicDefinition-Default-GeoRGB": {
+      "ref": "#MosaicDefinition-Default-Base",
+      "ItemURI": {
+        "Tag": "#Tag-RGB",
+        "ProductName": "#ProductName-GeoRGB"
+      }
+    },
+    "MosaicDefinition-Catalog-GeoRGB": {
+      "@Variables": {
+        "LayerObjectType": "Multispectral3Bands-RGB"
+      },
+      "ref": "#MosaicDefinition-Catalog-Base",
+      "ItemURI": {
+        "Tag": "#Tag-RGB",
+        "ProductName": "#ProductName-GeoRGB"
+      }
+    },
+    "MosaicDefinition-Default-GeoMSI": {
+      "ref": "#MosaicDefinition-Default-Base",
+      "ItemURI": {
+        "Tag": "#Tag-MS",
+        "ProductName": "#ProductName-GeoMSI"
+      }
+    },
+    "MosaicDefinition-Catalog-GeoMSI4": {
+      "@Variables": {
+        "LayerObjectType": "Multispectral4Bands-Basic"
+      },
+      "ref": "#MosaicDefinition-Catalog-Base",
+      "ItemURI": {
+        "Tag": "#Tag-MS",
+        "ProductName": "#ProductName-GeoMSI"
+      }
+    },
+    "MosaicDefinition-Catalog-GeoMSI8": {
+      "@Variables": {
+        "LayerObjectType": "Multispectral8Bands-Basic"
+      },
+      "ref": "#MosaicDefinition-Catalog-Base",
+      "ItemURI": {
+        "Tag": "#Tag-MS",
+        "ProductName": "#ProductName-GeoMSI"
+      }
+    },
+    "MosaicDefinition-Default-GeoPansharpened": {
+      "ref": "#MosaicDefinition-Default-Base",
+      "ItemURI": {
+        "Tag": "#Tag-Pansharpened",
+        "ProductName": "#ProductName-GeoPansharpened"
+      }
+    },
+    "MosaicDefinition-Catalog-GeoPansharpened": {
+      "@Variables": {
+        "LayerObjectType": "Multispectral3Bands-Psh"
+      },
+      "ref": "#MosaicDefinition-Catalog-Base",
+      "ItemURI": {
+        "Tag": "#Tag-Pansharpened",
+        "ProductName": "#ProductName-GeoPansharpened"
+      }
+    },
+    "MosaicDefinition-Default-GeoSWIR": {
+      "ref": "#MosaicDefinition-Default-Base",
+      "ItemURI": {
+        "Tag": "#Tag-SWIR",
+        "ProductName": "#ProductName-GeoSWIR"
+      }
+    },
+    "MosaicDefinition-Catalog-GeoSWIR": {
+      "@Variables": {
+        "LayerObjectType": "SWIR8"
+      },
+      "ref": "#MosaicDefinition-Catalog-Base",
+      "ItemURI": {
+        "Tag": "#Tag-SWIR",
+        "ProductName": "#ProductName-GeoSWIR"
+      }
+    },
+    "MosaicDefinition-Default-GeoCAVIS": {
+      "ref": "#MosaicDefinition-Default-Base",
+      "ItemURI": {
+        "Tag": "#Tag-CAVIS",
+        "ProductName": "#ProductName-GeoCAVIS"
+      }
+    },
+    "MosaicDefinition-Catalog-GeoCAVIS": {
+      "@Variables": {
+        "LayerObjectType": "CAVIS6"
+      },
+      "ref": "#MosaicDefinition-Catalog-Base",
+      "ItemURI": {
+        "Tag": "#Tag-CAVIS",
+        "ProductName": "#ProductName-GeoCAVIS"
+      }
+    },
+    "MosaicDefinition-Default-OrthoPan": {
+      "ref": "#MosaicDefinition-Default-Base",
+      "ItemURI": {
+        "Tag": "#Tag-Pan",
+        "ProductName": "#ProductName-OrthoPanchromatic"
+      }
+    },
+    "MosaicDefinition-Catalog-OrthoPan": {
+      "@Variables": {
+        "LayerObjectType": "Panchromatic-Basic"
+      },
+      "ref": "#MosaicDefinition-Catalog-Base",
+      "ItemURI": {
+        "Tag": "#Tag-Pan",
+        "ProductName": "#ProductName-OrthoPanchromatic"
+      }
+    },
+    "MosaicDefinition-Default-OrthoRGB": {
+      "ref": "#MosaicDefinition-Default-Base",
+      "ItemURI": {
+        "Tag": "#Tag-RGB",
+        "ProductName": "#ProductName-OrthoRGB"
+      }
+    },
+    "MosaicDefinition-Catalog-OrthoRGB": {
+      "@Variables": {
+        "LayerObjectType": "Multispectral3Bands-RGB"
+      },
+      "ref": "#MosaicDefinition-Catalog-Base",
+      "ItemURI": {
+        "Tag": "#Tag-RGB",
+        "ProductName": "#ProductName-OrthoRGB"
+      }
+    },
+    "MosaicDefinition-Default-OrthoMSI": {
+      "ref": "#MosaicDefinition-Default-Base",
+      "ItemURI": {
+        "Tag": "#Tag-MS",
+        "ProductName": "#ProductName-OrthoMSI"
+      }
+    },
+    "MosaicDefinition-Catalog-OrthoMSI4": {
+      "@Variables": {
+        "LayerObjectType": "Multispectral4Bands-Basic"
+      },
+      "ref": "#MosaicDefinition-Catalog-Base",
+      "ItemURI": {
+        "Tag": "#Tag-MS",
+        "ProductName": "#ProductName-OrthoMSI"
+      }
+    },
+    "MosaicDefinition-Catalog-OrthoMSI8": {
+      "@Variables": {
+        "LayerObjectType": "Multispectral8Bands-Basic"
+      },
+      "ref": "#MosaicDefinition-Catalog-Base",
+      "ItemURI": {
+        "Tag": "#Tag-MS",
+        "ProductName": "#ProductName-OrthoMSI"
+      }
+    },
+    "MosaicDefinition-Default-OrthoPansharpened": {
+      "ref": "#MosaicDefinition-Default-Base",
+      "ItemURI": {
+        "Tag": "#Tag-Pansharpened",
+        "ProductName": "#ProductName-OrthoPansharpened"
+      }
+    },
+    "MosaicDefinition-Catalog-OrthoPansharpened": {
+      "@Variables": {
+        "LayerObjectType": "Multispectral3Bands-Psh"
+      },
+      "ref": "#MosaicDefinition-Catalog-Base",
+      "ItemURI": {
+        "Tag": "#Tag-Pansharpened",
+        "ProductName": "#ProductName-OrthoPansharpened"
+      }
+    },
+    "MosaicDefinition-Default-OrthoSWIR": {
+      "ref": "#MosaicDefinition-Default-Base",
+      "ItemURI": {
+        "Tag": "#Tag-SWIR",
+        "ProductName": "#ProductName-OrthoSWIR"
+      }
+    },
+    "MosaicDefinition-Catalog-OrthoSWIR": {
+      "@Variables": {
+        "LayerObjectType": "SWIR8"
+      },
+      "ref": "#MosaicDefinition-Catalog-Base",
+      "ItemURI": {
+        "Tag": "#Tag-SWIR",
+        "ProductName": "#ProductName-OrthoSWIR"
+      }
+    },
+    "MosaicDefinition-Default-OrthoCAVIS": {
+      "ref": "#MosaicDefinition-Default-Base",
+      "ItemURI": {
+        "Tag": "#Tag-CAVIS",
+        "ProductName": "#ProductName-OrthoCAVIS"
+      }
+    },
+    "MosaicDefinition-Catalog-OrthoCAVIS": {
+      "@Variables": {
+        "LayerObjectType": "CAVIS6"
+      },
+      "ref": "#MosaicDefinition-Catalog-Base",
+      "ItemURI": {
+        "Tag": "#Tag-CAVIS",
+        "ProductName": "#ProductName-OrthoCAVIS"
+      }
+    }
+  }
+}

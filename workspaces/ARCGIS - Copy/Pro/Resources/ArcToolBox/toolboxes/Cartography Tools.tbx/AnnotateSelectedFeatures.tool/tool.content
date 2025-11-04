@@ -1,0 +1,101 @@
+{
+    "type": "FunctionTool",
+    "guid": "{c8a7d1e8-6016-4106-8cb4-9d2bc577d29a}",
+    "displayname": "$rc:title",
+    "helpcontent": "10000003",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_map": {
+            "displayname": "$rc:in_map.title",
+            "datatype": {
+                "type": "GPMap"
+            },
+            "description": "$rc:in_map.descr"
+        },
+        "in_layer": {
+            "displayname": "$rc:in_layer.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_layer.descr"
+        },
+        "anno_layers": {
+            "control_guid": "{F604736F-06D8-47CD-AC15-7055F7FCDAC1}",
+            "displayname": "$rc:anno_layers.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPAnnotationLayer",
+                        "displayname": "$rc:anno_layers.dt.title1",
+                        "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:anno_layers.dt.title2",
+                        "control_guid": "{172840BF-D385-4F83-80E8-2AC3B79EB0E0}"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCompositeDomain",
+                        "items": [
+                            {
+                                "type": "GPCodedValueDomain"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:anno_layers.descr"
+        },
+        "generate_unplaced": {
+            "type": "optional",
+            "displayname": "$rc:generate_unplaced.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "GENERATE_UNPLACED"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "ONLY_PLACED"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:generate_unplaced.descr"
+        },
+        "out_anno_layers": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_anno_layers.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPAnnotationLayer"
+                }
+            }
+        }
+    }
+}

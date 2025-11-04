@@ -1,0 +1,11 @@
+{
+    "set": [
+        "delete event",
+        "delete lrs",
+        "delete route",
+        "derived measure",
+        "enable derived measure",
+        "remove event",
+        "remove route"
+    ]
+}

@@ -1,0 +1,77 @@
+{
+    "type": "FunctionTool",
+    "guid": "{0A4A9218-07A4-497A-8506-CED528063FB9}/TranslateEventMeasures",
+    "displayname": "$rc:title",
+    "helpcontent": "23000019",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "78"
+    ],
+    "params": {
+        "in_source_event": {
+            "displayname": "$rc:in_source_event.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_source_event.descr"
+        },
+        "in_target_route_features": {
+            "displayname": "$rc:in_target_route_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_target_route_features.descr"
+        },
+        "out_target_event": {
+            "direction": "out",
+            "displayname": "$rc:out_target_event.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_target_event.descr"
+        },
+        "in_concurrent_route_matching": {
+            "type": "optional",
+            "displayname": "$rc:in_concurrent_route_matching.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ANY",
+                        "code": "$rc:in_concurrent_route_matching.domain.ANY"
+                    },
+                    {
+                        "value": "ROUTE_ID",
+                        "code": "$rc:in_concurrent_route_matching.domain.ROUTE_ID"
+                    },
+                    {
+                        "value": "ALL",
+                        "code": "$rc:in_concurrent_route_matching.domain.ALL"
+                    }
+                ]
+            },
+            "value": "ANY",
+            "description": "$rc:in_concurrent_route_matching.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

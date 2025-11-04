@@ -1,0 +1,15 @@
+{
+    "map": {
+        "description": "Sets the domain for a particular field and, optionally, for a subtype. If no subtype is specified, the domain is only assigned to the specified field.",
+        "domain_name.descr": "The name of a geodatabase domain that will be assigned to the field name. Available domains will be loaded automatically.",
+        "domain_name.title": "Domain Name",
+        "field_name.descr": "The name of the field that will be assigned a domain.",
+        "field_name.title": "Field Name",
+        "in_table.descr": "The name of the table or feature class containing the field that will be assigned a domain.",
+        "in_table.title": "Input Table",
+        "out_table.title": "Updated Input Table",
+        "subtype_code.descr": "The subtype code that will be assigned a domain.",
+        "subtype_code.title": "Subtype",
+        "title": "Assign Domain To Field"
+    }
+}

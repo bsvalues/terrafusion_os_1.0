@@ -1,0 +1,208 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "53040001",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "inputLayer": {
+            "displayname": "$rc:inputlayer.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "description": "$rc:inputlayer.descr"
+        },
+        "outputName": {
+            "displayname": "$rc:outputname.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:outputname.descr"
+        },
+        "distances": {
+            "type": "optional",
+            "displayname": "$rc:distances.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPDouble"
+                }
+            },
+            "description": "$rc:distances.descr"
+        },
+        "field": {
+            "type": "optional",
+            "displayname": "$rc:field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double"
+                ]
+            },
+            "depends": [
+                "inputLayer"
+            ],
+            "description": "$rc:field.descr"
+        },
+        "units": {
+            "type": "optional",
+            "displayname": "$rc:units.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "METERS",
+                        "code": "$rc:units.domain.METERS"
+                    },
+                    {
+                        "value": "KILOMETERS",
+                        "code": "$rc:units.domain.KILOMETERS"
+                    },
+                    {
+                        "value": "FEET",
+                        "code": "$rc:units.domain.FEET"
+                    },
+                    {
+                        "value": "MILES",
+                        "code": "$rc:units.domain.MILES"
+                    },
+                    {
+                        "value": "NAUTICALMILES",
+                        "code": "$rc:units.domain.NAUTICALMILES"
+                    },
+                    {
+                        "value": "YARDS",
+                        "code": "$rc:units.domain.YARDS"
+                    }
+                ]
+            },
+            "value": "METERS",
+            "description": "$rc:units.descr"
+        },
+        "dissolveType": {
+            "type": "optional",
+            "displayname": "$rc:dissolvetype.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NONE",
+                        "code": "$rc:dissolvetype.domain.NONE"
+                    },
+                    {
+                        "value": "DISSOLVE",
+                        "code": "$rc:dissolvetype.domain.DISSOLVE"
+                    }
+                ]
+            },
+            "value": "NONE",
+            "description": "$rc:dissolvetype.descr"
+        },
+        "ringType": {
+            "type": "optional",
+            "displayname": "$rc:ringtype.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DISKS",
+                        "code": "$rc:ringtype.domain.DISKS"
+                    },
+                    {
+                        "value": "RINGS",
+                        "code": "$rc:ringtype.domain.RINGS"
+                    }
+                ]
+            },
+            "value": "DISKS",
+            "description": "$rc:ringtype.descr"
+        },
+        "sideType": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:sidetype.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "FULL",
+                        "code": "$rc:sidetype.domain.FULL"
+                    },
+                    {
+                        "value": "RIGHT",
+                        "code": "$rc:sidetype.domain.RIGHT"
+                    },
+                    {
+                        "value": "LEFT",
+                        "code": "$rc:sidetype.domain.LEFT"
+                    },
+                    {
+                        "value": "OUTSIDE",
+                        "code": "$rc:sidetype.domain.OUTSIDE"
+                    }
+                ]
+            },
+            "description": "$rc:sidetype.descr"
+        },
+        "endType": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:endtype.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ROUND",
+                        "code": "$rc:endtype.domain.ROUND"
+                    },
+                    {
+                        "value": "FLAT",
+                        "code": "$rc:endtype.domain.FLAT"
+                    }
+                ]
+            },
+            "value": "ROUND",
+            "description": "$rc:endtype.descr"
+        },
+        "output": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    },
+    "environments": [
+        "extent"
+    ]
+}

@@ -1,0 +1,1297 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.PACSService.DTOs</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.PACSService.DTOs.PayImportedPaymentRunDTO">
+            <summary>
+            Data Transfer Objects to represent PACS Payment Import Related Information.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DTOs.PayImportedPaymentRunDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PayImportedPaymentRunDTO.RunID">
+            <summary>
+            runId
+            </summary>
+            <remarks>
+            runId in PACS DB
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PayImportedPaymentRunDTO.AcceptCount">
+            <summary>
+            AcceptCount
+            </summary>		
+            <remarks>
+            From PACS DB - AcceptCount
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PayImportedPaymentRunDTO.FileType">
+            <summary>
+            FileType
+            </summary>		
+            <remarks>
+            From PACS DB - FileType
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PayImportedPaymentRunDTO.RecordCount">
+            <summary>
+            RecordCount
+            </summary>		
+            <remarks>
+            From PACS DB - RecordCount
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PayImportedPaymentRunDTO.PaymentSourceId">
+            <summary>
+            PaymentSourceId
+            </summary>
+            <remarks>
+            From PACS DB - PaymentSourceId
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PayImportedPaymentRunDTO.AmountPaid">
+            <summary>
+            AmountPaid
+            </summary>
+            <remarks>
+            From PACS DB - AmountPaid
+            </remarks>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DTOs.PayImportedPaymentRunDTO.GetCount">
+            <summary>
+            Will return a count of the data records present
+            </summary>
+            <returns>Count</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:TrueAutomation.PACSService.DTOs.Pacs_UserDTO" -->
+        <!-- Badly formed XML comment ignored for member "M:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.#ctor" -->
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.Id">
+            <summary>
+            The Id
+            </summary>
+            <remarks>
+            Id corresponds to pacs_user_id in PACS DB
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.PacsUserName">
+            <summary>
+            PacsUserName
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.pacs_user_name
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.FullName">
+            <summary>
+            FullName
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.full_name
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.Description">
+            <summary>
+            Description
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.description
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.UserRoles">
+            <summary>
+            List of Roles assigned for this user
+            </summary>
+            <remarks>
+            From PACS DB - user_role_user_assoc.role_id
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.MruPropId1">
+            <summary>
+            MruPropId1
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.mru_prop_id1
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.MruPropId2">
+            <summary>
+            MruPropId2
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.mru_prop_id2
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.MruPropId3">
+            <summary>
+            MruPropId3
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.mru_prop_id3
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.MruPropId4">
+            <summary>
+            MruPropId1
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.mru_prop_id4
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.MruPropId5">
+            <summary>
+            MruPropId4
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.mru_prop_id5
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.MruPropId6">
+            <summary>
+            MruPropId5
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.mru_prop_id6
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.MruPropId7">
+            <summary>
+            MruPropId6
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.mru_prop_id7
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.MruPropId8">
+            <summary>
+            MruPropId7
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.mru_prop_id8
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.MruAcctId1">
+            <summary>
+            MruPropId8
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.mru_acct_id1
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.MruAcctId2">
+            <summary>
+            MruAcctId2
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.mru_acct_id2
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.MruAcctId3">
+            <summary>
+            MruAcctId3
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.mru_acct_id3
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.MruAcctId4">
+            <summary>
+            MruAcctId4
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.mru_acct_id4
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.MruAcctId5">
+            <summary>
+            MruAcctId5
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.mru_acct_id5
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.MruAcctId6">
+            <summary>
+            MruPropId1
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.mru_acct_id6
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.MruAcctId7">
+            <summary>
+            MruAcctId7
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.mru_acct_id7
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.MruAcctId8">
+            <summary>
+            MruAcctId8
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.mru_acct_id8
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.MruBillId1">
+            <summary>
+            MruBillId1
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.mru_bill_id1
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.MruBillId2">
+            <summary>
+            MruBillId2
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.mru_bill_id2
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.MruBillId3">
+            <summary>
+            MruBillId3
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.mru_bill_id3
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.MruBillId4">
+            <summary>
+            MruBillId4
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.mru_bill_id4
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.MruBillId5">
+            <summary>
+            MruBillId5
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.mru_bill_id5
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.MruBillId6">
+            <summary>
+            MruBillId6
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.mru_bill_id6
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.MruBillId7">
+            <summary>
+            MruBillId7
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.mru_bill_id7
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.MruBillId8">
+            <summary>
+            MruBillId8
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.mru_bill_id8
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.LogonStart">
+            <summary>
+            LogonStart
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.logon_start
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.LogonEnd">
+            <summary>
+            LogonEnd
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.logon_end
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.WeekendLogonStart">
+            <summary>
+            WeekendLogonStart
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.weeknd_logon_start
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.WeekendLogonEnd">
+            <summary>
+            WeekendLogonEnd
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.weeknd_logon_end
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.AccountExpirationEnd">
+            <summary>
+            AccountExpirationEnd
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.acct_exp_end
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.PasswordExpirationEnd">
+            <summary>
+            PasswordExpirationEnd
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.psw_exp_end
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.MustChangePassword">
+            <summary>
+            MustChangePassword
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.must_chg_psw
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.RemoteUser">
+            <summary>
+            RemoteUser
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.remote_user
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.TNTUserName">
+            <summary>
+            TNTUserName
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.tnt_user_name
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.TNTPassword">
+            <summary>
+            TNTPassword
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.tnt_password
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.SearchRowCount">
+            <summary>
+            SearchRowCount
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.search_row_count
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.LastPasswordChangeDate">
+            <summary>
+            LastPasswordChangeDate
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.last_password_chg_dt
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.Pacs_UserDTO.PasswordHash">
+            <summary>
+            PasswordHash
+            </summary>
+            <remarks>
+            From PACS DB - Pacs_User.password_hash
+            </remarks>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DTOs.REETExportDTO">
+            <summary>
+            Data Transfer Object to represent REET Export Information.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DTOs.REETExportDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.REETExportDTO.FullFileName">
+            <summary>
+            FullFileName of the Exported REET record
+            </summary>		
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.REETExportDTO.AsOfDate">
+            <summary>
+            AsOfDate of the Exported REET record
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.REETExportDTO.ExportErrorMessage">
+            <summary>
+            ErrorMessage received when the REET export fails
+            </summary>		
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.REETExportDTO.IsSuccess">
+            <summary>
+            Boolean to indicate if the REET export is a success
+            </summary>		
+        </member>
+        <member name="M:TrueAutomation.PACSService.DTOs.REETExportDTO.GetCount">
+            <summary>
+            Will return a count of the data records present
+            </summary>
+            <returns>Count</returns>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DTOs.SqlQueryResult">
+            <summary>
+            Class to represent the result of a SQL Query.
+            Query Result will also contain Column Names along with Data.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:TrueAutomation.PACSService.DTOs.SqlQueryResult.#ctor" -->
+        <!-- Badly formed XML comment ignored for member "M:TrueAutomation.PACSService.DTOs.SqlQueryResult.#ctor(System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.Object[]})" -->
+        <member name="P:TrueAutomation.PACSService.DTOs.SqlQueryResult.ResultRows">
+            <summary>
+            Query Result Rows with Data
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.SqlQueryResult.ColumnNames">
+            <summary>
+            Column Names in the Query result
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DTOs.TaskQueryMappingDTO">
+            <summary>
+            Data Transfer Objects containing information needed to convey the details of a  <c>TrueAutomation.PACSService.Domain.TaskQueryMapping</c>
+            </summary>
+            
+        </member>
+        <member name="M:TrueAutomation.PACSService.DTOs.TaskQueryMappingDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DTOs.TaskQueryMappingDTO.CompareTo(System.Object)">
+            <summary>
+            Custom Sort implementation
+            Sort by Name
+            </summary>
+            <param name="compareToObject"></param>
+            <returns></returns>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQueryMappingDTO.Id">
+            <summary>
+            The Unique Identifier of the TaskQueryMapping 
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQueryMappingDTO.Name">
+            <summary>
+            The name of the mapping
+            </summary>
+            <remarks>Used for retrieval in listing the available queries</remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQueryMappingDTO.Description">
+            <summary>
+            A Description of the mapping/query
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQueryMappingDTO.Query">
+            <summary>
+            The Task Query to Map
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQueryMappingDTO.DataRecordDefinitionId">
+            <summary>
+            The Data Record Definition being mapped to the query.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQueryMappingDTO.Fields">
+            <summary>
+            A dictionary showing the relationships between the DataRecordDefinition fields and the Query's returned fields.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQueryMappingDTO.IsModifiedCreate">
+            <summary>
+            Flag to denote whether the DTO is being created
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQueryMappingDTO.IsModifiedUpdate">
+            <summary>
+            Flag to denote whether the DTO is being updated
+            </summary>		
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQueryMappingDTO.IsModifiedDelete">
+            <summary>
+            Flag to denote whether the DTO is being deleted
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DTOs.TaskQuerySelectionFieldDTO">
+            <summary>
+            Data Transfer Objects containing information needed to convey the details of a  <c>TrueAutomation.PACSService.Domain.TaskQuerySelectionFields</c>
+            </summary>
+            
+        </member>
+        <member name="M:TrueAutomation.PACSService.DTOs.TaskQuerySelectionFieldDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DTOs.TaskQuerySelectionFieldDTO.CompareTo(System.Object)">
+            <summary>
+            Custom Sort implementation
+            Sort by column order
+            </summary>
+            <param name="compareToObject"></param>
+            <returns></returns>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQuerySelectionFieldDTO.Guid">
+            <summary>
+            The Unique identifier of the Fields stored in the Task Query Selection
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQuerySelectionFieldDTO.Name">
+            <summary>
+            The Name of the Field selected
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQuerySelectionFieldDTO.FieldType">
+            <summary>
+            The Type of the Field selected
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQuerySelectionFieldDTO.colorder">
+            <summary>
+            The order of the columns within the query.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQuerySelectionFieldDTO.length">
+            <summary>
+            The length of the field in the query
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQuerySelectionFieldDTO.QueryId">
+            <summary>
+            The Unique ID of the Query to which the field belongs.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DTOs.TaskQueryDTO">
+             <summary>
+             Data Transfer Objects containing information needed to convey the details of a  <c>TrueAutomation.PACSService.Domain.TaskQuery</c>
+             </summary>
+            
+        </member>
+        <member name="M:TrueAutomation.PACSService.DTOs.TaskQueryDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQueryDTO.Id">
+            <summary>
+            The Unique Identifier of the Query
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQueryDTO.PACSQueryId">
+            <summary>
+            The QueryId of the associated query in PACS.Query
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQueryDTO.Name">
+            <summary>
+            The Name of the Query
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQueryDTO.Description">
+            <summary>
+            The description of the Query
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQueryDTO.SqlQuery">
+            <summary>
+            The string of sql to execute.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQueryDTO.CreationDate">
+            <summary>
+            Creation Time of associated record in PACS.Query
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQueryDTO.ExpirationDate">
+            <summary>
+            Expiration Date set in PACS.Query
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQueryDTO.PacsUser">
+            <summary>
+            UserName of the Pacs User responsible for the creation of the query.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQueryDTO.Fields">
+            <summary>
+            The list of fields (name/type) being selected within the query.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQueryDTO.TaskQueryMappingId">
+            <summary>
+            The Id of the TaskQueryMapping
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQueryDTO.IsModifiedCreate">
+            <summary>
+            Flag to denote whether the DTO is being created
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQueryDTO.IsModifiedUpdate">
+            <summary>
+            Flag to denote whether the DTO is being updated
+            </summary>		
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.TaskQueryDTO.IsModifiedDelete">
+            <summary>
+            Flag to denote whether the DTO is being deleted
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DTOs.TaskQueryDTO.CompareTo(System.Object)">
+            <summary>
+            Custom Sort implementation
+            Sort by Name
+            </summary>
+            <param name="compareToObject"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DTOs.PACSSearchDTO">
+            <summary>
+            Data Transfer Objects containing information needed to search on PACS Related Information.
+            </summary>
+            
+        </member>
+        <member name="M:TrueAutomation.PACSService.DTOs.PACSSearchDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PACSSearchDTO.Parameters">
+            <summary>
+            Dictionary of search parameters
+            as fieldname, value
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DTOs.NamespaceDoc">
+            <summary>
+            These are the namespace comments for <c>TrueAutomation.PACSService.DTOs</c>.
+            
+            This class contains the code to send/retrieve data from the PACS Service
+            using these Data Transfer Objects
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DTOs.PropertyDTO">
+            <summary>
+            Data Transfer Objects to represent PACS Property Related Information.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DTOs.PropertyDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.Id">
+            <summary>
+            Id
+            </summary>
+            <remarks>
+            Id corresponds to prop_id in PACS DB
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.PropertyTypeCode">
+            <summary>
+            Property Type Code
+            </summary>
+            <remarks>
+            From PACS DB - property.prop_type_cd
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.PropertyCreatedDate">
+            <summary>
+            Property created date
+            </summary>
+            <remarks>
+            From PACS DB - property.prop_create_dt
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.ReferenceID1">
+            <summary>
+            Reference Id 1
+            </summary>
+            <remarks>
+            From PACS DB - property.ref_id1
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.ReferenceID2">
+            <summary>
+            Reference Id 2
+            </summary>
+            <remarks>
+            From PACS DB - property.ref_id2
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.GeoId">
+            <summary>
+            Geo Id of this property
+            </summary>
+            <remarks>
+            From PACS DB - property.geo_id
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.AMSLoadDate">
+            <summary>
+            Last AMD loaded date
+            </summary>
+            <remarks>
+            From PACS DB - property.ams_load_dt
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.PropertyComment">
+            <summary>
+            Comments on this property
+            </summary>
+            <remarks>
+            From PACS DB - property.prop_cmnt
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.PropertySicCode">
+            <summary>
+            Property SIC code
+            </summary>
+            <remarks>
+            From PACS DB - property.prop_sic_cd
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.OwnerId">
+            <summary>
+            Owner ID of this property
+            </summary>
+            <remarks>
+            From PACS DB - property.col_owner_id
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.AgentId">
+            <summary>
+            Agent ID of this property
+            </summary>
+            <remarks>
+            From PACS DB - property.col_agent_id
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.AutoPayId">
+            <summary>
+            AutoPay account ID of this property
+            </summary>
+            <remarks>
+            From PACS DB - property.col_autopay_id
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.DBAName">
+            <summary>
+            DBA name
+            </summary>
+            <remarks>
+            From PACS DB - property.dba_name
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.AlternateDBAName">
+            <summary>
+            Alternante DBA name
+            </summary>
+            <remarks>
+            From PACS DB - property.alt_dba_name
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.ExemptReset">
+            <summary>
+            Property exempt reset flag
+            </summary>
+            <remarks>
+            From PACS DB - property.exmpt_reset
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.GPMIrrigation">
+            <summary>
+            GPM Irrigation
+            </summary>
+            <remarks>
+            From PACS DB - property.gpm_irrig
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.Utilities">
+            <summary>
+            Utilities
+            </summary>
+            <remarks>
+            From PACS DB - property.utilities
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.Topography">
+            <summary>
+            Topography
+            </summary>
+            <remarks>
+            From PACS DB - property.topography
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.RoadAccess">
+            <summary>
+            Road access
+            </summary>
+            <remarks>
+            From PACS DB - property.road_access
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.Other">
+            <summary>
+            Other data
+            </summary>
+            <remarks>
+            From PACS DB - property.other
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.Zoning">
+            <summary>
+            Zoning
+            </summary>
+            <remarks>
+            From PACS DB - property.zoning
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.Remarks">
+            <summary>
+            Remarks on the property
+            </summary>
+            <remarks>
+            From PACS DB - property.remarks
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.StateCode">
+            <summary>
+            State code
+            </summary>
+            <remarks>
+            From PACS DB - property.state_cd
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.MassCreatedFrom">
+            <summary>
+            Mass created from 
+            </summary>
+            <remarks>
+            From PACS DB - property.mass_created_from
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.SimpleGeoId">
+            <summary>
+            Simple Geo ID
+            </summary>
+            <remarks>
+            From PACS DB - property.simple_geo_id
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.ReferenceFlag">
+            <summary>
+            Reference flag
+            </summary>
+            <remarks>
+            From PACS DB - property.reference_flag
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.PenpadRunId">
+            <summary>
+            Penpad run ID
+            </summary>
+            <remarks>
+            From PACS DB - property.penpad_run_id
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.ReferenceDescription">
+            <summary>
+            Reference description
+            </summary>
+            <remarks>
+            From PACS DB - property.reference_desc
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.OwnerYear">
+            <summary>
+            Owner year
+            </summary>
+            <remarks>
+            From PACS DB - property.col_owner_yr
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.OwnerOverride">
+            <summary>
+            Owner override flag
+            </summary>
+            <remarks>
+            From PACS DB - property.col_owner_override
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.AgentOverride">
+            <summary>
+            Agent override flag
+            </summary>
+            <remarks>
+            From PACS DB - property.col_agent_override
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.OwnerUpdateDate">
+            <summary>
+            Owner updated date
+            </summary>
+            <remarks>
+            From PACS DB - property.col_owner_update_dt
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.AgentUpdateDate">
+            <summary>
+            Agent updated date
+            </summary>
+            <remarks>
+            From PACS DB - property.col_agent_update_dt
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.PropertyDTO.MassCreateRunId">
+            <summary>
+            MAss create run id
+            </summary>
+            <remarks>
+            From PACS DB - property.mass_create_run_id
+            </remarks>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DTOs.PropertyDTO.GetCount">
+            <summary>
+            Will return a count of the data records present
+            </summary>
+            <returns>Count</returns>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DTOs.AccountDTO">
+            <summary>
+            Data Transfer Objects to represent PACS Account Related Information.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DTOs.AccountDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.Id">
+            <summary>
+            The Id
+            </summary>
+            <remarks>
+            Id corresponds to acct_id in PACS DB
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.FirstName">
+            <summary>
+            First name on the account
+            </summary>		
+            <remarks>
+            From PACS DB - account.first_name
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.LastName">
+            <summary>
+            Last name on the account
+            </summary>		
+            <remarks>
+            From PACS DB - account.last_name
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.FileAsName">
+            <summary>
+            File As name on the account
+            </summary>
+            <remarks>
+            From PACS DB - account.file_as_name
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.DrivingLicenseNumber">
+            <summary>
+            Dr license number on the account
+            </summary>
+            <remarks>
+            From PACS DB - account.dl_num
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.DrivingLicenseState">
+            <summary>
+            Dr license State
+            </summary>
+            <remarks>
+            From PACS DB - account.dl_state
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.DrivingLicenseExpiryDate">
+            <summary>
+            Expiry date of the Dr license
+            </summary>
+            <remarks>
+            From PACS DB - account.dl_expir_dt
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.MergedAccountId">
+            <summary>
+            Merged account Id on the account
+            </summary>
+            <remarks>
+            From PACS DB - account.merged_acct_id
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.AccountCreatedDate">
+            <summary>
+            Account created date
+            </summary>
+            <remarks>
+            From PACS DB - account.acct_create_dt
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.OpeningBalance">
+            <summary>
+            Opening balance on the account
+            </summary>
+            <remarks>
+            From PACS DB - account.opening_balance
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.Comment">
+            <summary>
+            Additional comments
+            </summary>
+            <remarks>
+            From PACS DB - account.comment
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.MiscellaneousCode">
+            <summary>
+            Misc code
+            </summary>
+            <remarks>
+            From PACS DB - account.misc_code
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.ReferenceId1">
+            <summary>
+            Ref Id 1
+            </summary>
+            <remarks>
+            From PACS DB - account.ref_id1
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.Source">
+            <summary>
+            Source
+            </summary>
+            <remarks>
+            From PACS DB - account.source
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.ReferenceAccountId">
+            <summary>
+            Reference account Id
+            </summary>
+            <remarks>
+            From PACS DB - account.ref_acct_id
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.ConfidentialFlag">
+            <summary>
+            Confidential flag on the account
+            </summary>
+            <remarks>
+            From PACS DB - account.confidential_flag
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.ConfidentialFileAsName">
+            <summary>
+            Confidential file as name
+            </summary>
+            <remarks>
+            From PACS DB - account.confidential_file_as_name
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.ConfidentialFirstName">
+            <summary>
+            Confidential First name on the account
+            </summary>
+            <remarks>
+            From PACS DB - account.confidential_first_name
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.ConfidentialLastName">
+            <summary>
+            Confidential Last name on the account
+            </summary>
+            <remarks>
+            From PACS DB - account.confidential_last_name
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.DistrictMNO">
+            <summary>
+            District M N O
+            </summary>
+            <remarks>
+            From PACS DB - account.dist_m_n_o
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.DistrictINS">
+            <summary>
+            District I N S
+            </summary>
+            <remarks>
+            From PACS DB - account.dist_i_n_s
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.DistrictPI">
+            <summary>
+            District P I
+            </summary>
+            <remarks>
+            From PACS DB - account.dist_pi
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.DistrictAttorneyFees">
+            <summary>
+            District Attorney Fees
+            </summary>
+            <remarks>
+            From PACS DB - account.dist_atty_fees
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.DistrictOverages">
+            <summary>
+            District Overages on the account
+            </summary>
+            <remarks>
+            From PACS DB - account.dist_overages
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.DistrictTaxCertificationFees">
+            <summary>
+            District Tax Certification Fees
+            </summary>
+            <remarks>
+            From PACS DB - account.dist_tax_cert_fees
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.DistrictMiscellaneousFees">
+            <summary>
+            District Miscellaneous Fees
+            </summary>
+            <remarks>
+            From PACS DB - account.dist_misc_fees
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.DistrictVIT">
+            <summary>
+            District V I T
+            </summary>
+            <remarks>
+            From PACS DB - account.dist_vit
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.EmailAddress">
+            <summary>
+            Email address on the account
+            </summary>
+            <remarks>
+            From PACS DB - account.email_addr
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.WebAddress">
+            <summary>
+            Web Address
+            </summary>
+            <remarks>
+            From PACS DB - account.web_addr
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.FTPAddress">
+            <summary>
+            FTP address
+            </summary>
+            <remarks>
+            From PACS DB - account.ftp_addr
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.UpdateDate">
+            <summary>
+            Updated date
+            </summary>
+            <remarks>
+            From PACS DB - account.update_dt
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.WebSuppression">
+            <summary>
+            Web suppression flag
+            </summary>
+            <remarks>
+            From PACS DB - account.web_suppression
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.AccountDTO.AppraisalCompanyId">
+            <summary>
+            Appraisal company ID
+            </summary>
+            <remarks>
+            From PACS DB - account.appr_company_id
+            </remarks>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DTOs.AccountDTO.GetCount">
+            <summary>
+            Will return a count of the data records present
+            </summary>
+            <returns>Count</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:TrueAutomation.PACSService.DTOs.User_RoleDTO" -->
+        <!-- Badly formed XML comment ignored for member "M:TrueAutomation.PACSService.DTOs.User_RoleDTO.#ctor" -->
+        <member name="P:TrueAutomation.PACSService.DTOs.User_RoleDTO.Id">
+            <summary>
+            The Role Id
+            </summary>
+            <remarks>
+            Id corresponds to User_Role.role_id in PACS DB
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.User_RoleDTO.RoleDescription">
+            <summary>
+            RoleDescription
+            </summary>
+            <remarks>
+            From PACS DB - User_Role.role_description
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.User_RoleDTO.RoleType">
+            <summary>
+            RoleType
+            </summary>
+            <remarks>
+            From PACS DB - User_Role.role_type
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.User_RoleDTO.RoleSubAttribute">
+            <summary>
+            RoleSubAttribute
+            </summary>
+            <remarks>
+            From PACS DB - User_Role.role_sub_attribute
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.DTOs.User_RoleDTO.Users">
+            <summary>
+            List of Users assigned with this role
+            </summary>
+            <remarks>
+            From PACS DB - user_role_user_assoc.pacs_user_id
+            </remarks>
+        </member>
+    </members>
+</doc>

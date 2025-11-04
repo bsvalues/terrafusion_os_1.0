@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Permanently deletes one or more sessions and all related records from a Reviewer workspace.",
+        "result.title": "Delete Reviewer Session Succeeded",
+        "reviewer_workspace.descr": "The workspace from which the Reviewer session will be deleted.",
+        "reviewer_workspace.title": "Reviewer Workspace",
+        "session.descr": "<xdoc><p>The Reviewer session identifier and name. The session must exist in the Reviewer workspace, for example, <span class=\"esri_uicontrol\">Session 1 : data_qc</span>.</p></xdoc>",
+        "session.title": "Session",
+        "summary": "<xdoc><p>Permanently deletes one or more sessions and all related records from a Reviewer workspace.</p><p>A Reviewer session is used to store and manage the results of a data analysis throughout the life cycle of an anomaly. It allows you to organize the results from running batch jobs and visual inspections.</p><note type=\"legacy\"/><p group=\"note\">ArcMap-based Reviewer workflows will soon be deprecated. It is recommended that current users begin converting their workflows from Reviewer batch jobs to ArcGIS Pro attribute rules.</p></xdoc>",
+        "title": "Delete Reviewer Session"
+    }
+}

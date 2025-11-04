@@ -1,0 +1,335 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "1040007",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_polygons": {
+            "displayname": "$rc:in_polygons.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_polygons.descr"
+        },
+        "in_sum_features": {
+            "displayname": "$rc:in_sum_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Multipoint",
+                    "Polygon",
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_sum_features.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "depends": [
+                "in_polygons"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "keep_all_polygons": {
+            "type": "optional",
+            "displayname": "$rc:keep_all_polygons.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "KEEP_ALL"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "ONLY_INTERSECTING"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:keep_all_polygons.descr"
+        },
+        "sum_fields": {
+            "type": "optional",
+            "displayname": "$rc:sum_fields.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:sum_fields.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:sum_fields.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Short",
+                            "Long",
+                            "Float",
+                            "Double",
+                            "BigInteger",
+                            "Date",
+                            "DateOnly",
+                            "TimeOnly",
+                            "TimestampOffset"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "Sum",
+                                "code": "$rc:sum_fields.domain.item2.Sum"
+                            },
+                            {
+                                "value": "Mean",
+                                "code": "$rc:sum_fields.domain.item2.Mean"
+                            },
+                            {
+                                "value": "Min",
+                                "code": "$rc:sum_fields.domain.item2.Min"
+                            },
+                            {
+                                "value": "Max",
+                                "code": "$rc:sum_fields.domain.item2.Max"
+                            },
+                            {
+                                "value": "Stddev",
+                                "code": "$rc:sum_fields.domain.item2.Stddev"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "in_sum_features"
+            ],
+            "description": "$rc:sum_fields.descr"
+        },
+        "sum_shape": {
+            "type": "optional",
+            "displayname": "$rc:sum_shape.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ADD_SHAPE_SUM"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_SHAPE_SUM"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:sum_shape.descr"
+        },
+        "shape_unit": {
+            "type": "optional",
+            "displayname": "$rc:shape_unit.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ACRES",
+                        "code": "$rc:shape_unit.domain.ACRES"
+                    },
+                    {
+                        "value": "HECTARES",
+                        "code": "$rc:shape_unit.domain.HECTARES"
+                    },
+                    {
+                        "value": "SQUAREMETERS",
+                        "code": "$rc:shape_unit.domain.SQUAREMETERS"
+                    },
+                    {
+                        "value": "SQUAREKILOMETERS",
+                        "code": "$rc:shape_unit.domain.SQUAREKILOMETERS"
+                    },
+                    {
+                        "value": "SQUAREFEET",
+                        "code": "$rc:shape_unit.domain.SQUAREFEET"
+                    },
+                    {
+                        "value": "SQUAREYARDS",
+                        "code": "$rc:shape_unit.domain.SQUAREYARDS"
+                    },
+                    {
+                        "value": "SQUAREMILES",
+                        "code": "$rc:shape_unit.domain.SQUAREMILES"
+                    },
+                    {
+                        "value": "METERS",
+                        "code": "$rc:shape_unit.domain.METERS"
+                    },
+                    {
+                        "value": "KILOMETERS",
+                        "code": "$rc:shape_unit.domain.KILOMETERS"
+                    },
+                    {
+                        "value": "FEET",
+                        "code": "$rc:shape_unit.domain.FEET"
+                    },
+                    {
+                        "value": "YARDS",
+                        "code": "$rc:shape_unit.domain.YARDS"
+                    },
+                    {
+                        "value": "MILES",
+                        "code": "$rc:shape_unit.domain.MILES"
+                    }
+                ]
+            },
+            "description": "$rc:shape_unit.descr"
+        },
+        "group_field": {
+            "type": "optional",
+            "displayname": "$rc:group_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "BigInteger",
+                    "Date",
+                    "DateOnly",
+                    "TimeOnly",
+                    "TimestampOffset"
+                ]
+            },
+            "depends": [
+                "in_sum_features"
+            ],
+            "description": "$rc:group_field.descr"
+        },
+        "add_min_maj": {
+            "type": "optional",
+            "displayname": "$rc:add_min_maj.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ADD_MIN_MAJ"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_MIN_MAJ"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:add_min_maj.descr"
+        },
+        "add_group_percent": {
+            "type": "optional",
+            "displayname": "$rc:add_group_percent.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ADD_PERCENT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_PERCENT"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:add_group_percent.descr"
+        },
+        "out_group_table": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_group_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_group_table.descr"
+        }
+    },
+    "environments": [
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "ZDomain",
+        "ZResolution",
+        "ZTolerance",
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "outputZFlag",
+        "outputZValue",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

@@ -1,0 +1,63 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "69000016",
+    "description": "$rc:description",
+    "product": "300",
+    "attributes": [
+        "spark"
+    ],
+    "params": {
+        "input_layer": {
+            "displayname": "$rc:input_layer.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:input_layer.descr"
+        },
+        "clip_layer": {
+            "displayname": "$rc:clip_layer.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:clip_layer.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_feature_class.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "outputCoordinateSystem",
+        "workspace"
+    ]
+}

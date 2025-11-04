@@ -1,0 +1,187 @@
+{
+    "type": "FunctionTool",
+    "guid": "{71661049-3751-455a-90fe-6fd9a13551e5}",
+    "displayname": "$rc:title",
+    "helpcontent": "61010034",
+    "description": "$rc:description",
+    "product": "200",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "block_add_to_map"
+    ],
+    "params": {
+        "in_utility_network": {
+            "display_order": "1",
+            "displayname": "$rc:in_utility_network.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    },
+                    {
+                        "type": "GPUtilityNetworkLayer"
+                    }
+                ]
+            }
+        },
+        "domain_network": {
+            "display_order": "2",
+            "displayname": "$rc:domain_network.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "circuits": {
+            "display_order": "3",
+            "displayname": "$rc:circuits.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "export_acknowledged": {
+            "display_order": "4",
+            "displayname": "$rc:export_acknowledged.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ACKNOWLEDGE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_ACKNOWLEDGE"
+                    }
+                ]
+            },
+            "value": "false"
+        },
+        "out_folder_path": {
+            "display_order": "5",
+            "displayname": "$rc:out_folder_path.title",
+            "datatype": {
+                "type": "DEFolder"
+            }
+        },
+        "include_geometry": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:include_geometry.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "INCLUDE_GEOMETRY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "EXCLUDE_GEOMETRY"
+                    }
+                ]
+            },
+            "value": "false"
+        },
+        "include_domain_descriptions": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:include_domain_descriptions.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "INCLUDE_DOMAIN_DESCRIPTIONS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "EXCLUDE_DOMAIN_DESCRIPTIONS"
+                    }
+                ]
+            },
+            "value": "false"
+        },
+        "result_types": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:result_types.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "FEATURES",
+                        "code": "$rc:result_types.domain.FEATURES"
+                    },
+                    {
+                        "value": "CONNECTIVITY",
+                        "code": "$rc:result_types.domain.CONNECTIVITY"
+                    }
+                ]
+            }
+        },
+        "result_network_attributes": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:result_network_attributes.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            }
+        },
+        "result_fields": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:result_fields.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:result_fields.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:result_fields.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            }
+        }
+    }
+}

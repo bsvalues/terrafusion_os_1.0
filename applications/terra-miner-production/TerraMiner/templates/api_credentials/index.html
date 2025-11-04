@@ -1,0 +1,247 @@
+{% extends "api_credentials/base.html" %}
+
+{% block title %}API Credential Management{% endblock %}
+
+{% block api_credentials_content %}
+{% include 'partials/flash_messages.html' %}
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h3 class="mb-0">Available Data Sources</h3>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Data Source</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Required Fields</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for source in available_sources %}
+                    <tr>
+                        <td>
+                            <strong class="text-capitalize">{{ source.name }}</strong>
+                        </td>
+                        <td>{{ source.description }}</td>
+                        <td>
+                            {% if source.connector_status == "not_implemented" %}
+                                <span class="badge bg-secondary">Not Implemented</span>
+                            {% elif source.has_credentials and source.is_enabled %}
+                                <span class="badge bg-success">Active</span>
+                            {% elif source.has_credentials and not source.is_enabled %}
+                                <span class="badge bg-warning text-dark">Disabled</span>
+                            {% else %}
+                                <span class="badge bg-danger">No Credentials</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% for field in source.required_fields %}
+                                <span class="badge bg-info text-dark me-1 text-capitalize">{{ field }}</span>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                {% if source.has_credentials %}
+                                    <a href="{{ url_for('api_credentials.create_form', source_name=source.name) }}" class="btn btn-sm btn-primary bg-gradient" title="Edit credentials">
+                                        <i class="bi bi-pencil"></i> Edit
+                                    </a>
+                                    <form class="d-inline" method="POST" action="{{ url_for('api_credentials.toggle', credential_id=source.credentials_id) }}" id="toggle-form-{{ source.credentials_id }}">
+                                        <button type="button" onclick="toggleCredential({{ source.credentials_id }})" class="btn btn-sm btn-{{ 'danger' if source.is_enabled else 'success' }} bg-gradient" title="{{ 'Disable' if source.is_enabled else 'Enable' }} credentials">
+                                            <i class="bi bi-{{ 'toggle2-off' if source.is_enabled else 'toggle2-on' }}"></i> {{ 'Disable' if source.is_enabled else 'Enable' }}
+                                        </button>
+                                    </form>
+                                    <form class="d-inline delete-form" method="POST" action="{{ url_for('api_credentials.delete', credential_id=source.credentials_id) }}">
+                                        <button type="button" onclick="confirmDelete(this.form)" class="btn btn-sm btn-danger bg-gradient" title="Delete credentials">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                    <button type="button" onclick="testConnection('{{ source.name }}')" class="btn btn-sm btn-info bg-gradient" title="Test connection">
+                                        <i class="bi bi-lightning"></i> Test
+                                    </button>
+                                {% else %}
+                                    <a href="{{ url_for('api_credentials.create_form', source_name=source.name) }}" class="btn btn-sm btn-success bg-gradient" title="Add credentials">
+                                        <i class="bi bi-plus-circle"></i> Add
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="mb-0">Data Source Security</h3>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-primary">
+            <i class="bi bi-shield-lock me-2"></i> All API keys and credentials are securely stored in the database. Sensitive information is only shown when editing.
+        </div>
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i> Disabled credentials will not be used for API requests, but remain stored for future use.
+        </div>
+    </div>
+</div>
+
+<!-- Test Connection Modal -->
+<div class="modal fade" id="testModal" tabindex="-1" aria-labelledby="testModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title" id="testModalLabel">Testing Connection</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="testModalContent">
+                <div class="d-flex justify-content-center align-items-center">
+                    <div class="spinner-border text-primary me-3" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mb-0">Testing connection...</p>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const testModal = new bootstrap.Modal(document.getElementById('testModal'));
+    
+    function confirmDelete(form) {
+        if (confirm('Are you sure you want to delete these credentials? This action cannot be undone.')) {
+            form.submit();
+        }
+    }
+    
+    function toggleCredential(id) {
+        const form = document.getElementById(`toggle-form-${id}`);
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Create toast notification
+                const toastContainer = document.createElement('div');
+                toastContainer.className = 'position-fixed top-0 end-0 p-3';
+                toastContainer.style.zIndex = '1070';
+                
+                const toastElement = document.createElement('div');
+                toastElement.className = 'toast show';
+                toastElement.setAttribute('role', 'alert');
+                toastElement.setAttribute('aria-live', 'assertive');
+                toastElement.setAttribute('aria-atomic', 'true');
+                
+                toastElement.innerHTML = `
+                    <div class="toast-header bg-success text-white">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        <strong class="me-auto">Success</strong>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body bg-dark text-light">
+                        ${data.message}
+                    </div>
+                `;
+                
+                toastContainer.appendChild(toastElement);
+                document.body.appendChild(toastContainer);
+                
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    toastContainer.remove();
+                    // Reload the page to reflect changes
+                    window.location.reload();
+                }, 2000);
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while processing your request.');
+        });
+    }
+    
+    function testConnection(sourceName) {
+        const modalTitle = document.getElementById('testModalLabel');
+        const modalContent = document.getElementById('testModalContent');
+        
+        modalTitle.textContent = `Testing ${sourceName} Connection`;
+        modalContent.innerHTML = `
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="spinner-border text-primary me-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mb-0">Testing connection...</p>
+            </div>
+        `;
+        
+        testModal.show();
+        
+        fetch(`/api-credentials/test/${sourceName}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                modalContent.innerHTML = `
+                    <div class="text-center">
+                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
+                            <i class="bi bi-check-lg fs-1"></i>
+                        </div>
+                        <div class="alert alert-success bg-success bg-opacity-25 border-success text-success">
+                            ${data.message}
+                        </div>
+                        <p class="text-light opacity-75">Response time: ${data.response_time.toFixed(2)}ms</p>
+                    </div>
+                `;
+            } else {
+                modalContent.innerHTML = `
+                    <div class="text-center">
+                        <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
+                            <i class="bi bi-x-lg fs-1"></i>
+                        </div>
+                        <div class="alert alert-danger bg-danger bg-opacity-25 border-danger text-danger">
+                            Connection failed
+                        </div>
+                        <p class="text-light">${data.message}</p>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            modalContent.innerHTML = `
+                <div class="text-center">
+                    <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
+                        <i class="bi bi-exclamation-triangle fs-1"></i>
+                    </div>
+                    <div class="alert alert-warning bg-warning bg-opacity-25 border-warning text-warning">
+                        Error testing connection
+                    </div>
+                    <p class="text-light">An unexpected error occurred while testing the connection.</p>
+                </div>
+            `;
+        });
+    }
+</script>
+{% endblock %}

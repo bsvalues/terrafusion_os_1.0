@@ -1,0 +1,159 @@
+{
+    "type": "FunctionTool",
+    "guid": "{7664a58e-bfdf-4482-be6b-a7288e7a8ee3}",
+    "displayname": "$rc:title",
+    "helpcontent": "10010003",
+    "description": "$rc:description",
+    "product": "300",
+    "params": {
+        "masking_layer": {
+            "displayname": "$rc:masking_layer.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPAnnotationLayer"
+                    },
+                    {
+                        "type": "GPLayer"
+                    }
+                ]
+            },
+            "description": "$rc:masking_layer.descr"
+        },
+        "masked_layer": {
+            "displayname": "$rc:masked_layer.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPAnnotationLayer"
+                    },
+                    {
+                        "type": "GPLayer"
+                    }
+                ]
+            },
+            "description": "$rc:masked_layer.descr"
+        },
+        "output_fc": {
+            "direction": "out",
+            "displayname": "$rc:output_fc.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:output_fc.descr"
+        },
+        "reference_scale": {
+            "control_guid": "{B23D9E8D-E360-4670-919E-A7F8FFF0DC19}",
+            "displayname": "$rc:reference_scale.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:reference_scale.descr"
+        },
+        "spatial_reference": {
+            "displayname": "$rc:spatial_reference.title",
+            "datatype": {
+                "type": "GPSpatialReference"
+            },
+            "description": "$rc:spatial_reference.descr"
+        },
+        "margin": {
+            "displayname": "$rc:margin.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                }
+            },
+            "value": "0 Points",
+            "description": "$rc:margin.descr"
+        },
+        "method": {
+            "displayname": "$rc:method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "BOX",
+                        "code": "$rc:method.domain.BOX"
+                    },
+                    {
+                        "value": "CONVEX_HULL",
+                        "code": "$rc:method.domain.CONVEX_HULL"
+                    },
+                    {
+                        "value": "EXACT_SIMPLIFIED",
+                        "code": "$rc:method.domain.EXACT_SIMPLIFIED"
+                    },
+                    {
+                        "value": "EXACT",
+                        "code": "$rc:method.domain.EXACT"
+                    }
+                ]
+            },
+            "value": "CONVEX_HULL",
+            "description": "$rc:method.descr"
+        },
+        "mask_for_non_placed_anno": {
+            "displayname": "$rc:mask_for_non_placed_anno.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ALL_FEATURES",
+                        "code": "$rc:mask_for_non_placed_anno.domain.ALL_FEATURES"
+                    },
+                    {
+                        "value": "ONLY_PLACED",
+                        "code": "$rc:mask_for_non_placed_anno.domain.ONLY_PLACED"
+                    }
+                ]
+            },
+            "value": "ALL_FEATURES",
+            "description": "$rc:mask_for_non_placed_anno.descr"
+        },
+        "attributes": {
+            "displayname": "$rc:attributes.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NO_FID",
+                        "code": "$rc:attributes.domain.NO_FID"
+                    },
+                    {
+                        "value": "ONLY_FID",
+                        "code": "$rc:attributes.domain.ONLY_FID"
+                    },
+                    {
+                        "value": "ALL",
+                        "code": "$rc:attributes.domain.ALL"
+                    }
+                ]
+            },
+            "value": "ONLY_FID",
+            "description": "$rc:attributes.descr"
+        }
+    },
+    "environments": [
+        "cartographicCoordinateSystem",
+        "cartographicPartitions"
+    ]
+}

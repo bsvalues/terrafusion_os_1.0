@@ -1,0 +1,9 @@
+{
+    "set": [
+        "append",
+        "diagram",
+        "diagrams",
+        "network",
+        "network diagram"
+    ]
+}

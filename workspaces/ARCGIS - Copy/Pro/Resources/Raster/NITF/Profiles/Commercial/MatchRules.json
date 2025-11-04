@@ -1,0 +1,334 @@
+{
+  "IDs": {
+    "MatchRules-1ImagePlusCloudAndImageFeatures": [
+      "#MatchRule-1Image",
+      "#MatchRule-Image1Is1Band",
+      "#MatchRule-HasCloudShapesFeatureLayer",
+      "#MatchRule-HasImageShapeFeatureLayer"
+    ],
+    "MatchRules-ProductP2MS4Bands": [
+      "#MatchRule-MatchMission",
+      "#MatchRule-ProductIsP2",
+      "#MatchRule-Image1HasICATIsMS",
+      "#MatchRule-Image1HasIREPIsMULTI",
+      "#MatchRule-2Images",
+      "#MatchRule-Image1Is4Bands",
+      "#MatchRule-Image2Is1Band",
+      "#MatchRule-HasCloudShapesFeatureLayer",
+      "#MatchRule-HasImageShapeFeatureLayer"
+    ],
+    "MatchRules-ProductP2MS8Bands": [
+      "#MatchRule-MatchMission",
+      "#MatchRule-ProductIsP2",
+      "#MatchRule-Image1HasICATIsMS",
+      "#MatchRule-Image1HasIREPIsMULTI",
+      "#MatchRule-2Images",
+      "#MatchRule-Image1Is8Bands",
+      "#MatchRule-Image2Is1Band",
+      "#MatchRule-HasCloudShapesFeatureLayer",
+      "#MatchRule-HasImageShapeFeatureLayer"
+    ],
+    "MatchRules-ProductP2SWIR8Bands": [
+      "#MatchRule-MatchMission",
+      "#MatchRule-ProductIsP2",
+      "#MatchRule-Image1HasICATIsSWIR",
+      "#MatchRule-Image1HasIREPIsMULTI",
+      "#MatchRule-2Images",
+      "#MatchRule-Image1Is8Bands",
+      "#MatchRule-Image2Is1Band",
+      "#MatchRule-HasCloudShapesFeatureLayer",
+      "#MatchRule-HasImageShapeFeatureLayer"
+    ],
+    "MatchRules-ProductP2CAVIS6Bands": [
+      "#MatchRule-MatchMission",
+      "#MatchRule-ProductIsP2",
+      "#MatchRule-Image1HasICATIsCAVIS",
+      "#MatchRule-Image1HasIREPIsMULTI",
+      "#MatchRule-2Images",
+      "#MatchRule-Image1Is6Bands",
+      "#MatchRule-Image2Is1Band",
+      "#MatchRule-HasCloudShapesFeatureLayer",
+      "#MatchRule-HasImageShapeFeatureLayer"
+    ],
+    "MatchRules-ProductG1": [
+      "#MatchRule-MatchMission",
+      "#MatchRule-ProductIsG1",
+      "#MatchRule-Image1HasICATIsVIS",
+      "#MatchRule-Image1HasIREPIsMONO",
+      "#MatchRule-2Images",
+      "#MatchRule-Image1Is1Band",
+      "#MatchRule-Image2Is1Band",
+      "#MatchRule-HasCloudShapesFeatureLayer",
+      "#MatchRule-HasImageShapeFeatureLayer"
+    ],
+    "MatchRules-ProductG2MS4Bands": [
+      "#MatchRule-MatchMission",
+      "#MatchRule-ProductIsG2",
+      "#MatchRule-Image1HasICATIsMS",
+      "#MatchRule-Image1HasIREPIsMULTI",
+      "#MatchRule-2Images",
+      "#MatchRule-Image1Is4Bands",
+      "#MatchRule-Image2Is1Band",
+      "#MatchRule-HasCloudShapesFeatureLayer",
+      "#MatchRule-HasImageShapeFeatureLayer"
+    ],
+    "MatchRules-ProductG2MS8Bands": [
+      "#MatchRule-MatchMission",
+      "#MatchRule-ProductIsG2",
+      "#MatchRule-Image1HasICATIsMS",
+      "#MatchRule-Image1HasIREPIsMULTI",
+      "#MatchRule-2Images",
+      "#MatchRule-Image1Is8Bands",
+      "#MatchRule-Image2Is1Band",
+      "#MatchRule-HasCloudShapesFeatureLayer",
+      "#MatchRule-HasImageShapeFeatureLayer"
+    ],
+    "MatchRules-ProductG2SWIR8Bands": [
+      "#MatchRule-MatchMission",
+      "#MatchRule-ProductIsG2",
+      "#MatchRule-Image1HasICATIsSWIR",
+      "#MatchRule-Image1HasIREPIsMULTI",
+      "#MatchRule-2Images",
+      "#MatchRule-Image1Is8Bands",
+      "#MatchRule-Image2Is1Band",
+      "#MatchRule-HasCloudShapesFeatureLayer",
+      "#MatchRule-HasImageShapeFeatureLayer"
+    ],
+    "MatchRules-ProductG2CAVIS6Bands": [
+      "#MatchRule-MatchMission",
+      "#MatchRule-ProductIsG2",
+      "#MatchRule-Image1HasICATIsCAVIS",
+      "#MatchRule-Image1HasIREPIsMULTI",
+      "#MatchRule-2Images",
+      "#MatchRule-Image1Is6Bands",
+      "#MatchRule-Image2Is1Band",
+      "#MatchRule-HasCloudShapesFeatureLayer",
+      "#MatchRule-HasImageShapeFeatureLayer"
+    ],
+    "MatchRules-ProductG3PS3Bands": [
+      "#MatchRule-MatchMission",
+      "#MatchRule-ProductIsG3",
+      "#MatchRule-Image1HasICATIsMS",
+      "#MatchRule-Image1HasIREPIsRGB",
+      "#MatchRule-2Images",
+      "#MatchRule-Image1Is3Bands",
+      "#MatchRule-Image2Is1Band",
+      "#MatchRule-HasCloudShapesFeatureLayer",
+      "#MatchRule-HasImageShapeFeatureLayer"
+    ],
+    "MatchRules-ProductG3PS4Bands": [
+      "#MatchRule-MatchMission",
+      "#MatchRule-ProductIsG3",
+      "#MatchRule-Image1HasICATIsMS",
+      "#MatchRule-Image1HasIREPIsMULTI",
+      "#MatchRule-2Images",
+      "#MatchRule-Image1Is4Bands",
+      "#MatchRule-Image2Is1Band",
+      "#MatchRule-HasCloudShapesFeatureLayer",
+      "#MatchRule-HasImageShapeFeatureLayer"
+    ],
+    "MatchRules-ImageIsPan": [
+      "MatchRules.json#MatchRule-ImageHasICATIsVIS",
+      "MatchRules.json#MatchRule-ImageHasIREPIsMONO",
+      "MatchRules.json#MatchRule-ImageIs1Band"
+    ],
+    "MatchRules-ImageIsMSI4Bands": [
+      "MatchRules.json#MatchRule-ImageHasICATIsMS",
+      "MatchRules.json#MatchRule-ImageHasIREPIsMULTI",
+      "MatchRules.json#MatchRule-ImageIs4Bands"
+    ],
+    "MatchRule-MatchMission": {
+      "Key": "Properties.json#Mission-Match-Property",
+      "Operator": "Equals",
+      "Value": "@{MissionMatch}"
+    },
+    "MatchKey-Product": "Properties.json#ProductName-Property",
+    "MatchRule-ProductIsNOT": {
+      "Key": "#MatchKey-Product",
+      "Operator": "NotEqual",
+      "Value": [ "P1", "P2", "G1", "G2", "G3", "R1", "R2", "R3" ]
+    },
+    "MatchRule-ProductIsP2": {
+      "Key": "#MatchKey-Product",
+      "Operator": "Equals",
+      "Value": "P2"
+    },
+    "MatchRule-ProductIsP1": {
+      "Key": "#MatchKey-Product",
+      "Operator": "Equals",
+      "Value": "P1"
+    },
+    "MatchRule-ProductIsG1": {
+      "Key": "#MatchKey-Product",
+      "Operator": "Equals",
+      "Value": "G1"
+    },
+    "MatchRule-ProductIsG2": {
+      "Key": "#MatchKey-Product",
+      "Operator": "Equals",
+      "Value": "G2"
+    },
+    "MatchRule-ProductIsG3": {
+      "Key": "#MatchKey-Product",
+      "Operator": "Equals",
+      "Value": "G3"
+    },
+    "MatchRule-ProductIsR1": {
+      "Key": "#MatchKey-Product",
+      "Operator": "Equals",
+      "Value": "R1"
+    },
+    "MatchRule-ProductIsR2": {
+      "Key": "#MatchKey-Product",
+      "Operator": "Equals",
+      "Value": "R2"
+    },
+    "MatchRule-ProductIsR3": {
+      "Key": "#MatchKey-Product",
+      "Operator": "Equals",
+      "Value": "R3"
+    },
+    "MatchRule-1Image": {
+      "Key": "$/FileHeader/NUMI$",
+      "Operator": "Equals",
+      "Value": "001"
+    },
+    "MatchRule-2Images": {
+      "Key": "$/FileHeader/NUMI$",
+      "Operator": "Equals",
+      "Value": "002"
+    },
+    "MatchRule-ImageIs1Band": {
+      "Key": "$/Images/%i/NBANDS$",
+      "Operator": "Equals",
+      "Value": "1"
+    },
+    "MatchRule-ImageIs3Bands": {
+      "Key": "$/Images/%i/NBANDS$",
+      "Operator": "Equals",
+      "Value": "3"
+    },
+    "MatchRule-ImageIs4Bands": {
+      "Key": "$/Images/%i/NBANDS$",
+      "Operator": "Equals",
+      "Value": "4"
+    },
+    "MatchRule-ImageIs6Bands": {
+      "Key": "$/Images/%i/NBANDS$",
+      "Operator": "Equals",
+      "Value": "6"
+    },
+    "MatchRule-ImageIs8Bands": {
+      "Key": "$/Images/%i/NBANDS$",
+      "Operator": "Equals",
+      "Value": "8"
+    },
+    "MatchRule-ICATIsNOT": {
+      "Key": "$/Images/%i/ICAT$",
+      "Operator": "NotEqual",
+      "Value": [ "VIS", "PAN", "MS", "RGB", "CAVIS", "SWIR" ]
+    },
+    "MatchRule-ImageHasICATIsVIS": {
+      "Key": "$/Images/%i/ICAT$",
+      "Operator": "Equals",
+      "Value": "VIS"
+    },
+    "MatchRule-ImageHasICATIsPAN": {
+      "Key": "$/Images/%i/ICAT$",
+      "Operator": "Equals",
+      "Value": "PAN"
+    },
+    "MatchRule-ImageHasICATIsMS": {
+      "Key": "$/Images/%i/ICAT$",
+      "Operator": "Equals",
+      "Value": "MS"
+    },
+    "MatchRule-ImageHasICATIsSWIR": {
+      "Key": "$/Images/%i/ICAT$",
+      "Operator": "Equals",
+      "Value": "SWIR"
+    },
+    "MatchRule-ImageHasICATIsCAVIS": {
+      "Key": "$/Images/%i/ICAT$",
+      "Operator": "Equals",
+      "Value": "CAVIS"
+    },
+    "MatchRule-ImageHasICATIsRGB": {
+      "Key": "$/Images/%i/ICAT$",
+      "Operator": "Equals",
+      "Value": "RGB"
+    },
+    "MatchRule-ImageHasIREPIsMONO": {
+      "Key": "$/Images/%i/IREP$",
+      "Operator": "Equals",
+      "Value": "MONO"
+    },
+    "MatchRule-ImageHasIREPIsRGB": {
+      "Key": "$/Images/%i/IREP$",
+      "Operator": "Equals",
+      "Value": "RGB"
+    },
+    "MatchRule-ImageHasIREPIsMULTI": {
+      "Key": "$/Images/%i/IREP$",
+      "Operator": "Equals",
+      "Value": "MULTI"
+    },
+    "MatchRule-ImageHasIREPIsRGBorMULTI": {
+      "Key": {
+        "Aliases": [],
+        "SourcePaths": [
+          {
+            "Path": "$/Images/%i/IREP$",
+            "Map": [
+              ["RGB", "yes"],
+              ["MULTI", "yes"]
+            ]
+          }
+        ],
+        "Default": null
+      },
+      "Operator": "Equals",
+      "Value": "yes"
+    },
+    "MatchRule-ImageHasIREPBAND0IsR": {
+      "Key": "$/Images/%i/Bands/0/IREPBAND$",
+      "Operator": "Equals",
+      "Value": "R"
+    },
+    "MatchRule-ImageHasIREPBAND0IsB": {
+      "Key": "$/Images/%i/Bands/0/IREPBAND$",
+      "Operator": "Equals",
+      "Value": "B"
+    },
+    "MatchRule-ImageHasIREPBAND1IsG": {
+      "Key": "$/Images/%i/Bands/1/IREPBAND$",
+      "Operator": "Equals",
+      "Value": "G"
+    },
+    "MatchRule-ImageHasIREPBAND2IsB": {
+      "Key": "$/Images/%i/Bands/2/IREPBAND$",
+      "Operator": "Equals",
+      "Value": "B"
+    },
+    "MatchRule-ImageHasIREPBAND2IsR": {
+      "Key": "$/Images/%i/Bands/2/IREPBAND$",
+      "Operator": "Equals",
+      "Value": "R"
+    },
+    "MatchRule-DESIsCLOUD_SHAPES": {
+      "Key": "$/DESs/%i/UserDefinedSubHeader/SHAPE_USE$",
+      "Operator": "Equals",
+      "Value": "CLOUD_SHAPES"
+    },
+    "MatchRule-DESIsIMAGE_SHAPE": {
+      "Key": "$/DESs/%i/UserDefinedSubHeader/SHAPE_USE$",
+      "Operator": "Equals",
+      "Value": "IMAGE_SHAPE"
+    },
+    "MatchRule-HasImageShapeFeatureLayer": {
+      "Key": "$Feature/IMAGE_SHAPE/Exists$",
+      "Operator": "Equals",
+      "Value": "true"
+    }
+  }
+}

@@ -1,0 +1,118 @@
+{
+    "type": "FunctionTool",
+    "guid": "{c333474a-80be-4e71-80ed-813f067bee96}",
+    "displayname": "$rc:title",
+    "helpcontent": "8110105",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10",
+        "86"
+    ],
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "params": {
+        "in_raster_or_constant1": {
+            "displayname": "$rc:in_raster_or_constant1.title",
+            "datatype": {
+                "type": "GPSAGeoData"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "false",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "GPRasterFormulated",
+                    "analysis_cell_size",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile",
+                    "GPDouble",
+                    "GPLong"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_raster_or_constant1.descr"
+        },
+        "in_raster_or_constant2": {
+            "displayname": "$rc:in_raster_or_constant2.title",
+            "datatype": {
+                "type": "GPSAGeoData"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "false",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "GPRasterFormulated",
+                    "analysis_cell_size",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile",
+                    "GPDouble",
+                    "GPLong"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_raster_or_constant2.descr"
+        },
+        "out_raster": {
+            "direction": "out",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_raster.descr"
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "cellSize",
+        "cellSizeProjectionMethod",
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "mask",
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

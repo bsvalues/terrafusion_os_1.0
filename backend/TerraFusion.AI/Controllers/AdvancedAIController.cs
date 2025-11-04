@@ -42,7 +42,7 @@ namespace TerraFusion.AI.Controllers
         public async Task<IActionResult> InitializeAdvancedAI()
         {
             _logger.LogInformation("🚀 API Request: Initialize Advanced AI System");
-            
+
             try
             {
                 var startTime = DateTime.UtcNow;
@@ -52,7 +52,7 @@ namespace TerraFusion.AI.Controllers
                 if (success)
                 {
                     var metrics = await _orchestrator.GetAdvancedMetrics();
-                    
+
                     var response = new AdvancedAIInitResponse
                     {
                         Success = true,
@@ -104,7 +104,7 @@ namespace TerraFusion.AI.Controllers
         public async Task<IActionResult> ProcessAdvancedRequest([FromBody] AdvancedAIRequestDto request)
         {
             _logger.LogInformation($"🧠 API Request: Process Advanced AI Request - Type: {request.RequestType}");
-            
+
             try
             {
                 // Validate request
@@ -122,10 +122,10 @@ namespace TerraFusion.AI.Controllers
 
                 // Convert DTO to internal request format
                 var internalRequest = MapToInternalRequest(request);
-                
+
                 // Process with Advanced AI Orchestrator
                 var response = await _orchestrator.ProcessAdvancedRequest(internalRequest);
-                
+
                 // Convert to API response format
                 var apiResponse = MapToApiResponse(response);
 
@@ -175,11 +175,11 @@ namespace TerraFusion.AI.Controllers
         public async Task<IActionResult> GetAdvancedMetrics()
         {
             _logger.LogInformation("📊 API Request: Get Advanced AI Metrics");
-            
+
             try
             {
                 var metrics = await _orchestrator.GetAdvancedMetrics();
-                
+
                 var response = new AdvancedAIMetricsResponse
                 {
                     Success = true,
@@ -220,7 +220,7 @@ namespace TerraFusion.AI.Controllers
             {
                 var metrics = await _orchestrator.GetAdvancedMetrics();
                 var status = DetermineSystemStatus(metrics);
-                
+
                 var response = new AdvancedAIHealthResponse
                 {
                     Status = status,
@@ -260,7 +260,7 @@ namespace TerraFusion.AI.Controllers
             try
             {
                 var metrics = await _orchestrator.GetAdvancedMetrics();
-                
+
                 var response = new AdvancedAICapabilitiesResponse
                 {
                     MultiModalProcessing = new MultiModalCapabilities
@@ -364,11 +364,11 @@ namespace TerraFusion.AI.Controllers
                 Response = response.Response,
                 Confidence = response.Confidence,
                 ProcessingTime = response.ProcessingTime,
-                Explanation = response.Explanation,
+                // Explanation = response.Explanation, // TODO: Fix DecisionExplanation type mapping
                 QuantumResponse = response.QuantumResponse,
                 EmergentBehaviors = response.EmergentBehaviors,
                 EmergentPatterns = response.EmergentPatterns,
-                EthicalValidation = response.EthicalValidation,
+                // EthicalValidation = response.EthicalValidation, // TODO: Fix EthicalValidation type mapping
                 Sources = response.Sources,
                 QualityMetrics = response.QualityMetrics,
                 ModelUsed = response.ModelUsed,
@@ -415,19 +415,19 @@ namespace TerraFusion.AI.Controllers
         /// </summary>
         private string DetermineSystemStatus(AdvancedAIMetrics metrics)
         {
-            if (metrics.OverallAccuracy >= 0.99 && 
-                metrics.AgentUtilization >= 0.8 && 
+            if (metrics.OverallAccuracy >= 0.99 &&
+                metrics.AgentUtilization >= 0.8 &&
                 metrics.EthicalComplianceScore >= 0.95)
             {
                 return "Optimal";
             }
-            else if (metrics.OverallAccuracy >= 0.95 && 
-                     metrics.AgentUtilization >= 0.6 && 
+            else if (metrics.OverallAccuracy >= 0.95 &&
+                     metrics.AgentUtilization >= 0.6 &&
                      metrics.EthicalComplianceScore >= 0.9)
             {
                 return "Good";
             }
-            else if (metrics.OverallAccuracy >= 0.9 && 
+            else if (metrics.OverallAccuracy >= 0.9 &&
                      metrics.AgentUtilization >= 0.4)
             {
                 return "Fair";
@@ -590,22 +590,22 @@ namespace TerraFusion.AI.Controllers
 
         // Note: AIRequestType enum is defined in DTOs/AdvancedAIDtos.cs
         public enum RequestPriority { Low, Normal, High, Critical }
-        
+
         // Request/Response DTOs would be defined in TerraFusion.Core.DTOs
         public class AdvancedAIRequestDto
         {
             [Required]
             public string RequestId { get; set; }
-            
+
             public string TextInput { get; set; }
             public byte[] ImageData { get; set; }
             public string AudioData { get; set; }
             public Dictionary<string, object> SpatialData { get; set; }
             public RequestContext Context { get; set; }
-            
+
             [Required]
             public string RequestType { get; set; }
-            
+
             public bool RequiresQuantumOptimization { get; set; }
             public string OptimizationType { get; set; }
             public Dictionary<string, double> OptimizationParameters { get; set; }

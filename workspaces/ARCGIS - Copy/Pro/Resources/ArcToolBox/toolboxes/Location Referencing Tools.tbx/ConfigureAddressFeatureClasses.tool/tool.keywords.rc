@@ -1,0 +1,15 @@
+{
+    "set": [
+        "address data management",
+        "address range",
+        "configuration",
+        "delete event",
+        "delete lrs",
+        "delete route",
+        "lrs line event",
+        "remove event",
+        "remove route",
+        "roads",
+        "site address"
+    ]
+}

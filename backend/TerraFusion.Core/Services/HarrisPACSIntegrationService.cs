@@ -18,7 +18,7 @@ namespace TerraFusion.Core.Services
         Task<List<PACSTaxRecord>> GetTaxRecordsAsync(string jurisdiction, string parcelId);
         Task<List<PACSPermit>> GetPermitsAsync(string jurisdiction, string parcelId);
         Task<bool> SyncPropertyDataAsync(string jurisdiction);
-        Task<PACSSyncStatus> GetSyncStatusAsync(string jurisdiction);
+        Task<PACSSyncStatus?> GetSyncStatusAsync(string jurisdiction);
         Task<List<PACSJurisdiction>> GetAvailableJurisdictionsAsync();
         Task<PACSSystemStatus> GetSystemStatusAsync();
         Task<List<PACSTransaction>> GetRecentTransactionsAsync(string jurisdiction, DateTime? since = null);
@@ -167,7 +167,7 @@ namespace TerraFusion.Core.Services
         private readonly IConfiguration _configuration;
         private readonly HttpClient _httpClient;
         private readonly IRedisCacheService _cacheService;
-        
+
         private readonly string _pacsEndpoint;
         private readonly string _username;
         private readonly string _password;
@@ -199,7 +199,7 @@ namespace TerraFusion.Core.Services
         private void ConfigureHttpClient()
         {
             _httpClient.BaseAddress = new Uri(_pacsEndpoint);
-            
+
             // Harris PACS typically uses basic authentication
             var authToken = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_username}:{_password}"));
             _httpClient.DefaultRequestHeaders.Add("Authorization", $"Basic {authToken}");
@@ -214,7 +214,7 @@ namespace TerraFusion.Core.Services
             {
                 var cacheKey = $"harris:pacs:properties:{jurisdiction}:{page}:{pageSize}";
                 var cachedProperties = await _cacheService.GetAsync<List<PACSProperty>>(cacheKey);
-                
+
                 if (cachedProperties != null)
                 {
                     return cachedProperties;
@@ -234,10 +234,10 @@ namespace TerraFusion.Core.Services
                 {
                     await _cacheService.SetAsync(cacheKey, properties, _cacheExpiration);
                 }
-                
-                _logger.LogInformation("Retrieved {Count} properties for jurisdiction {Jurisdiction} from Harris PACS", 
-                    properties.Count, jurisdiction);
-                
+
+                _logger.LogInformation("Retrieved {Count} properties for jurisdiction {Jurisdiction} from Harris PACS",
+                    properties?.Count ?? 0, jurisdiction);
+
                 return properties ?? new List<PACSProperty>();
             }
             catch (Exception ex)
@@ -253,7 +253,7 @@ namespace TerraFusion.Core.Services
             {
                 var cacheKey = $"pacs:property:{jurisdiction}:{parcelId}";
                 var cachedProperty = await _cacheService.GetAsync<PACSProperty>(cacheKey);
-                
+
                 if (cachedProperty != null)
                 {
                     return cachedProperty;
@@ -261,7 +261,7 @@ namespace TerraFusion.Core.Services
 
                 var url = $"/api/v1/jurisdictions/{jurisdiction}/properties/{parcelId}";
                 var response = await _httpClient.GetAsync(url);
-                
+
                 if (!response.IsSuccessStatusCode)
                 {
                     return null;
@@ -277,12 +277,12 @@ namespace TerraFusion.Core.Services
                 {
                     await _cacheService.SetAsync(cacheKey, property, _cacheExpiration);
                 }
-                
+
                 return property;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving property {ParcelId} for jurisdiction {Jurisdiction}", 
+                _logger.LogError(ex, "Error retrieving property {ParcelId} for jurisdiction {Jurisdiction}",
                     parcelId, jurisdiction);
                 return null;
             }
@@ -294,7 +294,7 @@ namespace TerraFusion.Core.Services
             {
                 var cacheKey = $"pacs:assessments:{jurisdiction}:{parcelId}";
                 var cachedAssessments = await _cacheService.GetAsync<List<PACSAssessment>>(cacheKey);
-                
+
                 if (cachedAssessments != null)
                 {
                     return cachedAssessments;
@@ -314,7 +314,7 @@ namespace TerraFusion.Core.Services
                 {
                     await _cacheService.SetAsync(cacheKey, assessments, _cacheExpiration);
                 }
-                
+
                 return assessments ?? new List<PACSAssessment>();
             }
             catch (Exception ex)
@@ -330,7 +330,7 @@ namespace TerraFusion.Core.Services
             {
                 var cacheKey = $"pacs:owner:{jurisdiction}:{parcelId}";
                 var cachedOwner = await _cacheService.GetAsync<PACSOwner>(cacheKey);
-                
+
                 if (cachedOwner != null)
                 {
                     return cachedOwner;
@@ -338,7 +338,7 @@ namespace TerraFusion.Core.Services
 
                 var url = $"/api/v1/jurisdictions/{jurisdiction}/properties/{parcelId}/owner";
                 var response = await _httpClient.GetAsync(url);
-                
+
                 if (!response.IsSuccessStatusCode)
                 {
                     return null;
@@ -354,7 +354,7 @@ namespace TerraFusion.Core.Services
                 {
                     await _cacheService.SetAsync(cacheKey, owner, _cacheExpiration);
                 }
-                
+
                 return owner;
             }
             catch (Exception ex)
@@ -370,7 +370,7 @@ namespace TerraFusion.Core.Services
             {
                 var cacheKey = $"pacs:taxes:{jurisdiction}:{parcelId}";
                 var cachedTaxRecords = await _cacheService.GetAsync<List<PACSTaxRecord>>(cacheKey);
-                
+
                 if (cachedTaxRecords != null)
                 {
                     return cachedTaxRecords;
@@ -390,7 +390,7 @@ namespace TerraFusion.Core.Services
                 {
                     await _cacheService.SetAsync(cacheKey, taxRecords, _cacheExpiration);
                 }
-                
+
                 return taxRecords ?? new List<PACSTaxRecord>();
             }
             catch (Exception ex)
@@ -406,16 +406,16 @@ namespace TerraFusion.Core.Services
             {
                 var url = $"/api/v1/jurisdictions/{jurisdiction}/sync";
                 var payload = new { clientId = _clientId, timestamp = DateTime.UtcNow };
-                
+
                 var json = JsonSerializer.Serialize(payload);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
-                
+
                 var response = await _httpClient.PostAsync(url, content);
                 response.EnsureSuccessStatusCode();
 
                 // Clear cache for this jurisdiction
                 await _cacheService.RemoveByPatternAsync($"pacs:*:{jurisdiction}:*");
-                
+
                 _logger.LogInformation("Property data sync initiated for jurisdiction {Jurisdiction}", jurisdiction);
                 return true;
             }
@@ -426,7 +426,7 @@ namespace TerraFusion.Core.Services
             }
         }
 
-        public async Task<PACSSyncStatus> GetSyncStatusAsync(string jurisdiction)
+        public async Task<PACSSyncStatus?> GetSyncStatusAsync(string jurisdiction)
         {
             try
             {
@@ -460,7 +460,7 @@ namespace TerraFusion.Core.Services
             {
                 var cacheKey = "pacs:jurisdictions";
                 var cachedJurisdictions = await _cacheService.GetAsync<List<PACSJurisdiction>>(cacheKey);
-                
+
                 if (cachedJurisdictions != null)
                 {
                     return cachedJurisdictions;
@@ -480,7 +480,7 @@ namespace TerraFusion.Core.Services
                 {
                     await _cacheService.SetAsync(cacheKey, jurisdictions, TimeSpan.FromHours(1));
                 }
-                
+
                 return jurisdictions ?? new List<PACSJurisdiction>();
             }
             catch (Exception ex)
@@ -524,7 +524,7 @@ namespace TerraFusion.Core.Services
             {
                 var cacheKey = $"pacs:permits:{jurisdiction}:{parcelId}";
                 var cachedPermits = await _cacheService.GetAsync<List<PACSPermit>>(cacheKey);
-                
+
                 if (cachedPermits != null)
                 {
                     return cachedPermits;
@@ -544,7 +544,7 @@ namespace TerraFusion.Core.Services
                 {
                     await _cacheService.SetAsync(cacheKey, permits, _cacheExpiration);
                 }
-                
+
                 return permits ?? new List<PACSPermit>();
             }
             catch (Exception ex)
@@ -561,7 +561,7 @@ namespace TerraFusion.Core.Services
                 var sinceParam = since?.ToString("yyyy-MM-ddTHH:mm:ssZ") ?? DateTime.UtcNow.AddDays(-30).ToString("yyyy-MM-ddTHH:mm:ssZ");
                 var cacheKey = $"pacs:transactions:{jurisdiction}:{sinceParam}";
                 var cachedTransactions = await _cacheService.GetAsync<List<PACSTransaction>>(cacheKey);
-                
+
                 if (cachedTransactions != null)
                 {
                     return cachedTransactions;
@@ -581,7 +581,7 @@ namespace TerraFusion.Core.Services
                 {
                     await _cacheService.SetAsync(cacheKey, transactions, TimeSpan.FromMinutes(5)); // Shorter cache for transactions
                 }
-                
+
                 return transactions ?? new List<PACSTransaction>();
             }
             catch (Exception ex)

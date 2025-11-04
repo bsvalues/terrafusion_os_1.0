@@ -1,0 +1,11 @@
+{
+    "map": {
+        "derived_folder.title": "Updated Output Folder",
+        "description": "Converts the features from one or more feature classes or feature layers to shapefiles and adds them to a folder of shapefiles.",
+        "input_features.descr": "The list of input feature classes or feature layers that will be converted and added to the output folder.",
+        "input_features.title": "Input Features",
+        "output_folder.descr": "The folder where the shapefiles will be written.",
+        "output_folder.title": "Output Folder",
+        "title": "Feature Class To Shapefile"
+    }
+}

@@ -1,0 +1,213 @@
+{
+    "type": "FunctionTool",
+    "guid": "{b21fbe91-a247-4556-a56f-df7133e00858}",
+    "displayname": "$rc:title",
+    "helpcontent": "5070006",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9"
+    ],
+    "params": {
+        "in_surface": {
+            "displayname": "$rc:in_surface.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTinLayer"
+                    },
+                    {
+                        "type": "GPTerrainLayer"
+                    },
+                    {
+                        "type": "GPLasDatasetLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_surface.descr"
+        },
+        "in_reference_surface": {
+            "displayname": "$rc:in_reference_surface.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTinLayer"
+                    },
+                    {
+                        "type": "GPTerrainLayer"
+                    },
+                    {
+                        "type": "GPLasDatasetLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_reference_surface.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "pyramid_level_resolution": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:pyramid_level_resolution.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:pyramid_level_resolution.descr"
+        },
+        "reference_pyramid_level_resolution": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:reference_pyramid_level_resolution.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:reference_pyramid_level_resolution.descr"
+        },
+        "out_raster": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_raster.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_raster.descr"
+        },
+        "raster_cell_size": {
+            "type": "optional",
+            "displayname": "$rc:raster_cell_size.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "9.9999999999999995e-08"
+                }
+            },
+            "value": "10",
+            "description": "$rc:raster_cell_size.descr"
+        },
+        "out_tin_folder": {
+            "type": "optional",
+            "displayname": "$rc:out_tin_folder.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:out_tin_folder.descr"
+        },
+        "out_tin_basename": {
+            "type": "optional",
+            "displayname": "$rc:out_tin_basename.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:out_tin_basename.descr"
+        },
+        "method": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MIN",
+                        "code": "$rc:method.domain.MIN"
+                    },
+                    {
+                        "value": "MAX",
+                        "code": "$rc:method.domain.MAX"
+                    },
+                    {
+                        "value": "CLOSEST_TO_MEAN",
+                        "code": "$rc:method.domain.CLOSEST_TO_MEAN"
+                    }
+                ]
+            },
+            "value": "CLOSEST_TO_MEAN",
+            "description": "$rc:method.descr"
+        },
+        "reference_method": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:reference_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MIN",
+                        "code": "$rc:reference_method.domain.MIN"
+                    },
+                    {
+                        "value": "MAX",
+                        "code": "$rc:reference_method.domain.MAX"
+                    },
+                    {
+                        "value": "CLOSEST_TO_MEAN",
+                        "code": "$rc:reference_method.domain.CLOSEST_TO_MEAN"
+                    }
+                ]
+            },
+            "value": "CLOSEST_TO_MEAN",
+            "description": "$rc:reference_method.descr"
+        },
+        "extent": {
+            "type": "optional",
+            "displayname": "$rc:extent.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPExtent"
+            },
+            "description": "$rc:extent.descr"
+        },
+        "boundary": {
+            "type": "optional",
+            "displayname": "$rc:boundary.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:boundary.descr"
+        }
+    },
+    "environments": [
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "autoCommit",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "terrainMemoryUsage",
+        "workspace"
+    ]
+}

@@ -1,0 +1,32 @@
+{
+    "set": [
+        "band",
+        "bil",
+        "bip",
+        "bit depth",
+        "bitmap",
+        "bmp",
+        "bsq",
+        "contain",
+        "empty",
+        "envi dat",
+        "erdas imagine",
+        "file",
+        "gdb",
+        "geodatabase",
+        "gif",
+        "grid",
+        "img",
+        "jp2",
+        "jpeg",
+        "jpg",
+        "load",
+        "make",
+        "mosaic",
+        "new",
+        "pixel depth",
+        "png",
+        "tif",
+        "tiff"
+    ]
+}

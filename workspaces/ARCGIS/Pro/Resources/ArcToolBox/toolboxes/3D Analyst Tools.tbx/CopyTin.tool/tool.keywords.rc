@@ -1,0 +1,10 @@
+{
+    "set": [
+        "copy",
+        "delaunay",
+        "edit",
+        "move",
+        "tin",
+        "triangulated irregular network"
+    ]
+}

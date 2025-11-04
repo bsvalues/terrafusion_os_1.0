@@ -1,0 +1,18 @@
+{
+    "set": [
+        "attributes",
+        "coordinates",
+        "dates",
+        "decimal degrees",
+        "degrees decimal minutes",
+        "degrees minutes seconds",
+        "extract",
+        "feature class",
+        "latitude and longitude",
+        "locations",
+        "military grid reference system",
+        "scan",
+        "text",
+        "universal transverse mercator"
+    ]
+}

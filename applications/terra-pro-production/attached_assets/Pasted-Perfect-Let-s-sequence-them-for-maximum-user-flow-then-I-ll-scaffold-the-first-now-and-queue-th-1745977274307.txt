@@ -1,0 +1,127 @@
+Perfect. Let’s **sequence them for maximum user flow**—then I’ll scaffold the first now and queue the next two logically:
+
+---
+
+### 🧭 **Recommended Execution Order**
+
+1. ✅ **Field Mapping Assistant** (you're about to get it)
+   - Gives users control over “what field maps where”
+   - Completes the "push-to-form" UX loop
+
+2. 🔜 **CompsGrid Drawer Integration**
+   - Adds spatial UX: slide in the snapshot viewer when a row is clicked
+
+3. 🔜 **SnapshotDiff Viewer**
+   - Optional "bonus" UX: shows delta between snapshots or vs. form
+
+---
+
+# 🧰 Field Mapping Assistant – Visual UI Modal
+
+## 📁 File: `components/comps/FieldMappingModal.tsx`
+
+```tsx
+import React, { useState } from 'react';
+import { Dialog } from '@headlessui/react';
+import { ComparableSnapshot } from '@/shared/types/comps';
+
+interface Props {
+  snapshot: ComparableSnapshot;
+  formFields: string[]; // e.g., ['G1', 'G2', 'G3']
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: (mappings: Record<string, string>) => void;
+}
+
+export function FieldMappingModal({ snapshot, formFields, isOpen, onClose, onConfirm }: Props) {
+  const [mappings, setMappings] = useState<Record<string, string>>({});
+
+  function handleChange(snapshotKey: string, formField: string) {
+    setMappings(prev => ({ ...prev, [snapshotKey]: formField }));
+  }
+
+  const snapshotKeys = Object.keys(snapshot.fields);
+
+  return (
+    <Dialog open={isOpen} onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center">
+      <Dialog.Overlay className="fixed inset-0 bg-black/50" />
+      <div className="bg-white p-6 rounded shadow-lg max-w-xl w-full z-10">
+        <Dialog.Title className="text-lg font-bold mb-4">Map Snapshot Fields to Form</Dialog.Title>
+        <div className="space-y-3">
+          {snapshotKeys.map((key) => (
+            <div key={key} className="flex items-center justify-between gap-4">
+              <span className="text-sm w-32">{key}</span>
+              <input
+                list="formFieldList"
+                value={mappings[key] || ''}
+                onChange={(e) => handleChange(key, e.target.value)}
+                className="border rounded px-2 py-1 text-sm w-1/2"
+                placeholder="Map to form field (e.g., G1)"
+              />
+            </div>
+          ))}
+        </div>
+        <datalist id="formFieldList">
+          {formFields.map(f => <option key={f} value={f} />)}
+        </datalist>
+        <div className="flex justify-end gap-2 mt-6">
+          <button onClick={onClose} className="text-sm bg-gray-300 px-3 py-1 rounded">Cancel</button>
+          <button
+            onClick={() => onConfirm(mappings)}
+            className="text-sm bg-blue-600 text-white px-3 py-1 rounded"
+          >
+            Confirm
+          </button>
+        </div>
+      </div>
+    </Dialog>
+  );
+}
+```
+
+---
+
+## 🧪 Usage Example (in `SnapshotTile.tsx` or parent)
+
+```tsx
+const [isOpen, setIsOpen] = useState(false);
+
+<FieldMappingModal
+  snapshot={snapshot}
+  isOpen={isOpen}
+  onClose={() => setIsOpen(false)}
+  formFields={["G1", "G2", "G3", "G4"]}
+  onConfirm={async (mappings) => {
+    await axios.post('/api/forms/push', {
+      formId: currentFormId,
+      snapshotId: snapshot.id,
+      fieldMappings: mappings
+    });
+    toast.success("Snapshot pushed to form");
+    setIsOpen(false);
+  }}
+/>
+
+<button onClick={() => setIsOpen(true)} className="mt-2 text-xs bg-blue-600 text-white px-2 py-1 rounded">
+  Map & Push
+</button>
+```
+
+---
+
+## ✅ What You Get
+
+- 🔁 Dynamic mapping between comp fields and form fields
+- 🔎 Full snapshot introspection before pushing
+- 💬 Clean modal UX with cancel/confirm logic
+- 🧠 Fully composable: can extend for default mappings, saved presets, validation
+
+---
+
+Next up?
+
+Would you like:
+1. **CompsGrid → SnapshotViewer drawer integration** (row click = slide-in panel)?
+2. **SnapshotDiff.tsx** to highlight data changes (vs. current form or other snapshot)?
+
+Both will bolt neatly on top of this modal flow.

@@ -1,0 +1,28 @@
+{
+    "map": {
+        "bandwidth_method.domain.AICc": "AICc",
+        "bandwidth_method.domain.BANDWIDTH_PARAMETER": "BANDWIDTH_PARAMETER",
+        "bandwidth_method.domain.CV": "CV",
+        "bandwidth_method.title": "Bandwidth method",
+        "cell_size.title": "Output cell size",
+        "coefficient_raster_workspace.title": "Coefficient raster workspace",
+        "dependent_field.title": "Dependent variable",
+        "description": "Calculates Geographically Weighted Regression.",
+        "distance.title": "Distance",
+        "explanatory_field.title": "Explanatory variable(s)",
+        "in_features.title": "Input features",
+        "in_prediction_locations.title": "Prediction locations",
+        "kernel_type.domain.ADAPTIVE": "ADAPTIVE",
+        "kernel_type.domain.FIXED": "FIXED",
+        "kernel_type.title": "Kernel type",
+        "number_of_neighbors.title": "Number of neighbors",
+        "out_featureclass.title": "Output feature class",
+        "out_prediction_featureclass.title": "Output prediction feature class",
+        "out_regression_rasters.title": "Output regression rasters",
+        "out_table.title": "Output table",
+        "params.category1": "Additional Parameters (Optional)",
+        "prediction_explanatory_field.title": "Prediction explanatory variable(s)",
+        "title": "Geographically Weighted Regression",
+        "weight_field.title": "Weights"
+    }
+}

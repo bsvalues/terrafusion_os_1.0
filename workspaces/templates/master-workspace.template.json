@@ -1,0 +1,307 @@
+{
+  "folders": [
+    {
+      "path": ".",
+      "name": "🎯 ${workspaceName} - Government. Transcended."
+    },
+    {
+      "path": "../SDK",
+      "name": "📦 Platform SDK (shared)"
+    },
+    {
+      "path": "../config",
+      "name": "⚙️ TerraFusion Config (shared)"
+    },
+    {
+      "path": "../docs/${workspaceType}",
+      "name": "📚 Documentation"
+    },
+    {
+      "path": "../tests/${workspaceType}",
+      "name": "🧪 Test Suite - Championship Excellence"
+    },
+    {
+      "path": "../monitoring/${workspaceType}",
+      "name": "📊 Performance & Quality Monitoring"
+    }
+  ],
+  "settings": {
+    "workbench.colorTheme": "TerraFusion Dark",
+    "workbench.startupEditor": "readme",
+    "workbench.tree.indent": 20,
+    "breadcrumbs.enabled": true,
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "editor.rulers": [80, 120],
+    "editor.bracketPairColorization.enabled": true,
+    "editor.linkedEditing": true,
+    "editor.inlineSuggest.enabled": true,
+    "editor.guides.indentation": true,
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/.git": true,
+      "**/coverage": true,
+      "**/__pycache__": true,
+      "**/.pytest_cache": true,
+      "**/.venv": true,
+      "**/bin": true,
+      "**/obj": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/coverage": true,
+      "**/.git": true,
+      "**/package-lock.json": true,
+      "**/.venv": true
+    },
+    "git.autofetch": true,
+    "git.enableSmartCommit": true,
+    "git.branchProtection": [
+      "main",
+      "develop",
+      "production"
+    ],
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+    "terrafusion.workspace": {
+      "type": "${workspaceType}",
+      "name": "${workspaceName}",
+      "version": "2.0",
+      "aiAgentEnabled": true,
+      "workforgeCompatible": true,
+      "confidenceTarget": 0.97,
+      "governmentTranscended": true
+    },
+    "terrafusion.ai": {
+      "agentTeamEnabled": true,
+      "mcpProtocol": "v1.0",
+      "agentCoordination": {
+        "enabled": true,
+        "coordinatorUrl": "http://localhost:3004/api/agents",
+        "healthCheckInterval": 30,
+        "maxRetries": 3
+      },
+      "agentTypes": {
+        "developmentLead": true,
+        "codeGenerator": true,
+        "testAutomation": true,
+        "qaLead": true,
+        "uiuxDesigner": "${includeUIUX}",
+        "accessibilityExpert": true,
+        "devOpsSpecialist": true,
+        "securityAnalyst": true,
+        "performanceOptimizer": true
+      },
+      "agentCapabilities": {
+        "codeGeneration": true,
+        "testGeneration": true,
+        "qualityAssurance": true,
+        "performanceOptimization": true,
+        "securityAnalysis": true,
+        "accessibilityValidation": true,
+        "uiuxDesign": "${includeUIUX}",
+        "deployment": true
+      }
+    },
+    "terrafusion.workforge": {
+      "enabled": true,
+      "version": "2.0",
+      "compatibility": {
+        "projectCreation": true,
+        "templateValidation": true,
+        "qualityGates": true,
+        "automatedDeployment": true
+      },
+      "validation": {
+        "structureCheck": true,
+        "dependencyValidation": true,
+        "testCoverage": ">=90%",
+        "codeQuality": "AA",
+        "performance": "excellent",
+        "accessibility": "AA"
+      },
+      "automation": {
+        "scaffolding": true,
+        "dependencyInstallation": true,
+        "initialCommit": true,
+        "cicdSetup": true
+      }
+    },
+    "terrafusion.compliance": {
+      "fismaMode": "${fismaMode}",
+      "nist80053": true,
+      "auditTrail": "comprehensive",
+      "securityScanning": "${securityLevel}",
+      "accessControl": "role-based"
+    },
+    "terrafusion.branding": {
+      "enabled": true,
+      "theme": "Government Transcended",
+      "colorPalette": "TerraFusion Quantum",
+      "typography": "Championship Excellence",
+      "glassMorphism": true,
+      "scanLineAnimations": true,
+      "quantumEffects": true
+    },
+    "terrafusion.performance": {
+      "target": {
+        "responseTime": "50ms",
+        "testCoverage": "90%",
+        "codeQuality": "AA",
+        "accessibility": "WCAG 2.1 AA",
+        "lighthouse": "90+"
+      },
+      "monitoring": {
+        "realTime": true,
+        "alerting": true,
+        "dashboard": true,
+        "reporting": "comprehensive"
+      }
+    },
+    "terrafusion.development": {
+      "confidenceTarget": 0.97,
+      "testingFramework": "${testFramework}",
+      "qualityGates": "enforced",
+      "reversiblePRs": "mandatory",
+      "evidenceCollection": "automatic",
+      "enhancedRoles": "enabled"
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "github.copilot",
+      "github.copilot-chat",
+      "ms-vscode.vscode-ai-toolkit",
+      "eamodio.gitlens",
+      "gruntfuggly.todo-tree",
+      "usernamehw.errorlens",
+      "streetsidesoftware.code-spell-checker",
+      "ms-vscode.test-adapter-converter",
+      "coverage-gutters.coverage-gutters",
+      "ms-azuretools.vscode-docker",
+      "yzhang.markdown-all-in-one",
+      "bierner.markdown-mermaid",
+      "hediet.vscode-drawio",
+      "aaron-bond.better-comments",
+      "christian-kohler.path-intellisense",
+      "ms-vscode.vscode-github-issue-notebooks"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Launch AI Agent Dashboard",
+        "type": "node",
+        "request": "launch",
+        "program": "${workspaceFolder}/.vscode/agents/dashboard.js",
+        "console": "integratedTerminal",
+        "env": {
+          "WORKSPACE_TYPE": "${workspaceType}",
+          "AGENT_COORDINATION_URL": "http://localhost:3004/api/agents"
+        }
+      },
+      {
+        "name": "Run Performance Benchmark",
+        "type": "node",
+        "request": "launch",
+        "program": "${workspaceFolder}/.vscode/scripts/benchmark.js",
+        "console": "integratedTerminal"
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Initialize AI Agent Team",
+        "type": "shell",
+        "command": "node",
+        "args": [
+          "${workspaceFolder}/.vscode/scripts/init-agents.js"
+        ],
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared",
+          "showReuseMessage": true,
+          "clear": false
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Validate WorkForge Compatibility",
+        "type": "shell",
+        "command": "node",
+        "args": [
+          "${workspaceFolder}/.vscode/scripts/validate-workforge.js"
+        ],
+        "group": "test",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "label": "Run Quality Gates",
+        "type": "shell",
+        "command": "${testCommand}",
+        "args": ["${testArgs}"],
+        "group": "test",
+        "presentation": {
+          "reveal": "always",
+          "panel": "shared"
+        },
+        "problemMatcher": "${problemMatcher}"
+      },
+      {
+        "label": "Deploy to TerraFusion Platform",
+        "type": "shell",
+        "command": "node",
+        "args": [
+          "${workspaceFolder}/.vscode/scripts/deploy.js",
+          "--environment=${environment}"
+        ],
+        "group": "build",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "label": "Generate Agent Health Report",
+        "type": "shell",
+        "command": "node",
+        "args": [
+          "${workspaceFolder}/.vscode/scripts/agent-health.js"
+        ],
+        "group": "test",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "label": "Sync with Master Orchestrator",
+        "type": "shell",
+        "command": "curl",
+        "args": [
+          "-X", "POST",
+          "http://localhost:3004/api/agents/sync",
+          "-H", "Content-Type: application/json",
+          "-d", "{\"workspaceId\": \"${workspaceName}\", \"status\": \"active\"}"
+        ],
+        "group": "build",
+        "presentation": {
+          "reveal": "silent"
+        }
+      }
+    ]
+  }
+}

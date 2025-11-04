@@ -1,0 +1,16 @@
+{
+  "name": "TerraFusion Security Transcendence",
+  "folders": [
+    {
+      "path": "../backend/TerraFusion.Security"
+    },
+    {
+      "path": "../config/security"
+    }
+  ],
+  "settings": {
+    "terrafusion.role": "security_transcendence",
+    "terrafusion.security_level": "FISMA_HIGH",
+    "terrafusion.encryption": "quantum_enhanced"
+  }
+}

@@ -1,0 +1,20 @@
+{
+    "map": {
+        "class_field.descr": "<xdoc><p>The field that holds the class values.</p><p>It can be an integer or a string field of the input class data.</p></xdoc>",
+        "class_field.title": "Class field",
+        "classes_as_rows.descr": "<xdoc><p>Specifies how the values from the input class raster will be represented in the output table.</p><ul><li>Unchecked—Classes will be represented as fields. This is the default.</li><li>Checked—Classes will be represented as rows.</li></ul></xdoc>",
+        "classes_as_rows.title": "Classes as rows in output table",
+        "description": "Calculates cross-tabulated areas between two datasets and outputs a table.",
+        "in_class_data.descr": "<xdoc><p>The dataset that defines the classes that will have their area summarized within each zone.</p><p>The class input can be an integer raster layer or a feature layer.</p></xdoc>",
+        "in_class_data.title": "Input raster or feature class data",
+        "in_zone_data.descr": "<xdoc><p>The dataset that defines the zones.</p><p>The zones can be defined by an integer raster or a feature layer.</p></xdoc>",
+        "in_zone_data.title": "Input raster or feature zone data",
+        "out_table.descr": "<xdoc><p>The output table that will contain the summary of the area of each class in each zone.</p><p>The format of the table is determined by the output location and path. By default, the output will be a geodatabase table if in a geodatabase workspace, and a dBASE table if in a file workspace.</p></xdoc>",
+        "out_table.title": "Output table",
+        "processing_cell_size.descr": "<xdoc><p>The cell size of the output raster that will be created.</p><p>This parameter can be defined by a numeric value or obtained from an existing raster dataset. If the cell size hasn&apos;t been explicitly specified as the parameter value, the environment cell size value will be used if specified; otherwise, additional rules will be used to calculate it from the other inputs. See the usage section for more detail.</p></xdoc>",
+        "processing_cell_size.title": "Processing cell size",
+        "title": "Tabulate Area",
+        "zone_field.descr": "<xdoc><p>The field that contains the values that define each zone.</p><p>It can be an integer or a string field of the zone dataset.</p></xdoc>",
+        "zone_field.title": "Zone field"
+    }
+}

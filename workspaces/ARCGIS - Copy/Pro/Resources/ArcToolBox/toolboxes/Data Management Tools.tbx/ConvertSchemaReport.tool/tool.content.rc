@@ -1,0 +1,20 @@
+{
+    "map": {
+        "description": "Converts a JSON or XLSX formatted schema report to another schema report format or to an XML workspace document that can be used to create a geodatabase.",
+        "formats.descr": "<xdoc><p>Specifies the file types that will be included in the output folder.</p><ul><li><span title=\"JSON\">JSON</span>—The output folder will include a .json file.</li><li><span title=\"PDF\">PDF</span>—The output folder will include a .pdf file.</li><li><span title=\"HTML\">HTML</span>—The output folder will include an .html file.</li><li><span title=\"XLSX\">XLSX</span>—The output folder will include an Excel .xlsx file.</li><li><span title=\"XML\">XML</span>—The output folder will include an .xml file.</li></ul></xdoc>",
+        "formats.domain.HTML": "HTML",
+        "formats.domain.JSON": "JSON",
+        "formats.domain.PDF": "PDF",
+        "formats.domain.XLSX": "XLSX",
+        "formats.domain.XML": "XML",
+        "formats.title": "Output Formats",
+        "name.descr": "The name of the file outputs.",
+        "name.title": "Name",
+        "out_files.title": "Output Files",
+        "out_location.descr": "The folder where the output files will be placed",
+        "out_location.title": "Output Location",
+        "schema_report.descr": "The JSON or XLSX schema report that will be converted.",
+        "schema_report.title": "Schema Report",
+        "title": "Convert Schema Report"
+    }
+}

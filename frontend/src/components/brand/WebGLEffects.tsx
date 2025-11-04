@@ -4,10 +4,7 @@ interface WebGLEffectsProps {
   effect?: number;
   onEffectChange?: (_effect: number) => void;
 }
-const WebGLEffects: React.FC<WebGLEffectsProps> = ({
-  effect = 1,
-  onEffectChange
-}) => {
+const WebGLEffects: React.FC<WebGLEffectsProps> = ({ effect = 1, onEffectChange }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [currentEffect, setCurrentEffect] = useState(effect);
   const [_isLoaded, _setIsLoaded] = useState(false);
@@ -20,18 +17,23 @@ const WebGLEffects: React.FC<WebGLEffectsProps> = ({
   const [fps, setFps] = useState(60);
   const fpsRef = useRef({
     frames: 0,
-    lastTime: Date.now()
+    lastTime: Date.now(),
   });
   useEffect(() => {
     if (!canvasRef.current) return;
 
     // Initialize Three.js
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
     const renderer = new THREE.WebGLRenderer({
       canvas: canvasRef.current,
       antialias: true,
-      alpha: true
+      alpha: true,
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x000000, 0);
@@ -70,7 +72,12 @@ const WebGLEffects: React.FC<WebGLEffectsProps> = ({
       initializeEffect(currentEffect, sceneRef.current, cameraRef.current, rendererRef.current);
     }
   }, [currentEffect]);
-  const initializeEffect = (effectNumber: number, scene: THREE.Scene, camera: THREE.PerspectiveCamera, renderer: THREE.WebGLRenderer) => {
+  const initializeEffect = (
+    effectNumber: number,
+    scene: THREE.Scene,
+    camera: THREE.PerspectiveCamera,
+    renderer: THREE.WebGLRenderer
+  ) => {
     switch (effectNumber) {
       case 1:
         createTranscendenceWave(scene);
@@ -103,14 +110,14 @@ const WebGLEffects: React.FC<WebGLEffectsProps> = ({
     const material = new THREE.ShaderMaterial({
       uniforms: {
         time: {
-          value: 0.0
+          value: 0.0,
         },
         colorA: {
-          value: new THREE.Color(0x0099ff)
+          value: new THREE.Color(0x0099ff),
         },
         colorB: {
-          value: new THREE.Color(0x00ffee)
-        }
+          value: new THREE.Color(0x00ffee),
+        },
       },
       vertexShader: `
         uniform float time;
@@ -133,7 +140,7 @@ const WebGLEffects: React.FC<WebGLEffectsProps> = ({
           gl_FragColor = vec4(color, 0.8);
         }
       `,
-      transparent: true
+      transparent: true,
     });
     const mesh = new THREE.Mesh(geometry, material);
     mesh.rotation.x = -Math.PI / 4;
@@ -150,10 +157,14 @@ const WebGLEffects: React.FC<WebGLEffectsProps> = ({
     for (let i = 0; i < 50; i++) {
       const geometry = new THREE.SphereGeometry(0.05, 8, 8);
       const material = new THREE.MeshBasicMaterial({
-        color: new THREE.Color().setHSL(0.5 + Math.random() * 0.2, 0.8, 0.5)
+        color: new THREE.Color().setHSL(0.5 + Math.random() * 0.2, 0.8, 0.5),
       });
       const node = new THREE.Mesh(geometry, material);
-      node.position.set((Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10, (Math.random() - 0.5) * 5);
+      node.position.set(
+        (Math.random() - 0.5) * 10,
+        (Math.random() - 0.5) * 10,
+        (Math.random() - 0.5) * 5
+      );
       nodes.push(node);
       scene.add(node);
     }
@@ -163,11 +174,14 @@ const WebGLEffects: React.FC<WebGLEffectsProps> = ({
       for (let j = i + 1; j < nodes.length; j++) {
         if (Math.random() < 0.1) {
           // 10% chance of connection
-          const geometry = new THREE.BufferGeometry().setFromPoints([nodes[i].position, nodes[j].position]);
+          const geometry = new THREE.BufferGeometry().setFromPoints([
+            nodes[i].position,
+            nodes[j].position,
+          ]);
           const material = new THREE.LineBasicMaterial({
             color: 0x00ffaa,
             transparent: true,
-            opacity: 0.3
+            opacity: 0.3,
           });
           const line = new THREE.Line(geometry, material);
           connections.push(line);
@@ -184,13 +198,19 @@ const WebGLEffects: React.FC<WebGLEffectsProps> = ({
       const points = [];
       const startY = (Math.random() - 0.5) * 10;
       for (let j = 0; j < 20; j++) {
-        points.push(new THREE.Vector3(-10 + j * 1, startY + Math.sin(j * 0.5) * 0.5, (Math.random() - 0.5) * 2));
+        points.push(
+          new THREE.Vector3(
+            -10 + j * 1,
+            startY + Math.sin(j * 0.5) * 0.5,
+            (Math.random() - 0.5) * 2
+          )
+        );
       }
       const geometry = new THREE.BufferGeometry().setFromPoints(points);
       const material = new THREE.LineBasicMaterial({
         color: new THREE.Color().setHSL(Math.random() * 0.3 + 0.4, 0.8, 0.5),
         transparent: true,
-        opacity: 0.6
+        opacity: 0.6,
       });
       const stream = new THREE.Line(geometry, material);
       streams.push(stream);
@@ -221,7 +241,7 @@ const WebGLEffects: React.FC<WebGLEffectsProps> = ({
       size: 0.02,
       vertexColors: true,
       transparent: true,
-      opacity: 0.8
+      opacity: 0.8,
     });
     const particles = new THREE.Points(geometry, material);
     scene.add(particles);
@@ -234,7 +254,7 @@ const WebGLEffects: React.FC<WebGLEffectsProps> = ({
       color: 0x00ffee,
       wireframe: true,
       transparent: true,
-      opacity: 0.6
+      opacity: 0.6,
     });
     const mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
@@ -248,7 +268,7 @@ const WebGLEffects: React.FC<WebGLEffectsProps> = ({
       const material = new THREE.MeshBasicMaterial({
         color: new THREE.Color().setHSL(0.5 + i * 0.02, 0.8, 0.5),
         transparent: true,
-        opacity: 0.3
+        opacity: 0.3,
       });
       const torus = new THREE.Mesh(geometry, material);
       torus.rotation.x = Math.random() * Math.PI;
@@ -269,7 +289,7 @@ const WebGLEffects: React.FC<WebGLEffectsProps> = ({
             const material = new THREE.MeshBasicMaterial({
               color: new THREE.Color().setHSL(0.5, 0.8, Math.random()),
               transparent: true,
-              opacity: 0.7
+              opacity: 0.7,
             });
             const cube = new THREE.Mesh(geometry, material);
             cube.position.set(x, y, z);
@@ -281,7 +301,11 @@ const WebGLEffects: React.FC<WebGLEffectsProps> = ({
     }
     (scene as any).matrixCubes = cubes;
   };
-  const startAnimation = (scene: THREE.Scene, camera: THREE.PerspectiveCamera, renderer: THREE.WebGLRenderer) => {
+  const startAnimation = (
+    scene: THREE.Scene,
+    camera: THREE.PerspectiveCamera,
+    renderer: THREE.WebGLRenderer
+  ) => {
     const animate = (time: number) => {
       // FPS monitoring
       fpsRef.current.frames++;
@@ -347,59 +371,87 @@ const WebGLEffects: React.FC<WebGLEffectsProps> = ({
     setCurrentEffect(newEffect);
     onEffectChange?.(newEffect);
   };
-  return <div className="webgl-container w-full" style={{
-    zIndex: -1
-  }}>
-      <canvas ref={canvasRef} style={{
-      display: 'block'
-    }} />
-      
+  return (
+    <div
+      className='webgl-container w-full'
+      style={{
+        zIndex: -1,
+      }}
+    >
+      <canvas
+        ref={canvasRef}
+        style={{
+          display: 'block',
+        }}
+      />
+
       {/* Effect Controls */}
-      <div className="flex">
-        {[1, 2, 3, 4, 5, 6, 7].map(num => <button key={num} onClick={() => changeEffect(num)} style={{
-        padding: '8px 12px',
-        backgroundColor: currentEffect === num ? '#00ffee' : 'rgba(0, 255, 238, 0.2)',
-        color: currentEffect === num ? '#0b1020' : '#00ffee',
-        border: '1px solid #00ffee',
-        borderRadius: '5px',
-        cursor: 'pointer',
-        fontSize: '12px',
-        fontWeight: 'bold'
-      }}>
+      <div className='flex'>
+        {[1, 2, 3, 4, 5, 6, 7].map((num) => (
+          <button
+            key={num}
+            onClick={() => changeEffect(num)}
+            style={{
+              padding: '8px 12px',
+              backgroundColor: currentEffect === num ? '#00ffee' : 'rgba(0, 255, 238, 0.2)',
+              color: currentEffect === num ? '#0b1020' : '#00ffee',
+              border: '1px solid #00ffee',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              fontSize: '12px',
+              fontWeight: 'bold',
+            }}
+          >
             {num}
-          </button>)}
+          </button>
+        ))}
       </div>
 
       {/* FPS Counter */}
-      <div style={{
-      position: 'fixed',
-      top: '20px',
-      left: '20px',
-      zIndex: 1000,
-      color: '#00ffee',
-      fontFamily: 'monospace',
-      fontSize: '14px',
-      background: 'rgba(11, 16, 32, 0.8)',
-      padding: '5px 10px',
-      borderRadius: '5px'
-    }}>
+      <div
+        style={{
+          position: 'fixed',
+          top: '20px',
+          left: '20px',
+          zIndex: 1000,
+          color: '#00ffee',
+          fontFamily: 'monospace',
+          fontSize: '14px',
+          background: 'rgba(11, 16, 32, 0.8)',
+          padding: '5px 10px',
+          borderRadius: '5px',
+        }}
+      >
         FPS: {fps}
       </div>
 
       {/* Effect Labels */}
-      <div style={{
-      position: 'fixed',
-      bottom: '70px',
-      left: '20px',
-      zIndex: 1000,
-      color: '#00ffee',
-      fontSize: '12px',
-      background: 'rgba(11, 16, 32, 0.8)',
-      padding: '5px 10px',
-      borderRadius: '5px'
-    }}>
-        {['Transcendence Wave', 'Neural Network', 'Data Flow', 'Particle Galaxy', 'Quantum Field', 'Digital Cortex', 'Transcendence Matrix'][currentEffect - 1]}
+      <div
+        style={{
+          position: 'fixed',
+          bottom: '70px',
+          left: '20px',
+          zIndex: 1000,
+          color: '#00ffee',
+          fontSize: '12px',
+          background: 'rgba(11, 16, 32, 0.8)',
+          padding: '5px 10px',
+          borderRadius: '5px',
+        }}
+      >
+        {
+          [
+            'Transcendence Wave',
+            'Neural Network',
+            'Data Flow',
+            'Particle Galaxy',
+            'Quantum Field',
+            'Digital Cortex',
+            'Transcendence Matrix',
+          ][currentEffect - 1]
+        }
       </div>
-    </div>;
+    </div>
+  );
 };
 export default WebGLEffects;

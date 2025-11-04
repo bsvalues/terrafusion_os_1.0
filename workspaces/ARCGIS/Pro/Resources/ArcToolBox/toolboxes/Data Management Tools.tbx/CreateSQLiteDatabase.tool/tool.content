@@ -1,0 +1,66 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "3180009",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "out_database_name": {
+            "direction": "out",
+            "displayname": "$rc:out_database_name.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "description": "$rc:out_database_name.descr"
+        },
+        "spatial_type": {
+            "type": "optional",
+            "displayname": "$rc:spatial_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ST_GEOMETRY",
+                        "code": "$rc:spatial_type.domain.ST_GEOMETRY"
+                    },
+                    {
+                        "value": "SPATIALITE",
+                        "code": "$rc:spatial_type.domain.SPATIALITE"
+                    },
+                    {
+                        "value": "GEOPACKAGE",
+                        "code": "$rc:spatial_type.domain.GEOPACKAGE"
+                    },
+                    {
+                        "value": "GEOPACKAGE_1.0",
+                        "code": "$rc:spatial_type.domain.GEOPACKAGE_1.0"
+                    },
+                    {
+                        "value": "GEOPACKAGE_1.1",
+                        "code": "$rc:spatial_type.domain.GEOPACKAGE_1.1"
+                    },
+                    {
+                        "value": "GEOPACKAGE_1.2",
+                        "code": "$rc:spatial_type.domain.GEOPACKAGE_1.2"
+                    },
+                    {
+                        "value": "GEOPACKAGE_1.3",
+                        "code": "$rc:spatial_type.domain.GEOPACKAGE_1.3"
+                    },
+                    {
+                        "value": "GEOPACKAGE_1.4",
+                        "code": "$rc:spatial_type.domain.GEOPACKAGE_1.4"
+                    }
+                ]
+            },
+            "value": "ST_GEOMETRY",
+            "description": "$rc:spatial_type.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

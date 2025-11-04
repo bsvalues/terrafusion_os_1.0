@@ -1,0 +1,221 @@
+{
+    "type": "FunctionTool",
+    "guid": "{10dde9fe-7877-402d-bdd6-25740872b6d2}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190511",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "mCPU",
+        "no_data_change"
+    ],
+    "params": {
+        "in_mosaic_dataset": {
+            "display_order": "0",
+            "displayname": "$rc:in_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_mosaic_dataset.descr"
+        },
+        "overview_image_folder": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:overview_image_folder.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "domain": {
+                "type": "GPWorkspaceDomain",
+                "workspacetype": [
+                    "File System",
+                    "Local Database",
+                    "Remote Database"
+                ]
+            },
+            "description": "$rc:overview_image_folder.descr"
+        },
+        "in_template_dataset": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:in_template_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_template_dataset.descr"
+        },
+        "extent": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:extent.title",
+            "datatype": {
+                "type": "GPEnvelope"
+            },
+            "description": "$rc:extent.descr"
+        },
+        "pixel_size": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:pixel_size.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:pixel_size.descr"
+        },
+        "number_of_levels": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:number_of_levels.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:number_of_levels.descr"
+        },
+        "tile_rows": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:tile_rows.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "5120",
+            "description": "$rc:tile_rows.descr"
+        },
+        "tile_cols": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:tile_cols.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "5120",
+            "description": "$rc:tile_cols.descr"
+        },
+        "overview_factor": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:overview_factor.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "2",
+                "max": "10"
+            },
+            "value": "3",
+            "description": "$rc:overview_factor.descr"
+        },
+        "force_overview_tiles": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:force_overview_tiles.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FORCE_OVERVIEW_TILES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_FORCE_OVERVIEW_TILES"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:force_overview_tiles.descr"
+        },
+        "resampling_method": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:resampling_method.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NEAREST",
+                        "code": "$rc:resampling_method.domain.NEAREST"
+                    },
+                    {
+                        "value": "BILINEAR",
+                        "code": "$rc:resampling_method.domain.BILINEAR"
+                    },
+                    {
+                        "value": "CUBIC",
+                        "code": "$rc:resampling_method.domain.CUBIC"
+                    }
+                ]
+            },
+            "value": "BILINEAR",
+            "description": "$rc:resampling_method.descr"
+        },
+        "compression_method": {
+            "type": "optional",
+            "display_order": "11",
+            "displayname": "$rc:compression_method.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "JPEG",
+            "description": "$rc:compression_method.descr"
+        },
+        "compression_quality": {
+            "type": "optional",
+            "display_order": "12",
+            "displayname": "$rc:compression_quality.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "80",
+            "description": "$rc:compression_quality.descr"
+        },
+        "out_mosaic_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "13",
+            "displayname": "$rc:out_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPMosaicLayer"
+            },
+            "depends": [
+                "in_mosaic_dataset"
+            ]
+        }
+    },
+    "environments": [
+        "extent",
+        "parallelProcessingFactor",
+        "tileSize"
+    ]
+}

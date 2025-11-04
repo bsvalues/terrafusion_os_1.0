@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Test Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">GeoAssessmentPro Testing Dashboard</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        <strong>Welcome to the Testing Dashboard!</strong> This area is designed to help test and validate the GeoAssessmentPro platform. Please select a user persona that matches your role to begin testing the relevant features.
+                    </div>
+                    
+                    <h4 class="mb-3 mt-4">Select Your Testing Persona</h4>
+                    <div class="row">
+                        <div class="col-md-6 col-xl-3 mb-4">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body text-center">
+                                    <div class="mb-3">
+                                        <span class="test-persona-badge persona-assessor">CA</span>
+                                    </div>
+                                    <h5 class="card-title">County Assessor</h5>
+                                    <p class="card-text text-muted">Administrative functions and system oversight</p>
+                                </div>
+                                <div class="card-footer bg-white border-0 text-center">
+                                    <a href="{{ url_for('test_scenario', scenario_type='assessor') }}" class="btn btn-outline-primary">Start Testing</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 col-xl-3 mb-4">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body text-center">
+                                    <div class="mb-3">
+                                        <span class="test-persona-badge persona-appraiser">FA</span>
+                                    </div>
+                                    <h5 class="card-title">Field Appraiser</h5>
+                                    <p class="card-text text-muted">Property assessment and data collection</p>
+                                </div>
+                                <div class="card-footer bg-white border-0 text-center">
+                                    <a href="{{ url_for('test_scenario', scenario_type='appraiser') }}" class="btn btn-outline-primary">Start Testing</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 col-xl-3 mb-4">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body text-center">
+                                    <div class="mb-3">
+                                        <span class="test-persona-badge persona-analyst">DA</span>
+                                    </div>
+                                    <h5 class="card-title">Data Analyst</h5>
+                                    <p class="card-text text-muted">Reporting and analytics capabilities</p>
+                                </div>
+                                <div class="card-footer bg-white border-0 text-center">
+                                    <a href="{{ url_for('test_scenario', scenario_type='analyst') }}" class="btn btn-outline-primary">Start Testing</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 col-xl-3 mb-4">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body text-center">
+                                    <div class="mb-3">
+                                        <span class="test-persona-badge persona-gis">GS</span>
+                                    </div>
+                                    <h5 class="card-title">GIS Specialist</h5>
+                                    <p class="card-text text-muted">Spatial data management and visualization</p>
+                                </div>
+                                <div class="card-footer bg-white border-0 text-center">
+                                    <a href="{{ url_for('test_scenario', scenario_type='gis') }}" class="btn btn-outline-primary">Start Testing</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h4 class="mb-3 mt-4">Testing Guidelines</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">How to Test</h5>
+                                </div>
+                                <div class="card-body">
+                                    <ol class="mb-0">
+                                        <li class="mb-2">Select a persona that matches your role</li>
+                                        <li class="mb-2">Follow the guided test scenario steps</li>
+                                        <li class="mb-2">Use the feedback button to report issues or suggestions</li>
+                                        <li class="mb-2">Try to complete all steps in the scenario</li>
+                                        <li>Test across different devices if possible</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Feedback Focus Areas</h5>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="mb-0">
+                                        <li class="mb-2">Usability: Is the system intuitive and easy to use?</li>
+                                        <li class="mb-2">Performance: Does the system respond quickly?</li>
+                                        <li class="mb-2">Functionality: Do all features work as expected?</li>
+                                        <li class="mb-2">Visual Design: Is the interface clear and well-organized?</li>
+                                        <li>Data Quality: Is information accurate and complete?</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

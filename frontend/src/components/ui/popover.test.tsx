@@ -199,7 +199,7 @@ describe('Popover', () => {
       render(
         <Popover>
           <PopoverTrigger>Open</PopoverTrigger>
-          <PopoverContent className="custom-popover">Content</PopoverContent>
+          <PopoverContent className='custom-popover'>Content</PopoverContent>
         </Popover>
       );
 
@@ -216,7 +216,7 @@ describe('Popover', () => {
       render(
         <Popover>
           <PopoverTrigger>Open</PopoverTrigger>
-          <PopoverContent className="w-[400px]">Wide content</PopoverContent>
+          <PopoverContent className='w-[400px]'>Wide content</PopoverContent>
         </Popover>
       );
 
@@ -251,7 +251,7 @@ describe('Popover', () => {
       render(
         <Popover>
           <PopoverTrigger>Open</PopoverTrigger>
-          <PopoverContent align="start">Aligned start</PopoverContent>
+          <PopoverContent align='start'>Aligned start</PopoverContent>
         </Popover>
       );
 
@@ -267,7 +267,7 @@ describe('Popover', () => {
       render(
         <Popover>
           <PopoverTrigger>Open</PopoverTrigger>
-          <PopoverContent align="end">Aligned end</PopoverContent>
+          <PopoverContent align='end'>Aligned end</PopoverContent>
         </Popover>
       );
 
@@ -299,7 +299,7 @@ describe('Popover', () => {
       render(
         <Popover>
           <PopoverTrigger>Open</PopoverTrigger>
-          <PopoverContent side="top">Top content</PopoverContent>
+          <PopoverContent side='top'>Top content</PopoverContent>
         </Popover>
       );
 
@@ -315,7 +315,7 @@ describe('Popover', () => {
       render(
         <Popover>
           <PopoverTrigger>Open</PopoverTrigger>
-          <PopoverContent side="bottom">Bottom content</PopoverContent>
+          <PopoverContent side='bottom'>Bottom content</PopoverContent>
         </Popover>
       );
 
@@ -331,7 +331,7 @@ describe('Popover', () => {
       render(
         <Popover>
           <PopoverTrigger>Open</PopoverTrigger>
-          <PopoverContent side="left">Left content</PopoverContent>
+          <PopoverContent side='left'>Left content</PopoverContent>
         </Popover>
       );
 
@@ -347,7 +347,7 @@ describe('Popover', () => {
       render(
         <Popover>
           <PopoverTrigger>Open</PopoverTrigger>
-          <PopoverContent side="right">Right content</PopoverContent>
+          <PopoverContent side='right'>Right content</PopoverContent>
         </Popover>
       );
 
@@ -526,7 +526,7 @@ describe('Popover', () => {
     it('supports aria-label on trigger', () => {
       render(
         <Popover>
-          <PopoverTrigger aria-label="Open settings">⚙️</PopoverTrigger>
+          <PopoverTrigger aria-label='Open settings'>⚙️</PopoverTrigger>
           <PopoverContent>Settings content</PopoverContent>
         </Popover>
       );
@@ -570,10 +570,10 @@ describe('Popover', () => {
             <div>
               <h4>Preferences</h4>
               <label>
-                <input type="checkbox" /> Dark mode
+                <input type='checkbox' /> Dark mode
               </label>
               <label>
-                <input type="checkbox" /> Notifications
+                <input type='checkbox' /> Notifications
               </label>
             </div>
           </PopoverContent>
@@ -663,8 +663,7 @@ describe('Popover', () => {
 
     it('handles very long content', async () => {
       const user = userEvent.setup();
-      const longText =
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. '.repeat(20);
+      const longText = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. '.repeat(20);
       render(
         <Popover>
           <PopoverTrigger>Open</PopoverTrigger>
@@ -718,7 +717,7 @@ describe('Popover', () => {
       render(
         <Popover>
           <PopoverTrigger asChild>
-            <button className="custom-button">Custom Trigger</button>
+            <button className='custom-button'>Custom Trigger</button>
           </PopoverTrigger>
           <PopoverContent>Content</PopoverContent>
         </Popover>
@@ -772,7 +771,7 @@ describe('Popover', () => {
           <PopoverContent>
             <div>
               <button onClick={handleClick}>Interactive Button</button>
-              <input type="text" placeholder="Type here" />
+              <input type='text' placeholder='Type here' />
             </div>
           </PopoverContent>
         </Popover>

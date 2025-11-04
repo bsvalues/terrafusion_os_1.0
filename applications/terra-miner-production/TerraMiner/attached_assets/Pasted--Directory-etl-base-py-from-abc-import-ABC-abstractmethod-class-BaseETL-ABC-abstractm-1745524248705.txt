@@ -1,0 +1,108 @@
+# Directory: etl/base.py
+from abc import ABC, abstractmethod
+
+class BaseETL(ABC):
+    @abstractmethod
+    def extract(self):
+        """Fetch raw data from source"""
+        pass
+
+    @abstractmethod
+    def transform(self, raw):
+        """Convert raw data into loadable format"""
+        pass
+
+    @abstractmethod
+    def load(self, processed):
+        """Insert processed data into PostGIS"""
+        pass
+
+    def run(self):
+        raw = self.extract()
+        processed = self.transform(raw)
+        self.load(processed)
+
+
+# Directory: etl/parcels.py
+import geopandas as gpd
+from config.database import get_postgis_engine
+from .base import BaseETL
+
+class ParcelsETL(BaseETL):
+    def extract(self):
+        url = "https://api.koordinates.com/…/download.geojson"
+        return gpd.read_file(url)
+
+    def transform(self, raw):
+        raw = raw.to_crs(epsg=3857)
+        return raw[['parcel_id', 'geometry']]
+
+    def load(self, processed):
+        engine = get_postgis_engine()
+        processed.to_postgis('parcels', engine, if_exists='replace', index=False)
+
+
+# Directory: etl/census.py
+import requests
+import pandas as pd
+import geopandas as gpd
+from config.database import get_postgis_engine
+from .base import BaseETL
+
+class CensusETL(BaseETL):
+    def extract(self):
+        vars = ['B01003_001E','B19013_001E']
+        resp = requests.get(
+            "https://api.census.gov/data/2023/acs/acs5",
+            params={"get": ",".join(vars), "for": "tract:*", "in": "state:53 county:005"}
+        ).json()
+        df = pd.DataFrame(resp[1:], columns=resp[0])
+        return df
+
+    def transform(self, raw):
+        raw[['B01003_001E','B19013_001E']] = raw[['B01003_001E','B19013_001E']].astype(int)
+        # geometry join via TIGERweb to create 'geom' column
+        # ... implementation omitted for brevity
+        return gpd.GeoDataFrame(raw, geometry='geom')
+
+    def load(self, processed):
+        engine = get_postgis_engine()
+        processed.to_postgis('census_tracts', engine, if_exists='replace', index=False)
+
+
+# Directory: etl/dem.py
+import subprocess
+from osgeo import gdal
+from .base import BaseETL
+
+class DemETL(BaseETL):
+    def extract(self):
+        subprocess.run(["tnm_access", "-o", "dem.tif", "--bbox", "..."])
+        return "dem.tif"
+
+    def transform(self, raw):
+        gdal.Translate('dem_3857.tif', raw, outputSRS='EPSG:3857')
+        return 'dem_3857.tif'
+
+    def load(self, processed):
+        cmd = f"raster2pgsql -s 3857 -I -C {processed} -F dem | psql"
+        subprocess.run(cmd, shell=True)
+
+
+# Directory: etl/__main__.py
+import pkgutil
+import importlib
+from .base import BaseETL
+
+def load_plugins():
+    plugins = []
+    for _, module_name, _ in pkgutil.iter_modules(__path__):
+        mod = importlib.import_module(f"etl.{module_name}")
+        for obj in mod.__dict__.values():
+            if isinstance(obj, type) and issubclass(obj, BaseETL) and obj is not BaseETL:
+                plugins.append(obj())
+    return plugins
+
+if __name__ == "__main__":
+    for plugin in load_plugins():
+        plugin.run()

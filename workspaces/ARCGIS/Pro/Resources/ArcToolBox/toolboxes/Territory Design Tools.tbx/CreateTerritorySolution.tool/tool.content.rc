@@ -1,0 +1,21 @@
+{
+    "map": {
+        "default_territory_name.descr": "The prefix for the names of the new territories that will be created—for example, Territory 1, Territory 2, and Territory 3 or District 1, District 2, and District 3.",
+        "default_territory_name.title": "Default Territory Name",
+        "description": "Creates a new territory solution with two levels and loads input features into the base level.",
+        "id_field.descr": "The field that contains ID values for objects in the level.",
+        "id_field.title": "ID Field",
+        "in_boundary_mask.descr": "The layer that is used as a mask to limit the growth of point-based layers.",
+        "in_boundary_mask.title": "Boundary Mask",
+        "in_features.descr": "The geometry or data features that will be used as the base level of the created solution. The level will have the same name as the input features.",
+        "in_features.title": "Input Features",
+        "name_field.descr": "The field that contains name values for objects in the level.",
+        "name_field.title": "Name Field",
+        "out_territory_solution.title": "Output Territory Solution",
+        "solution_name.descr": "The name of the territory solution to be created.",
+        "solution_name.title": "Territory Solution Name",
+        "territory_level_name.descr": "The name of the territory level—for example, level 2.",
+        "territory_level_name.title": "Territory Level Name",
+        "title": "Create Territory Solution"
+    }
+}

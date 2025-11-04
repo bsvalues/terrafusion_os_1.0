@@ -1,0 +1,18 @@
+{
+    "map": {
+        "description": "Creates a point scene layer package (.slpk) or scene layer content (.i3sREST) from a point feature layer.",
+        "in_dataset.descr": "The input point feature layer.",
+        "in_dataset.title": "Input Dataset",
+        "out_coor_system.descr": "<xdoc><p>The coordinate system of the output scene layer package. It can be any projected or custom coordinate system. Supported geographic coordinate systems include WGS84 and China Geodetic Coordinate System 2000. WGS84 and EGM96 Geoid are the default horizontal and vertical coordinate systems, respectively. The coordinate system can be specified in any of the following ways:<ul><li>Specify the path to a .prj file.</li><li>Reference a dataset with the correct coordinate system.</li><li>Use an arcpy.SpatialReference object.</li></ul></p></xdoc>",
+        "out_coor_system.title": "Output Coordinate System",
+        "out_slpk.descr": "The output scene layer package (.slpk).",
+        "out_slpk.title": "Output Scene Layer Package",
+        "support_symbol_referencing.descr": "<xdoc><p>Specifies whether Esri symbols will be referenced by the scene layer package or copied to it.<ul><li>Checked—Esri symbols will be referenced by the scene layer package. Using this option will improve the time to create the scene layer package as well as reduce the file size of the package.</li><li>Unchecked—Esri symbols will be copied to the scene layer package. This is the default.</li></ul></p></xdoc>",
+        "support_symbol_referencing.title": "Support Symbol Referencing",
+        "target_cloud_connection.descr": "The target cloud connection file (.acs) where the scene layer content (.i3sREST) will be output.",
+        "target_cloud_connection.title": "Target Cloud Connection",
+        "title": "Create Point Scene Layer Content",
+        "transform_method.descr": "<xdoc><p>The datum transformation method that will be used when the input layer&apos;s coordinate system uses a datum that differs from the output coordinate system. All transformations are bidirectional, regardless of the direction implied by their names. For example, NAD_1927_to_WGS84_3 will work correctly even if the datum conversion is from WGS84 to NAD 1927.</p><note type=\"note\"/><p group=\"note\">The ArcGIS coordinate system data is required for vertical datum transformations between ellipsoidal and gravity-related and two gravity-related datums.</p></xdoc>",
+        "transform_method.title": "Geographic Transformation"
+    }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "default",
+  "data_type": "property",
+  "mapping": {
+    "property_id": "PropertyID",
+    "parcel_number": "ParcelNumber",
+    "property_type": "PropertyType",
+    "address": "StreetAddress",
+    "city": "City",
+    "state": "State",
+    "zip": "ZipCode",
+    "owner_name": "OwnerName",
+    "owner_address": "OwnerAddress",
+    "assessed_value": "AssessedValue",
+    "land_value": "LandValue",
+    "improvement_value": "ImprovementValue",
+    "year_built": "YearBuilt",
+    "square_footage": "SquareFootage",
+    "bedrooms": "Bedrooms",
+    "bathrooms": "Bathrooms",
+    "last_sale_date": "LastSaleDate",
+    "last_sale_price": "LastSalePrice",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "legal_description": "LegalDescription",
+    "zoning": "ZoningCode",
+    "neighborhood_code": "NeighborhoodCode",
+    "tax_code_area": "TaxCodeArea",
+    "last_updated": "LastUpdated"
+  },
+  "created": "2025-04-15T13:28:00.000000"
+}

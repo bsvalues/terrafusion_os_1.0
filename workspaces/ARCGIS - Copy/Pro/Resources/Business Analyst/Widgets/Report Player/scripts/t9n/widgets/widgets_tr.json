@@ -1,0 +1,78 @@
+{
+  "calcite": {
+    "reset": "Sıfırla",
+    "action": {
+      "sort": "Sırala"
+    },
+    "buttons": {
+      "save": "Kaydet",
+      "edit": "Düzenle",
+      "done": "Bitti",
+      "apply": "Uygula",
+      "cancel": "İptal",
+      "close": "Kapat"
+    },
+    "ColorPicker": {
+      "selectColor": "Renk seç",
+      "noColorSpecified": "Renk belirtilmedi",
+      "transparent": "Şeffaf",
+      "colorTooltip": "<p>Hex: ${hex}</p><p>RGB: ${r}, ${g}, ${b}</p>",
+      "recent": "Son",
+      "standard": "Standart",
+      "savedColors": "Kaydedilen renkler",
+      "advanced": "Gelişmiş"
+    },
+    "DatePickerLink": {
+      "enterDate": "Tarih gir"
+    },
+    "PaginationContinuous": {
+      "next": "İleri",
+      "previous": "Önceki"
+    }
+  },
+  "ImageNavigator": {
+    "paginationLabel": "${n} / ${m}",
+    "noImage": "Şu anda bu site ile kaydedilmiş fotoğraf yok",
+    "previewNotAvailable": "Önizleme bulunmuyor"
+  },
+  "PageNavigator": {
+    "currentPageOutOfN": "Sayfa ${current} / ${total}"
+  },
+  "PanoramicViewer": {
+    "image-viewer-close": "Kapat",
+    "image-viewer-fullscreen": "Tam Ekran",
+    "image-viewer-minimize": "Simge Durumuna Küçült",
+    "image-viewer-title": "Fotoğraf Görüntüleyici",
+    "image-viewer-show-caption": "Başlığı Göster",
+    "image-viewer-hide-caption": "Gizle"
+  },
+  "TextBox": {
+    "error_numberExpected": "Bir sayı girilmesi gerekir",
+    "error_range": "${0}'den ${1}'e beklenen değer"
+  },
+  "charts": {
+    "histogram": {
+      "minValue": "Min:<br>${0}",
+      "maxValue": "Maks:<br>${0}",
+      "thisAreaValue": "Bu alan: ${0}",
+      "medianValue": "Ortanca:<br>${0}",
+      "q1Value": "Ç1:<br>${0}",
+      "q3Value": "Ç3:<br>${0}",
+      "percentile": "Yüzdeli ${percent}:<br>${0}",
+      "percentileBottom": "En düşük %${percent}:<br>${0}",
+      "percentileTop": "En yüksek %${percent}:<br>${0}",
+      "percentile_singleLine": "Yüzdeli ${percent}: ${0}",
+      "percentileBottom_singleLine": "En düşük %${percent}: ${0}",
+      "percentileTop_singleLine": "En yüksek %${percent}: ${0}",
+      "sd_singleLine": "${sd} SD: ${0}",
+      "tooltip": {
+        "range_single": "<b>${value}</b> içinde değerle <b>${level}</b>: <b>1</b>",
+        "range_single_precise": "<b>${areaName}</b>'nın değeri <b>${value}</b>.",
+        "range_multi": "<b>${value}</b> içinde değerle <b>${level}</b>: <b>${count}</b>",
+        "thisArea": "<b>Bu alan</b>, <b>${value}</b> değerine sahip.",
+        "percentileLower": "<b>${level}</b>'nın <b>${percent}%</b>'i <b>${value}</b>'nin üzerinde bir değere sahip.",
+        "percentileUpper": "<b>${level}</b>'nin <b>${percent}%</b>'i <b>${value}</b>'i altında bir değere sahip."
+      }
+    }
+  }
+}

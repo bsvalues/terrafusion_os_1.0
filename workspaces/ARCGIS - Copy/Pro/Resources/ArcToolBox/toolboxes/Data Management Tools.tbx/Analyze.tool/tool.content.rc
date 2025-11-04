@@ -1,0 +1,16 @@
+{
+    "map": {
+        "components.descr": "<xdoc><p>The component type to be analyzed.</p><ul><li><span title=\"BUSINESS\">Business table</span>—Updates business rules statistics.</li><li><span title=\"FEATURE\">Feature table</span>—Updates feature statistics.</li><li><span title=\"RASTER\">Raster table</span>—Updates statistics on raster tables.</li><li><span title=\"ADDS\">Adds table</span>—Updates statistics on added datasets.</li><li><span title=\"DELETES\">Deletes table</span>—Updates statistics on deleted datasets.</li></ul></xdoc>",
+        "components.domain.ADDS": "Adds table",
+        "components.domain.BUSINESS": "Business table",
+        "components.domain.DELETES": "Deletes table",
+        "components.domain.FEATURE": "Feature table",
+        "components.domain.RASTER": "Raster table",
+        "components.title": "Components to Analyze",
+        "description": "Updates database statistics of business tables, feature tables, and delta tables, along with the statistics of those tables' indexes.",
+        "in_dataset.descr": "The table or feature class to be analyzed.",
+        "in_dataset.title": "Input Dataset",
+        "out_dataset.title": "Output Dataset",
+        "title": "Analyze"
+    }
+}

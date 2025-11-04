@@ -1,0 +1,19 @@
+{
+    "map": {
+        "description": "Removes lines that are shorter than a specified minimum length and do not connect to other features on one end.",
+        "in_features.descr": "The features that will have small lines removed.",
+        "in_features.title": "Input Features",
+        "in_intersecting_features.descr": "Additional intersecting features that the input features can be compared to when determining whether the feature is a small line.",
+        "in_intersecting_features.title": "Intersecting Features",
+        "maximum_angle.descr": "Any line below the minimum length that is within the defined angle of a consecutive line segment will be kept. The angle value must be within the range of 0–180.",
+        "maximum_angle.title": "Maximum Angle",
+        "minimum_length.descr": "The minimum length for input lines. Features shorter than this distance will be removed.",
+        "minimum_length.title": "Minimum Length",
+        "output_features.title": "Output Layer",
+        "recursive.descr": "<xdoc><p>Specifies whether small lines on the line features will be removed.</p><ul><li>Unchecked—All the small lines on line features will be removed. The remaining lines will not be analyzed to determine whether they are small lines. This is the default.</li><li>Checked—The small lines will be removed from the line features and the remaining lines will be analyzed to determine whether they are small lines. If they do not meet the <span class=\"esri_uicontrol\">Minimum Length</span> value, they will be identified as small lines and removed.</li></ul></xdoc>",
+        "recursive.title": "Recursive",
+        "split_input_lines.descr": "<xdoc><p>Specifies whether the input line features will be split at all intersections before determining the small lines to remove.</p><ul><li>Checked—All lines in the input feature class will be split at intersections to ensure topological integrity. The length of the split features, not the original feature geometries, will be used when applying the minimum length value to determine small lines. This is the default.</li><li>Unchecked—The lines will not be split before determining the lines to remove. The length of the input feature geometries will be used when applying the minimum length value to determine small lines.</li></ul></xdoc>",
+        "split_input_lines.title": "Split Input Lines",
+        "title": "Remove Small Lines"
+    }
+}

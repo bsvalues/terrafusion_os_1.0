@@ -1,0 +1,11 @@
+{
+    "set": [
+        "configuration",
+        "diagram rule",
+        "diagram template",
+        "expand container",
+        "network",
+        "network diagram",
+        "template configuration"
+    ]
+}

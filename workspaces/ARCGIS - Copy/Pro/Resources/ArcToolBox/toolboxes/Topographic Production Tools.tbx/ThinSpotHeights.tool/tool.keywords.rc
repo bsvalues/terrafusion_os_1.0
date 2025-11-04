@@ -1,0 +1,15 @@
+{
+    "set": [
+        "cartographic refinement",
+        "cartography",
+        "defense",
+        "defense mapping",
+        "production",
+        "production mapping",
+        "spot heights",
+        "spots",
+        "topo",
+        "topographic",
+        "topographic production"
+    ]
+}

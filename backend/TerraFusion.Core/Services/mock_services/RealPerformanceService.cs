@@ -175,7 +175,7 @@ public class RealPerformanceService : IRealPerformanceService, IHostedService
         return metrics;
     }
 
-    public async Task<double> GetPerformanceImprovementAsync(string operationName)
+    public Task<double> GetPerformanceImprovementAsync(string operationName)
     {
         if (_performanceTrackers.TryGetValue(operationName, out var tracker))
         {
@@ -183,10 +183,10 @@ public class RealPerformanceService : IRealPerformanceService, IHostedService
             var improvement = BASELINE_RESPONSE_TIME_MS / Math.Max(currentAverage, 1.0);
             
             // Cap at realistic maximum improvement
-            return Math.Min(improvement, 50.0); // Maximum 50x improvement
+            return Task.FromResult(Math.Min(improvement, 50.0)); // Maximum 50x improvement
         }
 
-        return 1.0; // No improvement baseline
+        return Task.FromResult(1.0); // No improvement baseline
     }
 
     public async Task OptimizeSystemResourcesAsync()
@@ -607,16 +607,16 @@ public class CacheOptimizer
         await Task.CompletedTask;
     }
 
-    public async Task<T?> TryGetCachedResultAsync<T>(string key) where T : class
+    public Task<T?> TryGetCachedResultAsync<T>(string key) where T : class
     {
         if (_cache.TryGetValue(key, out T? value))
         {
             Interlocked.Increment(ref _hits);
-            return value;
+            return Task.FromResult<T?>(value);
         }
         
         Interlocked.Increment(ref _misses);
-        return null;
+        return Task.FromResult<T?>(null);
     }
 
     public async Task SetCachedResultAsync<T>(string key, T value, TimeSpan expiration) where T : class

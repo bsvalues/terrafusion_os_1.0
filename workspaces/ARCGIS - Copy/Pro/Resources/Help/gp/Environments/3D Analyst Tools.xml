@@ -1,0 +1,77 @@
+<ArrayOfGPEnvironment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:typens="http://www.esri.com/schemas/ArcGIS/3.4.0" xsi:type="typens:ArrayOfGPEnvironment">
+  <GPEnvironment xsi:type="typens:GPEnvironment">
+    <Name>tinSaveVersion</Name>
+    <DisplayName>Default TIN Storage Version</DisplayName>
+    <Category>TIN</Category>
+    <Value xsi:type="typens:GPString">
+      <Value>CURRENT</Value>
+    </Value>
+    <Domain xsi:type="typens:GPCodedValueDomain">
+      <GPDomainPropertiesArray xsi:type="typens:ArrayOfGPCodedValueDomainProperty">
+        <GPCodedValueDomainProperty xsi:type="typens:GPCodedValueDomainProperty">
+          <Name name="PRE_10.0">10.0 and earlier</Name>
+          <Value xsi:type="typens:GPString">
+            <Value>PRE_10.0</Value>
+          </Value>
+        </GPCodedValueDomainProperty>
+        <GPCodedValueDomainProperty xsi:type="typens:GPCodedValueDomainProperty">
+          <Name name="CURRENT">Current</Name>
+          <Value xsi:type="typens:GPString">
+            <Value>CURRENT</Value>
+          </Value>
+        </GPCodedValueDomainProperty>
+      </GPDomainPropertiesArray>
+    </Domain>
+    <DataTypeName xsi:type="typens:GPDataTypeName">
+      <Name>GPString</Name>
+      <DisplayName>String</DisplayName>
+      <Description>String</Description>
+      <Category>Data Type</Category>
+      <FactoryCLSID xsi:type="typens:UID">
+        <UID xsi:type="xs:string">{E41CFD44-5741-4F2B-8ACE-1A49E146D329}</UID>
+      </FactoryCLSID>
+    </DataTypeName>
+    <DisplayOrder>-1</DisplayOrder>
+    <ControlCLSID xsi:nil="true"/>
+    <ParamDependencyArray xsi:type="typens:ArrayOfString"/>
+    <Altered>false</Altered>
+  </GPEnvironment>
+  <GPEnvironment xsi:type="typens:GPEnvironment">
+    <Name>terrainMemoryUsage</Name>
+    <DisplayName>Minimize memory use during analysis on terrains</DisplayName>
+    <Category>Terrain Dataset</Category>
+    <Value xsi:type="typens:GPBoolean">
+      <Value>false</Value>
+    </Value>
+    <Domain xsi:type="typens:GPCodedValueDomain">
+      <GPDomainPropertiesArray xsi:type="typens:ArrayOfGPCodedValueDomainProperty">
+        <GPCodedValueDomainProperty xsi:type="typens:GPCodedValueDomainProperty">
+          <Name name="MINIMIZE">MINIMIZE</Name>
+          <Value xsi:type="typens:GPBoolean">
+            <Value>true</Value>
+          </Value>
+        </GPCodedValueDomainProperty>
+        <GPCodedValueDomainProperty xsi:type="typens:GPCodedValueDomainProperty">
+          <Name name="NORMAL">NORMAL</Name>
+          <Value xsi:type="typens:GPBoolean">
+            <Value>false</Value>
+          </Value>
+        </GPCodedValueDomainProperty>
+      </GPDomainPropertiesArray>
+    </Domain>
+    <DataTypeName xsi:type="typens:GPDataTypeName">
+      <Name>GPBoolean</Name>
+      <DisplayName>Boolean</DisplayName>
+      <Description>Boolean data type</Description>
+      <Category>Data Type</Category>
+      <FactoryCLSID xsi:type="typens:UID">
+        <UID xsi:type="xs:string">{E41CFD44-5741-4F2B-8ACE-1A49E146D329}</UID>
+      </FactoryCLSID>
+    </DataTypeName>
+    <DisplayOrder>-1</DisplayOrder>
+    <ControlCLSID xsi:nil="true"/>
+    <ParamDependencyArray xsi:type="typens:ArrayOfString"/>
+    <Altered>false</Altered>
+  </GPEnvironment>
+</ArrayOfGPEnvironment>
+

@@ -1,0 +1,70 @@
+{
+    "type": "FunctionTool",
+    "displayname": "$rc:title",
+    "helpcontent": "62050008",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "33",
+        "35"
+    ],
+    "tool_UpdateParameters": "GPBAFunctions.dll/GPSASetTargetSite_UpdateParameters",
+    "tool_UpdateMessages": "GPBAFunctions.dll/GPSASetTargetSite_UpdateMessages",
+    "tool_Execute": "GPBAFunctions.dll/GPSASetTargetSite_Execute",
+    "params": {
+        "in_analysis_layer": {
+            "displayname": "$rc:in_analysis_layer.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPGroupLayer"
+                    },
+                    {
+                        "type": "DEFeatureDataset"
+                    }
+                ]
+            },
+            "description": "$rc:in_analysis_layer.descr"
+        },
+        "target_site_layer": {
+            "type": "optional",
+            "displayname": "$rc:target_site_layer.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:target_site_layer.descr"
+        },
+        "target_site_feature_id": {
+            "type": "optional",
+            "displayname": "$rc:target_site_feature_id.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:target_site_feature_id.descr"
+        },
+        "out_analysis_layer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_analysis_layer.title",
+            "datatype": {
+                "type": "GPGroupLayer"
+            }
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

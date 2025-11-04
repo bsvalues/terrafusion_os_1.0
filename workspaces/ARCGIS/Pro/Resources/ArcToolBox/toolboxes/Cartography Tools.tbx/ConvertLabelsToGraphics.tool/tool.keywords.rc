@@ -1,0 +1,14 @@
+{
+    "set": [
+        "anno",
+        "create",
+        "generate",
+        "geodatabase",
+        "graphic",
+        "graphics layer",
+        "label",
+        "shape",
+        "shapes",
+        "text"
+    ]
+}

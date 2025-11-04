@@ -1,0 +1,16 @@
+{
+    "map": {
+        "description": "Performs either a smoothing (Low pass) or edge-enhancing (High pass) filter on a raster.",
+        "filter_type.descr": "<xdoc><p>The type of filter operation to perform.</p><ul><li><span title=\"LOW\">Low pass</span>—Traverses a low pass 3-by-3 filter over the raster. This option smooths the entire input raster and reduces the significance of anomalous cells. This is the default.</li><li><span title=\"HIGH\">High pass</span>—Traverses a high pass 3-by-3 filter over the raster. This option enhances the edges of subdued features in a raster.</li></ul></xdoc>",
+        "filter_type.domain.HIGH": "High pass",
+        "filter_type.domain.LOW": "Low pass",
+        "filter_type.title": "Filter type",
+        "ignore_nodata.descr": "<xdoc><p>Denotes whether NoData values are ignored by the filter calculation.</p><ul><li>Checked—If a NoData value exists within the filter, the NoData value will be ignored. Only cells within the filter that have data values will be used in determining the output. This is the default.</li><li>Unchecked—If a NoData value exists within the filter, the output for the processing cell will be NoData. With this option, the presence of a NoData value implies that there is insufficient information to determine the statistic value for the neighborhood.</li></ul></xdoc>",
+        "ignore_nodata.title": "Ignore NoData in calculations",
+        "in_raster.descr": "The input raster on which to perform the filter operation.",
+        "in_raster.title": "Input raster",
+        "out_raster.descr": "<xdoc><p>The output filtered raster.</p><p>The output is always floating point.</p></xdoc>",
+        "out_raster.title": "Output raster",
+        "title": "Filter"
+    }
+}

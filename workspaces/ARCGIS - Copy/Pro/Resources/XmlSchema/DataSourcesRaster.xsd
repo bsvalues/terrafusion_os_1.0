@@ -1,0 +1,607 @@
+<?xml version="1.0"?>
+<xs:schema xmlns="http://www.esri.com/schemas/ArcGIS/3.4.0" targetNamespace="http://www.esri.com/schemas/ArcGIS/3.4.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:include schemaLocation="Geodatabase.xsd" />
+  <xs:simpleType name="esriRasterTableTypeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="esriRasterTableIndex" />
+      <xs:enumeration value="esriRasterTableValue" />
+      <xs:enumeration value="esriRasterTableInvalid" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="esriMosaicMethod">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="esriMosaicNone" />
+      <xs:enumeration value="esriMosaicCenter" />
+      <xs:enumeration value="esriMosaicNadir" />
+      <xs:enumeration value="esriMosaicViewpoint" />
+      <xs:enumeration value="esriMosaicAttribute" />
+      <xs:enumeration value="esriMosaicLockRaster" />
+      <xs:enumeration value="esriMosaicNorthwest" />
+      <xs:enumeration value="esriMosaicSeamline" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="rstMosaicOperatorType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="MT_FIRST" />
+      <xs:enumeration value="MT_LAST" />
+      <xs:enumeration value="MT_MIN" />
+      <xs:enumeration value="MT_MAX" />
+      <xs:enumeration value="MT_MEAN" />
+      <xs:enumeration value="MT_BLEND" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="DERasterDataset">
+    <xs:complexContent mixed="false">
+      <xs:extension base="DEGeoDataset">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Format" type="xs:string" />
+          <xs:element minOccurs="0" name="CompressionType" type="xs:string" />
+          <xs:element minOccurs="0" name="SensorType" type="xs:string" />
+          <xs:element minOccurs="0" name="BandCount" type="xs:int" />
+          <xs:element minOccurs="0" name="Permanent" type="xs:boolean" />
+          <xs:element minOccurs="0" name="StorageDef" type="RasterStorageDef" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="DERasterBand">
+    <xs:complexContent mixed="false">
+      <xs:extension base="DETable">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="IsInteger" type="xs:boolean" />
+          <xs:element minOccurs="0" name="MeanCellHeight" type="xs:double" />
+          <xs:element minOccurs="0" name="MeanCellWidth" type="xs:double" />
+          <xs:element minOccurs="0" name="Height" type="xs:int" />
+          <xs:element minOccurs="0" name="Width" type="xs:int" />
+          <xs:element minOccurs="0" name="PixelType" type="rstPixelType" />
+          <xs:element minOccurs="0" name="PrimaryField" type="xs:int" />
+          <xs:element minOccurs="0" name="TableType" type="esriRasterTableTypeEnum" />
+          <xs:element minOccurs="0" name="Extent" type="Envelope" />
+          <xs:element minOccurs="0" name="SpatialReference" type="SpatialReference" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="RasterUniqueValues">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="UniqueValuesSize" type="xs:int" />
+      <xs:element minOccurs="0" name="Values" type="ArrayOfValue" />
+      <xs:element minOccurs="0" name="Counts" type="ArrayOfInt" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="RasterColormap">
+    <xs:sequence>
+      <xs:element name="ColormapSize" type="xs:int" />
+      <xs:element name="Values" type="ArrayOfInt" />
+      <xs:element name="Colors" type="ArrayOfInt" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="RasterStatistics">
+    <xs:sequence>
+      <xs:element name="Min" type="xs:double" />
+      <xs:element name="Max" type="xs:double" />
+      <xs:element minOccurs="0" name="Mean" type="xs:double" />
+      <xs:element minOccurs="0" name="StandardDeviation" type="xs:double" />
+      <xs:element minOccurs="0" name="Median" type="xs:double" />
+      <xs:element minOccurs="0" name="Mode" type="xs:double" />
+      <xs:element minOccurs="0" name="SkipX" type="xs:int" />
+      <xs:element minOccurs="0" name="SkipY" type="xs:int" />
+      <xs:element minOccurs="0" name="Ignores" type="xs:anyType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="RasterHistogram">
+    <xs:sequence>
+      <xs:element name="Size" type="xs:int" />
+      <xs:element name="Min" type="xs:double" />
+      <xs:element name="Max" type="xs:double" />
+      <xs:element name="Counts" type="ArrayOfDouble" />
+      <xs:element minOccurs="0" name="Bins" type="ArrayOfDouble" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfRasterHistogram">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="RasterHistogram" type="RasterHistogram" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="RasterInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Origin" type="Point" />
+      <xs:element minOccurs="0" name="BlockWidth" type="xs:int" />
+      <xs:element minOccurs="0" name="BlockHeight" type="xs:int" />
+      <xs:element minOccurs="0" name="PixelSizeX" type="xs:double" />
+      <xs:element minOccurs="0" name="PixelSizeY" type="xs:double" />
+      <xs:element minOccurs="0" name="GeodataXform" type="GeodataXform" />
+      <xs:element minOccurs="0" name="Extent" type="Envelope" />
+      <xs:element minOccurs="0" name="NativeSpatialReference" type="SpatialReference" />
+      <xs:element minOccurs="0" name="NativeExtent" type="Envelope" />
+      <xs:element minOccurs="0" name="BandCount" type="xs:int" />
+      <xs:element minOccurs="0" name="PixelType" type="rstPixelType" />
+      <xs:element minOccurs="0" name="NoData" type="ArrayOfAnyType" />
+      <xs:element minOccurs="0" name="FirstPyramidLevel" type="xs:int" />
+      <xs:element minOccurs="0" name="MaximumPyramidLevel" type="xs:int" />
+      <xs:element minOccurs="0" name="Format" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfRasterInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="RasterInfo" type="RasterInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="RasterFunction">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Name" type="xs:string" />
+      <xs:element minOccurs="0" name="Description" type="xs:string" />
+      <xs:element minOccurs="0" name="PixelType" type="rstPixelType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArithmeticFunction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunction" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="AspectFunction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunction" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ClipFunction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunction" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ColormapFunction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunction" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ColormapToRGBFunction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunction" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ColorspaceConversionFunction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunction" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ComplexFunction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunction" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ConstantFunction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunction" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ConvolutionFunction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunction" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ExtractBandFunction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunction" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="GeometricFunction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunction" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="GrayscaleFunction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunction" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="HillshadeFunction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunction" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="IdentityFunction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunction" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="MaskFunction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunction" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="NDVIFunction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunction" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="PansharpeningFunction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunction" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="RasterInfoFunction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunction" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ShadedReliefFunction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunction" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="SlopeFunction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunction" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="SpectralConversionFunction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunction" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="StatisticsFunction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunction" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="StretchFunction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunction" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="TrendFunction">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunction" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="RasterFunctionArguments">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Names" type="ArrayOfString" />
+      <xs:element minOccurs="0" name="Values" type="ArrayOfAnyType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArithmeticFunctionArguments">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunctionArguments" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ClipFunctionArguments">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunctionArguments" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ColormapFunctionArguments">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunctionArguments" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ColorspaceConversionFunctionArguments">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunctionArguments" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ConstantFunctionArguments">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunctionArguments" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ConvolutionFunctionArguments">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunctionArguments" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ExtractBandFunctionArguments">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunctionArguments" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="GeometricFunctionArguments">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunctionArguments" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="GrayscaleFunctionArguments">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunctionArguments" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="HillshadeFunctionArguments">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunctionArguments" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="MaskFunctionArguments">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunctionArguments" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="NDVIFunctionArguments">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunctionArguments" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="PansharpeningFunctionArguments">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunctionArguments" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="RasterInfoFunctionArguments">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunctionArguments" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ShadedReliefFunctionArguments">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunctionArguments" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="SlopeFunctionArguments">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunctionArguments" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="SpectralConversionFunctionArguments">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunctionArguments" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="StatisticsFunctionArguments">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunctionArguments" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="StretchFunctionArguments">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunctionArguments" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="TrendFunctionArguments">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunctionArguments" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="RasterFunctionTemplateArguments">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunctionArguments" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="RasterFunctionVariable">
+    <xs:sequence>
+      <xs:element name="Name" type="xs:string" />
+      <xs:element minOccurs="0" name="Description" type="xs:string" />
+      <xs:element minOccurs="0" name="Value" type="xs:anyType" />
+      <xs:element minOccurs="0" name="Aliases" type="ArrayOfString" />
+      <xs:element minOccurs="0" name="IsDataset" type="xs:boolean" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="RasterFunctionTemplate">
+    <xs:complexContent mixed="false">
+      <xs:extension base="RasterFunction">
+        <xs:sequence>
+          <xs:element name="Function" type="RasterFunction" />
+          <xs:element minOccurs="0" name="Arguments" type="RasterFunctionArguments" />
+          <xs:element minOccurs="0" name="Aliases" type="ArrayOfString" />
+          <xs:element minOccurs="0" name="Help" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="IdentityXform">
+    <xs:complexContent mixed="false">
+      <xs:extension base="GeodataXform">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="SpatialReference" type="SpatialReference" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="RPCXform">
+    <xs:complexContent mixed="false">
+      <xs:extension base="GeodataXform">
+        <xs:sequence>
+          <xs:element name="SpatialReference" type="SpatialReference" />
+          <xs:element name="ConstantZ" type="xs:double" />
+          <xs:element name="ZFactor" type="xs:double" />
+          <xs:element name="ZOffset" type="xs:double" />
+          <xs:element name="CorrectGeoid" type="xs:boolean" />
+          <xs:element name="RequireDEM" type="xs:boolean" />
+          <xs:element name="RPC" type="ArrayOfDouble" />
+          <xs:element name="ForwardXform" type="GeodataXform" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="PolynomialXform">
+    <xs:complexContent mixed="false">
+      <xs:extension base="GeodataXform">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="SpatialReference" type="SpatialReference" />
+          <xs:element minOccurs="0" name="PolynomialOrder" type="xs:int" />
+          <xs:element minOccurs="0" name="SourceGCPs" type="ArrayOfDouble" />
+          <xs:element minOccurs="0" name="TargetGCPs" type="ArrayOfDouble" />
+          <xs:element minOccurs="0" name="CoeffX" type="ArrayOfDouble" />
+          <xs:element minOccurs="0" name="CoeffY" type="ArrayOfDouble" />
+          <xs:element minOccurs="0" name="InverseCoeffX" type="ArrayOfDouble" />
+          <xs:element minOccurs="0" name="InverseCoeffY" type="ArrayOfDouble" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ProjectiveXform">
+    <xs:complexContent mixed="false">
+      <xs:extension base="GeodataXform">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="SpatialReference" type="SpatialReference" />
+          <xs:element minOccurs="0" name="SourceGCPs" type="ArrayOfDouble" />
+          <xs:element minOccurs="0" name="TargetGCPs" type="ArrayOfDouble" />
+          <xs:element minOccurs="0" name="ProjectiveParameters" type="ArrayOfDouble" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="FrameXform">
+    <xs:complexContent mixed="false">
+      <xs:extension base="GeodataXform">
+        <xs:sequence>
+          <xs:element name="SpatialReference" type="SpatialReference" />
+          <xs:element minOccurs="0" name="ConstantZ" type="xs:double" />
+          <xs:element minOccurs="0" name="ZFactor" type="xs:double" />
+          <xs:element minOccurs="0" name="ZOffset" type="xs:double" />
+          <xs:element minOccurs="0" name="CorrectGeoid" type="xs:boolean" />
+          <xs:element minOccurs="0" name="InteriorOrientation" type="GeodataXform" />
+          <xs:element minOccurs="0" name="Konrady" type="xs:boolean" />
+          <xs:element minOccurs="0" name="KonradyType" type="xs:string" />
+          <xs:element minOccurs="0" name="KonradyParameters" type="ArrayOfDouble" />
+          <xs:element minOccurs="0" name="CurvatureAndRefraction" type="xs:boolean" />
+          <xs:element minOccurs="0" name="EarthRadius" type="xs:double" />
+          <xs:element minOccurs="0" name="AverageZ" type="xs:double" />
+          <xs:element minOccurs="0" name="PrinciplePoint" type="Point" />
+          <xs:element minOccurs="0" name="FocalLength" type="xs:double" />
+          <xs:element minOccurs="0" name="Polarity" type="xs:double" />
+          <xs:element minOccurs="0" name="SensorPosition" type="Point" />
+          <xs:element minOccurs="0" name="ExteriorOrientation" type="ArrayOfDouble" />
+          <xs:element minOccurs="0" name="Clockwise" type="xs:boolean" />
+          <xs:element minOccurs="0" name="LSR" type="GeodataXform" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="LSRXform">
+    <xs:complexContent mixed="false">
+      <xs:extension base="GeodataXform">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="SpatialReference" type="SpatialReference" />
+          <xs:element minOccurs="0" name="PerspectiveCenter" type="Point" />
+          <xs:element minOccurs="0" name="RotationMatrix" type="ArrayOfDouble" />
+          <xs:element name="Flattening" type="xs:double" />
+          <xs:element minOccurs="0" name="EquatorialRadius" type="xs:double" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="GeometricXform">
+    <xs:complexContent mixed="false">
+      <xs:extension base="GeodataXform">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="SpatialReference" type="SpatialReference" />
+          <xs:element minOccurs="0" name="Coefficients" type="ArrayOfDouble" />
+          <xs:element minOccurs="0" name="ProjectiveParameters" type="ArrayOfDouble" />
+          <xs:element minOccurs="0" name="CellsizeRatio" type="xs:double" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CoordinateXform">
+    <xs:complexContent mixed="false">
+      <xs:extension base="GeodataXform">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Approximation" type="xs:boolean" />
+          <xs:element minOccurs="0" name="RecalculateTolerance" type="xs:boolean" />
+          <xs:element minOccurs="0" name="Tolerance" type="xs:double" />
+          <xs:element minOccurs="0" name="GridSize" type="xs:int" />
+          <xs:element minOccurs="0" name="SpatialReference" type="SpatialReference" />
+          <xs:element minOccurs="0" name="InputSpatialReference" type="SpatialReference" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>  
+  <xs:complexType name="CompositeXform">
+    <xs:complexContent mixed="false">
+      <xs:extension base="GeodataXform">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="XF_0" type="GeodataXform" />
+          <xs:element minOccurs="0" name="XF_1" type="GeodataXform" />
+          <xs:element minOccurs="0" name="XF_2" type="GeodataXform" />
+          <xs:element minOccurs="0" name="XF_3" type="GeodataXform" />
+          <xs:element minOccurs="0" name="XF_4" type="GeodataXform" />
+          <xs:element minOccurs="0" name="XF_5" type="GeodataXform" />
+          <xs:element minOccurs="0" name="XF_6" type="GeodataXform" />
+          <xs:element minOccurs="0" name="XF_7" type="GeodataXform" />
+          <xs:element minOccurs="0" name="XF_8" type="GeodataXform" />
+          <xs:element minOccurs="0" name="XF_9" type="GeodataXform" />
+          <xs:element name="RequireDEM" type="xs:boolean" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ImageCoordinateSystem">
+    <xs:complexContent mixed="false">
+      <xs:extension base="SpatialReference">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Name" type="xs:string" />
+          <xs:element minOccurs="0" name="Alias" type="xs:string" />
+          <xs:element minOccurs="0" name="Abbreviation" type="xs:string" />
+          <xs:element minOccurs="0" name="Remarks" type="xs:string" />
+          <xs:element minOccurs="0" name="GeodataXform" type="GeodataXform" />
+          <xs:element minOccurs="0" name="Extent" type="Envelope" />
+          <xs:element minOccurs="0" name="NativeExtent" type="Envelope" />
+          <xs:element minOccurs="0" name="Dx" type="xs:double" />
+          <xs:element minOccurs="0" name="Dy" type="xs:double" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="DEMosaicDataset">
+    <xs:annotation>
+      <xs:documentation>The mosaic dataset data element.</xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="DEGeoDataset">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Content" type="xs:anyType">
+            <xs:annotation>
+              <xs:documentation>The mosaic dataset content.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="0" name="Referenced" type="xs:boolean">
+            <xs:annotation>
+              <xs:documentation>Indicates if this is a referenced mosaic dataset.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="0" name="BandCount" type="xs:int" />
+          <xs:element minOccurs="0" name="ChildrenNames" type="ArrayOfString">
+            <xs:annotation>
+              <xs:documentation>The mosaic dataset table names.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="0" name="RasterCatalog" type="DERasterCatalog">
+            <xs:annotation>
+              <xs:documentation>The DE raster catalog.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+          <xs:element minOccurs="0" name="AttributeTable" type="DETable">
+            <xs:annotation>
+              <xs:documentation>The raster attribute.</xs:documentation>
+            </xs:annotation>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="esriNoDataInterpretation">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="esriNoDataMatchAny" />
+      <xs:enumeration value="esriNoDataMatchAll" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="esriRasterResamplingHint">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="esriRasterResamplingClosest" />
+      <xs:enumeration value="esriRasterResamplingUpsampling" />
+      <xs:enumeration value="esriRasterResamplingDownsampling" />
+      <xs:enumeration value="esriRasterResamplingFinest" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="ImageServerForceDeriveFromAnyType">
+    <xs:annotation>
+      <xs:documentation>A type used to force derivation from anyType in client frameworks.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="RasterFunctionTemplate" type="RasterFunctionTemplate" />
+      <xs:element name="RasterFunctionVariable" type="RasterFunctionVariable" />
+      <xs:element name="RasterStatistics" type="RasterStatistics" />
+      <xs:element name="PolynomialXform" type="PolynomialXform" />
+      <xs:element name="ProjectiveXform" type="ProjectiveXform" />
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

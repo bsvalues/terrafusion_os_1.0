@@ -220,7 +220,7 @@ namespace TerraFusion.Core.Services
             await ProcessLogEntryAsync(logEntry);
 
             // Also log to security-specific logger for immediate alerting
-            _logger.LogWarning("SECURITY EVENT: {EventType} for user {UserId} - {Details}", 
+            _logger.LogWarning("SECURITY EVENT: {EventType} for user {UserId} - {Details}",
                 eventType, userId, details);
         }
 
@@ -241,7 +241,7 @@ namespace TerraFusion.Core.Services
 
             logEntry.Data["event_type"] = eventType;
             logEntry.Data["entity_id"] = entityId;
-            
+
             if (eventData != null)
             {
                 logEntry.Data["event_data"] = SerializeToDict(eventData);
@@ -269,9 +269,9 @@ namespace TerraFusion.Core.Services
             };
 
             logEntry.Data["exception_type"] = exception.GetType().Name;
-            logEntry.Data["stack_trace"] = exception.StackTrace;
-            logEntry.Data["inner_exception"] = exception.InnerException?.Message;
-            logEntry.Data["context"] = context;
+            logEntry.Data["stack_trace"] = exception.StackTrace ?? "none";
+            logEntry.Data["inner_exception"] = exception.InnerException?.Message ?? "none";
+            logEntry.Data["context"] = context ?? "none";
 
             if (additionalData != null)
             {
@@ -292,11 +292,11 @@ namespace TerraFusion.Core.Services
             _logger.LogError(exception, "Error in context: {Context}", context);
         }
 
-        public async Task<List<LogEntry>> QueryLogsAsync(LogQuery query)
+        public Task<List<LogEntry>> QueryLogsAsync(LogQuery query)
         {
             // For now, query from buffer - in production, this would query Elasticsearch
             List<LogEntry> results;
-            
+
             lock (_bufferLock)
             {
                 results = new List<LogEntry>(_logBuffer);
@@ -305,29 +305,29 @@ namespace TerraFusion.Core.Services
             // Apply filters
             if (query.StartTime.HasValue)
                 results = results.Where(l => l.Timestamp >= query.StartTime.Value).ToList();
-            
+
             if (query.EndTime.HasValue)
                 results = results.Where(l => l.Timestamp <= query.EndTime.Value).ToList();
-            
+
             if (query.MinLevel.HasValue)
                 results = results.Where(l => l.Level >= query.MinLevel.Value).ToList();
-            
+
             if (!string.IsNullOrEmpty(query.TraceId))
                 results = results.Where(l => l.TraceId == query.TraceId).ToList();
-            
+
             if (!string.IsNullOrEmpty(query.UserId))
                 results = results.Where(l => l.UserId == query.UserId).ToList();
-            
+
             if (!string.IsNullOrEmpty(query.Category))
                 results = results.Where(l => l.Category == query.Category).ToList();
-            
+
             if (!string.IsNullOrEmpty(query.SearchText))
                 results = results.Where(l => l.Message.Contains(query.SearchText, StringComparison.OrdinalIgnoreCase)).ToList();
 
             // Apply ordering
             if (query.OrderBy == "timestamp")
             {
-                results = query.OrderDescending 
+                results = query.OrderDescending
                     ? results.OrderByDescending(l => l.Timestamp).ToList()
                     : results.OrderBy(l => l.Timestamp).ToList();
             }
@@ -335,13 +335,13 @@ namespace TerraFusion.Core.Services
             // Apply pagination
             results = results.Skip(query.Skip).Take(query.Take).ToList();
 
-            return results;
+            return Task.FromResult(results);
         }
 
         public async Task FlushLogsAsync()
         {
             List<LogEntry> logsToFlush;
-            
+
             lock (_bufferLock)
             {
                 logsToFlush = new List<LogEntry>(_logBuffer);
@@ -371,7 +371,7 @@ namespace TerraFusion.Core.Services
             lock (_bufferLock)
             {
                 _logBuffer.Add(logEntry);
-                
+
                 // Auto-flush if buffer is full
                 if (_logBuffer.Count >= _bufferSize)
                 {
@@ -389,7 +389,7 @@ namespace TerraFusion.Core.Services
         private Dictionary<string, object> SerializeToDict(object obj)
         {
             if (obj == null) return new Dictionary<string, object>();
-            
+
             try
             {
                 var json = JsonSerializer.Serialize(obj);
@@ -397,7 +397,7 @@ namespace TerraFusion.Core.Services
             }
             catch
             {
-                return new Dictionary<string, object> { ["serialized_value"] = obj.ToString() };
+                return new Dictionary<string, object> { ["serialized_value"] = obj.ToString() ?? "null" };
             }
         }
 
@@ -507,7 +507,7 @@ namespace TerraFusion.Core.Services
 
                 var content = new StringContent(bulkData.ToString(), Encoding.UTF8, "application/json");
                 var response = await _httpClient.PostAsync($"{_elasticsearchEndpoint}/_bulk", content);
-                
+
                 if (!response.IsSuccessStatusCode)
                 {
                     _logger.LogWarning("Failed to send logs to Elasticsearch: {StatusCode}", response.StatusCode);

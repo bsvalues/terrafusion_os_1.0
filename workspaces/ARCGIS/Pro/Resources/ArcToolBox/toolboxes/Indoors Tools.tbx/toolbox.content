@@ -1,0 +1,39 @@
+{
+    "version": "1.0",
+    "alias": "indoors",
+    "displayname": "$rc:title",
+    "description": "$rc:descr",
+    "helpcontext": "68000000",
+    "toolsets": {
+        "<root>": {
+            "tools": [
+                "ConfigureIndoorPositioning",
+                "CreateIndoor3DDataset",
+                "CreateIndoorDataset",
+                "CreateIndoorsDatabase",
+                "GenerateFloorPlanFromPointCloud",
+                "GenerateOccupantFeatures",
+                "GenerateUnitOpenings",
+                "ImportBIMToIndoorDataset",
+                "ImportCADToIndoorDataset",
+                "ImportFeaturesToIndoorDataset",
+                "ImportFloorplansToIndoorsGDB",
+                "ImportIFCToIndoorDataset",
+                "ImportIndoorImages",
+                "UpdateOccupantFeatures",
+                "UpgradeIndoorsDatabase"
+            ]
+        },
+        "$rc:toolset1.name": {
+            "tools": [
+                "ClassifyIndoorPathways",
+                "CreateIndoorNetworkDataset",
+                "GenerateFacilityEntryways",
+                "GenerateFloorTransitions",
+                "GenerateIndoorNetworkFeatures",
+                "GenerateIndoorPathways",
+                "ThinIndoorPathways"
+            ]
+        }
+    }
+}

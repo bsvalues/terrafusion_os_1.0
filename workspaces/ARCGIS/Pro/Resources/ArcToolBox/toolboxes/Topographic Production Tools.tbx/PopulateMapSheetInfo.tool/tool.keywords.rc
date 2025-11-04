@@ -1,0 +1,15 @@
+{
+    "set": [
+        "cartography",
+        "defense",
+        "defense mapping",
+        "info",
+        "layout",
+        "populate",
+        "sheet",
+        "sheet info",
+        "topo",
+        "topographic",
+        "topographic production"
+    ]
+}

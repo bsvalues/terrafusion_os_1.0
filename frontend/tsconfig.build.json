@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.template.tsx",
+    "**/*.test.{ts,tsx}",
+    "**/*.spec.{ts,tsx}",
+    "**/*.stories.{ts,tsx}",
+    "src/tests/**/*",
+    "src/__tests__/**/*",
+    "src/test-utils.tsx"
+  ],
+  "include": ["src/**/*.{ts,tsx}", "vite-env.d.ts"]
+}

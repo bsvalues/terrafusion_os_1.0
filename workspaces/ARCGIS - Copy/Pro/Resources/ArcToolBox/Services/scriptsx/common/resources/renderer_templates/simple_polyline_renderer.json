@@ -1,0 +1,16 @@
+{
+    "renderer": {
+        "type": "simple",
+        "symbol": {
+            "type": "esriSLS",
+            "style": "esriSLSSolid",
+            "color": [
+                79,
+                129,
+                189,
+                255
+            ],
+            "width": 2
+        }
+    }
+}

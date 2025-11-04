@@ -1,0 +1,5 @@
+CREATE USER [CO\MDP] FOR LOGIN [CO\MDP];
+
+
+GO
+

@@ -1,0 +1,23 @@
+{
+    "set": [
+        "center line",
+        "combine",
+        "cover",
+        "grid",
+        "inside",
+        "intersect",
+        "join",
+        "multiple",
+        "on top of",
+        "outside",
+        "overlap",
+        "overlay",
+        "remove",
+        "spatial relationship",
+        "superimpose",
+        "thiessen",
+        "topological set",
+        "topology",
+        "weight"
+    ]
+}

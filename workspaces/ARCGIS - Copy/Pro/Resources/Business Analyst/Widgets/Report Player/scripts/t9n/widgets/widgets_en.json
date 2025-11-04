@@ -1,0 +1,78 @@
+{
+  "calcite": {
+    "reset": "Reset",
+    "action": {
+      "sort": "Sort"
+    },
+    "buttons": {
+      "save": "Save",
+      "edit": "Edit",
+      "done": "Done",
+      "apply": "Apply",
+      "cancel": "Cancel",
+      "close": "Close"
+    },
+    "ColorPicker": {
+      "selectColor": "Select color",
+      "noColorSpecified": "No color specified",
+      "transparent": "Transparent",
+      "colorTooltip": "<p>Hex: ${hex}</p><p>RGB: ${r}, ${g}, ${b}</p>",
+      "recent": "Recent",
+      "standard": "Standard",
+      "savedColors": "Saved colors",
+      "advanced": "Advanced"
+    },
+    "DatePickerLink": {
+      "enterDate": "Enter date"
+    },
+    "PaginationContinuous": {
+      "next": "Next",
+      "previous": "Previous"
+    }
+  },
+  "ImageNavigator": {
+    "paginationLabel": "${n} of ${m}",
+    "noImage": "No photos currently saved with this site",
+    "previewNotAvailable": "Preview not available"
+  },
+  "PageNavigator": {
+    "currentPageOutOfN": "Page ${current} of ${total}"
+  },
+  "PanoramicViewer": {
+    "image-viewer-close": "Close",
+    "image-viewer-fullscreen": "Fullscreen",
+    "image-viewer-minimize": "Minimize",
+    "image-viewer-title": "Photo Viewer",
+    "image-viewer-show-caption": "Show Caption",
+    "image-viewer-hide-caption": "Hide"
+  },
+  "TextBox": {
+    "error_numberExpected": "A number is expected",
+    "error_range": "Expected value from ${0} to ${1}"
+  },
+  "charts": {
+    "histogram": {
+      "minValue": "Min:<br>${0}",
+      "maxValue": "Max:<br>${0}",
+      "thisAreaValue": "This area: ${0}",
+      "medianValue": "Median:<br>${0}",
+      "q1Value": "Q1:<br>${0}",
+      "q3Value": "Q3:<br>${0}",
+      "percentile": "Percentile ${percent}:<br>${0}",
+      "percentileBottom": "Bottom ${percent}%:<br>${0}",
+      "percentileTop": "Top ${percent}%:<br>${0}",
+      "percentile_singleLine": "Percentile ${percent}: ${0}",
+      "percentileBottom_singleLine": "Bottom ${percent}%: ${0}",
+      "percentileTop_singleLine": "Top ${percent}%: ${0}",
+      "sd_singleLine": "${sd} SD: ${0}",
+      "tooltip": {
+        "range_single": "<b>${level}</b> with value within <b>${value}</b> : <b>1</b>",
+        "range_single_precise": "<b>${areaName}</b> has value of <b>${value}</b>.",
+        "range_multi": "<b>${level}</b> with value within <b>${value}</b> : <b>${count}</b>",
+        "thisArea": "<b>This area</b> has value of <b>${value}</b>.",
+        "percentileLower": "<b>${percent}%</b> of <b>${level}</b> have value above <b>${value}</b>.",
+        "percentileUpper": "<b>${percent}%</b> of <b>${level}</b> have value below <b>${value}</b>."
+      }
+    }
+  }
+}

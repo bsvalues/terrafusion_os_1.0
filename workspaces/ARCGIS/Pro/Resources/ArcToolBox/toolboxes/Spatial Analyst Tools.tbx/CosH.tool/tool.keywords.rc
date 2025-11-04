@@ -1,0 +1,8 @@
+{
+    "set": [
+        "cosine",
+        "hyperbolic",
+        "math",
+        "trig"
+    ]
+}

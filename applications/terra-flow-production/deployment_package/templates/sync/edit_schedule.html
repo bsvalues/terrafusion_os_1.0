@@ -1,0 +1,179 @@
+{% extends "layout.html" %}
+
+{% block title %}Edit Sync Schedule{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2">Edit Sync Schedule</h1>
+                <div>
+                    <a href="{{ url_for('sync.schedules') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Schedules
+                    </a>
+                </div>
+            </div>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white py-3">
+                    <h6 class="m-0 font-weight-bold">Edit Schedule: {{ schedule.name }}</h6>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('sync.edit_schedule', schedule_id=schedule.id) }}" method="post">
+                        <div class="mb-3">
+                            <label for="scheduleName" class="form-label">Schedule Name</label>
+                            <input type="text" class="form-control" id="scheduleName" name="name" value="{{ schedule.name }}" required>
+                            <div class="form-text">A descriptive name for this schedule</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="scheduleDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="scheduleDescription" name="description" rows="2">{{ schedule.description or '' }}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="jobType" class="form-label">Job Type</label>
+                            <select class="form-select" id="jobType" name="job_type" required>
+                                <option value="up_sync" {% if schedule.job_type == 'up_sync' %}selected{% endif %}>Up Sync (Training to Production)</option>
+                                <option value="down_sync" {% if schedule.job_type == 'down_sync' %}selected{% endif %}>Down Sync (Production to Training)</option>
+                                <option value="full_sync" {% if schedule.job_type == 'full_sync' %}selected{% endif %}>Full Sync</option>
+                                <option value="incremental_sync" {% if schedule.job_type == 'incremental_sync' %}selected{% endif %}>Incremental Sync</option>
+                                <option value="property_export" {% if schedule.job_type == 'property_export' %}selected{% endif %}>Property Export</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Schedule Type</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="schedule_type" id="scheduleTypeInterval" value="interval" {% if schedule.schedule_type == 'interval' %}checked{% endif %}>
+                                <label class="form-check-label" for="scheduleTypeInterval">
+                                    Interval (run every X hours)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="schedule_type" id="scheduleTypeCron" value="cron" {% if schedule.schedule_type == 'cron' %}checked{% endif %}>
+                                <label class="form-check-label" for="scheduleTypeCron">
+                                    Cron Expression (advanced scheduling)
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div id="intervalOptions" class="mb-3 {% if schedule.schedule_type == 'cron' %}d-none{% endif %}">
+                            <label for="intervalHours" class="form-label">Interval (Hours)</label>
+                            <input type="number" class="form-control" id="intervalHours" name="interval_hours" min="1" max="168" value="{{ schedule.interval_hours or 24 }}">
+                            <div class="form-text">How often to run the sync job in hours</div>
+                        </div>
+                        
+                        <div id="cronOptions" class="mb-3 {% if schedule.schedule_type != 'cron' %}d-none{% endif %}">
+                            <label for="cronExpression" class="form-label">Cron Expression</label>
+                            <input type="text" class="form-control" id="cronExpression" name="cron_expression" placeholder="0 0 * * *" value="{{ schedule.cron_expression or '' }}">
+                            <div class="form-text">
+                                Cron format: minute hour day month weekday (e.g., "0 0 * * *" for daily at midnight)
+                                <a href="https://crontab.guru/" target="_blank">Cron Expression Helper</a>
+                            </div>
+                        </div>
+                        
+                        <div id="propertyExportParams" class="mb-3 {% if schedule.job_type != 'property_export' %}d-none{% endif %}">
+                            <h6 class="mb-2">Property Export Parameters</h6>
+                            
+                            <div class="mb-3">
+                                <label for="databaseName" class="form-label">Database Name</label>
+                                <input type="text" class="form-control" id="databaseName" name="database_name" value="{{ schedule.parameters.database_name if schedule.parameters and schedule.parameters.database_name else 'web_internet_benton' }}">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="numYears" class="form-label">Number of Years</label>
+                                <input type="number" class="form-control" id="numYears" name="num_years" value="{{ schedule.parameters.num_years if schedule.parameters and schedule.parameters.num_years else -1 }}">
+                                <div class="form-text">Number of years of data to export (-1 for all years)</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="minBillYears" class="form-label">Minimum Billing Years</label>
+                                <input type="number" class="form-control" id="minBillYears" name="min_bill_years" value="{{ schedule.parameters.min_bill_years if schedule.parameters and schedule.parameters.min_bill_years else 2 }}">
+                                <div class="form-text">Minimum number of billing years to include</div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mb-3">
+                            <a href="{{ url_for('sync.schedules') }}" class="btn btn-secondary">Cancel</a>
+                            <div>
+                                <a href="{{ url_for('sync.delete_schedule', schedule_id=schedule.id) }}" class="btn btn-danger me-2" onclick="return confirm('Are you sure you want to delete this schedule?');">
+                                    Delete Schedule
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    Update Schedule
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card shadow mb-4">
+                <div class="card-header bg-info text-white py-3">
+                    <h6 class="m-0 font-weight-bold">Schedule History</h6>
+                </div>
+                <div class="card-body">
+                    <p><strong>Created:</strong> {{ schedule.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                    <p><strong>Last Updated:</strong> {{ schedule.last_updated.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                    <p><strong>Last Run:</strong> 
+                        {% if schedule.last_run %}
+                        {{ schedule.last_run.strftime('%Y-%m-%d %H:%M:%S') }}
+                        {% else %}
+                        Never run
+                        {% endif %}
+                    </p>
+                    
+                    {% if schedule.last_job_id %}
+                    <p>
+                        <strong>Last Job ID:</strong> 
+                        <a href="{{ url_for('sync.job_details', job_id=schedule.last_job_id) }}">
+                            {{ schedule.last_job_id }}
+                        </a>
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle between interval and cron schedule types
+        document.querySelectorAll('input[name="schedule_type"]').forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                const intervalOptions = document.getElementById('intervalOptions');
+                const cronOptions = document.getElementById('cronOptions');
+                
+                if (this.value === 'interval') {
+                    intervalOptions.classList.remove('d-none');
+                    cronOptions.classList.add('d-none');
+                } else {
+                    intervalOptions.classList.add('d-none');
+                    cronOptions.classList.remove('d-none');
+                }
+            });
+        });
+        
+        // Show/hide property export parameters based on job type
+        document.getElementById('jobType').addEventListener('change', function() {
+            const propertyExportParams = document.getElementById('propertyExportParams');
+            if (this.value === 'property_export') {
+                propertyExportParams.classList.remove('d-none');
+            } else {
+                propertyExportParams.classList.add('d-none');
+            }
+        });
+    });
+</script>
+{% endblock %}

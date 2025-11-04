@@ -1,0 +1,95 @@
+{
+    "type": "FunctionTool",
+    "guid": "{dd3fb637-2023-43f5-9956-9a68d3cb7bbc}",
+    "displayname": "$rc:title",
+    "helpcontent": "66130010",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "58",
+        "86"
+    ],
+    "params": {
+        "in_raster": {
+            "display_order": "0",
+            "displayname": "$rc:in_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "GPString"
+                    },
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "DEMosaicDataset"
+                    }
+                ]
+            },
+            "description": "$rc:in_raster.descr"
+        },
+        "out_table": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "description": "$rc:out_table.descr"
+        },
+        "dimension": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:dimension.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "in_raster"
+            ],
+            "description": "$rc:dimension.descr"
+        },
+        "aoi": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:aoi.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:aoi.descr"
+        },
+        "aoi_id_field": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:aoi_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "aoi"
+            ],
+            "description": "$rc:aoi_id_field.descr"
+        }
+    },
+    "environments": [
+        "extent"
+    ]
+}

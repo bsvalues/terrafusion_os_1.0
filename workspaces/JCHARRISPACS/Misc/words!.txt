@@ -1,0 +1,277 @@
+
+Ask clarifying questions until you are 95% confident you can accomplish the task.
+
+Perpplexity AI api: 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
+
+https://c3e.sharepoint.com/:f:/r/sites/CustomerSolutions/Shared%20Documents/0.%20Pilots/5.%20Customer%20Pilots%20(Individual%20Pilot%20Artifacts)/09-GCP-PA-Pilot%20Benton/Data?csf=1&web=1&e=3x5s3w
+
+
+Public County WIFI:
+countybiz247
+
+\\jcharrispacs\OLTP\Matix\BaseSettings
+
+Activation Code for Appraisalest : ACKP0F0C00GHJCDI862W5V7IJ5Z3JR
+
+
+State COmmercial database 
+bill.spencer
+Frankthetank#1
+
+https://bentonco.maps.arcgis.com/apps/webappviewer/index.html?id=61d57da12d42415f9c2208cdf9476620#
+
+https://dservices7.arcgis.com/NURlY7V8UHl6XumF/arcgis/services/Assessor_Map/WFSServer?service=wfs&request=getcapabilities
+
+https://services7.arcgis.com/NURlY7V8UHl6XumF/ArcGIS/rest/services
+
+https://services7.arcgis.com/NURlY7V8UHl6XumF/arcgis/rest/services/Parcels_and_Assess/FeatureServer
+
+https://maps.co.benton.wa.us/portal/home/index.html#access_token=RozGc2WSO8w_z4RRCOwaoKYywHsRDYyjOZWAb2PFequSzeQ23Hq3bpl02LhiH95Ax91H3rWXlzqYr_t_3xyIn8NvRFNHN6ZCWafg0MBMveN4OYRLJHSiCqXmpQ6eB-aPJiPhOEfh0zG0-kClNUvGwUI3TEo5S3Jj0gsGXY1ncUTrNbb8855BfGnjsnWu6jWmuMkO8cTkQD64O-UmwDCNq_wFJP7Xr21r5nFAclzkMKUEfyscq1ymupwuuQeg76GY&expires_in=7200&username=Bill.Spencer%40co.benton.wa.us&ssl=true
+
+simplefile	
+spencerb	
+Kimberly#3
+
+Harris Govern password protected docs
+H@rrisG0vern2020
+
+https://www.wix.com/_serverless/funnel-custom-gpt-bridge/entrypoint?language=en&siteName=PACS+Hybrid+Appraisal+%26+Tax+System&businessType=Tax+Automation&businessDescription=A+customized+solution+integrating+PACS+9.0+for+property+tax+calculations+while+using+custom-built+appraisal+tools+and+cost+tables.&lookAndFeel=Streamlined+and+professional%2C+focused+on+seamless+data+management+and+tax+automation.
+
+eden
+bspencer
+password = blackberry
+
+Username:  bjs
+Password:  bcassessor14
+
+
+PACS:Password
+bs
+Password3
+
+Ascend
+
+bjs
+Kimberly#80
+
+IAAO
+BSPENCER
+kimberly3
+
+Weebly
+Assessor@co.benton.wa.us
+assessor1
+
+Simplefile
+spencerb	
+Frankthetank#1
+
+Site:
+bjs
+Kimberly@1
+
+Help Star
+Benton Assessor
+benton
+
+AWC
+Username:         bill.spencer
+
+Password:         Frankthetank#1 or Kimberly#3 for the salary survay
+
+
+
+ ftp.trueautomation.com
+
+a.	User name:  tauser
+b.	Password:  HG2017
+
+
+https://www.arcgis.com/sharing/oauth2/authorize?client_id=arcgisonline&response_type=code&state=%7B%22portalUrl%22%3A%22https%3A%2F%2Fwww.arcgis.com%22%2C%22uid%22%3A%223PNEmocSVTzouJv7oXCWETlcNiIES3h6AhdeUBlg6FI%22%2C%22useLandingPage%22%3Atrue%2C%22clientId%22%3A%22arcgisonline%22%7D&expiration=20160&locale=en&redirect_uri=https%3A%2F%2Fwww.arcgis.com%2Fhome%2Faccountswitcher-callback.html&force_login=true&redirectToUserOrgUrl=true&code_challenge=siCk15UN8tN0RHrdq0ZOD1kKMG1XpNTNA42b_d_exx0&code_challenge_method=S256&display=default&hideCancel=true&showSignupOption=true&canHandleCrossOrgSignIn=true&signuptype=esri&allow_verification=true
+
+User Name: Bill.Spencer_BentonCo
+Password: Kimberly#3
+
+Benton_Assessor_WA
+Kimberly#3
+
+mls
+123456@Md
+
+
+neogov
+bill.spencer@co.benton.wa.us
+BSpassword@1
+
+
+http://chtylerapp:81/tylercm/web/splash.jsp
+
+log in:
+user: pubexcise
+pass: pubexcise
+
+
+User Name: bspencer
+Password: baltimore
+
+PACS
+bs
+Password1
+
+
+Spatialest FTP
+Server: ftp.spatialest.com
+Username: benton-wa
+Password: 8hKc7m6f
+
+Team support
+assessor@co.benton.wa.us
+Benton22
+
+PacsRD
+co\pacssupport
+PaintEarthCloud%
+ <add key="ConnectionString" value="server=.;uid=sa;pwd=monitor107;database=PropertyAccess"
+
+
+https://www.comper.info/  (there will be a public one of these also, but this is mine for now) 53005 (client id)/ bspence (Username)/ bspence (password)
+
+Below are the details for the account you requested. Please pass them along to the vendor and have them let me know if they have any issues.
+
+They will need to use the Cisco AnyConnect VPN Client and connect to the address vpn.co.benton.wa.us. Once connected they can login using the username / password combination SpatialestSupport / NatureWingStone#
+
+Once connected they can Remote Desktop to the database server CHPACS (192.168.28.45), using the same login information as above, and access SQL Server Management Studio using Windows Authentication linked to their user account where they will have read only access to the pacs_oltp database.
+
+
+Benton dropbox
+
+assessor@co.benton.wa.us
+Benton21
+
+
+local state plane projection ESRI:102749 or EPSG:2927
+
+
+user
+tadata
+tadata2600
+binary
+cd GIS\BentonData
+put D:\PropAccessData\BentonData.rar
+bye
+
+
+The client side scripts are configured to run from D:\PropAccessData
+-create this folder if it does not exist and place the 'FTP_Commands.txt' here to be run
+-install the stored procuedures into the database:
+	+pa_web_map_neighborhood_export_sp
+	+pa_web_map_property_export_sp
+	+pa_web_map_subdv_export_sp
+-add step to the Export job to run the script after export as seen in the pa_export_job_rar_ftp.txt file
+
+
+http://lidarportal.dnr.wa.gov/#46.21978:-119.22540:17
+https://wadnr.maps.arcgis.com/apps/Cascade/index.html?appid=36b4887370d141fcbb35392f996c82d9
+https://www.dnr.wa.gov/programs-and-services/geology/publications-and-data/gis-data-and-databases
+https://geologyportal.dnr.wa.gov/#subsurface
+https://geologyportal.dnr.wa.gov/#subsurface
+
+
+
+server	username	password	database
+VJCPACSWEB	sa	benton-48-2600	web_internet_benton
+
+MTServer	MTEnvironmentID	MTPacsUserName	MTPacsPassword	MTDomainUserName	MTDomainPassword	MTDomainName
+VJCPACSWEB	0	System	system123	svcmtier	askl1290	PACS
+
+http://map.trueautomation.com/arcgis/rest/services/Geometry/GeometryServer
+
+http://map.trueautomation.com/arcgis/rest/services/Geometry/GeometryServer.
+
+http://map.trueautomation.com/arcgis/rest/services/Stevens/MapServer
+
+website reviews
+https://property.spatialest.com/wa/benton/manage-reviews
+user: Bill.Spencer@co.benton.wa.us
+password: assessor21
+
+
+wsaca gmail
+assessorwsaca@gmail.com
+washingtonassessor
+
+wsace wells account
+wawsaca
+Assessor1
+
+
+
+
+google maps api
+AIzaSyCf_fFOyBTgJcMh-PVFKB1go6dznluhu74
+
+Ag map https://bentonco.maps.arcgis.com/apps/webappviewer/index.html?id=62032424ea0f4ad8a6c8bfb42a5ea7d0pacs_system
+
+Remote Desktop
+as-226697
+
+Wireless passwords:
+Northmoon90!
+or northmoon90!
+
+or green moracki screen....
+
+
+
+
+
+(SELECT 
+[Parcel_ID],
+ROW_NUMBER() 
+over 
+(partition by prop_id 
+ORDER BY [OBJECTID] DESC) 
+AS order_id,
+[Prop_ID],
+--Geometry,
+[Geometry].STCentroid().STX as XCoord,
+[Geometry].STCentroid().STY as YCoord ,
+
+      [CENTROID_X] as x
+      ,[CENTROID_Y] as y
+
+FROM 
+
+[Benton_spatial_data].[dbo].[parcel]
+
+
+
+,[XCoord]as X_Coord
+,[YCoord]as Y_Coord 
+FROM 
+[Benton_spatial_data].[dbo].[spatial_parcel]
+
+
+ inner join 
+(select CENTROID_X,CENTROID_Y,geometry,prop_id
+from spatial.dbo.parcel1)as sp on pta.prop_id=sp.prop_id
+
+(select appr_yr from pacs_system)
+
+cast (getdate() as date)
+
+
+API Keys Open AI
+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
+
+AI-Excel
+AI.ASK
+AI.LIST
+AI.FILL
+AI.TRANSLATE
+AI.FORMAT
+AI.EXTRACT
+
+
+
+arcpy.management.AddGeometryAttributes(Input_Features, Geometry_Properties, {Length_Unit}, {Area_Unit}, {Coordinate_System})

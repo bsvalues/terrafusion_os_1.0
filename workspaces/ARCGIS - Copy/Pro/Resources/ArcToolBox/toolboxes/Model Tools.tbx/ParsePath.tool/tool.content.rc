@@ -1,0 +1,16 @@
+{
+    "map": {
+        "description": "The Parse Path tool parses the input into its file, path, name, or extension. The output can be used as inline variable in the output name of other tools.",
+        "in_data_element.descr": "Input values that you want to parse.",
+        "in_data_element.title": "Input Values",
+        "parse_type.descr": "<xdoc><p>Specifies the parse type.</p><p>Given an input value of C:\\ToolData\\InputFC.shp:</p><ul><li><span title=\"FILE\">File name and extension</span>—Output will be the file. Example: InputFC.shp</li><li><span title=\"PATH\">File path</span>—Output will be the file path. Example: C:\\ToolData</li><li><span title=\"NAME\">File name</span>—Output will be the file name. Example: InputFC</li><li><span title=\"EXTENSION\">File extension</span>—Output will be the file extension. Example: shp</li></ul></xdoc>",
+        "parse_type.domain.EXTENSION": "File extension",
+        "parse_type.domain.FILE": "File name and extension",
+        "parse_type.domain.NAME": "File name",
+        "parse_type.domain.PATH": "File path",
+        "parse_type.title": "Parse type",
+        "summary": "<xdoc><p>The Parse Path tool parses the input into its file, path, name, or extension. The output can be used as inline variable in the output name of other tools.</p><note type=\"legacy\"/><p group=\"note\">This is a deprecated tool. This functionality has been replaced by the new Parse Path tool.</p></xdoc>",
+        "title": "Parse Path",
+        "value.title": "Value"
+    }
+}

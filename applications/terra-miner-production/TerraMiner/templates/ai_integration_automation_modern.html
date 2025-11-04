@@ -1,0 +1,1181 @@
+{% extends "new_unified_base.html" %}
+
+{% block title %}AI Integration & Automation{% endblock %}
+
+{% block styles %}
+<style>
+    .integration-card {
+        transition: all 0.2s;
+    }
+    .integration-card:hover {
+        transform: translateY(-4px);
+    }
+    .integration-logo {
+        height: 50px;
+        width: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+    }
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 48px;
+        height: 24px;
+    }
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 24px;
+    }
+    .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    input:checked + .toggle-slider {
+        background-color: #3b82f6;
+    }
+    input:checked + .toggle-slider:before {
+        transform: translateX(24px);
+    }
+    .status-badge {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.25rem 0.5rem;
+        border-radius: 9999px;
+    }
+    .status-active {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: rgb(16, 185, 129);
+    }
+    .status-inactive {
+        background-color: rgba(107, 114, 128, 0.1);
+        color: rgb(107, 114, 128);
+    }
+    .tab-switcher {
+        display: flex;
+        background-color: #f3f4f6;
+        border-radius: 0.5rem;
+        padding: 0.25rem;
+    }
+    .tab-switcher .tab {
+        flex: 1;
+        text-align: center;
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .tab-switcher .tab.active {
+        background-color: white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    .dark .tab-switcher {
+        background-color: #374151;
+    }
+    .dark .tab-switcher .tab.active {
+        background-color: #1f2937;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold mb-2">AI Integration & Automation</h1>
+        <p class="text-gray-600 dark:text-gray-300">Configure AI services, integrations, and automation rules.</p>
+    </div>
+
+    <!-- Tab Switcher -->
+    <div class="tab-switcher mb-8">
+        <div class="tab active" data-tab="integrations">
+            <span class="font-medium">Integrations</span>
+        </div>
+        <div class="tab" data-tab="models">
+            <span class="font-medium">Model Configuration</span>
+        </div>
+        <div class="tab" data-tab="automation">
+            <span class="font-medium">Automation Rules</span>
+        </div>
+        <div class="tab" data-tab="api">
+            <span class="font-medium">API Settings</span>
+        </div>
+    </div>
+
+    <!-- Integrations Tab Content -->
+    <div class="tab-content" id="integrations-tab">
+        <div class="card mb-8">
+            <div class="card-header">
+                <h2 class="text-xl font-semibold">Active Integrations</h2>
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    Connected AI services and APIs
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- OpenAI Integration -->
+                    <div class="integration-card bg-white dark:bg-gray-800 rounded-lg shadow p-4 hover:shadow-lg transition-shadow duration-300">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex items-center">
+                                <div class="integration-logo bg-gradient-to-br from-emerald-500 to-teal-700 text-white mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.41-2.62c-.512-1.701-1.798-3.105-3.452-3.773C10.2-2.17 8.254-.87 7.612 1.28c-1.624.133-3.136.95-4.1 2.27a5.99 5.99 0 0 0-1.225 4.695 5.985 5.985 0 0 0-1.47 4.61 6.046 6.046 0 0 0 4.978 4.772c.068 1.752.943 3.372 2.365 4.399 2.066 1.49 4.93.837 6.28-1.009 1.7.095 3.352-.463 4.502-1.803 1.223-1.426 1.664-3.388 1.132-5.223 1.4-.92 2.318-2.412 2.518-4.062a6.031 6.031 0 0 0-1.31-5.109zM12 19.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-lg">OpenAI</h3>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">AI text generation & embeddings</p>
+                                </div>
+                            </div>
+                            <span class="status-badge status-active">Active</span>
+                        </div>
+                        <div class="space-y-3 mb-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm">API Key</span>
+                                <span class="text-sm font-mono text-gray-500">•••••••••••••••</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm">Models</span>
+                                <span class="text-sm">GPT-4, GPT-3.5 Turbo</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm">Usage This Month</span>
+                                <span class="text-sm">$142.78</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center pt-3 border-t border-gray-200 dark:border-gray-700">
+                            <a href="#" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                                Configure Settings
+                            </a>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Anthropic Integration -->
+                    <div class="integration-card bg-white dark:bg-gray-800 rounded-lg shadow p-4 hover:shadow-lg transition-shadow duration-300">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex items-center">
+                                <div class="integration-logo bg-gradient-to-br from-purple-500 to-indigo-700 text-white mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2L2 12l10 10 10-10z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-lg">Anthropic</h3>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Claude AI models</p>
+                                </div>
+                            </div>
+                            <span class="status-badge status-active">Active</span>
+                        </div>
+                        <div class="space-y-3 mb-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm">API Key</span>
+                                <span class="text-sm font-mono text-gray-500">•••••••••••••••</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm">Models</span>
+                                <span class="text-sm">Claude 3 Opus, Sonnet</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm">Usage This Month</span>
+                                <span class="text-sm">$97.42</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center pt-3 border-t border-gray-200 dark:border-gray-700">
+                            <a href="#" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                                Configure Settings
+                            </a>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Pinecone Integration -->
+                    <div class="integration-card bg-white dark:bg-gray-800 rounded-lg shadow p-4 hover:shadow-lg transition-shadow duration-300">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex items-center">
+                                <div class="integration-logo bg-gradient-to-br from-yellow-500 to-orange-700 text-white mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M15.787 7.085l-5.874 5.87-1.41-1.412 5.87-5.87-3.537-3.535 9.899-.12-.12 9.898-3.537-3.537L9.16 16.317l-1.41-1.412 7.91-7.91 3.535 3.537.08-6.617-6.617.08 3.536 3.535-8.295 8.295-2.825-2.824L12 6.075l1.41 1.412-6.918 6.918 1.412 1.412 6.917-6.917 1.414 1.414-6.918 6.918 2.825 2.825 8.296-8.296 3.535 3.535.08-6.617-6.616.08 3.537 3.537-7.91 7.91-1.415-1.412 7.92-7.92-3.538-3.536.082-6.617-6.616.08 3.536 3.538-5.87 5.87-1.414-1.413 5.872-5.869-3.537-3.535 9.898-.121-.12 9.898-3.538-3.536z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-lg">Pinecone</h3>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Vector database for embeddings</p>
+                                </div>
+                            </div>
+                            <span class="status-badge status-active">Active</span>
+                        </div>
+                        <div class="space-y-3 mb-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm">API Key</span>
+                                <span class="text-sm font-mono text-gray-500">•••••••••••••••</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm">Index Name</span>
+                                <span class="text-sm">terraminer-property-data</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm">Vector Dimensions</span>
+                                <span class="text-sm">1536</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center pt-3 border-t border-gray-200 dark:border-gray-700">
+                            <a href="#" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                                Configure Settings
+                            </a>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- MLS Integration -->
+                    <div class="integration-card bg-white dark:bg-gray-800 rounded-lg shadow p-4 hover:shadow-lg transition-shadow duration-300">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex items-center">
+                                <div class="integration-logo bg-gradient-to-br from-blue-500 to-sky-700 text-white mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M3 10.417c0-.5.042-.917.125-1.25h-.292a.833.833 0 010-1.667h.542c.566-1.308 1.75-2.083 3.542-2.083 1.4 0 2.467.358 3.183 1.066.225-.608.692-1.066 1.4-1.066h.833c.734 0 1.192.466 1.384 1.066.716-.708 1.791-1.066 3.2-1.066 1.783 0 2.966.775 3.541 2.083h.542a.833.833 0 110 1.667h-.292c.083.333.125.75.125 1.25v6.666a.833.833 0 01-.833.834H3.833A.833.833 0 013 17.083v-6.666zm13.333 0c0-1.8-.891-2.5-2.5-2.5-1.666 0-2.5.775-2.5 2.5v5h5v-5zm-7.5 0c0-1.8-.891-2.5-2.5-2.5-1.666 0-2.5.775-2.5 2.5v5h5v-5z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-lg">MLS Connect</h3>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Real-time MLS data</p>
+                                </div>
+                            </div>
+                            <span class="status-badge status-inactive">Inactive</span>
+                        </div>
+                        <div class="space-y-3 mb-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm">API Key</span>
+                                <span class="text-sm font-mono text-gray-500">Not configured</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm">MLS ID</span>
+                                <span class="text-sm">Not configured</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm">Status</span>
+                                <span class="text-sm text-yellow-500">Setup required</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center pt-3 border-t border-gray-200 dark:border-gray-700">
+                            <a href="#" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                                Setup Integration
+                            </a>
+                            <label class="toggle-switch">
+                                <input type="checkbox">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Zillow Integration -->
+                    <div class="integration-card bg-white dark:bg-gray-800 rounded-lg shadow p-4 hover:shadow-lg transition-shadow duration-300">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex items-center">
+                                <div class="integration-logo bg-gradient-to-br from-blue-700 to-indigo-900 text-white mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-lg">Zillow API</h3>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Property data & valuations</p>
+                                </div>
+                            </div>
+                            <span class="status-badge status-active">Active</span>
+                        </div>
+                        <div class="space-y-3 mb-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm">API Key</span>
+                                <span class="text-sm font-mono text-gray-500">•••••••••••••••</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm">Access Level</span>
+                                <span class="text-sm">Premium</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm">Usage This Month</span>
+                                <span class="text-sm">3,245 calls</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center pt-3 border-t border-gray-200 dark:border-gray-700">
+                            <a href="#" class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                                Configure Settings
+                            </a>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Add New Integration -->
+                    <div class="integration-card bg-gray-50 dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-4 hover:border-blue-500 dark:hover:border-blue-500 transition-colors duration-300 flex flex-col items-center justify-center text-center">
+                        <div class="h-12 w-12 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                        </div>
+                        <h3 class="font-semibold text-lg mb-1">Add New Integration</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Connect a new AI or data service</p>
+                        <a href="#" class="btn-primary">
+                            Browse Integrations
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recently Added & Available Integrations -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-xl font-semibold">Recently Added</h2>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                        New integrations available
+                    </div>
+                </div>
+                <div class="card-body">
+                    <ul class="space-y-4">
+                        <li class="flex justify-between items-center p-3 bg-white dark:bg-gray-800 rounded-lg shadow">
+                            <div class="flex items-center">
+                                <div class="h-10 w-10 bg-purple-100 dark:bg-purple-900 rounded-md flex items-center justify-center mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium">Clarifai</h3>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Computer vision & image analysis</p>
+                                </div>
+                            </div>
+                            <button class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                                Connect
+                            </button>
+                        </li>
+                        <li class="flex justify-between items-center p-3 bg-white dark:bg-gray-800 rounded-lg shadow">
+                            <div class="flex items-center">
+                                <div class="h-10 w-10 bg-green-100 dark:bg-green-900 rounded-md flex items-center justify-center mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium">MapBox</h3>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Enhanced mapping services</p>
+                                </div>
+                            </div>
+                            <button class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                                Connect
+                            </button>
+                        </li>
+                        <li class="flex justify-between items-center p-3 bg-white dark:bg-gray-800 rounded-lg shadow">
+                            <div class="flex items-center">
+                                <div class="h-10 w-10 bg-yellow-100 dark:bg-yellow-900 rounded-md flex items-center justify-center mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600 dark:text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium">SendGrid</h3>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Email automation</p>
+                                </div>
+                            </div>
+                            <button class="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                                Connect
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-xl font-semibold">Integration Metrics</h2>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                        Usage statistics
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="font-medium">API Usage (Last 30 Days)</h3>
+                                <span class="text-sm text-gray-500">24,873 calls</span>
+                            </div>
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                                <div class="bg-blue-600 h-2.5 rounded-full" style="width: 65%"></div>
+                            </div>
+                            <div class="flex justify-between items-center mt-1">
+                                <span class="text-xs text-gray-500">Plan: 50,000 calls/month</span>
+                                <span class="text-xs text-gray-500">65% used</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="font-medium">Token Usage (Last 30 Days)</h3>
+                                <span class="text-sm text-gray-500">5.8M tokens</span>
+                            </div>
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                                <div class="bg-green-600 h-2.5 rounded-full" style="width: 48%"></div>
+                            </div>
+                            <div class="flex justify-between items-center mt-1">
+                                <span class="text-xs text-gray-500">Plan: 12M tokens/month</span>
+                                <span class="text-xs text-gray-500">48% used</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="font-medium">Response Times (Avg)</h3>
+                                <span class="text-sm text-gray-500">1.2 seconds</span>
+                            </div>
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                                <div class="bg-purple-600 h-2.5 rounded-full" style="width: 32%"></div>
+                            </div>
+                            <div class="flex justify-between items-center mt-1">
+                                <span class="text-xs text-gray-500">Target: < 2 seconds</span>
+                                <span class="text-xs text-green-600">Good performance</span>
+                            </div>
+                        </div>
+                        
+                        <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <a href="#" class="flex items-center justify-center text-blue-600 dark:text-blue-400 hover:underline">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                </svg>
+                                View Detailed Usage Statistics
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Model Configuration Tab Content -->
+    <div class="tab-content hidden" id="models-tab">
+        <div class="card mb-8">
+            <div class="card-header">
+                <h2 class="text-xl font-semibold">Model Configuration</h2>
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    Set up models for each feature
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-800">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Feature</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Primary Model</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Fallback Model</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Parameters</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">Property Valuation</div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-gray-100">Fine-tuned Property Valuation</div>
+                                    <div class="text-xs text-gray-500">Custom model</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-gray-100">GPT-4</div>
+                                    <div class="text-xs text-gray-500">OpenAI</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-gray-100">Temperature: 0.2</div>
+                                    <div class="text-xs text-gray-500">Max tokens: 2048</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <a href="#" class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300">Edit</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">Market Analysis</div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-gray-100">Claude 3 Opus</div>
+                                    <div class="text-xs text-gray-500">Anthropic</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-gray-100">Claude 3 Sonnet</div>
+                                    <div class="text-xs text-gray-500">Anthropic</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-gray-100">Temperature: 0.7</div>
+                                    <div class="text-xs text-gray-500">Max tokens: 4096</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <a href="#" class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300">Edit</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">Comparables Finder</div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-gray-100">GPT-4</div>
+                                    <div class="text-xs text-gray-500">OpenAI</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-gray-100">GPT-3.5 Turbo</div>
+                                    <div class="text-xs text-gray-500">OpenAI</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-gray-100">Temperature: 0.3</div>
+                                    <div class="text-xs text-gray-500">Max tokens: 2048</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <a href="#" class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300">Edit</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">Natural Language Search</div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-gray-100">GPT-3.5 Turbo</div>
+                                    <div class="text-xs text-gray-500">OpenAI</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-gray-100">Claude 3 Sonnet</div>
+                                    <div class="text-xs text-gray-500">Anthropic</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-gray-100">Temperature: 0.5</div>
+                                    <div class="text-xs text-gray-500">Max tokens: 1024</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <a href="#" class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300">Edit</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">Investment Detector</div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-gray-100">Claude 3 Opus</div>
+                                    <div class="text-xs text-gray-500">Anthropic</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-gray-100">GPT-4</div>
+                                    <div class="text-xs text-gray-500">OpenAI</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-gray-100">Temperature: 0.4</div>
+                                    <div class="text-xs text-gray-500">Max tokens: 2048</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <a href="#" class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300">Edit</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-6">
+                    <button class="btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                        Add New Configuration
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-8">
+            <div class="card-header">
+                <h2 class="text-xl font-semibold">Model Testing & Validation</h2>
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    Verify model performance
+                </div>
+            </div>
+            <div class="card-body">
+                <p class="text-gray-700 dark:text-gray-300 mb-6">
+                    Test your AI models with sample inputs to verify performance and output quality.
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-6 mb-6">
+                    <div class="col-span-1">
+                        <label for="test-model" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Model to Test</label>
+                        <select id="test-model" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                            <option>Fine-tuned Property Valuation</option>
+                            <option>GPT-4</option>
+                            <option>GPT-3.5 Turbo</option>
+                            <option>Claude 3 Opus</option>
+                            <option>Claude 3 Sonnet</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-span-1">
+                        <label for="test-feature" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Feature Context</label>
+                        <select id="test-feature" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                            <option>Property Valuation</option>
+                            <option>Market Analysis</option>
+                            <option>Comparables Finder</option>
+                            <option>Natural Language Search</option>
+                            <option>Investment Detector</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-span-1">
+                        <label for="test-temperature" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Temperature</label>
+                        <input type="range" id="test-temperature" min="0" max="1" step="0.1" value="0.2" class="block w-full">
+                        <div class="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>0.0 (Deterministic)</span>
+                            <span>1.0 (Creative)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label for="test-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Test Input</label>
+                    <textarea id="test-input" rows="4" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" placeholder="Enter property details or query to test the model...">3 bedroom, 2 bathroom single family home in Seattle, WA. 2,000 sq ft, built in 1985, fully renovated in 2020. Located in Green Lake neighborhood with good schools nearby. Similar properties in the area have sold for between $850,000 and $950,000 in the last 6 months.</textarea>
+                </div>
+                
+                <div class="flex justify-between mb-8">
+                    <button class="btn-outline">
+                        Load Sample Input
+                    </button>
+                    <button class="btn-primary">
+                        Run Test
+                    </button>
+                </div>
+                
+                <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                    <h3 class="font-medium mb-3">Test Results</h3>
+                    <div class="bg-white dark:bg-gray-900 p-4 rounded-lg border border-gray-200 dark:border-gray-700 mb-4 min-h-[150px]">
+                        <div class="text-gray-500 dark:text-gray-400 italic">
+                            Test results will appear here after running a test.
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 text-sm">
+                        <div>
+                            <span class="text-gray-500 dark:text-gray-400">Response Time:</span>
+                            <span class="font-medium ml-1">-</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500 dark:text-gray-400">Token Usage:</span>
+                            <span class="font-medium ml-1">-</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500 dark:text-gray-400">Cost:</span>
+                            <span class="font-medium ml-1">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Automation Rules Tab Content -->
+    <div class="tab-content hidden" id="automation-tab">
+        <div class="card mb-8">
+            <div class="card-header">
+                <h2 class="text-xl font-semibold">AI Automation Rules</h2>
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    Configure automated AI workflows
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg mb-6">
+                    <div class="flex items-start">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 dark:text-blue-400 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p class="text-sm text-blue-700 dark:text-blue-300">
+                            Automation rules allow you to configure conditions that trigger AI actions. For example, automatically running property valuations when new properties are added to the system.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="space-y-6 mb-8">
+                    <!-- Rule 1 -->
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="font-semibold">New Property Auto-Valuation</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Automatically runs property valuation when new properties are added</p>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="status-badge status-active mr-3">Active</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 text-sm mb-4">
+                            <div>
+                                <span class="text-gray-500 dark:text-gray-400">Trigger:</span>
+                                <span class="ml-1">New Property Added</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500 dark:text-gray-400">Action:</span>
+                                <span class="ml-1">Run Property Valuation</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500 dark:text-gray-400">Model:</span>
+                                <span class="ml-1">Fine-tuned Property Valuation</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500 dark:text-gray-400">Execution:</span>
+                                <span class="ml-1">Immediate</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-end space-x-3">
+                            <button class="btn-outline btn-sm">
+                                Edit Rule
+                            </button>
+                            <button class="btn-outline btn-sm text-red-600 border-red-600 hover:bg-red-50">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Rule 2 -->
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="font-semibold">Weekly Market Analysis</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Generates market analysis reports every Monday</p>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="status-badge status-active mr-3">Active</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 text-sm mb-4">
+                            <div>
+                                <span class="text-gray-500 dark:text-gray-400">Trigger:</span>
+                                <span class="ml-1">Schedule (Weekly, Monday 6am)</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500 dark:text-gray-400">Action:</span>
+                                <span class="ml-1">Generate Market Analysis</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500 dark:text-gray-400">Model:</span>
+                                <span class="ml-1">Claude 3 Opus</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500 dark:text-gray-400">Markets:</span>
+                                <span class="ml-1">Seattle, Portland, San Francisco</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-end space-x-3">
+                            <button class="btn-outline btn-sm">
+                                Edit Rule
+                            </button>
+                            <button class="btn-outline btn-sm text-red-600 border-red-600 hover:bg-red-50">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Rule 3 -->
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="font-semibold">Price Drop Alert Analysis</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Analyzes investment potential when price drops are detected</p>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="status-badge status-inactive mr-3">Inactive</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 text-sm mb-4">
+                            <div>
+                                <span class="text-gray-500 dark:text-gray-400">Trigger:</span>
+                                <span class="ml-1">Price Drop (>5%)</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500 dark:text-gray-400">Action:</span>
+                                <span class="ml-1">Run Investment Analysis</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500 dark:text-gray-400">Model:</span>
+                                <span class="ml-1">GPT-4</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500 dark:text-gray-400">Notification:</span>
+                                <span class="ml-1">Email if ROI > 12%</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-end space-x-3">
+                            <button class="btn-outline btn-sm">
+                                Edit Rule
+                            </button>
+                            <button class="btn-outline btn-sm text-red-600 border-red-600 hover:bg-red-50">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-between">
+                    <button class="btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                        Create New Rule
+                    </button>
+                    <button class="btn-outline">
+                        View Execution History
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-8">
+            <div class="card-header">
+                <h2 class="text-xl font-semibold">AI Workflow Templates</h2>
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    Pre-configured automation templates
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+                        <div class="h-12 w-12 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                        </div>
+                        <h3 class="font-semibold text-lg mb-1">Market Intelligence Suite</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">
+                            Complete set of scheduled reports including price trends, inventory analysis, and market forecasting.
+                        </p>
+                        <button class="btn-outline w-full">
+                            Use Template
+                        </button>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+                        <div class="h-12 w-12 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                        </div>
+                        <h3 class="font-semibold text-lg mb-1">Investment Opportunity System</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">
+                            Automated detection and analysis of investment opportunities based on multiple triggers.
+                        </p>
+                        <button class="btn-outline w-full">
+                            Use Template
+                        </button>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+                        <div class="h-12 w-12 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                        </div>
+                        <h3 class="font-semibold text-lg mb-1">Property Listing Enhancer</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">
+                            Automatically enhances property listings with AI-generated descriptions and analytics.
+                        </p>
+                        <button class="btn-outline w-full">
+                            Use Template
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- API Settings Tab Content -->
+    <div class="tab-content hidden" id="api-tab">
+        <div class="card mb-8">
+            <div class="card-header">
+                <h2 class="text-xl font-semibold">API Settings</h2>
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    Configure API access and usage
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium mb-3">Your API Keys</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead class="bg-gray-50 dark:bg-gray-800">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Key Name</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">API Key</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Created</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Last Used</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">Production Key</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <span class="text-sm font-mono text-gray-500">•••••••••••••••••••••</span>
+                                            <button class="text-gray-400 hover:text-gray-600 ml-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900 dark:text-gray-100">2025-01-15</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900 dark:text-gray-100">2025-05-12</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                                            Active
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <div class="flex justify-end space-x-3">
+                                            <button class="text-gray-500 hover:text-gray-700">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                                </svg>
+                                            </button>
+                                            <button class="text-red-500 hover:text-red-700">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">Development Key</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <span class="text-sm font-mono text-gray-500">•••••••••••••••••••••</span>
+                                            <button class="text-gray-400 hover:text-gray-600 ml-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900 dark:text-gray-100">2025-03-22</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900 dark:text-gray-100">2025-04-30</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                                            Active
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <div class="flex justify-end space-x-3">
+                                            <button class="text-gray-500 hover:text-gray-700">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                                </svg>
+                                            </button>
+                                            <button class="text-red-500 hover:text-red-700">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-4 flex justify-end">
+                        <button class="btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                            </svg>
+                            Generate New API Key
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="mb-8">
+                    <h3 class="text-lg font-medium mb-3">API Access Control</h3>
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-4">
+                        <div class="mb-4">
+                            <label for="allow-origins" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Allowed Origins</label>
+                            <input type="text" id="allow-origins" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" value="https://example.com, https://app.example.com">
+                            <p class="mt-1 text-xs text-gray-500">Comma-separated list of allowed origins for CORS</p>
+                        </div>
+                        <div class="mb-4">
+                            <label for="rate-limit" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rate Limiting</label>
+                            <div class="flex space-x-3">
+                                <input type="number" id="rate-limit" class="block w-24 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" value="100">
+                                <select class="block rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                    <option>per minute</option>
+                                    <option>per hour</option>
+                                    <option selected>per day</option>
+                                </select>
+                            </div>
+                            <p class="mt-1 text-xs text-gray-500">Maximum number of API calls allowed</p>
+                        </div>
+                        <div class="flex items-center mb-4">
+                            <input id="require-auth" name="require-auth" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" checked>
+                            <label for="require-auth" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                                Require authentication for all API endpoints
+                            </label>
+                        </div>
+                        <div class="flex items-center">
+                            <input id="log-requests" name="log-requests" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" checked>
+                            <label for="log-requests" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                                Log all API requests for monitoring
+                            </label>
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button class="btn-primary">
+                            Save Access Settings
+                        </button>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-medium mb-3">API Documentation</h3>
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                        <p class="text-gray-700 dark:text-gray-300 mb-4">
+                            Comprehensive documentation for integrating with our AI services and accessing property data.
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <a href="#" class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                                <div class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 dark:text-blue-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    <span class="font-medium">API Reference</span>
+                                </div>
+                            </a>
+                            <a href="#" class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                                <div class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600 dark:text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                    </svg>
+                                    <span class="font-medium">Guides & Tutorials</span>
+                                </div>
+                            </a>
+                            <a href="#" class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                                <div class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-600 dark:text-purple-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                                    </svg>
+                                    <span class="font-medium">SDK Downloads</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Navigation Links -->
+    <div class="flex justify-between">
+        <a href="{{ url_for('ai_advanced_analytics') }}" class="btn-outline flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+            </svg>
+            Advanced Analytics
+        </a>
+        <a href="{{ url_for('monitoring_dashboard') }}" class="btn-outline flex items-center">
+            Monitoring Dashboard
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tab switching functionality
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.getAttribute('data-tab');
+                
+                // Update active tab
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Show relevant content
+                tabContents.forEach(content => {
+                    content.classList.add('hidden');
+                    if (content.id === tabName + '-tab') {
+                        content.classList.remove('hidden');
+                    }
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

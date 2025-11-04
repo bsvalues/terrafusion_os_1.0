@@ -1,0 +1,14 @@
+{
+    "set": [
+        "aggregate",
+        "count",
+        "inside",
+        "overlap",
+        "overlay",
+        "polygon",
+        "simplify",
+        "sum",
+        "summary",
+        "visualize"
+    ]
+}

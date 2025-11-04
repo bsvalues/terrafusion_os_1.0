@@ -1,0 +1,5 @@
+GRANT CONNECT TO [COUNTY\davido];
+
+
+GO
+

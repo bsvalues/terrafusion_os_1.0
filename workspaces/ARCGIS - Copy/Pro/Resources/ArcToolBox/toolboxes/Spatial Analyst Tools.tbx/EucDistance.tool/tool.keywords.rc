@@ -1,0 +1,12 @@
+{
+    "set": [
+        "crow",
+        "distance",
+        "eucdistance",
+        "proximity",
+        "source",
+        "spread",
+        "straight line",
+        "travel cost"
+    ]
+}

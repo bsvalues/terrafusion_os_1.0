@@ -1,0 +1,11 @@
+{
+    "set": [
+        "convert",
+        "delaunay",
+        "edge",
+        "edit",
+        "tin",
+        "triangle",
+        "triangulated irregular network"
+    ]
+}

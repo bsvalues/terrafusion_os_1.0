@@ -1,0 +1,164 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ServiceTests</name>
+    </assembly>
+    <members>
+        <member name="T:ServiceTests.Program">
+            <summary>
+            Main class
+            </summary>
+        </member>
+        <member name="M:ServiceTests.Program.Main(System.String[])">
+            <summary>
+            Console propgram to test against a 
+            running Workflow service
+            </summary>
+            <param name="args"></param>
+        </member>
+        <member name="T:ServiceTests.TextColorClass">
+            <summary>
+            Class that is used to 
+            change the Console output 
+            text color, for eg. red for errors
+            Reference: http://support.microsoft.com/kb/319883
+            </summary>
+        </member>
+        <member name="T:ServiceTests.TestServices">
+            <summary>
+            Class that holds all
+            Test methods
+            </summary>
+        </member>
+        <member name="M:ServiceTests.TestServices.CreateTaskData1">
+            <summary>
+            Creates a new test task
+            not needed once data can be read infrom a XML file
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ServiceTests.TestServices.CreatePACSDataFromExportedCSV">
+            <summary>
+            Import PACS like data
+            from CSV files
+            The CSV files could be exported
+            from PACS DB directly
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ServiceTests.TestServices.TestPACSService">
+            <summary>
+            Method to test dummy data
+            retrieval from PACS Service
+            </summary>
+            <returns>true or false</returns>
+        </member>
+        <member name="M:ServiceTests.TestServices.TestTaskService">
+            <summary>
+            Tests the existence of the Task Service
+            and iterates through all the available methods,
+            and displays their name - to be modified to 
+            make a basic call on each of these
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ServiceTests.TestServices.CreateUserFromXMLFile(System.Xml.XmlTextReader,ServiceTests.SecurityServiceReference.SecurityServiceClient,ServiceTests.TaskServiceReference.TaskServiceClient)">
+            <summary>
+            Create Task Type data using the Task and Security Services
+            will not throw or return error, the caller
+            should handle the exception for detailed reporting
+            </summary>
+            <param name="reader">XML reader for the input file</param>
+            <param name="securityService"></param>
+            <param name="taskService"></param>
+        </member>
+        <member name="M:ServiceTests.TestServices.CreateStatusFromXMLFile(System.Xml.XmlTextReader,ServiceTests.TaskServiceReference.TaskServiceClient)">
+            <summary>
+            Create Task Status data using the Task Service
+            will not throw or return error, the caller
+            should handle the exception for detailed reporting
+            </summary>
+            <param name="reader">XML reader for the input file</param>
+            <param name="taskService"></param>
+        </member>
+        <member name="M:ServiceTests.TestServices.CreatePriorityFromXMLFile(System.Xml.XmlTextReader,ServiceTests.TaskServiceReference.TaskServiceClient)">
+            <summary>
+            Create Task Priority data using the Task Service
+            will not throw or return error, the caller
+            should handle the exception for detailed reporting
+            </summary>
+            <param name="reader">XML reader for the input file</param>
+            <param name="taskService"></param>
+        </member>
+        <member name="M:ServiceTests.TestServices.GetKeyFieldFromXMLFile(System.Xml.XmlTextReader,System.String@,System.String@)">
+            <summary>
+            Gets KeyFields data 
+            </summary>
+            <param name="reader">XML reader for the input file</param>
+            <param name="taskService"></param>
+        </member>
+        <member name="M:ServiceTests.TestServices.CreateDataRecordDefinitionFromXMLFile(System.Xml.XmlTextReader,ServiceTests.TaskServiceReference.TaskServiceClient)">
+            <summary>
+            Create Data Record Definition data using the Task Service
+            will not throw or return error, the caller
+            should handle the exception for detailed reporting
+            </summary>
+            <param name="reader">XML reader for the input file</param>
+            <param name="taskService"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ServiceTests.TestServices.CreateTaskTypeFromXMLFile(System.Xml.XmlTextReader,ServiceTests.TaskServiceReference.TaskServiceClient)">
+            <summary>
+            Create Task Type data using the Task Service
+            will not throw or return error, the caller
+            should handle the exception for detailed reporting
+            </summary>
+            <param name="reader">XML reader for the input file</param>
+            <param name="taskService"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ServiceTests.TestServices.CreateTaskStepFromXMLFile(System.Xml.XmlTextReader,ServiceTests.TaskServiceReference.TaskServiceClient)">
+            <summary>
+            Create Task Step data using the Task Service
+            will not throw or return error, the caller
+            should handle the exception for detailed reporting
+            </summary>
+            <param name="reader">XML reader for the input file</param>
+            <param name="taskService"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ServiceTests.TestServices.CreateCategoryFromXMLFile(System.Xml.XmlTextReader,ServiceTests.TaskServiceReference.TaskServiceClient)">
+            <summary>
+            Create Task Category data using the Task Service
+            will not throw or return error, the caller
+            should handle the exception for detailed reporting
+            </summary>
+            <param name="reader">XML reader for the input file</param>
+            <param name="taskService"></param>
+        </member>
+        <member name="M:ServiceTests.TestServices.CreateQueueFromXMLFile(System.Xml.XmlTextReader,ServiceTests.TaskServiceReference.TaskServiceClient)">
+            <summary>
+            Create Task Queue data using the Task Service
+            will not throw or return error, the caller
+            should handle the exception for detailed reporting
+            </summary>
+            <param name="reader">XML reader for the input file</param>
+            <param name="taskService"></param>
+        </member>
+        <member name="M:ServiceTests.TestServices.GenerateDataFromXMLFiles(System.String)">
+            <summary>
+            This reads data from an XML file
+            and calls appropriate Services
+            to generate the data
+            </summary>
+            <param name="dataXMLFile">XML file from which data will be read in</param>
+            <returns>true or false indicating success or failure</returns>
+        </member>
+        <member name="M:ServiceTests.TestServices.Test_TaskQueueUsersGroups">
+            <summary>
+            Creates Task Queue user and group
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

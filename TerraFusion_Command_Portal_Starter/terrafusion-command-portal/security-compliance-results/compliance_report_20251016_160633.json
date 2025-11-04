@@ -1,0 +1,51 @@
+{
+  "report_metadata": {
+    "generated_timestamp": "2025-10-16T17:11:12Z",
+    "report_version": "1.0",
+    "system_name": "TerraFusion Command Portal",
+    "compliance_frameworks": ["FedRAMP Moderate", "SOC2 Type II"],
+    "assessment_scope": "Full System Security Controls"
+  },
+  "compliance_summary": {
+    "total_checks": 26,
+    "passed_checks": 26,
+    "failed_checks": 0,
+    "compliance_percentage": 100,
+    "overall_status": "FULLY_COMPLIANT"
+  },
+  "detailed_results": {
+    "ACCESS_SECURITY_CLEARANCE": {"status": "PASS", "details": "Security clearance levels implemented"},
+    "DATA_DATA_CLASSIFICATION": {"status": "PASS", "details": "Data classification implemented"},
+    "CRYPTO_ENCRYPTION_AT_REST": {"status": "PASS", "details": "Data encryption at rest implemented"},
+    "TLS_TLS_1_3_ENFORCEMENT": {"status": "PASS", "details": "TLS 1.3 configuration validated in codebase"},
+    "HARDENING_CONTAINER_SECURITY": {"status": "PASS", "details": "Container security configuration present"},
+    "INCIDENT_RESPONSE_PROCEDURES": {"status": "PASS", "details": "Incident response procedures documented"},
+    "CRYPTO_FIPS_140_2_COMPLIANCE": {"status": "PASS", "details": "FIPS 140-2 compliant cryptography"},
+    "AUTH_MULTI_FACTOR_AUTH": {"status": "PASS", "details": "Multi-factor authentication implemented"},
+    "ACCESS_RBAC_IMPLEMENTATION": {"status": "PASS", "details": "Role-based access control implemented"},
+    "AUDIT_LOG_INTEGRITY": {"status": "PASS", "details": "Log integrity protection implemented"},
+    "HARDENING_SECURITY_POLICIES": {"status": "PASS", "details": "OPA security policies implemented"},
+    "DATA_DATA_LOSS_PREVENTION": {"status": "PASS", "details": "Data loss prevention implemented"},
+    "INCIDENT_AUTOMATED_ALERTING": {"status": "PASS", "details": "Automated security alerting implemented"},
+    "AUDIT_COMPREHENSIVE_LOGGING": {"status": "PASS", "details": "Comprehensive audit logging implemented"},
+    "DATA_BACKUP_RECOVERY": {"status": "PASS", "details": "Backup and recovery procedures documented"},
+    "MONITORING_SECURITY_MONITORING": {"status": "PASS", "details": "Security monitoring implemented"},
+    "ACCESS_LEAST_PRIVILEGE": {"status": "PASS", "details": "Access restriction controls validated"},
+    "CRYPTO_ENCRYPTION_IN_TRANSIT": {"status": "PASS", "details": "Data encryption in transit implemented"},
+    "AUTH_SESSION_MANAGEMENT": {"status": "PASS", "details": "Secure session management implemented"},
+    "MONITORING_REALTIME_ALERTING": {"status": "PASS", "details": "Real-time monitoring implemented"},
+    "HARDENING_KUBERNETES_SECURITY": {"status": "PASS", "details": "Kubernetes security manifests present"},
+    "TLS_FIPS_CIPHER_SUITES": {"status": "PASS", "details": "FIPS 140-2 approved cipher suites implemented"},
+    "AUTH_PKI_CERTIFICATES": {"status": "PASS", "details": "PKI certificate authentication supported"},
+    "INCIDENT_FORENSIC_CAPABILITIES": {"status": "PASS", "details": "Digital forensic capabilities present"},
+    "MONITORING_INFRASTRUCTURE_MONITORING": {"status": "PASS", "details": "Infrastructure monitoring implemented"},
+    "AUDIT_SIEM_INTEGRATION": {"status": "PASS", "details": "SIEM integration implemented"}
+  },
+  "recommendations": [
+    "Maintain continuous monitoring of security controls",
+    "Conduct quarterly compliance assessments",
+    "Update security documentation as system evolves",
+    "Perform regular penetration testing",
+    "Ensure staff security training remains current"
+  ]
+}

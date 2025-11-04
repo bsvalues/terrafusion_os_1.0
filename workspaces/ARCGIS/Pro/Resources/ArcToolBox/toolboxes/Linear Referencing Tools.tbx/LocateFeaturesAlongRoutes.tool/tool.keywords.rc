@@ -1,0 +1,25 @@
+{
+    "set": [
+        "create",
+        "detect",
+        "discover",
+        "event",
+        "events",
+        "find",
+        "linear referencing",
+        "locate features",
+        "locate features along routes",
+        "locate lines along routes",
+        "locate points along routes",
+        "locate polygons along routes",
+        "pinpoint",
+        "place",
+        "position",
+        "put",
+        "route",
+        "route events",
+        "set",
+        "situate",
+        "trace"
+    ]
+}

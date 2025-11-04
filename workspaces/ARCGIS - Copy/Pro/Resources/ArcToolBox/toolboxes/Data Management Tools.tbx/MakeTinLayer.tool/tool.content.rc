@@ -1,0 +1,10 @@
+{
+    "map": {
+        "description": "Creates a triangulated irregular network (TIN) layer from an input TIN dataset or layer file. The layer that is created by the tool is temporary and will not persist after the session ends unless the layer is saved to disk or the map document is saved.",
+        "in_tin.descr": "The input TIN dataset or layer from which the new layer will be created.",
+        "in_tin.title": "Input TIN",
+        "out_layer.descr": "The name of the TIN layer to be created. The output layer can be used as an input to any geoprocessing tool that accepts a TIN layer as input.",
+        "out_layer.title": "Output TIN Layer",
+        "title": "Make TIN Layer"
+    }
+}

@@ -1,0 +1,512 @@
+{% extends "unified_base.html" %}
+
+{% from "components/ui_components.html" import card, chart_container, icon_button, tabs %}
+{% from "components/data_components.html" import api_performance_card %}
+
+{% block title %}API Monitoring - TerraMiner{% endblock %}
+
+{% block page_title %}API Monitoring{% endblock %}
+
+{% block page_actions %}
+<div class="btn-group">
+    <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-filter me-1"></i>
+        Filter
+    </button>
+    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+        <li><a class="dropdown-item" href="#" data-filter="all">All Endpoints</a></li>
+        <li><a class="dropdown-item" href="#" data-filter="error">Error Rate > 0%</a></li>
+        <li><a class="dropdown-item" href="#" data-filter="slow">Slow Response (> 500ms)</a></li>
+        <li><a class="dropdown-item" href="#" data-filter="high-traffic">High Traffic (> 100 req/min)</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="#" data-filter="etl">ETL API</a></li>
+        <li><a class="dropdown-item" href="#" data-filter="data">Data API</a></li>
+        <li><a class="dropdown-item" href="#" data-filter="zillow">Zillow API</a></li>
+    </ul>
+</div>
+<div class="btn-group ms-2">
+    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-calendar3 me-1"></i>
+        Time Range
+    </button>
+    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+        <li><a class="dropdown-item active" href="#" data-range="1h">Last Hour</a></li>
+        <li><a class="dropdown-item" href="#" data-range="6h">Last 6 Hours</a></li>
+        <li><a class="dropdown-item" href="#" data-range="24h">Last 24 Hours</a></li>
+        <li><a class="dropdown-item" href="#" data-range="7d">Last 7 Days</a></li>
+        <li><a class="dropdown-item" href="#" data-range="30d">Last 30 Days</a></li>
+    </ul>
+</div>
+<button type="button" class="btn btn-primary ms-2" id="refreshAPIData">
+    <i class="bi bi-arrow-clockwise me-1"></i>
+    Refresh
+</button>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6 col-lg-3 mb-3 mb-lg-0">
+        <div class="card bg-dark border-secondary text-center h-100">
+            <div class="card-body">
+                <h6 class="text-muted mb-1">Total Requests</h6>
+                <h2 class="mb-0">{{ api_summary.total_requests|default('0') }}</h2>
+                <div class="text-success small mt-2">
+                    <i class="bi bi-arrow-up-short"></i>
+                    {{ api_summary.request_increase|default('0') }}% vs yesterday
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-3 mb-lg-0">
+        <div class="card bg-dark border-secondary text-center h-100">
+            <div class="card-body">
+                <h6 class="text-muted mb-1">Avg Response Time</h6>
+                <h2 class="mb-0">{{ api_summary.avg_response_time|default('0') }}ms</h2>
+                <div class="text-success small mt-2">
+                    <i class="bi bi-arrow-down-short"></i>
+                    {{ api_summary.response_time_decrease|default('0') }}% vs yesterday
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-3 mb-lg-0">
+        <div class="card bg-dark border-secondary text-center h-100">
+            <div class="card-body">
+                <h6 class="text-muted mb-1">Error Rate</h6>
+                <h2 class="mb-0">{{ api_summary.error_rate|default('0') }}%</h2>
+                <div class="text-danger small mt-2">
+                    <i class="bi bi-arrow-up-short"></i>
+                    {{ api_summary.error_rate_increase|default('0') }}% vs yesterday
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card bg-dark border-secondary text-center h-100">
+            <div class="card-body">
+                <h6 class="text-muted mb-1">Active Endpoints</h6>
+                <h2 class="mb-0">{{ api_summary.active_endpoints|default('0') }}</h2>
+                <div class="text-muted small mt-2">
+                    <i class="bi bi-dash"></i>
+                    No change
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        {% call card(title="API Traffic Overview", subtitle="Requests per minute") %}
+            {{ chart_container(id="apiTrafficChart", height="300px", loading=true) }}
+        {% endcall %}
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        {% call card(title="Response Time Distribution", subtitle="Response time percentiles") %}
+            {{ chart_container(id="responseTimeChart", height="300px", loading=true) }}
+        {% endcall %}
+    </div>
+    <div class="col-md-6">
+        {% call card(title="Error Rate Trends", subtitle="Errors over time") %}
+            {{ chart_container(id="errorRateChart", height="300px", loading=true) }}
+        {% endcall %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        {% call card(title="API Endpoint Performance", subtitle="Top 10 endpoints by traffic") %}
+            <div class="table-responsive">
+                <table class="table table-sm table-dark" id="apiEndpointTable">
+                    <thead>
+                        <tr>
+                            <th>Endpoint</th>
+                            <th>Method</th>
+                            <th>Requests</th>
+                            <th>Avg. Time</th>
+                            <th>Error Rate</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for endpoint in api_endpoints %}
+                            <tr>
+                                <td>{{ endpoint.path }}</td>
+                                <td>
+                                    <span class="badge 
+                                        {% if endpoint.method == 'GET' %}text-bg-success{% 
+                                        elif endpoint.method == 'POST' %}text-bg-primary{% 
+                                        elif endpoint.method == 'PUT' %}text-bg-warning{% 
+                                        elif endpoint.method == 'DELETE' %}text-bg-danger{% 
+                                        else %}text-bg-secondary{% endif %}">
+                                        {{ endpoint.method }}
+                                    </span>
+                                </td>
+                                <td>{{ endpoint.requests }}</td>
+                                <td>{{ endpoint.avg_time }}ms</td>
+                                <td>{{ endpoint.error_rate }}%</td>
+                                <td>
+                                    {% if endpoint.status == 'healthy' %}
+                                        <span class="badge text-bg-success">Healthy</span>
+                                    {% elif endpoint.status == 'degraded' %}
+                                        <span class="badge text-bg-warning">Degraded</span>
+                                    {% elif endpoint.status == 'error' %}
+                                        <span class="badge text-bg-danger">Error</span>
+                                    {% else %}
+                                        <span class="badge text-bg-secondary">Unknown</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-outline-primary view-details-btn" data-endpoint-id="{{ endpoint.id }}">
+                                        <i class="bi bi-bar-chart me-1"></i>
+                                        Details
+                                    </button>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <i class="bi bi-lightning text-muted d-block mb-2" style="font-size: 2rem;"></i>
+                                    <p class="mb-0 text-muted">No API endpoints data available.</p>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endcall %}
+    </div>
+</div>
+
+<!-- Endpoint Details Modal -->
+<div class="modal fade" id="endpointDetailsModal" tabindex="-1" aria-labelledby="endpointDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark text-light border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title" id="endpointDetailsModalLabel">API Endpoint Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="endpoint-info mb-4">
+                    <h4 class="endpoint-path mb-2"></h4>
+                    <div class="endpoint-meta d-flex flex-wrap gap-3">
+                        <span class="badge endpoint-method"></span>
+                        <span class="text-muted">Category: <span class="endpoint-category">ETL API</span></span>
+                        <span class="text-muted">Last Called: <span class="endpoint-last-called">10 minutes ago</span></span>
+                    </div>
+                </div>
+                
+                <!-- Endpoint Performance Tabs -->
+                <ul class="nav nav-tabs" id="endpointTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview-tab-pane" type="button" role="tab" aria-controls="overview-tab-pane" aria-selected="true">
+                            Overview
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="response-time-tab" data-bs-toggle="tab" data-bs-target="#response-time-tab-pane" type="button" role="tab" aria-controls="response-time-tab-pane" aria-selected="false">
+                            Response Time
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="errors-tab" data-bs-toggle="tab" data-bs-target="#errors-tab-pane" type="button" role="tab" aria-controls="errors-tab-pane" aria-selected="false">
+                            Errors
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="usage-tab" data-bs-toggle="tab" data-bs-target="#usage-tab-pane" type="button" role="tab" aria-controls="usage-tab-pane" aria-selected="false">
+                            Usage
+                        </button>
+                    </li>
+                </ul>
+                <div class="tab-content pt-3" id="endpointTabsContent">
+                    <div class="tab-pane fade show active" id="overview-tab-pane" role="tabpanel" aria-labelledby="overview-tab" tabindex="0">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="p-3 border border-secondary rounded mb-3">
+                                    <div class="text-muted small mb-1">Recent Trend</div>
+                                    <div class="endpoint-trend-chart" style="height: 150px;">
+                                        <canvas id="endpointTrendChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-3 border border-secondary rounded mb-3">
+                                    <div class="text-muted small mb-1">Performance Stats</div>
+                                    <table class="table table-sm table-dark mb-0">
+                                        <tr>
+                                            <td>Avg. Response Time</td>
+                                            <td class="endpoint-avg-time text-end">95ms</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Min Response Time</td>
+                                            <td class="endpoint-min-time text-end">45ms</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Max Response Time</td>
+                                            <td class="endpoint-max-time text-end">350ms</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Error Rate</td>
+                                            <td class="endpoint-error-rate text-end">0.5%</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="response-time-tab-pane" role="tabpanel" aria-labelledby="response-time-tab" tabindex="0">
+                        <div style="height: 300px;">
+                            <canvas id="responseTimeDetailChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="errors-tab-pane" role="tabpanel" aria-labelledby="errors-tab" tabindex="0">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-dark">
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Error Code</th>
+                                        <th>Message</th>
+                                        <th>Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="endpointErrorsTable">
+                                    <!-- Error data will be inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="usage-tab-pane" role="tabpanel" aria-labelledby="usage-tab" tabindex="0">
+                        <div style="height: 300px;">
+                            <canvas id="usageDetailChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary endpoint-analyze-btn">
+                    <i class="bi bi-graph-up me-1"></i>
+                    Analyze Endpoint
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize charts
+    const apiTrafficChart = createChart('apiTrafficChart', 'line', {
+        labels: ['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00'],
+        datasets: [
+            {
+                label: 'GET Requests',
+                data: [120, 150, 170, 250, 300, 320, 280, 240],
+                borderWidth: 2,
+                tension: 0.3
+            },
+            {
+                label: 'POST Requests',
+                data: [40, 50, 70, 90, 100, 120, 90, 70],
+                borderWidth: 2,
+                tension: 0.3
+            },
+            {
+                label: 'Other Requests',
+                data: [20, 25, 30, 45, 50, 40, 35, 25],
+                borderWidth: 2,
+                tension: 0.3
+            }
+        ]
+    });
+    
+    const responseTimeChart = createChart('responseTimeChart', 'bar', {
+        labels: ['p50', 'p90', 'p95', 'p99', 'Max'],
+        datasets: [
+            {
+                label: 'Response Time (ms)',
+                data: [85, 150, 180, 250, 450],
+                backgroundColor: [
+                    'rgba(0, 191, 179, 0.8)',    // Teal for p50
+                    'rgba(0, 191, 179, 0.8)',    // Teal for p90
+                    'rgba(255, 193, 7, 0.8)',    // Warning for p95
+                    'rgba(220, 53, 69, 0.8)',    // Danger for p99
+                    'rgba(220, 53, 69, 0.8)'     // Danger for Max
+                ]
+            }
+        ]
+    });
+    
+    const errorRateChart = createChart('errorRateChart', 'line', {
+        labels: ['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00'],
+        datasets: [
+            {
+                label: '4xx Errors',
+                data: [1.2, 1.4, 1.5, 1.8, 1.7, 1.9, 2.1, 1.8],
+                borderWidth: 2,
+                tension: 0.3
+            },
+            {
+                label: '5xx Errors',
+                data: [0.5, 0.6, 0.3, 0.4, 0.7, 0.5, 0.4, 0.3],
+                borderWidth: 2,
+                tension: 0.3
+            }
+        ]
+    });
+    
+    // Hide loading overlays
+    setTimeout(() => {
+        document.querySelectorAll('.chart-container').forEach(container => {
+            const loading = container.querySelector('.chart-loading');
+            if (loading) loading.style.display = 'none';
+        });
+    }, 1000);
+    
+    // Refresh button handler
+    document.getElementById('refreshAPIData').addEventListener('click', function() {
+        document.querySelectorAll('.chart-container').forEach(container => {
+            const chartId = container.querySelector('canvas').id;
+            showLoading(chartId, 'Refreshing data...');
+        });
+        
+        // Simulate API call
+        setTimeout(() => {
+            // Update charts with new random data
+            apiTrafficChart.data.datasets.forEach(dataset => {
+                dataset.data = dataset.data.map(() => Math.floor(Math.random() * 200) + 50);
+            });
+            apiTrafficChart.update();
+            
+            responseTimeChart.data.datasets[0].data = [
+                Math.floor(Math.random() * 50) + 50,  // p50
+                Math.floor(Math.random() * 50) + 120, // p90
+                Math.floor(Math.random() * 50) + 150, // p95
+                Math.floor(Math.random() * 100) + 200, // p99
+                Math.floor(Math.random() * 200) + 350  // Max
+            ];
+            responseTimeChart.update();
+            
+            errorRateChart.data.datasets.forEach(dataset => {
+                dataset.data = dataset.data.map(() => (Math.random() * 2).toFixed(1));
+            });
+            errorRateChart.update();
+            
+            // Hide loading states
+            document.querySelectorAll('.chart-container').forEach(container => {
+                const chartId = container.querySelector('canvas').id;
+                hideLoading(chartId);
+            });
+            
+            // Show success message
+            showToast('API monitoring data refreshed successfully', 'success', {
+                duration: 3000
+            });
+        }, 1500);
+    });
+    
+    // Endpoint details modal handling
+    const detailsModal = new bootstrap.Modal(document.getElementById('endpointDetailsModal'));
+    const endpointTrendChart = createChart('endpointTrendChart', 'line', {
+        labels: ['1h ago', '45m ago', '30m ago', '15m ago', 'Now'],
+        datasets: [
+            {
+                label: 'Requests/min',
+                data: [10, 12, 15, 14, 18],
+                borderWidth: 2,
+                tension: 0.3
+            }
+        ]
+    }, {
+        plugins: {
+            legend: { display: false }
+        }
+    });
+    
+    document.querySelectorAll('.view-details-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const endpointId = this.getAttribute('data-endpoint-id');
+            // In a real app, you would fetch detailed data for this endpoint
+            
+            // For demo, just show the modal with some data
+            document.querySelector('.endpoint-path').textContent = this.closest('tr').querySelector('td:first-child').textContent;
+            
+            const methodBadge = this.closest('tr').querySelector('td:nth-child(2) .badge').cloneNode(true);
+            document.querySelector('.endpoint-method').className = methodBadge.className;
+            document.querySelector('.endpoint-method').textContent = methodBadge.textContent;
+            
+            document.querySelector('.endpoint-avg-time').textContent = this.closest('tr').querySelector('td:nth-child(4)').textContent;
+            document.querySelector('.endpoint-error-rate').textContent = this.closest('tr').querySelector('td:nth-child(5)').textContent;
+            
+            // Initialize the other charts in the modal
+            createChart('responseTimeDetailChart', 'line', {
+                labels: ['24h ago', '18h ago', '12h ago', '6h ago', 'Now'],
+                datasets: [
+                    {
+                        label: 'Avg Response Time',
+                        data: [85, 92, 88, 95, 90],
+                        borderWidth: 2,
+                        tension: 0.3
+                    },
+                    {
+                        label: 'p95 Response Time',
+                        data: [150, 165, 155, 170, 165],
+                        borderWidth: 2,
+                        tension: 0.3
+                    }
+                ]
+            });
+            
+            createChart('usageDetailChart', 'bar', {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [
+                    {
+                        label: 'Requests',
+                        data: [1200, 1350, 1450, 1400, 1500, 900, 850],
+                        backgroundColor: 'rgba(0, 191, 179, 0.8)'
+                    }
+                ]
+            });
+            
+            // Populate errors table
+            document.getElementById('endpointErrorsTable').innerHTML = `
+                <tr>
+                    <td>2025-04-30 01:15:22</td>
+                    <td>404</td>
+                    <td>Resource not found</td>
+                    <td>3</td>
+                </tr>
+                <tr>
+                    <td>2025-04-30 00:48:15</td>
+                    <td>400</td>
+                    <td>Bad request parameter</td>
+                    <td>2</td>
+                </tr>
+                <tr>
+                    <td>2025-04-29 22:32:05</td>
+                    <td>500</td>
+                    <td>Internal server error</td>
+                    <td>1</td>
+                </tr>
+            `;
+            
+            // Show the modal
+            detailsModal.show();
+        });
+    });
+    
+    // Initialize endpoint analyze button
+    document.querySelector('.endpoint-analyze-btn').addEventListener('click', function() {
+        showToast('Endpoint analysis started. This may take a few minutes.', 'info');
+    });
+});
+</script>
+{% endblock %}

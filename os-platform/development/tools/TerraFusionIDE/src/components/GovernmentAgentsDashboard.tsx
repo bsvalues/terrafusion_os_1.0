@@ -1,26 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { Shield,
-  FileText,
-  Database,
-  Globe,
-  DollarSign,
-  Map,
-  Archive,
-  Settings,
-  Play,
-  CheckCircle,
-  AlertCircle,
-  Clock,
-  Activity,
-  TrendingUp,
-  Users,
-  Target,
-  BarChart3
- } from 'lucide-react';
-import GovernmentSpecializedAgents, { 
-  GovernmentAgent, 
-  ComplianceTask, 
-  GovernmentAgentCapability 
+import {
+    Activity,
+    AlertCircle,
+    Archive,
+    BarChart3,
+    CheckCircle,
+    Database,
+    DollarSign,
+    FileText,
+    Globe,
+    Map,
+    Play,
+    Shield,
+    Target,
+    Users
+} from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import GovernmentSpecializedAgents, {
+    ComplianceTask,
+    GovernmentAgent
 } from '../core/GovernmentSpecializedAgents';
 
 interface GovernmentAgentsDashboardProps {
@@ -330,7 +327,7 @@ value="critical">Critical</option>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Requirements</label>
-                  {newTask.requirements.map((req /* , index */) => (
+                  {newTask.requirements.map((req, index) => (
                     <div key={index} className="flex gap-2 mb-2">
                       <input
                         type="text"

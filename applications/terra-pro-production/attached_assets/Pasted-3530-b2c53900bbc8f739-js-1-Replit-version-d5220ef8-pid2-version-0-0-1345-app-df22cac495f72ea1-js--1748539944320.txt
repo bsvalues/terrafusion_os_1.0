@@ -1,0 +1,145 @@
+3530-b2c53900bbc8f739.js:1 Replit version d5220ef8, pid2 version 0.0.1345
+_app-df22cac495f72ea1.js:38 
+      /////////////////////
+   ///////////////////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////        Curious and driven?
+  ///////////////@@@@@@@///////        Work with us!
+  ///////////////@@@@@@@///////
+  ///////////////@@@@@@@///////        https://join.replit.com/hack.with.us
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@#//////////////
+   ///////////////////////////
+      /////////////////////
+      
+_app-df22cac495f72ea1.js:38 [LaunchDarkly] LaunchDarkly client initialized
+TerraFusionPro:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+framework-45f4cdb007d7ccaa.js:1 Unrecognized feature: 'ambient-light-sensor'.
+_ @ framework-45f4cdb007d7ccaa.js:1
+framework-45f4cdb007d7ccaa.js:1 Unrecognized feature: 'battery'.
+_ @ framework-45f4cdb007d7ccaa.js:1
+framework-45f4cdb007d7ccaa.js:1 Unrecognized feature: 'execution-while-not-rendered'.
+_ @ framework-45f4cdb007d7ccaa.js:1
+framework-45f4cdb007d7ccaa.js:1 Unrecognized feature: 'execution-while-out-of-viewport'.
+_ @ framework-45f4cdb007d7ccaa.js:1
+framework-45f4cdb007d7ccaa.js:1 Unrecognized feature: 'layout-animations'.
+_ @ framework-45f4cdb007d7ccaa.js:1
+framework-45f4cdb007d7ccaa.js:1 Unrecognized feature: 'legacy-image-formats'.
+_ @ framework-45f4cdb007d7ccaa.js:1
+framework-45f4cdb007d7ccaa.js:1 Unrecognized feature: 'navigation-override'.
+_ @ framework-45f4cdb007d7ccaa.js:1
+framework-45f4cdb007d7ccaa.js:1 Unrecognized feature: 'oversized-images'.
+_ @ framework-45f4cdb007d7ccaa.js:1
+framework-45f4cdb007d7ccaa.js:1 Unrecognized feature: 'publickey-credentials'.
+_ @ framework-45f4cdb007d7ccaa.js:1
+framework-45f4cdb007d7ccaa.js:1 Unrecognized feature: 'speaker-selection'.
+_ @ framework-45f4cdb007d7ccaa.js:1
+framework-45f4cdb007d7ccaa.js:1 Unrecognized feature: 'unoptimized-images'.
+_ @ framework-45f4cdb007d7ccaa.js:1
+framework-45f4cdb007d7ccaa.js:1 Unrecognized feature: 'unsized-media'.
+_ @ framework-45f4cdb007d7ccaa.js:1
+framework-45f4cdb007d7ccaa.js:1 Unrecognized feature: 'pointer-lock'.
+_ @ framework-45f4cdb007d7ccaa.js:1
+framework-45f4cdb007d7ccaa.js:1 Allow attribute will take precedence over 'allowfullscreen'.
+_ @ framework-45f4cdb007d7ccaa.js:1
+framework-45f4cdb007d7ccaa.js:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+_ @ framework-45f4cdb007d7ccaa.js:1
+_app-df22cac495f72ea1.js:38 Adding extension: CSS Shadow Generator Object
+stallwart.build.js:1 stallwart: failed ping 1
+_app-df22cac495f72ea1.js:38 Adding extension: Docx Viewer Object
+_app-df22cac495f72ea1.js:38 Adding extension: Meme Generator Object
+_app-df22cac495f72ea1.js:38 Adding extension: Run in Shell Object
+_app-df22cac495f72ea1.js:38 Command: run-in-shell has unrecognized contributions: filetree-context-menu. Valid contributions are commandbar,filetree-context-menu,sidebar-search,editor-context-menu Object
+(anonymous) @ _app-df22cac495f72ea1.js:38
+_app-df22cac495f72ea1.js:38 Adding extension: manim Object
+_app-df22cac495f72ea1.js:38 Adding extension: CSS Gradient Generator Object
+_app-df22cac495f72ea1.js:38 Adding extension: Icon Generator Object
+_app-df22cac495f72ea1.js:38 Adding extension: Secrets Generator Object
+_app-df22cac495f72ea1.js:38 registerCommand: calling registerCommand with a single argument is deprecated. Pass a {commandId, contributions} object as the first command. Object
+(anonymous) @ _app-df22cac495f72ea1.js:38
+_app-df22cac495f72ea1.js:38 Command Random Secret uses deprecated contributions field Object
+(anonymous) @ _app-df22cac495f72ea1.js:38
+_app-df22cac495f72ea1.js:38 Adding extension: portkiller Object
+background.js:1 Uncaught SyntaxError: Invalid or unexpected token
+_app-df22cac495f72ea1.js:38 Adding extension: Hex Editor Object
+_app-df22cac495f72ea1.js:38 Adding extension: Sanity Studio Toolkit Object
+_app-df22cac495f72ea1.js:38 Adding extension: Prettier - Code Formatter Object
+_app-df22cac495f72ea1.js:38 Adding extension: Magit Object
+_app-df22cac495f72ea1.js:38 registerCommand: calling registerCommand with a single argument is deprecated. Pass a {commandId, contributions} object as the first command. Object
+(anonymous) @ _app-df22cac495f72ea1.js:38
+_app-df22cac495f72ea1.js:38 Command Magit uses deprecated contributions field Object
+(anonymous) @ _app-df22cac495f72ea1.js:38
+_app-df22cac495f72ea1.js:38 Adding extension: UI Sketcher Object
+_app-df22cac495f72ea1.js:38 Adding extension: SnippetVault - Store Snippets Object
+_app-df22cac495f72ea1.js:38 Adding extension: Disk Usage Object
+_app-df22cac495f72ea1.js:38 registerCommand: calling registerCommand with a single argument is deprecated. Pass a {commandId, contributions} object as the first command. Object
+(anonymous) @ _app-df22cac495f72ea1.js:38
+_app-df22cac495f72ea1.js:38 Command Disk Usage uses deprecated contributions field Object
+(anonymous) @ _app-df22cac495f72ea1.js:38
+_app-df22cac495f72ea1.js:38 Adding extension: Google Cloud Auth Object
+_app-df22cac495f72ea1.js:38 Adding extension: ZIP Extractor Object
+_app-df22cac495f72ea1.js:38 Adding extension: repl.tv Object
+_app-df22cac495f72ea1.js:38 Adding extension: JSON Editor Object
+_app-df22cac495f72ea1.js:38 Adding extension: AI Playground Object
+_app-df22cac495f72ea1.js:38 Adding extension: Root Workbench Object
+_app-df22cac495f72ea1.js:38 Adding extension: API Request Tester Object
+_app-df22cac495f72ea1.js:38 Adding extension: Javascript Commands Object
+_app-df22cac495f72ea1.js:38 Command: javascript-root-command has unrecognized contributions: commandbar. Valid contributions are commandbar,filetree-context-menu,sidebar-search,editor-context-menu Object
+(anonymous) @ _app-df22cac495f72ea1.js:38
+_app-df22cac495f72ea1.js:38 Adding extension: CSV Editor Object
+_app-df22cac495f72ea1.js:38 Adding extension: Perplexity Object
+_app-df22cac495f72ea1.js:38 Command: hello has unrecognized contributions: editor-context-menu. Valid contributions are commandbar,filetree-context-menu,sidebar-search,editor-context-menu Object
+(anonymous) @ _app-df22cac495f72ea1.js:38
+_app-df22cac495f72ea1.js:38 Adding extension: GPT-Replit - ChatGPT in your Repl. Object
+_app-df22cac495f72ea1.js:38 Adding extension: ReplDB Export and Import Object
+workspace_iframe.html:32 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html:32 Unrecognized feature: 'battery'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html:32 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html:32 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html:32 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html:32 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html:32 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html:32 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+Network.js:227 WebSocket connection to 'wss://0a70841c-2a8a-41f9-be07-c9d0667751c9-00-35s1pv4wd80nb.picard.replit.dev/?token=NXS1da3r55eY' failed: 
+t @ Network.js:227
+Network.js:227 WebSocket connection to 'wss://0a70841c-2a8a-41f9-be07-c9d0667751c9-00-35s1pv4wd80nb.picard.replit.dev/?token=NXS1da3r55eY' failed: 
+t @ Network.js:227
+Network.js:227 WebSocket connection to 'wss://0a70841c-2a8a-41f9-be07-c9d0667751c9-00-35s1pv4wd80nb.picard.replit.dev/?token=NXS1da3r55eY' failed: 
+t @ Network.js:227
+Network.js:227 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=NXS1da3r55eY' is invalid.
+    at new t (Network.js:227:18)
+    at setupWebSocket (client:536:19)
+    at fallback (client:509:16)
+    at WebSocket.<anonymous> (client:555:7)
+Console.js:61 Terrafusion: Loading unified modern application
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.

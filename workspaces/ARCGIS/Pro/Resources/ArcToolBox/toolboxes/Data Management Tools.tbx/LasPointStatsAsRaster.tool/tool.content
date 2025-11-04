@@ -1,0 +1,110 @@
+{
+    "type": "FunctionTool",
+    "guid": "{99880fc2-9407-4576-966f-61a83a394afd}",
+    "displayname": "$rc:title",
+    "helpcontent": "3300004",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_las_dataset": {
+            "display_order": "0",
+            "displayname": "$rc:in_las_dataset.title",
+            "datatype": {
+                "type": "GPLasDatasetLayer"
+            },
+            "description": "$rc:in_las_dataset.descr"
+        },
+        "out_raster": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_raster.descr"
+        },
+        "method": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PULSE_COUNT",
+                        "code": "$rc:method.domain.PULSE_COUNT"
+                    },
+                    {
+                        "value": "POINT_COUNT",
+                        "code": "$rc:method.domain.POINT_COUNT"
+                    },
+                    {
+                        "value": "PREDOMINANT_LAST_RETURN",
+                        "code": "$rc:method.domain.PREDOMINANT_LAST_RETURN"
+                    },
+                    {
+                        "value": "PREDOMINANT_CLASS",
+                        "code": "$rc:method.domain.PREDOMINANT_CLASS"
+                    },
+                    {
+                        "value": "INTENSITY_RANGE",
+                        "code": "$rc:method.domain.INTENSITY_RANGE"
+                    },
+                    {
+                        "value": "Z_RANGE",
+                        "code": "$rc:method.domain.Z_RANGE"
+                    }
+                ]
+            },
+            "value": "PULSE_COUNT",
+            "description": "$rc:method.descr"
+        },
+        "sampling_type": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:sampling_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "OBSERVATIONS",
+                        "code": "$rc:sampling_type.domain.OBSERVATIONS"
+                    },
+                    {
+                        "value": "CELLSIZE",
+                        "code": "$rc:sampling_type.domain.CELLSIZE"
+                    }
+                ]
+            },
+            "value": "CELLSIZE",
+            "description": "$rc:sampling_type.descr"
+        },
+        "sampling_value": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:sampling_value.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "10",
+            "description": "$rc:sampling_value.descr"
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "cellSize",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "pyramid",
+        "rasterStatistics",
+        "workspace"
+    ]
+}

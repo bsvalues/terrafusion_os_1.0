@@ -1,0 +1,5 @@
+<DataType Name="GPGAValueTable">
+  <DisplayName>Geostatistical Value Table</DisplayName>
+  <Description>A collection of data sources and fields that define a geostatistical layer.</Description>
+</DataType>
+

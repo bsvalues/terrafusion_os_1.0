@@ -1,0 +1,122 @@
+name: Lighthouse CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lhci:
+    name: Lighthouse CI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Start server in background
+        run: npm run start:prod & sleep 10
+        env:
+          PORT: 3000
+          NODE_ENV: production
+
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          urls: |
+            http://localhost:3000/
+            http://localhost:3000/dashboard
+            http://localhost:3000/fields
+          budgets: ./lighthouse-ci/budget.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+          runs: 3
+
+      - name: Save LHCI results as PR comment
+        uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const lighthouseReport = JSON.parse(fs.readFileSync('./lhci_reports/manifest.json'));
+            
+            const metrics = ['performance', 'accessibility', 'best-practices', 'seo'];
+            let comment = '## Lighthouse Results\n\n';
+            
+            for (const url of Object.keys(lighthouseReport)) {
+              const urlReport = lighthouseReport[url][0];
+              comment += `### ${url}\n\n`;
+              
+              comment += '| Metric | Score |\n';
+              comment += '| ------ | ----- |\n';
+              
+              for (const metric of metrics) {
+                const score = Math.round(urlReport.summary[metric] * 100);
+                const emoji = score >= 90 ? '🟢' : score >= 70 ? '🟠' : '🔴';
+                comment += `| ${metric} | ${emoji} ${score} |\n`;
+              }
+              
+              comment += '\n';
+              
+              // Add web vitals metrics
+              comment += '#### Web Vitals\n\n';
+              comment += '| Metric | Value | Threshold | Status |\n';
+              comment += '| ------ | ----- | --------- | ------ |\n';
+              
+              const lcp = urlReport.audits['largest-contentful-paint'].numericValue;
+              const lcpThreshold = 2500;
+              const lcpStatus = lcp <= lcpThreshold ? '✅' : '❌';
+              comment += `| LCP | ${lcp.toFixed(0)}ms | ${lcpThreshold}ms | ${lcpStatus} |\n`;
+              
+              const fid = urlReport.audits['max-potential-fid'] ? urlReport.audits['max-potential-fid'].numericValue : 'N/A';
+              const fidThreshold = 100;
+              const fidStatus = fid === 'N/A' ? '❓' : (fid <= fidThreshold ? '✅' : '❌');
+              comment += `| FID | ${fid === 'N/A' ? fid : fid.toFixed(0) + 'ms'} | ${fidThreshold}ms | ${fidStatus} |\n`;
+              
+              const cls = urlReport.audits['cumulative-layout-shift'].numericValue;
+              const clsThreshold = 0.1;
+              const clsStatus = cls <= clsThreshold ? '✅' : '❌';
+              comment += `| CLS | ${cls.toFixed(3)} | ${clsThreshold} | ${clsStatus} |\n`;
+              
+              const ttfb = urlReport.audits['server-response-time'].numericValue;
+              const ttfbThreshold = 600;
+              const ttfbStatus = ttfb <= ttfbThreshold ? '✅' : '❌';
+              comment += `| TTFB | ${ttfb.toFixed(0)}ms | ${ttfbThreshold}ms | ${ttfbStatus} |\n`;
+              
+              comment += '\n';
+            }
+            
+            const failingMetrics = Object.values(lighthouseReport)
+              .flatMap(reports => reports[0])
+              .filter(report => 
+                report.audits['largest-contentful-paint'].numericValue > 2500 ||
+                report.audits['cumulative-layout-shift'].numericValue > 0.1 ||
+                report.audits['server-response-time'].numericValue > 600
+              );
+            
+            if (failingMetrics.length > 0) {
+              comment += '\n⚠️ **Performance metrics exceed thresholds. Please check and improve!**\n';
+            } else {
+              comment += '\n✅ **All performance metrics are within acceptable thresholds!**\n';
+            }
+            
+            comment += '\n[📖 View detailed reports](https://htmlpreview.github.io/?https://raw.githubusercontent.com/${{ github.repository }}/${{ github.event.pull_request.head.sha }}/lighthouse-results/index.html)';
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

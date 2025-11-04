@@ -1,0 +1,214 @@
+{
+    "type": "FunctionTool",
+    "guid": "{0A4A9218-07A4-497A-8506-CED528063FB9}/GenerateLrsDataProduct",
+    "displayname": "$rc:title",
+    "helpcontent": "23000062",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "78"
+    ],
+    "params": {
+        "in_template": {
+            "displayname": "$rc:in_template.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "json"
+                ]
+            },
+            "description": "$rc:in_template.descr"
+        },
+        "in_route_features": {
+            "displayname": "$rc:in_route_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_route_features.descr"
+        },
+        "effective_date": {
+            "displayname": "$rc:effective_date.title",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "value": "10/22/2024",
+            "description": "$rc:effective_date.descr"
+        },
+        "units": {
+            "displayname": "$rc:units.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "INCHES",
+                        "code": "$rc:units.domain.INCHES"
+                    },
+                    {
+                        "value": "FEET",
+                        "code": "$rc:units.domain.FEET"
+                    },
+                    {
+                        "value": "YARDS",
+                        "code": "$rc:units.domain.YARDS"
+                    },
+                    {
+                        "value": "MILES",
+                        "code": "$rc:units.domain.MILES"
+                    },
+                    {
+                        "value": "NAUTICAL_MILES",
+                        "code": "$rc:units.domain.NAUTICAL_MILES"
+                    },
+                    {
+                        "value": "INTFEET",
+                        "code": "$rc:units.domain.INTFEET"
+                    },
+                    {
+                        "value": "INTMILES",
+                        "code": "$rc:units.domain.INTMILES"
+                    },
+                    {
+                        "value": "MILLIMETERS",
+                        "code": "$rc:units.domain.MILLIMETERS"
+                    },
+                    {
+                        "value": "CENTIMETERS",
+                        "code": "$rc:units.domain.CENTIMETERS"
+                    },
+                    {
+                        "value": "METERS",
+                        "code": "$rc:units.domain.METERS"
+                    },
+                    {
+                        "value": "KILOMETERS",
+                        "code": "$rc:units.domain.KILOMETERS"
+                    },
+                    {
+                        "value": "DECIMETERS",
+                        "code": "$rc:units.domain.DECIMETERS"
+                    }
+                ]
+            },
+            "value": "MILES",
+            "description": "$rc:units.descr"
+        },
+        "boundary_features": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:boundary_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:boundary_features.descr"
+        },
+        "summary_field": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:summary_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text",
+                    "Short",
+                    "Long"
+                ]
+            },
+            "depends": [
+                "boundary_features"
+            ],
+            "description": "$rc:summary_field.descr"
+        },
+        "exclude_null_summary_rows": {
+            "type": "optional",
+            "displayname": "$rc:exclude_null_summary_rows.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "EXCLUDE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_EXCLUDE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:exclude_null_summary_rows.descr"
+        },
+        "output_format": {
+            "type": "optional",
+            "displayname": "$rc:output_format.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "CSV",
+                        "code": "$rc:output_format.domain.CSV"
+                    }
+                ]
+            },
+            "value": "CSV",
+            "description": "$rc:output_format.descr"
+        },
+        "out_file": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "csv",
+                    "txt"
+                ]
+            },
+            "description": "$rc:out_file.descr"
+        },
+        "out_table": {
+            "enabled": "false",
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "description": "$rc:out_table.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "map": {
+        "description": "Computes a set of attributes associated with the segmented image. The input raster can be a single-band or 3-band, 8-bit segmented image.",
+        "in_additional_raster.descr": "Ancillary raster datasets, such as a multispectral image or a DEM, will be incorporated to generate attributes and other required information for the classifier. This raster is necessary when calculating attributes such as mean or standard deviation. This parameter is optional.",
+        "in_additional_raster.title": "Additional Input Raster",
+        "in_segmented_raster.descr": "The input segmented raster dataset, where all the pixels belonging to a segment have the same converged RGB color. Usually, it is an 8-bit, 3-band RGB raster, but it can also be a 1-band grayscale raster.",
+        "in_segmented_raster.title": "Input Segmented RGB Or Gray Raster",
+        "out_index_raster_dataset.descr": "The output segment index raster, where the attributes for each segment are recorded in the associated attribute table.",
+        "out_index_raster_dataset.title": "Output Segment Index Raster",
+        "params.category1": "Segment Attributes",
+        "title": "Compute Segment Attributes",
+        "used_attributes.descr": "<xdoc><p>Specifies the attributes that will be included in the attribute table associated with the output raster.</p><ul><li><span title=\"COLOR\">Converged color</span>—The RGB color values will be derived from the input raster on a per-segment basis. This is also known as average chromaticity color.</li><li><span title=\"MEAN\">Mean digital number</span>—The average digital number (DN) will be derived from the optional pixel image on a per-segment basis.</li><li><span title=\"STD\">Standard deviation</span>—The standard deviation will be derived from the optional pixel image on a per-segment basis.</li><li><span title=\"COUNT\">Count of pixels</span>—The number of pixels composing the segment, on a per-segment basis.</li><li><span title=\"COMPACTNESS\">Compactness</span>—The degree to which a segment is compact or circular, on a per-segment basis. The values range from 0 to 1, in which 1 is a circle.</li><li><span title=\"RECTANGULARITY\">Rectangularity</span>—The degree to which the segment is rectangular, on a per-segment basis. The values range from 0 to 1, in which 1 is a rectangle.</li></ul><p>If the only input into the tool is a segmented image, the default attributes are <span class=\"esri_uicontrol\">Average chromaticity color</span>, <span class=\"esri_uicontrol\">Count of pixels</span>, <span class=\"esri_uicontrol\">Compactness</span>, and <span class=\"esri_uicontrol\">Rectangularity</span>. If an <span class=\"esri_uicontrol\">Additional Input Raster</span> is also included as an input along with a segmented image, then <span class=\"esri_uicontrol\">Mean digital number</span> and <span class=\"esri_uicontrol\">Standard deviation</span> are available as options.</p></xdoc>",
+        "used_attributes.domain.COLOR": "Converged color",
+        "used_attributes.domain.COMPACTNESS": "Compactness",
+        "used_attributes.domain.COUNT": "Count of pixels",
+        "used_attributes.domain.MEAN": "Mean digital number",
+        "used_attributes.domain.RECTANGULARITY": "Rectangularity",
+        "used_attributes.domain.STD": "Standard deviation",
+        "used_attributes.title": "Segment Attributes Used"
+    }
+}

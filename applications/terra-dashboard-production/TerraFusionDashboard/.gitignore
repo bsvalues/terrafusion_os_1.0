@@ -1,0 +1,48 @@
+node_modules
+dist
+.DS_Store
+server/public
+vite.config.ts.*
+*.tar.gz
+
+# Environment and Secrets
+.env.local
+.env.production.local
+secrets/.env.secrets
+secrets/api-keys/*.key
+secrets/api-keys/*.txt
+secrets/certificates/*.pem
+secrets/certificates/*.key
+secrets/certificates/*.crt
+secrets/database/*.db
+secrets/database/*.sql
+
+# Security Files
+*.p12
+*.pfx
+*.keystore
+private-key*.json
+service-account*.json
+
+# Logs and Debug
+*.log
+logs/
+debug/
+coverage/
+
+# OS Files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# IDE Files
+.vscode/settings.json
+.idea/
+*.sublime-*
+
+# Runtime
+.pid
+*.pid
+*.seed
+*.pid.lock

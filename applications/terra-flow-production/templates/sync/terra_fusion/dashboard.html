@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="terrafusion-title">TerraFusion Sync Dashboard</h1>
+            <p class="lead">Manage your database synchronization jobs</p>
+        </div>
+        <div class="col-auto">
+            <a href="{{ url_for('terra_fusion_ui.new_job') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> New Sync Job
+            </a>
+        </div>
+    </div>
+
+    <!-- Dashboard Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Active Jobs</h5>
+                    <h2 class="display-4">{{ active_count }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-title">
+                    <h5 class="card-title p-3">Completed</h5>
+                    <h2 class="display-4 px-3 pb-3">{{ jobs|selectattr('status', 'equalto', 'completed')|list|length }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Running</h5>
+                    <h2 class="display-4">{{ jobs|selectattr('status', 'equalto', 'running')|list|length }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Failed</h5>
+                    <h2 class="display-4">{{ jobs|selectattr('status', 'equalto', 'failed')|list|length }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job List -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Sync Jobs</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Progress</th>
+                            <th>Created</th>
+                            <th>Updated</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if jobs %}
+                            {% for job in jobs %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ url_for('terra_fusion_ui.job_details', job_id=job.id) }}">
+                                            {{ job.id[:8] }}...
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{% if job.type == 'full' %}primary{% else %}info{% endif %}">
+                                            {{ job.type }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-
+                                            {% if job.status == 'completed' %}success
+                                            {% elif job.status == 'running' %}warning
+                                            {% elif job.status == 'failed' %}danger
+                                            {% elif job.status == 'stopped' %}secondary
+                                            {% else %}info{% endif %}">
+                                            {{ job.status }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="progress">
+                                            <div class="progress-bar progress-bar-striped
+                                                {% if job.status == 'running' %}progress-bar-animated{% endif %}"
+                                                role="progressbar"
+                                                style="width: {{ job.progress or 0 }}%">
+                                                {{ job.progress or 0 }}%
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ job.created_at|default('N/A') }}</td>
+                                    <td>{{ job.updated_at|default('N/A') }}</td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{{ url_for('terra_fusion_ui.job_details', job_id=job.id) }}"
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-info-circle"></i>
+                                            </a>
+                                            
+                                            {% if job.status == 'running' %}
+                                                <form method="POST" action="{{ url_for('terra_fusion_ui.control_job', job_id=job.id, action='stop') }}">
+                                                    <button type="submit" class="btn btn-sm btn-outline-warning">
+                                                        <i class="fas fa-pause"></i>
+                                                    </button>
+                                                </form>
+                                            {% elif job.status in ['stopped', 'failed'] %}
+                                                <form method="POST" action="{{ url_for('terra_fusion_ui.control_job', job_id=job.id, action='resume') }}">
+                                                    <button type="submit" class="btn btn-sm btn-outline-success">
+                                                        <i class="fas fa-play"></i>
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                            
+                                            <form method="POST" action="{{ url_for('terra_fusion_ui.control_job', job_id=job.id, action='delete') }}">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                        onclick="return confirm('Are you sure you want to delete this job?')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <div class="alert alert-info mb-0">
+                                        No sync jobs found. <a href="{{ url_for('terra_fusion_ui.new_job') }}">Create a new job</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    .terrafusion-title {
+        color: #3f51b5;
+        border-bottom: 2px solid #3f51b5;
+        padding-bottom: 8px;
+    }
+    
+    .card {
+        transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}

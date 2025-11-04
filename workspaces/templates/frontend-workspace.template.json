@@ -1,0 +1,203 @@
+{
+  "$extends": "./master-workspace.template.json",
+  "folders": [
+    {
+      "path": ".",
+      "name": "🎨 ${workspaceName} Frontend - Government. Transcended."
+    },
+    {
+      "path": "../TERRAFUSION BRAND CODEX - The Divine Design System",
+      "name": "🎨 TerraFusion Brand Codex"
+    },
+    {
+      "path": "../platform/design-system",
+      "name": "🎨 Design System (Platform)"
+    },
+    {
+      "path": "../SDK",
+      "name": "📦 Platform SDK (shared)"
+    },
+    {
+      "path": "../tests/frontend/${workspaceName}",
+      "name": "🧪 Frontend Test Suite - Championship Excellence"
+    },
+    {
+      "path": "../tests/accessibility",
+      "name": "♿ Accessibility Testing Suite - WCAG 2.1 AA Excellence"
+    },
+    {
+      "path": "../tests/performance",
+      "name": "⚡ Performance & Quality Gates"
+    },
+    {
+      "path": "../config",
+      "name": "⚙️ TerraFusion Config"
+    },
+    {
+      "path": "../backend",
+      "name": "🔧 Backend Integration Target"
+    },
+    {
+      "path": "../monitoring/qa",
+      "name": "📊 Quality Assurance Dashboard"
+    }
+  ],
+  "settings": {
+    "typescript.preferences.quoteStyle": "single",
+    "typescript.suggest.autoImports": true,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "typescript.inlayHints.parameterNames.enabled": "all",
+    "typescript.inlayHints.variableTypes.enabled": true,
+    "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
+    "eslint.workingDirectories": ["./"],
+    "eslint.format.enable": true,
+    "eslint.codeActionsOnSave.mode": "all",
+    "prettier.tabWidth": 2,
+    "prettier.useTabs": false,
+    "prettier.semi": true,
+    "prettier.singleQuote": true,
+    "prettier.trailingComma": "es5",
+    "html.format.wrapLineLength": 80,
+    "css.format.wrapLineLength": 80,
+    "emmet.includeLanguages": {
+      "typescript": "html",
+      "javascript": "html"
+    },
+    "terrafusion.frontend": {
+      "primaryStack": "React 18 + TypeScript + Vite",
+      "scope": "FRONTEND ONLY",
+      "qaLead": "enhanced",
+      "testingFramework": "Vitest + Testing Library + Playwright",
+      "accessibilityTesting": "axe-core + WCAG 2.1 AA",
+      "performanceMonitoring": "Lighthouse + Core Web Vitals",
+      "qualityGates": "mandatory",
+      "brandCompliance": "transcendent"
+    },
+    "terrafusion.testing": {
+      "unitTestCoverage": "≥90% critical paths required",
+      "integrationTesting": "comprehensive",
+      "e2eTesting": "Playwright automation",
+      "accessibilityTesting": "automated WCAG 2.1 AA validation",
+      "performanceTesting": "Core Web Vitals monitoring",
+      "visualRegressionTesting": "enabled",
+      "testReporting": "comprehensive with evidence collection"
+    },
+    "terrafusion.accessibility": {
+      "wcag21AA": "mandatory",
+      "axeCore": "automated scanning",
+      "colorContrast": "4.5:1 minimum",
+      "keyboardNavigation": "comprehensive",
+      "screenReaderTesting": "manual validation required",
+      "accessibilityAudit": "quarterly"
+    },
+    "terrafusion.ui": {
+      "glassMorphism": "enabled",
+      "quantumEffects": "enabled",
+      "scanLineAnimations": "enabled",
+      "brandGradients": "clarity-gradient",
+      "typography": "championship-excellence",
+      "colorPalette": "transcendent-government",
+      "responsiveDesign": "mobile-first",
+      "performanceOptimized": "60fps+"
+    },
+    "terrafusion.ai.agentTypes": {
+      "developmentLead": true,
+      "codeGenerator": true,
+      "testAutomation": true,
+      "qaLead": true,
+      "uiuxDesigner": true,
+      "accessibilityExpert": true,
+      "performanceOptimizer": true,
+      "brandCompliance": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-vscode.vscode-typescript-next",
+      "bradlc.vscode-tailwindcss",
+      "vitest.explorer",
+      "ms-playwright.playwright",
+      "deque-systems.vscode-axe-linter",
+      "webhint.vscode-webhint",
+      "formulahendry.auto-rename-tag",
+      "ms-vscode.live-server",
+      "ritwickdey.liveserver"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Start Development Server",
+        "type": "shell",
+        "command": "npm",
+        "args": ["run", "dev"],
+        "group": "build",
+        "isBackground": true,
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        },
+        "problemMatcher": "$tsc-watch"
+      },
+      {
+        "label": "Build for Production",
+        "type": "shell",
+        "command": "npm",
+        "args": ["run", "build"],
+        "group": "build",
+        "presentation": {
+          "reveal": "always",
+          "panel": "shared"
+        },
+        "problemMatcher": "$tsc"
+      },
+      {
+        "label": "Run Unit Tests",
+        "type": "shell",
+        "command": "npm",
+        "args": ["run", "test"],
+        "group": "test",
+        "presentation": {
+          "reveal": "always",
+          "panel": "shared"
+        }
+      },
+      {
+        "label": "Run E2E Tests",
+        "type": "shell",
+        "command": "npx",
+        "args": ["playwright", "test"],
+        "group": "test",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "label": "Accessibility Audit",
+        "type": "shell",
+        "command": "npx",
+        "args": ["axe", "http://localhost:3000", "--save", "accessibility-report.json"],
+        "group": "test",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "label": "Performance Benchmark",
+        "type": "shell",
+        "command": "npx",
+        "args": ["lighthouse", "http://localhost:3000", "--output=json", "--output-path=lighthouse-report.json"],
+        "group": "test",
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      }
+    ]
+  }
+}

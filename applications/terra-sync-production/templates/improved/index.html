@@ -1,0 +1,145 @@
+{% extends "base_improved.html" %}
+
+{% block title %}TerraFusion Platform - Home{% endblock %}
+
+{% block page_id %}home{% endblock %}
+
+{% block content %}
+<div class="tf-row tf-mt-5">
+    <div class="tf-col-md-8 tf-col-lg-7">
+        <h1 class="display-4">TerraFusion Platform</h1>
+        <p class="lead">Enterprise-grade geospatial data synchronization platform with advanced GIS export capabilities</p>
+        
+        <p class="tf-mt-4">
+            TerraFusion Platform provides county governments with a comprehensive solution for synchronizing and exporting geospatial data across different systems. Our platform ensures data consistency and simplifies complex data operations.
+        </p>
+        
+        <div class="tf-d-flex tf-mt-4">
+            {% if session.get('token') %}
+                <a href="{{ url_for('improved.dashboard') }}" class="tf-btn tf-btn-primary tf-me-3">
+                    <i class="fas fa-tachometer-alt me-1"></i> Go to Dashboard
+                </a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="tf-btn tf-btn-primary tf-me-3">
+                    <i class="fas fa-sign-in-alt me-1"></i> Login
+                </a>
+            {% endif %}
+            
+            <a href="{{ url_for('improved.gis_export') }}" class="tf-btn tf-btn-outline-primary">
+                <i class="fas fa-map-marked-alt me-1"></i> GIS Export
+            </a>
+        </div>
+    </div>
+    
+    <div class="tf-col-md-4 tf-col-lg-5 tf-d-flex tf-align-items-center tf-mt-5 tf-mt-md-0">
+        <div class="tf-card tf-p-4 tf-w-100">
+            <h3 class="tf-mb-3">System Status</h3>
+            
+            <div class="tf-d-flex tf-justify-content-between tf-align-items-center tf-mb-3">
+                <span>API Gateway</span>
+                <span class="tf-badge tf-badge-success">Online</span>
+            </div>
+            
+            <div class="tf-d-flex tf-justify-content-between tf-align-items-center tf-mb-3">
+                <span>SyncService</span>
+                <span class="tf-status-indicator" data-status-type="service" data-status-id="syncservice">
+                    <span class="tf-badge tf-badge-warning">Checking...</span>
+                </span>
+            </div>
+            
+            <div class="tf-d-flex tf-justify-content-between tf-align-items-center">
+                <span>Database</span>
+                <span class="tf-status-indicator" data-status-type="service" data-status-id="database">
+                    <span class="tf-badge tf-badge-success">Connected</span>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr class="tf-my-5">
+
+<div class="tf-row tf-mt-5">
+    <div class="tf-col-12">
+        <h2 class="tf-mb-4">Key Features</h2>
+    </div>
+    
+    <div class="tf-col-md-4 tf-mb-4">
+        <div class="tf-card h-100">
+            <div class="tf-card-body">
+                <div class="tf-mb-3 text-center">
+                    <i class="fas fa-sync-alt fa-3x text-primary"></i>
+                </div>
+                <h5 class="tf-card-title text-center">Data Synchronization</h5>
+                <p class="tf-card-text">
+                    Keep your data consistent across multiple systems with automated synchronization operations.
+                </p>
+                <div class="tf-d-flex tf-justify-content-center tf-mt-3">
+                    <a href="{{ url_for('improved.sync_operations') }}" class="tf-btn tf-btn-outline-primary tf-btn-sm">
+                        Learn More
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="tf-col-md-4 tf-mb-4">
+        <div class="tf-card h-100">
+            <div class="tf-card-body">
+                <div class="tf-mb-3 text-center">
+                    <i class="fas fa-map-marked-alt fa-3x text-success"></i>
+                </div>
+                <h5 class="tf-card-title text-center">GIS Export</h5>
+                <p class="tf-card-text">
+                    Export geospatial data in various formats with customizable parameters for your specific needs.
+                </p>
+                <div class="tf-d-flex tf-justify-content-center tf-mt-3">
+                    <a href="{{ url_for('improved.gis_export') }}" class="tf-btn tf-btn-outline-success tf-btn-sm">
+                        Learn More
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="tf-col-md-4 tf-mb-4">
+        <div class="tf-card h-100">
+            <div class="tf-card-body">
+                <div class="tf-mb-3 text-center">
+                    <i class="fas fa-chart-line fa-3x text-info"></i>
+                </div>
+                <h5 class="tf-card-title text-center">System Monitoring</h5>
+                <p class="tf-card-text">
+                    Gain insights into your system's performance with comprehensive monitoring and reporting.
+                </p>
+                <div class="tf-d-flex tf-justify-content-center tf-mt-3">
+                    <a href="{{ url_for('improved.metrics') }}" class="tf-btn tf-btn-outline-info tf-btn-sm">
+                        Learn More
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/real-time-updates.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize real-time updates for service status
+        if (window.TerraFusion && window.TerraFusion.realTimeUpdates) {
+            // Check SyncService status
+            window.TerraFusion.realTimeUpdates.startPolling('service', 'syncservice', function(status) {
+                const indicator = document.querySelector('[data-status-id="syncservice"]');
+                if (indicator) {
+                    const badgeClass = status === 'UP' ? 'tf-badge-success' : 'tf-badge-danger';
+                    const statusText = status === 'UP' ? 'Online' : 'Offline';
+                    
+                    indicator.innerHTML = `<span class="tf-badge ${badgeClass}">${statusText}</span>`;
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

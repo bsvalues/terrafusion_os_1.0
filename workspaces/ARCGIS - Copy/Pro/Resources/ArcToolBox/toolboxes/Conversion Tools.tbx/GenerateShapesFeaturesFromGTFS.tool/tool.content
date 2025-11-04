@@ -1,0 +1,192 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "2140006",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_gtfs_folder": {
+            "displayname": "$rc:in_gtfs_folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:in_gtfs_folder.descr"
+        },
+        "out_shape_lines": {
+            "direction": "out",
+            "displayname": "$rc:out_shape_lines.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "symbologylayer": "GenerateShapesFeaturesFromGTFS_shapes.lyrx",
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_shape_lines.descr"
+        },
+        "out_shape_stops": {
+            "direction": "out",
+            "displayname": "$rc:out_shape_stops.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "symbologylayer": "GenerateShapesFeaturesFromGTFS_stops.lyrx",
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_shape_stops.descr"
+        },
+        "out_gtfs_trips": {
+            "direction": "out",
+            "displayname": "$rc:out_gtfs_trips.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "txt"
+                ]
+            },
+            "description": "$rc:out_gtfs_trips.descr"
+        },
+        "network_modes": {
+            "type": "optional",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:network_modes.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "0",
+                        "code": "$rc:network_modes.domain.0"
+                    },
+                    {
+                        "value": "1",
+                        "code": "$rc:network_modes.domain.1"
+                    },
+                    {
+                        "value": "2",
+                        "code": "$rc:network_modes.domain.2"
+                    },
+                    {
+                        "value": "3",
+                        "code": "$rc:network_modes.domain.3"
+                    },
+                    {
+                        "value": "4",
+                        "code": "$rc:network_modes.domain.4"
+                    },
+                    {
+                        "value": "5",
+                        "code": "$rc:network_modes.domain.5"
+                    },
+                    {
+                        "value": "6",
+                        "code": "$rc:network_modes.domain.6"
+                    },
+                    {
+                        "value": "7",
+                        "code": "$rc:network_modes.domain.7"
+                    },
+                    {
+                        "value": "11",
+                        "code": "$rc:network_modes.domain.11"
+                    },
+                    {
+                        "value": "12",
+                        "code": "$rc:network_modes.domain.12"
+                    },
+                    {
+                        "value": "OTHER",
+                        "code": "$rc:network_modes.domain.OTHER"
+                    }
+                ]
+            },
+            "value": "3;5;11",
+            "description": "$rc:network_modes.descr"
+        },
+        "network_data_source": {
+            "type": "optional",
+            "displayname": "$rc:network_data_source.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPNetworkDataSource"
+            },
+            "description": "$rc:network_data_source.descr"
+        },
+        "travel_mode": {
+            "type": "optional",
+            "displayname": "$rc:travel_mode.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "NetworkTravelMode"
+            },
+            "depends": [
+                "network_data_source"
+            ],
+            "description": "$rc:travel_mode.descr"
+        },
+        "drive_side": {
+            "type": "optional",
+            "displayname": "$rc:drive_side.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "LEFT",
+                        "code": "$rc:drive_side.domain.LEFT"
+                    },
+                    {
+                        "value": "RIGHT",
+                        "code": "$rc:drive_side.domain.RIGHT"
+                    }
+                ]
+            },
+            "value": "RIGHT",
+            "description": "$rc:drive_side.descr"
+        },
+        "bearing_tolerance": {
+            "type": "optional",
+            "displayname": "$rc:bearing_tolerance.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "180"
+            },
+            "value": "30",
+            "description": "$rc:bearing_tolerance.descr"
+        },
+        "max_bearing_angle": {
+            "type": "optional",
+            "displayname": "$rc:max_bearing_angle.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "180"
+            },
+            "value": "65",
+            "description": "$rc:max_bearing_angle.descr"
+        }
+    }
+}

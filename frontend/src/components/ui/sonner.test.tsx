@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
-import { axe, toHaveNoViolations} from 'jest-axe';
+import { axe, toHaveNoViolations } from 'jest-axe';
 import { toast } from 'sonner';
 import { Toaster } from './sonner';
 import { Button } from './button';
@@ -50,7 +50,7 @@ describe('Sonner (Toast)', () => {
       const user = userEvent.setup();
       render(
         <>
-          <ToastTrigger message="Test notification" />
+          <ToastTrigger message='Test notification' />
           <Toaster />
         </>
       );
@@ -64,7 +64,7 @@ describe('Sonner (Toast)', () => {
     });
 
     it('renders with custom className', () => {
-      const { container } = render(<Toaster className="custom-toaster" />);
+      const { container } = render(<Toaster className='custom-toaster' />);
       expect(container.querySelector('.custom-toaster')).toBeInTheDocument();
     });
 
@@ -72,11 +72,13 @@ describe('Sonner (Toast)', () => {
       const user = userEvent.setup();
       render(
         <>
-          <Button onClick={() => {
-            toast('First toast');
-            toast('Second toast');
-            toast('Third toast');
-          }}>
+          <Button
+            onClick={() => {
+              toast('First toast');
+              toast('Second toast');
+              toast('Third toast');
+            }}
+          >
             Show Multiple Toasts
           </Button>
           <Toaster />
@@ -119,7 +121,7 @@ describe('Sonner (Toast)', () => {
       const user = userEvent.setup();
       render(
         <>
-          <ToastTrigger message="Success message" type="success" />
+          <ToastTrigger message='Success message' type='success' />
           <Toaster />
         </>
       );
@@ -136,7 +138,7 @@ describe('Sonner (Toast)', () => {
       const user = userEvent.setup();
       render(
         <>
-          <ToastTrigger message="Error message" type="error" />
+          <ToastTrigger message='Error message' type='error' />
           <Toaster />
         </>
       );
@@ -153,7 +155,7 @@ describe('Sonner (Toast)', () => {
       const user = userEvent.setup();
       render(
         <>
-          <ToastTrigger message="Info message" type="info" />
+          <ToastTrigger message='Info message' type='info' />
           <Toaster />
         </>
       );
@@ -170,7 +172,7 @@ describe('Sonner (Toast)', () => {
       const user = userEvent.setup();
       render(
         <>
-          <ToastTrigger message="Warning message" type="warning" />
+          <ToastTrigger message='Warning message' type='warning' />
           <Toaster />
         </>
       );
@@ -187,7 +189,7 @@ describe('Sonner (Toast)', () => {
       const user = userEvent.setup();
       render(
         <>
-          <ToastTrigger message="Loading message" type="loading" />
+          <ToastTrigger message='Loading message' type='loading' />
           <Toaster />
         </>
       );
@@ -208,12 +210,16 @@ describe('Sonner (Toast)', () => {
 
       render(
         <>
-          <Button onClick={() => toast('Message', {
-            action: {
-              label: 'Undo',
-              onClick: actionFn,
-            },
-          })}>
+          <Button
+            onClick={() =>
+              toast('Message', {
+                action: {
+                  label: 'Undo',
+                  onClick: actionFn,
+                },
+              })
+            }
+          >
             Show Toast
           </Button>
           <Toaster />
@@ -239,12 +245,16 @@ describe('Sonner (Toast)', () => {
 
       render(
         <>
-          <Button onClick={() => toast('Message', {
-            cancel: {
-              label: 'Cancel',
-              onClick: cancelFn,
-            },
-          })}>
+          <Button
+            onClick={() =>
+              toast('Message', {
+                cancel: {
+                  label: 'Cancel',
+                  onClick: cancelFn,
+                },
+              })
+            }
+          >
             Show Toast
           </Button>
           <Toaster />
@@ -271,16 +281,20 @@ describe('Sonner (Toast)', () => {
 
       render(
         <>
-          <Button onClick={() => toast('Message', {
-            action: {
-              label: 'Confirm',
-              onClick: actionFn,
-            },
-            cancel: {
-              label: 'Cancel',
-              onClick: cancelFn,
-            },
-          })}>
+          <Button
+            onClick={() =>
+              toast('Message', {
+                action: {
+                  label: 'Confirm',
+                  onClick: actionFn,
+                },
+                cancel: {
+                  label: 'Cancel',
+                  onClick: cancelFn,
+                },
+              })
+            }
+          >
             Show Toast
           </Button>
           <Toaster />
@@ -305,11 +319,15 @@ describe('Sonner (Toast)', () => {
 
       render(
         <>
-          <Button onClick={() => toast.promise(promise, {
-            loading: 'Loading...',
-            success: 'Operation successful!',
-            error: 'Operation failed',
-          })}>
+          <Button
+            onClick={() =>
+              toast.promise(promise, {
+                loading: 'Loading...',
+                success: 'Operation successful!',
+                error: 'Operation failed',
+              })
+            }
+          >
             Show Promise Toast
           </Button>
           <Toaster />
@@ -336,11 +354,15 @@ describe('Sonner (Toast)', () => {
 
       render(
         <>
-          <Button onClick={() => toast.promise(promise, {
-            loading: 'Loading...',
-            success: 'Operation successful!',
-            error: 'Operation failed',
-          })}>
+          <Button
+            onClick={() =>
+              toast.promise(promise, {
+                loading: 'Loading...',
+                success: 'Operation successful!',
+                error: 'Operation failed',
+              })
+            }
+          >
             Show Promise Toast
           </Button>
           <Toaster />
@@ -367,11 +389,15 @@ describe('Sonner (Toast)', () => {
 
       render(
         <>
-          <Button onClick={() => toast.promise(promise, {
-            loading: 'Loading...',
-            success: (data) => `Loaded ${data.name}`,
-            error: 'Failed to load',
-          })}>
+          <Button
+            onClick={() =>
+              toast.promise(promise, {
+                loading: 'Loading...',
+                success: (data) => `Loaded ${data.name}`,
+                error: 'Failed to load',
+              })
+            }
+          >
             Show Promise Toast
           </Button>
           <Toaster />
@@ -392,9 +418,7 @@ describe('Sonner (Toast)', () => {
       const user = userEvent.setup();
       render(
         <>
-          <Button onClick={() => toast('Dismissible toast')}>
-            Show Toast
-          </Button>
+          <Button onClick={() => toast('Dismissible toast')}>Show Toast</Button>
           <Toaster />
         </>
       );
@@ -408,9 +432,10 @@ describe('Sonner (Toast)', () => {
 
       // Find and click close button (sonner adds dismiss button)
       const closeButtons = screen.getAllByRole('button');
-      const closeButton = closeButtons.find(btn => 
-        btn.getAttribute('aria-label')?.includes('close') || 
-        btn.getAttribute('aria-label')?.includes('dismiss')
+      const closeButton = closeButtons.find(
+        (btn) =>
+          btn.getAttribute('aria-label')?.includes('close') ||
+          btn.getAttribute('aria-label')?.includes('dismiss')
       );
 
       if (closeButton) {
@@ -427,9 +452,7 @@ describe('Sonner (Toast)', () => {
       const user = userEvent.setup();
       render(
         <>
-          <Button onClick={() => toast('Accessible toast')}>
-            Show Toast
-          </Button>
+          <Button onClick={() => toast('Accessible toast')}>Show Toast</Button>
           <Toaster />
         </>
       );
@@ -448,9 +471,7 @@ describe('Sonner (Toast)', () => {
       const user = userEvent.setup();
       const { container } = render(
         <>
-          <Button onClick={() => toast('Test message')}>
-            Show Toast
-          </Button>
+          <Button onClick={() => toast('Test message')}>Show Toast</Button>
           <Toaster />
         </>
       );
@@ -470,9 +491,7 @@ describe('Sonner (Toast)', () => {
       const user = userEvent.setup();
       const { container } = render(
         <>
-          <Button onClick={() => toast.success('Success message')}>
-            Show Toast
-          </Button>
+          <Button onClick={() => toast.success('Success message')}>Show Toast</Button>
           <Toaster />
         </>
       );
@@ -492,12 +511,16 @@ describe('Sonner (Toast)', () => {
       const user = userEvent.setup();
       const { container } = render(
         <>
-          <Button onClick={() => toast('Message', {
-            action: {
-              label: 'Undo',
-              onClick: () => {},
-            },
-          })}>
+          <Button
+            onClick={() =>
+              toast('Message', {
+                action: {
+                  label: 'Undo',
+                  onClick: () => {},
+                },
+              })
+            }
+          >
             Show Toast
           </Button>
           <Toaster />
@@ -519,9 +542,13 @@ describe('Sonner (Toast)', () => {
       const user = userEvent.setup();
       const { container } = render(
         <>
-          <Button onClick={() => toast('Title', {
-            description: 'Description text',
-          })}>
+          <Button
+            onClick={() =>
+              toast('Title', {
+                description: 'Description text',
+              })
+            }
+          >
             Show Toast
           </Button>
           <Toaster />
@@ -543,9 +570,13 @@ describe('Sonner (Toast)', () => {
       const user = userEvent.setup();
       const { container } = render(
         <>
-          <Button onClick={() => toast.error('Error message', {
-            description: 'Something went wrong',
-          })}>
+          <Button
+            onClick={() =>
+              toast.error('Error message', {
+                description: 'Something went wrong',
+              })
+            }
+          >
             Show Toast
           </Button>
           <Toaster />
@@ -566,7 +597,7 @@ describe('Sonner (Toast)', () => {
 
   describe('Custom Styling', () => {
     it('applies custom className to Toaster', () => {
-      const { container } = render(<Toaster className="custom-class" />);
+      const { container } = render(<Toaster className='custom-class' />);
       expect(container.firstChild).toHaveClass('custom-class');
     });
 

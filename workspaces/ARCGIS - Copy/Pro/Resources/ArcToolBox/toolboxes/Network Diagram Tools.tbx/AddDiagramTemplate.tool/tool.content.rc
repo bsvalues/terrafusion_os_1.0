@@ -1,0 +1,17 @@
+{
+    "map": {
+        "description": "Adds a new diagram template to a network. A network diagram rule and layout definitions file (.ndbd) and a network diagram layer definition file (.ndld) can be imported.",
+        "in_utility_network.descr": "The utility network or trace network to which the template will be added.",
+        "in_utility_network.title": "Input Network",
+        "ndbd_file.descr": "The network diagram rule and layout definitions file (.ndbd) that will be imported. This file can be created using the Export Diagram Template Definitions tool on an existing template.",
+        "ndbd_file.title": "Rule and Layout Definitions File",
+        "ndld_file.descr": "<xdoc><p>The diagram layer definition file (.ndld) that will be imported. This file can be created using the Export Diagram Template Definitions or Export Diagram Layer Definition tool on an existing template.</p><p>When this parameter is not specified or loads an empty .ndld file, a default diagram layer definition is systematically initialized on the input diagram template.</p></xdoc>",
+        "ndld_file.title": "Diagram Layer Definition File",
+        "out_template_name.title": "Output Diagram Template",
+        "out_utility_network.title": "Output Network",
+        "summary": "<xdoc><p>Adds a new diagram template to a network. A network diagram rule and layout definitions file (.ndbd) and a network diagram layer definition file (.ndld) can be imported.</p><note type=\"caution\"/><p group=\"note\">This tool is a configuration and administration tool.</p></xdoc>",
+        "template_name.descr": "The name of the output diagram template.",
+        "template_name.title": "Diagram Template  Name",
+        "title": "Add Diagram Template"
+    }
+}

@@ -566,11 +566,11 @@ namespace TerraFusion.Core.Services
             return true; // Placeholder implementation
         }
 
-        private async Task<bool> HasEntityPermissionAsync(string userId, string permissionName, string entityId)
+        private System.Threading.Tasks.Task<bool> HasEntityPermissionAsync(string userId, string permissionName, string entityId)
         {
             // This would implement entity-specific permission checking
             // For example, checking if user has permission for specific project, document, etc.
-            return false; // Placeholder implementation
+            return System.Threading.Tasks.Task.FromResult(false); // Placeholder implementation
         }
 
         private int GetClearanceLevel(SecurityClearance clearance)

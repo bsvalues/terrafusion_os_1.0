@@ -1,0 +1,292 @@
+/**
+ * TerraFusion Design System - Design Tokens
+ * Unified source of truth for all design variables
+ */
+
+:root {
+  /* 
+   * BRAND COLORS
+   * Core brand colors for TerraFusion
+   */
+  --tf-blue: hsl(210, 100%, 45%);
+  --tf-teal: hsl(188, 100%, 42%); 
+  --tf-green: hsl(145, 63%, 42%);
+  --tf-orange: hsl(30, 100%, 50%);
+  --tf-red: hsl(0, 85%, 55%);
+  --tf-purple: hsl(265, 83%, 57%);
+  
+  /* 
+   * SEMANTIC COLORS 
+   * Used for specific UI meanings
+   */
+  --tf-primary: var(--tf-teal);
+  --tf-secondary: var(--tf-blue);
+  --tf-success: var(--tf-green);
+  --tf-warning: var(--tf-orange);
+  --tf-error: var(--tf-red);
+  --tf-info: var(--tf-blue);
+  
+  /*
+   * LIGHT THEME VARIABLES
+   * Tailwind/shadcn compatible variables for light mode
+   */
+  --background: 0 0% 100%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --primary: 188 100% 42%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 100% 45%;
+  --secondary-foreground: 222 47% 11%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 265 83% 57%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 85% 55%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 188 100% 42%;
+  
+  /* 
+   * TYPOGRAPHY
+   * Font families, sizes, and weights
+   */
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  
+  /* Font sizes - follow 1.25 scale */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+  --font-size-5xl: 3rem;
+  
+  /* Font weights */
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* Line heights */
+  --line-height-none: 1;
+  --line-height-tight: 1.25;
+  --line-height-snug: 1.375;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+  --line-height-loose: 2;
+  
+  /* Letter spacing */
+  --letter-spacing-tighter: -0.05em;
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-normal: 0em;
+  --letter-spacing-wide: 0.025em;
+  --letter-spacing-wider: 0.05em;
+  --letter-spacing-widest: 0.1em;
+  
+  /* 
+   * SPACING
+   * Consistent spacing scale
+   */
+  --spacing-0: 0;
+  --spacing-px: 1px;
+  --spacing-0-5: 0.125rem;
+  --spacing-1: 0.25rem;
+  --spacing-1-5: 0.375rem;
+  --spacing-2: 0.5rem;
+  --spacing-2-5: 0.625rem;
+  --spacing-3: 0.75rem;
+  --spacing-3-5: 0.875rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.25rem;
+  --spacing-6: 1.5rem;
+  --spacing-8: 2rem;
+  --spacing-10: 2.5rem;
+  --spacing-12: 3rem;
+  --spacing-16: 4rem;
+  --spacing-20: 5rem;
+  --spacing-24: 6rem;
+  --spacing-32: 8rem;
+  --spacing-40: 10rem;
+  
+  /* 
+   * BORDER RADIUS
+   * Consistent radius scale
+   */
+  --radius: 0.5rem;
+  --radius-none: 0;
+  --radius-sm: 0.125rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-full: 9999px;
+  
+  /* 
+   * SHADOWS
+   * Elevation system with consistent shadows
+   */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  
+  /* 
+   * ANIMATIONS & TRANSITIONS
+   * Consistent timing functions and durations
+   */
+  --transition-duration-fast: 150ms;
+  --transition-duration-normal: 250ms;
+  --transition-duration-slow: 350ms;
+  --transition-timing-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-timing-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --transition-timing-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --transition-timing-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* 
+   * Z-INDEX
+   * Consistent z-index scale
+   */
+  --z-0: 0;
+  --z-10: 10;
+  --z-20: 20;
+  --z-30: 30;
+  --z-40: 40;
+  --z-50: 50;
+  --z-auto: auto;
+  
+  /* 
+   * EFFECTS
+   * Special visual effects
+   */
+  --glassmorphism-bg: rgba(255, 255, 255, 0.25);
+  --glassmorphism-border: 1px solid rgba(255, 255, 255, 0.18);
+  --glassmorphism-blur: blur(12px);
+  --glassmorphism-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+/* 
+ * DARK THEME
+ * Override variables for dark mode
+ */
+.dark {
+  --background: 222 47% 11%;
+  --foreground: 210 40% 98%;
+  --card: 222 47% 11%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222 47% 11%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 188 100% 42%;
+  --primary-foreground: 222 47% 11%;
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+  --accent: 265 83% 57%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 85% 55%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 188 100% 42%;
+  
+  --glassmorphism-bg: rgba(17, 25, 40, 0.75);
+  --glassmorphism-border: 1px solid rgba(255, 255, 255, 0.125);
+}
+
+/*
+ * UTILITIES & COMPONENT CLASSES
+ * Reusable utility classes
+ */
+
+/* Glassmorphic effect */
+.tf-glass {
+  background: var(--glassmorphism-bg);
+  backdrop-filter: var(--glassmorphism-blur);
+  -webkit-backdrop-filter: var(--glassmorphism-blur);
+  border: var(--glassmorphism-border);
+  box-shadow: var(--glassmorphism-shadow);
+}
+
+/* Typography classes */
+.tf-heading {
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+}
+
+.tf-body {
+  font-family: var(--font-sans);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+}
+
+.tf-mono {
+  font-family: var(--font-mono);
+  font-weight: var(--font-weight-normal);
+}
+
+/* Navigation item style */
+.tf-nav-item {
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-duration-fast) var(--transition-timing-ease);
+}
+
+.tf-nav-item:hover {
+  background-color: hsl(var(--muted));
+}
+
+.tf-nav-item.active {
+  background-color: hsl(var(--primary) / 0.1);
+  color: hsl(var(--primary));
+  font-weight: var(--font-weight-medium);
+}
+
+/* Card styles */
+.tf-card {
+  background-color: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.tf-card-glass {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  background: var(--glassmorphism-bg);
+  backdrop-filter: var(--glassmorphism-blur);
+  -webkit-backdrop-filter: var(--glassmorphism-blur);
+  border: var(--glassmorphism-border);
+}
+
+/* Visual indication */
+.tf-glow-effect {
+  position: relative;
+  transition: all var(--transition-duration-normal) var(--transition-timing-ease);
+}
+
+.tf-glow-effect:hover {
+  box-shadow: 0 0 8px 2px hsl(var(--primary) / 0.5);
+}
+
+.tf-ai-icon {
+  color: hsl(var(--primary));
+  background-color: hsl(var(--primary) / 0.1);
+}
+
+.tf-ai-icon:hover {
+  background-color: hsl(var(--primary) / 0.2);
+}

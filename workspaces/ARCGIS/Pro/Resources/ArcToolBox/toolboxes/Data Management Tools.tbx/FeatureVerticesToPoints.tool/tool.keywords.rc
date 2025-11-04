@@ -1,0 +1,23 @@
+{
+    "set": [
+        "begin",
+        "connect",
+        "dangle",
+        "dot",
+        "end",
+        "from",
+        "geometry",
+        "half",
+        "intersection",
+        "mid",
+        "midpoint",
+        "node",
+        "origin",
+        "start",
+        "to",
+        "topology",
+        "transform",
+        "vector",
+        "vertex"
+    ]
+}

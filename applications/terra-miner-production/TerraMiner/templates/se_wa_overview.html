@@ -1,0 +1,178 @@
+{% extends "unified_base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-secondary-900 dark:text-white">Southeastern Washington Property Assessment</h1>
+        <p class="mt-2 text-secondary-600 dark:text-secondary-400">
+            Comprehensive property assessment tools and data for counties in Southeastern Washington.
+        </p>
+    </div>
+    
+    <!-- County Information Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {% for county_key, county in counties.items() %}
+        <div class="card hover:shadow-lg transition-shadow">
+            <div class="card-body">
+                <h2 class="text-lg font-medium text-secondary-900 dark:text-white mb-2">{{ county.name }}</h2>
+                <p class="text-secondary-600 dark:text-secondary-400 mb-4">County Seat: {{ county.seat }}</p>
+                
+                <div class="mb-4">
+                    <h3 class="text-sm font-medium text-secondary-900 dark:text-white mb-1">Key Areas</h3>
+                    <div class="flex flex-wrap gap-2">
+                        {% for area in county.key_areas %}
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary-100 text-secondary-800 dark:bg-secondary-700 dark:text-secondary-300">
+                            {{ area }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="flex justify-between items-center mt-auto pt-4 border-t border-secondary-200 dark:border-secondary-700">
+                    <a href="{{ county.assessor_url }}" target="_blank" class="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300 text-sm">
+                        Assessor's Office
+                    </a>
+                    <a href="{{ county.gis_url }}" target="_blank" class="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300 text-sm">
+                        GIS Maps
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Assessment Tools -->
+    <div class="card mb-8">
+        <div class="card-header">
+            <h2 class="text-lg font-medium text-secondary-900 dark:text-white">Assessment Tools</h2>
+        </div>
+        <div class="card-body">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="p-4 bg-secondary-50 rounded-lg dark:bg-secondary-800">
+                    <div class="flex items-center mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary-500 dark:text-primary-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                        <h3 class="text-lg font-medium text-secondary-900 dark:text-white">Assessment Calculator</h3>
+                    </div>
+                    <p class="text-secondary-600 dark:text-secondary-400 mb-4">
+                        Calculate property assessments using local market factors, depreciation tables, and county-specific methodologies.
+                    </p>
+                    <a href="#" class="btn btn-primary-outline btn-sm">
+                        Open Calculator
+                    </a>
+                </div>
+                
+                <div class="p-4 bg-secondary-50 rounded-lg dark:bg-secondary-800">
+                    <div class="flex items-center mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary-500 dark:text-primary-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <h3 class="text-lg font-medium text-secondary-900 dark:text-white">Assessment Calendar</h3>
+                    </div>
+                    <p class="text-secondary-600 dark:text-secondary-400 mb-4">
+                        View important dates for assessment cycles, appeal deadlines, and tax payment schedules.
+                    </p>
+                    <a href="#" class="btn btn-primary-outline btn-sm">
+                        View Calendar
+                    </a>
+                </div>
+                
+                <div class="p-4 bg-secondary-50 rounded-lg dark:bg-secondary-800">
+                    <div class="flex items-center mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary-500 dark:text-primary-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        <h3 class="text-lg font-medium text-secondary-900 dark:text-white">Market Analysis</h3>
+                    </div>
+                    <p class="text-secondary-600 dark:text-secondary-400 mb-4">
+                        Analyze regional market trends, property value changes, and sales data for equitable assessment.
+                    </p>
+                    <a href="#" class="btn btn-primary-outline btn-sm">
+                        View Analysis
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Regional Insights -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="text-lg font-medium text-secondary-900 dark:text-white">Regional Assessment Insights</h2>
+        </div>
+        <div class="card-body">
+            <div class="space-y-6">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-500 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-md font-medium text-secondary-900 dark:text-white">Agricultural Property Valuation</h3>
+                        <p class="mt-1 text-secondary-600 dark:text-secondary-400">
+                            Agricultural properties in Southeastern Washington are assessed based on their current use value, not market value.
+                            This includes consideration of water rights, soil quality, and crop yields over a 5-year period.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-500 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-md font-medium text-secondary-900 dark:text-white">Vineyard and Winery Valuations</h3>
+                        <p class="mt-1 text-secondary-600 dark:text-secondary-400">
+                            The unique vineyard and winery properties in Walla Walla and Benton counties require specialized
+                            assessment methodologies that account for both agricultural and commercial components.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-500 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-md font-medium text-secondary-900 dark:text-white">Hanford Area Special Considerations</h3>
+                        <p class="mt-1 text-secondary-600 dark:text-secondary-400">
+                            Properties in North Richland and other areas near the Hanford Site may have special assessment
+                            considerations due to their proximity to federal lands and the unique employment market.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary-500 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-md font-medium text-secondary-900 dark:text-white">Water Rights Valuation</h3>
+                        <p class="mt-1 text-secondary-600 dark:text-secondary-400">
+                            Water rights in Southeastern Washington are a critical component of property value,
+                            particularly for agricultural land. Proper documentation and valuation of these rights
+                            is essential for accurate assessment.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6 pt-6 border-t border-secondary-200 dark:border-secondary-700">
+                <a href="{{ url_for('se_wa.se_washington_demo') }}" class="btn btn-primary">
+                    View Demo Properties
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

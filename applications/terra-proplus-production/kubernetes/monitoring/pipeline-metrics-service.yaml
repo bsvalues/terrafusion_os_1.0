@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pipeline-metrics
+  namespace: terrafusion-prod
+  labels:
+    app: pipeline-metrics
+    component: monitoring
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8080"
+    prometheus.io/path: "/metrics"
+spec:
+  selector:
+    app: terrafusion
+    component: pipeline-service
+  ports:
+  - name: metrics
+    port: 8080
+    targetPort: metrics
+  type: ClusterIP

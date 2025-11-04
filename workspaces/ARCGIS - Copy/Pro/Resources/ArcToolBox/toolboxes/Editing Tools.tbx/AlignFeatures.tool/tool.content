@@ -1,0 +1,126 @@
+{
+    "type": "FunctionTool",
+    "guid": "{950c4662-b187-43d4-ba22-804093fc5d28}",
+    "displayname": "$rc:title",
+    "helpcontent": "24010007",
+    "description": "$rc:description",
+    "product": "300",
+    "attributes": [
+        "edit_session",
+        "input_data_change"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline",
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple",
+                    "SimpleJunction",
+                    "SimpleEdge",
+                    "ComplexJunction",
+                    "ComplexEdge",
+                    "RasterCatalogItem"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "target_features": {
+            "displayname": "$rc:target_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline",
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple",
+                    "SimpleJunction",
+                    "SimpleEdge",
+                    "ComplexJunction",
+                    "ComplexEdge",
+                    "RasterCatalogItem"
+                ]
+            },
+            "description": "$rc:target_features.descr"
+        },
+        "search_distance": {
+            "displayname": "$rc:search_distance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "target_features"
+            ],
+            "description": "$rc:search_distance.descr"
+        },
+        "match_fields": {
+            "type": "optional",
+            "control_guid": "{C99D0042-EF42-4B04-8A0B-1A53F6DB67A6}",
+            "displayname": "$rc:match_fields.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:match_fields.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:match_fields.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Date",
+                    "Blob",
+                    "Raster",
+                    "XML",
+                    "GUID",
+                    "OID"
+                ],
+                "exclude.field": [
+                    "SHAPE_Length",
+                    "SHAPE_Area"
+                ]
+            },
+            "depends": [
+                "in_features",
+                "target_features"
+            ],
+            "description": "$rc:match_fields.descr"
+        },
+        "out_feature_class": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "in_features"
+            ]
+        }
+    },
+    "environments": [
+        "extent",
+        "workspace"
+    ]
+}

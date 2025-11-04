@@ -1,0 +1,16 @@
+{
+    "set": [
+        "add",
+        "create",
+        "edit",
+        "lidar",
+        "mass points",
+        "multipoints",
+        "multiresolution surface",
+        "surface",
+        "terrain",
+        "terrain dataset",
+        "terrains",
+        "triangulated"
+    ]
+}

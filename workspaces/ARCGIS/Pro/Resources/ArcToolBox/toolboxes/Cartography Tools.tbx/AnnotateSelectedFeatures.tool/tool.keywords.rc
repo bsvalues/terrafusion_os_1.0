@@ -1,0 +1,13 @@
+{
+    "set": [
+        "anno",
+        "annotation",
+        "convert",
+        "create",
+        "generate",
+        "geodatabase",
+        "label",
+        "labels",
+        "text"
+    ]
+}

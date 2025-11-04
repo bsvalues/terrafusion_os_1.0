@@ -1,0 +1,525 @@
+version: "3.8"
+
+# 🛡️ BULLETPROOF TERRAFUSION OS - SERVICE MESH ARCHITECTURE
+# Championship-Level Resilience with Istio Sidecar Proxies
+# Government-Grade Service Discovery and Fault Tolerance
+
+# Global configuration for bulletproof services
+x-common-variables: &common-variables
+  TERRAFUSION_ENVIRONMENT: ${TERRAFUSION_ENVIRONMENT:-production}
+  ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+
+  # Service Mesh Configuration
+  ISTIO_SIDECAR_ENABLED: "true"
+  SERVICE_MESH_NAMESPACE: "terrafusion-system"
+  MTLS_MODE: "STRICT"
+
+  # Circuit Breaker Settings
+  CIRCUIT_BREAKER_ENABLED: "true"
+  CIRCUIT_BREAKER_THRESHOLD: "5"
+  CIRCUIT_BREAKER_TIMEOUT: "30s"
+
+  # Retry Policy Configuration
+  RETRY_ATTEMPTS: "3"
+  RETRY_BACKOFF: "exponential"
+  RETRY_MAX_INTERVAL: "10s"
+
+  # Health Check Configuration
+  HEALTH_CHECK_INTERVAL: "10s"
+  HEALTH_CHECK_TIMEOUT: "5s"
+  HEALTH_CHECK_RETRIES: "3"
+
+  # Database Configuration (Multi-Master Setup)
+  POSTGRES_PRIMARY_HOST: postgres-primary
+  POSTGRES_REPLICA_HOST: postgres-replica
+  POSTGRES_PORT: 5432
+  POSTGRES_DB: terrafusion_os
+  POSTGRES_USER: ${POSTGRES_USER:-terrafusion}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-TerraFusion2024!}
+
+  # Cache Configuration (Redis Cluster)
+  REDIS_CLUSTER_ENABLED: "true"
+  REDIS_PRIMARY_HOST: redis-primary
+  REDIS_REPLICA_HOST: redis-replica
+  REDIS_PORT: 6379
+  REDIS_PASSWORD: ${REDIS_PASSWORD:-TerraFusion2024!}
+
+  # Message Broker (RabbitMQ Cluster)
+  RABBITMQ_CLUSTER_ENABLED: "true"
+  RABBITMQ_PRIMARY_HOST: rabbitmq-primary
+  RABBITMQ_REPLICA_HOST: rabbitmq-replica
+  RABBITMQ_PORT: 5672
+  RABBITMQ_USER: ${RABBITMQ_USER:-terrafusion}
+  RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-TerraFusion2024!}
+
+  # Security Configuration
+  JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-for-production}
+  ENCRYPTION_KEY: ${ENCRYPTION_KEY:-your-256-bit-encryption-key}
+
+  # Government Compliance
+  FISMA_COMPLIANCE_LEVEL: "HIGH"
+  FEDRAMP_AUTHORIZATION: "MODERATE"
+  AUDIT_LOGGING_ENABLED: "true"
+  DATA_CLASSIFICATION: "OFFICIAL"
+
+x-common-labels: &common-labels
+  - "traefik.enable=true"
+  - "terrafusion.system=bulletproof-mesh"
+  - "terrafusion.version=1.0"
+  - "government.compliance=FISMA-HIGH"
+  - "security.classification=OFFICIAL"
+  - "mesh.sidecar=istio-proxy"
+
+x-health-check: &health-check
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 60s
+
+x-resource-limits: &resource-limits
+  deploy:
+    resources:
+      limits:
+        cpus: "1.0"
+        memory: 1G
+      reservations:
+        cpus: "0.25"
+        memory: 256M
+    restart_policy:
+      condition: on-failure
+      delay: 5s
+      max_attempts: 3
+      window: 120s
+
+networks:
+  terrafusion-mesh:
+    driver: overlay
+    driver_opts:
+      encrypted: "true"
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16
+        - subnet: 2001:db8::/64
+  terrafusion-backend:
+    driver: overlay
+    driver_opts:
+      encrypted: "true"
+    internal: true
+    ipam:
+      config:
+        - subnet: 172.31.0.0/16
+
+volumes:
+  postgres-primary-data:
+  postgres-replica-data:
+  redis-primary-data:
+  redis-replica-data:
+  prometheus-data:
+  grafana-data:
+  consul-data:
+  istio-certs:
+
+services:
+  # ==================================================
+  # SERVICE MESH CONTROL PLANE
+  # ==================================================
+
+  # Istio Pilot (Service Discovery and Configuration)
+  istio-pilot:
+    image: istio/pilot:1.19.0
+    container_name: terrafusion-istio-pilot
+    restart: unless-stopped
+    networks:
+      - terrafusion-mesh
+    ports:
+      - "15010:15010" # gRPC
+      - "15011:15011" # HTTPS
+      - "8080:8080" # HTTP debugging
+    environment:
+      PILOT_ENABLE_WORKLOAD_ENTRY_AUTOREGISTRATION: "true"
+      PILOT_ENABLE_CROSS_CLUSTER_WORKLOAD_ENTRY: "true"
+      EXTERNAL_ISTIOD: "false"
+    volumes:
+      - istio-certs:/etc/ssl/certs
+    command: >
+      discovery
+      --monitoringAddr=:15014
+      --log_output_level=default:info
+      --domain=cluster.local
+      --keepaliveMaxServerConnectionAge=30m
+    labels: *common-labels
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/ready"]
+      <<: *health-check
+
+  # Istio Proxy (Sidecar for services)
+  istio-proxy:
+    image: istio/proxyv2:1.19.0
+    container_name: terrafusion-istio-proxy
+    restart: unless-stopped
+    networks:
+      - terrafusion-mesh
+    environment:
+      PILOT_CERT_PROVIDER: "istiod"
+      CA_ADDR: "istio-pilot:15011"
+    labels: *common-labels
+
+  # ==================================================
+  # HIGH AVAILABILITY DATA LAYER
+  # ==================================================
+
+  # PostgreSQL Primary (Master)
+  postgres-primary:
+    image: postgres:15-alpine
+    container_name: terrafusion-postgres-primary
+    restart: unless-stopped
+    networks:
+      - terrafusion-backend
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-primary-data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+      - ./database/replication:/etc/postgresql/conf.d
+    environment:
+      <<: *common-variables
+      POSTGRES_REPLICATION_MODE: master
+      POSTGRES_REPLICATION_USER: replicator
+      POSTGRES_REPLICATION_PASSWORD: ${POSTGRES_REPLICATION_PASSWORD:-ReplicationKey2024!}
+    command: >
+      postgres
+      -c wal_level=replica
+      -c max_wal_senders=3
+      -c max_replication_slots=3
+      -c checkpoint_completion_target=0.7
+      -c wal_compression=on
+      -c shared_preload_libraries=pg_stat_statements
+    labels: *common-labels
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
+      <<: *health-check
+    <<: *resource-limits
+
+  # PostgreSQL Replica (Standby)
+  postgres-replica:
+    image: postgres:15-alpine
+    container_name: terrafusion-postgres-replica
+    restart: unless-stopped
+    networks:
+      - terrafusion-backend
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-replica-data:/var/lib/postgresql/data
+    environment:
+      <<: *common-variables
+      POSTGRES_REPLICATION_MODE: slave
+      POSTGRES_MASTER_HOST: postgres-primary
+      POSTGRES_REPLICATION_USER: replicator
+      POSTGRES_REPLICATION_PASSWORD: ${POSTGRES_REPLICATION_PASSWORD:-ReplicationKey2024!}
+    depends_on:
+      - postgres-primary
+    labels: *common-labels
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
+      <<: *health-check
+    <<: *resource-limits
+
+  # Redis Primary (Master)
+  redis-primary:
+    image: redis:7-alpine
+    container_name: terrafusion-redis-primary
+    restart: unless-stopped
+    networks:
+      - terrafusion-backend
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-primary-data:/data
+      - ./redis/redis-primary.conf:/usr/local/etc/redis/redis.conf
+    command: >
+      redis-server /usr/local/etc/redis/redis.conf
+      --appendonly yes
+      --requirepass ${REDIS_PASSWORD:-TerraFusion2024!}
+      --replica-announce-ip redis-primary
+      --replica-announce-port 6379
+    labels: *common-labels
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      <<: *health-check
+    <<: *resource-limits
+
+  # Redis Replica (Standby)
+  redis-replica:
+    image: redis:7-alpine
+    container_name: terrafusion-redis-replica
+    restart: unless-stopped
+    networks:
+      - terrafusion-backend
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis-replica-data:/data
+      - ./redis/redis-replica.conf:/usr/local/etc/redis/redis.conf
+    command: >
+      redis-server /usr/local/etc/redis/redis.conf
+      --replicaof redis-primary 6379
+      --masterauth ${REDIS_PASSWORD:-TerraFusion2024!}
+      --requirepass ${REDIS_PASSWORD:-TerraFusion2024!}
+    depends_on:
+      - redis-primary
+    labels: *common-labels
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      <<: *health-check
+    <<: *resource-limits
+
+  # ==================================================
+  # BULLETPROOF TERRAFUSION SERVICES
+  # ==================================================
+
+  # API Gateway with Circuit Breaker
+  terrafusion-gateway:
+    build:
+      context: .
+      dockerfile: TerraFusion.Gateway/Dockerfile.Bulletproof
+    container_name: terrafusion-gateway-bulletproof
+    restart: unless-stopped
+    networks:
+      - terrafusion-mesh
+      - terrafusion-backend
+    ports:
+      - "5000:5000"
+      - "15090:15090" # Envoy admin
+    environment:
+      <<: *common-variables
+      SERVICE_NAME: gateway
+      SERVICE_PORT: 5000
+      OCELOT_CONFIG_PATH: /app/ocelot.bulletproof.json
+      ISTIO_SIDECAR_ENABLED: "true"
+    depends_on:
+      - istio-pilot
+      - postgres-primary
+      - redis-primary
+    volumes:
+      - ./configs/ocelot.bulletproof.json:/app/ocelot.bulletproof.json
+      - ./configs/envoy-sidecar.yaml:/etc/envoy/envoy.yaml
+    labels:
+      - "traefik.enable=true"
+      - "terrafusion.system=bulletproof-mesh"
+      - "terrafusion.version=1.0"
+      - "government.compliance=FISMA-HIGH"
+      - "security.classification=OFFICIAL"
+      - "mesh.sidecar=istio-proxy"
+      - "traefik.http.routers.gateway.rule=Host(`api.terrafusion.gov`)"
+      - "traefik.http.services.gateway.loadbalancer.server.port=5000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      <<: *health-check
+    <<: *resource-limits
+
+  # TerraFusion API with Resilience Patterns
+  terrafusion-api:
+    build:
+      context: .
+      dockerfile: TerraFusion.API/Dockerfile.Bulletproof
+    container_name: terrafusion-api-bulletproof
+    restart: unless-stopped
+    networks:
+      - terrafusion-mesh
+      - terrafusion-backend
+    ports:
+      - "5001:5001"
+      - "15091:15090" # Envoy admin
+    environment:
+      <<: *common-variables
+      SERVICE_NAME: terrafusion-api
+      SERVICE_PORT: 5001
+      CONNECTION_STRING: "Host=postgres-primary;Database=terrafusion_os;Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+      REDIS_CONNECTION: "redis-primary:6379,password=${REDIS_PASSWORD}"
+    depends_on:
+      - istio-pilot
+      - postgres-primary
+      - redis-primary
+      - terrafusion-gateway
+    labels: *common-labels
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/health"]
+      <<: *health-check
+    <<: *resource-limits
+
+  # Elite Operations Service with Circuit Breakers
+  terrafusion-operations:
+    build:
+      context: .
+      dockerfile: TerraFusion.Operations/Dockerfile.Bulletproof
+    container_name: terrafusion-operations-bulletproof
+    restart: unless-stopped
+    networks:
+      - terrafusion-mesh
+      - terrafusion-backend
+    ports:
+      - "5002:5002"
+      - "15092:15090" # Envoy admin
+    environment:
+      <<: *common-variables
+      SERVICE_NAME: elite-operations
+      SERVICE_PORT: 5002
+      AI_AGENT_COUNT: 10008
+      PERFORMANCE_MONITORING: "enabled"
+    depends_on:
+      - istio-pilot
+      - postgres-primary
+      - redis-primary
+    labels: *common-labels
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5002/health"]
+      <<: *health-check
+    <<: *resource-limits
+
+  # AI Service with Fault Tolerance
+  terrafusion-ai:
+    build:
+      context: .
+      dockerfile: TerraFusion.AI/Dockerfile.Bulletproof
+    container_name: terrafusion-ai-bulletproof
+    restart: unless-stopped
+    networks:
+      - terrafusion-mesh
+      - terrafusion-backend
+    ports:
+      - "5003:5003"
+      - "15093:15090" # Envoy admin
+    environment:
+      <<: *common-variables
+      SERVICE_NAME: ai-intelligence
+      SERVICE_PORT: 5003
+      AI_MODEL_PATH: /app/models
+      QUANTUM_OPTIMIZATION: "enabled"
+    depends_on:
+      - istio-pilot
+      - postgres-primary
+      - redis-primary
+    volumes:
+      - ./ai-models:/app/models:ro
+    labels: *common-labels
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5003/health"]
+      <<: *health-check
+    <<: *resource-limits
+
+  # ==================================================
+  # MONITORING AND OBSERVABILITY (ENHANCED)
+  # ==================================================
+
+  # Prometheus with Service Mesh Metrics
+  prometheus:
+    image: prom/prometheus:v2.47.0
+    container_name: terrafusion-prometheus-bulletproof
+    restart: unless-stopped
+    networks:
+      - terrafusion-mesh
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus-data:/prometheus
+      - ./monitoring/prometheus-bulletproof.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/rules:/etc/prometheus/rules
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=720h"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+      - "--web.enable-lifecycle"
+      - "--web.enable-admin-api"
+    labels: *common-labels
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:9090/-/healthy",
+        ]
+      <<: *health-check
+
+  # Grafana with Bulletproof Dashboards
+  grafana:
+    image: grafana/grafana:10.1.0
+    container_name: terrafusion-grafana-bulletproof
+    restart: unless-stopped
+    networks:
+      - terrafusion-mesh
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards-bulletproof:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-TerraFusion2024!}
+      GF_INSTALL_PLUGINS: "grafana-piechart-panel,grafana-worldmap-panel,grafana-clock-panel"
+      GF_FEATURE_TOGGLES_ENABLE: "ngalert"
+    depends_on:
+      - prometheus
+    labels: *common-labels
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f localhost:3000/api/health"]
+      <<: *health-check
+
+  # Jaeger for Distributed Tracing
+  jaeger:
+    image: jaegertracing/all-in-one:1.49
+    container_name: terrafusion-jaeger-bulletproof
+    restart: unless-stopped
+    networks:
+      - terrafusion-mesh
+    ports:
+      - "16686:16686" # UI
+      - "14268:14268" # HTTP collector
+      - "14250:14250" # gRPC collector
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+      COLLECTOR_ZIPKIN_HOST_PORT: ":9411"
+    labels: *common-labels
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:16686/",
+        ]
+      <<: *health-check
+
+# ==================================================
+# BULLETPROOF CONFIGURATION FILES
+# ==================================================
+
+configs:
+  ocelot-bulletproof:
+    file: ./configs/ocelot.bulletproof.json
+  envoy-sidecar:
+    file: ./configs/envoy-sidecar.yaml
+  prometheus-bulletproof:
+    file: ./monitoring/prometheus-bulletproof.yml
+
+# ==================================================
+# SECRETS MANAGEMENT
+# ==================================================
+
+secrets:
+  postgres-password:
+    external: true
+  redis-password:
+    external: true
+  jwt-secret:
+    external: true
+  encryption-key:
+    external: true

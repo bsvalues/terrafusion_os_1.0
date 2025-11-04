@@ -1,0 +1,14 @@
+{
+    "map": {
+        "cell_size.descr": "<xdoc><p>The cell size of the output raster being created.</p><p>This parameter can be defined by a numeric value or obtained from an existing raster dataset. If the cell size hasn’t been explicitly specified as the parameter value, the environment cell size value is used, if specified; otherwise, additional rules are used to calculate it from the other inputs. See Usages for more detail.</p></xdoc>",
+        "cell_size.title": "Output cell size",
+        "description": "Converts features to a raster dataset.",
+        "field.descr": "<xdoc><p>The field used to assign values to the output raster.</p><p>It can be any field of the input feature dataset&apos;s attribute table.</p><p>If the <span class=\"esri_fieldname\">Shape</span> field of a point or multipoint dataset contains z- or m-values, either of these can be used.</p></xdoc>",
+        "field.title": "Field",
+        "in_features.descr": "The input feature dataset to be converted to a raster dataset.",
+        "in_features.title": "Input features",
+        "out_raster.descr": "<xdoc><p>The output raster dataset to be created.</p><p>If the output raster will not be saved to a geodatabase, specify .tif for TIFF file format, .CRF for CRF file format, .img for ERDAS IMAGINE file format, or no extension for Esri Grid raster format.</p></xdoc>",
+        "out_raster.title": "Output raster",
+        "title": "Feature to Raster"
+    }
+}

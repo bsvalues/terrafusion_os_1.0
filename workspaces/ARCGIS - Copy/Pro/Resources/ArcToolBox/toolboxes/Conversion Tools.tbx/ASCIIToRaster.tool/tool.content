@@ -1,0 +1,67 @@
+{
+    "type": "FunctionTool",
+    "guid": "{b83ee306-e8aa-49fa-a2ee-efd2f8c64daf}",
+    "displayname": "$rc:title",
+    "helpcontent": "2060001",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_ascii_file": {
+            "displayname": "$rc:in_ascii_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "TXT",
+                    "ASC"
+                ]
+            },
+            "description": "$rc:in_ascii_file.descr"
+        },
+        "out_raster": {
+            "direction": "out",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_raster.descr"
+        },
+        "data_type": {
+            "type": "optional",
+            "displayname": "$rc:data_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "INTEGER",
+                        "code": "$rc:data_type.domain.INTEGER"
+                    },
+                    {
+                        "value": "FLOAT",
+                        "code": "$rc:data_type.domain.FLOAT"
+                    }
+                ]
+            },
+            "value": "INTEGER",
+            "description": "$rc:data_type.descr"
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "compression",
+        "configKeyword",
+        "pyramid",
+        "rasterStatistics",
+        "scratchWorkspace",
+        "tileSize",
+        "workspace"
+    ]
+}

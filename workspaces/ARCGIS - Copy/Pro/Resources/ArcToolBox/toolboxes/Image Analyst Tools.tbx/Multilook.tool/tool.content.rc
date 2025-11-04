@@ -1,0 +1,17 @@
+{
+    "map": {
+        "azimuth_looks.descr": "The integer number of looks in the azimuth direction. If no value is provided, the minimum number of looks required to create an approximate square pixel will be used.",
+        "azimuth_looks.title": "Azimuth Looks",
+        "description": "Averages the input synthetic aperture radar (SAR) data  by looks in range and azimuth to approximate square pixels, mitigates speckle, and reduces SAR tool processing time.",
+        "in_radar_data.descr": "The input radar data.",
+        "in_radar_data.title": "Input Radar Data",
+        "out_radar_data.descr": "The output multilook radar data.",
+        "out_radar_data.title": "Output Radar Data",
+        "polarization_bands.descr": "<xdoc><p>The polarization bands that will be corrected.</p><p>The first band is selected by default.</p></xdoc>",
+        "polarization_bands.title": "Polarization Bands",
+        "range_looks.descr": "The integer number of looks in the range direction. If no value is provided, the minimum number of looks required to create an approximate square pixel will be used.",
+        "range_looks.title": "Range Looks",
+        "summary": "Averages the input synthetic aperture radar (SAR) data by looks in range and azimuth to approximate square pixels, mitigates speckle, and reduces SAR tool processing time.",
+        "title": "Multilook"
+    }
+}

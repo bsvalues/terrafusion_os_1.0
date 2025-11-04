@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion Property Record Card</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .prc-container {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            height: 100vh;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .prc-header {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .property-identity {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .parcel-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 210, 255, 0.3);
+        }
+
+        .property-details h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #00d2ff, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.3rem;
+        }
+
+        .property-subtitle {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .property-metrics {
+            display: flex;
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .metric-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00d2ff;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-top: 0.3rem;
+        }
+
+        .prc-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(0, 210, 255, 0.3);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0, 210, 255, 0.5);
+        }
+
+        .action-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: none;
+        }
+
+        /* Main Content Grid */
+        .prc-main {
+            display: grid;
+            grid-template-columns: 1fr 1fr 400px;
+            gap: 1rem;
+            padding: 1rem 2rem;
+            overflow: hidden;
+        }
+
+        .prc-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        /* Map Section */
+        .map-container {
+            height: 300px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .map-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .map-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            color: white;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .map-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .map-btn.active {
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+        }
+
+        /* Property Details */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .detail-card h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            color: #00d2ff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.5rem 0;
+            padding: 0.3rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .detail-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .editable-field {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            padding: 0.3rem 0.5rem;
+            color: white;
+            font-size: 0.9rem;
+            min-width: 100px;
+        }
+
+        /* Statistics Panel */
+        .stats-panel {
+            overflow-y: auto;
+        }
+
+        .stat-comparison {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comparison-header {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            color: #00d2ff;
+        }
+
+        .comparison-bar {
+            display: flex;
+            align-items: center;
+            margin: 0.5rem 0;
+        }
+
+        .bar-label {
+            width: 120px;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .bar-visual {
+            flex: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin: 0 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .bar-value {
+            font-size: 0.8rem;
+            font-weight: 600;
+            min-width: 60px;
+        }
+
+        .chart-container {
+            height: 200px;
+            margin: 1rem 0;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        /* Agent Panel */
+        .agent-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .agent-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.8rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .agent-card:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .agent-card.active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .agent-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .agent-status {
+            font-size: 0.7rem;
+            opacity: 0.8;
+        }
+
+        .ai-chat {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .chat-messages {
+            max-height: 150px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+
+        .chat-message {
+            margin-bottom: 0.8rem;
+            padding: 0.6rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .chat-message.agent {
+            background: rgba(34, 197, 94, 0.2);
+            border-left: 3px solid #22c55e;
+        }
+
+        .chat-message.user {
+            background: rgba(0, 210, 255, 0.2);
+            border-left: 3px solid #00d2ff;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            padding: 0.6rem;
+            color: white;
+            font-size: 0.8rem;
+        }
+
+        .chat-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .send-btn {
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        /* Footer */
+        .prc-footer {
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-info {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .footer-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .notification-badge {
+            background: #ef4444;
+            color: white;
+            border-radius: 10px;
+            padding: 0.2rem 0.5rem;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: 0.5rem;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .status-good { background: #22c55e; }
+        .status-warning { background: #f59e0b; }
+        .status-error { background: #ef4444; }
+
+        @media (max-width: 1400px) {
+            .prc-main {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: 1fr auto;
+            }
+            
+            .stats-panel {
+                grid-column: 1 / -1;
+                max-height: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .prc-main {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+            
+            .prc-header {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .property-metrics {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="prc-container">
+        <!-- Header -->
+        <div class="prc-header">
+            <div class="property-identity">
+                <div class="parcel-icon">🏡</div>
+                <div class="property-details">
+                    <h1>Parcel 1102234412</h1>
+                    <div class="property-subtitle">123 Main Street, Richland, WA 99354</div>
+                </div>
+            </div>
+            
+            <div class="property-metrics">
+                <div class="metric-item">
+                    <div class="metric-value">$485,200</div>
+                    <div class="metric-label">Assessed Value</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">2,340</div>
+                    <div class="metric-label">Sq Ft</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">97.3%</div>
+                    <div class="metric-label">AI Confidence</div>
+                </div>
+            </div>
+            
+            <div class="prc-actions">
+                <button class="action-btn" onclick="runValuation()">Run Valuation</button>
+                <button class="action-btn secondary" onclick="launchQA()">QA Check</button>
+                <button class="action-btn secondary" onclick="exportPRC()">Export PRC</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="prc-main">
+            <!-- GIS & Map Section -->
+            <div class="prc-section">
+                <div class="section-header">
+                    <div class="section-title">
+                        <div class="section-icon" style="background: linear-gradient(45deg, #10b981, #059669);">🗺️</div>
+                        Interactive Map & GIS
+                    </div>
+                </div>
+                
+                <div class="map-controls">
+                    <button class="map-btn active" onclick="toggleLayer('satellite')">Satellite</button>
+                    <button class="map-btn" onclick="toggleLayer('parcels')">Parcels</button>
+                    <button class="map-btn" onclick="toggleLayer('zoning')">Zoning</button>
+                    <button class="map-btn" onclick="toggleLayer('flood')">Flood Zones</button>
+                </div>
+                
+                <div class="map-container" id="propertyMap"></div>
+                
+                <div class="detail-card">
+                    <h4>Geographic Details</h4>
+                    <div class="detail-row">
+                        <span class="detail-label">Coordinates:</span>
+                        <span class="detail-value">46.2382°N, 119.2751°W</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Elevation:</span>
+                        <span class="detail-value">345 ft</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Zoning:</span>
+                        <span class="detail-value">R1-7200 (Residential)</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">School District:</span>
+                        <span class="detail-value">Richland SD #400</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Property Details Section -->
+            <div class="prc-section">
+                <div class="section-header">
+                    <div class="section-title">
+                        <div class="section-icon" style="background: linear-gradient(45deg, #f59e0b, #d97706);">📋</div>
+                        Property Details
+                    </div>
+                    <button class="action-btn secondary" onclick="editMode()">Edit Mode</button>
+                </div>
+
+                <div class="detail-grid">
+                    <div class="detail-card">
+                        <h4>Owner Information</h4>
+                        <div class="detail-row">
+                            <span class="detail-label">Owner:</span>
+                            <span class="detail-value">John & Jane Smith</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Mail Address:</span>
+                            <span class="detail-value">123 Main St, Richland</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Owner Type:</span>
+                            <span class="detail-value">Individual</span>
+                        </div>
+                    </div>
+
+                    <div class="detail-card">
+                        <h4>Land Details</h4>
+                        <div class="detail-row">
+                            <span class="detail-label">Acres:</span>
+                            <input type="text" class="editable-field" value="0.16" readonly>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Land Use:</span>
+                            <input type="text" class="editable-field" value="Residential" readonly>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Land Value:</span>
+                            <input type="text" class="editable-field" value="$82,400" readonly>
+                        </div>
+                    </div>
+
+                    <div class="detail-card">
+                        <h4>Improvements</h4>
+                        <div class="detail-row">
+                            <span class="detail-label">Year Built:</span>
+                            <input type="text" class="editable-field" value="1995" readonly>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Square Feet:</span>
+                            <input type="text" class="editable-field" value="2,340" readonly>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Improvement Value:</span>
+                            <input type="text" class="editable-field" value="$402,800" readonly>
+                        </div>
+                    </div>
+
+                    <div class="detail-card">
+                        <h4>Assessment Roll</h4>
+                        <div class="detail-row">
+                            <span class="detail-label">Total Value:</span>
+                            <span class="detail-value">$485,200</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Last Assessment:</span>
+                            <span class="detail-value">2024-12-15</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Status:</span>
+                            <span class="detail-value">
+                                <span class="status-indicator status-good"></span>
+                                Current
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-card">
+                    <h4>Sales History</h4>
+                    <div class="detail-row">
+                        <span class="detail-label">Last Sale:</span>
+                        <span class="detail-value">08/15/2023 - $475,000</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Previous Sale:</span>
+                        <span class="detail-value">03/22/2018 - $385,000</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Market Trend:</span>
+                        <span class="detail-value">+2.1% annually</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics & AI Panel -->
+            <div class="prc-section stats-panel">
+                <div class="section-header">
+                    <div class="section-title">
+                        <div class="section-icon" style="background: linear-gradient(45deg, #8b5cf6, #7c3aed);">📊</div>
+                        Smart Analytics & AI
+                    </div>
+                </div>
+
+                <!-- Comparative Statistics -->
+                <div class="stat-comparison">
+                    <div class="comparison-header">Property vs Neighborhood</div>
+                    <div class="comparison-bar">
+                        <div class="bar-label">Assessed Value</div>
+                        <div class="bar-visual">
+                            <div class="bar-fill" style="width: 78%"></div>
+                        </div>
+                        <div class="bar-value">$485K</div>
+                    </div>
+                    <div class="comparison-bar">
+                        <div class="bar-label">$/Sq Ft</div>
+                        <div class="bar-visual">
+                            <div class="bar-fill" style="width: 82%"></div>
+                        </div>
+                        <div class="bar-value">$207</div>
+                    </div>
+                    <div class="comparison-bar">
+                        <div class="bar-label">Land/Improvement</div>
+                        <div class="bar-visual">
+                            <div class="bar-fill" style="width: 17%"></div>
+                        </div>
+                        <div class="bar-value">17%</div>
+                    </div>
+                </div>
+
+                <div class="stat-comparison">
+                    <div class="comparison-header">Statistical Analysis</div>
+                    <div class="detail-row">
+                        <span class="detail-label">Neighborhood Median:</span>
+                        <span class="detail-value">$492,300</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Assessment Ratio:</span>
+                        <span class="detail-value">1.02 (IAAO Compliant)</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">COD Range:</span>
+                        <span class="detail-value">8.2% (Excellent)</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Market Position:</span>
+                        <span class="detail-value">45th percentile</span>
+                    </div>
+                </div>
+
+                <!-- Chart Container -->
+                <div class="chart-container">
+                    <canvas id="trendsChart"></canvas>
+                </div>
+
+                <!-- AI Agents -->
+                <div class="stat-comparison">
+                    <div class="comparison-header">
+                        AI Agents
+                        <span class="notification-badge">2 Active</span>
+                    </div>
+                    <div class="agent-grid">
+                        <div class="agent-card active" onclick="launchAgent('narrator')">
+                            <div class="agent-name">NarratorAI</div>
+                            <div class="agent-status">Analyzing</div>
+                        </div>
+                        <div class="agent-card" onclick="launchAgent('exemption')">
+                            <div class="agent-name">ExemptionSeer</div>
+                            <div class="agent-status">Ready</div>
+                        </div>
+                        <div class="agent-card active" onclick="launchAgent('sales')">
+                            <div class="agent-name">SalesValidator</div>
+                            <div class="agent-status">Processing</div>
+                        </div>
+                        <div class="agent-card" onclick="launchAgent('statistical')">
+                            <div class="agent-name">StatAgent</div>
+                            <div class="agent-status">Standby</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Chat Interface -->
+                <div class="ai-chat">
+                    <div class="chat-messages" id="aiChatMessages">
+                        <div class="chat-message agent">
+                            Property analysis complete. This home is assessed 1.5% below neighborhood median, suggesting accurate valuation.
+                        </div>
+                        <div class="chat-message agent">
+                            Sales validation shows strong comparables within 0.3 miles. Market trend is +2.1% annually.
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input-container">
+                        <input type="text" class="chat-input" placeholder="Ask about this property..." id="aiChatInput" onkeypress="handleAIChatInput(event)">
+                        <button class="send-btn" onclick="sendAIMessage()">Ask AI</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="prc-footer">
+            <div class="footer-info">
+                Last Updated: December 16, 2024 at 2:45 PM by Sarah Anderson • 
+                <span class="status-indicator status-good"></span>
+                All systems operational
+            </div>
+            <div class="footer-actions">
+                <button class="action-btn secondary" onclick="saveDraft()">Save Draft</button>
+                <button class="action-btn secondary" onclick="viewHistory()">View History</button>
+                <button class="action-btn" onclick="certifyAssessment()">Certify Assessment</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Leaflet Map
+        const map = L.map('propertyMap', {
+            center: [46.2382, -119.2751],
+            zoom: 18,
+            zoomControl: true
+        });
+
+        // Add tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Add property marker
+        const propertyMarker = L.marker([46.2382, -119.2751])
+            .addTo(map)
+            .bindPopup('<strong>123 Main Street</strong><br>Parcel: 1102234412<br>$485,200');
+
+        // Add property boundary (simplified rectangle)
+        const propertyBounds = L.rectangle([
+            [46.2380

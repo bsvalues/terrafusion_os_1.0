@@ -1,0 +1,191 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.Workflow.TaskActions</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.Workflow.TaskActions.Category">
+            <summary>
+            Static Methods used to execute calls against the task Service API regarding TaskCategories.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActions.Category.GetCategories">
+            <summary>
+            Obtain a complete list of TaskCategories <cref>TrueAutomation.TaskService.WCF.TaskService.GetTaskCategories</cref>
+            </summary>
+            <returns>A List of TaskCategoryDTOs</returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActions.Category.GetTaskTypes">
+            <summary>
+            Obtain a complete list of TaskTypes <cref>TrueAutomation.TaskService.WCF.TaskService.GetTaskTypes</cref>
+            </summary>
+            <returns>A List of TaskTypeDTOs</returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActions.Category.GetTaskType(System.Int32)">
+            <summary>
+            Obtain the TaskType for the given Id<cref>TrueAutomation.TaskService.WCF.TaskService.GetTaskType</cref>
+            </summary>
+            <returns>TaskTypeDTO</returns>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActions.CustomOrderedList">
+            <summary>
+            Static Methods used to execute calls against the task Service API regarding Custom Ordered Lists.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActions.CustomOrderedList.GetCustomOrderedLists">
+            <summary>
+            Obtain a complete list of custom Ordered Lists <cref>TrueAutomation.TaskService.WCF.TaskService.GetCustomOrderedLists</cref>
+            </summary>
+            <returns>A List of UserDTOs</returns>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActions.DataRecordDefinition">
+            <summary>
+            Static Methods used to execute calls against the task Service API regarding TaskCategories.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActions.DataRecordDefinition.GetDataRecordDefinitions">
+            <summary>
+            Method to load the data record definitions from the Task Service
+            </summary>
+            <returns>A List of DataRecordDefinitionDTOs</returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActions.DataRecordDefinition.GetDataRecordDefinition(System.Int32)">
+            <summary>
+            Returns the data record definition with the specified ID value.
+            </summary>
+            <param name="drdId"> Data Record Definition Id </param>
+            <returns>A data transfer object for the specified data record definition,
+            or null if no such task data record definition was found.</returns>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActions.NamespaceDoc">
+            <summary>
+            These are the namespace comments for <c>TrueAutomation.Workflow.TaskActions</c>.
+            
+            This class contains the codes to perform various actions on the workflow activities.  In order to avoid exposing the entire set
+            of Task Service API calls to the workflow activity library (and thus the workflow designer), the set of calls to the task service have
+            been moved here and are accessible using the classes within.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActions.Notification">
+            <summary>
+             Static Methods used to execute calls against the task Service API regarding Notifications.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActions.Notification.SendEmailNotification(TrueAutomation.TaskService.DTOs.EmailNotificationDTO)">
+            <summary>
+            Send Email Notification <cref>TrueAutomation.TaskService.WCF.TaskService.SendEmailNotification</cref>
+            </summary>
+            <returns>A EmailNotificationDTO with the service supplied changes</returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActions.Notification.SendSMSNotification(TrueAutomation.TaskService.DTOs.SMSNotificationDTO)">
+            <summary>
+            Send SMS Notification <cref>TrueAutomation.TaskService.WCF.TaskService.SendEmailNotification</cref>
+            </summary>
+            <returns>A SMSNotificationDTO with the service supplied changes</returns>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActions.Priority">
+            <summary>
+            Static Methods used to execute calls against the task Service API regarding Task priorities.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActions.Priority.GetPriorities">
+            <summary>
+            Obtain a complete list of Task Priorities <cref>TrueAutomation.TaskService.WCF.TaskService.GetPriorities</cref>
+            </summary>
+            <returns>A List of UserDTOs</returns>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActions.ServiceProvider">
+            <summary>
+            Static Methods used to execute calls against the task Service API regarding Service Providers.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActions.ServiceProvider.GetServiceProviders">
+            <summary>
+            Obtain a complete list of ServiceProviderDTO <cref>TrueAutomation.TaskService.WCF.TaskService.GetServiceProviders</cref>
+            </summary>
+            <returns>A List of ServiceProviderDTOs</returns>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActions.Status">
+            <summary>
+            Static Methods used to execute calls against the task Service API regarding Task statuses.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActions.Status.GetStatuses">
+            <summary>
+            Obtain a complete list of Task statuses <cref>TrueAutomation.TaskService.WCF.TaskService.GetStatuses</cref>
+            </summary>
+            <returns>A List of StatusDTOs</returns>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActions.Task">
+            <summary>
+             Static Methods used to execute calls against the task Service API regarding Tasks.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActions.Task.CreateTask(TrueAutomation.TaskService.DTOs.TaskDTO)">
+            <summary>
+            Create a Task from a DTO <cref>TrueAutomation.TaskService.WCF.TaskService.CreateTask</cref>
+            </summary>
+            <returns>A Task DTO with the service supplied changes</returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActions.Task.UpdateTask(TrueAutomation.TaskService.DTOs.TaskDTO)">
+            <summary>
+            Update a Task from a DTO <cref>TrueAutomation.TaskService.WCF.TaskService.UpdateTask</cref>
+            </summary>
+            <returns>A Task DTO with the service supplied changes</returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActions.Task.GetTask(System.Int32)">
+            <summary>
+            Returns the task with the specified ID value.
+            </summary>
+            <param name="id">Task Id</param>
+            <returns>A data transfer object for the specified task,
+            or null if no such task was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActions.Task.LookupTasks(TrueAutomation.Core.DTO.CriteriaDTO)">
+            <summary>
+            Returns a list of all tasks based on lookup information
+            </summary>
+            <param name="criteriaDTO">Search Criteria</param>
+            <returns>A list containing a data transfer object for each
+            task in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActions.Task.GetLatestTaskHistory(System.Int32)">
+            <summary>
+            Returns the latest task History Item
+            </summary>
+            <param name="taskId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActions.Task.GetTaskHistory(System.Int32)">
+            <summary>
+            Returns the task History Items
+            </summary>
+            <param name="taskId"></param>
+            <returns></returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:TrueAutomation.Workflow.TaskActions.Task.AddNote(TrueAutomation.TaskService.DTOs.TaskNoteDTO,TrueAutomation.TaskService.DTOs.TaskDTO)" -->
+        <member name="T:TrueAutomation.Workflow.TaskActions.TaskQueue">
+            <summary>
+             Static Methods used to execute calls against the task Service API regarding TaskQueues.<cref>TrueAutomation.TaskService.WCF.TaskService.GetTaskQueues</cref>
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActions.Taskuser">
+            <summary>
+            Static Methods used to execute calls against the task Service API regarding Task users.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActions.Taskuser.GetUsers">
+            <summary>
+            Obtain a complete list of Task users <cref>TrueAutomation.TaskService.WCF.TaskService.GetUsers</cref>
+            </summary>
+            <returns>A List of UserDTOs</returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActions.Taskuser.GetUser(System.Int32)">
+            <summary>
+            Returns the user with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified user,
+            or null if no such user was found.</returns>
+        </member>
+    </members>
+</doc>

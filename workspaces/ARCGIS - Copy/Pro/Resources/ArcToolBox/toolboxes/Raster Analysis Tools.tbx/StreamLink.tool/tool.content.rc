@@ -1,0 +1,13 @@
+{
+    "map": {
+        "description": "Assigns unique values to sections of a raster linear network between intersections.",
+        "inputflowdirectionraster.descr": "The input raster that shows the direction of flow out of each cell.",
+        "inputflowdirectionraster.title": "Input Flow Direction Raster",
+        "inputstreamraster.descr": "An input raster that represents a linear stream network.",
+        "inputstreamraster.title": "Input Stream Raster",
+        "outputname.descr": "<xdoc><p>The name of the output stream link raster service.</p><p>The default name is based on the tool name and the input layer name. If the layer name already exists, you will be prompted to provide another name.</p></xdoc>",
+        "outputname.title": "Output Name",
+        "outputraster.title": "Output Raster",
+        "title": "Stream Link"
+    }
+}

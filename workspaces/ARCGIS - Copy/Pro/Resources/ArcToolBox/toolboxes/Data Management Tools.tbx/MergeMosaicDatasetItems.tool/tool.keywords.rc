@@ -1,0 +1,12 @@
+{
+    "set": [
+        "add",
+        "block field",
+        "combine",
+        "consolidate",
+        "items",
+        "merge",
+        "records",
+        "rows"
+    ]
+}

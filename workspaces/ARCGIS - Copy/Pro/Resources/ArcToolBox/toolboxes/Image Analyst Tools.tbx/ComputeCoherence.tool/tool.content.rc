@@ -1,0 +1,19 @@
+{
+    "map": {
+        "azimuth_window_size.descr": "<xdoc><p>The azimuth window size in pixels.</p><p>The default value is the minimum number of pixels required to create an approximate square window. For example, if the <span class=\"esri_uicontrol\">Range Window Size</span> parameter value is 10, the default will be 3.</p></xdoc>",
+        "azimuth_window_size.title": "Azimuth Window Size",
+        "description": "Computes the similarity between the reference and secondary input complex radar data.",
+        "in_reference_radar_data.descr": "The input reference complex radar data.",
+        "in_reference_radar_data.title": "Input Reference Radar Data",
+        "in_secondary_radar_data.descr": "The input secondary complex radar data.",
+        "in_secondary_radar_data.title": "Input Secondary Radar Data",
+        "out_radar_data.descr": "The output coherence radar data.",
+        "out_radar_data.title": "Output Radar Data",
+        "polarization_bands.descr": "<xdoc><p>The polarization bands that will be corrected.</p><p>The first band is selected by default.</p></xdoc>",
+        "polarization_bands.title": "Polarization Bands",
+        "range_window_size.descr": "<xdoc><p>The range window size in pixels.</p><p>The default value is 10.</p></xdoc>",
+        "range_window_size.title": "Range Window Size",
+        "summary": "<xdoc><p>Computes the similarity between the reference and secondary input complex radar data.</p><p>The output is a coherence raster with a value range of 0 to 1 in which 0 indicates no coherence and 1 indicates perfect coherence. A value of 0.3 or above is considered a good coherence value.</p></xdoc>",
+        "title": "Compute Coherence"
+    }
+}

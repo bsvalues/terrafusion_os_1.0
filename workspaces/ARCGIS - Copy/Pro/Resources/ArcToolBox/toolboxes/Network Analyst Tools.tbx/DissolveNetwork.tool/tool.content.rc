@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Creates a network dataset that minimizes the number of line features required to correctly model the input network dataset. The more efficient output network dataset reduces the time required to solve analyses, draw results, and generate driving directions. This tool outputs a new network dataset and source feature classes; the input network dataset and its source features remain unchanged.",
+        "in_network_dataset.descr": "<xdoc><p>The network dataset to be dissolved.</p><p>The input network dataset must be a file or personal geodatabase network dataset with exactly one edge source. Any number of junction sources and turn sources is allowed. The edge source must have:<ul><li>End point connectivity policy</li><li>An elevation policy of either None or Elevation Fields</li></ul></p><p>The input network dataset must be built before it can be used in this tool.</p></xdoc>",
+        "in_network_dataset.title": "Input Network Dataset",
+        "out_network_dataset.title": "Output Dissolved Network Dataset",
+        "out_workspace_location.descr": "The geodatabase workspace in which to create the dissolved network dataset. The workspace must be an ArcGIS 10 geodatabase or later, and it must be a different geodatabase than the one where the input network dataset resides.",
+        "out_workspace_location.title": "Output Geodatabase Workspace",
+        "summary": "<xdoc><p>Creates a network dataset that minimizes the number of line features required to correctly model the input network dataset. The more efficient output network dataset reduces the time required to solve analyses, draw results, and generate driving directions. This tool outputs a new network dataset and source feature classes; the input network dataset and its source features remain unchanged.</p>Learn more about how Dissolve Network works</xdoc>",
+        "title": "Dissolve Network"
+    }
+}

@@ -1,0 +1,32 @@
+{
+    "map": {
+        "decimal_format.descr": "<xdoc><p>Specifies the method that will determine the number of significant digits stored in the output files.</p><ul><li><span title=\"AUTOMATIC\">Automatically Determined</span>—The number of significant digits needed to preserve the available precision, while removing unnecessary trailing zeros, is automatically determined. This is the default.</li><li><span title=\"FIXED\">Specified Number</span>—The number of significant digits is defined in the <span class=\"esri_uicontrol\">Digits after Decimal</span> parameter.</li></ul></xdoc>",
+        "decimal_format.domain.AUTOMATIC": "Automatically Determined",
+        "decimal_format.domain.FIXED": "Specified Number",
+        "decimal_format.title": "Decimal Notation",
+        "decimal_separator.descr": "<xdoc><p>Specifies the decimal character that will differentiate the integer of a number from its fractional part.</p><ul><li><span title=\"DECIMAL_POINT\">Point</span>—A point is used as the decimal character. This is the default.</li><li><span title=\"DECIMAL_COMMA\">Comma</span>—A comma is used as the decimal character.</li></ul></xdoc>",
+        "decimal_separator.domain.DECIMAL_COMMA": "Comma",
+        "decimal_separator.domain.DECIMAL_POINT": "Point",
+        "decimal_separator.title": "Decimal Separator",
+        "delimiter.descr": "<xdoc><p>Specifies the delimiter that will indicate the separation of entries in the columns of the text file table.</p><ul><li><span title=\"SPACE\">Space</span>—A space will be used to delimit field values. This is the default.</li><li><span title=\"COMMA\">Comma</span>—A comma will be used to delimit field values. This option is not applicable if the decimal separator is also a comma.</li></ul></xdoc>",
+        "delimiter.domain.COMMA": "Comma",
+        "delimiter.domain.SPACE": "Space",
+        "delimiter.title": "Delimiter",
+        "derived_output.title": "Updated Folder",
+        "description": "Exports 3D features to ASCII text files storing GENERATE, XYZ, or profile data.",
+        "digits_after_decimal.descr": "<xdoc><p>The number of digits written after the decimal for floating-point values written to the output files. This parameter is used when the <span class=\"esri_uicontrol\">Decimal Notation</span> parameter is set to <span class=\"esri_uicontrol\">Specified Number</span> (decimal_format=FIXED in Python).</p></xdoc>",
+        "digits_after_decimal.title": "Digits after Decimal",
+        "format.descr": "<xdoc><p>Specifies the format of the ASCII file being created.</p><ul><li><span title=\"GENERATE\">GENERATE</span>—Writes output in the GENERATE format. This is the default.</li><li><span title=\"XYZ\">XYZ</span>—Writes XYZ information of input features. One file will be created for each line or polygon in the input feature.</li><li><span title=\"PROFILE\">Profile</span>—Writes profile information for line features that can be used in external graphing applications.</li></ul></xdoc>",
+        "format.domain.GENERATE": "GENERATE",
+        "format.domain.PROFILE": "Profile",
+        "format.domain.XYZ": "XYZ",
+        "format.title": "ASCII Format",
+        "in_feature_class.descr": "The 3D point, multipoint, polyline, or polygon feature class that will be exported to an ASCII file.",
+        "in_feature_class.title": "Input Features",
+        "out_file.descr": "<xdoc><p>The name of the resulting ASCII file.</p><p>If a line or polygon feature class is exported to XYZ format, the file name is used as a base name. Each feature will have a unique file output, since the XYZ format only supports one line or polygon per file. Multipart features will also have each part written to a separate file. The file name will be appended with the OID of each feature, as well as any additional characters needed to make each file name unique.</p></xdoc>",
+        "out_file.title": "Output Text File",
+        "output_location.descr": "The folder to which output files will be written.",
+        "output_location.title": "Output Location",
+        "title": "Feature Class Z To ASCII"
+    }
+}

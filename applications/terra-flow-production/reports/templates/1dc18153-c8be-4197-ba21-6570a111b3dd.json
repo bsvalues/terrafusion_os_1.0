@@ -1,0 +1,122 @@
+{
+  "template_id": "1dc18153-c8be-4197-ba21-6570a111b3dd",
+  "name": "Geospatial Analysis Report",
+  "description": "Template for geospatial data analysis reports",
+  "template_type": "geospatial_analysis",
+  "sections": [
+    {
+      "section_id": "2f920a4e-bc16-46aa-94f1-7efc69ca4fb4",
+      "section_type": "header",
+      "title": "Geospatial Analysis Report",
+      "content": {
+        "include_logo": true,
+        "include_date": true,
+        "include_page_numbers": true,
+        "subtitle": "Property Value Distribution Analysis"
+      },
+      "created_at": "2025-04-25T20:26:09.971021"
+    },
+    {
+      "section_id": "9c4f5309-dfdf-4d55-83e2-f6ec01ecbfde",
+      "section_type": "text",
+      "title": "Analysis Overview",
+      "content": {
+        "text": "This report provides analysis of property values across the selected geographic area, identifying patterns, anomalies, and trends in property valuations.",
+        "format": "paragraph"
+      },
+      "created_at": "2025-04-25T20:26:09.971030"
+    },
+    {
+      "section_id": "1e38784a-049f-4348-8160-9afdaba84d36",
+      "section_type": "map",
+      "title": "Value Distribution Map",
+      "content": {
+        "map_type": "choropleth",
+        "data_field": "assessed_value",
+        "color_scheme": "blues",
+        "include_legend": true,
+        "show_boundaries": true
+      },
+      "created_at": "2025-04-25T20:26:09.971038"
+    },
+    {
+      "section_id": "a5d8b4e6-6f21-4f3a-8a2a-bc9fdbb07674",
+      "section_type": "chart",
+      "title": "Value Distribution by Property Type",
+      "content": {
+        "chart_type": "bar",
+        "data_field": "assessed_value",
+        "group_by": "property_type",
+        "aggregate": "avg",
+        "sort_by": "value",
+        "sort_direction": "desc"
+      },
+      "created_at": "2025-04-25T20:26:09.971044"
+    },
+    {
+      "section_id": "4a865ac1-6d6b-488c-862d-568943bc8fea",
+      "section_type": "map",
+      "title": "Anomaly Detection",
+      "content": {
+        "map_type": "points",
+        "data_field": "anomaly_score",
+        "threshold": 0.75,
+        "point_color": "red",
+        "include_legend": true,
+        "show_labels": true
+      },
+      "created_at": "2025-04-25T20:26:09.971054"
+    },
+    {
+      "section_id": "0ac64670-f4c6-4060-896d-fe85bacfac24",
+      "section_type": "table",
+      "title": "Statistical Summary by Area",
+      "content": {
+        "columns": [
+          "area_name",
+          "property_count",
+          "min_value",
+          "max_value",
+          "avg_value",
+          "median_value",
+          "std_dev",
+          "anomaly_count"
+        ],
+        "sort_by": "avg_value",
+        "sort_direction": "desc"
+      },
+      "created_at": "2025-04-25T20:26:09.971067"
+    },
+    {
+      "section_id": "60ee8981-68d5-4a15-8599-33fac8363b15",
+      "section_type": "chart",
+      "title": "Value Trends Over Time",
+      "content": {
+        "chart_type": "line",
+        "data_field": "assessed_value",
+        "time_field": "assessment_year",
+        "group_by": "area_name",
+        "aggregate": "avg"
+      },
+      "created_at": "2025-04-25T20:26:09.971080"
+    },
+    {
+      "section_id": "5aa6d99a-559e-4142-819a-8d470a3249ac",
+      "section_type": "footer",
+      "title": "Report Footer",
+      "content": {
+        "include_disclaimer": true,
+        "include_contact": true,
+        "include_generated_date": true
+      },
+      "created_at": "2025-04-25T20:26:09.971086"
+    }
+  ],
+  "metadata": {
+    "created_at": "2025-04-25T20:26:09.971004",
+    "modified_at": "2025-04-25T20:26:09.971087",
+    "version": "1.0",
+    "created_by": "system",
+    "tags": []
+  }
+}

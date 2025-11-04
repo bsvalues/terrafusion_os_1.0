@@ -1,0 +1,143 @@
+/* TerraFusion SyncService Stylesheet */
+
+/* Custom Variables */
+:root {
+  --primary-color: #0275d8;
+  --secondary-color: #6c757d;
+  --success-color: #28a745;
+  --info-color: #17a2b8;
+  --warning-color: #ffc107;
+  --danger-color: #dc3545;
+  --light-color: #f8f9fa;
+  --dark-color: #343a40;
+}
+
+/* Global Styles */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #f5f5f5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+}
+
+/* Custom Card Styling */
+.card {
+  border-radius: 0.5rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  border-top-left-radius: 0.5rem !important;
+  border-top-right-radius: 0.5rem !important;
+}
+
+/* Navigation */
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* Dashboard Components */
+.progress {
+  height: 1.25rem;
+  border-radius: 0.5rem;
+}
+
+.progress-bar {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+/* Status Indicators */
+.status-indicator {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.status-online {
+  background-color: var(--success-color);
+}
+
+.status-offline {
+  background-color: var(--danger-color);
+}
+
+.status-warning {
+  background-color: var(--warning-color);
+}
+
+/* Data Tables */
+.table th {
+  border-top: none;
+  font-weight: 600;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+/* Sync Operation Controls */
+.sync-controls {
+  background-color: #f9f9f9;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+/* Metrics Panels */
+.metric-card {
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.metric-value {
+  font-size: 2rem;
+  font-weight: 700;
+  display: block;
+  margin: 0.5rem 0;
+}
+
+.metric-label {
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  color: var(--secondary-color);
+}
+
+/* Animations */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animated-pulse {
+  animation: pulse 2s infinite;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .metric-value {
+    font-size: 1.5rem;
+  }
+  
+  .card-header h5 {
+    font-size: 1rem;
+  }
+}

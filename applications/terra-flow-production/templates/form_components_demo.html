@@ -1,0 +1,398 @@
+{% extends "base.html" %}
+{% from "components/form_components.html" import form_input, form_textarea, form_select, form_checkbox, form_radio_group, form_switch, form_file, form_range, form_date, form_datetime, form_floating_input, form_input_group, form_button, form_buttons, form_error_container, form_divider %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <h1 class="mb-4">Form Components</h1>
+            <p class="lead mb-5">
+                This page demonstrates the standardized form components with built-in validation.
+                These components provide consistent styling, accessibility, and behavior across the application.
+            </p>
+            
+            <div class="card mb-5">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="formDemoTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="basic-tab" data-bs-toggle="tab" data-bs-target="#basic" type="button" role="tab" aria-controls="basic" aria-selected="true">Basic Components</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="advanced-tab" data-bs-toggle="tab" data-bs-target="#advanced" type="button" role="tab" aria-controls="advanced" aria-selected="false">Advanced Components</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="validation-tab" data-bs-toggle="tab" data-bs-target="#validation" type="button" role="tab" aria-controls="validation" aria-selected="false">Validation Demo</button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="formDemoTabsContent">
+                        <!-- Basic Components Tab -->
+                        <div class="tab-pane fade show active" id="basic" role="tabpanel" aria-labelledby="basic-tab">
+                            <h3 class="card-title mb-4">Basic Form Components</h3>
+                            
+                            <form id="basicComponentsForm">
+                                {{ form_divider("Text Inputs") }}
+                                
+                                {{ form_input(
+                                    id="username",
+                                    name="username",
+                                    label="Username",
+                                    placeholder="Enter your username",
+                                    required=True,
+                                    help_text="Choose a unique username for your account."
+                                ) }}
+                                
+                                {{ form_input(
+                                    id="email",
+                                    name="email",
+                                    label="Email Address",
+                                    type="email",
+                                    placeholder="you@example.com",
+                                    required=True
+                                ) }}
+                                
+                                {{ form_input(
+                                    id="password",
+                                    name="password",
+                                    label="Password",
+                                    type="password",
+                                    placeholder="••••••••",
+                                    required=True,
+                                    min_length=8,
+                                    help_text="Must be at least 8 characters long."
+                                ) }}
+                                
+                                {{ form_textarea(
+                                    id="bio",
+                                    name="bio",
+                                    label="Bio",
+                                    placeholder="Tell us about yourself",
+                                    rows=3,
+                                    max_length=200,
+                                    help_text="Maximum 200 characters."
+                                ) }}
+                                
+                                {{ form_divider("Selection Inputs") }}
+                                
+                                {{ form_select(
+                                    id="country",
+                                    name="country",
+                                    label="Country",
+                                    options=[
+                                        {"value": "us", "label": "United States"},
+                                        {"value": "ca", "label": "Canada"},
+                                        {"value": "mx", "label": "Mexico"},
+                                        {"value": "uk", "label": "United Kingdom"},
+                                        {"value": "fr", "label": "France"}
+                                    ],
+                                    required=True
+                                ) }}
+                                
+                                {{ form_checkbox(
+                                    id="subscribe",
+                                    name="subscribe",
+                                    label="Subscribe to newsletter",
+                                    checked=True,
+                                    help_text="We'll never share your email with anyone else."
+                                ) }}
+                                
+                                {{ form_radio_group(
+                                    id="gender",
+                                    name="gender",
+                                    label="Gender",
+                                    options=[
+                                        {"value": "m", "label": "Male"},
+                                        {"value": "f", "label": "Female"},
+                                        {"value": "o", "label": "Other"}
+                                    ]
+                                ) }}
+                                
+                                {{ form_buttons() }}
+                            </form>
+                        </div>
+                        
+                        <!-- Advanced Components Tab -->
+                        <div class="tab-pane fade" id="advanced" role="tabpanel" aria-labelledby="advanced-tab">
+                            <h3 class="card-title mb-4">Advanced Form Components</h3>
+                            
+                            <form id="advancedComponentsForm">
+                                {{ form_divider("Advanced Inputs") }}
+                                
+                                {{ form_switch(
+                                    id="darkMode",
+                                    name="darkMode",
+                                    label="Dark Mode",
+                                    help_text="Enable dark mode for the interface."
+                                ) }}
+                                
+                                {{ form_file(
+                                    id="profilePicture",
+                                    name="profilePicture",
+                                    label="Profile Picture",
+                                    accept="image/*",
+                                    help_text="Upload a profile picture (JPEG, PNG)."
+                                ) }}
+                                
+                                {{ form_range(
+                                    id="satisfaction",
+                                    name="satisfaction",
+                                    label="Satisfaction Level",
+                                    min_value=1,
+                                    max_value=10,
+                                    value=5,
+                                    help_text="How satisfied are you with our service?"
+                                ) }}
+                                
+                                {{ form_date(
+                                    id="birthdate",
+                                    name="birthdate",
+                                    label="Birth Date",
+                                    required=True,
+                                    help_text="Please enter your date of birth."
+                                ) }}
+                                
+                                {{ form_datetime(
+                                    id="meetingTime",
+                                    name="meetingTime",
+                                    label="Meeting Time",
+                                    help_text="Select your preferred date and time for the meeting."
+                                ) }}
+                                
+                                {{ form_divider("Styled Inputs") }}
+                                
+                                {{ form_floating_input(
+                                    id="floatingName",
+                                    name="floatingName",
+                                    label="Name with Floating Label",
+                                    placeholder="Your Name"
+                                ) }}
+                                
+                                {{ form_input_group(
+                                    id="priceInput",
+                                    name="price",
+                                    label="Price",
+                                    type="number",
+                                    min_value=0,
+                                    prepend="$",
+                                    append=".00",
+                                    placeholder="0.00",
+                                    help_text="Enter the price in USD."
+                                ) }}
+                                
+                                {{ form_buttons(submit_text="Save Settings", cancel_text="Discard") }}
+                            </form>
+                        </div>
+                        
+                        <!-- Validation Demo Tab -->
+                        <div class="tab-pane fade" id="validation" role="tabpanel" aria-labelledby="validation-tab">
+                            <h3 class="card-title mb-4">Form Validation Demo</h3>
+                            
+                            <p class="mb-4">
+                                This form demonstrates the validation system in action. Try submitting the form without filling required fields, 
+                                or with invalid data to see the validation messages.
+                            </p>
+                            
+                            {{ form_error_container("validationFormErrors") }}
+                            
+                            <form id="validationDemoForm" class="needs-validation" novalidate>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        {{ form_input(
+                                            id="validateFirstName",
+                                            name="firstName",
+                                            label="First Name",
+                                            required=True
+                                        ) }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form_input(
+                                            id="validateLastName",
+                                            name="lastName",
+                                            label="Last Name",
+                                            required=True
+                                        ) }}
+                                    </div>
+                                </div>
+                                
+                                {{ form_input(
+                                    id="validateEmail",
+                                    name="email",
+                                    type="email",
+                                    label="Email Address",
+                                    required=True,
+                                    placeholder="you@example.com"
+                                ) }}
+                                
+                                {{ form_input(
+                                    id="validatePhone",
+                                    name="phone",
+                                    label="Phone Number",
+                                    placeholder="123-456-7890",
+                                    pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}",
+                                    help_text="Format: 123-456-7890"
+                                ) }}
+                                
+                                {{ form_input(
+                                    id="validatePassword",
+                                    name="password",
+                                    type="password",
+                                    label="Password",
+                                    required=True,
+                                    min_length=8,
+                                    help_text="Must be at least 8 characters with one number and one uppercase letter."
+                                ) }}
+                                
+                                {{ form_input(
+                                    id="validateConfirmPassword",
+                                    name="confirmPassword",
+                                    type="password",
+                                    label="Confirm Password",
+                                    required=True,
+                                    help_text="Re-enter your password to confirm."
+                                ) }}
+                                
+                                {{ form_select(
+                                    id="validateRole",
+                                    name="role",
+                                    label="Role",
+                                    options=[
+                                        {"value": "user", "label": "User"},
+                                        {"value": "editor", "label": "Editor"},
+                                        {"value": "admin", "label": "Administrator"}
+                                    ],
+                                    required=True
+                                ) }}
+                                
+                                {{ form_checkbox(
+                                    id="validateTerms",
+                                    name="terms",
+                                    label="I agree to the terms and conditions",
+                                    required=True
+                                ) }}
+                                
+                                {{ form_buttons(submit_text="Create Account") }}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Usage Instructions</h4>
+                </div>
+                <div class="card-body">
+                    <h5>Basic Usage</h5>
+                    <p>Include the form components in your template:</p>
+                    <pre><code>{% raw %}{% from "components/form_components.html" import form_input %}
+
+{{ form_input(
+    id="username",
+    name="username",
+    label="Username",
+    required=True
+) }}{% endraw %}</code></pre>
+                    
+                    <h5 class="mt-4">Form Validation</h5>
+                    <p>Initialize form validation in your JavaScript:</p>
+                    <pre><code>// Register a form for validation
+const formValidator = terraFusionForms.register('myFormId', {
+  validateOnInput: true,
+  validateOnBlur: true,
+  customErrorContainer: '#errorContainer'
+}, {
+  username: {
+    required: true,
+    minLength: 3
+  },
+  email: {
+    required: true,
+    email: true
+  }
+});</code></pre>
+                    
+                    <p>Or use the data attributes for quick setup:</p>
+                    <pre><code>&lt;form id="myForm" data-tf-validate="true" data-tf-validate-on-input="true"&gt;
+  ...
+&lt;/form&gt;</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize validation for the validation demo form
+    const validationDemoValidator = terraFusionForms.register('validationDemoForm', {
+      validateOnInput: true,
+      validateOnBlur: true,
+      customErrorContainer: '#validationFormErrors'
+    }, {
+      firstName: {
+        required: true
+      },
+      lastName: {
+        required: true
+      },
+      email: {
+        required: true,
+        email: true
+      },
+      phone: {
+        pattern: {
+          value: '[0-9]{3}-[0-9]{3}-[0-9]{4}',
+          message: 'Please enter a valid phone number in the format 123-456-7890'
+        }
+      },
+      password: {
+        required: true,
+        minLength: 8,
+        pattern: {
+          value: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$',
+          message: 'Password must contain at least one lowercase letter, one uppercase letter, and one number'
+        }
+      },
+      confirmPassword: {
+        required: true,
+        equalTo: {
+          value: '#validatePassword',
+          message: 'Passwords do not match'
+        }
+      },
+      role: {
+        required: true
+      },
+      terms: {
+        required: true
+      }
+    });
+    
+    // Add event listener for form submission
+    document.getElementById('validationDemoForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      if (validationDemoValidator.validate()) {
+        terraFusionNotifications.success('Form validated successfully!');
+      } else {
+        terraFusionNotifications.error('Please fix the validation errors.');
+      }
+    });
+    
+    // Basic form submission handler
+    document.getElementById('basicComponentsForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      terraFusionNotifications.info('Basic form submitted (demo only)');
+    });
+    
+    // Advanced form submission handler
+    document.getElementById('advancedComponentsForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      terraFusionNotifications.info('Advanced form submitted (demo only)');
+    });
+  });
+</script>
+{% endblock %}

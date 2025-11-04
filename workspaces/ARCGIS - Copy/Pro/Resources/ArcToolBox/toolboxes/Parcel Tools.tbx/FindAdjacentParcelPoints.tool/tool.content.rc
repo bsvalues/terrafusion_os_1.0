@@ -1,0 +1,13 @@
+{
+    "map": {
+        "description": "Finds parcel points that are on top of each other (coincident)  or closer to each other than a specified tolerance.",
+        "in_parcel_points.descr": "The input parcel fabric points feature class that will be searched.",
+        "in_parcel_points.title": "Input Parcel Point Features",
+        "out_feature_class.descr": "The output feature class that will contain the adjacent points that are found. These adjacent points will be symbolized with large point features that are visible in the map.",
+        "out_feature_class.title": "Output Feature Class",
+        "summary": "<xdoc><p>Finds parcel points that are on top of each other (coincident) or closer to each other than a specified tolerance.</p><p>Adjacent parcel points that are very close to each other or stacked on top of each other are unusual in cadastral data and may indicate data quality issues. For example, parcel points are very close to each other when there are very short, invalid lines.</p><p>The adjacent points that are found will be copied to an output feature class and symbolized with large point symbology that is visible in the map.</p></xdoc>",
+        "title": "Find Adjacent Parcel Points",
+        "tolerance.descr": "The distance within which a point is considered adjacent to another point. If a point is closer to another point than the specified tolerance, the point will be considered an adjacent point and will be copied to the output feature class. The default tolerance of 0 meters will find stacked points that lie directly on top of each other.",
+        "tolerance.title": "Tolerance"
+    }
+}

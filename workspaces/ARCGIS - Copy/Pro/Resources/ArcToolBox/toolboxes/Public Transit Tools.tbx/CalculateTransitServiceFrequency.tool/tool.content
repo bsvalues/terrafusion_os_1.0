@@ -1,0 +1,359 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "77010001",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "credits"
+    ],
+    "params": {
+        "in_transit_feature_dataset": {
+            "displayname": "$rc:in_transit_feature_dataset.title",
+            "datatype": {
+                "type": "DEFeatureDataset"
+            },
+            "description": "$rc:in_transit_feature_dataset.descr"
+        },
+        "analysis_type": {
+            "displayname": "$rc:analysis_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "STOPS",
+                        "code": "$rc:analysis_type.domain.STOPS"
+                    },
+                    {
+                        "value": "LINES",
+                        "code": "$rc:analysis_type.domain.LINES"
+                    },
+                    {
+                        "value": "POINTS_OF_INTEREST",
+                        "code": "$rc:analysis_type.domain.POINTS_OF_INTEREST"
+                    },
+                    {
+                        "value": "AREAS",
+                        "code": "$rc:analysis_type.domain.AREAS"
+                    }
+                ]
+            },
+            "value": "STOPS",
+            "description": "$rc:analysis_type.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "time_windows": {
+            "displayname": "$rc:time_windows.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPBoolean",
+                        "displayname": "$rc:time_windows.dt.title1"
+                    },
+                    {
+                        "type": "GPDate",
+                        "displayname": "$rc:time_windows.dt.title2"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:time_windows.dt.title3"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:time_windows.dt.title4"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:time_windows.dt.title5"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "ARRIVALS",
+                                "code": "$rc:time_windows.domain.item4.ARRIVALS"
+                            },
+                            {
+                                "value": "DEPARTURES",
+                                "code": "$rc:time_windows.domain.item4.DEPARTURES"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "description": "$rc:time_windows.descr"
+        },
+        "separate_counts_by_line": {
+            "type": "optional",
+            "displayname": "$rc:separate_counts_by_line.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SEPARATE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_SEPARATE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:separate_counts_by_line.descr"
+        },
+        "in_points_of_interest": {
+            "type": "optional",
+            "displayname": "$rc:in_points_of_interest.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_points_of_interest.descr"
+        },
+        "network_data_source": {
+            "type": "optional",
+            "displayname": "$rc:network_data_source.title",
+            "datatype": {
+                "type": "GPNetworkDataSource"
+            },
+            "description": "$rc:network_data_source.descr"
+        },
+        "travel_mode": {
+            "type": "optional",
+            "displayname": "$rc:travel_mode.title",
+            "datatype": {
+                "type": "NetworkTravelMode"
+            },
+            "depends": [
+                "network_data_source"
+            ],
+            "description": "$rc:travel_mode.descr"
+        },
+        "travel_limit": {
+            "type": "optional",
+            "displayname": "$rc:travel_limit.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:travel_limit.descr"
+        },
+        "travel_limit_units": {
+            "type": "optional",
+            "displayname": "$rc:travel_limit_units.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "KILOMETERS",
+                        "code": "$rc:travel_limit_units.domain.KILOMETERS"
+                    },
+                    {
+                        "value": "METERS",
+                        "code": "$rc:travel_limit_units.domain.METERS"
+                    },
+                    {
+                        "value": "MILES",
+                        "code": "$rc:travel_limit_units.domain.MILES"
+                    },
+                    {
+                        "value": "YARDS",
+                        "code": "$rc:travel_limit_units.domain.YARDS"
+                    },
+                    {
+                        "value": "FEET",
+                        "code": "$rc:travel_limit_units.domain.FEET"
+                    },
+                    {
+                        "value": "NAUTICALMILES",
+                        "code": "$rc:travel_limit_units.domain.NAUTICALMILES"
+                    },
+                    {
+                        "value": "DAYS",
+                        "code": "$rc:travel_limit_units.domain.DAYS"
+                    },
+                    {
+                        "value": "HOURS",
+                        "code": "$rc:travel_limit_units.domain.HOURS"
+                    },
+                    {
+                        "value": "MINUTES",
+                        "code": "$rc:travel_limit_units.domain.MINUTES"
+                    },
+                    {
+                        "value": "SECONDS",
+                        "code": "$rc:travel_limit_units.domain.SECONDS"
+                    },
+                    {
+                        "value": "UNKNOWN",
+                        "code": "$rc:travel_limit_units.domain.UNKNOWN"
+                    }
+                ]
+            },
+            "description": "$rc:travel_limit_units.descr"
+        },
+        "cell_size": {
+            "type": "optional",
+            "displayname": "$rc:cell_size.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPUnitDomain",
+                "items": [
+                    "Meters",
+                    "Kilometers",
+                    "FeetInt",
+                    "YardsInt",
+                    "MilesInt",
+                    "Feet",
+                    "Yards",
+                    "Miles"
+                ]
+            },
+            "value": "80 Meters",
+            "description": "$rc:cell_size.descr"
+        },
+        "barriers": {
+            "type": "optional",
+            "displayname": "$rc:barriers.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            },
+            "description": "$rc:barriers.descr"
+        },
+        "wheelchair": {
+            "type": "optional",
+            "displayname": "$rc:wheelchair.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "WHEELCHAIR"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_WHEELCHAIR"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:wheelchair.descr"
+        },
+        "bicycle": {
+            "type": "optional",
+            "displayname": "$rc:bicycle.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "BICYCLE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_BICYCLE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:bicycle.descr"
+        },
+        "exclude_modes": {
+            "type": "optional",
+            "displayname": "$rc:exclude_modes.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPLong"
+                }
+            },
+            "description": "$rc:exclude_modes.descr"
+        },
+        "line_shape_type": {
+            "type": "optional",
+            "displayname": "$rc:line_shape_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "CARTOGRAPHIC_LINES",
+                        "code": "$rc:line_shape_type.domain.CARTOGRAPHIC_LINES"
+                    },
+                    {
+                        "value": "STRAIGHT_LINES",
+                        "code": "$rc:line_shape_type.domain.STRAIGHT_LINES"
+                    }
+                ]
+            },
+            "value": "STRAIGHT_LINES",
+            "description": "$rc:line_shape_type.descr"
+        }
+    }
+}

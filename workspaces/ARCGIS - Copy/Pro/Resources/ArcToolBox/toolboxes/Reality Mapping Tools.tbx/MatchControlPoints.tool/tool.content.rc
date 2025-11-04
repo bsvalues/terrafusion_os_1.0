@@ -1,0 +1,18 @@
+{
+    "map": {
+        "description": "Creates matching tie points for a given ground control point and initial tie point in one of the overlapping images.",
+        "in_control_points.descr": "The input control point set that contains a list of ground control point features and at least one initial tie point for each ground control point.",
+        "in_control_points.title": "Input Control Points",
+        "in_mosaic_dataset.descr": "The mosaic dataset that contains the source imagery from which the tie points will be created.",
+        "in_mosaic_dataset.title": "Input Mosaic Dataset",
+        "out_control_points.descr": "The output control point features that contain ground control points.",
+        "out_control_points.title": "Output Control Point Table",
+        "similarity.descr": "<xdoc><p>Specifies the similarity level that will be used for matching tie points.</p><ul><li><span title=\"LOW\">Low similarity</span>—The similarity criteria for the two matching points will be low. This option will produce the most matching points, but some of the matches may have a higher level of error.</li><li><span title=\"MEDIUM\">Medium similarity</span>—The similarity criteria for the matching points will be medium.</li><li><span title=\"HIGH\">High similarity</span>—The similarity criteria for the matching points will be high. This option will produce the fewest matching points, but each match will have a lower level of error.</li></ul></xdoc>",
+        "similarity.domain.HIGH": "High similarity",
+        "similarity.domain.LOW": "Low similarity",
+        "similarity.domain.MEDIUM": "Medium similarity",
+        "similarity.title": "Similarity",
+        "summary": "<xdoc><p>Creates matching tie points for a given ground control point and initial tie point in one of the overlapping images.</p><p>The Reality mapping block adjustment workflow often involves adding ground control points for a more accurate adjustment. One ground control point is typically associated with a tie point in each overlapping image. When there are many overlapping images for one ground control point, manually creating tie points for each image is labor intensive.</p></xdoc>",
+        "title": "Match Control Points"
+    }
+}

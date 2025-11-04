@@ -1,0 +1,175 @@
+# TerraFusion Platform Configuration Template
+# ==========================================
+# Single source of truth for all environment variables
+# Copy this file to .env and fill in your specific values
+
+# Platform Information
+PLATFORM_NAME=TerraFusion
+PLATFORM_VERSION=2.0.0
+PLATFORM_ENVIRONMENT=development
+
+# Database Configuration
+# =====================
+# Primary Database (SQLite for development)
+DATABASE_URL=sqlite:///./terrafusionsync_real.db
+PACS_DATABASE_URL=sqlite:///./real_pacs.db
+
+# PostgreSQL (Production)
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_USER=terrafusion
+POSTGRES_PASSWORD=your_postgres_password
+POSTGRES_DB=terrafusion_production
+
+# Application Ports
+# ================
+# Core Production Applications
+TERRAFUSION_SYNC_PORT=5002
+TERRA_AGENT_PORT=5003
+COSTFORGE_PORT=8000
+TERRA_LEVY_PORT=5007
+TERRA_FLOW_PORT=5001
+TERRA_MINER_PORT=5006
+
+# Specialized Systems
+TERRAFUSION_PERMIT_PORT=5004
+TERRAFUSION_GIS_PORT=5005
+TERRA_INSIGHT_PORT=3003
+WEB_AUDIT_TRACKER_PORT=5000
+
+# AI & Intelligence
+MCP_SERVERS_PORT=8001
+TERRAFUSION_ASSISTANT_PORT=8002
+
+# Development Tools
+TERRAFUSION_DASHBOARD_PORT=3000
+TERRAFUSION_INCOME_PORT=5008
+TERRAFUSION_PRO_PORT=5009
+
+# Quantum Architecture
+QUANTUM_BACKEND_PORT=8080
+QUANTUM_FRONTEND_PORT=3001
+
+# AI Service Configuration
+# =======================
+# OpenAI
+OPENAI_API_KEY=your_openai_api_key
+OPENAI_MODEL=gpt-4
+OPENAI_TEMPERATURE=0.7
+
+# LangChain
+LANGCHAIN_TRACING_V2=true
+LANGCHAIN_ENDPOINT=https://api.langchain.plus
+LANGCHAIN_API_KEY=your_langchain_api_key
+
+# External System Integrations
+# ============================
+# PACS Integration
+PACS_API_URL=https://pacs.bentoncounty.org/api
+PACS_API_KEY=your_pacs_api_key
+PACS_SYNC_INTERVAL=3600
+
+# CIAPS Integration
+CIAPS_API_URL=https://ciaps.bentoncounty.org/api
+CIAPS_API_KEY=your_ciaps_api_key
+
+# ArcGIS Integration
+ARCGIS_API_KEY=your_arcgis_api_key
+ARCGIS_PORTAL_URL=https://www.arcgis.com
+ARCGIS_USERNAME=your_arcgis_username
+ARCGIS_PASSWORD=your_arcgis_password
+
+# Spatialest Integration
+SPATIALEST_API_KEY=your_spatialest_api_key
+SPATIALEST_BASE_URL=https://api.spatialest.com
+
+# Security Configuration
+# ======================
+# JWT Configuration
+JWT_SECRET_KEY=your_jwt_secret_key_at_least_32_characters_long
+JWT_ALGORITHM=HS256
+JWT_EXPIRATION_HOURS=24
+
+# Session Configuration
+SESSION_SECRET=your_session_secret_key
+SESSION_TIMEOUT=3600
+
+# API Keys
+MASTER_API_KEY=your_master_api_key
+ADMIN_API_KEY=your_admin_api_key
+
+# Encryption
+ENCRYPTION_KEY=your_encryption_key_32_characters
+
+# Monitoring & Observability
+# =========================
+# Prometheus
+PROMETHEUS_ENABLED=true
+PROMETHEUS_PORT=9090
+PROMETHEUS_METRICS_PATH=/metrics
+
+# Health Checks
+HEALTH_CHECK_ENABLED=true
+HEALTH_CHECK_INTERVAL=30
+HEALTH_CHECK_TIMEOUT=5
+
+# Development Configuration
+# =========================
+# Debug Settings
+DEBUG=true
+FLASK_ENV=development
+FLASK_DEBUG=true
+
+# Testing
+TESTING=false
+TEST_DATABASE_URL=sqlite:///./test_terrafusion.db
+
+# Performance Configuration
+# ========================
+# Database Connection Pool
+DB_POOL_SIZE=20
+DB_MAX_OVERFLOW=30
+DB_POOL_TIMEOUT=30
+
+# Rate Limiting
+RATE_LIMIT_ENABLED=true
+RATE_LIMIT_REQUESTS=1000
+RATE_LIMIT_WINDOW=3600
+
+# County-Specific Configuration
+# =============================
+COUNTY_NAME=Benton County
+COUNTY_STATE=Washington
+COUNTY_FIPS=53005
+COUNTY_TIMEZONE=America/Los_Angeles
+
+# Assessment Configuration
+TAX_YEAR=2024
+ASSESSMENT_CYCLE=annual
+REVALUATION_CYCLE=6
+
+# GIS Configuration
+DEFAULT_MAP_CENTER_LAT=46.2396
+DEFAULT_MAP_CENTER_LNG=-119.1391
+DEFAULT_MAP_ZOOM=10
+
+# Feature Flags
+# =============
+FEATURE_AI_ASSESSMENT=true
+FEATURE_QUANTUM_BACKEND=false
+FEATURE_REAL_TIME_SYNC=true
+FEATURE_ADVANCED_ANALYTICS=true
+FEATURE_MOBILE_APP=false
+
+# System Limits
+# =============
+MAX_FILE_UPLOAD_SIZE=100MB
+MAX_REQUEST_SIZE=500MB
+MAX_CONCURRENT_USERS=1000
+MAX_API_REQUESTS_PER_MINUTE=10000
+
+# End of Configuration
+# ===================
+# Last updated: 2024-01-15
+# Configuration version: 2.0.0
+# For support, contact: admin@terrafusion.com 

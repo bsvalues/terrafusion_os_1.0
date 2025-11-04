@@ -1,0 +1,12 @@
+{
+    "set": [
+        "clean",
+        "connected",
+        "contiguous",
+        "generalize",
+        "image processing",
+        "region",
+        "simplify",
+        "zone"
+    ]
+}

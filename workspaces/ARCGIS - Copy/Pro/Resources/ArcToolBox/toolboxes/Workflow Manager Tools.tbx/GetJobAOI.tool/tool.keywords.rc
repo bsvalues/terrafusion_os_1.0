@@ -1,0 +1,8 @@
+{
+    "set": [
+        "aoi layer",
+        "input database path",
+        "job id",
+        "workflow manager"
+    ]
+}

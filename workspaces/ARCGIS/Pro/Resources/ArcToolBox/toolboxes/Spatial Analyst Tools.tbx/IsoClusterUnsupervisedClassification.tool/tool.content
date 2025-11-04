@@ -1,0 +1,104 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "8120009",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10"
+    ],
+    "params": {
+        "Input_raster_bands": {
+            "displayname": "$rc:input_raster_bands.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "GPRasterLayer"
+                        },
+                        {
+                            "type": "GPMosaicLayer"
+                        }
+                    ]
+                }
+            },
+            "description": "$rc:input_raster_bands.descr"
+        },
+        "Number_of_classes": {
+            "displayname": "$rc:number_of_classes.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:number_of_classes.descr"
+        },
+        "Output_classified_raster": {
+            "direction": "out",
+            "displayname": "$rc:output_classified_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "depends": [
+                "Input_raster_bands"
+            ],
+            "schema": {
+                "type": "GPRasterSchema",
+                "extenttype.rule": "Environment",
+                "cellsize.rule": "Environment",
+                "raster.rule": "FirstDependency",
+                "rasterformat.rule": "IMG",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:output_classified_raster.descr"
+        },
+        "Minimum_class_size": {
+            "type": "optional",
+            "displayname": "$rc:minimum_class_size.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "20",
+            "description": "$rc:minimum_class_size.descr"
+        },
+        "Sample_interval": {
+            "type": "optional",
+            "displayname": "$rc:sample_interval.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "10",
+            "description": "$rc:sample_interval.descr"
+        },
+        "Output_signature_file": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:output_signature_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "gsg"
+                ]
+            },
+            "description": "$rc:output_signature_file.descr"
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "cellSize",
+        "cellSizeProjectionMethod",
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "mask",
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

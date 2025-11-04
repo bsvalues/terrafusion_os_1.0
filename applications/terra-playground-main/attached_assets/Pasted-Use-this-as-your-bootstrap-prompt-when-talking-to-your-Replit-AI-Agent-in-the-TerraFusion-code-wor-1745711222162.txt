@@ -1,0 +1,40 @@
+Use this as your “bootstrap” prompt when talking to your Replit AI Agent in the Terrafusion code workspace. It tells the agent exactly what to build, test, document, and commit for Phase 1 (server‐driven fallback + metrics):
+
+```
+You are working in the Terrafusion monorepo. Your task is to implement a production-grade WebSocket fallback system and instrumentation (Phase 1):
+
+1. **Add an SSE endpoint**  
+   - In the main server (e.g. Express/Nest/Fastify), create a new route `/events` that streams Server-Sent Events.  
+   - Subscribe it to the same internal event bus or data source that powers the WebSocket messages.  
+   - Ensure it sets the correct headers (`Content-Type: text/event-stream`, `Cache-Control: no-cache`, `Connection: keep-alive`), handles client disconnect, and cleans up subscriptions.
+
+2. **Wire the client to use SSE on failure**  
+   - In your WebSocket client wrapper, detect `onerror` or repeated failed reconnects.  
+   - When failure occurs, increment a metric `websocket_fallback_total` (via your existing metrics service).  
+   - Open an `EventSource('/events')`, route its `onmessage` to the same handler as WebSocket messages, and hide any “retrying” UI once connected.
+
+3. **Instrument fallback usage**  
+   - In the client, call `metrics.increment('websocket_fallback_total')` each time you switch to SSE.  
+   - On the server, increment the same metric via your Prometheus client whenever a new `/events` connection is established.
+
+4. **Tests**  
+   - Write a unit/integration test that simulates a WebSocket failure and asserts the client falls back to SSE and still receives real events.  
+   - Test the SSE endpoint emits correctly formatted events.
+
+5. **Documentation**  
+   - Update `docs/observability_and_monitoring_guide.md` (or create `docs/websocket_fallback.md`) with:  
+     - Endpoint definition and usage  
+     - Client configuration  
+     - How to query the `websocket_fallback_total` metric in Grafana  
+
+6. **CI and Deployment**  
+   - Ensure your GitHub Actions CI runs the new tests.  
+   - Confirm linter/formatter passes.  
+
+After making these changes, commit with a message:  
+`feat(realtime): add SSE fallback + websocket_fallback_total metric (Phase 1)`  
+Then push and open a PR against `main`.  
+
+---  
+Goal: under all network conditions, clients always receive real-time data and we have telemetry on fallback activation.  
+```

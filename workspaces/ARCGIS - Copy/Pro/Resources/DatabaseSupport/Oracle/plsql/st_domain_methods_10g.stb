@@ -1,0 +1,3674 @@
+/* $Id: st_domain_methods_10g.stb,v 1.14, 2014-11-20 17:49:58Z, Sanjay Magal$
+$NoKeywords$ */ 
+
+CREATE OR REPLACE Type Body st_domain_methods
+IS
+
+    -- get interfaces --
+/******************************************************************************
+  *
+  *n  {odcigetinterfaces}  --  get interface descriptions/methods
+  *
+  *::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *p  purpose:
+  *     odcigetinterfaces gets the names of the interfaces 
+  *  implemented by the type.
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *a  parameters:
+  *     ifclist  <in>     ==  (sys.odciobjectlist) odci object list
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *x  &1. exceptions:
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *h  history:
+  *
+  *    kevin watt          12/02/04           original coding.
+  *e
+  ***********************************************************************/
+  static Function odcigetinterfaces(ifclist Out sys.odciobjectlist)
+  Return number IS
+    Begin
+      ifclist := sys.odciobjectlist(sys.odciobject('SYS','ODCIINDEX2'));
+      Return odciconst.success;
+    End odcigetinterfaces;
+
+	   -- start scan--
+/***********************************************************************
+  *
+  *n  {odciindexstart}  --  starts domain index selection using envp
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *p  purpose:
+  *     odciindexstart - uses minx,miny,maxx,maxy to start domain
+  *  index selection.
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *a  parameters:
+  *     ia    <in>     ==  (sys.odciindexinfo) odci object info
+  *     parms <in>     ==  (varchar2) parameters list
+  *     env   <in>     ==  (sys.odcienv) context handle
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *x  &1. exceptions:
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *h  history:
+  *
+  *    kevin watt          12/02/04           original coding.
+  *e
+  ***********************************************************************/
+  static Function odciindexstart (sctx IN Out &1..st_domain_methods,
+                                  ia          sys.odciindexinfo,
+                                  op          sys.odcipredinfo, 
+                                  qi          sys.odciqueryinfo,
+                                  strt        number,
+                                  stop        number,
+                                  minx        number,
+                                  miny        number,
+                                  maxx        number, 
+                                  maxy        number,
+                                  env         sys.odcienv)
+  Return number
+  IS
+
+    spx_info_r      &1..spx_util.spx_record_t;
+    sp_ref_r        &1..spx_util.spatial_ref_record_t;
+    properties      &1..spx_util.st_geom_prop_t;
+    stmt            varchar2(256);
+    table_name      varchar2(256);
+    partition_name  varchar2(256);
+    curs1           number;
+    int_env_r       &1..spx_util.r_env;
+    nrows           integer;
+    rc              number;
+    num_grids       pls_integer;
+    loc_geom        &1..st_geometry DEFAULT NULL;
+    loc_own         varchar2(30) DEFAULT NULL;
+    loc_tab         varchar2(30) DEFAULT NULL;
+    loc_col         varchar2(30) DEFAULT NULL;
+    loc_mat         varchar2(9) DEFAULT NULL;
+    loc_dist        number DEFAULT NULL;
+    loc_grid1       number DEFAULT NULL;
+    optype          pls_integer;
+    res             integer;
+  
+  Begin
+
+    optype := &1..spx_util.st_geom_operation_select;
+    rc := &1..spx_util.get_object_info(ia,optype,NULL,spx_info_r,sp_ref_r,properties);
+
+    IF rc != &1..spx_util.se_success THEN
+      raise_application_error (&1..st_type_util.spx_object_noexist,'Object '||ia.indexcols(1).tableschema||
+                               '.'||ia.indexcols(1).tablename||'.'||REPLACE(ia.indexcols(1).colname,'"','')||' not found in ST_GEOMETRY_INDEX.');
+    End If;
+
+    int_env_r.minx := ((minx - sp_ref_r.x_offset) * sp_ref_r.xyunits + 0.5);
+    int_env_r.miny := ((miny - sp_ref_r.y_offset) * sp_ref_r.xyunits + 0.5);
+    int_env_r.maxx := ((maxx - sp_ref_r.x_offset) * sp_ref_r.xyunits + 0.5);
+    int_env_r.maxy := ((maxy - sp_ref_r.y_offset) * sp_ref_r.xyunits + 0.5);
+
+    IF ((env.callproperty IS NULL) AND (ia.indexcols(1).tablepartition IS NULL )) THEN
+      table_name := '"'||ia.indexcols(1).tableschema||'"'||'.S'||spx_info_r.index_id||'_IDX$';
+    End If;
+
+    IF (((env.callproperty IS NOT NULL) AND (ia.indexcols(1).tablepartition IS NOT NULL)) OR
+        ((env.callproperty IS NULL) AND (ia.indexcols(1).tablepartition IS NOT NULL))) THEN
+      If(ia.indexcols(1).tablepartition = ia.indexpartition) Then
+        partition_name := ia.indexcols(1).tablepartition;
+      Else
+        partition_name := ia.indexpartition;
+      End If;
+
+      table_name := &1..spx_util.get_partition_name(partition_name,
+                                                    properties,
+                                                    spx_info_r.index_id);
+      table_name := '"'||ia.indexcols(1).tableschema||'"'||'.'||table_name;
+      &1..spx_util.get_partition_grids(ia.indexcols(1).tableschema,
+                                       ia.indexcols(1).tablename,
+                                       REPLACE(ia.indexcols(1).colname,'"',''),
+                                       partition_name,
+                                       properties,
+                                       spx_info_r);
+    End If;
+
+    IF op.objectname = 'ST_ENVINTERSECTS' THEN
+      &1..spx_util.execute_spatial (ia,table_name,spx_info_r,sp_ref_r,int_env_r,curs1);
+    else
+      &1..spx_util.execute_spatial_join (ia,op,table_name,spx_info_r,sp_ref_r,int_env_r,curs1);
+    End if;
+
+    &1..spx_util.first_fetch := True;
+    loc_grid1 := spx_info_r.grid.grid1;
+
+    sctx := &1..st_domain_methods(curs1,loc_own,loc_tab,loc_col,loc_geom,op.objectname,loc_mat,loc_dist,NULL);
+
+    Return odciconst.success;
+  End odciindexstart;
+  
+  /***********************************************************************
+  *
+  *n  {odciindexstart}  --  starts domain index selection using envp
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *p  purpose:
+  *     *     odciindexstart - uses geometry to start domain
+  *  index selection.
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *a  parameters:
+  *     ia    <in>     ==  (sys.odciindexinfo) odci object info
+  *     parms <in>     ==  (varchar2) parameters list
+  *     env   <in>     ==  (sys.odcienv) context handle
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *x  &1. exceptions:
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *h  history:
+  *
+  *    kevin watt          12/02/04           original coding.
+  *e
+  ***********************************************************************/
+  static Function odciindexstart (sctx IN Out &1..st_domain_methods,
+                                  ia          sys.odciindexinfo,
+                                  op          sys.odcipredinfo,
+                                  qi          sys.odciqueryinfo,
+                                  strt        number,
+                                  stop        number,
+                                  srch_shape  &1..st_geometry,
+                                  env         sys.odcienv)
+  Return number
+  IS
+  
+    spx_info_r      &1..spx_util.spx_record_t;
+    sp_ref_r        &1..spx_util.spatial_ref_record_t;
+    properties      &1..spx_util.st_geom_prop_t;
+    stmt            varchar2(256);
+    table_name      varchar2(256);
+    partition_name  varchar2(256);
+    curs1           number;
+    int_env_r       &1..spx_util.r_env;
+    nrows           integer;
+    rc              number;
+    num_grids       pls_integer;
+    loc_geom        &1..st_geometry DEFAULT NULL;
+    shape_out       &1..st_geometry := &1..st_geometry(0,0,0,0,0,0,0,0,0,0,0,0,0,empty_blob());
+    loc_own         varchar2(30) DEFAULT NULL;
+    loc_tab         varchar2(30) DEFAULT NULL;
+    loc_col         varchar2(30) DEFAULT NULL;
+    loc_mat         varchar2(9) DEFAULT NULL;
+    loc_dist        number DEFAULT NULL;
+    optype          pls_integer;
+    distance        number;
+    operation       Integer;
+    is_empty        BOOLEAN DEFAULT FALSE;
+ 
+  Begin
+
+    optype := &1..spx_util.st_geom_operation_select;
+    rc := &1..spx_util.get_object_info(ia,optype,NULL,spx_info_r,sp_ref_r,properties);
+
+    If rc != &1..spx_util.se_success THEN
+      raise_application_error (&1..st_type_util.spx_object_noexist,'Object '||ia.indexcols(1).tableschema||
+                               '.'||ia.indexcols(1).tablename||'.'||REPLACE(ia.indexcols(1).colname,'"','')||' not found in ST_GEOMETRY_INDEX.');
+    End If;
+
+    int_env_r.minx := ((srch_shape.minx - sp_ref_r.x_offset) * sp_ref_r.xyunits + 0.5);	
+    int_env_r.miny := ((srch_shape.miny - sp_ref_r.y_offset) * sp_ref_r.xyunits + 0.5);
+    int_env_r.maxx := ((srch_shape.maxx - sp_ref_r.x_offset) * sp_ref_r.xyunits + 0.5);		
+    int_env_r.maxy := ((srch_shape.maxy - sp_ref_r.y_offset) * sp_ref_r.xyunits + 0.5);
+
+    If ((env.callproperty IS NULL) AND (ia.indexcols(1).tablepartition IS NULL )) THEN
+      table_name := '"'||ia.indexcols(1).tableschema||'"'||'.S'||spx_info_r.index_id||'_IDX$';
+    End If;
+
+    IF (((env.callproperty IS NOT NULL) AND (ia.indexcols(1).tablepartition IS NOT NULL)) OR
+        ((env.callproperty IS NULL) AND (ia.indexcols(1).tablepartition IS NOT NULL))) THEN
+      If(ia.indexcols(1).tablepartition = ia.indexpartition) Then
+        partition_name := ia.indexcols(1).tablepartition;
+      Else
+        partition_name := ia.indexpartition;
+      End If;
+
+      table_name := &1..spx_util.get_partition_name(partition_name,
+                                                    properties,
+                                                    spx_info_r.index_id);
+
+      &1..spx_util.get_partition_grids(ia.indexcols(1).tableschema,
+                                       ia.indexcols(1).tablename,
+                                       REPLACE(ia.indexcols(1).colname,'"',''),
+                                       partition_name,
+                                       properties,
+                                       spx_info_r);
+    End If;
+
+    If op.objectname = 'ST_ENVINTERSECTS' THEN
+      rc := odciindexstart(sctx,ia,op,qi,strt,stop, 
+                           srch_shape.minx,srch_shape.miny,
+                           srch_shape.maxx,srch_shape.maxy,env);
+      Return rc;
+    Else
+
+      If op.objectname = 'ST_INTERSECTS' Or 
+         op.objectname = 'ST_WITHIN' Or
+         op.objectname = 'ST_CONTAINS' Or
+         op.objectname = 'ST_CROSSES' Or
+         op.objectname = 'ST_TOUCHES' Or
+         op.objectname = 'ST_OVERLAPS' Or
+         op.objectname = 'ST_EQUALS' Or 
+         op.objectname = 'ST_ORDERINGEQUALS' Then
+      
+        If (srch_shape.numpts = 0) AND 
+           (srch_shape.len = 0 OR srch_shape.len IS NULL) Then
+          is_empty := TRUE;
+        End If;
+        
+        If is_empty = TRUE OR 
+           srch_shape IS NULL Then
+          curs1 := &1..spx_util.curs_shape_empty_null; 
+        End If;
+           
+        If srch_shape.entity > 0 And 
+           srch_shape IS NOT NULL And 
+           is_empty = FALSE Then
+          distance := 0;
+          If op.objectname = 'ST_INTERSECTS' Then
+            operation := &1..st_geom_util.intersects_c;
+          Elsif op.objectname = 'ST_WITHIN' Then
+            operation := &1..st_geom_util.within_c;
+          Elsif op.objectname = 'ST_CONTAINS' Then
+            operation := &1..st_geom_util.contains_c;
+          Elsif op.objectname = 'ST_CROSSES' Then
+            operation := &1..st_geom_util.crosses_c;
+          Elsif op.objectname = 'ST_TOUCHES' Then
+            operation := &1..st_geom_util.touches_c;
+          Elsif op.objectname = 'ST_OVERLAPS' Then
+            operation := &1..st_geom_util.overlaps_c;
+          Elsif op.objectname = 'ST_EQUALS' Or op.objectname = 'ST_ORDERINGEQUALS' Then
+            operation := &1..st_geom_util.equals_c; 
+          Else 
+            raise_application_error (&1..st_type_util.spx_invalid_rel_operation,'Invalid domain index operation.');
+          End If;
+
+          rc := &1..spx_util.check_search_geom_srid (ia,srch_shape,shape_out);
+          If &1..st_type_util.se_success != rc Then
+            raise_application_error (&1..st_type_util.spx_diff_srids,'Search shape spatial reference transformation failed');
+          End If;
+
+          If shape_out.numpts != 0 And shape_out.entity != 0 Then
+            &1..spx_util.grid_search_prepare (ia,table_name,spx_info_r,sp_ref_r,shape_out,distance,operation,curs1);
+          Else
+            &1..spx_util.grid_search_prepare (ia,table_name,spx_info_r,sp_ref_r,srch_shape,distance,operation,curs1);
+          End If;
+
+        End If;
+      Else
+        &1..spx_util.execute_spatial_join (ia,op,table_name,spx_info_r,sp_ref_r,int_env_r,curs1);
+      End If;
+      
+      &1..spx_util.first_fetch := True;
+      If shape_out.numpts > 0 And shape_out.entity > 0 Then
+        sctx := &1..st_domain_methods(curs1,ia.indexcols(1).tableschema,ia.indexcols(1).tablename,
+                                      REPLACE(ia.indexcols(1).colname,'"',''),shape_out,op.objectname,loc_mat,loc_dist,NULL);
+      Else
+        sctx := &1..st_domain_methods(curs1,ia.indexcols(1).tableschema,ia.indexcols(1).tablename,
+                                      REPLACE(ia.indexcols(1).colname,'"',''),srch_shape,op.objectname,loc_mat,loc_dist,NULL);
+      End If;
+    End If;
+
+    Return odciconst.success;
+  End odciindexstart;
+
+  /***********************************************************************
+  *
+  *n  {odciindexstart}
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *p  purpose:
+  *     odciindexstart - uses st_relate index selection.
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *a  parameters:
+  *     ia    <in>     ==  (sys.odciindexinfo) odci object info
+  *     parms <in>     ==  (varchar2) parameters list
+  *     env   <in>     ==  (sys.odcienv) context handle
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *x  &1. exceptions:
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *h  history:
+  *
+  *    kevin watt          12/02/04           original coding.
+  *    Sanjay Magal        03/26/08     Add logic for grid ordering 
+  *e
+  ***********************************************************************/
+  static Function odciindexstart (sctx IN Out &1..st_domain_methods,
+                                  ia          sys.odciindexinfo,
+                                  op          sys.odcipredinfo,
+                                  qi          sys.odciqueryinfo,
+                                  strt        number,
+                                  stop        number,
+                                  srch_shape  &1..st_geometry,
+                                  matrix      varchar2,
+                                  env         sys.odcienv)
+  Return number
+  IS
+
+    spx_info_r      &1..spx_util.spx_record_t;
+    sp_ref_r        &1..spx_util.spatial_ref_record_t;
+    properties      &1..spx_util.st_geom_prop_t;
+    stmt            varchar2(256);
+    table_name      varchar2(256);
+    partition_name  varchar2(256);
+    curs1           number;
+    int_env_r       &1..spx_util.r_env;
+    nrows           integer;
+    pos             integer;
+    rc              number;
+    num_grids       pls_integer;
+    loc_geom        &1..st_geometry DEFAULT NULL;
+    loc_own         varchar2(30) DEFAULT NULL;
+    loc_tab         varchar2(30) DEFAULT NULL;
+    loc_col         varchar2(30) DEFAULT NULL;
+    loc_mat         varchar2(9) DEFAULT NULL;
+    loc_dist        number DEFAULT NULL;
+    optype          pls_integer;
+
+  Begin
+      
+    If (op.objectname = 'ST_ENVINTERSECTS' AND upper(matrix) = 'ORDERBYGRID') Then
+      rc := odciindexstart(sctx,ia,op,qi,strt,stop, 
+                           srch_shape.minx,srch_shape.miny,
+                           srch_shape.maxx,srch_shape.maxy,matrix,env);
+      Return rc;  
+    End If;
+       
+    optype := &1..spx_util.st_geom_operation_select;
+    rc := &1..spx_util.get_object_info(ia,optype,NULL,spx_info_r,sp_ref_r,properties);
+
+    IF rc != &1..spx_util.se_success THEN
+      raise_application_error (&1..st_type_util.spx_object_noexist,'Object '||ia.indexcols(1).tableschema||
+                               '.'||ia.indexcols(1).tablename||'.'||REPLACE(ia.indexcols(1).colname,'"','')||' not found in ST_GEOMETRY_INDEX.');
+    End If;
+
+    int_env_r.minx := ((srch_shape.minx - sp_ref_r.x_offset) * sp_ref_r.xyunits + 0.5);	
+    int_env_r.miny := ((srch_shape.miny - sp_ref_r.y_offset) * sp_ref_r.xyunits + 0.5);
+    int_env_r.maxx := ((srch_shape.maxx - sp_ref_r.x_offset) * sp_ref_r.xyunits + 0.5);		
+    int_env_r.maxy := ((srch_shape.maxy - sp_ref_r.y_offset) * sp_ref_r.xyunits + 0.5);
+
+    IF ((env.callproperty IS NULL) AND (ia.indexcols(1).tablepartition IS NULL )) THEN
+      table_name := '"'||ia.indexcols(1).tableschema||'"'||'.S'||spx_info_r.index_id||'_IDX$';
+    End If;
+
+    IF (((env.callproperty IS NOT NULL) AND (ia.indexcols(1).tablepartition IS NOT NULL)) OR
+        ((env.callproperty IS NULL) AND (ia.indexcols(1).tablepartition IS NOT NULL))) THEN
+      If(ia.indexcols(1).tablepartition = ia.indexpartition) Then
+        partition_name := ia.indexcols(1).tablepartition;
+      Else
+        partition_name := ia.indexpartition;
+      End If;
+
+      table_name := &1..spx_util.get_partition_name(partition_name,
+                                                    properties,
+                                                    spx_info_r.index_id);
+
+      &1..spx_util.get_partition_grids(ia.indexcols(1).tableschema,
+                                       ia.indexcols(1).tablename,
+                                       REPLACE(ia.indexcols(1).colname,'"',''),
+                                       partition_name,
+                                       properties,
+                                       spx_info_r);
+    End If;
+
+    IF op.objectname = 'ST_ENVINTERSECTS' THEN
+      &1..spx_util.execute_spatial (ia,table_name,spx_info_r,sp_ref_r,int_env_r,curs1);
+    else
+      &1..spx_util.execute_spatial_join (ia,op,table_name,spx_info_r,sp_ref_r,int_env_r,curs1);
+    End if;
+    
+    &1..spx_util.fetch_env(curs1).curs := curs1;
+    &1..spx_util.fetch_env(curs1).first_fetch := True;
+    &1..spx_util.fetch_env(curs1).relate_disjoint := FALSE;
+    &1..spx_util.fetch_env(curs1).envp_bygridorder := FALSE;
+    &1..spx_util.fetch_env(curs1).fetch_pos := 1;
+    &1..spx_util.fetch_env(curs1).total_rows := 0;
+    
+    pos := instr(UPPER(matrix),'FF*FF****',1);      --Disjoint case
+    IF pos > 0 THEN
+      &1..spx_util.fetch_env(curs1).relate_disjoint := TRUE;
+    End If;
+    
+    sctx := &1..st_domain_methods(curs1,ia.indexcols(1).tableschema,ia.indexcols(1).tablename,REPLACE(ia.indexcols(1).colname,'"',''),
+                                  srch_shape,op.objectname,matrix,loc_dist,NULL);
+  
+    Return odciconst.success;
+	
+End odciindexstart;
+
+/***********************************************************************
+  *
+  *n  {odciindexstart}  --  starts domain index selection using envp
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *p  purpose:
+  *     odciindexstart - uses minx,miny,maxx,maxy to start domain
+  *  index selection in spatial index grid order.
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *a  parameters:
+  *     ia    <in>     ==  (sys.odciindexinfo) odci object info
+  *     parms <in>     ==  (varchar2) parameters list
+  *     env   <in>     ==  (sys.odcienv) context handle
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *x  &1. exceptions:
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *h  history:
+  *
+  *    Sanjay Magal          03/19/08           original coding.
+  *e
+  ***********************************************************************/
+  static Function odciindexstart (sctx IN Out &1..st_domain_methods,
+                                  ia          sys.odciindexinfo,
+                                  op          sys.odcipredinfo, 
+                                  qi          sys.odciqueryinfo,
+                                  strt        number,
+                                  stop        number,
+                                  minx        number,
+                                  miny        number,
+                                  maxx        number, 
+                                  maxy        number,
+                                  orderby     varchar2,
+                                  env         sys.odcienv)
+  Return number
+  IS
+
+    spx_info_r      &1..spx_util.spx_record_t;
+    sp_ref_r        &1..spx_util.spatial_ref_record_t;
+    properties      &1..spx_util.st_geom_prop_t;
+    stmt            varchar2(256);
+    table_name      varchar2(256);
+    partition_name  varchar2(256);
+    int_env_r       &1..spx_util.r_env;
+    nrows           integer;
+    rc              number;
+    num_grids       pls_integer;
+    loc_geom        &1..st_geometry DEFAULT NULL;
+    loc_own         varchar2(30) DEFAULT NULL;
+    loc_tab         varchar2(30) DEFAULT NULL;
+    loc_col         varchar2(30) DEFAULT NULL;
+    loc_mat         varchar2(9) DEFAULT NULL;
+    loc_dist        number DEFAULT NULL;
+    curs1           number := 0;
+    optype          pls_integer;
+  
+  Begin
+      
+    If upper(orderby) <> 'ORDERBYGRID' Then
+       raise_application_error (&1..st_type_util.st_geom_invalid_parameter,'Invalid parameter specified, '|| 
+         'only valid string for this operation is OrderByGrid ');  
+    End If;
+      
+    optype := &1..spx_util.st_geom_operation_selordbygx;
+    rc := &1..spx_util.get_object_info(ia,optype,NULL,spx_info_r,sp_ref_r,properties);
+
+    IF rc != &1..spx_util.se_success THEN
+      raise_application_error (&1..st_type_util.spx_object_noexist,'Object '||ia.indexcols(1).tableschema||
+                               '.'||ia.indexcols(1).tablename||'.'||REPLACE(ia.indexcols(1).colname,'"','')||' not found in ST_GEOMETRY_INDEX.');
+    End If;
+
+    int_env_r.minx := ((minx - sp_ref_r.x_offset) * sp_ref_r.xyunits + 0.5);	
+    int_env_r.miny := ((miny - sp_ref_r.y_offset) * sp_ref_r.xyunits + 0.5);
+    int_env_r.maxx := ((maxx - sp_ref_r.x_offset) * sp_ref_r.xyunits + 0.5);		
+    int_env_r.maxy := ((maxy - sp_ref_r.y_offset) * sp_ref_r.xyunits + 0.5);
+
+    IF ((env.callproperty IS NULL) AND (ia.indexcols(1).tablepartition IS NULL )) THEN
+      table_name := '"'||ia.indexcols(1).tableschema||'"'||'.S'||spx_info_r.index_id||'_IDX$';
+    End If;
+
+    IF (((env.callproperty IS NOT NULL) AND (ia.indexcols(1).tablepartition IS NOT NULL)) OR
+        ((env.callproperty IS NULL) AND (ia.indexcols(1).tablepartition IS NOT NULL))) THEN
+      If(ia.indexcols(1).tablepartition = ia.indexpartition) Then
+        partition_name := ia.indexcols(1).tablepartition;
+      Else
+        partition_name := ia.indexpartition;
+      End If;
+
+      table_name := &1..spx_util.get_partition_name(partition_name,
+                                                    properties,
+                                                    spx_info_r.index_id);
+
+      &1..spx_util.get_partition_grids(ia.indexcols(1).tableschema,
+                                       ia.indexcols(1).tablename,
+                                       REPLACE(ia.indexcols(1).colname,'"',''),
+                                       partition_name,
+                                       properties,
+                                       spx_info_r);
+    End If;
+
+    IF op.objectname = 'ST_ENVINTERSECTS' THEN
+      &1..spx_util.execute_spatial_gridorder (ia,table_name,spx_info_r,sp_ref_r,int_env_r,curs1);
+     
+      &1..spx_util.fetch_env(curs1).first_fetch := True;
+      &1..spx_util.fetch_env(curs1).relate_disjoint := FALSE;
+      &1..spx_util.fetch_env(curs1).envp_bygridorder := TRUE;
+      &1..spx_util.fetch_env(curs1).fetch_state := 'FIRST';
+      &1..spx_util.fetch_env(curs1).fetch_pos := 1;
+      &1..spx_util.fetch_env(curs1).total_rows := 0;
+
+    else
+      raise_application_error(-20000, 'Invalid operation ');
+    End if;
+    
+    &1..spx_util.first_fetch := True;
+    sctx := &1..st_domain_methods(curs1,loc_own,loc_tab,loc_col,loc_geom,op.objectname,loc_mat,loc_dist,NULL);
+
+    Return odciconst.success;
+  End odciindexstart;
+
+/***********************************************************************
+  *
+  *n  {odciindexstart}
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *p  purpose:
+  *     odciindexstart - uses st_buffer_intersects index selection.
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *a  parameters:
+  *     ia    <in>     ==  (sys.odciindexinfo) odci object info
+  *     parms <in>     ==  (varchar2) parameters list
+  *     env   <in>     ==  (sys.odcienv) context handle
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *x  &1. exceptions:
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *h  history:
+  *
+  *    Thomas Brown          03/10/08           original coding.
+  *e
+  ***********************************************************************/
+  static Function odciindexstart (sctx IN OUT &1..st_domain_methods,
+                                  ia          sys.odciindexinfo,
+                                  op          sys.odcipredinfo,
+                                  qi          sys.odciqueryinfo,
+                                  strt        number,
+                                  stop        number,
+                                  srch_shape  &1..st_geometry,
+                                  distance    number,
+                                  env         sys.odcienv)
+  Return number
+  IS
+
+    spx_info_r      &1..spx_util.spx_record_t;
+    sp_ref_r        &1..spx_util.spatial_ref_record_t;
+    properties      &1..spx_util.st_geom_prop_t;
+    stmt            varchar2(256);
+    table_name      varchar2(256);
+    partition_name  varchar2(256);
+    curs1           number;
+    int_env_r       &1..spx_util.r_env;
+    nrows           integer;
+    pos             integer;
+    rc              number;
+    num_grids       pls_integer;
+    loc_geom        &1..st_geometry DEFAULT NULL;
+    shape_out       &1..st_geometry := &1..st_geometry(0,0,0,0,0,0,0,0,0,0,0,0,0,empty_blob());
+    loc_own         varchar2(30) DEFAULT NULL;
+    loc_tab         varchar2(30) DEFAULT NULL;
+    loc_col         varchar2(30) DEFAULT NULL;
+    loc_mat         varchar2(9) DEFAULT NULL;
+    loc_dist        number DEFAULT NULL;
+    optype          pls_integer;
+    operation       integer;
+
+  Begin
+      
+    optype := &1..spx_util.st_geom_operation_select;
+    rc := &1..spx_util.get_object_info(ia,optype,NULL,spx_info_r,sp_ref_r,properties);
+
+    IF rc != &1..spx_util.se_success THEN
+      raise_application_error (&1..st_type_util.spx_object_noexist,'Object '||ia.indexcols(1).tableschema||
+                               '.'||ia.indexcols(1).tablename||'.'||REPLACE(ia.indexcols(1).colname,'"','')||' not found in ST_GEOMETRY_INDEX.');
+    End If;
+
+    int_env_r.minx := ((srch_shape.minx - sp_ref_r.x_offset) * sp_ref_r.xyunits + 0.5);	
+    int_env_r.miny := ((srch_shape.miny - sp_ref_r.y_offset) * sp_ref_r.xyunits + 0.5);
+    int_env_r.maxx := ((srch_shape.maxx - sp_ref_r.x_offset) * sp_ref_r.xyunits + 0.5);		
+    int_env_r.maxy := ((srch_shape.maxy - sp_ref_r.y_offset) * sp_ref_r.xyunits + 0.5);
+
+    IF ((env.callproperty IS NULL) AND (ia.indexcols(1).tablepartition IS NULL )) THEN
+      table_name := '"'||ia.indexcols(1).tableschema||'"'||'.S'||spx_info_r.index_id||'_IDX$';
+    End If;
+
+    IF (((env.callproperty IS NOT NULL) AND (ia.indexcols(1).tablepartition IS NOT NULL)) OR
+        ((env.callproperty IS NULL) AND (ia.indexcols(1).tablepartition IS NOT NULL))) THEN
+      If(ia.indexcols(1).tablepartition = ia.indexpartition) Then
+        partition_name := ia.indexcols(1).tablepartition;
+      Else
+        partition_name := ia.indexpartition;
+      End If;
+
+      table_name := &1..spx_util.get_partition_name(partition_name,
+                                                    properties,
+                                                    spx_info_r.index_id);
+      &1..spx_util.get_partition_grids(ia.indexcols(1).tableschema,
+                                       ia.indexcols(1).tablename,
+                                       REPLACE(ia.indexcols(1).colname,'"',''),
+                                       partition_name,
+                                       properties,
+                                       spx_info_r);
+    End If;
+
+    if op.objectname = 'ST_BUFFER_INTERSECTS' Then
+      operation := &1..st_geom_util.buffer_intersects_c;
+      
+      rc := &1..spx_util.check_search_geom_srid (ia,srch_shape,shape_out);
+      If &1..st_type_util.se_success != rc Then
+        raise_application_error (&1..st_type_util.spx_diff_srids,'Search shape spatial reference transformation failed');
+      End If;
+          
+      If shape_out.numpts != 0 And shape_out.entity != 0 Then
+        &1..spx_util.grid_search_prepare (ia,table_name,spx_info_r,sp_ref_r,shape_out,distance,operation,curs1);
+      Else
+        &1..spx_util.grid_search_prepare (ia,table_name,spx_info_r,sp_ref_r,srch_shape,distance,operation,curs1);
+      End If;
+    Else
+        &1..spx_util.execute_spatial_join (ia,op,table_name,spx_info_r,sp_ref_r,int_env_r,curs1);
+    End If;
+       
+    loc_dist := distance;
+    
+    &1..spx_util.first_fetch := True;
+    If shape_out.numpts > 0 And shape_out.entity > 0 Then
+      sctx := &1..st_domain_methods(curs1,ia.indexcols(1).tableschema,ia.indexcols(1).tablename,
+                                    REPLACE(ia.indexcols(1).colname,'"',''),shape_out,op.objectname,loc_mat,loc_dist,NULL);
+    Else
+      sctx := &1..st_domain_methods(curs1,ia.indexcols(1).tableschema,ia.indexcols(1).tablename,
+                                    REPLACE(ia.indexcols(1).colname,'"',''),srch_shape,op.objectname,loc_mat,loc_dist,NULL);
+    End If;
+
+    Return odciconst.success;
+
+End odciindexstart;
+  
+    -- fetch scan--
+/***********************************************************************
+  *
+  *n  {odciindexfetch}  --  fetches domain index selection using operators
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *p  purpose:
+  *     odciindexfetch binds, executes and fetches spatial information
+  *  using the domain index. The domain index is invoked for spatial 
+  *  selections (ST_EnvIntersects) and relational operators (ST_Contains,
+  *  ST_Within,etc...). Spatial selections fetch ROWID information from
+  *  the domain index that idenitfy the shape. 
+  *
+  *  Relational operators fetch the ST_Geometry information based on a 
+  *  spatial (srch_geom) provided from the predicate filter in the 
+  *  selection. The geomerty's returned (loc_geom) are used along with
+  *  the srch_geom shape to call the specific operator. The order of 
+  *  these shapes (loc_geom,srch_geom) is important to the operator. 
+  *  ST_Contains (G1 contains G2) and ST_Within (G1 within G2) execute
+  *  a spatial selection against G1 using the search shape from G2. 
+  *  G1 (loc_geom) must always be the first shape in these operators
+  *  followed by G2 (srch_geom).
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *a  parameters:
+  *     ia    <in>     ==  (sys.odciindexinfo) odci object info
+  *     parms <in>     ==  (varchar2) parameters list
+  *     env   <in>     ==  (sys.odcienv) context handle
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *x  &1. exceptions:
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *h  history:
+  *
+  *    kevin watt          12/02/04           original coding.
+  *e
+  ***********************************************************************/
+  member Function odciindexfetch (self  IN OUT &1..st_domain_methods,
+                                  nrows number,
+                                  rids  Out NOCOPY sys.odciridlist,
+                                  env   sys.odcienv)
+  Return number
+  IS
+
+    CURSOR c_geom_idx (owner_wanted IN VARCHAR2, table_wanted IN VARCHAR2, column_wanted IN VARCHAR2) IS
+      SELECT *
+      FROM   &1..st_geometry_index
+      WHERE  owner = owner_wanted AND table_name = table_wanted AND column_name = column_wanted;
+
+    geom_idx    &1..st_geometry_index%ROWTYPE;
+
+    CURSOR c_spa_ref (srid_wanted IN NUMBER) IS
+      SELECT *
+      FROM   &1..st_spatial_references
+      WHERE  srid = srid_wanted;
+
+    spa_ref    &1..st_spatial_references%ROWTYPE;
+                                                      
+    row_cnt  pls_integer;
+
+    TYPE spa_index IS REF CURSOR;
+    spa_cursor spa_index;
+
+    TYPE geom_tab IS TABLE OF &1..st_geometry INDEX BY BINARY_INTEGER; 
+    geom_val    geom_tab;
+    
+    rids_cnt    NUMBER DEFAULT 0;
+    loc_geom    &1..st_geometry;
+    trans_geom  &1..st_geometry;
+    srch_geom   &1..st_geometry;
+    minx        integer;
+    miny        integer;
+    maxx        integer;
+    maxy        integer;
+    f_minx      float(64);
+    f_maxx      float(64);
+    f_miny      float(64);
+    f_maxy      float(64);
+    grids       &1..spx_util.v_grids := &1..spx_util.v_grids(0,0,0);
+    levels      &1..spx_util.v_levels := &1..spx_util.v_levels(0,0,0);
+    grid_env    &1..spx_util.r_grid_env := &1..spx_util.r_grid_env();
+    curs1       number;
+    frows       integer;
+    pos         pls_integer;
+    fetch_pos   pls_integer;
+    tot_rows    pls_integer := 0;
+    relate_cond integer;
+    rc          integer;
+    grid1       number;
+    grid2       number;
+    grid3       number;
+    curs_cnt    number;
+    first_fetch boolean;
+    index_p     integer;
+    lridtab     dbms_sql.varchar2_table;  
+    l_entity_t  dbms_sql.number_table;
+    l_numpts_t  dbms_sql.number_table;
+    l_minx_t    dbms_sql.number_table;
+    l_miny_t    dbms_sql.number_table;
+    l_maxx_t    dbms_sql.number_table; 
+    l_maxy_t    dbms_sql.number_table;
+    l_srid_t    dbms_sql.number_table;
+    l_points_t  dbms_sql.blob_table;
+
+    
+  Begin
+  
+    curs1 := self.curs_select;
+    rids := sys.odciridlist();
+    
+    If curs1 = &1..spx_util.curs_shape_empty_null Then
+      Return odciconst.success;
+    End If;
+ 
+    If &1..spx_util.fetch_env.exists(curs1) Then
+      fetch_pos := &1..spx_util.fetch_env(curs1).fetch_pos;
+      first_fetch := &1..spx_util.fetch_env(curs1).first_fetch;
+      tot_rows := &1..spx_util.fetch_env(curs1).total_rows;
+      
+      If cur_op = 'ST_RELATE' Then
+        pos := &1..spx_util.fetch_env(curs1).fetch_pos;
+      Else
+        pos := &1..spx_util.fetch_env(curs1).total_rows;
+      End IF;
+    Else 
+      &1..spx_util.fetch_env(curs1).curs := curs1;
+      curs_cnt := 1;
+      &1..spx_util.fetch_env(curs1).fetch_pos := 1;
+      &1..spx_util.fetch_env(curs1).first_fetch := TRUE;
+      &1..spx_util.fetch_env(curs1).fetch_state := 'FIRST';
+      &1..spx_util.fetch_env(curs1).total_rows := 0;
+      &1..spx_util.fetch_state := &1..spx_util.fetch_env(curs1).fetch_state;
+      &1..spx_util.fetch_env(curs1).test_boundary_fetch := 'FIRST';
+      self.curs_sel_cnt := 1;
+      fetch_pos := 1;
+      first_fetch := TRUE;
+    End If;
+
+    If cur_op = 'ST_ENVINTERSECTS' Then
+      LOOP 
+        row_cnt := dbms_sql.fetch_rows(curs1);
+
+         If row_cnt = 0 Then
+           &1..spx_util.close_partition_table_cursor(curs1);
+         End If;
+
+        EXIT WHEN row_cnt = 0;
+
+        --dbms_sql.column_value(curs1, 1, &1..spx_util.fetch_env(curs1).rid_t);
+        dbms_sql.column_value(curs1, 1, lridtab);
+        
+        FOR i IN 1 .. row_cnt 
+        LOOP
+
+          rids_cnt := rids_cnt + 1;
+          rids.EXTEND(1);
+          index_p := i + pos;
+            
+            &1..spx_util.fetch_env(curs1).rid_t(index_p) := lridtab(index_p);
+                        
+            rids(rids_cnt) := &1..spx_util.fetch_env(curs1).rid_t(index_p); 
+        End LOOP;
+      
+        &1..spx_util.fetch_env(curs1).rid_t.delete;
+
+         If row_cnt <> 100 Then
+           &1..spx_util.close_partition_table_cursor(curs1);
+         End If;
+
+        EXIT WHEN row_cnt <> 100;
+        pos := pos + row_cnt;
+        IF rids_cnt = 2000 and rids.count > 0 THEN
+          &1..spx_util.fetch_env(curs1).total_rows := pos;
+          Return odciconst.success;
+        End If;
+      End LOOP;
+
+      IF (rids_cnt > 0 AND rids_cnt < 2000) Or
+         (rids_cnt = 0 And row_cnt = 0) THEN
+        rids.EXTEND(1);
+        rids(rids_cnt + 1) := NULL;
+        Return odciconst.success;
+      END IF;
+
+    End If;
+
+    If cur_op = 'ST_INTERSECTS' Or
+       cur_op = 'ST_BUFFER_INTERSECTS' Or
+       cur_op = 'ST_WITHIN' Or
+       cur_op = 'ST_CONTAINS' Or 
+       cur_op = 'ST_CROSSES' Or
+       cur_op = 'ST_TOUCHES' Or 
+       cur_op = 'ST_OVERLAPS' Or 
+       cur_op = 'ST_EQUALS' Or
+       cur_op = 'ST_ORDERINGEQUALS' Then
+       
+       rc := &1..spx_util.grid_search_execute (curs1,
+                                              self.cur_own,
+                                              self.cur_tab,
+                                              self.cur_col,
+                                              self.cur_op,
+                                              self.cur_geom,
+                                              self.cur_dist,
+                                              rids, 
+                                              env);
+      Return rc;
+
+    End If;
+
+     If &1..spx_util.fetch_env(curs1).first_fetch = True THEN
+    
+      OPEN c_geom_idx (self.cur_own, self.cur_tab, self.cur_col);
+      FETCH c_geom_idx INTO geom_idx;
+      IF c_geom_idx%NOTFOUND THEN
+        CLOSE c_geom_idx;
+        RETURN odciconst.error;
+      END IF;
+      CLOSE c_geom_idx;
+
+      loc_geom := self.cur_geom;
+      IF geom_idx.srid <> self.cur_geom.srid THEN
+        &1..st_geometry_operators.transform_srch_shape(loc_geom,srch_geom,self.cur_geom.srid,geom_idx.srid);
+      ELSE
+        srch_geom := self.cur_geom;
+      End IF;
+     
+      OPEN c_spa_ref (geom_idx.srid);
+      FETCH c_spa_ref INTO spa_ref;
+      IF c_spa_ref%NOTFOUND THEN
+        CLOSE c_spa_ref;
+        RETURN odciconst.error;
+      END IF;
+      CLOSE c_spa_ref;
+
+      f_minx := srch_geom.minx;
+      f_miny := srch_geom.miny;
+      f_maxx := srch_geom.maxx;
+      f_maxy := srch_geom.maxy;
+
+      minx := ((f_minx - spa_ref.x_offset) * spa_ref.xyunits + 0.5);
+      miny := ((f_miny - spa_ref.y_offset) * spa_ref.xyunits + 0.5);
+      maxx := ((f_maxx - spa_ref.x_offset) * spa_ref.xyunits + 0.5);
+      maxy := ((f_maxy - spa_ref.y_offset) * spa_ref.xyunits + 0.5);
+
+      grid1 := geom_idx.grid.grid1;
+      grid2 := geom_idx.grid.grid2;
+      grid3 := geom_idx.grid.grid3;
+
+      grids(1) := grid1 * spa_ref.xyunits;
+      levels(1) := 0;
+
+      If grid2 > 0 THEN
+        grids(2) := grid2 * spa_ref.xyunits;
+        levels(2) := &1..spx_util.grid_level_mask_1;
+      ELSE
+        grids(2) := 0;
+      End If;
+
+      If grid3 > 0 THEN
+        grids(3) := grid3 * spa_ref.xyunits;
+        levels(3) := &1..spx_util.grid_level_mask_2;
+      ELSE
+        grids(3) := 0;
+      End If;
+      grid_env.extend(3);
+        
+      FOR x IN 1 .. 3
+        Loop
+        If grids(x) > 0 THEN
+          grid_env(x).minx := TRUNC(minx / grids(x)) + levels(x);
+          grid_env(x).miny := TRUNC(miny / grids(x)) + levels(x);
+          grid_env(x).maxx := TRUNC(maxx / grids(x)) + levels(x);
+          grid_env(x).maxy := TRUNC(maxy / grids(x)) + levels(x);
+        End If;
+      End Loop;
+
+      dbms_sql.bind_variable(curs1, ':b1',grid_env(1).minx);
+      dbms_sql.bind_variable(curs1, ':b2',grid_env(1).maxx);
+      dbms_sql.bind_variable(curs1, ':b3',grid_env(1).miny);
+      dbms_sql.bind_variable(curs1, ':b4',grid_env(1).maxy);
+
+      If grids(2) > 0 THEN
+        dbms_sql.bind_variable(curs1, ':b5',grid_env(2).minx);
+        dbms_sql.bind_variable(curs1, ':b6',grid_env(2).maxx);
+        dbms_sql.bind_variable(curs1, ':b7',grid_env(2).miny);
+        dbms_sql.bind_variable(curs1, ':b8',grid_env(2).maxy);
+      End If;
+
+      If grids(3) > 0 THEN
+        dbms_sql.bind_variable(curs1, ':b9',grid_env(3).minx);
+        dbms_sql.bind_variable(curs1, ':b10',grid_env(3).maxx);
+        dbms_sql.bind_variable(curs1, ':b11',grid_env(3).miny);
+        dbms_sql.bind_variable(curs1, ':b12',grid_env(3).maxy);
+      End If;
+
+      dbms_sql.bind_variable(curs1, ':e1',maxx);
+      dbms_sql.bind_variable(curs1, ':e2',maxy);
+      dbms_sql.bind_variable(curs1, ':e3',minx);
+      dbms_sql.bind_variable(curs1, ':e4',miny);
+        
+      dbms_sql.define_array(curs1,1,&1..spx_util.fetch_env(curs1).entity_t,100,1);
+      dbms_sql.define_array(curs1,2,&1..spx_util.fetch_env(curs1).numpts_t,100,1);
+      dbms_sql.define_array(curs1,3,&1..spx_util.fetch_env(curs1).minx_t,100,1);
+      dbms_sql.define_array(curs1,4,&1..spx_util.fetch_env(curs1).maxx_t,100,1);
+      dbms_sql.define_array(curs1,5,&1..spx_util.fetch_env(curs1).miny_t,100,1);
+      dbms_sql.define_array(curs1,6,&1..spx_util.fetch_env(curs1).maxy_t,100,1);
+      dbms_sql.define_array(curs1,7,&1..spx_util.fetch_env(curs1).points_t,100,1);
+      dbms_sql.define_array(curs1,8,&1..spx_util.fetch_env(curs1).srid_t,100,1);
+      dbms_sql.define_array(curs1,9,&1..spx_util.fetch_env(curs1).rid_t,100,1);
+    End if;
+      
+    frows := dbms_sql.execute(curs1);
+   
+    If &1..spx_util.fetch_env(curs1).first_fetch = True THEN 
+      LOOP 
+        row_cnt := dbms_sql.fetch_rows(curs1);
+        if row_cnt = 0 AND tot_rows = 0 THEN
+          rids := sys.odciridlist();
+          rids.EXTEND(1);
+          rids(1) := NULL;
+          RETURN odciconst.success;
+        End IF;
+          
+        IF row_cnt > 0 THEN 
+          --dbms_sql.column_value(curs1, 1, &1..spx_util.fetch_env(curs1).entity_t);
+          dbms_sql.column_value(curs1, 1, l_entity_t);          
+          --dbms_sql.column_value(curs1, 2, &1..spx_util.fetch_env(curs1).numpts_t);
+          dbms_sql.column_value(curs1, 2, l_numpts_t);
+          --dbms_sql.column_value(curs1, 3, &1..spx_util.fetch_env(curs1).minx_t);
+          dbms_sql.column_value(curs1, 3, l_minx_t); 
+          --dbms_sql.column_value(curs1, 4, &1..spx_util.fetch_env(curs1).maxx_t);
+          dbms_sql.column_value(curs1, 4, l_maxx_t);          
+          --dbms_sql.column_value(curs1, 5, &1..spx_util.fetch_env(curs1).miny_t);
+          dbms_sql.column_value(curs1, 5, l_miny_t);          
+          --dbms_sql.column_value(curs1, 6, &1..spx_util.fetch_env(curs1).maxy_t);
+          dbms_sql.column_value(curs1, 6, l_maxy_t);          
+          --dbms_sql.column_value(curs1, 7, &1..spx_util.fetch_env(curs1).points_t);
+          dbms_sql.column_value(curs1, 7, l_points_t);
+          --dbms_sql.column_value(curs1, 8, &1..spx_util.fetch_env(curs1).srid_t);
+          dbms_sql.column_value(curs1, 8, l_srid_t);
+         --dbms_sql.column_value(curs1, 9, &1..spx_util.fetch_env(curs1).rid_t);
+          dbms_sql.column_value(curs1, 9, lridtab);
+
+        End If;
+          
+       tot_rows := tot_rows + row_cnt;
+        exit when row_cnt <> 100;
+      END LOOP;
+
+      &1..spx_util.fetch_env(curs1).srch_geom := srch_geom;
+
+      IF tot_rows > 0 THEN
+        &1..spx_util.fetch_env(curs1).total_rows := tot_rows;
+        pos := 1;
+        &1..spx_util.fetch_env(curs1).first_fetch := FALSE;
+
+      End IF;
+    ELSE
+      tot_rows :=&1..spx_util.fetch_env(curs1).total_rows;
+      pos := &1..spx_util.fetch_env(curs1).fetch_pos + 1;
+      loc_geom := self.cur_geom;
+      srch_geom := &1..spx_util.fetch_env(curs1).srch_geom;
+      rids_cnt := 0;
+    END IF;
+    
+    IF cur_op = 'ST_RELATE' AND &1..spx_util.fetch_env(curs1).relate_disjoint = TRUE THEN
+      relate_cond := 0;
+    ELSE
+      relate_cond := 1;
+    End If;
+
+    LOOP
+      IF pos <= tot_rows THEN
+        FOR i IN pos .. tot_rows 
+        LOOP
+
+          &1..spx_util.fetch_env(curs1).entity_t(i) := l_entity_t(i);
+	  &1..spx_util.fetch_env(curs1).numpts_t(i) := l_numpts_t(i);
+          &1..spx_util.fetch_env(curs1).minx_t(i) := l_minx_t(i);      
+          &1..spx_util.fetch_env(curs1).miny_t(i) := l_miny_t(i);     
+          &1..spx_util.fetch_env(curs1).maxx_t(i) := l_maxx_t(i);     
+          &1..spx_util.fetch_env(curs1).maxy_t(i) := l_maxy_t(i); 
+          &1..spx_util.fetch_env(curs1).points_t(i) := l_points_t(i);
+          &1..spx_util.fetch_env(curs1).srid_t(i) := l_srid_t(i);
+          &1..spx_util.fetch_env(curs1).rid_t(i) := lridtab(i);
+ 
+ 
+          loc_geom.entity := &1..spx_util.fetch_env(curs1).entity_t(i);
+          loc_geom.numpts := &1..spx_util.fetch_env(curs1).numpts_t(i);
+          loc_geom.minx := &1..spx_util.fetch_env(curs1).minx_t(i);
+          loc_geom.maxx := &1..spx_util.fetch_env(curs1).maxx_t(i);
+          loc_geom.miny := &1..spx_util.fetch_env(curs1).miny_t(i);
+          loc_geom.maxy := &1..spx_util.fetch_env(curs1).maxy_t(i);
+          loc_geom.points := &1..spx_util.fetch_env(curs1).points_t(i);
+          loc_geom.srid := &1..spx_util.fetch_env(curs1).srid_t(i);
+          loc_geom.minz := 0;
+          loc_geom.maxz := 0;
+          loc_geom.minm := 0;
+          loc_geom.maxm := 0;
+ 
+          IF &1..st_relation_operators.st_relate_f(loc_geom, srch_geom, cur_mat) = relate_cond THEN
+            rids_cnt := rids_cnt + 1;
+            IF rids_cnt = 1 THEN
+              rids := sys.odciridlist();
+            END IF;
+            rids.EXTEND(1);
+               
+            --&1..spx_util.fetch_env(curs1).rid_t(i) := lridtab(i);
+            rids(rids_cnt) := &1..spx_util.fetch_env(curs1).rid_t(i);
+          END IF;
+ 
+          IF rids_cnt = 2000 and rids.count > 0 THEN
+            &1..spx_util.fetch_env(curs1).fetch_pos := i;
+            Return odciconst.success;
+          End If;
+
+        END LOOP;
+        
+      End If;
+
+      IF rids_cnt > 0 AND rids_cnt < 2000 THEN
+        rids.EXTEND(1);
+        rids(rids_cnt + 1) := NULL;
+        &1..spx_util.fetch_env(curs1).first_fetch := True;
+        &1..spx_util.fetch_env(curs1).fetch_pos := 1;
+        &1..spx_util.fetch_env(curs1).entity_t.delete;
+        &1..spx_util.fetch_env(curs1).numpts_t.delete;
+        &1..spx_util.fetch_env(curs1).minx_t.delete;
+        &1..spx_util.fetch_env(curs1).miny_t.delete;
+        &1..spx_util.fetch_env(curs1).maxx_t.delete;
+        &1..spx_util.fetch_env(curs1).maxy_t.delete;
+        &1..spx_util.fetch_env(curs1).sp_id_t.delete;
+        &1..spx_util.fetch_env(curs1).rid_t.delete;
+        Return odciconst.success;
+      END IF;
+      
+      IF rids_cnt = 0 THEN 
+        rids := sys.odciridlist();
+        rids.EXTEND(1);
+        rids(rids_cnt + 1) := NULL;
+        Return odciconst.success;
+      END IF;
+
+    END LOOP;
+    
+    IF rids_cnt > 0 AND rids_cnt < 2000 THEN
+      rids.EXTEND(1);
+      rids(rids_cnt + 1) := NULL;
+    END IF;
+
+    Return odciconst.success;
+ End odciindexfetch;
+
+/***********************************************************************
+  *
+  *n  {odciindexclose}  --  closes domain index selection cursor
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *p  purpose:
+  *     odciindexclose 
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *a  parameters:
+  *     ia    <in>     ==  (sys.odciindexinfo) odci object info
+  *     parms <in>     ==  (varchar2) parameters list
+  *     env   <in>     ==  (sys.odcienv) context handle
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *x  &1. exceptions:
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *h  history:
+  *
+  *    kevin watt          12/02/04           original coding.
+  *e
+  ***********************************************************************/
+  member Function odciindexclose (env sys.odcienv)
+  Return number
+
+  IS
+  
+  loc_curs_ordbygx number := 0;
+  curs    number;
+  
+  Begin
+
+    IF cur_op = 'ST_RELATE' AND &1..spx_util.fetch_env(self.curs_select).relate_disjoint = TRUE THEN
+      &1..spx_util.fetch_env(self.curs_select).relate_disjoint := FALSE;
+    End If;
+
+    If &1..spx_util.fetch_env.exists(self.curs_select) Then
+      
+      IF cur_op = 'ST_ENVINTERSECTS' AND &1..spx_util.fetch_env(self.curs_select).envp_bygridorder = TRUE THEN
+        &1..spx_util.fetch_env(self.curs_select).envp_bygridorder := FALSE;  
+      End If;
+      
+      If dbms_sql.is_open(&1..spx_util.fetch_env(self.curs_select).curs) = TRUE Then
+        dbms_sql.close_cursor(&1..spx_util.fetch_env(self.curs_select).curs);
+      End If;
+      &1..spx_util.fetch_env.delete(self.curs_select);
+  
+    End If;
+    
+    Return odciconst.success;
+ End odciindexclose;
+  
+    -- index create --
+/***********************************************************************
+  *
+  *n  {odciindexcreate}  --  creates the domain index table.
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *p  purpose:
+  *     odciindexcreate creates the index table used for spatial
+  *  selections.
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *a  parameters:
+  *     ia    <in>     ==  (sys.odciindexinfo) odci object info
+  *     parms <in>     ==  (varchar2) parameters list
+  *     env   <in>     ==  (sys.odcienv) context handle
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *x  &1. exceptions:
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *h  history:
+  *
+  *    kevin watt          12/02/04           original coding.
+  *e
+  ***********************************************************************/
+  static Function odciindexcreate (ia    sys.odciindexinfo, 
+                                   parms varchar2,
+                                   env   sys.odcienv)
+  Return number
+  IS
+
+   CURSOR c_tbspname_sel (schema_in IN varchar2) IS
+   SELECT tablespace_name
+   FROM all_tables
+   WHERE owner = UPPER(schema_in) AND tablespace_name IS NOT NULL;
+
+   cstmt1            clob;
+   stmt1             varchar2(1000);
+   ret               number;
+   curs1             number := 0;
+   commit_row        pls_integer := 0;
+   
+   spx_info_r        &1..spx_util.spx_record_t;
+   sp_ref_r          &1..spx_util.spatial_ref_record_t;
+   properties        &1..spx_util.st_geom_prop_t;
+   array_size        Constant pls_integer := 200;
+
+   e_minx            integer;
+   e_miny            integer;
+   e_maxx            integer;
+   e_maxy            integer;
+   gsize1            integer := 0;
+   gsize2            integer := 0;
+   gsize3            integer := 0;
+   g_minx            integer;
+   g_miny            integer;
+   g_maxx            integer;
+   g_maxy            integer;
+   min_g_miny        integer;
+   rc                number;
+   pos               pls_integer;
+   fetch_cnt         pls_integer := 0;
+   idx_name          varchar2(64);
+   idx2_name         varchar2(64);
+   idx3_name         varchar2(64);
+   spcol             varchar2(32);
+   partition_name    varchar2(256);
+   st_storage        clob := NULL;
+   st_tablespace     varchar(64) := NULL;
+   st_pctthreshold   pls_integer;
+   optype            pls_integer;
+
+   sel_cursor_num    number;
+   select_statement  VARCHAR2(4000);
+   sel_cursor_result number;
+   f_numpts          dbms_sql.number_table;
+   f_minx            dbms_sql.number_table;
+   f_miny            dbms_sql.number_table;
+   f_maxx            dbms_sql.number_table;
+   f_maxy            dbms_sql.number_table;
+   f_gx              dbms_sql.number_table;
+   f_gy              dbms_sql.number_table;
+   f_rowid           dbms_sql.urowid_table;
+   f_srid            dbms_sql.number_table;
+
+   ins_cursor_num    number;
+   insert_statement  VARCHAR2(4000);
+   ins_cursor_result number;
+   s_rowid           dbms_sql.urowid_table;
+   s_gx              dbms_sql.number_table;
+   s_gy              dbms_sql.number_table;
+   s_minx            dbms_sql.number_table;
+   s_miny            dbms_sql.number_table;
+   s_maxx            dbms_sql.number_table;
+   s_maxy            dbms_sql.number_table;
+   tbsp_pos          pls_integer := 0;
+   tbsp_val          varchar2(64);
+   spatial_column    varchar2(32);
+   tempval           number;
+   errstr            varchar2(64);
+   bGridZero         boolean := FALSE;
+
+Begin
+
+  spatial_column := REPLACE(ia.indexcols(1).colname,'"','');
+
+      -- validate the index column type as st_Geometry first. --
+  If ia.indexcols(1).coltypename != 'ST_GEOMETRY' AND 
+     ia.indexcols(1).coltypename != 'ST_POINT' AND ia.indexcols(1).coltypename != 'ST_MULTIPOINT' AND
+     ia.indexcols(1).coltypename != 'ST_LINESTRING' AND ia.indexcols(1).coltypename != 'ST_MULTILINESTRING' AND
+     ia.indexcols(1).coltypename != 'ST_POLYGON' AND ia.indexcols(1).coltypename != 'ST_MULTIPOLYGON' THEN
+    raise_application_error (&1..st_type_util.spx_invalid_type,'Column type must be ST_GEOMETRY type.');
+  End If;
+      
+  IF env.callproperty = ODCIConst.FirstCall THEN
+    Return odciconst.success;
+  END IF;
+
+  IF env.callproperty = ODCIConst.FinalCall Then
+    IF spx_info_r.grid.grid1 IS NOT NULL THEN
+      -- If value is NULL, then look it up from sde.st_geometry_index, confirm cache is set
+      Begin
+
+        stmt1 := 'BEGIN &1..layers_util.update_layer_grids('||''''||ia.indexcols(1).tableschema||''''||','||
+                        ''''||ia.indexcols(1).tablename||''''||','||''''||spatial_column||''''||','||
+                        spx_info_r.grid.grid1||','||spx_info_r.grid.grid2||','||spx_info_r.grid.grid3||'); END;';
+
+        EXECUTE IMMEDIATE stmt1;
+  
+      Exception
+        When Others Then
+          NULL;
+      End;
+
+    END IF;
+    &1..spx_util.update_layers_sp_mode(ia.indexcols(1).tableschema,
+                                       ia.indexcols(1).tablename,
+                                       spatial_column,
+                                       &1..st_geom_util.LAYERS_HAS_INDEX);
+    Return odciconst.success;
+  END IF;
+
+  optype := &1..spx_util.st_geom_operation_create;
+  sp_ref_r.srid := -1;
+  rc := &1..spx_util.get_object_info(ia,optype,parms,spx_info_r,sp_ref_r,properties);
+
+  IF rc != &1..spx_util.se_success THEN
+    raise_application_error (&1..st_type_util.spx_object_noexist,'Object '||ia.indexcols(1).tableschema||
+                   '.'||ia.indexcols(1).tablename||'.'||spatial_column||' not found in ST_GEOMETRY_INDEX.');
+  END IF;
+
+  IF spx_info_r.grid.grid1 > 0 Then
+    tempval := (spx_info_r.grid.grid1 - 0) * sp_ref_r.xyunits + .5;
+    If (tempval < &1..spx_util.SE_MIN_GRIDSIZE OR tempval > &1..spx_util.SULIMIT64) Then
+      If tempval < &1..spx_util.SE_MIN_GRIDSIZE Then
+        errstr := 'Invalid Grid Size. GRID1 is too small.';
+      Else
+        errstr := 'Invalid Grid Size. GRID1 is too large.';
+      End If;
+      raise_application_error (&1..st_type_util.spx_inv_grid_sizes,errstr);
+    End If;
+  End If;
+
+  IF spx_info_r.grid.grid2 > 0 Then
+    tempval := (spx_info_r.grid.grid2 - 0) * sp_ref_r.xyunits + .5;
+    If (tempval < &1..spx_util.SE_MIN_GRIDSIZE OR tempval > &1..spx_util.SULIMIT64) Then
+      If tempval < &1..spx_util.SE_MIN_GRIDSIZE Then
+        errstr := 'Invalid Grid Size. GRID2 is too small.';
+      Else
+        errstr := 'Invalid Grid Size. GRID2 is too large.';
+      End If;
+      raise_application_error (&1..st_type_util.spx_inv_grid_sizes,errstr);
+    End If;
+  End If;
+
+  IF spx_info_r.grid.grid3 > 0 Then
+    tempval := (spx_info_r.grid.grid3 - 0) * sp_ref_r.xyunits + .5;
+    If (tempval < &1..spx_util.SE_MIN_GRIDSIZE OR tempval > &1..spx_util.SULIMIT64) Then
+      If tempval < &1..spx_util.SE_MIN_GRIDSIZE Then
+        errstr := 'Invalid Grid Size. GRID3 is too small.';
+      Else
+        errstr := 'Invalid Grid Size. GRID3 is too large.';
+      End If;
+      raise_application_error (&1..st_type_util.spx_inv_grid_sizes,errstr);
+    End If;
+  End If;
+
+  IF spx_info_r.grid.grid1 > 0 THEN
+    IF ((spx_info_r.grid.grid2 > 0 AND  spx_info_r.grid.grid2 < (3.0*spx_info_r.grid.grid1)) OR
+       (spx_info_r.grid.grid3 > 0 AND  spx_info_r.grid.grid3 < (3.0*spx_info_r.grid.grid2)) ) THEN
+       raise_application_error (&1..st_type_util. spx_inv_grid_sizes,'Error, Invalid Grid Size: 2nd and 3rd sizes must be '||
+                                'at least 3 times larger than previous grid size.');
+    END IF;
+  END IF;
+
+  tbsp_pos := instr(UPPER(parms),'TABLESPACE');
+  IF (tbsp_pos > 0) THEN 
+     &1..spx_util.get_storage_info(parms,st_storage,st_tablespace,st_pctthreshold);
+  ELSE 
+    OPEN c_tbspname_sel (ia.indexschema);
+    FETCH c_tbspname_sel INTO st_tablespace;
+    IF c_tbspname_sel%NOTFOUND THEN    
+      st_tablespace := NULL;
+    END IF;
+    CLOSE c_tbspname_sel;
+    &1..spx_util.get_storage_info(parms,st_storage,st_tablespace,st_pctthreshold);
+  END IF;
+
+  IF ((env.callproperty IS NULL) AND (ia.indexcols(1).tablepartition IS NULL)) THEN
+    idx_name := 'S'||spx_info_r.index_id||'_IDX$';
+    idx2_name := 'S'||spx_info_r.index_id||'$_IX1';
+    idx3_name := 'S'||spx_info_r.index_id||'$_IX2';
+
+    cstmt1 := 'CREATE TABLE '||'"'|| ia.indexschema||'"' || '.' || idx_name ||
+                  ' (gx integer, gy integer, minx integer,' ||
+                  'miny integer, maxx integer, maxy integer, sp_id rowid,'||
+                  'constraint '||idx2_name||
+                  ' primary key(gx,gy,maxx,maxy,minx,miny,sp_id)) '||
+                  'organization index pctthreshold ' || st_pctthreshold || ' pctfree 0 initrans 4';
+
+    IF st_storage IS NOT NULL THEN
+      cstmt1 := cstmt1||' storage '||st_storage;
+    END IF;
+
+    IF st_tablespace IS NOT NULL THEN
+      cstmt1 := cstmt1||' tablespace '||st_tablespace;
+    END IF;
+
+    curs1 := dbms_sql.open_cursor;
+    dbms_sql.parse(curs1,cstmt1,dbms_sql.native);
+    dbms_sql.close_cursor(curs1);
+  END IF;
+
+  IF ia.indexcols(1).tablepartition IS NOT NULL Then
+    partition_name := ia.indexcols(1).tablepartition;
+    idx_name := 'S'||spx_info_r.index_id||ia.indexcols(1).tablepartition;
+    idx2_name := 'S'||spx_info_r.index_id||ia.indexcols(1).tablepartition||'P';
+    idx3_name := 'S'||spx_info_r.index_id||ia.indexcols(1).tablepartition||'X';
+  End If;
+
+  IF ((env.callproperty = sys.odciconst.intermediatecall OR env.callproperty IS NULL) AND 
+      ia.indexcols(1).tablepartition IS NOT NULL) THEN
+    cstmt1 := 'CREATE TABLE ' ||'"'|| ia.indexschema ||'"'|| '.' || idx_name ||
+              ' (gx integer, gy integer, minx integer,' ||
+              'miny integer, maxx integer, maxy integer, sp_id rowid, '||
+              'constraint '||idx2_name||
+              ' primary key(gx,gy,maxx,maxy,minx,miny,sp_id)) '||
+              'organization index pctthreshold ' || st_pctthreshold || ' pctfree 0 initrans 4 ';
+
+    IF st_storage IS NOT NULL THEN
+      cstmt1 := cstmt1||' storage '||st_storage;
+    END IF;
+
+    IF st_tablespace IS NOT NULL THEN
+      cstmt1 := cstmt1||' tablespace '||st_tablespace;
+    END IF;
+
+    curs1 := dbms_sql.open_cursor;
+    dbms_sql.parse(curs1,cstmt1,dbms_sql.native);
+    dbms_sql.close_cursor(curs1);
+  END IF;
+
+  IF ((env.callproperty IS NULL) OR (env.callproperty = sys.odciconst.none) OR (env.callproperty = sys.odciconst.intermediatecall)) THEN
+    IF spx_info_r.grid.grid1 = 0 AND spx_info_r.grid.grid2 = 0 AND spx_info_r.grid.grid3 = 0 Then
+      bGridZero := TRUE;
+    ELSE
+      gsize1 := spx_info_r.grid.grid1 * sp_ref_r.xyunits;
+
+      IF spx_info_r.grid.grid2 > 0 THEN
+        gsize2 := spx_info_r.grid.grid2 * sp_ref_r.xyunits;
+        IF spx_info_r.grid.grid3 > 0 THEN
+          gsize3 := spx_info_r.grid.grid3 * sp_ref_r.xyunits;
+        END IF;
+      END IF;
+    END IF;
+
+    spcol := REPLACE(ia.indexcols(1).colname,'"','');
+
+    select_statement := 'SELECT t.shape.numpts,t.shape.minx,t.shape.miny,t.shape.maxx,t.shape.maxy,'||
+      't.rowid,t.shape.srid FROM (SELECT '||spcol||' shape FROM '||'"'||ia.indexcols(1).tableschema||'"'||'.'||ia.indexcols(1).tablename;
+
+
+    IF (ia.indexcols(1).tablepartition IS NOT NULL) THEN
+      select_statement := select_statement ||' PARTITION ('||ia.indexcols(1).tablepartition||')) t WHERE t.shape.numpts IS NOT NULL '||
+         'AND t.shape.entity > 0 ORDER BY 2, 3, 4, 5';
+    ELSE
+      select_statement := select_statement ||') t WHERE t.shape.numpts IS NOT NULL AND t.shape.entity > 0 '||
+                          'ORDER BY 2, 3, 4, 5';
+    END IF;
+
+    sel_cursor_num := dbms_sql.open_cursor;
+    dbms_sql.parse(sel_cursor_num,select_statement,dbms_sql.native);
+    dbms_sql.define_array(sel_cursor_num,1,f_numpts,array_size,1);
+    dbms_sql.define_array(sel_cursor_num,2,f_minx,array_size,1);
+    dbms_sql.define_array(sel_cursor_num,3,f_miny,array_size,1);
+    dbms_sql.define_array(sel_cursor_num,4,f_maxx,array_size,1);
+    dbms_sql.define_array(sel_cursor_num,5,f_maxy,array_size,1);
+    dbms_sql.define_array(sel_cursor_num,6,f_rowid,array_size,1);
+    dbms_sql.define_array(sel_cursor_num,7,f_srid,array_size,1);
+
+    sel_cursor_result := dbms_sql.execute(sel_cursor_num);
+    sel_cursor_result := dbms_sql.fetch_rows(sel_cursor_num);
+    dbms_sql.column_value(sel_cursor_num,1,f_numpts);
+    dbms_sql.column_value(sel_cursor_num,2,f_minx);
+    dbms_sql.column_value(sel_cursor_num,3,f_miny);
+    dbms_sql.column_value(sel_cursor_num,4,f_maxx);
+    dbms_sql.column_value(sel_cursor_num,5,f_maxy);
+    dbms_sql.column_value(sel_cursor_num,6,f_rowid);
+    dbms_sql.column_value(sel_cursor_num,7,f_srid);
+
+    fetch_cnt := sel_cursor_result;
+
+    pos := 1;
+
+    ins_cursor_num := dbms_sql.open_cursor;
+    insert_statement := 'INSERT INTO '||'"'||ia.indexschema||'"' ||'.'||idx_name||' (gx,gy,minx,miny,maxx,maxy,sp_id) VALUES ' ||
+                        '(:gx,:gy,:minx,:miny,:maxx,:maxy,:sp_row)';
+    dbms_sql.parse(ins_cursor_num,insert_statement,dbms_sql.native);
+
+    WHILE fetch_cnt > 0 LOOP
+
+      FOR row IN 1..fetch_cnt LOOP
+
+        IF f_srid(row) <> sp_ref_r.srid THEN
+          IF optype = &1..spx_util.st_geom_operation_new Then
+            &1..spx_util.delete_index(spx_info_r.index_id);
+            &1..st_geom_cols_util.delete_gcol(REPLACE(ia.indexcols(1).tableschema,'"',''),
+                                              ia.indexcols(1).tablename,
+                                              spatial_column);
+          END IF;
+          stmt1 := 'Different SRID''s. CREATE INDEX Parameter ST_SRID '''||sp_ref_r.srid||''' (Rowid: '||f_rowid(ROW)||') do not match.';
+              raise_application_error (&1..st_type_util.spx_diff_srids,stmt1);
+        END IF;
+
+        e_minx := ((f_minx(row) - sp_ref_r.x_offset) * sp_ref_r.xyunits + .5);
+        e_miny := ((f_miny(row) - sp_ref_r.y_offset) * sp_ref_r.xyunits + .5);
+        e_maxx := ((f_maxx(row) - sp_ref_r.x_offset) * sp_ref_r.xyunits + .5);
+        e_maxy := ((f_maxy(row) - sp_ref_r.y_offset) * sp_ref_r.xyunits + .5);
+
+        IF bGridZero = TRUE Then
+          g_minx := -1;
+          g_miny := -1;
+          g_maxx := -1;
+          g_maxy := -1;
+        ELSE
+          IF f_minx(row) <= f_maxx(row) THEN
+            &1..spx_util.compute_feat_grid_envp (gsize1,gsize2,gsize3,e_minx,e_miny,e_maxx,e_maxy,
+                                                 g_minx,g_miny,g_maxx,g_maxy);
+          ELSE
+            &1..spx_util.compute_feat_grid_envp (gsize1,gsize2,gsize3,f_minx(row),f_miny(row),f_maxx(row),f_maxy(row),
+                                                 g_minx,g_miny,g_maxx,g_maxy);
+          END IF;
+
+          If ((g_maxx - g_minx + 1) * (g_maxy - g_miny + 1) > &1..spx_util.max_grids_per_feat) THEN
+            g_minx := -1;
+            g_miny := -1;
+            g_maxx := -1;
+            g_maxy := -1;
+          End If;
+        END IF;
+
+        min_g_miny := g_miny;
+
+        WHILE g_minx <= g_maxx LOOP
+
+          WHILE (g_miny <= g_maxy) LOOP
+
+            s_gx(pos) := g_minx;
+            s_gy(pos) := g_miny;
+            s_minx(pos) := e_minx;
+            s_miny(pos) := e_miny;
+            s_maxx(pos) := e_maxx;
+            s_maxy(pos) := e_maxy;
+            s_rowid(pos) := f_rowid(row);
+
+            If pos = array_size THEN
+
+              dbms_sql.bind_array(ins_cursor_num,':gx',s_gx);
+              dbms_sql.bind_array(ins_cursor_num,':gy',s_gy);
+              dbms_sql.bind_array(ins_cursor_num,':minx',s_minx);
+              dbms_sql.bind_array(ins_cursor_num,':miny',s_miny);
+              dbms_sql.bind_array(ins_cursor_num,':maxx',s_maxx);
+              dbms_sql.bind_array(ins_cursor_num,':maxy',s_maxy);
+              dbms_sql.bind_array(ins_cursor_num,':sp_row',s_rowid);
+
+              ins_cursor_result := dbms_sql.execute(ins_cursor_num);
+  
+              IF spx_info_r.commit_int > 0 THEN
+                commit_row := commit_row + array_size;
+                IF commit_row >= spx_info_r.commit_int THEN
+                  COMMIT;
+                  commit_row := 0;
+                END IF;
+              END IF;
+
+              s_gx.delete;
+              s_gy.delete;
+              s_minx.delete;
+              s_miny.delete;
+              s_maxx.delete;
+              s_maxy.delete;
+              s_rowid.delete;
+
+              pos := 1;
+            ELSE
+              pos := pos + 1;
+            END IF;
+
+            g_miny := g_miny + 1;
+
+          END LOOP;
+
+          g_minx := g_minx + 1;
+          g_miny := min_g_miny;
+
+        END LOOP;
+      END LOOP;
+
+      f_numpts.delete;
+      f_minx.delete;
+      f_miny.delete;
+      f_maxx.delete;
+      f_maxy.delete;
+      f_rowid.delete;
+      f_srid.delete; 
+
+      IF fetch_cnt = array_size THEN
+        dbms_sql.define_array(sel_cursor_num,1,f_numpts,array_size,1);
+        dbms_sql.define_array(sel_cursor_num,2,f_minx,array_size,1);
+        dbms_sql.define_array(sel_cursor_num,3,f_miny,array_size,1);
+        dbms_sql.define_array(sel_cursor_num,4,f_maxx,array_size,1);
+        dbms_sql.define_array(sel_cursor_num,5,f_maxy,array_size,1);
+        dbms_sql.define_array(sel_cursor_num,6,f_rowid,array_size,1);
+        dbms_sql.define_array(sel_cursor_num,7,f_srid,array_size,1);
+        sel_cursor_result := dbms_sql.fetch_rows(sel_cursor_num);
+        dbms_sql.column_value(sel_cursor_num,1,f_numpts);
+        dbms_sql.column_value(sel_cursor_num,2,f_minx);
+        dbms_sql.column_value(sel_cursor_num,3,f_miny);
+        dbms_sql.column_value(sel_cursor_num,4,f_maxx);
+        dbms_sql.column_value(sel_cursor_num,5,f_maxy);
+        dbms_sql.column_value(sel_cursor_num,6,f_rowid);
+        dbms_sql.column_value(sel_cursor_num,7,f_srid);
+        fetch_cnt := sel_cursor_result;
+      ELSE
+        fetch_cnt := 0;
+      END IF;
+
+    END LOOP;
+
+    pos := pos - 1;
+
+    If pos >= 1 THEN
+      dbms_sql.bind_array(ins_cursor_num,':gx',s_gx);
+      dbms_sql.bind_array(ins_cursor_num,':gy',s_gy);
+      dbms_sql.bind_array(ins_cursor_num,':minx',s_minx);
+      dbms_sql.bind_array(ins_cursor_num,':miny',s_miny);
+      dbms_sql.bind_array(ins_cursor_num,':maxx',s_maxx);
+      dbms_sql.bind_array(ins_cursor_num,':maxy',s_maxy);
+      dbms_sql.bind_array(ins_cursor_num,':sp_row',s_rowid);
+
+      ins_cursor_result := dbms_sql.execute(ins_cursor_num);
+      COMMIT;
+
+      s_rowid.delete;
+      s_gx.delete;
+      s_gy.delete;
+      s_minx.delete;
+      s_miny.delete;
+      s_maxx.delete;
+      s_maxy.delete;
+
+      f_numpts.delete;
+      f_minx.delete;
+      f_miny.delete;
+      f_maxx.delete;
+      f_maxy.delete;
+      f_rowid.delete;
+      f_srid.delete; 
+
+    END IF;
+
+    dbms_sql.close_cursor(ins_cursor_num);
+    dbms_sql.close_cursor(sel_cursor_num);
+
+    If(env.callproperty IS NULL OR (env.callproperty = sys.odciconst.intermediatecall AND ia.indexcols(1).tablepartition IS NOT NULL)) Then
+      stmt1 := 'CREATE INDEX '||'"'||ia.indexschema||'"'||'.'||idx3_name||' ON '||idx_name||' (sp_id)';
+
+      IF st_tablespace IS NOT NULL THEN
+        stmt1 := stmt1||' tablespace '||st_tablespace;
+      END IF;
+  
+      curs1 := dbms_sql.open_cursor;
+      dbms_sql.parse(curs1,stmt1,dbms_sql.native);
+      dbms_sql.close_cursor(curs1);
+    End If;
+        
+  END IF;
+
+      -- Update ST_Geometry_Columns Properties for partitioned tables
+
+  If ((env.callproperty = sys.odciconst.intermediatecall AND ia.indexcols(1).tablepartition IS NOT NULL) OR
+      (env.callproperty = sys.odciconst.none)) Then 
+    &1..spx_util.insert_partition (ia.indexcols(1).tableschema,
+                                   ia.indexcols(1).tablename,
+                                   spatial_column,
+                                   partition_name,
+                                   spx_info_r);
+  End If;
+
+      -- Update entry to SDE.LAYERS to indicate the object has an index for non-partitioned indexes.
+
+  IF (env.callproperty IS NULL OR env.callproperty != sys.odciconst.intermediatecall) Then
+    IF spx_info_r.grid.grid1 IS NOT NULL THEN
+        -- If value is NULL, then look it up from sde.st_geometry_index, confirm cache is set
+      Begin
+
+        stmt1 := 'BEGIN &1..layers_util.update_layer_grids('||''''||ia.indexcols(1).tableschema||''''||','||
+                        ''''||ia.indexcols(1).tablename||''''||','||''''||spatial_column||''''||','||
+                        spx_info_r.grid.grid1||','||spx_info_r.grid.grid2||','||spx_info_r.grid.grid3||'); END;';
+
+        EXECUTE IMMEDIATE stmt1;
+  
+      Exception
+       When Others Then
+         NULL;
+      End;
+    END IF;
+    &1..spx_util.update_layers_sp_mode(ia.indexcols(1).tableschema,
+                                       ia.indexcols(1).tablename,
+                                       spatial_column,
+                                       &1..st_geom_util.LAYERS_HAS_INDEX);
+  End If;
+  Return odciconst.success;
+
+End odciindexcreate;
+
+    -- index drop --
+/***********************************************************************
+  *
+  *n  {odciindexdrop}  --  drops domain spatial index table
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *p  purpose:
+  *     odciindexdrop drops the domain spatial index table.
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *a  parameters:
+  *     ia    <in>     ==  (sys.odciindexinfo) odci object info
+  *     parms <in>     ==  (varchar2) parameters list
+  *     env   <in>     ==  (sys.odcienv) context handle
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *x  &1. exceptions:
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *h  history:
+  *
+  *    kevin watt          12/02/04           original coding.
+  *e
+  ***********************************************************************/
+  static Function odciindexdrop(ia   sys.odciindexinfo, 
+                                env  sys.odcienv)
+  Return number
+IS
+  spx_info_r        &1..spx_util.spx_record_t;
+  spref_r           &1..spx_util.spatial_ref_record_t;
+  properties        &1..spx_util.st_geom_prop_t;
+  stmt1             varchar2(256);
+  partition_name    varchar2(256);
+  curs1             number;
+  rc                number;
+  idx_name          varchar2(64);
+  optype            pls_integer;
+  res               integer;
+  spatial_column    varchar2(32);
+
+Begin
+
+  spatial_column := REPLACE(ia.indexcols(1).colname,'"','');
+
+   -- get layer info --
+  optype := &1..spx_util.st_geom_operation_drop;
+  rc := &1..spx_util.get_object_info(ia,optype,NULL,spx_info_r,spref_r,properties);
+  If rc != &1..spx_util.se_success THEN
+    raise_application_error (&1..st_type_util.spx_object_noexist,'Object '||ia.indexcols(1).tableschema||
+                             '.'||ia.indexcols(1).tablename||'.'||spatial_column||' not found in ST_GEOMETRY_INDEX.');
+  End If;
+
+  &1..spx_util.delete_cache_info(spx_info_r);
+
+  IF ((env.callproperty = ODCIConst.FinalCall OR env.callproperty IS NULL) And
+      ia.indexcols(1).tablepartition IS NULL) Then
+    res := bitand(properties,&1..st_geom_util.ST_GEOM_PROP_PARTITION_INDEX);
+    If(res = &1..st_geom_util.ST_GEOM_PROP_PARTITION_INDEX AND env.callproperty = ODCIConst.FinalCall) Then
+      properties := properties - &1..st_geom_util.ST_GEOM_PROP_PARTITION_INDEX;
+
+      &1..st_geom_cols_util.update_gcol_properties(ia.indexcols(1).tableschema,
+                                                   ia.indexcols(1).tablename,
+                                                   spatial_column,
+                                                   properties);
+
+    End If;
+
+    &1..spx_util.delete_index(spx_info_r.index_id);
+
+    &1..spx_util.update_layers_sp_mode(ia.indexcols(1).tableschema,
+                                       ia.indexcols(1).tablename,
+                                       spatial_column,
+                                       &1..st_geom_util.LAYERS_HAS_INDEX);
+
+    If (env.callproperty = ODCIConst.FinalCall) Then
+      Return odciconst.success;
+    End If;
+
+  End If;
+
+  If (ia.indexcols(1).tablepartition IS NOT NULL) THEN
+    If(ia.indexcols(1).tablepartition = ia.indexpartition) Then
+      partition_name := ia.indexcols(1).tablepartition;
+    Else
+      partition_name := ia.indexpartition;
+    End If;
+  End If;
+
+    -- remove layer ref from the cursor_Cache --
+  If &1..spx_util.nlayers > 0 THEN
+    FOR id IN 1 .. &1..spx_util.nlayers
+    Loop
+      If &1..spx_util.cursor_cache(id).index_id = spx_info_r.index_id THEN
+        If ((env.callproperty IS NULL) AND (ia.indexcols(1).tablepartition IS NULL )) THEN
+          &1..spx_util.cursor_cache(id).index_id := 0;
+        Elsif env.callproperty = sys.odciconst.finalcall THEN
+          &1..spx_util.cursor_cache(id).index_id := 0;
+        End If;
+
+        If (ia.indexcols(1).tablepartition IS NOT NULL) THEN
+          If &1..spx_util.cursor_cache(id).ncurs_array > 0 THEN
+
+            FOR i IN 1 .. &1..spx_util.cursor_cache(id).ncurs_array
+            Loop
+              If partition_name = &1..spx_util.cursor_cache(id).curs_array(i).tab_object THEN
+
+                &1..spx_util.cursor_cache(id).curs_array(i).tab_object := ' ';
+
+                If &1..spx_util.cursor_cache(id).curs_array(i).curs  > 0 THEN
+                  dbms_sql.close_cursor(&1..spx_util.cursor_cache(id).curs_array(i).curs);
+                End If;
+
+                If &1..spx_util.cursor_cache(id).curs_array(i).curs_insert > 0 THEN
+                  dbms_sql.close_cursor(&1..spx_util.cursor_cache(id).curs_array(i).curs_insert);
+                End If;
+
+                If &1..spx_util.cursor_cache(id).curs_array(i).curs_delete > 0 THEN
+                  dbms_sql.close_cursor(&1..spx_util.cursor_cache(id).curs_array(i).curs_delete);
+                End If;
+
+                If &1..spx_util.cursor_cache(id).curs_array(i).curs_update > 0 THEN
+                  dbms_sql.close_cursor(&1..spx_util.cursor_cache(id).curs_array(i).curs_update);
+                End If;
+              End If;
+            End Loop;
+          End If;
+        ELSE
+          If ((env.callproperty IS NULL) AND (ia.indexcols(1).tablepartition IS NULL )) THEN
+            &1..spx_util.cursor_cache(id).curs_array(1).curs := 0;
+            &1..spx_util.cursor_cache(id).curs_array(1).curs_insert := 0;
+            &1..spx_util.cursor_cache(id).curs_array(1).curs_update := 0;
+            &1..spx_util.cursor_cache(id).curs_array(1).curs_delete := 0;
+            &1..spx_util.cursor_cache(id).ncurs_array := 0;
+          End If;
+        End If;
+      End If;
+    End Loop cursor_cache_nlayers;
+  End If;
+
+  Begin
+
+      -- construct the drop table sql statement.
+
+    curs1 := dbms_sql.open_cursor;
+
+    If ((env.callproperty IS NULL) AND (ia.indexcols(1).tablepartition IS NULL )) THEN
+      idx_name := 'S'||spx_info_r.index_id||'_IDX$';
+    End If;
+
+    IF (((env.callproperty IS NOT NULL) AND (ia.indexcols(1).tablepartition IS NOT NULL)) OR
+        ((env.callproperty IS NULL) AND (ia.indexcols(1).tablepartition IS NOT NULL))) THEN
+      idx_name := &1..spx_util.get_partition_name(partition_name,
+                                                  properties,
+                                                  spx_info_r.index_id);
+    End If;
+
+
+    If ( spx_info_r.index_id > 0 AND ((env.callproperty IS NULL) OR
+          (env.callproperty = sys.odciconst.intermediatecall))) THEN
+      Begin 
+        stmt1 := 'drop table '||'"'|| ia.indexschema||'"' || '.' ||idx_name;
+        dbms_sql.parse(curs1,stmt1,dbms_sql.native);
+        dbms_sql.close_cursor(curs1);
+      Exception
+        When others THEN
+        dbms_output.put_line('Error '||sqlerrm||' '||sqlcode);
+      End;
+
+    Elsif (env.callproperty = sys.odciconst.none) Then
+      stmt1 := 'truncate table '||'"'||ia.indexschema||'"' || '.' ||idx_name;
+      dbms_sql.parse(curs1,stmt1,dbms_sql.native);
+      dbms_sql.close_cursor(curs1);
+    End If;
+
+    If (ia.indexcols(1).tablepartition IS NOT NULL) Then
+      idx_name := 'S'||spx_info_r.index_id||ia.indexcols(1).tablepartition;
+      &1..spx_util.delete_partition(ia.indexcols(1).tableschema,
+                                    ia.indexcols(1).tablename,
+                                    spatial_column,
+                                    partition_name,
+                                    spx_info_r.index_id,
+                                    properties);
+
+    End If;
+
+  Exception
+     When others THEN
+     dbms_output.put_line('Error '||sqlerrm||' '||sqlcode);
+  End;
+
+  Return odciconst.success;
+
+Exception
+    When others THEN
+     dbms_output.put_line('Error '||sqlerrm||' '||sqlcode);
+     Return odciconst.success;
+
+End odciindexdrop;
+
+    -- index insert --
+/***********************************************************************
+  *
+  *n  {odciindexinsert}  --  inserts into the domain spatial index
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *p  purpose:
+  *     odciindexinsert inserts rows into the domain spatial index.
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *a  parameters:
+  *     ia    <in>     ==  (sys.odciindexinfo) odci object info
+  *     parms <in>     ==  (varchar2) parameters list
+  *     env   <in>     ==  (sys.odcienv) context handle
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *x  &1. exceptions:
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *h  history:
+  *
+  *    kevin watt          12/02/04           original coding.
+  *e
+  ***********************************************************************/
+  static Function odciindexinsert(ia      sys.odciindexinfo,
+                                  rid     varchar2,
+                                  newval  &1..st_geometry,
+                                  env     sys.odcienv)
+  Return number
+  IS
+    Type r_env IS Record (minx integer,miny integer,maxx integer,maxy integer);
+
+    array_size     Constant pls_integer := 200;
+    spx_info_r     &1..spx_util.spx_record_t;
+    spref_r        &1..spx_util.spatial_ref_record_t;
+    properties     &1..spx_util.st_geom_prop_t;
+    stmt           varchar2(256);
+    partition_name varchar2(256);
+    curs1          number := 0;
+    nrows          number;
+    pos            binary_integer := 0;
+    gsize1         integer := 0;
+    gsize2         integer := 0;
+    gsize3         integer := 0;
+    e_minx         integer;
+    e_miny         integer;
+    e_maxx         integer;
+    e_maxy         integer;
+    g_minx         integer;
+    g_miny         integer;
+    g_maxx         integer;
+    g_maxy         integer;
+    min_g_miny     integer;
+    rc             integer;
+    s_gx           dbms_sql.number_table;
+    s_gy           dbms_sql.number_table;
+    s_minx         dbms_sql.number_table;
+    s_miny         dbms_sql.number_table;
+    s_maxx         dbms_sql.number_table;
+    s_maxy         dbms_sql.number_table;
+    s_rowid        dbms_sql.urowid_table;
+    int_env        r_env;
+    idx_name       varchar2(64);
+    optype         pls_integer;
+    pgrid_info     sp_grid_info := sp_grid_info(0,0,0);
+    bGridZero      boolean := FALSE;
+    
+  Begin
+
+    If (env.callproperty =  sys.odciconst.none AND ia.indexcols(1).tablepartition IS NULL ) THEN
+      Return odciconst.success;
+    End If;
+
+    If (newval.numpts IS NULL OR (newval.numpts = 0 and newval.len = 0)) THEN
+      Return odciconst.success;
+    End If;
+    
+       -- get layer info --
+    optype := &1..spx_util.st_geom_operation_dml;
+    rc := &1..spx_util.get_object_info(ia,optype,NULL,spx_info_r,spref_r,properties);
+    If rc != &1..spx_util.se_success THEN
+      raise_application_error (&1..st_type_util.spx_object_noexist,'Object '||ia.indexcols(1).tableschema||
+                               '.'||ia.indexcols(1).tablename||'.'||REPLACE(ia.indexcols(1).colname,'"','')||' not found in ST_GEOMETRY_INDEX.');
+    End If;
+    
+    If newval.srid <> spref_r.srid THEN
+      raise_application_error (&1..st_type_util.spx_diff_srids,'Insert Spatial Reference SRID '||newval.srid||
+                               ' does not match '||ia.indexcols(1).tableschema||'.'||ia.indexcols(1).tablename||'.'||REPLACE(ia.indexcols(1).colname,'"','')||
+                               ' registered Spatial Reference SRID '||spref_r.srid);
+    End If;
+
+    If (ia.indexpartition IS NOT NULL) THEN
+      If(ia.indexcols(1).tablepartition = ia.indexpartition) Then
+        partition_name := ia.indexcols(1).tablepartition;
+      Else
+        partition_name := ia.indexpartition;
+      End If;
+    End If;
+
+    If &1..spx_util.nlayers > 0 THEN
+      FOR id IN 1 .. &1..spx_util.nlayers
+      Loop
+        If &1..spx_util.cursor_cache(id).index_id = spx_info_r.index_id THEN
+          pos := id;
+
+          If (ia.indexpartition IS NOT NULL) THEN
+            curs1 := &1..spx_util.get_partition_curs(id,partition_name,&1..spx_util.curs_type_insert,pgrid_info);
+            If (curs1 <> 0) Then
+              spx_info_r.grid.grid1 := pgrid_info.grid1;
+              spx_info_r.grid.grid2 := pgrid_info.grid2;
+              spx_info_r.grid.grid3 := pgrid_info.grid3;
+            End If;
+          ELSE
+            curs1 := &1..spx_util.get_curs(pos,&1..spx_util.curs_type_insert);
+          End If;
+          Exit;
+       End If;
+      End Loop nlayers;
+    End If;
+
+    If curs1 = 0 THEN
+      If ((env.callproperty IS NULL OR env.callproperty = sys.odciconst.none) AND (ia.indexpartition IS NULL )) THEN
+        idx_name := 'S'||spx_info_r.index_id||'_IDX$';
+      End If;
+
+      IF (((env.callproperty IS NOT NULL) AND (ia.indexpartition IS NOT NULL)) OR
+          ((env.callproperty IS NULL) AND (ia.indexpartition IS NOT NULL))) THEN
+        idx_name := &1..spx_util.get_partition_name(partition_name,
+                                                    properties,
+                                                    spx_info_r.index_id);
+
+        &1..spx_util.get_partition_grids(ia.indexcols(1).tableschema,
+                                         ia.indexcols(1).tablename,
+                                         REPLACE(ia.indexcols(1).colname,'"',''),
+                                         partition_name,
+                                         properties,
+                                         spx_info_r);
+      End If;
+
+      stmt := 'INSERT INTO '||'"'||ia.indexschema||'"' || '.' || idx_name ||
+                           ' ( sp_id,gx,gy,minx,miny,maxx,maxy) VALUES ' ||
+                           '(:sp_row,:gx,:gy,:minx,:miny,:maxx,:maxy)';
+      curs1 := dbms_sql.open_cursor;
+      dbms_sql.parse(curs1,stmt,dbms_sql.native);
+
+      If (ia.indexpartition IS NOT NULL) THEN
+         &1..spx_util.set_partition_curs(pos,curs1,partition_name,spx_info_r,&1..spx_util.curs_type_insert);
+      ELSE
+        &1..spx_util.set_curs(pos,curs1,&1..spx_util.curs_type_insert);
+      End If;
+    End If;
+
+    If spx_info_r.grid.grid1 = 0 AND spx_info_r.grid.grid2 = 0 AND spx_info_r.grid.grid3 = 0 Then
+      bGridZero := TRUE;
+    Else
+      gsize1 := spx_info_r.grid.grid1 * spref_r.xyunits;
+
+      If spx_info_r.grid.grid2 > 0 THEN
+        gsize2 := spx_info_r.grid.grid2 * spref_r.xyunits;
+      End If;
+ 
+      If spx_info_r.grid.grid3 > 0 THEN	  
+        gsize3 := spx_info_r.grid.grid3 * spref_r.xyunits;
+      End If;
+    End If;
+
+    int_env.minx := ((newval.minx - spref_r.x_offset) * spref_r.xyunits + 0.5);
+    int_env.miny := ((newval.miny - spref_r.y_offset) * spref_r.xyunits + 0.5);
+    int_env.maxx := ((newval.maxx - spref_r.x_offset) * spref_r.xyunits + 0.5);
+    int_env.maxy := ((newval.maxy - spref_r.y_offset) * spref_r.xyunits + 0.5);
+   
+    pos   := 1;
+
+    e_minx := int_env.minx;
+    e_miny := int_env.miny;
+    e_maxx := int_env.maxx;
+    e_maxy := int_env.maxy;
+
+    If bGridZero = TRUE Then
+      g_minx := -1;
+      g_miny := -1;
+      g_maxx := -1;
+      g_maxy := -1;
+    Else
+      &1..spx_util.compute_feat_grid_envp (gsize1,gsize2,gsize3,e_minx,e_miny,e_maxx,e_maxy,
+                                           g_minx,g_miny,g_maxx,g_maxy);
+
+      If ((g_maxx - g_minx + 1) * (g_maxy - g_miny + 1) > &1..spx_util.max_grids_per_feat) THEN
+        g_minx := -1;
+        g_miny := -1;
+        g_maxx := -1;
+        g_maxy := -1;
+      End If;
+    End If;
+
+    min_g_miny := g_miny;
+
+    While g_minx <= g_maxx
+    Loop
+
+      While (g_miny <= g_maxy)
+      Loop
+
+        s_rowid(pos) := rid;
+        s_gx(pos)    := g_minx;
+        s_gy(pos)    := g_miny;
+        s_minx(pos)  := int_env.minx;
+        s_miny(pos)  := int_env.miny;
+        s_maxx(pos)  := int_env.maxx;
+        s_maxy(pos)  := int_env.maxy;
+
+        If pos = array_size THEN
+          dbms_sql.bind_array(curs1, 'sp_row', s_rowid,1,200);
+          dbms_sql.bind_array(curs1, 'gx', s_gx,1,200);
+          dbms_sql.bind_array(curs1, 'gy', s_gy,1,200);
+          dbms_sql.bind_array(curs1, 'minx', s_minx,1,200);
+          dbms_sql.bind_array(curs1, 'miny', s_miny,1,200);
+          dbms_sql.bind_array(curs1, 'maxx', s_maxx,1,200);
+          dbms_sql.bind_array(curs1, 'maxy', s_maxy,1,200);
+          rc := dbms_sql.execute(curs1);
+            pos := 1;
+         ELSE
+            pos := pos + 1;
+         End If;
+
+         g_miny := g_miny + 1;
+
+       End Loop grid_y_row;
+
+       g_minx := g_minx + 1;
+       g_miny := min_g_miny;
+
+     End Loop grid_x_row;
+   
+     pos := pos - 1;
+
+     If pos >= 1 THEN
+       dbms_sql.bind_array(curs1, 'sp_row', s_rowid,1,pos);
+       dbms_sql.bind_array(curs1, 'gx', s_gx,1,pos);
+       dbms_sql.bind_array(curs1, 'gy', s_gy,1,pos);
+       dbms_sql.bind_array(curs1, 'minx', s_minx,1,pos);
+       dbms_sql.bind_array(curs1, 'miny', s_miny,1,pos);
+       dbms_sql.bind_array(curs1, 'maxx', s_maxx,1,pos);
+       dbms_sql.bind_array(curs1, 'maxy', s_maxy,1,pos);
+       rc := dbms_sql.execute(curs1);
+
+     End If;
+
+    Return odciconst.success;
+  End odciindexinsert;
+  
+    -- index delete --
+/***********************************************************************
+  *
+  *n  {odciindexdelete}  --  delete from the domain spatial index
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *p  purpose:
+  *     odciindexdelete deletes rows into the domain spatial index.
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *a  parameters:
+  *     ia    <in>     ==  (sys.odciindexinfo) odci object info
+  *     parms <in>     ==  (varchar2) parameters list
+  *     env   <in>     ==  (sys.odcienv) context handle
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *x  &1. exceptions:
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *h  history:
+  *
+  *    kevin watt          12/02/04           original coding.
+  *e
+  ***********************************************************************/
+  static Function odciindexdelete(ia      sys.odciindexinfo,
+                                  rid     varchar2,
+                                  oldval  &1..st_geometry,
+                                  env     sys.odcienv)
+  Return number
+  IS
+    spx_info_r     &1..spx_util.spx_record_t;
+    spref_r        &1..spx_util.spatial_ref_record_t;
+    properties     &1..spx_util.st_geom_prop_t;
+    rc             integer;
+    idx_name       varchar2(65);
+    partition_name varchar2(256);
+    optype         pls_integer;
+
+  Begin
+
+    If (env.callproperty =  sys.odciconst.none AND ia.indexpartition IS NULL ) THEN
+      Return odciconst.success;
+    End If;
+ 
+    optype := &1..spx_util.st_geom_operation_dml;
+    rc := &1..spx_util.get_object_info(ia,optype,NULL,spx_info_r,spref_r,properties);
+    If rc != &1..spx_util.se_success THEN
+      raise_application_error (&1..st_type_util.spx_object_noexist,'Object '||ia.indexcols(1).tableschema||
+                            '.'||ia.indexcols(1).tablename||'.'||REPLACE(ia.indexcols(1).colname,'"','')||' not found in ST_GEOMETRY_INDEX.');
+    End If;
+
+    If ((env.callproperty IS NULL OR env.callproperty = sys.odciconst.none) AND (ia.indexpartition IS NULL )) THEN
+       idx_name := '"'||ia.indexcols(1).tableschema||'"'||'.S'||spx_info_r.index_id||'_IDX$';
+    End If;
+
+    IF (((env.callproperty IS NOT NULL) AND (ia.indexpartition IS NOT NULL)) OR
+        ((env.callproperty IS NULL) AND (ia.indexpartition IS NOT NULL))) THEN
+      If(ia.indexcols(1).tablepartition = ia.indexpartition) Then
+        partition_name := ia.indexcols(1).tablepartition;
+      Else
+        partition_name := ia.indexpartition;
+      End If;
+
+      idx_name := &1..spx_util.get_partition_name(partition_name,
+                                                  properties,
+                                                  spx_info_r.index_id);
+    End If;
+
+    rc := &1..spx_util.exec_delete (ia,idx_name,spx_info_r,rid);
+    If rc != &1..spx_util.se_success THEN 
+      raise_application_error (&1..st_type_util.spx_delete_err,'Error deleting from domain index table '||idx_name);
+    End If;
+
+    Return odciconst.success;
+  End odciindexdelete;
+
+    -- index Truncate --
+/***********************************************************************
+  *
+  *n  {odciindextruncate}  --  Truncate the domain spatial index
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *p  purpose:
+  *     odciindextruncate truncates rows into the domain spatial index.
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *a  parameters:
+  *     ia    <in>     ==  (sys.odciindexinfo) odci object info
+  *     env   <in>     ==  (sys.odcienv) context handle
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *x  &1. exceptions:
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *h  history:
+  *
+  *    kevin watt          12/02/04           original coding.
+  *e
+  ***********************************************************************/
+  static Function odciindextruncate(ia      sys.odciindexinfo,
+                                    env     sys.odcienv)
+  Return number
+  IS
+    spx_info_r     &1..spx_util.spx_record_t;
+    spref_r        &1..spx_util.spatial_ref_record_t;
+    properties     &1..spx_util.st_geom_prop_t;
+    rc             integer;
+    idx_name       varchar2(65);
+    stmt           varchar2(128);
+    partition_name varchar2(256);
+    optype         pls_integer;
+
+  Begin
+
+    If (env.callproperty =  sys.odciconst.none AND ia.indexcols(1).tablepartition IS NULL) THEN
+      Return odciconst.success;
+    End If;
+
+    If (env.callproperty = sys.odciconst.firstcall OR env.callproperty = sys.odciconst.finalcall)
+        AND ia.indexcols(1).tablepartition IS NULL THEN
+     Return odciconst.success;
+    End If;
+ 
+    optype := &1..spx_util.st_geom_operation_dml;
+    rc := &1..spx_util.get_object_info(ia,optype,NULL,spx_info_r,spref_r,properties);
+    If rc != &1..spx_util.se_success THEN
+      raise_application_error (&1..st_type_util.spx_object_noexist,'Object '||ia.indexcols(1).tableschema||
+                               '.'||ia.indexcols(1).tablename||'.'||REPLACE(ia.indexcols(1).colname,'"','')||' not found in ST_GEOMETRY_INDEX.');
+    End If;
+
+    If ((env.callproperty IS NULL OR env.callproperty = sys.odciconst.none) AND (ia.indexcols(1).tablepartition IS NULL )) THEN
+       idx_name := '"'||ia.indexcols(1).tableschema||'"'||'.S'||spx_info_r.index_id||'_IDX$';
+    End If;
+
+    IF (((env.callproperty IS NOT NULL) AND (ia.indexcols(1).tablepartition IS NOT NULL)) OR
+        ((env.callproperty IS NULL) AND (ia.indexcols(1).tablepartition IS NOT NULL))) THEN
+      If(ia.indexcols(1).tablepartition = ia.indexpartition) Then
+        partition_name := ia.indexcols(1).tablepartition;
+      Else
+        partition_name := ia.indexpartition;
+      End If;
+
+      idx_name := &1..spx_util.get_partition_name(partition_name,
+                                                  properties,
+                                                  spx_info_r.index_id);
+    End If;
+
+    stmt := 'truncate table '||idx_name||' reuse storage';
+
+    execute IMMEDIATE stmt;
+
+    Return odciconst.success;
+  End odciindextruncate;
+  
+    -- index update --
+/***********************************************************************
+  *
+  *n  {odciindexupdate}  --  update the domain spatial index
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *p  purpose:
+  *     odciindexdelete updates rows in the domain spatial index by 
+  *  first deleting the rows by sp_Id (rowid) then inserting new rows.
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *a  parameters:
+  *     ia    <in>     ==  (sys.odciindexinfo) odci object info
+  *     parms <in>     ==  (varchar2) parameters list
+  *     env   <in>     ==  (sys.odcienv) context handle
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *x  &1. exceptions:
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *h  history:
+  *
+  *    kevin watt          12/02/04           original coding.
+  *e
+  ***********************************************************************/
+  static Function odciindexupdate(ia      sys.odciindexinfo,
+                                  rid     varchar2,
+                                  oldval  &1..st_geometry,
+                                  newval  &1..st_geometry,
+                                  env     sys.odcienv)
+  Return number
+  IS
+    rc         integer;
+
+  Begin
+
+   If (env.callproperty =  sys.odciconst.none AND ia.indexcols(1).tablepartition IS NULL ) THEN
+     Return odciconst.success;
+   End If;
+
+   rc := &1..st_domain_methods.odciindexdelete(ia,rid,oldval,env);
+   rc := &1..st_domain_methods.odciindexinsert(ia,rid,newval,env);
+
+    Return odciconst.success;
+  End odciindexupdate;
+
+    -- index update --
+/***********************************************************************
+  *
+  *n  {odciindexalter}  --  Alter domain index
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *p  purpose:
+  *     odciindexalter performs the operations of an
+  *  ALTER INDEX against the domain index.
+  *  
+  *  Possible options are:
+  *
+  *    0 - AlterIndexNone if ALTER INDEX [PARTITION] PARAMETERS
+  *    1 - AlterIndexRename if ALTER INDEX RENAME [PARTITION]
+  *    2 - AlterIndexRebuild if ALTER INDEX REBUILD [PARTITION]
+  *                        [PARALLEL (DEGREE deg)] [PARAMETERS]
+  *    3 - AlterIndexUpdBlockRefs if ALTER INDEX [schema.]index
+  *                        UPDATE BLOCK REFERENCES
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *a  parameters:
+  *     ia    <in>     ==  (sys.odciindexinfo) odci object info
+  *     parms <in>     ==  (varchar2) parameters list
+  *     env   <in>     ==  (sys.odcienv) context handle
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *x  &1. exceptions:
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *h  history:
+  *
+  *    kevin watt          12/02/04           original coding.
+  *e
+  ***********************************************************************/
+ static Function odciindexalter(ia sys.odciindexinfo,
+                                   parms IN Out varchar2,
+                                   alter_option number,
+                                   env sys.odcienv)
+           Return number IS
+
+  CURSOR c_idxparam (owner_wanted IN varchar2, index_wanted IN varchar2) IS
+    SELECT parameters
+    FROM all_indexes
+    WHERE owner = owner_wanted AND index_name = index_wanted;
+    
+   spx_info_r     &1..spx_util.spx_record_t;
+   spx_info2_r    &1..spx_util.spx_record_t;
+   sp_ref_r       &1..spx_util.spatial_ref_record_t;
+   properties     &1..spx_util.st_geom_prop_t;
+   rc             number;
+   spatial_col    &1..spx_util.spx_column_t;
+   optype         pls_integer;
+   buffer         varchar2(1000);
+   pos            pls_integer := 0;
+   len            pls_integer;
+   partition_name varchar2(256);
+
+  Begin
+
+  -- verify existence of layers entry --
+    optype := &1..spx_util.st_geom_operation_dml;
+    rc := &1..spx_util.get_object_info(ia,optype,parms,spx_info_r,sp_ref_r,properties);
+    If rc != &1..spx_util.se_success THEN
+      raise_application_error (&1..st_type_util.spx_object_noexist,'Object '||ia.indexcols(1).tableschema||
+                               '.'||ia.indexcols(1).tablename||'.'||REPLACE(ia.indexcols(1).colname,'"','')||' not found in ST_GEOMETRY_INDEX.');
+    End If;
+
+    If alter_option = odciconst.alterindexrebuild THEN
+
+      If parms IS NULL THEN
+        rc := odciindexdrop (ia, env);
+        If rc != sys.odciconst.success THEN
+          Return sys.odciconst.error;
+        End If;
+
+        parms := 'ST_GRIDS='|| spx_info_r.grid.grid1||':'|| spx_info_r.grid.grid2||
+                         ':'||spx_info_r.grid.grid3||' ST_SRID='|| spx_info_r.srid;
+        If spx_info_r.commit_int > 0 THEN
+          parms := parms||' ST_COMMIT_ROWS='||spx_info_r.commit_int;
+        End If;
+
+        rc := odciindexcreate(ia,parms,env);
+        If rc != sys.odciconst.success THEN
+          Return sys.odciconst.error;
+        End If;
+      ELSE
+        -- check if the REBUILD PARAMS is VALIDATE. Do not 
+        -- rebuild the index. Change status only. 
+        
+        buffer := upper(parms);
+        buffer := REPLACE(buffer, chr(10), ' ');
+        buffer := ltrim(buffer);
+        buffer := rtrim(buffer);
+        len := length(buffer);
+      
+        pos := instr(buffer,'VALIDATE');
+        If (pos > 0 and len = 8) Then
+          Open c_idxparam (ia.IndexSchema, ia.IndexName);
+          Fetch c_idxparam INTO buffer;
+          If c_idxparam%NOTFOUND THEN
+            Close c_idxparam;
+            raise_application_error (&1..st_type_util.spx_object_noexist,'Index '||ia.IndexSchema||'.'||ia.IndexName||' does not exist.');
+          End If;
+          Close c_idxparam;
+          
+          parms := buffer;
+          Return sys.odciconst.success;
+        End If;
+        
+        spx_info2_r.grid := &1..sp_grid_info(0,0,0);
+        spx_info2_r.srid := 0;
+        &1..spx_util.parse_params(parms,spx_info2_r);
+ 
+        If ((spx_info2_r.grid.grid2 > 0.0 AND  spx_info2_r.grid.grid2 < (3.0*spx_info2_r.grid.grid1)) OR
+        (spx_info2_r.grid.grid3 > 0.0 AND  spx_info2_r.grid.grid3 < (3.0*spx_info2_r.grid.grid2)) ) THEN
+           raise_application_error (&1..st_type_util.spx_inv_grid_sizes,'Error, Invalid Grid Size: 2nd and 3rd sizes must be '||
+                              'at least 3 times larger than previous grid size.');
+        End If;
+  
+        If spx_info2_r.srid > 0 THEN
+          If spx_info2_r.srid <> spx_info_r.srid THEN
+            raise_application_error (&1..st_type_util.spx_diff_srids,'Cannot modify the spatial reference of an existing ST_GEOMETRY object. '||
+                                                        'ST_SRID '||spx_info2_r.srid||' is different from current ST_SRID '||spx_info_r.srid||'.');
+          End If;
+        End If;
+
+        If spx_info2_r.grid.grid1 > 0 THEN
+          parms := 'ST_GRIDS='|| spx_info2_r.grid.grid1||':'|| spx_info2_r.grid.grid2||
+                         ':'||spx_info2_r.grid.grid3||' ST_SRID='|| spx_info_r.srid;
+
+        If spx_info2_r.commit_int > 0 THEN
+          parms := parms||' ST_COMMIT_ROWS='||spx_info2_r.commit_int;
+        End If;
+
+          rc := odciindexdrop (ia, env);
+          If rc != sys.odciconst.success THEN
+            Return sys.odciconst.error;
+          End If;
+
+          rc := odciindexcreate(ia,parms,env);
+          If rc != sys.odciconst.success THEN
+            Return sys.odciconst.error;
+          End If;
+
+          spatial_col := REPLACE(ia.indexcols(1).colname,'"','');
+
+          &1..spx_util.update_index(spx_info2_r,ia.indexcols(1).tableschema,
+                       ia.indexcols(1).tablename,spatial_col);
+
+          &1..spx_util.update_cache_info  (ia.indexcols(1).tableschema,
+                                           ia.indexcols(1).tablename,
+                                           spatial_col,
+                                           spx_info2_r,
+                                           sp_ref_r,
+                                           properties);
+        End If;
+      End If;
+    ElsIf alter_option = odciconst.AlterIndexRename THEN
+      If(ia.indexcols(1).tablepartition = ia.indexpartition) Then
+        partition_name := ia.indexcols(1).tablepartition;
+      Else
+        partition_name := ia.indexpartition;
+      End If;
+
+      &1..spx_util.update_partition_name (spx_info_r,
+                                          properties,
+                                          partition_name,
+                                          parms);
+
+    ElsIf alter_option = odciconst.AlterIndexNone THEN
+      buffer := upper(parms);
+      buffer := REPLACE(buffer, chr(10), ' ');
+      buffer := ltrim(buffer);
+      buffer := rtrim(buffer);
+      len := length(buffer);
+      
+      pos := instr(buffer,'VALIDATE');
+      If(pos = 0 Or len <> 8) Then
+        raise_application_error (&1..st_type_util.spx_invalid_alter_parms,'Invalid ALTER INDEX parameter option - '||buffer);
+      End If;
+      
+      Open c_idxparam (ia.IndexSchema, ia.IndexName);
+      Fetch c_idxparam INTO buffer;
+      If c_idxparam%NOTFOUND THEN
+        Close c_idxparam;
+        raise_application_error (&1..st_type_util.spx_object_noexist,'Index '||ia.IndexSchema||'.'||ia.IndexName||' does not exist.');
+      End If;
+      Close c_idxparam;
+      parms := buffer;
+    
+    End If;
+
+
+  Return odciconst.success;
+  End odciindexalter;
+
+   -- index update --
+/***********************************************************************
+  *
+  *n  {odciindexgetmetadata}  --  Export Metadata about the 
+*                                  domain index.
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *p  purpose:
+  *     odciindexgetmetadata exports metadata information 
+*  to the export (dmp) file used during import of the domain
+*  index.
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *a  parameters:
+  *     ia    <in>     ==  (sys.odciindexinfo) odci object info
+  *     parms <in>     ==  (varchar2) parameters list
+  *     env   <in>     ==  (sys.odcienv) context handle
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *x  &1. exceptions:
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *h  history:
+  *
+  *    kevin watt          12/02/04           original coding.
+  *e
+  ***********************************************************************/
+static Function odciindexgetmetadata(ia sys.odciindexinfo, 
+                                     expversion  varchar2, 
+                                     newblock Out pls_integer, 
+                                     env sys.odcienv)
+Return varchar2 IS
+
+    Cursor c_sel_noparms (owner_in IN varchar2,index_in IN varchar2) IS
+      SELECT st.owner, st.table_name, st.column_name
+      FROM &1..st_geometry_columns st,  
+      (SELECT table_owner, table_name FROM all_indexes WHERE owner = owner_in AND index_name = index_in) ai
+      WHERE st.owner = ai.table_owner 
+      AND st.table_name = ai.table_name;  
+      
+     Cursor c_spx_info_get (in_owner IN &1..spx_util.spx_owner_t,in_table IN &1..spx_util.spx_table_t,in_spcol IN &1..spx_util.spx_column_t) IS
+      SELECT  s.index_id,s.grid.grid1,s.grid.grid2,s.grid.grid3,
+              sr.srid,sr.x_offset,sr.y_offset,sr.xyunits,st.properties
+      FROM   &1..st_geometry_index s,&1..st_geometry_columns st,&1..st_spatial_references sr
+      WHERE  s.owner = in_owner AND s.table_name = in_table AND s.column_name = in_spcol 
+      AND s.index_id = st.geom_id AND sr.srid = s.srid;  
+
+    tableschema  &1..spx_util.spx_owner_t; 
+    tablename    &1..spx_util.spx_table_t; 
+    spatialcol   &1..spx_util.spx_column_t;
+    srid         &1..spx_util.srid_t;
+    gsize1       &1..spx_util.spx_gsize_t;
+    gsize2       &1..spx_util.spx_gsize_t;
+    gsize3       &1..spx_util.spx_gsize_t;
+    falsex       &1..spx_util.sr_falsex_t;
+    falsey       &1..spx_util.sr_falsey_t;
+    xyunits      &1..spx_util.sr_xyunits_t;
+    index_id     &1..spx_util.spx_index_id_t;
+    properties   &1..spx_util.st_geom_prop_t;
+    spx_info_r   &1..spx_util.spx_record_t;
+    spref_r      &1..spx_util.spatial_ref_record_t;
+    parms_out    varchar2(2000);
+    rc           number;
+
+    Begin
+
+      Open c_sel_noparms (ia.indexschema,ia.indexname);
+      Fetch c_sel_noparms INTO tableschema, tablename, spatialcol;
+
+      If c_sel_noparms%NOTFOUND THEN
+        Close c_sel_noparms;
+        raise_application_error (&1..st_type_util.spx_no_srid,'No ST_SRID supplied in PARAMETERS clause.');
+      Else
+        spx_info_r.index_id := 0;
+        spx_info_r.grid := &1..sp_grid_info(0,0,0);
+      
+        gsize1 := 0;
+        gsize2 := 0;
+        gsize3 := 0;  
+      
+        Open c_spx_info_get (tableschema,tablename,spatialcol);
+        Fetch c_spx_info_get INTO index_id,gsize1,gsize2,gsize3,srid,falsex,falsey,xyunits,properties;
+
+        If c_spx_info_get%NOTFOUND THEN 
+          Close c_spx_info_get;
+          raise_application_error (&1..st_type_util.spx_no_srid,'No ST_SRID supplied in PARAMETERS clause.');
+        Else
+          spx_info_r.owner       := tableschema;
+          spx_info_r.table_name  := tablename;
+          spx_info_r.column_name := spatialcol;
+          spx_info_r.index_id    := index_id;
+          spx_info_r.grid.grid1  := gsize1;
+          spx_info_r.grid.grid2  := gsize2;
+          spx_info_r.grid.grid3  := gsize3;
+          spx_info_r.srid        := srid;
+          spref_r.x_offset       := falsex;
+          spref_r.y_offset       := falsey;
+          spref_r.xyunits        := xyunits;
+          spref_r.srid           := srid;
+       
+          Close c_spx_info_get;
+        End If;
+        Close c_sel_noparms;
+      End If;      
+
+      spref_r.srid := spx_info_r.srid;
+      rc := &1..st_spref_util.select_spref(spref_r);
+
+      Return &1..st_type_export.export_info (ia.indexschema, ia.indexname, spx_info_r, spref_r, expversion, newblock);
+
+      Exception
+        When others THEN
+        Raise;
+  End odciindexgetmetadata;
+
+    --Exchange partition --
+/***********************************************************************
+  *
+  *n  {odciindexexchangepartition}  --  Exchange local domain
+  *  index partition tables.
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *p  purpose:
+  *     odciindexexchangepartition exchanges local 
+  *  domain index partition tables.
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *a  parameters:
+  *     ia    <in>     ==  (sys.odciindexinfo) odci object info
+  *     parms <in>     ==  (varchar2) parameters list
+  *     env   <in>     ==  (sys.odcienv) context handle
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *x  &1. exceptions:
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *h  history:
+  *
+  *    kevin watt          12/02/04           original coding.
+  *e
+  ***********************************************************************/
+  static Function odciindexexchangepartition(ia sys.odciindexinfo,
+                           ia1 sys.odciindexinfo, env sys.odcienv)
+  Return number IS
+
+    stmt              varchar2(1000);
+    ret               number;
+    commit_row        pls_integer := 0;
+    spx_info_r        &1..spx_util.spx_record_t;
+    sp_ref_r          &1..spx_util.spatial_ref_record_t;
+    properties        &1..spx_util.st_geom_prop_t;
+    spx_info_rx       &1..spx_util.spx_record_t;
+    sp_ref_rx         &1..spx_util.spatial_ref_record_t;
+    properties_x      &1..spx_util.st_geom_prop_t;
+    array_size        Constant pls_integer := 200;
+
+    e_minx            integer;
+    e_miny            integer;
+    e_maxx            integer;
+    e_maxy            integer;
+    gsize1            integer := 0;
+    gsize2            integer := 0;
+    gsize3            integer := 0;
+    g_minx            integer;
+    g_miny            integer;
+    g_maxx            integer;
+    g_maxy            integer;
+    min_g_miny        integer;
+    rc                number;
+    pos               pls_integer;
+    fetch_cnt         pls_integer;
+    idx_name          varchar2(64);
+    spcol             varchar2(32);
+
+    optype            pls_integer;
+
+    sel_cursor_num    number;
+    select_statement  VARCHAR2(4000);
+    sel_cursor_result number;
+    f_numpts          dbms_sql.number_table;
+    f_minx            dbms_sql.number_table;
+    f_miny            dbms_sql.number_table;
+    f_maxx            dbms_sql.number_table;
+    f_maxy            dbms_sql.number_table;
+    f_gx              dbms_sql.number_table;
+    f_gy              dbms_sql.number_table;
+    f_rowid           dbms_sql.urowid_table;
+    f_srid            dbms_sql.number_table;
+
+    ins_cursor_num    number;
+    insert_statement  VARCHAR2(4000);
+    ins_cursor_result number;
+    s_rowid           dbms_sql.urowid_table;
+    s_gx              dbms_sql.number_table;
+    s_gy              dbms_sql.number_table;
+    s_minx            dbms_sql.number_table;
+    s_miny            dbms_sql.number_table;
+    s_maxx            dbms_sql.number_table;
+    s_maxy            dbms_sql.number_table;
+    ex_metadata       boolean := TRUE;
+    pgrid_info        sp_grid_info := sp_grid_info(0,0,0);
+    shape_out         integer;
+    partition_name    varchar2(256);
+
+  Begin
+
+    If (env.callproperty =  sys.odciconst.none AND ia.indexcols(1).tablepartition IS NULL ) THEN
+      Return odciconst.success;
+    End If;
+
+       -- get info --
+    optype := &1..spx_util.st_geom_operation_create;
+    rc := &1..spx_util.get_object_info(ia,optype,NULL,spx_info_r,sp_ref_r,properties);
+    If rc != &1..spx_util.se_success THEN
+      raise_application_error (&1..st_type_util.spx_object_noexist,'Object '||ia.indexcols(1).tableschema||
+                               '.'||ia.indexcols(1).tablename||'.'||REPLACE(ia.indexcols(1).colname,'"','')||' not found in ST_GEOMETRY_INDEX.');
+    End If;
+
+    rc := &1..spx_util.get_object_info(ia1,optype,NULL,spx_info_rx,sp_ref_rx,properties_x);
+    If rc != &1..spx_util.se_success THEN
+      ex_metadata := FALSE;
+    End If;
+
+    IF (ia.indexcols(1).tablepartition IS NOT NULL) THEN
+
+      If(ia.indexcols(1).tablepartition = ia.indexpartition) Then
+        partition_name := ia.indexcols(1).tablepartition;
+      Else
+        partition_name := ia.indexpartition;
+      End If;
+
+      idx_name := &1..spx_util.get_partition_name(partition_name,
+                                                  properties,
+                                                  spx_info_r.index_id);
+
+        stmt := 'truncate table '||'"'||ia.indexcols(1).tableschema||'"'||'.'||idx_name||' reuse storage';
+        EXECUTE IMMEDIATE stmt;
+
+      &1..spx_util.get_partition_grids(ia.indexcols(1).tableschema,
+                                       ia.indexcols(1).tablename,
+                                       REPLACE(ia.indexcols(1).colname,'"',''),
+                                       partition_name,
+                                       properties,
+                                       spx_info_r);
+    End If;
+
+    stmt := 'INSERT INTO '||'"'||ia.indexschema||'"' || '.' || idx_name ||
+                         ' ( sp_id,gx,gy,minx,miny,maxx,maxy) VALUES ' ||
+                         '(:sp_row,:gx,:gy,:minx,:miny,:maxx,:maxy)';
+
+    ins_cursor_num := dbms_sql.open_cursor;
+    insert_statement := 'INSERT INTO '||'"'||ia.indexschema||'"' || '.' || idx_name ||
+                          ' ( sp_id,gx,gy,minx,miny,maxx,maxy) VALUES ' ||
+                          '(:sp_row,:gx,:gy,:minx,:miny,:maxx,:maxy)';
+    dbms_sql.parse(ins_cursor_num,insert_statement,dbms_sql.native);
+
+    gsize1 := spx_info_r.grid.grid1 * sp_ref_r.xyunits;
+
+    IF spx_info_r.grid.grid2 > 0 THEN
+      gsize2 := spx_info_r.grid.grid2 * sp_ref_r.xyunits;
+      IF spx_info_r.grid.grid3 > 0 THEN
+        gsize3 := spx_info_r.grid.grid3 * sp_ref_r.xyunits;
+      END IF;
+    END IF;
+
+    spcol := REPLACE(ia1.indexcols(1).colname,'"','');
+
+    select_statement := 'SELECT t.'||spcol||'.numpts,t.'||spcol||'.minx,t.'||spcol||'.miny,t.'||spcol||'.maxx,t.'||spcol||'.maxy,'||
+                        't.rowid,t.'||spcol||'.srid FROM '||'"'||ia.indexcols(1).tableschema||'"'||'.'||ia.indexcols(1).tablename||' '||
+                        'PARTITION ('||partition_name||') ';
+
+    select_statement := select_statement ||' t WHERE t.'||spcol||'.numpts IS NOT NULL AND t.'||spcol||'.entity > 0 '||
+                        'ORDER BY 2, 3, 4, 5';
+
+    sel_cursor_num := dbms_sql.open_cursor;
+    dbms_sql.parse(sel_cursor_num,select_statement,dbms_sql.native);
+
+    dbms_sql.define_array(sel_cursor_num,1,f_numpts,array_size,1);
+    dbms_sql.define_array(sel_cursor_num,2,f_minx,array_size,1);
+    dbms_sql.define_array(sel_cursor_num,3,f_miny,array_size,1);
+    dbms_sql.define_array(sel_cursor_num,4,f_maxx,array_size,1);
+    dbms_sql.define_array(sel_cursor_num,5,f_maxy,array_size,1);
+    dbms_sql.define_array(sel_cursor_num,6,f_rowid,array_size,1);
+    dbms_sql.define_array(sel_cursor_num,7,f_srid,array_size,1);
+
+    sel_cursor_result := dbms_sql.execute(sel_cursor_num);
+    sel_cursor_result := dbms_sql.fetch_rows(sel_cursor_num);
+    dbms_sql.column_value(sel_cursor_num,1,f_numpts);
+    dbms_sql.column_value(sel_cursor_num,2,f_minx);
+    dbms_sql.column_value(sel_cursor_num,3,f_miny);
+    dbms_sql.column_value(sel_cursor_num,4,f_maxx);
+    dbms_sql.column_value(sel_cursor_num,5,f_maxy);
+    dbms_sql.column_value(sel_cursor_num,6,f_rowid);
+    dbms_sql.column_value(sel_cursor_num,7,f_srid);
+
+    fetch_cnt := sel_cursor_result;
+
+    pos := 1;
+
+    WHILE fetch_cnt > 0 LOOP
+
+      FOR row IN 1..fetch_cnt LOOP
+
+        IF f_srid(row) <> sp_ref_r.srid THEN
+
+          stmt := 'ODCIndexExchangePartition - Different SRID''s. Destination partition SRID '''||sp_ref_r.srid||''' does not match source table SRID '||f_rowid(ROW)||'.';
+              raise_application_error (&1..st_type_util.spx_diff_srids,stmt);
+        END IF;
+
+        e_minx := ((f_minx(row) - sp_ref_r.x_offset) * sp_ref_r.xyunits + .5);
+        e_miny := ((f_miny(row) - sp_ref_r.y_offset) * sp_ref_r.xyunits + .5);
+        e_maxx := ((f_maxx(row) - sp_ref_r.x_offset) * sp_ref_r.xyunits + .5);
+        e_maxy := ((f_maxy(row) - sp_ref_r.y_offset) * sp_ref_r.xyunits + .5);
+
+        IF f_minx(row) <= f_maxx(row) THEN
+          &1..spx_util.compute_feat_grid_envp (gsize1,gsize2,gsize3,e_minx,e_miny,e_maxx,e_maxy,
+                                               g_minx,g_miny,g_maxx,g_maxy);
+        ELSE
+          &1..spx_util.compute_feat_grid_envp (gsize1,gsize2,gsize3,f_minx(row),f_miny(row),f_maxx(row),f_maxy(row),
+                                               g_minx,g_miny,g_maxx,g_maxy);
+        END IF;
+
+        If ((g_maxx - g_minx + 1) * (g_maxy - g_miny + 1) > &1..spx_util.max_grids_per_feat) THEN
+          raise_application_error (&1..st_type_util.spx_max_grids_per_feat,'Maximum number of grids per feature (8000) exceeded.');
+        End If;
+
+        min_g_miny := g_miny;
+
+        WHILE g_minx <= g_maxx LOOP
+
+          WHILE (g_miny <= g_maxy) LOOP
+
+            s_gx(pos) := g_minx;
+            s_gy(pos) := g_miny;
+            s_minx(pos) := e_minx;
+            s_miny(pos) := e_miny;
+            s_maxx(pos) := e_maxx;
+            s_maxy(pos) := e_maxy;
+            s_rowid(pos) := f_rowid(row);
+
+            If pos = array_size THEN
+
+              dbms_sql.bind_array(ins_cursor_num,':gx',s_gx);
+              dbms_sql.bind_array(ins_cursor_num,':gy',s_gy);
+              dbms_sql.bind_array(ins_cursor_num,':minx',s_minx);
+              dbms_sql.bind_array(ins_cursor_num,':miny',s_miny);
+              dbms_sql.bind_array(ins_cursor_num,':maxx',s_maxx);
+              dbms_sql.bind_array(ins_cursor_num,':maxy',s_maxy);
+              dbms_sql.bind_array(ins_cursor_num,':sp_row',s_rowid);
+
+              ins_cursor_result := dbms_sql.execute(ins_cursor_num);
+  
+              IF spx_info_r.commit_int > 0 THEN
+                commit_row := commit_row + array_size;
+                IF commit_row >= spx_info_r.commit_int THEN
+                  COMMIT;
+                  commit_row := 0;
+                END IF;
+              END IF;
+
+              s_gx.delete;
+              s_gy.delete;
+              s_minx.delete;
+              s_miny.delete;
+              s_maxx.delete;
+              s_maxy.delete;
+              s_rowid.delete;
+
+              pos := 1;
+            ELSE
+              pos := pos + 1;
+            END IF;
+
+            g_miny := g_miny + 1;
+
+          END LOOP;
+
+          g_minx := g_minx + 1;
+          g_miny := min_g_miny;
+
+        END LOOP;
+      END LOOP;
+
+      f_numpts.delete;
+      f_minx.delete;
+      f_miny.delete;
+      f_maxx.delete;
+      f_maxy.delete;
+      f_rowid.delete;
+      f_srid.delete; 
+
+      IF fetch_cnt = array_size THEN
+        dbms_sql.define_array(sel_cursor_num,1,f_numpts,array_size,1);
+        dbms_sql.define_array(sel_cursor_num,2,f_minx,array_size,1);
+        dbms_sql.define_array(sel_cursor_num,3,f_miny,array_size,1);
+        dbms_sql.define_array(sel_cursor_num,4,f_maxx,array_size,1);
+        dbms_sql.define_array(sel_cursor_num,5,f_maxy,array_size,1);
+        dbms_sql.define_array(sel_cursor_num,6,f_rowid,array_size,1);
+        dbms_sql.define_array(sel_cursor_num,7,f_srid,array_size,1);
+        sel_cursor_result := dbms_sql.fetch_rows(sel_cursor_num);
+        dbms_sql.column_value(sel_cursor_num,1,f_numpts);
+        dbms_sql.column_value(sel_cursor_num,2,f_minx);
+        dbms_sql.column_value(sel_cursor_num,3,f_miny);
+        dbms_sql.column_value(sel_cursor_num,4,f_maxx);
+        dbms_sql.column_value(sel_cursor_num,5,f_maxy);
+        dbms_sql.column_value(sel_cursor_num,6,f_rowid);
+        dbms_sql.column_value(sel_cursor_num,7,f_srid);
+        fetch_cnt := sel_cursor_result;
+      ELSE
+        fetch_cnt := 0;
+      END IF;
+
+    END LOOP;
+
+    pos := pos - 1;
+
+    If pos >= 1 THEN
+      dbms_sql.bind_array(ins_cursor_num,':gx',s_gx);
+      dbms_sql.bind_array(ins_cursor_num,':gy',s_gy);
+      dbms_sql.bind_array(ins_cursor_num,':minx',s_minx);
+      dbms_sql.bind_array(ins_cursor_num,':miny',s_miny);
+      dbms_sql.bind_array(ins_cursor_num,':maxx',s_maxx);
+      dbms_sql.bind_array(ins_cursor_num,':maxy',s_maxy);
+      dbms_sql.bind_array(ins_cursor_num,':sp_row',s_rowid);
+
+      ins_cursor_result := dbms_sql.execute(ins_cursor_num);
+      COMMIT;
+
+      s_rowid.delete;
+      s_gx.delete;
+      s_gy.delete;
+      s_minx.delete;
+      s_miny.delete;
+      s_maxx.delete;
+      s_maxy.delete;
+
+      f_numpts.delete;
+      f_minx.delete;
+      f_miny.delete;
+      f_maxx.delete;
+      f_maxy.delete;
+      f_rowid.delete;
+      f_srid.delete; 
+
+    END IF;
+
+    dbms_sql.close_cursor(ins_cursor_num);
+    dbms_sql.close_cursor(sel_cursor_num);
+
+    Return odciconst.success;
+  End odciindexexchangepartition;
+
+    -- Merge  partition --
+/***********************************************************************
+  *
+  *n  {odciindexmergepartition}  --  Merge local domain 
+  *                                            index partition 
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *p  purpose:
+  *     odciindexmergepartition merges local domain index partition
+  *  tables.
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *a  parameters:
+  *     ia    <in>     ==  (sys.odciindexinfo) odci object info
+  *     part_name1     ==  (sys.odcipartinfo) Merge (source) partition
+  *     part_name2     ==  (sys.odcipartinfo) Merge (target) partition
+  *     parms <in>     ==  (varchar2) parameters list
+  *     env   <in>     ==  (sys.odcienv) context handle
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *x  &1. exceptions:
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *h  history:
+  *
+  *    kevin watt          12/02/04           original coding.
+  *e
+  ***********************************************************************/
+  static Function odciindexmergepartition(ia sys.odciindexinfo,
+                           part_name1 sys.odcipartinfo, part_name2 sys.odcipartinfo, 
+                           parms varchar2, env sys.odcienv) 
+  Return number IS
+
+    rc                pls_integer;
+    optype            pls_integer;
+    spx_info_r        &1..spx_util.spx_record_t;
+    sp_ref_r          &1..spx_util.spatial_ref_record_t;
+    properties        &1..spx_util.st_geom_prop_t;
+    partition_name    varchar2(32);
+    stmt              varchar2(256);
+
+  Begin
+
+    optype := &1..spx_util.st_geom_operation_dml;
+    rc := &1..spx_util.get_object_info(ia,optype,NULL,spx_info_r,sp_ref_r,properties);
+    If rc != &1..spx_util.se_success THEN
+      raise_application_error (&1..st_type_util.spx_object_noexist,'Object '||ia.indexcols(1).tableschema||
+                               '.'||ia.indexcols(1).tablename||'.'||REPLACE(ia.indexcols(1).colname,'"','')||' not found in ST_GEOMETRY_INDEX.');
+    End If;
+
+    &1..spx_util.delete_partition (ia.indexcols(1).tableschema,
+                                   ia.indexcols(1).tablename,
+                                   REPLACE(ia.indexcols(1).colname,'"',''),
+                                   part_name1.indexpartition,
+                                   spx_info_r.index_id,
+                                   properties);
+
+    stmt := 'DROP TABLE '||'"'||ia.indexcols(1).tableschema||'"'||'.S'||spx_info_r.index_id||part_name1.tablepartition;
+    EXECUTE IMMEDIATE stmt;
+
+    Return odciconst.success;
+
+  End odciindexmergepartition;
+
+    --Split partition --
+/***********************************************************************
+  *
+  *n  {odciindexsplitpartition}  --  Split local domain index partition 
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *p  purpose:
+  *     odciindexsplitpartition spits a local domain index partition
+  *  table.
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *a  parameters:
+  *     ia    <in>     ==  (sys.odciindexinfo) odci object info
+  *     part_name1     ==  (sys.odcipartinfo) New "split" partition
+  *     part_name2     ==  (sys.odcipartinfo) Source partition
+  *     parms <in>     ==  (varchar2) parameters list
+  *     env   <in>     ==  (sys.odcienv) context handle
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *x  &1. exceptions:
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *h  history:
+  *
+  *    kevin watt          12/02/04           original coding.
+  *e
+  ***********************************************************************/
+  static Function odciindexsplitpartition(ia sys.odciindexinfo,
+                           part_name1 sys.odcipartinfo, part_name2 sys.odcipartinfo, 
+                           parms varchar2, env sys.odcienv) 
+  Return number IS
+
+    CURSOR c_tbspname_sel (schema_in IN varchar2) IS
+         SELECT tablespace_name
+         FROM all_tables
+         WHERE owner = UPPER(schema_in) AND tablespace_name IS NOT NULL;
+
+    cstmt1            clob;
+    stmt              varchar2(1000);
+    ret               number;
+    commit_row        pls_integer := 0;
+    spx_info_r        &1..spx_util.spx_record_t;
+    sp_ref_r          &1..spx_util.spatial_ref_record_t;
+    properties        &1..spx_util.st_geom_prop_t;
+    array_size        Constant pls_integer := 200;
+    curs1             number := 0;
+    e_minx            integer;
+    e_miny            integer;
+    e_maxx            integer;
+    e_maxy            integer;
+    gsize1            integer := 0;
+    gsize2            integer := 0;
+    gsize3            integer := 0;
+    g_minx            integer;
+    g_miny            integer;
+    g_maxx            integer;
+    g_maxy            integer;
+    min_g_miny        integer;
+    rc                number;
+    pos               pls_integer;
+    fetch_cnt         pls_integer;
+    idx_name          varchar2(64);
+    idx2_name         varchar2(64);
+    idx3_name         varchar2(64);
+    spcol             varchar2(32);
+
+    optype            pls_integer;
+
+    sel_cursor_num    number;
+    select_statement  VARCHAR2(4000);
+    sel_cursor_result number;
+    f_numpts          dbms_sql.number_table;
+    f_minx            dbms_sql.number_table;
+    f_miny            dbms_sql.number_table;
+    f_maxx            dbms_sql.number_table;
+    f_maxy            dbms_sql.number_table;
+    f_gx              dbms_sql.number_table;
+    f_gy              dbms_sql.number_table;
+    f_rowid           dbms_sql.urowid_table;
+    f_srid            dbms_sql.number_table;
+
+    ins_cursor_num    number;
+    insert_statement  VARCHAR2(4000);
+    ins_cursor_result number;
+    s_rowid           dbms_sql.urowid_table;
+    s_gx              dbms_sql.number_table;
+    s_gy              dbms_sql.number_table;
+    s_minx            dbms_sql.number_table;
+    s_miny            dbms_sql.number_table;
+    s_maxx            dbms_sql.number_table;
+    s_maxy            dbms_sql.number_table;
+    ex_metadata       boolean := TRUE;
+    pgrid_info        sp_grid_info := sp_grid_info(0,0,0);
+    st_storage        clob := NULL;
+    st_tablespace     varchar(64) := NULL;
+    st_pctthreshold   pls_integer;
+    tbsp_pos          pls_integer;
+    sel_tab_partition varchar2(32);
+
+  Begin
+
+       -- get info --
+    optype := &1..spx_util.st_geom_operation_dml;
+    rc := &1..spx_util.get_object_info(ia,optype,NULL,spx_info_r,sp_ref_r,properties);
+    If rc != &1..spx_util.se_success THEN
+      raise_application_error (&1..st_type_util.spx_object_noexist,'Object '||ia.indexcols(1).tableschema||
+                               '.'||ia.indexcols(1).tablename||'.'||REPLACE(ia.indexcols(1).colname,'"','')||' not found in ST_GEOMETRY_INDEX.');
+    End If;
+
+    tbsp_pos := instr(UPPER(parms),'TABLESPACE');
+    IF (tbsp_pos > 0) THEN 
+       &1..spx_util.get_storage_info(parms,st_storage,st_tablespace,st_pctthreshold);
+    ELSE 
+      OPEN c_tbspname_sel (ia.indexschema);
+      FETCH c_tbspname_sel INTO st_tablespace;
+      IF c_tbspname_sel%NOTFOUND THEN    
+        st_tablespace := NULL;
+      END IF;
+      CLOSE c_tbspname_sel;
+      &1..spx_util.get_storage_info(parms,st_storage,st_tablespace,st_pctthreshold);
+    END IF;
+
+    idx_name := 'S'||spx_info_r.index_id||part_name2.tablepartition;
+    idx2_name := 'S'||spx_info_r.index_id||part_name2.tablepartition||'P';
+    idx3_name := 'S'||spx_info_r.index_id||part_name2.tablepartition||'X';
+    sel_tab_partition := part_name2.tablepartition;
+
+    cstmt1 := 'CREATE TABLE ' ||'"'|| ia.indexschema||'"' || '.' || idx_name ||
+              ' (gx integer, gy integer, minx integer,' ||
+              'miny integer, maxx integer, maxy integer, sp_id rowid, '||
+              'constraint '||idx2_name||
+              ' primary key(gx,gy,maxx,maxy,minx,miny,sp_id)) '||
+              'organization index pctthreshold ' || st_pctthreshold || ' pctfree 0 initrans 4 ';
+
+    IF st_storage IS NOT NULL THEN
+      cstmt1 := cstmt1||' storage '||st_storage;
+    END IF;
+
+    IF st_tablespace IS NOT NULL THEN
+      cstmt1 := cstmt1||' tablespace '||st_tablespace;
+    END IF;
+
+    curs1 := dbms_sql.open_cursor;
+    dbms_sql.parse(curs1,cstmt1,dbms_sql.native);
+    dbms_sql.close_cursor(curs1);
+
+      -- Loop thru each partition to create new spatial index partition
+
+    For iter IN 1..2 LOOP
+
+      ins_cursor_num := dbms_sql.open_cursor;
+      insert_statement := 'INSERT INTO '||'"'||ia.indexschema||'"' || '.' || idx_name ||
+                            ' ( sp_id,gx,gy,minx,miny,maxx,maxy) VALUES ' ||
+                            '(:sp_row,:gx,:gy,:minx,:miny,:maxx,:maxy)';
+      dbms_sql.parse(ins_cursor_num,insert_statement,dbms_sql.native);
+
+      gsize1 := spx_info_r.grid.grid1 * sp_ref_r.xyunits;
+
+      IF spx_info_r.grid.grid2 > 0 THEN
+        gsize2 := spx_info_r.grid.grid2 * sp_ref_r.xyunits;
+        IF spx_info_r.grid.grid3 > 0 THEN
+          gsize3 := spx_info_r.grid.grid3 * sp_ref_r.xyunits;
+        END IF;
+      END IF;
+
+      spcol := REPLACE(ia.indexcols(1).colname,'"','');
+
+      select_statement := 'SELECT t.'||spcol||'.numpts,t.'||spcol||'.minx,t.'||spcol||'.miny,t.'||spcol||'.maxx,t.'||spcol||'.maxy,'||
+                          't.rowid,t.'||spcol||'.srid FROM '||'"'||ia.indexcols(1).tableschema||'"'||'.'||ia.indexcols(1).tablename||' '||
+                          'PARTITION ('||sel_tab_partition||') ';
+
+      select_statement := select_statement ||' t WHERE t.'||spcol||'.numpts IS NOT NULL AND t.'||spcol||'.entity > 0 '||
+                          'ORDER BY 2, 3, 4, 5';
+
+      sel_cursor_num := dbms_sql.open_cursor;
+      dbms_sql.parse(sel_cursor_num,select_statement,dbms_sql.native);
+
+      dbms_sql.define_array(sel_cursor_num,1,f_numpts,array_size,1);
+      dbms_sql.define_array(sel_cursor_num,2,f_minx,array_size,1);
+      dbms_sql.define_array(sel_cursor_num,3,f_miny,array_size,1);
+      dbms_sql.define_array(sel_cursor_num,4,f_maxx,array_size,1);
+      dbms_sql.define_array(sel_cursor_num,5,f_maxy,array_size,1);
+      dbms_sql.define_array(sel_cursor_num,6,f_rowid,array_size,1);
+      dbms_sql.define_array(sel_cursor_num,7,f_srid,array_size,1);
+
+      sel_cursor_result := dbms_sql.execute(sel_cursor_num);
+      sel_cursor_result := dbms_sql.fetch_rows(sel_cursor_num);
+      dbms_sql.column_value(sel_cursor_num,1,f_numpts);
+      dbms_sql.column_value(sel_cursor_num,2,f_minx);
+      dbms_sql.column_value(sel_cursor_num,3,f_miny);
+      dbms_sql.column_value(sel_cursor_num,4,f_maxx);
+      dbms_sql.column_value(sel_cursor_num,5,f_maxy);
+      dbms_sql.column_value(sel_cursor_num,6,f_rowid);
+      dbms_sql.column_value(sel_cursor_num,7,f_srid);
+
+      fetch_cnt := sel_cursor_result;
+
+      pos := 1;
+
+      WHILE fetch_cnt > 0 LOOP
+
+        FOR row IN 1..fetch_cnt LOOP
+
+          IF f_srid(row) <> sp_ref_r.srid THEN
+
+            stmt := 'ODCIndexExchangePartition - Different SRID''s. Destination partition SRID '''||sp_ref_r.srid||''' does not match source table SRID '||f_rowid(ROW)||'.';
+                raise_application_error (&1..st_type_util.spx_diff_srids,stmt);
+          END IF;
+
+          e_minx := ((f_minx(row) - sp_ref_r.x_offset) * sp_ref_r.xyunits + .5);
+          e_miny := ((f_miny(row) - sp_ref_r.y_offset) * sp_ref_r.xyunits + .5);
+          e_maxx := ((f_maxx(row) - sp_ref_r.x_offset) * sp_ref_r.xyunits + .5);
+          e_maxy := ((f_maxy(row) - sp_ref_r.y_offset) * sp_ref_r.xyunits + .5);
+
+          IF f_minx(row) <= f_maxx(row) THEN
+            &1..spx_util.compute_feat_grid_envp (gsize1,gsize2,gsize3,e_minx,e_miny,e_maxx,e_maxy,
+                                                 g_minx,g_miny,g_maxx,g_maxy);
+          ELSE
+            &1..spx_util.compute_feat_grid_envp (gsize1,gsize2,gsize3,f_minx(row),f_miny(row),f_maxx(row),f_maxy(row),
+                                                 g_minx,g_miny,g_maxx,g_maxy);
+          END IF;
+
+          If ((g_maxx - g_minx + 1) * (g_maxy - g_miny + 1) > &1..spx_util.max_grids_per_feat) THEN
+            raise_application_error (&1..st_type_util.spx_max_grids_per_feat,'Maximum number of grids per feature (8000) exceeded.');
+          End If;
+
+          min_g_miny := g_miny;
+
+          WHILE g_minx <= g_maxx LOOP
+
+            WHILE (g_miny <= g_maxy) LOOP
+
+              s_gx(pos) := g_minx;
+              s_gy(pos) := g_miny;
+              s_minx(pos) := e_minx;
+              s_miny(pos) := e_miny;
+              s_maxx(pos) := e_maxx;
+              s_maxy(pos) := e_maxy;
+              s_rowid(pos) := f_rowid(row);
+
+              If pos = array_size THEN
+
+                dbms_sql.bind_array(ins_cursor_num,':gx',s_gx);
+                dbms_sql.bind_array(ins_cursor_num,':gy',s_gy);
+                dbms_sql.bind_array(ins_cursor_num,':minx',s_minx);
+                dbms_sql.bind_array(ins_cursor_num,':miny',s_miny);
+                dbms_sql.bind_array(ins_cursor_num,':maxx',s_maxx);
+                dbms_sql.bind_array(ins_cursor_num,':maxy',s_maxy);
+                dbms_sql.bind_array(ins_cursor_num,':sp_row',s_rowid);
+
+                ins_cursor_result := dbms_sql.execute(ins_cursor_num);
+
+                IF spx_info_r.commit_int > 0 THEN
+                  commit_row := commit_row + array_size;
+                  IF commit_row >= spx_info_r.commit_int THEN
+                    COMMIT;
+                    commit_row := 0;
+                  END IF;
+                END IF;
+
+                s_gx.delete;
+                s_gy.delete;
+                s_minx.delete;
+                s_miny.delete;
+                s_maxx.delete;
+                s_maxy.delete;
+                s_rowid.delete;
+
+                pos := 1;
+              ELSE
+                pos := pos + 1;
+              END IF;
+
+              g_miny := g_miny + 1;
+
+            END LOOP;
+
+            g_minx := g_minx + 1;
+            g_miny := min_g_miny;
+
+          END LOOP;
+        END LOOP;
+
+        f_numpts.delete;
+        f_minx.delete;
+        f_miny.delete;
+        f_maxx.delete;
+        f_maxy.delete;
+        f_rowid.delete;
+        f_srid.delete; 
+
+        IF fetch_cnt = array_size THEN
+          dbms_sql.define_array(sel_cursor_num,1,f_numpts,array_size,1);
+          dbms_sql.define_array(sel_cursor_num,2,f_minx,array_size,1);
+          dbms_sql.define_array(sel_cursor_num,3,f_miny,array_size,1);
+          dbms_sql.define_array(sel_cursor_num,4,f_maxx,array_size,1);
+          dbms_sql.define_array(sel_cursor_num,5,f_maxy,array_size,1);
+          dbms_sql.define_array(sel_cursor_num,6,f_rowid,array_size,1);
+          dbms_sql.define_array(sel_cursor_num,7,f_srid,array_size,1);
+          sel_cursor_result := dbms_sql.fetch_rows(sel_cursor_num);
+          dbms_sql.column_value(sel_cursor_num,1,f_numpts);
+          dbms_sql.column_value(sel_cursor_num,2,f_minx);
+          dbms_sql.column_value(sel_cursor_num,3,f_miny);
+          dbms_sql.column_value(sel_cursor_num,4,f_maxx);
+          dbms_sql.column_value(sel_cursor_num,5,f_maxy);
+          dbms_sql.column_value(sel_cursor_num,6,f_rowid);
+          dbms_sql.column_value(sel_cursor_num,7,f_srid);
+          fetch_cnt := sel_cursor_result;
+        ELSE
+          fetch_cnt := 0;
+        END IF;
+
+      END LOOP;
+
+      pos := pos - 1;
+
+      If pos >= 1 THEN
+        dbms_sql.bind_array(ins_cursor_num,':gx',s_gx);
+        dbms_sql.bind_array(ins_cursor_num,':gy',s_gy);
+        dbms_sql.bind_array(ins_cursor_num,':minx',s_minx);
+        dbms_sql.bind_array(ins_cursor_num,':miny',s_miny);
+        dbms_sql.bind_array(ins_cursor_num,':maxx',s_maxx);
+        dbms_sql.bind_array(ins_cursor_num,':maxy',s_maxy);
+        dbms_sql.bind_array(ins_cursor_num,':sp_row',s_rowid);
+
+        ins_cursor_result := dbms_sql.execute(ins_cursor_num);
+        COMMIT;
+
+        s_rowid.delete;
+        s_gx.delete;
+        s_gy.delete;
+        s_minx.delete;
+        s_miny.delete;
+        s_maxx.delete;
+        s_maxy.delete;
+
+        f_numpts.delete;
+        f_minx.delete;
+        f_miny.delete;
+        f_maxx.delete;
+        f_maxy.delete;
+        f_rowid.delete;
+        f_srid.delete; 
+
+      END IF;
+
+      dbms_sql.close_cursor(ins_cursor_num);
+      dbms_sql.close_cursor(sel_cursor_num);
+
+      -- Update ST_Geometry_Columns Properties for partitioned tables
+
+      If iter = 1 Then
+        &1..spx_util.insert_partition (ia.indexcols(1).tableschema,
+                                       ia.indexcols(1).tablename,
+                                       spcol,
+                                       part_name2.tablepartition,
+                                       spx_info_r);
+
+        cstmt1 := 'CREATE INDEX '||'"'||ia.indexschema||'"'||'.'||idx3_name||' ON '||idx_name||' (sp_id)';
+
+        IF st_tablespace IS NOT NULL THEN
+          cstmt1 := cstmt1||' tablespace '||st_tablespace;
+        END IF;
+  
+        curs1 := dbms_sql.open_cursor;
+        dbms_sql.parse(curs1,cstmt1,dbms_sql.native);
+        dbms_sql.close_cursor(curs1);
+
+        idx_name := 'S'||spx_info_r.index_id||part_name1.tablepartition;
+        stmt := 'truncate table '||idx_name||' reuse storage';
+        EXECUTE IMMEDIATE stmt;
+        sel_tab_partition := part_name1.tablepartition;
+      End If;
+
+    End Loop;
+ 
+    Return odciconst.success;
+  End odciindexsplitpartition;
+
+/***********************************************************************
+  *
+  *n  {odciindexutilcleanup}  -- Cleanup for transportable 
+  *   tablespace on domain index tables.
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *p  purpose:
+  *     odciindexutilcleanup cleanup any temporary state created by
+  *    ODCIIndexUtilGetTableNames.
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *a  parameters:
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *x  &1. exceptions:
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *h  history:
+  *
+  *    kevin watt          12/02/04           original coding.
+  *e
+  ***********************************************************************/
+  static Function odciindexutilcleanup (CONTEXT pls_integer)
+           Return number
+ IS
+
+  Begin
+
+  
+    Return odciconst.success;
+  End odciindexutilcleanup;
+
+/***********************************************************************
+  *
+  *n  {odciindexutilgettablenames}  -- 
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *p  purpose:
+  *     This function should return TRUE or FALSE based on whether the secondary
+  *     tables should be transported or not.
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *a  parameters:
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *x  &1. exceptions:
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *h  history:
+  *
+  *    kevin watt          12/02/04           original coding.
+  *e
+  ***********************************************************************/
+  static Function odciindexutilgettablenames(ia sys.odciindexinfo,
+                                             read_only pls_integer,
+                                             version varchar2,
+                                             CONTEXT Out pls_integer)
+  Return boolean 
+  IS
+  Begin
+
+    If (bitand(ia.IndexInfoFlags, sys.ODCIConst.TransTblspc) !=0 ) then
+      return TRUE;
+    Else 
+      -- exclude secondary objects from export --
+      return FALSE;
+    End If;
+
+End odciindexutilgettablenames;
+
+/***********************************************************************
+  *
+  *n  {get_Release}  --  returns type release info
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *p  purpose:
+  *     returns the type release infor used during upgrade
+  *   operations. 
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *a  parameters:
+  *    none
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *x  &1. exceptions:
+  *e
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *h  history:
+  *
+  *    kevin watt          02/27/06           original coding.
+  *e
+  ***********************************************************************/
+  static Function get_release
+  Return number
+  IS
+    c_type_release    Constant pls_integer := 1174;
+
+  Begin
+    Return c_type_release;
+  End get_release;
+  
+End;
+/

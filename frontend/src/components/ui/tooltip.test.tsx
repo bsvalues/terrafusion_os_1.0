@@ -2,12 +2,7 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
-} from './tooltip';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './tooltip';
 
 expect.extend(toHaveNoViolations);
 
@@ -106,7 +101,7 @@ describe('Tooltip', () => {
       );
 
       const trigger = screen.getByText('Trigger');
-      
+
       // Show tooltip
       await user.hover(trigger);
       await waitFor(() => {
@@ -151,7 +146,7 @@ describe('Tooltip', () => {
       );
 
       const trigger = screen.getByText('Trigger');
-      
+
       // Show tooltip
       await user.tab();
       await waitFor(() => {
@@ -199,7 +194,7 @@ describe('Tooltip', () => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>Trigger</TooltipTrigger>
-            <TooltipContent className="custom-tooltip">Content</TooltipContent>
+            <TooltipContent className='custom-tooltip'>Content</TooltipContent>
           </Tooltip>
         </TooltipProvider>
       );
@@ -238,7 +233,7 @@ describe('Tooltip', () => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>Trigger</TooltipTrigger>
-            <TooltipContent side="top">Top tooltip</TooltipContent>
+            <TooltipContent side='top'>Top tooltip</TooltipContent>
           </Tooltip>
         </TooltipProvider>
       );
@@ -256,7 +251,7 @@ describe('Tooltip', () => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>Trigger</TooltipTrigger>
-            <TooltipContent side="bottom">Bottom tooltip</TooltipContent>
+            <TooltipContent side='bottom'>Bottom tooltip</TooltipContent>
           </Tooltip>
         </TooltipProvider>
       );
@@ -274,7 +269,7 @@ describe('Tooltip', () => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>Trigger</TooltipTrigger>
-            <TooltipContent side="left">Left tooltip</TooltipContent>
+            <TooltipContent side='left'>Left tooltip</TooltipContent>
           </Tooltip>
         </TooltipProvider>
       );
@@ -292,7 +287,7 @@ describe('Tooltip', () => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>Trigger</TooltipTrigger>
-            <TooltipContent side="right">Right tooltip</TooltipContent>
+            <TooltipContent side='right'>Right tooltip</TooltipContent>
           </Tooltip>
         </TooltipProvider>
       );
@@ -310,7 +305,7 @@ describe('Tooltip', () => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>Trigger</TooltipTrigger>
-            <TooltipContent align="start">Aligned tooltip</TooltipContent>
+            <TooltipContent align='start'>Aligned tooltip</TooltipContent>
           </Tooltip>
         </TooltipProvider>
       );
@@ -373,7 +368,7 @@ describe('Tooltip', () => {
       });
 
       await user.unhover(first);
-      
+
       const second = screen.getByText('Second');
       await user.hover(second);
 
@@ -470,7 +465,7 @@ describe('Tooltip', () => {
       const { container } = render(
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger aria-label="More information">
+            <TooltipTrigger aria-label='More information'>
               <span>ℹ️</span>
             </TooltipTrigger>
             <TooltipContent>Additional details</TooltipContent>
@@ -520,9 +515,7 @@ describe('Tooltip', () => {
       render(
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger aria-label="Help">
-              ?
-            </TooltipTrigger>
+            <TooltipTrigger aria-label='Help'>?</TooltipTrigger>
             <TooltipContent>Help text</TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -539,9 +532,7 @@ describe('Tooltip', () => {
       render(
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger aria-label="Delete">
-              🗑️
-            </TooltipTrigger>
+            <TooltipTrigger aria-label='Delete'>🗑️</TooltipTrigger>
             <TooltipContent>Delete item</TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -562,11 +553,9 @@ describe('Tooltip', () => {
       render(
         <TooltipProvider>
           <div>
-            <label htmlFor="password">Password</label>
+            <label htmlFor='password'>Password</label>
             <Tooltip>
-              <TooltipTrigger aria-label="Password requirements">
-                ℹ️
-              </TooltipTrigger>
+              <TooltipTrigger aria-label='Password requirements'>ℹ️</TooltipTrigger>
               <TooltipContent>
                 Must be at least 8 characters with 1 uppercase and 1 number
               </TooltipContent>
@@ -580,9 +569,7 @@ describe('Tooltip', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText(
-            'Must be at least 8 characters with 1 uppercase and 1 number'
-          )
+          screen.getByText('Must be at least 8 characters with 1 uppercase and 1 number')
         ).toBeInTheDocument();
       });
     });
@@ -593,9 +580,7 @@ describe('Tooltip', () => {
       render(
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger className="max-w-[100px] truncate">
-              {longText}
-            </TooltipTrigger>
+            <TooltipTrigger className='max-w-[100px] truncate'>{longText}</TooltipTrigger>
             <TooltipContent>{longText}</TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -615,8 +600,8 @@ describe('Tooltip', () => {
       render(
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger aria-label="Status">
-              <span className="inline-block w-2 h-2 rounded-full bg-green-500" />
+            <TooltipTrigger aria-label='Status'>
+              <span className='inline-block w-2 h-2 rounded-full bg-green-500' />
             </TooltipTrigger>
             <TooltipContent>Active - All systems operational</TooltipContent>
           </Tooltip>
@@ -627,9 +612,7 @@ describe('Tooltip', () => {
       await user.hover(trigger);
 
       await waitFor(() => {
-        expect(
-          screen.getByText('Active - All systems operational')
-        ).toBeInTheDocument();
+        expect(screen.getByText('Active - All systems operational')).toBeInTheDocument();
       });
     });
   });
@@ -641,7 +624,7 @@ describe('Tooltip', () => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>Trigger</TooltipTrigger>
-            <TooltipContent></TooltipContent>
+            <TooltipContent>Test Content</TooltipContent>
           </Tooltip>
         </TooltipProvider>
       );

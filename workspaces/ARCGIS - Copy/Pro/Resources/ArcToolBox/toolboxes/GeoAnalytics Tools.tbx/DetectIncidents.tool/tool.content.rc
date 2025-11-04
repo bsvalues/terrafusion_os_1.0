@@ -1,0 +1,31 @@
+{
+    "map": {
+        "data_store.descr": "<xdoc><p>Specifies the ArcGIS Data Store where the output will be stored. All results stored in a spatiotemporal big data store will be stored in WGS84. Results stored in a relational data store will maintain their coordinate system.</p><ul><li><span title=\"SPATIOTEMPORAL_DATA_STORE\">Spatiotemporal big data store</span>—Output will be stored in a spatiotemporal big data store. This is the default.</li><li><span title=\"RELATIONAL_DATA_STORE\">Relational data store</span>—Output will be stored in a relational data store.</li></ul></xdoc>",
+        "data_store.domain.RELATIONAL_DATA_STORE": "Relational data store",
+        "data_store.domain.SPATIOTEMPORAL_DATA_STORE": "Spatiotemporal big data store",
+        "data_store.title": "Data Store",
+        "description": "Creates a layer that detects features that meet a given condition.",
+        "end_condition.descr": "<xdoc><p>The condition that will be used to end incidents. If no end condition is specified, incidents will end when the start condition is no longer true.</p><p>Expressions are written in Arcade and can include operators and multiple fields.</p><p>If the layer is added to the map, the <span class=\"esri_uicontrol\">Fields</span> and <span class=\"esri_uicontrol\">Helpers</span> filters can be used to build an expression.</p></xdoc>",
+        "end_condition.title": "End Condition",
+        "input_layer.descr": "The input features that contain potential incidents.",
+        "input_layer.title": "Input Layer",
+        "output.title": "Output Feature Class",
+        "output_mode.descr": "<xdoc><p>Specifies the features that will be returned.</p><ul><li><span title=\"ALL_FEATURES\">All features</span>—All the input features will be returned. This is the default.</li><li><span title=\"INCIDENTS\">Incidents</span>—Only features that were found to be incidents will be returned.</li></ul></xdoc>",
+        "output_mode.domain.ALL_FEATURES": "All features",
+        "output_mode.domain.INCIDENTS": "Incidents",
+        "output_mode.title": "Output Mode",
+        "output_name.descr": "The name of the output feature service.",
+        "output_name.title": "Output Name",
+        "params.category1": "Data Store",
+        "start_condition.descr": "<xdoc><p>The condition that will be used to identify incidents. Expressions are written in Arcade and can include [+ - * / ] operators and multiple fields.</p><p>If the layer is added to the map, the <span class=\"esri_uicontrol\">Fields</span> and <span class=\"esri_uicontrol\">Helpers</span> filters can be used to build an expression.</p></xdoc>",
+        "start_condition.title": "Start Condition",
+        "summary": "<xdoc><p>Creates a layer that detects features that meet a given condition.</p><p><note type=\"legacy\"/><p group=\"note\">The ArcGIS GeoAnalytics Server extension is being deprecated in ArcGIS Enterprise. The final release of GeoAnalytics Server was included with ArcGIS Enterprise 11.3. This geoprocessing tool is available through ArcGIS Enterprise 11.3 and earlier versions.</p></p></xdoc>",
+        "time_boundary_reference.descr": "The reference time used to split the input data into for analysis. Time boundaries will be created for the entire span of the data, and the reference time does not need to occur at the start. If no reference time is specified, January 1, 1970, is used. This parameter is only available with ArcGIS Enterprise 10.7 and later.",
+        "time_boundary_reference.title": "Time Boundary Reference",
+        "time_boundary_split.descr": "A time span to split the input data into for analysis. A time boundary allows you to analyze values within a defined time span. For example, if you use a time boundary of 1 day, starting on January 1, 1980, tracks will be split at the beginning of every day. This parameter is only available with ArcGIS Enterprise 10.7 and later.",
+        "time_boundary_split.title": "Time Boundary Split",
+        "title": "Detect Incidents",
+        "track_fields.descr": "A field or fields that will be used to identify unique tracks.",
+        "track_fields.title": "Track Fields"
+    }
+}

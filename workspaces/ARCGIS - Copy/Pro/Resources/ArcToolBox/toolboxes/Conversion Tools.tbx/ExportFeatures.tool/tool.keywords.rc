@@ -1,0 +1,33 @@
+{
+    "set": [
+        "cad",
+        "change",
+        "convert",
+        "copy",
+        "coverage",
+        "dgn",
+        "dwg",
+        "dxf",
+        "export",
+        "expression",
+        "feature class",
+        "field map",
+        "file",
+        "format",
+        "gdb",
+        "import",
+        "import from cad",
+        "load",
+        "make",
+        "migrate",
+        "sdc",
+        "sde",
+        "shapefile",
+        "shp",
+        "sql",
+        "subset",
+        "turn",
+        "vpf",
+        "where clause"
+    ]
+}

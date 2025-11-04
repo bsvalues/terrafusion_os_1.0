@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Defines data storage parameters for an enterprise geodatabase by importing a file containing configuration keywords, parameters, and values.",
+        "in_file.descr": "The path to and name of the ASCII text file containing configuration keywords, parameters, and values to import.",
+        "in_file.title": "Input File",
+        "input_database.descr": "The connection file for the enterprise geodatabase to which you want to import the configuration file. You must connect as the geodatabase administrator.",
+        "input_database.title": "Input Database Connection",
+        "out_workspace.title": "Updated Input Workspace",
+        "title": "Import Geodatabase Configuration Keywords"
+    }
+}

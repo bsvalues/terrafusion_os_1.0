@@ -1,0 +1,31 @@
+{
+    "map": {
+        "descr": "The Spatial Analyst toolbox provides a set of spatial analysis and modeling tools for raster (cell-based) and feature (vector) data.",
+        "title": "Spatial Analyst Tools",
+        "toolset1.name": "Math",
+        "toolset10.name": "Neighborhood",
+        "toolset11.name": "Math\\Logical",
+        "toolset12.name": "Density",
+        "toolset13.name": "Local",
+        "toolset14.name": "Segmentation and Classification",
+        "toolset15.name": "Conditional",
+        "toolset16.name": "Distance\\Legacy",
+        "toolset17.name": "Raster Creation",
+        "toolset18.name": "Groundwater",
+        "toolset19.name": "Distance",
+        "toolset2.name": "Math\\Trigonometric",
+        "toolset20.name": "Extraction",
+        "toolset21.name": "Overlay",
+        "toolset22.name": "Interpolation",
+        "toolset23.name": "Reclass",
+        "toolset24.name": "Map Algebra",
+        "toolset25.name": "Zonal",
+        "toolset3.name": "Surface",
+        "toolset4.name": "Generalization",
+        "toolset5.name": "Multidimensional Analysis",
+        "toolset6.name": "Solar Radiation",
+        "toolset7.name": "Multivariate",
+        "toolset8.name": "Hydrology",
+        "toolset9.name": "Math\\Bitwise"
+    }
+}

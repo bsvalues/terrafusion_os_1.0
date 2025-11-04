@@ -1,0 +1,502 @@
+{% extends "layout.html" %}
+
+{% block title %}AI Continuous Learning System{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">AI Continuous Learning System</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-4 col-12">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">System Status</h5>
+                    <div id="system-status">
+                        <div class="text-center py-4" id="status-loading">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        <div id="status-content" class="d-none">
+                            <!-- Status will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8 col-12 mt-3 mt-md-0">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Learning Metrics</h5>
+                    <div id="learning-metrics">
+                        <div class="text-center py-4" id="metrics-loading">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        <div id="metrics-content" class="d-none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <h6 class="card-title">Overall Improvement</h6>
+                                            <div id="improvement-chart" style="height: 200px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <h6 class="card-title">Agent Performance</h6>
+                                            <div id="agent-performance-chart" style="height: 200px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Learning Cycles</h5>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <button id="start-cycle-btn" class="btn btn-primary">Start Learning Cycle</button>
+                        </div>
+                    </div>
+                    <div id="learning-cycles">
+                        <div class="text-center py-4" id="cycles-loading">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        <div id="cycles-content" class="d-none">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <th>Status</th>
+                                        <th>Agents Optimized</th>
+                                        <th>Avg. Improvement</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cycles-table-body">
+                                    <!-- Cycles will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="no-cycles-message" class="alert alert-info d-none">
+                            No learning cycles found. Start a new learning cycle to optimize AI agents.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Learning Cycle Details Modal -->
+    <div class="modal fade" id="cycleDetailsModal" tabindex="-1" aria-labelledby="cycleDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cycleDetailsModalLabel">Learning Cycle Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="cycle-details-content">
+                    <!-- Cycle details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load system status
+    loadSystemStatus();
+    
+    // Load learning metrics
+    loadLearningMetrics();
+    
+    // Load learning cycles
+    loadLearningCycles();
+    
+    // Event listener for starting a new learning cycle
+    document.getElementById('start-cycle-btn').addEventListener('click', function() {
+        startLearningCycle();
+    });
+});
+
+function loadSystemStatus() {
+    // Show loading spinner
+    document.getElementById('status-loading').classList.remove('d-none');
+    document.getElementById('status-content').classList.add('d-none');
+    
+    // Simulate API call - replace with actual API
+    setTimeout(function() {
+        // Hide loading spinner
+        document.getElementById('status-loading').classList.add('d-none');
+        document.getElementById('status-content').classList.remove('d-none');
+        
+        // Render status
+        const statusContent = document.getElementById('status-content');
+        statusContent.innerHTML = `
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span><strong>Continuous Learning:</strong></span>
+                    <span class="badge bg-success">Active</span>
+                </div>
+                <div class="progress" style="height: 10px;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%;" 
+                         aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span><strong>Learning Agents:</strong></span>
+                    <span class="badge bg-info">4 Active</span>
+                </div>
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Text Summarizer
+                        <span class="badge bg-primary rounded-pill">v3</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Market Analyzer
+                        <span class="badge bg-primary rounded-pill">v2</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Recommendation Agent
+                        <span class="badge bg-primary rounded-pill">v2</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Natural Language Search
+                        <span class="badge bg-primary rounded-pill">v1</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div>
+                <strong>Last Cycle:</strong> 
+                <span>${new Date().toLocaleDateString()}</span>
+            </div>
+        `;
+    }, 1000);
+}
+
+function loadLearningMetrics() {
+    // Show loading spinner
+    document.getElementById('metrics-loading').classList.remove('d-none');
+    document.getElementById('metrics-content').classList.add('d-none');
+    
+    // Simulate API call - replace with actual API
+    setTimeout(function() {
+        // Hide loading spinner
+        document.getElementById('metrics-loading').classList.add('d-none');
+        document.getElementById('metrics-content').classList.remove('d-none');
+        
+        // Initialize charts
+        initializeImprovementChart();
+        initializeAgentPerformanceChart();
+    }, 1000);
+}
+
+function initializeImprovementChart() {
+    const ctx = document.getElementById('improvement-chart').getContext('2d');
+    
+    // Sample data - replace with actual data from API
+    const data = {
+        labels: ['Cycle 1', 'Cycle 2', 'Cycle 3', 'Cycle 4', 'Cycle 5'],
+        datasets: [{
+            label: 'Average Rating',
+            data: [3.2, 3.5, 3.7, 4.1, 4.3],
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 2,
+            tension: 0.2
+        }]
+    };
+    
+    const config = {
+        type: 'line',
+        data: data,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    min: 1,
+                    max: 5,
+                    title: {
+                        display: true,
+                        text: 'Rating'
+                    }
+                }
+            }
+        }
+    };
+    
+    new Chart(ctx, config);
+}
+
+function initializeAgentPerformanceChart() {
+    const ctx = document.getElementById('agent-performance-chart').getContext('2d');
+    
+    // Sample data - replace with actual data from API
+    const data = {
+        labels: ['Summarizer', 'Market Analyzer', 'Recommender', 'NL Search'],
+        datasets: [{
+            label: 'Current Rating',
+            data: [4.3, 3.9, 4.1, 3.7],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)'
+            ],
+            borderWidth: 1
+        }]
+    };
+    
+    const config = {
+        type: 'bar',
+        data: data,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    min: 1,
+                    max: 5,
+                    title: {
+                        display: true,
+                        text: 'Rating'
+                    }
+                }
+            }
+        }
+    };
+    
+    new Chart(ctx, config);
+}
+
+function loadLearningCycles() {
+    // Show loading spinner
+    document.getElementById('cycles-loading').classList.remove('d-none');
+    document.getElementById('cycles-content').classList.add('d-none');
+    document.getElementById('no-cycles-message').classList.add('d-none');
+    
+    // Simulate API call - replace with actual API
+    setTimeout(function() {
+        // Hide loading spinner
+        document.getElementById('cycles-loading').classList.add('d-none');
+        
+        // Sample data - replace with actual data from API
+        const cycles = [
+            {
+                id: 5,
+                start_date: '2025-04-10T08:00:00Z',
+                end_date: '2025-04-10T09:30:00Z',
+                status: 'completed',
+                agents_optimized: 2,
+                avg_improvement: 12.5
+            },
+            {
+                id: 4,
+                start_date: '2025-04-01T14:30:00Z',
+                end_date: '2025-04-01T15:45:00Z',
+                status: 'completed',
+                agents_optimized: 1,
+                avg_improvement: 8.3
+            },
+            {
+                id: 3,
+                start_date: '2025-03-15T10:15:00Z',
+                end_date: '2025-03-15T11:30:00Z',
+                status: 'completed',
+                agents_optimized: 3,
+                avg_improvement: 15.7
+            }
+        ];
+        
+        if (cycles.length > 0) {
+            // Show cycles content
+            document.getElementById('cycles-content').classList.remove('d-none');
+            
+            // Render cycles table
+            const tableBody = document.getElementById('cycles-table-body');
+            tableBody.innerHTML = '';
+            
+            cycles.forEach(cycle => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${cycle.id}</td>
+                    <td>${new Date(cycle.start_date).toLocaleString()}</td>
+                    <td>${new Date(cycle.end_date).toLocaleString()}</td>
+                    <td><span class="badge bg-${cycle.status === 'completed' ? 'success' : cycle.status === 'in_progress' ? 'primary' : 'secondary'}">${cycle.status}</span></td>
+                    <td>${cycle.agents_optimized}</td>
+                    <td>+${cycle.avg_improvement}%</td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary view-cycle-btn" data-cycle-id="${cycle.id}">
+                            View
+                        </button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+            
+            // Add event listeners to view buttons
+            document.querySelectorAll('.view-cycle-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const cycleId = this.getAttribute('data-cycle-id');
+                    showCycleDetails(cycleId);
+                });
+            });
+        } else {
+            // Show no cycles message
+            document.getElementById('no-cycles-message').classList.remove('d-none');
+        }
+    }, 1000);
+}
+
+function startLearningCycle() {
+    // Disable button to prevent multiple clicks
+    const button = document.getElementById('start-cycle-btn');
+    button.disabled = true;
+    button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Starting...`;
+    
+    // Simulate API call - replace with actual API
+    setTimeout(function() {
+        // Re-enable button
+        button.disabled = false;
+        button.textContent = 'Start Learning Cycle';
+        
+        // Show success message
+        alert('Learning cycle started successfully!');
+        
+        // Reload learning cycles
+        loadLearningCycles();
+    }, 2000);
+}
+
+function showCycleDetails(cycleId) {
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('cycleDetailsModal'));
+    modal.show();
+    
+    // Set loading state
+    document.getElementById('cycle-details-content').innerHTML = `
+        <div class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    `;
+    
+    // Simulate API call - replace with actual API
+    setTimeout(function() {
+        // Sample data - replace with actual data from API
+        const cycleDetails = {
+            id: cycleId,
+            start_date: '2025-04-10T08:00:00Z',
+            end_date: '2025-04-10T09:30:00Z',
+            status: 'completed',
+            duration_minutes: 90,
+            agent_results: [
+                {
+                    agent_type: 'summarizer',
+                    original_rating: 3.8,
+                    new_rating: 4.3,
+                    improvement: 13.2,
+                    tests_run: 2,
+                    winner: 'B'
+                },
+                {
+                    agent_type: 'market_analyzer',
+                    original_rating: 3.5,
+                    new_rating: 3.9,
+                    improvement: 11.4,
+                    tests_run: 1,
+                    winner: 'B'
+                }
+            ]
+        };
+        
+        // Render cycle details
+        const content = document.getElementById('cycle-details-content');
+        
+        let agentResultsHtml = '';
+        cycleDetails.agent_results.forEach(agent => {
+            agentResultsHtml += `
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <strong>${agent.agent_type.charAt(0).toUpperCase() + agent.agent_type.slice(1)}</strong>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p><strong>Original Rating:</strong> ${agent.original_rating.toFixed(1)}</p>
+                                <p><strong>New Rating:</strong> ${agent.new_rating.toFixed(1)}</p>
+                            </div>
+                            <div class="col-md-4">
+                                <p><strong>Improvement:</strong> +${agent.improvement.toFixed(1)}%</p>
+                                <p><strong>Tests Run:</strong> ${agent.tests_run}</p>
+                            </div>
+                            <div class="col-md-4">
+                                <p><strong>Winner:</strong> Version ${agent.winner}</p>
+                                <p><strong>Status:</strong> <span class="badge bg-success">Applied</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        content.innerHTML = `
+            <h5>Cycle Information</h5>
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <p><strong>ID:</strong> ${cycleDetails.id}</p>
+                    <p><strong>Status:</strong> <span class="badge bg-success">${cycleDetails.status}</span></p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Start:</strong> ${new Date(cycleDetails.start_date).toLocaleString()}</p>
+                    <p><strong>End:</strong> ${new Date(cycleDetails.end_date).toLocaleString()}</p>
+                    <p><strong>Duration:</strong> ${cycleDetails.duration_minutes} minutes</p>
+                </div>
+            </div>
+            
+            <h5>Agent Optimizations</h5>
+            ${agentResultsHtml}
+        `;
+    }, 1000);
+}
+</script>
+{% endblock %}

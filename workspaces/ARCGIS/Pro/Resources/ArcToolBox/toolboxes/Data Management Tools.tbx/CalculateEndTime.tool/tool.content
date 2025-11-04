@@ -1,0 +1,101 @@
+{
+    "type": "FunctionTool",
+    "guid": "{9a6973cc-826f-40ca-9d7f-8b2f84421b0f}",
+    "displayname": "$rc:title",
+    "helpcontent": "3060007",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_table": {
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "start_field": {
+            "displayname": "$rc:start_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Date"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:start_field.descr"
+        },
+        "end_field": {
+            "displayname": "$rc:end_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Date"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:end_field.descr"
+        },
+        "fields": {
+            "type": "optional",
+            "displayname": "$rc:fields.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Date"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:fields.descr"
+        },
+        "out_table": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "depends": [
+                "in_table"
+            ]
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

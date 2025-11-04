@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Permanently deletes multiple data items of the same or different data types. All types of geographic data supported by ArcGIS, as well as toolboxes and workspaces (folders and geodatabases), can be deleted. If a  specified item is a workspace, all contained items will also be deleted.",
+        "in_data.descr": "<xdoc><p>The input data that will be deleted.</p><p>The data type is necessary in the event of a name conflict between data types. For example, a geodatabase can contain a feature class with an identical name to a relationship class. In this case, specify the relevant keyword.</p><ul><li>FeatureClass—In the event of duplicate names, the feature class will be used.</li><li>FeatureDataset—In the event of duplicate names, the feature dataset will be used.</li><li>MosaicDataset—In the event of duplicate names, the mosaic dataset will be used.</li><li>ParcelFabric—In the event of duplicate names, the parcel fabric will be used.</li><li>RelationshipClass—In the event of duplicate names, the relationship class will be used.</li><li>Topology—In the event of duplicate names, the topology will be used.</li></ul></xdoc>",
+        "in_data.dt.title1": "Input Data Element",
+        "in_data.dt.title2": "Data Type",
+        "in_data.title": "Input Data Element",
+        "out_results.title": "Delete succeeded",
+        "summary": "Permanently deletes multiple data items of the same or different data types. All types of geographic data supported by ArcGIS, as well as toolboxes and workspaces (folders and geodatabases), can be deleted. If a specified item is a workspace, all contained items will also be deleted.",
+        "title": "Delete Multiple"
+    }
+}

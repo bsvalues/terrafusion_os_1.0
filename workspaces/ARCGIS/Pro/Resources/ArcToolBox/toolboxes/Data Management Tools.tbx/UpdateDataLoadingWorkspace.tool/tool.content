@@ -1,0 +1,34 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "3400005",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_workbook": {
+            "displayname": "$rc:in_workbook.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "xlsx"
+                ]
+            },
+            "description": "$rc:in_workbook.descr"
+        },
+        "out_loading_workspace": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_loading_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "schema": {
+                "type": "GPContainerSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    }
+}

@@ -1,0 +1,35 @@
+{
+    "type": "FunctionTool",
+    "guid": "{00c8095c-815f-41ac-93d7-11f3652d24ef}",
+    "displayname": "$rc:title",
+    "helpcontent": "3160006",
+    "description": "$rc:description",
+    "product": "200",
+    "params": {
+        "in_topology": {
+            "displayname": "$rc:in_topology.title",
+            "datatype": {
+                "type": "GPTopologyLayer"
+            },
+            "description": "$rc:in_topology.descr"
+        },
+        "cluster_tolerance": {
+            "displayname": "$rc:cluster_tolerance.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:cluster_tolerance.descr"
+        },
+        "out_topology": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_topology.title",
+            "datatype": {
+                "type": "GPTopologyLayer"
+            },
+            "depends": [
+                "in_topology"
+            ]
+        }
+    }
+}

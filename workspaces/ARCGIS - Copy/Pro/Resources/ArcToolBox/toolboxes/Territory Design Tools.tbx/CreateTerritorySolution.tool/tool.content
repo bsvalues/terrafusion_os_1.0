@@ -1,0 +1,127 @@
+{
+    "type": "FunctionTool",
+    "guid": "{00948a88-b303-4390-8fd7-26d9fab19efb}",
+    "displayname": "$rc:title",
+    "helpcontent": "67020003",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "33"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "solution_name": {
+            "displayname": "$rc:solution_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:solution_name.descr"
+        },
+        "id_field": {
+            "type": "optional",
+            "displayname": "$rc:id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Date",
+                    "OID"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:id_field.descr"
+        },
+        "name_field": {
+            "type": "optional",
+            "displayname": "$rc:name_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Date",
+                    "OID"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:name_field.descr"
+        },
+        "territory_level_name": {
+            "type": "optional",
+            "displayname": "$rc:territory_level_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:territory_level_name.descr"
+        },
+        "default_territory_name": {
+            "type": "optional",
+            "displayname": "$rc:default_territory_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:default_territory_name.descr"
+        },
+        "out_territory_solution": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_territory_solution.title",
+            "datatype": {
+                "type": "GPGroupLayer"
+            },
+            "depends": [
+                "layer_name"
+            ]
+        },
+        "in_boundary_mask": {
+            "type": "optional",
+            "displayname": "$rc:in_boundary_mask.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:in_boundary_mask.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

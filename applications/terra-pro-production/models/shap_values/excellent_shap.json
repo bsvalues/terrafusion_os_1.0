@@ -1,0 +1,15 @@
+{
+  "condition": "excellent",
+  "base_score": 4.5,
+  "final_score": 5.0,
+  "features": [
+    "Roof Condition",
+    "Gutters",
+    "Exterior Paint",
+    "Foundation",
+    "Landscaping",
+    "Overall Cleanliness"
+  ],
+  "values": [0.83, 0.68, 0.6, 0.39, 0.3, 0.17],
+  "image_path": "/home/runner/workspace/data/sample_images/excellent_condition.png"
+}

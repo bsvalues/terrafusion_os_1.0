@@ -1,0 +1,10 @@
+{
+    "set": [
+        "floor plan",
+        "floor-aware",
+        "indoor",
+        "indoors",
+        "las",
+        "point cloud"
+    ]
+}

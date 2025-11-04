@@ -1,0 +1,154 @@
+{
+  "base_map": {
+    "enable_selection": false,
+    "order": 0,
+    "visible": false,
+    "type": "ESRIDynamicLayer"
+  },
+  "base_layers": [
+    {
+      "name": "",
+      "enable_selection": false,
+      "order": 0,
+      "visible": true,
+      "url": "https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer",
+      "type": "ESRITiledLayer",
+      "spatial_reference_id": 0
+    },
+    {
+      "name": "",
+      "enable_selection": false,
+      "order": 0,
+      "visible": true,
+      "url": "https://services.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer/",
+      "type": "ESRITiledLayer",
+      "spatial_reference_id": 0
+    },
+    {
+      "name": "",
+      "enable_selection": false,
+      "order": 0,
+      "visible": true,
+      "url": "https://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer",
+      "type": "ESRITiledLayer",
+      "spatial_reference_id": 0
+    },
+    {
+      "name": "",
+      "enable_selection": false,
+      "order": 0,
+      "visible": true,
+      "url": "https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHLWMS/MapServer",
+      "type": "ESRITiledLayer",
+      "spatial_reference_id": 0
+    },
+    {
+      "name": "",
+      "enable_selection": false,
+      "order": 0,
+      "visible": true,
+      "url": "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer",
+      "type": "ESRITiledLayer",
+      "spatial_reference_id": 0
+    }
+  ],
+  "viewable_layers": [
+    {
+      "name": "",
+      "enable_selection": true,
+      "selection_layer_id": 0,
+      "order": 5,
+      "visible": true,
+      "url": "https://services7.arcgis.com/NURlY7V8UHl6XumF/arcgis/rest/services/Parcels_and_Assess/FeatureServer",
+      "type": "ESRIDynamicLayer"
+    },
+    {
+      "name": "",
+      "enable_selection": false,
+      "selection_layer_id": 0,
+      "order": 6,
+      "visible": false,
+      "url": "https://services7.arcgis.com/NURlY7V8UHl6XumF/ArcGIS/rest/services/Short_Plats/FeatureServer",
+      "type": "ESRIDynamicLayer"
+    },
+    {
+      "name": "",
+      "enable_selection": false,
+      "selection_layer_id": 0,
+      "order": 7,
+      "visible": false,
+      "url": "https://services7.arcgis.com/NURlY7V8UHl6XumF/ArcGIS/rest/services/Long_Plats/FeatureServer",
+      "type": "ESRIDynamicLayer"
+    },
+    {
+      "name": "",
+      "enable_selection": false,
+      "selection_layer_id": 0,
+      "order": 8,
+      "visible": false,
+      "url": "https://services7.arcgis.com/NURlY7V8UHl6XumF/ArcGIS/rest/services/FEMA_FLOOD_ZONES/FeatureServer",
+      "type": "ESRIDynamicLayer"
+    },
+    {
+      "name": "",
+      "enable_selection": false,
+      "selection_layer_id": 0,
+      "order": 9,
+      "visible": false,
+      "url": "https://services7.arcgis.com/NURlY7V8UHl6XumF/ArcGIS/rest/services/WellLogs/FeatureServer",
+      "type": "ESRIDynamicLayer"
+    },
+    {
+      "name": "",
+      "enable_selection": false,
+      "selection_layer_id": 0,
+      "order": 10,
+      "visible": false,
+      "url": "https://services7.arcgis.com/NURlY7V8UHl6XumF/ArcGIS/rest/services/Zoning/FeatureServer",
+      "type": "ESRIDynamicLayer"
+    },
+    {
+      "name": "",
+      "enable_selection": false,
+      "selection_layer_id": 0,
+      "order": 11,
+      "visible": false,
+      "url": "https://services7.arcgis.com/NURlY7V8UHl6XumF/ArcGIS/rest/services/BC_Zoning/FeatureServer",
+      "type": "ESRIDynamicLayer"
+    }
+  ],
+  "custom_query_layers": [],
+  "map_extent": {
+    "spatial_reference_wkid": 3857,
+    "x_min": -180.0,
+    "y_min": 25.6,
+    "x_max": -93.2,
+    "y_max": 36.7
+  },
+  "selection_style": {
+    "fill_opacity": 0.15,
+    "border_thickness": 1,
+    "border_color": "0,255,255",
+    "highlighted_border_color": "0,0,255",
+    "highlighted_border_thickness": 3,
+    "filtered_fill_opacity": 0.25,
+    "filtered_fill_color": "200,0,0",
+    "filtered_border_color": "200,0,0",
+    "filtered_border_thickness": 1
+  },
+  "general": {
+    "geometry_server_url": "https://webmap.trueautomation.com/arcgis/rest/services/Utilities/Geometry/GeometryServer",
+    "output_fields": "OBJECTID",
+    "pin_field_name": "Prop_ID",
+    "x_centroid_field_name": "",
+    "y_centroid_field_name": "",
+    "spatial_filter": "prop_id > 0",
+    "convert_measure_to_projection": 0,
+    "show_scale_bar": false,
+    "fetch_partition_size": 200,
+    "append_search": false,
+    "auto_select_max_records": 2000,
+    "legal_text": "THIS PRODUCT IS FOR INFORMATIONAL PURPOSES AND MAY NOT HAVE BEEN PREPARED FOR OR BE SUITABLE FOR LEGAL, ENGINEERING, OR SURVEYING PURPOSES. IT DOES NOT REPRESENT AN ON-THE-GROUND SURVEY AND REPRESENTS ONLY THE APPROXIMATE RELATIVE LOCATION OF PROPERTY BOUNDARIES.",
+    "map_title": "Benton County Assessor Office"
+  }
+}

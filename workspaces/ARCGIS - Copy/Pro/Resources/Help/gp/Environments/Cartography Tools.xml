@@ -1,0 +1,86 @@
+<ArrayOfGPEnvironment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:typens="http://www.esri.com/schemas/ArcGIS/3.4.0" xsi:type="typens:ArrayOfGPEnvironment">
+  <GPEnvironment xsi:type="typens:GPEnvironment">
+    <Name>referenceScale</Name>
+    <DisplayName>Reference Scale</DisplayName>
+    <Category>Cartography</Category>
+    <Value xsi:type="typens:GPDouble"/>
+    <DataTypeName xsi:type="typens:GPDataTypeName">
+      <Name>GPDouble</Name>
+      <DisplayName>Double</DisplayName>
+      <Description>Double</Description>
+      <Category>Data Type</Category>
+      <FactoryCLSID xsi:type="typens:UID">
+        <UID xsi:type="xs:string">{E41CFD44-5741-4F2B-8ACE-1A49E146D329}</UID>
+      </FactoryCLSID>
+    </DataTypeName>
+    <DisplayOrder>2</DisplayOrder>
+    <ControlCLSID xsi:nil="true"/>
+    <ParamDependencyArray xsi:type="typens:ArrayOfString"/>
+    <Altered>false</Altered>
+  </GPEnvironment>
+  <GPEnvironment xsi:type="typens:GPEnvironment">
+    <Name>cartographicCoordinateSystem</Name>
+    <DisplayName>Cartographic Coordinate System</DisplayName>
+    <Category>Cartography</Category>
+    <Value xsi:type="typens:GPCoordinateSystem"/>
+    <DataTypeName xsi:type="typens:GPDataTypeName">
+      <Name>GPCoordinateSystem</Name>
+      <DisplayName>Coordinate System</DisplayName>
+      <Description>Coordinate System</Description>
+      <Category>Data Type</Category>
+      <FactoryCLSID xsi:type="typens:UID">
+        <UID xsi:type="xs:string">{E41CFD44-5741-4F2B-8ACE-1A49E146D329}</UID>
+      </FactoryCLSID>
+    </DataTypeName>
+    <DisplayOrder>1</DisplayOrder>
+    <ControlCLSID xsi:type="typens:UID">
+      <UID xsi:type="xs:string">{C2F00CB7-B008-4D78-A56F-B636623F1B0B}</UID>
+    </ControlCLSID>
+    <ParamDependencyArray xsi:type="typens:ArrayOfString"/>
+    <Altered>false</Altered>
+  </GPEnvironment>
+  <GPEnvironment xsi:type="typens:GPEnvironment">
+    <Name>cartographicPartitions</Name>
+    <DisplayName>Cartographic Partitions</DisplayName>
+    <Category>Cartography</Category>
+    <Value xsi:type="typens:GPFeatureLayer"/>
+    <Domain xsi:type="typens:GPFeatureClassDomain">
+      <TypeArray xsi:type="typens:ArrayOfString">
+        <String>esriGeometryPolygon</String>
+      </TypeArray>
+    </Domain>
+    <DataTypeName xsi:type="typens:GPDataTypeName">
+      <Name>GPFeatureLayer</Name>
+      <DisplayName>Feature Layer</DisplayName>
+      <Description>Feature Layer</Description>
+      <Category>Data Type</Category>
+      <FactoryCLSID xsi:type="typens:UID">
+        <UID xsi:type="xs:string">{E41CFD44-5741-4F2B-8ACE-1A49E146D329}</UID>
+      </FactoryCLSID>
+    </DataTypeName>
+    <DisplayOrder>3</DisplayOrder>
+    <ControlCLSID xsi:nil="true"/>
+    <ParamDependencyArray xsi:type="typens:ArrayOfString"/>
+    <Altered>false</Altered>
+  </GPEnvironment>
+  <GPEnvironment xsi:type="typens:GPEnvironment">
+    <Name>annotationTextStringFieldLength</Name>
+    <DisplayName>Annotation Text String Field Length</DisplayName>
+    <Category>Cartography</Category>
+    <Value xsi:type="typens:GPLong"/>
+    <DataTypeName xsi:type="typens:GPDataTypeName">
+      <Name>GPLong</Name>
+      <DisplayName>Long</DisplayName>
+      <Description>Long Integer</Description>
+      <Category>Data Type</Category>
+      <FactoryCLSID xsi:type="typens:UID">
+        <UID xsi:type="xs:string">{E41CFD44-5741-4F2B-8ACE-1A49E146D329}</UID>
+      </FactoryCLSID>
+    </DataTypeName>
+    <DisplayOrder>4</DisplayOrder>
+    <ControlCLSID xsi:nil="true"/>
+    <ParamDependencyArray xsi:type="typens:ArrayOfString"/>
+    <Altered>false</Altered>
+  </GPEnvironment>
+</ArrayOfGPEnvironment>
+

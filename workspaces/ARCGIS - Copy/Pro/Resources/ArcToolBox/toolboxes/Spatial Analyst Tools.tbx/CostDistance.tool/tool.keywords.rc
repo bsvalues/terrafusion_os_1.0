@@ -1,0 +1,11 @@
+{
+    "set": [
+        "accumulative",
+        "cost weighted",
+        "distance",
+        "friction",
+        "proximity",
+        "spread",
+        "travel cost"
+    ]
+}

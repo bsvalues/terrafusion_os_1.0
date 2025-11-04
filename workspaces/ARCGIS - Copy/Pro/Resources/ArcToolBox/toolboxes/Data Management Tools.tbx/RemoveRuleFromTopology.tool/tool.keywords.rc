@@ -1,0 +1,14 @@
+{
+    "set": [
+        "coincident",
+        "control",
+        "delete",
+        "geometry",
+        "relationship",
+        "rule",
+        "share",
+        "spatial",
+        "topology",
+        "valid"
+    ]
+}

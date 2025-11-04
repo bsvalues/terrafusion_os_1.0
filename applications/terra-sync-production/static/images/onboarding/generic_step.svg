@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect x="0" y="0" width="400" height="300" fill="#f8f9fa" rx="10" ry="10"/>
+  
+  <!-- Abstract elements -->
+  <circle cx="200" cy="150" r="80" fill="#e9f2fa" stroke="#005099" stroke-width="2"/>
+  <rect x="160" y="110" width="80" height="80" fill="#d1e7f8" stroke="#003366" stroke-width="2" rx="5" ry="5"/>
+  
+  <!-- County icon -->
+  <g transform="translate(175, 125)">
+    <rect x="0" y="0" width="50" height="50" fill="#005099" rx="5" ry="5"/>
+    <rect x="10" y="10" width="30" height="25" fill="#ffffff" rx="2" ry="2"/>
+    <rect x="15" y="40" width="20" height="5" fill="#ffffff"/>
+    <rect x="20" y="20" width="10" height="10" fill="#003366"/>
+  </g>
+  
+  <!-- Document elements -->
+  <g transform="translate(50, 70)">
+    <rect x="0" y="0" width="60" height="80" fill="#ffffff" stroke="#003366" stroke-width="1" rx="3" ry="3"/>
+    <line x1="10" y1="15" x2="50" y2="15" stroke="#003366" stroke-width="2"/>
+    <line x1="10" y1="30" x2="50" y2="30" stroke="#003366" stroke-width="2"/>
+    <line x1="10" y1="45" x2="40" y2="45" stroke="#003366" stroke-width="2"/>
+    <line x1="10" y1="60" x2="30" y2="60" stroke="#003366" stroke-width="2"/>
+  </g>
+  
+  <g transform="translate(290, 70)">
+    <rect x="0" y="0" width="60" height="80" fill="#ffffff" stroke="#003366" stroke-width="1" rx="3" ry="3"/>
+    <line x1="10" y1="15" x2="50" y2="15" stroke="#003366" stroke-width="2"/>
+    <line x1="10" y1="30" x2="50" y2="30" stroke="#003366" stroke-width="2"/>
+    <line x1="10" y1="45" x2="40" y2="45" stroke="#003366" stroke-width="2"/>
+    <line x1="10" y1="60" x2="30" y2="60" stroke="#003366" stroke-width="2"/>
+  </g>
+  
+  <!-- Connection lines -->
+  <g>
+    <line x1="110" y1="110" x2="160" y2="150" stroke="#005099" stroke-width="2" stroke-dasharray="5,3"/>
+    <line x1="240" y1="150" x2="290" y2="110" stroke="#005099" stroke-width="2" stroke-dasharray="5,3"/>
+  </g>
+  
+  <!-- Title -->
+  <text x="200" y="245" font-family="Arial" font-size="14" text-anchor="middle" fill="#003366" font-weight="bold">
+    County Property Assessment
+  </text>
+  <text x="200" y="265" font-family="Arial" font-size="12" text-anchor="middle" fill="#005099">
+    Interactive Tutorial
+  </text>
+</svg>

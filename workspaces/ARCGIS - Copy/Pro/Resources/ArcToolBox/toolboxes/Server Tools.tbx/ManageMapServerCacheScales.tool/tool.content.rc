@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Updates the scale levels in an existing map image layer in ArcGIS Enterprise or in a cached map or image service on a stand-alone server. Use this tool to add new scales or delete existing scales from a cache.",
+        "input_service.descr": "The map image layer or map or image service where cache scales will be added or removed. You can drag a map or an image service from the Catalog tree to supply this parameter value.",
+        "input_service.title": "Input Service",
+        "out_job_url.title": "Output Map Service URL",
+        "scales.descr": "The scale values that will be included in the updated tiling scheme.",
+        "scales.dt.title1": "Scale",
+        "scales.title": "Scales",
+        "title": "Manage Map Server Cache Scales"
+    }
+}

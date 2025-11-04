@@ -1,0 +1,28 @@
+{
+    "map": {
+        "description": "Generates a raster dataset from an input raster function or function chain.",
+        "format.descr": "<xdoc><p>The output raster format.</p><p>The default format will be derived from the file extension specified in the <span class=\"esri_uicontrol\">Output Raster Dataset</span> value.</p><ul><li><span title=\"TIFF\">TIFF</span>—Tagged Image File Format for raster datasets will be used.</li><li><span title=\"Cloud Optimized GeoTIFF\">Cloud Optimized GeoTIFF</span>—Cloud Optimized GeoTIFF format will be used.</li><li><span title=\"IMAGINE Image\">ERDAS IMAGINE file</span>—ERDAS IMAGINE raster data format will be used.</li><li><span title=\"GRID\">Esri Grid</span>—Esri Grid raster dataset format will be used.</li><li><span title=\"CRF\">CRF</span>—Cloud Raster Format will be used.</li><li><span title=\"MRF\">MRF</span>—Meta Raster Format will be used.</li></ul></xdoc>",
+        "format.domain.COG": "Cloud Optimized GeoTIFF",
+        "format.domain.CRF": "CRF",
+        "format.domain.GRID": "Esri Grid",
+        "format.domain.IMAGINE Image": "ERDAS IMAGINE file",
+        "format.domain.MRF": "MRF",
+        "format.domain.TIFF": "TIFF",
+        "format.title": "Format",
+        "out_raster_dataset.descr": "The output raster dataset.",
+        "out_raster_dataset.title": "Output Raster Dataset",
+        "process_as_multidimensional.descr": "<xdoc><p>Specifies whether the input mosaic dataset will be processed as a multidimensional raster dataset.</p><ul><li>Unchecked—The input will not be processed as a multidimensional raster dataset. If the input is multidimensional, only the slice that is currently displayed will be processed. This is the default.</li><li>Checked—The input will be processed as a multidimensional raster dataset and all slices will be processed to produce a new multidimensional raster dataset. Set the <span class=\"esri_uicontrol\">Format</span> parameter to <span class=\"esri_uicontrol\">Cloud raster format</span>to use this option.</li></ul></xdoc>",
+        "process_as_multidimensional.title": "Process as Multidimensional",
+        "raster_function.descr": "The name of a raster function, raster function JSON object, or function chain (in .rft.xml format).",
+        "raster_function.title": "Input Raster Function",
+        "raster_function_arguments.descr": "The parameters associated with the function chain. For example, if the function chain applies the Hillshade raster function, set the data source, azimuth, and altitude.",
+        "raster_function_arguments.dt.title1": "Name",
+        "raster_function_arguments.dt.title2": "Value",
+        "raster_function_arguments.title": "Raster Function Arguments",
+        "raster_properties.descr": "The output raster dataset key properties, such as the sensor or wavelength.",
+        "raster_properties.dt.title1": "Name",
+        "raster_properties.dt.title2": "Value",
+        "raster_properties.title": "Raster Properties",
+        "title": "Generate Raster From Raster Function"
+    }
+}

@@ -1,0 +1,142 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "78000006",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "target_positioning_table": {
+            "displayname": "$rc:target_positioning_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:target_positioning_table.descr"
+        },
+        "in_beacon_features": {
+            "displayname": "$rc:in_beacon_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_beacon_features.descr"
+        },
+        "in_ips_area_features": {
+            "displayname": "$rc:in_ips_area_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_ips_area_features.descr"
+        },
+        "in_wall_features": {
+            "displayname": "$rc:in_wall_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_wall_features.descr"
+        },
+        "in_facility_features": {
+            "displayname": "$rc:in_facility_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_facility_features.descr"
+        },
+        "in_level_features": {
+            "displayname": "$rc:in_level_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_level_features.descr"
+        },
+        "in_ips_transition_features": {
+            "type": "optional",
+            "displayname": "$rc:in_ips_transition_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_ips_transition_features.descr"
+        },
+        "in_comment": {
+            "type": "optional",
+            "displayname": "$rc:in_comment.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:in_comment.descr"
+        },
+        "out_positioning_table": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_positioning_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "depends": [
+                "target_positioning_table"
+            ],
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

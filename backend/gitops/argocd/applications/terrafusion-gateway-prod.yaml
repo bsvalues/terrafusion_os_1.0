@@ -1,0 +1,76 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: terrafusion-gateway-prod
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"  # Deploy gateway first
+    notifications.argoproj.io/subscribe.on-deployed.slack: terrafusion-deployments
+    notifications.argoproj.io/subscribe.on-health-degraded.slack: terrafusion-alerts
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: terrafusion
+  
+  source:
+    repoURL: https://github.com/terrafusion/terrafusion-os
+    targetRevision: main
+    path: backend/helm/terrafusion-gateway
+    helm:
+      releaseName: terrafusion-gateway
+      valueFiles:
+        - values.yaml
+      parameters:
+        - name: global.environment
+          value: production
+        - name: image.tag
+          value: "1.0.0"
+        - name: replicaCount
+          value: "3"
+        - name: gateway.rateLimiting.enabled
+          value: "true"
+        - name: gateway.rateLimiting.requestsPerSecond
+          value: "1000"
+        - name: autoscaling.enabled
+          value: "true"
+        - name: autoscaling.minReplicas
+          value: "3"
+        - name: autoscaling.maxReplicas
+          value: "20"
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: terrafusion
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
+  
+  revisionHistoryLimit: 10
+  
+  info:
+    - name: 'Environment'
+      value: 'Production'
+    - name: 'Service'
+      value: 'TerraFusion Gateway (Ocelot)'
+    - name: 'Port'
+      value: '3002'
+    - name: 'Rate Limit'
+      value: '1000 RPS'

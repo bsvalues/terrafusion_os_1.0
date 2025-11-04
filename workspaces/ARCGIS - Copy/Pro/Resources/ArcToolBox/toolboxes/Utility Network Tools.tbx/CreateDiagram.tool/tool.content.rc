@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Create a Network Diagram",
+        "features.title": "Input Features",
+        "in_utility_network.title": "Input Network",
+        "out_name.title": "Network Diagram Name",
+        "out_utility_network.title": "Output Network",
+        "template_name.title": "Input Diagram Template",
+        "title": "Create Diagram"
+    }
+}

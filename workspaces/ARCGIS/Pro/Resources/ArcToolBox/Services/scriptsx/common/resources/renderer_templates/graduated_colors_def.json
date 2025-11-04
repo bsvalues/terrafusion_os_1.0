@@ -1,0 +1,43 @@
+{
+    "type": "classBreaksDef",
+    "classificationField": "Point_Count",
+    "classificationMethod": "esriClassifyNaturalBreaks",
+    "breakCount": 5,
+    "baseSymbol": {
+        "type": "esriSFS",
+        "style": "esriSFSSolid",
+        "color": [
+            255,
+            251,
+            253,
+            255
+        ],
+        "outline": {
+            "type": "esriSLS",
+            "style": "esriSLSSolid",
+            "color": [
+                255,
+                251,
+                253,
+                255
+            ],
+            "width": 1
+        }
+    },
+    "colorRamp": {
+        "type": "algorithmic",
+        "fromColor": [
+            222,
+            164,
+            207,
+            255
+        ],
+        "toColor": [
+            63,
+            0,
+            125,
+            255
+        ],
+        "algorithm": "esriHSVAlgorithm"
+    }
+}

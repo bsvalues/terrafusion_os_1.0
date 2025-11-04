@@ -1,0 +1,140 @@
+{
+    "type": "FunctionTool",
+    "guid": "{45d21c99-7da0-4a4d-98cc-85fd0530edda}",
+    "displayname": "$rc:title",
+    "helpcontent": "6000003",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "country_code": {
+            "displayname": "$rc:country_code.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "AUS",
+                        "code": "$rc:country_code.domain.AUS"
+                    },
+                    {
+                        "value": "AUT",
+                        "code": "$rc:country_code.domain.AUT"
+                    },
+                    {
+                        "value": "BEL",
+                        "code": "$rc:country_code.domain.BEL"
+                    },
+                    {
+                        "value": "CAN",
+                        "code": "$rc:country_code.domain.CAN"
+                    },
+                    {
+                        "value": "CHE",
+                        "code": "$rc:country_code.domain.CHE"
+                    },
+                    {
+                        "value": "CZE",
+                        "code": "$rc:country_code.domain.CZE"
+                    },
+                    {
+                        "value": "DEU",
+                        "code": "$rc:country_code.domain.DEU"
+                    },
+                    {
+                        "value": "ESP",
+                        "code": "$rc:country_code.domain.ESP"
+                    },
+                    {
+                        "value": "EST",
+                        "code": "$rc:country_code.domain.EST"
+                    },
+                    {
+                        "value": "FRA",
+                        "code": "$rc:country_code.domain.FRA"
+                    },
+                    {
+                        "value": "GBR",
+                        "code": "$rc:country_code.domain.GBR"
+                    },
+                    {
+                        "value": "ISR",
+                        "code": "$rc:country_code.domain.ISR"
+                    },
+                    {
+                        "value": "ITA",
+                        "code": "$rc:country_code.domain.ITA"
+                    },
+                    {
+                        "value": "LTU",
+                        "code": "$rc:country_code.domain.LTU"
+                    },
+                    {
+                        "value": "LVA",
+                        "code": "$rc:country_code.domain.LVA"
+                    },
+                    {
+                        "value": "NLD",
+                        "code": "$rc:country_code.domain.NLD"
+                    },
+                    {
+                        "value": "PRI",
+                        "code": "$rc:country_code.domain.PRI"
+                    },
+                    {
+                        "value": "SWE",
+                        "code": "$rc:country_code.domain.SWE"
+                    },
+                    {
+                        "value": "USA",
+                        "code": "$rc:country_code.domain.USA"
+                    },
+                    {
+                        "value": "ZAF",
+                        "code": "$rc:country_code.domain.ZAF"
+                    }
+                ]
+            },
+            "value": "USA",
+            "description": "$rc:country_code.descr"
+        },
+        "in_address_data": {
+            "displayname": "$rc:in_address_data.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_address_data.descr"
+        },
+        "in_address_fields": {
+            "displayname": "$rc:in_address_fields.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "description": "$rc:in_address_fields.descr"
+        },
+        "out_address_data": {
+            "direction": "out",
+            "displayname": "$rc:out_address_data.title",
+            "datatype": {
+                "type": "DEDatasetType"
+            },
+            "description": "$rc:out_address_data.descr"
+        },
+        "in_exceptions": {
+            "type": "optional",
+            "displayname": "$rc:in_exceptions.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_exceptions.descr"
+        }
+    },
+    "environments": [
+        "parallelProcessingFactor",
+        "workspace"
+    ]
+}

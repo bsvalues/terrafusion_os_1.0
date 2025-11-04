@@ -1,0 +1,21 @@
+{
+    "map": {
+        "description": "Copies all features from two layers into a new layer. The layers to be combined must contain the same feature types (points, lines, or polygons). You can control how the fields from the input layers are joined and copied.",
+        "inputlayer.descr": "The point, line, or polygon features to merge with the merge layer.",
+        "inputlayer.title": "Input Layer",
+        "mergelayer.descr": "The point, line, or polygon features to merge with the input layer. The merge layer must contain the same feature type (point, line, or polygon) as the input layer.",
+        "mergelayer.title": "Merge Layer",
+        "mergingattributes.descr": "<xdoc><p>A list of values that describe how fields from the merge layer are to be modified and matched with fields in the input layer. By default, all fields from both inputs will be carried across to the output layer.</p><p>If a field exists in one layer but not the other, the output layer will contain both fields. The output field will contain null values for the input features that did not have the field. For example, if the input layer contains a field named <span class=\"esri_fieldname\">TYPE</span> but the merge layer does not contain <span class=\"esri_fieldname\">TYPE</span>, the output will contain <span class=\"esri_fieldname\">TYPE</span>, but its values will be null for all the features copied from the merge layer.</p><p>You can control the following merge actions (how fields on the merge layer are written to the output).<ul><li>REMOVE—The merge layer field will be removed from the output layer.</li><li>RENAME—The merge layer field will be renamed in the output. You cannot rename a field from the merge layer to a field from the input layer. If you want to make field names equivalent, use the match option.</li><li>MATCH—The merge layer field is renamed and matched to a field from the input layer. For example, the input layer has a field named <span class=\"esri_fieldname\">CODE</span> and the merge layer has a field named <span class=\"esri_fieldname\">STATUS</span>. You can match <span class=\"esri_fieldname\">STATUS</span> to <span class=\"esri_fieldname\">CODE</span>, and the output will contain the <span class=\"esri_fieldname\">CODE</span> field with values of the <span class=\"esri_fieldname\">STATUS</span> field used for features copied from the merge layer. Type casting is supported (for example, double to integer, integer to string), except for string to numeric.</li></ul></p></xdoc>",
+        "mergingattributes.domain.item2.MATCH": "Match",
+        "mergingattributes.domain.item2.REMOVE": "Remove",
+        "mergingattributes.domain.item2.RENAME": "Rename",
+        "mergingattributes.dt.title1": "Merge field",
+        "mergingattributes.dt.title2": "Action",
+        "mergingattributes.dt.title3": "Input field",
+        "mergingattributes.title": "Merging Attributes",
+        "output.title": "Output",
+        "outputname.descr": "The name of the output layer to create on your portal.",
+        "outputname.title": "Output Name",
+        "title": "Merge Layers"
+    }
+}

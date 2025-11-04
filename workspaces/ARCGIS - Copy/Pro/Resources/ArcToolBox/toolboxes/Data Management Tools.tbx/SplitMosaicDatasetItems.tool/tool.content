@@ -1,0 +1,58 @@
+{
+    "type": "FunctionTool",
+    "guid": "{73c31a92-0105-4d9d-a6b3-e3bc6250cc64}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190533",
+    "description": "$rc:description",
+    "product": "200",
+    "categories": [
+        "{0a2ad811-7215-4a95-92f3-9c29de502e9b}"
+    ],
+    "attributes": [
+        "no_data_change"
+    ],
+    "params": {
+        "in_mosaic_dataset": {
+            "display_order": "0",
+            "displayname": "$rc:in_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_mosaic_dataset.descr"
+        },
+        "where_clause": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:where_clause.title",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "in_mosaic_dataset"
+            ],
+            "description": "$rc:where_clause.descr"
+        },
+        "out_mosaic_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "2",
+            "displayname": "$rc:out_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "depends": [
+                "in_mosaic_dataset"
+            ]
+        }
+    }
+}

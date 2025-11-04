@@ -1,0 +1,155 @@
+{
+    "type": "FunctionTool",
+    "guid": "{26B17338-CB00-45A9-AB9C-858C2E0122C9}/GAIT",
+    "displayname": "$rc:title",
+    "helpcontent": "46010004",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "49"
+    ],
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "GPTableView"
+                        },
+                        {
+                            "type": "GPFeatureLayer"
+                        }
+                    ]
+                }
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "gait_exe": {
+            "displayname": "$rc:gait_exe.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "description": "$rc:gait_exe.descr"
+        },
+        "folder": {
+            "displayname": "$rc:folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:folder.descr"
+        },
+        "schema": {
+            "displayname": "$rc:schema.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:schema.descr"
+        },
+        "project": {
+            "displayname": "$rc:project.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:project.descr"
+        },
+        "format": {
+            "displayname": "$rc:format.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:format.descr"
+        },
+        "metadata": {
+            "displayname": "$rc:metadata.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "META_ESRI",
+                        "code": "$rc:metadata.domain.META_ESRI"
+                    },
+                    {
+                        "value": "META_INGR",
+                        "code": "$rc:metadata.domain.META_INGR"
+                    },
+                    {
+                        "value": "META_MGCPNGA",
+                        "code": "$rc:metadata.domain.META_MGCPNGA"
+                    }
+                ]
+            },
+            "value": "META_MGCPNGA",
+            "description": "$rc:metadata.descr"
+        },
+        "silent": {
+            "displayname": "$rc:silent.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SILENT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "VERBOSE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:silent.descr"
+        },
+        "reviewer_workspace": {
+            "type": "optional",
+            "displayname": "$rc:reviewer_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "description": "$rc:reviewer_workspace.descr"
+        },
+        "specfile": {
+            "type": "optional",
+            "displayname": "$rc:specfile.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "description": "$rc:specfile.descr"
+        },
+        "out_featurelayers": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_featurelayers.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "GPTableView"
+                        },
+                        {
+                            "type": "GPFeatureLayer"
+                        }
+                    ]
+                }
+            },
+            "depends": [
+                "in_features"
+            ]
+        }
+    }
+}

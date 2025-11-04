@@ -1,0 +1,115 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "80020001",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_bis_workspace": {
+            "displayname": "$rc:in_bis_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "domain": {
+                "type": "GPWorkspaceDomain",
+                "workspacetype": [
+                    "Local Database",
+                    "Remote Database"
+                ]
+            },
+            "description": "$rc:in_bis_workspace.descr"
+        },
+        "out_mosaic": {
+            "direction": "out",
+            "displayname": "$rc:out_mosaic.title",
+            "datatype": {
+                "type": "DEMosaicDataset"
+            },
+            "schema": {
+                "type": "GPRasterSchema",
+                "extenttype.rule": "Environment",
+                "cellsize.rule": "Environment",
+                "raster.rule": "FirstDependency",
+                "rasterformat.rule": "IMG",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_mosaic.descr"
+        },
+        "coordinate_system": {
+            "type": "optional",
+            "displayname": "$rc:coordinate_system.title",
+            "datatype": {
+                "type": "GPCoordinateSystem"
+            },
+            "description": "$rc:coordinate_system.descr"
+        },
+        "in_query_file": {
+            "type": "optional",
+            "displayname": "$rc:in_query_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "rule",
+                    "model"
+                ]
+            },
+            "description": "$rc:in_query_file.descr"
+        },
+        "create_overviews": {
+            "type": "optional",
+            "displayname": "$rc:create_overviews.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CREATE_OVERVIEWS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_OVERVIEWS"
+                    }
+                ]
+            },
+            "description": "$rc:create_overviews.descr"
+        },
+        "force_overview_tiles": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:force_overview_tiles.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FORCE_OVERVIEW_TILES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_FORCE_OVERVIEW_TILES"
+                    }
+                ]
+            },
+            "description": "$rc:force_overview_tiles.descr"
+        }
+    },
+    "environments": [
+        "configKeyword",
+        "extent",
+        "pyramid",
+        "rasterStatistics"
+    ]
+}

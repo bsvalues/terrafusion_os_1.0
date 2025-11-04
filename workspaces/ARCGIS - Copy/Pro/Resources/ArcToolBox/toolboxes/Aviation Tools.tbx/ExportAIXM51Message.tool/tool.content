@@ -1,0 +1,142 @@
+{
+    "type": "FunctionTool",
+    "guid": "{F6243FE3-8552-4511-BBCE-F882B7099A58}/ExportAIXM51Message",
+    "displayname": "$rc:title",
+    "helpcontent": "64030010",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "53",
+        "70"
+    ],
+    "params": {
+        "in_aviation_workspace": {
+            "displayname": "$rc:in_aviation_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "description": "$rc:in_aviation_workspace.descr"
+        },
+        "out_message_file": {
+            "direction": "out",
+            "displayname": "$rc:out_message_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "xml"
+                ]
+            },
+            "description": "$rc:out_message_file.descr"
+        },
+        "export_type": {
+            "displayname": "$rc:export_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "BASELINE",
+                        "code": "$rc:export_type.domain.BASELINE"
+                    },
+                    {
+                        "value": "SNAPSHOT",
+                        "code": "$rc:export_type.domain.SNAPSHOT"
+                    },
+                    {
+                        "value": "PERM_DELTA",
+                        "code": "$rc:export_type.domain.PERM_DELTA"
+                    },
+                    {
+                        "value": "TEMP_DELTA",
+                        "code": "$rc:export_type.domain.TEMP_DELTA"
+                    }
+                ]
+            },
+            "description": "$rc:export_type.descr"
+        },
+        "last_modified_time": {
+            "type": "optional",
+            "displayname": "$rc:last_modified_time.title",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:last_modified_time.descr"
+        },
+        "in_filter_layers": {
+            "type": "optional",
+            "displayname": "$rc:in_filter_layers.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPTableView"
+                }
+            },
+            "depends": [
+                "in_aviation_workspace"
+            ],
+            "description": "$rc:in_filter_layers.descr"
+        },
+        "from_time": {
+            "type": "optional",
+            "displayname": "$rc:from_time.title",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:from_time.descr"
+        },
+        "to_time": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:to_time.title",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:to_time.descr"
+        },
+        "validate_output": {
+            "type": "optional",
+            "displayname": "$rc:validate_output.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "VALIDATE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_VALIDATE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:validate_output.descr"
+        },
+        "out_validation_log": {
+            "enabled": "false",
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_validation_log.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "txt"
+                ]
+            },
+            "description": "$rc:out_validation_log.descr"
+        }
+    }
+}

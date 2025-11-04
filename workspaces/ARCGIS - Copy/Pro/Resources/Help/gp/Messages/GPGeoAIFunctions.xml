@@ -1,0 +1,410 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Messages STARTID='260001'>
+
+<!--GEOAI TOOLBOX-->
+<!--Note: keep Message IDs in designated tool sections only.-->
+<!--Check unused IDs and create new IDs with the help of http://gp.esri.com to register new ones, while verifying existing IDs, if already used.-->
+<!--Valid GEOAI TOOLBOX ID range: 260001 - 260500-->
+
+<!--IDs being used from other toolbox: 230001, 180002-->
+
+
+
+<!--Shared Generic Message IDs-->
+<!--List: 260004, 260005, 260013, 260014, 260036, 260041, 260056, 260065, 260124, 260134, 260135-->
+<!--List: 260136, 260325-->
+<!--start-->
+<Message><ID>260004</ID><Description>The tool you are running requires more memory to compute the result.</Description></Message>
+<Message><ID>260005</ID><Description>To set up your machine to use deep learning frameworks in ArcGIS Pro, see Install deep learning frameworks for ArcGIS at: https://pro.arcgis.com/en/pro-app/latest/help/analysis/deep-learning/install-deep-learning-frameworks.htm</Description></Message>
+<Message><ID>260013</ID><Description>Invalid input format. Only feature classes and tables are supported.</Description></Message>
+<Message><ID>260014</ID><Description>Input format is not supported.</Description></Message>
+<Message><ID>260036</ID><Description>GPU is being used.</Description></Message>
+<Message><ID>260041</ID><Description>Error: %1</Description></Message>
+<Message><ID>260056</ID><Description>Model training completed.</Description></Message>
+<Message><ID>260065</ID><Description>Model saved at: %1.</Description></Message>
+<Message><ID>260124</ID><Description>Validation percentage should be greater than 10 and less than 50</Description></Message>
+<Message><ID>260134</ID><Description>Training loss</Description></Message>
+<Message><ID>260135</ID><Description>Validation loss</Description></Message>
+<Message><ID>260136</ID><Description>Accuracy</Description></Message>
+<Message><ID>260325</ID><Description>This tool is supported only with GPU enabled machine.</Description></Message>
+
+
+<!--end-->
+<!--Shared Generic Message IDs-->
+
+
+
+<!--Localization Message IDs-->
+<!--start-->
+<Message><ID>260067</ID><Description>Features Importance</Description></Message>
+<Message><ID>260068</ID><Description>features importance across models</Description></Message>
+<Message><ID>260069</ID><Description>Spearman Correlation of Models</Description></Message>
+<Message><ID>260070</ID><Description>models spearman correlation</Description></Message>
+<Message><ID>260071</ID><Description>Feature importance</Description></Message>
+<Message><ID>260072</ID><Description>Top-25 important features</Description></Message>
+<Message><ID>260073</ID><Description>Confusion Matrix</Description></Message>
+<Message><ID>260074</ID><Description>Normalized Confusion Matrix</Description></Message>
+<Message><ID>260075</ID><Description>ROC Curve</Description></Message>
+<Message><ID>260076</ID><Description>Kolmogorov-Smirnov Statistic</Description></Message>
+<Message><ID>260077</ID><Description>Precision-Recall Curve</Description></Message>
+<Message><ID>260078</ID><Description>Calibration Curve</Description></Message>
+<Message><ID>260079</ID><Description>Lift Curve</Description></Message>
+<Message><ID>260080</ID><Description>True values</Description></Message>
+<Message><ID>260081</ID><Description>Predicted values</Description></Message>
+<Message><ID>260082</ID><Description>Target values vs Predicted values</Description></Message>
+<Message><ID>260083</ID><Description>True vs Predicted</Description></Message>
+<Message><ID>260084</ID><Description>Residuals</Description></Message>
+<Message><ID>260085</ID><Description>samples</Description></Message>
+<Message><ID>260086</ID><Description>Predicted values vs Residuals</Description></Message>
+<Message><ID>260087</ID><Description>Predicted vs Residuals</Description></Message>
+<Message><ID>260088</ID><Description>Learning curves</Description></Message>
+<Message><ID>260089</ID><Description>at threshold</Description></Message>
+<Message><ID>260090</ID><Description>Go back</Description></Message>
+<Message><ID>260091</ID><Description>Metric details</Description></Message>
+<Message><ID>260092</ID><Description>Coefficients</Description></Message>
+<Message><ID>260093</ID><Description>Coefficients learner</Description></Message>
+<Message><ID>260094</ID><Description>Decision Tree</Description></Message>
+<Message><ID>260095</ID><Description>Mean of feature importance</Description></Message>
+<Message><ID>260096</ID><Description>Permutation-based Importance</Description></Message>
+<Message><ID>260097</ID><Description>average impact on model output magnitude</Description></Message>
+<Message><ID>260098</ID><Description>Cumulative Gains Curve</Description></Message>
+<Message><ID>260099</ID><Description>Importance</Description></Message>
+<Message><ID>260100</ID><Description>Dependence plots</Description></Message>
+<Message><ID>260101</ID><Description>Iteration</Description></Message>
+<Message><ID>260102</ID><Description>Performance</Description></Message>
+<Message><ID>260103</ID><Description>Performance Boxplot</Description></Message>
+<Message><ID>260104</ID><Description>Trees</Description></Message>
+<Message><ID>260105</ID><Description>Ensemble</Description></Message>
+<Message><ID>260106</ID><Description>Leaderboard</Description></Message>
+<Message><ID>260107</ID><Description>the best</Description></Message>
+<Message><ID>260108</ID><Description>Summary of</Description></Message>
+<Message><ID>260109</ID><Description>Validation</Description></Message>
+<Message><ID>260110</ID><Description>Optimized metric</Description></Message>
+<Message><ID>260111</ID><Description>Training time (Seconds)</Description></Message>
+<Message><ID>260112</ID><Description>structure</Description></Message>
+<Message><ID>260113</ID><Description>Model name</Description></Message>
+<Message><ID>260114</ID><Description>Model parameters</Description></Message>
+<Message><ID>260115</ID><Description>Seconds</Description></Message>
+<Message><ID>260116</ID><Description>Metric</Description></Message>
+<Message><ID>260117</ID><Description>Score</Description></Message>
+<Message><ID>260118</ID><Description>Best model</Description></Message>
+<Message><ID>260119</ID><Description>Model type</Description></Message>
+<Message><ID>260120</ID><Description>Metric type</Description></Message>
+<Message><ID>260121</ID><Description>Metric value</Description></Message>
+<Message><ID>260122</ID><Description>Predicted as</Description></Message>
+<Message><ID>260128</ID><Description>Model</Description></Message>
+<Message><ID>260129</ID><Description>Weight</Description></Message>
+<Message><ID>260130</ID><Description>Threshold</Description></Message>
+<Message><ID>260143</ID><Description>Unable to fit transforms. This could be because some of the columns in your dataset have multiple datatypes.</Description></Message>
+<Message><ID>260144</ID><Description>You have some missing values in dependent variable column.</Description></Message>
+<Message><ID>260145</ID><Description>Rows having null values in dependent variable are removed and model will be trained with remaining data</Description></Message>
+<Message><ID>260150</ID><Description>The desired models could not be trained using the input data provided.</Description></Message>
+<Message><ID>260151</ID><Description>%1 model could not be trained on this dataset.</Description></Message>
+<Message><ID>260152</ID><Description>Data on which prediction is needed does not have the fields the model was trained on.</Description></Message>
+<Message><ID>260154</ID><Description>Dependent variable has more than 200 unique values more than half of the total records are unique, hence there is not enough information to train a model.</Description></Message>
+<Message><ID>260200</ID><Description>Could not process the data. Your csv or table might contain columns with all null values.</Description></Message>
+<Message><ID>260207</ID><Description>Labeled as</Description></Message>
+<Message><ID>260208</ID><Description>Automatic Exploratory Data Analysis Report</Description></Message>
+<Message><ID>260209</ID><Description>Exploratory Data Analysis</Description></Message>
+<Message><ID>260212</ID><Description>Yes</Description></Message>
+<Message><ID>260213</ID><Description>No</Description></Message>
+
+<!--end-->
+<!--Localization Message IDs-->
+
+
+
+<!--TEXT ANALYSIS TOOLS-->
+<!--start-->
+<Message><ID>260001</ID><Description>The model is trained on multi-label classification task. The model will be predicting multiple labels for the input text.</Description></Message>
+<Message><ID>260002</ID><Description>Model Type is set to ZeroShotClassifier. Set the desired candidate labels.</Description></Message>
+<Message><ID>260003</ID><Description>%1 already exists. Overwriting the existing %1 column.</Description></Message>
+<Message><ID>260006</ID><Description>Processor type is invalid.</Description></Message>
+<Message><ID>260008</ID><Description>The "candidate_labels" argument contains only a single class. All the fields in the input table will be classified as %1.</Description></Message>
+<Message><ID>260009</ID><Description>Input Folder %1 does not exists or is not a directory.</Description></Message>
+<Message><ID>260010</ID><Description>No address entity found in extracted entities %1</Description></Message>
+<Message><ID>260011</ID><Description>No documents found to be processed, check the input data.</Description></Message>
+<Message><ID>260012</ID><Description>The address entity used in the model definition file is %1. Retrain the model with the correct address entity to be able to geocode the results.</Description></Message>
+<Message><ID>260022</ID><Description>The Input Model Definition File is invalid.</Description></Message>
+<Message><ID>260035</ID><Description>CPU is being used.</Description></Message>
+<Message><ID>260038</ID><Description>Reading: %1</Description></Message>
+<Message><ID>260039</ID><Description>Loading the model.</Description></Message>
+<Message><ID>260040</ID><Description>Inferencing completed.</Description></Message>
+<Message><ID>260042</ID><Description>The Input Model Definition File is invalid. Expected model types are: 'TextClassifier' and 'ZeroShotClassifier'.</Description></Message>
+<Message><ID>260043</ID><Description>Number of items to process: %1</Description></Message>
+<Message><ID>260044</ID><Description>Reading files from the path: %1</Description></Message>
+<Message><ID>260045</ID><Description>Address entity or geocode locator could not be found.</Description></Message>
+<Message><ID>260046</ID><Description>Info: %1</Description></Message>
+<Message><ID>260047</ID><Description>Extracting locations and other entities.</Description></Message>
+<Message><ID>260048</ID><Description>The extracted locations could not be geocoded, make sure you have passed a valid locator. Also, this operation may consume credits.</Description></Message>
+<Message><ID>260049</ID><Description>Output table could not be created.</Description></Message>
+<Message><ID>260050</ID><Description>The Input Model Definition File is invalid. Expected model types are: 'TransformerEntityRecognizer', '_TransformerEntityRecognizer'.</Description></Message>
+<Message><ID>260051</ID><Description>Finding the optimal learning rate.</Description></Message>
+<Message><ID>260052</ID><Description>Learning rate: %1</Description></Message>
+<Message><ID>260053</ID><Description>Precision score: %1</Description></Message>
+<Message><ID>260054</ID><Description>Recall score: %1</Description></Message>
+<Message><ID>260055</ID><Description>F1 score: %1</Description></Message>
+<Message><ID>260057</ID><Description>The selected `Text Field` or `Label Field` is invalid or the input table does not have enough records.</Description></Message>
+<Message><ID>260058</ID><Description>Model accuracy: %1</Description></Message>
+<Message><ID>260059</ID><Description>The Input Model Definition File is invalid. Expected model type is: 'TextClassifier'.</Description></Message>
+<Message><ID>260060</ID><Description>The selected `Text Field` is not present in the feature layer or table.</Description></Message>
+<Message><ID>260061</ID><Description>The selected `Label Field` is not present in the feature layer or table.</Description></Message>
+<Message><ID>260062</ID><Description>The selected `Text Field` or `Label Field` is invalid.</Description></Message>
+<Message><ID>260063</ID><Description>Model metrics- %1.</Description></Message>
+<Message><ID>260064</ID><Description>The input model definition file is invalid. Expected model type is: 'SequenceToSequence'.</Description></Message>
+<Message><ID>260131</ID><Description>The Input Table will be modified.</Description></Message>
+<Message><ID>260132</ID><Description>Running inference...</Description></Message>
+<Message><ID>260133</ID><Description>Training model...</Description></Message>
+<Message><ID>260137</ID><Description>Epoch</Description></Message>
+<Message><ID>260138</ID><Description>Saving the model...</Description></Message>
+<Message><ID>260139</ID><Description>Updating records...</Description></Message>
+<Message><ID>260140</ID><Description>Records updated.</Description></Message>
+<Message><ID>260141</ID><Description>The output must be stored in a geodatabase.</Description></Message>
+<Message><ID>260147</ID><Description>The input data is insufficient. A minimum of 100 records is needed for the transformers-based model backbone, while the Mistral model backbone requires a minimum of 20 records in the input feature to run the tool.</Description></Message>
+<Message><ID>260155</ID><Description>The `Text Field` and `Label Field` cannot be same.</Description></Message>
+<Message><ID>260157</ID><Description>Unsupported Model Argument. The supported model arguments include sequence_length (positive integer).</Description></Message>
+<Message><ID>260158</ID><Description>Minimum sequence length should be less than the maximum sequence length.</Description></Message>
+<Message><ID>260159</ID><Description>Minimum sequence length should be greater than or equal to 1.</Description></Message>
+<Message><ID>260160</ID><Description>Maximum sequence length should be greater than or equal to 1.</Description></Message>
+<Message><ID>260161</ID><Description>Batch size should be greater than or equal to 1.</Description></Message>
+<Message><ID>260162</ID><Description>Batch size should be greater than or equal to 2.</Description></Message>
+<Message><ID>260163</ID><Description>Max Epochs should be greater than or equal to 1.</Description></Message>
+<Message><ID>260164</ID><Description>The pretrained model could not be loaded. Ensure that it is compatible with the task, model backbone, training data and labels being used.</Description></Message>
+<Message><ID>260165</ID><Description>The model could not be initialized. Ensure that it is compatible with the task, model backbone, training data and labels being used.</Description></Message>
+<Message><ID>260300</ID><Description>Selected label fields are invalid for multi label classification task.</Description></Message>
+<Message><ID>260302</ID><Description>Unsupported Model Argument. The supported model arguments include sequence_length (positive integer) and confidence_threshold(0-1).</Description></Message>
+<Message><ID>260328</ID><Description>Could not generate explanation for the predictions as input row(s) has fewer chunks than expected to generate SHAP based explanation.</Description></Message>
+<Message><ID>260331</ID><Description>Pop-up generation for variable importance has failed.</Description></Message>
+<Message><ID>260332</ID><Description>Number of classes in validation set does not match the size of total classes, try to increase the Validation Percentage or remove unwanted columns from the input data.</Description></Message>
+<Message><ID>260333</ID><Description>Mistral model backbone is not installed. Install Mistral backbone from https://github.com/Esri/deep-learning-frameworks?tab=readme-ov-file#additional-installation-for-disconnected-environment</Description></Message>
+<Message><ID>260334</ID><Description>The validation percentage should be greater than 50 and less than 90.</Description></Message>
+<Message><ID>260335</ID><Description>Extract named entities belonging to the specified classes within the provided text. Do not tag entities belonging to any other class.</Description></Message>
+<Message><ID>260336</ID><Description>Categorize the provided text into the specified classes. Do not create new labels for classification.</Description></Message>
+<Message><ID>260337</ID><Description>Transform the input text from the text field into the transformed text present in the label field.</Description></Message>
+<Message><ID>260338</ID><Description>This Deep Learning Package (DLPK) contains external code that might be harmful when used. Use this model only if you trust it.</Description></Message>
+<Message><ID>260339</ID><Description>The model extension class is not defined correctly. It must include the following functions: `__init__`, `getParameterInfo`, `initialize`, `getConfiguration`, and `predict`.</Description></Message>
+<Message><ID>260340</ID><Description>The number of input records does not match the number of output records.</Description></Message>
+<Message><ID>260341</ID><Description>Extensible model encountered an issue. Check that all functions defined in the extensible model class are implemented as expected.</Description></Message>
+<Message><ID>260342</ID><Description>Could not locate the extensible model file specified in the ESRI model definition (.emd) file.</Description></Message>
+<Message><ID>260343</ID><Description>The Esri Model Definition (EMD) file for text classification must include the keys InferenceFunction, ModelType:TextClassifier, and OutputField.</Description></Message>
+<Message><ID>260344</ID><Description>The Esri Model Definition (EMD) file for text transformation must include the keys InferenceFunction, ModelType:SequenceToSequence, and OutputField.</Description></Message>
+<Message><ID>260345</ID><Description>Fine-tuning of the pre-trained Mistral model backbone is not supported.</Description></Message>
+<Message><ID>260346</ID><Description>Multi-label classification is not supported with the Mistral model backbone.</Description></Message>
+<!--end-->
+<!--TEXT ANALYSIS TOOLS-->
+
+
+
+<!--AUTOML TOOLS-->
+<!--start-->
+<Message><ID>260015</ID><Description>Column %1 is not marked categorical.</Description></Message>
+<Message><ID>260016</ID><Description>The folder is not empty and the model will be saved in a new folder under the directory selected.</Description></Message>
+<Message><ID>260017</ID><Description>Total time limit must be greater than or equal to 5.</Description></Message>
+<Message><ID>260018</ID><Description>The shapefile field names cannot end with numbers.</Description></Message>
+<Message><ID>260019</ID><Description>Linear model can only be applied if the number of records in training is less than 10000 and number of explanatory training variables is less than 1000.</Description></Message>
+<Message><ID>260024</ID><Description>Final model is saved at:</Description></Message>
+<Message><ID>260025</ID><Description>Report is saved at:</Description></Message>
+<Message><ID>260026</ID><Description>Additional metrics for the best model</Description></Message>
+<Message><ID>260027</ID><Description>Best Model</Description></Message>
+<Message><ID>260028</ID><Description>VARIABLES</Description></Message>
+<Message><ID>260029</ID><Description>IMPORTANCE</Description></Message>
+<Message><ID>260030</ID><Description>Metric</Description></Message>
+<Message><ID>260031</ID><Description>Value</Description></Message>
+<Message><ID>260032</ID><Description>Predicted output has been saved in %1</Description></Message>
+<Message><ID>260033</ID><Description>Output feature class could not be generated as the dataset does not have geometry column, instead a table was generated.</Description></Message>
+<Message><ID>260034</ID><Description>Feature importance table can only be generated in BASIC mode.</Description></Message>
+<Message><ID>260066</ID><Description>Predictions can be obtained on a raster only if ALL the predictors are part of input rasters.</Description></Message>
+<Message><ID>260123</ID><Description>Raster dataset cannot be combined with Table datatypes.</Description></Message>
+<Message><ID>260125</ID><Description>The data present in the input is not enough. A minimum of 25 records are required in the input feature to run the tool.</Description></Message>
+<Message><ID>260126</ID><Description>Could not locate the input feature class in the active gdb.</Description></Message>
+<Message><ID>260142</ID><Description>Input rasters are required to obtain predictions on a raster.</Description></Message>
+<Message><ID>260146</ID><Description>The dependent variable has high category frequency and a classification model cannot be trained on this dependent variable. A regression model will be fitted on this data.</Description></Message>
+<Message><ID>260148</ID><Description>Distance features cannot be the same as input features.</Description></Message>
+<Message><ID>260149</ID><Description>Some of the columns in input data has all NULL values. Cannot proceed with the training.</Description></Message>
+<Message><ID>260153</ID><Description>Corresponding training field is required.</Description></Message>
+<Message><ID>260156</ID><Description>The output importance table could not be generated on this dataset.</Description></Message>
+<Message><ID>260202</ID><Description>Could not extract all the matching prediction variables. If the corresponding prediction variables are not filled, then match explanatory variables will be ignored and model will search for training variables in the prediction dataset.</Description></Message>
+<Message><ID>260203</ID><Description>An error occurred while preparing the data to train AutoML.</Description></Message>
+<Message><ID>260204</ID><Description>An error occurred while getting the predictions from a trained AutoML Model.</Description></Message>
+<Message><ID>260205</ID><Description>An error occurred while loading the trained AutoML model.</Description></Message>
+<Message><ID>260206</ID><Description>Performance of the evaluated models</Description></Message>
+<Message><ID>260223</ID><Description>Output report could not be generated.</Description></Message>
+<Message><ID>260224</ID><Description>Preparing data...</Description></Message>
+<Message><ID>260225</ID><Description>Evaluating models...</Description></Message>
+<Message><ID>260226</ID><Description>Found the best model, saving it...</Description></Message>
+<Message><ID>260227</ID><Description>Writing to output feature class.</Description></Message>
+<Message><ID>260228</ID><Description>Class imbalance is observed in the provided dataset. Certain classes have less than 1 percent of total number of samples. This is a case of extreme imbalance and this can cause the trained models to be biased against underrepresented classes.</Description></Message>
+<Message><ID>260240</ID><Description>Variable importance graph could not be generated for individual predictions. The importance values can still be seen in the attribute table.</Description></Message>
+<Message><ID>260276</ID><Description>Ensure that there is an image associated with each feature in your input when Enable Image attachment option is enabled in the tool.</Description></Message>
+<Message><ID>260277</ID><Description>Attachments are not enabled on the provided feature input or the feature has no attachments.</Description></Message>
+<Message><ID>260278</ID><Description>Unable to read the feature layer. Check the source and ensure that the layer is accessible</Description></Message>
+<Message><ID>260279</ID><Description>Some of the variables selected as sensitive features are not selected as explanatory variables.Sensitive features should be one of the explanatory variables.</Description></Message>
+<!--<Message><ID>260332</ID><Description>Column %1 is not marked categorical.</Description></Message>-->
+<!--end-->
+<!--AUTOML TOOLS-->
+
+
+
+<!--EXTRACT FEATURE TOOL-->
+<!--start-->
+<Message><ID>260007</ID><Description>Ran out of GPU memory, for polygon segmentation postprocessing.</Description></Message>
+<Message><ID>260020</ID><Description>Skipping polygon segmentation postprocessing for model - [%1]. This postprocessing only works if input raster has 3 bands.</Description></Message>
+<Message><ID>260021</ID><Description>Skipping polygon segmentation postprocessing for model - [%1]. This postprocessing requires an active internet connection. For disconnected environment usage, follow the instructions available at: https://github.com/Esri/deep-learning-frameworks?tab=readme-ov-file#additional-installation-for-disconnected-environment</Description></Message>
+<Message><ID>260023</ID><Description>Error occurred, while downloading the polygon segmentation model. Postprocessing is skipped for the model - [%1].</Description></Message>
+<Message><ID>260037</ID><Description>Error occurred, during polygon segmentation model's inferencing.</Description></Message>
+<Message><ID>260127</ID><Description>For polygon regularization postprocessing, the geometry type of the provided input should be polygon.</Description></Message>
+<Message><ID>260201</ID><Description>Error occurred, polygon segmentation postprocessing could not be completed for the model - [%1].</Description></Message>
+<Message><ID>260210</ID><Description>The output location should be a geodatabase.</Description></Message>
+<Message><ID>260211</ID><Description>Output location does not exist at the specified path.</Description></Message>
+<Message><ID>260214</ID><Description>Area of interest does not exist at the specified path.</Description></Message>
+<Message><ID>260215</ID><Description>Input road feature does not exist at the specified path.</Description></Message>
+<Message><ID>260216</ID><Description>Output summary should be saved in a geodatabase.</Description></Message>
+<Message><ID>260217</ID><Description>Input feature does not exist at the specified path.</Description></Message>
+<Message><ID>260218</ID><Description>Output summary location does not exist.</Description></Message>
+<Message><ID>260219</ID><Description>Error occurred while generating the output summary. It might be available at the specified location.</Description></Message>
+<Message><ID>260220</ID><Description>Output summary is not generated as there are no results.</Description></Message>
+<Message><ID>260221</ID><Description>Supported number of raster bands cannot be determined for model - [%1], due to invalid model metadata. Inferencing for this model is skipped.</Description></Message>
+<Message><ID>260222</ID><Description>Skipping polygon segmentation postprocessing for model - [%1]. Model outputs should be polygon geometry type.</Description></Message>
+<Message><ID>260229</ID><Description>Processing </Description></Message>
+<Message><ID>260230</ID><Description>This tool does not support inference from the model - [%1].</Description></Message>
+<Message><ID>260231</ID><Description>Use a prefix like - [%1]. A prefix starting with a digit is not supported.</Description></Message>
+<Message><ID>260232</ID><Description>The geometry type of the provided input road feature is not supported. Supported types are polygon and polyline.</Description></Message>
+<Message><ID>260233</ID><Description>Group layer might not be created. The tool outputs might be available inside the specified gdb.</Description></Message>
+<Message><ID>260234</ID><Description>Executing line regularization postprocessing...</Description></Message>
+<Message><ID>260235</ID><Description>Executing parcel regularization postprocessing...</Description></Message>
+<Message><ID>260236</ID><Description>Executing polygon regularization postprocessing...</Description></Message>
+<Message><ID>260237</ID><Description>Error occurred, the postprocessing could not be completed for the model - [%1].</Description></Message>
+<Message><ID>260238</ID><Description>Error occurred, the tool could not process the model - [%1].</Description></Message>
+<Message><ID>260239</ID><Description>The input raster type is not supported.</Description></Message>
+<Message><ID>260241</ID><Description>Line regularization and parcel regularization workflows, expect a single band raster with binary classification.</Description></Message>
+<Message><ID>260242</ID><Description>Skipping postprocessing for model - [%1]. It requires licenses for both 3D Analyst and Production Mapping extensions.</Description></Message>
+<Message><ID>260243</ID><Description>Use a prefix like - [%1]. The input contains invalid characters.</Description></Message>
+<Message><ID>260244</ID><Description>Input raster does not exist at the specified path.</Description></Message>
+<Message><ID>260245</ID><Description>Avoid usage of special characters and blank spaces for specified paths.</Description></Message>
+<Message><ID>260246</ID><Description>Default values were used for line regularization options, update them to modify the outputs.</Description></Message>
+<Message><ID>260247</ID><Description>Default values were used for parcel regularization options, update them to modify the outputs.</Description></Message>
+<Message><ID>260248</ID><Description>Default values were used for polygon regularization options, update them to modify the outputs.</Description></Message>
+<Message><ID>260249</ID><Description>Skipping postprocessing for model - [%1]. It requires licenses for all of the following extensions: 3D Analyst, Spatial Analyst, and Production Mapping.</Description></Message>
+<Message><ID>260250</ID><Description>Skipping postprocessing for model - [%1]. It requires 3D Analyst extension license.</Description></Message>
+<Message><ID>260251</ID><Description>Cannot apply this postprocessing as it requires licenses for both 3D Analyst and Production Mapping extensions.</Description></Message>
+<Message><ID>260252</ID><Description>Cannot apply this postprocessing as it requires licenses for all of the following extensions: 3D Analyst, Spatial Analyst, and Production Mapping.</Description></Message>
+<Message><ID>260253</ID><Description>Specify a valid postprocessing workflow.</Description></Message>
+<Message><ID>260254</ID><Description>Provide the output feature class location.</Description></Message>
+<Message><ID>260255</ID><Description>Error occurred during the specified postprocessing. The output might be available at the specified location.</Description></Message>
+<Message><ID>260256</ID><Description>Calculating hyperparameters for </Description></Message>
+<Message><ID>260257</ID><Description>Downloading </Description></Message>
+<Message><ID>260258</ID><Description>The pretrained model - [%1], cannot be downloaded from ArcGIS Living Atlas of the World, inferencing for this model is skipped.</Description></Message>
+<Message><ID>260259</ID><Description>The additional model with item id - [%1], cannot be downloaded.</Description></Message>
+<Message><ID>260260</ID><Description>The model file for model - [%1] is invalid or corrupted, inferencing for this model is skipped.</Description></Message>
+<Message><ID>260261</ID><Description>Ran out of GPU memory, for model - [%1].</Description></Message>
+<Message><ID>260262</ID><Description>The [%1] file, is an invalid or corrupted deep learning model package.</Description></Message>
+<Message><ID>260263</ID><Description>Additional model - [%1] and [%2] workflow are incompatible, postprocessing is skipped for this model.</Description></Message>
+<Message><ID>260264</ID><Description>Filenames for additional models should be unique.</Description></Message>
+<Message><ID>260265</ID><Description>The ArcGIS pretrained models list is not populated, check if the internet connection is available. Additional models section can be used in case of offline usage.</Description></Message>
+<Message><ID>260266</ID><Description>Neither ArcGIS pretrained models nor additional models were selected or provided. Tool outputs are not generated.</Description></Message>
+<Message><ID>260267</ID><Description>Inferencing is not performed for model - [%1]. As, the number of bands supported by the model, does not match with the number of bands in the input raster: [%2].</Description></Message>
+<Message><ID>260268</ID><Description>Long names and paths can cause issues due to character length limitations.</Description></Message>
+<Message><ID>260269</ID><Description>Error occurred during the process. Error message - [%1].</Description></Message>
+<Message><ID>260270</ID><Description>The [%1] file does not exist at the specified path - [%2].</Description></Message>
+<Message><ID>260271</ID><Description>The [%1] file is not a esri model definition (.emd) or a deep learning model package (.dlpk).</Description></Message>
+<Message><ID>260272</ID><Description>No features were extracted by the model - [%1], its postprocessing is skipped.</Description></Message>
+<Message><ID>260273</ID><Description>Feature class, containing the result of the model - [%1], does not have a 'Class' field. Polygon segmentation postprocessing will be skipped for this model.</Description></Message>
+<Message><ID>260274</ID><Description>Using cached </Description></Message>
+<Message><ID>260275</ID><Description>No pretrained models are recommended, as the number of bands in the input raster is [%1], which is not compatible with any of the current Esri-authored pretrained models.</Description></Message>
+<Message><ID>260289</ID><Description>Skipping inference for model - [%1]. As its SAR-specific preprocessing, requires Image Analyst extension license.</Description></Message>
+<Message><ID>260290</ID><Description>Error occurred in the preprocessing of - [%1], inferencing for this model is skipped.</Description></Message>
+<Message><ID>260291</ID><Description>Executing SAR preprocessing...</Description></Message>
+<Message><ID>260292</ID><Description>Input raster is scaled and converted, as per the supported bit depth of respective Esri-authored pretrained models.</Description></Message>
+<Message><ID>260293</ID><Description>No pretrained models are recommended, as the input raster has an unknown coordinate system.</Description></Message>
+<Message><ID>260294</ID><Description>No pretrained models are recommended, as the input raster might be corrupted.</Description></Message>
+<Message><ID>260295</ID><Description>The tool does the radiometric offset correction of '-1000' for Sentinel 2 L2A imagery, assuming the imagery is acquired after January 25, 2022. Verify with your data provider, as datasets from some sources require this correction, while some are already corrected. Not keeping track of this, might result in unsatisfactory inferencing results.</Description></Message>
+<Message><ID>260296</ID><Description>For line regularization postprocessing, a single band raster with binary classification is required. Where within the discreet classes, lower class id is assumed to be background and higher class id is assumed to be the feature of interest.</Description></Message>
+<Message><ID>260297</ID><Description>Skipping line regularization postprocessing for - [%1]. It requires a single band raster with binary classification, where within the discreet classes, lower class id is assumed to be background and higher class id is assumed to be the feature of interest.</Description></Message>
+<Message><ID>260298</ID><Description>For parcel regularization postprocessing, a single band raster with binary classification is required. Where within the discreet classes, lower class id is assumed to be background and higher class id is assumed to be the feature of interest.</Description></Message>
+<Message><ID>260299</ID><Description>Skipping parcel regularization postprocessing for - [%1]. It requires a single band raster with binary classification, where within the discreet classes, lower class id is assumed to be background and higher class id is assumed to be the feature of interest.</Description></Message>
+<Message><ID>260301</ID><Description>For line regularization, the geometry type of the provided input should be polyline.</Description></Message>
+<Message><ID>260304</ID><Description>polygon segmentation model</Description></Message>
+<Message><ID>260305</ID><Description>Default values were used for polygon segmentation options, update them to modify the outputs.</Description></Message>
+<Message><ID>260313</ID><Description>Skipping polygon segmentation postprocessing for model - [%1]. It requires Image Analyst extension license.</Description></Message>
+<Message><ID>260324</ID><Description>Cannot apply this postprocessing as it requires 3D Analyst extension license.</Description></Message>
+<Message><ID>260371</ID><Description>Executing polygon segmentation postprocessing...</Description></Message>
+
+<!--end-->
+<!--EXTRACT FEATURE TOOLS-->
+
+
+
+<!--AUTODL TOOLS-->
+<!--start-->
+<Message><ID>260303</ID><Description>The input data is not supported. Supported data formats are: PASCAL_VOC_rectangles, KITTI_rectangles, and Classified_Tiles.</Description></Message>
+<Message><ID>260306</ID><Description>The Input Model Definition File does not exist or is not supported by AutoDL. %1</Description></Message>
+<Message><ID>260307</ID><Description>The Input Model Definition File is invalid.</Description></Message>
+<Message><ID>260308</ID><Description>Total time limit should be greater than or equal to 0.5 hr.</Description></Message>
+<Message><ID>260309</ID><Description>Not a valid AutoDL mode. Supported modes are: BASIC, and ADVANCED.</Description></Message>
+<Message><ID>260310</ID><Description>The selected model is not supported by AutoDL. Please select a model from the dropdown list.</Description></Message>
+<Message><ID>260311</ID><Description>%1 is already selected.</Description></Message>
+<Message><ID>260312</ID><Description>Starting the training process.</Description></Message>
+<Message><ID>260314</ID><Description>Error: %1</Description></Message>
+<Message><ID>260315</ID><Description>Time is not sufficient to train remaining models.</Description></Message>
+<Message><ID>260316</ID><Description>Training completed.</Description></Message>
+<Message><ID>260317</ID><Description>This model is not a AutoDL supported model.</Description></Message>
+<Message><ID>260318</ID><Description>Time required to process atleast 20 epochs with the entire dataset is %1</Description></Message>
+<Message><ID>260319</ID><Description>Model will be trained for %1 epochs in the given time.</Description></Message>
+<Message><ID>260320</ID><Description>Given time to process the dataset is: %1 hours.</Description></Message>
+<Message><ID>260321</ID><Description>Number of images that can be processed in the given time: %1.</Description></Message>
+<Message><ID>260322</ID><Description>Time required to process the entire dataset of %1 images is %2 hrs.</Description></Message>
+<Message><ID>260323</ID><Description>Model,Train Loss,Valid Loss,Accuracy,Learning Rate,Time,Backbone</Description></Message>
+<Message><ID>260326</ID><Description>Model,Train Loss,Valid Loss,Accuracy,Dice,Learning Rate,Time,Backbone</Description></Message>
+<Message><ID>260327</ID><Description>Error while loading the pretrained model file, make sure data has the same number of classes as the pretrained model.</Description></Message>
+<Message><ID>260329</ID><Description>Output folder path cannot be same as Input Training Data parameter value.</Description></Message>
+<Message><ID>260330</ID><Description>There seems to be an issue with internet connection. Model backbones could not be downloaded.</Description></Message>
+<Message><ID>260400</ID><Description>Model</Description></Message>
+<Message><ID>260401</ID><Description>Train Loss</Description></Message>
+<Message><ID>260402</ID><Description>Valid Loss</Description></Message>
+<Message><ID>260403</ID><Description>Accuracy</Description></Message>
+<Message><ID>260404</ID><Description>Learning Rate</Description></Message>
+<Message><ID>260405</ID><Description>Time</Description></Message>
+<Message><ID>260406</ID><Description>Backbone</Description></Message>
+<Message><ID>260407</ID><Description>Dice</Description></Message>
+
+<!--end-->
+<!--AUTODL TOOLS-->
+
+
+
+<!--TIME SERIES TOOLS-->
+<!--start-->
+<Message><ID>260351</ID><Description>InceptionTime</Description></Message>
+<Message><ID>260352</ID><Description>ResNet</Description></Message>
+<Message><ID>260353</ID><Description>ResCNN</Description></Message>
+<Message><ID>260354</ID><Description>FCN</Description></Message>
+<Message><ID>260355</ID><Description>LSTM</Description></Message>
+<Message><ID>260356</ID><Description>A Space Time Cube created from Defined Locations can only be analyzed in ArcGIS Pro.</Description></Message>
+<Message><ID>260357</ID><Description>%s is not a variable in the Space Time Cube.</Description></Message>
+<Message><ID>260358</ID><Description>The Input Space Time Cube cannot contain forecast values.</Description></Message>
+<Message><ID>260359</ID><Description>The Input Space Time Cube contains forecast values.</Description></Message>
+<Message><ID>260360</ID><Description>Number of time steps to validate cannot be greater than 25 percent of total time steps in input cube.</Description></Message>
+<Message><ID>260361</ID><Description>Sequence length cannot be larger than total number of timesteps left after excluding validation timesteps from input cube.</Description></Message>
+<Message><ID>260362</ID><Description>This value should be greater than 0.</Description></Message>
+<Message><ID>260363</ID><Description>This value should be greater than 1.</Description></Message>
+<Message><ID>260364</ID><Description>Validation timesteps must be greater than 0 in order to get feature layer on validation dataset.</Description></Message>
+<Message><ID>260365</ID><Description>LSTM is not supported for multivariate dataset</Description></Message>
+<Message><ID>260366</ID><Description>Number of timesteps to forecast must be less than 50 percent of total timesteps in the input cube.</Description></Message>
+<Message><ID>260367</ID><Description>%s is not a valid Space Time Cube.</Description></Message>
+<Message><ID>260368</ID><Description>Dependent variable in the input data should contain NaN values which will be forecasted in case of multivariate forecasting.</Description></Message>
+<Message><ID>260369</ID><Description>Dependent variable in the input data should not contain NaN values in case of univariate forecasting.</Description></Message>
+<Message><ID>260370</ID><Description>The variable %s is repeated.</Description></Message>
+<Message><ID>260372</ID><Description>Variable marked as Categorical is of float datatype.</Description></Message>
+<Message><ID>260373</ID><Description>TimeSeriesTransformer</Description></Message>
+<Message><ID>260374</ID><Description>The value cannot be greater than half of the sequence length in case of multistep model.</Description></Message>
+<Message><ID>260375</ID><Description>1.5 times the value of sequence length cannot be greater than total number of timesteps after excluding validation timesteps in case of multistep model.</Description></Message>
+<Message><ID>260376</ID><Description>Number of time steps to validate should not be less than 5 percent of total time steps in input cube</Description></Message>
+<Message><ID>260377</ID><Description>Input data should not contain NaN values.</Description></Message>
+
+<!--end-->
+<!--TIME SERIES TOOLS-->
+
+
+
+<!--GEOAI TOOLBOX-->
+</Messages>

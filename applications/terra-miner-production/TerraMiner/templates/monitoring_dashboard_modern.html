@@ -1,0 +1,559 @@
+{% extends "new_unified_base.html" %}
+
+{% block head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js" integrity="sha512-ElRFoEQdI5Ht6kZvyzXhYG9NqjtkmlkfYk0wr6wHxU9JEHakS7UJZNeml5ALk+8IKlU6jDgMabC3vkumRokgJA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+{% endblock %}
+
+{% block title %}Monitoring Dashboard{% endblock %}
+{% block page_title %}Monitoring Dashboard{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 gap-6 mb-6">
+  <!-- Health Overview Card -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        System Health
+      </h2>
+      <div class="flex items-center">
+        {% if health_status == 'excellent' %}
+        <span class="px-2 py-1 text-sm font-semibold text-green-800 bg-green-100 rounded-md dark:bg-green-800 dark:text-green-100">Excellent ({{ health_score }}%)</span>
+        {% elif health_status == 'good' %}
+        <span class="px-2 py-1 text-sm font-semibold text-blue-800 bg-blue-100 rounded-md dark:bg-blue-800 dark:text-blue-100">Good ({{ health_score }}%)</span>
+        {% elif health_status == 'fair' %}
+        <span class="px-2 py-1 text-sm font-semibold text-yellow-800 bg-yellow-100 rounded-md dark:bg-yellow-800 dark:text-yellow-100">Fair ({{ health_score }}%)</span>
+        {% elif health_status == 'poor' %}
+        <span class="px-2 py-1 text-sm font-semibold text-red-800 bg-red-100 rounded-md dark:bg-red-800 dark:text-red-100">Poor ({{ health_score }}%)</span>
+        {% else %}
+        <span class="px-2 py-1 text-sm font-semibold text-red-800 bg-red-100 rounded-md dark:bg-red-800 dark:text-red-100">Critical ({{ health_score }}%)</span>
+        {% endif %}
+        <span class="text-sm text-gray-500 dark:text-gray-400 ml-4">Last updated: {{ current_time }}</span>
+      </div>
+    </div>
+    <div class="p-6">
+      <p class="text-gray-600 dark:text-gray-300">Real-time health status and metrics for the TerraMiner system</p>
+    </div>
+  </div>
+
+  <!-- Cards Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Active Alerts Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+      <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-white flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          Active Alerts
+        </h2>
+      </div>
+      <div class="p-6">
+        <div class="flex justify-between mb-6">
+          <div>
+            <div class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ alerts_summary.active.total }}</div>
+            <div class="text-sm text-gray-500 dark:text-gray-400">Total Active Alerts</div>
+          </div>
+          <div class="text-right">
+            <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">Last 24h: {{ alerts_summary.last_24h }}</div>
+            <div class="text-sm text-gray-500 dark:text-gray-400">Last 7d: {{ alerts_summary.last_7d }}</div>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div class="bg-red-50 dark:bg-red-900/20 p-3 rounded-lg">
+            <div class="flex justify-between items-center">
+              <span class="text-sm font-medium text-red-800 dark:text-red-300">Critical</span>
+              <span class="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded dark:bg-red-800 dark:text-red-100">{{ alerts_summary.active.critical }}</span>
+            </div>
+          </div>
+          <div class="bg-red-50 dark:bg-red-900/20 p-3 rounded-lg">
+            <div class="flex justify-between items-center">
+              <span class="text-sm font-medium text-red-800 dark:text-red-300">Error</span>
+              <span class="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded dark:bg-red-800 dark:text-red-100">{{ alerts_summary.active.error }}</span>
+            </div>
+          </div>
+          <div class="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded-lg">
+            <div class="flex justify-between items-center">
+              <span class="text-sm font-medium text-yellow-800 dark:text-yellow-300">Warning</span>
+              <span class="px-2 py-1 text-xs font-semibold text-yellow-800 bg-yellow-100 rounded dark:bg-yellow-800 dark:text-yellow-100">{{ alerts_summary.active.warning }}</span>
+            </div>
+          </div>
+          <div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
+            <div class="flex justify-between items-center">
+              <span class="text-sm font-medium text-blue-800 dark:text-blue-300">Info</span>
+              <span class="px-2 py-1 text-xs font-semibold text-blue-800 bg-blue-100 rounded dark:bg-blue-800 dark:text-blue-100">{{ alerts_summary.active.info }}</span>
+            </div>
+          </div>
+        </div>
+        
+        {% if alerts_summary.latest %}
+        <div class="mb-4">
+          <h3 class="text-md font-medium text-gray-700 dark:text-gray-300 mb-3">Latest Alerts</h3>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead>
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Severity</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Message</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Time</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                {% for alert in alerts_summary.latest %}
+                <tr>
+                  <td class="px-4 py-2 whitespace-nowrap">
+                    {% if alert.severity == 'critical' %}
+                    <span class="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full dark:bg-red-800 dark:text-red-100">Critical</span>
+                    {% elif alert.severity == 'error' %}
+                    <span class="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-full dark:bg-red-800 dark:text-red-100">Error</span>
+                    {% elif alert.severity == 'warning' %}
+                    <span class="px-2 py-1 text-xs font-semibold text-yellow-800 bg-yellow-100 rounded-full dark:bg-yellow-800 dark:text-yellow-100">Warning</span>
+                    {% else %}
+                    <span class="px-2 py-1 text-xs font-semibold text-blue-800 bg-blue-100 rounded-full dark:bg-blue-800 dark:text-blue-100">Info</span>
+                    {% endif %}
+                  </td>
+                  <td class="px-4 py-2 whitespace-normal text-sm text-gray-700 dark:text-gray-300">{{ alert.message }}</td>
+                  <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ alert.created_at.strftime('%H:%M:%S') }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {% else %}
+        <p class="text-gray-500 dark:text-gray-400 text-center py-4">No recent alerts</p>
+        {% endif %}
+        
+        <div class="flex justify-end">
+          <a href="{{ url_for('monitoring_alerts_active') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-lg hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:hover:bg-blue-900/30">
+            View All Alerts
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- System Performance Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+      <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-white flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          System Performance
+        </h2>
+      </div>
+      <div class="p-6">
+        <div class="space-y-6">
+          <!-- CPU Usage -->
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">CPU Usage</span>
+              <span class="text-sm font-medium 
+                {% if system_metrics.performance.cpu and system_metrics.performance.cpu.metric_value > 90 %}text-red-600 dark:text-red-400
+                {% elif system_metrics.performance.cpu and system_metrics.performance.cpu.metric_value > 70 %}text-yellow-600 dark:text-yellow-400
+                {% else %}text-green-600 dark:text-green-400{% endif %}">
+                {{ system_metrics.performance.cpu.metric_value|round(1) if system_metrics.performance.cpu else 'N/A' }}%
+              </span>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+              <div class="h-2.5 rounded-full
+                {% if system_metrics.performance.cpu and system_metrics.performance.cpu.metric_value > 90 %}bg-red-500
+                {% elif system_metrics.performance.cpu and system_metrics.performance.cpu.metric_value > 70 %}bg-yellow-500
+                {% else %}bg-green-500{% endif %}" 
+                style="width: {{ system_metrics.performance.cpu.metric_value if system_metrics.performance.cpu else 0 }}%">
+              </div>
+            </div>
+          </div>
+          
+          <!-- Memory Usage -->
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Memory Usage</span>
+              <span class="text-sm font-medium 
+                {% if system_metrics.performance.memory and system_metrics.performance.memory.metric_value > 90 %}text-red-600 dark:text-red-400
+                {% elif system_metrics.performance.memory and system_metrics.performance.memory.metric_value > 70 %}text-yellow-600 dark:text-yellow-400
+                {% else %}text-green-600 dark:text-green-400{% endif %}">
+                {{ system_metrics.performance.memory.metric_value|round(1) if system_metrics.performance.memory else 'N/A' }}%
+              </span>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+              <div class="h-2.5 rounded-full
+                {% if system_metrics.performance.memory and system_metrics.performance.memory.metric_value > 90 %}bg-red-500
+                {% elif system_metrics.performance.memory and system_metrics.performance.memory.metric_value > 70 %}bg-yellow-500
+                {% else %}bg-green-500{% endif %}" 
+                style="width: {{ system_metrics.performance.memory.metric_value if system_metrics.performance.memory else 0 }}%">
+              </div>
+            </div>
+          </div>
+          
+          <!-- Disk Usage -->
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Disk Usage</span>
+              <span class="text-sm font-medium 
+                {% if system_metrics.performance.disk and system_metrics.performance.disk.metric_value > 90 %}text-red-600 dark:text-red-400
+                {% elif system_metrics.performance.disk and system_metrics.performance.disk.metric_value > 70 %}text-yellow-600 dark:text-yellow-400
+                {% else %}text-green-600 dark:text-green-400{% endif %}">
+                {{ system_metrics.performance.disk.metric_value|round(1) if system_metrics.performance.disk else 'N/A' }}%
+              </span>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+              <div class="h-2.5 rounded-full
+                {% if system_metrics.performance.disk and system_metrics.performance.disk.metric_value > 90 %}bg-red-500
+                {% elif system_metrics.performance.disk and system_metrics.performance.disk.metric_value > 70 %}bg-yellow-500
+                {% else %}bg-green-500{% endif %}" 
+                style="width: {{ system_metrics.performance.disk.metric_value if system_metrics.performance.disk else 0 }}%">
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <h3 class="text-md font-medium text-gray-700 dark:text-gray-300 mb-4">Database Metrics</h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+              <div class="text-sm text-gray-500 dark:text-gray-400">Connections</div>
+              <div class="text-lg font-semibold text-gray-800 dark:text-white">
+                {{ database_metrics.connection_count.metric_value|int if database_metrics.connection_count else 'N/A' }}
+              </div>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+              <div class="text-sm text-gray-500 dark:text-gray-400">Avg Query Time</div>
+              <div class="text-lg font-semibold text-gray-800 dark:text-white">
+                {{ database_metrics.query_time_avg.metric_value|round(3) if database_metrics.query_time_avg else 'N/A' }} s
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex justify-end mt-6">
+          <a href="{{ url_for('monitoring_system') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-lg hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:hover:bg-blue-900/30">
+            View System Details
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- API Performance Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+      <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-white flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+          API Performance
+        </h2>
+      </div>
+      <div class="p-6">
+        <div class="mb-6">
+          <h3 class="text-md font-medium text-gray-700 dark:text-gray-300 mb-4">Last 24 Hours</h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+              <div class="text-sm text-gray-500 dark:text-gray-400">Total Requests</div>
+              <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ api_metrics.total_requests_24h|int }}</div>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+              <div class="text-sm text-gray-500 dark:text-gray-400">Avg Response Time</div>
+              <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ api_metrics.avg_response_time|round(3) }} s</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Error Rate -->
+        <div class="mb-6">
+          <div class="flex justify-between mb-1">
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Error Rate (24h)</span>
+            <span class="text-sm font-medium 
+              {% if api_metrics.error_rate > 5 %}text-red-600 dark:text-red-400
+              {% elif api_metrics.error_rate > 2 %}text-yellow-600 dark:text-yellow-400
+              {% else %}text-green-600 dark:text-green-400{% endif %}">
+              {{ api_metrics.error_rate|round(2) }}%
+            </span>
+          </div>
+          <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+            <div class="h-2.5 rounded-full
+              {% if api_metrics.error_rate > 5 %}bg-red-500
+              {% elif api_metrics.error_rate > 2 %}bg-yellow-500
+              {% else %}bg-green-500{% endif %}" 
+              style="width: {{ api_metrics.error_rate }}%">
+            </div>
+          </div>
+        </div>
+        
+        <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <h3 class="text-md font-medium text-gray-700 dark:text-gray-300 mb-4">AI Performance</h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+              <div class="text-sm text-gray-500 dark:text-gray-400">Requests (24h)</div>
+              <div class="text-lg font-semibold text-gray-800 dark:text-white">
+                {{ ai_metrics.total_requests_24h|int }}
+              </div>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+              <div class="text-sm text-gray-500 dark:text-gray-400">Avg Rating</div>
+              <div class="text-lg font-semibold text-gray-800 dark:text-white">
+                {{ ai_metrics.avg_rating|round(2) if ai_metrics.avg_rating else 'N/A' }}
+                {% if ai_metrics.avg_rating %}
+                  <span class="text-xs text-gray-500 dark:text-gray-400">(out of 5)</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex justify-end mt-6 space-x-2">
+          <a href="{{ url_for('monitoring_api') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-lg hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:hover:bg-blue-900/30">
+            View API Details
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+          <a href="{{ url_for('monitoring_ai') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-lg hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:hover:bg-blue-900/30">
+            View AI Details
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Property Data Analysis Row -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Property Locations Map Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+      <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-white flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          Property Locations
+        </h2>
+      </div>
+      <div class="p-6">
+        <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 h-44 flex items-center justify-center mb-6">
+          <svg class="w-full h-full" viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
+            <rect width="100%" height="100%" fill="transparent" />
+            <path d="M50,90 L70,50 L90,90 Z" fill="#3B82F6" stroke="#2563EB" stroke-width="2" />
+            <path d="M150,70 L170,30 L190,70 Z" fill="#3B82F6" stroke="#2563EB" stroke-width="2" />
+            <path d="M250,110 L270,70 L290,110 Z" fill="#3B82F6" stroke="#2563EB" stroke-width="2" />
+            <circle cx="70" cy="120" r="8" fill="#2563EB" opacity="0.8" />
+            <circle cx="170" cy="100" r="8" fill="#2563EB" opacity="0.8" />
+            <circle cx="270" cy="140" r="8" fill="#2563EB" opacity="0.8" />
+            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="16" fill="#64748B" class="dark:text-gray-300">Property Location Map</text>
+          </svg>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+            <div class="text-sm text-gray-500 dark:text-gray-400">Total Properties</div>
+            <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ location_stats.total_properties|default('120') }}</div>
+          </div>
+          <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+            <div class="text-sm text-gray-500 dark:text-gray-400">Cities</div>
+            <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ location_stats.distinct_cities|default('10') }}</div>
+          </div>
+        </div>
+        <div class="flex justify-center mt-6">
+          <a href="{{ url_for('monitoring_locations') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-lg hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:hover:bg-blue-900/30">
+            View Property Map
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Price Trends Card -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+      <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-white flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+          </svg>
+          Price Trends
+        </h2>
+      </div>
+      <div class="p-6">
+        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg h-44 p-4 flex items-center justify-center mb-6">
+          <canvas id="price-trend-chart" class="w-full h-full"></canvas>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+            <div class="text-sm text-gray-500 dark:text-gray-400">Avg. Price Change</div>
+            <div class="text-2xl font-bold {% if price_trends.avg_price_change and price_trends.avg_price_change >= 0 %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %}">
+              {{ price_trends.avg_price_change|default('+2.4') }}%
+            </div>
+          </div>
+          <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+            <div class="text-sm text-gray-500 dark:text-gray-400">Price Range</div>
+            <div class="text-2xl font-bold text-gray-900 dark:text-white">
+              ${{ price_trends.min_price|default('200k') }} - {{ price_trends.max_price|default('1.2M') }}
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-center mt-6">
+          <a href="{{ url_for('monitoring_price_trends') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-lg hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:hover:bg-blue-900/30">
+            View Price Trends
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scheduled Reports Card -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+      <h2 class="text-lg font-semibold text-gray-800 dark:text-white flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        Scheduled Reports
+      </h2>
+      <a href="{{ url_for('monitoring_reports_create') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        Create Report
+      </a>
+    </div>
+    <div class="p-6">
+      {% if scheduled_reports %}
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead>
+            <tr>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Schedule</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Last Run</th>
+              <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+            {% for report in scheduled_reports %}
+            <tr>
+              <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ report.name }}</td>
+              <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ report.schedule }}</td>
+              <td class="px-4 py-3 whitespace-nowrap">
+                {% if report.is_active %}
+                <span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full dark:bg-green-800 dark:text-green-100">Active</span>
+                {% else %}
+                <span class="px-2 py-1 text-xs font-semibold text-gray-800 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-300">Inactive</span>
+                {% endif %}
+              </td>
+              <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ report.last_run_at or 'Never' }}</td>
+              <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
+                <div class="flex justify-end space-x-2">
+                  <a href="{{ url_for('monitoring_reports_edit', report_id=report.id) }}" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </a>
+                  <form action="{{ url_for('monitoring_reports_run', report_id=report.id) }}" method="post" class="inline-block">
+                    <button type="submit" class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-center py-8">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400 dark:text-gray-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <p class="text-gray-500 dark:text-gray-400 mb-4">No scheduled reports found</p>
+        <a href="{{ url_for('monitoring_reports_create') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Create Your First Report
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize Price Trends Chart
+  var priceTrendCtx = document.getElementById('price-trend-chart').getContext('2d');
+  var priceTrendChart = new Chart(priceTrendCtx, {
+    type: 'line',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+      datasets: [{
+        label: 'Avg Property Price',
+        data: [320000, 340000, 360000, 355000, 370000, 380000],
+        borderColor: '#3B82F6',
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        tension: 0.3,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          mode: 'index',
+          intersect: false
+        }
+      },
+      scales: {
+        x: {
+          grid: {
+            display: false
+          }
+        },
+        y: {
+          grid: {
+            borderDash: [2, 4],
+            color: 'rgba(156, 163, 175, 0.2)'
+          },
+          ticks: {
+            callback: function(value) {
+              return '$' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // Apply dark mode to charts if needed
+  const isDarkMode = document.documentElement.classList.contains('dark');
+  if (isDarkMode) {
+    Chart.defaults.color = '#D1D5DB';
+    Chart.defaults.borderColor = 'rgba(75, 85, 99, 0.2)';
+    priceTrendChart.update();
+  }
+});
+</script>
+{% endblock %}

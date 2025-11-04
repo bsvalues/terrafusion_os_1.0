@@ -1,0 +1,382 @@
+{
+    "type": "FunctionTool",
+    "guid": "{F6243FE3-8552-4511-BBCE-F882B7099A58}/FAA13ARunwayProtectionSurfaces",
+    "displayname": "$rc:title",
+    "helpcontent": "64010008",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "53",
+        "70"
+    ],
+    "params": {
+        "in_features": {
+            "display_order": "1",
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "target": {
+            "displayname": "$rc:target.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Polygon",
+                            "MultiPatch"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:target.descr"
+        },
+        "surface_generation": {
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:surface_generation.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "RUNWAY_SAFETY_AREA",
+                        "code": "$rc:surface_generation.domain.RUNWAY_SAFETY_AREA"
+                    },
+                    {
+                        "value": "RUNWAY_OBJECT_FREE_AREA",
+                        "code": "$rc:surface_generation.domain.RUNWAY_OBJECT_FREE_AREA"
+                    },
+                    {
+                        "value": "RUNWAY_OBSTACLE_FREE_ZONE",
+                        "code": "$rc:surface_generation.domain.RUNWAY_OBSTACLE_FREE_ZONE"
+                    },
+                    {
+                        "value": "PRECISION_OBSTACLE_FREE_ZONE",
+                        "code": "$rc:surface_generation.domain.PRECISION_OBSTACLE_FREE_ZONE"
+                    },
+                    {
+                        "value": "APPROACH_RUNWAY_PROTECTION_ZONE",
+                        "code": "$rc:surface_generation.domain.APPROACH_RUNWAY_PROTECTION_ZONE"
+                    },
+                    {
+                        "value": "DEPARTURE_RUNWAY_PROTECTION_ZONE",
+                        "code": "$rc:surface_generation.domain.DEPARTURE_RUNWAY_PROTECTION_ZONE"
+                    }
+                ]
+            },
+            "description": "$rc:surface_generation.descr"
+        },
+        "visibility_minimums": {
+            "type": "optional",
+            "displayname": "$rc:visibility_minimums.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "VISUAL",
+                        "code": "$rc:visibility_minimums.domain.VISUAL"
+                    },
+                    {
+                        "value": "NOT_LOWER_THAN_1_MILE",
+                        "code": "$rc:visibility_minimums.domain.NOT_LOWER_THAN_1_MILE"
+                    },
+                    {
+                        "value": "NOT_LOWER_THAN_3_4_MILE",
+                        "code": "$rc:visibility_minimums.domain.NOT_LOWER_THAN_3_4_MILE"
+                    },
+                    {
+                        "value": "LOWER_THAN_3_4_MILE",
+                        "code": "$rc:visibility_minimums.domain.LOWER_THAN_3_4_MILE"
+                    }
+                ]
+            },
+            "value": "VISUAL",
+            "description": "$rc:visibility_minimums.descr"
+        },
+        "approach_category": {
+            "displayname": "$rc:approach_category.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "A",
+                        "code": "$rc:approach_category.domain.A"
+                    },
+                    {
+                        "value": "B",
+                        "code": "$rc:approach_category.domain.B"
+                    },
+                    {
+                        "value": "C",
+                        "code": "$rc:approach_category.domain.C"
+                    },
+                    {
+                        "value": "D",
+                        "code": "$rc:approach_category.domain.D"
+                    },
+                    {
+                        "value": "E",
+                        "code": "$rc:approach_category.domain.E"
+                    }
+                ]
+            },
+            "description": "$rc:approach_category.descr"
+        },
+        "approach_design_group": {
+            "displayname": "$rc:approach_design_group.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "I",
+                        "code": "$rc:approach_design_group.domain.I"
+                    },
+                    {
+                        "value": "II",
+                        "code": "$rc:approach_design_group.domain.II"
+                    },
+                    {
+                        "value": "III",
+                        "code": "$rc:approach_design_group.domain.III"
+                    },
+                    {
+                        "value": "IV",
+                        "code": "$rc:approach_design_group.domain.IV"
+                    },
+                    {
+                        "value": "V",
+                        "code": "$rc:approach_design_group.domain.V"
+                    },
+                    {
+                        "value": "VI",
+                        "code": "$rc:approach_design_group.domain.VI"
+                    }
+                ]
+            },
+            "description": "$rc:approach_design_group.descr"
+        },
+        "small_aircraft": {
+            "type": "optional",
+            "displayname": "$rc:small_aircraft.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SMALL_AIRCRAFT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NOT_SMALL_AIRCRAFT"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:small_aircraft.descr"
+        },
+        "approach_guidance": {
+            "type": "optional",
+            "displayname": "$rc:approach_guidance.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PRECISION_CAT_I",
+                        "code": "$rc:approach_guidance.domain.PRECISION_CAT_I"
+                    },
+                    {
+                        "value": "PRECISION_CAT_II",
+                        "code": "$rc:approach_guidance.domain.PRECISION_CAT_II"
+                    },
+                    {
+                        "value": "PRECISION_CAT_IIIA",
+                        "code": "$rc:approach_guidance.domain.PRECISION_CAT_IIIA"
+                    },
+                    {
+                        "value": "PRECISION_CAT_IIIB",
+                        "code": "$rc:approach_guidance.domain.PRECISION_CAT_IIIB"
+                    },
+                    {
+                        "value": "PRECISION_CAT_IIIC",
+                        "code": "$rc:approach_guidance.domain.PRECISION_CAT_IIIC"
+                    },
+                    {
+                        "value": "PRECISION_CAT_IIID",
+                        "code": "$rc:approach_guidance.domain.PRECISION_CAT_IIID"
+                    },
+                    {
+                        "value": "NON_VERTICAL",
+                        "code": "$rc:approach_guidance.domain.NON_VERTICAL"
+                    },
+                    {
+                        "value": "VERTICAL",
+                        "code": "$rc:approach_guidance.domain.VERTICAL"
+                    },
+                    {
+                        "value": "VISUAL",
+                        "code": "$rc:approach_guidance.domain.VISUAL"
+                    }
+                ]
+            },
+            "description": "$rc:approach_guidance.descr"
+        },
+        "runway_direction": {
+            "type": "optional",
+            "displayname": "$rc:runway_direction.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "HIGH_END_TO_LOW_END",
+                        "code": "$rc:runway_direction.domain.HIGH_END_TO_LOW_END"
+                    },
+                    {
+                        "value": "LOW_END_TO_HIGH_END",
+                        "code": "$rc:runway_direction.domain.LOW_END_TO_HIGH_END"
+                    },
+                    {
+                        "value": "BOTH_END",
+                        "code": "$rc:runway_direction.domain.BOTH_END"
+                    }
+                ]
+            },
+            "value": "HIGH_END_TO_LOW_END",
+            "description": "$rc:runway_direction.descr"
+        },
+        "airport_elevation": {
+            "type": "optional",
+            "displayname": "$rc:airport_elevation.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:airport_elevation.descr"
+        },
+        "airport_control_point_feature_class": {
+            "type": "optional",
+            "displayname": "$rc:airport_control_point_feature_class.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:airport_control_point_feature_class.descr"
+        },
+        "runway_end_features": {
+            "type": "optional",
+            "displayname": "$rc:runway_end_features.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:runway_end_features.descr"
+        },
+        "last_low_light": {
+            "type": "optional",
+            "displayname": "$rc:last_low_light.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:last_low_light.descr"
+        },
+        "last_high_light": {
+            "type": "optional",
+            "displayname": "$rc:last_high_light.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:last_high_light.descr"
+        },
+        "custom_json_file": {
+            "type": "optional",
+            "displayname": "$rc:custom_json_file.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "json"
+                ]
+            },
+            "description": "$rc:custom_json_file.descr"
+        },
+        "derived_outfeatureclass": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:derived_outfeatureclass.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Polygon",
+                            "MultiPatch"
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "target"
+            ]
+        }
+    }
+}

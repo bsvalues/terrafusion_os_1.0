@@ -5,7 +5,7 @@ Based on Official Brand Kit: tf-brand-config.json
 
 CUTTING-EDGE FEATURES:
 - Quantum-inspired animation systems with 1,008 AI agent coordination
-- Self-healing CSS architecture with automatic fault recovery  
+- Self-healing CSS architecture with automatic fault recovery
 - AI-responsive design adapting to user behavior and system performance
 - Real-time performance monitoring with government-grade SLA compliance
 - Container queries, CSS Grid subgrid, and advanced layout systems
@@ -33,9 +33,18 @@ CUTTING-EDGE FEATURES:
   --tf-clarity: #e0f7ff;
 
   /* Official Brand Gradients */
-  --tf-gradient-hero: linear-gradient(135deg, var(--tf-primary) 0%, var(--tf-transcend) 50%, var(--tf-accent) 100%);
+  --tf-gradient-hero: linear-gradient(
+    135deg,
+    var(--tf-primary) 0%,
+    var(--tf-transcend) 50%,
+    var(--tf-accent) 100%
+  );
   --tf-gradient-dark: linear-gradient(180deg, var(--tf-dark) 0%, #0a0f1c 100%);
-  --tf-gradient-glass: linear-gradient(135deg, rgba(0, 255, 238, 0.1) 0%, rgba(0, 153, 255, 0.05) 100%);
+  --tf-gradient-glass: linear-gradient(
+    135deg,
+    rgba(0, 255, 238, 0.1) 0%,
+    rgba(0, 153, 255, 0.05) 100%
+  );
 
   /* Glass Morphism System */
   --tf-glass: rgba(255, 255, 255, 0.03);
@@ -93,8 +102,8 @@ body {
 /* Official TerraFusion Card System */
 .tf-card {
   background: var(--tf-glass);
-  backdrop-filter: var(--tf-blur);
   -webkit-backdrop-filter: var(--tf-blur);
+  backdrop-filter: var(--tf-blur);
   border: 1px solid var(--tf-glass-border);
   border-radius: var(--tf-radius-xl);
   padding: var(--tf-space-lg);
@@ -148,7 +157,7 @@ body {
 
 .tf-button:hover {
   transform: translateY(-2px);
-  box-shadow: 
+  box-shadow:
     0 10px 25px rgba(0, 255, 238, 0.3),
     0 6px 10px rgba(0, 153, 255, 0.2);
 }
@@ -196,7 +205,7 @@ body {
 .tf-input:focus {
   outline: none;
   border-color: var(--tf-transcend);
-  box-shadow: 
+  box-shadow:
     0 0 0 3px rgba(0, 255, 238, 0.1),
     0 0 20px rgba(0, 255, 238, 0.1);
 }
@@ -301,10 +310,7 @@ body {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(0, 255, 238, 0.2), 
-    transparent);
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 238, 0.2), transparent);
   animation: loading-shimmer 1.5s infinite;
 }
 
@@ -319,27 +325,21 @@ body {
 
 /* Success States */
 .tf-success {
-  background: linear-gradient(135deg, 
-    rgba(0, 255, 136, 0.1) 0%, 
-    rgba(0, 255, 170, 0.1) 100%);
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.1) 0%, rgba(0, 255, 170, 0.1) 100%);
   border: 1px solid rgba(0, 255, 136, 0.3);
   color: var(--tf-success);
 }
 
 /* Error States */
 .tf-error {
-  background: linear-gradient(135deg, 
-    rgba(255, 51, 51, 0.1) 0%, 
-    rgba(255, 102, 102, 0.1) 100%);
+  background: linear-gradient(135deg, rgba(255, 51, 51, 0.1) 0%, rgba(255, 102, 102, 0.1) 100%);
   border: 1px solid rgba(255, 51, 51, 0.3);
   color: var(--tf-error);
 }
 
 /* Warning States */
 .tf-warning {
-  background: linear-gradient(135deg, 
-    rgba(255, 170, 0, 0.1) 0%, 
-    rgba(255, 204, 0, 0.1) 100%);
+  background: linear-gradient(135deg, rgba(255, 170, 0, 0.1) 0%, rgba(255, 204, 0, 0.1) 100%);
   border: 1px solid rgba(255, 170, 0, 0.3);
   color: var(--tf-warning);
 }
@@ -347,6 +347,7 @@ body {
 /* Module Cards - Official Implementation */
 .tf-module-card {
   background: var(--tf-glass);
+  -webkit-backdrop-filter: var(--tf-blur);
   backdrop-filter: var(--tf-blur);
   border: 1px solid var(--tf-glass-border);
   border-radius: var(--tf-radius-lg);
@@ -360,7 +361,7 @@ body {
 .tf-module-card:hover {
   transform: translateY(-8px) scale(1.02);
   border-color: var(--tf-transcend);
-  box-shadow: 
+  box-shadow:
     0 20px 40px rgba(0, 255, 238, 0.3),
     0 0 60px rgba(0, 255, 238, 0.1);
 }
@@ -388,11 +389,11 @@ body {
   .tf-grid-4 {
     grid-template-columns: 1fr;
   }
-  
+
   .tf-card {
     padding: var(--tf-space-md);
   }
-  
+
   .tf-button {
     padding: var(--tf-space-md);
     font-size: 14px;
@@ -406,7 +407,7 @@ body {
     --tf-transcend: #00cccc;
     --tf-accent: #00aa00;
   }
-  
+
   .tf-card {
     border: 2px solid var(--tf-primary);
   }

@@ -1,0 +1,97 @@
+version: '3.8'
+networks:
+  terrafusion-network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.enable_icc: "false"
+      com.docker.network.bridge.enable_ip_masquerade: "true"
+
+volumes:
+  api-logs:
+    driver: local
+  web-logs:
+    driver: local
+
+services:
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        - BUILDKIT_INLINE_CACHE=1
+    ports: 
+      - "127.0.0.1:8787:8787"  # Only bind to localhost for security
+    environment:
+      - RUST_LOG=info
+      - RUST_BACKTRACE=1
+      - TF_ENVIRONMENT=production
+      - TF_LOG_LEVEL=info
+    volumes:
+      - api-logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8787/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    security_opt:
+      - no-new-privileges:true
+    user: "1000:1000"
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=100m
+    networks:
+      - terrafusion-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+  web:
+    build:
+      context: ./apps/terrafusion-web
+      dockerfile: Dockerfile
+      args:
+        - BUILDKIT_INLINE_CACHE=1
+        - NODE_ENV=production
+    environment:
+      - BACKEND_URL=http://api:8787
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
+      - TF_ENVIRONMENT=production
+    ports: 
+      - "127.0.0.1:3000:3000"  # Only bind to localhost for security
+    volumes:
+      - web-logs:/app/logs
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    security_opt:
+      - no-new-privileges:true
+    user: "1000:1000"
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,size=100m
+      - /app/.next/cache:noexec,nosuid,size=500m
+    networks:
+      - terrafusion-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M

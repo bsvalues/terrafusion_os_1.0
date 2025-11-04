@@ -12,18 +12,18 @@ describe('Avatar', () => {
           <AvatarFallback>JD</AvatarFallback>
         </Avatar>
       );
-      
+
       const fallback = screen.getByText('JD');
       expect(fallback).toBeInTheDocument();
     });
 
     it('renders with custom className', () => {
       const { container } = render(
-        <Avatar className="custom-avatar">
+        <Avatar className='custom-avatar'>
           <AvatarFallback>JD</AvatarFallback>
         </Avatar>
       );
-      
+
       const avatar = container.firstChild;
       expect(avatar).toHaveClass('custom-avatar');
     });
@@ -34,7 +34,7 @@ describe('Avatar', () => {
           <AvatarFallback>JD</AvatarFallback>
         </Avatar>
       );
-      
+
       const avatar = container.firstChild;
       expect(avatar).toHaveClass('h-10', 'w-10', 'rounded-full');
     });
@@ -44,7 +44,7 @@ describe('Avatar', () => {
     it('renders image when src is provided', async () => {
       render(
         <Avatar>
-          <AvatarImage src="https://example.com/avatar.jpg" alt="John Doe" />
+          <AvatarImage src='https://example.com/avatar.jpg' alt='John Doe' />
           <AvatarFallback>JD</AvatarFallback>
         </Avatar>
       );
@@ -57,11 +57,7 @@ describe('Avatar', () => {
     it('renders with custom className', () => {
       render(
         <Avatar>
-          <AvatarImage
-            src="https://example.com/avatar.jpg"
-            alt="User"
-            className="custom-image"
-          />
+          <AvatarImage src='https://example.com/avatar.jpg' alt='User' className='custom-image' />
           <AvatarFallback>U</AvatarFallback>
         </Avatar>
       );
@@ -73,7 +69,7 @@ describe('Avatar', () => {
     it('has correct aspect ratio classes', () => {
       render(
         <Avatar>
-          <AvatarImage src="https://example.com/avatar.jpg" alt="User" />
+          <AvatarImage src='https://example.com/avatar.jpg' alt='User' />
           <AvatarFallback>U</AvatarFallback>
         </Avatar>
       );
@@ -97,7 +93,7 @@ describe('Avatar', () => {
     it('renders fallback with custom className', () => {
       render(
         <Avatar>
-          <AvatarFallback className="custom-fallback">JD</AvatarFallback>
+          <AvatarFallback className='custom-fallback'>JD</AvatarFallback>
         </Avatar>
       );
 
@@ -119,7 +115,7 @@ describe('Avatar', () => {
     it('shows fallback when image fails to load', async () => {
       render(
         <Avatar>
-          <AvatarImage src="https://example.com/invalid.jpg" alt="User" />
+          <AvatarImage src='https://example.com/invalid.jpg' alt='User' />
           <AvatarFallback>U</AvatarFallback>
         </Avatar>
       );
@@ -153,8 +149,8 @@ describe('Avatar', () => {
     });
 
     it('renders icon as fallback', () => {
-      const UserIcon = () => <svg data-testid="user-icon" />;
-      
+      const UserIcon = () => <svg data-testid='user-icon' />;
+
       render(
         <Avatar>
           <AvatarFallback>
@@ -171,7 +167,7 @@ describe('Avatar', () => {
     it('shows image when loaded successfully', () => {
       render(
         <Avatar>
-          <AvatarImage src="https://example.com/avatar.jpg" alt="John Doe" />
+          <AvatarImage src='https://example.com/avatar.jpg' alt='John Doe' />
           <AvatarFallback>JD</AvatarFallback>
         </Avatar>
       );
@@ -183,7 +179,7 @@ describe('Avatar', () => {
     it('provides alt text for image', () => {
       render(
         <Avatar>
-          <AvatarImage src="https://example.com/avatar.jpg" alt="Profile picture" />
+          <AvatarImage src='https://example.com/avatar.jpg' alt='Profile picture' />
           <AvatarFallback>PP</AvatarFallback>
         </Avatar>
       );
@@ -208,7 +204,7 @@ describe('Avatar', () => {
     it('has no accessibility violations with image and alt text', async () => {
       const { container } = render(
         <Avatar>
-          <AvatarImage src="https://example.com/avatar.jpg" alt="John Doe" />
+          <AvatarImage src='https://example.com/avatar.jpg' alt='John Doe' />
           <AvatarFallback>JD</AvatarFallback>
         </Avatar>
       );
@@ -219,9 +215,9 @@ describe('Avatar', () => {
 
     it('has no accessibility violations with custom styling', async () => {
       const { container } = render(
-        <Avatar className="h-12 w-12">
-          <AvatarImage src="https://example.com/avatar.jpg" alt="User avatar" />
-          <AvatarFallback className="text-lg">UA</AvatarFallback>
+        <Avatar className='h-12 w-12'>
+          <AvatarImage src='https://example.com/avatar.jpg' alt='User avatar' />
+          <AvatarFallback className='text-lg'>UA</AvatarFallback>
         </Avatar>
       );
 
@@ -232,10 +228,7 @@ describe('Avatar', () => {
     it('provides meaningful alt text for images', () => {
       render(
         <Avatar>
-          <AvatarImage
-            src="https://example.com/avatar.jpg"
-            alt="Profile picture of John Doe"
-          />
+          <AvatarImage src='https://example.com/avatar.jpg' alt='Profile picture of John Doe' />
           <AvatarFallback>JD</AvatarFallback>
         </Avatar>
       );
@@ -248,7 +241,7 @@ describe('Avatar', () => {
   describe('Custom Sizes', () => {
     it('applies custom size classes', () => {
       const { container } = render(
-        <Avatar className="h-20 w-20">
+        <Avatar className='h-20 w-20'>
           <AvatarFallback>XL</AvatarFallback>
         </Avatar>
       );
@@ -259,14 +252,14 @@ describe('Avatar', () => {
 
     it('applies small size classes', () => {
       const { container } = render(
-        <Avatar className="h-8 w-8">
-          <AvatarFallback className="text-xs">SM</AvatarFallback>
+        <Avatar className='h-8 w-8'>
+          <AvatarFallback className='text-xs'>SM</AvatarFallback>
         </Avatar>
       );
 
       const avatar = container.firstChild;
       expect(avatar).toHaveClass('h-8', 'w-8');
-      
+
       const fallback = screen.getByText('SM');
       expect(fallback).toHaveClass('text-xs');
     });

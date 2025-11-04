@@ -1,0 +1,452 @@
+{
+  "folders": [
+    {
+      "path": "..",
+      "name": "🎯 TerraFusion OS 1.0 (Complete Ecosystem)"
+    },
+    {
+      "path": "../workspaces",
+      "name": "🎊 All Workspaces (31+ Environments)"
+    },
+    {
+      "path": "../os-platform",
+      "name": "🏛️ OS Platform Core"
+    },
+    {
+      "path": "../marketplace",
+      "name": "🏪 Marketplace System"
+    },
+    {
+      "path": "../frontend",
+      "name": "🎨 Frontend Engine"
+    },
+    {
+      "path": "../backend",
+      "name": "🔧 Backend Services"
+    },
+    {
+      "path": "../SDK",
+      "name": "📦 Platform SDK"
+    },
+    {
+      "path": "../docs",
+      "name": "📚 Documentation Hub"
+    },
+    {
+      "path": "../config",
+      "name": "⚙️ Configuration Center"
+    },
+    {
+      "path": "../infrastructure",
+      "name": "🏗️ Infrastructure Layer"
+    },
+    {
+      "path": "../ops",
+      "name": "📊 Operations & DevOps"
+    },
+    {
+      "path": "../monitoring",
+      "name": "📈 System Monitoring"
+    },
+    {
+      "path": "../.github",
+      "name": "🚀 CI/CD & Automation"
+    },
+    {
+      "path": "../docs/terrafusion_ecosystem",
+      "name": "📚 Terrafusion-Ecosystem Docs"
+    }
+  ],
+  "settings": {
+    "workbench.colorTheme": "One Dark Pro",
+    "workbench.startupEditor": "readme",
+    "workbench.iconTheme": "vscode-icons",
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/out": true,
+      "**/.git": true,
+      "**/obj": true,
+      "**/bin": true,
+      "**/__pycache__": true,
+      "**/.pytest_cache": true,
+      "**/.venv": true,
+      "**/target": true,
+      "**/.next": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/out": true,
+      "**/package-lock.json": true,
+      "**/.venv": true,
+      "**/target": true
+    },
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "git.branchProtection": [
+      "main",
+      "develop",
+      "production"
+    ],
+    "terrafusion.ecosystem": {
+      "totalWorkspaces": 31,
+      "coreInfrastructure": 11,
+      "marketplaceApplications": 15,
+      "platformServices": 12,
+      "governmentCompliance": "FISMA HIGH/MODERATE",
+      "aiAgentCount": 1008,
+      "countyIntegration": "Harris PACS v12.4.7",
+      "quantumEnhanced": true
+    },
+    "terrafusion.management": {
+      "masterWorkspace": true,
+      "ecosystemOverview": true,
+      "workspaceSync": "auto",
+      "healthMonitoring": "enabled",
+      "performanceTracking": "comprehensive",
+      "complianceValidation": "continuous"
+    },
+    "terrafusion.compliance": {
+      "fismaMode": "HIGH",
+      "nist80053": true,
+      "fedramp": "HIGH",
+      "sox": true,
+      "governmentStandards": true,
+      "auditTrail": "comprehensive"
+    },
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "python.defaultInterpreter": "./.venv/bin/python",
+    "eslint.workingDirectories": [
+      "./os-platform",
+      "./marketplace",
+      "./frontend",
+      "./backend"
+    ],
+    "terrafusion.sync": {
+      "autoSync": true,
+      "syncInterval": 15,
+      "conflictResolution": "terrafusion-priority",
+      "sharedState": {
+        "backend": "read-only",
+        "sdk": "read-only",
+        "config": "shared-write"
+      }
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-python.debugpy",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-vscode.vscode-typescript-next",
+      "streetsidesoftware.code-spell-checker",
+      "ms-azuretools.vscode-docker",
+      "ms-kubernetes-tools.vscode-kubernetes-tools",
+      "redhat.vscode-yaml",
+      "ms-vscode.vscode-json",
+      "usernamehw.errorlens",
+      "eamodio.gitlens",
+      "gruntfuggly.todo-tree",
+      "ms-vscode.vscode-js-profile-table",
+      "yzhang.markdown-all-in-one",
+      "bierner.markdown-mermaid",
+      "hediet.vscode-drawio",
+      "github.vscode-github-actions",
+      "ms-vscode.azure-account"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "🚀 Launch Complete TerraFusion Ecosystem",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": [
+          "run",
+          "start:ecosystem"
+        ],
+        "console": "integratedTerminal",
+        "env": {
+          "TERRAFUSION_MODE": "complete-ecosystem",
+          "WORKSPACE_COUNT": "31",
+          "AI_AGENTS": "1008",
+          "COMPLIANCE_LEVEL": "FISMA_HIGH"
+        }
+      },
+      {
+        "name": "🏛️ Start OS Platform Core",
+        "type": "python",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/os-platform",
+        "program": "main.py",
+        "console": "integratedTerminal",
+        "env": {
+          "TERRAFUSION_SERVICE": "os-platform",
+          "PLATFORM_MODE": "production"
+        }
+      },
+      {
+        "name": "🏪 Start Marketplace System",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "console": "integratedTerminal",
+        "env": {
+          "TERRAFUSION_SERVICE": "marketplace"
+        }
+      },
+      {
+        "name": "🎨 Start Frontend Engine",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/frontend",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "console": "integratedTerminal",
+        "env": {
+          "TERRAFUSION_SERVICE": "frontend"
+        }
+      },
+      {
+        "name": "🔧 Start Backend Services",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/backend",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "console": "integratedTerminal",
+        "env": {
+          "TERRAFUSION_SERVICE": "backend"
+        }
+      },
+      {
+        "name": "📊 View System Health Dashboard",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/ops",
+        "program": "dashboard/server.js",
+        "console": "integratedTerminal",
+        "env": {
+          "DASHBOARD_MODE": "comprehensive"
+        }
+      }
+    ],
+    "compounds": [
+      {
+        "name": "🌟 Complete TerraFusion OS Ecosystem",
+        "configurations": [
+          "🏛️ Start OS Platform Core",
+          "🏪 Start Marketplace System",
+          "🎨 Start Frontend Engine",
+          "🔧 Start Backend Services",
+          "📊 View System Health Dashboard"
+        ],
+        "presentation": {
+          "hidden": false,
+          "group": "ecosystem",
+          "order": 1
+        },
+        "stopAll": true
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "🎯 Generate Complete Ecosystem Health Report",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "${workspaceFolder}/ops/health/generate_workspace_health.py",
+          "marketplace",
+          "frontend",
+          "platform",
+          "all-workspaces"
+        ],
+        "problemMatcher": [],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "presentation": {
+          "reveal": "always",
+          "panel": "new",
+          "showReuseMessage": false
+        }
+      },
+      {
+        "label": "🚀 Build Complete TerraFusion Ecosystem",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "build:ecosystem"
+        ],
+        "problemMatcher": [
+          "$tsc"
+        ],
+        "group": "build"
+      },
+      {
+        "label": "🧪 Test Complete TerraFusion Ecosystem",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "test:ecosystem"
+        ],
+        "problemMatcher": [],
+        "group": "test"
+      },
+      {
+        "label": "🔍 Validate All 31 Workspaces",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "${workspaceFolder}/ops/validation/validate_all_workspaces.py"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "📊 View All CI/CD Pipeline Status",
+        "type": "shell",
+        "command": "gh",
+        "args": [
+          "workflow",
+          "list",
+          "--all"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "🏛️ Deploy Government OS Platform",
+        "type": "shell",
+        "command": "kubectl",
+        "args": [
+          "apply",
+          "-f",
+          "${workspaceFolder}/infrastructure/kubernetes/"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "🤖 Coordinate AI Swarm (1008 Agents)",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "${workspaceFolder}/os-platform/ai-systems/ai-swarm/swarm_coordinator.py",
+          "--agents=1008",
+          "--mode=government"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "🛡️ Run FISMA Compliance Check",
+        "type": "shell",
+        "command": "./SDK/tools/compliance-check.sh",
+        "args": [
+          "--all-workspaces",
+          "--level=FISMA_HIGH"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "🏪 Sync All Marketplace Applications",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "${workspaceFolder}/SDK/tools/sync_workspaces.py",
+          "--target=marketplace-applications"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "⚡ Optimize Platform Performance",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "${workspaceFolder}/os-platform/performance/optimization-suite/optimize_ecosystem.py"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "🔄 Synchronize All Workspaces",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "${workspaceFolder}/SDK/tools/sync_workspaces.py",
+          "--all",
+          "--validate"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "📋 Generate Ecosystem Documentation",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "${workspaceFolder}/docs/generation/generate_ecosystem_docs.py"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      }
+    ]
+  },
+  "inputs": [
+    {
+      "id": "workspaceTarget",
+      "description": "Select workspace category:",
+      "default": "all-workspaces",
+      "type": "pickString",
+      "options": [
+        "all-workspaces",
+        "core-infrastructure",
+        "marketplace-applications",
+        "platform-services",
+        "government-portals",
+        "specialized-services"
+      ]
+    },
+    {
+      "id": "deploymentEnvironment",
+      "description": "Select deployment environment:",
+      "default": "production",
+      "type": "pickString",
+      "options": [
+        "development",
+        "staging",
+        "production",
+        "government-cloud",
+        "multi-cloud"
+      ]
+    }
+  ]
+}

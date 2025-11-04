@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Tests.TaskService.DAL.NHibernate</name>
+    </assembly>
+    <members>
+        <member name="T:Tests.TaskService.DAL.NHibernate.TaskCategoryRepositoryTests">
+            <summary>
+            Implements unit tests for the task category repository.
+            </summary>
+        </member>
+        <member name="F:Tests.TaskService.DAL.NHibernate.TaskCategoryRepositoryTests.repository">
+            <summary>
+            The task category repository to use for the accompanying tests.
+            </summary>
+        </member>
+        <member name="M:Tests.TaskService.DAL.NHibernate.TaskCategoryRepositoryTests.PopulateDatabase">
+            <summary>
+            Loads the test data used by this set of tests.
+            </summary>
+        </member>
+        <member name="M:Tests.TaskService.DAL.NHibernate.TaskCategoryRepositoryTests.CreateTaskCategory(System.String,System.String)">
+            <summary>
+            Creates a task category object using the specified parameters
+            and persists it to the underlying data store.
+            </summary>
+            <param name="categoryName">The name of the task category
+            to create.</param>
+            <param name="description">A description string for the task
+            category to create.</param>
+        </member>
+        <member name="M:Tests.TaskService.DAL.NHibernate.TaskCategoryRepositoryTests.CanGetAllTaskCategories">
+            <summary>
+            Tests whether or not we can retrieve the full set of task
+            categories using the repository's GetAll() method.
+            </summary>
+        </member>
+        <member name="M:Tests.TaskService.DAL.NHibernate.TaskCategoryRepositoryTests.CanGetTaskCategoryById">
+            <summary>
+            Tests whether or not we can retrieve a specific task
+            category by its ID value.
+            </summary>
+        </member>
+        <member name="T:Tests.TaskService.DAL.NHibernate.TaskTypeRepositoryTests">
+            <summary>
+            Implements unit tests for the task category repository.
+            </summary>
+        </member>
+        <member name="F:Tests.TaskService.DAL.NHibernate.TaskTypeRepositoryTests.categoryRepository">
+            <summary>
+            The task category repository to use for the accompanying tests.
+            </summary>
+        </member>
+        <member name="F:Tests.TaskService.DAL.NHibernate.TaskTypeRepositoryTests.taskTypeRepository">
+            <summary>
+            The task type repository to use for the accompanying tests.
+            </summary>
+        </member>
+        <member name="M:Tests.TaskService.DAL.NHibernate.TaskTypeRepositoryTests.PopulateDatabase">
+            <summary>
+            Loads the test data used by this set of tests.
+            </summary>
+        </member>
+        <member name="M:Tests.TaskService.DAL.NHibernate.TaskTypeRepositoryTests.CreateTaskCategory(System.String,System.String)">
+            <summary>
+            Creates a task category object using the specified parameters
+            and persists it to the underlying data store.
+            </summary>
+            <param name="categoryName">The name of the task category
+            to create.</param>
+            <param name="description">A description string for the task
+            category to create.</param>
+        </member>
+        <member name="M:Tests.TaskService.DAL.NHibernate.TaskTypeRepositoryTests.CreateTaskType(System.String,System.String,System.String)">
+            <summary>
+            Creates a task type object using the specified parameters
+            and persists it to the underlying data store.
+            </summary>
+            <param name="name">The name of the task type to create.</param>
+            <param name="description">A description string for the task
+            type to create.</param>
+        </member>
+        <member name="M:Tests.TaskService.DAL.NHibernate.TaskTypeRepositoryTests.CanGetAllTaskTypes">
+            <summary>
+            Tests whether or not we can retrieve the full set of task
+            categories using the repository's GetAll() method.
+            </summary>
+        </member>
+        <member name="M:Tests.TaskService.DAL.NHibernate.TaskTypeRepositoryTests.CanAddTaskTypeToCategory">
+            <summary>
+            Tests whether we can add task types to a category.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,5 @@
+<DataType Name="GPSAVerticalFactor">
+  <DisplayName>Vertical Factor</DisplayName>
+  <Description>Specifies the relationship between the vertical cost factor and the vertical, relative moving angle.</Description>
+</DataType>
+

@@ -1,0 +1,42 @@
+CREATE TABLE [dbo].[transfer_tax_stmnt_school_breakdown] (
+    [levy_group_id]            INT              NOT NULL,
+    [levy_group_yr]            NUMERIC (4)      NOT NULL,
+    [levy_run_id]              INT              NOT NULL,
+    [prop_id]                  INT              NOT NULL,
+    [owner_id]                 INT              NOT NULL,
+    [sup_num]                  INT              NOT NULL,
+    [sup_tax_yr]               NUMERIC (4)      NOT NULL,
+    [stmnt_id]                 INT              NOT NULL,
+    [entity_1_name]            VARCHAR (70)     NULL,
+    [entity_1_curr_yr]         NUMERIC (4)      NULL,
+    [entity_1_curr_mno_rate]   NUMERIC (13, 10) NULL,
+    [entity_1_curr_ins_rate]   NUMERIC (13, 10) NULL,
+    [entity_1_curr_total_rate] NUMERIC (13, 10) NULL,
+    [entity_1_prev_yr]         NUMERIC (4)      NULL,
+    [entity_1_prev_mno_rate]   NUMERIC (13, 10) NULL,
+    [entity_1_prev_ins_rate]   NUMERIC (13, 10) NULL,
+    [entity_1_prev_total_rate] NUMERIC (13, 10) NULL,
+    [entity_2_name]            VARCHAR (70)     NULL,
+    [entity_2_curr_yr]         NUMERIC (4)      NULL,
+    [entity_2_curr_mno_rate]   NUMERIC (13, 10) NULL,
+    [entity_2_curr_ins_rate]   NUMERIC (13, 10) NULL,
+    [entity_2_curr_total_rate] NUMERIC (13, 10) NULL,
+    [entity_2_prev_yr]         NUMERIC (4)      NULL,
+    [entity_2_prev_mno_rate]   NUMERIC (13, 10) NULL,
+    [entity_2_prev_ins_rate]   NUMERIC (13, 10) NULL,
+    [entity_2_prev_total_rate] NUMERIC (13, 10) NULL,
+    [entity_3_name]            VARCHAR (70)     NULL,
+    [entity_3_curr_yr]         NUMERIC (4)      NULL,
+    [entity_3_curr_mno_rate]   NUMERIC (13, 10) NULL,
+    [entity_3_curr_ins_rate]   NUMERIC (13, 10) NULL,
+    [entity_3_curr_total_rate] NUMERIC (13, 10) NULL,
+    [entity_3_prev_yr]         NUMERIC (4)      NULL,
+    [entity_3_prev_mno_rate]   NUMERIC (13, 10) NULL,
+    [entity_3_prev_ins_rate]   NUMERIC (13, 10) NULL,
+    [entity_3_prev_total_rate] NUMERIC (13, 10) NULL,
+    CONSTRAINT [CPK_transfer_tax_stmnt_school_breakdown] PRIMARY KEY CLUSTERED ([levy_group_id] ASC, [levy_group_yr] ASC, [levy_run_id] ASC, [prop_id] ASC, [owner_id] ASC, [sup_num] ASC, [sup_tax_yr] ASC, [stmnt_id] ASC)
+);
+
+
+GO
+

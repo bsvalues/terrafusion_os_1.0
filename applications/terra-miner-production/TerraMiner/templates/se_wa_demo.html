@@ -1,0 +1,170 @@
+{% extends "unified_base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-6 flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-bold text-secondary-900 dark:text-white">Southeastern Washington Properties</h1>
+            <p class="mt-2 text-secondary-600 dark:text-secondary-400">
+                Demo properties with assessment data for Southeastern Washington counties.
+            </p>
+        </div>
+        <div>
+            <a href="{{ url_for('se_wa.se_washington_overview') }}" class="btn btn-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                Back to Overview
+            </a>
+        </div>
+    </div>
+    
+    <!-- Property Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        {% for property in properties %}
+        <div class="card hover:shadow-lg transition-shadow">
+            <div class="card-body p-0">
+                <!-- Property Image -->
+                <div class="relative h-48 overflow-hidden rounded-t-lg">
+                    <img src="{{ property.image_url }}" alt="{{ property.address }}" class="w-full h-full object-cover">
+                    <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent p-4">
+                        <h2 class="text-white text-lg font-medium">{{ property.address }}</h2>
+                        <p class="text-white/90 text-sm">{{ property.city }}, {{ property.state }}</p>
+                    </div>
+                </div>
+                
+                <!-- Property Details -->
+                <div class="p-4">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-xl font-bold text-secondary-900 dark:text-white">${{ '{:,.0f}'.format(property.price) }}</p>
+                            <p class="text-sm text-secondary-500 dark:text-secondary-400">{{ property.bedrooms }} bd | {{ property.bathrooms }} ba | {{ '{:,.0f}'.format(property.sqft) }} sqft</p>
+                        </div>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-300">
+                            ID: {{ property.id }}
+                        </span>
+                    </div>
+                    
+                    <div class="mt-4 grid grid-cols-2 gap-2">
+                        <a href="{{ url_for('property_details', property_id=property.id) }}" class="btn btn-secondary-outline btn-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            View Details
+                        </a>
+                        <a href="{{ url_for('se_wa.property_assessment', property_id=property.id) }}" class="btn btn-primary-outline btn-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                            View Assessment
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Assessment Tools Card -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="text-lg font-medium text-secondary-900 dark:text-white">Assessment Tools for Benton County</h2>
+        </div>
+        <div class="card-body">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-md font-medium text-secondary-900 dark:text-white mb-3">About Property Assessments</h3>
+                    <p class="text-secondary-600 dark:text-secondary-400 mb-4">
+                        Property assessments in Southeastern Washington counties are conducted by county assessors to determine
+                        the value of real property for tax purposes. These assessments consider factors such as:
+                    </p>
+                    <ul class="list-disc list-inside space-y-1 text-secondary-600 dark:text-secondary-400">
+                        <li>Market value based on comparable sales</li>
+                        <li>Property characteristics and improvements</li>
+                        <li>Location and neighborhood factors</li>
+                        <li>Special considerations for agricultural land</li>
+                        <li>Water rights and irrigation access</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-md font-medium text-secondary-900 dark:text-white mb-3">Assessment Cycle</h3>
+                    <p class="text-secondary-600 dark:text-secondary-400 mb-4">
+                        Benton County operates on a cyclical inspection schedule:
+                    </p>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-secondary-200 dark:divide-secondary-700">
+                            <thead class="bg-secondary-50 dark:bg-secondary-700">
+                                <tr>
+                                    <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider dark:text-secondary-400">
+                                        Year
+                                    </th>
+                                    <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider dark:text-secondary-400">
+                                        Areas Inspected
+                                    </th>
+                                    <th scope="col" class="px-3 py-2 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider dark:text-secondary-400">
+                                        Status
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-secondary-200 dark:bg-secondary-800 dark:divide-secondary-700">
+                                <tr>
+                                    <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-secondary-900 dark:text-white">
+                                        2023
+                                    </td>
+                                    <td class="px-3 py-2 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
+                                        South Kennewick, Finley
+                                    </td>
+                                    <td class="px-3 py-2 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-100 text-success-800 dark:bg-success-900 dark:text-success-300">
+                                            Complete
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-secondary-900 dark:text-white">
+                                        2024
+                                    </td>
+                                    <td class="px-3 py-2 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
+                                        Richland, West Richland
+                                    </td>
+                                    <td class="px-3 py-2 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-100 text-success-800 dark:bg-success-900 dark:text-success-300">
+                                            Complete
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-secondary-900 dark:text-white">
+                                        2025
+                                    </td>
+                                    <td class="px-3 py-2 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
+                                        North Kennewick, Benton City
+                                    </td>
+                                    <td class="px-3 py-2 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warning-100 text-warning-800 dark:bg-warning-900 dark:text-warning-300">
+                                            In Progress
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6 pt-6 border-t border-secondary-200 dark:border-secondary-700 flex space-x-4">
+                <a href="https://www.co.benton.wa.us/pview.aspx?id=1425&catID=45" target="_blank" class="btn btn-primary">
+                    Visit Benton County Assessor
+                </a>
+                <a href="{{ url_for('index') }}" class="btn btn-secondary-outline">
+                    Return to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

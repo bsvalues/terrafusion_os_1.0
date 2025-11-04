@@ -1,0 +1,193 @@
+{
+    "type": "FunctionTool",
+    "guid": "{000cda18-35e7-45a8-9275-015864cb37f7}",
+    "displayname": "$rc:title",
+    "helpcontent": "8200006",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10",
+        "86"
+    ],
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_raster": {
+            "display_order": "0",
+            "displayname": "$rc:in_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "description": "$rc:in_raster.descr"
+        },
+        "max_classes": {
+            "display_order": "1",
+            "displayname": "$rc:max_classes.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:max_classes.descr"
+        },
+        "out_classifier_definition": {
+            "direction": "out",
+            "display_order": "2",
+            "displayname": "$rc:out_classifier_definition.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "ecd"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:out_classifier_definition.descr"
+        },
+        "in_additional_raster": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:in_additional_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "description": "$rc:in_additional_raster.descr"
+        },
+        "max_iterations": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:max_iterations.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "20",
+            "description": "$rc:max_iterations.descr"
+        },
+        "min_samples_per_cluster": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:min_samples_per_cluster.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "20",
+            "description": "$rc:min_samples_per_cluster.descr"
+        },
+        "skip_factor": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:skip_factor.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "10",
+            "description": "$rc:skip_factor.descr"
+        },
+        "used_attributes": {
+            "type": "optional",
+            "display_order": "9",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:used_attributes.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "COLOR",
+                        "code": "$rc:used_attributes.domain.COLOR"
+                    },
+                    {
+                        "value": "MEAN",
+                        "code": "$rc:used_attributes.domain.MEAN"
+                    },
+                    {
+                        "value": "STD",
+                        "code": "$rc:used_attributes.domain.STD"
+                    },
+                    {
+                        "value": "COUNT",
+                        "code": "$rc:used_attributes.domain.COUNT"
+                    },
+                    {
+                        "value": "COMPACTNESS",
+                        "code": "$rc:used_attributes.domain.COMPACTNESS"
+                    },
+                    {
+                        "value": "RECTANGULARITY",
+                        "code": "$rc:used_attributes.domain.RECTANGULARITY"
+                    }
+                ]
+            },
+            "value": "COLOR;MEAN",
+            "description": "$rc:used_attributes.descr"
+        },
+        "max_merge_per_iter": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:max_merge_per_iter.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "5",
+            "description": "$rc:max_merge_per_iter.descr"
+        },
+        "max_merge_distance": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:max_merge_distance.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0.5",
+            "description": "$rc:max_merge_distance.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "scratchWorkspace",
+        "snapRaster",
+        "workspace"
+    ]
+}

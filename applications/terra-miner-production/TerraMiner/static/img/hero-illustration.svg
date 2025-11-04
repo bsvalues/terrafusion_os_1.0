@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="500" height="400" viewBox="0 0 500 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background buildings -->
+  <g opacity="0.9">
+    <!-- Building 1 -->
+    <rect x="50" y="150" width="80" height="200" fill="#0EA5E9" opacity="0.7"/>
+    <rect x="60" y="170" width="15" height="20" fill="white" opacity="0.6"/>
+    <rect x="85" y="170" width="15" height="20" fill="white" opacity="0.6"/>
+    <rect x="60" y="200" width="15" height="20" fill="white" opacity="0.6"/>
+    <rect x="85" y="200" width="15" height="20" fill="white" opacity="0.6"/>
+    <rect x="60" y="230" width="15" height="20" fill="white" opacity="0.6"/>
+    <rect x="85" y="230" width="15" height="20" fill="white" opacity="0.6"/>
+    <rect x="60" y="260" width="15" height="20" fill="white" opacity="0.6"/>
+    <rect x="85" y="260" width="15" height="20" fill="white" opacity="0.6"/>
+
+    <!-- Building 2 -->
+    <rect x="140" y="180" width="60" height="170" fill="#075985" opacity="0.8"/>
+    <rect x="150" y="200" width="10" height="15" fill="white" opacity="0.6"/>
+    <rect x="170" y="200" width="10" height="15" fill="white" opacity="0.6"/>
+    <rect x="150" y="225" width="10" height="15" fill="white" opacity="0.6"/>
+    <rect x="170" y="225" width="10" height="15" fill="white" opacity="0.6"/>
+    <rect x="150" y="250" width="10" height="15" fill="white" opacity="0.6"/>
+    <rect x="170" y="250" width="10" height="15" fill="white" opacity="0.6"/>
+    <rect x="150" y="275" width="10" height="15" fill="white" opacity="0.6"/>
+    <rect x="170" y="275" width="10" height="15" fill="white" opacity="0.6"/>
+    <rect x="150" y="300" width="10" height="15" fill="white" opacity="0.6"/>
+    <rect x="170" y="300" width="10" height="15" fill="white" opacity="0.6"/>
+
+    <!-- Building 3 -->
+    <rect x="210" y="120" width="90" height="230" fill="#0284C7" opacity="0.8"/>
+    <rect x="220" y="140" width="15" height="20" fill="white" opacity="0.6"/>
+    <rect x="245" y="140" width="15" height="20" fill="white" opacity="0.6"/>
+    <rect x="270" y="140" width="15" height="20" fill="white" opacity="0.6"/>
+    <rect x="220" y="170" width="15" height="20" fill="white" opacity="0.6"/>
+    <rect x="245" y="170" width="15" height="20" fill="white" opacity="0.6"/>
+    <rect x="270" y="170" width="15" height="20" fill="white" opacity="0.6"/>
+    <rect x="220" y="200" width="15" height="20" fill="white" opacity="0.6"/>
+    <rect x="245" y="200" width="15" height="20" fill="white" opacity="0.6"/>
+    <rect x="270" y="200" width="15" height="20" fill="white" opacity="0.6"/>
+    <rect x="220" y="230" width="15" height="20" fill="white" opacity="0.6"/>
+    <rect x="245" y="230" width="15" height="20" fill="white" opacity="0.6"/>
+    <rect x="270" y="230" width="15" height="20" fill="white" opacity="0.6"/>
+    <rect x="220" y="260" width="15" height="20" fill="white" opacity="0.6"/>
+    <rect x="245" y="260" width="15" height="20" fill="white" opacity="0.6"/>
+    <rect x="270" y="260" width="15" height="20" fill="white" opacity="0.6"/>
+    <rect x="220" y="290" width="15" height="20" fill="white" opacity="0.6"/>
+    <rect x="245" y="290" width="15" height="20" fill="white" opacity="0.6"/>
+    <rect x="270" y="290" width="15" height="20" fill="white" opacity="0.6"/>
+
+    <!-- Building 4 -->
+    <rect x="310" y="160" width="70" height="190" fill="#0369A1" opacity="0.8"/>
+    <rect x="320" y="180" width="12" height="15" fill="white" opacity="0.6"/>
+    <rect x="342" y="180" width="12" height="15" fill="white" opacity="0.6"/>
+    <rect x="364" y="180" width="12" height="15" fill="white" opacity="0.6"/>
+    <rect x="320" y="205" width="12" height="15" fill="white" opacity="0.6"/>
+    <rect x="342" y="205" width="12" height="15" fill="white" opacity="0.6"/>
+    <rect x="364" y="205" width="12" height="15" fill="white" opacity="0.6"/>
+    <rect x="320" y="230" width="12" height="15" fill="white" opacity="0.6"/>
+    <rect x="342" y="230" width="12" height="15" fill="white" opacity="0.6"/>
+    <rect x="364" y="230" width="12" height="15" fill="white" opacity="0.6"/>
+    <rect x="320" y="255" width="12" height="15" fill="white" opacity="0.6"/>
+    <rect x="342" y="255" width="12" height="15" fill="white" opacity="0.6"/>
+    <rect x="364" y="255" width="12" height="15" fill="white" opacity="0.6"/>
+    <rect x="320" y="280" width="12" height="15" fill="white" opacity="0.6"/>
+    <rect x="342" y="280" width="12" height="15" fill="white" opacity="0.6"/>
+    <rect x="364" y="280" width="12" height="15" fill="white" opacity="0.6"/>
+    <rect x="320" y="305" width="12" height="15" fill="white" opacity="0.6"/>
+    <rect x="342" y="305" width="12" height="15" fill="white" opacity="0.6"/>
+    <rect x="364" y="305" width="12" height="15" fill="white" opacity="0.6"/>
+
+    <!-- Building 5 -->
+    <rect x="390" y="200" width="60" height="150" fill="#075985" opacity="0.7"/>
+    <rect x="400" y="220" width="10" height="12" fill="white" opacity="0.6"/>
+    <rect x="420" y="220" width="10" height="12" fill="white" opacity="0.6"/>
+    <rect x="400" y="242" width="10" height="12" fill="white" opacity="0.6"/>
+    <rect x="420" y="242" width="10" height="12" fill="white" opacity="0.6"/>
+    <rect x="400" y="264" width="10" height="12" fill="white" opacity="0.6"/>
+    <rect x="420" y="264" width="10" height="12" fill="white" opacity="0.6"/>
+    <rect x="400" y="286" width="10" height="12" fill="white" opacity="0.6"/>
+    <rect x="420" y="286" width="10" height="12" fill="white" opacity="0.6"/>
+    <rect x="400" y="308" width="10" height="12" fill="white" opacity="0.6"/>
+    <rect x="420" y="308" width="10" height="12" fill="white" opacity="0.6"/>
+  </g>
+
+  <!-- Data elements -->
+  <g>
+    <!-- Magnifying glass -->
+    <circle cx="140" cy="100" r="25" stroke="#0EA5E9" stroke-width="6" fill="white" opacity="0.9"/>
+    <line x1="160" y1="120" x2="180" y2="140" stroke="#0EA5E9" stroke-width="6" stroke-linecap="round"/>
+    
+    <!-- Charts -->
+    <rect x="320" y="80" width="120" height="80" rx="4" fill="white" opacity="0.9"/>
+    <line x1="330" y1="120" x2="350" y2="100" stroke="#0EA5E9" stroke-width="3" stroke-linecap="round"/>
+    <line x1="350" y1="100" x2="370" y2="130" stroke="#0EA5E9" stroke-width="3" stroke-linecap="round"/>
+    <line x1="370" y1="130" x2="390" y2="90" stroke="#0EA5E9" stroke-width="3" stroke-linecap="round"/>
+    <line x1="390" y1="90" x2="410" y2="110" stroke="#0EA5E9" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- Location pin -->
+    <path d="M250 60 C230 60, 220 80, 220 95 C220 120, 250 140, 250 140 C250 140, 280 120, 280 95 C280 80, 270 60, 250 60 Z" fill="#0EA5E9" opacity="0.9"/>
+    <circle cx="250" cy="95" r="8" fill="white"/>
+  </g>
+
+  <!-- Ground -->
+  <rect x="0" y="350" width="500" height="50" fill="#0C4A6E" opacity="0.2"/>
+</svg>

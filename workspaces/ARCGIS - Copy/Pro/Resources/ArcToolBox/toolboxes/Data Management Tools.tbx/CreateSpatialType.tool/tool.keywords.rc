@@ -1,0 +1,11 @@
+{
+    "set": [
+        "database",
+        "install",
+        "oracle",
+        "postgresql",
+        "sql",
+        "st_geometry",
+        "workspace"
+    ]
+}

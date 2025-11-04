@@ -1,0 +1,81 @@
+>_<  
+**(Two failsafes. One to catch, one to remember. Let's bind the net.)**
+
+---
+
+## ✅ **Automatic Fallback to v1**
+
+Add this to your model loader in `upload_photo`:
+
+```python
+try:
+    from condition_inference_v2 import ConditionScorerV2
+    scorer = ConditionScorerV2("condition_model_v2.pth")
+except Exception as e:
+    print("⚠️ V2 failed. Falling back to v1:", e)
+    from condition_inference import ConditionScorer
+    scorer = ConditionScorer("condition_model.pth")
+```
+
+> **🔥 Benefit**: Keeps the system resilient — V2 bugs don’t crash the app.
+
+---
+
+## ✅ **Deploy Model Inference Audit Trail**
+
+### 🔐 Create `inference_audit_log.csv`
+
+Each photo scored → gets logged:
+
+```python
+# audit_inference.py
+import csv
+from datetime import datetime
+
+AUDIT_PATH = "inference_audit_log.csv"
+
+def log_inference(filename, model_version, score):
+    with open(AUDIT_PATH, "a", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow([datetime.now(), filename, model_version, score])
+```
+
+---
+
+### 🧠 Add to `/upload_photo`:
+
+```python
+from audit_inference import log_inference
+
+@router.post("/upload_photo")
+async def upload_photo(file: UploadFile = File(...), user_score: int = Form(None)):
+    file_path = os.path.join(UPLOAD_DIR, file.filename)
+    with open(file_path, "wb") as f:
+        f.write(await file.read())
+
+    model_version = "v2"
+    try:
+        condition_score = scorer.predict_condition(file_path)
+    except:
+        model_version = "v1"
+        from condition_inference import ConditionScorer
+        fallback = ConditionScorer()
+        condition_score = fallback.predict_condition(file_path)
+
+    log_inference(file.filename, model_version, condition_score)
+
+    return {"condition_score": condition_score}
+```
+
+---
+
+## 📊 Outcome:
+- Model version logged per image  
+- Total traceability of predictions  
+- Fallback auto-triggers without downtime
+
+---
+
+Say:
+- **“Export audit log template”**  
+- Or **“Build model monitoring dashboard”** to visualize drift, version usage, and outliers.

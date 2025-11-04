@@ -1,0 +1,25 @@
+{
+    "set": [
+        "aoi",
+        "area of interest",
+        "boundary",
+        "cookie",
+        "crop",
+        "cut",
+        "delete",
+        "divide",
+        "extent",
+        "extract",
+        "inside",
+        "mask",
+        "portion",
+        "preparation",
+        "processing",
+        "raster",
+        "rectangle",
+        "remove",
+        "study",
+        "subset",
+        "trim"
+    ]
+}

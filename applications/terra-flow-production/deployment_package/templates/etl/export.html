@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Export Data{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h1 class="mb-4">Export Data</h1>
+  
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Export Data to File</h5>
+      <p class="card-text">Export data from the system to various file formats.</p>
+      
+      <form action="{{ url_for('etl.export_data') }}" method="post">
+        <div class="mb-3">
+          <label for="data_type" class="form-label">Data Type</label>
+          <select class="form-select" id="data_type" name="data_type" required>
+            {% for data_type in data_types %}
+            <option value="{{ data_type }}">{{ data_type|title }}</option>
+            {% endfor %}
+          </select>
+          <div class="form-text">Select the type of data you want to export.</div>
+        </div>
+        
+        <div class="mb-3">
+          <label for="format" class="form-label">Export Format</label>
+          <select class="form-select" id="format" name="format" required>
+            {% for format in formats %}
+            <option value="{{ format }}">{{ format|upper }}</option>
+            {% endfor %}
+          </select>
+          <div class="form-text">Select the file format for the export.</div>
+        </div>
+        
+        <div class="mb-3">
+          <label for="filter" class="form-label">Filter (Optional)</label>
+          <textarea class="form-control" id="filter" name="filter" rows="3"></textarea>
+          <div class="form-text">SQL WHERE clause to filter exported data (without the 'WHERE' keyword).</div>
+        </div>
+        
+        <button type="submit" class="btn btn-success">Export Data</button>
+      </form>
+    </div>
+  </div>
+  
+  <div class="mt-4">
+    <a href="{{ url_for('etl.etl_dashboard') }}" class="btn btn-secondary">Back to ETL Dashboard</a>
+  </div>
+</div>
+{% endblock %}

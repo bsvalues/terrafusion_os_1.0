@@ -1,0 +1,13 @@
+{
+    "map": {
+        "description": "Generates a license definition file (.licdef) that defines and restricts the display of contents in a file geodatabase.  The contents of the licensed file geodatabase can be viewed by creating  a license file (*.sdlic) and configuring the ArcGIS clients to recognize it.  The license file is created using the Generate File Geodatabase License tool.",
+        "in_fgdb.descr": "The unlicensed file geodatabase that will be licensed.",
+        "in_fgdb.title": "Input File Geodatabase",
+        "out_fgdb.descr": "The name and location of the generated licensed file geodatabase.",
+        "out_fgdb.title": "Output Licensed File Geodatabase",
+        "out_lic_def.descr": "The license definition file.",
+        "out_lic_def.title": "Output License Definition File",
+        "summary": "<xdoc><p>Generates a license definition file (.licdef) that defines and restricts the display of contents in a file geodatabase. The contents of the licensed file geodatabase can be viewed by creating a license file (*.sdlic) and configuring the ArcGIS clients to recognize it. The license file is created using the Generate File Geodatabase License tool.</p><note type=\"legacy\"/><p group=\"note\">Licensing is not supported for geodatabases created earlier than version 10.1.</p></xdoc>",
+        "title": "Generate Licensed File Geodatabase"
+    }
+}

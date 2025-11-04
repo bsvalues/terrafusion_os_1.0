@@ -1,0 +1,13 @@
+{
+    "map": {
+        "description": "Performs a Boolean Or operation on the cell values of two input rasters.",
+        "in_raster_or_constant1.descr": "<xdoc><p>The first input to use in this Boolean operation.</p><p>A number can be used as an input for this parameter, provided a raster is specified for the other parameter. To specify a number for both inputs, the cell size and extent must first be set in the environment.</p></xdoc>",
+        "in_raster_or_constant1.title": "Input raster or constant value 1",
+        "in_raster_or_constant2.descr": "<xdoc><p>The second input to use in this Boolean operation.</p><p>A number can be used as an input for this parameter, provided a raster is specified for the other parameter. To specify a number for both inputs, the cell size and extent must first be set in the environment.</p></xdoc>",
+        "in_raster_or_constant2.title": "Input raster or constant value 2",
+        "out_raster.descr": "<xdoc><p>The output raster.</p><p>The output cell values will be either 0 or 1.</p></xdoc>",
+        "out_raster.title": "Output raster",
+        "summary": "<xdoc><p>Performs a Boolean Or operation on the cell values of two input rasters.</p><p>If one or both input values are true (non-zero), the output value is 1. If both input values are false (zero), the output is 0.</p></xdoc>",
+        "title": "Boolean Or"
+    }
+}

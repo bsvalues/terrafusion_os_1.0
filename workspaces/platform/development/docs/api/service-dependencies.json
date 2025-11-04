@@ -1,0 +1,72 @@
+{
+  "dependencies": {
+    "required": [
+      {
+        "service": "auth",
+        "purpose": "Authentication and authorization",
+        "sla": "99.9%"
+      },
+      {
+        "service": "monitoring",
+        "purpose": "Health monitoring and metrics",
+        "sla": "99.5%"
+      },
+      {
+        "service": "security",
+        "purpose": "Threat detection and security scanning",
+        "sla": "99.9%"
+      }
+    ],
+    "optional": [
+      {
+        "service": "api",
+        "purpose": "API gateway and routing",
+        "sla": "99.9%"
+      },
+      {
+        "service": "ai-systems",
+        "purpose": "AI/ML capabilities and inference",
+        "sla": "99.5%"
+      }
+    ],
+    "data_sources": [],
+    "consumers": [
+      {
+        "service": "all-workspaces",
+        "purpose": "Platform services for all workspaces",
+        "sla": "99.9%"
+      }
+    ]
+  },
+  "provides": {
+    "services": [
+      {
+        "name": "development-api",
+        "description": "Development operations APIs",
+        "base_path": "/api/v1/development",
+        "security_level": "MEDIUM"
+      }
+    ],
+    "data_endpoints": [
+      "/health",
+      "/data",
+      "/operations",
+      "/status"
+    ],
+    "integration_points": [
+      "/api/v1/development/integration"
+    ]
+  },
+  "communication_patterns": {
+    "sync_apis": true,
+    "async_messaging": false,
+    "event_streaming": false,
+    "batch_processing": false
+  },
+  "sla_requirements": {
+    "response_time": "100ms",
+    "availability": "99.9%",
+    "throughput": "100 requests/minute per user",
+    "error_rate": "<0.1%"
+  }
+}

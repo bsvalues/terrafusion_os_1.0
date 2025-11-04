@@ -1,0 +1,49 @@
+{
+    "type": "FunctionTool",
+    "guid": "{e856dc84-f834-4018-a5a2-e4d3b7a15fb9}",
+    "displayname": "$rc:title",
+    "helpcontent": "6010012",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_locator": {
+            "displayname": "$rc:in_locator.title",
+            "datatype": {
+                "type": "DEAddressLocator"
+            }
+        },
+        "output_folder": {
+            "direction": "out",
+            "displayname": "$rc:output_folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            }
+        },
+        "copy_arcsde_locator": {
+            "type": "optional",
+            "displayname": "$rc:copy_arcsde_locator.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "COPY_ARCSDE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "PRESERVE_ARCSDE"
+                    }
+                ]
+            },
+            "value": "true"
+        }
+    }
+}

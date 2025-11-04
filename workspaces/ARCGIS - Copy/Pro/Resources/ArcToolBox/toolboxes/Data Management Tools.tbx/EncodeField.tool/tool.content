@@ -1,0 +1,162 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "3060021",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "in_table": {
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "field": {
+            "displayname": "$rc:field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Text",
+                    "Long",
+                    "Date",
+                    "BigInteger"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:field.descr"
+        },
+        "method": {
+            "type": "optional",
+            "displayname": "$rc:method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ONEHOT",
+                        "code": "$rc:method.domain.ONEHOT"
+                    },
+                    {
+                        "value": "ONECOLD",
+                        "code": "$rc:method.domain.ONECOLD"
+                    },
+                    {
+                        "value": "TEMPORAL",
+                        "code": "$rc:method.domain.TEMPORAL"
+                    }
+                ]
+            },
+            "value": "ONEHOT",
+            "description": "$rc:method.descr"
+        },
+        "time_step_interval": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:time_step_interval.title",
+            "datatype": {
+                "type": "GPTimeUnit"
+            },
+            "domain": {
+                "type": "GPUnitDomain",
+                "items": [
+                    "Seconds",
+                    "Minutes",
+                    "Hours",
+                    "Days",
+                    "Weeks",
+                    "Months",
+                    "Years"
+                ]
+            },
+            "description": "$rc:time_step_interval.descr"
+        },
+        "time_step_alignment": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:time_step_alignment.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "END_TIME",
+                        "code": "$rc:time_step_alignment.domain.END_TIME"
+                    },
+                    {
+                        "value": "START_TIME",
+                        "code": "$rc:time_step_alignment.domain.START_TIME"
+                    },
+                    {
+                        "value": "REFERENCE_TIME",
+                        "code": "$rc:time_step_alignment.domain.REFERENCE_TIME"
+                    }
+                ]
+            },
+            "value": "END_TIME",
+            "description": "$rc:time_step_alignment.descr"
+        },
+        "reference_time": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:reference_time.title",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:reference_time.descr"
+        },
+        "updated_table": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_table.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    },
+    "environments": [
+        "extent"
+    ]
+}

@@ -1,0 +1,41 @@
+
+<svg id="terrafusion-logo" width="240" height="60" viewBox="0 0 240 60" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="tfGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d2ff;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#0891b2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#667eea;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- TerraFusion Text -->
+  <text x="20" y="35" font-family="'Segoe UI', sans-serif" font-size="24" font-weight="700" 
+        fill="url(#tfGradient)" filter="url(#glow)">TerraFusion</text>
+  
+  <!-- Tagline -->
+  <text x="20" y="52" font-family="'Segoe UI', sans-serif" font-size="10" font-weight="500" 
+        fill="#00d2ff" opacity="0.9">Intelligence That Counties Envy</text>
+  
+  <!-- Geometric Elements -->
+  <circle cx="200" cy="20" r="8" fill="none" stroke="#00d2ff" stroke-width="2" opacity="0.6">
+    <animate attributeName="r" values="8;12;8" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  
+  <polygon points="210,15 220,25 210,35 200,25" fill="none" stroke="#0891b2" stroke-width="2" opacity="0.7">
+    <animateTransform attributeName="transform" type="rotate" values="0 210 25;360 210 25" dur="8s" repeatCount="indefinite"/>
+  </polygon>
+  
+  <rect x="225" y="18" width="10" height="14" fill="none" stroke="#667eea" stroke-width="2" opacity="0.5" rx="2">
+    <animate attributeName="height" values="14;20;14" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="y" values="18;15;18" dur="4s" repeatCount="indefinite"/>
+  </rect>
+</svg>
+        

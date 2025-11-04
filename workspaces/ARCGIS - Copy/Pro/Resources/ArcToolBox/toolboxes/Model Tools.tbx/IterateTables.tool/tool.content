@@ -1,0 +1,113 @@
+{
+    "type": "FunctionTool",
+    "guid": "{09094e44-9d69-4f6a-920c-71223d842570}",
+    "displayname": "$rc:title",
+    "helpcontent": "32020010",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_workspace": {
+            "displayname": "$rc:in_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "description": "$rc:in_workspace.descr"
+        },
+        "wildcard": {
+            "type": "optional",
+            "displayname": "$rc:wildcard.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:wildcard.descr"
+        },
+        "table_type": {
+            "type": "optional",
+            "displayname": "$rc:table_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DBASE",
+                        "code": "$rc:table_type.domain.DBASE"
+                    },
+                    {
+                        "value": "INFO",
+                        "code": "$rc:table_type.domain.INFO"
+                    },
+                    {
+                        "value": "FILE_GDB",
+                        "code": "$rc:table_type.domain.FILE_GDB"
+                    },
+                    {
+                        "value": "EXCEL",
+                        "code": "$rc:table_type.domain.EXCEL"
+                    },
+                    {
+                        "value": "TEXT",
+                        "code": "$rc:table_type.domain.TEXT"
+                    },
+                    {
+                        "value": "SQLITE",
+                        "code": "$rc:table_type.domain.SQLITE"
+                    },
+                    {
+                        "value": "ENTERPRISE_GDB",
+                        "code": "$rc:table_type.domain.ENTERPRISE_GDB"
+                    },
+                    {
+                        "value": "OLE_DB",
+                        "code": "$rc:table_type.domain.OLE_DB"
+                    }
+                ]
+            },
+            "description": "$rc:table_type.descr"
+        },
+        "recursive": {
+            "type": "optional",
+            "displayname": "$rc:recursive.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "RECURSIVE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NOT_RECURSIVE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:recursive.descr"
+        },
+        "table": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:table.title",
+            "datatype": {
+                "type": "DETable"
+            }
+        },
+        "name": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:name.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        }
+    }
+}

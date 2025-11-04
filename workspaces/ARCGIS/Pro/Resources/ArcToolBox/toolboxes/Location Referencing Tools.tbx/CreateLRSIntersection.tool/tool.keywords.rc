@@ -1,0 +1,13 @@
+{
+    "set": [
+        "create intersection",
+        "delete event",
+        "delete lrs",
+        "delete route",
+        "generate intersection",
+        "intersection",
+        "lrs",
+        "remove event",
+        "remove route"
+    ]
+}

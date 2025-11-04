@@ -1,0 +1,95 @@
+{
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "node",
+        "cwd": "../../frontend/public-works-portal",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "name": "Start Public Works Portal"
+      }
+    ]
+  },
+  "tasks": {
+    "tasks": [
+      {
+        "cwd": "../../frontend/public-works-portal",
+        "args": [
+          "run",
+          "build"
+        ],
+        "command": "npm",
+        "label": "Build Portal"
+      },
+      {
+        "cwd": "../../frontend/public-works-portal",
+        "args": [
+          "run",
+          "test"
+        ],
+        "command": "npm",
+        "label": "Test Portal"
+      }
+    ],
+    "version": "2.0.0"
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "bradlc.vscode-tailwindcss",
+      "dsznajder.es7-react-js-snippets"
+    ]
+  },
+  "folders": [
+    {
+      "name": "🏛️ Public Works Portal",
+      "path": "../../frontend/public-works-portal"
+    },
+    {
+      "name": "🎨 Design System (read-only)",
+      "path": "../../platform/design-system"
+    },
+    {
+      "name": "📦 Platform SDK (read-only)",
+      "path": "../../platform/sdk"
+    },
+    {
+      "name": "🧪 Tests",
+      "path": "../../tests/frontend/public-works"
+    },
+    {
+      "name": "📚 Portal Docs",
+      "path": "../../docs/portals"
+    },
+    {
+      "name": "⚙️ Config (shared)",
+      "path": "../../config"
+    }
+  ],
+  "settings": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit",
+      "source.fixAll": "explicit"
+    },
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#10b981",
+      "titleBar.activeForeground": "#ffffff"
+    },
+    "files.exclude": {
+      "../../os-platform": true,
+      "**/node_modules": true,
+      "../../frontend/*-portal": true,
+      "../../marketplace": true,
+      "../../backend": true,
+      "!../../frontend/public-works-portal": true,
+      "../../terrafusion-cos": true,
+      "**/dist": true
+    },
+    "editor.formatOnSave": true
+  }
+}
+

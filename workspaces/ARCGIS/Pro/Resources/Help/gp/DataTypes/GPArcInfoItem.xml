@@ -1,0 +1,5 @@
+<DataType Name="GPArcInfoItem">
+  <DisplayName>INFO Item</DisplayName>
+  <Description>An item in an INFO table.</Description>
+</DataType>
+

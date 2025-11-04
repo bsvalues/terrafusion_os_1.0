@@ -1,0 +1,5 @@
+<DataType Name="DEShapeFile">
+  <DisplayName>Shapefile</DisplayName>
+  <Description>Spatial data in a shapefile format.</Description>
+</DataType>
+

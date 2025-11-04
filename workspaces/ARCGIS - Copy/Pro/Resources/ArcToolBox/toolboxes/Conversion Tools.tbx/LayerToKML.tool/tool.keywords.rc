@@ -1,0 +1,23 @@
+{
+    "set": [
+        "change",
+        "convert",
+        "export",
+        "feature",
+        "format",
+        "geometry",
+        "google",
+        "google earth",
+        "import",
+        "keyhole",
+        "kml",
+        "kmz",
+        "language",
+        "make",
+        "markup",
+        "memory",
+        "symbology",
+        "turn",
+        "xml"
+    ]
+}

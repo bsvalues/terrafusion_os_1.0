@@ -1,0 +1,3676 @@
+<?xml version="1.0"?>
+<doc processed="true">
+  <assembly>
+    <name>Leadtools.Workflow.Raster</name>
+  </assembly>
+  <members>
+    <member name="T:Leadtools.Workflow.Raster.UnlockSupportActivity">
+      <summary>
+            The UnlockSupportActivity class unlocks support for optional LEADTOOLS features, such as LEADTOOLS Document/Medical capabilities.
+            </summary>
+      <document>yes</document>
+      <keywords>WF|Unlocking optional LEADTOOLS features</keywords>
+      <isnew>2/28/2009</isnew>
+      <remarks>
+            For more information, refer to Unlocking Special LEAD Features.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Workflow.Raster.UnlockSupportActivity.#ctor">
+      <summary>
+            Constructs a new UnlockSupportActivity object.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.UnlockSupportActivity.DeveloperKeyProperty">
+      <summary>
+            Identifies the DeveloperKey dependency property.
+            </summary>
+      <document>yes</document>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.UnlockSupportActivity.LicenseFilePathProperty">
+      <summary>
+            Identifies the LicenseFilePath dependency property.
+            </summary>
+      <document>yes</document>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Workflow.Raster.UnlockSupportActivity.Execute(System.Workflow.ComponentModel.ActivityExecutionContext)">
+      <summary>
+            This member overrides <see cref="M:System.Workflow.ComponentModel.Activity.Execute(System.Workflow.ComponentModel.ActivityExecutionContext)" />.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <param name="context">The execution environment of the activity.</param>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Workflow.Raster.UnlockSupportActivity.System#Runtime#Serialization#ISerializable#GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+      <summary>
+            Populates a specified <see cref="T:System.Runtime.Serialization.SerializationInfo" /> with the data needed to serialize this object.
+            </summary>
+      <document>yes</document>
+      <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> to populate with data.</param>
+      <param name="context">The contextual information about the source or destination of the serialization.</param>
+      <remarks>
+        <para>This method implements <see cref="M:System.Runtime.Serialization.ISerializable.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">ISerializable.GetObjectData</see>.</para>
+        <para>The <see cref="T:Leadtools.Workflow.Raster.UnlockSupportActivity" /> class supports standard .NET serialization.  Serialization a <see cref="T:Leadtools.Workflow.Raster.UnlockSupportActivity" />
+            is the process of converting the state of an <see cref="T:Leadtools.Workflow.Raster.UnlockSupportActivity" /> object into a form that can be persisted or
+            transported. The complement of serialization is deserialization, which converts a stream into an <see cref="T:Leadtools.Workflow.Raster.UnlockSupportActivity" />
+            object. Together, these processes allow the image data to be easily stored and transferred.</para>
+        <para>When you serialize an <see cref="T:Leadtools.Workflow.Raster.UnlockSupportActivity" /> object, all the data inside the object are saved.  This
+            include the image data of all pages as well as the current page number, region information, low bit/high bit,
+            palette data, metadata (tags, markers and comments), etc.  In other words, the <see cref="T:Leadtools.Workflow.Raster.UnlockSupportActivity" /> can
+            be constructed back to its original state from the stream.</para>
+      </remarks>
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.UnlockSupportActivity.DeveloperKey">
+      <summary>
+            Sets the developer key for a runtime license for LEADTOOLS and unlock functionality.
+            </summary>
+      <value>String containing the developer key for the runtime license.</value>
+      <remarks>
+        <para>For more information, refer to <see cref="T:Leadtools.Topics.UnlockingSpecialLEADFeatures">Unlocking Special LEAD Features</see>.</para>
+        <para>For information about LEADTOOLS Document/Medical capabilities, contact LEAD.</para>
+      </remarks>
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.UnlockSupportActivity.LicenseFilePath">
+      <summary>
+            Sets the filename for the runtime license file for LEADTOOLS.
+            </summary>
+      <value>String containing the filename of the runtime license file.</value>
+      <remarks>
+        <para>For more information, refer to <see cref="T:Leadtools.Topics.UnlockingSpecialLEADFeatures">Unlocking Special LEAD Features</see>.</para>
+        <para>For information about LEADTOOLS Document/Medical capabilities, contact LEAD.</para>
+      </remarks>
+      <noexample />
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.WorkflowImageActivityDesigner">
+      <exclude />
+    </member>
+    <member name="M:Leadtools.Workflow.Raster.WorkflowImageActivityDesigner.Initialize(System.Workflow.ComponentModel.Activity)">
+      <exclude />
+    </member>
+    <member name="M:Leadtools.Workflow.Raster.WorkflowImageActivityDesigner.OnPaint(System.Workflow.ComponentModel.Design.ActivityDesignerPaintEventArgs)">
+      <exclude />
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.DisposeWorkflowImageActivityValidator">
+      <exclude />
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.WorkflowImageActivity">
+      <summary>
+            The WorkflowImageActivity class is the base class for all the LEADTOOLS WF activities that contain an image but do not automatically dispose it.
+            </summary>
+      <document>yes</document>
+      <keywords>WF|Activity|Workflow image|Raster image</keywords>
+      <isnew>2/28/2009</isnew>
+      <remarks>
+            This activity does not do anything; it just contains properties that are common to some of the other LEADTOOLS activities.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Workflow.Raster.WorkflowImageActivity.#ctor">
+      <summary>
+            Constructs a new <see cref="T:Leadtools.Workflow.Raster.WorkflowImageActivity" /> object.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.WorkflowImageActivity.ImageProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.WorkflowImageActivity.Image" /> and the <see cref="P:Leadtools.Workflow.Raster.WorkflowImageActivity.ImageCopy" /> dependency properties.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.WorkflowImageActivity.ImageCopy">
+      <summary>
+            Gets a copy of the activity's image object.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>A reference to a copy of the activity's image.</value>
+      <remarks>
+            This property is used in situations where a copy of the activity's image is needed, such as when using parallel activities where copies of an activity's image are passed to a subsequent parallel activity.  If a reference to the image is needed, use the <see cref="P:Leadtools.Workflow.Raster.WorkflowImageActivity.Image" /> property.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.WorkflowImageActivity.Image">
+      <summary>
+            Gets or sets a reference to the activity's image.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>A reference to the activity's image.</value>
+      <remarks>
+            This property is used in situations where a reference to the activity's image is needed.  Using this property to bind activities will cause the workflow to process the same copy of the image.  If a copy of the image is needed, use the <see cref="P:Leadtools.Workflow.Raster.WorkflowImageActivity.ImageCopy" /> property.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.UpdateCodecsOptionsEventArgs">
+      <summary>
+            Provides a property for the <see cref="E:Leadtools.Workflow.Raster.LoadImageActivity.GetCredentials_EV">LoadImageActivity.GetCredentials</see>, <see cref="E:Leadtools.Workflow.Raster.SaveImageActivity.GetCredentials_EV">SaveImageActivity.GetCredentials</see>, and <see cref="E:Leadtools.Workflow.Raster.GetImageInfoActivity.GetCredentials_EV">GetImageInfoActivity.GetCredentials</see> events to set the appropriate RasterCodecs options used for file loading and saving.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Workflow.Raster.UpdateCodecsOptionsEventArgs.#ctor(Leadtools.Codecs.RasterCodecs)">
+      <summary>
+            Constructs a new UpdateCodecsOptionsEventArgs object.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <param name="codec">The RasterCodecs instance used by the activity.</param>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.UpdateCodecsOptionsEventArgs.RasterCodecsInstance">
+      <summary>
+            Gets the <see cref="T:Leadtools.Codecs.RasterCodecs">RasterCodecs</see> object used for file access.  You can change the properties of this object for more control over the load and save options.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The <see cref="T:Leadtools.Codecs.RasterCodecs">RasterCodecs</see> object used for file access.  You can change the properties of this object for more control over the load and save options.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.TiffImageInfo">
+      <summary>
+            Provides information specific to TIFF images.
+            </summary>
+      <document>yes</document>
+      <keywords>WF|TIFF image|LZW|Tagged image</keywords>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.TiffImageInfo.HasNoPaletteProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.TiffImageInfo.HasNoPalette" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.TiffImageInfo.ImageFileDirectoryOffsetProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.TiffImageInfo.ImageFileDirectoryOffset" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.TiffImageInfo.IsImageFileDirectoryOffsetValidProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.TiffImageInfo.IsImageFileDirectoryOffsetValid" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.TiffImageInfo.HasNoPalette">
+      <summary>
+            Determines if the image has no palette.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>true if the image is saved without a palette, false if the image is saved with a palette.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.TiffImageInfo.ImageFileDirectoryOffset">
+      <summary>
+            Gets the image file directory offset.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The image file directory offset.</value>
+      <remarks>
+            Use this to speed up the handling of TIFF files with many pages.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.TiffImageInfo.IsImageFileDirectoryOffsetValid">
+      <summary>
+            Determines whether or not the image has a valid image file directory (IFD).
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>true if the image has a valid IFD, false otherwise.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.DisposableImageActivity">
+      <summary>
+            The WorkflowImageActivity class is the base class for all the LEADTOOLS WF activities that contain an image and can automatically dispose of it.
+            </summary>
+      <document>yes</document>
+      <keywords>WF|Disposing image|Activity</keywords>
+      <isnew>2/28/2009</isnew>
+      <remarks>
+            This activity does not do anything; it just contains properties that are common to some of the other LEADTOOLS activities.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.DisposableImageActivity.DisposeImageProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.DisposableImageActivity.DisposeImage" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Workflow.Raster.DisposableImageActivity.#ctor">
+      <summary>
+            Constructs a new <see cref="T:Leadtools.Workflow.Raster.WorkflowImageActivity" /> object.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.DisposableImageActivity.DisposeImage">
+      <summary>
+            Gets or sets a value which indicates whether the activity should free its image after being executed.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>
+            true means that the activity should free its image after being executed; false means that it should keep the image.
+            </value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.GetCredentialsEventArgs">
+      <summary>
+            Provides a property for the <see cref="E:Leadtools.Workflow.Raster.LoadImageActivity.GetCredentials_EV">LoadImageActivity.GetCredentials</see>, <see cref="E:Leadtools.Workflow.Raster.SaveImageActivity.GetCredentials_EV">SaveImageActivity.GetCredentials</see>, and <see cref="E:Leadtools.Workflow.Raster.GetImageInfoActivity.GetCredentials_EV">GetImageInfoActivity.GetCredentials</see> events to set the appropriate ICredentials object for file access.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Workflow.Raster.GetCredentialsEventArgs.#ctor">
+      <summary>
+            Constructs a new GetCredentialsEventArgs object.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetCredentialsEventArgs.Credentials">
+      <summary>
+            Gets or sets the ICredentials object to use for file access.  This member has to be set to a new instance of an ICredentials object.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The ICredentials object being to use for file access.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.WorkflowImage">
+      <summary>
+            The RasterImage class serves as a means for passing image data between the different LEADTOOLS WF activities.
+            </summary>
+      <document>yes</document>
+      <keywords>WF|Workflow image|Raster image</keywords>
+      <isnew>2/28/2009</isnew>
+      <remarks>
+            Every LEADTOOLS activity that operates on, or returns an image will have a RasterImage property that is set to the image to be operated on, or will contain the resulting image of that activity.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Workflow.Raster.WorkflowImage.#ctor">
+      <summary>
+            Constructs a new empty <see cref="T:Leadtools.Workflow.Raster.WorkflowImage" /> object.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <remarks>
+            The resulting RasterImage will not have any image data in it.  You will need to set the <see cref="T:System.Drawing.Image" /> property to a reference to a valid <see cref="T:Leadtools.RasterImage" /> object.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Workflow.Raster.WorkflowImage.#ctor(Leadtools.RasterImage)">
+      <summary>
+            Constructs a new RasterImage from the specified existing <see cref="T:Leadtools.RasterImage" /> object.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <param name="inputImage">
+            The <see cref="T:Leadtools.RasterImage" /> from which to create the new RasterImage.
+            </param>
+      <remarks>
+            This constructor will not make a copy of <paramref name="srcImage" />; it will reference it.  Therefore, <paramref name="srcImage" /> should not be disposed after calling this constructor.
+            </remarks>
+      <noexample />
+            /// 
+        </member>
+    <member name="M:Leadtools.Workflow.Raster.WorkflowImage.Dispose">
+      <summary>
+            Releases all resources used by this RasterImage.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <remarks>
+            For more information, refer to <see cref="T:System.IDisposable" />.
+            </remarks>
+      <noexample />
+            /// 
+        </member>
+    <member name="F:Leadtools.Workflow.Raster.WorkflowImage.RasterImageProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.WorkflowImage.RasterImage" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.WorkflowImage.WidthProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.WorkflowImage.Width" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.WorkflowImage.HeightProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.WorkflowImage.Height" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.WorkflowImage.XResolutionProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.WorkflowImage.XResolution" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.WorkflowImage.YResolutionProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.WorkflowImage.YResolution" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.WorkflowImage.BitsPerPixelProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.WorkflowImage.BitsPerPixel" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.WorkflowImage.PageCountProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.WorkflowImage.PageCount" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.WorkflowImage.PageProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.WorkflowImage.Page" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.WorkflowImage.OriginalFormatProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.WorkflowImage.OriginalFormat" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.WorkflowImage.BitsPerPixel">
+      <summary>
+            Gets the number of bits per pixel of this <see cref="T:Leadtools.RasterImage" />.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The bits per pixel of this <see cref="T:Leadtools.RasterImage" />.</value>
+      <remarks>
+            The <see cref="T:Leadtools.RasterImage" /> object supports image data of 1, 2, 3, 4, 5, 6, 7, 8, 12, 16, 24, 32, 48 and 64 bits per pixel A 16-bpp image may be color or grayscale. If you are working with a 16-bit grayscale image, then use <see cref="T:Leadtools.Workflow.Raster.RasterByteOrder">RasterByteOrder.Gray</see> when creating the image. By default, the Order for a 16-bit image will be set to <see cref="T:Leadtools.Workflow.Raster.RasterByteOrder">RasterByteOrder.Bgr</see></remarks>
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.WorkflowImage.Height">
+      <summary>
+            Gets the height of this <see cref="T:Leadtools.RasterImage" /> in pixels.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The height of this <see cref="T:Leadtools.RasterImage" /> in pixels.</value>
+      <remarks>This is the actual number of scanlines of image data.</remarks>
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.WorkflowImage.Page">
+      <summary>
+            Gets or sets the current active page for this <see cref="T:Leadtools.RasterImage" />.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The 1-based index of the current page for this <see cref="T:Leadtools.RasterImage" />.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.WorkflowImage.PageCount">
+      <summary>
+            Gets the total number of pages in the this <see cref="T:Leadtools.RasterImage" />.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The total number of pages in the this <see cref="T:Leadtools.RasterImage" />.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.WorkflowImage.Width">
+      <summary>
+            Gets the width of this <see cref="T:Leadtools.RasterImage" /> in pixels.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The width of this <see cref="T:Leadtools.RasterImage" /> in pixels.</value>
+      <remarks>
+            This is the actual width of the image data scanline.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.WorkflowImage.XResolution">
+      <summary>
+            Gets or sets the image horizontal resolution, in dots per inch (DPI).
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>Horizontal resolution in dots per inch (DPI).</value>
+      <remarks>
+            Some file formats save this value in the file header.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.WorkflowImage.YResolution">
+      <summary>
+            Gets or sets the image vertical resolution, in dots per inch (DPI).
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>Vertical resolution in dots per inch (DPI).</value>
+      <remarks>
+            Some file formats save this value in the file header.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.WorkflowImage.OriginalFormat">
+      <summary>
+            Gets or sets the original image format of this WorkflowImage.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The original image format of this WorkflowImage.</value>
+      <remarks>
+        <para>When a <see cref="T:Leadtools.Workflow.Raster.WorkflowImage" /> object is created by loading it from an image file, this property will hold
+            the format type of the file as a <see cref="T:Leadtools.Workflow.Raster.RasterImageFormat" /> enumeration member.</para>
+        <para>If the <see cref="T:Leadtools.Workflow.Raster.WorkflowImage" /> was created by other means (for example, through the <see cref="T:Leadtools.Workflow.Raster.WorkflowImage" />
+            constructor or scanning), the value of this property will be <see cref="T:Leadtools.Workflow.Raster.RasterImageFormat">RasterImageFormat.Unknown</see>.</para>
+      </remarks>
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.WorkflowImage.RasterImage">
+      <summary>
+            Gets or sets the <see cref="T:Leadtools.RasterImage" /> contained in the <see cref="T:Leadtools.RasterImage" /> object.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The <see cref="T:Leadtools.RasterImage" /> contained in the <see cref="T:Leadtools.RasterImage" /> object.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.MyDescriptionAttribute">
+      <exclude />
+    </member>
+    <member name="M:Leadtools.Workflow.Raster.MyDescriptionAttribute.#ctor(System.String)">
+      <exclude />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.MyDescriptionAttribute.Description">
+      <exclude />
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.RasterViewPerspective">
+      <summary>
+            Indicates the view perspective of the image data
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterViewPerspective.TopLeft">
+      <summary>
+            Top-left of image is first in memory.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterViewPerspective.BottomLeft">
+      <summary>
+            Bottom-left of image is first in memory.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterViewPerspective.TopRight">
+      <summary>
+        <see cref="T:Leadtools.Topics.RasterProDocMed">(Document/Medical only)</see> First row is the right side, first column is top side.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterViewPerspective.BottomLeft180">
+      <summary>
+        <see cref="T:Leadtools.Topics.RasterProDocMed">(Document/Medical only)</see> Same as <strong>TopLeft</strong>, which is <strong>BottomLeft</strong> rotated clockwise by 180 degrees.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterViewPerspective.BottomRight">
+      <summary>
+        <see cref="T:Leadtools.Topics.RasterProDocMed">(Document/Medical only)</see> First row is the right side, first column is the bottom side.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterViewPerspective.TopLeft180">
+      <summary>
+        <see cref="T:Leadtools.Topics.RasterProDocMed">(Document/Medical only)</see> Same as <strong>BottomRight</strong>, which is <strong>TopLeft</strong> rotated clockwise by 180 degrees.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterViewPerspective.RightTop">
+      <summary>
+        <see cref="T:Leadtools.Topics.RasterProDocMed">(Document/Medical only)</see> First row is the right side, first column is top side.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterViewPerspective.TopLeft90">
+      <summary>
+        <see cref="T:Leadtools.Topics.RasterProDocMed">(Document/Medical only)</see> Same as <strong>RightTop</strong>, which is <strong>TopLeft</strong> rotated clockwise by 90 degrees.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterViewPerspective.LeftBottom">
+      <summary>
+        <see cref="T:Leadtools.Topics.RasterProDocMed">(Document/Medical only)</see> First row is the left side, first column is top side.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterViewPerspective.TopLeft270">
+      <summary>
+        <see cref="T:Leadtools.Topics.RasterProDocMed">(Document/Medical only)</see> Same as <strong>LeftBottom</strong>, which is <strong>TopLeft</strong> rotated clockwise by 270 degrees.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterViewPerspective.LeftTop">
+      <summary>
+        <see cref="T:Leadtools.Topics.RasterProDocMed">(Document/Medical only)</see> First row is the left side, first column is the top side.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterViewPerspective.BottomLeft90">
+      <summary>
+        <see cref="T:Leadtools.Topics.RasterProDocMed">(Document/Medical only)</see> Same as <strong>LeftTop</strong>, which is <strong>BottomLeft</strong> rotated clockwise by 90 degrees.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterViewPerspective.RightBottom">
+      <summary>
+        <see cref="T:Leadtools.Topics.RasterProDocMed">(Document/Medical only)</see> First row is the right side, first column is the bottom side.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterViewPerspective.BottomLeft270">
+      <summary>
+        <see cref="T:Leadtools.Topics.RasterProDocMed">(Document/Medical only)</see> Same as <strong>RightBottom</strong>, which is <strong>BottomLeft</strong> rotated clockwise by 270 degrees.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.GetImageInfoActivity">
+      <summary>
+            The GetImageInfoActivity class gets the specific image page information from a disk file.
+            </summary>
+      <document>yes</document>
+      <keywords>WF|Image information|Activity|disk file|Compressed image|Image format</keywords>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.UrlProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.Url" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.TotalPagesProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.TotalPages" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.PageNumberProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.PageNumber" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.WidthProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.Width" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.HeightProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.Height" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.XResolutionProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.XResolution" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.YResolutionProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.YResolution" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.BitsPerPixelProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.BitsPerPixel" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.PageCountProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.PageCount" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.PageProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.Page" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.FormatProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.Format" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.BytesPerLineProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.BytesPerLine" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.CompressionProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.Compression" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.HasAlphaProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.HasAlpha" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.HasResolutionProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.HasResolution" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.IsLinkProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.IsLink" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.IsRotatedProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.IsRotated" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.IsSignedProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.IsSigned" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.FileNameProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.FileName" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.OrderProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.Order" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.SizeDiskProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.SizeDisk" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.SizeMemoryProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.SizeMemory" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.ColorSpaceProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.ColorSpace" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.FaxProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.Fax" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.GifProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.Gif" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.JpegProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.Jpeg" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.PsdProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.Psd" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.TiffProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.Tiff" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.ViewPerspectiveProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.ViewPerspective" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.GetCredentialsEvent">
+      <summary>
+            Identifies the <see cref="E:Leadtools.Workflow.Raster.GetImageInfoActivity.GetCredentials_EV">Leadtools.Workflow.Raster.GetImageInfoActivity.GetCredentials</see> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GetImageInfoActivity.UpdateCodecsOptionsEvent">
+      <summary>
+            Identifies the <see cref="E:Leadtools.Workflow.Raster.GetImageInfoActivity.UpdateCodecsOptions_EV">Leadtools.Workflow.Raster.GetImageInfoActivity.UpdateCodecsOptions</see> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Workflow.Raster.GetImageInfoActivity.#ctor">
+      <summary>
+            Constructs a new GetImageInfoActivity object.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Workflow.Raster.GetImageInfoActivity.Execute(System.Workflow.ComponentModel.ActivityExecutionContext)">
+      <summary>
+            This member overrides <see cref="M:System.Workflow.ComponentModel.Activity.Execute(System.Workflow.ComponentModel.ActivityExecutionContext)" />.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <param name="context">The execution environment of the activity.</param>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="E:Leadtools.Workflow.Raster.GetImageInfoActivity.GetCredentials">
+      <summary>
+            Gets called just before the file is queried to enable the client to set the appropriate network credentials.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <remarks>
+            The callback receives an object that contains the ICredentials object to set.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="E:Leadtools.Workflow.Raster.GetImageInfoActivity.UpdateCodecsOptions">
+      <summary>
+            Gets called just before the file is queried to enable the client to set the appropriate querying options.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <remarks>The callback receives an object that contains the <see cref="T:Leadtools.Codecs.RasterCodecs">RasterCodecs</see> object used for file access.</remarks>
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.Url">
+      <summary>
+            Gets or sets a value indicating the name of the image file to query.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The name of the image file to query.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.TotalPages">
+      <summary>
+            Gets or sets a value indicating whether to query the file for total number of pages.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>true to query the file for total number of pages, false otherwise.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.PageNumber">
+      <summary>
+            Gets or sets the page number in the file to query.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The page number in the file to query.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.Width">
+      <summary>
+            Gets the width of the image in pixels.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The width of the image in pixels.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.Height">
+      <summary>
+            Gets the height of the image in pixels.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The height of the image in pixels.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.BitsPerPixel">
+      <summary>
+            Gets the bits per pixel of the image.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The bits per pixel of the image.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.XResolution">
+      <summary>
+            Gets the horizontal resolution (DPI) of the image.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The horizontal resolution (DPI) of the image.</value>
+      <remarks>
+            The <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.XResolution" /> is valid only when the value of <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.HasResolution" /> is true.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.YResolution">
+      <summary>
+            Gets the vertical resolution (DPI) of the image.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The vertical resolution (DPI) of the image.</value>
+      <remarks>
+            The <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.YResolution" /> is valid only when the value of <see cref="P:Leadtools.Workflow.Raster.GetImageInfoActivity.HasResolution" /> is true.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.BytesPerLine">
+      <summary>
+            Gets the number of bytes per scanline for the image data.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>the number of bytes per scanline for the image data..</value>
+      <remarks>
+            The BytesPerLine is rounded upward to the nearest multiple of four.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.ColorSpace">
+      <summary>
+            Gets the color space of the image.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The color space of the image.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.Compression">
+      <summary>
+            Gets the compression of the image file.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>A <see cref="T:System.String" /> containing the compression of the image file.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.Fax">
+      <summary>
+            Gets extra information about the image if the file format is FAX.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>A <see cref="T:Leadtools.Workflow.Raster.FaxImageInfo" /> object that contains extra information about the image if the file format is FAX.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.Format">
+      <summary>
+            Gets the image file format.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The image file format.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.Gif">
+      <summary>
+            Gets extra information about the image if the file format is GIF.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>A <see cref="T:Leadtools.Workflow.Raster.GifImageInfo" /> object that contains extra information about the image if the file format is GIF.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.HasAlpha">
+      <summary>
+            Determines whether or not the image contains alpha channel information.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>true if the image contains alpha channel information, false otherwise.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.HasResolution">
+      <summary>
+            Determines whether or not the file has resolution values (DPI) stored inside.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>true if the image file has resolution values stored inside, false otherwise.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.IsLink">
+      <summary>
+            Determines whether or not the file is an image file or a link to an image file.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>true if the file is a link to an image file, false otherwise.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.IsRotated">
+      <summary>
+            Determines whether or not the image has a rotated view perspective.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>true if the image has a rotated view perspective, false otherwise.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.IsSigned">
+      <summary>
+            Determines whether or not the image data is signed.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>true if the image data contains signed (negative) values, false otherwise.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.Jpeg">
+      <summary>
+            Gets extra information about the image if the file format is JPEG or LEAD CMP.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>A <see cref="T:Leadtools.Workflow.Raster.JpegImageInfo" /> object that contains extra information about the image if the file format is JPEG or LEAD CMP.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.FileName">
+      <summary>
+            Gets the file name.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The file name.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.Order">
+      <summary>
+            Gets the byte order of the image.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The byte order of the image.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.Page">
+      <summary>
+            Gets the page number of the file.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The page number of the file.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.Psd">
+      <summary>
+            Gets extra information about the image if the file format is PSD.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>A <see cref="T:Leadtools.Workflow.Raster.PsdImageInfo" /> object that contains extra information about the image if the file format is PSD.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.SizeDisk">
+      <summary>
+            Gets the size of the image file on disk.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The size of the image file on disk.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.SizeMemory">
+      <summary>
+            Gets the size of the image when loaded uncompressed in memory.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The size of the image when loaded uncompressed in memory.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.Tiff">
+      <summary>
+            Gets extra information about the image if the file format is TIFF.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>A <see cref="T:Leadtools.Workflow.Raster.TiffImageInfo" /> object that contains extra information about the image if the file format is TIFF.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.PageCount">
+      <summary>
+            Gets the total number of pages in the file.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The total number of pages in the file.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GetImageInfoActivity.ViewPerspective">
+      <summary>
+            Gets the view perspective of the image.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The view perspective of the image.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.SaveImageActivityValidator">
+      <exclude />
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.JpegImageInfo">
+      <summary>
+            Provides information specific to JPEG and LEAD CMP images.
+            </summary>
+      <document>yes</document>
+      <keywords>WF|JPEG images|Lossless JPEG|Progressive JPEG|Compression</keywords>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.JpegImageInfo.HasStampProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.JpegImageInfo.HasStamp" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.JpegImageInfo.IsLosslessProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.JpegImageInfo.IsLossless" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.JpegImageInfo.IsProgressiveProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.JpegImageInfo.IsProgressive" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.JpegImageInfo.HasStamp">
+      <summary>
+            Determines whether or not the image file has a stamp stored.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>true if a stamp image is stored in the image file, false otherwise.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.JpegImageInfo.IsLossless">
+      <summary>
+            Determines whether or not the image uses lossless JPEG compression.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>true if the image uses lossless JPEG compression, false otherwise.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.JpegImageInfo.IsProgressive">
+      <summary>
+            Determines whether or not the image is progressive.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>true if the image is progressive, false otherwise.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.SaveImageActivity">
+      <summary>
+            The SaveImageActivity class saves an image in any of the supported formats.
+            </summary>
+      <document>yes</document>
+      <keywords>WF|Saving image|Image format|Url|Activity</keywords>
+      <isnew>2/28/2009</isnew>
+      <remarks>
+            The image to be saved should be assigned to the <see cref="T:Leadtools.RasterImage" /> property.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Workflow.Raster.SaveImageActivity.#ctor">
+      <summary>
+            Constructs a new SaveImageActivity object.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.SaveImageActivity.TargetFileProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.SaveImageActivity.TargetFile" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.SaveImageActivity.FirstPageNumberProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.SaveImageActivity.FirstPageNumber" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.SaveImageActivity.LastPageNumberProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.SaveImageActivity.LastPageNumber" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.SaveImageActivity.FirstSavePageNumberProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.SaveImageActivity.FirstSavePageNumber" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.SaveImageActivity.BitsPerPixelProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.SaveImageActivity.BitsPerPixel" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.SaveImageActivity.FormatProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.SaveImageActivity.Format" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.SaveImageActivity.SaveModeProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.SaveImageActivity.SaveMode" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.SaveImageActivity.GetCredentialsEvent">
+      <summary>
+            Identifies the <see cref="E:Leadtools.Workflow.Raster.SaveImageActivity.GetCredentials_EV">Leadtools.Workflow.Raster.SaveImageActivity.GetCredentials</see> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.SaveImageActivity.SaveToUrlProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.SaveImageActivity.SaveToUrl" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.SaveImageActivity.UpdateCodecsOptionsEvent">
+      <summary>
+            Identifies the <see cref="E:Leadtools.Workflow.Raster.SaveImageActivity.UpdateCodecsOptions_EV">Leadtools.Workflow.Raster.SaveImageActivity.UpdateCodecsOptions</see> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Workflow.Raster.SaveImageActivity.Execute(System.Workflow.ComponentModel.ActivityExecutionContext)">
+      <summary>
+            This member overrides <see cref="M:System.Workflow.ComponentModel.Activity.Execute(System.Workflow.ComponentModel.ActivityExecutionContext)" />.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <param name="context">The execution environment of the activity.</param>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="E:Leadtools.Workflow.Raster.SaveImageActivity.GetCredentials">
+      <summary>
+            Gets called just before the file is saved to enable the client to set the appropriate network credentials.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <remarks>
+            The callback receives an object that contains the ICredentials object to set.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="E:Leadtools.Workflow.Raster.SaveImageActivity.UpdateCodecsOptions">
+      <summary>
+            Gets called just before the saved file is loaded to enable the client to set the appropriate saving options.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <remarks>The callback receives an object that contains the <see cref="T:Leadtools.Codecs.RasterCodecs">RasterCodecs</see> object used for file access.</remarks>
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.SaveImageActivity.SaveMode">
+      <summary>
+            Gets or sets a value that determines how to handle the page when saving to multipage formats.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>A value that determines how to handle the page when saving to multipage formats.</value>
+      <remarks>
+            Values for this property can be one of the following:
+            
+            <para><list type="table"><listheader><term>Value</term><description>Meaning</description></listheader><item><term><see cref="T:Leadtools.Workflow.Raster.CodecsSavePageMode">CodecsSavePageMode.Append</see></term><description>Append the new page(s) to the end of the file. If the file does not exist, this option will create
+            the file and add the pages to it.  <paramref name="firstSavePageNumber" /> is not used.</description></item><item><term><see cref="T:Leadtools.Workflow.Raster.CodecsSavePageMode">CodecsSavePageMode.Insert</see></term><description>Insert the new page(s) at the index specified by <paramref name="firstSavePageNumber" />.</description></item><item><term><see cref="T:Leadtools.Workflow.Raster.CodecsSavePageMode">CodecsSavePageMode.Replace</see></term><description>Replace the page(s) starting at the index specified by <paramref name="firstSavePageNumber" />.</description></item><item><term><see cref="T:Leadtools.Workflow.Raster.CodecsSavePageMode">CodecsSavePageMode.Overwrite</see></term><description>Overwrite the page(s) starting at the index specified by <paramref name="firstSavePageNumber" />.</description></item><item><term><see cref="T:Leadtools.Workflow.Raster.CodecsSavePageMode">CodecsSavePageMode.Append</see></term><description>Append the new page(s) to the end of the file. If the file does not exist, this option will create
+            the file and add the pages to it.</description></item></list></para></remarks>
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.SaveImageActivity.BitsPerPixel">
+      <summary>
+            Gets or sets a value indicating the resulting file's pixel depth.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The resulting file's pixel depth.</value>
+      <remarks>
+            If this property is 0 , the image will be stored using the closest bits/pixel value supported by that format. For example, if a file format supports 1, 4, and 24 bits/pixel, and <see cref="P:Leadtools.RasterImage.BitsPerPixel" /> is 5, the file will be stored as 24 bit. Likewise, if <see cref="P:Leadtools.RasterImage.BitsPerPixel" /> is 2, the file will be stored as 4 bit.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.SaveImageActivity.FirstPageNumber">
+      <summary>
+            Gets or sets a value indicating the 1-based index of the first page in the image to save.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The 1-based index of the first page in the image to save.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.SaveImageActivity.FirstSavePageNumber">
+      <summary>
+            Gets or sets a value indicating the 1-based index of the first output page. If the output file already exists, then this parameter lets you control which pages to overwrite and/or where to append the new pages.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The 1-based index of the first output page. If the output file already exists, then this parameter lets you control which pages to overwrite and/or where to append the new pages.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.SaveImageActivity.LastPageNumber">
+      <summary>
+            Gets or sets a value indicating the 1-based index of the last page in the image to save. Pass -1 to save from <see cref="P:Leadtools.Workflow.Raster.SaveImageActivity.FirstPageNumber" /> to the last page in image.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The 1-based index of the last page in the image to save.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.SaveImageActivity.Format">
+      <summary>Gets or sets a value indicating the output file format.</summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The output file format.</value>
+      <remarks>
+            For valid values, refer to
+            <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics.Leadtools~L.Topics.SummaryOfAllSupportedImageFileFormats.html">
+            Summary of All Supported Image File Formats</a>.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.SaveImageActivity.TargetFile">
+      <summary>
+            Gets or sets a value indicating the name of the image file to be saved.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>
+            The name of the image file to be saved.
+            </value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.SaveImageActivity.SaveToUrl">
+      <summary>
+            Gets or sets a value indicating whether or not the <see cref="P:Leadtools.Workflow.Raster.SaveImageActivity.TargetFile" /> property specifies a url or a filename.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>
+            true if <see cref="P:Leadtools.Workflow.Raster.SaveImageActivity.TargetFile" /> specifies a url; false if it specifies a filename.
+            </value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.DisposeWorkflowImageActivity">
+      <summary>
+            The DisposeRasterImageActivity class frees the resources allocated by a <see cref="T:Leadtools.Workflow.Raster.WorkflowImage" /> object.
+            </summary>
+      <document>yes</document>
+      <keywords>WF|Disposing image|Activity</keywords>
+      <isnew>2/28/2009</isnew>
+      <remarks>
+            The image to be disposed of should be assigned to the <see cref="T:Leadtools.RasterImage" /> property.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Workflow.Raster.DisposeWorkflowImageActivity.#ctor">
+      <summary>
+            Constructs a new DisposeRasterImageActivity object.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Workflow.Raster.DisposeWorkflowImageActivity.Execute(System.Workflow.ComponentModel.ActivityExecutionContext)">
+      <summary>
+            This member overrides <see cref="M:System.Workflow.ComponentModel.Activity.Execute(System.Workflow.ComponentModel.ActivityExecutionContext)" />.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <param name="context">The execution environment of the activity.</param>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.GifImageInfo">
+      <summary>
+            Provides information specific to GIF images.
+            </summary>
+      <document>yes</document>
+      <keywords>WF|GIF images|Interlaced GIF|Animated GIF|Graphics Interchange|multi-page files|LZW</keywords>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GifImageInfo.AnimationBackgroundProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GifImageInfo.AnimationBackground" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GifImageInfo.AnimationHeightProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GifImageInfo.AnimationHeight" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GifImageInfo.AnimationLoopProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GifImageInfo.AnimationLoop" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GifImageInfo.AnimationWidthProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GifImageInfo.AnimationWidth" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GifImageInfo.HasAnimationBackgroundProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GifImageInfo.HasAnimationBackground" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GifImageInfo.HasAnimationLoopProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GifImageInfo.HasAnimationLoop" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GifImageInfo.HasAnimationPaletteProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GifImageInfo.HasAnimationPalette" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.GifImageInfo.IsInterlacedProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.GifImageInfo.IsInterlaced" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GifImageInfo.AnimationBackground">
+      <summary>
+            Gets the animation background.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The animation background.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GifImageInfo.AnimationHeight">
+      <summary>
+            Gets the animation height.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The animation height, in pixels.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GifImageInfo.AnimationLoop">
+      <summary>
+            Determines whether or not the image has animation looping enabled.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>non-zero if the image has animation looping enabled, zero otherwise.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GifImageInfo.AnimationWidth">
+      <summary>
+            Gets the animation width.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The animation width, in pixels.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GifImageInfo.HasAnimationBackground">
+      <summary>
+            Determines whether or not the image has animation background.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>true if the image has animation background, false otherwise.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GifImageInfo.HasAnimationLoop">
+      <summary>
+            Determines whether or not the image has animation looping.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>true if the image has animation looping, false otherwise.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GifImageInfo.HasAnimationPalette">
+      <summary>
+            Determines whether or not the image has an animation palette.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>true if the image has an animation palette, false otherwise.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.GifImageInfo.IsInterlaced">
+      <summary>
+            Determines whether or not the image is interlaced.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>true if the image is interlaced, false otherwise.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.CreateThumbnailActivity">
+      <summary>
+            The CreateThumbnailActivity activity creates a thumbnail image of its Image property.
+            </summary>
+      <document>yes</document>
+      <keywords>WF|Thumbnail image|Activity</keywords>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.CreateThumbnailActivity.BitsPerPixelProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.CreateThumbnailActivity.BitsPerPixel" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.CreateThumbnailActivity.ThumbnailWidthProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.CreateThumbnailActivity.ThumbnailWidth" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.CreateThumbnailActivity.ThumbnailHeightProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.CreateThumbnailActivity.ThumbnailHeight" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.CreateThumbnailActivity.ThumbnailProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.CreateThumbnailActivity.Thumbnail" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Workflow.Raster.CreateThumbnailActivity.#ctor">
+      <summary>
+            Constructs a new CreateThumbnailActivity object.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Workflow.Raster.CreateThumbnailActivity.Execute(System.Workflow.ComponentModel.ActivityExecutionContext)">
+      <summary>
+            This member overrides <see cref="M:System.Workflow.ComponentModel.Activity.Execute(System.Workflow.ComponentModel.ActivityExecutionContext)" />.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <param name="context">The execution environment of the activity.</param>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.CreateThumbnailActivity.BitsPerPixel">
+      <summary>
+            Gets or sets a value indicating the pixel depth of the resulting thumbnail.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The resulting thumbnail pixel depth.</value>
+      <remarks>
+            The default value for this property is 24.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.CreateThumbnailActivity.ThumbnailWidth">
+      <summary>
+            Gets or sets a value indicating the width of the resulting thumbnail.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The resulting thumbnail width.</value>
+      <remarks>
+            The default value for this property is 128.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.CreateThumbnailActivity.ThumbnailHeight">
+      <summary>
+            Gets or sets a value indicating the height of the resulting thumbnail.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The resulting thumbnail height.</value>
+      <remarks>
+            The default value for this property is 128.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.CreateThumbnailActivity.Thumbnail">
+      <summary>
+            Gets the resulting thumbnail.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The resulting thumbnail.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.LoadImageActivityValidator">
+      <exclude />
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.FaxImageInfo">
+      <summary>
+            Provides information specific to FAX images.
+            </summary>
+      <document>yes</document>
+      <keywords>WF|FAX images|Compressed FAX</keywords>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.FaxImageInfo.IsCompressedProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.FaxImageInfo.IsCompressed" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.FaxImageInfo.IsCompressed">
+      <summary>
+            Determines whether or not the image is compressed.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>true if the image is compressed, false otherwise.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.CodecsColorSpaceType">
+      <summary>
+            Indicates the colorspace of the image data
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.CodecsColorSpaceType.Bgr">
+      <summary>
+            BGR colorspace
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.CodecsColorSpaceType.Yuv">
+      <summary>
+            YUV colorspace
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.CodecsColorSpaceType.Cmyk">
+      <summary>
+            CMYK colorspace
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.CodecsColorSpaceType.CieLab">
+      <summary>
+            CIELab colorspace
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.RasterDitheringMethod">
+      <summary>
+            Indicates the dithering method used for the image
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterDitheringMethod.None">
+      <summary>
+            No dithering
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterDitheringMethod.FloydStein">
+      <summary>
+            Floyd-Steinberg method
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterDitheringMethod.Stucki">
+      <summary>
+            Stucki method
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterDitheringMethod.Burkes">
+      <summary>
+            Burkes method
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterDitheringMethod.Sierra">
+      <summary>
+            Sierra method
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterDitheringMethod.StevensonArce">
+      <summary>
+            Stevenson-Arce method
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterDitheringMethod.Jarvis">
+      <summary>
+            Jarvis method
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterDitheringMethod.Ordered">
+      <summary>
+            Ordered dithering, which is faster than other methods but is lower in quality
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterDitheringMethod.Clustered">
+      <summary>
+            Clustered dithering
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.RasterByteOrder">
+      <summary>
+            Indicates the color byte order of the image data
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterByteOrder.Rgb">
+      <summary>
+            RGB
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterByteOrder.Bgr">
+      <summary>
+            BGR (inverse of RGB)
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterByteOrder.Gray">
+      <summary>
+            Grayscale
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterByteOrder.Romm">
+      <summary>
+            ROMM (BGR)
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.CodecsLoadByteOrder">
+      <summary>
+            Indicates the desired byte order when loading image files.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.CodecsLoadByteOrder.Rgb">
+      <summary>
+            Red-green-blue order.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.CodecsLoadByteOrder.Bgr">
+      <summary>
+            Blue-green-red order.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.CodecsLoadByteOrder.Gray">
+      <summary>
+            12 or 16-bit grayscale image.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.CodecsLoadByteOrder.RgbOrGray">
+      <summary>
+            Load the image as red, green, blue OR as a 12 or 16-bit grayscale image.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.CodecsLoadByteOrder.BgrOrGray">
+      <summary>
+            Load the image as blue, green, red OR as a 12 or 16-bit grayscale image.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.CodecsLoadByteOrder.Romm">
+      <summary>
+            ROMM order. ROMM only supports 24 and 48-bit images.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.CodecsLoadByteOrder.BgrOrGrayOrRomm">
+      <summary>
+            Load the image as red, green, blue OR as a 12 or 16-bit grayscale image OR as ROMM. ROMM only supports 24 and 48-bit color
+            images.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.RasterImageFormat">
+      <summary>
+            Indicates the image file format.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Unknown">
+      <summary>
+            Unknown (or RAW Data).
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Pcx">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsPCXFormats">ZSoft PCX</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Gif">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsGif">GIF</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Tif">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTIFF">TIFF (Tagged Image File Format)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Tga">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTargaFormat">Truevision TGA (TARGA)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Cmp">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsJPEGAndLEADCompressed">LEAD Compressed (CMP)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Bmp">
+      <summary>
+        <see cref="T:L.Topics.FileFormatBMPFormats">Bitmap (BMP)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Jpeg">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsJPEGAndLEADCompressed">JPEG File Interchange Format (JFIF)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.JpegRgb">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsJPEGAndLEADCompressed">JPEG File Interchange Format (JFIF) (RGB)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifJpeg">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTIFF">TIFF with JPEG compression</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Os2">
+      <summary>
+        <see cref="T:L.Topics.FileFormatBMPFormats">OS/2 Bitmap (OS/2 BMP)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Wmf">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsWindowsMetafileFormats">Windows Metafile (WMF)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Eps">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsEPS">PostScript Raster (Encapsulated PostScript)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifLzw">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTIFF">TIFF with LZW Compression</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Jpeg411">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsJPEGAndLEADCompressed">JPEG File Interchange Format (4-1-1)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifJpeg411">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTIFF">TIFF with JPEG compression</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Jpeg422">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsJPEGAndLEADCompressed">JPEG File Interchange Format (4-2-2)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifJpeg422">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTIFF">TIFF with JPEG compression</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Ccitt">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFax">TIFF CCITT</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Lead1Bit">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsLEAD1BitFormat">LEAD 1-bit lossless format</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.CcittGroup31Dim">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFax">TIFF CCITT Group 3 (1 Dimensional)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.CcittGroup32Dim">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFax">TIFF CCITT Group3 two dimensions</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.CcittGroup4">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFax">TIFF CCITT Group4 two dimensions 4</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Abc">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsABC">LEAD Advanced Bitonal Compression</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Cals">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFax">CALS Raster (Type 1)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Mac">
+      <summary>
+        <see cref="T:L.Topics.Miscellaneous1BitFormats">MacPaint (MAC)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Img">
+      <summary>
+        <see cref="T:L.Topics.Miscellaneous1BitFormats">GEM Image (IMG)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Msp">
+      <summary>
+        <see cref="T:L.Topics.Miscellaneous1BitFormats">Microsoft Paint (MSP)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Wpg">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsWPG">WordPerfect (WPG)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Ras">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsSun">SUN Raster Format (RAS)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Fli">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFLC">Flic Animation (FLI)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.EpsTiff">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsEPS">PostScript Raster TIFF (Encapsulated PostScript TIFF)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.EpsWmf">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsEPS">PostScript Raster WMF(Encapsulated PostScript WMF)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.FaxG31Dim">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFax">FAX Group 3 (1 Dimensional)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.FaxG32Dim">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFax">FAX Group 3 (2 Dimensional)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.FaxG4">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFax">FAX Group 4</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.WfxG31Dim">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFax">WinFax Group 3 (1 Dimensional)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.WfxG4">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFax">WinFax Group 4</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.IcaG31Dim">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsIOCAFormat">IOCA (ICA) (1 Dimensional)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.IcaG32Dim">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsIOCAFormat">IOCA (ICA) (2 Dimensional)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.IcaG4">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsIOCAFormat">IOCA (ICA) (Group 4)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Os22">
+      <summary>
+        <see cref="T:L.Topics.FileFormatBMPFormats">OS/2 Bitmap (OS/2 BMP)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Png">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsPNGFormat">PNG (Portable Network Graphics)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.RawIcaG31Dim">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsIOCAFormat">IOCA (ICA) (Group 3 1Dimensional)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.RawIcaG32Dim">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsIOCAFormat">IOCA (ICA) (Group 3 2Dimensional)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.RawIcaG4">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsIOCAFormat">IOCA (ICA) (Group 4)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.BmpRle">
+      <summary>
+        <see cref="T:L.Topics.FileFormatBMPFormats">Bitmap (BMP) (With RLE)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifCmyk">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTIFF">TIFF CMYK (With CMYK colorspace)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifLzwCmyk">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTIFF">TIFF LZW (CMYK)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifPackBits">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTIFF">TIFF Packbits</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifPackBitsCmyk">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTIFF">TIFF Packbits (CMYK)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifDxf">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTIFF">TIFF with embedded DXF</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.WinIco">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsIconsAndCursors">Windows Icon (ICO)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.WinCur">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsIconsAndCursors">Windows Cursor (CUR)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifYcc">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTIFF">TIFF YCC</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifLzwYcc">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTIFF">TIFF LZW YCC</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifPackbitsYcc">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTIFF">TIFF Packbits (YCC)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Exif">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsExifFormats">Exif</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.ExifYcc">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsExifFormats">Exif (YCC)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.ExifJpeg422">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsExifFormats">Exif (JPEG 4-2-2)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.ExifJpeg">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsExifFormats">Exif (JPEG 4-2-2)</see>. This is the same as <see cref="T:Leadtools.Workflow.Raster.RasterImageFormat">RasterImageFormat.ExifJpeg422</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.ExifJpeg411">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsExifFormats">Exif (JPEG 4-1-1)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.PbmAscii">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsPortableBitmapUtilities">PBM Ascii</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.PbmBinary">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsPortableBitmapUtilities">PBM Binary</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.PgmAscii">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsPortableBitmapUtilities">PGM Ascii</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.PgmBinary">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsPortableBitmapUtilities">PPGM Binary</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.PpmAscii">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsPortableBitmapUtilities">PPM Ascii</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.PpmBinary">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsPortableBitmapUtilities">PPM Binary</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Cut">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsCUT">Dr. Halo</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Xpm">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsXPicMapFormat">XPM Window PixMap</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Xbm">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsXBitMap">XWindows BitMap (XBM)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.IffIlbm">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsIFF">IFF (Amiga Interchange) (ILBM)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.IffCat">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsIFF">IFF (Amiga Interchange) (CAT)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Xwd">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsXWD">X Window Dump (XWD)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Clp">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsCLP">Microsoft Windows Clipboard (CLP)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Jbig">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsJBIGFormat">JBIG (JBG)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Emf">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsWindowsMetafileFormats">Windows Enhanced Metafile (EMF)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.IcaIbmMmr">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsIOCAFormat">IOCA (ICA) (MMR Compressed)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.RawIcaIbmMmr">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsIOCAFormat">IOCA (ICA) (Raw MMR Compressed)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Ani">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsWindowsAnimatedCursorFormat">Windows Animated Cursor (ANI)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.LaserData">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFax">LaserView LaserData</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.IntergraphRle">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsITG">IntergraphRLE (ITG) (RLE compressed)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Cals4">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFax">CALS Raster (Type 4)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Cals2">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFax">CALS Raster (Type 2)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Cals3">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFax">CALS Raster (Type 3)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Xwd10">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsXWD">X Window Dump (XWD 10)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Xwd11">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsXWD">X Window Dump (XWD 11)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Flc">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFLC">Flic Animation (FLC)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifCmp">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTIFF">TIFF (with LEAD CMP compression)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifJbig">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTIFF">TIFF (with JBIG compression)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifUnknown">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTIFF">TIFF (Unknown image data)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Sgi">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsSGI">Silicon Graphics Image Format (SGI)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.SgiRle">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsSGI">Silicon Graphics Image Format (SGI) (RLE)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.RasPdf">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsPDF">Portable Document Format (PDF)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.RasPdfG31Dim">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsPDF">Portable Document Format (PDF) (Group 3 1-Dimensional)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.RasPdfG32Dim">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsPDF">Portable Document Format (PDF) (Group 3 2-Dimensional)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.RasPdfG4">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsPDF">Portable Document Format (PDF) (Group 4)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.RasPdfJpeg">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsPDF">Portable Document Format (PDF) (JPEG)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.RasPdfJpeg422">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsPDF">Portable Document Format (PDF) (JPEG 4-2-2)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.RasPdfJpeg411">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsPDF">Portable Document Format (PDF) (JPEG 4-1-1)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.RasPdfLzw">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsPDF">Portable Document Format (PDF) (LZW Compression)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.RasPdfJbig2">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsPDF">Portable Document Format (PDF) (JBIG2 Compression)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.RasPdfCmyk">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsPDF">Portable Document Format (PDF) (CMYK data)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.RasPdfLzwCmyk">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsPDF">Portable Document Format (PDF) (CMYK data - LZW Compression)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Raw">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsRAW">Raw Image Data</see>. LEADTOOLS can load and save raw compressed or uncompressed data.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifCustom">
+      <summary>
+            Unsupported.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.RawRgb">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsRAW">Raw Image Data</see>. LEADTOOLS can load and save raw compressed or uncompressed data.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.RawRle4">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsRAW">Raw Image Data</see> (RLE 4-bit). LEADTOOLS can load and save raw compressed or uncompressed data.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.RawRle8">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsRAW">Raw Image Data</see> (RLE 8-bit).LEADTOOLS can load and save raw compressed or uncompressed data.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.RawBitfields">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsRAW">Raw Image Data</see> (BitField compressed). LEADTOOLS can load and save raw compressed or uncompressed data.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.RawPackBits">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsRAW">Raw Image Data</see> (Packbits compressed). LEADTOOLS can load and save raw compressed or uncompressed data.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.RawJpeg">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsRAW">Raw Image Data</see> (JPEG compressed).
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.FaxG31DimNoEol">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFax">FAX Group 3 (1 Dimensional) - with no EOL</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.RawCcitt">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsRAW">Raw Image Data</see> (CCITT compressed). LEADTOOLS can load and save raw compressed or uncompressed data.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Jp2">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsJPEGAndLEADCompressed">JP2 - Lossy or Lossless</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.J2k">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsJPEGAndLEADCompressed">J2K - Lossy or Lossless</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Cmw">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsJPEGAndLEADCompressed">LEAD CMW</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifJ2k">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTIFF">TIFF with JPEG 2000 compression</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifCmw">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTIFF">TIFF with LEAD Wavelet CMW compression</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Mrc">
+      <summary>
+        <see cref="T:L.Topics.MrcT44Fmt">Standard MRC T44 format</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.LeadMrc">
+      <summary>
+        <see cref="T:L.Topics.LeadMrcFmt">LEADTOOLS MRC format</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifMrc">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTIFF">TIFF with standard MRC compression</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifLeadMrc">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTIFF">TIFF with LEAD MRC compression</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Wbmp">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsWBMP">Wireless Bitmap Format (WBMP)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.JpegLab">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsJPEGAndLEADCompressed">JPEG File Interchange Format (JFIF) (LAB)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.JpegLab411">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsJPEGAndLEADCompressed">JPEG File Interchange Format (JFIF) (LAB 4-1-1)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.JpegLab422">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsJPEGAndLEADCompressed">JPEG File Interchange Format (JFIF) (LAB 4-2-2)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.GeoTiff">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTIFF">TIFF (GeoTIFF)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifLead1Bit">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTIFF">TIFF with LEAD 1-bit compression</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifAbc">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTIFF">TIFF with LEAD ABC 1-bit compression</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Postscript">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsPostScriptDoc">PostScript Document Format (PS)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Ptoca">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsPTOCA">PTOCA Format (PTOCA)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Sct">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsSCT">Scitex Continuous Tone Format (SCT)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Afp">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsAFP">AFP Format (AFP)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.IcaUncompressed">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsIOCAFormat">IOCA (ICA) (uncompressed)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.RawIcaUncompressed">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsIOCAFormat">IOCA (ICA) (raw uncompressed)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Smp">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsSMP">SMP Format (SMP)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.SmpG31Dim">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsSMP">SMP Format (SMP) (Group 3 1-Dimensional)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.SmpG32Dim">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsSMP">SMP Format (SMP) (Group 3 2-Dimensional)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.SmpG4">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsSMP">SMP Format (SMP) (Group 4)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TgaRle">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTargaFormat">Truevision TGA (TARGA) (RLE)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.RasRle">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsSun">SUN Raster Format (RAS) (RLE)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.ClpRle">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsCLP">Microsoft Windows Clipboard (CLP)(RLE compressed)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Fit">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFIT">FITS Format (FIT)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Cin">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsKODAKCineon">Cineon Format (CIN)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.EpsPostscript">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsEPS">PostScript Raster (Encapsulated PostScript)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.IntergraphCcittG4">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsITG">IntergraphRLE (ITG) (CCITT Group 4 compressed)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Sff">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsSFF">Structured Fax File Format (SFF)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.IffIlbmUncompressed">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsIFF">IFF (Amiga Interchange) (ILBM uncompressed)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.IffCatUncompressed">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsIFF">IFF (Amiga Interchange) (CAT uncompressed)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.AfpIcaG31Dim">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsAFP">AFP Format (AFP) IOCA Group3 1 Dimensional</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.AfpIcaG32Dim">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsAFP">AFP Format (AFP) IOCA Group3 2 Dimensional</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.AfpIcaG4">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsAFP">AFP Format (AFP) IOCA Group4</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.AfpIcaUncompressed">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsAFP">AFP Format (AFP) IOCA Uncompressed</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.AfpIcaIbmMmr">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsAFP">AFP Format (AFP) IOCA MMR Compressed</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Psd">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsPSDFormat">Photoshop 3.0 (PSD)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Jbig2">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsJBIG2Format">JBIG2 (JB2)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Crw">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsCRW">AFP Format (AFP) IOCA MMR Compressed</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Dcr">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsDCR">Kodak Professional Digital Camera System Format (DCR)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Dcs">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsDCS">Kodak Professional Digital Camera System Format (DCS)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Ecw">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsECW">Enhanced Compressed Wavelet Format (ECW)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Kdc">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsKDC">Kodak Digital Camera Format (KDC)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Pcd">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFPX">PhotoCD (PCD)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Kdc120">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsKDC">Kodak Digital Camera Format (KDC) (120)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Kdc40">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsKDC">Kodak Digital Camera Format (KDC) (40)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Kdc50">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsKDC">Kodak Digital Camera Format (KDC) (50)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.RtfRaster">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsRTF">Rich Text Format (RTF)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Awd">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFax">Microsoft Fax (AWD)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Abic">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsABIC">Raw ABIC Format (ABIC)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.IcaAbic">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsIOCAFormat">IOCA with ABIC compression</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifAbic">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTIFF">TIFF with ABIC compression</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifJbig2">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsTIFF">TIFF with JBIG2 compression</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.RawLzw">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsRAW">LZW Image Data</see>. LEADTOOLS can save raw lzw compressed data.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.PdfLeadMrc">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsPdfLeadMrc">PDF format with image segmentation using MRC</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Txt">
+      <summary>
+            ASCII Text Format. LEADTOOLS can load TXT files as raster images.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Fpx">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFPX">Kodak Formats (PCD and FPX)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.FpxSingleColor">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFPX">Kodak Formats (PCD and FPX)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.FpxJpeg">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFPX">Kodak Formats (PCD and FPX)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.FpxJpegQFactor">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFPX">Kodak Formats (PCD and FPX)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.DicomGray">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsDICOM">DICOM Format (DIC)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.DicomColor">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsDICOM">DICOM Format (DIC)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.DicomRleGray">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsDICOM">DICOM Format (DIC)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.DicomRleColor">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsDICOM">DICOM Format (DIC)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.DicomJpegGray">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsDICOM">DICOM Format (DIC)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.DicomJpegColor">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsDICOM">DICOM Format (DIC)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.DicomJ2kGray">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsDICOM">DICOM Format (DIC)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.DicomJ2kColor">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsDICOM">DICOM Format (DIC)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Wmz">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsWMZ">Compressed Windows Metafile Format (WMZ)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Pct">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsPCT">Macintosh Pict Format (PCT)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifxJbig">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFax">Xerox Internet Fax File Format</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifxJbigT43">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFax">Xerox Internet Fax File Format</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifxJbigT43ItuLab">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFax">Xerox Internet Fax File Format</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifxJbigT43Gs">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFax">Xerox Internet Fax File Format</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifxFaxG4">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFax">Xerox Internet Fax File Format</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifxFaxG31D">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFax">Xerox Internet Fax File Format</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifxFaxG32D">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFax">Xerox Internet Fax File Format</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifxJpeg">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsFax">Xerox Internet Fax File Format</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Hdp">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsHDP">JPEG XR / Microsoft HD Photo File Format</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.HdpGray">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsHDP">JPEG XR / Microsoft HD Photo File Format</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.HdpCmyk">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsHDP">JPEG XR / Microsoft HD Photo File Format</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.PngIco">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsIconsAndCursors">Windows Icon (ICO), PNG Compressed (VISTA)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.TifZip">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsIconsAndCursors">TIFF (with ZIP compression)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Xps">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsXPSFormat">XML Paper Specification (XPS) - with PNG Compression</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Jpx">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsJPEGAndLEADCompressed">Jpeg 2000 extension part 2 (JPX)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.XpsJpeg">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsXPSFormat">XML Paper Specification (XPS) - with JPEG (4-4-4) Compression</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.XpsJpeg422">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsXPSFormat">XML Paper Specification (XPS) - with JPEG (4-2-2) Compression</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.XpsJpeg411">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsXPSFormat">XML Paper Specification (XPS) - with JPEG (4-1-1) Compression</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.Mng">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsMNG">Multiple Network Graphics (MNG)</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.MngGray">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsMNG">Multiple Network Graphics (MNG) - Gray</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.MngJng">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsMNG">Multiple Network Graphics (MNG) - YUV 4-4-4</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.MngJng411">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsMNG">Multiple Network Graphics (MNG) - YUV 4-1-1</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterImageFormat.MngJng422">
+      <summary>
+        <see cref="T:L.Topics.FileFormatsMNG">Multiple Network Graphics (MNG) - YUV 4-2-2</see>.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.CodecsSavePageMode">
+      <summary>
+            Indicates the operation to perform when saving multipage files.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.CodecsSavePageMode.Append">
+      <summary>
+            Append the page to the end of the file.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.CodecsSavePageMode.Insert">
+      <summary>
+            Insert the page at the specified index.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.CodecsSavePageMode.Replace">
+      <summary>
+            Replace the page at the specified index.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.CodecsSavePageMode.Overwrite">
+      <summary>
+            Overwrite the entire file.
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.RasterSizeFlags">
+      <summary>
+            Flags which control the behavior of image resize methods
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterSizeFlags.None">
+      <summary>
+            Resize normally
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterSizeFlags.FavorBlack">
+      <summary>
+        <para>
+          <see cref="T:Leadtools.Topics.RasterProDocMed">(Document/Medical only)</see> Preserve black objects when making the image smaller. This option
+            affects only 1-bit, black-and-white images, where it prevents the disappearance of thin lines. You can use a bitwise OR ( | ) to combine
+            this flag with another one. For example, <strong>Resample</strong> | <strong>FavorBlack</strong> causes color images to be resampled, 
+            but applies the favor-black option to 1-bit, black-and-white images.</para>
+        <para>If you apply this flag to an image that has more than 1 bit per pixel, then the behavior is undefined.</para>
+      </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterSizeFlags.Resample">
+      <summary>
+            Use linear interpolation and averaging to produce a higher-quality image
+            </summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.RasterSizeFlags.Bicubic">
+      <summary>
+            Use bicubic interpolation and averaging to produce a higher quality image. This is slower than <strong>Resample</strong></summary>
+      <isnew>2/28/2009</isnew>
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.CreateThumbnailActivityValidator">
+      <exclude />
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.LoadImageActivity">
+      <summary>
+            The LoadActivity class loads image files in any supported format.
+            </summary>
+      <document>yes</document>
+      <keywords>WF|Loading image|Image format|Url|Activity</keywords>
+      <isnew>2/28/2009</isnew>
+      <remarks>
+            The loaded image is returned in the <see cref="T:Leadtools.RasterImage" /> property.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Workflow.Raster.LoadImageActivity.#ctor">
+      <summary>
+            Constructs a new LoadActivity object.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.LoadImageActivity.UrlProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.LoadImageActivity.Url" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.LoadImageActivity.FirstPageNumberProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.LoadImageActivity.FirstPageNumber" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.LoadImageActivity.LastPageNumberProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.LoadImageActivity.LastPageNumber" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.LoadImageActivity.BitsPerPixelProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.LoadImageActivity.BitsPerPixel" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.LoadImageActivity.ByteOrderProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.LoadImageActivity.ByteOrder" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.LoadImageActivity.GetCredentialsEvent">
+      <summary>
+            Identifies the <see cref="E:Leadtools.Workflow.Raster.LoadImageActivity.GetCredentials_EV">Leadtools.Workflow.Raster.LoadImageActivity.GetCredentials</see> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.LoadImageActivity.UpdateCodecsOptionsEvent">
+      <summary>
+            Identifies the <see cref="E:Leadtools.Workflow.Raster.LoadImageActivity.UpdateCodecsOptions_EV">Leadtools.Workflow.Raster.LoadImageActivity.UpdateCodecsOptions</see> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Workflow.Raster.LoadImageActivity.Execute(System.Workflow.ComponentModel.ActivityExecutionContext)">
+      <summary>
+            This member overrides <see cref="M:System.Workflow.ComponentModel.Activity.Execute(System.Workflow.ComponentModel.ActivityExecutionContext)" />.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <param name="context">The execution environment of the activity.</param>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="E:Leadtools.Workflow.Raster.LoadImageActivity.GetCredentials">
+      <summary>
+            Gets called just before the file is loaded to enable the client to set the appropriate network credentials.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <remarks>
+            The callback receives an object that contains the ICredentials object to set.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="E:Leadtools.Workflow.Raster.LoadImageActivity.UpdateCodecsOptions">
+      <summary>
+            Gets called just before the file is loaded to enable the client to set the appropriate loading options.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <remarks>The callback receives an object that contains the <see cref="T:Leadtools.Codecs.RasterCodecs">RasterCodecs</see> object used for file access.</remarks>
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.LoadImageActivity.ByteOrder">
+      <summary>
+            Gets or sets a value indicating the color order for 16-, 24-, 32-, 48-, and 64-bit images. If the resulting image is less than 16 bits per pixel, this will have no effect since palletized images have no order.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The color order for 16-, 24-, 32-, 48-, and 64-bit images.</value>
+      <remarks>
+            Valid values for this property are:
+            <para><list type="table"><listheader><term>Value</term><description>Meaning</description></listheader><item><term><see cref="T:Leadtools.Workflow.Raster.CodecsLoadByteOrder">CodecsLoadByteOrder.Rgb</see></term><description>Red, green, and blue color order in memory</description></item><item><term><see cref="T:Leadtools.Workflow.Raster.CodecsLoadByteOrder">CodecsLoadByteOrder.Bgr</see></term><description>Blue, green, and red color order in memory</description></item><item><term><see cref="T:Leadtools.Workflow.Raster.CodecsLoadByteOrder">CodecsLoadByteOrder.Gray</see></term><description>12 or 16-bit grayscale image. 12 and 16-bit grayscale images are only supported in the
+            <see cref="T:Leadtools.Topics.DocumentMedicalEditionSupportAndLicensingRequirements">Document/Medical Imaging</see> editions.</description></item><item><term><see cref="T:Leadtools.Workflow.Raster.CodecsLoadByteOrder">CodecsLoadByteOrder.RgbOrGray</see></term><description>Load the image as red, green, blue OR as a 12 or 16-bit grayscale image. 12 and 16-bit grayscale
+            images are supported in the <see cref="T:Leadtools.Topics.DocumentMedicalEditionSupportAndLicensingRequirements">Document/Medical Imaging</see> editions</description></item><item><term><see cref="T:Leadtools.Workflow.Raster.CodecsLoadByteOrder">CodecsLoadByteOrder.BgrOrGray</see></term><description>Load the image as blue, green, red OR as a 12 or 16-bit grayscale image. 12 and 16-bit grayscale
+            images are supported in the <see cref="T:Leadtools.Topics.DocumentMedicalEditionSupportAndLicensingRequirements">Document/Medical Imaging</see> editions</description></item><item><term><see cref="T:Leadtools.Workflow.Raster.CodecsLoadByteOrder">CodecsLoadByteOrder.Romm</see></term><description>ROMM order. ROMM only supports 24 and 48-bit images</description></item><item><term><see cref="T:Leadtools.Workflow.Raster.CodecsLoadByteOrder">CodecsLoadByteOrder.BgrOrGrayOrRomm</see></term><description>Load the image as red, green, blue OR as a 12 or 16-bit grayscale image OR as ROMM. 12 and 16-bit grayscale
+            images are supported in the <see cref="T:Leadtools.Topics.DocumentMedicalEditionSupportAndLicensingRequirements">Document/Medical Imaging</see> editions only.
+            ROMM only supports 24 and 48-bit color images.</description></item></list></para></remarks>
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.LoadImageActivity.BitsPerPixel">
+      <summary>
+            Gets or sets a value indicating the resulting image pixel depth.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The resulting image pixel depth.</value>
+      <remarks>
+            Valid values for this property are: 0, 1 to 8, 12, 16, 24, 32, 48, 64.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.LoadImageActivity.FirstPageNumber">
+      <summary>
+            Gets or sets a value indicating the 1-based index of the first page to load.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The 1-based index of the first page to load.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.LoadImageActivity.LastPageNumber">
+      <summary>
+            Gets or sets a value indicating the 1-based index of the last page to load.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The 1-based index of the last page to load.</value>
+      <remarks>
+            The value for this property must be greater than or equal to <see cref="P:Leadtools.Workflow.Raster.LoadImageActivity.FirstPageNumber" />. You can pass -1 to load from <see cref="P:Leadtools.Workflow.Raster.LoadImageActivity.FirstPageNumber" /> to the last page in the file.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.LoadImageActivity.Url">
+      <summary>
+            Gets or sets a value indicating the name of the image file to load.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>The name of the image file to load.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.PsdImageInfo">
+      <summary>
+            Provides information specific to PSD images.
+            </summary>
+      <document>yes</document>
+      <keywords>WF|PSD images|Adobe Photoshop|Photoshop file format</keywords>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="F:Leadtools.Workflow.Raster.PsdImageInfo.LayersProperty">
+      <summary>
+            Identifies the <see cref="P:Leadtools.Workflow.Raster.PsdImageInfo.Layers" /> dependency property.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="P:Leadtools.Workflow.Raster.PsdImageInfo.Layers">
+      <summary>
+            Gets the number of layers in the PSD file.
+            </summary>
+      <document>yes</document>
+      <isnew>2/28/2009</isnew>
+      <value>An integer value that represents the number of layers in the PSD file.</value>
+      <remarks>
+        <para>If this value is 0, then the PSD file does not contain any layers.</para>
+        <para>For more information on PSD layers, refer to the FILE FORMATS SPECIFICATION from Adobe.</para>
+      </remarks>
+      <noexample />
+    </member>
+    <member name="T:Leadtools.Workflow.Raster.GetImageInfoActivityValidator">
+      <exclude />
+    </member>
+  </members>
+</doc>

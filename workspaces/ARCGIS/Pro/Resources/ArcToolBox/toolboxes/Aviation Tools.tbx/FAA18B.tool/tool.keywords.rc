@@ -1,0 +1,14 @@
+{
+    "set": [
+        "airports",
+        "faa",
+        "faa18b",
+        "identification",
+        "multipatch",
+        "obstacle",
+        "obstruction",
+        "runway",
+        "surface",
+        "tin"
+    ]
+}

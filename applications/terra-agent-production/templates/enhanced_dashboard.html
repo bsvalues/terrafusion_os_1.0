@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion Enterprise Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .skip-to-content { position: absolute; top: -40px; left: 6px; z-index:100; color: white; }
+        .skip-to-content:focus { position: absolute; top: 6px; }
+        .footer { margin-top: 40px; padding: 20px 0; border-top: 1px solid #444; text-align: center; color: #666; }
+        .query-section { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 20px; margin: 10px 0; }
+        .status-indicator { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
+        .status-active { background-color: #28a745; }
+        .status-warning { background-color: #ffc107; }
+        .status-error { background-color: #dc3545; }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
+    
+    <div class="container">
+        <header class="header">
+            <div class="row align-items-center mb-4">
+                <div class="col-md-8">
+                    <h1><i class="fas fa-globe me-2"></i>TerraFusion Enterprise Dashboard</h1>
+                    <p class="lead">Comprehensive Property Assessment & AI Management Platform</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button class="btn btn-outline-info me-2" onclick="refreshData()">
+                        <i class="fas fa-sync me-1"></i> Refresh
+                    </button>
+                    <a href="/" class="btn btn-info">
+                        <i class="fas fa-comments me-1"></i> AI Chat
+                    </a>
+                </div>
+            </div>
+        </header>
+        
+        <main id="main-content">
+            <!-- System Status Cards -->
+            <div class="row mb-4">
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="card bg-dark text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-database text-info fs-2"></i>
+                            <h6 class="mt-2">Database</h6>
+                            <span class="status-indicator status-active"></span>
+                            <small>Connected</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="card bg-dark text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-map text-warning fs-2"></i>
+                            <h6 class="mt-2">ArcGIS</h6>
+                            <span class="status-indicator status-active"></span>
+                            <small>Active</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="card bg-dark text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-robot text-success fs-2"></i>
+                            <h6 class="mt-2">AI Engine</h6>
+                            <span class="status-indicator status-active"></span>
+                            <small>Online</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="card bg-dark text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-sync text-primary fs-2"></i>
+                            <h6 class="mt-2">Sync Jobs</h6>
+                            <span class="status-indicator status-active"></span>
+                            <small>Running</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="card bg-dark text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-calculator text-info fs-2"></i>
+                            <h6 class="mt-2">Assessment</h6>
+                            <span class="status-indicator status-active"></span>
+                            <small>Ready</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
+                    <div class="card bg-dark text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-balance-scale text-warning fs-2"></i>
+                            <h6 class="mt-2">Debate Mode</h6>
+                            <span class="status-indicator status-active"></span>
+                            <small>Available</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Row -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-dark">
+                        <div class="card-body text-center">
+                            <h3 class="text-info" id="totalProperties">0</h3>
+                            <h6>Total Properties</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-dark">
+                        <div class="card-body text-center">
+                            <h3 class="text-success" id="totalValue">$0</h3>
+                            <h6>Total Assessed Value</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-dark">
+                        <div class="card-body text-center">
+                            <h3 class="text-warning" id="avgValue">$0</h3>
+                            <h6>Average Value</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-dark">
+                        <div class="card-body text-center">
+                            <h3 class="text-primary" id="totalQueries">0</h3>
+                            <h6>AI Queries Today</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Query Testing Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card bg-dark">
+                        <div class="card-header">
+                            <h5><i class="fas fa-robot me-2"></i>AI Query Testing</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Query Type</label>
+                                        <select class="form-select" id="queryType">
+                                            <option value="general">General</option>
+                                            <option value="property_search">Property Search</option>
+                                            <option value="assessment">Assessment</option>
+                                            <option value="levy">Levy Calculation</option>
+                                            <option value="trends">Market Trends</option>
+                                            <option value="sync">Sync Management</option>
+                                            <option value="debate">Debate Format</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Query</label>
+                                        <textarea class="form-control" id="queryText" rows="3" placeholder="Enter your query here..."></textarea>
+                                    </div>
+                                    <button class="btn btn-primary" onclick="testQuery()">
+                                        <i class="fas fa-paper-plane me-1"></i> Send Query
+                                    </button>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Response</label>
+                                        <div id="queryResponse" class="bg-secondary p-3 rounded" style="min-height: 150px; white-space: pre-wrap;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Management -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card bg-dark">
+                        <div class="card-header">
+                            <h5><i class="fas fa-home me-2"></i>Property Data</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="propertyStats"></div>
+                            <button class="btn btn-outline-info mt-2" onclick="loadPropertyData()">
+                                <i class="fas fa-download me-1"></i> Load ArcGIS Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card bg-dark">
+                        <div class="card-header">
+                            <h5><i class="fas fa-sync-alt me-2"></i>Sync Jobs</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="syncJobs"></div>
+                            <button class="btn btn-outline-success mt-2" onclick="loadSyncJobs()">
+                                <i class="fas fa-refresh me-1"></i> Refresh Jobs
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card bg-dark">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-pie me-2"></i>Property Distribution by City</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="cityChart" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card bg-dark">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-bar me-2"></i>Value Ranges</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="valueChart" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Endpoints -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card bg-dark">
+                        <div class="card-header">
+                            <h5><i class="fas fa-plug me-2"></i>API Endpoints</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>System APIs</h6>
+                                    <ul class="list-unstyled">
+                                        <li><a href="/api/system_status" class="text-info">/api/system_status</a> - System health</li>
+                                        <li><a href="/api/properties" class="text-info">/api/properties</a> - Property data</li>
+                                        <li><a href="/api/statistics" class="text-info">/api/statistics</a> - Platform stats</li>
+                                        <li><a href="/api/sync_jobs" class="text-info">/api/sync_jobs</a> - Sync job status</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>AI APIs</h6>
+                                    <ul class="list-unstyled">
+                                        <li><code>POST /api/query</code> - AI query processing</li>
+                                        <li><code>GET http://localhost:8001/metrics</code> - Prometheus metrics</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="footer">
+            <p>TerraFusion Enterprise &copy; 2025 | Comprehensive Property Assessment Platform</p>
+        </footer>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        let cityChart, valueChart;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSystemStatus();
+            loadStatistics();
+            initializeCharts();
+        });
+        
+        async function loadSystemStatus() {
+            try {
+                const response = await fetch('/api/system_status');
+                const data = await response.json();
+                
+                if (data.total_properties) {
+                    document.getElementById('totalProperties').textContent = data.total_properties.toLocaleString();
+                }
+            } catch (error) {
+                console.error('Error loading system status:', error);
+            }
+        }
+        
+        async function loadStatistics() {
+            try {
+                const response = await fetch('/api/statistics');
+                const data = await response.json();
+                
+                if (data) {
+                    document.getElementById('totalValue').textContent = `$${(data.total_assessed_value || 0).toLocaleString()}`;
+                    document.getElementById('avgValue').textContent = `$${Math.round(data.average_value || 0).toLocaleString()}`;
+                    
+                    updateCharts(data);
+                }
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+            }
+        }
+        
+        function initializeCharts() {
+            const cityCtx = document.getElementById('cityChart');
+            if (cityCtx) {
+                cityChart = new Chart(cityCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            data: [],
+                            backgroundColor: ['#0d6efd', '#6c757d', '#ffc107', '#198754', '#dc3545', '#fd7e14']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        }
+                    }
+                });
+            }
+            
+            const valueCtx = document.getElementById('valueChart');
+            if (valueCtx) {
+                valueChart = new Chart(valueCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Under $300K', '$300K-500K', '$500K-750K', 'Over $750K'],
+                        datasets: [{
+                            label: 'Properties',
+                            data: [],
+                            backgroundColor: '#0dcaf0'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+            }
+        }
+        
+        function updateCharts(data) {
+            if (cityChart && data.cities) {
+                cityChart.data.labels = Object.keys(data.cities);
+                cityChart.data.datasets[0].data = Object.values(data.cities);
+                cityChart.update();
+            }
+            
+            if (valueChart && data.value_ranges) {
+                valueChart.data.datasets[0].data = [
+                    data.value_ranges.under_300k || 0,
+                    data.value_ranges['300k_500k'] || 0,
+                    data.value_ranges['500k_750k'] || 0,
+                    data.value_ranges.over_750k || 0
+                ];
+                valueChart.update();
+            }
+        }
+        
+        async function testQuery() {
+            const queryType = document.getElementById('queryType').value;
+            const queryText = document.getElementById('queryText').value;
+            const responseDiv = document.getElementById('queryResponse');
+            
+            if (!queryText.trim()) {
+                responseDiv.textContent = 'Please enter a query.';
+                return;
+            }
+            
+            responseDiv.textContent = 'Processing...';
+            
+            try {
+                const response = await fetch('/api/query', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: queryText, type: queryType })
+                });
+                
+                const data = await response.json();
+                responseDiv.textContent = data.response || 'No response received';
+                
+                document.getElementById('totalQueries').textContent = 
+                    parseInt(document.getElementById('totalQueries').textContent) + 1;
+                
+            } catch (error) {
+                responseDiv.textContent = `Error: ${error.message}`;
+            }
+        }
+        
+        async function loadPropertyData() {
+            try {
+                const response = await fetch('/api/properties');
+                const data = await response.json();
+                
+                document.getElementById('propertyStats').innerHTML = `
+                    <p><strong>Total Properties:</strong> ${data.total || 0}</p>
+                    <p><strong>Source:</strong> ${data.source || 'Unknown'}</p>
+                    <small class="text-muted">Last updated: ${new Date().toLocaleString()}</small>
+                `;
+            } catch (error) {
+                document.getElementById('propertyStats').innerHTML = `<p class="text-danger">Error loading property data</p>`;
+            }
+        }
+        
+        async function loadSyncJobs() {
+            try {
+                const response = await fetch('/api/sync_jobs');
+                const data = await response.json();
+                
+                let html = '';
+                if (data.sync_jobs && data.sync_jobs.length > 0) {
+                    data.sync_jobs.forEach(job => {
+                        html += `<p><strong>${job.name}:</strong> ${job.status}</p>`;
+                    });
+                } else {
+                    html = '<p>No sync jobs found</p>';
+                }
+                
+                document.getElementById('syncJobs').innerHTML = html;
+            } catch (error) {
+                document.getElementById('syncJobs').innerHTML = `<p class="text-danger">Error loading sync jobs</p>`;
+            }
+        }
+        
+        function refreshData() {
+            loadSystemStatus();
+            loadStatistics();
+            loadPropertyData();
+            loadSyncJobs();
+        }
+    </script>
+</body>
+</html> 

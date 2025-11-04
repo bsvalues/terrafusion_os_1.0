@@ -1,0 +1,25 @@
+{
+    "map": {
+        "description": "Generates an Esri classifier definition file (.ecd) using the Maximum Likelihood Classifier (MLC) classification definition.",
+        "dimension_value_field.descr": "<xdoc><p>Contains dimension values in the input training sample feature class.</p><p>This parameter is required to classify a time series of raster data using the change analysis raster output from the Analyze Changes Using CCDC tool in the Image Analyst toolbox.</p></xdoc>",
+        "dimension_value_field.title": "Dimension Value Field",
+        "in_additional_raster.descr": "Incorporates ancillary raster datasets, such as a segmented image or DEM. This parameter is optional.",
+        "in_additional_raster.title": "Additional Input Raster",
+        "in_raster.descr": "The raster dataset to classify.",
+        "in_raster.title": "Input Raster",
+        "in_training_features.descr": "<xdoc><p>The training sample file or layer that delineates the training sites.</p><p>These can be either shapefiles or feature classes that contain the training samples. The following field names are required in the training sample file:<ul><li>classname—A text field indicating the name of the class category</li><li>classvalue—A long integer field containing the integer value for each class category</li></ul></p></xdoc>",
+        "in_training_features.title": "Input Training Sample File",
+        "out_classifier_definition.descr": "The output JSON format file that will contain attribute information, statistics, hyperplane vectors, and other information for the classifier. An .ecd file will be created.",
+        "out_classifier_definition.title": "Output Classifier Definition File",
+        "params.category1": "Segment Attributes",
+        "title": "Train Maximum Likelihood Classifier",
+        "used_attributes.descr": "<xdoc><p>Specifies the attributes that will be included in the attribute table associated with the output raster.</p><ul><li><span title=\"COLOR\">Converged color</span>—The RGB color values will be derived from the input raster on a per-segment basis. This is also known as average chromaticity color.</li><li><span title=\"MEAN\">Mean digital number</span>—The average digital number (DN) will be derived from the optional pixel image on a per-segment basis.</li><li><span title=\"STD\">Standard deviation</span>—The standard deviation will be derived from the optional pixel image on a per-segment basis.</li><li><span title=\"COUNT\">Count of pixels</span>—The number of pixels composing the segment, on a per-segment basis.</li><li><span title=\"COMPACTNESS\">Compactness</span>—The degree to which a segment is compact or circular, on a per-segment basis. The values range from 0 to 1, in which 1 is a circle.</li><li><span title=\"RECTANGULARITY\">Rectangularity</span>—The degree to which the segment is rectangular, on a per-segment basis. The values range from 0 to 1, in which 1 is a rectangle.</li></ul><p>This parameter is only active if the <span class=\"esri_uicontrol\">Segmented</span> key property is set to true on the input raster. If the only input to the tool is a segmented image, the default attributes are <span class=\"esri_uicontrol\">Converged color</span>, <span class=\"esri_uicontrol\">Count of pixels</span>, <span class=\"esri_uicontrol\">Compactness</span>, and <span class=\"esri_uicontrol\">Rectangularity</span>. If an <span class=\"esri_uicontrol\">Additional Input Raster</span> value is included as an input with a segmented image, <span class=\"esri_uicontrol\">Mean digital number</span> and <span class=\"esri_uicontrol\">Standard deviation</span> are also available attributes.</p></xdoc>",
+        "used_attributes.domain.COLOR": "Converged color",
+        "used_attributes.domain.COMPACTNESS": "Compactness",
+        "used_attributes.domain.COUNT": "Count of pixels",
+        "used_attributes.domain.MEAN": "Mean digital number",
+        "used_attributes.domain.RECTANGULARITY": "Rectangularity",
+        "used_attributes.domain.STD": "Standard deviation",
+        "used_attributes.title": "Segment Attributes Used"
+    }
+}

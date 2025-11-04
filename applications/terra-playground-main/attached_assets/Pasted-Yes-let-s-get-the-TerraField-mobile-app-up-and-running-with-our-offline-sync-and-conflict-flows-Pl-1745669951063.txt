@@ -1,0 +1,179 @@
+Yes—let’s get the TerraField mobile app up and running with our offline-sync and conflict flows.  Please go ahead and execute these steps:
+
+⸻
+
+Step A: Scaffold the Expo React Native App
+
+# 1. Create app directory
+mkdir -p apps/terrafield-mobile
+cd apps/terrafield-mobile
+
+# 2. Initialize Expo + TypeScript
+npx create-expo-app . --template expo-template-blank-typescript
+
+# 3. Install dependencies
+yarn add realm @react-native-async-storage/async-storage @react-native-community/netinfo
+yarn add ../../packages/offline-sync ../../packages/ui-components
+
+
+
+⸻
+
+Step B: Add the Realm Adapter for Yjs Persistence
+
+Create apps/terrafield-mobile/src/realm-adapter.ts:
+
+import Realm from "realm";
+import * as Y from "yjs";
+
+const PropertySchema = {
+  name: "PropertyDoc",
+  primaryKey: "id",
+  properties: {
+    id: "string",
+    ydoc: "data",       // binary Yjs snapshot
+    updatedAt: "date",
+  },
+};
+
+let realm: Realm | null = null;
+
+export async function getRealm() {
+  if (!realm) {
+    realm = await Realm.open({
+      schema: [PropertySchema],
+      schemaVersion: 1,
+    });
+  }
+  return realm;
+}
+
+export async function saveYDoc(id: string, ydoc: Y.Doc) {
+  const db = await getRealm();
+  const blob = Y.encodeStateAsUpdate(ydoc);
+  db.write(() => {
+    db.create("PropertyDoc", { id, ydoc: blob, updatedAt: new Date() }, Realm.UpdateMode.Modified);
+  });
+}
+
+export async function loadYDoc(id: string): Promise<Uint8Array | null> {
+  const db = await getRealm();
+  const rec = db.objectForPrimaryKey("PropertyDoc", id);
+  return rec ? (rec.ydoc as ArrayBuffer) : null;
+}
+
+
+
+⸻
+
+Step C: Wire Up the Hook to Realm
+
+In your offline-sync package, update the property hook (e.g. packages/offline-sync/src/hooks.ts):
+
+import { loadYDoc, saveYDoc } from "../../apps/terrafield-mobile/src/realm-adapter";
+import * as Y from "yjs";
+
+export function usePropertyDoc(propertyId: string) {
+  const ydoc = useMemo(() => new Y.Doc(), []);
+  const [shared, setShared] = useState<Y.Map<any>>(new Y.Map());
+  const [local, setLocal] = useState<any>(null);
+  const [remote, setRemote] = useState<any>(null);
+  const [hasConflict, setHasConflict] = useState(false);
+
+  // Load persisted doc on mount
+  useEffect(() => {
+    loadYDoc(propertyId).then((blob) => {
+      if (blob) Y.applyUpdate(ydoc, new Uint8Array(blob));
+      setShared(ydoc.getMap("property"));
+    });
+  }, []);
+
+  // Persist any local changes
+  useEffect(() => {
+    const handler = (update: Uint8Array) => saveYDoc(propertyId, ydoc);
+    ydoc.on("update", handler);
+    return () => ydoc.off("update", handler);
+  }, [ydoc]);
+
+  // Subscribe to remote updates
+  useEffect(() => {
+    subscribeToRemote(propertyId, (update) => {
+      const clone = new Y.Doc();
+      Y.applyUpdate(clone, update);
+      const localState = ydoc.getMap("property").toJSON();
+      const remoteState = clone.getMap("property").toJSON();
+      if (JSON.stringify(localState) !== JSON.stringify(remoteState)) {
+        setHasConflict(true);
+        setRemote(remoteState);
+      }
+    });
+  }, [propertyId]);
+
+  const resolveConflict = (mergedState: any) => {
+    ydoc.transact(() => {
+      const m = ydoc.getMap("property");
+      Object.entries(mergedState).forEach(([k, v]) => m.set(k, v));
+    });
+    pushUpdate(propertyId, Y.encodeStateAsUpdate(ydoc));
+    setHasConflict(false);
+    setRemote(null);
+  };
+
+  return { shared, local: shared.toJSON(), remote, hasConflict, resolveConflict };
+}
+
+
+
+⸻
+
+Step D: Add Connectivity & Background Sync
+
+In apps/terrafield-mobile/src/App.tsx (or a dedicated sync manager):
+
+import NetInfo from "@react-native-community/netinfo";
+import { runPendingSyncs } from "../../packages/offline-sync/src/sync-queues";
+
+useEffect(() => {
+  const sub = NetInfo.addEventListener((state) => {
+    if (state.isConnected) {
+      runPendingSyncs();
+    }
+  });
+  return () => sub();
+}, []);
+
+
+
+⸻
+
+Step E: Embed the Conflict UI in Mobile Editor
+
+Create apps/terrafield-mobile/src/components/MobilePropertyEditor.tsx:
+
+import React from "react";
+import { View } from "react-native";
+import { usePropertyDoc } from "../../packages/offline-sync/src/hooks";
+import { ConflictManager } from "ui-components/conflict-resolution";
+import { MobilePropertyForm } from "./MobilePropertyForm";
+
+export function MobilePropertyEditor({ propertyId }: { propertyId: string }) {
+  const { shared, hasConflict, remote, resolveConflict } = usePropertyDoc(propertyId);
+
+  if (hasConflict && remote) {
+    return (
+      <ConflictManager
+        localState={shared.toJSON()}
+        remoteState={remote}
+        onResolve={resolveConflict}
+      />
+    );
+  }
+
+  return <MobilePropertyForm data={shared.toJSON()} />;
+}
+
+
+
+⸻
+
+Once these files are in place, run your Expo app on a simulator or real device, toggle offline mode, make edits on two devices, and confirm the conflict UI appears and resolves correctly. Let me know when you’re ready or if you’d like any tweaks!

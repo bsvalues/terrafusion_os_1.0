@@ -1,0 +1,5 @@
+<DataType Name="GP3DObjectFeatureLayer">
+  <DisplayName>3D Object Feature Layer</DisplayName>
+  <Description>A layer that defines how 3D object features are displayed in a scene.</Description>
+</DataType>
+

@@ -1,0 +1,164 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\ExponentialSmoothingForecast",
+    "displayname": "$rc:title",
+    "helpcontent": "50020002",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_cube": {
+            "display_order": "0",
+            "displayname": "$rc:in_cube.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "nc"
+                ]
+            },
+            "description": "$rc:in_cube.descr"
+        },
+        "analysis_variable": {
+            "display_order": "1",
+            "displayname": "$rc:analysis_variable.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:analysis_variable.descr"
+        },
+        "output_features": {
+            "direction": "out",
+            "display_order": "3",
+            "displayname": "$rc:output_features.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "depends": [
+                "in_cube"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "featuretype.rule": "AsSpecified",
+                "featuretype": "Simple",
+                "geometrytype.rule": "AsSpecified",
+                "geometrytype": "Polygon",
+                "fields.rule": "None",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:output_features.descr"
+        },
+        "output_cube": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "4",
+            "displayname": "$rc:output_cube.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "nc"
+                ]
+            },
+            "description": "$rc:output_cube.descr"
+        },
+        "number_of_time_steps_to_forecast": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:number_of_time_steps_to_forecast.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "1",
+            "description": "$rc:number_of_time_steps_to_forecast.descr"
+        },
+        "season_length": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:season_length.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:season_length.descr"
+        },
+        "number_for_validation": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:number_for_validation.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:number_for_validation.descr"
+        },
+        "outlier_option": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:outlier_option.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NONE",
+                        "code": "$rc:outlier_option.domain.NONE"
+                    },
+                    {
+                        "value": "IDENTIFY",
+                        "code": "$rc:outlier_option.domain.IDENTIFY"
+                    }
+                ]
+            },
+            "value": "NONE",
+            "description": "$rc:outlier_option.descr"
+        },
+        "level_of_confidence": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:level_of_confidence.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "90%",
+                        "code": "$rc:level_of_confidence.domain.90%"
+                    },
+                    {
+                        "value": "95%",
+                        "code": "$rc:level_of_confidence.domain.95%"
+                    },
+                    {
+                        "value": "99%",
+                        "code": "$rc:level_of_confidence.domain.99%"
+                    }
+                ]
+            },
+            "value": "90%",
+            "description": "$rc:level_of_confidence.descr"
+        },
+        "maximum_number_of_outliers": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:maximum_number_of_outliers.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:maximum_number_of_outliers.descr"
+        }
+    },
+    "environments": [
+        "outputCoordinateSystem"
+    ]
+}

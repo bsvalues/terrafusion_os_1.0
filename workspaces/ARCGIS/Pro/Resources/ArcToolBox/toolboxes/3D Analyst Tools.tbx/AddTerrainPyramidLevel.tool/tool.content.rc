@@ -1,0 +1,13 @@
+{
+    "map": {
+        "derived_out_terrain.title": "Updated Input Terrain",
+        "description": "Adds one or more pyramid levels to an existing terrain dataset.",
+        "in_terrain.descr": "The terrain dataset that will be processed.",
+        "in_terrain.title": "Input Terrain",
+        "pyramid_level_definition.descr": "<xdoc><p>The z-tolerance or window size and its associated reference scale for each pyramid level being added to the terrain. Each pyramid level is entered as a space-delimited pair of the pyramid level resolution and reference scale (for example, &quot;20 24000&quot; for a window size of 20 and reference scale of 1:24000, or &quot;1.5 10000&quot; for a z-tolerance of 1.5 and reference scale of 1:10000). The pyramid level resolution can be provided as a floating-point value, while the reference scale must be entered as a whole number.</p><p>The z-tolerance value represents the maximum deviation that can occur from the elevation of the terrain at full resolution, whereas the window size value defines the area of the terrain tile used in thinning elevation points by selecting one or two points from the area based on the window size method defined during the creation of the terrain. The reference scale represents the largest map scale at which the pyramid level is enforced. When the terrain is displayed at a scale larger than this value, the next highest pyramid level is displayed.</p></xdoc>",
+        "pyramid_level_definition.title": "Pyramid Levels Definition",
+        "pyramid_type.descr": "The pyramid type used by the terrain dataset. This parameter is not used in ArcGIS 9.3 and beyond, as its purpose is to ensure backward-compatibility with scripts and models written using ArcGIS 9.2.",
+        "pyramid_type.title": "Pyramid Type",
+        "title": "Add Terrain Pyramid Level"
+    }
+}

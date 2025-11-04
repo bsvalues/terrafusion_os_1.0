@@ -1,0 +1,11 @@
+{
+    "set": [
+        "cogo",
+        "delete",
+        "dimensions",
+        "disable",
+        "fields",
+        "lines",
+        "traverse"
+    ]
+}

@@ -1,0 +1,83 @@
+{
+    "type": "FunctionTool",
+    "guid": "{d2e77872-95cb-4fe3-81e4-c7a9af589600}",
+    "displayname": "$rc:title",
+    "helpcontent": "2060002",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_dem_file": {
+            "displayname": "$rc:in_dem_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "DEM",
+                    "TXT",
+                    "ASC"
+                ]
+            },
+            "description": "$rc:in_dem_file.descr"
+        },
+        "out_raster": {
+            "direction": "out",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_raster.descr"
+        },
+        "data_type": {
+            "type": "optional",
+            "displayname": "$rc:data_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "FLOAT",
+                        "code": "$rc:data_type.domain.FLOAT"
+                    },
+                    {
+                        "value": "INTEGER",
+                        "code": "$rc:data_type.domain.INTEGER"
+                    }
+                ]
+            },
+            "value": "FLOAT",
+            "description": "$rc:data_type.descr"
+        },
+        "z_factor": {
+            "type": "optional",
+            "displayname": "$rc:z_factor.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "value": "1",
+            "description": "$rc:z_factor.descr"
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "cellSize",
+        "cellSizeProjectionMethod",
+        "compression",
+        "configKeyword",
+        "extent",
+        "pyramid",
+        "rasterStatistics",
+        "scratchWorkspace",
+        "tileSize"
+    ]
+}

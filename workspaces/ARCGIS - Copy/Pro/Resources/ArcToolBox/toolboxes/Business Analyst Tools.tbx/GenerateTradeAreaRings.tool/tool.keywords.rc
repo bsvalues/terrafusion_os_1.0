@@ -1,0 +1,16 @@
+{
+    "set": [
+        "boundary",
+        "buffer",
+        "circles",
+        "discs",
+        "donuts",
+        "geographies",
+        "remove overlap",
+        "rings",
+        "static rings",
+        "stores",
+        "trade area",
+        "trade areas"
+    ]
+}

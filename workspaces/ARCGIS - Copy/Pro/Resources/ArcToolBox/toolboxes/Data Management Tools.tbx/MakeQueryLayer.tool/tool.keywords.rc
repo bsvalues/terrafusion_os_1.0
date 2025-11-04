@@ -1,0 +1,7 @@
+{
+    "set": [
+        "create",
+        "memory",
+        "query"
+    ]
+}

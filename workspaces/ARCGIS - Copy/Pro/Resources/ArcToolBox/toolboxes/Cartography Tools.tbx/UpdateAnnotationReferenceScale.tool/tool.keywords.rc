@@ -1,0 +1,14 @@
+{
+    "set": [
+        "anno",
+        "create",
+        "dimension",
+        "dimensions",
+        "dims",
+        "generate",
+        "geodatabase",
+        "label",
+        "reference scale",
+        "text"
+    ]
+}

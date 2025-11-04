@@ -1,0 +1,15 @@
+{
+    "set": [
+        "distance",
+        "geostatistical",
+        "geostatistics",
+        "interpolation",
+        "inverse",
+        "power",
+        "predict",
+        "interpolate",
+        "voxel",
+        "weighted",
+        "weighting"
+    ]
+}

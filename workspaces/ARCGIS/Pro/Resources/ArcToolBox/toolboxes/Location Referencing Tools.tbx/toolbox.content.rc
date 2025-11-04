@@ -1,0 +1,11 @@
+{
+    "map": {
+        "descr": "The Location Referencing toolbox provides essential tools for the configuration and management of the LRS.",
+        "title": "Location Referencing Tools",
+        "toolset1.name": "Configuration",
+        "toolset2.name": "Configuration\\LRS Event",
+        "toolset3.name": "Configuration\\LRS Network",
+        "toolset4.name": "Configuration\\LRS",
+        "toolset5.name": "Configuration\\LRS Intersection"
+    }
+}

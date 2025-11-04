@@ -1,0 +1,303 @@
+{% extends 'mobile_layout.html' %}
+
+{% block title %}TerraFlow | Anomalies{% endblock %}
+
+{% block content %}
+<div class="mobile-container">
+    <div class="mobile-section-title">Anomalies</div>
+
+    <!-- Filter Card -->
+    <div class="mobile-card p-3 mb-3">
+        <form id="filterForm" action="/mobile/anomalies" method="get">
+            <div class="mb-3">
+                <label for="anomalyType" class="mobile-form-label">Anomaly Type</label>
+                <select class="form-select" id="anomalyType" name="type">
+                    <option value="">All Types</option>
+                    {% for anomaly_type in anomaly_types %}
+                    <option value="{{ anomaly_type.name }}" {% if current_type == anomaly_type.name %}selected{% endif %}>{{ anomaly_type.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="severity" class="mobile-form-label">Severity</label>
+                <select class="form-select" id="severity" name="severity">
+                    <option value="">All Severities</option>
+                    <option value="high" {% if current_severity == 'high' %}selected{% endif %}>High</option>
+                    <option value="medium" {% if current_severity == 'medium' %}selected{% endif %}>Medium</option>
+                    <option value="low" {% if current_severity == 'low' %}selected{% endif %}>Low</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="status" class="mobile-form-label">Status</label>
+                <select class="form-select" id="status" name="status">
+                    <option value="">All Statuses</option>
+                    <option value="active" {% if current_status == 'active' %}selected{% endif %}>Active</option>
+                    <option value="reviewing" {% if current_status == 'reviewing' %}selected{% endif %}>Reviewing</option>
+                    <option value="resolved" {% if current_status == 'resolved' %}selected{% endif %}>Resolved</option>
+                    <option value="ignored" {% if current_status == 'ignored' %}selected{% endif %}>Ignored</option>
+                </select>
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Apply Filters</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Anomalies List -->
+    <div id="anomaliesList">
+        {% if anomalies %}
+            {% for anomaly in anomalies %}
+            <div class="mobile-card mobile-anomaly-card severity-{{ anomaly.severity }} mb-3">
+                <div class="p-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <h5 class="mb-0">{{ anomaly.description|truncate(60) }}</h5>
+                            <div class="text-muted small">
+                                {% if anomaly.property_id %}
+                                Property ID: {{ anomaly.property_id }}
+                                {% else %}
+                                System-wide anomaly
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div>
+                            {% if anomaly.severity == 'high' %}
+                            <span class="badge bg-danger">HIGH</span>
+                            {% elif anomaly.severity == 'medium' %}
+                            <span class="badge bg-warning">MEDIUM</span>
+                            {% else %}
+                            <span class="badge bg-success">LOW</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="anomaly-details mb-3">
+                        <div class="d-flex flex-wrap">
+                            {% if anomaly.type %}
+                            <span class="anomaly-type type-{{ anomaly.type.name|lower }}">{{ anomaly.type.name }}</span>
+                            {% endif %}
+                            <span class="anomaly-severity severity-{{ anomaly.severity }}">{{ anomaly.severity|upper }}</span>
+                            {% if anomaly.status %}
+                            <span class="mobile-badge mobile-badge-gray">{{ anomaly.status|upper }}</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="text-muted small mt-2">
+                            Detected: {{ anomaly.detected_at.strftime('%Y-%m-%d %H:%M') }}
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="/mobile/anomaly/{{ anomaly.id }}" class="btn btn-outline-primary">View Details</a>
+                        {% if anomaly.property_id %}
+                        <a href="/mobile/property/{{ anomaly.property_id }}" class="btn btn-outline-secondary">View Property</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="mobile-card p-4 text-center">
+                <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                <h5>No anomalies found</h5>
+                <p class="text-muted">All clear! There are no anomalies matching your filter criteria.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block action_button %}
+<a href="#" class="action-button" onclick="showBottomSheet()">
+    <i class="fas fa-filter"></i>
+</a>
+{% endblock %}
+
+{% block sheet_title %}Advanced Filters{% endblock %}
+
+{% block sheet_content %}
+<form id="advancedFilterForm">
+    <div class="mb-3">
+        <label class="mobile-form-label">Anomaly Type</label>
+        <select class="form-select" id="advAnomalyType">
+            <option value="">All Types</option>
+            {% for anomaly_type in anomaly_types %}
+            <option value="{{ anomaly_type.name }}" {% if current_type == anomaly_type.name %}selected{% endif %}>{{ anomaly_type.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <div class="mb-3">
+        <label class="mobile-form-label">Severity</label>
+        <select class="form-select" id="advSeverity">
+            <option value="">All Severities</option>
+            <option value="high" {% if current_severity == 'high' %}selected{% endif %}>High</option>
+            <option value="medium" {% if current_severity == 'medium' %}selected{% endif %}>Medium</option>
+            <option value="low" {% if current_severity == 'low' %}selected{% endif %}>Low</option>
+        </select>
+    </div>
+    
+    <div class="mb-3">
+        <label class="mobile-form-label">Status</label>
+        <select class="form-select" id="advStatus">
+            <option value="">All Statuses</option>
+            <option value="active" {% if current_status == 'active' %}selected{% endif %}>Active</option>
+            <option value="reviewing" {% if current_status == 'reviewing' %}selected{% endif %}>Reviewing</option>
+            <option value="resolved" {% if current_status == 'resolved' %}selected{% endif %}>Resolved</option>
+            <option value="ignored" {% if current_status == 'ignored' %}selected{% endif %}>Ignored</option>
+        </select>
+    </div>
+    
+    <div class="mb-3">
+        <label class="mobile-form-label">Detection Date Range</label>
+        <div class="row g-2">
+            <div class="col-6">
+                <input type="date" class="form-control" id="advStartDate" placeholder="Start Date">
+            </div>
+            <div class="col-6">
+                <input type="date" class="form-control" id="advEndDate" placeholder="End Date">
+            </div>
+        </div>
+    </div>
+    
+    <div class="mb-3">
+        <label class="mobile-form-label">Property Type</label>
+        <select class="form-select" id="advPropertyType">
+            <option value="">All Property Types</option>
+            <option value="residential">Residential</option>
+            <option value="commercial">Commercial</option>
+            <option value="agricultural">Agricultural</option>
+            <option value="industrial">Industrial</option>
+            <option value="vacant">Vacant</option>
+        </select>
+    </div>
+    
+    <div class="mb-3">
+        <label class="mobile-form-label">Area</label>
+        <select class="form-select" id="advArea">
+            <option value="">All Areas</option>
+            <option value="kennewick">Kennewick</option>
+            <option value="richland">Richland</option>
+            <option value="pasco">Pasco</option>
+            <option value="west_richland">West Richland</option>
+            <option value="prosser">Prosser</option>
+            <option value="benton_city">Benton City</option>
+        </select>
+    </div>
+    
+    <div class="mb-3">
+        <label class="mobile-form-label">Sort By</label>
+        <select class="form-select" id="advSortBy">
+            <option value="date_desc">Detection Date (Newest)</option>
+            <option value="date_asc">Detection Date (Oldest)</option>
+            <option value="severity_desc">Severity (High to Low)</option>
+            <option value="severity_asc">Severity (Low to High)</option>
+            <option value="property_asc">Property ID (A-Z)</option>
+            <option value="property_desc">Property ID (Z-A)</option>
+        </select>
+    </div>
+    
+    <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="advActiveOnly">
+        <label class="form-check-label" for="advActiveOnly">
+            Only show active anomalies
+        </label>
+    </div>
+    
+    <div class="d-grid gap-2">
+        <button class="btn btn-primary" id="applyAdvancedFilters" type="button">Apply Filters</button>
+        <button class="btn btn-outline-secondary" id="resetAdvancedFilters" type="button">Reset Filters</button>
+    </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Map advanced filter values to the main form when applied
+        document.getElementById('applyAdvancedFilters').addEventListener('click', function() {
+            // Get values from advanced filters
+            const anomalyType = document.getElementById('advAnomalyType').value;
+            const severity = document.getElementById('advSeverity').value;
+            const status = document.getElementById('advStatus').value;
+            const startDate = document.getElementById('advStartDate').value;
+            const endDate = document.getElementById('advEndDate').value;
+            const propertyType = document.getElementById('advPropertyType').value;
+            const area = document.getElementById('advArea').value;
+            const sortBy = document.getElementById('advSortBy').value;
+            const activeOnly = document.getElementById('advActiveOnly').checked;
+            
+            // Build query string
+            let queryParams = new URLSearchParams();
+            
+            if (anomalyType) queryParams.append('type', anomalyType);
+            if (severity) queryParams.append('severity', severity);
+            if (status) queryParams.append('status', status);
+            if (startDate) queryParams.append('start_date', startDate);
+            if (endDate) queryParams.append('end_date', endDate);
+            if (propertyType) queryParams.append('property_type', propertyType);
+            if (area) queryParams.append('area', area);
+            if (sortBy) queryParams.append('sort', sortBy);
+            if (activeOnly) queryParams.append('active_only', 'true');
+            
+            // Redirect with query params
+            window.location.href = '/mobile/anomalies?' + queryParams.toString();
+            
+            // Close bottom sheet
+            hideBottomSheet();
+        });
+        
+        // Reset advanced filters
+        document.getElementById('resetAdvancedFilters').addEventListener('click', function() {
+            document.getElementById('advAnomalyType').value = '';
+            document.getElementById('advSeverity').value = '';
+            document.getElementById('advStatus').value = '';
+            document.getElementById('advStartDate').value = '';
+            document.getElementById('advEndDate').value = '';
+            document.getElementById('advPropertyType').value = '';
+            document.getElementById('advArea').value = '';
+            document.getElementById('advSortBy').value = 'date_desc';
+            document.getElementById('advActiveOnly').checked = false;
+        });
+        
+        // Set values from URL params to advanced filters (for persistence)
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        if (urlParams.has('type')) {
+            document.getElementById('advAnomalyType').value = urlParams.get('type');
+        }
+        
+        if (urlParams.has('severity')) {
+            document.getElementById('advSeverity').value = urlParams.get('severity');
+        }
+        
+        if (urlParams.has('status')) {
+            document.getElementById('advStatus').value = urlParams.get('status');
+        }
+        
+        if (urlParams.has('start_date')) {
+            document.getElementById('advStartDate').value = urlParams.get('start_date');
+        }
+        
+        if (urlParams.has('end_date')) {
+            document.getElementById('advEndDate').value = urlParams.get('end_date');
+        }
+        
+        if (urlParams.has('property_type')) {
+            document.getElementById('advPropertyType').value = urlParams.get('property_type');
+        }
+        
+        if (urlParams.has('area')) {
+            document.getElementById('advArea').value = urlParams.get('area');
+        }
+        
+        if (urlParams.has('sort')) {
+            document.getElementById('advSortBy').value = urlParams.get('sort');
+        }
+        
+        if (urlParams.has('active_only')) {
+            document.getElementById('advActiveOnly').checked = urlParams.get('active_only') === 'true';
+        }
+    });
+</script>
+{% endblock %}

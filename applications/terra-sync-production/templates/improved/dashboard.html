@@ -1,0 +1,346 @@
+{% extends "base_improved.html" %}
+
+{% block title %}TerraFusion Platform - Dashboard{% endblock %}
+
+{% block page_id %}dashboard{% endblock %}
+
+{% block content %}
+<div class="tf-row tf-mt-4">
+    <div class="tf-col-12">
+        <h1 class="tf-mb-3">System Dashboard</h1>
+        <p class="lead">Monitor your TerraFusion SyncService platform in real-time.</p>
+    </div>
+</div>
+
+<div class="tf-row tf-mt-4">
+    <!-- System Status -->
+    <div class="tf-col-md-6 tf-mb-4">
+        <div class="tf-card h-100">
+            <div class="tf-card-header tf-d-flex tf-justify-content-between tf-align-items-center">
+                <h5 class="tf-mb-0">System Status</h5>
+                <span id="system-health-indicator" class="tf-badge tf-badge-success">85%</span>
+            </div>
+            <div class="tf-card-body" id="system-status">
+                <div class="tf-d-flex tf-justify-content-between tf-align-items-center tf-mb-3">
+                    <span>API Gateway:</span>
+                    <span class="tf-badge tf-badge-success">Online</span>
+                </div>
+                <div class="tf-d-flex tf-justify-content-between tf-align-items-center tf-mb-3">
+                    <span>SyncService:</span>
+                    <span class="tf-status-indicator" data-status-type="service" data-status-id="syncservice">
+                        <span class="tf-badge tf-badge-warning">Checking...</span>
+                    </span>
+                </div>
+                <div class="tf-d-flex tf-justify-content-between tf-align-items-center tf-mb-3">
+                    <span>Database:</span>
+                    <span class="tf-badge tf-badge-success">Connected</span>
+                </div>
+                <div class="tf-progress">
+                    <div class="tf-progress-bar" id="system-health-progress" role="progressbar" style="width: 85%;" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100">85%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resource Usage -->
+    <div class="tf-col-md-6 tf-mb-4">
+        <div class="tf-card h-100">
+            <div class="tf-card-header">
+                <h5 class="tf-mb-0">Resource Usage</h5>
+            </div>
+            <div class="tf-card-body" id="resource-usage">
+                <div class="tf-mb-3">
+                    <div class="tf-d-flex tf-justify-content-between tf-align-items-center tf-mb-1">
+                        <label class="tf-form-label tf-mb-0">CPU Usage</label>
+                        <span id="cpu-usage-text">45%</span>
+                    </div>
+                    <div class="tf-progress">
+                        <div class="tf-progress-bar tf-bg-warning" id="cpu-usage" role="progressbar" style="width: 45%;" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+                <div class="tf-mb-3">
+                    <div class="tf-d-flex tf-justify-content-between tf-align-items-center tf-mb-1">
+                        <label class="tf-form-label tf-mb-0">Memory Usage</label>
+                        <span id="memory-usage-text">60%</span>
+                    </div>
+                    <div class="tf-progress">
+                        <div class="tf-progress-bar tf-bg-info" id="memory-usage" role="progressbar" style="width: 60%;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+                <div class="tf-mb-3">
+                    <div class="tf-d-flex tf-justify-content-between tf-align-items-center tf-mb-1">
+                        <label class="tf-form-label tf-mb-0">Disk Usage</label>
+                        <span id="disk-usage-text">25%</span>
+                    </div>
+                    <div class="tf-progress">
+                        <div class="tf-progress-bar tf-bg-success" id="disk-usage" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="tf-col-md-12 tf-mb-4">
+        <div class="tf-card">
+            <div class="tf-card-header">
+                <h5 class="tf-mb-0">Quick Actions</h5>
+            </div>
+            <div class="tf-card-body">
+                <div class="tf-row">
+                    <div class="tf-col-md-3 tf-col-sm-6 tf-mb-3 tf-mb-md-0">
+                        <a href="{{ url_for('improved.sync_operations') }}" class="tf-card tf-p-3 tf-text-center tf-d-block">
+                            <div class="tf-mb-3">
+                                <i class="fas fa-sync-alt fa-2x text-primary"></i>
+                            </div>
+                            <h6 class="tf-mb-0">Sync Operations</h6>
+                        </a>
+                    </div>
+                    <div class="tf-col-md-3 tf-col-sm-6 tf-mb-3 tf-mb-md-0">
+                        <a href="{{ url_for('improved.gis_export') }}" class="tf-card tf-p-3 tf-text-center tf-d-block">
+                            <div class="tf-mb-3">
+                                <i class="fas fa-map-marked-alt fa-2x text-success"></i>
+                            </div>
+                            <h6 class="tf-mb-0">GIS Export</h6>
+                        </a>
+                    </div>
+                    <div class="tf-col-md-3 tf-col-sm-6 tf-mb-3 tf-mb-md-0">
+                        <a href="{{ url_for('improved.metrics') }}" class="tf-card tf-p-3 tf-text-center tf-d-block">
+                            <div class="tf-mb-3">
+                                <i class="fas fa-chart-line fa-2x text-info"></i>
+                            </div>
+                            <h6 class="tf-mb-0">System Metrics</h6>
+                        </a>
+                    </div>
+                    <div class="tf-col-md-3 tf-col-sm-6">
+                        <a href="{{ url_for('improved.audit') }}" class="tf-card tf-p-3 tf-text-center tf-d-block">
+                            <div class="tf-mb-3">
+                                <i class="fas fa-history fa-2x text-secondary"></i>
+                            </div>
+                            <h6 class="tf-mb-0">Audit Trail</h6>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sync Statistics -->
+    <div class="tf-col-md-6 tf-mb-4">
+        <div class="tf-card h-100">
+            <div class="tf-card-header tf-d-flex tf-justify-content-between tf-align-items-center">
+                <h5 class="tf-mb-0">Sync Statistics</h5>
+                <button id="refresh-sync-stats" class="tf-btn tf-btn-sm tf-btn-outline-primary">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+            <div class="tf-card-body">
+                <canvas id="sync-stats-chart" height="200"></canvas>
+                <div id="sync-stats-loading" class="tf-d-flex tf-justify-content-center tf-align-items-center" style="display: none !important;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alerts and Notifications -->
+    <div class="tf-col-md-6 tf-mb-4">
+        <div class="tf-card h-100">
+            <div class="tf-card-header tf-d-flex tf-justify-content-between tf-align-items-center">
+                <h5 class="tf-mb-0">Alerts & Notifications</h5>
+                <button id="clear-alerts" class="tf-btn tf-btn-sm tf-btn-outline-secondary">
+                    <i class="fas fa-trash-alt"></i> Clear All
+                </button>
+            </div>
+            <div class="tf-card-body">
+                <div id="alerts-list">
+                    <div class="tf-card tf-mb-3">
+                        <div class="tf-card-body tf-p-3">
+                            <div class="tf-d-flex tf-justify-content-between tf-align-items-start">
+                                <h6 class="tf-mb-1">Full Sync Completed</h6>
+                                <small class="text-muted">2 hours ago</small>
+                            </div>
+                            <p class="tf-mb-1">Full sync operation completed for PACS-CAMA Integration.</p>
+                            <small class="text-muted">5000 records processed, 4950 successful, 50 failed</small>
+                        </div>
+                    </div>
+                    <div class="tf-card tf-mb-3">
+                        <div class="tf-card-body tf-p-3">
+                            <div class="tf-d-flex tf-justify-content-between tf-align-items-start">
+                                <h6 class="tf-mb-1">Incremental Sync Scheduled</h6>
+                                <small class="text-muted">5 hours ago</small>
+                            </div>
+                            <p class="tf-mb-1">Incremental sync scheduled for GIS-ERP Integration.</p>
+                            <small class="text-muted">Next execution: Tomorrow, 08:00 AM</small>
+                        </div>
+                    </div>
+                    <div class="tf-card">
+                        <div class="tf-card-body tf-p-3">
+                            <div class="tf-d-flex tf-justify-content-between tf-align-items-start">
+                                <h6 class="tf-mb-1">SyncService Restarted</h6>
+                                <small class="text-muted">8 hours ago</small>
+                            </div>
+                            <p class="tf-mb-1">SyncService was automatically restarted by the system.</p>
+                            <small class="text-muted">Auto-recovery process complete</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/real-time-updates.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize real-time updates for service status
+        if (window.TerraFusion && window.TerraFusion.realTimeUpdates) {
+            // Check SyncService status
+            window.TerraFusion.realTimeUpdates.startPolling('service', 'syncservice', function(status) {
+                const indicator = document.querySelector('[data-status-id="syncservice"]');
+                if (indicator) {
+                    const badgeClass = status === 'UP' ? 'tf-badge-success' : 'tf-badge-danger';
+                    const statusText = status === 'UP' ? 'Online' : 'Offline';
+                    
+                    indicator.innerHTML = `<span class="tf-badge ${badgeClass}">${statusText}</span>`;
+                    
+                    // Update health indicator based on service status
+                    updateSystemHealth();
+                }
+            });
+        }
+        
+        // Initialize Sync Statistics Chart
+        const ctx = document.getElementById('sync-stats-chart').getContext('2d');
+        const syncStatsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['PACS-CAMA', 'GIS-ERP', 'CRM-ERP'],
+                datasets: [{
+                    label: 'Success Rate (%)',
+                    data: [99, 97.5, 100],
+                    backgroundColor: [
+                        'rgba(40, 167, 69, 0.7)',
+                        'rgba(23, 162, 184, 0.7)',
+                        'rgba(0, 123, 255, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(40, 167, 69, 1)',
+                        'rgba(23, 162, 184, 1)',
+                        'rgba(0, 123, 255, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+        
+        // Refresh button for sync stats
+        document.getElementById('refresh-sync-stats').addEventListener('click', function() {
+            document.getElementById('sync-stats-loading').style.display = 'flex';
+            
+            // Simulate loading
+            setTimeout(function() {
+                // Update chart with new data
+                syncStatsChart.data.datasets[0].data = [
+                    Math.floor(Math.random() * 10) + 90,
+                    Math.floor(Math.random() * 10) + 90,
+                    Math.floor(Math.random() * 10) + 90
+                ];
+                syncStatsChart.update();
+                
+                document.getElementById('sync-stats-loading').style.display = 'none';
+                
+                // Show notification
+                if (window.TerraFusion && window.TerraFusion.notifications) {
+                    window.TerraFusion.notifications.success(
+                        'Sync statistics refreshed successfully',
+                        'Data Updated'
+                    );
+                }
+            }, 1000);
+        });
+        
+        // Clear alerts button
+        document.getElementById('clear-alerts').addEventListener('click', function() {
+            if (confirm('Are you sure you want to clear all alerts?')) {
+                document.getElementById('alerts-list').innerHTML = '<p class="text-center text-muted">No alerts to display</p>';
+                
+                // Show notification
+                if (window.TerraFusion && window.TerraFusion.notifications) {
+                    window.TerraFusion.notifications.info(
+                        'All alerts have been cleared',
+                        'Alerts Cleared'
+                    );
+                }
+            }
+        });
+        
+        // Function to simulate real-time updates
+        setInterval(function() {
+            // Simulate CPU usage changes
+            const cpuUsage = Math.floor(Math.random() * 60) + 20;
+            document.getElementById('cpu-usage').style.width = cpuUsage + '%';
+            document.getElementById('cpu-usage-text').textContent = cpuUsage + '%';
+            document.getElementById('cpu-usage').setAttribute('aria-valuenow', cpuUsage);
+            
+            // Simulate memory usage changes
+            const memoryUsage = Math.floor(Math.random() * 40) + 40;
+            document.getElementById('memory-usage').style.width = memoryUsage + '%';
+            document.getElementById('memory-usage-text').textContent = memoryUsage + '%';
+            document.getElementById('memory-usage').setAttribute('aria-valuenow', memoryUsage);
+            
+            // Update health indicator
+            updateSystemHealth();
+        }, 5000);
+        
+        // Function to update system health indicator
+        function updateSystemHealth() {
+            const cpuUsage = parseInt(document.getElementById('cpu-usage').getAttribute('aria-valuenow'));
+            const memoryUsage = parseInt(document.getElementById('memory-usage').getAttribute('aria-valuenow'));
+            const syncServiceStatus = document.querySelector('[data-status-id="syncservice"] .tf-badge').classList.contains('tf-badge-success') ? 100 : 0;
+            
+            // Calculate health score based on CPU, memory, and service status
+            const healthScore = Math.floor(
+                ((100 - cpuUsage) * 0.4) + 
+                ((100 - memoryUsage) * 0.4) + 
+                (syncServiceStatus * 0.2)
+            );
+            
+            // Update health indicator
+            document.getElementById('system-health-indicator').textContent = healthScore + '%';
+            document.getElementById('system-health-progress').style.width = healthScore + '%';
+            document.getElementById('system-health-progress').textContent = healthScore + '%';
+            document.getElementById('system-health-progress').setAttribute('aria-valuenow', healthScore);
+            
+            // Update health indicator class based on score
+            document.getElementById('system-health-indicator').className = 'tf-badge';
+            document.getElementById('system-health-progress').className = 'tf-progress-bar';
+            
+            if (healthScore < 60) {
+                document.getElementById('system-health-indicator').classList.add('tf-badge-danger');
+                document.getElementById('system-health-progress').classList.add('tf-bg-danger');
+            } else if (healthScore < 80) {
+                document.getElementById('system-health-indicator').classList.add('tf-badge-warning');
+                document.getElementById('system-health-progress').classList.add('tf-bg-warning');
+            } else {
+                document.getElementById('system-health-indicator').classList.add('tf-badge-success');
+                document.getElementById('system-health-progress').classList.add('tf-bg-success');
+            }
+        }
+    });
+</script>
+{% endblock %}

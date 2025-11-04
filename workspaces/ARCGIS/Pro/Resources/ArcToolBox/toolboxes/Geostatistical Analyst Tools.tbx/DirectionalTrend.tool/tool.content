@@ -1,0 +1,149 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "11000036",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_features": {
+            "display_order": "0",
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Multipoint",
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "analysis_field": {
+            "display_order": "1",
+            "displayname": "$rc:analysis_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "BigInteger"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:analysis_field.descr"
+        },
+        "direction": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:direction.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "359.99900000000002"
+            },
+            "value": "0",
+            "description": "$rc:direction.descr"
+        },
+        "determine_direction": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:determine_direction.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "DETERMINE_DIRECTION"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_DETERMINE_DIRECTION"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:determine_direction.descr"
+        },
+        "order": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:order.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPLong",
+                        "value": "1",
+                        "code": "1"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "2",
+                        "code": "2"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "3",
+                        "code": "3"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "4",
+                        "code": "4"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "5",
+                        "code": "5"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "6",
+                        "code": "6"
+                    }
+                ]
+            },
+            "value": "1",
+            "description": "$rc:order.descr"
+        },
+        "updated_in_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    }
+}

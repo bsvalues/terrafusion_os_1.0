@@ -1,0 +1,88 @@
+{
+    "type": "FunctionTool",
+    "guid": "{F6243FE3-8552-4511-BBCE-F882B7099A58}/GenerateChangeoverPoints",
+    "displayname": "$rc:title",
+    "helpcontent": "64060004",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "53",
+        "70"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "target_changeover_features": {
+            "displayname": "$rc:target_changeover_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:target_changeover_features.descr"
+        },
+        "distance_source_type": {
+            "displayname": "$rc:distance_source_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "POINT",
+                        "code": "$rc:distance_source_type.domain.POINT"
+                    },
+                    {
+                        "value": "ROUTE",
+                        "code": "$rc:distance_source_type.domain.ROUTE"
+                    }
+                ]
+            },
+            "description": "$rc:distance_source_type.descr"
+        },
+        "updated_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Point"
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "target_changeover_features"
+            ]
+        }
+    }
+}

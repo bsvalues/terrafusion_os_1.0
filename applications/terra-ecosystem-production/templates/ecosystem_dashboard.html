@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion Ecosystem Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --tf-cosmic-blue: #0891b2;
+            --tf-quantum-teal: #00d2ff;
+            --tf-deep-space: #0a0f1c;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--tf-deep-space), #1a1a2e);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .tf-card {
+            background: rgba(8, 145, 178, 0.1);
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0, 210, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .tf-header {
+            background: linear-gradient(135deg, var(--tf-cosmic-blue), var(--tf-quantum-teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        .service-card {
+            background: linear-gradient(135deg, rgba(8, 145, 178, 0.15), rgba(0, 210, 255, 0.1));
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 210, 255, 0.4);
+        }
+
+        .status-running { color: #28a745; }
+        .status-starting { color: #ffc107; }
+        .status-pending { color: #6c757d; }
+        .status-error { color: #dc3545; }
+
+        .ecosystem-stats {
+            background: linear-gradient(135deg, var(--tf-cosmic-blue), var(--tf-quantum-teal));
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="tf-card p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <svg class="tf-logo me-3" viewBox="0 0 48 48" width="48" height="48">
+                            <defs>
+                                <linearGradient id="tfEcosystemGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#0891b2"/>
+                                    <stop offset="100%" style="stop-color:#00d2ff"/>
+                                </linearGradient>
+                            </defs>
+                            <circle cx="24" cy="24" r="20" fill="none" stroke="url(#tfEcosystemGradient)" stroke-width="2"/>
+                            <circle cx="24" cy="24" r="12" fill="url(#tfEcosystemGradient)" opacity="0.3"/>
+                            <circle cx="24" cy="24" r="4" fill="url(#tfEcosystemGradient)"/>
+                        </svg>
+                        <h1 class="tf-header display-4 mb-0">TerraFusion Ecosystem</h1>
+                    </div>
+                    <p class="lead mb-3">Enterprise Service Orchestration & Management Platform</p>
+                    <div class="d-flex align-items-center">
+                        <span class="me-3">Ecosystem Status:</span>
+                        <span class="badge bg-success fs-6">✅ OPERATIONAL</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ecosystem Statistics -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="ecosystem-stats">
+                    <h2>{{ ecosystem_status.total_services }}</h2>
+                    <p>Total Services</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="ecosystem-stats">
+                    <h2>{{ ecosystem_status.running_services }}</h2>
+                    <p>Running Services</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="ecosystem-stats">
+                    <h2>{{ ecosystem_status.operational_percentage }}%</h2>
+                    <p>Operational Status</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="ecosystem-stats">
+                    <h2>{{ ecosystem_status.starting_services }}</h2>
+                    <p>Starting Services</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Management -->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="tf-card p-4">
+                    <h3 class="tf-header mb-4">🚀 Service Management</h3>
+                    
+                    {% for service_name, config in ecosystem_status.services.items() %}
+                    <div class="service-card">
+                        <div class="row align-items-center">
+                            <div class="col-md-4">
+                                <h5 class="mb-1">{{ service_name }}</h5>
+                                <small class="text-muted">Port {{ config.port }}</small>
+                            </div>
+                            <div class="col-md-3">
+                                <span class="badge status-{{ config.status }}">
+                                    {% if config.status == 'running' %}
+                                        ✅ Running
+                                    {% elif config.status == 'starting' %}
+                                        🔄 Starting
+                                    {% elif config.status == 'pending' %}
+                                        ⏳ Pending
+                                    {% else %}
+                                        ❌ {{ config.status|title }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-success btn-sm" 
+                                            onclick="startService('{{ service_name }}')">
+                                        <i class="fas fa-play"></i> Start
+                                    </button>
+                                    <button class="btn btn-outline-warning btn-sm" 
+                                            onclick="restartService('{{ service_name }}')">
+                                        <i class="fas fa-redo"></i> Restart
+                                    </button>
+                                    <a href="http://localhost:{{ config.port }}" 
+                                       class="btn btn-outline-info btn-sm" target="_blank">
+                                        <i class="fas fa-external-link-alt"></i> Open
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <!-- Infrastructure Status -->
+                <div class="tf-card p-4 mb-4">
+                    <h3 class="tf-header mb-3">🏗️ Infrastructure</h3>
+                    {% for service_name, config in ecosystem_status.infrastructure.items() %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>{{ service_name }}</span>
+                        <span class="badge status-{{ config.status }}">
+                            ✅ Port {{ config.port }}
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Ecosystem Actions -->
+                <div class="tf-card p-4">
+                    <h3 class="tf-header mb-3">⚡ Ecosystem Actions</h3>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-success" onclick="restartAllServices()">
+                            <i class="fas fa-rocket me-2"></i>Restart All Services
+                        </button>
+                        <button class="btn btn-info" onclick="refreshStatus()">
+                            <i class="fas fa-sync-alt me-2"></i>Refresh Status
+                        </button>
+                        <button class="btn btn-warning" onclick="generateReport()">
+                            <i class="fas fa-file-alt me-2"></i>Generate Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function startService(serviceName) {
+            fetch(`/api/ecosystem/services/${serviceName}/start`, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(`Starting ${serviceName}: ${data.message || data.error}`);
+                setTimeout(refreshStatus, 2000);
+            })
+            .catch(error => {
+                alert(`Error starting ${serviceName}: ${error}`);
+            });
+        }
+
+        function restartService(serviceName) {
+            startService(serviceName);
+        }
+
+        function restartAllServices() {
+            if (confirm('Are you sure you want to restart all services?')) {
+                fetch('/api/ecosystem/restart-all', {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Restarting all services...');
+                    setTimeout(refreshStatus, 5000);
+                })
+                .catch(error => {
+                    alert(`Error restarting services: ${error}`);
+                });
+            }
+        }
+
+        function refreshStatus() {
+            location.reload();
+        }
+
+        function generateReport() {
+            fetch('/api/ecosystem/status')
+            .then(response => response.json())
+            .then(data => {
+                const report = JSON.stringify(data, null, 2);
+                const blob = new Blob([report], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `terrafusion-ecosystem-report-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(refreshStatus, 30000);
+    </script>
+</body>
+</html> 

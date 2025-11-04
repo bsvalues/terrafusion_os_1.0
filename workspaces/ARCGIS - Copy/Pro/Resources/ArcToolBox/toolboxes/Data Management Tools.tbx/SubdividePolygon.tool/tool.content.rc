@@ -1,0 +1,26 @@
+{
+    "map": {
+        "description": "Divides polygon features into a number of equal areas or parts.",
+        "in_polygons.descr": "The polygon features to be subdivided.",
+        "in_polygons.title": "Input Features",
+        "method.descr": "<xdoc><p>Specifies the method that will be used to divide the polygons.</p><ul><li><span title=\"NUMBER_OF_EQUAL_PARTS\">Number of equal parts</span>— Polygons will be divided evenly into a number of parts. This is the default.</li><li><span title=\"EQUAL_AREAS\">Equal areas</span>—Polygons will be divided into a specified number of parts of a certain area, and a remainder part.</li></ul></xdoc>",
+        "method.domain.EQUAL_AREAS": "Equal areas",
+        "method.domain.NUMBER_OF_EQUAL_PARTS": "Number of equal parts",
+        "method.title": "Subdivision Method",
+        "num_areas.descr": "<xdoc><p>The number of areas into which the polygon will be divided if the <span class=\"esri_uicontrol\">Number of equal parts</span> subdivision method is specified.</p></xdoc>",
+        "num_areas.title": "Number of Areas",
+        "out_feature_class.descr": "The output feature class of subdivided polygons.",
+        "out_feature_class.title": "Output Feature Class",
+        "split_angle.descr": "The angle that will be used to draw the lines that divide the polygon. The default is 0.",
+        "split_angle.title": "Split Angle",
+        "subdivision_type.descr": "<xdoc><p>Specifies how the polygons will be divided.</p><ul><li><span title=\"STRIPS\">Strips</span>— Polygons will be divided into strips. This is the default.</li><li><span title=\"STACKED_BLOCKS\">Stacked blocks</span>—Polygons will be divided into stacked blocks.</li></ul></xdoc>",
+        "subdivision_type.domain.STACKED_BLOCKS": "Stacked blocks",
+        "subdivision_type.domain.STRIPS": "Strips",
+        "subdivision_type.title": "Subdivision Type",
+        "target_area.descr": "<xdoc><p>The area of the equal parts if the <span class=\"esri_uicontrol\">Equal areas</span> subdivision method is specified. If the <span class=\"esri_uicontrol\">Target Area</span> is larger than the area of the input polygon, the polygon will not be subdivided.</p></xdoc>",
+        "target_area.title": "Target Area",
+        "target_width.descr": "This parameter is not yet supported.",
+        "target_width.title": "RESERVED",
+        "title": "Subdivide Polygon"
+    }
+}

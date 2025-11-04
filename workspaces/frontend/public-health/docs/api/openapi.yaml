@@ -1,0 +1,221 @@
+openapi: 3.0.3
+info:
+  title: Public Health API
+  description: Public health services and medical operations APIs
+  version: 1.0.0
+  contact:
+    name: TerraFusion Government OS API Support
+    email: public-health-api@terrafusion.gov
+    url: https://docs.terrafusion.gov/frontend/public-health
+  license:
+    name: Government Use License
+    url: https://terrafusion.gov/licenses/government-api
+  termsOfService: https://terrafusion.gov/terms/api-usage
+servers:
+- url: https://api.terrafusion.gov/api/v1/public-health
+  description: Production TerraFusion Government API
+- url: https://staging-api.terrafusion.gov/api/v1/public-health
+  description: Staging Environment
+- url: https://dev-api.terrafusion.gov/api/v1/public-health
+  description: Development Environment
+paths:
+  /health-records:
+    get:
+      tags:
+      - public-health
+      summary: Health records (HIPAA compliant)
+      description: Health records (HIPAA compliant) - Public health services and medical
+        operations APIs
+      operationId: get__health-records
+      security:
+      - OAuth2:
+        - public-health:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /immunizations:
+    post:
+      tags:
+      - public-health
+      summary: Record immunizations
+      description: Record immunizations - Public health services and medical operations
+        APIs
+      operationId: post__immunizations
+      security:
+      - OAuth2:
+        - public-health:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /health-alerts:
+    get:
+      tags:
+      - public-health
+      summary: Public health alerts
+      description: Public health alerts - Public health services and medical operations
+        APIs
+      operationId: get__health-alerts
+      security:
+      - OAuth2:
+        - public-health:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /inspections:
+    post:
+      tags:
+      - public-health
+      summary: Health facility inspections
+      description: Health facility inspections - Public health services and medical
+        operations APIs
+      operationId: post__inspections
+      security:
+      - OAuth2:
+        - public-health:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: object
+    HealthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - healthy
+          - degraded
+          - unhealthy
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        dependencies:
+          type: object
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
+          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          scopes:
+            public-health:read: Read access to public-health resources
+            public-health:write: Write access to public-health resources
+            public-health:admin: Administrative access to public-health
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+security:
+- OAuth2:
+  - public-health:read
+- ApiKey: []
+tags:
+- name: public-health
+  description: Public Health operations
+  externalDocs:
+    description: Find out more about public-health
+    url: https://docs.terrafusion.gov/frontend/public-health

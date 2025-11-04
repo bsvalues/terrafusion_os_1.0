@@ -1,0 +1,78 @@
+{
+  "calcite": {
+    "reset": "Zurücksetzen",
+    "action": {
+      "sort": "Sortieren"
+    },
+    "buttons": {
+      "save": "Speichern",
+      "edit": "Bearbeiten",
+      "done": "Fertig",
+      "apply": "Übernehmen",
+      "cancel": "Abbrechen",
+      "close": "Schließen"
+    },
+    "ColorPicker": {
+      "selectColor": "Farbe auswählen",
+      "noColorSpecified": "Keine Farbe angegeben",
+      "transparent": "Transparent",
+      "colorTooltip": "<p>Hex: ${hex}</p><p>RGB: ${r}, ${g}, ${b}</p>",
+      "recent": "Zuletzt verwendet",
+      "standard": "Standard",
+      "savedColors": "Gespeicherte Farben",
+      "advanced": "Advanced"
+    },
+    "DatePickerLink": {
+      "enterDate": "Datum eingeben"
+    },
+    "PaginationContinuous": {
+      "next": "Weiter",
+      "previous": "Zurück"
+    }
+  },
+  "ImageNavigator": {
+    "paginationLabel": "${n} von ${m}",
+    "noImage": "Derzeit sind keine Fotos für diesen Standort gespeichert",
+    "previewNotAvailable": "Vorschau nicht verfügbar"
+  },
+  "PageNavigator": {
+    "currentPageOutOfN": "Seite ${current} von ${total}"
+  },
+  "PanoramicViewer": {
+    "image-viewer-close": "Schließen",
+    "image-viewer-fullscreen": "Vollbild",
+    "image-viewer-minimize": "Minimieren",
+    "image-viewer-title": "Foto-Viewer",
+    "image-viewer-show-caption": "Titel anzeigen",
+    "image-viewer-hide-caption": "Ausblenden"
+  },
+  "TextBox": {
+    "error_numberExpected": "Es wurde eine Zahl erwartet.",
+    "error_range": "Erwarteter Wert zwischen ${0} und ${1}"
+  },
+  "charts": {
+    "histogram": {
+      "minValue": "Min:<br>${0}",
+      "maxValue": "Max:<br>${0}",
+      "thisAreaValue": "Dieses Gebiet: ${0}",
+      "medianValue": "Medianwert:<br>${0}",
+      "q1Value": "Q1:<br>${0}",
+      "q3Value": "Q3:<br>${0}",
+      "percentile": "Perzentil ${percent}:<br>${0}",
+      "percentileBottom": "Untere ${percent} %:<br>${0}",
+      "percentileTop": "Obere ${percent} %:<br>${0}",
+      "percentile_singleLine": "Perzentil ${percent}: ${0}",
+      "percentileBottom_singleLine": "Untere ${percent} %: ${0}",
+      "percentileTop_singleLine": "Obere ${percent} %: ${0}",
+      "sd_singleLine": "${sd} SD: ${0}",
+      "tooltip": {
+        "range_single": "<b>${level}</b> mit einem Wert innerhalb von <b>${value}</b>: <b>1</b>",
+        "range_single_precise": "<b>${areaName}</b> weist den Wert <b>${value}</b> auf.",
+        "range_multi": "<b>${level}</b> mit einem Wert innerhalb von <b>${value}</b>: <b>${count}</b>",
+        "thisArea": "<b>Dieses Gebiet</b> weist einen Wert von <b>${value}</b> auf.",
+        "percentileLower": "<b>${percent}%</b> der <b>${level}</b> weisen einen Wert über <b>${value}</b> auf.",
+        "percentileUpper": "<b>${percent}%</b> der <b>${level}</b> weisen einen Wert unter <b>${value}</b> auf."
+      }
+    }
+  }
+}

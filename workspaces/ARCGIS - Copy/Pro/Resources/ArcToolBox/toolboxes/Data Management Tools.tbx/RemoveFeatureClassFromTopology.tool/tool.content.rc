@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Removes a feature class from a topology.",
+        "in_featureclass.descr": "The feature class to remove from the topology.",
+        "in_featureclass.title": "Feature Class to Remove",
+        "in_topology.descr": "The topology from which to remove the feature class.",
+        "in_topology.title": "Input Topology",
+        "out_topology.title": "Updated Input Topology",
+        "title": "Remove Feature Class From Topology"
+    }
+}

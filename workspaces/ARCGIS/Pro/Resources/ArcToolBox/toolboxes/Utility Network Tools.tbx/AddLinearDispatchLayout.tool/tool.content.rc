@@ -1,0 +1,26 @@
+{
+    "map": {
+        "are_leaves_expanded.title": "Expand leaves",
+        "are_leaves_moved.title": "Move leaves",
+        "description": "Add a linear dispatch layout to a diagram template",
+        "expand_shift_absolute.title": "Maximum Expand Shift",
+        "expand_shift_proportional.title": "Maximum Expand Shift",
+        "in_utility_network.title": "Input Network",
+        "is_active.title": "Active",
+        "is_path_preserved.title": "Preserve path",
+        "is_unit_absolute.title": "Spacing values interpreted as absolute units in the diagram coordinate system",
+        "iterations_number.title": "Number of Iterations",
+        "junction_placement_type.domain.EQUAL_DISTANCE": "EQUAL_DISTANCE",
+        "junction_placement_type.domain.ITERATIVE_DISTANCE": "ITERATIVE_DISTANCE",
+        "junction_placement_type.domain.USER_DEFINE_DISTANCE": "USER_DEFINE_DISTANCE",
+        "junction_placement_type.title": "Junctions Placement",
+        "maximum_shift_absolute.title": "Maximum Shift",
+        "maximum_shift_proportional.title": "Maximum Shift",
+        "minimum_shift_absolute.title": "Minimum Shift",
+        "minimum_shift_proportional.title": "Minimum Shift",
+        "out_template_name.title": "Output Diagram Template",
+        "out_utility_network.title": "Output Network",
+        "template_name.title": "Input Diagram Template",
+        "title": "Add Linear Dispatch Layout"
+    }
+}

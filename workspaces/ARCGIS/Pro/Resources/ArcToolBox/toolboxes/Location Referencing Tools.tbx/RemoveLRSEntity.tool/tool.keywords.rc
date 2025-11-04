@@ -1,0 +1,10 @@
+{
+    "set": [
+        "delete event",
+        "delete lrs",
+        "delete route",
+        "lrs entity",
+        "remove event",
+        "remove route"
+    ]
+}

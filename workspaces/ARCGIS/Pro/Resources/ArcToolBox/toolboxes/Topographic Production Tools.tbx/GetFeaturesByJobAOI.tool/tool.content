@@ -1,0 +1,157 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "46030401",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "46",
+        "49"
+    ],
+    "params": {
+        "job_id": {
+            "displayname": "$rc:job_id.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:job_id.descr"
+        },
+        "source_database": {
+            "displayname": "$rc:source_database.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "description": "$rc:source_database.descr"
+        },
+        "target_database": {
+            "displayname": "$rc:target_database.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "description": "$rc:target_database.descr"
+        },
+        "extract_operation": {
+            "displayname": "$rc:extract_operation.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "EXTRACT_DATA",
+                        "code": "$rc:extract_operation.domain.EXTRACT_DATA"
+                    },
+                    {
+                        "value": "REPLICATE_DATA",
+                        "code": "$rc:extract_operation.domain.REPLICATE_DATA"
+                    }
+                ]
+            },
+            "value": "EXTRACT_DATA",
+            "description": "$rc:extract_operation.descr"
+        },
+        "filter_feature": {
+            "type": "optional",
+            "displayname": "$rc:filter_feature.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:filter_feature.descr"
+        },
+        "filter_type": {
+            "type": "optional",
+            "displayname": "$rc:filter_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "INTERSECTS",
+                        "code": "$rc:filter_type.domain.INTERSECTS"
+                    },
+                    {
+                        "value": "CONTAINS",
+                        "code": "$rc:filter_type.domain.CONTAINS"
+                    },
+                    {
+                        "value": "CLIP",
+                        "code": "$rc:filter_type.domain.CLIP"
+                    }
+                ]
+            },
+            "value": "INTERSECTS",
+            "description": "$rc:filter_type.descr"
+        },
+        "replica_type": {
+            "type": "optional",
+            "displayname": "$rc:replica_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "TWO_WAY_REPLICA",
+                        "code": "$rc:replica_type.domain.TWO_WAY_REPLICA"
+                    },
+                    {
+                        "value": "ONE_WAY_REPLICA",
+                        "code": "$rc:replica_type.domain.ONE_WAY_REPLICA"
+                    },
+                    {
+                        "value": "CHECK_OUT",
+                        "code": "$rc:replica_type.domain.CHECK_OUT"
+                    },
+                    {
+                        "value": "ONE_WAY_CHILD_TO_PARENT_REPLICA",
+                        "code": "$rc:replica_type.domain.ONE_WAY_CHILD_TO_PARENT_REPLICA"
+                    }
+                ]
+            },
+            "value": "CHECK_OUT",
+            "description": "$rc:replica_type.descr"
+        },
+        "database_path": {
+            "type": "optional",
+            "displayname": "$rc:database_path.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "jtc"
+                ]
+            },
+            "description": "$rc:database_path.descr"
+        },
+        "updated_database": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_database.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "depends": [
+                "target_database"
+            ],
+            "schema": {
+                "type": "GPContainerSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    }
+}

@@ -1,0 +1,16 @@
+{
+    "set": [
+        "bandwidth",
+        "condition number",
+        "esda",
+        "estimate",
+        "geostatistical",
+        "geostatistics",
+        "interpolate",
+        "interpolation",
+        "kernel",
+        "lpi",
+        "predict",
+        "smooth interpolation"
+    ]
+}

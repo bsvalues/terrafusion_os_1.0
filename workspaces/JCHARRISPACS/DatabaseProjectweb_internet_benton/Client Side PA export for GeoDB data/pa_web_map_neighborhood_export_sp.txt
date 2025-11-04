@@ -1,0 +1,28 @@
+USE [pacs_oltp]
+GO
+/****** Object:  StoredProcedure [dbo].[PA_WebMapNeighborhood]    Script Date: 03/24/2016 13:00:24 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+
+
+
+CREATE PROCEDURE [dbo].[PA_WebMapNeighborhood]
+	@szServerDBSource sysname
+
+
+as
+
+
+declare @sql varchar(8000);
+
+set @sql = 'select
+		p.hood_cd,
+		p.hood_name
+	from '+@szServerDBSource+'.dbo._clientdb_neighborhood as p with (nolock)'
+
+exec(@sql)

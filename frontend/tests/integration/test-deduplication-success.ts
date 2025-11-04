@@ -1,12 +1,8 @@
 // Test Deduplication Success - Using Shared Package in Frontend
-import { 
-  ProjectStatus, 
-  UserRole, 
-  TaskStatus
-} from '@terrafusion/shared';
+import { ProjectStatus, UserRole, TaskStatus } from '@terrafusion/shared';
 
 console.log('🎯 DEDUPLICATION TEST - FRONTEND USAGE');
-console.log('=' .repeat(50));
+console.log('='.repeat(50));
 
 console.log('✅ Successfully importing from @terrafusion/shared:');
 console.log('   ProjectStatus.ACTIVE:', ProjectStatus.ACTIVE);
@@ -19,7 +15,7 @@ const createProject = (name: string, status: ProjectStatus, owner: UserRole) => 
     name,
     status,
     owner,
-    createdAt: new Date()
+    createdAt: new Date(),
   };
 };
 

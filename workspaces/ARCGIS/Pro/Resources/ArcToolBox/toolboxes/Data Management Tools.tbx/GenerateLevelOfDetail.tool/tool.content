@@ -1,0 +1,70 @@
+{
+    "type": "FunctionTool",
+    "guid": "{77b98940-a076-4051-8b6b-d2a9e75f51e1}",
+    "displayname": "$rc:title",
+    "helpcontent": "3260030",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_dataset": {
+            "display_order": "0",
+            "displayname": "$rc:in_dataset.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "slpk"
+                ]
+            },
+            "description": "$rc:in_dataset.descr"
+        },
+        "out_dataset": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_dataset.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "slpk"
+                ]
+            },
+            "description": "$rc:out_dataset.descr"
+        },
+        "texture_optimization": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:texture_optimization.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "All",
+                        "code": "$rc:texture_optimization.domain.All"
+                    },
+                    {
+                        "value": "Desktop",
+                        "code": "$rc:texture_optimization.domain.Desktop"
+                    },
+                    {
+                        "value": "Mobile",
+                        "code": "$rc:texture_optimization.domain.Mobile"
+                    },
+                    {
+                        "value": "None",
+                        "code": "$rc:texture_optimization.domain.None"
+                    }
+                ]
+            },
+            "value": "Desktop",
+            "description": "$rc:texture_optimization.descr"
+        }
+    }
+}

@@ -39,7 +39,7 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        public async Task<ROIPredictionResult> PredictROIAsync(ROIPredictionRequest request)
+        public async System.Threading.Tasks.Task<ROIPredictionResult> PredictROIAsync(ROIPredictionRequest request)
         {
             await System.Threading.Tasks.Task.Delay(300);
 
@@ -62,7 +62,7 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        public async Task<MarketTrendResult> AnalyzeMarketTrendsAsync(MarketTrendRequest request)
+        public async System.Threading.Tasks.Task<MarketTrendResult> AnalyzeMarketTrendsAsync(MarketTrendRequest request)
         {
             await System.Threading.Tasks.Task.Delay(250);
 
@@ -82,7 +82,7 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        public async Task<RiskAssessmentResult> AssessRiskAsync(RiskAssessmentRequest request)
+        public async System.Threading.Tasks.Task<RiskAssessmentResult> AssessRiskAsync(RiskAssessmentRequest request)
         {
             await System.Threading.Tasks.Task.Delay(200);
 
@@ -104,7 +104,7 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        public async Task<ModelStatusResult> GetModelStatusAsync()
+        public async System.Threading.Tasks.Task<ModelStatusResult> GetModelStatusAsync()
         {
             await System.Threading.Tasks.Task.Delay(50);
 
@@ -127,11 +127,12 @@ namespace TerraFusion.AI.Services
 
         private decimal ApplyMarketFactors(decimal baseROI, ROIPredictionRequest request)
         {
-            var marketMultiplier = request.Region?.ToLower() switch
+            var region = request.Region?.ToLower() ?? string.Empty;
+            var marketMultiplier = region switch
             {
-                var region when region.Contains("seattle") => 1.15m,
-                var region when region.Contains("portland") => 1.08m,
-                var region when region.Contains("spokane") => 0.95m,
+                var r when r.Contains("seattle") => 1.15m,
+                var r when r.Contains("portland") => 1.08m,
+                var r when r.Contains("spokane") => 0.95m,
                 _ => 1.0m
             };
 
@@ -140,7 +141,8 @@ namespace TerraFusion.AI.Services
 
         private string DetermineTrendDirection(string region)
         {
-            return region?.ToLower() switch
+            var regionLower = region?.ToLower() ?? string.Empty;
+            return regionLower switch
             {
                 var r when r.Contains("seattle") || r.Contains("bellevue") => "Upward",
                 var r when r.Contains("portland") => "Stable",
@@ -151,7 +153,8 @@ namespace TerraFusion.AI.Services
 
         private decimal CalculatePredictedGrowth(string region)
         {
-            return region?.ToLower() switch
+            var regionLower = region?.ToLower() ?? string.Empty;
+            return regionLower switch
             {
                 var r when r.Contains("seattle") => 0.08m,
                 var r when r.Contains("portland") => 0.05m,

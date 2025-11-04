@@ -1,0 +1,109 @@
+Let’s advance to our #1 mobile priority—bringing these same offline‐first, conflict‐resolution flows into TerraField on React Native with Realm persistence. Here’s what I’d tackle next:
+
+⸻
+
+Mobile Integration & Realm Persistence
+
+1. Scaffold the React Native App
+	•	Create apps/terrafield-mobile (if you haven’t already) via Expo:
+
+cd apps
+npx create-expo-app terrafield-mobile --template expo-template-blank-typescript
+
+
+	•	Install our offline-sync & UI packages alongside Realm and networking:
+
+cd terrafield-mobile
+yarn add realm @react-native-async-storage/async-storage @react-native-community/netinfo
+yarn add ../../packages/offline-sync ../../packages/ui-components
+
+
+
+2. Wire Up CRDT + Realm
+	•	Initialize Yjs docs on mobile just like web, but persist updates to Realm. In offline-sync package add a Realm adapter:
+
+// offline-sync/src/realm-adapter.ts
+import Realm from "realm";
+import { Y } from "yjs";
+
+const PropertySchema = {
+  name: "PropertyDoc",
+  primaryKey: "id",
+  properties: {
+    id: "string",
+    ydoc: "data",        // binary Yjs snapshot
+    updatedAt: "date",
+  },
+};
+
+export async function initRealm() {
+  return await Realm.open({
+    schema: [PropertySchema],
+    schemaVersion: 1,
+  });
+}
+
+export async function saveYDoc(id: string, ydoc: Y.Doc) {
+  const realm = await initRealm();
+  realm.write(() => {
+    realm.create("PropertyDoc", {
+      id,
+      ydoc: Y.encodeStateAsUpdate(ydoc),
+      updatedAt: new Date(),
+    }, Realm.UpdateMode.Modified);
+  });
+}
+
+export async function loadYDoc(id: string): Promise<Uint8Array|undefined> {
+  const realm = await initRealm();
+  const rec = realm.objectForPrimaryKey("PropertyDoc", id);
+  return rec ? rec.ydoc : undefined;
+}
+
+
+	•	Hook it into your usePropertyDoc in offline-sync/src/hooks.ts:
+
+import { loadYDoc, saveYDoc } from "./realm-adapter";
+// on init: 
+const initial = await loadYDoc(propertyId);
+if (initial) Y.applyUpdate(ydoc, initial);
+// on every local change:
+ydoc.on("update", update => saveYDoc(propertyId, ydoc));
+
+
+
+3. Connectivity & Background Sync
+	•	Detect connectivity with NetInfo:
+
+import NetInfo from "@react-native-community/netinfo";
+
+useEffect(() => {
+  const sub = NetInfo.addEventListener(state => {
+    if (state.isConnected) runPendingSyncs();
+  });
+  return () => sub();
+}, []);
+
+
+	•	Queue your Yjs updates locally (Realm or AsyncStorage) when offline, then replay them on reconnect by calling your /mobile-sync endpoint.
+
+4. Embed Conflict UI
+	•	Re-use your ConflictManager inside a MobilePropertyEditor.tsx component:
+
+import { ConflictManager } from "ui-components/conflict-resolution";
+// identical pattern to web:
+if (hasConflict) {
+  return <ConflictManager … />;
+} else {
+  return <MobilePropertyForm doc={doc.shared} />;
+}
+
+
+
+5. Test & Iterate
+	•	Run the Expo app on simulator/mobile, toggle airplane mode, make divergent edits in two simulators, then reconnect and confirm the conflict flow works identically to web.
+	•	Validate that Realm persists across app restarts and that no data is lost.
+
+⸻
+
+Once mobile is vertically sliced end-to-end, we’ll have true cross-platform offline-first capabilities—a massive differentiator for field users. Let me know if you’d like me to kick off that React Native + Realm integration now!

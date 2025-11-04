@@ -1,0 +1,59 @@
+{
+    "version": "1.0",
+    "alias": "na",
+    "displayname": "$rc:title",
+    "description": "$rc:descr",
+    "helpcontext": "13000000",
+    "toolsets": {
+        "$rc:toolset1.name": {
+            "tools": [
+                "AddFieldToAnalysisLayer",
+                "AddLocations",
+                "AddVehicleRoutingProblemBreaks",
+                "AddVehicleRoutingProblemRoutes",
+                "CalculateLocations",
+                "CopyNetworkAnalysisLayer",
+                "CopyTraversedSourceFeatures",
+                "DeleteNetworkAnalysisLayer",
+                "Directions",
+                "MakeClosestFacilityAnalysisLayer",
+                "MakeClosestFacilityLayer",
+                "MakeLastMileDeliveryAnalysisLayer",
+                "MakeLocationAllocationAnalysisLayer",
+                "MakeLocationAllocationLayer",
+                "MakeODCostMatrixAnalysisLayer",
+                "MakeODCostMatrixLayer",
+                "MakeRouteAnalysisLayer",
+                "MakeRouteLayer",
+                "MakeServiceAreaAnalysisLayer",
+                "MakeServiceAreaLayer",
+                "MakeVehicleRoutingProblemAnalysisLayer",
+                "ShareAsRouteLayers",
+                "Solve",
+                "SolveVehicleRoutingProblem",
+                "UpdateAnalysisLayerAttributeParameter"
+            ]
+        },
+        "$rc:toolset2.name": {
+            "tools": [
+                "BuildNetwork",
+                "CreateNetworkDataset",
+                "CreateNetworkDatasetFromTemplate",
+                "CreateTemplateFromNetworkDataset",
+                "DissolveNetwork",
+                "MakeNetworkDatasetLayer",
+                "UpgradeNetwork"
+            ]
+        },
+        "$rc:toolset3.name": {
+            "tools": [
+                "CreateTurnFeatureClass",
+                "IncreaseMaximumEdges",
+                "PopulateAlternateIDFields",
+                "TurnTableToTurnFeatureClass",
+                "UpdateByAlternateIDFields",
+                "UpdateByGeometry"
+            ]
+        }
+    }
+}

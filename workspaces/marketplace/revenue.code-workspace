@@ -1,0 +1,107 @@
+{
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "node",
+        "cwd": "../../marketplace/revenue/frontend",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "name": "Start Revenue Frontend"
+      },
+      {
+        "type": "debugpy",
+        "cwd": "../../marketplace/revenue/backend",
+        "program": "../../marketplace/revenue/backend/main.py",
+        "name": "Start Revenue Backend"
+      },
+      {
+        "type": "node",
+        "cwd": "../../marketplace/revenue/mcp-server",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "name": "Start Revenue MCP Server"
+      }
+    ]
+  },
+  "tasks": {
+    "tasks": [
+      {
+        "cwd": "../../marketplace/revenue",
+        "args": [
+          "run",
+          "build"
+        ],
+        "command": "npm",
+        "label": "Build Revenue"
+      },
+      {
+        "cwd": "../../marketplace/revenue",
+        "args": [
+          "run",
+          "test"
+        ],
+        "command": "npm",
+        "label": "Test Revenue"
+      }
+    ],
+    "version": "2.0.0"
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "ms-python.black-formatter"
+    ]
+  },
+  "folders": [
+    {
+      "name": "💼 Revenue",
+      "path": "../../marketplace/revenue"
+    },
+    {
+      "name": "📦 Platform SDK (read-only)",
+      "path": "../../platform/sdk"
+    },
+    {
+      "name": "🎨 Design System (read-only)",
+      "path": "../../platform/design-system"
+    },
+    {
+      "name": "🧪 Tests",
+      "path": "../../tests/marketplace/revenue"
+    },
+    {
+      "name": "📚 Revenue Docs",
+      "path": "../../docs/marketplace/revenue.md"
+    }
+  ],
+  "settings": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit",
+      "source.fixAll": "explicit"
+    },
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#f59e0b",
+      "titleBar.activeForeground": "#ffffff"
+    },
+    "files.exclude": {
+      "../../os-platform": true,
+      "**/node_modules": true,
+      "../../terrafusion-cos": true,
+      "../../marketplace/*": true,
+      "../../backend": true,
+      "**/dist": true,
+      "../../frontend": true,
+      "!../../marketplace/revenue": true
+    },
+    "editor.formatOnSave": true
+  }
+}
+

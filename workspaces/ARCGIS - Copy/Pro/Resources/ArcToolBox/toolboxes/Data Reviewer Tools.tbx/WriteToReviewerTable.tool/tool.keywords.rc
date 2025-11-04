@@ -1,0 +1,12 @@
+{
+    "set": [
+        "analysis",
+        "check",
+        "error",
+        "quality",
+        "quality control",
+        "result",
+        "session",
+        "validate"
+    ]
+}

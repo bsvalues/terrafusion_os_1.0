@@ -1,0 +1,14 @@
+{
+    "set": [
+        "defined interval",
+        "equal interval",
+        "fields",
+        "geometric interval",
+        "manual interval",
+        "natural breaks",
+        "quantile",
+        "reverse values",
+        "standard deviation",
+        "unique values"
+    ]
+}

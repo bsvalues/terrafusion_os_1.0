@@ -1,0 +1,23 @@
+{
+    "map": {
+        "description": "Extracts video frame images and associated metadata from an FMV-compliant video stream.  The extracted images can be added to a mosaic dataset or other tools and functions for further analysis.",
+        "image_overlap.descr": "The maximum overlap percentage between two images. If the overlap between a candidate image and the last image written to disk is greater than this value, the candidate image will be ignored. The default percentage is 100 percent, which writes all images to disk.",
+        "image_overlap.title": "Maximum Overlap Percentage",
+        "image_type.descr": "<xdoc><p>Specifies the output image format.</p><ul><li><span title=\"JPEG\">JPEG</span>—The output will be in JPEG image format.</li><li><span title=\"TIFF\">TIFF</span>—The output will be in TIFF image format. This is the default.</li><li><span title=\"NITF\">NITF</span>—The output will be in NITF image format.</li><li><span title=\"PNG\">PNG</span>—The output will be in PNG image format.</li></ul></xdoc>",
+        "image_type.domain.JPEG": "JPEG",
+        "image_type.domain.NITF": "NITF",
+        "image_type.domain.PNG": "PNG",
+        "image_type.domain.TIFF": "TIFF",
+        "image_type.title": "Image Type",
+        "in_video.descr": "The input video file in any of the supported video file formats, including PS, TS, MPG, MPEG, MP2, MPG2, MPEG2, MP4, MPG4, MPEG4, H264, H265, VOB, and M2TS.",
+        "in_video.title": "Input Video File",
+        "min_time.descr": "The minimum time interval between video frames to be saved. If no value is specified, all video frames will be saved as images.",
+        "min_time.title": "Minimum Time Between Features",
+        "out_folder.descr": "The file directory where the output images and metadata will be saved.",
+        "out_folder.title": "Output Folder",
+        "require_fresh_metadata.descr": "<xdoc><p>Specifies whether video frames with associated metadata will be extracted and saved.</p><ul><li>Checked—Only video frames with associated metadata will be saved.</li><li>Unchecked—All video frames will be saved. This is the default.</li></ul></xdoc>",
+        "require_fresh_metadata.title": "Require Fresh Metadata",
+        "summary": "Extracts video frame images and associated metadata from an FMV-compliant video stream. The extracted images can be added to a mosaic dataset or other tools and functions for further analysis.",
+        "title": "Extract Video Frames To Images"
+    }
+}

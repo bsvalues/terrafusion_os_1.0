@@ -1,0 +1,29 @@
+{
+    "map": {
+        "clustering_method.descr": "<xdoc><p>Specifies the method that will be used to define clusters.</p><ul><li><span title=\"DBSCAN\">Defined distance (DBSCAN)</span>— Uses a specified distance to separate dense clusters from sparser noise. DBSCAN is the fastest of the clustering methods but is only appropriate if there is a clear distance that works well to define all clusters that may be present. This results in clusters that have similar densities. This is the default.</li><li><span title=\"HDBSCAN\">Self-adjusting (HDBSCAN)</span>— Uses varying distances to separate clusters of varying densities from sparser noise. HDBSCAN is the most data driven of the clustering methods and requires the least user input.</li></ul></xdoc>",
+        "clustering_method.domain.DBSCAN": "Defined distance (DBSCAN)",
+        "clustering_method.domain.HDBSCAN": "Self-adjusting (HDBSCAN)",
+        "clustering_method.title": "Clustering Method",
+        "data_store.descr": "<xdoc><p>Specifies the ArcGIS Data Store where the output will be stored. All results stored in a spatiotemporal big data store will be stored in WGS84. Results stored in a relational data store will maintain their coordinate system.</p><ul><li><span title=\"SPATIOTEMPORAL_DATA_STORE\">Spatiotemporal big data store</span>—Output will be stored in a spatiotemporal big data store. This is the default.</li><li><span title=\"RELATIONAL_DATA_STORE\">Relational data store</span>—Output will be stored in a relational data store.</li></ul></xdoc>",
+        "data_store.domain.RELATIONAL_DATA_STORE": "Relational data store",
+        "data_store.domain.SPATIOTEMPORAL_DATA_STORE": "Spatiotemporal big data store",
+        "data_store.title": "Data Store",
+        "description": "Finds clusters of point features in surrounding noise based on their spatial or spatiotemporal distribution.",
+        "input_points.descr": "The point feature class containing the point clusters.",
+        "input_points.title": "Input Point Layer",
+        "minimum_points.descr": "<xdoc><p>This parameter is used differently depending on the clustering method chosen as follows:</p><p><ul><li>Defined distance (DBSCAN)—Specifies the number of features that must be found within a certain distance of a point for that point to start to form a cluster. The distance is defined using the <span class=\"esri_uicontrol\">Search Distance</span> parameter.</li><li>Self-adjusting (HDBSCAN)—Specifies the number of features neighboring each point (including the point) that will be considered when estimating density. This number is also the minimum cluster size allowed when extracting clusters.</li></ul></p></xdoc>",
+        "minimum_points.title": "Minimum Features per Cluster",
+        "output.title": "Output Feature Layer",
+        "output_name.descr": "The name of the output feature service.",
+        "output_name.title": "Output Name",
+        "params.category1": "Data Store",
+        "search_distance.descr": "<xdoc><p>The maximum distance that will be considered.</p><p>The <span class=\"esri_uicontrol\">Minimum Features per Cluster</span> value specified must be found within this distance for cluster membership. Individual clusters will be separated by at least this distance. If a feature is located farther than this distance from the next closest feature in the cluster, it will not be included in the cluster.</p></xdoc>",
+        "search_distance.title": "Search Distance",
+        "search_duration.descr": "When searching for cluster members, the specified minimum number of points must be found within this time duration to form a cluster.",
+        "search_duration.title": "Search Duration",
+        "summary": "<xdoc><p>Finds clusters of point features in surrounding noise based on their spatial or spatiotemporal distribution.</p><p><note type=\"legacy\"/><p group=\"note\">The ArcGIS GeoAnalytics Server extension is being deprecated in ArcGIS Enterprise. The final release of GeoAnalytics Server was included with ArcGIS Enterprise 11.3. This geoprocessing tool is available through ArcGIS Enterprise 11.3 and earlier versions.</p></p></xdoc>",
+        "title": "Find Point Clusters",
+        "use_time.descr": "<xdoc><p>Specifies whether or not time will be used to discover clusters with DBSCAN.</p><ul><li>Checked—Spatiotemporal clusters will be found using both a search distance and a search duration.</li><li>Unchecked—Spatial clusters will be found using a search distance and time will be ignored. This is the default.</li></ul></xdoc>",
+        "use_time.title": "Use Time to Find Clusters"
+    }
+}

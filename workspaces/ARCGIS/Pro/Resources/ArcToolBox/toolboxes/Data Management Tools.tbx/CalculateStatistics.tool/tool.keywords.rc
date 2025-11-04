@@ -1,0 +1,10 @@
+{
+    "set": [
+        "contrast",
+        "deviation",
+        "display",
+        "properties",
+        "render",
+        "skip factor"
+    ]
+}

@@ -1,0 +1,222 @@
+{
+  "name": "TerraFusion Master Coordination",
+  "folders": [
+    {
+      "path": "../backend",
+    },
+    {
+      "path": "../ai-systems",
+    },
+    {
+      "path": "../config",
+    },
+    {
+      "path": "../docs",
+    },
+    {
+      "path": "../SDK",
+    },
+    {
+      "path": "../infrastructure",
+    },
+    {
+      "path": "../terrabuild-modernization",
+    },
+    {
+      "path": "../monitoring",
+    },
+    {
+      "path": "../ops",
+    },
+    {
+      "path": "../ecosystem",
+    },
+    {
+      "path": "../marketplace",
+    },
+    {
+      "path": "../workspaces",
+    },
+    {
+      "path": "../applications/terra-pilt-production",
+      "name": "TerraFusion PILT (Production)",
+    },
+    {
+      "path": "../applications/terra-playground-production",
+      "name": "TerraFusion Playground (Production)",
+    },
+    {
+      "path": "../applications/terra-permit-production",
+      "name": "TerraFusion Permit (Production)",
+    },
+    {
+      "path": "../applications/bcbs-webhub-production",
+      "name": "BCBS WebHub (Production)",
+    },
+    {
+      "path": "../applications/terra-dashboard-production",
+      "name": "TerraFusion Dashboard (Production)",
+    },
+    {
+      "path": "../applications/terra-pro-production",
+      "name": "TerraFusion Pro (Production)",
+    },
+    {
+      "path": "../applications/terra-agent-production",
+      "name": "TerraAgent (Production)",
+    },
+    {
+      "path": "../applications/terra-assistant-production",
+      "name": "TerraFusion Assistant (Production)",
+    },
+    {
+      "path": "../applications/terra-build-actual",
+      "name": "TerraFusion Build (Actual)",
+    },
+    {
+      "path": "../applications/terra-ecosystem-production",
+      "name": "TerraFusion Ecosystem (Production)",
+    },
+    {
+      "path": "../applications/terra-gama-production",
+      "name": "TerraFusion GAMA (Production)",
+    },
+    {
+      "path": "../applications/terra-miner-production",
+      "name": "TerraMiner (Production)",
+    },
+    {
+      "path": "../applications/terra-playground-main",
+      "name": "TerraFusion Playground (Main)",
+    },
+    {
+      "path": "../applications/terra-primeview-production",
+      "name": "TerraFusion PrimeView (Production)",
+    },
+    {
+      "path": "../applications/terra-prof-production",
+      "name": "TerraFusion Prof (Production)",
+    },
+    {
+      "path": "../applications/terra-proplus-production",
+      "name": "TerraFusion ProPlus (Production)",
+    },
+    {
+      "path": "../applications/terra-v0demo-production",
+      "name": "TerraFusion V0 Demo (Production)",
+    },
+    {
+      "path": "../applications/security-production",
+      "name": "TerraFusion Security (Production)",
+    },
+    {
+      "path": "../applications/mcp-servers-production",
+      "name": "MCP Servers (Production)",
+    },
+    {
+      "path": "../applications/monitoring-production",
+      "name": "TerraFusion Monitoring (Production)",
+    },
+    {
+      "path": "../applications/system-prompts-ai-tools",
+      "name": "System Prompts & AI Tools (Production)",
+    },
+    {
+      "path": "../applications/terra-enterprise",
+      "name": "TerraFusion Enterprise",
+    },
+    {
+      "path": "../applications/terra-development",
+      "name": "TerraFusion Development",
+    },
+    {
+      "path": "../applications/terra-nextgen-elite-execution",
+      "name": "TerraFusion NextGen Elite Execution",
+    },
+    {
+      "path": "../applications/terra-flow-production",
+      "name": "TerraFlow (Production)",
+    },
+    {
+      "path": "../applications/bcbs-gis-pro-production",
+      "name": "BCBS GIS Pro (Production)",
+    },
+    {
+      "path": "../applications/terra-assessor-production",
+      "name": "TerraFusion Assessor (Production)",
+    },
+    {
+      "path": "../applications/bs-income-valuation-production",
+      "name": "BS Income Valuation (Production)",
+    },
+    {
+      "path": "../applications/terra-sync-production",
+      "name": "TerraFusion Sync (Production)",
+    },
+    {
+      "path": "../applications/costforge-ai",
+      "name": "CostForge AI (Production)",
+    },
+    {
+      "path": "../applications/terra-levy",
+      "name": "TerraLevy (Production)",
+    },
+  ],
+  "settings": {
+    "azureML.showWelcomePage": false,
+    "azureML.enableWorkspaceCompletions": false,
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
+    "terrafusion.quantum_factor": 949,
+    "terrafusion.target_score": 12.0,
+    "terrafusion.sacred_mathematics": "OPERATIONAL",
+    "terrafusion.role": "master_coordination",
+    "terrafusion.responsibility": "39_county_deployment",
+    "powershell.cwd": "SDK",
+    "files.watcherExclude": {
+      "**/node_modules/**": true,
+      "**/.git/**": true,
+      "**/dist/**": true,
+      "**/out/**": true,
+      "**/.next/**": true,
+    },
+    "liveServer.settings.multiRootWorkspaceName": "workspaces",
+    "liveServer.settings.port": 5501,
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Championship Status",
+        "type": "debugpy",
+        "request": "launch",
+        "program": "${workspaceFolder}/scripts/mission-completion-report.py",
+        "console": "integratedTerminal",
+      },
+    ],
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Deploy Production",
+        "type": "shell",
+        "command": "python",
+        "args": ["scripts/execute-production-deployment.py"],
+      },
+    ],
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-dotnettools.csharp",
+      "ms-vscode.powershell",
+      "ms-azuretools.vscode-azure-github-copilot",
+      "ms-vscode.vscode-json",
+      "bradlc.vscode-tailwindcss",
+      "esbenp.prettier-vscode",
+      "ms-playwright.playwright",
+      "ms-vscode.vscode-typescript-next",
+    ],
+    "unwantedRecommendations": ["ms-toolsai.vscode-ai"],
+  },
+}

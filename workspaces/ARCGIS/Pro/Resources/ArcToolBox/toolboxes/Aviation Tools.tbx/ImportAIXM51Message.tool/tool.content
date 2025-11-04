@@ -1,0 +1,86 @@
+{
+    "type": "FunctionTool",
+    "guid": "{F6243FE3-8552-4511-BBCE-F882B7099A58}/ImportAIXM51Message",
+    "displayname": "$rc:title",
+    "helpcontent": "64030002",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "53",
+        "70"
+    ],
+    "params": {
+        "in_message_file": {
+            "displayname": "$rc:in_message_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "xml"
+                ]
+            },
+            "description": "$rc:in_message_file.descr"
+        },
+        "target_gdb": {
+            "displayname": "$rc:target_gdb.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "description": "$rc:target_gdb.descr"
+        },
+        "in_tables": {
+            "type": "optional",
+            "displayname": "$rc:in_tables.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPDatasetDomain"
+            },
+            "depends": [
+                "target_gdb"
+            ],
+            "description": "$rc:in_tables.descr"
+        },
+        "update_existing_features": {
+            "type": "optional",
+            "displayname": "$rc:update_existing_features.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "UPDATE_EXISTING"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "CREATE_NEW"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:update_existing_features.descr"
+        },
+        "updated_gdb": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_gdb.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "depends": [
+                "target_gdb"
+            ]
+        }
+    }
+}

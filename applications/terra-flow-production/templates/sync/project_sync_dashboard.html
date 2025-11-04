@@ -1,0 +1,305 @@
+{% extends 'base.html' %}
+
+{% block title %}Project Sync Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-xl-3 col-sm-6 mb-4">
+            <div class="card">
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="numbers">
+                                <p class="text-sm mb-0 text-uppercase font-weight-bold">Total Sync Jobs</p>
+                                <h5 class="font-weight-bolder mb-0">
+                                    {{ total_jobs }}
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="col-4 text-end">
+                            <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+                                <i class="fas fa-sync text-lg opacity-10" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 mb-4">
+            <div class="card">
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="numbers">
+                                <p class="text-sm mb-0 text-uppercase font-weight-bold">Success Rate</p>
+                                <h5 class="font-weight-bolder mb-0">
+                                    {{ "%.1f" % success_rate }}%
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="col-4 text-end">
+                            <div class="icon icon-shape bg-gradient-success shadow text-center border-radius-md">
+                                <i class="fas fa-check text-lg opacity-10" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 mb-4">
+            <div class="card">
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="numbers">
+                                <p class="text-sm mb-0 text-uppercase font-weight-bold">Project Tables</p>
+                                <h5 class="font-weight-bolder mb-0">
+                                    {{ project_tables|length }}
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="col-4 text-end">
+                            <div class="icon icon-shape bg-gradient-info shadow text-center border-radius-md">
+                                <i class="fas fa-table text-lg opacity-10" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 mb-4">
+            <div class="card">
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="numbers">
+                                <p class="text-sm mb-0 text-uppercase font-weight-bold">Pending Conflicts</p>
+                                <h5 class="font-weight-bolder mb-0">
+                                    {{ pending_conflicts }}
+                                    {% if pending_conflicts > 0 %}
+                                    <a href="{{ url_for('project_sync.conflict_list', status='pending') }}" class="text-info ms-2">
+                                        <small>View</small>
+                                    </a>
+                                    {% endif %}
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="col-4 text-end">
+                            <div class="icon icon-shape bg-gradient-warning shadow text-center border-radius-md">
+                                <i class="fas fa-exclamation-triangle text-lg opacity-10" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+                    <h6>Recent Project Sync Jobs</h6>
+                    <a href="{{ url_for('project_sync.run_sync') }}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-play me-2"></i> Start New Sync
+                    </a>
+                </div>
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="table-responsive p-0">
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Job ID</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Name</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Status</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Progress</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Started</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Duration</th>
+                                    <th class="text-secondary opacity-7"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for job in recent_jobs %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{{ job.job_id[:8] }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">{{ job.name }}</p>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-sm bg-gradient-{{ 
+                                            'success' if job.status == 'completed' 
+                                            else 'danger' if job.status == 'failed' 
+                                            else 'warning' if job.status == 'cancelled' 
+                                            else 'info' 
+                                        }}">
+                                            {{ job.status }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if job.total_records > 0 %}
+                                            <span class="me-2 text-xs font-weight-bold">{{ (job.processed_records / job.total_records * 100)|round|int }}%</span>
+                                            <div>
+                                                <div class="progress">
+                                                    <div class="progress-bar bg-gradient-{{ 
+                                                        'success' if job.status == 'completed' 
+                                                        else 'danger' if job.status == 'failed' 
+                                                        else 'info' 
+                                                    }}" role="progressbar" aria-valuenow="{{ (job.processed_records / job.total_records * 100)|round|int }}" 
+                                                    aria-valuemin="0" aria-valuemax="100" style="width: {{ (job.processed_records / job.total_records * 100)|round|int }}%;"></div>
+                                                </div>
+                                            </div>
+                                            {% else %}
+                                            <span class="text-xs font-weight-bold">N/A</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="text-secondary text-xs font-weight-bold">
+                                            {% if job.start_time %}
+                                                {{ job.start_time.strftime('%Y-%m-%d %H:%M:%S') }}
+                                            {% else %}
+                                                Pending
+                                            {% endif %}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="text-secondary text-xs font-weight-bold">
+                                            {% if job.duration_seconds %}
+                                                {{ (job.duration_seconds / 60)|round|int }} min {{ job.duration_seconds % 60 }} sec
+                                            {% elif job.status == 'running' and job.start_time %}
+                                                Running ({{ ((now - job.start_time).total_seconds() / 60)|round|int }} min)
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </span>
+                                    </td>
+                                    <td class="align-middle">
+                                        <a href="{{ url_for('project_sync.job_details', job_id=job.job_id) }}" class="btn btn-link text-secondary mb-0">
+                                            <i class="fa fa-ellipsis-v text-xs"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">
+                                        <p class="text-secondary mb-0">No sync jobs found</p>
+                                        <a href="{{ url_for('project_sync.run_sync') }}" class="btn btn-sm btn-primary mt-3">
+                                            <i class="fas fa-play me-2"></i> Start First Sync
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+                    <h6>Project Tables Configuration</h6>
+                    <a href="{{ url_for('project_sync.table_config') }}" class="btn btn-sm btn-outline-primary">
+                        Manage Tables
+                    </a>
+                </div>
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="table-responsive p-0">
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Table Name</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Status</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Fields</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for table in project_tables %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{{ table.name }}</h6>
+                                                <p class="text-xs text-secondary mb-0">{{ table.description }}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-sm bg-gradient-{{ 'success' if table.sync_enabled else 'secondary' }}">
+                                            {{ 'Enabled' if table.sync_enabled else 'Disabled' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">{{ table.fields|length }} fields</p>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="3" class="text-center py-4">
+                                        <p class="text-secondary mb-0">No project tables configured</p>
+                                        <a href="{{ url_for('project_sync.add_table') }}" class="btn btn-sm btn-primary mt-3">
+                                            <i class="fas fa-plus me-2"></i> Add First Table
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+                    <h6>Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a href="{{ url_for('project_sync.run_sync') }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">Start New Sync</h5>
+                                <small><i class="fas fa-arrow-right"></i></small>
+                            </div>
+                            <p class="mb-1">Initiate a new sync job between databases</p>
+                        </a>
+                        <a href="{{ url_for('project_sync.table_config') }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">Manage Tables</h5>
+                                <small><i class="fas fa-arrow-right"></i></small>
+                            </div>
+                            <p class="mb-1">Configure tables to sync between environments</p>
+                        </a>
+                        <a href="{{ url_for('project_sync.conflict_list') }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">Resolve Conflicts</h5>
+                                <small><i class="fas fa-arrow-right"></i></small>
+                            </div>
+                            <p class="mb-1">View and resolve data conflicts between environments</p>
+                        </a>
+                        <a href="{{ url_for('project_sync.job_list') }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">View All Jobs</h5>
+                                <small><i class="fas fa-arrow-right"></i></small>
+                            </div>
+                            <p class="mb-1">See all sync jobs with detailed history</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

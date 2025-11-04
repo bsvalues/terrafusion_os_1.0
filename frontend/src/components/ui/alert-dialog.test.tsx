@@ -82,7 +82,7 @@ describe('AlertDialog', () => {
           <AlertDialogTrigger asChild>
             <Button>Open</Button>
           </AlertDialogTrigger>
-          <AlertDialogContent className="custom-dialog">
+          <AlertDialogContent className='custom-dialog'>
             <AlertDialogTitle>Title</AlertDialogTitle>
           </AlertDialogContent>
         </AlertDialog>
@@ -205,7 +205,7 @@ describe('AlertDialog', () => {
 
         return (
           <>
-            <button onClick={() => setOpen(true)} data-testid="external-trigger">
+            <button onClick={() => setOpen(true)} data-testid='external-trigger'>
               External Open
             </button>
             <AlertDialog open={open} onOpenChange={setOpen}>
@@ -743,9 +743,7 @@ describe('AlertDialog', () => {
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogTitle>Confirm Action</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to continue?
-            </AlertDialogDescription>
+            <AlertDialogDescription>Are you sure you want to continue?</AlertDialogDescription>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction>Continue</AlertDialogAction>
@@ -767,18 +765,14 @@ describe('AlertDialog', () => {
       const { container } = render(
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button variant="destructive">Delete</Button>
+            <Button variant='destructive'>Delete</Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogTitle>Delete Item</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone.
-            </AlertDialogDescription>
+            <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction className="bg-red-600">
-                Delete Permanently
-              </AlertDialogAction>
+              <AlertDialogAction className='bg-red-600'>Delete Permanently</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

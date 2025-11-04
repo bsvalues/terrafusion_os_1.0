@@ -1,0 +1,16 @@
+{
+    "map": {
+        "cell_size.descr": "<xdoc><p>The cell size at which the output raster will be created.</p><p>This value can be explicitly set in the <span class=\"esri_uicontrol\">Environments</span> by the <span class=\"esri_uicontrol\">Cell Size</span> parameter.</p><p>If not set, it is the shorter of the width or the height of the extent of the input point features, in the input spatial reference, divided by 250.</p></xdoc>",
+        "cell_size.title": "Output cell size",
+        "description": "Exports a Geostatistical layer to a raster.",
+        "in_geostat_layer.descr": "The geostatistical layer to be analyzed.",
+        "in_geostat_layer.title": "Input geostatistical layer",
+        "out_surface_grid.descr": "The raster to be created.",
+        "out_surface_grid.title": "Output surface raster",
+        "points_per_block_horz.descr": "The number of predictions for each cell in the horizontal direction for block interpolation. The default is 1.",
+        "points_per_block_horz.title": "Number of points in the cell (horizontal)",
+        "points_per_block_vert.descr": "The number of predictions for each cell in the vertical direction for block interpolation. The default is 1.",
+        "points_per_block_vert.title": "Number of points in the cell (vertical)",
+        "title": "GA Layer To Grid"
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "set": [
+        "angle",
+        "dem",
+        "digital elevation model",
+        "elevation",
+        "gradient",
+        "maximum rate of change",
+        "percent",
+        "relief",
+        "steepness",
+        "z-factor"
+    ]
+}

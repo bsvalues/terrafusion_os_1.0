@@ -1,0 +1,20 @@
+{
+    "map": {
+        "aoi_features.descr": "<xdoc><p>The polygon feature class containing the AOI data.</p><p>The selected polygon features will be used to filter the airspace lines that will be added, modified, or deleted.</p></xdoc>",
+        "aoi_features.title": "Area of Interest Features",
+        "description": "Generates line features in the AirspaceLine feature class from the edges of input Airspace polygon features.",
+        "in_airspace_features.descr": "The polygon feature classes containing the airspace boundaries.",
+        "in_airspace_features.title": "Input Airspace Features",
+        "label_airspaces.descr": "<xdoc><p>Specifies whether the output line&apos;s left and right labels will aggregate and show the labels of the intersecting airspaces that the line is within.</p><ul><li>Unchecked—The left and right labels of the output lines will contain the airspace labels of the coincident airspaces only. Intersecting airspaces will not be included. Only coincident airspaces that touch the airspace line within the preference cluster tolerance will be identified. This is the default.</li><li>Checked—The left and right labels of the output lines will contain airspace labels of intersecting airspaces and coincident airspaces. Only coincident airspaces that touch the airspace line within the default cluster tolerance will be identified.</li></ul></xdoc>",
+        "label_airspaces.title": "Label Airspaces",
+        "preference.descr": "<xdoc><p>The name of a preference in the <span class=\"esri_uicontrol\">Preference Table</span> parameter value. The selected preference defines how the airspace lines will be added, modified, or deleted.</p></xdoc>",
+        "preference.title": "Preference",
+        "preference_table.descr": "The table of preferences that define how the airspace lines will be added, modified, or deleted.",
+        "preference_table.title": "Preference Table",
+        "summary": "<xdoc><p>Generates line features in the AirspaceLine feature class from the edges of input Airspace polygon features.</p><p>AirspaceLine features can be used as the basis for charting complex line symbols where coincident or intersecting boundaries of different Airspace types may require special symbology for clarity. Similarly, labels or annotation can be generated along the lines, specifying the Airspace features on either side.</p><p>The AirspaceLine <span class=\"esri_fieldname\">LINESYMBOL.TXT</span> field will be populated with Airspace <span class=\"esri_fieldname\">TYPE_CODE</span> source values. The AirspaceLine <span class=\"esri_fieldname\">RIGHTLABEL_TXT</span> and AirspaceLine <span class=\"esri_fieldname\">LEFTLABEL_TXT</span> fields will be populated with configured field values from the contributing right and left source Airspace features.</p><p>The tool will add, modify, or delete AirspaceLine features as needed when subsequently run with updated Airspace features.</p><p>The tool uses preferences to define how it will process polyline features. These preferences are available in the Aviation Preferences tool and should be configured before running the Generate Airspace Lines tool.</p></xdoc>",
+        "target_airspace_line_features.descr": "The polyline feature class containing the airspace line data.",
+        "target_airspace_line_features.title": "Target Airspace Line Features",
+        "title": "Generate Airspace Lines",
+        "updated_airspace_line_features.title": "Updated Airspace Line Features"
+    }
+}

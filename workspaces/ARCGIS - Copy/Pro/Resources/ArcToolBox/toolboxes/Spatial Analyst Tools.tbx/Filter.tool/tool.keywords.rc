@@ -1,0 +1,10 @@
+{
+    "set": [
+        "edge detection",
+        "edge enhancement",
+        "high pass",
+        "low pass",
+        "neighborhood",
+        "smooth"
+    ]
+}

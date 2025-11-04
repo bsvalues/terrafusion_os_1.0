@@ -1,0 +1,218 @@
+openapi: 3.0.3
+info:
+  title: Security API
+  description: Cybersecurity and threat management APIs
+  version: 1.0.0
+  contact:
+    name: TerraFusion Government OS API Support
+    email: security-api@terrafusion.gov
+    url: https://docs.terrafusion.gov/platform/security
+  license:
+    name: Government Use License
+    url: https://terrafusion.gov/licenses/government-api
+  termsOfService: https://terrafusion.gov/terms/api-usage
+servers:
+- url: https://api.terrafusion.gov/api/v1/security
+  description: Production TerraFusion Government API
+- url: https://staging-api.terrafusion.gov/api/v1/security
+  description: Staging Environment
+- url: https://dev-api.terrafusion.gov/api/v1/security
+  description: Development Environment
+paths:
+  /threats:
+    get:
+      tags:
+      - security
+      summary: Threat intelligence
+      description: Threat intelligence - Cybersecurity and threat management APIs
+      operationId: get__threats
+      security:
+      - OAuth2:
+        - security:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /incidents:
+    post:
+      tags:
+      - security
+      summary: Security incident reporting
+      description: Security incident reporting - Cybersecurity and threat management
+        APIs
+      operationId: post__incidents
+      security:
+      - OAuth2:
+        - security:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /scanning:
+    post:
+      tags:
+      - security
+      summary: Security scanning
+      description: Security scanning - Cybersecurity and threat management APIs
+      operationId: post__scanning
+      security:
+      - OAuth2:
+        - security:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /alerts:
+    get:
+      tags:
+      - security
+      summary: Security alerts
+      description: Security alerts - Cybersecurity and threat management APIs
+      operationId: get__alerts
+      security:
+      - OAuth2:
+        - security:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: object
+    HealthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - healthy
+          - degraded
+          - unhealthy
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        dependencies:
+          type: object
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
+          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          scopes:
+            security:read: Read access to security resources
+            security:write: Write access to security resources
+            security:admin: Administrative access to security
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+security:
+- OAuth2:
+  - security:read
+- ApiKey: []
+tags:
+- name: security
+  description: Security operations
+  externalDocs:
+    description: Find out more about security
+    url: https://docs.terrafusion.gov/platform/security

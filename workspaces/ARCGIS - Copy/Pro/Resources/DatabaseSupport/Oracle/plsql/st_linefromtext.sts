@@ -1,0 +1,12 @@
+/* $Id: st_linefromtext.sts,v 1.1.1.0, 2008-08-24 17:26:43Z, Kevin Watt$ 
+$NoKeywords$ */ 
+CREATE OR REPLACE Type st_linefromtext 
+          OID 'A618FA8DD1D84E13B35784E17153010F' 
+          under st_linestring
+        --C_Type_Release 1001
+(
+  constructor Function st_linefromtext(geom_str clob) Return self AS result deterministic,
+  constructor Function st_linefromtext(geom_str clob,srid number) Return self AS result deterministic,
+  static Function get_release Return number
+);
+/

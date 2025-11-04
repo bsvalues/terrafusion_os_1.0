@@ -1,0 +1,422 @@
+{% extends "layout.html" %}
+
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="mb-0">NARRPR Reports</h3>
+                <div class="input-group" style="max-width: 300px;">
+                    <input type="text" class="form-control table-search" placeholder="Search reports..." data-table="reports-table">
+                    <span class="input-group-text"><i data-feather="search"></i></span>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if reports %}
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="reports-table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Address</th>
+                                    <th>Price</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for report in reports %}
+                                <tr>
+                                    <td>{{ report.title }}</td>
+                                    <td>{{ report.address }}</td>
+                                    <td>{{ report.price }}</td>
+                                    <td>{{ report.date }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-secondary btn-copy" data-copy-text="{{ report.address }}">
+                                                <i data-feather="copy"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-info" onclick="window.open('{{ url_for('reports') }}?id={{ report.id }}', '_blank')">
+                                                <i data-feather="eye"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i data-feather="info" class="me-2"></i> No reports found. Run the scraper to collect data from NARRPR.
+                    </div>
+                    <div class="d-grid gap-2 col-6 mx-auto">
+                        <a href="{{ url_for('run_scraper') }}" class="btn btn-primary">
+                            <i data-feather="play"></i> Run Scraper
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if reports %}
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Report Statistics</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <i data-feather="file-text" class="me-2"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-0">Total Reports</h6>
+                                <p class="mb-0">{{ reports|length }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <i data-feather="calendar" class="me-2"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-0">Last Updated</h6>
+                                <p class="mb-0">{{ reports[0].created_at if reports and reports[0].created_at else 'Unknown' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Export Options</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    {% for format in export_formats %}
+                    <a href="{{ url_for('export_data', format=format.id) }}" class="btn btn-outline-secondary">
+                        <i data-feather="download" class="me-2"></i> Export to {{ format.name }}
+                    </a>
+                    {% endfor %}
+                    
+                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#exportModal">
+                        <i data-feather="sliders" class="me-2"></i> Advanced Export Options
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+<!-- Export Modal -->
+<div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exportModalLabel">Advanced Export Options</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="exportForm" action="" method="get">
+                    <div class="mb-3">
+                        <label for="exportFormat" class="form-label">Export Format</label>
+                        <select class="form-select" id="exportFormat" name="format">
+                            {% for format in export_formats %}
+                            <option value="{{ format.id }}">{{ format.name }} ({{ format.extension }})</option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text" id="formatHelp"></div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="exportLimit" class="form-label">Number of Records</label>
+                        <input type="number" class="form-control" id="exportLimit" name="limit" value="100" min="1" max="1000">
+                        <div class="form-text">Maximum number of records to export (1-1000)</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Date Range</label>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <label for="startDate" class="form-label small text-muted">Start Date</label>
+                                <input type="date" class="form-control" id="startDate" name="start_date">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="endDate" class="form-label small text-muted">End Date</label>
+                                <input type="date" class="form-control" id="endDate" name="end_date">
+                            </div>
+                        </div>
+                        <div class="form-text">Filter reports by date range (optional)</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Data to Include</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="true" id="includeMetadata" name="include_metadata">
+                            <label class="form-check-label" for="includeMetadata">
+                                Include export metadata (timestamp, user, query info)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="true" id="includeAllColumns" name="include_all_columns" checked>
+                            <label class="form-check-label" for="includeAllColumns">
+                                Include all available columns
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Export Configurations</label>
+                        <div class="row g-2 mb-2">
+                            <div class="col">
+                                <select class="form-select" id="savedConfigs">
+                                    <option value="">-- Saved Configurations --</option>
+                                </select>
+                            </div>
+                            <div class="col-auto">
+                                <button class="btn btn-outline-secondary" type="button" id="loadConfig">
+                                    <i data-feather="download" class="me-1"></i> Load
+                                </button>
+                                <button class="btn btn-outline-danger" type="button" id="deleteConfig">
+                                    <i data-feather="trash-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="configName" name="config_name" placeholder="Name this export configuration">
+                            <button class="btn btn-outline-secondary" type="button" id="saveConfig">
+                                <i data-feather="save" class="me-1"></i> Save
+                            </button>
+                        </div>
+                        <div class="form-text">Save and load your export configurations</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="exportSubmit">Export Data</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Feather icons
+        feather.replace();
+        
+        // Load saved configurations
+        const savedConfigsSelect = document.getElementById('savedConfigs');
+        function loadSavedConfigs() {
+            const savedConfigs = JSON.parse(localStorage.getItem('exportConfigurations') || '[]');
+            
+            // Clear existing options except the first one
+            while (savedConfigsSelect.options.length > 1) {
+                savedConfigsSelect.remove(1);
+            }
+            
+            // Add saved configurations to dropdown
+            savedConfigs.forEach((config, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.text = config.name;
+                savedConfigsSelect.add(option);
+            });
+        }
+        
+        // Initial load of saved configurations
+        loadSavedConfigs();
+        
+        // Format descriptions
+        const formatDescriptions = {
+            {% for format in export_formats %}
+            '{{ format.id }}': '{{ format.description }}',
+            {% endfor %}
+        };
+        
+        // Update format help text when selection changes
+        const formatSelect = document.getElementById('exportFormat');
+        const formatHelp = document.getElementById('formatHelp');
+        
+        if (formatSelect && formatHelp) {
+            formatSelect.addEventListener('change', function() {
+                formatHelp.textContent = formatDescriptions[this.value] || '';
+            });
+            
+            // Set initial help text
+            formatHelp.textContent = formatDescriptions[formatSelect.value] || '';
+        }
+        
+        // Handle export form submission
+        const exportForm = document.getElementById('exportForm');
+        const exportSubmit = document.getElementById('exportSubmit');
+        
+        if (exportForm && exportSubmit) {
+            exportSubmit.addEventListener('click', function() {
+                // Show loading indicator
+                this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Exporting...';
+                this.disabled = true;
+                
+                // Get form values
+                const format = formatSelect.value;
+                const limit = document.getElementById('exportLimit').value;
+                const includeMetadata = document.getElementById('includeMetadata').checked;
+                const includeAllColumns = document.getElementById('includeAllColumns').checked;
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                
+                // Build the URL
+                let url = `{{ url_for('export_data', format='FORMAT') }}`.replace('FORMAT', format);
+                url += `?limit=${limit}`;
+                
+                if (includeMetadata) {
+                    url += '&include_metadata=true';
+                }
+                
+                if (!includeAllColumns) {
+                    url += '&include_all_columns=false';
+                }
+                
+                if (startDate) {
+                    url += `&start_date=${startDate}`;
+                }
+                
+                if (endDate) {
+                    url += `&end_date=${endDate}`;
+                }
+                
+                // Navigate to the URL
+                window.location.href = url;
+                
+                // Reset button after a short delay (in case download starts quickly)
+                setTimeout(() => {
+                    this.innerHTML = 'Export Data';
+                    this.disabled = false;
+                }, 3000);
+            });
+            
+            // Save configuration functionality
+            const saveConfigBtn = document.getElementById('saveConfig');
+            if (saveConfigBtn) {
+                saveConfigBtn.addEventListener('click', function() {
+                    const configName = document.getElementById('configName').value;
+                    if (!configName) {
+                        alert('Please enter a name for this configuration');
+                        return;
+                    }
+                    
+                    // Get current settings
+                    const config = {
+                        name: configName,
+                        format: formatSelect.value,
+                        limit: document.getElementById('exportLimit').value,
+                        includeMetadata: document.getElementById('includeMetadata').checked,
+                        includeAllColumns: document.getElementById('includeAllColumns').checked,
+                        startDate: document.getElementById('startDate').value,
+                        endDate: document.getElementById('endDate').value
+                    };
+                    
+                    // Save to localStorage
+                    let savedConfigs = JSON.parse(localStorage.getItem('exportConfigurations') || '[]');
+                    savedConfigs.push(config);
+                    localStorage.setItem('exportConfigurations', JSON.stringify(savedConfigs));
+                    
+                    // Reload the configurations dropdown
+                    loadSavedConfigs();
+                    
+                    // Clear the input field
+                    document.getElementById('configName').value = '';
+                    
+                    // Show confirmation
+                    alert(`Configuration "${configName}" has been saved!`);
+                });
+            }
+            
+            // Load configuration functionality
+            const loadConfigBtn = document.getElementById('loadConfig');
+            if (loadConfigBtn && savedConfigsSelect) {
+                loadConfigBtn.addEventListener('click', function() {
+                    const selectedIndex = savedConfigsSelect.value;
+                    if (!selectedIndex || selectedIndex === '') {
+                        alert('Please select a configuration to load');
+                        return;
+                    }
+                    
+                    // Get saved configurations
+                    const savedConfigs = JSON.parse(localStorage.getItem('exportConfigurations') || '[]');
+                    if (selectedIndex >= savedConfigs.length) {
+                        alert('Selected configuration not found');
+                        return;
+                    }
+                    
+                    // Load the selected configuration
+                    const config = savedConfigs[selectedIndex];
+                    
+                    // Apply settings to form
+                    document.getElementById('exportFormat').value = config.format;
+                    document.getElementById('exportLimit').value = config.limit;
+                    document.getElementById('includeMetadata').checked = config.includeMetadata;
+                    document.getElementById('includeAllColumns').checked = config.includeAllColumns;
+                    document.getElementById('startDate').value = config.startDate || '';
+                    document.getElementById('endDate').value = config.endDate || '';
+                    
+                    // Update format help text
+                    formatHelp.textContent = formatDescriptions[config.format] || '';
+                    
+                    // Show confirmation
+                    alert(`Configuration "${config.name}" has been loaded!`);
+                });
+            }
+            
+            // Delete configuration functionality
+            const deleteConfigBtn = document.getElementById('deleteConfig');
+            if (deleteConfigBtn && savedConfigsSelect) {
+                deleteConfigBtn.addEventListener('click', function() {
+                    const selectedIndex = savedConfigsSelect.value;
+                    if (!selectedIndex || selectedIndex === '') {
+                        alert('Please select a configuration to delete');
+                        return;
+                    }
+                    
+                    // Get saved configurations
+                    let savedConfigs = JSON.parse(localStorage.getItem('exportConfigurations') || '[]');
+                    if (selectedIndex >= savedConfigs.length) {
+                        alert('Selected configuration not found');
+                        return;
+                    }
+                    
+                    // Confirm deletion
+                    const configName = savedConfigs[selectedIndex].name;
+                    if (!confirm(`Are you sure you want to delete the configuration "${configName}"?`)) {
+                        return;
+                    }
+                    
+                    // Remove the selected configuration
+                    savedConfigs.splice(selectedIndex, 1);
+                    localStorage.setItem('exportConfigurations', JSON.stringify(savedConfigs));
+                    
+                    // Reload the configurations dropdown
+                    loadSavedConfigs();
+                    
+                    // Show confirmation
+                    alert(`Configuration "${configName}" has been deleted!`);
+                });
+            }
+        }
+    });
+</script>
+{% endblock %}

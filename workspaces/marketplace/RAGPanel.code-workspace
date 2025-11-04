@@ -1,0 +1,107 @@
+{
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "node",
+        "cwd": "../../marketplace/RAGPanel/frontend",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "name": "Start Ragpanel Frontend"
+      },
+      {
+        "type": "debugpy",
+        "cwd": "../../marketplace/RAGPanel/backend",
+        "program": "../../marketplace/RAGPanel/backend/main.py",
+        "name": "Start Ragpanel Backend"
+      },
+      {
+        "type": "node",
+        "cwd": "../../marketplace/RAGPanel/mcp-server",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "name": "Start Ragpanel MCP Server"
+      }
+    ]
+  },
+  "tasks": {
+    "tasks": [
+      {
+        "cwd": "../../marketplace/RAGPanel",
+        "args": [
+          "run",
+          "build"
+        ],
+        "command": "npm",
+        "label": "Build Ragpanel"
+      },
+      {
+        "cwd": "../../marketplace/RAGPanel",
+        "args": [
+          "run",
+          "test"
+        ],
+        "command": "npm",
+        "label": "Test Ragpanel"
+      }
+    ],
+    "version": "2.0.0"
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "ms-python.black-formatter"
+    ]
+  },
+  "folders": [
+    {
+      "name": "💼 Ragpanel",
+      "path": "../../marketplace/RAGPanel"
+    },
+    {
+      "name": "📦 Platform SDK (read-only)",
+      "path": "../../platform/sdk"
+    },
+    {
+      "name": "🎨 Design System (read-only)",
+      "path": "../../platform/design-system"
+    },
+    {
+      "name": "🧪 Tests",
+      "path": "../../tests/marketplace/RAGPanel"
+    },
+    {
+      "name": "📚 Ragpanel Docs",
+      "path": "../../docs/marketplace/RAGPanel.md"
+    }
+  ],
+  "settings": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit",
+      "source.fixAll": "explicit"
+    },
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#f59e0b",
+      "titleBar.activeForeground": "#ffffff"
+    },
+    "files.exclude": {
+      "../../os-platform": true,
+      "**/node_modules": true,
+      "../../terrafusion-cos": true,
+      "../../marketplace/*": true,
+      "../../backend": true,
+      "**/dist": true,
+      "../../frontend": true,
+      "!../../marketplace/RAGPanel": true
+    },
+    "editor.formatOnSave": true
+  }
+}
+

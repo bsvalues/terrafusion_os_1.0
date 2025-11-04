@@ -1,0 +1,103 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\VisualizeSpaceTimeCube3D",
+    "displayname": "$rc:title",
+    "helpcontent": "50010002",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_cube": {
+            "displayname": "$rc:in_cube.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "nc"
+                ]
+            },
+            "description": "$rc:in_cube.descr"
+        },
+        "cube_variable": {
+            "displayname": "$rc:cube_variable.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:cube_variable.descr"
+        },
+        "display_theme": {
+            "displayname": "$rc:display_theme.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "VALUE",
+                        "code": "$rc:display_theme.domain.VALUE"
+                    },
+                    {
+                        "value": "HOT_AND_COLD_SPOT_RESULTS",
+                        "code": "$rc:display_theme.domain.HOT_AND_COLD_SPOT_RESULTS"
+                    },
+                    {
+                        "value": "LOCAL_OUTLIER_RESULTS",
+                        "code": "$rc:display_theme.domain.LOCAL_OUTLIER_RESULTS"
+                    },
+                    {
+                        "value": "ESTIMATED_BINS",
+                        "code": "$rc:display_theme.domain.ESTIMATED_BINS"
+                    },
+                    {
+                        "value": "TEMPORAL_AGGREGATION_COUNT",
+                        "code": "$rc:display_theme.domain.TEMPORAL_AGGREGATION_COUNT"
+                    },
+                    {
+                        "value": "FORECAST_RESULTS",
+                        "code": "$rc:display_theme.domain.FORECAST_RESULTS"
+                    },
+                    {
+                        "value": "TIME_SERIES_OUTLIER_RESULTS",
+                        "code": "$rc:display_theme.domain.TIME_SERIES_OUTLIER_RESULTS"
+                    },
+                    {
+                        "value": "TIME_SERIES_CHANGE_POINTS",
+                        "code": "$rc:display_theme.domain.TIME_SERIES_CHANGE_POINTS"
+                    }
+                ]
+            },
+            "description": "$rc:display_theme.descr"
+        },
+        "output_features": {
+            "direction": "out",
+            "displayname": "$rc:output_features.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "depends": [
+                "in_cube"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "featuretype.rule": "AsSpecified",
+                "featuretype": "Simple",
+                "geometrytype.rule": "AsSpecified",
+                "geometrytype": "Polygon",
+                "fields.rule": "None",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:output_features.descr"
+        }
+    },
+    "environments": [
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

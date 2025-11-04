@@ -1,0 +1,8 @@
+{
+    "set": [
+        "database",
+        "make",
+        "table",
+        "unregister"
+    ]
+}

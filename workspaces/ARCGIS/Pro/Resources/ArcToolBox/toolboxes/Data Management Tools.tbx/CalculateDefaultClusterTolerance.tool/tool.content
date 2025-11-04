@@ -1,0 +1,25 @@
+{
+    "type": "FunctionTool",
+    "guid": "{7f852f61-c7ff-498d-84ac-15477d399358}",
+    "displayname": "$rc:title",
+    "helpcontent": "3040002",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            }
+        },
+        "cluster_tolerance": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:cluster_tolerance.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0"
+        }
+    }
+}

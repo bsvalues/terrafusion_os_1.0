@@ -1,0 +1,229 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "53010002",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "inputLayer": {
+            "displayname": "$rc:inputlayer.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Multipoint",
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:inputlayer.descr"
+        },
+        "outputName": {
+            "displayname": "$rc:outputname.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:outputname.descr"
+        },
+        "field": {
+            "type": "optional",
+            "displayname": "$rc:field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double"
+                ]
+            },
+            "depends": [
+                "inputLayer"
+            ],
+            "description": "$rc:field.descr"
+        },
+        "cellSize": {
+            "type": "optional",
+            "displayname": "$rc:cellsize.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:cellsize.descr"
+        },
+        "cellSizeUnits": {
+            "type": "optional",
+            "displayname": "$rc:cellsizeunits.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MILES",
+                        "code": "$rc:cellsizeunits.domain.MILES"
+                    },
+                    {
+                        "value": "FEET",
+                        "code": "$rc:cellsizeunits.domain.FEET"
+                    },
+                    {
+                        "value": "KILOMETERS",
+                        "code": "$rc:cellsizeunits.domain.KILOMETERS"
+                    },
+                    {
+                        "value": "METERS",
+                        "code": "$rc:cellsizeunits.domain.METERS"
+                    }
+                ]
+            },
+            "description": "$rc:cellsizeunits.descr"
+        },
+        "radius": {
+            "type": "optional",
+            "displayname": "$rc:radius.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:radius.descr"
+        },
+        "radiusUnits": {
+            "type": "optional",
+            "displayname": "$rc:radiusunits.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MILES",
+                        "code": "$rc:radiusunits.domain.MILES"
+                    },
+                    {
+                        "value": "FEET",
+                        "code": "$rc:radiusunits.domain.FEET"
+                    },
+                    {
+                        "value": "KILOMETERS",
+                        "code": "$rc:radiusunits.domain.KILOMETERS"
+                    },
+                    {
+                        "value": "METERS",
+                        "code": "$rc:radiusunits.domain.METERS"
+                    }
+                ]
+            },
+            "description": "$rc:radiusunits.descr"
+        },
+        "boundingPolygonLayer": {
+            "type": "optional",
+            "displayname": "$rc:boundingpolygonlayer.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "description": "$rc:boundingpolygonlayer.descr"
+        },
+        "areaUnits": {
+            "type": "optional",
+            "displayname": "$rc:areaunits.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SQUAREMILES",
+                        "code": "$rc:areaunits.domain.SQUAREMILES"
+                    },
+                    {
+                        "value": "SQUAREKILOMETERS",
+                        "code": "$rc:areaunits.domain.SQUAREKILOMETERS"
+                    }
+                ]
+            },
+            "value": "SQUAREMILES",
+            "description": "$rc:areaunits.descr"
+        },
+        "classificationType": {
+            "type": "optional",
+            "displayname": "$rc:classificationtype.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "EQUALINTERVAL",
+                        "code": "$rc:classificationtype.domain.EQUALINTERVAL"
+                    },
+                    {
+                        "value": "GEOMETRICINTERVAL",
+                        "code": "$rc:classificationtype.domain.GEOMETRICINTERVAL"
+                    },
+                    {
+                        "value": "NATURALBREAKS",
+                        "code": "$rc:classificationtype.domain.NATURALBREAKS"
+                    },
+                    {
+                        "value": "EQUALAREA",
+                        "code": "$rc:classificationtype.domain.EQUALAREA"
+                    },
+                    {
+                        "value": "STANDARDDEVIATION",
+                        "code": "$rc:classificationtype.domain.STANDARDDEVIATION"
+                    }
+                ]
+            },
+            "value": "EQUALINTERVAL",
+            "description": "$rc:classificationtype.descr"
+        },
+        "numClasses": {
+            "type": "optional",
+            "displayname": "$rc:numclasses.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "32"
+            },
+            "value": "10",
+            "description": "$rc:numclasses.descr"
+        },
+        "outputLayer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:outputlayer.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    },
+    "environments": [
+        "extent"
+    ]
+}

@@ -1,0 +1,207 @@
+{
+  "functions": [
+    {
+      "name": "GetPropertyData",
+      "description": "Retrieves detailed property information including characteristics, assessed values, sales history, and improvement details",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "propertyId": {
+            "type": "string",
+            "description": "The property identifier (parcel number, property ID, or address)"
+          },
+          "includeHistory": {
+            "type": "boolean",
+            "description": "Whether to include sales history and previous assessments",
+            "default": false
+          },
+          "includeImprovements": {
+            "type": "boolean",
+            "description": "Whether to include detailed improvement (building) information",
+            "default": true
+          }
+        },
+        "required": ["propertyId"]
+      },
+      "implementation": "TerraFusion.AI.Functions.PropertyDataFunction"
+    },
+    {
+      "name": "GetComparableSales",
+      "description": "Finds comparable property sales based on specified criteria including property type, size, age, location, and sale date",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "propertyType": {
+            "type": "string",
+            "enum": ["Residential", "Commercial", "Industrial", "Agricultural", "Vacant Land"],
+            "description": "Type of property to search for"
+          },
+          "squareFootage": {
+            "type": "number",
+            "description": "Target square footage (will search ±20%)"
+          },
+          "buildingAge": {
+            "type": "number",
+            "description": "Target building age in years (will search ±10 years)"
+          },
+          "location": {
+            "type": "string",
+            "description": "Property address or area to search near"
+          },
+          "maxDistance": {
+            "type": "number",
+            "description": "Maximum distance in miles from location",
+            "default": 5.0
+          },
+          "saleDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Start date for sales (defaults to 24 months ago)"
+          },
+          "quality": {
+            "type": "string",
+            "enum": ["Low", "Fair", "Average", "Good", "Very Good", "Excellent"],
+            "description": "Quality/grade of construction"
+          },
+          "condition": {
+            "type": "string",
+            "enum": ["Poor", "Fair", "Average", "Good", "Very Good", "Excellent"],
+            "description": "Overall property condition"
+          },
+          "maxResults": {
+            "type": "integer",
+            "description": "Maximum number of comparables to return",
+            "default": 10,
+            "minimum": 1,
+            "maximum": 50
+          }
+        },
+        "required": ["propertyType", "squareFootage", "location"]
+      },
+      "implementation": "TerraFusion.AI.Functions.ComparableSalesFunction"
+    },
+    {
+      "name": "CalculateDepreciation",
+      "description": "Calculates property depreciation using the age-life method based on actual age, effective age, and total economic life",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "actualAge": {
+            "type": "number",
+            "description": "Actual age of the building in years"
+          },
+          "effectiveAge": {
+            "type": "number",
+            "description": "Effective age considering maintenance and condition (can be less than or greater than actual age)"
+          },
+          "economicLife": {
+            "type": "number",
+            "description": "Total economic life expectancy of the building in years (typically 40-60 years for commercial, 50-100 years for residential)"
+          },
+          "replacementCost": {
+            "type": "number",
+            "description": "Current replacement cost of the improvement (optional, for calculating depreciated value)",
+            "default": null
+          }
+        },
+        "required": ["actualAge", "effectiveAge", "economicLife"]
+      },
+      "implementation": "TerraFusion.AI.Functions.DepreciationCalculationFunction"
+    },
+    {
+      "name": "GetMarketTrends",
+      "description": "Retrieves market statistics and trends for a specific property type and time period, including median prices, price per square foot, and sales volume",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "propertyType": {
+            "type": "string",
+            "enum": ["Residential", "Commercial", "Industrial", "Agricultural", "Vacant Land"],
+            "description": "Type of property to analyze"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Start date for trend analysis"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date",
+            "description": "End date for trend analysis (defaults to current date)"
+          },
+          "location": {
+            "type": "string",
+            "description": "Specific area or neighborhood (optional, defaults to county-wide)"
+          },
+          "groupBy": {
+            "type": "string",
+            "enum": ["month", "quarter", "year"],
+            "description": "How to group the trend data",
+            "default": "quarter"
+          }
+        },
+        "required": ["propertyType", "startDate"]
+      },
+      "implementation": "TerraFusion.AI.Functions.MarketTrendsFunction"
+    },
+    {
+      "name": "CalculatePropertyTax",
+      "description": "Calculates estimated property tax based on assessed value and current levy rates for all taxing districts",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "assessedValue": {
+            "type": "number",
+            "description": "Current assessed value of the property"
+          },
+          "propertyId": {
+            "type": "string",
+            "description": "Property identifier to determine applicable taxing districts"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year for calculation (defaults to current year)"
+          },
+          "includeBreakdown": {
+            "type": "boolean",
+            "description": "Whether to include detailed breakdown by taxing district",
+            "default": true
+          }
+        },
+        "required": ["assessedValue", "propertyId"]
+      },
+      "implementation": "TerraFusion.AI.Functions.PropertyTaxCalculationFunction"
+    },
+    {
+      "name": "GetLevyRates",
+      "description": "Retrieves current levy rates for all taxing districts applicable to a property location",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "propertyId": {
+            "type": "string",
+            "description": "Property identifier to determine applicable taxing districts"
+          },
+          "taxYear": {
+            "type": "integer",
+            "description": "Tax year for levy rates (defaults to current year)"
+          }
+        },
+        "required": ["propertyId"]
+      },
+      "implementation": "TerraFusion.AI.Functions.LevyRatesFunction"
+    }
+  ],
+  "metadata": {
+    "gptName": "property-assessor",
+    "version": "1.0.0",
+    "lastUpdated": "2025-10-31",
+    "category": "Property Assessment",
+    "totalFunctions": 6,
+    "securityLevel": "County Staff Only",
+    "rateLimits": {
+      "requestsPerMinute": 30,
+      "requestsPerHour": 500
+    }
+  }
+}

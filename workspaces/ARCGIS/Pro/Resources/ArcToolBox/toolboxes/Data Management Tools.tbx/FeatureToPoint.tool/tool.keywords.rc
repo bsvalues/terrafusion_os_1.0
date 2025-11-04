@@ -1,0 +1,16 @@
+{
+    "set": [
+        "center",
+        "centroid",
+        "change",
+        "conversion",
+        "convert",
+        "geometry",
+        "inside",
+        "line",
+        "mid",
+        "polygon",
+        "transform",
+        "vector"
+    ]
+}

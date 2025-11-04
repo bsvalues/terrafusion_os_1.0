@@ -1,0 +1,9 @@
+{
+    "set": [
+        "dsm",
+        "dtm",
+        "interpolation",
+        "orthomapping",
+        "point cloud"
+    ]
+}

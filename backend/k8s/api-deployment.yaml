@@ -1,0 +1,370 @@
+# ============================================================================
+# TerraFusion API - Kubernetes Deployment Configuration
+# Government. Transcended. - Championship-Level API Deployment
+# ============================================================================
+# Service: Core API (Port 5000)
+# Features: Rolling updates, health checks, auto-scaling, resource limits
+# Scaling: 3 replicas with HPA (2-10 pods based on CPU/memory)
+# Performance: <100ms response time, 99.99% uptime target
+# Security: FISMA-High compliance, non-root containers, network policies
+# ============================================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terrafusion-api
+  namespace: terrafusion
+  labels:
+    app: terrafusion-api
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/component: api
+    app.kubernetes.io/part-of: terrafusion-platform
+    app.kubernetes.io/version: "1.0.0"
+    tier: backend
+    compliance: fisma-high
+spec:
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: terrafusion-api
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: terrafusion-api
+        app.kubernetes.io/name: terrafusion-os
+        app.kubernetes.io/component: api
+        app.kubernetes.io/part-of: terrafusion-platform
+        version: "1.0.0"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: terrafusion-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      
+      # Pod Anti-Affinity - Distribute pods across nodes
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - terrafusion-api
+                topologyKey: kubernetes.io/hostname
+      
+      containers:
+        - name: terrafusion-api
+          image: terrafusion-api:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+            - name: metrics
+              containerPort: 8080
+              protocol: TCP
+          
+          # Environment Variables from ConfigMap and Secrets
+          env:
+            # Common Configuration
+            - name: ASPNETCORE_ENVIRONMENT
+              valueFrom:
+                configMapKeyRef:
+                  name: terrafusion-config
+                  key: ASPNETCORE_ENVIRONMENT
+            - name: ASPNETCORE_URLS
+              value: "http://+:5000"
+            - name: TZ
+              valueFrom:
+                configMapKeyRef:
+                  name: terrafusion-config
+                  key: TZ
+            
+            # Database Connection
+            - name: ConnectionStrings__DefaultConnection
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-secrets
+                  key: DB_CONNECTION_STRING
+            
+            # Redis Configuration
+            - name: Redis__Configuration
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-secrets
+                  key: Redis__Configuration
+            
+            # JWT Authentication
+            - name: JWT__Secret
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-secrets
+                  key: JWT__Secret
+            - name: JWT__Issuer
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-secrets
+                  key: JWT__Issuer
+            - name: JWT__Audience
+              valueFrom:
+                secretKeyRef:
+                  name: terrafusion-secrets
+                  key: JWT__Audience
+            
+            # Service Discovery
+            - name: Services__Consciousness__Url
+              valueFrom:
+                configMapKeyRef:
+                  name: terrafusion-config
+                  key: Services__Consciousness__Url
+            - name: Services__Operations__Url
+              valueFrom:
+                configMapKeyRef:
+                  name: terrafusion-config
+                  key: Services__Operations__Url
+            
+            # Compliance Configuration
+            - name: Compliance__EnableAuditLogging
+              valueFrom:
+                configMapKeyRef:
+                  name: terrafusion-config
+                  key: Compliance__EnableAuditLogging
+            - name: Compliance__EnableFISMAControls
+              valueFrom:
+                configMapKeyRef:
+                  name: terrafusion-config
+                  key: Compliance__EnableFISMAControls
+          
+          # Resource Limits and Requests
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "2"
+              memory: "2Gi"
+          
+          # Liveness Probe - Restart container if unhealthy
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+              scheme: HTTP
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          
+          # Readiness Probe - Remove from service if not ready
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 5000
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          
+          # Startup Probe - Allow time for application startup
+          startupProbe:
+            httpGet:
+              path: /health/startup
+              port: 5000
+              scheme: HTTP
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            timeoutSeconds: 3
+            successThreshold: 1
+            failureThreshold: 30
+          
+          # Security Context
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            capabilities:
+              drop:
+                - ALL
+          
+          # Lifecycle Hooks
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 15"]
+      
+      # Termination Grace Period
+      terminationGracePeriodSeconds: 30
+      
+      # DNS Configuration
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+
+---
+# ============================================================================
+# TerraFusion API - Service Configuration
+# ============================================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: terrafusion-api
+  namespace: terrafusion
+  labels:
+    app: terrafusion-api
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/component: api
+    app.kubernetes.io/part-of: terrafusion-platform
+spec:
+  type: ClusterIP
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+  ports:
+    - name: http
+      port: 5000
+      targetPort: 5000
+      protocol: TCP
+    - name: metrics
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+  selector:
+    app: terrafusion-api
+
+---
+# ============================================================================
+# TerraFusion API - Horizontal Pod Autoscaler (HPA)
+# ============================================================================
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: terrafusion-api-hpa
+  namespace: terrafusion
+  labels:
+    app: terrafusion-api
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/component: api-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: terrafusion-api
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    # CPU-based scaling
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    
+    # Memory-based scaling
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 75
+  
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+        - type: Percent
+          value: 50
+          periodSeconds: 60
+        - type: Pods
+          value: 2
+          periodSeconds: 60
+      selectPolicy: Max
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 10
+          periodSeconds: 60
+        - type: Pods
+          value: 1
+          periodSeconds: 60
+      selectPolicy: Min
+
+---
+# ============================================================================
+# TerraFusion API - Pod Disruption Budget (PDB)
+# ============================================================================
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: terrafusion-api-pdb
+  namespace: terrafusion
+  labels:
+    app: terrafusion-api
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/component: api-pdb
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: terrafusion-api
+  unhealthyPodEvictionPolicy: IfHealthyBudget
+
+# ============================================================================
+# Apply Instructions
+# ============================================================================
+# Apply API deployment:
+#   kubectl apply -f api-deployment.yaml
+#
+# View deployment status:
+#   kubectl get deployment terrafusion-api -n terrafusion
+#   kubectl describe deployment terrafusion-api -n terrafusion
+#
+# View pods:
+#   kubectl get pods -n terrafusion -l app=terrafusion-api
+#   kubectl logs -f -n terrafusion -l app=terrafusion-api
+#
+# View service:
+#   kubectl get service terrafusion-api -n terrafusion
+#   kubectl describe service terrafusion-api -n terrafusion
+#
+# View HPA status:
+#   kubectl get hpa terrafusion-api-hpa -n terrafusion
+#   kubectl describe hpa terrafusion-api-hpa -n terrafusion
+#
+# Test health endpoint:
+#   kubectl port-forward -n terrafusion svc/terrafusion-api 5000:5000
+#   curl http://localhost:5000/health
+#
+# Scale manually:
+#   kubectl scale deployment terrafusion-api -n terrafusion --replicas=5
+#
+# Rollout restart:
+#   kubectl rollout restart deployment terrafusion-api -n terrafusion
+#
+# Rollback deployment:
+#   kubectl rollout undo deployment terrafusion-api -n terrafusion
+#
+# View rollout history:
+#   kubectl rollout history deployment terrafusion-api -n terrafusion
+# ============================================================================

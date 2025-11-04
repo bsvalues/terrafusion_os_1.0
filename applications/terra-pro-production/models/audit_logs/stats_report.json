@@ -1,0 +1,27 @@
+{
+  "total_inferences": 50,
+  "average_score": 2.6512000000000002,
+  "fallback_rate": 14.000000000000002,
+  "version_usage": {
+    "1.0.0": 22,
+    "2.0.0": 19,
+    "2.1.0": 9
+  },
+  "score_distribution": {
+    "1.0-1.9": 10,
+    "2.0-2.9": 22,
+    "3.0-3.9": 14,
+    "4.0-5.0": 4
+  },
+  "execution_times": {
+    "average": 328.43640000000005,
+    "min": 152.17,
+    "max": 795.15
+  },
+  "feedback_stats": {
+    "total_feedback": 13,
+    "average_difference": 0.31538461538461543,
+    "agreement_rate": 76.92307692307693
+  },
+  "fallback_count": 7
+}

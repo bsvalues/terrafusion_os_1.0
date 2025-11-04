@@ -1,0 +1,31 @@
+{
+    "set": [
+        "combine",
+        "cookie",
+        "cover",
+        "cut",
+        "cutter",
+        "delete",
+        "difference",
+        "donut",
+        "doughnut",
+        "hole",
+        "inside",
+        "intersect",
+        "join",
+        "minus",
+        "on top of",
+        "outside",
+        "overlap",
+        "overlay",
+        "punch",
+        "remove",
+        "reverse buffer",
+        "spatial relationship",
+        "subtract",
+        "superimpose",
+        "swiss cheese",
+        "topological set",
+        "topology"
+    ]
+}

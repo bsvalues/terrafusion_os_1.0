@@ -1,0 +1,85 @@
+{{/*
+============================================================================
+TerraFusion Consciousness Engine - ConfigMap Template
+Government. Transcended. - AI Agent Configuration
+============================================================================
+*/}}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "terrafusion-consciousness.fullname" . }}-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "terrafusion-consciousness.labels" . | nindent 4 }}
+    terrafusion.io/component: consciousness
+    terrafusion.io/tier: ai
+  annotations:
+    description: "TerraFusion Consciousness Engine Configuration"
+    compliance: "FISMA-High"
+data:
+  # Runtime configuration
+  ENVIRONMENT: {{ .Values.global.environment | quote }}
+  LOG_LEVEL: "Information"
+  ENABLE_METRICS: "true"
+  ENABLE_TRACING: {{ .Values.monitoring.jaeger.enabled | quote }}
+  ENABLE_AUDIT_LOGGING: {{ .Values.compliance.fisma.auditLogging | quote }}
+  
+  # AI agent configuration
+  AI_AGENT_COUNT: {{ .Values.aiAgent.totalAgents | quote }}
+  AGENTS_PER_POD: {{ .Values.aiAgent.agentsPerPod | quote }}
+  QUANTUM_OPTIMIZATION_FACTOR: {{ .Values.aiAgent.quantumOptimizationFactor | quote }}
+  
+  # Swarm intelligence configuration
+  SWARM_INTELLIGENCE_ENABLED: {{ .Values.aiAgent.swarmIntelligence.enabled | quote }}
+  COORDINATION_INTERVAL_MS: {{ .Values.aiAgent.swarmIntelligence.coordinationInterval | quote }}
+  CONSENSUS_THRESHOLD: {{ .Values.aiAgent.swarmIntelligence.consensusThreshold | quote }}
+  
+  # ML model configuration
+  ML_MODEL_CACHE_SIZE_MB: {{ .Values.mlModels.cache.sizeMB | quote }}
+  ML_MODEL_CACHE_ENABLED: {{ .Values.mlModels.cache.enabled | quote }}
+  ML_MODEL_REGISTRY_URL: {{ .Values.mlModels.registry.url | quote }}
+  AUTOML_ENABLED: {{ .Values.mlModels.automl.enabled | quote }}
+  
+  # Agent communication protocol
+  AGENT_COMMUNICATION_PROTOCOL: {{ .Values.aiAgent.communication.protocol | quote }}
+  HEARTBEAT_INTERVAL_MS: {{ .Values.aiAgent.communication.heartbeatInterval | quote }}
+  COMMUNICATION_TIMEOUT_MS: {{ .Values.aiAgent.communication.timeout | quote }}
+  
+  # County configuration
+  COUNTY_COUNT: "39"
+  
+  # Feature flags
+  AI_GOVERNANCE_ENABLED: {{ .Values.compliance.aiGovernance.enabled | quote }}
+  BIAS_DETECTION_ENABLED: {{ .Values.compliance.aiGovernance.biasDetection | quote }}
+  EXPLAINABILITY_ENABLED: {{ .Values.compliance.aiGovernance.explainability | quote }}
+---
+# StatSD exporter configuration for custom AI metrics
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "terrafusion-consciousness.fullname" . }}-statsd-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "terrafusion-consciousness.labels" . | nindent 4 }}
+data:
+  mapping.yml: |
+    mappings:
+      - match: "terrafusion.consciousness.agent.*.count"
+        name: "ai_agent_count"
+        labels:
+          agent_type: "$1"
+      
+      - match: "terrafusion.consciousness.agent.*.queue_depth"
+        name: "ai_agent_queue_depth"
+        labels:
+          agent_type: "$1"
+      
+      - match: "terrafusion.consciousness.quantum.optimization_score"
+        name: "quantum_optimization_score"
+      
+      - match: "terrafusion.consciousness.ml.inference_latency"
+        name: "ml_model_inference_latency"
+      
+      - match: "terrafusion.consciousness.swarm.coordination_latency"
+        name: "swarm_coordination_latency"

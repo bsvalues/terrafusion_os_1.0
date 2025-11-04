@@ -1,0 +1,15 @@
+{
+  "name": "TerraFusion Monitoring Transcendence",
+  "folders": [
+    {
+      "path": "../monitoring"
+    },
+    {
+      "path": "../ops"
+    }
+  ],
+  "settings": {
+    "terrafusion.role": "monitoring_transcendence",
+    "terrafusion.dashboard": "quantum_real_time"
+  }
+}

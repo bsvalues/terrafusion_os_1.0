@@ -1,0 +1,163 @@
+{
+    "type": "FunctionTool",
+    "guid": "{4eaaa15f-87a6-4578-ae1d-8b7d4df61720}",
+    "displayname": "$rc:title",
+    "helpcontent": "71010023",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "block_add_to_map"
+    ],
+    "params": {
+        "in_utility_network": {
+            "displayname": "$rc:in_utility_network.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    },
+                    {
+                        "type": "DETraceNetwork"
+                    }
+                ]
+            }
+        },
+        "template_name": {
+            "displayname": "$rc:template_name.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "is_active": {
+            "displayname": "$rc:is_active.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ACTIVE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "INACTIVE"
+                    }
+                ]
+            },
+            "value": "true"
+        },
+        "network_source": {
+            "displayname": "$rc:network_source.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DETable"
+                    },
+                    {
+                        "type": "DEFeatureClass"
+                    }
+                ]
+            },
+            "depends": [
+                "in_utility_network"
+            ]
+        },
+        "where_clause": {
+            "type": "optional",
+            "displayname": "$rc:where_clause.title",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "network_source"
+            ]
+        },
+        "description": {
+            "type": "optional",
+            "control_guid": "{E5456E51-0C41-4797-9EE4-5269820C6F0E}",
+            "displayname": "$rc:description.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "out_utility_network": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_utility_network.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    },
+                    {
+                        "type": "DETraceNetwork"
+                    }
+                ]
+            },
+            "addtomap": "false"
+        },
+        "out_template_name": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_template_name.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "unconnected_junctions": {
+            "type": "optional",
+            "displayname": "$rc:unconnected_junctions.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "MUST_BE_UNCONNECTED"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_CONSTRAINT"
+                    }
+                ]
+            },
+            "value": "false"
+        },
+        "one_connected_junction": {
+            "type": "optional",
+            "displayname": "$rc:one_connected_junction.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "MUST_BE_CONNECTED_TO_SINGLE_JUNCTION"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_CONSTRAINT"
+                    }
+                ]
+            },
+            "value": "false"
+        }
+    }
+}

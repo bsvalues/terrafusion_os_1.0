@@ -1,0 +1,145 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\ChangePointDetection",
+    "displayname": "$rc:title",
+    "helpcontent": "50010004",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_cube": {
+            "display_order": "0",
+            "displayname": "$rc:in_cube.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "nc"
+                ]
+            },
+            "description": "$rc:in_cube.descr"
+        },
+        "analysis_variable": {
+            "display_order": "1",
+            "displayname": "$rc:analysis_variable.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "in_cube"
+            ],
+            "description": "$rc:analysis_variable.descr"
+        },
+        "output_features": {
+            "direction": "out",
+            "display_order": "2",
+            "displayname": "$rc:output_features.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:output_features.descr"
+        },
+        "change_type": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:change_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MEAN",
+                        "code": "$rc:change_type.domain.MEAN"
+                    },
+                    {
+                        "value": "STANDARD_DEVIATION",
+                        "code": "$rc:change_type.domain.STANDARD_DEVIATION"
+                    },
+                    {
+                        "value": "SLOPE",
+                        "code": "$rc:change_type.domain.SLOPE"
+                    },
+                    {
+                        "value": "COUNT",
+                        "code": "$rc:change_type.domain.COUNT"
+                    }
+                ]
+            },
+            "value": "MEAN",
+            "description": "$rc:change_type.descr"
+        },
+        "method": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "AUTO_DETECT",
+                        "code": "$rc:method.domain.AUTO_DETECT"
+                    },
+                    {
+                        "value": "DEFINED_NUMBER",
+                        "code": "$rc:method.domain.DEFINED_NUMBER"
+                    }
+                ]
+            },
+            "value": "AUTO_DETECT",
+            "description": "$rc:method.descr"
+        },
+        "num_change_points": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:num_change_points.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "1",
+            "description": "$rc:num_change_points.descr"
+        },
+        "sensitivity": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:sensitivity.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "1"
+            },
+            "depends": [
+                "in_cube"
+            ],
+            "value": "0.5",
+            "description": "$rc:sensitivity.descr"
+        },
+        "min_seg_len": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:min_seg_len.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "1",
+            "description": "$rc:min_seg_len.descr"
+        }
+    },
+    "environments": [
+        "outputCoordinateSystem",
+        "parallelProcessingFactor"
+    ]
+}

@@ -1,0 +1,102 @@
+Excellent — let’s scaffold **QR code → snapshot deep link** inside your PDF exports.
+
+This adds:
+- 📱 Mobile-friendly quick access to comp source
+- 📎 Permanent links embedded in printed reports
+- 🧾 Audit/compliance traceability for reviewers
+
+---
+
+# 🧿 PDF QR Code: Snapshot → Deep Link
+
+---
+
+## 📌 Goal
+
+Every exported snapshot PDF gets a scannable QR code linking to:
+
+```
+https://app.terrafusion.pro/comp/12345
+```
+
+Where `12345` is the snapshot ID.
+
+---
+
+## 🛠️ Step 1: Install QR Generator
+
+```bash
+pnpm add qrcode
+```
+
+---
+
+## 🧠 Step 2: `generateQrBase64.ts`
+
+```ts
+import QRCode from 'qrcode';
+
+export async function generateQrBase64(url: string): Promise<string> {
+  return await QRCode.toDataURL(url, {
+    width: 128,
+    margin: 1,
+    color: { dark: '#000000', light: '#ffffff' }
+  });
+}
+```
+
+---
+
+## 🧩 Step 3: Modify `renderPdfFromSnapshot.ts`
+
+```ts
+import { generateQrBase64 } from './generateQrBase64';
+
+export async function renderPdfFromSnapshot(snapshot: ComparableSnapshot): Promise<Buffer> {
+  const baseUrl = 'https://app.terrafusion.pro/comp/';
+  const qrImage = await generateQrBase64(baseUrl + snapshot.id);
+
+  const html = htmlTemplate
+    .replace('{{qrCode}}', `<img src="${qrImage}" width="100" />`)
+    .replace('{{address}}', snapshot.fields.address || 'N/A')
+    // ...rest of replacements
+}
+```
+
+---
+
+## 🧾 Step 4: Modify `pdfReport.html`
+
+```html
+<div style="margin-top: 40px; font-size: 12px; text-align: center;">
+  <div>Scan for full record:</div>
+  {{qrCode}}
+</div>
+```
+
+---
+
+## ✅ Output
+
+Every snapshot PDF now includes:
+
+- 🔍 All key fields
+- 🖼 Optional branding
+- 🧿 **QR code linking back to snapshot view**
+- 📎 No need to search — just scan and see source
+
+---
+
+## 🔜 Enhancements
+
+- 🧠 Add auto-expiring public links
+- 🛡️ Require login to view if sensitive
+- 📝 Log every scan as a “viewed by” audit trail
+
+---
+
+You now have a **closed loop from form → snapshot → PDF → digital access**.
+
+Would you like next to:
+1. Scaffold **org-wide role management** (Admin / Reviewer / Appraiser)?
+2. Build **view audit logs** for snapshot usage (who viewed/pushed/exported)?

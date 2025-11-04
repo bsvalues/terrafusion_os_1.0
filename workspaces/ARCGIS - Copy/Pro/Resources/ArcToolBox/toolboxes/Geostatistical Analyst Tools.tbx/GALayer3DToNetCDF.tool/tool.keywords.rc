@@ -1,0 +1,24 @@
+{
+    "set": [
+        "covariance",
+        "ebk3d",
+        "ebk",
+        "export",
+        "gaussian",
+        "geostatistical",
+        "geostatistics",
+        "intrinsic random function",
+        "irf",
+        "irf-0",
+        "irf-k",
+        "nonstationarity",
+        "nonstationary",
+        "predict",
+        "semivariogram",
+        "stationarity",
+        "stationary",
+        "variography",
+        "netcdf",
+        "voxel"
+    ]
+}

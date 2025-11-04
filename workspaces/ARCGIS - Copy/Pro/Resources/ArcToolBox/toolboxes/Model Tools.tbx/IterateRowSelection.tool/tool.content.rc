@@ -1,0 +1,16 @@
+{
+    "map": {
+        "description": "Iterates over rows in a table.",
+        "fields.descr": "The input field or fields used to group the features for selection. Any number of input fields can be defined, resulting in a selection based on a unique combination of the fields. If a field is not specified, the Object ID is used to iterate over features.",
+        "fields.dt.title1": "Field",
+        "fields.dt.title2": "Null Value",
+        "fields.title": "Group By Fields",
+        "in_table.descr": "The table containing records to iterate through.",
+        "in_table.title": "Input Table",
+        "selection.title": "Selected Rows",
+        "skip_nulls.descr": "<xdoc><p>Specifies if null values in the grouping fields are skipped during selection.</p><ul><li>Checked—Skip through all the null values in the grouping fields during selection.</li><li>Unchecked—Include all the null values in the grouping fields during selection. This is the default.</li></ul></xdoc>",
+        "skip_nulls.title": "Skip Null Values",
+        "title": "Iterate Row Selection",
+        "value.title": "Value"
+    }
+}

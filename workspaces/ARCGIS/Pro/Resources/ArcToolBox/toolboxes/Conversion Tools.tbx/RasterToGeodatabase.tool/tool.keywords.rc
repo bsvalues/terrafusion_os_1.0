@@ -1,0 +1,24 @@
+{
+    "set": [
+        "batch",
+        "catalog item",
+        "change",
+        "convert",
+        "copy",
+        "dataset",
+        "export",
+        "file",
+        "format",
+        "gdb",
+        "image",
+        "import",
+        "load",
+        "make",
+        "manage",
+        "many",
+        "migrate",
+        "multiple",
+        "sde",
+        "turn"
+    ]
+}

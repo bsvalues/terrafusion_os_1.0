@@ -1,0 +1,11 @@
+{
+    "set": [
+        ">=",
+        "false",
+        "ge",
+        "math",
+        "math operator",
+        "relational",
+        "true"
+    ]
+}

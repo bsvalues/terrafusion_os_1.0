@@ -1,0 +1,76 @@
+Objective:
+Enhance the BCBSGeoAssessmentPro application by implementing two key enhancements in the data synchronization pipeline: a robust Data Sanitization Framework and an Enhanced Notification/Alerting System, along with expanded automated testing for these components. These enhancements are critical for safely moving data (from PACS and production environments) into pacs_training while maintaining security and operational awareness.
+
+Tasks:
+
+1. Data Sanitization Framework:
+
+Design & Implementation:
+
+Develop a customizable DataSanitizer class that applies rule-based transformations to sensitive fields (e.g., masking personal data, nullifying credentials, partial masking of addresses, transforming financial data) before the data is synced into pacs_training.
+
+Integrate this sanitizer into the sync pipeline so that every record is passed through sanitization prior to being written to the new environment.
+
+Logging & Auditing:
+
+Ensure that the sanitization process logs each transformation in a sanitization log to enable auditing.
+
+Testing:
+
+Write unit tests for the sanitization rules to ensure that all sensitive fields are appropriately handled under various scenarios.
+
+2. Enhanced Notification/Alerting System:
+
+Design & Implementation:
+
+Create a SyncNotificationManager class that supports multiple communication channels (email, SMS, Slack, or system logs) with severity-based routing.
+
+Configure the system so that it automatically sends notifications when key sync events occur, such as:
+
+Successful completion of a synchronization job.
+
+Errors or failures during sync.
+
+Detection of data conflicts (using counts from the SyncConflict model).
+
+Format notification messages to include contextual metadata (e.g., job IDs, timestamps, conflict details).
+
+Testing:
+
+Develop tests to simulate various sync events, verify that notifications are formatted correctly and sent through the correct channels based on severity.
+
+3. Expanded Automated Testing for Data Sync Enhancements:
+
+Integration Tests:
+
+Create integration tests that run a full sync job with simulated data, ensuring that records are properly sanitized, conflicts are detected, and notifications are triggered.
+
+Edge Cases:
+
+Write tests to simulate edge cases (e.g., simultaneous updates, network interruptions, unexpected data formats) to validate conflict detection/resolution and error handling.
+
+4. Documentation & Rollout:
+
+Documentation:
+
+Update the project documentation to include the new configuration settings, the use of the Data Sanitization Framework, and the Notification system.
+
+Add clear instructions for future maintenance and troubleshooting.
+
+Rollout:
+
+Integrate the new modules into the CI/CD pipeline to ensure all tests pass before deployment.
+
+Deploy the updates to a staging environment first and verify that the system works in parallel with legacy databases.
+
+Integration with Existing Features:
+
+Ensure that these new modules work within the current MCP, APScheduler-based job scheduling, and conflict resolution framework already in place.
+
+Verify that the new changes do not affect the existing verification dashboard functionality.
+
+Outcome:
+The final system should automatically sanitize data before moving it to pacs_training, maintain robust alerts for sync events, and include comprehensive testing to catch issues early. This setup will enable parallel operation with legacy systems, ensuring data integrity and security throughout the transition.
+
+Action:
+Please begin by implementing the Data Sanitization Framework and the Enhanced Notification/Alerting System as outlined above, along with the necessary unit and integration tests. Report back detailed test outcomes and log metrics to confirm that these enhancements work as expected.

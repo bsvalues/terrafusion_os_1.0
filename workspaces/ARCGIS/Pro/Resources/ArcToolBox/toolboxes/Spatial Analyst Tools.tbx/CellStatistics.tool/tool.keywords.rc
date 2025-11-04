@@ -1,0 +1,24 @@
+{
+    "set": [
+        "average",
+        "bandwisestats",
+        "by cell",
+        "for each",
+        "largest",
+        "least",
+        "maximum",
+        "median",
+        "minimum",
+        "multiband",
+        "per cell",
+        "pixel",
+        "singleband",
+        "smallest",
+        "standard deviation",
+        "statistic",
+        "stdev",
+        "total",
+        "unique",
+        "perbandstats"
+    ]
+}

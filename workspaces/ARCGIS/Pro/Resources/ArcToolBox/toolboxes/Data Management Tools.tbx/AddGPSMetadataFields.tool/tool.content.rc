@@ -1,0 +1,9 @@
+{
+    "map": {
+        "description": "Adds GNSS fields to a feature class in a geodatabase.",
+        "in_point_features.descr": "The input feature class to be updated. The input can be a point, polyline, or polygon feature class.",
+        "in_point_features.title": "Input Features",
+        "title": "Add GPS Metadata Fields",
+        "updated_point_features.title": "Updated Features"
+    }
+}

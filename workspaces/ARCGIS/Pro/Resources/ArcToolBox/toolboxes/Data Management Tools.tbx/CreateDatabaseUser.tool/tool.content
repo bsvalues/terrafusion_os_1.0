@@ -1,0 +1,90 @@
+{
+    "type": "FunctionTool",
+    "guid": "{debe1bf6-d33d-4b90-a536-5ba86b2c4a40}",
+    "displayname": "$rc:title",
+    "helpcontent": "3010013",
+    "description": "$rc:description",
+    "product": "200",
+    "params": {
+        "input_database": {
+            "displayname": "$rc:input_database.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "domain": {
+                "type": "GPWorkspaceDomain",
+                "workspacetype": [
+                    "Remote Database"
+                ]
+            },
+            "description": "$rc:input_database.descr"
+        },
+        "user_authentication_type": {
+            "type": "optional",
+            "displayname": "$rc:user_authentication_type.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "OPERATING_SYSTEM_USER"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DATABASE_USER"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:user_authentication_type.descr"
+        },
+        "user_name": {
+            "displayname": "$rc:user_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:user_name.descr"
+        },
+        "user_password": {
+            "type": "optional",
+            "displayname": "$rc:user_password.title",
+            "datatype": {
+                "type": "GPEncryptedString"
+            },
+            "description": "$rc:user_password.descr"
+        },
+        "role": {
+            "type": "optional",
+            "displayname": "$rc:role.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:role.descr"
+        },
+        "tablespace_name": {
+            "type": "optional",
+            "displayname": "$rc:tablespace_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:tablespace_name.descr"
+        },
+        "out_result": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_result.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "value": "false"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

@@ -1,0 +1,658 @@
+{% extends "base_clean.html" %}
+
+{% block title %}TerraAssist - AI Configuration Guidance{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+  .ai-assistant-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .chat-container {
+    height: 500px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  
+  .chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+  }
+  
+  .message {
+    margin-bottom: 15px;
+    display: flex;
+  }
+  
+  .user-message {
+    justify-content: flex-end;
+  }
+  
+  .assistant-message {
+    justify-content: flex-start;
+  }
+  
+  .message-content {
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  .user-message .message-content {
+    background-color: #d1e7dd;
+  }
+  
+  .assistant-message .message-content {
+    background-color: #e2e3e5;
+  }
+  
+  .chat-input {
+    display: flex;
+    padding: 15px;
+    background-color: #fff;
+    border-top: 1px solid #ddd;
+  }
+  
+  .chat-input input {
+    flex-grow: 1;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-right: 10px;
+  }
+  
+  .assistant-typing {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    font-style: italic;
+    color: #6c757d;
+  }
+  
+  .typing-indicator {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 5px;
+  }
+  
+  .typing-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #6c757d;
+    margin: 0 2px;
+    animation: typing-dot 1.5s infinite ease-in-out;
+  }
+  
+  .typing-dot:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  
+  .typing-dot:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+  
+  @keyframes typing-dot {
+    0%, 100% { transform: translateY(0); opacity: 0.2; }
+    50% { transform: translateY(-5px); opacity: 1; }
+  }
+  
+  .tab-content {
+    padding: 20px 0;
+  }
+  
+  .config-form {
+    margin-top: 20px;
+  }
+  
+  .config-form .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .recommendations {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+  }
+  
+  .recommendation-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-left: 3px solid #0d6efd;
+    background-color: #e9f0fe;
+  }
+  
+  .markdown-content h1,
+  .markdown-content h2,
+  .markdown-content h3 {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .markdown-content ul {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+  }
+  
+  .markdown-content pre {
+    background-color: #f1f1f1;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    overflow-x: auto;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ai-assistant-container">
+  <div class="row mb-4">
+    <div class="col">
+      <h1>
+        <i class="fas fa-robot text-primary"></i>
+        TerraAssist AI
+      </h1>
+      <p class="lead">
+        Your intelligent assistant for sync configuration and guidance
+      </p>
+    </div>
+  </div>
+
+  <ul class="nav nav-tabs" id="assistantTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="chat-tab" data-bs-toggle="tab" data-bs-target="#chat" type="button" role="tab" aria-controls="chat" aria-selected="true">
+        <i class="fas fa-comments"></i> Chat
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="field-mapping-tab" data-bs-toggle="tab" data-bs-target="#field-mapping" type="button" role="tab" aria-controls="field-mapping" aria-selected="false">
+        <i class="fas fa-exchange-alt"></i> Field Mapping
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="config-analysis-tab" data-bs-toggle="tab" data-bs-target="#config-analysis" type="button" role="tab" aria-controls="config-analysis" aria-selected="false">
+        <i class="fas fa-search"></i> Config Analysis
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="troubleshooting-tab" data-bs-toggle="tab" data-bs-target="#troubleshooting" type="button" role="tab" aria-controls="troubleshooting" aria-selected="false">
+        <i class="fas fa-wrench"></i> Troubleshooting
+      </button>
+    </li>
+  </ul>
+
+  <div class="tab-content" id="assistantTabsContent">
+    <!-- Chat Tab -->
+    <div class="tab-pane fade show active" id="chat" role="tabpanel" aria-labelledby="chat-tab">
+      <div class="chat-container">
+        <div class="chat-messages" id="chatMessages">
+          <div class="message assistant-message">
+            <div class="message-content">
+              <p>
+                <strong>TerraAssist AI:</strong> Hello! I'm your AI assistant for the TerraFusion SyncService platform. How can I help you with sync configuration today?
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="assistant-typing d-none" id="assistantTyping">
+          TerraAssist is typing
+          <div class="typing-indicator">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+          </div>
+        </div>
+        <div class="chat-input">
+          <input type="text" id="chatInput" class="form-control" placeholder="Ask a question about sync configuration..." aria-label="Chat input">
+          <button class="btn btn-primary" id="sendButton">
+            <i class="fas fa-paper-plane"></i> Send
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Field Mapping Tab -->
+    <div class="tab-pane fade" id="field-mapping" role="tabpanel" aria-labelledby="field-mapping-tab">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card mb-3">
+            <div class="card-header">
+              <h5>Source Fields</h5>
+            </div>
+            <div class="card-body">
+              <div class="mb-3">
+                <textarea class="form-control" id="sourceFields" rows="10" placeholder='[{"name": "property_id", "type": "string", "description": "Unique identifier for property"}, ...]'></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card mb-3">
+            <div class="card-header">
+              <h5>Target Fields</h5>
+            </div>
+            <div class="card-body">
+              <div class="mb-3">
+                <textarea class="form-control" id="targetFields" rows="10" placeholder='[{"name": "id", "type": "string", "description": "Primary key"}, ...]'></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
+        <button class="btn btn-primary" id="generateMappingsBtn">
+          <i class="fas fa-magic"></i> Generate Mapping Suggestions
+        </button>
+      </div>
+
+      <div class="card d-none" id="mappingSuggestionsCard">
+        <div class="card-header">
+          <h5>Mapping Suggestions</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Source Field</th>
+                  <th>Target Field</th>
+                  <th>Confidence</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody id="mappingSuggestionsTable">
+                <!-- Suggestions will be added here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Config Analysis Tab -->
+    <div class="tab-pane fade" id="config-analysis" role="tabpanel" aria-labelledby="config-analysis-tab">
+      <div class="config-form">
+        <div class="form-group">
+          <label for="syncConfig">Sync Configuration (JSON):</label>
+          <textarea class="form-control" id="syncConfig" rows="12" placeholder='{"name": "Property Tax System Sync", "source_type": "sql_database", "source_config": {...}, "target_type": "rest_api", "target_config": {...}, ...}'></textarea>
+        </div>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
+          <button class="btn btn-primary" id="analyzeConfigBtn">
+            <i class="fas fa-microscope"></i> Analyze Configuration
+          </button>
+        </div>
+      </div>
+
+      <div class="card d-none" id="analysisResultCard">
+        <div class="card-header">
+          <h5>Configuration Analysis</h5>
+        </div>
+        <div class="card-body">
+          <div class="markdown-content" id="analysisResult"></div>
+
+          <div class="recommendations mt-4">
+            <h5>Recommendations:</h5>
+            <ul id="recommendationsList">
+              <!-- Recommendations will be added here -->
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Troubleshooting Tab -->
+    <div class="tab-pane fade" id="troubleshooting" role="tabpanel" aria-labelledby="troubleshooting-tab">
+      <div class="config-form">
+        <div class="form-group">
+          <label for="issueDescription">Describe the issue you're experiencing:</label>
+          <textarea class="form-control" id="issueDescription" rows="4" placeholder="Describe the sync issue in detail..."></textarea>
+        </div>
+
+        <div class="form-group mt-3">
+          <label for="syncLogs">Sync Logs (JSON, optional):</label>
+          <textarea class="form-control" id="syncLogs" rows="6" placeholder='[{"timestamp": "2025-05-08T12:34:56", "level": "ERROR", "message": "Connection refused"}, ...]'></textarea>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-4">
+          <button class="btn btn-primary" id="getTroubleshootingBtn">
+            <i class="fas fa-life-ring"></i> Get Troubleshooting Guidance
+          </button>
+        </div>
+      </div>
+
+      <div class="card d-none" id="troubleshootingResultCard">
+        <div class="card-header">
+          <h5>Troubleshooting Guidance</h5>
+        </div>
+        <div class="card-body">
+          <div class="markdown-content" id="troubleshootingResult"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<!-- Include Marked.js for Markdown rendering -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Chat functionality
+    const chatInput = document.getElementById('chatInput');
+    const sendButton = document.getElementById('sendButton');
+    const chatMessages = document.getElementById('chatMessages');
+    const assistantTyping = document.getElementById('assistantTyping');
+    
+    // Helper function to add a message to the chat
+    function addMessage(content, isUser = false) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${isUser ? 'user-message' : 'assistant-message'}`;
+      
+      const contentDiv = document.createElement('div');
+      contentDiv.className = 'message-content';
+      
+      const paragraph = document.createElement('p');
+      
+      if (isUser) {
+        paragraph.innerHTML = `<strong>You:</strong> ${content}`;
+      } else {
+        paragraph.innerHTML = `<strong>TerraAssist AI:</strong> ${marked.parse(content)}`;
+      }
+      
+      contentDiv.appendChild(paragraph);
+      messageDiv.appendChild(contentDiv);
+      chatMessages.appendChild(messageDiv);
+      
+      // Scroll to the bottom
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    // Send a message
+    function sendMessage() {
+      const message = chatInput.value.trim();
+      if (!message) return;
+      
+      // Add user message to chat
+      addMessage(message, true);
+      
+      // Clear input
+      chatInput.value = '';
+      
+      // Show typing indicator
+      assistantTyping.classList.remove('d-none');
+      
+      // Send message to AI assistant API
+      fetch('/ai-assistant/api/ask', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          question: message
+        }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Hide typing indicator
+        assistantTyping.classList.add('d-none');
+        
+        if (data.success) {
+          // Add assistant response to chat
+          addMessage(data.answer);
+        } else {
+          // Add error message
+          addMessage(`I'm sorry, I encountered an error: ${data.message}`);
+        }
+      })
+      .catch(error => {
+        // Hide typing indicator
+        assistantTyping.classList.add('d-none');
+        
+        // Add error message
+        addMessage(`I'm sorry, I encountered an error: ${error.message}`);
+      });
+    }
+    
+    // Event listeners for chat
+    sendButton.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+    
+    // Field Mapping functionality
+    const sourceFields = document.getElementById('sourceFields');
+    const targetFields = document.getElementById('targetFields');
+    const generateMappingsBtn = document.getElementById('generateMappingsBtn');
+    const mappingSuggestionsCard = document.getElementById('mappingSuggestionsCard');
+    const mappingSuggestionsTable = document.getElementById('mappingSuggestionsTable');
+    
+    generateMappingsBtn.addEventListener('click', function() {
+      let sourceFieldsData;
+      let targetFieldsData;
+      
+      try {
+        sourceFieldsData = JSON.parse(sourceFields.value);
+        targetFieldsData = JSON.parse(targetFields.value);
+      } catch (error) {
+        alert('Please enter valid JSON for source and target fields');
+        return;
+      }
+      
+      // Show loading state
+      generateMappingsBtn.disabled = true;
+      generateMappingsBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+      
+      // Call the API
+      fetch('/ai-assistant/api/field-mapping', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          source_fields: sourceFieldsData,
+          target_fields: targetFieldsData
+        }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Reset button
+        generateMappingsBtn.disabled = false;
+        generateMappingsBtn.innerHTML = '<i class="fas fa-magic"></i> Generate Mapping Suggestions';
+        
+        if (data.success) {
+          // Clear existing suggestions
+          mappingSuggestionsTable.innerHTML = '';
+          
+          // Add suggestions to table
+          data.suggestions.forEach(suggestion => {
+            const row = document.createElement('tr');
+            
+            const sourceCell = document.createElement('td');
+            sourceCell.textContent = suggestion.source_field;
+            
+            const targetCell = document.createElement('td');
+            targetCell.textContent = suggestion.target_field;
+            
+            const confidenceCell = document.createElement('td');
+            // Format confidence as percentage
+            confidenceCell.textContent = `${Math.round(suggestion.confidence * 100)}%`;
+            
+            const notesCell = document.createElement('td');
+            notesCell.textContent = suggestion.notes || '';
+            
+            row.appendChild(sourceCell);
+            row.appendChild(targetCell);
+            row.appendChild(confidenceCell);
+            row.appendChild(notesCell);
+            
+            mappingSuggestionsTable.appendChild(row);
+          });
+          
+          // Show results
+          mappingSuggestionsCard.classList.remove('d-none');
+        } else if (data.raw_content) {
+          // Handle raw text response
+          alert('Could not parse structured suggestions. Check browser console for details.');
+          console.log('Raw suggestions:', data.raw_content);
+        } else {
+          alert(`Error: ${data.message}`);
+        }
+      })
+      .catch(error => {
+        // Reset button
+        generateMappingsBtn.disabled = false;
+        generateMappingsBtn.innerHTML = '<i class="fas fa-magic"></i> Generate Mapping Suggestions';
+        
+        alert(`Error: ${error.message}`);
+      });
+    });
+    
+    // Config Analysis functionality
+    const syncConfig = document.getElementById('syncConfig');
+    const analyzeConfigBtn = document.getElementById('analyzeConfigBtn');
+    const analysisResultCard = document.getElementById('analysisResultCard');
+    const analysisResult = document.getElementById('analysisResult');
+    const recommendationsList = document.getElementById('recommendationsList');
+    
+    analyzeConfigBtn.addEventListener('click', function() {
+      let syncConfigData;
+      
+      try {
+        syncConfigData = JSON.parse(syncConfig.value);
+      } catch (error) {
+        alert('Please enter valid JSON for sync configuration');
+        return;
+      }
+      
+      // Show loading state
+      analyzeConfigBtn.disabled = true;
+      analyzeConfigBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+      
+      // Call the API
+      fetch('/ai-assistant/api/analyze-config', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sync_config: syncConfigData
+        }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Reset button
+        analyzeConfigBtn.disabled = false;
+        analyzeConfigBtn.innerHTML = '<i class="fas fa-microscope"></i> Analyze Configuration';
+        
+        if (data.success) {
+          // Show analysis result
+          analysisResult.innerHTML = marked.parse(data.analysis);
+          
+          // Show recommendations
+          recommendationsList.innerHTML = '';
+          data.recommendations.forEach(recommendation => {
+            const li = document.createElement('li');
+            li.className = 'recommendation-item';
+            li.textContent = recommendation;
+            recommendationsList.appendChild(li);
+          });
+          
+          // Show results
+          analysisResultCard.classList.remove('d-none');
+        } else {
+          alert(`Error: ${data.message}`);
+        }
+      })
+      .catch(error => {
+        // Reset button
+        analyzeConfigBtn.disabled = false;
+        analyzeConfigBtn.innerHTML = '<i class="fas fa-microscope"></i> Analyze Configuration';
+        
+        alert(`Error: ${error.message}`);
+      });
+    });
+    
+    // Troubleshooting functionality
+    const issueDescription = document.getElementById('issueDescription');
+    const syncLogs = document.getElementById('syncLogs');
+    const getTroubleshootingBtn = document.getElementById('getTroubleshootingBtn');
+    const troubleshootingResultCard = document.getElementById('troubleshootingResultCard');
+    const troubleshootingResult = document.getElementById('troubleshootingResult');
+    
+    getTroubleshootingBtn.addEventListener('click', function() {
+      const description = issueDescription.value.trim();
+      if (!description) {
+        alert('Please describe the issue you are experiencing');
+        return;
+      }
+      
+      // Parse sync logs if provided
+      let logsData = null;
+      if (syncLogs.value.trim()) {
+        try {
+          logsData = JSON.parse(syncLogs.value);
+        } catch (error) {
+          alert('Please enter valid JSON for sync logs or leave it empty');
+          return;
+        }
+      }
+      
+      // Show loading state
+      getTroubleshootingBtn.disabled = true;
+      getTroubleshootingBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+      
+      // Call the API
+      fetch('/ai-assistant/api/troubleshoot', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          issue_description: description,
+          sync_logs: logsData
+        }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Reset button
+        getTroubleshootingBtn.disabled = false;
+        getTroubleshootingBtn.innerHTML = '<i class="fas fa-life-ring"></i> Get Troubleshooting Guidance';
+        
+        if (data.success) {
+          // Show troubleshooting guidance
+          troubleshootingResult.innerHTML = marked.parse(data.guidance);
+          
+          // Show results
+          troubleshootingResultCard.classList.remove('d-none');
+        } else {
+          alert(`Error: ${data.message}`);
+        }
+      })
+      .catch(error => {
+        // Reset button
+        getTroubleshootingBtn.disabled = false;
+        getTroubleshootingBtn.innerHTML = '<i class="fas fa-life-ring"></i> Get Troubleshooting Guidance';
+        
+        alert(`Error: ${error.message}`);
+      });
+    });
+  });
+</script>
+{% endblock %}

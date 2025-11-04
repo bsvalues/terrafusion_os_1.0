@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TAPrinting</name>
+    </assembly>
+    <members>
+        <member name="T:TAPrinting.IPrintService">
+            <summary>
+            Interface for Printing Services
+            </summary>
+        </member>
+        <member name="M:TAPrinting.IPrintService.PrintFile(System.String,System.String,System.Int16,System.Int32,System.Int32,System.Boolean,System.Object)">
+            <summary>
+            Print a file
+            </summary>
+            <param name="filename">Name of the file</param>
+            <param name="printerName">Name of the printer</param>
+            <param name="numOfCopies">Number of Copies to print</param>
+            <param name="startpage">Start / From page</param>
+            <param name="endPage">End / To page</param>
+            <param name="duplex">Duplex (true) or single sided (false)</param>
+            <param name="printFontIn">Please cast the object to System.Drawing.Font</param>
+            <returns>Whether the print call could be made successfully</returns>
+        </member>
+        <member name="M:TAPrinting.IPrintService.PrintFile(System.String,System.Int16)">
+            <summary>
+            Print a file
+            </summary>
+            <param name="filename">Name of the file.</param>
+            <param name="numOfCopies">Number of copies to make</param>
+            <returns></returns>
+        </member>
+        <member name="M:TAPrinting.IPrintService.PrintFile(System.String)">
+            <summary>
+            Prints a file. This process initiates (by the OS) the default application that is 
+            associated with the filetype. User will have to use the print functionality from 
+            the application and then close it.
+            </summary>
+            <param name="filename">Name of the file.</param>        
+            <returns></returns>
+        </member>
+        <member name="T:TAPrinting.PrintHelper">
+            <summary>
+            Static Print Helper Functions
+            </summary>
+        </member>
+        <member name="M:TAPrinting.PrintHelper.GetListOfInstalledPrinters">
+            <summary>
+            Returns a list of all the installed printers
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TAPrinting.PrintHelper.IsValidPrinter(System.String)">
+            <summary>
+            Verify if the printer is installed
+            </summary>
+            <param name="printerName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TAPrinting.PrintHelper.SetPrinter(System.Drawing.Printing.PrintDocument,System.String)">
+            <summary>
+            Set the printer for a Print Document
+            </summary>
+            <param name="myPrintDocument">The document to be printed</param>
+            <param name="printerName">Name of the printer to use</param>
+            <returns></returns>
+        </member>
+        <member name="T:TAPrinting.PrintService">
+            <summary>
+            This class offers printing services for files
+            </summary>
+        </member>
+        <member name="M:TAPrinting.PrintService.PrintFile(System.String)">
+            <summary>
+            Prints a file. This process initiates (by the OS) the default application that is 
+            associated with the filetype. User will have to use the print functionality from 
+            the application and then close it.
+            </summary>
+            <param name="filename"></param>        
+            <returns></returns>
+        </member>
+        <member name="M:TAPrinting.PrintService.PrintFile(System.String,System.Int16)">
+            <summary>
+            Prints a file
+            </summary>
+            <param name="filename"></param>
+            <param name="numOfCopies"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TAPrinting.PrintService.PrintFile(System.String,System.String,System.Int16,System.Int32,System.Int32,System.Boolean,System.Object)">
+            <summary>
+            Service to Print Files
+            </summary>
+            <param name="filename">Name of the file to be printed</param>
+            <param name="printerName">Name of the printer to print on</param>
+            <param name="numOfCopies">Number of copies to print</param>
+            <param name="startPage">Starting page</param>
+            <param name="endPage">Ending page</param>
+            <param name="duplex">Duplex or single sided</param>
+            <param name="printFontIn">Font to use</param>
+            <returns>Boolean indicating whether job was submitted</returns>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,26 @@
+{
+    "set": [
+        "attribute",
+        "blank",
+        "blob",
+        "column",
+        "create",
+        "date",
+        "double",
+        "empty",
+        "feature",
+        "fields",
+        "float",
+        "id",
+        "integer",
+        "item",
+        "length",
+        "multiple",
+        "new",
+        "numeric",
+        "raster",
+        "string",
+        "table",
+        "text"
+    ]
+}

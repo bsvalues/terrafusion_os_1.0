@@ -1,0 +1,258 @@
+## Prometheus configuration for TerraMiner platform
+
+# Global configuration
+global:
+  evaluation_interval: 30s
+  scrape_interval: 30s
+  external_labels:
+    environment: production
+    cluster: terraminer-eks
+
+# Prometheus component configuration
+prometheus:
+  prometheusSpec:
+    retention: 15d
+    resources:
+      requests:
+        cpu: 500m
+        memory: 2Gi
+      limits:
+        cpu: 1000m
+        memory: 4Gi
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 50Gi
+          storageClassName: gp3
+    additionalScrapeConfigs:
+      - job_name: 'api-gateway'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - terraminer-api
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+            regex: api-gateway
+            action: keep
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+            regex: "true"
+            action: keep
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+            action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+            target_label: __address__
+      - job_name: 'data-processor'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - terraminer-data
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+            regex: data-processor
+            action: keep
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+            regex: "true"
+            action: keep
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+            action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+            target_label: __address__
+      - job_name: 'ml-service'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - terraminer-ml
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+            regex: ml-service
+            action: keep
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+            regex: "true"
+            action: keep
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+            action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+            target_label: __address__
+
+# Alertmanager configuration
+alertmanager:
+  alertmanagerSpec:
+    retention: 120h
+    storage:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
+          storageClassName: gp3
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 200m
+        memory: 512Mi
+  config:
+    global:
+      resolve_timeout: 5m
+      slack_api_url: '${SLACK_API_URL}'
+    route:
+      group_by: ['alertname', 'job']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 4h
+      receiver: 'slack-notifications'
+      routes:
+      - match:
+          severity: critical
+        receiver: 'slack-critical'
+        group_wait: 10s
+        repeat_interval: 1h
+    receivers:
+    - name: 'slack-notifications'
+      slack_configs:
+      - channel: '#terraminer-alerts'
+        send_resolved: true
+        title: '[{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] TerraMiner Monitoring'
+        text: >-
+          {{ range .Alerts }}
+           *Alert:* {{ .Labels.alertname }}{{ if .Labels.severity }} - {{ .Labels.severity }}{{ end }}
+           *Description:* {{ .Annotations.description }}
+           *Details:*
+           {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
+           {{ end }}
+          {{ end }}
+    - name: 'slack-critical'
+      slack_configs:
+      - channel: '#terraminer-critical'
+        send_resolved: true
+        title: '[CRITICAL ALERT{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] TerraMiner Monitoring'
+        text: >-
+          {{ range .Alerts }}
+           *Alert:* {{ .Labels.alertname }}
+           *Description:* {{ .Annotations.description }}
+           *Details:*
+           {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
+           {{ end }}
+          {{ end }}
+
+# Grafana configuration
+grafana:
+  adminPassword: "${GRAFANA_ADMIN_PASSWORD}"
+  persistence:
+    enabled: true
+    storageClassName: gp3
+    size: 10Gi
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+      - name: 'default'
+        orgId: 1
+        folder: ''
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/default
+  dashboards:
+    default:
+      terraminer-api-gateway:
+        url: https://raw.githubusercontent.com/terraminer/dashboards/main/api-gateway-dashboard.json
+      terraminer-data-processing:
+        url: https://raw.githubusercontent.com/terraminer/dashboards/main/data-processing-dashboard.json
+      terraminer-ml-service:
+        url: https://raw.githubusercontent.com/terraminer/dashboards/main/ml-service-dashboard.json
+      terraminer-system-overview:
+        url: https://raw.githubusercontent.com/terraminer/dashboards/main/system-overview-dashboard.json
+  plugins:
+    - grafana-piechart-panel
+    - grafana-worldmap-panel
+    - grafana-clock-panel
+    - jdbranham-diagram-panel
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+
+# Node exporter configuration
+nodeExporter:
+  enabled: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+
+# kube-state-metrics configuration
+kubeStateMetrics:
+  enabled: true
+
+# Enable ServiceMonitor for additional metrics
+serviceMonitor:
+  enabled: true
+  interval: 30s
+  
+# Configure PrometheusRules for custom alerting
+prometheusRule:
+  enabled: true
+  additionalLabels: {}
+  groups:
+    - name: terraminer.rules
+      rules:
+        - alert: HighApiErrorRate
+          expr: sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) > 0.05
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            description: 'High API error rate detected ({{ printf "%.2f" $value }}%)'
+            summary: High API error rate
+            runbook_url: https://wiki.terraminer.io/runbooks/high-api-error-rate
+            
+        - alert: HighProcessingLatency
+          expr: histogram_quantile(0.95, sum(rate(processing_duration_seconds_bucket[5m])) by (le)) > 30
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            description: 'High data processing latency detected (95th percentile > 30s)'
+            summary: High data processing latency
+            runbook_url: https://wiki.terraminer.io/runbooks/high-processing-latency
+            
+        - alert: ModelPredictionErrors
+          expr: sum(rate(ml_prediction_errors_total[5m])) / sum(rate(ml_predictions_total[5m])) > 0.1
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            description: 'High rate of ML prediction errors detected (> 10%)'
+            summary: High ML prediction error rate
+            runbook_url: https://wiki.terraminer.io/runbooks/ml-prediction-errors

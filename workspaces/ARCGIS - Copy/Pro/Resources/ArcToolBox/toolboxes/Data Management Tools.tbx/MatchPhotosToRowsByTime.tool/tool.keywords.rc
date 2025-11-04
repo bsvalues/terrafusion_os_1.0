@@ -1,0 +1,23 @@
+{
+    "set": [
+        "aware",
+        "camera",
+        "connect",
+        "coordinates",
+        "date",
+        "geo",
+        "gps",
+        "jpeg",
+        "jpg",
+        "link",
+        "location",
+        "map",
+        "picture",
+        "points",
+        "reference",
+        "reverse",
+        "table",
+        "tif",
+        "timestamp"
+    ]
+}

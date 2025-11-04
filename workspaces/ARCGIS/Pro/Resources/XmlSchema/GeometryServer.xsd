@@ -1,0 +1,590 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://www.esri.com/schemas/ArcGIS/3.4.0" 
+           xmlns="http://www.esri.com/schemas/ArcGIS/3.4.0" 
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+           
+  <xs:include schemaLocation="Geometry.xsd"/>
+  
+  <xs:annotation>
+    <xs:documentation>The Esri Geometry Server.</xs:documentation>
+  </xs:annotation>
+
+  <xs:element name="Project">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="InSpatialReference" type="SpatialReference" />
+        <xs:element name="OutSpatialReference" type="SpatialReference" />
+        <xs:element name="TransformForward" type="xs:boolean" />
+        <xs:element name="Transformation" type="GeoTransformation" />
+        <xs:element name="Extent" type="Envelope" />
+        <xs:element name="InGeometryArray" type="ArrayOfGeometry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ProjectResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfGeometry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="Buffer">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="InSpatialReference" type="SpatialReference" />
+        <xs:element name="BufferSpatialReference" type="SpatialReference" />
+        <xs:element name="OutSpatialReference" type="SpatialReference" />
+        <xs:element name="Distances" type="ArrayOfDouble" />
+        <xs:element name="Unit" type="Unit" />
+        <xs:element name="UnionResults" type="xs:boolean" />
+        <xs:element name="InGeometryArray" type="ArrayOfGeometry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="BufferResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfGeometry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="BufferGeodesic">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="InSpatialReference" type="SpatialReference" />
+        <xs:element name="OutSpatialReference" type="SpatialReference" />
+        <xs:element name="Distances" type="ArrayOfDouble" />
+        <xs:element name="MaxDeviation" type="xs:double" />
+        <xs:element name="LinearUnit" type="LinearUnit" />
+        <xs:element name="UnionResults" type="xs:boolean" />
+        <xs:element name="InGeometryArray" type="ArrayOfGeometry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="BufferGeodesicResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfGeometry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="Relation">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SpatialReference" type="SpatialReference" />
+        <xs:element name="InGeometryArray1" type="ArrayOfGeometry" />
+        <xs:element name="InGeometryArray2" type="ArrayOfGeometry" />
+        <xs:element name="RelationName" type="esriGeometryRelationEnum" />
+        <xs:element name="RelationParameter" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RelationResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfRelationResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="Densify">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SpatialReference" type="SpatialReference" />
+        <xs:element name="InGeometryArray" type="ArrayOfGeometry" />
+        <xs:element name="MaxSegmentLength" type="xs:double" />
+        <xs:element name="UseDeviationDensification" type="xs:boolean" />
+        <xs:element name="DensificationParameter" type="xs:double" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DensifyResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfGeometry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="Simplify">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SpatialReference" type="SpatialReference" />
+        <xs:element name="InGeometryArray" type="ArrayOfGeometry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SimplifyResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfGeometry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="FindSRByWKID">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="authority" type="xs:string" />
+        <xs:element name="WKID" type="xs:int" />
+        <xs:element name="WKID_Z" type="xs:int" />
+        <xs:element name="DefaultXYResolution" type="xs:boolean" />
+        <xs:element name="DefaultXYTolerance" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="FindSRByWKIDResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="SpatialReference" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="FindSRByWKT">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="WKT" type="xs:string" />
+        <xs:element name="WKT_Z" type="xs:string" />
+        <xs:element name="DefaultXYResolution" type="xs:boolean" />
+        <xs:element name="DefaultXYTolerance" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="FindSRByWKTResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="SpatialReference" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="FindUnitsByWKID">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="authority" type="xs:string" />
+        <xs:element name="WKID" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="FindUnitsByWKIDResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="Unit" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="FindUnitsByWKT">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="WKT" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="FindUnitsByWKTResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="Unit" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="GetAreasAndLengths">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SpatialReference" type="SpatialReference" />
+        <xs:element name="InPolygonArray" type="ArrayOfPolygon" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAreasAndLengthsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <!-- see http://support.microsoft.com/kb/322624 -->
+        <xs:element name="Areas" type="ArrayOfDouble" />
+        <xs:element name="Lengths" type="ArrayOfDouble" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="GetLengths">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SpatialReference" type="SpatialReference" />
+        <xs:element name="InPolylineArray" type="ArrayOfPolyline" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetLengthsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfDouble" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="GetLabelPoints">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SpatialReference" type="SpatialReference" />
+        <xs:element name="InPolygonArray" type="ArrayOfPolygon" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetLabelPointsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfPoint" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- IGeometryServer2 web service method definitions -->
+
+  <xs:element name="GetAreasAndLengths2">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SpatialReference" type="SpatialReference" />
+        <xs:element name="InPolygonArray" type="ArrayOfPolygon" />
+        <xs:element name="LengthUnit" type="LinearUnit"/>
+        <xs:element name="AreaUnit" type="LinearUnit"/>
+        <xs:element name="AreaUnitEnum" type="esriAreaUnits"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAreasAndLengths2Response">
+    <xs:complexType>
+      <xs:sequence>
+        <!-- see http://support.microsoft.com/kb/322624 -->
+        <xs:element name="Areas" type="ArrayOfDouble" />
+        <xs:element name="Lengths" type="ArrayOfDouble" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="GetLengths2">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SpatialReference" type="SpatialReference" />
+        <xs:element name="InPolylineArray" type="ArrayOfPolyline" />
+        <xs:element name="LengthUnit" type="LinearUnit" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetLengths2Response">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfDouble" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="DensifyGeodesic">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SpatialReference" type="SpatialReference" />
+        <xs:element name="InGeometryArray" type="ArrayOfGeometry" />
+        <xs:element name="MaxSegmentLength" type="xs:double" />
+        <xs:element name="LengthUnit" type="LinearUnit" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DensifyGeodesicResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfGeometry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="GetLengthsGeodesic">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SpatialReference" type="SpatialReference" />
+        <xs:element name="InPolylineArray" type="ArrayOfPolyline" />
+        <xs:element name="LengthUnit" type="LinearUnit" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetLengthsGeodesicResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfDouble" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="GetLengthsPreserveShape">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SpatialReference" type="SpatialReference" />
+        <xs:element name="InPolylineArray" type="ArrayOfPolyline" />
+        <xs:element name="LengthUnit" type="LinearUnit" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetLengthsPreserveShapeResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfDouble" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="GetAreasAndLengthsGeodesic">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SpatialReference" type="SpatialReference" />
+        <xs:element name="InPolygonArray" type="ArrayOfPolygon" />
+        <xs:element name="LengthUnit" type="LinearUnit" />
+        <xs:element name="AreaUnit" type="LinearUnit" />
+        <xs:element name="AreaUnitEnum" type="esriAreaUnits" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAreasAndLengthsGeodesicResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="AreasGeodesic" type="ArrayOfDouble" />
+        <xs:element name="LengthsGeodesic" type="ArrayOfDouble" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="GetAreasAndLengthsPreserveShape">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SpatialReference" type="SpatialReference" />
+        <xs:element name="InPolygonArray" type="ArrayOfPolygon" />
+        <xs:element name="LengthUnit" type="LinearUnit" />
+        <xs:element name="AreaUnit" type="LinearUnit" />
+        <xs:element name="AreaUnitEnum" type="esriAreaUnits" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAreasAndLengthsPreserveShapeResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Areas" type="ArrayOfDouble" />
+        <xs:element name="Lengths" type="ArrayOfDouble" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="GetDistance">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SpatialReference" type="SpatialReference" />
+        <xs:element name="G1" type="Geometry" />
+        <xs:element name="G2" type="Geometry" />
+        <xs:element name="DistanceUnit" type="LinearUnit" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDistanceResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:double" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="GetDistanceGeodesic">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SpatialReference" type="SpatialReference" />
+        <xs:element name="G1" type="Geometry" />
+        <xs:element name="G2" type="Geometry" />
+        <xs:element name="DistanceUnit" type="LinearUnit" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDistanceGeodesicResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:double" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="Union">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SpatialReference" type="SpatialReference" />
+        <xs:element name="InGeometryArray" type="ArrayOfGeometry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UnionResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="Geometry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="Intersect">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SpatialReference" type="SpatialReference" />
+        <xs:element name="InGeometryArray1" type="ArrayOfGeometry" />
+        <xs:element name="InGeometry2" type="Geometry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="IntersectResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfGeometry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="Difference">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SpatialReference" type="SpatialReference" />
+        <xs:element name="InGeometryArray1" type="ArrayOfGeometry" />
+        <xs:element name="InGeometry2" type="Geometry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DifferenceResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfGeometry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="Cut">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SpatialReference" type="SpatialReference" />
+        <xs:element name="Targets" type="ArrayOfGeometry" />
+        <xs:element name="Cutter" type="Polyline" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CutResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <!-- see http://support.microsoft.com/kb/322624 -->
+        <xs:element name="Result" type="ArrayOfGeometry" />
+        <xs:element name="CutIndexResult" type="ArrayOfInt" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="TrimExtend">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SpatialReference" type="SpatialReference" />
+        <xs:element name="InPolylineArray" type="ArrayOfPolyline" />
+        <xs:element name="TrimExtendTo" type="Polyline" />
+        <xs:element name="ExtendHow" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="TrimExtendResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfPolyline" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="Offset">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SpatialReference" type="SpatialReference" />
+        <xs:element name="InGeometryArray" type="ArrayOfGeometry" />
+        <xs:element name="OffsetDistance" type="xs:double" />
+        <xs:element name="OffsetUnit" type="LinearUnit" />
+        <xs:element name="OffsetHow" type="esriGeometryOffsetEnum" />
+        <xs:element name="BevelRatio" type="xs:double" />
+        <xs:element name="SimplifyResult" type="xs:boolean"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="OffsetResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfGeometry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="Generalize">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SpatialReference" type="SpatialReference" />
+        <xs:element name="InGeometryArray" type="ArrayOfGeometry" />
+        <xs:element name="MaxDeviation" type="xs:double" />
+        <xs:element name="DeviationUnit" type="LinearUnit" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GeneralizeResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfGeometry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="Reshape">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SpatialReference" type="SpatialReference" />
+        <xs:element name="Target" type="Geometry" />
+        <xs:element name="Reshaper" type="Polyline" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ReshapeResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="Geometry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="ConvexHull">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SpatialReference" type="SpatialReference" />
+        <xs:element name="InGeometryArray" type="ArrayOfGeometry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ConvexHullResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="Geometry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="AutoComplete">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SpatialReference" type="SpatialReference" />
+        <xs:element name="InPolygons" type="ArrayOfPolygon" />
+        <xs:element name="InCompletionLines" type="ArrayOfPolyline" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AutoCompleteResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfPolygon" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

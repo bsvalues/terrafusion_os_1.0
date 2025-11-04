@@ -1,0 +1,12 @@
+{
+    "set": [
+        "clip",
+        "convert",
+        "create",
+        "divide",
+        "preparation",
+        "processing",
+        "separate",
+        "tile"
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "set": [
+        "climate",
+        "climatology",
+        "dimension",
+        "meteorology",
+        "oceanography",
+        "scientific",
+        "weather",
+        "multidimensional voxel datasets",
+        "netcdf",
+        "voxel layer"
+    ]
+}

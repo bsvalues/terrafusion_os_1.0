@@ -1,0 +1,33 @@
+{
+    "set": [
+        "area",
+        "boundary",
+        "coincident",
+        "contain",
+        "control",
+        "cover",
+        "dangle",
+        "end",
+        "gap",
+        "geometry",
+        "inside",
+        "interior",
+        "intersect",
+        "line",
+        "node",
+        "overlap",
+        "part",
+        "point",
+        "polygon",
+        "pseudo",
+        "relationship",
+        "rule",
+        "self",
+        "share",
+        "single",
+        "spatial",
+        "topology",
+        "touch",
+        "valid"
+    ]
+}

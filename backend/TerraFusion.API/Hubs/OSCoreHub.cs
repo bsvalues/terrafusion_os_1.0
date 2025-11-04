@@ -124,7 +124,7 @@ namespace TerraFusion.API.Hubs
                 connectionId = Context.ConnectionId
             });
 
-            await _audit.LogAsync("os.auth", 
+            await _audit.LogAsync("os.auth",
                 $"County: {request.CountyId}, Legacy: {request.LegacySystem}, Session: {sessionId}, Connection: {Context.ConnectionId}");
         }
 
@@ -141,7 +141,7 @@ namespace TerraFusion.API.Hubs
                 payload
             });
 
-            await _audit.LogAsync("os.heartbeat", 
+            await _audit.LogAsync("os.heartbeat",
                 $"Connection: {Context.ConnectionId}, SessionId: {payload?.SessionId}, Timestamp: {payload?.Ts}");
         }
 
@@ -171,7 +171,7 @@ namespace TerraFusion.API.Hubs
             if (perms is null || !perms.Contains(moduleKey, StringComparer.OrdinalIgnoreCase))
             {
                 await Clients.Caller.SendAsync("ModuleLoadFailed", new { reason = "Not authorized", module = request.ModuleName });
-                await _audit.LogAsync("os.module.load", 
+                await _audit.LogAsync("os.module.load",
                     $"Connection: {Context.ConnectionId}, Module: {request.ModuleName}, Source: {request.Source ?? "electron"}, Authorized: false");
                 return;
             }
@@ -183,7 +183,7 @@ namespace TerraFusion.API.Hubs
                 connectionId = Context.ConnectionId
             });
 
-            await _audit.LogAsync("os.module.load", 
+            await _audit.LogAsync("os.module.load",
                 $"Connection: {Context.ConnectionId}, Module: {request.ModuleName}, Source: {request.Source ?? "electron"}, Authorized: true");
         }
 
@@ -235,7 +235,7 @@ namespace TerraFusion.API.Hubs
                 return;
             }
 
-            await _audit.LogAsync("plugin.emit", 
+            await _audit.LogAsync("plugin.emit",
                 $"Connection: {Context.ConnectionId}, Module: {request.ModuleName}, Event: {request.Event}");
         }
 
@@ -383,9 +383,9 @@ namespace TerraFusion.API.Hubs
 
         private async Task<object> HandleHarrisImportStatus(object? payload)
         {
-            // Get Harris PACS import status for Benton County only
+            // Government-grade: Get Harris PACS import status for Benton County only
             // Mock status for demo - in production, inject service properly
-            return new
+            return await Task.Run(() => new
             {
                 county = "benton",
                 legacySystem = "PACS_9.0",
@@ -406,14 +406,14 @@ namespace TerraFusion.API.Hubs
                     totalMapped = 14850,
                     mappingErrors = 125
                 }
-            };
+            });
         }
 
         private async Task<object> HandleHarrisStartImport(object? payload)
         {
             // Start Harris PACS import for Benton County only
             await Task.Delay(100); // Simulate async operation
-            
+
             return new
             {
                 county = "benton",

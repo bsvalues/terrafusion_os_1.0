@@ -1,0 +1,187 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "terrafusion-gateway.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "terrafusion-gateway.labels" . | nindent 4 }}
+    terrafusion.io/component: gateway
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "terrafusion-gateway.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "terrafusion-gateway.selectorLabels" . | nindent 8 }}
+        terrafusion.io/component: gateway
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "terrafusion-gateway.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: gateway
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 3002
+              protocol: TCP
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: {{ .Values.global.environment | title }}
+            - name: ASPNETCORE_URLS
+              value: "http://+:3002"
+            - name: OCELOT_BASE_URL
+              value: {{ .Values.ocelot.globalConfiguration.baseUrl }}
+            - name: OCELOT_REQUEST_ID_KEY
+              value: {{ .Values.ocelot.globalConfiguration.requestIdKey }}
+            - name: RATE_LIMIT_GLOBAL_ENABLED
+              value: "{{ .Values.rateLimiting.global.enabled }}"
+            - name: RATE_LIMIT_REQUESTS_PER_SECOND
+              value: "{{ .Values.rateLimiting.global.requestsPerSecond }}"
+            - name: CIRCUIT_BREAKER_ENABLED
+              value: "{{ .Values.circuitBreaker.enabled }}"
+            - name: CIRCUIT_BREAKER_EXCEPTIONS_BEFORE_BREAK
+              value: "{{ .Values.circuitBreaker.exceptionsAllowedBeforeBreaking }}"
+            - name: CIRCUIT_BREAKER_DURATION_OF_BREAK
+              value: "{{ .Values.circuitBreaker.durationOfBreak }}"
+            - name: LOAD_BALANCER_TYPE
+              value: {{ .Values.loadBalancer.type }}
+            - name: CORS_ENABLED
+              value: "{{ .Values.cors.enabled }}"
+            - name: CORS_ALLOWED_ORIGINS
+              value: {{ join "," .Values.cors.allowedOrigins }}
+            - name: LOGGING__LOGLEVEL__DEFAULT
+              value: {{ .Values.logging.level }}
+            - name: LOGGING__STRUCTURED
+              value: "{{ .Values.logging.structured }}"
+            {{- if .Values.logging.loki.enabled }}
+            - name: LOGGING__LOKI__URL
+              value: {{ .Values.logging.loki.url }}
+            {{- end }}
+            {{- if .Values.monitoring.prometheus.enabled }}
+            - name: PROMETHEUS_ENABLED
+              value: "true"
+            - name: PROMETHEUS_PORT
+              value: "{{ .Values.monitoring.prometheus.port }}"
+            {{- end }}
+            {{- if .Values.monitoring.jaeger.enabled }}
+            - name: JAEGER_AGENT_HOST
+              value: {{ .Values.monitoring.jaeger.agentHost }}
+            - name: JAEGER_AGENT_PORT
+              value: "{{ .Values.monitoring.jaeger.agentPort }}"
+            - name: JAEGER_SAMPLER_TYPE
+              value: probabilistic
+            - name: JAEGER_SAMPLER_PARAM
+              value: "{{ .Values.monitoring.jaeger.samplingRate }}"
+            {{- end }}
+            - name: FISMA_COMPLIANCE_LEVEL
+              value: {{ .Values.compliance.fisma.level }}
+            - name: FISMA_AUDIT_LOGGING
+              value: "{{ .Values.compliance.fisma.auditLogging }}"
+            - name: TERRAFUSION_API_URL
+              value: http://terrafusion-api:5000
+            - name: TERRAFUSION_CONSCIOUSNESS_URL
+              value: http://terrafusion-consciousness:3004
+            - name: TERRAFUSION_OPERATIONS_URL
+              value: http://terrafusion-operations:5003
+          envFrom:
+            - configMapRef:
+                name: {{ include "terrafusion-gateway.fullname" . }}-config
+            - secretRef:
+                name: {{ include "terrafusion-gateway.fullname" . }}-secrets
+          {{- if .Values.healthChecks.liveness.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.healthChecks.liveness.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.healthChecks.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthChecks.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthChecks.liveness.timeoutSeconds }}
+            failureThreshold: {{ .Values.healthChecks.liveness.failureThreshold }}
+          {{- end }}
+          {{- if .Values.healthChecks.readiness.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.healthChecks.readiness.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.healthChecks.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthChecks.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthChecks.readiness.timeoutSeconds }}
+            failureThreshold: {{ .Values.healthChecks.readiness.failureThreshold }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: ocelot-config
+              mountPath: /app/ocelot.json
+              subPath: ocelot.json
+              readOnly: true
+            - name: app-logs
+              mountPath: /app/logs
+        
+        # Promtail sidecar for log shipping
+        {{- if .Values.logging.loki.enabled }}
+        - name: promtail
+          image: grafana/promtail:2.9.0
+          args:
+            - -config.file=/etc/promtail/promtail.yaml
+          volumeMounts:
+            - name: app-logs
+              mountPath: /app/logs
+              readOnly: true
+            - name: promtail-config
+              mountPath: /etc/promtail
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+        {{- end }}
+      
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: app-logs
+          emptyDir: {}
+        - name: ocelot-config
+          configMap:
+            name: {{ include "terrafusion-gateway.fullname" . }}-ocelot
+        {{- if .Values.logging.loki.enabled }}
+        - name: promtail-config
+          configMap:
+            name: {{ include "terrafusion-gateway.fullname" . }}-promtail
+        {{- end }}
+      
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,9 @@
+{
+    "set": [
+        "classification",
+        "forest",
+        "prediction",
+        "presence",
+        "regression"
+    ]
+}

@@ -1,0 +1,3102 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TAPanelBase</name>
+    </assembly>
+    <members>
+        <member name="F:TAPanelBase.ApplicationCustomToolStripItem.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.ApplicationCustomToolStripItem.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelBase.ApplicationCustomToolStripItem.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.GradientButton.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.GradientButton.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelBase.GradientButton.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.GradientButton.MeasureTextFormat">
+            <summary>
+            <see cref="T:System.Drawing.StringFormat"/> used to measure the Y extent of the caption text
+            </summary>
+            <remarks>
+            Respects the user specified horizontal/vertical alignments and
+            trims to "..." on word boundaries
+            </remarks>
+        </member>
+        <member name="T:TAPanelBase.MVPForm">
+            <summary>
+            Implements a base MVP-enabled form class.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.MVPForm.requiresPresenter">
+            <summary>
+            Indicates whether or not this view should throw an exception
+            if no presenter has been bound to it.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.MVPForm.isRegisteredWithViewHost">
+            <summary>
+            Status variable indicating whether or not this view has been
+            registered with a view host or not.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.MVPForm.viewHost">
+            <summary>
+            The <see cref="T:TrueAutomation.MVP.Core.IViewHost"/> instance
+            associated with the current object instance. The view host sets
+            the context for this view and all of its children, and provides
+            some shared resources and basic lifetime-management services on
+            their behalf.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.MVPForm.#ctor">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.MVPForm.UpdateUI(System.Windows.Forms.MethodInvoker)">
+            <summary>
+            Utility method used for thread-safe UI access.
+            </summary>
+            <param name="uiDelegate">A delegate containing the UI
+            operation to perform.</param>
+        </member>
+        <member name="M:TAPanelBase.MVPForm.OnHandleCreated(System.EventArgs)">
+            <summary>
+            Overrides the base class OnHandleCreated() implementation to do any
+            MVP-related view registration on behalf of this instance of the class.
+            </summary>
+            <param name="e">Event arguments associated with the event; unused
+            by this override and simply passed to the base class implementation.
+            </param>
+        </member>
+        <member name="M:TAPanelBase.MVPForm.RegisterWithViewHost">
+            <summary>
+            Registers this view with its view host, creating the view host
+            if one hasn't been assigned yet.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.MVPForm.RegisterChildren(System.Windows.Forms.Control)">
+            <summary>
+            Checks if controls or any of their descendants use the IView interface
+            and if so, Register then with the View Host.
+            </summary>
+            <param name="control">the control to check/register</param>
+        </member>
+        <member name="M:TAPanelBase.MVPForm.OnInitComplete">
+            <summary>
+            Implementation method to notify any interested observers that
+            we've finished initializing the view and its children.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.MVPForm.OnUnloadComplete">
+            <summary>
+            Implementation method to notify any interested observers that
+            we've finished unloading the view and its children.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.MVPForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.MVPForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelBase.MVPForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.MVPForm.RequiresPresenter">
+            <summary>
+            Indicates whether or not this view should throw an exception
+            if no presenter has been bound to it.
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.MVPForm.Host">
+            <summary>
+            The <see cref="T:TrueAutomation.MVP.Core.IViewHost"/> instance
+            associated with the current object instance.
+            </summary>
+        </member>
+        <member name="E:TAPanelBase.MVPForm.InitComplete">
+            <summary>
+            An event handler fired on completion of this object's
+            initialization sequence.
+            </summary>
+        </member>
+        <member name="E:TAPanelBase.MVPForm.UnloadComplete">
+            <summary>
+            An event handler fired on completion of this object's
+            close/unload sequence.
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.MVPForm.IsDesignMode">
+            <summary>
+            Returns whether or not the control is currently being used
+            in design mode or not.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.RenderForm.SetEnableDialogHotKeyAction(System.Boolean)">
+            <summary>
+            Sets the EnableDialogHotKeyAction value.
+            If value is true, will set DisableHotKeyFilter to true.
+            Will also fire off InitializeHotKeyActions()
+            </summary>
+            <param name="value">if set to <c>true</c> [value].</param>
+        </member>
+        <member name="M:TAPanelBase.RenderForm.InitializeHotKeyActions">
+            <summary>
+            Initializes the HotKeyActions for this dialog. See <see cref="N:TAPanelBase.HotKeyAction"/>.
+            Called in the contructor. This should clear HotKeyActions before adding new ones.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.RenderForm.ProcessCmdKey(System.Windows.Forms.Message@,System.Windows.Forms.Keys)">
+            <summary>
+            Process keys for this paragraph.
+            Will call ProcessHotKeyActions on the HotKeyActions list.
+            </summary>
+            <param name="msg">A <see cref="T:System.Windows.Forms.Message"/>, passed by reference, that represents the window message to process.</param>
+            <param name="keyData">One of the <see cref="T:System.Windows.Forms.Keys"/> values that represents the key to process.</param>
+            <returns>
+            true if the character was processed by the control; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:TAPanelBase.RenderForm.InvalidateWindow">
+            <summary>
+            This method should invalidate entire window including the non-client area.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.RenderForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.RenderForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelBase.RenderForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.RenderForm.Close">
+            <summary>
+            This method was modified to use an Action instead of directly calling the windows close APIs
+            This way we can point the Close to any other required action /method.
+            This change was done for displaying the dialogs in Workflow custom UI Task view
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.RenderForm.CloseUI">
+            <summary>
+            This Action was added to change the Close method behaviour in case of Workflow custom UI
+            This way we can point the Close to any other required action /method.
+            </summary> 
+        </member>
+        <member name="P:TAPanelBase.RenderForm.EnableDialogHotKeyAction">
+            <summary>
+            Gets a value indicating whether HotKeyActions <see cref="N:TAPanelBase.HotKeyAction"/> will be 
+            executed for this dialog.
+            
+            HotKeyActions in a dialog are captured in the OnKeyUp action.
+            </summary>
+            <value>
+            	<c>true</c> if the dialog uses HotKeyActions; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="F:TAPanelBase.ApplicationMenu.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.ApplicationMenu.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelBase.ApplicationMenu.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.BorderPanel.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.BorderPanel.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.BorderPanel.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.ExtCheckEdit.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.ExtCheckEdit.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelBase.ExtCheckEdit.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.ExtRichTextBox.GetFontDetails">
+            <summary>
+                Returns a Font with:
+                1) The font applying to the entire selection, if none is the default font. 
+                2) The font size applying to the entire selection, if none is the size of the default font.
+                3) A style containing the attributes that are common to the entire selection, default regular.
+            </summary>		
+        </member>
+        <member name="M:TAPanelBase.ExtRichTextBox.ChangeFontColor(System.Drawing.Color)">
+            <summary>
+                Change the richtextbox font color for the current selection
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.ExtRichTextBox.ChangeFontSize(System.Single)">
+            <summary>
+                Change the richtextbox font size for the current selection
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.ExtRichTextBox.ChangeFontStyle(System.Drawing.FontStyle,System.Boolean)">
+            <summary>
+                Change the richtextbox style for the current selection
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.ExtRichTextBox.ChangeFont(System.String)">
+            <summary>
+                Change the richtextbox font for the current selection
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.ExtRichTextBox.richTextBox_SelectionChanged(System.Object,System.EventArgs)">
+            <summary>
+            	Change the toolbar buttons when new text is selected
+            	and raise event SelChanged
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.ExtRichTextBox.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.ExtRichTextBox.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelBase.ExtRichTextBox.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.ExtRichTextBox.DetectURLs">
+            <summary>
+                Detect URLs with-in the richtextbox
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.ExtRichTextBox.AcceptsTab">
+            <summary>
+            Determines if the TAB key moves to the next control or enters a TAB character in the richtextbox
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.ExtRichTextBox.AutoWordSelection">
+            <summary>
+            Determines if auto word selection is enabled
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.ExtRichTextBox.Multiline">
+            <summary>
+            Determines if the text can be on multiple lines
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.ExtRichTextBoxEditor.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.ExtRichTextBoxEditor.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelBase.ExtRichTextBoxEditor.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TAPanelBase.HotKeyAction.HotKeyAction">
+            <summary>
+            Used to associate HotKeys <see cref="M:TAPanelBase.HotKeyAction.HotKeyAction.KeyToString(System.Windows.Forms.Keys)"/> with actions for PACS dialogs and paragraphs.
+            This does NOT utilize the PACS HotKeyFilter system.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.HotKeyAction.HotKeyAction.toolTipString">
+            <summary>
+            The GetHotKeyToolTips() call will use this to display the tooltip:
+            eg: "[CTRL+P]"
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.HotKeyAction.HotKeyAction.keySeperator">
+            <summary>
+            Seperator used for concatenating Keys together
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.HotKeyAction.HotKeyAction.toolTipSeperator">
+            <summary>
+            Seperator used for concatinating ToolTips together
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.HotKeyAction.HotKeyAction.keyStringReplacements">
+            <summary>
+            Dictionary of Key and string replacements
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.HotKeyAction.HotKeyAction.#ctor(System.Action)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TAPanelBase.HotKeyAction.HotKeyAction"/> class.
+            </summary>
+            <param name="action">The action.</param>
+        </member>
+        <member name="M:TAPanelBase.HotKeyAction.HotKeyAction.#ctor(System.ComponentModel.Component)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TAPanelBase.HotKeyAction.HotKeyAction"/> class.
+            This will default to ActionType.Focus
+            </summary>
+            <param name="control">The control the hotkeys are associated with</param>
+        </member>
+        <member name="M:TAPanelBase.HotKeyAction.HotKeyAction.#ctor(System.ComponentModel.Component,TAPanelBase.HotKeyAction.HotKeyAction.ActionType)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TAPanelBase.HotKeyAction.HotKeyAction"/> class.
+            </summary>
+            <param name="control">The control.</param>
+            <param name="actionType">Type of the action.</param>
+        </member>
+        <member name="M:TAPanelBase.HotKeyAction.HotKeyAction.AddHotKey(System.Windows.Forms.Keys)">
+            <summary>
+            Add HotKeys to this action.
+            </summary>
+            <param name="hotKeys">The hot keys.</param>
+            <returns></returns>
+        </member>
+        <member name="M:TAPanelBase.HotKeyAction.HotKeyAction.AddHotKey(System.Collections.Generic.IEnumerable{System.Windows.Forms.Keys})">
+            <summary>
+            Add multiple HotKeys to this action.
+            </summary>
+            <param name="hotKeys">The hot keys.</param>
+            <returns></returns>
+        </member>
+        <member name="M:TAPanelBase.HotKeyAction.HotKeyAction.SetToolTips">
+            <summary>
+            Sets ToolTips for the assocaited control, if exists
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TAPanelBase.HotKeyAction.HotKeyAction.Invoke(System.Windows.Forms.Keys)">
+            <summary>
+            Invokes the action if it matches the hotKeys
+            </summary>
+            <param name="hotKeys">The hot keys. Will search for this match on the action
+            and then invoke the action</param>
+            <returns>ture if the hotkey is matched.</returns>
+        </member>
+        <member name="M:TAPanelBase.HotKeyAction.HotKeyAction.Invoke">
+            <summary>
+            Invokes the assocaited action
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.HotKeyAction.HotKeyAction.GetHotKeyToolTips">
+            <summary>
+            Gets a comma seperated list of the ToolTips to display
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TAPanelBase.HotKeyAction.HotKeyAction.KeyToString(System.Windows.Forms.Keys)">
+            <summary>
+            Returns the string representation of HotKeys. This is meant for a single Key.
+            It will use the constant of key replacements.
+            </summary>
+            <param name="key">The key.</param>
+            <returns>key.ToString() if not replacement is found</returns>
+        </member>
+        <member name="M:TAPanelBase.HotKeyAction.HotKeyAction.KeysToString(System.Windows.Forms.Keys)">
+            <summary>
+            Returns the string representation of HotKeys. This can be used on bitwise combinations.
+            </summary>
+            <param name="keys">The keys.</param>
+            <returns></returns>
+        </member>
+        <member name="M:TAPanelBase.HotKeyAction.HotKeyAction.IsModifierKey(System.Windows.Forms.Keys)">
+            <summary>
+            Determines whether key is a Modifier key (Ctrl, Alt, Shift, etc).
+            This is meant to be used on single values of the enumeration, not on
+            bitwise combinations
+            </summary>
+            <param name="key">The key.</param>
+            <returns>
+              <c>true</c> if key is a modifier; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:TAPanelBase.HotKeyAction.HotKeyAction.ContainsKey(System.Windows.Forms.Keys,System.Windows.Forms.Keys)">
+            <summary>
+            Determines whether a single HotKey is contained in a another (bitwise combination)
+            This is used for type "KeyCode" only (i.e. not modifiers)
+            </summary>
+            <param name="keys">The keys (usually bitwise combination)</param>
+            <param name="contain">Key we're searching for.</param>
+            <returns>
+              <c>true</c> if the specified keys contains key; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:TAPanelBase.HotKeyAction.HotKeyAction.ContainsModifier(System.Windows.Forms.Keys,System.Windows.Forms.Keys)">
+            <summary>
+            Determines whether a single modifer HotKey is contained in another (bitwise combination)
+            </summary>
+            <param name="keys">The keys (usually bitwise combination)</param>
+            <param name="contain">Modifier key we're searching for</param>
+            <returns>
+              <c>true</c> if the specified keys contains modifier; otherwise, <c>false</c>.
+            </returns>
+        </member>
+        <member name="M:TAPanelBase.HotKeyAction.HotKeyAction.GetToolTip(System.ComponentModel.Component)">
+            <summary>
+            Gets the ToolTip of a component
+            (BaseControl.ToolTip, ToolStripButton.ToolTipText or through ToolTipController)
+            </summary>
+            <param name="component">The component.</param>
+            <returns>The ToolTip if found, else string.Empty</returns>
+        </member>
+        <member name="M:TAPanelBase.HotKeyAction.HotKeyAction.SetToolTip(System.ComponentModel.Component,System.String)">
+            <summary>
+            Sets the ToolTip of a component
+            (BaseControl.ToolTip, ToolStripButton.ToolTipText or through ToolTipController)
+            </summary>
+            <param name="component">The component.</param>
+            <param name="text">The text.</param>
+        </member>
+        <member name="T:TAPanelBase.HotKeyAction.HotKeyAction.ActionType">
+            <summary>
+            Used to determine the default action when associated to a control
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.HotKeyAction.HotKeyActionList.ProcessHotKeyActions(System.Windows.Forms.Keys)">
+            <summary>
+            Processes all HotKey actions and Invoke() them if the HotKeys match.
+            </summary>
+            <param name="keyData">The HotKeys we're trying to match.</param>
+            <returns>true if keyData matches any of the HotKeyActions</returns>
+        </member>
+        <member name="M:TAPanelBase.HotKeyAction.HotKeyActionList.Dispose">
+            <summary>
+            Performs application-defined tasks associated with 
+            freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.ExtTimeEdit.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.ExtTimeEdit.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelBase.ExtTimeEdit.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.ExtButtonEdit.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.ExtButtonEdit.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelBase.ExtButtonEdit.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.ExtDateEdit.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.ExtDateEdit.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelBase.ExtDateEdit.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.ExtLookUpEdit.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.ExtLookUpEdit.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelBase.ExtLookUpEdit.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.ExtMemoEdit.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.ExtMemoEdit.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelBase.ExtMemoEdit.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.ExtTextEdit.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.ExtTextEdit.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelBase.ExtTextEdit.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.ExtXtraTabControl.RefreshControlsState">
+            <summary>
+            This method is responsible for maintaining a controls readonly state.
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.ExtXtraTabControl.PerformValidation">
+            <summary>
+            Determines whether or not a call to <see cref="M:TAPanelBase.ExtXtraTabControl.ValidateData"/> will process validation.
+            </summary>
+        </member>
+        <member name="T:TAPanelBase.FixedPanelExt">
+            <summary>
+            Summary description for FixedPanelExt.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.PanelItemProperties.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.PanelItemProperties.SetEnableDialogHotKeyAction(System.Boolean)">
+            <summary>
+            Sets the EnableDialogHotKeyAction value.
+            If true, will also fire off InitializeHotKeyActions()
+            </summary>
+            <param name="value">if set to <c>true</c> [value].</param>
+        </member>
+        <member name="M:TAPanelBase.PanelItemProperties.InitializeHotKeyActions">
+            <summary>
+            Initializes the HotKeyActions. See <see cref="N:TAPanelBase.HotKeyAction"/>.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.PanelItemProperties.ProcessCmdKey(System.Windows.Forms.Message@,System.Windows.Forms.Keys)">
+            <summary>
+            Process keys for this paragraph.
+            Will call ProcessHotKeyActions on the HotKeyActions list.
+            </summary>
+            <param name="msg">A <see cref="T:System.Windows.Forms.Message"/>, passed by reference, that represents the window message to process.</param>
+            <param name="keyData">One of the <see cref="T:System.Windows.Forms.Keys"/> values that represents the key to process.</param>
+            <returns>
+            true if the character was processed by the control; otherwise, false.
+            </returns>
+        </member>
+        <member name="M:TAPanelBase.PanelItemProperties.Dispose(System.Boolean)">
+            <summary>
+            </summary>
+            <param name="disposing">true to release both managed and unmanaged resources; 
+            false to release only unmanaged resources.</param>
+        </member>
+        <member name="P:TAPanelBase.PanelItemProperties.EnableDialogHotKeyAction">
+            <summary>
+            Gets a value indicating whether HotKeyActions <see cref="N:TAPanelBase.HotKeyAction"/> will be 
+            executed for this paragraph.
+            
+            HotKeyActions in a paragraph are captured in the ProcessCmdKey() action.
+            </summary>
+            <value>
+            	<c>true</c> if the dialog uses HotKeyActions; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="F:TAPanelBase.FixedPanelExt.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.FixedPanelExt.BeginInit">
+            <summary>
+            Set flag noting that we are in InitializeComponent()
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.FixedPanelExt.EndInit">
+            <summary>
+            Clear flag noting that we are in InitializeComponent()
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.FixedPanelExt.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.FixedPanelExt.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TAPanelBase.FixedPanel">
+            <summary>
+            Summary description for FixedPanel.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.FixedPanel.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.FixedPanel.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.FixedPanel.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.HighlightLabel.MeasureTextFormat">
+            <summary>
+            <see cref="T:System.Drawing.StringFormat"/> used to measure the Y extent of the caption text
+            </summary>
+            <remarks>
+            Respects the user specified horizontal/vertical alignments and
+            trims to "..." on word boundaries
+            </remarks>
+        </member>
+        <member name="T:TAPanelBase.NativeMethods.NCHITTEST">
+            <summary>
+            Location of cursor hot spot returnet in WM_NCHITTEST.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCHITTEST.HTERROR">
+            <summary>
+            On the screen background or on a dividing line between windows 
+            (same as HTNOWHERE, except that the DefWindowProc function produces a system beep to indicate an error).
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCHITTEST.HTTRANSPARENT">
+            <summary>
+            In a window currently covered by another window in the same thread 
+            (the message will be sent to underlying windows in the same thread until one of them returns a code that is not HTTRANSPARENT).
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCHITTEST.HTNOWHERE">
+            <summary>
+            On the screen background or on a dividing line between windows.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCHITTEST.HTCLIENT">
+            <summary>In a client area.</summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCHITTEST.HTCAPTION">
+            <summary>In a title bar.</summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCHITTEST.HTSYSMENU">
+            <summary>In a window menu or in a Close button in a child window.</summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCHITTEST.HTGROWBOX">
+            <summary>In a size box (same as HTSIZE).</summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCHITTEST.HTMENU">
+            <summary>In a menu.</summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCHITTEST.HTHSCROLL">
+            <summary>In a horizontal scroll bar.</summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCHITTEST.HTVSCROLL">
+            <summary>In the vertical scroll bar.</summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCHITTEST.HTMINBUTTON">
+            <summary>In a Minimize button.</summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCHITTEST.HTMAXBUTTON">
+            <summary>In a Maximize button.</summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCHITTEST.HTLEFT">
+            <summary>In the left border of a resizable window 
+            (the user can click the mouse to resize the window horizontally).</summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCHITTEST.HTRIGHT">
+            <summary>
+            In the right border of a resizable window 
+            (the user can click the mouse to resize the window horizontally).
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCHITTEST.HTTOP">
+            <summary>In the upper-horizontal border of a window.</summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCHITTEST.HTTOPLEFT">
+            <summary>In the upper-left corner of a window border.</summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCHITTEST.HTTOPRIGHT">
+            <summary>In the upper-right corner of a window border.</summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCHITTEST.HTBOTTOM">
+            <summary>	In the lower-horizontal border of a resizable window 
+            (the user can click the mouse to resize the window vertically).</summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCHITTEST.HTBOTTOMLEFT">
+            <summary>In the lower-left corner of a border of a resizable window 
+            (the user can click the mouse to resize the window diagonally).</summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCHITTEST.HTBOTTOMRIGHT">
+            <summary>	In the lower-right corner of a border of a resizable window 
+            (the user can click the mouse to resize the window diagonally).</summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCHITTEST.HTBORDER">
+            <summary>In the border of a window that does not have a sizing border.</summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCHITTEST.HTCLOSE">
+            <summary>In a Close button.</summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCHITTEST.HTHELP">
+            <summary>In a Help button.</summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCCALCSIZE_PARAMS.rectProposed">
+            <summary>
+            Contains the new coordinates of a window that has been moved or resized, that is, it is the proposed new window coordinates.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCCALCSIZE_PARAMS.rectBeforeMove">
+            <summary>
+            Contains the coordinates of the window before it was moved or resized.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCCALCSIZE_PARAMS.rectClientBeforeMove">
+            <summary>
+            Contains the coordinates of the window's client area before the window was moved or resized.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.NCCALCSIZE_PARAMS.lpPos">
+            <summary>
+            Pointer to a WINDOWPOS structure that contains the size and position values specified in the operation that moved or resized the window.
+            </summary>
+        </member>
+        <member name="T:TAPanelBase.NativeMethods.MEMORYSTATUSEX">
+            <summary>
+            contains information about the current state of both physical and virtual memory, including extended memory
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.MEMORYSTATUSEX.dwLength">
+            <summary>
+            Size of the structure, in bytes. You must set this member before calling GlobalMemoryStatusEx. 
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.MEMORYSTATUSEX.dwMemoryLoad">
+            <summary>
+            Number between 0 and 100 that specifies the approximate percentage of physical memory that is in use (0 indicates no memory use and 100 indicates full memory use). 
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.MEMORYSTATUSEX.ullTotalPhys">
+            <summary>
+            Total size of physical memory, in bytes.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.MEMORYSTATUSEX.ullAvailPhys">
+            <summary>
+            Size of physical memory available, in bytes. 
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.MEMORYSTATUSEX.ullTotalPageFile">
+            <summary>
+            Size of the committed memory limit, in bytes. This is physical memory plus the size of the page file, minus a small overhead. 
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.MEMORYSTATUSEX.ullAvailPageFile">
+            <summary>
+            Size of available memory to commit, in bytes. The limit is ullTotalPageFile. 
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.MEMORYSTATUSEX.ullTotalVirtual">
+            <summary>
+            Total size of the user mode portion of the virtual address space of the calling process, in bytes. 
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.MEMORYSTATUSEX.ullAvailVirtual">
+            <summary>
+            Size of unreserved and uncommitted memory in the user mode portion of the virtual address space of the calling process, in bytes. 
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.NativeMethods.MEMORYSTATUSEX.ullAvailExtendedVirtual">
+            <summary>
+            Size of unreserved and uncommitted memory in the extended portion of the virtual address space of the calling process, in bytes. 
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.NativeMethods.MEMORYSTATUSEX.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:MEMORYSTATUSEX"/> class.
+            </summary>
+        </member>
+        <member name="T:TAPanelBase.PanelHeights">
+            <summary>
+            Summary description for PanelHeights.
+            </summary>
+        </member>
+        <member name="T:TAPanelBase.ParagraphControlExt">
+             <summary>
+             Class: ParagaphControlExt
+            
+             Category: Reusable User Interface Component
+            
+             Purpose: The PACS.NET user interface requires an orgizational display of
+                      data.  The ParagraphControlExt provides flow layout to all children
+                      and a header to display a descriptive name for its group of
+                      controls.
+             </summary>
+        </member>
+        <member name="F:TAPanelBase.ParagraphControlExt.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.ParagraphControlExt.BeginInit">
+            <summary>
+            Set flag noting that we are in InitializeComponent()
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.ParagraphControlExt.EndInit">
+            <summary>
+            Clear flag noting that we are in InitializeComponent()
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.ParagraphControlExt.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.ParagraphControlExt.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.ParagraphControlExt.MakeToolTip(System.Windows.Forms.Control,System.String)">
+             <summary>
+             Method: MakeToolTip
+            
+             Purpose: Attaches a ToolTip via the <see cref="T:DevExpress.Utils.ToolTipController"/> to the control specified.
+             </summary>
+             <param name="control">The control to attach the tooltip.</param>
+             <param name="text">The value of the tooltip.</param>
+        </member>
+        <member name="M:TAPanelBase.ParagraphControlExt.GetAdjacentLabel(System.Windows.Forms.Control)">
+            <summary>
+            Returns the <see cref="T:System.Windows.Forms.Label"/> adjacent to the specificed control according
+            to the tab index order.
+            </summary>
+            <param name="curControl">The target <see cref="T:System.Windows.Forms.Control"/></param>
+            <returns><see cref="T:System.Windows.Forms.Label"/> next to the control in tab index order or null if the
+            previous tabindex control is not a label.</returns>
+        </member>
+        <member name="M:TAPanelBase.ParagraphControlExt.RecalcLayout">
+             <summary>
+             Method: RecalcLayout
+            
+             Purpose: When the control layout is changed, this method iterates through
+                      all of the controls in the ControlCollection forcing them to
+                      PerformLayout() so that the Flow Layout model properly positions
+                      and sizes the controls.
+             </summary>
+        </member>
+        <member name="M:TAPanelBase.ParagraphControlExt.OnControlLostFocus(System.Object,System.EventArgs)">
+             <summary>
+             Method: OnControlLostFocus
+            
+             Purpose: Due to the potential nesting of paragraph control's inside of
+                      other paragraph controls, the data model will be updated with user
+                      modifications when the focus is lost on a control.  This will
+                      call into the  method, DoDataExchange, to ensure the changes
+                      are persisted.
+             </summary>
+             <param name="sender">The <see cref="T:System.Windows.Forms.Control"/> that triggered the event.</param>
+             <param name="e"></param>
+        </member>
+        <member name="M:TAPanelBase.ParagraphControlExt.SetChangeIndicator">
+             <summary>
+             Method: SetChangeIndicator
+            
+             Purpose: When the data is modified, the paragraph control will update its
+                      parent XPPanel's caption and the containing Form's text with a ' *'
+                      at the end of the caption.
+             </summary>
+        </member>
+        <member name="M:TAPanelBase.ParagraphControlExt.SetToolTips">
+             <summary>
+             Method: SetToolTips
+            
+             Purpose: Sets the tooltip text specified in the extender provider.
+            
+             Operation:
+                        The tooltip will specify the table.column or table { column1, 
+                        column2, ... } on the first line of the tooltip if the control is
+                        bound and the ~ escape character was not used.  Otherwise only 
+                        tooltip text is used.  The ~ character is removed.
+             </summary>
+        </member>
+        <member name="M:TAPanelBase.ParagraphControlExt.OnControlValidate(System.Object,System.ComponentModel.CancelEventArgs)">
+             <summary>
+             Method: OnControlValidate
+            
+             Purpose: This control handles the Control.Validating Event
+                      
+             Operation: When the user changes the focus, the Validating event is fired.
+                        The framework will validate the value on the control based     
+                        on validation rules set at design time and appropriately set 
+                        the IsValid Property on the PanelBaseExtenderProperties for the
+                        control. 
+                        
+                        If the control state has been flagged as invalid, this routine
+                        would display an error icon inside the control (right aligned)
+                        However if the control state is valid, error icon (if added 
+                        in the previous editing )would be removed.
+                  
+                        The method however would not alter the value on 
+                        CancelEventArgs.Cancel and retain its default value to false
+                        The thinking behind this is not to prevent Focus Change just 
+                        because the data state on the control is invalid. However this 
+                        invalid state would be caught when the top level container is 
+                        validated.
+            
+             </summary>
+             <param name="sender">The <see cref="T:System.Windows.Forms.Control"/> being validated.</param>
+             <param name="e"></param>
+        </member>
+        <member name="M:TAPanelBase.ParagraphControlExt.DoDataExchange(System.Windows.Forms.Control)">
+             <summary>
+             Method: DoDataExchange
+            
+             Purpose: This method is to be implemented by inheritors of this class
+                      to ensure that changes to the contained control's properties
+                      relevant to data are persisted to the data model.
+             JKI - Changed from abstract to virtual too much loss of functionality to
+             have the classs be abstract
+             </summary>
+             <param name="control"></param>
+        </member>
+        <member name="M:TAPanelBase.ParagraphControlExt.OverrideReadOnlyState">
+            <summary>
+            This method is responsible for maintaining a controls readonly state.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.ParagraphControlExt.OnLoad(System.EventArgs)">
+             <summary>
+             Method: OnLoad
+            
+             Purpose: When the control is loaded, the ToolTips specified in the extender
+                      provider need to be set.
+             </summary>
+             <param name="e"></param>
+        </member>
+        <member name="P:TAPanelBase.ParagraphControlExt.TopMargin">
+             <summary>
+             Property: TopMargin
+            
+             Purpose: Gets/Sets the amount of space the ParagraphControl's layout model
+                      will leave at the top of the control.
+             </summary>
+        </member>
+        <member name="P:TAPanelBase.ParagraphControlExt.LeftMargin">
+             <summary>
+             Property: LeftMargin
+            
+             Purpose: Gets/Sets the amount of space the ParagraphControl's layout model
+                      will leave to the left of the control.
+             </summary>
+        </member>
+        <member name="P:TAPanelBase.ParagraphControlExt.RightMargin">
+             <summary>
+             Property: RightMargin
+            
+             Purpose: Gets/Sets the amount of space the ParagraphControl's layout model
+                      will leave to the right of the control.
+             </summary>
+        </member>
+        <member name="P:TAPanelBase.ParagraphControlExt.BottomMargin">
+             <summary>
+             Property: BottomMargin
+            
+             Purpose: Gets/Sets the amount of space the ParagraphControl's layout model
+                      will leave at the bottom of the control.
+             </summary>
+        </member>
+        <member name="P:TAPanelBase.ParagraphControlExt.IsComponentInitializing">
+             <summary>
+             Property: IsComponentInitializing
+            
+             Purpose: Gets whether the component is being initialized in the container's
+                      InitializeComponent method.
+             </summary>
+        </member>
+        <member name="P:TAPanelBase.ParagraphControlExt.RowCount">
+             <summary>
+             Property: RowCount
+            
+             Purpose: Gets the number of rows the layout model is aware of.
+             </summary>
+        </member>
+        <member name="P:TAPanelBase.ParagraphControlExt.Text">
+             <summary>
+             Property: Text
+            
+             Purpose: The text that will be displayed on the header area of the Paragraph
+                      control.
+             </summary>
+        </member>
+        <member name="P:TAPanelBase.ParagraphControlExt.LineHeight">
+             <summary>
+             Property: LineHeight
+            
+             Purpose: The height of each line (row) in the Paragraph Control.
+             </summary>
+        </member>
+        <member name="P:TAPanelBase.ParagraphControlExt.NumLines">
+             <summary>
+             Property: NumLines
+            
+             Purpose: The number of lines this Paragraph contains.  This is used to
+                      calculate the height of the control.
+             </summary>
+        </member>
+        <member name="P:TAPanelBase.ParagraphControlExt.ShowHeader">
+             <summary>
+             Property: ShowHeader
+            
+             Purpose: Gets/Sets whether to display the text and horizontal line.  If the
+                      header will not be shown, the TopMargin is also adjusted to 0.
+             </summary>
+        </member>
+        <member name="P:TAPanelBase.ParagraphControlExt.IsDesignMode">
+             <summary>
+             Property: IsDesignMode
+            
+             Purpose: Accurately determines if the control is in design mode or not.
+             </summary>
+        </member>
+        <member name="P:TAPanelBase.ParagraphControlExt.ApplicationState">
+             <summary>
+             Property: ApplicationState
+            
+             Purpose: Returns the <see cref="T:TAUserInterfaceService.IApplicationState"/> object.
+             </summary>
+        </member>
+        <member name="P:TAPanelBase.ParagraphControlExt.ObjectState">
+             <summary>ObjectState
+             
+             Property: ApplicationState
+            
+             Purpose: Returns the <see cref="T:TAUserInterfaceService.IObjectState"/> object.
+             </summary>
+        </member>
+        <member name="P:TAPanelBase.ParagraphControlExt.DialogState">
+             <summary>
+             Property: ApplicationState
+            
+             Purpose: Returns the <see cref="T:TAUserInterfaceService.IDialogState"/> object.
+             This will always return a valid value on dialogs, but never on views or other
+             objects that don't provide the <see cref="T:TAUserInterfaceService.IDialogState"/>.
+             </summary>
+        </member>
+        <member name="P:TAPanelBase.ParagraphControlExt.DialogData">
+             <summary>
+             Property: ApplicationState
+            
+             Purpose: Returns the <see cref="T:TAUserInterfaceService.IDialogData"/> object.
+             This will always return a valid value on dialogs, but never on views or other
+             objects that don't provide the <see cref="T:TAUserInterfaceService.IDialogData"/>.
+             </summary>
+        </member>
+        <member name="P:TAPanelBase.ParagraphControlExt.PerformValidation">
+            <summary>
+            Determines whether or not a call to <see cref="M:TAPanelBase.ParagraphControlExt.ValidateData"/> will process validation.
+            </summary>
+        </member>
+        <member name="T:TAPanelBase.ParagraphControlExt.ParagraphControlCollectionExt">
+             <summary>
+             Class: ParagraphControlCollectionExt
+            
+             Category: Unknown
+            
+             Purpose: Custom Control collection that ensures that the
+                      PanelBaseExtenderProperties are set to each control added to the
+                      paragraph control.  Can also ensure other properties are set.
+             </summary>
+        </member>
+        <member name="F:TAPanelBase.ParagraphControlGroup.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.ParagraphControlGroup.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelBase.ParagraphControlGroup.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TAPanelBase.PopupClosedEventArgs">
+            <summary>
+            Contains event information for a <see cref="E:TAPanelBase.PopupWindowHelper.PopupClosed"/> event.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.PopupClosedEventArgs.popup">
+            <summary>
+            The popup form.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.PopupClosedEventArgs.#ctor(System.Windows.Forms.Form)">
+            <summary>
+            Constructs a new instance of this class for the specified
+            popup form.
+            </summary>
+            <param name="popup">Popup Form which is being closed.</param>
+        </member>
+        <member name="P:TAPanelBase.PopupClosedEventArgs.Popup">
+            <summary>
+            Gets the popup form which is being closed.
+            </summary>
+        </member>
+        <member name="T:TAPanelBase.PopupCancelEventArgs">
+            <summary>
+            Arguments to a <see cref="T:TAPanelBase.PopupCancelEventHandler"/>.  Provides a
+            reference to the popup form that is to be closed and 
+            allows the operation to be cancelled.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.PopupCancelEventArgs.cancel">
+            <summary>
+            Whether to cancel the operation
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.PopupCancelEventArgs.location">
+            <summary>
+            Mouse down location
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.PopupCancelEventArgs.popup">
+            <summary>
+            Popup form.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.PopupCancelEventArgs.#ctor(System.Windows.Forms.Form,System.Drawing.Point)">
+            <summary>
+            Constructs a new instance of this class.
+            </summary>
+            <param name="popup">The popup form</param>
+            <param name="location">The mouse location, if any, where the
+            mouse event that would cancel the popup occured.</param>
+        </member>
+        <member name="P:TAPanelBase.PopupCancelEventArgs.Popup">
+            <summary>
+            Gets the popup form
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.PopupCancelEventArgs.CursorLocation">
+            <summary>
+            Gets the location that the mouse down which would cancel this 
+            popup occurred
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.PopupCancelEventArgs.Cancel">
+            <summary>
+            Gets/sets whether to cancel closing the form. Set to
+            <c>true</c> to prevent the popup from being closed.
+            </summary>
+        </member>
+        <member name="T:TAPanelBase.PopupClosedEventHandler">
+            <summary>
+            Represents the method which responds to a <see cref="E:TAPanelBase.PopupWindowHelper.PopupClosed"/> event.
+            </summary>
+        </member>
+        <member name="T:TAPanelBase.PopupCancelEventHandler">
+            <summary>
+            Represents the method which responds to a <see cref="E:TAPanelBase.PopupWindowHelper.PopupCancel"/> event.
+            </summary>
+        </member>
+        <member name="T:TAPanelBase.PopupWindowHelper">
+            <summary>
+            A class to assist in creating popup windows like Combo Box drop-downs and Menus.
+            This class includes functionality to keep the title bar of the popup owner form
+            active whilst the popup is displayed, and to automatically cancel the popup
+            whenever the user clicks outside the popup window or shifts focus to another 
+            application.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.PopupWindowHelper.popClosedHandler">
+            <summary>
+            Event Handler to detect when the popup window is closed
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.PopupWindowHelper.filter">
+            <summary>
+            Message filter to detect mouse clicks anywhere in the application
+            whilst the popup window is being displayed.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.PopupWindowHelper.popup">
+            <summary>
+            The popup form that is being shown.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.PopupWindowHelper.owner">
+            <summary>
+            The owner of the popup form that is being shown:
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.PopupWindowHelper.popupShowing">
+            <summary>
+            Whether the popup is showing or not.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.PopupWindowHelper.skipClose">
+            <summary>
+            Whether the popup has been cancelled, notified by PopupCancel,
+            rather than closed.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.PopupWindowHelper.ShowPopup(System.Windows.Forms.Form,System.Windows.Forms.Form,System.Drawing.Point,System.Boolean)">
+            <summary>
+            Shows the specified Form as a popup window, keeping the
+            Owner's title bar active and preparing to cancel the popup
+            should the user click anywhere outside the popup window.
+            <para>Typical code to use this message is as follows:</para>
+            <code>
+               frmPopup popup = new frmPopup();
+               Point location = this.PointToScreen(new Point(button1.Left, button1.Bottom));
+               popupHelper.ShowPopup(this, popup, location);
+            </code>
+            <para>Put as much initialisation code as possible
+            into the popup form's constructor, rather than the System.Windows.Forms.Load
+            event as this will improve visual appearance.</para>
+            </summary>
+            <param name="owner">Main form which owns the popup</param>
+            <param name="popup">Window to show as a popup</param>
+            <param name="location">Location relative to the screen to show the popup at.</param>
+            <param name="addFilter"></param>
+        </member>
+        <member name="M:TAPanelBase.PopupWindowHelper.popup_Closed(System.Object,System.EventArgs)">
+            <summary>
+            Responds to the <see cref="E:System.Windows.Forms.Form.Closed"/>
+            event from the popup form.
+            </summary>
+            <param name="sender">Popup form that has been closed.</param>
+            <param name="e">Not used.</param>
+        </member>
+        <member name="M:TAPanelBase.PopupWindowHelper.WndProc(System.Windows.Forms.Message@)">
+            <summary>
+            Subclasses the owning form's existing Window Procedure to enables the 
+            title bar to remain active when a popup is show, and to detect if
+            the user clicks onto another application whilst the popup is visible.
+            </summary>
+            <param name="m">Window Procedure Message</param>
+        </member>
+        <member name="M:TAPanelBase.PopupWindowHelper.ClosePopup">
+            <summary>
+            Called when the popup is being hidden.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.PopupWindowHelper.OnPopupClosed(TAPanelBase.PopupClosedEventArgs)">
+            <summary>
+            Raises the <see cref="E:TAPanelBase.PopupWindowHelper.PopupClosed"/> event.
+            </summary>
+            <param name="e"><see cref="T:TAPanelBase.PopupClosedEventArgs"/> describing the
+            popup form that is being closed.</param>
+        </member>
+        <member name="M:TAPanelBase.PopupWindowHelper.OnPopupCancel(TAPanelBase.PopupCancelEventArgs)">
+            <summary>
+            Raises the <see cref="E:TAPanelBase.PopupWindowHelper.PopupCancel"/> event.
+            </summary>
+            <param name="e"><see cref="T:TAPanelBase.PopupCancelEventArgs"/> describing the
+            popup form that about to be cancelled.</param>
+        </member>
+        <member name="M:TAPanelBase.PopupWindowHelper.#ctor">
+            <summary>
+            Default constructor.
+            </summary>
+            <remarks>Use the <see cref="M:System.Windows.Forms.NativeWindow.AssignHandle(System.IntPtr)"/>
+            method to attach this class to the form you want to show popups from.</remarks>
+        </member>
+        <member name="E:TAPanelBase.PopupWindowHelper.PopupClosed">
+            <summary>
+            Raised when the popup form is closed.
+            </summary>
+        </member>
+        <member name="E:TAPanelBase.PopupWindowHelper.PopupCancel">
+            <summary>
+            Raised when the Popup Window is about to be cancelled.  The
+            <see cref="P:TAPanelBase.PopupCancelEventArgs.Cancel"/> property can be
+            set to <c>true</c> to prevent the form from being cancelled.
+            </summary>
+        </member>
+        <member name="T:TAPanelBase.PopupWindowHelperMessageFilter">
+            <summary>
+            A Message Loop filter which detect mouse events whilst the popup form is shown
+            and notifies the owning <see cref="T:TAPanelBase.PopupWindowHelper"/> class when a mouse
+            click outside the popup occurs.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.PopupWindowHelperMessageFilter.popup">
+            <summary>
+            The popup form
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.PopupWindowHelperMessageFilter.owner">
+            <summary>
+            The owning <see cref="T:TAPanelBase.PopupWindowHelper"/> object.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.PopupWindowHelperMessageFilter.#ctor(TAPanelBase.PopupWindowHelper)">
+            <summary>
+            Constructs a new instance of this class and sets the owning
+            object.
+            </summary>
+            <param name="owner">The <see cref="T:TAPanelBase.PopupWindowHelper"/> object
+            which owns this class.</param>
+        </member>
+        <member name="M:TAPanelBase.PopupWindowHelperMessageFilter.PreFilterMessage(System.Windows.Forms.Message@)">
+            <summary>
+            Checks the message loop for mouse messages whilst the popup
+            window is displayed.  If one is detected the position is
+            checked to see if it is outside the form, and the owner
+            is notified if so.
+            </summary>
+            <param name="m">Windows Message about to be processed by the
+            message loop</param>
+            <returns><c>true</c> to filter the message, <c>false</c> otherwise.
+            This implementation always returns <c>false</c>.</returns>
+        </member>
+        <member name="M:TAPanelBase.PopupWindowHelperMessageFilter.OnMouseDown">
+            <summary>
+            Checks the mouse location and calls the OnCancelPopup method
+            if the mouse is outside the popup form.		
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.PopupWindowHelperMessageFilter.OnCancelPopup(TAPanelBase.PopupCancelEventArgs)">
+            <summary>
+            Raises the <see cref="E:TAPanelBase.PopupWindowHelperMessageFilter.PopupCancel"/> event.
+            </summary>
+            <param name="e">The <see cref="T:TAPanelBase.PopupCancelEventArgs"/> associated 
+            with the cancel event.</param>
+        </member>
+        <member name="E:TAPanelBase.PopupWindowHelperMessageFilter.PopupCancel">
+            <summary>
+            Raised when the Popup Window is about to be cancelled.  The
+            <see cref="P:TAPanelBase.PopupCancelEventArgs.Cancel"/> property can be
+            set to <c>true</c> to prevent the form from being cancelled.
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.PopupWindowHelperMessageFilter.Popup">
+            <summary>
+            Gets/sets the popup form which is being displayed.
+            </summary>
+        </member>
+        <member name="T:TAPanelBase.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.TAMessageBox.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.TAMessageBox.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelBase.TAMessageBox.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.ApplicationSubMenu.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.ApplicationSubMenu.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelBase.ApplicationSubMenu.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.VerbToolStripDropDownButton.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.VerbToolStripDropDownButton.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelBase.VerbToolStripDropDownButton.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.VerbToolStripButton.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.VerbToolStripButton.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelBase.VerbToolStripButton.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.VerbToolStripMenuItem.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.VerbToolStripMenuItem.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelBase.VerbToolStripMenuItem.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.WatchForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.WatchForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelBase.WatchForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TAPanelBase.Windows7Taskbar">
+            <summary>
+            The primary coordinator of the Windows 7 taskbar-related activities.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.Windows7Taskbar.SetProgressState(System.IntPtr,TAPanelBase.ThumbnailProgressState)">
+            <summary>
+            Sets the progress state of the specified window's
+            taskbar button.
+            </summary>
+            <param name="hwnd">The window handle.</param>
+            <param name="state">The progress state.</param>
+        </member>
+        <member name="M:TAPanelBase.Windows7Taskbar.SetProgressValue(System.IntPtr,System.UInt64,System.UInt64)">
+            <summary>
+            Sets the progress value of the specified window's
+            taskbar button.
+            </summary>
+            <param name="hwnd">The window handle.</param>
+            <param name="current">The current value.</param>
+            <param name="maximum">The maximum value.</param>
+        </member>
+        <member name="T:TAPanelBase.ThumbnailProgressState">
+            <summary>
+            Represents the thumbnail progress bar state.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.ThumbnailProgressState.NoProgress">
+            <summary>
+            No progress is displayed.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.ThumbnailProgressState.Indeterminate">
+            <summary>
+            The progress is indeterminate (marquee).
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.ThumbnailProgressState.Normal">
+            <summary>
+            Normal progress is displayed.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.ThumbnailProgressState.Error">
+            <summary>
+            An error occurred (red).
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.ThumbnailProgressState.Paused">
+            <summary>
+            The operation is paused (yellow).
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.xpStyleExpandGlyphs">
+            <summary>
+            Windows XP style expand glyphs state image mapping
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.xpStyleCollapseGlyphs">
+            <summary>
+            Windows XP style collapse glyphs state image mapping
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.LoadBitmap(System.String)">
+            <summary>
+            Used to load bitmap resources from the <c>XPPanel</c> assembly
+            </summary>
+            <param name="resource">The name of the resource</param>
+            <returns>
+            The <see cref="T:System.Drawing.Bitmap"/> resource
+            </returns>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.components">
+            <summary>
+            Standard Windows Forms container
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.text">
+            <summary>
+            The text for the <see cref="P:TAPanelBase.XPPanel.Caption"/> of the XPPanel
+            </summary>
+            <remarks>
+            See <see cref="P:TAPanelBase.XPPanel.Caption"/>
+            </remarks>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.horzAlignment">
+            <summary>
+            Horizontal alignment of <see cref="P:TAPanelBase.XPPanel.Caption"/> text
+            </summary>
+            <remarks>
+            See <see cref="P:TAPanelBase.XPPanel.HorzAlignment"/>
+            </remarks>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.vertAlignment">
+            <summary>
+            Vertical alignment of <see cref="P:TAPanelBase.XPPanel.Caption"/> text
+            </summary>
+            <remarks>
+            See <see cref="P:TAPanelBase.XPPanel.VertAlignment"/>
+            </remarks>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.font">
+            <summary>
+            Font used to draw the <see cref="P:TAPanelBase.XPPanel.Caption"/>
+            </summary>
+            <remarks>
+            See <see cref="P:TAPanelBase.XPPanel.Font"/>
+            </remarks>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.textColors">
+            <summary>
+            Normal <see cref="T:TAGDI.ColorPair"/> of the <see cref="P:TAPanelBase.XPPanel.Caption"/> text 
+            </summary>
+            <remarks>
+            A <see cref="T:TAGDI.ColorPair"/> describes both the foreground and background colors
+            <para>
+            See <see cref="P:TAPanelBase.XPPanel.TextColors"/>
+            </para>
+            </remarks>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.textHighlightColors">
+            <summary>
+            Highlight <see cref="T:TAGDI.ColorPair"/> of the <see cref="P:TAPanelBase.XPPanel.Caption"/> text (foreground and background)
+            </summary>
+            <remarks>
+            A <see cref="T:TAGDI.ColorPair"/> describes both the foreground and background colors
+            <para>
+            See <see cref="P:TAPanelBase.XPPanel.TextHighlightColors"/>
+            </para>
+            </remarks>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.captionGradient">
+            <summary>
+            Encapsulates the start and end colors for the caption gradient
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.captionUnderline">
+            <summary>
+            <see cref="T:System.Drawing.Color"/> of the accent line beneath the caption
+            </summary>
+            <remarks>
+            Set to <see cref="F:System.Drawing.Color.Empty"/> for no underline
+            </remarks>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.captionCurveRadius">
+            <summary>
+            Curve Radius for XPPanel Caption
+            </summary>
+            <remarks>
+            Controls the degree of the arc for the rounded corners of the caption.
+            <para>
+            Set to zero (0) for no rounding (square)
+            </para>
+            </remarks>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.captionCornerType">
+            <summary>
+            Where the caption corner's are rounded
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.captionGradientMode">
+            <summary>
+            Direction of the linear gradient of the Caption
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.imageItems">
+            <summary>
+            Defines the image index mappings for each Image state
+            (normal,highlight,pressed,disabled)
+            </summary>
+            <remarks>
+            <c>ImageItems</c> specifies the images that appear on the
+            left-side of the caption of the <c>XPPanel</c>
+            </remarks>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.glyphImageItemsExpanded">
+            <summary>
+            Defines the image index mappings for each glyph image state
+            (normal,highlight,pressed,disabled) when <see cref="!:XPPanelState.Expanded"/>
+            </summary>
+            <remarks>
+            Glyphs specify the images that appear on the right-side of the <c>XPPanel</c>
+            caption
+            <para>See <see cref="P:TAPanelBase.XPPanel.ExpandedGlyphs"/></para>
+            </remarks>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.glyphImageItemsCollapsed">
+            <summary>
+            Defines the image index mappings for each glyph image state
+            (normal,highlight,pressed,disabled) when <see cref="E:TAPanelBase.XPPanel.Collapsed"/>
+            </summary>
+            <remarks>
+            Glyphs specify the images that appear on the right-side of the <c>XPPanel</c>
+            caption
+            <para>See <see cref="P:TAPanelBase.XPPanel.CollapsedGlyphs"/></para>
+            </remarks>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.spacing">
+            <summary>
+            Defines the X and Y margins for the left/right and top/bottom
+            </summary>
+            <remarks>
+            Controls the spacing between the edges of the caption and items
+            in the caption. Also controls the inter-item spacing that seperates
+            caption items from each other
+            <para>
+            See <see cref="P:TAPanelBase.XPPanel.Spacing"/>
+            </para>
+            </remarks>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.isFitToImage">
+            <summary>
+            <see langword="true"/> if we want to fit the caption to the size of the image
+            </summary>
+            <remarks>
+            Only useful when the height of the image is larger than the best height for the
+            caption. In this case, the height of the caption is forced to be the size of the
+            image.
+            <para>See <see cref="P:TAPanelBase.XPPanel.FitToImage"/></para>
+            </remarks>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.isFixedHeight">
+            <summary>
+            <see langword="true"/> if the panel cannot be collapsed
+            </summary>
+            <remarks>
+            See <see cref="P:TAPanelBase.XPPanel.IsFixedHeight"/>
+            </remarks>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.gradientOffset">
+            <summary>
+            Offset for the start of the caption gradient expressed
+            in terms of %. 
+            </summary>
+            <remarks>
+            0 or 100 means no offset, .4 means gradient starts 40% 
+            from the left edge of the caption
+            </remarks>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.panelGradient">
+            <summary>
+            <see cref="T:TAGDI.GradientColor"/> used for graident background of the panel
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.panelGradientMode">
+            <summary>
+            Direction of the linear gradient of the Panel
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.panelOutlineColor">
+            <summary>
+            <see cref="T:System.Drawing.Color"/> of the panel outline
+            </summary>
+            <remarks>
+            Set to <see cref="F:System.Drawing.Color.Empty"/> for no panel outline
+            </remarks>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.xpPanelStyle">
+            <summary>
+            Style of the XPPanel
+            </summary>
+            <remarks>
+            Default is custom
+            </remarks>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.customized">
+            <summary>
+            Indicator that a panel has been customized or is a custom non-TA panel.
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.propertyChangeListeners">
+            <summary>
+            <see cref="E:TAPanelBase.XPPanel.PropertyChange"/> event listeners
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.panelStateChangeListeners">
+            <summary>
+            <see cref="E:TAPanelBase.XPPanel.PanelStateChange"/> event listeners
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.panelExpandedListeners">
+            <summary>
+            See <see cref="E:TAPanelBase.XPPanel.Expanded"/> event
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.panelExpandingListeners">
+            <summary>
+            See <see cref="E:TAPanelBase.XPPanel.Expanding"/> event
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.panelCollapsedListeners">
+            <summary>
+            See <see cref="E:TAPanelBase.XPPanel.Collapsed"/> event
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.panelPreHeightChangeListeners">
+            <summary>
+            See <see cref="E:TAPanelBase.XPPanel.PreHeightChangeListeners"/> event
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.disabledFont">
+            <summary>
+            <see cref="P:TAPanelBase.XPPanel.Font"/> used to draw caption text when <c>XPPanel</c> is disabled
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.captionBrush">
+            <summary>
+            <see cref="T:System.Drawing.Drawing2D.LinearGradientBrush"/> for the full caption area of <c>XPPanel</c> 
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.captionPath">
+            <summary>
+            Cached <see cref="T:System.Drawing.Drawing2D.GraphicsPath"/> for the full caption area of <c>XPPanel</c> 
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.fontBrush">
+            <summary>
+            <see cref="T:System.Drawing.SolidBrush"/> used to draw the caption text in the selected text foreground color
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.fontHighlightBrush">
+            <summary>
+            <see cref="T:System.Drawing.SolidBrush"/> used to draw the caption text in the selected text highlight foreground color
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.captionUnderlinePen">
+            <summary>
+            <see cref="T:System.Drawing.Pen"/> used to draw the caption underline
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.measureTextFormat">
+            <summary>
+            <see cref="T:System.Drawing.StringFormat"/> used to measure caption text extents
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.drawTextFormat">
+            <summary>
+            <see cref="T:System.Drawing.StringFormat"/> used to draw caption text
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.panelBrush">
+            <summary>
+            <see cref="T:System.Drawing.Drawing2D.LinearGradientBrush"/> used to paint the panel area
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.isLayoutDirty">
+            <summary>
+            <see langword="true"/> if a property change has invalidated the
+            cached layout of the <c>XPPanel</c>
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.panelNumHeights">
+            <summary>
+            Number heights normally two 
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.currentHeightIndex">
+            <summary>
+            Current height index
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.panelHeights">
+            <summary>
+            Array of heights 
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.panelHeight">
+            <summary>
+            Minimum size of panel when expanded
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.imageRect">
+            <summary>
+            The <see cref="T:System.Drawing.Rectangle"/> describing the image on the left side of the caption
+            </summary>
+            <remarks>
+            The "origin" is generally left at 0,0 and the appropriate offset is applied during
+            drawing
+            </remarks>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.glyphRect">
+            <summary>
+            The <see cref="T:System.Drawing.Rectangle"/> describing the image on the right side of the caption
+            </summary>
+            <remarks>
+            The "origin" is generally left at 0,0 and the appropriate offset is applied during
+            drawing
+            </remarks>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.customizedRect">
+            <summary>
+            The <see cref="T:System.Drawing.Rectangle"/> describing that this panel has been "Customized".
+            </summary>
+            <remarks>
+            The "origin" is generally left at 0,0 and the appropriate offset is applied during
+            drawing
+            </remarks>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.textRect">
+            <summary>
+            The <see cref="T:System.Drawing.Rectangle"/> describing the image on the left side of the caption
+            </summary>
+            <remarks>
+            The "origin" is generally left at 0,0 and the appropriate offset is applied during
+            drawing
+            </remarks>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.xpCaptionRect">
+            <summary>
+            The <see cref="T:System.Drawing.Rectangle"/> describing the entire caption area of the <c>XPPanel</c>
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.xpPanelRect">
+            <summary>
+            The <see cref="T:System.Drawing.Rectangle"/> describing the entire panel area (excluding the caption)
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.isCaptionHot">
+            <summary>
+            <see langword="true"/> if the mouse is over the caption
+            </summary>
+            <remarks>
+            Can be <see langword="true"/> when <see cref="F:TAPanelBase.XPPanel.isCaptionPressed"/> is <see langword="true"/>
+            </remarks>
+        </member>
+        <member name="F:TAPanelBase.XPPanel.isCaptionPressed">
+            <summary>
+            <see langword="true"/> if the mouse is *down* over the caption
+            </summary>
+            <remarks>
+            If <see langword="true"/>, <see cref="F:TAPanelBase.XPPanel.isCaptionHot"/> is also <see langword="true"/>
+            </remarks>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.DisposeCachedObjects">
+            <summary>
+            Sets all cached GDI+ drawing object proeprties to null which
+            causes their current value (if any) to be disposed
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.ShouldSerializeCaption">
+            <summary>
+            Determine if the property needs to be serialized by the designer during code generation
+            </summary>
+            <remarks>Called by the IDE</remarks>
+            <returns><see langword="true"/> if the property has a non-default value</returns>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.ResetCaption">
+            <summary>
+            Resets the property value back to its default
+            </summary>
+            <remarks>
+            Called by the IDE
+            </remarks>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.ShouldSerializeFont">
+            <summary>
+            Determine if the property needs to be serialized by the designer during code generation
+            </summary>
+            <remarks>Called by the IDE</remarks>
+            <returns><see langword="true"/> if the property has a non-default value</returns>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.ResetFont">
+            <summary>
+            Resets the property value back to its default
+            </summary>
+            <remarks>
+            Called by the IDE
+            </remarks>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.ShouldSerializeTextColors">
+            <summary>
+            Determine if the property needs to be serialized by the designer during code generation
+            </summary>
+            <remarks>Called by the IDE</remarks>
+            <returns><see langword="true"/> if the property has a non-default value</returns>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.ResetTextColors">
+            <summary>
+            Resets the property value back to its default
+            </summary>
+            <remarks>
+            Called by the IDE
+            </remarks>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.ShouldSerializeTextHighlightColors">
+            <summary>
+            Determine if the property needs to be serialized by the designer during code generation
+            </summary>
+            <remarks>Called by the IDE</remarks>
+            <returns><see langword="true"/> if the property has a non-default value</returns>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.ResetTextHighlightColors">
+            <summary>
+            Resets the property value back to its default
+            </summary>
+            <remarks>
+            Called by the IDE
+            </remarks>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.ResetCaptionGradient">
+            <summary>
+            Resets the property value back to its default
+            </summary>
+            <remarks>
+            Called by the IDE
+            </remarks>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.ShouldSerializeCaptionUnderline">
+            <summary>
+            Determine if the property needs to be serialized by the designer during code generation
+            </summary>
+            <remarks>Called by the IDE</remarks>
+            <returns><see langword="true"/> if the property has a non-default value</returns>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.ResetCaptionUnderline">
+            <summary>
+            Resets the property value back to its default
+            </summary>
+            <remarks>
+            Called by the IDE
+            </remarks>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.ShouldSerializeImageStates">
+            <summary>
+            Determine if the property needs to be serialized by the designer during code generation
+            </summary>
+            <remarks>Called by the IDE</remarks>
+            <returns><see langword="true"/> if the property has a non-default value</returns>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.ResetImageStates">
+            <summary>
+            Resets the property value back to its default
+            </summary>
+            <remarks>
+            Called by the IDE
+            </remarks>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.ShouldSerializeExpandedGlyphs">
+            <summary>
+            Determine if the property needs to be serialized by the designer during code generation
+            </summary>
+            <remarks>Called by the IDE</remarks>
+            <returns><see langword="true"/> if the property has a non-default value</returns>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.ResetExpandedGlyphs">
+            <summary>
+            Resets the property value back to its default
+            </summary>
+            <remarks>
+            Called by the IDE
+            </remarks>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.ShouldSerializeCollapsedGlyphs">
+            <summary>
+            Determine if the property needs to be serialized by the designer during code generation
+            </summary>
+            <remarks>Called by the IDE</remarks>
+            <returns><see langword="true"/> if the property has a non-default value</returns>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.ResetCollapsedGlyphs">
+            <summary>
+            Resets the property value back to its default
+            </summary>
+            <remarks>
+            Called by the IDE
+            </remarks>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.ShouldSerializePanelGradient">
+            <summary>
+            Determine if the property needs to be serialized by the designer during code generation
+            </summary>
+            <remarks>Called by the IDE</remarks>
+            <returns><see langword="true"/> if the property has a non-default value</returns>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.ResetPanelGradient">
+            <summary>
+            Resets the property value back to its default
+            </summary>
+            <remarks>
+            Called by the IDE
+            </remarks>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.ShouldSerializeOutlineColor">
+            <summary>
+            Determine if the property needs to be serialized by the designer during code generation
+            </summary>
+            <remarks>Called by the IDE</remarks>
+            <returns><see langword="true"/> if the property has a non-default value</returns>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.ResetOutlineColor">
+            <summary>
+            Resets the property value back to its default
+            </summary>
+            <remarks>
+            Called by the IDE
+            </remarks>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.ShouldSerializeSpacing">
+            <summary>
+            Determine if the property needs to be serialized by the designer during code generation
+            </summary>
+            <remarks>Called by the IDE</remarks>
+            <returns><see langword="true"/> if the property has a non-default value</returns>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.ResetSpacing">
+            <summary>
+            Resets the property value back to its default
+            </summary>
+            <remarks>
+            Called by the IDE
+            </remarks>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.TogglePanelState">
+            <summary>
+            Routine to toggle the state of <c>XPPanel</c> from Expanded to Collapsed
+            (or visa-versa)
+            </summary>
+            <remarks>
+            This routine provides a way to trigger the visual animation of
+            expanding/collapsing a <c>XPPanel</c>
+            </remarks>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.CalculateNextHeightIndex">
+            <summary>
+            Calculates the next height index for the panel if a user were to click
+            on the panel to generate an expand/collapse of the panel.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.OnPanelStateChange">
+            <summary>
+            Send a <see cref="E:TAPanelBase.XPPanel.PanelStateChange"/> to listeners
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.OnPropertyChange(TAPanelBase.XPPanelProperties)">
+            <summary>
+            Preprocessor for <see cref="E:TAPanelBase.XPPanel.PropertyChange"/> events
+            </summary>
+            <param name="xpPanelProperty">The property that changed</param>
+            <remarks>
+            Look at each property change and invalidate cached GDI+ objects 
+            as necessary.
+            </remarks>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.OnPanelExpanding">
+            <summary>
+            Shim for the <see cref="E:TAPanelBase.XPPanel.Expanding"/> event
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.OnPanelExpanded">
+            <summary>
+            Shim for the <see cref="E:TAPanelBase.XPPanel.Expanded"/> event
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.OnPrePanelHeightChange">
+            <summary>
+            Shim for the <see cref="E:TAPanelBase.XPPanel.PreHeightChangeListeners"/> event
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.OnPanelCollapsed">
+            <summary>
+            Shim for the <see cref="E:TAPanelBase.XPPanel.Collapsed"/> event
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.GetStatefulImage(TAGDI.StateImageItems)">
+            <summary>
+            Get the appropriate image for the current state as defined by the
+            specified <see cref="T:TAGDI.StateImageItems"/>
+            </summary>
+            <param name="imageItems">Images and image state map</param>
+            <returns>
+            The appropriate image for the state, or the <c>Normal</c> image
+            </returns>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.GetGlyphStateImageItems">
+            <summary>
+            Select the appropriate <see cref="T:TAGDI.StateImageItems"/> based on the current
+            state of the <c>XPPanel</c>
+            </summary>
+            <returns>
+            The <see cref="T:TAGDI.StateImageItems"/> containing the appropriate glyph images 
+            and state mappings
+            </returns>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.GetGlyphImages">
+            <summary>
+            Select the appropriate <see cref="T:TAGDI.ImageSet"/> based on the current
+            state of the <c>XPPanel</c>
+            </summary>
+            <returns>
+            The <see cref="T:TAGDI.ImageSet"/> containing the appropriate glyph images
+            </returns>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.GetTextSize(System.Drawing.Graphics,System.Int32)">
+            <summary>
+            Measure the caption text to establish the <c>vertical extents</c> of its
+            bounding box. This way we can use multi-line captions
+            </summary>
+            <param name="g">The <see cref="T:System.Drawing.Graphics"/> object being used</param>
+            <param name="width">The horizontal extents/limits</param>
+            <returns></returns>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.UpdatePanelLayout(System.Drawing.Graphics)">
+            <summary>
+            Calculate the various rectangles for the caption and caption items
+            </summary>
+            <param name="graphics">The <see cref="T:System.Drawing.Graphics"/> instance to use. May be <see langword="null"/></param>
+            <remarks>
+            At initialization the <see cref="T:System.Drawing.Graphics"/> instance may be null since we need to force an inital
+            panel layout. In this case we do <b>not</b> clear the dirty flag
+            <para>
+            Images (on the left) are clipped to 64x64. Glyphs (on the right) are clipped to 32x32. These
+            restrictions are arbitrary. Any image that is larger will be <i>scaled</i> to the max width/height
+            </para>
+            </remarks>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.DrawCaptionBackground(System.Drawing.Graphics)">
+            <summary>
+            Draw the caption area (sans items)
+            </summary>
+            <param name="graphics">The <see cref="T:System.Drawing.Graphics"/> object to use</param>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.DrawCaption(System.Drawing.Graphics)">
+            <summary>
+            Draw the caption area of the <c>XPPanel</c>
+            </summary>
+            <param name="graphics"><see cref="T:System.Drawing.Graphics"/> for drawing</param>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.DrawPanel(System.Drawing.Graphics)">
+            <summary>
+            Paint the panel portion of the <c>XPPanel</c>
+            </summary>
+            <param name="graphics"><see cref="T:System.Drawing.Graphics"/> object for drawing</param>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            Paint the <c>XPPanel</c>
+            </summary>
+            <param name="e">The <see cref="T:System.Windows.Forms.PaintEventArgs"/></param>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.OnVisibleChanged(System.EventArgs)">
+            <summary>
+            Send an <see cref="E:TAPanelBase.XPPanel.PanelStateChange"/> when the visibility of the
+            <c>XPPanel</c> changes
+            </summary>
+            <param name="e">The event args</param>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.SetBoundsCore(System.Int32,System.Int32,System.Int32,System.Int32,System.Windows.Forms.BoundsSpecified)">
+            <summary>
+            Prevent the panel from being inappropriately resized.
+            This logic applies when the panel is collapsed (cuz we dont want to allow collapsed panel
+            to be resized by/in the designer) as well as for fixed height panel areas (which are required
+            to be a specific height and no other.)
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.OnMouseMove(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Track the mouse movement so we can draw the caption hot/normal
+            </summary>
+            <remarks>
+            If the <c>XPPanel</c> <see cref="P:TAPanelBase.XPPanel.IsFixedHeight"/> property is
+            <see langword="true"/> then panel is <b>never</b> hot
+            </remarks>
+            <param name="e">MouseMove args</param>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.OnMouseLeave(System.EventArgs)">
+            <summary>
+            Mouse is out of the control
+            </summary>
+            <param name="e">MouseLeave args</param>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.OnSizeChanged(System.EventArgs)">
+            <summary>
+            Override base.OnSizeChanged
+            </summary>
+            <param name="e">The OnSizeChanged event args</param>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.OnMouseDown(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Handle mouse down event
+            </summary>
+            <param name="e">MouseDown event args</param>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.OnMouseUp(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Handle mouse up event
+            </summary>
+            <param name="e">MouseUp args</param>
+        </member>
+        <member name="M:TAPanelBase.XPPanel.OnEnabledChanged(System.EventArgs)">
+            <summary>
+            Handles enable/disable of <c>XPPanel</c>
+            </summary>
+            <param name="e">Enable event args</param>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.XPStyleExpandGlyphs">
+            <summary>
+            Returns a <see cref="T:TAGDI.StateImageItems"/> for the expand glyphs when using 
+            <see cref="F:TAPanelBase.XPPanelStyle.Standard"/>
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.XPStyleCollapseGlyphs">
+            <summary>
+            Returns a <see cref="T:TAGDI.StateImageItems"/> for the collapse glyphs when using 
+            <see cref="F:TAPanelBase.XPPanelStyle.Standard"/>
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.XPPanelStyle">
+            <summary>
+            Get/Set the style for the XPPanel
+            </summary>
+            <remarks>
+            <see cref="F:TAPanelBase.XPPanelStyle.Custom"/> uses all user-defined settings, while 
+            <see cref="F:TAPanelBase.XPPanelStyle.Standard"/> provides overrides to certain properties
+            to provide a <c>Standard</c> look and feel.
+            <para>
+            Currently, <see cref="F:TAPanelBase.XPPanelStyle.Standard"/>, overrides user-specified values
+            for <see cref="P:TAPanelBase.XPPanel.ExpandedGlyphs"/> and <see cref="P:TAPanelBase.XPPanel.CollapsedGlyphs"/>
+            </para>
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.CurrentHeightIndex">
+            <summary>
+            Get/Set the current height index of the panel 
+            </summary>
+            <remarks>
+            The current height index of the panel
+            <para>Normally set to 2</para>
+            <para>Fires a PropertyChange event w/ <see cref="F:TAPanelBase.XPPanelProperties.CurrentHeightIndex"/> argument</para>
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.IsFixedHeight">
+            <summary>
+            <see langword="true"/> if the panel is always expanded and
+            cannot be collapsed
+            </summary>
+            <remarks>
+            Glyph images are <b>not</b> drawn when the <c>XPPanel</c> is fixed
+            <para>The default value for this property is <see langword="false"/></para>
+            <para>Fires a PropertyChange event w/ <see cref="F:TAPanelBase.XPPanelProperties.IsFixedHeightProperty"/> argument</para>
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.Caption">
+            <summary>
+            The caption text for the <c>XPPanel</c>
+            </summary>
+            <remarks>
+            Similar to the <see cref="P:TAPanelBase.XPPanel.Font"/> property, we could use the base class text property.
+            <para>The default value for this property is <see cref="F:System.String.Empty"/></para>
+            <para>Fires a PropertyChange event w/ <see cref="F:TAPanelBase.XPPanelProperties.CaptionProperty"/> argument</para>
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.Font">
+            <summary>
+            The <see cref="P:TAPanelBase.XPPanel.Font"/> for the caption text
+            </summary>
+            <remarks>
+            There is no real reason to override this Property. It is an artifact of my
+            initial thinking. If removed adjustments would need to be made to
+            detect font changes so the property change event can be fired. As an alternative, 
+            override property but dont define a <see cref="P:TAPanelBase.XPPanel.Font"/> field and just use <c>base.Font</c>
+            <para>Fires a PropertyChange event w/ <see cref="F:TAPanelBase.XPPanelProperties.FontProperty"/> argument</para>
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.TextColors">
+            <summary>
+            <see cref="T:TAGDI.ColorPair"/> describing the foreground/background colors for the
+            caption text in a <i>normal</i> state
+            </summary>
+            <remarks>
+            Currently, the background color value is ignored (i.e., never used) and always
+            <see cref="F:System.Drawing.Color.Empty"/>.
+            Also, we do not map the text foreground color to the base.Foreground property
+            <para>Fires a PropertyChange event w/ <see cref="F:TAPanelBase.XPPanelProperties.TextColorsProperty"/> argument</para>
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.TextHighlightColors">
+            <summary>
+            <see cref="T:TAGDI.ColorPair"/> describing the foreground/background colors for the
+            caption text when in a <i>hot/highlight</i> state (mouse over)
+            </summary>
+            <remarks>
+            Currently, the background color value is ignored (i.e., never used) and always
+            <see cref="F:System.Drawing.Color.Empty"/>
+            <para>Fires a PropertyChange event w/ <see cref="F:TAPanelBase.XPPanelProperties.TextHighlightColorsProperty"/> argument</para>
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.CaptionGradient">
+            <summary>
+            <see cref="T:TAGDI.GradientColor"/> describing the gradient colors of the
+            caption
+            </summary>
+            <remarks>
+            <para>Fires a PropertyChange event w/ <see cref="F:TAPanelBase.XPPanelProperties.CaptionGradientProperty"/> argument</para>
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.CaptionUnderline">
+            <summary>
+            The <see cref="T:System.Drawing.Color"/> used to draw the caption underline
+            </summary>
+            <remarks>
+            Set to <see cref="F:System.Drawing.Color.Empty"/> for no underline
+            <para>Fires a PropertyChange event w/ <see cref="F:TAPanelBase.XPPanelProperties.CaptionUnderlineProperty"/> argument</para>
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.HorzAlignment">
+            <summary>
+            The horizontal alignment of the caption text
+            </summary>
+            <remarks>
+            Uses the standard <see cref="T:System.Drawing.StringAlignment"/> values that abstract right-to-left
+            left-to-right semnatics
+            <para>Default value is <see cref="F:System.Drawing.StringAlignment.Near"/></para>
+            <para>Fires a PropertyChange event w/ <see cref="F:TAPanelBase.XPPanelProperties.HorzAlignmentProperty"/> argument</para>
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.VertAlignment">
+            <summary>
+            The vertical alignment of the caption text
+            </summary>
+            <remarks>
+            Uses the standard <see cref="T:System.Drawing.StringAlignment"/> values that abstract right-to-left
+            left-to-right semnatics
+            <para>Default value is <see cref="F:System.Drawing.StringAlignment.Near"/></para>
+            <para>Fires a PropertyChange event w/ <see cref="F:TAPanelBase.XPPanelProperties.VertAlignmentProperty"/> argument</para>
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.ImageItems">
+            <summary>
+            Describes images that appear on the left side of the caption
+            </summary>
+            <remarks>
+            <see cref="T:TAGDI.StateImageItems"/> which encapsulates an <see cref="T:TAGDI.ImageSet"/> and
+            image mappings for the states <c>Normal</c>, <c>Highlight</c>, <c>Pressed</c>, and
+            <c>Disabled</c>
+            <para>It is important that the <see cref="T:System.ComponentModel.DesignerSerializationVisibility"/> attribute be
+            set to <see cref="F:System.ComponentModel.DesignerSerializationVisibility.Content"/> for proper code generation
+            in InitializeComponent()</para>
+            <para>Fires a PropertyChange event w/ <see cref="F:TAPanelBase.XPPanelProperties.ImageItemsProperty"/> argument</para>
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.ExpandedGlyphs">
+            <summary>
+            Describes images that appear on the right side of the caption when the
+            <c>XPPanel</c> is <see cref="E:TAPanelBase.XPPanel.Expanded"/>
+            </summary>
+            <remarks>
+            <see cref="T:TAGDI.StateImageItems"/> which encapsulates an <see cref="T:TAGDI.ImageSet"/> and
+            image mappings for the states <c>Normal</c>, <c>Highlight</c>, <c>Pressed</c>, and
+            <c>Disabled</c>
+            <para>It is important that the <see cref="T:System.ComponentModel.DesignerSerializationVisibility"/> attribute be
+            set to <see cref="F:System.ComponentModel.DesignerSerializationVisibility.Content"/> for proper code generation
+            in InitializeComponent()</para>
+            <para>Fires a PropertyChange event w/ <see cref="F:TAPanelBase.XPPanelProperties.ExpandedGlyphsProperty"/> argument</para>
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.CollapsedGlyphs">
+            <summary>
+            Describes images that appear on the right side of the caption when the
+            <c>XPPanel</c> is <see cref="E:TAPanelBase.XPPanel.Collapsed"/>
+            </summary>
+            <remarks>
+            <see cref="T:TAGDI.StateImageItems"/> which encapsulates an <see cref="T:TAGDI.ImageSet"/> and
+            image mappings for the states <c>Normal</c>, <c>Highlight</c>, <c>Pressed</c>, and
+            <c>Disabled</c>
+            <para>It is important that the <see cref="T:System.ComponentModel.DesignerSerializationVisibility"/> attribute be
+            set to <see cref="F:System.ComponentModel.DesignerSerializationVisibility.Content"/> for proper code generation
+            in InitializeComponent()</para>
+            <para>Fires a PropertyChange event w/ <see cref="F:TAPanelBase.XPPanelProperties.CollapsedGlyphsProperty"/> argument</para>
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.CurveRadius">
+            <summary>
+            Defines the readius of the rounded corners on the caption
+            </summary>
+            <remarks>
+            Default value is 7
+            <para>Set to zero (0) for square corners</para>
+            <para>Fires a PropertyChange event w/ <see cref="F:TAPanelBase.XPPanelProperties.CurveRadiusProperty"/> argument</para>
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.GradientOffset">
+            <summary>
+            Describes the starting point (as a percentage) for the gradient of the caption
+            </summary>
+            <remarks>
+            When set to a value &gt; 0.0 and &lt; 1.0 the gradient does not
+            begin until the appropriate relative position. The initial part of
+            the caption is drawn using (a <see cref="T:System.Drawing.SolidBrush"/>) with the start 
+            <see cref="T:System.Drawing.Color"/> of the <see cref="T:TAGDI.GradientColor"/> property.
+            <para>Fires a PropertyChange event w/ <see cref="F:TAPanelBase.XPPanelProperties.GradientOffsetProperty"/> argument</para>
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.PanelGradient">
+            <summary>
+            <see cref="T:TAGDI.GradientColor"/> describing the gradient colors of the panel
+            </summary>
+            <remarks>
+            <para>Fires a PropertyChange event w/ <see cref="F:TAPanelBase.XPPanelProperties.PanelGradientProperty"/> argument</para>
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.OutlineColor">
+            <summary>
+            The <see cref="T:System.Drawing.Color"/> used to draw the panel outline
+            </summary>
+            <remarks>
+            Set to <see cref="F:System.Drawing.Color.Empty"/> for no panel outline
+            <para>Fires a PropertyChange event w/ <see cref="F:TAPanelBase.XPPanelProperties.PanelOutlineColorProperty"/> argument</para>
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.PanelRect">
+            <summary>
+            Returns the current dimensions of the Panel
+            </summary>
+            <remarks>If the Layout of the <c>XPPanel</c> is not upto date, it is updated</remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.Spacing">
+            <summary>
+            Get/Set the margin/spacing values for items in the caption
+            </summary>
+            <remarks>
+            The X value defines the left/right margin from the caption borders, as
+            well as the inter-item spacing. The Y value provides the
+            margins from the top/bottom of the caption borders but has no effect
+            on inter-item spacing
+            <para>Fires a PropertyChange event w/ <see cref="F:TAPanelBase.XPPanelProperties.SpacingProperty"/> argument</para>
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.FitToImage">
+            <summary>
+            Forces the height of the caption to be &gt;= the height of the <see cref="P:TAPanelBase.XPPanel.ImageItems"/>
+            </summary>
+            <remarks>
+            The default value is <see langword="false"/>
+            <para>
+            This property can be used to prevent an image from extending above the caption header when
+            the image is taller than best caption height. Otherwise it has no effect
+            </para>
+            <para>Fires a PropertyChange event w/ <see cref="F:TAPanelBase.XPPanelProperties.FitToImageProperty"/> argument</para>
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.BorderStyle">
+            <summary>
+            Overridden to supress the user/designer from changing the border style
+            </summary>
+            <remarks>
+            Do not display this property in the browse as it should be a constant
+            value (<see cref="F:System.Windows.Forms.BorderStyle.None"/>)
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.BackColor">
+            <summary>
+            Overridden to supress the user/designer from changing the background color
+            </summary>
+            <remarks>
+            Do not display this property in the browse as it should be a constant
+            value (<see cref="P:System.Drawing.Color.Transparent"/>)
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.ForeColor">
+            <summary>
+            Overridden to supress the user/designer from changing the foreground color
+            </summary>
+            <remarks>
+            Do not display this property in the browser as it has no meaning
+            See <see cref="P:TAPanelBase.XPPanel.TextColors"/> for setting the color of the caption text
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.FullCaptionRect">
+            <summary>
+            Get the full catpion rect which is the entire area of the
+            caption, not just the <see cref="F:TAPanelBase.XPPanel.xpCaptionRect"/>
+            </summary>
+            <remarks>
+            This rectangle includes any portion of the caption that extends
+            above the actual caption area (such as the top of an image)
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.CaptionBrush">
+            <summary>
+            <see cref="T:System.Drawing.Drawing2D.LinearGradientBrush"/> used to draw the caption background
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.CaptionUnderlinePen">
+            <summary>
+            <see cref="T:System.Drawing.Pen"/> used to draw the caption underline
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.PanelBrush">
+            <summary>
+            <see cref="T:System.Drawing.Drawing2D.LinearGradientBrush"/> used to draw the panel background
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.CaptionPath">
+            <summary>
+            Defines the outline of the caption area when <see cref="P:TAPanelBase.XPPanel.GradientOffset"/> is 0.0 or 1.0
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.DisabledFont">
+            <summary>
+            <see cref="P:TAPanelBase.XPPanel.Font"/> used to draw the <see cref="P:TAPanelBase.XPPanel.Caption"/> when the <c>XPPanel</c> is disabled
+            </summary>
+            <remarks>
+            Normal caption font is <b>FontStyle.Bold</b>. Disabled font is <c>FontStyle.Regular</c>
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.FontBrush">
+            <summary>
+            <see cref="T:System.Drawing.SolidBrush"/> used to draw the caption text when <i>normal</i>
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.FontHighlightBrush">
+            <summary>
+            <see cref="T:System.Drawing.SolidBrush"/> used to draw the caption text when <i>highlighted</i> (mouse over)
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.MeasureTextFormat">
+            <summary>
+            <see cref="T:System.Drawing.StringFormat"/> used to measure the Y extent of the caption text
+            </summary>
+            <remarks>
+            Respects the user specified horizontal/vertical alignments and
+            trims to "..." on word boundaries
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.DrawTextFormat">
+            <summary>
+            <see cref="T:System.Drawing.StringFormat"/> used to draw caption text
+            </summary>
+            <remarks>
+            Respects the user specified horizontal/vertical alignments and
+            trims to "..." on word boundaries
+            <para>Use of <see cref="F:System.Drawing.StringFormatFlags.LineLimit"/> prevents
+            a partial line from being displayed (vertically)</para>
+            </remarks>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.IsExpanded">
+            <summary>
+            <see true="true"/> if <see cref="E:TAPanelBase.XPPanel.Expanded"/>
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.IsCollapsed">
+            <summary>
+            <see true="true"/> if <see cref="E:TAPanelBase.XPPanel.Collapsed"/>
+            </summary>
+        </member>
+        <member name="E:TAPanelBase.XPPanel.PropertyChange">
+            <summary>
+            Register/Remove a PropertyChange listener
+            </summary>
+        </member>
+        <member name="E:TAPanelBase.XPPanel.PanelStateChange">
+            <summary>
+            Register/Remove a PanelStateChange listener
+            </summary>
+        </member>
+        <member name="E:TAPanelBase.XPPanel.Collapsed">
+            <summary>
+            Register/Remove a Collapsed event listener
+            </summary>
+        </member>
+        <member name="E:TAPanelBase.XPPanel.PreHeightChangeListeners">
+            <summary>
+            Register/Remove a Collapsing event listener
+            </summary>
+        </member>
+        <member name="E:TAPanelBase.XPPanel.Expanding">
+            <summary>
+            Register/Remove a Expanding event listener
+            </summary>
+        </member>
+        <member name="E:TAPanelBase.XPPanel.Expanded">
+            <summary>
+            Register/Remove a Expanded event listener
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.IsDesignMode">
+             <summary>
+             Property: IsDesignMode
+            
+             Purpose: Accurately determines if the control is in design mode or not.
+             </summary>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.DisplayRectangle">
+            <summary>
+            Override this so that Docking of child controls will work
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.XPPanel.PerformValidation">
+            <summary>
+            Determines whether or not a call to <see cref="M:TAPanelBase.XPPanel.ValidateData"/> will process validation.
+            </summary>
+        </member>
+        <member name="T:TAPanelBase.PanelPropertyChangeHandler">
+            <summary>
+            Delegate signature for <see cref="E:TAPanelBase.XPPanel.PropertyChange"/> events
+            </summary>
+        </member>
+        <member name="T:TAPanelBase.XPPanelPropertyChangeEventArgs">
+            <summary>
+            EventArgs for <see cref="E:TAPanelBase.XPPanel.PropertyChange"/> events
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanelPropertyChangeEventArgs.xpPanelProperty">
+            <summary>
+            The property that changed
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.XPPanelPropertyChangeEventArgs.#ctor(TAPanelBase.XPPanelProperties)">
+            <summary>
+            Create a new <c>XPPanelPropertyChangeArgs</c> with the specified
+            property enumeration value
+            </summary>
+            <param name="property"></param>
+        </member>
+        <member name="P:TAPanelBase.XPPanelPropertyChangeEventArgs.XPPanelProperty">
+            <summary>
+            Get the <see cref="T:TAPanelBase.XPPanelProperties"/> property that changed
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.XPPanelGroupExt.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.XPPanelGroupExt.ReorderPanels(System.Boolean)">
+            <summary>
+            Ensures the orderedPanel list is in the asc order for the Row of the panel.
+            </summary>
+            <param name="clearControls"></param>
+        </member>
+        <member name="M:TAPanelBase.XPPanelGroupExt.SetPanelRow(TAPanelBase.XPPanel,System.Int32)">
+            <summary>
+            Called in design mode when the control is being dragged for a new position.
+            </summary>
+            <param name="panel"></param>
+            <param name="y"></param>
+        </member>
+        <member name="M:TAPanelBase.XPPanelGroupExt.BeginInit">
+            <summary>
+            Set flag noting that we are in InitializeComponent()
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.XPPanelGroupExt.EndInit">
+            <summary>
+            Clear flag noting that we are in InitializeComponent()
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanelFlowLayout.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.XPPanelFlowLayout.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelBase.XPPanelFlowLayout.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TAPanelBase.XPPanelGroupProperties">
+            <summary>
+            Enumeration of <see cref="T:TAPanelBase.XPPanelGroup"/> properties
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanelGroupProperties.BorderMarginProperty">
+            <summary>
+            <see cref="P:TAPanelBase.XPPanelGroup.BorderMargin"/>
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanelGroupProperties.PanelSpacingProperty">
+            <summary>
+            <see cref="P:TAPanelBase.XPPanelGroup.PanelSpacing"/>
+            </summary>
+        </member>
+        <member name="F:TAPanelBase.XPPanelGroupProperties.PanelGradientProperty">
+            <summary>
+            <see cref="P:TAPanelBase.XPPanelGroup.PanelGradient"/>
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.XPPanelGroup.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.XPPanelGroup.ResetCaptionGradient">
+            <summary>
+            Resets the property value back to its default
+            </summary>
+            <remarks>
+            Called by the IDE
+            </remarks>
+        </member>
+        <member name="M:TAPanelBase.XPPanelGroup.FixPanelRowCollision">
+            <summary>
+            Ensures that there is only 1 XPPanel per row.
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.XPPanelGroup.ReorderPanels(System.Boolean)">
+            <summary>
+            Ensures the orderedPanel list is in the asc order for the Row of the panel.
+            </summary>
+            <param name="clearControls"></param>
+        </member>
+        <member name="M:TAPanelBase.XPPanelGroup.SetPanelRow(TAPanelBase.XPPanel,System.Int32)">
+            <summary>
+            Called in design mode when the control is being dragged for a new position.
+            </summary>
+            <param name="panel"></param>
+            <param name="y"></param>
+        </member>
+        <member name="M:TAPanelBase.XPPanelGroup.BeginInit">
+            <summary>
+            Set flag noting that we are in InitializeComponent()
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.XPPanelGroup.EndInit">
+            <summary>
+            Clear flag noting that we are in InitializeComponent()
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.XPPanelGroup.HotSwappingPanels">
+            <summary>
+            Indicates that the ordered list of panels should not be changed on the add of a panel.
+            </summary>
+        </member>
+        <member name="P:TAPanelBase.XPPanelGroup.PanelGradient">
+            <summary>
+            <see cref="T:TAGDI.GradientColor"/> describing the gradient colors of the
+            caption
+            </summary>
+            <remarks>
+            <para>Fires a PropertyChange event w/ <see cref="F:TAPanelBase.XPPanelProperties.CaptionGradientProperty"/> argument</para>
+            </remarks>
+        </member>
+        <member name="T:TAPanelBase.Designers.XPPanelTypeConverter">
+            <summary>
+            XPPanelTypeConverter provides an <see cref="T:System.ComponentModel.Design.Serialization.InstanceDescriptor"/> used
+            for designer code generation. This allows an alternate constructor to
+            be used that allows the value of XPPanel.ExpandedHeight to
+            be specified prior to other properties (such as <see cref="P:System.Windows.Forms.Control.Size"/>)
+            which could interfere with correct sizing
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.Designers.XPPanelTypeConverter.#ctor">
+            <summary>
+            Create an <c>XPPanelTypeConverter</c>
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.Designers.XPPanelTypeConverter.CanConvertTo(System.ComponentModel.ITypeDescriptorContext,System.Type)">
+            <summary>
+            Signal that we can convert to an <see cref="T:System.ComponentModel.Design.Serialization.InstanceDescriptor"/> (if asked...)
+            </summary>
+            <param name="context">designer context</param>
+            <param name="destinationType">Target type</param>
+            <returns>
+            <see langword="true"/> if the designer asks for an <see cref="T:System.ComponentModel.Design.Serialization.InstanceDescriptor"/>,
+            otherwise whatever the base class says
+            </returns>
+        </member>
+        <member name="M:TAPanelBase.Designers.XPPanelTypeConverter.ConvertTo(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object,System.Type)">
+            <summary>
+            Convert to an <see cref="T:System.ComponentModel.Design.Serialization.InstanceDescriptor"/> if requested
+            </summary>
+            <param name="context">designer context</param>
+            <param name="culture">globalization</param>
+            <param name="value">the instance to convert</param>
+            <param name="destinationType">The target type</param>
+            <returns>
+            An <see cref="T:System.ComponentModel.Design.Serialization.InstanceDescriptor"/> if requested, otherwise whatever
+            the base class returns
+            </returns>
+        </member>
+        <member name="T:TAPanelBase.Designers.XPPanelHeightTypeConverter">
+            <summary>
+            A custom TypeConvert for PanelHeights objects  
+            </summary>
+        </member>
+        <member name="M:TAPanelBase.Designers.XPPanelHeightTypeConverter.CanConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Type)">
+            <summary>Determines whether this converter can convert an object in the specified source type to the native type of the converter.</summary>
+            <returns>This method returns true if this object can perform the conversion.</returns>
+            <param name="context">A <see cref="T:System.ComponentModel.ITypeDescriptorContext"></see> that can be used to get additional information about the environment this converter is being called from. This may be null, so you should always check. Also, properties on the context object may also return null. </param>
+            <param name="sourceType">The type you want to convert from. </param>
+            <filterpriority>1</filterpriority>
+        </member>
+        <member name="M:TAPanelBase.Designers.XPPanelHeightTypeConverter.CanConvertTo(System.ComponentModel.ITypeDescriptorContext,System.Type)">
+            <summary>Gets a value indicating whether this converter can convert an object to the given destination type using the context.</summary>
+            <returns>This method returns true if this converter can perform the conversion; otherwise, false.</returns>
+            <param name="context">A <see cref="T:System.ComponentModel.ITypeDescriptorContext"></see> that can be used to get additional information about the environment this converter is being called from. This can be null, so always check. Also, properties on the context object can return null.</param>
+            <param name="destinationType">A <see cref="T:System.Type"></see> that represents the type you want to convert to. </param>
+            <filterpriority>1</filterpriority>
+        </member>
+        <member name="M:TAPanelBase.Designers.XPPanelHeightTypeConverter.ConvertFrom(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object)">
+            <summary>Converts the specified object to the converter's native type.</summary>
+            <returns>The converted object. </returns>
+            <param name="culture">An <see cref="T:System.Globalization.CultureInfo"></see> object that contains culture specific information, such as the language, calendar, and cultural conventions associated with a specific culture. It is based on the RFC 1766 standard. </param>
+            <param name="context">A <see cref="T:System.ComponentModel.ITypeDescriptorContext"></see> that can be used to get additional information about the environment this converter is being called from. This may be null, so you should always check. Also, properties on the context object may also return null. </param>
+            <param name="value">The object to convert. </param>
+            <exception cref="T:System.NotSupportedException">The conversion cannot be completed.</exception>
+            <filterpriority>1</filterpriority>
+        </member>
+        <member name="M:TAPanelBase.Designers.XPPanelHeightTypeConverter.ConvertTo(System.ComponentModel.ITypeDescriptorContext,System.Globalization.CultureInfo,System.Object,System.Type)">
+            <summary>Converts the specified object to the specified type.</summary>
+            <returns>The converted object.</returns>
+            <param name="culture">An <see cref="T:System.Globalization.CultureInfo"></see> object that contains culture specific information, such as the language, calendar, and cultural conventions associated with a specific culture. It is based on the RFC 1766 standard. </param>
+            <param name="context">A <see cref="T:System.ComponentModel.ITypeDescriptorContext"></see> that can be used to get additional information about the environment this converter is being called from. This may be null, so you should always check. Also, properties on the context object may also return null. </param>
+            <param name="destinationType">The type to convert the object to. </param>
+            <param name="value">The object to convert. </param>
+            <exception cref="T:System.NotSupportedException">The conversion cannot be completed.</exception>
+            <filterpriority>1</filterpriority>
+        </member>
+        <member name="M:TAPanelBase.Designers.XPPanelHeightTypeConverter.CreateInstance(System.ComponentModel.ITypeDescriptorContext,System.Collections.IDictionary)">
+            <summary>Creates an object of this type by using a specified set of property values for the object. This is useful for creating non-changeable objects that have changeable properties.</summary>
+            <returns>The newly created object, or null if the object could not be created. The default implementation returns null.</returns>
+            <param name="propertyValues">A dictionary of new property values. The dictionary contains a series of name-value pairs, one for each property returned from the <see cref="M:System.Drawing.SizeConverter.GetProperties(System.ComponentModel.ITypeDescriptorContext,System.Object,System.Attribute[])"></see> method. </param>
+            <param name="context">A <see cref="T:System.ComponentModel.TypeDescriptor"></see> through which additional context can be provided. </param>
+            <filterpriority>1</filterpriority>
+        </member>
+        <member name="M:TAPanelBase.Designers.XPPanelHeightTypeConverter.GetCreateInstanceSupported(System.ComponentModel.ITypeDescriptorContext)">
+            <summary>
+            We support CreateInstance
+            </summary>
+            <param name="context">designer context</param>
+            <returns>
+            <see langword="true"/>
+            </returns>
+        </member>
+        <member name="M:TAPanelBase.Designers.XPPanelHeightTypeConverter.GetProperties(System.ComponentModel.ITypeDescriptorContext,System.Object,System.Attribute[])">
+            <summary>Retrieves the set of properties for this type. By default, a type does not have any properties to return. </summary>
+            <returns>The set of properties that should be exposed for this data type. If no properties should be exposed, this may return null. The default implementation always returns null.</returns>
+            <param name="context">A <see cref="T:System.ComponentModel.TypeDescriptor"></see> through which additional context can be provided. </param>
+            <param name="attributes">An array of <see cref="T:System.Attribute"></see> objects that describe the properties. </param>
+            <param name="value">The value of the object to get the properties for. </param>
+            <filterpriority>1</filterpriority>
+        </member>
+        <member name="M:TAPanelBase.Designers.XPPanelHeightTypeConverter.GetPropertiesSupported(System.ComponentModel.ITypeDescriptorContext)">
+            <summary>Determines whether this object supports properties. By default, this is false.</summary>
+            <returns>true if the <see cref="M:TAPanelBase.Designers.XPPanelHeightTypeConverter.GetProperties(System.ComponentModel.ITypeDescriptorContext,System.Object,System.Attribute[])"></see> method should be called to find the properties of this object.</returns>
+            <param name="context">A <see cref="T:System.ComponentModel.TypeDescriptor"></see> through which additional context can be provided. </param>
+            <filterpriority>1</filterpriority>
+        </member>
+        <member name="T:TAPanelBase.Designers.GradientColorEditor">
+            <summary>
+            Designer type editor for the <see cref="T:TAGDI.GradientColor"/> class
+            </summary>
+            <remarks>
+            Provides a preview of the <see cref="T:TAGDI.GradientColor"/> in the designer property grid
+            </remarks>
+        </member>
+        <member name="M:TAPanelBase.Designers.GradientColorEditor.GetPaintValueSupported(System.ComponentModel.ITypeDescriptorContext)">
+            <summary>
+            Yes we paint the value
+            </summary>
+            <param name="context">ignored</param>
+            <returns><see langword="true"/> as we always show the preview</returns>
+        </member>
+        <member name="M:TAPanelBase.Designers.GradientColorEditor.PaintValue(System.Drawing.Design.PaintValueEventArgs)">
+            <summary>
+            Draw a preview of the <see cref="T:TAGDI.GradientColor"/>
+            </summary>
+            <param name="e">The paint event args providing the <see cref="T:System.Drawing.Graphics"/> and bounding
+            rectangle</param>
+        </member>
+        <member name="T:TAPanelBase.Designers.PanelHeightsEditor">
+            <summary>
+            Designer type editor for the ColorPair class
+            </summary>
+            <remarks>
+            Provides a preview of the <see cref="T:TAGDI.ColorPair"/> in the designer property grid
+            </remarks>
+        </member>
+    </members>
+</doc>

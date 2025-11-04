@@ -1,0 +1,331 @@
+{% extends 'mobile_layout.html' %}
+
+{% block title %}TerraFlow | Search{% endblock %}
+
+{% block content %}
+<div class="mobile-container">
+    <div class="mobile-section-title">Advanced Search</div>
+
+    <!-- Search Form -->
+    <div class="mobile-card p-3 mb-3">
+        <form id="searchForm" action="/mobile/search" method="get">
+            <div class="mb-3">
+                <label for="searchQuery" class="mobile-form-label">Search Query</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="searchQuery" name="q" placeholder="Enter search term..." value="{{ query if query else '' }}">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <div class="form-text">Search properties, owners, addresses, or assessments</div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="mobile-form-label">Search In</label>
+                <div class="d-flex flex-wrap">
+                    <div class="form-check me-3">
+                        <input class="form-check-input" type="checkbox" value="properties" id="searchProperties" name="search_type" checked>
+                        <label class="form-check-label" for="searchProperties">
+                            Properties
+                        </label>
+                    </div>
+                    <div class="form-check me-3">
+                        <input class="form-check-input" type="checkbox" value="assessments" id="searchAssessments" name="search_type">
+                        <label class="form-check-label" for="searchAssessments">
+                            Assessments
+                        </label>
+                    </div>
+                    <div class="form-check me-3">
+                        <input class="form-check-input" type="checkbox" value="anomalies" id="searchAnomalies" name="search_type">
+                        <label class="form-check-label" for="searchAnomalies">
+                            Anomalies
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion mb-3" id="searchAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="advancedFilterHeading">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#advancedFilterCollapse" aria-expanded="false" aria-controls="advancedFilterCollapse">
+                            Advanced Filters
+                        </button>
+                    </h2>
+                    <div id="advancedFilterCollapse" class="accordion-collapse collapse" aria-labelledby="advancedFilterHeading" data-bs-parent="#searchAccordion">
+                        <div class="accordion-body">
+                            <!-- Property Filters -->
+                            <div id="propertyFilters">
+                                <div class="mb-3">
+                                    <label for="propertyType" class="mobile-form-label">Property Type</label>
+                                    <select class="form-select" id="propertyType" name="property_type">
+                                        <option value="">All Types</option>
+                                        {% for property_type in property_types %}
+                                        <option value="{{ property_type }}" {% if current_property_type == property_type %}selected{% endif %}>{{ property_type }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="row g-2 mb-3">
+                                    <div class="col-6">
+                                        <label for="minValue" class="mobile-form-label">Min Value</label>
+                                        <input type="number" class="form-control" id="minValue" name="min_value" placeholder="Min Value" value="{{ min_value if min_value else '' }}">
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="maxValue" class="mobile-form-label">Max Value</label>
+                                        <input type="number" class="form-control" id="maxValue" name="max_value" placeholder="Max Value" value="{{ max_value if max_value else '' }}">
+                                    </div>
+                                </div>
+                                
+                                <div class="row g-2 mb-3">
+                                    <div class="col-6">
+                                        <label for="minYear" class="mobile-form-label">Year Built (Min)</label>
+                                        <input type="number" class="form-control" id="minYear" name="min_year" placeholder="Min Year" value="{{ min_year if min_year else '' }}">
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="maxYear" class="mobile-form-label">Year Built (Max)</label>
+                                        <input type="number" class="form-control" id="maxYear" name="max_year" placeholder="Max Year" value="{{ max_year if max_year else '' }}">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Assessment Filters -->
+                            <div id="assessmentFilters" style="display: none;">
+                                <div class="row g-2 mb-3">
+                                    <div class="col-6">
+                                        <label for="assessmentDateStart" class="mobile-form-label">Assessment Date (Start)</label>
+                                        <input type="date" class="form-control" id="assessmentDateStart" name="assessment_date_start">
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="assessmentDateEnd" class="mobile-form-label">Assessment Date (End)</label>
+                                        <input type="date" class="form-control" id="assessmentDateEnd" name="assessment_date_end">
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="assessmentStatus" class="mobile-form-label">Assessment Status</label>
+                                    <select class="form-select" id="assessmentStatus" name="assessment_status">
+                                        <option value="">All Statuses</option>
+                                        <option value="draft">Draft</option>
+                                        <option value="review">Review</option>
+                                        <option value="complete">Complete</option>
+                                        <option value="appealed">Appealed</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Anomaly Filters -->
+                            <div id="anomalyFilters" style="display: none;">
+                                <div class="mb-3">
+                                    <label for="anomalyType" class="mobile-form-label">Anomaly Type</label>
+                                    <select class="form-select" id="anomalyType" name="anomaly_type">
+                                        <option value="">All Types</option>
+                                        {% for anomaly_type in anomaly_types %}
+                                        <option value="{{ anomaly_type.name }}">{{ anomaly_type.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="anomalySeverity" class="mobile-form-label">Severity</label>
+                                    <select class="form-select" id="anomalySeverity" name="anomaly_severity">
+                                        <option value="">All Severities</option>
+                                        <option value="high">High</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="low">Low</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="anomalyStatus" class="mobile-form-label">Status</label>
+                                    <select class="form-select" id="anomalyStatus" name="anomaly_status">
+                                        <option value="">All Statuses</option>
+                                        <option value="active">Active</option>
+                                        <option value="reviewing">Reviewing</option>
+                                        <option value="resolved">Resolved</option>
+                                        <option value="ignored">Ignored</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Common Filters -->
+                            <div class="mb-3">
+                                <label for="sortBy" class="mobile-form-label">Sort By</label>
+                                <select class="form-select" id="sortBy" name="sort">
+                                    <option value="relevance">Relevance</option>
+                                    <option value="date_desc">Date (Newest First)</option>
+                                    <option value="date_asc">Date (Oldest First)</option>
+                                    <option value="value_desc">Value (High to Low)</option>
+                                    <option value="value_asc">Value (Low to High)</option>
+                                    <option value="alpha_asc">Name (A-Z)</option>
+                                    <option value="alpha_desc">Name (Z-A)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Search Results -->
+    <div class="mobile-section-title">
+        {% if query %}Search Results{% else %}Recent Items{% endif %}
+        {% if results %}<span class="badge bg-primary">{{ results|length }}</span>{% endif %}
+    </div>
+    
+    {% if results %}
+        <div id="searchResults">
+            {% for result in results %}
+                {% if result.type == 'property' %}
+                <div class="mobile-card mobile-property-card mb-3">
+                    <div class="property-image" style="background-image: url('/static/images/property_placeholders/{{ result.property_type|lower }}.jpg');"></div>
+                    <div class="p-3">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h5 class="mb-0">{{ result.address }}</h5>
+                                <div class="text-muted small">{{ result.parcel_id }}</div>
+                            </div>
+                            <span class="badge bg-primary">{{ result.property_type }}</span>
+                        </div>
+                        
+                        <div class="property-details mb-3">
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div class="text-muted small">Owner</div>
+                                    <div>{{ result.owner_name }}</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-muted small">Assessed Value</div>
+                                    <div class="property-value">${{ "{:,.2f}".format(result.assessed_value) if result.assessed_value else 'N/A' }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="/mobile/property/{{ result.id }}" class="btn btn-outline-primary">View Details</a>
+                            <div class="text-muted small">Match: {{ result.match_score }}%</div>
+                        </div>
+                    </div>
+                </div>
+                
+                {% elif result.type == 'assessment' %}
+                <div class="mobile-card mb-3">
+                    <div class="p-3">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h5 class="mb-0">Assessment #{{ result.id[:8] }}</h5>
+                                <div class="text-muted small">Property: {{ result.property_address }}</div>
+                            </div>
+                            <span class="badge bg-secondary">Assessment</span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div class="text-muted small">Date</div>
+                                    <div>{{ result.assessment_date }}</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-muted small">Value</div>
+                                    <div>${{ "{:,.2f}".format(result.total_value) }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="/mobile/assessment/{{ result.id }}" class="btn btn-outline-primary">View Details</a>
+                            <div class="text-muted small">Match: {{ result.match_score }}%</div>
+                        </div>
+                    </div>
+                </div>
+                
+                {% elif result.type == 'anomaly' %}
+                <div class="mobile-card mobile-anomaly-card severity-{{ result.severity }} mb-3">
+                    <div class="p-3">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h5 class="mb-0">{{ result.description|truncate(60) }}</h5>
+                                <div class="text-muted small">
+                                    {% if result.property_id %}
+                                    Property: {{ result.property_address }}
+                                    {% else %}
+                                    System-wide anomaly
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div>
+                                {% if result.severity == 'high' %}
+                                <span class="badge bg-danger">HIGH</span>
+                                {% elif result.severity == 'medium' %}
+                                <span class="badge bg-warning">MEDIUM</span>
+                                {% else %}
+                                <span class="badge bg-success">LOW</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="anomaly-details mb-3">
+                            <div class="d-flex flex-wrap">
+                                {% if result.type %}
+                                <span class="anomaly-type type-{{ result.type|lower }}">{{ result.type }}</span>
+                                {% endif %}
+                                <span class="mobile-badge mobile-badge-gray">{{ result.detected_at }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="/mobile/anomaly/{{ result.id }}" class="btn btn-outline-primary">View Details</a>
+                            <div class="text-muted small">Match: {{ result.match_score }}%</div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% elif query %}
+        <div class="mobile-card p-4 text-center">
+            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+            <h5>No results found</h5>
+            <p class="text-muted">Try changing your search terms or filters.</p>
+        </div>
+    {% else %}
+        <div class="mobile-card p-4 text-center">
+            <i class="fas fa-search fa-3x text-primary mb-3"></i>
+            <h5>Enter a search query</h5>
+            <p class="text-muted">Search for properties, assessments, or anomalies.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle filters based on search type selection
+        const searchProperties = document.getElementById('searchProperties');
+        const searchAssessments = document.getElementById('searchAssessments');
+        const searchAnomalies = document.getElementById('searchAnomalies');
+        
+        const propertyFilters = document.getElementById('propertyFilters');
+        const assessmentFilters = document.getElementById('assessmentFilters');
+        const anomalyFilters = document.getElementById('anomalyFilters');
+        
+        function updateFilters() {
+            propertyFilters.style.display = searchProperties.checked ? 'block' : 'none';
+            assessmentFilters.style.display = searchAssessments.checked ? 'block' : 'none';
+            anomalyFilters.style.display = searchAnomalies.checked ? 'block' : 'none';
+        }
+        
+        searchProperties.addEventListener('change', updateFilters);
+        searchAssessments.addEventListener('change', updateFilters);
+        searchAnomalies.addEventListener('change', updateFilters);
+        
+        // Set initial state
+        updateFilters();
+    });
+</script>
+{% endblock %}

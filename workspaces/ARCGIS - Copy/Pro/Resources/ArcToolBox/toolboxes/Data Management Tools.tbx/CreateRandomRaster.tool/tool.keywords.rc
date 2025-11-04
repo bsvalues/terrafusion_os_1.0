@@ -1,0 +1,19 @@
+{
+    "set": [
+        "arbitrary",
+        "erdas imagine",
+        "exponential",
+        "extent",
+        "geometric",
+        "grid",
+        "img",
+        "make",
+        "negative binomial",
+        "normal distribution",
+        "poisson",
+        "probability",
+        "tif",
+        "tiff",
+        "value"
+    ]
+}

@@ -1,0 +1,30 @@
+{
+    "set": [
+        "average",
+        "different",
+        "dissimilar",
+        "largest",
+        "least",
+        "least often",
+        "majority",
+        "max",
+        "maximum",
+        "mean",
+        "med",
+        "median",
+        "min",
+        "minimum",
+        "minority",
+        "most often",
+        "moving deviation",
+        "neighborhood",
+        "std",
+        "stddev",
+        "stdev",
+        "sum",
+        "texture",
+        "total",
+        "unique",
+        "variety"
+    ]
+}

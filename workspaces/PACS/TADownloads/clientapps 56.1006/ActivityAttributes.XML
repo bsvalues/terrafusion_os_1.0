@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ActivityAttributes</name>
+    </assembly>
+    <members>
+        <member name="T:ActivityAttributes.ActivityAttribute">
+            <summary>
+            Attribute to add to workflow activities to make them enabled for Workflow Designer
+            </summary>
+        </member>
+        <member name="M:ActivityAttributes.ActivityAttribute.#ctor(System.String)">
+            <summary>
+            Constructor for Activity Attribute
+            </summary>
+            <param name="category">The Category for which the Activity will be found </param>
+        </member>
+        <member name="P:ActivityAttributes.ActivityAttribute.Category">
+            <summary>
+            The Category for which the Activity will be found 
+            </summary>
+        </member>
+    </members>
+</doc>

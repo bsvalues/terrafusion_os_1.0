@@ -1,0 +1,30 @@
+{
+    "set": [
+        "bin",
+        "binning",
+        "diamond",
+        "diamonds",
+        "fishnet",
+        "graticule",
+        "grid",
+        "hexagon",
+        "hexagons",
+        "mesh",
+        "pattern",
+        "polygon",
+        "rectangle",
+        "regular",
+        "repeat",
+        "sample",
+        "shape",
+        "square",
+        "squares",
+        "texture",
+        "tile",
+        "tiling",
+        "traverse hexagon",
+        "traverse hexagons",
+        "triangle",
+        "triangles"
+    ]
+}

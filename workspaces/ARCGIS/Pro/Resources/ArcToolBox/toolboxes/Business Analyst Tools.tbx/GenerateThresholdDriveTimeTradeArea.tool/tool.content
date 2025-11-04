@@ -1,0 +1,300 @@
+{
+    "type": "FunctionTool",
+    "guid": "{33724566-2738-4FE2-903A-A8C439127E50}/GenerateThresholdDriveTimeTradeArea",
+    "displayname": "$rc:title",
+    "helpcontent": "62030007",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "33",
+        "35"
+    ],
+    "params": {
+        "in_features": {
+            "display_order": "0",
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "featuretype.rule": "AsSpecified",
+                "featuretype": "Simple",
+                "geometrytype.rule": "AsSpecified",
+                "geometrytype": "Polygon",
+                "extenttype.rule": "Union",
+                "fields.rule": "None",
+                "clonedependency": "true",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "threshold_variable": {
+            "display_order": "2",
+            "control_guid": "{B2149D1C-943E-4613-A1D7-7DEA971DBC7B}",
+            "displayname": "$rc:threshold_variable.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:threshold_variable.descr"
+        },
+        "threshold_values": {
+            "type": "optional",
+            "displayname": "$rc:threshold_values.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPDouble"
+                }
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "description": "$rc:threshold_values.descr"
+        },
+        "distance_type": {
+            "displayname": "$rc:distance_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:distance_type.descr"
+        },
+        "units": {
+            "type": "optional",
+            "displayname": "$rc:units.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:units.descr"
+        },
+        "id_field": {
+            "type": "optional",
+            "displayname": "$rc:id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text",
+                    "Short",
+                    "BigInteger",
+                    "Long",
+                    "GUID",
+                    "GlobalID"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:id_field.descr"
+        },
+        "travel_direction": {
+            "type": "optional",
+            "displayname": "$rc:travel_direction.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "TOWARD_STORES",
+                        "code": "$rc:travel_direction.domain.TOWARD_STORES"
+                    },
+                    {
+                        "value": "AWAY_FROM_STORES",
+                        "code": "$rc:travel_direction.domain.AWAY_FROM_STORES"
+                    }
+                ]
+            },
+            "value": "TOWARD_STORES",
+            "description": "$rc:travel_direction.descr"
+        },
+        "time_of_day": {
+            "type": "optional",
+            "displayname": "$rc:time_of_day.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:time_of_day.descr"
+        },
+        "time_zone": {
+            "type": "optional",
+            "displayname": "$rc:time_zone.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "UTC",
+                        "code": "$rc:time_zone.domain.UTC"
+                    },
+                    {
+                        "value": "TIME_ZONE_AT_LOCATION",
+                        "code": "$rc:time_zone.domain.TIME_ZONE_AT_LOCATION"
+                    }
+                ]
+            },
+            "value": "TIME_ZONE_AT_LOCATION",
+            "description": "$rc:time_zone.descr"
+        },
+        "search_tolerance": {
+            "type": "optional",
+            "displayname": "$rc:search_tolerance.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "description": "$rc:search_tolerance.descr"
+        },
+        "polygon_detail": {
+            "type": "optional",
+            "displayname": "$rc:polygon_detail.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "STANDARD",
+                        "code": "$rc:polygon_detail.domain.STANDARD"
+                    },
+                    {
+                        "value": "GENERALIZED",
+                        "code": "$rc:polygon_detail.domain.GENERALIZED"
+                    },
+                    {
+                        "value": "HIGH",
+                        "code": "$rc:polygon_detail.domain.HIGH"
+                    }
+                ]
+            },
+            "value": "STANDARD",
+            "description": "$rc:polygon_detail.descr"
+        },
+        "iterations_limit": {
+            "type": "optional",
+            "displayname": "$rc:iterations_limit.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "1"
+                }
+            },
+            "description": "$rc:iterations_limit.descr"
+        },
+        "minimum_step": {
+            "type": "optional",
+            "displayname": "$rc:minimum_step.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "description": "$rc:minimum_step.descr"
+        },
+        "target_percent_diff": {
+            "type": "optional",
+            "displayname": "$rc:target_percent_diff.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "high": {
+                    "allow": "false",
+                    "val": "100"
+                }
+            },
+            "value": "5",
+            "description": "$rc:target_percent_diff.descr"
+        },
+        "input_method": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:input_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "VALUES",
+                        "code": "$rc:input_method.domain.VALUES"
+                    },
+                    {
+                        "value": "EXPRESSION",
+                        "code": "$rc:input_method.domain.EXPRESSION"
+                    }
+                ]
+            },
+            "value": "VALUES",
+            "description": "$rc:input_method.descr"
+        },
+        "expression": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "4",
+            "control_guid": "{CD56692A-4968-45D0-9D88-45E4946AB3DD}",
+            "displayname": "$rc:expression.title",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "in_features",
+                "threshold_variable"
+            ],
+            "description": "$rc:expression.descr"
+        }
+    },
+    "environments": [
+        "baDataSource",
+        "baNetworkSource",
+        "geographicTransformations",
+        "workspace"
+    ]
+}

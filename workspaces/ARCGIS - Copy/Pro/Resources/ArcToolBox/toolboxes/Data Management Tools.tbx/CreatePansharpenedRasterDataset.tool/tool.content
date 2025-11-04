@@ -1,0 +1,327 @@
+{
+    "type": "FunctionTool",
+    "guid": "{182fe6ca-ba06-4dd2-9c34-29981b389e58}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190303",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_raster": {
+            "display_order": "0",
+            "displayname": "$rc:in_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEMosaicDataset"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_raster.descr"
+        },
+        "red_channel": {
+            "display_order": "1",
+            "displayname": "$rc:red_channel.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "value": "3",
+            "description": "$rc:red_channel.descr"
+        },
+        "green_channel": {
+            "display_order": "2",
+            "displayname": "$rc:green_channel.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "value": "2",
+            "description": "$rc:green_channel.descr"
+        },
+        "blue_channel": {
+            "display_order": "3",
+            "displayname": "$rc:blue_channel.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "value": "1",
+            "description": "$rc:blue_channel.descr"
+        },
+        "infrared_channel": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:infrared_channel.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "value": "1",
+            "description": "$rc:infrared_channel.descr"
+        },
+        "out_raster_dataset": {
+            "direction": "out",
+            "display_order": "5",
+            "displayname": "$rc:out_raster_dataset.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_raster_dataset.descr"
+        },
+        "in_panchromatic_image": {
+            "display_order": "6",
+            "displayname": "$rc:in_panchromatic_image.title",
+            "datatype": {
+                "type": "GPRasterLayer"
+            },
+            "description": "$rc:in_panchromatic_image.descr"
+        },
+        "pansharpening_type": {
+            "display_order": "7",
+            "displayname": "$rc:pansharpening_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "IHS",
+                        "code": "$rc:pansharpening_type.domain.IHS"
+                    },
+                    {
+                        "value": "BROVEY",
+                        "code": "$rc:pansharpening_type.domain.BROVEY"
+                    },
+                    {
+                        "value": "Esri",
+                        "code": "$rc:pansharpening_type.domain.Esri"
+                    },
+                    {
+                        "value": "SIMPLE_MEAN",
+                        "code": "$rc:pansharpening_type.domain.SIMPLE_MEAN"
+                    },
+                    {
+                        "value": "Gram-Schmidt",
+                        "code": "$rc:pansharpening_type.domain.Gram-Schmidt"
+                    }
+                ]
+            },
+            "value": "Esri",
+            "description": "$rc:pansharpening_type.descr"
+        },
+        "red_weight": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:red_weight.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0.166",
+            "description": "$rc:red_weight.descr"
+        },
+        "green_weight": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:green_weight.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0.167",
+            "description": "$rc:green_weight.descr"
+        },
+        "blue_weight": {
+            "type": "optional",
+            "display_order": "11",
+            "displayname": "$rc:blue_weight.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0.167",
+            "description": "$rc:blue_weight.descr"
+        },
+        "infrared_weight": {
+            "type": "optional",
+            "display_order": "12",
+            "displayname": "$rc:infrared_weight.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0.5",
+            "description": "$rc:infrared_weight.descr"
+        },
+        "sensor": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:sensor.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "UNKNOWN",
+                        "code": "$rc:sensor.domain.UNKNOWN"
+                    },
+                    {
+                        "value": "BlackSky",
+                        "code": "$rc:sensor.domain.BlackSky"
+                    },
+                    {
+                        "value": "DubaiSat-2",
+                        "code": "$rc:sensor.domain.DubaiSat-2"
+                    },
+                    {
+                        "value": "GeoEye-1",
+                        "code": "$rc:sensor.domain.GeoEye-1"
+                    },
+                    {
+                        "value": "GF-1 PMS",
+                        "code": "$rc:sensor.domain.GF-1 PMS"
+                    },
+                    {
+                        "value": "GF-2 PMS",
+                        "code": "$rc:sensor.domain.GF-2 PMS"
+                    },
+                    {
+                        "value": "IKONOS",
+                        "code": "$rc:sensor.domain.IKONOS"
+                    },
+                    {
+                        "value": "Jilin-1",
+                        "code": "$rc:sensor.domain.Jilin-1"
+                    },
+                    {
+                        "value": "KOMPSAT-2",
+                        "code": "$rc:sensor.domain.KOMPSAT-2"
+                    },
+                    {
+                        "value": "KOMPSAT-3",
+                        "code": "$rc:sensor.domain.KOMPSAT-3"
+                    },
+                    {
+                        "value": "Landsat 1-5 MSS",
+                        "code": "$rc:sensor.domain.Landsat 1-5 MSS"
+                    },
+                    {
+                        "value": "Landsat 7 ETM+",
+                        "code": "$rc:sensor.domain.Landsat 7 ETM+"
+                    },
+                    {
+                        "value": "Landsat 8",
+                        "code": "$rc:sensor.domain.Landsat 8"
+                    },
+                    {
+                        "value": "Landsat 9",
+                        "code": "$rc:sensor.domain.Landsat 9"
+                    },
+                    {
+                        "value": "Pleiades Neo",
+                        "code": "$rc:sensor.domain.Pleiades Neo"
+                    },
+                    {
+                        "value": "Pleiades-1",
+                        "code": "$rc:sensor.domain.Pleiades-1"
+                    },
+                    {
+                        "value": "QuickBird",
+                        "code": "$rc:sensor.domain.QuickBird"
+                    },
+                    {
+                        "value": "SkySat",
+                        "code": "$rc:sensor.domain.SkySat"
+                    },
+                    {
+                        "value": "SPOT 5",
+                        "code": "$rc:sensor.domain.SPOT 5"
+                    },
+                    {
+                        "value": "SPOT 6",
+                        "code": "$rc:sensor.domain.SPOT 6"
+                    },
+                    {
+                        "value": "SPOT 7",
+                        "code": "$rc:sensor.domain.SPOT 7"
+                    },
+                    {
+                        "value": "SuperView-1",
+                        "code": "$rc:sensor.domain.SuperView-1"
+                    },
+                    {
+                        "value": "TH-01",
+                        "code": "$rc:sensor.domain.TH-01"
+                    },
+                    {
+                        "value": "UltraCam",
+                        "code": "$rc:sensor.domain.UltraCam"
+                    },
+                    {
+                        "value": "Vision-1",
+                        "code": "$rc:sensor.domain.Vision-1"
+                    },
+                    {
+                        "value": "WorldView-2",
+                        "code": "$rc:sensor.domain.WorldView-2"
+                    },
+                    {
+                        "value": "WorldView-3",
+                        "code": "$rc:sensor.domain.WorldView-3"
+                    },
+                    {
+                        "value": "WorldView-4",
+                        "code": "$rc:sensor.domain.WorldView-4"
+                    },
+                    {
+                        "value": "ZY1-02C PMS",
+                        "code": "$rc:sensor.domain.ZY1-02C PMS"
+                    },
+                    {
+                        "value": "ZY3-CRESDA",
+                        "code": "$rc:sensor.domain.ZY3-CRESDA"
+                    },
+                    {
+                        "value": "ZY3-SASMAC",
+                        "code": "$rc:sensor.domain.ZY3-SASMAC"
+                    }
+                ]
+            },
+            "value": "UNKNOWN",
+            "description": "$rc:sensor.descr"
+        }
+    },
+    "environments": [
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "nodata",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "pyramid",
+        "rasterStatistics",
+        "resamplingMethod",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

@@ -1,0 +1,101 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build
+        run: npm run build
+        env:
+          NODE_ENV: production
+          
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+          
+      # Create backup of production database
+      - name: Backup production database
+        run: |
+          aws rds create-db-snapshot \
+            --db-instance-identifier terrafusionpro-prod \
+            --db-snapshot-identifier terrafusionpro-prod-backup-${{ github.sha }}
+            
+      # First, deploy to blue environment for blue-green deployment
+      - name: Deploy frontend to S3 (Blue)
+        run: |
+          aws s3 sync dist/public/ s3://terrafusionpro-prod-blue-frontend/ --delete
+          
+      - name: Deploy backend to ECS (Blue)
+        run: |
+          aws ecs update-service --cluster terrafusionpro-prod --service terrafusionpro-api-blue --force-new-deployment
+          
+      - name: Wait for ECS deployment (Blue)
+        run: |
+          aws ecs wait services-stable --cluster terrafusionpro-prod --services terrafusionpro-api-blue
+          
+      - name: Run smoke tests on blue environment
+        run: |
+          echo "Running smoke tests for blue environment"
+          # In a real implementation, this would test the blue environment before switching traffic
+          curl -f https://api-blue.terrafusion.com/api/health || exit 1
+          
+      # Shift traffic to blue environment once tests pass
+      - name: Update ALB target group
+        run: |
+          aws elbv2 modify-listener \
+            --listener-arn ${{ secrets.PROD_ALB_LISTENER_ARN }} \
+            --default-actions Type=forward,TargetGroupArn=${{ secrets.PROD_BLUE_TARGET_GROUP_ARN }}
+            
+      # Deploy desktop app artifacts
+      - name: Upload desktop app artifacts
+        run: |
+          aws s3 cp dist/desktop s3://terrafusionpro-desktop-releases/${{ github.sha }}/ --recursive
+          
+      - name: Generate desktop app update manifest
+        run: |
+          echo '{"version": "${{ github.ref_name }}", "url": "https://downloads.terrafusion.com/${{ github.sha }}/TerraFusionPro-Setup.exe"}' > update-manifest.json
+          aws s3 cp update-manifest.json s3://terrafusionpro-desktop-releases/latest/update-manifest.json
+          
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.PROD_CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+          
+      - name: Notify deployment success
+        if: success()
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: 'deployments'
+          slack-message: "🚀 Successfully deployed to production! Check it out: https://app.terrafusion.com"
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          
+      - name: Notify deployment failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: 'deployments'
+          slack-message: "❌ Failed to deploy to production! Check the logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

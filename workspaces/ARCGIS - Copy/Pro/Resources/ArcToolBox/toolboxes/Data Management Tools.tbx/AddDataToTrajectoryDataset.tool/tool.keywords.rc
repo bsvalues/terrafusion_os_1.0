@@ -1,0 +1,11 @@
+{
+    "set": [
+        "altimetry",
+        "cryosat",
+        "geodatabase",
+        "icesat",
+        "sentinel-3",
+        "sentinel-6",
+        "trajectory"
+    ]
+}

@@ -14,18 +14,18 @@ describe('Input Component', () => {
     });
 
     it('renders with placeholder', () => {
-      render(<Input placeholder="Enter your name" />);
+      render(<Input placeholder='Enter your name' />);
       expect(screen.getByPlaceholderText(/enter your name/i)).toBeInTheDocument();
     });
 
     it('renders with default value', () => {
-      render(<Input defaultValue="Default text" />);
+      render(<Input defaultValue='Default text' />);
       const input = screen.getByRole('textbox') as HTMLInputElement;
       expect(input.value).toBe('Default text');
     });
 
     it('renders with specific type', () => {
-      render(<Input type="email" />);
+      render(<Input type='email' />);
       const input = screen.getByRole('textbox');
       expect(input).toHaveAttribute('type', 'email');
     });
@@ -33,32 +33,32 @@ describe('Input Component', () => {
 
   describe('Input Types', () => {
     it('renders text input', () => {
-      render(<Input type="text" />);
+      render(<Input type='text' />);
       expect(screen.getByRole('textbox')).toHaveAttribute('type', 'text');
     });
 
     it('renders email input', () => {
-      render(<Input type="email" data-testid="email-input" />);
+      render(<Input type='email' data-testid='email-input' />);
       expect(screen.getByTestId('email-input')).toHaveAttribute('type', 'email');
     });
 
     it('renders password input', () => {
-      render(<Input type="password" data-testid="password-input" />);
+      render(<Input type='password' data-testid='password-input' />);
       expect(screen.getByTestId('password-input')).toHaveAttribute('type', 'password');
     });
 
     it('renders number input', () => {
-      render(<Input type="number" data-testid="number-input" />);
+      render(<Input type='number' data-testid='number-input' />);
       expect(screen.getByTestId('number-input')).toHaveAttribute('type', 'number');
     });
 
     it('renders search input', () => {
-      render(<Input type="search" role="searchbox" />);
+      render(<Input type='search' role='searchbox' />);
       expect(screen.getByRole('searchbox')).toHaveAttribute('type', 'search');
     });
 
     it('renders file input', () => {
-      render(<Input type="file" data-testid="file-input" />);
+      render(<Input type='file' data-testid='file-input' />);
       expect(screen.getByTestId('file-input')).toHaveAttribute('type', 'file');
     });
   });
@@ -70,7 +70,7 @@ describe('Input Component', () => {
     });
 
     it('renders readonly input', () => {
-      render(<Input readOnly value="Read only" />);
+      render(<Input readOnly value='Read only' />);
       const input = screen.getByRole('textbox');
       expect(input).toHaveAttribute('readonly');
     });
@@ -78,18 +78,18 @@ describe('Input Component', () => {
     it('cannot type in disabled input', async () => {
       render(<Input disabled />);
       const input = screen.getByRole('textbox');
-      
+
       await userEvent.type(input, 'test');
-      
+
       expect(input).toHaveValue('');
     });
 
     it('cannot type in readonly input', async () => {
-      render(<Input readOnly value="Original" />);
+      render(<Input readOnly value='Original' />);
       const input = screen.getByRole('textbox');
-      
+
       await userEvent.type(input, 'test');
-      
+
       expect(input).toHaveValue('Original');
     });
   });
@@ -98,18 +98,18 @@ describe('Input Component', () => {
     it('allows typing text', async () => {
       render(<Input />);
       const input = screen.getByRole('textbox');
-      
+
       await userEvent.type(input, 'Hello World');
-      
+
       expect(input).toHaveValue('Hello World');
     });
 
     it('clears text on clear', async () => {
-      render(<Input defaultValue="Initial text" />);
+      render(<Input defaultValue='Initial text' />);
       const input = screen.getByRole('textbox');
-      
+
       await userEvent.clear(input);
-      
+
       expect(input).toHaveValue('');
     });
 
@@ -117,9 +117,9 @@ describe('Input Component', () => {
       const handleChange = jest.fn();
       render(<Input onChange={handleChange} />);
       const input = screen.getByRole('textbox');
-      
+
       await userEvent.type(input, 'test');
-      
+
       expect(handleChange).toHaveBeenCalled();
       expect(handleChange).toHaveBeenCalledTimes(4); // Called for each character
     });
@@ -128,9 +128,9 @@ describe('Input Component', () => {
       const handleFocus = jest.fn();
       render(<Input onFocus={handleFocus} />);
       const input = screen.getByRole('textbox');
-      
+
       await userEvent.click(input);
-      
+
       expect(handleFocus).toHaveBeenCalledTimes(1);
     });
 
@@ -138,19 +138,19 @@ describe('Input Component', () => {
       const handleBlur = jest.fn();
       render(<Input onBlur={handleBlur} />);
       const input = screen.getByRole('textbox');
-      
+
       await userEvent.click(input);
       await userEvent.tab(); // Move focus away
-      
+
       expect(handleBlur).toHaveBeenCalledTimes(1);
     });
 
     it('can be focused with Tab key', async () => {
       render(<Input />);
       const input = screen.getByRole('textbox');
-      
+
       await userEvent.tab();
-      
+
       expect(input).toHaveFocus();
     });
   });
@@ -172,16 +172,16 @@ describe('Input Component', () => {
     });
 
     it('accepts pattern attribute', () => {
-      render(<Input pattern="[0-9]*" />);
+      render(<Input pattern='[0-9]*' />);
       expect(screen.getByRole('textbox')).toHaveAttribute('pattern', '[0-9]*');
     });
 
     it('respects maxLength constraint', async () => {
       render(<Input maxLength={5} />);
       const input = screen.getByRole('textbox') as HTMLInputElement;
-      
+
       await userEvent.type(input, '1234567890');
-      
+
       // Should only accept 5 characters
       expect(input.value.length).toBeLessThanOrEqual(5);
     });
@@ -189,20 +189,20 @@ describe('Input Component', () => {
 
   describe('Custom Props', () => {
     it('accepts custom className', () => {
-      render(<Input className="custom-input" />);
+      render(<Input className='custom-input' />);
       expect(screen.getByRole('textbox')).toHaveClass('custom-input');
     });
 
     it('accepts aria-label', () => {
-      render(<Input aria-label="Username" />);
+      render(<Input aria-label='Username' />);
       expect(screen.getByLabelText(/username/i)).toBeInTheDocument();
     });
 
     it('accepts aria-describedby', () => {
       render(
         <>
-          <Input aria-describedby="helper-text" />
-          <div id="helper-text">Enter your username</div>
+          <Input aria-describedby='helper-text' />
+          <div id='helper-text'>Enter your username</div>
         </>
       );
       const input = screen.getByRole('textbox');
@@ -210,7 +210,7 @@ describe('Input Component', () => {
     });
 
     it('accepts data attributes', () => {
-      render(<Input data-testid="custom-input" data-custom="value" />);
+      render(<Input data-testid='custom-input' data-custom='value' />);
       const input = screen.getByTestId('custom-input');
       expect(input).toHaveAttribute('data-custom', 'value');
     });
@@ -231,26 +231,26 @@ describe('Input Component', () => {
     it('is keyboard accessible', async () => {
       render(<Input />);
       const input = screen.getByRole('textbox');
-      
+
       await userEvent.tab();
       expect(input).toHaveFocus();
-      
+
       await userEvent.keyboard('test');
       expect(input).toHaveValue('test');
     });
 
     it('announces required state', () => {
-      render(<Input required aria-label="Required field" />);
+      render(<Input required aria-label='Required field' />);
       expect(screen.getByRole('textbox')).toBeRequired();
     });
 
     it('announces disabled state', () => {
-      render(<Input disabled aria-label="Disabled field" />);
+      render(<Input disabled aria-label='Disabled field' />);
       expect(screen.getByRole('textbox')).toBeDisabled();
     });
 
     it('supports aria-invalid for errors', () => {
-      render(<Input aria-invalid="true" />);
+      render(<Input aria-invalid='true' />);
       expect(screen.getByRole('textbox')).toHaveAttribute('aria-invalid', 'true');
     });
   });
@@ -260,17 +260,17 @@ describe('Input Component', () => {
       const handleSubmit = jest.fn((e) => e.preventDefault());
       render(
         <form onSubmit={handleSubmit}>
-          <Input name="username" />
-          <button type="submit">Submit</button>
+          <Input name='username' />
+          <button type='submit'>Submit</button>
         </form>
       );
-      
+
       const input = screen.getByRole('textbox');
       await userEvent.type(input, 'testuser');
-      
+
       const submitButton = screen.getByRole('button');
       await userEvent.click(submitButton);
-      
+
       expect(handleSubmit).toHaveBeenCalled();
     });
 
@@ -283,14 +283,14 @@ describe('Input Component', () => {
 
       render(
         <form onSubmit={handleSubmit}>
-          <Input name="email" defaultValue="test@example.com" />
-          <button type="submit">Submit</button>
+          <Input name='email' defaultValue='test@example.com' />
+          <button type='submit'>Submit</button>
         </form>
       );
-      
+
       const submitButton = screen.getByRole('button');
       await userEvent.click(submitButton);
-      
+
       expect(formData?.get('email')).toBe('test@example.com');
     });
   });

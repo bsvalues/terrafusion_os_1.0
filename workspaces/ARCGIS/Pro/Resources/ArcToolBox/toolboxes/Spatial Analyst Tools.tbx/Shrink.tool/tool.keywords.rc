@@ -1,0 +1,14 @@
+{
+    "set": [
+        "boundary",
+        "clean",
+        "erosion",
+        "generalize",
+        "image processing",
+        "neighborhood",
+        "simplify",
+        "smooth",
+        "thin",
+        "zone"
+    ]
+}

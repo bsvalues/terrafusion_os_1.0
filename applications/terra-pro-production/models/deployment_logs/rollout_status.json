@@ -1,0 +1,19 @@
+{
+  "current_deployment": {
+    "model": "condition_model",
+    "version": "2.0.0",
+    "timestamp": "2025-05-02T19:44:39.344804",
+    "status": "active"
+  },
+  "fallback_enabled": true,
+  "fallback_version": "1.0.0",
+  "deployment_history": [
+    {
+      "model": "condition_model",
+      "version": "1.0.0",
+      "timestamp": "2025-05-02T19:44:39.344814",
+      "status": "superseded"
+    }
+  ],
+  "last_updated": "2025-05-02T19:44:39.344816"
+}

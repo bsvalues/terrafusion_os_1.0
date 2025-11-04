@@ -1,9 +1,9 @@
 /**
  * Terrafusion CSS React Integration
- * 
+ *
  * React hooks and components for integrating with the Terrafusion CSS Engine
  * Provides reactive CSS updates based on AI states and performance metrics
- * 
+ *
  * @author Terrafusion AI Team
  */
 
@@ -26,9 +26,9 @@ class SimpleTerraFusionCSSEngine {
   private performanceMetrics: PerformanceMetrics = {
     performanceIndex: 0.8,
     fps: 60,
-    memoryUsage: 0.5
+    memoryUsage: 0.5,
   };
-  
+
   private aiAgents: Map<string, AIAgentState> = new Map();
 
   getPerformanceMetrics(): PerformanceMetrics {
@@ -69,7 +69,9 @@ interface TerraFusionCSSProviderProps {
 
 export const TerraFusionCSSProvider: React.FC<TerraFusionCSSProviderProps> = ({ children }) => {
   const [isInitialized, setIsInitialized] = useState(false);
-  const [performanceMetrics, setPerformanceMetrics] = useState(terraFusionCSS.getPerformanceMetrics());
+  const [performanceMetrics, setPerformanceMetrics] = useState(
+    terraFusionCSS.getPerformanceMetrics()
+  );
   const [aiAgentCount, setAiAgentCount] = useState(0);
 
   useEffect(() => {
@@ -80,7 +82,7 @@ export const TerraFusionCSSProvider: React.FC<TerraFusionCSSProviderProps> = ({ 
     const performanceInterval = setInterval(() => {
       const metrics = terraFusionCSS.getPerformanceMetrics();
       setPerformanceMetrics(metrics);
-      
+
       const agents = terraFusionCSS.getAIAgentStates();
       setAiAgentCount(agents.size);
     }, 1000);
@@ -95,13 +97,11 @@ export const TerraFusionCSSProvider: React.FC<TerraFusionCSSProviderProps> = ({ 
     engine: terraFusionCSS,
     isInitialized,
     performanceMetrics,
-    aiAgentCount
+    aiAgentCount,
   };
 
   return (
-    <TerraFusionCSSContext.Provider value={contextValue}>
-      {children}
-    </TerraFusionCSSContext.Provider>
+    <TerraFusionCSSContext.Provider value={contextValue}>{children}</TerraFusionCSSContext.Provider>
   );
 };
 
@@ -148,12 +148,12 @@ export const PerformanceAware: React.FC<PerformanceAwareProps> = ({
   children,
   className = '',
   performanceThreshold = 0.5,
-  fallbackComponent = null
+  fallbackComponent = null,
 }) => {
   const { performanceMetrics } = useTerraFusionCSS();
-  
+
   const shouldRenderFallback = performanceMetrics.performanceIndex < performanceThreshold;
-  
+
   const dynamicClassName = `
     ${className} 
     tf-performance-aware 
@@ -178,7 +178,7 @@ interface AIAgentStatusProps {
 export const AIAgentStatus: React.FC<AIAgentStatusProps> = ({
   agentId,
   showGlobalStatus = false,
-  className = ''
+  className = '',
 }) => {
   const agentStates = useAIAgentStates();
   const { aiAgentCount } = useTerraFusionCSS();
@@ -190,11 +190,10 @@ export const AIAgentStatus: React.FC<AIAgentStatusProps> = ({
 
     return (
       <div className={`tf-ai-global-status ${className}`}>
-
-
-        <span className="tf-agent-count">{activeCount}/{aiAgentCount}</span>
-        <span
- className="tf-status-indicator tf-status-active"></span>
+        <span className='tf-agent-count'>
+          {activeCount}/{aiAgentCount}
+        </span>
+        <span className='tf-status-indicator tf-status-active'></span>
       </div>
     );
   }
@@ -206,14 +205,14 @@ export const AIAgentStatus: React.FC<AIAgentStatusProps> = ({
 
   return (
     <div className={`tf-ai-agent-status tf-status-${agentState.status} ${className}`}>
-
-
-      <span className="tf-agent-id">{agentId}</span>
+      <span className='tf-agent-id'>{agentId}</span>
+      <span className='tf-status-indicator'></span>
       <span
- className="tf-status-indicator"></span>
-      <span className="tf-coherence-level" style={{
-        opacity: agentState.coherence
-      }}></span>
+        className='tf-coherence-level'
+        style={{
+          opacity: agentState.coherence,
+        }}
+      ></span>
     </div>
   );
 };
@@ -238,7 +237,7 @@ export const useCSSCustomProperties = () => {
   return {
     setCSSProperty,
     getCSSProperty,
-    updateUserPreference
+    updateUserPreference,
   };
 };
 
@@ -255,10 +254,10 @@ export const QuantumElement: React.FC<QuantumElementProps> = ({
   children,
   coherenceLevel = 1.0,
   quantumState = 'collapsed',
-  className = ''
+  className = '',
 }) => {
   const { performanceMetrics } = useTerraFusionCSS();
-  
+
   const quantumClassName = `
     tf-quantum-element 
     tf-quantum-${quantumState}
@@ -268,7 +267,7 @@ export const QuantumElement: React.FC<QuantumElementProps> = ({
   const quantumStyle = {
     '--tf-quantum-coherence': coherenceLevel.toString(),
     '--tf-quantum-phase': (Math.random() * 360).toString(),
-    opacity: performanceMetrics.performanceIndex > 0.8 ? 1 : 0.8
+    opacity: performanceMetrics.performanceIndex > 0.8 ? 1 : 0.8,
   } as React.CSSProperties;
 
   return (
@@ -291,7 +290,7 @@ export const ComplianceWrapper: React.FC<ComplianceWrapperProps> = ({
   children,
   accessibilityLevel = 'AAA',
   securityLevel = 'enhanced',
-  auditMode = false
+  auditMode = false,
 }) => {
   const complianceClassName = `
     tf-compliance-wrapper
@@ -301,10 +300,10 @@ export const ComplianceWrapper: React.FC<ComplianceWrapperProps> = ({
   `.trim();
 
   return (
-    <div 
+    <div
       className={complianceClassName}
-      role="application"
-      aria-label="Terrafusion Government Interface"
+      role='application'
+      aria-label='Terrafusion Government Interface'
     >
       {children}
     </div>

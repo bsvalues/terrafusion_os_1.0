@@ -1,0 +1,15 @@
+{
+    "map": {
+        "description": "Deletes one or more fields from a table, feature class, feature layer, or raster dataset.",
+        "drop_field.descr": "<xdoc><p>The fields to be deleted or kept from the input table, as specified by the <span class=\"esri_uicontrol\">Method</span> parameter. Only nonrequired fields can be deleted.</p></xdoc>",
+        "drop_field.title": "Fields",
+        "in_table.descr": "The table containing the fields to be deleted. The existing input table will be modified.",
+        "in_table.title": "Input Table",
+        "method.descr": "<xdoc><p>Specifies whether the fields specified by the <span class=\"esri_uicontrol\">Fields</span> parameter will be deleted or kept.</p><ul><li><span title=\"DELETE_FIELDS\">Delete Fields</span>—The fields specified by the <span class=\"esri_uicontrol\">Fields</span> parameter will be deleted. This is the default.</li><li><span title=\"KEEP_FIELDS\">Keep Fields</span>—The fields specified by the <span class=\"esri_uicontrol\">Fields</span> parameter will be kept; all other fields will be deleted.</li></ul></xdoc>",
+        "method.domain.DELETE_FIELDS": "Delete Fields",
+        "method.domain.KEEP_FIELDS": "Keep Fields",
+        "method.title": "Method",
+        "out_table.title": "Update Input Table",
+        "title": "Delete Field"
+    }
+}

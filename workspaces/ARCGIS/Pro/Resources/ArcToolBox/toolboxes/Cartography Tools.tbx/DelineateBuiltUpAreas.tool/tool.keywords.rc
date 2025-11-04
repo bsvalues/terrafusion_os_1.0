@@ -1,0 +1,25 @@
+{
+    "set": [
+        "aggregate",
+        "bua",
+        "building",
+        "built up",
+        "builtup",
+        "contextual",
+        "generalisation",
+        "generalise",
+        "generalization",
+        "generalize",
+        "interpolation",
+        "multi-scale",
+        "multiscale",
+        "outline",
+        "partition",
+        "partitioning",
+        "point to polygon",
+        "scale change",
+        "simplify",
+        "small scale",
+        "urban"
+    ]
+}

@@ -1,0 +1,30 @@
+{% extends "new_unified_base.html" %}
+
+{% block title %}{{ error_code }} - {{ error_message }}{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] flex items-center justify-center">
+    <div class="text-center p-8 max-w-md">
+        <div class="bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 rounded-full h-24 w-24 flex items-center justify-center mx-auto mb-6">
+            <span class="text-4xl font-bold">{{ error_code }}</span>
+        </div>
+        
+        <h1 class="text-3xl font-bold mb-4">{{ error_message }}</h1>
+        
+        <p class="text-gray-600 dark:text-gray-300 mb-8">
+            {% if error_code == 404 %}
+            The page you were looking for could not be found. It might have been moved or deleted.
+            {% elif error_code == 500 %}
+            An unexpected error occurred on our server. Our team has been notified and we're working to fix the issue.
+            {% else %}
+            Something went wrong. Please try again later or contact support if the problem persists.
+            {% endif %}
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{{ url_for('index') }}" class="btn-primary">Return to Home</a>
+            <a href="javascript:history.back()" class="btn-secondary">Go Back</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

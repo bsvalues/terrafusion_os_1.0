@@ -1,0 +1,130 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "53020003",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "inputLayer": {
+            "displayname": "$rc:inputlayer.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "description": "$rc:inputlayer.descr"
+        },
+        "overlayLayer": {
+            "displayname": "$rc:overlaylayer.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "description": "$rc:overlaylayer.descr"
+        },
+        "outputName": {
+            "displayname": "$rc:outputname.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:outputname.descr"
+        },
+        "overlayType": {
+            "type": "optional",
+            "displayname": "$rc:overlaytype.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "INTERSECT",
+                        "code": "$rc:overlaytype.domain.INTERSECT"
+                    },
+                    {
+                        "value": "UNION",
+                        "code": "$rc:overlaytype.domain.UNION"
+                    },
+                    {
+                        "value": "ERASE",
+                        "code": "$rc:overlaytype.domain.ERASE"
+                    }
+                ]
+            },
+            "value": "INTERSECT",
+            "description": "$rc:overlaytype.descr"
+        },
+        "outputType": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:outputtype.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "INPUT",
+                        "code": "$rc:outputtype.domain.INPUT"
+                    },
+                    {
+                        "value": "LINE",
+                        "code": "$rc:outputtype.domain.LINE"
+                    },
+                    {
+                        "value": "POINT",
+                        "code": "$rc:outputtype.domain.POINT"
+                    }
+                ]
+            },
+            "value": "INPUT",
+            "description": "$rc:outputtype.descr"
+        },
+        "snapToInput": {
+            "type": "optional",
+            "displayname": "$rc:snaptoinput.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SNAP"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_SNAP"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:snaptoinput.descr"
+        },
+        "tolerance": {
+            "type": "optional",
+            "displayname": "$rc:tolerance.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:tolerance.descr"
+        },
+        "output": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    },
+    "environments": [
+        "extent"
+    ]
+}

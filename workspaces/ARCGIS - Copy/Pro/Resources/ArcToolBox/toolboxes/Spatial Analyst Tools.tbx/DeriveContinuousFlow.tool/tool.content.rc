@@ -1,0 +1,22 @@
+{
+    "map": {
+        "description": "Generates a raster of accumulated flow into each cell from an input surface raster with no prior sink or depression filling required.",
+        "flow_direction_type.descr": "<xdoc><p>Specifies the type of flow method that will be used when computing flow directions.</p><ul><li><span title=\"D8\">D8</span>—Flow direction will be determined by the D8 method. This method assigns flow direction to the steepest downslope neighbor. This is the default.</li><li><span title=\"MFD\">MFD</span>—Flow direction will be based on the MFD flow method. Flow direction will be partitioned across downslope neighbors according to an adaptive partition exponent.</li></ul></xdoc>",
+        "flow_direction_type.domain.D8": "D8",
+        "flow_direction_type.domain.MFD": "MFD",
+        "flow_direction_type.title": "Flow direction type",
+        "force_flow.descr": "<xdoc><p>Specifies whether edge cells will always flow outward or follow normal flow rules.</p><ul><li>Unchecked—If the maximum drop on the inside of an edge cell is greater than zero, the flow direction will be determined as usual; otherwise, the flow direction will be toward the edge. Cells that should flow from the edge of the surface raster inward will do so. This is the default.</li><li>Checked—All cells at the edge of the surface raster will flow outward from the surface raster.</li></ul></xdoc>",
+        "force_flow.title": "Force all edge cells to flow outward",
+        "in_depressions_data.descr": "<xdoc><p>An optional dataset that defines real depressions.</p><p>The depressions can be defined either through a raster or a feature layer.</p><p>If input is a raster, the depression cells must take a valid value, including zero, and the areas that are not depressions must be NoData.</p></xdoc>",
+        "in_depressions_data.title": "Input raster or feature depressions data",
+        "in_surface_raster.descr": "The input raster representing a continuous surface.",
+        "in_surface_raster.title": "Input surface raster",
+        "in_weight_raster.descr": "<xdoc><p>An optional input raster dataset that defines the fraction of flow that contributes to flow accumulation at each cell.</p><p>The weight is only applied to the accumulation of flow.</p><p>If no accumulation weight raster is specified, a default weight of 1 will be applied to each cell.</p></xdoc>",
+        "in_weight_raster.title": "Input accumulation weight raster",
+        "out_accumulation_raster.descr": "<xdoc><p>The output raster representing flow accumulation (number of upstream cells draining to each cell).</p><p>The output raster is of floating-point type.</p></xdoc>",
+        "out_accumulation_raster.title": "Output flow accumulation raster",
+        "out_flow_direction_raster.descr": "<xdoc><p>The output raster that shows the direction of flow at each cell using the D8 or Multiple Flow Direction (MFD) method.</p><p>The output is of integer type.</p></xdoc>",
+        "out_flow_direction_raster.title": "Output flow direction raster",
+        "title": "Derive Continuous Flow"
+    }
+}

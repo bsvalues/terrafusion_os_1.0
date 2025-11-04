@@ -1,0 +1,42 @@
+CREATE TABLE [dbo].[sales_comp_display] (
+    [criteria_id]            INT         NOT NULL,
+    [criteria_id_type]       VARCHAR (5) NOT NULL,
+    [abs_subdv]              VARCHAR (1) NULL,
+    [appraised_val]          VARCHAR (1) NULL,
+    [appraised_val_per_sqft] VARCHAR (1) NULL,
+    [city_entity]            VARCHAR (1) NULL,
+    [class_cd]               VARCHAR (1) NULL,
+    [geo_id]                 VARCHAR (1) NULL,
+    [hood_cd]                VARCHAR (1) NULL,
+    [imprv_add_val]          VARCHAR (1) NULL,
+    [imprv_up]               VARCHAR (1) NULL,
+    [imprv_val]              VARCHAR (1) NULL,
+    [land_sale_val_per]      VARCHAR (1) NULL,
+    [land_size]              VARCHAR (1) NULL,
+    [land_type]              VARCHAR (1) NULL,
+    [land_up]                VARCHAR (1) NULL,
+    [land_val]               VARCHAR (1) NULL,
+    [land_val_per]           VARCHAR (1) NULL,
+    [living_area]            VARCHAR (1) NULL,
+    [map_id]                 VARCHAR (1) NULL,
+    [owner]                  VARCHAR (1) NULL,
+    [picture]                VARCHAR (1) NULL,
+    [prop_id]                VARCHAR (1) NULL,
+    [region_cd]              VARCHAR (1) NULL,
+    [sale_date]              VARCHAR (1) NULL,
+    [sale_price]             VARCHAR (1) NULL,
+    [sale_price_per_sqft]    VARCHAR (1) NULL,
+    [sale_ratio]             VARCHAR (1) NULL,
+    [sale_type]              VARCHAR (1) NULL,
+    [school_entity]          VARCHAR (1) NULL,
+    [score]                  VARCHAR (1) NULL,
+    [situs]                  VARCHAR (1) NULL,
+    [state_cd]               VARCHAR (1) NULL,
+    [subset_cd]              VARCHAR (1) NULL,
+    [yr_built]               VARCHAR (1) NULL,
+    CONSTRAINT [CPK_sales_comp_display] PRIMARY KEY CLUSTERED ([criteria_id] ASC, [criteria_id_type] ASC) WITH (FILLFACTOR = 100)
+);
+
+
+GO
+

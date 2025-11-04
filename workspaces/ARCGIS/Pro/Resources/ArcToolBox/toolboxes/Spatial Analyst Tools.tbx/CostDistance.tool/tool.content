@@ -1,0 +1,362 @@
+{
+    "type": "FunctionTool",
+    "guid": "{7bea851f-395e-4081-a97e-cd170897c5ec}",
+    "displayname": "$rc:title",
+    "helpcontent": "8030004",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10"
+    ],
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_source_data": {
+            "displayname": "$rc:in_source_data.title",
+            "datatype": {
+                "type": "GPSAGeoData"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "true",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "DEFeatureClass",
+                    "GPFeatureLayer",
+                    "DETin",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "OID",
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Geometry"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_source_data.descr"
+        },
+        "in_cost_raster": {
+            "displayname": "$rc:in_cost_raster.title",
+            "datatype": {
+                "type": "GPSAGeoData"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "true",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_cost_raster.descr"
+        },
+        "out_distance_raster": {
+            "direction": "out",
+            "displayname": "$rc:out_distance_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_distance_raster.descr"
+        },
+        "maximum_distance": {
+            "type": "optional",
+            "displayname": "$rc:maximum_distance.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "depends": [
+                "source_capacity"
+            ],
+            "description": "$rc:maximum_distance.descr"
+        },
+        "out_backlink_raster": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_backlink_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_backlink_raster.descr"
+        },
+        "source_cost_multiplier": {
+            "type": "optional",
+            "control_guid": "{BEDF969C-20D2-4C41-96DA-32408CA72BF6}",
+            "displayname": "$rc:source_cost_multiplier.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPDouble"
+                    },
+                    {
+                        "type": "Field"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPNumericDomain",
+                        "allowempty": "true"
+                    },
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "OID",
+                            "Short",
+                            "Long",
+                            "Float",
+                            "Double",
+                            "BigInteger"
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "in_source_data"
+            ],
+            "category": "$rc:params.category1",
+            "description": "$rc:source_cost_multiplier.descr"
+        },
+        "source_start_cost": {
+            "type": "optional",
+            "control_guid": "{BEDF969C-20D2-4C41-96DA-32408CA72BF6}",
+            "displayname": "$rc:source_start_cost.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPDouble"
+                    },
+                    {
+                        "type": "Field"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPNumericDomain",
+                        "allowempty": "true",
+                        "low": {
+                            "inclusive": "true",
+                            "val": "0"
+                        }
+                    },
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "OID",
+                            "Short",
+                            "Long",
+                            "Float",
+                            "Double",
+                            "BigInteger"
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "in_source_data"
+            ],
+            "category": "$rc:params.category1",
+            "description": "$rc:source_start_cost.descr"
+        },
+        "source_resistance_rate": {
+            "type": "optional",
+            "control_guid": "{BEDF969C-20D2-4C41-96DA-32408CA72BF6}",
+            "displayname": "$rc:source_resistance_rate.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPDouble"
+                    },
+                    {
+                        "type": "Field"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPNumericDomain",
+                        "allowempty": "true",
+                        "low": {
+                            "inclusive": "true",
+                            "val": "0"
+                        }
+                    },
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "OID",
+                            "Short",
+                            "Long",
+                            "Float",
+                            "Double",
+                            "BigInteger"
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "in_source_data"
+            ],
+            "category": "$rc:params.category1",
+            "description": "$rc:source_resistance_rate.descr"
+        },
+        "source_capacity": {
+            "type": "optional",
+            "control_guid": "{BEDF969C-20D2-4C41-96DA-32408CA72BF6}",
+            "displayname": "$rc:source_capacity.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPDouble"
+                    },
+                    {
+                        "type": "Field"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPNumericDomain",
+                        "allowempty": "true"
+                    },
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "OID",
+                            "Short",
+                            "Long",
+                            "Float",
+                            "Double",
+                            "BigInteger"
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "in_source_data"
+            ],
+            "category": "$rc:params.category1",
+            "description": "$rc:source_capacity.descr"
+        },
+        "source_direction": {
+            "type": "optional",
+            "control_guid": "{BEDF969C-20D2-4C41-96DA-32408CA72BF6}",
+            "displayname": "$rc:source_direction.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPString"
+                    },
+                    {
+                        "type": "Field"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "TO_SOURCE",
+                                "code": "$rc:source_direction.domain.item1.TO_SOURCE"
+                            },
+                            {
+                                "value": "FROM_SOURCE",
+                                "code": "$rc:source_direction.domain.item1.FROM_SOURCE"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Text"
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "in_source_data"
+            ],
+            "category": "$rc:params.category1",
+            "description": "$rc:source_direction.descr"
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "cellSize",
+        "cellSizeProjectionMethod",
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "mask",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "pyramid",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

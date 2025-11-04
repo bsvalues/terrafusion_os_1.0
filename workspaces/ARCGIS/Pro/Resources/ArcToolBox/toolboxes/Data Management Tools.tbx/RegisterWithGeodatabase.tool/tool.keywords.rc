@@ -1,0 +1,9 @@
+{
+    "set": [
+        "data",
+        "geodatabase",
+        "geodatabase administration",
+        "register",
+        "tables"
+    ]
+}

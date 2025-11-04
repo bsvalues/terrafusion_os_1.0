@@ -1,0 +1,11 @@
+{
+    "map": {
+        "airports_workspace.descr": "The geodatabase into which the shapefiles will be imported.",
+        "airports_workspace.title": "Target Geodatabase",
+        "description": "Imports one or more FAA Advisory Circular 150/5300-18B compliant shapefiles into a geodatabase that contains the ArcGIS Aviation Airports schema.",
+        "in_features.descr": "The FAA 18B shapefiles that will be imported into a geodatabase.",
+        "in_features.title": "Input Shapefiles",
+        "out_workspace.title": "Output Geodatabase",
+        "title": "Import FAA 18B Shapefiles"
+    }
+}

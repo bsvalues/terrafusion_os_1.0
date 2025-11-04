@@ -1,0 +1,124 @@
+{
+    "version": "1.0",
+    "alias": "topographic",
+    "displayname": "$rc:title",
+    "description": "$rc:descr",
+    "helpcontext": "46000000",
+    "toolsets": {
+        "$rc:toolset11.name": {
+            "tools": [
+                "GenerateElevationBands",
+                "GenerateElevationBandsFromFeatures"
+            ]
+        },
+        "$rc:toolset1.name": {
+            "tools": [
+                "ApplyBuildingOffsets",
+                "ApplyMasksFromRules",
+                "ApplyVisualSpecificationToMap",
+                "CalculateBridgeOffsets",
+                "MakeMasksFromRules",
+                "ThinSpotHeights"
+            ]
+        },
+        "$rc:toolset3.name": {
+            "tools": [
+                "CalculateMagneticComponents",
+                "CalculateMEF",
+                "GenerateAdjoiningSheetsFeatures",
+                "GenerateElevationGuideFeatures",
+                "GenerateIsogonicLines",
+                "GenerateLocationDiagramFeatures",
+                "GenerateSpotHeights",
+                "GenerateTopographicContours",
+                "IdentifyContours",
+                "ValidateSpotHeights"
+            ]
+        },
+        "$rc:toolset12.name": {
+            "tools": [
+                "GenerateProductLayout",
+                "MakeGridsAndGraticulesLayer",
+                "PopulateMapSheetInfo"
+            ]
+        },
+        "$rc:toolset2.name": {
+            "tools": [
+                "ApplyFeatureLevelMetadata",
+                "CalculateDefaultValues",
+                "CalculateMetrics",
+                "MergeLinesByPseudoNode",
+                "RemoveCutbackVertices",
+                "RepairSelfIntersection",
+                "SplitFeatures",
+                "UpdateGeoNames"
+            ]
+        },
+        "$rc:toolset8.name": {
+            "tools": [
+                "EliminatePolygon",
+                "ExportGeneralizedData",
+                "FillGaps",
+                "IdentifyNarrowPolygons",
+                "ImportGeneralizationData",
+                "PolygonToCenterline",
+                "RemoveSmallLines",
+                "SetLineDirection",
+                "ThinHydrologyLines"
+            ]
+        },
+        "$rc:toolset7.name": {
+            "tools": [
+                "CreateCrossReferenceGeodatabase",
+                "ExportMetadata",
+                "ExtractDataByFeature",
+                "GenerateExcelFromGeodatabase",
+                "GenerateGeodatabaseFromExcel",
+                "GeodatabaseToShape",
+                "GeoNamesToGeodatabase",
+                "ImportMetadata",
+                "LoadData",
+                "UnzipCellAndImport"
+            ]
+        },
+        "$rc:toolset9.name": {
+            "tools": [
+                "ExportTopology",
+                "ImportTopology"
+            ]
+        },
+        "$rc:toolset10.name": {
+            "tools": [
+                "GAIT"
+            ]
+        },
+        "$rc:toolset6.name": {
+            "tools": [
+                "CopyJobFiles",
+                "CreateTaskGroupJobs",
+                "GetFeaturesByJobAOI",
+                "SetTaskGroupDependencies",
+                "UpdateTaskGroupMetrics"
+            ]
+        },
+        "$rc:toolset5.name": {
+            "tools": [
+                "CopyExtendedProperties",
+                "SetDataWorkspace",
+                "SetProductionProperties",
+                "UpdateExtendedProperty",
+                "UpdatePropertyCount"
+            ]
+        },
+        "$rc:toolset4.name": {
+            "tools": [
+                "CancelRemainingTasks",
+                "CreateJobForTask",
+                "InsertTaskGroup",
+                "SetNextTask",
+                "SetTaskList",
+                "SetTaskStatus"
+            ]
+        }
+    }
+}

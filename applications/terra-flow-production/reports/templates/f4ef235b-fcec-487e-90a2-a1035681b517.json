@@ -1,0 +1,106 @@
+{
+  "template_id": "f4ef235b-fcec-487e-90a2-a1035681b517",
+  "name": "Property Anomaly Report",
+  "description": "Template for reports highlighting property valuation anomalies",
+  "template_type": "anomaly_report",
+  "sections": [
+    {
+      "section_id": "eca30843-ecf0-46f8-8fbd-27a2f566cbdd",
+      "section_type": "header",
+      "title": "Property Anomaly Report",
+      "content": {
+        "include_logo": true,
+        "include_date": true,
+        "include_page_numbers": true,
+        "subtitle": "Detected Valuation Anomalies"
+      },
+      "created_at": "2025-04-25T20:26:09.971365"
+    },
+    {
+      "section_id": "70643ebe-2827-41c2-9129-e3e7dc31d8c1",
+      "section_type": "text",
+      "title": "Anomaly Detection Overview",
+      "content": {
+        "text": "This report identifies properties with valuation anomalies that may require further investigation. Anomalies are detected using advanced statistical methods and machine learning algorithms.",
+        "format": "paragraph"
+      },
+      "created_at": "2025-04-25T20:26:09.971371"
+    },
+    {
+      "section_id": "24721c3e-4b52-4a89-b0f1-be705835a02e",
+      "section_type": "map",
+      "title": "Anomaly Location Map",
+      "content": {
+        "map_type": "points",
+        "data_field": "anomaly_score",
+        "color_by": "anomaly_type",
+        "include_legend": true,
+        "show_clusters": true
+      },
+      "created_at": "2025-04-25T20:26:09.971377"
+    },
+    {
+      "section_id": "55668a6e-4455-4fe0-b2f4-d78923af671b",
+      "section_type": "chart",
+      "title": "Anomalies by Type",
+      "content": {
+        "chart_type": "pie",
+        "data_field": "count",
+        "group_by": "anomaly_type"
+      },
+      "created_at": "2025-04-25T20:26:09.971385"
+    },
+    {
+      "section_id": "5018d9e8-7804-4099-933f-34fff1fd1518",
+      "section_type": "table",
+      "title": "Anomaly Details",
+      "content": {
+        "columns": [
+          "property_id",
+          "address",
+          "anomaly_type",
+          "anomaly_score",
+          "assessed_value",
+          "expected_value",
+          "percent_difference",
+          "detection_method",
+          "confidence"
+        ],
+        "sort_by": "anomaly_score",
+        "sort_direction": "desc"
+      },
+      "created_at": "2025-04-25T20:26:09.971397"
+    },
+    {
+      "section_id": "9ebbb443-56f9-4099-b7a6-1140f74e37b9",
+      "section_type": "chart",
+      "title": "Anomaly Distribution by Area",
+      "content": {
+        "chart_type": "bar",
+        "data_field": "anomaly_count",
+        "group_by": "area_name",
+        "sort_by": "value",
+        "sort_direction": "desc"
+      },
+      "created_at": "2025-04-25T20:26:09.971408"
+    },
+    {
+      "section_id": "d9d89a62-2792-414a-9f79-e6ca1d7a45d9",
+      "section_type": "footer",
+      "title": "Report Footer",
+      "content": {
+        "include_disclaimer": true,
+        "include_contact": true,
+        "include_generated_date": true
+      },
+      "created_at": "2025-04-25T20:26:09.971414"
+    }
+  ],
+  "metadata": {
+    "created_at": "2025-04-25T20:26:09.971354",
+    "modified_at": "2025-04-25T20:26:09.971416",
+    "version": "1.0",
+    "created_by": "system",
+    "tags": []
+  }
+}

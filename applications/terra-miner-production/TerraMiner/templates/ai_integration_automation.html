@@ -1,0 +1,1200 @@
+{% extends "layout.html" %}
+
+{% block title %}AI Integration & Automation{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">AI Integration & Automation</h1>
+    
+    <!-- Nav tabs for Integration and Automation -->
+    <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="integrations-tab" data-bs-toggle="tab" data-bs-target="#integrations-panel" type="button" role="tab" aria-controls="integrations-panel" aria-selected="true">Integrations</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="automations-tab" data-bs-toggle="tab" data-bs-target="#automations-panel" type="button" role="tab" aria-controls="automations-panel" aria-selected="false">Automations</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="logs-tab" data-bs-toggle="tab" data-bs-target="#logs-panel" type="button" role="tab" aria-controls="logs-panel" aria-selected="false">Activity Logs</button>
+        </li>
+    </ul>
+    
+    <div class="tab-content" id="myTabContent">
+        <!-- Integrations Tab Panel -->
+        <div class="tab-pane fade show active" id="integrations-panel" role="tabpanel" aria-labelledby="integrations-tab">
+            <div class="d-flex justify-content-between mb-3">
+                <h3>External Integrations</h3>
+                <button class="btn btn-primary" id="new-integration-btn" data-bs-toggle="modal" data-bs-target="#integration-modal">
+                    <i class="bi bi-plus-lg"></i> New Integration
+                </button>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="integrations-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Type</th>
+                                            <th>Agent</th>
+                                            <th>Status</th>
+                                            <th>Last Executed</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>CRM Data Sync</td>
+                                            <td>API</td>
+                                            <td>Market Analyzer</td>
+                                            <td><span class="badge bg-success">Active</span></td>
+                                            <td>2025-04-20 14:30</td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <button class="btn btn-sm btn-outline-secondary edit-integration-btn" data-integration-id="1">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-secondary test-integration-btn" data-integration-id="1">
+                                                        <i class="bi bi-play-fill"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-danger delete-integration-btn" data-integration-id="1">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Email Reports</td>
+                                            <td>Email</td>
+                                            <td>All Agents</td>
+                                            <td><span class="badge bg-success">Active</span></td>
+                                            <td>2025-04-21 09:15</td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <button class="btn btn-sm btn-outline-secondary edit-integration-btn" data-integration-id="2">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-secondary test-integration-btn" data-integration-id="2">
+                                                        <i class="bi bi-play-fill"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-danger delete-integration-btn" data-integration-id="2">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Slack Notifications</td>
+                                            <td>Webhook</td>
+                                            <td>Recommender</td>
+                                            <td><span class="badge bg-secondary">Inactive</span></td>
+                                            <td>2025-04-19 16:45</td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <button class="btn btn-sm btn-outline-secondary edit-integration-btn" data-integration-id="3">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-secondary test-integration-btn" data-integration-id="3">
+                                                        <i class="bi bi-play-fill"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-danger delete-integration-btn" data-integration-id="3">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Integration Usage</h5>
+                            <div id="integration-usage-chart" style="height: 250px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Integration Performance</h5>
+                            <div id="integration-performance-chart" style="height: 250px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Automations Tab Panel -->
+        <div class="tab-pane fade" id="automations-panel" role="tabpanel" aria-labelledby="automations-tab">
+            <div class="d-flex justify-content-between mb-3">
+                <h3>Automated Workflows</h3>
+                <button class="btn btn-primary" id="new-automation-btn" data-bs-toggle="modal" data-bs-target="#automation-modal">
+                    <i class="bi bi-plus-lg"></i> New Automation
+                </button>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="automations-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Trigger</th>
+                                            <th>Action</th>
+                                            <th>Status</th>
+                                            <th>Last Run</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Daily Feedback Analysis</td>
+                                            <td>Schedule (Daily @ 1 AM)</td>
+                                            <td>Run Analysis & Generate Report</td>
+                                            <td><span class="badge bg-success">Active</span></td>
+                                            <td>2025-04-21 01:00</td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <button class="btn btn-sm btn-outline-secondary edit-automation-btn" data-automation-id="1">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-secondary run-automation-btn" data-automation-id="1">
+                                                        <i class="bi bi-play-fill"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-danger delete-automation-btn" data-automation-id="1">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Low Rating Alert</td>
+                                            <td>Event (Rating < 3)</td>
+                                            <td>Send Notification & Log</td>
+                                            <td><span class="badge bg-success">Active</span></td>
+                                            <td>2025-04-20 18:35</td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <button class="btn btn-sm btn-outline-secondary edit-automation-btn" data-automation-id="2">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-secondary run-automation-btn" data-automation-id="2">
+                                                        <i class="bi bi-play-fill"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-danger delete-automation-btn" data-automation-id="2">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Weekly Optimization</td>
+                                            <td>Schedule (Sunday @ 2 AM)</td>
+                                            <td>Start Learning Cycle</td>
+                                            <td><span class="badge bg-success">Active</span></td>
+                                            <td>2025-04-14 02:00</td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <button class="btn btn-sm btn-outline-secondary edit-automation-btn" data-automation-id="3">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-secondary run-automation-btn" data-automation-id="3">
+                                                        <i class="bi bi-play-fill"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-danger delete-automation-btn" data-automation-id="3">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Trigger Distribution</h5>
+                            <div id="trigger-distribution-chart" style="height: 250px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Automation Success Rate</h5>
+                            <div id="automation-success-chart" style="height: 250px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Logs Tab Panel -->
+        <div class="tab-pane fade" id="logs-panel" role="tabpanel" aria-labelledby="logs-tab">
+            <h3 class="mb-3">Activity Logs</h3>
+            
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <form id="logs-filter-form" class="row g-3">
+                                    <div class="col-md-3">
+                                        <label for="log-type" class="form-label">Type</label>
+                                        <select class="form-select" id="log-type">
+                                            <option value="all" selected>All</option>
+                                            <option value="integration">Integration</option>
+                                            <option value="automation">Automation</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="log-status" class="form-label">Status</label>
+                                        <select class="form-select" id="log-status">
+                                            <option value="all" selected>All</option>
+                                            <option value="success">Success</option>
+                                            <option value="failure">Failure</option>
+                                            <option value="partial">Partial</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="log-date-range" class="form-label">Date Range</label>
+                                        <select class="form-select" id="log-date-range">
+                                            <option value="today">Today</option>
+                                            <option value="yesterday">Yesterday</option>
+                                            <option value="last7" selected>Last 7 days</option>
+                                            <option value="last30">Last 30 days</option>
+                                            <option value="custom">Custom Range</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2 d-flex align-items-end">
+                                        <button type="submit" class="btn btn-secondary w-100">Filter</button>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="logs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date/Time</th>
+                                            <th>Type</th>
+                                            <th>Name</th>
+                                            <th>Status</th>
+                                            <th>Duration</th>
+                                            <th>Details</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>2025-04-21 09:15:32</td>
+                                            <td>Integration</td>
+                                            <td>Email Reports</td>
+                                            <td><span class="badge bg-success">Success</span></td>
+                                            <td>3.2s</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-secondary view-log-btn" data-log-id="1">
+                                                    <i class="bi bi-eye"></i> View
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>2025-04-21 01:00:05</td>
+                                            <td>Automation</td>
+                                            <td>Daily Feedback Analysis</td>
+                                            <td><span class="badge bg-success">Success</span></td>
+                                            <td>18.7s</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-secondary view-log-btn" data-log-id="2">
+                                                    <i class="bi bi-eye"></i> View
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>2025-04-20 18:35:47</td>
+                                            <td>Automation</td>
+                                            <td>Low Rating Alert</td>
+                                            <td><span class="badge bg-success">Success</span></td>
+                                            <td>1.5s</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-secondary view-log-btn" data-log-id="3">
+                                                    <i class="bi bi-eye"></i> View
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>2025-04-20 14:30:19</td>
+                                            <td>Integration</td>
+                                            <td>CRM Data Sync</td>
+                                            <td><span class="badge bg-warning">Partial</span></td>
+                                            <td>45.2s</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-secondary view-log-btn" data-log-id="4">
+                                                    <i class="bi bi-eye"></i> View
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>2025-04-19 16:45:03</td>
+                                            <td>Integration</td>
+                                            <td>Slack Notifications</td>
+                                            <td><span class="badge bg-danger">Failure</span></td>
+                                            <td>2.1s</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-secondary view-log-btn" data-log-id="5">
+                                                    <i class="bi bi-eye"></i> View
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Integration Modal -->
+    <div class="modal fade" id="integration-modal" tabindex="-1" aria-labelledby="integration-modal-label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="integration-modal-label">New Integration</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="integration-form">
+                        <input type="hidden" id="integration-id" value="">
+                        <div class="mb-3">
+                            <label for="integration-name" class="form-label">Integration Name</label>
+                            <input type="text" class="form-control" id="integration-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="integration-type" class="form-label">Integration Type</label>
+                            <select class="form-select" id="integration-type" required>
+                                <option value="" selected disabled>Select Type</option>
+                                <option value="api">API</option>
+                                <option value="webhook">Webhook</option>
+                                <option value="email">Email</option>
+                                <option value="database">Database</option>
+                                <option value="file">File Export</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="integration-agent" class="form-label">Agent Type</label>
+                            <select class="form-select" id="integration-agent" required>
+                                <option value="" selected disabled>Select Agent</option>
+                                <option value="all">All Agents</option>
+                                <option value="summarizer">Text Summarizer</option>
+                                <option value="market_analyzer">Market Analyzer</option>
+                                <option value="recommender">Recommender</option>
+                                <option value="nl_search">Natural Language Search</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Dynamic fields based on integration type -->
+                        <div id="api-fields" class="integration-type-fields d-none">
+                            <div class="mb-3">
+                                <label for="api-url" class="form-label">API Endpoint URL</label>
+                                <input type="url" class="form-control" id="api-url">
+                            </div>
+                            <div class="mb-3">
+                                <label for="api-method" class="form-label">Method</label>
+                                <select class="form-select" id="api-method">
+                                    <option value="GET">GET</option>
+                                    <option value="POST" selected>POST</option>
+                                    <option value="PUT">PUT</option>
+                                    <option value="DELETE">DELETE</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="api-headers" class="form-label">Headers (JSON)</label>
+                                <textarea class="form-control" id="api-headers" rows="3" placeholder='{"Content-Type": "application/json", "Authorization": "Bearer {TOKEN}"}'></textarea>
+                            </div>
+                        </div>
+                        
+                        <div id="webhook-fields" class="integration-type-fields d-none">
+                            <div class="mb-3">
+                                <label for="webhook-url" class="form-label">Webhook URL</label>
+                                <input type="url" class="form-control" id="webhook-url">
+                            </div>
+                            <div class="mb-3">
+                                <label for="webhook-secret" class="form-label">Secret (optional)</label>
+                                <input type="password" class="form-control" id="webhook-secret">
+                            </div>
+                        </div>
+                        
+                        <div id="email-fields" class="integration-type-fields d-none">
+                            <div class="mb-3">
+                                <label for="email-recipients" class="form-label">Recipients (comma-separated)</label>
+                                <input type="text" class="form-control" id="email-recipients">
+                            </div>
+                            <div class="mb-3">
+                                <label for="email-subject" class="form-label">Subject Template</label>
+                                <input type="text" class="form-control" id="email-subject" placeholder="AI Feedback Report: {{date}}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="email-format" class="form-label">Format</label>
+                                <select class="form-select" id="email-format">
+                                    <option value="plain">Plain Text</option>
+                                    <option value="html" selected>HTML</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="integration-active" checked>
+                                <label class="form-check-label" for="integration-active">Active</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="save-integration-btn">Save Integration</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Automation Modal -->
+    <div class="modal fade" id="automation-modal" tabindex="-1" aria-labelledby="automation-modal-label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="automation-modal-label">New Automation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="automation-form">
+                        <input type="hidden" id="automation-id" value="">
+                        <div class="mb-3">
+                            <label for="automation-name" class="form-label">Automation Name</label>
+                            <input type="text" class="form-control" id="automation-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="automation-description" class="form-label">Description</label>
+                            <textarea class="form-control" id="automation-description" rows="2"></textarea>
+                        </div>
+                        
+                        <h6 class="mt-4 mb-3">Trigger Configuration</h6>
+                        <div class="mb-3">
+                            <label for="trigger-type" class="form-label">Trigger Type</label>
+                            <select class="form-select" id="trigger-type" required>
+                                <option value="" selected disabled>Select Trigger</option>
+                                <option value="schedule">Schedule</option>
+                                <option value="event">Event</option>
+                                <option value="threshold">Threshold</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Dynamic fields based on trigger type -->
+                        <div id="schedule-trigger-fields" class="trigger-type-fields d-none">
+                            <div class="mb-3">
+                                <label for="schedule-frequency" class="form-label">Frequency</label>
+                                <select class="form-select" id="schedule-frequency">
+                                    <option value="hourly">Hourly</option>
+                                    <option value="daily" selected>Daily</option>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly">Monthly</option>
+                                </select>
+                            </div>
+                            <div class="mb-3 schedule-daily-fields">
+                                <label for="schedule-time" class="form-label">Time</label>
+                                <input type="time" class="form-control" id="schedule-time" value="01:00">
+                            </div>
+                            <div class="mb-3 schedule-weekly-fields d-none">
+                                <label for="schedule-day-of-week" class="form-label">Day of Week</label>
+                                <select class="form-select" id="schedule-day-of-week">
+                                    <option value="0">Monday</option>
+                                    <option value="1">Tuesday</option>
+                                    <option value="2">Wednesday</option>
+                                    <option value="3">Thursday</option>
+                                    <option value="4">Friday</option>
+                                    <option value="5">Saturday</option>
+                                    <option value="6" selected>Sunday</option>
+                                </select>
+                            </div>
+                            <div class="mb-3 schedule-monthly-fields d-none">
+                                <label for="schedule-day-of-month" class="form-label">Day of Month</label>
+                                <input type="number" class="form-control" id="schedule-day-of-month" min="1" max="31" value="1">
+                            </div>
+                        </div>
+                        
+                        <div id="event-trigger-fields" class="trigger-type-fields d-none">
+                            <div class="mb-3">
+                                <label for="event-type" class="form-label">Event Type</label>
+                                <select class="form-select" id="event-type">
+                                    <option value="feedback_submitted">Feedback Submitted</option>
+                                    <option value="rating_threshold">Rating Threshold</option>
+                                    <option value="learning_cycle_completed">Learning Cycle Completed</option>
+                                </select>
+                            </div>
+                            <div class="mb-3 event-rating-fields">
+                                <label for="rating-threshold" class="form-label">Rating Threshold</label>
+                                <input type="number" class="form-control" id="rating-threshold" min="1" max="5" value="3">
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="radio" name="rating-operator" id="rating-below" value="below" checked>
+                                    <label class="form-check-label" for="rating-below">
+                                        Below threshold
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="rating-operator" id="rating-above" value="above">
+                                    <label class="form-check-label" for="rating-above">
+                                        Above threshold
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="threshold-trigger-fields" class="trigger-type-fields d-none">
+                            <div class="mb-3">
+                                <label for="threshold-metric" class="form-label">Metric</label>
+                                <select class="form-select" id="threshold-metric">
+                                    <option value="average_rating">Average Rating</option>
+                                    <option value="rating_count">Rating Count</option>
+                                    <option value="low_ratings_percentage">Low Ratings Percentage</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="threshold-value" class="form-label">Threshold Value</label>
+                                <input type="number" class="form-control" id="threshold-value" step="0.1" value="3.5">
+                            </div>
+                            <div class="mb-3">
+                                <label for="threshold-operator" class="form-label">Operator</label>
+                                <select class="form-select" id="threshold-operator">
+                                    <option value="lt">Less Than</option>
+                                    <option value="lte">Less Than or Equal</option>
+                                    <option value="gt">Greater Than</option>
+                                    <option value="gte">Greater Than or Equal</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="threshold-window" class="form-label">Time Window</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="threshold-window-value" value="24">
+                                    <select class="form-select" id="threshold-window-unit">
+                                        <option value="hours">Hours</option>
+                                        <option value="days">Days</option>
+                                        <option value="weeks">Weeks</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h6 class="mt-4 mb-3">Action Configuration</h6>
+                        <div class="mb-3">
+                            <label for="action-type" class="form-label">Action Type</label>
+                            <select class="form-select" id="action-type" required>
+                                <option value="" selected disabled>Select Action</option>
+                                <option value="notification">Send Notification</option>
+                                <option value="integration">Run Integration</option>
+                                <option value="learning_cycle">Start Learning Cycle</option>
+                                <option value="custom_api">Custom API Call</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Dynamic fields based on action type -->
+                        <div id="notification-action-fields" class="action-type-fields d-none">
+                            <div class="mb-3">
+                                <label for="notification-method" class="form-label">Notification Method</label>
+                                <select class="form-select" id="notification-method">
+                                    <option value="email" selected>Email</option>
+                                    <option value="slack">Slack</option>
+                                    <option value="webhook">Webhook</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="notification-recipients" class="form-label">Recipients</label>
+                                <input type="text" class="form-control" id="notification-recipients">
+                            </div>
+                            <div class="mb-3">
+                                <label for="notification-template" class="form-label">Message Template</label>
+                                <textarea class="form-control" id="notification-template" rows="3"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div id="integration-action-fields" class="action-type-fields d-none">
+                            <div class="mb-3">
+                                <label for="integration-id-select" class="form-label">Integration</label>
+                                <select class="form-select" id="integration-id-select">
+                                    <option value="1">CRM Data Sync</option>
+                                    <option value="2">Email Reports</option>
+                                    <option value="3">Slack Notifications</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div id="learning-cycle-action-fields" class="action-type-fields d-none">
+                            <div class="mb-3">
+                                <label class="form-label">Learning Cycle Options</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="include-all-agents" checked>
+                                    <label class="form-check-label" for="include-all-agents">
+                                        Include All Agents
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="custom-api-action-fields" class="action-type-fields d-none">
+                            <div class="mb-3">
+                                <label for="custom-api-url" class="form-label">API URL</label>
+                                <input type="url" class="form-control" id="custom-api-url">
+                            </div>
+                            <div class="mb-3">
+                                <label for="custom-api-method" class="form-label">Method</label>
+                                <select class="form-select" id="custom-api-method">
+                                    <option value="GET">GET</option>
+                                    <option value="POST" selected>POST</option>
+                                    <option value="PUT">PUT</option>
+                                    <option value="DELETE">DELETE</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="custom-api-body" class="form-label">Request Body Template (JSON)</label>
+                                <textarea class="form-control" id="custom-api-body" rows="3" placeholder='{"data": {{data}}, "timestamp": "{{timestamp}}"}'></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="automation-active" checked>
+                                <label class="form-check-label" for="automation-active">Active</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="save-automation-btn">Save Automation</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Log Details Modal -->
+    <div class="modal fade" id="log-details-modal" tabindex="-1" aria-labelledby="log-details-modal-label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="log-details-modal-label">Log Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="log-details-content">
+                        <!-- Log details will be loaded here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Charts
+    initIntegrationCharts();
+    initAutomationCharts();
+    
+    // Show/hide dynamic fields based on selections
+    document.getElementById('integration-type').addEventListener('change', function() {
+        // Hide all integration type fields
+        document.querySelectorAll('.integration-type-fields').forEach(el => {
+            el.classList.add('d-none');
+        });
+        
+        // Show fields for selected type
+        const selectedType = this.value;
+        if (selectedType) {
+            document.getElementById(`${selectedType}-fields`).classList.remove('d-none');
+        }
+    });
+    
+    document.getElementById('trigger-type').addEventListener('change', function() {
+        // Hide all trigger type fields
+        document.querySelectorAll('.trigger-type-fields').forEach(el => {
+            el.classList.add('d-none');
+        });
+        
+        // Show fields for selected type
+        const selectedType = this.value;
+        if (selectedType) {
+            document.getElementById(`${selectedType}-trigger-fields`).classList.remove('d-none');
+        }
+    });
+    
+    document.getElementById('action-type').addEventListener('change', function() {
+        // Hide all action type fields
+        document.querySelectorAll('.action-type-fields').forEach(el => {
+            el.classList.add('d-none');
+        });
+        
+        // Show fields for selected type
+        const selectedType = this.value;
+        if (selectedType) {
+            document.getElementById(`${selectedType}-action-fields`).classList.remove('d-none');
+        }
+    });
+    
+    document.getElementById('schedule-frequency').addEventListener('change', function() {
+        // Hide all schedule fields
+        document.querySelector('.schedule-daily-fields').classList.add('d-none');
+        document.querySelector('.schedule-weekly-fields').classList.add('d-none');
+        document.querySelector('.schedule-monthly-fields').classList.add('d-none');
+        
+        // Show fields for selected frequency
+        const selectedFrequency = this.value;
+        if (selectedFrequency === 'daily') {
+            document.querySelector('.schedule-daily-fields').classList.remove('d-none');
+        } else if (selectedFrequency === 'weekly') {
+            document.querySelector('.schedule-daily-fields').classList.remove('d-none');
+            document.querySelector('.schedule-weekly-fields').classList.remove('d-none');
+        } else if (selectedFrequency === 'monthly') {
+            document.querySelector('.schedule-daily-fields').classList.remove('d-none');
+            document.querySelector('.schedule-monthly-fields').classList.remove('d-none');
+        }
+    });
+    
+    // Handle form submissions
+    document.getElementById('save-integration-btn').addEventListener('click', function() {
+        const form = document.getElementById('integration-form');
+        if (form.checkValidity()) {
+            // Simulate saving - in a real app, this would send data to backend API
+            alert('Integration saved successfully!');
+            
+            // Close modal
+            var modal = bootstrap.Modal.getInstance(document.getElementById('integration-modal'));
+            modal.hide();
+        } else {
+            form.reportValidity();
+        }
+    });
+    
+    document.getElementById('save-automation-btn').addEventListener('click', function() {
+        const form = document.getElementById('automation-form');
+        if (form.checkValidity()) {
+            // Simulate saving - in a real app, this would send data to backend API
+            alert('Automation saved successfully!');
+            
+            // Close modal
+            var modal = bootstrap.Modal.getInstance(document.getElementById('automation-modal'));
+            modal.hide();
+        } else {
+            form.reportValidity();
+        }
+    });
+    
+    // View log details
+    document.querySelectorAll('.view-log-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const logId = this.getAttribute('data-log-id');
+            showLogDetails(logId);
+        });
+    });
+    
+    // Action buttons
+    document.querySelectorAll('.edit-integration-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const integrationId = this.getAttribute('data-integration-id');
+            editIntegration(integrationId);
+        });
+    });
+    
+    document.querySelectorAll('.edit-automation-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const automationId = this.getAttribute('data-automation-id');
+            editAutomation(automationId);
+        });
+    });
+    
+    document.querySelectorAll('.test-integration-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const integrationId = this.getAttribute('data-integration-id');
+            testIntegration(integrationId);
+        });
+    });
+    
+    document.querySelectorAll('.run-automation-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const automationId = this.getAttribute('data-automation-id');
+            runAutomation(automationId);
+        });
+    });
+});
+
+function initIntegrationCharts() {
+    // Integration usage chart
+    const usageCtx = document.getElementById('integration-usage-chart').getContext('2d');
+    new Chart(usageCtx, {
+        type: 'bar',
+        data: {
+            labels: ['CRM Data Sync', 'Email Reports', 'Slack Notifications'],
+            datasets: [{
+                label: 'Executions (Last 30 Days)',
+                data: [45, 30, 12],
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.5)',
+                    'rgba(75, 192, 192, 0.5)',
+                    'rgba(255, 99, 132, 0.5)'
+                ],
+                borderColor: [
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(255, 99, 132, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    
+    // Integration performance chart
+    const perfCtx = document.getElementById('integration-performance-chart').getContext('2d');
+    new Chart(perfCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Success', 'Partial', 'Failure'],
+            datasets: [{
+                data: [85, 10, 5],
+                backgroundColor: [
+                    'rgba(75, 192, 192, 0.5)',
+                    'rgba(255, 205, 86, 0.5)',
+                    'rgba(255, 99, 132, 0.5)'
+                ],
+                borderColor: [
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(255, 205, 86, 1)',
+                    'rgba(255, 99, 132, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+function initAutomationCharts() {
+    // Trigger distribution chart
+    const triggerCtx = document.getElementById('trigger-distribution-chart').getContext('2d');
+    new Chart(triggerCtx, {
+        type: 'pie',
+        data: {
+            labels: ['Schedule', 'Event', 'Threshold'],
+            datasets: [{
+                data: [60, 30, 10],
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.5)',
+                    'rgba(255, 99, 132, 0.5)',
+                    'rgba(255, 205, 86, 0.5)'
+                ],
+                borderColor: [
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(255, 205, 86, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+    
+    // Automation success chart
+    const successCtx = document.getElementById('automation-success-chart').getContext('2d');
+    new Chart(successCtx, {
+        type: 'line',
+        data: {
+            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+            datasets: [{
+                label: 'Success Rate (%)',
+                data: [92, 94, 96, 98],
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                tension: 0.3,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    min: 80,
+                    max: 100
+                }
+            }
+        }
+    });
+}
+
+function showLogDetails(logId) {
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('log-details-modal'));
+    modal.show();
+    
+    // Set content based on log ID
+    const logContent = document.getElementById('log-details-content');
+    
+    // In a real app, this would fetch data from the server
+    // For the demo, we'll use hardcoded content based on the log ID
+    let content = '';
+    
+    if (logId === '1') {
+        content = `
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <h6 class="mb-0">Email Reports Integration - Success</h6>
+                </div>
+                <div class="card-body">
+                    <p><strong>Date/Time:</strong> 2025-04-21 09:15:32</p>
+                    <p><strong>Duration:</strong> 3.2 seconds</p>
+                    <p><strong>Recipients:</strong> admin@example.com, team@example.com</p>
+                    <p><strong>Results:</strong> Email sent successfully to 2 recipients.</p>
+                </div>
+            </div>
+            <h6>Response Details:</h6>
+            <pre class="bg-light p-3 rounded"><code>{
+  "status": "success",
+  "message": "Email sent successfully",
+  "recipients": 2,
+  "timestamp": "2025-04-21T09:15:35Z"
+}</code></pre>
+        `;
+    } else if (logId === '2') {
+        content = `
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <h6 class="mb-0">Daily Feedback Analysis Automation - Success</h6>
+                </div>
+                <div class="card-body">
+                    <p><strong>Date/Time:</strong> 2025-04-21 01:00:05</p>
+                    <p><strong>Duration:</strong> 18.7 seconds</p>
+                    <p><strong>Trigger:</strong> Schedule (Daily @ 1 AM)</p>
+                    <p><strong>Action:</strong> Run Analysis & Generate Report</p>
+                </div>
+            </div>
+            <h6>Execution Details:</h6>
+            <pre class="bg-light p-3 rounded"><code>{
+  "status": "success",
+  "execution_id": "auto-187",
+  "start_time": "2025-04-21T01:00:05Z",
+  "end_time": "2025-04-21T01:00:24Z",
+  "actions_performed": [
+    "feedback_analysis",
+    "report_generation",
+    "email_notification"
+  ],
+  "feedback_processed": 124,
+  "report_url": "https://example.com/reports/20250421"
+}</code></pre>
+        `;
+    } else if (logId === '4') {
+        content = `
+            <div class="card mb-3">
+                <div class="card-header bg-warning text-white">
+                    <h6 class="mb-0">CRM Data Sync Integration - Partial Success</h6>
+                </div>
+                <div class="card-body">
+                    <p><strong>Date/Time:</strong> 2025-04-20 14:30:19</p>
+                    <p><strong>Duration:</strong> 45.2 seconds</p>
+                    <p><strong>API Endpoint:</strong> https://api.example-crm.com/data/sync</p>
+                    <p><strong>Status:</strong> 207 Multi-Status (Partial success)</p>
+                </div>
+            </div>
+            <div class="alert alert-warning">
+                <strong>Warning:</strong> 5 out of 50 records failed to sync.
+            </div>
+            <h6>Response Details:</h6>
+            <pre class="bg-light p-3 rounded"><code>{
+  "status": "partial",
+  "message": "Some records failed to sync",
+  "total_records": 50,
+  "successful": 45,
+  "failed": 5,
+  "error_details": [
+    {
+      "record_id": "rec-1234",
+      "error": "Validation error: missing required field"
+    },
+    {
+      "record_id": "rec-5678",
+      "error": "Duplicate entry"
+    },
+    ...
+  ]
+}</code></pre>
+        `;
+    } else if (logId === '5') {
+        content = `
+            <div class="card mb-3">
+                <div class="card-header bg-danger text-white">
+                    <h6 class="mb-0">Slack Notifications Integration - Failure</h6>
+                </div>
+                <div class="card-body">
+                    <p><strong>Date/Time:</strong> 2025-04-19 16:45:03</p>
+                    <p><strong>Duration:</strong> 2.1 seconds</p>
+                    <p><strong>Webhook URL:</strong> https://hooks.slack.com/services/XXX/YYY/ZZZ</p>
+                    <p><strong>Status:</strong> 401 Unauthorized</p>
+                </div>
+            </div>
+            <div class="alert alert-danger">
+                <strong>Error:</strong> Invalid webhook URL or token. Authentication failed.
+            </div>
+            <h6>Error Details:</h6>
+            <pre class="bg-light p-3 rounded"><code>{
+  "status": "error",
+  "message": "Authentication failed",
+  "error_code": "invalid_token",
+  "timestamp": "2025-04-19T16:45:05Z"
+}</code></pre>
+            <h6>Troubleshooting:</h6>
+            <ul>
+                <li>Verify the webhook URL is correct</li>
+                <li>Check if the token has expired</li>
+                <li>Ensure the Slack app has the required permissions</li>
+            </ul>
+        `;
+    } else {
+        content = `
+            <div class="alert alert-info">
+                <strong>Note:</strong> Log details not available for log ID ${logId}.
+            </div>
+        `;
+    }
+    
+    logContent.innerHTML = content;
+}
+
+function editIntegration(integrationId) {
+    // Open the integration modal
+    const modal = new bootstrap.Modal(document.getElementById('integration-modal'));
+    document.getElementById('integration-modal-label').textContent = 'Edit Integration';
+    
+    // In a real app, this would fetch the integration details from the server
+    // For the demo, we'll use hardcoded values based on the ID
+    document.getElementById('integration-id').value = integrationId;
+    
+    // Set form values based on integration ID
+    if (integrationId === '1') {
+        document.getElementById('integration-name').value = 'CRM Data Sync';
+        document.getElementById('integration-type').value = 'api';
+        document.getElementById('integration-agent').value = 'market_analyzer';
+        document.getElementById('integration-active').checked = true;
+        
+        // Trigger change event to show the right fields
+        document.getElementById('integration-type').dispatchEvent(new Event('change'));
+        
+        // Set API-specific fields
+        document.getElementById('api-url').value = 'https://api.example-crm.com/data/sync';
+        document.getElementById('api-method').value = 'POST';
+        document.getElementById('api-headers').value = '{\n  "Content-Type": "application/json",\n  "Authorization": "Bearer {TOKEN}"\n}';
+    }
+    
+    modal.show();
+}
+
+function editAutomation(automationId) {
+    // Open the automation modal
+    const modal = new bootstrap.Modal(document.getElementById('automation-modal'));
+    document.getElementById('automation-modal-label').textContent = 'Edit Automation';
+    
+    // In a real app, this would fetch the automation details from the server
+    // For the demo, we'll use hardcoded values based on the ID
+    document.getElementById('automation-id').value = automationId;
+    
+    // Set form values based on automation ID
+    if (automationId === '1') {
+        document.getElementById('automation-name').value = 'Daily Feedback Analysis';
+        document.getElementById('automation-description').value = 'Runs analysis on feedback data and generates a report every day.';
+        document.getElementById('trigger-type').value = 'schedule';
+        document.getElementById('action-type').value = 'custom_api';
+        document.getElementById('automation-active').checked = true;
+        
+        // Trigger change events to show the right fields
+        document.getElementById('trigger-type').dispatchEvent(new Event('change'));
+        document.getElementById('action-type').dispatchEvent(new Event('change'));
+        
+        // Set schedule-specific fields
+        document.getElementById('schedule-frequency').value = 'daily';
+        document.getElementById('schedule-time').value = '01:00';
+        document.getElementById('schedule-frequency').dispatchEvent(new Event('change'));
+        
+        // Set API-specific fields
+        document.getElementById('custom-api-url').value = 'https://example.com/api/analyze-feedback';
+        document.getElementById('custom-api-method').value = 'POST';
+        document.getElementById('custom-api-body').value = '{\n  "date": "{{date}}",\n  "agent_types": ["all"],\n  "generate_report": true\n}';
+    }
+    
+    modal.show();
+}
+
+function testIntegration(integrationId) {
+    alert(`Testing integration ID ${integrationId}...`);
+    // In a real app, this would send a request to the server to test the integration
+    setTimeout(() => {
+        alert('Integration test completed successfully!');
+    }, 1500);
+}
+
+function runAutomation(automationId) {
+    alert(`Running automation ID ${automationId}...`);
+    // In a real app, this would send a request to the server to run the automation
+    setTimeout(() => {
+        alert('Automation executed successfully!');
+    }, 1500);
+}
+</script>
+{% endblock %}

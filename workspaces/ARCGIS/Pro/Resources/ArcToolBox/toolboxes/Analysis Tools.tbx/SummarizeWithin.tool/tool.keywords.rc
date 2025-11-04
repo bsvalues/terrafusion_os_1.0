@@ -1,0 +1,11 @@
+{
+    "set": [
+        "count",
+        "inside",
+        "overlap",
+        "overlay",
+        "polygon",
+        "sum",
+        "summary"
+    ]
+}

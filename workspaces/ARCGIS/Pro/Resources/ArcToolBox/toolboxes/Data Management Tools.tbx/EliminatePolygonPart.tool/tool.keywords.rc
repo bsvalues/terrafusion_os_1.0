@@ -1,0 +1,23 @@
+{
+    "set": [
+        "area",
+        "complex",
+        "contain",
+        "delete",
+        "detail",
+        "fill",
+        "hole",
+        "holes",
+        "in",
+        "less",
+        "little",
+        "out",
+        "percent",
+        "reduce",
+        "region",
+        "remove",
+        "scale",
+        "small",
+        "within"
+    ]
+}

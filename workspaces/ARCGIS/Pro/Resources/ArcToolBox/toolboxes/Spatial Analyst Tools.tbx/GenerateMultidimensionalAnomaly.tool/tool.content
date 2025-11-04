@@ -1,0 +1,255 @@
+{
+    "type": "FunctionTool",
+    "guid": "{abaf7c42-bfd1-4d9a-a998-29e261d180c4}",
+    "displayname": "$rc:title",
+    "helpcontent": "8210002",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10",
+        "58",
+        "86"
+    ],
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_multidimensional_raster": {
+            "display_order": "0",
+            "displayname": "$rc:in_multidimensional_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "DEMosaicDataset"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "DEFile"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPBrowseFiltersDomain",
+                        "filters": [
+                            "esri_browseDialogFilters_netcdf",
+                            "  esri_browseDialogFilters_GRIB_files",
+                            "esri_browseDialogFilters_rasters",
+                            "esri_browseDialogFilters_acsFiles"
+                        ]
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "nc",
+                            "nc4",
+                            "zgroup",
+                            "zarray",
+                            "zarr"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:in_multidimensional_raster.descr"
+        },
+        "out_multidimensional_raster": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_multidimensional_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_multidimensional_raster.descr"
+        },
+        "variables": {
+            "type": "optional",
+            "display_order": "2",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:variables.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "description": "$rc:variables.descr"
+        },
+        "method": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DIFFERENCE_FROM_MEAN",
+                        "code": "$rc:method.domain.DIFFERENCE_FROM_MEAN"
+                    },
+                    {
+                        "value": "PERCENT_DIFFERENCE_FROM_MEAN",
+                        "code": "$rc:method.domain.PERCENT_DIFFERENCE_FROM_MEAN"
+                    },
+                    {
+                        "value": "PERCENT_OF_MEAN",
+                        "code": "$rc:method.domain.PERCENT_OF_MEAN"
+                    },
+                    {
+                        "value": "Z_SCORE",
+                        "code": "$rc:method.domain.Z_SCORE"
+                    },
+                    {
+                        "value": "DIFFERENCE_FROM_MEDIAN",
+                        "code": "$rc:method.domain.DIFFERENCE_FROM_MEDIAN"
+                    },
+                    {
+                        "value": "PERCENT_DIFFERENCE_FROM_MEDIAN",
+                        "code": "$rc:method.domain.PERCENT_DIFFERENCE_FROM_MEDIAN"
+                    },
+                    {
+                        "value": "PERCENT_OF_MEDIAN",
+                        "code": "$rc:method.domain.PERCENT_OF_MEDIAN"
+                    }
+                ]
+            },
+            "value": "DIFFERENCE_FROM_MEAN",
+            "description": "$rc:method.descr"
+        },
+        "calculation_interval": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:calculation_interval.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ALL",
+                        "code": "$rc:calculation_interval.domain.ALL"
+                    },
+                    {
+                        "value": "YEARLY",
+                        "code": "$rc:calculation_interval.domain.YEARLY"
+                    },
+                    {
+                        "value": "RECURRING_MONTHLY",
+                        "code": "$rc:calculation_interval.domain.RECURRING_MONTHLY"
+                    },
+                    {
+                        "value": "RECURRING_WEEKLY",
+                        "code": "$rc:calculation_interval.domain.RECURRING_WEEKLY"
+                    },
+                    {
+                        "value": "RECURRING_DAILY",
+                        "code": "$rc:calculation_interval.domain.RECURRING_DAILY"
+                    },
+                    {
+                        "value": "HOURLY",
+                        "code": "$rc:calculation_interval.domain.HOURLY"
+                    },
+                    {
+                        "value": "EXTERNAL_RASTER",
+                        "code": "$rc:calculation_interval.domain.EXTERNAL_RASTER"
+                    }
+                ]
+            },
+            "value": "ALL",
+            "description": "$rc:calculation_interval.descr"
+        },
+        "ignore_nodata": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:ignore_nodata.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "DATA"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NODATA"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:ignore_nodata.descr"
+        },
+        "reference_mean_raster": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:reference_mean_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "DEMosaicDataset"
+                    }
+                ]
+            },
+            "description": "$rc:reference_mean_raster.descr"
+        }
+    },
+    "environments": [
+        "cellSize",
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "nodata",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "pyramid",
+        "rasterStatistics",
+        "resamplingMethod",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

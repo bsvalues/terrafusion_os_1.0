@@ -1,0 +1,18 @@
+{
+    "set": [
+        "add",
+        "edit",
+        "feature class",
+        "lidar",
+        "load features",
+        "load features to terrain",
+        "mass points",
+        "multipoints",
+        "multiresolution surface",
+        "surface",
+        "terrain",
+        "terrain dataset",
+        "terrains",
+        "update"
+    ]
+}

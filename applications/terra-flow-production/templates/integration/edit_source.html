@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h5>Edit Data Source</h5>
+                    <p class="text-sm">Edit data source: <strong>{{ source.source_id }}</strong></p>
+                </div>
+                <div class="card-body">
+                    {% if error %}
+                    <div class="alert alert-danger text-white" role="alert">
+                        {{ error }}
+                    </div>
+                    {% endif %}
+                    
+                    <form method="post" action="{{ url_for('integration.edit_source', source_id=source.source_id) }}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-control-label">Source ID</label>
+                                    <input class="form-control" type="text" value="{{ source.source_id }}" disabled>
+                                    <small class="form-text text-muted">
+                                        Source ID cannot be changed
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="source_type" class="form-control-label">Source Type</label>
+                                    <select class="form-control" id="source_type" name="source_type" required>
+                                        <option value="">Select a type...</option>
+                                        <option value="cama" {% if source.source_type == 'cama' %}selected{% endif %}>CAMA System</option>
+                                        <option value="gis" {% if source.source_type == 'gis' %}selected{% endif %}>GIS System</option>
+                                        <option value="sql_server" {% if source.source_type == 'sql_server' %}selected{% endif %}>SQL Server</option>
+                                        <option value="postgresql" {% if source.source_type == 'postgresql' %}selected{% endif %}>PostgreSQL</option>
+                                        <option value="sqlite" {% if source.source_type == 'sqlite' %}selected{% endif %}>SQLite</option>
+                                        <option value="file" {% if source.source_type == 'file' %}selected{% endif %}>File (CSV, Excel, etc.)</option>
+                                    </select>
+                                    <small class="form-text text-muted">
+                                        Type of data source
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group" id="connectionStringGroup">
+                            <label for="connection_string" class="form-control-label">Connection String</label>
+                            <textarea class="form-control" id="connection_string" name="connection_string" rows="3" required>{{ source.connection_string }}</textarea>
+                            <small class="form-text text-muted" id="connectionHelp">
+                                Connection string for the data source
+                            </small>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="refresh_interval" class="form-control-label">Refresh Interval (minutes)</label>
+                                    <input class="form-control" type="number" id="refresh_interval" name="refresh_interval" 
+                                           value="{{ source.refresh_interval }}" min="1" max="10080">
+                                    <small class="form-text text-muted">
+                                        How often to refresh data from this source (in minutes)
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-control-label">Enabled</label>
+                                    <div class="form-check form-switch mt-2">
+                                        <input class="form-check-input" type="checkbox" id="enabled" name="enabled" 
+                                               {% if source.enabled %}checked{% endif %}>
+                                        <label class="form-check-label" for="enabled">Enable this data source</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="metadata" class="form-control-label">Metadata (JSON)</label>
+                            <textarea class="form-control" id="metadata" name="metadata" rows="5">{{ source.metadata|tojson(indent=2) }}</textarea>
+                            <small class="form-text text-muted">
+                                Additional metadata for the data source (JSON format)
+                            </small>
+                        </div>
+                        
+                        <div class="form-group d-flex justify-content-between mt-4">
+                            <a href="{{ url_for('integration.view_source', source_id=source.source_id) }}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header pb-0">
+                    <h5>Connection Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-0">Current Status: 
+                                {% if source.status == 'connected' %}
+                                <span class="badge bg-success">Connected</span>
+                                {% elif source.status == 'error' %}
+                                <span class="badge bg-danger">Error</span>
+                                {% else %}
+                                <span class="badge bg-secondary">{{ source.status|title }}</span>
+                                {% endif %}
+                            </p>
+                            {% if source.last_sync %}
+                            <p class="text-sm text-secondary mb-0">Last Sync: {{ source.last_sync.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                            {% else %}
+                            <p class="text-sm text-secondary mb-0">Never synced</p>
+                            {% endif %}
+                        </div>
+                        <button id="testConnectionBtn" class="btn btn-info">Test Connection</button>
+                    </div>
+                    <div id="connectionResult" class="mt-3" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        // Update connection string help text based on source type
+        function updateConnectionHelp() {
+            const sourceType = $('#source_type').val();
+            let helpText = 'Connection string for the data source';
+            
+            if (sourceType === 'cama' || sourceType === 'sql_server') {
+                helpText = 'SQL Server connection string for the CAMA system';
+            } else if (sourceType === 'gis' || sourceType === 'postgresql') {
+                helpText = 'PostgreSQL connection string for the GIS system';
+            } else if (sourceType === 'sqlite') {
+                helpText = 'SQLite connection string';
+            } else if (sourceType === 'file') {
+                helpText = 'File path (prefix with file://)';
+            }
+            
+            $('#connectionHelp').text(helpText);
+        }
+        
+        // Initialize with current values
+        updateConnectionHelp();
+        
+        // Update when type changes
+        $('#source_type').change(updateConnectionHelp);
+        
+        // Test connection button
+        $('#testConnectionBtn').click(function() {
+            const btn = $(this);
+            const resultDiv = $('#connectionResult');
+            
+            btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> Testing...');
+            resultDiv.hide();
+            
+            fetch(`{{ url_for('integration.test_source', source_id=source.source_id) }}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                btn.prop('disabled', false).text('Test Connection');
+                
+                if (data.status === 'success') {
+                    resultDiv.html(`
+                        <div class="alert alert-success" role="alert">
+                            <i class="fas fa-check-circle me-2"></i> 
+                            ${data.message}
+                        </div>
+                    `).show();
+                } else {
+                    resultDiv.html(`
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-times-circle me-2"></i> 
+                            ${data.message}
+                        </div>
+                    `).show();
+                }
+            })
+            .catch(error => {
+                btn.prop('disabled', false).text('Test Connection');
+                resultDiv.html(`
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-times-circle me-2"></i> 
+                        An error occurred: ${error}
+                    </div>
+                `).show();
+            });
+        });
+    });
+</script>
+{% endblock %}

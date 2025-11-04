@@ -1,0 +1,15 @@
+{
+    "set": [
+        "adjacent",
+        "conflation",
+        "connect",
+        "disconnected",
+        "edge",
+        "edgematching",
+        "generate",
+        "links",
+        "matching",
+        "source",
+        "spatial adjustment"
+    ]
+}

@@ -1,0 +1,16 @@
+{
+    "set": [
+        "between",
+        "closest",
+        "cluster",
+        "disperse",
+        "distance",
+        "distribution",
+        "feature",
+        "geographic",
+        "global",
+        "point pattern analysis",
+        "random",
+        "separation"
+    ]
+}

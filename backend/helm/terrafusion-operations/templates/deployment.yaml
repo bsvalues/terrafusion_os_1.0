@@ -1,0 +1,185 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "terrafusion-operations.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "terrafusion-operations.labels" . | nindent 4 }}
+    terrafusion.io/component: operations
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "terrafusion-operations.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "terrafusion-operations.selectorLabels" . | nindent 8 }}
+        terrafusion.io/component: operations
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "terrafusion-operations.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      
+      initContainers:
+        - name: db-migration
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          command: ['dotnet', 'ef', 'database', 'update', '--context', 'OperationsDbContext']
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: {{ .Values.global.environment | title }}
+            - name: ConnectionStrings__DefaultConnection
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "terrafusion-operations.fullname" . }}-secrets
+                  key: DATABASE_CONNECTION_STRING
+      
+      containers:
+        - name: operations
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 5003
+              protocol: TCP
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: {{ .Values.global.environment | title }}
+            - name: ASPNETCORE_URLS
+              value: "http://+:5003"
+            - name: COUNTY_INTEGRATION_ENABLED
+              value: "{{ .Values.countyIntegration.enabled }}"
+            - name: TOTAL_COUNTIES
+              value: "{{ .Values.countyIntegration.totalCounties }}"
+            - name: DEFAULT_SYNC_INTERVAL
+              value: "{{ .Values.countyIntegration.defaultSyncInterval }}"
+            - name: BATCH_SIZE
+              value: "{{ .Values.countyIntegration.batchSize }}"
+            - name: MAX_RETRIES
+              value: "{{ .Values.countyIntegration.maxRetries }}"
+            - name: HARRIS_PACS_ENABLED
+              value: "{{ .Values.harrisPACS.enabled }}"
+            - name: HARRIS_PACS_BASE_URL
+              value: {{ .Values.harrisPACS.baseUrl }}
+            - name: HARRIS_PACS_VERSION
+              value: {{ .Values.harrisPACS.version }}
+            - name: TYLER_ENABLED
+              value: "{{ .Values.tylerTechnologies.enabled }}"
+            - name: TYLER_BASE_URL
+              value: {{ .Values.tylerTechnologies.baseUrl }}
+            - name: AUMENTUM_ENABLED
+              value: "{{ .Values.aumentumSystems.enabled }}"
+            - name: AUMENTUM_BASE_URL
+              value: {{ .Values.aumentumSystems.baseUrl }}
+            - name: DATA_SYNC_ENABLED
+              value: "{{ .Values.dataSync.enabled }}"
+            - name: DATA_SYNC_PARALLEL_COUNTIES
+              value: "{{ .Values.dataSync.parallelCounties }}"
+            - name: DATA_SYNC_CONFLICT_RESOLUTION
+              value: {{ .Values.dataSync.conflictResolution }}
+            - name: LOGGING__LOGLEVEL__DEFAULT
+              value: {{ .Values.logging.level }}
+            {{- if .Values.monitoring.prometheus.enabled }}
+            - name: PROMETHEUS_ENABLED
+              value: "true"
+            {{- end }}
+            {{- if .Values.monitoring.jaeger.enabled }}
+            - name: JAEGER_AGENT_HOST
+              value: {{ .Values.monitoring.jaeger.agentHost }}
+            - name: JAEGER_AGENT_PORT
+              value: "{{ .Values.monitoring.jaeger.agentPort }}"
+            {{- end }}
+            - name: FISMA_COMPLIANCE_LEVEL
+              value: {{ .Values.compliance.fisma.level }}
+            - name: COUNTY_DATA_SOVEREIGNTY
+              value: "{{ .Values.compliance.countyDataSovereignty.enabled }}"
+          envFrom:
+            - configMapRef:
+                name: {{ include "terrafusion-operations.fullname" . }}-config
+            - secretRef:
+                name: {{ include "terrafusion-operations.fullname" . }}-secrets
+          {{- if .Values.healthChecks.liveness.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.healthChecks.liveness.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.healthChecks.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthChecks.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthChecks.liveness.timeoutSeconds }}
+            failureThreshold: {{ .Values.healthChecks.liveness.failureThreshold }}
+          {{- end }}
+          {{- if .Values.healthChecks.readiness.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.healthChecks.readiness.path }}
+              port: http
+            initialDelaySeconds: {{ .Values.healthChecks.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthChecks.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthChecks.readiness.timeoutSeconds }}
+            failureThreshold: {{ .Values.healthChecks.readiness.failureThreshold }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: app-logs
+              mountPath: /app/logs
+        
+        {{- if .Values.logging.loki.enabled }}
+        - name: promtail
+          image: grafana/promtail:2.9.0
+          args:
+            - -config.file=/etc/promtail/promtail.yaml
+          volumeMounts:
+            - name: app-logs
+              mountPath: /app/logs
+              readOnly: true
+            - name: promtail-config
+              mountPath: /etc/promtail
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+        {{- end }}
+      
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: app-logs
+          emptyDir: {}
+        {{- if .Values.logging.loki.enabled }}
+        - name: promtail-config
+          configMap:
+            name: {{ include "terrafusion-operations.fullname" . }}-promtail
+        {{- end }}
+      
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

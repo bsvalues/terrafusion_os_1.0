@@ -20,19 +20,20 @@ namespace TerraFusion.API.Security
 
         public Task<AuthorizationPolicy?> GetFallbackPolicyAsync() => _fallback.GetFallbackPolicyAsync();
 
-        public Task<AuthorizationPolicy?> GetPolicyAsync(string policyName)
+        public Task<AuthorizationPolicy?> GetPolicyAsync(string? policyName)
         {
-            if (policyName == null) return _fallback.GetPolicyAsync(policyName);
+            var safePolicyName = policyName ?? "default";
+            if (policyName == null) return _fallback.GetPolicyAsync(safePolicyName);
 
-            if (policyName.StartsWith(RequiresPermissionAttribute.PolicyPrefix, StringComparison.OrdinalIgnoreCase))
+            if (safePolicyName.StartsWith(RequiresPermissionAttribute.PolicyPrefix, StringComparison.OrdinalIgnoreCase))
             {
-                var permission = policyName.Substring(RequiresPermissionAttribute.PolicyPrefix.Length);
+                var permission = safePolicyName.Substring(RequiresPermissionAttribute.PolicyPrefix.Length);
                 var builder = new AuthorizationPolicyBuilder();
                 builder.AddRequirements(new PluginPermissionRequirement(permission));
                 return Task.FromResult<AuthorizationPolicy?>(builder.Build());
             }
-            
-            if (policyName.StartsWith("module:", StringComparison.OrdinalIgnoreCase))
+
+            if (safePolicyName.StartsWith("module:", StringComparison.OrdinalIgnoreCase))
             {
                 var moduleName = policyName.Substring("module:".Length);
                 var builder = new AuthorizationPolicyBuilder();

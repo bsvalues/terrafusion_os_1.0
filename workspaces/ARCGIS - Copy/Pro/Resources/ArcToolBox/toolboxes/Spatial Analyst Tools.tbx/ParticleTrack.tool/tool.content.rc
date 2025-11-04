@@ -1,0 +1,20 @@
+{
+    "map": {
+        "description": "Calculates the path of a particle through a velocity field, returning an ASCII file of particle tracking data and, optionally, a feature class of track information.",
+        "in_direction_raster.descr": "<xdoc><p>An input raster where each cell value represents the direction of the seepage velocity vector (average linear velocity) at the center of the cell.</p><p>Directions are expressed in compass coordinates, in degrees clockwise from north. This can be created by the Darcy Flow tool.</p><p>Direction values must be floating point.</p></xdoc>",
+        "in_direction_raster.title": "Input direction raster",
+        "in_magnitude_raster.descr": "<xdoc><p>An input raster where each cell value represents the magnitude of the seepage velocity vector (average linear velocity) at the center of the cell.</p><p>Units are length/time. This can be created by the Darcy Flow tool.</p></xdoc>",
+        "in_magnitude_raster.title": "Input magnitude raster",
+        "out_track_file.descr": "The output ASCII text file that contains the particle tracking data.",
+        "out_track_file.title": "Output particle track file",
+        "out_track_polyline_features.descr": "<xdoc><p>The optional output line feature class containing the particle track.</p><p>This feature class contains a series of arcs with attributes for position, local velocity direction and magnitude, and cumulative length and time of travel along the path.</p></xdoc>",
+        "out_track_polyline_features.title": "Output track polyline features",
+        "source_point.descr": "<xdoc><p>The location of the source point from which to begin the particle tracking.</p><p>This is entered as numbers identifying the x,y coordinates of the position in map units.</p></xdoc>",
+        "source_point.title": "Source point",
+        "step_length.descr": "<xdoc><p>The step length to be used for calculating the particle track.</p><p>The default is one-half the cell size. Units are length.</p></xdoc>",
+        "step_length.title": "Step length",
+        "title": "Particle Track",
+        "tracking_time.descr": "<xdoc><p>Maximum elapsed time for particle tracking.</p><p>The algorithm will follow the track until either this time is met or the particle migrates off the raster or into a depression.</p><p>The default value is infinity. Units are time.</p></xdoc>",
+        "tracking_time.title": "Tracking time"
+    }
+}

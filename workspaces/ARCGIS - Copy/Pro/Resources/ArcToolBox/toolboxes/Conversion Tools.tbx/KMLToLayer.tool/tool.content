@@ -1,0 +1,109 @@
+{
+    "type": "FunctionTool",
+    "guid": "{87b9673c-55e6-4bb7-80e4-3a54a06240f7}",
+    "displayname": "$rc:title",
+    "helpcontent": "2200001",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_kml_file": {
+            "displayname": "$rc:in_kml_file.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFile"
+                    },
+                    {
+                        "type": "GPKMLLayer"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "kml",
+                            "kmz"
+                        ]
+                    },
+                    {
+                        "type": "GPLayersAndTablesDomain"
+                    }
+                ]
+            },
+            "description": "$rc:in_kml_file.descr"
+        },
+        "output_folder": {
+            "displayname": "$rc:output_folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:output_folder.descr"
+        },
+        "output_data": {
+            "type": "optional",
+            "displayname": "$rc:output_data.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:output_data.descr"
+        },
+        "include_groundoverlay": {
+            "type": "optional",
+            "displayname": "$rc:include_groundoverlay.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "GROUNDOVERLAY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_GROUNDOVERLAY"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:include_groundoverlay.descr"
+        },
+        "output_layer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_layer.title",
+            "datatype": {
+                "type": "GPGroupLayer"
+            }
+        },
+        "out_geodatabase": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_geodatabase.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            }
+        },
+        "out_suffix": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:out_suffix.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:out_suffix.descr"
+        }
+    },
+    "environments": [
+        "outputZFlag",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

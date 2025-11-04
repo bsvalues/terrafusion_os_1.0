@@ -1,0 +1,29 @@
+{
+    "map": {
+        "description": "Adds descriptions and units to the variables stored in a spatial statistics model file.",
+        "distance_features.descr": "The name, description, and unit of the explanatory training distance features that will be used to train the input model.",
+        "distance_features.dt.title1": "Variable",
+        "distance_features.dt.title2": "Description",
+        "distance_features.dt.title3": "Unit",
+        "distance_features.title": "Explanatory Training Distance Features",
+        "explanatory_rasters.descr": "The name, description, and unit of the explanatory training rasters that will be used to train the input model.",
+        "explanatory_rasters.dt.title1": "Variable",
+        "explanatory_rasters.dt.title2": "Description",
+        "explanatory_rasters.dt.title3": "Unit",
+        "explanatory_rasters.title": "Explanatory Training Rasters",
+        "explanatory_variables.descr": "The name, description, and unit of the explanatory variables that will be used to train the input model.",
+        "explanatory_variables.dt.title1": "Variable",
+        "explanatory_variables.dt.title2": "Description",
+        "explanatory_variables.dt.title3": "Unit",
+        "explanatory_variables.title": "Explanatory Training Variables",
+        "input_model.descr": "The spatial statistics model file.",
+        "input_model.title": "Input Model File",
+        "title": "Set Spatial Statistics Model File Properties",
+        "updated_model_file.title": "Updated Model File",
+        "variable_predict.descr": "The name, description, and unit of the variable that will be predicted at new locations.",
+        "variable_predict.dt.title1": "Variable",
+        "variable_predict.dt.title2": "Description",
+        "variable_predict.dt.title3": "Unit",
+        "variable_predict.title": "Variable To Predict"
+    }
+}

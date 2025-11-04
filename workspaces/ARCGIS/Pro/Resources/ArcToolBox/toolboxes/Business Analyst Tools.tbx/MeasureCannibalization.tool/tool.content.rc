@@ -1,0 +1,30 @@
+{
+    "map": {
+        "area_description_field.descr": "The field that describes each feature in the input layer.",
+        "area_description_field.title": "Trade Area Description",
+        "area_id_field.descr": "The field that uniquely identifies each feature in the input layer.",
+        "area_id_field.title": "Trade Area ID",
+        "create_report.descr": "<xdoc><p>Specifies whether a report will be generated.</p><ul><li>Checked—A report will be generated.</li><li>Unchecked—A report will not be generated. This is the default.</li></ul></xdoc>",
+        "create_report.title": "Create Report",
+        "description": "Calculates the amount of overlap between two or more polygons. Overlap refers to the extent of the polygons beyond intersection.",
+        "in_features.descr": "The input polygon features that will be analyzed for overlap.",
+        "in_features.title": "Input Features",
+        "out_feature_class.descr": "The output feature class that will contain the areas of overlap found in the input layer.",
+        "out_feature_class.title": "Output Feature Class",
+        "output_report.title": "Output Report",
+        "params.category1": "Report Options",
+        "params.category2": "Additional Metrics",
+        "report_folder.descr": "The output location where the report will be saved.",
+        "report_folder.title": "Output Report Folder",
+        "report_format.descr": "The output format or formats of the report.",
+        "report_format.title": "Report Output Formats",
+        "report_title.descr": "The title of the report. The default value is Measure Cannibalization.",
+        "report_title.title": "Report Title",
+        "store_id_field.descr": "The unique ID that associates a store with each polygon when the inputs are trade areas.",
+        "store_id_field.title": "Store ID Field",
+        "summary": "<xdoc><p>Calculates the amount of overlap between two or more polygons. Overlap refers to the extent of the polygons beyond intersection.</p><p>An optional report can be created detailing overlapped statistics.</p></xdoc>",
+        "title": "Measure Cannibalization",
+        "variables.descr": "One or more variables that will be used to calculate additional overlap metrics—for example, the total number of people and households in intersection areas, or the percentage of the total number of people and households in a trade area falling into overlapped area.",
+        "variables.title": "Variables"
+    }
+}

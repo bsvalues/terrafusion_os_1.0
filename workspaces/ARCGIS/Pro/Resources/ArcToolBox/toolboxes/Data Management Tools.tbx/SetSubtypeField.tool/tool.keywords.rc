@@ -1,0 +1,14 @@
+{
+    "set": [
+        "attribute",
+        "category",
+        "code",
+        "domain",
+        "feature",
+        "geodatabase",
+        "group",
+        "store",
+        "subtype",
+        "table"
+    ]
+}

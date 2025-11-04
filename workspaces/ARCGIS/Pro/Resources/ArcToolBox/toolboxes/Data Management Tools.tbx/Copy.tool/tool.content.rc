@@ -1,0 +1,18 @@
+{
+    "map": {
+        "associated_data.descr": "<xdoc><p>When the input has associated data, this parameter can be used to control the associated output data&apos;s name and config keyword.</p><ul><li>From Name—The data associated with the input data, which will also be copied.</li><li>Data Type—The type of the data on disk to be copied. The only time you need to provide a value is when a geodatabase contains a feature dataset and a feature class with the same name. In this case, select the correct data type, FeatureDataset or FeatureClass, of the item you want to copy.</li><li>To Name—The name of the copied data in the <span class=\"esri_uicontrol\">Output Data</span> parameter value.</li><li>Config Keyword—The geodatabase storage parameters (configuration).</li></ul><p>The <span class=\"esri_uicontrol\">From Name</span> and <span class=\"esri_uicontrol\">To Name</span> column names will be identical if the <span class=\"esri_uicontrol\">To Name</span> value is not used in the <span class=\"esri_uicontrol\">Output Data</span> parameter value. If the name exists in the <span class=\"esri_uicontrol\">Output Data</span> value, a unique <span class=\"esri_uicontrol\">To Name</span> value will be automatically created by appending an underscore and a number (for example, rivers_1) to the <span class=\"esri_uicontrol\">From Name</span> value.</p></xdoc>",
+        "associated_data.dt.title1": "From Name",
+        "associated_data.dt.title2": "Data Type",
+        "associated_data.dt.title3": "To Name",
+        "associated_data.dt.title4": "Config Keyword",
+        "associated_data.title": "Associated Data",
+        "data_type.descr": "<xdoc><p>The type of the data on disk to be copied.</p><p>This parameter is only necessary in the event of a name conflict between two different data types. For example, a geodatabase can contain a relationship class with an identical name to a feature class. If that is the case, specify the relevant keyword.</p><ul><li>FeatureClass—In the event of duplicate names, the feature class will be used.</li><li>FeatureDataset—In the event of duplicate names, the feature dataset will be used.</li><li>MosaicDataset—In the event of duplicate names, the mosaic dataset will be used.</li><li>ParcelFabric—In the event of duplicate names, the parcel fabric will be used.</li><li>RelationshipClass—In the event of duplicate names, the relationship class will be used.</li><li>Topology—In the event of duplicate names, the topology will be used.</li></ul></xdoc>",
+        "data_type.title": "Data type",
+        "description": "Copies the input data to an output workspace of the same data type as the input workspace.",
+        "in_data.descr": "The data to be copied.",
+        "in_data.title": "Input Data",
+        "out_data.descr": "The location and name of the output data.",
+        "out_data.title": "Output Data",
+        "title": "Copy"
+    }
+}

@@ -1,0 +1,113 @@
+{
+    "type": "FunctionTool",
+    "guid": "{75625721-fbf3-43fc-b262-56897c788724}",
+    "displayname": "$rc:title",
+    "helpcontent": "1010003",
+    "description": "$rc:description",
+    "product": "300",
+    "categories": [
+        "{0a2ad811-7215-4a95-92f3-9c29de502e9b}"
+    ],
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "split_features": {
+            "displayname": "$rc:split_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:split_features.descr"
+        },
+        "split_field": {
+            "displayname": "$rc:split_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text"
+                ]
+            },
+            "depends": [
+                "split_features"
+            ],
+            "description": "$rc:split_field.descr"
+        },
+        "out_workspace": {
+            "displayname": "$rc:out_workspace.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEWorkspace"
+                    },
+                    {
+                        "type": "DEFeatureDataset"
+                    }
+                ]
+            },
+            "description": "$rc:out_workspace.descr"
+        },
+        "cluster_tolerance": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:cluster_tolerance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:cluster_tolerance.descr"
+        },
+        "out_workspace2": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_workspace2.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEWorkspace"
+                    },
+                    {
+                        "type": "DEFeatureDataset"
+                    }
+                ]
+            }
+        }
+    },
+    "environments": [
+        "MDomain",
+        "MResolution",
+        "MTolerance",
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "ZDomain",
+        "ZResolution",
+        "ZTolerance",
+        "configKeyword",
+        "extent",
+        "outputCoordinateSystem",
+        "outputMFlag",
+        "outputZFlag",
+        "outputZValue",
+        "parallelProcessingFactor"
+    ]
+}

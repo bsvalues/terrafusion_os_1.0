@@ -1,0 +1,1298 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.WorkflowDesignStudio.UI.Logic</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.Logic.Domain.EventRecord">
+            <summary>
+            a Class representing the information needed to resemble a workflow
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Domain.EventRecord.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Domain.EventRecord.SaveChanges">
+            <summary>
+            Actual saving of changes is being handled by the WorkflowDesignerService
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.Domain.EventRecord.IsDirty">
+            <summary>
+            Flag to track unsaved changes
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.Domain.EventRecord.Eventdto">
+            <summary>
+            DTO containg relevant Event information
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.Logic.Domain.EventRecords">
+            <summary>
+            a class to represent multiple workflow records.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Domain.EventRecords.SaveChanges">
+            <summary>
+            Method to Save Changes
+            <remarks>mostly useless except that it sets the dirty flag.</remarks>
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.Domain.EventRecords.IsDirty">
+            <summary>
+            Flag to determine if any changes have occured on the class.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.Domain.EventRecords.Events">
+            <summary>
+            List of Workflow Data Transfer Objects
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.Logic.Domain.RecurrenceType">
+            <summary>
+            Enum indicating the User Permissions for a document
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.Logic.Domain.RecurrenceType.NONE">
+            <summary>
+            Non-Recurring pattern
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.Logic.Domain.RecurrenceType.DAILY">
+            <summary>
+            Recurrence pattern Daily
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.Logic.Domain.RecurrenceType.WEEKLY">
+            <summary>
+            Recurrence pattern Weekly
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.Logic.Domain.RecurrenceType.MONTHLY">
+            <summary>
+            Recurrence pattern Monthly
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.Logic.Domain.RecurrenceType.YEARLY">
+            <summary>
+            Recurrence pattern Yearly
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.Logic.Domain.WorkflowRecord">
+            <summary>
+            a Class representing the information needed to resemble a workflow
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Domain.WorkflowRecord.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Domain.WorkflowRecord.SaveChanges">
+            <summary>
+            Actual saving of changes is being handled by the WorkflowDesignerModel
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.Domain.WorkflowRecord.IsDirty">
+            <summary>
+            Flag to track unsaved changes
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.Domain.WorkflowRecord.Workflow">
+            <summary>
+            DTO containg relevant workflow information
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.Logic.Domain.WorkflowRecords">
+            <summary>
+            a class to represent multiple workflow records.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Domain.WorkflowRecords.SaveChanges">
+            <summary>
+            Method to Save Changes
+            <remarks>mostly useless except that it sets the dirty flag.</remarks>
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.Domain.WorkflowRecords.IsDirty">
+            <summary>
+            Flag to determine if any changes have occured on the class.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.Domain.WorkflowRecords.Workflows">
+            <summary>
+            List of Workflow Data Transfer Objects
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.Logic.Domain.WorkflowSearchRecords">
+            <summary>
+            Class to contain the results of a query to the Workflow Service for a list of workflows.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrenceRangeParagraphPresenter" -->
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrenceRangeParagraphPresenter.#ctor(TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IRecurrenceRangeParagraph)">
+            <summary>
+            Constructor -- initializes an instance of the class
+            </summary>
+            <param name="view">The Event Management with which this presenter
+            should be associated.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrenceRangeParagraphPresenter.View_Data_Changed(System.Object,System.EventArgs)">
+            <summary>
+            Handler to manage data changes lets interested parties know
+            data has changed, source is set as "ModifiedEvent" indicating
+            this message is sent from an Event related view.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrenceRangeParagraphPresenter.ReleaseView">
+            <summary>
+            Implemented to satisfy interface requirements -- no special
+            implementation is required in this simple example.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrenceRangeParagraphPresenter.View_Load(System.Object,System.EventArgs)">
+            <summary>
+            Method to load the workflow data based on the Guid ID passed in.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementDetailParagraphPresenter" -->
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementDetailParagraphPresenter.#ctor(TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IEventManagementDetailParagraph)">
+            <summary>
+            Constructor -- initializes an instance of the class
+            </summary>
+            <param name="view">The Event Management view with which this presenter
+            should be associated.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementDetailParagraphPresenter.ReleaseView">
+            <summary>
+            Implemented to satisfy interface requirements -- no special
+            implementation is required in this simple example.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementDetailParagraphPresenter.SetSubscriptions(System.Object,System.EventArgs)">
+            <summary>
+            Message to setup message subscriptions for any workflow changes to this particular workflow item.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementDetailParagraphPresenter.View_Data_Changed(System.Object,System.EventArgs)">
+            <summary>
+            Handler to manage data changes lets interested parties know
+            data has changed, source is set as "ModifiedEvent" indicating
+            this message is sent from an Event related view.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementDetailParagraphPresenter.LoadScheduledEvent(TrueAutomation.MVP.Core.GenericMessage{System.Guid})">
+            <summary>
+            Method that fires when a "GenericMessage" message is put on the Message Bus
+            Will take specified string from the message and loads the Event Information
+            </summary>
+            <param name="msg">The "GenericMessage" message that was put on the message bus</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementDetailParagraphPresenter.ProcessMessage(TrueAutomation.MVP.Core.GenericMessage{System.String})">
+            <summary>
+            Method that fires when a "GenericMessage" message is put on the Message Bus
+            Will take specified string from the message and saves the event
+            </summary>
+            <param name="msg">The "GenericMessage" message that was put on the message bus</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementDetailParagraphPresenter.View_Load(System.Object,System.EventArgs)">
+            <summary>
+            Method to load the workflow data based on the Guid ID passed in.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrencePatternParagraphPresenter" -->
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrencePatternParagraphPresenter.#ctor(TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IRecurrencePatternParagraph)">
+            <summary>
+            Constructor -- initializes an instance of the class
+            </summary>
+            <param name="view">The Event Management with which this presenter
+            should be associated.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrencePatternParagraphPresenter.View_Data_Changed(System.Object,System.EventArgs)">
+            <summary>
+            Handler to manage data changes lets interested parties know
+            data has changed, source is set as "ModifiedEvent" indicating
+            this message is sent from an Event related view.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrencePatternParagraphPresenter.ReleaseView">
+            <summary>
+            Implemented to satisfy interface requirements -- no special
+            implementation is required in this simple example.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrencePatternParagraphPresenter.View_Load(System.Object,System.EventArgs)">
+            <summary>
+            Method to load the workflow data based on the Guid ID passed in.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrenceYearlyParagraphPresenter" -->
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrenceYearlyParagraphPresenter.#ctor(TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IRecurrenceYearlyParagraph)">
+            <summary>
+            Constructor -- initializes an instance of the class
+            </summary>
+            <param name="view">The Event Management with which this presenter
+            should be associated.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrenceYearlyParagraphPresenter.ReleaseView">
+            <summary>
+            Implemented to satisfy interface requirements -- no special
+            implementation is required in this simple example.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrenceYearlyParagraphPresenter.View_Data_Changed(System.Object,System.EventArgs)">
+            <summary>
+            Handler to manage data changes lets interested parties know
+            data has changed, source is set as "ModifiedEvent" indicating
+            this message is sent from an Event related view.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrenceYearlyParagraphPresenter.View_Load(System.Object,System.EventArgs)">
+            <summary>
+            Method to load the workflow data based on the Guid ID passed in.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrenceDailyParagraphPresenter" -->
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrenceDailyParagraphPresenter.#ctor(TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IRecurrenceDailyParagraph)">
+            <summary>
+            Constructor -- initializes an instance of the class
+            </summary>
+            <param name="view">The Event Management with which this presenter
+            should be associated.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrenceDailyParagraphPresenter.View_Data_Changed(System.Object,System.EventArgs)">
+            <summary>
+            Handler to manage data changes lets interested parties know
+            data has changed, source is set as "ModifiedEvent" indicating
+            this message is sent from an Event related view.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrenceDailyParagraphPresenter.ReleaseView">
+            <summary>
+            Implemented to satisfy interface requirements -- no special
+            implementation is required in this simple example.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrenceDailyParagraphPresenter.SetupNotifications(System.Object,System.EventArgs)">
+            <summary>
+            Message to setup message subscriptions for any workflow changes to this particular workflow item.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrenceDailyParagraphPresenter.View_Load(System.Object,System.EventArgs)">
+            <summary>
+            Method to load the workflow data based on the Guid ID passed in.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrenceWeeklyParagraphPresenter" -->
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrenceWeeklyParagraphPresenter.#ctor(TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IRecurrenceWeeklyParagraph)">
+            <summary>
+            Constructor -- initializes an instance of the class
+            </summary>
+            <param name="view">The Event Management with which this presenter
+            should be associated.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrenceWeeklyParagraphPresenter.View_Data_Changed(System.Object,System.EventArgs)">
+            <summary>
+            Handler to manage data changes lets interested parties know
+            data has changed, source is set as "ModifiedEvent" indicating
+            this message is sent from an Event related view.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrenceWeeklyParagraphPresenter.ReleaseView">
+            <summary>
+            Implemented to satisfy interface requirements -- no special
+            implementation is required in this simple example.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrenceWeeklyParagraphPresenter.View_Load(System.Object,System.EventArgs)">
+            <summary>
+            Method to load the workflow data based on the Guid ID passed in.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrenceMonthlyParagraphPresenter" -->
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrenceMonthlyParagraphPresenter.#ctor(TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IRecurrenceMonthlyParagraph)">
+            <summary>
+            Constructor -- initializes an instance of the class
+            </summary>
+            <param name="view">The Event Management with which this presenter
+            should be associated.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrenceMonthlyParagraphPresenter.ReleaseView">
+            <summary>
+            Implemented to satisfy interface requirements -- no special
+            implementation is required in this simple example.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrenceMonthlyParagraphPresenter.View_Load(System.Object,System.EventArgs)">
+            <summary>
+            Method to load the workflow data based on the Guid ID passed in.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.RecurrenceMonthlyParagraphPresenter.View_Data_Changed(System.Object,System.EventArgs)">
+            <summary>
+            Handler to manage data changes lets interested parties know
+            data has changed, source is set as "ModifiedEvent" indicating
+            this message is sent from an Event related view.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.ScheduledParagraphPresenter" -->
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.ScheduledParagraphPresenter.#ctor(TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IScheduledParagraph)">
+            <summary>
+            Constructor -- initializes an instance of the class
+            </summary>
+            <param name="view">The Event Management with which this presenter
+            should be associated.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.ScheduledParagraphPresenter.View_Data_Changed(System.Object,System.EventArgs)">
+            <summary>
+            Handler to manage data changes lets interested parties know
+            data has changed, source is set as "ModifiedEvent" indicating
+            this message is sent from an Event related view.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.ScheduledParagraphPresenter.ReleaseView">
+            <summary>
+            Implemented to satisfy interface requirements -- no special
+            implementation is required in this simple example.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.ScheduledParagraphPresenter.View_Load(System.Object,System.EventArgs)">
+            <summary>
+            Method to load the workflow data based on the Guid ID passed in.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementDetailViewPresenter" -->
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementDetailViewPresenter.#ctor(TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IEventManagementDetailView)">
+            <summary>
+            Constructor -- initializes an instance of the class
+            </summary>
+            <param name="view">The Event Management view with which this presenter
+            should be associated.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementDetailViewPresenter.ReleaseView">
+            <summary>
+            Implemented to satisfy interface requirements -- no special
+            implementation is required in this simple example.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementDetailViewPresenter.SetSubscriptions(System.Object,System.EventArgs)">
+            <summary>
+            Message to setup message subscriptions for any workflow changes to this particular workflow item.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementDetailViewPresenter.ProcessMessage(TrueAutomation.MVP.Core.GenericMessage{System.String})">
+            <summary>
+            Method that fires when a "GenericMessage" message is put on the Message Bus
+            </summary>
+            <param name="msg">The "GenericMessage" message that was put on the message bus</param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementDetailViewPresenter.ProcessValidationErrors(TrueAutomation.MVP.Core.GenericMessage{System.Collections.Generic.Dictionary{System.String,System.String}})" -->
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementDetailViewPresenter.View_Load(System.Object,System.EventArgs)">
+            <summary>
+            Method to load the workflow data based on the Guid ID passed in.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementDetailViewPresenter.View_SaveChanges(System.Object,System.EventArgs)">
+            <summary>
+            Delegate to handle save events from the associated view.
+            </summary>
+            <param name="sender">The control that sent this notification.
+            </param>
+            <param name="args">Any arguments related to the save operation.
+            </param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementDetailViewPresenter.SetIsDirty(TrueAutomation.MVP.Core.GenericMessage{System.Boolean})">
+            <summary>
+            Enables Apply button, and sets the IsDirty flag on the Record to true
+            </summary>
+            <param name="msg"></param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.MessageBasedParagraphPresenter" -->
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.MessageBasedParagraphPresenter.#ctor(TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IMessageBasedParagraph)">
+            <summary>
+            Constructor -- initializes an instance of the class
+            </summary>
+            <param name="view">The Event Management with which this presenter
+            should be associated.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.MessageBasedParagraphPresenter.ReleaseView">
+            <summary>
+            Implemented to satisfy interface requirements -- no special
+            implementation is required in this simple example.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.MessageBasedParagraphPresenter.View_Data_Changed(System.Object,System.EventArgs)">
+            <summary>
+            Handler to manage data changes lets interested parties know
+            data has changed, source is set as "ModifiedEvent" indicating
+            this message is sent from an Event related view.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.MessageBasedParagraphPresenter.SetSubscriptions(System.Object,System.EventArgs)">
+            <summary>
+            Message to setup message subscriptions for any workflow changes to this particular workflow item.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.MessageBasedParagraphPresenter.LoadMessageEvent(TrueAutomation.MVP.Core.GenericMessage{System.Guid})">
+            <summary>
+            Method that fires when a "GenericMessage" message is put on the Message Bus
+            Will take specified string from the message, and set it as the Permission 
+            property value on the View.
+            </summary>
+            <param name="msg">The "GenericMessage" message that was put on the message bus</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.MessageBasedParagraphPresenter.View_Load(System.Object,System.EventArgs)">
+            <summary>
+            Method to load the workflow data based on the Guid ID passed in.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementParagraphPresenter" -->
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementParagraphPresenter.#ctor(TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IEventManagementParagraph)">
+            <summary>
+            Constructor -- initializes an instance of the class
+            </summary>
+            <param name="view">The Event Management with which this presenter
+            should be associated.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementParagraphPresenter.ReleaseView">
+            <summary>
+            Implemented to satisfy interface requirements -- no special
+            implementation is required in this simple example.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementParagraphPresenter.SetupNotifications(System.Object,System.EventArgs)">
+            <summary>
+            Message to setup message subscriptions for any workflow changes to this particular workflow item.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementParagraphPresenter.ProcessMessage(TrueAutomation.MVP.Core.GenericMessage{System.String})">
+            <summary>
+            Method that fires when a "GenericMessage" message is put on the Message Bus
+            Will take specified string from the message, and set it as the Permission 
+            property value on the View.
+            </summary>
+            <param name="msg">The "GenericMessage" message that was put on the message bus</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementParagraphPresenter.View_Load(System.Object,System.EventArgs)">
+            <summary>
+            Method to load the workflow data based on the Guid ID passed in.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementViewPresenter" -->
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementViewPresenter.#ctor(TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IEventManagementView)">
+            <summary>
+            Constructor -- initializes an instance of the class
+            </summary>
+            <param name="view">The Event Management view with which this presenter
+            should be associated.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementViewPresenter.ReleaseView">
+            <summary>
+            Implemented to satisfy interface requirements -- no special
+            implementation is required in this simple example.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementViewPresenter.View_RefreshView(System.Object,System.EventArgs)">
+            <summary>
+            For View Refresh
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementViewPresenter.SetSubscriptions(System.Object,System.EventArgs)">
+            <summary>
+            Message to setup message subscriptions for any workflow changes to this particular workflow item.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementViewPresenter.ProcessMessage(TrueAutomation.MVP.Core.GenericMessage{System.String})">
+            <summary>
+            Method that fires when a "GenericMessage" message is put on the Message Bus
+            Will take specified string from the message, and set it as the Permission 
+            property value on the View.
+            </summary>
+            <param name="msg">The "GenericMessage" message that was put on the message bus</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.EventManagementViewPresenter.View_Load(System.Object,System.EventArgs)">
+            <summary>
+            Method to load the workflow data based on the Guid ID passed in.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.WorkflowDesignerViewPresenter" -->
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.WorkflowDesignerViewPresenter.#ctor(TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IWorkflowDesignerView)">
+            <summary>
+            Constructor -- initializes an instance of the class
+            </summary>
+            <param name="view">The Workflow view with which this presenter
+            should be associated.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.WorkflowDesignerViewPresenter.ReleaseView">
+            <summary>
+            Implemented to satisfy interface requirements -- no special
+            implementation is required in this simple example.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.WorkflowDesignerViewPresenter.View_RefreshHandler(System.Object,System.EventArgs)">
+            <summary>
+            Update the UI Elements after some event changes the model.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.WorkflowDesignerViewPresenter.SetupNotifications(System.Object,System.EventArgs)">
+            <summary>
+            Message to setup message subscriptions for any workflow changes to this particular workflow item.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.WorkflowDesignerViewPresenter.View_Load(System.Object,System.EventArgs)">
+            <summary>
+            Method to load the workflow data based on the Guid ID passed in.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.WorkflowDesignerViewPresenter.View_SaveChanges(System.Object,System.EventArgs)">
+            <summary>
+            Delegate to handle save events from the associated view.
+            </summary>
+            <param name="sender">The control that sent this notification.
+            </param>
+            <param name="args">Any arguments related to the save operation.
+            </param>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.WorkflowDesignerViewPresenter.WorkflowSearchFunc">
+            <summary>
+            Simple delegate to invoke the WorkflowDesignerModel.FindWorkflow() method.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.WorkflowDesignerViewPresenter.View_XAMLContentsValueChanged(System.Object,System.EventArgs)">
+            <summary>
+            Method to handle the event of the Contents being changed in the view to update the model.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.WorkflowDesignerViewPresenter.View_WorkflowId_Changed(System.Object,System.EventArgs)">
+            <summary>
+            Handler for changes in the workflow ID.  Recalls the View_Load with an updated workflowId
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.WorkflowsListParagraphPresenter" -->
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.WorkflowsListParagraphPresenter.#ctor(TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IWorkflowsListParagraph)">
+            <summary>
+            Constructor -- initializes an instance of the class
+            </summary>
+            <param name="view">The Security view with which this presenter
+            should be associated.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.WorkflowsListParagraphPresenter.ReleaseView">
+            <summary>
+            Implemented to satisfy interface requirements -- no special
+            implementation is required in this simple example.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.WorkflowsViewPresenter.#ctor(TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IWorkflowsView)">
+            <summary>
+            Constructor -- initializes an instance of the class
+            </summary>
+            <param name="view">The Security view with which this presenter
+            should be associated.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Presenters.WorkflowsViewPresenter.ReleaseView">
+            <summary>
+            Implemented to satisfy interface requirements -- no special
+            implementation is required in this simple example.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IRecurrenceRangeParagraph.Data_Changed">
+            <summary>
+            Fired when any Event related data is modified
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IEventManagementDetailParagraph.SetScheduledInitialLoadValue(System.Boolean)">
+            <summary>
+            Method to set a boolean on all the relevant paragraphs to 
+            indicate if it is the initial data load on their UI fields.
+            </summary>
+            <param name="initialLoad">boolean</param>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IEventManagementDetailParagraph.Data_Changed">
+            <summary>
+            Fired when any Event related data is modified
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IRecurrencePatternParagraph.Data_Changed">
+            <summary>
+            Fired when any Event related data is modified
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IRecurrenceYearlyParagraph.Data_Changed">
+            <summary>
+            Fired when any Event related data is modified
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IRecurrenceDailyParagraph.Data_Changed">
+            <summary>
+            Fired when any Event related data is modified
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IRecurrenceWeeklyParagraph.Data_Changed">
+            <summary>
+            Fired when any Event related data is modified
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IRecurrenceMonthlyParagraph.Data_Changed">
+            <summary>
+            Fired when any Event related data is modified
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IScheduledParagraph.Data_Changed">
+            <summary>
+            Fired when any Event related data is modified
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IEventManagementDetailView.SaveChanges">
+            <summary>
+            An event handler for the save-changes event. Our presenter
+            will generally want to register with this in order to handle
+            the logic required to apply any changes.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IEventManagementDetailView.EventId">
+             <summary>
+            EventId used to display the details
+             </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IEventManagementDetailView.IsApplyEnabled">
+            <summary>
+            Enable/Disable the Apply buttons
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IEventManagementDetailView.ValidationErrors">
+            <summary>
+            For all validation erros
+            found during a Save
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IMessageBasedParagraph.Data_Changed">
+            <summary>
+            Fired when any Event related data is modified
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IEventManagementParagraph.RefreshView">
+            <summary>
+            For View Refresh
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IEventManagementParagraph.NewButtonClick">
+            <summary>
+            Event to handle new button click
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IEventManagementParagraph.DeleteButtonClick" -->
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IWorkflowDesignerView.RefreshView">
+            <summary>
+            Method to refresh the view's various data elements after a change is made
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IWorkflowDesignerView.XAMLContent">
+            <summary>
+            The XAML Contenst of the Workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IWorkflowDesignerView.CanImport">
+            <summary>
+            Flag to determine whether or not the workflow can import and be overwritten
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IWorkflowDesignerView.SaveChanges">
+            <summary>
+            An event handler for the save-changes event. Our presenter
+            will generally want to register with this in order to handle
+            the logic required to apply any changes.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IWorkflowDesignerView.SaveChangesAsNew">
+            <summary>
+            Event Handler to Save Changes as a new Workflow
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IWorkflowDesignerView.SaveChangesAsNewVersion">
+            <summary>
+            Event handler to save a new version of a workflow
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IWorkflowDesignerView.DeleteWorkflow">
+            <summary>
+            Event handler to delete a workflow
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IWorkflowDesignerView.XAMLContents_Changed">
+            <summary>
+            An event handler to update the Model's Contents when they are changed.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IWorkflowDesignerView.WorkflowId_Changed">
+            <summary>
+            An event handler to update the Model  when the ID has changed.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IWorkflowDesignerView.RefreshHandler">
+            <summary>
+            An event handler to update the View when necessary
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IWorkflowsListParagraph.GetFocusedRow">
+            <summary>
+            Method to retrieve the currently focuesed Workflow Record
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IWorkflowsListParagraph.GetSelectedWorkflows">
+            <summary>
+            Retreive a list of selected workflow records
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IWorkflowsListParagraph.GetFocusedInstanceRow">
+            <summary>
+            Method to retrieve the currently focuesed Workflow Record
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IWorkflowsListParagraph.Record">
+            <summary>
+            Data for this control
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IWorkflowsListParagraph.RefreshWFData">
+            <summary>
+            event handler for refreshing the data from Cache
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IWorkflowsListParagraph.RefreshWFDataFromDB">
+            <summary>
+            event handler for refreshing the data from the database
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IWorkflowsListParagraph.EnableWorkflow">
+            <summary>
+            Event fired when a workflow is enabled.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IWorkflowsListParagraph.DisableWorkflow">
+            <summary>
+            Event fired when a workflow is disabled
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IWorkflowsListParagraph.RunWorkflow">
+            <summary>
+            event fired to execute an instance of a workflow
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IWorkflowsListParagraph.PermanentlyRetire">
+            <summary>
+            event fired to permanently retire a workflow
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IWorkflowsListParagraph.PermanentlyDelete">
+            <summary>
+            event fired to delete a workflow
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.IWorkflowsListParagraph.AbortWorkflow">
+            <summary>
+            event fired to abort a running instance.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.Models.EventManagementModel.errorString">
+            <summary>
+            Holds the error string if 
+            any from a Save operation
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.Models.EventManagementModel.validationErrors">
+            <summary>
+            For validation errors
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.Models.EventManagementModel.SaveScheduledEvent(TrueAutomation.WorkflowService.DTOs.ScheduledEventDTO)">
+            <summary>
+            Saves SheduledEvent
+            OR Creates a new Scheduled
+            </summary>
+            <param name="dto"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.Models.EventManagementModel.SaveMessageEvent(TrueAutomation.WorkflowService.DTOs.MessageEventDTO)">
+            <summary>
+            Saves MessageEvent
+            OR Creates a new MessageEvent
+            </summary>
+            <param name="dto"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.Models.EventManagementModel.GetAllWorkflows">
+            <summary>
+            retrieves all the workflows
+            </summary>
+            <param name="dto"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.Models.EventManagementModel.GetAllMessageTypes">
+            <summary>
+            retrieves all the workflows
+            </summary>
+            <param name="dto"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.Models.EventManagementModel.GetEventById(System.Guid)">
+            <summary>
+            Get Event based on the Id
+            </summary>
+            <param name="dto"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.Models.EventManagementModel.LoadNewEvent">
+            <summary>
+            Loads the New Document 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.Models.EventManagementModel.GetWorkflowById(System.Guid)">
+            <summary>
+            Get Workflow based on the Id
+            </summary>
+            <param name="dto"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.Models.EventManagementModel.GetMessageById(System.Guid)">
+            <summary>
+            Get Workflow based on the Id
+            </summary>
+            <param name="dto"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.Models.EventManagementModel.DeleteEventById(System.Guid)">
+            <summary>
+            Deleting an event based on the Id
+            </summary>
+            <param name="dto"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.Models.EventManagementModel.ValidateScheduledEventData(TrueAutomation.WorkflowService.DTOs.ScheduledEventDTO)">
+            <summary>
+            Perform validations of the ScheduledEvent object to
+            ensure all neccessary data is present
+            </summary>
+            <returns>Dictionary of errors</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.Models.EventManagementModel.ValidateMessageEventData(TrueAutomation.WorkflowService.DTOs.MessageEventDTO)">
+            <summary>
+            Perform validations of the MessageEvent object to
+            ensure all neccessary data is present
+            </summary>
+            <returns>Dictionary of errors</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.Models.EventManagementModel.SetWorkflowCache(TrueAutomation.WorkflowService.DTOs.EventDTO)">
+            <summary>
+            Added to set the workflows after update or create directly to refresh the data on the view. 
+            This was done as the rhino queues was taking some time sometimes to refresh the data
+            </summary>
+            <param name="record"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.Models.EventManagementModel.DeleteFromWorkflowCache(System.Guid)">
+            <summary>
+            Added to delete the workflows directly to refresh the data on the view. 
+            This was done as the rhino queues was taking some time sometimes to refresh the data
+            </summary>
+            <param name="record"></param>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.Models.EventManagementModel.ErrorString">
+            <summary>
+            Stores the error string from a 
+            save operation, if any
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.Models.EventManagementModel.ValidationErrors">
+            <summary>
+            Validation errors
+            found during a Save operation
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.Models.WorkflowDesignerModel.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.Models.WorkflowDesignerModel.errorString">
+            <summary>
+            Holds the error string if 
+            any from a Save operation
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.Models.WorkflowDesignerModel.LoadWorkflow">
+            <summary>
+             Method to retrieve the workflow data from the workflow service
+            </summary>
+            <returns>A record of hte workflow corresponding to the GUID of the WorkflowRecord</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.Models.WorkflowDesignerModel.FindWorkflow(System.Guid)">
+            <summary>
+              Method to retrieve the workflow data from the workflow service based on an Id
+            </summary>
+            <param name="workflowId">Guid identifier of the workflow</param>
+            <returns>A record of hte workflow corresponding to the GUID of the WorkflowRecord</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.Models.WorkflowDesignerModel.SaveChanges">
+            <summary>
+            Method to persist the workflow to the database.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.Models.WorkflowDesignerModel.SetWorkflowCache(TrueAutomation.WorkflowService.DTOs.WorkflowDTO)">
+            <summary>
+            Added to set the workflows after update or create directly to refresh the data on the view. 
+            This was done as the rhino queues was taking some time sometimes to refresh the data
+            </summary>
+            <param name="record"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.Models.WorkflowDesignerModel.DeleteFromWorkflowCache(System.Guid)">
+            <summary>
+            Added to delete the workflows directly to refresh the data on the view. 
+            This was done as the rhino queues was taking some time sometimes to refresh the data
+            </summary>
+            <param name="record"></param>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.Models.WorkflowDesignerModel.ErrorString">
+            <summary>
+            Stores the error string from a 
+            save operation, if any
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.WorkflowSearchEventArgs.#ctor(TrueAutomation.WorkflowDesignStudio.UI.Logic.Domain.WorkflowSearchRecords)">
+            <summary>
+            Constructor to create Event Arguments for Workflow Searching.
+            </summary>
+            <param name="searchRecord"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.Views.WorkflowSearchEventArgs.#ctor(System.Guid)">
+            <summary>
+            Constructor to create Event Arguments for Workflow Searching.
+            </summary>
+            <param name="taskQID"></param>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.Bootstrapper">
+            <summary>
+            Bootstrapper class used by Rhino ESB to handle processing the consumer classes.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.ConfigUtil">
+            <summary>
+            Class the handle modifications to configuration files
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.ConfigUtil.UpdateConfigAttribute(System.String,System.String,System.String,System.String)">
+            <summary>
+            Method to update an element of a configuration file
+            </summary>
+            <param name="filePath">path to the config file</param>
+            <param name="nodePath">XML Path to the element</param>
+            <param name="attribute">the attribute to update</param>
+            <param name="value">the new value of the attribute</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.ConfigUtil.GetConfigurationFile(System.String)">
+            <summary>
+            Find the path to the configuration file.  If one is not provided, return the app.config
+            </summary>
+            <param name="filePath">path to the file.</param>
+            <returns>path to the desired configuration file.</returns>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.Consumers.WorkflowClientConsumer">
+            <summary>
+            Rhino ESB Consumer Class for keeping track of workflow update notifications on the service bus.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.Consumers.WorkflowClientConsumer.Consume(TrueAutomation.WorkflowService.Messages.IClientMessage)">
+            <summary>
+            Set consumer to only worry about the IClientMessage Interface so that we can receive all messages
+            using this and track sequence numbers even if we don't process the message
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.Consumers.WorkflowClientConsumer.ConsumeWorkflowUpdatedMessage(TrueAutomation.WorkflowService.Messages.WorkflowUpdatedMessage)">
+            <summary>
+            Method to perform some action whenever a message comes through.
+            </summary>
+            <remarks>currently not that useful.  Could be expanded with an expanded WorkflowUpdatedMessage 
+            to receive the entire WorkflowDTO within.</remarks>
+            <param name="message"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.Consumers.WorkflowClientConsumer.ConsumeWorkflowInstanceUpdatedMessage(TrueAutomation.WorkflowService.Messages.WorkflowInstanceUpdatedMessage)">
+            <summary>
+            Method to perform some action whenever a message comes through.
+            </summary>
+            <remarks>currently not that useful.  Could be expanded with an expanded WorkflowInstanceUpdatedMessage 
+            to receive the entire WorkflowInstanceDTO within.</remarks>
+            <param name="message"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.Consumers.WorkflowClientConsumer.ConsumeEventUpdatedMessage(TrueAutomation.WorkflowService.Messages.EventUpdatedMessage)">
+            <summary>
+            Method to perform some action whenever a message comes through.
+            </summary>
+            <remarks>currently not that useful.  Could be expanded with an expanded EventUpdatedMessage 
+            to receive the entire EventDTO within.</remarks>
+            <param name="message"></param>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.IWorkflowCacheService">
+            <summary>
+            Interface for the Workflow Cache.
+            Currently used to cache queue lists and task lists only.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.IWorkflowCacheService.UpdateWorkflows(TrueAutomation.WorkflowService.DTOs.WorkflowDTO)">
+             <summary>
+            Method to update the workflow list  
+             </summary>
+             <param name="workflow"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.IWorkflowCacheService.AddWorkflow(TrueAutomation.WorkflowService.DTOs.WorkflowDTO)">
+            <summary>
+            Method to Add a workflow to the workflow list
+            </summary>
+            <param name="workflow"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.IWorkflowCacheService.RemoveWorkflow(System.Guid)">
+            <summary>
+            Method to remove a workflow from the workflow List
+            </summary>
+            <param name="workflowId"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.IWorkflowCacheService.GetUpdatedWorkflowsList">
+            <summary>
+            Get updated list of Workflows from the Database through the services
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.IWorkflowCacheService.UpdateEvent(TrueAutomation.WorkflowService.DTOs.EventDTO)">
+             <summary>
+            Method to update an Event in the Events list  
+             </summary>
+             <param name="eventDTO"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.IWorkflowCacheService.AddEvent(TrueAutomation.WorkflowService.DTOs.EventDTO)">
+            <summary>
+            Method to Add an Event to the Events list
+            </summary>
+            <param name="eventDTO"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.IWorkflowCacheService.RemoveEvent(System.Guid)">
+             <summary>
+            Method to remove an Event from the Events list  
+             </summary>
+             <param name="eventId"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.IWorkflowCacheService.UpdateWorkflowInstance(TrueAutomation.WorkflowService.DTOs.WorkflowInstanceDTO)">
+            <summary>
+            Catchall method to update the instance list whenever a new instance is added or an
+            existing one is updated.
+            </summary>
+            <param name="dto"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.IWorkflowCacheService.EnableWorkflowServices">
+            <summary>
+            Initialize the ESB service in case the workflow services are available
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.IWorkflowCacheService.Workflows">
+            <summary>
+            List of Workflows in the system
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.IWorkflowCacheService.Events">
+            <summary>
+            List of Events in the system
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.IWorkflowCacheService.ApplicationForm">
+            <summary>
+            a reference to the base form of the application
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.IWorkflowCacheService.Messages">
+            <summary>
+            List of unprocessed messages
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.IWorkflowCacheService.LastProcessedSequenceNumber">
+            <summary>
+            The last sequence number of messages processed.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.IWorkflowCacheService.CustomActivities">
+            <summary>
+            List of activities available for workflow grouped by the toolbox area.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.ServiceBusHeartbeat">
+            <summary>
+            A class to continually notify the 
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.WorkflowCacheService">
+            <summary>
+            Caching class for the Workflow related Task Objects.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.WorkflowCacheService.#ctor">
+            <summary>
+            Default Constructor (private singleton)
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.WorkflowCacheService.UpdateWorkflowInstance(TrueAutomation.WorkflowService.DTOs.WorkflowInstanceDTO)">
+            <summary>
+            Catchall method to update the instance list whenever a new instance is added or an
+            existing one is updated.
+            </summary>
+            <param name="dto"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.WorkflowCacheService.UpdateWorkflows(TrueAutomation.WorkflowService.DTOs.WorkflowDTO)">
+             <summary>
+            Method to update the workflow list  
+             </summary>
+             <param name="workflow"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.WorkflowCacheService.AddWorkflow(TrueAutomation.WorkflowService.DTOs.WorkflowDTO)">
+            <summary>
+            Method to Add a workflow to the workflow list
+            </summary>
+            <param name="workflow"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.WorkflowCacheService.RemoveWorkflow(System.Guid)">
+            <summary>
+            Method to remove a workflow from the workflow List
+            </summary>
+            <param name="workflowId"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.WorkflowCacheService.GetUpdatedWorkflowsList">
+            <summary>
+            Get updated list of Workflows from the Database through the services
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.WorkflowCacheService.UpdateEvent(TrueAutomation.WorkflowService.DTOs.EventDTO)">
+             <summary>
+            Method to update the event list  
+             </summary>
+             <param name="eventDTO"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.WorkflowCacheService.AddEvent(TrueAutomation.WorkflowService.DTOs.EventDTO)">
+            <summary>
+            Method to Add a workflow to the workflow list
+            </summary>
+            <param name="eventDTO"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.WorkflowCacheService.RemoveEvent(System.Guid)">
+            <summary>
+            Method to remove a workflow from the workflow List
+            </summary>
+            <param name="workflowId"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.WorkflowCacheService.OnForceShutdown">
+            <summary>
+            Method to handle the event that the workflowcacheservice is being shutdown for
+            some reason
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.WorkflowCacheService.Reset">
+            <summary>
+            Method to force the cache to reset in the case that you are changing servers or users.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.WorkflowCacheService.InitializeESB">
+            <summary>
+            Iniitializes a connection to the ESB and creates the subscriptions courtesy of the Bootstrapper
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.WorkflowCacheService.InitializeLists">
+            <summary>
+            Initiializes the  QueueList from the services
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.WorkflowCacheService.Instance">
+            <summary>
+            Retrieves the active instance of the class.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.WorkflowCacheService.Workflows">
+            <summary>
+            List of Workflows in the system
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.WorkflowCacheService.CustomActivities">
+            <summary>
+            List of activities available for workflow grouped by the toolbox area.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.WorkflowCacheService.Events">
+            <summary>
+            List of Events in the system
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.WorkflowCacheService.Messages">
+            <summary>
+            List of unprocessed messages
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.UI.Logic.ServiceBus.WorkflowCacheService.LastProcessedSequenceNumber">
+            <summary>
+            The last sequence number of messages processed.
+            </summary>
+        </member>
+    </members>
+</doc>

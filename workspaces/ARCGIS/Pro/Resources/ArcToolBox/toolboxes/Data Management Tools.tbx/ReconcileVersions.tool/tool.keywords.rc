@@ -1,0 +1,18 @@
+{
+    "set": [
+        "alternative",
+        "change",
+        "edit",
+        "geodatabase",
+        "integrate",
+        "merge",
+        "modify",
+        "multiple",
+        "owner",
+        "sde",
+        "state",
+        "update",
+        "user",
+        "version"
+    ]
+}

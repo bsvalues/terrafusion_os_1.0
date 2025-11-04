@@ -1,0 +1,101 @@
+{
+    "type": "FunctionTool",
+    "guid": "{F6243FE3-8552-4511-BBCE-F882B7099A58}/GroupRouteSegments",
+    "displayname": "$rc:title",
+    "helpcontent": "64030011",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "53",
+        "70"
+    ],
+    "params": {
+        "target_atsroute_features": {
+            "displayname": "$rc:target_atsroute_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:target_atsroute_features.descr"
+        },
+        "target_enroute_table": {
+            "displayname": "$rc:target_enroute_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:target_enroute_table.descr"
+        },
+        "target_routeportion_table": {
+            "displayname": "$rc:target_routeportion_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:target_routeportion_table.descr"
+        },
+        "in_association_table": {
+            "displayname": "$rc:in_association_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_association_table.descr"
+        },
+        "modified_target_atsroute_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:modified_target_atsroute_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Point"
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "target_atsroute_features"
+            ]
+        },
+        "modified_target_enroute_table": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:modified_target_enroute_table.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPCompositeDomain"
+            },
+            "depends": [
+                "target_enroute_table"
+            ]
+        },
+        "modified_target_routeportion_table": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:modified_target_routeportion_table.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPCompositeDomain"
+            },
+            "depends": [
+                "target_routeportion_table"
+            ]
+        }
+    }
+}

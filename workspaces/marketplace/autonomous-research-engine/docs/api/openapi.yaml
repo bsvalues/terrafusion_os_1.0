@@ -1,0 +1,219 @@
+openapi: 3.0.3
+info:
+  title: Autonomous Research Engine API
+  description: Autonomous Research Engine operations APIs
+  version: 1.0.0
+  contact:
+    name: TerraFusion Government OS API Support
+    email: autonomous-research-engine-api@terrafusion.gov
+    url: https://docs.terrafusion.gov/marketplace/autonomous-research-engine
+  license:
+    name: Government Use License
+    url: https://terrafusion.gov/licenses/government-api
+  termsOfService: https://terrafusion.gov/terms/api-usage
+servers:
+- url: https://api.terrafusion.gov/api/v1/autonomous-research-engine
+  description: Production TerraFusion Government API
+- url: https://staging-api.terrafusion.gov/api/v1/autonomous-research-engine
+  description: Staging Environment
+- url: https://dev-api.terrafusion.gov/api/v1/autonomous-research-engine
+  description: Development Environment
+paths:
+  /health:
+    get:
+      tags:
+      - autonomous-research-engine
+      summary: Health check
+      description: Health check - Autonomous Research Engine operations APIs
+      operationId: get__health
+      security:
+      - OAuth2:
+        - autonomous-research-engine:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /data:
+    get:
+      tags:
+      - autonomous-research-engine
+      summary: Data retrieval
+      description: Data retrieval - Autonomous Research Engine operations APIs
+      operationId: get__data
+      security:
+      - OAuth2:
+        - autonomous-research-engine:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /operations:
+    post:
+      tags:
+      - autonomous-research-engine
+      summary: Operation execution
+      description: Operation execution - Autonomous Research Engine operations APIs
+      operationId: post__operations
+      security:
+      - OAuth2:
+        - autonomous-research-engine:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /status:
+    get:
+      tags:
+      - autonomous-research-engine
+      summary: Service status
+      description: Service status - Autonomous Research Engine operations APIs
+      operationId: get__status
+      security:
+      - OAuth2:
+        - autonomous-research-engine:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: object
+    HealthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - healthy
+          - degraded
+          - unhealthy
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        dependencies:
+          type: object
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
+          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          scopes:
+            autonomous-research-engine:read: Read access to autonomous-research-engine
+              resources
+            autonomous-research-engine:write: Write access to autonomous-research-engine
+              resources
+            autonomous-research-engine:admin: Administrative access to autonomous-research-engine
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+security:
+- OAuth2:
+  - autonomous-research-engine:read
+- ApiKey: []
+tags:
+- name: autonomous-research-engine
+  description: Autonomous Research Engine operations
+  externalDocs:
+    description: Find out more about autonomous-research-engine
+    url: https://docs.terrafusion.gov/marketplace/autonomous-research-engine

@@ -1,0 +1,27 @@
+{
+    "set": [
+        "altitude",
+        "annual drift",
+        "cartography",
+        "charting",
+        "compute",
+        "create",
+        "date",
+        "defense",
+        "defense mapping",
+        "features",
+        "grid variation",
+        "inclination",
+        "isomagnetic",
+        "lines",
+        "locations",
+        "model",
+        "points",
+        "topo",
+        "topographic",
+        "topographic production",
+        "vertical intensity",
+        "wmm",
+        "world"
+    ]
+}

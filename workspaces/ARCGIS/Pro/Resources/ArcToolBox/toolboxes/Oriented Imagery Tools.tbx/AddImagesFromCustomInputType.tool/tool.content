@@ -1,0 +1,88 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "81010004",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_oriented_imagery_dataset": {
+            "displayname": "$rc:in_oriented_imagery_dataset.title",
+            "datatype": {
+                "type": "GPOrientedImageryLayer"
+            },
+            "description": "$rc:in_oriented_imagery_dataset.descr"
+        },
+        "input_type": {
+            "displayname": "$rc:input_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:input_type.descr"
+        },
+        "in_type_folder": {
+            "enabled": "false",
+            "displayname": "$rc:in_type_folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:in_type_folder.descr"
+        },
+        "in_data": {
+            "displayname": "$rc:in_data.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:in_data.dt.title1",
+                        "readonly": "true"
+                    },
+                    {
+                        "type": "GPType",
+                        "displayname": "$rc:in_data.dt.title2"
+                    }
+                ]
+            },
+            "description": "$rc:in_data.descr"
+        },
+        "auxiliary_parameters": {
+            "type": "optional",
+            "displayname": "$rc:auxiliary_parameters.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:auxiliary_parameters.dt.title1",
+                        "readonly": "true"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:auxiliary_parameters.dt.title2"
+                    }
+                ]
+            },
+            "description": "$rc:auxiliary_parameters.descr"
+        },
+        "out_oriented_imagery_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_oriented_imagery_dataset.title",
+            "datatype": {
+                "type": "GPOrientedImageryLayer"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    },
+    "environments": [
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem"
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "set": [
+        "data management",
+        "defense",
+        "defense mapping",
+        "export",
+        "geodatabase",
+        "geodatabase management",
+        "mgcp",
+        "metadata",
+        "topo",
+        "topographic",
+        "topographic production"
+    ]
+}

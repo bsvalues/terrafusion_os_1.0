@@ -1,0 +1,19 @@
+{
+    "set": [
+        "alter",
+        "change",
+        "coincident",
+        "distance",
+        "fuzzy",
+        "geometry",
+        "identical",
+        "relationship",
+        "rule",
+        "share",
+        "spatial",
+        "topology",
+        "update",
+        "valid",
+        "xy"
+    ]
+}

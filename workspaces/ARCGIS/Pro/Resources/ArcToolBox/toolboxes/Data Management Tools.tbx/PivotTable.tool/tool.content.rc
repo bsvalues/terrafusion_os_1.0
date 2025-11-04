@@ -1,0 +1,17 @@
+{
+    "map": {
+        "description": "Creates a table from the input table by reducing redundancy  in records and flattening one-to-many relationships.",
+        "fields.descr": "The fields that define the records that will be included in the output table.",
+        "fields.title": "Input Fields",
+        "in_table.descr": "The table containing the records that will be pivoted.",
+        "in_table.title": "Input Table",
+        "out_table.descr": "The table that will be created containing the pivoted records.",
+        "out_table.title": "Output Table",
+        "pivot_field.descr": "The field whose record values will be used to generate the field names in the output table.",
+        "pivot_field.title": "Pivot Field",
+        "summary": "Creates a table from the input table by reducing redundancy in records and flattening one-to-many relationships.",
+        "title": "Pivot Table",
+        "value_field.descr": "The field whose values will populate the pivoted fields in the output table.",
+        "value_field.title": "Value Field"
+    }
+}

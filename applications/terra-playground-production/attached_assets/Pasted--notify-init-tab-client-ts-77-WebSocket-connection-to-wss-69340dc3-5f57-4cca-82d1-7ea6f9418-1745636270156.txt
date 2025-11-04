@@ -1,0 +1,131 @@
+{"notify":"init_tab"}
+client.ts:77  WebSocket connection to 'wss://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev/' failed: Error during WebSocket handshake: Unexpected response code: 400
+setupWebSocket @ client.ts:77
+client.ts:77  Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/' is invalid.
+    at setupWebSocket (client.ts:77:18)
+    at fallback (client.ts:42:16)
+    at WebSocket.<anonymous> (client.ts:99:7)
+5hook.js:608  Warning: Invalid prop `data-replit-metadata` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props. Error Component Stack
+    at NavMenu.tsx:248:5
+    at div (<anonymous>)
+    at aside (<anonymous>)
+    at _c (Sidebar.tsx:89:5)
+    at div (<anonymous>)
+    at aside (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at AppShell (AppShell.tsx:61:3)
+    at NewAppLayout (new-app-layout.tsx:256:51)
+    at Route (index.js:227:18)
+    at Switch (index.js:314:19)
+    at Router (<anonymous>)
+    at GISProvider (GISContext.tsx:110:72)
+    at AIAssistantProvider (ai-assistant-provider.tsx:35:75)
+    at ExtensionProvider (extension-provider.tsx:24:37)
+    at QueryClientProvider (QueryClientProvider.tsx:30:3)
+    at App (<anonymous>)
+    at AuthProvider (auth-provider.tsx:26:32)
+overrideMethod @ hook.js:608
+GISContext.tsx:155 No Mapbox token found in environment variables, using OpenStreetMap fallback
+extension-service.ts:37 Fetching extensions from API...
+extension-service.ts:85 Fetching webviews from API...
+api/agents/master-development-status:1 
+            
+            
+            Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+hook.js:608  API error: 500 Internal Server Error - {"error":"Failed to get Master Development Agent status","message":"this.capabilities.map is not a function"}
+overrideMethod @ hook.js:608
+hook.js:608  Query error: Error: 500: {"error":"Failed to get Master Development Agent status","message":"this.capabilities.map is not a function"}
+    at queryClient.ts:101:15
+overrideMethod @ hook.js:608
+extension-service.ts:47 Successfully loaded 1 extensions
+extension-service.ts:95 Successfully loaded 2 webviews
+queryClient.ts:92 
+            
+            
+            GET https://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev/api/agents/master-development-status 500 (Internal Server Error)
+(anonymous) @ queryClient.ts:92
+fetchFn @ query.ts:429
+run @ retryer.ts:153
+start @ retryer.ts:218
+fetch @ query.ts:540
+executeFetch_fn @ queryObserver.ts:346
+(anonymous) @ queryObserver.ts:409
+queryClient.ts:100  API error: 500 Internal Server Error - {"error":"Failed to get Master Development Agent status","message":"this.capabilities.map is not a function"}
+overrideMethod @ hook.js:608
+(anonymous) @ queryClient.ts:100
+await in (anonymous)
+fetchFn @ query.ts:429
+run @ retryer.ts:153
+start @ retryer.ts:218
+fetch @ query.ts:540
+executeFetch_fn @ queryObserver.ts:346
+(anonymous) @ queryObserver.ts:409
+queryClient.ts:106  Query error: Error: 500: {"error":"Failed to get Master Development Agent status","message":"this.capabilities.map is not a function"}
+    at queryClient.ts:101:15
+overrideMethod @ hook.js:608
+(anonymous) @ queryClient.ts:106
+await in (anonymous)
+fetchFn @ query.ts:429
+run @ retryer.ts:153
+start @ retryer.ts:218
+fetch @ query.ts:540
+executeFetch_fn @ queryObserver.ts:346
+(anonymous) @ queryObserver.ts:409
+queryClient.ts:92 
+            
+            
+            GET https://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev/api/agents/master-development-status 500 (Internal Server Error)
+(anonymous) @ queryClient.ts:92
+fetchFn @ query.ts:429
+run @ retryer.ts:153
+start @ retryer.ts:218
+fetch @ query.ts:540
+executeFetch_fn @ queryObserver.ts:346
+(anonymous) @ queryObserver.ts:409
+setInterval
+updateRefetchInterval_fn @ queryObserver.ts:404
+updateTimers_fn @ queryObserver.ts:416
+onQueryUpdate @ queryObserver.ts:739
+(anonymous) @ query.ts:619
+(anonymous) @ query.ts:618
+batch @ notifyManager.ts:52
+dispatch_fn @ query.ts:617
+onError @ query.ts:465
+reject @ retryer.ts:116
+(anonymous) @ retryer.ts:180
+Promise.catch
+run @ retryer.ts:160
+start @ retryer.ts:218
+fetch @ query.ts:540
+executeFetch_fn @ queryObserver.ts:346
+(anonymous) @ queryObserver.ts:409
+queryClient.ts:100  API error: 500 Internal Server Error - {"error":"Failed to get Master Development Agent status","message":"this.capabilities.map is not a function"}
+overrideMethod @ hook.js:608
+(anonymous) @ queryClient.ts:100
+await in (anonymous)
+fetchFn @ query.ts:429
+run @ retryer.ts:153
+start @ retryer.ts:218
+fetch @ query.ts:540
+executeFetch_fn @ queryObserver.ts:346
+(anonymous) @ queryObserver.ts:409
+setInterval
+updateRefetchInterval_fn @ queryObserver.ts:404
+updateTimers_fn @ queryObserver.ts:416
+onQueryUpdate @ queryObserver.ts:739
+(anonymous) @ query.ts:619
+(anonymous) @ query.ts:618
+batch @ notifyManager.ts:52
+dispatch_fn @ query.ts:617
+onError @ query.ts:465
+reject @ retryer.ts:116
+(anonymous) @ retryer.ts:180
+Promise.catch
+run @ retryer.ts:160
+start @ retryer.ts:218
+fetch @ query.ts:540
+executeFetch_fn @ queryObserver.ts:346
+(anonymous) @ queryObserver.ts:409
+queryClient.ts:106  Query error: Error: 500: {"error":"Failed to get Master Development Agent status","message":"this.capabilities.map is not a function"}
+    at queryClient.ts:101:15

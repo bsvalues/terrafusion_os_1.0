@@ -1,0 +1,5 @@
+<DataType Name="NAClassFieldMap">
+  <DisplayName>Network Analyst Class FieldMap</DisplayName>
+  <Description>Mapping between location properties in a Network Analyst layer (such as stops, facilities, and incidents) and a point feature class.</Description>
+</DataType>
+

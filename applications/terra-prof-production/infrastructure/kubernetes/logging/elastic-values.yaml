@@ -1,0 +1,136 @@
+## Elasticsearch Helm chart values for TerraFusionPro
+
+# Elasticsearch cluster name
+clusterName: "terrafusionpro-logs"
+
+# Elasticsearch version
+nodeGroup: "master"
+masterService: "elasticsearch-master"
+roles:
+  master: "true"
+  ingest: "true"
+  data: "true"
+
+# Replicas for high availability
+replicas: 3
+minimumMasterNodes: 2
+
+# Resource configuration for Elasticsearch nodes
+resources:
+  requests:
+    cpu: "1000m"
+    memory: "2Gi"
+  limits:
+    cpu: "2000m"
+    memory: "4Gi"
+
+# Persistence configuration
+persistence:
+  enabled: true
+  accessModes:
+    - ReadWriteOnce
+  size: "100Gi"
+  storageClass: "managed-premium"
+
+# JVM options
+esJavaOpts: "-Xmx2g -Xms2g"
+
+# Network configuration
+networkHost: "0.0.0.0"
+httpPort: 9200
+
+# Security settings
+extraEnvs:
+  - name: ELASTIC_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: elasticsearch-credentials
+        key: password
+  - name: xpack.security.enabled
+    value: "true"
+  - name: xpack.security.transport.ssl.enabled
+    value: "true"
+  - name: xpack.security.transport.ssl.verification_mode
+    value: "certificate"
+  - name: xpack.security.transport.ssl.keystore.path
+    value: "/usr/share/elasticsearch/config/certs/elastic-certificates.p12"
+  - name: xpack.security.transport.ssl.truststore.path
+    value: "/usr/share/elasticsearch/config/certs/elastic-certificates.p12"
+
+# Additional plugins
+extraInitContainers:
+  - name: plugin-installer
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.3
+    command: ["/bin/bash", "-c"]
+    args:
+      - |
+        bin/elasticsearch-plugin install --batch repository-gcs;
+        bin/elasticsearch-plugin install --batch repository-azure;
+        bin/elasticsearch-plugin install --batch repository-s3;
+
+# Index lifecycle management
+lifecycle:
+  policies:
+    - name: "logs"
+      body: |
+        {
+          "policy": {
+            "phases": {
+              "hot": {
+                "actions": {}
+              },
+              "warm": {
+                "min_age": "7d",
+                "actions": {}
+              },
+              "cold": {
+                "min_age": "30d",
+                "actions": {}
+              },
+              "delete": {
+                "min_age": "90d",
+                "actions": {
+                  "delete": {}
+                }
+              }
+            }
+          }
+        }
+
+# ILM hooks
+ilm:
+  enabled: true
+  rollover_alias: "logs"
+  pattern: "{now/d}-000001"
+  policy_name: "logs"
+
+# Health checks
+readinessProbe:
+  initialDelaySeconds: 90
+  periodSeconds: 20
+livenessProbe:
+  initialDelaySeconds: 120
+  periodSeconds: 20
+
+# Pod security context
+podSecurityContext:
+  fsGroup: 1000
+
+# Security context
+securityContext:
+  capabilities:
+    drop:
+      - ALL
+  runAsNonRoot: true
+  runAsUser: 1000
+
+# Anti-affinity to ensure high availability
+antiAffinity: "hard"
+
+# Service configuration
+service:
+  type: ClusterIP
+  nodePort: ""
+  annotations: {}
+  httpPortName: http
+  transportPortName: transport

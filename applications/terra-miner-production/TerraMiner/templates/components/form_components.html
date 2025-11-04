@@ -1,0 +1,548 @@
+{# Form Component Library #}
+{# This file contains reusable form components for the TerraMiner application #}
+
+{% from "components/ui_components.html" import icon_button %}
+
+{# Input Field Component #}
+{% macro input_field(name, label, type="text", value="", placeholder="", required=False, help_text=None, error=None, disabled=False, readonly=False, autocomplete="on", min=None, max=None, step=None, pattern=None, maxlength=None, class="") %}
+<div class="mb-3 form-field {{ class }}">
+    <label for="{{ name }}" class="form-label">
+        {{ label }}
+        {% if required %}<span class="text-danger">*</span>{% endif %}
+    </label>
+    <input type="{{ type }}" 
+           class="form-control {% if error %}is-invalid{% endif %}" 
+           id="{{ name }}" 
+           name="{{ name }}" 
+           value="{{ value }}" 
+           placeholder="{{ placeholder }}"
+           {% if required %}required{% endif %}
+           {% if disabled %}disabled{% endif %}
+           {% if readonly %}readonly{% endif %}
+           {% if autocomplete %}autocomplete="{{ autocomplete }}"{% endif %}
+           {% if min is not none %}min="{{ min }}"{% endif %}
+           {% if max is not none %}max="{{ max }}"{% endif %}
+           {% if step is not none %}step="{{ step }}"{% endif %}
+           {% if pattern %}pattern="{{ pattern }}"{% endif %}
+           {% if maxlength %}maxlength="{{ maxlength }}"{% endif %}>
+    
+    {% if help_text %}
+        <div class="form-text text-muted small">{{ help_text }}</div>
+    {% endif %}
+    
+    {% if error %}
+        <div class="invalid-feedback">{{ error }}</div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{# Textarea Component #}
+{% macro textarea_field(name, label, value="", rows=3, placeholder="", required=False, help_text=None, error=None, disabled=False, readonly=False, maxlength=None, class="") %}
+<div class="mb-3 form-field {{ class }}">
+    <label for="{{ name }}" class="form-label">
+        {{ label }}
+        {% if required %}<span class="text-danger">*</span>{% endif %}
+    </label>
+    <textarea class="form-control {% if error %}is-invalid{% endif %}" 
+              id="{{ name }}" 
+              name="{{ name }}" 
+              rows="{{ rows }}" 
+              placeholder="{{ placeholder }}"
+              {% if required %}required{% endif %}
+              {% if disabled %}disabled{% endif %}
+              {% if readonly %}readonly{% endif %}
+              {% if maxlength %}maxlength="{{ maxlength }}"{% endif %}>{{ value }}</textarea>
+    
+    {% if help_text %}
+        <div class="form-text text-muted small">{{ help_text }}</div>
+    {% endif %}
+    
+    {% if error %}
+        <div class="invalid-feedback">{{ error }}</div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{# Select Field Component #}
+{% macro select_field(name, label, options, value="", required=False, help_text=None, error=None, disabled=False, multiple=False, size=None, class="") %}
+<div class="mb-3 form-field {{ class }}">
+    <label for="{{ name }}" class="form-label">
+        {{ label }}
+        {% if required %}<span class="text-danger">*</span>{% endif %}
+    </label>
+    <select class="form-select {% if error %}is-invalid{% endif %}" 
+            id="{{ name }}" 
+            name="{{ name }}"
+            {% if required %}required{% endif %}
+            {% if disabled %}disabled{% endif %}
+            {% if multiple %}multiple{% endif %}
+            {% if size %}size="{{ size }}"{% endif %}>
+        
+        {% for option in options %}
+            {% if option is mapping %}
+                <option value="{{ option.value }}" 
+                        {% if multiple and option.value in value or not multiple and option.value == value %}selected{% endif %}
+                        {% if option.disabled %}disabled{% endif %}>
+                    {{ option.text }}
+                </option>
+            {% else %}
+                <option value="{{ option }}" 
+                        {% if multiple and option in value or not multiple and option == value %}selected{% endif %}>
+                    {{ option }}
+                </option>
+            {% endif %}
+        {% endfor %}
+    </select>
+    
+    {% if help_text %}
+        <div class="form-text text-muted small">{{ help_text }}</div>
+    {% endif %}
+    
+    {% if error %}
+        <div class="invalid-feedback">{{ error }}</div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{# Checkbox/Radio Group Component #}
+{% macro checkbox_radio_group(name, label, options, type="checkbox", inline=False, value=[], required=False, help_text=None, error=None, disabled=False, class="") %}
+<div class="mb-3 form-field {{ class }}">
+    <label class="form-label d-block">
+        {{ label }}
+        {% if required %}<span class="text-danger">*</span>{% endif %}
+    </label>
+    
+    {% for option in options %}
+        {% if option is mapping %}
+            <div class="form-check {% if inline %}form-check-inline{% endif %}">
+                <input class="form-check-input {% if error %}is-invalid{% endif %}" 
+                       type="{{ type }}" 
+                       name="{{ name }}{% if type == 'checkbox' %}[]{% endif %}" 
+                       id="{{ name }}_{{ loop.index }}" 
+                       value="{{ option.value }}"
+                       {% if type == 'checkbox' and option.value in value or type == 'radio' and option.value == value %}checked{% endif %}
+                       {% if required %}required{% endif %}
+                       {% if option.disabled or disabled %}disabled{% endif %}>
+                <label class="form-check-label" for="{{ name }}_{{ loop.index }}">
+                    {{ option.text }}
+                </label>
+            </div>
+        {% else %}
+            <div class="form-check {% if inline %}form-check-inline{% endif %}">
+                <input class="form-check-input {% if error %}is-invalid{% endif %}" 
+                       type="{{ type }}" 
+                       name="{{ name }}{% if type == 'checkbox' %}[]{% endif %}" 
+                       id="{{ name }}_{{ loop.index }}" 
+                       value="{{ option }}"
+                       {% if type == 'checkbox' and option in value or type == 'radio' and option == value %}checked{% endif %}
+                       {% if required %}required{% endif %}
+                       {% if disabled %}disabled{% endif %}>
+                <label class="form-check-label" for="{{ name }}_{{ loop.index }}">
+                    {{ option }}
+                </label>
+            </div>
+        {% endif %}
+    {% endfor %}
+    
+    {% if help_text %}
+        <div class="form-text text-muted small">{{ help_text }}</div>
+    {% endif %}
+    
+    {% if error %}
+        <div class="invalid-feedback d-block">{{ error }}</div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{# Toggle Switch Component #}
+{% macro toggle_switch(name, label, checked=False, help_text=None, error=None, disabled=False, required=False, class="") %}
+<div class="mb-3 form-field {{ class }}">
+    <div class="form-check form-switch">
+        <input class="form-check-input {% if error %}is-invalid{% endif %}" 
+               type="checkbox" 
+               id="{{ name }}" 
+               name="{{ name }}" 
+               {% if checked %}checked{% endif %}
+               {% if disabled %}disabled{% endif %}
+               {% if required %}required{% endif %}>
+        <label class="form-check-label" for="{{ name }}">
+            {{ label }}
+            {% if required %}<span class="text-danger">*</span>{% endif %}
+        </label>
+        
+        {% if help_text %}
+            <div class="form-text text-muted small">{{ help_text }}</div>
+        {% endif %}
+        
+        {% if error %}
+            <div class="invalid-feedback">{{ error }}</div>
+        {% endif %}
+    </div>
+</div>
+{% endmacro %}
+
+{# File Upload Component #}
+{% macro file_upload(name, label, accept=None, multiple=False, required=False, help_text=None, error=None, disabled=False, class="") %}
+<div class="mb-3 form-field {{ class }}">
+    <label for="{{ name }}" class="form-label">
+        {{ label }}
+        {% if required %}<span class="text-danger">*</span>{% endif %}
+    </label>
+    <input type="file" 
+           class="form-control {% if error %}is-invalid{% endif %}" 
+           id="{{ name }}" 
+           name="{{ name }}{% if multiple %}[]{% endif %}" 
+           {% if accept %}accept="{{ accept }}"{% endif %}
+           {% if multiple %}multiple{% endif %}
+           {% if required %}required{% endif %}
+           {% if disabled %}disabled{% endif %}>
+    
+    {% if help_text %}
+        <div class="form-text text-muted small">{{ help_text }}</div>
+    {% endif %}
+    
+    {% if error %}
+        <div class="invalid-feedback">{{ error }}</div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{# Date/Time Picker Component #}
+{% macro datetime_picker(name, label, type="date", value="", required=False, help_text=None, error=None, disabled=False, min=None, max=None, class="") %}
+<div class="mb-3 form-field {{ class }}">
+    <label for="{{ name }}" class="form-label">
+        {{ label }}
+        {% if required %}<span class="text-danger">*</span>{% endif %}
+    </label>
+    <input type="{{ type }}" 
+           class="form-control {% if error %}is-invalid{% endif %}" 
+           id="{{ name }}" 
+           name="{{ name }}" 
+           value="{{ value }}"
+           {% if required %}required{% endif %}
+           {% if disabled %}disabled{% endif %}
+           {% if min %}min="{{ min }}"{% endif %}
+           {% if max %}max="{{ max }}"{% endif %}>
+    
+    {% if help_text %}
+        <div class="form-text text-muted small">{{ help_text }}</div>
+    {% endif %}
+    
+    {% if error %}
+        <div class="invalid-feedback">{{ error }}</div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{# Range Slider Component #}
+{% macro range_slider(name, label, min=0, max=100, step=1, value=50, required=False, help_text=None, error=None, disabled=False, show_value=True, class="") %}
+<div class="mb-3 form-field {{ class }}">
+    <label for="{{ name }}" class="form-label">
+        {{ label }}
+        {% if required %}<span class="text-danger">*</span>{% endif %}
+        {% if show_value %}<span class="slider-value ms-2">{{ value }}</span>{% endif %}
+    </label>
+    <input type="range" 
+           class="form-range {% if error %}is-invalid{% endif %}" 
+           id="{{ name }}" 
+           name="{{ name }}" 
+           min="{{ min }}" 
+           max="{{ max }}" 
+           step="{{ step }}" 
+           value="{{ value }}"
+           {% if required %}required{% endif %}
+           {% if disabled %}disabled{% endif %}
+           {% if show_value %}oninput="document.querySelector('#{{ name }}').previousElementSibling.querySelector('.slider-value').textContent = this.value"{% endif %}>
+    
+    {% if help_text %}
+        <div class="form-text text-muted small">{{ help_text }}</div>
+    {% endif %}
+    
+    {% if error %}
+        <div class="invalid-feedback">{{ error }}</div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{# Search Field with Autocomplete Component #}
+{% macro search_field(name, label, placeholder="Search...", value="", data_url=None, required=False, help_text=None, error=None, disabled=False, min_length=2, delay=300, class="") %}
+<div class="mb-3 form-field {{ class }}">
+    <label for="{{ name }}" class="form-label">
+        {{ label }}
+        {% if required %}<span class="text-danger">*</span>{% endif %}
+    </label>
+    <div class="input-group">
+        <input type="search" 
+               class="form-control {% if error %}is-invalid{% endif %}" 
+               id="{{ name }}" 
+               name="{{ name }}" 
+               value="{{ value }}" 
+               placeholder="{{ placeholder }}"
+               {% if required %}required{% endif %}
+               {% if disabled %}disabled{% endif %}
+               {% if data_url %}
+               data-autocomplete-url="{{ data_url }}"
+               data-autocomplete-min-length="{{ min_length }}"
+               data-autocomplete-delay="{{ delay }}"
+               {% endif %}>
+        <button class="btn btn-outline-secondary" type="button">
+            <i class="bi bi-search"></i>
+        </button>
+    </div>
+    
+    {% if help_text %}
+        <div class="form-text text-muted small">{{ help_text }}</div>
+    {% endif %}
+    
+    {% if error %}
+        <div class="invalid-feedback">{{ error }}</div>
+    {% endif %}
+    
+    {% if data_url %}
+        <div class="autocomplete-results"></div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{# Input Group with Prefix/Suffix Component #}
+{% macro input_group(name, label, type="text", value="", prefix=None, suffix=None, placeholder="", required=False, help_text=None, error=None, disabled=False, class="") %}
+<div class="mb-3 form-field {{ class }}">
+    <label for="{{ name }}" class="form-label">
+        {{ label }}
+        {% if required %}<span class="text-danger">*</span>{% endif %}
+    </label>
+    <div class="input-group">
+        {% if prefix %}
+            <span class="input-group-text">{{ prefix }}</span>
+        {% endif %}
+        
+        <input type="{{ type }}" 
+               class="form-control {% if error %}is-invalid{% endif %}" 
+               id="{{ name }}" 
+               name="{{ name }}" 
+               value="{{ value }}" 
+               placeholder="{{ placeholder }}"
+               {% if required %}required{% endif %}
+               {% if disabled %}disabled{% endif %}>
+        
+        {% if suffix %}
+            <span class="input-group-text">{{ suffix }}</span>
+        {% endif %}
+    </div>
+    
+    {% if help_text %}
+        <div class="form-text text-muted small">{{ help_text }}</div>
+    {% endif %}
+    
+    {% if error %}
+        <div class="invalid-feedback">{{ error }}</div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{# Form Action Buttons Component #}
+{% macro form_actions(submit_text="Submit", cancel_url=None, cancel_text="Cancel", reset=False, submit_icon="check2", cancel_icon="x", reset_icon="arrow-counterclockwise", submit_class="btn-primary", cancel_class="btn-outline-secondary", reset_class="btn-outline-danger", class="mt-4") %}
+<div class="form-actions {{ class }}">
+    <button type="submit" class="btn {{ submit_class }}">
+        {% if submit_icon %}<i class="bi bi-{{ submit_icon }} me-1"></i>{% endif %}
+        {{ submit_text }}
+    </button>
+    
+    {% if cancel_url %}
+        <a href="{{ cancel_url }}" class="btn {{ cancel_class }} ms-2">
+            {% if cancel_icon %}<i class="bi bi-{{ cancel_icon }} me-1"></i>{% endif %}
+            {{ cancel_text }}
+        </a>
+    {% endif %}
+    
+    {% if reset %}
+        <button type="reset" class="btn {{ reset_class }} ms-2">
+            {% if reset_icon %}<i class="bi bi-{{ reset_icon }} me-1"></i>{% endif %}
+            Reset
+        </button>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{# Form Section Component #}
+{% macro form_section(title=None, description=None, collapsible=False, collapsed=False, section_id=None, class="") %}
+<div class="form-section border border-secondary rounded p-3 mb-4 {{ class }}" 
+     {% if collapsible %}
+     id="{{ section_id or ('section-' + range(1000, 9999)|random|string) }}"
+     {% endif %}>
+    
+    {% if title %}
+        <div class="form-section-header {% if collapsible %}d-flex justify-content-between align-items-center cursor-pointer{% endif %} mb-3"
+             {% if collapsible %}
+             data-bs-toggle="collapse" 
+             data-bs-target="#{{ section_id or ('section-' + range(1000, 9999)|random|string) }}-content"
+             aria-expanded="{{ 'false' if collapsed else 'true' }}"
+             {% endif %}>
+            <h5 class="mb-0">{{ title }}</h5>
+            {% if collapsible %}
+                <i class="bi bi-chevron-{{ 'down' if not collapsed else 'right' }}"></i>
+            {% endif %}
+        </div>
+    {% endif %}
+    
+    {% if description %}
+        <p class="text-muted mb-3">{{ description }}</p>
+    {% endif %}
+    
+    <div class="form-section-content {% if collapsible %}collapse{{ '' if collapsed else ' show' }}{% endif %}"
+         {% if collapsible %}
+         id="{{ section_id or ('section-' + range(1000, 9999)|random|string) }}-content"
+         {% endif %}>
+        {{ caller() }}
+    </div>
+</div>
+{% endmacro %}
+
+{# Form Container Component #}
+{% macro form_container(action="", method="post", enctype=None, id=None, class="", novalidate=False) %}
+<form action="{{ action }}" method="{{ method }}" 
+      {% if enctype %}enctype="{{ enctype }}"{% endif %}
+      {% if id %}id="{{ id }}"{% endif %}
+      class="needs-validation {{ class }}"
+      {% if novalidate %}novalidate{% endif %}>
+    {{ caller() }}
+</form>
+{% endmacro %}
+
+{# Form Field Row (for horizontally arranging multiple form fields) #}
+{% macro form_row(columns=2, gap=3, class="") %}
+<div class="row g-{{ gap }} {{ class }}">
+    {% for column in range(columns) %}
+        <div class="col-md-{{ 12 // columns }}">
+            {{ caller(loop.index0) }}
+        </div>
+    {% endfor %}
+</div>
+{% endmacro %}
+
+{# Form Error Summary Component #}
+{% macro form_errors(errors, title="Please fix the following errors:") %}
+{% if errors and errors|length > 0 %}
+    <div class="alert alert-danger mb-4">
+        <h5 class="alert-heading"><i class="bi bi-exclamation-triangle-fill me-2"></i>{{ title }}</h5>
+        <ul class="mb-0 ps-3">
+            {% for field, message in errors.items() %}
+                <li>{{ field }}: {{ message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+{% endmacro %}
+
+{# Tag Input Component #}
+{% macro tag_input(name, label, value=[], placeholder="Enter tags...", required=False, help_text=None, error=None, disabled=False, max_tags=null, delimiters=[",", " "], color="primary", class="") %}
+<div class="mb-3 form-field {{ class }}">
+    <label for="{{ name }}" class="form-label">
+        {{ label }}
+        {% if required %}<span class="text-danger">*</span>{% endif %}
+    </label>
+    <div class="tag-input-container">
+        <div class="tag-input-wrapper border rounded p-1 d-flex flex-wrap align-items-center {% if error %}border-danger{% endif %}">
+            <div class="tag-list d-flex flex-wrap">
+                {% for tag in value %}
+                    <div class="badge bg-{{ color }} tag-item m-1 px-2 py-1">
+                        <span>{{ tag }}</span>
+                        <button type="button" class="btn-close btn-close-white ms-1 tag-remove" aria-label="Remove"></button>
+                    </div>
+                {% endfor %}
+            </div>
+            <input type="text" 
+                   class="tag-input flex-grow-1 border-0 outline-0 py-1 px-2" 
+                   id="{{ name }}_input" 
+                   placeholder="{{ placeholder }}"
+                   {% if disabled %}disabled{% endif %}
+                   data-max-tags="{{ max_tags if max_tags else 'null' }}"
+                   data-delimiters="{{ delimiters|tojson }}">
+        </div>
+        <input type="hidden" id="{{ name }}" name="{{ name }}" value="{{ value|tojson }}">
+    </div>
+    
+    {% if help_text %}
+        <div class="form-text text-muted small">{{ help_text }}</div>
+    {% endif %}
+    
+    {% if error %}
+        <div class="invalid-feedback d-block">{{ error }}</div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{# Color Picker Component #}
+{% macro color_picker(name, label, value="#00bfb3", required=False, help_text=None, error=None, disabled=False, class="") %}
+<div class="mb-3 form-field {{ class }}">
+    <label for="{{ name }}" class="form-label">
+        {{ label }}
+        {% if required %}<span class="text-danger">*</span>{% endif %}
+    </label>
+    <div class="input-group">
+        <input type="color" 
+               class="form-control form-control-color" 
+               id="{{ name }}" 
+               name="{{ name }}" 
+               value="{{ value }}"
+               {% if required %}required{% endif %}
+               {% if disabled %}disabled{% endif %}>
+        <input type="text" 
+               class="form-control {% if error %}is-invalid{% endif %}"
+               value="{{ value }}"
+               id="{{ name }}_text"
+               aria-label="Color value">
+    </div>
+    
+    {% if help_text %}
+        <div class="form-text text-muted small">{{ help_text }}</div>
+    {% endif %}
+    
+    {% if error %}
+        <div class="invalid-feedback">{{ error }}</div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{# Password Field with Show/Hide Toggle #}
+{% macro password_field(name, label, value="", placeholder="", required=False, help_text=None, error=None, disabled=False, strength_meter=False, class="") %}
+<div class="mb-3 form-field {{ class }}">
+    <label for="{{ name }}" class="form-label">
+        {{ label }}
+        {% if required %}<span class="text-danger">*</span>{% endif %}
+    </label>
+    <div class="input-group">
+        <input type="password" 
+               class="form-control {% if error %}is-invalid{% endif %}" 
+               id="{{ name }}" 
+               name="{{ name }}" 
+               value="{{ value }}" 
+               placeholder="{{ placeholder }}"
+               {% if required %}required{% endif %}
+               {% if disabled %}disabled{% endif %}>
+        <button class="btn btn-outline-secondary toggle-password" type="button">
+            <i class="bi bi-eye"></i>
+        </button>
+    </div>
+    
+    {% if strength_meter %}
+        <div class="password-strength mt-2">
+            <div class="progress" style="height: 5px;">
+                <div class="progress-bar bg-danger" role="progressbar" style="width: 0%"></div>
+            </div>
+            <div class="d-flex justify-content-between mt-1">
+                <span class="strength-text small text-muted">Password strength</span>
+                <span class="strength-label small text-muted"></span>
+            </div>
+        </div>
+    {% endif %}
+    
+    {% if help_text %}
+        <div class="form-text text-muted small">{{ help_text }}</div>
+    {% endif %}
+    
+    {% if error %}
+        <div class="invalid-feedback">{{ error }}</div>
+    {% endif %}
+</div>
+{% endmacro %}

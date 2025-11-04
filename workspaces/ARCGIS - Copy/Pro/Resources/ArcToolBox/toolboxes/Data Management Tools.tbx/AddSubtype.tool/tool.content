@@ -1,0 +1,54 @@
+{
+    "type": "FunctionTool",
+    "guid": "{28ddaba4-7e82-4aca-8381-84a468fdab95}",
+    "displayname": "$rc:title",
+    "helpcontent": "3140001",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{0a2ad811-7215-4a95-92f3-9c29de502e9b}"
+    ],
+    "attributes": [
+        "block_add_to_map",
+        "input_data_change",
+        "param_nocount:in_table"
+    ],
+    "params": {
+        "in_table": {
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "subtype_code": {
+            "displayname": "$rc:subtype_code.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:subtype_code.descr"
+        },
+        "subtype_description": {
+            "displayname": "$rc:subtype_description.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:subtype_description.descr"
+        },
+        "out_table": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "depends": [
+                "in_table"
+            ]
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "workspace"
+    ]
+}

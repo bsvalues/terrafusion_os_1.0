@@ -1,0 +1,15 @@
+{
+    "map": {
+        "config_keyword.descr": "The configuration keyword applies to enterprise geodatabase data only. It determines the storage parameters of the database table.",
+        "config_keyword.title": "Configuration Keyword",
+        "description": "Creates a parcel fabric and its associated datasets. The parcel fabric is created  in a feature dataset that resides in a file, enterprise, or mobile  geodatabase.",
+        "name.descr": "The name of the parcel fabric that will be created. Associated datasets will be prefixed with the parcel fabric name.",
+        "name.title": "Name",
+        "out_parcel_fabric.title": "Output Parcel Fabric",
+        "params.category1": "Geodatabase Settings (optional)",
+        "summary": "<xdoc><p>Creates a parcel fabric and its associated datasets. The parcel fabric is created in a feature dataset that resides in a file, enterprise, or mobile geodatabase.</p><p>The parcel fabric is created as a controller dataset that controls the following datasets:</p><p><ul><li>Parcel fabric topology</li><li>Records feature class</li><li>Connections feature class</li><li>Points feature class</li></ul></p><p>Parcels are added to the parcel fabric as parcel types. Use the Add Parcel Type tool to add parcel types to the parcel fabric. The Connections, Points, and parcel type feature classes participate in the parcel fabric topology.</p></xdoc>",
+        "target_dataset.descr": "The feature dataset in which the parcel fabric and related schema will be created. The feature dataset can reside in a file, enterprise, or mobile geodatabase.",
+        "target_dataset.title": "Target Feature Dataset",
+        "title": "Create Parcel Fabric"
+    }
+}

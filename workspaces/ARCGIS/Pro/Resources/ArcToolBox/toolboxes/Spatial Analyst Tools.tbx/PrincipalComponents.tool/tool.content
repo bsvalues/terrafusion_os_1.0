@@ -1,0 +1,113 @@
+{
+    "type": "FunctionTool",
+    "guid": "{789b7dd4-7f8e-4da7-83de-326ce534572e}",
+    "displayname": "$rc:title",
+    "helpcontent": "8120008",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10"
+    ],
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "params": {
+        "in_raster_bands": {
+            "displayname": "$rc:in_raster_bands.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPSAGeoData"
+                }
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "false",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "analysis_cell_size",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_raster_bands.descr"
+        },
+        "out_multiband_raster": {
+            "direction": "out",
+            "displayname": "$rc:out_multiband_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_multiband_raster.descr"
+        },
+        "number_components": {
+            "type": "optional",
+            "displayname": "$rc:number_components.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "1"
+                }
+            },
+            "depends": [
+                "in_raster_bands"
+            ],
+            "description": "$rc:number_components.descr"
+        },
+        "out_data_file": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_data_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "TXT",
+                    "ASC"
+                ]
+            },
+            "description": "$rc:out_data_file.descr"
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "cellSize",
+        "cellSizeProjectionMethod",
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "mask",
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

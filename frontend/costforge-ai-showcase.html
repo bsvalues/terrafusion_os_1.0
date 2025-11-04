@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CostForge AI - Revolutionary Construction Cost Intelligence | TerraFusion OS</title>
+    <link rel="icon" href="/favicon.ico" />
+    <meta
+      name="description"
+      content="Experience CostForge AI - Advanced construction cost intelligence powered by quantum-themed TerraFusion design system"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        background: linear-gradient(135deg, #0a0e1a 0%, #1e293b 50%, #0a0e1a 100%);
+        min-height: 100vh;
+        color: white;
+        overflow-x: hidden;
+      }
+
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        position: relative;
+        padding: 2rem;
+      }
+
+      .hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background:
+          radial-gradient(circle at 20% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, rgba(0, 128, 255, 0.1) 0%, transparent 50%);
+        pointer-events: none;
+      }
+
+      .terra-sphere {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: conic-gradient(from 0deg, #00ffff, #0080ff, #8b5cf6, #00ffff);
+        animation: quantum-spin 4s linear infinite;
+        margin-bottom: 2rem;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow:
+          0 0 60px rgba(0, 255, 255, 0.4),
+          inset 0 0 60px rgba(0, 255, 255, 0.1);
+      }
+
+      .terra-sphere::before {
+        content: '🏗️';
+        font-size: 2.5rem;
+        position: absolute;
+        animation: pulse 2s ease-in-out infinite alternate;
+      }
+
+      @keyframes quantum-spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes pulse {
+        from {
+          transform: scale(1);
+          opacity: 0.8;
+        }
+        to {
+          transform: scale(1.1);
+          opacity: 1;
+        }
+      }
+
+      h1 {
+        font-size: clamp(2.5rem, 6vw, 4rem);
+        font-weight: 900;
+        background: linear-gradient(135deg, #00ffff 0%, #0080ff 50%, #8b5cf6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1rem;
+        letter-spacing: -0.02em;
+      }
+
+      .subtitle {
+        font-size: clamp(1.1rem, 3vw, 1.5rem);
+        color: #94a3b8;
+        margin-bottom: 2rem;
+        max-width: 600px;
+        line-height: 1.6;
+      }
+
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin: 4rem 0;
+        max-width: 1200px;
+        width: 100%;
+      }
+
+      .feature-card {
+        background: rgba(30, 41, 59, 0.3);
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(0, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 2rem;
+        text-align: left;
+        transition: all 0.3s ease;
+      }
+
+      .feature-card:hover {
+        border-color: rgba(0, 255, 255, 0.3);
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        display: block;
+      }
+
+      .feature-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 0.5rem;
+      }
+
+      .feature-desc {
+        color: #94a3b8;
+        line-height: 1.6;
+      }
+
+      .cta-section {
+        margin-top: 4rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+      }
+
+      .cta-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #00ffff;
+        background: rgba(0, 255, 255, 0.1);
+        border: 2px solid rgba(0, 255, 255, 0.3);
+        border-radius: 12px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .cta-button:hover {
+        background: rgba(0, 255, 255, 0.2);
+        border-color: rgba(0, 255, 255, 0.5);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(0, 255, 255, 0.2);
+      }
+
+      .cta-button::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+        transform: rotate(45deg);
+        transition: all 0.6s ease;
+        opacity: 0;
+      }
+
+      .cta-button:hover::before {
+        animation: shimmer 1s ease-in-out;
+      }
+
+      @keyframes shimmer {
+        0% {
+          transform: translateX(-100%) translateY(-100%) rotate(45deg);
+          opacity: 0;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateX(100%) translateY(100%) rotate(45deg);
+          opacity: 0;
+        }
+      }
+
+      .tech-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: rgba(139, 92, 246, 0.2);
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        border-radius: 20px;
+        font-size: 0.875rem;
+        color: #c4b5fd;
+        margin: 0.25rem;
+      }
+
+      .stats-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin: 3rem 0;
+        max-width: 800px;
+        width: 100%;
+      }
+
+      .stat-item {
+        text-align: center;
+      }
+
+      .stat-number {
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: #00ffff;
+        display: block;
+      }
+
+      .stat-label {
+        color: #94a3b8;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+      }
+
+      .footer-note {
+        margin-top: 4rem;
+        text-align: center;
+        color: #64748b;
+        font-size: 0.875rem;
+      }
+
+      @media (max-width: 768px) {
+        .features {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+
+        .stats-section {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hero">
+      <div class="terra-sphere"></div>
+
+      <h1>CostForge AI</h1>
+      <p class="subtitle">
+        Revolutionary AI-Powered Construction Cost Intelligence Platform built with the TerraFusion
+        Quantum Design System
+      </p>
+
+      <div class="stats-section">
+        <div class="stat-item">
+          <span class="stat-number">94.2%</span>
+          <div class="stat-label">AI Accuracy</div>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">2.3s</span>
+          <div class="stat-label">Processing Time</div>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">33+</span>
+          <div class="stat-label">Government Modules</div>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">∞</span>
+          <div class="stat-label">Quantum Possibilities</div>
+        </div>
+      </div>
+
+      <div class="features">
+        <div class="feature-card">
+          <span class="feature-icon">🎯</span>
+          <h3 class="feature-title">AI-Powered Estimates</h3>
+          <p class="feature-desc">
+            Advanced machine learning algorithms analyze thousands of construction variables to
+            deliver precision cost estimates with 94%+ accuracy.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-icon">📊</span>
+          <h3 class="feature-title">Real-Time Market Intelligence</h3>
+          <p class="feature-desc">
+            Live market data integration with material costs, labor rates, and economic indicators
+            for data-driven construction decisions.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-icon">🧠</span>
+          <h3 class="feature-title">Quantum UI Architecture</h3>
+          <p class="feature-desc">
+            Terra-cyan themed quantum design system with glassmorphic effects, golden ratio
+            typography, and government-grade accessibility.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-icon">✅</span>
+          <h3 class="feature-title">Government Compliance</h3>
+          <p class="feature-desc">
+            Built-in USPAP compliance, audit trails, and regulatory reporting for seamless
+            government and institutional adoption.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-icon">🏗️</span>
+          <h3 class="feature-title">Multi-Property Support</h3>
+          <p class="feature-desc">
+            Residential, commercial, industrial, and institutional property types with specialized
+            cost models and industry benchmarks.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-icon">🌐</span>
+          <h3 class="feature-title">Progressive Web App</h3>
+          <p class="feature-desc">
+            Modern PWA architecture with offline capabilities, Electron shell, and cross-platform
+            compatibility for desktop and mobile.
+          </p>
+        </div>
+      </div>
+
+      <div class="cta-section">
+        <div>
+          <span class="tech-badge">React 18</span>
+          <span class="tech-badge">TypeScript</span>
+          <span class="tech-badge">Vite 5</span>
+          <span class="tech-badge">TerraFusion Design System</span>
+          <span class="tech-badge">Quantum Theming</span>
+          <span class="tech-badge">Shadcn/UI</span>
+        </div>
+
+        <a href="#demo" class="cta-button">
+          🚀 Experience CostForge AI
+          <span>The TerraFusion Way</span>
+        </a>
+
+        <div class="footer-note">
+          <strong>THE TERRAFUSION WAY • GOVERNMENT-GRADE EXCELLENCE</strong><br />
+          Revolutionary construction cost intelligence built with quantum-themed UI components<br />
+          Featuring terra-cyan consciousness theming and golden ratio typography
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Add some interactive quantum effects
+      document.addEventListener('DOMContentLoaded', function () {
+        const terraSpere = document.querySelector('.terra-sphere');
+        const featureCards = document.querySelectorAll('.feature-card');
+
+        // Add quantum glow effect on hover
+        featureCards.forEach((card) => {
+          card.addEventListener('mouseenter', function () {
+            this.style.boxShadow = '0 0 40px rgba(0, 255, 255, 0.2)';
+          });
+
+          card.addEventListener('mouseleave', function () {
+            this.style.boxShadow = 'none';
+          });
+        });
+
+        // Quantum pulse effect for TerraSphere
+        let pulseIntensity = 0;
+        setInterval(() => {
+          pulseIntensity = (pulseIntensity + 0.1) % (Math.PI * 2);
+          const intensity = (Math.sin(pulseIntensity) + 1) * 0.3 + 0.2;
+          terraSpere.style.boxShadow = `
+                    0 0 60px rgba(0, 255, 255, ${intensity}),
+                    inset 0 0 60px rgba(0, 255, 255, ${intensity * 0.3})
+                `;
+        }, 100);
+
+        // Smooth scroll for CTA button
+        document.querySelector('.cta-button').addEventListener('click', function (e) {
+          e.preventDefault();
+          alert(
+            '🎯 CostForge AI Demo\n\nThis is a preview of the revolutionary CostForge AI interface!\n\n✨ Features:\n• AI-powered cost estimation\n• Quantum-themed UI components\n• Real-time market intelligence\n• Government compliance built-in\n\nTHE TERRAFUSION WAY - GOVERNMENT-GRADE EXCELLENCE'
+          );
+        });
+      });
+    </script>
+  </body>
+</html>

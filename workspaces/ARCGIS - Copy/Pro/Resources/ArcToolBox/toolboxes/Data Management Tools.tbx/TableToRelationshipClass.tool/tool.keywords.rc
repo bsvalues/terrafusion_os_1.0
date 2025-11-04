@@ -1,0 +1,28 @@
+{
+    "set": [
+        "associate",
+        "attributed",
+        "cardinality",
+        "complex",
+        "composite",
+        "connect",
+        "destination",
+        "feature",
+        "geodatabase",
+        "join",
+        "key",
+        "link",
+        "many",
+        "one",
+        "origin",
+        "path",
+        "peer",
+        "relate",
+        "relationship",
+        "relationship class",
+        "relationship classes",
+        "rule",
+        "simple",
+        "table"
+    ]
+}

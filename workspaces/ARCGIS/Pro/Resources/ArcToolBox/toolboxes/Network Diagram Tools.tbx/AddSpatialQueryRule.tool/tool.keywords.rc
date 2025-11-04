@@ -1,0 +1,11 @@
+{
+    "set": [
+        "configuration",
+        "diagram rule",
+        "diagram template",
+        "network",
+        "network diagram",
+        "spatial query",
+        "template configuration"
+    ]
+}

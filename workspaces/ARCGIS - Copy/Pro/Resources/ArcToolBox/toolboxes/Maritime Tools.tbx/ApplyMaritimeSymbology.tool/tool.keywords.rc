@@ -1,0 +1,20 @@
+{
+    "set": [
+        "cartography",
+        "catalog",
+        "catalogue",
+        "cell",
+        "export",
+        "import",
+        "load",
+        "s-100",
+        "s-101",
+        "s-57",
+        "s100",
+        "s101",
+        "symbology",
+        "charting",
+        "paper chart",
+        "symbols"
+    ]
+}

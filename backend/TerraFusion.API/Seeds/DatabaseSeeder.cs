@@ -63,9 +63,9 @@ public static class DatabaseSeeder
         {
             var propertiesJson = await File.ReadAllTextAsync("data/counties/benton_county_properties.json");
             var propertiesData = JsonSerializer.Deserialize<dynamic[]>(propertiesJson);
-            
+
             var properties = new List<Property>();
-            foreach (var prop in propertiesData.Take(1000)) // Limit for development
+            foreach (var prop in (propertiesData ?? Array.Empty<dynamic>()).Take(1000)) // Limit for development
             {
                 properties.Add(new Property
                 {
@@ -91,19 +91,19 @@ public static class DatabaseSeeder
     {
         var costMatrices = new[]
         {
-            new CostMatrix 
-            { 
-                CountyId = 1, 
-                MatrixType = "PropertyTax", 
-                BaseRate = 0.0123m, 
+            new CostMatrix
+            {
+                CountyId = 1,
+                MatrixType = "PropertyTax",
+                BaseRate = 0.0123m,
                 Multiplier = 1.0m,
                 EffectiveDate = DateTime.UtcNow.AddYears(-1)
             },
-            new CostMatrix 
-            { 
-                CountyId = 1, 
-                MatrixType = "BusinessLicense", 
-                BaseRate = 50.0m, 
+            new CostMatrix
+            {
+                CountyId = 1,
+                MatrixType = "BusinessLicense",
+                BaseRate = 50.0m,
                 Multiplier = 1.2m,
                 EffectiveDate = DateTime.UtcNow.AddYears(-1)
             }

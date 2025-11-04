@@ -1,0 +1,172 @@
+{
+    "type": "FunctionTool",
+    "guid": "{b91c30b5-d934-462e-9d13-59dc9fbe81a5}",
+    "displayname": "$rc:title",
+    "helpcontent": "71010008",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "block_add_to_map"
+    ],
+    "params": {
+        "in_utility_network": {
+            "displayname": "$rc:in_utility_network.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    },
+                    {
+                        "type": "DETraceNetwork"
+                    }
+                ]
+            }
+        },
+        "template_name": {
+            "displayname": "$rc:template_name.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "is_active": {
+            "displayname": "$rc:is_active.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ACTIVE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "INACTIVE"
+                    }
+                ]
+            },
+            "value": "true"
+        },
+        "are_containers_preserved": {
+            "type": "optional",
+            "displayname": "$rc:are_containers_preserved.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "PRESERVE_CONTAINERS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "IGNORE_CONTAINERS"
+                    }
+                ]
+            },
+            "value": "false"
+        },
+        "is_unit_absolute": {
+            "type": "optional",
+            "displayname": "$rc:is_unit_absolute.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ABSOLUTE_UNIT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "PROPORTIONAL_UNIT"
+                    }
+                ]
+            },
+            "value": "false"
+        },
+        "initial_radius_absolute": {
+            "type": "optional",
+            "displayname": "$rc:initial_radius_absolute.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_utility_network"
+            ],
+            "value": "5 Unknown"
+        },
+        "initial_radius_proportional": {
+            "type": "optional",
+            "displayname": "$rc:initial_radius_proportional.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "5"
+        },
+        "disjoined_graph_absolute": {
+            "type": "optional",
+            "displayname": "$rc:disjoined_graph_absolute.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_utility_network"
+            ],
+            "value": "10 Unknown"
+        },
+        "disjoined_graph_proportional": {
+            "type": "optional",
+            "displayname": "$rc:disjoined_graph_proportional.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "10"
+        },
+        "radius_factor": {
+            "type": "optional",
+            "displayname": "$rc:radius_factor.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "1"
+        },
+        "out_utility_network": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_utility_network.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    },
+                    {
+                        "type": "DETraceNetwork"
+                    }
+                ]
+            },
+            "addtomap": "false"
+        },
+        "out_template_name": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_template_name.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        }
+    }
+}

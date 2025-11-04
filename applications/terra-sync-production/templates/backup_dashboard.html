@@ -1,0 +1,417 @@
+{% extends "base_clean.html" %}
+
+{% block title %}TerraFusion Platform - Backup Management{% endblock %}
+
+{% block head %}
+  {{ super() %}
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #495057;
+        }
+        .dashboard-header {
+            background-color: #343a40;
+            color: white;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+        .backup-card {
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+        .backup-card:hover {
+            transform: translateY(-5px);
+        }
+        .card-header {
+            border-radius: 8px 8px 0 0;
+            font-weight: 600;
+        }
+        .dashboard-nav {
+            background-color: #343a40;
+            padding: 0.5rem 0;
+        }
+        .dashboard-nav a {
+            color: #adb5bd;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+        }
+        .dashboard-nav a:hover, .dashboard-nav a.active {
+            color: white;
+            background-color: #495057;
+            border-radius: 4px;
+        }
+        .backup-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .status-running {
+            background-color: #28a745;
+            animation: pulse 2s infinite;
+        }
+        .status-stopped {
+            background-color: #dc3545;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .backup-type-database {
+            border-left: 4px solid #007bff;
+        }
+        .backup-type-files {
+            border-left: 4px solid #28a745;
+        }
+        .backup-type-config {
+            border-left: 4px solid #ffc107;
+        }
+        .file-size {
+            font-family: 'Courier New', monospace;
+            color: #6c757d;
+        }
+        .backup-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .alert-info {
+            border-color: #0dcaf0;
+            background-color: #cff4fc;
+        }
+    </style>
+</head>
+<body>
+    <header class="dashboard-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h1>TerraFusion Backup Management</h1>
+                    <p class="lead">Protect your county data with automated backups and recovery</p>
+                </div>
+                <div class="col-auto">
+                    <div class="backup-status">
+                        <span class="status-indicator status-running" id="backup-status-indicator"></span>
+                        <span class="badge bg-success fs-6" id="backup-status-text">Backup Service Active</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav class="dashboard-nav mb-4">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <a href="/dashboard" class="me-3">Main Dashboard</a>
+                    <a href="/gis/dashboard" class="me-3">GIS Dashboard</a>
+                    <a href="/sync/dashboard" class="me-3">Sync Dashboard</a>
+                    <a href="/monitoring/dashboard" class="me-3">Monitoring</a>
+                    <a href="/backup/dashboard" class="active me-3">Backup Management</a>
+                </div>
+                <div>
+                    <button id="create-backup-btn" class="btn btn-primary btn-sm me-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cloud-arrow-up" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2z"/>
+                            <path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"/>
+                        </svg>
+                        Create Backup Now
+                    </button>
+                    <button id="refresh-backups" class="btn btn-outline-secondary btn-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                        </svg>
+                        Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Backup Status Overview -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card backup-card">
+                    <div class="card-body text-center">
+                        <h2 class="text-primary mb-0" id="total-backups">{{ backups|length }}</h2>
+                        <p class="text-muted mb-0">Total Backups</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card backup-card">
+                    <div class="card-body text-center">
+                        <h2 class="text-success mb-0" id="database-backups">
+                            {{ backups|selectattr("type", "equalto", "database")|list|length }}
+                        </h2>
+                        <p class="text-muted mb-0">Database Backups</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card backup-card">
+                    <div class="card-body text-center">
+                        <h2 class="text-warning mb-0" id="file-backups">
+                            {{ backups|selectattr("type", "equalto", "files")|list|length }}
+                        </h2>
+                        <p class="text-muted mb-0">File Backups</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card backup-card">
+                    <div class="card-body text-center">
+                        <h2 class="text-info mb-0" id="config-backups">
+                            {{ backups|selectattr("type", "equalto", "config")|list|length }}
+                        </h2>
+                        <p class="text-muted mb-0">Config Backups</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Backup Creation Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card backup-card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Create Manual Backup</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Create on-demand backups of your TerraFusion Platform data. Automatic backups run hourly for databases and every 6 hours for files.</p>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="btn-group" role="group" aria-label="Backup type selection">
+                                    <input type="radio" class="btn-check" name="backup-type" id="backup-all" value="all" checked>
+                                    <label class="btn btn-outline-primary" for="backup-all">Complete Backup</label>
+                                    
+                                    <input type="radio" class="btn-check" name="backup-type" id="backup-database" value="database">
+                                    <label class="btn btn-outline-primary" for="backup-database">Database Only</label>
+                                    
+                                    <input type="radio" class="btn-check" name="backup-type" id="backup-files" value="files">
+                                    <label class="btn btn-outline-primary" for="backup-files">Files Only</label>
+                                    
+                                    <input type="radio" class="btn-check" name="backup-type" id="backup-config" value="config">
+                                    <label class="btn btn-outline-primary" for="backup-config">Config Only</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <button id="start-backup" class="btn btn-primary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-play-fill me-1" viewBox="0 0 16 16">
+                                        <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/>
+                                    </svg>
+                                    Start Backup
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="backup-progress" class="mt-3" style="display: none;">
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
+                            </div>
+                            <p class="text-muted mt-2 mb-0">Creating backup...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Backups List -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card backup-card">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">Available Backups</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if backups %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Type</th>
+                                            <th>Filename</th>
+                                            <th>Created</th>
+                                            <th>Size</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="backups-table">
+                                        {% for backup in backups|sort(attribute='timestamp', reverse=true) %}
+                                        <tr class="backup-type-{{ backup.type }}">
+                                            <td>
+                                                <span class="badge 
+                                                    {% if backup.type == 'database' %}bg-primary{% endif %}
+                                                    {% if backup.type == 'files' %}bg-success{% endif %}
+                                                    {% if backup.type == 'config' %}bg-warning text-dark{% endif %}
+                                                ">
+                                                    {{ backup.type.title() }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <code>{{ backup.filename }}</code>
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">
+                                                    {{ backup.timestamp[:19] | replace('T', ' ') }}
+                                                </small>
+                                            </td>
+                                            <td>
+                                                <span class="file-size">
+                                                    {% set size_mb = (backup.file_size / 1024 / 1024) | round(2) %}
+                                                    {% if size_mb < 1 %}
+                                                        {{ (backup.file_size / 1024) | round(1) }} KB
+                                                    {% else %}
+                                                        {{ size_mb }} MB
+                                                    {% endif %}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="backup-actions">
+                                                    <button class="btn btn-outline-primary btn-sm" onclick="downloadBackup('{{ backup.filename }}')">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                                                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                                                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                                                        </svg>
+                                                        Download
+                                                    </button>
+                                                    {% if backup.type == 'database' %}
+                                                    <button class="btn btn-outline-warning btn-sm" onclick="restoreBackup('{{ backup.filename }}')">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                                                            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                                                            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                                                        </svg>
+                                                        Restore
+                                                    </button>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-info-circle me-2" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                                </svg>
+                                <strong>No backups found.</strong> The backup system will automatically create backups according to the scheduled intervals. You can also create manual backups using the controls above.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Backup management functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const startBackupBtn = document.getElementById('start-backup');
+            const backupProgress = document.getElementById('backup-progress');
+            const refreshBtn = document.getElementById('refresh-backups');
+            const createBackupBtn = document.getElementById('create-backup-btn');
+            
+            // Start backup functionality
+            function startBackup() {
+                const selectedElement = document.querySelector('input[name="backup-type"]:checked');
+                const selectedType = selectedElement ? selectedElement.value : 'full';
+                
+                // Show progress
+                backupProgress.style.display = 'block';
+                startBackupBtn.disabled = true;
+                
+                fetch('/api/v1/backup/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ type: selectedType })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    backupProgress.style.display = 'none';
+                    startBackupBtn.disabled = false;
+                    
+                    if (data.error) {
+                        alert('Backup failed: ' + data.error);
+                    } else {
+                        alert('Backup completed successfully!');
+                        location.reload(); // Refresh the page to show new backup
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    backupProgress.style.display = 'none';
+                    startBackupBtn.disabled = false;
+                    alert('Backup failed: ' + error.message);
+                });
+            }
+            
+            startBackupBtn.addEventListener('click', startBackup);
+            createBackupBtn.addEventListener('click', function() {
+                // Set to complete backup and start
+                document.getElementById('backup-all').checked = true;
+                startBackup();
+            });
+            
+            // Refresh functionality
+            refreshBtn.addEventListener('click', function() {
+                location.reload();
+            });
+            
+            // Update backup status periodically
+            function updateBackupStatus() {
+                fetch('/api/v1/backup/status')
+                    .then(response => response.json())
+                    .then(data => {
+                        const indicator = document.getElementById('backup-status-indicator');
+                        const statusText = document.getElementById('backup-status-text');
+                        
+                        if (data.scheduler_running) {
+                            indicator.className = 'status-indicator status-running';
+                            statusText.textContent = 'Backup Service Active';
+                            statusText.className = 'badge bg-success fs-6';
+                        } else {
+                            indicator.className = 'status-indicator status-stopped';
+                            statusText.textContent = 'Backup Service Stopped';
+                            statusText.className = 'badge bg-danger fs-6';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error updating backup status:', error);
+                    });
+            }
+            
+            // Update status every 30 seconds
+            setInterval(updateBackupStatus, 30000);
+            updateBackupStatus(); // Initial update
+        });
+        
+        function downloadBackup(filename) {
+            // In a real implementation, this would download the backup file
+            alert('Download functionality for ' + filename + ' would be implemented here.');
+        }
+        
+        function restoreBackup(filename) {
+            if (confirm('Are you sure you want to restore from this backup? This will overwrite current data.')) {
+                // In a real implementation, this would restore from the backup
+                alert('Database restore functionality for ' + filename + ' would be implemented here.');
+            }
+        }
+    </script>
+</body>
+</html>

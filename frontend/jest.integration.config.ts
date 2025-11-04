@@ -3,7 +3,7 @@ import baseConfig from './jest.config';
 
 /**
  * Jest Configuration for Integration Tests
- * 
+ *
  * Integration tests validate multi-component workflows and interactions.
  * This config extends the base Jest config with integration-specific settings:
  * - Longer timeouts for complex workflows
@@ -43,7 +43,7 @@ const config: Config = {
   ],
 
   // Coverage thresholds specific to integration tests
-  coverageThresholds: undefined, // Don't enforce coverage thresholds for integration tests
+  coverageThreshold: undefined, // Don't enforce coverage thresholds for integration tests
 
   // Setup files specific to integration tests
   setupFilesAfterEnv: [

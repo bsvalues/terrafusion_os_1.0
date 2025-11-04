@@ -1,0 +1,69 @@
+{
+    "type": "FunctionTool",
+    "guid": "{06c952c0-80d7-48e6-904b-96df64859ea8}",
+    "displayname": "$rc:title",
+    "helpcontent": "71000001",
+    "description": "$rc:description",
+    "product": "200",
+    "params": {
+        "in_network_diagram_layer": {
+            "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}",
+            "displayname": "$rc:in_network_diagram_layer.title",
+            "datatype": {
+                "type": "GPDiagramLayer"
+            },
+            "description": "$rc:in_network_diagram_layer.descr"
+        },
+        "out_name": {
+            "type": "optional",
+            "displayname": "$rc:out_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:out_name.descr"
+        },
+        "access_right_type": {
+            "type": "optional",
+            "displayname": "$rc:access_right_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PUBLIC",
+                        "code": "$rc:access_right_type.domain.PUBLIC"
+                    },
+                    {
+                        "value": "PROTECTED",
+                        "code": "$rc:access_right_type.domain.PROTECTED"
+                    },
+                    {
+                        "value": "PRIVATE",
+                        "code": "$rc:access_right_type.domain.PRIVATE"
+                    }
+                ]
+            },
+            "value": "PUBLIC",
+            "description": "$rc:access_right_type.descr"
+        },
+        "tags": {
+            "type": "optional",
+            "displayname": "$rc:tags.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": " ",
+            "description": "$rc:tags.descr"
+        },
+        "out_network_diagram_layer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_network_diagram_layer.title",
+            "datatype": {
+                "type": "GPDiagramLayer"
+            }
+        }
+    }
+}

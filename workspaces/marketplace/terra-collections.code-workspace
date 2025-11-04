@@ -1,0 +1,107 @@
+{
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "node",
+        "cwd": "../../marketplace/terra-collections/frontend",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "name": "Start Terra Collections Frontend"
+      },
+      {
+        "type": "debugpy",
+        "cwd": "../../marketplace/terra-collections/backend",
+        "program": "../../marketplace/terra-collections/backend/main.py",
+        "name": "Start Terra Collections Backend"
+      },
+      {
+        "type": "node",
+        "cwd": "../../marketplace/terra-collections/mcp-server",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "name": "Start Terra Collections MCP Server"
+      }
+    ]
+  },
+  "tasks": {
+    "tasks": [
+      {
+        "cwd": "../../marketplace/terra-collections",
+        "args": [
+          "run",
+          "build"
+        ],
+        "command": "npm",
+        "label": "Build Terra Collections"
+      },
+      {
+        "cwd": "../../marketplace/terra-collections",
+        "args": [
+          "run",
+          "test"
+        ],
+        "command": "npm",
+        "label": "Test Terra Collections"
+      }
+    ],
+    "version": "2.0.0"
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "ms-python.black-formatter"
+    ]
+  },
+  "folders": [
+    {
+      "name": "💼 Terra Collections",
+      "path": "../../marketplace/terra-collections"
+    },
+    {
+      "name": "📦 Platform SDK (read-only)",
+      "path": "../../platform/sdk"
+    },
+    {
+      "name": "🎨 Design System (read-only)",
+      "path": "../../platform/design-system"
+    },
+    {
+      "name": "🧪 Tests",
+      "path": "../../tests/marketplace/terra-collections"
+    },
+    {
+      "name": "📚 Terra Collections Docs",
+      "path": "../../docs/marketplace/terra-collections.md"
+    }
+  ],
+  "settings": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit",
+      "source.fixAll": "explicit"
+    },
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#f59e0b",
+      "titleBar.activeForeground": "#ffffff"
+    },
+    "files.exclude": {
+      "../../os-platform": true,
+      "**/node_modules": true,
+      "../../terrafusion-cos": true,
+      "../../marketplace/*": true,
+      "../../backend": true,
+      "**/dist": true,
+      "../../frontend": true,
+      "!../../marketplace/terra-collections": true
+    },
+    "editor.formatOnSave": true
+  }
+}
+

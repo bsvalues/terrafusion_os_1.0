@@ -1,0 +1,24 @@
+{% macro module_card(module_name, title, description, icon_class="fa-wave-square", link="#", btn_text="Open") %}
+{% from 'components/module_lockup.html' import module_lockup %}
+{% set module_class = module_name.lower() %}
+<div class="module-card {{ module_class }} h-100">
+    <div class="card-header">
+        <div class="d-flex align-items-center">
+            <i class="fas {{ icon_class }} me-2" style="color: white; font-size: 20px;"></i>
+            <div>
+                <h4 class="card-title" style="color: white; font-weight: 700; margin-bottom: 0;">{{ module_lockup(module_name) }}</h4>
+                <p class="card-subtitle" style="color: white; opacity: 0.95; font-weight: 500;">{{ title }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <p class="card-text" style="color: black; font-weight: 500; font-size: 1rem;">{{ description }}</p>
+        <div class="mt-4 text-center">
+            <a href="{{ link }}" class="btn-tf {{ module_class }}" style="display: inline-block; padding: 10px 20px; border-radius: 4px; color: white; font-weight: 600; text-decoration: none;">
+                <i class="fas {{ icon_class }} me-2"></i>
+                {{ btn_text }}
+            </a>
+        </div>
+    </div>
+</div>
+{% endmacro %}

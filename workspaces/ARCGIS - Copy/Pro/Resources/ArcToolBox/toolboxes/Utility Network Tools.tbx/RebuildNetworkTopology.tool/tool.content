@@ -1,0 +1,46 @@
+{
+    "type": "FunctionTool",
+    "guid": "{544d54dc-dd4c-42ee-acd7-7f62afa630b4}",
+    "displayname": "$rc:title",
+    "helpcontent": "61000006",
+    "description": "$rc:description",
+    "product": "200",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "block_add_to_map"
+    ],
+    "params": {
+        "in_utility_network": {
+            "displayname": "$rc:in_utility_network.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    },
+                    {
+                        "type": "GPUtilityNetworkLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_utility_network.descr"
+        },
+        "extent": {
+            "displayname": "$rc:extent.title",
+            "datatype": {
+                "type": "GPExtent"
+            },
+            "description": "$rc:extent.descr"
+        },
+        "out_utility_network": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_utility_network.title",
+            "datatype": {
+                "type": "DEUtilityNetwork"
+            }
+        }
+    }
+}

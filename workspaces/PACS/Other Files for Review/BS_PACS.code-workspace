@@ -1,0 +1,47 @@
+{
+	"folders": [
+		{
+			"name": "BS_PACS",
+			"path": "BS_PACS"
+		},
+		{
+			"name": "DatabaseProjectSSISDB",
+			"path": "jcharrispacsSSISDB_project/DatabaseProjectSSISDB"
+		},
+		{
+			"name": "DatabaseProjectSSISDB",
+			"path": "jcharrispacsSSISDB_project/chpacsSSISDB_project/DatabaseProjectSSISDB"
+		},
+		{
+			"name": "DatabaseProjectweb_internet_benton",
+			"path": "DatabaseProjectweb_internet_benton"
+		},
+		{
+			"name": "DatabaseProjectTAAppSvr",
+			"path": "DatabaseProjectTAAppSvr"
+		},
+		{
+			"name": "DatabaseProjectSyncService",
+			"path": "DatabaseProjectSyncService"
+		},
+		{
+			"name": "DatabaseProjectReportServer",
+			"path": "DatabaseProjectReportServer"
+		},
+		{
+			"name": "DatabaseProjectpacs_oltp",
+			"path": "DatabaseProjectpacs_oltp"
+		},
+		{
+			"name": "DatabaseProjectpacs_training",
+			"path": "DatabaseProjectpacs_training"
+		},
+		{
+			"name": "DatabaseProjectCIAPS",
+			"path": "DatabaseProjectCIAPS"
+		}
+	],
+	"settings": {
+		"CodeGPT.apiKey": "CodeGPT Plus Beta"
+	}
+}

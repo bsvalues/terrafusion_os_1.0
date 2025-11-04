@@ -1,0 +1,378 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* TerraFusion Design System - Exact Color Specifications */
+  --tf-dark-blue: #001529;         /* Primary background */
+  --tf-medium-blue: #002a4a;       /* Secondary background */
+  --tf-light-blue: #004d7a;        /* Tertiary background */
+  --tf-primary-cyan: #00e5ff;      /* Primary accent */
+  --tf-secondary-cyan: #00b8d4;    /* Secondary accent */
+  
+  /* Semantic Colors */
+  --tf-success: #10b981;           /* Success green */
+  --tf-error: #ef4444;             /* Error red */
+  --tf-warning: #f59e0b;           /* Warning amber */
+  --tf-info: #3b82f6;              /* Info blue */
+  
+  /* Design System Variables */
+  --background: var(--tf-dark-blue);
+  --foreground: #ffffff;
+  --muted: var(--tf-light-blue);
+  --muted-foreground: rgba(0, 229, 255, 0.5);
+  --popover: var(--tf-medium-blue);
+  --popover-foreground: #ffffff;
+  --card: rgba(0, 21, 41, 0.9);
+  --card-foreground: #ffffff;
+  --border: rgba(0, 229, 255, 0.2);
+  --input: var(--tf-medium-blue);
+  --primary: var(--tf-primary-cyan);
+  --primary-foreground: var(--tf-dark-blue);
+  --secondary: var(--tf-medium-blue);
+  --secondary-foreground: #ffffff;
+  --accent: var(--tf-primary-cyan);
+  --accent-foreground: var(--tf-dark-blue);
+  --destructive: var(--tf-error);
+  --destructive-foreground: #ffffff;
+  --ring: var(--tf-primary-cyan);
+  --radius: 0.75rem;
+  
+  /* Typography Scale */
+  --font-xs: 0.75rem;      /* 12px */
+  --font-sm: 0.875rem;     /* 14px */
+  --font-base: 1rem;       /* 16px */
+  --font-lg: 1.125rem;     /* 18px */
+  --font-xl: 1.25rem;      /* 20px */
+  --font-2xl: 1.5rem;      /* 24px */
+  --font-3xl: 2.25rem;     /* 36px */
+  --font-4xl: 3rem;        /* 48px */
+  
+  /* Spacing Scale */
+  --spacing-sm: 0.5rem;    /* 8px */
+  --spacing-md: 1rem;      /* 16px */
+  --spacing-lg: 2rem;      /* 32px */
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply antialiased text-foreground;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--tf-dark-blue);
+    color: #ffffff;
+    line-height: 1.5;
+  }
+
+  /* TerraFusion Typography Classes */
+  .tf-text-primary {
+    color: #ffffff;
+  }
+  
+  .tf-text-secondary {
+    color: rgba(0, 229, 255, 0.7);
+  }
+  
+  .tf-text-muted {
+    color: rgba(0, 229, 255, 0.5);
+  }
+  
+  .tf-text-accent {
+    color: var(--tf-primary-cyan);
+  }
+
+  /* Heading Styles */
+  h1, .tf-h1 {
+    @apply text-4xl font-bold leading-tight;
+    color: #ffffff;
+  }
+  
+  h2, .tf-h2 {
+    @apply text-3xl font-bold leading-tight;
+    color: #ffffff;
+  }
+  
+  h3, .tf-h3 {
+    @apply text-2xl font-bold leading-tight;
+    color: #ffffff;
+  }
+  
+  h4, .tf-h4 {
+    @apply text-xl font-medium leading-tight;
+    color: #ffffff;
+  }
+  
+  h5, .tf-h5 {
+    @apply text-lg font-medium leading-normal;
+    color: #ffffff;
+  }
+
+  /* Body Text */
+  .tf-body-large {
+    @apply text-base font-normal leading-normal;
+  }
+  
+  .tf-body-small {
+    @apply text-sm font-normal leading-normal;
+  }
+  
+  .tf-caption {
+    @apply text-xs font-normal leading-relaxed;
+    color: rgba(0, 229, 255, 0.7);
+  }
+}
+
+@layer components {
+  /* TerraFusion Card Effects */
+  .tf-card {
+    background: rgba(0, 21, 41, 0.9);
+    border: 1px solid rgba(0, 229, 255, 0.2);
+    border-radius: 0.75rem;
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
+  }
+  
+  .tf-card-glow {
+    @apply tf-card;
+    transition: all 0.3s ease;
+  }
+  
+  .tf-card-glow:hover {
+    box-shadow: 0 0 30px rgba(0, 229, 255, 0.2);
+    transform: translateY(-2px);
+  }
+  
+  .tf-card-3d {
+    @apply tf-card;
+    perspective: 1000px;
+    transition: all 0.3s ease;
+  }
+  
+  .tf-card-3d:hover {
+    transform: rotateX(5deg) rotateY(5deg) translateY(-4px);
+    box-shadow: 0 10px 40px rgba(0, 229, 255, 0.3);
+  }
+
+  /* TerraFusion Button Styles */
+  .tf-button-primary {
+    background: var(--tf-primary-cyan);
+    color: var(--tf-dark-blue);
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+  }
+  
+  .tf-button-primary:hover {
+    background: var(--tf-secondary-cyan);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0, 229, 255, 0.3);
+  }
+  
+  .tf-button-secondary {
+    background: rgba(0, 229, 255, 0.1);
+    color: var(--tf-primary-cyan);
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+  }
+  
+  .tf-button-secondary:hover {
+    background: rgba(0, 229, 255, 0.2);
+    border-color: rgba(0, 229, 255, 0.5);
+  }
+
+  /* TerraFusion Input Styles */
+  .tf-input {
+    background: var(--tf-medium-blue);
+    border: 1px solid rgba(0, 229, 255, 0.2);
+    color: #ffffff;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+  }
+  
+  .tf-input::placeholder {
+    color: rgba(0, 229, 255, 0.5);
+  }
+  
+  .tf-input:focus {
+    border-color: rgba(0, 229, 255, 0.5);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 229, 255, 0.1);
+  }
+
+  /* Glassmorphic Effects */
+  .tf-glass-panel {
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 229, 255, 0.2);
+    border-radius: 0.75rem;
+    background: rgba(0, 21, 41, 0.7);
+  }
+
+  /* Hero Section Style */
+  .tf-hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--tf-dark-blue);
+  }
+
+  /* Navigation Styles */
+  .tf-nav {
+    height: 4rem;
+    background: rgba(0, 21, 41, 0.7);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(0, 229, 255, 0.2);
+  }
+
+  /* Container Styles */
+  .tf-container {
+    @apply container mx-auto py-8 px-4;
+  }
+
+  /* Grid Layouts */
+  .tf-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+  }
+
+  /* Animation Classes */
+  .tf-fade-in {
+    animation: fadeIn 0.6s ease-out;
+  }
+  
+  .tf-slide-up {
+    animation: slideUp 0.6s ease-out;
+  }
+  
+  .tf-glow-pulse {
+    animation: glowPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideUp {
+    from { 
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes glowPulse {
+    0%, 100% { 
+      box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
+    }
+    50% { 
+      box-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
+    }
+  }
+}
+
+@layer utilities {
+  /* TerraFusion Color Utilities */
+  .text-tf-primary {
+    color: #ffffff;
+  }
+  
+  .text-tf-secondary {
+    color: rgba(0, 229, 255, 0.7);
+  }
+  
+  .text-tf-muted {
+    color: rgba(0, 229, 255, 0.5);
+  }
+  
+  .text-tf-accent {
+    color: var(--tf-primary-cyan);
+  }
+  
+  .bg-tf-dark {
+    background-color: var(--tf-dark-blue);
+  }
+  
+  .bg-tf-medium {
+    background-color: var(--tf-medium-blue);
+  }
+  
+  .bg-tf-light {
+    background-color: var(--tf-light-blue);
+  }
+  
+  .bg-tf-accent {
+    background-color: var(--tf-primary-cyan);
+  }
+  
+  .border-tf-accent {
+    border-color: rgba(0, 229, 255, 0.2);
+  }
+
+  /* Scrollbar Styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: var(--tf-dark-blue);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0, 229, 255, 0.3);
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 229, 255, 0.5);
+  }
+
+  /* TerraFusion Layout Utilities */
+  .tf-app-container {
+    @apply flex h-screen bg-tf-dark text-tf-primary;
+  }
+  
+  .tf-main-content {
+    @apply flex-1 overflow-hidden;
+  }
+  
+  .tf-content-wrapper {
+    @apply flex-1 overflow-y-auto bg-tf-dark;
+  }
+  
+  .tf-content-area {
+    @apply p-6;
+  }
+  
+  .tf-grid {
+    @apply grid gap-6;
+  }
+  
+  .tf-container {
+    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+  
+  .tf-surface {
+    background-color: var(--tf-medium-blue);
+  }
+  
+  .tf-background {
+    background-color: var(--tf-dark-blue);
+  }
+  
+  .tf-text {
+    color: #ffffff;
+  }
+}

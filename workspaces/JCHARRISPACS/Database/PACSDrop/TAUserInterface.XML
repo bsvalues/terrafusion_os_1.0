@@ -1,0 +1,1557 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TAUserInterface</name>
+    </assembly>
+    <members>
+        <member name="T:TAUserInterface.Animate">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.Animate.No">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.Animate.System">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.Animate.Yes">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.Animation">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.Animation.Blend">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.Animation.SlideCenter">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.Animation.SlideHorNegVerPositive">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.Animation.SlideHorPosVerNegative">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.Animation.SlideHorVerNegative">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.Animation.SlideHorVerPositive">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.Animation.System">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.BandedBar.BandContent">
+            <summary>
+            Summary description for Band.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.BandedBar.SubsetViewBandContent.ShowErrorOnItem(TAData.PanelType,System.Boolean)">
+            <summary>
+            Will cause the <see cref="T:TAUserInterface.BandedBar.ItemBandContentSubItem"/> to show/hide the error indicator.
+            </summary>
+            <param name="panelType">The target <see cref="T:TAPanelBase.XPPanel"/>'s <see cref="T:TAData.PanelType"/> used to find the matching UI element.</param>
+            <param name="showError">True: Show the indicator on the UI Element, False: Hides the Error Indicator.</param>
+        </member>
+        <member name="T:TAUserInterface.BandedBar.ItemBandContent">
+            <summary>
+            Summary description for OutlookBarIconPanel.
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.BandedBar.BandHeader.MeasureTextFormat">
+            <summary>
+            <see cref="T:System.Drawing.StringFormat"/> used to measure the Y extent of the caption text
+            </summary>
+            <remarks>
+            Respects the user specified horizontal/vertical alignments and
+            trims to "..." on word boundaries
+            </remarks>
+        </member>
+        <member name="F:TAUserInterface.BandedBar.BandHeader.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.BandedBar.BandHeader.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAUserInterface.BandedBar.BandHeader.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.BandedBar.BandHeaderMenu.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.BandedBar.BandHeaderMenu.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAUserInterface.BandedBar.BandHeaderMenu.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.BandedBar.ItemBandContentItem">
+            <summary>
+            Summary description for OutlookBarIcon.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.CollectionWithEvents`1">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.CollectionWithEvents`1.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:TAUserInterface.CollectionWithEvents`1.Cleared">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:TAUserInterface.CollectionWithEvents`1.Clearing">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:TAUserInterface.CollectionWithEvents`1.Inserted">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:TAUserInterface.CollectionWithEvents`1.Inserting">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:TAUserInterface.CollectionWithEvents`1.Removed">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:TAUserInterface.CollectionWithEvents`1.Removing">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:TAUserInterface.CollectionWithEvents`1.ItemSet">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:TAUserInterface.CollectionWithEvents`1.ItemSetting">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.CollectionWithEvents`1.IsSuspended">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.CollectionWithEvents`1.ResumeEvents">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.CollectionWithEvents`1.SuspendEvents">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.CollectionWithEvents`1.ClearItems">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.CollectionWithEvents`1.OnClearComplete">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.CollectionWithEvents`1.OnInsertStarted(System.Int32,`0)">
+            <summary>
+            
+            </summary>
+            <param name="index"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:TAUserInterface.CollectionWithEvents`1.OnInsertComplete(System.Int32,`0)">
+            <summary>
+            
+            </summary>
+            <param name="index"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:TAUserInterface.CollectionWithEvents`1.OnRemoveStarted(System.Int32,`0)">
+            <summary>
+            
+            </summary>
+            <param name="index"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:TAUserInterface.CollectionWithEvents`1.OnRemoveComplete(System.Int32,`0)">
+            <summary>
+            
+            </summary>
+            <param name="index"></param>
+            <param name="value"></param>
+        </member>
+        <member name="T:TAUserInterface.FontSizeChangedDelegate">
+            <summary>
+            Summary description for FontSizeChangedEventEvent.
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.BannerForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.BannerForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAUserInterface.BannerForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.DesktopPopupWindow.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.DesktopPopupWindow.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="F:TAUserInterface.Forms.ShortcutManager.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.Forms.ShortcutManager.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAUserInterface.Forms.ShortcutManager.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.TASplashForm">
+            <summary>
+            Summary description for Busy.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.TASplashForm.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.TASplashForm.#ctor(TAUserInterfaceService.DelegateAdapter)">
+            <summary>
+            
+            </summary>
+            <param name="cancelAdapter"></param>
+        </member>
+        <member name="M:TAUserInterface.TASplashForm.#ctor(TAUserInterfaceService.DelegateAdapter,System.AsyncCallback,TAUserInterfaceService.DelegateAdapter)">
+            <summary>
+            
+            </summary>
+            <param name="dialogAdapter"></param>
+            <param name="callback"></param>
+            <param name="cancelAdapter"></param>
+        </member>
+        <member name="P:TAUserInterface.TASplashForm.Successfull">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.TASplashForm.DelegateResult">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.TASplashForm.NotificationDelay">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.TASplashForm.SetNotificationAndDetail(System.String,System.String)">
+            <summary>
+            This method allows one to set the notification and notificationdetail in one operation
+            thus removing the notification delay that would encur by setting each of them separate.
+            </summary>
+            <param name="notification"></param>
+            <param name="detail"></param>
+        </member>
+        <member name="M:TAUserInterface.TASplashForm.Close(TAUserInterface.TASplashForm)">
+            <summary>
+            
+            </summary>
+            <param name="splashForm"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TAUserInterface.TASplashForm.CloseSplash(TAUserInterface.TASplashForm)">
+            <summary>
+            
+            </summary>
+            <param name="splashForm"></param>
+            <returns></returns>
+        </member>
+        <member name="F:TAUserInterface.TASplashForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.TASplashForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAUserInterface.TASplashForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.eButtonForm">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.eButtonForm.Rectangle">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.eButtonForm.Ellipse">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.eTextAlign">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.eTextAlign.Bottom">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.eTextAlign.Right">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.eTextAlign.None">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.HotTrackButton">
+            <summary>
+            Summary description for HotTrackButton.
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.HotTrackButton.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.HotTrackButton.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.HotTrackButton.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.HotTrackButton.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.HotTrackButton.DrawImage(System.Drawing.Graphics)">
+            <summary>
+            
+            </summary>
+            <param name="g"></param>
+        </member>
+        <member name="M:TAUserInterface.HotTrackButton.DrawText(System.Drawing.Graphics)">
+            <summary>
+            
+            </summary>
+            <param name="g"></param>
+        </member>
+        <member name="M:TAUserInterface.HotTrackButton.OnPaintBackground(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="pevent"></param>
+        </member>
+        <member name="M:TAUserInterface.HotTrackButton.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="pevent"></param>
+        </member>
+        <member name="M:TAUserInterface.HotTrackButton.HotTrackButton_MouseDown(System.Object,System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TAUserInterface.HotTrackButton.HotTrackButton_MouseEnter(System.Object,System.EventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TAUserInterface.HotTrackButton.HotTrackButton_MouseHover(System.Object,System.EventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TAUserInterface.HotTrackButton.HotTrackButton_MouseLeave(System.Object,System.EventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TAUserInterface.HotTrackButton.HotTrackButton_MouseMove(System.Object,System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TAUserInterface.HotTrackButton.HotTrackButton_MouseUp(System.Object,System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="P:TAUserInterface.HotTrackButton.ButtonForm">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.HotTrackButton.HighlightColor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.HotTrackButton.TextAlign">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.HotTrackButton.OnlyShowBitmap">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.HotTrackButton.ToolTip">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.HotTrackButton.NormalImage">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.HotTrackButton.HottrackImage">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.HotTrackButton.PressedImage">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.HotTrackButton.Text">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.HotTrackButtonDesigner">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.HotTrackButtonDesigner.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.HotTrackButtonDesigner.PostFilterProperties(System.Collections.IDictionary)">
+            <summary>
+            Remove Button and Control properties that are 
+            not supported by NSButton
+            </summary>
+            <param name="Properties"></param>
+        </member>
+        <member name="T:TAUserInterface.HoverButton">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="E:TAUserInterface.HoverButton.Click">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.HoverButton.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.HoverButton.#ctor(System.Drawing.Image)">
+            <summary>
+            
+            </summary>
+            <param name="image"></param>
+        </member>
+        <member name="M:TAUserInterface.HoverButton.InternalConstruct(System.Drawing.Image)">
+            <summary>
+            
+            </summary>
+            <param name="image"></param>
+        </member>
+        <member name="M:TAUserInterface.HoverButton.OnClick">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.HoverButton.OnMouseDown(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TAUserInterface.HoverButton.OnMouseEnter(System.EventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TAUserInterface.HoverButton.OnMouseLeave(System.EventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TAUserInterface.HoverButton.OnMouseMove(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TAUserInterface.HoverButton.OnMouseUp(System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TAUserInterface.HoverButton.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TAUserInterface.HoverButton.ResetStayDown">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.HoverButton.HighlightColor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.HoverButton.Image">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.HoverButton.RememberMouseDown">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.HoverButton.SelectColor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.HoverButton.StayDown">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.TAMenuForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.TAMenuForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAUserInterface.TAMenuForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.TAFontSelectionForm">
+            <summary>
+            Summary description for TAFontSelectionForm.
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.TAFontSelectionForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.TAFontSelectionForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.TAFontSelectionForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.TaskbarMenu.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.TaskbarMenu.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAUserInterface.TaskbarMenu.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.TaskbarSubMenu.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.TaskbarSubMenu.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAUserInterface.TaskbarSubMenu.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.DraggableTabControl.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.DraggableTabControl.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAUserInterface.DraggableTabControl.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.GradientBar.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.GradientBar.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAUserInterface.GradientBar.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.IconArea.TrayIcon.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.IconArea.TrayIcon.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="F:TAUserInterface.IconArea.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.IconArea.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAUserInterface.IconArea.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.LineScroller.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.LineScroller.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAUserInterface.LineScroller.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.ChildTitleBar">
+            <summary>
+            Summary description for ChildTitleBar.
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.ChildTitleBar.captionGradient">
+            <summary>
+            Default gradient colors used to draw title box <see cref="T:TAGDI.GradientColor"/> for the <see cref="P:TAUserInterface.ChildTitleBar.Text"/>
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.ChildTitleBar.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.ChildTitleBar.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.ChildTitleBar.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.ChildTitleBar.CaptionGradient">
+            <summary>
+            <see cref="T:TAGDI.GradientColor"/> describing the gradient colors of the
+            caption
+            </summary>
+            <remarks>
+            <para>Fires a PropertyChange event w/ <see cref="P:TAUserInterface.ChildTitleBar.CaptionGradient"/> argument</para>
+            </remarks>
+        </member>
+        <member name="M:TAUserInterface.ChildTitleBar.ResetCaptionGradient">
+            <summary>
+            Resets the property value back to its default
+            </summary>
+            <remarks>
+            Called by the IDE
+            </remarks>
+        </member>
+        <member name="M:TAUserInterface.PanelView.BeginInit">
+            <summary>
+            Set flag noting that we are in InitializeComponent()
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.PanelView.EndInit">
+            <summary>
+            Clear flag noting that we are in InitializeComponent()
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.PanelView.MessagePanel">
+            <summary>
+            Top level fixed panel used for displaying alerts about a property.
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.PanelView.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.PanelView.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAUserInterface.PanelView.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.PanelViewContainerProperties">
+            <summary>
+            Properties exposed by the IExtenderProvider for controls in the PanelView.
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.PanelViewContainerProperties.ContainerRow">
+            <summary>
+            The row on which the control will appear.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.PanelViewFlowLayout">
+            <summary>
+            Flow layout for the PanelView control.
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.PanelViewFlowLayout.DefaultRowHeight">
+            <summary>
+            Required to be overriden by the base class but not used in this context.
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.PanelViewFlowLayout.VerticalMargin">
+            <summary>
+            The margin between each control when it is laid out.
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.PanelViewFlowLayout.ItemWidth">
+            <summary>
+            The width each FixedPanelExt will be.
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.PanelViewGroup.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.PanelViewGroup.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAUserInterface.PanelViewGroup.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.PanelViewItemProperties.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.PanelViewForm.ForceInitializePanels">
+            <summary>
+            This Should Never Be called from the outside.  It only exists for SubsetView Management.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.PanelViewForm.PostProcessPanelsComplete(System.IAsyncResult)">
+            <summary>
+            Callback method to properly cleanup the asynchronous call.  The AsyncCallback
+            automatically calls EndInvoke so we can leave this methods empty.  This method is
+            also executed on a seperate thread managed by a ThreadPool. However we use the call
+            to DisplayNotifications so that the focus that gets lost in a normal notification in 
+            the AsyncCall stays on the invoked Notifications
+            </summary>
+            <param name="result"></param>
+        </member>
+        <member name="M:TAUserInterface.PanelViewForm.ShowPanelErrorOnSubsetView(TAData.PanelType,System.Boolean)">
+            <summary>
+            Will cause the <see cref="T:TAUserInterface.BandedBar.ItemBandContentSubItem"/> to show/hide the error indicator.
+            </summary>
+            <param name="panelType">The target <see cref="T:TAPanelBase.XPPanel"/>'s <see cref="T:TAData.PanelType"/> used to find the matching UI element.</param>
+            <param name="showError">True: Show the indicator on the UI Element, False: Hides the Error Indicator.</param>
+        </member>
+        <member name="P:TAUserInterface.PanelViewForm.PerformValidation">
+            <summary>
+            Determines whether or not a call to <see cref="M:TAUserInterface.PanelViewForm.ValidateData"/> will process validation.
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.PanelViewForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.PanelViewForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAUserInterface.PanelViewForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.OwnersWithPropertyOnlyCheckbox">
+            <summary>
+            Summary description for DeletedPropertyCheckbox.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.OwnersWithPropertyOnlyCheckbox.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.DockedPanel">
+            <summary>
+            Summary description for DockedPanel.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.FormatMoney">
+            <summary>
+            Summary description for FormatMoney.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.GroupBox">
+            <summary>
+            Summary description for GroupBox.
+            </summary>
+            
+        </member>
+        <member name="F:TAUserInterface.GroupBox.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.GroupBox.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.GroupBox.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.IUIHelpContext.HelpTag">
+            <summary>
+            Contains the information for the help system to extract to provide the context sensitive help.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.MdiChildForm">
+            <summary>
+            Summary description for MdiChildForm.
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.MdiChildForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.MdiChildForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.MdiChildForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.MdiParentBase.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.MdiParentBase.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAUserInterface.MdiParentBase.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.MenuControl">
+            <summary>
+            Summary description for MenuControl.
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.MenuControl.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.MenuControl.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.MenuControl.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.MessagePanel">
+            <summary>
+            Summary description for MessagePanel.
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.MessagePanel.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.MessagePanel.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.MessagePanel.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.MultiLineLabel">
+            <summary>
+            Summary description for MultiLineLabel.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.OutlookBarIcon">
+            <summary>
+            Summary description for OutlookBarIcon.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.OutlookBarIconPanel">
+            <summary>
+            Summary description for OutlookBarIconPanel.
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.OutlookBarLine.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.OutlookBarLine.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAUserInterface.OutlookBarLine.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.OutlookBarPanel">
+            <summary>
+            Summary description for OutlookBarPanel.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.OutlookBarSubHeader">
+            <summary>
+            Summary description for OutlookBarSubHeader.
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.OutlookBarSubHeader.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.OutlookBarSubHeader.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.OutlookBarSubHeader.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.OutlookBarSubPanel">
+            <summary>
+            Summary description for OutlookBarSubPanel.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.OutlookBarTreePanel">
+            <summary>
+            Summary description for OutlookBarTreePanel.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.PictureBox">
+            <summary>
+            Summary description for PictureBox.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.Properties.Resources.clock_32">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.Properties.Resources.close_32">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.Properties.Resources.close_b_32">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.Properties.Resources.paper_clip_down_32">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.Properties.Resources.sandclock_clock_32">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.Properties.Resources.window_ok_32">
+            <summary>
+              Looks up a localized resource of type System.Drawing.Bitmap.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.SimpleGrid">
+            <summary>
+            Summary description for SimpleGrid.
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.SimpleGrid.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.SimpleGrid.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.SimpleGrid.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.SqlEditControl">
+            <summary>
+            Summary description for SqlEditControl.
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.SqlEditControl.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.SqlEditControl.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.SqlEditControl.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.TABaseForm.IgnoreTearProcedures">
+            <summary>
+            Specifies whether this form follows tearing procedures.
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.TABaseForm.CanBeTorn">
+            <summary>
+            States whether a form can be changed from a MdiChild to a Non-MdiChild
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.TABaseForm.OnClosing(System.ComponentModel.CancelEventArgs)">
+            <summary>
+            First Check to see if the form is not an mdi child.  If this the case
+            then it needs to be docked back with the mdi parent form.  Otherwise
+            it can be closed.
+            </summary>
+            <param name="e">Provides data for a cancelable event.</param>
+        </member>
+        <member name="M:TAUserInterface.TABaseForm.WndProc(System.Windows.Forms.Message@)">
+            <summary>
+            Disable form move by intercepting the WM_MOVING notification message that windows sends.
+            </summary>
+            <param name="message">Windows notification message</param>
+        </member>
+        <member name="F:TAUserInterface.TABaseForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.TABaseForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAUserInterface.TABaseForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.TAMdiClient">
+            <summary>
+            Listens for messages sent to a <see cref="T:System.Windows.Forms.MdiClient"/>
+            class and controls its properties.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.TAMdiClient.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:TAUserInterface.TAMdiClient"/> class.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.TAMdiClient.#ctor(System.Windows.Forms.Form)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TAUserInterface.TAMdiClient"/> class
+            for the given MDI form.
+            </summary>
+            <param name="parentForm">The MDI form.</param>
+        </member>
+        <member name="E:TAUserInterface.TAMdiClient.Paint">
+            <summary>
+            Occurs when the control is redrawn.
+            </summary>
+        </member>
+        <member name="E:TAUserInterface.TAMdiClient.Disposed">
+            <summary>
+            Occurs when the control is disposed.
+            </summary>
+        </member>
+        <member name="E:TAUserInterface.TAMdiClient.HandleAssigned">
+            <summary>
+            Occurs when the <see cref="T:System.Windows.Forms.NativeWindow"/> handle
+            is assigned.
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.TAMdiClient.Site">
+            <summary>
+            Gets or sets the <see cref="T:System.ComponentModel.ISite"/> of
+            the <see cref="T:System.ComponentModel.Component"/>.
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.TAMdiClient.ParentForm">
+            <summary>
+            Gets or sets the form that the <see cref="T:System.Windows.Forms.MdiClient"/>
+            control is assigned to.
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.TAMdiClient.MdiClient">
+            <summary>
+            Gets the <see cref="T:System.Windows.Forms.MdiClient"/> being controlled.
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.TAMdiClient.BackColor">
+            <summary>
+            Gets or sets the background color for the control.
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.TAMdiClient.BorderStyle">
+            <summary>
+            Indicates the border style for the control.
+            </summary>
+            <exception cref="T:System.ComponentModel.InvalidEnumArgumentException">The value
+            assigned to the property is not a member of
+            the <see cref="T:System.Windows.Forms.BorderStyle"/> enumeration.</exception>
+        </member>
+        <member name="P:TAUserInterface.TAMdiClient.AutoScroll">
+            <summary>
+            Gets or sets a value indicating whether the container will allow the user to
+            scroll to any controls placed outside of its visible boundaries.
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.TAMdiClient.Image">
+            <summary>
+            Gets or sets the image that the
+            <see cref="T:TAUserInterface.TAMdiClient"/> displays.
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.TAMdiClient.ImageAlign">
+            <summary>
+            Gets or sets the alignment of the background image.
+            </summary>
+            <exception cref="T:System.ComponentModel.InvalidEnumArgumentException">The
+            value assigned to the property is not a member of
+            the <see cref="T:System.Drawing.ContentAlignment"/> enumeration.</exception>
+        </member>
+        <member name="P:TAUserInterface.TAMdiClient.StretchImage">
+            <summary>
+            Gets or sets a value indicating whether the
+            <see cref="P:TAUserInterface.TAMdiClient.Image"/> should
+            be stretched to fill the entire client area.
+            </summary>
+        </member>
+        <member name="P:TAUserInterface.TAMdiClient.Handle">
+            <summary>
+            Gets the handle for this window.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.TAMdiClient.Dispose">
+            <summary>
+            Releases all resources used by the
+            <see cref="T:System.ComponentModel.Component"/>.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.TAMdiClient.RenewMdiClient">
+            <summary>
+            Reestablishes a connection to the <see cref="T:System.Windows.Forms.MdiClient"/>
+            control if the <see cref="P:TAUserInterface.TAMdiClient.ParentForm"/>
+            hasn't changed but its <see cref="P:System.Windows.Forms.Form.IsMdiContainer"/>
+            property has.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.TAMdiClient.Dispose(System.Boolean)">
+            <summary>Releases the unmanaged resources used by the
+            <see cref="T:System.ComponentModel.Component"/> and optionally releases the
+            managed resources.</summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged
+            resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:TAUserInterface.TAMdiClient.WndProc(System.Windows.Forms.Message@)">
+            <summary>
+            Invokes the default window procedure associated with this window.
+            </summary>
+            <param name="m">A <see cref="T:System.Windows.Forms.Message"/> that is associated with the current Windows message. </param>
+        </member>
+        <member name="M:TAUserInterface.TAMdiClient.OnPaint(System.Windows.Forms.PaintEventArgs)">
+            <summary>
+            Raises the <see cref="E:TAUserInterface.TAMdiClient.Paint"/> event.
+            </summary>
+            <param name="e">A <see cref="T:System.Windows.Forms.PaintEventArgs"/> that
+            contains the event data.</param>
+        </member>
+        <member name="M:TAUserInterface.TAMdiClient.OnHandleAssigned(System.EventArgs)">
+            <summary>
+            Raises the <see cref="E:TAUserInterface.TAMdiClient.HandleAssigned"/> event.
+            </summary>
+            <param name="e">A <see cref="T:System.EventArgs"/> that contains the event
+            data.</param>
+        </member>
+        <member name="F:TAUserInterface.TAMDIRollupChild.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.TAMDIRollupChild.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAUserInterface.TAMDIRollupChild.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.TaskArea.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.TaskArea.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAUserInterface.TaskArea.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.TaskBar.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.TaskBar.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAUserInterface.TaskBar.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.ToolboxPanel.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="F:TAUserInterface.ToolboxPanel.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.ToolboxPanel.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TAUserInterface.TopCountCombobox">
+            <summary>
+            Summary description for TopCountCombobox.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.TopCountCombobox.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="F:TAUserInterface.WindowArea.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUserInterface.WindowArea.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAUserInterface.WindowArea.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:UIComponents.BackgroundStyle">
+            <summary>
+            Enumeration used for various panel types to describe how the
+            background should be painted (or not painted)
+            </summary>
+        </member>
+        <member name="F:UIComponents.BackgroundStyle.Transparent">
+            <summary>
+            No background will be drawn
+            </summary>
+        </member>
+        <member name="F:UIComponents.BackgroundStyle.Solid">
+            <summary>
+            Background will be drawn using <see cref="P:System.Windows.Forms.Control.BackColor"/>
+            </summary>
+        </member>
+        <member name="F:UIComponents.BackgroundStyle.Gradient">
+            <summary>
+            Background will be drawn using a gradient defined by the control
+            </summary>
+        </member>
+    </members>
+</doc>

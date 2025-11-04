@@ -1,0 +1,5 @@
+<DataType Name="GPCompositeLayer">
+  <DisplayName>Composite Layer</DisplayName>
+  <Description>A reference to several children layers, including symbology and rendering properties.</Description>
+</DataType>
+

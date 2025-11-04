@@ -1,0 +1,12 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="tfFaviconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#0891b2;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#00d2ff;stop-opacity:1" />
+        </linearGradient>
+    </defs>
+    
+    <rect x="0" y="0" width="32" height="32" rx="6" fill="url(#tfFaviconGradient)"/>
+    <path d="M4 9 L28 9 L28 13 L18 13 L18 26 L14 26 L14 13 L4 13 Z" fill="white"/>
+    <path d="M9 16 L23 16 L23 19 L18 19 L18 26 L14 26 L14 19 L9 19 Z" fill="white" opacity="0.8"/>
+</svg>

@@ -1,0 +1,132 @@
+{
+    "type": "FunctionTool",
+    "guid": "{dd8ea62b-f689-47df-a5e4-92d7452ec889}",
+    "displayname": "$rc:title",
+    "helpcontent": "3230001",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "param_nocount:n_data"
+    ],
+    "params": {
+        "in_data": {
+            "displayname": "$rc:in_data.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEWorkspace"
+                    },
+                    {
+                        "type": "DEFeatureDataset"
+                    },
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "DEGeometricNetwork"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPWorkspaceDomain",
+                        "workspacetype": [
+                            "Local Database"
+                        ]
+                    },
+                    {
+                        "type": "GPDatasetDomain",
+                        "guid": "{995468D7-B974-47FB-A06F-D4DEC8501B1C}",
+                        "datasettype": [
+                            "FeatureDataset",
+                            "FeatureClass",
+                            "GeometricNetwork",
+                            "Table",
+                            "RasterDataset",
+                            "RasterCatalog"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:in_data.descr"
+        },
+        "lossless": {
+            "displayname": "$rc:lossless.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "Lossless compression",
+                        "code": "$rc:lossless.domain.Lossless compression"
+                    },
+                    {
+                        "value": "Non-lossless compression",
+                        "code": "$rc:lossless.domain.Non-lossless compression"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:lossless.descr"
+        },
+        "out_data": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_data.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEWorkspace"
+                    },
+                    {
+                        "type": "DEFeatureDataset"
+                    },
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "DEGeometricNetwork"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPWorkspaceDomain",
+                        "workspacetype": [
+                            "Local Database"
+                        ]
+                    },
+                    {
+                        "type": "GPDatasetDomain",
+                        "guid": "{995468D7-B974-47FB-A06F-D4DEC8501B1C}",
+                        "datasettype": [
+                            "FeatureDataset",
+                            "FeatureClass",
+                            "GeometricNetwork",
+                            "Table",
+                            "RasterDataset",
+                            "RasterCatalog"
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

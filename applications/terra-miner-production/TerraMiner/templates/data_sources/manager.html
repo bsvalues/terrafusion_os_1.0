@@ -1,0 +1,930 @@
+{% extends "base.html" %}
+
+{% block title %}Data Source Manager{% endblock %}
+
+{% block styles %}
+<style>
+    .status-badge {
+        display: inline-block;
+        padding: 0.25em 0.75em;
+        border-radius: 1rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .status-healthy {
+        background-color: rgba(52, 211, 153, 0.2);
+        color: #059669;
+    }
+    
+    .status-degraded {
+        background-color: rgba(251, 191, 36, 0.2);
+        color: #d97706;
+    }
+    
+    .status-critical {
+        background-color: rgba(239, 68, 68, 0.2);
+        color: #dc2626;
+    }
+    
+    .status-unknown {
+        background-color: rgba(156, 163, 175, 0.2);
+        color: #6b7280;
+    }
+    
+    .status-limited {
+        background-color: rgba(124, 58, 237, 0.2);
+        color: #7c3aed;
+    }
+    
+    .connector-card {
+        transition: all 0.2s ease;
+    }
+    
+    .connector-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    
+    .metrics-label {
+        font-size: 0.75rem;
+        color: #6b7280;
+    }
+    
+    .metrics-value {
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+    
+    .priority-1 {
+        border-left: 4px solid #0d9488;
+    }
+    
+    .priority-2 {
+        border-left: 4px solid #6366f1;
+    }
+    
+    .priority-3 {
+        border-left: 4px solid #8b5cf6;
+    }
+    
+    .priority-fallback {
+        border-left: 4px solid #6b7280;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Data Source Manager</h1>
+        <button class="btn btn-primary" id="refreshAllBtn">
+            <i class="bi bi-arrow-clockwise me-1"></i> Refresh All
+        </button>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-database-check me-2"></i>
+                        Active Sources
+                    </h5>
+                    <h2 class="display-4 mb-0">{{ active_sources|default('3') }}</h2>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-building me-2"></i>
+                        Properties
+                    </h5>
+                    <h2 class="display-4 mb-0">{{ property_count|default('0') }}</h2>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-geo-alt me-2"></i>
+                        Locations
+                    </h5>
+                    <h2 class="display-4 mb-0">{{ location_count|default('0') }}</h2>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card bg-warning text-white h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-clock-history me-2"></i>
+                        Last Sync
+                    </h5>
+                    <p class="mb-0 fs-5">{{ last_sync|default('Never') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <ul class="nav nav-tabs mb-4" id="dataSourceTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">
+                <i class="bi bi-grid-3x3-gap me-1"></i> Overview
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="config-tab" data-bs-toggle="tab" data-bs-target="#config" type="button" role="tab" aria-controls="config" aria-selected="false">
+                <i class="bi bi-gear me-1"></i> Configuration
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="metrics-tab" data-bs-toggle="tab" data-bs-target="#metrics" type="button" role="tab" aria-controls="metrics" aria-selected="false">
+                <i class="bi bi-graph-up me-1"></i> Metrics
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="logs-tab" data-bs-toggle="tab" data-bs-target="#logs" type="button" role="tab" aria-controls="logs" aria-selected="false">
+                <i class="bi bi-list-ul me-1"></i> Logs
+            </button>
+        </li>
+    </ul>
+    
+    <div class="tab-content" id="dataSourceTabContent">
+        <!-- Overview Tab -->
+        <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+            <div class="row">
+                {% for source in data_sources %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card connector-card priority-{{ source.priority_num|default('fallback') }}">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">{{ source.name }}</h5>
+                            <span class="status-badge status-{{ source.status }}">
+                                {{ source.status|capitalize }}
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <small class="text-muted">Priority:</small>
+                                <p class="mb-0">{{ source.priority|default('Secondary') }}</p>
+                            </div>
+                            <div class="mb-3">
+                                <small class="text-muted">Data Types:</small>
+                                <p class="mb-0">{{ source.data_types|join(', ') }}</p>
+                            </div>
+                            <div class="mb-3">
+                                <small class="text-muted">Success Rate:</small>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar {{ 'bg-success' if source.success_rate >= 90 else 'bg-warning' if source.success_rate >= 70 else 'bg-danger' }}" 
+                                         role="progressbar" 
+                                         style="width: {{ source.success_rate }}%;" 
+                                         aria-valuenow="{{ source.success_rate }}" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100"></div>
+                                </div>
+                                <p class="text-end mb-0"><small>{{ source.success_rate }}%</small></p>
+                            </div>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between">
+                            <button class="btn btn-sm btn-outline-primary test-btn" data-source="{{ source.name }}">
+                                <i class="bi bi-lightning-charge me-1"></i> Test
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary configure-btn" data-source="{{ source.name }}">
+                                <i class="bi bi-gear me-1"></i> Configure
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                
+                <!-- Add Data Source Card -->
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 border-dashed border-primary text-center">
+                        <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                            <i class="bi bi-plus-circle text-primary" style="font-size: 3rem;"></i>
+                            <h5 class="mt-3">Add Data Source</h5>
+                            <p class="text-muted">Connect a new data source to enhance property data</p>
+                            <button class="btn btn-primary mt-3" id="addSourceBtn">
+                                <i class="bi bi-plus me-1"></i> Add Source
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Configuration Tab -->
+        <div class="tab-pane fade" id="config" role="tabpanel" aria-labelledby="config-tab">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Data Source Configuration</h5>
+                </div>
+                <div class="card-body">
+                    <form id="sourceConfigForm">
+                        <h6 class="mb-3">Source Priority</h6>
+                        <p class="text-muted mb-3">
+                            Set the priority order for data sources. Higher priority sources will be queried first.
+                        </p>
+                        
+                        <div class="mb-4" id="priorityContainer">
+                            {% for source in data_sources %}
+                            <div class="card mb-2 priority-item" data-source="{{ source.name }}">
+                                <div class="card-body p-2">
+                                    <div class="d-flex align-items-center">
+                                        <span class="handle me-2"><i class="bi bi-grip-vertical"></i></span>
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h6 class="mb-0">{{ source.name }}</h6>
+                                                <span class="status-badge status-{{ source.status }}">
+                                                    {{ source.status|capitalize }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="form-check form-switch ms-3">
+                                            <input class="form-check-input" type="checkbox" 
+                                                   id="source_{{ source.name }}_enabled" 
+                                                   {{ 'checked' if source.enabled else '' }}>
+                                            <label class="form-check-label" for="source_{{ source.name }}_enabled">
+                                                {{ 'Enabled' if source.enabled else 'Disabled' }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <h6 class="mb-3">Global Settings</h6>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="failoverTimeoutInput">Failover Timeout (seconds)</label>
+                                    <input type="number" class="form-control" id="failoverTimeoutInput" 
+                                           value="{{ failover_timeout|default(10) }}" min="1" max="60">
+                                    <small class="form-text text-muted">
+                                        How long to wait before trying the next data source
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="maxRetryAttemptsInput">Max Retry Attempts</label>
+                                    <input type="number" class="form-control" id="maxRetryAttemptsInput" 
+                                           value="{{ max_retry_attempts|default(3) }}" min="0" max="10">
+                                    <small class="form-text text-muted">
+                                        Maximum number of retries per data source
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="enableCircuitBreakers" 
+                                   {{ 'checked' if enable_circuit_breakers else '' }}>
+                            <label class="form-check-label" for="enableCircuitBreakers">
+                                Enable Circuit Breakers
+                            </label>
+                            <small class="form-text text-muted d-block">
+                                Automatically disable data sources that consistently fail
+                            </small>
+                        </div>
+                        
+                        <div class="text-end">
+                            <button type="button" class="btn btn-secondary me-2" id="resetConfigBtn">
+                                Reset
+                            </button>
+                            <button type="submit" class="btn btn-primary" id="saveConfigBtn">
+                                <i class="bi bi-save me-1"></i> Save Configuration
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Metrics Tab -->
+        <div class="tab-pane fade" id="metrics" role="tabpanel" aria-labelledby="metrics-tab">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Response Time Comparison</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="responseTimeChart" height="250"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Success Rate Comparison</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="successRateChart" height="250"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Detailed Metrics</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Data Source</th>
+                                            <th>Success Rate</th>
+                                            <th>Avg. Response Time</th>
+                                            <th>Total Requests</th>
+                                            <th>Errors</th>
+                                            <th>Timeouts</th>
+                                            <th>Rate Limit Hits</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for source in data_sources %}
+                                        <tr>
+                                            <td>
+                                                <strong>{{ source.name }}</strong>
+                                                <span class="status-badge status-{{ source.status }} ms-2">
+                                                    {{ source.status|capitalize }}
+                                                </span>
+                                            </td>
+                                            <td>{{ source.metrics.success_rate }}%</td>
+                                            <td>{{ source.metrics.avg_response_time|round(2) }}s</td>
+                                            <td>{{ source.metrics.requests }}</td>
+                                            <td>{{ source.metrics.errors }}</td>
+                                            <td>{{ source.metrics.timeouts }}</td>
+                                            <td>{{ source.metrics.rate_limit_hits }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Logs Tab -->
+        <div class="tab-pane fade" id="logs" role="tabpanel" aria-labelledby="logs-tab">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Data Source Logs</h5>
+                    <div>
+                        <select class="form-select form-select-sm d-inline-block w-auto me-2" id="logFilter">
+                            <option value="all">All Sources</option>
+                            {% for source in data_sources %}
+                            <option value="{{ source.name }}">{{ source.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <select class="form-select form-select-sm d-inline-block w-auto" id="logLevel">
+                            <option value="all">All Levels</option>
+                            <option value="error">Error</option>
+                            <option value="warning">Warning</option>
+                            <option value="info">Info</option>
+                            <option value="debug">Debug</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="log-container" style="max-height: 500px; overflow-y: auto;">
+                        <table class="table table-striped mb-0">
+                            <thead class="position-sticky top-0 bg-light">
+                                <tr>
+                                    <th style="width: 180px;">Timestamp</th>
+                                    <th style="width: 100px;">Source</th>
+                                    <th style="width: 100px;">Level</th>
+                                    <th>Message</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logTable">
+                                <!-- Sample log entries -->
+                                <tr class="log-row" data-source="zillow" data-level="info">
+                                    <td><small>2025-05-13 10:15:23</small></td>
+                                    <td>zillow</td>
+                                    <td><span class="badge bg-info">INFO</span></td>
+                                    <td>Initialized Zillow API connector</td>
+                                </tr>
+                                <tr class="log-row" data-source="realtor" data-level="info">
+                                    <td><small>2025-05-13 10:15:24</small></td>
+                                    <td>realtor</td>
+                                    <td><span class="badge bg-info">INFO</span></td>
+                                    <td>Initialized Realtor API connector</td>
+                                </tr>
+                                <tr class="log-row" data-source="pacmls" data-level="warning">
+                                    <td><small>2025-05-13 10:15:24</small></td>
+                                    <td>pacmls</td>
+                                    <td><span class="badge bg-warning">WARNING</span></td>
+                                    <td>PACMLS credentials not found in environment variables</td>
+                                </tr>
+                                <tr class="log-row" data-source="zillow" data-level="error">
+                                    <td><small>2025-05-13 10:17:35</small></td>
+                                    <td>zillow</td>
+                                    <td><span class="badge bg-danger">ERROR</span></td>
+                                    <td>Rate limit exceeded for Zillow API: Too many requests</td>
+                                </tr>
+                                <tr class="log-row" data-source="realtor" data-level="info">
+                                    <td><small>2025-05-13 10:17:36</small></td>
+                                    <td>realtor</td>
+                                    <td><span class="badge bg-info">INFO</span></td>
+                                    <td>Failover to Realtor API successful</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer text-end">
+                    <button class="btn btn-sm btn-secondary" id="clearLogsBtn">
+                        <i class="bi bi-trash me-1"></i> Clear Logs
+                    </button>
+                    <button class="btn btn-sm btn-primary" id="downloadLogsBtn">
+                        <i class="bi bi-download me-1"></i> Download Logs
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Source Configuration Modal -->
+<div class="modal fade" id="sourceConfigModal" tabindex="-1" aria-labelledby="sourceConfigModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sourceConfigModalLabel">Configure Data Source</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="dataSourceForm">
+                    <input type="hidden" id="sourceNameInput" value="">
+                    
+                    <div class="mb-3">
+                        <label for="sourcePrioritySelect" class="form-label">Priority</label>
+                        <select class="form-select" id="sourcePrioritySelect">
+                            <option value="primary">Primary (First Choice)</option>
+                            <option value="secondary">Secondary</option>
+                            <option value="tertiary">Tertiary</option>
+                            <option value="fallback">Fallback (Last Resort)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">API Credentials</label>
+                        <div class="source-zillow source-credentials">
+                            <div class="mb-3">
+                                <label for="zillowApiKeyInput" class="form-label">RapidAPI Key</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="zillowApiKeyInput" placeholder="Your RapidAPI Key">
+                                    <button class="btn btn-outline-secondary toggle-password" type="button">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                                <small class="form-text text-muted">Used for Zillow API access via RapidAPI</small>
+                            </div>
+                        </div>
+                        
+                        <div class="source-realtor source-credentials d-none">
+                            <div class="mb-3">
+                                <label for="realtorApiKeyInput" class="form-label">RapidAPI Key</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="realtorApiKeyInput" placeholder="Your RapidAPI Key">
+                                    <button class="btn btn-outline-secondary toggle-password" type="button">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                                <small class="form-text text-muted">Used for Realtor API access via RapidAPI</small>
+                            </div>
+                        </div>
+                        
+                        <div class="source-pacmls source-credentials d-none">
+                            <div class="mb-3">
+                                <label for="pacmlsUsernameInput" class="form-label">PACMLS Username</label>
+                                <input type="text" class="form-control" id="pacmlsUsernameInput" placeholder="Your PACMLS Username">
+                            </div>
+                            <div class="mb-3">
+                                <label for="pacmlsPasswordInput" class="form-label">PACMLS Password</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="pacmlsPasswordInput" placeholder="Your PACMLS Password">
+                                    <button class="btn btn-outline-secondary toggle-password" type="button">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Request Settings</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="requestTimeoutInput" class="form-label">Request Timeout (seconds)</label>
+                                    <input type="number" class="form-control" id="requestTimeoutInput" value="10" min="1" max="60">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="retryAttemptsInput" class="form-label">Retry Attempts</label>
+                                    <input type="number" class="form-control" id="retryAttemptsInput" value="3" min="0" max="10">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveSourceBtn">
+                    <i class="bi bi-save me-1"></i> Save Configuration
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Source Modal -->
+<div class="modal fade" id="addSourceModal" tabindex="-1" aria-labelledby="addSourceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addSourceModalLabel">Add New Data Source</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100 connector-card" data-source="zillow">
+                            <div class="card-body text-center">
+                                <img src="/static/img/zillow-logo.png" alt="Zillow" class="img-fluid mb-3" style="max-height: 50px;">
+                                <h5>Zillow</h5>
+                                <p class="text-muted small mb-0">Property listings and market data from Zillow</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100 connector-card" data-source="realtor">
+                            <div class="card-body text-center">
+                                <img src="/static/img/realtor-logo.png" alt="Realtor.com" class="img-fluid mb-3" style="max-height: 50px;">
+                                <h5>Realtor.com</h5>
+                                <p class="text-muted small mb-0">Property listings and market data from Realtor.com</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100 connector-card" data-source="pacmls">
+                            <div class="card-body text-center">
+                                <img src="/static/img/pacmls-logo.png" alt="PACMLS" class="img-fluid mb-3" style="max-height: 50px;">
+                                <h5>PACMLS</h5>
+                                <p class="text-muted small mb-0">MLS data from Paragon Connect</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100 connector-card" data-source="county">
+                            <div class="card-body text-center">
+                                <img src="/static/img/county-logo.png" alt="County Records" class="img-fluid mb-3" style="max-height: 50px;">
+                                <h5>County Records</h5>
+                                <p class="text-muted small mb-0">Official property records from county sources</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize charts for metrics tab
+        const responseTimeCtx = document.getElementById('responseTimeChart').getContext('2d');
+        const responseTimeChart = new Chart(responseTimeCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Zillow', 'Realtor', 'PACMLS', 'County Records'],
+                datasets: [{
+                    label: 'Average Response Time (seconds)',
+                    data: [0.8, 1.2, 0.5, 1.7],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.5)',
+                        'rgba(255, 99, 132, 0.5)',
+                        'rgba(75, 192, 192, 0.5)',
+                        'rgba(153, 102, 255, 0.5)'
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Response Time (seconds)'
+                        }
+                    }
+                }
+            }
+        });
+        
+        const successRateCtx = document.getElementById('successRateChart').getContext('2d');
+        const successRateChart = new Chart(successRateCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Zillow', 'Realtor', 'PACMLS', 'County Records'],
+                datasets: [{
+                    label: 'Success Rate (%)',
+                    data: [93, 97, 85, 99],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.5)',
+                        'rgba(255, 99, 132, 0.5)',
+                        'rgba(75, 192, 192, 0.5)',
+                        'rgba(153, 102, 255, 0.5)'
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Success Rate (%)'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Toggle password visibility
+        document.querySelectorAll('.toggle-password').forEach(button => {
+            button.addEventListener('click', function() {
+                const input = this.previousElementSibling;
+                const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                input.setAttribute('type', type);
+                
+                // Toggle eye icon
+                const icon = this.querySelector('i');
+                if (type === 'text') {
+                    icon.classList.remove('bi-eye');
+                    icon.classList.add('bi-eye-slash');
+                } else {
+                    icon.classList.remove('bi-eye-slash');
+                    icon.classList.add('bi-eye');
+                }
+            });
+        });
+        
+        // Source Configuration Modal
+        const sourceConfigModal = new bootstrap.Modal(document.getElementById('sourceConfigModal'));
+        
+        // Configure source buttons
+        document.querySelectorAll('.configure-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const sourceName = this.getAttribute('data-source');
+                document.getElementById('sourceNameInput').value = sourceName;
+                
+                // Show/hide the appropriate credentials section
+                document.querySelectorAll('.source-credentials').forEach(div => {
+                    div.classList.add('d-none');
+                });
+                document.querySelector(`.source-${sourceName}`).classList.remove('d-none');
+                
+                // Update modal title
+                document.getElementById('sourceConfigModalLabel').innerText = `Configure ${sourceName} Data Source`;
+                
+                sourceConfigModal.show();
+            });
+        });
+        
+        // Add source modal
+        const addSourceModal = new bootstrap.Modal(document.getElementById('addSourceModal'));
+        
+        document.getElementById('addSourceBtn').addEventListener('click', function() {
+            addSourceModal.show();
+        });
+        
+        // Add source selection
+        document.querySelectorAll('#addSourceModal .connector-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const sourceName = this.getAttribute('data-source');
+                document.getElementById('sourceNameInput').value = sourceName;
+                
+                // Show/hide the appropriate credentials section
+                document.querySelectorAll('.source-credentials').forEach(div => {
+                    div.classList.add('d-none');
+                });
+                document.querySelector(`.source-${sourceName}`).classList.remove('d-none');
+                
+                // Update modal title
+                document.getElementById('sourceConfigModalLabel').innerText = `Configure ${sourceName} Data Source`;
+                
+                addSourceModal.hide();
+                sourceConfigModal.show();
+            });
+        });
+        
+        // Log filtering
+        document.getElementById('logFilter').addEventListener('change', filterLogs);
+        document.getElementById('logLevel').addEventListener('change', filterLogs);
+        
+        function filterLogs() {
+            const sourceFilter = document.getElementById('logFilter').value;
+            const levelFilter = document.getElementById('logLevel').value;
+            
+            document.querySelectorAll('#logTable .log-row').forEach(row => {
+                const source = row.getAttribute('data-source');
+                const level = row.getAttribute('data-level');
+                
+                const sourceMatch = sourceFilter === 'all' || source === sourceFilter;
+                const levelMatch = levelFilter === 'all' || level === levelFilter;
+                
+                if (sourceMatch && levelMatch) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+        
+        // Test source buttons
+        document.querySelectorAll('.test-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const sourceName = this.getAttribute('data-source');
+                const originalText = this.innerHTML;
+                
+                // Show loading spinner
+                this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Testing...';
+                this.disabled = true;
+                
+                // Call the test API endpoint
+                fetch(`/api/data_sources/${sourceName}/test`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Restore button
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                    
+                    // Show result notification
+                    if (data.success) {
+                        alert(`${sourceName} connection test successful!`);
+                    } else {
+                        alert(`${sourceName} connection test failed: ${data.message}`);
+                    }
+                })
+                .catch(error => {
+                    // Restore button
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                    
+                    // Show error
+                    alert(`Error testing ${sourceName}: ${error.message}`);
+                });
+            });
+        });
+        
+        // Save source configuration
+        document.getElementById('saveSourceBtn').addEventListener('click', function() {
+            const sourceName = document.getElementById('sourceNameInput').value;
+            const priority = document.getElementById('sourcePrioritySelect').value;
+            
+            // Get source-specific credentials
+            let credentials = {};
+            if (sourceName === 'zillow') {
+                credentials.apiKey = document.getElementById('zillowApiKeyInput').value;
+            } else if (sourceName === 'realtor') {
+                credentials.apiKey = document.getElementById('realtorApiKeyInput').value;
+            } else if (sourceName === 'pacmls') {
+                credentials.username = document.getElementById('pacmlsUsernameInput').value;
+                credentials.password = document.getElementById('pacmlsPasswordInput').value;
+            }
+            
+            // Request settings
+            const settings = {
+                timeout: document.getElementById('requestTimeoutInput').value,
+                retries: document.getElementById('retryAttemptsInput').value
+            };
+            
+            // Send to API
+            fetch(`/api/data_sources/${sourceName}/configure`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    priority: priority,
+                    credentials: credentials,
+                    settings: settings
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Close modal
+                sourceConfigModal.hide();
+                
+                // Show result
+                if (data.success) {
+                    alert(`Configuration for ${sourceName} saved successfully!`);
+                    // Reload to reflect changes
+                    window.location.reload();
+                } else {
+                    alert(`Error saving configuration: ${data.message}`);
+                }
+            })
+            .catch(error => {
+                alert(`Error: ${error.message}`);
+            });
+        });
+        
+        // Save global configuration
+        document.getElementById('saveConfigBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Collect priority order
+            const priorityOrder = Array.from(document.querySelectorAll('#priorityContainer .priority-item'))
+                .map(item => item.getAttribute('data-source'));
+            
+            // Collect enabled status
+            const enabledSources = Array.from(document.querySelectorAll('#priorityContainer .form-check-input:checked'))
+                .map(checkbox => checkbox.id.replace('source_', '').replace('_enabled', ''));
+            
+            // Global settings
+            const settings = {
+                failover_timeout: document.getElementById('failoverTimeoutInput').value,
+                max_retry_attempts: document.getElementById('maxRetryAttemptsInput').value,
+                enable_circuit_breakers: document.getElementById('enableCircuitBreakers').checked
+            };
+            
+            // Send to API
+            fetch('/api/data_sources/config', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    priority_order: priorityOrder,
+                    enabled_sources: enabledSources,
+                    settings: settings
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Global configuration saved successfully!');
+                    // Reload to reflect changes
+                    window.location.reload();
+                } else {
+                    alert(`Error saving configuration: ${data.message}`);
+                }
+            })
+            .catch(error => {
+                alert(`Error: ${error.message}`);
+            });
+        });
+    });
+</script>
+{% endblock %}

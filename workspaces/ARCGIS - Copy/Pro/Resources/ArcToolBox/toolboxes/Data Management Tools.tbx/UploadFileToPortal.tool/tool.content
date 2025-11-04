@@ -1,0 +1,131 @@
+{
+    "type": "FunctionTool",
+    "guid": "{ad49440a-4e83-427e-95a3-fcc556572137}",
+    "displayname": "$rc:title",
+    "helpcontent": "3070015",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_file": {
+            "display_order": "0",
+            "control_guid": "{F618CB52-29AE-49C8-BF32-9845F642276B}",
+            "displayname": "$rc:in_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "mapx",
+                    "lyrx",
+                    "pagx",
+                    "rptx",
+                    "rptt",
+                    "stylx",
+                    "pdf"
+                ]
+            },
+            "description": "$rc:in_file.descr"
+        },
+        "title": {
+            "display_order": "1",
+            "displayname": "$rc:title.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:title.descr"
+        },
+        "folder": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:folder.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:folder.descr"
+        },
+        "summary": {
+            "type": "optional",
+            "display_order": "3",
+            "control_guid": "{E5456E51-0C41-4797-9EE4-5269820C6F0E}",
+            "displayname": "$rc:summary.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:summary.descr"
+        },
+        "tags": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:tags.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:tags.descr"
+        },
+        "sharing_level": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:sharing_level.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "OWNER",
+                        "code": "$rc:sharing_level.domain.OWNER"
+                    },
+                    {
+                        "value": "ORGANIZATION",
+                        "code": "$rc:sharing_level.domain.ORGANIZATION"
+                    },
+                    {
+                        "value": "EVERYONE",
+                        "code": "$rc:sharing_level.domain.EVERYONE"
+                    }
+                ]
+            },
+            "value": "OWNER",
+            "description": "$rc:sharing_level.descr"
+        },
+        "groups": {
+            "type": "optional",
+            "display_order": "6",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:groups.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:groups.descr"
+        },
+        "file_item_id": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "7",
+            "displayname": "$rc:file_item_id.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "file_item_url": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "8",
+            "displayname": "$rc:file_item_url.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        }
+    }
+}

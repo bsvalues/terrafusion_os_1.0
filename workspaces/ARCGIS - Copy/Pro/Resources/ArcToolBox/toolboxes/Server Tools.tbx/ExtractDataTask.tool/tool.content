@@ -1,0 +1,173 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "22020003",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "Layers_to_Clip": {
+            "displayname": "$rc:layers_to_clip.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPLayer"
+                }
+            },
+            "description": "$rc:layers_to_clip.descr"
+        },
+        "Area_of_Interest": {
+            "displayname": "$rc:area_of_interest.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:area_of_interest.descr"
+        },
+        "Feature_Format": {
+            "displayname": "$rc:feature_format.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "File Geodatabase - GDB - .gdb",
+                        "code": "$rc:feature_format.domain.File Geodatabase - GDB - .gdb"
+                    },
+                    {
+                        "value": "Shapefile - SHP - .shp",
+                        "code": "$rc:feature_format.domain.Shapefile - SHP - .shp"
+                    },
+                    {
+                        "value": "Bentley Microstation Design (V8) - DGN_V8 - .dgn",
+                        "code": "$rc:feature_format.domain.Bentley Microstation Design (V8) - DGN_V8 - .dgn"
+                    },
+                    {
+                        "value": "Autodesk AutoCAD - DXF_R14   - .dxf",
+                        "code": "$rc:feature_format.domain.Autodesk AutoCAD - DXF_R14   - .dxf"
+                    },
+                    {
+                        "value": "Autodesk AutoCAD - DXF_R2000 - .dxf",
+                        "code": "$rc:feature_format.domain.Autodesk AutoCAD - DXF_R2000 - .dxf"
+                    },
+                    {
+                        "value": "Autodesk AutoCAD - DXF_R2004 - .dxf",
+                        "code": "$rc:feature_format.domain.Autodesk AutoCAD - DXF_R2004 - .dxf"
+                    },
+                    {
+                        "value": "Autodesk AutoCAD - DXF_R2005 - .dxf",
+                        "code": "$rc:feature_format.domain.Autodesk AutoCAD - DXF_R2005 - .dxf"
+                    },
+                    {
+                        "value": "Autodesk AutoCAD - DXF_R2007 - .dxf",
+                        "code": "$rc:feature_format.domain.Autodesk AutoCAD - DXF_R2007 - .dxf"
+                    },
+                    {
+                        "value": "Autodesk AutoCAD - DXF_R2010 - .dxf",
+                        "code": "$rc:feature_format.domain.Autodesk AutoCAD - DXF_R2010 - .dxf"
+                    },
+                    {
+                        "value": "Autodesk AutoCAD - DXF_R2013 - .dxf",
+                        "code": "$rc:feature_format.domain.Autodesk AutoCAD - DXF_R2013 - .dxf"
+                    },
+                    {
+                        "value": "Autodesk AutoCAD - DWG_R14   - .dwg",
+                        "code": "$rc:feature_format.domain.Autodesk AutoCAD - DWG_R14   - .dwg"
+                    },
+                    {
+                        "value": "Autodesk AutoCAD - DWG_R2000 - .dwg",
+                        "code": "$rc:feature_format.domain.Autodesk AutoCAD - DWG_R2000 - .dwg"
+                    },
+                    {
+                        "value": "Autodesk AutoCAD - DWG_R2004 - .dwg",
+                        "code": "$rc:feature_format.domain.Autodesk AutoCAD - DWG_R2004 - .dwg"
+                    },
+                    {
+                        "value": "Autodesk AutoCAD - DWG_R2005 - .dwg",
+                        "code": "$rc:feature_format.domain.Autodesk AutoCAD - DWG_R2005 - .dwg"
+                    },
+                    {
+                        "value": "Autodesk AutoCAD - DWG_R2007 - .dwg",
+                        "code": "$rc:feature_format.domain.Autodesk AutoCAD - DWG_R2007 - .dwg"
+                    },
+                    {
+                        "value": "Autodesk AutoCAD - DWG_R2010 - .dwg",
+                        "code": "$rc:feature_format.domain.Autodesk AutoCAD - DWG_R2010 - .dwg"
+                    },
+                    {
+                        "value": "Autodesk AutoCAD - DWG_R2013 - .dwg",
+                        "code": "$rc:feature_format.domain.Autodesk AutoCAD - DWG_R2013 - .dwg"
+                    }
+                ]
+            },
+            "value": "File Geodatabase - GDB - .gdb",
+            "description": "$rc:feature_format.descr"
+        },
+        "Raster_Format": {
+            "displayname": "$rc:raster_format.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ESRI GRID - GRID",
+                        "code": "$rc:raster_format.domain.ESRI GRID - GRID"
+                    },
+                    {
+                        "value": "File Geodatabase - GDB - .gdb",
+                        "code": "$rc:raster_format.domain.File Geodatabase - GDB - .gdb"
+                    },
+                    {
+                        "value": "ERDAS IMAGINE - IMG - .img",
+                        "code": "$rc:raster_format.domain.ERDAS IMAGINE - IMG - .img"
+                    },
+                    {
+                        "value": "Tagged Image File Format - TIFF - .tif",
+                        "code": "$rc:raster_format.domain.Tagged Image File Format - TIFF - .tif"
+                    },
+                    {
+                        "value": "Graphic Interchange Format - GIF - .gif",
+                        "code": "$rc:raster_format.domain.Graphic Interchange Format - GIF - .gif"
+                    },
+                    {
+                        "value": "Joint Photographics Experts Group - JPEG - .jpg",
+                        "code": "$rc:raster_format.domain.Joint Photographics Experts Group - JPEG - .jpg"
+                    },
+                    {
+                        "value": "Joint Photographics Experts Group - JPEG 2000 - .jp2",
+                        "code": "$rc:raster_format.domain.Joint Photographics Experts Group - JPEG 2000 - .jp2"
+                    },
+                    {
+                        "value": "Bitmap - BMP - .bmp",
+                        "code": "$rc:raster_format.domain.Bitmap - BMP - .bmp"
+                    },
+                    {
+                        "value": "Portable Network Graphics - PNG - .png",
+                        "code": "$rc:raster_format.domain.Portable Network Graphics - PNG - .png"
+                    }
+                ]
+            },
+            "value": "ESRI GRID - GRID",
+            "description": "$rc:raster_format.descr"
+        },
+        "Output_Zip_File": {
+            "direction": "out",
+            "displayname": "$rc:output_zip_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "description": "$rc:output_zip_file.descr"
+        }
+    }
+}

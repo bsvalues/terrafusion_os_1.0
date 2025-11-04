@@ -1,0 +1,351 @@
+/* Workflow Component Styling */
+
+/* WorkflowStatus Component */
+.workflow-status {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.workflow-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.workflow-title {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.workflow-badge {
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: white;
+}
+
+.workflow-badge.pending {
+  background-color: #f5b041;
+}
+
+.workflow-badge.processing {
+  background-color: #3498db;
+}
+
+.workflow-badge.completed {
+  background-color: #2ecc71;
+}
+
+.workflow-badge.failed {
+  background-color: #e74c3c;
+}
+
+.workflow-description {
+  margin-bottom: 15px;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.workflow-progress-container {
+  height: 8px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.workflow-progress-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.workflow-progress-text {
+  position: absolute;
+  right: 5px;
+  top: -18px;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.workflow-steps {
+  margin-top: 30px;
+}
+
+.workflow-step {
+  display: flex;
+  margin-bottom: 15px;
+  position: relative;
+}
+
+.workflow-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 30px;
+  left: 12px;
+  width: 2px;
+  height: calc(100% + 15px);
+  background-color: #e0e0e0;
+  z-index: 0;
+}
+
+.step-indicator {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 15px;
+  position: relative;
+  z-index: 1;
+}
+
+.workflow-step.completed .step-indicator {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.workflow-step.failed .step-indicator {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.workflow-step.processing .step-indicator {
+  background-color: #3498db;
+  color: white;
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-name {
+  font-weight: 500;
+  margin-bottom: 3px;
+}
+
+.step-description {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.step-check, .step-x, .step-number {
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+/* DataFlow Component */
+.dataflow-container {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.dataflow-title {
+  margin: 0 0 20px 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.dataflow-diagram {
+  border: 1px solid #eee;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.dataflow-node {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.dataflow-node:hover {
+  transform: scale(1.05);
+}
+
+.node-circle {
+  stroke: white;
+  stroke-width: 2;
+}
+
+.animated-line {
+  animation: dash 1s linear infinite;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: -10;
+  }
+}
+
+.connection-label {
+  background-color: white;
+  padding: 2px 4px;
+}
+
+.dataflow-legend {
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.dataflow-legend h4 {
+  margin: 0 0 10px 0;
+  font-size: 1rem;
+}
+
+.legend-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+}
+
+.legend-icon {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 5px;
+  color: white;
+  font-size: 0.8rem;
+}
+
+.legend-label {
+  font-size: 0.85rem;
+}
+
+/* ProcessTimeline Component */
+.process-timeline {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.timeline-title {
+  margin: 0 0 20px 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.timeline-container {
+  position: relative;
+}
+
+.timeline-item {
+  display: flex;
+  margin-bottom: 25px;
+  position: relative;
+}
+
+.timeline-marker {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 15px;
+  color: white;
+  font-size: 1rem;
+  z-index: 2;
+}
+
+.timeline-connector {
+  position: absolute;
+  top: 30px;
+  left: 15px;
+  width: 2px;
+  height: calc(100% - 15px);
+  background-color: #e0e0e0;
+  z-index: 1;
+}
+
+.timeline-content {
+  flex: 1;
+  padding-bottom: 15px;
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 5px;
+}
+
+.step-name {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.step-meta {
+  display: flex;
+  gap: 15px;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.step-status {
+  font-weight: 500;
+}
+
+.step-description {
+  margin: 5px 0 0 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.timeline-item.current .timeline-content {
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  padding: 10px;
+  margin-left: -10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.timeline-item.current .timeline-marker {
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+}
+
+.timeline-empty {
+  padding: 30px;
+  text-align: center;
+  color: #666;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .timeline-header {
+    flex-direction: column;
+  }
+  
+  .step-meta {
+    margin-top: 5px;
+  }
+  
+  .legend-items {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

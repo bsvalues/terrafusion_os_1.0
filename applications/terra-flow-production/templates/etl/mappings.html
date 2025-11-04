@@ -1,0 +1,599 @@
+{% extends "layout.html" %}
+
+{% block title %}ETL Field Mappings{% endblock %}
+
+{% block styles %}
+<style>
+    .mapping-card {
+        margin-bottom: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .mapping-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        background-color: #f5f7fa;
+        border-bottom: 1px solid #e2e8f0;
+        border-radius: 8px 8px 0 0;
+    }
+    .mapping-body {
+        padding: 20px;
+    }
+    .mapping-row {
+        display: flex;
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .mapping-row:last-child {
+        border-bottom: none;
+    }
+    .mapping-target {
+        flex: 1;
+        font-weight: 500;
+    }
+    .mapping-source {
+        flex: 1;
+    }
+    .mapping-arrow {
+        padding: 0 15px;
+        color: #64748b;
+    }
+    .tab-content {
+        padding-top: 20px;
+    }
+    .field-pair {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .field-pair select, .field-pair input {
+        flex: 1;
+    }
+    .field-pair .arrow {
+        margin: 0 10px;
+        font-size: 20px;
+        color: #64748b;
+    }
+    .field-pair .remove-btn {
+        margin-left: 10px;
+    }
+    .add-field-btn {
+        margin-top: 15px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>ETL Field Mappings</h1>
+            <p class="lead">Manage field mappings for data import and export operations</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Field Mappings Manager</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-tabs" id="mappingTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="view-tab" data-bs-toggle="tab" data-bs-target="#view" type="button" role="tab" aria-controls="view" aria-selected="true">View Mappings</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="create-tab" data-bs-toggle="tab" data-bs-target="#create" type="button" role="tab" aria-controls="create" aria-selected="false">Create Mapping</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="edit-tab" data-bs-toggle="tab" data-bs-target="#edit" type="button" role="tab" aria-controls="edit" aria-selected="false">Edit Mapping</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="mappingTabsContent">
+                        <!-- View Mappings Tab -->
+                        <div class="tab-pane fade show active" id="view" role="tabpanel" aria-labelledby="view-tab">
+                            <div class="row mb-4">
+                                <div class="col">
+                                    <form id="viewMappingForm" class="row g-3">
+                                        <div class="col-md-4">
+                                            <label for="dataTypeSelect" class="form-label">Data Type</label>
+                                            <select id="dataTypeSelect" class="form-select" required>
+                                                <option value="" selected disabled>Select Data Type</option>
+                                                <option value="property">Property</option>
+                                                <option value="sales">Sales</option>
+                                                <option value="valuation">Valuation</option>
+                                                <option value="tax">Tax</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="mappingNameSelect" class="form-label">Mapping Name</label>
+                                            <select id="mappingNameSelect" class="form-select" required>
+                                                <option value="" selected disabled>Select Mapping</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 d-flex align-items-end">
+                                            <button type="submit" class="btn btn-primary">View Mapping</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            
+                            <div id="mappingDetails" class="mt-4 d-none">
+                                <div class="card mapping-card">
+                                    <div class="mapping-header">
+                                        <h5 class="mb-0" id="mappingTitle">Mapping Details</h5>
+                                        <span class="badge bg-primary" id="mappingFieldCount">0 fields</span>
+                                    </div>
+                                    <div class="mapping-body">
+                                        <div id="mappingFields"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Create Mapping Tab -->
+                        <div class="tab-pane fade" id="create" role="tabpanel" aria-labelledby="create-tab">
+                            <form id="createMappingForm">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="newDataType" class="form-label">Data Type</label>
+                                        <select id="newDataType" name="dataType" class="form-select" required>
+                                            <option value="" selected disabled>Select Data Type</option>
+                                            <option value="property">Property</option>
+                                            <option value="sales">Sales</option>
+                                            <option value="valuation">Valuation</option>
+                                            <option value="tax">Tax</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="newMappingName" class="form-label">Mapping Name</label>
+                                        <input type="text" class="form-control" id="newMappingName" name="mappingName" placeholder="Enter mapping name" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="card mb-3">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0">Field Mappings</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="fieldMappings">
+                                            <div class="field-pair">
+                                                <select class="form-select target-field" name="targetField[]" required>
+                                                    <option value="" selected disabled>Select Target Field</option>
+                                                </select>
+                                                <span class="arrow">→</span>
+                                                <input type="text" class="form-control source-field" name="sourceField[]" placeholder="Source Field" required>
+                                                <button type="button" class="btn btn-sm btn-outline-danger remove-btn">✕</button>
+                                            </div>
+                                        </div>
+                                        <button type="button" id="addFieldBtn" class="btn btn-sm btn-outline-secondary add-field-btn">+ Add Field</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <button type="submit" class="btn btn-primary">Create Mapping</button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <!-- Edit Mapping Tab -->
+                        <div class="tab-pane fade" id="edit" role="tabpanel" aria-labelledby="edit-tab">
+                            <div class="row mb-4">
+                                <div class="col">
+                                    <form id="selectEditMappingForm" class="row g-3">
+                                        <div class="col-md-4">
+                                            <label for="editDataTypeSelect" class="form-label">Data Type</label>
+                                            <select id="editDataTypeSelect" class="form-select" required>
+                                                <option value="" selected disabled>Select Data Type</option>
+                                                <option value="property">Property</option>
+                                                <option value="sales">Sales</option>
+                                                <option value="valuation">Valuation</option>
+                                                <option value="tax">Tax</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="editMappingNameSelect" class="form-label">Mapping Name</label>
+                                            <select id="editMappingNameSelect" class="form-select" required>
+                                                <option value="" selected disabled>Select Mapping</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 d-flex align-items-end">
+                                            <button type="submit" class="btn btn-primary">Load Mapping</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            
+                            <div id="editMappingForm" class="d-none">
+                                <form id="updateMappingForm">
+                                    <input type="hidden" id="editDataType" name="dataType">
+                                    <input type="hidden" id="editMappingName" name="mappingName">
+                                    
+                                    <div class="card mb-3">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0">Edit Field Mappings</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="editFieldMappings">
+                                                <!-- Field mappings will be loaded here -->
+                                            </div>
+                                            <button type="button" id="editAddFieldBtn" class="btn btn-sm btn-outline-secondary add-field-btn">+ Add Field</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                        <button type="button" id="deleteMappingBtn" class="btn btn-danger me-md-2">Delete Mapping</button>
+                                        <button type="submit" class="btn btn-primary">Update Mapping</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Target field options for different data types
+    const targetFieldOptions = {
+        property: [
+            'property_id', 'parcel_number', 'property_type', 'address', 'city', 'state', 'zip',
+            'owner_name', 'owner_address', 'assessed_value', 'land_value', 'improvement_value',
+            'year_built', 'square_footage', 'bedrooms', 'bathrooms', 'last_sale_date',
+            'last_sale_price', 'latitude', 'longitude', 'legal_description', 'zoning',
+            'neighborhood_code', 'tax_code_area'
+        ],
+        sales: [
+            'sale_id', 'property_id', 'parcel_number', 'sale_date', 'sale_price',
+            'buyer_name', 'seller_name', 'deed_type', 'sale_type', 'verified',
+            'verification_source', 'verification_date', 'qualified', 'disqualification_reason',
+            'notes', 'recorded_document'
+        ],
+        valuation: [
+            'valuation_id', 'property_id', 'parcel_number', 'tax_year', 'assessment_date',
+            'market_value', 'assessed_value', 'land_value', 'improvement_value', 'exemption_value',
+            'taxable_value', 'valuation_method', 'valuation_model', 'appeal_status', 'certified',
+            'certification_date', 'appraiser', 'notes'
+        ],
+        tax: [
+            'tax_id', 'property_id', 'parcel_number', 'tax_year', 'tax_code_area',
+            'levy_code', 'assessed_value', 'taxable_value', 'total_tax', 'tax_bill_number',
+            'first_half_amount', 'first_half_due_date', 'first_half_paid_date', 'first_half_paid_amount',
+            'second_half_amount', 'second_half_due_date', 'second_half_paid_date', 'second_half_paid_amount',
+            'is_delinquent', 'delinquent_amount', 'interest_amount', 'penalty_amount',
+            'payment_status', 'special_assessments', 'tax_relief_amount', 'tax_relief_type',
+            'exemption_codes', 'notes'
+        ]
+    };
+
+    // Populate target field options based on data type
+    function populateTargetFields(selectElement, dataType) {
+        const fields = targetFieldOptions[dataType] || [];
+        selectElement.innerHTML = '<option value="" selected disabled>Select Target Field</option>';
+        
+        fields.forEach(field => {
+            const option = document.createElement('option');
+            option.value = field;
+            option.textContent = field;
+            selectElement.appendChild(option);
+        });
+    }
+    
+    // Add new field mapping row
+    function addFieldMapping(container, dataType, targetValue = '', sourceValue = '') {
+        const fieldPair = document.createElement('div');
+        fieldPair.className = 'field-pair';
+        
+        const targetField = document.createElement('select');
+        targetField.className = 'form-select target-field';
+        targetField.name = 'targetField[]';
+        targetField.required = true;
+        
+        populateTargetFields(targetField, dataType);
+        
+        if (targetValue) {
+            // Set selected value if provided
+            const option = Array.from(targetField.options).find(opt => opt.value === targetValue);
+            if (option) {
+                option.selected = true;
+            }
+        }
+        
+        const arrow = document.createElement('span');
+        arrow.className = 'arrow';
+        arrow.textContent = '→';
+        
+        const sourceField = document.createElement('input');
+        sourceField.type = 'text';
+        sourceField.className = 'form-control source-field';
+        sourceField.name = 'sourceField[]';
+        sourceField.placeholder = 'Source Field';
+        sourceField.required = true;
+        sourceField.value = sourceValue;
+        
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'btn btn-sm btn-outline-danger remove-btn';
+        removeBtn.textContent = '✕';
+        removeBtn.addEventListener('click', () => {
+            fieldPair.remove();
+        });
+        
+        fieldPair.appendChild(targetField);
+        fieldPair.appendChild(arrow);
+        fieldPair.appendChild(sourceField);
+        fieldPair.appendChild(removeBtn);
+        
+        container.appendChild(fieldPair);
+    }
+    
+    // Load mappings for data type
+    async function loadMappingsForDataType(dataType, selectElement) {
+        try {
+            const response = await fetch(`/api/etl/mappings/${dataType}`);
+            const data = await response.json();
+            
+            selectElement.innerHTML = '<option value="" selected disabled>Select Mapping</option>';
+            
+            if (data.mappings && data.mappings.length > 0) {
+                data.mappings.forEach(mapping => {
+                    const option = document.createElement('option');
+                    option.value = mapping;
+                    option.textContent = mapping;
+                    selectElement.appendChild(option);
+                });
+            }
+        } catch (error) {
+            console.error('Error loading mappings:', error);
+        }
+    }
+    
+    // Load mapping details
+    async function loadMappingDetails(dataType, mappingName) {
+        try {
+            const response = await fetch(`/api/etl/mappings/${dataType}/${mappingName}`);
+            const data = await response.json();
+            
+            return data.mapping || {};
+        } catch (error) {
+            console.error('Error loading mapping details:', error);
+            return {};
+        }
+    }
+    
+    // Display mapping details
+    function displayMappingDetails(dataType, mappingName, mapping) {
+        const mappingDetails = document.getElementById('mappingDetails');
+        const mappingTitle = document.getElementById('mappingTitle');
+        const mappingFieldCount = document.getElementById('mappingFieldCount');
+        const mappingFields = document.getElementById('mappingFields');
+        
+        mappingTitle.textContent = `${dataType} / ${mappingName}`;
+        
+        const fieldCount = Object.keys(mapping).length;
+        mappingFieldCount.textContent = `${fieldCount} fields`;
+        
+        mappingFields.innerHTML = '';
+        
+        for (const [targetField, sourceField] of Object.entries(mapping)) {
+            const row = document.createElement('div');
+            row.className = 'mapping-row';
+            
+            const target = document.createElement('div');
+            target.className = 'mapping-target';
+            target.textContent = targetField;
+            
+            const arrow = document.createElement('div');
+            arrow.className = 'mapping-arrow';
+            arrow.textContent = '→';
+            
+            const source = document.createElement('div');
+            source.className = 'mapping-source';
+            source.textContent = sourceField;
+            
+            row.appendChild(target);
+            row.appendChild(arrow);
+            row.appendChild(source);
+            
+            mappingFields.appendChild(row);
+        }
+        
+        mappingDetails.classList.remove('d-none');
+    }
+    
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', function() {
+        // Data type change events for select elements
+        document.getElementById('dataTypeSelect').addEventListener('change', function() {
+            loadMappingsForDataType(this.value, document.getElementById('mappingNameSelect'));
+        });
+        
+        document.getElementById('editDataTypeSelect').addEventListener('change', function() {
+            loadMappingsForDataType(this.value, document.getElementById('editMappingNameSelect'));
+        });
+        
+        document.getElementById('newDataType').addEventListener('change', function() {
+            const fieldMappings = document.getElementById('fieldMappings');
+            fieldMappings.innerHTML = '';
+            addFieldMapping(fieldMappings, this.value);
+        });
+        
+        // View mapping form submit
+        document.getElementById('viewMappingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const dataType = document.getElementById('dataTypeSelect').value;
+            const mappingName = document.getElementById('mappingNameSelect').value;
+            
+            if (dataType && mappingName) {
+                const mapping = await loadMappingDetails(dataType, mappingName);
+                displayMappingDetails(dataType, mappingName, mapping);
+            }
+        });
+        
+        // Add field button click
+        document.getElementById('addFieldBtn').addEventListener('click', function() {
+            const dataType = document.getElementById('newDataType').value;
+            if (dataType) {
+                addFieldMapping(document.getElementById('fieldMappings'), dataType);
+            } else {
+                alert('Please select a data type first');
+            }
+        });
+        
+        // Create mapping form submit
+        document.getElementById('createMappingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const dataType = document.getElementById('newDataType').value;
+            const mappingName = document.getElementById('newMappingName').value;
+            
+            const targetFields = Array.from(this.querySelectorAll('.target-field')).map(el => el.value);
+            const sourceFields = Array.from(this.querySelectorAll('.source-field')).map(el => el.value);
+            
+            // Create mapping object
+            const mapping = {};
+            for (let i = 0; i < targetFields.length; i++) {
+                mapping[targetFields[i]] = sourceFields[i];
+            }
+            
+            try {
+                const response = await fetch('/api/etl/mappings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        data_type: dataType,
+                        mapping_name: mappingName,
+                        mapping: mapping
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Mapping created successfully');
+                    this.reset();
+                    document.getElementById('fieldMappings').innerHTML = '';
+                } else {
+                    alert('Error creating mapping: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error creating mapping:', error);
+                alert('Error creating mapping');
+            }
+        });
+        
+        // Select edit mapping form submit
+        document.getElementById('selectEditMappingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const dataType = document.getElementById('editDataTypeSelect').value;
+            const mappingName = document.getElementById('editMappingNameSelect').value;
+            
+            if (dataType && mappingName) {
+                const mapping = await loadMappingDetails(dataType, mappingName);
+                
+                // Populate edit form
+                document.getElementById('editDataType').value = dataType;
+                document.getElementById('editMappingName').value = mappingName;
+                
+                const editFieldMappings = document.getElementById('editFieldMappings');
+                editFieldMappings.innerHTML = '';
+                
+                for (const [targetField, sourceField] of Object.entries(mapping)) {
+                    addFieldMapping(editFieldMappings, dataType, targetField, sourceField);
+                }
+                
+                document.getElementById('editMappingForm').classList.remove('d-none');
+            }
+        });
+        
+        // Edit add field button click
+        document.getElementById('editAddFieldBtn').addEventListener('click', function() {
+            const dataType = document.getElementById('editDataType').value;
+            if (dataType) {
+                addFieldMapping(document.getElementById('editFieldMappings'), dataType);
+            }
+        });
+        
+        // Update mapping form submit
+        document.getElementById('updateMappingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const dataType = document.getElementById('editDataType').value;
+            const mappingName = document.getElementById('editMappingName').value;
+            
+            const targetFields = Array.from(this.querySelectorAll('.target-field')).map(el => el.value);
+            const sourceFields = Array.from(this.querySelectorAll('.source-field')).map(el => el.value);
+            
+            // Create mapping object
+            const mapping = {};
+            for (let i = 0; i < targetFields.length; i++) {
+                mapping[targetFields[i]] = sourceFields[i];
+            }
+            
+            try {
+                const response = await fetch(`/api/etl/mappings/${dataType}/${mappingName}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        mapping: mapping
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Mapping updated successfully');
+                    document.getElementById('editMappingForm').classList.add('d-none');
+                    document.getElementById('selectEditMappingForm').reset();
+                } else {
+                    alert('Error updating mapping: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error updating mapping:', error);
+                alert('Error updating mapping');
+            }
+        });
+        
+        // Delete mapping button click
+        document.getElementById('deleteMappingBtn').addEventListener('click', async function() {
+            const dataType = document.getElementById('editDataType').value;
+            const mappingName = document.getElementById('editMappingName').value;
+            
+            if (confirm(`Are you sure you want to delete the mapping "${dataType}/${mappingName}"?`)) {
+                try {
+                    const response = await fetch(`/api/etl/mappings/${dataType}/${mappingName}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        alert('Mapping deleted successfully');
+                        document.getElementById('editMappingForm').classList.add('d-none');
+                        document.getElementById('selectEditMappingForm').reset();
+                    } else {
+                        alert('Error deleting mapping: ' + result.message);
+                    }
+                } catch (error) {
+                    console.error('Error deleting mapping:', error);
+                    alert('Error deleting mapping');
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

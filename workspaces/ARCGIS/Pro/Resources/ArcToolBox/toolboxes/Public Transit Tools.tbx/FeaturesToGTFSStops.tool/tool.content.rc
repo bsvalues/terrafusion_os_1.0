@@ -1,0 +1,10 @@
+{
+    "map": {
+        "description": "Converts a feature class to a GTFS stops.txt file for a GTFS public transit dataset.",
+        "in_features.descr": "<xdoc><p>A point feature class containing transit stop geometries and at least the minimum required GTFS stops.txt file fields except <span class=\"esri_fieldname\">stop_lat</span> and <span class=\"esri_fieldname\">stop_lon</span>.</p></xdoc>",
+        "in_features.title": "Input Features",
+        "out_gtfs_stops_file.descr": "The output stops.txt file.",
+        "out_gtfs_stops_file.title": "Output GTFS Stops File",
+        "title": "Features To GTFS Stops"
+    }
+}

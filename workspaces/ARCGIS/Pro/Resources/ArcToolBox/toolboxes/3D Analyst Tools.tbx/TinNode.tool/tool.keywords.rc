@@ -1,0 +1,11 @@
+{
+    "set": [
+        "convert",
+        "delaunay",
+        "edit",
+        "node",
+        "points",
+        "tin",
+        "triangulated irregular network"
+    ]
+}

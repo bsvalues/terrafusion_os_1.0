@@ -1,0 +1,298 @@
+{
+    "type": "FunctionTool",
+    "guid": "{a0e1d552-4bbb-415b-aa76-c873d4a23689}",
+    "displayname": "$rc:title",
+    "helpcontent": "3170009",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "block_add_to_map",
+        "input_data_change"
+    ],
+    "params": {
+        "input_database": {
+            "display_order": "0",
+            "displayname": "$rc:input_database.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "domain": {
+                "type": "GPWorkspaceDomain",
+                "workspacetype": [
+                    "Remote Database",
+                    "Feature Service"
+                ]
+            },
+            "description": "$rc:input_database.descr"
+        },
+        "reconcile_mode": {
+            "display_order": "1",
+            "displayname": "$rc:reconcile_mode.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ALL_VERSIONS",
+                        "code": "$rc:reconcile_mode.domain.ALL_VERSIONS"
+                    },
+                    {
+                        "value": "BLOCKING_VERSIONS",
+                        "code": "$rc:reconcile_mode.domain.BLOCKING_VERSIONS"
+                    }
+                ]
+            },
+            "value": "ALL_VERSIONS",
+            "description": "$rc:reconcile_mode.descr"
+        },
+        "target_version": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:target_version.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "in_workspace"
+            ],
+            "description": "$rc:target_version.descr"
+        },
+        "edit_versions": {
+            "type": "optional",
+            "display_order": "3",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:edit_versions.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "depends": [
+                "in_workspace"
+            ],
+            "description": "$rc:edit_versions.descr"
+        },
+        "acquire_locks": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:acquire_locks.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "LOCK_ACQUIRED"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_LOCK_ACQUIRED"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:acquire_locks.descr"
+        },
+        "abort_if_conflicts": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:abort_if_conflicts.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ABORT_CONFLICTS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_ABORT"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:abort_if_conflicts.descr"
+        },
+        "conflict_definition": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:conflict_definition.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "BY_OBJECT",
+                        "code": "$rc:conflict_definition.domain.BY_OBJECT"
+                    },
+                    {
+                        "value": "BY_ATTRIBUTE",
+                        "code": "$rc:conflict_definition.domain.BY_ATTRIBUTE"
+                    }
+                ]
+            },
+            "value": "BY_OBJECT",
+            "description": "$rc:conflict_definition.descr"
+        },
+        "conflict_resolution": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:conflict_resolution.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "FAVOR_TARGET_VERSION",
+                        "code": "$rc:conflict_resolution.domain.FAVOR_TARGET_VERSION"
+                    },
+                    {
+                        "value": "FAVOR_EDIT_VERSION",
+                        "code": "$rc:conflict_resolution.domain.FAVOR_EDIT_VERSION"
+                    }
+                ]
+            },
+            "value": "FAVOR_TARGET_VERSION",
+            "description": "$rc:conflict_resolution.descr"
+        },
+        "with_post": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:with_post.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "POST"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_POST"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:with_post.descr"
+        },
+        "with_delete": {
+            "type": "optional",
+            "display_order": "11",
+            "displayname": "$rc:with_delete.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "DELETE_VERSION"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "KEEP_VERSION"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:with_delete.descr"
+        },
+        "out_log": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "12",
+            "displayname": "$rc:out_log.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "addtomap": "false",
+            "description": "$rc:out_log.descr"
+        },
+        "out_workspace": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "13",
+            "displayname": "$rc:out_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            }
+        },
+        "proceed_if_conflicts_not_reviewed": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:proceed_if_conflicts_not_reviewed.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "PROCEED"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NOT_PROCEED"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:proceed_if_conflicts_not_reviewed.descr"
+        },
+        "reconcile_checkout_versions": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:reconcile_checkout_versions.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "RECONCILE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_RECONCILE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:reconcile_checkout_versions.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

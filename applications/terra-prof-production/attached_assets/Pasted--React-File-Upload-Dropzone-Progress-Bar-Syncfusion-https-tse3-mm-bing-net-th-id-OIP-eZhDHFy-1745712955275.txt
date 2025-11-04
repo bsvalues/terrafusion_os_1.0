@@ -1,0 +1,319 @@
+[![React File Upload | Dropzone Progress Bar| Syncfusion](https://tse3.mm.bing.net/th?id=OIP.eZhDHFyKZOKB9Ck5PN83tAHaE1&pid=Api)](https://www.syncfusion.com/react-components/react-file-upload)
+Absolutely! Let's embark on a comprehensive overhaul of the TerraFusionProf frontend, focusing on enhancing user experience, clarifying data workflows, and ensuring consistency throughout the application. Here's a step-by-step guide to achieve this transformation:
+
+---
+
+## 🏗️ 1. Bootstrap the `/components/ui` and Layout Skeleton
+
+**Objective**: Establish a consistent and reusable UI component library and layout structure.
+
+### 📁 Directory Structure
+
+```
+/src
+  /components
+    /ui
+      Button.tsx
+      Input.tsx
+      Modal.tsx
+      Toast.tsx
+      ProgressBar.tsx
+    /layout
+      Header.tsx
+      Sidebar.tsx
+      Footer.tsx
+  /pages
+    index.tsx
+    upload.tsx
+    sync.tsx
+```
+
+### 🧩 Sample `Button` Component
+
+```tsx
+// /components/ui/Button.tsx
+import React from 'react';
+
+type ButtonProps = {
+  children: React.ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
+  loading?: boolean;
+};
+
+const Button: React.FC<ButtonProps> = ({ children, onClick, disabled, loading }) => (
+  <button
+    onClick={onClick}
+    disabled={disabled || loading}
+    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+  >
+    {loading ? 'Loading...' : children}
+  </button>
+);
+
+export default Button;
+```
+
+### 🧩 Sample `Layout` Component
+
+```tsx
+// /components/layout/Layout.tsx
+import React from 'react';
+import Header from './Header';
+import Sidebar from './Sidebar';
+import Footer from './Footer';
+
+const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="flex h-screen">
+    <Sidebar />
+    <div className="flex flex-col flex-1">
+      <Header />
+      <main className="flex-1 p-4 overflow-auto">{children}</main>
+      <Footer />
+    </div>
+  </div>
+);
+
+export default Layout;
+```
+
+---
+
+## 🌐 2. Implement Global `AppContext` for Loading/Error States
+
+**Objective**: Manage global application states like loading and error messages.
+
+### 🧩 `AppContext` Implementation
+
+```tsx
+// /contexts/AppContext.tsx
+import React, { createContext, useState } from 'react';
+
+type AppContextType = {
+  isLoading: boolean;
+  setIsLoading: (loading: boolean) => void;
+  error: string | null;
+  setError: (error: string | null) => void;
+};
+
+export const AppContext = createContext<AppContextType | undefined>(undefined);
+
+export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  return (
+    <AppContext.Provider value={{ isLoading, setIsLoading, error, setError }}>
+      {children}
+    </AppContext.Provider>
+  );
+};
+```
+
+### 🧩 Using `AppContext` in Components
+
+```tsx
+import React, { useContext } from 'react';
+import { AppContext } from '../contexts/AppContext';
+
+const SomeComponent: React.FC = () => {
+  const appContext = useContext(AppContext);
+
+  if (!appContext) {
+    throw new Error('AppContext must be used within an AppProvider');
+  }
+
+  const { isLoading, setIsLoading, error, setError } = appContext;
+
+  // Use isLoading, setIsLoading, error, setError as needed
+};
+```
+
+---
+
+## 🔄 3. Redesign Upload → Sync Workflow
+
+**Objective**: Create a clear and intuitive user flow for uploading and syncing data.
+
+### 🧩 Upload Page (`upload.tsx`)
+
+```tsx
+// /pages/upload.tsx
+import React, { useState } from 'react';
+import Layout from '../components/layout/Layout';
+import Button from '../components/ui/Button';
+import ProgressBar from '../components/ui/ProgressBar';
+
+const UploadPage: React.FC = () => {
+  const [file, setFile] = useState<File | null>(null);
+  const [progress, setProgress] = useState(0);
+
+  const handleUpload = () => {
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/upload');
+
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        setProgress((event.loaded / event.total) * 100);
+      }
+    };
+
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        // Handle success
+      } else {
+        // Handle error
+      }
+    };
+
+    xhr.send(formData);
+  };
+
+  return (
+    <Layout>
+      <h1 className="text-2xl mb-4">Upload File</h1>
+      <input type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+      <Button onClick={handleUpload} disabled={!file}>
+        Upload
+      </Button>
+      {progress > 0 && <ProgressBar progress={progress} />}
+    </Layout>
+  );
+};
+
+export default UploadPage;
+```
+
+### 🧩 Sync Page (`sync.tsx`)
+
+```tsx
+// /pages/sync.tsx
+import React, { useState } from 'react';
+import Layout from '../components/layout/Layout';
+import Button from '../components/ui/Button';
+
+const SyncPage: React.FC = () => {
+  const [syncing, setSyncing] = useState(false);
+
+  const handleSync = async () => {
+    setSyncing(true);
+    try {
+      const response = await fetch('/api/sync', { method: 'POST' });
+      if (!response.ok) {
+        throw new Error('Sync failed');
+      }
+      // Handle success
+    } catch (error) {
+      // Handle error
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  return (
+    <Layout>
+      <h1 className="text-2xl mb-4">Sync Data</h1>
+      <Button onClick={handleSync} loading={syncing}>
+        {syncing ? 'Syncing...' : 'Start Sync'}
+      </Button>
+    </Layout>
+  );
+};
+
+export default SyncPage;
+```
+
+---
+
+## 🔔 4. Add a Toast Notification System
+
+**Objective**: Provide real-time feedback to users through toast notifications.
+
+### 🧩 Install `react-toastify`
+
+```bash
+npm install react-toastify
+```
+
+### 🧩 Configure Toasts
+
+```tsx
+// /components/ui/Toast.tsx
+import React from 'react';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+const Toast: React.FC = () => <ToastContainer position="top-right" autoClose={5000} />;
+
+export default Toast;
+```
+
+### 🧩 Use Toasts in Application
+
+```tsx
+// /pages/_app.tsx
+import React from 'react';
+import { AppProvider } from '../contexts/AppContext';
+import Toast from '../components/ui/Toast';
+
+const MyApp = ({ Component, pageProps }) => (
+  <AppProvider>
+    <Toast />
+    <Component {...pageProps} />
+  </AppProvider>
+);
+
+export default MyApp;
+```
+
+### 🧩 Triggering Toasts
+
+```tsx
+import { toast } from 'react-toastify';
+
+toast.success('Upload successful!');
+toast.error('Upload failed!');
+```
+
+---
+
+## 🔄 5. Replace Broken Pages with New Flow
+
+**Objective**: Ensure all pages follow the new consistent layout and UI components.
+
+### 🧩 Example: Home Page (`index.tsx`)
+
+```tsx
+// /pages/index.tsx
+import React from 'react';
+import Layout from '../components/layout/Layout';
+import Button from '../components/ui/Button';
+import Link from 'next/link';
+
+const HomePage: React.FC = () => (
+  <Layout>
+    <h1 className="text-2xl mb-4">Welcome to TerraFusionProf</h1>
+    <div className="space-x-4">
+      <Link href="/upload">
+        <Button>Upload Data</Button>
+      </Link>
+      <Link href="/sync">
+        <Button>Sync Data</Button>
+      </Link>
+    </div>
+  </Layout>
+);
+
+export default HomePage;
+```
+
+---
+
+By following this structured approach, you'll transform TerraFusionProf into a user-friendly, consistent, and efficient application. Each component and page will adhere to a unified design system, enhancing the overall user experience.
+
+If you need further assistance or have specific questions about implementing any part of this plan, feel free to ask! 

@@ -1,0 +1,271 @@
+{% extends "base_clean.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-6">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Settings</h1>
+                    <p class="mt-1 text-sm text-gray-500">Configure your TerraFusion Platform settings</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        System Active
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Performance Settings -->
+            <div class="lg:col-span-2">
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                            <i class="fas fa-tachometer-alt text-blue-500 mr-2"></i>
+                            Performance Configuration
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Worker Count</label>
+                                <input type="number" value="{{ performance_config.worker_count or 12 }}" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Max Workers</label>
+                                <input type="number" value="{{ performance_config.max_workers or 24 }}" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div class="col-span-2">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <label class="text-sm font-medium text-gray-700">Performance Optimization</label>
+                                        <p class="text-sm text-gray-500">{{ performance_config.performance_target or "Standard performance" }}</p>
+                                    </div>
+                                    <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                        <input type="checkbox" {% if performance_config.optimization_enabled %}checked{% endif %}
+                                               class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                                        <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cache Settings -->
+                <div class="bg-white shadow rounded-lg mt-6">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                            <i class="fas fa-memory text-purple-500 mr-2"></i>
+                            Caching Configuration
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Cache Hit Rate</label>
+                                <div class="text-2xl font-bold text-green-600">{{ cache_config.hit_rate or "N/A" }}</div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Total Cache Size</label>
+                                <div class="text-lg text-gray-900">{{ cache_config.total_size or 0 }} entries</div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Eviction Policy</label>
+                                <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option {% if cache_config.eviction_policy == "LRU" %}selected{% endif %}>LRU</option>
+                                    <option {% if cache_config.eviction_policy == "LFU" %}selected{% endif %}>LFU</option>
+                                    <option {% if cache_config.eviction_policy == "FIFO" %}selected{% endif %}>FIFO</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Cache Types</label>
+                                <div class="text-sm text-gray-600">
+                                    {% if cache_config.cache_types %}
+                                        {% for cache_type in cache_config.cache_types %}
+                                            <span class="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs mr-1 mb-1">{{ cache_type }}</span>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="text-gray-400">No cache types configured</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Settings -->
+                <div class="bg-white shadow rounded-lg mt-6">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                            <i class="fas fa-shield-alt text-red-500 mr-2"></i>
+                            Security Configuration
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <label class="text-sm font-medium text-gray-700">Threat Detection</label>
+                                    <p class="text-sm text-gray-500">Real-time monitoring for security threats</p>
+                                </div>
+                                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" {% if security_config.threat_detection %}checked{% endif %}
+                                           class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                                    <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <label class="text-sm font-medium text-gray-700">Request Monitoring</label>
+                                    <p class="text-sm text-gray-500">Monitor and log all API requests</p>
+                                </div>
+                                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" {% if security_config.request_monitoring %}checked{% endif %}
+                                           class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                                    <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <label class="text-sm font-medium text-gray-700">Rate Limiting</label>
+                                    <p class="text-sm text-gray-500">Prevent abuse with request rate limits</p>
+                                </div>
+                                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" {% if security_config.rate_limiting %}checked{% endif %}
+                                           class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                                    <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                                </div>
+                            </div>
+                            {% if security_config.active_protections %}
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Active Protections</label>
+                                <div class="text-sm text-gray-600">
+                                    {% for protection in security_config.active_protections %}
+                                        <span class="inline-block bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs mr-1 mb-1">{{ protection }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Information -->
+            <div class="space-y-6">
+                <!-- System Status -->
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                            <i class="fas fa-info-circle text-green-500 mr-2"></i>
+                            System Information
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <dl class="space-y-3">
+                            <div>
+                                <dt class="text-sm font-medium text-gray-700">Version</dt>
+                                <dd class="text-sm text-gray-900">{{ system_config.version }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-sm font-medium text-gray-700">Environment</dt>
+                                <dd class="text-sm text-gray-900">{{ system_config.environment }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-sm font-medium text-gray-700">Logging Level</dt>
+                                <dd class="text-sm text-gray-900">{{ system_config.logging_level }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-sm font-medium text-gray-700">Enterprise Features</dt>
+                                <dd class="text-sm">
+                                    {% if ENTERPRISE_FEATURES_AVAILABLE %}
+                                        <span class="text-green-600">✓ Active</span>
+                                    {% else %}
+                                        <span class="text-red-600">✗ Inactive</span>
+                                    {% endif %}
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+
+                <!-- Database Configuration -->
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                            <i class="fas fa-database text-blue-500 mr-2"></i>
+                            Database
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <dl class="space-y-3">
+                            <div>
+                                <dt class="text-sm font-medium text-gray-700">Type</dt>
+                                <dd class="text-sm text-gray-900">{{ database_config.type }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-sm font-medium text-gray-700">Pool Size</dt>
+                                <dd class="text-sm text-gray-900">{{ database_config.pool_size }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-sm font-medium text-gray-700">Connection Timeout</dt>
+                                <dd class="text-sm text-gray-900">{{ database_config.connection_timeout }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-sm font-medium text-gray-700">Encryption</dt>
+                                <dd class="text-sm text-gray-900">{{ database_config.encryption }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-sm font-medium text-gray-700">Backup</dt>
+                                <dd class="text-sm">
+                                    {% if database_config.backup_enabled %}
+                                        <span class="text-green-600">✓ Enabled</span>
+                                    {% else %}
+                                        <span class="text-red-600">✗ Disabled</span>
+                                    {% endif %}
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Actions</h3>
+                    </div>
+                    <div class="p-6 space-y-3">
+                        <button class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            Save Configuration
+                        </button>
+                        <button class="w-full px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                            Reset to Defaults
+                        </button>
+                        <button class="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            Export Configuration
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.toggle-checkbox:checked {
+    right: 0;
+    border-color: #3b82f6;
+}
+.toggle-checkbox:checked + .toggle-label {
+    background-color: #3b82f6;
+}
+</style>
+{% endblock %}

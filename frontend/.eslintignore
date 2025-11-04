@@ -1,20 +1,38 @@
 # Dependencies
-node_modules
+node_modules/
 
 # Build outputs
-dist
-build
+dist/
+build/
+coverage/
 
 # Generated files
-*.d.ts
+*.generated.*
+*.min.js
 
-# Components-enhanced (temporarily excluded)
-components-enhanced
+# Configuration files
+*.config.js
+webpack.config.js
+rollup.config.js
+vite.config.js
 
-# Documentation (temporarily excluded)
-docs
-../docs
+# Package files
+package-lock.json
 
-# Config files
-vite.config.ts
-.eslintrc.js
+# Environment files
+.env*
+
+# IDE files
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Government sensitive files
+*.gov
+*.classified
+
+# Test files (if needed)
+# *.test.ts
+# *.spec.ts

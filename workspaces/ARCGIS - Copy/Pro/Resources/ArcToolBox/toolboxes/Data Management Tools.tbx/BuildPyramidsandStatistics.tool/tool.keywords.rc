@@ -1,0 +1,17 @@
+{
+    "set": [
+        "contrast",
+        "deviation",
+        "display",
+        "overview",
+        "ovr",
+        "performance",
+        "properties",
+        "reduced resolution dataset",
+        "renderer",
+        "rrd",
+        "skip factor",
+        "source datasets",
+        "speed"
+    ]
+}

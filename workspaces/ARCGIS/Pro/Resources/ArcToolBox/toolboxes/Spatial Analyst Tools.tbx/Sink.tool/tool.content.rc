@@ -1,0 +1,10 @@
+{
+    "map": {
+        "description": "Creates a raster identifying all sinks or areas of internal drainage.",
+        "in_flow_direction_raster.descr": "<xdoc><p>The input raster that shows the direction of flow out of each cell.</p><p>The flow direction raster can be created using the Flow Direction tool, run using the default flow direction type D8.</p></xdoc>",
+        "in_flow_direction_raster.title": "Input D8 flow direction raster",
+        "out_raster.descr": "<xdoc><p>The output raster that shows all the sinks (areas of internal drainage) on the input surface.</p><p>This output is of integer type.</p></xdoc>",
+        "out_raster.title": "Output raster",
+        "title": "Sink"
+    }
+}

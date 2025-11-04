@@ -1,0 +1,352 @@
+{% extends "layout.html" %}
+
+{% block title %}
+{{ title }} | GeoAssessmentPro
+{% endblock %}
+
+{% block main %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('supabase_config.index') }}">Supabase Configuration</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ environment }} Environment</li>
+                </ol>
+            </nav>
+            
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2><i class="fas fa-server"></i> {{ environment|capitalize }} Environment</h2>
+                <div>
+                    {% if is_current %}
+                    <span class="badge bg-success"><i class="fas fa-check-circle"></i> Active Environment</span>
+                    {% else %}
+                    <form action="{{ url_for('supabase_config.set_active') }}" method="post" class="d-inline">
+                        <input type="hidden" name="environment" value="{{ environment }}">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            Set As Active
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Environment Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">Environment Name</dt>
+                                <dd class="col-sm-8">{{ environment }}</dd>
+                                
+                                <dt class="col-sm-4">URL</dt>
+                                <dd class="col-sm-8">
+                                    {% if env_info.url %}
+                                    <code>{{ env_info.url }}</code>
+                                    {% else %}
+                                    <span class="text-danger">Not configured</span>
+                                    {% endif %}
+                                </dd>
+                                
+                                <dt class="col-sm-4">API Key</dt>
+                                <dd class="col-sm-8">
+                                    {% if env_info.key_available %}
+                                    <span class="text-success"><i class="fas fa-check-circle"></i> Available</span>
+                                    {% else %}
+                                    <span class="text-danger"><i class="fas fa-times-circle"></i> Not set</span>
+                                    {% endif %}
+                                </dd>
+                                
+                                <dt class="col-sm-4">Service Key</dt>
+                                <dd class="col-sm-8">
+                                    {% if env_info.service_key_available %}
+                                    <span class="text-success"><i class="fas fa-check-circle"></i> Available</span>
+                                    {% else %}
+                                    <span class="text-warning"><i class="fas fa-exclamation-circle"></i> Not set (may limit functionality)</span>
+                                    {% endif %}
+                                </dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">Environment Status</h5>
+                                    {% if env_info.configured %}
+                                    <div class="alert alert-success">
+                                        <strong><i class="fas fa-check-circle"></i> Configuration Complete</strong>
+                                        <p class="mb-0">This environment is fully configured and ready to use.</p>
+                                    </div>
+                                    {% else %}
+                                    <div class="alert alert-warning">
+                                        <strong><i class="fas fa-exclamation-triangle"></i> Configuration Incomplete</strong>
+                                        <p class="mb-0">This environment needs to be configured before it can be used.</p>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="mt-3">
+                                        <h6>Used By Services:</h6>
+                                        <ul class="list-group">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                Data Migration
+                                                {% if env_info.service_key_available %}
+                                                <span class="badge bg-success">Available</span>
+                                                {% else %}
+                                                <span class="badge bg-warning text-dark">Limited</span>
+                                                {% endif %}
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                Property Management
+                                                {% if env_info.configured %}
+                                                <span class="badge bg-success">Available</span>
+                                                {% else %}
+                                                <span class="badge bg-danger">Unavailable</span>
+                                                {% endif %}
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                Data Synchronization
+                                                {% if env_info.configured %}
+                                                <span class="badge bg-success">Available</span>
+                                                {% else %}
+                                                <span class="badge bg-danger">Unavailable</span>
+                                                {% endif %}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('supabase_config.configure') }}" class="btn btn-primary">
+                            <i class="fas fa-edit"></i> Update Configuration
+                        </a>
+                        <a href="{{ url_for('supabase_config.test') }}" class="btn btn-info">
+                            <i class="fas fa-vial"></i> Test Connection
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Connection Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Connection Pool</h6>
+                            <div id="connection-pool-stats" class="mt-3">
+                                <div class="text-center py-5">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2">Loading connection pool statistics...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Environment Health</h6>
+                            <div id="environment-health" class="mt-3">
+                                <div class="text-center py-5">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2">Checking environment health...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Environment Usage</h5>
+                </div>
+                <div class="card-body">
+                    <p>This environment is used by the following components:</p>
+                    
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>Property Management Module</strong>
+                                    <p class="mb-0 text-muted">Manages property data and assessments.</p>
+                                </div>
+                                <span class="badge bg-primary">Core Component</span>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>Data Migration Tool</strong>
+                                    <p class="mb-0 text-muted">Migrates data from SQL Server to Supabase.</p>
+                                </div>
+                                <span class="badge bg-success">Tool</span>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>Data Synchronization Service</strong>
+                                    <p class="mb-0 text-muted">Keeps data in sync between systems.</p>
+                                </div>
+                                <span class="badge bg-info">Service</span>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>File Storage Service</strong>
+                                    <p class="mb-0 text-muted">Stores and manages file attachments.</p>
+                                </div>
+                                <span class="badge bg-info">Service</span>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>Authentication Service</strong>
+                                    <p class="mb-0 text-muted">Handles user authentication and authorization.</p>
+                                </div>
+                                <span class="badge bg-primary">Core Component</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Fetch connection pool stats
+    fetch('/supabase/api/pool_stats')
+        .then(response => response.json())
+        .then(data => {
+            const poolStats = document.getElementById('connection-pool-stats');
+            if (data.success) {
+                poolStats.innerHTML = `
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <th>Max Connections</th>
+                                    <td>${data.stats.max_connections}</td>
+                                </tr>
+                                <tr>
+                                    <th>Active Connections</th>
+                                    <td>${data.stats.active_connections}</td>
+                                </tr>
+                                <tr>
+                                    <th>Available Connections</th>
+                                    <td>${data.stats.available_connections}</td>
+                                </tr>
+                                <tr>
+                                    <th>Connection Timeout</th>
+                                    <td>${data.stats.connection_timeout}s</td>
+                                </tr>
+                                <tr>
+                                    <th>Cleanup Thread</th>
+                                    <td>${data.stats.cleanup_thread_active ? '<span class="text-success">Active</span>' : '<span class="text-danger">Inactive</span>'}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } else {
+                poolStats.innerHTML = `<div class="alert alert-danger">Failed to fetch connection pool statistics.</div>`;
+            }
+        })
+        .catch(error => {
+            const poolStats = document.getElementById('connection-pool-stats');
+            poolStats.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+        });
+    
+    // Fetch environment health
+    fetch('/supabase/api/test_connection', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            environment: '{{ environment }}'
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            const healthEl = document.getElementById('environment-health');
+            
+            if (data.success) {
+                healthEl.innerHTML = `
+                    <div class="alert alert-success">
+                        <h6><i class="fas fa-check-circle"></i> Environment is healthy</h6>
+                        <p class="mb-0">${data.message}</p>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <th>Connection</th>
+                                    <td>${data.connection.success ? '<span class="text-success">Success</span>' : '<span class="text-danger">Failed</span>'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Auth</th>
+                                    <td>${data.auth.success ? '<span class="text-success">Success</span>' : '<span class="text-danger">Failed</span>'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Storage</th>
+                                    <td>${data.storage.success ? '<span class="text-success">Success</span>' : '<span class="text-danger">Failed</span>'}</td>
+                                </tr>
+                                <tr>
+                                    <th>PostGIS</th>
+                                    <td>${data.postgis.success ? '<span class="text-success">Success</span>' : '<span class="text-danger">Failed</span>'}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } else {
+                healthEl.innerHTML = `
+                    <div class="alert alert-danger">
+                        <h6><i class="fas fa-times-circle"></i> Environment has issues</h6>
+                        <p class="mb-0">${data.message}</p>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <tbody>
+                                <tr>
+                                    <th>Connection</th>
+                                    <td>${data.connection && data.connection.success ? '<span class="text-success">Success</span>' : '<span class="text-danger">Failed</span>'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Auth</th>
+                                    <td>${data.auth && data.auth.success ? '<span class="text-success">Success</span>' : '<span class="text-danger">Failed</span>'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Storage</th>
+                                    <td>${data.storage && data.storage.success ? '<span class="text-success">Success</span>' : '<span class="text-danger">Failed</span>'}</td>
+                                </tr>
+                                <tr>
+                                    <th>PostGIS</th>
+                                    <td>${data.postgis && data.postgis.success ? '<span class="text-success">Success</span>' : '<span class="text-danger">Failed</span>'}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            const healthEl = document.getElementById('environment-health');
+            healthEl.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+        });
+});
+</script>
+{% endblock %}

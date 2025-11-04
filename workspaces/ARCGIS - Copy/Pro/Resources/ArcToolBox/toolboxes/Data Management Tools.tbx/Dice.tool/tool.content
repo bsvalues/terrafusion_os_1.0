@@ -1,0 +1,53 @@
+{
+    "type": "FunctionTool",
+    "guid": "{32dd6933-9acf-4427-bf20-9ff79cc1665d}",
+    "displayname": "$rc:title",
+    "helpcontent": "3050018",
+    "description": "$rc:description",
+    "product": "300",
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "clonedependency": "true",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "vertex_limit": {
+            "displayname": "$rc:vertex_limit.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:vertex_limit.descr"
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "configKeyword",
+        "qualifiedFieldNames"
+    ]
+}

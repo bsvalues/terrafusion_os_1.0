@@ -1,0 +1,78 @@
+{
+  "calcite": {
+    "reset": "Thiết lập lại",
+    "action": {
+      "sort": "Sắp xếp"
+    },
+    "buttons": {
+      "save": "Lưu",
+      "edit": "Chỉnh sửa",
+      "done": "Hoàn tất",
+      "apply": "Áp dụng",
+      "cancel": "Hủy",
+      "close": "Tắt"
+    },
+    "ColorPicker": {
+      "selectColor": "Chọn màu sắc",
+      "noColorSpecified": "Chưa chỉ định màu sắc",
+      "transparent": "Độ trong suốt",
+      "colorTooltip": "<p>Hex: ${hex}</p><p>RGB: ${r}, ${g}, ${b}</p>",
+      "recent": "Gần đây",
+      "standard": "Tiêu chuẩn",
+      "savedColors": "Các màu đã lưu",
+      "advanced": "Nâng cao"
+    },
+    "DatePickerLink": {
+      "enterDate": "Nhập ngày"
+    },
+    "PaginationContinuous": {
+      "next": "Tiếp",
+      "previous": "Trước"
+    }
+  },
+  "ImageNavigator": {
+    "paginationLabel": "${n} / ${m}",
+    "noImage": "Hiện không có hình ảnh nào được lưu với trang này",
+    "previewNotAvailable": "Chế độ xem trước không khả dụng"
+  },
+  "PageNavigator": {
+    "currentPageOutOfN": "Trang ${current} / ${total}"
+  },
+  "PanoramicViewer": {
+    "image-viewer-close": "Đóng",
+    "image-viewer-fullscreen": "Toàn màn hình",
+    "image-viewer-minimize": "Thu nhỏ",
+    "image-viewer-title": "Photo Viewer",
+    "image-viewer-show-caption": "Hiện Chú thích",
+    "image-viewer-hide-caption": "Ẩn"
+  },
+  "TextBox": {
+    "error_numberExpected": "Một con số được kỳ vọng",
+    "error_range": "Giá trị kỳ vọng trong khoảng từ ${0} đến ${1}"
+  },
+  "charts": {
+    "histogram": {
+      "minValue": "Tối thiểu:<br>${0}",
+      "maxValue": "Tối đa:<br>${0}",
+      "thisAreaValue": "Khu vực này: ${0}",
+      "medianValue": "Bình quân:<br>${0}",
+      "q1Value": "Q1:<br>${0}",
+      "q3Value": "Q3:<br>${0}",
+      "percentile": "Phân vị ${percent}:<br>${0}",
+      "percentileBottom": "${percent}% dưới cùng:<br>${0}",
+      "percentileTop": "${percent}% trên cùng:<br>${0}",
+      "percentile_singleLine": "Phân vị ${percent}: ${0}",
+      "percentileBottom_singleLine": "${percent}% dưới cùng: ${0}",
+      "percentileTop_singleLine": "${percent}% trên cùng: ${0}",
+      "sd_singleLine": "${sd} SD: ${0}",
+      "tooltip": {
+        "range_single": "<b>${level}</b> với giá trị trong <b>${value}</b> : <b>1</b>",
+        "range_single_precise": "<b>${areaName}</b> có giá trị là <b>${value}</b>.",
+        "range_multi": "<b>${level}</b> với giá trị trong <b>${value}</b> : <b>${count}</b>",
+        "thisArea": "<b>Khu vực này</b> có giá trị là <b>${value}</b>.",
+        "percentileLower": "<b>${percent}%</b> của <b>${level}</b> có giá trị trên <b>${value}</b>.",
+        "percentileUpper": "<b>${percent}%</b> của <b>${level}</b> có giá trị dưới <b>${value}</b>."
+      }
+    }
+  }
+}

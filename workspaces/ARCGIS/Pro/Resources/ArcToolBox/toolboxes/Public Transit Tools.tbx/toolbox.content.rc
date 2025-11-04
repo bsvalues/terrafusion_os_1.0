@@ -1,0 +1,8 @@
+{
+    "map": {
+        "descr": "The Public Transit toolbox contains tools for converting, displaying, editing, and analyzing public transit data. Several tools convert between General Transit Feed Specification (GTFS) datasets and feature classes and tables. Other tools perform analysis using public transit schedule data.",
+        "title": "Public Transit Tools",
+        "toolset1.name": "Analysis",
+        "toolset2.name": "Conversion"
+    }
+}

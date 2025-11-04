@@ -1,0 +1,14 @@
+{
+    "map": {
+        "coordinate_system.descr": "The spatial reference that will be used for the output IPS Data Model. The default is WGS84.",
+        "coordinate_system.title": "Coordinate System",
+        "description": "Creates an IPS Data Model containing the following components:",
+        "out_workspace.title": "Updated Workspace",
+        "setup_indoors_model_for_ips.descr": "<xdoc><p>Specifies whether an Indoors Information Model containing the feature classes—Sites, Facilities, Levels, Units, Details, Pathways, and Floor Transitions—will be created and configured.</p><ul><li>Checked—An Indoors Information Model and feature classes will be created and configured.</li><li>Unchecked—An Indoors Information Model and feature classes will not be created and configured. This is the default.</li></ul></xdoc>",
+        "setup_indoors_model_for_ips.title": "Setup Indoors Model for IPS",
+        "summary": "<xdoc><p>Creates an IPS Data Model containing the following components:</p><ul><li>IPS Positioning Datasets</li><li>IPS Positioning Signals</li><li>IPS Positioning Points</li><li>IPS Recordings</li><li>IPS Beacons</li></ul></xdoc>",
+        "target_workspace.descr": "The file or enterprise geodatabase where the IPS Data Model will be created.",
+        "target_workspace.title": "Target Workspace",
+        "title": "Create IPS Data Model"
+    }
+}

@@ -1,0 +1,998 @@
+{% extends 'base.html' %}
+
+{% block title %}Legacy Data Conversion{% endblock %}
+
+{% block header %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-5 fw-bold">Legacy Data Conversion</h1>
+            <p class="lead">Convert legacy data formats into your GeoAssessmentPro database with AI-assisted mapping</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Upload Legacy File</h5>
+                </div>
+                <div class="card-body">
+                    <form id="upload-form" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="file" class="form-label">Select File</label>
+                            <input type="file" class="form-control" id="file" name="file" required>
+                            <div class="form-text">Supported formats: CSV, DBF, Excel, Fixed-width, XML</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="target-schema" class="form-label">Target Table</label>
+                            <select class="form-select" id="target-schema" name="target_schema" required>
+                                <option value="" selected disabled>Select target table</option>
+                                {% for table in tables %}
+                                <option value="{{ table }}">{{ table }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ai-assistance-level" class="form-label">AI Assistance Level</label>
+                            <div class="d-flex align-items-center">
+                                <div class="flex-grow-1">
+                                    <input type="range" class="form-range" id="ai-assistance-level" name="ai_assistance_level" min="0" max="3" value="2">
+                                </div>
+                                <div class="ms-3 text-muted small" style="min-width: 100px" id="ai-level-label">Auto-mapping</div>
+                            </div>
+                            <div class="form-text mt-1">
+                                <small class="d-flex justify-content-between">
+                                    <span>None</span>
+                                    <span>Suggestions</span>
+                                    <span>Auto-mapping</span>
+                                    <span>Full</span>
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-3 bg-light">
+                            <div class="card-body py-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-shrink-0">
+                                        <i class="bi bi-lightbulb text-warning fs-4"></i>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <p class="mb-0 small">Our AI system will analyze your file structure and use domain knowledge of property assessment to suggest optimal field mappings.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-grid">
+                            <button type="button" id="analyze-btn" class="btn btn-primary">Analyze File</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="card-title mb-0">Conversion History</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush" id="conversion-history">
+                        <!-- Conversion history will be loaded here -->
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div class="text-center w-100 py-4">
+                                <p class="text-muted">No recent conversions</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="conversion-tabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="analyze-tab" data-bs-toggle="tab" data-bs-target="#analyze-content" type="button" role="tab" aria-controls="analyze-content" aria-selected="true">Analysis</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="mapping-tab" data-bs-toggle="tab" data-bs-target="#mapping-content" type="button" role="tab" aria-controls="mapping-content" aria-selected="false">Field Mapping</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="validation-tab" data-bs-toggle="tab" data-bs-target="#validation-content" type="button" role="tab" aria-controls="validation-content" aria-selected="false">Validation</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="results-tab" data-bs-toggle="tab" data-bs-target="#results-content" type="button" role="tab" aria-controls="results-content" aria-selected="false">Results</button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="conversion-tab-content">
+                        <!-- Analysis Tab -->
+                        <div class="tab-pane fade show active" id="analyze-content" role="tabpanel" aria-labelledby="analyze-tab">
+                            <div id="analysis-placeholder" class="text-center py-5">
+                                <i class="fa fa-file-upload fa-4x mb-3 text-muted"></i>
+                                <p class="lead">Upload and analyze a file to get started</p>
+                            </div>
+                            <div id="analysis-results" class="d-none">
+                                <div class="mb-4">
+                                    <h5>File Information</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-bordered">
+                                            <tbody>
+                                                <tr>
+                                                    <th style="width: 200px;">File Name</th>
+                                                    <td id="file-name"></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Format</th>
+                                                    <td id="file-format"></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Size</th>
+                                                    <td id="file-size"></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Estimated Rows</th>
+                                                    <td id="file-rows"></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Detected Columns</th>
+                                                    <td id="file-columns"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h5>Sample Data</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-bordered table-hover" id="sample-data-table">
+                                            <thead>
+                                                <tr id="sample-header"></tr>
+                                            </thead>
+                                            <tbody id="sample-body"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <button type="button" id="proceed-to-mapping-btn" class="btn btn-primary">
+                                        Continue to Field Mapping
+                                        <i class="fas fa-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mapping Tab -->
+                        <div class="tab-pane fade" id="mapping-content" role="tabpanel" aria-labelledby="mapping-tab">
+                            <div id="mapping-placeholder" class="text-center py-5">
+                                <i class="fa fa-random fa-4x mb-3 text-muted"></i>
+                                <p class="lead">Complete file analysis to start field mapping</p>
+                            </div>
+                            <div id="mapping-ui" class="d-none">
+                                <div class="mb-3">
+                                    <div class="alert alert-info" role="alert">
+                                        <i class="fas fa-robot me-2"></i>
+                                        <span id="ai-status-message">AI is analyzing your data and suggesting optimal field mappings...</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h5 class="mb-0">Field Mapping</h5>
+                                        <div>
+                                            <button type="button" id="auto-map-btn" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-magic me-1"></i> Auto-Map All
+                                            </button>
+                                            <button type="button" id="clear-map-btn" class="btn btn-sm btn-outline-secondary">
+                                                <i class="fas fa-eraser me-1"></i> Clear All
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover" id="mapping-table">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width: 40%;">Source Field</th>
+                                                    <th style="width: 40%;">Target Field</th>
+                                                    <th style="width: 10%;">Required</th>
+                                                    <th style="width: 10%;">Data Type</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="mapping-body"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <h5>Conversion Options</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="validate-only" name="validate_only">
+                                                <label class="form-check-label" for="validate-only">
+                                                    Validate only (don't import data)
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="create-missing-columns" name="create_missing_columns">
+                                                <label class="form-check-label" for="create-missing-columns">
+                                                    Create missing columns
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <button type="button" id="back-to-analyze-btn" class="btn btn-outline-secondary me-md-2">
+                                        <i class="fas fa-arrow-left me-2"></i>
+                                        Back to Analysis
+                                    </button>
+                                    <button type="button" id="proceed-to-validation-btn" class="btn btn-primary">
+                                        Continue to Validation
+                                        <i class="fas fa-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Validation Tab -->
+                        <div class="tab-pane fade" id="validation-content" role="tabpanel" aria-labelledby="validation-tab">
+                            <div id="validation-placeholder" class="text-center py-5">
+                                <i class="fa fa-check-circle fa-4x mb-3 text-muted"></i>
+                                <p class="lead">Complete field mapping to start validation</p>
+                            </div>
+                            <div id="validation-results" class="d-none">
+                                <div class="mb-3">
+                                    <div class="progress">
+                                        <div id="validation-progress" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h5>Validation Summary</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <div class="card border-success">
+                                                <div class="card-body text-center">
+                                                    <h5 class="card-title text-success">Valid Records</h5>
+                                                    <p class="card-text display-6" id="valid-count">0</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card border-warning">
+                                                <div class="card-body text-center">
+                                                    <h5 class="card-title text-warning">Warnings</h5>
+                                                    <p class="card-text display-6" id="warning-count">0</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card border-danger">
+                                                <div class="card-body text-center">
+                                                    <h5 class="card-title text-danger">Errors</h5>
+                                                    <p class="card-text display-6" id="error-count">0</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h5>Validation Issues</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover" id="validation-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Severity</th>
+                                                    <th>Row</th>
+                                                    <th>Field</th>
+                                                    <th>Issue</th>
+                                                    <th>Value</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="validation-body"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <button type="button" id="back-to-mapping-btn" class="btn btn-outline-secondary me-md-2">
+                                        <i class="fas fa-arrow-left me-2"></i>
+                                        Back to Mapping
+                                    </button>
+                                    <button type="button" id="start-conversion-btn" class="btn btn-success">
+                                        <i class="fas fa-exchange-alt me-2"></i>
+                                        Start Conversion
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Results Tab -->
+                        <div class="tab-pane fade" id="results-content" role="tabpanel" aria-labelledby="results-tab">
+                            <div id="results-placeholder" class="text-center py-5">
+                                <i class="fa fa-chart-bar fa-4x mb-3 text-muted"></i>
+                                <p class="lead">Start conversion to see results</p>
+                            </div>
+                            <div id="conversion-results" class="d-none">
+                                <div class="mb-3">
+                                    <div class="progress mb-3">
+                                        <div id="conversion-progress" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                                    </div>
+                                    <div class="text-center mb-3">
+                                        <div id="conversion-status" class="alert alert-info">
+                                            Preparing conversion...
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h5>Conversion Summary</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-bordered">
+                                            <tbody>
+                                                <tr>
+                                                    <th style="width: 200px;">Status</th>
+                                                    <td id="result-status"></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Total Rows</th>
+                                                    <td id="result-total-rows"></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Processed Rows</th>
+                                                    <td id="result-processed-rows"></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Success Rate</th>
+                                                    <td id="result-success-rate"></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Duration</th>
+                                                    <td id="result-duration"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h5>Issues</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover" id="issues-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Severity</th>
+                                                    <th>Row</th>
+                                                    <th>Field</th>
+                                                    <th>Issue</th>
+                                                    <th>Value</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="issues-body"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <a id="report-link" href="#" target="_blank" class="btn btn-outline-primary me-md-2">
+                                        <i class="fas fa-file-alt me-2"></i>
+                                        View Full Report
+                                    </a>
+                                    <button type="button" id="new-conversion-btn" class="btn btn-primary">
+                                        <i class="fas fa-plus me-2"></i>
+                                        New Conversion
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        // Helper function to format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Variables to store the current state
+        let currentFile = null;
+        let currentAnalysis = null;
+        let currentMappings = [];
+        let conversionId = null;
+
+        // Analyze button click handler
+        $('#analyze-btn').click(function() {
+            const fileInput = $('#file')[0];
+            const targetSchema = $('#target-schema').val();
+            
+            if (!fileInput.files[0]) {
+                alert('Please select a file to analyze.');
+                return;
+            }
+            
+            if (!targetSchema) {
+                alert('Please select a target table.');
+                return;
+            }
+            
+            currentFile = fileInput.files[0];
+            
+            // Show loading state
+            $(this).prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Analyzing...');
+            
+            // Create form data
+            const formData = new FormData();
+            formData.append('file', currentFile);
+            
+            // Send file for analysis
+            fetch('/legacy/analyze', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Store analysis results
+                currentAnalysis = data;
+                
+                // Display analysis results
+                $('#analysis-placeholder').addClass('d-none');
+                $('#analysis-results').removeClass('d-none');
+                
+                // Fill in file info
+                $('#file-name').text(currentFile.name);
+                $('#file-format').text(data.detected_format);
+                $('#file-size').text(formatFileSize(data.file_size));
+                $('#file-rows').text(data.row_count_estimate || 'Unknown');
+                $('#file-columns').text(Object.keys(data.schema.columns || {}).length);
+                
+                // Fill in sample data
+                const columns = data.schema.columns || {};
+                const sampleData = data.sample_data || [];
+                
+                // Create table header
+                let headerHtml = '';
+                Object.keys(columns).forEach(colName => {
+                    headerHtml += `<th>${colName}</th>`;
+                });
+                $('#sample-header').html(headerHtml);
+                
+                // Create table rows
+                let bodyHtml = '';
+                sampleData.forEach(row => {
+                    bodyHtml += '<tr>';
+                    Object.keys(columns).forEach(colName => {
+                        const value = row[colName];
+                        bodyHtml += `<td>${value !== null ? value : ''}</td>`;
+                    });
+                    bodyHtml += '</tr>';
+                });
+                $('#sample-body').html(bodyHtml);
+                
+                // Request AI mappings if enabled
+                if ($('#ai-assisted').is(':checked')) {
+                    requestAIMappings(targetSchema);
+                }
+            })
+            .catch(error => {
+                console.error('Error analyzing file:', error);
+                alert('Error analyzing file. Please try again.');
+            })
+            .finally(() => {
+                // Reset button state
+                $('#analyze-btn').prop('disabled', false).html('Analyze File');
+            });
+        });
+
+        // Request AI mappings
+        function requestAIMappings(targetSchema) {
+            // Create form data
+            const formData = new FormData();
+            formData.append('file', currentFile);
+            formData.append('target_schema', targetSchema);
+            
+            // Send request for mappings
+            fetch('/legacy/suggest-mappings', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Store suggested mappings
+                currentMappings = data.mappings || [];
+                
+                // Update AI status message
+                $('#ai-status-message').html(
+                    `AI analysis complete! ${currentMappings.length} field mappings suggested with an average confidence of 
+                    ${calculateAverageConfidence(currentMappings)}%.`
+                );
+                
+                // Pre-populate mapping table when user switches to that tab
+                populateMappingTable();
+            })
+            .catch(error => {
+                console.error('Error getting AI mappings:', error);
+                $('#ai-status-message').html(
+                    'AI mapping suggestion failed. You can still map fields manually.'
+                );
+            });
+        }
+
+        // Calculate average confidence of mappings
+        function calculateAverageConfidence(mappings) {
+            if (!mappings || mappings.length === 0) return 0;
+            const sum = mappings.reduce((acc, mapping) => acc + (mapping.confidence || 0), 0);
+            return Math.round((sum / mappings.length) * 100);
+        }
+
+        // Populate mapping table
+        function populateMappingTable() {
+            // Get target schema from select
+            const targetSchema = $('#target-schema').val();
+            
+            // Clear existing rows
+            $('#mapping-body').empty();
+            
+            // Get source columns from analysis
+            const sourceColumns = Object.keys(currentAnalysis.schema.columns || {});
+            
+            // For each source column, create a mapping row
+            sourceColumns.forEach((colName, index) => {
+                // Find AI suggested mapping if available
+                const suggestedMapping = currentMappings.find(m => m.source_column === colName);
+                
+                // Get column info
+                const colInfo = currentAnalysis.schema.columns[colName];
+                const dataType = colInfo.type || 'string';
+                
+                // Create row HTML
+                let rowHtml = `
+                    <tr data-source="${colName}">
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <span>${colName}</span>
+                                ${suggestedMapping && suggestedMapping.ai_suggested ? 
+                                    getConfidenceIndicator(suggestedMapping.confidence, suggestedMapping.ai_suggested) : ''}
+                            </div>
+                            <small class="text-muted">Type: ${dataType}</small>
+                            ${suggestedMapping && suggestedMapping.ai_suggested && suggestedMapping.description ? 
+                                `<div class="mt-1 small fst-italic text-muted">${suggestedMapping.description}</div>` : ''}
+                            ${colInfo.sample_values ? 
+                                `<br><small class="text-muted">Sample: ${colInfo.sample_values.slice(0, 2).join(', ')}</small>` : ''}
+                        </td>
+                        <td>
+                            <select class="form-select target-field" data-source="${colName}">
+                                <option value="">-- Don't Import --</option>
+                                ${generateTargetOptions(targetSchema, suggestedMapping ? suggestedMapping.target_column : null)}
+                            </select>
+                        </td>
+                        <td>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="1" 
+                                    ${suggestedMapping && suggestedMapping.required ? 'checked' : ''}>
+                            </div>
+                        </td>
+                        <td>
+                            <select class="form-select form-select-sm data-type-field">
+                                <option value="string" ${dataType === 'string' ? 'selected' : ''}>String</option>
+                                <option value="integer" ${dataType === 'integer' ? 'selected' : ''}>Integer</option>
+                                <option value="float" ${dataType === 'float' ? 'selected' : ''}>Float</option>
+                                <option value="date" ${dataType === 'date' ? 'selected' : ''}>Date</option>
+                                <option value="boolean" ${dataType === 'boolean' ? 'selected' : ''}>Boolean</option>
+                                <option value="text" ${dataType === 'text' ? 'selected' : ''}>Text</option>
+                            </select>
+                        </td>
+                    </tr>
+                `;
+                
+                $('#mapping-body').append(rowHtml);
+            });
+            
+            // Show the mapping UI
+            $('#mapping-placeholder').addClass('d-none');
+            $('#mapping-ui').removeClass('d-none');
+        }
+
+        // Generate target options for dropdowns
+        function generateTargetOptions(targetSchema, selectedValue) {
+            // This would normally be populated from the server with the actual target schema columns
+            // For now, we'll use placeholder options
+            return `
+                <option value="id" ${selectedValue === 'id' ? 'selected' : ''}>id</option>
+                <option value="name" ${selectedValue === 'name' ? 'selected' : ''}>name</option>
+                <option value="description" ${selectedValue === 'description' ? 'selected' : ''}>description</option>
+                <option value="parcel_id" ${selectedValue === 'parcel_id' ? 'selected' : ''}>parcel_id</option>
+                <option value="address" ${selectedValue === 'address' ? 'selected' : ''}>address</option>
+                <option value="city" ${selectedValue === 'city' ? 'selected' : ''}>city</option>
+                <option value="state" ${selectedValue === 'state' ? 'selected' : ''}>state</option>
+                <option value="zip" ${selectedValue === 'zip' ? 'selected' : ''}>zip</option>
+                <option value="value" ${selectedValue === 'value' ? 'selected' : ''}>value</option>
+                <option value="sq_ft" ${selectedValue === 'sq_ft' ? 'selected' : ''}>sq_ft</option>
+                <option value="year_built" ${selectedValue === 'year_built' ? 'selected' : ''}>year_built</option>
+                <option value="property_class" ${selectedValue === 'property_class' ? 'selected' : ''}>property_class</option>
+            `;
+        }
+
+        // Tab navigation handlers
+        $('#proceed-to-mapping-btn').click(function() {
+            $('#mapping-tab').tab('show');
+        });
+        
+        $('#back-to-analyze-btn').click(function() {
+            $('#analyze-tab').tab('show');
+        });
+        
+        $('#proceed-to-validation-btn').click(function() {
+            // Get the current mappings from the UI
+            const mappings = getMappingsFromUI();
+            
+            // Validate mappings
+            if (mappings.length === 0) {
+                alert('Please map at least one field before proceeding.');
+                return;
+            }
+            
+            // Simulate validation (this would normally be a server call)
+            simulateValidation(mappings);
+            
+            // Show validation tab
+            $('#validation-tab').tab('show');
+        });
+        
+        $('#back-to-mapping-btn').click(function() {
+            $('#mapping-tab').tab('show');
+        });
+        
+        $('#start-conversion-btn').click(function() {
+            // Get the current mappings from the UI
+            const mappings = getMappingsFromUI();
+            
+            // Get conversion options
+            const options = {
+                validate_only: $('#validate-only').is(':checked'),
+                create_missing_columns: $('#create-missing-columns').is(':checked')
+            };
+            
+            // Simulate starting conversion (this would normally be a server call)
+            simulateConversion(mappings, options);
+            
+            // Show results tab
+            $('#results-tab').tab('show');
+        });
+        
+        $('#new-conversion-btn').click(function() {
+            // Reset UI and state
+            resetConversionUI();
+        });
+
+        // Auto-map and clear buttons
+        $('#auto-map-btn').click(function() {
+            // Apply all AI-suggested mappings
+            currentMappings.forEach(mapping => {
+                const select = $(`.target-field[data-source="${mapping.source_column}"]`);
+                if (select.length && mapping.target_column) {
+                    select.val(mapping.target_column);
+                }
+            });
+        });
+        
+        $('#clear-map-btn').click(function() {
+            // Clear all mappings
+            $('.target-field').val('');
+        });
+
+        // Get mappings from UI
+        function getMappingsFromUI() {
+            const mappings = [];
+            
+            $('#mapping-body tr').each(function() {
+                const sourceColumn = $(this).data('source');
+                const targetColumn = $(this).find('.target-field').val();
+                
+                // Skip if no target is selected
+                if (!targetColumn) return;
+                
+                const required = $(this).find('.form-check-input').is(':checked');
+                const dataType = $(this).find('.data-type-field').val();
+                
+                mappings.push({
+                    source_column: sourceColumn,
+                    target_column: targetColumn,
+                    required: required,
+                    data_type: dataType
+                });
+            });
+            
+            return mappings;
+        }
+
+        // Simulate validation (would be a server call in production)
+        function simulateValidation(mappings) {
+            // Show validation UI
+            $('#validation-placeholder').addClass('d-none');
+            $('#validation-results').removeClass('d-none');
+            
+            // Set progress to 0
+            $('#validation-progress').css('width', '0%').attr('aria-valuenow', 0).text('0%');
+            
+            // Clear existing validation issues
+            $('#validation-body').empty();
+            
+            // Initialize counters
+            let valid = 0;
+            let warnings = 0;
+            let errors = 0;
+            
+            // Simulate progress updates
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                $('#validation-progress').css('width', progress + '%').attr('aria-valuenow', progress).text(progress + '%');
+                
+                // Add some simulated issues
+                if (progress === 30) {
+                    addValidationIssue('warning', 'Sample location', 'Missing value for required field');
+                    warnings++;
+                }
+                if (progress === 60) {
+                    addValidationIssue('error', 'Property classification', 'Invalid value "XYZ" - must be one of: A, B, C, D');
+                    errors++;
+                }
+                
+                // Update counters
+                valid = Math.floor(currentAnalysis.row_count_estimate * 0.95);
+                $('#valid-count').text(valid.toLocaleString());
+                $('#warning-count').text(warnings.toLocaleString());
+                $('#error-count').text(errors.toLocaleString());
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                }
+            }, 500);
+        }
+
+        // Add a validation issue to the table
+        function addValidationIssue(severity, field, message, row = 'Unknown', value = 'Unknown') {
+            const iconClass = severity === 'error' ? 'fa-times-circle text-danger' : 'fa-exclamation-triangle text-warning';
+            const badgeClass = severity === 'error' ? 'bg-danger' : 'bg-warning';
+            
+            const issueHtml = `
+                <tr>
+                    <td><span class="badge ${badgeClass}">${severity.toUpperCase()}</span></td>
+                    <td>${row}</td>
+                    <td>${field}</td>
+                    <td>${message}</td>
+                    <td>${value}</td>
+                </tr>
+            `;
+            
+            $('#validation-body').append(issueHtml);
+        }
+
+        // Simulate conversion (would be a server call in production)
+        function simulateConversion(mappings, options) {
+            // Show conversion UI
+            $('#results-placeholder').addClass('d-none');
+            $('#conversion-results').removeClass('d-none');
+            
+            // Set progress to 0
+            $('#conversion-progress').css('width', '0%').attr('aria-valuenow', 0).text('0%');
+            
+            // Set status message
+            $('#conversion-status').removeClass('alert-info alert-success alert-danger')
+                                 .addClass('alert-info')
+                                 .html('Conversion in progress...');
+            
+            // Clear existing issues
+            $('#issues-body').empty();
+            
+            // Generate a fake conversion ID
+            conversionId = 'conv_' + Math.random().toString(36).substr(2, 9);
+            
+            // Simulate progress updates
+            let progress = 0;
+            const totalRows = currentAnalysis.row_count_estimate || 1000;
+            const processedRows = Math.floor(totalRows * 0.98);
+            const successRows = Math.floor(processedRows * 0.95);
+            
+            const interval = setInterval(() => {
+                progress += 5;
+                $('#conversion-progress').css('width', progress + '%').attr('aria-valuenow', progress).text(progress + '%');
+                
+                // Update status based on progress
+                if (progress < 30) {
+                    $('#conversion-status').html('Processing data...');
+                } else if (progress < 60) {
+                    $('#conversion-status').html('Validating and transforming records...');
+                } else if (progress < 90) {
+                    $('#conversion-status').html('Importing to target database...');
+                }
+                
+                // Complete the conversion
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    
+                    // Show completion status
+                    $('#conversion-status').removeClass('alert-info').addClass('alert-success')
+                                         .html('<i class="fas fa-check-circle me-2"></i> Conversion completed successfully!');
+                    
+                    // Show stats
+                    $('#result-status').html('<span class="badge bg-success">COMPLETED</span>');
+                    $('#result-total-rows').text(totalRows.toLocaleString());
+                    $('#result-processed-rows').text(processedRows.toLocaleString());
+                    $('#result-success-rate').text(Math.round((successRows / totalRows) * 100) + '%');
+                    $('#result-duration').text('2 minutes 37 seconds');
+                    
+                    // Set report link
+                    $('#report-link').attr('href', `/legacy/report/${conversionId}`);
+                }
+            }, 200);
+        }
+
+        // Reset UI for a new conversion
+        function resetConversionUI() {
+            // Reset file input
+            $('#upload-form')[0].reset();
+            
+            // Reset analysis view
+            $('#analysis-placeholder').removeClass('d-none');
+            $('#analysis-results').addClass('d-none');
+            
+            // Reset mapping view
+            $('#mapping-placeholder').removeClass('d-none');
+            $('#mapping-ui').addClass('d-none');
+            
+            // Reset validation view
+            $('#validation-placeholder').removeClass('d-none');
+            $('#validation-results').addClass('d-none');
+            
+            // Reset results view
+            $('#results-placeholder').removeClass('d-none');
+            $('#conversion-results').addClass('d-none');
+            
+            // Go back to first tab
+            $('#analyze-tab').tab('show');
+            
+            // Reset variables
+            currentFile = null;
+            currentAnalysis = null;
+            currentMappings = [];
+            conversionId = null;
+        }
+    });
+    
+    // AI Assistance Level Functionality
+    $(document).ready(function() {
+        // Handle AI assistance level changes
+        $("#ai-assistance-level").on("input", function() {
+            updateAIAssistanceLevel($(this).val());
+        });
+        
+        // Initial setting
+        updateAIAssistanceLevel($("#ai-assistance-level").val());
+        
+        // Handle auto-map functionality based on AI level
+        $("#analyze-btn").on("click", function() {
+            // Store AI level to use in the mapping process
+            currentAILevel = $("#ai-assistance-level").val();
+        });
+    });
+    
+    /**
+     * Update the AI assistance level UI
+     * @param {string} level - The selected AI assistance level (0-3)
+     */
+    function updateAIAssistanceLevel(level) {
+        const labels = ["None", "Suggestions", "Auto-mapping", "Full"];
+        $("#ai-level-label").text(labels[level]);
+        
+        // Highlight the corresponding text in the range
+        $(".form-text small span").removeClass("fw-bold text-primary");
+        $(".form-text small span").eq(level).addClass("fw-bold text-primary");
+        
+        // Update UI based on selected level
+        if (level == 0) {
+            $("#ai-status-message").html("AI assistance is disabled. You'll need to manually map all fields.");
+        } else if (level == 1) {
+            $("#ai-status-message").html("AI will suggest possible mappings but won't apply them automatically.");
+        } else if (level == 2) {
+            $("#ai-status-message").html("AI will automatically map fields with high confidence scores.");
+        } else if (level == 3) {
+            $("#ai-status-message").html("AI will handle the entire mapping process with domain-specific optimizations.");
+        }
+    }
+    
+    /**
+     * Process mappings based on AI assistance level
+     * @param {Array} mappings - The suggested mappings from the server
+     * @param {number} aiLevel - The current AI assistance level
+     * @returns {Array} - Processed mappings based on AI level
+     */
+    function processMappingsByAILevel(mappings, aiLevel) {
+        if (!mappings || !mappings.length) return [];
+        
+        // Make a copy to avoid modifying the original
+        let processedMappings = JSON.parse(JSON.stringify(mappings));
+        
+        switch(parseInt(aiLevel)) {
+            case 0: // None - clear all ai_suggested flags
+                processedMappings.forEach(mapping => {
+                    mapping.ai_suggested = false;
+                    mapping.auto_apply = false;
+                });
+                break;
+                
+            case 1: // Suggestions - mark as suggestions but don't auto-apply
+                processedMappings.forEach(mapping => {
+                    mapping.auto_apply = false;
+                });
+                break;
+                
+            case 2: // Auto-mapping - auto-apply high confidence mappings
+                processedMappings.forEach(mapping => {
+                    mapping.auto_apply = mapping.confidence > 0.75;
+                });
+                break;
+                
+            case 3: // Full - auto-apply all AI suggestions
+                processedMappings.forEach(mapping => {
+                    mapping.auto_apply = true;
+                });
+                break;
+        }
+        
+        return processedMappings;
+    }
+    
+    /**
+     * Display AI confidence indicators in the mapping table
+     * @param {number} confidence - Confidence score between 0 and 1
+     * @param {boolean} aiSuggested - Whether this was AI suggested
+     * @returns {string} - HTML for the confidence indicator
+     */
+    function getConfidenceIndicator(confidence, aiSuggested) {
+        if (!aiSuggested) return '';
+        
+        let color, icon;
+        if (confidence >= 0.9) {
+            color = 'success';
+            icon = 'check-circle-fill';
+        } else if (confidence >= 0.7) {
+            color = 'primary';
+            icon = 'check-circle';
+        } else if (confidence >= 0.5) {
+            color = 'warning';
+            icon = 'exclamation-circle';
+        } else {
+            color = 'danger';
+            icon = 'question-circle';
+        }
+        
+        return `<span class="badge bg-${color} ms-2" title="AI confidence: ${Math.round(confidence*100)}%">
+                  <i class="bi bi-${icon} me-1"></i>${Math.round(confidence*100)}%
+                </span>`;
+    }
+</script>
+{% endblock %}

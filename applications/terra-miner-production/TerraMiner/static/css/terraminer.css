@@ -1,0 +1,253 @@
+/* TerraMiner UI - Unified Theme */
+
+/* Main Colors */
+:root {
+  --tm-dark-blue: #0d1b2a;
+  --tm-blue: #1b263b;
+  --tm-light-blue: #415a77;
+  --tm-pale-blue: #778da9;
+  --tm-teal: #00b4d8;
+  --tm-dark-teal: #0096c7;
+  --tm-light-gray: #e0e1dd;
+}
+
+/* Backgrounds */
+.bg-dark-blue {
+  background-color: var(--tm-dark-blue) !important;
+}
+
+.bg-blue {
+  background-color: var(--tm-blue) !important;
+}
+
+.bg-light-blue {
+  background-color: var(--tm-light-blue) !important;
+}
+
+.bg-teal {
+  background-color: var(--tm-teal) !important;
+}
+
+/* Text Colors */
+.text-teal {
+  color: var(--tm-teal) !important;
+}
+
+.text-light-blue {
+  color: var(--tm-pale-blue) !important;
+}
+
+/* Buttons */
+.btn-teal {
+  background-color: var(--tm-teal);
+  border-color: var(--tm-teal);
+  color: #fff;
+}
+
+.btn-teal:hover {
+  background-color: var(--tm-dark-teal);
+  border-color: var(--tm-dark-teal);
+  color: #fff;
+}
+
+.btn-dark-teal {
+  background-color: var(--tm-dark-teal);
+  border-color: var(--tm-dark-teal);
+  color: #fff;
+}
+
+.btn-dark-teal:hover {
+  background-color: var(--tm-teal);
+  border-color: var(--tm-teal);
+  color: #fff;
+}
+
+.btn-outline-teal {
+  color: var(--tm-teal);
+  border-color: var(--tm-teal);
+}
+
+.btn-outline-teal:hover {
+  background-color: var(--tm-teal);
+  color: #fff;
+}
+
+/* Cards */
+.card-unified {
+  border: none;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.card-unified .card-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1rem 1.25rem;
+}
+
+.card-header-teal {
+  background-color: var(--tm-teal);
+  color: white;
+}
+
+/* Tables */
+.table-unified {
+  color: #fff;
+  border-color: var(--tm-light-blue);
+}
+
+.table-unified thead th {
+  border-bottom: 2px solid var(--tm-light-blue);
+  background-color: var(--tm-blue);
+  color: var(--tm-teal);
+  font-weight: 600;
+}
+
+.table-unified tbody tr:hover {
+  background-color: rgba(65, 90, 119, 0.3);
+}
+
+.table-unified td, .table-unified th {
+  border-top: 1px solid var(--tm-light-blue);
+  padding: 0.75rem;
+}
+
+/* Alerts */
+.alert-teal {
+  background-color: rgba(0, 180, 216, 0.15);
+  border-color: var(--tm-teal);
+  color: var(--tm-teal);
+}
+
+/* Badges */
+.badge-teal {
+  background-color: var(--tm-teal);
+  color: #fff;
+}
+
+/* Loading States */
+.spinner-teal {
+  color: var(--tm-teal);
+}
+
+/* Skeleton Loading Animation */
+.skeleton-loader {
+  animation: skeleton-loading 1.5s infinite;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.05) 100%);
+  background-size: 200% 100%;
+  border-radius: 4px;
+  display: inline-block;
+  height: 1rem;
+  width: 100%;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+/* Property Card Styling */
+.property-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 1.5rem;
+}
+
+.property-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.property-price {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--tm-teal);
+}
+
+.property-details {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  color: var(--tm-pale-blue);
+  font-size: 0.875rem;
+}
+
+/* Charts and Data Visualization */
+.chart-container {
+  background-color: var(--tm-blue);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.15);
+  margin-bottom: 1.5rem;
+}
+
+.chart-title {
+  color: var(--tm-teal);
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive font sizes */
+@media (max-width: 768px) {
+  .h1, h1 {
+    font-size: 1.85rem;
+  }
+  .h2, h2 {
+    font-size: 1.65rem;
+  }
+  .h3, h3 {
+    font-size: 1.45rem;
+  }
+}
+
+/* Error states */
+.error-container {
+  background-color: var(--tm-blue);
+  border-radius: 0.5rem;
+  padding: 2rem;
+  text-align: center;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.error-icon {
+  font-size: 3rem;
+  color: #dc3545;
+  margin-bottom: 1rem;
+}
+
+.error-title {
+  color: #fff;
+  margin-bottom: 1rem;
+}
+
+.error-message {
+  color: var(--tm-pale-blue);
+  margin-bottom: 1.5rem;
+}
+
+/* Empty states */
+.empty-state {
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  color: var(--tm-pale-blue);
+  margin-bottom: 1rem;
+  opacity: 0.7;
+}
+
+.empty-state-text {
+  color: var(--tm-pale-blue);
+  margin-bottom: 1.5rem;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+}

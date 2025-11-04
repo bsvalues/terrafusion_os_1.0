@@ -1,0 +1,28 @@
+{
+    "id": "A74006F7-35CE-4CB9-91C1-CC3C10CF521F",
+    "model_architecture": "MyNet",
+    "version": 10,
+    "input_channels": 2,
+    "decoder_channels": 16,
+    "num_classes": 1,
+    "layers_config": [
+        {"channels": 8, "kernel_radius": 3, "dilation": 1},
+        {"channels": 10, "kernel_radius": 3, "dilation": 1},
+        {"channels": 12, "kernel_radius": 3, "dilation": 1},
+        {"channels": 14, "kernel_radius": 3, "dilation": 1},
+        {"channels": 16, "kernel_radius": 3, "dilation": 1}
+    ],
+    "pdf_config": [
+        {"kernel_radius": 3, "dilation": 1},
+        {"kernel_radius": 3, "dilation": 3},
+        {"kernel_radius": 3, "dilation": 7},
+        {"kernel_radius": 3, "dilation": 15},
+        {"kernel_radius": 3, "dilation": 31},
+        {"kernel_radius": 3, "dilation": 63}
+    ],
+    "combining_mode": "COMBINE",
+    "TrackGauge": 1.435,
+    "RailThickness": 0.0720,
+    "CellSize": 0.04,
+    "LineThickness": 0.0720
+}

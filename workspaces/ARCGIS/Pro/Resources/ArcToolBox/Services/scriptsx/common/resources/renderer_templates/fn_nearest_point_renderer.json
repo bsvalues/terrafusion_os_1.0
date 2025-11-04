@@ -1,0 +1,24 @@
+{
+    "type": "simple",
+    "label": "",
+    "symbol": {
+        "type": "esriSMS",
+        "style": "esriSMSCircle",
+        "color": [
+            223,
+            0,
+            235,
+            255
+        ],
+        "size": 5.0,
+        "outline": {
+            "color": [
+                0,
+                0,
+                0,
+                255
+            ],
+            "width": 1.0
+        }
+    }
+}

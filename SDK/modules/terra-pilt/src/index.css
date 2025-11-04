@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --terra-cyan: #00FFFF;
+  --terra-midnight: #0A0E1A;
+  --terra-blue: #0080FF;
+  --terra-slate: #1E293B;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--terra-midnight);
+  color: white;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.quantum-pulse {
+  animation: quantum-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes quantum-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.text-terra-cyan { color: var(--terra-cyan); }
+.bg-terra-midnight { background-color: var(--terra-midnight); }

@@ -1,0 +1,242 @@
+<?xml version="1.0"?>
+<xs:schema xmlns="http://www.esri.com/schemas/ArcGIS/3.4.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.esri.com/schemas/ArcGIS/3.4.0">
+	<xs:include schemaLocation="DataSourcesRaster.xsd"/>
+	<xs:simpleType name="esriGDSTransportType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="esriGDSTransportTypeEmbedded"/>
+			<xs:enumeration value="esriGDSTransportTypeUrl"/>
+      <xs:enumeration value="esriGDSTransportTypeUpload"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="esriGDSExportFormat">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="esriGDSExportFormatPersonalGdb"/>
+			<xs:enumeration value="esriGDSExportFormatXml"/>
+			<xs:enumeration value="esriGDSExportFormatFileGDB"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="esriGDSReplicaImportSource">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="esriGDSReplicaImportSourceDeltaXmlFile"/>
+			<xs:enumeration value="esriGDSReplicaImportSourceDeltaPersonalGDB"/>
+			<xs:enumeration value="esriGDSReplicaImportSourceDeltaFileGDB"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="esriGDSImportFormat">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="esriGDSImportFormatXmlWorkspace"/>
+			<xs:enumeration value="esriGDSImportFormatFileGDB"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="esriTopoErrorType">
+		<xs:annotation>
+			<xs:documentation>Topology error types.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="esriTopoPointError">
+				<xs:annotation>
+					<xs:documentation/>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="esriTopoLineError">
+				<xs:annotation>
+					<xs:documentation/>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="esriTopoPolyError">
+				<xs:annotation>
+					<xs:documentation/>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>	
+	<xs:complexType name="GDSExportOptions">
+		<xs:sequence>
+			<xs:element name="ExportFormat" type="esriGDSExportFormat"/>
+			<xs:element name="Compressed" type="xs:boolean"/>
+			<xs:element name="BinaryGeometry" type="xs:boolean"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="GDSData">
+		<xs:sequence>
+			<xs:element name="Compressed" type="xs:boolean"/>
+			<xs:element name="TransportType" type="esriGDSTransportType"/>
+			<xs:element name="EmbeddedData" type="xs:base64Binary" minOccurs="0"/>
+			<xs:element name="URL" type="xs:string" minOccurs="0"/>
+			<xs:element name="ConnectionProperties" type="PropertySet" minOccurs="0"/>
+      <xs:element name="UploadID" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="GDSQueryResultPortion">
+		<xs:sequence>
+			<xs:element name="ResultPortionInfo" type="ResultPortionInfo"/>
+			<xs:element name="RecordSet" type="RecordSet"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="UpdateGramDefinition">
+		<xs:sequence>
+			<xs:element name="ChangedDatasetDefinition" type="ChangedDatasetDefinition" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ChangedDatasetDefinition">
+		<xs:sequence>
+			<xs:element name="DatasetName" type="xs:string"/>
+			<xs:element name="DatasetType" type="esriDatasetType"/>
+			<xs:element name="ParentDB" type="xs:string" minOccurs="0"/>
+			<xs:element name="ParentOwner" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="UpdateGramTopologyDefinition">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ChangedTopologyDefinition" type="ChangedTopologyDefinition" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ChangedTopologyDefinition">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="TopologyName" type="xs:string"/>
+			<xs:element name="ParentDB" type="xs:string" minOccurs="0"/>
+			<xs:element name="ParentOwner" type="xs:string"/>
+			<xs:element name="TopologyID" type="xs:int"/>
+			<xs:element name="ErrorTopoTableTypes">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ErrorTopoTableType" type="esriTopoErrorType" maxOccurs="3"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="UpdateGramTopologyData">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ChangedTopologyData" type="ChangedTopologyData" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ChangedTopologyData">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="TopologyName" type="xs:string"/>
+			<xs:element name="TopologyID" type="xs:int"/>
+			<xs:element name="PointErrorExceptions" type="PointErrorExceptions" minOccurs="0"/>
+			<xs:element name="LineErrorExceptions" type="LineErrorExceptions" minOccurs="0"/>
+			<xs:element name="PolygonErrorExceptions" type="PolygonErrorExceptions" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PointErrorExceptions">
+		<xs:sequence>
+			<xs:element name="ChangedRecordSets" type="ChangedRecordSets"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="LineErrorExceptions">
+		<xs:sequence>
+			<xs:element name="ChangedRecordSets" type="ChangedRecordSets"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PolygonErrorExceptions">
+		<xs:sequence>
+			<xs:element name="ChangedRecordSets" type="ChangedRecordSets"/>
+		</xs:sequence>
+	</xs:complexType>	
+	<xs:complexType name="UpdateGramData">
+		<xs:sequence>
+			<xs:element name="ChangedDatasetData" type="ChangedDatasetData" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ChangedDatasetData">
+		<xs:sequence>
+			<xs:element name="DatasetName" type="xs:string"/>
+			<xs:element name="DatasetType" type="esriDatasetType"/>
+			<xs:element name="ChangedRecordSets" type="ChangedRecordSets"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ChangedRecordSets">
+		<xs:sequence>
+			<xs:element name="ChangedRecordSet" type="ChangedRecordSet" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ChangedRecordSet">
+		<xs:sequence>
+			<xs:element name="GenNO" type="xs:int" minOccurs="0"/>
+			<xs:element name="Insert" type="RecordSet"/>
+			<xs:element name="Update" type="RecordSet"/>
+			<xs:element name="Delete" type="RecordSet"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="UpdateGram">
+		<xs:annotation>
+			<xs:documentation>Root element for delta geodatabase exchanges in xml</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="GeodatabaseRelease">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="MajorVersion" type="xs:int"/>
+							<xs:element name="MinorVersion" type="xs:int"/>
+							<xs:element name="BugfixVersion" type="xs:int"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="GUID" type="xs:string" minOccurs="0"/>
+				<xs:element name="ParentID" type="xs:int" minOccurs="0"/>
+				<xs:element name="ParentConnectionInfo" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="WorkspaceType" type="esriWorkspaceType"/>
+							<xs:element name="ConnectionString" type="xs:string"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="ModelType" type="xs:string"/>
+				<xs:element name="ReplicaState" type="xs:string"/>
+				<xs:element name="ReplicaMessageType" type="xs:string"/>
+				<xs:element name="SourceGenStart" type="xs:int"/>
+				<xs:element name="SourceGenEnd" type="xs:int"/>
+				<xs:element name="TargetGen" type="xs:int"/>
+				<xs:element name="UpdateGramDefinition" type="UpdateGramDefinition"/>
+				<xs:element name="UpdateGramTopologyDefinition" type="UpdateGramTopologyDefinition"/>
+				<xs:element name="UpdateGramData" type="UpdateGramData"/>
+				<xs:element name="UpdateGramTopologyData" type="UpdateGramTopologyData"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Workspace">
+		<xs:annotation>
+			<xs:documentation>Root element for geodatabase xml documents</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="WorkspaceDefinition" type="WorkspaceDefinition"/>
+				<xs:element name="WorkspaceData" type="WorkspaceData"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="RecordSetData">
+		<xs:annotation>
+			<xs:documentation>Root element for RecordSet XML documents</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Data" type="RecordSet"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="esriExportGenerationsOption">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="esriExportGenerationsUnAcknowledged"/>
+			<xs:enumeration value="esriExportGenerationsNew"/>
+			<xs:enumeration value="esriExportGenerationsAll"/>
+			<xs:enumeration value="esriExportGenerationsNone"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

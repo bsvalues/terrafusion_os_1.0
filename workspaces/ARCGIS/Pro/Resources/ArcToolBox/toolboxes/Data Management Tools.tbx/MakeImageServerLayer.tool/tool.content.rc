@@ -1,0 +1,31 @@
+{
+    "map": {
+        "band_index.descr": "The bands that will be exported for the layer. If no bands are specified, all the bands will be used in the output.",
+        "band_index.dt.title1": "ID",
+        "band_index.title": "Bands",
+        "cell_size.descr": "The cell size for the output image service layer.",
+        "cell_size.title": "Output Cell Size",
+        "description": "Creates a temporary raster layer from an image service. The layer that is created will not persist after the session ends unless the document is saved.",
+        "in_image_service.descr": "<xdoc><p>The name of the input image service or the SOAP URL that references the image service. Browse to or type the input image service. This tool can also accept a SOAP URL that references the image service.</p><p>An example of using the image service name called ProjectX is: C:\\MyProject\\ServerConnection.ags\\ProjectX.ImageServer.</p><p>An example of a URL is http://AGSServer:8399/arcgis/services/ISName/ImageServer.</p></xdoc>",
+        "in_image_service.title": "Input Image Service",
+        "lock_rasterid.descr": "The raster ID or raster name to which the service should be locked, such that only the specified rasters are displayed. If left blank (undefined), it will be similar to the system default. Multiple IDs can be defined as a semicolon-delimited list.",
+        "lock_rasterid.title": "Lock Raster ID",
+        "mosaic_method.descr": "<xdoc><p>The mosaic method defines how the mosaic is created from different rasters.</p><ul><li><span title=\"SEAMLINE\">Seamline</span>—Smooth transitions between images using seamlines.</li><li><span title=\"NORTH_WEST\">Northwest</span>—Display imagery that is closest to the northwest corner of the mosaic dataset boundary.</li><li><span title=\"CLOSEST_TO_CENTER\">Center</span>—Display imagery that is closest to the center of the screen.</li><li><span title=\"LOCK_RASTER\">Lock raster</span>—Select specific raster datasets to display.</li><li><span title=\"BY_ATTRIBUTE\">By attribute</span>—Display and prioritize imagery based on a field in the attribute table.</li><li><span title=\"CLOSEST_TO_NADIR\">Nadir</span>—Display the rasters with viewing angles closest to zero.</li><li><span title=\"CLOSEST_TO_VIEWPOINT\">Viewpoint</span>—Display imagery that is closest to a selected viewing angle.</li><li><span title=\"NONE\">None</span>—Order rasters based on the ObjectID in the mosaic dataset attribute table.</li></ul></xdoc>",
+        "mosaic_method.title": "Mosaic Method",
+        "order_base_value.descr": "The images are sorted based on the difference between this input value and the attribute value in the specified field.",
+        "order_base_value.title": "Order Base Value",
+        "order_field.descr": "The default field to use to order the rasters when the mosaic method is By_Attribute. The list of fields is defined as those in the service table that are of type metadata and are integer (for example, the values can represent dates or cloud cover percentage).",
+        "order_field.title": "Order Field",
+        "out_imageserver_layer.descr": "The name of the output image layer.",
+        "out_imageserver_layer.title": "Output Image Server Layer",
+        "params.category1": "Mosaic Properties",
+        "processing_template.descr": "<xdoc><p>The raster function processing template that can be applied on the output image service layer.</p><ul><li><span title=\"None\">None</span>—No processing template.</li></ul></xdoc>",
+        "processing_template.title": "Processing Template",
+        "summary": "<xdoc><p>Creates a temporary raster layer from an image service. The layer that is created will not persist after the session ends unless the document is saved.</p><p>The input can also be a SOAP URL to an image server.</p></xdoc>",
+        "template.descr": "<xdoc><p>The output extent of the image layer.</p><ul><li>Current Display Extent—The extent will be based on the active map or scene.</li><li>Draw Extent—The extent will be based on a rectangle drawn on the map or scene.</li><li>Extent of a Layer—The extent will be based on an active map layer. Choose an available layer or use the <span class=\"esri_uicontrol\">Extent of data in all layers</span> option. Each map layer has the following options:<p><ul><li>All Features—The extent of all features.</li><li>Selected Features —The extent of the selected features.</li><li>Visible Features—The extent of visible features.</li></ul></p></li><li>Browse—The extent will be based on a dataset.</li><li>Clipboard—The extent can be copied to and from the clipboard.<ul><li>Copy Extent—Copies the extent and coordinate system to the clipboard.</li><li>Paste Extent—Pastes the extent and coordinate system from the clipboard. If the clipboard does not include a coordinate system, the extent will use the map’s coordinate system.</li></ul></li><li>Reset Extent—The extent will be reset to the default value.</li></ul><p>When coordinates are manually provided, the coordinates must be numeric values and in the active map&apos;s coordinate system. The map may use different display units than the provided coordinates. Use a negative value sign for south and west coordinates.</p></xdoc>",
+        "template.title": "Template Extent",
+        "title": "Make Image Server Layer",
+        "where_clause.descr": "Define a query using SQL or use the Query Builder to build a query.",
+        "where_clause.title": "Expression"
+    }
+}

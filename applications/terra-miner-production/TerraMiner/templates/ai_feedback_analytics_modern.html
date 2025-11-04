@@ -1,0 +1,712 @@
+{% extends "new_unified_base.html" %}
+
+{% block title %}AI Feedback Analytics{% endblock %}
+
+{% block styles %}
+<style>
+    .sentiment-positive {
+        color: #10b981;
+    }
+    .sentiment-negative {
+        color: #ef4444;
+    }
+    .sentiment-neutral {
+        color: #6b7280;
+    }
+    .feedback-card {
+        transition: all 0.2s;
+    }
+    .feedback-card:hover {
+        transform: translateY(-3px);
+    }
+    .metric-change-up {
+        color: #10b981;
+    }
+    .metric-change-down {
+        color: #ef4444;
+    }
+    .chart-container {
+        height: 300px;
+        position: relative;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold mb-2">AI Feedback Analytics</h1>
+        <p class="text-gray-600 dark:text-gray-300">Track and analyze user feedback to improve AI capabilities.</p>
+    </div>
+
+    <!-- Performance Overview -->
+    <div class="card mb-8">
+        <div class="card-header">
+            <h2 class="text-xl font-semibold">Performance Overview</h2>
+            <div class="text-sm text-gray-500 dark:text-gray-400">
+                <select id="time-period-selector" class="bg-transparent border-0 focus:ring-0 cursor-pointer">
+                    <option value="7d">Last 7 Days</option>
+                    <option value="30d">Last 30 Days</option>
+                    <option value="90d">Last 90 Days</option>
+                </select>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <!-- User Satisfaction -->
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">User Satisfaction</p>
+                            <h3 class="text-2xl font-bold">92%</h3>
+                        </div>
+                        <span class="flex items-center text-sm metric-change-up">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            3%
+                        </span>
+                    </div>
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 mt-3">
+                        <div class="bg-green-500 h-1.5 rounded-full" style="width: 92%"></div>
+                    </div>
+                </div>
+                
+                <!-- AI Response Accuracy -->
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Response Accuracy</p>
+                            <h3 class="text-2xl font-bold">87%</h3>
+                        </div>
+                        <span class="flex items-center text-sm metric-change-up">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            2.5%
+                        </span>
+                    </div>
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 mt-3">
+                        <div class="bg-blue-500 h-1.5 rounded-full" style="width: 87%"></div>
+                    </div>
+                </div>
+                
+                <!-- Total Feedback -->
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Total Feedback</p>
+                            <h3 class="text-2xl font-bold">2,436</h3>
+                        </div>
+                        <span class="flex items-center text-sm metric-change-up">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            18%
+                        </span>
+                    </div>
+                    <div class="flex items-center justify-between mt-3">
+                        <div class="flex items-center">
+                            <div class="h-3 w-3 bg-green-500 rounded-full mr-1"></div>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Positive: 1,873</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="h-3 w-3 bg-red-500 rounded-full mr-1"></div>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Negative: 563</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Response Time -->
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Avg. Response Time</p>
+                            <h3 class="text-2xl font-bold">1.8s</h3>
+                        </div>
+                        <span class="flex items-center text-sm metric-change-down">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            0.3s
+                        </span>
+                    </div>
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 mt-3">
+                        <div class="bg-purple-500 h-1.5 rounded-full" style="width: 65%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Feedback Trend Chart -->
+            <div class="chart-container mb-6">
+                <canvas id="feedback-trend-chart"></canvas>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Sentiment Distribution -->
+                <div>
+                    <h3 class="text-lg font-medium mb-3">Sentiment Distribution</h3>
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                        <canvas id="sentiment-chart" height="200"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Feature Satisfaction -->
+                <div>
+                    <h3 class="text-lg font-medium mb-3">Feature Satisfaction</h3>
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                        <canvas id="feature-satisfaction-chart" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Feedback Categories -->
+    <div class="card mb-8">
+        <div class="card-header">
+            <h2 class="text-xl font-semibold">Feedback Categories</h2>
+            <div class="text-sm text-gray-500 dark:text-gray-400">
+                Top themes from user feedback
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Positive Feedback -->
+                <div>
+                    <h3 class="text-lg font-medium mb-3 text-green-600 dark:text-green-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
+                        </svg>
+                        Positive Themes
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow">
+                            <div class="flex justify-between mb-1">
+                                <span class="font-medium">Accuracy</span>
+                                <span class="text-sm text-gray-500">32%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                                <div class="bg-green-500 h-1.5 rounded-full" style="width: 32%"></div>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow">
+                            <div class="flex justify-between mb-1">
+                                <span class="font-medium">Speed</span>
+                                <span class="text-sm text-gray-500">24%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                                <div class="bg-green-500 h-1.5 rounded-full" style="width: 24%"></div>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow">
+                            <div class="flex justify-between mb-1">
+                                <span class="font-medium">Usefulness</span>
+                                <span class="text-sm text-gray-500">20%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                                <div class="bg-green-500 h-1.5 rounded-full" style="width: 20%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Negative Feedback -->
+                <div>
+                    <h3 class="text-lg font-medium mb-3 text-red-600 dark:text-red-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M18 9.5a1.5 1.5 0 11-3 0v-6a1.5 1.5 0 013 0v6zM14 9.667v-5.43a2 2 0 00-1.105-1.79l-.05-.025A4 4 0 0011.055 2H5.64a2 2 0 00-1.962 1.608l-1.2 6A2 2 0 004.44 12H8v4a2 2 0 002 2 1 1 0 001-1v-.667a4 4 0 01.8-2.4l1.4-1.866a4 4 0 00.8-2.4z" />
+                        </svg>
+                        Negative Themes
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow">
+                            <div class="flex justify-between mb-1">
+                                <span class="font-medium">Missing Features</span>
+                                <span class="text-sm text-gray-500">18%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                                <div class="bg-red-500 h-1.5 rounded-full" style="width: 18%"></div>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow">
+                            <div class="flex justify-between mb-1">
+                                <span class="font-medium">Reliability Issues</span>
+                                <span class="text-sm text-gray-500">12%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                                <div class="bg-red-500 h-1.5 rounded-full" style="width: 12%"></div>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow">
+                            <div class="flex justify-between mb-1">
+                                <span class="font-medium">Data Limitations</span>
+                                <span class="text-sm text-gray-500">8%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                                <div class="bg-red-500 h-1.5 rounded-full" style="width: 8%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Feature Requests -->
+                <div>
+                    <h3 class="text-lg font-medium mb-3 text-blue-600 dark:text-blue-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z" />
+                        </svg>
+                        Feature Requests
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow">
+                            <div class="flex justify-between mb-1">
+                                <span class="font-medium">Integration with MLS</span>
+                                <span class="text-sm text-gray-500">15%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                                <div class="bg-blue-500 h-1.5 rounded-full" style="width: 15%"></div>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow">
+                            <div class="flex justify-between mb-1">
+                                <span class="font-medium">Mobile App Support</span>
+                                <span class="text-sm text-gray-500">12%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                                <div class="bg-blue-500 h-1.5 rounded-full" style="width: 12%"></div>
+                            </div>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow">
+                            <div class="flex justify-between mb-1">
+                                <span class="font-medium">Predictive Analytics</span>
+                                <span class="text-sm text-gray-500">10%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                                <div class="bg-blue-500 h-1.5 rounded-full" style="width: 10%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Feedback -->
+    <div class="card mb-8">
+        <div class="card-header">
+            <h2 class="text-xl font-semibold">Recent Feedback</h2>
+            <div class="text-sm">
+                <select id="feedback-filter" class="bg-transparent border-0 focus:ring-0 cursor-pointer">
+                    <option value="all">All Feedback</option>
+                    <option value="positive">Positive Only</option>
+                    <option value="negative">Negative Only</option>
+                </select>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="space-y-4">
+                <!-- Feedback Item 1 -->
+                <div class="feedback-card bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex items-start">
+                            <div class="h-8 w-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mr-3">
+                                <span class="font-medium text-blue-700 dark:text-blue-300">JD</span>
+                            </div>
+                            <div>
+                                <h4 class="font-medium">John Doe</h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Real Estate Agent • 2 days ago</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center text-sm sentiment-positive">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
+                            </svg>
+                            Positive
+                        </div>
+                    </div>
+                    <p class="text-gray-700 dark:text-gray-300 mb-3">
+                        "The AI property valuation is extremely accurate. I compared the results with my own CMA and it was within 3% of my estimate. This saves me hours of research time."
+                    </p>
+                    <div class="flex justify-between text-sm">
+                        <div class="text-gray-500 dark:text-gray-400">
+                            Feature: AI Property Valuation
+                        </div>
+                        <div class="text-gray-500 dark:text-gray-400">
+                            Rating: 5/5
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Feedback Item 2 -->
+                <div class="feedback-card bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex items-start">
+                            <div class="h-8 w-8 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mr-3">
+                                <span class="font-medium text-purple-700 dark:text-purple-300">SK</span>
+                            </div>
+                            <div>
+                                <h4 class="font-medium">Sarah Kim</h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Data Analyst • 3 days ago</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center text-sm sentiment-negative">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M18 9.5a1.5 1.5 0 11-3 0v-6a1.5 1.5 0 013 0v6zM14 9.667v-5.43a2 2 0 00-1.105-1.79l-.05-.025A4 4 0 0011.055 2H5.64a2 2 0 00-1.962 1.608l-1.2 6A2 2 0 004.44 12H8v4a2 2 0 002 2 1 1 0 001-1v-.667a4 4 0 01.8-2.4l1.4-1.866a4 4 0 00.8-2.4z" />
+                            </svg>
+                            Negative
+                        </div>
+                    </div>
+                    <p class="text-gray-700 dark:text-gray-300 mb-3">
+                        "The market analysis tool is missing data for newer neighborhoods. It would be much more useful if it could integrate with the local MLS to get the most up-to-date information."
+                    </p>
+                    <div class="flex justify-between text-sm">
+                        <div class="text-gray-500 dark:text-gray-400">
+                            Feature: Market Analysis
+                        </div>
+                        <div class="text-gray-500 dark:text-gray-400">
+                            Rating: 3/5
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Feedback Item 3 -->
+                <div class="feedback-card bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex items-start">
+                            <div class="h-8 w-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mr-3">
+                                <span class="font-medium text-green-700 dark:text-green-300">MT</span>
+                            </div>
+                            <div>
+                                <h4 class="font-medium">Mark Thompson</h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Property Manager • 5 days ago</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center text-sm sentiment-positive">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
+                            </svg>
+                            Positive
+                        </div>
+                    </div>
+                    <p class="text-gray-700 dark:text-gray-300 mb-3">
+                        "The comparable property finder is amazing. It finds truly similar properties rather than just homes in the same area. The AI seems to understand what makes properties truly comparable."
+                    </p>
+                    <div class="flex justify-between text-sm">
+                        <div class="text-gray-500 dark:text-gray-400">
+                            Feature: Comparables Finder
+                        </div>
+                        <div class="text-gray-500 dark:text-gray-400">
+                            Rating: 5/5
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Feedback Item 4 -->
+                <div class="feedback-card bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex items-start">
+                            <div class="h-8 w-8 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center mr-3">
+                                <span class="font-medium text-yellow-700 dark:text-yellow-300">AR</span>
+                            </div>
+                            <div>
+                                <h4 class="font-medium">Alex Rodriguez</h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Home Buyer • 1 week ago</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center text-sm sentiment-neutral">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            Neutral
+                        </div>
+                    </div>
+                    <p class="text-gray-700 dark:text-gray-300 mb-3">
+                        "The natural language search is convenient but sometimes misunderstands what I'm looking for. It would be great if there was a way to refine the search after getting initial results."
+                    </p>
+                    <div class="flex justify-between text-sm">
+                        <div class="text-gray-500 dark:text-gray-400">
+                            Feature: Natural Language Search
+                        </div>
+                        <div class="text-gray-500 dark:text-gray-400">
+                            Rating: 3/5
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-center mt-6">
+                <button class="btn-outline">
+                    Load More Feedback
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Action Items -->
+    <div class="card mb-8">
+        <div class="card-header">
+            <h2 class="text-xl font-semibold">Recommended Actions</h2>
+            <div class="text-sm text-gray-500 dark:text-gray-400">
+                AI-generated suggestions based on feedback analysis
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <div class="flex items-start mb-3">
+                        <div class="flex-shrink-0 h-10 w-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 dark:text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-lg">Improve Market Data Coverage</h3>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm">High priority • Based on 43 user comments</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 dark:text-gray-300 mb-4">
+                        Integrate with additional data sources to expand coverage of new developments and neighborhoods. Users specifically mentioned missing data in recently developed areas.
+                    </p>
+                    <div class="flex justify-between">
+                        <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Impact: High</span>
+                        <a href="#" class="text-blue-600 dark:text-blue-400 text-sm font-medium hover:underline">View Details</a>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <div class="flex items-start mb-3">
+                        <div class="flex-shrink-0 h-10 w-10 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600 dark:text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-lg">Refine Natural Language Search</h3>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm">Medium priority • Based on 29 user comments</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 dark:text-gray-300 mb-4">
+                        Add interactive refinement options after initial search results. Users want the ability to narrow down or pivot their search based on initial findings.
+                    </p>
+                    <div class="flex justify-between">
+                        <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Impact: Medium</span>
+                        <a href="#" class="text-blue-600 dark:text-blue-400 text-sm font-medium hover:underline">View Details</a>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <div class="flex items-start mb-3">
+                        <div class="flex-shrink-0 h-10 w-10 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600 dark:text-green-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-lg">Promote Successful Features</h3>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm">Low priority • Based on 37 user comments</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 dark:text-gray-300 mb-4">
+                        Highlight the Comparable Property Finder in marketing materials and onboarding. Users consistently rate this feature highly but many are unaware it exists.
+                    </p>
+                    <div class="flex justify-between">
+                        <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Impact: Low</span>
+                        <a href="#" class="text-blue-600 dark:text-blue-400 text-sm font-medium hover:underline">View Details</a>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <div class="flex items-start mb-3">
+                        <div class="flex-shrink-0 h-10 w-10 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600 dark:text-red-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-lg">Address Reliability Issues</h3>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm">High priority • Based on 19 user comments</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 dark:text-gray-300 mb-4">
+                        Investigate and fix occasional service outages reported during peak usage hours. Users report intermittent issues when running multiple analyses simultaneously.
+                    </p>
+                    <div class="flex justify-between">
+                        <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Impact: High</span>
+                        <a href="#" class="text-blue-600 dark:text-blue-400 text-sm font-medium hover:underline">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Navigation Links -->
+    <div class="flex justify-between">
+        <a href="{{ url_for('ai_demo') }}" class="btn-outline flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+            </svg>
+            AI Demo
+        </a>
+        <a href="{{ url_for('ai_prompt_testing') }}" class="btn-outline flex items-center">
+            Prompt Testing
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Feedback trend chart
+        const trendCtx = document.getElementById('feedback-trend-chart').getContext('2d');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                datasets: [
+                    {
+                        label: 'Positive Feedback',
+                        data: [120, 150, 180, 190, 210, 250, 310],
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Negative Feedback',
+                        data: [80, 90, 85, 95, 70, 75, 60],
+                        borderColor: 'rgba(239, 68, 68, 1)',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Feedback Trends Over Time'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Feedback Items'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Month (2023)'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Sentiment distribution chart
+        const sentimentCtx = document.getElementById('sentiment-chart').getContext('2d');
+        new Chart(sentimentCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Positive', 'Neutral', 'Negative'],
+                datasets: [{
+                    data: [76, 12, 12],
+                    backgroundColor: [
+                        'rgba(16, 185, 129, 0.7)',
+                        'rgba(107, 114, 128, 0.7)',
+                        'rgba(239, 68, 68, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(16, 185, 129, 1)',
+                        'rgba(107, 114, 128, 1)',
+                        'rgba(239, 68, 68, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    }
+                }
+            }
+        });
+        
+        // Feature satisfaction chart
+        const featureCtx = document.getElementById('feature-satisfaction-chart').getContext('2d');
+        new Chart(featureCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Comp Finder', 'Valuation', 'Market Analysis', 'NL Search', 'ETL'],
+                datasets: [{
+                    label: 'Satisfaction Rating (out of 5)',
+                    data: [4.8, 4.6, 3.9, 3.5, 4.3],
+                    backgroundColor: [
+                        'rgba(124, 58, 237, 0.7)',  // purple
+                        'rgba(16, 185, 129, 0.7)',  // green
+                        'rgba(59, 130, 246, 0.7)',  // blue
+                        'rgba(239, 68, 68, 0.7)',   // red
+                        'rgba(251, 191, 36, 0.7)'   // yellow
+                    ],
+                    borderColor: [
+                        'rgba(124, 58, 237, 1)',
+                        'rgba(16, 185, 129, 1)',
+                        'rgba(59, 130, 246, 1)',
+                        'rgba(239, 68, 68, 1)',
+                        'rgba(251, 191, 36, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 5,
+                        title: {
+                            display: true,
+                            text: 'Rating'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Handle feedback filter
+        document.getElementById('feedback-filter').addEventListener('change', function() {
+            // In production, this would filter the displayed feedback items
+            console.log('Filter changed to: ' + this.value);
+        });
+        
+        // Handle time period selector
+        document.getElementById('time-period-selector').addEventListener('change', function() {
+            // In production, this would update all charts and metrics
+            console.log('Time period changed to: ' + this.value);
+        });
+    });
+</script>
+{% endblock %}

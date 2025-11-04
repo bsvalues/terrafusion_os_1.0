@@ -1,0 +1,82 @@
+{
+    "type": "FunctionTool",
+    "guid": "{26B17338-CB00-45A9-AB9C-858C2E0122C9}/ApplyFeatureLevelMetadata",
+    "displayname": "$rc:title",
+    "helpcontent": "76070001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "46",
+        "49"
+    ],
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon",
+                    "Polyline",
+                    "Point"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "in_metadata_table": {
+            "displayname": "$rc:in_metadata_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "domain": {
+                "type": "GPTablesDomain",
+                "hidejoinedlayers": "true",
+                "showonlystandalonetables": "true"
+            },
+            "description": "$rc:in_metadata_table.descr"
+        },
+        "metadata_favorite": {
+            "displayname": "$rc:metadata_favorite.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:metadata_favorite.descr"
+        },
+        "updated_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon",
+                    "Polyline",
+                    "Point"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            }
+        }
+    }
+}

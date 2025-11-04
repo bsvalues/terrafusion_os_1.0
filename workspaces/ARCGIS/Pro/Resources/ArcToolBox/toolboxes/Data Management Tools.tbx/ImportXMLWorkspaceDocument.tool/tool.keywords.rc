@@ -1,0 +1,11 @@
+{
+    "set": [
+        "copy",
+        "exchange",
+        "gdb",
+        "schema",
+        "sde",
+        "share",
+        "distributed geodatabase"
+    ]
+}

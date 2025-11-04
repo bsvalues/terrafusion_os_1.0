@@ -1,0 +1,454 @@
+{
+  "TRE": "IOMAPA0",
+  "Source": ["STDI-0002-1 v2021.1, Appendix F: IOMAPA"],
+  "Name": "Output Amplitude Mapping Process Data",
+  "Description": "The IOMAPA tagged extension contains the data necessary to perform the output amplitude mapping process for each scan within each image frame. This post-processing is applied after the image data has undergone the data expansion process using the 12-bit JPEG/DCT algorithm. The output amplitude mapping function is generally the inverse of the input amplitude mapping function that is performed as a pre-processing step before the data compression process is executed. Note: An exception to this case is when the output of the compression is scaled by a factor (S2) to change the precision of the output product relative to the input data precision. The explanation of the input amplitude mapping is included to describe the pre-processing performed before the compression process. The pre-processing steps are shown in figure F-1 and the post processing steps are shown in figure F-2 for mapping methods 1 through 3.",  
+  "Size": 6,
+  "Fields": {
+    "BAND_NUMBER" : {
+      "Name": "Band Identifier",
+      "Description": "This field shall identify the type of band.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 999
+        }       
+      ]
+    },
+    "MAP_SELECT": {
+      "Name": "Mapping Method to Apply",
+      "Description": "This field shall indicate the mapping method to apply.",
+      "Size": 1,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 3
+        }
+      ]
+    },
+    "TABLE_ID": {
+      "Name": "Input/Output Table Used",
+      "Description": "This field shall indicate the mapping method to apply.",
+      "Size": 2,
+      "Format": "BCS-N",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 99
+        }
+      ]
+    },
+    "S1": {
+      "Name": "Scale Factor 1",
+      "Description": "This field shall indicate scale factor 1.",
+      "Size": 2,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 11
+        }
+      ]
+    },
+    "S2": {
+      "Name": "Scale Factor 2",
+      "Description": "This field shall indicate scale factor 2.",
+      "Size": 2,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 11
+        }
+      ]
+    },
+    "OUTPUT_MAP_VALUE_0": {
+      "Name": "First Output Mapping Value",
+      "Description": "This field shall indicate the first output mapping value.",
+      "Size": 2,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"          
+        }
+      ]
+    },
+    "OUTPUT_MAP_VALUE_4095": {
+      "Name": "Last Output Mapping Value",
+      "Description": "This field shall indicate the last output mapping value.",
+      "Size": 2,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"          
+        }
+      ]
+    },
+    "R_WHOLE": {
+      "Name": "R Scaling Factor - Whole Part",
+      "Description": "This field shall indicate the R scaling factor whole part.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 999          
+        }
+      ]
+    },
+    "R_FRACTION": {
+      "Name": "R Scaling Factor - Fractional Part",
+      "Description": "This field shall indicate the R scaling factor fractional part.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 255          
+        }
+      ]
+    },
+    "NO_OF_SEGMENTS": {
+      "Name": "Number of Segments",
+      "Description": "This field shall indicate the number of segments.",
+      "Size": 1,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["3"]                  
+        }
+      ]
+    },
+    "XOB_1": {
+      "Name": "Segment Boundary 1",
+      "Description": "This field shall indicate segment boundary 1.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 4095                  
+        }
+      ]
+    },
+    "XOB_2": {
+      "Name": "Segment Boundary 2",
+      "Description": "This field shall indicate segment boundary 2.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 4095                  
+        }
+      ]
+    },
+    "OUT_B0_1": {
+      "Name": "B0 Coefficient of 1st Segment",
+      "Description": "This field shall indicate the B0 coefficient of the 1st segment.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 31                  
+        }
+      ]
+    },
+    "OUT_B1_1": {
+      "Name": "B1 Coefficient of 1st Segment",
+      "Description": "This field shall indicate the B1 coefficient of the 1st segment.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 31                  
+        }
+      ]
+    },
+    "OUT_B2_1": {
+      "Name": "B2 Coefficient of 1st Segment",
+      "Description": "This field shall indicate the B2 coefficient of the 1st segment.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 31                  
+        }
+      ]
+    },
+    "OUT_B3_1": {
+      "Name": "B3 Coefficient of 1st Segment",
+      "Description": "This field shall indicate the B3 coefficient of the 1st segment.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 31                  
+        }
+      ]
+    },
+    "OUT_B4_1": {
+      "Name": "B4 Coefficient of 1st Segment",
+      "Description": "This field shall indicate the B4 coefficient of the 1st segment.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 31                  
+        }
+      ]
+    },
+    "OUT_B5_1": {
+      "Name": "B5 Coefficient of 1st Segment",
+      "Description": "This field shall indicate the B5 coefficient of the 1st segment.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 31                  
+        }
+      ]
+    },
+    "OUT_B0_2": {
+      "Name": "B0 Coefficient of 2nd Segment",
+      "Description": "This field shall indicate the B0 coefficient of the 2nd segment.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 31                  
+        }
+      ]
+    },
+    "OUT_B1_2": {
+      "Name": "B1 Coefficient of 2nd Segment",
+      "Description": "This field shall indicate the B1 coefficient of the 2nd segment.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 31                  
+        }
+      ]
+    },
+    "OUT_B2_2": {
+      "Name": "B2 Coefficient of 2nd Segment",
+      "Description": "This field shall indicate the B2 coefficient of the 2nd segment.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 31                  
+        }
+      ]
+    },
+    "OUT_B3_2": {
+      "Name": "B3 Coefficient of 2nd Segment",
+      "Description": "This field shall indicate the B3 coefficient of the 2nd segment.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 31                  
+        }
+      ]
+    },
+    "OUT_B4_2": {
+      "Name": "B4 Coefficient of 2nd Segment",
+      "Description": "This field shall indicate the B4 coefficient of the 2nd segment.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 31                  
+        }
+      ]
+    },
+    "OUT_B5_2": {
+      "Name": "B5 Coefficient of 2nd Segment",
+      "Description": "This field shall indicate the B5 coefficient of the 2nd segment.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 31                  
+        }
+      ]
+    },
+    "OUT_B0_3": {
+      "Name": "B0 Coefficient of 3rd Segment",
+      "Description": "This field shall indicate the B0 coefficient of the 3rd segment.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 31                  
+        }
+      ]
+    },
+    "OUT_B1_3": {
+      "Name": "B1 Coefficient of 3rd Segment",
+      "Description": "This field shall indicate the B1 coefficient of the 3rd segment.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 31                  
+        }
+      ]
+    },
+    "OUT_B2_3": {
+      "Name": "B2 Coefficient of 3rd Segment",
+      "Description": "This field shall indicate the B2 coefficient of the 3rd segment.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 31                  
+        }
+      ]
+    },
+    "OUT_B3_3": {
+      "Name": "B3 Coefficient of 3rd Segment",
+      "Description": "This field shall indicate the B3 coefficient of the 3rd segment.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 31                  
+        }
+      ]
+    },
+    "OUT_B4_3": {
+      "Name": "B4 Coefficient of 3rd Segment",
+      "Description": "This field shall indicate the B4 coefficient of the 3rd segment.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 31                  
+        }
+      ]
+    },
+    "OUT_B5_3": {
+      "Name": "B5 Coefficient of 3rd Segment",
+      "Description": "This field shall indicate the B5 coefficient of the 3rd segment.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 31                  
+        }
+      ]
+    }    
+  }
+}

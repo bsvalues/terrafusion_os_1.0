@@ -1,0 +1,88 @@
+{
+    "type": "FunctionTool",
+    "guid": "{26B17338-CB00-45A9-AB9C-858C2E0122C9}/SplitFeatures",
+    "displayname": "$rc:title",
+    "helpcontent": "46010008",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "46",
+        "49"
+    ],
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "cutting_features": {
+            "displayname": "$rc:cutting_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:cutting_features.descr"
+        },
+        "target_features": {
+            "displayname": "$rc:target_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline",
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:target_features.descr"
+        },
+        "use_target_z": {
+            "displayname": "$rc:use_target_z.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "USE_TARGET_Z"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DONT_USE_TARGET_Z"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:use_target_z.descr"
+        },
+        "out_feature_layer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_feature_layer.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "target_features"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "clonedependency": "true"
+            }
+        }
+    }
+}

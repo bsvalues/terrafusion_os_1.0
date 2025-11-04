@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+
+function Round(v,s){return Math.round((v + Number.EPSILON) * Math.pow(10,s)) /Math.pow(10,s);}
+function when(...params){var n = params.length;for(var i = 0; i< n/2; i++){if (params[i*2]) return params[i*2+1]; } return params[n-1];}
+function Text(v){return v.toString();}
+function Count(v){return v.length;}
+function Abs(v){return Math.abs(v);}
+var outIndexFields = [
+{ value : -50,  alias: "value > mean", min:-100, max:100, comparison: 60}, 
+{ value : 30,  alias: "INDEXXXXRANK", min:0, max:35, comparison: 0.5} 
+];
+
+var inVariableFields = [
+{ value : 35000,  alias:"Per capita income, 22222  ", min:0, max: 72832, comparison: 45000},     
+{ value : 122.35,  alias:"Maximum == Value", min:37.025, max: 122.35, comparison: 120}, 
+{ value : 2000,  alias: "Value < Mean", min:111, max:7540, comparison: 5000},
+{ value : 5000,  alias: "Value == Mean", min:111, max:7540, comparison: 5000},
+{ value : 1000,  alias: "Maximum == Value", min:0, max:1000, comparison: 20},
+{ value : 193.058,  alias: "value == min", min:193.058, max:7587.35666, comparison: 5000},
+{ value : 6000,  alias: "value > mean", min:193.058, max:7587.35666, comparison: 5000}
+];
+var indexInfo = { name: "Index - Geometric mean" , preprocessing_method: "RAW", combination_method: "GEOMETRIC_MEAN", removeMeanLine: "TRUE" };
+var finalMessage = "The index was created by scaling the input variables using the <strong>Raw values</strong> method, then combining the variables using <strong>Geometric mean</strong>. The black line in each bar indicates the mean.";
+var rankLabel = "Rank";
+var inputVariablesLabel = "Input variables";
+
+var comparisonTextforPopup = "Average";
+
+// Constants and functions
+var nameCharLimit = 100;
+var htmlBreak = "<br>";
+var htmlSpan = "</span>";
+var margin = "&ensp;";
+
+function borderLeftFnc(size, color){
+    return "border-left: "+size+"px solid "+color+";";
+}
+
+function borderRightFnc(size, color){
+    if (size < 2) {
+        return "border-right: 0px solid "+color+";";}
+    else{
+        return "border-right: "+size+"px solid black;";
+    }
+}
+
+function borderTopBotton(size){
+    return "border-top: 1px solid grey;border-bottom: 1px solid grey;";
+}
+
+function styleCell(typeOfCell, colorCell, width, height, borderLeftSize , borderRightSize){
+    var borderColor="grey"
+    var round = 5;
+    var roundleft = "border-left:1px solid gray;border-top-left-radius:"+round+"px;border-bottom-left-radius:"+round+"px;";
+    var roundright = "border-right:1px solid gray;border-top-right-radius:"+round+"px;border-bottom-right-radius:"+round+"px;";
+    var background = "background-color:"+colorCell+";";
+    var widthHeight = "height:"+height+"; width:"+width+"%;";    
+    var styleValue = "";
+    var startTD ="<td style='";
+    var endTD = "'></td>";
+    if (typeOfCell == "left")
+         return startTD+roundleft+background+borderTopBotton(1)+borderRightFnc(borderRightSize,borderColor)+widthHeight+endTD;
+    if (typeOfCell == "center")
+        return startTD+background+borderLeftFnc(borderLeftSize,borderColor)+borderTopBotton(1)+borderRightFnc(borderRightSize,borderColor)+widthHeight+endTD;
+    if (typeOfCell == "right")
+        return startTD+roundright+background+borderTopBotton(1)+borderLeftFnc(borderLeftSize, borderColor)+widthHeight+endTD;
+    if (typeOfCell == "complete")
+        return startTD+roundleft+background+borderTopBotton(1)+widthHeight+roundright+endTD;
+}
+
+function buildVariableBar(hexValueC, min, max, mean, val, barHeight, removeLine, fontSize){
+
+    var barHeight = Text(barHeight)+"px";
+    var widthLeft = 15;
+    var widthRight = 15;
+    var barLabelWidthLeft = Text(widthLeft)+"%";
+    var barLabelWidthRight = Text(widthRight)+"%";
+    var range = max-min;
+    var minLabel = Text(Round(Number(min),3));
+    var maxLabel = Text(Round(Number(max),3));
+
+    var styleLabelCell = "background-color:transparent;border: 0px;height:"+barHeight+";width:"+barLabelWidthLeft+";";
+    var startCell = '<td style="'+styleLabelCell+' text-align: right;padding-right: 10px;">'+minLabel+'</td>';
+    var endCell = '<td style="'+styleLabelCell+' text-align: left;padding-left: 10px;">'+maxLabel+'</td>';
+    var figure = '<figure class="table"><table style="border-spacing:0px;margin-left:20px;margin-right:20px;margin-top:10px;margin-bottom:10px;'+fontSize+'"><tbody><tr><th></th>';
+    var endFigure = '</tr></tbody></table></figure>';
+
+    var proportionWidth = 100 - widthLeft - widthRight;
+    var hexv = "#"+hexValueC;
+    var hexValueColors = [hexv,hexv,hexv];
+    var widths = [0,0,0];
+    var borderLeft = [1,1,1];
+    var borderRight = [1,1,1];
+    var typeOfCell = [];
+    var valProportion = (val-min)/range;
+    var meanProportion = (mean-min)/range;
+    var meanValProportion = Abs((mean-val)/range);
+    var emptyMeanProportion = (max-mean)/range;
+    var emptyvalueProportion = (max-val)/range;
+
+    if (val == min) { 
+        if (removeLine)
+        {
+            hexValueColors[0]="transparent";
+            widths[0] = proportionWidth;
+            typeOfCell = ["complete"];
+        }
+        else
+        {
+            hexValueColors[0] = "transparent";
+            hexValueColors[1] = "transparent";
+            widths[0] = meanProportion*proportionWidth;
+            widths[1] =(1 - meanProportion)*proportionWidth;
+            borderRight[0] = 2;
+            typeOfCell = ["left", "right"];
+        }
+    }
+    else if (val == max){ 
+        if (removeLine)
+        {
+            widths[0] = proportionWidth;
+            typeOfCell = ["complete"];
+        }
+        else
+        {
+            widths[0] = meanProportion*proportionWidth;
+            widths[1] =(1 - meanProportion)*proportionWidth;
+            borderRight[0] = 2;
+            typeOfCell = ["left", "right"];
+        }
+    }
+    else if (val == mean){
+        hexValueColors[1] = "transparent";
+        widths[0] = valProportion*proportionWidth;
+        widths[1] =(1 - valProportion)*proportionWidth;
+        typeOfCell = ["left", "right"];
+
+        if (!removeLine)
+        {
+            borderRight[0] = 2;
+        }
+    }
+    else if (val < mean) {
+        if (removeLine)
+        {
+            hexValueColors[1] = "transparent";
+            widths[0] = valProportion*proportionWidth;
+            widths[1] =(1 - valProportion)*proportionWidth;
+            typeOfCell = ["left", "right"];
+        }
+        else
+        {
+            typeOfCell = ["left", "center","right"];
+            widths[0] = valProportion*proportionWidth;
+            widths[1] = meanValProportion*proportionWidth;
+            widths[2] = emptyMeanProportion*proportionWidth;
+            hexValueColors[1] ="transparent"; 
+            hexValueColors[2] ="transparent";
+            borderRight[1] = 2;
+        }
+    }
+    else if (val > mean)
+    {
+        if (removeLine)
+        {
+            typeOfCell = ["left", "right"];
+            hexValueColors[1] = "transparent";
+            widths[0] = valProportion*proportionWidth;
+            widths[1] =(1 - valProportion)*proportionWidth;
+        }
+        else
+        {   typeOfCell = ["left", "center", "right"];
+            widths[0] = meanProportion*proportionWidth;
+            widths[1] = meanValProportion*proportionWidth
+            widths[2] = (1-valProportion)*proportionWidth;
+            hexValueColors[2] ="transparent";
+            borderRight[0] = 2;
+            borderLeft[1] = 0;
+        }
+    }
+
+    var temp = "";
+    for(var i = 0; i < Count(typeOfCell); i++)
+    {
+
+         temp = temp + styleCell(typeOfCell[i], hexValueColors[i], widths[i], barHeight, borderLeft[i], borderRight[i]);
+    }
+   
+    return figure+startCell+temp+endCell+endFigure;
+}
+
+// Function to get quartiles from a provided range
+function getQuartiles(minval, maxval){
+      var range = maxval - minval;
+      var quartileval = range / 4;
+      var firstQuartile = minval+quartileval;
+      var secondQuartile = firstQuartile+quartileval;
+      var thirdQuartile = secondQuartile+quartileval;
+      var fourthQuartile = thirdQuartile+quartileval;
+      return [firstQuartile, secondQuartile, thirdQuartile, fourthQuartile];
+}
+
+function calculateQuantiles(minValue, maxValue, numQuantiles) {
+    // Generate an array of values from minValue to maxValue
+    var data = [];
+    for (var i = 0; i < numQuantiles; i++) {
+        var quantileValue = minValue + (i / (numQuantiles - 1)) * (maxValue - minValue);
+        data[i] = quantileValue;
+    }
+    return data;
+}
+
+// Function to get the color scheme based on the value   
+function calcIndexHex(value, quantiles){
+    var hexValue = when(value < quantiles[0], "F7FCFD", 
+                        value >= quantiles[0] && value < quantiles[1], "E0ECF4", 
+                        value >= quantiles[1] && value < quantiles[2], "BFD3E6", 
+                        value >= quantiles[2] && value < quantiles[3], "9EBCDA", 
+                        value >= quantiles[3] && value < quantiles[4], "8C96C6", 
+                        value >= quantiles[4] && value < quantiles[5], "8C6BB1", 
+                        value >= quantiles[5] && value < quantiles[6], "88419D", 
+                        value >= quantiles[6] && value < quantiles[7], "810F7C", 
+                        value >= quantiles[7], "4D004B", 
+                        "N/A")
+    return hexValue 
+}
+
+function createPopup(indexArray, variablesArray, indexInfoArray, messages){
+    var popupHTML = ""
+
+    // # Pop-up Section 1: Index value information
+    var overallIndexValue = Round((indexArray[0].value), 2); 
+    var overallIndexHex = calcIndexHex(overallIndexValue, calculateQuantiles(indexArray[0].min, indexArray[0].max, 9)); 
+
+    // ## Line 1: Index Title
+    if (indexInfoArray.name == ""){
+        var indexTitle =  "Composite Index: "+Text(overallIndexValue);
+    } else {
+        var indexTitle = indexInfoArray.name+": "+Text(overallIndexValue);
+    }
+
+    var removeLine = indexInfoArray.removeMeanLine == "TRUE";
+
+    // ## Line 2: Index rank 
+    var indexRankText = messages[1] + " "+ indexArray[1].value + " / " + indexArray[1].max;
+
+     // ## Line 3: Bar to represent index value visually
+    var indexBox = buildVariableBar(overallIndexHex, indexArray[0].min, indexArray[0].max, indexArray[0].comparison, indexArray[0].value, 30, false, "");
+
+    // ## Assemble html for pop-up section 1
+    var popupSection1HTML = '<h2><span>' + indexTitle + htmlSpan + htmlBreak + '<span style="font-size:12px">' + indexRankText + htmlSpan + htmlBreak + 
+        '<span style="font-size:14px">'+ indexBox + htmlBreak + htmlSpan + '<span style="font-size:18px">'+messages[2]+htmlSpan+"</h2>"; 
+
+    // # Pop-up Section 2: Explanatory variable information, Iterate on input fields - each field will have three lines: (1) Title, (2) Value
+    var variablesHTML = "";
+    var variableCount = 0;
+    for(var x in variablesArray){
+
+        // Get the needed data to assemble the lines for the variable
+        var alias = variablesArray[x].alias;
+        var val = Round(variablesArray[x].value, 3);
+        var comp = Round(variablesArray[x].comparison, 3);
+        var hex = "C1C1C1"
+
+        // ## Line 1: Variable Title
+        if (Count(alias) > nameCharLimit){var alias = Left(alias, nameCharLimit) + "... ";}
+        var popupSection2Line1 = margin +'<span style="font-size:12px; word-wrap: break-word">'+ "<strong>" + alias + "</strong>"+htmlSpan;
+        var popupSection2HTML = popupSection2Line1; 
+        var variableNameHTML = popupSection2HTML;
+        var variableBarHTML = buildVariableBar(hex, variablesArray[x].min, variablesArray[x].max, variablesArray[x].comparison, variablesArray[x].value, 20, removeLine, "font-size:13px;");
+        variablesHTML += variableNameHTML + htmlBreak + variableBarHTML;
+        variableCount += 1;
+    }
+
+    // # Pop-up Section 3: Index design information, Line 1: Sentence about how the index was created. 
+    var popupSection3HTML = '<span style="font-size:12px;">'+messages[0]+'</span>';
+
+    // Final section: Logic to assemble the popup
+    popupHTML += popupSection1HTML; 
+    popupHTML += variablesHTML;
+    popupHTML += popupSection3HTML;
+    return popupHTML;
+}   
+
+var txt = createPopup(outIndexFields, inVariableFields, indexInfo, [finalMessage, rankLabel, inputVariablesLabel]);
+
+document.body.innerHTML = txt;
+
+</script>
+</body>
+<html>

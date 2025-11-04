@@ -1,0 +1,9 @@
+{
+    "set": [
+        "concealment",
+        "cover",
+        "observer",
+        "viewshed",
+        "visibility"
+    ]
+}

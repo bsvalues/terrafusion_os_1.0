@@ -1,0 +1,11 @@
+{
+    "map": {
+        "circuits.title": "Circuits",
+        "continue_on_failure.title": "Continue on failure",
+        "description": "Verify circuits.",
+        "domain_network.title": "Domain Network",
+        "in_utility_network.title": "Input Utility Network",
+        "out_utility_network.title": "Output Utility Network",
+        "title": "Verify Circuits"
+    }
+}

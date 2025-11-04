@@ -1,0 +1,130 @@
+name: TerraFusion CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  release:
+    types: [published]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Run tests
+        run: npm test
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Container Registry
+        if: ${{ github.event_name != 'pull_request' }}
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,format=long,prefix=
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build-and-test
+    if: ${{ github.event_name != 'pull_request' }}
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref_name == 'main' && 'production' || 'development' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set Kubernetes context
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: 'latest'
+
+      - name: Deploy to development environment
+        if: github.ref == 'refs/heads/develop'
+        run: |
+          helm upgrade --install terrafusion-dev ./helm/terrafusion \
+            --namespace terrafusion-dev \
+            --create-namespace \
+            --values ./helm/terrafusion/values-dev.yaml \
+            --set image.tag=$(echo ${{ github.sha }} | cut -c1-7) \
+            --set secrets.database.data.DATABASE_URL="${{ secrets.DEV_DATABASE_URL }}" \
+            --set secrets.api.data.AI_SERVICE_API_KEY="${{ secrets.DEV_AI_SERVICE_API_KEY }}"
+
+      - name: Deploy to production environment
+        if: github.ref == 'refs/heads/main'
+        run: |
+          helm upgrade --install terrafusion ./helm/terrafusion \
+            --namespace terrafusion \
+            --create-namespace \
+            --values ./helm/terrafusion/values-prod.yaml \
+            --set image.tag=$(echo ${{ github.sha }} | cut -c1-7) \
+            --set secrets.database.data.DATABASE_URL="${{ secrets.PROD_DATABASE_URL }}" \
+            --set secrets.api.data.AI_SERVICE_API_KEY="${{ secrets.PROD_AI_SERVICE_API_KEY }}"
+
+  notify:
+    needs: [deploy]
+    if: ${{ github.event_name != 'pull_request' && always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: deployments
+          SLACK_COLOR: ${{ needs.deploy.result == 'success' && 'good' || 'danger' }}
+          SLACK_TITLE: Deployment ${{ needs.deploy.result }}
+          SLACK_MESSAGE: |
+            Environment: ${{ github.ref_name == 'main' && 'Production' || 'Development' }}
+            Commit: ${{ github.event.head_commit.message }}
+            Author: ${{ github.actor }}
+            SHA: ${{ github.sha }}

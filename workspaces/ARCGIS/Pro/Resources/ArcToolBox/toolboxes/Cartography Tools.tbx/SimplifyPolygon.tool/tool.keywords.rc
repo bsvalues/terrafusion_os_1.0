@@ -1,0 +1,26 @@
+{
+    "set": [
+        "bend simplify",
+        "bendsimplify",
+        "contextual",
+        "generalisation",
+        "generalise",
+        "generalization",
+        "generalize",
+        "multi-scale",
+        "multiscale",
+        "point remove",
+        "pointremove",
+        "polygon simplification",
+        "reduce",
+        "remove",
+        "scale change",
+        "simplification",
+        "simplify",
+        "small scale",
+        "typification",
+        "typify",
+        "vertex",
+        "vertices"
+    ]
+}

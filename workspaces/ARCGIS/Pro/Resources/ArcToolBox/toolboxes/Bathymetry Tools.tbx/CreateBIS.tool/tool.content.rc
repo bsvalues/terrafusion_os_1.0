@@ -1,0 +1,18 @@
+{
+    "map": {
+        "config_keyword.descr": "The configuration keyword applies to enterprise geodatabase data only. It determines the storage parameters of the database table.",
+        "config_keyword.title": "Configuration Keyword",
+        "coordinate_system.descr": "The spatial reference of the BIS workspace. If no coordinate system is provided, WGS84 will be used by default.",
+        "coordinate_system.title": "Coordinate System",
+        "description": "Creates a Bathymetric Information System (BIS) in a designated geodatabase workspace.",
+        "in_proxy_raster_location.descr": "The specified proxy raster location that will be saved to the BISDetails table. You must have read and write access to the proxy raster location. This location is used by the Add Point Data To BIS tool to store proxy rasters.",
+        "in_proxy_raster_location.title": "Proxy Raster Location",
+        "in_template.descr": "The schema template that will be used to define the attribute fields of the BIS. There are four schema templates included in the BisCatalog_schema_MGDB.geodatabase file: the basic BIS, Bathymetric Attributed Grid (BAG), S-102, and combined BAG plus S-102. The file is located at <installation location>\\ArcGIS\\Pro\\Resources\\Bathymetry.",
+        "in_template.title": "BIS Catalog Template",
+        "in_workspace.descr": "The enterprise or file geodatabase in which the output BIS will be created.",
+        "in_workspace.title": "Target Workspace",
+        "out_bis.title": "Output BIS",
+        "summary": "<xdoc><p>Creates a Bathymetric Information System (BIS) in a designated geodatabase workspace.</p><note type=\"note\"/><p group=\"note\">A BIS created at ArcGIS Pro 3.1 is not compatible with ArcGIS Bathymetry tools at ArcGIS Pro 3.2 and later. A new BIS must be created with the Create BIS tool to use with Bathymetry tools at version 3.2 and later.</p></xdoc>",
+        "title": "Create BIS"
+    }
+}

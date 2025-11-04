@@ -1,0 +1,273 @@
+{% extends "base_clean.html" %}
+
+{% block title %}TerraFusion Platform - Admin Panel{% endblock %}
+
+{% block head %}
+{{ super() }}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        .admin-card {
+            transition: all 0.3s ease;
+            height: 100%;
+            border-left: 4px solid transparent;
+        }
+        
+        .admin-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        
+        .admin-card.warning { border-left-color: #ffc107; }
+        .admin-card.success { border-left-color: #198754; }
+        .admin-card.info { border-left-color: #0dcaf0; }
+        .admin-card.primary { border-left-color: #0d6efd; }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        .status-healthy { background-color: #198754; }
+        .status-warning { background-color: #ffc107; }
+        .status-error { background-color: #dc3545; }
+    </style>
+{% endblock %}
+
+{% block content %}
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">
+                            <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/admin">
+                            <i class="bi bi-gear me-1"></i>Admin Panel
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle me-1"></i>County Assessor Administrator
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid py-4">
+        <div class="row mb-4">
+            <div class="col">
+                <h1 class="display-6 mb-2">County Assessor Administration</h1>
+                <p class="lead text-muted">Comprehensive oversight and management of property assessment data operations</p>
+            </div>
+        </div>
+        
+        <!-- System Status -->
+        <div class="row mb-4">
+            <div class="col">
+                <div class="alert alert-warning" role="alert">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <strong>Backup System Alert:</strong> PostgreSQL version mismatch detected. Database backups are failing but file and configuration backups are successful.
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Overview Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card admin-card success">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="card-subtitle mb-2 text-muted">GIS Exports</h6>
+                                <h4 class="card-title mb-0">{{ total_exports or 0 }}</h4>
+                                <small class="text-muted">Total processed</small>
+                            </div>
+                            <div class="text-success">
+                                <i class="bi bi-map fs-2"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card admin-card info">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="card-subtitle mb-2 text-muted">Data Syncs</h6>
+                                <h4 class="card-title mb-0">{{ total_syncs or 0 }}</h4>
+                                <small class="text-muted">Operations completed</small>
+                            </div>
+                            <div class="text-info">
+                                <i class="bi bi-arrow-repeat fs-2"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card admin-card warning">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="card-subtitle mb-2 text-muted">Backup Files</h6>
+                                <h4 class="card-title mb-0">{{ total_backups or 0 }}</h4>
+                                <small class="text-muted">DB backups failing</small>
+                            </div>
+                            <div class="text-warning">
+                                <i class="bi bi-shield-check fs-2"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card admin-card primary">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="card-subtitle mb-2 text-muted">System Health</h6>
+                                <h4 class="card-title mb-0">Good</h4>
+                                <small class="text-muted">Core services operational</small>
+                            </div>
+                            <div class="text-primary">
+                                <i class="bi bi-cpu fs-2"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Operations -->
+        <div class="row mb-4">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Recent GIS Export Jobs</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if recent_gis_jobs %}
+                            <div class="list-group list-group-flush">
+                                {% for job in recent_gis_jobs[:5] %}
+                                <div class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1">{{ job.get('format', 'N/A') }} Export</h6>
+                                        <p class="mb-1 text-muted small">{{ job.get('county_id', 'Unknown') }}</p>
+                                        <small class="text-muted">{{ job.get('created_at', 'N/A') }}</small>
+                                    </div>
+                                    <span class="badge bg-success">{{ job.get('status', 'Unknown') }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted">No recent GIS export jobs</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Recent Sync Operations</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if recent_sync_jobs %}
+                            <div class="list-group list-group-flush">
+                                {% for job in recent_sync_jobs[:5] %}
+                                <div class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1">{{ job.get('source_system', 'N/A') }} → {{ job.get('target_system', 'N/A') }}</h6>
+                                        <p class="mb-1 text-muted small">{{ job.get('county_id', 'Unknown') }}</p>
+                                        <small class="text-muted">{{ job.get('created_at', 'N/A') }}</small>
+                                    </div>
+                                    <span class="badge bg-success">{{ job.get('status', 'Unknown') }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted">No recent sync operations</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Status Details -->
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">System Status Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Services Status</h6>
+                                <div class="mb-2">
+                                    <span class="status-indicator status-healthy"></span>
+                                    <span>GIS Export Service</span>
+                                    <span class="badge bg-success ms-2">Running</span>
+                                </div>
+                                <div class="mb-2">
+                                    <span class="status-indicator status-healthy"></span>
+                                    <span>Sync Service</span>
+                                    <span class="badge bg-success ms-2">Running</span>
+                                </div>
+                                <div class="mb-2">
+                                    <span class="status-indicator status-warning"></span>
+                                    <span>Backup Service</span>
+                                    <span class="badge bg-warning ms-2">Partial</span>
+                                </div>
+                                <div class="mb-2">
+                                    <span class="status-indicator status-healthy"></span>
+                                    <span>Monitoring</span>
+                                    <span class="badge bg-success ms-2">Active</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Recent Backups</h6>
+                                {% if recent_backups %}
+                                    {% for backup in recent_backups %}
+                                    <div class="mb-2">
+                                        <small class="text-muted">{{ backup.get('created_at', 'N/A') }}</small><br>
+                                        <span>{{ backup.get('backup_type', 'Unknown') }} - {{ backup.get('file_size', 0) }} bytes</span>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <p class="text-muted">No recent backup data available</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

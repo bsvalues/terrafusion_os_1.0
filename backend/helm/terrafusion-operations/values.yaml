@@ -1,0 +1,422 @@
+# ============================================================================
+# TerraFusion Operations Service - Helm Chart Values
+# Government. Transcended. - Port 5003 - 39 WA Counties
+# ============================================================================
+
+global:
+  environment: production
+  region: us-west-2
+  domain: terrafusion.gov
+
+replicaCount: 3
+
+image:
+  repository: ghcr.io/terrafusion/terrafusion-operations
+  pullPolicy: IfNotPresent
+  tag: "1.0.0"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/TerraFusionOperationsRole
+  name: ""
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "5003"
+  prometheus.io/path: "/metrics"
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 10001
+  fsGroup: 10001
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 10001
+  capabilities:
+    drop:
+      - ALL
+
+service:
+  type: ClusterIP
+  port: 5003
+  targetPort: http
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rate-limit: "500"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"  # 5 min for sync operations
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+  hosts:
+    - host: operations.terrafusion.gov
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: terrafusion-operations-tls
+      hosts:
+        - operations.terrafusion.gov
+
+resources:
+  limits:
+    cpu: 4000m
+    memory: 16Gi
+  requests:
+    cpu: 2000m
+    memory: 4Gi
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 15
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 75
+
+nodeSelector:
+  terrafusion.io/workload: operations
+
+tolerations: []
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - terrafusion-operations
+          topologyKey: kubernetes.io/hostname
+
+# County System Integration Configuration
+countyIntegration:
+  enabled: true
+  totalCounties: 39
+  defaultSyncInterval: 900  # 15 minutes in seconds
+  batchSize: 1000
+  maxRetries: 3
+  retryDelay: 60000  # milliseconds
+
+# Washington State Counties (39 total)
+counties:
+  # Major Population Centers (King County 2.3M+)
+  king:
+    enabled: true
+    name: "King County"
+    population: 2300000
+    parcels: 650000
+    syncInterval: 300  # 5 minutes for high-volume
+    priority: high
+    systems:
+      harrisPACS:
+        enabled: true
+        jurisdiction: "KING_WA"
+        version: "12.4.7"
+      tyler:
+        enabled: true
+      aumentum:
+        enabled: false
+  
+  # Large Counties (100k-700k population)
+  pierce:
+    enabled: true
+    name: "Pierce County"
+    population: 920000
+    parcels: 320000
+    syncInterval: 600  # 10 minutes
+    priority: high
+    systems:
+      harrisPACS:
+        enabled: true
+        jurisdiction: "PIERCE_WA"
+      tyler:
+        enabled: true
+  
+  snohomish:
+    enabled: true
+    name: "Snohomish County"
+    population: 830000
+    parcels: 280000
+    syncInterval: 600
+    priority: high
+    systems:
+      harrisPACS:
+        enabled: true
+        jurisdiction: "SNOHOMISH_WA"
+  
+  spokane:
+    enabled: true
+    name: "Spokane County"
+    population: 530000
+    parcels: 190000
+    syncInterval: 900
+    priority: medium
+    systems:
+      harrisPACS:
+        enabled: true
+        jurisdiction: "SPOKANE_WA"
+  
+  clark:
+    enabled: true
+    name: "Clark County"
+    population: 500000
+    parcels: 175000
+    syncInterval: 900
+    priority: medium
+    systems:
+      harrisPACS:
+        enabled: true
+        jurisdiction: "CLARK_WA"
+  
+  thurston:
+    enabled: true
+    name: "Thurston County"
+    population: 300000
+    parcels: 110000
+    syncInterval: 900
+    priority: medium
+    systems:
+      harrisPACS:
+        enabled: true
+        jurisdiction: "THURSTON_WA"
+  
+  kitsap:
+    enabled: true
+    name: "Kitsap County"
+    population: 280000
+    parcels: 105000
+    syncInterval: 900
+    priority: medium
+    systems:
+      harrisPACS:
+        enabled: true
+        jurisdiction: "KITSAP_WA"
+  
+  whatcom:
+    enabled: true
+    name: "Whatcom County"
+    population: 230000
+    parcels: 95000
+    syncInterval: 1800  # 30 minutes
+    priority: medium
+    systems:
+      harrisPACS:
+        enabled: true
+        jurisdiction: "WHATCOM_WA"
+  
+  yakima:
+    enabled: true
+    name: "Yakima County"
+    population: 250000
+    parcels: 88000
+    syncInterval: 1800
+    priority: medium
+    systems:
+      harrisPACS:
+        enabled: true
+        jurisdiction: "YAKIMA_WA"
+  
+  benton:
+    enabled: true
+    name: "Benton County"
+    population: 210000
+    parcels: 89247
+    syncInterval: 900
+    priority: medium
+    systems:
+      harrisPACS:
+        enabled: true
+        jurisdiction: "BENTON_WA"
+        version: "12.4.7"
+      tyler:
+        enabled: true
+      aumentum:
+        enabled: true
+  
+  # Medium Counties (50k-100k population)
+  skagit:
+    enabled: true
+    name: "Skagit County"
+    population: 130000
+    parcels: 55000
+    syncInterval: 1800
+    priority: low
+    systems:
+      harrisPACS:
+        enabled: true
+        jurisdiction: "SKAGIT_WA"
+  
+  cowlitz:
+    enabled: true
+    name: "Cowlitz County"
+    population: 110000
+    parcels: 48000
+    syncInterval: 1800
+    priority: low
+    systems:
+      harrisPACS:
+        enabled: true
+        jurisdiction: "COWLITZ_WA"
+  
+  grant:
+    enabled: true
+    name: "Grant County"
+    population: 100000
+    parcels: 42000
+    syncInterval: 3600  # 1 hour
+    priority: low
+    systems:
+      harrisPACS:
+        enabled: true
+        jurisdiction: "GRANT_WA"
+  
+  franklin:
+    enabled: true
+    name: "Franklin County"
+    population: 96000
+    parcels: 35000
+    syncInterval: 3600
+    priority: low
+    systems:
+      harrisPACS:
+        enabled: true
+        jurisdiction: "FRANKLIN_WA"
+  
+  walla_walla:
+    enabled: true
+    name: "Walla Walla County"
+    population: 62000
+    parcels: 28000
+    syncInterval: 3600
+    priority: low
+    systems:
+      harrisPACS:
+        enabled: true
+        jurisdiction: "WALLA_WALLA_WA"
+  
+  # Small Counties (25k-50k population)
+  chelan:
+    enabled: true
+    name: "Chelan County"
+    population: 78000
+    parcels: 38000
+    syncInterval: 3600
+    priority: low
+  
+  # ... Additional 24 counties with similar structure
+  # (whitman, lewis, mason, grays_harbor, island, san_juan, etc.)
+
+# Harris PACS Integration
+harrisPACS:
+  enabled: true
+  version: "12.4.7"
+  baseUrl: "https://harris-pacs.vendor.com/api"
+  timeout: 60000  # milliseconds
+  batchSize: 1000
+  maxRetries: 3
+  rateLimitPerSecond: 10
+
+# Tyler Technologies Integration
+tylerTechnologies:
+  enabled: true
+  product: "Vision"
+  baseUrl: "https://tyler-vision.vendor.com/api"
+  timeout: 45000
+  batchSize: 500
+
+# Aumentum Systems Integration
+aumentumSystems:
+  enabled: true
+  baseUrl: "https://aumentum.vendor.com/api"
+  timeout: 45000
+  batchSize: 750
+
+# Data Sync Configuration
+dataSync:
+  enabled: true
+  parallelCounties: 5  # Max counties syncing simultaneously
+  conflictResolution: "latest-wins"  # Options: latest-wins, manual-review
+  validation:
+    enabled: true
+    strictMode: true
+  audit:
+    enabled: true
+    retentionDays: 365
+
+# Health checks
+healthChecks:
+  liveness:
+    enabled: true
+    path: /health/live
+    initialDelaySeconds: 60
+    periodSeconds: 15
+    timeoutSeconds: 10
+    failureThreshold: 3
+  readiness:
+    enabled: true
+    path: /health/ready
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+# Monitoring
+monitoring:
+  prometheus:
+    enabled: true
+    port: 5003
+    path: /metrics
+    customMetrics:
+      - operations_county_sync_duration_seconds
+      - operations_harris_pacs_requests_total
+      - operations_tyler_requests_total
+      - operations_parcel_sync_count
+      - operations_sync_errors_total
+  jaeger:
+    enabled: true
+    agentHost: jaeger-agent.tracing.svc.cluster.local
+    agentPort: 6831
+    samplingRate: 0.1
+
+# Logging
+logging:
+  level: Information
+  structured: true
+  loki:
+    enabled: true
+    url: http://loki.monitoring.svc.cluster.local:3100
+
+# Compliance
+compliance:
+  fisma:
+    level: HIGH
+    auditLogging: true
+    dataEncryption: true
+  countyDataSovereignty:
+    enabled: true
+    isolatedByTenant: true
+
+# Pod Disruption Budget
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 2
+
+# Service Monitor
+serviceMonitor:
+  enabled: true
+  interval: 30s
+  scrapeTimeout: 15s

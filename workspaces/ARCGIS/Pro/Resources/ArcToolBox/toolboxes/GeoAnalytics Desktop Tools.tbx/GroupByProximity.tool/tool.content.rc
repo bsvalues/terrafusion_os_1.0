@@ -1,0 +1,28 @@
+{
+    "map": {
+        "attribute_relationship.descr": "<xdoc><p>An ArcGIS Arcade expression that will be used to group features by. For example, $a[&quot;Amount&quot;] == $b[&quot;Amount&quot;] groups features when the <span class=\"esri_fieldname\">Amount</span> field has the same value.</p></xdoc>",
+        "attribute_relationship.title": "Attribute Relationship",
+        "description": "Groups features that are within spatial or spatiotemporal proximity to each other.",
+        "input_layer.descr": "The point, line, or polygon features that will be grouped.",
+        "input_layer.title": "Input Layer",
+        "output.descr": "<xdoc><p>The output feature class with grouped features represented by a new field named <span class=\"esri_fieldname\">group_id</span>.</p></xdoc>",
+        "output.title": "Output",
+        "spatial_near_distance.descr": "<xdoc><p>The distance that will be used to group near features. This parameter is only used when the <span class=\"esri_uicontrol\">Spatial Relationship</span> parameter value is <span class=\"esri_uicontrol\">Planar Near</span> or <span class=\"esri_uicontrol\">Geodesic Near</span>.</p></xdoc>",
+        "spatial_near_distance.title": "Spatial Near Distance",
+        "spatial_relationship.descr": "<xdoc><p>Specifies the type of relationship that features will be grouped by.</p><ul><li><span title=\"INTERSECTS\">Intersects</span>—Features will be grouped when features or portions of features overlap. This is the default.</li><li><span title=\"TOUCHES\">Touches</span>—Features will be grouped with another feature if they have an intersecting vertex, but the features do not overlap.</li><li><span title=\"NEAR_PLANAR\">Planar Near</span>—Features will be grouped when a vertex or edge is within a given planar distance of another feature.</li><li><span title=\"NEAR_GEODESIC\">Geodesic Near</span>—Features will be grouped when a vertex or edge is within a given geodesic distance of another feature.</li></ul></xdoc>",
+        "spatial_relationship.domain.INTERSECTS": "Intersects",
+        "spatial_relationship.domain.NEAR_GEODESIC": "Geodesic Near",
+        "spatial_relationship.domain.NEAR_PLANAR": "Planar Near",
+        "spatial_relationship.domain.TOUCHES": "Touches",
+        "spatial_relationship.title": "Spatial Relationship",
+        "summary": "<xdoc><p>Groups features that are within spatial or spatiotemporal proximity to each other.</p><p>The following are examples of questions that can be answered by Group By Proximity workflows:<ul><li>Which roads are connected?</li><li>Where are there groups of crime that happened within a close distance and time of each other?</li><li>Are there groups of polygons that overlap each other?</li></ul></p></xdoc>",
+        "temporal_near_distance.descr": "<xdoc><p>The temporal distance that will be used to group near features. This parameter is only used when the <span class=\"esri_uicontrol\">Temporal Relationship</span> parameter value is <span class=\"esri_uicontrol\">Near</span>.</p></xdoc>",
+        "temporal_near_distance.title": "Temporal Near Distance",
+        "temporal_relationship.descr": "<xdoc><p>Specifies the time criteria that will be used to match features. When the parameter is set to <span class=\"esri_uicontrol\">Intersects</span> or <span class=\"esri_uicontrol\">Near</span>, features are grouped when both the spatial and time criteria are met. Time must be enabled on the input to support this option.</p><ul><li><span title=\"INTERSECTS\">Intersects</span>—Features will be grouped when any part of a feature&apos;s time overlaps another feature. This is the default.</li><li><span title=\"NEAR\">Near</span>—Features will be grouped when the feature&apos;s time is within a range of time of another feature.</li><li><span title=\"NONE\">None</span>—Time will not be used to group features.</li></ul></xdoc>",
+        "temporal_relationship.domain.INTERSECTS": "Intersects",
+        "temporal_relationship.domain.NEAR": "Near",
+        "temporal_relationship.domain.NONE": "None",
+        "temporal_relationship.title": "Temporal Relationship",
+        "title": "Group By Proximity"
+    }
+}

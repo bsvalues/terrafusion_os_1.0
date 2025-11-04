@@ -1,0 +1,28 @@
+{
+    "map": {
+        "bypass_features.descr": "<xdoc><p>The point features that the <span class=\"esri_uicontrol\">Target Line Features</span> parameter value will bypass.</p></xdoc>",
+        "bypass_features.title": "Bypass Features",
+        "description": "Adjusts route polyline features that overlap point features.",
+        "in_map.descr": "The input map with a set reference scale.",
+        "in_map.title": "Input Map",
+        "merge_option.descr": "<xdoc><p>Specifies whether consecutive bypass lines will be merged.</p><ul><li><span title=\"NO_MERGE_BYPASS\">Consecutive bypass lines will not be merged</span>—Consecutive bypass lines will not be merged. This is the default.</li><li><span title=\"MERGE_BYPASS\">Consecutive bypass lines will be merged</span>—Consecutive bypass lines will be merged.</li></ul></xdoc>",
+        "merge_option.domain.MERGE_BYPASS": "Consecutive bypass lines will be merged",
+        "merge_option.domain.NO_MERGE_BYPASS": "Consecutive bypass lines will not be merged",
+        "merge_option.title": "Merge Option",
+        "radius.descr": "<xdoc><p>The radius of a bypass with a constant radius. This parameter is only valid if <span class=\"esri_uicontrol\">Constant Radius</span> is chosen as the <span class=\"esri_uicontrol\">Radius Option</span> parameter value.</p><p>If the linear unit is not specified or is set to Unknown, it will be the same as the input map&apos;s spatial reference.</p></xdoc>",
+        "radius.title": "Radius",
+        "radius_option.descr": "<xdoc><p>Specifies the type of bypass radius that will be used.</p><ul><li><span title=\"DYNAMIC_RADIUS\">Dynamic Radius</span>—The radius will be dynamic relative to its scale factor. This is the default.</li><li><span title=\"CONSTANT_RADIUS\">Constant Radius</span>—The radius will be a constant radius.</li></ul></xdoc>",
+        "radius_option.domain.CONSTANT_RADIUS": "Constant Radius",
+        "radius_option.domain.DYNAMIC_RADIUS": "Dynamic Radius",
+        "radius_option.title": "Radius Option",
+        "radius_scale.descr": "<xdoc><p>The amount a bypass with a dynamic radius will be scaled. This parameter is only valid if <span class=\"esri_uicontrol\">Dynamic Radius</span> is chosen as the <span class=\"esri_uicontrol\">Radius Option</span> parameter value.</p></xdoc>",
+        "radius_scale.title": "Radius Scale Factor",
+        "summary": "<xdoc><p>Adjusts route polyline features that overlap point features.</p><p>In some cases, an Air Traffic Service (ATS) route may pass through a point such as a navigational aid (navaid) or designated point that is not designated as part of its airway structure. For those cases, the ATS route&apos;s line symbol can be depicted as a bypass around the point to more clearly show that the ATS route does not include the point.</p><p>When an ATS route bypasses a navaid or designated point, the route representing the line is curved slightly where the point intersects the route. This does not indicate that the flight path has changed, only that the point is not considered part of the ATS route. The following images show the difference between an ATS route that includes a designated point and a route that bypasses a designated point on a navigational chart:</p></xdoc>",
+        "target_line_features.descr": "The polyline features representing ATS routes.",
+        "target_line_features.title": "Target Line Features",
+        "title": "Add Aviation Line Bypass",
+        "tolerance.descr": "<xdoc><p>The maximum distance between the center point of a bypass feature and a route.</p><p>If the linear unit is not specified or is set to Unknown, it will be the same as the input map&apos;s spatial reference.</p></xdoc>",
+        "tolerance.title": "Tolerance",
+        "updated_line_features.title": "Updated Line Features"
+    }
+}

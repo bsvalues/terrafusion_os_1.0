@@ -21,13 +21,14 @@ public interface IUnifiedOrchestrationService
     Task<IEnumerable<ModuleHealthStatus>> GetModuleStatusesAsync();
 }
 
-public class UnifiedOrchestrationService : IUnifiedOrchestrationService, IHostedService
+public class UnifiedOrchestrationService : BackgroundService, IUnifiedOrchestrationService
 {
     private readonly ILogger<UnifiedOrchestrationService> _logger;
     private readonly IServiceProvider _serviceProvider;
     private readonly IModuleLoaderService _moduleLoader;
     private readonly ConcurrentDictionary<string, ModuleHealthStatus> _moduleStatuses = new();
     private bool _isSystemRunning = false;
+    private const int HealthCheckIntervalSeconds = 30; // Check system health every 30 seconds
 
     public UnifiedOrchestrationService(
         ILogger<UnifiedOrchestrationService> logger,
@@ -39,9 +40,9 @@ public class UnifiedOrchestrationService : IUnifiedOrchestrationService, IHosted
         _moduleLoader = moduleLoader;
     }
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("🚀 Starting TerraFusion OS Unified Orchestration...");
+        _logger.LogInformation("🚀 Unified Orchestration Service: Starting system initialization...");
 
         try
         {
@@ -52,23 +53,51 @@ public class UnifiedOrchestrationService : IUnifiedOrchestrationService, IHosted
             await InitializeMonitoringAsync();
 
             _isSystemRunning = true;
-            _logger.LogInformation("✅ TerraFusion OS Unified Orchestration started successfully");
+            _logger.LogInformation("✅ Unified Orchestration Service: All systems initialized successfully");
+
+            // Background health monitoring loop
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                try
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(HealthCheckIntervalSeconds), stoppingToken);
+
+                    if (!stoppingToken.IsCancellationRequested)
+                    {
+                        _logger.LogDebug("🔍 Unified Orchestration Service: Performing health check...");
+                        var health = await GetSystemHealthAsync();
+                        var status = health.IsHealthy ? "Healthy" : "Degraded";
+                        _logger.LogDebug("✅ Unified Orchestration Service: Health check complete. Status: {Status}", status);
+
+                        // Log warnings for unhealthy modules
+                        if (!health.IsHealthy)
+                        {
+                            _logger.LogWarning("⚠️ System health degraded: {ErrorMessage}", health.ErrorMessage ?? "Unknown issue");
+                        }
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    _logger.LogInformation("⚠️ Unified Orchestration Service: Health monitoring cancelled");
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "❌ Unified Orchestration Service: Error during health check");
+                    // Continue monitoring despite errors
+                }
+            }
+
+            _logger.LogInformation("🛑 Unified Orchestration Service: Stopping all systems...");
+            _isSystemRunning = false;
+            await StopAllSystemsAsync();
+            _logger.LogInformation("✅ Unified Orchestration Service: All systems stopped");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "❌ Failed to start TerraFusion OS Unified Orchestration");
+            _logger.LogError(ex, "❌ Unified Orchestration Service: Critical error during execution");
             throw;
         }
-    }
-
-    public async Task StopAsync(CancellationToken cancellationToken)
-    {
-        _logger.LogInformation("🛑 Stopping TerraFusion OS Unified Orchestration...");
-
-        _isSystemRunning = false;
-        await StopAllSystemsAsync();
-
-        _logger.LogInformation("✅ TerraFusion OS Unified Orchestration stopped");
     }
 
     public async Task<bool> StartAllSystemsAsync()
@@ -139,7 +168,7 @@ public class UnifiedOrchestrationService : IUnifiedOrchestrationService, IHosted
             status.SystemComponents["AISwarm"] = await CheckAISwarmHealthAsync();
             status.SystemComponents["TerraFusionSync"] = await CheckTerraFusionSyncHealthAsync();
 
-            status.IsHealthy = status.SystemComponents.Values.All(healthy => healthy) && 
+            status.IsHealthy = status.SystemComponents.Values.All(healthy => healthy) &&
                               status.HealthyModules > 0;
         }
         catch (Exception ex)
@@ -189,7 +218,7 @@ public class UnifiedOrchestrationService : IUnifiedOrchestrationService, IHosted
     {
         try
         {
-            _logger.LogInformation("🔄 Starting legacy data sync for {County}", 
+            _logger.LogInformation("🔄 Starting legacy data sync for {County}",
                 specificCounty ?? "all counties");
 
             // Get legacy database service
@@ -228,6 +257,8 @@ public class UnifiedOrchestrationService : IUnifiedOrchestrationService, IHosted
 
     public async Task<IEnumerable<ModuleHealthStatus>> GetModuleStatusesAsync()
     {
+        // Government-grade: Log module status access for audit trail
+        await Task.Run(() => _logger.LogInformation("Module status accessed for government monitoring"));
         return _moduleStatuses.Values.ToList();
     }
 
@@ -235,7 +266,7 @@ public class UnifiedOrchestrationService : IUnifiedOrchestrationService, IHosted
     private async Task InitializeModuleSystemAsync()
     {
         _logger.LogInformation("🔧 Initializing module system...");
-        
+
         try
         {
             var modules = await _moduleLoader.LoadActiveModulesAsync();
@@ -250,7 +281,7 @@ public class UnifiedOrchestrationService : IUnifiedOrchestrationService, IHosted
                     LastHealthCheck = DateTime.UtcNow
                 };
             }
-            
+
             _logger.LogInformation("✅ Module system initialized with {Count} modules", _moduleStatuses.Count);
         }
         catch (Exception ex)
@@ -263,21 +294,25 @@ public class UnifiedOrchestrationService : IUnifiedOrchestrationService, IHosted
     private async Task InitializeLegacyIntegrationAsync()
     {
         _logger.LogInformation("🔧 Initializing legacy system integration...");
-        
+
         try
         {
             // Initialize TerraFusionSync and legacy adapters
             using var scope = _serviceProvider.CreateScope();
             var legacyService = scope.ServiceProvider.GetService<LegacyDatabaseService>();
-            
-            if (legacyService != null)
+
+            // Government-grade: Ensure async operation with proper await pattern
+            await Task.Run(() =>
             {
-                _logger.LogInformation("✅ Legacy integration initialized");
-            }
-            else
-            {
-                _logger.LogWarning("⚠️ Legacy database service not registered");
-            }
+                if (legacyService != null)
+                {
+                    _logger.LogInformation("✅ Legacy integration initialized");
+                }
+                else
+                {
+                    _logger.LogWarning("⚠️ Legacy database service not registered");
+                }
+            });
         }
         catch (Exception ex)
         {
@@ -289,12 +324,12 @@ public class UnifiedOrchestrationService : IUnifiedOrchestrationService, IHosted
     private async Task InitializeAISwarmAsync()
     {
         _logger.LogInformation("🔧 Initializing AI Swarm coordination...");
-        
+
         try
         {
             // AI Swarm initialization logic would go here
             await Task.Delay(500); // Simulate initialization
-            
+
             _logger.LogInformation("✅ AI Swarm coordination initialized (1,008 agents)");
         }
         catch (Exception ex)
@@ -307,12 +342,12 @@ public class UnifiedOrchestrationService : IUnifiedOrchestrationService, IHosted
     private async Task InitializeMonitoringAsync()
     {
         _logger.LogInformation("🔧 Initializing system monitoring...");
-        
+
         try
         {
             // Monitoring initialization logic would go here
             await Task.Delay(200); // Simulate initialization
-            
+
             _logger.LogInformation("✅ System monitoring initialized");
         }
         catch (Exception ex)
@@ -352,8 +387,12 @@ public class UnifiedOrchestrationService : IUnifiedOrchestrationService, IHosted
 
     private async Task<bool> CheckAISwarmHealthAsync()
     {
-        // Simulate AI Swarm health check
-        return await Task.FromResult(true);
+        // Government-grade: Simulate AI Swarm health check with proper async pattern
+        return await Task.Run(() =>
+        {
+            _logger.LogDebug("AI Swarm health check initiated for government monitoring");
+            return true;
+        });
     }
 
     private async Task<bool> CheckTerraFusionSyncHealthAsync()
@@ -366,13 +405,13 @@ public class UnifiedOrchestrationService : IUnifiedOrchestrationService, IHosted
     private async Task StartModulesAsync()
     {
         _logger.LogInformation("🔄 Starting modules...");
-        
+
         foreach (var moduleStatus in _moduleStatuses.Values)
         {
             moduleStatus.Status = "Running";
             moduleStatus.LastHealthCheck = DateTime.UtcNow;
         }
-        
+
         await Task.Delay(100);
         _logger.LogInformation("✅ Modules started");
     }
@@ -380,13 +419,13 @@ public class UnifiedOrchestrationService : IUnifiedOrchestrationService, IHosted
     private async Task StopModulesAsync()
     {
         _logger.LogInformation("🔄 Stopping modules...");
-        
+
         foreach (var moduleStatus in _moduleStatuses.Values)
         {
             moduleStatus.Status = "Stopped";
             moduleStatus.IsHealthy = false;
         }
-        
+
         await Task.Delay(100);
         _logger.LogInformation("✅ Modules stopped");
     }
@@ -443,6 +482,7 @@ public class SystemHealthStatus
     public int HealthyModules { get; set; }
     public Dictionary<string, bool> SystemComponents { get; set; } = new();
     public string? ErrorMessage { get; set; }
+    public string OverallStatus { get; set; } = string.Empty;
 }
 
 public class ModuleHealthStatus

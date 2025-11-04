@@ -1,0 +1,28 @@
+{
+    "map": {
+        "custom_messages.descr": "<xdoc><p>Custom messages will be added when the model is run.</p><p>This parameter is active when the <span class=\"esri_uicontrol\">Message Type</span> parameter is set to <span class=\"esri_uicontrol\">Custom Message</span>.<ul><li>Message Severity—Specifies the message severity that will be used.<ul><li>Informative—The message will be an informative message.</li><li>Warning—The message will be a warning message.</li><li>Error—The message will be an error message.</li></ul></li><li>Custom Message—The message string.</li></ul></p></xdoc>",
+        "custom_messages.domain.item1.ERROR": "Error",
+        "custom_messages.domain.item1.INFORMATIVE": "Informative",
+        "custom_messages.domain.item1.WARNING": "Warning",
+        "custom_messages.dt.title1": "Message Severity",
+        "custom_messages.dt.title2": "Custom Message",
+        "custom_messages.title": "Custom Messages",
+        "description": "Adds custom error, warning, or informative messages to a model's messages to enhance the context of a model when run.",
+        "message_codes.descr": "<xdoc><p>Esri standard messages will be added when the model is run.</p><p>This parameter is active when the <span class=\"esri_uicontrol\">Message Type</span> parameter is set to <span class=\"esri_uicontrol\">Message Code</span>.</p><ul><li>Message Severity—Specifies the message severity that will be used.<ul><li>Informative—The message will be an informative message.</li><li>Warning—The message will be a warning message.</li><li>Error—The message will be an error message.</li></ul></li><li>Message Code—An Esri standard six-digit geoprocessing message code.</li><li>Code Argument 1—The first value that will be substituted into the message.</li><li>Code Argument 2—The second value that will be substituted into the message.</li><li>Custom Message—An additional message for context that will be added to the model when run.</li></ul></xdoc>",
+        "message_codes.domain.item1.ERROR": "Error",
+        "message_codes.domain.item1.INFORMATIVE": "Informative",
+        "message_codes.domain.item1.WARNING": "Warning",
+        "message_codes.dt.title1": "Message Severity",
+        "message_codes.dt.title2": "Message Code",
+        "message_codes.dt.title3": "Code Argument 1",
+        "message_codes.dt.title4": "Code Argument 2",
+        "message_codes.dt.title5": "Additional Message",
+        "message_codes.title": "Message Codes",
+        "message_type.descr": "<xdoc><p>Specifies whether custom messages or standard Esri messages will be used.</p><ul><li><span title=\"MESSAGE_CODE\">Message Code</span>— Standard Esri messages accessed by the message IDs will be used.</li><li><span title=\"CUSTOM_MESSAGE\">Custom Message</span>—Custom messages will be used.</li></ul></xdoc>",
+        "message_type.domain.CUSTOM_MESSAGE": "Custom Message",
+        "message_type.domain.MESSAGE_CODE": "Message Code",
+        "message_type.title": "Message Type",
+        "output_messages.title": "Output Messages",
+        "title": "Custom Message"
+    }
+}

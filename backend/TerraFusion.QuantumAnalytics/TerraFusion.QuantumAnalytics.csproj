@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>TerraFusion.QuantumAnalytics</AssemblyName>
+    <RootNamespace>TerraFusion.QuantumAnalytics</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- ASP.NET Core -->
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Swashbuckle.AspNetCore" />
+
+    <!-- Entity Framework Core -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+
+    <!-- Authentication & Authorization -->
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+
+    <!-- Mathematical & Statistical Libraries -->
+    <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
+    <PackageReference Include="Accord.Statistics" Version="3.8.0" />
+    <PackageReference Include="Accord.Math" Version="3.8.0" />
+
+    <!-- R.NET for advanced statistical computing -->
+    <PackageReference Include="R.NET.Community" Version="1.9.0" />
+
+    <!-- Monitoring & Observability -->
+    <PackageReference Include="Serilog.AspNetCore" />
+    <PackageReference Include="Serilog.Sinks.Console" />
+    <PackageReference Include="OpenTelemetry" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" />
+
+    <!-- CORS -->
+    <PackageReference Include="Microsoft.AspNetCore.Cors" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Project References -->
+    <ProjectReference Include="..\TerraFusion.Core\TerraFusion.Core.csproj" />
+    <ProjectReference Include="..\TerraFusion.Abstractions\TerraFusion.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

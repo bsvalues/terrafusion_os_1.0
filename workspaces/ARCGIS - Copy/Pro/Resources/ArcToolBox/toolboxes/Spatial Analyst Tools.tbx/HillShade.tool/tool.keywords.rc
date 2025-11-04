@@ -1,0 +1,17 @@
+{
+    "set": [
+        "altitude",
+        "angle",
+        "azimuth",
+        "dem",
+        "digital elevation model",
+        "elevation",
+        "hillshade",
+        "illumination",
+        "relief",
+        "shaded relief",
+        "shadow",
+        "sun",
+        "z-factor"
+    ]
+}

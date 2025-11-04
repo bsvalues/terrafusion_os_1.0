@@ -1,0 +1,10 @@
+{
+    "set": [
+        "convert",
+        "delaunay",
+        "edit",
+        "landxml",
+        "tin",
+        "triangulated irregular network"
+    ]
+}

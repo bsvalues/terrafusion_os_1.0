@@ -1,0 +1,149 @@
+{
+  "source_type": "sqlserver",
+  "source_path": "Driver={ODBC Driver 17 for SQL Server};Server=your-server.database.windows.net;Database=your-db;UID=your-username;PWD=your-password;",
+  "supabase_url": "",
+  "supabase_key": "",
+  "sync_interval": 900,
+  "notifications": {
+    "channels": [
+      {
+        "type": "email",
+        "recipients": ["admin@example.com"],
+        "from_address": "sync@geoproapp.com",
+        "smtp_server": "smtp.example.com",
+        "smtp_port": 587,
+        "use_tls": true
+      },
+      {
+        "type": "webhook",
+        "url": "https://hooks.slack.com/services/your-webhook-url",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    ]
+  },
+  "sync": {
+    "dry_run": false,
+    "incremental": true,
+    "enable_rollback": true,
+    "enable_change_tracking": true,
+    "batch_size": 100,
+    "parallelism": 1
+  },
+  "tables": [
+    {
+      "source_table": "Property",
+      "target_table": "properties",
+      "target_schema": "public",
+      "key_column": "property_id",
+      "modified_time_column": "last_modified",
+      "upsert_on_key": true,
+      "field_mapping": {
+        "id": "property_id",
+        "parcel_id": "parcel_id",
+        "address": "address",
+        "city": "city",
+        "state": "state",
+        "zip": "zip_code",
+        "property_type": "property_type",
+        "land_value": "land_value",
+        "improvement_value": "improvement_value",
+        "total_value": "total_value",
+        "area_sqft": "area_sqft",
+        "year_built": "year_built",
+        "last_updated": {
+          "field": "last_modified",
+          "transform": "to_iso_date"
+        }
+      },
+      "transformers": {
+        "to_iso_date": "lambda x: x.isoformat() if hasattr(x, 'isoformat') else x"
+      },
+      "batch_size": 100
+    },
+    {
+      "source_table": "Owner",
+      "target_table": "owners",
+      "target_schema": "public",
+      "key_column": "owner_id",
+      "modified_time_column": "last_modified",
+      "upsert_on_key": true,
+      "field_mapping": {
+        "id": "owner_id",
+        "name": "owner_name",
+        "address": "mailing_address",
+        "city": "mailing_city",
+        "state": "mailing_state",
+        "zip": "mailing_zip",
+        "last_updated": {
+          "field": "last_modified",
+          "transform": "to_iso_date"
+        }
+      },
+      "transformers": {
+        "to_iso_date": "lambda x: x.isoformat() if hasattr(x, 'isoformat') else x"
+      },
+      "batch_size": 100
+    },
+    {
+      "source_table": "PropertyOwner",
+      "target_table": "property_owners",
+      "target_schema": "public",
+      "key_column": "id",
+      "modified_time_column": "last_modified",
+      "upsert_on_key": true,
+      "field_mapping": {
+        "id": "id",
+        "property_id": "property_id",
+        "owner_id": "owner_id",
+        "ownership_percentage": "ownership_percentage",
+        "start_date": {
+          "field": "start_date",
+          "transform": "to_iso_date"
+        },
+        "end_date": {
+          "field": "end_date",
+          "transform": "to_iso_date"
+        },
+        "last_updated": {
+          "field": "last_modified",
+          "transform": "to_iso_date"
+        }
+      },
+      "transformers": {
+        "to_iso_date": "lambda x: x.isoformat() if hasattr(x, 'isoformat') else x"
+      },
+      "batch_size": 100
+    },
+    {
+      "source_table": "Assessment",
+      "target_table": "assessments",
+      "target_schema": "public",
+      "key_column": "assessment_id",
+      "modified_time_column": "last_modified",
+      "upsert_on_key": true,
+      "field_mapping": {
+        "id": "assessment_id",
+        "property_id": "property_id",
+        "tax_year": "tax_year",
+        "assessment_date": {
+          "field": "assessment_date",
+          "transform": "to_iso_date"
+        },
+        "land_value": "land_value",
+        "improvement_value": "improvement_value",
+        "total_value": "total_value",
+        "last_updated": {
+          "field": "last_modified",
+          "transform": "to_iso_date"
+        }
+      },
+      "transformers": {
+        "to_iso_date": "lambda x: x.isoformat() if hasattr(x, 'isoformat') else x"
+      },
+      "batch_size": 100
+    }
+  ]
+}

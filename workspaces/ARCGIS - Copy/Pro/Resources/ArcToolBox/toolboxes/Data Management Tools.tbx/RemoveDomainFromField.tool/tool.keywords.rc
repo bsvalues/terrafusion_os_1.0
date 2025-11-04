@@ -1,0 +1,15 @@
+{
+    "set": [
+        "attribute",
+        "constrain",
+        "delete",
+        "discard",
+        "domains",
+        "erase",
+        "field",
+        "integrity",
+        "limit",
+        "restrict",
+        "subtype"
+    ]
+}

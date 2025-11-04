@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Deletes a domain from a workspace.",
+        "domain_name.descr": "The name of the domain to be deleted.",
+        "domain_name.title": "Domain Name",
+        "in_workspace.descr": "The geodatabase that contains the domain to be deleted.",
+        "in_workspace.title": "Input Workspace",
+        "out_workspace.title": "Updated Input Workspace",
+        "title": "Delete Domain"
+    }
+}

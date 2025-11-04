@@ -1,0 +1,15 @@
+{
+    "set": [
+        "combine",
+        "fuzzification",
+        "logic",
+        "memberships",
+        "normalize",
+        "scale",
+        "set theory",
+        "site selection",
+        "siting",
+        "suitability",
+        "suitability modeling"
+    ]
+}

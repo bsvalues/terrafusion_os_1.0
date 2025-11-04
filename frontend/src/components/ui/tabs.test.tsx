@@ -1,6 +1,6 @@
 /**
  * Tabs Component Tests
- * 
+ *
  * Tests for the Tabs component and its sub-components.
  * Tabs organize content into multiple panels with keyboard navigation support.
  * Built on @radix-ui/react-tabs.
@@ -22,13 +22,13 @@ describe('Tabs', () => {
   describe('Rendering', () => {
     it('renders tabs with triggers and content', () => {
       render(
-        <Tabs defaultValue="tab1">
+        <Tabs defaultValue='tab1'>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
+            <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
-          <TabsContent value="tab2">Content 2</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
+          <TabsContent value='tab2'>Content 2</TabsContent>
         </Tabs>
       );
 
@@ -39,15 +39,15 @@ describe('Tabs', () => {
 
     it('renders multiple tabs in tablist', () => {
       render(
-        <Tabs defaultValue="overview">
+        <Tabs defaultValue='overview'>
           <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="details">Details</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
+            <TabsTrigger value='overview'>Overview</TabsTrigger>
+            <TabsTrigger value='details'>Details</TabsTrigger>
+            <TabsTrigger value='settings'>Settings</TabsTrigger>
           </TabsList>
-          <TabsContent value="overview">Overview content</TabsContent>
-          <TabsContent value="details">Details content</TabsContent>
-          <TabsContent value="settings">Settings content</TabsContent>
+          <TabsContent value='overview'>Overview content</TabsContent>
+          <TabsContent value='details'>Details content</TabsContent>
+          <TabsContent value='settings'>Settings content</TabsContent>
         </Tabs>
       );
 
@@ -58,13 +58,13 @@ describe('Tabs', () => {
 
     it('shows only active tab content by default', () => {
       render(
-        <Tabs defaultValue="tab1">
+        <Tabs defaultValue='tab1'>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
+            <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
-          <TabsContent value="tab2">Content 2</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
+          <TabsContent value='tab2'>Content 2</TabsContent>
         </Tabs>
       );
 
@@ -74,11 +74,11 @@ describe('Tabs', () => {
 
     it('renders tabs with custom className', () => {
       const { container } = render(
-        <Tabs defaultValue="tab1" className="custom-tabs">
+        <Tabs defaultValue='tab1' className='custom-tabs'>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
         </Tabs>
       );
 
@@ -88,13 +88,13 @@ describe('Tabs', () => {
 
     it('renders tab triggers with data-state attribute', () => {
       render(
-        <Tabs defaultValue="tab1">
+        <Tabs defaultValue='tab1'>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
+            <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
-          <TabsContent value="tab2">Content 2</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
+          <TabsContent value='tab2'>Content 2</TabsContent>
         </Tabs>
       );
 
@@ -114,13 +114,13 @@ describe('Tabs', () => {
     it('switches content when clicking different tab', async () => {
       const user = userEvent.setup();
       render(
-        <Tabs defaultValue="tab1">
+        <Tabs defaultValue='tab1'>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
+            <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
-          <TabsContent value="tab2">Content 2</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
+          <TabsContent value='tab2'>Content 2</TabsContent>
         </Tabs>
       );
 
@@ -139,13 +139,13 @@ describe('Tabs', () => {
     it('updates data-state when switching tabs', async () => {
       const user = userEvent.setup();
       render(
-        <Tabs defaultValue="tab1">
+        <Tabs defaultValue='tab1'>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
+            <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
-          <TabsContent value="tab2">Content 2</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
+          <TabsContent value='tab2'>Content 2</TabsContent>
         </Tabs>
       );
 
@@ -166,13 +166,13 @@ describe('Tabs', () => {
     it('handles clicking same tab (stays active)', async () => {
       const user = userEvent.setup();
       render(
-        <Tabs defaultValue="tab1">
+        <Tabs defaultValue='tab1'>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
+            <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
-          <TabsContent value="tab2">Content 2</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
+          <TabsContent value='tab2'>Content 2</TabsContent>
         </Tabs>
       );
 
@@ -191,15 +191,15 @@ describe('Tabs', () => {
     it('switches between multiple tabs correctly', async () => {
       const user = userEvent.setup();
       render(
-        <Tabs defaultValue="tab1">
+        <Tabs defaultValue='tab1'>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
-            <TabsTrigger value="tab3">Tab 3</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
+            <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
+            <TabsTrigger value='tab3'>Tab 3</TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
-          <TabsContent value="tab2">Content 2</TabsContent>
-          <TabsContent value="tab3">Content 3</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
+          <TabsContent value='tab2'>Content 2</TabsContent>
+          <TabsContent value='tab3'>Content 3</TabsContent>
         </Tabs>
       );
 
@@ -237,15 +237,15 @@ describe('Tabs', () => {
     it('moves to next tab with ArrowRight key', async () => {
       const user = userEvent.setup();
       render(
-        <Tabs defaultValue="tab1">
+        <Tabs defaultValue='tab1'>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
-            <TabsTrigger value="tab3">Tab 3</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
+            <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
+            <TabsTrigger value='tab3'>Tab 3</TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
-          <TabsContent value="tab2">Content 2</TabsContent>
-          <TabsContent value="tab3">Content 3</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
+          <TabsContent value='tab2'>Content 2</TabsContent>
+          <TabsContent value='tab3'>Content 3</TabsContent>
         </Tabs>
       );
 
@@ -262,15 +262,15 @@ describe('Tabs', () => {
     it('moves to previous tab with ArrowLeft key', async () => {
       const user = userEvent.setup();
       render(
-        <Tabs defaultValue="tab2">
+        <Tabs defaultValue='tab2'>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
-            <TabsTrigger value="tab3">Tab 3</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
+            <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
+            <TabsTrigger value='tab3'>Tab 3</TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
-          <TabsContent value="tab2">Content 2</TabsContent>
-          <TabsContent value="tab3">Content 3</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
+          <TabsContent value='tab2'>Content 2</TabsContent>
+          <TabsContent value='tab3'>Content 3</TabsContent>
         </Tabs>
       );
 
@@ -287,15 +287,15 @@ describe('Tabs', () => {
     it('wraps to first tab from last with ArrowRight', async () => {
       const user = userEvent.setup();
       render(
-        <Tabs defaultValue="tab3">
+        <Tabs defaultValue='tab3'>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
-            <TabsTrigger value="tab3">Tab 3</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
+            <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
+            <TabsTrigger value='tab3'>Tab 3</TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
-          <TabsContent value="tab2">Content 2</TabsContent>
-          <TabsContent value="tab3">Content 3</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
+          <TabsContent value='tab2'>Content 2</TabsContent>
+          <TabsContent value='tab3'>Content 3</TabsContent>
         </Tabs>
       );
 
@@ -312,15 +312,15 @@ describe('Tabs', () => {
     it('wraps to last tab from first with ArrowLeft', async () => {
       const user = userEvent.setup();
       render(
-        <Tabs defaultValue="tab1">
+        <Tabs defaultValue='tab1'>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
-            <TabsTrigger value="tab3">Tab 3</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
+            <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
+            <TabsTrigger value='tab3'>Tab 3</TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
-          <TabsContent value="tab2">Content 2</TabsContent>
-          <TabsContent value="tab3">Content 3</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
+          <TabsContent value='tab2'>Content 2</TabsContent>
+          <TabsContent value='tab3'>Content 3</TabsContent>
         </Tabs>
       );
 
@@ -337,13 +337,13 @@ describe('Tabs', () => {
     it('activates tab with Enter key', async () => {
       const user = userEvent.setup();
       render(
-        <Tabs defaultValue="tab1">
+        <Tabs defaultValue='tab1'>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
+            <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
-          <TabsContent value="tab2">Content 2</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
+          <TabsContent value='tab2'>Content 2</TabsContent>
         </Tabs>
       );
 
@@ -359,13 +359,13 @@ describe('Tabs', () => {
     it('activates tab with Space key', async () => {
       const user = userEvent.setup();
       render(
-        <Tabs defaultValue="tab1">
+        <Tabs defaultValue='tab1'>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
+            <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
-          <TabsContent value="tab2">Content 2</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
+          <TabsContent value='tab2'>Content 2</TabsContent>
         </Tabs>
       );
 
@@ -386,13 +386,13 @@ describe('Tabs', () => {
   describe('Controlled State', () => {
     it('respects controlled value prop', () => {
       render(
-        <Tabs value="tab2">
+        <Tabs value='tab2'>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
+            <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
-          <TabsContent value="tab2">Content 2</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
+          <TabsContent value='tab2'>Content 2</TabsContent>
         </Tabs>
       );
 
@@ -404,15 +404,15 @@ describe('Tabs', () => {
     it('calls onValueChange when tab is clicked', async () => {
       const user = userEvent.setup();
       const handleValueChange = jest.fn();
-      
+
       render(
-        <Tabs defaultValue="tab1" onValueChange={handleValueChange}>
+        <Tabs defaultValue='tab1' onValueChange={handleValueChange}>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
+            <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
-          <TabsContent value="tab2">Content 2</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
+          <TabsContent value='tab2'>Content 2</TabsContent>
         </Tabs>
       );
 
@@ -431,11 +431,11 @@ describe('Tabs', () => {
             <button onClick={() => setValue('tab2')}>Switch to Tab 2</button>
             <Tabs value={value} onValueChange={setValue}>
               <TabsList>
-                <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-                <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+                <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
+                <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
               </TabsList>
-              <TabsContent value="tab1">Content 1</TabsContent>
-              <TabsContent value="tab2">Content 2</TabsContent>
+              <TabsContent value='tab1'>Content 1</TabsContent>
+              <TabsContent value='tab2'>Content 2</TabsContent>
             </Tabs>
           </div>
         );
@@ -460,15 +460,15 @@ describe('Tabs', () => {
       const handleValueChange = jest.fn();
 
       render(
-        <Tabs defaultValue="tab1" onValueChange={handleValueChange}>
+        <Tabs defaultValue='tab1' onValueChange={handleValueChange}>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
-            <TabsTrigger value="tab3">Tab 3</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
+            <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
+            <TabsTrigger value='tab3'>Tab 3</TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
-          <TabsContent value="tab2">Content 2</TabsContent>
-          <TabsContent value="tab3">Content 3</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
+          <TabsContent value='tab2'>Content 2</TabsContent>
+          <TabsContent value='tab3'>Content 3</TabsContent>
         </Tabs>
       );
 
@@ -490,13 +490,15 @@ describe('Tabs', () => {
   describe('Disabled Tabs', () => {
     it('renders disabled tab with disabled attribute', () => {
       render(
-        <Tabs defaultValue="tab1">
+        <Tabs defaultValue='tab1'>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-            <TabsTrigger value="tab2" disabled>Tab 2 (Disabled)</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
+            <TabsTrigger value='tab2' disabled>
+              Tab 2 (Disabled)
+            </TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
-          <TabsContent value="tab2">Content 2</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
+          <TabsContent value='tab2'>Content 2</TabsContent>
         </Tabs>
       );
 
@@ -507,13 +509,15 @@ describe('Tabs', () => {
     it('does not activate disabled tab on click', async () => {
       const user = userEvent.setup();
       render(
-        <Tabs defaultValue="tab1">
+        <Tabs defaultValue='tab1'>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-            <TabsTrigger value="tab2" disabled>Tab 2</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
+            <TabsTrigger value='tab2' disabled>
+              Tab 2
+            </TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
-          <TabsContent value="tab2">Content 2</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
+          <TabsContent value='tab2'>Content 2</TabsContent>
         </Tabs>
       );
 
@@ -528,15 +532,17 @@ describe('Tabs', () => {
     it('skips disabled tab during keyboard navigation', async () => {
       const user = userEvent.setup();
       render(
-        <Tabs defaultValue="tab1">
+        <Tabs defaultValue='tab1'>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-            <TabsTrigger value="tab2" disabled>Tab 2</TabsTrigger>
-            <TabsTrigger value="tab3">Tab 3</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
+            <TabsTrigger value='tab2' disabled>
+              Tab 2
+            </TabsTrigger>
+            <TabsTrigger value='tab3'>Tab 3</TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
-          <TabsContent value="tab2">Content 2</TabsContent>
-          <TabsContent value="tab3">Content 3</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
+          <TabsContent value='tab2'>Content 2</TabsContent>
+          <TabsContent value='tab3'>Content 3</TabsContent>
         </Tabs>
       );
 
@@ -553,13 +559,15 @@ describe('Tabs', () => {
 
     it('applies disabled opacity styles', () => {
       const { container } = render(
-        <Tabs defaultValue="tab1">
+        <Tabs defaultValue='tab1'>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-            <TabsTrigger value="tab2" disabled>Tab 2</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
+            <TabsTrigger value='tab2' disabled>
+              Tab 2
+            </TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
-          <TabsContent value="tab2">Content 2</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
+          <TabsContent value='tab2'>Content 2</TabsContent>
         </Tabs>
       );
 
@@ -576,11 +584,11 @@ describe('Tabs', () => {
   describe('ARIA and Accessibility', () => {
     it('has role="tablist" on TabsList', () => {
       render(
-        <Tabs defaultValue="tab1">
+        <Tabs defaultValue='tab1'>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
         </Tabs>
       );
 
@@ -590,13 +598,13 @@ describe('Tabs', () => {
 
     it('has role="tab" on TabsTrigger', () => {
       render(
-        <Tabs defaultValue="tab1">
+        <Tabs defaultValue='tab1'>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
+            <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
-          <TabsContent value="tab2">Content 2</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
+          <TabsContent value='tab2'>Content 2</TabsContent>
         </Tabs>
       );
 
@@ -606,11 +614,11 @@ describe('Tabs', () => {
 
     it('has role="tabpanel" on TabsContent', () => {
       render(
-        <Tabs defaultValue="tab1">
+        <Tabs defaultValue='tab1'>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
         </Tabs>
       );
 
@@ -620,13 +628,13 @@ describe('Tabs', () => {
 
     it('has aria-selected on active tab', () => {
       render(
-        <Tabs defaultValue="tab1">
+        <Tabs defaultValue='tab1'>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
+            <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
-          <TabsContent value="tab2">Content 2</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
+          <TabsContent value='tab2'>Content 2</TabsContent>
         </Tabs>
       );
 
@@ -639,11 +647,11 @@ describe('Tabs', () => {
 
     it('has aria-controls linking tab to panel', () => {
       render(
-        <Tabs defaultValue="tab1">
+        <Tabs defaultValue='tab1'>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
         </Tabs>
       );
 
@@ -658,13 +666,13 @@ describe('Tabs', () => {
 
     it('has no accessibility violations', async () => {
       const { container } = render(
-        <Tabs defaultValue="tab1">
+        <Tabs defaultValue='tab1'>
           <TabsList>
-            <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-            <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+            <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
+            <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
           </TabsList>
-          <TabsContent value="tab1">Content 1</TabsContent>
-          <TabsContent value="tab2">Content 2</TabsContent>
+          <TabsContent value='tab1'>Content 1</TabsContent>
+          <TabsContent value='tab2'>Content 2</TabsContent>
         </Tabs>
       );
 

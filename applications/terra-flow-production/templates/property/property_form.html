@@ -1,0 +1,416 @@
+{% extends "layout.html" %}
+
+{% block title %}{% if property.id %}Edit{% else %}New{% endif %} Property{% endblock %}
+
+{% block additionalcss %}
+<style>
+    .form-section {
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .form-section-title {
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    .form-label {
+        font-weight: 500;
+        color: #495057;
+    }
+    
+    .form-text {
+        margin-top: 0.25rem;
+        font-size: 0.875em;
+        color: #6c757d;
+    }
+    
+    .required-field::after {
+        content: "*";
+        color: #dc3545;
+        margin-left: 0.25rem;
+    }
+    
+    .alert-validation {
+        display: none;
+        margin-top: 1rem;
+    }
+    
+    .floating-action-bar {
+        position: sticky;
+        bottom: 0;
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 1rem 0;
+        border-top: 1px solid #dee2e6;
+        margin-top: 2rem;
+        z-index: 100;
+        backdrop-filter: blur(10px);
+    }
+    
+    .map-placeholder {
+        height: 250px;
+        background-color: #f8f9fa;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 0.375rem;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('property.property_list') }}">Properties</a></li>
+            {% if property.id %}
+            <li class="breadcrumb-item"><a href="{{ url_for('property.property_detail', property_id=property.id) }}">{{ property.parcel_id }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Edit</li>
+            {% else %}
+            <li class="breadcrumb-item active" aria-current="page">New Property</li>
+            {% endif %}
+        </ol>
+    </nav>
+    
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2">
+            {% if property.id %}
+            <i class="fas fa-edit me-2"></i> Edit Property
+            {% else %}
+            <i class="fas fa-plus-circle me-2"></i> New Property
+            {% endif %}
+        </h1>
+    </div>
+    
+    <!-- Validation Alert -->
+    <div class="alert alert-danger alert-validation" id="validation-alert" role="alert">
+        <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i> Please fix the following errors:</h4>
+        <ul class="mb-0" id="validation-errors"></ul>
+    </div>
+    
+    <!-- Property Form -->
+    <form id="property-form" method="post" novalidate>
+        <!-- Identification Section -->
+        <div class="form-section">
+            <h3 class="form-section-title h5"><i class="fas fa-id-card me-2"></i> Property Identification</h3>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="parcel_id" class="form-label required-field">Parcel ID</label>
+                    <input type="text" class="form-control" id="parcel_id" name="parcel_id" value="{{ property.parcel_id or '' }}" required>
+                    <div class="invalid-feedback">Please provide a parcel ID.</div>
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="account_number" class="form-label">Account Number</label>
+                    <input type="text" class="form-control" id="account_number" name="account_number" value="{{ property.account_number or '' }}">
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="property_class" class="form-label">Property Class</label>
+                    <select class="form-select" id="property_class" name="property_class">
+                        <option value="" {% if not property.property_class %}selected{% endif %}>Select a class</option>
+                        <option value="residential" {% if property.property_class == 'residential' %}selected{% endif %}>Residential</option>
+                        <option value="commercial" {% if property.property_class == 'commercial' %}selected{% endif %}>Commercial</option>
+                        <option value="industrial" {% if property.property_class == 'industrial' %}selected{% endif %}>Industrial</option>
+                        <option value="agricultural" {% if property.property_class == 'agricultural' %}selected{% endif %}>Agricultural</option>
+                        <option value="vacant" {% if property.property_class == 'vacant' %}selected{% endif %}>Vacant Land</option>
+                        <option value="mixed" {% if property.property_class == 'mixed' %}selected{% endif %}>Mixed Use</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <label for="zoning" class="form-label">Zoning</label>
+                    <input type="text" class="form-control" id="zoning" name="zoning" value="{{ property.zoning or '' }}">
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <label for="status" class="form-label">Status</label>
+                    <select class="form-select" id="status" name="status">
+                        <option value="active" {% if property.status == 'active' or not property.status %}selected{% endif %}>Active</option>
+                        <option value="inactive" {% if property.status == 'inactive' %}selected{% endif %}>Inactive</option>
+                        <option value="pending" {% if property.status == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="exempt" {% if property.status == 'exempt' %}selected{% endif %}>Exempt</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Location Section -->
+        <div class="form-section">
+            <h3 class="form-section-title h5"><i class="fas fa-map-marker-alt me-2"></i> Property Location</h3>
+            
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="address" class="form-label">Street Address</label>
+                    <input type="text" class="form-control" id="address" name="address" value="{{ property.address or '' }}">
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-5 mb-3">
+                    <label for="city" class="form-label">City</label>
+                    <input type="text" class="form-control" id="city" name="city" value="{{ property.city or '' }}">
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <label for="state" class="form-label">State</label>
+                    <input type="text" class="form-control" id="state" name="state" value="{{ property.state or '' }}">
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <label for="zip_code" class="form-label">ZIP Code</label>
+                    <input type="text" class="form-control" id="zip_code" name="zip_code" value="{{ property.zip_code or '' }}">
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="latitude" class="form-label">Latitude</label>
+                    <input type="text" class="form-control" id="latitude" name="latitude" value="{{ property.latitude or '' }}">
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="longitude" class="form-label">Longitude</label>
+                    <input type="text" class="form-control" id="longitude" name="longitude" value="{{ property.longitude or '' }}">
+                </div>
+            </div>
+            
+            <div class="map-placeholder">
+                <div class="text-center">
+                    <i class="fas fa-map-marked-alt fa-3x text-secondary mb-3"></i>
+                    <h4 class="h6 text-muted">Map Location</h4>
+                    <p class="text-muted small mb-0">Future enhancement: Interactive map for location selection</p>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="legal_description" class="form-label">Legal Description</label>
+                <textarea class="form-control" id="legal_description" name="legal_description" rows="3">{{ property.legal_description or '' }}</textarea>
+            </div>
+        </div>
+        
+        <!-- Owner Information Section -->
+        <div class="form-section">
+            <h3 class="form-section-title h5"><i class="fas fa-user me-2"></i> Owner Information</h3>
+            
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="owner_name" class="form-label">Owner Name</label>
+                    <input type="text" class="form-control" id="owner_name" name="owner_name" value="{{ property.owner_name or '' }}">
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="owner_address" class="form-label">Owner Address</label>
+                    <input type="text" class="form-control" id="owner_address" name="owner_address" value="{{ property.owner_address or '' }}">
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-5 mb-3">
+                    <label for="owner_city" class="form-label">Owner City</label>
+                    <input type="text" class="form-control" id="owner_city" name="owner_city" value="{{ property.owner_city or '' }}">
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <label for="owner_state" class="form-label">Owner State</label>
+                    <input type="text" class="form-control" id="owner_state" name="owner_state" value="{{ property.owner_state or '' }}">
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <label for="owner_zip" class="form-label">Owner ZIP Code</label>
+                    <input type="text" class="form-control" id="owner_zip" name="owner_zip" value="{{ property.owner_zip or '' }}">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Property Characteristics Section -->
+        <div class="form-section">
+            <h3 class="form-section-title h5"><i class="fas fa-home me-2"></i> Property Characteristics</h3>
+            
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label for="year_built" class="form-label">Year Built</label>
+                    <input type="number" class="form-control" id="year_built" name="year_built" value="{{ property.year_built or '' }}">
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <label for="living_area" class="form-label">Living Area (sq ft)</label>
+                    <input type="number" class="form-control" id="living_area" name="living_area" value="{{ property.living_area or '' }}">
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <label for="bedrooms" class="form-label">Bedrooms</label>
+                    <input type="number" class="form-control" id="bedrooms" name="bedrooms" value="{{ property.bedrooms or '' }}">
+                </div>
+                
+                <div class="col-md-3 mb-3">
+                    <label for="bathrooms" class="form-label">Bathrooms</label>
+                    <input type="number" step="0.5" class="form-control" id="bathrooms" name="bathrooms" value="{{ property.bathrooms or '' }}">
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="land_area" class="form-label">Land Area (sq ft)</label>
+                    <input type="number" class="form-control" id="land_area" name="land_area" value="{{ property.land_area or '' }}">
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    <label for="lot_size" class="form-label">Lot Size (acres or dimensions)</label>
+                    <input type="text" class="form-control" id="lot_size" name="lot_size" value="{{ property.lot_size or '' }}">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Valuation Section -->
+        <div class="form-section">
+            <h3 class="form-section-title h5"><i class="fas fa-dollar-sign me-2"></i> Property Valuation</h3>
+            
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="land_value" class="form-label">Land Value ($)</label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input type="number" class="form-control value-input" id="land_value" name="land_value" value="{{ property.land_value or '' }}">
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <label for="improvement_value" class="form-label">Improvement Value ($)</label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input type="number" class="form-control value-input" id="improvement_value" name="improvement_value" value="{{ property.improvement_value or '' }}">
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <label for="total_value" class="form-label">Total Value ($)</label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input type="number" class="form-control" id="total_value" name="total_value" value="{{ property.total_value or '' }}" readonly>
+                    </div>
+                    <div class="form-text">Automatically calculated from Land + Improvement values</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Last Sale Section -->
+        <div class="form-section">
+            <h3 class="form-section-title h5"><i class="fas fa-handshake me-2"></i> Last Sale Information</h3>
+            
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="last_sale_date" class="form-label">Last Sale Date</label>
+                    <input type="date" class="form-control" id="last_sale_date" name="last_sale_date" value="{{ property.last_sale_date or '' }}">
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <label for="last_sale_price" class="form-label">Last Sale Price ($)</label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input type="number" class="form-control" id="last_sale_price" name="last_sale_price" value="{{ property.last_sale_price or '' }}">
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-3">
+                    <label for="last_sale_document" class="form-label">Last Sale Document</label>
+                    <input type="text" class="form-control" id="last_sale_document" name="last_sale_document" value="{{ property.last_sale_document or '' }}" placeholder="Deed reference or document ID">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Form Actions -->
+        <div class="floating-action-bar">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 d-flex justify-content-between">
+                        <a href="{{ url_for('property.property_list') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i> Cancel
+                        </a>
+                        
+                        <div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> {% if property.id %}Update{% else %}Create{% endif %} Property
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('property-form');
+        const validationAlert = document.getElementById('validation-alert');
+        const validationErrors = document.getElementById('validation-errors');
+        
+        // Calculate total value when land or improvement values change
+        const landValueInput = document.getElementById('land_value');
+        const improvementValueInput = document.getElementById('improvement_value');
+        const totalValueInput = document.getElementById('total_value');
+        
+        function calculateTotalValue() {
+            const landValue = parseFloat(landValueInput.value) || 0;
+            const improvementValue = parseFloat(improvementValueInput.value) || 0;
+            totalValueInput.value = (landValue + improvementValue).toFixed(2);
+        }
+        
+        landValueInput.addEventListener('input', calculateTotalValue);
+        improvementValueInput.addEventListener('input', calculateTotalValue);
+        
+        // Initial calculation
+        calculateTotalValue();
+        
+        // Form validation
+        form.addEventListener('submit', function(event) {
+            let isValid = true;
+            const errors = [];
+            
+            // Reset validation state
+            validationAlert.style.display = 'none';
+            validationErrors.innerHTML = '';
+            form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            
+            // Check required fields
+            const parcelIdInput = document.getElementById('parcel_id');
+            if (!parcelIdInput.value.trim()) {
+                parcelIdInput.classList.add('is-invalid');
+                errors.push('Parcel ID is required');
+                isValid = false;
+            }
+            
+            // Additional validations can be added here
+            
+            if (!isValid) {
+                event.preventDefault();
+                
+                // Display validation errors
+                errors.forEach(error => {
+                    const li = document.createElement('li');
+                    li.textContent = error;
+                    validationErrors.appendChild(li);
+                });
+                
+                validationAlert.style.display = 'block';
+                
+                // Scroll to the validation alert
+                validationAlert.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+</script>
+{% endblock %}

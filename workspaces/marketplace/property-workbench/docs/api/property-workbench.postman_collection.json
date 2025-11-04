@@ -1,0 +1,207 @@
+{
+  "info": {
+    "name": "Property Workbench API",
+    "description": "Property management and valuation APIs - TerraFusion Government API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "oauth2",
+    "oauth2": [
+      {
+        "key": "tokenUrl",
+        "value": "https://auth.terrafusion.gov/oauth/token",
+        "type": "string"
+      },
+      {
+        "key": "authUrl",
+        "value": "https://auth.terrafusion.gov/oauth/authorize",
+        "type": "string"
+      },
+      {
+        "key": "scope",
+        "value": "property-workbench:read property-workbench:write",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.terrafusion.gov/api/v1/property",
+      "type": "string"
+    },
+    {
+      "key": "workspace",
+      "value": "property-workbench",
+      "type": "string"
+    },
+    {
+      "key": "version",
+      "value": "1.0.0",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-TerraFusion-Workspace",
+            "value": "{{workspace}}",
+            "type": "text"
+          },
+          {
+            "key": "X-TerraFusion-Version",
+            "value": "{{version}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Property information",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-TerraFusion-Workspace",
+            "value": "{{workspace}}",
+            "type": "text"
+          },
+          {
+            "key": "X-TerraFusion-Version",
+            "value": "{{version}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/properties",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "properties"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Property valuations",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-TerraFusion-Workspace",
+            "value": "{{workspace}}",
+            "type": "text"
+          },
+          {
+            "key": "X-TerraFusion-Version",
+            "value": "{{version}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/valuations",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "valuations"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Property ownership records",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-TerraFusion-Workspace",
+            "value": "{{workspace}}",
+            "type": "text"
+          },
+          {
+            "key": "X-TerraFusion-Version",
+            "value": "{{version}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/ownership",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "ownership"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Property transfer processing",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-TerraFusion-Workspace",
+            "value": "{{workspace}}",
+            "type": "text"
+          },
+          {
+            "key": "X-TerraFusion-Version",
+            "value": "{{version}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/transfers",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "transfers"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

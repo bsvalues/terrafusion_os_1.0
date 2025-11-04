@@ -1,0 +1,85 @@
+{
+    "type": "FunctionTool",
+    "guid": "{d5409843-ccd3-4cd5-9f45-20d3eea76b07}",
+    "displayname": "$rc:title",
+    "helpcontent": "61010013",
+    "description": "$rc:description",
+    "product": "200",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "block_add_to_map"
+    ],
+    "params": {
+        "in_utility_network": {
+            "displayname": "$rc:in_utility_network.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    },
+                    {
+                        "type": "GPUtilityNetworkLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_utility_network.descr"
+        },
+        "association_type": {
+            "displayname": "$rc:association_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ALL",
+                        "code": "$rc:association_type.domain.ALL"
+                    },
+                    {
+                        "value": "JUNCTION_JUNCTION_CONNECTIVITY",
+                        "code": "$rc:association_type.domain.JUNCTION_JUNCTION_CONNECTIVITY"
+                    },
+                    {
+                        "value": "CONTAINMENT",
+                        "code": "$rc:association_type.domain.CONTAINMENT"
+                    },
+                    {
+                        "value": "STRUCTURAL_ATTACHMENT",
+                        "code": "$rc:association_type.domain.STRUCTURAL_ATTACHMENT"
+                    },
+                    {
+                        "value": "JUNCTION_EDGE_FROM_CONNECTIVITY",
+                        "code": "$rc:association_type.domain.JUNCTION_EDGE_FROM_CONNECTIVITY"
+                    },
+                    {
+                        "value": "JUNCTION_EDGE_MIDSPAN_CONNECTIVITY",
+                        "code": "$rc:association_type.domain.JUNCTION_EDGE_MIDSPAN_CONNECTIVITY"
+                    },
+                    {
+                        "value": "JUNCTION_EDGE_TO_CONNECTIVITY",
+                        "code": "$rc:association_type.domain.JUNCTION_EDGE_TO_CONNECTIVITY"
+                    }
+                ]
+            },
+            "description": "$rc:association_type.descr"
+        },
+        "out_csv_file": {
+            "direction": "out",
+            "displayname": "$rc:out_csv_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "csv"
+                ]
+            },
+            "description": "$rc:out_csv_file.descr"
+        }
+    }
+}

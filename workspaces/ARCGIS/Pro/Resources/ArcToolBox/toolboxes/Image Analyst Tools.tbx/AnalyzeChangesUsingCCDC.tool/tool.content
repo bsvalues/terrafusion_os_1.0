@@ -1,0 +1,157 @@
+{
+    "type": "FunctionTool",
+    "guid": "{06f90bae-887a-46f2-ae93-ac64bffa3239}",
+    "displayname": "$rc:title",
+    "helpcontent": "66130007",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "58",
+        "86"
+    ],
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_multidimensional_raster": {
+            "display_order": "0",
+            "displayname": "$rc:in_multidimensional_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "DEMosaicDataset"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "DEImageServer"
+                    }
+                ]
+            },
+            "description": "$rc:in_multidimensional_raster.descr"
+        },
+        "out_ccdc_result": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_ccdc_result.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    }
+                ]
+            },
+            "description": "$rc:out_ccdc_result.descr"
+        },
+        "bands": {
+            "type": "optional",
+            "display_order": "2",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:bands.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPLong"
+                }
+            },
+            "description": "$rc:bands.descr"
+        },
+        "tmask_bands": {
+            "type": "optional",
+            "display_order": "3",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:tmask_bands.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPLong"
+                }
+            },
+            "description": "$rc:tmask_bands.descr"
+        },
+        "chi_squared_threshold": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:chi_squared_threshold.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                },
+                "high": {
+                    "allow": "true",
+                    "val": "1"
+                }
+            },
+            "value": "0.99",
+            "description": "$rc:chi_squared_threshold.descr"
+        },
+        "min_anomaly_observations": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:min_anomaly_observations.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "1"
+                }
+            },
+            "value": "6",
+            "description": "$rc:min_anomaly_observations.descr"
+        },
+        "update_frequency": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:update_frequency.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                }
+            },
+            "value": "1",
+            "description": "$rc:update_frequency.descr"
+        }
+    },
+    "environments": [
+        "cellSize",
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "nodata",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "pyramid",
+        "rasterStatistics",
+        "resamplingMethod",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

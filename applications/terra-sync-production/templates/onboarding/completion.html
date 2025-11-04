@@ -1,0 +1,304 @@
+{% extends "base.html" %}
+
+{% block title %}Onboarding Complete - TerraFusion{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    .completion-container {
+        padding: 3rem 0;
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+    }
+    
+    .completion-header {
+        margin-bottom: 2rem;
+    }
+    
+    .completion-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--dark-color);
+        margin-bottom: 1rem;
+    }
+    
+    .completion-subtitle {
+        font-size: 1.5rem;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+    }
+    
+    .completion-image {
+        max-width: 300px;
+        margin: 0 auto 3rem;
+        display: block;
+    }
+    
+    .completion-message {
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border: 1px solid var(--border-color);
+        text-align: left;
+    }
+    
+    .completion-message h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: var(--dark-color);
+    }
+    
+    .completion-message p {
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+        color: var(--text-color);
+    }
+    
+    .completion-stats {
+        display: flex;
+        justify-content: center;
+        margin: 2rem 0;
+        gap: 2rem;
+    }
+    
+    .stat-item {
+        text-align: center;
+    }
+    
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        font-size: 1rem;
+        color: var(--text-secondary);
+    }
+    
+    .completion-actions {
+        margin-top: 2rem;
+    }
+    
+    .action-btn {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        font-size: 1.125rem;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 0.25rem;
+        transition: all 0.2s;
+    }
+    
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+        text-decoration: none;
+        color: white;
+    }
+    
+    .resources-section {
+        margin-top: 3rem;
+        text-align: left;
+    }
+    
+    .resources-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--dark-color);
+    }
+    
+    .resources-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .resource-item {
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+        border: 1px solid var(--border-color);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .resource-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .resource-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+    }
+    
+    .resource-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--dark-color);
+    }
+    
+    .resource-description {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+    }
+    
+    .resource-link {
+        display: inline-flex;
+        align-items: center;
+        color: var(--primary-color);
+        font-weight: 500;
+        font-size: 0.875rem;
+    }
+    
+    .resource-link-icon {
+        margin-left: 0.25rem;
+    }
+    
+    @media (max-width: 768px) {
+        .completion-container {
+            padding: 2rem 0;
+        }
+        
+        .completion-title {
+            font-size: 2rem;
+        }
+        
+        .completion-subtitle {
+            font-size: 1.25rem;
+        }
+        
+        .completion-image {
+            max-width: 200px;
+        }
+        
+        .completion-stats {
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .resources-list {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="completion-container">
+    <div class="completion-header">
+        <h1 class="completion-title">Tutorial Completed!</h1>
+        <p class="completion-subtitle">Congratulations, you've completed the {{ tutorial.title }}.</p>
+        
+        {% if tutorial.welcome_image %}
+        <img src="{{ url_for('static', filename='images/onboarding/' + tutorial.welcome_image) }}" alt="Completion" class="completion-image">
+        {% endif %}
+    </div>
+    
+    <div class="completion-stats">
+        <div class="stat-item">
+            <div class="stat-value">{{ steps_completed }}</div>
+            <div class="stat-label">Steps Completed</div>
+        </div>
+        
+        <div class="stat-item">
+            <div class="stat-value">100%</div>
+            <div class="stat-label">Completion Rate</div>
+        </div>
+    </div>
+    
+    <div class="completion-message">
+        <h3>Next Steps for {{ user.role }}</h3>
+        {% if user.role == 'ITAdmin' %}
+        <p>As an IT Administrator, you now have the knowledge to:</p>
+        <ul>
+            <li>Configure the connection to County Active Directory</li>
+            <li>Manage user roles and permissions</li>
+            <li>Monitor system health and performance</li>
+            <li>Troubleshoot sync operations</li>
+            <li>Set up data validation rules</li>
+        </ul>
+        {% elif user.role == 'Assessor' %}
+        <p>As a Property Assessor, you now have the knowledge to:</p>
+        <ul>
+            <li>Review property data changes</li>
+            <li>Approve valid data updates</li>
+            <li>Reject problematic data with explanations</li>
+            <li>Create new sync operations for property data</li>
+        </ul>
+        {% elif user.role == 'Staff' %}
+        <p>As a County Staff member, you now have the knowledge to:</p>
+        <ul>
+            <li>Upload property assessment data files</li>
+            <li>Monitor data validation results</li>
+            <li>Address validation errors and warnings</li>
+            <li>Track the status of sync operations</li>
+        </ul>
+        {% elif user.role == 'Auditor' %}
+        <p>As a County Auditor, you now have the knowledge to:</p>
+        <ul>
+            <li>Review the complete audit trail</li>
+            <li>Monitor data changes for compliance</li>
+            <li>Generate audit reports</li>
+            <li>Track user actions and approvals</li>
+        </ul>
+        {% else %}
+        <p>You're now ready to use the TerraFusion SyncService platform! Explore the dashboard to get started with your work.</p>
+        {% endif %}
+    </div>
+    
+    <div class="resources-section">
+        <h2 class="resources-title">Helpful Resources</h2>
+        
+        <div class="resources-list">
+            <div class="resource-item">
+                <div class="resource-icon">📚</div>
+                <h3 class="resource-title">User Guide</h3>
+                <p class="resource-description">Comprehensive documentation for all platform features.</p>
+                <a href="#" class="resource-link">View Documentation <span class="resource-link-icon">→</span></a>
+            </div>
+            
+            <div class="resource-item">
+                <div class="resource-icon">🎬</div>
+                <h3 class="resource-title">Video Tutorials</h3>
+                <p class="resource-description">Step-by-step videos for common tasks.</p>
+                <a href="#" class="resource-link">Watch Videos <span class="resource-link-icon">→</span></a>
+            </div>
+            
+            <div class="resource-item">
+                <div class="resource-icon">❓</div>
+                <h3 class="resource-title">Help Center</h3>
+                <p class="resource-description">Frequently asked questions and troubleshooting tips.</p>
+                <a href="#" class="resource-link">Get Help <span class="resource-link-icon">→</span></a>
+            </div>
+            
+            <div class="resource-item">
+                <div class="resource-icon">👥</div>
+                <h3 class="resource-title">Support</h3>
+                <p class="resource-description">Contact IT support for assistance with any issues.</p>
+                <a href="mailto:support@benton.wa.us" class="resource-link">Contact Support <span class="resource-link-icon">→</span></a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="completion-actions">
+        <form method="post" action="{{ url_for('onboarding_bp.onboarding_complete') }}">
+            <button type="submit" class="action-btn btn-primary">Go to Dashboard</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

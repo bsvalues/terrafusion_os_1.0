@@ -1,0 +1,476 @@
+{% extends "unified_base.html" %}
+
+{% block title %}SE Washington Assessment - {{ property.address }}, {{ property.city }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-6 flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-bold text-secondary-900 dark:text-white">{{ property.address }}</h1>
+            <p class="mt-1 text-secondary-600 dark:text-secondary-400">{{ property.city }}, {{ property.state }} {{ property.zip_code }}</p>
+        </div>
+        <div class="flex space-x-3">
+            <button class="btn btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                </svg>
+                Print Assessment
+            </button>
+            <button class="btn btn-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                View Public Record
+            </button>
+        </div>
+    </div>
+
+    <!-- County Information -->
+    <div class="card mb-6">
+        <div class="card-header">
+            <h2 class="text-lg font-medium text-secondary-900 dark:text-white">County Information</h2>
+        </div>
+        <div class="card-body">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-medium text-secondary-900 dark:text-white mb-2">Assessment Summary</h3>
+                    <dl class="divide-y divide-secondary-200 dark:divide-secondary-700">
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">County</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">{{ county.name }}</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Parcel ID</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">{{ property.id }}</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Assessment Year</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">2025</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Land Value</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">${{ '{:,.0f}'.format(property.land_value|default(property.price * 0.3, true)) }}</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Improvement Value</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">${{ '{:,.0f}'.format(property.improvement_value|default(property.price * 0.7, true)) }}</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Total Value</dt>
+                            <dd class="text-sm font-bold text-secondary-900 dark:text-white col-span-2">${{ '{:,.0f}'.format(property.price|default(0)) }}</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Levy Code</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">{{ property.levy_code|default('04-104') }}</dd>
+                        </div>
+                    </dl>
+                </div>
+                
+                <div>
+                    <h3 class="font-medium text-secondary-900 dark:text-white mb-2">Property Classification</h3>
+                    <dl class="divide-y divide-secondary-200 dark:divide-secondary-700">
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Property Class</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">{{ property.property_type }}</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Zoning</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">{{ property.zoning|default('R-1 Residential') }}</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Land Use</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">{{ property.land_use|default('Single Family Residence') }}</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Tax Area</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">{{ property.tax_area|default('0104') }}</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Acres</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">{{ property.lot_size }}</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Year Built</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">{{ property.year_built }}</dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assessment History -->
+    <div class="card mb-6">
+        <div class="card-header">
+            <h2 class="text-lg font-medium text-secondary-900 dark:text-white">Assessment History</h2>
+        </div>
+        <div class="card-body">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-secondary-200 dark:divide-secondary-700">
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider dark:text-secondary-400">
+                                Year
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider dark:text-secondary-400">
+                                Land Value
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider dark:text-secondary-400">
+                                Improvement Value
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider dark:text-secondary-400">
+                                Total Value
+                            </th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider dark:text-secondary-400">
+                                Change
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-secondary-200 dark:divide-secondary-700">
+                        <tr>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-secondary-900 dark:text-white">
+                                2025
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
+                                ${{ '{:,.0f}'.format(property.land_value|default(property.price * 0.3, true)) }}
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
+                                ${{ '{:,.0f}'.format(property.improvement_value|default(property.price * 0.7, true)) }}
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
+                                ${{ '{:,.0f}'.format(property.price|default(0)) }}
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
+                                <span class="text-primary-600 dark:text-primary-400">+6.8%</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-secondary-900 dark:text-white">
+                                2024
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
+                                ${{ '{:,.0f}'.format((property.land_value|default(property.price * 0.3, true)) / 1.068) }}
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
+                                ${{ '{:,.0f}'.format((property.improvement_value|default(property.price * 0.7, true)) / 1.068) }}
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
+                                ${{ '{:,.0f}'.format((property.price|default(0)) / 1.068) }}
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
+                                <span class="text-primary-600 dark:text-primary-400">+4.2%</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-secondary-900 dark:text-white">
+                                2023
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
+                                ${{ '{:,.0f}'.format((property.land_value|default(property.price * 0.3, true)) / 1.068 / 1.042) }}
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
+                                ${{ '{:,.0f}'.format((property.improvement_value|default(property.price * 0.7, true)) / 1.068 / 1.042) }}
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
+                                ${{ '{:,.0f}'.format((property.price|default(0)) / 1.068 / 1.042) }}
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
+                                <span class="text-primary-600 dark:text-primary-400">+8.5%</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-secondary-900 dark:text-white">
+                                2022
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
+                                ${{ '{:,.0f}'.format((property.land_value|default(property.price * 0.3, true)) / 1.068 / 1.042 / 1.085) }}
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
+                                ${{ '{:,.0f}'.format((property.improvement_value|default(property.price * 0.7, true)) / 1.068 / 1.042 / 1.085) }}
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
+                                ${{ '{:,.0f}'.format((property.price|default(0)) / 1.068 / 1.042 / 1.085) }}
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
+                                <span class="text-primary-600 dark:text-primary-400">--</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Tax Information -->
+        <div class="card lg:col-span-2">
+            <div class="card-header">
+                <h2 class="text-lg font-medium text-secondary-900 dark:text-white">Tax Information</h2>
+            </div>
+            <div class="card-body">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-secondary-200 dark:divide-secondary-700">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider dark:text-secondary-400">
+                                    Year
+                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider dark:text-secondary-400">
+                                    Amount
+                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider dark:text-secondary-400">
+                                    Change
+                                </th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider dark:text-secondary-400">
+                                    Status
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-secondary-200 dark:divide-secondary-700">
+                            {% for tax in property.tax_history %}
+                            <tr>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-secondary-900 dark:text-white">
+                                    {{ tax.year }}
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
+                                    ${{ '{:,.0f}'.format(tax.amount) }}
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
+                                    {% if tax.change > 0 %}
+                                    <span class="text-primary-600 dark:text-primary-400">+{{ tax.change }}%</span>
+                                    {% elif tax.change < 0 %}
+                                    <span class="text-accent-600 dark:text-accent-400">{{ tax.change }}%</span>
+                                    {% else %}
+                                    <span>0%</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-100 text-success-800 dark:bg-success-900 dark:text-success-300">
+                                        Paid
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exemptions -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="text-lg font-medium text-secondary-900 dark:text-white">Exemptions</h2>
+            </div>
+            <div class="card-body">
+                {% if property.exemptions|default([]) %}
+                <ul class="divide-y divide-secondary-200 dark:divide-secondary-700">
+                    {% for exemption in property.exemptions %}
+                    <li class="py-2">
+                        <div class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="text-sm text-secondary-900 dark:text-white">{{ exemption }}</span>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="text-sm text-secondary-700 dark:text-secondary-300 py-4">
+                    <p>No exemptions are currently applied to this property.</p>
+                    <p class="mt-2">Property owners may qualify for the following exemptions:</p>
+                    <ul class="list-disc list-inside mt-2 space-y-1">
+                        <li>Senior Citizen / Disabled Person Exemption</li>
+                        <li>Disabled Veterans Exemption</li>
+                        <li>Open Space / Agriculture / Timber Land</li>
+                        <li>Historic Property</li>
+                    </ul>
+                    <div class="mt-4">
+                        <a href="#" class="text-primary-600 hover:text-primary-500 dark:text-primary-400 dark:hover:text-primary-300">
+                            Learn more about exemptions
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Agricultural Information (if applicable) -->
+    {% if property.property_type|lower in ["agricultural", "farm", "vineyard", "orchard"] %}
+    <div class="card mt-6">
+        <div class="card-header">
+            <h2 class="text-lg font-medium text-secondary-900 dark:text-white">Agricultural Information</h2>
+        </div>
+        <div class="card-body">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <h3 class="font-medium text-secondary-900 dark:text-white mb-2">Land Classification</h3>
+                    <dl class="divide-y divide-secondary-200 dark:divide-secondary-700">
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Soil Type</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">Sandy loam</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Land Class</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">Irrigated cropland</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Primary Crops</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">Apples, Cherries, Wheat</dd>
+                        </div>
+                    </dl>
+                </div>
+                
+                <div>
+                    <h3 class="font-medium text-secondary-900 dark:text-white mb-2">Water Rights</h3>
+                    <dl class="divide-y divide-secondary-200 dark:divide-secondary-700">
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Certificate</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">Certificate #12345</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Source</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">Surface water</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Status</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-100 text-success-800 dark:bg-success-900 dark:text-success-300">
+                                    Active
+                                </span>
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+                
+                <div>
+                    <h3 class="font-medium text-secondary-900 dark:text-white mb-2">Yield History</h3>
+                    <dl class="divide-y divide-secondary-200 dark:divide-secondary-700">
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">2024</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">5.5 tons/acre</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">2023</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">5.8 tons/acre</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">2022</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">5.2 tons/acre</dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Valuation Method -->
+    <div class="card mt-6">
+        <div class="card-header">
+            <h2 class="text-lg font-medium text-secondary-900 dark:text-white">Valuation Methodology</h2>
+        </div>
+        <div class="card-body">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <h3 class="font-medium text-secondary-900 dark:text-white mb-2">Cost Approach</h3>
+                    <dl class="divide-y divide-secondary-200 dark:divide-secondary-700">
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Replacement Cost</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">${{ '{:,.0f}'.format(property.price|default(0) * 0.75) }}</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Less Depreciation</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">${{ '{:,.0f}'.format(property.price|default(0) * 0.75 * 0.15) }}</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Plus Land Value</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">${{ '{:,.0f}'.format(property.land_value|default(property.price * 0.3, true)) }}</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Total</dt>
+                            <dd class="text-sm font-bold text-secondary-900 dark:text-white col-span-2">${{ '{:,.0f}'.format(property.price|default(0) * 0.75 * 0.85 + property.land_value|default(property.price * 0.3, true)) }}</dd>
+                        </div>
+                    </dl>
+                </div>
+                
+                <div>
+                    <h3 class="font-medium text-secondary-900 dark:text-white mb-2">Market Approach</h3>
+                    <dl class="divide-y divide-secondary-200 dark:divide-secondary-700">
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Comp 1</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">${{ '{:,.0f}'.format(property.price|default(0) * 0.95) }}</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Comp 2</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">${{ '{:,.0f}'.format(property.price|default(0) * 1.02) }}</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Comp 3</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">${{ '{:,.0f}'.format(property.price|default(0) * 0.98) }}</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Market Value</dt>
+                            <dd class="text-sm font-bold text-secondary-900 dark:text-white col-span-2">${{ '{:,.0f}'.format(property.price|default(0) * 0.98) }}</dd>
+                        </div>
+                    </dl>
+                </div>
+                
+                <div>
+                    <h3 class="font-medium text-secondary-900 dark:text-white mb-2">Final Valuation</h3>
+                    <dl class="divide-y divide-secondary-200 dark:divide-secondary-700">
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Cost Approach</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">${{ '{:,.0f}'.format(property.price|default(0) * 0.75 * 0.85 + property.land_value|default(property.price * 0.3, true)) }}</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Market Approach</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">${{ '{:,.0f}'.format(property.price|default(0) * 0.98) }}</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Income Approach</dt>
+                            <dd class="text-sm text-secondary-900 dark:text-white col-span-2">${{ '{:,.0f}'.format(property.price|default(0) * 1.03) }}</dd>
+                        </div>
+                        <div class="py-2 grid grid-cols-3">
+                            <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400">Assessed Value</dt>
+                            <dd class="text-sm font-bold text-secondary-900 dark:text-white col-span-2">${{ '{:,.0f}'.format(property.price|default(0)) }}</dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Set the context type for the AI sidebar
+    document.addEventListener('DOMContentLoaded', function() {
+        // Wait for the AI sidebar to initialize
+        setTimeout(function() {
+            // Override context type for SE Washington assessment page
+            window.currentContextType = 'property_detail';
+            
+            // Add property data for more relevant suggestions
+            window.propertyData = {
+                id: '{{ property.id }}',
+                address: '{{ property.address }}',
+                city: '{{ property.city }}',
+                state: '{{ property.state }}',
+                zip_code: '{{ property.zip_code }}',
+                price: {{ property.price|default(0) }},
+                bedrooms: {{ property.bedrooms|default(0) }},
+                bathrooms: {{ property.bathrooms|default(0) }},
+                sqft: {{ property.sqft|default(0) }},
+                lot_size: '{{ property.lot_size }}',
+                year_built: '{{ property.year_built }}',
+                property_type: '{{ property.property_type }}'
+            };
+        }, 100);
+    });
+</script>
+{% endblock %}

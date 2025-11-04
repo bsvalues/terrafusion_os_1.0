@@ -1,0 +1,21 @@
+{
+    "map": {
+        "description": "Generates displacement links for parcel fabric points that have changed locations in a specified time period.",
+        "extent.descr": "<xdoc><p>The extent of the dataset to be processed. Only features that fall within the specified extent will be processed.</p><ul><li>Current Display Extent—The extent will be based on the active map or scene.</li><li>Draw Extent—The extent will be based on a rectangle drawn on the map or scene.</li><li>Extent of a Layer—The extent will be based on an active map layer. Choose an available layer or use the <span class=\"esri_uicontrol\">Extent of data in all layers</span> option. Each map layer has the following options:<p><ul><li>All Features—The extent of all features.</li><li>Selected Features —The extent of the selected features.</li><li>Visible Features—The extent of visible features.</li></ul></p></li><li>Browse—The extent will be based on a dataset.</li><li>Intersection of Inputs—The extent will be the intersecting extent of all inputs.</li><li>Union of Inputs—The extent will be the combined extent of all inputs.</li><li>Clipboard—The extent can be copied to and from the clipboard.<ul><li>Copy Extent—Copies the extent and coordinate system to the clipboard.</li><li>Paste Extent—Pastes the extent and coordinate system from the clipboard. If the clipboard does not include a coordinate system, the extent will use the map’s coordinate system.</li></ul></li><li>Reset Extent—The extent will be reset to the default value.</li></ul><p>When coordinates are manually provided, the coordinates must be numeric values and in the active map&apos;s coordinate system. The map may use different display units than the provided coordinates. Use a negative value sign for south and west coordinates.</p></xdoc>",
+        "extent.title": "Extent",
+        "from_date.descr": "The date from which to search the parcel fabric for points that have changed locations. Links and anchor points will be only be generated for points on or after this date.",
+        "from_date.title": "From Date",
+        "min_link_length.descr": "The minimum length of the generated links. If the link length between the current points and their original locations is smaller than the specified value, anchor points are created for the original locations of the points.",
+        "min_link_length.title": "Minimum Link Length",
+        "out_anchor_points_feature_class.descr": "The output point feature class that will store the anchor points.",
+        "out_anchor_points_feature_class.title": "Output Anchor Points Feature Class",
+        "out_links_feature_class.descr": "The output line feature class that will store the generated links.",
+        "out_links_feature_class.title": "Output Links Feature Class",
+        "summary": "<xdoc><p>Generates displacement links for parcel fabric points that have changed locations in a specified time period.</p><p>Links are stored as lines in a line feature class and are drawn from the original locations to the current locations of the points. Anchor points are created for points that have not changed locations in the specified time period and are stored in a point feature class.</p><p>Parcel fabric points can change locations as a result of editing actions such as parcel alignment or from least squares adjustments of parcels.</p></xdoc>",
+        "target_parcel_fabric.descr": "The parcel fabric that will be used to generate links. The parcel fabric must be published as a feature service and the default version is used to generate links.",
+        "target_parcel_fabric.title": "Input Parcel Fabric",
+        "title": "Generate Parcel Fabric Links",
+        "to_date.descr": "<xdoc><p>The end date of the time period in which to search the parcel fabric for points that have changed locations. Links and anchor points will only be generated for points on or before this date. If no To date is specified, links and anchor points will be generated for all points on or after the specified <span class=\"esri_uicontrol\">From Date</span>. If the <span class=\"esri_uicontrol\">To Date</span> is specified at a future date, links will be generated in the time period between the <span class=\"esri_uicontrol\">From Date</span> and the current date and time.</p></xdoc>",
+        "to_date.title": "To Date"
+    }
+}

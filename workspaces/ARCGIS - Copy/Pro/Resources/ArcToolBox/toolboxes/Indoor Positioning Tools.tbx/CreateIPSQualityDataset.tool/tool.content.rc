@@ -1,0 +1,15 @@
+{
+    "map": {
+        "coordinate_system.descr": "The spatial reference that will be used for the output IPS Quality dataset. The default is WGS84.",
+        "coordinate_system.title": "Coordinate System",
+        "description": "Creates a dataset that can be used to assess the quality of an ArcGIS IPS deployment.",
+        "out_computed_positions.title": "Output Computed Positions",
+        "out_dataset_name.descr": "The name of the dataset that will be created. The default is IPS_Quality.",
+        "out_dataset_name.title": "Dataset Name",
+        "out_ips_quality_dataset.title": "Output Dataset",
+        "out_reference_positions.title": "Output Reference Positions",
+        "target_workspace.descr": "The geodatabase where the IPS Quality dataset will be created. The value can be a file or an enterprise geodatabase.",
+        "target_workspace.title": "Target Workspace",
+        "title": "Create IPS Quality Dataset"
+    }
+}

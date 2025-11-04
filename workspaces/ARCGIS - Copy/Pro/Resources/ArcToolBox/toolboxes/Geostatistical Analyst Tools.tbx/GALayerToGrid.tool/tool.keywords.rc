@@ -1,0 +1,8 @@
+{
+    "set": [
+        "convert",
+        "create geostatistical layer",
+        "export",
+        "predict"
+    ]
+}

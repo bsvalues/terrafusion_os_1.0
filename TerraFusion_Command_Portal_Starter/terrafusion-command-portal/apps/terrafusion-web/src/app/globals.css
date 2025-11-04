@@ -1,0 +1,176 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* TerraFusion Custom CSS Variables */
+:root {
+  --terrafusion-primary: #2563eb;
+  --terrafusion-secondary: #7c3aed;
+  --terrafusion-accent: #059669;
+  --terrafusion-warning: #d97706;
+  --terrafusion-error: #dc2626;
+  --terrafusion-success: #16a34a;
+  --terrafusion-bg-primary: #f8fafc;
+  --terrafusion-bg-secondary: #f1f5f9;
+  --terrafusion-text-primary: #1e293b;
+  --terrafusion-text-secondary: #64748b;
+  --terrafusion-border: #e2e8f0;
+}
+
+/* Dark mode variables */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --terrafusion-bg-primary: #0f172a;
+    --terrafusion-bg-secondary: #1e293b;
+    --terrafusion-text-primary: #f8fafc;
+    --terrafusion-text-secondary: #cbd5e1;
+    --terrafusion-border: #334155;
+  }
+}
+
+/* Global styles */
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--terrafusion-bg-primary);
+  color: var(--terrafusion-text-primary);
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* TerraFusion Custom Components */
+.terrafusion-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--terrafusion-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.terrafusion-card:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.terrafusion-gradient {
+  background: linear-gradient(135deg, var(--terrafusion-primary) 0%, var(--terrafusion-secondary) 100%);
+}
+
+.terrafusion-text-gradient {
+  background: linear-gradient(135deg, var(--terrafusion-primary) 0%, var(--terrafusion-secondary) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Status indicators */
+.status-online {
+  color: var(--terrafusion-success);
+}
+
+.status-degraded {
+  color: var(--terrafusion-warning);
+}
+
+.status-offline {
+  color: var(--terrafusion-error);
+}
+
+.status-maintenance {
+  color: var(--terrafusion-primary);
+}
+
+/* Animation utilities */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(37, 99, 235, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.8);
+  }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--terrafusion-bg-secondary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--terrafusion-border);
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--terrafusion-text-secondary);
+}
+
+/* Loading states */
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--terrafusion-border);
+  border-radius: 50%;
+  border-top-color: var(--terrafusion-primary);
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Focus styles for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--terrafusion-primary);
+  outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+  .terrafusion-card {
+    background: white;
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+  
+  .terrafusion-gradient,
+  .terrafusion-text-gradient {
+    background: none;
+    color: black;
+  }
+}

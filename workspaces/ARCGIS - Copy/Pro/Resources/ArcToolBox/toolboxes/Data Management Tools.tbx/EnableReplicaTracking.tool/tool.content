@@ -1,0 +1,55 @@
+{
+    "type": "FunctionTool",
+    "guid": "{89f23f8c-898e-4f17-ac70-68fd32454e7b}",
+    "displayname": "$rc:title",
+    "helpcontent": "3220015",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "block_add_to_map",
+        "input_data_change"
+    ],
+    "params": {
+        "in_dataset": {
+            "displayname": "$rc:in_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DETable"
+                    },
+                    {
+                        "type": "DEFeatureClass"
+                    },
+                    {
+                        "type": "DEFeatureDataset"
+                    }
+                ]
+            },
+            "description": "$rc:in_dataset.descr"
+        },
+        "updated_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DETable"
+                    },
+                    {
+                        "type": "DEFeatureClass"
+                    },
+                    {
+                        "type": "DEFeatureDataset"
+                    }
+                ]
+            },
+            "depends": [
+                "in_dataset"
+            ],
+            "addtomap": "false"
+        }
+    }
+}

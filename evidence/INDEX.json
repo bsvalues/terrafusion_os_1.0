@@ -1,0 +1,11 @@
+{
+  "version": "1.0.0",
+  "created": "2025-10-19T15:32:06.392909",
+  "confidence_target": 0.97,
+  "evidence_items": [],
+  "rules": [
+    "Every claim links to at least one evidence item",
+    "Evidence reproducible from a clean state",
+    "Include timestamps and environment identifiers"
+  ]
+}

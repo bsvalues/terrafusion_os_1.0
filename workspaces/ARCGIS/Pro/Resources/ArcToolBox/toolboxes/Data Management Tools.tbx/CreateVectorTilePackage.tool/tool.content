@@ -1,0 +1,165 @@
+{
+    "type": "FunctionTool",
+    "guid": "{a62b9491-7cd0-478c-9b5b-9e259482ded0}",
+    "displayname": "$rc:title",
+    "helpcontent": "3260016",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_map": {
+            "displayname": "$rc:in_map.title",
+            "datatype": {
+                "type": "GPMap"
+            },
+            "description": "$rc:in_map.descr"
+        },
+        "output_file": {
+            "direction": "out",
+            "control_guid": "{F618CB52-29AE-49C8-BF32-9845F642276B}",
+            "displayname": "$rc:output_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "vtpk"
+                ]
+            },
+            "description": "$rc:output_file.descr"
+        },
+        "service_type": {
+            "displayname": "$rc:service_type.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ONLINE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "EXISTING"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:service_type.descr"
+        },
+        "tiling_scheme": {
+            "type": "optional",
+            "displayname": "$rc:tiling_scheme.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEMapServer"
+                    },
+                    {
+                        "type": "DEFile"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "xml"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:tiling_scheme.descr"
+        },
+        "tile_structure": {
+            "type": "optional",
+            "displayname": "$rc:tile_structure.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "INDEXED",
+                        "code": "$rc:tile_structure.domain.INDEXED"
+                    },
+                    {
+                        "value": "FLAT",
+                        "code": "$rc:tile_structure.domain.FLAT"
+                    }
+                ]
+            },
+            "value": "INDEXED",
+            "description": "$rc:tile_structure.descr"
+        },
+        "min_cached_scale": {
+            "control_guid": "{B23D9E8D-E360-4670-919E-A7F8FFF0DC19}",
+            "displayname": "$rc:min_cached_scale.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:min_cached_scale.descr"
+        },
+        "max_cached_scale": {
+            "control_guid": "{B23D9E8D-E360-4670-919E-A7F8FFF0DC19}",
+            "displayname": "$rc:max_cached_scale.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:max_cached_scale.descr"
+        },
+        "index_polygons": {
+            "type": "optional",
+            "displayname": "$rc:index_polygons.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:index_polygons.descr"
+        },
+        "summary": {
+            "type": "optional",
+            "displayname": "$rc:summary.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:summary.descr"
+        },
+        "tags": {
+            "type": "optional",
+            "displayname": "$rc:tags.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:tags.descr"
+        }
+    },
+    "environments": [
+        "transferDomains"
+    ]
+}

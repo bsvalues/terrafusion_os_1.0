@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<Messages STARTID="90004">
+  <Message>
+    <ID>90004</ID>
+    <Description>Incorrect label engine.</Description>
+  </Message>
+  <Message>
+    <ID>90005</ID>
+    <Description>Tool does not run in an edit session.</Description>
+  </Message>
+  <Message>
+    <ID>90006</ID>
+    <Description>Empty or invalid .mxd.</Description>
+  </Message>
+  <Message>
+    <ID>90011</ID>
+    <Description>Only one feature can be selected.</Description>
+  </Message>
+  <Message>
+    <ID>90012</ID>
+    <Description>The field MapId_Txt or Erase_FC does not exist.</Description>
+  </Message>
+  <Message>
+    <ID>90013</ID>
+    <Description>Query must return a feature.</Description>
+  </Message>
+  <Message>
+    <ID>90014</ID>
+    <Description>Erase feature selection cannot contain the AOI feature.</Description>
+  </Message>
+  <Message>
+    <ID>90015</ID>
+    <Description>Warning:(feature_class) had no selected features to process</Description>
+  </Message>
+  <Message>
+    <ID>90016</ID>
+    <Description>The Dynamic Update X,Y Coordinate properties must be set before running this tool.</Description>
+  </Message>
+  <Message>
+    <ID>90017</ID>
+    <Description>Missing Obstacle Surface Parameters table</Description>
+  </Message>
+  <Message>
+    <ID>90018</ID>
+    <Description>Invalid geometry in OIS surface</Description>
+  </Message>
+  <Message>
+    <ID>90019</ID>
+    <Description>Product Library workspace is not set.</Description>
+  </Message>
+  <Message>
+    <ID>90020</ID>
+    <Description>Production Database workspace is not set.</Description>
+  </Message>
+  <Message>
+    <ID>90021</ID>
+    <Description>Product Library and Production Database workspaces are not set.</Description>
+  </Message>
+  <Message>
+    <ID>90022</ID>
+    <Description>The selected feature class is not Z enabled.</Description>
+  </Message>
+  <Message>
+    <ID>90023</ID>
+    <Description>This tool cannot be run in background mode. Disable background processing before running this tool.</Description>
+  </Message>
+  <Message>
+    <ID>90024</ID>
+    <Description>This tool cannot be run in background mode. Disable background processing before running this tool.</Description>
+  </Message>
+  <Message>
+    <ID>90025</ID>
+    <Description>Enter a valid Output Path Location.</Description>
+  </Message>
+  <Message>
+    <ID>90038</ID>
+    <Description>Input workspace is not a valid Product Library workspace. </Description>
+  </Message>
+  <Message>
+    <ID>90039</ID>
+    <Description>Input workspace is not a valid Production Database workspace. </Description>
+  </Message>
+  <Message>
+    <ID>90053</ID>
+    <Description>Invalid database type.</Description>
+  </Message>
+  <Message>
+    <ID>90054</ID>
+    <Description>Beginning date is missing.</Description>
+  </Message>
+  <Message>
+    <ID>90055</ID>
+    <Description>End date is missing.</Description>
+  </Message>
+  <Message>
+    <ID>90056</ID>
+    <Description>Invalid date</Description>
+  </Message>
+  <Message>
+    <ID>90057</ID>
+    <Description>No change type has been selected.</Description>
+  </Message>
+  <Message>
+    <ID>90058</ID>
+    <Description>The selected workspace does not implement the AIS model.</Description>
+  </Message>
+  <Message>
+    <ID>90059</ID>
+    <Description>The selected workspace contains an older AIS model.</Description>
+  </Message>
+  <Message>
+    <ID>90060</ID>
+    <Description>Invalid Data Model Version.</Description>
+  </Message>
+  <Message>
+    <ID>90061</ID>
+    <Description>No Instances Maintained defined.</Description>
+  </Message>
+  <Message>
+    <ID>90063</ID>
+    <Description>Output feature class does not exist.</Description>
+  </Message>
+  <Message>
+    <ID>90064</ID>
+    <Description>Airport Control Point feature class is missing.</Description>
+  </Message>
+  <Message>
+    <ID>90065</ID>
+    <Description>No valid record found in the Airport Control Point feature class.</Description>
+  </Message>
+  <Message>
+    <ID>90066</ID>
+    <Description>Workspaces do not match.</Description>
+  </Message>
+  <Message>
+    <ID>90067</ID>
+    <Description>The input is not a feature class.</Description>
+  </Message>
+  <Message>
+    <ID>90110</ID>
+    <Description>The workspace is not valid.</Description>
+  </Message>
+  <Message>
+    <ID>90111</ID>
+    <Description>No vertical coordinate system defined</Description>
+  </Message>
+  <Message>
+    <ID>90112</ID>
+    <Description>Tool can only run on Default Version</Description>
+  </Message>
+  <Message>
+    <ID>90113</ID>
+    <Description>Only Airports Schema can be applied to File Geodatabase</Description>
+  </Message>
+  <Message>
+    <ID>90114</ID>
+    <Description>Selected schema is already applied to the database</Description>
+  </Message>
+  <Message>
+    <ID>90125</ID>
+    <Description>The output TIN file %s already exists in the specified location.</Description>
+  </Message>
+  <Message>
+    <ID>90145</ID>
+    <Description>The runway classification selected is not valid.</Description>
+  </Message>
+  <Message>
+    <ID>90146</ID>
+    <Description>The imput points are missing required attributes.</Description>
+  </Message>
+  <Message>
+    <ID>90147</ID>
+    <Description>The input points cannot be used to create a valid runway centerline.</Description>
+  </Message>
+  <Message>
+    <ID>90148</ID>
+    <Description>The provided point input is empty.</Description>
+  </Message>
+  <Message>
+    <ID>90149</ID>
+    <Description>The provided polyline input is invalid.</Description>
+  </Message>
+  <Message>
+    <ID>90150</ID>
+    <Description>The provided polygon input cannot be used to create a valid runway centerline.</Description>
+  </Message>
+  <Message>
+    <ID>90151</ID>
+    <Description>The input feature class is not in projected coordinate system.</Description>
+  </Message>
+  <Message>
+    <ID>90152</ID>
+    <Description>The output feature class is not in projected coordinate system.</Description>
+  </Message>
+  <Message>
+    <ID>90153</ID>
+    <Description>The input feature class has empty feature.</Description>
+  </Message>
+  <Message>
+    <ID>90154</ID>
+    <Description>The input runway feature and flight path feature cannot be in the same feature class.</Description>
+  </Message>
+  <Message>
+    <ID>90155</ID>
+    <Description>Runway Designator field and/or Path ID field are missing in the output feature class.</Description>
+  </Message>
+  <Message>
+    <ID>170000</ID>
+    <Description>The required %s specification is missing in the provided JSON file.</Description>
+  </Message>
+  <Message>
+    <ID>170001</ID>
+    <Description>The selected workspace does not implement the Airport model.</Description>
+  </Message>
+  <Message>
+    <ID>170002</ID>
+    <Description>Selected workspace is not FAA compliant.</Description>
+  </Message>
+  <Message>
+    <ID>170003</ID>
+    <Description>Failed to import shapefile.</Description>
+  </Message>
+  <Message>
+    <ID>170004</ID>
+    <Description>Copying features failed.</Description>
+  </Message>
+  <Message>
+    <ID>170005</ID>
+    <Description>Cannot open input shapefiles.</Description>
+  </Message>
+  <Message>
+    <ID>170006</ID>
+    <Description>Invalid classification type for %s specification in the provided JSON file.</Description>
+  </Message>
+  <Message>
+    <ID>170007</ID>
+    <Description>The JSON is invalid.</Description>
+  </Message>
+  <Message>
+    <ID>170008</ID>
+    <Description>The JSON has invalid values.</Description>
+  </Message>
+  <Message>
+    <ID>170009</ID>
+    <Description>JSON has negative values.</Description>
+  </Message>
+  <Message>
+    <ID>170010</ID>
+    <Description>The size of the output JSON text exceeds the output field length.</Description>
+  </Message>
+  <Message>
+    <ID>170011</ID>
+    <Description>Vertical coordinate system not defined.</Description>
+  </Message>
+  <Message>
+    <ID>170012</ID>
+    <Description>Multipatch feature classes coordinate system not same.</Description>
+  </Message>
+  <Message>
+    <ID>170013</ID>
+    <Description>Flight path %1 not found within 10 units of runway centerline %2 - no output will be generated for this flight path.</Description>
+  </Message>
+  <Message>
+    <ID>170014</ID>
+    <Description>Airspace association sequence numbers are not sequential.</Description>
+  </Message>
+  <Message>
+    <ID>170015</ID>
+    <Description>The second member in an airspace associate cannot be found.</Description>
+  </Message>
+  <Message>
+    <ID>170016</ID>
+    <Description>An empty airspace geometry was encountered where it was not expected.</Description>
+  </Message>
+  <Message>
+    <ID>170017</ID>
+    <Description>The first member is an airspace association cannot be found.</Description>
+  </Message>
+  <Message>
+    <ID>170018</ID>
+    <Description>Incorrect PAPI location.</Description>
+  </Message>
+  <Message>
+    <ID>170019</ID>
+    <Description>No configuration information found for the specified feature class.</Description>
+  </Message>
+  <Message>
+    <ID>170020</ID>
+    <Description>DOF file could not be opened.</Description>
+  </Message>
+  <Message>
+    <ID>170021</ID>
+    <Description>One or more label fields listed in the selected preference cannot be found in the selected feature class.</Description>
+  </Message>
+  <Message>
+    <ID>170022</ID>
+    <Description>Input table does not contain any preferences.</Description>
+  </Message>
+  <Message>
+    <ID>170023</ID>
+    <Description>Flight path %1 not found within 10 units of FATO surface %2 - no output will be generated for this flight path.</Description>
+  </Message>
+  <Message>
+    <ID>170024</ID>
+    <Description>Invalid workspace type.</Description>
+  </Message>
+  <Message>
+    <ID>170025</ID>
+    <Description>Report name not unique.</Description>
+  </Message>
+  <Message>
+    <ID>170026</ID>
+    <Description>Value for AirspaceAssociation FirstMember_ID matches SecondMember_ID.</Description>
+  </Message>
+  <Message>
+    <ID>170027</ID>
+    <Description>Target Geodatabase is not an AIS geodatabase.</Description>
+  </Message>
+  <Message>
+    <ID>170028</ID>
+    <Description>The input feature and output feature cannot be in the same feature class.</Description>
+  </Message>
+  <Message>
+    <ID>170029</ID>
+    <Description>The Input Flight Path cannot be null.</Description>
+  </Message>
+  <Message>
+    <ID>170030</ID>
+    <Description>AirspaceAssociation.FirstMember_Id %1 is missing SecondMember_Id %2.</Description>
+  </Message>
+  <Message>
+    <ID>170031</ID>
+    <Description>Operation %1 with sequence number %2 will not be completed. The derived geometry for the FirstMember Airspace is incomplete.</Description>
+  </Message>
+  <Message>
+    <ID>170032</ID>
+    <Description>Airspace.GFID %1 with DERIVED_CODE = %2 is missing from AirspaceAssociation.FirstMember_Id.</Description>
+  </Message>
+  <Message>
+    <ID>170033</ID>
+    <Description>The width of the helipad safety area with OBJECTID = %1 is too large for the indicated rotor diameter and type of operation (%2).</Description>
+  </Message>
+  <Message>
+    <ID>170034</ID>
+    <Description>The helipad safety area with OBJECTID = %1 is not rectangular as it does not have exactly 4 corners close to 90 degrees.</Description>
+  </Message>
+    <Message>
+    <ID>170035</ID>
+    <Description>The selected approach category and design group does not support small aircraft.</Description>
+  </Message>
+    <Message>
+    <ID>170036</ID>
+    <Description>The runway end features of the given runway centerline contains different category and group.</Description>
+  </Message>
+    <Message>
+    <ID>170037</ID>
+    <Description>The approach guidance parameter is required for runway obstacle free zone surface</Description>
+  </Message>
+    <Message>
+    <ID>170038</ID>
+    <Description>The clearway surface will not generate because Departure Surface option is 'Do Not Generate Departure Surface'.</Description>
+  </Message> 
+  <Message>
+    <ID>170039</ID>
+    <Description>An OLE DB driver for Microsoft Access is required to run this tool.</Description>
+  </Message> 
+  <Message>
+    <ID>170040</ID>
+    <Description>The Dataset %1 is missing required field(s): %2.</Description>
+  </Message>
+  <Message>
+    <ID>170041</ID>
+    <Description>This tool does not support pagx file as input</Description>
+  </Message>
+  <Message>
+	<ID>170042</ID>
+	<Description>All datasets must be from the same workspace.</Description>
+  </Message>
+  <Message>
+    <ID>170043</ID>
+	<Description>The following ATSRoute segments OIDS could not be processed: %s .</Description>
+  </Message>
+  <Message>
+    <ID>170044</ID>
+	<Description>The selected Aircraft Design Group does not support the current Approach Category.</Description>
+  </Message>
+  <Message>
+    <ID>170045</ID>
+	<Description>Offset angle cannot be applied to selected runway classification.</Description>
+  </Message>
+  <Message>
+    <ID>170046</ID>
+	<Description>The unit of measurement %s specified with the linear unit is not supported.</Description>
+  </Message>
+  <Message>
+    <ID>170047</ID>
+    <Description>The %1 relationship query contains the following ambiguous field(s): %2.</Description>
+  </Message>
+  <Message>
+    <ID>170048</ID>
+	<Description>The workspace is missing required Dataset(s): %s.</Description>
+  </Message>  
+</Messages>

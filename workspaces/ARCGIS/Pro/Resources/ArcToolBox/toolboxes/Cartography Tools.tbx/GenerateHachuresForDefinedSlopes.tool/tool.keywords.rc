@@ -1,0 +1,31 @@
+{
+    "set": [
+        "aspect",
+        "bank",
+        "bottom",
+        "cliff",
+        "create",
+        "depression",
+        "ditch",
+        "embankment",
+        "escarpment",
+        "generalisation",
+        "generalization",
+        "hachure",
+        "hash",
+        "hatch",
+        "hill",
+        "landform",
+        "lower",
+        "mound",
+        "representation",
+        "slope",
+        "symbol",
+        "symbology",
+        "terrain",
+        "tick",
+        "top",
+        "triangle",
+        "upper"
+    ]
+}

@@ -1,0 +1,20 @@
+{
+    "map": {
+        "base_z.descr": "The Z value of the plane that will be used to calculate area and volume.",
+        "base_z.title": "Plane Height",
+        "description": "Calculates the area and volume of the region between a surface and a reference plane.",
+        "in_surface.descr": "The raster, TIN, or terrain surface that will be processed.",
+        "in_surface.title": "Input Surface",
+        "out_text_file.descr": "A comma-delimited ASCII text file containing the area and volume calculations. If the file already exists, the new results will be appended to the file.",
+        "out_text_file.title": "Output Text File",
+        "pyramid_level_resolution.descr": "The z-tolerance or window-size resolution of the terrain pyramid level that will be used. The default is 0, or full resolution.",
+        "pyramid_level_resolution.title": "Pyramid Level Resolution",
+        "reference_plane.descr": "<xdoc><p>The direction from the reference plane for which to calculate the results.</p><ul><li><span title=\"ABOVE\">Above the Plane</span>—Volume and area calculations will represent the region of space between the specified plane height and the portions of the surface that are above the plane. This is the default.</li><li><span title=\"BELOW\">Below the Plane</span>—Volume and area calculations will represent the region of space between the specified plane height and portions of the surface that are below the plane.</li></ul></xdoc>",
+        "reference_plane.domain.ABOVE": "Above the Plane",
+        "reference_plane.domain.BELOW": "Below the Plane",
+        "reference_plane.title": "Reference Plane",
+        "title": "Surface Volume",
+        "z_factor.descr": "The factor by which z-values will be multiplied. This is typically used to convert z linear units to match x,y linear units. The default is 1, which leaves elevation values unchanged. This parameter is not available if the spatial reference of the input surface has a z-datum with a specified linear unit.",
+        "z_factor.title": "Z Factor"
+    }
+}

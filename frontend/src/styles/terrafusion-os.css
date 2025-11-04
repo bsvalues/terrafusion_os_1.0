@@ -1,0 +1,213 @@
+/* TerraFusion OS - Quantum Design System CSS */
+/* Revolutionary Government Operating System Styling */
+
+/* Core TerraFusion Colors */
+:root {
+  --terra-cyan: #00ffff;
+  --terra-midnight: #0a0e1a;
+  --terra-blue: #0080ff;
+  --terra-slate: #1e293b;
+  --terra-glow: rgba(0, 255, 255, 0.4);
+}
+
+/* Tailwind custom classes for TerraFusion */
+.bg-terra-cyan {
+  background-color: var(--terra-cyan);
+}
+.bg-terra-midnight {
+  background-color: var(--terra-midnight);
+}
+.bg-terra-blue {
+  background-color: var(--terra-blue);
+}
+.bg-terra-slate {
+  background-color: var(--terra-slate);
+}
+
+.text-terra-cyan {
+  color: var(--terra-cyan);
+}
+.text-terra-midnight {
+  color: var(--terra-midnight);
+}
+.text-terra-blue {
+  color: var(--terra-blue);
+}
+.text-terra-slate {
+  color: var(--terra-slate);
+}
+
+.border-terra-cyan {
+  border-color: var(--terra-cyan);
+}
+.border-terra-midnight {
+  border-color: var(--terra-midnight);
+}
+.border-terra-blue {
+  border-color: var(--terra-blue);
+}
+.border-terra-slate {
+  border-color: var(--terra-slate);
+}
+
+/* Opacity variants */
+.bg-terra-cyan\/20 {
+  background-color: rgba(0, 255, 255, 0.2);
+}
+.bg-terra-cyan\/30 {
+  background-color: rgba(0, 255, 255, 0.3);
+}
+.bg-terra-midnight\/90 {
+  background-color: rgba(10, 14, 26, 0.9);
+}
+.bg-terra-midnight\/95 {
+  background-color: rgba(10, 14, 26, 0.95);
+}
+.bg-terra-slate\/20 {
+  background-color: rgba(30, 41, 59, 0.2);
+}
+.bg-terra-slate\/30 {
+  background-color: rgba(30, 41, 59, 0.3);
+}
+
+.text-terra-cyan\/50 {
+  color: rgba(0, 255, 255, 0.5);
+}
+.text-terra-cyan\/60 {
+  color: rgba(0, 255, 255, 0.6);
+}
+.text-terra-cyan\/70 {
+  color: rgba(0, 255, 255, 0.7);
+}
+.text-terra-cyan\/80 {
+  color: rgba(0, 255, 255, 0.8);
+}
+
+.border-terra-cyan\/10 {
+  border-color: rgba(0, 255, 255, 0.1);
+}
+.border-terra-cyan\/20 {
+  border-color: rgba(0, 255, 255, 0.2);
+}
+.border-terra-cyan\/30 {
+  border-color: rgba(0, 255, 255, 0.3);
+}
+
+/* TerraFusion Quantum Effects */
+@keyframes quantum-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes quantum-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px var(--terra-glow);
+  }
+  50% {
+    box-shadow:
+      0 0 40px var(--terra-glow),
+      0 0 60px var(--terra-glow);
+  }
+}
+
+@keyframes quantum-flow {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes quantum-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes quantum-orbital {
+  0% {
+    transform: rotate(0deg) translateX(2px) rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg) translateX(2px) rotate(-360deg);
+  }
+}
+
+/* TerraFusion Component Classes */
+.quantum-pulse {
+  animation: quantum-pulse 2s ease-in-out infinite;
+}
+
+.quantum-delay-1 {
+  animation-delay: 0.5s;
+}
+
+.quantum-delay-2 {
+  animation-delay: 1s;
+}
+
+.quantum-glow {
+  animation: quantum-glow 3s ease-in-out infinite;
+}
+
+.quantum-flow {
+  background-size: 200% 100%;
+  animation: quantum-flow 2s ease-in-out infinite;
+}
+
+.quantum-shimmer {
+  background-size: 200% 100%;
+  animation: quantum-shimmer 2s ease-in-out infinite;
+}
+
+.quantum-orbital {
+  animation: quantum-orbital 20s linear infinite;
+}
+
+.quantum-hover {
+  transition: all 0.3s ease;
+}
+
+.quantum-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px var(--terra-glow);
+}
+
+/* TerraFusion Glass Morphism */
+.terra-glass {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(30, 41, 59, 0.1);
+  border: 1px solid rgba(0, 255, 255, 0.1);
+}
+
+/* Golden Ratio Typography */
+.golden-ratio-text {
+  font-size: 1.618rem; /* φ ratio */
+  line-height: 1.618;
+}
+
+/* Quantum Grid Pattern */
+.quantum-grid {
+  background-image: radial-gradient(circle at 1px 1px, var(--terra-cyan) 1px, transparent 0);
+  background-size: 40px 40px;
+  opacity: 0.05;
+}
+
+/* System font for OS feel */
+.font-system-ui {
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}

@@ -1,0 +1,37 @@
+Understood—let's focus on finalizing the core data hub enhancements first. Here’s a concise roadmap for this phase:
+
+---
+
+### Immediate Next Steps for Core Data Hub Enhancement
+
+1. **Finalize Security & Authentication:**
+   - Complete the LDAP/Active Directory integration by replacing the development bypass.
+   - Implement multi‑factor authentication (MFA) and single sign‑on (SSO) with Azure AD/LDAP.
+   - Enforce role‑based access controls and department‑based permissions.
+   - Ensure all authentication events are fully logged for auditing and troubleshooting.
+
+2. **Refine API Integration & Data Federation:**
+   - Verify that all API endpoints properly connect to internal data sources (sinkhole server, network SQL Server, and geospatial data).
+   - Normalize output data from these diverse sources into consistent JSON/GeoJSON formats.
+   - Enhance error handling, logging, and routing within the API Gateway to ensure a robust interface for third‑party applications.
+
+3. **Automated Testing & Monitoring:**
+   - Implement and run a comprehensive suite of pre‑implementation tests (unit, integration, and security tests) in your staging environment.
+   - Deploy enhancements and then execute thorough post‑deployment tests to verify that endpoints, authentication, and data flows are stable and performant.
+   - Set up centralized logging (using your preferred tools) and monitoring dashboards to capture performance metrics and error logs.
+
+4. **Document & Validate:**
+   - Update the API documentation, ensuring clear instructions for third‑party developers.
+   - Prepare a test report for each enhancement phase, confirming successful implementation or noting any issues for immediate attention.
+
+5. **Schedule a Review Before Branching Out:**
+   - Once the above steps are complete and the data hub is stable, conduct a comprehensive review.
+   - Only then should you plan for the next phase—developing a companion ETL application for heavy data transformation and synchronization.
+
+---
+
+### Final Note
+
+For now, we’re putting the companion ETL module on hold. This will allow us to concentrate on perfecting the central data hub’s reliability, security, and integration capabilities. Once our core system is production-ready and thoroughly validated, the ETL companion app can be developed as a separate, dedicated module that pushes enhanced data upstream without impacting real-time operations.
+
+Let me know if you’d like additional details for any of the steps, or if you’re ready to start implementing these next phases!

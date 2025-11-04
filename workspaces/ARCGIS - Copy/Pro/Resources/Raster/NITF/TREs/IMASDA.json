@@ -1,0 +1,174 @@
+{
+    "TRE": "IMASDA",
+    "Source": ["MIL-PRF-89034, DPPDB: Table 68"],
+    "Name": "Segment Image Support Data Extension",
+    "Description": "This extension contains definitions of image support data such as latitude, longitude, and elevation translation, latitude, logitude and elevation scale, and X,Y, and Z translation.",
+    "Size": 6,
+    "Fields": {
+      "LONTR" : {
+        "Name": "Longitude Translation",
+        "Description": "This field indicates the logitude translation of the image segment in degrees.",
+        "Size": 10,
+        "Format": "BCS-N",
+        "Type": "R",
+        "Units": ["degrees"],
+        "Values": [
+          {
+            "Type": "Range",
+            "Min": -180,
+            "Max": 180
+          }
+        ]
+      },
+      "LATTR": {
+        "Name": "Latitude Translation",
+        "Description": "This field indicates the latitude translation of the image segment in degrees.",
+        "Size": 10,
+        "Format": "BCS-N",
+        "Type": "R",
+        "Units": ["degrees"],
+        "Values": [
+          {
+            "Type": "Range",
+            "Min": -90,
+            "Max": 90
+          }
+        ]
+      },
+      "ELVTR": {
+        "Name": "Elevation Translation",
+        "Description": "This field indicates the latitude translation of the image segment in degrees.",
+        "Size": 10,
+        "Format": "BCS-N",
+        "Type": "R",
+        "Units": ["meters"],
+        "Values": [
+          {
+            "Type": "Range",
+            "Min": -10000,
+            "Max": 10000
+          }
+        ]
+      },
+      "LONSC": {
+        "Name": "Longitude Scale",
+        "Description": "This field indicates the longitude scale of the image segment.",
+        "Size": 6,
+        "Format": "BCS-N",
+        "Type": "R",
+        "Units": [],
+        "Values": [
+          {
+            "Type": "Range",
+            "Min": 0,
+            "Max": 100
+          }
+        ]
+      },
+      "LATSC": {
+        "Name": "Latitude Scale",
+        "Description": "This field inicates the latitude scale of the image segment.",
+        "Size": 6,
+        "Format": "BCS-N",
+        "Type": "R",
+        "Units": [],
+        "Values": [
+          {
+            "Type": "Range",
+            "Min": 0,
+            "Max": 100
+          }
+        ]
+      },
+      "ELVSC": {
+        "Name": "Elevation Scale",
+        "Description": "This field indicates the elevation scale of the image segment.",
+        "Size": 6,
+        "Format": "BCS-N",
+        "Type": "R",
+        "Units": [],
+        "Values": [
+          {
+            "Type": "Range",
+            "Min": 0,
+            "Max": 100
+          }
+        ]
+      },
+      "XITR": {
+        "Name": "X Image Translation",
+        "Description": "This field indicates the X image translation in pixels.",
+        "Size": 7,
+        "Format": "BCS-N",
+        "Type": "R",
+        "Units": ["pixels"],
+        "Values": [
+          {
+            "Type": "Range",
+            "Min": -100000,
+            "Max": 100000
+          }
+        ]
+      },      
+      "YITR": {
+        "Name": "Y Image Translation",
+        "Description": "This field indicates the Y image translation in pixels.",
+        "Size": 7,
+        "Format": "BCS-A",
+        "Type": "R",
+        "Units": [],
+        "Values": [
+          {
+            "Type": "Range",
+            "Min": -100000,
+            "Max": 100000 
+          }
+        ]
+      },
+      "XISC": {
+        "Name": "X Image Scale",
+        "Description": "This field indicates the X image scale.",
+        "Size": 6,
+        "Format": "BCS-N",
+        "Type": "R",
+        "Units": [],
+        "Values": [
+          {
+            "Type": "Range",
+            "Min": 0,
+            "Max": 100
+          }
+        ]
+      },
+      "YISC": {
+        "Name": "Y Image Scale",
+        "Description": "This field indicates the Y image scale.",
+        "Size": 6,
+        "Format": "BCS-N",
+        "Type": "R",
+        "Units": [],
+        "Values": [
+          {
+            "Type": "Range",
+            "Min": 0,
+            "Max": 100 
+         }
+       ]
+     },
+     "DELEV": {
+      "Name": "Display Elevation",
+      "Description": "This field indicates the display elevation.",
+      "Size": 6,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -1000,
+          "Max": 10000
+        }
+      ]
+    }      
+  }
+}

@@ -1,0 +1,197 @@
+{
+    "type": "FunctionTool",
+    "guid": "{26B17338-CB00-45A9-AB9C-858C2E0122C9}/MergeLinesByPseudoNode",
+    "displayname": "$rc:title",
+    "helpcontent": "76040001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "46",
+        "49"
+    ],
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "input_features": {
+            "displayname": "$rc:input_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:input_features.descr"
+        },
+        "merge_fields": {
+            "type": "optional",
+            "displayname": "$rc:merge_fields.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "BigInteger",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Date",
+                    "DateOnly",
+                    "TimeOnly",
+                    "TimestampOffset"
+                ]
+            },
+            "depends": [
+                "input_features"
+            ],
+            "description": "$rc:merge_fields.descr"
+        },
+        "aggregate_operations": {
+            "type": "optional",
+            "displayname": "$rc:aggregate_operations.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:aggregate_operations.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:aggregate_operations.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Short",
+                            "BigInteger",
+                            "Long",
+                            "Float",
+                            "Double",
+                            "Text",
+                            "Date",
+                            "DateOnly",
+                            "TimeOnly",
+                            "TimestampOffset"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "SUM",
+                                "code": "$rc:aggregate_operations.domain.item2.SUM"
+                            },
+                            {
+                                "value": "MEAN",
+                                "code": "$rc:aggregate_operations.domain.item2.MEAN"
+                            },
+                            {
+                                "value": "MIN",
+                                "code": "$rc:aggregate_operations.domain.item2.MIN"
+                            },
+                            {
+                                "value": "MAX",
+                                "code": "$rc:aggregate_operations.domain.item2.MAX"
+                            },
+                            {
+                                "value": "RANGE",
+                                "code": "$rc:aggregate_operations.domain.item2.RANGE"
+                            },
+                            {
+                                "value": "STD",
+                                "code": "$rc:aggregate_operations.domain.item2.STD"
+                            },
+                            {
+                                "value": "COUNT",
+                                "code": "$rc:aggregate_operations.domain.item2.COUNT"
+                            },
+                            {
+                                "value": "FIRST",
+                                "code": "$rc:aggregate_operations.domain.item2.FIRST"
+                            },
+                            {
+                                "value": "LAST",
+                                "code": "$rc:aggregate_operations.domain.item2.LAST"
+                            },
+                            {
+                                "value": "MEDIAN",
+                                "code": "$rc:aggregate_operations.domain.item2.MEDIAN"
+                            },
+                            {
+                                "value": "VARIANCE",
+                                "code": "$rc:aggregate_operations.domain.item2.VARIANCE"
+                            },
+                            {
+                                "value": "UNIQUE",
+                                "code": "$rc:aggregate_operations.domain.item2.UNIQUE"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "input_features"
+            ],
+            "description": "$rc:aggregate_operations.descr"
+        },
+        "merge_feature_rule": {
+            "type": "optional",
+            "displayname": "$rc:merge_feature_rule.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "FIRST",
+                        "code": "$rc:merge_feature_rule.domain.FIRST"
+                    },
+                    {
+                        "value": "LAST",
+                        "code": "$rc:merge_feature_rule.domain.LAST"
+                    },
+                    {
+                        "value": "BY_LENGTH",
+                        "code": "$rc:merge_feature_rule.domain.BY_LENGTH"
+                    },
+                    {
+                        "value": "USE_DEFAULTS",
+                        "code": "$rc:merge_feature_rule.domain.USE_DEFAULTS"
+                    }
+                ]
+            },
+            "value": "FIRST",
+            "description": "$rc:merge_feature_rule.descr"
+        },
+        "updated_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "input_features"
+            ]
+        }
+    }
+}

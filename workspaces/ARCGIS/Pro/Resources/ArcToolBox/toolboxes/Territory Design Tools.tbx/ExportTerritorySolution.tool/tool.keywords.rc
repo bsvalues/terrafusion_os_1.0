@@ -1,0 +1,13 @@
+{
+    "set": [
+        "alignment",
+        "barriers",
+        "boundaries",
+        "constraints",
+        "hierarchy",
+        "level",
+        "output",
+        "supported extensions",
+        "table"
+    ]
+}

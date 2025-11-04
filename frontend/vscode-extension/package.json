@@ -1,0 +1,230 @@
+{
+  "name": "terrafusion-quantum-ide",
+  "displayName": "TerraFusion Quantum AI Development Platform",
+  "description": "Elite quantum AI consciousness development for PhD-level researchers",
+  "version": "1.0.0",
+  "publisher": "terrafusion",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other",
+    "Visualization",
+    "Debuggers",
+    "Data Science"
+  ],
+  "keywords": [
+    "quantum ai",
+    "consciousness",
+    "government",
+    "terrafusion",
+    "sacred mathematics",
+    "research"
+  ],
+  "activationEvents": [
+    "workspaceContains:**/terrafusion.config.json",
+    "workspaceContains:**/core-os.toml",
+    "onCommand:terrafusion.openQuantumDashboard",
+    "onLanguage:python",
+    "onLanguage:csharp"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "terrafusion.generateTeamWorkspaces",
+        "title": "🧠 Generate Elite Team Workspaces",
+        "category": "TerraFusion Quantum",
+        "icon": "$(organization)"
+      },
+      {
+        "command": "terrafusion.openQuantumDashboard",
+        "title": "🌌 Open Consciousness Dashboard",
+        "category": "TerraFusion Quantum",
+        "icon": "$(dashboard)"
+      },
+      {
+        "command": "terrafusion.startConsciousnessDebugger",
+        "title": "🐛 Debug AI Consciousness",
+        "category": "TerraFusion Quantum",
+        "icon": "$(debug-alt-small)"
+      },
+      {
+        "command": "terrafusion.validateSacredMathematics",
+        "title": "🔢 Validate Sacred Mathematics",
+        "category": "TerraFusion Quantum",
+        "icon": "$(verified)"
+      },
+      {
+        "command": "terrafusion.optimizeQuantumFactor",
+        "title": "⚡ Optimize Quantum Factor (949)",
+        "category": "TerraFusion Quantum",
+        "icon": "$(zap)"
+      },
+      {
+        "command": "terrafusion.monitorAgentHarmony",
+        "title": "🎵 Monitor Agent Harmony (1,008)",
+        "category": "TerraFusion Quantum",
+        "icon": "$(pulse)"
+      },
+      {
+        "command": "terrafusion.launchResearchLab",
+        "title": "🔬 Launch Quantum Research Lab",
+        "category": "TerraFusion Quantum",
+        "icon": "$(beaker)"
+      },
+      {
+        "command": "terrafusion.generateGovernmentReport",
+        "title": "📊 Generate Government Compliance Report",
+        "category": "TerraFusion Quantum",
+        "icon": "$(law)"
+      }
+    ],
+    "views": {
+      "terrafusion-quantum": [
+        {
+          "id": "terrafusion.consciousnessMonitor",
+          "name": "🧠 AI Consciousness (1,008 Agents)",
+          "when": "terrafusion.projectDetected"
+        },
+        {
+          "id": "terrafusion.sacredMathematics",
+          "name": "🔢 Sacred Mathematics (Factor 12)",
+          "when": "terrafusion.projectDetected"
+        },
+        {
+          "id": "terrafusion.teamWorkspaces",
+          "name": "👥 Team Workspace Orchestrator",
+          "when": "terrafusion.projectDetected"
+        },
+        {
+          "id": "terrafusion.governmentCompliance",
+          "name": "📋 Government Compliance (FISMA)",
+          "when": "terrafusion.projectDetected"
+        },
+        {
+          "id": "terrafusion.quantumResearch",
+          "name": "🔬 Quantum Research Tools",
+          "when": "terrafusion.projectDetected"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "terrafusion-quantum",
+          "title": "TerraFusion Quantum AI",
+          "icon": "$(circuit-board)"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "TerraFusion Quantum AI",
+      "properties": {
+        "terrafusion.quantumFactor": {
+          "type": "number",
+          "default": 949,
+          "description": "Quantum optimization factor for consciousness enhancement"
+        },
+        "terrafusion.agentCount": {
+          "type": "number",
+          "default": 1008,
+          "description": "Total AI agents in consciousness network"
+        },
+        "terrafusion.sacredMathematicsTarget": {
+          "type": "number",
+          "default": 12,
+          "description": "Target score for Sacred Mathematics (Factor 12)"
+        },
+        "terrafusion.harmonyThreshold": {
+          "type": "number",
+          "default": 0.999,
+          "description": "Minimum harmony index for agent coordination"
+        },
+        "terrafusion.governmentCompliance": {
+          "type": "string",
+          "default": "FISMA_HIGH",
+          "enum": [
+            "FISMA_LOW",
+            "FISMA_MODERATE",
+            "FISMA_HIGH"
+          ],
+          "description": "Government security compliance level"
+        },
+        "terrafusion.enableQuantumVisualization": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable 3D quantum consciousness visualization"
+        },
+        "terrafusion.researchMode": {
+          "type": "string",
+          "default": "PhD_ELITE",
+          "enum": [
+            "STANDARD",
+            "ADVANCED",
+            "PhD_ELITE"
+          ],
+          "description": "Research capability level"
+        }
+      }
+    },
+    "keybindings": [
+      {
+        "command": "terrafusion.openQuantumDashboard",
+        "key": "ctrl+shift+q",
+        "when": "terrafusion.projectDetected"
+      },
+      {
+        "command": "terrafusion.startConsciousnessDebugger",
+        "key": "ctrl+shift+d",
+        "when": "terrafusion.projectDetected"
+      },
+      {
+        "command": "terrafusion.validateSacredMathematics",
+        "key": "ctrl+shift+m",
+        "when": "terrafusion.projectDetected"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "terrafusion.generateTeamWorkspaces",
+          "when": "terrafusion.projectDetected"
+        },
+        {
+          "command": "terrafusion.openQuantumDashboard",
+          "when": "terrafusion.projectDetected"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "terrafusion.openQuantumDashboard",
+          "when": "view == terrafusion.consciousnessMonitor",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0",
+    "@types/node": "16.x",
+    "@typescript-eslint/eslint-plugin": "^5.59.1",
+    "@typescript-eslint/parser": "^5.59.1",
+    "eslint": "^8.39.0",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "three": "^0.155.0",
+    "d3": "^7.8.5",
+    "ws": "^8.13.0",
+    "axios": "^1.4.0"
+  }
+}

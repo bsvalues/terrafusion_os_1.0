@@ -1,0 +1,8 @@
+{
+    "set": [
+        "generate intersection",
+        "integrity",
+        "intersection",
+        "pipeline"
+    ]
+}

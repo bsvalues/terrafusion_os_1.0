@@ -1,0 +1,27 @@
+{
+  "name": "data-processor",
+  "version": "1.0.0",
+  "description": "A plugin for processing and transforming various data formats",
+  "author": "CodeAgent Team",
+  "tools": ["tools/csvParser.js", "tools/jsonTransformer.js", "tools/xmlProcessor.js"],
+  "hooks": {
+    "beforeCommand": ["hooks/dataContextHook.js"],
+    "afterCommand": ["hooks/dataSummaryHook.js"]
+  },
+  "commands": [],
+  "tags": ["data", "csv", "json", "xml", "transform", "processing"],
+  "dependencies": ["csv-parse", "fast-xml-parser"],
+  "settings": {
+    "maxFileSize": 10485760,
+    "allowedFormats": ["csv", "json", "xml"],
+    "outputFormat": "json",
+    "verbose": false,
+    "tempDirectory": "./temp",
+    "validation": {
+      "enabled": true,
+      "strictMode": false,
+      "maxErrors": 10
+    }
+  },
+  "repository": "https://github.com/codeagent/data-processor-plugin"
+}

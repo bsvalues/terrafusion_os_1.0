@@ -1,0 +1,210 @@
+{% extends "layout.html" %}
+
+{% block title %}Bi-Directional Synchronization{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2">Bi-Directional Synchronization</h1>
+                <div>
+                    <a href="{{ url_for('sync.index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Sync Dashboard
+                    </a>
+                </div>
+            </div>
+            
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> This page provides controls for synchronizing data in both directions between the production and training environments.
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Down Sync (Production to Training) -->
+        <div class="col-md-6">
+            <div class="card mb-4 shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h5 mb-0">
+                        <i class="fas fa-cloud-download-alt"></i> Down Sync
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Synchronize data from the production environment to the training environment.</p>
+                    
+                    <h3 class="h6 mt-3">Benefits</h3>
+                    <ul class="small">
+                        <li>Ensures training environment has the latest production data</li>
+                        <li>Keeps testing environment up-to-date for accurate verification</li>
+                        <li>Necessary before making changes to the training environment</li>
+                    </ul>
+                    
+                    <h3 class="h6 mt-3">Last Down Sync</h3>
+                    {% if global_settings and global_settings.last_down_sync_time %}
+                    <p class="text-muted small">
+                        {{ global_settings.last_down_sync_time.strftime('%Y-%m-%d %H:%M:%S') }}
+                        ({{ ((now - global_settings.last_down_sync_time).total_seconds() / 3600)|round(1) }} hours ago)
+                    </p>
+                    {% else %}
+                    <p class="text-muted small">No previous down sync recorded</p>
+                    {% endif %}
+                    
+                    <div class="mt-3">
+                        <a href="{{ url_for('sync.run_down_sync') }}" class="btn btn-primary">
+                            <i class="fas fa-play"></i> Start Down Sync
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Up Sync (Training to Production) -->
+        <div class="col-md-6">
+            <div class="card mb-4 shadow">
+                <div class="card-header bg-success text-white">
+                    <h2 class="h5 mb-0">
+                        <i class="fas fa-cloud-upload-alt"></i> Up Sync
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Synchronize changes from the training environment back to the production environment.</p>
+                    
+                    <h3 class="h6 mt-3">Benefits</h3>
+                    <ul class="small">
+                        <li>Propagates verified changes from training to production</li>
+                        <li>Reduces risk by testing changes before applying to production</li>
+                        <li>Maintains data integrity across environments</li>
+                    </ul>
+                    
+                    <h3 class="h6 mt-3">Pending Changes</h3>
+                    <p class="text-muted small" id="pending-changes-count">
+                        Fetching pending changes...
+                    </p>
+                    
+                    <div class="mt-3">
+                        <a href="{{ url_for('sync.run_up_sync') }}" class="btn btn-success">
+                            <i class="fas fa-play"></i> Start Up Sync
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4 shadow">
+                <div class="card-header bg-secondary text-white">
+                    <h2 class="h5 mb-0">
+                        <i class="fas fa-history"></i> Recent Sync Jobs
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Job ID</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Started</th>
+                                    <th>Completed</th>
+                                    <th>Progress</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-jobs">
+                                {% for job in recent_jobs %}
+                                <tr>
+                                    <td><a href="{{ url_for('sync.job_details', job_id=job.job_id) }}">{{ job.job_id[:8] }}...</a></td>
+                                    <td>
+                                        {% if job.job_type == 'up_sync' %}
+                                        <span class="badge bg-success">Up Sync</span>
+                                        {% elif job.job_type == 'down_sync' %}
+                                        <span class="badge bg-primary">Down Sync</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">{{ job.job_type }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if job.status == 'completed' %}
+                                        <span class="badge bg-success">Completed</span>
+                                        {% elif job.status == 'failed' %}
+                                        <span class="badge bg-danger">Failed</span>
+                                        {% elif job.status == 'running' %}
+                                        <span class="badge bg-primary">Running</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">{{ job.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ job.start_time.strftime('%Y-%m-%d %H:%M') if job.start_time else 'Not started' }}</td>
+                                    <td>{{ job.end_time.strftime('%Y-%m-%d %H:%M') if job.end_time else 'Not completed' }}</td>
+                                    <td>
+                                        {% if job.total_records > 0 %}
+                                        <div class="progress">
+                                            <div class="progress-bar bg-info" 
+                                                role="progressbar" 
+                                                style="width: {{ (job.processed_records / job.total_records * 100)|int }}%"
+                                                aria-valuenow="{{ (job.processed_records / job.total_records * 100)|int }}" 
+                                                aria-valuemin="0" 
+                                                aria-valuemax="100">
+                                                {{ (job.processed_records / job.total_records * 100)|int }}%
+                                            </div>
+                                        </div>
+                                        {% else %}
+                                        <span class="text-muted">No records</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('sync.job_details', job_id=job.job_id) }}" class="btn btn-sm btn-outline-secondary">
+                                            <i class="fas fa-info-circle"></i> Details
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center">No recent jobs found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Function to load pending changes count
+        function loadPendingChangesCount() {
+            fetch('/sync/api/pending-changes-count')
+                .then(response => response.json())
+                .then(data => {
+                    const pendingChangesElement = document.getElementById('pending-changes-count');
+                    if (data.count > 0) {
+                        pendingChangesElement.innerHTML = `<strong>${data.count}</strong> pending change${data.count !== 1 ? 's' : ''} ready to be synchronized to production.`;
+                        pendingChangesElement.classList.add('text-success');
+                        pendingChangesElement.classList.remove('text-muted');
+                    } else {
+                        pendingChangesElement.innerText = 'No pending changes detected.';
+                        pendingChangesElement.classList.add('text-muted');
+                        pendingChangesElement.classList.remove('text-success');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching pending changes count:', error);
+                    document.getElementById('pending-changes-count').innerText = 'Error checking for pending changes.';
+                });
+        }
+        
+        // Load pending changes count on page load
+        loadPendingChangesCount();
+        
+        // Refresh every 30 seconds
+        setInterval(loadPendingChangesCount, 30000);
+    });
+</script>
+{% endblock %}

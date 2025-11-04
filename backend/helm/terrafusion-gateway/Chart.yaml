@@ -1,0 +1,30 @@
+apiVersion: v2
+name: terrafusion-gateway
+description: TerraFusion OS API Gateway (Ocelot) - Government. Transcended.
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+
+keywords:
+  - government
+  - api-gateway
+  - ocelot
+  - rate-limiting
+  - routing
+  - fisma-high
+  - microservices
+  - load-balancing
+
+home: https://terrafusion.gov
+sources:
+  - https://github.com/terrafusion/terrafusion-os
+maintainers:
+  - name: TerraFusion Engineering
+    email: engineering@terrafusion.gov
+
+annotations:
+  terrafusion.io/component: gateway
+  terrafusion.io/tier: infrastructure
+  terrafusion.io/compliance: fisma-high
+  terrafusion.io/routing-rules: "backend-api,consciousness-ai,operations-sync"
+  terrafusion.io/rate-limiting: "1000rps"

@@ -1,0 +1,10 @@
+{
+    "map": {
+        "box_threshold.title": "Box Threshold",
+        "class_name.title": "Class Name",
+        "input_raster_dataset.title": "Input Raster Dataset",
+        "output_feature_class.title": "Output Feature Class",
+        "text_threshold.title": "Text Threshold",
+        "title": "Detect Objects Using Text"
+    }
+}

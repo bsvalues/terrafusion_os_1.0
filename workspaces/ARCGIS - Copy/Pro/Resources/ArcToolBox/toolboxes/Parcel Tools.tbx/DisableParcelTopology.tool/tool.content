@@ -1,0 +1,34 @@
+{
+    "type": "FunctionTool",
+    "guid": "{bc4595ea-8896-4b03-859f-b022154e76cb}",
+    "displayname": "$rc:title",
+    "helpcontent": "52010005",
+    "description": "$rc:description",
+    "product": "200",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "block_add_to_map"
+    ],
+    "params": {
+        "in_parcel_fabric": {
+            "displayname": "$rc:in_parcel_fabric.title",
+            "datatype": {
+                "type": "GPParcelLayer"
+            },
+            "description": "$rc:in_parcel_fabric.descr"
+        },
+        "updated_parcel_fabric": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_parcel_fabric.title",
+            "datatype": {
+                "type": "DEParcelDataset"
+            },
+            "depends": [
+                "in_parcel_fabric"
+            ]
+        }
+    }
+}

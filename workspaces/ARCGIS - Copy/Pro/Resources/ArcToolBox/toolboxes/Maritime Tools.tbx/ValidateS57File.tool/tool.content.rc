@@ -1,0 +1,24 @@
+{
+    "map": {
+        "description": "Validates an ENC, IENC, or bIENC file and generates an .S58 file and a shapefile as a result.",
+        "exclude_shapefile.descr": "<xdoc><p>Specifies whether a shapefile will be generated.<ul><li>Checked—A shapefile will not be generated. Only the .s58 file will be created.</li><li>Unchecked—A shapefile will be generated, along with the .s58 file. This is the default.</li></ul></p></xdoc>",
+        "exclude_shapefile.title": "Exclude Shapefile",
+        "in_ignore_list.descr": "A text file containing a list of checks to ignore in the output log file.",
+        "in_ignore_list.title": "Ignore List",
+        "in_s57_file.descr": "The base cell file (*.000).",
+        "in_s57_file.title": "Input S-57 File",
+        "in_update_cells.descr": "The update cell files (*.001 - *.999).",
+        "in_update_cells.title": "Update Cells",
+        "out_directory.descr": "The location where the validated S-57 log will be created.",
+        "out_directory.title": "Output Directory",
+        "out_log_file.title": "Output S-58 Log File",
+        "regional_rules.descr": "<xdoc><p>Specifies the region that will be used to set the Recommended Inland ENC Validation Checks for that region.</p><p>For IENC and bIENC cells, some validation rules don&apos;t apply in certain regions, or they check for different objects and attribution.</p><ul><li><span title=\"BR\">Brazil</span>—Brazilian validation rules will be applied.</li><li><span title=\"EU\">Europe</span>—European validation rules will be applied.</li><li><span title=\"RU\">Russian Federation</span>—Russian Federation validation rules will be applied.</li><li><span title=\"US\">United States</span>—United States validation rules will be applied.</li></ul></xdoc>",
+        "regional_rules.domain.BR": "Brazil",
+        "regional_rules.domain.EU": "Europe",
+        "regional_rules.domain.RU": "Russian Federation",
+        "regional_rules.domain.US": "United States",
+        "regional_rules.title": "Regional Rules",
+        "summary": "<xdoc><p>Validates an ENC, IENC, or bIENC file and generates an .S58 file and a shapefile as a result.</p><note type=\"note\"/><p group=\"note\">This tool supports S-58 Edition 8.0.0 at ArcGIS Pro 3.4.</p></xdoc>",
+        "title": "Validate S-57 File"
+    }
+}

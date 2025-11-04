@@ -1,0 +1,26 @@
+{
+  "database": "app.db",
+  "initialization_time": "2025-10-21T16:06:42.734983",
+  "tables_created": 3,
+  "records_inserted": {
+    "properties": 6,
+    "sync_jobs": 3,
+    "query_logs": 2
+  },
+  "total_records": 11,
+  "sample_property_data": [
+    {
+      "parcel_id": "BC-2024-001",
+      "address": "2505 Duportail Street, Richland, WA",
+      "assessed_value": 485000,
+      "property_class": "RESIDENTIAL"
+    },
+    {
+      "parcel_id": "BC-2024-004",
+      "address": "456 Prosser Industrial Way, Prosser, WA",
+      "assessed_value": 1250000,
+      "property_class": "COMMERCIAL"
+    }
+  ],
+  "status": "ELITE_INITIALIZATION_COMPLETE"
+}

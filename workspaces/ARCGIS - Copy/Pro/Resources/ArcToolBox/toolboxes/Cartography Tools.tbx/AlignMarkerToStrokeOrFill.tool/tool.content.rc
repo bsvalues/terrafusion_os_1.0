@@ -1,0 +1,17 @@
+{
+    "map": {
+        "description": "Aligns the marker symbol layers of a point feature class to the nearest stroke or fill symbol layers in a line or polygon feature class within a specified search distance.",
+        "in_line_or_polygon_features.descr": "The input line or polygon feature layer to which the input point symbols will be aligned.",
+        "in_line_or_polygon_features.title": "Input Line or Polygon Features",
+        "in_point_features.descr": "<xdoc><p>The input point feature layer containing point symbols to be aligned to nearby lines or polygons. Symbols are aligned by storing an angle in the attribute connected to the angle property of the marker symbol layer. This must be connected to a single field with no expression applied. If multiple marker symbol layers in the same point symbol have the <span class=\"esri_uicontrol\">Angle</span> property connected to the same field, the <span class=\"esri_uicontrol\">Rotate clockwise</span> setting must match in each of those marker layers.</p></xdoc>",
+        "in_point_features.title": "Input Point Features",
+        "marker_orientation.descr": "<xdoc><p>Specifies how the marker symbol layer will be oriented relative to the stroke or fill symbol layer&apos;s edge.</p><ul><li><span title=\"PERPENDICULAR\">Perpendicular</span>—Marker symbol layers will be aligned perpendicularly to the stroke or fill edge. This is the default.</li><li><span title=\"PARALLEL\">Parallel</span>—Marker symbol layers will be aligned parallel to the stroke or fill edge.</li></ul></xdoc>",
+        "marker_orientation.domain.PARALLEL": "Parallel",
+        "marker_orientation.domain.PERPENDICULAR": "Perpendicular",
+        "marker_orientation.title": "Marker Orientation",
+        "out_representations.title": "Updated Input Layer",
+        "search_distance.descr": "The search distance from graphical marker edge to graphical stroke or fill edge. A distance greater than or equal to zero must be specified.",
+        "search_distance.title": "Search Distance",
+        "title": "Align Marker To Stroke Or Fill"
+    }
+}

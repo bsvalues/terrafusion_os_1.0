@@ -1,0 +1,141 @@
+{
+    "version": "1.0",
+    "alias": "conversion",
+    "displayname": "$rc:title",
+    "description": "$rc:descr",
+    "helpcontext": "2000000",
+    "toolsets": {
+        "<root>": {
+            "tools": [
+                "ConnectNetworkDatasetTransitSourcesToStreets",
+                "FeaturesToGTFSShapes",
+                "FeaturesToGTFSStops",
+                "GenerateShapesFeaturesFromGTFS",
+                "GTFSShapesToFeatures",
+                "GTFSStopsToFeatures",
+                "GTFSToNetworkDatasetTransitSources"
+            ]
+        },
+        "$rc:toolset6.name": {
+            "tools": [
+                "ExcelToTable",
+                "TableToExcel"
+            ]
+        },
+        "$rc:toolset13.name": {
+            "tools": [
+                "PDFToTIFF"
+            ]
+        },
+        "$rc:toolset14.name": {
+            "tools": [
+                "RasterToASCII",
+                "RasterToFloat",
+                "RasterToPoint",
+                "RasterToPolygon",
+                "RasterToPolyline"
+            ]
+        },
+        "$rc:toolset17.name": {
+            "tools": [
+                "WFSToFeatureClass"
+            ]
+        },
+        "$rc:toolset8.name": {
+            "tools": [
+                "FeaturesToGPX",
+                "GPXtoFeatures"
+            ]
+        },
+        "$rc:toolset9.name": {
+            "tools": [
+                "FeaturesToGraphics",
+                "GraphicsToFeatures"
+            ]
+        },
+        "$rc:toolset10.name": {
+            "tools": [
+                "FeaturesToJSON",
+                "JSONToFeatures"
+            ]
+        },
+        "$rc:toolset11.name": {
+            "tools": [
+                "KMLToLayer",
+                "LayerToKML",
+                "MapToKML"
+            ]
+        },
+        "$rc:toolset5.name": {
+            "tools": [
+                "ConvertLas",
+                "LasDatasetToRaster",
+                "MeshToLAS",
+                "PointCloudToRaster"
+            ]
+        },
+        "$rc:toolset15.name": {
+            "tools": [
+                "SASToTable",
+                "TableToSAS"
+            ]
+        },
+        "$rc:toolset1.name": {
+            "tools": [
+                "AddCADFields",
+                "ExportCAD"
+            ]
+        },
+        "$rc:toolset12.name": {
+            "tools": [
+                "MultipatchToCollada"
+            ]
+        },
+        "$rc:toolset16.name": {
+            "tools": [
+                "TableToDBASE"
+            ]
+        },
+        "$rc:toolset4.name": {
+            "tools": [
+                "BIMFileToGeodatabase",
+                "CADToGeodatabase",
+                "ExportFeatures",
+                "ExportTable",
+                "ExtractBIMFileFloorplan",
+                "ExtractLocationsDocument",
+                "ExtractLocationsText",
+                "FeatureClassToFeatureClass",
+                "FeatureClassToGeodatabase",
+                "ImportCAD",
+                "MobileGdbToFileGdb",
+                "RasterToGeodatabase",
+                "TableToGeodatabase",
+                "TableToTable"
+            ]
+        },
+        "$rc:toolset2.name": {
+            "tools": [
+                "AddRasterToGeoPackage"
+            ]
+        },
+        "$rc:toolset3.name": {
+            "tools": [
+                "ASCIIToRaster",
+                "DEMToRaster",
+                "FeatureToRaster",
+                "FloatToRaster",
+                "MultipatchToRaster",
+                "PointToRaster",
+                "PolygonToRaster",
+                "PolylineToRaster",
+                "RasterToOtherFormat"
+            ]
+        },
+        "$rc:toolset7.name": {
+            "tools": [
+                "FeatureClassToShapefile"
+            ]
+        }
+    }
+}

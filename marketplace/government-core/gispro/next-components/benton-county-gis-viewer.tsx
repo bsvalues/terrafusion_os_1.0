@@ -36,11 +36,13 @@ interface ArcGISResponse {
 // Helper component to highlight matches
 const HighlightMatch = ({ text, highlight }: { text: string; highlight: string }) => {
   if (!highlight.trim()) {
-    return <>{text}<div }
+    return <>{text}</>
+  }
   const regex = new RegExp(`(${highlight.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi")
   const parts = String(text).split(regex)
 
   return (
+    <>
       {parts.map((part, i) =>
         regex.test(part) ? (
           <mark key={i} className="bg-yellow-300 dark:bg-yellow-500 px-0.5 rounded-sm">
@@ -50,6 +52,7 @@ const HighlightMatch = ({ text, highlight }: { text: string; highlight: string }
           <Fragment key={i}>{part}</Fragment>
         ),
       )}
+    </>
   )
 }
 
@@ -188,34 +191,25 @@ export function BentonCountyGisViewer() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2"><>
-
+        <CardTitle className="flex items-center gap-2">
           <MapPin className="h-5 w-5 text-green-600" />
           Benton County GIS Data Viewer
         </CardTitle>
-        <CardDescription
-</>
-</>>
+        <CardDescription>
           Explore various GIS layers for Benton County, Washington. Data sourced from ArcGIS REST Services.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end">
-          <div className="flex-grow w-full sm:w-auto"><>
-
+          <div className="flex-grow w-full sm:w-auto">
             <label htmlFor="gis-layer-select" className="text-sm font-medium mb-1 block">
               Select GIS Layer
             </label>
-            <Select
-</>
-value={selectedService} onValueChange={handleServiceChange}>
-              <SelectTrigger id="gis-layer-select"><>
-
+            <Select             <Select value={selectedService} onValueChange={handleServiceChange}>
+              <SelectTrigger id="gis-layer-select">
                 <SelectValue placeholder="Select a GIS Layer" />
               </SelectTrigger>
-              <SelectContent
-</>
-</>>
+              <SelectContent>
                 {bentonCountyServices.map((service) => (
                   <SelectItem key={service.value} value={service.value}>
                     {service.name}
@@ -224,26 +218,22 @@ value={selectedService} onValueChange={handleServiceChange}>
               </SelectContent>
             </Select>
           </div>
-          <div className="w-full sm:w-auto sm:min-w-[120px]"><>
-
+          <div className="w-full sm:w-auto sm:min-w-[120px]">
             <label htmlFor="record-count-select" className="text-sm font-medium mb-1 block">
               Records
             </label>
-            <Select
-</>
-value={recordCount} onValueChange={handleRecordCountChange}>
-              <SelectTrigger id="record-count-select"><>
-
+            <Select             <Select value={recordCount} onValueChange={handleRecordCountChange}>
+              <SelectTrigger id="record-count-select">
                 <SelectValue placeholder="Count" />
               </SelectTrigger>
-              <SelectContent
-</>
-</>><>
+              <SelectContent>
+<>
 
                 <SelectItem value="5">5</SelectItem>
                 <SelectItem
 </>
-value="10">10</SelectItem><>
+value="10">10</SelectItem>
+<>
 
                 <SelectItem value="25">25</SelectItem>
                 <SelectItem
@@ -254,24 +244,18 @@ value="50">50</SelectItem>
             </Select>
           </div>
           {allAvailableFields.length > 0 && (
-            <div className="w-full sm:w-auto"><>
-
+            <div className="w-full sm:w-auto">
               <label className="text-sm font-medium mb-1 block opacity-0 sm:opacity-100 hidden sm:block">Columns</label>
-              <DropdownMenu
-</>
-</>>
+              <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="w-full sm:w-auto">
                     <Columns className="h-4 w-4 mr-2" />
                     Columns ({selectedColumnNames.length}/{allAvailableFields.length})
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="max-h-96 overflow-y-auto"><>
-
+                <DropdownMenuContent align="end" className="max-h-96 overflow-y-auto">
                   <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
-                  <DropdownMenuSeparator
-</>
-/>
+                  <DropdownMenuSeparator />
                   {allAvailableFields.map((field) => (
                     <DropdownMenuCheckboxItem
                       key={field.name}
@@ -362,7 +346,7 @@ value="50">50</SelectItem>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredFeatures.map((feature /* , index */) => (
+                {filteredFeatures.map((feature, index) => (
                   <TableRow key={index}>
                     {displayedTableColumns.map((field) => (
                       <TableCell key={field.name} className="whitespace-nowrap">

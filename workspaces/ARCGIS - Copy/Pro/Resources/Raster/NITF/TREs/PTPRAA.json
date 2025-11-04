@@ -1,0 +1,470 @@
+{
+  "TRE": "PTPRAA",
+  "Source": ["MIL-PRF-89034, DPPDB: Table 38"],
+  "Name": "Segment to Segment Relative Accuracy",
+  "Description": "This TRE contains the DPPDB segment to segment relative accuracy. It is a user-defined file found in the DPPDB data extension subheader.",
+  "Size": 99999,
+  "Fields": {
+    "SISEGID" : {
+      "Name": "Segment Model ID",
+      "Description": "This field indicates the model ID of the DPPDB segment.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Integer"          
+        }        
+      ]
+    },
+    "SNACE": {
+      "Name": "Segment Absolute CE90",
+      "Description": "This field indicates the absolute CE value of the DPPDB segment with 90% confidence.",
+      "Size": 6,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "SNALE": {
+      "Name": "Segment Absolute LE90",
+      "Description": "This field indicates the absolute LE value of the DPPDB segment with 90% confidence.",
+      "Size": 6,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "SNMCE": {
+      "Name": "Segment Mensuration CE90",
+      "Description": "This field indicates the mensuration (1 pixel) CE value of the DPPDB segment with 90% confidence.",
+      "Size": 6,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "SNMLE": {
+      "Name": "Segment Mensuration LE90",
+      "Description": "This field indicates the mensuration (1 pixel) LE value of the DPPDB segment with 90% confidence.",
+      "Size": 6,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "EXACERF": {
+      "Name": "Exceeds Absolute CE Requirement",
+      "Description": "This field indicates whether the DPPDB product exceeds the absolute CE accuracy requirement. Y means the accuracy of this DPPDB data exceeds the accuracy requirement for its intended use.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["Y", "N"]        
+        }
+      ]
+    },
+    "EXALERF": {
+      "Name": "Exceeds Absolute LE Requirement",
+      "Description": "This field indicates whether the DPPDB product exceeds the absolute LE accuracy requirement. Y means the accuracy of this DPPDB data exceeds the accuracy requirement for its intended use.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["Y", "N"]        
+        }
+      ]
+    },
+    "NBRSEG": {
+      "Name": "Number of Remaining Segments Relative Accuracy",
+      "Description": "This field indicates the number of remaining segments relative accuracy.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 999       
+        }
+      ]
+    },
+    "RASEGID<NBRSEG>": {
+      "Name": "Stereo Image Segment ID",
+      "Description": "This field indicates the ID of the stereo segment.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Integer"                
+        }
+      ]
+    },
+    "SNRCE0_1<NBRSEG>": {
+      "Name": "Segment Relative CEP",
+      "Description": "This field indicates the relative CEP (0-1 nm) of the DPPDB stereo segment with 50% confidence.",
+      "Size": 6,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00                
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "SNRLE0_1<NBRSEG>": {
+      "Name": "Segment Relative LEP",
+      "Description": "This field indicates the relative LEP (0-1 nm) of the DPPDB stereo segment with 50% confidence.",
+      "Size": 6,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00                
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "SNRCE1_5<NBRSEG>": {
+      "Name": "Segment Relative CEP",
+      "Description": "This field indicates the relative CEP (1-5 nm) of the DPPDB stereo segment with 50% confidence.",
+      "Size": 6,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00                
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "SNRLE1_5<NBRSEG>": {
+      "Name": "Segment Relative LEP",
+      "Description": "This field indicates the relative LEP (1-5 nm) of the DPPDB stereo segment with 50% confidence.",
+      "Size": 6,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00                
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "SNRCE5_15<NBRSEG>": {
+      "Name": "Segment Relative CEP",
+      "Description": "This field indicates the relative CEP (5-15 nm) of the DPPDB stereo segment with 50% confidence.",
+      "Size": 6,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00                
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "SNRLE5_15<NBRSEG>": {
+      "Name": "Segment Relative LEP",
+      "Description": "This field indicates the relative LEP (5-15 nm) of the DPPDB stereo segment with 50% confidence.",
+      "Size": 6,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00                
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "SNRCE15_30<NBRSEG>": {
+      "Name": "Segment Relative CEP",
+      "Description": "This field indicates the relative CEP (15-30 nm) of the DPPDB stereo segment with 50% confidence.",
+      "Size": 6,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00                
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "SNRLE15_30<NBRSEG>": {
+      "Name": "Segment Relative LEP",
+      "Description": "This field indicates the relative LEP (15-30 nm) of the DPPDB stereo segment with 50% confidence.",
+      "Size": 6,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00                
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "SNRCE30<NBRSEG>": {
+      "Name": "Segment Relative CEP",
+      "Description": "This field indicates the relative CEP (>30 nm) of the DPPDB stereo segment with 50% confidence.",
+      "Size": 6,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00                
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "SNRLE30<NBRSEG>": {
+      "Name": "Segment Relative LEP",
+      "Description": "This field indicates the relative LEP (>30 nm) of the DPPDB stereo segment with 50% confidence.",
+      "Size": 6,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00                
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "EXRCE0_1<NBRSEG>": {
+      "Name": "Exceeds Relative CEP (0-1 nm) Requirement Flag",
+      "Description": "This field indicates whether the DPPDB product exceeds the absolute CE accuracy (0-1 nm) requirement. Y means the accuracy of this DPPDB data exceeds the accuracy requirement for its intended use.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["Y", "N"]                          
+        }        
+      ]
+    },
+    "EXRLE0_1<NBRSEG>": {
+      "Name": "Exceeds Relative LEP (0-1 nm) Requirement Flag",
+      "Description": "This field indicates whether the DPPDB product exceeds the absolute LE accuracy (0-1 nm) requirement. Y means the accuracy of this DPPDB data exceeds the accuracy requirement for its intended use.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["Y", "N"]                          
+        }        
+      ]
+    },
+    "EXRCE1_5<NBRSEG>": {
+      "Name": "Exceeds Relative CEP (1-5 nm) Requirement Flag",
+      "Description": "This field indicates whether the DPPDB product exceeds the absolute CE accuracy (1-5 nm) requirement. Y means the accuracy of this DPPDB data exceeds the accuracy requirement for its intended use.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["Y", "N"]                          
+        }        
+      ]
+    },
+    "EXRLE1_5<NBRSEG>": {
+      "Name": "Exceeds Relative LEP (1-5 nm) Requirement Flag",
+      "Description": "This field indicates whether the DPPDB product exceeds the absolute LE accuracy (1-5 nm) requirement. Y means the accuracy of this DPPDB data exceeds the accuracy requirement for its intended use.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["Y", "N"]                          
+        }        
+      ]
+    },
+    "EXRCE5_15<NBRSEG>": {
+      "Name": "Exceeds Relative CEP (5-15 nm) Requirement Flag",
+      "Description": "This field indicates whether the DPPDB product exceeds the absolute CE accuracy (5-15 nm) requirement. Y means the accuracy of this DPPDB data exceeds the accuracy requirement for its intended use.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["Y", "N"]                          
+        }        
+      ]
+    },
+    "EXRLE5_15<NBRSEG>": {
+      "Name": "Exceeds Relative LEP (5-15 nm) Requirement Flag",
+      "Description": "This field indicates whether the DPPDB product exceeds the absolute LE accuracy (5-15 nm) requirement. Y means the accuracy of this DPPDB data exceeds the accuracy requirement for its intended use.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["Y", "N"]                          
+        }        
+      ]
+    },
+    "EXRCE15_30<NBRSEG>": {
+      "Name": "Exceeds Relative CEP (15-30 nm) Requirement Flag",
+      "Description": "This field indicates whether the DPPDB product exceeds the absolute CE accuracy (15-30 nm) requirement. Y means the accuracy of this DPPDB data exceeds the accuracy requirement for its intended use.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["Y", "N"]                          
+        }        
+      ]
+    },
+    "EXRLE15_30<NBRSEG>": {
+      "Name": "Exceeds Relative LEP (15-30 nm) Requirement Flag",
+      "Description": "This field indicates whether the DPPDB product exceeds the absolute LE accuracy (15-30 nm) requirement. Y means the accuracy of this DPPDB data exceeds the accuracy requirement for its intended use.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["Y", "N"]                          
+        }        
+      ]
+    },
+    "EXRCE30<NBRSEG>": {
+      "Name": "Exceeds Relative CEP (>30 nm) Requirement Flag",
+      "Description": "This field indicates whether the DPPDB product exceeds the absolute CE accuracy (>30 nm) requirement. Y means the accuracy of this DPPDB data exceeds the accuracy requirement for its intended use.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["Y", "N"]                          
+        }        
+      ]
+    },
+    "EXRLE30<NBRSEG>": {
+      "Name": "Exceeds Relative LEP (>30 nm) Requirement Flag",
+      "Description": "This field indicates whether the DPPDB product exceeds the absolute LE accuracy (>30 nm) requirement. Y means the accuracy of this DPPDB data exceeds the accuracy requirement for its intended use.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["Y", "N"]                          
+        }        
+      ]
+    }    
+  }
+}

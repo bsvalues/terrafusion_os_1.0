@@ -36,7 +36,7 @@ namespace TerraFusion.AI.Services
             _crossPlatformVerifier = crossPlatformVerifier;
         }
 
-        public async Task<(bool Success, string Message)> ProcessPluginSubmissionAsync(PluginSubmissionDto submissionDto)
+        public async System.Threading.Tasks.Task<(bool Success, string Message)> ProcessPluginSubmissionAsync(PluginSubmissionDto submissionDto)
         {
             _logger.LogInformation("Processing plugin submission for: {PluginName} v{PluginVersion}", submissionDto.Name, submissionDto.Version);
 
@@ -97,7 +97,9 @@ namespace TerraFusion.AI.Services
                     AuthorId = submissionDto.AuthorId, // This should be populated from user claims in a real scenario
                     Status = PluginStatus.Pending,
                     SubmittedAt = DateTime.UtcNow,
-                    PermissionsJson = ExtractPermissions(submissionDto.ManifestJson)
+                    PermissionsJson = ExtractPermissions(submissionDto.ManifestJson),
+                    PackageUrl = $"https://plugins.terrafusion.ai/packages/{Guid.NewGuid()}.zip",
+                    IconUrl = $"https://plugins.terrafusion.ai/icons/{Guid.NewGuid()}.png"
                 };
 
                 await _pluginRepository.AddAsync(plugin);
@@ -121,7 +123,7 @@ namespace TerraFusion.AI.Services
             }
         }
 
-        private async Task<(bool Success, string Message)> ValidateManifestWithNodeScript(string manifestPath)
+        private async System.Threading.Tasks.Task<(bool Success, string Message)> ValidateManifestWithNodeScript(string manifestPath)
         {
             var scriptsDir = Path.Combine(_hostingEnvironment.ContentRootPath, "..", "..", "scripts");
             var scriptPath = Path.Combine(scriptsDir, "validate-manifest.mjs");
@@ -181,7 +183,7 @@ namespace TerraFusion.AI.Services
             return "[]";
         }
 
-        public async Task<(bool Success, string Message)> PublishPluginAsync(PluginPublishDto publishDto)
+        public async System.Threading.Tasks.Task<(bool Success, string Message)> PublishPluginAsync(PluginPublishDto publishDto)
         {
             _logger.LogInformation("Attempting to publish plugin {PluginId} v{Version}", publishDto.PluginId, publishDto.Version);
 

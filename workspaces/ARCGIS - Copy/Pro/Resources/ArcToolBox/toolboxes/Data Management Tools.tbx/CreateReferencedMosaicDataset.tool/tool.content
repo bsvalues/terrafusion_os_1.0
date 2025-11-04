@@ -1,0 +1,297 @@
+{
+    "type": "FunctionTool",
+    "guid": "{4335bb8d-7918-4a03-a73e-f4ed2dbe63a4}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190507",
+    "description": "$rc:description",
+    "product": "200",
+    "categories": [
+        "{0a2ad811-7215-4a95-92f3-9c29de502e9b}"
+    ],
+    "params": {
+        "in_dataset": {
+            "display_order": "0",
+            "displayname": "$rc:in_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEMosaicDataset"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_dataset.descr"
+        },
+        "out_mosaic_dataset": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_mosaic_dataset.title",
+            "datatype": {
+                "type": "DEMosaicDataset"
+            },
+            "description": "$rc:out_mosaic_dataset.descr"
+        },
+        "coordinate_system": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:coordinate_system.title",
+            "datatype": {
+                "type": "GPCoordinateSystem"
+            },
+            "defaultenvironmentname": "outputCoordinateSystem",
+            "description": "$rc:coordinate_system.descr"
+        },
+        "number_of_bands": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:number_of_bands.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:number_of_bands.descr"
+        },
+        "pixel_type": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:pixel_type.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "1_BIT",
+                        "code": "$rc:pixel_type.domain.1_BIT"
+                    },
+                    {
+                        "value": "2_BIT",
+                        "code": "$rc:pixel_type.domain.2_BIT"
+                    },
+                    {
+                        "value": "4_BIT",
+                        "code": "$rc:pixel_type.domain.4_BIT"
+                    },
+                    {
+                        "value": "8_BIT_UNSIGNED",
+                        "code": "$rc:pixel_type.domain.8_BIT_UNSIGNED"
+                    },
+                    {
+                        "value": "8_BIT_SIGNED",
+                        "code": "$rc:pixel_type.domain.8_BIT_SIGNED"
+                    },
+                    {
+                        "value": "16_BIT_UNSIGNED",
+                        "code": "$rc:pixel_type.domain.16_BIT_UNSIGNED"
+                    },
+                    {
+                        "value": "16_BIT_SIGNED",
+                        "code": "$rc:pixel_type.domain.16_BIT_SIGNED"
+                    },
+                    {
+                        "value": "32_BIT_UNSIGNED",
+                        "code": "$rc:pixel_type.domain.32_BIT_UNSIGNED"
+                    },
+                    {
+                        "value": "32_BIT_SIGNED",
+                        "code": "$rc:pixel_type.domain.32_BIT_SIGNED"
+                    },
+                    {
+                        "value": "32_BIT_FLOAT",
+                        "code": "$rc:pixel_type.domain.32_BIT_FLOAT"
+                    },
+                    {
+                        "value": "64_BIT",
+                        "code": "$rc:pixel_type.domain.64_BIT"
+                    }
+                ]
+            },
+            "description": "$rc:pixel_type.descr"
+        },
+        "where_clause": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:where_clause.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "in_dataset"
+            ],
+            "description": "$rc:where_clause.descr"
+        },
+        "in_template_dataset": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:in_template_dataset.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_template_dataset.descr"
+        },
+        "extent": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:extent.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPEnvelope"
+            },
+            "description": "$rc:extent.descr"
+        },
+        "select_using_features": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:select_using_features.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SELECT_USING_FEATURES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_SELECT_USING_FEATURES"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:select_using_features.descr"
+        },
+        "lod_field": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:lod_field.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Date"
+                ]
+            },
+            "depends": [
+                "in_dataset"
+            ],
+            "description": "$rc:lod_field.descr"
+        },
+        "minPS_field": {
+            "type": "optional",
+            "display_order": "11",
+            "displayname": "$rc:minps_field.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Date"
+                ]
+            },
+            "depends": [
+                "in_dataset"
+            ],
+            "description": "$rc:minps_field.descr"
+        },
+        "maxPS_field": {
+            "type": "optional",
+            "display_order": "12",
+            "displayname": "$rc:maxps_field.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Date"
+                ]
+            },
+            "depends": [
+                "in_dataset"
+            ],
+            "description": "$rc:maxps_field.descr"
+        },
+        "pixelSize": {
+            "type": "optional",
+            "display_order": "13",
+            "displayname": "$rc:pixelsize.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:pixelsize.descr"
+        },
+        "build_boundary": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:build_boundary.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "BUILD_BOUNDARY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_BOUNDARY"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:build_boundary.descr"
+        }
+    },
+    "environments": [
+        "configKeyword",
+        "extent",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

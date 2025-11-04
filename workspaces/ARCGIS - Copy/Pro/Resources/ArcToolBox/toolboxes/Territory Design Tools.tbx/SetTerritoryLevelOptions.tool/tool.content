@@ -1,0 +1,153 @@
+{
+    "type": "FunctionTool",
+    "guid": "{c8946364-26a9-487f-82fc-918837e53395}",
+    "displayname": "$rc:title",
+    "helpcontent": "67010005",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "33"
+    ],
+    "params": {
+        "in_territory_solution": {
+            "displayname": "$rc:in_territory_solution.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPGroupLayer"
+                    },
+                    {
+                        "type": "DEFeatureDataset"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "description": "$rc:in_territory_solution.descr"
+        },
+        "level": {
+            "displayname": "$rc:level.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "depends": [
+                "in_territory_solution"
+            ],
+            "description": "$rc:level.descr"
+        },
+        "compactness": {
+            "type": "optional",
+            "displayname": "$rc:compactness.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                },
+                "high": {
+                    "allow": "true",
+                    "val": "100"
+                }
+            },
+            "description": "$rc:compactness.descr"
+        },
+        "fill_extent": {
+            "type": "optional",
+            "displayname": "$rc:fill_extent.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "AUTO_FILL_EXTENT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_AUTO_FILL_EXTENT"
+                    }
+                ]
+            },
+            "description": "$rc:fill_extent.descr"
+        },
+        "out_territory_solution": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_territory_solution.title",
+            "datatype": {
+                "type": "GPGroupLayer"
+            },
+            "depends": [
+                "in_territory_solution"
+            ]
+        },
+        "random_seed": {
+            "type": "optional",
+            "displayname": "$rc:random_seed.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                }
+            },
+            "description": "$rc:random_seed.descr"
+        },
+        "spatial_relationship": {
+            "type": "optional",
+            "displayname": "$rc:spatial_relationship.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "CONTIGUITY_EDGES_ONLY",
+                        "code": "$rc:spatial_relationship.domain.CONTIGUITY_EDGES_ONLY"
+                    }
+                ]
+            },
+            "description": "$rc:spatial_relationship.descr"
+        },
+        "buffer_tolerance": {
+            "type": "optional",
+            "displayname": "$rc:buffer_tolerance.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                }
+            },
+            "description": "$rc:buffer_tolerance.descr"
+        }
+    },
+    "environments": [
+        "baDataSource",
+        "workspace"
+    ]
+}

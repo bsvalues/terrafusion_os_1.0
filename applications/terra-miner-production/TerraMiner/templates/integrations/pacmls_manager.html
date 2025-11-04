@@ -1,0 +1,420 @@
+{% extends "base.html" %}
+
+{% block title %}PACMLS Integration Manager{% endblock %}
+
+{% block styles %}
+<style>
+  .integration-header {
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: white;
+  }
+  
+  .card-header-custom {
+    background: #1e3a8a;
+    color: white;
+  }
+  
+  .status-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    font-weight: 600;
+  }
+  
+  .status-active {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: rgb(16, 185, 129);
+  }
+  
+  .status-inactive {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: rgb(239, 68, 68);
+  }
+  
+  .status-warning {
+    background-color: rgba(245, 158, 11, 0.15);
+    color: rgb(245, 158, 11);
+  }
+  
+  .data-source-item {
+    border-left: 4px solid transparent;
+    transition: all 0.2s ease;
+  }
+  
+  .data-source-item:hover {
+    border-left-color: #1e40af;
+    background-color: rgba(30, 64, 175, 0.05);
+  }
+  
+  .data-source-primary {
+    border-left-color: #1e40af;
+    background-color: rgba(30, 64, 175, 0.1);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="integration-header">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center">
+      <h1 class="mb-2">PACMLS Integration</h1>
+      <span class="status-badge status-{{ pacmls_status|default('inactive') }}">
+        {{ pacmls_status|default('Inactive')|capitalize }}
+      </span>
+    </div>
+    <p class="lead mb-0">
+      Connect to Paragon Connect MLS for comprehensive real estate listing data
+    </p>
+  </div>
+</div>
+
+<div class="container mb-5">
+  <div class="row">
+    <!-- Left Column - Status & Configuration -->
+    <div class="col-lg-8">
+      <!-- Status Card -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header card-header-custom">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+              <i class="bi bi-box-arrow-in-down-right me-2"></i>
+              Integration Status
+            </h5>
+            <button class="btn btn-sm btn-light" id="refreshStatusBtn">
+              <i class="bi bi-arrow-clockwise me-1"></i>
+              Refresh
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="statusContainer">
+            {% if pacmls_status == 'active' %}
+              <div class="alert alert-success">
+                <div class="d-flex">
+                  <i class="bi bi-check-circle-fill fs-4 me-2"></i>
+                  <div>
+                    <h5 class="alert-heading mb-1">PACMLS Connected</h5>
+                    <p class="mb-0">Connection to Paragon Connect MLS is active and working properly.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="row text-center">
+                <div class="col-sm-4">
+                  <div class="border rounded p-3 mb-3">
+                    <div class="text-muted small">CONNECTION</div>
+                    <div class="fs-4 fw-bold text-success">
+                      <i class="bi bi-wifi"></i> Active
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-4">
+                  <div class="border rounded p-3 mb-3">
+                    <div class="text-muted small">DATA SOURCE RANK</div>
+                    <div class="fs-4 fw-bold">
+                      <i class="bi bi-list-ol"></i> {{ pacmls_rank|default('2') }}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-4">
+                  <div class="border rounded p-3 mb-3">
+                    <div class="text-muted small">LISTINGS AVAILABLE</div>
+                    <div class="fs-4 fw-bold">
+                      <i class="bi bi-house-door"></i> {{ pacmls_listings|default('Unknown') }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% else %}
+              <div class="alert alert-warning">
+                <div class="d-flex">
+                  <i class="bi bi-exclamation-triangle-fill fs-4 me-2"></i>
+                  <div>
+                    <h5 class="alert-heading mb-1">PACMLS Not Connected</h5>
+                    <p class="mb-0">The PACMLS integration requires configuration. Please set up your credentials below.</p>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      
+      <!-- Configuration Card -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header card-header-custom">
+          <h5 class="mb-0">
+            <i class="bi bi-gear-fill me-2"></i>
+            Connection Configuration
+          </h5>
+        </div>
+        <div class="card-body">
+          <form id="pacmlsConfigForm" action="{{ url_for('pacmls_controller.save_pacmls_config') }}" method="post">
+            <div class="mb-3">
+              <label class="form-label">PACMLS Username / Email</label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="bi bi-person"></i>
+                </span>
+                <input type="text" class="form-control" name="pacmls_username" 
+                       placeholder="Your PACMLS username" 
+                       value="{{ pacmls_username|default('') }}">
+              </div>
+              <div class="form-text">This is the username you use to log into Paragon Connect MLS.</div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">PACMLS Password</label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="bi bi-lock"></i>
+                </span>
+                <input type="password" class="form-control" name="pacmls_password" 
+                       placeholder="Your PACMLS password" 
+                       value="{{ pacmls_password|default('') }}">
+                <button class="btn btn-outline-secondary toggle-password" type="button">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </div>
+              <div class="form-text">Your password is securely stored in the environment variables.</div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Data Source Priority</label>
+              <select class="form-select" name="pacmls_priority">
+                <option value="primary" {% if pacmls_priority == 'primary' %}selected{% endif %}>Primary (First Choice)</option>
+                <option value="secondary" {% if pacmls_priority == 'secondary' or not pacmls_priority %}selected{% endif %}>Secondary (Fallback)</option>
+              </select>
+              <div class="form-text">Set PACMLS as the primary or secondary data source for property information.</div>
+            </div>
+            
+            <div class="d-flex justify-content-between">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save me-1"></i>
+                Save Configuration
+              </button>
+              
+              <button type="button" id="testConnectionBtn" class="btn btn-outline-info">
+                <i class="bi bi-broadcast me-1"></i>
+                Test Connection
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Right Column - Information & Statistics -->
+    <div class="col-lg-4">
+      <!-- Info Card -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header card-header-custom">
+          <h5 class="mb-0">
+            <i class="bi bi-info-circle-fill me-2"></i>
+            About PACMLS
+          </h5>
+        </div>
+        <div class="card-body">
+          <p class="mb-3">
+            <strong>Paragon Connect MLS</strong> provides access to comprehensive, up-to-date real 
+            estate listing data, offering some of the most current and accurate property information 
+            available to real estate professionals.
+          </p>
+          
+          <h6 class="fw-bold">Key Benefits:</h6>
+          <ul class="mb-3">
+            <li>Real-time property listing data</li>
+            <li>Comprehensive agent and broker details</li>
+            <li>Historical sales data and market activity</li>
+            <li>Exclusive access to off-market properties</li>
+            <li>Detailed property specifications and amenities</li>
+          </ul>
+          
+          <div class="alert alert-info mb-0">
+            <div class="d-flex">
+              <i class="bi bi-shield-lock fs-5 me-2"></i>
+              <div>
+                <strong>Authentication Required:</strong> 
+                PACMLS requires valid credentials with appropriate access permissions.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Data Sources Card -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header card-header-custom">
+          <h5 class="mb-0">
+            <i class="bi bi-database-fill me-2"></i>
+            Data Sources
+          </h5>
+        </div>
+        <div class="card-body p-0">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item data-source-item py-3 {% if primary_source == 'pacmls' %}data-source-primary{% endif %}">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-0">PACMLS</h6>
+                  <p class="text-muted small mb-0">Paragon Connect MLS</p>
+                </div>
+                <span class="status-badge status-{{ pacmls_status|default('inactive') }}">
+                  {{ pacmls_status|default('Inactive')|capitalize }}
+                </span>
+              </div>
+            </li>
+            
+            <li class="list-group-item data-source-item py-3 {% if primary_source == 'zillow' %}data-source-primary{% endif %}">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-0">Zillow</h6>
+                  <p class="text-muted small mb-0">Zillow Real Estate API</p>
+                </div>
+                <span class="status-badge status-{{ zillow_status|default('active') }}">
+                  {{ zillow_status|default('Active')|capitalize }}
+                </span>
+              </div>
+            </li>
+            
+            <li class="list-group-item data-source-item py-3 {% if primary_source == 'county' %}data-source-primary{% endif %}">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-0">County Records</h6>
+                  <p class="text-muted small mb-0">Official County Assessment Data</p>
+                </div>
+                <span class="status-badge status-{{ county_status|default('active') }}">
+                  {{ county_status|default('Active')|capitalize }}
+                </span>
+              </div>
+            </li>
+            
+            <li class="list-group-item data-source-item py-3 {% if primary_source == 'narrpr' %}data-source-primary{% endif %}">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-0">NARRPR</h6>
+                  <p class="text-muted small mb-0">REALTORS Property Resource</p>
+                </div>
+                <span class="status-badge status-{{ narrpr_status|default('warning') }}">
+                  {{ narrpr_status|default('Partial')|capitalize }}
+                </span>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="card-footer bg-light">
+          <small class="text-muted">
+            <i class="bi bi-info-circle me-1"></i>
+            Sources marked as Primary are tried first when retrieving property data
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Toggle password visibility
+    const toggleBtns = document.querySelectorAll('.toggle-password');
+    toggleBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const input = this.previousElementSibling;
+        const icon = this.querySelector('i');
+        
+        if (input.type === 'password') {
+          input.type = 'text';
+          icon.classList.remove('bi-eye');
+          icon.classList.add('bi-eye-slash');
+        } else {
+          input.type = 'password';
+          icon.classList.remove('bi-eye-slash');
+          icon.classList.add('bi-eye');
+        }
+      });
+    });
+    
+    // Test connection button
+    const testBtn = document.getElementById('testConnectionBtn');
+    if (testBtn) {
+      testBtn.addEventListener('click', function() {
+        const username = document.querySelector('input[name="pacmls_username"]').value;
+        const password = document.querySelector('input[name="pacmls_password"]').value;
+        
+        if (!username || !password) {
+          alert('Please enter both username and password to test the connection.');
+          return;
+        }
+        
+        testBtn.disabled = true;
+        testBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Testing...';
+        
+        // Send AJAX request to test connection
+        fetch('/api/pacmls/test-connection', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, password }),
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert('Connection successful! PACMLS authentication is working properly.');
+          } else {
+            alert('Connection failed: ' + data.message);
+          }
+        })
+        .catch(error => {
+          alert('Error testing connection: ' + error);
+        })
+        .finally(() => {
+          testBtn.disabled = false;
+          testBtn.innerHTML = '<i class="bi bi-broadcast me-1"></i> Test Connection';
+        });
+      });
+    }
+    
+    // Form submission handler
+    const form = document.getElementById('pacmlsConfigForm');
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(form);
+        const username = formData.get('pacmls_username');
+        const password = formData.get('pacmls_password');
+        const priority = formData.get('pacmls_priority');
+        
+        if (!username || !password) {
+          alert('Please enter both username and password.');
+          return;
+        }
+        
+        // Submit the form via AJAX
+        fetch(form.action, {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert('PACMLS configuration saved successfully!');
+            // Reload the page to reflect changes
+            window.location.reload();
+          } else {
+            alert('Error saving configuration: ' + data.message);
+          }
+        })
+        .catch(error => {
+          alert('Error: ' + error);
+        });
+      });
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,254 @@
+{
+    "type": "FunctionTool",
+    "guid": "{1f4cb83d-2153-4ae1-a5ae-e20c3c9c1dfd}",
+    "displayname": "$rc:title",
+    "helpcontent": "3110005",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "no_data_change",
+        "param_nocount:in_layer"
+    ],
+    "params": {
+        "in_layer": {
+            "displayname": "$rc:in_layer.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "GPFeatureLayer"
+                        },
+                        {
+                            "type": "GPRasterLayer"
+                        },
+                        {
+                            "type": "GPMosaicLayer"
+                        }
+                    ]
+                }
+            },
+            "description": "$rc:in_layer.descr"
+        },
+        "overlap_type": {
+            "type": "optional",
+            "displayname": "$rc:overlap_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "INTERSECT",
+                        "code": "$rc:overlap_type.domain.INTERSECT"
+                    },
+                    {
+                        "value": "INTERSECT_3D",
+                        "code": "$rc:overlap_type.domain.INTERSECT_3D"
+                    },
+                    {
+                        "value": "INTERSECT_DBMS",
+                        "code": "$rc:overlap_type.domain.INTERSECT_DBMS"
+                    },
+                    {
+                        "value": "WITHIN_A_DISTANCE_GEODESIC",
+                        "code": "$rc:overlap_type.domain.WITHIN_A_DISTANCE_GEODESIC"
+                    },
+                    {
+                        "value": "WITHIN_A_DISTANCE",
+                        "code": "$rc:overlap_type.domain.WITHIN_A_DISTANCE"
+                    },
+                    {
+                        "value": "WITHIN_A_DISTANCE_3D",
+                        "code": "$rc:overlap_type.domain.WITHIN_A_DISTANCE_3D"
+                    },
+                    {
+                        "value": "CONTAINS",
+                        "code": "$rc:overlap_type.domain.CONTAINS"
+                    },
+                    {
+                        "value": "COMPLETELY_CONTAINS",
+                        "code": "$rc:overlap_type.domain.COMPLETELY_CONTAINS"
+                    },
+                    {
+                        "value": "CONTAINS_CLEMENTINI",
+                        "code": "$rc:overlap_type.domain.CONTAINS_CLEMENTINI"
+                    },
+                    {
+                        "value": "WITHIN",
+                        "code": "$rc:overlap_type.domain.WITHIN"
+                    },
+                    {
+                        "value": "COMPLETELY_WITHIN",
+                        "code": "$rc:overlap_type.domain.COMPLETELY_WITHIN"
+                    },
+                    {
+                        "value": "WITHIN_CLEMENTINI",
+                        "code": "$rc:overlap_type.domain.WITHIN_CLEMENTINI"
+                    },
+                    {
+                        "value": "ARE_IDENTICAL_TO",
+                        "code": "$rc:overlap_type.domain.ARE_IDENTICAL_TO"
+                    },
+                    {
+                        "value": "BOUNDARY_TOUCHES",
+                        "code": "$rc:overlap_type.domain.BOUNDARY_TOUCHES"
+                    },
+                    {
+                        "value": "SHARE_A_LINE_SEGMENT_WITH",
+                        "code": "$rc:overlap_type.domain.SHARE_A_LINE_SEGMENT_WITH"
+                    },
+                    {
+                        "value": "CROSSED_BY_THE_OUTLINE_OF",
+                        "code": "$rc:overlap_type.domain.CROSSED_BY_THE_OUTLINE_OF"
+                    },
+                    {
+                        "value": "HAVE_THEIR_CENTER_IN",
+                        "code": "$rc:overlap_type.domain.HAVE_THEIR_CENTER_IN"
+                    }
+                ]
+            },
+            "value": "INTERSECT",
+            "description": "$rc:overlap_type.descr"
+        },
+        "select_features": {
+            "type": "optional",
+            "displayname": "$rc:select_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:select_features.descr"
+        },
+        "search_distance": {
+            "type": "optional",
+            "displayname": "$rc:search_distance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_layer"
+            ],
+            "description": "$rc:search_distance.descr"
+        },
+        "selection_type": {
+            "type": "optional",
+            "displayname": "$rc:selection_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NEW_SELECTION",
+                        "code": "$rc:selection_type.domain.NEW_SELECTION"
+                    },
+                    {
+                        "value": "ADD_TO_SELECTION",
+                        "code": "$rc:selection_type.domain.ADD_TO_SELECTION"
+                    },
+                    {
+                        "value": "REMOVE_FROM_SELECTION",
+                        "code": "$rc:selection_type.domain.REMOVE_FROM_SELECTION"
+                    },
+                    {
+                        "value": "SUBSET_SELECTION",
+                        "code": "$rc:selection_type.domain.SUBSET_SELECTION"
+                    },
+                    {
+                        "value": "SWITCH_SELECTION",
+                        "code": "$rc:selection_type.domain.SWITCH_SELECTION"
+                    }
+                ]
+            },
+            "value": "NEW_SELECTION",
+            "description": "$rc:selection_type.descr"
+        },
+        "out_layer_or_view": {
+            "type": "derived",
+            "direction": "out",
+            "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}",
+            "displayname": "$rc:out_layer_or_view.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPFeatureLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "addtomap": "false"
+        },
+        "invert_spatial_relationship": {
+            "type": "optional",
+            "displayname": "$rc:invert_spatial_relationship.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "INVERT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NOT_INVERT"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:invert_spatial_relationship.descr"
+        },
+        "out_layers_or_views": {
+            "type": "derived",
+            "direction": "out",
+            "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}",
+            "displayname": "$rc:out_layers_or_views.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "GPFeatureLayer"
+                        },
+                        {
+                            "type": "GPMosaicLayer"
+                        }
+                    ]
+                }
+            },
+            "depends": [
+                "in_layer"
+            ]
+        },
+        "count": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:count.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPLong"
+                }
+            }
+        }
+    },
+    "environments": [
+        "extent",
+        "outputCoordinateSystem",
+        "workspace"
+    ]
+}

@@ -1,0 +1,262 @@
+{
+    "type": "FunctionTool",
+    "guid": "{28669a79-9d9f-4bc3-9d85-513576d2027e}",
+    "displayname": "$rc:title",
+    "helpcontent": "3050026",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_table": {
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "out_featureclass": {
+            "direction": "out",
+            "displayname": "$rc:out_featureclass.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_featureclass.descr"
+        },
+        "x_field": {
+            "displayname": "$rc:x_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Float",
+                    "Double",
+                    "Short",
+                    "Long"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:x_field.descr"
+        },
+        "y_field": {
+            "displayname": "$rc:y_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Float",
+                    "Double",
+                    "Short",
+                    "Long"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:y_field.descr"
+        },
+        "distance_field": {
+            "displayname": "$rc:distance_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Float",
+                    "Double",
+                    "Short",
+                    "Long"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:distance_field.descr"
+        },
+        "distance_units": {
+            "displayname": "$rc:distance_units.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "METERS",
+                        "code": "$rc:distance_units.domain.METERS"
+                    },
+                    {
+                        "value": "KILOMETERS",
+                        "code": "$rc:distance_units.domain.KILOMETERS"
+                    },
+                    {
+                        "value": "MILES",
+                        "code": "$rc:distance_units.domain.MILES"
+                    },
+                    {
+                        "value": "NAUTICAL_MILES",
+                        "code": "$rc:distance_units.domain.NAUTICAL_MILES"
+                    },
+                    {
+                        "value": "FEET",
+                        "code": "$rc:distance_units.domain.FEET"
+                    },
+                    {
+                        "value": "US_SURVEY_FEET",
+                        "code": "$rc:distance_units.domain.US_SURVEY_FEET"
+                    }
+                ]
+            },
+            "value": "METERS",
+            "description": "$rc:distance_units.descr"
+        },
+        "bearing_field": {
+            "displayname": "$rc:bearing_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Float",
+                    "Double",
+                    "Short",
+                    "Long"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:bearing_field.descr"
+        },
+        "bearing_units": {
+            "displayname": "$rc:bearing_units.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DEGREES",
+                        "code": "$rc:bearing_units.domain.DEGREES"
+                    },
+                    {
+                        "value": "MILS",
+                        "code": "$rc:bearing_units.domain.MILS"
+                    },
+                    {
+                        "value": "RADS",
+                        "code": "$rc:bearing_units.domain.RADS"
+                    },
+                    {
+                        "value": "GRADS",
+                        "code": "$rc:bearing_units.domain.GRADS"
+                    }
+                ]
+            },
+            "value": "DEGREES",
+            "description": "$rc:bearing_units.descr"
+        },
+        "line_type": {
+            "type": "optional",
+            "displayname": "$rc:line_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "GEODESIC",
+                        "code": "$rc:line_type.domain.GEODESIC"
+                    },
+                    {
+                        "value": "GREAT_CIRCLE",
+                        "code": "$rc:line_type.domain.GREAT_CIRCLE"
+                    },
+                    {
+                        "value": "RHUMB_LINE",
+                        "code": "$rc:line_type.domain.RHUMB_LINE"
+                    },
+                    {
+                        "value": "NORMAL_SECTION",
+                        "code": "$rc:line_type.domain.NORMAL_SECTION"
+                    },
+                    {
+                        "value": "PLANAR",
+                        "code": "$rc:line_type.domain.PLANAR"
+                    }
+                ]
+            },
+            "value": "GEODESIC",
+            "description": "$rc:line_type.descr"
+        },
+        "id_field": {
+            "type": "optional",
+            "displayname": "$rc:id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Float",
+                    "Double",
+                    "Short",
+                    "Long",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:id_field.descr"
+        },
+        "spatial_reference": {
+            "type": "optional",
+            "displayname": "$rc:spatial_reference.title",
+            "datatype": {
+                "type": "GPSpatialReference"
+            },
+            "value": "{B286C06B-0879-11D2-AACA-00C04FA33C20};-450359962737.049 -450359962737.049 10000;-100000 10000;-100000 10000;0.001;0.001;0.001;IsHighPrecision",
+            "description": "$rc:spatial_reference.descr"
+        },
+        "attributes": {
+            "type": "optional",
+            "displayname": "$rc:attributes.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ATTRIBUTES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_ATTRIBUTES"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:attributes.descr"
+        }
+    },
+    "environments": [
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

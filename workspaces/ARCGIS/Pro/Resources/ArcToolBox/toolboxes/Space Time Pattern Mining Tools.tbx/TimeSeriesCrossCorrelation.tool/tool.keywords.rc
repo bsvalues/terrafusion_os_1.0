@@ -1,0 +1,7 @@
+{
+    "set": [
+        "autocorrelation",
+        "lag",
+        "statistics"
+    ]
+}

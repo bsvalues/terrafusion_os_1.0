@@ -1,0 +1,270 @@
+{% extends "unified_base.html" %}
+
+{% from "components/ui_components.html" import card, stat_card, chart_container, icon_button %}
+{% from "components/data_components.html" import system_metrics_card, api_performance_card, db_connection_status, alert_list %}
+
+{% block title %}Monitoring Dashboard - TerraMiner{% endblock %}
+
+{% block page_title %}Monitoring Dashboard{% endblock %}
+
+{% block page_actions %}
+<div class="btn-group">
+    <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-download me-1"></i>
+        Export
+    </button>
+    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+        <li><a class="dropdown-item" href="{{ url_for('export_data', format='csv') }}"><i class="bi bi-filetype-csv me-2"></i>CSV</a></li>
+        <li><a class="dropdown-item" href="{{ url_for('export_data', format='excel') }}"><i class="bi bi-filetype-xlsx me-2"></i>Excel</a></li>
+        <li><a class="dropdown-item" href="{{ url_for('export_data', format='json') }}"><i class="bi bi-filetype-json me-2"></i>JSON</a></li>
+    </ul>
+</div>
+<button type="button" class="btn btn-primary ms-2" id="refreshDashboard">
+    <i class="bi bi-arrow-clockwise me-1"></i>
+    Refresh
+</button>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
+        {{ stat_card(
+            title="Active Reports",
+            value=system_overview.reports|default(0),
+            icon="file-earmark-text",
+            trend="vs last week",
+            trend_value="5%",
+            trend_positive=true,
+            color="primary"
+        ) }}
+    </div>
+    <div class="col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
+        {{ stat_card(
+            title="Properties",
+            value=system_overview.properties|default(0),
+            icon="houses",
+            trend="vs last week",
+            trend_value="2%",
+            trend_positive=true,
+            color="info"
+        ) }}
+    </div>
+    <div class="col-sm-6 col-md-6 col-lg-3 mb-4 mb-lg-0">
+        {{ stat_card(
+            title="Active Jobs",
+            value=system_overview.active_jobs|default(0),
+            icon="cpu",
+            trend="vs yesterday",
+            trend_value="3",
+            trend_positive=true,
+            color="success"
+        ) }}
+    </div>
+    <div class="col-sm-6 col-md-6 col-lg-3">
+        {{ stat_card(
+            title="Active Alerts",
+            value=system_overview.alerts|default(0),
+            icon="exclamation-triangle",
+            trend="vs yesterday",
+            trend_value="1",
+            trend_positive=false,
+            color="warning"
+        ) }}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="mb-4">
+            {% call card(title="System Overview", subtitle="Past 24 hours") %}
+                {{ chart_container(
+                    id="systemOverviewChart",
+                    height="300px",
+                    loading=true,
+                    error=false
+                ) }}
+            {% endcall %}
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                {{ system_metrics_card(system_metrics, loading=false, error=false) }}
+            </div>
+            <div class="col-md-6">
+                {{ api_performance_card(api_metrics, loading=false, error=false) }}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="mb-4">
+            {{ db_connection_status(
+                status="connected",
+                connection_count=system_overview.db_connections|default(3),
+                response_time=system_overview.db_response_time|default(15),
+                max_connections=10
+            ) }}
+        </div>
+        
+        <div class="mb-4">
+            {% call card(title="Active Alerts", subtitle="Requires attention") %}
+                {{ alert_list(alerts, loading=false, error=false, empty_state_text="No active alerts at this time.") }}
+            {% endcall %}
+        </div>
+        
+        <div class="mb-4">
+            {% call card(title="Recent Activity") %}
+                <div class="list-group list-group-flush bg-dark">
+                    {% for activity in recent_activity %}
+                        <div class="list-group-item bg-dark border-secondary">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ activity.action }}</h6>
+                                <small class="text-muted">{{ activity.timestamp|format_datetime }}</small>
+                            </div>
+                            <p class="mb-1 small text-muted">{{ activity.details }}</p>
+                        </div>
+                    {% else %}
+                        <div class="list-group-item bg-dark border-secondary text-center py-4">
+                            <i class="bi bi-activity text-muted d-block mb-2" style="font-size: 2rem;"></i>
+                            <p class="mb-0 text-muted">No recent activity to display.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endcall %}
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        {% call card(title="Scheduled Jobs", subtitle="Next 24 hours") %}
+            {% if scheduled_jobs and scheduled_jobs|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-sm table-dark">
+                        <thead>
+                            <tr>
+                                <th>Job Name</th>
+                                <th>Schedule</th>
+                                <th>Last Run</th>
+                                <th>Next Run</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for job in scheduled_jobs %}
+                                <tr>
+                                    <td>{{ job.name }}</td>
+                                    <td>{{ job.schedule }}</td>
+                                    <td>{{ job.last_run|format_datetime if job.last_run else 'Never' }}</td>
+                                    <td>{{ job.next_run|format_datetime if job.next_run else 'Not Scheduled' }}</td>
+                                    <td>
+                                        {% if job.status == 'active' %}
+                                            <span class="badge text-bg-success">Active</span>
+                                        {% elif job.status == 'failed' %}
+                                            <span class="badge text-bg-danger">Failed</span>
+                                        {% elif job.status == 'paused' %}
+                                            <span class="badge text-bg-warning">Paused</span>
+                                        {% else %}
+                                            <span class="badge text-bg-secondary">Unknown</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button type="button" class="btn btn-outline-primary" title="Run Now">
+                                                <i class="bi bi-play-fill"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary" title="Edit">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger" title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-4">
+                    <i class="bi bi-calendar text-muted d-block mb-3" style="font-size: 2rem;"></i>
+                    <h5 class="mb-2">No Scheduled Jobs</h5>
+                    <p class="text-muted mb-3">There are no scheduled jobs for the next 24 hours.</p>
+                    <a href="{{ url_for('monitoring_reports_create') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-plus-circle me-1"></i>
+                        Create Job
+                    </a>
+                </div>
+            {% endif %}
+        {% endcall %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Create system overview chart
+    const systemOverviewChart = createChart('systemOverviewChart', 'line', {
+        labels: ['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00'],
+        datasets: [
+            {
+                label: 'CPU Usage',
+                data: [25, 30, 45, 60, 55, 65, 70, 60],
+                borderWidth: 2,
+                tension: 0.3
+            },
+            {
+                label: 'Memory',
+                data: [40, 42, 45, 50, 55, 58, 62, 60],
+                borderWidth: 2,
+                tension: 0.3
+            },
+            {
+                label: 'Disk I/O',
+                data: [10, 15, 20, 35, 30, 25, 20, 15],
+                borderWidth: 2,
+                tension: 0.3
+            }
+        ]
+    });
+    
+    // Hide loading overlay
+    setTimeout(() => {
+        document.querySelector('#systemOverviewChart').closest('.chart-container').querySelector('.chart-loading').style.display = 'none';
+    }, 1000);
+    
+    // Refresh dashboard handler
+    document.getElementById('refreshDashboard').addEventListener('click', function() {
+        // Show loading state
+        showLoading('systemOverviewChart', 'Refreshing data...');
+        
+        // Simulate API call
+        setTimeout(() => {
+            // Update charts with new data
+            systemOverviewChart.data.datasets[0].data = [
+                20 + Math.random() * 20,
+                25 + Math.random() * 20,
+                40 + Math.random() * 20,
+                55 + Math.random() * 20,
+                50 + Math.random() * 20,
+                60 + Math.random() * 20,
+                65 + Math.random() * 20,
+                55 + Math.random() * 20
+            ];
+            systemOverviewChart.update();
+            
+            // Hide loading state
+            hideLoading('systemOverviewChart');
+            
+            // Show success message
+            showToast('Dashboard data refreshed successfully', 'success', {
+                duration: 3000
+            });
+        }, 1500);
+    });
+});
+</script>
+{% endblock %}

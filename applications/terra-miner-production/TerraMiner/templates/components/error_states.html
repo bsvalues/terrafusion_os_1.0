@@ -1,0 +1,91 @@
+{% macro error_card(title="Error", message="Something went wrong. Please try again.", icon="exclamation-triangle", show_retry=true, retry_url="#", retry_text="Try Again") %}
+<div class="card {% if ui_template == 'unified' %}bg-dark-blue border-0 shadow{% endif %} mb-4">
+    <div class="card-body text-center py-5">
+        <div class="{% if ui_template == 'unified' %}text-danger{% else %}text-danger{% endif %} mb-3">
+            <i class="fas fa-{{ icon }} fa-3x"></i>
+        </div>
+        <h5 class="{% if ui_template == 'unified' %}text-white{% endif %}">{{ title }}</h5>
+        <p class="{% if ui_template == 'unified' %}text-light{% else %}text-muted{% endif %} mb-4">{{ message }}</p>
+        {% if show_retry %}
+        <a href="{{ retry_url }}" class="btn {% if ui_template == 'unified' %}btn-teal{% else %}btn-primary{% endif %}">
+            <i class="fas fa-sync-alt me-2"></i>{{ retry_text }}
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endmacro %}
+
+{% macro empty_state(title="No Data Available", message="There are no items to display at this time.", icon="database", action_url=None, action_text="Add New") %}
+<div class="empty-state">
+    <div class="{% if ui_template == 'unified' %}text-light-blue{% else %}text-secondary{% endif %} empty-state-icon">
+        <i class="fas fa-{{ icon }}"></i>
+    </div>
+    <h5 class="{% if ui_template == 'unified' %}text-white{% else %}text-dark{% endif %}">{{ title }}</h5>
+    <p class="{% if ui_template == 'unified' %}text-light-blue{% else %}text-muted{% endif %} empty-state-text">{{ message }}</p>
+    {% if action_url %}
+    <a href="{{ action_url }}" class="btn {% if ui_template == 'unified' %}btn-teal{% else %}btn-primary{% endif %}">
+        <i class="fas fa-plus me-1"></i>{{ action_text }}
+    </a>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{% macro no_results(search_term="", message=None, icon="search", show_clear=true, clear_url="#") %}
+<div class="card {% if ui_template == 'unified' %}bg-dark-blue border-0 shadow{% endif %} mb-4">
+    <div class="card-body text-center py-5">
+        <div class="{% if ui_template == 'unified' %}text-light-blue{% else %}text-secondary{% endif %} mb-3">
+            <i class="fas fa-{{ icon }} fa-3x"></i>
+        </div>
+        <h5 class="{% if ui_template == 'unified' %}text-white{% endif %}">No Results Found</h5>
+        {% if search_term %}
+        <p class="{% if ui_template == 'unified' %}text-light{% else %}text-muted{% endif %} mb-4">
+            {{ message if message else 'No results found for "' + search_term + '". Please try a different search term.' }}
+        </p>
+        {% else %}
+        <p class="{% if ui_template == 'unified' %}text-light{% else %}text-muted{% endif %} mb-4">
+            {{ message if message else 'No matching results found. Please try different search criteria.' }}
+        </p>
+        {% endif %}
+        
+        {% if show_clear %}
+        <a href="{{ clear_url }}" class="btn {% if ui_template == 'unified' %}btn-dark-teal{% else %}btn-outline-primary{% endif %}">
+            <i class="fas fa-times me-2"></i>Clear Search
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endmacro %}
+
+{% macro network_error(retry_callback="window.location.reload()") %}
+<div class="card {% if ui_template == 'unified' %}bg-dark-blue border-0 shadow{% endif %} mb-4">
+    <div class="card-body text-center py-5">
+        <div class="{% if ui_template == 'unified' %}text-danger{% else %}text-danger{% endif %} mb-3">
+            <i class="fas fa-wifi fa-3x"></i>
+        </div>
+        <h5 class="{% if ui_template == 'unified' %}text-white{% endif %}">Network Error</h5>
+        <p class="{% if ui_template == 'unified' %}text-light{% else %}text-muted{% endif %} mb-4">
+            Unable to connect to the server. Please check your internet connection and try again.
+        </p>
+        <button onclick="{{ retry_callback }}" class="btn {% if ui_template == 'unified' %}btn-teal{% else %}btn-primary{% endif %}">
+            <i class="fas fa-sync-alt me-2"></i>Retry Connection
+        </button>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro permission_error(message="You don't have permission to access this resource.", back_url="#") %}
+<div class="card {% if ui_template == 'unified' %}bg-dark-blue border-0 shadow{% endif %} mb-4">
+    <div class="card-body text-center py-5">
+        <div class="{% if ui_template == 'unified' %}text-warning{% else %}text-warning{% endif %} mb-3">
+            <i class="fas fa-lock fa-3x"></i>
+        </div>
+        <h5 class="{% if ui_template == 'unified' %}text-white{% endif %}">Access Denied</h5>
+        <p class="{% if ui_template == 'unified' %}text-light{% else %}text-muted{% endif %} mb-4">
+            {{ message }}
+        </p>
+        <a href="{{ back_url }}" class="btn {% if ui_template == 'unified' %}btn-dark-teal{% else %}btn-outline-primary{% endif %}">
+            <i class="fas fa-arrow-left me-2"></i>Go Back
+        </a>
+    </div>
+</div>
+{% endmacro %}

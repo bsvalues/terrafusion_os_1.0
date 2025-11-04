@@ -1,0 +1,15 @@
+{
+  "name": "TerraFusion Performance Optimization",
+  "folders": [
+    {
+      "path": "../monitoring"
+    },
+    {
+      "path": "../scripts/performance"
+    }
+  ],
+  "settings": {
+    "terrafusion.role": "performance_optimization",
+    "terrafusion.performance_target": "championship_level"
+  }
+}

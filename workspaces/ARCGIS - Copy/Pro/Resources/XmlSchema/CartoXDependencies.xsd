@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.esri.com/schemas/ArcGIS/3.4.0" targetNamespace="http://www.esri.com/schemas/ArcGIS/3.4.0">
+	<xs:include schemaLocation="DataSourcesRaster.xsd"/>
+	<xs:include schemaLocation="GeoDatabaseDistributed.xsd"/>
+	<xs:complexType name="StatsHistogram">
+		<xs:sequence>
+			<xs:element name="min" type="xs:double" nillable="true" minOccurs="0"/>
+			<xs:element name="max" type="xs:double" nillable="true" minOccurs="0"/>
+			<xs:element name="mean" type="xs:double" nillable="true" minOccurs="0"/>
+			<xs:element name="stddev" type="xs:double" nillable="true" minOccurs="0"/>
+			<xs:element name="limitMin" type="xs:double" nillable="true" minOccurs="0"/>
+			<xs:element name="limitMax" type="xs:double" nillable="true" minOccurs="0"/>
+			<xs:element name="histogram" type="ArrayOfDouble" nillable="true" minOccurs="0"/>
+			<xs:element name="nsamples" type="xs:double" nillable="true" minOccurs="0"/>
+			<xs:element name="resolution" type="xs:double" nillable="true" minOccurs="0"/>
+			<xs:element name="nBands" type="xs:int" nillable="true" minOccurs="0"/>
+			<xs:element name="covariances" type="ArrayOfDouble" nillable="true" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="BGLPattern">
+		<xs:sequence/>
+	</xs:complexType>
+	<xs:complexType name="Area">
+		<xs:sequence/>
+	</xs:complexType>
+	<xs:complexType name="Array">
+		<xs:sequence/>
+	</xs:complexType>
+	<xs:complexType name="XMLSerialize">
+		<xs:sequence/>
+	</xs:complexType>
+	<xs:complexType name="BGLColorManagementPolicy">
+		<xs:sequence/>
+	</xs:complexType>
+	<xs:complexType name="LasFilter">
+		<xs:sequence>
+			<xs:element name="AreaOfInterest" type="Envelope" nillable="true" minOccurs="0"/>
+			<xs:element name="ClassFlags" type="xs:int"/>
+			<xs:element name="ClassCodes" type="ArrayOfInt" nillable="true" minOccurs="0"/>
+			<xs:element name="SurfaceConstraints" type="ArrayOfString" nillable="true" minOccurs="0"/>
+			<xs:element name="Returns" type="ArrayOfInt" nillable="true" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="esriJoinType">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="esriBGLAntialiasingMode">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="esriBGLTextAAlias">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="esriImageFormat">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="esriTimeRelation">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="esriTimeRelationOverlaps"/>
+			<xs:enumeration value="esriTimeRelationOverlapsStartWithinEnd"/>
+			<xs:enumeration value="esriTimeRelationAfterStartOverlapsEnd"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="esriDiagramDatasetFeatureClass">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="esriDiagramEdgeFeatureClass"/>
+			<xs:enumeration value="esriDiagramJunctionFeatureClass"/>
+			<xs:enumeration value="esriDiagramContainerFeatureClass"/>
+			<xs:enumeration value="esriTemporaryDiagramEdgeFeatureClass"/>
+			<xs:enumeration value="esriTemporaryDiagramJunctionFeatureClass"/>
+			<xs:enumeration value="esriTemporaryDiagramContainerFeatureClass"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

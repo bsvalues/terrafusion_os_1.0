@@ -1,0 +1,272 @@
+{
+    "type": "FunctionTool",
+    "guid": "{84e780da-c3c6-421f-a5f7-7cdc6ef73d6c}",
+    "displayname": "$rc:title",
+    "helpcontent": "3300002",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "params": {
+        "input": {
+            "display_order": "0",
+            "displayname": "$rc:input.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "GPLasDatasetLayer"
+                        },
+                        {
+                            "type": "DEFolder"
+                        },
+                        {
+                            "type": "DEFile"
+                        }
+                    ]
+                }
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "las",
+                            "zlas"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:input.descr"
+        },
+        "out_las_dataset": {
+            "direction": "out",
+            "display_order": "2",
+            "displayname": "$rc:out_las_dataset.title",
+            "datatype": {
+                "type": "DELasDataset"
+            },
+            "description": "$rc:out_las_dataset.descr"
+        },
+        "folder_recursion": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:folder_recursion.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "RECURSION"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_RECURSION"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:folder_recursion.descr"
+        },
+        "in_surface_constraints": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:in_surface_constraints.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPFeatureLayer",
+                        "displayname": "$rc:in_surface_constraints.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:in_surface_constraints.dt.title2"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:in_surface_constraints.dt.title3"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Point",
+                            "Polyline",
+                            "Polygon"
+                        ]
+                    },
+                    {
+                        "type": "GPCompositeDomain"
+                    },
+                    {
+                        "type": "GPCompositeDomain"
+                    }
+                ]
+            },
+            "description": "$rc:in_surface_constraints.descr"
+        },
+        "spatial_reference": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:spatial_reference.title",
+            "datatype": {
+                "type": "GPCoordinateSystem"
+            },
+            "defaultenvironmentname": "outputCoordinateSystem",
+            "description": "$rc:spatial_reference.descr"
+        },
+        "compute_stats": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:compute_stats.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "COMPUTE_STATS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_COMPUTE_STATS"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:compute_stats.descr"
+        },
+        "relative_paths": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:relative_paths.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "RELATIVE_PATHS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "ABSOLUTE_PATHS"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:relative_paths.descr"
+        },
+        "create_las_prj": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:create_las_prj.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NO_FILES",
+                        "code": "$rc:create_las_prj.domain.NO_FILES"
+                    },
+                    {
+                        "value": "FILES_MISSING_PROJECTION",
+                        "code": "$rc:create_las_prj.domain.FILES_MISSING_PROJECTION"
+                    },
+                    {
+                        "value": "ALL_FILES",
+                        "code": "$rc:create_las_prj.domain.ALL_FILES"
+                    }
+                ]
+            },
+            "value": "NO_FILES",
+            "description": "$rc:create_las_prj.descr"
+        },
+        "extent": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:extent.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPExtent"
+            },
+            "description": "$rc:extent.descr"
+        },
+        "boundary": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:boundary.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:boundary.descr"
+        },
+        "add_only_contained_files": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:add_only_contained_files.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CONTAINED_FILES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "INTERSECTED_FILES"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:add_only_contained_files.descr"
+        }
+    },
+    "environments": [
+        "outputCoordinateSystem",
+        "workspace"
+    ]
+}

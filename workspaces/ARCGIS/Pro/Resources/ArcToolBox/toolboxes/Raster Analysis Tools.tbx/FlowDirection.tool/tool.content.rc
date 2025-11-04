@@ -1,0 +1,21 @@
+{
+    "map": {
+        "description": "Calculates the direction of flow from each cell to its downslope neighbor or neighbors using the D8, D-Infinity (DINF), or Multiple Flow Direction (MFD) method.",
+        "flowdirectiontype.descr": "<xdoc><p>Specifies the type of flow method to use while computing flow directions.</p><ul><li><span title=\"D8\">D8</span>—Assign a flow direction based on the D8 flow method. This method assigns flow direction to the steepest downslope neighbor. This is the default.</li><li><span title=\"MFD\">MFD</span>—Assign a flow direction based on the MFD flow method. This method assigns multiple flow directions towards all downslope neighbors.</li><li><span title=\"DINF\">DINF</span>—Assign a flow direction based on the D-Infinity flow method using the steepest slope of a triangular facet.</li></ul></xdoc>",
+        "flowdirectiontype.domain.D8": "D8",
+        "flowdirectiontype.domain.DINF": "DINF",
+        "flowdirectiontype.domain.MFD": "MFD",
+        "flowdirectiontype.title": "Flow Direction Type",
+        "forceflow.descr": "<xdoc><p>Specifies if edge cells will always flow outward or follow normal flow rules.</p><ul><li>Unchecked—If the maximum drop on the inside of an edge cell is greater than zero, the flow direction will be determined as usual; otherwise, the flow direction will be toward the edge. Cells that should flow from the edge of the surface raster inward will do so. This is the default.</li><li>Checked—All cells at the edge of the surface raster will flow outward from the surface raster.</li></ul></xdoc>",
+        "forceflow.title": "Force all edge cells to flow outward",
+        "inputsurfaceraster.descr": "The input raster representing a continuous surface.",
+        "inputsurfaceraster.title": "Input Surface Raster",
+        "outputdropname.descr": "<xdoc><p>The name of the output drop raster service.</p><p>The default name is based on the tool name and the input layer name. If the layer name already exists, you will be prompted to provide another name.</p></xdoc>",
+        "outputdropname.title": "Output Drop Name",
+        "outputdropraster.title": "Output Drop Raster",
+        "outputflowdirectionname.descr": "<xdoc><p>The name of the output flow direction raster service.</p><p>The default name is based on the tool name and the input layer name. If the layer name already exists, you will be prompted to provide another name.</p></xdoc>",
+        "outputflowdirectionname.title": "Output Flow Direction Name",
+        "outputflowdirectionraster.title": "Output Flow Direction Raster",
+        "title": "Flow Direction"
+    }
+}

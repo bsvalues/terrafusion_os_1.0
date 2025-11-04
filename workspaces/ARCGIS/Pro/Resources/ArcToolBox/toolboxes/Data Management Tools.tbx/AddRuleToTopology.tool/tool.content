@@ -1,0 +1,205 @@
+{
+    "type": "FunctionTool",
+    "guid": "{71007c9c-a389-4e55-a6a3-cf91a9024eae}",
+    "displayname": "$rc:title",
+    "helpcontent": "3160002",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "block_add_to_map",
+        "input_data_change",
+        "param_nocount:in_featureclass",
+        "param_nocount:in_featureclass2"
+    ],
+    "params": {
+        "in_topology": {
+            "displayname": "$rc:in_topology.title",
+            "datatype": {
+                "type": "GPTopologyLayer"
+            },
+            "description": "$rc:in_topology.descr"
+        },
+        "rule_type": {
+            "displayname": "$rc:rule_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "Must Not Have Gaps (Area)",
+                        "code": "$rc:rule_type.domain.Must Not Have Gaps (Area)"
+                    },
+                    {
+                        "value": "Must Not Overlap (Area)",
+                        "code": "$rc:rule_type.domain.Must Not Overlap (Area)"
+                    },
+                    {
+                        "value": "Must Be Covered By Feature Class Of (Area-Area)",
+                        "code": "$rc:rule_type.domain.Must Be Covered By Feature Class Of (Area-Area)"
+                    },
+                    {
+                        "value": "Must Cover Each Other (Area-Area)",
+                        "code": "$rc:rule_type.domain.Must Cover Each Other (Area-Area)"
+                    },
+                    {
+                        "value": "Must Be Covered By (Area-Area)",
+                        "code": "$rc:rule_type.domain.Must Be Covered By (Area-Area)"
+                    },
+                    {
+                        "value": "Must Not Overlap With (Area-Area)",
+                        "code": "$rc:rule_type.domain.Must Not Overlap With (Area-Area)"
+                    },
+                    {
+                        "value": "Must Be Covered By Boundary Of (Line-Area)",
+                        "code": "$rc:rule_type.domain.Must Be Covered By Boundary Of (Line-Area)"
+                    },
+                    {
+                        "value": "Must Be Covered By Boundary Of (Point-Area)",
+                        "code": "$rc:rule_type.domain.Must Be Covered By Boundary Of (Point-Area)"
+                    },
+                    {
+                        "value": "Must Be Properly Inside (Point-Area)",
+                        "code": "$rc:rule_type.domain.Must Be Properly Inside (Point-Area)"
+                    },
+                    {
+                        "value": "Must Not Overlap (Line)",
+                        "code": "$rc:rule_type.domain.Must Not Overlap (Line)"
+                    },
+                    {
+                        "value": "Must Not Intersect (Line)",
+                        "code": "$rc:rule_type.domain.Must Not Intersect (Line)"
+                    },
+                    {
+                        "value": "Must Not Have Dangles (Line)",
+                        "code": "$rc:rule_type.domain.Must Not Have Dangles (Line)"
+                    },
+                    {
+                        "value": "Must Not Have Pseudo-Nodes (Line)",
+                        "code": "$rc:rule_type.domain.Must Not Have Pseudo-Nodes (Line)"
+                    },
+                    {
+                        "value": "Must Be Covered By Feature Class Of (Line-Line)",
+                        "code": "$rc:rule_type.domain.Must Be Covered By Feature Class Of (Line-Line)"
+                    },
+                    {
+                        "value": "Must Not Overlap With (Line-Line)",
+                        "code": "$rc:rule_type.domain.Must Not Overlap With (Line-Line)"
+                    },
+                    {
+                        "value": "Must Be Covered By (Point-Line)",
+                        "code": "$rc:rule_type.domain.Must Be Covered By (Point-Line)"
+                    },
+                    {
+                        "value": "Must Be Covered By Endpoint Of (Point-Line)",
+                        "code": "$rc:rule_type.domain.Must Be Covered By Endpoint Of (Point-Line)"
+                    },
+                    {
+                        "value": "Boundary Must Be Covered By (Area-Line)",
+                        "code": "$rc:rule_type.domain.Boundary Must Be Covered By (Area-Line)"
+                    },
+                    {
+                        "value": "Boundary Must Be Covered By Boundary Of (Area-Area)",
+                        "code": "$rc:rule_type.domain.Boundary Must Be Covered By Boundary Of (Area-Area)"
+                    },
+                    {
+                        "value": "Must Not Self-Overlap (Line)",
+                        "code": "$rc:rule_type.domain.Must Not Self-Overlap (Line)"
+                    },
+                    {
+                        "value": "Must Not Self-Intersect (Line)",
+                        "code": "$rc:rule_type.domain.Must Not Self-Intersect (Line)"
+                    },
+                    {
+                        "value": "Must Not Intersect Or Touch Interior (Line)",
+                        "code": "$rc:rule_type.domain.Must Not Intersect Or Touch Interior (Line)"
+                    },
+                    {
+                        "value": "Endpoint Must Be Covered By (Line-Point)",
+                        "code": "$rc:rule_type.domain.Endpoint Must Be Covered By (Line-Point)"
+                    },
+                    {
+                        "value": "Contains Point (Area-Point)",
+                        "code": "$rc:rule_type.domain.Contains Point (Area-Point)"
+                    },
+                    {
+                        "value": "Must Be Single Part (Line)",
+                        "code": "$rc:rule_type.domain.Must Be Single Part (Line)"
+                    },
+                    {
+                        "value": "Must Coincide With (Point-Point)",
+                        "code": "$rc:rule_type.domain.Must Coincide With (Point-Point)"
+                    },
+                    {
+                        "value": "Must Be Disjoint (Point)",
+                        "code": "$rc:rule_type.domain.Must Be Disjoint (Point)"
+                    },
+                    {
+                        "value": "Must Not Intersect With (Line-Line)",
+                        "code": "$rc:rule_type.domain.Must Not Intersect With (Line-Line)"
+                    },
+                    {
+                        "value": "Must Not Intersect or Touch Interior With (Line-Line)",
+                        "code": "$rc:rule_type.domain.Must Not Intersect or Touch Interior With (Line-Line)"
+                    },
+                    {
+                        "value": "Must Be Inside (Line-Area)",
+                        "code": "$rc:rule_type.domain.Must Be Inside (Line-Area)"
+                    },
+                    {
+                        "value": "Contains One Point (Area-Point)",
+                        "code": "$rc:rule_type.domain.Contains One Point (Area-Point)"
+                    }
+                ]
+            },
+            "value": "Must Not Have Gaps (Area)",
+            "description": "$rc:rule_type.descr"
+        },
+        "in_featureclass": {
+            "displayname": "$rc:in_featureclass.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:in_featureclass.descr"
+        },
+        "subtype": {
+            "type": "optional",
+            "displayname": "$rc:subtype.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:subtype.descr"
+        },
+        "in_featureclass2": {
+            "type": "optional",
+            "displayname": "$rc:in_featureclass2.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:in_featureclass2.descr"
+        },
+        "subtype2": {
+            "type": "optional",
+            "displayname": "$rc:subtype2.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:subtype2.descr"
+        },
+        "out_topology": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_topology.title",
+            "datatype": {
+                "type": "GPTopologyLayer"
+            },
+            "depends": [
+                "in_topology"
+            ]
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

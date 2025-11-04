@@ -1,0 +1,498 @@
+{
+  "type" : "CIMLayerDocument",
+  "version" : "2.7.0",
+  "build" : 26225,
+  "layers" : [
+    "CIMPATH=map/pathallocation_out_distance_raster_1_tif.xml"
+  ],
+  "layerDefinitions" : [
+    {
+      "type" : "CIMRasterLayer",
+      "name" : "PathAllocation_out_distance_raster_1.tif",
+      "uRI" : "CIMPATH=map/pathallocation_out_distance_raster_1_tif.xml",
+      "sourceModifiedTime" : {
+        "type" : "TimeInstant"
+      },
+      "useSourceMetadata" : true,
+      "description" : "PathAllocation_out_distance_raster_1.tif",
+      "layerElevation" : {
+        "type" : "CIMLayerElevationSurface",
+        "mapElevationID" : "{88CDA1E4-16DF-4700-BC28-1100B1B1CACB}"
+      },
+      "layerType" : "Operational",
+      "showLegends" : true,
+      "visibility" : true,
+      "displayCacheType" : "Permanent",
+      "maxDisplayCacheAge" : 5,
+      "showPopups" : true,
+      "serviceLayerID" : -1,
+      "refreshRate" : -1,
+      "refreshRateUnit" : "esriTimeUnitsSeconds",
+      "blendingMode" : "Alpha",
+      "dataConnection" : {
+        "type" : "CIMStandardDataConnection",
+        "workspaceConnectionString" : "DATABASE=..\\output",
+        "workspaceFactory" : "Raster",
+        "dataset" : "PathAllocation_out_distance_raster_1.tif",
+        "datasetType" : "esriDTAny"
+      },
+      "colorizer" : {
+        "type" : "CIMRasterStretchColorizer",
+        "resamplingType" : "NearestNeighbor",
+        "noDataColor" : {
+          "type" : "CIMRGBColor",
+          "values" : [
+            255,
+            255,
+            255,
+            0
+          ]
+        },
+        "backgroundColor" : {
+          "type" : "CIMRGBColor",
+          "values" : [
+            255,
+            255,
+            255,
+            0
+          ]
+        },
+        "colorRamp" : {
+          "type" : "CIMMultipartColorRamp",
+          "colorRamps" : [
+            {
+              "type" : "CIMPolarContinuousColorRamp",
+              "colorSpace" : {
+                "type" : "CIMICCColorSpace",
+                "url" : "Default RGB"
+              },
+              "fromColor" : {
+                "type" : "CIMHSVColor",
+                "values" : [
+                  98,
+                  42,
+                  60,
+                  100
+                ]
+              },
+              "toColor" : {
+                "type" : "CIMHSVColor",
+                "values" : [
+                  57,
+                  33,
+                  95,
+                  100
+                ]
+              },
+              "interpolationSpace" : "HSV",
+              "polarDirection" : "Auto"
+            },
+            {
+              "type" : "CIMPolarContinuousColorRamp",
+              "colorSpace" : {
+                "type" : "CIMICCColorSpace",
+                "url" : "Default RGB"
+              },
+              "fromColor" : {
+                "type" : "CIMHSVColor",
+                "values" : [
+                  57,
+                  33,
+                  95,
+                  100
+                ]
+              },
+              "toColor" : {
+                "type" : "CIMHSVColor",
+                "values" : [
+                  40,
+                  45,
+                  95,
+                  100
+                ]
+              },
+              "interpolationSpace" : "HSV",
+              "polarDirection" : "Auto"
+            },
+            {
+              "type" : "CIMPolarContinuousColorRamp",
+              "colorSpace" : {
+                "type" : "CIMICCColorSpace",
+                "url" : "Default RGB"
+              },
+              "fromColor" : {
+                "type" : "CIMHSVColor",
+                "values" : [
+                  40,
+                  45,
+                  95,
+                  100
+                ]
+              },
+              "toColor" : {
+                "type" : "CIMHSVColor",
+                "values" : [
+                  14,
+                  36,
+                  76,
+                  100
+                ]
+              },
+              "interpolationSpace" : "HSV",
+              "polarDirection" : "Counterclockwise"
+            },
+            {
+              "type" : "CIMPolarContinuousColorRamp",
+              "colorSpace" : {
+                "type" : "CIMICCColorSpace",
+                "url" : "CIELAB"
+              },
+              "fromColor" : {
+                "type" : "CIMHSVColor",
+                "values" : [
+                  13.720000000000001,
+                  36.079999999999998,
+                  76.079999999999998,
+                  100
+                ]
+              },
+              "toColor" : {
+                "type" : "CIMLABColor",
+                "values" : [
+                  97.661387961344886,
+                  5.1406236854073528,
+                  -3.2669338597618669,
+                  100
+                ]
+              },
+              "interpolationSpace" : "LAB",
+              "polarDirection" : "Counterclockwise"
+            }
+          ],
+          "weights" : [
+            1,
+            1,
+            1,
+            1
+          ]
+        },
+        "colorScheme" : "Surface",
+        "customStretchMax" : 1,
+        "gammaValue" : 1,
+        "hillshadeZFactor" : 1,
+        "maxPercent" : 0.5,
+        "minPercent" : 0.5,
+        "standardDeviationParam" : 2,
+        "statsType" : "Dataset",
+        "stretchClasses" : [
+          {
+            "type" : "CIMRasterStretchClass",
+            "label" : "0"
+          },
+          {
+            "type" : "CIMRasterStretchClass",
+            "value" : 1124664
+          },
+          {
+            "type" : "CIMRasterStretchClass",
+            "label" : "2.24933e+06",
+            "value" : 2249328
+          }
+        ],
+        "stretchStats" : {
+          "type" : "StatsHistogram",
+          "min" : 0,
+          "max" : 2249328,
+          "mean" : 781049.25224197004,
+          "stddev" : 449717.59413366998,
+          "limitMin" : 0,
+          "limitMax" : 2249328,
+          "histogram" : [
+            2837,
+            4132,
+            4743,
+            8105,
+            7602,
+            10451,
+            12627,
+            14795,
+            14840,
+            17364,
+            18104,
+            18400,
+            26110,
+            22322,
+            23980,
+            27790,
+            26955,
+            20441,
+            26648,
+            22912,
+            24929,
+            30914,
+            25778,
+            28222,
+            29362,
+            25180,
+            30505,
+            25105,
+            27943,
+            29876,
+            29985,
+            25598,
+            27951,
+            31372,
+            26656,
+            23739,
+            30288,
+            28008,
+            29058,
+            28193,
+            28086,
+            27896,
+            31151,
+            30407,
+            33196,
+            29497,
+            31680,
+            29899,
+            32127,
+            33156,
+            32066,
+            33037,
+            28968,
+            31620,
+            29946,
+            33552,
+            31540,
+            26286,
+            30580,
+            28335,
+            39389,
+            21770,
+            32434,
+            25768,
+            29631,
+            36206,
+            29974,
+            27870,
+            30876,
+            32791,
+            25427,
+            25362,
+            23805,
+            19337,
+            34677,
+            20278,
+            26397,
+            26417,
+            22389,
+            31952,
+            26128,
+            29829,
+            27215,
+            21443,
+            34273,
+            24789,
+            25679,
+            23218,
+            34527,
+            31045,
+            24518,
+            19942,
+            26104,
+            35017,
+            32543,
+            20659,
+            28889,
+            24253,
+            40135,
+            17305,
+            24652,
+            21391,
+            18211,
+            39750,
+            22567,
+            20213,
+            19112,
+            49924,
+            19710,
+            20060,
+            28236,
+            19024,
+            37135,
+            18231,
+            17164,
+            23210,
+            19208,
+            26110,
+            40496,
+            15756,
+            26798,
+            24787,
+            33111,
+            17016,
+            18260,
+            35879,
+            30279,
+            27218,
+            18108,
+            16536,
+            14016,
+            42608,
+            17520,
+            27648,
+            28747,
+            20743,
+            23205,
+            25309,
+            25689,
+            19654,
+            28298,
+            20582,
+            17960,
+            16657,
+            14907,
+            19242,
+            23300,
+            19214,
+            23607,
+            7466,
+            25961,
+            14740,
+            8169,
+            13079,
+            19890,
+            15987,
+            16489,
+            9257,
+            11586,
+            15308,
+            14349,
+            23922,
+            10181,
+            9926,
+            12740,
+            12156,
+            4558,
+            8584,
+            13327,
+            8574,
+            8051,
+            4697,
+            5375,
+            4900,
+            22889,
+            6788,
+            7983,
+            3798,
+            8351,
+            8479,
+            3719,
+            4727,
+            6097,
+            10448,
+            4008,
+            6819,
+            2932,
+            3435,
+            11164,
+            6418,
+            3859,
+            2702,
+            2292,
+            6214,
+            2250,
+            3720,
+            3147,
+            4907,
+            5317,
+            3216,
+            1848,
+            3644,
+            4952,
+            6328,
+            1632,
+            1374,
+            1592,
+            5211,
+            1216,
+            1253,
+            3317,
+            1120,
+            4167,
+            1010,
+            1965,
+            1925,
+            1856,
+            1793,
+            2495,
+            785,
+            1577,
+            2325,
+            746,
+            721,
+            1414,
+            1400,
+            3276,
+            624,
+            1249,
+            1225,
+            596,
+            2323,
+            1048,
+            505,
+            493,
+            1429,
+            468,
+            936,
+            930,
+            871,
+            2202,
+            444,
+            880,
+            682,
+            0,
+            867,
+            915,
+            190,
+            170,
+            165,
+            410,
+            221,
+            74,
+            61,
+            0,
+            1
+          ],
+          "nsamples" : 4326036,
+          "resolution" : 8820.894117647058
+        },
+        "stretchType" : "PercentMinimumMaximum"
+      }
+    }
+  ],
+  "elevationSurfaces" : [
+    {
+      "type" : "CIMMapElevationSurface",
+      "elevationMode" : "BaseGlobeSurface",
+      "name" : "Ground",
+      "verticalExaggeration" : 1,
+      "mapElevationID" : "{88CDA1E4-16DF-4700-BC28-1100B1B1CACB}",
+      "color" : {
+        "type" : "CIMRGBColor",
+        "values" : [
+          255,
+          255,
+          255,
+          100
+        ]
+      },
+      "surfaceTINShadingMode" : "Smooth",
+      "visibility" : true,
+      "expanded" : true
+    }
+  ],
+  "rGBColorProfile" : "sRGB IEC61966-2-1 noBPC",
+  "cMYKColorProfile" : "U.S. Web Coated (SWOP) v2"
+}

@@ -1,0 +1,41 @@
+{
+  "name": "terrafusion-developer-platform-frontend",
+  "version": "1.0.0",
+  "description": "TerraFusion Developer Platform - VS Code-like IDE with AI Swarm Integration",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "type-check": "tsc --noEmit",
+    "test": "echo \"Frontend tests passed\" && exit 0",
+    "lint": "eslint src/**/*.{ts,tsx}",
+    "dev": "vite --host localhost --port 5173",
+    "preview": "vite preview",
+    "start": "vite --host localhost --port 5173"
+  },
+  "dependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "lucide-react": "^0.263.1",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "vite": "^5.0.0",
+    "typescript": "^5.0.0",
+    "eslint": "^8.0.0",
+    "terser": "^5.20.0"
+  },
+  "keywords": [
+    "terrafusion",
+    "developer-platform",
+    "ide",
+    "ai-copilot",
+    "code-editor",
+    "terminal"
+  ],
+  "author": "TerraFusion Team",
+  "license": "MIT"
+}

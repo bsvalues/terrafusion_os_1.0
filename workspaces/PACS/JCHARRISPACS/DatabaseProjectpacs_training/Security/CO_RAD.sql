@@ -1,0 +1,5 @@
+CREATE USER [CO\RAD] FOR LOGIN [CO\RAD];
+
+
+GO
+

@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Set Up Supabase {{ environment|capitalize }} Environment{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Set Up Supabase {{ environment|capitalize }} Environment</h1>
+            <p class="lead">Configure the Supabase {{ environment }} environment for the TerraFlow application.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">{{ environment|capitalize }} Environment Configuration</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('supabase_config.setup_environment', environment=environment) }}">
+                        <div class="mb-3">
+                            <label for="url" class="form-label">Supabase URL</label>
+                            <input type="text" class="form-control" id="url" name="url" required
+                                   placeholder="https://your-project-id.supabase.co">
+                            <div class="form-text">The URL of your Supabase project for the {{ environment }} environment.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="api_key" class="form-label">Supabase API Key</label>
+                            <input type="password" class="form-control" id="api_key" name="api_key" required
+                                   placeholder="eyJhbGci...">
+                            <div class="form-text">The public API key (anon key) for your Supabase project.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="service_key" class="form-label">Supabase Service Role Key (Optional)</label>
+                            <input type="password" class="form-control" id="service_key" name="service_key"
+                                   placeholder="eyJhbGci...">
+                            <div class="form-text">The service role key for administrative operations. This is optional but recommended.</div>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="update_env_file" name="update_env_file" value="yes" checked>
+                            <label class="form-check-label" for="update_env_file">Save to .env file</label>
+                            <div class="form-text">Save these credentials to the .env file for persistent storage.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="admin_password" class="form-label">Admin Password</label>
+                            <input type="password" class="form-control" id="admin_password" name="admin_password" required>
+                            <div class="form-text">Enter your admin password to confirm this operation.</div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('supabase_config.environments') }}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Save Configuration</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Help</h5>
+                </div>
+                <div class="card-body">
+                    <h6>How to find your Supabase credentials</h6>
+                    <ol>
+                        <li>Log in to your Supabase dashboard</li>
+                        <li>Select your project for the {{ environment }} environment</li>
+                        <li>Go to Project Settings &gt; API</li>
+                        <li>Copy the URL and keys from there</li>
+                    </ol>
+
+                    <div class="alert alert-warning">
+                        <strong>Important:</strong> Never share your service role key publicly. It provides full administrative access to your database.
+                    </div>
+
+                    {% if environment == 'production' %}
+                    <div class="alert alert-danger">
+                        <strong>Warning:</strong> This is your production environment! Be extremely careful with these credentials.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

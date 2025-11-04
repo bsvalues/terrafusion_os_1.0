@@ -1,0 +1,181 @@
+Excellent — let’s **build both**:
+
+---
+
+# 1️⃣ ✉️ Invite Flow (Org Membership via Email)
+
+### 🔐 Why:
+- Secure, auditable team expansion  
+- No accidental access  
+- Supports scale: admins manage 5 → 500 users
+
+---
+
+## 🗃️ DB Table: `org_invites`
+
+```ts
+export const orgInvites = pgTable('org_invites', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  orgId: text('org_id').notNull(),
+  invitedEmail: text('invited_email').notNull(),
+  role: text('role').notNull(), // 'reviewer', 'appraiser'
+  token: text('token').notNull(), // secure UUID
+  createdAt: timestamp('created_at').defaultNow()
+});
+```
+
+---
+
+## 📡 API Routes
+
+### `POST /api/org/invite`
+
+```ts
+router.post('/org/invite', checkRole('admin'), async (req, res) => {
+  const { org } = req;
+  const { email, role } = req.body;
+
+  const token = crypto.randomUUID();
+
+  await db.insert(orgInvites).values({
+    orgId: org.id,
+    invitedEmail: email,
+    role,
+    token
+  });
+
+  // (You can send real email via SendGrid or SES here)
+  const inviteUrl = `https://app.terrafusion.pro/invite/${token}`;
+  console.log(`🔗 Invite URL: ${inviteUrl}`);
+
+  res.json({ success: true });
+});
+```
+
+---
+
+### `GET /api/invite/:token`
+
+```ts
+router.get('/invite/:token', async (req, res) => {
+  const { token } = req.params;
+  const invite = await db.query.orgInvites.findFirst({ where: (i) => i.token.eq(token) });
+
+  if (!invite) return res.status(404).json({ error: 'Invalid or expired invite' });
+
+  res.json({ orgId: invite.orgId, role: invite.role, email: invite.invitedEmail });
+});
+```
+
+---
+
+### `POST /api/invite/accept`
+
+```ts
+// req.body = { token, userId }
+router.post('/invite/accept', async (req, res) => {
+  const { token, userId } = req.body;
+  const invite = await db.query.orgInvites.findFirst({ where: (i) => i.token.eq(token) });
+
+  if (!invite) return res.status(404).json({ error: 'Invalid invite' });
+
+  await db.insert(orgMembers).values({
+    orgId: invite.orgId,
+    userId,
+    role: invite.role
+  });
+
+  await db.delete(orgInvites).where((i) => i.token.eq(token));
+
+  res.json({ success: true });
+});
+```
+
+---
+
+## ✨ Frontend Flow
+
+- Admin opens `/team-management`
+- Types in `jane@firm.com`, selects “Appraiser” → clicks “Send Invite”
+- Invite URL is generated → emailed or copied
+- User visits `https://app.terrafusion.pro/invite/:token`
+- Accept → auto-joins org as `role`, `userId` is bound
+
+---
+
+# 2️⃣ 🧠 Form-Level CRDT Change Tracking (Audit Trail)
+
+---
+
+## 📌 Goal
+
+Track **every change** to the appraisal form, via Yjs events.
+
+---
+
+## 🧠 Use Yjs Observer Hook
+
+```ts
+yDoc.getMap('form').observeDeep((events) => {
+  for (const event of events) {
+    const changes = Array.from(event.changes.keys.entries());
+    const field = changes[0][0];
+    const newVal = event.target.get(field);
+
+    logFormChange({
+      formId,
+      userId,
+      field,
+      newVal,
+      timestamp: Date.now()
+    });
+  }
+});
+```
+
+---
+
+## 🗃️ Table: `form_audit_log`
+
+```ts
+export const formAuditLog = pgTable('form_audit_log', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  formId: text('form_id').notNull(),
+  userId: text('user_id').notNull(),
+  field: text('field').notNull(),
+  newValue: text('new_value'),
+  at: timestamp('at').defaultNow()
+});
+```
+
+---
+
+## 🧪 Sample Log Entry
+
+| Form | Field  | Changed By | New Value | Timestamp |
+|------|--------|------------|-----------|-----------|
+| #A1  | G1     | jsmith     | $420,000  | 4/29/25  |
+
+---
+
+## 🧾 Viewer UI Stub
+
+```tsx
+<formAuditViewer formId="A1" />
+
+// shows grouped by user, sortable by time
+```
+
+---
+
+## ✅ Why This Matters
+
+- 🕵️ Review who typed what
+- 🔄 Undo reasoning during disputes
+- 📜 Generate “change sheet” for underwriters
+
+---
+
+### 🔜 Want next to:
+- Auto-generate a **Form Change Summary** PDF?  
+- Or show **real-time collaborator cursors** using Yjs awareness?

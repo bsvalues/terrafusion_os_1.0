@@ -1,0 +1,198 @@
+{
+    "type": "FunctionTool",
+    "guid": "{8eab2e2b-4b8a-453c-ae48-707d02398fab}",
+    "displayname": "$rc:title",
+    "helpcontent": "66160010",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "86"
+    ],
+    "params": {
+        "in_radar_data": {
+            "display_order": "0",
+            "displayname": "$rc:in_radar_data.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_radar_data.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "out_type": {
+            "type": "optional",
+            "displayname": "$rc:out_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "BOUNDS",
+                        "code": "$rc:out_type.domain.BOUNDS"
+                    },
+                    {
+                        "value": "PERIMETER",
+                        "code": "$rc:out_type.domain.PERIMETER"
+                    }
+                ]
+            },
+            "value": "BOUNDS",
+            "description": "$rc:out_type.descr"
+        },
+        "min_object_width": {
+            "type": "optional",
+            "displayname": "$rc:min_object_width.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "10 Meters",
+            "description": "$rc:min_object_width.descr"
+        },
+        "max_object_width": {
+            "type": "optional",
+            "displayname": "$rc:max_object_width.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "100 Meters",
+            "description": "$rc:max_object_width.descr"
+        },
+        "min_object_length": {
+            "type": "optional",
+            "displayname": "$rc:min_object_length.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "50 Meters",
+            "description": "$rc:min_object_length.descr"
+        },
+        "max_object_length": {
+            "type": "optional",
+            "displayname": "$rc:max_object_length.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "500 Meters",
+            "description": "$rc:max_object_length.descr"
+        },
+        "mask_features": {
+            "type": "optional",
+            "displayname": "$rc:mask_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:mask_features.descr"
+        },
+        "feature_type": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:feature_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "LAND",
+                        "code": "$rc:feature_type.domain.LAND"
+                    },
+                    {
+                        "value": "WATER",
+                        "code": "$rc:feature_type.domain.WATER"
+                    }
+                ]
+            },
+            "description": "$rc:feature_type.descr"
+        },
+        "in_dem_raster": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:in_dem_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_dem_raster.descr"
+        },
+        "geoid": {
+            "type": "optional",
+            "displayname": "$rc:geoid.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "GEOID"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NONE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:geoid.descr"
+        },
+        "mask_tolerance": {
+            "type": "optional",
+            "displayname": "$rc:mask_tolerance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "value": "100 Meters",
+            "description": "$rc:mask_tolerance.descr"
+        }
+    },
+    "environments": [
+        "compression",
+        "configKeyword",
+        "nodata",
+        "parallelProcessingFactor",
+        "pyramid",
+        "rasterStatistics",
+        "resamplingMethod",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

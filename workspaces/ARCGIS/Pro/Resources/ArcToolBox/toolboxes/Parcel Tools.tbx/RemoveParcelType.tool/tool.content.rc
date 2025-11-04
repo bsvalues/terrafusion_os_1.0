@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Removes  a parcel type from a parcel fabric.",
+        "in_parcel_fabric.descr": "The parcel fabric from which the parcel type will be removed. The parcel fabric can be from a file, enterprise, or mobile geodatabase.",
+        "in_parcel_fabric.title": "Input Parcel Fabric",
+        "name.descr": "The name of the parcel type.",
+        "name.title": "Name",
+        "out_line_fc.title": "Output Line Feature Class",
+        "out_polygon_fc.title": "Output Polygon Feature Class",
+        "summary": "Removes a parcel type from a parcel fabric.",
+        "title": "Remove Parcel Type",
+        "updated_parcel_fabric.title": "Updated Parcel Fabric"
+    }
+}

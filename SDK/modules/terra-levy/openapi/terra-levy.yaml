@@ -1,0 +1,395 @@
+openapi: 3.0.3
+info:
+  title: TerraLevy API
+  version: 1.0.0
+  description: TerraLevy endpoints for levy measures, scenarios, calculations, and projections.
+servers:
+  - url: http://localhost:5000
+paths:
+  /levy/health:
+    get:
+      summary: Health check
+      operationId: getHealth
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /levy/districts:
+    get:
+      summary: List districts
+      operationId: getDistricts
+      parameters:
+        - in: query
+          name: county
+          schema: { type: string }
+        - in: query
+          name: take
+          schema: { type: integer, default: 100 }
+        - in: query
+          name: skip
+          schema: { type: integer, default: 0 }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count: { type: integer }
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/District'
+  /levy/measures:
+    get:
+      summary: List levy measures
+      operationId: getMeasures
+      parameters:
+        - in: query
+          name: county
+          schema: { type: string }
+        - in: query
+          name: take
+          schema: { type: integer, default: 100 }
+        - in: query
+          name: skip
+          schema: { type: integer, default: 0 }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count: { type: integer }
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LevyMeasure'
+  /levy/measures/{id}:
+    get:
+      summary: Get measure by id
+      operationId: getMeasureById
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LevyMeasure'
+  /levy/measures/{id}/compliance:
+    get:
+      summary: Check compliance at a proposed rate
+      operationId: checkCompliance
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+        - in: query
+          name: rate
+          required: true
+          schema: { type: number }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComplianceResponse'
+  /levy/calculate:
+    post:
+      summary: Calculate optimal rate
+      operationId: calculateOptimalRate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CalculateRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalculateResponse'
+  /levy/scenarios:
+    get:
+      summary: List scenarios
+      operationId: getScenarios
+      parameters:
+        - in: query
+          name: measureId
+          schema: { type: string }
+        - in: query
+          name: take
+          schema: { type: integer, default: 100 }
+        - in: query
+          name: skip
+          schema: { type: integer, default: 0 }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count: { type: integer }
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/LevyScenario' }
+  /levy/scenarios/analyze:
+    post:
+      summary: Analyze scenarios
+      operationId: analyzeScenarios
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnalyzeScenariosRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/ScenarioAnalysis' }
+  /levy/scenarios/compare:
+    post:
+      summary: Compare scenarios
+      operationId: compareScenarios
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompareScenariosRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompareResponse'
+  /levy/projections:
+    get:
+      summary: List projections
+      operationId: getProjections
+      parameters:
+        - in: query
+          name: scenarioId
+          schema: { type: string }
+        - in: query
+          name: take
+          schema: { type: integer, default: 100 }
+        - in: query
+          name: skip
+          schema: { type: integer, default: 0 }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count: { type: integer }
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/RevenueProjection' }
+  /levy/projections/generate:
+    post:
+      summary: Generate projections
+      operationId: generateProjections
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateProjectionsRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/RevenueProjection' }
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, down]
+        timestamp:
+          type: string
+          format: date-time
+      required: [status, timestamp]
+    District:
+      type: object
+      properties:
+        id: { type: string }
+        countyId: { type: string }
+        districtCode: { type: string }
+        name: { type: string }
+        districtType: { type: string }
+        parcelCount: { type: integer }
+        totalAssessedValue: { type: number }
+        isActive: { type: boolean }
+      required: [id, countyId, districtCode, name, districtType, parcelCount, totalAssessedValue, isActive]
+    LevyMeasure:
+      type: object
+      properties:
+        id: { type: string }
+        countyId: { type: string }
+        name: { type: string }
+        description: { type: string }
+        levyYear: { type: integer }
+        levyType: { type: string }
+        status: { type: string }
+        targetAmount: { type: number }
+        calculatedAmount: { type: number }
+        maximumRate: { type: number }
+        calculatedRate: { type: number }
+        approvedDate: { type: string, format: date-time }
+        effectiveDate: { type: string, format: date-time }
+        expirationDate: { type: string, format: date-time }
+        subjectToLimit: { type: boolean }
+        totalAssessedValue: { type: number }
+        quantumOptimized: { type: boolean }
+        aiConfidenceScore: { type: number }
+        metadata: { }
+      required: [id, countyId, name, levyYear, levyType, status, targetAmount, calculatedAmount, maximumRate, calculatedRate, subjectToLimit, totalAssessedValue, quantumOptimized, aiConfidenceScore]
+    CalculateRequest:
+      type: object
+      properties:
+        measureId: { type: string }
+        quantumOptimization: { type: boolean }
+      required: [measureId]
+    CalculateResponse:
+      type: object
+      properties:
+        calculatedRate: { type: number }
+        levyAmount: { type: number }
+        aiOptimalRate: { type: number }
+        confidenceScore: { type: number }
+        quantumOptimized: { type: boolean }
+        recommendationReason: { type: string }
+        calculationDetails: { }
+      required: [calculatedRate, levyAmount, aiOptimalRate, confidenceScore, quantumOptimized, recommendationReason]
+    ComplianceResponse:
+      type: object
+      properties:
+        isCompliant: { type: boolean }
+        proposedRate: { type: number }
+        maximumAllowedRate: { type: number }
+        statutoryLimit: { type: number }
+        violations:
+          type: array
+          items: { type: string }
+        warnings:
+          type: array
+          items: { type: string }
+        complianceLevel: { type: string }
+      required: [isCompliant, proposedRate, maximumAllowedRate, statutoryLimit, violations, warnings, complianceLevel]
+    AnalyzeScenariosRequest:
+      type: object
+      properties:
+        measureId: { type: string }
+        rates:
+          type: array
+          items: { type: number }
+      required: [measureId, rates]
+    ScenarioAnalysis:
+      type: object
+      properties:
+        scenarioName: { type: string }
+        rate: { type: number }
+        levyAmount: { type: number }
+        projectedRevenue: { type: number }
+        collectionRate: { type: number }
+        aiConfidenceScore: { type: number }
+        riskLevel: { type: string }
+        aiInsights: { }
+      required: [scenarioName, rate, levyAmount, projectedRevenue, collectionRate, aiConfidenceScore, riskLevel]
+    CompareScenariosRequest:
+      type: object
+      properties:
+        scenarioIds:
+          type: array
+          items: { type: string }
+        projectionYears: { type: integer }
+      required: [scenarioIds, projectionYears]
+    ScenarioComparison:
+      type: object
+      properties:
+        scenarioId: { type: string }
+        scenarioName: { type: string }
+        scenarioType: { type: string }
+        totalProjectedRevenue: { type: number }
+        averageGrowthRate: { type: number }
+        averageConfidence: { type: number }
+        riskLevel: { type: string }
+        projectionYears: { type: integer }
+      required: [scenarioId, scenarioName, scenarioType, totalProjectedRevenue, averageGrowthRate, averageConfidence, riskLevel, projectionYears]
+    CompareResponse:
+      type: object
+      properties:
+        scenarios:
+          type: array
+          items: { $ref: '#/components/schemas/ScenarioComparison' }
+        recommendedScenario: { $ref: '#/components/schemas/ScenarioComparison' }
+        recommendationReason: { type: string }
+        comparisonMetrics: { }
+        aiConfidence: { type: number }
+      required: [scenarios, recommendedScenario, recommendationReason, aiConfidence]
+    LevyScenario:
+      type: object
+      properties:
+        id: { type: string }
+        countyId: { type: string }
+        levyMeasureId: { type: string }
+        name: { type: string }
+        scenarioType: { type: string }
+        levyRate: { type: number }
+        projectedRevenue: { type: number }
+        collectionRate: { type: number }
+        isActive: { type: boolean }
+        confidenceScore: { type: number }
+      required: [id, countyId, levyMeasureId, name, scenarioType, levyRate]
+    RevenueProjection:
+      type: object
+      properties:
+        id: { type: string }
+        levyScenarioId: { type: string }
+        fiscalYear: { type: integer }
+        projectedAssessedValue: { type: number }
+        projectedLevyAmount: { type: number }
+        projectedCollectionRate: { type: number }
+        projectedNetRevenue: { type: number }
+        growthRate: { type: number }
+        confidenceLevel: { type: number }
+      required: [id, levyScenarioId, fiscalYear, projectedAssessedValue, projectedLevyAmount, projectedCollectionRate, projectedNetRevenue, growthRate, confidenceLevel]
+    GenerateProjectionsRequest:
+      type: object
+      properties:
+        scenarioId: { type: string }
+        years: { type: integer }
+        quantumForecasting: { type: boolean }
+      required: [scenarioId, years]

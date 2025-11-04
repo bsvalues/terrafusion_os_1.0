@@ -1,0 +1,709 @@
+{
+    "type": "FunctionTool",
+    "guid": "{48352ae1-2550-41c2-8a93-2cccb62dde64}",
+    "displayname": "$rc:title",
+    "helpcontent": "32030002",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_data": {
+            "type": "optional",
+            "displayname": "$rc:in_data.title",
+            "datatype": {
+                "type": "GPType"
+            },
+            "description": "$rc:in_data.descr"
+        },
+        "data_type": {
+            "type": "optional",
+            "displayname": "$rc:data_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ANY",
+                        "code": "$rc:data_type.domain.ANY"
+                    },
+                    {
+                        "value": "DECadastralFabric",
+                        "code": "$rc:data_type.domain.DECadastralFabric"
+                    },
+                    {
+                        "value": "DEGeoDataServer",
+                        "code": "$rc:data_type.domain.DEGeoDataServer"
+                    },
+                    {
+                        "value": "DEMapServer",
+                        "code": "$rc:data_type.domain.DEMapServer"
+                    },
+                    {
+                        "value": "DEGlobeServer",
+                        "code": "$rc:data_type.domain.DEGlobeServer"
+                    },
+                    {
+                        "value": "DEGPServer",
+                        "code": "$rc:data_type.domain.DEGPServer"
+                    },
+                    {
+                        "value": "DEServerConnection",
+                        "code": "$rc:data_type.domain.DEServerConnection"
+                    },
+                    {
+                        "value": "DEFeatureClass",
+                        "code": "$rc:data_type.domain.DEFeatureClass"
+                    },
+                    {
+                        "value": "DEFeatureDataset",
+                        "code": "$rc:data_type.domain.DEFeatureDataset"
+                    },
+                    {
+                        "value": "DEGeometricNetwork",
+                        "code": "$rc:data_type.domain.DEGeometricNetwork"
+                    },
+                    {
+                        "value": "DERelationshipClass",
+                        "code": "$rc:data_type.domain.DERelationshipClass"
+                    },
+                    {
+                        "value": "DETable",
+                        "code": "$rc:data_type.domain.DETable"
+                    },
+                    {
+                        "value": "DEWorkspace",
+                        "code": "$rc:data_type.domain.DEWorkspace"
+                    },
+                    {
+                        "value": "Field",
+                        "code": "$rc:data_type.domain.Field"
+                    },
+                    {
+                        "value": "Index",
+                        "code": "$rc:data_type.domain.Index"
+                    },
+                    {
+                        "value": "DETopology",
+                        "code": "$rc:data_type.domain.DETopology"
+                    },
+                    {
+                        "value": "DERasterCatalog",
+                        "code": "$rc:data_type.domain.DERasterCatalog"
+                    },
+                    {
+                        "value": "DEBimFileWorkspace",
+                        "code": "$rc:data_type.domain.DEBimFileWorkspace"
+                    },
+                    {
+                        "value": "DECadDrawingDataset",
+                        "code": "$rc:data_type.domain.DECadDrawingDataset"
+                    },
+                    {
+                        "value": "DEShapeFile",
+                        "code": "$rc:data_type.domain.DEShapeFile"
+                    },
+                    {
+                        "value": "DELayer",
+                        "code": "$rc:data_type.domain.DELayer"
+                    },
+                    {
+                        "value": "DEDbaseTable",
+                        "code": "$rc:data_type.domain.DEDbaseTable"
+                    },
+                    {
+                        "value": "DETin",
+                        "code": "$rc:data_type.domain.DETin"
+                    },
+                    {
+                        "value": "DELasDataset",
+                        "code": "$rc:data_type.domain.DELasDataset"
+                    },
+                    {
+                        "value": "DECatalogRoot",
+                        "code": "$rc:data_type.domain.DECatalogRoot"
+                    },
+                    {
+                        "value": "DERemoteDatabaseFolder",
+                        "code": "$rc:data_type.domain.DERemoteDatabaseFolder"
+                    },
+                    {
+                        "value": "DESpatialReferencesFolder",
+                        "code": "$rc:data_type.domain.DESpatialReferencesFolder"
+                    },
+                    {
+                        "value": "DEFile",
+                        "code": "$rc:data_type.domain.DEFile"
+                    },
+                    {
+                        "value": "DEDiskConnection",
+                        "code": "$rc:data_type.domain.DEDiskConnection"
+                    },
+                    {
+                        "value": "DEFolder",
+                        "code": "$rc:data_type.domain.DEFolder"
+                    },
+                    {
+                        "value": "DEMapDocument",
+                        "code": "$rc:data_type.domain.DEMapDocument"
+                    },
+                    {
+                        "value": "DEPrjFile",
+                        "code": "$rc:data_type.domain.DEPrjFile"
+                    },
+                    {
+                        "value": "DETextFile",
+                        "code": "$rc:data_type.domain.DETextFile"
+                    },
+                    {
+                        "value": "DEVPFTable",
+                        "code": "$rc:data_type.domain.DEVPFTable"
+                    },
+                    {
+                        "value": "DEVPFCoverage",
+                        "code": "$rc:data_type.domain.DEVPFCoverage"
+                    },
+                    {
+                        "value": "GPArcInfoItem",
+                        "code": "$rc:data_type.domain.GPArcInfoItem"
+                    },
+                    {
+                        "value": "DEArcInfoTable",
+                        "code": "$rc:data_type.domain.DEArcInfoTable"
+                    },
+                    {
+                        "value": "DECoverage",
+                        "code": "$rc:data_type.domain.DECoverage"
+                    },
+                    {
+                        "value": "DECoverageFeatureClass",
+                        "code": "$rc:data_type.domain.DECoverageFeatureClass"
+                    },
+                    {
+                        "value": "DETraceNetwork",
+                        "code": "$rc:data_type.domain.DETraceNetwork"
+                    },
+                    {
+                        "value": "DENetworkDataset",
+                        "code": "$rc:data_type.domain.DENetworkDataset"
+                    },
+                    {
+                        "value": "NetworkTravelMode",
+                        "code": "$rc:data_type.domain.NetworkTravelMode"
+                    },
+                    {
+                        "value": "DEUtilityNetwork",
+                        "code": "$rc:data_type.domain.DEUtilityNetwork"
+                    },
+                    {
+                        "value": "DEAddressLocator",
+                        "code": "$rc:data_type.domain.DEAddressLocator"
+                    },
+                    {
+                        "value": "GPRasterFormulated",
+                        "code": "$rc:data_type.domain.GPRasterFormulated"
+                    },
+                    {
+                        "value": "GPSAGDBEnvCompression",
+                        "code": "$rc:data_type.domain.GPSAGDBEnvCompression"
+                    },
+                    {
+                        "value": "GPSAGDBEnvPyramid",
+                        "code": "$rc:data_type.domain.GPSAGDBEnvPyramid"
+                    },
+                    {
+                        "value": "GPSAGDBEnvStatistics",
+                        "code": "$rc:data_type.domain.GPSAGDBEnvStatistics"
+                    },
+                    {
+                        "value": "GPSAGDBEnvTileSize",
+                        "code": "$rc:data_type.domain.GPSAGDBEnvTileSize"
+                    },
+                    {
+                        "value": "analysis_cell_size",
+                        "code": "$rc:data_type.domain.analysis_cell_size"
+                    },
+                    {
+                        "value": "GPGALayer",
+                        "code": "$rc:data_type.domain.GPGALayer"
+                    },
+                    {
+                        "value": "GPGAValueTable",
+                        "code": "$rc:data_type.domain.GPGAValueTable"
+                    },
+                    {
+                        "value": "GPGASearchNeighborhood",
+                        "code": "$rc:data_type.domain.GPGASearchNeighborhood"
+                    },
+                    {
+                        "value": "GPBoolean",
+                        "code": "$rc:data_type.domain.GPBoolean"
+                    },
+                    {
+                        "value": "GPDate",
+                        "code": "$rc:data_type.domain.GPDate"
+                    },
+                    {
+                        "value": "GPLong",
+                        "code": "$rc:data_type.domain.GPLong"
+                    },
+                    {
+                        "value": "GPDouble",
+                        "code": "$rc:data_type.domain.GPDouble"
+                    },
+                    {
+                        "value": "GPString",
+                        "code": "$rc:data_type.domain.GPString"
+                    },
+                    {
+                        "value": "GPStringHidden",
+                        "code": "$rc:data_type.domain.GPStringHidden"
+                    },
+                    {
+                        "value": "GPEncryptedString",
+                        "code": "$rc:data_type.domain.GPEncryptedString"
+                    },
+                    {
+                        "value": "GPEnvelope",
+                        "code": "$rc:data_type.domain.GPEnvelope"
+                    },
+                    {
+                        "value": "GPSpatialReference",
+                        "code": "$rc:data_type.domain.GPSpatialReference"
+                    },
+                    {
+                        "value": "GPPoint",
+                        "code": "$rc:data_type.domain.GPPoint"
+                    },
+                    {
+                        "value": "GPPolygon",
+                        "code": "$rc:data_type.domain.GPPolygon"
+                    },
+                    {
+                        "value": "GPLine",
+                        "code": "$rc:data_type.domain.GPLine"
+                    },
+                    {
+                        "value": "GPLayout",
+                        "code": "$rc:data_type.domain.GPLayout"
+                    },
+                    {
+                        "value": "GPReport",
+                        "code": "$rc:data_type.domain.GPReport"
+                    },
+                    {
+                        "value": "GPMap",
+                        "code": "$rc:data_type.domain.GPMap"
+                    },
+                    {
+                        "value": "GPLayer",
+                        "code": "$rc:data_type.domain.GPLayer"
+                    },
+                    {
+                        "value": "GPFeatureLayer",
+                        "code": "$rc:data_type.domain.GPFeatureLayer"
+                    },
+                    {
+                        "value": "GPTopologyLayer",
+                        "code": "$rc:data_type.domain.GPTopologyLayer"
+                    },
+                    {
+                        "value": "GPRasterLayer",
+                        "code": "$rc:data_type.domain.GPRasterLayer"
+                    },
+                    {
+                        "value": "GPRasterCatalogLayer",
+                        "code": "$rc:data_type.domain.GPRasterCatalogLayer"
+                    },
+                    {
+                        "value": "GPMosaicLayer",
+                        "code": "$rc:data_type.domain.GPMosaicLayer"
+                    },
+                    {
+                        "value": "GPRasterBuilder",
+                        "code": "$rc:data_type.domain.GPRasterBuilder"
+                    },
+                    {
+                        "value": "GPRouteMeasureEventProperties",
+                        "code": "$rc:data_type.domain.GPRouteMeasureEventProperties"
+                    },
+                    {
+                        "value": "GPTinLayer",
+                        "code": "$rc:data_type.domain.GPTinLayer"
+                    },
+                    {
+                        "value": "GPTableView",
+                        "code": "$rc:data_type.domain.GPTableView"
+                    },
+                    {
+                        "value": "GPFieldInfo",
+                        "code": "$rc:data_type.domain.GPFieldInfo"
+                    },
+                    {
+                        "value": "GPFieldMapping",
+                        "code": "$rc:data_type.domain.GPFieldMapping"
+                    },
+                    {
+                        "value": "GPTimeUnit",
+                        "code": "$rc:data_type.domain.GPTimeUnit"
+                    },
+                    {
+                        "value": "GPLinearUnit",
+                        "code": "$rc:data_type.domain.GPLinearUnit"
+                    },
+                    {
+                        "value": "GPArealUnit",
+                        "code": "$rc:data_type.domain.GPArealUnit"
+                    },
+                    {
+                        "value": "GPRandomNumberGenerator",
+                        "code": "$rc:data_type.domain.GPRandomNumberGenerator"
+                    },
+                    {
+                        "value": "GPType",
+                        "code": "$rc:data_type.domain.GPType"
+                    },
+                    {
+                        "value": "DEType",
+                        "code": "$rc:data_type.domain.DEType"
+                    },
+                    {
+                        "value": "DEDatasetType",
+                        "code": "$rc:data_type.domain.DEDatasetType"
+                    },
+                    {
+                        "value": "DEGeoDatasetType",
+                        "code": "$rc:data_type.domain.DEGeoDatasetType"
+                    },
+                    {
+                        "value": "GPSQLExpression",
+                        "code": "$rc:data_type.domain.GPSQLExpression"
+                    },
+                    {
+                        "value": "GPINFOExpression",
+                        "code": "$rc:data_type.domain.GPINFOExpression"
+                    },
+                    {
+                        "value": "GPExtent",
+                        "code": "$rc:data_type.domain.GPExtent"
+                    },
+                    {
+                        "value": "GPCoordinateSystem",
+                        "code": "$rc:data_type.domain.GPCoordinateSystem"
+                    },
+                    {
+                        "value": "GPXYDomain",
+                        "code": "$rc:data_type.domain.GPXYDomain"
+                    },
+                    {
+                        "value": "GPZDomain",
+                        "code": "$rc:data_type.domain.GPZDomain"
+                    },
+                    {
+                        "value": "GPMDomain",
+                        "code": "$rc:data_type.domain.GPMDomain"
+                    },
+                    {
+                        "value": "GPGroupLayer",
+                        "code": "$rc:data_type.domain.GPGroupLayer"
+                    },
+                    {
+                        "value": "GPCompositeLayer",
+                        "code": "$rc:data_type.domain.GPCompositeLayer"
+                    },
+                    {
+                        "value": "GPNetworkDatasetLayer",
+                        "code": "$rc:data_type.domain.GPNetworkDatasetLayer"
+                    },
+                    {
+                        "value": "GPNetworkDataSource",
+                        "code": "$rc:data_type.domain.GPNetworkDataSource"
+                    },
+                    {
+                        "value": "GPUtilityNetworkLayer",
+                        "code": "$rc:data_type.domain.GPUtilityNetworkLayer"
+                    },
+                    {
+                        "value": "GPTraceNetworkLayer",
+                        "code": "$rc:data_type.domain.GPTraceNetworkLayer"
+                    },
+                    {
+                        "value": "GPDiagramLayer",
+                        "code": "$rc:data_type.domain.GPDiagramLayer"
+                    },
+                    {
+                        "value": "GPVariant",
+                        "code": "$rc:data_type.domain.GPVariant"
+                    },
+                    {
+                        "value": "GPTerrainLayer",
+                        "code": "$rc:data_type.domain.GPTerrainLayer"
+                    },
+                    {
+                        "value": "GPLasDatasetLayer",
+                        "code": "$rc:data_type.domain.GPLasDatasetLayer"
+                    },
+                    {
+                        "value": "GPRecordSet",
+                        "code": "$rc:data_type.domain.GPRecordSet"
+                    },
+                    {
+                        "value": "GPFeatureRecordSetLayer",
+                        "code": "$rc:data_type.domain.GPFeatureRecordSetLayer"
+                    },
+                    {
+                        "value": "DEToolbox",
+                        "code": "$rc:data_type.domain.DEToolbox"
+                    },
+                    {
+                        "value": "DETool",
+                        "code": "$rc:data_type.domain.DETool"
+                    },
+                    {
+                        "value": "GPGraphDataTable",
+                        "code": "$rc:data_type.domain.GPGraphDataTable"
+                    },
+                    {
+                        "value": "GPGraph",
+                        "code": "$rc:data_type.domain.GPGraph"
+                    },
+                    {
+                        "value": "GPCadastralFabricLayer",
+                        "code": "$rc:data_type.domain.GPCadastralFabricLayer"
+                    },
+                    {
+                        "value": "GPParcelLayer",
+                        "code": "$rc:data_type.domain.GPParcelLayer"
+                    },
+                    {
+                        "value": "GPVoxelLayer",
+                        "code": "$rc:data_type.domain.GPVoxelLayer"
+                    },
+                    {
+                        "value": "GPCellSizeXY",
+                        "code": "$rc:data_type.domain.GPCellSizeXY"
+                    },
+                    {
+                        "value": "GPCalculatorExpression",
+                        "code": "$rc:data_type.domain.GPCalculatorExpression"
+                    },
+                    {
+                        "value": "GPRasterDataLayer",
+                        "code": "$rc:data_type.domain.GPRasterDataLayer"
+                    },
+                    {
+                        "value": "GPDataFile",
+                        "code": "$rc:data_type.domain.GPDataFile"
+                    },
+                    {
+                        "value": "GPInternetTiledLayer",
+                        "code": "$rc:data_type.domain.GPInternetTiledLayer"
+                    },
+                    {
+                        "value": "GPMapServerLayer",
+                        "code": "$rc:data_type.domain.GPMapServerLayer"
+                    },
+                    {
+                        "value": "GPSceneServiceLayer",
+                        "code": "$rc:data_type.domain.GPSceneServiceLayer"
+                    },
+                    {
+                        "value": "GP3DTilesLayer",
+                        "code": "$rc:data_type.domain.GP3DTilesLayer"
+                    },
+                    {
+                        "value": "GPVectorLayer",
+                        "code": "$rc:data_type.domain.GPVectorLayer"
+                    },
+                    {
+                        "value": "GPKMLLayer",
+                        "code": "$rc:data_type.domain.GPKMLLayer"
+                    },
+                    {
+                        "value": "GPBuildingLayer",
+                        "code": "$rc:data_type.domain.GPBuildingLayer"
+                    },
+                    {
+                        "value": "GPBuildingDisciplineLayer",
+                        "code": "$rc:data_type.domain.GPBuildingDisciplineLayer"
+                    },
+                    {
+                        "value": "GPBuildingSceneLayer",
+                        "code": "$rc:data_type.domain.GPBuildingSceneLayer"
+                    },
+                    {
+                        "value": "GPBuildingSceneDisciplineLayer",
+                        "code": "$rc:data_type.domain.GPBuildingSceneDisciplineLayer"
+                    },
+                    {
+                        "value": "GPElevationSurfaceLayer",
+                        "code": "$rc:data_type.domain.GPElevationSurfaceLayer"
+                    },
+                    {
+                        "value": "GPAnnotationLayer",
+                        "code": "$rc:data_type.domain.GPAnnotationLayer"
+                    },
+                    {
+                        "value": "GP3DObjectFeatureLayer",
+                        "code": "$rc:data_type.domain.GP3DObjectFeatureLayer"
+                    },
+                    {
+                        "value": "GPGraphicsLayer",
+                        "code": "$rc:data_type.domain.GPGraphicsLayer"
+                    },
+                    {
+                        "value": "GPDimensionLayer",
+                        "code": "$rc:data_type.domain.GPDimensionLayer"
+                    },
+                    {
+                        "value": "GPCatalogLayer",
+                        "code": "$rc:data_type.domain.GPCatalogLayer"
+                    },
+                    {
+                        "value": "GPTrajectoryLayer",
+                        "code": "$rc:data_type.domain.GPTrajectoryLayer"
+                    },
+                    {
+                        "value": "GPOrientedImageryLayer",
+                        "code": "$rc:data_type.domain.GPOrientedImageryLayer"
+                    },
+                    {
+                        "value": "GPSANeighborhood",
+                        "code": "$rc:data_type.domain.GPSANeighborhood"
+                    },
+                    {
+                        "value": "GPSARadius",
+                        "code": "$rc:data_type.domain.GPSARadius"
+                    },
+                    {
+                        "value": "GPSACellSize",
+                        "code": "$rc:data_type.domain.GPSACellSize"
+                    },
+                    {
+                        "value": "GPSARemap",
+                        "code": "$rc:data_type.domain.GPSARemap"
+                    },
+                    {
+                        "value": "GPSASemiVariogram",
+                        "code": "$rc:data_type.domain.GPSASemiVariogram"
+                    },
+                    {
+                        "value": "GPEvaluationScale",
+                        "code": "$rc:data_type.domain.GPEvaluationScale"
+                    },
+                    {
+                        "value": "GPSAWeightedOverlayTable",
+                        "code": "$rc:data_type.domain.GPSAWeightedOverlayTable"
+                    },
+                    {
+                        "value": "GPSAWeightedSum",
+                        "code": "$rc:data_type.domain.GPSAWeightedSum"
+                    },
+                    {
+                        "value": "GPSATopoFeatures",
+                        "code": "$rc:data_type.domain.GPSATopoFeatures"
+                    },
+                    {
+                        "value": "GPSAHorizontalFactor",
+                        "code": "$rc:data_type.domain.GPSAHorizontalFactor"
+                    },
+                    {
+                        "value": "GPSAVerticalFactor",
+                        "code": "$rc:data_type.domain.GPSAVerticalFactor"
+                    },
+                    {
+                        "value": "GPSATimeConfiguration",
+                        "code": "$rc:data_type.domain.GPSATimeConfiguration"
+                    },
+                    {
+                        "value": "GPSAFuzzyFunction",
+                        "code": "$rc:data_type.domain.GPSAFuzzyFunction"
+                    },
+                    {
+                        "value": "GPSAExtractValues",
+                        "code": "$rc:data_type.domain.GPSAExtractValues"
+                    },
+                    {
+                        "value": "GPRasterCalculatorExpression",
+                        "code": "$rc:data_type.domain.GPRasterCalculatorExpression"
+                    },
+                    {
+                        "value": "GPSATransformationFunction",
+                        "code": "$rc:data_type.domain.GPSATransformationFunction"
+                    },
+                    {
+                        "value": "GP3DADecimate",
+                        "code": "$rc:data_type.domain.GP3DADecimate"
+                    },
+                    {
+                        "value": "GPNALayer",
+                        "code": "$rc:data_type.domain.GPNALayer"
+                    },
+                    {
+                        "value": "GPNAHierarchySettings",
+                        "code": "$rc:data_type.domain.GPNAHierarchySettings"
+                    },
+                    {
+                        "value": "NAClassFieldMap",
+                        "code": "$rc:data_type.domain.NAClassFieldMap"
+                    },
+                    {
+                        "value": "DEParcelDataset",
+                        "code": "$rc:data_type.domain.DEParcelDataset"
+                    },
+                    {
+                        "value": "DERasterDataset",
+                        "code": "$rc:data_type.domain.DERasterDataset"
+                    },
+                    {
+                        "value": "DERasterBand",
+                        "code": "$rc:data_type.domain.DERasterBand"
+                    },
+                    {
+                        "value": "DEWCSCoverage",
+                        "code": "$rc:data_type.domain.DEWCSCoverage"
+                    },
+                    {
+                        "value": "DEImageServer",
+                        "code": "$rc:data_type.domain.DEImageServer"
+                    },
+                    {
+                        "value": "DEMosaicDataset",
+                        "code": "$rc:data_type.domain.DEMosaicDataset"
+                    },
+                    {
+                        "value": "DEWMSMap",
+                        "code": "$rc:data_type.domain.DEWMSMap"
+                    },
+                    {
+                        "value": "DEWMTS",
+                        "code": "$rc:data_type.domain.DEWMTS"
+                    }
+                ]
+            },
+            "value": "ANY",
+            "description": "$rc:data_type.descr"
+        },
+        "true": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:true.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "value": "false"
+        },
+        "false": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:false.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "value": "false"
+        }
+    }
+}

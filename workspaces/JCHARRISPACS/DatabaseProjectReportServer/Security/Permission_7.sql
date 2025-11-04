@@ -1,0 +1,5 @@
+GRANT REFERENCES TO [RSExecRole];
+
+
+GO
+

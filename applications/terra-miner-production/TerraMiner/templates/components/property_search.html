@@ -1,0 +1,172 @@
+{# Property Search Components - Standardized property search interfaces #}
+
+{% macro property_search_form(search_url='', default_value='', placeholder='Enter property address, city, state or zip code', button_text='Search', advanced=false) %}
+<form action="{{ search_url }}" method="GET" class="property-search-form">
+    <div class="input-group mb-3 shadow-sm">
+        <input type="text" name="query" class="form-control form-control-lg border-0" placeholder="{{ placeholder }}" 
+               value="{{ default_value }}" aria-label="Property search" required>
+        <button class="btn btn-primary px-4" type="submit">
+            <i class="bi bi-search me-2"></i>{{ button_text }}
+        </button>
+    </div>
+    
+    {% if advanced %}
+    <div class="advanced-search-options card p-3 mb-4 shadow-sm">
+        <div class="row g-3">
+            <div class="col-md-6 col-lg-3">
+                <label for="propertyType" class="form-label">Property Type</label>
+                <select class="form-select" id="propertyType" name="propertyType">
+                    <option value="" selected>All Types</option>
+                    <option value="residential">Residential</option>
+                    <option value="commercial">Commercial</option>
+                    <option value="land">Land</option>
+                    <option value="industrial">Industrial</option>
+                </select>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <label for="minPrice" class="form-label">Min Price</label>
+                <input type="number" class="form-control" id="minPrice" name="minPrice" placeholder="$">
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <label for="maxPrice" class="form-label">Max Price</label>
+                <input type="number" class="form-control" id="maxPrice" name="maxPrice" placeholder="$">
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <label for="radius" class="form-label">Search Radius (miles)</label>
+                <select class="form-select" id="radius" name="radius">
+                    <option value="0" selected>Exact Address</option>
+                    <option value="0.5">0.5 miles</option>
+                    <option value="1">1 mile</option>
+                    <option value="3">3 miles</option>
+                    <option value="5">5 miles</option>
+                    <option value="10">10 miles</option>
+                    <option value="25">25 miles</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</form>
+{% endmacro %}
+
+{% macro property_card(property, card_classes='') %}
+<div class="property-card card h-100 {{ card_classes }}">
+    {% if property.image_url %}
+    <div class="property-image-container">
+        <img src="{{ property.image_url }}" class="card-img-top property-image" alt="{{ property.address }}">
+        {% if property.status %}
+        <div class="property-status badge bg-{{ 
+            'success' if property.status == 'active' 
+            else 'danger' if property.status == 'sold' 
+            else 'warning' if property.status == 'pending' 
+            else 'info' 
+        }}">
+            {{ property.status | capitalize }}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    <div class="card-body">
+        <h5 class="card-title">{{ property.address }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{ property.city }}, {{ property.state }} {{ property.zip_code }}</h6>
+        
+        <div class="property-price mt-2 mb-3">
+            <span class="fs-4 fw-bold">${{ property.price | format_number }}</span>
+            {% if property.price_per_sqft %}
+            <span class="text-muted ms-2">${{ property.price_per_sqft }}/sqft</span>
+            {% endif %}
+        </div>
+        
+        <div class="property-features d-flex justify-content-between text-center mb-3">
+            {% if property.bedrooms is defined %}
+            <div class="feature">
+                <div class="feature-value">{{ property.bedrooms }}</div>
+                <div class="feature-label text-muted small">Beds</div>
+            </div>
+            {% endif %}
+            
+            {% if property.bathrooms is defined %}
+            <div class="feature">
+                <div class="feature-value">{{ property.bathrooms }}</div>
+                <div class="feature-label text-muted small">Baths</div>
+            </div>
+            {% endif %}
+            
+            {% if property.sqft is defined %}
+            <div class="feature">
+                <div class="feature-value">{{ property.sqft | format_number }}</div>
+                <div class="feature-label text-muted small">Sq.ft</div>
+            </div>
+            {% endif %}
+            
+            {% if property.lot_size is defined %}
+            <div class="feature">
+                <div class="feature-value">{{ property.lot_size }}</div>
+                <div class="feature-label text-muted small">Lot</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="card-footer bg-transparent d-flex justify-content-between align-items-center">
+        <span class="text-muted small">{{ property.property_type | capitalize }}</span>
+        <div>
+            <a href="{{ url_for('property_details', property_id=property.id) }}" class="btn btn-sm btn-outline-primary">
+                Details
+            </a>
+            {% if property.has_cma %}
+            <a href="{{ url_for('cma_ui.view_report', report_id=property.id) }}" class="btn btn-sm btn-outline-secondary ms-1">
+                CMA
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro property_search_results(properties, empty_message='No properties found matching your search criteria', show_map=false, map_id='property-map') %}
+{% if properties and properties|length > 0 %}
+    {% if show_map %}
+    <div class="map-container mb-4">
+        <div id="{{ map_id }}" class="property-map" style="height: 400px;"></div>
+    </div>
+    {% endif %}
+    
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for property in properties %}
+        <div class="col">
+            {{ property_card(property) }}
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-house-slash" style="font-size: 3rem; opacity: 0.5;"></i>
+        <h4 class="mt-3 text-muted">{{ empty_message }}</h4>
+    </div>
+{% endif %}
+{% endmacro %}
+
+{% macro property_search_loading() %}
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for i in range(6) %}
+    <div class="col">
+        <div class="card loading-property-card h-100">
+            <div class="skeleton-image pulse"></div>
+            <div class="card-body">
+                <div class="skeleton-title pulse mb-2"></div>
+                <div class="skeleton-subtitle pulse mb-3" style="width: 70%;"></div>
+                <div class="skeleton-price pulse mb-3"></div>
+                <div class="d-flex justify-content-between">
+                    <div class="skeleton-feature pulse"></div>
+                    <div class="skeleton-feature pulse"></div>
+                    <div class="skeleton-feature pulse"></div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent">
+                <div class="skeleton-footer pulse" style="width: 100%;"></div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endmacro %}

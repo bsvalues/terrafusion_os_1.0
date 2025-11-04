@@ -1,0 +1,149 @@
+Let’s knock out both — because they complete the **review lifecycle**:
+
+1. 🖨️ **PDF export** → human-readable, shareable review summary  
+2. 📋 **Dashboard** → centralized list of what needs attention
+
+---
+
+# 🖨️ 1. Reviewer PDF Export — Field + Annotation Summary
+
+---
+
+## 📄 Goal
+
+For any given form, generate a **review PDF** that includes:
+
+| Field | Value | Reviewer Notes | Status |
+|-------|-------|----------------|--------|
+| G1    | $420K | "Verify MLS ID" | Needs Fix |
+
+---
+
+## 📡 API: `POST /api/export/review-sheet`
+
+```ts
+router.post('/export/review-sheet', async (req, res) => {
+  const { formId } = req.body;
+
+  const formMap = await getCRDTFormState(formId);       // all field values
+  const annotationsMap = await getCRDTAnnotations(formId); // all comments
+
+  const html = renderReviewHTML(formMap, annotationsMap);
+  const pdf = await renderHTMLToPDF(html);
+
+  res.set({
+    'Content-Type': 'application/pdf',
+    'Content-Disposition': `inline; filename=review_${formId}.pdf`,
+  });
+
+  res.send(pdf);
+});
+```
+
+---
+
+## 🧾 Example HTML Snippet
+
+```html
+<table>
+  <thead>
+    <tr><th>Field</th><th>Value</th><th>Annotation</th><th>Status</th></tr>
+  </thead>
+  <tbody>
+    {{#each fields}}
+      <tr>
+        <td>{{this.id}}</td>
+        <td>{{this.value}}</td>
+        <td>
+          {{#each this.annotations}}
+            <p><strong>{{this.author}}</strong>: {{this.comment}}</p>
+          {{/each}}
+        </td>
+        <td>{{this.latestStatus}}</td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
+```
+
+---
+
+## ✅ Output
+
+- Clean PDF review sheet  
+- Per-field reviewer notes  
+- Statuses ("Needs Fix", "Reviewed OK")  
+- Time-stamped & exportable  
+
+---
+
+# 📋 2. Reviewer Dashboard — Report Overview
+
+---
+
+## 📌 Purpose
+
+Give reviewers a **single place** to see:
+
+- 🧾 Reports waiting for review  
+- 📍 Unresolved annotations  
+- 📊 Reviewer status tracking
+
+---
+
+## 📦 API: `GET /api/review/pending`
+
+```ts
+router.get('/review/pending', checkRole('reviewer'), async (req, res) => {
+  const { org } = req;
+
+  const reports = await db.query.forms.findMany({
+    where: (f) => f.orgId.eq(org.id),
+    include: {
+      annotations: true,
+    }
+  });
+
+  const withOutstandingIssues = reports.filter(r =>
+    r.annotations.some(a => a.status === 'Needs Fix')
+  );
+
+  res.json({ reports: withOutstandingIssues });
+});
+```
+
+---
+
+## 🖥️ Frontend Table
+
+```tsx
+<table>
+  <thead>
+    <tr><th>Form</th><th>Unresolved</th><th>Last Activity</th><th>Actions</th></tr>
+  </thead>
+  <tbody>
+    {reports.map(r => (
+      <tr key={r.formId}>
+        <td>{r.formId}</td>
+        <td>{r.annotations.filter(a => a.status === 'Needs Fix').length}</td>
+        <td>{formatDate(r.updatedAt)}</td>
+        <td><Link to={`/form/${r.formId}`}>Open</Link></td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+```
+
+---
+
+## ✅ Results
+
+- 📍 Reviewers get focus: only unresolved forms  
+- ⏳ Deadlines optional (e.g. “review by X date”)  
+- 🚀 Can add “Mark as Reviewed” for approval workflows
+
+---
+
+Would you like to:
+1. Add **Reviewer Sign-Off workflow** (greenlight a form)?
+2. Trigger **email/webhook** when review is done?

@@ -1,0 +1,7 @@
+BUILDINGS = "BUILDINGS".lower()
+RECORDINGS = "RECORDINGS".lower()
+SLAMS = "SLAMS".lower()
+IDMS = "IDMS".lower()
+TRAJECTORIES = "TRAJECTORIES".lower()
+KPIS = 'KPIS'.lower()
+KPI_BENCHMARKS = 'KPI_BENCHMARKS'.lower()

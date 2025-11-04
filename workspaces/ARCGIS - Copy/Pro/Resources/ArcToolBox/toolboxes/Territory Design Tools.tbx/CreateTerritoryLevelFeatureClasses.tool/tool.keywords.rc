@@ -1,0 +1,12 @@
+{
+    "set": [
+        "alignment",
+        "barriers",
+        "boundaries",
+        "centers",
+        "constraints",
+        "feature classes",
+        "hierarchy",
+        "level"
+    ]
+}

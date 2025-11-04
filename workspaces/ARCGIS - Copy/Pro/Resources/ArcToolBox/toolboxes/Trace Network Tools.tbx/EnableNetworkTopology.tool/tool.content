@@ -1,0 +1,71 @@
+{
+    "type": "FunctionTool",
+    "guid": "{e972ade5-21c4-41f4-a656-e41601c212bd}",
+    "displayname": "$rc:title",
+    "helpcontent": "72000009",
+    "description": "$rc:description",
+    "product": "200",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_trace_network": {
+            "displayname": "$rc:in_trace_network.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DETraceNetwork"
+                    },
+                    {
+                        "type": "GPTraceNetworkLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_trace_network.descr"
+        },
+        "max_number_of_errors": {
+            "type": "optional",
+            "displayname": "$rc:max_number_of_errors.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "10000",
+            "description": "$rc:max_number_of_errors.descr"
+        },
+        "only_generate_errors": {
+            "type": "optional",
+            "displayname": "$rc:only_generate_errors.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ONLY_ERRORS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "ENABLE_TOPO"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:only_generate_errors.descr"
+        },
+        "out_trace_network": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_trace_network.title",
+            "datatype": {
+                "type": "DETraceNetwork"
+            }
+        }
+    }
+}

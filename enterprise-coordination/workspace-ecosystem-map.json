@@ -1,0 +1,462 @@
+{
+  "terrafusion_os_main": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0",
+    "type": "CORE_OPERATING_SYSTEM",
+    "priority": "SUPREME",
+    "dependencies": [],
+    "provides": [
+      "Core.Interfaces",
+      "Data.Abstractions",
+      "AI.Services",
+      "TerraGaia.Consciousness"
+    ],
+    "status": "PRODUCTION_CRITICAL"
+  },
+  "costforge_ai_workspace": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\costforge-ai-workspace",
+    "type": "AI_ENHANCEMENT_ENGINE",
+    "priority": "ELITE",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "CostForge.AI.Services",
+      "PropertyValuation.Engine"
+    ],
+    "status": "DEVELOPMENT_ACTIVE"
+  },
+  "terrabuild_modernization": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\terrabuild-modernization",
+    "type": "LEGACY_MODERNIZATION",
+    "priority": "ELITE",
+    "dependencies": [
+      "terrafusion_os_main",
+      "costforge_ai_workspace"
+    ],
+    "provides": [
+      "TerraBuild.Modernization",
+      "Legacy.Integration"
+    ],
+    "status": "INTEGRATION_REQUIRED"
+  },
+  "marketplace_api": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\api",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.api"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_autonomous-research-engine": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\autonomous-research-engine",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.autonomous-research-engine"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_commercial": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\commercial",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.commercial"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_commercial-suite": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\commercial-suite",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.commercial-suite"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_costforge-ai": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\costforge-ai",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.costforge-ai"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_government-core": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\government-core",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.government-core"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_government-edition": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\government-edition",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.government-edition"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_LeafScope": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\LeafScope",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.LeafScope"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_marketplace-frontend": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\marketplace-frontend",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.marketplace-frontend"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_plugins": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\plugins",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.plugins"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_property-workbench": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\property-workbench",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.property-workbench"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_RAGPanel": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\RAGPanel",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.RAGPanel"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_revenue": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\revenue",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.revenue"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_shock-and-awe": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\shock-and-awe",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.shock-and-awe"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_store": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\store",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.store"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_submissions": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\submissions",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.submissions"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_templates": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\templates",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.templates"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_terra-bank": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\terra-bank",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.terra-bank"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_terra-collections": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\terra-collections",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.terra-collections"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_terra-flow": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\terra-flow",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.terra-flow"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_terra-fusion-dashboard": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\terra-fusion-dashboard",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.terra-fusion-dashboard"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_terra-fusion-sync": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\terra-fusion-sync",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.terra-fusion-sync"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_terra-insight": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\terra-insight",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.terra-insight"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_terra-justice": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\terra-justice",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.terra-justice"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_terra-levy": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\terra-levy",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.terra-levy"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_terra-net": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\terra-net",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.terra-net"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_terra-sync": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\terra-sync",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.terra-sync"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_terra-university": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\terra-university",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.terra-university"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_TerraFusion-PublicRecords": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\TerraFusion-PublicRecords",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.TerraFusion-PublicRecords"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_TerraFusionIDE": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\TerraFusionIDE",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.TerraFusionIDE"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_testing": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\testing",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.testing"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "marketplace_unified-system": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\marketplace\\unified-system",
+    "type": "MARKETPLACE_COMPONENT",
+    "priority": "STANDARD",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Marketplace.unified-system"
+    ],
+    "status": "MARKETPLACE_ACTIVE"
+  },
+  "testing_tests": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\tests",
+    "type": "TESTING_FRAMEWORK",
+    "priority": "ELITE",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Testing.tests"
+    ],
+    "status": "TESTING_OPERATIONAL"
+  },
+  "testing_testing-coordination": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\testing-coordination",
+    "type": "TESTING_FRAMEWORK",
+    "priority": "ELITE",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Testing.testing-coordination"
+    ],
+    "status": "TESTING_OPERATIONAL"
+  },
+  "testing_generated_tests": {
+    "path": "c:\\Users\\bsval\\terrafusion_os_1.0\\generated_tests",
+    "type": "TESTING_FRAMEWORK",
+    "priority": "ELITE",
+    "dependencies": [
+      "terrafusion_os_main"
+    ],
+    "provides": [
+      "Testing.generated_tests"
+    ],
+    "status": "TESTING_OPERATIONAL"
+  }
+}

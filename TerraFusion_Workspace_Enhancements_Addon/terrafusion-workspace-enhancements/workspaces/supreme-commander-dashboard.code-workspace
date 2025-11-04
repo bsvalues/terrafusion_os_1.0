@@ -1,0 +1,37 @@
+{
+  "folders": [
+    {
+      "path": "../../ops/dashboard",
+      "name": "Ops Dashboard"
+    },
+    {
+      "path": "../../monitoring",
+      "name": "Monitoring"
+    },
+    {
+      "path": "../../docs/architecture",
+      "name": "Architecture Docs"
+    },
+    {
+      "path": "../../.github/workflows",
+      "name": "CI/CD"
+    },
+    {
+      "path": "../../platform",
+      "name": "Platform (ro)"
+    }
+  ],
+  "settings": {
+    "workbench.startupEditor": "readme",
+    "supremeCommander.dashboardRefreshRate": "30s",
+    "supremeCommander.criticalAlertsEnabled": true
+  },
+  "extensions": {
+    "recommendations": [
+      "eamodio.gitlens",
+      "gruntfuggly.todo-tree",
+      "ms-vscode.vscode-js-profile-table",
+      "ms-azuretools.vscode-docker"
+    ]
+  }
+}

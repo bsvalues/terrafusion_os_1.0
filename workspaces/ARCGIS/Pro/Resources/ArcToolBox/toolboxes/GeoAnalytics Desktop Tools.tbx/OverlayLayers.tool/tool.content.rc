@@ -1,0 +1,20 @@
+{
+    "map": {
+        "description": "Overlays the geometries from multiple layers into a single layer.  Overlay can be used to combine, erase, modify, or update spatial features.",
+        "input_layer.descr": "The point, line, or polygon features that will be overlaid with the overlay layer.",
+        "input_layer.title": "Input Layer",
+        "out_feature_class.descr": "A new feature class with overlaid features.",
+        "out_feature_class.title": "Output Feature Class",
+        "overlay_layer.descr": "The features that will be overlaid with the input layer features.",
+        "overlay_layer.title": "Overlay Layer",
+        "overlay_type.descr": "<xdoc><p>Specifies the type of overlay to be performed.</p><ul><li><span title=\"INTERSECT\">Intersect</span>—A geometric intersection of the input layers will be computed. Features or portions of features that overlap in both the input layer and overlay layer will be written to the output layer. This is the default.</li><li><span title=\"ERASE\">Erase</span>—Only those features or portions of features in the input layer that do not overlap the features in the overlay layer will be written to the output.</li><li><span title=\"UNION\">Union</span>—A geometric union of the input layer and overlay layer will be computed. All features and their attributes will be written to the layer.</li><li><span title=\"IDENTITY\">Identity</span>—A geometric intersection of the input features and identity features will be computed. Features or portions of features that overlap in both the input layer and the overlay layer will be written to the output layer.</li><li><span title=\"SYMMETRICAL_DIFFERENCE\">Symmetrical Difference</span>— Features or portions of features in the input layer and overlay layer that do not overlap will be written to the output layer.</li></ul></xdoc>",
+        "overlay_type.domain.ERASE": "Erase",
+        "overlay_type.domain.IDENTITY": "Identity",
+        "overlay_type.domain.INTERSECT": "Intersect",
+        "overlay_type.domain.SYMMETRICAL_DIFFERENCE": "Symmetrical Difference",
+        "overlay_type.domain.UNION": "Union",
+        "overlay_type.title": "Overlay Type",
+        "summary": "<xdoc><p>Overlays the geometries from multiple layers into a single layer. Overlay can be used to combine, erase, modify, or update spatial features.</p><p>Overlay is used to answer one of the most basic questions of geography, What is on top of what? The following are examples:<ul><li>What parcels are within the 100-year floodplain? (Within is another way of saying on top of.)</li><li>What land use is on top of what soil type?</li><li>What mines are within abandoned military bases?</li></ul></p></xdoc>",
+        "title": "Overlay Layers"
+    }
+}

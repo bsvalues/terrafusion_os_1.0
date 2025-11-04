@@ -1,0 +1,11 @@
+{
+    "map": {
+        "bdc_dataset.descr": "The MFC dataset to be duplicated.",
+        "bdc_dataset.title": "Multifile Feature Connection Dataset",
+        "description": "Creates a duplicate of a multifile feature connection (MFC) dataset.",
+        "duplicate_name.descr": "The name of the output MFC dataset.",
+        "duplicate_name.title": "Duplicate Name",
+        "title": "Duplicate Dataset From Multifile Feature Connection",
+        "updated_bdc.title": "Updated MFC"
+    }
+}

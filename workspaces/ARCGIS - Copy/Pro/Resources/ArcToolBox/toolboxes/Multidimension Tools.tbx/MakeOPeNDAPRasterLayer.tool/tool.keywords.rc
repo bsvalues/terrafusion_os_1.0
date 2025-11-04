@@ -1,0 +1,15 @@
+{
+    "set": [
+        "climate",
+        "climatology",
+        "dap",
+        "dimension",
+        "meteorology",
+        "netcdf",
+        "oceanography",
+        "opendap",
+        "scientific",
+        "thredds",
+        "weather"
+    ]
+}

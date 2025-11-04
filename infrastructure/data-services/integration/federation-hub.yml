@@ -1,0 +1,776 @@
+# TerraFusion OS - Integration Hub & Multi-County Federation
+# SECURE API MESH FOR GOVERNMENT INTEROPERABILITY
+# Cross-County Data Exchange with FISMA-HIGH Compliance
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrafusion-integration
+  labels:
+    security.level: high
+    compliance: fisma-high
+    tier: integration-layer
+
+---
+# API Mesh Controller (Istio Service Mesh)
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  name: terrafusion-mesh
+  namespace: terrafusion-integration
+spec:
+  values:
+    global:
+      meshID: terrafusion-government-mesh
+      multiCluster:
+        clusterName: terrafusion-primary
+      network: terrafusion-network
+      proxy:
+        autoInject: enabled
+        holdApplicationUntilProxyStarts: true
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 2000m
+            memory: 1Gi
+  components:
+    pilot:
+      k8s:
+        resources:
+          requests:
+            cpu: 500m
+            memory: 2Gi
+          limits:
+            cpu: 2000m
+            memory: 4Gi
+        hpaSpec:
+          minReplicas: 2
+          maxReplicas: 5
+        env:
+          EXTERNAL_ISTIOD: true
+          PILOT_ENABLE_WORKLOAD_ENTRY_AUTOREGISTRATION: true
+          PILOT_ENABLE_CROSS_CLUSTER_WORKLOAD_ENTRY: true
+    ingressGateways:
+    - name: istio-ingressgateway
+      enabled: true
+      k8s:
+        resources:
+          requests:
+            cpu: 1000m
+            memory: 1Gi
+          limits:
+            cpu: 2000m
+            memory: 2Gi
+        hpaSpec:
+          minReplicas: 3
+          maxReplicas: 10
+        service:
+          type: LoadBalancer
+          ports:
+          - port: 15021
+            targetPort: 15021
+            name: status-port
+          - port: 80
+            targetPort: 8080
+            name: http2
+          - port: 443
+            targetPort: 8443
+            name: https
+          - port: 15443
+            targetPort: 15443
+            name: tls
+    egressGateways:
+    - name: istio-egressgateway
+      enabled: true
+      k8s:
+        resources:
+          requests:
+            cpu: 500m
+            memory: 512Mi
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+        hpaSpec:
+          minReplicas: 2
+          maxReplicas: 5
+
+---
+# External System Connectors Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: external-connectors-config
+  namespace: terrafusion-integration
+data:
+  harris-pacs-config.yaml: |
+    # Harris PACS v12.4.7 Integration
+    name: harris-pacs-connector
+    type: database
+    connection:
+      host: harris-pacs.external.gov
+      port: 5432
+      database: pacs_production
+      ssl_mode: require
+      timeout: 30s
+    security:
+      authentication: certificate
+      certificate_path: /etc/ssl/certs/harris-pacs.crt
+      private_key_path: /etc/ssl/private/harris-pacs.key
+      ca_certificate_path: /etc/ssl/certs/ca.crt
+    sync:
+      interval: 5m
+      batch_size: 1000
+      tables:
+        - name: properties
+          primary_key: parcel_id
+          sync_mode: incremental
+        - name: assessments
+          primary_key: assessment_id
+          sync_mode: incremental
+        - name: valuations
+          primary_key: valuation_id
+          sync_mode: incremental
+    monitoring:
+      health_check_interval: 1m
+      error_threshold: 5
+      
+  tyler-vision-config.yaml: |
+    # Tyler Technologies Vision Integration
+    name: tyler-vision-connector
+    type: rest_api
+    connection:
+      base_url: https://vision-api.tyler.com/v2
+      timeout: 30s
+      rate_limit: 1000/hour
+    security:
+      authentication: api_key
+      api_key_header: X-Tyler-API-Key
+      api_key_secret_name: tyler-vision-credentials
+    sync:
+      interval: 15m
+      batch_size: 500
+      endpoints:
+        - path: /parcels
+          method: GET
+          pagination: true
+        - path: /ownership
+          method: GET
+          pagination: true
+        - path: /permits
+          method: GET
+          pagination: true
+    monitoring:
+      health_check_interval: 2m
+      error_threshold: 3
+      
+  aumentum-config.yaml: |
+    # Aumentum Systems Integration
+    name: aumentum-connector
+    type: soap_api
+    connection:
+      wsdl_url: https://api.aumentum.com/services/PropertyService?wsdl
+      endpoint: https://api.aumentum.com/services/PropertyService
+      timeout: 45s
+    security:
+      authentication: wsse
+      username_token: true
+      credentials_secret_name: aumentum-credentials
+    sync:
+      interval: 30m
+      batch_size: 200
+      operations:
+        - name: GetPropertyData
+          input_mapping:
+            county_code: benton
+            date_range: last_24_hours
+        - name: GetAssessmentData
+          input_mapping:
+            county_code: benton
+            date_range: last_24_hours
+    monitoring:
+      health_check_interval: 5m
+      error_threshold: 2
+
+---
+# Harris PACS Connector Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: harris-pacs-connector
+  namespace: terrafusion-integration
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: harris-pacs-connector
+  template:
+    metadata:
+      labels:
+        app: harris-pacs-connector
+        version: v1
+      annotations:
+        sidecar.istio.io/inject: "true"
+    spec:
+      serviceAccountName: integration-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+      containers:
+      - name: connector
+        image: terrafusion/external-connector:1.0.0
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: CONNECTOR_TYPE
+          value: "harris-pacs"
+        - name: CONFIG_PATH
+          value: "/etc/connector/harris-pacs-config.yaml"
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: harris-pacs-credentials
+              key: password
+        - name: KAFKA_BROKERS
+          value: "terrafusion-kafka-kafka-bootstrap.terrafusion-streaming:9092"
+        - name: OUTPUT_TOPIC
+          value: "property-data-harris-pacs"
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            memory: 512Mi
+            cpu: 250m
+          limits:
+            memory: 1Gi
+            cpu: 500m
+        volumeMounts:
+        - name: connector-config
+          mountPath: /etc/connector
+          readOnly: true
+        - name: ssl-certs
+          mountPath: /etc/ssl/certs
+          readOnly: true
+        - name: ssl-private
+          mountPath: /etc/ssl/private
+          readOnly: true
+        - name: tmp-volume
+          mountPath: /tmp
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+      volumes:
+      - name: connector-config
+        configMap:
+          name: external-connectors-config
+      - name: ssl-certs
+        secret:
+          secretName: harris-pacs-ssl-certs
+      - name: ssl-private
+        secret:
+          secretName: harris-pacs-ssl-private
+      - name: tmp-volume
+        emptyDir:
+          sizeLimit: 1Gi
+
+---
+# Tyler Vision Connector Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tyler-vision-connector
+  namespace: terrafusion-integration
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tyler-vision-connector
+  template:
+    metadata:
+      labels:
+        app: tyler-vision-connector
+        version: v1
+      annotations:
+        sidecar.istio.io/inject: "true"
+    spec:
+      serviceAccountName: integration-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+      containers:
+      - name: connector
+        image: terrafusion/external-connector:1.0.0
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: CONNECTOR_TYPE
+          value: "tyler-vision"
+        - name: CONFIG_PATH
+          value: "/etc/connector/tyler-vision-config.yaml"
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: tyler-vision-credentials
+              key: api-key
+        - name: KAFKA_BROKERS
+          value: "terrafusion-kafka-kafka-bootstrap.terrafusion-streaming:9092"
+        - name: OUTPUT_TOPIC
+          value: "property-data-tyler-vision"
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            memory: 512Mi
+            cpu: 250m
+          limits:
+            memory: 1Gi
+            cpu: 500m
+        volumeMounts:
+        - name: connector-config
+          mountPath: /etc/connector
+          readOnly: true
+        - name: tmp-volume
+          mountPath: /tmp
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+      volumes:
+      - name: connector-config
+        configMap:
+          name: external-connectors-config
+      - name: tmp-volume
+        emptyDir:
+          sizeLimit: 1Gi
+
+---
+# Multi-County Federation Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: county-federation-service
+  namespace: terrafusion-integration
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: county-federation-service
+  template:
+    metadata:
+      labels:
+        app: county-federation-service
+        version: v1
+      annotations:
+        sidecar.istio.io/inject: "true"
+    spec:
+      serviceAccountName: integration-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+      containers:
+      - name: federation-service
+        image: terrafusion/county-federation:1.0.0
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 9090
+          name: metrics
+        env:
+        - name: FEDERATION_MODE
+          value: "multi-county"
+        - name: PRIMARY_COUNTY
+          value: "benton"
+        - name: SUPPORTED_COUNTIES
+          value: "benton,spokane,yakima,cowlitz,franklin,asotin"
+        - name: KAFKA_BROKERS
+          value: "terrafusion-kafka-kafka-bootstrap.terrafusion-streaming:9092"
+        - name: DATABASE_URL
+          value: "postgresql://federation_user:$(DB_PASSWORD)@timescaledb.terrafusion-analytics:5432/terrafusion_analytics"
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: federation-credentials
+              key: database-password
+        - name: ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: federation-credentials
+              key: encryption-key
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            memory: 1Gi
+            cpu: 500m
+          limits:
+            memory: 2Gi
+            cpu: 1000m
+        volumeMounts:
+        - name: county-configs
+          mountPath: /etc/counties
+          readOnly: true
+        - name: ssl-certs
+          mountPath: /etc/ssl/certs
+          readOnly: true
+        - name: tmp-volume
+          mountPath: /tmp
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+      volumes:
+      - name: county-configs
+        configMap:
+          name: county-federation-config
+      - name: ssl-certs
+        secret:
+          secretName: federation-ssl-certs
+      - name: tmp-volume
+        emptyDir:
+          sizeLimit: 1Gi
+
+---
+# County Federation Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: county-federation-config
+  namespace: terrafusion-integration
+data:
+  benton.yaml: |
+    county:
+      name: Benton County
+      code: benton
+      state: WA
+      fips: 53005
+    systems:
+      primary: harris-pacs
+      secondary: tyler-vision
+    endpoints:
+      property_api: https://api.benton.terrafusion.gov/v1/properties
+      assessment_api: https://api.benton.terrafusion.gov/v1/assessments
+      citizen_api: https://api.benton.terrafusion.gov/v1/citizens
+    security:
+      authentication: mutual_tls
+      certificates:
+        client_cert: /etc/ssl/certs/benton-client.crt
+        client_key: /etc/ssl/private/benton-client.key
+        ca_cert: /etc/ssl/certs/benton-ca.crt
+    data_sharing:
+      allowed_counties: [spokane, yakima]
+      restricted_fields: [ssn, financial_details]
+      audit_level: high
+      
+  spokane.yaml: |
+    county:
+      name: Spokane County
+      code: spokane
+      state: WA
+      fips: 53063
+    systems:
+      primary: tyler-vision
+      secondary: cama-plus
+    endpoints:
+      property_api: https://api.spokane.terrafusion.gov/v1/properties
+      assessment_api: https://api.spokane.terrafusion.gov/v1/assessments
+    federation:
+      enabled: true
+      trust_level: high
+      shared_services: [property_valuation, appeal_processing]
+      
+  yakima.yaml: |
+    county:
+      name: Yakima County
+      code: yakima
+      state: WA
+      fips: 53077
+    systems:
+      primary: aumentum
+      secondary: harris-pacs
+    endpoints:
+      property_api: https://api.yakima.terrafusion.gov/v1/properties
+      assessment_api: https://api.yakima.terrafusion.gov/v1/assessments
+    federation:
+      enabled: true
+      trust_level: medium
+      shared_services: [property_valuation]
+
+---
+# API Gateway for External Access
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: terrafusion-integration-gateway
+  namespace: terrafusion-integration
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: terrafusion-tls-secret
+    hosts:
+    - api.terrafusion.gov
+    - integration.terrafusion.gov
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - api.terrafusion.gov
+    - integration.terrafusion.gov
+    tls:
+      httpsRedirect: true
+
+---
+# Virtual Service for API Routing
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: integration-api-routing
+  namespace: terrafusion-integration
+spec:
+  hosts:
+  - api.terrafusion.gov
+  - integration.terrafusion.gov
+  gateways:
+  - terrafusion-integration-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /v1/counties
+    route:
+    - destination:
+        host: county-federation-service
+        port:
+          number: 8080
+    fault:
+      delay:
+        percentage:
+          value: 0.1
+        fixedDelay: 5s
+    retries:
+      attempts: 3
+      perTryTimeout: 10s
+  - match:
+    - uri:
+        prefix: /v1/connectors/harris-pacs
+    route:
+    - destination:
+        host: harris-pacs-connector
+        port:
+          number: 8080
+  - match:
+    - uri:
+        prefix: /v1/connectors/tyler-vision
+    route:
+    - destination:
+        host: tyler-vision-connector
+        port:
+          number: 8080
+
+---
+# Destination Rules for Circuit Breaking
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: integration-circuit-breaker
+  namespace: terrafusion-integration
+spec:
+  host: "*.terrafusion-integration.svc.cluster.local"
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 100
+      http:
+        http1MaxPendingRequests: 50
+        http2MaxRequests: 100
+        maxRequestsPerConnection: 10
+        maxRetries: 3
+        consecutiveGatewayErrors: 5
+        interval: 30s
+        baseEjectionTime: 30s
+        maxEjectionPercent: 50
+    outlierDetection:
+      consecutiveGatewayErrors: 5
+      interval: 30s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
+
+---
+# Services
+apiVersion: v1
+kind: Service
+metadata:
+  name: harris-pacs-connector
+  namespace: terrafusion-integration
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+    app: harris-pacs-connector
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tyler-vision-connector
+  namespace: terrafusion-integration
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+    app: tyler-vision-connector
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: county-federation-service
+  namespace: terrafusion-integration
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  - port: 9090
+    targetPort: 9090
+    protocol: TCP
+    name: metrics
+  selector:
+    app: county-federation-service
+
+---
+# ServiceAccount
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: integration-service-account
+  namespace: terrafusion-integration
+
+---
+# Network Policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: integration-network-policy
+  namespace: terrafusion-integration
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow from Istio gateway
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: istio-system
+    ports:
+    - protocol: TCP
+      port: 8080
+  # Allow from TerraFusion services
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: terrafusion-system
+    ports:
+    - protocol: TCP
+      port: 8080
+  # Allow internal mesh communication
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: terrafusion-integration
+    ports:
+    - protocol: TCP
+      port: 8080
+    - protocol: TCP
+      port: 9090
+    - protocol: TCP
+      port: 15000  # Envoy admin
+  egress:
+  # Allow to external government systems
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 80
+    - protocol: TCP
+      port: 5432  # PostgreSQL
+  # Allow to Kafka
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: terrafusion-streaming
+    ports:
+    - protocol: TCP
+      port: 9092
+    - protocol: TCP
+      port: 9093
+  # Allow to Analytics
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: terrafusion-analytics
+    ports:
+    - protocol: TCP
+      port: 5432

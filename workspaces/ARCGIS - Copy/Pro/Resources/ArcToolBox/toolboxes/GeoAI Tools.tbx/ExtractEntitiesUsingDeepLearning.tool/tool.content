@@ -1,0 +1,137 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "79010002",
+    "description": "$rc:description",
+    "product": "300",
+    "attributes": [
+        "GPU",
+        "mCPU"
+    ],
+    "params": {
+        "in_folder": {
+            "displayname": "$rc:in_folder.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFolder"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    },
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "DEFeatureClass"
+                    }
+                ]
+            },
+            "description": "$rc:in_folder.descr"
+        },
+        "out_table": {
+            "direction": "out",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFeatureClass"
+                    },
+                    {
+                        "type": "DETable"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    }
+                ]
+            },
+            "description": "$rc:out_table.descr"
+        },
+        "in_model_definition_file": {
+            "displayname": "$rc:in_model_definition_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "dlpk_remote",
+                    "emd",
+                    "dlpk"
+                ]
+            },
+            "description": "$rc:in_model_definition_file.descr"
+        },
+        "model_arguments": {
+            "type": "optional",
+            "displayname": "$rc:model_arguments.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:model_arguments.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:model_arguments.dt.title2"
+                    }
+                ]
+            },
+            "value": "sequence_length 512",
+            "description": "$rc:model_arguments.descr"
+        },
+        "batch_size": {
+            "type": "optional",
+            "displayname": "$rc:batch_size.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "4",
+            "description": "$rc:batch_size.descr"
+        },
+        "location_zone": {
+            "type": "optional",
+            "displayname": "$rc:location_zone.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:location_zone.descr"
+        },
+        "in_locator": {
+            "type": "optional",
+            "displayname": "$rc:in_locator.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "DEAddressLocator"
+            },
+            "description": "$rc:in_locator.descr"
+        },
+        "text_field": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:text_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_folder"
+            ],
+            "description": "$rc:text_field.descr"
+        }
+    },
+    "environments": [
+        "gpuID",
+        "processorType"
+    ]
+}

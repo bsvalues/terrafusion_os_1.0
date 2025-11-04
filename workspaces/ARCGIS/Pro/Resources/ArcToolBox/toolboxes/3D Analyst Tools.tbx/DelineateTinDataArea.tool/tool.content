@@ -1,0 +1,63 @@
+{
+    "type": "FunctionTool",
+    "guid": "{83cb4d39-2827-4c2f-afa4-8981d95f51f0}",
+    "displayname": "$rc:title",
+    "helpcontent": "5200004",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9"
+    ],
+    "params": {
+        "in_tin": {
+            "displayname": "$rc:in_tin.title",
+            "datatype": {
+                "type": "GPTinLayer"
+            },
+            "description": "$rc:in_tin.descr"
+        },
+        "max_edge_length": {
+            "displayname": "$rc:max_edge_length.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:max_edge_length.descr"
+        },
+        "method": {
+            "type": "optional",
+            "displayname": "$rc:method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PERIMETER_ONLY",
+                        "code": "$rc:method.domain.PERIMETER_ONLY"
+                    },
+                    {
+                        "value": "ALL",
+                        "code": "$rc:method.domain.ALL"
+                    }
+                ]
+            },
+            "value": "PERIMETER_ONLY",
+            "description": "$rc:method.descr"
+        },
+        "derived_out_tin": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:derived_out_tin.title",
+            "datatype": {
+                "type": "GPTinLayer"
+            },
+            "depends": [
+                "in_tin"
+            ]
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

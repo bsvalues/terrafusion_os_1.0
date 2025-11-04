@@ -1,7 +1,7 @@
 /**
  * Grid Component Stories - TerraFusion Design System
  * Week 2, Day 1 - Layout Components Phase
- * 
+ *
  * Purpose: Comprehensive documentation and testing of Grid component
  * - Column-based layouts
  * - Responsive patterns
@@ -10,7 +10,7 @@
  * - Auto-fit patterns
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Grid, GridItem } from '../layout/grid';
 
 const meta = {
@@ -103,13 +103,16 @@ type Story = StoryObj<typeof meta>;
  */
 export const BasicGridLayouts: Story = {
   render: () => (
-    <div className="space-y-8">
+    <div className='space-y-8'>
       {/* 2 Columns */}
       <div>
-        <h3 className="text-lg font-bold mb-4">2 Columns</h3>
-        <Grid cols={2} gap="md">
+        <h3 className='text-lg font-bold mb-4'>2 Columns</h3>
+        <Grid cols={2} gap='md'>
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-primary text-primary-foreground rounded-lg p-6 text-center font-medium">
+            <div
+              key={i}
+              className='bg-primary text-primary-foreground rounded-lg p-6 text-center font-medium'
+            >
               Item {i}
             </div>
           ))}
@@ -118,10 +121,13 @@ export const BasicGridLayouts: Story = {
 
       {/* 3 Columns */}
       <div>
-        <h3 className="text-lg font-bold mb-4">3 Columns</h3>
-        <Grid cols={3} gap="md">
+        <h3 className='text-lg font-bold mb-4'>3 Columns</h3>
+        <Grid cols={3} gap='md'>
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="bg-secondary text-secondary-foreground rounded-lg p-6 text-center font-medium">
+            <div
+              key={i}
+              className='bg-secondary text-secondary-foreground rounded-lg p-6 text-center font-medium'
+            >
               Item {i}
             </div>
           ))}
@@ -130,10 +136,13 @@ export const BasicGridLayouts: Story = {
 
       {/* 4 Columns */}
       <div>
-        <h3 className="text-lg font-bold mb-4">4 Columns</h3>
-        <Grid cols={4} gap="md">
+        <h3 className='text-lg font-bold mb-4'>4 Columns</h3>
+        <Grid cols={4} gap='md'>
           {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-            <div key={i} className="bg-accent text-accent-foreground rounded-lg p-6 text-center font-medium">
+            <div
+              key={i}
+              className='bg-accent text-accent-foreground rounded-lg p-6 text-center font-medium'
+            >
               Item {i}
             </div>
           ))}
@@ -142,10 +151,13 @@ export const BasicGridLayouts: Story = {
 
       {/* 6 Columns */}
       <div>
-        <h3 className="text-lg font-bold mb-4">6 Columns (Fine Grid)</h3>
-        <Grid cols={6} gap="sm">
+        <h3 className='text-lg font-bold mb-4'>6 Columns (Fine Grid)</h3>
+        <Grid cols={6} gap='sm'>
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((i) => (
-            <div key={i} className="bg-muted text-muted-foreground rounded-lg p-4 text-center text-sm font-medium">
+            <div
+              key={i}
+              className='bg-muted text-muted-foreground rounded-lg p-4 text-center text-sm font-medium'
+            >
               {i}
             </div>
           ))}
@@ -168,24 +180,39 @@ export const BasicGridLayouts: Story = {
  */
 export const ColumnSpans: Story = {
   render: () => (
-    <div className="space-y-8">
+    <div className='space-y-8'>
       {/* Simple spanning */}
       <div>
-        <h3 className="text-lg font-bold mb-4">Basic Column Spanning (4-column grid)</h3>
-        <Grid cols={4} gap="md">
-          <GridItem colSpan={4} className="bg-primary text-primary-foreground rounded-lg p-6 text-center font-medium">
+        <h3 className='text-lg font-bold mb-4'>Basic Column Spanning (4-column grid)</h3>
+        <Grid cols={4} gap='md'>
+          <GridItem
+            colSpan={4}
+            className='bg-primary text-primary-foreground rounded-lg p-6 text-center font-medium'
+          >
             Full Width (colSpan=4)
           </GridItem>
-          <GridItem colSpan={2} className="bg-secondary text-secondary-foreground rounded-lg p-6 text-center font-medium">
+          <GridItem
+            colSpan={2}
+            className='bg-secondary text-secondary-foreground rounded-lg p-6 text-center font-medium'
+          >
             Half Width (colSpan=2)
           </GridItem>
-          <GridItem colSpan={2} className="bg-secondary text-secondary-foreground rounded-lg p-6 text-center font-medium">
+          <GridItem
+            colSpan={2}
+            className='bg-secondary text-secondary-foreground rounded-lg p-6 text-center font-medium'
+          >
             Half Width (colSpan=2)
           </GridItem>
-          <GridItem colSpan={1} className="bg-accent text-accent-foreground rounded-lg p-6 text-center font-medium">
+          <GridItem
+            colSpan={1}
+            className='bg-accent text-accent-foreground rounded-lg p-6 text-center font-medium'
+          >
             1
           </GridItem>
-          <GridItem colSpan={3} className="bg-muted text-muted-foreground rounded-lg p-6 text-center font-medium">
+          <GridItem
+            colSpan={3}
+            className='bg-muted text-muted-foreground rounded-lg p-6 text-center font-medium'
+          >
             Three Quarters (colSpan=3)
           </GridItem>
         </Grid>
@@ -193,31 +220,31 @@ export const ColumnSpans: Story = {
 
       {/* Dashboard layout */}
       <div>
-        <h3 className="text-lg font-bold mb-4">Dashboard Layout (12-column grid)</h3>
-        <Grid cols={12} gap="md">
-          <GridItem colSpan={12} className="bg-primary text-primary-foreground rounded-lg p-6">
-            <h4 className="font-bold">Header (12 columns)</h4>
-            <p className="text-sm opacity-80">Full-width header section</p>
+        <h3 className='text-lg font-bold mb-4'>Dashboard Layout (12-column grid)</h3>
+        <Grid cols={12} gap='md'>
+          <GridItem colSpan={12} className='bg-primary text-primary-foreground rounded-lg p-6'>
+            <h4 className='font-bold'>Header (12 columns)</h4>
+            <p className='text-sm opacity-80'>Full-width header section</p>
           </GridItem>
-          <GridItem colSpan={3} className="bg-secondary text-secondary-foreground rounded-lg p-6">
-            <h4 className="font-bold mb-2">Sidebar</h4>
-            <p className="text-sm">3 columns</p>
+          <GridItem colSpan={3} className='bg-secondary text-secondary-foreground rounded-lg p-6'>
+            <h4 className='font-bold mb-2'>Sidebar</h4>
+            <p className='text-sm'>3 columns</p>
           </GridItem>
-          <GridItem colSpan={9} className="bg-muted text-muted-foreground rounded-lg p-6">
-            <h4 className="font-bold mb-2">Main Content</h4>
-            <p className="text-sm">9 columns - Primary content area</p>
+          <GridItem colSpan={9} className='bg-muted text-muted-foreground rounded-lg p-6'>
+            <h4 className='font-bold mb-2'>Main Content</h4>
+            <p className='text-sm'>9 columns - Primary content area</p>
           </GridItem>
-          <GridItem colSpan={4} className="bg-accent text-accent-foreground rounded-lg p-6">
-            <h4 className="font-bold mb-2">Card 1</h4>
-            <p className="text-sm">4 columns</p>
+          <GridItem colSpan={4} className='bg-accent text-accent-foreground rounded-lg p-6'>
+            <h4 className='font-bold mb-2'>Card 1</h4>
+            <p className='text-sm'>4 columns</p>
           </GridItem>
-          <GridItem colSpan={4} className="bg-accent text-accent-foreground rounded-lg p-6">
-            <h4 className="font-bold mb-2">Card 2</h4>
-            <p className="text-sm">4 columns</p>
+          <GridItem colSpan={4} className='bg-accent text-accent-foreground rounded-lg p-6'>
+            <h4 className='font-bold mb-2'>Card 2</h4>
+            <p className='text-sm'>4 columns</p>
           </GridItem>
-          <GridItem colSpan={4} className="bg-accent text-accent-foreground rounded-lg p-6">
-            <h4 className="font-bold mb-2">Card 3</h4>
-            <p className="text-sm">4 columns</p>
+          <GridItem colSpan={4} className='bg-accent text-accent-foreground rounded-lg p-6'>
+            <h4 className='font-bold mb-2'>Card 3</h4>
+            <p className='text-sm'>4 columns</p>
           </GridItem>
         </Grid>
       </div>
@@ -238,13 +265,16 @@ export const ColumnSpans: Story = {
  */
 export const GapUtilities: Story = {
   render: () => (
-    <div className="space-y-8">
+    <div className='space-y-8'>
       {(['none', 'xs', 'sm', 'md', 'lg', 'xl'] as const).map((gap) => (
         <div key={gap}>
-          <h3 className="text-lg font-bold mb-4">Gap: {gap}</h3>
+          <h3 className='text-lg font-bold mb-4'>Gap: {gap}</h3>
           <Grid cols={4} gap={gap}>
             {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-              <div key={i} className="bg-primary text-primary-foreground rounded-lg p-6 text-center font-medium">
+              <div
+                key={i}
+                className='bg-primary text-primary-foreground rounded-lg p-6 text-center font-medium'
+              >
                 {i}
               </div>
             ))}
@@ -268,16 +298,19 @@ export const GapUtilities: Story = {
  */
 export const ResponsiveColumns: Story = {
   render: () => (
-    <div className="space-y-8">
+    <div className='space-y-8'>
       {/* Responsive 1-2-3 pattern */}
       <div>
-        <h3 className="text-lg font-bold mb-4">Responsive: 1 → 2 → 3 Columns</h3>
-        <p className="text-sm text-muted-foreground mb-4">
+        <h3 className='text-lg font-bold mb-4'>Responsive: 1 → 2 → 3 Columns</h3>
+        <p className='text-sm text-muted-foreground mb-4'>
           Mobile: 1 col | Tablet (md): 2 cols | Desktop (lg): 3 cols
         </p>
-        <Grid cols={{ base: 1, md: 2, lg: 3 }} gap="md">
+        <Grid cols={{ base: 1, md: 2, lg: 3 }} gap='md'>
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="bg-primary text-primary-foreground rounded-lg p-6 text-center font-medium">
+            <div
+              key={i}
+              className='bg-primary text-primary-foreground rounded-lg p-6 text-center font-medium'
+            >
               Card {i}
             </div>
           ))}
@@ -286,13 +319,16 @@ export const ResponsiveColumns: Story = {
 
       {/* Responsive 2-3-4 pattern */}
       <div>
-        <h3 className="text-lg font-bold mb-4">Responsive: 2 → 3 → 4 Columns</h3>
-        <p className="text-sm text-muted-foreground mb-4">
+        <h3 className='text-lg font-bold mb-4'>Responsive: 2 → 3 → 4 Columns</h3>
+        <p className='text-sm text-muted-foreground mb-4'>
           Mobile: 2 cols | Tablet (md): 3 cols | Desktop (lg): 4 cols
         </p>
-        <Grid cols={{ base: 2, md: 3, lg: 4 }} gap="md">
+        <Grid cols={{ base: 2, md: 3, lg: 4 }} gap='md'>
           {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-            <div key={i} className="bg-secondary text-secondary-foreground rounded-lg p-6 text-center font-medium">
+            <div
+              key={i}
+              className='bg-secondary text-secondary-foreground rounded-lg p-6 text-center font-medium'
+            >
               Item {i}
             </div>
           ))}
@@ -301,13 +337,16 @@ export const ResponsiveColumns: Story = {
 
       {/* Responsive 1-2-4 pattern */}
       <div>
-        <h3 className="text-lg font-bold mb-4">Responsive: 1 → 2 → 4 Columns</h3>
-        <p className="text-sm text-muted-foreground mb-4">
+        <h3 className='text-lg font-bold mb-4'>Responsive: 1 → 2 → 4 Columns</h3>
+        <p className='text-sm text-muted-foreground mb-4'>
           Mobile: 1 col | Tablet (md): 2 cols | Desktop (xl): 4 cols
         </p>
-        <Grid cols={{ base: 1, md: 2, xl: 4 }} gap="lg">
+        <Grid cols={{ base: 1, md: 2, xl: 4 }} gap='lg'>
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-accent text-accent-foreground rounded-lg p-6 text-center font-medium">
+            <div
+              key={i}
+              className='bg-accent text-accent-foreground rounded-lg p-6 text-center font-medium'
+            >
               Feature {i}
             </div>
           ))}
@@ -330,22 +369,27 @@ export const ResponsiveColumns: Story = {
  */
 export const AlignmentAndJustification: Story = {
   render: () => (
-    <div className="space-y-8">
+    <div className='space-y-8'>
       {/* Vertical Alignment */}
       <div>
-        <h3 className="text-lg font-bold mb-4">Vertical Alignment (align prop)</h3>
-        <div className="space-y-4">
+        <h3 className='text-lg font-bold mb-4'>Vertical Alignment (align prop)</h3>
+        <div className='space-y-4'>
           {(['start', 'center', 'end', 'stretch'] as const).map((align) => (
             <div key={align}>
-              <p className="text-sm font-medium mb-2">align="{align}"</p>
-              <Grid cols={3} gap="md" align={align} className="min-h-[120px] bg-muted/30 rounded-lg p-4">
-                <div className="bg-primary text-primary-foreground rounded-lg p-4 text-center text-sm">
+              <p className='text-sm font-medium mb-2'>align="{align}"</p>
+              <Grid
+                cols={3}
+                gap='md'
+                align={align}
+                className='min-h-[120px] bg-muted/30 rounded-lg p-4'
+              >
+                <div className='bg-primary text-primary-foreground rounded-lg p-4 text-center text-sm'>
                   Short
                 </div>
-                <div className="bg-primary text-primary-foreground rounded-lg p-4 text-center text-sm h-20">
+                <div className='bg-primary text-primary-foreground rounded-lg p-4 text-center text-sm h-20'>
                   Taller Item
                 </div>
-                <div className="bg-primary text-primary-foreground rounded-lg p-4 text-center text-sm">
+                <div className='bg-primary text-primary-foreground rounded-lg p-4 text-center text-sm'>
                   Short
                 </div>
               </Grid>
@@ -356,19 +400,19 @@ export const AlignmentAndJustification: Story = {
 
       {/* Horizontal Justification */}
       <div>
-        <h3 className="text-lg font-bold mb-4">Horizontal Justification (justify prop)</h3>
-        <div className="space-y-4">
+        <h3 className='text-lg font-bold mb-4'>Horizontal Justification (justify prop)</h3>
+        <div className='space-y-4'>
           {(['start', 'center', 'end'] as const).map((justify) => (
             <div key={justify}>
-              <p className="text-sm font-medium mb-2">justify="{justify}"</p>
-              <Grid cols={3} gap="md" justify={justify} className="bg-muted/30 rounded-lg p-4">
-                <div className="bg-secondary text-secondary-foreground rounded-lg p-4 text-center text-sm w-20">
+              <p className='text-sm font-medium mb-2'>justify="{justify}"</p>
+              <Grid cols={3} gap='md' justify={justify} className='bg-muted/30 rounded-lg p-4'>
+                <div className='bg-secondary text-secondary-foreground rounded-lg p-4 text-center text-sm w-20'>
                   A
                 </div>
-                <div className="bg-secondary text-secondary-foreground rounded-lg p-4 text-center text-sm w-20">
+                <div className='bg-secondary text-secondary-foreground rounded-lg p-4 text-center text-sm w-20'>
                   B
                 </div>
-                <div className="bg-secondary text-secondary-foreground rounded-lg p-4 text-center text-sm w-20">
+                <div className='bg-secondary text-secondary-foreground rounded-lg p-4 text-center text-sm w-20'>
                   C
                 </div>
               </Grid>
@@ -393,16 +437,19 @@ export const AlignmentAndJustification: Story = {
  */
 export const AutoFitPattern: Story = {
   render: () => (
-    <div className="space-y-8">
+    <div className='space-y-8'>
       <div>
-        <h3 className="text-lg font-bold mb-4">Auto-fit with 250px min width</h3>
-        <p className="text-sm text-muted-foreground mb-4">
-          Automatically creates as many columns as fit, with each at least 250px wide.
-          Resize your browser to see columns adjust dynamically.
+        <h3 className='text-lg font-bold mb-4'>Auto-fit with 250px min width</h3>
+        <p className='text-sm text-muted-foreground mb-4'>
+          Automatically creates as many columns as fit, with each at least 250px wide. Resize your
+          browser to see columns adjust dynamically.
         </p>
-        <Grid autoFit minColWidth="250px" gap="md">
+        <Grid autoFit minColWidth='250px' gap='md'>
           {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-            <div key={i} className="bg-primary text-primary-foreground rounded-lg p-6 text-center font-medium">
+            <div
+              key={i}
+              className='bg-primary text-primary-foreground rounded-lg p-6 text-center font-medium'
+            >
               Card {i}
             </div>
           ))}
@@ -410,13 +457,16 @@ export const AutoFitPattern: Story = {
       </div>
 
       <div>
-        <h3 className="text-lg font-bold mb-4">Auto-fit with 300px min width</h3>
-        <p className="text-sm text-muted-foreground mb-4">
+        <h3 className='text-lg font-bold mb-4'>Auto-fit with 300px min width</h3>
+        <p className='text-sm text-muted-foreground mb-4'>
           Larger minimum width means fewer columns on smaller screens.
         </p>
-        <Grid autoFit minColWidth="300px" gap="lg">
+        <Grid autoFit minColWidth='300px' gap='lg'>
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="bg-secondary text-secondary-foreground rounded-lg p-8 text-center font-medium">
+            <div
+              key={i}
+              className='bg-secondary text-secondary-foreground rounded-lg p-8 text-center font-medium'
+            >
               Feature {i}
             </div>
           ))}
@@ -424,22 +474,25 @@ export const AutoFitPattern: Story = {
       </div>
 
       <div>
-        <h3 className="text-lg font-bold mb-4">Auto-fit with 200px min width (Dense)</h3>
-        <p className="text-sm text-muted-foreground mb-4">
+        <h3 className='text-lg font-bold mb-4'>Auto-fit with 200px min width (Dense)</h3>
+        <p className='text-sm text-muted-foreground mb-4'>
           Smaller minimum width creates denser layouts with more columns.
         </p>
-        <Grid autoFit minColWidth="200px" gap="sm">
+        <Grid autoFit minColWidth='200px' gap='sm'>
           {Array.from({ length: 12 }, (_, i) => i + 1).map((i) => (
-            <div key={i} className="bg-accent text-accent-foreground rounded-lg p-4 text-center text-sm font-medium">
+            <div
+              key={i}
+              className='bg-accent text-accent-foreground rounded-lg p-4 text-center text-sm font-medium'
+            >
               {i}
             </div>
           ))}
         </Grid>
       </div>
 
-      <div className="mt-6 bg-muted rounded-lg p-4">
-        <p className="text-sm font-medium mb-2">💡 When to use auto-fit:</p>
-        <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+      <div className='mt-6 bg-muted rounded-lg p-4'>
+        <p className='text-sm font-medium mb-2'>💡 When to use auto-fit:</p>
+        <ul className='text-sm text-muted-foreground space-y-1 list-disc list-inside'>
           <li>Card galleries that should fill available space</li>
           <li>Product grids in e-commerce</li>
           <li>Image galleries</li>
@@ -463,25 +516,27 @@ export const AutoFitPattern: Story = {
  */
 export const DashboardLayoutExample: Story = {
   render: () => (
-    <div className="bg-background min-h-screen p-6 space-y-6">
+    <div className='bg-background min-h-screen p-6 space-y-6'>
       {/* Header */}
-      <div className="bg-card border rounded-lg p-6">
-        <h1 className="text-2xl font-bold">Analytics Dashboard</h1>
-        <p className="text-muted-foreground">Real-time metrics and insights</p>
+      <div className='bg-card border rounded-lg p-6'>
+        <h1 className='text-2xl font-bold'>Analytics Dashboard</h1>
+        <p className='text-muted-foreground'>Real-time metrics and insights</p>
       </div>
 
       {/* Stats Grid */}
-      <Grid cols={{ base: 1, sm: 2, lg: 4 }} gap="md">
+      <Grid cols={{ base: 1, sm: 2, lg: 4 }} gap='md'>
         {[
           { label: 'Total Revenue', value: '$45,231', change: '+20.1%', positive: true },
           { label: 'Active Users', value: '2,350', change: '+15.3%', positive: true },
           { label: 'Bounce Rate', value: '32.5%', change: '-5.4%', positive: true },
           { label: 'Avg. Session', value: '4m 20s', change: '+2.1%', positive: true },
         ].map((stat, i) => (
-          <div key={i} className="bg-card border rounded-lg p-6">
-            <p className="text-sm text-muted-foreground mb-1">{stat.label}</p>
-            <p className="text-3xl font-bold mb-2">{stat.value}</p>
-            <p className={`text-sm font-medium ${stat.positive ? 'text-green-600' : 'text-red-600'}`}>
+          <div key={i} className='bg-card border rounded-lg p-6'>
+            <p className='text-sm text-muted-foreground mb-1'>{stat.label}</p>
+            <p className='text-3xl font-bold mb-2'>{stat.value}</p>
+            <p
+              className={`text-sm font-medium ${stat.positive ? 'text-green-600' : 'text-red-600'}`}
+            >
               {stat.change} from last month
             </p>
           </div>
@@ -489,16 +544,16 @@ export const DashboardLayoutExample: Story = {
       </Grid>
 
       {/* Charts & Tables Grid */}
-      <Grid cols={{ base: 1, lg: 3 }} gap="md">
+      <Grid cols={{ base: 1, lg: 3 }} gap='md'>
         {/* Large Chart */}
         <GridItem colSpan={{ base: 1, lg: 2 }}>
-          <div className="bg-card border rounded-lg p-6 h-[400px]">
-            <h3 className="text-lg font-bold mb-4">Revenue Over Time</h3>
-            <div className="flex items-end justify-between h-[300px] gap-2">
+          <div className='bg-card border rounded-lg p-6 h-[400px]'>
+            <h3 className='text-lg font-bold mb-4'>Revenue Over Time</h3>
+            <div className='flex items-end justify-between h-[300px] gap-2'>
               {[60, 80, 65, 90, 70, 85, 95, 75, 88, 92, 78, 100].map((height, i) => (
                 <div
                   key={i}
-                  className="bg-primary rounded-t flex-1"
+                  className='bg-primary rounded-t flex-1'
                   style={{ height: `${height}%` }}
                 />
               ))}
@@ -508,9 +563,9 @@ export const DashboardLayoutExample: Story = {
 
         {/* Activity Feed */}
         <GridItem colSpan={1}>
-          <div className="bg-card border rounded-lg p-6 h-[400px] overflow-y-auto">
-            <h3 className="text-lg font-bold mb-4">Recent Activity</h3>
-            <div className="space-y-3">
+          <div className='bg-card border rounded-lg p-6 h-[400px] overflow-y-auto'>
+            <h3 className='text-lg font-bold mb-4'>Recent Activity</h3>
+            <div className='space-y-3'>
               {[
                 'New user signed up',
                 'Payment received: $1,250',
@@ -519,11 +574,11 @@ export const DashboardLayoutExample: Story = {
                 'New feature released',
                 'System backup completed',
               ].map((activity, i) => (
-                <div key={i} className="flex items-start gap-2 pb-3 border-b last:border-0">
-                  <div className="w-2 h-2 rounded-full bg-primary mt-2" />
-                  <div className="flex-1">
-                    <p className="text-sm">{activity}</p>
-                    <p className="text-xs text-muted-foreground">{i + 1}h ago</p>
+                <div key={i} className='flex items-start gap-2 pb-3 border-b last:border-0'>
+                  <div className='w-2 h-2 rounded-full bg-primary mt-2' />
+                  <div className='flex-1'>
+                    <p className='text-sm'>{activity}</p>
+                    <p className='text-xs text-muted-foreground'>{i + 1}h ago</p>
                   </div>
                 </div>
               ))}
@@ -533,16 +588,16 @@ export const DashboardLayoutExample: Story = {
       </Grid>
 
       {/* Bottom Cards */}
-      <Grid cols={{ base: 1, md: 2, lg: 3 }} gap="md">
+      <Grid cols={{ base: 1, md: 2, lg: 3 }} gap='md'>
         {[
           { title: 'Top Products', count: 24 },
           { title: 'Customer Reviews', count: 156 },
           { title: 'Pending Orders', count: 8 },
         ].map((card, i) => (
-          <div key={i} className="bg-card border rounded-lg p-6">
-            <h3 className="text-lg font-bold mb-2">{card.title}</h3>
-            <p className="text-4xl font-bold text-primary mb-4">{card.count}</p>
-            <button className="text-sm text-primary hover:underline">View all →</button>
+          <div key={i} className='bg-card border rounded-lg p-6'>
+            <h3 className='text-lg font-bold mb-2'>{card.title}</h3>
+            <p className='text-4xl font-bold text-primary mb-4'>{card.count}</p>
+            <button className='text-sm text-primary hover:underline'>View all →</button>
           </div>
         ))}
       </Grid>

@@ -1,0 +1,27 @@
+{
+    "map": {
+        "band_dimension.descr": "The netCDF dimension name that will be used to specify bands.",
+        "band_dimension.title": "Band Dimension",
+        "compression_level.descr": "The level at which the output netCDF file will be compressed. The default value is 0, which implies no compression. A value of 9 represents maximum compression.",
+        "compression_level.title": "Compression Level",
+        "description": "Converts a raster dataset to a netCDF file.",
+        "fields_to_dimensions.descr": "<xdoc><p>The field or fields that will be used to create dimensions in the netCDF file.</p><ul><li>Field—A field in the input raster attribute table.</li><li>Dimension—The netCDF dimension name</li><li>Units—The units of the data represented by the field</li></ul></xdoc>",
+        "fields_to_dimensions.dt.title1": "Field",
+        "fields_to_dimensions.dt.title2": "Dimension",
+        "fields_to_dimensions.dt.title3": "Units",
+        "fields_to_dimensions.title": "Fields to Dimensions",
+        "in_raster.descr": "The input raster dataset.",
+        "in_raster.title": "Input Raster",
+        "out_netcdf_file.descr": "The output netCDF file. The file name must have an .nc extension.",
+        "out_netcdf_file.title": "Output netCDF File",
+        "title": "Raster to NetCDF",
+        "variable.descr": "The netCDF variable name that will be used in the output netCDF file. This variable will contain the values of cells in the input raster.",
+        "variable.title": "Variable",
+        "variable_units.descr": "<xdoc><p>The units of the data contained within the variable. The variable name is specified in the <span class=\"esri_uicontrol\">Variable</span> parameter.</p></xdoc>",
+        "variable_units.title": "Variable Units",
+        "x_dimension.descr": "The netCDF dimension name that will be used to specify x, or longitude, coordinates.",
+        "x_dimension.title": "X Dimension",
+        "y_dimension.descr": "The netCDF dimension name that will be used to specify y, or latitude, coordinates.",
+        "y_dimension.title": "Y Dimension"
+    }
+}

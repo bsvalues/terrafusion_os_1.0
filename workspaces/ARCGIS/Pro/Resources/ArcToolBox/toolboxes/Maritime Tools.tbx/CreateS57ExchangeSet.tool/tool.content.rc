@@ -1,0 +1,21 @@
+{
+    "map": {
+        "derived_out_directory.title": "S-57 Exchange Set Directory",
+        "description": "Allows a mariner to view the Electronic Navigational Chart (ENC) datasets in an Electronic Chart Display and Information System (ECDIS) for shipboard navigation.",
+        "in_directories.descr": "<xdoc><p>Folders that contain at least one S-57 base cell (*.000) and, optionally, any of the following:<ul><li>S-57 update datasets</li><li>README.txt file</li><li>Any referenced files in the S-57 cells (*.txt, *.tif, and *.jpg)</li></ul></p></xdoc>",
+        "in_directories.title": "Input Directories",
+        "layout_format.descr": "<xdoc><p>Specifies the directory and folder structure of the exchange set.</p><ul><li><span title=\"VERSION_LAYOUT\">VERSION_LAYOUT</span>— The exchange set will be written in the format ENC_ROOT\\CATALOG.031, ENC_ROOT\\&lt;Agency&gt;\\&lt;ProductName&gt;\\&lt;MajorEdition&gt;\\&lt;MinorEdition&gt;\\&lt;S57Product&gt;, &lt;Referenced Files&gt;. This is the default.</li><li><span title=\"PRODUCT_LAYOUT\">PRODUCT_LAYOUT</span>—The exchange set will be written in the format ENC_ROOT\\CATALOG.031, ENC_ROOT\\&lt;ProductName&gt;\\&lt;S57Product&gt;, &lt;Referenced Files&gt;.</li><li><span title=\"FLAT_LAYOUT\">FLAT_LAYOUT</span>—The exchange set will be written in the format ENC_ROOT\\CATALOG.031, &lt;S57Product(s)&gt;, &lt;Referenced Files&gt;.</li></ul></xdoc>",
+        "layout_format.domain.FLAT_LAYOUT": "FLAT_LAYOUT",
+        "layout_format.domain.PRODUCT_LAYOUT": "PRODUCT_LAYOUT",
+        "layout_format.domain.VERSION_LAYOUT": "VERSION_LAYOUT",
+        "layout_format.title": "Layout Format",
+        "lfil_file.descr": "A text file that will be used to match file names in the output exchange set to the long file descriptions populated on the catalog file records.",
+        "lfil_file.title": "LFIL File",
+        "out_directory.descr": "The location of an empty folder where the ENC_ROOT folder will be written. The folder must be empty for the tool to run successfully.",
+        "out_directory.title": "Output Directory",
+        "summary": "<xdoc><p>Allows a mariner to view the Electronic Navigational Chart (ENC) datasets in an Electronic Chart Display and Information System (ECDIS) for shipboard navigation.</p><p>An exchange set is a package of files that contains one catalog file and at least one S-57 dataset file (New Edition [EN] and Revised Edition [ER]). Once you export and publish the S-57 data, you need to package the S-57 dataset files into a valid S-57 exchange set.</p></xdoc>",
+        "title": "Create S-57 Exchange Set",
+        "updates_only.descr": "<xdoc><p>Specifies how S-57 update datasets in the input folder will be processed.</p><ul><li>Checked—The output exchange set will include all the updates but not the S-57 base dataset. If there are no updates, the output will include the S-57 base dataset.</li><li>Unchecked—The output exchange set will include the S-57 base dataset and any update datasets. This is the default.<note type=\"note\"/><p group=\"note\">An S-57 base dataset is required in the input folder when creating an update exchange set.</p></li></ul></xdoc>",
+        "updates_only.title": "Updates Only"
+    }
+}

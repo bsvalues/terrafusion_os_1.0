@@ -1,0 +1,23 @@
+{
+    "map": {
+        "bin_size.descr": "<xdoc><p>The distance interval that represents the bin size and units into which the <span class=\"esri_uicontrol\">Point Layer</span> will be aggregated. The distance interval must be a linear unit.</p></xdoc>",
+        "bin_size.title": "Bin Size",
+        "description": "Given a set of features, identifies statistically significant hot spots and cold spots using the Getis-Ord Gi* statistic.",
+        "neighborhood_size.descr": "The spatial extent of the analysis neighborhood. This value determines which features are analyzed together to assess local clustering.",
+        "neighborhood_size.title": "Neighborhood Size",
+        "out_feature_class.descr": "The output feature class with the z-score and p-value results.",
+        "out_feature_class.title": "Output Feature Class",
+        "point_layer.descr": "The point feature class for which hot spot analysis will be performed.",
+        "point_layer.title": "Point Layer",
+        "time_step_alignment.descr": "<xdoc><p>Specifies how time steps will be aligned. This parameter is only available if the input points are time enabled and represent an instant in time.</p><ul><li><span title=\"END_TIME\">End time</span>—Time steps will align to the last time event and aggregate back in time.</li><li><span title=\"START_TIME\">Start time</span>—Time steps will align to the first time event and aggregate forward in time. This is the default.</li><li><span title=\"REFERENCE_TIME\">Reference time</span>—Time steps will align to a specified date or time. If all points in the input features have a time stamp larger than the specified reference time (or it falls exactly on the start time of the input features), the time-step interval will begin with that reference time and aggregate forward in time (as occurs with the <span class=\"esri_uicontrol\">Start time</span> alignment). If all points in the input features have a time stamp smaller than the specified reference time (or it falls exactly on the end time of the input features), the time-step interval will end with that reference time and aggregate backward in time (as occurs with the <span class=\"esri_uicontrol\">End time</span> alignment). If the specified reference time is in the middle of the time extent of the data, a time-step interval will be created ending with the reference time provided (as occurs with the <span class=\"esri_uicontrol\">End time</span> alignment); additional intervals will be created both before and after the reference time until the full time extent of the data is covered.</li></ul></xdoc>",
+        "time_step_alignment.domain.END_TIME": "End time",
+        "time_step_alignment.domain.REFERENCE_TIME": "Reference time",
+        "time_step_alignment.domain.START_TIME": "Start time",
+        "time_step_alignment.title": "Time Step Alignment",
+        "time_step_interval.descr": "<xdoc><p>The interval that will be used for the time step. This parameter is only used if time is enabled for <span class=\"esri_uicontrol\">Point Layer</span>.</p></xdoc>",
+        "time_step_interval.title": "Time Step Interval",
+        "time_step_reference.descr": "<xdoc><p>The time that will be used to align the time steps and time intervals. This parameter is only used if time is enabled for <span class=\"esri_uicontrol\">Point Layer</span>.</p></xdoc>",
+        "time_step_reference.title": "Time Step Reference",
+        "title": "Find Hot Spots"
+    }
+}

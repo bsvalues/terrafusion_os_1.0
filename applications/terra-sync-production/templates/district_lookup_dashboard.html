@@ -1,0 +1,356 @@
+{% extends "base_clean.html" %}
+
+{% block title %}District Lookup - TerraFusion Platform{% endblock %}
+
+{% block content %}
+    <style>
+        .lookup-card {
+            transition: transform 0.2s ease-in-out;
+        }
+        .lookup-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .district-badge {
+            font-size: 0.9em;
+            margin: 2px;
+        }
+        .result-section {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        .example-coords {
+            background-color: #e7f3ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i data-feather="map"></i>
+                TerraFusion Platform
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/dashboard">Main Dashboard</a>
+                <a class="nav-link" href="/gis/dashboard">GIS Export</a>
+                <a class="nav-link active" href="#">District Lookup</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="mb-4">
+                    <i data-feather="compass"></i>
+                    Benton County District Lookup Service
+                </h1>
+                <p class="text-muted">
+                    Determine administrative and electoral district assignments based on location data for Benton County, Washington.
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Coordinate Lookup -->
+            <div class="col-lg-6 mb-4">
+                <div class="card lookup-card h-100">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="card-title mb-0">
+                            <i data-feather="crosshair"></i>
+                            Lookup by Coordinates
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="coordinateForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="latitude" class="form-label">Latitude</label>
+                                    <input type="number" class="form-control" id="latitude" 
+                                           step="any" placeholder="46.230" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="longitude" class="form-label">Longitude</label>
+                                    <input type="number" class="form-control" id="longitude" 
+                                           step="any" placeholder="-119.090" required>
+                                </div>
+                            </div>
+                            <div class="example-coords mt-3">
+                                <strong>Example coordinates for Benton County:</strong><br>
+                                <small>
+                                    • Kennewick: 46.211, -119.137<br>
+                                    • Richland: 46.286, -119.284<br>
+                                    • County Center: 46.25, -119.15
+                                </small>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100 mt-3">
+                                <i data-feather="search"></i>
+                                Find Districts
+                            </button>
+                        </form>
+                        <div id="coordinateResults" class="result-section" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Address Lookup -->
+            <div class="col-lg-6 mb-4">
+                <div class="card lookup-card h-100">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="card-title mb-0">
+                            <i data-feather="map-pin"></i>
+                            Lookup by Address
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="addressForm">
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Street Address</label>
+                                <input type="text" class="form-control" id="address" 
+                                       placeholder="123 Main St, Kennewick, WA" required>
+                            </div>
+                            <div class="example-coords">
+                                <strong>Try these example addresses:</strong><br>
+                                <small>
+                                    • 123 Main St, Kennewick, WA<br>
+                                    • 456 Oak Ave, Richland, WA<br>
+                                    • 789 Pine Rd, Benton County, WA
+                                </small>
+                            </div>
+                            <button type="submit" class="btn btn-info w-100 mt-3">
+                                <i data-feather="search"></i>
+                                Find Districts
+                            </button>
+                        </form>
+                        <div id="addressResults" class="result-section" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Available Districts -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="card-title mb-0">
+                            <i data-feather="layers"></i>
+                            Available District Types
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row" id="districtTypes">
+                            <div class="col-md-4 mb-3">
+                                <div class="card border-primary">
+                                    <div class="card-body text-center">
+                                        <i data-feather="users" class="mb-2" style="color: #0d6efd;"></i>
+                                        <h6 class="card-title">Voting Precincts</h6>
+                                        <p class="card-text small">Electoral districts for voting purposes</p>
+                                        <button class="btn btn-outline-primary btn-sm" onclick="loadDistricts('voting_precincts')">
+                                            View All
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="card border-danger">
+                                    <div class="card-body text-center">
+                                        <i data-feather="shield" class="mb-2" style="color: #dc3545;"></i>
+                                        <h6 class="card-title">Fire Districts</h6>
+                                        <p class="card-text small">Emergency response zones and fire stations</p>
+                                        <button class="btn btn-outline-danger btn-sm" onclick="loadDistricts('fire_districts')">
+                                            View All
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="card border-warning">
+                                    <div class="card-body text-center">
+                                        <i data-feather="book" class="mb-2" style="color: #ffc107;"></i>
+                                        <h6 class="card-title">School Districts</h6>
+                                        <p class="card-text small">Educational district boundaries</p>
+                                        <button class="btn btn-outline-warning btn-sm" onclick="loadDistricts('school_districts')">
+                                            View All
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="districtList" class="mt-3" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Information -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="card-title mb-0">
+                            <i data-feather="info"></i>
+                            API Service Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Available API Endpoints:</h6>
+                                <ul class="list-unstyled">
+                                    <li><code>GET /api/v1/district-lookup/coordinates</code></li>
+                                    <li><code>GET /api/v1/district-lookup/address</code></li>
+                                    <li><code>GET /api/v1/district-lookup/districts</code></li>
+                                    <li><code>GET /api/v1/district-lookup</code></li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Example API Calls:</h6>
+                                <small>
+                                    <code>curl 'http://localhost:5000/api/v1/district-lookup/coordinates?lat=46.230&lon=-119.090'</code><br><br>
+                                    <code>curl 'http://localhost:5000/api/v1/district-lookup/address?address=123 Main St, Kennewick'</code>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"></script>
+    <script>
+        // Initialize Feather icons
+        feather.replace();
+
+        // Coordinate lookup form
+        document.getElementById('coordinateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const lat = document.getElementById('latitude').value;
+            const lon = document.getElementById('longitude').value;
+            const resultDiv = document.getElementById('coordinateResults');
+            
+            try {
+                resultDiv.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div> Looking up districts...</div>';
+                resultDiv.style.display = 'block';
+                
+                const response = await fetch(`/api/v1/district-lookup/coordinates?lat=${lat}&lon=${lon}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayResults(data, resultDiv);
+                } else {
+                    resultDiv.innerHTML = `<div class="alert alert-danger">${data.error || 'Error occurred'}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+            }
+        });
+
+        // Address lookup form
+        document.getElementById('addressForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const address = document.getElementById('address').value;
+            const resultDiv = document.getElementById('addressResults');
+            
+            try {
+                resultDiv.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div> Looking up districts...</div>';
+                resultDiv.style.display = 'block';
+                
+                const response = await fetch(`/api/v1/district-lookup/address?address=${encodeURIComponent(address)}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayResults(data, resultDiv);
+                } else {
+                    resultDiv.innerHTML = `<div class="alert alert-danger">${data.error || 'Error occurred'}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+            }
+        });
+
+        // Display lookup results
+        function displayResults(data, container) {
+            if (!data.found_any) {
+                container.innerHTML = '<div class="alert alert-warning">No districts found for this location.</div>';
+                return;
+            }
+
+            let html = '<h6><i data-feather="check-circle"></i> District Assignments Found:</h6>';
+            
+            if (data.coordinates) {
+                html += `<p><strong>Coordinates:</strong> ${data.coordinates.latitude}, ${data.coordinates.longitude}</p>`;
+            }
+            if (data.address) {
+                html += `<p><strong>Address:</strong> ${data.address}</p>`;
+            }
+
+            html += '<div class="row">';
+            
+            for (const [districtType, district] of Object.entries(data.districts)) {
+                const badgeColor = districtType.includes('voting') ? 'primary' : 
+                                 districtType.includes('fire') ? 'danger' : 'warning';
+                
+                html += `
+                    <div class="col-md-12 mb-2">
+                        <span class="badge bg-${badgeColor} district-badge">${districtType.replace('_', ' ').toUpperCase()}</span>
+                        <strong>${district.name}</strong>
+                        ${district.properties ? `<br><small class="text-muted">${JSON.stringify(district.properties, null, 2).replace(/[{}]/g, '').replace(/"/g, '').replace(/,/g, ', ')}</small>` : ''}
+                    </div>
+                `;
+            }
+            
+            html += '</div>';
+            container.innerHTML = html;
+            feather.replace();
+        }
+
+        // Load districts by type
+        async function loadDistricts(districtType) {
+            const listDiv = document.getElementById('districtList');
+            
+            try {
+                listDiv.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div> Loading districts...</div>';
+                listDiv.style.display = 'block';
+                
+                const response = await fetch(`/api/v1/district-lookup/districts?type=${districtType}`);
+                const data = await response.json();
+                
+                if (response.ok && data[districtType]) {
+                    let html = `<h6>Available ${districtType.replace('_', ' ').toUpperCase()}:</h6>`;
+                    html += '<div class="row">';
+                    
+                    data[districtType].forEach(district => {
+                        html += `
+                            <div class="col-md-4 mb-2">
+                                <div class="card border-light">
+                                    <div class="card-body p-2">
+                                        <h6 class="card-title mb-1">${district.name}</h6>
+                                        <small class="text-muted">ID: ${district.id}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += '</div>';
+                    listDiv.innerHTML = html;
+                } else {
+                    listDiv.innerHTML = '<div class="alert alert-warning">No districts found.</div>';
+                }
+            } catch (error) {
+                listDiv.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+            }
+        }
+    </script>
+{% endblock %}

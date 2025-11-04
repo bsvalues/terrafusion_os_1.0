@@ -1,0 +1,344 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\SurfaceParameters",
+    "displayname": "$rc:title",
+    "helpcontent": "54060004",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "inputSurfaceRaster": {
+            "display_order": "0",
+            "displayname": "$rc:inputsurfaceraster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "description": "$rc:inputsurfaceraster.descr"
+        },
+        "outputRasterName": {
+            "display_order": "1",
+            "displayname": "$rc:outputrastername.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:outputrastername.descr"
+        },
+        "parameterType": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:parametertype.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SLOPE",
+                        "code": "$rc:parametertype.domain.SLOPE"
+                    },
+                    {
+                        "value": "ASPECT",
+                        "code": "$rc:parametertype.domain.ASPECT"
+                    },
+                    {
+                        "value": "MEAN_CURVATURE",
+                        "code": "$rc:parametertype.domain.MEAN_CURVATURE"
+                    },
+                    {
+                        "value": "TANGENTIAL_CURVATURE",
+                        "code": "$rc:parametertype.domain.TANGENTIAL_CURVATURE"
+                    },
+                    {
+                        "value": "PROFILE_CURVATURE",
+                        "code": "$rc:parametertype.domain.PROFILE_CURVATURE"
+                    },
+                    {
+                        "value": "CONTOUR_CURVATURE",
+                        "code": "$rc:parametertype.domain.CONTOUR_CURVATURE"
+                    },
+                    {
+                        "value": "CONTOUR_GEODESIC_TORSION",
+                        "code": "$rc:parametertype.domain.CONTOUR_GEODESIC_TORSION"
+                    },
+                    {
+                        "value": "GAUSSIAN_CURVATURE",
+                        "code": "$rc:parametertype.domain.GAUSSIAN_CURVATURE"
+                    },
+                    {
+                        "value": "CASORATI_CURVATURE",
+                        "code": "$rc:parametertype.domain.CASORATI_CURVATURE"
+                    }
+                ]
+            },
+            "value": "SLOPE",
+            "description": "$rc:parametertype.descr"
+        },
+        "localSurfaceType": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:localsurfacetype.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "QUADRATIC",
+                        "code": "$rc:localsurfacetype.domain.QUADRATIC"
+                    },
+                    {
+                        "value": "BIQUADRATIC",
+                        "code": "$rc:localsurfacetype.domain.BIQUADRATIC"
+                    }
+                ]
+            },
+            "value": "QUADRATIC",
+            "description": "$rc:localsurfacetype.descr"
+        },
+        "neighborhoodDistance": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:neighborhooddistance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "description": "$rc:neighborhooddistance.descr"
+        },
+        "useAdaptiveNeighborhood": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:useadaptiveneighborhood.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ADAPTIVE_NEIGHBORHOOD"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "FIXED_NEIGHBORHOOD"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:useadaptiveneighborhood.descr"
+        },
+        "zUnit": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:zunit.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "METER",
+                        "code": "$rc:zunit.domain.METER"
+                    },
+                    {
+                        "value": "INCH",
+                        "code": "$rc:zunit.domain.INCH"
+                    },
+                    {
+                        "value": "FOOT",
+                        "code": "$rc:zunit.domain.FOOT"
+                    },
+                    {
+                        "value": "YARD",
+                        "code": "$rc:zunit.domain.YARD"
+                    },
+                    {
+                        "value": "MILE_US",
+                        "code": "$rc:zunit.domain.MILE_US"
+                    },
+                    {
+                        "value": "NAUTICAL_MILE",
+                        "code": "$rc:zunit.domain.NAUTICAL_MILE"
+                    },
+                    {
+                        "value": "MILLIMETER",
+                        "code": "$rc:zunit.domain.MILLIMETER"
+                    },
+                    {
+                        "value": "CENTIMETER",
+                        "code": "$rc:zunit.domain.CENTIMETER"
+                    },
+                    {
+                        "value": "KILOMETER",
+                        "code": "$rc:zunit.domain.KILOMETER"
+                    },
+                    {
+                        "value": "DECIMETER",
+                        "code": "$rc:zunit.domain.DECIMETER"
+                    }
+                ]
+            },
+            "value": "METER",
+            "description": "$rc:zunit.descr"
+        },
+        "outputSlopeMeasurement": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:outputslopemeasurement.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DEGREE",
+                        "code": "$rc:outputslopemeasurement.domain.DEGREE"
+                    },
+                    {
+                        "value": "PERCENT_RISE",
+                        "code": "$rc:outputslopemeasurement.domain.PERCENT_RISE"
+                    }
+                ]
+            },
+            "value": "DEGREE",
+            "description": "$rc:outputslopemeasurement.descr"
+        },
+        "projectGeodesicAzimuths": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:projectgeodesicazimuths.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "PROJECT_GEODESIC_AZIMUTHS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "GEODESIC_AZIMUTHS"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:projectgeodesicazimuths.descr"
+        },
+        "useEquatorialAspect": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:useequatorialaspect.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "EQUATORIAL_ASPECT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NORTH_POLE_ASPECT"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:useequatorialaspect.descr"
+        },
+        "outputRaster": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "11",
+            "displayname": "$rc:outputraster.title",
+            "datatype": {
+                "type": "GPRasterLayer"
+            }
+        },
+        "inputAnalysisMask": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:inputanalysismask.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "description": "$rc:inputanalysismask.descr"
+        }
+    },
+    "environments": [
+        "cellSize",
+        "extent",
+        "mask",
+        "outputCoordinateSystem",
+        "pyramid",
+        "snapRaster"
+    ]
+}

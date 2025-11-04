@@ -1,0 +1,38 @@
+Yes – everything you’ve described is wired up correctly, so the WebSocket test page at **/websocket-test** should successfully open a socket to **/ws**. Here’s how to verify and then exercise it:
+
+1. **Open the test page**  
+   In your browser navigate to:  
+   ```
+   http://localhost:3000/websocket-test
+   ```  
+   You should see a “Connect” button (this is the `WebSocketTest` component registered at that route) .
+
+2. **Check the connection**  
+   - Open the browser DevTools (⌘+Option+I / Ctrl+Shift+I) and go to the **Console** tab.  
+   - Click **Connect**.  
+   - You should see a log entry like:  
+     ```
+     WebSocket connected.
+     ```  
+   - In the **Network** tab, you can filter by “WS” and you should see a “101 Switching Protocols” on `/ws` .
+
+3. **Send and receive messages**  
+   Once you see “WebSocket connected,” test sending a message:  
+   - In the test page UI there should be a text input and “Send” button. Enter e.g. `hello world` and click **Send**.  
+   - In the console you should see the server echo or respond (depending on your implementation).  
+   - Alternatively, from the DevTools Console you can grab the socket instance and send manually:  
+     ```js
+     // assuming the page code exposes `socket`
+     socket.send(JSON.stringify({ type: 'ping', payload: 'test' }));
+     ```  
+   - You should then see a corresponding `onmessage` log, e.g.  
+     ```
+     Received message: {"type":"pong","payload":"test"}
+     ```
+
+4. **If you don’t see “Connected” or get errors**  
+   - Verify the server is running on the same port (usually 3000) and that `/ws` is not blocked by any proxy.  
+   - Check the server logs for any WebSocket handshake errors.  
+   - Ensure no CORS or HTTP vs HTTPS mismatch is occurring.
+
+Once you confirm the round-trip, you can move on to pushing real-time Web Vitals data over this socket to your Grafana-backed dashboard. Let me know what you see in the console when you click Connect and Send!

@@ -1,0 +1,53 @@
+{
+  "appId": "com.terrafusion.ide",
+  "productName": "Terrafusion IDE",
+  "directories": {
+    "output": "dist",
+    "buildResources": "build"
+  },
+  "files": [
+    "build/**/*",
+    "node_modules/**/*",
+    "package.json"
+  ],
+  "extraResources": [
+    {
+      "from": "models",
+      "to": "models",
+      "filter": ["**/*"]
+    },
+    {
+      "from": "config",
+      "to": "config",
+      "filter": ["**/*"]
+    }
+  ],
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      }
+    ],
+    "icon": "build/icon.ico"
+  },
+  "mac": {
+    "target": ["dmg"],
+    "icon": "build/icon.icns"
+  },
+  "linux": {
+    "target": ["AppImage"],
+    "icon": "build/icon.png"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "Terrafusion IDE"
+  },
+  "publish": {
+    "provider": "github",
+    "releaseType": "release"
+  }
+} 

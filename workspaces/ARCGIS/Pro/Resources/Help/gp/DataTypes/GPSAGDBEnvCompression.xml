@@ -1,0 +1,5 @@
+<DataType Name="GPSAGDBEnvCompression">
+  <DisplayName>Compression</DisplayName>
+  <Description>Specifies the type of compression used for a raster.</Description>
+</DataType>
+

@@ -1,0 +1,193 @@
+{
+    "renderer": {
+        "type": "classBreaks",
+        "field": "Gi_Bin",
+        "classificationMethod": "esriClassifyManual",
+        "minValue": -3,
+        "classBreakInfos": [
+            {
+                "symbol": {
+                    "type": "esriSFS",
+                    "style": "esriSFSSolid",
+                    "color": [
+                        69,
+                        117,
+                        181,
+                        255
+                    ],
+                    "outline": {
+                        "type": "esriSLS",
+                        "style": "esriSLSSolid",
+                        "color": [
+                            178,
+                            178,
+                            178,
+                            255
+                        ],
+                        "width": 0.4
+                    }
+                },
+                "classMaxValue": -3,
+                "label": "Cold Spot with 99% Confidence",
+                "description": ""
+            },
+            {
+                "symbol": {
+                    "type": "esriSFS",
+                    "style": "esriSFSSolid",
+                    "color": [
+                        132,
+                        158,
+                        186,
+                        255
+                    ],
+                    "outline": {
+                        "type": "esriSLS",
+                        "style": "esriSLSSolid",
+                        "color": [
+                            178,
+                            178,
+                            178,
+                            255
+                        ],
+                        "width": 0.4
+                    }
+                },
+                "classMaxValue": -2,
+                "label": "Cold Spot with 95% Confidence",
+                "description": ""
+            },
+            {
+                "symbol": {
+                    "type": "esriSFS",
+                    "style": "esriSFSSolid",
+                    "color": [
+                        192,
+                        204,
+                        190,
+                        255
+                    ],
+                    "outline": {
+                        "type": "esriSLS",
+                        "style": "esriSLSSolid",
+                        "color": [
+                            178,
+                            178,
+                            178,
+                            255
+                        ],
+                        "width": 0.4
+                    }
+                },
+                "classMaxValue": -1,
+                "label": "Cold Spot with 90% Confidence",
+                "description": ""
+            },
+            {
+                "symbol": {
+                    "type": "esriSFS",
+                    "style": "esriSFSSolid",
+                    "color": [
+                        247,
+                        247,
+                        242,
+                        255
+                    ],
+                    "outline": {
+                        "type": "esriSLS",
+                        "style": "esriSLSSolid",
+                        "color": [
+                            178,
+                            178,
+                            178,
+                            255
+                        ],
+                        "width": 0.4
+                    }
+                },
+                "classMaxValue": 0,
+                "label": "Not Significant",
+                "description": ""
+            },
+            {
+                "symbol": {
+                    "type": "esriSFS",
+                    "style": "esriSFSSolid",
+                    "color": [
+                        250,
+                        185,
+                        132,
+                        255
+                    ],
+                    "outline": {
+                        "type": "esriSLS",
+                        "style": "esriSLSSolid",
+                        "color": [
+                            178,
+                            178,
+                            178,
+                            255
+                        ],
+                        "width": 0.4
+                    }
+                },
+                "classMaxValue": 1,
+                "label": "Hot Spot with 90% Confidence",
+                "description": ""
+            },
+            {
+                "symbol": {
+                    "type": "esriSFS",
+                    "style": "esriSFSSolid",
+                    "color": [
+                        237,
+                        117,
+                        81,
+                        255
+                    ],
+                    "outline": {
+                        "type": "esriSLS",
+                        "style": "esriSLSSolid",
+                        "color": [
+                            178,
+                            178,
+                            178,
+                            255
+                        ],
+                        "width": 0.4
+                    }
+                },
+                "classMaxValue": 2,
+                "label": "Hot Spot with 95% Confidence",
+                "description": ""
+            },
+            {
+                "symbol": {
+                    "type": "esriSFS",
+                    "style": "esriSFSSolid",
+                    "color": [
+                        214,
+                        47,
+                        39,
+                        255
+                    ],
+                    "outline": {
+                        "type": "esriSLS",
+                        "style": "esriSLSSolid",
+                        "color": [
+                            178,
+                            178,
+                            178,
+                            255
+                        ],
+                        "width": 0.4
+                    }
+                },
+                "classMaxValue": 3,
+                "label": "Hot Spot with 99% Confidence",
+                "description": ""
+            }
+        ]
+    },
+    "transparency": 0
+}

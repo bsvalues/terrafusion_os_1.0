@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect x="0" y="0" width="400" height="300" fill="#e9f2fa" rx="10" ry="10"/>
+  
+  <!-- Admin dashboard illustration -->
+  <rect x="50" y="50" width="300" height="200" fill="#ffffff" stroke="#003366" stroke-width="2" rx="5" ry="5"/>
+  
+  <!-- Header bar -->
+  <rect x="50" y="50" width="300" height="40" fill="#005099" rx="5" ry="5"/>
+  <text x="70" y="75" font-family="Arial" font-size="14" fill="#ffffff" font-weight="bold">County Property Assessment - Admin Dashboard</text>
+  
+  <!-- Admin icon -->
+  <circle cx="330" cy="70" r="15" fill="#ffffff"/>
+  <path d="M330 60 Q330 55, 325 55 L335 55 Q330 55, 330 60" fill="#003366"/>
+  <circle cx="330" cy="67" r="6" fill="#003366"/>
+  <path d="M320 80 Q330 90, 340 80" fill="#003366"/>
+  
+  <!-- Dashboard grid -->
+  <rect x="60" y="100" width="135" height="70" fill="#f0f7fd" stroke="#b3d7ff" stroke-width="1" rx="3" ry="3"/>
+  <text x="70" y="115" font-family="Arial" font-size="12" fill="#003366" font-weight="bold">System Status</text>
+  <rect x="70" y="125" width="115" height="10" fill="#28a745" rx="2" ry="2"/>
+  <rect x="70" y="140" width="115" height="10" fill="#28a745" rx="2" ry="2"/>
+  <rect x="70" y="155" width="90" height="10" fill="#ffc107" rx="2" ry="2"/>
+  
+  <rect x="205" y="100" width="135" height="70" fill="#f0f7fd" stroke="#b3d7ff" stroke-width="1" rx="3" ry="3"/>
+  <text x="215" y="115" font-family="Arial" font-size="12" fill="#003366" font-weight="bold">User Management</text>
+  <circle cx="225" cy="135" r="5" fill="#005099"/>
+  <text x="235" y="138" font-family="Arial" font-size="10" fill="#333333">Admin Users (5)</text>
+  <circle cx="225" cy="150" r="5" fill="#28a745"/>
+  <text x="235" y="153" font-family="Arial" font-size="10" fill="#333333">Staff Users (12)</text>
+  <circle cx="225" cy="165" r="5" fill="#6c757d"/>
+  <text x="235" y="168" font-family="Arial" font-size="10" fill="#333333">Assessors (8)</text>
+  
+  <rect x="60" y="180" width="135" height="60" fill="#f0f7fd" stroke="#b3d7ff" stroke-width="1" rx="3" ry="3"/>
+  <text x="70" y="195" font-family="Arial" font-size="12" fill="#003366" font-weight="bold">Sync Operations</text>
+  <rect x="70" y="205" width="115" height="8" fill="#e9ecef" rx="2" ry="2"/>
+  <rect x="70" y="205" width="80" height="8" fill="#005099" rx="2" ry="2"/>
+  <text x="70" y="225" font-family="Arial" font-size="10" fill="#333333">8 operations completed today</text>
+  
+  <rect x="205" y="180" width="135" height="60" fill="#f0f7fd" stroke="#b3d7ff" stroke-width="1" rx="3" ry="3"/>
+  <text x="215" y="195" font-family="Arial" font-size="12" fill="#003366" font-weight="bold">System Logs</text>
+  <line x1="215" y1="205" x2="325" y2="205" stroke="#e9ecef" stroke-width="1"/>
+  <text x="215" y="215" font-family="Arial" font-size="8" fill="#333333">INFO: System check completed</text>
+  <line x1="215" y1="220" x2="325" y2="220" stroke="#e9ecef" stroke-width="1"/>
+  <text x="215" y="230" font-family="Arial" font-size="8" fill="#333333">WARN: Disk usage at 75%</text>
+  
+  <!-- Title -->
+  <text x="200" y="275" font-family="Arial" font-size="14" text-anchor="middle" fill="#003366" font-weight="bold">
+    Welcome IT Administrator
+  </text>
+</svg>

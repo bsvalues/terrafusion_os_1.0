@@ -1,0 +1,11 @@
+{
+    "set": [
+        "<",
+        "false",
+        "lt",
+        "math",
+        "math operator",
+        "relational",
+        "true"
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "set": [
+        "cartography",
+        "catalog",
+        "catalogue",
+        "cell",
+        "charting",
+        "export",
+        "import",
+        "light sector",
+        "load",
+        "s-100",
+        "s-101",
+        "s-57",
+        "s100",
+        "s101",
+        "lights",
+        "navigation",
+        "navigation aid"
+    ]
+}

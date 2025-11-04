@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Creates a multipatch feature from the portion of an integrated mesh that overlaps a polygon.",
+        "footprint_features.descr": "The polygon features defining the area that will be clipped.",
+        "footprint_features.title": "Footprint Features",
+        "out_feature_class.descr": "The multipatch feature class that will be produced by this tool.",
+        "out_feature_class.title": "Output Multipatch Feature Class",
+        "source_mesh.descr": "The integrated mesh that will be processed.",
+        "source_mesh.title": "Source Integrated Mesh",
+        "title": "Extract Multipatch From Mesh"
+    }
+}

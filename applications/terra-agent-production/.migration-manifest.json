@@ -1,0 +1,14 @@
+{
+  "migration_date": "2025-11-04 02:45:43",
+  "tech_stack": "Python, Docker",
+  "target_path": "C:\\Users\\bsval\\terrafusion_os_1.0\\applications\\terra-agent-production",
+  "priority": "PRODUCTION",
+  "target_name": "terra-agent-production",
+  "size_mb": 201.57,
+  "status": "OPERATIONAL",
+  "file_count": 10306,
+  "agent": "TerraFusion Elite Government OS Engineering Agent",
+  "source_path": "MIGRATED",
+  "last_verified": "2025-11-04 02:45:43",
+  "system_name": "terra-agent-production"
+}

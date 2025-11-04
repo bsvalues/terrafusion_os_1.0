@@ -1,553 +1,81 @@
 version: '3.8'
-
-# TerraFusion OS Government-Grade Monitoring Stack
-# Comprehensive observability for 1,008 AI agents and government compliance
-
-networks:
-  terrafusion-monitoring:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.20.0.0/16
-  terrafusion-internal:
-    external: true
-
-volumes:
-  prometheus-data:
-    driver: local
-  grafana-data:
-    driver: local
-  alertmanager-data:
-    driver: local
-  loki-data:
-    driver: local
-  jaeger-data:
-    driver: local
-  elasticsearch-data:
-    driver: local
-
 services:
-  # =============================================================================
-  # CORE METRICS COLLECTION
-  # =============================================================================
-  
   prometheus:
-    image: prom/prometheus:v2.47.0
-    container_name: terrafusion-prometheus
-    restart: unless-stopped
+    image: prom/prometheus:latest
+    container_name: prometheus-master
     ports:
-      - "9090:9090"
+    - 9090:9090
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./prometheus/rules/:/etc/prometheus/rules/
-      - prometheus-data:/prometheus
+    - ./monitoring/prometheus:/etc/prometheus
+    - prometheus_data:/prometheus
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--storage.tsdb.retention.time=30d'
-      - '--storage.tsdb.retention.size=10GB'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--web.enable-lifecycle'
-      - '--web.enable-admin-api'
-      - '--log.level=info'
-    networks:
-      - terrafusion-monitoring
-      - terrafusion-internal
-    environment:
-      - PROMETHEUS_RETENTION_TIME=30d
-      - PROMETHEUS_STORAGE_SIZE=10GB
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+    - --config.file=/etc/prometheus/prometheus.yml
+    - --storage.tsdb.path=/prometheus
+    - --web.console.libraries=/etc/prometheus/console_libraries
+    - --web.console.templates=/etc/prometheus/consoles
+    - --storage.tsdb.retention.time=200h
+    - --web.enable-lifecycle
     labels:
-      - "terrafusion.component=monitoring"
-      - "terrafusion.service=prometheus"
-      - "terrafusion.government=true"
-
-  # Government-grade metrics exporter for AI Swarm
-  ai-swarm-exporter:
-    image: prom/node-exporter:v1.6.1
-    container_name: terrafusion-ai-swarm-exporter
-    restart: unless-stopped
-    ports:
-      - "9100:9100"
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/rootfs:ro
-      - ./exporters/ai-swarm-metrics.py:/usr/local/bin/ai-swarm-metrics.py
-    command:
-      - '--path.procfs=/host/proc'
-      - '--path.rootfs=/rootfs'
-      - '--path.sysfs=/host/sys'
-      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
-    networks:
-      - terrafusion-monitoring
-    environment:
-      - AI_SWARM_SIZE=1008
-      - QUANTUM_OPTIMIZATION_ENABLED=true
-      - HARRIS_PACS_INTEGRATION=true
-    labels:
-      - "terrafusion.component=monitoring"
-      - "terrafusion.service=ai-swarm-exporter"
-      - "terrafusion.agents=1008"
-
-  # Harris PACS Integration Metrics
-  harris-pacs-exporter:
-    build:
-      context: ./exporters/harris-pacs/
-      dockerfile: Dockerfile
-    container_name: terrafusion-harris-pacs-exporter
-    restart: unless-stopped
-    ports:
-      - "9200:9200"
-    environment:
-      - HARRIS_PACS_ENDPOINT=https://harris-pacs.benton.gov/api
-      - FISMA_COMPLIANCE_MODE=true
-      - GOVERNMENT_AUDIT_ENABLED=true
-      - MONITORING_INTERVAL=30s
-    networks:
-      - terrafusion-monitoring
-    volumes:
-      - ./config/harris-pacs-config.yml:/etc/harris-pacs/config.yml:ro
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9200/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    labels:
-      - "terrafusion.component=monitoring"
-      - "terrafusion.service=harris-pacs-exporter"
-      - "terrafusion.government=true"
-
-  # Quantum Performance Metrics Collector
-  quantum-performance-exporter:
-    build:
-      context: ./exporters/quantum-performance/
-      dockerfile: Dockerfile
-    container_name: terrafusion-quantum-performance-exporter
-    restart: unless-stopped
-    ports:
-      - "9300:9300"
-    environment:
-      - QUANTUM_OPTIMIZATION_TARGET=379
-      - AI_AGENT_COUNT=1008
-      - PERFORMANCE_MONITORING_INTERVAL=15s
-      - GOVERNMENT_COMPLIANCE_LOGGING=true
-    networks:
-      - terrafusion-monitoring
-    volumes:
-      - ./config/quantum-performance-config.yml:/etc/quantum/config.yml:ro
-    labels:
-      - "terrafusion.component=monitoring"
-      - "terrafusion.service=quantum-performance-exporter"
-      - "terrafusion.optimization=quantum"
-
-  # =============================================================================
-  # VISUALIZATION AND DASHBOARDS
-  # =============================================================================
-
+    - government.service=monitoring
+    - government.workspace=master
+    - compliance.level=government_grade
   grafana:
-    image: grafana/grafana:10.1.0
-    container_name: terrafusion-grafana
-    restart: unless-stopped
+    image: grafana/grafana:latest
+    container_name: grafana-master
     ports:
-      - "3002:3000"
+    - 3001:3000
     volumes:
-      - grafana-data:/var/lib/grafana
-      - ./grafana/dashboards/:/var/lib/grafana/dashboards/
-      - ./grafana/provisioning/:/etc/grafana/provisioning/
-      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+    - grafana_data:/var/lib/grafana
+    - ./monitoring/grafana:/etc/grafana/provisioning
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=terrafusion_admin_2024
-      - GF_USERS_ALLOW_SIGN_UP=false
-      - GF_SECURITY_ALLOW_EMBEDDING=true
-      - GF_AUTH_ANONYMOUS_ENABLED=false
-      - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel,grafana-clock-panel
-      - GF_FEATURE_TOGGLES_ENABLE=publicDashboards
-      - GF_SERVER_ROOT_URL=https://monitoring.terrafusion.gov
-      - GF_SECURITY_COOKIE_SECURE=true
-      - GF_LOG_LEVEL=info
-    networks:
-      - terrafusion-monitoring
+    - GF_SECURITY_ADMIN_PASSWORD=government_secure_2024!
+    - GF_USERS_ALLOW_SIGN_UP=false
+    - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    - GF_SERVER_DOMAIN=government.monitoring.local
     depends_on:
-      - prometheus
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f localhost:3000/api/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+    - prometheus
     labels:
-      - "terrafusion.component=monitoring"
-      - "terrafusion.service=grafana"
-      - "terrafusion.dashboard=true"
-
-  # =============================================================================
-  # ALERTING AND NOTIFICATIONS
-  # =============================================================================
-
+    - government.service=dashboard
+    - government.workspace=master
+    - accessibility.wcag=2.2_aa
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter-master
+    ports:
+    - 9100:9100
+    volumes:
+    - /proc:/host/proc:ro
+    - /sys:/host/sys:ro
+    - /:/rootfs:ro
+    command:
+    - --path.procfs=/host/proc
+    - --path.rootfs=/rootfs
+    - --path.sysfs=/host/sys
+    - --collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)
+    labels:
+    - government.service=metrics
+    - government.workspace=master
   alertmanager:
-    image: prom/alertmanager:v0.26.0
-    container_name: terrafusion-alertmanager
-    restart: unless-stopped
+    image: prom/alertmanager:latest
+    container_name: alertmanager-master
     ports:
-      - "9093:9093"
+    - 9093:9093
     volumes:
-      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
-      - ./alertmanager/templates/:/etc/alertmanager/templates/
-      - alertmanager-data:/alertmanager
+    - ./monitoring/alertmanager:/etc/alertmanager
     command:
-      - '--config.file=/etc/alertmanager/alertmanager.yml'
-      - '--storage.path=/alertmanager'
-      - '--web.external-url=https://alerts.terrafusion.gov'
-      - '--log.level=info'
-    networks:
-      - terrafusion-monitoring
-    environment:
-      - GOVERNMENT_ALERT_WEBHOOK=${GOVERNMENT_ALERT_WEBHOOK}
-      - SECURITY_TEAM_EMAIL=security@terrafusion.gov
-      - FISMA_COMPLIANCE_ALERT=true
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9093/-/healthy"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+    - --config.file=/etc/alertmanager/alertmanager.yml
+    - --storage.path=/alertmanager
+    - --web.external-url=http://localhost:9093
+    - --web.route-prefix=/
     labels:
-      - "terrafusion.component=monitoring"
-      - "terrafusion.service=alertmanager"
-      - "terrafusion.alerts=true"
-
-  # Government Notification Service
-  government-notifier:
-    build:
-      context: ./services/government-notifier/
-      dockerfile: Dockerfile
-    container_name: terrafusion-government-notifier
-    restart: unless-stopped
-    ports:
-      - "8090:8090"
-    environment:
-      - FISMA_NOTIFICATION_ENABLED=true
-      - SECURITY_CLEARANCE_REQUIRED=true
-      - GOVERNMENT_WEBHOOK_URL=${GOVERNMENT_ALERT_WEBHOOK}
-      - BENTON_COUNTY_NOTIFICATION=true
-      - HARRIS_PACS_ALERTS=true
-    networks:
-      - terrafusion-monitoring
-    volumes:
-      - ./config/government-notification-config.yml:/etc/notifier/config.yml:ro
+    - government.service=alerting
+    - government.workspace=master
+    - notification.government=enabled
+volumes:
+  prometheus_data: {}
+  grafana_data: {}
+networks:
+  default:
     labels:
-      - "terrafusion.component=monitoring"
-      - "terrafusion.service=government-notifier"
-      - "terrafusion.compliance=fisma"
-
-  # =============================================================================
-  # LOGGING AND OBSERVABILITY
-  # =============================================================================
-
-  loki:
-    image: grafana/loki:2.9.0
-    container_name: terrafusion-loki
-    restart: unless-stopped
-    ports:
-      - "3100:3100"
-    volumes:
-      - ./loki/loki-config.yml:/etc/loki/local-config.yaml
-      - loki-data:/loki
-    command: -config.file=/etc/loki/local-config.yaml
-    networks:
-      - terrafusion-monitoring
-    environment:
-      - LOKI_RETENTION_PERIOD=30d
-      - GOVERNMENT_LOG_RETENTION=true
-      - AUDIT_LOG_ENABLED=true
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3100/ready"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    labels:
-      - "terrafusion.component=monitoring"
-      - "terrafusion.service=loki"
-      - "terrafusion.logging=true"
-
-  promtail:
-    image: grafana/promtail:2.9.0
-    container_name: terrafusion-promtail
-    restart: unless-stopped
-    volumes:
-      - /var/log:/var/log:ro
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - ./promtail/promtail-config.yml:/etc/promtail/config.yml
-    command: -config.file=/etc/promtail/config.yml
-    networks:
-      - terrafusion-monitoring
-    depends_on:
-      - loki
-    environment:
-      - GOVERNMENT_LOG_PARSING=true
-      - SECURITY_LOG_FILTERING=true
-      - AI_SWARM_LOG_AGGREGATION=true
-    labels:
-      - "terrafusion.component=monitoring"
-      - "terrafusion.service=promtail"
-      - "terrafusion.log-collector=true"
-
-  # =============================================================================
-  # DISTRIBUTED TRACING
-  # =============================================================================
-
-  jaeger:
-    image: jaegertracing/all-in-one:1.49.0
-    container_name: terrafusion-jaeger
-    restart: unless-stopped
-    ports:
-      - "16686:16686"
-      - "14268:14268"
-      - "14250:14250"
-      - "6831:6831/udp"
-      - "6832:6832/udp"
-    volumes:
-      - jaeger-data:/badger
-    environment:
-      - SPAN_STORAGE_TYPE=badger
-      - BADGER_EPHEMERAL=false
-      - BADGER_DIRECTORY_VALUE=/badger/data
-      - BADGER_DIRECTORY_KEY=/badger/key
-      - COLLECTOR_OTLP_ENABLED=true
-      - LOG_LEVEL=info
-    networks:
-      - terrafusion-monitoring
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:16686/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    labels:
-      - "terrafusion.component=monitoring"
-      - "terrafusion.service=jaeger"
-      - "terrafusion.tracing=distributed"
-
-  # =============================================================================
-  # SECURITY AND COMPLIANCE MONITORING
-  # =============================================================================
-
-  security-monitor:
-    build:
-      context: ./services/security-monitor/
-      dockerfile: Dockerfile
-    container_name: terrafusion-security-monitor
-    restart: unless-stopped
-    ports:
-      - "8080:8080"
-    environment:
-      - FISMA_COMPLIANCE_MONITORING=true
-      - SECURITY_SCAN_INTERVAL=300
-      - GOVERNMENT_AUDIT_ENABLED=true
-      - HARRIS_PACS_SECURITY_CHECK=true
-      - AI_SWARM_SECURITY_VALIDATION=true
-    networks:
-      - terrafusion-monitoring
-      - terrafusion-internal
-    volumes:
-      - ./config/security-monitor-config.yml:/etc/security/config.yml:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    labels:
-      - "terrafusion.component=monitoring"
-      - "terrafusion.service=security-monitor"
-      - "terrafusion.compliance=government"
-
-  # FISMA Compliance Dashboard
-  compliance-dashboard:
-    build:
-      context: ./services/compliance-dashboard/
-      dockerfile: Dockerfile
-    container_name: terrafusion-compliance-dashboard
-    restart: unless-stopped
-    ports:
-      - "8070:8070"
-    environment:
-      - FISMA_CONTROLS_ENABLED=true
-      - NIST_FRAMEWORK_VALIDATION=true
-      - GOVERNMENT_REPORTING=true
-      - REAL_TIME_COMPLIANCE=true
-    networks:
-      - terrafusion-monitoring
-    volumes:
-      - ./config/compliance-dashboard-config.yml:/etc/compliance/config.yml:ro
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8070/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    labels:
-      - "terrafusion.component=monitoring"
-      - "terrafusion.service=compliance-dashboard"
-      - "terrafusion.fisma=true"
-
-  # =============================================================================
-  # ELASTICSEARCH FOR ADVANCED SEARCH AND ANALYTICS
-  # =============================================================================
-
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.0
-    container_name: terrafusion-elasticsearch
-    restart: unless-stopped
-    ports:
-      - "9201:9200"
-      - "9301:9300"
-    volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data
-      - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=true
-      - xpack.security.authc.api_key.enabled=true
-      - ELASTIC_PASSWORD=terrafusion_elastic_2024
-      - ES_JAVA_OPTS=-Xms2g -Xmx2g
-    networks:
-      - terrafusion-monitoring
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    healthcheck:
-      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -vq '\"status\":\"red\"'"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    labels:
-      - "terrafusion.component=monitoring"
-      - "terrafusion.service=elasticsearch"
-      - "terrafusion.search=advanced"
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:8.10.0
-    container_name: terrafusion-kibana
-    restart: unless-stopped
-    ports:
-      - "5601:5601"
-    volumes:
-      - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-      - ELASTICSEARCH_USERNAME=elastic
-      - ELASTICSEARCH_PASSWORD=terrafusion_elastic_2024
-      - SERVER_NAME=kibana.terrafusion.gov
-    networks:
-      - terrafusion-monitoring
-    depends_on:
-      - elasticsearch
-    healthcheck:
-      test: ["CMD-SHELL", "curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 200 OK'"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    labels:
-      - "terrafusion.component=monitoring"
-      - "terrafusion.service=kibana"
-      - "terrafusion.analytics=advanced"
-
-  # =============================================================================
-  # PERFORMANCE MONITORING
-  # =============================================================================
-
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.47.2
-    container_name: terrafusion-cadvisor
-    restart: unless-stopped
-    ports:
-      - "8081:8080"
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:rw
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-      - /dev/disk/:/dev/disk:ro
-    privileged: true
-    devices:
-      - /dev/kmsg:/dev/kmsg
-    networks:
-      - terrafusion-monitoring
-    command:
-      - '--housekeeping_interval=10s'
-      - '--docker_only=true'
-      - '--disable_metrics=percpu,sched,tcp,udp,disk,diskIO,accelerator,hugetlb,memory_numa,cpuset,advtcp,cpu_topology,resctrl'
-    labels:
-      - "terrafusion.component=monitoring"
-      - "terrafusion.service=cadvisor"
-      - "terrafusion.performance=container"
-
-  # =============================================================================
-  # BACKUP AND DISASTER RECOVERY
-  # =============================================================================
-
-  backup-service:
-    build:
-      context: ./services/backup/
-      dockerfile: Dockerfile
-    container_name: terrafusion-backup-service
-    restart: unless-stopped
-    volumes:
-      - prometheus-data:/backup/prometheus:ro
-      - grafana-data:/backup/grafana:ro
-      - alertmanager-data:/backup/alertmanager:ro
-      - loki-data:/backup/loki:ro
-      - ./backups:/backups
-      - ./config/backup-config.yml:/etc/backup/config.yml:ro
-    environment:
-      - BACKUP_INTERVAL=24h
-      - RETENTION_DAYS=30
-      - GOVERNMENT_BACKUP_COMPLIANCE=true
-      - ENCRYPTED_BACKUP=true
-      - S3_BUCKET=${BACKUP_S3_BUCKET}
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-    networks:
-      - terrafusion-monitoring
-    labels:
-      - "terrafusion.component=monitoring"
-      - "terrafusion.service=backup"
-      - "terrafusion.disaster-recovery=true"
-
-  # =============================================================================
-  # HEALTH CHECK AGGREGATOR
-  # =============================================================================
-
-  health-aggregator:
-    build:
-      context: ./services/health-aggregator/
-      dockerfile: Dockerfile
-    container_name: terrafusion-health-aggregator
-    restart: unless-stopped
-    ports:
-      - "8060:8060"
-    environment:
-      - HEALTH_CHECK_INTERVAL=30s
-      - AI_SWARM_HEALTH_CHECK=true
-      - HARRIS_PACS_HEALTH_CHECK=true
-      - QUANTUM_PERFORMANCE_CHECK=true
-      - GOVERNMENT_SLA_MONITORING=true
-    networks:
-      - terrafusion-monitoring
-      - terrafusion-internal
-    volumes:
-      - ./config/health-aggregator-config.yml:/etc/health/config.yml:ro
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8060/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    labels:
-      - "terrafusion.component=monitoring"
-      - "terrafusion.service=health-aggregator"
-      - "terrafusion.sla=government"
+    - government.network=monitoring
+    - security.level=government_grade

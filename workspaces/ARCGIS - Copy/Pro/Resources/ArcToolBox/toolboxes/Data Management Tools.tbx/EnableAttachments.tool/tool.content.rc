@@ -1,0 +1,9 @@
+{
+    "map": {
+        "description": "Enables attachments on a geodatabase feature class or table. The tool creates the necessary attachment relationship class and attachment table that will store attachment files internally.",
+        "in_dataset.descr": "The geodatabase table or feature class for which attachments will be enabled. The input must be in a version 10 or later geodatabase.",
+        "in_dataset.title": "Input Dataset",
+        "out_dataset.title": "Updated Input Dataset",
+        "title": "Enable Attachments"
+    }
+}

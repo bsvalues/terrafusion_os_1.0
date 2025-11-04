@@ -1,0 +1,149 @@
+Let’s scaffold the **PDF Export Pipeline** next — it's a universal deliverable for appraisers and clients, and it immediately adds:
+
+- 🖨️ Printable reports
+- 📎 Email-ready deliverables
+- 📁 Archival for compliance/audit
+- 🧠 Full data fidelity from form or snapshot
+
+---
+
+# 🖨️ PDF Export Pipeline — Snapshot → Form → Branded PDF
+
+---
+
+## 🔧 Approach
+
+- 🖥 Server-side rendering using **Puppeteer** (Chrome in headless mode)
+- 📄 HTML templates styled with **Tailwind** (matches in-app UI)
+- 🔐 Optionally locked or watermarked
+- 💬 Future: Support overlays, signature fields, QR codes
+
+---
+
+## 📁 Files
+
+```bash
+server/
+  routes/export.ts              # /api/export/pdf
+  templates/pdfReport.html      # HTML layout
+  utils/renderPdf.ts            # Puppeteer handler
+```
+
+---
+
+## 1️⃣ Route: `/api/export/pdf`
+
+```ts
+import express from 'express';
+import { renderPdfFromSnapshot } from '@/utils/renderPdf';
+import { getSnapshotById } from '@/services/comps';
+
+export const exportRouter = express.Router();
+
+exportRouter.post('/export/pdf', async (req, res) => {
+  const { snapshotId } = req.body;
+
+  const snapshot = await getSnapshotById(snapshotId);
+  if (!snapshot) return res.status(404).json({ error: 'Snapshot not found' });
+
+  const pdfBuffer = await renderPdfFromSnapshot(snapshot);
+
+  res.set({
+    'Content-Type': 'application/pdf',
+    'Content-Disposition': `inline; filename=comp_${snapshotId}.pdf`,
+  });
+
+  res.send(pdfBuffer);
+});
+```
+
+---
+
+## 2️⃣ `renderPdfFromSnapshot.ts`
+
+```ts
+import puppeteer from 'puppeteer';
+import fs from 'fs';
+import path from 'path';
+import { ComparableSnapshot } from '@/shared/types/comps';
+
+export async function renderPdfFromSnapshot(snapshot: ComparableSnapshot): Promise<Buffer> {
+  const templatePath = path.resolve(__dirname, '../templates/pdfReport.html');
+  const htmlTemplate = fs.readFileSync(templatePath, 'utf-8');
+
+  const html = htmlTemplate
+    .replace('{{address}}', snapshot.fields.address || 'N/A')
+    .replace('{{salePrice}}', `$${snapshot.fields.salePrice?.toLocaleString()}`)
+    .replace('{{gla}}', `${snapshot.fields.gla} sf`)
+    .replace('{{beds}}', `${snapshot.fields.beds}`)
+    .replace('{{baths}}', `${snapshot.fields.baths}`)
+    .replace('{{source}}', snapshot.source)
+    .replace('{{date}}', new Date(snapshot.createdAt).toLocaleDateString());
+
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.setContent(html, { waitUntil: 'networkidle0' });
+
+  const pdf = await page.pdf({
+    format: 'A4',
+    printBackground: true,
+    margin: { top: '20mm', bottom: '20mm', left: '15mm', right: '15mm' }
+  });
+
+  await browser.close();
+  return pdf;
+}
+```
+
+---
+
+## 3️⃣ `templates/pdfReport.html`
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Comp Snapshot</title>
+  <style>
+    body { font-family: 'Helvetica Neue', sans-serif; padding: 1rem; }
+    h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .label { font-weight: bold; margin-right: 0.5rem; }
+    .row { margin-bottom: 0.5rem; }
+  </style>
+</head>
+<body>
+  <h1>Comparable Property Snapshot</h1>
+  <div class="row"><span class="label">Address:</span> {{address}}</div>
+  <div class="row"><span class="label">Sale Price:</span> {{salePrice}}</div>
+  <div class="row"><span class="label">GLA:</span> {{gla}}</div>
+  <div class="row"><span class="label">Beds:</span> {{beds}}</div>
+  <div class="row"><span class="label">Baths:</span> {{baths}}</div>
+  <div class="row"><span class="label">Source:</span> {{source}}</div>
+  <div class="row"><span class="label">Created:</span> {{date}}</div>
+</body>
+</html>
+```
+
+---
+
+## ✅ Output
+
+- 📄 A clean, branded PDF
+- 🔐 Server-only generation = secure data
+- 🖨 Download, archive, or attach to report
+
+---
+
+## 🧩 Future Enhancements
+
+- Add logo/header/footer per company
+- Include photo thumbnails
+- Embed QR code linking back to TerraFusionPro comp view
+- Export **full comp set** (grid → batch PDF)
+
+---
+
+Would you like me to:
+- Scaffold **multi-comp batch export**?
+- Or move to **team preset sharing** (admin-managed mapping templates)?

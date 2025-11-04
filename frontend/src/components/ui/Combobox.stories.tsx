@@ -1,7 +1,18 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { useState, useEffect, useMemo } from 'react';
-import { Check, ChevronsUpDown, Search, X, Loader2, Building2, Users, Package, Tag } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import {
+  Building2,
+  Check,
+  ChevronsUpDown,
+  Loader2,
+  Package,
+  Search,
+  Tag,
+  Users,
+  X,
+} from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { Badge } from './badge';
 import { Button } from './button';
 import {
   Command,
@@ -12,21 +23,16 @@ import {
   CommandList,
   CommandSeparator,
 } from './command';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from './popover';
-import { Badge } from './badge';
+import { Popover, PopoverContent, PopoverTrigger } from './popover';
 
 /**
  * # Combobox Component
- * 
+ *
  * A searchable select component built by composing Command and Popover components.
  * Provides autocomplete, filtering, and selection capabilities with keyboard navigation.
- * 
+ *
  * ## Architecture
- * 
+ *
  * ### Component Composition
  * ```
  * Popover (root container, manages open state)
@@ -40,13 +46,13 @@ import { Badge } from './badge';
  *             │   └── CommandItem (selectable option)
  *             └── CommandSeparator (visual divider)
  * ```
- * 
+ *
  * ### Built on Radix UI + cmdk
  * - **Popover**: @radix-ui/react-popover (positioning, overlay management)
  * - **Command**: cmdk (command palette by Paco Coursey, fuzzy search, keyboard nav)
- * 
+ *
  * ## Features
- * 
+ *
  * ### Core Capabilities
  * - ✅ Fuzzy search filtering (built into cmdk)
  * - ✅ Keyboard navigation (Arrow Up/Down, Enter, Escape)
@@ -57,7 +63,7 @@ import { Badge } from './badge';
  * - ✅ Empty state messaging
  * - ✅ Loading state indicators
  * - ✅ Accessibility (ARIA combobox pattern)
- * 
+ *
  * ### Interaction Patterns
  * - **Click trigger**: Open dropdown
  * - **Type in search**: Filter options (fuzzy match)
@@ -65,28 +71,28 @@ import { Badge } from './badge';
  * - **Enter**: Select highlighted option
  * - **Escape**: Close dropdown
  * - **Click outside**: Close dropdown
- * 
+ *
  * ## Design Tokens
- * 
+ *
  * ### Colors
  * - Selected item: `data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground`
  * - Empty state: `text-muted-foreground`
  * - Group headings: `text-muted-foreground`
- * 
+ *
  * ### Sizing
  * - Popover width: `w-[300px]` (default, configurable)
  * - Max list height: `max-h-[300px]` with scroll
  * - Item padding: `px-2 py-1.5`
- * 
+ *
  * ## Accessibility
- * 
+ *
  * ### ARIA Combobox Pattern
  * - Role: `combobox` on trigger
  * - `aria-expanded`: Reflects open state
  * - `aria-controls`: Links trigger to listbox
  * - `aria-activedescendant`: Tracks focused option
  * - `role="option"` on CommandItem
- * 
+ *
  * ### Keyboard Navigation
  * - **Tab**: Focus trigger or input
  * - **Enter/Space**: Open dropdown (on trigger)
@@ -97,17 +103,17 @@ import { Badge } from './badge';
  * - **Enter**: Select highlighted option
  * - **Escape**: Close dropdown
  * - **Type to search**: Filter options
- * 
+ *
  * ### Screen Reader Support
  * - Options count announced
  * - Selected option announced
  * - Search results announced
  * - Empty state announced
- * 
+ *
  * ## Examples
- * 
+ *
  * The following stories demonstrate:
- * 
+ *
  * 1. **Autocomplete**: Basic combobox with type-ahead filtering
  * 2. **Search Filtering**: Fuzzy search across large dataset
  * 3. **Multi-select**: Select multiple options with chip display
@@ -125,7 +131,8 @@ const meta = {
     layout: 'centered',
     docs: {
       description: {
-        component: 'A searchable select component combining Command and Popover for autocomplete, filtering, and selection with keyboard navigation.',
+        component:
+          'A searchable select component combining Command and Popover for autocomplete, filtering, and selection with keyboard navigation.',
       },
     },
   },
@@ -156,16 +163,16 @@ const frameworks: Framework[] = [
 
 /**
  * ## Autocomplete
- * 
+ *
  * Basic combobox with type-ahead filtering. Type to filter options, click to select.
- * 
+ *
  * ### Use Cases
  * - Framework selection
  * - Country picker
  * - Language selector
  * - Category chooser
  * - Tag selection
- * 
+ *
  * ### Features
  * - Fuzzy search (built into cmdk)
  * - Keyboard navigation (Arrow keys, Enter)
@@ -182,20 +189,20 @@ export const Autocomplete: Story = {
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open ? "true" : "false"}
-            className="w-[300px] justify-between"
+            variant='outline'
+            role='combobox'
+            aria-expanded={open ? 'true' : 'false'}
+            className='w-[300px] justify-between'
           >
             {value
               ? frameworks.find((framework) => framework.value === value)?.label
               : 'Select framework...'}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[300px] p-0">
+        <PopoverContent className='w-[300px] p-0'>
           <Command>
-            <CommandInput placeholder="Search framework..." />
+            <CommandInput placeholder='Search framework...' />
             <CommandList>
               <CommandEmpty>No framework found.</CommandEmpty>
               <CommandGroup>
@@ -228,18 +235,18 @@ export const Autocomplete: Story = {
 
 /**
  * ## Search Filtering
- * 
+ *
  * Fuzzy search across large dataset (100+ items). Highlights matching text.
- * 
+ *
  * ### Implementation
  * cmdk handles fuzzy search automatically. No additional filtering code needed.
- * 
+ *
  * ### Use Cases
  * - City/state search
  * - Product search (large catalog)
  * - User search (employee directory)
  * - Document search (knowledge base)
- * 
+ *
  * ### Performance
  * - cmdk efficiently filters thousands of items
  * - Virtualization not needed for <1000 items
@@ -251,45 +258,128 @@ export const SearchFiltering: Story = {
     const [value, setValue] = useState('');
 
     // Generate large dataset (100 US cities)
-    const cities = useMemo(() => [
-      'New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix',
-      'Philadelphia', 'San Antonio', 'San Diego', 'Dallas', 'San Jose',
-      'Austin', 'Jacksonville', 'Fort Worth', 'Columbus', 'Charlotte',
-      'San Francisco', 'Indianapolis', 'Seattle', 'Denver', 'Washington',
-      'Boston', 'El Paso', 'Nashville', 'Detroit', 'Oklahoma City',
-      'Portland', 'Las Vegas', 'Memphis', 'Louisville', 'Baltimore',
-      'Milwaukee', 'Albuquerque', 'Tucson', 'Fresno', 'Mesa',
-      'Sacramento', 'Atlanta', 'Kansas City', 'Colorado Springs', 'Omaha',
-      'Raleigh', 'Miami', 'Long Beach', 'Virginia Beach', 'Oakland',
-      'Minneapolis', 'Tulsa', 'Tampa', 'Arlington', 'New Orleans',
-      'Wichita', 'Cleveland', 'Bakersfield', 'Aurora', 'Anaheim',
-      'Honolulu', 'Santa Ana', 'Riverside', 'Corpus Christi', 'Lexington',
-      'Henderson', 'Stockton', 'Saint Paul', 'Cincinnati', 'St. Louis',
-      'Pittsburgh', 'Greensboro', 'Lincoln', 'Anchorage', 'Plano',
-      'Orlando', 'Irvine', 'Newark', 'Durham', 'Chula Vista',
-      'Toledo', 'Fort Wayne', 'St. Petersburg', 'Laredo', 'Jersey City',
-      'Chandler', 'Madison', 'Lubbock', 'Scottsdale', 'Reno',
-      'Buffalo', 'Gilbert', 'Glendale', 'North Las Vegas', 'Winston-Salem',
-      'Chesapeake', 'Norfolk', 'Fremont', 'Garland', 'Irving',
-      'Hialeah', 'Richmond', 'Boise', 'Spokane', 'Baton Rouge',
-    ], []);
+    const cities = useMemo(
+      () => [
+        'New York',
+        'Los Angeles',
+        'Chicago',
+        'Houston',
+        'Phoenix',
+        'Philadelphia',
+        'San Antonio',
+        'San Diego',
+        'Dallas',
+        'San Jose',
+        'Austin',
+        'Jacksonville',
+        'Fort Worth',
+        'Columbus',
+        'Charlotte',
+        'San Francisco',
+        'Indianapolis',
+        'Seattle',
+        'Denver',
+        'Washington',
+        'Boston',
+        'El Paso',
+        'Nashville',
+        'Detroit',
+        'Oklahoma City',
+        'Portland',
+        'Las Vegas',
+        'Memphis',
+        'Louisville',
+        'Baltimore',
+        'Milwaukee',
+        'Albuquerque',
+        'Tucson',
+        'Fresno',
+        'Mesa',
+        'Sacramento',
+        'Atlanta',
+        'Kansas City',
+        'Colorado Springs',
+        'Omaha',
+        'Raleigh',
+        'Miami',
+        'Long Beach',
+        'Virginia Beach',
+        'Oakland',
+        'Minneapolis',
+        'Tulsa',
+        'Tampa',
+        'Arlington',
+        'New Orleans',
+        'Wichita',
+        'Cleveland',
+        'Bakersfield',
+        'Aurora',
+        'Anaheim',
+        'Honolulu',
+        'Santa Ana',
+        'Riverside',
+        'Corpus Christi',
+        'Lexington',
+        'Henderson',
+        'Stockton',
+        'Saint Paul',
+        'Cincinnati',
+        'St. Louis',
+        'Pittsburgh',
+        'Greensboro',
+        'Lincoln',
+        'Anchorage',
+        'Plano',
+        'Orlando',
+        'Irvine',
+        'Newark',
+        'Durham',
+        'Chula Vista',
+        'Toledo',
+        'Fort Wayne',
+        'St. Petersburg',
+        'Laredo',
+        'Jersey City',
+        'Chandler',
+        'Madison',
+        'Lubbock',
+        'Scottsdale',
+        'Reno',
+        'Buffalo',
+        'Gilbert',
+        'Glendale',
+        'North Las Vegas',
+        'Winston-Salem',
+        'Chesapeake',
+        'Norfolk',
+        'Fremont',
+        'Garland',
+        'Irving',
+        'Hialeah',
+        'Richmond',
+        'Boise',
+        'Spokane',
+        'Baton Rouge',
+      ],
+      []
+    );
 
     return (
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open ? "true" : "false"}
-            className="w-[300px] justify-between"
+            variant='outline'
+            role='combobox'
+            aria-expanded={open ? 'true' : 'false'}
+            className='w-[300px] justify-between'
           >
             {value || 'Select city...'}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[300px] p-0">
+        <PopoverContent className='w-[300px] p-0'>
           <Command>
-            <CommandInput placeholder="Search from 100 cities..." />
+            <CommandInput placeholder='Search from 100 cities...' />
             <CommandList>
               <CommandEmpty>No city found.</CommandEmpty>
               <CommandGroup>
@@ -303,10 +393,7 @@ export const SearchFiltering: Story = {
                     }}
                   >
                     <Check
-                      className={cn(
-                        'mr-2 h-4 w-4',
-                        value === city ? 'opacity-100' : 'opacity-0'
-                      )}
+                      className={cn('mr-2 h-4 w-4', value === city ? 'opacity-100' : 'opacity-0')}
                     />
                     {city}
                   </CommandItem>
@@ -322,13 +409,13 @@ export const SearchFiltering: Story = {
 
 /**
  * ## Multi-select
- * 
+ *
  * Select multiple options. Display selected items as chips/badges with remove buttons.
- * 
+ *
  * ### Implementation
  * ```tsx
  * const [selectedValues, setSelectedValues] = useState<string[]>([]);
- * 
+ *
  * const handleSelect = (value: string) => {
  *   setSelectedValues(prev =>
  *     prev.includes(value)
@@ -337,14 +424,14 @@ export const SearchFiltering: Story = {
  *   );
  * };
  * ```
- * 
+ *
  * ### Use Cases
  * - Tag selection (blog posts)
  * - Category selection (products)
  * - Recipient selection (email)
  * - Filter selection (search)
  * - Permission selection (user roles)
- * 
+ *
  * ### Features
  * - Multiple items selected at once
  * - Chips display selected items
@@ -359,9 +446,7 @@ export const MultiSelect: Story = {
 
     const handleSelect = (value: string) => {
       setSelectedValues((prev) =>
-        prev.includes(value)
-          ? prev.filter((v) => v !== value)
-          : [...prev, value]
+        prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
       );
     };
 
@@ -370,26 +455,26 @@ export const MultiSelect: Story = {
     };
 
     return (
-      <div className="space-y-2 w-[400px]">
+      <div className='space-y-2 w-[400px]'>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
-              variant="outline"
-              role="combobox"
-              aria-expanded={open ? "true" : "false"}
-              className="w-full justify-between"
+              variant='outline'
+              role='combobox'
+              aria-expanded={open ? 'true' : 'false'}
+              className='w-full justify-between'
             >
-              <span className="truncate">
+              <span className='truncate'>
                 {selectedValues.length > 0
                   ? `${selectedValues.length} selected`
                   : 'Select frameworks...'}
               </span>
-              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[400px] p-0">
+          <PopoverContent className='w-[400px] p-0'>
             <Command>
-              <CommandInput placeholder="Search framework..." />
+              <CommandInput placeholder='Search framework...' />
               <CommandList>
                 <CommandEmpty>No framework found.</CommandEmpty>
                 <CommandGroup>
@@ -402,9 +487,7 @@ export const MultiSelect: Story = {
                       <Check
                         className={cn(
                           'mr-2 h-4 w-4',
-                          selectedValues.includes(framework.value)
-                            ? 'opacity-100'
-                            : 'opacity-0'
+                          selectedValues.includes(framework.value) ? 'opacity-100' : 'opacity-0'
                         )}
                       />
                       {framework.label}
@@ -417,27 +500,22 @@ export const MultiSelect: Story = {
         </Popover>
 
         {selectedValues.length > 0 && (
-          <div className="flex flex-wrap gap-2">
+          <div className='flex flex-wrap gap-2'>
             {selectedValues.map((value) => {
               const framework = frameworks.find((f) => f.value === value);
               return (
-                <Badge key={value} variant="secondary" className="px-2 py-1">
+                <Badge key={value} variant='secondary' className='px-2 py-1'>
                   {framework?.label}
                   <button
-                    className="ml-1 rounded-full hover:bg-muted"
+                    className='ml-1 rounded-full hover:bg-muted'
                     onClick={() => handleRemove(value)}
                   >
-                    <X className="h-3 w-3" />
+                    <X className='h-3 w-3' />
                   </button>
                 </Badge>
               );
             })}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-6"
-              onClick={() => setSelectedValues([])}
-            >
+            <Button variant='ghost' size='sm' className='h-6' onClick={() => setSelectedValues([])}>
               Clear all
             </Button>
           </div>
@@ -449,14 +527,14 @@ export const MultiSelect: Story = {
 
 /**
  * ## Async Loading
- * 
+ *
  * Fetch data from API when combobox opens. Show loading state while fetching.
- * 
+ *
  * ### Implementation
  * ```tsx
  * const [options, setOptions] = useState<T[]>([]);
  * const [isLoading, setIsLoading] = useState(false);
- * 
+ *
  * useEffect(() => {
  *   if (open && options.length === 0) {
  *     setIsLoading(true);
@@ -467,14 +545,14 @@ export const MultiSelect: Story = {
  *   }
  * }, [open]);
  * ```
- * 
+ *
  * ### Use Cases
  * - User search (directory API)
  * - Product search (catalog API)
  * - Address autocomplete (geocoding API)
  * - Repository search (GitHub API)
  * - Ticket search (Jira API)
- * 
+ *
  * ### Features
  * - Lazy loading (fetch on first open)
  * - Loading spinner in dropdown
@@ -503,25 +581,23 @@ export const AsyncLoading: Story = {
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open ? "true" : "false"}
-            className="w-[300px] justify-between"
+            variant='outline'
+            role='combobox'
+            aria-expanded={open ? 'true' : 'false'}
+            className='w-[300px] justify-between'
           >
-            {value
-              ? options.find((opt) => opt.value === value)?.label
-              : 'Select framework...'}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            {value ? options.find((opt) => opt.value === value)?.label : 'Select framework...'}
+            <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[300px] p-0">
+        <PopoverContent className='w-[300px] p-0'>
           <Command>
-            <CommandInput placeholder="Search framework..." disabled={isLoading} />
+            <CommandInput placeholder='Search framework...' disabled={isLoading} />
             <CommandList>
               {isLoading ? (
-                <div className="flex items-center justify-center py-6">
-                  <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                  <span className="ml-2 text-sm text-muted-foreground">Loading...</span>
+                <div className='flex items-center justify-center py-6'>
+                  <Loader2 className='h-4 w-4 animate-spin text-muted-foreground' />
+                  <span className='ml-2 text-sm text-muted-foreground'>Loading...</span>
                 </div>
               ) : (
                 <>
@@ -558,16 +634,16 @@ export const AsyncLoading: Story = {
 
 /**
  * ## Custom Rendering
- * 
+ *
  * Rich item display with icons, badges, and metadata. More than just text labels.
- * 
+ *
  * ### Use Cases
  * - Team member selector (avatar + name + role)
  * - Repository picker (icon + name + stars)
  * - File browser (file type icon + name + size)
  * - Status selector (color indicator + label)
  * - Priority picker (icon + label + description)
- * 
+ *
  * ### Features
  * - Leading icons (lucide-react)
  * - Trailing badges (status, counts)
@@ -601,13 +677,13 @@ export const CustomRendering: Story = {
     const getIcon = (type: Resource['type']) => {
       switch (type) {
         case 'company':
-          return <Building2 className="h-4 w-4" />;
+          return <Building2 className='h-4 w-4' />;
         case 'team':
-          return <Users className="h-4 w-4" />;
+          return <Users className='h-4 w-4' />;
         case 'product':
-          return <Package className="h-4 w-4" />;
+          return <Package className='h-4 w-4' />;
         case 'tag':
-          return <Tag className="h-4 w-4" />;
+          return <Tag className='h-4 w-4' />;
       }
     };
 
@@ -619,20 +695,18 @@ export const CustomRendering: Story = {
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open ? "true" : "false"}
-            className="w-[350px] justify-between"
+            variant='outline'
+            role='combobox'
+            aria-expanded={open ? 'true' : 'false'}
+            className='w-[350px] justify-between'
           >
-            {value
-              ? resources.find((r) => r.id === value)?.name
-              : 'Select resource...'}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            {value ? resources.find((r) => r.id === value)?.name : 'Select resource...'}
+            <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[350px] p-0">
+        <PopoverContent className='w-[350px] p-0'>
           <Command>
-            <CommandInput placeholder="Search resources..." />
+            <CommandInput placeholder='Search resources...' />
             <CommandList>
               <CommandEmpty>No resource found.</CommandEmpty>
               <CommandGroup>
@@ -651,18 +725,18 @@ export const CustomRendering: Story = {
                         value === resource.id ? 'opacity-100' : 'opacity-0'
                       )}
                     />
-                    <div className="flex items-center justify-between flex-1">
-                      <div className="flex items-center gap-2">
+                    <div className='flex items-center justify-between flex-1'>
+                      <div className='flex items-center gap-2'>
                         {getIcon(resource.type)}
                         <div>
-                          <div className="font-medium">{resource.name}</div>
-                          <div className="text-xs text-muted-foreground">
+                          <div className='font-medium'>{resource.name}</div>
+                          <div className='text-xs text-muted-foreground'>
                             {getTypeLabel(resource.type)}
                           </div>
                         </div>
                       </div>
                       {resource.count && (
-                        <Badge variant="secondary" className="ml-2">
+                        <Badge variant='secondary' className='ml-2'>
                           {resource.count}
                         </Badge>
                       )}
@@ -680,9 +754,9 @@ export const CustomRendering: Story = {
 
 /**
  * ## Groups
- * 
+ *
  * Categorized options with section headers. Organizes large option lists.
- * 
+ *
  * ### Implementation
  * ```tsx
  * <CommandGroup heading="Category 1">
@@ -693,14 +767,14 @@ export const CustomRendering: Story = {
  *   <CommandItem>Option 2</CommandItem>
  * </CommandGroup>
  * ```
- * 
+ *
  * ### Use Cases
  * - Programming languages (by paradigm)
  * - Fonts (by style: Serif, Sans, Mono)
  * - Colors (by category: Primary, Secondary, Gray)
  * - Timezones (by region: Americas, Europe, Asia)
  * - Files (by type: Documents, Images, Videos)
- * 
+ *
  * ### Features
  * - Multiple CommandGroup components
  * - CommandSeparator between groups
@@ -716,57 +790,130 @@ export const Groups: Story = {
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open ? "true" : "false"}
-            className="w-[300px] justify-between"
+            variant='outline'
+            role='combobox'
+            aria-expanded={open ? 'true' : 'false'}
+            className='w-[300px] justify-between'
           >
             {value || 'Select language...'}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[300px] p-0">
+        <PopoverContent className='w-[300px] p-0'>
           <Command>
-            <CommandInput placeholder="Search language..." />
+            <CommandInput placeholder='Search language...' />
             <CommandList>
               <CommandEmpty>No language found.</CommandEmpty>
-              <CommandGroup heading="Frontend">
-                <CommandItem value="javascript" onSelect={(val) => { setValue(val); setOpen(false); }}>
-                  <Check className={cn('mr-2 h-4 w-4', value === 'javascript' ? 'opacity-100' : 'opacity-0')} />
+              <CommandGroup heading='Frontend'>
+                <CommandItem
+                  value='javascript'
+                  onSelect={(val) => {
+                    setValue(val);
+                    setOpen(false);
+                  }}
+                >
+                  <Check
+                    className={cn(
+                      'mr-2 h-4 w-4',
+                      value === 'javascript' ? 'opacity-100' : 'opacity-0'
+                    )}
+                  />
                   JavaScript
                 </CommandItem>
-                <CommandItem value="typescript" onSelect={(val) => { setValue(val); setOpen(false); }}>
-                  <Check className={cn('mr-2 h-4 w-4', value === 'typescript' ? 'opacity-100' : 'opacity-0')} />
+                <CommandItem
+                  value='typescript'
+                  onSelect={(val) => {
+                    setValue(val);
+                    setOpen(false);
+                  }}
+                >
+                  <Check
+                    className={cn(
+                      'mr-2 h-4 w-4',
+                      value === 'typescript' ? 'opacity-100' : 'opacity-0'
+                    )}
+                  />
                   TypeScript
                 </CommandItem>
-                <CommandItem value="html" onSelect={(val) => { setValue(val); setOpen(false); }}>
-                  <Check className={cn('mr-2 h-4 w-4', value === 'html' ? 'opacity-100' : 'opacity-0')} />
+                <CommandItem
+                  value='html'
+                  onSelect={(val) => {
+                    setValue(val);
+                    setOpen(false);
+                  }}
+                >
+                  <Check
+                    className={cn('mr-2 h-4 w-4', value === 'html' ? 'opacity-100' : 'opacity-0')}
+                  />
                   HTML
                 </CommandItem>
               </CommandGroup>
               <CommandSeparator />
-              <CommandGroup heading="Backend">
-                <CommandItem value="python" onSelect={(val) => { setValue(val); setOpen(false); }}>
-                  <Check className={cn('mr-2 h-4 w-4', value === 'python' ? 'opacity-100' : 'opacity-0')} />
+              <CommandGroup heading='Backend'>
+                <CommandItem
+                  value='python'
+                  onSelect={(val) => {
+                    setValue(val);
+                    setOpen(false);
+                  }}
+                >
+                  <Check
+                    className={cn('mr-2 h-4 w-4', value === 'python' ? 'opacity-100' : 'opacity-0')}
+                  />
                   Python
                 </CommandItem>
-                <CommandItem value="rust" onSelect={(val) => { setValue(val); setOpen(false); }}>
-                  <Check className={cn('mr-2 h-4 w-4', value === 'rust' ? 'opacity-100' : 'opacity-0')} />
+                <CommandItem
+                  value='rust'
+                  onSelect={(val) => {
+                    setValue(val);
+                    setOpen(false);
+                  }}
+                >
+                  <Check
+                    className={cn('mr-2 h-4 w-4', value === 'rust' ? 'opacity-100' : 'opacity-0')}
+                  />
                   Rust
                 </CommandItem>
-                <CommandItem value="go" onSelect={(val) => { setValue(val); setOpen(false); }}>
-                  <Check className={cn('mr-2 h-4 w-4', value === 'go' ? 'opacity-100' : 'opacity-0')} />
+                <CommandItem
+                  value='go'
+                  onSelect={(val) => {
+                    setValue(val);
+                    setOpen(false);
+                  }}
+                >
+                  <Check
+                    className={cn('mr-2 h-4 w-4', value === 'go' ? 'opacity-100' : 'opacity-0')}
+                  />
                   Go
                 </CommandItem>
               </CommandGroup>
               <CommandSeparator />
-              <CommandGroup heading="Database">
-                <CommandItem value="sql" onSelect={(val) => { setValue(val); setOpen(false); }}>
-                  <Check className={cn('mr-2 h-4 w-4', value === 'sql' ? 'opacity-100' : 'opacity-0')} />
+              <CommandGroup heading='Database'>
+                <CommandItem
+                  value='sql'
+                  onSelect={(val) => {
+                    setValue(val);
+                    setOpen(false);
+                  }}
+                >
+                  <Check
+                    className={cn('mr-2 h-4 w-4', value === 'sql' ? 'opacity-100' : 'opacity-0')}
+                  />
                   SQL
                 </CommandItem>
-                <CommandItem value="mongodb" onSelect={(val) => { setValue(val); setOpen(false); }}>
-                  <Check className={cn('mr-2 h-4 w-4', value === 'mongodb' ? 'opacity-100' : 'opacity-0')} />
+                <CommandItem
+                  value='mongodb'
+                  onSelect={(val) => {
+                    setValue(val);
+                    setOpen(false);
+                  }}
+                >
+                  <Check
+                    className={cn(
+                      'mr-2 h-4 w-4',
+                      value === 'mongodb' ? 'opacity-100' : 'opacity-0'
+                    )}
+                  />
                   MongoDB Query
                 </CommandItem>
               </CommandGroup>
@@ -780,9 +927,9 @@ export const Groups: Story = {
 
 /**
  * ## Empty State
- * 
+ *
  * Custom message when no results match search query. Helpful guidance for users.
- * 
+ *
  * ### Implementation
  * ```tsx
  * <CommandEmpty>
@@ -792,13 +939,13 @@ export const Groups: Story = {
  *   </div>
  * </CommandEmpty>
  * ```
- * 
+ *
  * ### Use Cases
  * - Search with no matches (suggest alternatives)
  * - Empty dataset (prompt to create first item)
  * - Filtered view with no results (clear filters)
  * - Typo detection (suggest corrections)
- * 
+ *
  * ### Best Practices
  * - Explain why there are no results
  * - Suggest corrective actions
@@ -818,33 +965,31 @@ export const EmptyState: Story = {
     ];
 
     return (
-      <div className="space-y-4 w-[300px]">
-        <p className="text-sm text-muted-foreground">
+      <div className='space-y-4 w-[300px]'>
+        <p className='text-sm text-muted-foreground'>
           Try searching for "orange" to see the empty state.
         </p>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
-              variant="outline"
-              role="combobox"
-              aria-expanded={open ? "true" : "false"}
-              className="w-full justify-between"
+              variant='outline'
+              role='combobox'
+              aria-expanded={open ? 'true' : 'false'}
+              className='w-full justify-between'
             >
-              {value
-                ? items.find((item) => item.value === value)?.label
-                : 'Select fruit...'}
-              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              {value ? items.find((item) => item.value === value)?.label : 'Select fruit...'}
+              <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[300px] p-0">
+          <PopoverContent className='w-[300px] p-0'>
             <Command>
-              <CommandInput placeholder="Search fruit..." />
+              <CommandInput placeholder='Search fruit...' />
               <CommandList>
                 <CommandEmpty>
-                  <div className="py-6 text-center space-y-2">
-                    <Search className="mx-auto h-8 w-8 text-muted-foreground" />
-                    <p className="text-sm font-medium">No fruits found</p>
-                    <p className="text-xs text-muted-foreground">
+                  <div className='py-6 text-center space-y-2'>
+                    <Search className='mx-auto h-8 w-8 text-muted-foreground' />
+                    <p className='text-sm font-medium'>No fruits found</p>
+                    <p className='text-xs text-muted-foreground'>
                       Try searching for apple, banana, or cherry
                     </p>
                   </div>
@@ -880,9 +1025,9 @@ export const EmptyState: Story = {
 
 /**
  * ## Loading State
- * 
+ *
  * Skeleton UI during data fetch. Prevents layout shift and provides feedback.
- * 
+ *
  * ### Implementation
  * ```tsx
  * isLoading ? (
@@ -894,13 +1039,13 @@ export const EmptyState: Story = {
  *   <CommandGroup>...items...</CommandGroup>
  * )
  * ```
- * 
+ *
  * ### Use Cases
  * - Initial data fetch
  * - Async search (debounced API calls)
  * - Dependent dropdowns (load based on parent selection)
  * - Infinite scroll (load more items)
- * 
+ *
  * ### Best Practices
  * - Show spinner immediately on open
  * - Disable input during load
@@ -922,39 +1067,37 @@ export const LoadingState: Story = {
     }, [open]);
 
     return (
-      <div className="space-y-4 w-[300px]">
-        <p className="text-sm text-muted-foreground">
+      <div className='space-y-4 w-[300px]'>
+        <p className='text-sm text-muted-foreground'>
           Open the combobox to see the loading state (2 second delay).
         </p>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
-              variant="outline"
-              role="combobox"
-              aria-expanded={open ? "true" : "false"}
-              className="w-full justify-between"
+              variant='outline'
+              role='combobox'
+              aria-expanded={open ? 'true' : 'false'}
+              className='w-full justify-between'
             >
-              {value
-                ? frameworks.find((f) => f.value === value)?.label
-                : 'Select framework...'}
-              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              {value ? frameworks.find((f) => f.value === value)?.label : 'Select framework...'}
+              <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[300px] p-0">
+          <PopoverContent className='w-[300px] p-0'>
             <Command>
-              <CommandInput placeholder="Search framework..." disabled={isLoading} />
+              <CommandInput placeholder='Search framework...' disabled={isLoading} />
               <CommandList>
                 {isLoading ? (
-                  <div className="py-8 space-y-3">
-                    <div className="flex items-center justify-center">
-                      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                  <div className='py-8 space-y-3'>
+                    <div className='flex items-center justify-center'>
+                      <Loader2 className='h-6 w-6 animate-spin text-muted-foreground' />
                     </div>
-                    <p className="text-center text-sm text-muted-foreground">
+                    <p className='text-center text-sm text-muted-foreground'>
                       Loading frameworks...
                     </p>
-                    <div className="px-2 space-y-2">
+                    <div className='px-2 space-y-2'>
                       {[...Array(3)].map((_, i) => (
-                        <div key={i} className="h-8 bg-muted rounded animate-pulse" />
+                        <div key={i} className='h-8 bg-muted rounded animate-pulse' />
                       ))}
                     </div>
                   </div>
@@ -994,16 +1137,16 @@ export const LoadingState: Story = {
 
 /**
  * ## Keyboard Shortcuts
- * 
+ *
  * Visual hints for keyboard navigation. Helps users discover shortcuts.
- * 
+ *
  * ### Keyboard Reference
  * - **↑/↓**: Navigate options
  * - **Enter**: Select option
  * - **Esc**: Close dropdown
  * - **Tab**: Focus next element
  * - **Type**: Filter options
- * 
+ *
  * ### Implementation
  * Use CommandShortcut component to display keyboard hints:
  * ```tsx
@@ -1012,7 +1155,7 @@ export const LoadingState: Story = {
  *   <CommandShortcut>⌘K</CommandShortcut>
  * </CommandItem>
  * ```
- * 
+ *
  * ### Use Cases
  * - Command palette (VS Code-style)
  * - Quick actions menu
@@ -1033,10 +1176,12 @@ export const KeyboardShortcuts: Story = {
     ];
 
     return (
-      <div className="space-y-4 w-[400px]">
-        <div className="text-sm text-muted-foreground space-y-1">
-          <p><strong>Keyboard hints:</strong></p>
-          <ul className="list-disc list-inside space-y-1 ml-2">
+      <div className='space-y-4 w-[400px]'>
+        <div className='text-sm text-muted-foreground space-y-1'>
+          <p>
+            <strong>Keyboard hints:</strong>
+          </p>
+          <ul className='list-disc list-inside space-y-1 ml-2'>
             <li>↑/↓ to navigate</li>
             <li>Enter to select</li>
             <li>Esc to close</li>
@@ -1046,25 +1191,25 @@ export const KeyboardShortcuts: Story = {
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
-              variant="outline"
-              role="combobox"
-              aria-expanded={open ? "true" : "false"}
-              className="w-full justify-between"
+              variant='outline'
+              role='combobox'
+              aria-expanded={open ? 'true' : 'false'}
+              className='w-full justify-between'
             >
               Select action...
-              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[400px] p-0">
+          <PopoverContent className='w-[400px] p-0'>
             <Command>
-              <CommandInput placeholder="Search actions..." />
+              <CommandInput placeholder='Search actions...' />
               <CommandList>
                 <CommandEmpty>No action found.</CommandEmpty>
-                <CommandGroup heading="Quick Actions">
+                <CommandGroup heading='Quick Actions'>
                   {actions.map((action) => (
                     <CommandItem key={action.id} value={action.id} onSelect={() => setOpen(false)}>
-                      <span className="flex-1">{action.label}</span>
-                      <span className="ml-auto text-xs text-muted-foreground font-mono bg-muted px-2 py-0.5 rounded">
+                      <span className='flex-1'>{action.label}</span>
+                      <span className='ml-auto text-xs text-muted-foreground font-mono bg-muted px-2 py-0.5 rounded'>
                         {action.shortcut}
                       </span>
                     </CommandItem>

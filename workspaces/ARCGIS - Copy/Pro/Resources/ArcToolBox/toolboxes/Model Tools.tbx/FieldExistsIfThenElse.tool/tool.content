@@ -1,0 +1,88 @@
+{
+    "type": "FunctionTool",
+    "guid": "{58036300-11a2-401f-aa99-22302eca2144}",
+    "displayname": "$rc:title",
+    "helpcontent": "32030003",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_table": {
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "field_test_type": {
+            "displayname": "$rc:field_test_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MUST_HAVE_ALL_FIELDS",
+                        "code": "$rc:field_test_type.domain.MUST_HAVE_ALL_FIELDS"
+                    },
+                    {
+                        "value": "MUST_HAVE_AT_LEAST_ONE_FIELD",
+                        "code": "$rc:field_test_type.domain.MUST_HAVE_AT_LEAST_ONE_FIELD"
+                    },
+                    {
+                        "value": "MUST_NOT_HAVE_ALL_FIELDS",
+                        "code": "$rc:field_test_type.domain.MUST_NOT_HAVE_ALL_FIELDS"
+                    },
+                    {
+                        "value": "MUST_NOT_HAVE_AT_LEAST_ONE_FIELD",
+                        "code": "$rc:field_test_type.domain.MUST_NOT_HAVE_AT_LEAST_ONE_FIELD"
+                    }
+                ]
+            },
+            "value": "MUST_HAVE_AT_LEAST_ONE_FIELD",
+            "description": "$rc:field_test_type.descr"
+        },
+        "field": {
+            "displayname": "$rc:field.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "description": "$rc:field.descr"
+        },
+        "true": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:true.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "value": "false"
+        },
+        "false": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:false.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "value": "false"
+        }
+    }
+}

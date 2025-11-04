@@ -24,7 +24,7 @@ describe('Label', () => {
     });
 
     it('renders with custom className', () => {
-      render(<Label className="custom-label">Custom</Label>);
+      render(<Label className='custom-label'>Custom</Label>);
       const label = screen.getByText('Custom');
       expect(label).toHaveClass('custom-label');
     });
@@ -34,14 +34,14 @@ describe('Label', () => {
     it('associates with input using htmlFor', () => {
       render(
         <div>
-          <Label htmlFor="username">Username</Label>
-          <input id="username" type="text" />
+          <Label htmlFor='username'>Username</Label>
+          <input id='username' type='text' />
         </div>
       );
 
       const label = screen.getByText('Username');
       const input = screen.getByRole('textbox');
-      
+
       expect(label).toHaveAttribute('for', 'username');
       expect(input).toHaveAttribute('id', 'username');
     });
@@ -49,8 +49,8 @@ describe('Label', () => {
     it('clicking label focuses associated input', () => {
       render(
         <div>
-          <Label htmlFor="email">Email</Label>
-          <input id="email" type="email" />
+          <Label htmlFor='email'>Email</Label>
+          <input id='email' type='email' />
         </div>
       );
 
@@ -64,8 +64,8 @@ describe('Label', () => {
     it('associates with checkbox', () => {
       render(
         <div>
-          <Label htmlFor="terms">Accept Terms</Label>
-          <input id="terms" type="checkbox" />
+          <Label htmlFor='terms'>Accept Terms</Label>
+          <input id='terms' type='checkbox' />
         </div>
       );
 
@@ -79,8 +79,8 @@ describe('Label', () => {
     it('associates with radio button', () => {
       render(
         <div>
-          <Label htmlFor="option1">Option 1</Label>
-          <input id="option1" type="radio" name="options" />
+          <Label htmlFor='option1'>Option 1</Label>
+          <input id='option1' type='radio' name='options' />
         </div>
       );
 
@@ -94,8 +94,8 @@ describe('Label', () => {
     it('associates with textarea', () => {
       render(
         <div>
-          <Label htmlFor="message">Message</Label>
-          <textarea id="message" />
+          <Label htmlFor='message'>Message</Label>
+          <textarea id='message' />
         </div>
       );
 
@@ -116,7 +116,7 @@ describe('Label', () => {
     it('renders with required indicator', () => {
       render(
         <Label>
-          Email <span className="text-destructive">*</span>
+          Email <span className='text-destructive'>*</span>
         </Label>
       );
       expect(screen.getByText('Email')).toBeInTheDocument();
@@ -124,7 +124,7 @@ describe('Label', () => {
     });
 
     it('renders with icon', () => {
-      const Icon = () => <svg data-testid="label-icon" />;
+      const Icon = () => <svg data-testid='label-icon' />;
       render(
         <Label>
           <Icon />
@@ -139,7 +139,7 @@ describe('Label', () => {
       render(
         <Label>
           Username
-          <span className="text-xs text-muted-foreground"> (optional)</span>
+          <span className='text-xs text-muted-foreground'> (optional)</span>
         </Label>
       );
       expect(screen.getByText('Username')).toBeInTheDocument();
@@ -151,10 +151,10 @@ describe('Label', () => {
     it('applies peer-disabled styles when used with disabled input', () => {
       render(
         <div>
-          <Label htmlFor="disabled-input" className="peer-disabled:opacity-70">
+          <Label htmlFor='disabled-input' className='peer-disabled:opacity-70'>
             Disabled Field
           </Label>
-          <input id="disabled-input" disabled className="peer" />
+          <input id='disabled-input' disabled className='peer' />
         </div>
       );
 
@@ -171,19 +171,19 @@ describe('Label', () => {
 
   describe('HTML Attributes', () => {
     it('applies id attribute', () => {
-      render(<Label id="my-label">Label</Label>);
+      render(<Label id='my-label'>Label</Label>);
       const label = screen.getByText('Label');
       expect(label).toHaveAttribute('id', 'my-label');
     });
 
     it('applies data attributes', () => {
-      render(<Label data-testid="custom-label">Label</Label>);
+      render(<Label data-testid='custom-label'>Label</Label>);
       const label = screen.getByTestId('custom-label');
       expect(label).toBeInTheDocument();
     });
 
     it('applies aria attributes', () => {
-      render(<Label aria-label="Form field label">Field</Label>);
+      render(<Label aria-label='Form field label'>Field</Label>);
       const label = screen.getByText('Field');
       expect(label).toHaveAttribute('aria-label', 'Form field label');
     });
@@ -199,8 +199,8 @@ describe('Label', () => {
     it('has no accessibility violations with associated input', async () => {
       const { container } = render(
         <div>
-          <Label htmlFor="test-input">Test Input</Label>
-          <input id="test-input" type="text" />
+          <Label htmlFor='test-input'>Test Input</Label>
+          <input id='test-input' type='text' />
         </div>
       );
       const results = await axe(container);
@@ -210,10 +210,10 @@ describe('Label', () => {
     it('has no accessibility violations with required indicator', async () => {
       const { container } = render(
         <div>
-          <Label htmlFor="required-input">
-            Email <span className="text-destructive">*</span>
+          <Label htmlFor='required-input'>
+            Email <span className='text-destructive'>*</span>
           </Label>
-          <input id="required-input" type="email" required />
+          <input id='required-input' type='email' required />
         </div>
       );
       const results = await axe(container);
@@ -223,8 +223,8 @@ describe('Label', () => {
     it('has no accessibility violations with disabled input', async () => {
       const { container } = render(
         <div>
-          <Label htmlFor="disabled-field">Disabled Field</Label>
-          <input id="disabled-field" type="text" disabled />
+          <Label htmlFor='disabled-field'>Disabled Field</Label>
+          <input id='disabled-field' type='text' disabled />
         </div>
       );
       const results = await axe(container);
@@ -236,8 +236,8 @@ describe('Label', () => {
     it('renders form field label', () => {
       render(
         <div>
-          <Label htmlFor="email">Email address</Label>
-          <input id="email" type="email" />
+          <Label htmlFor='email'>Email address</Label>
+          <input id='email' type='email' />
         </div>
       );
       expect(screen.getByText('Email address')).toBeInTheDocument();
@@ -245,9 +245,9 @@ describe('Label', () => {
 
     it('renders checkbox label', () => {
       render(
-        <div className="flex items-center space-x-2">
-          <input id="terms" type="checkbox" />
-          <Label htmlFor="terms">I agree to the terms and conditions</Label>
+        <div className='flex items-center space-x-2'>
+          <input id='terms' type='checkbox' />
+          <Label htmlFor='terms'>I agree to the terms and conditions</Label>
         </div>
       );
       expect(screen.getByText('I agree to the terms and conditions')).toBeInTheDocument();
@@ -256,10 +256,10 @@ describe('Label', () => {
     it('renders radio button group labels', () => {
       render(
         <div>
-          <Label htmlFor="option-a">Option A</Label>
-          <input id="option-a" type="radio" name="group" />
-          <Label htmlFor="option-b">Option B</Label>
-          <input id="option-b" type="radio" name="group" />
+          <Label htmlFor='option-a'>Option A</Label>
+          <input id='option-a' type='radio' name='group' />
+          <Label htmlFor='option-b'>Option B</Label>
+          <input id='option-b' type='radio' name='group' />
         </div>
       );
       expect(screen.getByText('Option A')).toBeInTheDocument();
@@ -269,13 +269,13 @@ describe('Label', () => {
     it('renders with helper text', () => {
       render(
         <div>
-          <Label htmlFor="password">
+          <Label htmlFor='password'>
             Password
-            <span className="block text-xs font-normal text-muted-foreground">
+            <span className='block text-xs font-normal text-muted-foreground'>
               Must be at least 8 characters
             </span>
           </Label>
-          <input id="password" type="password" />
+          <input id='password' type='password' />
         </div>
       );
       expect(screen.getByText('Password')).toBeInTheDocument();
@@ -297,7 +297,8 @@ describe('Label', () => {
     });
 
     it('handles long label text', () => {
-      const longText = 'This is a very long label text that might wrap to multiple lines in a narrow container';
+      const longText =
+        'This is a very long label text that might wrap to multiple lines in a narrow container';
       render(<Label>{longText}</Label>);
       expect(screen.getByText(longText)).toBeInTheDocument();
     });

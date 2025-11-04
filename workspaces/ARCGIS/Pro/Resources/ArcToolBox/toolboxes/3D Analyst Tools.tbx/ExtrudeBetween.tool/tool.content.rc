@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Creates 3D features by extruding each input feature between two triangulated irregular network (TIN) datasets.",
+        "in_feature_class.descr": "The features that will be extruded between the TINs.",
+        "in_feature_class.title": "Input Feature Class",
+        "in_tin1.descr": "The first input TIN.",
+        "in_tin1.title": "Input TIN",
+        "in_tin2.descr": "The second input TIN.",
+        "in_tin2.title": "Input TIN",
+        "out_feature_class.descr": "The output that will store the extruded features.",
+        "out_feature_class.title": "Output Feature Class",
+        "title": "Extrude Between"
+    }
+}

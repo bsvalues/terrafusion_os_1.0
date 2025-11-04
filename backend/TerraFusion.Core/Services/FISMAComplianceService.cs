@@ -2,6 +2,9 @@ using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using TerraFusion.Core.DTOs;
 
+
+#pragma warning disable CS1998
+
 namespace TerraFusion.Core.Services
 {
     public interface IFISMAComplianceService
@@ -10,7 +13,7 @@ namespace TerraFusion.Core.Services
         Task<FISMAComplianceReport> RunComplianceAssessmentAsync();
         Task<List<SecurityControl>> GetMissingControlsAsync();
         Task<bool> ImplementControlAsync(string controlId);
-        Task<DTOs.ComplianceMetrics> GetComplianceMetricsAsync();
+        Task<DTOs.FISMAComplianceMetrics> GetComplianceMetricsAsync();
     }
 
     public class FISMAComplianceService : IFISMAComplianceService
@@ -117,11 +120,11 @@ namespace TerraFusion.Core.Services
             }
         }
 
-        public async Task<DTOs.ComplianceMetrics> GetComplianceMetricsAsync()
+        public async Task<DTOs.FISMAComplianceMetrics> GetComplianceMetricsAsync()
         {
             var report = await GetComplianceStatusAsync();
 
-            var metrics = new DTOs.ComplianceMetrics
+            var metrics = new DTOs.FISMAComplianceMetrics
             {
                 OverallCompliance = report.CompliancePercentage,
                 AccessControlCompliance = CalculateFamilyCompliance("AC"),

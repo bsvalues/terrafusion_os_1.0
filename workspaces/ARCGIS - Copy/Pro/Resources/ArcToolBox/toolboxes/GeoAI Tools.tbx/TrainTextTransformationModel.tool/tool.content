@@ -1,0 +1,273 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "79010005",
+    "description": "$rc:description",
+    "product": "300",
+    "attributes": [
+        "GPU",
+        "mCPU"
+    ],
+    "params": {
+        "in_table": {
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFeatureClass"
+                    },
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "text_field": {
+            "displayname": "$rc:text_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:text_field.descr"
+        },
+        "label_field": {
+            "displayname": "$rc:label_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:label_field.descr"
+        },
+        "out_model": {
+            "direction": "out",
+            "displayname": "$rc:out_model.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "schema": {
+                "type": "GPContainerSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_model.descr"
+        },
+        "pretrained_model_file": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:pretrained_model_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "emd",
+                    "dlpk"
+                ]
+            },
+            "description": "$rc:pretrained_model_file.descr"
+        },
+        "max_epochs": {
+            "type": "optional",
+            "displayname": "$rc:max_epochs.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "5",
+            "description": "$rc:max_epochs.descr"
+        },
+        "model_backbone": {
+            "type": "optional",
+            "displayname": "$rc:model_backbone.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "t5-base",
+            "description": "$rc:model_backbone.descr"
+        },
+        "batch_size": {
+            "type": "optional",
+            "displayname": "$rc:batch_size.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "2",
+            "description": "$rc:batch_size.descr"
+        },
+        "model_arguments": {
+            "type": "optional",
+            "displayname": "$rc:model_arguments.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:model_arguments.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:model_arguments.dt.title2"
+                    }
+                ]
+            },
+            "value": "sequence_length 512",
+            "description": "$rc:model_arguments.descr"
+        },
+        "learning_rate": {
+            "type": "optional",
+            "displayname": "$rc:learning_rate.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:learning_rate.descr"
+        },
+        "validation_percentage": {
+            "type": "optional",
+            "displayname": "$rc:validation_percentage.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "10",
+            "description": "$rc:validation_percentage.descr"
+        },
+        "stop_training": {
+            "type": "optional",
+            "displayname": "$rc:stop_training.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "STOP_TRAINING"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "CONTINUE_TRAINING"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:stop_training.descr"
+        },
+        "make_trainable": {
+            "type": "optional",
+            "displayname": "$rc:make_trainable.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "TRAIN_MODEL_BACKBONE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "FREEZE_MODEL_BACKBONE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:make_trainable.descr"
+        },
+        "remove_html_tags": {
+            "type": "optional",
+            "displayname": "$rc:remove_html_tags.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "REMOVE_HTML_TAGS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_REMOVE_HTML_TAGS"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:remove_html_tags.descr"
+        },
+        "remove_urls": {
+            "type": "optional",
+            "displayname": "$rc:remove_urls.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "REMOVE_URLS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_REMOVE_URLS"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:remove_urls.descr"
+        },
+        "prompt": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:prompt.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:prompt.descr"
+        }
+    },
+    "environments": [
+        "gpuID",
+        "processorType"
+    ]
+}

@@ -1,0 +1,49 @@
+{
+    "type": "FunctionTool",
+    "guid": "{a1a19802-9401-4962-a2ea-db153aa0705c}",
+    "displayname": "$rc:title",
+    "helpcontent": "10040012",
+    "description": "$rc:description",
+    "product": "300",
+    "attributes": [
+        "edit_session",
+        "input_data_change"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon",
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "maximum_angle": {
+            "displayname": "$rc:maximum_angle.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:maximum_angle.descr"
+        },
+        "out_representations": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_representations.title",
+            "datatype": {
+                "type": "GPLayer"
+            },
+            "depends": [
+                "in_features"
+            ]
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

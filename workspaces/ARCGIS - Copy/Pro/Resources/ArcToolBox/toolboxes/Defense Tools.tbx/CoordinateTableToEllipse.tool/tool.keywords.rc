@@ -1,0 +1,16 @@
+{
+    "set": [
+        "csv",
+        "dd",
+        "ddm",
+        "dms",
+        "gars",
+        "georef",
+        "mgrs",
+        "propagation",
+        "signal",
+        "usng",
+        "utm",
+        "xy"
+    ]
+}

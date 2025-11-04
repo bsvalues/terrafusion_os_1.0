@@ -1,0 +1,72 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "3060005",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "Input_Feature_Class_or_Table": {
+            "displayname": "$rc:input_feature_class_or_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:input_feature_class_or_table.descr"
+        },
+        "Fields_to_Transpose": {
+            "displayname": "$rc:fields_to_transpose.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "description": "$rc:fields_to_transpose.descr"
+        },
+        "Output_Feature_Class_or_Table": {
+            "direction": "out",
+            "displayname": "$rc:output_feature_class_or_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:output_feature_class_or_table.descr"
+        },
+        "Time_Field_Name": {
+            "displayname": "$rc:time_field_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "Time",
+            "description": "$rc:time_field_name.descr"
+        },
+        "Value_Field_Name": {
+            "displayname": "$rc:value_field_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "Value",
+            "description": "$rc:value_field_name.descr"
+        },
+        "Attribute_Fields": {
+            "type": "optional",
+            "displayname": "$rc:attribute_fields.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "depends": [
+                "Input_Feature_Class_or_Table"
+            ],
+            "description": "$rc:attribute_fields.descr"
+        }
+    },
+    "environments": [
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

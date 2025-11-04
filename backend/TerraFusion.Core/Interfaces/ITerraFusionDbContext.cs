@@ -49,6 +49,12 @@ public interface ITerraFusionDbContext
     DbSet<Permission> Permissions { get; set; }
     DbSet<UserPermission> UserPermissions { get; set; }
 
+    // Codex 3-6-9 Framework Entities
+    DbSet<CodexMetric> CodexMetrics { get; set; }
+    DbSet<CodexScore> CodexScores { get; set; }
+    DbSet<CodexUltimatePower> CodexUltimatePowerRecords { get; set; }
+    DbSet<CodexAlert> CodexAlerts { get; set; }
+
     System.Threading.Tasks.Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     DbSet<TEntity> Set<TEntity>() where TEntity : class;
     EntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class;

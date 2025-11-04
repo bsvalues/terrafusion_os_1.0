@@ -1,0 +1,16 @@
+{
+    "set": [
+        "alter evaluation order",
+        "arcade",
+        "attribute",
+        "attribute rules",
+        "batch calculation",
+        "calculation",
+        "calculation rule",
+        "custom",
+        "evaluation order",
+        "immediate calculation",
+        "rules",
+        "utility network"
+    ]
+}

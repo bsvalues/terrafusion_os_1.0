@@ -1,0 +1,19 @@
+{
+    "map": {
+        "description": "Combine fuzzy membership rasters data together, based on selected overlay type.",
+        "gamma.descr": "<xdoc><p>The gamma value to be used. This is only available when the <span class=\"esri_uicontrol\">Overlay type</span> is set to <span class=\"esri_uicontrol\">Gamma</span>.</p><p>Default value is 0.9.</p></xdoc>",
+        "gamma.title": "Gamma",
+        "in_rasters.descr": "A list of input membership rasters to be combined in the overlay.",
+        "in_rasters.title": "Input rasters",
+        "out_raster.descr": "<xdoc><p>The output raster which is the result of applying the fuzzy operator.</p><p>This output will always have a value between 0 and 1.</p></xdoc>",
+        "out_raster.title": "Output raster",
+        "overlay_type.descr": "<xdoc><p>Specifies the method used to combine two or more membership data.</p><ul><li><span title=\"AND\">And</span>—The minimum of the fuzzy memberships from the input fuzzy rasters.</li><li><span title=\"OR\">Or</span>—The maximum of the fuzzy memberships from the input rasters.</li><li><span title=\"PRODUCT\">Product</span>—A decreasive function. Use this when the combination of multiple evidence is less important or smaller than any of the inputs alone.</li><li><span title=\"SUM\">Sum</span>—An increasive function. Use this when the combination of multiple evidence is more important or larger than any of the inputs alone.</li><li><span title=\"GAMMA\">Gamma</span>—The algebraic product of the fuzzy <span class=\"esri_uicontrol\">Sum</span> and fuzzy <span class=\"esri_uicontrol\">Product</span>, both raised to the power of gamma.</li></ul></xdoc>",
+        "overlay_type.domain.AND": "And",
+        "overlay_type.domain.GAMMA": "Gamma",
+        "overlay_type.domain.OR": "Or",
+        "overlay_type.domain.PRODUCT": "Product",
+        "overlay_type.domain.SUM": "Sum",
+        "overlay_type.title": "Overlay type",
+        "title": "Fuzzy Overlay"
+    }
+}

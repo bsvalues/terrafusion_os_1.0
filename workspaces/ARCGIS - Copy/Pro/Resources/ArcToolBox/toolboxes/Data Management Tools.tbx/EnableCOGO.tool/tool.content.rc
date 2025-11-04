@@ -1,0 +1,10 @@
+{
+    "map": {
+        "description": "Enables COGO on a line feature class and adds COGO fields and COGO-enabled labeling to a line feature class. COGO fields store  dimensions  that are used to create line features in relation to each other.",
+        "in_line_features.descr": "The line feature class that will be COGO enabled.",
+        "in_line_features.title": "Input Line Features",
+        "summary": "Enables COGO on a line feature class and adds COGO fields and COGO-enabled labeling to a line feature class. COGO fields store dimensions that are used to create line features in relation to each other.",
+        "title": "Enable COGO",
+        "updated_line_features.title": "Output Feature Class"
+    }
+}

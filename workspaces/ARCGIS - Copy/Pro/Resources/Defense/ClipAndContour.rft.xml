@@ -1,0 +1,214 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RasterFunctionTemplate xsi:type="typens:RasterFunctionTemplate" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:typens="http://www.esri.com/schemas/ArcGIS/2.2.0">
+  <Name>ClipAndContour</Name>
+  <Description>This Raster Function Template clips a raster, then creates a smooth contour surface. This is used by teh Topographic Production Generate Contours tool</Description>
+  <Function xsi:type="typens:ContourFunction" id="ID1">
+    <Name>Contour</Name>
+    <Description>Creates contour lines.</Description>
+    <PixelType>F32</PixelType>
+  </Function>
+  <Arguments xsi:type="typens:ContourFunctionArguments" id="ID2">
+    <Names xsi:type="typens:ArrayOfString" id="ID3">
+      <String>DEM</String>
+      <String>SigmaGaussian</String>
+      <String>ContourType</String>
+      <String>ZBase</String>
+      <String>NumberOfContours</String>
+      <String>ContourInterval</String>
+      <String>NthContourLineInBold</String>
+      <String>ZFactor</String>
+    </Names>
+    <Values xsi:type="typens:ArrayOfAnyType" id="ID4">
+      <AnyType xsi:type="typens:RasterFunctionTemplate" id="ID5">
+        <Name>Raster Function Template</Name>
+        <Description>A raster function template.</Description>
+        <Function xsi:type="typens:ResampleFunction" id="ID6">
+          <Name>Resample</Name>
+          <Description>Changes the cell size of a raster.</Description>
+          <PixelType>F32</PixelType>
+        </Function>
+        <Arguments xsi:type="typens:ResampleFunctionArguments" id="ID7">
+          <Names xsi:type="typens:ArrayOfString" id="ID8">
+            <String>Raster</String>
+            <String>ResamplingType</String>
+            <String>InputCellsize</String>
+            <String>OutputCellsize</String>
+          </Names>
+          <Values xsi:type="typens:ArrayOfAnyType" id="ID9">
+            <AnyType xsi:type="typens:RasterFunctionTemplate" id="ID10">
+              <Name>SimpleClip2</Name>
+              <Description>A raster function template.</Description>
+              <Function xsi:type="typens:ClipFunction" id="ID11">
+                <Name>Clip</Name>
+                <Description>Sets the extent of a raster using coordinates or another dataset.</Description>
+                <PixelType>F32</PixelType>
+              </Function>
+              <Arguments xsi:type="typens:ClipFunctionArguments" id="ID12">
+                <Names xsi:type="typens:ArrayOfString" id="ID13">
+                  <String>Raster</String>
+                  <String>ClippingType</String>
+                  <String>Extent</String>
+                  <String>ClippingGeometry</String>
+                  <String>ClippingRaster</String>
+                </Names>
+                <Values xsi:type="typens:ArrayOfAnyType" id="ID14">
+                  <AnyType xsi:type="typens:RasterFunctionVariable" id="ID15">
+                    <Name>Raster</Name>
+                    <Description></Description>
+                    <Value></Value>
+                    <IsDataset>true</IsDataset>
+                  </AnyType>
+                  <AnyType xsi:type="typens:RasterFunctionVariable" id="ID16">
+                    <Name>ClippingType</Name>
+                    <Description></Description>
+                    <Value xsi:type="xs:int">1</Value>
+                    <IsDataset>false</IsDataset>
+                  </AnyType>
+                  <AnyType xsi:type="typens:RasterFunctionVariable" id="ID17">
+                    <Name>Extent</Name>
+                    <Description></Description>
+                    <Value xsi:type="typens:EnvelopeN" id="ID18">
+                      <XMin>-121.99999993699998</XMin>
+                      <YMin>36.499999922000029</YMin>
+                      <XMax>-121.75000001699999</XMax>
+                      <YMax>36.750000015000069</YMax>
+                      <SpatialReference xsi:type="typens:GeographicCoordinateSystem" id="ID19">
+                        <WKT>GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433],AUTHORITY["EPSG",4326]]</WKT>
+                        <XOrigin>-400</XOrigin>
+                        <YOrigin>-400</YOrigin>
+                        <XYScale>999999999.99999988</XYScale>
+                        <ZOrigin>-100000</ZOrigin>
+                        <ZScale>10000</ZScale>
+                        <MOrigin>-100000</MOrigin>
+                        <MScale>10000</MScale>
+                        <XYTolerance>8.983152841195215e-09</XYTolerance>
+                        <ZTolerance>0.001</ZTolerance>
+                        <MTolerance>0.001</MTolerance>
+                        <HighPrecision>true</HighPrecision>
+                        <LeftLongitude>-180</LeftLongitude>
+                        <WKID>4326</WKID>
+                        <LatestWKID>4326</LatestWKID>
+                      </SpatialReference>
+                    </Value>
+                    <IsDataset>false</IsDataset>
+                  </AnyType>
+                  <AnyType xsi:type="typens:RasterFunctionVariable" id="ID20">
+                    <Name>ClippingGeometry</Name>
+                    <Description></Description>
+                    <Value></Value>
+                    <IsDataset>false</IsDataset>
+                  </AnyType>
+                  <AnyType xsi:type="typens:RasterFunctionVariable" id="ID21">
+                    <Name>ClippingRaster</Name>
+                    <Description></Description>
+                    <Value></Value>
+                    <IsDataset>false</IsDataset>
+                  </AnyType>
+                </Values>
+              </Arguments>
+              <Aliases xsi:type="typens:ArrayOfString" id="ID22">
+                <String>__tans__(Raster,Extent)</String>
+              </Aliases>
+              <Help></Help>
+              <Type>0</Type>
+              <Thumbnail xsi:type="xs:string"></Thumbnail>
+              <Definition></Definition>
+              <Group></Group>
+              <Tag></Tag>
+              <ThumbnailEx></ThumbnailEx>
+            </AnyType>
+            <AnyType xsi:type="typens:RasterFunctionVariable" id="ID23">
+              <Name>ResamplingType</Name>
+              <Description></Description>
+              <Value xsi:type="xs:int">1</Value>
+              <IsDataset>false</IsDataset>
+            </AnyType>
+            <AnyType xsi:type="typens:RasterFunctionVariable" id="ID24">
+              <Name>InputCellsize</Name>
+              <Description></Description>
+              <Value xsi:type="typens:PointN" id="ID25">
+                <X>0</X>
+                <Y>0</Y>
+              </Value>
+              <IsDataset>false</IsDataset>
+            </AnyType>
+            <AnyType xsi:type="typens:RasterFunctionVariable" id="ID26">
+              <Name>OutputCellsize</Name>
+              <Description></Description>
+              <Value xsi:type="typens:PointN" id="ID27">
+                <X>0</X>
+                <Y>0</Y>
+              </Value>
+              <IsDataset>false</IsDataset>
+            </AnyType>
+          </Values>
+        </Arguments>
+        <Aliases xsi:type="typens:ArrayOfString" id="ID28">
+          <String>__tans__(InputCellsize,OutputCellsize)</String>
+        </Aliases>
+        <Help></Help>
+        <Type>0</Type>
+        <Thumbnail></Thumbnail>
+        <Definition></Definition>
+        <Group></Group>
+        <Tag></Tag>
+        <ThumbnailEx></ThumbnailEx>
+      </AnyType>
+      <AnyType xsi:type="typens:RasterFunctionVariable" id="ID29">
+        <Name>SigmaGaussian</Name>
+        <Description></Description>
+        <Value xsi:type="xs:double">0.5</Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+      <AnyType xsi:type="typens:RasterFunctionVariable" id="ID30">
+        <Name>ContourType</Name>
+        <Description></Description>
+        <Value xsi:type="xs:int">2</Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+      <AnyType xsi:type="typens:RasterFunctionVariable" id="ID31">
+        <Name>ZBase</Name>
+        <Description></Description>
+        <Value xsi:type="xs:double">0</Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+      <AnyType xsi:type="typens:RasterFunctionVariable" id="ID32">
+        <Name>NumberOfContours</Name>
+        <Description></Description>
+        <Value xsi:type="xs:int">0</Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+      <AnyType xsi:type="typens:RasterFunctionVariable" id="ID33">
+        <Name>ContourInterval</Name>
+        <Description></Description>
+        <Value xsi:type="xs:double">20</Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+      <AnyType xsi:type="typens:RasterFunctionVariable" id="ID34">
+        <Name>NthContourLineInBold</Name>
+        <Description></Description>
+        <Value xsi:type="xs:int">0</Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+      <AnyType xsi:type="typens:RasterFunctionVariable" id="ID35">
+        <Name>ZFactor</Name>
+        <Description></Description>
+        <Value xsi:type="xs:double">1</Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+    </Values>
+  </Arguments>
+  <Aliases xsi:type="typens:ArrayOfString" id="ID36">
+    <String>__tans__(SigmaGaussian,ContourInterval,ZFactor)</String>
+  </Aliases>
+  <Help>Parameters: Raster, Extent, SigmaGaussian, ContourInterval, ZFactor
+
+To call this rft from python use the following as an example:
+arcpy.management.GenerateRasterFromRasterFunction(raster_function=r'C:\TMP\CLipAndContour.rft.xml', out_raster_dataset=r'C:\TMP\contour.tif', raster_function_arguments=r"Raster C:\TMP\Monterey.dt2; Extent '{'xmin':-121.25,'ymin':36.0,'xmax':-121.5,'ymax':36.25}'", format='TIFF')</Help>
+  <Type>0</Type>
+  <Thumbnail xsi:type="xs:string"></Thumbnail>
+  <Definition></Definition>
+  <Group></Group>
+  <Tag></Tag>
+  <ThumbnailEx></ThumbnailEx>
+</RasterFunctionTemplate>

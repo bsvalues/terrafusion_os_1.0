@@ -1,0 +1,205 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\GenerateCallLinks",
+    "displayname": "$rc:title",
+    "helpcontent": "75010003",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_primary_features": {
+            "displayname": "$rc:in_primary_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_primary_features.descr"
+        },
+        "in_secondary_features": {
+            "displayname": "$rc:in_secondary_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_secondary_features.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "output_type": {
+            "type": "optional",
+            "displayname": "$rc:output_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SUMMARY",
+                        "code": "$rc:output_type.domain.SUMMARY"
+                    },
+                    {
+                        "value": "DETAIL",
+                        "code": "$rc:output_type.domain.DETAIL"
+                    }
+                ]
+            },
+            "value": "SUMMARY",
+            "description": "$rc:output_type.descr"
+        },
+        "primary_subscriber_field": {
+            "type": "optional",
+            "displayname": "$rc:primary_subscriber_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_primary_features"
+            ],
+            "description": "$rc:primary_subscriber_field.descr"
+        },
+        "primary_destination_field": {
+            "type": "optional",
+            "displayname": "$rc:primary_destination_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_primary_features"
+            ],
+            "description": "$rc:primary_destination_field.descr"
+        },
+        "primary_start_time_field": {
+            "type": "optional",
+            "displayname": "$rc:primary_start_time_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Date",
+                    "TimestampOffset"
+                ]
+            },
+            "depends": [
+                "in_primary_features"
+            ],
+            "description": "$rc:primary_start_time_field.descr"
+        },
+        "secondary_subscriber_field": {
+            "type": "optional",
+            "displayname": "$rc:secondary_subscriber_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_secondary_features"
+            ],
+            "description": "$rc:secondary_subscriber_field.descr"
+        },
+        "secondary_destination_field": {
+            "type": "optional",
+            "displayname": "$rc:secondary_destination_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_secondary_features"
+            ],
+            "description": "$rc:secondary_destination_field.descr"
+        },
+        "secondary_start_time_field": {
+            "type": "optional",
+            "displayname": "$rc:secondary_start_time_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Date",
+                    "TimestampOffset"
+                ]
+            },
+            "depends": [
+                "in_secondary_features"
+            ],
+            "description": "$rc:secondary_start_time_field.descr"
+        }
+    },
+    "environments": [
+        "MDomain",
+        "MResolution",
+        "MTolerance",
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "ZDomain",
+        "ZResolution",
+        "ZTolerance",
+        "autoCommit",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "maintainAttachments",
+        "outputCoordinateSystem",
+        "outputMFlag",
+        "outputZFlag",
+        "outputZValue",
+        "qualifiedFieldNames",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "set": [
+        "arcade",
+        "attribute",
+        "attribute rules",
+        "calculation rule",
+        "constraint rule",
+        "custom",
+        "disable",
+        "disable rule",
+        "performance",
+        "rules",
+        "utility network"
+    ]
+}

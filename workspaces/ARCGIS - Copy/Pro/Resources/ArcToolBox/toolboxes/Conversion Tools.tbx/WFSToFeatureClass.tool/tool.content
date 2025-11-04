@@ -1,0 +1,159 @@
+{
+    "type": "FunctionTool",
+    "guid": "{6ac3a91d-9908-43a7-909e-ccad81cd77f4}",
+    "displayname": "$rc:title",
+    "helpcontent": "2090001",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "input_WFS_server": {
+            "displayname": "$rc:input_wfs_server.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:input_wfs_server.descr"
+        },
+        "WFS_feature_type": {
+            "displayname": "$rc:wfs_feature_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:wfs_feature_type.descr"
+        },
+        "out_path": {
+            "displayname": "$rc:out_path.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEWorkspace"
+                    },
+                    {
+                        "type": "DEFeatureDataset"
+                    },
+                    {
+                        "type": "DEFolder"
+                    }
+                ]
+            },
+            "description": "$rc:out_path.descr"
+        },
+        "out_name": {
+            "displayname": "$rc:out_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:out_name.descr"
+        },
+        "out_feature_class": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            }
+        },
+        "is_complex": {
+            "type": "optional",
+            "displayname": "$rc:is_complex.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "COMPLEX"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NOT_COMPLEX"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:is_complex.descr"
+        },
+        "out_gdb": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_gdb.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            }
+        },
+        "max_features": {
+            "type": "optional",
+            "displayname": "$rc:max_features.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "1000",
+            "description": "$rc:max_features.descr"
+        },
+        "expose_metadata": {
+            "type": "optional",
+            "displayname": "$rc:expose_metadata.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "EXPOSE_METADATA"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_EXPOSE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:expose_metadata.descr"
+        },
+        "swap_xy": {
+            "type": "optional",
+            "displayname": "$rc:swap_xy.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SWAP_XY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_SWAP_XY"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:swap_xy.descr"
+        },
+        "page_size": {
+            "type": "optional",
+            "displayname": "$rc:page_size.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "100",
+            "description": "$rc:page_size.descr"
+        }
+    },
+    "environments": [
+        "configKeyword",
+        "extent"
+    ]
+}

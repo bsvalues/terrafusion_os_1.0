@@ -1,0 +1,135 @@
+{
+    "type": "FunctionTool",
+    "guid": "{c6f6eea5-aec5-419e-9154-007a914f09d7}",
+    "displayname": "$rc:title",
+    "helpcontent": "5060007",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9"
+    ],
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "params": {
+        "in_feature_class": {
+            "display_order": "0",
+            "displayname": "$rc:in_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "MultiPatch"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:in_feature_class.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "display_order": "2",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "group_field": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:group_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "OID",
+                    "Short",
+                    "Long",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_feature_class"
+            ],
+            "description": "$rc:group_field.descr"
+        },
+        "disable_optimization": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:disable_optimization.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "DISABLE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "ENABLE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:disable_optimization.descr"
+        },
+        "output_all": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:output_all.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ENABLE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DISABLE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:output_all.descr"
+        },
+        "out_table": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "3",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "description": "$rc:out_table.descr"
+        }
+    },
+    "environments": [
+        "XYDomain",
+        "ZDomain",
+        "autoCommit",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "workspace"
+    ]
+}

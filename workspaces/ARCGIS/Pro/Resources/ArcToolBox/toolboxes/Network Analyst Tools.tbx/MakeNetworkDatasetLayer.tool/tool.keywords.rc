@@ -1,0 +1,11 @@
+{
+    "set": [
+        "cache",
+        "connection",
+        "copy",
+        "create",
+        "memory",
+        "open",
+        "temporary"
+    ]
+}

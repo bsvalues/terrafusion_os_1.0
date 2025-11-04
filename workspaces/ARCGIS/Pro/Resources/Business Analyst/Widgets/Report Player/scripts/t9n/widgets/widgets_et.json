@@ -1,0 +1,78 @@
+{
+  "calcite": {
+    "reset": "Lähesta",
+    "action": {
+      "sort": "Sordi"
+    },
+    "buttons": {
+      "save": "Salvesta",
+      "edit": "Muuda",
+      "done": "Valmis",
+      "apply": "Rakenda",
+      "cancel": "Loobu",
+      "close": "Sule"
+    },
+    "ColorPicker": {
+      "selectColor": "Valige värvus",
+      "noColorSpecified": "Värvi pole määratud",
+      "transparent": "Läbipaistev",
+      "colorTooltip": "<p>Kuueteistkümnend: ${hex}</p><p>RGB: ${r}, ${g}, ${b}</p>",
+      "recent": "Hiljutised",
+      "standard": "Standard",
+      "savedColors": "Salvestatud värvid",
+      "advanced": "Advanced"
+    },
+    "DatePickerLink": {
+      "enterDate": "Sisestage kuupäev"
+    },
+    "PaginationContinuous": {
+      "next": "Edasi",
+      "previous": "Eelmine"
+    }
+  },
+  "ImageNavigator": {
+    "paginationLabel": "${n} /${m}",
+    "noImage": "Sellele saidile pole fotosid salvestatud",
+    "previewNotAvailable": "Eelvaade pole saadaval"
+  },
+  "PageNavigator": {
+    "currentPageOutOfN": "Lk ${current} / ${total}"
+  },
+  "PanoramicViewer": {
+    "image-viewer-close": "Sule",
+    "image-viewer-fullscreen": "Täisekraani vaade",
+    "image-viewer-minimize": "Minimeeri",
+    "image-viewer-title": "Fotosirvija",
+    "image-viewer-show-caption": "Kuva pealdis",
+    "image-viewer-hide-caption": "Peida"
+  },
+  "TextBox": {
+    "error_numberExpected": "Eeldatav on number",
+    "error_range": "Eeldatav väärtus on vahemikus ${0} kuni ${1}"
+  },
+  "charts": {
+    "histogram": {
+      "minValue": "Min:<br>${0}",
+      "maxValue": "Max:<br>${0}",
+      "thisAreaValue": "See ala: ${0}",
+      "medianValue": "Mediaan:<br>${0}",
+      "q1Value": "K1:<br>${0}",
+      "q3Value": "K3:<br>${0}",
+      "percentile": "Protsentiil ${percent}:<br>${0}",
+      "percentileBottom": "Alumine ${percent}%:<br>${0}",
+      "percentileTop": "Ülemine ${percent}%:<br>${0}",
+      "percentile_singleLine": "Protsentiil ${percent}: ${0}",
+      "percentileBottom_singleLine": "Alumine ${percent}%: ${0}",
+      "percentileTop_singleLine": "Ülemine ${percent}%: ${0}",
+      "sd_singleLine": "${sd} SD: ${0}",
+      "tooltip": {
+        "range_single": "<b>${level}</b> väärtusega vahemikus <b>${value}</b> : <b>1</b>",
+        "range_single_precise": "<b>${areaName}</b> omab väärtust <b>${value}</b>.",
+        "range_multi": "<b>${level}</b> väärtusega vahemikus <b>${value}</b> : <b>${count}</b>",
+        "thisArea": "<b>Sellel alal</b> on väärtus<b>${value}</b>.",
+        "percentileLower": "<b>${percent}%</b> / <b>${level}</b> omab väärtust, mis on suurem kui <b>${value}</b>.",
+        "percentileUpper": "<b>${percent}%</b> / <b>${level}</b> omab väärtust, mis on väiksem kui <b>${value}</b>."
+      }
+    }
+  }
+}

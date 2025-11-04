@@ -1,0 +1,12 @@
+{
+    "set": [
+        "3d",
+        "area of interest",
+        "convert",
+        "extent",
+        "footprint",
+        "interpolation zone",
+        "polygon feature class",
+        "raster"
+    ]
+}

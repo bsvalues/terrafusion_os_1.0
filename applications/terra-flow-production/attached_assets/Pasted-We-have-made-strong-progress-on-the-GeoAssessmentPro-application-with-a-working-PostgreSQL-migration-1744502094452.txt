@@ -1,0 +1,30 @@
+We have made strong progress on the GeoAssessmentPro application with a working PostgreSQL migration and several supporting modules (db_health_monitor.py, data_migrator.py, service_orchestrator.py, and easy_connect.py). Our next step is to integrate Supabase deeply into our system to leverage its managed PostgreSQL, realtime, authentication, and storage features.
+
+Please perform the following tasks:
+
+1. **Update Database Models & Connection:**
+   - Modify models.py to use Supabase-managed PostgreSQL using a connection string obtained from environment variables (e.g., SUPABASE_URL and SUPABASE_KEY). Ensure connection pooling is enabled.
+   - Update our Alembic migration settings in alembic.ini and migrations_alembic/env.py to work with the new Supabase connection string.
+   - Ensure all models for Properties, TaxRecords, ComparableSales, MarketData, and InspectionReports remain intact and fully functional.
+
+2. **Implement Realtime Data Features:**
+   - Integrate the Supabase Python client to subscribe to realtime changes on key tables.
+   - Update our Flask dashboard (app.py and associated templates) to display realtime notifications when property data changes.
+   - Include error handling and logging for realtime subscription events.
+
+3. **Integrate Authentication & Storage:**
+   - Integrate Supabase Auth into our application: add routes for user registration, login, and session management. Use role‑based controls to enforce access (e.g., DataSetup, MobileAssessor, etc.).
+   - Update our report_generator.py and dashboard to integrate with Supabase Storage for property images and documents. Ensure that file uploads and downloads are handled securely.
+
+4. **Enhance Existing Tools:**
+   - Refactor data_migrator.py to utilize Supabase’s API endpoints for data insertion with a ‘dry-run’ mode and robust rollback.
+   - Modify service_orchestrator.py to leverage Supabase for inter-service communication, optionally using asynchronous processing where appropriate.
+   - Refactor easy_connect.py to support caching and connection pooling with Supabase credentials.
+
+5. **Documentation and Testing:**
+   - Update all inline comments and documentation to reflect changes, especially regarding environment configurations and new Supabase settings.
+   - Add unit tests for database connectivity, realtime updates, authentication flows, and file storage operations.
+   - Ensure our README includes clear setup instructions for the new environment variables (SUPABASE_URL, SUPABASE_KEY, etc.) and details on how to run migrations and the application.
+
+Generate the full updated code for all affected modules, ensuring that the new integration is seamless and that the application remains modular, secure, and easy to maintain.
+

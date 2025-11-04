@@ -1,0 +1,13 @@
+{
+    "set": [
+        "case",
+        "condition",
+        "evaluate",
+        "expression",
+        "false",
+        "logical",
+        "nodata",
+        "query",
+        "true"
+    ]
+}

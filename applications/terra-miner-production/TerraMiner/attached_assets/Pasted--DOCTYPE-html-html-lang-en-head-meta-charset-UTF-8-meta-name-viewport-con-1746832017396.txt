@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terrafusion Build UI Preview - Enhanced Charts with Depth & Drama (Fix)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles or overrides */
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #1a202c; /* Dark background */
+            color: #e2e8f0; /* Light text */
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+        /* Style for collapsible sections */
+        .collapsible-header {
+            cursor: pointer;
+            user-select: none;
+        }
+        .collapsible-content {
+            display: none;
+            overflow: hidden;
+        }
+        .collapsible-content.active {
+            display: block;
+        }
+
+        /* Simple background gradient animation */
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .animated-gradient {
+            background: linear-gradient(-45deg, #1a202c, #2d3748, #3182ce, #38b2ac); /* Dark tones with teal/blue */
+            background-size: 400% 400%;
+            animation: gradient-shift 15s ease infinite;
+        }
+
+         /* More complex loading animation placeholder */
+         .ai-processing-animation {
+             width: 100%;
+             height: 150px; /* Adjust height as needed */
+             background-color: #2d3748; /* Darker background for contrast */
+             border-radius: 8px;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             position: relative;
+             overflow: hidden;
+         }
+
+         /* Subtle glow effect for key elements */
+         .glow-effect {
+             box-shadow: 0 0 15px rgba(56, 178, 172, 0.5); /* teal-400 glow */
+         }
+
+         /* Input field focus glow */
+         input:focus, select:focus, textarea:focus {
+             box-shadow: 0 0 8px rgba(56, 178, 172, 0.6); /* teal-400 glow on focus */
+             border-color: #38b2ac; /* teal-400 border */
+         }
+
+         /* Placeholder for charts with enhanced styling */
+         .chart-placeholder {
+             background-color: #2d3748; /* Darker background */
+             border-radius: 8px;
+             padding: 24px; /* Increased padding */
+             position: relative;
+             min-height: 350px; /* Increased height for more visual space */
+             display: flex;
+             flex-direction: column; /* Stack elements vertically */
+             justify-content: flex-end; /* Align content to the bottom */
+             overflow: hidden;
+             box-shadow: inset 0 0 40px rgba(0,0,0,0.8); /* Stronger inner shadow for more depth */
+             border: 1px solid #4a5568; /* Subtle border */
+         }
+
+         /* Container for chart elements */
+         .chart-container {
+             flex-grow: 1; /* Allow chart area to grow */
+             position: relative;
+             padding-bottom: 30px; /* More space for X-axis labels and potential animation */
+             display: flex; /* Use flexbox for chart elements */
+             align-items: flex-end; /* Align bars/lines to the bottom */
+             justify-content: space-around; /* Distribute space */
+             width: 100%; /* Ensure container takes full width */
+         }
+
+         /* Visual elements for a Bar Chart */
+         .bar-chart-elements {
+             /* Specific styles for the bar chart container if needed */
+         }
+
+         .bar-chart-elements .bar {
+             width: 10%; /* Adjusted width */
+             background: linear-gradient(to top, #38b2ac, #4fd1c5); /* Teal gradient */
+             border-radius: 4px 4px 0 0;
+             opacity: 0.95; /* Less transparent */
+             box-shadow: 0 -6px 12px rgba(0,0,0,0.4); /* Stronger shadow for more lift */
+             transition: height 0.8s ease-out; /* Slower, more dramatic transition */
+             position: relative;
+             transform: perspective(600px) rotateX(15deg); /* More pronounced 3D perspective */
+             transform-origin: bottom; /* Rotate from the bottom */
+             margin: 0 1.5%; /* Adjusted margin */
+             /* Initial state for animation */
+             height: 0;
+         }
+
+         /* Add a subtle top edge to bars */
+         .bar-chart-elements .bar::after {
+             content: '';
+             position: absolute;
+             top: 0;
+             left: 0;
+             right: 0;
+             height: 5px; /* Thicker edge */
+             background-color: rgba(255,255,255,0.3); /* Brighter highlight */
+             border-radius: 4px 4px 0 0;
+         }
+
+         /* Animation for bars */
+         @keyframes grow-bar {
+             0% { height: 0; }
+             100% { height: var(--final-height); } /* Use CSS variable for target height */
+         }
+
+         /* Visual elements for a Line Chart */
+         .line-chart-elements {
+             /* Specific styles for the line chart container if needed */
+             align-items: center; /* Center line vertically */
+             padding: 10px 0; /* Padding for points */
+         }
+
+         .line-chart-elements .line-segment {
+             flex-grow: 1;
+             height: 4px; /* Thicker line */
+             background: linear-gradient(to right, #6b46c1, #805ad5); /* Purple gradient */
+             opacity: 0.9; /* Less transparent */
+             position: relative;
+         }
+
+         .line-chart-elements .data-point {
+             position: absolute;
+             width: 14px; /* Larger points */
+             height: 14px;
+             background-color: #6b46c1; /* Purple */
+             border-radius: 50%;
+             box-shadow: 0 0 12px #6b46c1, 0 0 20px #6b46c1; /* Stronger, layered glow */
+             z-index: 1; /* Ensure points are above lines */
+             transform: translate(-50%, -50%); /* Center the point */
+             /* Initial state for animation */
+             opacity: 0;
+             transform: translate(-50%, -50%) scale(0.5);
+         }
+
+         /* Animation for data points */
+         @keyframes appear-point {
+             0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+             80% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+             100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+         }
+
+         /* Axis and Labels Placeholder */
+         .axis-labels {
+             position: absolute;
+             bottom: 0;
+             left: 0;
+             width: 100%;
+             display: flex;
+             justify-content: space-around;
+             color: #a0aec0; /* Gray text */
+             font-size: 0.8rem;
+             padding-top: 8px; /* Space above labels */
+         }
+
+         .axis-label {
+             text-align: center;
+             opacity: 0.7;
+         }
+
+         /* Adding a subtle grid to the chart area */
+         .chart-grid {
+             position: absolute;
+             top: 0;
+             left: 0;
+             width: 100%;
+             height: calc(100% - 30px); /* Adjust height for x-axis labels */
+             background-image: linear-gradient(to right, rgba(74, 85, 104, 0.2) 1px, transparent 1px), linear-gradient(to bottom, rgba(74, 85, 104, 0.2) 1px, transparent 1px);
+             background-size: 20% 20%; /* Adjust grid size */
+             z-index: 0; /* Ensure grid is behind chart elements */
+             opacity: 0.5;
+         }
+
+         /* SVG for connecting line in line chart */
+         .line-chart-svg {
+             position: absolute;
+             top: 0;
+             left: 0;
+             width: 100%;
+             height: calc(100% - 30px); /* Match grid height */
+             z-index: 0; /* Behind points, above grid */
+             overflow: visible; /* Allow glow/shadows to extend */
+         }
+          .line-chart-svg polyline {
+              fill: none;
+              stroke: #6b46c1; /* Purple line color */
+              stroke-width: 3; /* Thicker line */
+              opacity: 0.8;
+              filter: drop-shadow(0 0 5px rgba(107, 70, 193, 0.5)); /* Subtle shadow on the line */
+              /* Animation for line drawing (example, requires JS for dynamic drawing) */
+              /* stroke-dasharray: 1000; */
+              /* stroke-dashoffset: 1000; */
+              /* animation: draw-line 5s ease-out forwards; */
+          }
+
+          /* @keyframes draw-line {
+              to { stroke-dashoffset: 0; }
+          } */
+
+
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="flex min-h-screen">
+
+    <div class="w-16 bg-gray-900 text-gray-400 flex flex-col items-center py-6 shadow-lg z-10">
+        <div class="mb-8">
+            <svg class="w-8 h-8 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        </div>
+        <nav class="flex flex-col space-y-6">
+            <a href="#" class="text-teal-400 hover:text-teal-200" title="Dashboard">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m0 0l7 7m-2 2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+            </a>
+            <a href="#" class="hover:text-teal-200" title="Build">
+                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v4m8-4v4m0 6v4m-8-4v4m0-8H6a2 2 0 00-2 2v4a2 2 0 002 2h2m0-6h4m4 0h2a2 2 0 012 2v4a2 2 0 01-2 2h-2m-8-4h.01M12 15h.01M12 12h.01M12 9h.01M12 7h.01"></path></svg>
+            </a>
+            <a href="#" class="hover:text-teal-200" title="Revenue">
+                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V9m0 3v2m0 2v3m0-10a9 9 0 110 18 9 9 0 010-18z"></path></svg>
+            </a>
+            <a href="#" class="hover:text-teal-200" title="Settings">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            </a>
+        </nav>
+    </div>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <header class="flex justify-between items-center p-4 bg-gray-900 border-b border-gray-700 shadow-lg z-10">
+            <div class="flex items-center">
+                <svg class="w-6 h-6 text-teal-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                <h1 class="text-xl font-semibold text-white">Terrafusion Build</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="text-sm">Welcome, User!</span>
+                <div class="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center text-white text-sm">U</div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-x-hidden overflow-y-auto">
+
+            <section class="relative h-96 animated-gradient flex items-center justify-center text-center p-6">
+                <div class="z-10">
+                    <h2 class="text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">
+                        Precision Costing, Powered by AI.<br>
+                        <span class="text-teal-300">Your Edge in Real Estate Development.</span>
+                    </h2>
+                    <p class="text-lg text-gray-200 mb-8 max-w-2xl mx-auto">
+                        Move beyond guesswork. Terrafusion Build's advanced AI delivers rapid, accurate, and insightful cost estimates, giving you the confidence to build smarter.
+                    </p>
+                    <button class="px-8 py-3 bg-teal-500 text-white font-semibold rounded-md text-lg hover:bg-teal-600 transition duration-300 ease-in-out glow-effect">
+                        Experience AI Estimation
+                    </button>
+                </div>
+                <div class="absolute inset-0 z-0 opacity-20">
+                     <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                         <defs>
+                             <filter id="glow">
+                                 <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+                                 <feMerge>
+                                     <feMergeNode in="coloredBlur"/>
+                                     <feMergeNode in="SourceGraphic"/>
+                                 </feMerge>
+                             </filter>
+                         </defs>
+                         <circle cx="20" cy="30" r="5" fill="#38b2ac" filter="url(#glow)"/>
+                         <circle cx="80" cy="70" r="5" fill="#6b46c1" filter="url(#glow)"/>
+                         <line x1="20" y1="30" x2="80" y2="70" stroke="#38b2ac" stroke-width="1" opacity="0.5"/>
+                         <circle cx="50" cy="50" r="6" fill="#3182ce" filter="url(#glow)"/>
+                         <line x1="20" y1="30" x2="50" y2="50" stroke="#3182ce" stroke-width="1" opacity="0.5"/>
+                         <line x1="80" y1="70" x2="50" y2="50" stroke="#6b46c1" stroke-width="1" opacity="0.5"/>
+                     </svg>
+                 </div>
+            </section>
+
+            <section class="py-16 bg-gray-800">
+                <div class="container mx-auto px-6">
+                    <h2 class="text-3xl font-bold text-white text-center mb-12">Intelligent Features, Powerful Results</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                        <div class="flex flex-col items-center text-center">
+                            <div class="p-4 bg-gray-700 rounded-full mb-4 glow-effect">
+                                <svg class="w-10 h-10 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                            </div>
+                            <h3 class="text-xl font-semibold text-white mb-3">Predictive Accuracy</h3>
+                            <p class="text-gray-400">Our AI leverages historical data and market trends for highly reliable cost predictions.</p>
+                        </div>
+                        <div class="flex flex-col items-center text-center">
+                            <div class="p-4 bg-gray-700 rounded-full mb-4 glow-effect">
+                                <svg class="w-10 h-10 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            </div>
+                            <h3 class="text-xl font-semibold text-white mb-3">Smart Document Processing</h3>
+                            <p class="text-gray-400">AI automatically extracts critical details from your plans and specifications.</p>
+                        </div>
+                        <div class="flex flex-col items-center text-center">
+                             <div class="p-4 bg-gray-700 rounded-full mb-4 glow-effect">
+                                <svg class="w-10 h-10 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <h3 class="text-xl font-semibold text-white mb-3">Rapid Analysis</h3>
+                            <p class="text-gray-400">Get comprehensive estimates in a fraction of the time compared to manual methods.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+             <section id="input" class="py-16 px-6">
+                 <div class="container mx-auto">
+                    <h2 class="text-2xl font-bold mb-6 text-white">Input Project Details</h2>
+                    <div class="bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="project-name" class="block text-sm font-medium text-gray-400 mb-1">Project Name</label>
+                                <input type="text" id="project-name" class="w-full px-3 py-2 rounded-md bg-gray-700 text-white border border-gray-600 focus:outline-none">
+                            </div>
+                             <div>
+                                <label for="property-type" class="block text-sm font-medium text-gray-400 mb-1">Property Type</label>
+                                 <select id="property-type" class="w-full px-3 py-2 rounded-md bg-gray-700 text-white border border-gray-600 focus:outline-none">
+                                    <option value="">Select Type</option>
+                                    <option value="residential">Residential</option>
+                                    <option value="commercial">Commercial</option>
+                                 </select>
+                            </div>
+                             <div class="md:col-span-2">
+                                <label for="scope-of-work" class="block text-sm font-medium text-gray-400 mb-1">Scope of Work</label>
+                                <textarea id="scope-of-work" rows="4" class="w-full px-3 py-2 rounded-md bg-gray-700 text-white border border-gray-600 focus:outline-none"></textarea>
+                            </div>
+                             <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-400 mb-2">Upload Documents for AI Analysis</label>
+                                <div class="border-2 border-dashed border-gray-600 rounded-md px-6 pt-5 pb-6 flex justify-center items-center text-gray-400 hover:border-teal-400 hover:text-teal-400 transition cursor-pointer">
+                                    <div class="text-center">
+                                        <svg class="mx-auto h-12 w-12" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
+                                        <p class="mt-1 text-sm">Drag and drop or <span class="font-semibold">browse</span> files</p>
+                                        <p class="text-xs text-gray-500 mt-1">Our AI will intelligently process blueprints, specs, and more.</p>
+                                    </div>
+                                </div>
+                             </div>
+                        </div>
+                         <div class="mt-6 text-right">
+                            <button class="px-6 py-2 bg-teal-600 text-white font-semibold rounded-md hover:bg-teal-700 transition">Generate AI Estimate</button>
+                        </div>
+                    </div>
+                 </div>
+            </section>
+
+             <section id="processing" class="mb-10 hidden px-6">
+                 <div class="container mx-auto">
+                     <h2 class="text-2xl font-bold mb-6 text-white">AI is Generating Your Estimate...</h2>
+                     <div class="bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700 flex flex-col items-center justify-center min-h-[200px]">
+                         <div class="ai-processing-animation mb-4">
+                             <p class="text-gray-500 text-xl font-semibold">Analyzing Data...</p>
+                         </div>
+                         <p class="text-gray-300 text-lg font-semibold">Processing complex real estate data with advanced algorithms.</p>
+                         <p class="text-sm text-gray-500 mt-2">Sit tight! Your intelligent estimate is almost ready.</p>
+                     </div>
+                 </div>
+             </section>
+
+
+             <section id="results" class="py-16 px-6">
+                <div class="container mx-auto">
+                    <h2 class="text-2xl font-bold mb-6 text-white">AI-Powered Estimation Results</h2>
+                    <div class="bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700">
+                        <div class="mb-8 text-center">
+                            <p class="text-gray-400 text-lg mb-2">Estimated Project Cost:</p>
+                            <h3 class="text-5xl font-bold text-green-400">$150,000</h3>
+                            <p class="text-sm text-gray-400 mt-2">Confidence Level: <span class="text-yellow-400 font-semibold">High - Based on AI Model Confidence</span></p>
+                        </div>
+
+                        <div class="mb-6">
+                            <div class="collapsible-header flex justify-between items-center text-lg font-semibold text-teal-400 mb-2">
+                                <span>Detailed Cost Breakdown</span>
+                                 <svg class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </div>
+                            <div class="collapsible-content active bg-gray-700 rounded-md p-4">
+                                <ul class="list-disc list-inside text-gray-300">
+                                    <li class="mb-1">Materials: $60,000</li>
+                                    <li class="mb-1">Labor: $70,000</li>
+                                    <li class="mb-1">Permits & Fees: $5,000</li>
+                                    <li class="mb-1">Contingency: $15,000</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                             <h3 class="text-lg font-semibold text-white mb-4">AI Cost Distribution Analysis</h3>
+                             <div class="w-full h-64 chart-placeholder">
+                                 <div class="chart-grid"></div> <div class="chart-container bar-chart-elements">
+                                     </div>
+                                  <div class="axis-labels">
+                                     <span class="axis-label">Materials</span>
+                                     <span class="axis-label">Labor</span>
+                                     <span class="axis-label">Permits</span>
+                                     <span class="axis-label">Contingency</span>
+                                      <span class="axis-label">Design</span>
+                                     <span class="axis-label">Site Work</span>
+                                     <span class="axis-label">Finishes</span>
+                                 </div>
+                             </div>
+                             <p class="text-sm text-gray-400 text-center mt-2">Detailed breakdown of estimated costs by category.</p>
+                        </div>
+
+                        <div class="mb-6">
+                             <h3 class="text-lg font-semibold text-white mb-4">Comparative Market Analysis (AI-Driven)</h3>
+                             <div class="w-full h-64 chart-placeholder">
+                                  <div class="chart-grid"></div> <div class="chart-container line-chart-elements">
+                                       <svg class="line-chart-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                           <polyline points="10,80 30,60 50,40 70,20 90,50" fill="none" stroke="#6b46c1" stroke-width="3" opacity="0.8" filter="drop-shadow(0 0 5px rgba(107, 70, 193, 0.5))"/>
+                                       </svg>
+                                  </div>
+                                   <div class="axis-labels">
+                                     <span class="axis-label">Project A</span>
+                                     <span class="axis-label">Project B</span>
+                                     <span class="axis-label">Your Project</span>
+                                     <span class="axis-label">Market Avg</span>
+                                      <span class="axis-label">Project C</span>
+                                 </div>
+                             </div>
+                             <p class="text-sm text-gray-400 text-center mt-2">See how your estimate compares to similar projects and market benchmarks.</p>
+                        </div>
+
+
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-white mb-2">AI Insights & Recommendations</h3>
+                            <div class="bg-gray-700 rounded-md p-4 text-gray-300 text-sm">
+                                <p class="mb-2"><span class="font-semibold text-teal-300">Insight:</span> Material costs are slightly higher than regional averages for this property type. Consider exploring alternative suppliers or materials.</p>
+                                <p><span class="font-semibold text-teal-300">Recommendation:</span> Review the "Materials" breakdown for potential cost-saving opportunities identified by the AI.</p>
+                            </div>
+                        </div>
+
+
+                         <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-white mb-2">AI Analysis Assumptions & Notes</h3>
+                            <div class="bg-gray-700 rounded-md p-4 text-gray-300 text-sm">
+                                <p>- Estimate based on AI analysis of uploaded documents and input parameters.</p>
+                                <p>- Assumes standard construction practices unless specified otherwise in documents.</p>
+                                <p>- Costs are estimates and may vary based on market fluctuations and final material/labor selections.</p>
+                            </div>
+                        </div>
+
+                        <div class="text-right">
+                            <button class="px-6 py-2 bg-teal-600 text-white font-semibold rounded-md hover:bg-teal-700 transition mr-4">Download Full AI Report</button>
+                            <button class="px-6 py-2 border border-gray-600 text-gray-300 rounded-md hover:bg-gray-700 transition">Revise Project Details</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+             <section id="dashboard" class="py-16 px-6">
+                <div class="container mx-auto">
+                    <h2 class="text-2xl font-bold mb-6 text-white">Your Projects</h2>
+                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700">
+                            <h3 class="text-lg font-semibold mb-2 text-teal-400">Luxury Condo Renovation</h3>
+                            <p class="text-sm text-gray-400 mb-4">Created: 2023-10-26 | Status: Complete</p>
+                            <p class="text-gray-300 mb-4">AI Estimated Cost: <span class="text-green-400 font-bold text-xl">$150,000</span></p>
+                            <div class="flex space-x-4">
+                                <button class="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition">View Details</button>
+                                <button class="px-4 py-2 border border-gray-600 text-gray-300 rounded-md hover:bg-gray-700 transition">Edit</button>
+                            </div>
+                        </div>
+                        <div class="bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700">
+                            <h3 class="text-lg font-semibold mb-2 text-purple-400">Downtown Office Build-out</h3>
+                            <p class="text-sm text-gray-400 mb-4">Created: 2023-11-10 | Status: Estimating</p>
+                            <p class="text-gray-300 mb-4">AI Analysis Progress: <span class="text-purple-400 font-bold">75%</span></p>
+                             <div class="flex space-x-4">
+                                <button class="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition">View Details</button>
+                                <button class="px-4 py-2 border border-gray-600 text-gray-300 rounded-md hover:bg-gray-700 transition">Edit</button>
+                            </div>
+                        </div>
+                         <div class="bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700 flex flex-col items-center justify-center border-dashed border-gray-600 text-gray-400 hover:border-teal-400 hover:text-teal-400 transition cursor-pointer">
+                            <svg class="mx-auto h-10 w-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span class="text-lg font-semibold">Create New Project</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+        </main>
+    </div>
+
+    <script>
+        // JavaScript for collapsible sections
+        document.addEventListener('DOMContentLoaded', function() {
+            const headers = document.querySelectorAll('.collapsible-header');
+
+            headers.forEach(header => {
+                header.addEventListener('click', function() {
+                    const content = this.nextElementSibling;
+                    const icon = this.querySelector('svg');
+
+                    content.classList.toggle('active');
+                    icon.classList.toggle('rotate-180'); // Rotate arrow icon
+                });
+            });
+
+            // Example of showing the processing state (you would trigger this on form submission)
+            // For demonstration, let's add a click listener to the "Generate AI Estimate" button
+            const generateButton = document.querySelector('#input button');
+            const inputSection = document.getElementById('input');
+            const processingSection = document.getElementById('processing');
+            const resultsSection = document.getElementById('results');
+            const heroSection = document.querySelector('.animated-gradient'); // Get the hero section
+
+            if(generateButton) {
+                generateButton.addEventListener('click', function(event) {
+                    event.preventDefault(); // Prevent default form submission for this demo
+
+                    // Hide input, results, and hero, show processing
+                    inputSection.classList.add('hidden');
+                    resultsSection.classList.add('hidden');
+                    heroSection.classList.add('hidden');
+                    processingSection.classList.remove('hidden');
+
+                    // Scroll to processing section
+                    processingSection.scrollIntoView({ behavior: 'smooth' });
+
+                    // In a real app, you'd make an API call here.
+                    // Simulate processing time and then show results
+                    setTimeout(() => {
+                        processingSection.classList.add('hidden');
+                        resultsSection.classList.remove('hidden');
+                         // Scroll to results section
+                        resultsSection.scrollIntoView({ behavior: 'smooth' });
+                         // Trigger chart animations after results are shown
+                         animateCharts();
+                    }, 3000); // Simulate 3 seconds of processing
+                });
+            }
+
+             // Add click listener to the "Experience AI Estimation" button in the Hero section
+             const startButton = document.querySelector('.animated-gradient button');
+             if(startButton) {
+                 startButton.addEventListener('click', function(event) {
+                     event.preventDefault(); // Prevent default link behavior
+
+                     // Scroll to the input section
+                     const inputSection = document.getElementById('input');
+                     if(inputSection) {
+                         inputSection.scrollIntoView({ behavior: 'smooth' });
+                     }
+                 });
+             }
+
+             // Function to animate the charts
+             function animateCharts() {
+                 // Animate Bar Chart Bars
+                 const barContainer = document.querySelector('.bar-chart-elements');
+                 if (barContainer) {
+                     // Clear existing bars if any
+                     barContainer.innerHTML = '';
+
+                     // Create and animate new bars
+                     const barHeights = [80, 90, 60, 75, 50, 85, 70]; // Example heights
+                     barHeights.forEach((height, index) => {
+                         const bar = document.createElement('div');
+                         bar.classList.add('bar');
+                         bar.style.setProperty('--final-height', height + '%');
+                         // Apply animation with staggered delay
+                         bar.style.animation = `grow-bar 1.5s ease-out forwards ${index * 0.1}s`;
+                         barContainer.appendChild(bar);
+                     });
+                 }
+
+
+                 // Animate Line Chart Points and Line
+                 const lineContainer = document.querySelector('.line-chart-elements');
+                 const lineSVG = lineContainer ? lineContainer.querySelector('.line-chart-svg polyline') : null;
+
+                 if (lineContainer && lineSVG) {
+                     // Define points for the line chart (relative to SVG viewBox 0-100)
+                     const points = [
+                         { x: 10, y: 80 },
+                         { x: 30, y: 60 },
+                         { x: 50, y: 40 },
+                         { x: 70, y: 20 },
+                         { x: 90, y: 50 }
+                     ];
+
+                     // Clear existing points if any
+                     lineContainer.querySelectorAll('.data-point').forEach(point => point.remove());
+
+
+                     // Add and animate data points
+                     points.forEach((point, index) => {
+                         const pointElement = document.createElement('div');
+                         pointElement.classList.add('data-point');
+                         // Position points based on SVG coordinates (adjusting for container padding/height)
+                         // This positioning is an approximation for the demo
+                         const containerHeight = lineContainer.clientHeight;
+                         const containerWidth = lineContainer.clientWidth;
+                         const pointX = (point.x / 100) * containerWidth;
+                         const pointY = (point.y / 100) * containerHeight;
+
+                         pointElement.style.top = `${pointY}px`;
+                         pointElement.style.left = `${pointX}px`;
+
+                         // Apply animation with staggered delay
+                         pointElement.style.animation = `appear-point 1s ease-out forwards ${index * 0.2 + 0.5}s`; // Add a slight delay after bars
+                         lineContainer.appendChild(pointElement);
+                     });
+
+                     // Animate the SVG line drawing (requires calculating path length)
+                     // For this demo, we'll just ensure the line is visible after a delay
+                     // A real implementation would use stroke-dasharray and stroke-dashoffset animation
+                     lineSVG.style.opacity = 0; // Start hidden
+                     setTimeout(() => {
+                          lineSVG.style.transition = 'opacity 1s ease-out';
+                          lineSVG.style.opacity = 0.8; // Fade in the line
+                     }, points.length * 0.2 * 1000 + 600); // Delay based on point animation + a little extra
+                 }
+             }
+
+             // Optional: Animate charts when the results section becomes visible on initial load
+             // (If the user lands directly on the results page)
+             // You might need an Intersection Observer for a real application
+             // For this demo, we'll just call it if the results section is initially visible
+             if (!resultsSection.classList.contains('hidden')) {
+                 animateCharts();
+             }
+
+        });
+    </script>
+
+</body>
+</html>

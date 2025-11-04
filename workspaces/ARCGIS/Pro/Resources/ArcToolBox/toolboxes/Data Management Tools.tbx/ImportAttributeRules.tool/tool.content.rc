@@ -1,0 +1,11 @@
+{
+    "map": {
+        "csv_file.descr": "The .csv file containing the rules to import.",
+        "csv_file.title": "Input File",
+        "description": "Imports attribute rules from a comma-separated values file (.csv) to a dataset.",
+        "out_table.title": "Attribute Rules Imported",
+        "target_table.descr": "The table or feature class to which the attribute rules will be applied. The dataset must have all the features specified in the rule definition.",
+        "target_table.title": "Target Table",
+        "title": "Import Attribute Rules"
+    }
+}

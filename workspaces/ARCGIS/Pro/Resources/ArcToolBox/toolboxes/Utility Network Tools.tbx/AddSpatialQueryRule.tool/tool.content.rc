@@ -1,0 +1,25 @@
+{
+    "map": {
+        "added_features.title": "Add Features",
+        "added_where_clause.title": "Added Features Query Definition",
+        "description": "Add a spatial query rule to a diagram template",
+        "description.title": "Description",
+        "existing_features.title": "Existing Features",
+        "existing_where_clause.title": "Existing Features Query Definition",
+        "in_utility_network.title": "Input Network",
+        "is_active.title": "Active",
+        "out_template_name.title": "Output Diagram Template",
+        "out_utility_network.title": "Output Network",
+        "overlap_type.domain.BOUNDARY_TOUCHES": "BOUNDARY_TOUCHES",
+        "overlap_type.domain.CONTAINS": "CONTAINS",
+        "overlap_type.domain.CROSSED_BY_THE_OUTLINE_OF": "CROSSED_BY_THE_OUTLINE_OF",
+        "overlap_type.domain.INTERSECT": "INTERSECT",
+        "overlap_type.domain.SHARE_A_LINE_SEGMENT_WITH": "SHARE_A_LINE_SEGMENT_WITH",
+        "overlap_type.domain.WITHIN": "WITHIN",
+        "overlap_type.domain.WITHIN_A_DISTANCE": "WITHIN_A_DISTANCE",
+        "overlap_type.title": "Relationship",
+        "search_distance.title": "Search Distance",
+        "template_name.title": "Input Diagram Template",
+        "title": "Add Spatial Query Rule"
+    }
+}

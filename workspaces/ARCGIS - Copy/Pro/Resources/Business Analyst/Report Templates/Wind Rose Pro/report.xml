@@ -1,0 +1,561 @@
+<HTMLextReport version="10.1" pagesize="letter" orientation="portrait" left="1" right="1" top="1" bottom="1" style="font-size:7.5;font-family:Arial;" mainTable="Analysis">
+  <queries>
+    <query name="default" table="Analysis" groupBy="Analysis.STORE_ID">
+      <join table="images" key="ID" to="STORE_ID" />
+    </query>
+  </queries>
+	<def align="left" lineSpacing="1"/>
+	<section type="PageHeader">
+		<table width="610.3" left="0" spaceAfter="3" widths="144;6.75;247.05;1.55;201.35;9.6">
+			<tr height="11.9025">
+				<td style="background-color:#3179bb;"/>
+				<td style="background-color:#3179bb;"/>
+				<td style="background-color:#3179bb;"/>
+				<td style="background-color:#3179bb;"/>
+				<td style="background-color:#3179bb;"/>
+				<td style="color:#ffffff;background-color:#3179bb;"/>
+			</tr>
+			<tr height="24">
+				<td style="background-color:#3179bb;"/>
+				<td style="font-size:18;background-color:#3179bb;color:#FFFFFF;font-weight:normal;" valign="center" pad="4.5" colspan="4">Wind Rose Report</td>
+				<td style="color:#ffffff;background-color:#3179bb;"/>
+			</tr>
+			<tr height="7.5">
+				<td style="background-color:#3179bb;"/>
+				<td style="background-color:#3179bb;"/>
+				<td style="background-color:#3179bb;"/>
+				<td style="background-color:#3179bb;"/>
+				<td style="background-color:#3179bb;"/>
+				<td style="color:#ffffff;background-color:#3179bb;"/>
+			</tr>
+			<tr height="11.4975">
+				<td style="background-color:#3179bb;"/>
+				<td style="background-color:#3179bb;"/>
+				<td style="background-color:#3179bb;color:#ffffff;font-size:9;">
+					<d f="Analysis.SITE_NAME"/>
+				</td>
+				<td style="background-color:#3179bb;color:#ffffff;font-size:9;" align="right" colspan="2">
+					<reportTitle2/>
+				</td>
+				<td style="color:#ffffff;background-color:#3179bb;"/>
+			</tr>
+			<tr height="10.7475">
+				<td style="background-color:#3179bb;"/>
+				<td style="background-color:#3179bb;"/>
+				<td style="background-color:#3179bb;color:#ffffff;font-size:9;" colspan="2">
+					<d f="Analysis.STORE_ADDR"/>
+				</td>
+				<td style="background-color:#3179bb;color:#ffffff;" align="right">
+					<d f="Analysis.STORE_LAT"/>
+				</td>
+				<td style="color:#ffffff;background-color:#3179bb;"/>
+			</tr>
+			<tr height="11.4975">
+				<td style="background-color:#3179bb;"/>
+				<td style="background-color:#3179bb;"/>
+				<td style="background-color:#3179bb;color:#ffffff;font-size:9;" colspan="2">
+					<d f="Analysis.AREA_DESC2"/>
+				</td>
+				<td style="background-color:#3179bb;color:#ffffff;" align="right">
+					<d f="Analysis.STORE_LONG"/>
+				</td>
+				<td style="color:#ffffff;background-color:#3179bb;"/>
+			</tr>
+			<tr height="3.2475">
+				<td style="background-color:#3179bb;"/>
+				<td style="background-color:#3179bb;"/>
+				<td style="color:#ffffff;font-size:9;background-color:#3179bb;"/>
+				<td style="background-color:#3179bb;color:#ffffff;"/>
+				<td style="color:#ffffff;background-color:#3179bb;" align="right"/>
+				<td style="color:#ffffff;background-color:#3179bb;"/>
+			</tr>
+			<tr height="0.5">
+				<td style="background-color:#3179bb;"/>
+				<td style="background-color:#3179bb;"/>
+				<td style="background-color:#3179bb;"/>
+				<td style="background-color:#3179bb;"/>
+				<td style="background-color:#3179bb;"/>
+				<td style="background-color:#3179bb;"/>
+			</tr>
+		</table>
+		<img top="0.5" left="0.48926" width="143.625" height="80.391" src="7q1nyco7rolr.png"/>
+	</section>
+	<section type="Details">
+		<table width="609.55" widths="20;570.95;18.6">
+			<tr height="20">
+				<td overrideStyle="Default"/>
+				<td style="font-size:12;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;" valign="center" overrideStyle="Default"/>
+				<td align="right" overrideStyle="Default"/>
+			</tr>
+			<tr height="24">
+				<td overrideStyle="Default"/>
+				<td style="font-size:13.5;font-family:Verdana;color:#3179bb;background-color:#ffffff;font-weight:bold;font-style:normal;text-decoration:none;" valign="center">Number of points and direction</td>
+				<td align="right" overrideStyle="Default"/>
+			</tr>
+		</table>
+		<table width="610" spaceAfter="0.6975" widths="610">
+			<tr height="475">
+				<td align="center" valign="center" overrideStyle="Default">
+					<mapImage width="610" height="475" />
+				</td>
+			</tr>
+		</table>
+		<table width="610" spaceAfter="2.145" widths="20;562.45;27.55">
+			<tr height="31">
+				<td overrideStyle="Default"/>
+				<td style="font-size:13.5;font-weight:bold;color:#3179bb;background-color:#ffffff;" valign="center">About the chart</td>
+				<td overrideStyle="Default"/>
+			</tr>
+			<tr height="48">
+				<td overrideStyle="Default"/>
+				<td style="font-size:9.75;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;" valign="center" overrideStyle="Default">This report describes the distribution and direction of location points (e.g. customers or patients) around a site (e.g. store or facility). The <b>length</b> of the sector represents the median distance of the location points from the site per sector and the <b>color</b> represents the number of location points in that sector.</td>
+				<td overrideStyle="Default"/>
+			</tr>
+		</table>
+		<table width="610" spaceAfter="1.4475" widths="20;239;338.65;12.35">
+			<tr height="28">
+				<td overrideStyle="Default"/>
+				<td style="font-size:9.75;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;" valign="center" overrideStyle="Default">The largest number of location points are in the</td>
+				<td style="font-size:10.5;font-weight:normal;color:#3179bb;background-color:#ffffff;font-family:Verdana;font-style:normal;text-decoration:none;" valign="center">
+					<d f="Analysis.MAX_COUNT_DIRECTION"/> (<d f="Analysis.MAX_POINTS_DIRECTION_PERCENT" m="#,#0.0\%"/>).</td>
+				<td align="right" overrideStyle="Default"/>
+			</tr>
+		</table>
+		<table width="609.75" spaceAfter="2.04" widths="20;276;299.95;13.8">
+			<tr height="16">
+				<td overrideStyle="Default"/>
+				<td style="font-size:9.75;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;" valign="center" overrideStyle="Default">Location points have the largest median distance in the</td>
+				<td style="font-size:10.5;font-family:Verdana;color:#3179bb;background-color:#ffffff;font-weight:normal;font-style:normal;text-decoration:none;" valign="center">
+					<d f="Analysis.MAX_DISTANCE_DIRECTION"/>.</td>
+				<td align="right" overrideStyle="Default"/>
+			</tr>
+		</table>
+		<pageBreak/>
+		<table width="610" spaceAfter="15.645" widths="20;143;143;142;142.5;19.5">
+			<tr height="10">
+				<td align="center" valign="center" overrideStyle="Default"/>
+				<td style="font-size:9;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;" overrideStyle="Default"/>
+				<td align="center" valign="center" overrideStyle="Default"/>
+				<td align="center" valign="center" overrideStyle="Default"/>
+				<td align="center" valign="center" overrideStyle="Default"/>
+				<td align="center" valign="center" overrideStyle="Default"/>
+			</tr>
+			<tr height="50">
+				<td align="center" valign="center" overrideStyle="Default"/>
+				<td align="center" valign="center" overrideStyle="Default">
+					<img width="142.25" height="49.25" src="jk8sdillilev.png"/>
+				</td>
+				<td align="center" valign="center" overrideStyle="Default">
+					<img width="142.25" height="49.25" src="493j093fpyj2.png"/>
+				</td>
+				<td align="center" valign="center" overrideStyle="Default">
+					<img width="141.25" height="49.25" src="1srztul9ya7a.png"/>
+				</td>
+				<td align="center" valign="center" overrideStyle="Default">
+					<img width="141.75" height="49.25" src="7elja5cria5e.png"/>
+				</td>
+				<td align="center" valign="center" overrideStyle="Default"/>
+			</tr>
+			<tr height="25">
+				<td style="font-size:10.5;font-family:Verdana;color:#4c4c4c;background-color:rgba(0, 0, 0, 0);font-weight:normal;font-style:normal;text-decoration:none;" align="center" valign="center"/>
+				<td style="font-size:18;font-family:Verdana;color:#3179bb;background-color:rgba(0, 0, 0, 0);font-weight:normal;font-style:normal;text-decoration:none;" align="center" valign="center">
+					<d f="Analysis.TOTAL_POINTS" m="0"/>
+				</td>
+				<td style="font-size:18;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;color:#3179bb;background-color:#ffffff;" align="center" valign="center">
+					<d f="Analysis.MED_DISTANCE" m="#,#0.0"/>
+				</td>
+				<td style="font-size:18;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;color:#3179bb;background-color:#ffffff;" align="center" valign="center">
+					<d f="Analysis.MIN_DISTANCE" m="#,#0.0"/>
+				</td>
+				<td style="font-size:18;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;color:#3179bb;background-color:rgba(0, 0, 0, 0);" align="center" valign="center">
+					<d f="Analysis.MAX_DISTANCE" m="#,#0.0"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;color:#4c4c4c;background-color:rgba(0, 0, 0, 0);" align="center" valign="center"/>
+			</tr>
+			<tr height="18">
+				<td style="font-size:9;" align="center" valign="center" overrideStyle="Default"/>
+				<td style="font-size:9.75;" align="center" valign="center" overrideStyle="Default">Total Number of Points</td>
+				<td style="font-size:9.75;" align="center" valign="center" overrideStyle="Default">Median Distance</td>
+				<td style="font-size:9.75;" align="center" valign="center" overrideStyle="Default">Distance of Closest Point</td>
+				<td style="font-size:9.75;" align="center" valign="center" overrideStyle="Default">Distance of Farthest Point</td>
+				<td style="font-size:9;" align="center" valign="center" overrideStyle="Default"/>
+			</tr>
+		</table>
+		<table width="610" spaceAfter="5.25" widths="15;87.1;30;136;160;160.85;8.3;12.75">
+			<tr height="26">
+				<td style="font-size:9;" valign="center" overrideStyle="Default"/>
+				<td style="background-color:#3179bb;color:#ffffff;font-size:11.25;font-weight:bold;" valign="center" pad="5">Direction</td>
+				<td style="background-color:#3179bb;color:#ffffff;font-size:11.25;font-weight:bold;" align="right" valign="center"/>
+				<td style="background-color:#3179bb;color:#ffffff;font-size:11.25;font-weight:bold;" align="right" valign="center">Number of Points</td>
+				<td style="background-color:#3179bb;color:#ffffff;font-size:11.25;font-weight:bold;" align="right" valign="center">Percent</td>
+				<td style="background-color:#3179bb;color:#ffffff;font-size:11.25;font-weight:bold;" align="right" valign="center">Median Distance *</td>
+				<td style="background-color:#3179bb;color:#ffffff;font-size:9;" align="right" valign="center"/>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="Default"/>
+			</tr>
+			<tr height="10">
+				<td style="font-size:9;" valign="center" overrideStyle="Default"/>
+				<td style="font-size:9;" valign="center" overrideStyle="Default" pad="3"/>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="Default"/>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="Default"/>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="Default"/>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="Default"/>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="Default"/>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="Default"/>
+			</tr>
+			<tr height="30">
+				<td style="font-size:9;" valign="center" overrideStyle="Default"/>
+				<td style="font-size:10.5;" valign="center" overrideStyle="AlternatingRow" pad="10">
+					<d f="Analysis.S1_NAME"/>
+				</td>
+				<td style="font-size:9;" valign="center" overrideStyle="AlternatingRow">
+					<img width="29.25" height="29.25" src="lqoulaxy0r5u.png"/>
+				</td>
+				<td style="font-size:10.5;" align="right" valign="center" overrideStyle="AlternatingRow">
+					<d f="Analysis.S1_COUNT" m="#,#0"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center" overrideStyle="AlternatingRow">
+					<d f="Analysis.S1_PERCENT" m="#,#0.0\%"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center" overrideStyle="AlternatingRow">
+					<d f="Analysis.S1_DISTANCE" m="#,#0.0"/>
+				</td>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="AlternatingRow"/>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="Default"/>
+			</tr>
+			<tr height="30">
+				<td style="font-size:9;" valign="center" overrideStyle="Default"/>
+				<td style="font-size:10.5;" valign="center" pad="10">
+					<d f="Analysis.S2_NAME"/>
+				</td>
+				<td style="font-size:9;" valign="center">
+					<img width="29.25" height="29.25" src="l2661ppzvmgo.png"/>
+				</td>
+				<td style="font-size:10.5;" align="right" valign="center">
+					<d f="Analysis.S2_COUNT" m="#,#0"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;color:#4c4c4c;background-color:#ffffff;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center">
+					<d f="Analysis.S2_PERCENT" m="#,#0.0\%"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;color:#4c4c4c;background-color:#ffffff;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center">
+					<d f="Analysis.S2_DISTANCE" m="#,#0.0"/>
+				</td>
+				<td style="font-size:9;" align="right" valign="center"/>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="Default"/>
+			</tr>
+			<tr height="30">
+				<td style="font-size:9;" valign="center" overrideStyle="Default"/>
+				<td style="font-size:10.5;" valign="center" overrideStyle="AlternatingRow" pad="10">
+					<d f="Analysis.S3_NAME"/>
+				</td>
+				<td style="font-size:9;" valign="center" overrideStyle="AlternatingRow">
+					<img width="29.25" height="29.25" src="z3ch7yrqxlcl.png"/>
+				</td>
+				<td style="font-size:10.5;" align="right" valign="center" overrideStyle="AlternatingRow">
+					<d f="Analysis.S3_COUNT" m="#,#0"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center" overrideStyle="AlternatingRow">
+					<d f="Analysis.S3_PERCENT" m="#,#0.0\%"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center" overrideStyle="AlternatingRow">
+					<d f="Analysis.S3_DISTANCE" m="#,#0.0"/>
+				</td>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="AlternatingRow"/>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="Default"/>
+			</tr>
+			<tr height="30">
+				<td style="font-size:9;" valign="center" overrideStyle="Default"/>
+				<td style="font-size:10.5;" valign="center" pad="10">
+					<d f="Analysis.S4_NAME"/>
+				</td>
+				<td style="font-size:9;" valign="center">
+					<img width="29.25" height="29.25" src="f0su6n5wyifq.png"/>
+				</td>
+				<td style="font-size:10.5;" align="right" valign="center">
+					<d f="Analysis.S4_COUNT" m="#,#0"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;color:#4c4c4c;background-color:#ffffff;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center">
+					<d f="Analysis.S4_PERCENT" m="#,#0.0\%"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;color:#4c4c4c;background-color:#ffffff;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center">
+					<d f="Analysis.S4_DISTANCE" m="#,#0.0"/>
+				</td>
+				<td style="font-size:9;" align="right" valign="center"/>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="Default"/>
+			</tr>
+			<tr height="30">
+				<td style="font-size:9;" valign="center" overrideStyle="Default"/>
+				<td style="font-size:10.5;" valign="center" overrideStyle="AlternatingRow" pad="10">
+					<d f="Analysis.S5_NAME"/>
+				</td>
+				<td style="font-size:9;" valign="center" overrideStyle="AlternatingRow">
+					<img width="29.25" height="29.25" src="bk004xen6qnb.png"/>
+				</td>
+				<td style="font-size:10.5;" align="right" valign="center" overrideStyle="AlternatingRow">
+					<d f="Analysis.S5_COUNT" m="#,#0"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center" overrideStyle="AlternatingRow">
+					<d f="Analysis.S5_PERCENT" m="#,#0.0\%"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center" overrideStyle="AlternatingRow">
+					<d f="Analysis.S5_DISTANCE" m="#,#0.0"/>
+				</td>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="AlternatingRow"/>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="Default"/>
+			</tr>
+			<tr height="30">
+				<td style="font-size:9;" valign="center" overrideStyle="Default"/>
+				<td style="font-size:10.5;" valign="center" pad="10">
+					<d f="Analysis.S6_NAME"/>
+				</td>
+				<td style="font-size:9;" valign="center">
+					<img width="29.25" height="29.25" src="87aol30ppm6p.png"/>
+				</td>
+				<td style="font-size:10.5;" align="right" valign="center">
+					<d f="Analysis.S6_COUNT" m="#,#0"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;color:#4c4c4c;background-color:#ffffff;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center">
+					<d f="Analysis.S6_PERCENT" m="#,#0.0\%"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;color:#4c4c4c;background-color:#ffffff;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center">
+					<d f="Analysis.S6_DISTANCE" m="#,#0.0"/>
+				</td>
+				<td style="font-size:9;" align="right" valign="center"/>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="Default"/>
+			</tr>
+			<tr height="30">
+				<td style="font-size:9;" valign="center" overrideStyle="Default"/>
+				<td style="font-size:10.5;" valign="center" overrideStyle="AlternatingRow" pad="10">
+					<d f="Analysis.S7_NAME"/>
+				</td>
+				<td style="font-size:9;" valign="center" overrideStyle="AlternatingRow">
+					<img width="29.25" height="29.25" src="t6obza46v3h9.png"/>
+				</td>
+				<td style="font-size:10.5;" align="right" valign="center" overrideStyle="AlternatingRow">
+					<d f="Analysis.S7_COUNT" m="#,#0"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center" overrideStyle="AlternatingRow">
+					<d f="Analysis.S7_PERCENT" m="#,#0.0\%"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center" overrideStyle="AlternatingRow">
+					<d f="Analysis.S7_DISTANCE" m="#,#0.0"/>
+				</td>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="AlternatingRow"/>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="Default"/>
+			</tr>
+			<tr height="30">
+				<td style="font-size:9;" valign="center" overrideStyle="Default"/>
+				<td style="font-size:10.5;" valign="center" pad="10">
+					<d f="Analysis.S8_NAME"/>
+				</td>
+				<td style="font-size:9;" valign="center">
+					<img width="29.25" height="29.25" src="ymh4zvrjabv0.png"/>
+				</td>
+				<td style="font-size:10.5;" align="right" valign="center">
+					<d f="Analysis.S8_COUNT" m="#,#0"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;color:#4c4c4c;background-color:#ffffff;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center">
+					<d f="Analysis.S8_PERCENT" m="#,#0.0\%"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;color:#4c4c4c;background-color:#ffffff;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center">
+					<d f="Analysis.S8_DISTANCE" m="#,#0.0"/>
+				</td>
+				<td style="font-size:9;" align="right" valign="center"/>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="Default"/>
+			</tr>
+			<tr height="30">
+				<td style="font-size:9;" valign="center" overrideStyle="Default"/>
+				<td style="font-size:10.5;" valign="center" overrideStyle="AlternatingRow" pad="10">
+					<d f="Analysis.S9_NAME"/>
+				</td>
+				<td style="font-size:9;" valign="center" overrideStyle="AlternatingRow">
+					<img width="29.25" height="29.25" src="f5guqs97iacl.png"/>
+				</td>
+				<td style="font-size:10.5;" align="right" valign="center" overrideStyle="AlternatingRow">
+					<d f="Analysis.S9_COUNT" m="#,#0"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center" overrideStyle="AlternatingRow">
+					<d f="Analysis.S9_PERCENT" m="#,#0.0\%"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center" overrideStyle="AlternatingRow">
+					<d f="Analysis.S9_DISTANCE" m="#,#0.0"/>
+				</td>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="AlternatingRow"/>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="Default"/>
+			</tr>
+			<tr height="30">
+				<td style="font-size:9;" valign="center" overrideStyle="Default"/>
+				<td style="font-size:10.5;" valign="center" pad="10">
+					<d f="Analysis.S10_NAME"/>
+				</td>
+				<td style="font-size:9;" valign="center">
+					<img width="29.25" height="29.25" src="t06toa7ofixm.png"/>
+				</td>
+				<td style="font-size:10.5;" align="right" valign="center">
+					<d f="Analysis.S10_COUNT" m="#,#0"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;color:#4c4c4c;background-color:#ffffff;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center">
+					<d f="Analysis.S10_PERCENT" m="#,#0.0\%"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;color:#4c4c4c;background-color:#ffffff;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center">
+					<d f="Analysis.S10_DISTANCE" m="#,#0.0"/>
+				</td>
+				<td style="font-size:9;" align="right" valign="center"/>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="Default"/>
+			</tr>
+			<tr height="30">
+				<td style="font-size:9;" valign="center" overrideStyle="Default"/>
+				<td style="font-size:10.5;" valign="center" overrideStyle="AlternatingRow" pad="10">
+					<d f="Analysis.S11_NAME"/>
+				</td>
+				<td style="font-size:9;" valign="center" overrideStyle="AlternatingRow">
+					<img width="29.25" height="29.25" src="wmwg4nryyhuj.png"/>
+				</td>
+				<td style="font-size:10.5;" align="right" valign="center" overrideStyle="AlternatingRow">
+					<d f="Analysis.S11_COUNT" m="#,#0"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center" overrideStyle="AlternatingRow">
+					<d f="Analysis.S11_PERCENT" m="#,#0.0\%"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center" overrideStyle="AlternatingRow">
+					<d f="Analysis.S11_DISTANCE" m="#,#0.0"/>
+				</td>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="AlternatingRow"/>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="Default"/>
+			</tr>
+			<tr height="30">
+				<td style="font-size:9;" valign="center" overrideStyle="Default"/>
+				<td style="font-size:10.5;" valign="center" pad="10">
+					<d f="Analysis.S12_NAME"/>
+				</td>
+				<td style="font-size:9;" valign="center">
+					<img width="29.25" height="29.25" src="f7tup5ij84ut.png"/>
+				</td>
+				<td style="font-size:10.5;" align="right" valign="center">
+					<d f="Analysis.S12_COUNT" m="#,#0"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;color:#4c4c4c;background-color:#ffffff;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center">
+					<d f="Analysis.S12_PERCENT" m="#,#0.0\%"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;color:#4c4c4c;background-color:#ffffff;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center">
+					<d f="Analysis.S12_DISTANCE" m="#,#0.0"/>
+				</td>
+				<td style="font-size:9;" align="right" valign="center"/>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="Default"/>
+			</tr>
+			<tr height="30">
+				<td style="font-size:9;" valign="center" overrideStyle="Default"/>
+				<td style="font-size:10.5;" valign="center" overrideStyle="AlternatingRow" pad="10">
+					<d f="Analysis.S13_NAME"/>
+				</td>
+				<td style="font-size:9;" valign="center" overrideStyle="AlternatingRow">
+					<img width="29.25" height="29.25" src="mx1x2pauyz53.png"/>
+				</td>
+				<td style="font-size:10.5;" align="right" valign="center" overrideStyle="AlternatingRow">
+					<d f="Analysis.S13_COUNT" m="#,#0"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center" overrideStyle="AlternatingRow">
+					<d f="Analysis.S13_PERCENT" m="#,#0.0\%"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center" overrideStyle="AlternatingRow">
+					<d f="Analysis.S13_DISTANCE" m="#,#0.0"/>
+				</td>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="AlternatingRow"/>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="Default"/>
+			</tr>
+			<tr height="30">
+				<td style="font-size:9;" valign="center" overrideStyle="Default"/>
+				<td style="font-size:10.5;" valign="center" pad="10">
+					<d f="Analysis.S14_NAME"/>
+				</td>
+				<td style="font-size:9;" valign="center">
+					<img width="29.25" height="29.25" src="fi675uqe7rud.png"/>
+				</td>
+				<td style="font-size:10.5;" align="right" valign="center">
+					<d f="Analysis.S14_COUNT" m="#,#0"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;color:#4c4c4c;background-color:#ffffff;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center">
+					<d f="Analysis.S14_PERCENT" m="#,#0.0\%"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;color:#4c4c4c;background-color:#ffffff;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center">
+					<d f="Analysis.S14_DISTANCE" m="#,#0.0"/>
+				</td>
+				<td style="font-size:9;" align="right" valign="center"/>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="Default"/>
+			</tr>
+			<tr height="30">
+				<td style="font-size:9;" valign="center" overrideStyle="Default"/>
+				<td style="font-size:10.5;" valign="center" overrideStyle="AlternatingRow" pad="10">
+					<d f="Analysis.S15_NAME"/>
+				</td>
+				<td style="font-size:9;" valign="center" overrideStyle="AlternatingRow">
+					<img width="29.25" height="29.25" src="8ajahvx3img8.png"/>
+				</td>
+				<td style="font-size:10.5;" align="right" valign="center" overrideStyle="AlternatingRow">
+					<d f="Analysis.S15_COUNT" m="#,#0"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center" overrideStyle="AlternatingRow">
+					<d f="Analysis.S15_PERCENT" m="#,#0.0\%"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center" overrideStyle="AlternatingRow">
+					<d f="Analysis.S15_DISTANCE" m="#,#0.0"/>
+				</td>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="AlternatingRow"/>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="Default"/>
+			</tr>
+			<tr height="30">
+				<td style="font-size:9;" valign="center" overrideStyle="Default"/>
+				<td style="font-size:10.5;" valign="center" pad="10">
+					<d f="Analysis.S16_NAME"/>
+				</td>
+				<td style="font-size:9;" valign="center">
+					<img width="29.25" height="28.5" src="ed9pvl07e440.png"/>
+				</td>
+				<td style="font-size:10.5;" align="right" valign="center">
+					<d f="Analysis.S16_COUNT" m="#,#0"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;color:#4c4c4c;background-color:#ffffff;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center">
+					<d f="Analysis.S16_PERCENT" m="#,#0.0\%"/>
+				</td>
+				<td style="font-size:10.5;font-family:Verdana;color:#4c4c4c;background-color:#ffffff;font-weight:normal;font-style:normal;text-decoration:none;" align="right" valign="center">
+					<d f="Analysis.S16_DISTANCE" m="#,#0.0"/>
+				</td>
+				<td style="font-size:9;" align="right" valign="center"/>
+				<td style="font-size:9;" align="right" valign="center" overrideStyle="Default"/>
+			</tr>
+		</table>
+		<table width="584.8" spaceAfter="0.6975" widths="584.8">
+			<tr height="24">
+				<td style="font-size:9;" align="right" valign="center">* Distance units: <text name="Units"/></td>
+			</tr>
+		</table>
+		<pageBreak/>
+	</section>
+	<section type="PageFooter">
+		<table width="610" widths="72.35;81.8;73.85;61.7;57.85;241.05;21.4">
+			<tr height="10">
+				<td style="background-color:#3179bb;color:#ffffff;"/>
+				<td style="background-color:#3179bb;color:#ffffff;"/>
+				<td style="background-color:#3179bb;color:#ffffff;" align="right" colspan="4"/>
+				<td style="color:#ffffff;background-color:#3179bb;"/>
+			</tr>
+			<tr height="10">
+				<td style="background-color:#3179bb;color:#ffffff;"/>
+				<td style="background-color:#3179bb;color:#ffffff;"/>
+				<td style="font-size:7.995;background-color:#3179bb;color:#ffffff;" align="center" colspan="3"/>
+				<td style="background-color:#3179bb;color:#ffffff;"/>
+				<td style="color:#ffffff;background-color:#3179bb;"/>
+			</tr>
+			<tr height="20">
+				<td style="font-size:7.995;background-color:#3179bb;color:#ffffff;" valign="center" pad="4">Ⓒ Esri, 2024</td>
+				<td style="font-size:7.995;background-color:#3179bb;color:#ffffff;" valign="center" pad="0"><a href="https://links.esri.com/business-analyst/pro/wind-rose"><u>Learn more...</u></a></td>>
+				<td style="font-size:7.995;background-color:#3179bb;color:#ffffff;" align="center"/>
+				<td style="font-size:7.995;background-color:#3179bb;color:#ffffff;" align="center"/>
+				<td style="text-decoration:underline;font-size:7.995;background-color:#3179bb;color:#ffffff;" align="center"/>
+				<td style="font-size:9;background-color:#3179bb;color:#ffffff;" align="right" valign="center">
+					<currPage/>
+				</td>
+				<td style="color:#ffffff;background-color:#3179bb;"/>
+			</tr>
+		</table>
+	</section>
+</HTMLextReport>

@@ -1,0 +1,86 @@
+# ============================================================================
+# TerraFusion Consciousness Engine - Helm Ignore File
+# Government. Transcended. - Exclude Files from Chart Packaging
+# ============================================================================
+
+# Development files
+.DS_Store
+.git/
+.gitignore
+.gitattributes
+.vscode/
+.idea/
+
+# CI/CD files
+.github/
+.gitlab-ci.yml
+Jenkinsfile
+azure-pipelines.yml
+
+# Documentation (keep only essential docs)
+*.md
+!README.md
+!CHANGELOG.md
+
+# Test files
+test/
+tests/
+*_test.yaml
+*.test.yaml
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+.helmignore~
+
+# Build artifacts
+dist/
+build/
+target/
+*.tar.gz
+*.zip
+
+# Editor files
+*.sublime-*
+*.code-workspace
+
+# OS files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Secrets
+*secret*
+*password*
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+
+# ML model files (too large for chart)
+*.pkl
+*.h5
+*.pb
+*.onnx
+*.pt
+*.pth
+
+# Draft Helm plugin
+.draft/
+
+# Helm dependencies
+charts/*.tgz

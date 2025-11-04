@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrafusion-os
+  labels:
+    name: terrafusion-os
+    government-tier: transcendent

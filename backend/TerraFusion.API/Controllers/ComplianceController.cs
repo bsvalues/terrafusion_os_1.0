@@ -55,10 +55,10 @@ namespace TerraFusion.API.Controllers
             try
             {
                 var report = await _complianceService.GenerateComplianceReportAsync(
-                    request.Framework, 
-                    request.StartDate, 
+                    request.Framework,
+                    request.StartDate,
                     request.EndDate);
-                
+
                 return Ok(report);
             }
             catch (Exception ex)
@@ -99,13 +99,13 @@ namespace TerraFusion.API.Controllers
         {
             try
             {
-                var userId = User.FindFirst("sub")?.Value ?? User.FindFirst("id")?.Value;
+                var userId = User.FindFirst("sub")?.Value ?? User.FindFirst("id")?.Value ?? "ANONYMOUS";
                 var auditTrail = await _complianceService.CreateAuditTrailAsync(
-                    request.Action, 
-                    userId, 
-                    request.Data, 
+                    request.Action,
+                    userId,
+                    request.Data,
                     request.EntityType);
-                
+
                 return Ok(auditTrail);
             }
             catch (Exception ex)
@@ -163,12 +163,12 @@ namespace TerraFusion.API.Controllers
         {
             try
             {
-                var userId = User.FindFirst("sub")?.Value ?? User.FindFirst("id")?.Value;
+                var userId = User.FindFirst("sub")?.Value ?? User.FindFirst("id")?.Value ?? "ANONYMOUS";
                 var success = await _complianceService.RemediateViolationAsync(
-                    violationId, 
-                    request.RemediationAction, 
+                    violationId,
+                    request.RemediationAction,
                     userId);
-                
+
                 if (success)
                 {
                     return Ok(new { message = "Violation remediated successfully" });
@@ -214,10 +214,10 @@ namespace TerraFusion.API.Controllers
             try
             {
                 var success = await _complianceService.UpdateComplianceControlAsync(
-                    controlId, 
-                    request.Status, 
+                    controlId,
+                    request.Status,
                     request.Evidence);
-                
+
                 if (success)
                 {
                     return Ok(new { message = "Control updated successfully" });
@@ -244,7 +244,7 @@ namespace TerraFusion.API.Controllers
             try
             {
                 var success = await _complianceService.ScheduleComplianceReportAsync(schedule);
-                
+
                 if (success)
                 {
                     return Ok(new { message = "Report scheduled successfully" });

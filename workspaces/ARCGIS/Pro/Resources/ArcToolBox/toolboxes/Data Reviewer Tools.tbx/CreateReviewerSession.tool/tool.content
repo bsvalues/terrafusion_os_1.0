@@ -1,0 +1,126 @@
+{
+    "type": "FunctionTool",
+    "guid": "{2F03DDCD-3D0E-422C-863C-24FDF2FCA288}/CreateReviewerSession",
+    "displayname": "$rc:title",
+    "helpcontent": "47000001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "47"
+    ],
+    "params": {
+        "reviewer_workspace": {
+            "displayname": "$rc:reviewer_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "domain": {
+                "type": "GPWorkspaceDomain",
+                "workspacetype": [
+                    "Local Database",
+                    "Remote Database"
+                ]
+            },
+            "description": "$rc:reviewer_workspace.descr"
+        },
+        "session_name": {
+            "displayname": "$rc:session_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:session_name.descr"
+        },
+        "session_template": {
+            "type": "optional",
+            "displayname": "$rc:session_template.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:session_template.descr"
+        },
+        "session": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:session.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "duplicate_checking": {
+            "type": "optional",
+            "displayname": "$rc:duplicate_checking.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DATABASE",
+                        "code": "$rc:duplicate_checking.domain.DATABASE"
+                    },
+                    {
+                        "value": "SESSION",
+                        "code": "$rc:duplicate_checking.domain.SESSION"
+                    },
+                    {
+                        "value": "NONE",
+                        "code": "$rc:duplicate_checking.domain.NONE"
+                    }
+                ]
+            },
+            "value": "NONE",
+            "description": "$rc:duplicate_checking.descr"
+        },
+        "store_geometry": {
+            "type": "optional",
+            "displayname": "$rc:store_geometry.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "STORE_GEOMETRY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "DO_NOT_STORE_GEOMETRY"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:store_geometry.descr"
+        },
+        "username": {
+            "type": "optional",
+            "displayname": "$rc:username.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "bldgis",
+            "description": "$rc:username.descr"
+        },
+        "version": {
+            "type": "optional",
+            "displayname": "$rc:version.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "reviewer_workspace"
+            ],
+            "description": "$rc:version.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

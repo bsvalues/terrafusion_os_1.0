@@ -1,0 +1,77 @@
+{
+  "workspace": "TerraFusionIDE",
+  "disasterRecovery": {
+    "backup": {
+      "strategy": {
+        "type": "incremental",
+        "frequency": "daily",
+        "retention_days": 90,
+        "compression": "gzip",
+        "encryption": "AES-256"
+      },
+      "targets": [
+        {
+          "type": "local",
+          "path": "/var/backups/TerraFusionIDE",
+          "enabled": true,
+          "retention_days": 30
+        },
+        {
+          "type": "cloud",
+          "provider": "AWS",
+          "bucket": "terrafusion-backups-TerraFusionIDE",
+          "region": "us-east-1",
+          "enabled": true,
+          "retention_days": 90
+        },
+        {
+          "type": "cloud",
+          "provider": "Azure",
+          "container": "terrafusion-backups-TerraFusionIDE",
+          "region": "eastus",
+          "enabled": true,
+          "retention_days": 90
+        }
+      ],
+      "scheduling": {
+        "hourly": false,
+        "daily": true,
+        "weekly": true,
+        "monthly": true,
+        "before_deployment": true
+      },
+      "verification": {
+        "enabled": true,
+        "frequency_days": 7,
+        "restore_test": true
+      }
+    },
+    "replication": {
+      "strategy": "active-passive",
+      "rpo_hours": 4,
+      "data_centers": 1,
+      "regions": [
+        "us-east-1"
+      ],
+      "consistency": "strong",
+      "conflict_resolution": "latest-write-wins"
+    },
+    "failover": {
+      "strategy": "manual",
+      "rto_minutes": 120,
+      "automatic_triggers": [
+        "primary_unavailable",
+        "data_corruption_detected",
+        "performance_degradation_critical"
+      ],
+      "health_check_interval_seconds": 30,
+      "failover_timeout_seconds": 300
+    },
+    "recovery": {
+      "recovery_level": "MEDIUM",
+      "point_in_time_recovery": true,
+      "rto_target_minutes": 120,
+      "rpo_target_hours": 4
+    }
+  }
+}

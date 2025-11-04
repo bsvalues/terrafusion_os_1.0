@@ -1,0 +1,6 @@
+CREATE SCHEMA [CO\ArcGis]
+    AUTHORIZATION [CO\ArcGis];
+
+
+GO
+

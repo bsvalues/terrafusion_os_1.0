@@ -1,0 +1,37 @@
+Principles of Design
+These are some points one should always keep in mind while designing, be it graphic, web, or product designs.
+Hierarchy:
+When creating designs that hold data in a serial order, comprising of the principles of design is crucial for sectionalizing the topics accordingly in a hierarchical form. This application of the principles of design makes it easier for the user to navigate through the topics, creating a visual path that follows the principles of design by starting from the basic and leading to secondary important paths. Achieving this clarity and navigational ease can be done by applying the principles of design through the use of different font sizes to define the order, such as giving the top one the H1 tag, followed by H2, H3, and so on, in accordance with the principles of design.
+Repetition:
+Repeating text might sound too clumsy and off for a design, but when colors are repeated, they set up a theme according to the principles of design. A repeat of colors in different gradients and saturations, guided by the principles of design, makes the design look simple yet elegant. Similarly, the principles of design suggest that a consistent approach to fonts is key. Using the same type of font aligns with the principles of design, creating a thorough and consistent design, thus making it less eye-vibrant and more harmonious.
+Balance:
+The word design itself suggests how we can use maximum doodles, following the principles of design, to create an impression of the text we would perhaps be writing. Sticking to the principles of design ensures that neither does too much text make it look like a design, rather it looks like a document, nor does too much design make it look beautiful.
+Everything, when balanced according to the principles of design, with an appropriate number of lines or words, proper designing of the chosen words, and all around a central point, with equal spaces, makes the design look harmonious and visually pleasing. By incorporating this, we ensure the creation is not only aesthetically appealing but also effectively communicates its intended message.
+Emphasis:
+When creating visuals, applying the principles of design is critical to improve the visual appeal and significance of your work. Minimum text, and hence maximum graphics and images. Use borders to emphasize the posts, and use frames to add images to them. It makes the design look well-structured and balanced. The use of borders around the designs or certain images is paramount in graphic design as they attract the visual interest of the audience to a greater extent than just simple text.
+White spaces:
+Not to make the design look cluttered and messy, it's a good practice, according to the principles of design, to leave some white space to maintain the aesthetics and design of the image. It promotes visual hierarchy and makes it easier for the user to navigate through other information. Incorporating white space helps organize the design and makes the design stand out on its own.
+Color theory:
+Colors are what set our designs apart from basic templates or documents. Following the theory of colors helps in making the designs subtle and less complicated. There are two basic forms of colors which we use to make our complete design:
+Primary colors: The basic colors are red, yellow, blue, and green into which we add contrast, saturation, and hues to maximize the effects of colors on the eyes. The increase in saturation makes it somewhat of a sunny tone, contrast increases the quality of the design and hue shifts the colors of all pixels.
+Secondary colors: These are formed by adding primary colors using gradients. They are a mixture of two or more primary colors and together make up a better and much more vibrant color. For eg. red and yellow make orange.
+Typography :
+Typography is what makes simple text look lively and vibrant in a design, illustrating a key aspect of the principles of design. When to capitalize text, how and which one to make bold or italics, color the first letter of a word with different dark colors, and the rest in light colors, all are governed by typography. It refers to the different styles of text that create different appearances. Sometimes a basic font will suffice for the design, but many times for a calligraphy or a poem, the letters written require cursive fonts. All of this understanding falls under typography, showcasing its role in the principles of design.
+Uses of Design Principles
+Some of the uses of Design Principles are:
+The use of design principles helps in adding a better experience for the users.
+It is used in advertisements which help captivate the readers to a much larger extent than just normally writing long paragraphs.
+Designing is useful when one wants to release their creativity and enthusiasm in creating simple, yet elegant and convincing designs with a dynamic approach that increases responsiveness and interactivity.
+Design involves mapping of the idea in the brain that helps in remembering the information in a much simpler way as it involves illustrations and images.
+Subtle and calm-looked designs invoke emotional senses better.
+Limitations of Designing
+Some of the limitations of designing principles are:
+Designing lacks at the textual information point as not too much of written details can be floated in designs. Too much text can't be written on the designs and many times the designs aren't convincing enough to explain the texts. Thus, beautiful and illustrative designs come with this limitation.
+Designing is a tedious and efforts demanding task. It involves creating designs with a lot of trials and errors. Sometimes the client asks the designer to completely change the look from subtle to highly vibrant. Thus it becomes a very tiring and time-consuming task.
+While some designers are proficient in making subtle and minimal-looking designs, they are burdened by their clients to create vibrant posters. This takes away the freedom of work and the designers have to stick with the layouts provided to them by clients and recreate the looks as it is with zero flexibility if the client denies it.
+Studio
+Note
+Digital Design and User Experience Fundamentals
+(Saved responses are view only)
+These sources provide a comprehensive overview of digital design principles and user experience (UX). They cover topics ranging from the psychological effects of colors and their practical applications in various design contexts to fundamental design principles like hierarchy, repetition, and balance. The texts also explain User Experience (UX) and the role of Visual Design within it, highlighting their collaborative importance in creating effective digital products, and offer key tips for outstanding UX design emphasizing user focus and consistency. Finally, the sources detail responsive web design, explaining its steps, benefits, and principles for creating websites that adapt seamlessly to different devices.
+

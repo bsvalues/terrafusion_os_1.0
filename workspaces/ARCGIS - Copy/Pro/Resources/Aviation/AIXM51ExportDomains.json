@@ -1,0 +1,4556 @@
+{
+  "refuelingtrack": {
+    "refuelingtrack.type_code": {
+      "aixm:type": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "TRACK",
+            "1": "ANCHOR",
+            "2": "BOTH"
+          }
+        }
+      ]
+    }
+  },
+  "aerogroundlight": {
+    "aerogroundlight.color_code": {
+      "aixm:colour": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "blu": "BLUE",
+            "grn": "GREEN",
+            "prp": "PURPLE",
+            "whi": "WHITE",
+            "yel": "YELLOW"
+          }
+        }
+      ]
+    },
+    "aerogroundlight.flashing_code": {
+      "aixm:flashing": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "aerogroundlight.type_code": {
+      "aixm:type": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "haz": "HAZ_BCN",
+            "hbcn": "HEL-BCN",
+            "marine": "MAR_BCN",
+            "rsp": "RSP_BCN",
+            "sig": "TWR_BCN"
+          }
+        }
+      ]
+    }
+  },
+  "aircraftcharacteristic": {
+    "aircraftcharacteristic.engine_code": {
+      "aixm:engine": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "all": "ALL",
+            "j": "JET",
+            "other": "OTHER",
+            "p": "PISTON",
+            "t": "TURBOPROP"
+          }
+        }
+      ]
+    },
+    "aircraftcharacteristic.type_code": {
+      "aixm:type": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "all": "ALL",
+            "a": "AMPHIBIAN",
+            "b": "BALLOON",
+            "e": "GLIDER",
+            "g": "GYROCOPTER",
+            "n": "HANGGLIDER",
+            "h": "HELICOPTER",
+            "l": "LANDPLANE",
+            "other": "OTHER",
+            "p": "PARAGLIDER",
+            "s": "SEAPLANE",
+            "r": "STOL",
+            "t": "TILT_WING",
+            "d": "UAV",
+            "u": "ULTRA_LIGHT"
+          }
+        }
+      ]
+    },
+    "aircraftcharacteristic.referenceclass_txt": {
+      "aixm:standardinstrumentarrival": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "terminalprocedure": "STANDARDINSTRUMENTARRIVAL"
+          }
+        }
+      ],
+      "aixm:instrumentapproachprocedure": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "terminalprocedure": "INSTRUMENTAPPROACHPROCEDURE"
+          }
+        }
+      ],
+      "aixm:standardinstrumentdeparture": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "terminalprocedure": "STANDARDINSTRUMENTDEPARTURE"
+          }
+        }
+      ],
+      "aixm:departureleg": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "procedureleg": "DEPARTURELEG"
+          }
+        }
+      ],
+      "aixm:arrivalleg": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "procedureleg": "ARRIVALLEG"
+          }
+        }
+      ],
+      "aixm:missedapproachleg": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "procedureleg": "MISSEDAPPROACHLEG"
+          }
+        }
+      ],
+      "aixm:intermediateleg": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "procedureleg": "INTERMEDIATELEG"
+          }
+        }
+      ],
+      "aixm:initialleg": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "procedureleg": "INITIALLEG"
+          }
+        }
+      ],
+      "aixm:finalleg": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "procedureleg": "FINALLEG"
+          }
+        }
+      ],
+      "aixm:arrivalfeederleg": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "procedureleg": "ARRIVALFEEDERLEG"
+          }
+        }
+      ],
+      "aixm:airspaceactivation": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "timesheet": "AIRSPACEACTIVATION"
+          }
+        }
+      ]
+    }
+  },
+  "adhpgroundservice": {
+    "adhpgroundservice.fuelsupply_code": {
+        "aixm:category": [
+        {
+          "aixm_ancestor_name": "aixm:fuel",
+          "domain": {
+            "OCT80-87": "OCT80_87",
+            "OCT91-98": "OCT91_98",
+            "OCT100-130": "OCT100_130",
+            "OCT108-135": "OCT108_135",
+            "OCT115-145": "OCT115_145",
+            "AVGAS-LL": "AVGAS_LL",
+            "A1+": "A1_PLUS",
+            "JP8+100": "JP8_HIGHER",
+            "F-18": "F18",
+            "F-34": "F34",
+            "F-35": "F35",
+            "F-40": "F40",
+            "F-44": "F44",
+            "TS-1": "TS1"
+          }
+        }
+      ]
+    }
+  },
+  "adhpsurfacepoint": {
+    "adhpsurfacepoint.type_code": {
+      "aixm:type": [
+        {
+          "aixm_ancestor_name": "aixm:aircraftstand",
+          "aixm_path_endswith": "aixm:aircraftstand/aixm:aircraftstandtimeslice/aixm:type",
+          "domain": {
+            "ang-ni": "ANG_NI",
+            "ang-no": "ANG_NO",
+            "par": "PARL"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:aircraftstand",
+          "aixm_path_endswith": "aixm:markingbuoytimeslice/aixm:type",
+          "domain": {
+            "ang-ni": "ANG_NI",
+            "ang-no": "ANG_NO",
+            "par": "PARL"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:markingbuoy",
+          "aixm_path_endswith": "aixm:aircraftstandtimeslice/aixm:type",
+          "domain": {
+            "ang-ni": "ANG_NI",
+            "ang-no": "ANG_NO",
+            "par": "PARL"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:markingbuoy",
+          "aixm_path_endswith": "aixm:markingbuoytimeslice/aixm:type",
+          "domain": {
+            "ang-ni": "ANG_NI",
+            "ang-no": "ANG_NO",
+            "par": "PARL"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:runwaycentrelinepoint",
+          "aixm_path_endswith": "aixm:aircraftstandtimeslice/aixm:type",
+          "domain": {
+            "ang-ni": "ANG_NI",
+            "ang-no": "ANG_NO",
+            "par": "PARL"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:runwaycentrelinepoint",
+          "aixm_path_endswith": "aixm:markingbuoytimeslice/aixm:type",
+          "domain": {
+            "ang-ni": "ANG_NI",
+            "ang-no": "ANG_NO",
+            "par": "PARL"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:runwayvisualrange",
+          "aixm_path_endswith": "aixm:aircraftstandtimeslice/aixm:type",
+          "domain": {
+            "ang-ni": "ANG_NI",
+            "ang-no": "ANG_NO",
+            "par": "PARL"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:runwayvisualrange",
+          "aixm_path_endswith": "aixm:markingbuoytimeslice/aixm:type",
+          "domain": {
+            "ang-ni": "ANG_NI",
+            "ang-no": "ANG_NO",
+            "par": "PARL"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:surveycontrolpoint",
+          "aixm_path_endswith": "aixm:markingbuoytimeslice/aixm:type",
+          "domain": {
+            "ang-ni": "ANG_NI",
+            "ang-no": "ANG_NO",
+            "par": "PARL"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:taxiholdingposition",
+          "aixm_path_endswith": "aixm:aircraftstandtimeslice/aixm:type",
+          "domain": {
+            "ang-ni": "ANG_NI",
+            "ang-no": "ANG_NO",
+            "par": "PARL"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:taxiholdingposition",
+          "aixm_path_endswith": "aixm:markingbuoytimeslice/aixm:type",
+          "domain": {
+            "ang-ni": "ANG_NI",
+            "ang-no": "ANG_NO",
+            "par": "PARL"
+          }
+        }
+      ]
+    },
+    "adhpsurfacepoint.subtype_code": {
+      "aixm:role": [
+        {
+          "aixm_ancestor_name": "aixm:aircraftstand",
+          "domain": {
+            "0": "OTHER",
+            "4": "TAXIHOLDINGPOSITION",
+            "6": "AIRCRAFTSTAND",
+            "7": "LAHSO",
+            "9": "START",
+            "10": "TDZ",
+            "11": "MID",
+            "12": "END",
+            "13": "ABEAM_GLIDESLOPE",
+            "14": "ABEAM_PAR",
+            "15": "ABEAM_ELEVATION",
+            "16": "ABEAM_TDR",
+            "17": "ABEAM_RER",
+            "18": "START_RUN",
+            "19": "THR",
+            "20": "DISTHR",
+            "21": "SURVEYCONTROLPOINT",
+            "22": "MARKINGBUOY",
+            "23": "RUNWAYVISUALRANGE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:markingbuoy",
+          "domain": {
+            "0": "OTHER",
+            "4": "TAXIHOLDINGPOSITION",
+            "6": "AIRCRAFTSTAND",
+            "7": "LAHSO",
+            "9": "START",
+            "10": "TDZ",
+            "11": "MID",
+            "12": "END",
+            "13": "ABEAM_GLIDESLOPE",
+            "14": "ABEAM_PAR",
+            "15": "ABEAM_ELEVATION",
+            "16": "ABEAM_TDR",
+            "17": "ABEAM_RER",
+            "18": "START_RUN",
+            "19": "THR",
+            "20": "DISTHR",
+            "21": "SURVEYCONTROLPOINT",
+            "22": "MARKINGBUOY",
+            "23": "RUNWAYVISUALRANGE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:runwaycentrelinepoint",
+          "aixm_path_endswith": "aixm:runwaycentrelinepointtimeslice/aixm:role",
+          "domain": {
+            "0": "OTHER",
+            "4": "TAXIHOLDINGPOSITION",
+            "6": "AIRCRAFTSTAND",
+            "7": "LAHSO",
+            "9": "START",
+            "10": "TDZ",
+            "11": "MID",
+            "12": "END",
+            "13": "ABEAM_GLIDESLOPE",
+            "14": "ABEAM_PAR",
+            "15": "ABEAM_ELEVATION",
+            "16": "ABEAM_TDR",
+            "17": "ABEAM_RER",
+            "18": "START_RUN",
+            "19": "THR",
+            "20": "DISTHR",
+            "21": "SURVEYCONTROLPOINT",
+            "22": "MARKINGBUOY",
+            "23": "RUNWAYVISUALRANGE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:runwayvisualrange",
+          "domain": {
+            "0": "OTHER",
+            "4": "TAXIHOLDINGPOSITION",
+            "6": "AIRCRAFTSTAND",
+            "7": "LAHSO",
+            "9": "START",
+            "10": "TDZ",
+            "11": "MID",
+            "12": "END",
+            "13": "ABEAM_GLIDESLOPE",
+            "14": "ABEAM_PAR",
+            "15": "ABEAM_ELEVATION",
+            "16": "ABEAM_TDR",
+            "17": "ABEAM_RER",
+            "18": "START_RUN",
+            "19": "THR",
+            "20": "DISTHR",
+            "21": "SURVEYCONTROLPOINT",
+            "22": "MARKINGBUOY",
+            "23": "RUNWAYVISUALRANGE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:surveycontrolpoint",
+          "domain": {
+            "0": "OTHER",
+            "4": "TAXIHOLDINGPOSITION",
+            "6": "AIRCRAFTSTAND",
+            "7": "LAHSO",
+            "9": "START",
+            "10": "TDZ",
+            "11": "MID",
+            "12": "END",
+            "13": "ABEAM_GLIDESLOPE",
+            "14": "ABEAM_PAR",
+            "15": "ABEAM_ELEVATION",
+            "16": "ABEAM_TDR",
+            "17": "ABEAM_RER",
+            "18": "START_RUN",
+            "19": "THR",
+            "20": "DISTHR",
+            "21": "SURVEYCONTROLPOINT",
+            "22": "MARKINGBUOY",
+            "23": "RUNWAYVISUALRANGE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:taxiholdingposition",
+          "domain": {
+            "0": "OTHER",
+            "4": "TAXIHOLDINGPOSITION",
+            "6": "AIRCRAFTSTAND",
+            "7": "LAHSO",
+            "9": "START",
+            "10": "TDZ",
+            "11": "MID",
+            "12": "END",
+            "13": "ABEAM_GLIDESLOPE",
+            "14": "ABEAM_PAR",
+            "15": "ABEAM_ELEVATION",
+            "16": "ABEAM_TDR",
+            "17": "ABEAM_RER",
+            "18": "START_RUN",
+            "19": "THR",
+            "20": "DISTHR",
+            "21": "SURVEYCONTROLPOINT",
+            "22": "MARKINGBUOY",
+            "23": "RUNWAYVISUALRANGE"
+          }
+        }
+      ],
+      "_": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "RUNWAYCENTRELINEPOINT",
+            "4": "TAXIHOLDINGPOSITION",
+            "6": "AIRCRAFTSTAND",
+            "7": "LAHSO",
+            "9": "START",
+            "10": "TDZ",
+            "11": "MID",
+            "12": "END",
+            "13": "ABEAM_GLIDESLOPE",
+            "14": "ABEAM_PAR",
+            "15": "ABEAM_ELEVATION",
+            "16": "ABEAM_TDR",
+            "17": "ABEAM_RER",
+            "18": "START_RUN",
+            "19": "THR",
+            "20": "DISTHR",
+            "21": "SURVEYCONTROLPOINT",
+            "22": "MARKINGBUOY",
+            "23": "RUNWAYVISUALRANGE"
+          }
+        }
+      ]
+    }
+  },
+  "adhp": {
+    "adhp.abandoned_code": {
+      "aixm:abandoned": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "adhp.certifiedicao_txt": {
+      "aixm:certifiedicao": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "adhp.military_code": {
+      "aixm:controltype": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "all": "JOINT"
+          }
+        }
+      ]
+    },
+    "adhp.privateuse_code": {
+      "aixm:privateuse": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "adhp.datum_code": {
+      "aixm:verticaldatum": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "egm": "EGM_96",
+            "n2000": "OTHER:N2000"
+          }
+        }
+      ]
+    }
+  },
+  "availability": {
+    "availability.operationstatus_code": {
+      "aixm:operationalstatus": [
+        {
+          "aixm_ancestor_name": "aixm:airportheliportavailability",
+          "domain": {
+            "closed": "CLSD",
+            "conditional": "COND",
+            "normal": "OPEN",
+            "other": "OTHER"
+          },
+          "collisions": {
+            "CLOSED": "closed",
+            "CLSD": "closed"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:altimetersourcestatus",
+          "domain": {
+            "closed": "CLSD",
+            "conditional": "COND",
+            "normal": "OPEN",
+            "other": "OTHER"
+          },
+          "collisions": {
+            "CLOSED": "closed",
+            "CLSD": "closed"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:apronareaavailability",
+          "domain": {
+            "closed": "CLSD",
+            "conditional": "COND",
+            "normal": "OPEN",
+            "other": "OTHER"
+          },
+          "collisions": {
+            "CLOSED": "closed",
+            "CLSD": "closed"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:groundlightingavailability",
+          "domain": {
+            "closed": "CLSD",
+            "conditional": "COND",
+            "normal": "OPEN",
+            "other": "OTHER"
+          },
+          "collisions": {
+            "CLOSED": "closed",
+            "CLSD": "closed"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:manoeuvringareaavailability",
+          "domain": {
+            "closed": "CLSD",
+            "conditional": "COND",
+            "normal": "OPEN",
+            "other": "OTHER"
+          },
+          "collisions": {
+            "CLOSED": "closed",
+            "CLSD": "closed"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:navaidoperationalstatus",
+          "domain": {
+            "closed": "CLSD",
+            "conditional": "COND",
+            "normal": "OPEN",
+            "other": "OTHER"
+          },
+          "collisions": {
+            "CLOSED": "closed",
+            "CLSD": "closed"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:procedureavailability",
+          "domain": {
+            "closed": "CLSD",
+            "conditional": "COND",
+            "normal": "OPEN",
+            "other": "OTHER"
+          },
+          "collisions": {
+            "CLOSED": "closed",
+            "CLSD": "closed"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:radiocommunicationoperationalstatus",
+          "domain": {
+            "closed": "CLSD",
+            "conditional": "COND",
+            "normal": "OPEN",
+            "other": "OTHER"
+          },
+          "collisions": {
+            "CLOSED": "closed",
+            "CLSD": "closed"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:serviceoperationalstatus",
+          "domain": {
+            "closed": "CLSD",
+            "conditional": "COND",
+            "normal": "OPEN",
+            "other": "OTHER"
+          },
+          "collisions": {
+            "CLOSED": "closed",
+            "CLSD": "closed"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:specialnavigationstationstatus",
+          "domain": {
+            "falseindication": "FALSE_INDICATION",
+            "falsepossible": "FALSE_POSSIBLE",
+            "construction": "IN_CONSTRUCTION"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:unitavailability",
+          "domain": {
+            "closed": "CLSD",
+            "conditional": "COND",
+            "normal": "OPEN",
+            "other": "OTHER"
+          },
+          "collisions": {
+            "CLOSED": "closed",
+            "CLSD": "closed"
+          }
+        }
+      ],
+      "aixm:status": [
+        {
+          "aixm_ancestor_name": "aixm:airportheliportavailability",
+          "domain": {
+            "closed": "CLSD",
+            "conditional": "COND",
+            "normal": "OPEN",
+            "other": "OTHER"
+          },
+          "collisions": {
+            "CLOSED": "closed",
+            "CLSD": "closed"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:altimetersourcestatus",
+          "domain": {
+            "closed": "CLSD",
+            "conditional": "COND",
+            "normal": "OPEN",
+            "other": "OTHER"
+          },
+          "collisions": {
+            "CLOSED": "closed",
+            "CLSD": "closed"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:apronareaavailability",
+          "domain": {
+            "closed": "CLSD",
+            "conditional": "COND",
+            "normal": "OPEN",
+            "other": "OTHER"
+          },
+          "collisions": {
+            "CLOSED": "closed",
+            "CLSD": "closed"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:groundlightingavailability",
+          "domain": {
+            "closed": "CLSD",
+            "conditional": "COND",
+            "normal": "OPEN",
+            "other": "OTHER"
+          },
+          "collisions": {
+            "CLOSED": "closed",
+            "CLSD": "closed"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:manoeuvringareaavailability",
+          "domain": {
+            "closed": "CLSD",
+            "conditional": "COND",
+            "normal": "OPEN",
+            "other": "OTHER"
+          },
+          "collisions": {
+            "CLOSED": "closed",
+            "CLSD": "closed"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:navaidoperationalstatus",
+          "domain": {
+            "closed": "CLSD",
+            "conditional": "COND",
+            "normal": "OPEN",
+            "other": "OTHER"
+          },
+          "collisions": {
+            "CLOSED": "closed",
+            "CLSD": "closed"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:procedureavailability",
+          "domain": {
+            "closed": "CLSD",
+            "conditional": "COND",
+            "normal": "OPEN",
+            "other": "OTHER"
+          },
+          "collisions": {
+            "CLOSED": "closed",
+            "CLSD": "closed"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:radiocommunicationoperationalstatus",
+          "domain": {
+            "closed": "CLSD",
+            "conditional": "COND",
+            "normal": "OPEN",
+            "other": "OTHER"
+          },
+          "collisions": {
+            "CLOSED": "closed",
+            "CLSD": "closed"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:routeavailability",
+          "domain": {
+            "closed": "CLSD",
+            "conditional": "COND",
+            "normal": "OPEN",
+            "other": "OTHER"
+          },
+          "collisions": {
+            "CLOSED": "closed",
+            "CLSD": "closed"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:serviceoperationalstatus",
+          "domain": {
+            "closed": "CLSD",
+            "conditional": "COND",
+            "normal": "OPEN",
+            "other": "OTHER"
+          },
+          "collisions": {
+            "CLOSED": "closed",
+            "CLSD": "closed"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:unitavailability",
+          "domain": {
+            "closed": "CLSD",
+            "conditional": "COND",
+            "normal": "OPEN",
+            "other": "OTHER"
+          },
+          "collisions": {
+            "CLOSED": "closed",
+            "CLSD": "closed"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:verticalstructurelightingstatus",
+          "domain": {
+            "closed": "CLSD",
+            "conditional": "COND",
+            "other": "OTHER"
+          },
+          "collisions": {
+            "CLOSED": "closed",
+            "CLSD": "closed"
+          }
+        }
+      ]
+    },
+    "availability.warning_code": {
+      "aixm:warning": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "resurf": "RESURFACING"
+          }
+        }
+      ]
+    },
+    "availability.predicatedtype_code": {
+      "_": [
+        {
+          "aixm_ancestor_name": "*",
+          "forced_union": "true",
+          "domain": {
+            "adhp": "AIRPORTHELIPORTAVAILABILITY",
+            "altimeter": "ALTIMETERSOURCESTATUS",
+            "apron": "APRONAREAAVAILABILITY",
+            "surfacelightsys": "GROUNDLIGHTINGAVAILABILITY",
+            "manoevering area": "MANOEUVRINGAREAAVAILABILITY",
+            "navaidcomponent": "NAVAIDOPERATIONALSTATUS",
+            "terminalprocedure": "PROCEDUREAVAILABILITY",
+            "frequency": "RADIOCOMMUNICATIONOPERATIONALSTATUS",
+            "atsroute": "ROUTEAVAILABILITY",
+            "service": "SERVICEOPERATIONALSTATUS",
+            "specialnavstation": "SPECIALNAVIGATIONSTATIONSTATUS",
+            "unit": "UNITAVAILABILITY",
+            "obstaclestructure": "VERTICALSTRUCTURELIGHTINGSTATUS"
+          }
+        }
+      ]
+    },
+    "availability.routeavailable_code": {
+      "adr:conditionalroutetype": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "cdr1": "CDR_1",
+            "cdr2": "CDR_2",
+            "cdr3": "CDR_3"
+          }
+        }
+      ]
+    }
+  },
+  "adhpcollocation": {
+    "adhpcollocation.type_code": {
+      "aixm:type": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "f": "FULL",
+            "p": "PARTIAL",
+            "r": "RWY",
+            "s": "SEPARATED",
+            "u": "UNILATERAL"
+          }
+        }
+      ]
+    }
+  },
+  "marking": {
+    "marking.subtype_code": {
+      "_": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "RUNWAYMARKING",
+            "1": "APRONMARKING",
+            "2": "TAXIWAYMARKING",
+            "3": "GUIDANCELINEMARKING",
+            "4": "TAXIHOLDINGPOSITIONMARKING",
+            "5": "AIRPORTPROTECTIONAREAMARKING",
+            "6": "TOUCHDOWNLIFTOFFMARKING",
+            "7": "DEICINGAREAMARKING",
+            "8": "STANDMARKING"
+          }
+        }
+      ]
+    }
+  },
+  "airspace": {
+    "airspace.mil_code": {
+      "aixm:controltype": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "all": "JOINT"
+          }
+        }
+      ]
+    },
+    "airspace.derived_code": {
+      "aixm:dependency": [
+        {
+          "aixm_ancestor_name": "aixm:airspace",
+          "domain": {
+            "1": "HORZ_PROJECTION"
+          },
+          "collisions": {
+            "FULL_GEOMETRY": "1",
+            "HORZ_PROJECTION": "1",
+            "OTHER": "1"
+          }
+        }
+      ]
+    },
+    "airspace.flexibleuse_code": {
+      "adr:flexibleuse": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "airspace.level1_code": {
+      "adr:level1": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "airspace.level2_code": {
+      "adr:level2": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "airspace.level3_code": {
+      "adr:level3": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "airspace.distvertlower_uom": {
+      "aixm:lowerlimit": [
+        {
+          "aixm_ancestor_name": "*",
+          "attribute": "uom",
+          "domain": {
+            "fl": "FL",
+            "ft": "FT",
+            "m": "M",
+            "other": "OTHER",
+            "sm": "SM"
+          }
+        }
+      ]
+    },
+    "airspace.distvertlower_code": {
+      "aixm:lowerlimitreference": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "gnd": "OTHER:GND"
+          }
+        }
+      ]
+    },
+    "airspace.type_code": {
+      "aixm:type": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "ada": "ADV",
+            "uada": "UADV",
+            "atz-p": "ATZ_P",
+            "cta-p": "CTA_P",
+            "ctr-p": "CTR_P",
+            "d-other": "D_OTHER",
+            "fir-p": "FIR_P",
+            "nas-p": "NAS_P",
+            "no-fir": "NO_FIR",
+            "oca-p": "OCA_P",
+            "sector-c": "SECTOR_C",
+            "tma-p": "TMA_P",
+            "uir-p": "UIR_P",
+            "uta-p": "UTA_P"
+          }
+        }
+      ]
+    },
+    "airspace.distvertupper_uom": {
+      "aixm:upperlimit": [
+        {
+          "aixm_ancestor_name": "*",
+          "attribute": "uom",
+          "domain": {
+            "fl": "FL",
+            "ft": "FT",
+            "m": "M",
+            "other": "OTHER",
+            "sm": "SM"
+          }
+        }
+      ]
+    },
+    "airspace.distvertupper_code": {
+      "aixm:upperlimitreference": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "amsl": "OTHER:AMSL"
+          }
+        }
+      ]
+    }
+  },
+  "airspaceassociation": {
+    "airspaceassociation.opr_code": {
+      "aixm:dependency": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "sameext": "HORZ_PROJECTION"
+          }
+        }
+      ]
+    }
+  },
+  "airspacelayer": {
+    "airspacelayer.altitudeinterpretation_code": {
+      "aixm:altitudeinterpretation": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "la": "ABOVE_LOWER",
+            "bh": "BELOW_UPPER",
+            "l": "AT_LOWER",
+            "b": "BETWEEN",
+            "r": "RECOMMENDED",
+            "e": "EXPECT_LOWER",
+            "as": "AS_ASSIGNED",
+            "other": "OTHER"
+          }
+        }
+      ]
+    }
+  },
+  "service": {
+    "service.isdatalink": {
+      "aixm:datalink": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "service.radar_code": {
+      "aixm:radarassisted": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "service.isrecorded": {
+      "aixm:recorded": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "service.type_code": {
+      "aixm:type": [
+        {
+          "aixm_ancestor_name": "aixm:airtrafficcontrolservice",
+          "domain": {
+            "bof": "BRIEFING",
+            "clrnc": "CLEARANCE",
+            "met": "OTHER:MET",
+            "nof": "NOTAM",
+            "oac": "OACS",
+            "atfm": "OTHER:ATFM",
+            "ats": "OTHER:ATS",
+            "com": "OTHER:COM",
+            "fcst": "OTHER:FCST",
+            "gca": "OTHER:GCA",
+            "radar": "OTHER:RADAR",
+            "vdf": "OTHER:VDF",
+            "ss": "SCHED",
+            "smc": "SMGCS"
+          },
+          "collisions": {
+            "METAR": "met",
+            "OTHER:MET": "met"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:airtrafficmanagementservice",
+          "domain": {
+            "bof": "BRIEFING",
+            "clrnc": "CLEARANCE",
+            "met": "OTHER:MET",
+            "nof": "NOTAM",
+            "oac": "OACS",
+            "atfm": "OTHER:ATFM",
+            "ats": "OTHER:ATS",
+            "com": "OTHER:COM",
+            "fcst": "OTHER:FCST",
+            "gca": "OTHER:GCA",
+            "radar": "OTHER:RADAR",
+            "vdf": "OTHER:VDF",
+            "ss": "SCHED",
+            "smc": "SMGCS"
+          },
+          "collisions": {
+            "METAR": "met",
+            "OTHER:MET": "met"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:groundtrafficcontrolservice",
+          "domain": {
+            "bof": "BRIEFING",
+            "clrnc": "CLEARANCE",
+            "met": "OTHER:MET",
+            "nof": "NOTAM",
+            "oac": "OACS",
+            "atfm": "OTHER:ATFM",
+            "ats": "OTHER:ATS",
+            "com": "OTHER:COM",
+            "fcst": "OTHER:FCST",
+            "gca": "OTHER:GCA",
+            "radar": "OTHER:RADAR",
+            "vdf": "OTHER:VDF",
+            "ss": "SCHED",
+            "smc": "SMGCS"
+          },
+          "collisions": {
+            "METAR": "met",
+            "OTHER:MET": "met"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:informationservice",
+          "domain": {
+            "bof": "BRIEFING",
+            "clrnc": "CLEARANCE",
+            "met": "OTHER:MET",
+            "nof": "NOTAM",
+            "oac": "OACS",
+            "atfm": "OTHER:ATFM",
+            "ats": "OTHER:ATS",
+            "com": "OTHER:COM",
+            "fcst": "OTHER:FCST",
+            "gca": "OTHER:GCA",
+            "radar": "OTHER:RADAR",
+            "vdf": "OTHER:VDF",
+            "ss": "SCHED",
+            "smc": "SMGCS"
+          },
+          "collisions": {
+            "METAR": "met",
+            "OTHER:MET": "met"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:searchrescueservice",
+          "domain": {
+            "bof": "BRIEFING",
+            "clrnc": "CLEARANCE",
+            "met": "OTHER:MET",
+            "nof": "NOTAM",
+            "oac": "OACS",
+            "atfm": "OTHER:ATFM",
+            "ats": "OTHER:ATS",
+            "com": "OTHER:COM",
+            "fcst": "OTHER:FCST",
+            "gca": "OTHER:GCA",
+            "radar": "OTHER:RADAR",
+            "vdf": "OTHER:VDF",
+            "ss": "SCHED",
+            "smc": "SMGCS"
+          },
+          "collisions": {
+            "METAR": "met",
+            "OTHER:MET": "met"
+          }
+        }
+      ]
+    },
+    "service.isvoice": {
+      "aixm:voice": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "service.complianticao_code": {
+      "aixm:complianticao": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    }
+  },
+  "altitudeadjustment": {
+    "altitudeadjustment.localremote_code": {
+      "aixm:localremotecode": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "altitudeadjustment.primaryaltmin_code": {
+      "aixm:primaryalternateminimum": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    }
+  },
+  "navaidindication": {
+    "navaidindication.bearingangle_type": {
+      "aixm:angletype": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "rad": "RDL"
+          }
+        }
+      ]
+    },
+    "navaidindication.subtype_code": {
+      "_": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "ANGLEINDICATION",
+            "1": "DISTANCEINDICATION"
+          }
+        }
+      ]
+    }
+  },
+  "approachdistance": {
+    "approachdistance.startingmeasurepnt_code": {
+      "aixm:startingmeasurementpoint": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "rod": "OTHER:ROD"
+          }
+        }
+      ]
+    }
+  },
+  "approachlightsys": {
+    "approachlightsys.emergency_code": {
+      "aixm:emergencylighting": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "approachlightsys.sequencedflash_code": {
+      "aixm:sequencedflashing": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "approachlightsys.type_code": {
+      "aixm:type": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "j": "CALVERT"
+          }
+        }
+      ]
+    }
+  },
+  "approachtiming": {
+    "approachtiming.speed_uom": {
+      "aixm:speed": [
+        {
+          "aixm_ancestor_name": "*",
+          "attribute": "uom",
+          "domain": {
+            "f/min": "FT_MIN",
+            "f/sec": "FT_SEC",
+            "km/h": "KM_H",
+            "m/min": "M_MIN",
+            "m/sec": "M_SEC"
+          }
+        }
+      ]
+    },
+    "approachtiming.startingmeasurepnt_code": {
+      "aixm:startingmeasurementpoint": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "rod": "OTHER:ROD"
+          }
+        }
+      ]
+    },
+    "approachtiming.time_uom": {
+      "aixm:time": [
+        {
+          "aixm_ancestor_name": "*",
+          "attribute": "uom",
+          "domain": {
+            "h": "HR",
+            "m": "MIN",
+            "s": "SEC"
+          }
+        }
+      ]
+    }
+  },
+  "adhpsurfacearea": {
+    "adhpsurfacearea.abandoned_code": {
+      "aixm:abandoned": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "adhpsurfacearea.status_code": {
+      "aixm:status": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "other": "DOWNGRADED",
+            "open": "NORMAL",
+            "clsd": "UNSERVICEABLE",
+            "wip": "WORK_IN_PROGRESS"
+          }
+        }
+      ]
+    },
+    "adhpsurfacearea.subtype_code": {
+      "_": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "RUNWAY",
+            "1": "RUNWAYPROTECTAREA",
+            "2": "FATO",
+            "4": "TOUCHDOWNLIFTOFF",
+            "5": "TOUCHDOWNLIFTOFFSAFEAREA",
+            "6": "TAXIWAY",
+            "8": "APRON",
+            "9": "RUNWAYBLASTPAD",
+            "10": "NONMOVEMENTAREA",
+            "11": "WORKAREA",
+            "12": "SEAPLANELANDINGAREA"
+          }
+        }
+      ]
+    },
+    "adhpsurfacearea.type_code": {
+      "aixm:type": [
+        {
+          "aixm_ancestor_name": "aixm:runwayprotectarea",
+          "domain": {
+            "SAFE": "RESA"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:taxiway",
+          "aixm_path_endswith": "/aixm:type",
+          "domain": {
+            "airtwy": "AIR",
+            "gndtwy": "GND",
+            "par": "PARALLEL",
+            "t-around": "TURN_AROUND"
+          }
+        }
+      ]
+    }
+  },
+  "adhpsurfaceelement": {
+    "adhpsurfaceelement.subtype_code": {
+      "_": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "RUNWAYELEMENT",
+            "1": "TAXIWAYELEMENT",
+            "2": "APRONELEMENT",
+            "3": "SEAPLANERAMPSITE",
+            "4": "FLOATINGDOCKSITE",
+            "5": "DEICINGAREA"
+          }
+        }
+      ]
+    },
+    "adhpsurfaceelement.jetwayavailable_code": {
+      "aixm:jetwayavailability": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+	"adhpsurfaceelement.towingavailable_code": {
+      "aixm:towingavailability": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+	"adhpsurfaceelement.dockingavailable_code": {
+      "aixm:dockingavailability": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+	"adhpsurfaceelement.gndpwravailable_code": {
+      "aixm:groundpoweravailability": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    }
+  },
+  "surfacelightsys": {
+    "surfacelightsys.color_code": {
+      "aixm:colour": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "blu": "BLUE",
+            "grn": "GREEN",
+            "prp": "PURPLE",
+            "whi": "WHITE",
+            "yel": "YELLOW"
+          }
+        }
+      ]
+    },
+    "surfacelightsys.emergency_code": {
+      "aixm:emergencylighting": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "surfacelightsys.portable": {
+      "aixm:portable": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "surfacelightsys.position_code": {
+      "aixm:position": [
+        {
+          "aixm_ancestor_name": "aixm:apronlightsystem",
+          "aixm_path_endswith": "/aixm:position",
+          "domain": {
+            "aftthr": "AFT_THR",
+            "dispthr": "DTHR",
+            "other": "OTHER:OTHER",
+            "rtwyint": "RPD_TWY_INT",
+            "rwy": "RWY_INT",
+            "twyint": "TWY_INT"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:guidancelinelightsystem",
+          "aixm_path_endswith": "/aixm:position",
+          "domain": {
+            "aftthr": "AFT_THR",
+            "dispthr": "DTHR",
+            "other": "OTHER:OTHER",
+            "rtwyint": "RPD_TWY_INT",
+            "rwy": "RWY_INT",
+            "twyint": "TWY_INT"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:pilotcontrolledlighting",
+          "aixm_path_endswith": "/aixm:position",
+          "domain": {
+            "aftthr": "AFT_THR",
+            "dispthr": "DTHR",
+            "other": "OTHER:OTHER",
+            "rtwyint": "RPD_TWY_INT",
+            "rwy": "RWY_INT",
+            "twyint": "TWY_INT"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:runwaydirectionlightsystem",
+          "aixm_path_endswith": "/aixm:position",
+          "domain": {
+            "aftthr": "AFT_THR",
+            "dispthr": "DTHR",
+            "other": "OTHER:SWYEND",
+            "rtwyint": "RPD_TWY_INT",
+            "rwy": "RWY_INT",
+            "twyint": "TWY_INT"
+          },
+          "collisions": {
+            "OTHER:OTHER": "other",
+            "OTHER:SWYEND": "other"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:runwayprotectarealightsystem",
+          "aixm_path_endswith": "/aixm:position",
+          "domain": {
+            "aftthr": "AFT_THR",
+            "dispthr": "DTHR",
+            "other": "OTHER:OTHER",
+            "rtwyint": "RPD_TWY_INT",
+            "rwy": "RWY_INT",
+            "twyint": "TWY_INT"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:taxiholdingpositionlightsystem",
+          "aixm_path_endswith": "/aixm:position",
+          "domain": {
+            "aftthr": "AFT_THR",
+            "dispthr": "DTHR",
+            "other": "OTHER:OTHER",
+            "rtwyint": "RPD_TWY_INT",
+            "rwy": "RWY_INT",
+            "twyint": "TWY_INT"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:taxiwaylightsystem",
+          "aixm_path_endswith": "/aixm:position",
+          "domain": {
+            "aftthr": "AFT_THR",
+            "dispthr": "DTHR",
+            "other": "OTHER:OTHER",
+            "rtwyint": "RPD_TWY_INT",
+            "rwy": "RWY_INT",
+            "twyint": "TWY_INT"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:touchdownliftofflightsystem",
+          "aixm_path_endswith": "/aixm:position",
+          "domain": {
+            "aftthr": "AFT_THR",
+            "dispthr": "DTHR",
+            "other": "OTHER:OTHER",
+            "rtwyint": "RPD_TWY_INT",
+            "rwy": "RWY_INT",
+            "twyint": "TWY_INT"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:visualglideslopeindicator",
+          "aixm_path_endswith": "/aixm:position",
+          "domain": {
+            "aftthr": "AFT_THR",
+            "dispthr": "DTHR",
+            "other": "OTHER:OTHER",
+            "rtwyint": "RPD_TWY_INT",
+            "rwy": "RWY_INT",
+            "twyint": "TWY_INT"
+          }
+        }
+      ]
+    },
+    "surfacelightsys.subtype_code": {
+      "_": [
+        {
+          "aixm_ancestor_name": "*",
+          "forced_union": "true",
+          "domain": {
+            "0": "RUNWAYDIRECTIONLIGHTSYSTEM",
+            "1": "TAXIWAYLIGHTSYSTEM",
+            "3": "TOUCHDOWNLIFTOFFLIGHTSYSTEM",
+            "4": "APRONLIGHTSYSTEM",
+            "5": "TAXIHOLDINGPOSITIONLIGHTSYSTEM",
+            "6": "RUNWAYPROTECTAREALIGHTSYSTEM",
+            "7": "GUIDANCELINELIGHTSYSTEM",
+            "8": "VISUALGLIDESLOPEINDICATOR"
+          }
+        }
+      ]
+    }
+  },
+  "arrestinggear": {
+    "arrestinggear.direction_code": {
+      "aixm:bidirectional": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "u": "NO",
+            "b": "YES"
+          }
+        }
+      ]
+    },
+    "arrestinggear.status_code": {
+      "aixm:status": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "open": "COMPLETED",
+            "abnd": "DEMOLITION_PLANNED",
+            "wip": "IN_CONSTRUCTION",
+            "clsd": "IN_DEMOLITION"
+          }
+        }
+      ]
+    }
+  },
+  "procedureleg": {
+    "procedureleg.descrdistvert_code": {
+      "aixm:altitudeinterpretation": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "la": "ABOVE_LOWER",
+            "as": "AS_ASSIGNED",
+            "l": "AT_LOWER",
+            "bh": "BELOW_UPPER",
+            "b": "BETWEEN",
+            "e": "EXPECT_LOWER",
+            "other": "OTHER",
+            "r": "RECOMMENDED"
+          }
+        }
+      ]
+    },
+    "procedureleg.typecourse_code": {
+      "aixm:coursetype": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "hdg": "HDG",
+            "mbrg": "MAG_BRG",
+            "mt": "MAG_TRACK",
+            "other": "OTHER",
+            "rad": "RDL",
+            "tbrg": "TRUE_BRG",
+            "tt": "TRUE_TRACK"
+          }
+        }
+      ]
+    },
+    "procedureleg.procedureturn_code": {
+      "aixm:procedureturnrequired": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "procedureleg.speedinterp_code": {
+      "aixm:speedinterpretation": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "la": "ABOVE_LOWER",
+            "as": "AS_ASSIGNED",
+            "l": "AT_LOWER",
+            "bh": "BELOW_UPPER",
+            "b": "BETWEEN",
+            "e": "EXPECT_LOWER",
+            "other": "OTHER",
+            "r": "RECOMMENDED"
+          }
+        }
+      ]
+    },
+    "procedureleg.dirturn_code": {
+      "aixm:turndirection": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "e": "EITHER",
+            "l": "LEFT",
+            "n": "OTHER",
+            "r": "RIGHT"
+          }
+        }
+      ]
+    }
+  },
+  "navaidcomponent": {
+    "navaidcomponent.type_code": {
+      "aixm:type": [
+        {
+          "aixm_ancestor_name": "aixm:azimuth",
+          "aixm_path_endswith": "aixm:azimuthtimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:azimuth",
+          "aixm_path_endswith": "aixm:dmetimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:azimuth",
+          "aixm_path_endswith": "aixm:vortimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:directionfinder",
+          "aixm_path_endswith": "aixm:azimuthtimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:directionfinder",
+          "aixm_path_endswith": "aixm:dmetimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:directionfinder",
+          "aixm_path_endswith": "aixm:vortimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:dme",
+          "aixm_path_endswith": "aixm:azimuthtimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:dme",
+          "aixm_path_endswith": "aixm:dmetimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:dme",
+          "aixm_path_endswith": "aixm:vortimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:elevation",
+          "aixm_path_endswith": "aixm:azimuthtimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:elevation",
+          "aixm_path_endswith": "aixm:dmetimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:elevation",
+          "aixm_path_endswith": "aixm:vortimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:glidepath",
+          "aixm_path_endswith": "aixm:azimuthtimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:glidepath",
+          "aixm_path_endswith": "aixm:dmetimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:glidepath",
+          "aixm_path_endswith": "aixm:vortimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:localizer",
+          "aixm_path_endswith": "aixm:azimuthtimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:localizer",
+          "aixm_path_endswith": "aixm:dmetimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:localizer",
+          "aixm_path_endswith": "aixm:vortimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:markerbeacon",
+          "aixm_path_endswith": "aixm:azimuthtimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:markerbeacon",
+          "aixm_path_endswith": "aixm:dmetimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:markerbeacon",
+          "aixm_path_endswith": "aixm:vortimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:ndb",
+          "aixm_path_endswith": "aixm:azimuthtimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:ndb",
+          "aixm_path_endswith": "aixm:dmetimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:ndb",
+          "aixm_path_endswith": "aixm:vortimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:sdf",
+          "aixm_path_endswith": "aixm:azimuthtimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:sdf",
+          "aixm_path_endswith": "aixm:dmetimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:sdf",
+          "aixm_path_endswith": "aixm:vortimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:tacan",
+          "aixm_path_endswith": "aixm:azimuthtimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:tacan",
+          "aixm_path_endswith": "aixm:dmetimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:tacan",
+          "aixm_path_endswith": "aixm:vortimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:vor",
+          "aixm_path_endswith": "aixm:azimuthtimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:vor",
+          "aixm_path_endswith": "aixm:dmetimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:vor",
+          "aixm_path_endswith": "aixm:vortimeslice/aixm:type",
+          "domain": {
+            "b": "BWD",
+            "f": "FWD",
+            "n": "NARROW",
+            "p": "PRECISION",
+            "w": "WIDE"
+          }
+        }
+      ]
+    },
+    "navaidcomponent.usebackcourse_code": {
+      "aixm:backcourseusable": [
+        {
+          "aixm_ancestor_name": "aixm:azimuth",
+          "domain": {
+            "n": "NO",
+            "o": "OTHER",
+            "r": "RSTR",
+            "y": "YES"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:directionfinder",
+          "domain": {
+            "n": "NO",
+            "o": "OTHER",
+            "r": "RSTR",
+            "y": "YES"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:dme",
+          "domain": {
+            "n": "NO",
+            "o": "OTHER",
+            "r": "RSTR",
+            "y": "YES"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:elevation",
+          "domain": {
+            "n": "NO",
+            "o": "OTHER",
+            "r": "RSTR",
+            "y": "YES"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:glidepath",
+          "domain": {
+            "n": "NO",
+            "o": "OTHER",
+            "r": "RSTR",
+            "y": "YES"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:localizer",
+          "domain": {
+            "n": "NO",
+            "r": "RSTR",
+            "y": "YES"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:markerbeacon",
+          "domain": {
+            "n": "NO",
+            "o": "OTHER",
+            "r": "RSTR",
+            "y": "YES"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:ndb",
+          "domain": {
+            "n": "NO",
+            "o": "OTHER",
+            "r": "RSTR",
+            "y": "YES"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:sdf",
+          "domain": {
+            "n": "NO",
+            "o": "OTHER",
+            "r": "RSTR",
+            "y": "YES"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:tacan",
+          "domain": {
+            "n": "NO",
+            "o": "OTHER",
+            "r": "RSTR",
+            "y": "YES"
+          }
+        },
+        {
+          "aixm_ancestor_name": "aixm:vor",
+          "domain": {
+            "n": "NO",
+            "o": "OTHER",
+            "r": "RSTR",
+            "y": "YES"
+          }
+        }
+      ]
+    },
+    "navaidcomponent.class_code": {
+      "aixm:class": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "b": "ENR",
+            "fm": "FAN",
+            "lfm": "LOW_PWR_FAN",
+            "m": "MAR"
+          }
+        }
+      ]
+    },
+    "navaidcomponent.doppler": {
+      "aixm:doppler": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "navaidcomponent.frequency_uom": {
+      "aixm:frequency": [
+        {
+          "aixm_ancestor_name": "*",
+          "attribute": "uom",
+          "domain": {
+            "gh": "GHZ",
+            "h": "HZ",
+            "kh": "KHZ",
+            "mh": "MHZ",
+            "o": "OTHER"
+          }
+        }
+      ]
+    },
+    "navaidcomponent.subtype_code": {
+      "_": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "MARKERBEACON",
+            "1": "NDB",
+            "2": "DME",
+            "3": "VOR",
+            "4": "TACAN",
+            "5": "ELEVATION",
+            "6": "AZIMUTH",
+            "7": "LOCALIZER",
+            "8": "GLIDEPATH",
+            "9": "DIRECTIONFINDER"
+          }
+        }
+      ]
+    },
+    "navaidcomponent.emissionband_code": {
+      "aixm:emissionband": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "uhf": "U",
+            "mf": "M",
+            "hf": "H",
+            "other": "OTHER"
+          }
+        }
+      ]
+    }
+  },
+  "callsign": {
+    "callsign.language_code": {
+      "aixm:language": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "af": "AFR",
+            "ar": "ARA",
+            "bg": "BUL",
+            "ch": "CHI",
+            "cz": "CZE",
+            "da": "DAN",
+            "ho": "DUT",
+            "en": "ENG",
+            "fi": "FIN",
+            "fr": "FRE",
+            "ge": "GER",
+            "gr": "GRE",
+            "he": "HEB",
+            "hu": "HUN",
+            "it": "ITA",
+            "ja": "JPN",
+            "ko": "KOR",
+            "ma": "MAC",
+            "no": "NOR",
+            "pe": "PER",
+            "pl": "POL",
+            "pt": "POR",
+            "ro": "ROM",
+            "ru": "RUS",
+            "es": "SPA",
+            "su": "SWE",
+            "tu": "TUR",
+            "xx": "XXX"
+          }
+        }
+      ]
+    }
+  },
+  "navsyscheckpt": {
+    "navsyscheckpt.altitudeinterpretation_code": {
+      "aixm:altitudeinterpretation": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "c": "BACKCOURSE",
+            "i": "INNER",
+            "m": "MIDDLE",
+            "o": "OUTER"
+          }
+        }
+      ]
+    },
+    "navsyscheckpt.type_code": {
+      "_": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "ins": "CHECKPOINTINS",
+            "vor": "CHECKPOINTVOR"
+          }
+        }
+      ]
+    }
+  },
+  "circlesector": {
+    "circlesector.angletype_code": {
+      "aixm:angletype": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "rad": "RDL"
+          }
+        }
+      ]
+    }
+  },
+  "address": {
+    "address.type_code": {
+      "_": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "post": "POSTALADDRESS",
+            "phone": "TELEPHONECONTACT",
+            "online": "ONLINECONTACT"
+          }
+        }
+      ]
+    },
+    "address.network_code": {
+      "aixm:network": [
+        {
+          "aixm_ancestor_name": "aixm:onlinecontact",
+          "domain": {
+            "tlx": "OTHER:TLX",
+            "radio": "OTHER:RADIO"
+          },
+          "collisions": {
+            "OTHER:TELEX": "tlx",
+            "OTHER:TLX": "tlx"
+          }
+        }
+      ]
+    }
+  },
+  "designatedpoint": {
+    "designatedpoint.type_code": {
+      "aixm:type": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "adhp": "OTHER:ADHP",
+            "vfr": "OTHER:VFR",
+            "term": "TERMINAL"
+          }
+        }
+      ]
+    }
+  },
+  "flightcondelement": {
+    "flightcondelement.referencelocation_code": {
+      "aixm:referencelocation": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    }
+  },
+  "flightrestrictionroute": {
+    "flightrestrictionroute.priorpermission_code": {
+      "aixm:priorpermission": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    }
+  },
+  "flightroutingelement": {
+    "flightroutingelement.speed_uom": {
+      "aixm:speed": [
+        {
+          "aixm_ancestor_name": "*",
+          "attribute": "uom",
+          "domain": {
+            "F/MIN": "FT_MIN",
+            "F/SEC": "FT_SEC",
+            "KM/H": "KM_H",
+            "KT": "KT",
+            "MACH": "MACH",
+            "MPH": "MPH",
+            "M/MIN": "M_MIN",
+            "M/SEC": "M_SEC",
+            "Other": "OTHER"
+          }
+        }
+      ]
+    }
+  },
+  "geoborder": {
+    "geoborder.type_code": {
+      "aixm:type": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "rb": "BANK",
+            "cs": "COAST",
+            "rw": "RIVER",
+            "st": "STATE",
+            "tw": "WATER"
+          }
+        }
+      ]
+    }
+  },
+  "adhpsurfaceline": {
+    "adhpsurfaceline.guidancetype_code": {
+      "aixm:type": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "airwy": "AIR_TLANE",
+            "apron": "APRON",
+            "s-tlane": "GATE_TLANE",
+            "li-tlane": "LI_TLANE",
+            "lo-tlane": "LO_TLANE",
+            "other": "RWY",
+            "gndtwy": "TWY"
+          }
+        }
+      ]
+    },
+    "adhpsurfaceline.subtype_code": {
+      "_": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "2": "GUIDANCELINE"
+          }
+        }
+      ]
+    }
+  },
+  "holdingassessment": {
+    "holdingassessment.turbulentair_code": {
+      "aixm:turbulentair": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    }
+  },
+  "holdingpattern": {
+    "holdingpattern.outboundcoursetype_code": {
+      "aixm:outboundcoursetype": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "hdg": "HDG",
+            "mbrg": "MAG_BRG",
+            "mt": "MAG_TRACK",
+            "rad": "RDL",
+            "tbrg": "TRUE_BRG",
+            "tt": "TRUE_TRACK"
+          }
+        }
+      ]
+    },
+    "holdingpattern.speedlimit_uom": {
+      "aixm:speedlimit": [
+        {
+          "aixm_ancestor_name": "*",
+          "attribute": "uom",
+          "domain": {
+            "km/h": "KM_H",
+            "kt": "KT",
+            "mach": "MACH",
+            "m/min": "M_MIN",
+            "f/min": "FT_MIN",
+            "m/sec": "M_SEC",
+            "f/sec": "FT_SEC",
+            "mph": "MPH",
+            "other": "OTHER"
+          }
+        }
+      ]
+    },
+    "holdingpattern.dirturn_code": {
+      "aixm:turndirection": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "e": "EITHER",
+            "l": "LEFT",
+            "r": "RIGHT"
+          }
+        }
+      ]
+    }
+  },
+  "obstaclepoint": {
+    "obstaclepoint.status_code": {
+      "aixm:constructionstatus": [
+        {
+          "aixm_ancestor_name": "aixm:verticalstructurepart/aixm:constructionstatus",
+          "aixm_path_endswith": "aixm:verticalstructurepart/aixm:constructionstatus",
+          "domain": {
+            "0": "OTHER:PLANNED",
+            "1": "IN_CONSTRUCTION",
+            "2": "COMPLETED",
+            "3": "IN_DEMOLITION",
+            "4": "OTHER",
+            "5": "DEMOLITION_PLANNED"
+          }
+        }
+      ]
+    },
+    "obstaclepoint.frangible_code": {
+      "aixm:frangible": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "obstaclepoint.firstcolor_code": {
+      "aixm:markingfirstcolour": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "yel": "YELLOW",
+            "red": "RED",
+            "whi": "WHITE",
+            "blu": "BLUE",
+            "grn": "GREEN",
+            "prp": "PURPLE",
+            "orange": "ORANGE",
+            "amber": "AMBER",
+            "black": "BLACK",
+            "brown": "BROWN",
+            "grey": "GREY",
+            "light_grey": "LIGHT_GREY",
+            "magenta": "MAGENTA",
+            "pink": "PINK",
+            "violet": "VIOLET",
+            "other": "OTHER"
+          }
+        }
+      ]
+    },
+    "obstaclepoint.secondcolor_code": {
+      "aixm:markingsecondcolour": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "yel": "YELLOW",
+            "red": "RED",
+            "whi": "WHITE",
+            "blu": "BLUE",
+            "grn": "GREEN",
+            "prp": "PURPLE",
+            "orange": "ORANGE",
+            "amber": "AMBER",
+            "black": "BLACK",
+            "brown": "BROWN",
+            "grey": "GREY",
+            "light_grey": "LIGHT_GREY",
+            "magenta": "MAGENTA",
+            "pink": "PINK",
+            "violet": "VIOLET",
+            "other": "OTHER"
+          }
+        }
+      ]
+    },
+    "obstaclepoint.markingpattern_code": {
+      "aixm:markingpattern": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "monocolor": "MONOCOLOUR",
+            "checkered": "CHEQUERED",
+            "hbands": "HBANDS",
+            "vbands": "VBANDS",
+            "flag": "FLAG",
+            "markers": "MARKERS",
+            "other": "OTHER"
+          }
+        }
+      ]
+    },
+    "obstaclepoint.mobile_code": {
+      "aixm:mobile": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "obstaclepoint.obstacletype_code": {
+      "aixm:type": [
+        {
+          "aixm_ancestor_name": "aixm:verticalstructurepart/aixm:type",
+          "domain": {
+            "0": "ARCH",
+            "1": "TETHERED_BALLOON",
+            "2": "BRIDGE",
+            "3": "OTHER:BUILDING",
+            "4": "CATENARY",
+            "5": "COOLING_TOWER",
+            "6": "CRANE",
+            "7": "CONTROL_TOWER",
+            "8": "DAM",
+            "9": "DOME",
+            "10": "ELEVATOR",
+            "11": "MONUMENT",
+            "12": "POWER_PLANT",
+            "13": "POLE",
+            "14": "RIG",
+            "15": "REFINERY",
+            "16": "SIGN",
+            "17": "SPIRE",
+            "18": "STACK",
+            "19": "TANK",
+            "21": "TOWER",
+            "22": "TRAMWAY",
+            "23": "WINDMILL",
+            "24": "OTHER:ANTENNA",
+            "25": "TREE",
+            "26": "VEGETATION",
+            "27": "NATURAL_HIGHPOINT",
+            "28": "WINDMILL_FARMS",
+            "29": "TRANSMISSION_LINE",
+            "30": "WALL",
+            "32": "OTHER:FENCE",
+            "33": "GRAIN_ELEVATOR",
+            "34": "LIGHTHOUSE",
+            "35": "NAVAID",
+            "36": "NUCLEAR_REACTOR",
+            "37": "WATER_TOWER",
+            "38": "STADIUM",
+            "39": "OTHER",
+            "40": "AG_EQUIP",
+            "41": "COMPRESSED_AIR_SYSTEM",
+            "42": "CONTROL_MONITORING_SYSTEM",
+            "43": "ELECTRICAL_EXIT_LIGHT",
+            "44": "ELECTRICAL_SYSTEM",
+            "45": "FUEL_SYSTEM",
+            "46": "GATE",
+            "47": "GENERAL_UTILITY",
+            "48": "HEAT_COOL_SYSTEM",
+            "49": "INDUSTRIAL_SYSTEM",
+            "50": "NATURAL_GAS_SYSTEM",
+            "51": "SALTWATER_SYSTEM",
+            "52": "STORM_SYSTEM",
+            "53": "WASTEWATER_SYSTEM",
+            "54": "WATER_SYSTEM",
+            "55": "OTHER:MAST",
+            "56": "OTHER:CHIMNEY",
+            "57": "OTHER:POWER_LINE",
+            "58": "OTHER:MOBILE_OBST",
+            "59": "OTHER:SEE_NOTE_AIXM_4_5_MAPPING",
+            "60": "OTHER:FLOODLIGHT",
+            "61": "OTHER:CHURCH",
+            "62": "OTHER:CATHEDRAL",
+            "63": "OTHER:WEATHERCOCK",
+            "64": "CABLE_CAR",
+            "65": "URBAN"
+          },
+          "collisions": {
+            "ANTENNA": "24",
+            "OTHER:ANTENNA": "24",
+            "BUILDING": "3",
+            "OTHER:BUILDING": "3",
+            "CHURCH": "61",
+            "OTHER:CHURCH": "61",
+            "FENCE": "32",
+            "OTHER:FENCE": "32",
+            "OTHER:POLE": "13",
+            "POLE": "13",
+            "OTHER:TOWER": "21",
+            "TOWER": "21",
+            "OTHER:TREE": "25",
+            "TREE": "25"
+          }
+        }
+      ]
+    },
+    "obstaclepoint.composition_code": {
+      "aixm:visiblematerial": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "adobe": "ADOBE_BRICK",
+            "pressedconcrete": "PRESSED_CONCRETE",
+            "reinforcedconcrete": "REINFORCED_CONCRETE",
+            "treatedtimber": "TREATED_TIMBER"
+          }
+        }
+      ]
+    }
+  },
+  "obstacleline": {
+    "obstacleline.status_code": {
+      "aixm:constructionstatus": [
+        {
+          "aixm_ancestor_name": "aixm:verticalstructurepart/aixm:constructionstatus",
+          "aixm_path_endswith": "aixm:verticalstructurepart/aixm:constructionstatus",
+          "domain": {
+            "0": "OTHER:PLANNED",
+            "1": "IN_CONSTRUCTION",
+            "2": "COMPLETED",
+            "3": "IN_DEMOLITION",
+            "4": "OTHER",
+            "5": "DEMOLITION_PLANNED"
+          }
+        }
+      ]
+    },
+    "obstacleline.frangible_code": {
+      "aixm:frangible": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "obstacleline.firstcolor_code": {
+      "aixm:markingfirstcolour": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "yel": "YELLOW",
+            "red": "RED",
+            "whi": "WHITE",
+            "blu": "BLUE",
+            "grn": "GREEN",
+            "prp": "PURPLE",
+            "orange": "ORANGE",
+            "amber": "AMBER",
+            "black": "BLACK",
+            "brown": "BROWN",
+            "grey": "GREY",
+            "light_grey": "LIGHT_GREY",
+            "magenta": "MAGENTA",
+            "pink": "PINK",
+            "violet": "VIOLET",
+            "other": "OTHER"
+          }
+        }
+      ]
+    },
+    "obstacleline.secondcolor_code": {
+      "aixm:markingsecondcolour": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "yel": "YELLOW",
+            "red": "RED",
+            "whi": "WHITE",
+            "blu": "BLUE",
+            "grn": "GREEN",
+            "prp": "PURPLE",
+            "orange": "ORANGE",
+            "amber": "AMBER",
+            "black": "BLACK",
+            "brown": "BROWN",
+            "grey": "GREY",
+            "light_grey": "LIGHT_GREY",
+            "magenta": "MAGENTA",
+            "pink": "PINK",
+            "violet": "VIOLET",
+            "other": "OTHER"
+          }
+        }
+      ]
+    },
+    "obstacleline.markingpattern_code": {
+      "aixm:markingpattern": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "monocolor": "MONOCOLOUR",
+            "checkered": "CHEQUERED",
+            "hbands": "HBANDS",
+            "vbands": "VBANDS",
+            "flag": "FLAG",
+            "markers": "MARKERS",
+            "other": "OTHER"
+          }
+        }
+      ]
+    },
+    "obstacleline.mobile_code": {
+      "aixm:mobile": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "obstacleline.obstacletype_code": {
+      "aixm:type": [
+        {
+          "aixm_ancestor_name": "aixm:verticalstructurepart/aixm:type",
+          "domain": {
+            "0": "ARCH",
+            "1": "TETHERED_BALLOON",
+            "2": "BRIDGE",
+            "3": "OTHER:BUILDING",
+            "4": "CATENARY",
+            "5": "COOLING_TOWER",
+            "6": "CRANE",
+            "7": "CONTROL_TOWER",
+            "8": "DAM",
+            "9": "DOME",
+            "10": "ELEVATOR",
+            "11": "MONUMENT",
+            "12": "POWER_PLANT",
+            "13": "POLE",
+            "14": "RIG",
+            "15": "REFINERY",
+            "16": "SIGN",
+            "17": "SPIRE",
+            "18": "STACK",
+            "19": "TANK",
+            "21": "TOWER",
+            "22": "TRAMWAY",
+            "23": "WINDMILL",
+            "24": "OTHER:ANTENNA",
+            "25": "TREE",
+            "26": "VEGETATION",
+            "27": "NATURAL_HIGHPOINT",
+            "28": "WINDMILL_FARMS",
+            "29": "TRANSMISSION_LINE",
+            "30": "WALL",
+            "32": "OTHER:FENCE",
+            "33": "GRAIN_ELEVATOR",
+            "34": "LIGHTHOUSE",
+            "35": "NAVAID",
+            "36": "NUCLEAR_REACTOR",
+            "37": "WATER_TOWER",
+            "38": "STADIUM",
+            "39": "OTHER",
+            "40": "AG_EQUIP",
+            "41": "COMPRESSED_AIR_SYSTEM",
+            "42": "CONTROL_MONITORING_SYSTEM",
+            "43": "ELECTRICAL_EXIT_LIGHT",
+            "44": "ELECTRICAL_SYSTEM",
+            "45": "FUEL_SYSTEM",
+            "46": "GATE",
+            "47": "GENERAL_UTILITY",
+            "48": "HEAT_COOL_SYSTEM",
+            "49": "INDUSTRIAL_SYSTEM",
+            "50": "NATURAL_GAS_SYSTEM",
+            "51": "SALTWATER_SYSTEM",
+            "52": "STORM_SYSTEM",
+            "53": "WASTEWATER_SYSTEM",
+            "54": "WATER_SYSTEM",
+            "55": "OTHER:MAST",
+            "56": "OTHER:CHIMNEY",
+            "57": "OTHER:POWER_LINE",
+            "58": "OTHER:MOBILE_OBST",
+            "59": "OTHER:SEE_NOTE_AIXM_4_5_MAPPING",
+            "60": "OTHER:FLOODLIGHT",
+            "61": "OTHER:CHURCH",
+            "62": "OTHER:CATHEDRAL",
+            "63": "OTHER:WEATHERCOCK",
+            "64": "CABLE_CAR",
+            "65": "URBAN"
+          },
+          "collisions": {
+            "ANTENNA": "24",
+            "OTHER:ANTENNA": "24",
+            "BUILDING": "3",
+            "OTHER:BUILDING": "3",
+            "CHURCH": "61",
+            "OTHER:CHURCH": "61",
+            "FENCE": "32",
+            "OTHER:FENCE": "32",
+            "OTHER:POLE": "13",
+            "POLE": "13",
+            "OTHER:TOWER": "21",
+            "TOWER": "21",
+            "OTHER:TREE": "25",
+            "TREE": "25"
+          }
+        }
+      ]
+    },
+    "obstacleline.composition_code": {
+      "aixm:visiblematerial": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "adobe": "ADOBE_BRICK",
+            "pressedconcrete": "PRESSED_CONCRETE",
+            "reinforcedconcrete": "REINFORCED_CONCRETE",
+            "treatedtimber": "TREATED_TIMBER"
+          }
+        }
+      ]
+    }
+  },
+  "obstaclepolygon": {
+    "obstaclepolygon.status_code": {
+      "aixm:constructionstatus": [
+        {
+          "aixm_ancestor_name": "aixm:verticalstructurepart/aixm:constructionstatus",
+          "aixm_path_endswith": "aixm:verticalstructurepart/aixm:constructionstatus",
+          "domain": {
+            "0": "OTHER:PLANNED",
+            "1": "IN_CONSTRUCTION",
+            "2": "COMPLETED",
+            "3": "IN_DEMOLITION",
+            "4": "OTHER",
+            "5": "DEMOLITION_PLANNED"
+          }
+        }
+      ]
+    },
+    "obstaclepolygon.frangible_code": {
+      "aixm:frangible": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "obstaclepolygon.firstcolor_code": {
+      "aixm:markingfirstcolour": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "yel": "YELLOW",
+            "red": "RED",
+            "whi": "WHITE",
+            "blu": "BLUE",
+            "grn": "GREEN",
+            "prp": "PURPLE",
+            "orange": "ORANGE",
+            "amber": "AMBER",
+            "black": "BLACK",
+            "brown": "BROWN",
+            "grey": "GREY",
+            "light_grey": "LIGHT_GREY",
+            "magenta": "MAGENTA",
+            "pink": "PINK",
+            "violet": "VIOLET",
+            "other": "OTHER"
+          }
+        }
+      ]
+    },
+    "obstaclepolygon.secondcolor_code": {
+      "aixm:markingsecondcolour": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "yel": "YELLOW",
+            "red": "RED",
+            "whi": "WHITE",
+            "blu": "BLUE",
+            "grn": "GREEN",
+            "prp": "PURPLE",
+            "orange": "ORANGE",
+            "amber": "AMBER",
+            "black": "BLACK",
+            "brown": "BROWN",
+            "grey": "GREY",
+            "light_grey": "LIGHT_GREY",
+            "magenta": "MAGENTA",
+            "pink": "PINK",
+            "violet": "VIOLET",
+            "other": "OTHER"
+          }
+        }
+      ]
+    },
+    "obstaclepolygon.markingpattern_code": {
+      "aixm:markingpattern": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "monocolor": "MONOCOLOUR",
+            "checkered": "CHEQUERED",
+            "hbands": "HBANDS",
+            "vbands": "VBANDS",
+            "flag": "FLAG",
+            "markers": "MARKERS",
+            "other": "OTHER"
+          }
+        }
+      ]
+    },
+    "obstaclepolygon.mobile_code": {
+      "aixm:mobile": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "obstaclepolygon.obstacletype_code": {
+      "aixm:type": [
+        {
+          "aixm_ancestor_name": "aixm:verticalstructurepart/aixm:type",
+          "domain": {
+            "0": "ARCH",
+            "1": "TETHERED_BALLOON",
+            "2": "BRIDGE",
+            "3": "OTHER:BUILDING",
+            "4": "CATENARY",
+            "5": "COOLING_TOWER",
+            "6": "CRANE",
+            "7": "CONTROL_TOWER",
+            "8": "DAM",
+            "9": "DOME",
+            "10": "ELEVATOR",
+            "11": "MONUMENT",
+            "12": "POWER_PLANT",
+            "13": "POLE",
+            "14": "RIG",
+            "15": "REFINERY",
+            "16": "SIGN",
+            "17": "SPIRE",
+            "18": "STACK",
+            "19": "TANK",
+            "21": "TOWER",
+            "22": "TRAMWAY",
+            "23": "WINDMILL",
+            "24": "OTHER:ANTENNA",
+            "25": "TREE",
+            "26": "VEGETATION",
+            "27": "NATURAL_HIGHPOINT",
+            "28": "WINDMILL_FARMS",
+            "29": "TRANSMISSION_LINE",
+            "30": "WALL",
+            "32": "OTHER:FENCE",
+            "33": "GRAIN_ELEVATOR",
+            "34": "LIGHTHOUSE",
+            "35": "NAVAID",
+            "36": "NUCLEAR_REACTOR",
+            "37": "WATER_TOWER",
+            "38": "STADIUM",
+            "39": "OTHER",
+            "40": "AG_EQUIP",
+            "41": "COMPRESSED_AIR_SYSTEM",
+            "42": "CONTROL_MONITORING_SYSTEM",
+            "43": "ELECTRICAL_EXIT_LIGHT",
+            "44": "ELECTRICAL_SYSTEM",
+            "45": "FUEL_SYSTEM",
+            "46": "GATE",
+            "47": "GENERAL_UTILITY",
+            "48": "HEAT_COOL_SYSTEM",
+            "49": "INDUSTRIAL_SYSTEM",
+            "50": "NATURAL_GAS_SYSTEM",
+            "51": "SALTWATER_SYSTEM",
+            "52": "STORM_SYSTEM",
+            "53": "WASTEWATER_SYSTEM",
+            "54": "WATER_SYSTEM",
+            "55": "OTHER:MAST",
+            "56": "OTHER:CHIMNEY",
+            "57": "OTHER:POWER_LINE",
+            "58": "OTHER:MOBILE_OBST",
+            "59": "OTHER:SEE_NOTE_AIXM_4_5_MAPPING",
+            "60": "OTHER:FLOODLIGHT",
+            "61": "OTHER:CHURCH",
+            "62": "OTHER:CATHEDRAL",
+            "63": "OTHER:WEATHERCOCK",
+            "64": "CABLE_CAR",
+            "65": "URBAN"
+          },
+          "collisions": {
+            "ANTENNA": "24",
+            "OTHER:ANTENNA": "24",
+            "BUILDING": "3",
+            "OTHER:BUILDING": "3",
+            "CHURCH": "61",
+            "OTHER:CHURCH": "61",
+            "FENCE": "32",
+            "OTHER:FENCE": "32",
+            "OTHER:POLE": "13",
+            "POLE": "13",
+            "OTHER:TOWER": "21",
+            "TOWER": "21",
+            "OTHER:TREE": "25",
+            "TREE": "25"
+          }
+        }
+      ]
+    },
+    "obstaclepolygon.composition_code": {
+      "aixm:visiblematerial": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "adobe": "ADOBE_BRICK",
+            "pressedconcrete": "PRESSED_CONCRETE",
+            "reinforcedconcrete": "REINFORCED_CONCRETE",
+            "treatedtimber": "TREATED_TIMBER"
+          }
+        }
+      ]
+    }
+  },
+  "terminalprocedure": {
+    "terminalprocedure.additionalequip_code": {
+      "aixm:additionalequipment": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "terminalprocedure.type_code": {
+      "aixm:approachtype": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "p": "GPS",
+            "g": "IGS",
+            "i": "ILS",
+            "idme": "ILS_DME",
+            "iprm": "ILS_PRM",
+            "l": "LOC",
+            "b": "LOC_BC",
+            "ldme": "LOC_DME",
+            "ldmeb": "LOC_DME_BC",
+            "m": "MLS",
+            "mdme": "MLS_DME",
+            "n": "NDB",
+            "ndbdme": "NDB_DME",
+            "e": "RNAV",
+            "u": "SDF",
+            "t": "TACAN",
+            "v": "VOR",
+            "vdme": "VOR_DME"
+          }
+        }
+      ]
+    },
+    "terminalprocedure.flightchecked_code": {
+      "aixm:flightchecked": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "terminalprocedure.rnav_code": {
+      "aixm:rnav": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "terminalprocedure.waasreliable_code": {
+      "aixm:waasreliable": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "terminalprocedure.subtype_code": {
+      "_": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "INSTRUMENTAPPROACHPROCEDURE",
+            "1": "STANDARDINSTRUMENTDEPARTURE",
+            "2": "STANDARDINSTRUMENTARRIVAL"
+          }
+        }
+      ]
+    }
+  },
+  "lightelement": {
+    "lightelement.color_code": {
+      "aixm:colour": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "blu": "BLUE",
+            "grn": "GREEN",
+            "prp": "PURPLE",
+            "whi": "WHITE",
+            "yel": "YELLOW"
+          }
+        }
+      ]
+    }
+  },
+  "markingpolygon": {
+    "markingpolygon.color_code": {
+      "aixm:colour": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "blu": "BLUE",
+            "grn": "GREEN",
+            "prp": "PURPLE",
+            "whi": "WHITE",
+            "yel": "YELLOW"
+          }
+        }
+      ]
+    }
+  },
+  "markingline": {
+    "markingline.color_code": {
+      "aixm:colour": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "blu": "BLUE",
+            "grn": "GREEN",
+            "prp": "PURPLE",
+            "whi": "WHITE",
+            "yel": "YELLOW"
+          }
+        }
+      ]
+    }
+  },
+  "markingpoint": {
+    "markingpoint.color_code": {
+      "aixm:colour": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "blu": "BLUE",
+            "grn": "GREEN",
+            "prp": "PURPLE",
+            "whi": "WHITE",
+            "yel": "YELLOW"
+          }
+        }
+      ]
+    }
+  },
+  "navaidsystem": {
+    "navaidsystem.flightchecked_code": {
+      "aixm:flightchecked": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "navaidsystem.subtype_code": {
+      "aixm:type": [
+        {
+          "aixm_ancestor_name": "aixm:navaid",
+          "domain": {
+            "1": "MKR",
+            "2": "NDB_MKR",
+            "3": "NDB",
+            "4": "NDB_DME",
+            "5": "DME",
+            "6": "VOR_DME",
+            "7": "VOR",
+            "8": "VORTAC",
+            "9": "TACAN",
+            "11": "MLS",
+            "13": "LOC_DME",
+            "14": "ILS",
+            "15": "ILS_DME",
+            "16": "MLS_DME",
+            "17": "TLS",
+            "18": "DIRECTIONFINDER"
+          },
+          "collisions": {
+            "LOC": "13",
+            "LOC_DME": "13"
+          }
+        }
+      ]
+    }
+  },
+  "navaidassociation": {
+    "navaidassociation.ilsposition_code": {
+      "aixm:markerposition": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "C": "BACKCOURSE",
+            "I": "INNER",
+            "M": "MIDDLE",
+            "O": "OUTER"
+          }
+        }
+      ]
+    },
+    "navaidassociation.navigablelocation_code": {
+      "aixm:providesnavigablelocation": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    }
+  },
+  "notes": {
+    "notes.type_code": {
+      "aixm:purpose": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "OTHER",
+            "3": "WARNING",
+            "28": "DESCRIPTION",
+            "29": "REMARK",
+            "30": "DISCLAIMER",
+            "31": "OTHER:AIXM_4_5_MAPPING"
+          }
+        }
+      ]
+    }
+  },
+  "obstruction": {
+    "obstruction.closein_code": {
+      "aixm:closein": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "obstruction.controlling_code": {
+      "aixm:controlling": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "obstruction.surfacepenetration_code": {
+      "aixm:surfacepenetration": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    }
+  },
+  "orgauth": {
+    "orgauth.military_code": {
+      "aixm:military": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "all": "JOINT"
+          }
+        }
+      ]
+    },
+    "orgauth.type_code": {
+      "aixm:type": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "aoa": "ACFT_OPR",
+            "ats": "ATS",
+            "c": "COMMERCIAL",
+            "ha": "HANDLING_AGENCY",
+            "io": "INTL_ORG",
+            "a": "NTL_AUTH",
+            "o": "ORG",
+            "s": "STATE",
+            "gs": "STATE_GROUP"
+          }
+        }
+      ]
+    }
+  },
+  "orgauthassoc": {
+    "orgauthassoc.type_code": {
+      "aixm:type": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "mbr": "MEMBER",
+            "other": "OTHER",
+            "own": "OWNED_BY",
+            "sup": "SUPERVISED_BY"
+          }
+        }
+      ]
+    }
+  },
+  "adhppassengerfacility": {
+    "adhppassengerfacility.type_code": {
+      "aixm:type": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "trans": "TRANSPORT"
+          }
+        }
+      ]
+    }
+  },
+  "radarequipment": {
+    "radarequipment.antenna_tilt_fixed": {
+      "aixm:antennatiltfixed": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "radarequipment.autonomous": {
+      "aixm:autonomous": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "radarequipment.digital": {
+      "aixm:digital": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "radarequipment.dualchannel": {
+      "aixm:dualchannel": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "radarequipment.militaryuse": {
+      "aixm:militaryuseonly": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "radarequipment.monopulse": {
+      "aixm:monopulse": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "radarequipment.movingtargetindicator": {
+      "aixm:movingtargetindicator": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "radarequipment.specialaircraft": {
+      "aixm:specialaircraftonly": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "radarequipment.specialuse": {
+      "aixm:specialuseonly": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "radarequipment.subtype_code": {
+      "_": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "PRIMARYSURVEILLANCERADAR",
+            "1": "SECONDARYSURVEILLANCERADAR",
+            "2": "PRECISIONAPPROACHRADAR"
+          }
+        }
+      ]
+    }
+  },
+  "proceduredme": {
+    "proceduredme.criticaldme_code": {
+      "aixm:criticaldme": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "proceduredme.satisfactory_code": {
+      "aixm:satisfactory": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    }
+  },
+  "radarsystem": {
+    "radarsystem.generalterrainmonitor": {
+      "aixm:generalterrainmonitor": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    }
+  },
+  "frequency": {
+    "frequency.frequency_uom": {
+      "aixm:frequencytransmission": [
+        {
+          "aixm_ancestor_name": "*",
+          "attribute": "uom",
+          "domain": {
+            "gh": "GHZ",
+            "h": "HZ",
+            "kh": "KHZ",
+            "mh": "MHZ",
+            "o": "OTHER"
+          }
+        }
+      ]
+    },
+    "frequency.type_code": {
+      "aixm:rank": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "alt": "ALTERNATE",
+            "emrg": "EMERG",
+            "guard": "GUARD",
+            "other": "OTHER",
+            "pri": "PRIMARY",
+            "adv": "SECONDARY"
+          }
+        }
+      ]
+    },
+    "frequency.selcal_code": {
+      "aixm:selectivecall": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    }
+  },
+  "road": {
+    "road.abandoned_code": {
+      "aixm:abandoned": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    }
+  },
+  "enrouteinformation": {
+    "enrouteinformation.fltrule_code": {
+      "aixm:flightrule": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "all": "OTHER:MIXED"
+          }
+        }
+      ]
+    },
+    "enrouteinformation.intlroute_code": {
+      "aixm:internationaluse": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "b": "BOTH",
+            "d": "DOM",
+            "i": "INTL",
+            "m": "OTHER:MIXED"
+          }
+        }
+      ]
+    },
+    "enrouteinformation.civilroute_code": {
+      "aixm:militaryuse": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "b": "ALL",
+            "c": "CIVIL",
+            "m": "MIL",
+            "other": "OTHER:MIXED"
+          }
+        }
+      ]
+    }
+  },
+  "routedme": {
+    "routedme.criticaldme_code": {
+      "aixm:criticaldme": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "routedme.satisfactory_code": {
+      "aixm:satisfactory": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    }
+  },
+  "atsroute": {
+    "atsroute.repatcend_code": {
+      "aixm:reportingatc": [
+        {
+          "aixm_ancestor_name": "aixm:routesegment",
+          "aixm_path_endswith": "aixm:routesegment/aixm:timeslice/aixm:routesegmenttimeslice/aixm:end/aixm:enroutesegmentpoint/aixm:reportingatc",
+          "domain": {
+            "c": "COMPULSORY",
+            "n": "NO_REPORT",
+            "r": "ON_REQUEST",
+            "o": "OTHER"
+          }
+        }
+      ]
+    },
+    "atsroute.level_code": {
+      "aixm:level": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "b": "BOTH",
+            "l": "LOWER",
+            "u": "UPPER"
+          }
+        }
+      ]
+    },
+    "atsroute.repatcstart_code": {
+      "aixm:reportingatc": [
+        {
+          "aixm_ancestor_name": "aixm:routesegment",
+          "aixm_path_endswith": "aixm:routesegment/aixm:timeslice/aixm:routesegmenttimeslice/aixm:start/aixm:enroutesegmentpoint/aixm:reportingatc",
+          "domain": {
+            "c": "COMPULSORY",
+            "n": "NO_REPORT",
+            "r": "ON_REQUEST",
+            "o": "OTHER"
+          }
+        }
+      ]
+    }
+  },
+  "adhpthreshold": {
+    "adhpthreshold.vfrpattern_code": {
+      "aixm:patternvfr": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "l": "LEFT",
+            "r": "RIGHT"
+          }
+        }
+      ]
+    },
+    "adhpthreshold.vasisportable_code": {
+      "aixm:portable": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "adhpthreshold.displaced_code": {
+      "aixm:role": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "THR",
+            "1": "DISTHR"
+          }
+        }
+      ]
+    },
+    "adhpthreshold.subtype_code": {
+      "_": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "RUNWAYDIRECTION"
+          }
+        }
+      ]
+    }
+  },
+  "msagroup": {
+    "msagroup.typemsapred_code": {
+      "aixm:centrepoint_airportreferencepoint": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "3": "CENTREPOINT_AIRPORTREFERENCEPOINT"
+          }
+        }
+      ],
+      "aixm:centrepoint_fixdesignatedpoint": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "1": "CENTREPOINT_FIXDESIGNATEDPOINT"
+          }
+        }
+      ],
+      "aixm:centrepoint_navaidsystem": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "4": "CENTREPOINT_NAVAIDSYSTEM"
+          }
+        }
+      ],
+      "aixm:centrepoint_runwaypoint": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "2": "CENTREPOINT_RUNWAYPOINT"
+          }
+        }
+      ]
+    }
+  },
+  "sectordefinition": {
+    "sectordefinition.angletype_code": {
+      "aixm:angletype": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "rad": "RDL"
+          }
+        }
+      ]
+    }
+  },
+  "sectordesign": {
+    "sectordesign.dirturn_code": {
+      "aixm:turndirection": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "e": "EITHER",
+            "l": "LEFT",
+            "o": "OTHER",
+            "r": "RIGHT"
+          }
+        }
+      ]
+    }
+  },
+  "specialdate": {
+    "specialdate.type_code": {
+      "aixm:type": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "bfri": "BUSY_FRI"
+          }
+        }
+      ]
+    }
+  },
+  "specialnavstation": {
+    "specialnavstation.frequency_uom": {
+      "aixm:frequency": [
+        {
+          "aixm_ancestor_name": "*",
+          "attribute": "uom",
+          "domain": {
+            "gh": "GHZ",
+            "h": "HZ",
+            "kh": "KHZ",
+            "mh": "MHZ",
+            "o": "OTHER"
+          }
+        }
+      ]
+    },
+    "specialnavstation.servicetype_code": {
+      "aixm:type": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "gs": "GREEN_SLAVE",
+            "m": "MASTER",
+            "other": "OTHER",
+            "ps": "PURPLE_SLAVE",
+            "rs": "RED_SLAVE",
+            "s": "SLAVE"
+          }
+        }
+      ]
+    }
+  },
+  "surfacecharacteristic": {
+    "surfacecharacteristic.composition_code": {
+      "aixm:composition": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "asp+grs": "ASPH_GRASS",
+            "conc+asph": "CONC_ASPH",
+            "conc+grs": "CONC_GRS",
+            "grave": "GRAVEL",
+            "mix": "NON_BITUM_MIX",
+            "psp": "PIERCED_STEEL"
+          }
+        }
+      ]
+    },
+    "surfacecharacteristic.pcnevalmethod_code": {
+      "aixm:evaluationmethodpcn": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "u": "ACFT",
+            "t": "TECH"
+          }
+        }
+      ]
+    },
+    "surfacecharacteristic.pcnpavetype_code": {
+      "aixm:pavementtypepcn": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "f": "FLEXIBLE",
+            "o": "OTHER",
+            "r": "RIGID"
+          }
+        }
+      ]
+    },
+    "surfacecharacteristic.preparation_code": {
+      "aixm:preparation": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "compact": "COMPACTED",
+            "non-grooved": "NON-GROOVED"
+          }
+        }
+      ]
+    }
+  },
+  "taa": {
+    "taa.altitudedesc_txt": {
+      "aixm:altitudedescription": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "la": "ABOVE_LOWER",
+            "as": "AS_ASSIGNED",
+            "l": "AT_LOWER",
+            "bh": "BELOW_UPPER",
+            "b": "BETWEEN",
+            "e": "EXPECT_LOWER",
+            "other": "OTHER",
+            "r": "RECOMMENDED"
+          }
+        }
+      ]
+    },
+    "taa.type_code": {
+      "aixm:arrivalareatype": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "left": "LEFT_BASE",
+            "other": "OTHER",
+            "right": "RIGHT_BASE",
+            "straight": "STRAIGHT_IN"
+          }
+        }
+      ]
+    },
+    "taa.flyby_code": {
+      "aixm:flybycode": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "taa.procedureturn_code": {
+      "aixm:procedureturnrequired": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    }
+  },
+  "timesheet": {
+    "timesheet.day_code": {
+      "aixm:day": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "alh": "AFT_HOL",
+            "awd": "AFT_WORK_DAY",
+            "plh": "BEF_HOL",
+            "pwd": "BEF_WORK_DAY",
+            "wd": "WORK_DAY",
+            "lh": "HOL",
+            "Any": "ANY",
+            "Mon": "MON",
+            "Tue": "TUE",
+            "Wed": "WED",
+            "Thu": "THU",
+            "Fri": "FRI",
+            "Sat": "SAT",
+            "Sun": "SUN"
+          }
+        }
+      ]
+    },
+    "timesheet.daytil_code": {
+      "aixm:daytil": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "alh": "AFT_HOL",
+            "awd": "AFT_WORK_DAY",
+            "plh": "BEF_HOL",
+            "pwd": "BEF_WORK_DAY",
+            "wd": "WORK_DAY",
+            "lh": "HOL",
+            "Any": "ANY",
+            "Mon": "MON",
+            "Tue": "TUE",
+            "Wed": "WED",
+            "Thu": "THU",
+            "Fri": "FRI",
+            "Sat": "SAT",
+            "Sun": "SUN"
+          }
+        }
+      ]
+    },
+    "timesheet.combtil_code": {
+      "aixm:endeventinterpretation": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "e": "EARLIEST",
+            "l": "LATEST",
+            "other": "OTHER"
+          }
+        }
+      ]
+    },
+    "timesheet.active_code": {
+      "aixm:isactive": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "timesheet.combwef_code": {
+      "aixm:starteventinterpretation": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "e": "EARLIEST",
+            "l": "LATEST",
+            "other": "OTHER"
+          }
+        }
+      ]
+    },
+    "timesheet.daysavingadj_code": {
+      "aixm:daylightsavingadjust": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "timesheet.excluded_code": {
+      "aixm:excluded": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    }
+  },
+  "procedurelegpoint": {
+    "procedurelegpoint.referencepointclass_code": {
+      "aixm:pointchoice_navaidsystem": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "4": "POINTCHOICE_NAVAIDSYSTEM"
+          }
+        }
+      ],
+      "aixm:pointChoice_airportreferencepoint": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "POINTCHOICE_AIRPORTREFERENCEPOINT"
+          }
+        }
+      ],
+      "aixm:pointchoice_fixdesignatedpoint": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "2": "POINTCHOICE_FIXDESIGNATEDPOINT"
+          }
+        }
+      ],
+      "aixm:pointChoice_runwaypoint": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "1": "POINTCHOICE_RUNWAYPOINT"
+          }
+        }
+      ]
+    }
+  },
+  "unit": {
+    "unit.certifiedicao_code": {
+      "aixm:complianticao": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "unit.military_code": {
+      "aixm:military": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "civil": "CIVIL",
+            "all": "JOINT",
+            "mil": "MIL",
+            "other": "OTHER"
+          }
+        }
+      ]
+    },
+    "unit.type_code": {
+      "aixm:type": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "app-arr": "APP_ARR",
+            "app-dep": "APP_DEP"
+          }
+        }
+      ]
+    }
+  },
+  "unplannedholding": {
+    "unplannedholding.c_as_code": {
+      "aixm:controlledairspace": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    }
+  },
+  "obstaclestructure": {
+    "obstaclestructure.group_code": {
+      "aixm:group": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "obstaclestructure.lighted_code": {
+      "aixm:lighted": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "obstaclestructure.lightingicao_code": {
+      "aixm:lightingicaostandard": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "obstaclestructure.markingicao_code": {
+      "aixm:markingicaostandard": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "obstaclestructure.synclighting_code": {
+      "aixm:synchronisedlighting": [
+        {
+          "aixm_ancestor_name": "*",
+          "domain": {
+            "0": "NO",
+            "1": "YES",
+            "2": "OTHER"
+          }
+        }
+      ]
+    },
+    "obstaclestructure.type_code": {
+      "aixm:type": [
+        {
+          "aixm_ancestor_name": "aixm:verticalstructure",
+          "domain": {
+            "0": "ARCH",
+            "1": "TETHERED_BALLOON",
+            "2": "BRIDGE",
+            "3": "OTHER:BUILDING",
+            "4": "CATENARY",
+            "5": "COOLING_TOWER",
+            "6": "CRANE",
+            "7": "CONTROL_TOWER",
+            "8": "DAM",
+            "9": "DOME",
+            "10": "ELEVATOR",
+            "11": "MONUMENT",
+            "12": "POWER_PLANT",
+            "13": "POLE",
+            "14": "RIG",
+            "15": "REFINERY",
+            "16": "SIGN",
+            "17": "SPIRE",
+            "18": "STACK",
+            "19": "TANK",
+            "21": "TOWER",
+            "22": "TRAMWAY",
+            "23": "WINDMILL",
+            "24": "OTHER:ANTENNA",
+            "25": "TREE",
+            "26": "VEGETATION",
+            "27": "NATURAL_HIGHPOINT",
+            "28": "WINDMILL_FARMS",
+            "29": "TRANSMISSION_LINE",
+            "30": "WALL",
+            "32": "OTHER:FENCE",
+            "33": "GRAIN_ELEVATOR",
+            "34": "LIGHTHOUSE",
+            "35": "NAVAID",
+            "36": "NUCLEAR_REACTOR",
+            "37": "WATER_TOWER",
+            "38": "STADIUM",
+            "39": "OTHER",
+            "40": "AG_EQUIP",
+            "41": "COMPRESSED_AIR_SYSTEM",
+            "42": "CONTROL_MONITORING_SYSTEM",
+            "43": "ELECTRICAL_EXIT_LIGHT",
+            "44": "ELECTRICAL_SYSTEM",
+            "45": "FUEL_SYSTEM",
+            "46": "GATE",
+            "47": "GENERAL_UTILITY",
+            "48": "HEAT_COOL_SYSTEM",
+            "49": "INDUSTRIAL_SYSTEM",
+            "50": "NATURAL_GAS_SYSTEM",
+            "51": "SALTWATER_SYSTEM",
+            "52": "STORM_SYSTEM",
+            "53": "WASTEWATER_SYSTEM",
+            "54": "WATER_SYSTEM",
+            "55": "OTHER:MAST",
+            "56": "OTHER:CHIMNEY",
+            "57": "OTHER:POWER_LINE",
+            "58": "OTHER:MOBILE_OBST",
+            "59": "OTHER:SEE_NOTE_AIXM_4_5_MAPPING",
+            "60": "OTHER:FLOODLIGHT",
+            "61": "OTHER:CHURCH",
+            "62": "OTHER:CATHEDRAL",
+            "63": "OTHER:WEATHERCOCK",
+            "64": "CABLE_CAR",
+            "65": "URBAN"
+          },
+          "collisions": {
+            "ANTENNA": "24",
+            "OTHER:ANTENNA": "24",
+            "BUILDING": "3",
+            "OTHER:BUILDING": "3",
+            "CHURCH": "61",
+            "OTHER:CHURCH": "61",
+            "FENCE": "32",
+            "OTHER:FENCE": "32",
+            "OTHER:POLE": "13",
+            "POLE": "13",
+            "OTHER:TOWER": "21",
+            "TOWER": "21",
+            "OTHER:TREE": "25",
+            "TREE": "25"
+          }
+        }
+      ]
+    }
+  }
+}

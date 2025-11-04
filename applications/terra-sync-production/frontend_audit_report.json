@@ -1,0 +1,675 @@
+{
+  "timestamp": "2025-06-11T16:52:19.725353",
+  "pages_tested": [
+    {
+      "path": "/",
+      "url": "http://localhost:5000/",
+      "status_code": 200,
+      "response_time_ms": 4.641,
+      "content_length": 19294,
+      "has_title": true,
+      "title": "Terrafusion Enterprise - Home",
+      "status": "pass"
+    },
+    {
+      "path": "/dashboard",
+      "url": "http://localhost:5000/dashboard",
+      "status_code": 200,
+      "response_time_ms": 10.361,
+      "content_length": 27855,
+      "has_title": true,
+      "title": "Terrafusion Platform - Dashboard",
+      "status": "pass"
+    },
+    {
+      "path": "/gis/dashboard",
+      "url": "http://localhost:5000/gis/dashboard",
+      "status_code": 500,
+      "response_time_ms": 14.122,
+      "content_length": 14411,
+      "has_title": false,
+      "title": null,
+      "status": "fail"
+    },
+    {
+      "path": "/district/dashboard",
+      "url": "http://localhost:5000/district/dashboard",
+      "status_code": 200,
+      "response_time_ms": 7.56,
+      "content_length": 26341,
+      "has_title": true,
+      "title": "District Lookup - Terrafusion Platform",
+      "status": "pass"
+    },
+    {
+      "path": "/ai/dashboard",
+      "url": "http://localhost:5000/ai/dashboard",
+      "status_code": 200,
+      "response_time_ms": 8.741,
+      "content_length": 21515,
+      "has_title": true,
+      "title": "Terrafusion AI Analysis Dashboard",
+      "status": "pass"
+    },
+    {
+      "path": "/pacs/dashboard",
+      "url": "http://localhost:5000/pacs/dashboard",
+      "status_code": 200,
+      "response_time_ms": 8.167,
+      "content_length": 26410,
+      "has_title": true,
+      "title": "PACS Synchronization - Terrafusion",
+      "status": "pass"
+    },
+    {
+      "path": "/project/dashboard",
+      "url": "http://localhost:5000/project/dashboard",
+      "status_code": 200,
+      "response_time_ms": 16.84,
+      "content_length": 27467,
+      "has_title": true,
+      "title": "Project Management Dashboard - Terrafusion",
+      "status": "pass"
+    },
+    {
+      "path": "/project/tasks",
+      "url": "http://localhost:5000/project/tasks",
+      "status_code": 200,
+      "response_time_ms": 15.882,
+      "content_length": 23166,
+      "has_title": true,
+      "title": "Project Tasks - Terrafusion",
+      "status": "pass"
+    },
+    {
+      "path": "/project/team",
+      "url": "http://localhost:5000/project/team",
+      "status_code": 200,
+      "response_time_ms": 12.465,
+      "content_length": 22343,
+      "has_title": true,
+      "title": "Project Team - Terrafusion",
+      "status": "pass"
+    },
+    {
+      "path": "/project/timeline",
+      "url": "http://localhost:5000/project/timeline",
+      "status_code": 200,
+      "response_time_ms": 14.805,
+      "content_length": 25134,
+      "has_title": true,
+      "title": "Project Timeline - Terrafusion",
+      "status": "pass"
+    },
+    {
+      "path": "/project/reports",
+      "url": "http://localhost:5000/project/reports",
+      "status_code": 500,
+      "response_time_ms": 5.152,
+      "content_length": 14411,
+      "has_title": false,
+      "title": null,
+      "status": "fail"
+    },
+    {
+      "path": "/saga/dashboard",
+      "url": "http://localhost:5000/saga/dashboard",
+      "status_code": 500,
+      "response_time_ms": 17.943,
+      "content_length": 14411,
+      "has_title": false,
+      "title": null,
+      "status": "fail"
+    },
+    {
+      "path": "/settings",
+      "url": "http://localhost:5000/settings",
+      "status_code": 500,
+      "response_time_ms": 16.308,
+      "content_length": 14411,
+      "has_title": false,
+      "title": null,
+      "status": "fail"
+    }
+  ],
+  "api_endpoints_tested": [
+    {
+      "path": "/health",
+      "method": "GET",
+      "url": "http://localhost:5000/health",
+      "status_code": 200,
+      "response_time_ms": 5.099,
+      "content_type": "application/json",
+      "status": "pass",
+      "response_data": {
+        "status": "healthy",
+        "system_health": {
+          "active_jobs": 0,
+          "health_score": 100.0,
+          "metrics": {
+            "active_connections": 0,
+            "cpu_usage": 45.2,
+            "disk_usage": 42.1,
+            "error_rate": 0.02,
+            "memory_usage": 68.5,
+            "response_time_avg": 120.5,
+            "uptime_seconds": 3600
+          },
+          "status": "initializing",
+          "timestamp": "2025-06-11T16:52:19.910672"
+        },
+        "timestamp": "2025-06-11T16:52:19.910677",
+        "version": "1.0.0"
+      }
+    },
+    {
+      "path": "/api/district/info",
+      "method": "GET",
+      "url": "http://localhost:5000/api/district/info",
+      "status_code": 200,
+      "response_time_ms": 2.518,
+      "content_type": "application/json",
+      "status": "pass",
+      "response_data": {
+        "endpoints": {
+          "district_info": "/api/district/{type}/{id}",
+          "list_districts": "/api/districts",
+          "lookup_by_address": "/api/district/lookup/address",
+          "lookup_by_coordinates": "/api/district/lookup/coordinates"
+        },
+        "service": "Terrafusion District Lookup",
+        "supported_counties": [
+          "benton-wa"
+        ],
+        "supported_district_types": [
+          "fire",
+          "school",
+          "water",
+          "voting"
+        ],
+        "version": "1.0.0"
+      }
+    },
+    {
+      "path": "/api/districts",
+      "method": "GET",
+      "url": "http://localhost:5000/api/districts",
+      "status_code": 200,
+      "response_time_ms": 121.799,
+      "content_type": "application/json",
+      "status": "pass",
+      "response_data": {
+        "county_id": "benton-wa",
+        "districts": [
+          {
+            "area_square_miles": 45.2,
+            "district_id": "FIRE001",
+            "district_name": "Richland Fire District",
+            "district_type": "fire",
+            "population": 25000,
+            "tax_rate": 0.0012
+          },
+          {
+            "area_square_miles": 52.1,
+            "district_id": "SCHOOL001",
+            "district_name": "Richland School District",
+            "district_type": "school",
+            "population": 28000,
+            "tax_rate": 0.0085
+          },
+          {
+            "area_square_miles": 12.3,
+            "district_id": "VOTE001",
+            "district_name": "Precinct 001",
+            "district_type": "voting",
+            "population": 5000,
+            "tax_rate": 0.0
+          },
+          {
+            "area_square_miles": 38.5,
+            "district_id": "WATER001",
+            "district_name": "City of Richland Water",
+            "district_type": "water",
+            "population": 30000,
+            "tax_rate": 0.0005
+          }
+        ],
+        "total_count": 4
+      }
+    },
+    {
+      "path": "/api/export/jobs",
+      "method": "POST",
+      "url": "http://localhost:5000/api/export/jobs",
+      "status_code": 201,
+      "response_time_ms": 3.039,
+      "content_type": "application/json",
+      "status": "pass",
+      "response_data": {
+        "county_id": "benton-wa",
+        "export_type": "geojson",
+        "job_id": "data_export_geojson_20250611_165220",
+        "status": "created"
+      }
+    },
+    {
+      "path": "/api/export/jobs/data_export_geojson_20250611_165220",
+      "method": "GET",
+      "url": "http://localhost:5000/api/export/jobs/data_export_geojson_20250611_165220",
+      "status_code": 200,
+      "response_time_ms": 2.82,
+      "content_type": "application/json",
+      "status": "pass",
+      "response_data": {
+        "completed_at": null,
+        "created_at": "2025-06-11T16:52:20.041604",
+        "job_id": "data_export_geojson_20250611_165220",
+        "job_type": "data_export_geojson",
+        "metadata": {
+          "county_id": "benton-wa",
+          "created_by": "web_interface",
+          "export_type": "geojson"
+        },
+        "priority": 6,
+        "progress_percent": 0.0,
+        "started_at": null,
+        "status": "queued"
+      }
+    },
+    {
+      "path": "/api/export/jobs",
+      "method": "GET",
+      "url": "http://localhost:5000/api/export/jobs",
+      "status_code": 200,
+      "response_time_ms": 2.84,
+      "content_type": "application/json",
+      "status": "pass",
+      "response_data": {
+        "jobs": [
+          {
+            "completed_at": null,
+            "created_at": "2025-06-11T16:52:20.041604",
+            "job_id": "data_export_geojson_20250611_165220",
+            "job_type": "data_export_geojson",
+            "metadata": {
+              "county_id": "benton-wa",
+              "created_by": "web_interface",
+              "export_type": "geojson"
+            },
+            "priority": 6,
+            "progress_percent": 0.0,
+            "started_at": null,
+            "status": "queued"
+          }
+        ],
+        "timestamp": "2025-06-11T16:52:20.051756",
+        "total_count": 1
+      }
+    },
+    {
+      "path": "/api/district/lookup/coordinates",
+      "method": "POST",
+      "url": "http://localhost:5000/api/district/lookup/coordinates",
+      "status_code": 500,
+      "response_time_ms": 164.62199999999999,
+      "content_type": "application/json",
+      "status": "fail",
+      "response_data": null
+    },
+    {
+      "path": "/api/district/lookup/address",
+      "method": "POST",
+      "url": "http://localhost:5000/api/district/lookup/address",
+      "status_code": 500,
+      "response_time_ms": 142.86499999999998,
+      "content_type": "application/json",
+      "status": "fail",
+      "response_data": null
+    },
+    {
+      "path": "/api/districts?county_id=benton-wa",
+      "method": "GET",
+      "url": "http://localhost:5000/api/districts?county_id=benton-wa",
+      "status_code": 200,
+      "response_time_ms": 137.47899999999998,
+      "content_type": "application/json",
+      "status": "pass",
+      "response_data": {
+        "county_id": "benton-wa",
+        "districts": [
+          {
+            "area_square_miles": 45.2,
+            "district_id": "FIRE001",
+            "district_name": "Richland Fire District",
+            "district_type": "fire",
+            "population": 25000,
+            "tax_rate": 0.0012
+          },
+          {
+            "area_square_miles": 52.1,
+            "district_id": "SCHOOL001",
+            "district_name": "Richland School District",
+            "district_type": "school",
+            "population": 28000,
+            "tax_rate": 0.0085
+          },
+          {
+            "area_square_miles": 12.3,
+            "district_id": "VOTE001",
+            "district_name": "Precinct 001",
+            "district_type": "voting",
+            "population": 5000,
+            "tax_rate": 0.0
+          },
+          {
+            "area_square_miles": 38.5,
+            "district_id": "WATER001",
+            "district_name": "City of Richland Water",
+            "district_type": "water",
+            "population": 30000,
+            "tax_rate": 0.0005
+          }
+        ],
+        "total_count": 4
+      }
+    },
+    {
+      "path": "/api/performance/analytics",
+      "method": "GET",
+      "url": "http://localhost:5000/api/performance/analytics",
+      "status_code": 200,
+      "response_time_ms": 3.113,
+      "content_type": "application/json",
+      "status": "pass",
+      "response_data": {
+        "job_statistics": {
+          "active_jobs": 1,
+          "completed_jobs": 0,
+          "failed_jobs": 0
+        },
+        "system_performance": {
+          "cpu_usage": 45.2,
+          "disk_usage": 42.1,
+          "error_rate": 0.02,
+          "memory_usage": 68.5,
+          "response_time_avg": 120.5,
+          "uptime_seconds": 3600
+        },
+        "timestamp": "2025-06-11T16:52:20.504563"
+      }
+    },
+    {
+      "path": "/api/enterprise/monitoring/dashboard",
+      "method": "GET",
+      "url": "http://localhost:5000/api/enterprise/monitoring/dashboard",
+      "status_code": 404,
+      "response_time_ms": 2.854,
+      "content_type": "text/html; charset=utf-8",
+      "status": "fail",
+      "response_data": null
+    }
+  ],
+  "features_tested": [
+    {
+      "feature_name": "Export Workflow",
+      "duration_ms": 14.230489730834961,
+      "status": "pass",
+      "details": {
+        "status": "pass",
+        "create_job": {
+          "path": "/api/export/jobs",
+          "method": "POST",
+          "url": "http://localhost:5000/api/export/jobs",
+          "status_code": 201,
+          "response_time_ms": 3.039,
+          "content_type": "application/json",
+          "status": "pass",
+          "response_data": {
+            "county_id": "benton-wa",
+            "export_type": "geojson",
+            "job_id": "data_export_geojson_20250611_165220",
+            "status": "created"
+          }
+        },
+        "check_status": {
+          "path": "/api/export/jobs/data_export_geojson_20250611_165220",
+          "method": "GET",
+          "url": "http://localhost:5000/api/export/jobs/data_export_geojson_20250611_165220",
+          "status_code": 200,
+          "response_time_ms": 2.82,
+          "content_type": "application/json",
+          "status": "pass",
+          "response_data": {
+            "completed_at": null,
+            "created_at": "2025-06-11T16:52:20.041604",
+            "job_id": "data_export_geojson_20250611_165220",
+            "job_type": "data_export_geojson",
+            "metadata": {
+              "county_id": "benton-wa",
+              "created_by": "web_interface",
+              "export_type": "geojson"
+            },
+            "priority": 6,
+            "progress_percent": 0.0,
+            "started_at": null,
+            "status": "queued"
+          }
+        },
+        "list_jobs": {
+          "path": "/api/export/jobs",
+          "method": "GET",
+          "url": "http://localhost:5000/api/export/jobs",
+          "status_code": 200,
+          "response_time_ms": 2.84,
+          "content_type": "application/json",
+          "status": "pass",
+          "response_data": {
+            "jobs": [
+              {
+                "completed_at": null,
+                "created_at": "2025-06-11T16:52:20.041604",
+                "job_id": "data_export_geojson_20250611_165220",
+                "job_type": "data_export_geojson",
+                "metadata": {
+                  "county_id": "benton-wa",
+                  "created_by": "web_interface",
+                  "export_type": "geojson"
+                },
+                "priority": 6,
+                "progress_percent": 0.0,
+                "started_at": null,
+                "status": "queued"
+              }
+            ],
+            "timestamp": "2025-06-11T16:52:20.051756",
+            "total_count": 1
+          }
+        }
+      }
+    },
+    {
+      "feature_name": "District Lookup",
+      "duration_ms": 448.3036994934082,
+      "status": "warning",
+      "details": {
+        "status": "warning",
+        "coordinate_lookup": {
+          "path": "/api/district/lookup/coordinates",
+          "method": "POST",
+          "url": "http://localhost:5000/api/district/lookup/coordinates",
+          "status_code": 500,
+          "response_time_ms": 164.62199999999999,
+          "content_type": "application/json",
+          "status": "fail",
+          "response_data": null
+        },
+        "address_lookup": {
+          "path": "/api/district/lookup/address",
+          "method": "POST",
+          "url": "http://localhost:5000/api/district/lookup/address",
+          "status_code": 500,
+          "response_time_ms": 142.86499999999998,
+          "content_type": "application/json",
+          "status": "fail",
+          "response_data": null
+        },
+        "district_list": {
+          "path": "/api/districts?county_id=benton-wa",
+          "method": "GET",
+          "url": "http://localhost:5000/api/districts?county_id=benton-wa",
+          "status_code": 200,
+          "response_time_ms": 137.47899999999998,
+          "content_type": "application/json",
+          "status": "pass",
+          "response_data": {
+            "county_id": "benton-wa",
+            "districts": [
+              {
+                "area_square_miles": 45.2,
+                "district_id": "FIRE001",
+                "district_name": "Richland Fire District",
+                "district_type": "fire",
+                "population": 25000,
+                "tax_rate": 0.0012
+              },
+              {
+                "area_square_miles": 52.1,
+                "district_id": "SCHOOL001",
+                "district_name": "Richland School District",
+                "district_type": "school",
+                "population": 28000,
+                "tax_rate": 0.0085
+              },
+              {
+                "area_square_miles": 12.3,
+                "district_id": "VOTE001",
+                "district_name": "Precinct 001",
+                "district_type": "voting",
+                "population": 5000,
+                "tax_rate": 0.0
+              },
+              {
+                "area_square_miles": 38.5,
+                "district_id": "WATER001",
+                "district_name": "City of Richland Water",
+                "district_type": "water",
+                "population": 30000,
+                "tax_rate": 0.0005
+              }
+            ],
+            "total_count": 4
+          }
+        }
+      }
+    },
+    {
+      "feature_name": "AI Analysis",
+      "duration_ms": 8.411884307861328,
+      "status": "pass",
+      "details": {
+        "status": "pass",
+        "performance_analytics": {
+          "path": "/api/performance/analytics",
+          "method": "GET",
+          "url": "http://localhost:5000/api/performance/analytics",
+          "status_code": 200,
+          "response_time_ms": 3.113,
+          "content_type": "application/json",
+          "status": "pass",
+          "response_data": {
+            "job_statistics": {
+              "active_jobs": 1,
+              "completed_jobs": 0,
+              "failed_jobs": 0
+            },
+            "system_performance": {
+              "cpu_usage": 45.2,
+              "disk_usage": 42.1,
+              "error_rate": 0.02,
+              "memory_usage": 68.5,
+              "response_time_avg": 120.5,
+              "uptime_seconds": 3600
+            },
+            "timestamp": "2025-06-11T16:52:20.504563"
+          }
+        },
+        "enterprise_monitoring": {
+          "path": "/api/enterprise/monitoring/dashboard",
+          "method": "GET",
+          "url": "http://localhost:5000/api/enterprise/monitoring/dashboard",
+          "status_code": 404,
+          "response_time_ms": 2.854,
+          "content_type": "text/html; charset=utf-8",
+          "status": "fail",
+          "response_data": null
+        }
+      }
+    },
+    {
+      "feature_name": "Sync Service",
+      "duration_ms": 7.93766975402832,
+      "status": "pass",
+      "details": {
+        "status": "pass",
+        "details": {
+          "health_check": {
+            "status_code": 200,
+            "response_time_ms": 2.816,
+            "status": "pass"
+          },
+          "health_data": {
+            "status": "healthy",
+            "service": "Terrafusion SyncService",
+            "timestamp": "2025-06-11T16:52:20.512370",
+            "version": "1.0.0"
+          },
+          "metrics_check": {
+            "status_code": 200,
+            "status": "pass"
+          },
+          "metrics_data": {
+            "cpu_usage": 15.2,
+            "memory_usage": 45.8,
+            "disk_usage": 23.1,
+            "network_io": {
+              "bytes_sent": 1024000,
+              "bytes_received": 2048000
+            },
+            "timestamp": "2025-06-11T16:52:20.516304"
+          }
+        }
+      }
+    }
+  ],
+  "ai_agents_tested": [],
+  "errors": [
+    "Page /gis/dashboard returned 500",
+    "Page /project/reports returned 500",
+    "Page /saga/dashboard returned 500",
+    "Page /settings returned 500",
+    "API /api/district/lookup/coordinates returned 500",
+    "API /api/district/lookup/address returned 500",
+    "API /api/enterprise/monitoring/dashboard returned 404"
+  ],
+  "warnings": [],
+  "summary": {
+    "pages": {
+      "total": 13,
+      "passed": 9,
+      "success_rate": 69.23076923076923
+    },
+    "apis": {
+      "total": 11,
+      "passed": 8,
+      "success_rate": 72.72727272727273
+    },
+    "features": {
+      "total": 4,
+      "passed": 3,
+      "success_rate": 75.0
+    },
+    "overall_health": "critical",
+    "total_errors": 7,
+    "total_warnings": 0
+  }
+}

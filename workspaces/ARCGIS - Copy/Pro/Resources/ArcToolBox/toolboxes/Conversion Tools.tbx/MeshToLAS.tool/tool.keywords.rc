@@ -1,0 +1,9 @@
+{
+    "set": [
+        "integrated mesh",
+        "las",
+        "lidar",
+        "mesh",
+        "point cloud"
+    ]
+}

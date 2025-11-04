@@ -1,0 +1,41 @@
+# 🏛️ TerraFusion Elite PostgreSQL Database - Simple Configuration
+# Championship-Level Government Database
+
+version: '3.8'
+
+networks:
+  terrafusion:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+
+services:
+  postgres-elite:
+    image: postgres:15-alpine
+    container_name: terrafusion-elite-postgres
+    restart: always
+
+    environment:
+      POSTGRES_DB: terrafusion_government
+      POSTGRES_USER: terrafusion_admin
+      POSTGRES_PASSWORD: TerraFusion_Elite_2025!
+      PGDATA: /var/lib/postgresql/data/pgdata
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./terrafusion_elite_schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+
+    networks:
+      - terrafusion
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U terrafusion_admin -d terrafusion_government"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s

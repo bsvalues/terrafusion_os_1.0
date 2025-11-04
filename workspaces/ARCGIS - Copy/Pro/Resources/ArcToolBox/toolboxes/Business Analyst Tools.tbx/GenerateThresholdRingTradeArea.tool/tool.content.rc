@@ -1,0 +1,29 @@
+{
+    "map": {
+        "description": "Creates a feature class of ring trade areas that expand around point features until the threshold value is reached.",
+        "expression.descr": "A fields-based expression that will be used to calculate the radii.",
+        "expression.title": "Expression",
+        "id_field.descr": "The ID that uniquely identifies each input point and is included in the output as an attribute.",
+        "id_field.title": "ID Field",
+        "in_features.descr": "The input point feature layer.",
+        "in_features.title": "Input Features",
+        "input_method.descr": "<xdoc><p>Specifies the type of value that will be used for each drive time.</p><ul><li><span title=\"VALUES\">Values</span>—A constant value will be used (all trade areas will be the same size). This is the default.</li><li><span title=\"EXPRESSION\">Expression</span>—The values from a field or an expression will be used (trade areas can be different sizes).</li></ul></xdoc>",
+        "input_method.domain.EXPRESSION": "Expression",
+        "input_method.domain.VALUES": "Values",
+        "input_method.title": "Input Method",
+        "minimum_step.descr": "The minimum distance between one threshold area candidate and the next as the model approaches the threshold value to prevent infinite iterations.",
+        "minimum_step.title": "Minimum Step",
+        "out_feature_class.descr": "The output feature class containing the threshold rings.",
+        "out_feature_class.title": "Output Feature Class",
+        "params.category1": "Advanced Parameters",
+        "target_percent_diff.descr": "The maximum percentage difference between the target value and threshold value that will be used when determining the threshold drive time, for example, 5 percent. The default value is 5.",
+        "target_percent_diff.title": "Threshold Percent Difference",
+        "threshold_values.descr": "The threshold variable value that will determine the size of the output rings. The rings will expand until they contain the threshold value of the selected variable.",
+        "threshold_values.title": "Threshold Values",
+        "threshold_variable.descr": "<xdoc><p>The selected Business Analyst dataset variable to which the threshold value will be applied.</p><p>Threshold variables must be numeric. No other statistic type is supported.</p></xdoc>",
+        "threshold_variable.title": "Threshold Variable",
+        "title": "Generate Threshold Rings",
+        "units.descr": "The distance units that will be used with the threshold values.",
+        "units.title": "Distance Units"
+    }
+}

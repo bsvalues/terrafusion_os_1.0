@@ -1,0 +1,15 @@
+{
+  "condition": "average",
+  "base_score": 2.5,
+  "final_score": 1.1,
+  "features": [
+    "Exterior Paint",
+    "Windows",
+    "Driveway",
+    "Overall Cleanliness",
+    "Foundation",
+    "Landscaping"
+  ],
+  "values": [-0.71, -0.51, 0.26, -0.23, -0.13, -0.09],
+  "image_path": "/home/runner/workspace/data/sample_images/average_condition.png"
+}

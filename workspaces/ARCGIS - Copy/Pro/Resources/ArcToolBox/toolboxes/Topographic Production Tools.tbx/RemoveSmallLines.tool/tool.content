@@ -1,0 +1,127 @@
+{
+    "type": "FunctionTool",
+    "guid": "{26B17338-CB00-45A9-AB9C-858C2E0122C9}/RemoveSmallLines",
+    "displayname": "$rc:title",
+    "helpcontent": "43110006",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "46",
+        "49"
+    ],
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "minimum_length": {
+            "displayname": "$rc:minimum_length.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "description": "$rc:minimum_length.descr"
+        },
+        "maximum_angle": {
+            "type": "optional",
+            "displayname": "$rc:maximum_angle.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:maximum_angle.descr"
+        },
+        "in_intersecting_features": {
+            "type": "optional",
+            "displayname": "$rc:in_intersecting_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polyline",
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple",
+                    "ComplexEdge"
+                ]
+            },
+            "description": "$rc:in_intersecting_features.descr"
+        },
+        "recursive": {
+            "type": "optional",
+            "displayname": "$rc:recursive.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "RECURSIVE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NON_RECURSIVE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:recursive.descr"
+        },
+        "output_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            }
+        },
+        "split_input_lines": {
+            "type": "optional",
+            "displayname": "$rc:split_input_lines.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SPLIT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_SPLIT"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:split_input_lines.descr"
+        }
+    }
+}

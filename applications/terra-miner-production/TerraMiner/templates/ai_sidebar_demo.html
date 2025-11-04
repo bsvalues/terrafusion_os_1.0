@@ -1,0 +1,131 @@
+{% extends "unified_base.html" %}
+
+{% block title %}AI Sidebar Demo{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-secondary-900 dark:text-white">AI Sidebar Demo</h1>
+        <p class="mt-2 text-secondary-600 dark:text-secondary-400">This page demonstrates the floating AI suggestions sidebar with contextual insights.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Sample data to provide context for the AI -->
+        <div class="stat-card">
+            <div class="stat-title">Total Properties</div>
+            <div class="stat-value">3,842</div>
+            <div class="stat-desc">
+                <span class="stat-trend-up">↑ 14%</span> from last month
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">Average Price</div>
+            <div class="stat-value">$328,405</div>
+            <div class="stat-desc">
+                <span class="stat-trend-up">↑ 5.3%</span> from last month
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">Filled Vacancies</div>
+            <div class="stat-value">89%</div>
+            <div class="stat-desc">
+                <span class="stat-trend-down">↓ 2%</span> from last month
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-8">
+        <div class="card-header">
+            <h2 class="text-lg font-medium text-secondary-900 dark:text-white">AI Sidebar Instructions</h2>
+        </div>
+        <div class="card-body">
+            <p class="mb-4 text-secondary-700 dark:text-secondary-300">
+                Look for the lightning bolt icon on the right side of the screen. Click it to open the AI suggestions sidebar.
+                The sidebar will provide contextual insights based on the current page content.
+            </p>
+            
+            <div class="bg-primary-50 p-4 rounded-md text-primary-800 dark:bg-primary-900 dark:text-primary-300">
+                <h3 class="font-medium mb-2">Features:</h3>
+                <ul class="list-disc list-inside space-y-1">
+                    <li>Context-aware suggestions using OpenAI API</li>
+                    <li>Automatic page context detection</li>
+                    <li>Responsive design that works on all screen sizes</li>
+                    <li>Dark mode support</li>
+                    <li>Persistent sidebar state (remembers if it was open or closed)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="text-lg font-medium text-secondary-900 dark:text-white">Context Types</h2>
+        </div>
+        <div class="card-body">
+            <p class="mb-4 text-secondary-700 dark:text-secondary-300">
+                The AI sidebar adapts to different context types:
+            </p>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-secondary-200 dark:divide-secondary-700">
+                    <thead class="bg-secondary-50 dark:bg-secondary-700">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider dark:text-secondary-400">
+                                Context Type
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider dark:text-secondary-400">
+                                Description
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider dark:text-secondary-400">
+                                URL Pattern
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-secondary-200 dark:bg-secondary-800 dark:divide-secondary-700">
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-secondary-900 dark:text-white">dashboard</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">Provides insights on dashboard metrics and trends</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">/monitoring/dashboard</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-secondary-900 dark:text-white">property_detail</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">Provides insights specific to property details</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">/property/...details</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-secondary-900 dark:text-white">market_trends</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">Provides insights on market trends and price movements</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">/monitoring/price-trends</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-secondary-900 dark:text-white">agent_performance</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">Provides insights on agent performance metrics</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">/agent/performance</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-secondary-900 dark:text-white">default</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">Provides general insights and tips</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary-700 dark:text-secondary-300">All other pages</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Force the current context type for demo purposes
+    document.addEventListener('DOMContentLoaded', function() {
+        // Wait for the AI sidebar to initialize
+        setTimeout(function() {
+            // This override will be picked up by the sidebar's detectPageContext function
+            window.currentContextType = 'dashboard';
+        }, 100);
+    });
+</script>
+{% endblock %}

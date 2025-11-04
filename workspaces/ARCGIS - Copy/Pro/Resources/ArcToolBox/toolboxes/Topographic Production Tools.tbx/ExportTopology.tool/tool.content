@@ -1,0 +1,55 @@
+{
+    "type": "FunctionTool",
+    "guid": "{26B17338-CB00-45A9-AB9C-858C2E0122C9}/ExportTopology",
+    "displayname": "$rc:title",
+    "helpcontent": "46070001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "46",
+        "49"
+    ],
+    "params": {
+        "topology": {
+            "displayname": "$rc:topology.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DETopology"
+                    },
+                    {
+                        "type": "GPTopologyLayer"
+                    }
+                ]
+            },
+            "description": "$rc:topology.descr"
+        },
+        "location": {
+            "displayname": "$rc:location.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:location.descr"
+        },
+        "file_name": {
+            "displayname": "$rc:file_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:file_name.descr"
+        },
+        "out_file": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "depends": [
+                "location",
+                "file_name"
+            ]
+        }
+    }
+}

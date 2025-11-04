@@ -1,0 +1,130 @@
+{
+    "type": "FunctionTool",
+    "guid": "{cc2dcda2-53d5-4066-a0b1-0c99bf13c0d1}",
+    "displayname": "$rc:title",
+    "helpcontent": "71000012",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "block_add_to_map"
+    ],
+    "params": {
+        "in_diagrams": {
+            "displayname": "$rc:in_diagrams.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    },
+                    {
+                        "type": "DETraceNetwork"
+                    },
+                    {
+                        "type": "GPUtilityNetworkLayer"
+                    },
+                    {
+                        "type": "GPTraceNetworkLayer"
+                    },
+                    {
+                        "type": "GPDiagramLayer"
+                    }
+                ]
+            }
+        },
+        "template_names": {
+            "type": "optional",
+            "displayname": "$rc:template_names.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            }
+        },
+        "diagram_names": {
+            "type": "optional",
+            "displayname": "$rc:diagram_names.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            }
+        },
+        "update_option": {
+            "type": "optional",
+            "displayname": "$rc:update_option.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "INCONSISTENT_DIAGRAMS_ONLY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "ALL_SELECTED_DIAGRAMS"
+                    }
+                ]
+            },
+            "value": "true"
+        },
+        "autolayout_option": {
+            "type": "optional",
+            "displayname": "$rc:autolayout_option.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "REAPPLY_AUTOLAYOUT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_REAPPLY_AUTOLAYOUT"
+                    }
+                ]
+            },
+            "value": "false"
+        },
+        "out_diagrams": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_diagrams.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    },
+                    {
+                        "type": "DETraceNetwork"
+                    },
+                    {
+                        "type": "GPUtilityNetworkLayer"
+                    },
+                    {
+                        "type": "GPTraceNetworkLayer"
+                    },
+                    {
+                        "type": "GPDiagramLayer"
+                    }
+                ]
+            },
+            "addtomap": "false"
+        }
+    }
+}

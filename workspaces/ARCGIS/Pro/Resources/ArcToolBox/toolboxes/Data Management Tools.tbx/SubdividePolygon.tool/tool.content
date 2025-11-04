@@ -1,0 +1,136 @@
+{
+    "type": "FunctionTool",
+    "guid": "{f9571014-dfab-4b0e-b5f5-dd45d5273a18}",
+    "displayname": "$rc:title",
+    "helpcontent": "3050013",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_polygons": {
+            "displayname": "$rc:in_polygons.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:in_polygons.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "method": {
+            "displayname": "$rc:method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NUMBER_OF_EQUAL_PARTS",
+                        "code": "$rc:method.domain.NUMBER_OF_EQUAL_PARTS"
+                    },
+                    {
+                        "value": "EQUAL_AREAS",
+                        "code": "$rc:method.domain.EQUAL_AREAS"
+                    }
+                ]
+            },
+            "value": "NUMBER_OF_EQUAL_PARTS",
+            "description": "$rc:method.descr"
+        },
+        "num_areas": {
+            "type": "optional",
+            "displayname": "$rc:num_areas.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "false",
+                "low": {
+                    "inclusive": "true",
+                    "val": "2"
+                },
+                "high": {
+                    "allow": "false",
+                    "val": "2147483647"
+                }
+            },
+            "depends": [
+                "in_polygons"
+            ],
+            "description": "$rc:num_areas.descr"
+        },
+        "target_area": {
+            "type": "optional",
+            "displayname": "$rc:target_area.title",
+            "datatype": {
+                "type": "GPArealUnit"
+            },
+            "depends": [
+                "in_polygons"
+            ],
+            "description": "$rc:target_area.descr"
+        },
+        "target_width": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:target_width.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "description": "$rc:target_width.descr"
+        },
+        "split_angle": {
+            "type": "optional",
+            "displayname": "$rc:split_angle.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:split_angle.descr"
+        },
+        "subdivision_type": {
+            "type": "optional",
+            "displayname": "$rc:subdivision_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "STRIPS",
+                        "code": "$rc:subdivision_type.domain.STRIPS"
+                    },
+                    {
+                        "value": "STACKED_BLOCKS",
+                        "code": "$rc:subdivision_type.domain.STACKED_BLOCKS"
+                    }
+                ]
+            },
+            "value": "STRIPS",
+            "description": "$rc:subdivision_type.descr"
+        }
+    },
+    "environments": [
+        "parallelProcessingFactor"
+    ]
+}

@@ -1,0 +1,56 @@
+{
+    "type": "FunctionTool",
+    "guid": "{F6243FE3-8552-4511-BBCE-F882B7099A58}/ExportFAA18BShapefiles",
+    "displayname": "$rc:title",
+    "helpcontent": "45020002",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "53",
+        "70"
+    ],
+    "params": {
+        "in_workspace": {
+            "displayname": "$rc:in_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "description": "$rc:in_workspace.descr"
+        },
+        "target_folder": {
+            "displayname": "$rc:target_folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:target_folder.descr"
+        },
+        "in_features": {
+            "type": "optional",
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "depends": [
+                "in_workspace"
+            ],
+            "description": "$rc:in_features.descr"
+        },
+        "output_folder": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            }
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

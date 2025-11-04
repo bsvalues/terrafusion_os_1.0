@@ -1,0 +1,10 @@
+{
+    "map": {
+        "description": "Regenerates shapes for event features registered with an LRS Network.",
+        "in_event_layer.descr": "The event for which shapes will be regenerated.",
+        "in_event_layer.title": "Event Layer",
+        "out_details_file.title": "Output Results File",
+        "out_event_layers.title": "Output Event Layers",
+        "title": "Generate Events"
+    }
+}

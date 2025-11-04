@@ -1,0 +1,234 @@
+{
+    "type": "FunctionTool",
+    "guid": "{89e6bce3-a662-4ef4-9b69-42ef9fc5dce5}",
+    "displayname": "$rc:title",
+    "helpcontent": "71020006",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "block_add_to_map"
+    ],
+    "params": {
+        "in_network_diagram_layer": {
+            "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}",
+            "displayname": "$rc:in_network_diagram_layer.title",
+            "datatype": {
+                "type": "GPDiagramLayer"
+            }
+        },
+        "junction_placement_type": {
+            "type": "optional",
+            "displayname": "$rc:junction_placement_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "EQUAL_DISTANCE",
+                        "code": "$rc:junction_placement_type.domain.EQUAL_DISTANCE"
+                    },
+                    {
+                        "value": "USER_DEFINE_DISTANCE",
+                        "code": "$rc:junction_placement_type.domain.USER_DEFINE_DISTANCE"
+                    },
+                    {
+                        "value": "ITERATIVE_DISTANCE",
+                        "code": "$rc:junction_placement_type.domain.ITERATIVE_DISTANCE"
+                    }
+                ]
+            },
+            "value": "EQUAL_DISTANCE"
+        },
+        "is_unit_absolute": {
+            "type": "optional",
+            "displayname": "$rc:is_unit_absolute.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ABSOLUTE_UNIT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "PROPORTIONAL_UNIT"
+                    }
+                ]
+            },
+            "value": "false"
+        },
+        "maximum_shift_absolute": {
+            "type": "optional",
+            "displayname": "$rc:maximum_shift_absolute.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_network_diagram_layer"
+            ],
+            "value": "2 Unknown"
+        },
+        "maximum_shift_proportional": {
+            "type": "optional",
+            "displayname": "$rc:maximum_shift_proportional.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "2"
+        },
+        "minimum_shift_absolute": {
+            "type": "optional",
+            "displayname": "$rc:minimum_shift_absolute.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_network_diagram_layer"
+            ],
+            "value": "2 Unknown"
+        },
+        "minimum_shift_proportional": {
+            "type": "optional",
+            "displayname": "$rc:minimum_shift_proportional.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "2"
+        },
+        "iterations_number": {
+            "type": "optional",
+            "displayname": "$rc:iterations_number.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "5"
+        },
+        "is_path_preserved": {
+            "type": "optional",
+            "displayname": "$rc:is_path_preserved.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "PRESERVE_PATH"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "IGNORE_PATH"
+                    }
+                ]
+            },
+            "value": "true"
+        },
+        "are_leaves_moved": {
+            "type": "optional",
+            "displayname": "$rc:are_leaves_moved.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "MOVE_LEAVES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_MOVE_LEAVES"
+                    }
+                ]
+            },
+            "value": "false"
+        },
+        "are_leaves_expanded": {
+            "type": "optional",
+            "displayname": "$rc:are_leaves_expanded.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "EXPAND_LEAVES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_EXPAND_LEAVES"
+                    }
+                ]
+            },
+            "value": "false"
+        },
+        "expand_shift_absolute": {
+            "type": "optional",
+            "displayname": "$rc:expand_shift_absolute.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_network_diagram_layer"
+            ],
+            "value": "2 Unknown"
+        },
+        "expand_shift_proportional": {
+            "type": "optional",
+            "displayname": "$rc:expand_shift_proportional.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "2"
+        },
+        "out_network_diagram_layer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_network_diagram_layer.title",
+            "datatype": {
+                "type": "GPDiagramLayer"
+            }
+        },
+        "run_async": {
+            "type": "optional",
+            "displayname": "$rc:run_async.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "RUN_ASYNCHRONOUSLY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "RUN_SYNCHRONOUSLY"
+                    }
+                ]
+            },
+            "value": "false"
+        }
+    }
+}

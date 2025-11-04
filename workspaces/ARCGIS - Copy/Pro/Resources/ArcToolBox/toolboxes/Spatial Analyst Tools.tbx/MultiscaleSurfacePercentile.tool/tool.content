@@ -1,0 +1,240 @@
+{
+    "type": "FunctionTool",
+    "guid": "{93d86f63-19f3-4a4c-834c-4b27a9c4f91d}",
+    "displayname": "$rc:title",
+    "helpcontent": "8170018",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10"
+    ],
+    "attributes": [
+        "GPU",
+        "mCPU"
+    ],
+    "params": {
+        "in_raster": {
+            "display_order": "0",
+            "displayname": "$rc:in_raster.title",
+            "datatype": {
+                "type": "GPSAGeoData"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "true",
+                "singleband": "true",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_raster.descr"
+        },
+        "out_percentile_raster": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_percentile_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_percentile_raster.descr"
+        },
+        "out_scale_raster": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "2",
+            "displayname": "$rc:out_scale_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_scale_raster.descr"
+        },
+        "distance_units": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:distance_units.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "CELLS",
+                        "code": "$rc:distance_units.domain.CELLS"
+                    },
+                    {
+                        "value": "METERS",
+                        "code": "$rc:distance_units.domain.METERS"
+                    },
+                    {
+                        "value": "CENTIMETERS",
+                        "code": "$rc:distance_units.domain.CENTIMETERS"
+                    },
+                    {
+                        "value": "KILOMETERS",
+                        "code": "$rc:distance_units.domain.KILOMETERS"
+                    },
+                    {
+                        "value": "INCHES",
+                        "code": "$rc:distance_units.domain.INCHES"
+                    },
+                    {
+                        "value": "FEET",
+                        "code": "$rc:distance_units.domain.FEET"
+                    },
+                    {
+                        "value": "YARDS",
+                        "code": "$rc:distance_units.domain.YARDS"
+                    },
+                    {
+                        "value": "MILES",
+                        "code": "$rc:distance_units.domain.MILES"
+                    }
+                ]
+            },
+            "depends": [
+                "in_raster"
+            ],
+            "value": "CELLS",
+            "description": "$rc:distance_units.descr"
+        },
+        "min_scale": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:min_scale.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "depends": [
+                "in_raster",
+                "out_percentile_raster",
+                "distance_units"
+            ],
+            "description": "$rc:min_scale.descr"
+        },
+        "max_scale": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:max_scale.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "depends": [
+                "in_raster",
+                "out_percentile_raster",
+                "distance_units"
+            ],
+            "description": "$rc:max_scale.descr"
+        },
+        "base_increment": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:base_increment.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "depends": [
+                "in_raster",
+                "out_percentile_raster",
+                "distance_units"
+            ],
+            "value": "1",
+            "description": "$rc:base_increment.descr"
+        },
+        "nonlinearity": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:nonlinearity.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "depends": [
+                "in_raster",
+                "out_percentile_raster",
+                "distance_units"
+            ],
+            "value": "1",
+            "description": "$rc:nonlinearity.descr"
+        },
+        "analysis_target_device": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:analysis_target_device.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "GPU_THEN_CPU",
+                        "code": "$rc:analysis_target_device.domain.GPU_THEN_CPU"
+                    },
+                    {
+                        "value": "GPU_ONLY",
+                        "code": "$rc:analysis_target_device.domain.GPU_ONLY"
+                    },
+                    {
+                        "value": "CPU_ONLY",
+                        "code": "$rc:analysis_target_device.domain.CPU_ONLY"
+                    }
+                ]
+            },
+            "value": "GPU_THEN_CPU",
+            "description": "$rc:analysis_target_device.descr"
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "cellSize",
+        "cellSizeProjectionMethod",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "mask",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "pyramid",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Rematches addresses in a geocoded feature class.",
+        "in_geocoded_feature_class.descr": "The geocoded feature class to be rematched.",
+        "in_geocoded_feature_class.title": "Input Feature Class",
+        "in_where_clause.descr": "An SQL expression used to select a subset of features.",
+        "in_where_clause.title": "Where Clause",
+        "out_geocoded_feature_class.title": "Updated Input Feature Class",
+        "summary": "<xdoc><p>Rematches addresses in a geocoded feature class.</p><p>Rematching addresses in the geocoded feature class using the ArcGIS World Geocoding Service requires an ArcGIS Online for organizations organizational account, and it consumes credits. The organizational account must have enough credits to complete the entire rematch request.</p><note type=\"note\"/><p group=\"note\">Credit estimation is available at the top of the tool when the active portal is ArcGIS Online and the input locator is the ArcGIS World Geocoding Service.</p></xdoc>",
+        "title": "Rematch Addresses"
+    }
+}

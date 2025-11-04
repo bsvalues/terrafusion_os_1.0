@@ -1,0 +1,16 @@
+{
+    "map": {
+        "description": "Changes ownership of stored network diagrams.",
+        "diagram_names.descr": "The names of the diagrams to be processed.",
+        "diagram_names.title": "Diagram Names",
+        "in_diagrams.descr": "The input network layer or network diagram layer related to the utility network or trace network of interest with the stored network diagrams whose ownership will be transferred.",
+        "in_diagrams.title": "Input Network or Network Diagram Layer",
+        "out_diagrams.title": "Output Network or Network Diagram Layer",
+        "source_owner.descr": "<xdoc><p>The name of the user whose ownership of the network diagrams will be changed.</p><note type=\"note\"/><p group=\"note\">This parameter is only used when there are no specified diagram names. When diagram names are specified, it will be ignored.</p></xdoc>",
+        "source_owner.title": "Source Owner",
+        "summary": "<xdoc><p>Changes ownership of stored network diagrams.</p><note type=\"caution\"/><p group=\"note\">This tool is an administration tool.</p><note type=\"legacy\"/><p group=\"note\">Change Diagrams Owner cannot process utility network datasets that were created prior to ArcGIS Pro 2.4, even if they have been upgraded.</p></xdoc>",
+        "target_owner.descr": "The name of the user that will become the new owner of the specified diagrams.",
+        "target_owner.title": "Target Owner",
+        "title": "Change Diagrams Owner"
+    }
+}

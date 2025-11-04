@@ -1,0 +1,49 @@
+{
+    "type": "FunctionTool",
+    "guid": "{5029f58e-d96f-495d-b040-ca0246596e89}",
+    "displayname": "$rc:title",
+    "helpcontent": "5180009",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9"
+    ],
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "in_terrain": {
+            "displayname": "$rc:in_terrain.title",
+            "datatype": {
+                "type": "GPTerrainLayer"
+            },
+            "description": "$rc:in_terrain.descr"
+        },
+        "feature_class": {
+            "displayname": "$rc:feature_class.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:feature_class.descr"
+        },
+        "derived_out_terrain": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:derived_out_terrain.title",
+            "datatype": {
+                "type": "GPTerrainLayer"
+            },
+            "depends": [
+                "in_terrain"
+            ]
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

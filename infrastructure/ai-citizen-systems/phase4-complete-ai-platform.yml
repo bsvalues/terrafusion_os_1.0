@@ -1,0 +1,914 @@
+# TerraFusion OS - Phase 4: AI & Citizen Systems
+# THE TRANSCENDENCE LAYER: CHAMPIONSHIP-LEVEL AI ORCHESTRATION
+# Complete AI-native government platform with quantum-ready citizen services
+
+# ===================================================================
+# Phase 4.1: AI Agent Swarm Coordination Platform
+# Advanced hierarchical AI management for 1,008+ agents
+# ===================================================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrafusion-ai-systems
+  labels:
+    security.level: maximum
+    compliance: fisma-high
+    tier: ai-orchestration
+    ai-tier: swarm-coordination
+
+---
+# AI Swarm Orchestrator - Master Coordinator
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-swarm-orchestrator
+  namespace: terrafusion-ai-systems
+spec:
+  replicas: 3  # High availability for critical AI coordination
+  selector:
+    matchLabels:
+      app: ai-swarm-orchestrator
+  template:
+    metadata:
+      labels:
+        app: ai-swarm-orchestrator
+        ai-tier: master-coordinator
+    spec:
+      serviceAccountName: ai-systems-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+      containers:
+      - name: swarm-orchestrator
+        image: terrafusion/ai-swarm-orchestrator:2.1.0
+        ports:
+        - containerPort: 8080
+          name: http-api
+        - containerPort: 9090
+          name: metrics
+        - containerPort: 8081
+          name: ai-coordination
+        env:
+        - name: SWARM_MODE
+          value: "master-coordinator"
+        - name: AGENT_CAPACITY
+          value: "1008"
+        - name: COORDINATION_STRATEGY
+          value: "hierarchical-quantum"
+        - name: AI_PERFORMANCE_TARGET
+          value: "379000000x"  # 379M× transcendence factor
+        - name: GOVERNMENT_COMPLIANCE
+          value: "fisma-high"
+        - name: REDIS_CLUSTER
+          value: "redis-cluster.terrafusion-ai-systems:6379"
+        - name: KAFKA_BROKERS
+          value: "terrafusion-kafka-kafka-bootstrap.terrafusion-streaming:9092"
+        - name: DATABASE_URL
+          value: "postgresql://ai_admin:$(DB_PASSWORD)@postgresql-ai.terrafusion-ai-systems:5432/ai_coordination"
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: ai-systems-secrets
+              key: database-password
+        - name: AI_MODEL_REGISTRY
+          value: "http://ai-model-registry:8080"
+        - name: TELEMETRY_ENDPOINT
+          value: "http://jaeger-collector.terrafusion-observability:14268/api/traces"
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            memory: 4Gi
+            cpu: 2000m
+          limits:
+            memory: 8Gi
+            cpu: 4000m
+        volumeMounts:
+        - name: ai-config
+          mountPath: /etc/ai-config
+          readOnly: true
+        - name: ai-models
+          mountPath: /opt/ai-models
+          readOnly: true
+        - name: tmp-volume
+          mountPath: /tmp
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+      volumes:
+      - name: ai-config
+        configMap:
+          name: ai-swarm-config
+      - name: ai-models
+        persistentVolumeClaim:
+          claimName: ai-models-pvc
+      - name: tmp-volume
+        emptyDir:
+          sizeLimit: 2Gi
+
+---
+# AI Field Generals - Specialized Coordinators
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-field-generals
+  namespace: terrafusion-ai-systems
+spec:
+  replicas: 6  # One for each major government function
+  selector:
+    matchLabels:
+      app: ai-field-generals
+  template:
+    metadata:
+      labels:
+        app: ai-field-generals
+        ai-tier: field-general
+    spec:
+      serviceAccountName: ai-systems-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+      containers:
+      - name: field-general
+        image: terrafusion/ai-field-general:2.1.0
+        ports:
+        - containerPort: 8080
+          name: http-api
+        - containerPort: 9090
+          name: metrics
+        env:
+        - name: FIELD_GENERAL_TYPE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['specialization']
+        - name: SWARM_ORCHESTRATOR
+          value: "ai-swarm-orchestrator.terrafusion-ai-systems:8081"
+        - name: MANAGED_AGENTS_COUNT
+          value: "168"  # 1008 / 6 field generals
+        - name: SPECIALIZATION_AREAS
+          value: "property-assessment,tax-processing,citizen-services,compliance,appeals,analytics"
+        - name: REDIS_CLUSTER
+          value: "redis-cluster.terrafusion-ai-systems:6379"
+        - name: KAFKA_COORDINATION_TOPIC
+          value: "ai-agent-coordination"
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            memory: 2Gi
+            cpu: 1000m
+          limits:
+            memory: 4Gi
+            cpu: 2000m
+        volumeMounts:
+        - name: ai-config
+          mountPath: /etc/ai-config
+          readOnly: true
+        - name: tmp-volume
+          mountPath: /tmp
+      volumes:
+      - name: ai-config
+        configMap:
+          name: ai-swarm-config
+      - name: tmp-volume
+        emptyDir:
+          sizeLimit: 1Gi
+
+---
+# Micro Agents - Rapid Task Execution
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: ai-micro-agents
+  namespace: terrafusion-ai-systems
+spec:
+  selector:
+    matchLabels:
+      app: ai-micro-agents
+  template:
+    metadata:
+      labels:
+        app: ai-micro-agents
+        ai-tier: micro-agent
+    spec:
+      serviceAccountName: ai-systems-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+      containers:
+      - name: micro-agent
+        image: terrafusion/ai-micro-agent:2.1.0
+        ports:
+        - containerPort: 8080
+          name: http-api
+        env:
+        - name: AGENT_TIER
+          value: "micro-execution"
+        - name: FIELD_GENERAL_ENDPOINT
+          value: "ai-field-generals.terrafusion-ai-systems:8080"
+        - name: TASK_QUEUE
+          value: "redis-cluster.terrafusion-ai-systems:6379"
+        - name: EXECUTION_MODE
+          value: "real-time-responsive"
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: 100m
+          limits:
+            memory: 512Mi
+            cpu: 200m
+        volumeMounts:
+        - name: tmp-volume
+          mountPath: /tmp
+      volumes:
+      - name: tmp-volume
+        emptyDir:
+          sizeLimit: 100Mi
+
+---
+# ===================================================================
+# Phase 4.2: Citizen Service Portal & Mobile Experience
+# Quantum-ready citizen engagement platform
+# ===================================================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrafusion-citizen-services
+  labels:
+    security.level: high
+    compliance: fisma-high
+    tier: citizen-engagement
+
+---
+# Citizen Portal Frontend
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: citizen-portal
+  namespace: terrafusion-citizen-services
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: citizen-portal
+  template:
+    metadata:
+      labels:
+        app: citizen-portal
+        tier: frontend
+    spec:
+      serviceAccountName: citizen-services-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        fsGroup: 101
+      containers:
+      - name: citizen-portal
+        image: terrafusion/citizen-portal:3.0.0
+        ports:
+        - containerPort: 80
+          name: http
+        - containerPort: 443
+          name: https
+        env:
+        - name: ENVIRONMENT
+          value: "production"
+        - name: API_GATEWAY_URL
+          value: "https://api.terrafusion.gov"
+        - name: CITIZEN_API_URL
+          value: "https://citizen-api.terrafusion-citizen-services"
+        - name: AI_ASSISTANT_ENDPOINT
+          value: "https://ai-assistant.terrafusion-citizen-services"
+        - name: GOVERNMENT_BRANDING
+          value: "terrafusion-transcended"
+        - name: PERFORMANCE_TARGET
+          value: "sub-100ms-response"
+        - name: ACCESSIBILITY_LEVEL
+          value: "wcag-2.1-aaa"
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            memory: 512Mi
+            cpu: 250m
+          limits:
+            memory: 1Gi
+            cpu: 500m
+        volumeMounts:
+        - name: nginx-cache
+          mountPath: /var/cache/nginx
+        - name: nginx-run
+          mountPath: /var/run
+        - name: tmp-volume
+          mountPath: /tmp
+      volumes:
+      - name: nginx-cache
+        emptyDir:
+          sizeLimit: 1Gi
+      - name: nginx-run
+        emptyDir:
+          sizeLimit: 100Mi
+      - name: tmp-volume
+        emptyDir:
+          sizeLimit: 100Mi
+
+---
+# Citizen API Backend
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: citizen-api
+  namespace: terrafusion-citizen-services
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      app: citizen-api
+  template:
+    metadata:
+      labels:
+        app: citizen-api
+        tier: backend
+    spec:
+      serviceAccountName: citizen-services-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+      - name: citizen-api
+        image: terrafusion/citizen-api:3.0.0
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 9090
+          name: metrics
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://citizen_user:$(DB_PASSWORD)@postgresql-citizen.terrafusion-citizen-services:5432/citizen_services"
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: citizen-services-secrets
+              key: database-password
+        - name: REDIS_URL
+          value: "redis://redis-citizen.terrafusion-citizen-services:6379"
+        - name: AI_COORDINATION_URL
+          value: "http://ai-swarm-orchestrator.terrafusion-ai-systems:8080"
+        - name: PROPERTY_API_URL
+          value: "http://property-service.terrafusion-system:8080"
+        - name: KAFKA_BROKERS
+          value: "terrafusion-kafka-kafka-bootstrap.terrafusion-streaming:9092"
+        - name: COMPLIANCE_MODE
+          value: "fisma-high"
+        - name: CITIZEN_PRIVACY_LEVEL
+          value: "maximum"
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            memory: 1Gi
+            cpu: 500m
+          limits:
+            memory: 2Gi
+            cpu: 1000m
+        volumeMounts:
+        - name: tmp-volume
+          mountPath: /tmp
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 10
+      volumes:
+      - name: tmp-volume
+        emptyDir:
+          sizeLimit: 1Gi
+
+---
+# AI-Powered Citizen Assistant
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-citizen-assistant
+  namespace: terrafusion-citizen-services
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: ai-citizen-assistant
+  template:
+    metadata:
+      labels:
+        app: ai-citizen-assistant
+        ai-tier: citizen-assistant
+    spec:
+      serviceAccountName: citizen-services-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+      - name: ai-assistant
+        image: terrafusion/ai-citizen-assistant:2.0.0
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 8081
+          name: websocket
+        env:
+        - name: AI_MODEL_TYPE
+          value: "government-fine-tuned-llm"
+        - name: CONVERSATION_MEMORY
+          value: "redis://redis-citizen.terrafusion-citizen-services:6379"
+        - name: KNOWLEDGE_BASE_URL
+          value: "http://knowledge-base.terrafusion-citizen-services:8080"
+        - name: AI_SWARM_COORDINATION
+          value: "http://ai-swarm-orchestrator.terrafusion-ai-systems:8080"
+        - name: CITIZEN_CONTEXT_API
+          value: "http://citizen-api:8080"
+        - name: RESPONSE_TIME_TARGET
+          value: "sub-2-seconds"
+        - name: LANGUAGE_SUPPORT
+          value: "en,es,mandarin,vietnamese,russian"
+        - name: ACCESSIBILITY_MODE
+          value: "full-ada-compliance"
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            memory: 2Gi
+            cpu: 1000m
+          limits:
+            memory: 4Gi
+            cpu: 2000m
+        volumeMounts:
+        - name: ai-models
+          mountPath: /opt/models
+          readOnly: true
+        - name: tmp-volume
+          mountPath: /tmp
+      volumes:
+      - name: ai-models
+        persistentVolumeClaim:
+          claimName: ai-models-pvc
+      - name: tmp-volume
+        emptyDir:
+          sizeLimit: 1Gi
+
+---
+# ===================================================================
+# Phase 4.3: Government Decision Support System
+# Quantum-enhanced analytics for championship-level governance
+# ===================================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: decision-support-system
+  namespace: terrafusion-ai-systems
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: decision-support-system
+  template:
+    metadata:
+      labels:
+        app: decision-support-system
+        ai-tier: decision-support
+    spec:
+      serviceAccountName: ai-systems-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+      - name: decision-engine
+        image: terrafusion/decision-support:2.0.0
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 9090
+          name: metrics
+        env:
+        - name: ANALYTICS_DATABASE
+          value: "clickhouse://analytics_user:$(CLICKHOUSE_PASSWORD)@clickhouse.terrafusion-analytics:8123/government_analytics"
+        - name: CLICKHOUSE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: analytics-integration-secrets
+              key: clickhouse-password
+        - name: TIMESERIES_DATABASE
+          value: "postgresql://analytics_user:$(TIMESCALE_PASSWORD)@timescaledb.terrafusion-analytics:5432/terrafusion_analytics"
+        - name: TIMESCALE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: analytics-integration-secrets
+              key: timescaledb-password
+        - name: AI_MODEL_ENDPOINT
+          value: "http://ai-model-registry:8080"
+        - name: REAL_TIME_STREAMING
+          value: "kafka://terrafusion-kafka-kafka-bootstrap.terrafusion-streaming:9092"
+        - name: DECISION_CONFIDENCE_THRESHOLD
+          value: "0.95"  # 95% confidence for government decisions
+        - name: QUANTUM_ACCELERATION
+          value: "enabled"
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            memory: 4Gi
+            cpu: 2000m
+          limits:
+            memory: 8Gi
+            cpu: 4000m
+        volumeMounts:
+        - name: decision-models
+          mountPath: /opt/decision-models
+          readOnly: true
+        - name: tmp-volume
+          mountPath: /tmp
+      volumes:
+      - name: decision-models
+        persistentVolumeClaim:
+          claimName: decision-models-pvc
+      - name: tmp-volume
+        emptyDir:
+          sizeLimit: 2Gi
+
+---
+# ===================================================================
+# Phase 4.4: Compliance & Audit Automation
+# Autonomous government compliance with quantum-level accuracy
+# ===================================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: compliance-automation
+  namespace: terrafusion-ai-systems
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: compliance-automation
+  template:
+    metadata:
+      labels:
+        app: compliance-automation
+        ai-tier: compliance
+    spec:
+      serviceAccountName: ai-systems-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+      - name: compliance-engine
+        image: terrafusion/compliance-automation:2.0.0
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 9090
+          name: metrics
+        env:
+        - name: COMPLIANCE_FRAMEWORKS
+          value: "fisma-high,nist-800-53,soc2,hipaa,ferpa"
+        - name: AUDIT_DATABASE
+          value: "postgresql://audit_user:$(AUDIT_DB_PASSWORD)@postgresql-audit.terrafusion-ai-systems:5432/compliance_audit"
+        - name: AUDIT_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: compliance-secrets
+              key: audit-database-password
+        - name: REAL_TIME_MONITORING
+          value: "kafka://terrafusion-kafka-kafka-bootstrap.terrafusion-streaming:9092/audit-trail"
+        - name: VIOLATION_ALERTING
+          value: "immediate"
+        - name: AUTO_REMEDIATION
+          value: "enabled"
+        - name: GOVERNMENT_TRANSPARENCY_LEVEL
+          value: "maximum"
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            memory: 2Gi
+            cpu: 1000m
+          limits:
+            memory: 4Gi
+            cpu: 2000m
+        volumeMounts:
+        - name: compliance-rules
+          mountPath: /etc/compliance-rules
+          readOnly: true
+        - name: tmp-volume
+          mountPath: /tmp
+      volumes:
+      - name: compliance-rules
+        configMap:
+          name: compliance-rules-config
+      - name: tmp-volume
+        emptyDir:
+          sizeLimit: 1Gi
+
+---
+# Supporting Infrastructure - Redis Cluster for AI Coordination
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis-cluster
+  namespace: terrafusion-ai-systems
+spec:
+  serviceName: redis-cluster
+  replicas: 6
+  selector:
+    matchLabels:
+      app: redis-cluster
+  template:
+    metadata:
+      labels:
+        app: redis-cluster
+    spec:
+      serviceAccountName: ai-systems-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        fsGroup: 999
+      containers:
+      - name: redis
+        image: redis:7.2-alpine
+        ports:
+        - containerPort: 6379
+          name: redis
+        - containerPort: 16379
+          name: cluster-bus
+        command:
+        - redis-server
+        - /etc/redis/redis.conf
+        env:
+        - name: REDIS_CLUSTER_ENABLED
+          value: "yes"
+        - name: REDIS_CLUSTER_REQUIRE_FULL_COVERAGE
+          value: "no"
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            memory: 2Gi
+            cpu: 500m
+          limits:
+            memory: 4Gi
+            cpu: 1000m
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+        - name: redis-config
+          mountPath: /etc/redis
+      volumes:
+      - name: redis-config
+        configMap:
+          name: redis-cluster-config
+  volumeClaimTemplates:
+  - metadata:
+      name: redis-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: fast-ssd-encrypted
+      resources:
+        requests:
+          storage: 50Gi
+
+---
+# AI Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ai-swarm-config
+  namespace: terrafusion-ai-systems
+data:
+  swarm-config.yaml: |
+    # TerraFusion AI Swarm Configuration
+    # Government. Transcended.
+    
+    swarm:
+      name: "TerraFusion Government AI Swarm"
+      version: "2.1.0"
+      total_agents: 1008
+      performance_target: "379M×"
+      
+    hierarchy:
+      master_coordinators: 3
+      field_generals: 6
+      micro_agents: 999
+      
+    specializations:
+      property_assessment:
+        agents: 200
+        models: ["valuation-ml", "market-analysis", "appeal-processor"]
+      tax_processing:
+        agents: 150
+        models: ["tax-calculator", "levy-optimizer", "compliance-checker"]
+      citizen_services:
+        agents: 200
+        models: ["nlp-assistant", "form-processor", "case-manager"]
+      compliance_audit:
+        agents: 100
+        models: ["audit-analyzer", "violation-detector", "report-generator"]
+      analytics_insights:
+        agents: 150
+        models: ["predictive-analytics", "trend-analyzer", "dashboard-generator"]
+      appeals_processing:
+        agents: 108
+        models: ["appeal-classifier", "evidence-analyzer", "decision-recommender"]
+        
+    performance:
+      response_time_target: "sub-100ms"
+      throughput_target: "10000-requests-per-second"
+      accuracy_target: "99.7%"
+      availability_target: "99.99%"
+      
+    compliance:
+      frameworks: ["FISMA-HIGH", "NIST-800-53", "SOC2"]
+      audit_retention: "7-years"
+      encryption: "AES-256"
+      access_control: "zero-trust"
+
+---
+# Services for AI Systems
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-swarm-orchestrator
+  namespace: terrafusion-ai-systems
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: http-api
+  - port: 8081
+    targetPort: 8081
+    protocol: TCP
+    name: ai-coordination
+  - port: 9090
+    targetPort: 9090
+    protocol: TCP
+    name: metrics
+  selector:
+    app: ai-swarm-orchestrator
+
+---
+# Services for Citizen Systems
+apiVersion: v1
+kind: Service
+metadata:
+  name: citizen-portal
+  namespace: terrafusion-citizen-services
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  - port: 443
+    targetPort: 443
+    protocol: TCP
+    name: https
+  selector:
+    app: citizen-portal
+
+---
+# ServiceAccounts
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ai-systems-service-account
+  namespace: terrafusion-ai-systems
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: citizen-services-account
+  namespace: terrafusion-citizen-services
+
+---
+# Network Policies for AI Systems
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ai-systems-network-policy
+  namespace: terrafusion-ai-systems
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow from TerraFusion core services
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: terrafusion-system
+    ports:
+    - protocol: TCP
+      port: 8080
+  # Allow internal AI coordination
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: terrafusion-ai-systems
+    ports:
+    - protocol: TCP
+      port: 8080
+    - protocol: TCP
+      port: 8081
+    - protocol: TCP
+      port: 6379
+    - protocol: TCP
+      port: 16379
+  egress:
+  # Allow to data services
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: terrafusion-streaming
+    ports:
+    - protocol: TCP
+      port: 9092
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: terrafusion-analytics
+    ports:
+    - protocol: TCP
+      port: 5432
+    - protocol: TCP
+      port: 8123

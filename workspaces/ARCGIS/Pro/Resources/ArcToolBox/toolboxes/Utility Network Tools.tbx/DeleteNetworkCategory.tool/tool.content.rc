@@ -1,0 +1,11 @@
+{
+    "map": {
+        "category_name.descr": "The name of the network category to delete.",
+        "category_name.title": "Category Name",
+        "description": "Deletes a network category in a utility network.",
+        "in_utility_network.descr": "The utility network that contains the network category to be deleted.",
+        "in_utility_network.title": "Input Utility Network",
+        "out_utility_network.title": "Updated Utility Network",
+        "title": "Delete Network Category"
+    }
+}

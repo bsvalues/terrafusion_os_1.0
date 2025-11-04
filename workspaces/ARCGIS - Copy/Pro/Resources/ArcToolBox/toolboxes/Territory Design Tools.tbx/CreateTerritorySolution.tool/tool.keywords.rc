@@ -1,0 +1,12 @@
+{
+    "set": [
+        "alignment",
+        "barriers",
+        "centroid",
+        "constraints",
+        "hierarchy",
+        "level",
+        "locked state",
+        "polygon"
+    ]
+}

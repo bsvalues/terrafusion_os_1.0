@@ -1,0 +1,21 @@
+{
+    "map": {
+        "a_priori_probabilities.descr": "<xdoc><p>Specifies how a priori probabilities will be determined.</p><ul><li><span title=\"EQUAL\">Equal</span>—All classes will have the same a priori probability.</li><li><span title=\"SAMPLE\">Sample</span>—A priori probabilities will be proportional to the number of cells in each class relative to the total number of cells sampled in all classes in the signature file.</li><li><span title=\"FILE\">File</span>—The a priori probabilities will be assigned to each class from an input ASCII a priori probability file.</li></ul></xdoc>",
+        "a_priori_probabilities.domain.EQUAL": "Equal",
+        "a_priori_probabilities.domain.FILE": "File",
+        "a_priori_probabilities.domain.SAMPLE": "Sample",
+        "a_priori_probabilities.title": "A priori probability weighting",
+        "description": "Creates a multiband raster of probability bands, with one band being created for each class represented in the input signature file.",
+        "in_a_priori_file.descr": "<xdoc><p>A text file containing a priori probabilities for the input signature classes.</p><p>An input for the a priori probability file is only required when the <span class=\"esri_uicontrol\">File</span> option is used.</p><p>The extension for the a priori file can be .txt or .asc.</p></xdoc>",
+        "in_a_priori_file.title": "Input a priori probability file",
+        "in_raster_bands.descr": "<xdoc><p>The input raster bands.</p><p>They can be integer or floating point type.</p></xdoc>",
+        "in_raster_bands.title": "Input raster bands",
+        "in_signature_file.descr": "<xdoc><p>Input signature file whose class signatures are used to generate the a priori probability bands.</p><p>A .gsg extension is required.</p></xdoc>",
+        "in_signature_file.title": "Input signature file",
+        "maximum_output_value.descr": "<xdoc><p>Factor for scaling the range of values in the output probability bands.</p><p>By default, the values range from 0 to 100.</p></xdoc>",
+        "maximum_output_value.title": "Maximum output value",
+        "out_multiband_raster.descr": "<xdoc><p>The output multiband raster dataset.</p><p>It will be of integer type.</p><p>If the output is an Esri Grid, the filename cannot have more than 9 characters.</p></xdoc>",
+        "out_multiband_raster.title": "Output multiband raster",
+        "title": "Class Probability"
+    }
+}

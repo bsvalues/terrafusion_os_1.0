@@ -1,0 +1,13 @@
+{
+    "set": [
+        "dem",
+        "dsm",
+        "elevation raster",
+        "las",
+        "lidar intensity image",
+        "point cloud",
+        "rgb",
+        "interpolation",
+        "lidar"
+    ]
+}

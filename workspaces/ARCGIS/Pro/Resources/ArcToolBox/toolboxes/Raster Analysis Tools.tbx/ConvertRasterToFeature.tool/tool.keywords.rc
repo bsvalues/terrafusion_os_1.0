@@ -1,0 +1,8 @@
+{
+    "set": [
+        "conversion",
+        "export",
+        "import",
+        "vectorize"
+    ]
+}

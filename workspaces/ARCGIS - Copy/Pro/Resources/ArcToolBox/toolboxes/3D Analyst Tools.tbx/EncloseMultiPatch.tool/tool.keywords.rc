@@ -1,0 +1,12 @@
+{
+    "set": [
+        "3d geometry",
+        "close multipatch",
+        "closed multipatch",
+        "gaps",
+        "multipatch",
+        "open multipatch",
+        "slivers",
+        "solids"
+    ]
+}

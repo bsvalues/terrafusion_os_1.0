@@ -1,0 +1,207 @@
+{
+  "info": {
+    "name": "Terra Levy API",
+    "description": "Tax management and revenue operations APIs - TerraFusion Government API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "oauth2",
+    "oauth2": [
+      {
+        "key": "tokenUrl",
+        "value": "https://auth.terrafusion.gov/oauth/token",
+        "type": "string"
+      },
+      {
+        "key": "authUrl",
+        "value": "https://auth.terrafusion.gov/oauth/authorize",
+        "type": "string"
+      },
+      {
+        "key": "scope",
+        "value": "terra-levy:read terra-levy:write",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.terrafusion.gov/api/v1/tax",
+      "type": "string"
+    },
+    {
+      "key": "workspace",
+      "value": "terra-levy",
+      "type": "string"
+    },
+    {
+      "key": "version",
+      "value": "1.0.0",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-TerraFusion-Workspace",
+            "value": "{{workspace}}",
+            "type": "text"
+          },
+          {
+            "key": "X-TerraFusion-Version",
+            "value": "{{version}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Property tax information",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-TerraFusion-Workspace",
+            "value": "{{workspace}}",
+            "type": "text"
+          },
+          {
+            "key": "X-TerraFusion-Version",
+            "value": "{{version}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/properties",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "properties"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Tax assessments",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-TerraFusion-Workspace",
+            "value": "{{workspace}}",
+            "type": "text"
+          },
+          {
+            "key": "X-TerraFusion-Version",
+            "value": "{{version}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/assessments",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "assessments"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Tax payment processing",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-TerraFusion-Workspace",
+            "value": "{{workspace}}",
+            "type": "text"
+          },
+          {
+            "key": "X-TerraFusion-Version",
+            "value": "{{version}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/payments",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "payments"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Tax exemption management",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-TerraFusion-Workspace",
+            "value": "{{workspace}}",
+            "type": "text"
+          },
+          {
+            "key": "X-TerraFusion-Version",
+            "value": "{{version}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/exemptions",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "exemptions"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

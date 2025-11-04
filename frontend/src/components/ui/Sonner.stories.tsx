@@ -1,16 +1,16 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { AlertTriangle, Check, Info, Loader2, Upload, X } from 'lucide-react';
 import * as React from 'react';
 import { toast } from 'sonner';
-import { Check, X, Info, AlertTriangle, Loader2, Upload } from 'lucide-react';
 import { Button } from './button';
 import { Toaster } from './sonner';
 
 /**
  * # Sonner Toast Component
- * 
+ *
  * An opinionated toast component for React, built on top of the sonner library.
  * Provides beautiful, accessible toast notifications with promise support.
- * 
+ *
  * ## Features
  * - **Multiple Types:** Success, error, info, warning, loading, custom
  * - **Positions:** Top/bottom, left/center/right combinations
@@ -19,14 +19,14 @@ import { Toaster } from './sonner';
  * - **Dismissible:** Click to dismiss or auto-dismiss
  * - **Stacking:** Multiple toasts stack elegantly
  * - **Accessibility:** Screen reader announcements, keyboard dismissal
- * 
+ *
  * ## Use Cases
  * - Form submission feedback
  * - API request status
  * - User action confirmations
  * - Error notifications
  * - Loading states
- * 
+ *
  * Built on sonner library with theme integration
  */
 
@@ -57,33 +57,26 @@ type Story = StoryObj<typeof Toaster>;
 
 /**
  * ## Default Toast
- * 
+ *
  * Basic toast notification with a simple message.
  */
 export const Default: Story = {
-  render: () => (
-    <Button onClick={() => toast('Event has been created')}>
-      Show Toast
-    </Button>
-  ),
+  render: () => <Button onClick={() => toast('Event has been created')}>Show Toast</Button>,
 };
 
 /**
  * ## Toast Types
- * 
+ *
  * Different toast types for various scenarios: success, error, info, warning, loading.
  */
 export const Types: Story = {
   render: () => (
-    <div className="flex flex-wrap gap-2">
-      <Button
-        variant="outline"
-        onClick={() => toast('Default notification')}
-      >
+    <div className='flex flex-wrap gap-2'>
+      <Button variant='outline' onClick={() => toast('Default notification')}>
         Default
       </Button>
       <Button
-        variant="outline"
+        variant='outline'
         onClick={() =>
           toast.success('Account created successfully', {
             description: 'Welcome to TerraFusion!',
@@ -93,7 +86,7 @@ export const Types: Story = {
         Success
       </Button>
       <Button
-        variant="outline"
+        variant='outline'
         onClick={() =>
           toast.error('Something went wrong', {
             description: 'Please try again later.',
@@ -103,7 +96,7 @@ export const Types: Story = {
         Error
       </Button>
       <Button
-        variant="outline"
+        variant='outline'
         onClick={() =>
           toast.info('Update available', {
             description: 'A new version is ready to install.',
@@ -113,7 +106,7 @@ export const Types: Story = {
         Info
       </Button>
       <Button
-        variant="outline"
+        variant='outline'
         onClick={() =>
           toast.warning('Storage almost full', {
             description: 'You have used 95% of your available storage.',
@@ -122,10 +115,7 @@ export const Types: Story = {
       >
         Warning
       </Button>
-      <Button
-        variant="outline"
-        onClick={() => toast.loading('Loading...')}
-      >
+      <Button variant='outline' onClick={() => toast.loading('Loading...')}>
         Loading
       </Button>
     </div>
@@ -134,12 +124,12 @@ export const Types: Story = {
 
 /**
  * ## With Description
- * 
+ *
  * Toasts can include additional description text for more context.
  */
 export const WithDescription: Story = {
   render: () => (
-    <div className="flex flex-wrap gap-2">
+    <div className='flex flex-wrap gap-2'>
       <Button
         onClick={() =>
           toast('Event has been created', {
@@ -150,7 +140,7 @@ export const WithDescription: Story = {
         Show Toast
       </Button>
       <Button
-        variant="outline"
+        variant='outline'
         onClick={() =>
           toast.success('Profile updated', {
             description: 'Your profile information has been saved successfully.',
@@ -165,12 +155,12 @@ export const WithDescription: Story = {
 
 /**
  * ## With Actions
- * 
+ *
  * Add action buttons to toasts for user interaction.
  */
 export const WithActions: Story = {
   render: () => (
-    <div className="flex flex-wrap gap-2">
+    <div className='flex flex-wrap gap-2'>
       <Button
         onClick={() =>
           toast('Event has been created', {
@@ -184,7 +174,7 @@ export const WithActions: Story = {
         With Action
       </Button>
       <Button
-        variant="outline"
+        variant='outline'
         onClick={() =>
           toast('File uploaded successfully', {
             description: 'Your file is now available in the dashboard.',
@@ -198,7 +188,7 @@ export const WithActions: Story = {
         With Action & Description
       </Button>
       <Button
-        variant="outline"
+        variant='outline'
         onClick={() =>
           toast.error('Failed to save changes', {
             description: 'There was a problem saving your changes.',
@@ -221,7 +211,7 @@ export const WithActions: Story = {
 
 /**
  * ## Promise Toasts
- * 
+ *
  * Handle async operations with loading, success, and error states automatically.
  */
 export const PromiseToasts: Story = {
@@ -241,7 +231,7 @@ export const PromiseToasts: Story = {
     };
 
     return (
-      <div className="flex flex-wrap gap-2">
+      <div className='flex flex-wrap gap-2'>
         <Button
           onClick={() => {
             const promise = simulateAsyncOperation();
@@ -257,7 +247,7 @@ export const PromiseToasts: Story = {
           Promise (Random)
         </Button>
         <Button
-          variant="outline"
+          variant='outline'
           onClick={() => {
             const promise = simulateSuccessOperation();
             toast.promise(promise, {
@@ -270,10 +260,9 @@ export const PromiseToasts: Story = {
           Promise (Success)
         </Button>
         <Button
-          variant="outline"
+          variant='outline'
           onClick={() => {
-            const promise = fetch('https://api.example.com/user')
-              .then(res => res.json());
+            const promise = fetch('https://api.example.com/user').then((res) => res.json());
             toast.promise(promise, {
               loading: 'Fetching user data...',
               success: (data) => 'User data loaded',
@@ -290,22 +279,22 @@ export const PromiseToasts: Story = {
 
 /**
  * ## Custom Content
- * 
+ *
  * Create custom toast content with JSX for rich notifications.
  */
 export const CustomContent: Story = {
   render: () => (
-    <div className="flex flex-wrap gap-2">
+    <div className='flex flex-wrap gap-2'>
       <Button
         onClick={() =>
           toast(
-            <div className="flex items-start gap-3">
-              <div className="rounded-full bg-green-100 p-1">
-                <Check className="h-4 w-4 text-green-600" />
+            <div className='flex items-start gap-3'>
+              <div className='rounded-full bg-green-100 p-1'>
+                <Check className='h-4 w-4 text-green-600' />
               </div>
               <div>
-                <div className="font-semibold">Payment successful</div>
-                <div className="text-sm text-muted-foreground">
+                <div className='font-semibold'>Payment successful</div>
+                <div className='text-sm text-muted-foreground'>
                   Your payment of $99.00 has been processed.
                 </div>
               </div>
@@ -316,18 +305,16 @@ export const CustomContent: Story = {
         Custom Success
       </Button>
       <Button
-        variant="outline"
+        variant='outline'
         onClick={() =>
           toast(
-            <div className="flex items-start gap-3">
-              <div className="rounded-full bg-blue-100 p-1">
-                <Info className="h-4 w-4 text-blue-600" />
+            <div className='flex items-start gap-3'>
+              <div className='rounded-full bg-blue-100 p-1'>
+                <Info className='h-4 w-4 text-blue-600' />
               </div>
               <div>
-                <div className="font-semibold">New message</div>
-                <div className="text-sm text-muted-foreground">
-                  You have 3 unread messages.
-                </div>
+                <div className='font-semibold'>New message</div>
+                <div className='text-sm text-muted-foreground'>You have 3 unread messages.</div>
               </div>
             </div>
           )
@@ -336,16 +323,16 @@ export const CustomContent: Story = {
         Custom Info
       </Button>
       <Button
-        variant="outline"
+        variant='outline'
         onClick={() =>
           toast(
-            <div className="flex items-start gap-3">
-              <div className="rounded-full bg-yellow-100 p-1">
-                <AlertTriangle className="h-4 w-4 text-yellow-600" />
+            <div className='flex items-start gap-3'>
+              <div className='rounded-full bg-yellow-100 p-1'>
+                <AlertTriangle className='h-4 w-4 text-yellow-600' />
               </div>
               <div>
-                <div className="font-semibold">Maintenance scheduled</div>
-                <div className="text-sm text-muted-foreground">
+                <div className='font-semibold'>Maintenance scheduled</div>
+                <div className='text-sm text-muted-foreground'>
                   System will be down for 2 hours starting at 2 AM.
                 </div>
               </div>
@@ -361,7 +348,7 @@ export const CustomContent: Story = {
 
 /**
  * ## Real-World: Form Submission
- * 
+ *
  * Typical form submission flow with loading, success, and error states.
  */
 export const RealWorldFormSubmit: Story = {
@@ -393,29 +380,29 @@ export const RealWorldFormSubmit: Story = {
     };
 
     return (
-      <div className="w-full max-w-md space-y-4">
-        <div className="space-y-4 rounded-lg border p-6">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Email</label>
+      <div className='w-full max-w-md space-y-4'>
+        <div className='space-y-4 rounded-lg border p-6'>
+          <div className='space-y-2'>
+            <label className='text-sm font-medium'>Email</label>
             <input
-              type="email"
-              placeholder="you@example.com"
-              className="w-full rounded-md border px-3 py-2 text-sm"
+              type='email'
+              placeholder='you@example.com'
+              className='w-full rounded-md border px-3 py-2 text-sm'
             />
           </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Password</label>
+          <div className='space-y-2'>
+            <label className='text-sm font-medium'>Password</label>
             <input
-              type="password"
-              placeholder="••••••••"
-              className="w-full rounded-md border px-3 py-2 text-sm"
+              type='password'
+              placeholder='••••••••'
+              className='w-full rounded-md border px-3 py-2 text-sm'
             />
           </div>
-          <div className="flex gap-2">
-            <Button onClick={handleSubmitSuccess} className="flex-1">
+          <div className='flex gap-2'>
+            <Button onClick={handleSubmitSuccess} className='flex-1'>
               Submit (Success)
             </Button>
-            <Button onClick={handleSubmitError} variant="outline" className="flex-1">
+            <Button onClick={handleSubmitError} variant='outline' className='flex-1'>
               Submit (Error)
             </Button>
           </div>
@@ -427,7 +414,7 @@ export const RealWorldFormSubmit: Story = {
 
 /**
  * ## Real-World: File Upload
- * 
+ *
  * File upload progress with promise handling.
  */
 export const RealWorldFileUpload: Story = {
@@ -435,7 +422,7 @@ export const RealWorldFileUpload: Story = {
     const uploadFile = (filename: string) => {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
-          Math.random() > 0.3 
+          Math.random() > 0.3
             ? resolve({ url: `https://example.com/${filename}` })
             : reject(new Error('Upload failed'));
         }, 3000);
@@ -444,19 +431,19 @@ export const RealWorldFileUpload: Story = {
 
     const handleUpload = (filename: string) => {
       const promise = uploadFile(filename);
-      
+
       toast.promise(promise, {
         loading: (
-          <div className="flex items-center gap-2">
-            <Loader2 className="h-4 w-4 animate-spin" />
+          <div className='flex items-center gap-2'>
+            <Loader2 className='h-4 w-4 animate-spin' />
             <span>Uploading {filename}...</span>
           </div>
         ),
         success: (data) => {
           return (
             <div>
-              <div className="font-semibold">Upload complete!</div>
-              <div className="text-sm text-muted-foreground">
+              <div className='font-semibold'>Upload complete!</div>
+              <div className='text-sm text-muted-foreground'>
                 {filename} has been uploaded successfully.
               </div>
             </div>
@@ -465,10 +452,8 @@ export const RealWorldFileUpload: Story = {
         error: (err) => {
           return (
             <div>
-              <div className="font-semibold">Upload failed</div>
-              <div className="text-sm text-muted-foreground">
-                {err.message}. Please try again.
-              </div>
+              <div className='font-semibold'>Upload failed</div>
+              <div className='text-sm text-muted-foreground'>{err.message}. Please try again.</div>
             </div>
           );
         },
@@ -476,29 +461,20 @@ export const RealWorldFileUpload: Story = {
     };
 
     return (
-      <div className="w-full max-w-md space-y-4">
-        <div className="space-y-4 rounded-lg border p-6">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Select File</label>
-            <div className="rounded-md border border-dashed p-8 text-center">
-              <Upload className="mx-auto h-8 w-8 text-muted-foreground" />
-              <p className="mt-2 text-sm text-muted-foreground">
-                Click to upload or drag and drop
-              </p>
+      <div className='w-full max-w-md space-y-4'>
+        <div className='space-y-4 rounded-lg border p-6'>
+          <div className='space-y-2'>
+            <label className='text-sm font-medium'>Select File</label>
+            <div className='rounded-md border border-dashed p-8 text-center'>
+              <Upload className='mx-auto h-8 w-8 text-muted-foreground' />
+              <p className='mt-2 text-sm text-muted-foreground'>Click to upload or drag and drop</p>
             </div>
           </div>
-          <div className="space-y-2">
-            <Button
-              onClick={() => handleUpload('presentation.pdf')}
-              className="w-full"
-            >
+          <div className='space-y-2'>
+            <Button onClick={() => handleUpload('presentation.pdf')} className='w-full'>
               Upload presentation.pdf
             </Button>
-            <Button
-              onClick={() => handleUpload('image.png')}
-              variant="outline"
-              className="w-full"
-            >
+            <Button onClick={() => handleUpload('image.png')} variant='outline' className='w-full'>
               Upload image.png
             </Button>
           </div>
@@ -510,15 +486,15 @@ export const RealWorldFileUpload: Story = {
 
 /**
  * ## Real-World: Notifications Center
- * 
+ *
  * Various notification types that might appear in an application.
  */
 export const RealWorldNotifications: Story = {
   render: () => (
-    <div className="w-full max-w-md space-y-2">
+    <div className='w-full max-w-md space-y-2'>
       <Button
-        variant="outline"
-        className="w-full justify-start"
+        variant='outline'
+        className='w-full justify-start'
         onClick={() =>
           toast.success('Message sent', {
             description: 'Your message has been delivered to John Doe.',
@@ -529,13 +505,13 @@ export const RealWorldNotifications: Story = {
           })
         }
       >
-        <Check className="mr-2 h-4 w-4" />
+        <Check className='mr-2 h-4 w-4' />
         Message Sent
       </Button>
 
       <Button
-        variant="outline"
-        className="w-full justify-start"
+        variant='outline'
+        className='w-full justify-start'
         onClick={() =>
           toast.info('New comment', {
             description: 'Sarah commented on your post "Design System Updates".',
@@ -546,13 +522,13 @@ export const RealWorldNotifications: Story = {
           })
         }
       >
-        <Info className="mr-2 h-4 w-4" />
+        <Info className='mr-2 h-4 w-4' />
         New Comment
       </Button>
 
       <Button
-        variant="outline"
-        className="w-full justify-start"
+        variant='outline'
+        className='w-full justify-start'
         onClick={() =>
           toast.warning('Storage limit reached', {
             description: 'Upgrade your plan to get more storage space.',
@@ -563,13 +539,13 @@ export const RealWorldNotifications: Story = {
           })
         }
       >
-        <AlertTriangle className="mr-2 h-4 w-4" />
+        <AlertTriangle className='mr-2 h-4 w-4' />
         Storage Warning
       </Button>
 
       <Button
-        variant="outline"
-        className="w-full justify-start"
+        variant='outline'
+        className='w-full justify-start'
         onClick={() =>
           toast.error('Connection lost', {
             description: 'Unable to connect to the server. Retrying...',
@@ -580,13 +556,13 @@ export const RealWorldNotifications: Story = {
           })
         }
       >
-        <X className="mr-2 h-4 w-4" />
+        <X className='mr-2 h-4 w-4' />
         Connection Error
       </Button>
 
       <Button
-        variant="outline"
-        className="w-full justify-start"
+        variant='outline'
+        className='w-full justify-start'
         onClick={() => {
           const promise = new Promise((resolve) => setTimeout(resolve, 2000));
           toast.promise(promise, {
@@ -596,7 +572,7 @@ export const RealWorldNotifications: Story = {
           });
         }}
       >
-        <Loader2 className="mr-2 h-4 w-4" />
+        <Loader2 className='mr-2 h-4 w-4' />
         Sync Data
       </Button>
     </div>
@@ -605,23 +581,23 @@ export const RealWorldNotifications: Story = {
 
 /**
  * ## Usage Guidelines
- * 
+ *
  * ### When to Use
  * - ✅ Confirming user actions (save, delete, etc.)
  * - ✅ Displaying non-critical errors
  * - ✅ Showing async operation status (loading, success, error)
  * - ✅ Temporary notifications that don't require user action
  * - ✅ Success confirmations
- * 
+ *
  * ### When Not to Use
  * - ❌ Critical errors (use Dialog/Alert instead)
  * - ❌ Information requiring user decision (use AlertDialog)
  * - ❌ Permanent status messages (use Alert)
  * - ❌ Complex forms or inputs (use Dialog)
  * - ❌ Navigation changes (use proper routing)
- * 
+ *
  * ### Toast Types Guide
- * 
+ *
  * | Type | Use For | Icon |
  * |------|---------|------|
  * | Default | General notifications | None |
@@ -630,9 +606,9 @@ export const RealWorldNotifications: Story = {
  * | Info | Informational messages | ℹ |
  * | Warning | Warnings and cautions | ⚠ |
  * | Loading | In-progress operations | ⟳ |
- * 
+ *
  * ### Best Practices
- * 
+ *
  * **Do:**
  * - Keep messages concise and clear
  * - Use appropriate toast types (success, error, etc.)
@@ -641,7 +617,7 @@ export const RealWorldNotifications: Story = {
  * - Group related notifications
  * - Use promise toasts for async operations
  * - Provide descriptions for additional context
- * 
+ *
  * **Don't:**
  * - Don't show multiple toasts for the same action
  * - Don't use toasts for critical errors
@@ -649,27 +625,27 @@ export const RealWorldNotifications: Story = {
  * - Don't block user interaction with toasts
  * - Don't use toasts for permanent information
  * - Don't stack too many toasts (limit 3-4)
- * 
+ *
  * ### Accessibility
- * 
+ *
  * - ARIA live regions for screen reader announcements
  * - Keyboard dismissal (Escape key)
  * - Sufficient color contrast
  * - Focus management for action buttons
  * - Respects prefers-reduced-motion
  * - Appropriate timeout durations
- * 
+ *
  * ### Common Patterns
- * 
+ *
  * ```tsx
  * // Basic toast
  * toast('Event created')
- * 
+ *
  * // With description
  * toast.success('Profile updated', {
  *   description: 'Your changes have been saved.',
  * })
- * 
+ *
  * // With action
  * toast('File deleted', {
  *   action: {
@@ -677,7 +653,7 @@ export const RealWorldNotifications: Story = {
  *     onClick: () => console.log('Undo'),
  *   },
  * })
- * 
+ *
  * // Promise toast
  * toast.promise(promise, {
  *   loading: 'Loading...',
@@ -688,10 +664,10 @@ export const RealWorldNotifications: Story = {
  */
 export const UsageGuidelines: Story = {
   render: () => (
-    <div className="space-y-6">
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">✅ Do's</h3>
-        <ul className="space-y-2 text-sm">
+    <div className='space-y-6'>
+      <div className='space-y-4'>
+        <h3 className='text-lg font-semibold'>✅ Do's</h3>
+        <ul className='space-y-2 text-sm'>
           <li>✓ Keep messages concise and actionable</li>
           <li>✓ Use appropriate types (success, error, info, warning)</li>
           <li>✓ Provide actions when relevant (Undo, View)</li>
@@ -700,9 +676,9 @@ export const UsageGuidelines: Story = {
         </ul>
       </div>
 
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">❌ Don'ts</h3>
-        <ul className="space-y-2 text-sm">
+      <div className='space-y-4'>
+        <h3 className='text-lg font-semibold'>❌ Don'ts</h3>
+        <ul className='space-y-2 text-sm'>
           <li>✗ Don't use toasts for critical errors (use Dialog)</li>
           <li>✗ Don't show multiple toasts for same action</li>
           <li>✗ Don't make toast messages too lengthy</li>
@@ -711,14 +687,12 @@ export const UsageGuidelines: Story = {
         </ul>
       </div>
 
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Example Usage</h3>
-        <div className="space-y-2">
-          <Button onClick={() => toast('Simple notification')}>
-            Show Toast
-          </Button>
+      <div className='space-y-4'>
+        <h3 className='text-lg font-semibold'>Example Usage</h3>
+        <div className='space-y-2'>
+          <Button onClick={() => toast('Simple notification')}>Show Toast</Button>
           <Button
-            variant="outline"
+            variant='outline'
             onClick={() =>
               toast.success('Operation successful', {
                 description: 'Your changes have been saved.',
@@ -739,7 +713,7 @@ export const UsageGuidelines: Story = {
 
 /**
  * ## Story 11: Composition Patterns
- * 
+ *
  * Common composition patterns for toast notifications in real-world applications.
  * Demonstrates reusable patterns for user feedback, actions, and async operations.
  */
@@ -751,17 +725,17 @@ export const CompositionPatterns: Story = {
     // Pattern 1: Multi-Step Operation with Sequential Toasts
     const handleMultiStepOperation = async () => {
       toast.info('Starting operation...', { duration: 2000 });
-      
+
       // Step 1
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       toast.loading('Processing step 1/3...');
-      
+
       // Step 2
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       toast.loading('Processing step 2/3...');
-      
+
       // Step 3
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       toast.success('All steps completed!', {
         description: 'Your multi-step operation was successful.',
         duration: 4000,
@@ -773,7 +747,7 @@ export const CompositionPatterns: Story = {
       const timeoutId = setTimeout(() => {
         toast.success('Item deleted successfully');
       }, 5000);
-      
+
       toast.warning('Item will be deleted', {
         description: 'You have 5 seconds to undo this action.',
         duration: 5000,
@@ -792,7 +766,7 @@ export const CompositionPatterns: Story = {
       setFormState('validating');
       toast.loading('Validating form...');
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Simulate validation error
       const hasError = Math.random() > 0.5;
@@ -808,14 +782,11 @@ export const CompositionPatterns: Story = {
         });
       } else {
         setFormState('submitting');
-        toast.promise(
-          new Promise((resolve) => setTimeout(resolve, 2000)),
-          {
-            loading: 'Submitting form...',
-            success: 'Form submitted successfully!',
-            error: 'Failed to submit form',
-          }
-        );
+        toast.promise(new Promise((resolve) => setTimeout(resolve, 2000)), {
+          loading: 'Submitting form...',
+          success: 'Form submitted successfully!',
+          error: 'Failed to submit form',
+        });
         setTimeout(() => setFormState('idle'), 2000);
       }
     };
@@ -826,7 +797,7 @@ export const CompositionPatterns: Story = {
       const steps = 10;
 
       for (let i = 1; i <= steps; i++) {
-        await new Promise(resolve => setTimeout(resolve, 300));
+        await new Promise((resolve) => setTimeout(resolve, 300));
         const progress = (i / steps) * 100;
         setUploadProgress(progress);
 
@@ -835,94 +806,89 @@ export const CompositionPatterns: Story = {
             description: `Successfully uploaded file (${progress}%)`,
           });
         } else {
-          toast.loading(`Uploading... ${Math.round(progress)}%`, { 
+          toast.loading(`Uploading... ${Math.round(progress)}%`, {
             id: 'upload-progress',
-            duration: Infinity 
+            duration: Infinity,
           });
         }
       }
-      
+
       setTimeout(() => setUploadProgress(0), 1000);
     };
 
     // Pattern 5: Action Queue
     const handleQueuedActions = async () => {
       const actions = ['Saving...', 'Uploading...', 'Processing...', 'Finalizing...'];
-      
+
       for (const action of actions) {
         toast.loading(action, { duration: 1000 });
-        await new Promise(resolve => setTimeout(resolve, 800));
+        await new Promise((resolve) => setTimeout(resolve, 800));
       }
-      
+
       toast.success('All actions completed!', {
         description: '4 operations processed successfully',
       });
     };
 
     return (
-      <div className="space-y-8 w-[600px]">
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Pattern 1: Multi-Step Operation</h3>
-          <p className="text-sm text-muted-foreground">
+      <div className='space-y-8 w-[600px]'>
+        <div className='space-y-4'>
+          <h3 className='text-lg font-semibold'>Pattern 1: Multi-Step Operation</h3>
+          <p className='text-sm text-muted-foreground'>
             Sequential toasts showing progress through multiple steps
           </p>
           <Button onClick={handleMultiStepOperation}>
-            <Loader2 className="mr-2 h-4 w-4" />
+            <Loader2 className='mr-2 h-4 w-4' />
             Start Multi-Step Operation
           </Button>
         </div>
 
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Pattern 2: Undo Pattern</h3>
-          <p className="text-sm text-muted-foreground">
+        <div className='space-y-4'>
+          <h3 className='text-lg font-semibold'>Pattern 2: Undo Pattern</h3>
+          <p className='text-sm text-muted-foreground'>
             Destructive action with undo option and timeout
           </p>
-          <Button variant="destructive" onClick={handleDeleteWithUndo}>
-            <X className="mr-2 h-4 w-4" />
+          <Button variant='destructive' onClick={handleDeleteWithUndo}>
+            <X className='mr-2 h-4 w-4' />
             Delete with Undo
           </Button>
         </div>
 
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Pattern 3: Form Validation</h3>
-          <p className="text-sm text-muted-foreground">
+        <div className='space-y-4'>
+          <h3 className='text-lg font-semibold'>Pattern 3: Form Validation</h3>
+          <p className='text-sm text-muted-foreground'>
             Validation feedback with error details and actions
           </p>
-          <div className="flex items-center gap-4">
-            <Button 
-              onClick={handleFormSubmit} 
-              disabled={formState !== 'idle'}
-            >
-              <Check className="mr-2 h-4 w-4" />
+          <div className='flex items-center gap-4'>
+            <Button onClick={handleFormSubmit} disabled={formState !== 'idle'}>
+              <Check className='mr-2 h-4 w-4' />
               Submit Form
             </Button>
             {formState !== 'idle' && (
-              <span className="text-sm text-muted-foreground">
-                State: {formState}
-              </span>
+              <span className='text-sm text-muted-foreground'>State: {formState}</span>
             )}
           </div>
         </div>
 
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Pattern 4: Progress Updates</h3>
-          <p className="text-sm text-muted-foreground">
+        <div className='space-y-4'>
+          <h3 className='text-lg font-semibold'>Pattern 4: Progress Updates</h3>
+          <p className='text-sm text-muted-foreground'>
             Real-time progress notifications with percentage
           </p>
-          <div className="space-y-2">
+          <div className='space-y-2'>
             <Button onClick={handleProgressOperation}>
-              <Upload className="mr-2 h-4 w-4" />
+              <Upload className='mr-2 h-4 w-4' />
               Upload with Progress
             </Button>
             {uploadProgress > 0 && (
-              <div className="space-y-1">
-                <div className="flex justify-between text-sm">
+              <div className='space-y-1'>
+                <div className='flex justify-between text-sm'>
                   <span>Upload Progress</span>
                   <span>{Math.round(uploadProgress)}%</span>
                 </div>
-                <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-primary transition-all duration-300"
+                <div className='h-2 bg-secondary rounded-full overflow-hidden'>
+                  <div
+                    className='h-full bg-primary transition-all duration-300'
                     style={{ width: `${uploadProgress}%` }}
                   />
                 </div>
@@ -931,20 +897,20 @@ export const CompositionPatterns: Story = {
           </div>
         </div>
 
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Pattern 5: Action Queue</h3>
-          <p className="text-sm text-muted-foreground">
+        <div className='space-y-4'>
+          <h3 className='text-lg font-semibold'>Pattern 5: Action Queue</h3>
+          <p className='text-sm text-muted-foreground'>
             Multiple sequential operations with final success message
           </p>
           <Button onClick={handleQueuedActions}>
-            <Loader2 className="mr-2 h-4 w-4" />
+            <Loader2 className='mr-2 h-4 w-4' />
             Process Queue
           </Button>
         </div>
 
-        <div className="p-4 bg-muted rounded-lg space-y-2">
-          <h4 className="font-semibold text-sm">Best Practices for Toast Patterns:</h4>
-          <ul className="text-sm space-y-1 text-muted-foreground">
+        <div className='p-4 bg-muted rounded-lg space-y-2'>
+          <h4 className='font-semibold text-sm'>Best Practices for Toast Patterns:</h4>
+          <ul className='text-sm space-y-1 text-muted-foreground'>
             <li>• Use loading toasts for operations &gt; 1 second</li>
             <li>• Provide undo for destructive actions when possible</li>
             <li>• Keep toast messages concise (1-2 lines maximum)</li>
@@ -961,7 +927,7 @@ export const CompositionPatterns: Story = {
 
 /**
  * ## Story 12: Performance
- * 
+ *
  * Performance analysis and stress testing for the Sonner toast component.
  * Includes bundle size, memory footprint, and rendering performance metrics.
  */
@@ -980,7 +946,7 @@ export const Performance: Story = {
         setTimeout(() => {
           const type = ['success', 'error', 'info', 'warning'][i % 4];
           const toastFn = toast[type as keyof typeof toast] as typeof toast.success;
-          
+
           toastFn(`Toast notification ${i + 1}`, {
             description: `This is test toast #${i + 1} of ${toastCount}`,
             duration: 2000,
@@ -996,42 +962,36 @@ export const Performance: Story = {
     };
 
     return (
-      <div className="space-y-8 w-[600px]">
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Interactive Stress Test</h3>
-          <p className="text-sm text-muted-foreground">
+      <div className='space-y-8 w-[600px]'>
+        <div className='space-y-4'>
+          <h3 className='text-lg font-semibold'>Interactive Stress Test</h3>
+          <p className='text-sm text-muted-foreground'>
             Test rendering performance with multiple simultaneous toasts
           </p>
-          
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Number of toasts: {toastCount}
-              </label>
+
+          <div className='space-y-4'>
+            <div className='space-y-2'>
+              <label className='text-sm font-medium'>Number of toasts: {toastCount}</label>
               <input
-                type="range"
-                min="5"
-                max="50"
+                type='range'
+                min='5'
+                max='50'
                 value={toastCount}
                 onChange={(e) => setToastCount(Number(e.target.value))}
-                className="w-full"
+                className='w-full'
                 disabled={isStressTesting}
               />
-              <div className="flex justify-between text-xs text-muted-foreground">
+              <div className='flex justify-between text-xs text-muted-foreground'>
                 <span>5</span>
                 <span>25</span>
                 <span>50</span>
               </div>
             </div>
 
-            <Button 
-              onClick={runStressTest} 
-              disabled={isStressTesting}
-              className="w-full"
-            >
+            <Button onClick={runStressTest} disabled={isStressTesting} className='w-full'>
               {isStressTesting ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                   Testing...
                 </>
               ) : (
@@ -1040,11 +1000,11 @@ export const Performance: Story = {
             </Button>
 
             {renderTime > 0 && (
-              <div className="p-3 bg-muted rounded-lg">
-                <p className="text-sm">
+              <div className='p-3 bg-muted rounded-lg'>
+                <p className='text-sm'>
                   <strong>Render Time:</strong> {renderTime.toFixed(2)}ms for {toastCount} toasts
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className='text-xs text-muted-foreground mt-1'>
                   Average: {(renderTime / toastCount).toFixed(2)}ms per toast
                 </p>
               </div>
@@ -1052,115 +1012,125 @@ export const Performance: Story = {
           </div>
         </div>
 
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Bundle Size Analysis</h3>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between p-2 bg-muted rounded">
+        <div className='space-y-4'>
+          <h3 className='text-lg font-semibold'>Bundle Size Analysis</h3>
+          <div className='space-y-2 text-sm'>
+            <div className='flex justify-between p-2 bg-muted rounded'>
               <span>Sonner Core:</span>
-              <span className="font-mono">~3.5 KB (gzipped)</span>
+              <span className='font-mono'>~3.5 KB (gzipped)</span>
             </div>
-            <div className="flex justify-between p-2 bg-muted rounded">
+            <div className='flex justify-between p-2 bg-muted rounded'>
               <span>Toaster Component:</span>
-              <span className="font-mono">~0.8 KB (gzipped)</span>
+              <span className='font-mono'>~0.8 KB (gzipped)</span>
             </div>
-            <div className="flex justify-between p-2 bg-muted rounded">
+            <div className='flex justify-between p-2 bg-muted rounded'>
               <span>Dependencies (CVA, clsx):</span>
-              <span className="font-mono">~2.6 KB (gzipped)</span>
+              <span className='font-mono'>~2.6 KB (gzipped)</span>
             </div>
-            <div className="flex justify-between p-2 bg-primary/10 rounded font-semibold">
+            <div className='flex justify-between p-2 bg-primary/10 rounded font-semibold'>
               <span>Total Bundle Impact:</span>
-              <span className="font-mono">~6.9 KB (gzipped)</span>
+              <span className='font-mono'>~6.9 KB (gzipped)</span>
             </div>
           </div>
-          <p className="text-xs text-muted-foreground">
+          <p className='text-xs text-muted-foreground'>
             * Sizes are approximate and measured with production build
           </p>
         </div>
 
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Memory Footprint</h3>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between p-2 bg-muted rounded">
+        <div className='space-y-4'>
+          <h3 className='text-lg font-semibold'>Memory Footprint</h3>
+          <div className='space-y-2 text-sm'>
+            <div className='flex justify-between p-2 bg-muted rounded'>
               <span>Single toast instance:</span>
-              <span className="font-mono">~150 bytes</span>
+              <span className='font-mono'>~150 bytes</span>
             </div>
-            <div className="flex justify-between p-2 bg-muted rounded">
+            <div className='flex justify-between p-2 bg-muted rounded'>
               <span>10 active toasts:</span>
-              <span className="font-mono">~1.5 KB</span>
+              <span className='font-mono'>~1.5 KB</span>
             </div>
-            <div className="flex justify-between p-2 bg-muted rounded">
+            <div className='flex justify-between p-2 bg-muted rounded'>
               <span>50 active toasts:</span>
-              <span className="font-mono">~7.5 KB</span>
+              <span className='font-mono'>~7.5 KB</span>
             </div>
-            <div className="flex justify-between p-2 bg-muted rounded">
+            <div className='flex justify-between p-2 bg-muted rounded'>
               <span>Toast queue overhead:</span>
-              <span className="font-mono">~2 KB</span>
+              <span className='font-mono'>~2 KB</span>
             </div>
           </div>
-          <p className="text-xs text-muted-foreground">
+          <p className='text-xs text-muted-foreground'>
             * Memory usage includes DOM elements, event listeners, and state
           </p>
         </div>
 
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Animation Performance</h3>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between p-2 bg-muted rounded">
+        <div className='space-y-4'>
+          <h3 className='text-lg font-semibold'>Animation Performance</h3>
+          <div className='space-y-2 text-sm'>
+            <div className='flex justify-between p-2 bg-muted rounded'>
               <span>Entry animation:</span>
-              <span className="font-mono">&lt;200ms (CSS transform)</span>
+              <span className='font-mono'>&lt;200ms (CSS transform)</span>
             </div>
-            <div className="flex justify-between p-2 bg-muted rounded">
+            <div className='flex justify-between p-2 bg-muted rounded'>
               <span>Exit animation:</span>
-              <span className="font-mono">&lt;200ms (CSS opacity)</span>
+              <span className='font-mono'>&lt;200ms (CSS opacity)</span>
             </div>
-            <div className="flex justify-between p-2 bg-muted rounded">
+            <div className='flex justify-between p-2 bg-muted rounded'>
               <span>Frame rate:</span>
-              <span className="font-mono">60 FPS (GPU accelerated)</span>
+              <span className='font-mono'>60 FPS (GPU accelerated)</span>
             </div>
-            <div className="flex justify-between p-2 bg-muted rounded">
+            <div className='flex justify-between p-2 bg-muted rounded'>
               <span>Stacking animation:</span>
-              <span className="font-mono">&lt;16ms (smooth 60 FPS)</span>
+              <span className='font-mono'>&lt;16ms (smooth 60 FPS)</span>
             </div>
           </div>
         </div>
 
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Optimization Tips</h3>
-          <ul className="space-y-2 text-sm text-muted-foreground">
-            <li className="flex items-start gap-2">
-              <Check className="h-4 w-4 mt-0.5 text-green-600 shrink-0" />
+        <div className='space-y-4'>
+          <h3 className='text-lg font-semibold'>Optimization Tips</h3>
+          <ul className='space-y-2 text-sm text-muted-foreground'>
+            <li className='flex items-start gap-2'>
+              <Check className='h-4 w-4 mt-0.5 text-green-600 shrink-0' />
               <span>Limit maximum visible toasts to 3-4 for better UX</span>
             </li>
-            <li className="flex items-start gap-2">
-              <Check className="h-4 w-4 mt-0.5 text-green-600 shrink-0" />
+            <li className='flex items-start gap-2'>
+              <Check className='h-4 w-4 mt-0.5 text-green-600 shrink-0' />
               <span>Use toast IDs to update existing toasts instead of creating new ones</span>
             </li>
-            <li className="flex items-start gap-2">
-              <Check className="h-4 w-4 mt-0.5 text-green-600 shrink-0" />
+            <li className='flex items-start gap-2'>
+              <Check className='h-4 w-4 mt-0.5 text-green-600 shrink-0' />
               <span>Batch related notifications to reduce toast spam</span>
             </li>
-            <li className="flex items-start gap-2">
-              <Check className="h-4 w-4 mt-0.5 text-green-600 shrink-0" />
+            <li className='flex items-start gap-2'>
+              <Check className='h-4 w-4 mt-0.5 text-green-600 shrink-0' />
               <span>Keep toast content simple to minimize DOM complexity</span>
             </li>
-            <li className="flex items-start gap-2">
-              <Check className="h-4 w-4 mt-0.5 text-green-600 shrink-0" />
+            <li className='flex items-start gap-2'>
+              <Check className='h-4 w-4 mt-0.5 text-green-600 shrink-0' />
               <span>Use promise toasts for async operations to avoid multiple renders</span>
             </li>
           </ul>
         </div>
 
-        <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg">
-          <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
-            <Info className="h-4 w-4" />
+        <div className='p-4 bg-primary/5 border border-primary/20 rounded-lg'>
+          <h4 className='font-semibold text-sm mb-2 flex items-center gap-2'>
+            <Info className='h-4 w-4' />
             Performance Summary
           </h4>
-          <div className="text-sm space-y-1 text-muted-foreground">
-            <p>• <strong>Bundle:</strong> ~6.9 KB gzipped (minimal impact)</p>
-            <p>• <strong>Memory:</strong> ~150 bytes per toast (very efficient)</p>
-            <p>• <strong>Animations:</strong> GPU-accelerated, 60 FPS smooth</p>
-            <p>• <strong>Render:</strong> &lt;5ms per toast (excellent)</p>
-            <p>• <strong>Accessibility:</strong> ARIA live regions, screen reader support</p>
+          <div className='text-sm space-y-1 text-muted-foreground'>
+            <p>
+              • <strong>Bundle:</strong> ~6.9 KB gzipped (minimal impact)
+            </p>
+            <p>
+              • <strong>Memory:</strong> ~150 bytes per toast (very efficient)
+            </p>
+            <p>
+              • <strong>Animations:</strong> GPU-accelerated, 60 FPS smooth
+            </p>
+            <p>
+              • <strong>Render:</strong> &lt;5ms per toast (excellent)
+            </p>
+            <p>
+              • <strong>Accessibility:</strong> ARIA live regions, screen reader support
+            </p>
           </div>
         </div>
       </div>

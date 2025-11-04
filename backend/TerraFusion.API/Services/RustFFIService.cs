@@ -68,8 +68,11 @@ public class RustFFIService
                     var resultJson = Marshal.PtrToStringAnsi(resultPtr);
                     free_string(resultPtr);
                     
-                    return JsonSerializer.Deserialize<ValuationResult>(resultJson) 
-                        ?? new ValuationResult { Success = false };
+                    if (!string.IsNullOrEmpty(resultJson))
+                    {
+                        return JsonSerializer.Deserialize<ValuationResult>(resultJson) 
+                            ?? new ValuationResult { Success = false };
+                    }
                 }
                 
                 return new ValuationResult { Success = false, Error = "No response from Rust engine" };
@@ -99,8 +102,11 @@ public class RustFFIService
                     var resultJson = Marshal.PtrToStringAnsi(resultPtr);
                     free_string(resultPtr);
                     
-                    return JsonSerializer.Deserialize<AgentCoordinationResult>(resultJson)
-                        ?? new AgentCoordinationResult { Success = false };
+                    if (!string.IsNullOrEmpty(resultJson))
+                    {
+                        return JsonSerializer.Deserialize<AgentCoordinationResult>(resultJson)
+                            ?? new AgentCoordinationResult { Success = false };
+                    }
                 }
                 
                 return new AgentCoordinationResult { Success = false };

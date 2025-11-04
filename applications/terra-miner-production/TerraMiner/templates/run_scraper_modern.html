@@ -1,0 +1,187 @@
+{% extends "new_unified_base.html" %}
+
+{% block title %}Run Data Extraction{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Main Form Card -->
+        <div class="card lg:col-span-2">
+            <div class="card-header flex justify-between items-center">
+                <h1 class="text-xl font-bold">Run NARRPR Data Extraction</h1>
+                <a href="{{ url_for('advanced_scraper') }}" class="btn-outline-primary btn-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
+                    </svg>
+                    Advanced Options
+                </a>
+            </div>
+            <div class="card-body">
+                <p class="text-gray-600 dark:text-gray-300 mb-4">Enter your NARRPR credentials to run the data extraction. This will login to the NARRPR website, navigate to the reports section, and extract available data.</p>
+                
+                <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 p-4 mb-6 rounded-r">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-blue-800 dark:text-blue-200">
+                                Need to scrape more than just reports? Use the <a href="{{ url_for('advanced_scraper') }}" class="font-medium underline">Advanced Scraper</a> to access property details, market activity, neighborhood data, and more.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <form method="POST" action="{{ url_for('run_scraper') }}" id="scraper-form" class="space-y-6">
+                    <div class="form-group">
+                        <label for="username" class="form-label">NARRPR Username/Email</label>
+                        <input type="email" class="form-input w-full" id="username" name="username" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password" class="form-label">NARRPR Password</label>
+                        <div class="relative">
+                            <input type="password" class="form-input w-full pr-10" id="password" name="password" required>
+                            <button type="button" class="absolute inset-y-0 right-0 px-3 flex items-center password-toggle" data-password-field="#password">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="form-checkbox" id="save-credentials" name="save_credentials">
+                            <span class="ml-2">Save credentials for future use</span>
+                        </label>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary w-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                        </svg>
+                        Run Basic Scraper
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Sidebar with Status and Info -->
+        <div class="space-y-6">
+            <!-- Status Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="font-semibold flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-primary-600" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                        </svg>
+                        Scraper Status
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Current Status</h3>
+                            <p class="text-lg font-semibold" id="scraper-status">Ready to run</p>
+                        </div>
+                    </div>
+                    
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mb-4">
+                        <div class="bg-primary-600 h-2.5 rounded-full" style="width: 0%" id="progress-bar"></div>
+                    </div>
+                    
+                    <div class="text-right text-sm text-gray-500 dark:text-gray-400" id="progress-text">0%</div>
+                </div>
+            </div>
+            
+            <!-- Activity Log Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="font-semibold flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-primary-600" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                        </svg>
+                        Activity Log
+                    </h2>
+                </div>
+                <div class="card-body p-0">
+                    <div id="activity-log" class="h-60 overflow-y-auto p-4 text-sm">
+                        <div class="log-entry text-blue-600 dark:text-blue-400 mb-2">
+                            <span class="log-time font-mono">[Current time]</span>
+                            <span class="log-message ml-2">Scraper ready to start</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add log entry when page loads
+        addLogEntry("Scraper ready. Enter credentials to begin.", "info");
+        
+        // Password toggle functionality
+        document.querySelectorAll('.password-toggle').forEach(button => {
+            button.addEventListener('click', function() {
+                const passwordField = document.querySelector(this.dataset.passwordField);
+                const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordField.setAttribute('type', type);
+                
+                // Toggle eye icon
+                const svg = this.querySelector('svg');
+                if (type === 'text') {
+                    svg.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />`;
+                } else {
+                    svg.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />`;
+                }
+            });
+        });
+    });
+    
+    // Function to add log entry
+    function addLogEntry(message, type = 'info') {
+        const logContainer = document.getElementById('activity-log');
+        const now = new Date();
+        const timeString = now.toLocaleTimeString();
+        
+        const entry = document.createElement('div');
+        entry.className = `log-entry mb-2 ${type === 'error' ? 'text-red-600 dark:text-red-400' : type === 'success' ? 'text-green-600 dark:text-green-400' : 'text-blue-600 dark:text-blue-400'}`;
+        
+        entry.innerHTML = `
+            <span class="log-time font-mono">[${timeString}]</span>
+            <span class="log-message ml-2">${message}</span>
+        `;
+        
+        logContainer.appendChild(entry);
+        logContainer.scrollTop = logContainer.scrollHeight;
+    }
+    
+    // Update progress bar
+    function updateProgress(percent, status) {
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const statusText = document.getElementById('scraper-status');
+        
+        progressBar.style.width = percent + '%';
+        progressText.textContent = percent + '%';
+        
+        if (status) {
+            statusText.textContent = status;
+            addLogEntry(status);
+        }
+    }
+</script>
+{% endblock %}

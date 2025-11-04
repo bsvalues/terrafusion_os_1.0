@@ -1,0 +1,150 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "79010001",
+    "description": "$rc:description",
+    "product": "300",
+    "attributes": [
+        "GPU",
+        "mCPU"
+    ],
+    "params": {
+        "in_table": {
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPFeatureLayer"
+                    },
+                    {
+                        "type": "GPTableView"
+                    }
+                ]
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "text_field": {
+            "displayname": "$rc:text_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:text_field.descr"
+        },
+        "in_model_definition_file": {
+            "displayname": "$rc:in_model_definition_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "dlpk_remote",
+                    "emd",
+                    "dlpk"
+                ]
+            },
+            "description": "$rc:in_model_definition_file.descr"
+        },
+        "class_label_field": {
+            "type": "optional",
+            "displayname": "$rc:class_label_field.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "ClassLabel",
+            "description": "$rc:class_label_field.descr"
+        },
+        "model_arguments": {
+            "type": "optional",
+            "displayname": "$rc:model_arguments.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:model_arguments.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:model_arguments.dt.title2"
+                    }
+                ]
+            },
+            "value": "sequence_length 512",
+            "description": "$rc:model_arguments.descr"
+        },
+        "updated_table": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_table.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    }
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "explain": {
+            "type": "optional",
+            "displayname": "$rc:explain.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ENABLE_SHAP"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DISABLE_SHAP"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:explain.descr"
+        },
+        "batch_size": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:batch_size.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "4",
+            "description": "$rc:batch_size.descr"
+        }
+    },
+    "environments": [
+        "gpuID",
+        "processorType"
+    ]
+}

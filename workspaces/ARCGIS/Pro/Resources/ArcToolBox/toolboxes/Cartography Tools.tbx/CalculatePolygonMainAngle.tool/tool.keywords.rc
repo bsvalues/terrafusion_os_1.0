@@ -1,0 +1,13 @@
+{
+    "set": [
+        "direction",
+        "orient",
+        "orientation",
+        "override",
+        "representation",
+        "rotate",
+        "rotation",
+        "symbol",
+        "symbology"
+    ]
+}

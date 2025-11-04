@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Exports feature layers with 3D display properties to 3D lines or multipatch features.",
+        "disable_materials.descr": "<xdoc><p>Specifies whether color and texture properties will be maintained when exporting a 3D layer to a multipatch feature class.</p><ul><li>Checked—Colors and textures will not be stored as part of the multipatch definition.</li><li>Unchecked—Colors and textures will be preserved with the multipatch. This is the default.</li></ul></xdoc>",
+        "disable_materials.title": "Disable Color and Texture",
+        "group_field.descr": "The input feature's text field that will be used to merge multiple input features into the same output feature. The resulting output's remaining attributes will be inherited from one of the input records.",
+        "group_field.title": "Grouping Field",
+        "in_feature_layer.descr": "The input feature layer with 3D display properties defined.",
+        "in_feature_layer.title": "Input Feature Layer",
+        "out_feature_class.descr": "The output feature class with 3D features. Extruded points will be exported as 3D lines. Points with 3D symbols, extruded lines, and polygons will be exported as multipatch features.",
+        "out_feature_class.title": "Output Feature Class",
+        "title": "Layer 3D To Feature Class"
+    }
+}

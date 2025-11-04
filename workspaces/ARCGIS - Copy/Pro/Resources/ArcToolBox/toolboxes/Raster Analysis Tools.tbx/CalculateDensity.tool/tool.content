@@ -1,0 +1,156 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\CalculateDensity",
+    "displayname": "$rc:title",
+    "helpcontent": "54030001",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "inputPointOrLineFeatures": {
+            "displayname": "$rc:inputpointorlinefeatures.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Multipoint",
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:inputpointorlinefeatures.descr"
+        },
+        "outputName": {
+            "displayname": "$rc:outputname.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:outputname.descr"
+        },
+        "countField": {
+            "type": "optional",
+            "displayname": "$rc:countfield.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double"
+                ]
+            },
+            "depends": [
+                "inputPointOrLineFeatures"
+            ],
+            "description": "$rc:countfield.descr"
+        },
+        "searchDistance": {
+            "type": "optional",
+            "displayname": "$rc:searchdistance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPUnitDomain",
+                "items": [
+                    "Meters",
+                    "Kilometers",
+                    "Feet",
+                    "Miles",
+                    "FeetInt",
+                    "MilesInt"
+                ]
+            },
+            "description": "$rc:searchdistance.descr"
+        },
+        "outputAreaUnits": {
+            "type": "optional",
+            "displayname": "$rc:outputareaunits.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "Square Meters",
+                        "code": "$rc:outputareaunits.domain.Square Meters"
+                    },
+                    {
+                        "value": "Square Kilometers",
+                        "code": "$rc:outputareaunits.domain.Square Kilometers"
+                    },
+                    {
+                        "value": "Square Feet",
+                        "code": "$rc:outputareaunits.domain.Square Feet"
+                    },
+                    {
+                        "value": "Square Miles",
+                        "code": "$rc:outputareaunits.domain.Square Miles"
+                    }
+                ]
+            },
+            "description": "$rc:outputareaunits.descr"
+        },
+        "outputCellSize": {
+            "type": "optional",
+            "displayname": "$rc:outputcellsize.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPUnitDomain",
+                "items": [
+                    "Meters",
+                    "Kilometers",
+                    "Feet",
+                    "Miles",
+                    "FeetInt",
+                    "MilesInt"
+                ]
+            },
+            "description": "$rc:outputcellsize.descr"
+        },
+        "outputRaster": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:outputraster.title",
+            "datatype": {
+                "type": "GPRasterLayer"
+            }
+        },
+        "inBarriers": {
+            "type": "optional",
+            "displayname": "$rc:inbarriers.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline",
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:inbarriers.descr"
+        }
+    },
+    "environments": [
+        "cellSize",
+        "extent",
+        "mask",
+        "outputCoordinateSystem",
+        "pyramid",
+        "snapRaster"
+    ]
+}

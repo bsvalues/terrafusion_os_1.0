@@ -1,0 +1,115 @@
+💥 Let’s complete your **review ops engine** by scaffolding:
+
+---
+
+# ⏳ 1. Review Timelines / SLA Enforcement
+
+---
+
+## 🧱 DB Column: Add `reviewDueAt` to `forms`
+
+```ts
+alter table forms add column review_due_at timestamp;
+```
+
+→ Automatically calculated on form creation:
+
+```ts
+form.reviewDueAt = dayjs().add(2, 'businessDays').toDate(); // SLA: 2-day review window
+```
+
+---
+
+## 🔔 API-side SLA Checker (cron or Lambda)
+
+```ts
+// cron: every 10 min
+const overdue = await db.query.forms.findMany({
+  where: (f) =>
+    f.reviewDueAt.lte(new Date()) &&
+    db.notExists(
+      db.query.formReviewStatus.where((r) => r.formId.eq(f.id))
+    )
+});
+
+for (const form of overdue) {
+  await notifyReviewer(form.id, form.assignedReviewerEmail);
+}
+```
+
+📩 `notifyReviewer()` sends:
+- 🔴 Email: “Review overdue for Form XYZ”
+- 🔗 Link: Direct to `/reviewer/form/XYZ`
+
+---
+
+## 🖥️ Reviewer Dashboard Update
+
+```tsx
+// Add “Due” column
+<td className={isOverdue(form) ? 'text-red-500' : ''}>
+  {formatDate(form.reviewDueAt)}
+</td>
+```
+
+---
+
+## 🧠 Optional Enhancements
+
+- SLA Config: Org-wide setting (e.g. 48hr default)
+- Exempt Drafts or “On Hold” forms
+- Reviewer reassignment on lapse
+
+---
+
+# 📦 2. Batch Export of Reviewed Forms (ZIP + PDF Bundle)
+
+---
+
+## 📡 Route: `POST /api/export/reviewed-batch`
+
+```ts
+router.post('/export/reviewed-batch', checkRole('admin'), async (req, res) => {
+  const { formIds } = req.body;
+
+  const reviewed = await db.query.formReviewStatus.findMany({
+    where: (r) => r.formId.in(formIds).and(r.status.eq('approved')),
+  });
+
+  const zip = new JSZip();
+
+  for (const form of reviewed) {
+    const pdf = await renderAuditSheetPDF(form.formId); // include annotations + status
+    zip.file(`${form.formId}_reviewed.pdf`, pdf);
+  }
+
+  const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+
+  res.set({
+    'Content-Type': 'application/zip',
+    'Content-Disposition': 'attachment; filename=reviewed_forms.zip',
+  });
+
+  res.send(zipBuffer);
+});
+```
+
+---
+
+## ✅ Output
+
+- One-click download of a `.zip` containing:
+  - Reviewed form PDFs
+  - Each named by form ID
+- 💼 Useful for:
+  - Submission packets
+  - Offline archiving
+  - Regulatory review
+
+---
+
+# 🧭 Next Steps?
+
+Would you like to:
+1. Scaffold a **submission workflow** (after review: send → external system)?
+2. Add **comment threads** per annotation (reply, resolve)?

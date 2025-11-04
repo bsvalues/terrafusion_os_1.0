@@ -1,0 +1,5 @@
+<DataType Name="GPStringHidden">
+  <DisplayName>String Hidden</DisplayName>
+  <Description>A string that is masked by * characters.</Description>
+</DataType>
+

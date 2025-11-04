@@ -1,0 +1,447 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.WorkflowService.DTOs</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.WorkflowService.DTOs.DailyIntervalDTO">
+            <summary>
+            DTO containing the relevant information regarding the Daily Interval
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DTOs.DailyIntervalDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DTOs.EventListDTO">
+            <summary>
+            DTO to represent list of events.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DTOs.EventListDTO.#ctor">
+            <summary>
+            default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.EventListDTO.Items">
+            <summary>
+            List of events loaded
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.EventListDTO.Count">
+            <summary>
+            total number of events remaining in the list
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.EventListDTO.IsComplete">
+            <summary>
+            flag to know if there are items that have not been loaded yet.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DTOs.EventListItemDTO">
+            <summary>
+            DTO to represent a Document List Item.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DTOs.EventListItemDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.EventListItemDTO.Id">
+            <summary>
+            The unique Identifier of the Event
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.EventListItemDTO.EventName">
+            <summary>
+            Name of the Event
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.EventListItemDTO.WorkflowName">
+            <summary>
+            Name of the WorkFlow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.EventListItemDTO.WorkflowId">
+            <summary>
+            The unique Identifier of the workflow
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DTOs.EventDTO">
+            <summary>
+            DTO containing the relevant information regarding the event
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DTOs.EventDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.EventDTO.Id">
+            <summary>
+            Unique Identifier of the Event
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.EventDTO.Name">
+            <summary>
+            The Name of the Event
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.EventDTO.Description">
+            <summary>
+            A Brief description of the purpose of the Event
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.EventDTO.Workflow">
+            <summary>
+            The workflow that associated with this event
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DTOs.IntervalDTO">
+            <summary>
+            DTO containing the relevant information regarding the Event Interval
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DTOs.IntervalDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.IntervalDTO.Id">
+            <summary>
+            Unique Identifier of the interval
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.IntervalDTO.Frequency">
+            <summary>
+            Frequency for the interval
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.IntervalDTO.EndDate">
+            <summary>
+            End date for the event interval
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DTOs.MessageEventDTO">
+            <summary>
+            DTO containing the relevant information regarding the MessageEvent
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DTOs.MessageEventDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.MessageEventDTO.MessageType">
+            <summary>
+            The MessageType that triggers this event.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DTOs.MessageTypeDTO">
+            <summary>
+            DTO containing the relevant information regarding the MessageType
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DTOs.MessageTypeDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.MessageTypeDTO.Id">
+            <summary>
+            Unique Identifier of the MessageType
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.MessageTypeDTO.DisplayName">
+            <summary>
+            Display Name for the MessageType
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.MessageTypeDTO.Description">
+            <summary>
+            Description to provide more details about the MessageType.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.MessageTypeDTO.FullName">
+            <summary>
+            The Full Name of the Event
+            </summary>
+            <remarks>
+            Reflection will require the fully-qualified class name, along with the assembly name
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.MessageTypeDTO.AssemblyName">
+            <summary>
+            Indicates the qualified name/path of the assembly
+            that this MessageType is associated with.
+            </summary>
+            <remarks>
+            Reflection will require the assembly name, along with the fully-qualified class name
+            </remarks>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DTOs.MonthlyIntervalDTO">
+            <summary>
+            DTO containing the relevant information regarding the Monthly Interval
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DTOs.MonthlyIntervalDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.MonthlyIntervalDTO.DayOfMonth">
+            <summary>
+            The day of the month when an event is scheduled to run
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DTOs.ScheduledEventDTO">
+            <summary>
+            DTO containing the relevant information regarding the ScheduledEvent
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DTOs.ScheduledEventDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.ScheduledEventDTO.EventStartDate">
+            <summary>
+            The Date when this event is triggered.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.ScheduledEventDTO.NextRunDate">
+            <summary>
+            The Date when this event is triggered next.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.ScheduledEventDTO.Interval">
+            <summary>
+            The interval for recurrence.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.ScheduledEventDTO.RunFlag">
+            <summary>
+            Indicates whether the scheduled event has been run.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DTOs.WeeklyIntervalDTO">
+            <summary>
+            DTO containing the relevant information regarding the Weekly Interval
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DTOs.WeeklyIntervalDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WeeklyIntervalDTO.Sunday">
+            <summary>
+            Indicates if event is scheduled to run on Sunday
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WeeklyIntervalDTO.Monday">
+            <summary>
+            Indicates if event is scheduled to run on Monday
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WeeklyIntervalDTO.Tuesday">
+            <summary>
+            Indicates if event is scheduled to run on Tuesday
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WeeklyIntervalDTO.Wednesday">
+            <summary>
+            Indicates if event is scheduled to run on Wednesday
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WeeklyIntervalDTO.Thursday">
+            <summary>
+            Indicates if event is scheduled to run on Thursday
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WeeklyIntervalDTO.Friday">
+            <summary>
+            Indicates if event is scheduled to run on Friday
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WeeklyIntervalDTO.Saturday">
+            <summary>
+            Indicates if event is scheduled to run on Saturday
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DTOs.WorkflowDTO">
+            <summary>
+            DTO containing the relevant information regarding searching for workflows
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DTOs.WorkflowDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WorkflowDTO.Id">
+            <summary>
+            A Unique Identifier for the workflow.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WorkflowDTO.Name">
+            <summary>
+            The Name of the workflow created
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WorkflowDTO.Description">
+            <summary>
+            A brief description of the workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WorkflowDTO.Content">
+            <summary>
+            The XAML Contents of the workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WorkflowDTO.AssemblyName">
+            <summary>
+            The Assembly Name of the workflow created.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WorkflowDTO.Enabled">
+            <summary>
+            Flag to denote whether or not a workflow is currently enabled.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WorkflowDTO.Version">
+            <summary>
+            The Version number of the given workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WorkflowDTO.HasRun">
+            <summary>
+            Flag to denote that the workflow has been run at least once.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WorkflowDTO.AuthorId">
+            <summary>
+            The unique identifier of the person who created the workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WorkflowDTO.CreatedDate">
+            <summary>
+            The Date and Time that the workflow was created
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WorkflowDTO.IsModifiedCreate">
+            <summary>
+            Flag to denote that a workflow has been created
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WorkflowDTO.IsModifiedUpdate">
+            <summary>
+            Flag to denote that a workflow has been modified with simple updates
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WorkflowDTO.IsModifiedDelete">
+            <summary>
+            Flag to denote that a workflow has been modified to be deleted.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WorkflowDTO.IsNewVersion">
+            <summary>
+            Flag to denote that the workflow is a new version
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WorkflowDTO.IsWorkflowSuspended">
+            <summary>
+            Flag to denote that a workflow is in the suspended state.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WorkflowDTO.Retired">
+            <summary>
+            Flag to denote that a workflow is NEVER to be used again.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WorkflowDTO.Instances">
+            <summary>
+            List of Instances of the given workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WorkflowDTO.ShouldRefresh">
+            <summary>
+            Flag to denote that this specific workflow should be refreshed on the WorkflowsView.
+            This is added to avoid refreshing the whole list of available Workflows whenever 
+            a change is done to just one of them.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DTOs.WorkflowInstanceDTO">
+            <summary>
+            DTO containing the relevant information regarding workflow instances
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DTOs.WorkflowInstanceDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WorkflowInstanceDTO.WorkflowId">
+            <summary>
+            The WorkflowDTO Id this instance belongs to
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WorkflowInstanceDTO.WorkflowInstanceStartTime">
+            <summary>
+            The time at which the instance started
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WorkflowInstanceDTO.WorkflowInstanceIdleStateStartTime">
+            <summary>
+            The time at which the instance went into idle state
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WorkflowInstanceDTO.WorkflowInstanceCompletedTime">
+            <summary>
+            The time at which the instance completed executing
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.WorkflowInstanceDTO.State">
+            <summary>
+            String outlining the state of the workflow (idle, running, completed)
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DTOs.WorkflowInstanceStatusTypeDTO">
+            <summary>
+            Enum corresponding to the domain object enum for workflow instance status
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DTOs.WorkflowSearchDTO">
+            <summary>
+            DTO containing the relevant information regarding searching for workflows
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DTOs.WorkflowSearchDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DTOs.YearlyIntervalDTO">
+            <summary>
+            DTO containing the relevant information regarding the Yearly Interval
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DTOs.YearlyIntervalDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.YearlyIntervalDTO.DayOfMonth">
+            <summary>
+            The day of the month when an event is scheduled to run
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.DTOs.YearlyIntervalDTO.MonthOfYear">
+            <summary>
+            The Month of the Year when an event is scheduled to run
+            </summary>
+        </member>
+    </members>
+</doc>

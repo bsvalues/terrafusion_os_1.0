@@ -1,0 +1,11 @@
+{
+    "set": [
+        "amd",
+        "blend",
+        "edge",
+        "feather",
+        "mosaic dataset",
+        "radiometry",
+        "viewpoint"
+    ]
+}

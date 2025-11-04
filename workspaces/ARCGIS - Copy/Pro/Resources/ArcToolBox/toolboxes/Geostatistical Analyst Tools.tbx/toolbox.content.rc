@@ -1,0 +1,11 @@
+{
+    "map": {
+        "descr": "With Geostatistical Analyst, you can easily create a continuous surface or map from measurements stored in a point feature layer or raster layer or by using polygon centroids. The sample points may be measurements such as elevation, depth to the water table, or levels of pollution. Geostatistical Analyst provides a comprehensive set of tools for creating surfaces that can be used to visualize, analyze, and understand spatial phenomena.",
+        "title": "Geostatistical Analyst Tools",
+        "toolset1.name": "Working with Geostatistical Layers",
+        "toolset2.name": "Utilities",
+        "toolset3.name": "Sampling Network Design",
+        "toolset4.name": "Interpolation",
+        "toolset5.name": "Simulation"
+    }
+}

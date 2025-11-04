@@ -1,0 +1,23 @@
+{
+    "set": [
+        "boundary",
+        "clean",
+        "cluster",
+        "coincident",
+        "collapse",
+        "distance",
+        "edit",
+        "fuzzy",
+        "overlay",
+        "parallel processing",
+        "reconcile",
+        "separation",
+        "snap",
+        "tolerance",
+        "topologic",
+        "topology",
+        "validate",
+        "vertex",
+        "vertices"
+    ]
+}

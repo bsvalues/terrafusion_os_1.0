@@ -1,0 +1,148 @@
+{
+    "type": "FunctionTool",
+    "guid": "{efca9c70-ec81-4610-8917-81b6fb268513}",
+    "displayname": "$rc:title",
+    "helpcontent": "2150002",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_point_cloud": {
+            "display_order": "0",
+            "displayname": "$rc:in_point_cloud.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPSceneServiceLayer"
+                    },
+                    {
+                        "type": "DEFile"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPSceneServiceLayerDomain",
+                        "servicelayertype": [
+                            "ServiceLayerTypePointCloud"
+                        ]
+                    },
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "slpk"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:in_point_cloud.descr"
+        },
+        "cell_size": {
+            "display_order": "4",
+            "displayname": "$rc:cell_size.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "description": "$rc:cell_size.descr"
+        },
+        "out_raster": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_raster.descr"
+        },
+        "cell_assignment": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:cell_assignment.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "AVERAGE",
+                        "code": "$rc:cell_assignment.domain.AVERAGE"
+                    },
+                    {
+                        "value": "MINIMUM",
+                        "code": "$rc:cell_assignment.domain.MINIMUM"
+                    },
+                    {
+                        "value": "MAXIMUM",
+                        "code": "$rc:cell_assignment.domain.MAXIMUM"
+                    },
+                    {
+                        "value": "NEAREST",
+                        "code": "$rc:cell_assignment.domain.NEAREST"
+                    }
+                ]
+            },
+            "value": "AVERAGE",
+            "description": "$rc:cell_assignment.descr"
+        },
+        "void_fill": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:void_fill.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NONE",
+                        "code": "$rc:void_fill.domain.NONE"
+                    },
+                    {
+                        "value": "SIMPLE",
+                        "code": "$rc:void_fill.domain.SIMPLE"
+                    },
+                    {
+                        "value": "LINEAR",
+                        "code": "$rc:void_fill.domain.LINEAR"
+                    },
+                    {
+                        "value": "NATURAL_NEIGHBOR",
+                        "code": "$rc:void_fill.domain.NATURAL_NEIGHBOR"
+                    }
+                ]
+            },
+            "value": "LINEAR",
+            "description": "$rc:void_fill.descr"
+        },
+        "z_factor": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:z_factor.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "value": "1",
+            "description": "$rc:z_factor.descr"
+        }
+    },
+    "environments": [
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "pyramid",
+        "rasterStatistics",
+        "scratchWorkspace",
+        "snapRaster",
+        "workspace"
+    ]
+}

@@ -1,0 +1,12 @@
+{
+    "set": [
+        "empirical bayes",
+        "rate",
+        "average",
+        "local",
+        "median",
+        "neighbor",
+        "neighborhood",
+        "weight"
+    ]
+}

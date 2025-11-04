@@ -1,0 +1,5 @@
+GRANT SELECT TO [RSExecRole];
+
+
+GO
+

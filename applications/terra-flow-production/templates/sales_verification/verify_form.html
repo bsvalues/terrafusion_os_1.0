@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <h1>Verify Sale</h1>
+      <p class="lead">Enter sale details for verification and analysis.</p>
+      
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{{ url_for('sales_verification.index') }}">Sales Verification</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Verify Sale</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+  
+  <div class="row mt-4">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Sale Information</h5>
+        </div>
+        <div class="card-body">
+          <form action="{{ url_for('sales_verification.verify_sale') }}" method="post">
+            <!-- Sale Information -->
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="sale_id" class="form-label">Sale ID *</label>
+                <input type="text" class="form-control" id="sale_id" name="sale_id" required>
+              </div>
+              <div class="col-md-6">
+                <label for="sale_date" class="form-label">Sale Date *</label>
+                <input type="date" class="form-control" id="sale_date" name="sale_date" required>
+              </div>
+            </div>
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="sale_price" class="form-label">Sale Price *</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input type="number" class="form-control" id="sale_price" name="sale_price" step="0.01" min="0" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="sale_type" class="form-label">Sale Type</label>
+                <select class="form-select" id="sale_type" name="sale_type">
+                  <option value="">Select Type</option>
+                  <option value="standard">Standard</option>
+                  <option value="foreclosure">Foreclosure</option>
+                  <option value="short_sale">Short Sale</option>
+                  <option value="estate_sale">Estate Sale</option>
+                  <option value="auction">Auction</option>
+                  <option value="reo">REO</option>
+                  <option value="inter_family">Inter-family</option>
+                </select>
+              </div>
+            </div>
+            
+            <!-- Property Information -->
+            <h6 class="mt-4 mb-3">Property Information</h6>
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="parcel_number" class="form-label">Parcel Number *</label>
+                <input type="text" class="form-control" id="parcel_number" name="parcel_number" required>
+              </div>
+              <div class="col-md-6">
+                <label for="property_id" class="form-label">Property ID</label>
+                <input type="text" class="form-control" id="property_id" name="property_id">
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="property_address" class="form-label">Property Address</label>
+              <input type="text" class="form-control" id="property_address" name="property_address">
+            </div>
+            
+            <!-- Parties Information -->
+            <h6 class="mt-4 mb-3">Transaction Parties</h6>
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="buyer_name" class="form-label">Buyer Name</label>
+                <input type="text" class="form-control" id="buyer_name" name="buyer_name">
+              </div>
+              <div class="col-md-6">
+                <label for="seller_name" class="form-label">Seller Name</label>
+                <input type="text" class="form-control" id="seller_name" name="seller_name">
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="deed_type" class="form-label">Deed Type</label>
+              <select class="form-select" id="deed_type" name="deed_type">
+                <option value="">Select Deed Type</option>
+                <option value="warranty">Warranty Deed</option>
+                <option value="special_warranty">Special Warranty Deed</option>
+                <option value="quit_claim">Quit Claim Deed</option>
+                <option value="bargain_sale">Bargain and Sale Deed</option>
+                <option value="tax_deed">Tax Deed</option>
+                <option value="executor">Executor's Deed</option>
+                <option value="trustee">Trustee's Deed</option>
+              </select>
+            </div>
+            
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+              <a href="{{ url_for('sales_verification.index') }}" class="btn btn-secondary me-md-2">Cancel</a>
+              <button type="submit" class="btn btn-primary">Verify Sale</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Verification Process</h5>
+        </div>
+        <div class="card-body">
+          <p>The sale verification process includes:</p>
+          <ul>
+            <li>Validating sale data completeness and format</li>
+            <li>Verifying property information against records</li>
+            <li>Checking GIS data for spatial validation</li>
+            <li>Qualifying the sale for use in valuation</li>
+            <li>Analyzing market trends and patterns</li>
+          </ul>
+          <p class="small text-muted mt-3">Fields marked with * are required.</p>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Washington Sales Qualification</h5>
+        </div>
+        <div class="card-body">
+          <p>Per Washington Department of Revenue guidelines, sales may be disqualified if:</p>
+          <ul class="small">
+            <li>Sale is between relatives or corporate affiliates</li>
+            <li>Sale involves government agencies or public utilities</li>
+            <li>Sale includes trades, partial interests, or estate liquidation</li>
+            <li>Deed type is not typical of market sales</li>
+            <li>Sale includes significant personal property</li>
+            <li>Sale involves distress, auction, or forced conditions</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

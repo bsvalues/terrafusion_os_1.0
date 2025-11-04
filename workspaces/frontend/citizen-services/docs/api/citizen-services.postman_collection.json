@@ -1,0 +1,210 @@
+{
+  "info": {
+    "name": "Citizen Services API",
+    "description": "Citizen engagement and service delivery APIs - TerraFusion Government API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "oauth2",
+    "oauth2": [
+      {
+        "key": "tokenUrl",
+        "value": "https://auth.terrafusion.gov/oauth/token",
+        "type": "string"
+      },
+      {
+        "key": "authUrl",
+        "value": "https://auth.terrafusion.gov/oauth/authorize",
+        "type": "string"
+      },
+      {
+        "key": "scope",
+        "value": "citizen-services:read citizen-services:write",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.terrafusion.gov/api/v1/citizen-services",
+      "type": "string"
+    },
+    {
+      "key": "workspace",
+      "value": "citizen-services",
+      "type": "string"
+    },
+    {
+      "key": "version",
+      "value": "1.0.0",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-TerraFusion-Workspace",
+            "value": "{{workspace}}",
+            "type": "text"
+          },
+          {
+            "key": "X-TerraFusion-Version",
+            "value": "{{version}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "List available services",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-TerraFusion-Workspace",
+            "value": "{{workspace}}",
+            "type": "text"
+          },
+          {
+            "key": "X-TerraFusion-Version",
+            "value": "{{version}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/services",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "services"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Apply for service",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-TerraFusion-Workspace",
+            "value": "{{workspace}}",
+            "type": "text"
+          },
+          {
+            "key": "X-TerraFusion-Version",
+            "value": "{{version}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/services/{id}/apply",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "services",
+            "{id}",
+            "apply"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get application status",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-TerraFusion-Workspace",
+            "value": "{{workspace}}",
+            "type": "text"
+          },
+          {
+            "key": "X-TerraFusion-Version",
+            "value": "{{version}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/applications/{id}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "applications",
+            "{id}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Submit service feedback",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-TerraFusion-Workspace",
+            "value": "{{workspace}}",
+            "type": "text"
+          },
+          {
+            "key": "X-TerraFusion-Version",
+            "value": "{{version}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/feedback",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "feedback"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

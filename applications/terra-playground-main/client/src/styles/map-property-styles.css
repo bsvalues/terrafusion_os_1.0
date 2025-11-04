@@ -1,0 +1,202 @@
+/* TerraFusion Property Map Styling */
+
+/* Property Boundary Hover Effects */
+.tf-property-hover {
+  animation: pulse 1.5s infinite;
+  filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.8));
+}
+
+@keyframes pulse {
+  0% {
+    filter: drop-shadow(0 0 3px rgba(0, 255, 255, 0.6));
+  }
+  50% {
+    filter: drop-shadow(0 0 6px rgba(0, 255, 255, 0.9));
+  }
+  100% {
+    filter: drop-shadow(0 0 3px rgba(0, 255, 255, 0.6));
+  }
+}
+
+/* Property Feature Tooltip */
+.tf-property-tooltip {
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+  z-index: 1000;
+  max-width: 300px;
+  border-left: 4px solid var(--color-primary);
+}
+
+.tf-property-tooltip-header {
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--color-primary);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding-bottom: 4px;
+}
+
+.tf-property-tooltip-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.tf-property-tooltip-label {
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.tf-property-tooltip-value {
+  font-weight: 500;
+}
+
+/* Property Data Legend */
+.tf-property-legend {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 4px;
+  padding: 8px;
+  font-size: 0.75rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  max-width: 200px;
+}
+
+.tf-property-legend-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+}
+
+.tf-property-legend-title svg {
+  margin-right: 4px;
+}
+
+.tf-property-legend-items {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tf-property-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tf-property-legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.tf-property-legend-label {
+  font-size: 0.7rem;
+}
+
+/* Property Selection Styles */
+.tf-property-selected {
+  stroke-width: 3px !important;
+  stroke: rgb(0, 166, 255) !important;
+  stroke-dasharray: 5, 5;
+  animation: selectedPulse 2s infinite linear;
+}
+
+@keyframes selectedPulse {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 20;
+  }
+}
+
+/* Custom Property Layer Control Panel */
+.tf-property-controls {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 4px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.tf-property-controls-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-primary);
+}
+
+.tf-property-controls-section {
+  margin-top: 12px;
+}
+
+.tf-property-controls-section-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #555;
+}
+
+.tf-property-visualization-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.tf-property-visualization-button {
+  padding: 6px;
+  font-size: 0.75rem;
+  text-align: center;
+  border-radius: 3px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tf-property-visualization-button:hover {
+  background-color: #e8e8e8;
+}
+
+.tf-property-visualization-button.active {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+/* QGIS Integration Branding */
+.tf-qgis-integration-badge {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  pointer-events: none;
+  z-index: 90;
+}
+
+.tf-qgis-integration-badge::before {
+  content: '';
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background-color: #589632;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}

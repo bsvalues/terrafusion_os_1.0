@@ -1,0 +1,12 @@
+{
+    "set": [
+        "all",
+        "clear",
+        "erase",
+        "geometry",
+        "record",
+        "remove",
+        "row",
+        "vector"
+    ]
+}

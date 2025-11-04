@@ -1,0 +1,203 @@
+{% extends "base_clean.html" %}
+
+{% block title %}TerraFusion - Login{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 2rem 1rem;
+        min-height: calc(100vh - 300px);
+    }
+    
+    .login-card {
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 450px;
+        padding: 2rem;
+        border: 1px solid var(--border-color);
+    }
+    
+    .login-card h1 {
+        text-align: center;
+        font-size: 1.75rem;
+        margin-bottom: 1.5rem;
+        color: var(--dark-color);
+    }
+    
+    .county-logo {
+        display: block;
+        margin: 0 auto 1.5rem;
+        max-width: 200px;
+        height: auto;
+    }
+    
+    .login-form {
+        margin-top: 1.5rem;
+    }
+    
+    .login-footer {
+        text-align: center;
+        margin-top: 1.5rem;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+    
+    .login-help {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-color);
+    }
+    
+    .login-help h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        color: var(--dark-color);
+    }
+    
+    .login-help-item {
+        margin-bottom: 1rem;
+    }
+    
+    .login-help-item h3 {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+        color: var(--dark-color);
+    }
+    
+    .login-help-item p {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .login-button {
+        width: 100%;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.75rem 1rem;
+        border-radius: 0.25rem;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.15s ease-in-out;
+    }
+    
+    .login-button:hover {
+        background-color: var(--primary-dark);
+    }
+    
+    .login-test-accounts {
+        margin-top: 2rem;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 0.25rem;
+        border: 1px solid #e9ecef;
+    }
+    
+    .login-test-accounts h3 {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+        color: var(--dark-color);
+    }
+    
+    .test-account-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .test-account-list li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #e9ecef;
+        font-size: 0.875rem;
+    }
+    
+    .test-account-list li:last-child {
+        border-bottom: none;
+    }
+    
+    .test-account-badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 1rem;
+        font-size: 0.75rem;
+        font-weight: bold;
+        margin-left: 0.5rem;
+    }
+    
+    .badge-itadmin { background-color: #4299e1; color: white; }
+    .badge-assessor { background-color: #48bb78; color: white; }
+    .badge-staff { background-color: #ed8936; color: white; }
+    .badge-auditor { background-color: #9f7aea; color: white; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+        <h1>County Property Assessment</h1>
+        <div class="card-body">
+            <p class="text-center mb-3">Log in with your County credentials to access the TerraFusion SyncService.</p>
+            
+            <form method="post" action="{{ url_for('login') }}" class="login-form">
+                <div class="form-group">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" id="username" name="username" class="form-control" required autofocus>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" name="password" class="form-control" required>
+                </div>
+                
+                <div class="form-group mt-3">
+                    <button type="submit" class="login-button">Log In</button>
+                </div>
+            </form>
+            
+            {% if config.get('DEBUG', False) or not config.get('COUNTY_LDAP_SERVER') %}
+            <div class="login-test-accounts">
+                <h3>Test Accounts</h3>
+                <p class="mb-2">Since LDAP is not configured, you can use these test accounts:</p>
+                <ul class="test-account-list">
+                    <li>Username: <strong>admin</strong> / Password: <strong>admin123</strong> <span class="test-account-badge badge-itadmin">ITAdmin</span></li>
+                    <li>Username: <strong>assessor</strong> / Password: <strong>assessor123</strong> <span class="test-account-badge badge-assessor">Assessor</span></li>
+                    <li>Username: <strong>staff</strong> / Password: <strong>staff123</strong> <span class="test-account-badge badge-staff">Staff</span></li>
+                    <li>Username: <strong>auditor</strong> / Password: <strong>auditor123</strong> <span class="test-account-badge badge-auditor">Auditor</span></li>
+                </ul>
+            </div>
+            {% endif %}
+            
+            <div class="login-help">
+                <h2>Need Help?</h2>
+                
+                <div class="login-help-item">
+                    <h3>Forgot Password?</h3>
+                    <p>Please contact your County IT department to reset your Active Directory password.</p>
+                </div>
+                
+                <div class="login-help-item">
+                    <h3>Account Locked?</h3>
+                    <p>If your account is locked, please contact the System Administrator at <a href="mailto:sysadmin@benton.wa.us">sysadmin@benton.wa.us</a>.</p>
+                </div>
+                
+                <div class="login-help-item">
+                    <h3>Technical Support</h3>
+                    <p>For technical issues, contact the County IT Help Desk at <a href="tel:5552345678">555-234-5678</a>.</p>
+                </div>
+            </div>
+            
+            <div class="login-footer">
+                <p>By logging in, you agree to the County's IT policies and procedures.</p>
+                <p>This system is for authorized users only. Unauthorized access is prohibited.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

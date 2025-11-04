@@ -1,0 +1,41 @@
+CREATE TABLE [dbo].[monthly_report] (
+    [pacs_user_id]      INT             NOT NULL,
+    [entity_id]         INT             NOT NULL,
+    [fiscal_year]       VARCHAR (10)    NULL,
+    [begin_date]        DATETIME        NULL,
+    [end_date]          DATETIME        NULL,
+    [curr_yr_prev_pi]   NUMERIC (14, 2) NULL,
+    [curr_yr_curr_pi]   NUMERIC (14, 2) NULL,
+    [delq_yr_prev_pi]   NUMERIC (14, 2) NULL,
+    [delq_yr_curr_pi]   NUMERIC (14, 2) NULL,
+    [prev_und]          NUMERIC (14, 2) NULL,
+    [curr_und]          NUMERIC (14, 2) NULL,
+    [prev_over]         NUMERIC (14, 2) NULL,
+    [curr_over]         NUMERIC (14, 2) NULL,
+    [prev_disc]         NUMERIC (14, 2) NULL,
+    [curr_disc]         NUMERIC (14, 2) NULL,
+    [curr_tax_cert]     NUMERIC (14, 2) NULL,
+    [prev_tax_cert]     NUMERIC (14, 2) NULL,
+    [delq_tax]          NUMERIC (14, 2) NULL,
+    [delq_adj]          NUMERIC (14, 2) NULL,
+    [delq_prev_coll]    NUMERIC (14, 2) NULL,
+    [delq_curr_coll]    NUMERIC (14, 2) NULL,
+    [total_tax]         NUMERIC (14, 2) NULL,
+    [total_adj]         NUMERIC (14, 2) NULL,
+    [total_prev_coll]   NUMERIC (14, 2) NULL,
+    [total_curr_coll]   NUMERIC (14, 2) NULL,
+    [curr_yr_prev_coll] NUMERIC (14, 2) NULL,
+    [curr_yr_curr_coll] NUMERIC (14, 2) NULL,
+    [curr_yr_orig_tax]  NUMERIC (14, 2) NULL,
+    [curr_atty_fees]    NUMERIC (14, 2) NULL,
+    [prev_atty_fees]    NUMERIC (14, 2) NULL,
+    [curr_refund]       NUMERIC (14, 2) NULL,
+    [prev_refund]       NUMERIC (14, 2) NULL,
+    [delq_curr_und]     NUMERIC (14, 2) NULL,
+    [total_curr_und]    NUMERIC (14, 2) NULL,
+    CONSTRAINT [CPK_monthly_report] PRIMARY KEY CLUSTERED ([pacs_user_id] ASC, [entity_id] ASC) WITH (FILLFACTOR = 100)
+);
+
+
+GO
+

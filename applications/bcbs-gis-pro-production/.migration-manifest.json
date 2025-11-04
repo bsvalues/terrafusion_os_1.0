@@ -1,0 +1,14 @@
+{
+  "migration_date": "2025-11-03 21:18:30",
+  "tech_stack": "Node.js",
+  "target_path": "C:\\Users\\bsval\\terrafusion_os_1.0\\applications\\bcbs-gis-pro-production",
+  "priority": "HIGH",
+  "target_name": "bcbs-gis-pro-production",
+  "size_mb": 306.62,
+  "status": "OPERATIONAL",
+  "file_count": 891,
+  "agent": "TerraFusion Elite Government OS Engineering Agent",
+  "source_path": "C:\\Users\\bsval\\OneDrive\\Desktop\\from D\\BCBSGISPRO_PRODUCTION",
+  "last_verified": "2025-11-04 02:45:42",
+  "system_name": "BCBSGISPRO_PRODUCTION"
+}

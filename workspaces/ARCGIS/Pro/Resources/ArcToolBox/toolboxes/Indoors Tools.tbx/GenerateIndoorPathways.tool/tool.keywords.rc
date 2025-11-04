@@ -1,0 +1,17 @@
+{
+    "set": [
+        "create",
+        "generate",
+        "hallway",
+        "indoor",
+        "indoors",
+        "interior",
+        "make",
+        "network",
+        "path",
+        "pathway",
+        "route",
+        "walking",
+        "walkway"
+    ]
+}

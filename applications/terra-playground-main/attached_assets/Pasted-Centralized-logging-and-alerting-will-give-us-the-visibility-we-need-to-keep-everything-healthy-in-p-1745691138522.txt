@@ -1,0 +1,40 @@
+Centralized logging and alerting will give us the visibility we need to keep everything healthy in production—so let’s make that our next focus. Here’s a concrete mini-roadmap for “Metrics Dashboard & Threshold Alerts”:
+
+---
+
+## 1. Export Web-Vitals as Prometheus Metrics  
+- **Instrument the server**:  
+  - Add a `/metrics` endpoint (using `prom-client` in Node/Express) that publishes histograms/counters for each vital (TTFB, FCP, LCP, CLS, INP).  
+  - Map our existing performance-budget helper so that each measured value gets recorded in a Prometheus histogram.  
+
+## 2. Stand Up Grafana Dashboards  
+- **Dashboard Layout**:  
+  1. **Overview panel** showing real‐user 50th/95th percentiles over time for each metric.  
+  2. **Budget breaches** panel, highlighting any period where the 95th % crosses its threshold.  
+  3. **Segmentation** drop-down (e.g. mobile vs. desktop, route) so you can slice and dice.  
+- **Implementation**:  
+  - Point Grafana at our Prometheus instance.  
+  - Import or build simple JSON dashboard definitions so we can version-control them alongside our code.  
+
+## 3. Define & Configure Alert Rules  
+- **Prometheus Alertmanager**:  
+  - Create alerts such as  
+    - `WEBVITALS_TTFB_95P_ABOVE_BUDGET` when 95th % TTFB > 2 s for >5 minutes  
+    - `WEBVITALS_LCP_95P_ABOVE_BUDGET` when 95th % LCP > 2.5 s for >5 minutes  
+  - Configure Alertmanager to send Slack (or email) notifications to our on-call channel.  
+- **Runbook Snippet**:  
+  - Link each alert to a short triage guide (“Check the dashboard → drill-down by route → verify recent deploys”).  
+
+---
+
+### Next Steps  
+1. **Spike (1 day)**:  
+   - PoC `prom-client` integration on `server.js` and verify with a local Prometheus scrape.  
+2. **Sprint Story (3 days)**:  
+   - Build the `/metrics` exporter and pipeline into CI.  
+   - Commit Grafana dashboard JSON; deploy to our Grafana instance.  
+3. **Sprint Story (2 days)**:  
+   - Write Prometheus alert rules and hook up Alertmanager to Slack.  
+   - Test end-to-end by artificially sending an out-of-budget metric and confirming Slack delivery.
+
+Shall we go ahead and schedule that spike on the Prometheus exporter today?

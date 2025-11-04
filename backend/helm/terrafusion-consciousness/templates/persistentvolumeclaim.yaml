@@ -1,0 +1,28 @@
+{{/*
+============================================================================
+TerraFusion Consciousness Engine - PersistentVolumeClaim Template
+Government. Transcended. - ML Model Cache Storage (50GB)
+============================================================================
+*/}}
+
+{{- if .Values.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "terrafusion-consciousness.fullname" . }}-ml-cache
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "terrafusion-consciousness.labels" . | nindent 4 }}
+    terrafusion.io/component: consciousness
+    terrafusion.io/tier: ai
+  annotations:
+    description: "ML Model Cache Storage for 50,000 AI Agents"
+    compliance: "FISMA-High"
+spec:
+  accessModes:
+    - {{ .Values.persistence.accessMode }}
+  storageClassName: {{ .Values.persistence.storageClass }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.size }}
+{{- end }}

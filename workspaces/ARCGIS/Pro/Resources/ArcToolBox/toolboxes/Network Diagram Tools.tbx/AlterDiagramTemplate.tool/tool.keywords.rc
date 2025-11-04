@@ -1,0 +1,11 @@
+{
+    "set": [
+        "alter",
+        "configuration",
+        "diagram template",
+        "network",
+        "network diagram",
+        "properties",
+        "template configuration"
+    ]
+}

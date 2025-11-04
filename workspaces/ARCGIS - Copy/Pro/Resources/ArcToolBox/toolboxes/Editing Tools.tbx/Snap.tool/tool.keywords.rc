@@ -1,0 +1,21 @@
+{
+    "set": [
+        "boundary",
+        "change",
+        "coincide",
+        "common",
+        "distance",
+        "exist",
+        "grab",
+        "input",
+        "magnet",
+        "match",
+        "modify",
+        "move",
+        "pull",
+        "rectify",
+        "update",
+        "vertex",
+        "vertices"
+    ]
+}

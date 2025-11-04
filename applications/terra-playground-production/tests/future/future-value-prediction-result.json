@@ -1,0 +1,69 @@
+{
+  "success": true,
+  "result": {
+    "currentValue": 375000,
+    "predictedValues": [
+      {
+        "year": 2026,
+        "predictedValue": 387000,
+        "growthRate": 3.2,
+        "growthFromPresent": 3.2
+      },
+      {
+        "year": 2027,
+        "predictedValue": 400158,
+        "growthRate": 3.4,
+        "growthFromPresent": 6.6
+      },
+      {
+        "year": 2028,
+        "predictedValue": 414564,
+        "growthRate": 3.6,
+        "growthFromPresent": 10.2
+      }
+    ],
+    "confidenceIntervals": [
+      {
+        "year": 2026,
+        "low": 361845,
+        "high": 412155,
+        "marginOfError": 6.5
+      },
+      {
+        "year": 2027,
+        "low": 368145,
+        "high": 432171,
+        "marginOfError": 8
+      },
+      {
+        "year": 2028,
+        "low": 375180,
+        "high": 453948,
+        "marginOfError": 9.5
+      }
+    ],
+    "marketFactors": [
+      {
+        "name": "Interest Rates",
+        "impact": "negative",
+        "trend": "rising"
+      },
+      {
+        "name": "Local Development",
+        "impact": "positive",
+        "trend": "improving"
+      },
+      {
+        "name": "Housing Demand",
+        "impact": "positive",
+        "trend": "stable"
+      }
+    ],
+    "overallConfidence": 0.75,
+    "marketOutlook": "positive",
+    "llmModel": "mock-gpt-model",
+    "analysisTimestamp": "2025-04-08T21:47:31.735Z"
+  },
+  "agent": "Property Assessment Agent",
+  "capability": "predictFutureValue"
+}

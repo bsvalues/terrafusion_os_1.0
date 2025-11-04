@@ -1,0 +1,8 @@
+{
+    "set": [
+        "clip",
+        "sample",
+        "select",
+        "subset"
+    ]
+}

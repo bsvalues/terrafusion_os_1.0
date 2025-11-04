@@ -1,0 +1,303 @@
+{
+    "type": "FunctionTool",
+    "guid": "{33724566-2738-4FE2-903A-A8C439127E50}/HuffModel",
+    "displayname": "$rc:title",
+    "helpcontent": "62060001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "33",
+        "35"
+    ],
+    "params": {
+        "in_facility_features": {
+            "displayname": "$rc:in_facility_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:in_facility_features.descr"
+        },
+        "facility_id_field": {
+            "displayname": "$rc:facility_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "BigInteger",
+                    "Long",
+                    "Text",
+                    "OID"
+                ]
+            },
+            "depends": [
+                "in_facility_features"
+            ],
+            "description": "$rc:facility_id_field.descr"
+        },
+        "in_candidate_features": {
+            "displayname": "$rc:in_candidate_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:in_candidate_features.descr"
+        },
+        "candidate_id_field": {
+            "displayname": "$rc:candidate_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "BigInteger",
+                    "Long",
+                    "Text",
+                    "OID"
+                ]
+            },
+            "depends": [
+                "in_candidate_features"
+            ],
+            "description": "$rc:candidate_id_field.descr"
+        },
+        "in_sales_potential_features": {
+            "displayname": "$rc:in_sales_potential_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:in_sales_potential_features.descr"
+        },
+        "sales_potential_id_field": {
+            "displayname": "$rc:sales_potential_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "BigInteger",
+                    "Long",
+                    "Text",
+                    "OID"
+                ]
+            },
+            "depends": [
+                "in_sales_potential_features"
+            ],
+            "description": "$rc:sales_potential_id_field.descr"
+        },
+        "sales_potential_field": {
+            "displayname": "$rc:sales_potential_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "BigInteger",
+                    "Long",
+                    "Float",
+                    "Double"
+                ]
+            },
+            "depends": [
+                "in_sales_potential_features"
+            ],
+            "description": "$rc:sales_potential_field.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "depends": [
+                "in_facility_features"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "featuretype.rule": "AsSpecified",
+                "featuretype": "Simple",
+                "geometrytype.rule": "AsSpecified",
+                "geometrytype": "Polygon",
+                "extenttype.rule": "Union",
+                "fields.rule": "None",
+                "clonedependency": "true",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "attractiveness_variables": {
+            "displayname": "$rc:attractiveness_variables.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:attractiveness_variables.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:attractiveness_variables.dt.title2"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:attractiveness_variables.dt.title3"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "description": "$rc:attractiveness_variables.descr"
+        },
+        "distance_exponent": {
+            "displayname": "$rc:distance_exponent.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "-1.5",
+            "description": "$rc:distance_exponent.descr"
+        },
+        "out_predicted_sales": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_predicted_sales.title",
+            "datatype": {
+                "type": "GPDouble"
+            }
+        },
+        "distance_type": {
+            "type": "optional",
+            "displayname": "$rc:distance_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "value": "STRAIGHT_LINE_DISTANCE",
+            "description": "$rc:distance_type.descr"
+        },
+        "distance_units": {
+            "type": "optional",
+            "displayname": "$rc:distance_units.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:distance_units.descr"
+        },
+        "out_distance_matrix": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_distance_matrix.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "fields.rule": "None"
+            },
+            "description": "$rc:out_distance_matrix.descr"
+        },
+        "travel_direction": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:travel_direction.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "TOWARD_STORES",
+                        "code": "$rc:travel_direction.domain.TOWARD_STORES"
+                    },
+                    {
+                        "value": "AWAY_FROM_STORES",
+                        "code": "$rc:travel_direction.domain.AWAY_FROM_STORES"
+                    }
+                ]
+            },
+            "description": "$rc:travel_direction.descr"
+        },
+        "time_of_day": {
+            "type": "optional",
+            "displayname": "$rc:time_of_day.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:time_of_day.descr"
+        },
+        "time_zone": {
+            "type": "optional",
+            "displayname": "$rc:time_zone.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "UTC",
+                        "code": "$rc:time_zone.domain.UTC"
+                    },
+                    {
+                        "value": "TIME_ZONE_AT_LOCATION",
+                        "code": "$rc:time_zone.domain.TIME_ZONE_AT_LOCATION"
+                    }
+                ]
+            },
+            "value": "TIME_ZONE_AT_LOCATION",
+            "description": "$rc:time_zone.descr"
+        }
+    },
+    "environments": [
+        "baDataSource",
+        "baNetworkSource",
+        "workspace"
+    ]
+}

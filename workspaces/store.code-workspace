@@ -1,0 +1,328 @@
+{
+  "folders": [
+    {
+      "path": "../marketplace/store/marketplace-management",
+      "name": "🏪 Marketplace Management"
+    },
+    {
+      "path": "../marketplace/store/application-catalog",
+      "name": "📱 Application Catalog"
+    },
+    {
+      "path": "../marketplace/store/license-management",
+      "name": "📜 License Management"
+    },
+    {
+      "path": "../marketplace/store/procurement-system",
+      "name": "🛒 Government Procurement"
+    },
+    {
+      "path": "../marketplace/store/vendor-portal",
+      "name": "🏢 Vendor Portal"
+    },
+    {
+      "path": "../marketplace/store/payment-gateway",
+      "name": "💳 Payment Gateway"
+    },
+    {
+      "path": "../marketplace/store/testing",
+      "name": "🧪 Store Tests"
+    },
+    {
+      "path": "../SDK",
+      "name": "📦 Platform SDK (read-only)"
+    },
+    {
+      "path": "../backend",
+      "name": "🔧 Shared Backend (read-only)"
+    },
+    {
+      "path": "../docs/store",
+      "name": "📚 Store Docs"
+    },
+    {
+      "path": "../config",
+      "name": "⚙️ Config (shared)"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/out": true,
+      "**/.pytest_cache": true,
+      "../marketplace/*/": true,
+      "!../marketplace/store": false,
+      "../frontend": true,
+      "../backend": true,
+      "../os-platform": true,
+      "../terrafusion-cos": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/out": true,
+      "../frontend": true,
+      "../backend": true,
+      "../os-platform": true
+    },
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "python.defaultInterpreter": "./marketplace/store/.venv/bin/python",
+    "eslint.workingDirectories": [
+      "./marketplace/store/marketplace-management",
+      "./marketplace/store/application-catalog"
+    ],
+    "terrafusion.sync": {
+      "autoSync": true,
+      "syncInterval": 15,
+      "conflictResolution": "prompt",
+      "sharedState": {
+        "backend": "read-only",
+        "sdk": "read-only",
+        "config": "shared-write"
+      },
+      "storeIntegration": true
+    },
+    "terrafusion.store": {
+      "enableMarketplace": true,
+      "applicationCatalog": true,
+      "licenseManagement": true,
+      "procurementSystem": true,
+      "vendorPortal": true,
+      "paymentGateway": true,
+      "subscriptionManagement": true
+    },
+    "terrafusion.commerce": {
+      "paymentProcessor": "stripe",
+      "licenseValidation": "automated",
+      "vendorVerification": true,
+      "procurementCompliance": true,
+      "subscriptionBilling": "recurring"
+    },
+    "terrafusion.compliance": {
+      "fismaMode": "MODERATE",
+      "nist80053": true,
+      "procurementRegulations": true,
+      "vendorCompliance": true,
+      "auditTrail": "comprehensive",
+      "contractManagement": true
+    },
+    "terrafusion.security": {
+      "vendorAccess": "controlled",
+      "paymentSecurity": "pci-dss",
+      "licenseProtection": "drm",
+      "marketplaceSecurity": "enhanced"
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-python.debugpy",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-vscode.vscode-typescript-next",
+      "streetsidesoftware.code-spell-checker",
+      "ms-azuretools.vscode-docker",
+      "redhat.vscode-yaml",
+      "ms-vscode.vscode-json",
+      "usernamehw.errorlens",
+      "formulahendry.auto-rename-tag"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Start Marketplace Management",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/store/marketplace-management",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "console": "integratedTerminal",
+        "env": {
+          "TERRAFUSION_SERVICE": "store",
+          "MARKETPLACE_MODE": "development",
+          "CATALOG_ENABLED": "true"
+        }
+      },
+      {
+        "name": "Debug License Management",
+        "type": "debugpy",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/store/license-management",
+        "program": "license_manager.py",
+        "console": "integratedTerminal",
+        "env": {
+          "LICENSE_DEBUG": "true",
+          "DRM_ENABLED": "true"
+        }
+      },
+      {
+        "name": "Debug Procurement System",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/store/procurement-system",
+        "program": "procurement_engine.js",
+        "console": "integratedTerminal",
+        "env": {
+          "PROCUREMENT_DEBUG": "true",
+          "COMPLIANCE_CHECK": "true"
+        }
+      },
+      {
+        "name": "Start Vendor Portal",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/store/vendor-portal",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "console": "integratedTerminal",
+        "env": {
+          "VENDOR_DEBUG": "true",
+          "PORTAL_MODE": "development"
+        }
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build Store System",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "build:store"
+        ],
+        "problemMatcher": [
+          "$tsc"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Test Store System",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "test:store"
+        ],
+        "problemMatcher": [],
+        "group": {
+          "kind": "test",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Deploy Store",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "deploy:store"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/store"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Update Application Catalog",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "update:catalog"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/store/application-catalog"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Validate Licenses",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "validate_licenses.py"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/store/license-management"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Process Procurement",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "process:procurement"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/store/procurement-system"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Vendor Verification",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "verify:vendors"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/store/vendor-portal"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Test Payment Gateway",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "test:payments"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/store/payment-gateway"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Procurement Compliance Check",
+        "type": "shell",
+        "command": "./SDK/tools/compliance-check.sh",
+        "args": [
+          "--service=store",
+          "--procurement-regulations"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      }
+    ]
+  }
+}

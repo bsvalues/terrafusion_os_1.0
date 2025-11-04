@@ -1,0 +1,34 @@
+# Production environment configuration for TerraFusionPro
+
+[server]
+host = "0.0.0.0"
+port = 5000
+
+[database]
+max_connections = 20
+idle_timeout_seconds = 60
+connection_timeout_seconds = 3
+
+[logging]
+level = "info"
+json_format = true  # Use JSON format in production for better log parsing
+request_logging = true
+
+[security]
+session_timeout_minutes = 30
+token_expiry_seconds = 3600  # 1 hour
+hash_rounds = 12
+
+[cors]
+# In production, we specify allowed origins explicitly
+allowed_origins = ["https://terrafusionpro.com", "https://app.terrafusionpro.com"]
+allowed_methods = ["GET", "POST", "PUT", "DELETE"]
+max_age_seconds = 86400  # 24 hours
+
+[services]
+# In production, services use internal Kubernetes service names
+user_service_url = "http://user-service:5004"
+property_service_url = "http://property-service:5003"
+form_service_url = "http://form-service:5005"
+report_service_url = "http://report-service:5007"
+analysis_service_url = "http://analysis-service:5006"

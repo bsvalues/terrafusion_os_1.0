@@ -1,0 +1,94 @@
+{
+  "workspace_protection_system": {
+    "workspace_name": "property-workbench",
+    "domain": "property_management",
+    "risk_level": "high",
+    "customization_timestamp": "2025-10-16T10:16:02.463790",
+    "eleven_layer_protection": {
+      "L1_role_scope_confirmation": {
+        "workspace_role": "property-workbench specialized AI agent",
+        "scope_definition": "Optimize and protect property_management operations",
+        "success_criteria": "Maintain high-level security for property_management",
+        "data_types_handled": [
+          "property_records",
+          "valuation_data",
+          "ownership_records"
+        ],
+        "protection_priorities": [
+          "property_privacy",
+          "valuation_accuracy",
+          "ownership_security"
+        ]
+      },
+      "L2_input_sanitation_threat_modeling": {
+        "threat_model": "property_management_specific_threats",
+        "input_validation": "property-workbench_input_sanitization",
+        "injection_prevention": "property_management_injection_protection",
+        "risk_level_controls": "high"
+      },
+      "L3_data_classification": {
+        "data_types": [
+          "property_records",
+          "valuation_data",
+          "ownership_records"
+        ],
+        "classification_level": "high",
+        "privacy_requirements": "property_management_privacy_rules",
+        "retention_policies": "property-workbench_data_retention",
+        "access_controls": "property_management_access_matrix"
+      },
+      "L4_secrets_hygiene": {
+        "vault_integration": "property-workbench_secret_vault",
+        "key_rotation": "property_management_key_management",
+        "credential_management": "property-workbench_credential_store",
+        "environment_separation": "high_env_isolation"
+      },
+      "L5_environment_guardrails": {
+        "environment_controls": "property-workbench_env_controls",
+        "blast_radius_limits": "property_management_isolation",
+        "feature_flags": "property-workbench_feature_management",
+        "deployment_gates": "high_deployment_controls"
+      },
+      "L6_policy_compliance": {
+        "domain_regulations": "property_management_compliance_framework",
+        "government_standards": [
+          "property_privacy",
+          "valuation_accuracy",
+          "ownership_security"
+        ],
+        "audit_requirements": "property-workbench_audit_trail",
+        "compliance_monitoring": "property_management_compliance_checks"
+      },
+      "L7_dependency_license_review": {
+        "sbom_generation": "property-workbench_software_bill_of_materials",
+        "vulnerability_scanning": "property_management_vuln_checks",
+        "license_compliance": "property-workbench_license_validation",
+        "dependency_monitoring": "high_dependency_tracking"
+      },
+      "L8_reproducibility": {
+        "version_pinning": "property-workbench_version_control",
+        "build_determinism": "property_management_build_reproducibility",
+        "configuration_management": "property-workbench_config_management",
+        "deployment_consistency": "high_deployment_standards"
+      },
+      "L9_observability_hooks": {
+        "metrics_collection": "property-workbench_domain_metrics",
+        "logging_framework": "property_management_specialized_logging",
+        "tracing_system": "property-workbench_distributed_tracing",
+        "alerting_rules": "property_management_alert_configuration"
+      },
+      "L10_human_in_loop_gates": {
+        "approval_workflows": "property-workbench_approval_matrix",
+        "review_requirements": "property_management_review_gates",
+        "escalation_procedures": "high_escalation_rules",
+        "manual_override_controls": "property-workbench_override_procedures"
+      },
+      "L11_red_team_self_check": {
+        "adversarial_testing": "property-workbench_penetration_testing",
+        "failure_mode_analysis": "property_management_failure_scenarios",
+        "rollback_procedures": "property-workbench_disaster_recovery",
+        "security_validation": "high_security_assessment"
+      }
+    }
+  }
+}

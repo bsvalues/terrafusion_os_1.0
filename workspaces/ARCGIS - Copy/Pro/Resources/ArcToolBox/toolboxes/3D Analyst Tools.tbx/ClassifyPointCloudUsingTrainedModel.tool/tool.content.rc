@@ -1,0 +1,32 @@
+{
+    "map": {
+        "batch_size.descr": "<xdoc><p>The number of point cloud data blocks that will be simultaneously processed during the inferencing operation. Generally, a larger batch size will cause faster processing of the data, but avoid using a batch size that is too large for the resources of the computer. When using the GPU, the available GPU memory is the most common constraint on the batch size the computer can handle. The memory used by a given block depends on the model&apos;s block point limit and required point attributes. To find the available GPU memory and for more information about evaluating GPU memory usage, use the NVIDIA SMI command line utility described in the Usages section.</p><p>For certain architectures, an optimal batch size will be calculated if the batch size is unspecified. When the GPU is used, the optimal batch size will be based on how much memory is consumed by a given block of data and how much GPU memory is freely available when the tool is run. When the CPU is used for inferencing, each block is processed on a CPU thread, and the optimal batch size is calculated to be half of the available, unused CPU threads.</p></xdoc>",
+        "batch_size.title": "Batch Size",
+        "boundary.descr": "The polygon boundary that defines the subset of points to be processed from the input point cloud. Points outside the boundary features will not be evaluated.",
+        "boundary.title": "Processing Boundary",
+        "compute_stats.descr": "<xdoc><p>Specifies whether statistics will be computed for the .las files referenced by the LAS dataset. Computing statistics provides a spatial index for each .las file, which improves analysis and display performance. Statistics also enhance the filtering and symbology experience by limiting the display of LAS attributes, such as classification codes and return information, to values that are present in the .las file.</p><ul><li>Checked—Statistics will be computed. This is the default.</li><li>Unchecked—Statistics will not be computed.</li></ul></xdoc>",
+        "compute_stats.title": "Compute statistics",
+        "description": "Classifies a point cloud using a deep learning model.",
+        "excluded_class_codes.descr": "The class codes that will be excluded from processing. Any value in the range of 0 to 255 can be specified.",
+        "excluded_class_codes.title": "Excluded Class Codes",
+        "in_class_mode.descr": "<xdoc><p>Specifies how the editable points from the input point cloud will be defined.</p><ul><li><span title=\"EDIT_ALL\">EDIT_ALL</span>—All points in the input point cloud will be edited. This is the default.</li><li><span title=\"EDIT_SELECTED\">EDIT_SELECTED</span>—Only points with class codes specified in the <span class=\"esri_uicontrol\">Existing Class Codes</span> parameter will be edited; all other points will remain unchanged.</li><li><span title=\"PRESERVE_SELECTED\">PRESERVE_SELECTED</span>—Points with class codes specified in the <span class=\"esri_uicontrol\">Existing Class Codes</span> parameter will be preserved; the remaining points will be edited.</li></ul></xdoc>",
+        "in_class_mode.domain.EDIT_ALL": "Edit All Points",
+        "in_class_mode.domain.EDIT_SELECTED": "Edit Selected Points",
+        "in_class_mode.domain.PRESERVE_SELECTED": "Preserve Selected Points",
+        "in_class_mode.title": "Existing Class Code Handling",
+        "in_point_cloud.descr": "The point cloud that will be classified.",
+        "in_point_cloud.title": "Target Point Cloud",
+        "in_trained_model.descr": "The input Esri model definition file (*.emd) or deep learning package (*.dlpk) that will be used to classify the point cloud. A URL for a deep learning package that is published on ArcGIS Online or ArcGIS Living Atlas can also be used.",
+        "in_trained_model.title": "Input Model Definition",
+        "out_point_cloud.title": "Output Point Cloud",
+        "output_classes.descr": "The class codes from the trained model that will be used to classify the input point cloud. All classes from the input model will be used by default unless a subset is specified.",
+        "output_classes.title": "Target Classification",
+        "reference_height.descr": "The raster surface that will be used to provide relative height values for each point in the point cloud data. Points that do not overlap with the raster will be omitted from the analysis.",
+        "reference_height.title": "Reference Surface",
+        "target_classes.descr": "<xdoc><p>The classes for which points will be edited or have their original class code designation preserved based on the <span class=\"esri_uicontrol\">Existing Class Code Handling</span> parameter value.</p></xdoc>",
+        "target_classes.title": "Existing Class Codes",
+        "title": "Classify Point Cloud Using Trained Model",
+        "update_pyramid.descr": "<xdoc><p>Specifies whether the LAS dataset pyramid will be updated after the class codes are modified.</p><ul><li>Checked—The LAS dataset pyramid will be updated. This is the default.</li><li>Unchecked—The LAS dataset pyramid will not be updated.</li></ul></xdoc>",
+        "update_pyramid.title": "Update pyramid"
+    }
+}

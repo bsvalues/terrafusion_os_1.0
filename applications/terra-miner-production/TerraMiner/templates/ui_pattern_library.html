@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraMiner UI Pattern Library</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                            950: '#082f49',
+                        },
+                        secondary: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        },
+                        success: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                            950: '#052e16',
+                        },
+                        warning: {
+                            50: '#fffbeb',
+                            100: '#fef3c7',
+                            200: '#fde68a',
+                            300: '#fcd34d',
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            700: '#b45309',
+                            800: '#92400e',
+                            900: '#78350f',
+                            950: '#451a03',
+                        },
+                        danger: {
+                            50: '#fef2f2',
+                            100: '#fee2e2',
+                            200: '#fecaca',
+                            300: '#fca5a5',
+                            400: '#f87171',
+                            500: '#ef4444',
+                            600: '#dc2626',
+                            700: '#b91c1c',
+                            800: '#991b1b',
+                            900: '#7f1d1d',
+                            950: '#450a0a',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer components {
+            .btn {
+                @apply px-4 py-2 rounded-md font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+            }
+            .btn-primary {
+                @apply btn bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 dark:bg-primary-700 dark:hover:bg-primary-800;
+            }
+            .btn-secondary {
+                @apply btn bg-secondary-100 text-secondary-800 hover:bg-secondary-200 focus:ring-secondary-500 dark:bg-secondary-700 dark:text-secondary-100 dark:hover:bg-secondary-600;
+            }
+            .btn-success {
+                @apply btn bg-success-600 text-white hover:bg-success-700 focus:ring-success-500 dark:bg-success-700 dark:hover:bg-success-800;
+            }
+            .btn-warning {
+                @apply btn bg-warning-500 text-white hover:bg-warning-600 focus:ring-warning-500 dark:bg-warning-600 dark:hover:bg-warning-700;
+            }
+            .btn-danger {
+                @apply btn bg-danger-600 text-white hover:bg-danger-700 focus:ring-danger-500 dark:bg-danger-700 dark:hover:bg-danger-800;
+            }
+            .btn-outline {
+                @apply btn bg-transparent border border-secondary-300 text-secondary-700 hover:bg-secondary-50 focus:ring-secondary-500 dark:border-secondary-600 dark:text-secondary-200 dark:hover:bg-secondary-800;
+            }
+            .btn-link {
+                @apply btn bg-transparent text-primary-600 hover:underline focus:ring-primary-500 dark:text-primary-400;
+            }
+            .btn-sm {
+                @apply px-2 py-1 text-sm;
+            }
+            .btn-lg {
+                @apply px-6 py-3 text-lg;
+            }
+
+            .card {
+                @apply bg-white rounded-lg shadow-md overflow-hidden dark:bg-secondary-800 dark:border dark:border-secondary-700;
+            }
+            .card-header {
+                @apply px-6 py-4 bg-secondary-50 border-b border-secondary-200 dark:bg-secondary-700 dark:border-secondary-600;
+            }
+            .card-body {
+                @apply p-6;
+            }
+            .card-footer {
+                @apply px-6 py-4 bg-secondary-50 border-t border-secondary-200 dark:bg-secondary-700 dark:border-secondary-600;
+            }
+            
+            .stat-card {
+                @apply card flex flex-col p-6;
+            }
+            .stat-title {
+                @apply text-secondary-500 text-sm font-medium dark:text-secondary-400;
+            }
+            .stat-value {
+                @apply text-3xl font-bold mt-2 text-secondary-900 dark:text-white;
+            }
+            .stat-desc {
+                @apply text-sm text-secondary-500 mt-1 dark:text-secondary-400;
+            }
+            .stat-trend-up {
+                @apply text-success-600 dark:text-success-500;
+            }
+            .stat-trend-down {
+                @apply text-danger-600 dark:text-danger-500;
+            }
+            
+            .form-label {
+                @apply block text-sm font-medium text-secondary-700 mb-1 dark:text-secondary-300;
+            }
+            .form-input {
+                @apply block w-full rounded-md border-secondary-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-secondary-700 dark:border-secondary-600 dark:text-white;
+            }
+            .form-select {
+                @apply block w-full rounded-md border-secondary-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-secondary-700 dark:border-secondary-600 dark:text-white;
+            }
+            .form-checkbox {
+                @apply rounded border-secondary-300 text-primary-600 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-offset-0 dark:border-secondary-600 dark:bg-secondary-700;
+            }
+            .form-radio {
+                @apply border-secondary-300 text-primary-600 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-offset-0 dark:border-secondary-600 dark:bg-secondary-700;
+            }
+            .form-group {
+                @apply mb-4;
+            }
+            
+            .table-container {
+                @apply w-full overflow-hidden rounded-lg shadow-md;
+            }
+            .table {
+                @apply min-w-full divide-y divide-secondary-200 dark:divide-secondary-700;
+            }
+            .table-header {
+                @apply bg-secondary-50 dark:bg-secondary-700;
+            }
+            .table-header-cell {
+                @apply px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider dark:text-secondary-400;
+            }
+            .table-body {
+                @apply bg-white divide-y divide-secondary-200 dark:bg-secondary-800 dark:divide-secondary-700;
+            }
+            .table-row {
+                @apply hover:bg-secondary-50 dark:hover:bg-secondary-700;
+            }
+            .table-cell {
+                @apply px-6 py-4 whitespace-nowrap text-sm text-secondary-900 dark:text-secondary-200;
+            }
+            
+            .badge {
+                @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+            }
+            .badge-primary {
+                @apply badge bg-primary-100 text-primary-800 dark:bg-primary-800 dark:text-primary-200;
+            }
+            .badge-secondary {
+                @apply badge bg-secondary-100 text-secondary-800 dark:bg-secondary-700 dark:text-secondary-200;
+            }
+            .badge-success {
+                @apply badge bg-success-100 text-success-800 dark:bg-success-800 dark:text-success-200;
+            }
+            .badge-warning {
+                @apply badge bg-warning-100 text-warning-800 dark:bg-warning-800 dark:text-warning-200;
+            }
+            .badge-danger {
+                @apply badge bg-danger-100 text-danger-800 dark:bg-danger-800 dark:text-danger-200;
+            }
+            
+            .alert {
+                @apply p-4 rounded-md mb-4;
+            }
+            .alert-info {
+                @apply alert bg-primary-50 text-primary-800 dark:bg-primary-900 dark:text-primary-200;
+            }
+            .alert-success {
+                @apply alert bg-success-50 text-success-800 dark:bg-success-900 dark:text-success-200;
+            }
+            .alert-warning {
+                @apply alert bg-warning-50 text-warning-800 dark:bg-warning-900 dark:text-warning-200;
+            }
+            .alert-danger {
+                @apply alert bg-danger-50 text-danger-800 dark:bg-danger-900 dark:text-danger-200;
+            }
+            
+            .toast {
+                @apply fixed top-4 right-4 p-4 rounded-md shadow-lg max-w-md z-50 transform transition-all duration-300 ease-in-out;
+            }
+            .toast-success {
+                @apply toast bg-success-600 text-white dark:bg-success-700;
+            }
+            .toast-info {
+                @apply toast bg-primary-600 text-white dark:bg-primary-700;
+            }
+            .toast-warning {
+                @apply toast bg-warning-500 text-white dark:bg-warning-600;
+            }
+            .toast-error {
+                @apply toast bg-danger-600 text-white dark:bg-danger-700;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased bg-secondary-50 text-secondary-900 dark:bg-secondary-900 dark:text-white h-full">
+    <div class="min-h-full">
+        <!-- Top Navigation -->
+        <nav class="bg-white shadow-sm dark:bg-secondary-800 dark:border-b dark:border-secondary-700">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center">
+                        <h1 class="text-xl font-bold text-primary-600 dark:text-primary-400">TerraMiner UI Pattern Library</h1>
+                    </div>
+                    <div class="flex items-center">
+                        <button id="theme-toggle" class="p-2 rounded-md text-secondary-500 hover:text-secondary-700 hover:bg-secondary-100 dark:text-secondary-400 dark:hover:text-white dark:hover:bg-secondary-700">
+                            <!-- Sun icon -->
+                            <svg id="light-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                            <!-- Moon icon -->
+                            <svg id="dark-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row md:space-x-6">
+                <!-- Sidebar Navigation -->
+                <div class="w-full md:w-64 mb-6 md:mb-0">
+                    <div class="sticky top-4 card">
+                        <div class="card-header">
+                            <h2 class="text-lg font-medium text-secondary-900 dark:text-white">Components</h2>
+                        </div>
+                        <div class="py-2">
+                            <nav class="flex flex-col space-y-1">
+                                <a href="#buttons" class="px-4 py-2 text-secondary-700 hover:bg-secondary-50 hover:text-secondary-900 dark:text-secondary-200 dark:hover:bg-secondary-700">Buttons</a>
+                                <a href="#cards" class="px-4 py-2 text-secondary-700 hover:bg-secondary-50 hover:text-secondary-900 dark:text-secondary-200 dark:hover:bg-secondary-700">Cards</a>
+                                <a href="#stats" class="px-4 py-2 text-secondary-700 hover:bg-secondary-50 hover:text-secondary-900 dark:text-secondary-200 dark:hover:bg-secondary-700">Stats</a>
+                                <a href="#forms" class="px-4 py-2 text-secondary-700 hover:bg-secondary-50 hover:text-secondary-900 dark:text-secondary-200 dark:hover:bg-secondary-700">Forms</a>
+                                <a href="#tables" class="px-4 py-2 text-secondary-700 hover:bg-secondary-50 hover:text-secondary-900 dark:text-secondary-200 dark:hover:bg-secondary-700">Tables</a>
+                                <a href="#badges" class="px-4 py-2 text-secondary-700 hover:bg-secondary-50 hover:text-secondary-900 dark:text-secondary-200 dark:hover:bg-secondary-700">Badges</a>
+                                <a href="#alerts" class="px-4 py-2 text-secondary-700 hover:bg-secondary-50 hover:text-secondary-900 dark:text-secondary-200 dark:hover:bg-secondary-700">Alerts</a>
+                                <a href="#toasts" class="px-4 py-2 text-secondary-700 hover:bg-secondary-50 hover:text-secondary-900 dark:text-secondary-200 dark:hover:bg-secondary-700">Toasts</a>
+                                <a href="#responsive" class="px-4 py-2 text-secondary-700 hover:bg-secondary-50 hover:text-secondary-900 dark:text-secondary-200 dark:hover:bg-secondary-700">Responsive Preview</a>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Component Showcase -->
+                <div class="flex-1">
+                    <!-- Introduction Section -->
+                    <div class="card mb-8">
+                        <div class="card-header">
+                            <h2 class="text-lg font-medium text-secondary-900 dark:text-white">TerraMiner UI Pattern Library</h2>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-4 text-secondary-700 dark:text-secondary-300">
+                                This pattern library provides a collection of UI components for use in the TerraMiner application. The components are built with Tailwind CSS and support both light and dark modes.
+                            </p>
+                            <p class="mb-4 text-secondary-700 dark:text-secondary-300">
+                                Use the toggle in the top-right corner to switch between light and dark modes.
+                            </p>
+                            <div class="flex space-x-2">
+                                <button class="btn-primary" id="showToastSuccess">Show Success Toast</button>
+                                <button class="btn-danger" id="showToastError">Show Error Toast</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Buttons Section -->
+                    <section id="buttons" class="mb-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="text-lg font-medium text-secondary-900 dark:text-white">Buttons</h2>
+                            </div>
+                            <div class="card-body">
+                                <h3 class="text-md font-medium mb-3 text-secondary-800 dark:text-secondary-200">Button Variants</h3>
+                                <div class="flex flex-wrap gap-2 mb-6">
+                                    <button class="btn-primary">Primary</button>
+                                    <button class="btn-secondary">Secondary</button>
+                                    <button class="btn-success">Success</button>
+                                    <button class="btn-warning">Warning</button>
+                                    <button class="btn-danger">Danger</button>
+                                    <button class="btn-outline">Outline</button>
+                                    <button class="btn-link">Link</button>
+                                </div>
+
+                                <h3 class="text-md font-medium mb-3 text-secondary-800 dark:text-secondary-200">Button Sizes</h3>
+                                <div class="flex flex-wrap gap-2 mb-6 items-center">
+                                    <button class="btn-primary btn-sm">Small</button>
+                                    <button class="btn-primary">Default</button>
+                                    <button class="btn-primary btn-lg">Large</button>
+                                </div>
+
+                                <h3 class="text-md font-medium mb-3 text-secondary-800 dark:text-secondary-200">Button States</h3>
+                                <div class="flex flex-wrap gap-2 mb-6">
+                                    <button class="btn-primary">Normal</button>
+                                    <button class="btn-primary opacity-75 cursor-not-allowed" disabled>Disabled</button>
+                                    <button class="btn-primary flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                        </svg>
+                                        With Icon
+                                    </button>
+                                </div>
+
+                                <h3 class="text-md font-medium mb-3 text-secondary-800 dark:text-secondary-200">Button Groups</h3>
+                                <div class="inline-flex rounded-md shadow-sm mb-6">
+                                    <button class="px-4 py-2 text-sm font-medium text-primary-700 bg-white border border-secondary-300 rounded-l-md hover:bg-secondary-50 focus:z-10 focus:ring-2 focus:ring-primary-500 dark:bg-secondary-800 dark:border-secondary-600 dark:text-secondary-200 dark:hover:bg-secondary-700">
+                                        Day
+                                    </button>
+                                    <button class="px-4 py-2 text-sm font-medium text-primary-700 bg-white border-t border-b border-secondary-300 hover:bg-secondary-50 focus:z-10 focus:ring-2 focus:ring-primary-500 dark:bg-secondary-800 dark:border-secondary-600 dark:text-secondary-200 dark:hover:bg-secondary-700">
+                                        Week
+                                    </button>
+                                    <button class="px-4 py-2 text-sm font-medium text-primary-700 bg-white border border-secondary-300 rounded-r-md hover:bg-secondary-50 focus:z-10 focus:ring-2 focus:ring-primary-500 dark:bg-secondary-800 dark:border-secondary-600 dark:text-secondary-200 dark:hover:bg-secondary-700">
+                                        Month
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Cards Section -->
+                    <section id="cards" class="mb-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="text-lg font-medium text-secondary-900 dark:text-white">Cards</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h3 class="text-md font-medium text-secondary-800 dark:text-secondary-200">Card with Header and Footer</h3>
+                                        </div>
+                                        <div class="card-body">
+                                            <p class="text-secondary-700 dark:text-secondary-300">
+                                                This is a basic card with a header and footer. Cards can be used to group related content.
+                                            </p>
+                                        </div>
+                                        <div class="card-footer">
+                                            <div class="flex justify-end">
+                                                <button class="btn-primary">Action</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h3 class="text-lg font-medium mb-2 text-secondary-800 dark:text-secondary-200">Simple Card</h3>
+                                            <p class="text-secondary-700 dark:text-secondary-300">
+                                                This is a simple card without header or footer. Use this for simpler content presentation.
+                                            </p>
+                                            <div class="mt-4">
+                                                <button class="btn-outline">Learn More</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Stats Section -->
+                    <section id="stats" class="mb-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="text-lg font-medium text-secondary-900 dark:text-white">Stats</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div class="stat-card">
+                                        <div class="stat-title">Total Properties</div>
+                                        <div class="stat-value">3,842</div>
+                                        <div class="stat-desc">
+                                            <span class="stat-trend-up">↑ 14%</span> from last month
+                                        </div>
+                                    </div>
+
+                                    <div class="stat-card">
+                                        <div class="stat-title">Average Price</div>
+                                        <div class="stat-value">$328,405</div>
+                                        <div class="stat-desc">
+                                            <span class="stat-trend-up">↑ 5.3%</span> from last month
+                                        </div>
+                                    </div>
+
+                                    <div class="stat-card">
+                                        <div class="stat-title">Filled Vacancies</div>
+                                        <div class="stat-value">89%</div>
+                                        <div class="stat-desc">
+                                            <span class="stat-trend-down">↓ 2%</span> from last month
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Forms Section -->
+                    <section id="forms" class="mb-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="text-lg font-medium text-secondary-900 dark:text-white">Forms</h2>
+                            </div>
+                            <div class="card-body">
+                                <form class="space-y-6">
+                                    <div class="form-group">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" id="email" class="form-input" placeholder="you@example.com">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="password" class="form-label">Password</label>
+                                        <input type="password" id="password" class="form-input" placeholder="••••••••">
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="form-group">
+                                            <label for="first-name" class="form-label">First Name</label>
+                                            <input type="text" id="first-name" class="form-input">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="last-name" class="form-label">Last Name</label>
+                                            <input type="text" id="last-name" class="form-input">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="country" class="form-label">Country / Region</label>
+                                        <select id="country" class="form-select">
+                                            <option>United States</option>
+                                            <option>Canada</option>
+                                            <option>Mexico</option>
+                                            <option>United Kingdom</option>
+                                            <option>Germany</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="message" class="form-label">Message</label>
+                                        <textarea id="message" rows="4" class="form-input" placeholder="Enter your message here"></textarea>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="flex items-start">
+                                            <div class="flex items-center h-5">
+                                                <input id="terms" type="checkbox" class="form-checkbox" checked>
+                                            </div>
+                                            <div class="ml-3 text-sm">
+                                                <label for="terms" class="font-medium text-secondary-700 dark:text-secondary-300">I agree to the terms and conditions</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <button type="submit" class="btn-primary w-full">Submit</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Tables Section -->
+                    <section id="tables" class="mb-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="text-lg font-medium text-secondary-900 dark:text-white">Tables</h2>
+                            </div>
+                            <div class="card-body overflow-x-auto">
+                                <div class="table-container">
+                                    <table class="table">
+                                        <thead class="table-header">
+                                            <tr>
+                                                <th scope="col" class="table-header-cell">Name</th>
+                                                <th scope="col" class="table-header-cell">Title</th>
+                                                <th scope="col" class="table-header-cell">Status</th>
+                                                <th scope="col" class="table-header-cell">Role</th>
+                                                <th scope="col" class="table-header-cell">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="table-body">
+                                            <tr class="table-row">
+                                                <td class="table-cell">Jane Cooper</td>
+                                                <td class="table-cell">Regional Manager</td>
+                                                <td class="table-cell">
+                                                    <span class="badge-success">Active</span>
+                                                </td>
+                                                <td class="table-cell">Admin</td>
+                                                <td class="table-cell">
+                                                    <button class="btn-outline btn-sm">Edit</button>
+                                                </td>
+                                            </tr>
+                                            <tr class="table-row">
+                                                <td class="table-cell">Sarah Brown</td>
+                                                <td class="table-cell">Marketing Specialist</td>
+                                                <td class="table-cell">
+                                                    <span class="badge-warning">Pending</span>
+                                                </td>
+                                                <td class="table-cell">User</td>
+                                                <td class="table-cell">
+                                                    <button class="btn-outline btn-sm">Edit</button>
+                                                </td>
+                                            </tr>
+                                            <tr class="table-row">
+                                                <td class="table-cell">Michael Johnson</td>
+                                                <td class="table-cell">Developer</td>
+                                                <td class="table-cell">
+                                                    <span class="badge-danger">Inactive</span>
+                                                </td>
+                                                <td class="table-cell">Developer</td>
+                                                <td class="table-cell">
+                                                    <button class="btn-outline btn-sm">Edit</button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Badges Section -->
+                    <section id="badges" class="mb-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="text-lg font-medium text-secondary-900 dark:text-white">Badges</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="flex flex-wrap gap-2 mb-6">
+                                    <span class="badge-primary">Primary</span>
+                                    <span class="badge-secondary">Secondary</span>
+                                    <span class="badge-success">Success</span>
+                                    <span class="badge-warning">Warning</span>
+                                    <span class="badge-danger">Danger</span>
+                                </div>
+
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="badge-primary">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="-ml-0.5 mr-1.5 h-2 w-2" fill="currentColor" viewBox="0 0 8 8">
+                                            <circle cx="4" cy="4" r="3" />
+                                        </svg>
+                                        With Dot
+                                    </span>
+                                    <span class="badge-success">
+                                        New Feature
+                                        <button type="button" class="ml-0.5 inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full text-success-400 hover:bg-success-200 hover:text-success-500 focus:bg-success-500 focus:text-white focus:outline-none dark:hover:bg-success-700">
+                                            <svg class="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">
+                                                <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7" />
+                                            </svg>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Alerts Section -->
+                    <section id="alerts" class="mb-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="text-lg font-medium text-secondary-900 dark:text-white">Alerts</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert-info flex">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-5 w-5 text-primary-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3">
+                                        <h3 class="text-sm font-medium text-primary-800 dark:text-primary-300">Information</h3>
+                                        <div class="mt-2 text-sm text-primary-700 dark:text-primary-200">
+                                            <p>This is an informational alert. Use this to provide general information to users.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="alert-success flex mt-4">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-5 w-5 text-success-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3">
+                                        <h3 class="text-sm font-medium text-success-800 dark:text-success-300">Success</h3>
+                                        <div class="mt-2 text-sm text-success-700 dark:text-success-200">
+                                            <p>This is a success alert. Use this to confirm that an action was successful.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="alert-warning flex mt-4">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-5 w-5 text-warning-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3">
+                                        <h3 class="text-sm font-medium text-warning-800 dark:text-warning-300">Warning</h3>
+                                        <div class="mt-2 text-sm text-warning-700 dark:text-warning-200">
+                                            <p>This is a warning alert. Use this to warn users about potential issues.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="alert-danger flex mt-4">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-5 w-5 text-danger-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3">
+                                        <h3 class="text-sm font-medium text-danger-800 dark:text-danger-300">Error</h3>
+                                        <div class="mt-2 text-sm text-danger-700 dark:text-danger-200">
+                                            <p>This is an error alert. Use this to inform users about errors or failures.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Toasts Section -->
+                    <section id="toasts" class="mb-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="text-lg font-medium text-secondary-900 dark:text-white">Toasts</h2>
+                            </div>
+                            <div class="card-body">
+                                <p class="mb-4 text-secondary-700 dark:text-secondary-300">
+                                    Click the buttons below to show toast notifications. These will appear in the top-right corner of the screen.
+                                </p>
+                                <div class="flex flex-wrap gap-2">
+                                    <button class="btn-primary" id="showToastInfo">Info Toast</button>
+                                    <button class="btn-success" id="showToastSuccess2">Success Toast</button>
+                                    <button class="btn-warning" id="showToastWarning">Warning Toast</button>
+                                    <button class="btn-danger" id="showToastError2">Error Toast</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Responsive Preview -->
+                    <section id="responsive" class="mb-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="text-lg font-medium text-secondary-900 dark:text-white">Responsive Preview</h2>
+                            </div>
+                            <div class="card-body">
+                                <p class="mb-6 text-secondary-700 dark:text-secondary-300">
+                                    Click the buttons below to preview the content at different screen sizes.
+                                </p>
+                                <div class="flex flex-wrap gap-2 mb-6">
+                                    <button class="btn-outline btn-sm responsive-preview" data-width="375">Mobile (375px)</button>
+                                    <button class="btn-outline btn-sm responsive-preview" data-width="768">Tablet (768px)</button>
+                                    <button class="btn-outline btn-sm responsive-preview" data-width="1024">Laptop (1024px)</button>
+                                    <button class="btn-outline btn-sm responsive-preview" data-width="1440">Desktop (1440px)</button>
+                                    <button class="btn-outline btn-sm responsive-preview" data-width="100%">Full Width</button>
+                                </div>
+                                
+                                <div class="preview-container border-2 border-secondary-300 dark:border-secondary-700 rounded-md mx-auto transition-all duration-300 flex justify-center overflow-hidden">
+                                    <div class="preview-content w-full h-96 bg-white dark:bg-secondary-800 p-4 overflow-auto">
+                                        <h3 class="text-lg font-medium mb-4 text-secondary-800 dark:text-secondary-200">Responsive Content Preview</h3>
+                                        
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                                            <div class="stat-card">
+                                                <div class="stat-title">Total</div>
+                                                <div class="stat-value">$89.4k</div>
+                                                <div class="stat-desc">21% more than last month</div>
+                                            </div>
+                                            <div class="stat-card">
+                                                <div class="stat-title">New</div>
+                                                <div class="stat-value">1,984</div>
+                                                <div class="stat-desc">142 more than yesterday</div>
+                                            </div>
+                                            <div class="stat-card">
+                                                <div class="stat-title">Returning</div>
+                                                <div class="stat-value">52%</div>
+                                                <div class="stat-desc">3% more than last month</div>
+                                            </div>
+                                            <div class="stat-card">
+                                                <div class="stat-title">Bounce</div>
+                                                <div class="stat-value">24.5%</div>
+                                                <div class="stat-desc">4% less than last month</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            <div class="md:col-span-2">
+                                                <div class="card h-full">
+                                                    <div class="card-header">
+                                                        <h3 class="text-md font-medium text-secondary-800 dark:text-secondary-200">Weekly Report</h3>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <p class="text-secondary-700 dark:text-secondary-300 mb-4">
+                                                            This container will adapt to different screen sizes. On smaller screens, the cards will stack vertically.
+                                                        </p>
+                                                        <div class="flex flex-wrap justify-between">
+                                                            <button class="btn-primary">View Report</button>
+                                                            <button class="btn-outline">Download PDF</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div class="card h-full">
+                                                    <div class="card-header">
+                                                        <h3 class="text-md font-medium text-secondary-800 dark:text-secondary-200">Quick Actions</h3>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="space-y-2">
+                                                            <button class="btn-outline w-full text-left flex items-center">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                                                </svg>
+                                                                Add New
+                                                            </button>
+                                                            <button class="btn-outline w-full text-left flex items-center">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                                                </svg>
+                                                                Export Data
+                                                            </button>
+                                                            <button class="btn-outline w-full text-left flex items-center">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                                </svg>
+                                                                Settings
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-center mt-4 text-sm text-secondary-600 dark:text-secondary-400">
+                                    <span id="preview-size">Current size: 100% width</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast containers -->
+    <div id="toast-success" class="toast toast-success translate-y-[-100%] opacity-0 hidden">
+        <div class="flex items-center">
+            <svg class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+            </svg>
+            <div>
+                <p class="font-medium">Success!</p>
+                <p class="text-sm">Your action was completed successfully.</p>
+            </div>
+            <button class="ml-auto -mx-1.5 -my-1.5 bg-success-700 text-success-200 rounded-lg p-1.5 hover:bg-success-800 inline-flex h-8 w-8 dark:bg-success-800 dark:text-success-300 dark:hover:bg-success-900" type="button" aria-label="Close" onclick="hideToast('toast-success')">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+            </button>
+        </div>
+    </div>
+
+    <div id="toast-info" class="toast bg-primary-600 text-white dark:bg-primary-700 translate-y-[-100%] opacity-0 hidden">
+        <div class="flex items-center">
+            <svg class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div>
+                <p class="font-medium">Information</p>
+                <p class="text-sm">Here's some important information for you.</p>
+            </div>
+            <button class="ml-auto -mx-1.5 -my-1.5 bg-primary-700 text-primary-200 rounded-lg p-1.5 hover:bg-primary-800 inline-flex h-8 w-8 dark:bg-primary-800 dark:text-primary-300 dark:hover:bg-primary-900" type="button" aria-label="Close" onclick="hideToast('toast-info')">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+            </button>
+        </div>
+    </div>
+
+    <div id="toast-warning" class="toast bg-warning-500 text-white dark:bg-warning-600 translate-y-[-100%] opacity-0 hidden">
+        <div class="flex items-center">
+            <svg class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div>
+                <p class="font-medium">Warning</p>
+                <p class="text-sm">Please be careful with this action.</p>
+            </div>
+            <button class="ml-auto -mx-1.5 -my-1.5 bg-warning-600 text-warning-200 rounded-lg p-1.5 hover:bg-warning-700 inline-flex h-8 w-8 dark:bg-warning-700 dark:text-warning-300 dark:hover:bg-warning-800" type="button" aria-label="Close" onclick="hideToast('toast-warning')">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+            </button>
+        </div>
+    </div>
+
+    <div id="toast-error" class="toast toast-error translate-y-[-100%] opacity-0 hidden">
+        <div class="flex items-center">
+            <svg class="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div>
+                <p class="font-medium">Error!</p>
+                <p class="text-sm">An error occurred while processing your request.</p>
+            </div>
+            <button class="ml-auto -mx-1.5 -my-1.5 bg-danger-700 text-danger-200 rounded-lg p-1.5 hover:bg-danger-800 inline-flex h-8 w-8 dark:bg-danger-800 dark:text-danger-300 dark:hover:bg-danger-900" type="button" aria-label="Close" onclick="hideToast('toast-error')">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Theme toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('theme-toggle');
+            const lightIcon = document.getElementById('light-icon');
+            const darkIcon = document.getElementById('dark-icon');
+            
+            // Check user preference and system settings
+            const userTheme = localStorage.getItem('theme');
+            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            
+            // Set initial theme
+            if (userTheme === 'dark' || (!userTheme && systemTheme === 'dark')) {
+                document.documentElement.classList.add('dark');
+                lightIcon.classList.remove('hidden');
+            } else {
+                darkIcon.classList.remove('hidden');
+            }
+            
+            // Theme toggle click handler
+            themeToggle.addEventListener('click', function() {
+                if (document.documentElement.classList.contains('dark')) {
+                    // Switch to light mode
+                    document.documentElement.classList.remove('dark');
+                    lightIcon.classList.add('hidden');
+                    darkIcon.classList.remove('hidden');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    // Switch to dark mode
+                    document.documentElement.classList.add('dark');
+                    darkIcon.classList.add('hidden');
+                    lightIcon.classList.remove('hidden');
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+            
+            // Toast functionality
+            document.getElementById('showToastSuccess').addEventListener('click', function() {
+                showToast('toast-success');
+            });
+            
+            document.getElementById('showToastSuccess2').addEventListener('click', function() {
+                showToast('toast-success');
+            });
+            
+            document.getElementById('showToastInfo').addEventListener('click', function() {
+                showToast('toast-info');
+            });
+            
+            document.getElementById('showToastWarning').addEventListener('click', function() {
+                showToast('toast-warning');
+            });
+            
+            document.getElementById('showToastError').addEventListener('click', function() {
+                showToast('toast-error');
+            });
+            
+            document.getElementById('showToastError2').addEventListener('click', function() {
+                showToast('toast-error');
+            });
+            
+            // Responsive preview
+            const previewButtons = document.querySelectorAll('.responsive-preview');
+            const previewContainer = document.querySelector('.preview-container');
+            const previewSize = document.getElementById('preview-size');
+            
+            previewButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const width = this.getAttribute('data-width');
+                    previewContainer.style.width = width;
+                    previewSize.textContent = `Current size: ${width}${width !== '100%' ? 'px' : ' width'}`;
+                });
+            });
+        });
+        
+        // Show toast notification
+        function showToast(id) {
+            const toast = document.getElementById(id);
+            // Hide any visible toasts first
+            document.querySelectorAll('.toast').forEach(t => {
+                if (!t.classList.contains('hidden') && t.id !== id) {
+                    hideToast(t.id);
+                }
+            });
+            
+            // Show the selected toast
+            toast.classList.remove('hidden');
+            // Use setTimeout to ensure the transition works
+            setTimeout(() => {
+                toast.classList.remove('translate-y-[-100%]', 'opacity-0');
+            }, 10);
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                hideToast(id);
+            }, 5000);
+        }
+        
+        // Hide toast notification
+        function hideToast(id) {
+            const toast = document.getElementById(id);
+            toast.classList.add('translate-y-[-100%]', 'opacity-0');
+            
+            // Wait for transition to complete before hiding
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 300);
+        }
+    </script>
+</body>
+</html>

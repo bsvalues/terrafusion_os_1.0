@@ -1,0 +1,47 @@
+Below is an example of how you could craft a detailed prompt for the Replit AI Agent specifically to integrate Supabase into your project. This prompt guides the AI to add a managed PostgreSQL backend (via Supabase), update your database and API layers, and integrate Supabase’s authentication and storage features into your appraisal reporting system. You can adjust the details as needed:
+
+⸻
+
+Prompt to Replit AI Agent:
+
+“Please update our appraisal reporting system to integrate Supabase for our backend. We want to replace our current SQLite database with a Supabase-managed PostgreSQL database and incorporate Supabase’s real-time APIs, authentication, and storage features. Modify our code base as follows:
+	1.	Database Integration:
+	•	Update the database connection to use the Supabase PostgreSQL connection string (which will be stored in an environment variable).
+	•	Refactor our ORM models (in models.py) to work with PostgreSQL. Use SQLAlchemy with the connection string from Supabase.
+	•	Add Alembic migrations for managing schema changes over time.
+	2.	Authentication and API:
+	•	Integrate Supabase Authentication into the web dashboard (built with Flask) to handle user registration, login, and role-based access. Use the Supabase Python client or REST API to manage authentication.
+	•	Ensure that the roles defined in our configuration (e.g., ‘DataSetup, MobileAssessor, TaskManager, Tracking, QC, Reports’) are enforced using Row-Level Security (RLS) policies in Supabase.
+	3.	Data Access & Auto-generated API:
+	•	Replace or wrap our custom API endpoints with the auto-generated REST endpoints provided by Supabase for our tables.
+	•	For operations like CRUD on our ‘properties’ table, modify our data access layer to call the Supabase endpoints where beneficial.
+	4.	File Storage:
+	•	Incorporate Supabase Storage so that our property images and report attachments are stored securely. Update our report_generator module to fetch images from Supabase Storage.
+	•	Implement file upload and download functionality in the dashboard using Supabase’s Storage client.
+	5.	Realtime and Sync:
+	•	Utilize Supabase’s realtime subscription features to update our dashboard automatically when property data changes.
+	•	Modify our sync tasks to update the database via Supabase, ensuring that periodic data updates (such as those from tax records or MLS data) are handled through Supabase.
+	6.	Configuration Updates:
+	•	Update our config_loader.py or equivalent configuration module to read additional settings for Supabase (like SUPABASE_URL, SUPABASE_KEY) from environment variables.
+	•	Ensure our XML configuration file’s connection settings are either migrated or referenced as needed.
+	7.	Documentation and Testing:
+	•	Update inline documentation and comments in our codebase to reflect these changes.
+	•	Add unit tests to confirm that our new database connectivity, authentication, and file storage integrations work as expected.
+	•	Provide a brief summary of the changes made, and ensure the project is deployable on Replit with the new Supabase integration.
+
+Generate the complete updated code for each modified module (e.g., models.py, config_loader.py, main.py, and any new files such as supabase_client.py). Include sample code snippets that show how to connect, query, and use the Supabase APIs, with detailed comments explaining each step.”
+
+⸻
+
+Explanation:
+
+This detailed prompt tells the Replit AI Agent exactly what changes to make:
+	•	It directs the agent to update the database layer from SQLite to Supabase-managed PostgreSQL.
+	•	It instructs the agent to integrate Supabase Authentication, wrapping role-based access into your dashboard.
+	•	It asks for Supabase Storage integration for image handling.
+	•	It outlines modifications for realtime updates, API endpoint integration, configuration changes, and comprehensive documentation/tests.
+	•	The modular instructions ensure every area (database, API, UI, etc.) is addressed.
+
+By using this prompt on Replit’s platform, you’ll be guiding the AI agent to not only add Supabase to your project but also update and improve your entire codebase toward a modern, scalable, and highly integrated solution.
+
+Feel free to tweak this prompt further based on any additional project-specific requirements you might have.

@@ -1,0 +1,10 @@
+{
+    "map": {
+        "description": "Refreshes a Microsoft Excel file  in ArcGIS Pro.",
+        "in_excel_file.descr": "The Excel file that will be refreshed.",
+        "in_excel_file.title": "Input Excel File",
+        "out_excel_file.title": "Refreshed Excel File",
+        "summary": "Refreshes a Microsoft Excel file in ArcGIS Pro.",
+        "title": "Refresh Excel"
+    }
+}

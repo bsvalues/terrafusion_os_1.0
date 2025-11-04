@@ -1,0 +1,44 @@
+{
+    "type": "FunctionTool",
+    "displayname": "$rc:title",
+    "helpcontent": "13020002",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "8"
+    ],
+    "tool_Execute": "NetworkAnalyst.dll/DissolveNetwork_Execute",
+    "tool_Validate2": "NetworkAnalyst.dll/DissolveNetwork_Validate",
+    "params": {
+        "in_network_dataset": {
+            "displayname": "$rc:in_network_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPNetworkDatasetLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_network_dataset.descr"
+        },
+        "out_workspace_location": {
+            "displayname": "$rc:out_workspace_location.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "description": "$rc:out_workspace_location.descr"
+        },
+        "out_network_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_network_dataset.title",
+            "datatype": {
+                "type": "DENetworkDataset"
+            }
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

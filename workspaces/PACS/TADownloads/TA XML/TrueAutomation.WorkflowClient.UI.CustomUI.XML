@@ -1,0 +1,2679 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.WorkflowClient.UI.CustomUI</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanel">
+            <summary>
+            Panel for Launching the Custom Data Entry Fields (Routing Dialog) that have been entered
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanel.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanel.SaveTaskData">
+            <summary>
+            This method is invoked when the Task is Saved. 
+            This will publish a CustomRoutingMessage passing parameters TaskId, TaskTypeId,
+            the Custom UI Name and  OptionSelected
+            If the datarecord needs to be modified
+            return datarecord to be saved in the database else return null 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanel.SetData(TrueAutomation.WorkflowClient.UI.Logic.CustomUI.ITaskDataRecord)">
+            <summary>
+            This is not used for this panel
+            </summary>
+            <param name="record"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanel.SetObjectState(TAUserInterfaceService.IObjectState)">
+            <summary>
+            This is not used for this panel
+            </summary>
+            <param name="objectState"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanel.AfterFormDisplay">
+            <summary>
+            Nothing to do
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanel.HandleDirtyRecord">
+            <summary>
+            This handles the data change event. This is not used for this panel.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanel.Notify(TrueAutomation.WorkflowService.Messages.IWorkflowMessage)">
+            <summary>
+            Publishes a LaunchWorkflowMessage to be consumed by a consumer for execution of launching the workflow
+            </summary>
+            <param name="msg"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanel.Serialize">
+            <summary>
+            No data to be serialized
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanel.uiElement">
+            <summary>
+            The UI element that contains information of the routing screen in the payload.
+            Also Deserializes the payload to display data in the panel
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanel.DisableCloseButton">
+            <summary>
+            No implementation required
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanel.DeSerialize(System.String)">
+            <summary>
+            Deserializes the payload (the name , instructions and the options selected for the routing panel)
+            </summary>
+            <param name="payload"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanel.ShowDialog(System.Windows.Forms.IWin32Window,System.Object[])">
+            <summary>
+            No dialog to be displayed
+            </summary>
+            <param name="owner"></param>
+            <param name="showDialogParameters"></param>
+            <returns>Ignore any dialog result</returns>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanel.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanel.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanel.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanel.TaskDataRecord">
+            <summary>
+            No DataRecord is associated with the Custom Routing panel
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanel.HeaderText">
+            <summary>
+            The Header that would appear in the panel
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanel.IsDirty">
+            <summary>
+            The flag to set if the data is dirty. This is not used for this panel
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanel.DirtyChanged">
+            <summary>
+            Event handler to handle the case when data is modified. This is not used for the time being.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanel.DialogState">
+            <summary>
+            Not implemented
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanel.TaskId">
+            <summary>
+            The Task Id that would be used by the workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanel.TaskTypeId">
+            <summary>
+            The Task type Id that would be used by the workflow
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanelSetUp">
+            <summary>
+            The IPanelSetup Task UI attribute that CustomRoutingPanel uses
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanelSetUp.#ctor">
+            <summary>
+            General constructor
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanelSetUp.commandsMenu">
+            <summary>
+            The commandsMenu attached. Not implemenetd
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanelSetUp.objectState">
+            <summary>
+            The associated objectstate. Not implemenetd
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanelSetUp.taskData">
+            <summary>
+            The associated TaskDataRecord. No data record
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanelSetUp.PreInitialize(System.Object)">
+            <summary>
+            This is invoked before initializing the panel
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanelSetUp.AssignUIEventHandlers">
+            <summary>
+            No eventhandlers to associate to
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanelSetUp.CommandsMenu">
+            <summary>
+            The associated commandsMenu. Not implemenetd
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanelSetUp.ObjectState">
+            <summary>
+            The associated objectstate. Not implemenetd
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanelSetUp.TaskData">
+            <summary>
+            The associated TaskDataRecord. No data record
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanelSetUp.IsReadOnly">
+            <summary>
+            This denotes if the panel is readonly. Not set
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanelSetUp.BaseView">
+            <summary>
+            The base view. Not implemented
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingPanelSetUp.ServiceContainer">
+            <summary>
+            The service container. Not implemented
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingParagraph">
+            <summary>
+            The CustomDataEntryRoutingParagraph
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.BaseCustomDataEntryRoutingParagraph">
+            <summary>
+            MVP base class. Fakery 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingParagraph.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingParagraph.dataEntryMessageContent">
+            <summary>
+            The routing dialog content or payload
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingParagraph.dataEntryValues">
+            <summary>
+            Values entered by user for the Data Entry Fields
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingParagraph.OverrideReadOnlyState">
+            <summary>
+            This method allows us to disable the Display text box.
+            Setting control.enabled = false and readonly = true does not work. 
+            What is the use of the flag Enabled if it always sets to true in Core. Guess that is the way PACS works. :(
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingParagraph.Notify(System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Raise the event to publish message to start any associated workflow
+            </summary>
+            <param name="parameters">the parameters that is required by the workflow</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingParagraph.InitializeOptionPanel">
+            <summary>
+            Initialize the options in the routing panel
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingParagraph.CreateOptionControls">
+            <summary>
+            Dynamically create radio button and check box controls for the available options.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingParagraph.ExtractFromRTF(System.String)">
+            <summary>
+            Convert RTF into plain text.
+            </summary>
+            <param name="rtf"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingParagraph.SetControlValues">
+            <summary>
+            Select the options chosen by the user.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingParagraph.SetComments">
+            <summary>
+            Set comments to the textbox. These  are the comments that are entered by the user while choosing an option
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingParagraph.commentsText_EditValueChanged(System.Object,System.EventArgs)">
+            <summary>
+            Store the Comments text in the routing message when the text changes.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingParagraph.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingParagraph.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingParagraph.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingParagraph.DataEntryMessageContent">
+            <summary>
+            The routing dilaog Content or payload
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingParagraph.DataEntryValues">
+            <summary>
+            Tne values entered by the user for the Data Entry Fields
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingParagraph.Comments">
+            <summary>
+            Field to store comments entered by user while selecting an option
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.CustomDataEntryRoutingParagraph.NotifyEvent">
+            <summary>
+            Event handler to publish message to start any associated workflow
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanel">
+            <summary>
+            Panel for Launching the custom options (RoutingDialog) that have been selected
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanel.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanel.SaveTaskData">
+            <summary>
+            This method is invoked when the Task is Saved. 
+            This will publish a CustomRoutingMessage passing parameters TaskId, TaskTypeId,
+            the Custom UI Name and  OptionSelected
+            If the datarecord needs to be modified
+            return datarecord to be saved in the db else return null 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanel.SetData(TrueAutomation.WorkflowClient.UI.Logic.CustomUI.ITaskDataRecord)">
+            <summary>
+            This is not used for this panel
+            </summary>
+            <param name="record"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanel.SetObjectState(TAUserInterfaceService.IObjectState)">
+            <summary>
+            This is not used for this panel
+            </summary>
+            <param name="objectState"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanel.AfterFormDisplay">
+            <summary>
+            Nothing to do
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanel.HandleDirtyRecord">
+            <summary>
+            This handles the data change event. This is not used for this panel.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanel.Notify(TrueAutomation.WorkflowService.Messages.IWorkflowMessage)">
+            <summary>
+            Publishes a LaunchWorkflowMessage to be consumed by a consumer for execution of launching the workflow
+            </summary>
+            <param name="msg"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanel.Serialize">
+            <summary>
+            No data to be serialized
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanel.uiElement">
+            <summary>
+            The UI element that contains information of the routing screen in the payload.
+            Also Deserializes the payload to display data in the panel
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanel.DisableCloseButton">
+            <summary>
+            No implementation required
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanel.DeSerialize(System.String)">
+            <summary>
+            Deserializes the payload (the name , instructions and the options selected for the routing panel)
+            </summary>
+            <param name="payload"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanel.ShowDialog(System.Windows.Forms.IWin32Window,System.Object[])">
+            <summary>
+            No dialog to be displayed
+            </summary>
+            <param name="owner"></param>
+            <param name="showDialogParameters"></param>
+            <returns>Ignore any dialog result</returns>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanel.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanel.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanel.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanel.TaskDataRecord">
+            <summary>
+            No DataRecord is associated with the Custom Routing panel
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanel.HeaderText">
+            <summary>
+            The Header that would appear in the panel
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanel.IsDirty">
+            <summary>
+            The flag to set if the data is dirty. This is not used for this panel
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanel.DirtyChanged">
+            <summary>
+            Event handler to handle the case when data is modified. This is not used for the time being.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanel.DialogState">
+            <summary>
+            Not implemented
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanel.TaskId">
+            <summary>
+            The Task Id that would be used by the workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanel.TaskTypeId">
+            <summary>
+            The Task type Id that would be used by the workflow
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanelSetUp">
+            <summary>
+            The IPanelSetup Task UI attribute that CustomRoutingPanel uses
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanelSetUp.#ctor">
+            <summary>
+            General constructor
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanelSetUp.commandsMenu">
+            <summary>
+            The commandsMenu attached. Not implemenetd
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanelSetUp.objectState">
+            <summary>
+            The associated objectstate. Not implemenetd
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanelSetUp.taskData">
+            <summary>
+            The associated TaskDataRecord. No data record
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanelSetUp.PreInitialize(System.Object)">
+            <summary>
+            This is invoked before initializing the panel
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanelSetUp.AssignUIEventHandlers">
+            <summary>
+            No eventhandlers to associate to
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanelSetUp.CommandsMenu">
+            <summary>
+            The associated commandsMenu. Not implemenetd
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanelSetUp.ObjectState">
+            <summary>
+            The associated objectstate. Not implemenetd
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanelSetUp.TaskData">
+            <summary>
+            The associated TaskDataRecord. No data record
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanelSetUp.IsReadOnly">
+            <summary>
+            This denotes if the panel is readonly. Not set
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanelSetUp.BaseView">
+            <summary>
+            The base view. Not implemented
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingPanelSetUp.ServiceContainer">
+            <summary>
+            The service container. Not implemented
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingParagraph">
+            <summary>
+            The CustomRoutingParagraph
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.BaseCustomRoutingParagraph">
+            <summary>
+            MVP base class. Fakery 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingParagraph.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingParagraph.routingMessageContent">
+            <summary>
+            The routing dialog content or payload
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingParagraph.selectedValues">
+            <summary>
+            The internal item of selected values
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingParagraph.OverrideReadOnlyState">
+            <summary>
+            This method allows us to disable the Display text box.
+            Setting control.enabled = false and readonly = true does not work. 
+            What is the use of the flag Enabled if it always sets to true in Core. Guess that is the way PACS works. :(
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingParagraph.Notify(System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Raise the event to publish message to start any associated workflow
+            </summary>
+            <param name="parameters">the parameters that is required by the workflow</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingParagraph.EncodeSelectedValues">
+            <summary>
+            Create a comma-separated list of the current selected options
+            </summary>
+            <returns>String containing a comma-separated list</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingParagraph.DecodeSelectedValues(System.String)">
+            <summary>
+            Select the options contained in the comma-separated string list
+            </summary>
+            <param name="valueString"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingParagraph.InitializeOptionPanel">
+            <summary>
+            Initialize the options in the routing panel
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingParagraph.CreateOptionControls">
+            <summary>
+            Dynamically create radio button and check box controls for the available options.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingParagraph.ExtractFromRTF(System.String)">
+            <summary>
+            Convert RTF into plain text.
+            </summary>
+            <param name="rtf"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingParagraph.SelectValues">
+            <summary>
+            Select the options chosen by the user.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingParagraph.SetComments">
+            <summary>
+            Set comments to the textbox. These  are the comments that are entered by the user while choosing an option
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingParagraph.commentsText_EditValueChanged(System.Object,System.EventArgs)">
+            <summary>
+            Store the Comments text in the routing message when the text changes.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingParagraph.optionRadio_CheckedChanged(System.Object,System.EventArgs)">
+            <summary>
+            The user has clicked a radio button - update selected options
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingParagraph.optionCheck_CheckedChanged(System.Object,System.EventArgs)">
+            <summary>
+            The user has clicked a check box - update selected options
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingParagraph.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingParagraph.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingParagraph.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingParagraph.RoutingMessageContent">
+            <summary>
+            The routing dilaog Content or payload
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingParagraph.OptionValue">
+            <summary>
+            Tne value or values selected by the user
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingParagraph.Comments">
+            <summary>
+            Field to store comments entered by user while selecting an option
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.CustomRoutingParagraph.NotifyEvent">
+            <summary>
+            Event handler to publish message to start any associated workflow
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIPanelErrorPanel">
+            <summary>
+            Panel for final step of a task
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIPanelErrorPanel.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIPanelErrorPanel.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIPanelErrorPanel.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIPanelNotFoundPanel">
+            <summary>
+            Panel for final step of a task
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIPanelNotFoundPanel.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIPanelNotFoundPanel.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIPanelNotFoundPanel.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepParagraph">
+            <summary>
+            MVP View class of the Final Step paragraph for task view
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.BaseCustomUIFinishStepParagraph">
+            <summary>
+            MVP base class for Custom UI Finish Step Paragraph
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepParagraph.markAsComplete">
+            <summary>
+            should we mark task as complete?
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepParagraph.saveTask">
+            <summary>
+            Should we save the task?
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepParagraph.closeView">
+            <summary>
+            Should we close the view?
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepParagraph.sessionStartTime">
+            <summary>
+            Holds the Time when the current session was started,
+            or when the user started working on the current task.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepParagraph.timeWorked">
+            <summary>
+            amount of time worked on task in current session
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepParagraph.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepParagraph.okButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Event for when the ok button is clicked
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepParagraph.closeCheckEdit_CheckedChanged(System.Object,System.EventArgs)">
+            <summary>
+            Event for when the "Close View" checkbox is checked/unchecked
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepParagraph.saveCheckEdit_CheckedChanged(System.Object,System.EventArgs)">
+            <summary>
+            Event for when the "Save Task" checkbox is checked/unchecked
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepParagraph.completeCheckEdit_CheckedChanged(System.Object,System.EventArgs)">
+            <summary>
+            Event for when the "Mark As Complete" checkbox is checked/unchecked
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepParagraph.SetButtonsVisibility">
+            <summary>
+            Method to Enable/Disable buttons based on user permission for this task
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepParagraph.UpdateMarkAsComplete">
+            <summary>
+            Updates the "Mark As Complete" checkbox
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepParagraph.UpdateSaveTask">
+            <summary>
+            Updates the "Save Task" checkbox
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepParagraph.UpdateCloseView">
+            <summary>
+            Updates the "Close View" checkbox
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepParagraph.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepParagraph.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepParagraph.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepParagraph.MarkAsComplete">
+            <summary>
+            Should we mark this task as complete?
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepParagraph.SaveTask">
+            <summary>
+            Should we save this task?
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepParagraph.CloseView">
+            <summary>
+            Should we close this view?
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepParagraph.SessionStartTime">
+            <summary>
+            Holds the Time when the current session was started,
+            or when the user started working on the current task.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepParagraph.TimeWorked">
+            <summary>
+            amount of time worked on task in current session
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepParagraph.Close_Clicked">
+            <summary>
+            Event for when the button is clicked
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepPanel">
+            <summary>
+            Panel for final step of a task
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepPanel.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepPanel.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIFinishStepPanel.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelAccount">
+            <summary>
+            Proof-of-Concept panel for Custom UI
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelAccount.record">
+            <summary>
+            The records object
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelAccount.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelAccount.RefreshData">
+            <summary>
+            Refreshes the view
+            </summary>
+            <remarks>
+            not used at this level
+            </remarks>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelAccount.SaveTaskData">
+            <summary>
+            Saves the data of the records object
+            If the datarecord needs to be modified
+            return datarecord to be saved in the db else return null 
+            </summary>
+            <remarks>kludge - in real PACS, save is part of records object class</remarks>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelAccount.DisableCloseButton">
+            <summary>
+            Method to disable the Close button on the dialog if control is a dialog, 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelAccount.SetData(TrueAutomation.WorkflowClient.UI.Logic.CustomUI.ITaskDataRecord)">
+            <summary>
+            Method to set the data for the panel
+            </summary>
+            <param name="record"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelAccount.SetObjectState(TAUserInterfaceService.IObjectState)">
+            <summary>
+            Set the objectstate to use for the panel.
+            </summary>
+            <param name="objectSate"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelAccount.AfterFormDisplay">
+            <summary>
+            Nothing to do
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelAccount.OnRecordSet">
+            <summary>
+            Passes the records object to eligible child controls
+            </summary>
+            <remarks>
+            Fires when the records object is set
+            </remarks>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelAccount.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelAccount.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelAccount.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelAccount.TaskDataRecord">
+            <summary>
+            The records object
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelAccount.HeaderText">
+            <summary>
+            Text to describe the header of the Panel.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelAccount.IsDirty">
+            <summary>
+            whether or not the data within the panel has changed.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelProperty">
+            <summary>
+            Proof-of-Concept panel for Custom UI
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelProperty.record">
+            <summary>
+            The records object
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelProperty.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelProperty.RefreshData">
+            <summary>
+            Refreshes the view
+            </summary>
+            <remarks>
+            not used at this level
+            </remarks>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelProperty.SaveTaskData">
+            <summary>
+            Saves the data of the records object
+            If the datarecord needs to be modified
+            return datarecord to be saved in the db else return null 
+            </summary>
+            <remarks>kludge - in real PACS, save is part of records object class</remarks>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelProperty.DisableCloseButton">
+            <summary>
+            Method to disable the Close button on the dialog if control is a dialog, 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelProperty.SetData(TrueAutomation.WorkflowClient.UI.Logic.CustomUI.ITaskDataRecord)">
+            <summary>
+            Method to set the data for the panel
+            </summary>
+            <param name="record"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelProperty.SetObjectState(TAUserInterfaceService.IObjectState)">
+            <summary>
+            Set the objectstate to use for the panel.
+            </summary>
+            <param name="objectSate"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelProperty.AfterFormDisplay">
+            <summary>
+            Nothing to do
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelProperty.OnRecordSet">
+            <summary>
+            Passes the records object to eligible child controls
+            </summary>
+            <remarks>
+            Fires when the records object is set
+            </remarks>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelProperty.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelProperty.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelProperty.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelProperty.TaskDataRecord">
+            <summary>
+            The records object
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelProperty.HeaderText">
+            <summary>
+            Text to describe the header of the Panel.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomPanelProperty.IsDirty">
+            <summary>
+            whether or not the data within the panel has changed.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIViewHost.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIViewHost.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIViewHost.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIViewHost.ServiceContainer">
+            <summary>
+            the service container to pass to the panels for their respective commands to use.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIViewHost.DefaultObjectNotFoundPanel">
+            <summary>
+            Panel to use in the case that the object is not found.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.CustomUIViewHost.DefaultObjectNotFoundPanelChanged">
+            <summary>
+            EventHandler to notify when the default object to use in case of object not found is changed.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomWebBrowserPanel.RefreshData">
+            <summary>
+            Refreshes the view
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomWebBrowserPanel.SaveTaskData">
+            <summary>
+            Saves the data of the records object
+            If the datarecord needs to be modified
+            return datarecord to be saved in the db else return null 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomWebBrowserPanel.RefreshState">
+            <summary>
+            Refreshes the data
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomWebBrowserPanel.SetData(TrueAutomation.WorkflowClient.UI.Logic.CustomUI.ITaskDataRecord)">
+            <summary>
+            Sets any initial data. This would be overriden in most cases.
+            </summary>
+            <param name="record"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomWebBrowserPanel.SetObjectState(TAUserInterfaceService.IObjectState)">
+            <summary>
+            Sets the state of the object
+            </summary>
+            <param name="objectState"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomWebBrowserPanel.DisableCloseButton">
+            <summary>
+            Method to disable the Close button on the dialog if control is a dialog, 
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.CustomWebBrowserPanel.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomWebBrowserPanel.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.CustomWebBrowserPanel.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.CustomWebBrowserPanel.ReadOnly">
+            <summary>
+            flag to determine if component is readonly
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog">
+            <summary>
+            The Routing Dialog for Custom Data Entry Fields
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.BaseDataEntryRoutingDialog">
+            <summary>
+            Fakery to keep VS happy w/ MVP stuff
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.#ctor">
+            <summary>
+            General constructor
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.internallyOkToClose">
+            <summary>
+            Flag to determine if Ok or apply button has been clicked and if dialog needs to be closed after save
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.incomingPayload">
+            <summary>
+            The payload that is serialised/de-serialised
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.validationErrors">
+            <summary>
+            The dictionary of validation errors
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.originalDescriptionText">
+            <summary>
+            The original description text that was loaded into the Routing dialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.OnSaveChanges">
+            <summary>
+            raises event to handle the case when the dialog save button is clicked
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.isDataToBeSend">
+            <summary>
+            Flag to determine if data needs to be sent back to the dialog launching the Routing dialog
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.closeView">
+            <summary>
+            Flag used to determine if a Save was successful
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.CloseThis">
+            <summary>
+            Close this View
+            if there are no errors, 
+            set the dirty flag to false
+            so that the Form does not prompt
+            the save message to the user.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.OnOkClick(System.Object,System.EventArgs)">
+            <summary>
+            Handles the OK click event
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.OnCancelClick(System.Object,System.EventArgs)">
+            <summary>
+            Handles the Cancel button click
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.OnValidationReasonListSet">
+            <summary>
+            Handles Validation of data enteerd
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.OnApplyClick(System.Object,System.EventArgs)">
+            <summary>
+            Event Handler for the Apply Button. This will save if any changes are made but will keep the dialog open.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.CheckTextChanges">
+            <summary>
+            Modifies Model as dirty if the description text is different from when it was loaded
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.Form_FormClosing(System.Object,System.Windows.Forms.FormClosingEventArgs)">
+            <summary>
+            Event handler for the Form closure
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.OnClosed(System.EventArgs)">
+            <summary>
+            Wraps up the needed data to be returned to the parent caller
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.Serialize">
+            <summary>
+            Raises event to serialise the payload
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.DeSerialize">
+            <summary>
+            Raises event to de-serialise the payload
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.ShowDialog(System.Windows.Forms.IWin32Window,System.Object[])">
+            <summary>
+            Display the dialog and save and deserialise the payload required for the dialog
+            </summary>
+            <param name="owner"></param>
+            <param name="showDialogParameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.DeSerialize(System.String)">
+            <summary>
+            To deserialise the payload
+            </summary>
+            <param name="payLoad"></param>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.DataEntryMessageContent">
+            <summary>
+            The routing message content that would be serialized and deserialized 
+            to display the data in the Routing panel
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.SkipFormClose">
+            <summary>
+            Flag to determine if Form close event should be ignored. 
+            For some reason any child close event is firing the form close of the options dialog
+            and unnecessary always prompting data change pop up
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.FormCloseReached">
+            <summary>
+            Flag to track if the description texts need to be compared
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.SaveChanges">
+            <summary>
+            An event handler for the save-changes event. Our presenter
+            will generally want to register with this in order to handle
+            the logic required to apply any changes.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.SerializeRoutingContent">
+            <summary>
+            Event handler to handle the serialization of the payload
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.DeSerializingContent">
+            <summary>
+            Event handler to handle the de-serialization of the payload
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.CloseView">
+            <summary>
+            Used to determine if a Save was successful
+            when user closed this view and said Yes 
+            when prompted to save. If Validation/Save failed
+            View will not close, giving the User
+            another oppurtunity to correct errors and Save if needed
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.ShouldEnableButtons">
+            <summary>
+            Flag used to disable the ok apply buttons initially when there is no data.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.ValidationErrors">
+            <summary>
+            For all validation erros
+            found during a Save
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.IncomingPayLoad">
+            <summary>
+            THe payload that is serialised/de-serialised
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingDialog.UiElement">
+            <summary>
+            The UI element details
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph">
+            <summary>
+            The Routing dialog paragraph for Custom Data Entry Fields
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.BaseDataEntryRoutingParagraph">
+            <summary>
+            Fakery to keep VS happy w/ MVP stuff
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.#ctor">
+            <summary>
+            General constructor
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.routingGridDataSource">
+            <summary>
+            Data Source for Details Grid
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.dataEntryMessageContent">
+            <summary>
+            The routing message content or payload
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.displayText">
+            <summary>
+            The display text
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.uIElementName">
+            <summary>
+            The name of the UI element
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.fieldTypeColumnValues">
+            <summary>
+            List of DataEntryTypes for user selection
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.InitializeFieldTypeValues">
+            <summary>
+            The list of possible values that the Field Type column can have
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.InitializeGrid">
+            <summary>
+            Initializes the grid
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.view_ShowGridMenu(System.Object,DevExpress.XtraGrid.Views.Grid.PopupMenuShowingEventArgs)">
+            <summary>
+            Disabling clicking the column option menu
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.mainView_CellValueChanged(System.Object,DevExpress.XtraGrid.Views.Base.CellValueChangedEventArgs)">
+            <summary>
+            Event handler to handle the case when the cell value is changed
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.SetToolStripVisibility">
+            <summary>
+            Set the grid tool strip items visibility
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.UpdateName">
+            <summary>
+            Update the name of the UI element
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.UpdateDisplayText">
+            <summary>
+            Updates the Ui with the display text
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.UpdateGridDataSource">
+            <summary>
+            Updates the grid with the new data source
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.mainView_FocusedRowChanged(System.Object,DevExpress.XtraGrid.Views.Base.FocusedRowChangedEventArgs)">
+            <summary>
+            Event handler to detect when the selected row has changed
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.nameTextBox_TextChanged(System.Object,System.EventArgs)">
+            <summary>
+            Event handler to handle event when the name is changed
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.extRichTextBoxDisplayText_RtfChanged(System.Object,System.EventArgs)">
+            <summary>
+            Event handler to handle when the display text box is changed
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.moveDownToolStripButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Event Handler for Move Down button. This would be used to set the order of the items in the list.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.moveUpToolStripButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Event Handler for Move Up button. This would be used to set the order of the items in the list.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.gridToolStrip1_DeleteButtonClick(System.Object,System.EventArgs)">
+            <summary>
+            Event Handler for Delete button
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.gridToolStrip1_NewButtonClick(System.Object,System.EventArgs)">
+            <summary>
+            Event Handler for New button
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.taXtraGrid1_ProcessGridKey(System.Object,System.Windows.Forms.KeyEventArgs)">
+            <summary>
+            Handling the tab event of the grid. The tab on the last row first column needs to move to the last row second column
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.DisplayText">
+            <summary>
+            The display text. Updates the UI with the text
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.UIElementName">
+            <summary>
+            The UI element name. Updates the UI with the name
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.RoutingOptionsGridDataSource">
+            <summary>
+            Data Source of Details Grid
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.DataEntryMessageContent">
+            <summary>
+            The Routing Message content or payload
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.Options_Add">
+            <summary>
+            Event raised when items to the custom list is added
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.Options_Delete">
+            <summary>
+            Event raised when an item from the custom list is deleted
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.Options_MoveUp">
+            <summary>
+            Event raised when an item from the custom list is moved up
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.Options_MoveDown">
+            <summary>
+            Event raised when an item from the custom list is moved down
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.Cell_Change">
+            <summary>
+            Cell Change Event Handler
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.RoutingMessage_NameChanged">
+            <summary>
+            Event Handler for when name changes
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.DataEntryRoutingParagraph.RoutingMessage_DisplayTextChanged">
+            <summary>
+            Event handler for when description changes
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog">
+            <summary>
+            The Routing Dialog
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.BaseRoutingDialog">
+            <summary>
+            Fakery to keep VS happy w/ MVP stuff
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.#ctor">
+            <summary>
+            General constructor
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.internallyOkToClose">
+            <summary>
+            Flag to determine if Ok or apply button has been clicked and if dialog needs to be closed after save
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.incomingPayload">
+            <summary>
+            The payload that is serialised/de-serialised
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.validationErrors">
+            <summary>
+            The dictionary of validation errors
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.originalDescriptionText">
+            <summary>
+            The original description text that was loaded into the Routing dialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.OnSaveChanges">
+            <summary>
+            raises event to handle the case when the dialog save button is clicked
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.isDataToBeSend">
+            <summary>
+            Flag to determine if data needs to be sent back to the dialog launching the Routing dialog
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.closeView">
+            <summary>
+            Flag used to determine if a Save was successful
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.CloseThis">
+            <summary>
+            Close this View
+            if there are no errors, 
+            set the dirty flag to false
+            so that the Form does not prompt
+            the save message to the user.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.OnOkClick(System.Object,System.EventArgs)">
+            <summary>
+            Handles the OK click event
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.OnCancelClick(System.Object,System.EventArgs)">
+            <summary>
+            Handles the Cancel button click
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.OnValidationReasonListSet">
+            <summary>
+            Handles Validation of data enteerd
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.OnApplyClick(System.Object,System.EventArgs)">
+            <summary>
+            Event Handler for the Apply Button. This will save if any changes are made but will keep the dialog open.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.CheckTextChanges">
+            <summary>
+            Modifies Model as dirty if the description text is different from when it was loaded
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.Form_FormClosing(System.Object,System.Windows.Forms.FormClosingEventArgs)">
+            <summary>
+            Event handler for the Form closure
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.OnClosed(System.EventArgs)">
+            <summary>
+            Wraps up the needed data to be returned to the parent caller
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.Serialize">
+            <summary>
+            Raises event to serialise the payload
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.DeSerialize">
+            <summary>
+            Raises event to de-serialise the payload
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.ShowDialog(System.Windows.Forms.IWin32Window,System.Object[])">
+            <summary>
+            Display the dialog and save and deserialise the payload required for the dialog
+            </summary>
+            <param name="owner"></param>
+            <param name="showDialogParameters"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.DeSerialize(System.String)">
+            <summary>
+            To deserialise the payload
+            </summary>
+            <param name="payLoad"></param>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.RoutingMessageContent">
+            <summary>
+            The routing message content that would be serialized and deserialized 
+            to display the data in the Routing panel
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.SkipFormClose">
+            <summary>
+            Flag to determine if Form close event should be ignored. 
+            For some reason any child close event is firing the form close of the options dialog
+            and unnecessary always prompting data change pop up
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.FormCloseReached">
+            <summary>
+            Flag to track if the description texts need to be compared
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.SaveChanges">
+            <summary>
+            An event handler for the save-changes event. Our presenter
+            will generally want to register with this in order to handle
+            the logic required to apply any changes.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.SerializeRoutingContent">
+            <summary>
+            Event handler to handle the serialization of the payload
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.DeSerializingContent">
+            <summary>
+            Event handler to handle the de-serialization of the payload
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.CloseView">
+            <summary>
+            Used to determine if a Save was successful
+            when user closed this view and said Yes 
+            when prompted to save. If Validation/Save failed
+            View will not close, giving the User
+            another oppurtunity to correct errors and Save if needed
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.ShouldEnableButtons">
+            <summary>
+            Flag used to disable the ok apply buttons initially when there is no data.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.ValidationErrors">
+            <summary>
+            For all validation erros
+            found during a Save
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.IncomingPayLoad">
+            <summary>
+            THe payload that is serialised/de-serialised
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingDialog.UiElement">
+            <summary>
+            The UI element details
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph">
+            <summary>
+            The Routing dialog paragraph
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.BaseRoutingParagraph">
+            <summary>
+            Fakery to keep VS happy w/ MVP stuff
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.#ctor">
+            <summary>
+            General constructor
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.routingGridDataSource">
+            <summary>
+            Data Source for Details Grid
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.routingMessageContent">
+            <summary>
+            The routing message content or payload
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.displayText">
+            <summary>
+            The display text
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.enableComment">
+            <summary>
+            Should the comment field be displayed
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.selectionMode">
+            <summary>
+            Selection Mode for routing options
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.uIElementName">
+            <summary>
+            The name of the UI element
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.InitializeGrid">
+            <summary>
+            Initializes the grid
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.view_ShowGridMenu(System.Object,DevExpress.XtraGrid.Views.Grid.PopupMenuShowingEventArgs)">
+            <summary>
+            Disabling clicking the column option menu
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.mainView_CellValueChanged(System.Object,DevExpress.XtraGrid.Views.Base.CellValueChangedEventArgs)">
+            <summary>
+            Event handler to handle the case when the cell value is changed
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.SetGridEnableStatus">
+            <summary>
+            Set the grid tool strip items visibility
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.UpdateName">
+            <summary>
+            Update the name of the UI element
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.UpdateDisplayText">
+            <summary>
+            Updates the Ui with the display text
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.UpdateEnableComment">
+            <summary>
+            Update the UI with the enable comment flag
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.UpdateSelectionMode">
+            <summary>
+            Update the UI with the current selection mode
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.UpdateGridDataSource">
+            <summary>
+            Updates the grid with the new data source
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.mainView_FocusedRowChanged(System.Object,DevExpress.XtraGrid.Views.Base.FocusedRowChangedEventArgs)">
+            <summary>
+            Event handler to detect when the selected row has changed
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.nameTextBox_TextChanged(System.Object,System.EventArgs)">
+            <summary>
+            Event handler to handle event when the name is changed
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.extRichTextBoxDisplayText_RtfChanged(System.Object,System.EventArgs)">
+            <summary>
+            Event handler to handle when the display text box is changed
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.enableCommentCheck_Click(System.Object,System.EventArgs)">
+            <summary>
+            Event handler - user has clicked on Enable Comment
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.selectionMode_Click(System.Object,System.EventArgs)">
+            <summary>
+            Event handler - user has clicked one of the selection mode radio buttons
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.moveDownToolStripButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Event Handler for Move Down button. This would be used to set the order of the items in the list.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.moveUpToolStripButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Event Handler for Move Up button. This would be used to set the order of the items in the list.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.gridToolStrip_DeleteButtonClick(System.Object,System.EventArgs)">
+            <summary>
+            Event Handler for Delete button
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.gridToolStrip_NewButtonClick(System.Object,System.EventArgs)">
+            <summary>
+            Event Handler for New button
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.optionsGrid_ProcessGridKey(System.Object,System.Windows.Forms.KeyEventArgs)">
+            <summary>
+            Handling the tab event of the grid. The tab on the last row first column needs to move to the last row second column
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.DisplayText">
+            <summary>
+            The display text. Updates the UI with the text
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.EnableComment">
+            <summary>
+            Enable Comment public property
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.UIElementName">
+            <summary>
+            The UI element name. Updates the UI with the name
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.RoutingOptionsGridDataSource">
+            <summary>
+            Data Source of Details Grid
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.RoutingMessageContent">
+            <summary>
+            The Routing Message content or payload
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.Options_Add">
+            <summary>
+            Event raised when items to the custom list is added
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.Options_Delete">
+            <summary>
+            Event raised when an item from the custom list is deleted
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.Options_MoveUp">
+            <summary>
+            Event raised when an item from the custom list is moved up
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.Options_MoveDown">
+            <summary>
+            Event raised when an item from the custom list is moved down
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.RoutingMessage_NameChanged">
+            <summary>
+            Event Handler for when name changes
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.RoutingMessage_DisplayTextChanged">
+            <summary>
+            Event handler for when description changes
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.RoutingMessage_EnableCommentChanged">
+            <summary>
+            Event Handler for when Enable Comment changes
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.RoutingParagraph.RoutingMessage_SelectionModeChanged">
+            <summary>
+            Event Handler for when the selection mode is changed
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.Test.CurrentCustomUI.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.Test.CurrentCustomUI.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.Test.CurrentCustomUI.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsDialog">
+            <summary>
+            Details Dialog for UI Customization
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.BaseUICustomizationDetailsDialog">
+            <summary>
+            Fakery to keep VS happy w/ MVP stuff
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsDialog.titleText">
+            <summary>
+            Title bar text string
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsDialog.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+            <remarks>
+            Used to create a new UI Customization
+            </remarks>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsDialog.#ctor(System.Int32)">
+            <summary>
+            Details Constructor
+            </summary>
+            <remarks>
+            Used to show the details of an existing UI Customization
+            </remarks>
+            <param name="id">Id of UI Customization you want the details of</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsDialog.OnApplyClick(System.Object,System.EventArgs)">
+            <summary>
+            Event Handler for the Apply Button
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsDialog.CloseThis">
+            <summary>
+            Close this View
+            if there are no errors, 
+            set the dirty flag to false
+            so that the Form does not prompt
+            the save message to the user.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsDialog.OnSaveChanges">
+            <summary>
+            Internal implementation function to invoke any registered
+            property change saving handler delegates. Note that this
+            should normally include the delegate supplied by our
+            associated presenter instance.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsDialog.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsDialog.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsDialog.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsDialog.ShouldEnableButtons">
+            <summary>
+            Flag that determines if the ok/apply button should be enabled/disabled.
+            In case the UI customization is in use or it is launched for the first time,
+            no changes are to be saved and the buttons should be disabled.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsDialog.UICustomizationDetailsTitle">
+            <summary>
+            Title Bar Text
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsDialog.UICustomizationId">
+            <summary>
+            Id of UI Customization
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsDialog.IsNew">
+            <summary>
+            Is this a new UI Customization?
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsDialog.SaveChanges">
+            <summary>
+            An event handler for the save-changes event. Our presenter
+            will generally want to register with this in order to handle
+            the logic required to apply any changes.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsDialog.ValidationErrors">
+            <summary>
+            For all validation erros
+            found during a Save
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsDialog.CloseView">
+            <summary>
+            Used to determine if a Save was successful
+            when user closed this view and said Yes 
+            when prompted to save. If Validation/Save failed
+            View will not close, giving the User
+            another oppurtunity to correct errors and Save if needed
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph">
+            <summary>
+            Main Paragraph for UI Customization Details Dialog
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.BaseUICustomizationDetailsParagraph">
+            <summary>
+            Fakery to keep VS happy w/ MVP stuff
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.uiCustomizationName">
+            <summary>
+            Name of UI Customization
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.uiCustomizationDescription">
+            <summary>
+            Description of UI Customization
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.uiCustomizationDetailsGridDataSource">
+            <summary>
+            Data Source for Details Grid
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.shouldDisableControlsForCustomizationInUse">
+            <summary>
+            Flag to aid disabling controls if Ui cutomization is in use.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.DisableControlsForCustomizationInUse">
+            <summary>
+            Disable the Add , delete buttons for Ui customizations that are in use.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.SetContextCellEditor(System.Int32)">
+            <summary>
+            Method to update the combobox values for a given cell.
+            </summary>
+            <param name="row"></param>
+            <param name="column"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.moveDownToolStripButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Event Handler for Move Down button
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.moveUpToolStripButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Event Handler for Move Up button
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.gridToolStrip1_DeleteButtonClick(System.Object,System.EventArgs)">
+            <summary>
+            Event Handler for Delete button
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.gridToolStrip1_NewButtonClick(System.Object,System.EventArgs)">
+            <summary>
+            Event Handler for New button
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.descriptionTextBox_TextChanged(System.Object,System.EventArgs)">
+            <summary>
+            Event Handler for when the description text changes
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.nameTextBox_TextChanged(System.Object,System.EventArgs)">
+            <summary>
+            Event Handler for when the name text changes
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.mainView_CellValueChanged(System.Object,DevExpress.XtraGrid.Views.Base.CellValueChangedEventArgs)">
+            <summary>
+            Event handler to detect when a cell in the grid has been edited
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.mainView_FocusedRowChanged(System.Object,DevExpress.XtraGrid.Views.Base.FocusedRowChangedEventArgs)">
+            <summary>
+            Event handler to detect when the selected row has changed
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.taXtraGrid1_ProcessGridKey(System.Object,System.Windows.Forms.KeyEventArgs)">
+            <summary>
+            Event handler to detect when the key is pressed
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.mainView_FocusedColumnChanged(System.Object,DevExpress.XtraGrid.Views.Base.FocusedColumnChangedEventArgs)">
+            <summary>
+            Event handler to detect when the selected Column has changed
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.RegisterEventHandlers" -->
+        <!-- Badly formed XML comment ignored for member "M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.UnregisterEventHandlers" -->
+        <!-- Badly formed XML comment ignored for member "M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.InitializeGrid" -->
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.UpdateUICustomizationName">
+            <summary>
+            Updates the name
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.UpdateUICustomizationDescription">
+            <summary>
+            Updates the description
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.UpdateGridDataSource">
+            <summary>
+            Updates the grid with the new data source
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.ShouldDisableControlsForCustomizationInUse">
+            <summary>
+            Propertys to aid disabling controls if UI cutomization is in use.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.UICustomizationName">
+            <summary>
+            Name of UI Customization
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.ElementContextList">
+            <summary>
+            Dictionary containing dictionaries of Contexts available to each UI Element
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.UICustomizationDescription">
+            <summary>
+            Description of UI Customization
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.UICustomizationDetailsGridDataSource">
+            <summary>
+            Data Source of Details Grid
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.UICustomizationDetails_NameChanged">
+            <summary>
+            Event Handler for when name changes
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.UICustomizationDetails_DescriptionChanged">
+            <summary>
+            Event handler for when description changes
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.UICustomizationDetails_UIElementDataRecordDefinitionChanged">
+            <summary>
+            Event Handler for when a UI Element's Data Record Definition Name changes
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.UICustomizationDetails_UIElementPanelHeaderTextChanged">
+            <summary>
+            Event Handler for when a UI Element's Panel Header Text changes
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.UICustomizationDetails_UIElementPanelContextChanged">
+            <summary>
+            Event Handler for when a UI Element's Context Value is Changed.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.UICustomizationDetails_Add">
+            <summary>
+            Event handler for New button
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.UICustomizationDetails_Delete">
+            <summary>
+            Event handler for Delete button
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.UICustomizationDetails_MoveUp">
+            <summary>
+            Event handler for Move Up button
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDetailsParagraph.UICustomizationDetails_MoveDown">
+            <summary>
+            Event handler for Move Down button
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDialog">
+            <summary>
+            UI Customization Management Dialog
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.BaseUICustomizationDialog">
+            <summary>
+            Fakery to keep VS happy w/ MVP stuff
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDialog.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDialog.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDialog.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationDialog.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationGeneralParagraph">
+            <summary>
+            Main paragraph of UI Customization Management dialog
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.BaseUICustomizationGeneralParagraph">
+            <summary>
+            Fakery to keep VS happy w/ MVP stuff
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationGeneralParagraph.uiCustomizationGridDataSource">
+            <summary>
+            data source for the grid
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationGeneralParagraph.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationGeneralParagraph.gridToolStrip1_DeleteButtonClick(System.Object,System.EventArgs)">
+            <summary>
+            Event handler for the Delete button
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationGeneralParagraph.gridToolStrip1_DetailsButtonClick(System.Object,System.EventArgs)">
+            <summary>
+            Event handler for the Details button
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationGeneralParagraph.gridToolStrip1_NewButtonClick(System.Object,System.EventArgs)">
+            <summary>
+            Event handler for the Add button
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationGeneralParagraph.IntializeGrid" -->
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationGeneralParagraph.UpdateGridDataSource">
+            <summary>
+            Updates the data source of the grid
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationGeneralParagraph.SetButtonState(System.Boolean)">
+            <summary>
+            Sets the enabled/disabled state of the tool strip buttons based on the data in the grid
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationGeneralParagraph.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationGeneralParagraph.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationGeneralParagraph.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationGeneralParagraph.UICustomizationGridDataSorce">
+            <summary>
+            Data source for the grid
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationGeneralParagraph.UICustomizations_Add">
+            <summary>
+            Event handler for the Add button
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationGeneralParagraph.UICustomizations_Delete">
+            <summary>
+            Event handler for the Delete button
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.UICustomizationGeneralParagraph.UICustomizations_Details">
+            <summary>
+            Event handler for the Details button
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementScanWithSplashScreen">
+            <summary>
+            UI Customization Management Dialog
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.BaseUIElementScanWithSplashScreen">
+            <summary>
+            Fakery to keep VS happy w/ MVP stuff
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog">
+            <summary>
+            UI Element Selection Dialog for UI Customization
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.CustomUI.BaseUIElementSelectionDialog">
+            <summary>
+            Fakery to keep VS happy w/ MVP
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.dataRecordTypes">
+            <summary>
+            List of DRD Type names
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.selectedDataRecordType">
+            <summary>
+            Selected DRD type name
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.availableUIElementsDataSource">
+            <summary>
+            Data source for available UI elements grid
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.selectedUIElementsDataSource">
+            <summary>
+            Data source for selected UI elements grid
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.suppressDataRecordTypeChangeEvent">
+            <summary>
+            Will swallow combo-box change event
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.suppressDataRecordTypeChangeEventLock">
+            <summary>
+            lock object to support change event swallowing
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.OnCancelClick(System.Object,System.EventArgs)">
+            <summary>
+            Event Handler for the Cancel Button
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.OnOkClick(System.Object,System.EventArgs)">
+            <summary>
+            Event Handler for the OK button
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.removeAllButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Event Handler for the remove all button
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.removeOneButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Event Handler for the remove one button
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.addAllButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Event Handler for the add all button
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.addOneButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Event handler for the add one button
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.recordTypeComboBox_SelectedIndexChanged(System.Object,System.EventArgs)">
+            <summary>
+            Event handler for the combo box selection change event
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.OnClosing(System.ComponentModel.CancelEventArgs)" -->
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.OnClosed(System.EventArgs)">
+            <summary>
+            Wraps up the needed data to be returned to the parent caller
+            </summary>
+            <param name="e"></param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.InitializeGrids" -->
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.UpdateDataRecordTypes">
+            <summary>
+            Updates the list of record types in the combo box
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.UpdateSelectedDataRecordType">
+            <summary>
+            Updates the selected record type in the combo box
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.UpdateAvailableUIElementsGrid">
+            <summary>
+            Updates the data source of the Available Elements grid
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.UpdateSelectedUIElementsGrid">
+            <summary>
+            Updates the data source of the Selected Elements grid
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.DataRecordTypes">
+            <summary>
+            List of DRD Type names
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.SelectedDataRecordType">
+            <summary>
+            Selected DRD type name
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.SelectedDataRecordType_Changed">
+            <summary>
+            Event handler for DRD type combo-box selection change
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.AvailableUIElementsDataSource">
+            <summary>
+            Data source for available UI elements grid
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.SelectedUIElementsDataSource">
+            <summary>
+            Data source for selected UI elements grid
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.UIElementsAddOne_Click">
+            <summary>
+            Event Handler for the Add One button
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.UIElementsAddAll_Click">
+            <summary>
+            Event Handler for the Add All button
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.UIElementsRemoveOne_Click">
+            <summary>
+            Event Handler for the Remove One button
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.UIElementsRemoveAll_Click">
+            <summary>
+            Event Handler for the Remove All button
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowClient.UI.CustomUI.UIElementSelectionDialog.CheckForUpdates">
+            <summary>
+            Event Handler for Checking for Updates to the UI Assemblies.
+            </summary>
+        </member>
+    </members>
+</doc>

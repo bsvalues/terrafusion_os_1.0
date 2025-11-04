@@ -1,0 +1,16 @@
+{
+  "coordinationProtocol": "master-workspace-authority",
+  "syncFrequency": "real-time",
+  "conflictResolution": "master-override",
+  "integrationPoints": {
+    "shared_backend": "read-only-access",
+    "shared_sdk": "read-only-access",
+    "shared_config": "controlled-write-access"
+  },
+  "governanceRules": [
+    "all-changes-require-master-approval",
+    "cross-workspace-impact-validation-required",
+    "deployment-authorization-reserved-to-master",
+    "rollback-authority-reserved-to-master"
+  ]
+}

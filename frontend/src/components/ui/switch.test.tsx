@@ -1,10 +1,10 @@
 /**
  * Switch Component Tests
- * 
+ *
  * Tests for the Switch toggle component.
  * Switch allows users to toggle between on/off states.
  * Built on @radix-ui/react-switch.
- * 
+ *
  * MILESTONE: This is the FINAL test file to achieve 100% Shadcn coverage! 🎯
  */
 
@@ -24,7 +24,7 @@ describe('Switch', () => {
    */
   describe('Rendering', () => {
     it('renders switch in unchecked state', () => {
-      render(<Switch aria-label="Toggle" />);
+      render(<Switch aria-label='Toggle' />);
 
       const switchElement = screen.getByRole('switch');
       expect(switchElement).toBeInTheDocument();
@@ -32,7 +32,7 @@ describe('Switch', () => {
     });
 
     it('renders switch in checked state', () => {
-      render(<Switch defaultChecked aria-label="Toggle" />);
+      render(<Switch defaultChecked aria-label='Toggle' />);
 
       const switchElement = screen.getByRole('switch');
       expect(switchElement).toBeChecked();
@@ -40,9 +40,9 @@ describe('Switch', () => {
 
     it('renders with label', () => {
       render(
-        <div className="flex items-center space-x-2">
-          <Switch id="airplane-mode" />
-          <Label htmlFor="airplane-mode">Airplane Mode</Label>
+        <div className='flex items-center space-x-2'>
+          <Switch id='airplane-mode' />
+          <Label htmlFor='airplane-mode'>Airplane Mode</Label>
         </div>
       );
 
@@ -52,19 +52,19 @@ describe('Switch', () => {
     });
 
     it('renders with custom className', () => {
-      render(<Switch className="custom-switch" aria-label="Toggle" />);
+      render(<Switch className='custom-switch' aria-label='Toggle' />);
 
       const switchElement = screen.getByRole('switch');
       expect(switchElement).toHaveClass('custom-switch');
     });
 
     it('has data-state attribute reflecting checked state', () => {
-      const { rerender } = render(<Switch defaultChecked={false} aria-label="Toggle" />);
+      const { rerender } = render(<Switch defaultChecked={false} aria-label='Toggle' />);
 
       const switchElement = screen.getByRole('switch');
       expect(switchElement).toHaveAttribute('data-state', 'unchecked');
 
-      rerender(<Switch defaultChecked={true} aria-label="Toggle" />);
+      rerender(<Switch defaultChecked={true} aria-label='Toggle' />);
       expect(switchElement).toHaveAttribute('data-state', 'checked');
     });
   });
@@ -76,7 +76,7 @@ describe('Switch', () => {
   describe('Toggle On/Off (Click)', () => {
     it('toggles from off to on when clicked', async () => {
       const user = userEvent.setup();
-      render(<Switch aria-label="Toggle" />);
+      render(<Switch aria-label='Toggle' />);
 
       const switchElement = screen.getByRole('switch');
       expect(switchElement).not.toBeChecked();
@@ -90,7 +90,7 @@ describe('Switch', () => {
 
     it('toggles from on to off when clicked', async () => {
       const user = userEvent.setup();
-      render(<Switch defaultChecked aria-label="Toggle" />);
+      render(<Switch defaultChecked aria-label='Toggle' />);
 
       const switchElement = screen.getByRole('switch');
       expect(switchElement).toBeChecked();
@@ -104,7 +104,7 @@ describe('Switch', () => {
 
     it('toggles multiple times', async () => {
       const user = userEvent.setup();
-      render(<Switch aria-label="Toggle" />);
+      render(<Switch aria-label='Toggle' />);
 
       const switchElement = screen.getByRole('switch');
 
@@ -124,9 +124,9 @@ describe('Switch', () => {
     it('can be toggled by clicking associated label', async () => {
       const user = userEvent.setup();
       render(
-        <div className="flex items-center space-x-2">
-          <Switch id="notifications" />
-          <Label htmlFor="notifications">Enable notifications</Label>
+        <div className='flex items-center space-x-2'>
+          <Switch id='notifications' />
+          <Label htmlFor='notifications'>Enable notifications</Label>
         </div>
       );
 
@@ -143,7 +143,7 @@ describe('Switch', () => {
 
     it('updates data-state when toggled', async () => {
       const user = userEvent.setup();
-      render(<Switch aria-label="Toggle" />);
+      render(<Switch aria-label='Toggle' />);
 
       const switchElement = screen.getByRole('switch');
       expect(switchElement).toHaveAttribute('data-state', 'unchecked');
@@ -163,7 +163,7 @@ describe('Switch', () => {
   describe('Keyboard Activation', () => {
     it('toggles with Space key', async () => {
       const user = userEvent.setup();
-      render(<Switch aria-label="Toggle" />);
+      render(<Switch aria-label='Toggle' />);
 
       const switchElement = screen.getByRole('switch');
       switchElement.focus();
@@ -179,7 +179,7 @@ describe('Switch', () => {
 
     it('toggles off with Space key when checked', async () => {
       const user = userEvent.setup();
-      render(<Switch defaultChecked aria-label="Toggle" />);
+      render(<Switch defaultChecked aria-label='Toggle' />);
 
       const switchElement = screen.getByRole('switch');
       switchElement.focus();
@@ -195,7 +195,7 @@ describe('Switch', () => {
 
     it('toggles with Enter key', async () => {
       const user = userEvent.setup();
-      render(<Switch aria-label="Toggle" />);
+      render(<Switch aria-label='Toggle' />);
 
       const switchElement = screen.getByRole('switch');
       switchElement.focus();
@@ -214,7 +214,7 @@ describe('Switch', () => {
       render(
         <div>
           <button>Before</button>
-          <Switch aria-label="Toggle" />
+          <Switch aria-label='Toggle' />
           <button>After</button>
         </div>
       );
@@ -237,7 +237,7 @@ describe('Switch', () => {
    */
   describe('Controlled State', () => {
     it('respects controlled checked prop', () => {
-      render(<Switch checked={true} aria-label="Toggle" />);
+      render(<Switch checked={true} aria-label='Toggle' />);
 
       const switchElement = screen.getByRole('switch');
       expect(switchElement).toBeChecked();
@@ -247,7 +247,7 @@ describe('Switch', () => {
       const user = userEvent.setup();
       const handleCheckedChange = jest.fn();
 
-      render(<Switch onCheckedChange={handleCheckedChange} aria-label="Toggle" />);
+      render(<Switch onCheckedChange={handleCheckedChange} aria-label='Toggle' />);
 
       const switchElement = screen.getByRole('switch');
       await user.click(switchElement);
@@ -259,9 +259,7 @@ describe('Switch', () => {
       const user = userEvent.setup();
       const handleCheckedChange = jest.fn();
 
-      render(
-        <Switch defaultChecked onCheckedChange={handleCheckedChange} aria-label="Toggle" />
-      );
+      render(<Switch defaultChecked onCheckedChange={handleCheckedChange} aria-label='Toggle' />);
 
       const switchElement = screen.getByRole('switch');
       await user.click(switchElement);
@@ -277,7 +275,7 @@ describe('Switch', () => {
           <div>
             <button onClick={() => setChecked(true)}>Turn On</button>
             <button onClick={() => setChecked(false)}>Turn Off</button>
-            <Switch checked={checked} onCheckedChange={setChecked} aria-label="Toggle" />
+            <Switch checked={checked} onCheckedChange={setChecked} aria-label='Toggle' />
           </div>
         );
       };
@@ -310,7 +308,7 @@ describe('Switch', () => {
       const handleCheckedChange = jest.fn();
 
       render(
-        <Switch defaultChecked={false} onCheckedChange={handleCheckedChange} aria-label="Toggle" />
+        <Switch defaultChecked={false} onCheckedChange={handleCheckedChange} aria-label='Toggle' />
       );
 
       const switchElement = screen.getByRole('switch');
@@ -335,7 +333,7 @@ describe('Switch', () => {
    */
   describe('Disabled State', () => {
     it('renders with disabled attribute', () => {
-      render(<Switch disabled aria-label="Toggle" />);
+      render(<Switch disabled aria-label='Toggle' />);
 
       const switchElement = screen.getByRole('switch');
       expect(switchElement).toBeDisabled();
@@ -343,7 +341,7 @@ describe('Switch', () => {
 
     it('does not toggle when clicked if disabled', async () => {
       const user = userEvent.setup();
-      render(<Switch disabled aria-label="Toggle" />);
+      render(<Switch disabled aria-label='Toggle' />);
 
       const switchElement = screen.getByRole('switch');
       expect(switchElement).not.toBeChecked();
@@ -356,7 +354,7 @@ describe('Switch', () => {
 
     it('does not toggle with keyboard if disabled', async () => {
       const user = userEvent.setup();
-      render(<Switch disabled aria-label="Toggle" />);
+      render(<Switch disabled aria-label='Toggle' />);
 
       const switchElement = screen.getByRole('switch');
       switchElement.focus();
@@ -373,7 +371,7 @@ describe('Switch', () => {
       const user = userEvent.setup();
       const handleCheckedChange = jest.fn();
 
-      render(<Switch disabled onCheckedChange={handleCheckedChange} aria-label="Toggle" />);
+      render(<Switch disabled onCheckedChange={handleCheckedChange} aria-label='Toggle' />);
 
       const switchElement = screen.getByRole('switch');
       await user.click(switchElement);
@@ -382,7 +380,7 @@ describe('Switch', () => {
     });
 
     it('applies disabled opacity styles', () => {
-      render(<Switch disabled aria-label="Toggle" />);
+      render(<Switch disabled aria-label='Toggle' />);
 
       const switchElement = screen.getByRole('switch');
       // Should have disabled:opacity-50 class from Switch styles
@@ -390,7 +388,7 @@ describe('Switch', () => {
     });
 
     it('shows not-allowed cursor when disabled', () => {
-      render(<Switch disabled aria-label="Toggle" />);
+      render(<Switch disabled aria-label='Toggle' />);
 
       const switchElement = screen.getByRole('switch');
       // Should have disabled:cursor-not-allowed class
@@ -404,25 +402,25 @@ describe('Switch', () => {
    */
   describe('ARIA and Accessibility', () => {
     it('has role="switch"', () => {
-      render(<Switch aria-label="Toggle" />);
+      render(<Switch aria-label='Toggle' />);
 
       const switchElement = screen.getByRole('switch');
       expect(switchElement).toBeInTheDocument();
     });
 
     it('has aria-checked attribute', () => {
-      const { rerender } = render(<Switch defaultChecked={false} aria-label="Toggle" />);
+      const { rerender } = render(<Switch defaultChecked={false} aria-label='Toggle' />);
 
       const switchElement = screen.getByRole('switch');
       expect(switchElement).toHaveAttribute('aria-checked', 'false');
 
-      rerender(<Switch defaultChecked={true} aria-label="Toggle" />);
+      rerender(<Switch defaultChecked={true} aria-label='Toggle' />);
       expect(switchElement).toHaveAttribute('aria-checked', 'true');
     });
 
     it('updates aria-checked when toggled', async () => {
       const user = userEvent.setup();
-      render(<Switch aria-label="Toggle" />);
+      render(<Switch aria-label='Toggle' />);
 
       const switchElement = screen.getByRole('switch');
       expect(switchElement).toHaveAttribute('aria-checked', 'false');
@@ -435,7 +433,7 @@ describe('Switch', () => {
     });
 
     it('supports aria-label for accessibility', () => {
-      render(<Switch aria-label="Enable dark mode" />);
+      render(<Switch aria-label='Enable dark mode' />);
 
       const switchElement = screen.getByRole('switch');
       expect(switchElement).toHaveAttribute('aria-label', 'Enable dark mode');
@@ -444,8 +442,8 @@ describe('Switch', () => {
     it('supports aria-labelledby for external labels', () => {
       render(
         <div>
-          <div id="switch-label">Notifications</div>
-          <Switch aria-labelledby="switch-label" />
+          <div id='switch-label'>Notifications</div>
+          <Switch aria-labelledby='switch-label' />
         </div>
       );
 
@@ -454,7 +452,7 @@ describe('Switch', () => {
     });
 
     it('has aria-disabled when disabled', () => {
-      render(<Switch disabled aria-label="Toggle" />);
+      render(<Switch disabled aria-label='Toggle' />);
 
       const switchElement = screen.getByRole('switch');
       expect(switchElement).toHaveAttribute('aria-disabled', 'true');
@@ -463,8 +461,8 @@ describe('Switch', () => {
     it('has no accessibility violations (unchecked)', async () => {
       const { container } = render(
         <div>
-          <Switch id="test-switch" />
-          <Label htmlFor="test-switch">Test Switch</Label>
+          <Switch id='test-switch' />
+          <Label htmlFor='test-switch'>Test Switch</Label>
         </div>
       );
 
@@ -475,8 +473,8 @@ describe('Switch', () => {
     it('has no accessibility violations (checked)', async () => {
       const { container } = render(
         <div>
-          <Switch id="test-switch" defaultChecked />
-          <Label htmlFor="test-switch">Test Switch</Label>
+          <Switch id='test-switch' defaultChecked />
+          <Label htmlFor='test-switch'>Test Switch</Label>
         </div>
       );
 
@@ -487,8 +485,8 @@ describe('Switch', () => {
     it('has no accessibility violations (disabled)', async () => {
       const { container } = render(
         <div>
-          <Switch id="test-switch" disabled />
-          <Label htmlFor="test-switch">Test Switch</Label>
+          <Switch id='test-switch' disabled />
+          <Label htmlFor='test-switch'>Test Switch</Label>
         </div>
       );
 

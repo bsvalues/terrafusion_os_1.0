@@ -1,0 +1,9 @@
+{
+    "set": [
+        "boundary",
+        "extent",
+        "footprints",
+        "seamlines",
+        "spatial resolution"
+    ]
+}

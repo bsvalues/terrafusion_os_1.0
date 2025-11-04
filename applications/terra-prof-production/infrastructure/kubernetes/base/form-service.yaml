@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: form-service
+  namespace: terrafusionpro
+  labels:
+    app: form-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: form-service
+  template:
+    metadata:
+      labels:
+        app: form-service
+    spec:
+      containers:
+      - name: form-service
+        image: terrafusionpro/form-service:latest
+        ports:
+        - containerPort: 5005
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: SERVICE_PORT
+          value: "5005"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: terrafusionpro-secrets
+              key: database-url
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5005
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5005
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 200m
+            memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: form-service
+  namespace: terrafusionpro
+spec:
+  selector:
+    app: form-service
+  ports:
+  - port: 5005
+    targetPort: 5005
+  type: ClusterIP

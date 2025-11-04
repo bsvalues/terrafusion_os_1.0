@@ -1,0 +1,151 @@
+{
+  "folders": [
+    {
+      "path": "..",
+      "name": "🎯 TerraFusion OS 1.0 (Root)"
+    },
+    {
+      "path": "../ops",
+      "name": "📊 Operations & Monitoring"
+    },
+    {
+      "path": "../monitoring",
+      "name": "📈 Monitoring"
+    },
+    {
+      "path": "../docs",
+      "name": "📚 Documentation"
+    },
+    {
+      "path": "../.github",
+      "name": "⚙️ CI/CD & Workflows"
+    },
+    {
+      "path": "../config",
+      "name": "🔧 Configuration"
+    },
+    {
+      "path": "../infrastructure",
+      "name": "🏗️ Infrastructure"
+    },
+    {
+      "path": "../architecture-diagrams",
+      "name": "📐 Architecture"
+    },
+    {
+      "path": "../SDK",
+      "name": "📦 Platform SDK (read-only)"
+    },
+    {
+      "path": "../backend",
+      "name": "🔧 Shared Backend (read-only)"
+    },
+    {
+      "path": "../docs/master",
+      "name": "📚 Master Docs"
+    }
+  ],
+  "settings": {
+    "workbench.colorTheme": "One Dark Pro",
+    "workbench.startupEditor": "readme",
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/.git": true,
+      "**/obj": true,
+      "**/bin": true,
+      "**/__pycache__": true,
+      "**/.pytest_cache": true,
+      "**/.venv": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/package-lock.json": true,
+      "**/.venv": true
+    },
+    "supremeCommander.dashboardRefreshRate": "30s",
+    "supremeCommander.criticalAlertsEnabled": true,
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "git.branchProtection": [
+      "main",
+      "develop",
+      "production"
+    ],
+    "terrafusion.sync": {
+      "autoSync": true,
+      "syncInterval": 15,
+      "conflictResolution": "master-priority",
+      "sharedState": {
+        "backend": "read-only",
+        "sdk": "read-only",
+        "config": "shared-write"
+      }
+    },
+    "terrafusion.compliance": {
+      "fismaMode": "MODERATE",
+      "nist80053": true,
+      "auditTrail": "comprehensive"
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "eamodio.gitlens",
+      "gruntfuggly.todo-tree",
+      "ms-vscode.vscode-js-profile-table",
+      "ms-azuretools.vscode-docker",
+      "streetsidesoftware.code-spell-checker",
+      "usernamehw.errorlens",
+      "yzhang.markdown-all-in-one",
+      "bierner.markdown-mermaid",
+      "hediet.vscode-drawio"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "View System Health Dashboard",
+        "type": "node",
+        "request": "launch",
+        "program": "${workspaceFolder}/ops/dashboard/server.js",
+        "console": "integratedTerminal"
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Generate Workspace Health Report",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "${workspaceFolder}/ops/health/generate_workspace_health.py",
+          "marketplace",
+          "frontend",
+          "platform"
+        ],
+        "problemMatcher": [],
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "label": "View All CI/CD Status",
+        "type": "shell",
+        "command": "gh",
+        "args": [
+          "workflow",
+          "list"
+        ],
+        "problemMatcher": []
+      }
+    ]
+  }
+}

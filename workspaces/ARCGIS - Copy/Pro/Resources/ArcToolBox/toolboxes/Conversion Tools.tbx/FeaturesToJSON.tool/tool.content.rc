@@ -1,0 +1,22 @@
+{
+    "map": {
+        "description": "Converts features to Esri JSON or GeoJSON format. The fields, geometry, and spatial reference of features will be converted to their corresponding JSON representation and written to a file with a .json or .geojson extension.",
+        "format_json.descr": "<xdoc><p>Specifies whether the JSON will be formatted to improve readability similar to the ArcGIS REST API specification&apos;s PJSON (Pretty JSON) format.</p><p><ul><li>Unchecked—The features will not be formatted. This is the default.</li><li>Checked—The features will be formatted to the PJSON specification.</li></ul></p></xdoc>",
+        "format_json.title": "Formatted JSON",
+        "geojson.descr": "<xdoc><p>Specifies whether the output will be created in GeoJSON format or Esri JSON format.</p><p><ul><li>Unchecked—The output will be created in Esri JSON format (.json file). This is the default.</li><li>Checked—The output will be created in GeoJSON format (.geojson file).</li></ul></p></xdoc>",
+        "geojson.title": "Output to GeoJSON",
+        "in_features.descr": "The features that will be converted to JSON format.",
+        "in_features.title": "Input Features",
+        "include_m_values.descr": "<xdoc><p>Specifies whether the m-values of the features will be included in the JSON.</p><p><ul><li>Unchecked—The m-values will not be included in geometries, and the hasM property of the JSON will not be included. This is the default.</li><li>Checked—The m-values will be included in geometries, and the hasM property of the JSON will be set to true.</li></ul></p></xdoc>",
+        "include_m_values.title": "Include M Values",
+        "include_z_values.descr": "<xdoc><p>Specifies whether the z-values of the features will be included in the JSON.</p><p><ul><li>Unchecked—The z-values will not be included in geometries, and the hasZ property of the JSON will not be included. This is the default.</li><li>Checked—The z-values will be included in geometries, and the hasZ property of the JSON will be set to true.</li></ul></p></xdoc>",
+        "include_z_values.title": "Include Z Values",
+        "out_json_file.descr": "The output .json or .geojson file.",
+        "out_json_file.title": "Output JSON",
+        "outputtowgs84.descr": "<xdoc><p>Specifies whether the input features will be projected to the WGS84 geographic coordinate system with a default geographic transformation. This parameter only applies when the output is GeoJSON.</p><p><ul><li>Checked—Features will be projected to WGS84.</li><li>Unchecked—Features will not be projected to WGS84. The GeoJSON will contain a CRS tag that defines the coordinate system. This is the default.</li></ul></p></xdoc>",
+        "outputtowgs84.title": "Project to WGS84",
+        "title": "Features To JSON",
+        "use_field_alias.descr": "<xdoc><p>Specifies whether the output file will use field aliases for feature attributes.</p><p><ul><li>Unchecked—Output feature attributes will not use field aliases; they will use field names. This is the default.</li><li>Checked—Output feature attributes will use field aliases.</li></ul></p></xdoc>",
+        "use_field_alias.title": "Use field aliases"
+    }
+}

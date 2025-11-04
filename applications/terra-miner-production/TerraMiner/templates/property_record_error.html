@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}Property Record Error{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-3xl mx-auto">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold mb-2">Property Record Error</h1>
+            <p class="text-gray-600 dark:text-gray-400">
+                Error retrieving property record for Parcel ID: {{ property_id }}
+            </p>
+            
+            <!-- Back to Search Link -->
+            <div class="mt-4">
+                <a href="{{ url_for('property_views.property_search') }}" class="inline-flex items-center text-primary hover:underline">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Back to Search
+                </a>
+            </div>
+        </div>
+        
+        <!-- IAAO/USPAP Compliance Notice -->
+        <div class="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 p-4 mb-8">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-blue-800 dark:text-blue-200">
+                        TerraMiner only displays authentic property assessment data in compliance with 
+                        <span class="font-semibold">International Association of Assessing Officers (IAAO)</span> 
+                        standards and <span class="font-semibold">Uniform Standards of Professional Appraisal Practice (USPAP)</span>.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Error Card -->
+        <div class="card bg-base-100 shadow-xl mb-8">
+            <div class="card-body">
+                <div class="alert alert-error">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <svg class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-lg font-medium text-red-800 dark:text-red-200">
+                                Property Record Unavailable
+                            </h3>
+                            <div class="mt-2 text-sm text-red-700 dark:text-red-300">
+                                <p>{{ error }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-6 mt-6">
+                    <h3 class="font-medium mb-4">Request Details:</h3>
+                    
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Parcel ID</div>
+                            <div class="col-span-2 font-mono">{{ property_id }}</div>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="text-sm font-medium text-gray-500 dark:text-gray-400">County</div>
+                            <div class="col-span-2">{{ county|title }}</div>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Data Source</div>
+                            <div class="col-span-2">{{ data_source }}</div>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Timestamp</div>
+                            <div class="col-span-2">{{ timestamp|default(now().strftime('%Y-%m-%d %H:%M:%S') if now is defined else '') }}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 class="text-lg font-medium mt-8 mb-4">Possible Reasons:</h3>
+                
+                <ul class="list-disc list-inside space-y-2 ml-2">
+                    <li class="text-sm text-gray-700 dark:text-gray-300">
+                        <span class="font-medium">Invalid Property ID:</span> 
+                        The parcel number "{{ property_id }}" may not exist in {{ county|title }} County records.
+                    </li>
+                    <li class="text-sm text-gray-700 dark:text-gray-300">
+                        <span class="font-medium">API Connection Issue:</span> 
+                        The connection to {{ data_source }} may be temporarily unavailable.
+                    </li>
+                    <li class="text-sm text-gray-700 dark:text-gray-300">
+                        <span class="font-medium">Authentication Required:</span> 
+                        API keys or authentication credentials may need to be updated.
+                    </li>
+                    <li class="text-sm text-gray-700 dark:text-gray-300">
+                        <span class="font-medium">Format Issue:</span> 
+                        The property ID format may be incorrect for {{ county|title }} County. 
+                        Try removing or adding dashes to the parcel number.
+                    </li>
+                </ul>
+                
+                <div class="card-actions justify-center mt-8">
+                    <a href="{{ url_for('property_views.property_search') }}" class="btn btn-primary">
+                        Return to Property Search
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Alternative Actions -->
+        <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden mb-8">
+            <div class="p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+                <h2 class="text-xl font-semibold">Alternative Options</h2>
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                        <h3 class="font-medium mb-2">Try Another Property ID</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                            Search for a different property by entering a valid parcel ID.
+                        </p>
+                        <form method="GET" action="{{ url_for('property_views.property_details') }}">
+                            <div class="flex gap-2">
+                                <input type="text" name="property_id" class="input input-bordered w-full" placeholder="Enter parcel ID">
+                                <input type="hidden" name="county" value="{{ county }}">
+                                <button type="submit" class="btn btn-primary">Search</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                        <h3 class="font-medium mb-2">Visit County Records</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                            Access official county property records directly from the source.
+                        </p>
+                        <a href="https://www.bentonassessor.com/property-search" 
+                           class="btn btn-outline w-full" 
+                           target="_blank" 
+                           rel="noopener noreferrer">
+                            Visit {{ county|title }} County Records
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('terra_fusion_ui.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('terra_fusion_ui.job_details', job_id=job.id) }}">Job Details</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Schema Validation</li>
+                </ol>
+            </nav>
+            <h1 class="terrafusion-title">Schema Validation</h1>
+            <p class="lead">Job ID: {{ job.id }}</p>
+        </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Filters</h5>
+        </div>
+        <div class="card-body">
+            <form id="filterForm" class="row">
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label for="tableFilter" class="form-label">Table</label>
+                        <select class="form-select" id="tableFilter" name="table">
+                            <option value="">All Tables</option>
+                            {% if tables %}
+                                {% for table in tables %}
+                                    <option value="{{ table.name }}" {% if request.args.get('table') == table.name %}selected{% endif %}>{{ table.name }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label for="statusFilter" class="form-label">Validation Status</label>
+                        <select class="form-select" id="statusFilter" name="status">
+                            <option value="">All Statuses</option>
+                            <option value="valid" {% if request.args.get('status') == 'valid' %}selected{% endif %}>Valid</option>
+                            <option value="invalid" {% if request.args.get('status') == 'invalid' %}selected{% endif %}>Invalid</option>
+                            <option value="warning" {% if request.args.get('status') == 'warning' %}selected{% endif %}>Warning</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary mb-3 w-100">Apply Filters</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tables Section -->
+    <div class="row mb-4">
+        {% if tables %}
+            {% for table in tables %}
+                {% if not request.args.get('table') or request.args.get('table') == table.name %}
+                    {% if not request.args.get('status') or table.schema_status == request.args.get('status') %}
+                    <div class="col-12 mb-4 schema-table" data-table="{{ table.name }}" data-status="{{ table.schema_status|default('unknown') }}">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-light">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">{{ table.name }}</h5>
+                                    <span class="badge bg-{% if table.schema_status == 'valid' %}success{% elif table.schema_status == 'invalid' %}danger{% elif table.schema_status == 'warning' %}warning{% else %}info{% endif %}">
+                                        {{ table.schema_status|default('Unknown') }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <!-- Schema Information -->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="card mb-3">
+                                            <div class="card-header">
+                                                <h6 class="mb-0">Source Schema</h6>
+                                            </div>
+                                            <div class="card-body">
+                                                {% if table.source_schema %}
+                                                    <pre class="mb-0 schema-code"><code>{{ table.source_schema|tojson(indent=2) }}</code></pre>
+                                                {% else %}
+                                                    <div class="alert alert-info mb-0">No source schema data available</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card mb-3">
+                                            <div class="card-header">
+                                                <h6 class="mb-0">Target Schema</h6>
+                                            </div>
+                                            <div class="card-body">
+                                                {% if table.target_schema %}
+                                                    <pre class="mb-0 schema-code"><code>{{ table.target_schema|tojson(indent=2) }}</code></pre>
+                                                {% else %}
+                                                    <div class="alert alert-info mb-0">No target schema data available</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Schema Differences -->
+                                {% if table.schema_diffs and table.schema_diffs|length > 0 %}
+                                    <h5 class="mt-4 mb-3">Schema Differences</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Column</th>
+                                                    <th>Issue Type</th>
+                                                    <th>Source</th>
+                                                    <th>Target</th>
+                                                    <th>Severity</th>
+                                                    <th>Recommendation</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for diff in table.schema_diffs %}
+                                                    <tr>
+                                                        <td>{{ diff.column|default('N/A') }}</td>
+                                                        <td>{{ diff.type }}</td>
+                                                        <td>{{ diff.source|default('Not present') }}</td>
+                                                        <td>{{ diff.target|default('Not present') }}</td>
+                                                        <td>
+                                                            <span class="badge bg-{% if diff.severity == 'high' %}danger{% elif diff.severity == 'medium' %}warning{% else %}info{% endif %}">
+                                                                {{ diff.severity|default('Unknown') }}
+                                                            </span>
+                                                        </td>
+                                                        <td>{{ diff.recommendation|default('No recommendation') }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                {% endif %}
+
+                                <!-- Migration SQL -->
+                                {% if table.migration_sql %}
+                                    <h5 class="mt-4 mb-3">Suggested Migration SQL</h5>
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <pre class="mb-0 schema-code"><code>{{ table.migration_sql }}</code></pre>
+                                            <div class="mt-3 d-flex justify-content-end">
+                                                <button class="btn btn-sm btn-primary copy-button" data-text="{{ table.migration_sql }}">
+                                                    <i class="fas fa-copy"></i> Copy SQL
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    No table schema data available.
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    // Copy button functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const copyButtons = document.querySelectorAll('.copy-button');
+        copyButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const text = this.dataset.text;
+                navigator.clipboard.writeText(text).then(() => {
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Could not copy text: ', err);
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    .terrafusion-title {
+        color: #3f51b5;
+        border-bottom: 2px solid #3f51b5;
+        padding-bottom: 8px;
+    }
+    
+    .card {
+        transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .schema-code {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.25rem;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,10 @@
+{
+    "set": [
+        "calculate",
+        "definition",
+        "field",
+        "fields",
+        "schema",
+        "update"
+    ]
+}

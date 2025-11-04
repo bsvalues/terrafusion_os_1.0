@@ -1,0 +1,9 @@
+{
+    "map": {
+        "description": "Disables referent fields for an existing linear referencing system (LRS) event feature class or feature layer. It does not delete the referent columns; it removes the referent column information from the Lrs_Metadata table.",
+        "in_feature_class.descr": "The input feature class or feature layer for the LRS event.",
+        "in_feature_class.title": "LRS Event Feature Class",
+        "out_feature_class.title": "Updated LRS Event Feature Class",
+        "title": "Disable Referent Fields"
+    }
+}

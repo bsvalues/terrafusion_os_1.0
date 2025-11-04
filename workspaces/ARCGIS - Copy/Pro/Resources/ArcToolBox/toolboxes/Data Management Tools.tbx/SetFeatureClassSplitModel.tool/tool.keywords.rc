@@ -1,0 +1,10 @@
+{
+    "set": [
+        "editing",
+        "feature",
+        "feature class",
+        "model",
+        "policy",
+        "split"
+    ]
+}

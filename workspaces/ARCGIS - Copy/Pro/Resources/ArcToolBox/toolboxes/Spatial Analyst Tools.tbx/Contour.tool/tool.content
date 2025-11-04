@@ -1,0 +1,174 @@
+{
+    "type": "FunctionTool",
+    "guid": "{d1329780-b444-4562-9962-eebe35857cd0}",
+    "displayname": "$rc:title",
+    "helpcontent": "8170002",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9",
+        "10"
+    ],
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_raster": {
+            "displayname": "$rc:in_raster.title",
+            "datatype": {
+                "type": "GPSAGeoData"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "true",
+                "singleband": "true",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_raster.descr"
+        },
+        "out_polyline_features": {
+            "direction": "out",
+            "displayname": "$rc:out_polyline_features.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_polyline_features.descr"
+        },
+        "contour_interval": {
+            "displayname": "$rc:contour_interval.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "false"
+            },
+            "description": "$rc:contour_interval.descr"
+        },
+        "base_contour": {
+            "type": "optional",
+            "displayname": "$rc:base_contour.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:base_contour.descr"
+        },
+        "z_factor": {
+            "type": "optional",
+            "displayname": "$rc:z_factor.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "depends": [
+                "in_raster"
+            ],
+            "value": "1",
+            "description": "$rc:z_factor.descr"
+        },
+        "contour_type": {
+            "type": "optional",
+            "displayname": "$rc:contour_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "CONTOUR",
+                        "code": "$rc:contour_type.domain.CONTOUR"
+                    },
+                    {
+                        "value": "CONTOUR_POLYGON",
+                        "code": "$rc:contour_type.domain.CONTOUR_POLYGON"
+                    },
+                    {
+                        "value": "CONTOUR_SHELL",
+                        "code": "$rc:contour_type.domain.CONTOUR_SHELL"
+                    },
+                    {
+                        "value": "CONTOUR_SHELL_UP",
+                        "code": "$rc:contour_type.domain.CONTOUR_SHELL_UP"
+                    }
+                ]
+            },
+            "value": "CONTOUR",
+            "description": "$rc:contour_type.descr"
+        },
+        "max_vertices_per_feature": {
+            "type": "optional",
+            "displayname": "$rc:max_vertices_per_feature.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "4"
+                },
+                "high": {
+                    "allow": "true",
+                    "val": "2147483646"
+                }
+            },
+            "description": "$rc:max_vertices_per_feature.descr"
+        }
+    },
+    "environments": [
+        "MDomain",
+        "MResolution",
+        "MTolerance",
+        "XYDomain",
+        "ZDomain",
+        "ZResolution",
+        "ZTolerance",
+        "autoCommit",
+        "cellSize",
+        "cellSizeProjectionMethod",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "maintainSpatialIndex",
+        "outputCoordinateSystem",
+        "outputMFlag",
+        "outputZFlag",
+        "outputZValue",
+        "parallelProcessingFactor",
+        "scratchWorkspace",
+        "snapRaster",
+        "workspace"
+    ]
+}

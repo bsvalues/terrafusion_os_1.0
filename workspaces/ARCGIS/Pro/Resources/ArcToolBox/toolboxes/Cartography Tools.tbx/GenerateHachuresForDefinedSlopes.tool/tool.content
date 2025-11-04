@@ -1,0 +1,180 @@
+{
+    "type": "FunctionTool",
+    "guid": "{c1648a53-d0bc-4a9e-aa96-4a4e33d205b9}",
+    "displayname": "$rc:title",
+    "helpcontent": "10040013",
+    "description": "$rc:description",
+    "product": "300",
+    "params": {
+        "upper_lines": {
+            "displayname": "$rc:upper_lines.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:upper_lines.descr"
+        },
+        "lower_lines": {
+            "displayname": "$rc:lower_lines.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:lower_lines.descr"
+        },
+        "output_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:output_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:output_feature_class.descr"
+        },
+        "output_type": {
+            "type": "optional",
+            "displayname": "$rc:output_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "POLYGON_TRIANGLES",
+                        "code": "$rc:output_type.domain.POLYGON_TRIANGLES"
+                    },
+                    {
+                        "value": "LINE_TICKS",
+                        "code": "$rc:output_type.domain.LINE_TICKS"
+                    }
+                ]
+            },
+            "value": "POLYGON_TRIANGLES",
+            "description": "$rc:output_type.descr"
+        },
+        "fully_connected": {
+            "type": "optional",
+            "displayname": "$rc:fully_connected.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FULLY_CONNECTED"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NOT_CONNECTED"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:fully_connected.descr"
+        },
+        "search_distance": {
+            "type": "optional",
+            "displayname": "$rc:search_distance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "20 Meters",
+            "description": "$rc:search_distance.descr"
+        },
+        "interval": {
+            "type": "optional",
+            "displayname": "$rc:interval.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "10 Meters",
+            "description": "$rc:interval.descr"
+        },
+        "minimum_length": {
+            "type": "optional",
+            "displayname": "$rc:minimum_length.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "0 Meters",
+            "description": "$rc:minimum_length.descr"
+        },
+        "alternate_hachures": {
+            "type": "optional",
+            "displayname": "$rc:alternate_hachures.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ALTERNATE_HACHURES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "UNIFORM_HACHURES"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:alternate_hachures.descr"
+        },
+        "perpendicular": {
+            "type": "optional",
+            "displayname": "$rc:perpendicular.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "PERPENDICULAR"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NOT_PERPENDICULAR"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:perpendicular.descr"
+        },
+        "polygon_base_width": {
+            "type": "optional",
+            "displayname": "$rc:polygon_base_width.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "5 Meters",
+            "description": "$rc:polygon_base_width.descr"
+        }
+    },
+    "environments": [
+        "MDomain",
+        "ZDomain",
+        "extent",
+        "outputCoordinateSystem"
+    ]
+}

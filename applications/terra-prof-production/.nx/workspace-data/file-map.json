@@ -1,0 +1,777 @@
+{
+  "version": "6.0",
+  "nxVersion": "20.8.1",
+  "pathMappings": {},
+  "nxJsonPlugins": [],
+  "fileMap": {
+    "projectFileMap": {
+      "@terrafusionpro/web-client": [
+        {
+          "file": "packages/web-client/App.js",
+          "hash": "8931089168355563712"
+        },
+        {
+          "file": "packages/web-client/components/Dashboard.js",
+          "hash": "11846287896510674274"
+        },
+        {
+          "file": "packages/web-client/components/Footer.js",
+          "hash": "3929889511610956790"
+        },
+        {
+          "file": "packages/web-client/components/Header.js",
+          "hash": "2359266767231561140"
+        },
+        {
+          "file": "packages/web-client/components/LoginForm.js",
+          "hash": "13321077018290241034"
+        },
+        {
+          "file": "packages/web-client/components/PropertyDetail.js",
+          "hash": "17913839959567876412"
+        },
+        {
+          "file": "packages/web-client/components/RegisterForm.js",
+          "hash": "3843031159583802415"
+        },
+        {
+          "file": "packages/web-client/components/ReportDetail.js",
+          "hash": "18008398429849719094"
+        },
+        {
+          "file": "packages/web-client/contexts/AuthContext.js",
+          "hash": "12188967586870622669"
+        },
+        {
+          "file": "packages/web-client/contexts/ThemeContext.js",
+          "hash": "7142323053744278434"
+        },
+        {
+          "file": "packages/web-client/index.js",
+          "hash": "10492600569880399471"
+        },
+        {
+          "file": "packages/web-client/package.json",
+          "hash": "11815133182936716046",
+          "deps": [
+            "npm:nodemon"
+          ]
+        },
+        {
+          "file": "packages/web-client/public/favicon.ico",
+          "hash": "14781373754943446366"
+        },
+        {
+          "file": "packages/web-client/public/global.css",
+          "hash": "11492036829793579903"
+        },
+        {
+          "file": "packages/web-client/public/index.html",
+          "hash": "8680414879281311401"
+        },
+        {
+          "file": "packages/web-client/public/styles.css",
+          "hash": "192508877595567647"
+        },
+        {
+          "file": "packages/web-client/styles/index.css",
+          "hash": "192508877595567647"
+        }
+      ],
+      "@terrafusionpro/shared": [
+        {
+          "file": "packages/shared/index.js",
+          "hash": "2506920584097248036"
+        },
+        {
+          "file": "packages/shared/migrations/0001_initial_schema.sql",
+          "hash": "11460702247050803935"
+        },
+        {
+          "file": "packages/shared/migrations/meta/_journal.json",
+          "hash": "3054171433540224572"
+        },
+        {
+          "file": "packages/shared/package.json",
+          "hash": "16008582795503294225",
+          "deps": [
+            "npm:drizzle-orm",
+            "npm:pg"
+          ]
+        },
+        {
+          "file": "packages/shared/schema/index.js",
+          "hash": "8101458484206479228"
+        },
+        {
+          "file": "packages/shared/scripts/db-push.js",
+          "hash": "4385653698749899866"
+        },
+        {
+          "file": "packages/shared/scripts/initialize-db.js",
+          "hash": "14194884307044066296"
+        },
+        {
+          "file": "packages/shared/storage.js",
+          "hash": "11916623007254077194"
+        }
+      ],
+      "form-service": [
+        {
+          "file": "services/form-service/index.js",
+          "hash": "11414603123042833275"
+        },
+        {
+          "file": "services/form-service/package.json",
+          "hash": "6560364213261189490",
+          "deps": [
+            "npm:cors",
+            "npm:express",
+            "npm:helmet"
+          ]
+        }
+      ],
+      "@terrafusionpro/property-service": [
+        {
+          "file": "services/property-service/index.js",
+          "hash": "1832319092127622854"
+        },
+        {
+          "file": "services/property-service/package.json",
+          "hash": "11604163117036550936"
+        }
+      ],
+      "report-service": [
+        {
+          "file": "services/report-service/index.js",
+          "hash": "13057219990518898350"
+        },
+        {
+          "file": "services/report-service/package.json",
+          "hash": "5129919185989139906",
+          "deps": [
+            "npm:cors",
+            "npm:express",
+            "npm:helmet"
+          ]
+        }
+      ],
+      "@terrafusionpro/api": [
+        {
+          "file": "packages/api/index.js",
+          "hash": "6829550359974188252"
+        },
+        {
+          "file": "packages/api/package.json",
+          "hash": "5200940145707562144",
+          "deps": [
+            "npm:jsonwebtoken"
+          ]
+        }
+      ],
+      "analysis-service": [
+        {
+          "file": "services/analysis-service/index.js",
+          "hash": "11385056417554208932"
+        },
+        {
+          "file": "services/analysis-service/package.json",
+          "hash": "16207687854915999730",
+          "deps": [
+            "npm:cors",
+            "npm:express",
+            "npm:helmet"
+          ]
+        }
+      ],
+      "@terrafusionpro/user-service": [
+        {
+          "file": "services/user-service/index.js",
+          "hash": "13116266509578458546"
+        },
+        {
+          "file": "services/user-service/package.json",
+          "hash": "15252753872729946197"
+        }
+      ]
+    },
+    "nonProjectFiles": [
+      {
+        "file": ".github/ISSUE_TEMPLATE/bug_report.md",
+        "hash": "17451727946217420595"
+      },
+      {
+        "file": ".github/ISSUE_TEMPLATE/feature_request.md",
+        "hash": "5530441325333933379"
+      },
+      {
+        "file": ".github/workflows/ci.yml",
+        "hash": "8348949861284792965"
+      },
+      {
+        "file": ".gitignore",
+        "hash": "9842995352605401156"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_0de696e31b67895d92688fcf574f8fcca3444737.bin",
+        "hash": "12706770358507351640"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_12b7aaf87c79edfc0f0003ce6392b3ab0305e885.bin",
+        "hash": "11229799358000020488"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_139aad7cb191ce8532922d34402e1f268e4854b0.bin",
+        "hash": "8965144784588846780"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_1bd994b9a8d50dedbf9bf0c62f95ff88c8eb3dbb.bin",
+        "hash": "12317792609525218010"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_1d20b32114fdf3df719b9bfa2a32d21f516b6b8d.bin",
+        "hash": "6107460853312977040"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_203b1acd548a46c3dd93ddd693be9a5013aa07cb.bin",
+        "hash": "12796150786449715223"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_2757388b3a5ce009916f592fadf63e91ef3b49ad.bin",
+        "hash": "12318960333013593536"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_2b4a717c1d7597df93c918a49edac09b82152c57.bin",
+        "hash": "9640103760339032512"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_3c2db10bd8417b26bced6943eaea992a9198fdfc.bin",
+        "hash": "16459219356549810370"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_49ae2d2dfc5ed7ae26f962c66d78ba6e8de89ddd.bin",
+        "hash": "7197244082403157588"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_4c988bc2eac913c3e09b28cb9359f0a92c2d7214.bin",
+        "hash": "10797938173398978116"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_4f0ff53c64a282b0cbdb9dd1a0e249b933464f01.bin",
+        "hash": "9703742476331910886"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_52b120e5a55998586faf0ddb335912fc77493b43.bin",
+        "hash": "1229541493251833327"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_5339f1ce6ace8795d7c95c2a7c03907fae98604c.bin",
+        "hash": "4566974700878792674"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_55febd4389435abf7ffc11a860aeec9069f02d5f.bin",
+        "hash": "15449276265748370254"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_5c51bc8d1a01a284be68b0b7ab56fc364f047e01.bin",
+        "hash": "3741098727081774893"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_624c2a74c44f95abf21a287074412b0d876ee850.bin",
+        "hash": "18199492200971582876"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_69898d9817002819ef9e05bc3ffbf0fe0359ffa4.bin",
+        "hash": "4192526222954609430"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_6bcfe5930ef673488f3348c3c4bf209cba26cb42.bin",
+        "hash": "9272071130451287492"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_6c6565fde6ae087d4060e9490959735f8b60148f.bin",
+        "hash": "9302624371888177731"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_7006b9df85351fcbf1a98941cb21561628f5a114.bin",
+        "hash": "17358007349318391469"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_732c35ef022de5bd857cc0b416cee70bfc301a48.bin",
+        "hash": "4531869327882038760"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_76091e60d9a5288b04d223b20035e010a23c4440.bin",
+        "hash": "3121995465041733298"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_7b474127e0c6727a329bef8c50afb7ced4fbb7f9.bin",
+        "hash": "3755692117739782893"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_7c4cd078662f1173ffd257a849439353b7c3dd42.bin",
+        "hash": "2671577651792357338"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_7cddd0fe790162c043ca0931f8693af98e17032e.bin",
+        "hash": "15035684162823869510"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_8a8803a2d8c2d7131512b37473a13f4adf20329b.bin",
+        "hash": "15323683331773516649"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_8f3efb8315c15d575fd7356f8868daa8081ef497.bin",
+        "hash": "3315126693493712100"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_970e49e3873ab5edbfdd75de394ca686f3aafbb7.bin",
+        "hash": "12412919179437250949"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_a4032525a71e641879c152957362e06607840c83.bin",
+        "hash": "5371282263703346555"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_a7317ecec3f8304ec4d9bccc7844911148a70d45.bin",
+        "hash": "16949651299303068815"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_a7c97c675e24d1066e225a58fafc3a105ab78c3e.bin",
+        "hash": "6182939419431597512"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_acf97e6a52176071047a9e3b8d69083e2d71e471.bin",
+        "hash": "3847539971936034905"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_af29cd0365daca6669d13e2ef59c0f80b2c475d5.bin",
+        "hash": "10103716777681175882"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_af55194bc0b2ef6774d8a702b4208a5514ec1747.bin",
+        "hash": "2306841284730744348"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_b137362f2b8a09d24e1fdeaa100f7b0c88debcb7.bin",
+        "hash": "7481909295001876180"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_b4cc366362e1793fcb622b2e0295417941050d6a.bin",
+        "hash": "4553496573941307305"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_b51e2c92ff8a3515978c33dd8964514a7338c3b2.bin",
+        "hash": "13325761604723186326"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_c0c35b72086091defc64aa5a0e6f5e7f49474934.bin",
+        "hash": "3912078728915222224"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_cef3f784aeef956bf313503880ffb86c54fdd75c.bin",
+        "hash": "12758304036736925113"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_cf9ad95aaf418c30531fa2c8893d0bcb23097a52.bin",
+        "hash": "16791241719381799098"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_d1bffabd7cad48a5a92d0ec18ad6cae880d47453.bin",
+        "hash": "6626238742548539665"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_d72401ac75be62611b65e72bc7dc4061f2a6edc6.bin",
+        "hash": "1285175303409559659"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_db144709df5e05bbf20a0e9a0d04587785809814.bin",
+        "hash": "11370699874657695144"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_e123f189090b0528866aef5bf08f494627ce96f9.bin",
+        "hash": "10373405743478269234"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_e7a6260d3267d9724fe7ea88d9710ea41c7cbcfa.bin",
+        "hash": "11898916342292943897"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_e80c45bd8aedb37a629ba609e12b291bfe242984.bin",
+        "hash": "9313097466430951342"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_eb89b8167fd7a0339c49e96f2bcaef82f66f3946.bin",
+        "hash": "17230056026513983443"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_ec1460ea001880319820a96d636e7ea6757dbcb6.bin",
+        "hash": "16104745595903690341"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_f2228758745eeac3f3141da6cd8a6f24a36187e6.bin",
+        "hash": "4354254503857724282"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_f5b4ea9ec3ac0495f222cf0fde9ab239a40c82ba.bin",
+        "hash": "387181137932234846"
+      },
+      {
+        "file": ".local/state/replit/agent/.agent_state_main.bin",
+        "hash": "7134422766323547556"
+      },
+      {
+        "file": ".local/state/replit/agent/.latest.json",
+        "hash": "3688231244080053223"
+      },
+      {
+        "file": ".local/state/replit/agent/rapid_build_started",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": ".local/state/replit/agent/rapid_build_success",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": ".local/state/replit/agent/repl_state.bin",
+        "hash": "10301586783223197135"
+      },
+      {
+        "file": ".replit",
+        "hash": "15338456637703869610"
+      },
+      {
+        "file": ".upm/store.json",
+        "hash": "8409800596651020776"
+      },
+      {
+        "file": "CONTRIBUTING.md",
+        "hash": "17971783091358977865"
+      },
+      {
+        "file": "README.md",
+        "hash": "14545987462330474430"
+      },
+      {
+        "file": "apps/bcbscostapp/index.js",
+        "hash": "9902663833638670985"
+      },
+      {
+        "file": "apps/bcbscostapp/package.json",
+        "hash": "9716235864001886862"
+      },
+      {
+        "file": "apps/bcbsdataengine/index.js",
+        "hash": "14070023038414779625"
+      },
+      {
+        "file": "apps/bcbsdataengine/package.json",
+        "hash": "15674168902818199017"
+      },
+      {
+        "file": "apps/bcbsgeoassessmentpro/index.js",
+        "hash": "1198943149830516199"
+      },
+      {
+        "file": "apps/bcbsgeoassessmentpro/package.json",
+        "hash": "10794317205724442248"
+      },
+      {
+        "file": "apps/bcbsgispro/index.js",
+        "hash": "13615019700922800668"
+      },
+      {
+        "file": "apps/bcbsgispro/package.json",
+        "hash": "4257691563289570479"
+      },
+      {
+        "file": "apps/bcbslevy/index.js",
+        "hash": "3251286430501625986"
+      },
+      {
+        "file": "apps/bcbslevy/package.json",
+        "hash": "16984993450286329762"
+      },
+      {
+        "file": "apps/bcbspacsmapping/index.js",
+        "hash": "14798724253787539099"
+      },
+      {
+        "file": "apps/bcbspacsmapping/package.json",
+        "hash": "6317225914543658201"
+      },
+      {
+        "file": "apps/bcbswebhub/index.js",
+        "hash": "16469845725745217707"
+      },
+      {
+        "file": "apps/bcbswebhub/package.json",
+        "hash": "12505321014434840354"
+      },
+      {
+        "file": "apps/bsbcmaster/index.js",
+        "hash": "10963739341492613094"
+      },
+      {
+        "file": "apps/bsbcmaster/package.json",
+        "hash": "15615879711327413789"
+      },
+      {
+        "file": "apps/bsincomevaluation/index.js",
+        "hash": "2377922705323173556"
+      },
+      {
+        "file": "apps/bsincomevaluation/package.json",
+        "hash": "7650124767857692686"
+      },
+      {
+        "file": "apps/geoassessmentpro/index.js",
+        "hash": "5200168049127302084"
+      },
+      {
+        "file": "apps/geoassessmentpro/package.json",
+        "hash": "15538251746038367080"
+      },
+      {
+        "file": "apps/terraagent/index.js",
+        "hash": "10462481872665655574"
+      },
+      {
+        "file": "apps/terraagent/package.json",
+        "hash": "1206190765869622808"
+      },
+      {
+        "file": "apps/terraf/index.js",
+        "hash": "17117118074290172256"
+      },
+      {
+        "file": "apps/terraf/package.json",
+        "hash": "8026428966550146906"
+      },
+      {
+        "file": "apps/terraflow/index.js",
+        "hash": "5240926829909366148"
+      },
+      {
+        "file": "apps/terraflow/package.json",
+        "hash": "16669836344631962140"
+      },
+      {
+        "file": "apps/terrafusion_mock-up/index.js",
+        "hash": "11448830652241541722"
+      },
+      {
+        "file": "apps/terrafusion_mock-up/package.json",
+        "hash": "13384209010647238235"
+      },
+      {
+        "file": "apps/terrafusionpro/index.js",
+        "hash": "10583876355179647105"
+      },
+      {
+        "file": "apps/terrafusionpro/package.json",
+        "hash": "6018429762036858912"
+      },
+      {
+        "file": "apps/terrafusionsync/index.js",
+        "hash": "15606080012272507517"
+      },
+      {
+        "file": "apps/terrafusionsync/package.json",
+        "hash": "2532869710357855049"
+      },
+      {
+        "file": "apps/terralegislativepulsepub/index.js",
+        "hash": "16801110808739073321"
+      },
+      {
+        "file": "apps/terralegislativepulsepub/package.json",
+        "hash": "18353160473313845617"
+      },
+      {
+        "file": "apps/terraminer/index.js",
+        "hash": "13703888458817942435"
+      },
+      {
+        "file": "apps/terraminer/package.json",
+        "hash": "10382271799651062368"
+      },
+      {
+        "file": "assets/images/terrafusion-logo.svg",
+        "hash": "2530246421192922528"
+      },
+      {
+        "file": "assets/styles/global.css",
+        "hash": "11492036829793579903"
+      },
+      {
+        "file": "attached_assets/Pasted--Summary-To-automate-the-full-integration-verification-and-deployment-of-your-TerraFusion-pla-1745615410652.txt",
+        "hash": "9103230149360293441"
+      },
+      {
+        "file": "attached_assets/Pasted-Here-s-a-single-god-tier-prompt-you-can-paste-straight-into-your-Replit-AI-Agent-session-to-scaffo-1745546181801.txt",
+        "hash": "12510303158224900242"
+      },
+      {
+        "file": "attached_assets/Pasted-Here-s-exactly-what-to-do-next-to-get-those-apps-running-and-hooked-into-your-core-gateway--1745615080874.txt",
+        "hash": "13538856019455954914"
+      },
+      {
+        "file": "attached_assets/Pasted-Right-let-s-fold-repo-creation-into-the-bootstrapping-Here-s-an-updated-prompt-you-can-drop-into-yo-1745546258535.txt",
+        "hash": "636915511099710886"
+      },
+      {
+        "file": "attached_assets/Pasted-d-to-use-an-absolute-path-for-creating-files-Let-me-create-a-project-directory-first-Ran-termin-1745546352420.txt",
+        "hash": "12543616600019972268"
+      },
+      {
+        "file": "docker-compose.yml",
+        "hash": "15143420624217853733"
+      },
+      {
+        "file": "docs/api/README.md",
+        "hash": "10794074127441335262"
+      },
+      {
+        "file": "docs/api/reference.md",
+        "hash": "17066103799032360807"
+      },
+      {
+        "file": "docs/architecture.md",
+        "hash": "706966293023333803"
+      },
+      {
+        "file": "docs/architecture/README.md",
+        "hash": "11668317253965852071"
+      },
+      {
+        "file": "docs/deployment/kubernetes.md",
+        "hash": "15466307019287070584"
+      },
+      {
+        "file": "docs/development/README.md",
+        "hash": "14259912724473327467"
+      },
+      {
+        "file": "docs/services/overview.md",
+        "hash": "2939998262126221397"
+      },
+      {
+        "file": "docs/user-guides/README.md",
+        "hash": "13811984684081234018"
+      },
+      {
+        "file": "generated-icon.png",
+        "hash": "14781373754943446366"
+      },
+      {
+        "file": "import-all-apps.sh",
+        "hash": "8307603346423897242"
+      },
+      {
+        "file": "infrastructure/ci-cd/README.md",
+        "hash": "14375652736985882816"
+      },
+      {
+        "file": "infrastructure/docker/README.md",
+        "hash": "4587827290313462444"
+      },
+      {
+        "file": "infrastructure/kubernetes/README.md",
+        "hash": "5618504645602387594"
+      },
+      {
+        "file": "infrastructure/kubernetes/base/analysis-service.yaml",
+        "hash": "5872525337464247319"
+      },
+      {
+        "file": "infrastructure/kubernetes/base/api-gateway.yaml",
+        "hash": "5974712822667492765"
+      },
+      {
+        "file": "infrastructure/kubernetes/base/database.yaml",
+        "hash": "9218637624610374933"
+      },
+      {
+        "file": "infrastructure/kubernetes/base/form-service.yaml",
+        "hash": "83209831543521894"
+      },
+      {
+        "file": "infrastructure/kubernetes/base/ingress.yaml",
+        "hash": "9333745901215693730"
+      },
+      {
+        "file": "infrastructure/kubernetes/base/kustomization.yaml",
+        "hash": "15228165839001197248"
+      },
+      {
+        "file": "infrastructure/kubernetes/base/namespace.yaml",
+        "hash": "158759048148520873"
+      },
+      {
+        "file": "infrastructure/kubernetes/base/property-service.yaml",
+        "hash": "16264770277672528390"
+      },
+      {
+        "file": "infrastructure/kubernetes/base/report-service.yaml",
+        "hash": "11458937808973309082"
+      },
+      {
+        "file": "infrastructure/kubernetes/base/secrets.yaml",
+        "hash": "15845665151479625420"
+      },
+      {
+        "file": "infrastructure/kubernetes/base/user-service.yaml",
+        "hash": "1556701010139636266"
+      },
+      {
+        "file": "infrastructure/kubernetes/base/web-client-deployment.yaml",
+        "hash": "17666888580895252968"
+      },
+      {
+        "file": "infrastructure/kubernetes/base/web-client-service.yaml",
+        "hash": "10310496508969314970"
+      },
+      {
+        "file": "infrastructure/kubernetes/base/web-client.yaml",
+        "hash": "10918416011734999420"
+      },
+      {
+        "file": "infrastructure/terraform/README.md",
+        "hash": "15780236071029458990"
+      },
+      {
+        "file": "lerna.json",
+        "hash": "7790468123264165038"
+      },
+      {
+        "file": "nx.json",
+        "hash": "1294938694062518408"
+      },
+      {
+        "file": "package-lock.json",
+        "hash": "9511180439348820899"
+      },
+      {
+        "file": "package.json",
+        "hash": "8067030456828072074"
+      },
+      {
+        "file": "packages/agents/index.js",
+        "hash": "13134966342004424507"
+      },
+      {
+        "file": "packages/field-app/index.js",
+        "hash": "5282312690989913529"
+      },
+      {
+        "file": "scripts/setup.sh",
+        "hash": "17921763536124756206"
+      },
+      {
+        "file": "tests/integration/README.md",
+        "hash": "4380922460923311653"
+      }
+    ]
+  }
+}

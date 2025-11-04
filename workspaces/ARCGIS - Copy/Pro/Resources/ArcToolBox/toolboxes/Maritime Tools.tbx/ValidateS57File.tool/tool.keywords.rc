@@ -1,0 +1,26 @@
+{
+    "set": [
+        "cartography",
+        "catalog",
+        "catalogue",
+        "cell",
+        "create",
+        "exchange",
+        "export",
+        "file",
+        "geodatabase",
+        "import",
+        "load",
+        "management",
+        "maritime",
+        "s-100",
+        "s-101",
+        "s-57",
+        "s100",
+        "s101",
+        "set",
+        "validate",
+        "validation",
+        "s57"
+    ]
+}

@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Predicts data values using the output from the Train Random Trees Regression Model tool.",
+        "in_rasters.descr": "The single-band, multidimensional, or multiband raster datasets, or mosaic datasets containing explanatory variables.",
+        "in_rasters.title": "Input Rasters",
+        "in_regression_definition.descr": "A JSON format file that contains attribute information, statistics, or other information from the regression model. The file has an .ecd extension. The file is the output of the Train Random Trees Regression Model tool.",
+        "in_regression_definition.title": "Input Regression Definition File",
+        "out_raster_dataset.descr": "A raster of the predicted values.",
+        "out_raster_dataset.title": "Output predicted raster",
+        "title": "Predict Using Regression Model"
+    }
+}

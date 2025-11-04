@@ -1,0 +1,13 @@
+{
+    "map": {
+        "description": "Creates the feature classes and table necessary for storing ArcGIS IPS data in an existing geodatabase.",
+        "in_workspace.descr": "The geodatabase where the ArcGIS IPS table and feature classes will be created. It can be a file or enterprise geodatabase.",
+        "in_workspace.title": "Input Workspace",
+        "out_beacon_features.title": "Output Beacons Feature Class",
+        "out_ips_positioning.title": "Output IPS Positioning Table",
+        "out_ips_recordings.title": "Output IPS Recordings Feature Class",
+        "out_workspace.title": "Updated input workspace",
+        "summary": "<xdoc><p>Creates the feature classes and table necessary for storing ArcGIS IPS data in an existing geodatabase.</p><note type=\"note\"/><p group=\"note\">The Create IPS Data Model tool provides enhanced functionality and performance.</p></xdoc>",
+        "title": "Enable Indoor Positioning"
+    }
+}

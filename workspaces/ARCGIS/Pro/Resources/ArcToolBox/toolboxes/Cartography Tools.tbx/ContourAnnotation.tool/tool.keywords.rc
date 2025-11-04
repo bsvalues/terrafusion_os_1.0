@@ -1,0 +1,16 @@
+{
+    "set": [
+        "anno",
+        "barrier",
+        "contours",
+        "create",
+        "elevation",
+        "generate",
+        "geodatabase",
+        "label",
+        "labels",
+        "maplex",
+        "mask",
+        "text"
+    ]
+}

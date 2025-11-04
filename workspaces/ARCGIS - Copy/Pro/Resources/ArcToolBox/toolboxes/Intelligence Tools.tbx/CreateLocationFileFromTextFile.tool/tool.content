@@ -1,0 +1,124 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\CreateLocationFileFromTextFile",
+    "displayname": "$rc:title",
+    "helpcontent": "73040003",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "spark"
+    ],
+    "params": {
+        "in_placenames_file": {
+            "displayname": "$rc:in_placenames_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "txt"
+                ]
+            },
+            "description": "$rc:in_placenames_file.descr"
+        },
+        "data_source": {
+            "displayname": "$rc:data_source.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "GEONAMES",
+                        "code": "$rc:data_source.domain.GEONAMES"
+                    },
+                    {
+                        "value": "NGA_GNS",
+                        "code": "$rc:data_source.domain.NGA_GNS"
+                    },
+                    {
+                        "value": "USGS_GNIS",
+                        "code": "$rc:data_source.domain.USGS_GNIS"
+                    },
+                    {
+                        "value": "USGS_ANTARCTIC_NAMES",
+                        "code": "$rc:data_source.domain.USGS_ANTARCTIC_NAMES"
+                    }
+                ]
+            },
+            "value": "GEONAMES",
+            "description": "$rc:data_source.descr"
+        },
+        "out_location_file": {
+            "direction": "out",
+            "displayname": "$rc:out_location_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "description": "$rc:out_location_file.descr"
+        },
+        "include_features": {
+            "type": "optional",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:include_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ADMINISTRATIVE_FEATURES",
+                        "code": "$rc:include_features.domain.ADMINISTRATIVE_FEATURES"
+                    },
+                    {
+                        "value": "HYDROLOGICAL_FEATURES",
+                        "code": "$rc:include_features.domain.HYDROLOGICAL_FEATURES"
+                    },
+                    {
+                        "value": "LOCALITY_FEATURES",
+                        "code": "$rc:include_features.domain.LOCALITY_FEATURES"
+                    },
+                    {
+                        "value": "POPULATED_PLACES",
+                        "code": "$rc:include_features.domain.POPULATED_PLACES"
+                    },
+                    {
+                        "value": "TRANSPORTATION_FEATURES",
+                        "code": "$rc:include_features.domain.TRANSPORTATION_FEATURES"
+                    },
+                    {
+                        "value": "SPOT_FEATURES",
+                        "code": "$rc:include_features.domain.SPOT_FEATURES"
+                    },
+                    {
+                        "value": "TERRAIN_FEATURES",
+                        "code": "$rc:include_features.domain.TERRAIN_FEATURES"
+                    },
+                    {
+                        "value": "UNDERSEA_FEATURES",
+                        "code": "$rc:include_features.domain.UNDERSEA_FEATURES"
+                    },
+                    {
+                        "value": "VEGETATION_FEATURES",
+                        "code": "$rc:include_features.domain.VEGETATION_FEATURES"
+                    }
+                ]
+            },
+            "description": "$rc:include_features.descr"
+        },
+        "in_rois": {
+            "type": "optional",
+            "displayname": "$rc:in_rois.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:in_rois.descr"
+        }
+    }
+}

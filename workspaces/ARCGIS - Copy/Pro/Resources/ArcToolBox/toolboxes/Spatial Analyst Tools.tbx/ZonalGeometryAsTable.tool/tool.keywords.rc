@@ -1,0 +1,10 @@
+{
+    "set": [
+        "shape",
+        "zonal area",
+        "zonal centroid",
+        "zonal perimeter",
+        "zonal thickness",
+        "zone"
+    ]
+}

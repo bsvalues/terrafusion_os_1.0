@@ -1,0 +1,13 @@
+{
+    "map": {
+        "description": "Creates  closed multipatch features from open multipatch features.",
+        "grid_size.descr": "The resolution that will be used to construct the closed multipatch features. This value is defined using the linear units of the input feature's spatial reference.",
+        "grid_size.title": "Grid Size",
+        "in_features.descr": "The multipatch features that will be used to construct closed multipatches.",
+        "in_features.title": "Input Multipatch Features",
+        "out_feature_class.descr": "The output closed multipatch features.",
+        "out_feature_class.title": "Output Multipatch Feature Class",
+        "summary": "Creates closed multipatch features from open multipatch features.",
+        "title": "Enclose Multipatch"
+    }
+}

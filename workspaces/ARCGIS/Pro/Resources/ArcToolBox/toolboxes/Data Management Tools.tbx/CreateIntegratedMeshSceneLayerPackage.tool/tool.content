@@ -1,0 +1,215 @@
+{
+    "type": "FunctionTool",
+    "guid": "{2b508510-68bd-4927-b541-0da4ef2a87d4}",
+    "displayname": "$rc:title",
+    "helpcontent": "3260020",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "no_data_change"
+    ],
+    "params": {
+        "in_dataset": {
+            "display_order": "0",
+            "displayname": "$rc:in_dataset.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "DEFolder"
+                        },
+                        {
+                            "type": "DEFile"
+                        }
+                    ]
+                }
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "osgb"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:in_dataset.descr"
+        },
+        "out_slpk": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_slpk.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "slpk"
+                ]
+            },
+            "description": "$rc:out_slpk.descr"
+        },
+        "anchor_point": {
+            "type": "optional",
+            "display_order": "4",
+            "control_guid": "{BEDF969C-20D2-4C41-96DA-32408CA72BF6}",
+            "displayname": "$rc:anchor_point.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFile"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "wld3",
+                            "xml",
+                            "3mx"
+                        ]
+                    },
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Point"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:anchor_point.descr"
+        },
+        "file_suffix": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:file_suffix.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "osgb",
+                        "code": "$rc:file_suffix.domain.osgb"
+                    },
+                    {
+                        "value": "*",
+                        "code": "$rc:file_suffix.domain.*"
+                    }
+                ]
+            },
+            "value": "osgb",
+            "description": "$rc:file_suffix.descr"
+        },
+        "out_coor_system": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:out_coor_system.title",
+            "datatype": {
+                "type": "GPSpatialReference"
+            },
+            "value": "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]];-400 -400 1000000000;-100000 10000;-100000 10000;8.98315284119521E-09;0.001;0.001;IsHighPrecision",
+            "description": "$rc:out_coor_system.descr"
+        },
+        "max_texture_size": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:max_texture_size.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPLong",
+                        "value": "2048",
+                        "code": "2048"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "4096",
+                        "code": "4096"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "8192",
+                        "code": "8192"
+                    }
+                ]
+            },
+            "description": "$rc:max_texture_size.descr"
+        },
+        "texture_optimization": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:texture_optimization.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "All",
+                        "code": "$rc:texture_optimization.domain.All"
+                    },
+                    {
+                        "value": "Desktop",
+                        "code": "$rc:texture_optimization.domain.Desktop"
+                    },
+                    {
+                        "value": "Mobile",
+                        "code": "$rc:texture_optimization.domain.Mobile"
+                    },
+                    {
+                        "value": "None",
+                        "code": "$rc:texture_optimization.domain.None"
+                    }
+                ]
+            },
+            "value": "Desktop",
+            "description": "$rc:texture_optimization.descr"
+        },
+        "target_cloud_connection": {
+            "type": "optional",
+            "display_order": "2",
+            "control_guid": "{C49F778E-E3D8-4718-BE07-70A90AF336FE}",
+            "displayname": "$rc:target_cloud_connection.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:target_cloud_connection.descr"
+        },
+        "out_name": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:out_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:out_name.descr"
+        }
+    },
+    "environments": [
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

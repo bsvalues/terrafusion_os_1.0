@@ -1,0 +1,5 @@
+<DataType Name="GPTerrainLayer">
+  <DisplayName>Terrain Layer</DisplayName>
+  <Description>A reference to a terrain, including symbology and rendering properties. It’s used to draw a terrain.</Description>
+</DataType>
+

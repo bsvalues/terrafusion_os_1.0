@@ -9,7 +9,7 @@ namespace TerraFusion.AI.Services
     {
         private static readonly Random _random = new Random();
 
-        public Task<ConsciousnessDataDto> GetConsciousnessDataAsync()
+        public System.Threading.Tasks.Task<ConsciousnessDataDto> GetConsciousnessDataAsync()
         {
             var mockData = new ConsciousnessDataDto
             {

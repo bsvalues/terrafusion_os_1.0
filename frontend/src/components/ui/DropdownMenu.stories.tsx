@@ -1,13 +1,13 @@
 /**
  * Dropdown Menu Component Stories - TerraFusion Design System
  * Week 1, Day 2 - Component Documentation Phase
- * 
+ *
  * Purpose: Comprehensive documentation and testing of the Dropdown Menu component
  * - Context menus and action menus
  * - Nested submenus
  * - Checkbox and radio items
  * - Keyboard shortcuts display
- * 
+ *
  * Architecture: Built on Radix UI Dropdown Menu primitive
  * - Keyboard navigation with arrow keys
  * - Automatic positioning
@@ -15,7 +15,9 @@
  * - Focus management
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { useState } from 'react';
+import { Button } from './button';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -23,7 +25,6 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
@@ -33,8 +34,6 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from './dropdown-menu';
-import { Button } from './button';
-import { useState } from 'react';
 
 const meta = {
   title: 'Design System/Molecules/DropdownMenu',
@@ -103,7 +102,7 @@ export const Default: Story = {
   render: () => (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">Open Menu</Button>
+        <Button variant='outline'>Open Menu</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem>Profile</DropdownMenuItem>
@@ -130,9 +129,9 @@ export const WithKeyboardShortcuts: Story = {
   render: () => (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">Edit</Button>
+        <Button variant='outline'>Edit</Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
+      <DropdownMenuContent className='w-56'>
         <DropdownMenuLabel>Edit</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
@@ -181,9 +180,9 @@ export const NestedSubmenus: Story = {
   render: () => (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">File</Button>
+        <Button variant='outline'>File</Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
+      <DropdownMenuContent className='w-56'>
         <DropdownMenuItem>
           New File
           <DropdownMenuShortcut>⌘N</DropdownMenuShortcut>
@@ -240,18 +239,15 @@ export const CheckboxItems: Story = {
     const [showPanel, setShowPanel] = useState(false);
 
     return (
-      <div className="space-y-4">
+      <div className='space-y-4'>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline">View Options</Button>
+            <Button variant='outline'>View Options</Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
+          <DropdownMenuContent className='w-56'>
             <DropdownMenuLabel>Appearance</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuCheckboxItem
-              checked={showStatusBar}
-              onCheckedChange={setShowStatusBar}
-            >
+            <DropdownMenuCheckboxItem checked={showStatusBar} onCheckedChange={setShowStatusBar}>
               Status Bar
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
@@ -260,22 +256,19 @@ export const CheckboxItems: Story = {
             >
               Activity Bar
             </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem
-              checked={showPanel}
-              onCheckedChange={setShowPanel}
-            >
+            <DropdownMenuCheckboxItem checked={showPanel} onCheckedChange={setShowPanel}>
               Panel
             </DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <div className="rounded-lg border p-4 bg-muted text-sm">
-          <p className="font-medium mb-2">Active Views:</p>
+        <div className='rounded-lg border p-4 bg-muted text-sm'>
+          <p className='font-medium mb-2'>Active Views:</p>
           {showStatusBar && <p>• Status Bar</p>}
           {showActivityBar && <p>• Activity Bar</p>}
           {showPanel && <p>• Panel</p>}
           {!showStatusBar && !showActivityBar && !showPanel && (
-            <p className="text-muted-foreground">No views enabled</p>
+            <p className='text-muted-foreground'>No views enabled</p>
           )}
         </div>
       </div>
@@ -299,24 +292,26 @@ export const RadioGroupItems: Story = {
     const [theme, setTheme] = useState('light');
 
     return (
-      <div className="space-y-4">
+      <div className='space-y-4'>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline">Theme: {theme}</Button>
+            <Button variant='outline'>Theme: {theme}</Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
+          <DropdownMenuContent className='w-56'>
             <DropdownMenuLabel>Theme</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
-              <DropdownMenuRadioItem value="light">Light</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="dark">Dark</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="system">System</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value='light'>Light</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value='dark'>Dark</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value='system'>System</DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <div className="rounded-lg border p-4 bg-muted text-sm">
-          <p className="font-medium">Selected Theme: <span className="text-primary">{theme}</span></p>
+        <div className='rounded-lg border p-4 bg-muted text-sm'>
+          <p className='font-medium'>
+            Selected Theme: <span className='text-primary'>{theme}</span>
+          </p>
         </div>
       </div>
     );
@@ -344,12 +339,12 @@ export const InteractiveExamples: Story = {
     });
 
     return (
-      <div className="space-y-4">
+      <div className='space-y-4'>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button>User Settings</Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
+          <DropdownMenuContent className='w-56'>
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
@@ -371,25 +366,19 @@ export const InteractiveExamples: Story = {
             <DropdownMenuSeparator />
             <DropdownMenuCheckboxItem
               checked={features.tooltips}
-              onCheckedChange={(checked) =>
-                setFeatures({ ...features, tooltips: checked })
-              }
+              onCheckedChange={(checked) => setFeatures({ ...features, tooltips: checked })}
             >
               Show Tooltips
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
               checked={features.animations}
-              onCheckedChange={(checked) =>
-                setFeatures({ ...features, animations: checked })
-              }
+              onCheckedChange={(checked) => setFeatures({ ...features, animations: checked })}
             >
               Enable Animations
             </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem
               checked={features.sounds}
-              onCheckedChange={(checked) =>
-                setFeatures({ ...features, sounds: checked })
-              }
+              onCheckedChange={(checked) => setFeatures({ ...features, sounds: checked })}
             >
               Sound Effects
             </DropdownMenuCheckboxItem>
@@ -398,10 +387,10 @@ export const InteractiveExamples: Story = {
               <DropdownMenuSubTrigger>Panel Position</DropdownMenuSubTrigger>
               <DropdownMenuSubContent>
                 <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
-                  <DropdownMenuRadioItem value="top">Top</DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="bottom">Bottom</DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="left">Left</DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="right">Right</DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value='top'>Top</DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value='bottom'>Bottom</DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value='left'>Left</DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value='right'>Right</DropdownMenuRadioItem>
                 </DropdownMenuRadioGroup>
               </DropdownMenuSubContent>
             </DropdownMenuSub>
@@ -413,11 +402,15 @@ export const InteractiveExamples: Story = {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <div className="rounded-lg border p-4 bg-muted text-sm space-y-2">
-          <p className="font-medium mb-2">Current Configuration:</p>
-          <p><strong>Panel Position:</strong> {position}</p>
-          <p><strong>Features:</strong></p>
-          <ul className="ml-4">
+        <div className='rounded-lg border p-4 bg-muted text-sm space-y-2'>
+          <p className='font-medium mb-2'>Current Configuration:</p>
+          <p>
+            <strong>Panel Position:</strong> {position}
+          </p>
+          <p>
+            <strong>Features:</strong>
+          </p>
+          <ul className='ml-4'>
             <li>Tooltips: {features.tooltips ? '✓ On' : '✗ Off'}</li>
             <li>Animations: {features.animations ? '✓ On' : '✗ Off'}</li>
             <li>Sounds: {features.sounds ? '✓ On' : '✗ Off'}</li>
@@ -441,13 +434,13 @@ export const InteractiveExamples: Story = {
  */
 export const RealWorldExamples: Story = {
   render: () => (
-    <div className="flex flex-wrap gap-4">
+    <div className='flex flex-wrap gap-4'>
       {/* User Account Menu */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline">👤 Account</Button>
+          <Button variant='outline'>👤 Account</Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56">
+        <DropdownMenuContent className='w-56'>
           <DropdownMenuLabel>john@example.com</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem>Dashboard</DropdownMenuItem>
@@ -479,9 +472,9 @@ export const RealWorldExamples: Story = {
       {/* Actions Menu */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline">⋯ More Actions</Button>
+          <Button variant='outline'>⋯ More Actions</Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56">
+        <DropdownMenuContent className='w-56'>
           <DropdownMenuItem>
             Edit
             <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
@@ -494,7 +487,7 @@ export const RealWorldExamples: Story = {
           <DropdownMenuItem>Move to</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem>Archive</DropdownMenuItem>
-          <DropdownMenuItem className="text-red-600">
+          <DropdownMenuItem className='text-red-600'>
             Delete
             <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
           </DropdownMenuItem>
@@ -504,9 +497,9 @@ export const RealWorldExamples: Story = {
       {/* Filter Menu */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline">🔍 Filter</Button>
+          <Button variant='outline'>🔍 Filter</Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56">
+        <DropdownMenuContent className='w-56'>
           <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuCheckboxItem>Active</DropdownMenuCheckboxItem>
@@ -521,16 +514,16 @@ export const RealWorldExamples: Story = {
       {/* Sort Menu */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline">↕ Sort</Button>
+          <Button variant='outline'>↕ Sort</Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56">
+        <DropdownMenuContent className='w-56'>
           <DropdownMenuLabel>Sort by</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuRadioGroup value="date">
-            <DropdownMenuRadioItem value="date">Date Created</DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value="name">Name (A-Z)</DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value="size">Size</DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value="modified">Last Modified</DropdownMenuRadioItem>
+          <DropdownMenuRadioGroup value='date'>
+            <DropdownMenuRadioItem value='date'>Date Created</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value='name'>Name (A-Z)</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value='size'>Size</DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value='modified'>Last Modified</DropdownMenuRadioItem>
           </DropdownMenuRadioGroup>
           <DropdownMenuSeparator />
           <DropdownMenuCheckboxItem>Reverse order</DropdownMenuCheckboxItem>
@@ -553,24 +546,26 @@ export const RealWorldExamples: Story = {
  */
 export const UsageGuidelines: Story = {
   render: () => (
-    <div className="space-y-8 max-w-4xl">
+    <div className='space-y-8 max-w-4xl'>
       <div>
-        <h2 className="text-2xl font-bold mb-4">Dropdown Menu Guidelines</h2>
-        <p className="text-muted-foreground">
+        <h2 className='text-2xl font-bold mb-4'>Dropdown Menu Guidelines</h2>
+        <p className='text-muted-foreground'>
           Best practices for using dropdown menus in your applications.
         </p>
       </div>
 
       {/* DO's Section */}
-      <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-green-600">✓ Do's</h3>
-        
-        <div className="grid grid-cols-2 gap-4">
-          <div className="rounded-lg border border-green-200 bg-green-50 dark:bg-green-950 p-4 space-y-2">
-            <p className="font-medium">✓ Group related items</p>
+      <div className='space-y-4'>
+        <h3 className='text-xl font-semibold text-green-600'>✓ Do's</h3>
+
+        <div className='grid grid-cols-2 gap-4'>
+          <div className='rounded-lg border border-green-200 bg-green-50 dark:bg-green-950 p-4 space-y-2'>
+            <p className='font-medium'>✓ Group related items</p>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button size="sm" variant="outline">Good</Button>
+                <Button size='sm' variant='outline'>
+                  Good
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuLabel>Edit</DropdownMenuLabel>
@@ -579,16 +574,16 @@ export const UsageGuidelines: Story = {
                 <DropdownMenuItem>Copy</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <p className="text-sm text-muted-foreground">
-              Use labels and separators to organize
-            </p>
+            <p className='text-sm text-muted-foreground'>Use labels and separators to organize</p>
           </div>
 
-          <div className="rounded-lg border border-green-200 bg-green-50 dark:bg-green-950 p-4 space-y-2">
-            <p className="font-medium">✓ Show keyboard shortcuts</p>
+          <div className='rounded-lg border border-green-200 bg-green-50 dark:bg-green-950 p-4 space-y-2'>
+            <p className='font-medium'>✓ Show keyboard shortcuts</p>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button size="sm" variant="outline">Good</Button>
+                <Button size='sm' variant='outline'>
+                  Good
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem>
@@ -597,73 +592,71 @@ export const UsageGuidelines: Story = {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <p className="text-sm text-muted-foreground">
-              Help users learn shortcuts
-            </p>
+            <p className='text-sm text-muted-foreground'>Help users learn shortcuts</p>
           </div>
 
-          <div className="rounded-lg border border-green-200 bg-green-50 dark:bg-green-950 p-4 space-y-2">
-            <p className="font-medium">✓ Use clear labels</p>
+          <div className='rounded-lg border border-green-200 bg-green-50 dark:bg-green-950 p-4 space-y-2'>
+            <p className='font-medium'>✓ Use clear labels</p>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button size="sm" variant="outline">Actions</Button>
+                <Button size='sm' variant='outline'>
+                  Actions
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem>Delete permanently</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <p className="text-sm text-muted-foreground">
-              Be explicit about destructive actions
-            </p>
+            <p className='text-sm text-muted-foreground'>Be explicit about destructive actions</p>
           </div>
 
-          <div className="rounded-lg border border-green-200 bg-green-50 dark:bg-green-950 p-4 space-y-2">
-            <p className="font-medium">✓ Disable unavailable items</p>
+          <div className='rounded-lg border border-green-200 bg-green-50 dark:bg-green-950 p-4 space-y-2'>
+            <p className='font-medium'>✓ Disable unavailable items</p>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button size="sm" variant="outline">Good</Button>
+                <Button size='sm' variant='outline'>
+                  Good
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem>Copy</DropdownMenuItem>
                 <DropdownMenuItem disabled>Paste</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <p className="text-sm text-muted-foreground">
-              Show but disable unavailable actions
-            </p>
+            <p className='text-sm text-muted-foreground'>Show but disable unavailable actions</p>
           </div>
         </div>
       </div>
 
       {/* DON'T's Section */}
-      <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-red-600">✗ Don'ts</h3>
-        
-        <div className="grid grid-cols-2 gap-4">
-          <div className="rounded-lg border border-red-200 bg-red-50 dark:bg-red-950 p-4 space-y-2">
-            <p className="font-medium">✗ Don't overcomplicate</p>
-            <p className="text-sm text-muted-foreground">
+      <div className='space-y-4'>
+        <h3 className='text-xl font-semibold text-red-600'>✗ Don'ts</h3>
+
+        <div className='grid grid-cols-2 gap-4'>
+          <div className='rounded-lg border border-red-200 bg-red-50 dark:bg-red-950 p-4 space-y-2'>
+            <p className='font-medium'>✗ Don't overcomplicate</p>
+            <p className='text-sm text-muted-foreground'>
               Avoid too many levels of nesting (max 2-3 levels)
             </p>
           </div>
 
-          <div className="rounded-lg border border-red-200 bg-red-50 dark:bg-red-950 p-4 space-y-2">
-            <p className="font-medium">✗ Don't use for primary actions</p>
-            <p className="text-sm text-muted-foreground">
+          <div className='rounded-lg border border-red-200 bg-red-50 dark:bg-red-950 p-4 space-y-2'>
+            <p className='font-medium'>✗ Don't use for primary actions</p>
+            <p className='text-sm text-muted-foreground'>
               Primary actions should be visible buttons, not hidden in menus
             </p>
           </div>
 
-          <div className="rounded-lg border border-red-200 bg-red-50 dark:bg-red-950 p-4 space-y-2">
-            <p className="font-medium">✗ Don't use vague labels</p>
-            <p className="text-sm text-muted-foreground">
+          <div className='rounded-lg border border-red-200 bg-red-50 dark:bg-red-950 p-4 space-y-2'>
+            <p className='font-medium'>✗ Don't use vague labels</p>
+            <p className='text-sm text-muted-foreground'>
               "Options" or "More" should be last resort. Be specific when possible.
             </p>
           </div>
 
-          <div className="rounded-lg border border-red-200 bg-red-50 dark:bg-red-950 p-4 space-y-2">
-            <p className="font-medium">✗ Don't make menus too long</p>
-            <p className="text-sm text-muted-foreground">
+          <div className='rounded-lg border border-red-200 bg-red-50 dark:bg-red-950 p-4 space-y-2'>
+            <p className='font-medium'>✗ Don't make menus too long</p>
+            <p className='text-sm text-muted-foreground'>
               If menu has 10+ items, consider grouping or using different UI
             </p>
           </div>
@@ -671,13 +664,13 @@ export const UsageGuidelines: Story = {
       </div>
 
       {/* Code Examples */}
-      <div className="space-y-4">
-        <h3 className="text-xl font-semibold">Code Examples</h3>
-        
-        <div className="space-y-4">
+      <div className='space-y-4'>
+        <h3 className='text-xl font-semibold'>Code Examples</h3>
+
+        <div className='space-y-4'>
           <div>
-            <h4 className="font-medium mb-2">Basic Dropdown</h4>
-            <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-sm">
+            <h4 className='font-medium mb-2'>Basic Dropdown</h4>
+            <pre className='bg-muted p-4 rounded-lg overflow-x-auto text-sm'>
               <code>{`<DropdownMenu>
   <DropdownMenuTrigger asChild>
     <Button>Open</Button>
@@ -690,11 +683,11 @@ export const UsageGuidelines: Story = {
           </div>
 
           <div>
-            <h4 className="font-medium mb-2">With Checkboxes</h4>
-            <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-sm">
+            <h4 className='font-medium mb-2'>With Checkboxes</h4>
+            <pre className='bg-muted p-4 rounded-lg overflow-x-auto text-sm'>
               <code>{`const [checked, setChecked] = useState(false);
 
-<DropdownMenuCheckboxItem 
+<DropdownMenuCheckboxItem
   checked={checked}
   onCheckedChange={setChecked}
 >
@@ -704,8 +697,8 @@ export const UsageGuidelines: Story = {
           </div>
 
           <div>
-            <h4 className="font-medium mb-2">With Submenu</h4>
-            <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-sm">
+            <h4 className='font-medium mb-2'>With Submenu</h4>
+            <pre className='bg-muted p-4 rounded-lg overflow-x-auto text-sm'>
               <code>{`<DropdownMenuSub>
   <DropdownMenuSubTrigger>
     More Options
@@ -720,79 +713,77 @@ export const UsageGuidelines: Story = {
       </div>
 
       {/* Accessibility */}
-      <div className="space-y-4">
-        <h3 className="text-xl font-semibold">Accessibility Checklist</h3>
-        <ul className="space-y-2">
-          <li className="flex items-start gap-2">
-            <span className="text-green-600 font-bold">✓</span>
+      <div className='space-y-4'>
+        <h3 className='text-xl font-semibold'>Accessibility Checklist</h3>
+        <ul className='space-y-2'>
+          <li className='flex items-start gap-2'>
+            <span className='text-green-600 font-bold'>✓</span>
             <span>Arrow keys navigate menu items (Up/Down, Left/Right for submenus)</span>
           </li>
-          <li className="flex items-start gap-2">
-            <span className="text-green-600 font-bold">✓</span>
+          <li className='flex items-start gap-2'>
+            <span className='text-green-600 font-bold'>✓</span>
             <span>Enter or Space activates menu items</span>
           </li>
-          <li className="flex items-start gap-2">
-            <span className="text-green-600 font-bold">✓</span>
+          <li className='flex items-start gap-2'>
+            <span className='text-green-600 font-bold'>✓</span>
             <span>Escape closes menu and returns focus to trigger</span>
           </li>
-          <li className="flex items-start gap-2">
-            <span className="text-green-600 font-bold">✓</span>
+          <li className='flex items-start gap-2'>
+            <span className='text-green-600 font-bold'>✓</span>
             <span>Tab moves focus to next element outside menu</span>
           </li>
-          <li className="flex items-start gap-2">
-            <span className="text-green-600 font-bold">✓</span>
+          <li className='flex items-start gap-2'>
+            <span className='text-green-600 font-bold'>✓</span>
             <span>Type-ahead: typing letter focuses first item starting with that letter</span>
           </li>
-          <li className="flex items-start gap-2">
-            <span className="text-green-600 font-bold">✓</span>
+          <li className='flex items-start gap-2'>
+            <span className='text-green-600 font-bold'>✓</span>
             <span>ARIA role="menu" applied automatically by Radix UI</span>
           </li>
-          <li className="flex items-start gap-2">
-            <span className="text-green-600 font-bold">✓</span>
+          <li className='flex items-start gap-2'>
+            <span className='text-green-600 font-bold'>✓</span>
             <span>Screen reader announces menu items and their states</span>
           </li>
         </ul>
       </div>
 
       {/* When to Use */}
-      <div className="space-y-4">
-        <h3 className="text-xl font-semibold">When to Use</h3>
-        <div className="space-y-3 text-sm">
-          <div className="flex items-start gap-2">
-            <span className="text-primary font-bold">→</span>
+      <div className='space-y-4'>
+        <h3 className='text-xl font-semibold'>When to Use</h3>
+        <div className='space-y-3 text-sm'>
+          <div className='flex items-start gap-2'>
+            <span className='text-primary font-bold'>→</span>
             <div>
-              <p className="font-medium">Context Menus</p>
-              <p className="text-muted-foreground">
+              <p className='font-medium'>Context Menus</p>
+              <p className='text-muted-foreground'>
                 Actions relevant to a specific item (right-click menus)
               </p>
             </div>
           </div>
-          
-          <div className="flex items-start gap-2">
-            <span className="text-primary font-bold">→</span>
+
+          <div className='flex items-start gap-2'>
+            <span className='text-primary font-bold'>→</span>
             <div>
-              <p className="font-medium">Action Menus</p>
-              <p className="text-muted-foreground">
+              <p className='font-medium'>Action Menus</p>
+              <p className='text-muted-foreground'>
                 Multiple actions for an item (⋯ more actions button)
               </p>
             </div>
           </div>
-          
-          <div className="flex items-start gap-2">
-            <span className="text-primary font-bold">→</span>
+
+          <div className='flex items-start gap-2'>
+            <span className='text-primary font-bold'>→</span>
             <div>
-              <p className="font-medium">User Account Menus</p>
-              <p className="text-muted-foreground">
-                User settings, profile, and logout options
-              </p>
+              <p className='font-medium'>User Account Menus</p>
+              <p className='text-muted-foreground'>User settings, profile, and logout options</p>
             </div>
           </div>
 
-          <div className="flex items-start gap-2">
-            <span className="text-primary font-bold">→</span>
+          <div className='flex items-start gap-2'>
+            <span className='text-primary font-bold'>→</span>
             <div>
-              <p className="font-medium">Filter/Sort Controls</p>
-              <p className="text-muted-foreground">
+              <p className='font-medium'>Filter/Sort Controls</p>
+              <p className='text-muted-foreground'>
                 Checkbox and radio options for filtering or sorting lists
               </p>
             </div>
@@ -805,7 +796,8 @@ export const UsageGuidelines: Story = {
     layout: 'padded',
     docs: {
       description: {
-        story: 'Comprehensive guidelines with best practices, code examples, accessibility, and usage patterns.',
+        story:
+          'Comprehensive guidelines with best practices, code examples, accessibility, and usage patterns.',
       },
     },
   },
@@ -818,46 +810,51 @@ export const EdgeCases: Story = {
   render: () => {
     const [value, setValue] = useState('');
     return (
-      <div className="space-y-6 max-w-4xl">
+      <div className='space-y-6 max-w-4xl'>
         <div>
-          <h3 className="text-lg font-semibold mb-4">Edge Cases</h3>
+          <h3 className='text-lg font-semibold mb-4'>Edge Cases</h3>
         </div>
-        
-        <div className="rounded-lg border p-6 space-y-4">
-          <h4 className="font-semibold">Very Long Labels</h4>
+
+        <div className='rounded-lg border p-6 space-y-4'>
+          <h4 className='font-semibold'>Very Long Labels</h4>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline">Long Labels Menu</Button>
+              <Button variant='outline'>Long Labels Menu</Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-80">
-              <DropdownMenuItem>This is an extremely long menu item label that demonstrates how the dropdown handles text wrapping</DropdownMenuItem>
-              <DropdownMenuItem>Another very long item with lots of text to show overflow behavior</DropdownMenuItem>
+            <DropdownMenuContent className='w-80'>
+              <DropdownMenuItem>
+                This is an extremely long menu item label that demonstrates how the dropdown handles
+                text wrapping
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                Another very long item with lots of text to show overflow behavior
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        
-        <div className="rounded-lg border p-6 space-y-4">
-          <h4 className="font-semibold">Many Items (30+)</h4>
+
+        <div className='rounded-lg border p-6 space-y-4'>
+          <h4 className='font-semibold'>Many Items (30+)</h4>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline">Many Items</Button>
+              <Button variant='outline'>Many Items</Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="max-h-96 overflow-y-auto">
+            <DropdownMenuContent className='max-h-96 overflow-y-auto'>
               {Array.from({ length: 30 }).map((_, i) => (
                 <DropdownMenuItem key={i}>Item {i + 1}</DropdownMenuItem>
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        
-        <div className="rounded-lg border p-6 space-y-4">
-          <h4 className="font-semibold">Empty Menu</h4>
+
+        <div className='rounded-lg border p-6 space-y-4'>
+          <h4 className='font-semibold'>Empty Menu</h4>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline">Empty Menu</Button>
+              <Button variant='outline'>Empty Menu</Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <div className="p-4 text-sm text-muted-foreground">No items available</div>
+              <div className='p-4 text-sm text-muted-foreground'>No items available</div>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -872,28 +869,30 @@ export const EdgeCases: Story = {
  */
 export const Responsive: Story = {
   render: () => (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       <div>
-        <h3 className="text-lg font-semibold mb-4">Responsive Dropdown Menus</h3>
+        <h3 className='text-lg font-semibold mb-4'>Responsive Dropdown Menus</h3>
       </div>
-      
-      <div className="rounded-lg border p-6 space-y-4">
-        <h4 className="font-semibold">Mobile-Optimized (Full Width)</h4>
+
+      <div className='rounded-lg border p-6 space-y-4'>
+        <h4 className='font-semibold'>Mobile-Optimized (Full Width)</h4>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="w-full sm:w-auto">Mobile Menu</Button>
+            <Button variant='outline' className='w-full sm:w-auto'>
+              Mobile Menu
+            </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-screen sm:w-56">
+          <DropdownMenuContent className='w-screen sm:w-56'>
             <DropdownMenuItem>Profile</DropdownMenuItem>
             <DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuItem>Logout</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      
-      <div className="rounded-lg bg-blue-50 dark:bg-blue-950 p-6 space-y-3">
-        <h4 className="font-semibold text-blue-900 dark:text-blue-100">📱 Mobile Best Practices</h4>
-        <ul className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
+
+      <div className='rounded-lg bg-blue-50 dark:bg-blue-950 p-6 space-y-3'>
+        <h4 className='font-semibold text-blue-900 dark:text-blue-100'>📱 Mobile Best Practices</h4>
+        <ul className='space-y-2 text-sm text-blue-800 dark:text-blue-200'>
           <li>• Touch-friendly spacing (44px+ targets)</li>
           <li>• Full-width on mobile for easier interaction</li>
           <li>• Consider drawer/sheet for complex menus on mobile</li>
@@ -909,37 +908,39 @@ export const Responsive: Story = {
  */
 export const CompositionPatterns: Story = {
   render: () => (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       <div>
-        <h3 className="text-lg font-semibold mb-4">Composition Patterns</h3>
+        <h3 className='text-lg font-semibold mb-4'>Composition Patterns</h3>
       </div>
-      
-      <div className="rounded-lg border p-6 space-y-4">
-        <h4 className="font-semibold">Table Row Actions</h4>
-        <div className="border rounded-lg overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-muted">
+
+      <div className='rounded-lg border p-6 space-y-4'>
+        <h4 className='font-semibold'>Table Row Actions</h4>
+        <div className='border rounded-lg overflow-hidden'>
+          <table className='w-full'>
+            <thead className='bg-muted'>
               <tr>
-                <th className="p-3 text-left text-sm font-medium">Name</th>
-                <th className="p-3 text-left text-sm font-medium">Status</th>
-                <th className="p-3 text-right text-sm font-medium">Actions</th>
+                <th className='p-3 text-left text-sm font-medium'>Name</th>
+                <th className='p-3 text-left text-sm font-medium'>Status</th>
+                <th className='p-3 text-right text-sm font-medium'>Actions</th>
               </tr>
             </thead>
             <tbody>
               {['John Doe', 'Jane Smith', 'Bob Johnson'].map((name, i) => (
-                <tr key={i} className="border-t">
-                  <td className="p-3 text-sm">{name}</td>
-                  <td className="p-3 text-sm">Active</td>
-                  <td className="p-3 text-right">
+                <tr key={i} className='border-t'>
+                  <td className='p-3 text-sm'>{name}</td>
+                  <td className='p-3 text-sm'>Active</td>
+                  <td className='p-3 text-right'>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">⋯</Button>
+                        <Button variant='ghost' size='sm'>
+                          ⋯
+                        </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
+                      <DropdownMenuContent align='end'>
                         <DropdownMenuItem>Edit</DropdownMenuItem>
                         <DropdownMenuItem>Duplicate</DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                        <DropdownMenuItem className='text-destructive'>Delete</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </td>
@@ -949,15 +950,21 @@ export const CompositionPatterns: Story = {
           </table>
         </div>
       </div>
-      
-      <div className="rounded-lg border p-6 space-y-4">
-        <h4 className="font-semibold">Toolbar Actions</h4>
-        <div className="flex items-center gap-2 p-3 border rounded-lg bg-muted/50">
-          <Button variant="ghost" size="sm">Bold</Button>
-          <Button variant="ghost" size="sm">Italic</Button>
+
+      <div className='rounded-lg border p-6 space-y-4'>
+        <h4 className='font-semibold'>Toolbar Actions</h4>
+        <div className='flex items-center gap-2 p-3 border rounded-lg bg-muted/50'>
+          <Button variant='ghost' size='sm'>
+            Bold
+          </Button>
+          <Button variant='ghost' size='sm'>
+            Italic
+          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm">More</Button>
+              <Button variant='ghost' size='sm'>
+                More
+              </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem>Underline</DropdownMenuItem>
@@ -977,37 +984,37 @@ export const CompositionPatterns: Story = {
  */
 export const Performance: Story = {
   render: () => (
-    <div className="space-y-6 max-w-4xl">
+    <div className='space-y-6 max-w-4xl'>
       <div>
-        <h3 className="text-lg font-semibold mb-4">Performance & Optimization</h3>
+        <h3 className='text-lg font-semibold mb-4'>Performance & Optimization</h3>
       </div>
-      
-      <div className="rounded-lg border p-6 space-y-4">
-        <h4 className="font-semibold">Bundle Size</h4>
-        <div className="bg-muted p-4 rounded">
-          <p className="text-2xl font-bold">11.2 KB</p>
-          <p className="text-sm text-muted-foreground">Gzipped (includes Radix UI primitives)</p>
+
+      <div className='rounded-lg border p-6 space-y-4'>
+        <h4 className='font-semibold'>Bundle Size</h4>
+        <div className='bg-muted p-4 rounded'>
+          <p className='text-2xl font-bold'>11.2 KB</p>
+          <p className='text-sm text-muted-foreground'>Gzipped (includes Radix UI primitives)</p>
         </div>
       </div>
-      
-      <div className="rounded-lg border p-6 space-y-4">
-        <h4 className="font-semibold">Large Menu Performance (100 items)</h4>
+
+      <div className='rounded-lg border p-6 space-y-4'>
+        <h4 className='font-semibold'>Large Menu Performance (100 items)</h4>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline">100 Items Test</Button>
+            <Button variant='outline'>100 Items Test</Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="max-h-96 overflow-y-auto">
+          <DropdownMenuContent className='max-h-96 overflow-y-auto'>
             {Array.from({ length: 100 }).map((_, i) => (
               <DropdownMenuItem key={i}>Menu item {i + 1}</DropdownMenuItem>
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-        <p className="text-sm text-green-600">✓ Smooth rendering and scrolling</p>
+        <p className='text-sm text-green-600'>✓ Smooth rendering and scrolling</p>
       </div>
-      
-      <div className="rounded-lg bg-green-50 dark:bg-green-950 p-6 space-y-3">
-        <h4 className="font-semibold text-green-900 dark:text-green-100">⚡ Performance</h4>
-        <ul className="space-y-2 text-sm text-green-800 dark:text-green-200">
+
+      <div className='rounded-lg bg-green-50 dark:bg-green-950 p-6 space-y-3'>
+        <h4 className='font-semibold text-green-900 dark:text-green-100'>⚡ Performance</h4>
+        <ul className='space-y-2 text-sm text-green-800 dark:text-green-200'>
           <li>✓ Bundle: 11.2 KB gzipped</li>
           <li>✓ Portal rendering (optimal positioning)</li>
           <li>✓ Lazy content rendering (only when open)</li>

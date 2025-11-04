@@ -1,0 +1,10 @@
+{
+    "set": [
+        "analysis",
+        "dem",
+        "digital elevation model",
+        "shadow",
+        "view",
+        "visibility"
+    ]
+}

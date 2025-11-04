@@ -78,7 +78,7 @@ describe('Sheet', () => {
           <SheetTrigger asChild>
             <Button>Open</Button>
           </SheetTrigger>
-          <SheetContent className="custom-sheet">
+          <SheetContent className='custom-sheet'>
             <SheetTitle>Title</SheetTitle>
           </SheetContent>
         </Sheet>
@@ -110,9 +110,11 @@ describe('Sheet', () => {
 
       await waitFor(() => {
         // The X close button should be present
-        const closeButton = screen.getAllByRole('button').find(
-          (btn) => btn.getAttribute('aria-label') === 'Close' || btn.textContent?.includes('×')
-        );
+        const closeButton = screen
+          .getAllByRole('button')
+          .find(
+            (btn) => btn.getAttribute('aria-label') === 'Close' || btn.textContent?.includes('×')
+          );
         expect(closeButton).toBeInTheDocument();
       });
     });
@@ -127,7 +129,7 @@ describe('Sheet', () => {
           <SheetTrigger asChild>
             <Button>Open</Button>
           </SheetTrigger>
-          <SheetContent side="right">
+          <SheetContent side='right'>
             <SheetTitle>Title</SheetTitle>
           </SheetContent>
         </Sheet>
@@ -150,7 +152,7 @@ describe('Sheet', () => {
           <SheetTrigger asChild>
             <Button>Open</Button>
           </SheetTrigger>
-          <SheetContent side="left">
+          <SheetContent side='left'>
             <SheetTitle>Title</SheetTitle>
           </SheetContent>
         </Sheet>
@@ -173,7 +175,7 @@ describe('Sheet', () => {
           <SheetTrigger asChild>
             <Button>Open</Button>
           </SheetTrigger>
-          <SheetContent side="top">
+          <SheetContent side='top'>
             <SheetTitle>Title</SheetTitle>
           </SheetContent>
         </Sheet>
@@ -196,7 +198,7 @@ describe('Sheet', () => {
           <SheetTrigger asChild>
             <Button>Open</Button>
           </SheetTrigger>
-          <SheetContent side="bottom">
+          <SheetContent side='bottom'>
             <SheetTitle>Title</SheetTitle>
           </SheetContent>
         </Sheet>
@@ -255,7 +257,7 @@ describe('Sheet', () => {
       const closeButton = closeButtons.find(
         (btn) => btn.getAttribute('aria-label') === 'Close' || btn.textContent?.includes('×')
       );
-      
+
       if (closeButton) {
         await user.click(closeButton);
 
@@ -300,7 +302,7 @@ describe('Sheet', () => {
 
         return (
           <>
-            <button onClick={() => setOpen(true)} data-testid="external-trigger">
+            <button onClick={() => setOpen(true)} data-testid='external-trigger'>
               External Open
             </button>
             <Sheet open={open} onOpenChange={setOpen}>
@@ -649,7 +651,7 @@ describe('Sheet', () => {
           <SheetTrigger asChild>
             <Button>Open</Button>
           </SheetTrigger>
-          <SheetContent side="right">
+          <SheetContent side='right'>
             <SheetTitle>Title</SheetTitle>
             <SheetDescription>Description</SheetDescription>
           </SheetContent>
@@ -671,7 +673,7 @@ describe('Sheet', () => {
           <SheetTrigger asChild>
             <Button>Open</Button>
           </SheetTrigger>
-          <SheetContent side="left">
+          <SheetContent side='left'>
             <SheetTitle>Title</SheetTitle>
             <SheetDescription>Description</SheetDescription>
           </SheetContent>
@@ -693,7 +695,7 @@ describe('Sheet', () => {
           <SheetTrigger asChild>
             <Button>Open</Button>
           </SheetTrigger>
-          <SheetContent side="top">
+          <SheetContent side='top'>
             <SheetTitle>Title</SheetTitle>
             <SheetDescription>Description</SheetDescription>
           </SheetContent>
@@ -715,7 +717,7 @@ describe('Sheet', () => {
           <SheetTrigger asChild>
             <Button>Open</Button>
           </SheetTrigger>
-          <SheetContent side="bottom">
+          <SheetContent side='bottom'>
             <SheetTitle>Title</SheetTitle>
             <SheetDescription>Description</SheetDescription>
           </SheetContent>

@@ -1,0 +1,122 @@
+{
+    "type": "FunctionTool",
+    "guid": "{2b57adb4-b9b7-4a88-8220-530bb36c9a8e}",
+    "displayname": "$rc:title",
+    "helpcontent": "3280001",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "param_nocount:in_dataset",
+        "param_nocount:in_match_table"
+    ],
+    "params": {
+        "in_dataset": {
+            "displayname": "$rc:in_dataset.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_dataset.descr"
+        },
+        "in_join_field": {
+            "displayname": "$rc:in_join_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Date",
+                    "OID",
+                    "GUID",
+                    "GlobalID"
+                ]
+            },
+            "depends": [
+                "in_dataset"
+            ],
+            "description": "$rc:in_join_field.descr"
+        },
+        "in_match_table": {
+            "displayname": "$rc:in_match_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_match_table.descr"
+        },
+        "in_match_join_field": {
+            "displayname": "$rc:in_match_join_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Date",
+                    "OID",
+                    "GUID",
+                    "GlobalID"
+                ]
+            },
+            "depends": [
+                "in_match_table"
+            ],
+            "description": "$rc:in_match_join_field.descr"
+        },
+        "in_match_path_field": {
+            "displayname": "$rc:in_match_path_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Date",
+                    "OID",
+                    "GUID",
+                    "GlobalID"
+                ]
+            },
+            "depends": [
+                "in_match_table"
+            ],
+            "description": "$rc:in_match_path_field.descr"
+        },
+        "in_working_folder": {
+            "type": "optional",
+            "displayname": "$rc:in_working_folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:in_working_folder.descr"
+        },
+        "out_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_dataset.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "depends": [
+                "in_dataset"
+            ]
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

@@ -1,0 +1,11 @@
+{
+    "map": {
+        "descr": "The Analysis toolbox contains a powerful set of tools that perform the most fundamental GIS operations. With the tools in this toolbox, you can perform overlays, create buffers, calculate statistics, perform proximity analysis, and much more.",
+        "title": "Analysis Tools",
+        "toolset1.name": "Overlay",
+        "toolset2.name": "Proximity",
+        "toolset3.name": "Extract",
+        "toolset4.name": "Statistics",
+        "toolset5.name": "Pairwise Overlay"
+    }
+}

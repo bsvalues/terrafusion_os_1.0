@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Add a structural attachments rule to a diagram template",
+        "description.title": "Description",
+        "in_utility_network.title": "Input Network",
+        "is_active.title": "Active",
+        "out_template_name.title": "Output Diagram Template",
+        "out_utility_network.title": "Output Network",
+        "template_name.title": "Input Diagram Template",
+        "title": "Add Structural Attachments Rule"
+    }
+}

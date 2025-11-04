@@ -1,0 +1,12 @@
+{
+    "set": [
+        "change",
+        "deny",
+        "geodatabase administration",
+        "grant",
+        "permissions",
+        "privileges",
+        "role",
+        "user"
+    ]
+}

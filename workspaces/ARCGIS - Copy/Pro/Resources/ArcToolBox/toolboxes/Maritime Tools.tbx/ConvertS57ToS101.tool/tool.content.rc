@@ -1,0 +1,15 @@
+{
+    "map": {
+        "description": "Converts the S-57 vector product for storing nautical charting data to the new vector S-101 format.",
+        "in_config_file.descr": "The input .xml file that can be used to customize some aspects of the conversion process.",
+        "in_config_file.title": "Configuration File",
+        "in_feature_catalogue.descr": "An .xml file that follows the S-100 Feature Catalogue format as defined by the IHO. It describes the content of a data product and its specifications. The default file location for S-100 catalogue files is <installation location>\\ArcGIS Maritime\\Product Files\\<version>\\S-101\\, provided the Maritime product files are installed.",
+        "in_feature_catalogue.title": "S-100 Feature Catalogue",
+        "input_s57.descr": "The input S-57 file with a .000 extension or a CATALOG.031 file that references a collection of S-57 files.",
+        "input_s57.title": "Input S-57 (File or Folder)",
+        "out_location.descr": "The directory where the converted cell will be written.",
+        "out_location.title": "Output Location",
+        "out_s101.title": "Output S-101 Data",
+        "title": "Convert S-57 to S-101 Cell"
+    }
+}

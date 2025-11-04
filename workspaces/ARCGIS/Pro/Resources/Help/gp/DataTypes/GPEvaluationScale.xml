@@ -1,0 +1,5 @@
+<DataType Name="GPEvaluationScale">
+  <DisplayName>Evaluation Scale</DisplayName>
+  <Description>The scale value range and increment value applied to inputs in a weighted overlay operation.</Description>
+</DataType>
+

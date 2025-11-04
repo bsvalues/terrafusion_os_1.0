@@ -1,0 +1,336 @@
+{
+  "folders": [
+    {
+      "path": "../marketplace/submissions/form-processing",
+      "name": "📋 Citizen Form Processing"
+    },
+    {
+      "path": "../marketplace/submissions/permit-applications",
+      "name": "📄 Permit Applications"
+    },
+    {
+      "path": "../marketplace/submissions/document-uploads",
+      "name": "📎 Document Upload System"
+    },
+    {
+      "path": "../marketplace/submissions/workflow-routing",
+      "name": "🔄 Workflow Routing Engine"
+    },
+    {
+      "path": "../marketplace/submissions/approval-tracking",
+      "name": "✅ Approval Tracking System"
+    },
+    {
+      "path": "../marketplace/submissions/notification-system",
+      "name": "🔔 Notification System"
+    },
+    {
+      "path": "../marketplace/submissions/testing",
+      "name": "🧪 Submissions Tests"
+    },
+    {
+      "path": "../SDK",
+      "name": "📦 Platform SDK (read-only)"
+    },
+    {
+      "path": "../backend",
+      "name": "🔧 Shared Backend (read-only)"
+    },
+    {
+      "path": "../docs/submissions",
+      "name": "📚 Submissions Docs"
+    },
+    {
+      "path": "../config",
+      "name": "⚙️ Config (shared)"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/out": true,
+      "**/.pytest_cache": true,
+      "../marketplace/*/": true,
+      "!../marketplace/submissions": false,
+      "../frontend": true,
+      "../backend": true,
+      "../os-platform": true,
+      "../terrafusion-cos": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/out": true,
+      "../frontend": true,
+      "../backend": true,
+      "../os-platform": true
+    },
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "python.defaultInterpreter": "./marketplace/submissions/.venv/bin/python",
+    "eslint.workingDirectories": [
+      "./marketplace/submissions/form-processing",
+      "./marketplace/submissions/workflow-routing"
+    ],
+    "terrafusion.sync": {
+      "autoSync": true,
+      "syncInterval": 15,
+      "conflictResolution": "prompt",
+      "sharedState": {
+        "backend": "read-only",
+        "sdk": "read-only",
+        "config": "shared-write"
+      },
+      "submissionsIntegration": true
+    },
+    "terrafusion.submissions": {
+      "enableFormProcessing": true,
+      "permitApplications": true,
+      "documentUploads": true,
+      "workflowRouting": true,
+      "approvalTracking": true,
+      "notificationSystem": true,
+      "citizenPortal": true
+    },
+    "terrafusion.workflow": {
+      "routingEngine": "advanced",
+      "approvalChains": "automated",
+      "statusTracking": "real-time",
+      "escalationRules": true,
+      "deadlineMonitoring": true
+    },
+    "terrafusion.compliance": {
+      "fismaMode": "MODERATE",
+      "nist80053": true,
+      "section508": true,
+      "citizenPrivacy": "strict",
+      "documentRetention": true,
+      "auditTrail": "comprehensive"
+    },
+    "terrafusion.security": {
+      "documentEncryption": "AES-256",
+      "uploadScanning": "virus-malware",
+      "accessControl": "rbac",
+      "dataClassification": "sensitive"
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-python.debugpy",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-vscode.vscode-typescript-next",
+      "streetsidesoftware.code-spell-checker",
+      "ms-azuretools.vscode-docker",
+      "redhat.vscode-yaml",
+      "ms-vscode.vscode-json",
+      "usernamehw.errorlens",
+      "formulahendry.auto-rename-tag"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Start Form Processing Engine",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/submissions/form-processing",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "console": "integratedTerminal",
+        "env": {
+          "TERRAFUSION_SERVICE": "submissions",
+          "FORM_MODE": "development",
+          "CITIZEN_PORTAL": "enabled"
+        }
+      },
+      {
+        "name": "Debug Permit Applications",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/submissions/permit-applications",
+        "program": "permit_processor.js",
+        "console": "integratedTerminal",
+        "env": {
+          "PERMIT_DEBUG": "true",
+          "WORKFLOW_ENGINE": "enabled"
+        }
+      },
+      {
+        "name": "Debug Workflow Routing",
+        "type": "debugpy",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/submissions/workflow-routing",
+        "program": "workflow_engine.py",
+        "console": "integratedTerminal",
+        "env": {
+          "WORKFLOW_DEBUG": "true",
+          "ROUTING_MODE": "development"
+        }
+      },
+      {
+        "name": "Debug Document Upload System",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/submissions/document-uploads",
+        "program": "upload_handler.js",
+        "console": "integratedTerminal",
+        "env": {
+          "UPLOAD_DEBUG": "true",
+          "VIRUS_SCAN": "enabled"
+        }
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build Submissions Portal",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "build:submissions"
+        ],
+        "problemMatcher": [
+          "$tsc"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Test Submissions Portal",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "test:submissions"
+        ],
+        "problemMatcher": [],
+        "group": {
+          "kind": "test",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Deploy Submissions Portal",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "deploy:submissions"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/submissions"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Process Pending Forms",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "process:forms"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/submissions/form-processing"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Update Permit Status",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "update_permit_status.py"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/submissions/permit-applications"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Test Workflow Engine",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "test_workflow.py"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/submissions/workflow-routing"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Scan Uploaded Documents",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "scan:documents"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/submissions/document-uploads"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Generate Approval Reports",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "generate_approval_report.py"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/submissions/approval-tracking"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Test Notification System",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "test:notifications"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/submissions/notification-system"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Section 508 Accessibility Check",
+        "type": "shell",
+        "command": "./SDK/tools/accessibility-check.sh",
+        "args": [
+          "--service=submissions",
+          "--section508"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      }
+    ]
+  }
+}

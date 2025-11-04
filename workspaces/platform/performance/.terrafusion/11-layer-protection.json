@@ -1,0 +1,94 @@
+{
+  "workspace_protection_system": {
+    "workspace_name": "performance",
+    "domain": "platform_service",
+    "risk_level": "medium",
+    "customization_timestamp": "2025-10-16T10:16:02.553858",
+    "eleven_layer_protection": {
+      "L1_role_scope_confirmation": {
+        "workspace_role": "performance specialized AI agent",
+        "scope_definition": "Optimize and protect platform_service operations",
+        "success_criteria": "Maintain medium-level security for platform_service",
+        "data_types_handled": [
+          "service_data",
+          "user_data",
+          "system_configs"
+        ],
+        "protection_priorities": [
+          "data_security",
+          "service_availability",
+          "compliance"
+        ]
+      },
+      "L2_input_sanitation_threat_modeling": {
+        "threat_model": "platform_service_specific_threats",
+        "input_validation": "performance_input_sanitization",
+        "injection_prevention": "platform_service_injection_protection",
+        "risk_level_controls": "medium"
+      },
+      "L3_data_classification": {
+        "data_types": [
+          "service_data",
+          "user_data",
+          "system_configs"
+        ],
+        "classification_level": "medium",
+        "privacy_requirements": "platform_service_privacy_rules",
+        "retention_policies": "performance_data_retention",
+        "access_controls": "platform_service_access_matrix"
+      },
+      "L4_secrets_hygiene": {
+        "vault_integration": "performance_secret_vault",
+        "key_rotation": "platform_service_key_management",
+        "credential_management": "performance_credential_store",
+        "environment_separation": "medium_env_isolation"
+      },
+      "L5_environment_guardrails": {
+        "environment_controls": "performance_env_controls",
+        "blast_radius_limits": "platform_service_isolation",
+        "feature_flags": "performance_feature_management",
+        "deployment_gates": "medium_deployment_controls"
+      },
+      "L6_policy_compliance": {
+        "domain_regulations": "platform_service_compliance_framework",
+        "government_standards": [
+          "data_security",
+          "service_availability",
+          "compliance"
+        ],
+        "audit_requirements": "performance_audit_trail",
+        "compliance_monitoring": "platform_service_compliance_checks"
+      },
+      "L7_dependency_license_review": {
+        "sbom_generation": "performance_software_bill_of_materials",
+        "vulnerability_scanning": "platform_service_vuln_checks",
+        "license_compliance": "performance_license_validation",
+        "dependency_monitoring": "medium_dependency_tracking"
+      },
+      "L8_reproducibility": {
+        "version_pinning": "performance_version_control",
+        "build_determinism": "platform_service_build_reproducibility",
+        "configuration_management": "performance_config_management",
+        "deployment_consistency": "medium_deployment_standards"
+      },
+      "L9_observability_hooks": {
+        "metrics_collection": "performance_domain_metrics",
+        "logging_framework": "platform_service_specialized_logging",
+        "tracing_system": "performance_distributed_tracing",
+        "alerting_rules": "platform_service_alert_configuration"
+      },
+      "L10_human_in_loop_gates": {
+        "approval_workflows": "performance_approval_matrix",
+        "review_requirements": "platform_service_review_gates",
+        "escalation_procedures": "medium_escalation_rules",
+        "manual_override_controls": "performance_override_procedures"
+      },
+      "L11_red_team_self_check": {
+        "adversarial_testing": "performance_penetration_testing",
+        "failure_mode_analysis": "platform_service_failure_scenarios",
+        "rollback_procedures": "performance_disaster_recovery",
+        "security_validation": "medium_security_assessment"
+      }
+    }
+  }
+}

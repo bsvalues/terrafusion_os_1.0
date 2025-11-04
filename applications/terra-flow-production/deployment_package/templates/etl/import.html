@@ -1,0 +1,606 @@
+{% extends "layout.html" %}
+
+{% block title %}Import Data{% endblock %}
+
+{% block styles %}
+<style>
+    .import-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 20px;
+    }
+    .import-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .import-icon {
+        font-size: 2.5rem;
+        color: #0d6efd;
+        opacity: 0.7;
+    }
+    .tab-content {
+        padding-top: 20px;
+    }
+    .file-upload-container {
+        border: 2px dashed #ccc;
+        border-radius: 8px;
+        padding: 30px;
+        text-align: center;
+        margin-bottom: 20px;
+        background-color: #f8f9fa;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .file-upload-container:hover {
+        border-color: #0d6efd;
+        background-color: #e9ecef;
+    }
+    .file-upload-container.dragover {
+        border-color: #0d6efd;
+        background-color: #e7f1ff;
+    }
+    #filePreview {
+        max-height: 300px;
+        overflow-y: auto;
+        margin-top: 20px;
+    }
+    .preview-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .preview-table th, .preview-table td {
+        border: 1px solid #dee2e6;
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+    .preview-table th {
+        background-color: #f1f1f1;
+        position: sticky;
+        top: 0;
+    }
+    .import-progress {
+        margin-top: 20px;
+    }
+    .mapping-selector {
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <h1 class="mb-4">Import Data</h1>
+    
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Data Import Wizard</h5>
+        </div>
+        <div class="card-body">
+            <ul class="nav nav-tabs" id="importTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="file-tab" data-bs-toggle="tab" data-bs-target="#file" type="button" role="tab" aria-controls="file" aria-selected="true">From File</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="database-tab" data-bs-toggle="tab" data-bs-target="#database" type="button" role="tab" aria-controls="database" aria-selected="false">From Database</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="api-tab" data-bs-toggle="tab" data-bs-target="#api" type="button" role="tab" aria-controls="api" aria-selected="false">From API</button>
+                </li>
+            </ul>
+            
+            <div class="tab-content" id="importTabsContent">
+                <!-- File Import Tab -->
+                <div class="tab-pane fade show active" id="file" role="tabpanel" aria-labelledby="file-tab">
+                    <form id="fileImportForm" method="post" enctype="multipart/form-data" action="{{ url_for('etl.import_data') }}">
+                        <input type="hidden" name="import_type" value="file">
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="dataType" class="form-label">Data Type</label>
+                                <select class="form-select" id="dataType" name="data_type" required>
+                                    <option value="" selected disabled>Select data type</option>
+                                    {% for data_type in data_types %}
+                                    <option value="{{ data_type }}">{{ data_type|capitalize }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="mappingName" class="form-label">Field Mapping</label>
+                                <select class="form-select" id="mappingName" name="mapping_name">
+                                    <option value="" selected>Auto-detect mapping</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="file-upload-container" id="dropZone" onclick="document.getElementById('file').click()">
+                            <input type="file" class="d-none" id="file" name="file" accept=".csv,.xlsx,.xls,.json,.parquet" required>
+                            <div class="import-icon mb-3">
+                                <i class="bi bi-cloud-upload"></i>
+                            </div>
+                            <h5>Drag & Drop or Click to Upload</h5>
+                            <p class="text-muted">Supported formats: CSV, Excel, JSON, Parquet</p>
+                            <div id="fileInfo" class="mt-2"></div>
+                        </div>
+                        
+                        <div id="filePreview" class="d-none">
+                            <h6>Data Preview</h6>
+                            <div class="table-responsive">
+                                <table class="preview-table" id="previewTable">
+                                    <thead>
+                                        <tr id="previewHeader"></tr>
+                                    </thead>
+                                    <tbody id="previewBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="validateOnly" name="validate_only">
+                            <label class="form-check-label" for="validateOnly">
+                                Validate only (don't import)
+                            </label>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="useChunking" name="use_chunking">
+                            <label class="form-check-label" for="useChunking">
+                                Use chunked processing for large datasets
+                            </label>
+                        </div>
+                        
+                        <div class="mb-3" id="chunkSizeContainer" style="display: none;">
+                            <label for="chunkSize" class="form-label">Chunk Size</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="chunkSize" name="chunk_size" min="100" max="10000" value="1000">
+                                <span class="input-group-text">rows</span>
+                            </div>
+                            <div class="form-text">Number of records to process in each batch</div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="button" class="btn btn-secondary me-md-2" id="resetBtn">Reset</button>
+                            <button type="submit" class="btn btn-primary" id="importBtn">Import Data</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Database Import Tab -->
+                <div class="tab-pane fade" id="database" role="tabpanel" aria-labelledby="database-tab">
+                    <form id="databaseImportForm" method="post" action="{{ url_for('etl.import_data') }}">
+                        <input type="hidden" name="import_type" value="database">
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="dbDataType" class="form-label">Data Type</label>
+                                <select class="form-select" id="dbDataType" name="data_type" required>
+                                    <option value="" selected disabled>Select data type</option>
+                                    {% for data_type in data_types %}
+                                    <option value="{{ data_type }}">{{ data_type|capitalize }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="dbMappingName" class="form-label">Field Mapping</label>
+                                <select class="form-select" id="dbMappingName" name="mapping_name">
+                                    <option value="" selected>Auto-detect mapping</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="connectionString" class="form-label">Connection String</label>
+                            <input type="text" class="form-control" id="connectionString" name="connection_string" required placeholder="e.g., postgresql://username:password@host:port/database">
+                            <div class="form-text">Enter the database connection string</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="query" class="form-label">SQL Query</label>
+                            <textarea class="form-control" id="query" name="query" rows="5" required placeholder="SELECT * FROM table_name"></textarea>
+                            <div class="form-text">Enter the SQL query to retrieve data</div>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="dbValidateOnly" name="validate_only">
+                            <label class="form-check-label" for="dbValidateOnly">
+                                Validate only (don't import)
+                            </label>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="dbUseChunking" name="use_chunking">
+                            <label class="form-check-label" for="dbUseChunking">
+                                Use chunked processing for large datasets
+                            </label>
+                        </div>
+                        
+                        <div class="mb-3" id="dbChunkSizeContainer" style="display: none;">
+                            <label for="dbChunkSize" class="form-label">Chunk Size</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="dbChunkSize" name="chunk_size" min="100" max="10000" value="1000">
+                                <span class="input-group-text">rows</span>
+                            </div>
+                            <div class="form-text">Number of records to process in each batch</div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="button" class="btn btn-secondary me-md-2" id="dbResetBtn">Reset</button>
+                            <button type="submit" class="btn btn-primary" id="dbImportBtn">Import Data</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- API Import Tab -->
+                <div class="tab-pane fade" id="api" role="tabpanel" aria-labelledby="api-tab">
+                    <form id="apiImportForm" method="post" action="{{ url_for('etl.import_data') }}">
+                        <input type="hidden" name="import_type" value="api">
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="apiDataType" class="form-label">Data Type</label>
+                                <select class="form-select" id="apiDataType" name="data_type" required>
+                                    <option value="" selected disabled>Select data type</option>
+                                    {% for data_type in data_types %}
+                                    <option value="{{ data_type }}">{{ data_type|capitalize }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="apiMappingName" class="form-label">Field Mapping</label>
+                                <select class="form-select" id="apiMappingName" name="mapping_name">
+                                    <option value="" selected>Auto-detect mapping</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="apiUrl" class="form-label">API URL</label>
+                            <input type="url" class="form-control" id="apiUrl" name="api_url" required placeholder="https://api.example.com/data">
+                            <div class="form-text">Enter the API endpoint URL</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="apiMethod" class="form-label">Method</label>
+                            <select class="form-select" id="apiMethod" name="api_method" required>
+                                <option value="GET">GET</option>
+                                <option value="POST">POST</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="apiHeaders" class="form-label">Headers (JSON)</label>
+                            <textarea class="form-control" id="apiHeaders" name="api_headers" rows="3" placeholder='{"Authorization": "Bearer token", "Content-Type": "application/json"}'></textarea>
+                            <div class="form-text">Enter the request headers as JSON</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="apiBody" class="form-label">Request Body (JSON)</label>
+                            <textarea class="form-control" id="apiBody" name="api_body" rows="3" placeholder='{"param1": "value1", "param2": "value2"}'></textarea>
+                            <div class="form-text">Enter the request body as JSON (for POST requests)</div>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="apiValidateOnly" name="validate_only">
+                            <label class="form-check-label" for="apiValidateOnly">
+                                Validate only (don't import)
+                            </label>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="apiUseChunking" name="use_chunking">
+                            <label class="form-check-label" for="apiUseChunking">
+                                Use chunked processing for large datasets
+                            </label>
+                        </div>
+                        
+                        <div class="mb-3" id="apiChunkSizeContainer" style="display: none;">
+                            <label for="apiChunkSize" class="form-label">Chunk Size</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="apiChunkSize" name="chunk_size" min="100" max="10000" value="1000">
+                                <span class="input-group-text">rows</span>
+                            </div>
+                            <div class="form-text">Number of records to process in each batch</div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="button" class="btn btn-secondary me-md-2" id="apiResetBtn">Reset</button>
+                            <button type="submit" class="btn btn-primary" id="apiImportBtn">Import Data</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card import-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="import-icon me-3">
+                            <i class="bi bi-info-circle"></i>
+                        </div>
+                        <h5 class="card-title mb-0">Import Tips</h5>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Ensure your data file is in a supported format (CSV, Excel, JSON, Parquet)</li>
+                        <li class="list-group-item">Select the correct data type that matches your data structure</li>
+                        <li class="list-group-item">Use field mappings to map source column names to target field names</li>
+                        <li class="list-group-item">Validate your data before importing to identify any issues</li>
+                        <li class="list-group-item">For large datasets, consider using chunked imports or batch processing</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card import-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="import-icon me-3">
+                            <i class="bi bi-question-circle"></i>
+                        </div>
+                        <h5 class="card-title mb-0">Troubleshooting</h5>
+                    </div>
+                    <h6 class="fw-bold">Common Issues:</h6>
+                    <ul class="mb-3">
+                        <li>Invalid file format or corrupted file</li>
+                        <li>Mismatched column names or data types</li>
+                        <li>Missing required fields in the source data</li>
+                        <li>Duplicate entries that violate unique constraints</li>
+                        <li>Connection issues with remote databases or APIs</li>
+                    </ul>
+                    <p>If you encounter any issues, check the validation results and error messages for details on how to resolve them.</p>
+                    <a href="#" class="btn btn-outline-primary btn-sm">View Documentation</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // File input change handler
+        document.getElementById('file').addEventListener('change', handleFileSelect);
+        
+        // Drag and drop handlers
+        const dropZone = document.getElementById('dropZone');
+        
+        dropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        
+        dropZone.addEventListener('dragleave', function() {
+            dropZone.classList.remove('dragover');
+        });
+        
+        dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            
+            if (e.dataTransfer.files.length) {
+                document.getElementById('file').files = e.dataTransfer.files;
+                handleFileSelect();
+            }
+        });
+        
+        // Reset button handlers
+        document.getElementById('resetBtn').addEventListener('click', function() {
+            document.getElementById('fileImportForm').reset();
+            document.getElementById('fileInfo').innerHTML = '';
+            document.getElementById('filePreview').classList.add('d-none');
+        });
+        
+        document.getElementById('dbResetBtn').addEventListener('click', function() {
+            document.getElementById('databaseImportForm').reset();
+        });
+        
+        document.getElementById('apiResetBtn').addEventListener('click', function() {
+            document.getElementById('apiImportForm').reset();
+        });
+        
+        // Data type change handlers - load appropriate mappings
+        document.getElementById('dataType').addEventListener('change', function() {
+            loadMappingsForDataType(this.value, 'mappingName');
+        });
+        
+        document.getElementById('dbDataType').addEventListener('change', function() {
+            loadMappingsForDataType(this.value, 'dbMappingName');
+        });
+        
+        document.getElementById('apiDataType').addEventListener('change', function() {
+            loadMappingsForDataType(this.value, 'apiMappingName');
+        });
+        
+        // Chunking option toggles
+        document.getElementById('useChunking').addEventListener('change', function() {
+            const chunkSizeContainer = document.getElementById('chunkSizeContainer');
+            chunkSizeContainer.style.display = this.checked ? 'block' : 'none';
+        });
+        
+        document.getElementById('dbUseChunking').addEventListener('change', function() {
+            const chunkSizeContainer = document.getElementById('dbChunkSizeContainer');
+            chunkSizeContainer.style.display = this.checked ? 'block' : 'none';
+        });
+        
+        document.getElementById('apiUseChunking').addEventListener('change', function() {
+            const chunkSizeContainer = document.getElementById('apiChunkSizeContainer');
+            chunkSizeContainer.style.display = this.checked ? 'block' : 'none';
+        });
+    });
+    
+    // Handle file selection
+    function handleFileSelect() {
+        const fileInput = document.getElementById('file');
+        const fileInfo = document.getElementById('fileInfo');
+        const filePreview = document.getElementById('filePreview');
+        
+        if (fileInput.files && fileInput.files[0]) {
+            const file = fileInput.files[0];
+            
+            // Show file info
+            fileInfo.innerHTML = `
+                <div class="alert alert-info mb-0">
+                    <strong>File:</strong> ${file.name}<br>
+                    <strong>Size:</strong> ${formatFileSize(file.size)}<br>
+                    <strong>Type:</strong> ${file.type || 'Unknown'}
+                </div>
+            `;
+            
+            // Generate preview if possible
+            if (file.name.endsWith('.csv')) {
+                generateCSVPreview(file);
+            } else if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+                filePreview.classList.add('d-none');
+                // Excel preview would require additional libraries
+            } else if (file.name.endsWith('.json')) {
+                generateJSONPreview(file);
+            } else {
+                filePreview.classList.add('d-none');
+            }
+        } else {
+            fileInfo.innerHTML = '';
+            filePreview.classList.add('d-none');
+        }
+    }
+    
+    // Generate CSV preview
+    function generateCSVPreview(file) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const content = e.target.result;
+            const lines = content.split('\n');
+            
+            if (lines.length > 0) {
+                const header = lines[0].split(',');
+                const rows = lines.slice(1, 11); // Get up to 10 rows for preview
+                
+                // Generate header
+                const headerRow = document.getElementById('previewHeader');
+                headerRow.innerHTML = '';
+                
+                header.forEach(cell => {
+                    const th = document.createElement('th');
+                    th.textContent = cell.trim().replace(/["']/g, '');
+                    headerRow.appendChild(th);
+                });
+                
+                // Generate rows
+                const tableBody = document.getElementById('previewBody');
+                tableBody.innerHTML = '';
+                
+                rows.forEach(row => {
+                    if (row.trim()) {
+                        const cells = row.split(',');
+                        const tr = document.createElement('tr');
+                        
+                        cells.forEach(cell => {
+                            const td = document.createElement('td');
+                            td.textContent = cell.trim().replace(/["']/g, '');
+                            tr.appendChild(td);
+                        });
+                        
+                        tableBody.appendChild(tr);
+                    }
+                });
+                
+                document.getElementById('filePreview').classList.remove('d-none');
+            }
+        };
+        
+        reader.readAsText(file);
+    }
+    
+    // Generate JSON preview
+    function generateJSONPreview(file) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            try {
+                const content = JSON.parse(e.target.result);
+                
+                // Check if it's an array of objects
+                if (Array.isArray(content) && content.length > 0 && typeof content[0] === 'object') {
+                    const data = content.slice(0, 10); // Get up to 10 items for preview
+                    const keys = Object.keys(data[0]);
+                    
+                    // Generate header
+                    const headerRow = document.getElementById('previewHeader');
+                    headerRow.innerHTML = '';
+                    
+                    keys.forEach(key => {
+                        const th = document.createElement('th');
+                        th.textContent = key;
+                        headerRow.appendChild(th);
+                    });
+                    
+                    // Generate rows
+                    const tableBody = document.getElementById('previewBody');
+                    tableBody.innerHTML = '';
+                    
+                    data.forEach(item => {
+                        const tr = document.createElement('tr');
+                        
+                        keys.forEach(key => {
+                            const td = document.createElement('td');
+                            td.textContent = item[key] !== null && item[key] !== undefined 
+                                ? (typeof item[key] === 'object' ? JSON.stringify(item[key]) : item[key]) 
+                                : '';
+                            tr.appendChild(td);
+                        });
+                        
+                        tableBody.appendChild(tr);
+                    });
+                    
+                    document.getElementById('filePreview').classList.remove('d-none');
+                } else {
+                    document.getElementById('filePreview').classList.add('d-none');
+                }
+            } catch (error) {
+                console.error('Error parsing JSON:', error);
+                document.getElementById('filePreview').classList.add('d-none');
+            }
+        };
+        
+        reader.readAsText(file);
+    }
+    
+    // Format file size
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    // Load mappings for data type
+    function loadMappingsForDataType(dataType, selectId) {
+        if (!dataType) return;
+        
+        const mappingSelect = document.getElementById(selectId);
+        mappingSelect.innerHTML = '<option value="">Auto-detect mapping</option>';
+        
+        // Fetch mappings from API
+        fetch(`/api/etl/mappings/${dataType}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.mappings && data.mappings.length > 0) {
+                    data.mappings.forEach(mapping => {
+                        const option = document.createElement('option');
+                        option.value = mapping;
+                        option.textContent = mapping;
+                        mappingSelect.appendChild(option);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error loading mappings:', error);
+            });
+    }
+</script>
+{% endblock %}

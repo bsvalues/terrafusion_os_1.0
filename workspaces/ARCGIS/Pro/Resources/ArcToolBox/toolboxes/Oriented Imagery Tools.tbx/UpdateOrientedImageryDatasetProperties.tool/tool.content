@@ -1,0 +1,394 @@
+{
+    "type": "FunctionTool",
+    "guid": "{e7746ee1-6b70-41bf-81e3-c9dd8727724f}",
+    "displayname": "$rc:title",
+    "helpcontent": "8102001",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "in_oriented_imagery_dataset": {
+            "display_order": "0",
+            "displayname": "$rc:in_oriented_imagery_dataset.title",
+            "datatype": {
+                "type": "GPOrientedImageryLayer"
+            },
+            "description": "$rc:in_oriented_imagery_dataset.descr"
+        },
+        "maximum_distance": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:maximum_distance.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:maximum_distance.descr"
+        },
+        "coverage_percent": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:coverage_percent.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:coverage_percent.descr"
+        },
+        "footprint_item": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:footprint_item.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:footprint_item.descr"
+        },
+        "elevation_source": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:elevation_source.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DEM",
+                        "code": "$rc:elevation_source.domain.DEM"
+                    },
+                    {
+                        "value": "CONSTANT_ELEVATION",
+                        "code": "$rc:elevation_source.domain.CONSTANT_ELEVATION"
+                    },
+                    {
+                        "value": "NONE",
+                        "code": "$rc:elevation_source.domain.NONE"
+                    }
+                ]
+            },
+            "description": "$rc:elevation_source.descr"
+        },
+        "constant_elevation": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:constant_elevation.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:constant_elevation.descr"
+        },
+        "dem": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:dem.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "DEImageServer"
+            },
+            "description": "$rc:dem.descr"
+        },
+        "lod": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:lod.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:lod.descr"
+        },
+        "raster_function": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:raster_function.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:raster_function.descr"
+        },
+        "vertical_measurement_unit": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:vertical_measurement_unit.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "METER",
+                        "code": "$rc:vertical_measurement_unit.domain.METER"
+                    },
+                    {
+                        "value": "FEET",
+                        "code": "$rc:vertical_measurement_unit.domain.FEET"
+                    }
+                ]
+            },
+            "description": "$rc:vertical_measurement_unit.descr"
+        },
+        "time_interval_unit": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:time_interval_unit.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MINUTES",
+                        "code": "$rc:time_interval_unit.domain.MINUTES"
+                    },
+                    {
+                        "value": "HOURS",
+                        "code": "$rc:time_interval_unit.domain.HOURS"
+                    },
+                    {
+                        "value": "DAYS",
+                        "code": "$rc:time_interval_unit.domain.DAYS"
+                    },
+                    {
+                        "value": "WEEKS",
+                        "code": "$rc:time_interval_unit.domain.WEEKS"
+                    },
+                    {
+                        "value": "MONTHS",
+                        "code": "$rc:time_interval_unit.domain.MONTHS"
+                    },
+                    {
+                        "value": "YEARS",
+                        "code": "$rc:time_interval_unit.domain.YEARS"
+                    }
+                ]
+            },
+            "description": "$rc:time_interval_unit.descr"
+        },
+        "oriented_imagery_type": {
+            "type": "optional",
+            "display_order": "11",
+            "displayname": "$rc:oriented_imagery_type.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "HORIZONTAL",
+                        "code": "$rc:oriented_imagery_type.domain.HORIZONTAL"
+                    },
+                    {
+                        "value": "OBLIQUE",
+                        "code": "$rc:oriented_imagery_type.domain.OBLIQUE"
+                    },
+                    {
+                        "value": "NADIR",
+                        "code": "$rc:oriented_imagery_type.domain.NADIR"
+                    },
+                    {
+                        "value": "360",
+                        "code": "$rc:oriented_imagery_type.domain.360"
+                    },
+                    {
+                        "value": "INSPECTION",
+                        "code": "$rc:oriented_imagery_type.domain.INSPECTION"
+                    },
+                    {
+                        "value": "NONE",
+                        "code": "$rc:oriented_imagery_type.domain.NONE"
+                    }
+                ]
+            },
+            "description": "$rc:oriented_imagery_type.descr"
+        },
+        "camera_heading": {
+            "type": "optional",
+            "display_order": "12",
+            "displayname": "$rc:camera_heading.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:camera_heading.descr"
+        },
+        "camera_pitch": {
+            "type": "optional",
+            "display_order": "13",
+            "displayname": "$rc:camera_pitch.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:camera_pitch.descr"
+        },
+        "camera_roll": {
+            "type": "optional",
+            "display_order": "14",
+            "displayname": "$rc:camera_roll.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:camera_roll.descr"
+        },
+        "camera_height": {
+            "type": "optional",
+            "display_order": "15",
+            "displayname": "$rc:camera_height.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:camera_height.descr"
+        },
+        "hfov": {
+            "type": "optional",
+            "display_order": "16",
+            "displayname": "$rc:hfov.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:hfov.descr"
+        },
+        "vfov": {
+            "type": "optional",
+            "display_order": "17",
+            "displayname": "$rc:vfov.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:vfov.descr"
+        },
+        "near_distance": {
+            "type": "optional",
+            "display_order": "18",
+            "displayname": "$rc:near_distance.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:near_distance.descr"
+        },
+        "far_distance": {
+            "type": "optional",
+            "display_order": "19",
+            "displayname": "$rc:far_distance.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:far_distance.descr"
+        },
+        "image_rotation": {
+            "type": "optional",
+            "display_order": "20",
+            "displayname": "$rc:image_rotation.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:image_rotation.descr"
+        },
+        "orientation_accuracy": {
+            "type": "optional",
+            "display_order": "21",
+            "displayname": "$rc:orientation_accuracy.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:orientation_accuracy.descr"
+        },
+        "image_path_prefix": {
+            "type": "optional",
+            "display_order": "22",
+            "displayname": "$rc:image_path_prefix.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:image_path_prefix.descr"
+        },
+        "image_path_suffix": {
+            "type": "optional",
+            "display_order": "23",
+            "displayname": "$rc:image_path_suffix.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:image_path_suffix.descr"
+        },
+        "depth_image_path_prefix": {
+            "type": "optional",
+            "display_order": "24",
+            "displayname": "$rc:depth_image_path_prefix.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:depth_image_path_prefix.descr"
+        },
+        "depth_image_path_suffix": {
+            "type": "optional",
+            "display_order": "25",
+            "displayname": "$rc:depth_image_path_suffix.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:depth_image_path_suffix.descr"
+        },
+        "dem_path_prefix": {
+            "type": "optional",
+            "display_order": "26",
+            "displayname": "$rc:dem_path_prefix.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:dem_path_prefix.descr"
+        },
+        "dem_path_suffix": {
+            "type": "optional",
+            "display_order": "27",
+            "displayname": "$rc:dem_path_suffix.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:dem_path_suffix.descr"
+        },
+        "out_oriented_imagery_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_oriented_imagery_dataset.title",
+            "datatype": {
+                "type": "GPOrientedImageryLayer"
+            },
+            "depends": [
+                "in_oriented_imagery_dataset"
+            ]
+        }
+    }
+}

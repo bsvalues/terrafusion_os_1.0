@@ -1,0 +1,18 @@
+{
+    "set": [
+        "2d mesh",
+        "3d mesh",
+        "block adjust",
+        "bundle adjust",
+        "bundle adjustment",
+        "dsm",
+        "mosaic dataset",
+        "point cloud",
+        "reality mapping",
+        "tie point",
+        "triangulation",
+        "true ortho",
+        "block adjustment",
+        "photogrammetry"
+    ]
+}

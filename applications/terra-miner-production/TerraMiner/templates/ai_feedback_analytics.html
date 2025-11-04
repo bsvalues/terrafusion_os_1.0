@@ -1,0 +1,519 @@
+{% extends 'layout.html' %}
+
+{% block title %}AI Feedback Analytics{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>AI Feedback Analytics</h2>
+        <div>
+            <div class="dropdown d-inline-block me-2">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-download me-2"></i>Export Data
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                    <li><a class="dropdown-item" href="/api/ai/feedback/export?format=csv" target="_blank">Export as CSV</a></li>
+                    <li><a class="dropdown-item" href="/api/ai/feedback/export?format=excel" target="_blank">Export as Excel</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#exportFilterModal">Advanced Export Options</a></li>
+                </ul>
+            </div>
+            <a href="{{ url_for('ai_demo') }}" class="btn btn-outline-primary">
+                <i class="bi bi-robot me-2"></i>Return to AI Demo
+            </a>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Overall Performance</h5>
+                </div>
+                <div class="card-body">
+                    <div id="overallStats" class="text-center py-4">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Rating Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <div id="ratingDistribution" class="text-center py-4">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Agent Performance Comparison</h5>
+        </div>
+        <div class="card-body">
+            <div id="agentComparison" class="text-center py-4">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Recent Feedback</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Agent</th>
+                            <th>Rating</th>
+                            <th>Comments</th>
+                            <th>Date/Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentFeedback">
+                        <tr>
+                            <td colspan="4" class="text-center py-4">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Export Filter Modal -->
+<div class="modal fade" id="exportFilterModal" tabindex="-1" aria-labelledby="exportFilterModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exportFilterModalLabel">Advanced Export Options</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="exportFilterForm">
+                    <div class="mb-3">
+                        <label for="exportFormat" class="form-label">Export Format</label>
+                        <select class="form-select" id="exportFormat" name="format">
+                            <option value="csv" selected>CSV</option>
+                            <option value="excel">Excel</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exportAgentType" class="form-label">Agent Type</label>
+                        <select class="form-select" id="exportAgentType" name="agent_type">
+                            <option value="" selected>All Agents</option>
+                            <option value="summarizer">Text Summarization</option>
+                            <option value="nl_search">Natural Language Search</option>
+                            <option value="market_analyzer">Market Analysis</option>
+                            <option value="recommender">Property Recommendation</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exportRating" class="form-label">Rating</label>
+                        <select class="form-select" id="exportRating" name="rating">
+                            <option value="" selected>All Ratings</option>
+                            <option value="5">5 Stars</option>
+                            <option value="4">4 Stars</option>
+                            <option value="3">3 Stars</option>
+                            <option value="2">2 Stars</option>
+                            <option value="1">1 Star</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exportDateFrom" class="form-label">Date From</label>
+                        <input type="date" class="form-control" id="exportDateFrom" name="date_from">
+                    </div>
+                    <div class="mb-3">
+                        <label for="exportDateTo" class="form-label">Date To</label>
+                        <input type="date" class="form-control" id="exportDateTo" name="date_to">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="exportFiltersApply">Export Data</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Load feedback stats
+        loadFeedbackStats();
+        
+        // Load recent feedback
+        loadRecentFeedback();
+    });
+    
+    function loadFeedbackStats() {
+        fetch('/api/ai/feedback/stats')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    renderOverallStats(data.stats.overall);
+                    renderAgentComparison(data.stats.by_agent);
+                    renderRatingDistribution(data.rating_distribution || generateMockRatingDistribution());
+                } else {
+                    displayError('overallStats', 'Error loading feedback statistics: ' + data.message);
+                    displayError('agentComparison', 'Error loading feedback statistics: ' + data.message);
+                    displayError('ratingDistribution', 'Error loading feedback statistics: ' + data.message);
+                }
+            })
+            .catch(error => {
+                displayError('overallStats', 'Error: ' + error.message);
+                displayError('agentComparison', 'Error: ' + error.message);
+                displayError('ratingDistribution', 'Error: ' + error.message);
+            });
+    }
+    
+    function loadRecentFeedback() {
+        fetch('/api/ai/feedback/recent')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    renderRecentFeedback(data.feedback);
+                } else {
+                    document.getElementById('recentFeedback').innerHTML = `
+                        <tr>
+                            <td colspan="4" class="text-center text-danger">
+                                Error loading recent feedback: ${data.message || 'Unknown error'}
+                            </td>
+                        </tr>
+                    `;
+                }
+            })
+            .catch(error => {
+                document.getElementById('recentFeedback').innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center text-danger">
+                            Error: ${error.message}
+                        </td>
+                    </tr>
+                `;
+            });
+    }
+    
+    function renderOverallStats(stats) {
+        const averageRating = stats.avg_rating.toFixed(1);
+        const totalFeedback = stats.total_feedback;
+        
+        let ratingClass = 'text-warning';
+        if (averageRating >= 4) {
+            ratingClass = 'text-success';
+        } else if (averageRating < 3) {
+            ratingClass = 'text-danger';
+        }
+        
+        document.getElementById('overallStats').innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="display-2 ${ratingClass} fw-bold mb-0">${averageRating}</div>
+                    <div class="mb-3">Average Rating</div>
+                    <div class="rating-stars">
+                        ${generateRatingStars(averageRating)}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="display-4 fw-bold mb-0">${totalFeedback}</div>
+                    <div>Total Ratings</div>
+                </div>
+            </div>
+        `;
+    }
+    
+    function renderAgentComparison(agentStats) {
+        const agentContainer = document.getElementById('agentComparison');
+        
+        // Prepare canvas for chart
+        agentContainer.innerHTML = '<canvas id="agentChart"></canvas>';
+        
+        // Extract data for chart
+        const agents = Object.keys(agentStats);
+        const ratings = agents.map(agent => agentStats[agent].avg_rating);
+        const counts = agents.map(agent => agentStats[agent].count);
+        
+        // Create a nice formatted version of agent names
+        const formattedAgents = agents.map(formatAgentName);
+        
+        // Create chart
+        const ctx = document.getElementById('agentChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: formattedAgents,
+                datasets: [
+                    {
+                        label: 'Average Rating',
+                        data: ratings,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Number of Ratings',
+                        data: counts,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1,
+                        type: 'line',
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 5,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Average Rating'
+                        }
+                    },
+                    y1: {
+                        beginAtZero: true,
+                        position: 'right',
+                        grid: {
+                            drawOnChartArea: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Number of Ratings'
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    function renderRatingDistribution(distribution) {
+        const container = document.getElementById('ratingDistribution');
+        
+        // Prepare canvas for chart
+        container.innerHTML = '<canvas id="distributionChart"></canvas>';
+        
+        // Create chart
+        const ctx = document.getElementById('distributionChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['1 Star', '2 Stars', '3 Stars', '4 Stars', '5 Stars'],
+                datasets: [{
+                    data: [
+                        distribution[1] || 0,
+                        distribution[2] || 0,
+                        distribution[3] || 0,
+                        distribution[4] || 0,
+                        distribution[5] || 0
+                    ],
+                    backgroundColor: [
+                        'rgba(220, 53, 69, 0.7)',
+                        'rgba(255, 128, 0, 0.7)',
+                        'rgba(255, 193, 7, 0.7)',
+                        'rgba(40, 167, 69, 0.7)',
+                        'rgba(0, 123, 255, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(220, 53, 69, 1)',
+                        'rgba(255, 128, 0, 1)',
+                        'rgba(255, 193, 7, 1)',
+                        'rgba(40, 167, 69, 1)',
+                        'rgba(0, 123, 255, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    }
+                }
+            }
+        });
+    }
+    
+    function renderRecentFeedback(feedback) {
+        const tableBody = document.getElementById('recentFeedback');
+        
+        if (!feedback || feedback.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-center">
+                        No feedback data available yet.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        let html = '';
+        
+        feedback.forEach(item => {
+            const date = new Date(item.created_at);
+            const formattedDate = date.toLocaleString();
+            
+            html += `
+                <tr>
+                    <td>${formatAgentName(item.agent_type)}</td>
+                    <td>
+                        <div class="rating-display">
+                            ${generateRatingStars(item.rating)}
+                        </div>
+                    </td>
+                    <td>${item.comments || '<em class="text-muted">No comments</em>'}</td>
+                    <td>${formattedDate}</td>
+                </tr>
+            `;
+        });
+        
+        tableBody.innerHTML = html;
+    }
+    
+    function generateRatingStars(rating) {
+        const fullStars = Math.floor(rating);
+        const halfStar = rating % 1 >= 0.5;
+        const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+        
+        let starsHtml = '';
+        
+        // Add full stars
+        for (let i = 0; i < fullStars; i++) {
+            starsHtml += '<i class="bi bi-star-fill text-warning"></i>';
+        }
+        
+        // Add half star if needed
+        if (halfStar) {
+            starsHtml += '<i class="bi bi-star-half text-warning"></i>';
+        }
+        
+        // Add empty stars
+        for (let i = 0; i < emptyStars; i++) {
+            starsHtml += '<i class="bi bi-star text-warning"></i>';
+        }
+        
+        return starsHtml;
+    }
+    
+    function formatAgentName(agentKey) {
+        const nameMap = {
+            'summarizer': 'Text Summarization',
+            'market_analyzer': 'Market Analysis',
+            'recommender': 'Property Recommendation',
+            'nl_search': 'Natural Language Search'
+        };
+        
+        return nameMap[agentKey] || agentKey;
+    }
+    
+    function displayError(containerId, message) {
+        document.getElementById(containerId).innerHTML = `
+            <div class="alert alert-danger">
+                ${message}
+            </div>
+        `;
+    }
+    
+    function generateMockRatingDistribution() {
+        return {
+            1: 0,
+            2: 0,
+            3: 0,
+            4: 0,
+            5: 0
+        };
+    }
+    
+    // Add handler for the export filters modal
+    document.addEventListener('DOMContentLoaded', function() {
+        const exportFiltersButton = document.getElementById('exportFiltersApply');
+        if (exportFiltersButton) {
+            exportFiltersButton.addEventListener('click', function() {
+                const form = document.getElementById('exportFilterForm');
+                const formData = new FormData(form);
+                
+                // Convert form data to URL parameters
+                const params = new URLSearchParams();
+                for (const [key, value] of formData.entries()) {
+                    if (value) {  // Only add non-empty values
+                        params.append(key, value);
+                    }
+                }
+                
+                // Format dates correctly if they exist
+                const dateFrom = document.getElementById('exportDateFrom').value;
+                const dateTo = document.getElementById('exportDateTo').value;
+                
+                if (dateFrom) {
+                    params.set('date_from', `${dateFrom}T00:00:00`);
+                }
+                
+                if (dateTo) {
+                    params.set('date_to', `${dateTo}T23:59:59`);
+                }
+                
+                // Create the export URL
+                const exportUrl = `/api/ai/feedback/export?${params.toString()}`;
+                
+                // Open in a new tab
+                window.open(exportUrl, '_blank');
+                
+                // Close the modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('exportFilterModal'));
+                modal.hide();
+            });
+        }
+        
+        // Set the current date as the default "to" date
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const formattedDate = `${year}-${month}-${day}`;
+        
+        const dateToField = document.getElementById('exportDateTo');
+        if (dateToField) {
+            dateToField.value = formattedDate;
+        }
+        
+        // Set 30 days ago as the default "from" date
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(today.getDate() - 30);
+        const yearFrom = thirtyDaysAgo.getFullYear();
+        const monthFrom = String(thirtyDaysAgo.getMonth() + 1).padStart(2, '0');
+        const dayFrom = String(thirtyDaysAgo.getDate()).padStart(2, '0');
+        const formattedDateFrom = `${yearFrom}-${monthFrom}-${dayFrom}`;
+        
+        const dateFromField = document.getElementById('exportDateFrom');
+        if (dateFromField) {
+            dateFromField.value = formattedDateFrom;
+        }
+    });
+</script>
+{% endblock %}

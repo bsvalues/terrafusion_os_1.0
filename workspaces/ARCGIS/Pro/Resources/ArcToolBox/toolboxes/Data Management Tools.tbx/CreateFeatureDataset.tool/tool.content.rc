@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Creates a feature dataset in the output location: an existing enterprise,  file, or mobile geodatabase.",
+        "out_dataset.title": "Output Feature Dataset",
+        "out_dataset_path.descr": "The enterprise, file, or mobile geodatabase where the output feature dataset will be created.",
+        "out_dataset_path.title": "Output Geodatabase",
+        "out_name.descr": "The name of the feature dataset to be created.",
+        "out_name.title": "Feature Dataset Name",
+        "spatial_reference.descr": "<xdoc><p>The spatial reference of the output feature dataset. On the <span class=\"esri_uicontrol\">Spatial Reference Properties</span> dialog box, you can select, import, or create a new coordinate system. To set aspects of the spatial reference, such as the x,y-, z-, or m-domain, resolution, or tolerance, use the <span class=\"esri_uicontrol\">Environments</span> dialog box.</p><note type=\"note\"/><p group=\"note\">This parameter is optional, but providing a value is recommended. To edit the data in a feature dataset, a spatial reference is required.</p></xdoc>",
+        "spatial_reference.title": "Coordinate System",
+        "summary": "Creates a feature dataset in the output location: an existing enterprise, file, or mobile geodatabase.",
+        "title": "Create Feature Dataset"
+    }
+}

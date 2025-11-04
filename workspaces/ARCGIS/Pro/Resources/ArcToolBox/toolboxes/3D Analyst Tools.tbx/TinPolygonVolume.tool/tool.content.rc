@@ -1,0 +1,22 @@
+{
+    "map": {
+        "description": "Calculates the volumetric and surface area between polygons of an input feature class and a TIN surface.",
+        "in_feature_class.descr": "The input polygon feature class.",
+        "in_feature_class.title": "Input Feature Class",
+        "in_height_field.descr": "The name of the field containing polygon reference plane heights.",
+        "in_height_field.title": "Height Field",
+        "in_tin.descr": "The input TIN.",
+        "in_tin.title": "Input TIN",
+        "out_volume_field.descr": "The name of the output field used to store the volume result. The default is Volume.",
+        "out_volume_field.title": "Volume Field",
+        "output_feature_class.title": "Output Feature Class",
+        "reference_plane.descr": "The keyword used to indicate whether volume and surface area are calculated ABOVE the reference plane height of the polygons, or BELOW. The default is BELOW.",
+        "reference_plane.domain.ABOVE": "ABOVE",
+        "reference_plane.domain.BELOW": "BELOW",
+        "reference_plane.title": "Reference Plane",
+        "summary": "<xdoc><p>Calculates the volumetric and surface area between polygons of an input feature class and a TIN surface.</p><note type=\"legacy\"/><p group=\"note\">This is a deprecated tool. This functionality has been added to the Polygon Volume tool.</p></xdoc>",
+        "surface_area_field.descr": "The name of the output field used to store the surface area result. The default is SArea.",
+        "surface_area_field.title": "Surface Area Field",
+        "title": "TIN Polygon Volume"
+    }
+}

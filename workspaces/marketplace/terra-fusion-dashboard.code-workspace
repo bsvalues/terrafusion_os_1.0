@@ -1,0 +1,107 @@
+{
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "node",
+        "cwd": "../../marketplace/terra-fusion-dashboard/frontend",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "name": "Start Terra Fusion Dashboard Frontend"
+      },
+      {
+        "type": "debugpy",
+        "cwd": "../../marketplace/terra-fusion-dashboard/backend",
+        "program": "../../marketplace/terra-fusion-dashboard/backend/main.py",
+        "name": "Start Terra Fusion Dashboard Backend"
+      },
+      {
+        "type": "node",
+        "cwd": "../../marketplace/terra-fusion-dashboard/mcp-server",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "name": "Start Terra Fusion Dashboard MCP Server"
+      }
+    ]
+  },
+  "tasks": {
+    "tasks": [
+      {
+        "cwd": "../../marketplace/terra-fusion-dashboard",
+        "args": [
+          "run",
+          "build"
+        ],
+        "command": "npm",
+        "label": "Build Terra Fusion Dashboard"
+      },
+      {
+        "cwd": "../../marketplace/terra-fusion-dashboard",
+        "args": [
+          "run",
+          "test"
+        ],
+        "command": "npm",
+        "label": "Test Terra Fusion Dashboard"
+      }
+    ],
+    "version": "2.0.0"
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "ms-python.black-formatter"
+    ]
+  },
+  "folders": [
+    {
+      "name": "💼 Terra Fusion Dashboard",
+      "path": "../../marketplace/terra-fusion-dashboard"
+    },
+    {
+      "name": "📦 Platform SDK (read-only)",
+      "path": "../../platform/sdk"
+    },
+    {
+      "name": "🎨 Design System (read-only)",
+      "path": "../../platform/design-system"
+    },
+    {
+      "name": "🧪 Tests",
+      "path": "../../tests/marketplace/terra-fusion-dashboard"
+    },
+    {
+      "name": "📚 Terra Fusion Dashboard Docs",
+      "path": "../../docs/marketplace/terra-fusion-dashboard.md"
+    }
+  ],
+  "settings": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit",
+      "source.fixAll": "explicit"
+    },
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#f59e0b",
+      "titleBar.activeForeground": "#ffffff"
+    },
+    "files.exclude": {
+      "../../os-platform": true,
+      "**/node_modules": true,
+      "../../terrafusion-cos": true,
+      "../../marketplace/*": true,
+      "!../../marketplace/terra-fusion-dashboard": true,
+      "../../backend": true,
+      "**/dist": true,
+      "../../frontend": true
+    },
+    "editor.formatOnSave": true
+  }
+}
+

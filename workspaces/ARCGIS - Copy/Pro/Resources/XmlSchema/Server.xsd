@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<xs:schema xmlns="http://www.esri.com/schemas/ArcGIS/3.4.0" targetNamespace="http://www.esri.com/schemas/ArcGIS/3.4.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:include schemaLocation="System.xsd" />
+  <xs:simpleType name="esriServiceCatalogMessageFormat">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="esriServiceCatalogMessageFormatSoap" />
+      <xs:enumeration value="esriServiceCatalogMessageFormatBin" />
+      <xs:enumeration value="esriServiceCatalogMessageFormatSoapOrBin" />
+    </xs:restriction>
+  </xs:simpleType>
+    <xs:complexType name="ServiceDescription">
+      <xs:sequence>
+        <xs:element name="Name" type="xs:string" />
+        <xs:element name="Type" type="xs:string" />
+        <xs:element name="Url" type="xs:string" />
+        <xs:element name="ParentType" type="xs:string" />
+        <xs:element name="Capabilities" type="xs:string" />
+        <xs:element name="Description" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+      <xs:complexType name="ArrayOfServiceDescription">
+        <xs:sequence>
+          <xs:element name="ServiceDescription" type="ServiceDescription" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+      </xs:complexType>
+</xs:schema>

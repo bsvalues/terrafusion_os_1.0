@@ -1,0 +1,27 @@
+{
+    "map": {
+        "description": "Determines the visibility of sight lines over obstructions consisting of a surface and an optional multipatch dataset.",
+        "in_features.descr": "A multipatch feature that may define additional obstructing elements, such as buildings. Refraction options are not honored for this input.",
+        "in_features.title": "Input Features",
+        "in_line_feature_class.descr": "<xdoc><p>The sight line features whose first vertex defines the observation point and last vertex identifies the target location. When the sight lines are 2D features, the observer and target heights will be derived from the input surface. When the sight lines are 3D features, the observer and target heights will be obtained from the feature&apos;s z-coordinates.</p><p>2D lines will be evaluated at an offset from the underlying surface. A default offset of 1 is applied to raise the points above the surface. Use a field named <span class=\"esri_fieldname\">OffsetA</span> to define a custom offset height for the observer; use a field named <span class=\"esri_fieldname\">OffsetB</span> to define a custom offset for the target.</p></xdoc>",
+        "in_line_feature_class.title": "Input Line Features",
+        "in_surface.descr": "The integrated mesh scene layer, LAS dataset, raster, TIN, or terrain surface that will be used to determine visibility.",
+        "in_surface.title": "Input Surface",
+        "out_los_feature_class.descr": "The output line feature class along which visibility will be determined",
+        "out_los_feature_class.title": "Output Feature Class",
+        "out_obstruction_feature_class.descr": "An optional point feature class identifying the location of the first obstruction on the observer's sight line to its target.",
+        "out_obstruction_feature_class.title": "Output Obstruction Point Feature Class",
+        "output_graphing_attributes.descr": "<xdoc><p>Specifies whether the output sight-line attributes will include additional fields with information that can be used to model the sight line in a profile graph. These fields provide information about the visibility of the sight line between the observer and target, along with the location of the obstruction point for a sight line with a nonvisible target.</p><ul><li>Checked—Graphing attributes will be included in the output. This is the default.</li><li>Unchecked—Graphing attributes will not be included in the output.</li></ul></xdoc>",
+        "output_graphing_attributes.title": "Output graphing attributes",
+        "params.category1": "Surface Options",
+        "pyramid_level_resolution.descr": "The z-tolerance or window-size resolution of the terrain pyramid level that will be used. The default value is 0, or full resolution.",
+        "pyramid_level_resolution.title": "Pyramid Level Resolution",
+        "refraction_factor.descr": "The value that will be used in the refraction factor. The default value is 0.13.",
+        "refraction_factor.title": "Refraction Factor",
+        "title": "Line Of Sight",
+        "use_curvature.descr": "<xdoc><p>Specifies whether the earth&apos;s curvature will be taken into consideration for the line-of-sight analysis. For this parameter to be active, the surface must have a defined spatial reference in projected coordinates with defined z-units.</p><ul><li>Unchecked—The earth&apos;s curvature will not be taken into consideration. This is the default.</li><li>Checked—The earth&apos;s curvature will be taken into consideration.</li></ul></xdoc>",
+        "use_curvature.title": "Use Curvature",
+        "use_refraction.descr": "<xdoc><p>Specifies whether atmospheric refraction will be taken into consideration when generating a line of sight from a functional surface. This parameter does not apply if multipatch features are used.</p><ul><li>Unchecked—Atmospheric refraction will not be taken into consideration. This is the default.</li><li>Checked—Atmospheric refraction will be taken into consideration.</li></ul></xdoc>",
+        "use_refraction.title": "Use Refraction"
+    }
+}

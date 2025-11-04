@@ -1,0 +1,18 @@
+{
+    "set": [
+        "area of interest",
+        "delete",
+        "edit",
+        "feature class",
+        "lidar",
+        "mass points",
+        "modify",
+        "multipoints",
+        "multiresolution surface",
+        "points",
+        "surface",
+        "terrain",
+        "terrain dataset",
+        "terrains"
+    ]
+}

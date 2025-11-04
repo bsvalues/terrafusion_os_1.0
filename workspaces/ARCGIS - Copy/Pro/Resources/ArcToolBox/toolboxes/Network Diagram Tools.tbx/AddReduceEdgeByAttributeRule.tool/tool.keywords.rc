@@ -1,0 +1,13 @@
+{
+    "set": [
+        "configuration",
+        "diagram rule",
+        "diagram template",
+        "network",
+        "network diagram",
+        "reduce diagram features",
+        "reduce edge",
+        "reduction",
+        "template configuration"
+    ]
+}

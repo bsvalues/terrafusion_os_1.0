@@ -1,0 +1,120 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\ExportXYv",
+    "displayname": "$rc:title",
+    "helpcontent": "9050007",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "Input_Feature_Class": {
+            "displayname": "$rc:input_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:input_feature_class.descr"
+        },
+        "Value_Field": {
+            "control_guid": "{C15EC6FA-35EF-4204-90FB-01E7B4DD6862}",
+            "displayname": "$rc:value_field.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Date",
+                    "OID",
+                    "GlobalID",
+                    "BigInteger"
+                ]
+            },
+            "depends": [
+                "Input_Feature_Class"
+            ],
+            "description": "$rc:value_field.descr"
+        },
+        "Delimiter": {
+            "displayname": "$rc:delimiter.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SPACE",
+                        "code": "$rc:delimiter.domain.SPACE"
+                    },
+                    {
+                        "value": "COMMA",
+                        "code": "$rc:delimiter.domain.COMMA"
+                    },
+                    {
+                        "value": "SEMI-COLON",
+                        "code": "$rc:delimiter.domain.SEMI-COLON"
+                    },
+                    {
+                        "value": "TAB",
+                        "code": "$rc:delimiter.domain.TAB"
+                    }
+                ]
+            },
+            "value": "SPACE",
+            "description": "$rc:delimiter.descr"
+        },
+        "Output_ASCII_File": {
+            "direction": "out",
+            "displayname": "$rc:output_ascii_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "txt",
+                    "tab",
+                    "tsv",
+                    "csv"
+                ]
+            },
+            "description": "$rc:output_ascii_file.descr"
+        },
+        "Add_Field_Names_to_Output": {
+            "displayname": "$rc:add_field_names_to_output.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ADD_FIELD_NAMES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_FIELD_NAMES"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:add_field_names_to_output.descr"
+        }
+    },
+    "environments": [
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

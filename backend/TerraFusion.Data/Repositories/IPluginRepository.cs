@@ -7,7 +7,7 @@ namespace TerraFusion.Data.Repositories
 {
     public interface IPluginRepository
     {
-        Task<Plugin> GetByIdAsync(Guid id);
+        Task<Plugin?> GetByIdAsync(Guid id);
         Task<IEnumerable<Plugin>> GetAllAsync();
         Task AddAsync(Plugin plugin);
         Task UpdateAsync(Plugin plugin);

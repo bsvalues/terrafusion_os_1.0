@@ -1,0 +1,441 @@
+{% extends 'base.html' %}
+
+{% block title %}Project Sync Settings{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6>Project Sync Settings</h6>
+                        <p class="text-sm mb-0">Configure global settings for project synchronization</p>
+                    </div>
+                    <a href="{{ url_for('project_sync.dashboard') }}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+                    </a>
+                </div>
+                
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('project_sync.settings') }}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="heading-small text-muted mb-4">Sync Behavior</h6>
+                                
+                                <div class="form-group mb-3">
+                                    <label for="default_conflict_strategy" class="form-control-label">Default Conflict Resolution Strategy</label>
+                                    <select class="form-select" id="default_conflict_strategy" name="default_conflict_strategy">
+                                        <option value="source_wins" {% if settings.default_conflict_strategy == 'source_wins' %}selected{% endif %}>Source Wins</option>
+                                        <option value="target_wins" {% if settings.default_conflict_strategy == 'target_wins' %}selected{% endif %}>Target Wins</option>
+                                        <option value="newer_wins" {% if settings.default_conflict_strategy == 'newer_wins' %}selected{% endif %}>Newer Timestamp Wins</option>
+                                        <option value="manual" {% if settings.default_conflict_strategy == 'manual' %}selected{% endif %}>Manual Resolution</option>
+                                    </select>
+                                    <small class="form-text text-muted">Default strategy used when conflicts occur</small>
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <label for="default_batch_size" class="form-control-label">Default Batch Size</label>
+                                    <input class="form-control" type="number" id="default_batch_size" name="default_batch_size" value="{{ settings.default_batch_size|default(1000) }}" min="1" max="10000">
+                                    <small class="form-text text-muted">Number of records to process at once</small>
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <div class="form-check form-switch ps-0">
+                                        <input class="form-check-input ms-auto" type="checkbox" id="schema_validation" name="schema_validation" {% if settings.schema_validation %}checked{% endif %}>
+                                        <label class="form-check-label ms-3" for="schema_validation">Schema Validation</label>
+                                    </div>
+                                    <small class="form-text text-muted">Validate target database schema before syncing</small>
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <div class="form-check form-switch ps-0">
+                                        <input class="form-check-input ms-auto" type="checkbox" id="auto_migration" name="auto_migration" {% if settings.auto_migration %}checked{% endif %}>
+                                        <label class="form-check-label ms-3" for="auto_migration">Auto-Migration</label>
+                                    </div>
+                                    <small class="form-text text-muted">Automatically apply schema changes to target</small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <h6 class="heading-small text-muted mb-4">Database Connections</h6>
+                                
+                                <div class="form-group mb-3">
+                                    <label for="default_source_connection" class="form-control-label">Default Source Database</label>
+                                    <select class="form-select" id="default_source_connection" name="default_source_connection">
+                                        <option value="">Select a connection...</option>
+                                        {% for conn in connections %}
+                                        <option value="{{ conn.name }}" {% if settings.default_source_connection == conn.name %}selected{% endif %}>{{ conn.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="form-text text-muted">Default source database for sync operations</small>
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <label for="default_target_connection" class="form-control-label">Default Target Database</label>
+                                    <select class="form-select" id="default_target_connection" name="default_target_connection">
+                                        <option value="">Select a connection...</option>
+                                        {% for conn in connections %}
+                                        <option value="{{ conn.name }}" {% if settings.default_target_connection == conn.name %}selected{% endif %}>{{ conn.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="form-text text-muted">Default target database for sync operations</small>
+                                </div>
+                                
+                                <h6 class="heading-small text-muted mb-4 mt-4">Notification Settings</h6>
+                                
+                                <div class="form-group mb-3">
+                                    <div class="form-check form-switch ps-0">
+                                        <input class="form-check-input ms-auto" type="checkbox" id="email_notifications" name="email_notifications" {% if settings.email_notifications %}checked{% endif %}>
+                                        <label class="form-check-label ms-3" for="email_notifications">Email Notifications</label>
+                                    </div>
+                                    <small class="form-text text-muted">Send email notifications for important events</small>
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <label for="notification_level" class="form-control-label">Notification Level</label>
+                                    <select class="form-select" id="notification_level" name="notification_level">
+                                        <option value="all" {% if settings.notification_level == 'all' %}selected{% endif %}>All Events</option>
+                                        <option value="errors" {% if settings.notification_level == 'errors' %}selected{% endif %}>Errors Only</option>
+                                        <option value="critical" {% if settings.notification_level == 'critical' %}selected{% endif %}>Critical Only</option>
+                                    </select>
+                                    <small class="form-text text-muted">When to send notifications</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr class="horizontal dark my-4">
+                        
+                        <h6 class="heading-small text-muted mb-4">Scheduled Sync Jobs</h6>
+                        
+                        <div class="form-group mb-3">
+                            <div class="form-check form-switch ps-0">
+                                <input class="form-check-input ms-auto" type="checkbox" id="enable_scheduled_sync" name="enable_scheduled_sync" {% if settings.enable_scheduled_sync %}checked{% endif %} onchange="toggleScheduleOptions()">
+                                <label class="form-check-label ms-3" for="enable_scheduled_sync">Enable Scheduled Synchronization</label>
+                            </div>
+                            <small class="form-text text-muted">Run sync jobs automatically on a schedule</small>
+                        </div>
+                        
+                        <div id="schedule-options" class="ml-4 {% if not settings.enable_scheduled_sync %}d-none{% endif %}">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3">
+                                        <label for="schedule_type" class="form-control-label">Schedule Type</label>
+                                        <select class="form-select" id="schedule_type" name="schedule_type" onchange="toggleScheduleTypeOptions()">
+                                            <option value="daily" {% if settings.schedule_type == 'daily' %}selected{% endif %}>Daily</option>
+                                            <option value="weekly" {% if settings.schedule_type == 'weekly' %}selected{% endif %}>Weekly</option>
+                                            <option value="monthly" {% if settings.schedule_type == 'monthly' %}selected{% endif %}>Monthly</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <div class="form-group mb-3">
+                                        <label for="schedule_time" class="form-control-label">Time</label>
+                                        <input class="form-control" type="time" id="schedule_time" name="schedule_time" value="{{ settings.schedule_time or '03:00' }}">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4" id="weekly-options" {% if settings.schedule_type != 'weekly' %}style="display: none;"{% endif %}>
+                                    <div class="form-group mb-3">
+                                        <label for="schedule_day" class="form-control-label">Day of Week</label>
+                                        <select class="form-select" id="schedule_day" name="schedule_day">
+                                            <option value="0" {% if settings.schedule_day == '0' %}selected{% endif %}>Sunday</option>
+                                            <option value="1" {% if settings.schedule_day == '1' %}selected{% endif %}>Monday</option>
+                                            <option value="2" {% if settings.schedule_day == '2' %}selected{% endif %}>Tuesday</option>
+                                            <option value="3" {% if settings.schedule_day == '3' %}selected{% endif %}>Wednesday</option>
+                                            <option value="4" {% if settings.schedule_day == '4' %}selected{% endif %}>Thursday</option>
+                                            <option value="5" {% if settings.schedule_day == '5' %}selected{% endif %}>Friday</option>
+                                            <option value="6" {% if settings.schedule_day == '6' %}selected{% endif %}>Saturday</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4" id="monthly-options" {% if settings.schedule_type != 'monthly' %}style="display: none;"{% endif %}>
+                                    <div class="form-group mb-3">
+                                        <label for="schedule_date" class="form-control-label">Day of Month</label>
+                                        <select class="form-select" id="schedule_date" name="schedule_date">
+                                            {% for i in range(1, 29) %}
+                                            <option value="{{ i }}" {% if settings.schedule_date == i|string %}selected{% endif %}>{{ i }}</option>
+                                            {% endfor %}
+                                            <option value="last" {% if settings.schedule_date == 'last' %}selected{% endif %}>Last day</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group mb-3">
+                                <label for="scheduled_job_name" class="form-control-label">Scheduled Job Name</label>
+                                <input class="form-control" type="text" id="scheduled_job_name" name="scheduled_job_name" value="{{ settings.scheduled_job_name or 'Scheduled Project Sync' }}">
+                                <small class="form-text text-muted">Name for the scheduled job in logs</small>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i> Save Settings
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Connection Management Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6>Database Connections</h6>
+                        <p class="text-sm mb-0">Manage database connections for project synchronization</p>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addConnectionModal">
+                        <i class="fas fa-plus me-2"></i> Add Connection
+                    </button>
+                </div>
+                
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="table-responsive p-0">
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Name</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Database Type</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Connection String</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Status</th>
+                                    <th class="text-secondary opacity-7"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for conn in connections %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{{ conn.name }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">{{ conn.type }}</p>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs text-secondary mb-0">{{ conn.connection_string_masked }}</p>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-sm bg-gradient-{{ 'success' if conn.connected else 'danger' }}">
+                                            {{ 'Connected' if conn.connected else 'Disconnected' }}
+                                        </span>
+                                    </td>
+                                    <td class="align-middle">
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-link text-primary mb-0" onclick="testConnection('{{ conn.name }}')">
+                                                <i class="fas fa-plug text-xs"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-link text-warning mb-0" data-bs-toggle="modal" data-bs-target="#editConnectionModal" data-connection-name="{{ conn.name }}">
+                                                <i class="fas fa-edit text-xs"></i>
+                                            </button>
+                                            <form method="POST" action="{{ url_for('project_sync.delete_connection') }}" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this connection?');">
+                                                <input type="hidden" name="connection_name" value="{{ conn.name }}">
+                                                <button type="submit" class="btn btn-link text-danger mb-0">
+                                                    <i class="fas fa-trash text-xs"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-4">
+                                        <p class="text-secondary mb-0">No database connections configured</p>
+                                        <button type="button" class="btn btn-sm btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#addConnectionModal">
+                                            <i class="fas fa-plus me-2"></i> Add First Connection
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Connection Modal -->
+<div class="modal fade" id="addConnectionModal" tabindex="-1" aria-labelledby="addConnectionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addConnectionModalLabel">Add Database Connection</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('project_sync.add_connection') }}">
+                <div class="modal-body">
+                    <div class="form-group mb-3">
+                        <label for="connection_name" class="form-control-label">Connection Name</label>
+                        <input class="form-control" type="text" id="connection_name" name="connection_name" required>
+                        <small class="form-text text-muted">Unique identifier for this connection</small>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="connection_type" class="form-control-label">Database Type</label>
+                        <select class="form-select" id="connection_type" name="connection_type" required>
+                            <option value="postgresql">PostgreSQL</option>
+                            <option value="mysql">MySQL</option>
+                            <option value="sqlserver">SQL Server</option>
+                            <option value="sqlite">SQLite</option>
+                            <option value="oracle">Oracle</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="connection_string" class="form-control-label">Connection String</label>
+                        <textarea class="form-control" id="connection_string" name="connection_string" rows="3" required></textarea>
+                        <small class="form-text text-muted">Database connection string (credentials will be masked)</small>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <div class="form-check form-switch ps-0">
+                            <input class="form-check-input ms-auto" type="checkbox" id="test_connection" name="test_connection" checked>
+                            <label class="form-check-label ms-3" for="test_connection">Test connection before saving</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Connection</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Connection Modal -->
+<div class="modal fade" id="editConnectionModal" tabindex="-1" aria-labelledby="editConnectionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editConnectionModalLabel">Edit Database Connection</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('project_sync.edit_connection') }}">
+                <input type="hidden" id="edit_connection_name_original" name="connection_name_original">
+                <div class="modal-body">
+                    <div class="form-group mb-3">
+                        <label for="edit_connection_name" class="form-control-label">Connection Name</label>
+                        <input class="form-control" type="text" id="edit_connection_name" name="connection_name" required>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="edit_connection_type" class="form-control-label">Database Type</label>
+                        <select class="form-select" id="edit_connection_type" name="connection_type" required>
+                            <option value="postgresql">PostgreSQL</option>
+                            <option value="mysql">MySQL</option>
+                            <option value="sqlserver">SQL Server</option>
+                            <option value="sqlite">SQLite</option>
+                            <option value="oracle">Oracle</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="edit_connection_string" class="form-control-label">Connection String</label>
+                        <textarea class="form-control" id="edit_connection_string" name="connection_string" rows="3" required></textarea>
+                        <small class="form-text text-muted">Leave unchanged to keep current connection string</small>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <div class="form-check form-switch ps-0">
+                            <input class="form-check-input ms-auto" type="checkbox" id="edit_test_connection" name="test_connection" checked>
+                            <label class="form-check-label ms-3" for="edit_test_connection">Test connection before saving</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    function toggleScheduleOptions() {
+        const enabledCheckbox = document.getElementById('enable_scheduled_sync');
+        const scheduleOptions = document.getElementById('schedule-options');
+        
+        if (enabledCheckbox.checked) {
+            scheduleOptions.classList.remove('d-none');
+        } else {
+            scheduleOptions.classList.add('d-none');
+        }
+    }
+    
+    function toggleScheduleTypeOptions() {
+        const scheduleType = document.getElementById('schedule_type').value;
+        const weeklyOptions = document.getElementById('weekly-options');
+        const monthlyOptions = document.getElementById('monthly-options');
+        
+        if (scheduleType === 'weekly') {
+            weeklyOptions.style.display = 'block';
+            monthlyOptions.style.display = 'none';
+        } else if (scheduleType === 'monthly') {
+            weeklyOptions.style.display = 'none';
+            monthlyOptions.style.display = 'block';
+        } else {
+            weeklyOptions.style.display = 'none';
+            monthlyOptions.style.display = 'none';
+        }
+    }
+    
+    function testConnection(connectionName) {
+        // Display a loading indicator
+        const statusCell = document.querySelector(`tr:has(td:first-child div h6:contains("${connectionName}")) td:nth-child(4)`);
+        statusCell.innerHTML = '<span class="badge badge-sm bg-gradient-info">Testing...</span>';
+        
+        // Make an API call to test the connection
+        fetch(`/project-sync/api/test-connection/${connectionName}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    statusCell.innerHTML = '<span class="badge badge-sm bg-gradient-success">Connected</span>';
+                } else {
+                    statusCell.innerHTML = '<span class="badge badge-sm bg-gradient-danger">Failed</span>';
+                    alert(`Connection failed: ${data.error}`);
+                }
+            })
+            .catch(error => {
+                statusCell.innerHTML = '<span class="badge badge-sm bg-gradient-danger">Error</span>';
+                console.error('Error:', error);
+                alert('An error occurred while testing the connection.');
+            });
+    }
+    
+    // Edit connection modal functionality
+    document.getElementById('editConnectionModal').addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const connectionName = button.getAttribute('data-connection-name');
+        
+        // Fetch connection details via API
+        fetch(`/project-sync/api/connection/${connectionName}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('edit_connection_name_original').value = connectionName;
+                document.getElementById('edit_connection_name').value = connectionName;
+                document.getElementById('edit_connection_type').value = data.type;
+                document.getElementById('edit_connection_string').value = 'Existing connection string (will be kept if not changed)';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while loading connection details.');
+            });
+    });
+</script>
+{% endblock %}
+
+{% endblock %}

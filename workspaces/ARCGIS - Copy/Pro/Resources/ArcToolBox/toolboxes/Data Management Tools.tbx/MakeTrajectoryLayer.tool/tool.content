@@ -1,0 +1,149 @@
+{
+    "type": "FunctionTool",
+    "guid": "{5e0c7c7e-fd53-4785-9c23-b33910348419}",
+    "displayname": "$rc:title",
+    "helpcontent": "3110020",
+    "description": "$rc:description",
+    "product": "200",
+    "params": {
+        "in_trajectory_file": {
+            "display_order": "0",
+            "displayname": "$rc:in_trajectory_file.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "GPTrajectoryLayer"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPBrowseFiltersDomain",
+                        "filters": [
+                            "esri_browseDialogFilters_netcdf",
+                            "esri_browseDialogFilters_rasters",
+                            "esri_browseDialogFilters_acsFiles"
+                        ]
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "description": "$rc:in_trajectory_file.descr"
+        },
+        "out_trajectory_layer": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_trajectory_layer.title",
+            "datatype": {
+                "type": "GPTrajectoryLayer"
+            },
+            "description": "$rc:out_trajectory_layer.descr"
+        },
+        "dimension": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:dimension.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:dimension.descr"
+        },
+        "predefined_variables": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:predefined_variables.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SIGMA0",
+                        "code": "$rc:predefined_variables.domain.SIGMA0"
+                    },
+                    {
+                        "value": "SSH",
+                        "code": "$rc:predefined_variables.domain.SSH"
+                    },
+                    {
+                        "value": "SSHA",
+                        "code": "$rc:predefined_variables.domain.SSHA"
+                    },
+                    {
+                        "value": "SWH",
+                        "code": "$rc:predefined_variables.domain.SWH"
+                    },
+                    {
+                        "value": "SIGMA0_OCEAN",
+                        "code": "$rc:predefined_variables.domain.SIGMA0_OCEAN"
+                    },
+                    {
+                        "value": "H_SEA_ICE",
+                        "code": "$rc:predefined_variables.domain.H_SEA_ICE"
+                    },
+                    {
+                        "value": "H_SEA_ICE_ANOMALY",
+                        "code": "$rc:predefined_variables.domain.H_SEA_ICE_ANOMALY"
+                    },
+                    {
+                        "value": "SIC",
+                        "code": "$rc:predefined_variables.domain.SIC"
+                    },
+                    {
+                        "value": "SIGMA0_SEA_ICE",
+                        "code": "$rc:predefined_variables.domain.SIGMA0_SEA_ICE"
+                    },
+                    {
+                        "value": "H_ICE_SHEET",
+                        "code": "$rc:predefined_variables.domain.H_ICE_SHEET"
+                    },
+                    {
+                        "value": "SIGMA0_ICE_SHEET",
+                        "code": "$rc:predefined_variables.domain.SIGMA0_ICE_SHEET"
+                    },
+                    {
+                        "value": "H_ICE",
+                        "code": "$rc:predefined_variables.domain.H_ICE"
+                    },
+                    {
+                        "value": "SIGMA0_ICE",
+                        "code": "$rc:predefined_variables.domain.SIGMA0_ICE"
+                    },
+                    {
+                        "value": "WS",
+                        "code": "$rc:predefined_variables.domain.WS"
+                    },
+                    {
+                        "value": "H_MSS",
+                        "code": "$rc:predefined_variables.domain.H_MSS"
+                    }
+                ]
+            },
+            "description": "$rc:predefined_variables.descr"
+        },
+        "variables": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:variables.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "description": "$rc:variables.descr"
+        }
+    }
+}

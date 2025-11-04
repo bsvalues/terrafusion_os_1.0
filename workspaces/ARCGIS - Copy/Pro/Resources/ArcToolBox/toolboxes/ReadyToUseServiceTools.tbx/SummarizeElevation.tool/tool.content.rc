@@ -1,0 +1,20 @@
+{
+    "map": {
+        "demresolution.descr": "<xdoc><p>Specifies the approximate spatial resolution (cell size) of the source elevation data used for the calculation.</p><p>The resolution keyword is an approximation of the spatial resolution of the digital elevation model. Many elevation sources are distributed in units of arc seconds; the keyword is an approximation in meters for easier understanding.</p><ul><li><span title=\"FINEST\">Finest</span>—The finest units available for the extent are used.</li><li><span title=\"10m\">10 meters</span>—The elevation source resolution is 1/3 arc second or approximately 10 meters.</li><li><span title=\"24m\">24 meters</span>—The elevation source is the Airbus WorldDEM4Ortho dataset at 24 meters resolution.</li><li><span title=\"30m\">30 meters</span>—The elevation source resolution is 1 arc second or approximately 30 meters.</li><li><span title=\"90m\">90 meters</span>—The elevation source resolution is 3 arc seconds or approximately 90 meters. This is the default.</li></ul></xdoc>",
+        "demresolution.domain.10m": "10 meters",
+        "demresolution.domain.24m": "24 meters",
+        "demresolution.domain.30m": "30 meters",
+        "demresolution.domain.90m": "90 meters",
+        "demresolution.domain.FINEST": "Finest",
+        "demresolution.title": "DEM Resolution",
+        "description": "Calculates summary statistics of elevation for each input feature.",
+        "featureidfield.descr": "The unique ID field to use for the input features.",
+        "featureidfield.title": "Feature ID Field",
+        "includeslopeaspect.descr": "<xdoc><p>Specifies whether slope and aspect values for the input features will be included in the output in addition to the elevation values.</p><ul><li>Checked—Slope and aspect values will be included in the output.</li><li>Unchecked—Slope and aspect values will not be included in the output. This is the default.</li></ul></xdoc>",
+        "includeslopeaspect.title": "Include Slope and Aspect",
+        "inputfeatures.descr": "The input point, line, or area features for which the elevation will be summarized.",
+        "inputfeatures.title": "Input Features",
+        "outputsummary.title": "Output Summary",
+        "title": "Summarize Elevation"
+    }
+}

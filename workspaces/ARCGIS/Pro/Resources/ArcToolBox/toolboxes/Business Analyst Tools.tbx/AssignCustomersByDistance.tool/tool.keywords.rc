@@ -1,0 +1,11 @@
+{
+    "set": [
+        "boundary",
+        "customer",
+        "distance",
+        "euclidean",
+        "geographies",
+        "network",
+        "trade area"
+    ]
+}

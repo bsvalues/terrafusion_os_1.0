@@ -1,0 +1,1152 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.Workflow.TaskActivities</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.Workflow.TaskActivities.AddDataRecordToList">
+            <summary>
+            This class contains the workflow Activity information which is populated through use of the proper designer.
+            This Activity is for Adding a Data Record Reference to a List of Data Record References along with it's name.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.AddDataRecordToList.#ctor">
+            <summary>
+            Default Constructior, sets the name of the workflow task in the designer.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.AddDataRecordToList.DataRecordName">
+            <summary>
+            The Argument representing the name of the Data Record
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.AddDataRecordToList.DataRecordReference">
+            <summary>
+            The Argument representing the Data Record Reference
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.AddDataRecordToList.DataRecordList">
+            <summary>
+            The argument representing the list of data records to add the data record reference to.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.AddDataRecordToList.Execute(System.Activities.CodeActivityContext)">
+            <summary>
+            Executes the activity in context by adding the Data Record Reference to the list with the appropriate name.
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActivities.AddDataRecordToListActivityDesigner">
+            <summary>
+            AddDataRecordToListActivityDesigner
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.AddDataRecordToListActivityDesigner.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActivities.AddTaskNote">
+            <summary>
+            This class contains the workflow Activity information which is populated through use of the proper designer.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.AddTaskNote.TaskIdExpression">
+            <summary>
+            The Id Number of the Task in the form of an argument to be evaluated at workflow runtime.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.AddTaskNote.TaskNoteExpression">
+            <summary>
+            An expression defining the Task Note.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.AddTaskNote.SelectedNoteAuthorID">
+            <summary>
+            The Owner ID of the User responsible for creation of the Task Note
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.AddTaskNote.#ctor">
+            <summary>
+            Default Constructior, sets the name of the workflow task in the designer.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.AddTaskNote.Execute(System.Activities.CodeActivityContext)">
+            <summary>
+            The Execute Method is fired off whenever the workflow reaches this activity.  
+            While it has no output, it does populate the OutArgument value of the TaskId.
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActivities.AddTaskNoteActivityDesigner">
+            <summary>
+            AddTaskNoteActivityDesigner
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.AddTaskNoteActivityDesigner.#ctor">
+            <summary>
+            Instantiate the Create Task Activity Designer.  Nothing special is being done here.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.AddTaskNoteActivityDesigner.TaskUsers">
+            <summary>
+            The list of users to bind the Task User  lists to.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.AddTaskNoteActivityDesigner.LoadTaskUsers">
+            <summary>
+            Method to populate the List of Task Users from the Task Service using the methods provided by the TaskActions Project.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.AddTaskNoteActivityDesigner.GetSelectedTaskTypeIdFromModel">
+            <summary>
+            Method to extract the current instance version value of the Selected Task Type Id from the Model.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.AddTaskNoteActivityDesigner.GetModelItemProperty(System.String)">
+            <summary>
+            Helper method to get objects out of the model.
+            </summary>
+            <param name="propertyName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.AddTaskNoteActivityDesigner.SetModelItemProperty(System.String,System.Object)">
+            <summary>
+            Method to update the Model object value.
+            </summary>
+            <param name="propertyName"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.AddTaskNoteActivityDesigner.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActivities.ChooseCustomOrderedList">
+            <summary>
+            This class contains the workflow Activity information which is populated through use of the proper designer.
+            This Activity is for enabling the user to modify the task properties based on the custom ordered list selected by user.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.ChooseCustomOrderedList.SelectedCustomOrderedListId">
+            <summary>
+            The ID of the Custom Ordered List selected by user
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.ChooseCustomOrderedList.CustomOrderedList">
+            <summary>
+            The Argument representing the name of the the Custom Ordered List
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.ChooseCustomOrderedList.FrequencyExpression">
+            <summary>
+            The frequency at which the task is updated with the next item in the customlist
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.ChooseCustomOrderedList.TaskIdExpression">
+            <summary>
+            The Task Id that needs to be updated
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.ChooseCustomOrderedList.SpanExpression">
+            <summary>
+            The Span for which the Task assignment runs
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.ChooseCustomOrderedList.CustomOrderListItems">
+            <summary>
+            The Custom Ordered list items
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.ChooseCustomOrderedList.#ctor">
+            <summary>
+            Default Constructior, sets the name of the workflow activity in the designer.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.ChooseCustomOrderedList.Execute(System.Activities.CodeActivityContext)">
+            <summary>
+            Executes the activity in context by updating the task with the items in the custom ordered list selected.
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.ChooseCustomOrderedList.ValidateInput(System.Int32,System.TimeSpan)">
+            <summary>
+            Validate inputs made by user
+            </summary>
+            <param name="taskId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.ChooseCustomOrderedList.RouteTaskProperty(System.Object)">
+            <summary>
+            Updates the task with the items in the custom ordered list selected after a given time period.
+            </summary>
+            <param name="parameters"></param>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActivities.CustomOrderedListActivityDesigner">
+            <summary>
+            Interaction logic for CustomOrderedListActivityDesigner.xaml 
+            </summary>
+            <summary>
+            CustomOrderedListActivityDesigner
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CustomOrderedListActivityDesigner.#ctor">
+            <summary>
+            Generic constructor
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Workflow.TaskActivities.CustomOrderedListActivityDesigner.customOrderedLists">
+            <summary>
+            The lists of custom ordered items
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Workflow.TaskActivities.CustomOrderedListActivityDesigner.selectedCustomOrderedListId">
+            <summary>
+            Field to hold the selected custom ordered list dropdown row
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.CustomOrderedListActivityDesigner.CustomOrderedList">
+            <summary>
+            The list of users to bind the Task User  lists to.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CustomOrderedListActivityDesigner.GetSelectedCustomOrderedListIdFromModel">
+            <summary>
+            Method to extract the selected custom ordered list.
+            </summary>
+            <returns>Selected dropdown row</returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CustomOrderedListActivityDesigner.GetModelItemProperty(System.String)">
+            <summary>
+            Helper method to get objects out of the model.
+            </summary>
+            <param name="propertyName">Property Name</param>
+            <returns>Object</returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CustomOrderedListActivityDesigner.LoadCustomOrderedLists">
+            <summary>
+            Method to populate the List of Custom Ordered Lists from the Task Service using the methods provided by the TaskActions Project.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CustomOrderedListActivityDesigner.CustomOrderedList_SelectionChanged(System.Object,System.Windows.Controls.SelectionChangedEventArgs)">
+            <summary>
+            Event handler for CustomOrderedList Selection Changed
+            </summary>
+            <param name="sender">Sender</param>
+            <param name="e">Event Args</param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CustomOrderedListActivityDesigner.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActivities.CustomOrderedListChooser">
+            <summary>
+            CustomOrderedListChooser
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.CustomOrderedListChooser.CustomOrderedList">
+            <summary>
+            The list of users to bind the Task User  lists to.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CustomOrderedListChooser.GetSelectedCustomOrderedListIdFromModel">
+            <summary>
+            Method to extract the current instance version value of the Selected Data Record Definition Id from the Model.
+            </summary>
+            <returns>Selected DRD Id</returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CustomOrderedListChooser.GetModelItemProperty(System.String)">
+            <summary>
+            Helper method to get objects out of the model.
+            </summary>
+            <param name="propertyName">Property Name</param>
+            <returns>Object</returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CustomOrderedListChooser.LoadCustomOrderedLists">
+            <summary>
+            Method to populate the List of Task Users from the Task Service using the methods provided by the TaskActions Project.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CustomOrderedListChooser.CustomOrderedList_SelectionChanged(System.Object,System.Windows.Controls.SelectionChangedEventArgs)">
+            <summary>
+            Event handler for DRD Selection Changed
+            </summary>
+            <param name="sender">Sender</param>
+            <param name="e">Event Args</param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CustomOrderedListChooser.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActivities.QueryTask">
+            <summary>
+            This class contains the workflow Activity information which is populated through use of the proper designer.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.SelectedTaskQueueId">
+            <summary>
+            The Id Number of the selected Task Queue
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.SelectedTaskCategoryId">
+            <summary>
+            The Id Number of the Selected Task Category
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.SelectedTaskTypeId">
+            <summary>
+            The Id Number of the Selected Task Type
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.SelectedDataRecordDefinitionId">
+            <summary>
+            The Id Number of the Selected Task Type
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.SelectedOwnerID">
+            <summary>
+            The Owner ID of the User responsible for owning the Task
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.SelectedPriorityCode">
+            <summary>
+            The priority for the task
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.SelectedStatusCode">
+            <summary>
+            The Status code of the task.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.SelectedStatusType">
+            <summary>
+            The Status Type of the Task.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.TaskId">
+            <summary>
+            The Id Number of the Task in the form of an argument to be evaluated at workflow runtime.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.DueDate">
+            <summary>
+            An expression to define the due date of the workflow.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.StartDate">
+            <summary>
+            An expression to define the start date of the workflow.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.CreationDate">
+            <summary>
+            An expression to define the Creation date of the workflow.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.TaskId2">
+            <summary>
+            Second Task Id Number in the form of an argument to be evaluated at workflow runtime.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.DueDate2">
+            <summary>
+            An expression to define the second due date of the workflow.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.StartDate2">
+            <summary>
+            An expression to define the second start date of the workflow.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.CreationDate2">
+            <summary>
+            An expression to define the second Creation date of the workflow.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.TaskNameExpression">
+            <summary>
+            An expression Defining the Name of the task
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.TaskDescriptionExpression">
+            <summary>
+            An expression defining the description of the task.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.SelectedTaskIdOperand">
+            <summary>
+            The ExpressionOperand value selected for TaskID
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.SelectedTaskNameOperand">
+            <summary>
+            The ExpressionOperand value selected for Task Name
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.SelectedDescriptionOperand">
+            <summary>
+            The ExpressionOperand value selected for Task Description
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.SelectedCategoryOperand">
+            <summary>
+            The ExpressionOperand value selected for Task Category
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.SelectedTaskTypeOperand">
+            <summary>
+            The ExpressionOperand value selected for Task Type
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.SelectedQueueOperand">
+            <summary>
+            The ExpressionOperand value selected for Task Queue
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.SelectedDueDateOperand">
+            <summary>
+            The ExpressionOperand value selected for Task Due Date
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.SelectedStartDateOperand">
+            <summary>
+            The ExpressionOperand value selected for Task Start Date
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.SelectedCreationDateOperand">
+            <summary>
+            The ExpressionOperand value selected for Task Creation Date
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.SelectedTaskOwnerOperand">
+            <summary>
+            The ExpressionOperand value selected for Task Owner
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.SelectedPriorityOperand">
+            <summary>
+            The ExpressionOperand value selected for Task Priority
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.SelectedStatusOperand">
+            <summary>
+            The ExpressionOperand value selected for Task Status
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.SelectedStatusTypeOperand">
+            <summary>
+            The ExpressionOperand value selected for Task StatusType
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTask.SelectedDataRecordOperand">
+            <summary>
+            The ExpressionOperand value selected for Data Record
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.QueryTask.#ctor">
+            <summary>
+            Default Constructor, sets the name of the workflow task in the designer.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.QueryTask.Execute(System.Activities.CodeActivityContext)">
+            <summary>
+            The Execute Method is fired off whenever the workflow reaches this activity.  While it has no output, it does populate the 
+            OutArgument value of the TaskId;
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner">
+            <summary>
+            QueryTaskActivityDesigner
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.#ctor">
+            <summary>
+            Instantiate the Query Task Activity Designer.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.Statuses">
+            <summary>
+            The list of queues to bind the Task Queue list to.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.TaskQueues">
+            <summary>
+            The list of queues to bind the Task Queue list to.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.TaskUsers">
+            <summary>
+            The list of queues to bind the Task User  lists to.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.Priorities">
+            <summary>
+            The list of queues to bind the Task User  lists to.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.TaskCategories">
+            <summary>
+            The list of Categories to Bind the task category combobox to.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.TaskTypes">
+            <summary>
+            The list of Task Types to Bind the task type combobox to.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.StatusTypes">
+            <summary>
+            The list of StatusTypes to Bind the status type combobox to.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.DataRecordDefinitions">
+            <summary>
+            The list of Task Types to Bind the task type combobox to.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.TaskIdOperands">
+            <summary>
+            Operands list for TaskID
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.TaskNameOperands">
+            <summary>
+            Operands list for Task Name
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.DescriptionOperands">
+            <summary>
+            Operands list for Task Description
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.CategoryOperands">
+            <summary>
+            Operands list for Task Category
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.TaskTypeOperands">
+            <summary>
+            Operands list for Task Type
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.TaskQueueOperands">
+            <summary>
+            Operands list for Task Queue
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.DueDateOperands">
+            <summary>
+            Operands list for Task Due Date
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.StartDateOperands">
+            <summary>
+            Operands list for Task Start Date
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.CreationDateOperands">
+            <summary>
+            Operands list for Task Creation Date
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.TaskOwnerOperands">
+            <summary>
+            Operands list for Task Owner
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.PriorityOperands">
+            <summary>
+            Operands list for Priority
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.StatusOperands">
+            <summary>
+            Operands list for Status
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.StatusTypeOperands">
+            <summary>
+            Operands list for Status Type
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.DataRecordOperands">
+            <summary>
+            Operands list for Data Records
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.LoadDataRecordDefinitions">
+            <summary>
+            Method to load the data record definitions from the Task Service
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.LoadCategories">
+            <summary>
+            Method to populate the List of Categories from the Task Service using the methods provided by the TaskActions Project.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.LoadTaskTypes">
+            <summary>
+            Method to populate the list of TaskTypes provided by the DTO Object of the Selected Task Category.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.LoadStatuses">
+            <summary>
+            Method to populate the List of Statuses from the Task Service using the methods provided by the TaskActions Project.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.LoadPriorities">
+            <summary>
+            Method to populate the List of Priorities from the Task Service using the methods provided by the TaskActions Project.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.LoadTaskUsers">
+            <summary>
+            Method to populate the List of Task Users from the Task Service using the methods provided by the TaskActions Project.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.LoadQueues">
+            <summary>
+            Method to populate the List of Queues from the Task Service using the methods provided by the TakActions Project.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.Value_Checked(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Event method executed when a checkbox is set to update the enabled status of each
+            of the various updatable fields in the Query Event.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.QueryTaskActivityDesigner.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActivities.SendEmailNotification">
+            <summary>
+            This class contains the workflow Activity information which is populated through use of the proper designer.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.SendEmailNotification.FromEmailExpression">
+            <summary>
+            An expression to define the 'From' Email address.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.SendEmailNotification.ToEmailExpression">
+            <summary>
+            An expression to define the 'To' Email address.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.SendEmailNotification.SubjectExpression">
+            <summary>
+            An expression Defining the Subject of the Email
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.SendEmailNotification.MessageBodyExpression">
+            <summary>
+            An expression for the Message Body of the Email.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.SendEmailNotification.AttachmentExpression">
+            <summary>
+            An expression Defining the Attachment path and file name 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.SendEmailNotification.#ctor">
+            <summary>
+            Default Constructor, sets the name of the workflow task in the designer.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.SendEmailNotification.Execute(System.Activities.CodeActivityContext)">
+            <summary>
+            The Execute Method is fired off whenever the workflow reaches this activity. 
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.SendEmailNotification.ValidateEmailInput">
+            <summary>
+            Validate the 'From' and 'To' Email Addresses entered by the user.
+            </summary>
+            <param name="metadata"></param>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActivities.SendEmailNotificationActivityDesigner">
+            <summary>
+            SendEmailNotificationActivityDesigner
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.SendEmailNotificationActivityDesigner.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActivities.SendSMSNotification">
+            <summary>
+            This class contains the workflow Activity information which is populated through use of the proper designer.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.SendSMSNotification.ToPhoneNumberExpression">
+            <summary>
+            An expression to define the 'To' Phone Number for the SMS Message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.SendSMSNotification.MessageBodyExpression">
+            <summary>
+            An expression defining the Body/Content of the SMS Message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.SendSMSNotification.SelectedServiceProviderId">
+            <summary>
+            The Id denoting the Mobile Email Address of the selected Service Provider.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.SendSMSNotification.#ctor">
+            <summary>
+            Default Constructior, sets the name of the workflow task in the designer.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.SendSMSNotification.Execute(System.Activities.CodeActivityContext)">
+            <summary>
+            The Execute Method is fired off whenever the workflow reaches this activity. 
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.SendSMSNotification.ValidatePhoneNumberInput">
+            <summary>
+            Validate the 'To' phone number entered by the user.
+            </summary>
+            <param name="metadata"></param>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActivities.SendSMSNotificationActivityDesigner">
+            <summary>
+            SendSMSNotificationActivityDesigner
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.SendSMSNotificationActivityDesigner.ServiceProviders">
+            <summary>
+            The list of Statuses to bind the Task Status lists to.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.SendSMSNotificationActivityDesigner.LoadServiceProviders">
+            <summary>
+            Method to populate the List of Phone Service Providers from the
+            Task Service using the methods provided by the TaskActions Project.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.SendSMSNotificationActivityDesigner.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActivities.UpdateTask">
+            <summary>
+            This class contains the workflow Activity information which is populated through use of the proper designer.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.UpdateTask.TaskId">
+            <summary>
+            The Id Number of the Task in the form of an argument to be evaluated at workflow runtime.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.UpdateTask.SelectedTaskQueueId">
+            <summary>
+            The Id Number of the selected Task Queue
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.UpdateTask.SelectedOwnerID">
+            <summary>
+            The Owner ID of the User responsible for owning the Task
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.UpdateTask.SelectedPriorityCode">
+            <summary>
+            The priority for the task
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.UpdateTask.SelectedStatusCode">
+            <summary>
+            The Status code to set the task to.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.UpdateTask.DueDate">
+            <summary>
+            An expression to define the due date of the workflow.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.UpdateTask.StartDate">
+            <summary>
+            An expression to define the start date of the workflow.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.UpdateTask.TaskNameExpression">
+            <summary>
+            An expression Defining the Name of the task
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.UpdateTask.TaskDescriptionExpression">
+            <summary>
+            An expression defining the description of the task.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.UpdateTask.TaskMetadataExpression">
+            <summary>
+            An expression Defining the Metadata associated with the task
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.UpdateTask.#ctor">
+            <summary>
+            Default Constructior, sets the name of the workflow task in the designer.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.UpdateTask.Execute(System.Activities.CodeActivityContext)">
+            <summary>
+            The Execute Method is fired off whenever the workflow reaches this activity.  While it has no output, it does populate the 
+            OutArgument value of the TaskId;
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActivities.UpdateTaskActivityDesigner">
+            <summary>
+            This class is the UI Element of the Update Task Activity
+            </summary>
+            <summary>
+            UpdateTaskActivityDesigner
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.UpdateTaskActivityDesigner.#ctor">
+            <summary>
+            Instantiate the Create Task Activity Designer.  Nothing special is being done here.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.UpdateTaskActivityDesigner.Statuses">
+            <summary>
+            The list of queues to bind the Task Queue list to.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.UpdateTaskActivityDesigner.TaskQueues">
+            <summary>
+            The list of queues to bind the Task Queue list to.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.UpdateTaskActivityDesigner.TaskUsers">
+            <summary>
+            The list of queues to bind the Task User  lists to.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.UpdateTaskActivityDesigner.Priorities">
+            <summary>
+            The list of queues to bind the Task User  lists to.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.UpdateTaskActivityDesigner.LoadStatuses">
+            <summary>
+            Method to populate the List of Statuses from the Task Service using the methods provided by the TaskActions Project.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.UpdateTaskActivityDesigner.LoadPriorities">
+            <summary>
+            Method to populate the List of Priorities from the Task Service using the methods provided by the TaskActions Project.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.UpdateTaskActivityDesigner.LoadTaskUsers">
+            <summary>
+            Method to populate the List of Task Users from the Task Service using the methods provided by the TaskActions Project.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.UpdateTaskActivityDesigner.LoadQueues">
+            <summary>
+            Method to populate the List of Queues from the Task Service using the methods provided by the TakActions Project.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.UpdateTaskActivityDesigner.Value_Checked(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Event method executed when a checkbox is set to update the enabled status of each
+            of the various updatable fields in the Update Event.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.UpdateTaskActivityDesigner.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActivities.CreateTask">
+            <summary>
+            This class contains the workflow Activity information which is populated through use of the proper designer.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.CreateTask.SelectedTaskCategoryId">
+            <summary>
+            The Id Number of the Selected Task Category
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.CreateTask.SelectedTaskTypeId">
+            <summary>
+            The Id Number of the Selected Task Type
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.CreateTask.SelectedTaskQueueId">
+            <summary>
+            The Id Number of the selected Task Queue
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.CreateTask.SelectedOwnerID">
+            <summary>
+            The Owner ID of the User responsible for creation/owning the Task
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.CreateTask.SelectedPriorityCode">
+            <summary>
+            The Initial priority for the task
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.CreateTask.SelectedStatusCode">
+            <summary>
+            The Initial Status for the task
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.CreateTask.DueDate">
+            <summary>
+            An expression to define the due date of the workflow.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.CreateTask.StartDate">
+            <summary>
+            An expression to define the start date of the workflow.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.CreateTask.TaskNameExpression">
+            <summary>
+            An expression Defining the Name of the task
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.CreateTask.TaskDescriptionExpression">
+            <summary>
+            An expression defining the description of the task.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.CreateTask.DataRecords">
+            <summary>
+            Data Record Definition Array to pass to the task creation
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.CreateTask.DataRecordsCollection">
+            <summary>
+            Dictionary to contain the dynamically created DataRecords Arguments
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.CreateTask.TaskMetadataExpression">
+            <summary>
+            An expression Defining the Metadata associated with the task
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CreateTask.#ctor">
+            <summary>
+            Default Constructior, sets the name of the workflow task in the designer.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CreateTask.Execute(System.Activities.CodeActivityContext)">
+            <summary>
+            The Execute Method is fired off whenever the workflow reaches this activity.  While it has no output, it does populate the 
+            OutArgument value of the TaskId;
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CreateTask.CacheMetadata(System.Activities.CodeActivityMetadata)">
+            <summary>
+            Override CacheMetadata to create runtime arguments and bind them to the metadata.
+            </summary>
+            <param name="metadata"></param>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActivities.CreateTaskActivityDesigner">
+            <summary>
+            This class is the UI Element of the Create Task Activity
+            </summary>
+            <summary>
+            CreateTaskActivityDesigner
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CreateTaskActivityDesigner.#ctor">
+            <summary>
+            Instantiate the Create Task Activity Designer.  Nothing special is being done here.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.CreateTaskActivityDesigner.TaskCategories">
+            <summary>
+            The list of Categories to Bind the task category combobox to.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.CreateTaskActivityDesigner.TaskTypes">
+            <summary>
+            The list of Task Types to Bind the task type combobox to.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.CreateTaskActivityDesigner.TaskQueues">
+            <summary>
+            The list of queues to bind the Task Queue list to.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.CreateTaskActivityDesigner.TaskUsers">
+            <summary>
+            The list of users to bind the Task User  lists to.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.CreateTaskActivityDesigner.Priorities">
+            <summary>
+            The list of Priorities to bind the Task User  lists to.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.CreateTaskActivityDesigner.Statuses">
+            <summary>
+            The list of Statuses to bind the Task Status lists to.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CreateTaskActivityDesigner.LoadCategories">
+            <summary>
+            Method to populate the List of Categories from the Task Service using the methods provided by the TaskActions Project.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CreateTaskActivityDesigner.LoadPriorities">
+            <summary>
+            Method to populate the List of Priorities from the Task Service using the methods provided by the TaskActions Project.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CreateTaskActivityDesigner.LoadStatuses">
+            <summary>
+            Method to populate the List of Statuses from the Task Service using the methods provided by the TaskActions Project.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CreateTaskActivityDesigner.LoadTaskUsers">
+            <summary>
+            Method to populate the List of Task Users from the Task Service using the methods provided by the TaskActions Project.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CreateTaskActivityDesigner.LoadQueues">
+            <summary>
+            Method to populate the List of Queues from the Task Service using the methods provided by the TakActions Project.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CreateTaskActivityDesigner.GetSelectedTaskTypeIdFromModel">
+            <summary>
+            Method to extract the current instance version value of the Selected Task Type Id from the Model.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CreateTaskActivityDesigner.TaskCategory_SelectionChanged(System.Object,System.Windows.Controls.SelectionChangedEventArgs)">
+            <summary>
+            Event fired when the Task Category Selection changes in order to populate the Task Type list.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CreateTaskActivityDesigner.ClearDataRecordsCollection">
+            <summary>
+            Clears and Sets the DataRecordsCollection ModelItem property
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CreateTaskActivityDesigner.LoadTaskTypes">
+            <summary>
+            Method to populate the list of TaskTypes provided by the DTO Object of the Selected Task Category.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CreateTaskActivityDesigner.GetModelItemProperty(System.String)">
+            <summary>
+            Helper method to get objects out of the model.
+            </summary>
+            <param name="propertyName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CreateTaskActivityDesigner.SetModelItemProperty(System.String,System.Object)">
+            <summary>
+            Method to update the Model object value.
+            </summary>
+            <param name="propertyName"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CreateTaskActivityDesigner.TaskType_SourceUpdated(System.Object,System.Windows.Data.DataTransferEventArgs)">
+            <summary>
+            Event fired when the TaskType combobox has had it's source updated in order to set the properly selected value from the model.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.CreateTaskActivityDesigner.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActivities.NamespaceDoc">
+            <summary>
+            These are the namespace comments for <c>TrueAutomation.Workflow.TaskActivities</c>.
+            
+            This class contains the Activities to be used for workflow's designed around creating and managing tasks in a workflow.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.TaskActivities.WaitForTaskEvent">
+            <summary>
+            Implements an activity that takes a specific task ID as input
+            and which is capable of waiting indefinitely for that task to
+            be updated by creating a bookmark for that task event message
+            and then going into an idle state.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.WaitForTaskEvent.#ctor">
+            <summary>
+            Class constructor -- initializes an instance of the
+            <see cref="T:WaitForTaskEvent"/> class.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.WaitForTaskEvent.TaskId">
+            <summary>
+            The Id Number of the Task in the form of an argument to be
+            evaluated at workflow runtime.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.TaskActivities.WaitForTaskEvent.CanInduceIdle">
+            <summary>
+            Indicates whether or not this activity can induce an idle state
+            in the associated workflow. Because that's basically the whole
+            intent of this activity, we return true in all cases.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.WaitForTaskEvent.Execute(System.Activities.NativeActivityContext)">
+            <summary>
+            Performs the actions associated with the
+            <see cref="T:WaitForTaskEvent"/> activity. This involves creating
+            a new bookmark crafted from the name of the task event message and
+            the specific task id of interest, so that when messages about that
+            task are received by the workflow engine on the enterprise service
+            bus, any instances of workflows waiting on that task can be
+            located and resumed.
+            </summary>
+            <param name="context">Provides information about the context
+            of the activity and the workflow runtime at the time the activity
+            is actually executed.</param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.TaskActivities.WaitForTaskEvent.Resumed(System.Activities.NativeActivityContext,System.Activities.Bookmark,System.Object)">
+            <summary>
+            Implements a callback method to invoke when the activity is
+            resumed after a task update message is received for the associated
+            task id by the workflow engine.
+            </summary>
+            <param name="context">Provides information about the context of
+            the activity and the workflow runtime at the time the activity
+            is resumed.</param>
+            <param name="bookmark">Identifies the actual bookmark that is
+            being resumed.</param>
+            <param name="value">Specifies any input data being passed into
+            the activity when it's being resumed. This is expected to be a
+            <see cref="T:TaskDTO"/> instance corresponding to the associated
+            task id, but may be null. If not value is specified, the activity
+            is expected to look up the associated activity itself if it needs
+            the information.</param>
+        </member>
+    </members>
+</doc>

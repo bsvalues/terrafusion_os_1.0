@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Removes the 3D formats  referenced by a 3D object feature layer.",
+        "formats.descr": "<xdoc><p>Specifies the 3D model formats referenced by the 3D object feature layer that will be removed. Only the formats that have been linked to the input features can be specified.</p><ul><li><span title=\"FMT3D_DAE\">Collada (.dae)</span>—The COLLADA format will be removed.</li><li><span title=\"FMT3D_DWG\">Autodesk Drawing (.dwg)</span>—The DWG format will be removed.</li><li><span title=\"FMT3D_FBX\">Autodesk (.fbx)</span>—The Autodesk FilmBox format will be removed.</li><li><span title=\"FMT3D_GLB\">Khronos Group glTF binary (.glb)</span>—The binary Graphics Library Transmission format will be removed.</li><li><span title=\"FMT3D_GLTF\">Khronos Group glTF json (.gltf)</span>—The JSON Graphics Library Transmission format will be removed.</li><li><span title=\"FMT3D_IFC\">Industry Foundation Classes (.ifc)</span>—The Industry Foundation Classes format will be removed.</li><li><span title=\"FMT3D_OBJ\">Wavefront (.obj)</span>—The Wavefront format will be removed.</li><li><span title=\"FMT3D_USDC\">Universal Scene Description (.usdc)</span>— The Universal Scene Description format will be removed.</li><li><span title=\"FMT3D_USDZ\">Compressed Universal Scene Description (.usdz)</span>— The compressed version of the Universal Scene Description format will be removed.</li></ul></xdoc>",
+        "formats.title": "3D Formats to Remove",
+        "in_features.descr": "The multipatch feature class that was converted to a 3D object feature class.",
+        "in_features.title": "Input Features",
+        "multipatch_materials.descr": "<xdoc><note type=\"note\"/><p group=\"note\">This parameter is no longer supported. The option to control whether multipatch materials were used was removed to improve this tool&apos;s usability. Materials will always be used when they are available through the 3D object feature layer, and they will be automatically removed when the 3D object feature layer capabilities are removed from the multipatch. Additional parameters are available using the dedicated API for multipatches.</p></xdoc>",
+        "multipatch_materials.title": "Use multipatch materials",
+        "summary": "Removes the 3D formats referenced by a 3D object feature layer.",
+        "title": "Remove 3D Formats From Multipatch",
+        "updated_features.title": "Updated Input Features"
+    }
+}

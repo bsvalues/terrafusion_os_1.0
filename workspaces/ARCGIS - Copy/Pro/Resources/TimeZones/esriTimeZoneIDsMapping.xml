@@ -1,0 +1,427 @@
+<TimeZoneIDsMapping>
+  <TimeZoneIDsMap OlsonID="Africa/Abidjan"					WindowsID="Greenwich Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Accra"					WindowsID="Greenwich Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Addis_Ababa"				WindowsID="E. Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Algiers"					WindowsID="Central Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Asmara"					WindowsID="E. Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Bamako"					WindowsID="Greenwich Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Bangui"					WindowsID="W. Central Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Banjul"					WindowsID="Greenwich Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Bissau"					WindowsID="Greenwich Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Blantyre"					WindowsID="South Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Brazzaville"				WindowsID="W. Central Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Bujumbura"				WindowsID="South Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Cairo"					WindowsID="Egypt Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Casablanca"				WindowsID="Greenwich Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Ceuta"					WindowsID="Central Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Conakry"					WindowsID="Greenwich Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Dakar"					WindowsID="Greenwich Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Dar_es_Salaam"			WindowsID="E. Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Djibouti"					WindowsID="E. Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Douala"					WindowsID="W. Central Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/El_Aaiun"					WindowsID="Greenwich Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Freetown"					WindowsID="Greenwich Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Gaborone"					WindowsID="South Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Harare"					WindowsID="South Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Johannesburg"				WindowsID="South Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Kampala"					WindowsID="E. Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Khartoum"					WindowsID="E. Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Kigali"					WindowsID="South Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Kinshasa"					WindowsID="W. Central Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Lagos"					WindowsID="W. Central Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Libreville"				WindowsID="W. Central Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Lome"						WindowsID="Greenwich Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Luanda"					WindowsID="W. Central Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Lubumbashi"				WindowsID="South Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Lusaka"					WindowsID="South Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Malabo"					WindowsID="W. Central Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Maputo"					WindowsID="South Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Maseru"					WindowsID="South Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Mbabane"					WindowsID="South Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Mogadishu"				WindowsID="E. Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Monrovia"					WindowsID="Greenwich Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Nairobi"					WindowsID="E. Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Ndjamena"					WindowsID="W. Central Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Niamey"					WindowsID="W. Central Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Nouakchott"				WindowsID="Greenwich Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Ouagadougou"				WindowsID="Greenwich Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Porto-Novo"				WindowsID="W. Central Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Sao_Tome"					WindowsID="Greenwich Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Tripoli"					WindowsID="South Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Tunis"					WindowsID="Central Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Africa/Windhoek"					WindowsID="W. Central Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Adak"					WindowsID="Hawaiian Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Anchorage"				WindowsID="Alaskan Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Anguilla"				WindowsID="Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Antigua"					WindowsID="Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Araguaina"				WindowsID="E. South America Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Argentina/Buenos_Aires"	WindowsID="Argentina Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Argentina/Catamarca"		WindowsID="Argentina Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Argentina/Cordoba"		WindowsID="Argentina Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Argentina/Jujuy"			WindowsID="Argentina Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Argentina/La_Rioja"		WindowsID="Argentina Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Argentina/Mendoza"		WindowsID="Argentina Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Argentina/Rio_Gallegos"	WindowsID="Argentina Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Argentina/San_Juan"		WindowsID="Argentina Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Argentina/San_Luis"		WindowsID="Argentina Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Argentina/Tucuman"		WindowsID="Argentina Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Argentina/Ushuaia"		WindowsID="Argentina Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Aruba"					WindowsID="Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Asuncion"				WindowsID="Paraguay Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Atikokan"				WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Bahia"					WindowsID="E. South America Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Barbados"				WindowsID="Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Belem"					WindowsID="E. South America Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Belize"					WindowsID="Central Standard Time (Mexico)" />
+  <TimeZoneIDsMap OlsonID="America/Blanc-Sablon"			WindowsID="Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Boa_Vista"				WindowsID="Central Brazilian Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Bogota"					WindowsID="SA Pacific Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Boise"					WindowsID="Mountain Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Cambridge_Bay"			WindowsID="Mountain Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Campo_Grande"			WindowsID="SA Western Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Cancun"					WindowsID="Central Standard Time (Mexico)" />
+  <TimeZoneIDsMap OlsonID="America/Caracas"					WindowsID="Newfoundland Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Cayenne"					WindowsID="SA Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Cayman"					WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Chicago"					WindowsID="Central Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Chihuahua"				WindowsID="Mountain Standard Time (Mexico)" />
+  <TimeZoneIDsMap OlsonID="America/Costa_Rica"				WindowsID="Central Standard Time (Mexico)" />
+  <TimeZoneIDsMap OlsonID="America/Cuiaba"					WindowsID="SA Western Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Curacao"					WindowsID="Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Danmarkshavn"			WindowsID="Greenwich Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Dawson"					WindowsID="Pacific Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Dawson_Creek"			WindowsID="Mountain Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Denver"					WindowsID="Mountain Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Detroit"					WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Dominica"				WindowsID="Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Edmonton"				WindowsID="Mountain Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Eirunepe"				WindowsID="SA Pacific Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/El_Salvador"				WindowsID="Central Standard Time (Mexico)" />
+  <TimeZoneIDsMap OlsonID="America/Fortaleza"				WindowsID="E. South America Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Glace_Bay"				WindowsID="Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Godthab"					WindowsID="Greenland Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Goose_Bay"				WindowsID="Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Grand_Turk"				WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Grenada"					WindowsID="Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Guadeloupe"				WindowsID="Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Guatemala"				WindowsID="Central Standard Time (Mexico)" />
+  <TimeZoneIDsMap OlsonID="America/Guayaquil"				WindowsID="SA Pacific Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Guyana"					WindowsID="SA Western Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Halifax"					WindowsID="Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Havana"					WindowsID="SA Pacific Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Hermosillo"				WindowsID="Mountain Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Indiana/Indianapolis"	WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Indiana/Knox"			WindowsID="Central Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Indiana/Marengo"			WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Indiana/Petersburg"		WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Indiana/Tell_City"		WindowsID="Central Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Indiana/Vevay"			WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Indiana/Vincennes"		WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Indiana/Winamac"			WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Inuvik"					WindowsID="Mountain Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Iqaluit"					WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Jamaica"					WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Juneau"					WindowsID="Alaskan Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Kentucky/Louisville"		WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Kentucky/Monticello"		WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/La_Paz"					WindowsID="SA Western Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Lima"					WindowsID="SA Pacific Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Los_Angeles"				WindowsID="Pacific Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Maceio"					WindowsID="E. South America Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Managua"					WindowsID="Central Standard Time (Mexico)" />
+  <TimeZoneIDsMap OlsonID="America/Manaus"					WindowsID="Central Brazilian Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Martinique"				WindowsID="Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Mazatlan"				WindowsID="Mountain Standard Time (Mexico)" />
+  <TimeZoneIDsMap OlsonID="America/Menominee"				WindowsID="Central Standard Time (Mexico)" />
+  <TimeZoneIDsMap OlsonID="America/Merida"					WindowsID="Central Standard Time (Mexico)" />
+  <TimeZoneIDsMap OlsonID="America/Mexico_City"				WindowsID="Central Standard Time (Mexico)" />
+  <TimeZoneIDsMap OlsonID="America/Miquelon"				WindowsID="Greenland Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Moncton"					WindowsID="Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Monterrey"				WindowsID="Central Standard Time (Mexico)" />
+  <TimeZoneIDsMap OlsonID="America/Montevideo"				WindowsID="Montevideo Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Montreal"				WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Montserrat"				WindowsID="Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Nassau"					WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/New_York"				WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Nipigon"					WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Nome"					WindowsID="Alaskan Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Noronha"					WindowsID="Mid-Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/North_Dakota/Center"		WindowsID="Central Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/North_Dakota/New_Salem"	WindowsID="Central Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Panama"					WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Pangnirtung"				WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Paramaribo"				WindowsID="SA Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Phoenix"					WindowsID="US Mountain Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Port_of_Spain"			WindowsID="Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Port-au-Prince"			WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Porto_Velho"				WindowsID="Central Brazilian Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Puerto_Rico"				WindowsID="Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Rainy_River"				WindowsID="Central Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Rankin_Inlet"			WindowsID="Central Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Recife"					WindowsID="E. South America Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Regina"					WindowsID="Central Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Resolute"				WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Rio_Branco"				WindowsID="SA Pacific Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Santiago"				WindowsID="SA Western Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Santo_Domingo"			WindowsID="Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Sao_Paulo"				WindowsID="E. South America Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Scoresbysund"			WindowsID="Azores Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/St_Johns"				WindowsID="Newfoundland Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/St_Kitts"				WindowsID="Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/St_Lucia"				WindowsID="Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/St_Thomas"				WindowsID="Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/St_Vincent"				WindowsID="Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Swift_Current"			WindowsID="Central Standard Time (Mexico)" />
+  <TimeZoneIDsMap OlsonID="America/Tegucigalpa"				WindowsID="Central Standard Time (Mexico)" />
+  <TimeZoneIDsMap OlsonID="America/Thule"					WindowsID="Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Thunder_Bay"				WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Tijuana"					WindowsID="Pacific Standard Time (Mexico)" />
+  <TimeZoneIDsMap OlsonID="America/Toronto"					WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Tortola"					WindowsID="Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Vancouver"				WindowsID="Pacific Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Whitehorse"				WindowsID="Pacific Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Winnipeg"				WindowsID="Central Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Yakutat"					WindowsID="Alaskan Standard Time" />
+  <TimeZoneIDsMap OlsonID="America/Yellowknife"				WindowsID="Mountain Standard Time" />
+  <TimeZoneIDsMap OlsonID="Antarctica/Casey"				WindowsID="W. Australia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Antarctica/Davis"				WindowsID="SE Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Antarctica/DumontDUrville"		WindowsID="E. Australia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Antarctica/Mawson"				WindowsID="Central Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Antarctica/McMurdo"				WindowsID="New Zealand Standard Time" />
+  <TimeZoneIDsMap OlsonID="Antarctica/Palmer"				WindowsID="SA Western Standard Time" />
+  <TimeZoneIDsMap OlsonID="Antarctica/Rothera"				WindowsID="SA Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="Antarctica/Syowa"				WindowsID="E. Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Antarctica/Vostok"				WindowsID="Central Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Aden"						WindowsID="Arabic Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Almaty"						WindowsID="Central Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Amman"						WindowsID="Jordan Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Anadyr"						WindowsID="New Zealand Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Aqtau"						WindowsID="West Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Aqtobe"						WindowsID="West Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Ashgabat"					WindowsID="West Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Baghdad"					WindowsID="Arabic Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Bahrain"					WindowsID="Arabic Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Baku"						WindowsID="Azerbaijan Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Bangkok"					WindowsID="SE Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Beirut"						WindowsID="Middle East Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Bishkek"					WindowsID="Central Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Brunei"						WindowsID="North Asia East Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Choibalsan"					WindowsID="Yakutsk Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Chongqing"					WindowsID="China Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Colombo"					WindowsID="Sri Lanka Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Damascus"					WindowsID="Middle East Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Dhaka"						WindowsID="N. Central Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Dili"						WindowsID="Korea Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Dubai"						WindowsID="Arabian Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Dushanbe"					WindowsID="West Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Gaza"						WindowsID="Middle East Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Harbin"						WindowsID="China Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Ho_Chi_Minh"				WindowsID="SE Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Hong_Kong"					WindowsID="Singapore Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Hovd"						WindowsID="SE Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Irkutsk"					WindowsID="North Asia East Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Jakarta"					WindowsID="SE Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Jayapura"					WindowsID="Korea Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Jerusalem"					WindowsID="Middle East Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Kabul"						WindowsID="Afghanistan Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Kamchatka"					WindowsID="Kamchatka Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Karachi"					WindowsID="West Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Kashgar"					WindowsID="China Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Katmandu"					WindowsID="Nepal Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Kolkata"					WindowsID="India Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Krasnoyarsk"				WindowsID="North Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Kuala_Lumpur"				WindowsID="Singapore Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Kuching"					WindowsID="Singapore Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Kuwait"						WindowsID="Arabic Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Macau"						WindowsID="China Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Magadan"					WindowsID="Central Pacific Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Makassar"					WindowsID="Singapore Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Manila"						WindowsID="Singapore Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Muscat"						WindowsID="Arabian Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Nicosia"					WindowsID="Middle East Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Novosibirsk"				WindowsID="N. Central Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Omsk"						WindowsID="N. Central Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Oral"						WindowsID="Ekaterinburg Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Phnom_Penh"					WindowsID="SE Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Pontianak"					WindowsID="SE Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Pyongyang"					WindowsID="Korea Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Qatar"						WindowsID="Arabic Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Qyzylorda"					WindowsID="N. Central Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Rangoon"					WindowsID="Myanmar Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Riyadh"						WindowsID="Arabic Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Sakhalin"					WindowsID="Vladivostok Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Samarkand"					WindowsID="West Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Seoul"						WindowsID="Korea Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Shanghai"					WindowsID="China Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Singapore"					WindowsID="Singapore Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Taipei"						WindowsID="China Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Tashkent"					WindowsID="West Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Tbilisi"					WindowsID="Arabian Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Tehran"						WindowsID="Iran Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Thimphu"					WindowsID="N. Central Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Tokyo"						WindowsID="Tokyo Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Ulaanbaatar"				WindowsID="North Asia East Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Urumqi"						WindowsID="China Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Vientiane"					WindowsID="SE Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Vladivostok"				WindowsID="Vladivostok Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Yakutsk"					WindowsID="Yakutsk Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Yekaterinburg"				WindowsID="Ekaterinburg Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Yerevan"					WindowsID="Caucasus Standard Time" />
+  <TimeZoneIDsMap OlsonID="Atlantic/Azores"					WindowsID="Azores Standard Time" />
+  <TimeZoneIDsMap OlsonID="Atlantic/Bermuda"				WindowsID="Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="Atlantic/Canary"					WindowsID="W. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Atlantic/Cape_Verde"				WindowsID="Cape Verde Standard Time" />
+  <TimeZoneIDsMap OlsonID="Atlantic/Faroe"					WindowsID="W. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Atlantic/Madeira"				WindowsID="W. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Atlantic/Reykjavik"				WindowsID="Greenwich Standard Time" />
+  <TimeZoneIDsMap OlsonID="Atlantic/South_Georgia"			WindowsID="Mid-Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="Atlantic/St_Helena"				WindowsID="Greenwich Standard Time" />
+  <TimeZoneIDsMap OlsonID="Atlantic/Stanley"				WindowsID="Pacific SA Standard Time" />
+  <TimeZoneIDsMap OlsonID="Australia/Adelaide"				WindowsID="Cen. Australia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Australia/Brisbane"				WindowsID="E. Australia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Australia/Broken_Hill"			WindowsID="Cen. Australia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Australia/Currie"				WindowsID="Tasmania Standard Time" />
+  <TimeZoneIDsMap OlsonID="Australia/Darwin"				WindowsID="AUS Central Standard Time" />
+  <TimeZoneIDsMap OlsonID="Australia/Eucla"					WindowsID="Cen. Australia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Australia/Hobart"				WindowsID="Tasmania Standard Time" />
+  <TimeZoneIDsMap OlsonID="Australia/Lindeman"				WindowsID="AUS Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="Australia/Lord_Howe"				WindowsID="Central Pacific Standard Time" />
+  <TimeZoneIDsMap OlsonID="Australia/Melbourne"				WindowsID="AUS Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="Australia/Perth"					WindowsID="W. Australia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Australia/Sydney"				WindowsID="AUS Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="CET"								WindowsID="Central Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="CST6CDT"							WindowsID="Central Standard Time" />
+  <TimeZoneIDsMap OlsonID="EET"								WindowsID="E. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="EST"								WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="EST5EDT"							WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT"							WindowsID="GMT Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/UCT"							WindowsID="UTC" />
+  <TimeZoneIDsMap OlsonID="Etc/UTC"							WindowsID="UTC" />
+  <TimeZoneIDsMap OlsonID="Europe/Amsterdam"				WindowsID="W. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Andorra"					WindowsID="Central Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Athens"					WindowsID="E. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Belgrade"					WindowsID="Central Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Berlin"					WindowsID="W. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Brussels"					WindowsID="Central European Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Bucharest"				WindowsID="E. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Budapest"					WindowsID="Central European Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Chisinau"					WindowsID="E. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Copenhagen"				WindowsID="Central European Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Dublin"					WindowsID="GMT Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Gibraltar"				WindowsID="Central European Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Helsinki"					WindowsID="E. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Istanbul"					WindowsID="E. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Kaliningrad"				WindowsID="E. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Kiev"						WindowsID="E. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Lisbon"					WindowsID="W. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/London"					WindowsID="GMT Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Luxembourg"				WindowsID="Central European Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Madrid"					WindowsID="Central European Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Malta"					WindowsID="Central European Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Minsk"					WindowsID="E. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Monaco"					WindowsID="Central European Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Moscow"					WindowsID="Russian Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Oslo"						WindowsID="Central European Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Paris"					WindowsID="Central European Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Prague"					WindowsID="Central European Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Riga"						WindowsID="E. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Rome"						WindowsID="W. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Samara"					WindowsID="Caucasus Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Simferopol"				WindowsID="E. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Sofia"					WindowsID="E. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Stockholm"				WindowsID="W. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Tallinn"					WindowsID="E. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Tirane"					WindowsID="Central European Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Uzhgorod"					WindowsID="E. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Vaduz"					WindowsID="W. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Vienna"					WindowsID="Central European Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Vilnius"					WindowsID="E. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Volgograd"				WindowsID="Russian Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Warsaw"					WindowsID="Central European Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Zaporozhye"				WindowsID="E. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Europe/Zurich"					WindowsID="Central European Standard Time" />
+  <TimeZoneIDsMap OlsonID="HST"								WindowsID="Hawaiian Standard Time" />
+  <TimeZoneIDsMap OlsonID="Indian/Antananarivo"				WindowsID="E. Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Indian/Chagos"					WindowsID="Central Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Indian/Christmas"				WindowsID="SE Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Indian/Cocos"					WindowsID="Myanmar Standard Time" />
+  <TimeZoneIDsMap OlsonID="Indian/Comoro"					WindowsID="E. Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Indian/Kerguelen"				WindowsID="West Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Indian/Mahe"						WindowsID="Arabian Standard Time" />
+  <TimeZoneIDsMap OlsonID="Indian/Maldives"					WindowsID="West Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Indian/Mauritius"				WindowsID="Azerbaijan Standard Time" />
+  <TimeZoneIDsMap OlsonID="Indian/Mayotte"					WindowsID="E. Africa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Indian/Reunion"					WindowsID="Arabian Standard Time" />
+  <TimeZoneIDsMap OlsonID="MET"								WindowsID="Central European Standard Time" />
+  <TimeZoneIDsMap OlsonID="MST"								WindowsID="Mountain Standard Time" />
+  <TimeZoneIDsMap OlsonID="MST7MDT"							WindowsID="US Mountain Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Apia"					WindowsID="Samoa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Auckland"				WindowsID="New Zealand Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Chatham"					WindowsID="Fiji Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Easter"					WindowsID="Central Standard Time (Mexico)" />
+  <TimeZoneIDsMap OlsonID="Pacific/Efate"					WindowsID="Central Pacific Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Enderbury"				WindowsID="Tonga Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Fakaofo"					WindowsID="Hawaiian Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Fiji"					WindowsID="Fiji Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Funafuti"				WindowsID="Fiji Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Galapagos"				WindowsID="Central Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Gambier"					WindowsID="Alaskan Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Guadalcanal"				WindowsID="Central Pacific Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Guam"					WindowsID="West Pacific Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Honolulu"				WindowsID="Hawaiian Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Johnston"				WindowsID="Hawaiian Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Kiritimati"				WindowsID="Tonga Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Kosrae"					WindowsID="Central Pacific Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Kwajalein"				WindowsID="Fiji Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Majuro"					WindowsID="Fiji Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Marquesas"				WindowsID="Pacific Standard Time (Mexico)" />
+  <TimeZoneIDsMap OlsonID="Pacific/Midway"					WindowsID="Samoa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Nauru"					WindowsID="Fiji Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Niue"					WindowsID="Samoa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Norfolk"					WindowsID="Central Pacific Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Noumea"					WindowsID="Central Pacific Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Pago_Pago"				WindowsID="Samoa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Palau"					WindowsID="Tokyo Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Pitcairn"				WindowsID="Pacific Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Ponape"					WindowsID="Central Pacific Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Port_Moresby"			WindowsID="West Pacific Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Rarotonga"				WindowsID="Hawaiian Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Saipan"					WindowsID="West Pacific Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Tahiti"					WindowsID="Hawaiian Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Tarawa"					WindowsID="Fiji Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Tongatapu"				WindowsID="Tonga Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Truk"					WindowsID="West Pacific Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Wake"					WindowsID="Fiji Standard Time" />
+  <TimeZoneIDsMap OlsonID="Pacific/Wallis"					WindowsID="Fiji Standard Time" />
+  <TimeZoneIDsMap OlsonID="PST8PDT"							WindowsID="Pacific Standard Time" />
+  <TimeZoneIDsMap OlsonID="WET"								WindowsID="W. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT+9"						WindowsID="Alaskan Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Riyadh87"					WindowsID="Arabic Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Riyadh88"					WindowsID="Arabic Standard Time" />
+  <TimeZoneIDsMap OlsonID="Asia/Riyadh89"					WindowsID="Arabic Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT+4"						WindowsID="Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT-10"						WindowsID="AUS Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT-4"						WindowsID="Azerbaijan Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT+1"						WindowsID="Azores Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT-1"						WindowsID="Central Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT-11"						WindowsID="Central Pacific Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT+6"						WindowsID="Central Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT+12"						WindowsID="Dateline Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT-2"						WindowsID="E. Europe Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT+3"						WindowsID="E. South America Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT+5"						WindowsID="Eastern Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT-5"						WindowsID="Ekaterinburg Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT+10"						WindowsID="Hawaiian Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT+2"						WindowsID="Mid-Atlantic Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT+7"						WindowsID="Mountain Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT-6"						WindowsID="N. Central Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT-12"						WindowsID="New Zealand Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT-7"						WindowsID="North Asia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT+8"						WindowsID="Pacific Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT-3"						WindowsID="Russian Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT+11"						WindowsID="Samoa Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT-13"						WindowsID="Tonga Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT-14"						WindowsID="Tonga Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT-8"						WindowsID="W. Australia Standard Time" />
+  <TimeZoneIDsMap OlsonID="Etc/GMT-9"						WindowsID="Yakutsk Standard Time" />
+</TimeZoneIDsMapping>

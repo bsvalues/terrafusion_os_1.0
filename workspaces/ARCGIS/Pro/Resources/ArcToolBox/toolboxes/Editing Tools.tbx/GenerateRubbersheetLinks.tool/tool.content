@@ -1,0 +1,134 @@
+{
+    "type": "FunctionTool",
+    "guid": "{1b29af52-9f8f-499a-91b6-49a1b00bcf15}",
+    "displayname": "$rc:title",
+    "helpcontent": "24010002",
+    "description": "$rc:description",
+    "product": "300",
+    "params": {
+        "source_features": {
+            "displayname": "$rc:source_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple",
+                    "SimpleJunction",
+                    "SimpleEdge",
+                    "ComplexEdge",
+                    "RasterCatalogItem"
+                ]
+            },
+            "description": "$rc:source_features.descr"
+        },
+        "target_features": {
+            "displayname": "$rc:target_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple",
+                    "SimpleJunction",
+                    "SimpleEdge",
+                    "ComplexEdge",
+                    "RasterCatalogItem"
+                ]
+            },
+            "description": "$rc:target_features.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "search_distance": {
+            "displayname": "$rc:search_distance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "source_features"
+            ],
+            "description": "$rc:search_distance.descr"
+        },
+        "match_fields": {
+            "type": "optional",
+            "control_guid": "{C99D0042-EF42-4B04-8A0B-1A53F6DB67A6}",
+            "displayname": "$rc:match_fields.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:match_fields.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:match_fields.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Date",
+                    "Blob",
+                    "Raster",
+                    "XML",
+                    "GUID",
+                    "OID"
+                ],
+                "exclude.field": [
+                    "SHAPE_Length",
+                    "SHAPE_Area"
+                ]
+            },
+            "depends": [
+                "source_features",
+                "target_features"
+            ],
+            "description": "$rc:match_fields.descr"
+        },
+        "out_match_table": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_match_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "description": "$rc:out_match_table.descr"
+        },
+        "out_point_feature_class": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_point_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "value": "output_feature_class_Pnt"
+        }
+    },
+    "environments": [
+        "extent",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

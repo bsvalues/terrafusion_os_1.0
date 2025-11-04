@@ -1,0 +1,22 @@
+{
+    "map": {
+        "description": "Adds images to an oriented imagery dataset from multiple input sources, including a file, folder, table, list of image paths, or a point feature layer.",
+        "folder_filter.descr": "<xdoc><p>An expression that will be used to filter and add images in the input folder.</p><p>For example, to add only images that contain a particular string, add percentage signs before and after the string value (%value%).</p></xdoc>",
+        "folder_filter.title": "Input Folder Filter",
+        "imagery_category.descr": "<xdoc><p>Specifies the type of input images that will be used and sets the default properties of the oriented imagery dataset. The default property will be used if the equivalent attribute is not found in the oriented imagery dataset attribute table.</p><ul><li>Horizontal—Images in which the exposure is parallel to the ground and looking to the horizon will be used.</li><li>Oblique—Images in which the exposure is at an angle to the ground, typically at about 45 degrees so sides of objects can be seen will be used.</li><li>Nadir—Images in which the exposure is perpendicular to the ground and looking straight down will be used. Only the top of the objects can be seen.</li><li>360—Images taken using specialized cameras that provide 360-degree spherical surround views or have been stitched together as 360-degree views from multiple cameras will be used.</li><li>Inspection—Close-up imagery of assets (less than 5 meters from the camera) will be used.</li></ul></xdoc>",
+        "imagery_category.title": "Imagery Category",
+        "in_oriented_imagery_dataset.descr": "The path and name of the oriented imagery dataset where the images will be added.",
+        "in_oriented_imagery_dataset.title": "Oriented Imagery Dataset",
+        "include_all_fields.descr": "<xdoc><p>Specifies whether all fields from input table, apart from the required schema, will be added to the dataset&apos;s attribute table.</p><p>Unchecked—Only oriented imagery schema-specific fields will be added to the dataset&apos;s attribute table. This is the default.</p><p>Checked—All fields in the input table will be added to the dataset&apos;s attribute table.</p></xdoc>",
+        "include_all_fields.title": "Include all fields from input table",
+        "include_sub_folders.descr": "<xdoc><p>Specifies whether subfolders will be recursively explored.</p><ul><li>Checked—All subfolders will be recursively explored for data. This is the default.</li><li>Unchecked—Only the top-level folder will be explored for data.</li></ul></xdoc>",
+        "include_sub_folders.title": "Include sub folders",
+        "input_data.descr": "<xdoc><p>The path and name of the input data. The following are supported:<ul><li>One or more images in JPEG format.</li><li>A folder containing images. Only JPEG images will be added to the dataset from the folder.</li><li>A .txt file containing JPEG image paths. Each image path must be on a separate line.</li><li>A .csv file using the oriented imagery table schema.</li><li>A feature layer using the oriented imagery attribute table schema.</li><li>An oriented imagery layer.</li></ul></p></xdoc>",
+        "input_data.title": "Input Data",
+        "out_oriented_imagery_dataset.title": "Updated Oriented Imagery Dataset",
+        "params.category1": "Auxiliary Inputs",
+        "title": "Add Images To Oriented Imagery Dataset",
+        "where_clause.descr": "An SQL expression that will be used to select a subset of records. For more information about SQL syntax, see SQL reference for query expressions used in ArcGIS.",
+        "where_clause.title": "Input Table Filter"
+    }
+}

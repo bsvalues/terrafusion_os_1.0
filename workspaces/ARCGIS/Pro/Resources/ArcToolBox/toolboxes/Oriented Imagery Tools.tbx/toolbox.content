@@ -1,0 +1,23 @@
+{
+    "version": "1.0",
+    "alias": "oi",
+    "displayname": "$rc:title",
+    "description": "$rc:descr",
+    "helpcontext": "81000000",
+    "toolsets": {
+        "$rc:toolset1.name": {
+            "tools": [
+                "AddImagesFromCustomInputType",
+                "AddImagesToOrientedImageryDataset",
+                "BuildOrientedImageryFootprint",
+                "CreateOrientedImageryDataset"
+            ]
+        },
+        "$rc:toolset2.name": {
+            "tools": [
+                "GenerateServiceFromOrientedImageryDataset",
+                "UpdateOrientedImageryDatasetProperties"
+            ]
+        }
+    }
+}

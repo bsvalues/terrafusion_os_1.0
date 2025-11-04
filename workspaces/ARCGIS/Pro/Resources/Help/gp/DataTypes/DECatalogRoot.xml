@@ -1,0 +1,5 @@
+<DataType Name="DECatalogRoot">
+  <DisplayName>Catalog Root</DisplayName>
+  <Description>The top-level node in the Catalog tree.</Description>
+</DataType>
+

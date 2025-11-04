@@ -1,0 +1,10 @@
+{
+    "set": [
+        "calibration points",
+        "create calibration points",
+        "generate calibration points",
+        "integrity",
+        "pipeline",
+        "update calibration points"
+    ]
+}

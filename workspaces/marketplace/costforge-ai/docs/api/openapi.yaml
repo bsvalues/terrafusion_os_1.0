@@ -1,0 +1,220 @@
+openapi: 3.0.3
+info:
+  title: Costforge Ai API
+  description: Cost analysis and budget optimization APIs
+  version: 1.0.0
+  contact:
+    name: TerraFusion Government OS API Support
+    email: costforge-ai-api@terrafusion.gov
+    url: https://docs.terrafusion.gov/marketplace/costforge-ai
+  license:
+    name: Government Use License
+    url: https://terrafusion.gov/licenses/government-api
+  termsOfService: https://terrafusion.gov/terms/api-usage
+servers:
+- url: https://api.terrafusion.gov/api/v1/cost-analysis
+  description: Production TerraFusion Government API
+- url: https://staging-api.terrafusion.gov/api/v1/cost-analysis
+  description: Staging Environment
+- url: https://dev-api.terrafusion.gov/api/v1/cost-analysis
+  description: Development Environment
+paths:
+  /cost-analysis:
+    post:
+      tags:
+      - costforge-ai
+      summary: AI-powered cost analysis
+      description: AI-powered cost analysis - Cost analysis and budget optimization
+        APIs
+      operationId: post__cost-analysis
+      security:
+      - OAuth2:
+        - costforge-ai:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /budget-optimization:
+    post:
+      tags:
+      - costforge-ai
+      summary: Budget optimization recommendations
+      description: Budget optimization recommendations - Cost analysis and budget
+        optimization APIs
+      operationId: post__budget-optimization
+      security:
+      - OAuth2:
+        - costforge-ai:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /forecasting:
+    get:
+      tags:
+      - costforge-ai
+      summary: Cost forecasting models
+      description: Cost forecasting models - Cost analysis and budget optimization
+        APIs
+      operationId: get__forecasting
+      security:
+      - OAuth2:
+        - costforge-ai:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /reports:
+    get:
+      tags:
+      - costforge-ai
+      summary: Cost analysis reports
+      description: Cost analysis reports - Cost analysis and budget optimization APIs
+      operationId: get__reports
+      security:
+      - OAuth2:
+        - costforge-ai:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: object
+    HealthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - healthy
+          - degraded
+          - unhealthy
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        dependencies:
+          type: object
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
+          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          scopes:
+            costforge-ai:read: Read access to costforge-ai resources
+            costforge-ai:write: Write access to costforge-ai resources
+            costforge-ai:admin: Administrative access to costforge-ai
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+security:
+- OAuth2:
+  - costforge-ai:read
+- ApiKey: []
+tags:
+- name: costforge-ai
+  description: Costforge Ai operations
+  externalDocs:
+    description: Find out more about costforge-ai
+    url: https://docs.terrafusion.gov/marketplace/costforge-ai

@@ -1,0 +1,21 @@
+{
+    "map": {
+        "admin_connection.descr": "<xdoc><p><note type=\"legacy\"/><p group=\"note\">This parameter is no longer supported. It remains only for the backward compatibility of scripts and models but is not essential to the tool operation.</p></p></xdoc>",
+        "admin_connection.title": "Admin Connection",
+        "config_keyword.descr": "The configuration keyword applies to enterprise geodatabases data only. It determines the storage parameters of the database table.",
+        "config_keyword.title": "Configuration Keyword",
+        "coordinate_system.descr": "The coordinate system of the output workspace. The default is WGS84.",
+        "coordinate_system.title": "Coordinate System",
+        "description": "Imports the contents of an S-100 feature catalogue to an existing geodatabase. A feature catalogue is an XML document that describes the content of a data product.",
+        "in_feature_catalogue.descr": "An .xml file that follows the S-100 Feature Catalogue format as defined by the IHO. It describes the content of a data product and its specifications. The default file location for S-100 catalogue files is <installation location>\\ArcGIS Maritime\\Product Files\\<version>\\S-101\\, provided the Maritime product files are installed.",
+        "in_feature_catalogue.title": "S-100 Feature Catalogue",
+        "output_workspace.title": "Output Workspace",
+        "params.category1": "Geodatabase Settings (optional)",
+        "subtype_mapping.descr": "The subtype mapping .xml file used to specify feature classes that each S-100 feature will be subtyped in. If no parameter value is specified, the created data model will have separate feature classes for each S-100 object type. For S-101, it is recommended that you use the S-101FeatureClassMap.xml file. The default file location is C:/<ArcGIS Pro installation location>\\Pro\\Resources\\Maritime.",
+        "subtype_mapping.title": "Subtype Mapping File",
+        "summary": "<xdoc><p>Imports the contents of an S-100 feature catalogue to an existing geodatabase. A feature catalogue is an XML document that describes the content of a data product.</p><p>Examples of S-100 data products include the following:<ul><li>S-101 Electronic Navigational Chart</li><li>S-128 Catalogue of Nautical Products</li><li>S-201 Aids to Navigation Information</li></ul></p></xdoc>",
+        "target_workspace.descr": "The geodatabase to which the schema will be written.",
+        "target_workspace.title": "Target Workspace",
+        "title": "Import S-100 Feature Catalogue"
+    }
+}

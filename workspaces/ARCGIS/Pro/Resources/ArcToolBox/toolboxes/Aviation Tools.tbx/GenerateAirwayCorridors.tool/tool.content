@@ -1,0 +1,140 @@
+{
+    "type": "FunctionTool",
+    "guid": "{F6243FE3-8552-4511-BBCE-F882B7099A58}/GenerateAirwayCorridors",
+    "displayname": "$rc:title",
+    "helpcontent": "64030012",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "53",
+        "70"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "enroute_information_table": {
+            "displayname": "$rc:enroute_information_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:enroute_information_table.descr"
+        },
+        "designated_points": {
+            "displayname": "$rc:designated_points.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:designated_points.descr"
+        },
+        "target_airspace_area_features": {
+            "displayname": "$rc:target_airspace_area_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:target_airspace_area_features.descr"
+        },
+        "floors_table": {
+            "type": "optional",
+            "displayname": "$rc:floors_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:floors_table.descr"
+        },
+        "route_types": {
+            "type": "optional",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:route_types.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:route_types.descr"
+        },
+        "flare_angle": {
+            "type": "optional",
+            "displayname": "$rc:flare_angle.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:flare_angle.descr"
+        },
+        "min_distance": {
+            "type": "optional",
+            "displayname": "$rc:min_distance.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:min_distance.descr"
+        },
+        "changeover_points": {
+            "type": "optional",
+            "displayname": "$rc:changeover_points.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:changeover_points.descr"
+        },
+        "modified_target_airspace_area_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:modified_target_airspace_area_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Polygon"
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "target_airspace_area_features"
+            ]
+        }
+    }
+}

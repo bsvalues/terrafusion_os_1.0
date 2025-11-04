@@ -1,0 +1,14 @@
+{
+  "migration_date": "2025-11-03 21:32:49",
+  "tech_stack": "Python, Docker",
+  "target_path": "C:\\Users\\bsval\\terrafusion_os_1.0\\applications\\terra-sync-production",
+  "priority": "MEDIUM",
+  "target_name": "terra-sync-production",
+  "size_mb": 399.29,
+  "status": "OPERATIONAL",
+  "file_count": 23612,
+  "agent": "TerraFusion Elite Government OS Engineering Agent",
+  "source_path": "C:\\Users\\bsval\\OneDrive\\Desktop\\from D\\TerraFusionSync_PRODUCTION",
+  "last_verified": "2025-11-04 02:46:04",
+  "system_name": "TerraFusionSync_PRODUCTION"
+}

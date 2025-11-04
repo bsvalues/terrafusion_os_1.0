@@ -1,0 +1,111 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\Watershed",
+    "displayname": "$rc:title",
+    "helpcontent": "54020005",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "inputFlowDirectionRaster": {
+            "displayname": "$rc:inputflowdirectionraster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "description": "$rc:inputflowdirectionraster.descr"
+        },
+        "inPourPointRasterOrFeatures": {
+            "displayname": "$rc:inpourpointrasterorfeatures.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "description": "$rc:inpourpointrasterorfeatures.descr"
+        },
+        "outputName": {
+            "displayname": "$rc:outputname.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:outputname.descr"
+        },
+        "pourPointField": {
+            "type": "optional",
+            "displayname": "$rc:pourpointfield.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:pourpointfield.descr"
+        },
+        "outputRaster": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:outputraster.title",
+            "datatype": {
+                "type": "GPRasterLayer"
+            }
+        }
+    },
+    "environments": [
+        "cellSize",
+        "extent",
+        "mask",
+        "outputCoordinateSystem",
+        "pyramid",
+        "snapRaster"
+    ]
+}

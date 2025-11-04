@@ -1,0 +1,10 @@
+{
+    "map": {
+        "description": "Sets the   label position of the line's COGO dimension to the left of the parcel  line, to the right of the parcel  line, or centered over the parcel line.",
+        "in_parcel_features.descr": "The input parcel line layers with label positions that will be updated.",
+        "in_parcel_features.title": "Input Parcel Features",
+        "summary": "<xdoc><p>Sets the label position of the line&apos;s COGO dimension to the left of the parcel line, to the right of the parcel line, or centered over the parcel line.</p><p>The label position is set to the right of a parcel line when the parcel edge it represents is to the right, to the left of the parcel line when the parcel edge it represents is to the left, and centered over the parcel line when boundary it represents is shared between adjacent parcels.</p><p>The direction of the parcel line determines the left and right side of the parcel line.</p></xdoc>",
+        "title": "Set Parcel Line Label Position",
+        "updated_parcel_features.title": "Updated Parcel Features"
+    }
+}

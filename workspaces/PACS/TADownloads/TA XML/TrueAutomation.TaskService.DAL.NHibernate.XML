@@ -1,0 +1,610 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.TaskService.DAL.NHibernate</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.SearchCriteriaGroupMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.TaskService.Domain.SearchCriteriaGroup"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.SearchCriteriaGroupMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.TaskService.Domain.SearchCriteriaGroup})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.CustomOrderedListItemMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.TaskService.Domain.CustomOrderedListItem"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.CustomOrderedListItemMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.TaskService.Domain.CustomOrderedListItem})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.CustomOrderedListMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.TaskService.Domain.CustomOrderedList"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.CustomOrderedListMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.TaskService.Domain.CustomOrderedList})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.ServiceProviderMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.TaskService.Domain.ServiceProvider"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.ServiceProviderMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.TaskService.Domain.ServiceProvider})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.UIElementContextMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.TaskService.Domain.UIElementContext"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.UIElementContextMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.TaskService.Domain.UIElementContext})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.UserMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="!:TrueAutomation.SecurityService.Domain.User"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.UserMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.TaskService.Domain.User})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.ACLEntryRepository">
+            <summary>
+            Repository class for ACL Entries
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.ACLRepository">
+            <summary>
+            Repository class for ACLs
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Repositories.CustomOrderedListItemRepository">
+            <summary>
+            The repository for Custom Ordered List Items
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Repositories.CustomOrderedListRepository">
+            <summary>
+            Repository class for the Custom Ordered List domain object
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Repositories.GenericRepository`1">
+            <summary>
+            Repository class for a generic type is Task service session. This was added to handle pulling up generic types for the custom ordered list
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.ACLEntryMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.AccessControl.Domain.ACLEntry"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.ACLEntryMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.AccessControl.Domain.ACLEntry})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.ACLMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.AccessControl.Domain.ACL"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.ACLMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.AccessControl.Domain.ACL})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.ApplicationPermissionMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.AccessControl.Domain.ApplicationPermission"/>
+            class.
+            </summary>a
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.ApplicationPermissionMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.AccessControl.Domain.ApplicationPermission})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.TaskMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.TaskService.Domain.Task"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.TaskMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.TaskService.Domain.Task})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.PermissionMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.AccessControl.Domain.Permission"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.PermissionMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.AccessControl.Domain.Permission})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.SavedSearchMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.TaskService.Domain.SavedSearch"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.SavedSearchMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.TaskService.Domain.SavedSearch})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.SearchCriteriaMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.TaskService.Domain.SearchCriteria"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.SearchCriteriaMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.TaskService.Domain.SearchCriteria})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.SearchExpressionMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.TaskService.Domain.SearchExpression"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.SearchExpressionMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.TaskService.Domain.SearchExpression})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.SecurityDescriptorMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.AccessControl.Domain.SecurityDescriptor"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.SecurityDescriptorMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.AccessControl.Domain.SecurityDescriptor})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.SecurityDescriptorEntryMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.AccessControl.Domain.SecurityDescriptorEntry"/>
+            class.
+            </summary>a
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.SecurityDescriptorEntryMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.AccessControl.Domain.SecurityDescriptorEntry})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.TaskSearchableRepository`1.FindByCriteria(TrueAutomation.Core.DTO.CriteriaDTO)">
+            <summary>
+            Returns a list of items based on searchable criteria
+            </summary>
+            <param name="searchCriteria">Criteria to search on</param>
+            <returns>List of Items matchinh this file as name</returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.TaskSearchableRepository`1.CreateCriteria(TrueAutomation.Core.DTO.CriteriaDTO)">
+            <summary>
+            Builds the criteria needed to find information for a task.
+            </summary>
+            <param name="dto">DTO Containing a binary tree representation of search terms</param>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.UICustomizationCategoryRepository">
+            <summary>
+            Repository for the UICustomizationCategory
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.PermissionRepository">
+            <summary>
+            Repository class for Permissions
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.SecurityDescriptorEntryRepository">
+            <summary>
+            Repository class for Security Descriptor Entries
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.SecurityDescriptorRepository">
+            <summary>
+            Repository class for a security descriptor.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.TaskHistoryRepository">
+            <summary>
+            Repository class for the Task History Items
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.HistoryValueMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.TaskService.Domain.HistoryValue"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.HistoryValueMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.TaskService.Domain.HistoryValue})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.TaskStepMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.TaskService.Domain.TaskStep"/> class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.TaskStepMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.TaskService.Domain.TaskStep})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.UICustomizationMap">
+            <summary>
+            Fluent.NHibernate Mapping for UICustomization domain object
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.UICustomizationMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.TaskService.Domain.UICustomization})">
+            <summary>
+            Custom mappings for UICustomization domain object
+            </summary>
+            <param name="mapping"></param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.UIElementMap">
+            <summary>
+            Fluent.NHibernate Mapping for UIElement domain object
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.UIElementMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.TaskService.Domain.UIElement})">
+            <summary>
+            Custom mappings for UIElement domain object
+            </summary>
+            <param name="mapping"></param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.AttachmentMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.TaskService.Domain.Attachment"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.AttachmentMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.TaskService.Domain.Attachment})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.AutoPersistenceModelGenerator.GenerateAutoPersistenceModel">
+            <summary>
+            Generates a Fluent NHibernate auto-persistence model
+            to specify the auto-mapping persistence behavior for
+            the task service domain.
+            </summary>
+            <returns>An auto-persistence model specifying the a
+            set of auto-mapping behaviors and conventions.</returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.AutoPersistenceModelGenerator.GetConventions">
+            <summary>
+            Returns the set of custom conventions defined in the
+            TrueAutomation.TaskService.DAL.NHibernate.Mappings.Conventions
+            namespace.
+            </summary>
+            <returns>The set of custom mappings specified by this
+            assembly.</returns>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.Conventions.HasManyConvention">
+            <summary>
+            A Fluent NHibernate convention for specifying the behavior
+            of foreign key values in a one-to-many collection.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.Conventions.HasManyConvention.Apply(FluentNHibernate.Conventions.Instances.IOneToManyCollectionInstance)">
+            <summary>
+            Applies the foreign key convention to the specified one-to-many
+            collection instance. This convention specifies a column name of
+            the lowercase version of the foreign entity's name with an "_id"
+            suffix appended to it.
+            </summary>
+            <param name="instance">The one-to-many collection instance for
+            which to specify the corresponding behavior.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.Conventions.PrimaryKeyConvention">
+            <summary>
+            A Fluent NHibernate convention for specifying the behavior
+            of primary key values.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.Conventions.PrimaryKeyConvention.Apply(FluentNHibernate.Conventions.Instances.IIdentityInstance)">
+            <summary>
+            Applies the primary key convention to the specified identity
+            instance. This convention specifies a column name of "id" and
+            an ID value of zero for transient objects.
+            </summary>
+            <param name="instance">The primary key instance for which to
+            specify the corresponding behavior.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.Conventions.TableNameConvention">
+            <summary>
+            A Fluent NHibernate convention for converting class names
+            to their RDBMS table name equivalents.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.Conventions.TableNameConvention.Apply(FluentNHibernate.Conventions.Instances.IClassInstance)">
+            <summary>
+            Applies the table-naming convention to the specified class
+            instance. This convention takes the lowercase version of the
+            entity's class name and prepends "workflow_" to it.
+            </summary>
+            <param name="instance">The class instance for which to
+            create the corresponding table name.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.DataRecordDefinitionMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.TaskService.Domain.DataRecordDefinition"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.DataRecordDefinitionMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.TaskService.Domain.DataRecordDefinition})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.DataRecordKeyValueFieldsMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.TaskService.Domain.DataRecordKeyValueFields"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.DataRecordKeyValueFieldsMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.TaskService.Domain.DataRecordKeyValueFields})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.DataRecordDefinitionKeyValueFieldsMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.TaskService.Domain.DataRecordDefinitionKeyValueFields"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.DataRecordDefinitionKeyValueFieldsMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.TaskService.Domain.DataRecordDefinitionKeyValueFields})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.DataRecordReferenceMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.TaskService.Domain.DataRecordReference"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.DataRecordReferenceMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.TaskService.Domain.DataRecordReference})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.MappingConfiguration">
+            <summary>
+            Defines an NHibernate object mapping configuration for
+            task service-related objects.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.MappingConfiguration.ShouldMap(System.Type)" -->
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.MappingConfiguration.ShouldMap(FluentNHibernate.Member)">
+            <summary>
+            Returns whether or not the specified member should be
+            auto-mapped to the underlying database. We currently require
+            any auto-mapped members to be writable, i.e. they should
+            have a public setter implementation.
+            </summary>
+            <param name="member">The type/class member to evaluate.</param>
+            <returns>True if the member should be automatically mapped
+            to the underlying database, otherwise false.</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.MappingConfiguration.AbstractClassIsLayerSupertype(System.Type)" -->
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.MappingConfiguration.IsId(FluentNHibernate.Member)">
+            <summary>
+            Returns whether or not the specified type member is a primary
+            key value, i.e. an identifier value. We consider any property
+            named "Id" to be an identifier value.
+            </summary>
+            <param name="member">The type member to be evaluated.</param>
+            <returns>True if the specified type member is an id value,
+            otherwise false.</returns>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.PriorityMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.TaskService.Domain.Priority"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.PriorityMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.TaskService.Domain.Priority})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.StatusMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.TaskService.Domain.Status"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.StatusMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.TaskService.Domain.Status})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.TaskCategoryMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.TaskService.Domain.TaskCategory"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.TaskCategoryMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.TaskService.Domain.TaskCategory})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.TaskHistoryItemMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.TaskService.Domain.TaskHistoryItem"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.TaskHistoryItemMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.TaskService.Domain.TaskHistoryItem})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.TaskNoteMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.TaskService.Domain.TaskNote"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.TaskNoteMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.TaskService.Domain.TaskNote})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.TaskQueueMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.TaskService.Domain.TaskQueue"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.TaskQueueMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.TaskService.Domain.TaskQueue})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.Mappings.TaskTypeMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.TaskService.Domain.TaskType"/> class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DAL.NHibernate.Mappings.TaskTypeMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.TaskService.Domain.TaskType})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DAL.NHibernate.UIElementRepository">
+            <summary>
+            Repository class for the UI Element domain object
+            </summary>
+        </member>
+    </members>
+</doc>

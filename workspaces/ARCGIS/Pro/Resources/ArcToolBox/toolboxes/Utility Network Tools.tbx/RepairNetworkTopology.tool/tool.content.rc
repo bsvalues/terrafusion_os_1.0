@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Verifies and repairs inconsistencies identified in the network topology system tables.",
+        "in_utility_network.descr": "The utility network that will be repaired.",
+        "in_utility_network.title": "Input Utility Network",
+        "out_log_file.descr": "The folder location and name of the file containing the discovered issues.",
+        "out_log_file.title": "Output Log File",
+        "out_utility_network.title": "Output Utility Network",
+        "summary": "<xdoc><p>Verifies and repairs inconsistencies identified in the network topology system tables.</p><p>The Repair Network Topology tool is used to check and perform repairs for consistency in a network topology and create an output log file containing the issues that were discovered and repaired. This tool can be used in conjunction with the Verify Network Topology tool to perform verification and review results before a repair is run.</p></xdoc>",
+        "title": "Repair Network Topology"
+    }
+}

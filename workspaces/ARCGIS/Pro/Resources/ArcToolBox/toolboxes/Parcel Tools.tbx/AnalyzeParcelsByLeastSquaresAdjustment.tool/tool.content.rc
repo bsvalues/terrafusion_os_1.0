@@ -1,0 +1,19 @@
+{
+    "map": {
+        "analysis_type.descr": "<xdoc><p>Specifies the type of least-squares analysis that will be used in the adjustment.</p><ul><li><span title=\"CONSISTENCY_CHECK\">Consistency check</span>—A free-network least-squares adjustment will be run to check dimensions on parcel lines for inconsistencies and mistakes. Fixed or weighted control points will not be used by the adjustment.</li><li><span title=\"WEIGHTED_LEAST_SQUARES\">Weighted least squares</span>—A weighted least-squares adjustment will be run to compute updated coordinates for parcel points. The parcels being adjusted should connect to at least two fixed or weighted control points.</li></ul></xdoc>",
+        "analysis_type.domain.CONSISTENCY_CHECK": "Consistency check",
+        "analysis_type.domain.WEIGHTED_LEAST_SQUARES": "Weighted least squares",
+        "analysis_type.title": "Analysis Type",
+        "convergence_tolerance.descr": "The tolerance representing the maximum coordinate shift expected after iterating the least-squares adjustment. A least-squares adjustment is run repeatedly (in iterations) until the solution converges. The solution is considered converged when maximum coordinate shift encountered becomes less than the specified convergence tolerance. The default value is 0.05 meters.",
+        "convergence_tolerance.title": "Convergence Tolerance",
+        "description": "Analyzes the parcel fabric measurement network by running a least-squares adjustment on the input parcels. A least-squares adjustment is a mathematical procedure that uses statistical analysis to estimate  the most likely coordinates for connected points in a measurement network. A least-squares adjustment can be run on the parcel fabric to evaluate and improve spatial accuracy of parcel corner point locations.",
+        "in_parcel_fabric.descr": "The input parcel fabric to be analyzed by least-squares adjustment.",
+        "in_parcel_fabric.title": "Input Parcel Fabric",
+        "summary": "<xdoc><p>Analyzes the parcel fabric measurement network by running a least-squares adjustment on the input parcels. A least-squares adjustment is a mathematical procedure that uses statistical analysis to estimate the most likely coordinates for connected points in a measurement network. A least-squares adjustment can be run on the parcel fabric to evaluate and improve spatial accuracy of parcel corner point locations.</p><p>Different types of adjustments can be run on the parcel fabric depending on whether you are evaluating spatial accuracy or improving spatial accuracy.<ul><li>Consistency check—Uses a free network adjustment to check measurements (dimensions) on input parcel lines for blunders and outliers</li><li>Weighted adjustment—Uses two or more fixed or weighted control points to estimate updated coordinates for points on the input parcels</li></ul></p></xdoc>",
+        "title": "Analyze Parcels By Least Squares Adjustment",
+        "updated_adjustment_lines.title": "Updated Adjustment Lines",
+        "updated_adjustment_points.title": "Updated Adjustment Points",
+        "updated_adjustment_vectors.title": "Updated Adjustment Vectors",
+        "updated_parcel_fabric.title": "Updated Parcel Fabric"
+    }
+}

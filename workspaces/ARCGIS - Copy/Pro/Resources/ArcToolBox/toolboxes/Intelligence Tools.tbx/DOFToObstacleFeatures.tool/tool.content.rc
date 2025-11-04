@@ -1,0 +1,14 @@
+{
+    "map": {
+        "clip_features.descr": "<xdoc><p>An area to clip from the <span class=\"esri_uicontrol\">Input Table</span>. Only obstacles within this area will be created and buffered.</p></xdoc>",
+        "clip_features.title": "Clip Features",
+        "description": "Converts the U.S. Federal Aviation Administration (FAA) Digital Obstacle File (DOF) to obstruction points and obstruction buffer features.",
+        "in_table.descr": "The input DOF table to convert into obstacle features.",
+        "in_table.title": "Input Table",
+        "out_obstacle_buffers.descr": "<xdoc><p>The distance buffers created at 10 times the value of the <span class=\"esri_fieldname\">AGL</span> field in the <span class=\"esri_uicontrol\">Input Table</span>.</p></xdoc>",
+        "out_obstacle_buffers.title": "Output Obstacle Buffers",
+        "out_obstacle_features.descr": "<xdoc><p>The point obstacle features created from the <span class=\"esri_uicontrol\">Input Table</span>.</p></xdoc>",
+        "out_obstacle_features.title": "Output Obstacle Features",
+        "title": "DOF To Obstacle Features"
+    }
+}

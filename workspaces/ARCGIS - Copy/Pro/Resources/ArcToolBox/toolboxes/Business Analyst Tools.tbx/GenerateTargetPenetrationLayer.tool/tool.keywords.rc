@@ -1,0 +1,13 @@
+{
+    "set": [
+        "base",
+        "customer",
+        "penetration",
+        "point",
+        "profiles",
+        "segment",
+        "segmentation",
+        "tapestry",
+        "target"
+    ]
+}

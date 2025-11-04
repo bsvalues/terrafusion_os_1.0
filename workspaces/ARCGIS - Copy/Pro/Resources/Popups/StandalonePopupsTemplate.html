@@ -1,0 +1,628 @@
+<!-- saved from url=(0014)about:internet -->
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" --FLOW_DIRECTION-->
+<head>
+    <meta charset="utf-8" />
+    <title>Popup</title>
+    <link rel="Stylesheet" type="text/css" href="--POPUP-STYLESHEET--"/>
+</head>
+<body onload="OnBodyLoaded();" onresize="OnBodyResized()" style="visibility:hidden;">
+    <h3 id="popupTitle" class="esriPopup">--POPUP-TITLE--</h3>
+    <table id="popupContent" class="esriPopup">
+    </table>
+    <script type="text/javascript">
+        var g_resStrings = null;//<!--POPUP_RESOURCE_STRINGS-->;
+        var g_popupElements = null;//<!--POPUP_ELEMENTS-->;
+        var g_popupElementHelper = null;
+        var g_popupTheme = 0;//<!--POPUP_THEME-->;
+        var g_mainTable = null;
+        var g_currentRow = null;
+        var g_tableCollection = [];
+        ////////////////////////////////////////////////////////////////////////////
+        // JS Utility Methods
+        function IsNullOrUndefined(myObject) {
+            return ((typeof myObject == undefined) || (myObject == null));
+        }
+
+        function IsNullOrEmpty(text) {
+            return IsNullOrUndefined(text) || (text.length == 0);
+        }
+
+        function TraceLine(message) {
+            try {
+                console.log("++++>Popup: " + message);
+            }
+            catch (err) {
+                console.log("++++>Popup.TraceLine(): Exception: " + err);
+                alert("++++>Popup.TraceLine(): Exception: " + err);
+            }
+        }
+
+        function IsNullOrUndefinedTrace(myObject, message) {
+            if (IsNullOrUndefined(myObject)) {
+                TraceLine(message);
+                return true;
+            }
+            return false;
+        }
+
+        function EncodeNonBreakingSpaces(node) {
+            try {
+                if (node == null)
+                    return;
+
+                if (node.nodeValue != undefined && (node.innerText != undefined || node.textContent != undefined)) {
+                    var innerText = node.nodeValue;
+                    if (node.innerText != undefined)
+                        innerText = node.innerText;
+                    else if (node.textContent != undefined)
+                        innerText = node.textContent;
+
+                    if (node.nodeValue == innerText) {
+                        var cleanText = innerText.split('\n').join(' ').trim();
+                        //ignore empty strings
+                        if (cleanText.length > 0) {
+                            //replace all spaces (' ') with non-breaking spaces ('\xa0') and split the new string into an array of characters
+                            var innerText2 = innerText.split(' ').join('\xa0').split('');
+                            for (var i = 1; i < innerText.length - 1; i++) {
+                                //replace non-breaking space ('\xa0') with normal space (' ') at the begining of each word to allow for text wrapping
+                                if (innerText[i] == ' ' && innerText[i + 1] != ' ') {
+                                    innerText2[i] = ' ';
+                                }
+                            }
+                            //convert the array of characters back to a string
+                            node.nodeValue = innerText2.join('');
+                        }
+                    }
+                }
+
+                if (node.childNodes === null || node.childNodes === undefined)
+                    return;
+
+                for (var i = 0; i < node.childNodes.length; i++) {
+                    EncodeNonBreakingSpaces(node.childNodes[i]);
+                }
+            }
+            catch (error) {
+            }
+        }
+
+        // Legacy object
+        class InfoBrowser {
+            static getResourceFolder() {
+                return g_resourceFolder;
+            }
+        }
+
+        ////////////////////////////////////////////////////////////////////////////
+        function ConstructDocNode(nodeType, id, className, innerHTML, parentNode) {
+            var newNode = document.createElement(nodeType);
+            newNode.id = id;
+            newNode.classList.add(className);
+            newNode.innerHTML = innerHTML;
+            parentNode.append(newNode);
+            return newNode;
+        }
+
+        function CreateTextHtmlElement(popupElement, cellNode) {
+            if (IsNullOrUndefinedTrace(popupElement, "Can't Create Text HTML element. The text popup element definition is null or undefined"))
+                return;
+
+            var textDom = ConstructDocNode("div", "textElement", "myclass", popupElement.text, cellNode);
+            textDom.classList.add("textCell");
+            if (!IsNullOrEmpty(popupElement.text) && (popupElement.text.search(/<script/i) !== -1)) {
+                //this._updateScriptDomElements(textDom);
+            }
+        }
+
+        function CreateTableFromFields(fieldsElement, tableId) {
+            if (IsNullOrUndefinedTrace(fieldsElement, "Can't Create Fields Table HTML element. The text popup element definition is null or undefined"))
+                return null;
+
+            var index = 1;
+            var tableHtml = "<table class='attrTable' id='" + tableId + "' cellspacing='0' cellpadding='0'><tbody>";
+            var rowBk;
+            for (var i = 0; i < fieldsElement.items.length; i++) {
+                var fieldElement = fieldsElement.items[i];
+                if (index % 2)
+                    rowBk = "";
+                else
+                    rowBk = " class='alt-row'";
+                index++;
+                if (!IsNullOrUndefined(fieldElement.background))
+                    rowBk = " class='" + fieldElement.background + "'";
+
+                var rowHtml = "";
+                switch (fieldElement.type) {
+                    case "text":
+                        rowHtml = "<tr valign='top'" + rowBk + "><td class='attrName'>" + fieldElement.label
+                            + "</td><td class='attrValue'>" + fieldElement.value + "</td></tr>";
+                        break;
+                    case "image":
+                        rowHtml = "<tr valign='top'" + rowBk + "><td class='attrName'>" + fieldElement.label
+                            + "</td><td class='attrValue'><img class='esriPopupMediaImage' src='"
+                            + fieldElement.value + "'></td></tr>";
+                        break;
+                    case "link":
+                        rowHtml = "<tr valign='top'" + rowBk + "><td class='attrName'>" + fieldElement.label
+                            + "</td><td class='attrValue'><a target='_blank' href='" + fieldElement.value + "'>"
+                            + fieldElement.linkText + "</a></td></tr>";
+                        break;
+                    case "stat-header":
+                        rowHtml = "<tr valign='top'" + rowBk + "><td class='attrName'>" + fieldElement.label
+                            + "</td><td class='attrValue'></td></tr>";
+                        break;
+                    case "stat":
+                        rowHtml = "<tr valign='top'" + rowBk + "><td class='attrName' align='right'>" + fieldElement.label
+                            + "</td><td class='attrValue'>" + fieldElement.value + "</td></tr>";
+                        break;
+                    default:
+                        break;
+                }
+
+                tableHtml += rowHtml;
+            }
+
+            tableHtml += "</tbody></table>";
+
+            return tableHtml;
+        }
+
+        function CreateFieldHtmlElement(fieldsElement, cellNode) {
+            if (IsNullOrUndefinedTrace(fieldsElement, "Can't Create Fields Table HTML element. The text popup element definition is null or undefined"))
+                return;
+
+            var index = 1;
+            var tableId = "table-" + fieldsElement.id + "-" + Date.now();
+            var tableHtml = CreateTableFromFields(fieldsElement, tableId);
+            var idElement = "field-element-" + fieldsElement.id;
+            var tableDom = null;
+            var title = "";
+            var description = "";
+            if (!IsNullOrUndefined(fieldsElement.title))
+                title = fieldsElement.title;
+            if (!IsNullOrUndefined(fieldsElement.description))
+                description = fieldsElement.description;
+            if (g_popupTheme < 1) {//classic theme
+                tableDom = ConstructDocNode("div", idElement, "myclass", tableHtml, cellNode);
+            } else {
+                var innerHtml = "";
+                if (title.length > 0)
+                    innerHtml += "<div class='header'>" + title + "</div>";
+                if (description.length > 0)
+                    innerHtml += "<div class='caption'>" + description + "</div>";
+                innerHtml += tableHtml;
+                tableDom = ConstructDocNode("div", idElement, "myclass", innerHtml, cellNode);
+            }
+
+            tableDom.classList.add("fieldCell");
+            if (tableHtml.search(/<script/i) !== -1) {
+                //this._updateScriptDomElements(tableDom);
+            }
+            g_tableCollection.push({ "id": tableId, "initialNameColWidth": -1, "initialAttrColWidth": - 1 });
+        }
+
+        function CreateGridCell(popupElement) {
+            //Create a new cell
+            var cell = g_currentRow.insertCell(g_currentRow.cells.length);
+
+            //Place cell in the table
+            if (popupElement.row != null)
+                cell.row = popupElement.row;
+            if (popupElement.col != null)
+                cell.col = popupElement.col;
+            if (popupElement.rowSpan != null)
+                cell.rowSpan = popupElement.rowSpan;
+            if (popupElement.colSpan != null)
+                cell.colSpan = popupElement.colSpan;
+
+            //Apply style to all but "list-items" (attachment list)
+            if (popupElement.type != "list-items") {
+                if (popupElement.borderColor != null && popupElement.borderColor.length >= 3) {
+                    var borderColorR = popupElement.borderColor[0].toString();
+                    var borderColorG = popupElement.borderColor[1].toString();
+                    var borderColorB = popupElement.borderColor[2].toString();
+                    if (popupElement.borderColor.length == 3) {
+                        cell.style.borderColor = "rgb(" + borderColorR + "," + borderColorG + "," + borderColorB + ")";
+                    }
+                    else {
+                        var borderColorA = popupElement.borderColor[3].toString();
+                        cell.style.borderColor = "rgba(" + borderColorR + "," + borderColorG + "," + borderColorB + "," + borderColorA + ")";
+                    }
+                }
+
+                if (popupElement.colWidth != null)
+                    cell.style.width = popupElement.colWidth.toString() + "%";
+
+                if (popupElement.borderWidth != null) {
+                    cell.style.borderStyle = "solid";
+                    cell.style.borderWidth = popupElement.borderWidth.toString() + "pt";
+                } else {
+                    cell.style.borderStyle = "solid";
+                    cell.style.borderWidth = "1pt";
+                }
+                cell.style.borderStyle = "solid";
+                cell.style.borderWidth = "1pt";
+                switch (popupElement.type) {
+                    case "text-item":
+                        cell.classList.add("textCell");
+                        break;
+                    case "field-items":
+                        cell.classList.add("fieldCell");
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            return cell;
+        }
+
+        function OnImageLoaded(img, galleryNode) {
+            //TraceLine("_onImageLoaded(): Image (" + img.height + "," + img.width + "), Gallery (" + galleryWidth + "," + galleryHeight + ")");
+            // Check the size of the image
+            var galleryHeight = galleryNode.scrollHeight;
+            var galleryWidth = galleryNode.scrollWidth;
+            if (g_popupTheme < 1) {
+                if ((img.width > galleryWidth) || (img.height > galleryHeight)) {
+                    if ((img.width > galleryWidth) && (img.height > galleryHeight)) {
+                        var ratio = 1.0;
+                        // need to size both sides
+                        if (img.width > img.height) {
+                            img.height = galleryWidth * (img.height / img.width);
+                            img.width = galleryWidth;
+                        }
+                        else {
+                            img.width = galleryHeight * (img.width / img.height);
+                            img.width = galleryHeight;
+                        }
+
+                    }
+                    else if (img.width > galleryWidth) {
+                        img.width = galleryWidth;
+                    }
+                    else {
+                        img.height = galleryHeight;
+                    }
+                }
+
+                // Vertically align middle
+                var imgHeight = img.height;
+                if (imgHeight < galleryHeight) {
+                    var diff = Math.round((galleryHeight - imgHeight) / 2);
+                    img.style.marginTop = diff + "px";
+                    TraceLine("_onImageLoaded(): Adjusted margin-top: ", diff);
+                }
+            } else {
+                var width = galleryWidth - 2;
+                var ratio = img.naturalHeight / img.naturalWidth;
+                var height = width * ratio;
+                for (var i = 0; i < img.naturalWidth; i++) {
+                    if (height <= (galleryHeight - 2)) {
+                        break;
+                    }
+                    width = width - 1;
+                    height = width * ratio;
+                }
+                img.width = width;
+                img.height = height;
+            }
+        }
+
+        function LoadMediaItem(mediaTarget, currentMediaItemId) {
+            var ids = mediaTarget.ids;
+            var galleryNode = null;
+            if (g_popupTheme < 1) {
+                galleryNode = document.getElementById(ids.gallery);
+            } else {
+                galleryNode = mediaTarget;
+            }
+            var mediaItem = mediaTarget.mediaItems[currentMediaItemId];
+            mediaTarget.currentMediaItemId = currentMediaItemId;
+            var title = mediaItem.title;
+            if (title == "") {
+                var titleNode = document.getElementById(ids.mediaTitle);
+                titleNode.innerHTML = "";
+                titleNode.classList.add("hidden");
+                document.getElementById(ids.mediaTitleLine).classList.add("hidden");
+            }
+            else {
+                var titleNode = document.getElementById(ids.mediaTitle);
+                titleNode.innerHTML = title;
+                titleNode.classList.remove("hidden");
+                document.getElementById(ids.mediaTitleLine).classList.remove("hidden");
+            }
+
+            var description = mediaItem.description;
+            if (description == "") {
+                var titleNode = document.getElementById(ids.mediaDescription);
+                titleNode.innerHTML = "";
+                titleNode.classList.add("hidden");
+            }
+            else {
+                var titleNode = document.getElementById(ids.mediaDescription);
+                titleNode.innerHTML = description;
+                titleNode.classList.remove("hidden");
+            }
+
+            if (IsNullOrUndefined(mediaItem.data) || IsNullOrUndefined(mediaItem.data.source))
+                return;
+
+            var source = mediaItem.data.source;
+            //if (addTime) {
+            //    var sep = this._startsWith(source, "\\\\") ? "?" : "#";
+            //    source = mediaItem.data.source + sep + Date.now();
+            //}
+
+            var link = mediaItem.data.link;
+            if (link == null || link == "")
+                link = source;
+
+            mediaTarget.innerHTML = "";
+            var imageContent = "<img id='" + ids.mediaImage + "' class='esriPopupMediaImage' src='" + source + "'>";
+            var linkNode = ConstructDocNode("a", ids.mediaImage + "_link", "myclass", imageContent, mediaTarget);
+            linkNode.href = link;
+            linkNode.target = '_blank';
+            var imageNode = linkNode.firstChild;
+            imageNode.style.border = 'none';
+            if (imageNode.complete) {
+                OnImageLoaded(imageNode, galleryNode);
+            }
+            else {
+                imageNode.onload = function () {
+                    OnImageLoaded(imageNode, galleryNode);
+                };
+            }
+
+            EncodeNonBreakingSpaces(document.getElementById(ids.mediaSection));
+        }
+
+        function CreateCarouselNode(mediaElements, id, cellNode) {
+            if (IsNullOrUndefined(mediaElements) || IsNullOrUndefinedTrace(cellNode, "Can't Create Media HTML target node. The parent node is null or undefined"))
+                return;
+
+            var ids = {
+                gallery: "gallery" + id,
+                mediaDescription: "mediaDescription" + id,
+                mediaImage: "mediaImage" + id,
+                mediaSection: "mediaSection" + id,
+                mediaTarget: "mediaTarget" + id,
+                mediaTitle: "mediaTitle" + id,
+                mediaTitleLine: "mediaTitleLine" + id,
+                nextMedia: "nextMedia" + id,
+                prevMedia: "prevMedia" + id
+            };
+
+            var innerHtml = "";
+            if (g_popupTheme < 1) {//classic theme
+                innerHtml += "<div id='" + ids.mediaTitle + "' class='header'></div>";
+                innerHtml += "<div id='" + ids.mediaTitleLine + "' class='hzLine'></div>";
+                innerHtml += "<div id='" + ids.mediaDescription + "' class='caption'></div>";
+                innerHtml += "<div id='" + ids.gallery + "' class='gallery'>";
+                innerHtml += "  <div id='" + ids.prevMedia + "' title='" + g_resStrings.prevMediaTitle + "' class='mediaHandle prev'></div>";
+                innerHtml += "  <div id='" + ids.nextMedia + "' title='" + g_resStrings.nextMediaTitle + "' class='mediaHandle next'></div>";
+                innerHtml += "  <div id='" + ids.mediaFrame + "' class='frame' style='-ms-user-select: none;'>";
+                innerHtml += "    <div id='" + ids.mediaTarget + "' class='image'></div>";
+                innerHtml += "  </div>";
+                innerHtml += "</div>";
+                innerHtml += "<br/><br/>";
+            } else {//light/dark theme
+                innerHtml += "<div id='" + ids.mediaTitle + "' class='header'></div>";
+                innerHtml += "<div id='" + ids.mediaTitleLine + "' class='hzLine'></div>";
+                var targetHtml = "  <div id='" + ids.mediaFrame + "' class='frame' style='-ms-user-select: none;'>";
+                targetHtml += "    <div id='" + ids.mediaTarget + "' class='image'></div>";
+                targetHtml += "  </div>";
+                innerHtml += "<table id='" + ids.gallery + "' class='gallery'>";
+                innerHtml += "  <tr>";
+                innerHtml += "    <td><div id='" + ids.prevMedia + "' title='" + g_resStrings.prevMediaTitle + "' class='mediaHandle prev'></div></td>";
+                innerHtml += "    <td>" + targetHtml + "</td>";
+                innerHtml += "    <td><div id='" + ids.nextMedia + "' title='" + g_resStrings.nextMediaTitle + "' class='mediaHandle next'></div></td>";
+                innerHtml += "  </tr>";
+                innerHtml += "</table>";
+                innerHtml += "<div id='" + ids.mediaDescription + "' class='caption'></div>";
+            }
+
+            var carouselNode = ConstructDocNode("div", ids.mediaSection, "mediaSection", innerHtml, cellNode);
+            if (IsNullOrUndefined(mediaElements.items) || mediaElements.length < 0) {
+                carouselNode.classList.add("hidden");
+                return carouselNode;
+            }
+
+            carouselNode.ids = ids;
+            carouselNode.mediaItems = mediaElements.items;
+            carouselNode.currentMediaItemId = 0;
+            var mediaTarget = document.getElementById(ids.mediaTarget);
+            mediaTarget.ids = ids;
+            mediaTarget.mediaItems = mediaElements.items;
+            mediaTarget.currentMediaItemId = 0;
+
+            var prevNode = document.getElementById(ids.prevMedia);
+            if (!IsNullOrUndefined(prevNode)) {
+                if (mediaElements.items.length == 1) {
+                    prevNode.classList.add("hidden");
+                } else {
+                    prevNode.addEventListener("click", function () {
+                        var currentMediaItemId = mediaTarget.currentMediaItemId - 1;
+                        if (currentMediaItemId < 0)
+                            currentMediaItemId = mediaElements.items.length - 1;
+                        LoadMediaItem(mediaTarget, currentMediaItemId);
+                    });
+                }
+            }
+
+            var nextNode = document.getElementById(ids.nextMedia);
+            if (!IsNullOrUndefined(nextNode)) {
+                if (mediaElements.items.length == 1) {
+                    nextNode.classList.add("hidden");
+                } else {
+                    nextNode.addEventListener("click", function () {
+                        var currentMediaItemId = mediaTarget.currentMediaItemId + 1;
+                        if (currentMediaItemId > mediaElements.items.length - 1)
+                            currentMediaItemId = 0;
+                        LoadMediaItem(mediaTarget, currentMediaItemId);
+                    });
+                }
+            }
+
+            LoadMediaItem(mediaTarget, 0);
+            return carouselNode;
+        }
+
+        function CreateListHtmlElement(listElements, cellNode) {
+            if (IsNullOrUndefinedTrace(listElements, "Can't Create List HTML element. The list popup element definition is null or undefined"))
+                return;
+
+            var listHtml = listElements.label;
+            var hasAttachment = true;
+            if (!IsNullOrUndefined(listElements.items)) {
+                var firstItem = null;
+                if (listElements.items.length == 1) {
+                    firstItem = listElements.items[0];
+                    if (!IsNullOrUndefined(firstItem) && !IsNullOrUndefined(firstItem.hasAttachment)) {
+                        hasAttachment = firstItem.hasAttachment;
+                    }
+                }
+
+                if (!hasAttachment) {
+                    var itemHtml = "<br/>" + firstItem.value;
+                    listHtml += itemHtml;
+                } else {
+                    for (var i = 0; i < listElements.items.length; i++) {
+                        var listItem = listElements.items[i];
+                        var hrefContent = "<a target='_blank' title='' href='" + listItem.sourceURL + "'>" + listItem.name + "</a>";
+                        var itemHtml = "<br/>" + hrefContent;
+                        listHtml += itemHtml;
+                    }
+                }
+            }
+
+            var idElement = "list-items-" + listElements.id;
+            var listDom = ConstructDocNode("div", idElement, "list-items", listHtml, cellNode);
+        }
+
+        function CreatePopupElements() {
+            if (IsNullOrUndefined(g_popupElements) || g_popupElements.length < 0) {
+                TraceLine("There are not popup elements to create.");
+                return;
+            }
+
+            g_tableCollection = [];
+            var lastRow = -999999;
+            var elementId = 0;
+            for (var i = 0; i < g_popupElements.length; i++) {
+                var popupElement = g_popupElements[i];
+                //Create a new row if the row index is different from the last row.
+                if (popupElement.row == null || popupElement.row != lastRow) {
+                    g_currentRow = g_mainTable.insertRow(g_mainTable.rows.length);
+                    if (popupElement.row == null) {
+                        lastRow++;
+                    }
+                    else {
+                        lastRow = popupElement.row;
+                    }
+                }
+
+                var cell = CreateGridCell(popupElement);
+                //cell.innerText = elementId.toString();
+                if (!IsNullOrUndefined(popupElement.items) && Array.isArray(popupElement.items)) {
+                    for (var j = 0; j < popupElement.items.length; j++) {
+                        var item = popupElement.items[j];
+                        item.elementId = elementId;
+                        elementId = elementId + 1;
+                    }
+                } else {
+                    popupElement.elementId = elementId;
+                    elementId = elementId + 1;
+                    //var obj = new Object();
+                    //obj.method = "SetPopupItem";
+                    //obj.param1 = popupElement.elementId;
+                    //obj.param2 = JSON.stringify(popupElement);
+                    //window.chrome.webview.postMessage(JSON.stringify(obj));
+                }
+
+                switch (popupElement.type) {
+                    case "text-item":
+                        CreateTextHtmlElement(popupElement, cell);
+                        break;
+                    case "field-items":
+                        CreateFieldHtmlElement(popupElement, cell);
+                        break;
+                    case "media-items":
+                        CreateCarouselNode(popupElement, elementId, cell);
+                        break;
+                    case "list-items":
+                        CreateListHtmlElement(popupElement, cell);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        function ResizeTablesToFill() {
+            if (g_popupTheme < 0)
+                return;
+
+            for (var i = 0; i < g_tableCollection.length; i++) {
+                var tbInfo = g_tableCollection[i];
+                var table = document.getElementById(tbInfo.id);
+                if (IsNullOrUndefined(table) || table.rows.length < 1 || table.rows[0].cells.length < 2)
+                    continue;
+
+                var parentElement = table.parentElement;//parent element hosting the table
+                var nameColCell = table.rows[0].cells[0];//name column cell
+                var attrColCell = table.rows[0].cells[1];//attribute column cell
+                if (IsNullOrUndefined(parentElement) || IsNullOrUndefined(nameColCell) || IsNullOrUndefined(attrColCell))
+                    continue;
+
+                var maxNameColWidth = tbInfo.initialNameColWidth;
+                var maxAttrColWidth = tbInfo.initialAttrColWidth;
+                for (var j = 0; j < table.rows.length; j++) {
+                    if (maxNameColWidth < table.rows[j].cells[0].offsetWidth) {
+                        maxNameColWidth = table.rows[j].cells[0].offsetWidth;
+                    }
+                    if (maxAttrColWidth < table.rows[j].cells[1].offsetWidth) {
+                        maxAttrColWidth = table.rows[j].cells[1].offsetWidth;
+                    }
+                }
+
+                //alert(maxNameColWidth);
+                tbInfo.initialNameColWidth = maxNameColWidth;
+                tbInfo.initialAttrColWidth = maxAttrColWidth;
+                g_tableCollection[i] = tbInfo;
+
+                var borderWith = 3; //three border lines
+                var nameColWidth = maxNameColWidth; //minimum horizontal space required for the name column
+                var attrColWidth = parentElement.offsetWidth - borderWith - nameColWidth; //remaining horizontal space
+                if (attrColWidth <= maxAttrColWidth)
+                    continue;
+                for (var j = 0; j < table.rows.length; j++) {
+                    table.rows[j].cells[0].width = nameColWidth.toString() + "px";
+                    table.rows[j].cells[1].width = attrColWidth.toString() + "px";
+                }
+            }
+        }
+
+        function OverrideAllLinks() {
+            var allLinks = document.links;
+            for (var i = 0; i < allLinks.length; i++) {
+                allLinks[i].target = '_blank';
+            }
+        }
+
+        function OnBodyLoaded() {
+            g_mainTable = document.getElementById('popupContent');
+            g_mainTable.innerHTML = "";
+            CreatePopupElements();
+            ResizeTablesToFill();
+            OverrideAllLinks();
+            EncodeNonBreakingSpaces(document.body);
+            document.body.style.visibility = "visible";
+        }
+
+        function OnBodyResized() {
+            ResizeTablesToFill();
+        }
+    </script>
+</body>
+</html>

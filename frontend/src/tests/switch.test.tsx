@@ -1,7 +1,7 @@
 /**
  * Switch Component Tests - TerraFusion Design System
  * Week 2, Day 2 - Testing Phase
- * 
+ *
  * Purpose: Comprehensive testing of Switch component
  * - Rendering (on/off states)
  * - Toggle interaction (click, keyboard)
@@ -34,7 +34,7 @@ function ControlledSwitch({
       defaultChecked={defaultChecked}
       onCheckedChange={onCheckedChange}
       disabled={disabled}
-      aria-label="Test switch"
+      aria-label='Test switch'
     />
   );
 }
@@ -43,8 +43,8 @@ function FullyControlledSwitch() {
   const [checked, setChecked] = useState(false);
   return (
     <div>
-      <Switch checked={checked} onCheckedChange={setChecked} aria-label="Controlled" />
-      <span data-testid="status">{checked ? 'On' : 'Off'}</span>
+      <Switch checked={checked} onCheckedChange={setChecked} aria-label='Controlled' />
+      <span data-testid='status'>{checked ? 'On' : 'Off'}</span>
     </div>
   );
 }
@@ -66,13 +66,13 @@ describe('Switch Component', () => {
     });
 
     it('should render switch with aria-label', () => {
-      render(<Switch aria-label="Enable notifications" />);
+      render(<Switch aria-label='Enable notifications' />);
       const switchElement = screen.getByRole('switch', { name: 'Enable notifications' });
       expect(switchElement).toBeInTheDocument();
     });
 
     it('should render switch with custom className', () => {
-      const { container } = render(<Switch className="custom-class" />);
+      const { container } = render(<Switch className='custom-class' />);
       const switchElement = container.querySelector('.custom-class');
       expect(switchElement).toBeInTheDocument();
     });
@@ -90,10 +90,10 @@ describe('Switch Component', () => {
       const user = userEvent.setup();
       const onCheckedChange = vi.fn();
       render(<ControlledSwitch onCheckedChange={onCheckedChange} />);
-      
+
       const switchElement = screen.getByRole('switch');
       await user.click(switchElement);
-      
+
       expect(onCheckedChange).toHaveBeenCalledWith(true);
     });
 
@@ -101,10 +101,10 @@ describe('Switch Component', () => {
       const user = userEvent.setup();
       const onCheckedChange = vi.fn();
       render(<ControlledSwitch defaultChecked onCheckedChange={onCheckedChange} />);
-      
+
       const switchElement = screen.getByRole('switch');
       await user.click(switchElement);
-      
+
       expect(onCheckedChange).toHaveBeenCalledWith(false);
     });
 
@@ -112,11 +112,11 @@ describe('Switch Component', () => {
       const user = userEvent.setup();
       const onCheckedChange = vi.fn();
       render(<ControlledSwitch onCheckedChange={onCheckedChange} />);
-      
+
       const switchElement = screen.getByRole('switch');
       switchElement.focus();
       await user.keyboard(' ');
-      
+
       expect(onCheckedChange).toHaveBeenCalledWith(true);
     });
 
@@ -124,25 +124,25 @@ describe('Switch Component', () => {
       const user = userEvent.setup();
       const onCheckedChange = vi.fn();
       render(<ControlledSwitch onCheckedChange={onCheckedChange} />);
-      
+
       const switchElement = screen.getByRole('switch');
       switchElement.focus();
       await user.keyboard('{Enter}');
-      
+
       expect(onCheckedChange).toHaveBeenCalledWith(true);
     });
 
     it('should update visual state after toggle', async () => {
       const user = userEvent.setup();
       render(<FullyControlledSwitch />);
-      
+
       const switchElement = screen.getByRole('switch');
       const status = screen.getByTestId('status');
-      
+
       expect(status).toHaveTextContent('Off');
-      
+
       await user.click(switchElement);
-      
+
       expect(status).toHaveTextContent('On');
     });
   });
@@ -159,10 +159,10 @@ describe('Switch Component', () => {
       const user = userEvent.setup();
       const onCheckedChange = vi.fn();
       render(<ControlledSwitch disabled onCheckedChange={onCheckedChange} />);
-      
+
       const switchElement = screen.getByRole('switch');
       await user.click(switchElement);
-      
+
       expect(onCheckedChange).not.toHaveBeenCalled();
     });
 
@@ -177,11 +177,11 @@ describe('Switch Component', () => {
       const user = userEvent.setup();
       const onCheckedChange = vi.fn();
       render(<ControlledSwitch disabled onCheckedChange={onCheckedChange} />);
-      
+
       const switchElement = screen.getByRole('switch');
       switchElement.focus();
       await user.keyboard(' ');
-      
+
       expect(onCheckedChange).not.toHaveBeenCalled();
     });
 
@@ -216,10 +216,10 @@ describe('Switch Component', () => {
     it('should update aria-checked on toggle', async () => {
       const user = userEvent.setup();
       render(<FullyControlledSwitch />);
-      
+
       const switchElement = screen.getByRole('switch');
       expect(switchElement).toHaveAttribute('aria-checked', 'false');
-      
+
       await user.click(switchElement);
       expect(switchElement).toHaveAttribute('aria-checked', 'true');
     });
@@ -228,7 +228,7 @@ describe('Switch Component', () => {
       const { rerender } = render(<Switch defaultChecked={false} />);
       let switchElement = screen.getByRole('switch');
       expect(switchElement).toHaveAttribute('data-state', 'unchecked');
-      
+
       rerender(<Switch defaultChecked={true} />);
       switchElement = screen.getByRole('switch');
       expect(switchElement).toHaveAttribute('data-state', 'checked');
@@ -246,38 +246,38 @@ describe('Switch Component', () => {
     it('should work with form submission', async () => {
       const handleSubmit = vi.fn((e) => e.preventDefault());
       const user = userEvent.setup();
-      
+
       render(
         <form onSubmit={handleSubmit}>
-          <Switch aria-label="Accept terms" />
-          <button type="submit">Submit</button>
+          <Switch aria-label='Accept terms' />
+          <button type='submit'>Submit</button>
         </form>
       );
-      
+
       const switchElement = screen.getByRole('switch');
       await user.click(switchElement);
-      
+
       const submitButton = screen.getByRole('button', { name: 'Submit' });
       await user.click(submitButton);
-      
+
       expect(handleSubmit).toHaveBeenCalled();
     });
 
     it('should work with controlled component', () => {
       render(<FullyControlledSwitch />);
-      
+
       const switchElement = screen.getByRole('switch');
       expect(switchElement).toHaveAttribute('aria-checked', 'false');
     });
 
     it('should have name attribute for form submission', () => {
-      render(<Switch name="notifications" />);
+      render(<Switch name='notifications' />);
       const switchElement = screen.getByRole('switch');
       expect(switchElement).toHaveAttribute('name', 'notifications');
     });
 
     it('should have value attribute for form submission', () => {
-      render(<Switch value="enabled" />);
+      render(<Switch value='enabled' />);
       const switchElement = screen.getByRole('switch');
       expect(switchElement).toHaveAttribute('value', 'enabled');
     });
@@ -294,27 +294,25 @@ describe('Switch Component', () => {
     it('should work as controlled component', async () => {
       const user = userEvent.setup();
       render(<FullyControlledSwitch />);
-      
+
       const switchElement = screen.getByRole('switch');
       const status = screen.getByTestId('status');
-      
+
       expect(status).toHaveTextContent('Off');
-      
+
       await user.click(switchElement);
-      
+
       expect(status).toHaveTextContent('On');
     });
 
     it('should sync with external state changes', () => {
-      const { rerender } = render(
-        <Switch checked={false} onCheckedChange={vi.fn()} />
-      );
-      
+      const { rerender } = render(<Switch checked={false} onCheckedChange={vi.fn()} />);
+
       let switchElement = screen.getByRole('switch');
       expect(switchElement).toHaveAttribute('data-state', 'unchecked');
-      
+
       rerender(<Switch checked={true} onCheckedChange={vi.fn()} />);
-      
+
       switchElement = screen.getByRole('switch');
       expect(switchElement).toHaveAttribute('data-state', 'checked');
     });
@@ -323,20 +321,20 @@ describe('Switch Component', () => {
       const user = userEvent.setup();
       const onCheckedChange = vi.fn();
       render(<Switch checked={false} onCheckedChange={onCheckedChange} />);
-      
+
       const switchElement = screen.getByRole('switch');
       await user.click(switchElement);
-      
+
       expect(onCheckedChange).toHaveBeenCalledWith(true);
     });
 
     it('should not change state without onCheckedChange', async () => {
       const user = userEvent.setup();
       render(<Switch checked={false} />);
-      
+
       const switchElement = screen.getByRole('switch');
       await user.click(switchElement);
-      
+
       // State should remain unchanged
       expect(switchElement).toHaveAttribute('data-state', 'unchecked');
     });
@@ -346,13 +344,13 @@ describe('Switch Component', () => {
   describe('Accessibility', () => {
     it('should be keyboard accessible', async () => {
       const user = userEvent.setup();
-      render(<Switch aria-label="Test" />);
-      
+      render(<Switch aria-label='Test' />);
+
       const switchElement = screen.getByRole('switch');
       switchElement.focus();
-      
+
       expect(switchElement).toHaveFocus();
-      
+
       await user.keyboard(' ');
       expect(switchElement).toHaveAttribute('data-state', 'checked');
     });
@@ -360,7 +358,7 @@ describe('Switch Component', () => {
     it('should have visible focus indicator', () => {
       render(<Switch />);
       const switchElement = screen.getByRole('switch');
-      
+
       switchElement.focus();
       expect(switchElement).toHaveClass('focus-visible:outline-none');
       expect(switchElement).toHaveClass('focus-visible:ring-2');
@@ -370,25 +368,25 @@ describe('Switch Component', () => {
       const user = userEvent.setup();
       render(
         <div>
-          <Switch aria-label="First" />
-          <Switch aria-label="Second" />
+          <Switch aria-label='First' />
+          <Switch aria-label='Second' />
         </div>
       );
-      
+
       const firstSwitch = screen.getByRole('switch', { name: 'First' });
       const secondSwitch = screen.getByRole('switch', { name: 'Second' });
-      
+
       firstSwitch.focus();
       expect(firstSwitch).toHaveFocus();
-      
+
       await user.keyboard('{Tab}');
       expect(secondSwitch).toHaveFocus();
     });
 
     it('should announce state to screen readers', () => {
-      render(<Switch aria-label="Notifications" defaultChecked />);
+      render(<Switch aria-label='Notifications' defaultChecked />);
       const switchElement = screen.getByRole('switch');
-      
+
       expect(switchElement).toHaveAttribute('aria-checked', 'true');
       expect(switchElement).toHaveAccessibleName('Notifications');
     });
@@ -396,14 +394,14 @@ describe('Switch Component', () => {
     it('should work with label association', () => {
       render(
         <div>
-          <label htmlFor="switch-1">Enable feature</label>
-          <Switch id="switch-1" />
+          <label htmlFor='switch-1'>Enable feature</label>
+          <Switch id='switch-1' />
         </div>
       );
-      
+
       const label = screen.getByText('Enable feature');
       const switchElement = screen.getByRole('switch');
-      
+
       expect(label).toBeInTheDocument();
       expect(switchElement).toHaveAttribute('id', 'switch-1');
     });
@@ -414,7 +412,7 @@ describe('Switch Component', () => {
     it('should show focus ring when focused', () => {
       render(<Switch />);
       const switchElement = screen.getByRole('switch');
-      
+
       switchElement.focus();
       expect(switchElement).toHaveClass('focus-visible:ring-2');
       expect(switchElement).toHaveClass('focus-visible:ring-ring');
@@ -424,7 +422,7 @@ describe('Switch Component', () => {
       const { rerender } = render(<Switch defaultChecked={false} />);
       let switchElement = screen.getByRole('switch');
       expect(switchElement).toHaveClass('data-[state=unchecked]:bg-input');
-      
+
       rerender(<Switch defaultChecked={true} />);
       switchElement = screen.getByRole('switch');
       expect(switchElement).toHaveClass('data-[state=checked]:bg-primary');
@@ -434,7 +432,7 @@ describe('Switch Component', () => {
       const { container, rerender } = render(<Switch defaultChecked={false} />);
       let thumb = container.querySelector('span[data-state]');
       expect(thumb).toHaveClass('data-[state=unchecked]:translate-x-0');
-      
+
       rerender(<Switch defaultChecked={true} />);
       thumb = container.querySelector('span[data-state]');
       expect(thumb).toHaveClass('data-[state=checked]:translate-x-4');

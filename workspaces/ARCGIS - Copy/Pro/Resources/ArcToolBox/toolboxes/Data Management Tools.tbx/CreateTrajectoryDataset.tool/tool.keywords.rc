@@ -1,0 +1,9 @@
+{
+    "set": [
+        "altimetry",
+        "geodatabase",
+        "ice topography",
+        "mosaic dataset",
+        "trajectory"
+    ]
+}

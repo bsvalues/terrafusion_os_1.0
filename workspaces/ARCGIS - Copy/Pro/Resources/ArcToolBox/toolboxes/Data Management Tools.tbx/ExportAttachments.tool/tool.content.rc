@@ -1,0 +1,22 @@
+{
+    "map": {
+        "description": "Exports file attachments from the records of a geodatabase feature class or table to a specified folder. Attachments can also be exported to  subdirectories  based on an attribute value from a specified attribute column. Exported attachments can be renamed using one or more field attribute values.",
+        "in_dataset.descr": "<xdoc><p>The geodatabase table or feature class from which attachments will be exported.</p><p>The input must be stored in a version 10.0 or later geodatabase, and the table must have attachments enabled.</p></xdoc>",
+        "in_dataset.title": "Input Dataset",
+        "name_fields.descr": "<xdoc><p>The field names from the <span class=\"esri_uicontrol\">Input Dataset</span> parameter value that will be used to rename the exported attachments. If multiple fields are specified, the output files will use the field values concatenated with an underscore in the order they are specified.</p><p>For example, if two field names are specified, and <span class=\"esri_uicontrol\">Name Format</span> parameter is set to <span class=\"esri_uicontrol\">Use Field Values Only</span>, the field values for the first record are <span class=\"esri_fieldname\">Main</span> and <span class=\"esri_fieldname\">Street</span>, and the attachment is a .jpg file, the exported file will be named Main_Street.jpg.</p><p>This parameter is enabled when the <span class=\"esri_uicontrol\">Name Format</span> parameter is set to <span class=\"esri_uicontrol\">Use Field Values Only</span>, <span class=\"esri_uicontrol\">Add Field Values as Prefix</span>, or <span class=\"esri_uicontrol\">Add Field Values as Suffix</span>.</p></xdoc>",
+        "name_fields.title": "Name Fields",
+        "name_format.descr": "<xdoc><p>Specifies the format that will be used for naming exported attachments.</p><ul><li><span title=\"ORIGINAL\">Use Original Filenames</span>—The output file names will use the original file names stored in the geodatabase.</li><li><span title=\"REPLACE\">Use Field Values Only</span>—The output file names will use the field values of the <span class=\"esri_uicontrol\">Name Fields</span> parameter values. Multiple values will be concatenated with an underscore.</li><li><span title=\"PREFIX\">Add Field Values as Prefix</span>—The output file names will use the original file names with a prefix from the field values of the <span class=\"esri_uicontrol\">Name Fields</span> parameter values.</li><li><span title=\"SUFFIX\">Add Field Values as Suffix</span>—The output file names will use the original file names with a suffix from the field values of the <span class=\"esri_uicontrol\">Name Fields</span> parameter values. Multiple values will be concatenated with an underscore.</li></ul></xdoc>",
+        "name_format.domain.ORIGINAL": "Use Original Filenames",
+        "name_format.domain.PREFIX": "Add Field Values as Prefix",
+        "name_format.domain.REPLACE": "Use Field Values Only",
+        "name_format.domain.SUFFIX": "Add Field Values as Suffix",
+        "name_format.title": "Name Format",
+        "out_dirs.title": "Output Directories",
+        "out_location.descr": "The folder where the attachment files will be exported.",
+        "out_location.title": "Output Location",
+        "subdirectory_field.descr": "<xdoc><p>A field from the <span class=\"esri_uicontrol\">Input Dataset</span> parameter value that will be used to create subdirectory names.</p></xdoc>",
+        "subdirectory_field.title": "Subdirectory Field",
+        "summary": "Exports file attachments from the records of a geodatabase feature class or table to a specified folder. Attachments can also be exported to subdirectories based on an attribute value from a specified attribute column. Exported attachments can be renamed using one or more field attribute values.",
+        "title": "Export Attachments"
+    }
+}

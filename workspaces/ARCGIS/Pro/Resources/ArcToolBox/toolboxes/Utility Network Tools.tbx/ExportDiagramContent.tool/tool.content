@@ -1,0 +1,170 @@
+{
+    "type": "FunctionTool",
+    "guid": "{a0ba2514-8296-4a2b-bf68-c3d9d0275085}",
+    "displayname": "$rc:title",
+    "helpcontent": "71000006",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "block_add_to_map"
+    ],
+    "params": {
+        "in_utility_network": {
+            "displayname": "$rc:in_utility_network.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    },
+                    {
+                        "type": "DETraceNetwork"
+                    },
+                    {
+                        "type": "GPUtilityNetworkLayer"
+                    },
+                    {
+                        "type": "GPTraceNetworkLayer"
+                    },
+                    {
+                        "type": "GPDiagramLayer"
+                    }
+                ]
+            }
+        },
+        "network_diagram_name": {
+            "displayname": "$rc:network_diagram_name.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "out_file": {
+            "direction": "out",
+            "displayname": "$rc:out_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "json"
+                ]
+            }
+        },
+        "include_diagram_properties": {
+            "type": "optional",
+            "displayname": "$rc:include_diagram_properties.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "INCLUDE_DIAGRAM_PROPERTIES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "EXCLUDE_DIAGRAM_PROPERTIES"
+                    }
+                ]
+            },
+            "value": "false"
+        },
+        "include_geometries": {
+            "type": "optional",
+            "displayname": "$rc:include_geometries.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "INCLUDE_GEOMETRIES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "EXCLUDE_GEOMETRIES"
+                    }
+                ]
+            },
+            "value": "false"
+        },
+        "include_attributes": {
+            "type": "optional",
+            "displayname": "$rc:include_attributes.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "INCLUDE_ATTRIBUTES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "EXCLUDE_ATTRIBUTES"
+                    }
+                ]
+            },
+            "value": "false"
+        },
+        "include_aggregations": {
+            "type": "optional",
+            "displayname": "$rc:include_aggregations.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "INCLUDE_AGGREGATIONS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "EXCLUDE_AGGREGATIONS"
+                    }
+                ]
+            },
+            "value": "false"
+        },
+        "use_domains": {
+            "type": "optional",
+            "displayname": "$rc:use_domains.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "USE_CODED_VALUE_NAMES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DONT_USE_CODED_VALUE_NAMES"
+                    }
+                ]
+            },
+            "value": "false"
+        }
+    }
+}

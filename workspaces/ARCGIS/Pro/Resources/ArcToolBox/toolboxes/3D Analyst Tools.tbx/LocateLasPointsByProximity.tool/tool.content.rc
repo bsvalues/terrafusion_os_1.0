@@ -1,0 +1,28 @@
+{
+    "map": {
+        "class_code.descr": "The class code value that will be used to reclassify the points found within the search radius of the input features.",
+        "class_code.title": "New Class Code",
+        "compute_stats.descr": "<xdoc><p>Specifies whether statistics will be computed for the .las files referenced by the LAS dataset. Computing statistics provides a spatial index for each .las file, which improves analysis and display performance. Statistics also enhance the filtering and symbology experience by limiting the display of LAS attributes, such as classification codes and return information, to values that are present in the .las file.</p><ul><li>Checked—Statistics will be computed. This is the default.</li><li>Unchecked—Statistics will not be computed.</li></ul></xdoc>",
+        "compute_stats.title": "Compute statistics",
+        "count_field.descr": "<xdoc><p>The name of the field that will be added to the input feature&apos;s attribute table and populated with the number of LAS points in each feature&apos;s proximity. The default field name is <span class=\"esri_fieldname\">COUNT</span>.</p></xdoc>",
+        "count_field.title": "Count Field",
+        "derived_features.title": "Updated Input 3D Features",
+        "description": "Identifies LAS points within the three-dimensional proximity of z-enabled features along with the option to reclassify those points.",
+        "geometry.descr": "<xdoc><p>Specifies the geometry of the output point features that represent the LAS points found within the specified proximity of the input features.</p><ul><li><span title=\"MULTIPOINT\">Multipoint</span>—Multipoint features that will have multiple points in each row.</li><li><span title=\"POINT\">Point</span>—Single-point features that will have a unique row for each identified LAS point.</li></ul></xdoc>",
+        "geometry.domain.MULTIPOINT": "Multipoint",
+        "geometry.domain.POINT": "Point",
+        "geometry.title": "Output Geometry Type",
+        "in_features.descr": "The 3D point, line, polygon, or multipatch features whose proximity will be used for identifying LAS points.",
+        "in_features.title": "Input 3D Features",
+        "in_las_dataset.descr": "The LAS dataset that will be processed.",
+        "in_las_dataset.title": "Input LAS Dataset",
+        "out_features.descr": "The point features that represent the LAS points detected within the specified proximity of the input features.",
+        "out_features.title": "Output Feature Class",
+        "out_las_dataset.title": "Updated Input LAS Dataset",
+        "search_radius.descr": "<xdoc><p>The distance around the input features that will be evaluated for the presence of LAS points, which can be provided as either a linear distance or a numeric field in the input feature&apos;s attribute table. If the search radius is derived from a field or a linear distance whose units are specified as <span class=\"esri_uicontrol\">Unknown</span>, the linear unit of the input features&apos; XY spatial reference is used.</p></xdoc>",
+        "search_radius.title": "Search Radius",
+        "title": "Locate LAS Points By Proximity",
+        "update_pyramid.descr": "<xdoc><p>Specifies whether the LAS dataset pyramid will be updated after the class codes are modified.</p><ul><li>Checked—The LAS dataset pyramid will be updated. This is the default.</li><li>Unchecked—The LAS dataset pyramid will not be updated.</li></ul></xdoc>",
+        "update_pyramid.title": "Update pyramid"
+    }
+}

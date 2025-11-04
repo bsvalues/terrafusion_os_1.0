@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test Tool</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-result {
+            margin-top: 10px;
+        }
+        .success {
+            color: #4CAF50;
+        }
+        .error {
+            color: #f44336;
+        }
+        .endpoint-input {
+            width: 400px;
+            padding: 8px;
+            margin-right: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .method-select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+            margin-top: 10px;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+        .tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            margin-right: 5px;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+        .tab.active {
+            background-color: white;
+            border-bottom: 1px solid white;
+            margin-bottom: -1px;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>GeoSpatial Platform API Test Tool</h1>
+    <p>This tool helps diagnose API issues by making direct browser requests to test endpoints.</p>
+    
+    <div class="tabs">
+        <div class="tab active" data-tab="basic-api">Basic API Tests</div>
+        <div class="tab" data-tab="agent-api">Agent System Tests</div>
+        <div class="tab" data-tab="gis-api">GIS Tests</div>
+        <div class="tab" data-tab="llm-api">LLM Tests</div>
+        <div class="tab" data-tab="custom-request">Custom Request</div>
+    </div>
+    
+    <div class="tab-content active" id="basic-api">
+        <h2>Basic API Tests</h2>
+        
+        <div class="test-section">
+            <h3>Test API Health</h3>
+            <button onclick="testApiHealth()">Run Test</button>
+            <div class="test-result" id="api-health-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Get Properties</h3>
+            <button onclick="testGetProperties()">Run Test</button>
+            <div class="test-result" id="get-properties-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Get AI Agents</h3>
+            <button onclick="testGetAgents()">Run Test</button>
+            <div class="test-result" id="get-agents-result"></div>
+        </div>
+    </div>
+    
+    <div class="tab-content" id="agent-api">
+        <h2>Agent System Tests</h2>
+        
+        <div class="test-section">
+            <h3>Agent System Status</h3>
+            <button onclick="testAgentSystemStatus()">Run Test</button>
+            <div class="test-result" id="agent-system-status-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test WebSocket Connection</h3>
+            <button onclick="testWebSocketConnection()">Run Test</button>
+            <div class="test-result" id="websocket-connection-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test Agent Capability</h3>
+            <p>Property ID: <input type="text" id="property-id" value="BC001" class="endpoint-input" style="width: 150px;"></p>
+            <button onclick="testAgentCapability()">Run Test</button>
+            <div class="test-result" id="agent-capability-result"></div>
+        </div>
+    </div>
+    
+    <div class="tab-content" id="gis-api">
+        <h2>GIS Tests</h2>
+        
+        <div class="test-section">
+            <h3>Get GIS Layers</h3>
+            <button onclick="testGetGISLayers()">Run Test</button>
+            <div class="test-result" id="gis-layers-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test MapBox Token</h3>
+            <button onclick="testMapBoxToken()">Run Test</button>
+            <div class="test-result" id="mapbox-token-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test Spatial Query</h3>
+            <button onclick="testSpatialQuery()">Run Test</button>
+            <div class="test-result" id="spatial-query-result"></div>
+        </div>
+    </div>
+    
+    <div class="tab-content" id="llm-api">
+        <h2>LLM Tests</h2>
+        
+        <div class="test-section">
+            <h3>Get LLM Providers</h3>
+            <button onclick="testGetLLMProviders()">Run Test</button>
+            <div class="test-result" id="llm-providers-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test LLM Generation</h3>
+            <p>Prompt: <input type="text" id="llm-prompt" value="Explain CAMA in property assessment" class="endpoint-input"></p>
+            <button onclick="testLLMGeneration()">Run Test</button>
+            <div class="test-result" id="llm-generation-result"></div>
+        </div>
+    </div>
+    
+    <div class="tab-content" id="custom-request">
+        <h2>Custom API Request</h2>
+        
+        <div class="test-section">
+            <p>
+                <select id="request-method" class="method-select">
+                    <option value="GET">GET</option>
+                    <option value="POST">POST</option>
+                    <option value="PUT">PUT</option>
+                    <option value="DELETE">DELETE</option>
+                </select>
+                <input type="text" id="request-endpoint" placeholder="Endpoint (e.g., /api/properties)" class="endpoint-input">
+                <button onclick="makeCustomRequest()">Send Request</button>
+            </p>
+            <p>Request Body (for POST/PUT):</p>
+            <textarea id="request-body" placeholder='{"key": "value"}'></textarea>
+            <div class="test-result" id="custom-request-result"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Tab functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and content
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                
+                // Show corresponding content
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // Helper function for API requests
+        async function makeApiRequest(url, method = 'GET', body = null) {
+            const options = {
+                method,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+            
+            if (body) {
+                options.body = JSON.stringify(body);
+            }
+            
+            try {
+                const response = await fetch(url, options);
+                const contentType = response.headers.get('content-type');
+                
+                let data;
+                if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    data = await response.text();
+                }
+                
+                return { 
+                    success: response.ok, 
+                    status: response.status, 
+                    contentType,
+                    data 
+                };
+            } catch (error) {
+                return { 
+                    success: false, 
+                    error: error.message 
+                };
+            }
+        }
+        
+        // Display test result
+        function displayResult(elementId, result) {
+            const resultElement = document.getElementById(elementId);
+            
+            let resultHtml = '';
+            if (result.success) {
+                resultHtml += `<p class="success">✅ Success (Status: ${result.status})</p>`;
+                if (result.contentType) {
+                    resultHtml += `<p>Content Type: ${result.contentType}</p>`;
+                }
+                resultHtml += '<pre>' + JSON.stringify(result.data, null, 2) + '</pre>';
+            } else {
+                resultHtml += `<p class="error">❌ Error: ${result.error || 'Unknown error'}</p>`;
+                if (result.status) {
+                    resultHtml += `<p>Status: ${result.status}</p>`;
+                }
+                if (result.data) {
+                    resultHtml += '<pre>' + (typeof result.data === 'string' ? result.data : JSON.stringify(result.data, null, 2)) + '</pre>';
+                }
+            }
+            
+            resultElement.innerHTML = resultHtml;
+        }
+        
+        // Basic API Tests
+        async function testApiHealth() {
+            const result = await makeApiRequest('/api/health');
+            displayResult('api-health-result', result);
+        }
+        
+        async function testGetProperties() {
+            const result = await makeApiRequest('/api/properties');
+            displayResult('get-properties-result', result);
+        }
+        
+        async function testGetAgents() {
+            const result = await makeApiRequest('/api/ai-agents');
+            displayResult('get-agents-result', result);
+        }
+        
+        // Agent System Tests
+        async function testAgentSystemStatus() {
+            const result = await makeApiRequest('/api/agent-system/status');
+            displayResult('agent-system-status-result', result);
+        }
+        
+        function testWebSocketConnection() {
+            const resultElement = document.getElementById('websocket-connection-result');
+            resultElement.innerHTML = '<p>Connecting to WebSocket...</p>';
+            
+            try {
+                const ws = new WebSocket(`ws://${window.location.host}/api/agents/ws`);
+                
+                ws.onopen = () => {
+                    resultElement.innerHTML += '<p class="success">✅ WebSocket connection established</p>';
+                    
+                    // Send an auth message
+                    const authMessage = {
+                        type: 'auth',
+                        clientType: 'test-client',
+                        clientId: `test-${Date.now()}`
+                    };
+                    
+                    ws.send(JSON.stringify(authMessage));
+                    resultElement.innerHTML += '<p>Sent authentication message</p>';
+                };
+                
+                ws.onmessage = (event) => {
+                    try {
+                        const message = JSON.parse(event.data);
+                        resultElement.innerHTML += `<p>Received message: <pre>${JSON.stringify(message, null, 2)}</pre></p>`;
+                        
+                        // Close connection after receiving auth response
+                        if (message.type === 'auth_response') {
+                            setTimeout(() => {
+                                ws.close();
+                                resultElement.innerHTML += '<p>WebSocket connection closed</p>';
+                            }, 1000);
+                        }
+                    } catch (error) {
+                        resultElement.innerHTML += `<p class="error">Error parsing WebSocket message: ${error.message}</p>`;
+                    }
+                };
+                
+                ws.onerror = (error) => {
+                    resultElement.innerHTML += `<p class="error">❌ WebSocket error: ${error.message || 'Unknown error'}</p>`;
+                };
+                
+                ws.onclose = () => {
+                    resultElement.innerHTML += '<p>WebSocket connection closed</p>';
+                };
+            } catch (error) {
+                resultElement.innerHTML += `<p class="error">❌ Error setting up WebSocket: ${error.message}</p>`;
+            }
+        }
+        
+        async function testAgentCapability() {
+            const propertyId = document.getElementById('property-id').value;
+            const result = await makeApiRequest(`/api/agent-system/property-assessment/analyze/${propertyId}`, 'POST');
+            displayResult('agent-capability-result', result);
+        }
+        
+        // GIS Tests
+        async function testGetGISLayers() {
+            const result = await makeApiRequest('/api/gis/layers');
+            displayResult('gis-layers-result', result);
+        }
+        
+        async function testMapBoxToken() {
+            const result = await makeApiRequest('/api/gis/mapbox-token');
+            displayResult('mapbox-token-result', result);
+        }
+        
+        async function testSpatialQuery() {
+            const bbox = {
+                minLon: -97.5,
+                minLat: 45.0,
+                maxLon: -97.0,
+                maxLat: 45.5
+            };
+            
+            const result = await makeApiRequest('/api/gis/query/properties', 'POST', { 
+                bbox,
+                limit: 10
+            });
+            
+            displayResult('spatial-query-result', result);
+        }
+        
+        // LLM Tests
+        async function testGetLLMProviders() {
+            const result = await makeApiRequest('/api/ai-assistant/providers');
+            displayResult('llm-providers-result', result);
+        }
+        
+        async function testLLMGeneration() {
+            const prompt = document.getElementById('llm-prompt').value;
+            
+            const result = await makeApiRequest('/api/ai-assistant/generate', 'POST', {
+                prompt,
+                provider: 'openai',
+                max_tokens: 150
+            });
+            
+            displayResult('llm-generation-result', result);
+        }
+        
+        // Custom Request
+        async function makeCustomRequest() {
+            const method = document.getElementById('request-method').value;
+            const endpoint = document.getElementById('request-endpoint').value;
+            const bodyElement = document.getElementById('request-body');
+            
+            let body = null;
+            if ((method === 'POST' || method === 'PUT') && bodyElement.value.trim()) {
+                try {
+                    body = JSON.parse(bodyElement.value);
+                } catch (error) {
+                    displayResult('custom-request-result', { 
+                        success: false, 
+                        error: `Invalid JSON in request body: ${error.message}` 
+                    });
+                    return;
+                }
+            }
+            
+            const result = await makeApiRequest(endpoint, method, body);
+            displayResult('custom-request-result', result);
+        }
+    </script>
+</body>
+</html>

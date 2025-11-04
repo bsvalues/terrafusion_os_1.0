@@ -1,0 +1,5 @@
+CREATE USER [Tom_S];
+
+
+GO
+

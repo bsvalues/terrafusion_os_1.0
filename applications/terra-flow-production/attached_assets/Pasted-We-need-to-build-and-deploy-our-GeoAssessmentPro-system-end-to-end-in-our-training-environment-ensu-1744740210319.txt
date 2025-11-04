@@ -1,0 +1,47 @@
+We need to build and deploy our GeoAssessmentPro system end-to-end in our training environment, ensuring that it is robust and negotiation-ready. This includes integration with Supabase for managed PostgreSQL, realtime subscriptions, authentication, and storage. Also, the system must be able to perform full and incremental data migrations from our legacy backup/training database, while running in parallel with our current production system without interference.
+
+Your tasks are as follows:
+
+1. **Configuration & Environment Management:**
+   - Update our configuration loader (config_loader.py) to support multiple environments by reading an environment variable named ENV_MODE, with possible values “training” and “production.” Based on this variable, load the corresponding environment variables (DATABASE_URL_TRAINING, SUPABASE_URL_TRAINING, SUPABASE_KEY_TRAINING for training, and similarly for production).
+   - Document how users can switch between environments in the README.
+
+2. **Database Integration & Migrations:**
+   - Modify our models.py to use SQLAlchemy with the Supabase PostgreSQL connection (using the environment variables from step 1). Enable proper connection pooling.
+   - Ensure our Alembic/Flask-Migrate setup in alembic.ini and migrations/env.py is updated to use the correct connection string. Include support for running migrations against the training database.
+   - Create/update a migration script that runs successfully, and include unit tests that query the tables to verify correct creation.
+
+3. **Realtime Integration & Supabase Auth:**
+   - Integrate the Supabase Python client into our Flask application (app.py) to subscribe to realtime updates on key tables (such as Properties, TaxRecords, and ComparableSales). Update the dashboard so that it displays realtime notifications when data changes.
+   - Integrate Supabase Auth into the application. Add endpoints or middleware to manage user registration, login, and session management with role-based access. Ensure that only authorized users can access sensitive routes.
+
+4. **File Storage Integration:**
+   - Update report_generator.py (and any related modules) to integrate with Supabase Storage for managing property images and documents. Allow users to upload files through the dashboard, with file URLs stored in the database.
+
+5. **Data Migration & Sync:**
+   - Enhance data_migrator.py so that it can perform a full migration from our legacy backup training database into Supabase. It must include a ‘dry-run’ mode, comprehensive logging, and rollback support if errors occur.
+   - Modify service_orchestrator.py to schedule and coordinate incremental (delta) syncs from the legacy training data into Supabase. This should run asynchronously and report status via logs and the dashboard.
+
+6. **Containerization & Deployment Automation:**
+   - Create a Dockerfile that packages the entire application. Ensure that it accepts environment variables so that the same container can run in training or production mode.
+   - Configure a CI/CD pipeline (or provide instructions to set one up) such that whenever code is pushed to the repository, a new Docker image is automatically built, pushed to a container registry, and deployed to our training server via a simple point-and-click interface.
+   - The deployment should automatically run the migration scripts (with error handling and alerting) when the container starts.
+
+7. **AI Agent Orchestration (Optional but Critical):**
+   - Create a new module called ai_agent_manager.py that contains a Deployment Agent. This agent should monitor for updates (via repository checks or webhooks), trigger container builds and push events, and run migration scripts asynchronously.
+   - Have the agent log all actions and errors. Optionally, include additional sub-agents for Data Quality, Testing & Documentation, and Compliance.
+   - Ensure that the agent architecture is modular and that inter-agent communication is set up (via REST or message queues) so that multiple agents can coordinate.
+
+8. **Documentation, Testing, and Runbook:**
+   - Update the README with detailed instructions on how to configure environment variables for training versus production.
+   - Include a runbook that outlines the full deployment process step-by-step (from building the container, pushing to the server, running migrations, to monitoring the system).
+   - Generate unit tests and integration tests for all new functionalities (database connectivity, realtime updates, authentication flows, file storage, data migrations, and AI agent orchestration).
+   - Provide inline comments and detailed documentation in all modules, explaining purpose, usage, and error handling.
+
+Your final output should be the complete, updated code for all affected modules (models.py, config_loader.py, app.py, easy_connect.py, data_migrator.py, service_orchestrator.py, ai_agent_manager.py, Dockerfile, and any new modules like supabase_client.py) along with updated tests and documentation.
+
+Ensure that the solution is modular, secure, and allows a user to deploy the system in a training environment with a simple, point-and-click interface while keeping the legacy production system completely untouched.
+
+Once the training deployment and full migration are validated, the system should be ready for negotiation with potential partners—showing that our new approach can reliably handle real data flows without disruption.
+
+Generate and display all the code with detailed comments, and provide a summary outlining how to deploy, test, and monitor the system.

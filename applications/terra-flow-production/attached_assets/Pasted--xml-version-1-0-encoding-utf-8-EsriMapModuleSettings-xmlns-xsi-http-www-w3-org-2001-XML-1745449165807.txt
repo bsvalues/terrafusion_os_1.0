@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<EsriMapModuleSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <BaseMap>
+    <EnableSelection>false</EnableSelection>
+    <Order>0</Order>
+    <Visible>false</Visible>
+    <Type>ESRIDynamicLayer</Type>
+  </BaseMap>
+  <BaseLayers>
+    <BaseLayerModel>
+      <Name>Imagery</Name>
+      <EnableSelection>false</EnableSelection>
+      <Order>0</Order>
+      <Visible>true</Visible>
+      <URL>https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer</URL>
+      <Type>ESRITiledLayer</Type>
+      <SpatialReferenceID>0</SpatialReferenceID>
+    </BaseLayerModel>
+    <BaseLayerModel>
+      <Name>Street Map</Name>
+      <EnableSelection>false</EnableSelection>
+      <Order>0</Order>
+      <Visible>true</Visible>
+      <URL>https://services.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer/</URL>
+      <Type>ESRITiledLayer</Type>
+      <SpatialReferenceID>0</SpatialReferenceID>
+    </BaseLayerModel>
+    <BaseLayerModel>
+      <Name>Topo</Name>
+      <EnableSelection>false</EnableSelection>
+      <Order>0</Order>
+      <Visible>true</Visible>
+      <URL>https://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer</URL>
+      <Type>ESRITiledLayer</Type>
+      <SpatialReferenceID>0</SpatialReferenceID>
+    </BaseLayerModel>
+    <BaseLayerModel>
+      <Name>FEMA Flood</Name>
+      <EnableSelection>false</EnableSelection>
+      <Order>0</Order>
+      <Visible>true</Visible>
+      <URL>https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHLWMS/MapServer</URL>
+      <Type>ESRITiledLayer</Type>
+      <SpatialReferenceID>0</SpatialReferenceID>
+    </BaseLayerModel>
+    <BaseLayerModel>
+      <Name>USGS Imagery</Name>
+      <EnableSelection>false</EnableSelection>
+      <Order>0</Order>
+      <Visible>true</Visible>
+      <URL>https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer</URL>
+      <Type>ESRITiledLayer</Type>
+      <SpatialReferenceID>0</SpatialReferenceID>
+    </BaseLayerModel>
+  </BaseLayers>
+  <ViewableLayers>
+    <CciLayerModel>
+      <Name>Parcels</Name>
+      <EnableSelection>true</EnableSelection>
+      <SelectionLayerID>0</SelectionLayerID>
+      <Order>5</Order>
+      <Visible>true</Visible>
+      <URL>https://services7.arcgis.com/NURlY7V8UHl6XumF/arcgis/rest/services/Parcels_and_Assess/FeatureServer</URL>
+      <Type>ESRIDynamicLayer</Type>
+    </CciLayerModel>
+    <CciLayerModel>
+      <Name>Short Plats</Name>
+      <EnableSelection>false</EnableSelection>
+      <SelectionLayerID>0</SelectionLayerID>
+      <Order>6</Order>
+      <Visible>false</Visible>
+      <URL>https://services7.arcgis.com/NURlY7V8UHl6XumF/ArcGIS/rest/services/Short_Plats/FeatureServer</URL>
+      <Type>ESRIDynamicLayer</Type>
+    </CciLayerModel>
+    <CciLayerModel>
+      <Name>Long Plats</Name>
+      <EnableSelection>false</EnableSelection>
+      <SelectionLayerID>0</SelectionLayerID>
+      <Order>7</Order>
+      <Visible>false</Visible>
+      <URL>https://services7.arcgis.com/NURlY7V8UHl6XumF/ArcGIS/rest/services/Long_Plats/FeatureServer</URL>
+      <Type>ESRIDynamicLayer</Type>
+    </CciLayerModel>
+    <CciLayerModel>
+      <Name>Flood Zones</Name>
+      <EnableSelection>false</EnableSelection>
+      <SelectionLayerID>0</SelectionLayerID>
+      <Order>8</Order>
+      <Visible>false</Visible>
+      <URL>https://services7.arcgis.com/NURlY7V8UHl6XumF/ArcGIS/rest/services/FEMA_FLOOD_ZONES/FeatureServer</URL>
+      <Type>ESRIDynamicLayer</Type>
+    </CciLayerModel>
+    <CciLayerModel>
+      <Name>Well Logs</Name>
+      <EnableSelection>false</EnableSelection>
+      <SelectionLayerID>0</SelectionLayerID>
+      <Order>9</Order>
+      <Visible>false</Visible>
+      <URL>https://services7.arcgis.com/NURlY7V8UHl6XumF/ArcGIS/rest/services/WellLogs/FeatureServer</URL>
+      <Type>ESRIDynamicLayer</Type>
+    </CciLayerModel>
+    <CciLayerModel>
+      <Name>Zoning</Name>
+      <EnableSelection>false</EnableSelection>
+      <SelectionLayerID>0</SelectionLayerID>
+      <Order>10</Order>
+      <Visible>false</Visible>
+      <URL>https://services7.arcgis.com/NURlY7V8UHl6XumF/ArcGIS/rest/services/Zoning/FeatureServer</URL>
+      <Type>ESRIDynamicLayer</Type>
+    </CciLayerModel>
+    <CciLayerModel>
+      <Name>BC Zoning</Name>
+      <EnableSelection>false</EnableSelection>
+      <SelectionLayerID>0</SelectionLayerID>
+      <Order>11</Order>
+      <Visible>false</Visible>
+      <URL>https://services7.arcgis.com/NURlY7V8UHl6XumF/ArcGIS/rest/services/BC_Zoning/FeatureServer</URL>
+      <Type>ESRIDynamicLayer</Type>
+    </CciLayerModel>
+  </ViewableLayers>
+  <CustomQueryLayers />
+  <ESRIGeometryServerURL>https://webmap.trueautomation.com/arcgis/rest/services/Utilities/Geometry/GeometryServer</ESRIGeometryServerURL>
+  <EsriOutputFields>OBJECTID</EsriOutputFields>
+  <GISPINFieldName>Prop_ID</GISPINFieldName>
+  <XCentroidFieldName />
+  <YCentroidFieldName />
+  <SpatialFilter>prop_id &gt; 0</SpatialFilter>
+  <ConvertMeasureToProjection>0</ConvertMeasureToProjection>
+  <ShowScaleBar>false</ShowScaleBar>
+  <FetchPartitionSize>200</FetchPartitionSize>
+  <AppendSearch>false</AppendSearch>
+  <SelectionFillOpacity>0.15</SelectionFillOpacity>
+  <SelectedBorderThickness>1</SelectedBorderThickness>
+  <SelectionBorderColor>0,255,255</SelectionBorderColor>
+  <HighlightedBorderColor>0,0,255</HighlightedBorderColor>
+  <HighlightedBorderThickness>3</HighlightedBorderThickness>
+  <FilteredFillOpacity>0.25</FilteredFillOpacity>
+  <FilteredFillColor>200,0,0</FilteredFillColor>
+  <FilteredBorderColor>200,0,0</FilteredBorderColor>
+  <FilteredBorderThickness>1</FilteredBorderThickness>
+  <MapExtent>
+    <SpatialReferenceWKID>3857</SpatialReferenceWKID>
+    <XMin>-180</XMin>
+    <YMin>25.6</YMin>
+    <XMax>-93.2</XMax>
+    <YMax>36.7</YMax>
+  </MapExtent>
+  <IntersectionModels />
+  <LegalText>THIS PRODUCT IS FOR INFORMATIONAL PURPOSES AND MAY NOT HAVE BEEN PREPARED FOR OR BE SUITABLE FOR LEGAL, ENGINEERING, OR SURVEYING PURPOSES. IT DOES NOT REPRESENT AN ON-THE-GROUND SURVEY AND REPRESENTS ONLY THE APPROXIMATE RELATIVE LOCATION OF PROPERTY BOUNDARIES.</LegalText>
+  <MapTitle>Benton County Assessor Office</MapTitle>
+  <ForcePrintLegalText>false</ForcePrintLegalText>
+  <AutoSelectMaxRecords>2000</AutoSelectMaxRecords>
+</EsriMapModuleSettings>

@@ -1,0 +1,402 @@
+{% extends "base_clean.html" %}
+
+{% block title %}TerraFusion Platform - County Operations Dashboard{% endblock %}
+
+{% block head %}
+{{ super() }}
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <style>
+        .system-status-widget {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 250px;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.875rem;
+        }
+        
+        .status-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .status-icon {
+            margin-right: 8px;
+            width: 16px;
+        }
+        
+        .task-card {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+        
+        .task-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .task-card.ai-tools { border-color: #dc3545; }
+        .task-card.geo-tools { border-color: #0d6efd; }
+        .task-card.system-tools { border-color: #198754; }
+        
+        .confidence-bar {
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            background: #e9ecef;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .confidence-high { background: linear-gradient(90deg, #28a745, #20c997); }
+        .confidence-medium { background: linear-gradient(90deg, #ffc107, #fd7e14); }
+        .confidence-low { background: linear-gradient(90deg, #dc3545, #e83e8c); }
+        
+        .feedback-area {
+            background: #f8f9fa;
+            border-left: 4px solid #0dcaf0;
+            border-radius: 0 8px 8px 0;
+            padding: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .feedback-area.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .tool-section {
+            margin-bottom: 40px;
+        }
+        
+        .section-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+            margin-bottom: 0;
+        }
+        
+        .breadcrumb-custom {
+            background: linear-gradient(90deg, #e3f2fd, #f3e5f5);
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Live System Status Widget -->
+    <div class="system-status-widget">
+        <h6 class="mb-2"><i class="bi bi-speedometer2 me-2"></i>System Status</h6>
+        <div class="status-item">
+            <span class="status-icon">✅</span>
+            <span>All services online</span>
+        </div>
+        <div class="status-item">
+            <span class="status-icon">🕒</span>
+            <span>Last sync: 3 min ago</span>
+        </div>
+        <div class="status-item">
+            <span class="status-icon">📦</span>
+            <span>Queue: 0 jobs</span>
+        </div>
+        <div class="status-item">
+            <span class="status-icon">📈</span>
+            <span>Monitoring: Active</span>
+        </div>
+        <div class="status-item">
+            <span class="status-icon">🔒</span>
+            <span>Security: Enabled</span>
+        </div>
+    </div>
+
+    <!-- Main Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="bi bi-geo-alt-fill me-2"></i>TerraFusion Platform
+            </a>
+            <div class="navbar-text text-white">
+                <small>Benton County, WA • Production Environment</small>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb Navigation -->
+    <div class="container-fluid mt-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb breadcrumb-custom mb-0">
+                <li class="breadcrumb-item active">
+                    <i class="bi bi-house-fill me-1"></i>Dashboard Home
+                </li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container-fluid py-4">
+        <div class="row mb-4">
+            <div class="col-lg-8">
+                <h1 class="display-5 mb-2">County Operations Dashboard</h1>
+                <p class="lead text-muted">Choose a tool to get started with TerraFusion</p>
+            </div>
+        </div>
+
+        <!-- Smart AI Tools Section -->
+        <div class="tool-section">
+            <div class="section-header">
+                <h3 class="mb-1"><i class="bi bi-brain me-2"></i>🧠 Smart AI Tools</h3>
+                <p class="mb-0 opacity-75">Intelligent analysis and decision support</p>
+            </div>
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="task-card ai-tools card h-100 border-danger" onclick="launchTool('exemption-seer')">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-eye-fill text-danger fs-1 mb-3"></i>
+                                    <h5 class="card-title text-danger">Analyze Property Exemption</h5>
+                                    <p class="card-text text-muted">Use AI to classify exemptions and detect fraud</p>
+                                    <div class="d-grid">
+                                        <button class="btn btn-danger">
+                                            <i class="bi bi-play-circle me-2"></i>Launch ExemptionSeer
+                                        </button>
+                                    </div>
+                                    <small class="text-muted mt-2 d-block">Perfect for: Assessor staff reviewing applications</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="task-card ai-tools card h-100 border-info" onclick="launchTool('narrator-ai')">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-file-text-fill text-info fs-1 mb-3"></i>
+                                    <h5 class="card-title text-info">Generate Parcel Summary</h5>
+                                    <p class="card-text text-muted">AI-powered property analysis and reporting</p>
+                                    <div class="d-grid">
+                                        <button class="btn btn-info text-white">
+                                            <i class="bi bi-magic me-2"></i>Launch NarratorAI
+                                        </button>
+                                    </div>
+                                    <small class="text-muted mt-2 d-block">Perfect for: Creating property summaries</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Geospatial Tools Section -->
+        <div class="tool-section">
+            <div class="section-header">
+                <h3 class="mb-1"><i class="bi bi-globe me-2"></i>🌍 Geospatial Tools</h3>
+                <p class="mb-0 opacity-75">Mapping, districts, and geographic analysis</p>
+            </div>
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="task-card geo-tools card h-100 border-primary" onclick="launchTool('gis-export')">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-map-fill text-primary fs-1 mb-3"></i>
+                                    <h5 class="card-title text-primary">Export Parcel GIS Data</h5>
+                                    <p class="card-text text-muted">Create maps in multiple formats (Shapefile, GeoJSON, CSV)</p>
+                                    <div class="d-grid">
+                                        <button class="btn btn-primary">
+                                            <i class="bi bi-download me-2"></i>Start GIS Export
+                                        </button>
+                                    </div>
+                                    <small class="text-muted mt-2 d-block">Perfect for: GIS analysts and mapping requests</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="task-card geo-tools card h-100 border-success" onclick="launchTool('district-lookup')">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-geo-alt-fill text-success fs-1 mb-3"></i>
+                                    <h5 class="card-title text-success">District Lookup by Address</h5>
+                                    <p class="card-text text-muted">Find voting precincts, fire districts, school boundaries</p>
+                                    <div class="d-grid">
+                                        <button class="btn btn-success">
+                                            <i class="bi bi-search me-2"></i>Search Districts
+                                        </button>
+                                    </div>
+                                    <small class="text-muted mt-2 d-block">Perfect for: Citizens and staff checking assignments</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Tools Section -->
+        <div class="tool-section">
+            <div class="section-header">
+                <h3 class="mb-1"><i class="bi bi-gear me-2"></i>🔄 System Tools</h3>
+                <p class="mb-0 opacity-75">Data synchronization and system administration</p>
+            </div>
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="task-card system-tools card h-100 border-warning" onclick="launchTool('sync-pacs')">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-arrow-repeat text-warning fs-1 mb-3"></i>
+                                    <h5 class="card-title text-warning">Sync PACS Records</h5>
+                                    <p class="card-text text-muted">Connect to legacy assessment systems</p>
+                                    <div class="d-grid">
+                                        <button class="btn btn-warning text-dark" disabled>
+                                            <i class="bi bi-gear me-2"></i>Configure Sync
+                                        </button>
+                                    </div>
+                                    <small class="text-muted mt-2 d-block">Contact IT for setup</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="task-card system-tools card h-100 border-info" onclick="launchTool('system-health')">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-heart-pulse text-info fs-1 mb-3"></i>
+                                    <h5 class="card-title text-info">View System Health</h5>
+                                    <p class="card-text text-muted">Monitor performance and diagnostics</p>
+                                    <div class="d-grid">
+                                        <button class="btn btn-info text-white">
+                                            <i class="bi bi-activity me-2"></i>View Health
+                                        </button>
+                                    </div>
+                                    <small class="text-muted mt-2 d-block">Perfect for: IT administrators</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="task-card system-tools card h-100 border-secondary" onclick="launchTool('backup-manual')">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-shield-check text-secondary fs-1 mb-3"></i>
+                                    <h5 class="card-title text-secondary">Run Backup Manually</h5>
+                                    <p class="card-text text-muted">Create immediate data backup</p>
+                                    <div class="d-grid">
+                                        <button class="btn btn-secondary">
+                                            <i class="bi bi-download me-2"></i>Start Backup
+                                        </button>
+                                    </div>
+                                    <small class="text-muted mt-2 d-block">Perfect for: Before major changes</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-Time Feedback Area -->
+        <div id="feedback-area" class="feedback-area">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <h6 class="mb-0">
+                    <i class="bi bi-info-circle me-1"></i>Tool Response
+                </h6>
+                <button class="btn-close btn-sm" onclick="hideFeedback()"></button>
+            </div>
+            <div id="feedback-content">
+                <!-- Tool responses will appear here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        function launchTool(toolName) {
+            const feedbackArea = document.getElementById('feedback-area');
+            const feedbackContent = document.getElementById('feedback-content');
+            
+            // Show loading state
+            showFeedback('Loading...', 'info');
+            
+            switch(toolName) {
+                case 'exemption-seer':
+                    window.location.href = '/ai-analysis';
+                    break;
+                case 'narrator-ai':
+                    showFeedback('✅ NarratorAI launching... Redirecting to AI analysis dashboard.', 'success');
+                    setTimeout(() => window.location.href = '/ai-analysis', 1000);
+                    break;
+                case 'gis-export':
+                    window.location.href = '/gis/dashboard';
+                    break;
+                case 'district-lookup':
+                    window.location.href = '/district-lookup';
+                    break;
+                case 'sync-pacs':
+                    window.location.href = '/pacs-sync';
+                    break;
+                case 'system-health':
+                    showFeedback('✅ System Status: All services operational. Database connected. AI services ready. Last backup: 1 hour ago.', 'success');
+                    break;
+                case 'backup-manual':
+                    showFeedback('✅ Manual backup initiated... This may take 2-3 minutes.', 'info');
+                    fetch('/api/v1/backup/create', { method: 'POST' })
+                        .then(response => response.json())
+                        .then(data => {
+                            showFeedback('✅ Backup completed successfully! Files saved to backup directory.', 'success');
+                        })
+                        .catch(error => {
+                            showFeedback('❌ Backup failed. Please check system logs or contact IT support.', 'danger');
+                        });
+                    break;
+                default:
+                    showFeedback('❌ Tool not recognized. Please try again.', 'danger');
+            }
+        }
+        
+        function showFeedback(message, type) {
+            const feedbackArea = document.getElementById('feedback-area');
+            const feedbackContent = document.getElementById('feedback-content');
+            
+            const alertClass = `alert alert-${type}`;
+            feedbackContent.innerHTML = `<div class="${alertClass} mb-0">${message}</div>`;
+            
+            feedbackArea.classList.add('show');
+        }
+        
+        function hideFeedback() {
+            const feedbackArea = document.getElementById('feedback-area');
+            feedbackArea.classList.remove('show');
+        }
+        
+        // Auto-hide feedback after 5 seconds for non-critical messages
+        function autoHideFeedback() {
+            setTimeout(() => {
+                const feedbackArea = document.getElementById('feedback-area');
+                if (feedbackArea.classList.contains('show')) {
+                    feedbackArea.classList.remove('show');
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

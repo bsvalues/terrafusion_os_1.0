@@ -1,0 +1,11 @@
+{
+    "set": [
+        "aoi spatial reference",
+        "create workflow",
+        "import configuration",
+        "input custom configuration",
+        "input database connection",
+        "user store",
+        "workflow manager"
+    ]
+}

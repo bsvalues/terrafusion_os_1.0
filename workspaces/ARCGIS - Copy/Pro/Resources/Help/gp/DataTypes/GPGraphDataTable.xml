@@ -1,0 +1,5 @@
+<DataType Name="GPGraphDataTable">
+  <DisplayName>Graph Data Table</DisplayName>
+  <Description>A graph data table.</Description>
+</DataType>
+

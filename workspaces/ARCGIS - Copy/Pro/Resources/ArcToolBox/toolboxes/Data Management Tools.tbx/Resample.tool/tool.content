@@ -1,0 +1,96 @@
+{
+    "type": "FunctionTool",
+    "guid": "{65d282f0-f940-4fff-8f55-d0e36d4b6f20}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190306",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_raster": {
+            "displayname": "$rc:in_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEMosaicDataset"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_raster.descr"
+        },
+        "out_raster": {
+            "direction": "out",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_raster.descr"
+        },
+        "cell_size": {
+            "type": "optional",
+            "displayname": "$rc:cell_size.title",
+            "datatype": {
+                "type": "GPCellSizeXY"
+            },
+            "description": "$rc:cell_size.descr"
+        },
+        "resampling_type": {
+            "type": "optional",
+            "displayname": "$rc:resampling_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NEAREST",
+                        "code": "$rc:resampling_type.domain.NEAREST"
+                    },
+                    {
+                        "value": "BILINEAR",
+                        "code": "$rc:resampling_type.domain.BILINEAR"
+                    },
+                    {
+                        "value": "CUBIC",
+                        "code": "$rc:resampling_type.domain.CUBIC"
+                    },
+                    {
+                        "value": "MAJORITY",
+                        "code": "$rc:resampling_type.domain.MAJORITY"
+                    }
+                ]
+            },
+            "value": "NEAREST",
+            "description": "$rc:resampling_type.descr"
+        }
+    },
+    "environments": [
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "nodata",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "pyramid",
+        "rasterStatistics",
+        "resamplingMethod",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

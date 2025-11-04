@@ -1,0 +1,884 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.WorkflowService.WCF</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.WorkflowService.WCF.IWorkflowService">
+            <summary>
+            Defines the service API for the True Automation Workflow Service.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.SaveMessageEvent(TrueAutomation.WorkflowService.DTOs.MessageEventDTO)">
+            <summary>
+            Save Method for MessageEvents.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the MessageEvent to save.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.SaveScheduledEvent(TrueAutomation.WorkflowService.DTOs.ScheduledEventDTO)">
+            <summary>
+            Save Method for ScheduledEvents.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the ScheduledEvent to save.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.UpdateMessageEvent(TrueAutomation.WorkflowService.DTOs.MessageEventDTO)">
+            <summary>
+            Update Method for MessageEvents.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the MessageEvent to update.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.UpdateScheduledEvent(TrueAutomation.WorkflowService.DTOs.ScheduledEventDTO,System.Boolean)">
+            <summary>
+            Update Method for ScheduledEvents.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the MessageEvent to update.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.DeleteEventById(System.Guid)">
+            <summary>
+            Deletes an existing Event record that matches the id.
+            </summary>
+            <param name="dto">The id containing the
+            parameters for the Event to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.DeleteEvent(TrueAutomation.WorkflowService.DTOs.EventDTO)">
+            <summary>
+            Deletes an existing Event record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the Event to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.GetAllEvents">
+            <summary>
+            Returns a list of all Events in the database.
+            </summary>
+            <returns>A list containing a data transfer object for each
+            Event in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.GetEvent(System.Guid)">
+            <summary>
+            Returns the Event with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified Event,
+            or null if no such Event was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.GetAllScheduledEvents(System.DateTime)">
+            <summary>
+            Retrieves the list of all scheduled events that has not yet run and next running date has already expired
+            </summary>
+            <param name="currentDateTime"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.CreateMessageType(TrueAutomation.WorkflowService.DTOs.MessageTypeDTO)">
+            <summary>
+            Creates a new MessageType record from the supplied DTO
+            </summary>
+            <param name="dto">MessageTypeDTO</param>
+            <returns>MessageTypeDTO</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.CreateMessageTypes(System.Collections.Generic.List{TrueAutomation.WorkflowService.DTOs.MessageTypeDTO})">
+            <summary>
+            Creates a series of new MessageType records from the supplied List of DTOs
+            </summary>
+            <param name="dtoList">List of MessageTypeDTOs</param>
+            <returns>IList of MessageTypeDTOs</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.UpdateMessageType(TrueAutomation.WorkflowService.DTOs.MessageTypeDTO)">
+            <summary>
+            Updates an existing MessageType record from the supplied DTO
+            </summary>
+            <param name="dto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.DeleteMessageTypeById(System.Guid)">
+            <summary>
+            Deletes an existing MessageType record based on the supplied id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.DeleteMessageType(TrueAutomation.WorkflowService.DTOs.MessageTypeDTO)">
+            <summary>
+            Deletes an existing MessageType record based on the supplied DTO
+            </summary>
+            <param name="dto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.GetMessageTypes">
+            <summary>
+            Gets a list of all existing MessageType DTOs
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.GetMessageType(System.Guid)">
+            <summary>
+            Gets a specific existing MessageType DTO
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.CheckServiceAvailable">
+            <summary>
+            Check if the service is available
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.CreateWorkflow(TrueAutomation.WorkflowService.DTOs.WorkflowDTO)">
+            <summary>
+            Creates a new workflow record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the workflow to create.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.CreateWorkflowNewVersion(TrueAutomation.WorkflowService.DTOs.WorkflowDTO)">
+            <summary>
+            Creates a new version of a workflow record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the workflow to create.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.UpdateWorkflow(TrueAutomation.WorkflowService.DTOs.WorkflowDTO)">
+            <summary>
+            Updates an existing workflow record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the workflow to update.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.SaveWorkflow(TrueAutomation.WorkflowService.DTOs.WorkflowDTO)">
+            <summary>
+            Generic Save Method for workflows.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the workflow to update.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.DeleteWorkflowById(System.Guid)">
+            <summary>
+            Deletes an existing workflow record from the id.
+            </summary>
+            <param name="dto">The id containing the
+            parameters for the workflow to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.DeleteWorkflow(TrueAutomation.WorkflowService.DTOs.WorkflowDTO)">
+            <summary>
+            Deletes an existing workflow record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the workflow to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.GetWorkflowsWithInstances">
+            <summary>
+            Returns a list of all workflows in the database along with their associated instances.
+            </summary>
+            <returns>A list containing a data transfer object for each
+            workflow in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.GetWorkflows">
+            <summary>
+            Returns a list of all workflows in the database.
+            </summary>
+            <returns>A list containing a data transfer object for each
+            workflow in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.GetWorkflow(System.Guid)">
+            <summary>
+            Returns the workflow with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified workflow,
+            or null if no such workflow was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.GetWorkflowWithInstances(System.Guid)">
+            <summary>
+            Returns the workflow with its associated instances for the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified workflow,
+            or null if no such workflow was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.SendLaunchNewWorkflowMessageToBus(System.String,System.Int32,TrueAutomation.WorkflowService.Messages.WorkflowPayLoad)">
+            <summary>
+            Publish messages to the service bus from the designer  to launch a workflow
+            </summary>
+            <param name="workflowName"></param>
+            <param name="version"></param>
+            <param name="payLoad"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.SendLaunchNewActivityMessageToBus(System.String,TrueAutomation.WorkflowService.Messages.WorkflowPayLoad)">
+            <summary>
+            Publish messages to the service bus from the designer to launch an activity
+            </summary>
+            <param name="activityText"></param>
+            <param name="payLoad"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.SendMessageToBus(System.String,System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Publish Message to the service bus 
+            </summary>
+            <param name="parameters"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.SendAbortWorkflowInstanceMessageToBus(TrueAutomation.WorkflowService.DTOs.WorkflowInstanceDTO)">
+            <summary>
+            Publish messages to launch a new workflow on the service bus.
+            </summary>
+            <param name="dto">WorkflowInstanceDTO</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.SuspendWorkflow(System.Guid)">
+            <summary>
+             Workflow entity update to suspend the workflow
+            </summary>
+            <param name="id"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.GetWorkflowByNameAndVersion(System.String,System.Int32)">
+            <summary>
+            retrieves all workflows for a given name and version
+            </summary>
+            <param name="workflowName"></param>
+            <param name="version"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.Notify(TrueAutomation.WorkflowService.Messages.IWorkflowMessage)">
+            <summary>
+            Puts a message on the bus to be absorbed by subscribers. 
+            </summary>
+            <param name="msg"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.IWorkflowService.ScanAssembliesForWorkflowMessageTypes">
+            <summary>
+            Scans the assemblies for Workflow Message Types
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.WCF.Windsor.Installer">
+            <summary>
+            Utility class to register any components and facilities implemented
+            by this assembly with our Windsor IoC container.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.Windsor.Installer.Install(Castle.Windsor.IWindsorContainer,Castle.MicroKernel.SubSystems.Configuration.IConfigurationStore)">
+            <summary>
+            Registers all our service-related types with the
+            supplied Windsor IoC container.
+            </summary>
+            <param name="container">The container into which to register
+            the service types.</param>
+            <param name="store">Configuration store parameter -- unused in
+            this implementation.</param>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.WCF.Windsor.WorkflowServiceHost">
+            <summary>
+            Implements a workflow service host that supports integration
+            with the Castle WCF facility.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowService.WCF.Windsor.WorkflowServiceHost.workflowManager">
+            <summary>
+            The workflow runtime manager instance that's used to manage
+            and run any workflow activities in the context of this service.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowService.WCF.Windsor.WorkflowServiceHost.logger">
+            <summary>
+            The logger instance associated with this service host.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.Windsor.WorkflowServiceHost.#ctor(Castle.Core.ComponentModel,System.Uri[])">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+            <param name="model">The Castle component model associated
+            with this class.</param>
+            <param name="baseAddresses">The set of base addresses for
+            the endpoints exposed by this service.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.Windsor.WorkflowServiceHost.#ctor(System.Type,System.Uri[])">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+            <param name="serviceType">The contract type exposed by
+            the service.</param>
+            <param name="baseAddresses">The set of base addresses for
+            the endpoints exposed by this service.</param>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.WCF.Windsor.WorkflowServiceHost.Logger">
+            <summary>
+            The logger associated with this service host instance.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.Windsor.WorkflowServiceHost.Initialize">
+            <summary>
+            Implementation method to initialize the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.Windsor.WorkflowServiceHost.InitializeLogger">
+            <summary>
+            Implementation method to initialize the logger for this class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.Windsor.WorkflowServiceHost.WorkflowServiceHost_Opening(System.Object,System.EventArgs)">
+            <summary>
+            Event handler called when the service host is transitioning
+            to the opened state. We implement this event handler in order to
+            initialize the associated service bus handlers.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">Any arguments associates with this event.
+            The arguments are ignored by this implementation.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.Windsor.WorkflowServiceHost.WorkflowServiceHost_Closing(System.Object,System.EventArgs)">
+            <summary>
+            Event handler called when the service host is transitioning
+            to the closed state. We implement this event handler in order to
+            terminate the associated service bus handlers.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">Any arguments associates with this event.
+            The arguments are ignored by this implementation.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.Windsor.WorkflowServiceHostBuilder.#ctor(Castle.MicroKernel.IKernel)">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+            <param name="kernel">The Castle kernel to use for service location.
+            </param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.Windsor.WorkflowServiceHostBuilder.CreateServiceHost(Castle.Core.ComponentModel,TrueAutomation.WorkflowService.WCF.Windsor.WorkflowServiceModel,System.Uri[])">
+            <summary>
+            Creates a new workflow service host.
+            </summary>
+            <param name="model">The component model to use for creation
+            of the new service host.</param>
+            <param name="serviceModel">The service model associated with
+            the new service host.</param>
+            <param name="baseAddresses">The set of base address URIs to
+            associate with the new service host.</param>
+            <returns>A new workflow service host.</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.Windsor.WorkflowServiceHostBuilder.CreateServiceHost(Castle.Core.ComponentModel,System.Uri[])">
+            <summary>
+            Creates a new workflow service host.
+            </summary>
+            <param name="model">The component model to use for creation
+            of the new service host.</param>
+            <param name="baseAddresses">The set of base address URIs to
+            associate with the new service host.</param>
+            <returns>A new workflow service host.</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.Windsor.WorkflowServiceHostBuilder.CreateServiceHost(System.Type,System.Uri[])">
+            <summary>
+            Creates a new workflow service host.
+            </summary>
+            <param name="model">The service contract type of the new
+            service host.</param>
+            <param name="baseAddresses">The set of base address URIs to
+            associate with the new service host.</param>
+            <returns>A new workflow service host.</returns>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.WCF.Windsor.WorkflowServiceModel">
+            <summary>
+            A Castle-style service model class compatible with the WCF
+            integration facility. This class is basically a do-nothing class
+            that exists purely as a means to get the right service builder
+            type associated with our workflow service host.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.Windsor.WorkflowServiceModel.#ctor">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.Windsor.WorkflowServiceModel.#ctor(Castle.Facilities.WcfIntegration.IWcfEndpoint)">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+            <param name="endpoint">A default endpoint associated with this
+            service model.</param>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.WCF.WorkflowService">
+            <summary>
+            Implements the service API for the True Automation Workflow Service.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.SaveMessageEvent(TrueAutomation.WorkflowService.DTOs.MessageEventDTO)">
+            <summary>
+            Save Method for MessageEvents.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the MessageEvent to save.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.SaveScheduledEvent(TrueAutomation.WorkflowService.DTOs.ScheduledEventDTO)">
+            <summary>
+            Save Method for ScheduledEvents.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the ScheduledEvent to save.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.UpdateMessageEvent(TrueAutomation.WorkflowService.DTOs.MessageEventDTO)">
+            <summary>
+            Update Method for MessageEvents.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the MessageEvent to update.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.UpdateScheduledEvent(TrueAutomation.WorkflowService.DTOs.ScheduledEventDTO,System.Boolean)">
+            <summary>
+            Update Method for ScheduledEvents.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the MessageEvent to update.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.DeleteEventById(System.Guid)">
+            <summary>
+            Deletes an existing Event record that matches the id.
+            </summary>
+            <param name="dto">The id containing the
+            parameters for the Event to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.DeleteEvent(TrueAutomation.WorkflowService.DTOs.EventDTO)">
+            <summary>
+            Deletes an existing Event record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the Event to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.GetAllEvents">
+            <summary>
+            Returns a list of all Events in the database.
+            </summary>
+            <returns>A list containing a data transfer object for each
+            Event in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.GetAllScheduledEvents(System.DateTime)">
+            <summary>
+            Retrieves the list of all scheduled events
+            </summary>
+            <param name="currentDateTime"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.GetAllMessageEvents(TrueAutomation.WorkflowService.DTOs.MessageTypeDTO)">
+            <summary>
+            Retrieves the list of all scheduled events
+            </summary>
+            <param name="currentDateTime"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.GetEvent(System.Guid)">
+            <summary>
+            Returns the Event with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified Event,
+            or null if no such Event was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.GetEventById(System.Guid)">
+            <summary>
+            Helper Method to return a domain object of a Event by it's id
+            </summary>
+            <param name="id">string value of the id of the Event</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.GetEventsByName(System.String)">
+            <summary>
+            Helper Method to return a domain object of a Event by it's id
+            </summary>
+            <param name="id">string value of the id of the Event</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.GetEvents">
+            <summary>
+            Helper method to get a list of all Events
+            </summary>	
+            <returns>returns a list of all Task Types</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.GetScheduledEvents(System.DateTime)">
+            <summary>
+            Retrieves the list of all scheduled events that has not yet run and next running date has already expired
+            </summary>
+            <param name="currentTime"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.CreateMessageEventFromDTO(TrueAutomation.WorkflowService.DTOs.MessageEventDTO,System.Boolean)">
+            <summary>
+            Helper method to create a MessageEvent domain object from
+            a MessageEventDTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the Event</param>
+            <returns>Saved Message Event</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.CreateScheduledEventFromDTO(TrueAutomation.WorkflowService.DTOs.ScheduledEventDTO,System.Boolean,System.Boolean)">
+            <summary>
+            Helper method to create a ScheduledEvent domain object from
+            a ScheduledEventDTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the Event</param>
+            <param name="isCreate">indicate new event or update event </param>
+            <param name="isFromDesigner">indicate if from Manage Event View</param>
+            <returns>Saved Scheduled Event</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.DeleteEventFromDTO(TrueAutomation.WorkflowService.DTOs.EventDTO)">
+            <summary>
+            Helper method to delete a Event based on it's dto
+            </summary>
+            <param name="dto">A DTO of the Event</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.CreateWorkflowFrom(TrueAutomation.WorkflowService.DTOs.WorkflowDTO)">
+            <summary>
+            Helper method to create a Workflow domain object from
+            a WorkflowDTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the Workflow</param>
+            <returns>Workflow object</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.CreateIntervalFrom(TrueAutomation.WorkflowService.DTOs.DailyIntervalDTO)">
+            <summary>
+            Helper method to create a DailyInterval domain object from
+            a DailyIntervalDTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the DailyInterval</param>
+            <returns>DailyInterval object</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.CreateIntervalFrom(TrueAutomation.WorkflowService.DTOs.WeeklyIntervalDTO)">
+            <summary>
+            Helper method to create a WeeklyInterval domain object from
+            a WeeklyIntervalDTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the WeeklyInterval</param>
+            <returns>WeeklyInterval object</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.CreateIntervalFrom(TrueAutomation.WorkflowService.DTOs.MonthlyIntervalDTO)">
+            <summary>
+            Helper method to create a MonthlyInterval domain object from
+            a MonthlyIntervalDTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the MonthlyInterval</param>
+            <returns>MonthlyInterval object</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.CreateIntervalFrom(TrueAutomation.WorkflowService.DTOs.YearlyIntervalDTO)">
+            <summary>
+            Helper method to create a YearlyInterval domain object from
+            a YearlyIntervalDTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the YearlyInterval</param>
+            <returns>YearlyInterval object</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.GetIntervalById(System.Int32)">
+            <summary>
+            Helper Method to return a domain object of a interval by it's id
+            </summary>
+            <param name="id">the id of the interval</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.GetAllIntervals">
+            <summary>
+            Helper method to get a list of all Intervals values
+            </summary>	
+            <returns>returns a list of all Intervals</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.CreateIntervalFromDTO(TrueAutomation.WorkflowService.DTOs.IntervalDTO)">
+            <summary>
+            Helper method to create a interval domain object from a interval DTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the interval</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.DeleteIntervalById(System.Int32)">
+            <summary>
+            Helper method to delete a interval based on it's dto
+            </summary>
+            <param name="id">the interval ID</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.CreateMessageType(TrueAutomation.WorkflowService.DTOs.MessageTypeDTO)">
+            <summary>
+            Creates a new MessageType record from the supplied DTO
+            </summary>
+            <param name="dto">MessageTypeDTO</param>
+            <returns>MessageTypeDTO</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.CreateMessageTypes(System.Collections.Generic.List{TrueAutomation.WorkflowService.DTOs.MessageTypeDTO})">
+            <summary>
+            Creates a series of new MessageType records from the supplied List of DTOs
+            </summary>
+            <param name="dtoList">List of MessageTypeDTOs</param>
+            <returns>IList of MessageTypeDTOs</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.UpdateMessageType(TrueAutomation.WorkflowService.DTOs.MessageTypeDTO)">
+            <summary>
+            Updates an existing MessageType record from the supplied DTO
+            </summary>
+            <param name="dto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.DeleteMessageTypeById(System.Guid)">
+            <summary>
+            Deletes an existing MessageType record based on the supplied id
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.DeleteMessageType(TrueAutomation.WorkflowService.DTOs.MessageTypeDTO)">
+            <summary>
+            Deletes an existing MessageType record based on the supplied DTO
+            </summary>
+            <param name="dto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.GetMessageTypes">
+            <summary>
+            Gets a list of all existing MessageType DTOs
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.GetMessageType(System.Guid)">
+            <summary>
+            Gets a specific existing MessageType DTO
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.CheckServiceAvailable">
+            <summary>
+            Implements the CheckServiceAvailable method. Ensures the service is available
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.SaveWorkflow(TrueAutomation.WorkflowService.DTOs.WorkflowDTO)">
+            <summary>
+            Generic Save Method for workflows.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the workflow to update.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.CreateWorkflow(TrueAutomation.WorkflowService.DTOs.WorkflowDTO)">
+            <summary>
+            Creates a new workflow record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the workflow to create.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.CreateWorkflowNewVersion(TrueAutomation.WorkflowService.DTOs.WorkflowDTO)">
+            <summary>
+            Creates a new version of a workflow record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the workflow to create.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.UpdateWorkflow(TrueAutomation.WorkflowService.DTOs.WorkflowDTO)">
+            <summary>
+            Updates an existing workflow record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the workflow to update.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.DeleteWorkflowById(System.Guid)">
+            <summary>
+            Deletes an existing workflow record from the id.
+            </summary>
+            <param name="dto">The id containing the
+            parameters for the workflow to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.DeleteWorkflow(TrueAutomation.WorkflowService.DTOs.WorkflowDTO)">
+            <summary>
+            Deletes an existing workflow record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the workflow to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.GetWorkflows">
+            <summary>
+            Returns a list of all workflows in the database.
+            </summary>
+            <returns>A list containing a data transfer object for each
+            workflow in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.GetWorkflowsWithInstances">
+            <summary>
+            Returns a list of all workflows in the database along with their associated instances.
+            </summary>
+            <returns>A list containing a data transfer object for each
+            workflow in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.GetWorkflow(System.Guid)">
+            <summary>
+            Returns the workflow with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified workflow,
+            or null if no such workflow was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.GetWorkflowByNameAndVersion(System.String,System.Int32)">
+            <summary>
+            Returns the workflow with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified workflow,
+            or null if no such workflow was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.SendLaunchNewWorkflowMessageToBus(System.String,System.Int32,TrueAutomation.WorkflowService.Messages.WorkflowPayLoad)">
+            <summary>
+            Publish messages to launch a new workflow on the service bus.
+            </summary>
+            <param name="msg"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.SendLaunchNewActivityMessageToBus(System.String,TrueAutomation.WorkflowService.Messages.WorkflowPayLoad)">
+            <summary>
+            Publish messages to launch a new activity on the service bus.
+            </summary>
+            <param name="msg"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.SendMessageToBus(System.String,System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Publish Message to the service bus 
+            </summary>
+            <param name="parameters"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.SendAbortWorkflowInstanceMessageToBus(TrueAutomation.WorkflowService.DTOs.WorkflowInstanceDTO)">
+            <summary>
+            Publish messages to launch a new workflow on the service bus.
+            </summary>
+            <param name="msg"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.SuspendWorkflow(System.Guid)">
+            <summary>
+            Fetches the workflow dto based on id and updates the entity for suspension
+            </summary>
+            <param name="id">The workflow entity id</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.SuspendWorkflow(TrueAutomation.WorkflowService.DTOs.WorkflowDTO)">
+            <summary>
+            Workflow entity update to suspend the workflow
+            </summary>
+            <param name="workflowDto">The workflow DTO that would be updated</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.GetWorkflowById(System.Guid)">
+            <summary>
+            Helper Method to return a domain object of a workflow by it's id
+            </summary>
+            <param name="id">string value of the id of the workflow</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.GetWorkflowsByName(System.String)">
+            <summary>
+            Helper Method to return a domain object of a workflow by it's id
+            </summary>
+            <param name="id">string value of the id of the workflow</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.GetAllWorkflows">
+            <summary>
+            Helper method to get a list of all Task Types values
+            </summary>	
+            <returns>returns a list of all Task Types</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.CreateWorkflowFromDTO(TrueAutomation.WorkflowService.DTOs.WorkflowDTO)">
+            <summary>
+            Helper method to create a workflow domain object from a workflow DTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the workflow</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.CreateWorkflowNewVersionFromDTO(TrueAutomation.WorkflowService.DTOs.WorkflowDTO)">
+            <summary>
+            Helper method to create a workflow domain object from a workflow DTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the workflow</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.UpdateWorkflowFromDTO(TrueAutomation.WorkflowService.DTOs.WorkflowDTO)">
+            <summary>
+            Helper method to update a workflow domain object from a workflow DTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the Workflow</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.DeleteWorkflowFromDTO(TrueAutomation.WorkflowService.DTOs.WorkflowDTO)">
+            <summary>
+            Helper method to delete a workflow based on it's dto
+            </summary>
+            <param name="dto">A DTO of the workflow</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.GetWorkflowWithInstances(System.Guid)">
+            <summary>
+            Returns a workflow in the database along with their associated instances.
+            </summary>
+            <returns>A data transfer object for each
+            workflow in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.Notify(TrueAutomation.WorkflowService.Messages.IWorkflowMessage)">
+            <summary>
+            Puts a message on the bus to be absorbed by subscribers. 
+            </summary>
+            <param name="msg"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.WCF.WorkflowService.ScanAssembliesForWorkflowMessageTypes">
+            <summary>
+            Scans the assemblies for Workflow Message Types
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

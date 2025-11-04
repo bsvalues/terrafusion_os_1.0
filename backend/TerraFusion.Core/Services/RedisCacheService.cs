@@ -13,7 +13,7 @@ namespace TerraFusion.Core.Services
 {
     public interface IRedisCacheService
     {
-        Task<T> GetAsync<T>(string key);
+        Task<T?> GetAsync<T>(string key);
         Task SetAsync<T>(string key, T value, TimeSpan? expiration = null);
         Task<bool> ExistsAsync(string key);
         Task RemoveAsync(string key);
@@ -50,7 +50,7 @@ namespace TerraFusion.Core.Services
         private readonly IConnectionMultiplexer _redis;
         private readonly IDatabase _database;
         private readonly IServer _server;
-        
+
         // Cache configuration
         private readonly string _keyPrefix;
         private readonly TimeSpan _defaultExpiration;
@@ -78,13 +78,13 @@ namespace TerraFusion.Core.Services
             _compressionThreshold = configuration.GetValue<int>("Cache:Redis:CompressionThreshold", 1024);
         }
 
-        public async Task<T> GetAsync<T>(string key)
+        public async Task<T?> GetAsync<T>(string key)
         {
             try
             {
                 var prefixedKey = GetPrefixedKey(key);
                 var value = await _database.StringGetAsync(prefixedKey);
-                
+
                 if (!value.HasValue)
                 {
                     Interlocked.Increment(ref _missCount);
@@ -157,7 +157,7 @@ namespace TerraFusion.Core.Services
             {
                 var prefixedPattern = GetPrefixedKey(pattern);
                 var keys = _server.Keys(pattern: prefixedPattern);
-                
+
                 var keyArray = keys.ToArray();
                 if (keyArray.Length > 0)
                 {
@@ -177,16 +177,19 @@ namespace TerraFusion.Core.Services
             {
                 var prefixedKeys = keys.Select(GetPrefixedKey).Select(k => (RedisKey)k).ToArray();
                 var values = await _database.StringGetAsync(prefixedKeys);
-                
+
                 var result = new Dictionary<string, T>();
                 var keyArray = keys.ToArray();
-                
+
                 for (int i = 0; i < values.Length; i++)
                 {
                     if (values[i].HasValue)
                     {
                         var deserializedValue = DeserializeValue<T>(values[i]);
-                        result[keyArray[i]] = deserializedValue;
+                        if (deserializedValue != null)
+                        {
+                            result[keyArray[i]] = deserializedValue;
+                        }
                         Interlocked.Increment(ref _hitCount);
                     }
                     else
@@ -222,7 +225,7 @@ namespace TerraFusion.Core.Services
 
                 batch.Execute();
                 await Task.WhenAll(tasks);
-                
+
                 _logger.LogDebug("Cached {Count} key-value pairs with expiration: {Expiration}", keyValuePairs.Count, exp);
             }
             catch (Exception ex)
@@ -272,7 +275,7 @@ namespace TerraFusion.Core.Services
                 var exp = expiration ?? _defaultExpiration;
 
                 var result = await _database.StringSetAsync(prefixedKey, serializedValue, exp, When.NotExists);
-                
+
                 if (result)
                 {
                     _logger.LogDebug("Set cache value for new key: {Key}", key);
@@ -340,13 +343,17 @@ namespace TerraFusion.Core.Services
             {
                 var prefixedKey = GetPrefixedKey(key);
                 var values = await _database.ListRangeAsync(prefixedKey, start, stop);
-                
+
                 var result = new List<T>();
                 foreach (var value in values)
                 {
                     if (value.HasValue)
                     {
-                        result.Add(DeserializeValue<T>(value));
+                        var deserializedValue = DeserializeValue<T>(value);
+                        if (deserializedValue != null)
+                        {
+                            result.Add(deserializedValue);
+                        }
                     }
                 }
 
@@ -380,7 +387,7 @@ namespace TerraFusion.Core.Services
             {
                 var info = await _server.InfoAsync();
                 var keyspaceInfo = info.FirstOrDefault(x => x.Key == "Keyspace");
-                
+
                 var stats = new CacheStatistics
                 {
                     HitCount = _hitCount,
@@ -470,9 +477,9 @@ namespace TerraFusion.Core.Services
         private string? SerializeValue<T>(T value)
         {
             if (value == null) return null;
-            
+
             var json = JsonSerializer.Serialize(value);
-            
+
             // Apply compression if enabled and value exceeds threshold
             if (_enableCompression && json.Length > _compressionThreshold)
             {
@@ -486,14 +493,14 @@ namespace TerraFusion.Core.Services
                 var compressed = output.ToArray();
                 return Convert.ToBase64String(compressed);
             }
-            
+
             return json;
         }
 
-        private T DeserializeValue<T>(string? value)
+        private T? DeserializeValue<T>(string? value)
         {
             if (string.IsNullOrEmpty(value)) return default(T);
-            
+
             try
             {
                 // Check if value is compressed (base64 encoded)
@@ -503,12 +510,12 @@ namespace TerraFusion.Core.Services
                     using var compressedStream = new MemoryStream(compressedBytes);
                     using var gzipStream = new System.IO.Compression.GZipStream(compressedStream, System.IO.Compression.CompressionMode.Decompress);
                     using var decompressedStream = new MemoryStream();
-                    
+
                     gzipStream.CopyTo(decompressedStream);
                     var decompressedJson = Encoding.UTF8.GetString(decompressedStream.ToArray());
                     return JsonSerializer.Deserialize<T>(decompressedJson);
                 }
-                
+
                 return JsonSerializer.Deserialize<T>(value);
             }
             catch (Exception ex)

@@ -91,19 +91,19 @@ export class EnhancementCommunicationService {
     try {
       // eslint-disable-next-line no-console
       console.log('🚀 Initializing Enhancement Communication Service...');
-      
+
       // Initialize SignalR connection for real-time updates
       await this.initializeSignalRConnection();
-      
+
       // Get initial enhancement status
       await this.refreshEnhancementStatus();
-      
+
       // Start periodic metrics updates
       this.startPeriodicUpdates();
-      
+
       this.isInitialized = true;
       isEnhancementConnected.value = true;
-      
+
       // eslint-disable-next-line no-console
       console.log('✅ Enhancement Communication Service initialized successfully');
     } catch (error) {
@@ -120,7 +120,7 @@ export class EnhancementCommunicationService {
     try {
       // Import SignalR dynamically to avoid SSR issues
       const { HubConnectionBuilder, LogLevel } = await import('@microsoft/signalr');
-      
+
       this.hubConnection = new HubConnectionBuilder()
         .withUrl('http://127.0.0.1:5000/hubs/enhancement')
         .withAutomaticReconnect()
@@ -137,9 +137,11 @@ export class EnhancementCommunicationService {
 
       // Join enhancement monitoring groups
       await this.hubConnection.invoke('StartEnhancementMonitoring', [
-        'Swarm', 'Consciousness', 'Security', 'Performance'
+        'Swarm',
+        'Consciousness',
+        'Security',
+        'Performance',
       ]);
-
     } catch (error) {
       console.error('❌ SignalR connection failed:', error);
       throw error;
@@ -493,10 +495,10 @@ export class EnhancementCommunicationService {
         await this.hubConnection.stop();
         this.hubConnection = null;
       }
-      
+
       this.isInitialized = false;
       isEnhancementConnected.value = false;
-      
+
       // eslint-disable-next-line no-console
       console.log('🧹 Enhancement Communication Service cleaned up');
     } catch (error) {

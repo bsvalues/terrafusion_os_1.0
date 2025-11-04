@@ -1,0 +1,132 @@
+{
+    "type": "FunctionTool",
+    "guid": "{26B17338-CB00-45A9-AB9C-858C2E0122C9}/CalculateMagneticComponents",
+    "displayname": "$rc:title",
+    "helpcontent": "76020001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "46",
+        "49"
+    ],
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "altitude": {
+            "displayname": "$rc:altitude.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "description": "$rc:altitude.descr"
+        },
+        "date": {
+            "displayname": "$rc:date.title",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:date.descr"
+        },
+        "magnetic_component": {
+            "displayname": "$rc:magnetic_component.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:magnetic_component.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:magnetic_component.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "DECLINATION",
+                                "code": "$rc:magnetic_component.domain.item1.DECLINATION"
+                            },
+                            {
+                                "value": "ANNUAL_DRIFT",
+                                "code": "$rc:magnetic_component.domain.item1.ANNUAL_DRIFT"
+                            },
+                            {
+                                "value": "INCLINATION",
+                                "code": "$rc:magnetic_component.domain.item1.INCLINATION"
+                            },
+                            {
+                                "value": "HORIZONTAL",
+                                "code": "$rc:magnetic_component.domain.item1.HORIZONTAL"
+                            },
+                            {
+                                "value": "EAST_COMPONENT",
+                                "code": "$rc:magnetic_component.domain.item1.EAST_COMPONENT"
+                            },
+                            {
+                                "value": "NORTH_COMPONENT",
+                                "code": "$rc:magnetic_component.domain.item1.NORTH_COMPONENT"
+                            },
+                            {
+                                "value": "VERTICAL_INTENSITY",
+                                "code": "$rc:magnetic_component.domain.item1.VERTICAL_INTENSITY"
+                            },
+                            {
+                                "value": "TOTAL_INTENSITY",
+                                "code": "$rc:magnetic_component.domain.item1.TOTAL_INTENSITY"
+                            },
+                            {
+                                "value": "GRID_VARIATION",
+                                "code": "$rc:magnetic_component.domain.item1.GRID_VARIATION"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "description": "$rc:magnetic_component.descr"
+        },
+        "updated_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "in_features",
+                "in_features"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "clonedependency": "true"
+            }
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

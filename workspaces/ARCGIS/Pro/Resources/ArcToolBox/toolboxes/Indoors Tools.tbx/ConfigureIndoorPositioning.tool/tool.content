@@ -1,0 +1,63 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "68000005",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_geodatabase": {
+            "displayname": "$rc:in_geodatabase.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "domain": {
+                "type": "GPWorkspaceDomain",
+                "workspacetype": [
+                    "Local Database",
+                    "Remote Database"
+                ]
+            },
+            "defaultenvironmentname": "workspace",
+            "description": "$rc:in_geodatabase.descr"
+        },
+        "encryption_key": {
+            "displayname": "$rc:encryption_key.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:encryption_key.descr"
+        },
+        "api_key": {
+            "displayname": "$rc:api_key.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:api_key.descr"
+        },
+        "building_id": {
+            "displayname": "$rc:building_id.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:building_id.descr"
+        },
+        "updated_gdb": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_gdb.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "depends": [
+                "in_geodatabase"
+            ],
+            "schema": {
+                "type": "GPContainerSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

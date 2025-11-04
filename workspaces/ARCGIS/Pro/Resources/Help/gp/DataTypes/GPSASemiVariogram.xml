@@ -1,0 +1,5 @@
+<DataType Name="GPSASemiVariogram">
+  <DisplayName>Semivariogram</DisplayName>
+  <Description>Specifies the distance and direction representing two locations used to quantify autocorrelation.</Description>
+</DataType>
+

@@ -1,0 +1,129 @@
+replicaCount: 3
+
+image:
+  repository: terrafusionpro/api
+  tag: "latest"
+  pullPolicy: Always
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8080"
+  prometheus.io/path: "/metrics"
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 5000
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector:
+  component: backend
+
+tolerations:
+  - key: "component"
+    operator: "Equal"
+    value: "backend"
+    effect: "NoSchedule"
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 100
+      podAffinityTerm:
+        labelSelector:
+          matchExpressions:
+          - key: app.kubernetes.io/name
+            operator: In
+            values:
+            - terrafusion
+        topologyKey: kubernetes.io/hostname
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+  hosts:
+    - host: app.terrafusion.pro
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: terrafusion-api-prod-tls
+      hosts:
+        - app.terrafusion.pro
+
+env:
+  NODE_ENV: production
+  LOG_LEVEL: info
+  ENABLE_METRICS: "true"
+
+configMaps:
+  app:
+    enabled: true
+    data:
+      CORS_ALLOWED_ORIGINS: "https://app.terrafusion.pro"
+      API_VERSION: "v1"
+
+secrets:
+  app:
+    enabled: true
+    data:
+      # These values should be properly encrypted in a real environment
+      # and injected via CI/CD pipeline or external secrets
+      DATABASE_URL: ""
+      JWT_SECRET: ""
+      REDIS_URL: ""
+
+postgresql:
+  enabled: true
+  auth:
+    username: terrafusion
+    database: terrafusion_prod
+  primary:
+    persistence:
+      size: 50Gi
+  readReplicas:
+    replicaCount: 2
+    persistence:
+      size: 20Gi
+
+redis:
+  enabled: true
+  architecture: replication
+  master:
+    persistence:
+      size: 10Gi
+  replica:
+    replicaCount: 2
+    persistence:
+      size: 5Gi

@@ -1,0 +1,17 @@
+{
+    "map": {
+        "description": "Exports 3D object features to one or more 3D model file formats.",
+        "formats.descr": "<xdoc><p>Specifies the 3D formats that will be exported.</p><ul><li><span title=\"FMT3D_DAE\">Collada (.dae)</span>—The COLLADA format will be exported.</li><li><span title=\"FMT3D_DWG\">Autodesk Drawing (.dwg)</span>—The DWG format will be exported.</li><li><span title=\"FMT3D_FBX\">Autodesk (.fbx)</span>—The Autodesk FilmBox format will be exported.</li><li><span title=\"FMT3D_GLB\">Khronos Group glTF binary (.glb)</span>—The binary Graphics Library Transmission format will be exported.</li><li><span title=\"FMT3D_GLTF\">Khronos Group glTF json (.gltf)</span>—The JSON Graphics Library Transmission format will be exported.</li><li><span title=\"FMT3D_IFC\">Industry Foundation Classes (.ifc)</span>—The Industry Foundation Classes format will be exported.</li><li><span title=\"FMT3D_OBJ\">Wavefront (.obj)</span>—The Wavefront format will be exported.</li><li><span title=\"FMT3D_USDC\">Universal Scene Description (.usdc)</span>— The Universal Scene Description format will be exported.</li><li><span title=\"FMT3D_USDZ\">Compressed Universal Scene Description (.usdz)</span>— The compressed version of the Universal Scene Description format will be exported.</li></ul></xdoc>",
+        "formats.title": "3D Formats To Export",
+        "in_features.descr": "The 3D object feature layer that will be exported.",
+        "in_features.title": "Input Features",
+        "name_field.descr": "The text field in the input feature's attribute table that contains the name to be used for each output folder. If no name field is provided, the output folder will be named after the object ID of the input features.",
+        "name_field.title": "Output Folder Name Field",
+        "overwrite.descr": "<xdoc><p>Specifies whether existing 3D models in the output directory will be overwritten.</p><ul><li>Checked—Existing 3D models in the output directory will be overwritten.</li><li>Unchecked—Existing 3D models in the output directory will not be overwritten. This is the default.</li></ul></xdoc>",
+        "overwrite.title": "Overwrite output folder",
+        "target_folder.descr": "The existing directory that will contain the output 3D models.",
+        "target_folder.title": "Target Folder",
+        "target_folder_out.title": "Output Folder",
+        "title": "Export 3D Objects"
+    }
+}

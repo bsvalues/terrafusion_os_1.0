@@ -1,0 +1,85 @@
+{
+    "type": "FunctionTool",
+    "guid": "{6b4d2663-7bab-494c-b369-cb4035b1ca24}",
+    "displayname": "$rc:title",
+    "helpcontent": "3050014",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "out_table": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "description": "$rc:out_table.descr"
+        },
+        "validation_method": {
+            "type": "optional",
+            "displayname": "$rc:validation_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ESRI",
+                        "code": "$rc:validation_method.domain.ESRI"
+                    },
+                    {
+                        "value": "OGC",
+                        "code": "$rc:validation_method.domain.OGC"
+                    }
+                ]
+            },
+            "value": "ESRI",
+            "description": "$rc:validation_method.descr"
+        },
+        "problems_found": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:problems_found.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "PROBLEMS_FOUND"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_PROBLEMS_FOUND"
+                    }
+                ]
+            },
+            "value": "false"
+        }
+    },
+    "environments": [
+        "configKeyword",
+        "extent",
+        "parallelProcessingFactor",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

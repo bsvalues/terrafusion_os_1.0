@@ -1,0 +1,94 @@
+{
+  "workspace_protection_system": {
+    "workspace_name": "terra-justice",
+    "domain": "justice_system",
+    "risk_level": "critical",
+    "customization_timestamp": "2025-10-16T10:16:02.505003",
+    "eleven_layer_protection": {
+      "L1_role_scope_confirmation": {
+        "workspace_role": "terra-justice specialized AI agent",
+        "scope_definition": "Optimize and protect justice_system operations",
+        "success_criteria": "Maintain critical-level security for justice_system",
+        "data_types_handled": [
+          "case_management",
+          "legal_records",
+          "justice_metrics"
+        ],
+        "protection_priorities": [
+          "judicial_integrity",
+          "case_security",
+          "legal_compliance"
+        ]
+      },
+      "L2_input_sanitation_threat_modeling": {
+        "threat_model": "justice_system_specific_threats",
+        "input_validation": "terra-justice_input_sanitization",
+        "injection_prevention": "justice_system_injection_protection",
+        "risk_level_controls": "critical"
+      },
+      "L3_data_classification": {
+        "data_types": [
+          "case_management",
+          "legal_records",
+          "justice_metrics"
+        ],
+        "classification_level": "critical",
+        "privacy_requirements": "justice_system_privacy_rules",
+        "retention_policies": "terra-justice_data_retention",
+        "access_controls": "justice_system_access_matrix"
+      },
+      "L4_secrets_hygiene": {
+        "vault_integration": "terra-justice_secret_vault",
+        "key_rotation": "justice_system_key_management",
+        "credential_management": "terra-justice_credential_store",
+        "environment_separation": "critical_env_isolation"
+      },
+      "L5_environment_guardrails": {
+        "environment_controls": "terra-justice_env_controls",
+        "blast_radius_limits": "justice_system_isolation",
+        "feature_flags": "terra-justice_feature_management",
+        "deployment_gates": "critical_deployment_controls"
+      },
+      "L6_policy_compliance": {
+        "domain_regulations": "justice_system_compliance_framework",
+        "government_standards": [
+          "judicial_integrity",
+          "case_security",
+          "legal_compliance"
+        ],
+        "audit_requirements": "terra-justice_audit_trail",
+        "compliance_monitoring": "justice_system_compliance_checks"
+      },
+      "L7_dependency_license_review": {
+        "sbom_generation": "terra-justice_software_bill_of_materials",
+        "vulnerability_scanning": "justice_system_vuln_checks",
+        "license_compliance": "terra-justice_license_validation",
+        "dependency_monitoring": "critical_dependency_tracking"
+      },
+      "L8_reproducibility": {
+        "version_pinning": "terra-justice_version_control",
+        "build_determinism": "justice_system_build_reproducibility",
+        "configuration_management": "terra-justice_config_management",
+        "deployment_consistency": "critical_deployment_standards"
+      },
+      "L9_observability_hooks": {
+        "metrics_collection": "terra-justice_domain_metrics",
+        "logging_framework": "justice_system_specialized_logging",
+        "tracing_system": "terra-justice_distributed_tracing",
+        "alerting_rules": "justice_system_alert_configuration"
+      },
+      "L10_human_in_loop_gates": {
+        "approval_workflows": "terra-justice_approval_matrix",
+        "review_requirements": "justice_system_review_gates",
+        "escalation_procedures": "critical_escalation_rules",
+        "manual_override_controls": "terra-justice_override_procedures"
+      },
+      "L11_red_team_self_check": {
+        "adversarial_testing": "terra-justice_penetration_testing",
+        "failure_mode_analysis": "justice_system_failure_scenarios",
+        "rollback_procedures": "terra-justice_disaster_recovery",
+        "security_validation": "critical_security_assessment"
+      }
+    }
+  }
+}

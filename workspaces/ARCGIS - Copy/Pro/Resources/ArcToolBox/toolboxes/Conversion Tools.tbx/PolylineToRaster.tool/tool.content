@@ -1,0 +1,185 @@
+{
+    "type": "FunctionTool",
+    "guid": "{7013aa42-a929-415d-9c54-f783c39213d3}",
+    "displayname": "$rc:title",
+    "helpcontent": "2060014",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{0a2ad811-7215-4a95-92f3-9c29de502e9b}"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "value_field": {
+            "displayname": "$rc:value_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "BigInteger",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "OID"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:value_field.descr"
+        },
+        "out_rasterdataset": {
+            "direction": "out",
+            "displayname": "$rc:out_rasterdataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    }
+                ]
+            },
+            "description": "$rc:out_rasterdataset.descr"
+        },
+        "cell_assignment": {
+            "type": "optional",
+            "displayname": "$rc:cell_assignment.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MAXIMUM_LENGTH",
+                        "code": "$rc:cell_assignment.domain.MAXIMUM_LENGTH"
+                    },
+                    {
+                        "value": "MAXIMUM_COMBINED_LENGTH",
+                        "code": "$rc:cell_assignment.domain.MAXIMUM_COMBINED_LENGTH"
+                    }
+                ]
+            },
+            "value": "MAXIMUM_LENGTH",
+            "description": "$rc:cell_assignment.descr"
+        },
+        "priority_field": {
+            "type": "optional",
+            "displayname": "$rc:priority_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "BigInteger",
+                    "Float",
+                    "Double"
+                ],
+                "key.field": [
+                    "NONE"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "value": "NONE",
+            "description": "$rc:priority_field.descr"
+        },
+        "cellsize": {
+            "type": "optional",
+            "displayname": "$rc:cellsize.title",
+            "datatype": {
+                "type": "analysis_cell_size"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "true",
+                "singleband": "true",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "analysis_cell_size",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:cellsize.descr"
+        },
+        "build_rat": {
+            "type": "optional",
+            "displayname": "$rc:build_rat.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "BUILD"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_BUILD"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:build_rat.descr"
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "cellSize",
+        "cellSizeProjectionMethod",
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "pyramid",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

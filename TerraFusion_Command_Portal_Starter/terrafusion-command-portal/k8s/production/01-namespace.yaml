@@ -1,0 +1,346 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrafusion-production
+  labels:
+    name: terrafusion-production
+    environment: production
+    classification: government-moderate
+    compliance: fedramp-moderate
+    version: "1.0"
+  annotations:
+    description: "TerraFusion Command Portal - Production Environment"
+    security.compliance/fedramp: "moderate"
+    security.compliance/soc2: "type-ii"
+    deployment.date: "2025-10-16"
+    contact.team: "terrafusion-operations@gov.example"
+    fedramp.gov/control-family: "AC,AU,AT,CM,CP,IA,IR,MA,MP,PE,PL,PS,RA,SA,SC,SI,SR"
+    soc2.com/trust-service: "security,availability,processing-integrity,confidentiality,privacy"
+    fisma.nist.gov/impact-level: "moderate"
+spec:
+  finalizers:
+    - kubernetes
+
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: terrafusion-production-quota
+  namespace: terrafusion-production
+  labels:
+    component: resource-management
+    environment: production
+spec:
+  hard:
+    requests.cpu: "50"          # 50 CPU cores total
+    requests.memory: 100Gi      # 100GB RAM total
+    limits.cpu: "100"           # 100 CPU cores limit
+    limits.memory: 200Gi        # 200GB RAM limit
+    persistentvolumeclaims: "20" # 20 PVC maximum
+    requests.storage: 2Ti       # 2TB storage total
+    count/deployments.apps: "20" # Maximum deployments
+    count/services: "30"        # Maximum services
+    count/secrets: "50"         # Maximum secrets
+    count/configmaps: "50"      # Maximum config maps
+
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: terrafusion-production-limits
+  namespace: terrafusion-production
+  labels:
+    component: resource-limits
+    environment: production
+spec:
+  limits:
+    # Default limits for containers
+    - type: Container
+      default:
+        cpu: "2"                # Default CPU limit
+        memory: "4Gi"           # Default memory limit
+      defaultRequest:
+        cpu: "500m"             # Default CPU request
+        memory: "1Gi"           # Default memory request
+      max:
+        cpu: "8"                # Maximum CPU per container
+        memory: "16Gi"          # Maximum memory per container
+      min:
+        cpu: "100m"             # Minimum CPU per container
+        memory: "128Mi"         # Minimum memory per container
+    
+    # Limits for pods
+    - type: Pod
+      max:
+        cpu: "16"               # Maximum CPU per pod
+        memory: "32Gi"          # Maximum memory per pod
+    
+    # Limits for persistent volume claims
+    - type: PersistentVolumeClaim
+      max:
+        storage: "500Gi"        # Maximum storage per PVC
+      min:
+        storage: "1Gi"          # Minimum storage per PVC
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: terrafusion-production-network-policy
+  namespace: terrafusion-production
+  labels:
+    component: network-security
+    environment: production
+spec:
+  podSelector: {}  # Apply to all pods in namespace
+  policyTypes:
+    - Ingress
+    - Egress
+  
+  # Ingress rules - what can connect to our pods
+  ingress:
+    # Allow ingress from ingress controller
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 3000  # Frontend port
+        - protocol: TCP
+          port: 8787  # Backend port
+    
+    # Allow internal pod-to-pod communication
+    - from:
+        - podSelector: {}
+      ports:
+        - protocol: TCP
+          port: 3000
+        - protocol: TCP
+          port: 8787
+        - protocol: TCP
+          port: 5432  # PostgreSQL
+        - protocol: TCP
+          port: 6379  # Redis
+    
+    # Allow monitoring from Prometheus
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: monitoring
+      ports:
+        - protocol: TCP
+          port: 9090  # Metrics port
+  
+  # Egress rules - what our pods can connect to
+  egress:
+    # Allow DNS resolution
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    
+    # Allow HTTPS to external APIs
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443
+    
+    # Allow internal communication
+    - to:
+        - podSelector: {}
+      ports:
+        - protocol: TCP
+          port: 3000
+        - protocol: TCP
+          port: 8787
+        - protocol: TCP
+          port: 5432
+        - protocol: TCP
+          port: 6379
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: terrafusion-frontend-pdb
+  namespace: terrafusion-production
+  labels:
+    component: frontend
+    environment: production
+spec:
+  minAvailable: 2  # Always keep at least 2 frontend pods running
+  selector:
+    matchLabels:
+      app: terrafusion-frontend
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: terrafusion-backend-pdb
+  namespace: terrafusion-production
+  labels:
+    component: backend
+    environment: production
+spec:
+  minAvailable: 3  # Always keep at least 3 backend pods running
+  selector:
+    matchLabels:
+      app: terrafusion-backend
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: terrafusion-service-account
+  namespace: terrafusion-production
+  labels:
+    component: security
+    environment: production
+  annotations:
+    description: "Service account for TerraFusion application pods"
+automountServiceAccountToken: true
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: terrafusion-pod-role
+  namespace: terrafusion-production
+  labels:
+    component: security
+    environment: production
+rules:
+  # Allow reading config maps for application configuration
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch"]
+  
+  # Allow reading secrets for database passwords, etc.
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch"]
+  
+  # Allow reading pod information for health checks
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+  
+  # Allow reading services for service discovery
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: terrafusion-pod-role-binding
+  namespace: terrafusion-production
+  labels:
+    component: security
+    environment: production
+subjects:
+  - kind: ServiceAccount
+    name: terrafusion-service-account
+    namespace: terrafusion-production
+roleRef:
+  kind: Role
+  name: terrafusion-pod-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: terrafusion-tls-cert
+  namespace: terrafusion-production
+  labels:
+    component: security
+    environment: production
+type: kubernetes.io/tls
+data:
+  # Base64 encoded TLS certificate and key
+  # In production, these would be real government-issued certificates
+  tls.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0t  # Placeholder cert
+  tls.key: LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0t  # Placeholder key
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: terrafusion-database-secret
+  namespace: terrafusion-production
+  labels:
+    component: database
+    environment: production
+type: Opaque
+data:
+  # Base64 encoded database credentials
+  # In production, these would be managed by Vault or similar
+  username: dGVycmFmdXNpb25fdXNlcg==  # terrafusion_user
+  password: c3VwZXJfc2VjdXJlX3Bhc3N3b3Jk  # super_secure_password
+  host: cG9zdGdyZXNxbC1zZXJ2aWNl  # postgresql-service
+  port: NTQzMg==  # 5432
+  database: dGVycmFmdXNpb25fZGI=  # terrafusion_db
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: terrafusion-redis-secret
+  namespace: terrafusion-production
+  labels:
+    component: cache
+    environment: production
+type: Opaque
+data:
+  # Base64 encoded Redis credentials
+  password: cmVkaXNfc2VjdXJlX3Bhc3N3b3Jk  # redis_secure_password
+  host: cmVkaXMtc2VydmljZQ==  # redis-service
+  port: NjM3OQ==  # 6379
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: terrafusion-config
+  namespace: terrafusion-production
+  labels:
+    component: configuration
+    environment: production
+data:
+  # Application configuration
+  environment: "production"
+  log_level: "info"
+  federation_enabled: "true"
+  counties: "alameda,contra-costa,solano"
+  websocket_enabled: "true"
+  monitoring_enabled: "true"
+  security_mode: "strict"
+  
+  # Federation configuration
+  alameda_county_endpoint: "https://alameda.terrafusion.gov/api"
+  contra_costa_county_endpoint: "https://contra-costa.terrafusion.gov/api"
+  solano_county_endpoint: "https://solano.terrafusion.gov/api"
+  
+  # Security configuration
+  tls_version: "1.3"
+  cipher_suites: "TLS_AES_256_GCM_SHA384,TLS_CHACHA20_POLY1305_SHA256"
+  session_timeout: "1800"  # 30 minutes
+  max_session_duration: "28800"  # 8 hours
+  
+  # Performance configuration
+  max_connections: "1000"
+  connection_timeout: "30"
+  read_timeout: "60"
+  write_timeout: "60"
+  
+  # Monitoring configuration
+  metrics_enabled: "true"
+  metrics_port: "9090"
+  health_check_interval: "30"
+  health_check_timeout: "10"

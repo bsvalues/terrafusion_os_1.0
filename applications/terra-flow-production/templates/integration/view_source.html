@@ -1,0 +1,310 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="card mb-4">
+                <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5>Data Source: {{ source.source_id }}</h5>
+                        <p class="text-sm">View data source details and schema information</p>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('integration.edit_source', source_id=source.source_id) }}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-edit"></i> Edit Source
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <h6 class="text-uppercase text-muted ls-1 mb-1">Source Information</h6>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            <th>ID:</th>
+                                            <td>{{ source.source_id }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Type:</th>
+                                            <td>{{ source.source_type }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Connection String:</th>
+                                            <td><code>{{ source.connection_string }}</code></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Status:</th>
+                                            <td>
+                                                {% if source.status == 'connected' %}
+                                                <span class="badge bg-success">Connected</span>
+                                                {% elif source.status == 'error' %}
+                                                <span class="badge bg-danger">Error</span>
+                                                {% else %}
+                                                <span class="badge bg-secondary">{{ source.status|title }}</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Refresh Interval:</th>
+                                            <td>{{ source.refresh_interval }} minutes</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Enabled:</th>
+                                            <td>
+                                                {% if source.enabled %}
+                                                <span class="badge bg-success">Yes</span>
+                                                {% else %}
+                                                <span class="badge bg-danger">No</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Last Sync:</th>
+                                            <td>
+                                                {% if source.last_sync %}
+                                                {{ source.last_sync.strftime('%Y-%m-%d %H:%M:%S') }}
+                                                {% else %}
+                                                Never
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <h6 class="text-uppercase text-muted ls-1 mb-1">Metadata</h6>
+                            <div class="card">
+                                <div class="card-body p-3">
+                                    <pre class="mb-0"><code id="metadata">{{ source.metadata|tojson(indent=2) }}</code></pre>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <h6 class="text-uppercase text-muted ls-1 mb-1">Connection Test</h6>
+                                <div class="d-flex">
+                                    <button id="testConnectionBtn" class="btn btn-info btn-sm me-2">
+                                        <i class="fas fa-plug me-1"></i> Test Connection
+                                    </button>
+                                    <span id="testStatus"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <h6 class="text-uppercase text-muted ls-1 mb-1">Data Synchronization</h6>
+                            <div class="d-flex gap-3 mb-3">
+                                <a href="{{ url_for('integration.sync_property') }}?source_id={{ source.source_id }}" class="btn btn-primary">
+                                    <i class="fas fa-sync-alt me-1"></i> Sync Property Data
+                                </a>
+                                <a href="{{ url_for('integration.sync_sales') }}?source_id={{ source.source_id }}" class="btn btn-primary">
+                                    <i class="fas fa-sync-alt me-1"></i> Sync Sales Data
+                                </a>
+                                <a href="{{ url_for('integration.sync_valuation') }}?source_id={{ source.source_id }}" class="btn btn-primary">
+                                    <i class="fas fa-sync-alt me-1"></i> Sync Valuation Data
+                                </a>
+                                <a href="{{ url_for('integration.query') }}?source_id={{ source.source_id }}" class="btn btn-secondary">
+                                    <i class="fas fa-database me-1"></i> Custom Query
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            {% if metadata and metadata.status == 'success' and metadata.schema_info %}
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h5>Schema Information</h5>
+                    <p class="text-sm">Tables and columns available in this data source</p>
+                </div>
+                <div class="card-body p-0">
+                    <div class="accordion" id="schemaAccordion">
+                        {% for table in metadata.schema_info.tables %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading{{ loop.index }}">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                        data-bs-target="#collapse{{ loop.index }}" aria-expanded="false" 
+                                        aria-controls="collapse{{ loop.index }}">
+                                    <i class="fas fa-table me-2"></i> {{ table }}
+                                </button>
+                            </h2>
+                            <div id="collapse{{ loop.index }}" class="accordion-collapse collapse" 
+                                 aria-labelledby="heading{{ loop.index }}" data-bs-parent="#schemaAccordion">
+                                <div class="accordion-body p-0">
+                                    <div class="table-responsive">
+                                        <table class="table mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Column Name</th>
+                                                    <th>Data Type</th>
+                                                    <th>Nullable</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% if metadata.schema_info.columns and metadata.schema_info.columns[table] %}
+                                                {% for column in metadata.schema_info.columns[table] %}
+                                                <tr>
+                                                    <td>{{ column.name }}</td>
+                                                    <td><code>{{ column.type }}</code></td>
+                                                    <td>
+                                                        {% if column.nullable %}
+                                                        <span class="badge bg-success">Yes</span>
+                                                        {% else %}
+                                                        <span class="badge bg-danger">No</span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                                {% else %}
+                                                <tr>
+                                                    <td colspan="3" class="text-center">No column information available</td>
+                                                </tr>
+                                                {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    {% if not metadata.schema_info.tables %}
+                    <div class="p-4 text-center">
+                        <p class="text-muted mb-0">No schema information available. Try testing the connection.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if metadata and metadata.status == 'success' and metadata.schema_info and metadata.schema_info.error %}
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h5>Schema Information Error</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        An error occurred while retrieving schema information: {{ metadata.schema_info.error }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h5>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex gap-3">
+                        <a href="{{ url_for('integration.list_sources') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Back to Sources
+                        </a>
+                        <button class="btn btn-danger" onclick="confirmDelete('{{ source.source_id }}')">
+                            <i class="fas fa-trash me-1"></i> Delete Source
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete data source <strong id="deleteSourceId"></strong>?</p>
+                <p class="text-danger">This action cannot be undone and will permanently remove all related configuration.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function confirmDelete(sourceId) {
+        $('#deleteSourceId').text(sourceId);
+        $('#deleteModal').modal('show');
+    }
+    
+    $(document).ready(function() {
+        // Test connection button handler
+        $('#testConnectionBtn').click(function() {
+            const btn = $(this);
+            const statusEl = $('#testStatus');
+            
+            btn.prop('disabled', true);
+            btn.html('<i class="fas fa-spinner fa-spin me-1"></i> Testing...');
+            statusEl.html('');
+            
+            fetch(`/integration/sources/{{ source.source_id }}/test`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                btn.prop('disabled', false);
+                btn.html('<i class="fas fa-plug me-1"></i> Test Connection');
+                
+                if (data.status === 'success') {
+                    statusEl.html(`<span class="badge bg-success ms-2"><i class="fas fa-check me-1"></i> ${data.message}</span>`);
+                } else {
+                    statusEl.html(`<span class="badge bg-danger ms-2"><i class="fas fa-times me-1"></i> ${data.message}</span>`);
+                }
+            })
+            .catch(error => {
+                btn.prop('disabled', false);
+                btn.html('<i class="fas fa-plug me-1"></i> Test Connection');
+                statusEl.html(`<span class="badge bg-danger ms-2"><i class="fas fa-times me-1"></i> Error: ${error}</span>`);
+            });
+        });
+        
+        // Delete confirmation button handler
+        $('#confirmDeleteBtn').click(function() {
+            fetch(`/integration/sources/{{ source.source_id }}/delete`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                $('#deleteModal').modal('hide');
+                
+                if (data.status === 'success') {
+                    window.location.href = "{{ url_for('integration.list_sources') }}";
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                $('#deleteModal').modal('hide');
+                alert('An error occurred: ' + error);
+            });
+        });
+    });
+</script>
+{% endblock %}

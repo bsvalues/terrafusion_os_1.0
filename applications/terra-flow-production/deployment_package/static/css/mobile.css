@@ -1,0 +1,491 @@
+/**
+ * GeoAssessmentPro Mobile Styles
+ * 
+ * Mobile-specific styles for GeoAssessmentPro, optimized for field use.
+ */
+
+/* ====================
+   Base Mobile Styles 
+   ==================== */
+
+/* Apply mobile optimizations at 768px and below */
+@media (max-width: 768px) {
+  body {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    overflow-x: hidden;
+    padding-bottom: 60px; /* Space for the bottom navigation bar */
+  }
+  
+  /* Fix font sizing */
+  html {
+    font-size: 16px; /* Base font size */
+  }
+  
+  h1 {
+    font-size: 1.75rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+  
+  h3 {
+    font-size: 1.25rem;
+  }
+  
+  /* Optimize touch targets */
+  button, .btn, a.btn, 
+  input[type="button"], 
+  input[type="submit"],
+  .nav-link,
+  .dropdown-item {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.5rem 0.75rem;
+  }
+  
+  /* Improve readability */
+  p, li, td, th, input, select, textarea {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  
+  /* Adjust layout for smaller screens */
+  .container, .container-fluid {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  
+  .row {
+    margin-left: -10px;
+    margin-right: -10px;
+  }
+  
+  .col, [class*="col-"] {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  
+  /* Optimize forms for touch */
+  .form-control, .form-select {
+    height: 44px;
+    font-size: 16px; /* Prevents iOS zoom on focus */
+  }
+  
+  textarea.form-control {
+    height: auto;
+  }
+  
+  .form-check-input {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+  
+  /* Adjust card layout */
+  .card {
+    margin-bottom: 1rem;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  /* Optimize tables */
+  .table-responsive {
+    border: 0;
+  }
+  
+  /* Adjust navigation */
+  .navbar {
+    padding: 0.5rem 1rem;
+  }
+  
+  .navbar-brand {
+    font-size: 1.25rem;
+    margin-right: 0.5rem;
+  }
+}
+
+/* Very small screens (under 576px) */
+@media (max-width: 576px) {
+  .container {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  h2 {
+    font-size: 1.25rem;
+  }
+  
+  h3 {
+    font-size: 1.125rem;
+  }
+  
+  /* Hide certain elements on very small screens */
+  .d-xs-none {
+    display: none !important;
+  }
+  
+  /* Adjust button groups */
+  .btn-group .btn {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
+/* ====================
+   Field Assessment Mode
+   ==================== */
+
+/* Special mode for field assessors */
+body.field-assessment-mode {
+  /* Visual indicator that field mode is active */
+  background-color: #fcfcfc;
+}
+
+.field-assessment-mode .navbar {
+  background-color: #24478f !important;
+}
+
+/* Enhanced touch targets in field mode */
+.field-assessment-mode button,
+.field-assessment-mode .btn,
+.field-assessment-mode a.btn,
+.field-assessment-mode input[type="button"],
+.field-assessment-mode input[type="submit"] {
+  padding: 0.625rem 1rem;
+  font-size: 1.1rem;
+  min-height: 48px;
+}
+
+/* Field mode form optimizations */
+.field-assessment-mode .form-control,
+.field-assessment-mode .form-select {
+  height: 48px;
+  font-size: 1.1rem;
+  background-color: #fff;
+  border: 1px solid #ced4da;
+}
+
+.field-assessment-mode .form-label {
+  font-weight: 500;
+  color: #212529;
+}
+
+.field-assessment-mode .form-check-input {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Field mode bottom navigation */
+.field-navbar {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  padding: 0.5rem;
+}
+
+.field-assessment-mode .field-navbar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.field-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem;
+  color: #6c757d;
+  text-decoration: none;
+  font-size: 0.8rem;
+}
+
+.field-nav-item.active {
+  color: #0d6efd;
+}
+
+.field-nav-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+/* ====================
+   Offline Indicator
+   ==================== */
+
+/* Offline mode indicator */
+body.offline .offline-indicator {
+  display: block;
+}
+
+.offline-indicator {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #dc3545;
+  color: white;
+  text-align: center;
+  padding: 0.5rem;
+  font-weight: 500;
+  z-index: 2000;
+}
+
+/* Adjust layout when offline indicator is visible */
+body.offline {
+  padding-top: 40px;
+}
+
+body.offline .navbar {
+  margin-top: 40px;
+}
+
+/* Offline notification */
+.offline-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-width: 300px;
+  z-index: 2000;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.offline-notification.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.offline-notification-content {
+  padding: 15px;
+}
+
+.offline-notification-content strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #212529;
+}
+
+.offline-notification-content p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.offline-notification-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  border: none;
+  background: none;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #6c757d;
+}
+
+/* Update notification */
+.update-notification {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background-color: #0d6efd;
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 15px;
+  max-width: 300px;
+  z-index: 2000;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.update-notification.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.update-notification-content strong {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.update-notification-content p {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+/* ====================
+   Property Assessment UI
+   ==================== */
+
+/* Mobile optimized property cards */
+.property-card {
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.property-card-header {
+  background-color: #f8f9fa;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.property-card-body {
+  padding: 1rem;
+}
+
+.property-card-footer {
+  background-color: #f8f9fa;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #dee2e6;
+}
+
+.property-card-title {
+  margin-bottom: 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.property-card-subtitle {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.property-info-row {
+  display: flex;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.property-info-label {
+  flex: 1;
+  font-weight: 500;
+  color: #495057;
+}
+
+.property-info-value {
+  flex: 2;
+  color: #212529;
+}
+
+/* Assessment form optimizations */
+.assessment-section {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.assessment-section-title {
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #dee2e6;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* Image capture buttons */
+.capture-photo-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 120px;
+  background-color: #f8f9fa;
+  border: 1px dashed #ced4da;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  cursor: pointer;
+}
+
+.capture-photo-btn i {
+  font-size: 1.5rem;
+  color: #6c757d;
+  margin-right: 0.5rem;
+}
+
+.thumbnail-preview {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+/* ====================
+   Map Components
+   ==================== */
+
+/* Mobile map container */
+.mobile-map-container {
+  position: relative;
+  height: calc(100vh - 110px);
+  width: 100%;
+}
+
+/* Map UI controls */
+.map-control-overlay {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  z-index: 400;
+  display: flex;
+  justify-content: space-between;
+}
+
+.map-search-container {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.map-search-input {
+  width: 100%;
+  height: 40px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.map-control-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  background-color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.map-control-button i {
+  font-size: 1.25rem;
+  color: #212529;
+}

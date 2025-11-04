@@ -1,0 +1,44 @@
+[package]
+name = "terrafusion_rust"
+version = "0.1.0"
+edition = "2021"
+authors = ["TerraFusion Team"]
+description = "Next-generation AI-powered real estate appraisal platform with agent orchestration"
+license = "MIT"
+repository = "https://github.com/terrafusion/terrafusion-rust"
+
+[dependencies]
+tokio = { version = "1.35", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+uuid = { version = "1.6", features = ["v4", "serde"] }
+async-trait = "0.1"
+thiserror = "1.0"
+anyhow = "1.0"
+clap = { version = "4.4", features = ["derive"] }
+chrono = { version = "0.4", features = ["serde"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+warp = "0.3"
+qdrant-client = "1.7"
+reqwest = { version = "0.11", features = ["json"] }
+xml-rs = "0.8"
+quick-xml = { version = "0.31", features = ["serialize"] }
+base64 = "0.21"
+futures = "0.3"
+dashmap = "5.5"
+notify = "6.1"
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "chrono", "uuid"] }
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[[bin]]
+name = "terrafusion"
+path = "src/main.rs"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"

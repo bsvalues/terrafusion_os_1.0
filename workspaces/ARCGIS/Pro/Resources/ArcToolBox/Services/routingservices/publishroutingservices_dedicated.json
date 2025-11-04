@@ -1,0 +1,611 @@
+{
+    "configVersion": "1.0",
+    "dedicatedServicePerSolver": true,
+    "routingServices": {
+        "mapServices": {
+            "route": {
+                "serviceProperties": {
+                    "serviceName": "Route",
+                    "summary": "Finds best route between two or more stops and returns driving directions..",
+                    "description": "",
+                    "tags": "Route, routing, routes, path, tour, directions",
+                    "credits": "",
+                    "useLimitations": "",
+                    "MinInstances": 1,
+                    "MaxInstances": 2,
+                    "UsageTimeout": 600,
+                    "WaitTimeout": 60,
+                    "IdleTimeout": 1800,
+                    "recycleInterval": 24,
+                    "recycleStartTime": "00:00",
+                    "allowSaveLayerOnServer": "true",
+                    "saveLayerOnServerWhenError": "false",
+                    "saveLayerOnServerWhenDebugging": "false",
+                    "ignoreNetworkLocationFields": "false",
+                    "usePortalTravelModes": "true",
+                    "licensedForAutomaticRerouting": "false",
+                    "logRestSolveParameters": "false",
+                    "defaultOutSR": "",
+                    "returnAllFields": "false",
+                    "analysisLayerNameSuffix": ""
+                },
+                "layerProperties": {
+                    "route": {
+                        "defaultValues": {
+                            "directionsLanguage": "",
+                            "directionsLengthUnits": "esriNAUMiles",
+                            "directionsStyleName": "NA Desktop",
+                            "findBestSequence": false,
+                            "ignoreInvalidLocations": true,
+                            "locateSettings": {
+                                "default": {
+                                    "allowAutoRelocate": true,
+                                    "tolerance": 20000,
+                                    "toleranceUnits": "esriMeters"
+                                }
+                            },
+                            "outputLines": "esriNAOutputLineTrueShape",
+                            "preserveFirstStop": true,
+                            "preserveLastStop": true,
+                            "returnDirections": true,
+                            "startTime": "none",
+                            "startTimeIsUTC": false,
+                            "timeWindowsAreUTC": false,
+                            "useTimeWindows": false
+                        }
+                    }
+                }
+            },
+            "closestFacility": {
+                "serviceProperties": {
+                    "serviceName": "ClosestFacility",
+                    "summary": "Finds one or more closest facilities for given incidents.",
+                    "description": "",
+                    "tags": "Closest Facility, proximity, nearby, near",
+                    "credits": "",
+                    "useLimitations": "",
+                    "MinInstances": 1,
+                    "MaxInstances": 2,
+                    "UsageTimeout": 600,
+                    "WaitTimeout": 60,
+                    "IdleTimeout": 1800,
+                    "recycleInterval": 24,
+                    "recycleStartTime": "00:00",
+                    "allowSaveLayerOnServer": "true",
+                    "saveLayerOnServerWhenError": "false",
+                    "saveLayerOnServerWhenDebugging": "false",
+                    "ignoreNetworkLocationFields": "false",
+                    "usePortalTravelModes": "true",
+                    "licensedForAutomaticRerouting": "false",
+                    "logRestSolveParameters": "false",
+                    "defaultOutSR": "",
+                    "returnAllFields": "false",
+                    "analysisLayerNameSuffix": ""
+                },
+                "layerProperties": {
+                    "closestFacility": {
+                        "defaultValues": {
+                            "defaultCutoff": null,
+                            "defaultTargetFacilityCount": 1,
+                            "directionsLanguage": "",
+                            "directionsLengthUnits": "esriNAUMiles",
+                            "directionsStyleName": "NA Desktop",
+                            "ignoreInvalidLocations": true,
+                            "locateSettings": {
+                                "default": {
+                                    "allowAutoRelocate": true,
+                                    "tolerance": 20000,
+                                    "toleranceUnits": "esriMeters"
+                                }
+                            },
+                            "outputLines": "esriNAOutputLineTrueShape",
+                            "returnDirections": false,
+                            "timeOfDay": "none",
+                            "timeOfDayIsUTC": false,
+                            "timeOfDayUsage": "esriNATimeOfDayUseAsStartTime",
+                            "travelDirection": "esriNATravelDirectionToFacility"
+                        }
+                    }
+                }
+            },
+            "serviceArea": {
+                "serviceProperties": {
+                    "serviceName": "ServiceAreas",
+                    "summary": "Calculates service areas around one or more facilities.",
+                    "description": "",
+                    "tags": "Service area, trade areas, drive time polygons",
+                    "credits": "",
+                    "useLimitations": "",
+                    "MinInstances": 1,
+                    "MaxInstances": 2,
+                    "UsageTimeout": 600,
+                    "WaitTimeout": 60,
+                    "IdleTimeout": 1800,
+                    "recycleInterval": 24,
+                    "recycleStartTime": "00:00",
+                    "allowSaveLayerOnServer": "true",
+                    "saveLayerOnServerWhenError": "false",
+                    "saveLayerOnServerWhenDebugging": "false",
+                    "ignoreNetworkLocationFields": "false",
+                    "usePortalTravelModes": "true",
+                    "logRestSolveParameters": "false",
+                    "defaultOutSR": "",
+                    "returnAllFields": "false",
+                    "analysisLayerNameSuffix": ""
+                },
+                "layerProperties": {
+                    "serviceArea": {
+                        "defaultValues": {
+                            "defaultBreaks": [
+                                5,
+                                10,
+                                15
+                            ],
+                            "ignoreInvalidLocations": true,
+                            "includeSourceInformationOnLines": true,
+                            "locateSettings": {
+                                "default": {
+                                    "allowAutoRelocate": true,
+                                    "tolerance": 20000,
+                                    "toleranceUnits": "esriMeters"
+                                }
+                            },
+                            "mergeSimilarPolygonRanges": false,
+                            "outputLines": "esriNAOutputLineNone",
+                            "outputPolygons": "esriNAOutputPolygonSimplified",
+                            "overlapLines": true,
+                            "overlapPolygons": true,
+                            "splitLinesAtBreaks": false,
+                            "splitPolygonsAtBreaks": true,
+                            "timeOfDay": "none",
+                            "timeOfDayIsUTC": false,
+                            "travelDirection": "esriNATravelDirectionFromFacility",
+                            "trimOuterPolygon": true,
+                            "trimPolygonDistance": 100,
+                            "trimPolygonDistanceUnits": "esriMeters"
+                        }
+                    }
+                }
+            },
+            "odCostMatrix": {
+                "serviceProperties": {
+                    "serviceName": "OriginDestinationCostMatrix",
+                    "summary": "Computes a travel cost matrix between origins and destinations.",
+                    "description": "",
+                    "tags": "OD Cost Matrix, OD, matrix, travel matrix, proximity, nearby, near",
+                    "credits": "",
+                    "useLimitations": "",
+                    "MinInstances": 1,
+                    "MaxInstances": 2,
+                    "UsageTimeout": 600,
+                    "WaitTimeout": 60,
+                    "IdleTimeout": 1800,
+                    "recycleInterval": 24,
+                    "recycleStartTime": "00:00",
+                    "allowSaveLayerOnServer": "true",
+                    "saveLayerOnServerWhenError": "false",
+                    "saveLayerOnServerWhenDebugging": "false",
+                    "ignoreNetworkLocationFields": "false",
+                    "usePortalTravelModes": "true",
+                    "licensedForAutomaticRerouting": "false",
+                    "logRestSolveParameters": "false",
+                    "defaultOutSR": "",
+                    "returnAllFields": "false",
+                    "analysisLayerNameSuffix": ""
+                },
+                "layerProperties": {
+                    "odCostMatrix": {
+                        "defaultValues": {
+                            "defaultCutoff": null,
+                            "defaultTargetDestinationCount": null,
+                            "ignoreInvalidLocations": true,
+                            "locateSettings": {
+                                "default": {
+                                    "allowAutoRelocate": true,
+                                    "tolerance": 20000,
+                                    "toleranceUnits": "esriMeters"
+                                }
+                            },
+                            "timeOfDay": "none",
+                            "timeOfDayIsUTC": false
+                        }
+                    }
+                }
+            }
+        },
+        "gpServices": {
+            "asyncRoute": {
+                "serviceProperties": {
+                    "serviceName": "Route",
+                    "summary": "FindRoutes determines the shortest paths to visit the input stops and returns the driving directions, information about the visited stops, and the route paths, including travel time and distance.",
+                    "tags": "route, routes, directions, driving directions, batch routes, tsp, path, tour",
+                    "maximumRecords": 1000000,
+                    "MinInstances": 1,
+                    "MaxInstances": 2,
+                    "UsageTimeout": 14400,
+                    "recycleInterval": 24,
+                    "recycleStartTime": "00:00"
+                },
+                "toolProperties": {
+                    "FindRoutes": {
+                        "defaultValues": {
+                            "directions_distance_units": "Miles",
+                            "directions_language": "en",
+                            "directions_style_name": "NA Desktop",
+                            "ignore_invalid_locations": true,
+                            "ignore_network_location_fields": false,
+                            "locate_settings": {
+                                "default": {
+                                    "allowAutoRelocate": true,
+                                    "tolerance": 20000,
+                                    "toleranceUnits": "esriMeters"
+                                }
+                            },
+                            "measurement_units": "Minutes",
+                            "output_format": "Feature Set",
+                            "populate_directions": true,
+                            "populate_route_edges": false,
+                            "preserve_terminal_stops": "Preserve First",
+                            "reorder_stops_to_find_optimal_routes": false,
+                            "return_to_start": false,
+                            "route_shape": "True Shape",
+                            "save_output_network_analysis_layer": false,
+                            "save_route_data": false,
+                            "time_of_day": null,
+                            "time_zone_for_time_of_day": "Geographically Local",
+                            "time_zone_for_time_windows": "Geographically Local",
+                            "use_time_windows": false
+                        },
+                        "constantParameters": []
+                    }
+                }
+            },
+            "asyncClosestFacility": {
+                "serviceProperties": {
+                    "serviceName": "ClosestFacility",
+                    "summary": "Finds one or more facilities that are closest from an incident based on travel time or travel distance and outputs the best routes, driving directions between the incidents and the chosen facilities, and a copy of the chosen facilities.",
+                    "tags": "find nearby, closest, proximity, closest facility, near, nearest facilities",
+                    "maximumRecords": 1000000,
+                    "MinInstances": 1,
+                    "MaxInstances": 1,
+                    "UsageTimeout": 14400,
+                    "recycleInterval": 24,
+                    "recycleStartTime": "00:00"
+                },
+                "toolProperties": {
+                    "FindClosestFacilities": {
+                        "defaultValues": {
+                            "cutoff": null,
+                            "directions_distance_units": "Miles",
+                            "directions_language": "en",
+                            "directions_style_name": "NA Desktop",
+                            "ignore_invalid_locations": true,
+                            "ignore_network_location_fields": false,
+                            "locate_settings": {
+                                "default": {
+                                    "allowAutoRelocate": true,
+                                    "tolerance": 20000,
+                                    "toleranceUnits": "esriMeters"
+                                }
+                            },
+                            "measurement_units": "Minutes",
+                            "number_of_facilities_to_find": 1,
+                            "output_format": "Feature Set",
+                            "populate_directions": false,
+                            "route_shape": "True Shape",
+                            "save_output_network_analysis_layer": false,
+                            "save_route_data": false,
+                            "time_of_day": null,
+                            "time_of_day_usage": "Start Time",
+                            "time_zone_for_time_of_day": "Geographically Local",
+                            "travel_direction": "Incident to Facility"
+                        },
+                        "constantParameters": []
+                    }
+                }
+            },
+            "asyncServiceArea": {
+                "serviceProperties": {
+                    "serviceName": "ServiceAreas",
+                    "summary": "GenerateServiceAreas determines network service areas around facilities. A network service area is a region that encompasses all streets that can be accessed within a given distance or travel time from one or more facilities.",
+                    "tags": "Drivetime polygons, Drivetime areas, Service areas, Trade areas, Network buffer, Market areas, Sales territories",
+                    "maximumRecords": 1000000,
+                    "MinInstances": 1,
+                    "MaxInstances": 2,
+                    "UsageTimeout": 14400,
+                    "recycleInterval": 24,
+                    "recycleStartTime": "00:00"
+                },
+                "toolProperties": {
+                    "GenerateServiceAreas": {
+                        "defaultValues": {
+                            "break_units": "Minutes",
+                            "break_values": "5 10 15",
+                            "exclude_sources_from_polygon_generation": [],
+                            "ignore_invalid_locations": true,
+                            "ignore_network_location_fields": false,
+                            "locate_settings": {
+                                "default": {
+                                    "allowAutoRelocate": true,
+                                    "tolerance": 20000,
+                                    "toleranceUnits": "esriMeters"
+                                }
+                            },
+                            "output_format": "Feature Set",
+                            "output_type": "Polygons",
+                            "polygon_detail": "Standard",
+                            "polygon_overlap_type": "Rings",
+                            "polygon_trim_distance": {
+                                "distance": 100,
+                                "units": "esriMeters"
+                            },
+                            "polygons_for_multiple_facilities": "Overlapping",
+                            "save_output_network_analysis_layer": false,
+                            "time_of_day": null,
+                            "time_zone_for_time_of_day": "Geographically Local",
+                            "travel_direction": "Away From Facility"
+                        },
+                        "constantParameters": []
+                    }
+                }
+            },
+            "asyncODCostMatrix": {
+                "serviceProperties": {
+                    "serviceName": "OriginDestinationCostMatrix",
+                    "summary": "Creates an origin-destination (OD) cost matrix from multiple origins to multiple destinations. An OD cost matrix is a table that contains the travel time and travel distance from each origin to each destination.",
+                    "tags": "matrix, distance matrix, travel matrix, od matrix, od cost matrix, origin-destination, origin destination cost matrix, origin destination matrix",
+                    "maximumRecords": 1000000,
+                    "MinInstances": 1,
+                    "MaxInstances": 2,
+                    "UsageTimeout": 14400,
+                    "recycleInterval": 24,
+                    "recycleStartTime": "00:00"
+                },
+                "toolProperties": {
+                    "GenerateOriginDestinationCostMatrix": {
+                        "defaultValues": {
+                            "cutoff": null,
+                            "distance_units": "Kilometers",
+                            "ignore_invalid_locations": true,
+                            "ignore_network_location_fields": false,
+                            "locate_settings": {
+                                "default": {
+                                    "allowAutoRelocate": true,
+                                    "tolerance": 20000,
+                                    "toleranceUnits": "esriMeters"
+                                }
+                            },
+                            "number_of_destinations_to_find": null,
+                            "origin_destination_line_shape": "None",
+                            "output_format": "Feature Set",
+                            "save_output_network_analysis_layer": false,
+                            "time_of_day": null,
+                            "time_units": "Minutes",
+                            "time_zone_for_time_of_day": "Geographically Local"
+                        },
+                        "constantParameters": []
+                    }
+                }
+            },
+            "asyncLocationAllocation": {
+                "serviceProperties": {
+                    "serviceName": "LocationAllocation",
+                    "summary": "The SolveLocationAllocation tool chooses the best location or locations from a set of input locations. Input to this tool includes facilities, which provide goods or services, and demand points, which consume the goods and services.",
+                    "tags": "choose locations, allocation, capacitated coverage, location-allocation, spatial interaction, market share, gravity models",
+                    "maximumRecords": 1000000,
+                    "MinInstances": 1,
+                    "MaxInstances": 2,
+                    "UsageTimeout": 14400,
+                    "recycleInterval": 24,
+                    "recycleStartTime": "00:00"
+                },
+                "toolProperties": {
+                    "SolveLocationAllocation": {
+                        "defaultValues": {
+                            "allocation_line_shape": "Straight Line",
+                            "default_capacity": 1,
+                            "default_measurement_cutoff": null,
+                            "ignore_invalid_locations": true,
+                            "ignore_network_location_fields": false,
+                            "locate_settings": {
+                                "default": {
+                                    "allowAutoRelocate": true,
+                                    "tolerance": 20000,
+                                    "toleranceUnits": "esriMeters"
+                                }
+                            },
+                            "measurement_transformation_factor": 1,
+                            "measurement_transformation_model": "Linear",
+                            "measurement_units": "Minutes",
+                            "number_of_facilities_to_find": 1,
+                            "output_format": "Feature Set",
+                            "problem_type": "Minimize Impedance",
+                            "save_output_network_analysis_layer": false,
+                            "target_market_share": 10,
+                            "time_of_day": null,
+                            "time_zone_for_time_of_day": "Geographically Local",
+                            "travel_direction": "Facility to Demand"
+                        },
+                        "constantParameters": []
+                    }
+                }
+            },
+            "asyncVRP": {
+                "serviceProperties": {
+                    "serviceName": "VehicleRoutingProblem",
+                    "summary": "SolveVehicleRoutingProblem tool solves a vehicle routing problem (VRP) to find the best routes for a fleet of vehicles.",
+                    "tags": "Bus, Delivery, Depot, Distribute, Driver, Fleet, Order, Pickup, School, Tour, Truck, VRP",
+                    "maximumRecords": 1000000,
+                    "MinInstances": 1,
+                    "MaxInstances": 2,
+                    "UsageTimeout": 14400,
+                    "recycleInterval": 24,
+                    "recycleStartTime": "00:00"
+                },
+                "toolProperties": {
+                    "SolveVehicleRoutingProblem": {
+                        "defaultValues": {
+                            "default_date": null,
+                            "directions_language": "en",
+                            "directions_style_name": "NA Desktop",
+                            "distance_units": "Miles",
+                            "excess_transit_factor": "Medium",
+                            "ignore_invalid_order_locations": true,
+                            "ignore_network_location_fields": false,
+                            "locate_settings": {
+                                "default": {
+                                    "allowAutoRelocate": true,
+                                    "tolerance": 20000,
+                                    "toleranceUnits": "esriMeters"
+                                }
+                            },
+                            "output_format": "Feature Set",
+                            "populate_directions": false,
+                            "populate_route_lines": true,
+                            "populate_stop_shapes": false,
+                            "save_output_layer": false,
+                            "save_route_data": false,
+                            "spatially_cluster_routes": true,
+                            "time_units": "Minutes",
+                            "time_window_factor": "Medium",
+                            "time_zone_usage_for_time_fields": "GEO_LOCAL"
+                        },
+                        "constantParameters": []
+                    }
+                }
+            },
+            "asyncFleetRouting": {
+                "serviceProperties": {
+                    "serviceName": "LastMileDelivery",
+                    "summary": "The Last Mile Delivery service is a use case specific Vehicle Routing Problem (VRP) algorithm designed for a fleet of vehicles that are delivering packages to the final customers",
+                    "tags": "Bus, Delivery, Depot, Distribute, Driver, Fleet, Order, Pickup, School, Tour, Truck, VRP, Last Mile",
+                    "maximumRecords": 1000000,
+                    "MinInstances": 1,
+                    "MaxInstances": 2,
+                    "UsageTimeout": 14400,
+                    "recycleInterval": 24,
+                    "recycleStartTime": "00:00"
+                },
+                "toolProperties": {
+                    "SolveLastMileDelivery": {
+                        "defaultValues": {
+                            "directions_language": "en",
+                            "distance_units": "Miles",
+                            "earliest_route_start_date": "",
+                            "earliest_route_start_time": "",
+                            "max_route_total_time": null,
+                            "sequence_gap": 1,
+                            "ignore_invalid_order_locations": true,
+                            "ignore_network_location_fields": false,
+                            "locate_settings": {
+                                "default": {
+                                    "allowAutoRelocate": true,
+                                    "tolerance": 20000,
+                                    "toleranceUnits": "esriMeters"
+                                }
+                            },
+                            "output_format": "Feature Set",
+                            "populate_directions": false,
+                            "route_shape": "Straight Line",
+                            "save_output_network_analysis_layer": false,
+                            "save_route_data": false,
+                            "time_units": "Minutes",
+                            "time_zone_usage_for_time_fields": "GEO_LOCAL"
+                        },
+                        "constantParameters": [
+                            "ignore_network_location_fields"
+                        ]
+                    }
+                }
+            },
+            "syncVRP": {
+                "serviceProperties": {
+                    "serviceName": "VehicleRoutingProblemSync",
+                    "summary": "EditVehicleRoutingProblem tool solves a vehicle routing problem (VRP) to find the best routes for a fleet of vehicles. It is similar to SolveVehicleRoutingProblem, but it is designed to make a few, small edits to the results of VRP.",
+                    "tags": "Bus, Delivery, Depot, Distribute, Driver, Fleet, Order, Pickup, School, Tour, Truck, VRP",
+                    "maximumRecords": 100000,
+                    "MinInstances": 1,
+                    "MaxInstances": 2,
+                    "UsageTimeout": 600,
+                    "recycleInterval": 24,
+                    "recycleStartTime": "00:00",
+                    "reusejobdir": "true"
+                },
+                "toolProperties": {
+                    "EditVehicleRoutingProblem": {
+                        "defaultValues": {
+                            "default_date": null,
+                            "directions_language": "en",
+                            "directions_style_name": "NA Desktop",
+                            "distance_units": "Miles",
+                            "excess_transit_factor": "Medium",
+                            "ignore_invalid_order_locations": true,
+                            "ignore_network_location_fields": false,
+                            "locate_settings": {
+                                "default": {
+                                    "allowAutoRelocate": true,
+                                    "tolerance": 20000,
+                                    "toleranceUnits": "esriMeters"
+                                }
+                            },
+                            "output_format": "Feature Set",
+                            "populate_directions": false,
+                            "populate_route_lines": true,
+                            "populate_stop_shapes": false,
+                            "save_output_layer": false,
+                            "save_route_data": false,
+                            "spatially_cluster_routes": true,
+                            "time_units": "Minutes",
+                            "time_window_factor": "Medium",
+                            "time_zone_usage_for_time_fields": "GEO_LOCAL"
+                        },
+                        "constantParameters": []
+                    }
+                }
+            },
+            "snapToRoads": {
+                "serviceProperties": {
+                    "serviceName": "SnapToRoadsSync",
+                    "summary": "Performs Snap to Roads analysis in synchronous execution mode.",
+                    "tags": "snap, match",
+                    "maximumRecords": 100000,
+                    "MinInstances": 1,
+                    "MaxInstances": 2,
+                    "UsageTimeout": 600,
+                    "recycleInterval": 24,
+                    "recycleStartTime": "00:00",
+                    "reusejobdir": "true"
+                },
+                "toolProperties": {
+                    "SnapToRoads": {
+                        "defaultValues": {
+                            "return_lines": false,
+                            "road_properties_on_snapped_points": [],
+                            "road_properties_on_lines": [],
+                            "return_location_fields": false
+                        },
+                        "constantParameters": [
+                            "road_properties"
+                        ]
+                    }
+                }
+
+            },
+
+            "routingUtilities": {
+                "serviceProperties": {
+                    "serviceName": "Utilities",
+                    "summary": "The Utilities service contains tools that provide auxiliary information such as the description of the network dataset used for the analysis, the execution limits for a tool, or a list of supported travel modes for the network analysis services.",
+                    "tags": "service limits, network description, network dataset description, travel modes, travel mode",
+                    "maximumRecords": 10000,
+                    "MinInstances": 1,
+                    "MaxInstances": 2,
+                    "UsageTimeout": 60,
+                    "recycleInterval": 24,
+                    "recycleStartTime": "00:00",
+                    "reusejobdir": "true"
+                }
+            }
+        }
+    }
+}

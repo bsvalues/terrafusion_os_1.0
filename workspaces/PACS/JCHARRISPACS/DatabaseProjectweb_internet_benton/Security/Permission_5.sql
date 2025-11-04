@@ -1,0 +1,5 @@
+GRANT CONNECT TO [CO\SRF1];
+
+
+GO
+

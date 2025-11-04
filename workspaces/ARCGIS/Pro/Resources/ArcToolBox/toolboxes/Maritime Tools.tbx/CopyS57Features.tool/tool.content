@@ -1,0 +1,62 @@
+{
+    "type": "FunctionTool",
+    "guid": "{C5CD7E91-50D4-44D2-B98B-151009423D52}/CopyS57Features",
+    "displayname": "$rc:title",
+    "helpcontent": "63020002",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "50"
+    ],
+    "attributes": [
+        "edit_session"
+    ],
+    "params": {
+        "in_features": {
+            "display_order": "0",
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "target_workspace": {
+            "display_order": "1",
+            "displayname": "$rc:target_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "domain": {
+                "type": "GPWorkspaceDomain",
+                "workspacetype": [
+                    "Local Database",
+                    "Remote Database"
+                ]
+            },
+            "description": "$rc:target_workspace.descr"
+        },
+        "compilation_scale": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:compilation_scale.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:compilation_scale.descr"
+        },
+        "updated_workspace": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "depends": [
+                "target_workspace"
+            ]
+        }
+    }
+}

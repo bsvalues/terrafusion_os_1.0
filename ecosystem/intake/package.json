@@ -1,0 +1,79 @@
+{
+  "name": "terrafusion-zt-intake",
+  "version": "1.0.0",
+  "description": "TerraFusion Zero-Touch Integration Pipeline - Government. Transcended.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "scan": "node scan-runner.js",
+    "analyze": "node analyze-runner.js",
+    "integrate": "node integration-runner.js",
+    "deploy": "node deployment-runner.js",
+    "test": "jest",
+    "lint": "eslint .",
+    "build": "tsc",
+    "dev": "nodemon --exec tsx scan-runner.js"
+  },
+  "keywords": [
+    "terrafusion",
+    "government",
+    "legacy-modernization",
+    "zero-touch",
+    "ai-agents",
+    "fisma",
+    "fedramp"
+  ],
+  "author": "TerraFusion Elite Government OS Team",
+  "license": "Government License",
+  "dependencies": {
+    "@kubernetes/client-node": "^1.4.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/node": "^20.19.23",
+    "@types/pg": "^8.15.5",
+    "chalk": "^5.3.0",
+    "commander": "^11.1.0",
+    "cors": "^2.8.5",
+    "docker-compose": "^0.24.3",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
+    "helmet": "^8.1.0",
+    "http-proxy-middleware": "^3.0.5",
+    "inquirer": "^9.2.12",
+    "ora": "^8.0.1",
+    "pg": "^8.16.3",
+    "prom-client": "^15.1.0",
+    "tsx": "^4.6.0",
+    "typescript": "^5.3.0",
+    "yaml": "^2.3.4"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.8",
+    "@typescript-eslint/eslint-plugin": "^6.12.0",
+    "@typescript-eslint/parser": "^6.12.0",
+    "eslint": "^8.54.0",
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/terrafusion/os-platform.git"
+  },
+  "terrafusion": {
+    "platform": "elite-government-os",
+    "version": "1.0.0",
+    "compliance": "FISMA-HIGH",
+    "security": "air-gap-ready",
+    "features": {
+      "zero-touch-integration": true,
+      "ai-agent-coordination": true,
+      "government-compliance": true,
+      "autonomous-healing": true,
+      "quantum-ui": true,
+      "infinite-scale": true
+    }
+  }
+}

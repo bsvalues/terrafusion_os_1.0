@@ -1,0 +1,20 @@
+{
+    "set": [
+        "bag",
+        "bag metadata",
+        "bis",
+        "bis catalog",
+        "bis workspace",
+        "bathymetric attributed grid",
+        "bathymetric information system",
+        "bathymetry",
+        "footprint",
+        "maritime",
+        "percent coverage",
+        "convex hull",
+        "depth data",
+        "envelope",
+        "precise domain",
+        "raster"
+    ]
+}

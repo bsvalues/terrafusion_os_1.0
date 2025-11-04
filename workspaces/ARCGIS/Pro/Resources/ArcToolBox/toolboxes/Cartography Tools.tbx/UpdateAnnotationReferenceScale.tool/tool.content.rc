@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Updates the reference scale of an existing annotation or dimension feature class.",
+        "in_anno_features.descr": "The input annotation or dimension features.",
+        "in_anno_features.title": "Input Annotation Features",
+        "reference_scale.descr": "The feature class reference scale that will be updated.",
+        "reference_scale.title": "Reference Scale",
+        "title": "Update Annotation Reference Scale",
+        "updated_annotation.title": "Updated Annotation"
+    }
+}

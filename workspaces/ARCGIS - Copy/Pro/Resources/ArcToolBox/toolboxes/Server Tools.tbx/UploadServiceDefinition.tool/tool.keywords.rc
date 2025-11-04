@@ -1,0 +1,16 @@
+{
+    "set": [
+        "geocoding service",
+        "geodata service",
+        "geoprocessing service",
+        "globe service",
+        "map service",
+        "publish",
+        "publish service",
+        "publishing",
+        "server",
+        "service",
+        "service definition",
+        "stage service"
+    ]
+}

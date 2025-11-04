@@ -1,0 +1,25 @@
+{
+    "set": [
+        "batch",
+        "change",
+        "convert",
+        "copy",
+        "coverage",
+        "export",
+        "feature class",
+        "file",
+        "format",
+        "gdb",
+        "import",
+        "layer",
+        "load",
+        "make",
+        "many",
+        "migrate",
+        "sde",
+        "shapefile",
+        "shp",
+        "turn",
+        "vpf"
+    ]
+}

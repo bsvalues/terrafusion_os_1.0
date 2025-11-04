@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-configuration xmlns="urn:nhibernate-configuration-2.2">
+	<!-- this configuration uses SQLite and an in-memory database,
+			 which is nice for unit testing -->
+	<!--<session-factory>
+		<property name="connection.provider">NHibernate.Connection.DriverConnectionProvider</property>
+		<property name="dialect">NHibernate.Dialect.SQLiteDialect</property>
+		<property name="connection.driver_class">NHibernate.Driver.SQLite20Driver</property>
+		<property name="connection.connection_string">Data Source=:memory:;Version=3;New=True;</property>
+		<property name="connection.release_mode">on_close</property>
+		<property name="show_sql">false</property>
+		<property name="proxyfactory.factory_class">NHibernate.ByteCode.Castle.ProxyFactoryFactory, NHibernate.ByteCode.Castle</property>
+	</session-factory>-->
+
+  <!-- this configuration uses a local SQLite database -->
+  <session-factory>
+    <property name="connection.provider">NHibernate.Connection.DriverConnectionProvider</property>
+    <property name="dialect">NHibernate.Dialect.SQLiteDialect</property>
+    <property name="connection.driver_class">NHibernate.Driver.SQLite20Driver</property>
+    <property name="connection.connection_string">Data Source=taskservice.db;Version=3;New=True;</property>
+    <property name="connection.release_mode">on_close</property>
+		<property name="format_sql">true</property>
+		<property name="show_sql">false</property>
+    <property name="proxyfactory.factory_class">NHibernate.ByteCode.Castle.ProxyFactoryFactory, NHibernate.ByteCode.Castle</property>
+  </session-factory>
+  
+	<!-- this is a configuration that uses SQL Server instead -->
+	<!--
+	<session-factory>
+		<property name="connection.connection_string">Data Source=localhost;Database=TestORM;Integrated Security=SSPI;</property>
+		<property name="dialect">NHibernate.Dialect.MsSql2005Dialect</property>
+		<property name="connection.provider">NHibernate.Connection.DriverConnectionProvider</property>
+		<property name="connection.driver_class">NHibernate.Driver.SqlClientDriver</property>
+		<property name="show_sql">false</property>
+		<property name="connection.release_mode">auto</property>
+		<property name="adonet.batch_size">500</property>
+		<property name="proxyfactory.factory_class">NHibernate.ByteCode.Castle.ProxyFactoryFactory, NHibernate.ByteCode.Castle</property>
+	</session-factory>
+	-->
+
+	<!--
+	<session-factory>
+		<property name="connection.connection_string">Data Source=localhost;Database=TestORM;Integrated Security=SSPI;</property>
+		<property name="dialect">NHibernate.Dialect.MsSql2008Dialect</property>
+		<property name="connection.provider">NHibernate.Connection.DriverConnectionProvider</property>
+		<property name="connection.driver_class">NHibernate.Driver.SqlClientDriver</property>
+		<property name="show_sql">false</property>
+		<property name="connection.release_mode">auto</property>
+		<property name="adonet.batch_size">500</property>
+		<property name="proxyfactory.factory_class">NHibernate.ByteCode.Castle.ProxyFactoryFactory, NHibernate.ByteCode.Castle</property>
+	</session-factory>
+	-->
+</hibernate-configuration>

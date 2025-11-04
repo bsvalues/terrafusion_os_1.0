@@ -39,11 +39,8 @@ export const OSStatusBadge: React.FC = () => {
     <div title={tooltip} className={badgeClass}>
       <span aria-hidden className={dotClass} />
 
-
       <span className={styles.labelStrong}>OS Core</span>
-      <span
-
-className={styles.labelSubtle}>· {meta.label}</span>
+      <span className={styles.labelSubtle}>· {meta.label}</span>
     </div>
   );
 };

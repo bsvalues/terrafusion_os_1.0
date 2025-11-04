@@ -1,0 +1,13 @@
+{
+    "set": [
+        "bearing",
+        "compass",
+        "direction",
+        "downslope",
+        "face",
+        "flat",
+        "maximum rate of change",
+        "relief",
+        "slope direction"
+    ]
+}

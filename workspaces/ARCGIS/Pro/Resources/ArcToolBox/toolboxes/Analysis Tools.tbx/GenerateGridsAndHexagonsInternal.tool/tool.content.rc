@@ -1,0 +1,13 @@
+{
+    "map": {
+        "area_of_interest.title": "Area of Interest",
+        "cell_size.title": "Cell Size",
+        "cell_type.domain.H3_HEXAGON": "H3_HEXAGON",
+        "cell_type.domain.HEXAGON": "HEXAGON",
+        "cell_type.domain.SQUARE": "SQUARE",
+        "cell_type.title": "Cell Geometry Type",
+        "h3_resolution.title": "H3 Resolution",
+        "out_feature_class.title": "Output Feature Class",
+        "title": "GenerateGridsAndHexagonsInternal"
+    }
+}

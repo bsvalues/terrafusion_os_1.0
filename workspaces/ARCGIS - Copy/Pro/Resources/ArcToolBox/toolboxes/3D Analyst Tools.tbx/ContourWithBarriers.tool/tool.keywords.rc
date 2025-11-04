@@ -1,0 +1,8 @@
+{
+    "set": [
+        "breakline",
+        "faulted",
+        "isoline",
+        "z-factor"
+    ]
+}

@@ -1,0 +1,8 @@
+{
+    "set": [
+        "building footprint",
+        "buildings",
+        "fix footprints",
+        "normalize footprints"
+    ]
+}

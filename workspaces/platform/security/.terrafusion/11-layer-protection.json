@@ -1,0 +1,94 @@
+{
+  "workspace_protection_system": {
+    "workspace_name": "security",
+    "domain": "cybersecurity",
+    "risk_level": "critical",
+    "customization_timestamp": "2025-10-16T10:16:02.557423",
+    "eleven_layer_protection": {
+      "L1_role_scope_confirmation": {
+        "workspace_role": "security specialized AI agent",
+        "scope_definition": "Optimize and protect cybersecurity operations",
+        "success_criteria": "Maintain critical-level security for cybersecurity",
+        "data_types_handled": [
+          "security_logs",
+          "threat_data",
+          "vulnerability_scans"
+        ],
+        "protection_priorities": [
+          "threat_prevention",
+          "incident_response",
+          "security_monitoring"
+        ]
+      },
+      "L2_input_sanitation_threat_modeling": {
+        "threat_model": "cybersecurity_specific_threats",
+        "input_validation": "security_input_sanitization",
+        "injection_prevention": "cybersecurity_injection_protection",
+        "risk_level_controls": "critical"
+      },
+      "L3_data_classification": {
+        "data_types": [
+          "security_logs",
+          "threat_data",
+          "vulnerability_scans"
+        ],
+        "classification_level": "critical",
+        "privacy_requirements": "cybersecurity_privacy_rules",
+        "retention_policies": "security_data_retention",
+        "access_controls": "cybersecurity_access_matrix"
+      },
+      "L4_secrets_hygiene": {
+        "vault_integration": "security_secret_vault",
+        "key_rotation": "cybersecurity_key_management",
+        "credential_management": "security_credential_store",
+        "environment_separation": "critical_env_isolation"
+      },
+      "L5_environment_guardrails": {
+        "environment_controls": "security_env_controls",
+        "blast_radius_limits": "cybersecurity_isolation",
+        "feature_flags": "security_feature_management",
+        "deployment_gates": "critical_deployment_controls"
+      },
+      "L6_policy_compliance": {
+        "domain_regulations": "cybersecurity_compliance_framework",
+        "government_standards": [
+          "threat_prevention",
+          "incident_response",
+          "security_monitoring"
+        ],
+        "audit_requirements": "security_audit_trail",
+        "compliance_monitoring": "cybersecurity_compliance_checks"
+      },
+      "L7_dependency_license_review": {
+        "sbom_generation": "security_software_bill_of_materials",
+        "vulnerability_scanning": "cybersecurity_vuln_checks",
+        "license_compliance": "security_license_validation",
+        "dependency_monitoring": "critical_dependency_tracking"
+      },
+      "L8_reproducibility": {
+        "version_pinning": "security_version_control",
+        "build_determinism": "cybersecurity_build_reproducibility",
+        "configuration_management": "security_config_management",
+        "deployment_consistency": "critical_deployment_standards"
+      },
+      "L9_observability_hooks": {
+        "metrics_collection": "security_domain_metrics",
+        "logging_framework": "cybersecurity_specialized_logging",
+        "tracing_system": "security_distributed_tracing",
+        "alerting_rules": "cybersecurity_alert_configuration"
+      },
+      "L10_human_in_loop_gates": {
+        "approval_workflows": "security_approval_matrix",
+        "review_requirements": "cybersecurity_review_gates",
+        "escalation_procedures": "critical_escalation_rules",
+        "manual_override_controls": "security_override_procedures"
+      },
+      "L11_red_team_self_check": {
+        "adversarial_testing": "security_penetration_testing",
+        "failure_mode_analysis": "cybersecurity_failure_scenarios",
+        "rollback_procedures": "security_disaster_recovery",
+        "security_validation": "critical_security_assessment"
+      }
+    }
+  }
+}

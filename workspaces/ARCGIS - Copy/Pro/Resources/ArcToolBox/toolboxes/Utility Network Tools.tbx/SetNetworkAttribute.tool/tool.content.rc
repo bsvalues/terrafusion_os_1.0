@@ -1,0 +1,18 @@
+{
+    "map": {
+        "description": "Assigns a network attribute to a feature class or table at the asset type level to be used during tracing operations.",
+        "domain_network.descr": "The domain network that contains the feature class or table that will have a network attribute set on it.",
+        "domain_network.title": "Domain Network",
+        "featureclass.descr": "The input feature class or table that contains the field that will be used to set the network attribute.",
+        "featureclass.title": "Input Table",
+        "field.descr": "An existing field that will be assigned the network attribute. The field data type must match the data type of the network attribute. For example, if the network attribute is a short integer type, the field must also be a short integer type. Network attributes that do not support nulls can only be assigned to fields that do not allow null values.",
+        "field.title": "Field",
+        "in_utility_network.descr": "The utility network that contains the network attribute to set.",
+        "in_utility_network.title": "Input Utility Network",
+        "network_attribute.descr": "The network attribute to be assigned to the field in the feature class or table.",
+        "network_attribute.title": "Network Attribute",
+        "out_utility_network.title": "Updated Utility Network",
+        "summary": "<xdoc><p>Assigns a network attribute to a feature class or table at the asset type level to be used during tracing operations.</p><p>A utility network can have a set of network attributes associated with it. A network attribute is a value stored in the network topology derived from attributes on corresponding features in the network. While a network attribute can be associated with only one attribute in a feature class or table, there is no limit to the number of network attributes a single utility network can have. Network attributes are used as weights to control traversability and to model the cost of paths in the network.</p></xdoc>",
+        "title": "Set Network Attribute"
+    }
+}

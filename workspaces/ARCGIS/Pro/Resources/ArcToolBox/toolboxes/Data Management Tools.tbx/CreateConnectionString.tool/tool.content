@@ -1,0 +1,49 @@
+{
+    "type": "FunctionTool",
+    "guid": "{11a93fdf-8c8a-4852-954a-776d098b16f4}",
+    "displayname": "$rc:title",
+    "helpcontent": "3180013",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_data": {
+            "displayname": "$rc:in_data.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEType"
+                    },
+                    {
+                        "type": "GPLayer"
+                    },
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPGraph"
+                    },
+                    {
+                        "type": "DEUtilityNetwork"
+                    }
+                ]
+            }
+        },
+        "data_type": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:data_type.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "out_connection_string": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_connection_string.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        }
+    }
+}

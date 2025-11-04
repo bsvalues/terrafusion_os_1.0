@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusionBuild RCN Valuation Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #2c6b95;
+            --secondary-color: #4a90e2;
+            --background-color: #f4f7fb;
+            --panel-color: #ffffff;
+            --text-color: #333333;
+            --border-color: #ddd;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --error-color: #dc3545;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        header p {
+            margin: 5px 0 0;
+            opacity: 0.9;
+        }
+
+        .status-bar {
+            background-color: var(--panel-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-dot.online {
+            background-color: var(--success-color);
+        }
+
+        .status-dot.offline {
+            background-color: var(--error-color);
+        }
+
+        .main-content {
+            display: flex;
+            margin-top: 20px;
+            gap: 20px;
+        }
+
+        .sidebar {
+            flex: 0 0 250px;
+            background-color: var(--panel-color);
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .main-panel {
+            flex: 1;
+            background-color: var(--panel-color);
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .card {
+            background-color: var(--panel-color);
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-header {
+            font-weight: bold;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        button.secondary {
+            background-color: #6c757d;
+        }
+
+        button.secondary:hover {
+            background-color: #5a6268;
+        }
+
+        #result-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+
+        #result-container.active {
+            max-height: 2000px;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f0f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .value-box {
+            background-color: #f0f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .value-box-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .value-box-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .value-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .value-row .value-box {
+            flex: 1;
+        }
+
+        .cost-breakdown {
+            margin-top: 20px;
+        }
+
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cost-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+        }
+
+        .warning-list {
+            background-color: #fff3cd;
+            border-left: 4px solid var(--warning-color);
+            padding: 10px 15px;
+            margin: 15px 0;
+            border-radius: 2px;
+        }
+
+        .calculation-steps {
+            margin-top: 20px;
+        }
+
+        .step {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .step-header {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .step-details {
+            font-size: 0.9rem;
+            color: #555;
+            white-space: pre-line;
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 2s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                flex: 0 0 auto;
+            }
+            
+            form {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>TerraFusionBuild RCN Valuation Dashboard</h1>
+            <p>Calculate replacement cost valuations for buildings using the RCN methodology</p>
+        </div>
+    </header>
+
+    <div class="status-bar">
+        <div class="status-indicator">
+            <div id="status-dot" class="status-dot offline"></div>
+            <span id="status-text">Checking API connection...</span>
+        </div>
+        <div id="api-version">API v1.0.0</div>
+    </div>
+
+    <div class="container">
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="card">
+                    <div class="card-header">Quick Actions</div>
+                    <div style="margin-bottom: 10px;">
+                        <button id="load-example-btn" type="button" style="width: 100%;">Load Example Building</button>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <button id="clear-form-btn" type="button" class="secondary" style="width: 100%;">Clear Form</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">Available Reference Data</div>
+                    <div style="margin-bottom: 10px;">
+                        <button id="view-building-types-btn" type="button" style="width: 100%;">Building Types</button>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <button id="view-regions-btn" type="button" style="width: 100%;">Regions</button>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <button id="view-quality-classes-btn" type="button" style="width: 100%;">Quality Classes</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="main-panel">
+                <div id="input-form-container">
+                    <h2>Building Input Data</h2>
+                    <form id="rcn-form">
+                        <div class="form-group">
+                            <label for="description">Building Description</label>
+                            <input type="text" id="description" name="description" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="building-type">Building Type</label>
+                            <select id="building-type" name="building_type" required>
+                                <option value="">Select Building Type</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="subtype">Building Subtype</label>
+                            <select id="subtype" name="subtype" required>
+                                <option value="">Select Subtype</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="year-built">Year Built</label>
+                            <input type="number" id="year-built" name="year_built" min="1800" max="2025" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="total-area">Total Area (sq ft)</label>
+                            <input type="number" id="total-area" name="total_area" min="1" step="1" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="construction-type">Construction Type</label>
+                            <select id="construction-type" name="construction_type" required>
+                                <option value="">Select Construction Type</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="quality-class">Quality Class</label>
+                            <select id="quality-class" name="quality_class" required>
+                                <option value="">Select Quality Class</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="condition">Condition</label>
+                            <select id="condition" name="condition" required>
+                                <option value="">Select Condition</option>
+                                <option value="excellent">Excellent</option>
+                                <option value="good">Good</option>
+                                <option value="average">Average</option>
+                                <option value="fair">Fair</option>
+                                <option value="poor">Poor</option>
+                                <option value="very_poor">Very Poor</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="region">Region</label>
+                            <select id="region" name="region" required>
+                                <option value="">Select Region</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="stories">Number of Stories</label>
+                            <input type="number" id="stories" name="stories" min="1" step="0.5" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="basement-area">Basement Area (sq ft)</label>
+                            <input type="number" id="basement-area" name="basement_area" min="0" step="1" value="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="garage-area">Garage Area (sq ft)</label>
+                            <input type="number" id="garage-area" name="garage_area" min="0" step="1" value="0">
+                        </div>
+                        
+                        <div class="form-group" id="units-group" style="display: none;">
+                            <label for="units">Number of Units</label>
+                            <input type="number" id="units" name="units" min="1" step="1">
+                        </div>
+                        
+                        <div class="form-group" id="office-area-group" style="display: none;">
+                            <label for="office-area">Office Area (sq ft)</label>
+                            <input type="number" id="office-area" name="office_area" min="0" step="1" value="0">
+                        </div>
+                        
+                        <div class="form-group" id="warehouse-area-group" style="display: none;">
+                            <label for="warehouse-area">Warehouse Area (sq ft)</label>
+                            <input type="number" id="warehouse-area" name="warehouse_area" min="0" step="1" value="0">
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label>Features</label>
+                            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                <div style="flex: 1;">
+                                    <label for="feature-hvac">HVAC</label>
+                                    <select id="feature-hvac" name="feature_hvac_included">
+                                        <option value="no">Not Included</option>
+                                        <option value="yes">Included</option>
+                                    </select>
+                                </div>
+                                <div id="hvac-area-container" style="flex: 1; display: none;">
+                                    <label for="feature-hvac-area">HVAC Area (sq ft)</label>
+                                    <input type="number" id="feature-hvac-area" name="feature_hvac_area" min="0" step="1">
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                <div style="flex: 1;">
+                                    <label for="feature-fireplace">Fireplaces</label>
+                                    <select id="feature-fireplace" name="feature_fireplace_included">
+                                        <option value="no">Not Included</option>
+                                        <option value="yes">Included</option>
+                                    </select>
+                                </div>
+                                <div id="fireplace-quantity-container" style="flex: 1; display: none;">
+                                    <label for="feature-fireplace-quantity">Number of Fireplaces</label>
+                                    <input type="number" id="feature-fireplace-quantity" name="feature_fireplace_quantity" min="1" step="1" value="1">
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                <div style="flex: 1;">
+                                    <label for="feature-pool">Swimming Pool</label>
+                                    <select id="feature-pool" name="feature_pool_included">
+                                        <option value="no">Not Included</option>
+                                        <option value="yes">Included</option>
+                                    </select>
+                                </div>
+                                <div id="pool-area-container" style="flex: 1; display: none;">
+                                    <label for="feature-pool-area">Pool Area (sq ft)</label>
+                                    <input type="number" id="feature-pool-area" name="feature_pool_area" min="0" step="1" value="0">
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: 10px;">
+                                <div style="flex: 1;">
+                                    <label for="feature-deck">Deck</label>
+                                    <select id="feature-deck" name="feature_deck_included">
+                                        <option value="no">Not Included</option>
+                                        <option value="yes">Included</option>
+                                    </select>
+                                </div>
+                                <div id="deck-area-container" style="flex: 1; display: none;">
+                                    <label for="feature-deck-area">Deck Area (sq ft)</label>
+                                    <input type="number" id="feature-deck-area" name="feature_deck_area" min="0" step="1" value="0">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label>Renovation History</label>
+                            <div style="display: flex; gap: 10px;">
+                                <div style="flex: 1;">
+                                    <label for="renovation-included">Last Renovation</label>
+                                    <select id="renovation-included" name="renovation_included">
+                                        <option value="no">No Renovation</option>
+                                        <option value="yes">Has Renovation</option>
+                                    </select>
+                                </div>
+                                <div id="renovation-details-container" style="flex: 2; display: none;">
+                                    <div style="display: flex; gap: 10px;">
+                                        <div style="flex: 1;">
+                                            <label for="renovation-year">Year</label>
+                                            <input type="number" id="renovation-year" name="renovation_year" min="1800" max="2025">
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <label for="renovation-extent">Extent</label>
+                                            <select id="renovation-extent" name="renovation_extent">
+                                                <option value="minor">Minor</option>
+                                                <option value="moderate">Moderate</option>
+                                                <option value="major">Major</option>
+                                                <option value="complete">Complete</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label>Special Considerations</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <div>
+                                    <input type="checkbox" id="historical" name="historical">
+                                    <label for="historical" style="display: inline;">Historical Building</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="energy-efficient" name="energy_efficient">
+                                    <label for="energy-efficient" style="display: inline;">Energy Efficient</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="ada-compliant" name="ada_compliant">
+                                    <label for="ada-compliant" style="display: inline;">ADA Compliant</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="hazardous-materials" name="hazardous_materials">
+                                    <label for="hazardous-materials" style="display: inline;">Hazardous Materials</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <button type="submit" id="calculate-btn">Calculate Replacement Cost <span id="calculate-loader" class="loader hidden"></span></button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="result-container">
+                    <div class="result-header">
+                        <h2>Calculation Results</h2>
+                        <button id="back-to-form-btn" type="button">Back to Input Form</button>
+                    </div>
+                    
+                    <div id="building-info"></div>
+                    
+                    <div class="value-row">
+                        <div class="value-box">
+                            <div class="value-box-title">Replacement Cost New (RCN)</div>
+                            <div class="value-box-value" id="rcn-value">$0</div>
+                        </div>
+                        <div class="value-box">
+                            <div class="value-box-title">Depreciated Value</div>
+                            <div class="value-box-value" id="depreciated-value">$0</div>
+                        </div>
+                        <div class="value-box">
+                            <div class="value-box-title">Cost per Square Foot</div>
+                            <div class="value-box-value" id="cost-per-sqft">$0.00</div>
+                        </div>
+                    </div>
+                    
+                    <div class="value-row">
+                        <div class="value-box">
+                            <div class="value-box-title">Depreciation</div>
+                            <div class="value-box-value" id="depreciation-percentage">0%</div>
+                        </div>
+                        <div class="value-box">
+                            <div class="value-box-title">Effective Age</div>
+                            <div class="value-box-value" id="effective-age">0 years</div>
+                        </div>
+                        <div class="value-box">
+                            <div class="value-box-title">Confidence Level</div>
+                            <div class="value-box-value" id="confidence-level">N/A</div>
+                        </div>
+                    </div>
+                    
+                    <div id="warnings-container" class="warning-list" style="display: none;">
+                        <strong>Warnings:</strong>
+                        <ul id="warnings-list"></ul>
+                    </div>
+                    
+                    <div class="cost-breakdown">
+                        <h3>Cost Breakdown</h3>
+                        <div id="cost-breakdown-items"></div>
+                    </div>
+                    
+                    <div class="calculation-steps">
+                        <h3>Calculation Steps</h3>
+                        <div id="calculation-steps"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="example-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); z-index: 1000;">
+        <div style="background: white; max-width: 600px; margin: 100px auto; padding: 20px; border-radius: 5px; max-height: 80vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="margin: 0;">Select an Example Building</h3>
+                <button id="close-example-modal" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <div id="example-list" style="margin-bottom: 15px;"></div>
+        </div>
+    </div>
+
+    <div id="reference-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); z-index: 1000;">
+        <div style="background: white; max-width: 800px; margin: 100px auto; padding: 20px; border-radius: 5px; max-height: 80vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 id="reference-modal-title" style="margin: 0;">Reference Data</h3>
+                <button id="close-reference-modal" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <div id="reference-data-content"></div>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration
+        const API_BASE_URL = 'http://localhost:5000';
+
+        // DOM Elements
+        const statusDot = document.getElementById('status-dot');
+        const statusText = document.getElementById('status-text');
+        const apiVersion = document.getElementById('api-version');
+        const buildingTypeSelect = document.getElementById('building-type');
+        const subtypeSelect = document.getElementById('subtype');
+        const constructionTypeSelect = document.getElementById('construction-type');
+        const qualityClassSelect = document.getElementById('quality-class');
+        const regionSelect = document.getElementById('region');
+        const rcnForm = document.getElementById('rcn-form');
+        const resultContainer = document.getElementById('result-container');
+        const calculateBtn = document.getElementById('calculate-btn');
+        const calculateLoader = document.getElementById('calculate-loader');
+        const backToFormBtn = document.getElementById('back-to-form-btn');
+        const loadExampleBtn = document.getElementById('load-example-btn');
+        const clearFormBtn = document.getElementById('clear-form-btn');
+        const exampleModal = document.getElementById('example-modal');
+        const closeExampleModal = document.getElementById('close-example-modal');
+        const exampleList = document.getElementById('example-list');
+        const viewBuildingTypesBtn = document.getElementById('view-building-types-btn');
+        const viewRegionsBtn = document.getElementById('view-regions-btn');
+        const viewQualityClassesBtn = document.getElementById('view-quality-classes-btn');
+        const referenceModal = document.getElementById('reference-modal');
+        const closeReferenceModal = document.getElementById('close-reference-modal');
+        const referenceModalTitle = document.getElementById('reference-modal-title');
+        const referenceDataContent = document.getElementById('reference-data-content');
+
+        // Feature toggles
+        document.getElementById('feature-hvac').addEventListener('change', function() {
+            document.getElementById('hvac-area-container').style.display = this.value === 'yes' ? 'block' : 'none';
+        });
+
+        document.getElementById('feature-fireplace').addEventListener('change', function() {
+            document.getElementById('fireplace-quantity-container').style.display = this.value === 'yes' ? 'block' : 'none';
+        });
+
+        document.getElementById('feature-pool').addEventListener('change', function() {
+            document.getElementById('pool-area-container').style.display = this.value === 'yes' ? 'block' : 'none';
+        });
+
+        document.getElementById('feature-deck').addEventListener('change', function() {
+            document.getElementById('deck-area-container').style.display = this.value === 'yes' ? 'block' : 'none';
+        });
+
+        document.getElementById('renovation-included').addEventListener('change', function() {
+            document.getElementById('renovation-details-container').style.display = this.value === 'yes' ? 'flex' : 'none';
+        });
+
+        // Building type change - update subtypes and show/hide fields based on type
+        buildingTypeSelect.addEventListener('change', function() {
+            const buildingType = this.value;
+            
+            // Reset subtype dropdown
+            subtypeSelect.innerHTML = '<option value="">Select Subtype</option>';
+            
+            // Show/hide specific fields based on building type
+            const unitsGroup = document.getElementById('units-group');
+            const officeAreaGroup = document.getElementById('office-area-group');
+            const warehouseAreaGroup = document.getElementById('warehouse-area-group');
+            
+            unitsGroup.style.display = 'none';
+            officeAreaGroup.style.display = 'none';
+            warehouseAreaGroup.style.display = 'none';
+            
+            if (buildingType === 'residential') {
+                // Show units for multi-family residential
+            } else if (buildingType === 'commercial') {
+                // Some commercial buildings have units
+            } else if (buildingType === 'industrial') {
+                officeAreaGroup.style.display = 'block';
+                if (buildingType === 'warehouse' || buildingType === 'flex') {
+                    warehouseAreaGroup.style.display = 'block';
+                }
+            }
+            
+            // If a building type is selected, fetch its subtypes
+            if (buildingType) {
+                fetch(`${API_BASE_URL}/building-types`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data[buildingType]) {
+                            const subtypes = data[buildingType].subtypes;
+                            subtypes.forEach(subtype => {
+                                const option = document.createElement('option');
+                                option.value = Object.keys(data[buildingType].subtypes).find(
+                                    key => data[buildingType].subtypes[key].code === subtype.code
+                                );
+                                option.textContent = `${subtype.name} - $${subtype.base_rate.toFixed(2)}/sq ft`;
+                                subtypeSelect.appendChild(option);
+                            });
+                        }
+                    })
+                    .catch(error => console.error('Error fetching subtypes:', error));
+            }
+        });
+        
+        // Handle subtype change
+        subtypeSelect.addEventListener('change', function() {
+            const buildingType = buildingTypeSelect.value;
+            const subtype = this.value;
+            
+            // Show/hide specific fields based on subtype
+            const unitsGroup = document.getElementById('units-group');
+            
+            if (buildingType === 'residential') {
+                if (subtype === 'multi_family' || subtype === 'duplex') {
+                    unitsGroup.style.display = 'block';
+                } else {
+                    unitsGroup.style.display = 'none';
+                }
+            }
+        });
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check API health
+            checkApiHealth();
+            
+            // Load reference data
+            loadBuildingTypes();
+            loadConstructionTypes();
+            loadQualityClasses();
+            loadRegions();
+            
+            // Event listeners
+            rcnForm.addEventListener('submit', handleFormSubmit);
+            backToFormBtn.addEventListener('click', showInputForm);
+            loadExampleBtn.addEventListener('click', showExampleModal);
+            closeExampleModal.addEventListener('click', () => exampleModal.style.display = 'none');
+            clearFormBtn.addEventListener('click', clearForm);
+            
+            viewBuildingTypesBtn.addEventListener('click', () => showReferenceData('Building Types', 'building-types'));
+            viewRegionsBtn.addEventListener('click', () => showReferenceData('Regions', 'regions'));
+            viewQualityClassesBtn.addEventListener('click', () => showReferenceData('Quality Classes', 'quality-classes'));
+            closeReferenceModal.addEventListener('click', () => referenceModal.style.display = 'none');
+        });
+
+        // Check API health
+        function checkApiHealth() {
+            fetch(`${API_BASE_URL}/health`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'healthy') {
+                        statusDot.classList.remove('offline');
+                        statusDot.classList.add('online');
+                        statusText.textContent = 'API Connected';
+                        
+                        // Also fetch API info
+                        return fetch(`${API_BASE_URL}/info`);
+                    } else {
+                        throw new Error('API is not healthy');
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    apiVersion.textContent = `API ${data.version}`;
+                })
+                .catch(error => {
+                    console.error('API Health Check Error:', error);
+                    statusDot.classList.remove('online');
+                    statusDot.classList.add('offline');
+                    statusText.textContent = 'API Disconnected';
+                });
+        }
+
+        // Load building types
+        function loadBuildingTypes() {
+            fetch(`${API_BASE_URL}/building-types`)
+                .then(response => response.json())
+                .then(data => {
+                    buildingTypeSelect.innerHTML = '<option value="">Select Building Type</option>';
+                    
+                    for (const [type, typeData] of Object.entries(data)) {
+                        const option = document.createElement('option');
+                        option.value = type;
+                        option.textContent = typeData.name;
+                        buildingTypeSelect.appendChild(option);
+                    }
+                })
+                .catch(error => console.error('Error loading building types:', error));
+        }
+
+        // Load construction types
+        function loadConstructionTypes() {
+            fetch(`${API_BASE_URL}/building-types`)
+                .then(response => response.json())
+                .then(data => {
+                    // This endpoint doesn't exist in the API stub, so we're using a workaround
+                    // In a real implementation, this would be a separate endpoint
+                    
+                    constructionTypeSelect.innerHTML = '<option value="">Select Construction Type</option>';
+                    
+                    // Hard-coded construction types for now
+                    const constructionTypes = [
+                        { value: 'frame', name: 'Frame' },
+                        { value: 'masonry', name: 'Masonry' },
+                        { value: 'concrete', name: 'Concrete' },
+                        { value: 'steel', name: 'Steel' }
+                    ];
+                    
+                    constructionTypes.forEach(type => {
+                        const option = document.createElement('option');
+                        option.value = type.value;
+                        option.textContent = type.name;
+                        constructionTypeSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error loading construction types:', error));
+        }
+
+        // Load quality classes
+        function loadQualityClasses() {
+            fetch(`${API_BASE_URL}/quality-classes`)
+                .then(response => response.json())
+                .then(data => {
+                    qualityClassSelect.innerHTML = '<option value="">Select Quality Class</option>';
+                    
+                    for (const [quality, qualityData] of Object.entries(data)) {
+                        const option = document.createElement('option');
+                        option.value = quality;
+                        option.textContent = qualityData.name;
+                        qualityClassSelect.appendChild(option);
+                    }
+                })
+                .catch(error => console.error('Error loading quality classes:', error));
+        }
+
+        // Load regions
+        function loadRegions() {
+            fetch(`${API_BASE_URL}/regions`)
+                .then(response => response.json())
+                .then(data => {
+                    regionSelect.innerHTML = '<option value="">Select Region</option>';
+                    
+                    for (const [region, regionData] of Object.entries(data)) {
+                        const option = document.createElement('option');
+                        option.value = region;
+                        option.textContent = regionData.name;
+                        regionSelect.appendChild(option);
+                    }
+                })
+                .catch(error => console.error('Error loading regions:', error));
+        }
+
+        // Show the example selection modal
+        function showExampleModal() {
+            // Load examples
+            fetch(`${API_BASE_URL}/examples`)
+                .then(response => response.json())
+                .then(data => {
+                    exampleList.innerHTML = '';
+                    
+                    data.examples.forEach(example => {
+                        const exampleDiv = document.createElement('div');
+                        exampleDiv.style.padding = '10px';
+                        exampleDiv.style.margin = '5px 0';
+                        exampleDiv.style.border = '1px solid #eee';
+                        exampleDiv.style.borderRadius = '4px';
+                        exampleDiv.style.cursor = 'pointer';
+                        
+                        exampleDiv.innerHTML = `
+                            <div><strong>${example.description}</strong></div>
+                            <div style="font-size: 0.9rem; color: #666;">
+                                Type: ${example.building_type} (${example.subtype}) | 
+                                Quality: ${example.quality_class} | 
+                                Area: ${example.total_area.toLocaleString()} sq ft
+                            </div>
+                        `;
+                        
+                        exampleDiv.addEventListener('click', () => {
+                            loadExampleBuilding(example.id);
+                            exampleModal.style.display = 'none';
+                        });
+                        
+                        exampleList.appendChild(exampleDiv);
+                    });
+                    
+                    exampleModal.style.display = 'block';
+                })
+                .catch(error => console.error('Error loading examples:', error));
+        }
+
+        // Load an example building into the form
+        function loadExampleBuilding(exampleId) {
+            fetch(`${API_BASE_URL}/examples/${exampleId}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Reset form
+                    clearForm();
+                    
+                    // Fill in the basic building data
+                    document.getElementById('description').value = data.description;
+                    document.getElementById('building-type').value = data.building_type;
+                    
+                    // Trigger change event to load subtypes
+                    const event = new Event('change');
+                    document.getElementById('building-type').dispatchEvent(event);
+                    
+                    // Wait for subtypes to load
+                    setTimeout(() => {
+                        document.getElementById('subtype').value = data.subtype;
+                        document.getElementById('subtype').dispatchEvent(new Event('change'));
+                    }, 500);
+                    
+                    document.getElementById('year-built').value = data.year_built;
+                    document.getElementById('total-area').value = data.total_area;
+                    document.getElementById('construction-type').value = data.construction_type;
+                    document.getElementById('quality-class').value = data.quality_class;
+                    document.getElementById('condition').value = data.condition;
+                    document.getElementById('region').value = data.region;
+                    document.getElementById('stories').value = data.stories;
+                    document.getElementById('basement-area').value = data.basement_area;
+                    document.getElementById('garage-area').value = data.garage_area;
+                    
+                    // Optional fields
+                    if (data.units) {
+                        document.getElementById('units').value = data.units;
+                        document.getElementById('units-group').style.display = 'block';
+                    }
+                    
+                    if (data.office_area) {
+                        document.getElementById('office-area').value = data.office_area;
+                        document.getElementById('office-area-group').style.display = 'block';
+                    }
+                    
+                    if (data.warehouse_area) {
+                        document.getElementById('warehouse-area').value = data.warehouse_area;
+                        document.getElementById('warehouse-area-group').style.display = 'block';
+                    }
+                    
+                    // Features
+                    const hasHvac = data.features.some(f => f.type === 'hvac');
+                    document.getElementById('feature-hvac').value = hasHvac ? 'yes' : 'no';
+                    document.getElementById('hvac-area-container').style.display = hasHvac ? 'block' : 'none';
+                    if (hasHvac) {
+                        const hvacFeature = data.features.find(f => f.type === 'hvac');
+                        document.getElementById('feature-hvac-area').value = hvacFeature.area_covered;
+                    }
+                    
+                    const hasFireplace = data.features.some(f => f.type === 'fireplace');
+                    document.getElementById('feature-fireplace').value = hasFireplace ? 'yes' : 'no';
+                    document.getElementById('fireplace-quantity-container').style.display = hasFireplace ? 'block' : 'none';
+                    if (hasFireplace) {
+                        const fireplaceFeature = data.features.find(f => f.type === 'fireplace');
+                        document.getElementById('feature-fireplace-quantity').value = fireplaceFeature.quantity;
+                    }
+                    
+                    const hasPool = data.features.some(f => f.type === 'pool');
+                    document.getElementById('feature-pool').value = hasPool ? 'yes' : 'no';
+                    document.getElementById('pool-area-container').style.display = hasPool ? 'block' : 'none';
+                    if (hasPool) {
+                        const poolFeature = data.features.find(f => f.type === 'pool');
+                        document.getElementById('feature-pool-area').value = poolFeature.area;
+                    }
+                    
+                    const hasDeck = data.features.some(f => f.type === 'deck');
+                    document.getElementById('feature-deck').value = hasDeck ? 'yes' : 'no';
+                    document.getElementById('deck-area-container').style.display = hasDeck ? 'block' : 'none';
+                    if (hasDeck) {
+                        const deckFeature = data.features.find(f => f.type === 'deck');
+                        document.getElementById('feature-deck-area').value = deckFeature.area;
+                    }
+                    
+                    // Renovation
+                    if (data.last_renovation) {
+                        document.getElementById('renovation-included').value = 'yes';
+                        document.getElementById('renovation-details-container').style.display = 'flex';
+                        document.getElementById('renovation-year').value = data.last_renovation.year;
+                        document.getElementById('renovation-extent').value = data.last_renovation.extent;
+                    }
+                    
+                    // Special considerations
+                    if (data.special_considerations) {
+                        if (data.special_considerations.historical) {
+                            document.getElementById('historical').checked = true;
+                        }
+                        if (data.special_considerations.energy_efficient) {
+                            document.getElementById('energy-efficient').checked = true;
+                        }
+                        if (data.special_considerations.ada_compliant) {
+                            document.getElementById('ada-compliant').checked = true;
+                        }
+                        if (data.special_considerations.hazardous_materials) {
+                            document.getElementById('hazardous-materials').checked = true;
+                        }
+                    }
+                })
+                .catch(error => console.error('Error loading example building:', error));
+        }
+
+        // Clear the form
+        function clearForm() {
+            rcnForm.reset();
+            
+            // Hide optional fields
+            document.getElementById('units-group').style.display = 'none';
+            document.getElementById('office-area-group').style.display = 'none';
+            document.getElementById('warehouse-area-group').style.display = 'none';
+            document.getElementById('hvac-area-container').style.display = 'none';
+            document.getElementById('fireplace-quantity-container').style.display = 'none';
+            document.getElementById('pool-area-container').style.display = 'none';
+            document.getElementById('deck-area-container').style.display = 'none';
+            document.getElementById('renovation-details-container').style.display = 'none';
+        }
+
+        // Handle form submission
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            // Show loading indicator
+            calculateLoader.classList.remove('hidden');
+            calculateBtn.disabled = true;
+            
+            // Build request data
+            const formData = new FormData(rcnForm);
+            const buildingData = {
+                description: formData.get('description'),
+                building_type: formData.get('building_type'),
+                subtype: formData.get('subtype'),
+                year_built: parseInt(formData.get('year_built')),
+                total_area: parseFloat(formData.get('total_area')),
+                construction_type: formData.get('construction_type'),
+                quality_class: formData.get('quality_class'),
+                condition: formData.get('condition'),
+                region: formData.get('region'),
+                stories: parseFloat(formData.get('stories')),
+                basement_area: parseFloat(formData.get('basement_area') || 0),
+                garage_area: parseFloat(formData.get('garage_area') || 0),
+                features: []
+            };
+            
+            // Add units if present
+            const units = formData.get('units');
+            if (units && units.trim() !== '') {
+                buildingData.units = parseInt(units);
+            }
+            
+            // Add office area if present
+            const officeArea = formData.get('office_area');
+            if (officeArea && officeArea.trim() !== '') {
+                buildingData.office_area = parseFloat(officeArea);
+            }
+            
+            // Add warehouse area if present
+            const warehouseArea = formData.get('warehouse_area');
+            if (warehouseArea && warehouseArea.trim() !== '') {
+                buildingData.warehouse_area = parseFloat(warehouseArea);
+            }
+            
+            // Add features
+            if (formData.get('feature_hvac_included') === 'yes') {
+                buildingData.features.push({
+                    type: 'hvac',
+                    area_covered: parseFloat(formData.get('feature_hvac_area'))
+                });
+            }
+            
+            if (formData.get('feature_fireplace_included') === 'yes') {
+                buildingData.features.push({
+                    type: 'fireplace',
+                    quantity: parseInt(formData.get('feature_fireplace_quantity'))
+                });
+            }
+            
+            if (formData.get('feature_pool_included') === 'yes') {
+                buildingData.features.push({
+                    type: 'pool',
+                    area: parseFloat(formData.get('feature_pool_area'))
+                });
+            }
+            
+            if (formData.get('feature_deck_included') === 'yes') {
+                buildingData.features.push({
+                    type: 'deck',
+                    area: parseFloat(formData.get('feature_deck_area'))
+                });
+            }
+            
+            // Add renovation if present
+            if (formData.get('renovation_included') === 'yes') {
+                buildingData.last_renovation = {
+                    year: parseInt(formData.get('renovation_year')),
+                    extent: formData.get('renovation_extent')
+                };
+            }
+            
+            // Add special considerations if any are checked
+            const historical = formData.get('historical') === 'on';
+            const energyEfficient = formData.get('energy_efficient') === 'on';
+            const adaCompliant = formData.get('ada_compliant') === 'on';
+            const hazardousMaterials = formData.get('hazardous_materials') === 'on';
+            
+            if (historical || energyEfficient || adaCompliant || hazardousMaterials) {
+                buildingData.special_considerations = {
+                    historical: historical,
+                    energy_efficient: energyEfficient,
+                    ada_compliant: adaCompliant,
+                    hazardous_materials: hazardousMaterials
+                };
+            }
+            
+            // Send calculation request
+            fetch(`${API_BASE_URL}/calculate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(buildingData)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => {
+                            throw new Error(err.detail || 'Error calculating RCN');
+                        });
+                    }
+                    return response.json();
+                })
+                .then(displayResults)
+                .catch(error => {
+                    console.error('Calculation Error:', error);
+                    alert(`Calculation Error: ${error.message}`);
+                })
+                .finally(() => {
+                    // Hide loading indicator
+                    calculateLoader.classList.add('hidden');
+                    calculateBtn.disabled = false;
+                });
+        }
+
+        // Display calculation results
+        function displayResults(result) {
+            // Format currency values
+            const formatCurrency = value => {
+                return new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                }).format(value);
+            };
+            
+            // Show building info
+            document.getElementById('building-info').innerHTML = `
+                <h3>${result.building_description}</h3>
+                <p>Calculation performed on ${new Date(result.calculation_date).toLocaleString()}</p>
+            `;
+            
+            // Show main values
+            document.getElementById('rcn-value').textContent = formatCurrency(result.replacement_cost_new);
+            document.getElementById('depreciated-value').textContent = formatCurrency(result.depreciated_value);
+            document.getElementById('cost-per-sqft').textContent = `$${result.cost_per_sqft.toFixed(2)}`;
+            document.getElementById('depreciation-percentage').textContent = `${result.depreciation_percentage.toFixed(0)}%`;
+            document.getElementById('effective-age').textContent = `${result.effective_age} years`;
+            document.getElementById('confidence-level').textContent = result.confidence_level;
+            document.getElementById('confidence-level').style.color = 
+                result.confidence_level === 'High' ? 'green' : 
+                result.confidence_level === 'Medium' ? 'orange' : 'red';
+            
+            // Show warnings if any
+            const warningsContainer = document.getElementById('warnings-container');
+            const warningsList = document.getElementById('warnings-list');
+            
+            if (result.warnings && result.warnings.length > 0) {
+                warningsList.innerHTML = '';
+                result.warnings.forEach(warning => {
+                    const li = document.createElement('li');
+                    li.textContent = warning;
+                    warningsList.appendChild(li);
+                });
+                warningsContainer.style.display = 'block';
+            } else {
+                warningsContainer.style.display = 'none';
+            }
+            
+            // Show cost breakdown
+            const costBreakdownItems = document.getElementById('cost-breakdown-items');
+            costBreakdownItems.innerHTML = '';
+            
+            let totalCost = 0;
+            for (const [category, cost] of Object.entries(result.cost_breakdown)) {
+                totalCost += cost;
+                
+                const costItem = document.createElement('div');
+                costItem.className = 'cost-item';
+                
+                const categoryText = {
+                    main_structure: 'Main Structure',
+                    basement: 'Basement',
+                    garage: 'Garage',
+                    features: 'Features',
+                    special_considerations: 'Special Considerations'
+                }[category] || category;
+                
+                costItem.innerHTML = `
+                    <div>${categoryText}</div>
+                    <div>${formatCurrency(cost)}</div>
+                `;
+                
+                costBreakdownItems.appendChild(costItem);
+            }
+            
+            // Add total as last item
+            const totalItem = document.createElement('div');
+            totalItem.className = 'cost-item';
+            totalItem.innerHTML = `
+                <div>Total Replacement Cost New</div>
+                <div>${formatCurrency(result.replacement_cost_new)}</div>
+            `;
+            costBreakdownItems.appendChild(totalItem);
+            
+            // Show calculation steps
+            const calculationStepsContainer = document.getElementById('calculation-steps');
+            calculationStepsContainer.innerHTML = '';
+            
+            result.calculation_steps.forEach(step => {
+                const stepElem = document.createElement('div');
+                stepElem.className = 'step';
+                
+                stepElem.innerHTML = `
+                    <div class="step-header">Step ${step.step}: ${step.description}</div>
+                    <div class="step-details">${step.details}</div>
+                `;
+                
+                calculationStepsContainer.appendChild(stepElem);
+            });
+            
+            // Show results container
+            showResults();
+        }
+
+        // Show results container
+        function showResults() {
+            document.getElementById('input-form-container').style.display = 'none';
+            resultContainer.classList.add('active');
+            resultContainer.style.display = 'block';
+        }
+
+        // Show input form
+        function showInputForm() {
+            document.getElementById('input-form-container').style.display = 'block';
+            resultContainer.classList.remove('active');
+            setTimeout(() => {
+                resultContainer.style.display = 'none';
+            }, 500);
+        }
+
+        // Show reference data modal
+        function showReferenceData(title, endpoint) {
+            referenceModalTitle.textContent = title;
+            referenceDataContent.innerHTML = '<div style="text-align: center; padding: 20px;">Loading...</div>';
+            
+            fetch(`${API_BASE_URL}/${endpoint}`)
+                .then(response => response.json())
+                .then(data => {
+                    let html = '';
+                    
+                    if (endpoint === 'building-types') {
+                        html = '<div style="display: grid; gap: 20px;">';
+                        
+                        for (const [type, typeData] of Object.entries(data)) {
+                            html += `
+                                <div style="border: 1px solid #ddd; border-radius: 5px; padding: 15px;">
+                                    <h4 style="margin-top: 0;">${typeData.name} (${typeData.code})</h4>
+                                    <p>${typeData.description}</p>
+                                    <h5>Subtypes:</h5>
+                                    <table style="width: 100%; border-collapse: collapse;">
+                                        <thead>
+                                            <tr>
+                                                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Name</th>
+                                                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Code</th>
+                                                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Description</th>
+                                                <th style="text-align: right; padding: 8px; border-bottom: 1px solid #ddd;">Base Rate</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                            `;
+                            
+                            typeData.subtypes.forEach(subtype => {
+                                html += `
+                                    <tr>
+                                        <td style="padding: 8px; border-bottom: 1px solid #eee;">${subtype.name}</td>
+                                        <td style="padding: 8px; border-bottom: 1px solid #eee;">${subtype.code}</td>
+                                        <td style="padding: 8px; border-bottom: 1px solid #eee;">${subtype.description}</td>
+                                        <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right;">$${subtype.base_rate.toFixed(2)}/sq ft</td>
+                                    </tr>
+                                `;
+                            });
+                            
+                            html += `
+                                        </tbody>
+                                    </table>
+                                </div>
+                            `;
+                        }
+                        
+                        html += '</div>';
+                    } else if (endpoint === 'regions') {
+                        html = `
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Region</th>
+                                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Code</th>
+                                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Description</th>
+                                        <th style="text-align: right; padding: 8px; border-bottom: 1px solid #ddd;">Cost Multiplier</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                        `;
+                        
+                        for (const [region, regionData] of Object.entries(data)) {
+                            html += `
+                                <tr>
+                                    <td style="padding: 8px; border-bottom: 1px solid #eee;">${regionData.name}</td>
+                                    <td style="padding: 8px; border-bottom: 1px solid #eee;">${regionData.code}</td>
+                                    <td style="padding: 8px; border-bottom: 1px solid #eee;">${regionData.description}</td>
+                                    <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right;">${regionData.multiplier.toFixed(2)}</td>
+                                </tr>
+                            `;
+                        }
+                        
+                        html += `
+                                </tbody>
+                            </table>
+                        `;
+                    } else if (endpoint === 'quality-classes') {
+                        html = `
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Quality Class</th>
+                                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Code</th>
+                                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Description</th>
+                                        <th style="text-align: right; padding: 8px; border-bottom: 1px solid #ddd;">Cost Multiplier</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                        `;
+                        
+                        for (const [quality, qualityData] of Object.entries(data)) {
+                            html += `
+                                <tr>
+                                    <td style="padding: 8px; border-bottom: 1px solid #eee;">${qualityData.name}</td>
+                                    <td style="padding: 8px; border-bottom: 1px solid #eee;">${qualityData.code}</td>
+                                    <td style="padding: 8px; border-bottom: 1px solid #eee;">${qualityData.description}</td>
+                                    <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right;">${qualityData.multiplier.toFixed(2)}</td>
+                                </tr>
+                            `;
+                        }
+                        
+                        html += `
+                                </tbody>
+                            </table>
+                        `;
+                    }
+                    
+                    referenceDataContent.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error(`Error loading ${endpoint}:`, error);
+                    referenceDataContent.innerHTML = `<p style="color: red;">Error loading data: ${error.message}</p>`;
+                });
+            
+            referenceModal.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

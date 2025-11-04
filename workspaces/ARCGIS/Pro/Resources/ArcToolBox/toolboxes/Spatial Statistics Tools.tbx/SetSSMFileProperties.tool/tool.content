@@ -1,0 +1,189 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\SetSSMFileProperties",
+    "displayname": "$rc:title",
+    "helpcontent": "9050005",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "input_model": {
+            "display_order": "0",
+            "displayname": "$rc:input_model.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "ssm"
+                ]
+            },
+            "description": "$rc:input_model.descr"
+        },
+        "variable_predict": {
+            "type": "optional",
+            "display_order": "1",
+            "control_guid": "{1A1CA7EC-A47A-4187-A15C-6EDBA4FE0CF7}",
+            "displayname": "$rc:variable_predict.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:variable_predict.dt.title1",
+                        "readonly": "true"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:variable_predict.dt.title2"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:variable_predict.dt.title3"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "description": "$rc:variable_predict.descr"
+        },
+        "explanatory_variables": {
+            "type": "optional",
+            "display_order": "2",
+            "control_guid": "{1A1CA7EC-A47A-4187-A15C-6EDBA4FE0CF7}",
+            "displayname": "$rc:explanatory_variables.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:explanatory_variables.dt.title1",
+                        "readonly": "true"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:explanatory_variables.dt.title2"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:explanatory_variables.dt.title3"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "description": "$rc:explanatory_variables.descr"
+        },
+        "distance_features": {
+            "type": "optional",
+            "display_order": "3",
+            "control_guid": "{1A1CA7EC-A47A-4187-A15C-6EDBA4FE0CF7}",
+            "displayname": "$rc:distance_features.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:distance_features.dt.title1",
+                        "readonly": "true"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:distance_features.dt.title2"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:distance_features.dt.title3",
+                        "readonly": "true"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "description": "$rc:distance_features.descr"
+        },
+        "explanatory_rasters": {
+            "type": "optional",
+            "display_order": "4",
+            "control_guid": "{1A1CA7EC-A47A-4187-A15C-6EDBA4FE0CF7}",
+            "displayname": "$rc:explanatory_rasters.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:explanatory_rasters.dt.title1",
+                        "readonly": "true"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:explanatory_rasters.dt.title2"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:explanatory_rasters.dt.title3"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "description": "$rc:explanatory_rasters.descr"
+        },
+        "updated_model_file": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_model_file.title",
+            "datatype": {
+                "type": "DEFile"
+            }
+        }
+    }
+}

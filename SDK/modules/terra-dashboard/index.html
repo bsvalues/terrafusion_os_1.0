@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="TerraFusion Elite Government Analytics Dashboard - Comprehensive monitoring and visualization for all TerraFusion systems. Government. Transcended." />
+    <meta name="keywords" content="terrafusion, dashboard, analytics, government, monitoring, visualization, quantum" />
+    <meta name="author" content="TerraFusion OS" />
+    
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' ws://localhost:* http://localhost:*;" />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#00FFFF" />
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="TerraFusion Command Center" />
+    <meta property="og:description" content="Government. Transcended. - Elite monitoring and analytics for all TerraFusion systems." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://terrafusion.gov/dashboard" />
+    
+    <!-- Quantum Factor & Terra-Cyan Branding -->
+    <style>
+      /* Initial loading styles with terra-cyan theme */
+      #root {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      }
+      
+      .loading-screen {
+        text-align: center;
+        color: #00FFFF;
+      }
+      
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(0, 255, 255, 0.1);
+        border-top: 3px solid #00FFFF;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      .loading-text {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        background: linear-gradient(135deg, #00FFFF 0%, #00FF88 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      
+      .loading-subtitle {
+        font-size: 14px;
+        color: #64748b;
+        margin-bottom: 20px;
+      }
+      
+      .quantum-info {
+        font-size: 12px;
+        color: #475569;
+        font-family: 'Courier New', monospace;
+      }
+    </style>
+    
+    <title>TerraFusion Command Center - Government. Transcended.</title>
+  </head>
+  <body>
+    <div id="root">
+      <!-- Loading Screen -->
+      <div class="loading-screen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">TerraFusion Command Center</div>
+        <div class="loading-subtitle">Government. Transcended.</div>
+        <div class="quantum-info">
+          Quantum Factor: 949 | Terra-Cyan: #00FFFF | Golden Ratio: φ=1.618<br>
+          Initializing quantum-enhanced analytics...
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

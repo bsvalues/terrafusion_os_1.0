@@ -1,0 +1,75 @@
+name: AI Swarm Safety Gate
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, labeled, unlabeled]
+
+jobs:
+  check-ai-swarm-safety:
+    name: Check AI-swarm safety
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run AI-swarm safety check
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            if (!pr) {
+              core.info('No pull_request in context — skipping.');
+              return;
+            }
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const prNumber = pr.number;
+
+            core.info(`Evaluating PR #${prNumber} for AI-swarm changes`);
+
+            // get list of changed files
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner, repo, pull_number: prNumber
+            });
+
+            const touched = files.map(f => f.filename);
+            const aiPaths = [
+              'backend/TerraFusion.Consciousness',
+              'backend/TerraFusion.AI',
+              'os-platform/specialized/ai-systems',
+            ];
+
+            const touchesAISwarm = touched.some(f => aiPaths.some(p => f.startsWith(p)));
+            core.info(`PR touches AI swarm paths: ${touchesAISwarm}`);
+
+            if (!touchesAISwarm) {
+              core.info('No AI-swarm related files changed. Safety gate passed.');
+              return;
+            }
+
+            // Check for AI-SWARM label
+            const labels = pr.labels ? pr.labels.map(l => l.name) : [];
+            const hasLabel = labels.includes('AI-SWARM');
+            core.info(`PR labels: ${JSON.stringify(labels)}`);
+
+            // Check for safety-plan.md in the PR root or changed files
+            const hasSafetyPlanInFiles = touched.some(f => f.toLowerCase().endsWith('safety-plan.md'));
+            let hasSafetyPlanInRepo = false;
+            try {
+              await github.rest.repos.getContent({ owner, repo, path: 'safety-plan.md' });
+              hasSafetyPlanInRepo = true;
+            } catch (e) {
+              // not found — that's fine
+            }
+
+            if (!hasLabel || !(hasSafetyPlanInFiles || hasSafetyPlanInRepo)) {
+              let msg = 'AI-swarm safety gate failed: this PR modifies AI swarm orchestration code but is missing required safety artifacts.';
+              msg += '\nRequirements:';
+              msg += '\n - Add the `AI-SWARM` label to this PR.';
+              msg += '\n - Include a `safety-plan.md` in the PR (or ensure one exists at repository root).';
+              await github.rest.issues.createComment({ owner, repo, issue_number: prNumber, body: msg });
+              core.setFailed(msg);
+            } else {
+              core.info('AI-swarm safety requirements satisfied.');
+            }

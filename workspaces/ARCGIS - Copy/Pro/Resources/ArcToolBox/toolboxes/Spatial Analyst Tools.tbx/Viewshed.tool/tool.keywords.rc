@@ -1,0 +1,21 @@
+{
+    "set": [
+        "blocked",
+        "dem",
+        "digital elevation model",
+        "elevation",
+        "frequency",
+        "hidden",
+        "horizon",
+        "line of sight",
+        "observer",
+        "obstruction",
+        "offset",
+        "reception",
+        "skyline",
+        "topography",
+        "transmission",
+        "visible",
+        "z-factor"
+    ]
+}

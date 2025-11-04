@@ -1,0 +1,14 @@
+{
+    "set": [
+        "collaboration",
+        "disable",
+        "feature service",
+        "gdb",
+        "offline",
+        "remove replica",
+        "sde",
+        "sync",
+        "tracking",
+        "distributed geodatabase"
+    ]
+}

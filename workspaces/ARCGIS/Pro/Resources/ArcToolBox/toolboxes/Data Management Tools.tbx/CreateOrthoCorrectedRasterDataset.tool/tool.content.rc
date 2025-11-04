@@ -1,0 +1,24 @@
+{
+    "map": {
+        "constant_elevation.descr": "<xdoc><p>The constant elevation value that will be used when the <span class=\"esri_uicontrol\">Orthorectification Type</span> parameter is <span class=\"esri_uicontrol\">Constant elevation</span>.</p><p>If a DEM is used in the orthocorrection process, this parameter value is not used.</p></xdoc>",
+        "constant_elevation.title": "Constant Elevation (Meters)",
+        "description": "Creates an orthocorrected raster dataset using a digital elevation model (DEM) and control data to accurately align imagery.",
+        "geoid.descr": "<xdoc><p>Specifies whether the geoid correction required by RPCs that reference ellipsoidal heights will be made. Most elevation datasets are referenced to sea level orthometric heights, so this correction is required in these cases to convert to ellipsoidal heights.</p><ul><li>Unchecked—No geoid correction will be made. Use this option only if the DEM is already expressed in ellipsoidal heights.</li><li>Checked—A geoid correction will be made to convert orthometric heights to ellipsoidal heights (based on EGM96 geoid).</li></ul></xdoc>",
+        "geoid.title": "Geoid",
+        "in_dem_raster.descr": "<xdoc><p>The DEM raster that will be used for orthorectification when the <span class=\"esri_uicontrol\">Orthorectification Type</span> parameter is <span class=\"esri_uicontrol\">DEM</span></p></xdoc>",
+        "in_dem_raster.title": "DEM Raster",
+        "in_raster.descr": "The raster dataset or mosaic dataset that will be orthorectified.",
+        "in_raster.title": "Input Raster",
+        "ortho_type.descr": "<xdoc><p>Specifies whether the orthorectification type will be a DEM or a specified value that represents the average elevation across the image.</p><ul><li><span title=\"CONSTANT_ELEVATION\">Constant elevation</span>—A specified elevation value will be used.</li><li><span title=\"DEM\">DEM</span>—A specified digital elevation model raster will be used.</li></ul></xdoc>",
+        "ortho_type.domain.CONSTANT_ELEVATION": "Constant elevation",
+        "ortho_type.domain.DEM": "DEM",
+        "ortho_type.title": "Orthorectification Type",
+        "out_raster_dataset.descr": "<xdoc><p>The name, location, and format of the dataset that will be created.</p><p>When storing the raster dataset in a file format, specify the file extension as follows:</p><ul><li>.bil—Esri BIL</li><li>.bip—Esri BIP</li><li>.bmp—BMP</li><li>.bsq—Esri BSQ</li><li>.dat—ENVI DAT</li><li>.gif—GIF</li><li>.img—ERDAS IMAGINE</li><li>.jpg—JPEG</li><li>.jp2—JPEG 2000</li><li>.png—PNG</li><li>.tif—TIFF</li><li>.mrf—MRF</li><li>.crf—CRF</li><li>No extension for Esri Grid</li></ul><p>When storing a raster dataset in a geodatabase, do not add a file extension to the name of the raster dataset.</p><p>When storing a raster dataset to a JPEG format file, a JPEG 2000 format file, or a geodatabase, you can specify a <span class=\"esri_uicontrol\">Compression Type</span> value and a <span class=\"esri_uicontrol\">Compression Quality</span> value in the geoprocessing environments.</p></xdoc>",
+        "out_raster_dataset.title": "Output Raster Dataset",
+        "title": "Create Ortho Corrected Raster Dataset",
+        "zfactor.descr": "<xdoc><p>The scaling factor that will be used to convert the elevation values in the DEM.</p><p>If the vertical units are meters, set the parameter to 1. If the vertical units are feet, set the parameter to 0.3048. If any other vertical units are used, use this parameter to scale the units to meters.</p></xdoc>",
+        "zfactor.title": "Z Factor",
+        "zoffset.descr": "The base value that will be added to the elevation value in the DEM. This can be used to offset elevation values that do not start at sea level.",
+        "zoffset.title": "Z Offset"
+    }
+}

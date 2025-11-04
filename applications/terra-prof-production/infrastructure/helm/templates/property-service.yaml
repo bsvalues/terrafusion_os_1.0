@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.propertyService.name }}
+  labels:
+    app: {{ .Values.propertyService.name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ .Values.propertyService.name }}
+spec:
+  replicas: {{ .Values.propertyService.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.propertyService.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.propertyService.name }}
+    spec:
+      {{- if .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range .Values.global.imagePullSecrets }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      containers:
+      - name: {{ .Values.propertyService.name }}
+        image: "{{ .Values.global.imageRegistry }}{{ .Values.propertyService.image.repository }}:{{ .Values.propertyService.image.tag | default .Values.global.imageTag }}"
+        imagePullPolicy: {{ .Values.propertyService.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.propertyService.port }}
+        env:
+        - name: NODE_ENV
+          value: {{ .Values.global.environment }}
+        - name: PORT
+          value: "{{ .Values.propertyService.port }}"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-db-credentials
+              key: database-url
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.propertyService.port }}
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.propertyService.port }}
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        resources:
+          {{- toYaml .Values.propertyService.resources | nindent 10 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.propertyService.name }}
+  labels:
+    app: {{ .Values.propertyService.name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ .Values.propertyService.name }}
+spec:
+  type: {{ .Values.propertyService.service.type }}
+  ports:
+  - port: {{ .Values.propertyService.service.port }}
+    targetPort: {{ .Values.propertyService.port }}
+    protocol: TCP
+    name: http
+  selector:
+    app: {{ .Values.propertyService.name }}
+---
+{{- if .Values.propertyService.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Values.propertyService.name }}
+  labels:
+    app: {{ .Values.propertyService.name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ .Values.propertyService.name }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Values.propertyService.name }}
+  minReplicas: {{ .Values.propertyService.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.propertyService.autoscaling.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.propertyService.autoscaling.targetCPUUtilizationPercentage }}
+{{- end }}

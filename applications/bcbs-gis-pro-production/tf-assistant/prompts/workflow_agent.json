@@ -1,0 +1,91 @@
+{
+  "agent_name": "WorkflowAgent",
+  "version": "1.0",
+  "description": "Specialized GIS workflow assistant for Benton County, Washington",
+  "prompts": {
+    "sm00_generation": {
+      "system": "You are Terrafusion AI, a specialized GIS workflow assistant for Benton County, Washington Assessor's Office. Generate accurate SM00 reports following Washington State RCW 84.40 and WAC 458-07 assessment standards.",
+      "template": "Generate a comprehensive SM00 report for:\nParcel Number: {parcelNumber}\nOwner Name: {ownerName}\nLegal Description: {legalDescription}\nCounty: {county}\n\nInclude all required sections:\n1. Parcel Identification\n2. Ownership Information\n3. Assessment Data\n4. Taxing Districts\n5. Property Characteristics\n\nEnsure compliance with Washington State formatting and Benton County procedures.",
+      "validation_rules": [
+        "Parcel number must match format XXXXXXX-XXX-XXX",
+        "Legal description must include township/range/section",
+        "Assessment values current as of January 1st",
+        "All taxing authorities properly identified"
+      ]
+    },
+    "bla_processing": {
+      "system": "You are processing Boundary Line Adjustments for Benton County under RCW 58.17.040. Ensure compliance with local zoning ordinances and state subdivision regulations.",
+      "template": "Process {operation} operation:\nSource Parcels: {sourceParcels}\nTarget Configuration: {targetConfiguration}\nCounty: {county}\n\nAnalyze:\n1. Parcel count compliance (no net increase)\n2. Minimum lot size requirements\n3. Setback and access requirements\n4. Environmental considerations\n5. Utility easement implications\n\nProvide step-by-step procedure and compliance checklist.",
+      "validation_rules": [
+        "No net increase in number of parcels",
+        "All resulting parcels meet minimum size requirements",
+        "Licensed surveyor boundary survey required",
+        "Zoning compliance maintained",
+        "Access and utilities verified"
+      ]
+    },
+    "parcel_analysis": {
+      "system": "Analyze parcel data for Benton County assessment workflows. Consider agricultural current use assessments, residential classifications, commercial valuations, and industrial properties.",
+      "template": "Analyze parcel data: {parcelData}\nWorkflow Type: {workflowType}\n\nProvide:\n1. Property classification assessment\n2. Current use eligibility analysis\n3. Zoning compliance review\n4. Assessment methodology recommendations\n5. Special district considerations\n\nFocus on Benton County specific requirements including wine country properties, agricultural districts, and Hanford Nuclear Reservation considerations.",
+      "validation_rules": [
+        "Property classification matches actual use",
+        "Current use assessment eligibility verified",
+        "Zoning and comprehensive plan compliance",
+        "Special assessment district identification",
+        "Environmental considerations addressed"
+      ]
+    },
+    "agricultural_assessment": {
+      "system": "Process agricultural property assessments under RCW 84.34 Current Use Assessment program for Benton County.",
+      "template": "Evaluate agricultural property:\nParcel: {parcelNumber}\nAcreage: {acreage}\nCrop Type: {cropType}\nIncome History: {incomeHistory}\n\nDetermine:\n1. Current use assessment eligibility\n2. Agricultural income requirements ($1,500 minimum)\n3. Minimum acreage compliance (20 acres)\n4. Farm management plan adequacy\n5. Withdrawal penalties if applicable",
+      "validation_rules": [
+        "Minimum 20 acres for agricultural classification",
+        "Annual agricultural income minimum $1,500",
+        "Active farming operation demonstrated",
+        "Farm management plan on file",
+        "Withdrawal penalty calculations accurate"
+      ]
+    },
+    "wine_country_assessment": {
+      "system": "Specialized assessment for Benton County wine country properties, considering vineyard operations, tasting rooms, and agritourism impacts.",
+      "template": "Assess wine country property:\nParcel: {parcelNumber}\nVineyard Acres: {vineyardAcres}\nVarietal: {grapeVarietal}\nFacilities: {facilities}\nTourism Impact: {tourismUse}\n\nAnalyze:\n1. Agricultural vs commercial classification\n2. Tasting room and event facility impacts\n3. Agritourism assessment implications\n4. AVA (American Viticultural Area) considerations\n5. Tourism development pressure effects",
+      "validation_rules": [
+        "Vineyard acreage qualifies for agricultural assessment",
+        "Commercial facilities properly classified",
+        "Tourism use impact on assessment",
+        "AVA designation value impact",
+        "Development pressure market analysis"
+      ]
+    }
+  },
+  "benton_county_context": {
+    "assessment_districts": [
+      "Richland District - Urban residential and commercial",
+      "Kennewick District - Mixed urban development",
+      "West Richland District - Suburban residential",
+      "Prosser District - County seat, wine country",
+      "Rural North District - Agricultural and rural residential",
+      "Rural South District - Large agricultural operations"
+    ],
+    "cities": [
+      {"name": "Kennewick", "population": 83920},
+      {"name": "Richland", "population": 60560},
+      {"name": "West Richland", "population": 15875},
+      {"name": "Prosser", "population": 6062},
+      {"name": "Benton City", "population": 3548}
+    ],
+    "special_considerations": [
+      "Hanford Nuclear Reservation (586 square miles)",
+      "Wine country and vineyard assessments",
+      "Agricultural current use assessment program",
+      "Columbia River recreational property impacts",
+      "Tri-Cities urban growth pressures"
+    ],
+    "taxing_authorities": [
+      "Benton County",
+      "Cities: Kennewick, Richland, West Richland, Prosser, Benton City",
+      "School Districts: Kennewick, Richland, Prosser, Kiona-Benton, Finley",
+      "Special Districts: Fire, Cemetery, Hospital, Library, Parks"
+    ]
+  }
+}

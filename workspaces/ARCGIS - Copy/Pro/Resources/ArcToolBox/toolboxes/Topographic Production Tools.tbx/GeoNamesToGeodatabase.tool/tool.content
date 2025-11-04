@@ -1,0 +1,138 @@
+{
+    "type": "FunctionTool",
+    "guid": "{26B17338-CB00-45A9-AB9C-858C2E0122C9}/GeoNamesToGeodatabase",
+    "displayname": "$rc:title",
+    "helpcontent": "46040308",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "46",
+        "49"
+    ],
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "in_source": {
+            "displayname": "$rc:in_source.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DETextFile"
+                    },
+                    {
+                        "type": "DEShapeFile"
+                    }
+                ]
+            },
+            "description": "$rc:in_source.descr"
+        },
+        "in_feature_class": {
+            "displayname": "$rc:in_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:in_feature_class.descr"
+        },
+        "in_allow_duplicates": {
+            "displayname": "$rc:in_allow_duplicates.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ALLOW_DUPLICATES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DON'T_ALLOW_DUPLICATES"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:in_allow_duplicates.descr"
+        },
+        "in_table": {
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "out_featureclass": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_featureclass.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "depends": [
+                "in_feature_class"
+            ]
+        },
+        "out_table": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "depends": [
+                "in_table"
+            ]
+        },
+        "match_fields": {
+            "type": "optional",
+            "control_guid": "{DCFB42B0-3FB4-4067-A9C7-702E7E9543A0}",
+            "displayname": "$rc:match_fields.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:match_fields.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:match_fields.dt.title2"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:match_fields.dt.title3"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "depends": [
+                "in_source",
+                "in_feature_class"
+            ],
+            "description": "$rc:match_fields.descr"
+        }
+    }
+}

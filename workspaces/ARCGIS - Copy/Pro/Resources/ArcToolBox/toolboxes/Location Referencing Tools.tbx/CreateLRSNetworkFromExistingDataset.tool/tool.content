@@ -1,0 +1,265 @@
+{
+    "type": "FunctionTool",
+    "guid": "{0A4A9218-07A4-497A-8506-CED528063FB9}/CreateLRSNetworkFromExistingDataset",
+    "displayname": "$rc:title",
+    "helpcontent": "23000029",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "78"
+    ],
+    "params": {
+        "in_feature_class": {
+            "displayname": "$rc:in_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_feature_class.descr"
+        },
+        "lrs_name": {
+            "displayname": "$rc:lrs_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:lrs_name.descr"
+        },
+        "route_id_field": {
+            "displayname": "$rc:route_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain"
+            },
+            "depends": [
+                "in_feature_class"
+            ],
+            "description": "$rc:route_id_field.descr"
+        },
+        "route_name_field": {
+            "type": "optional",
+            "displayname": "$rc:route_name_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_feature_class"
+            ],
+            "description": "$rc:route_name_field.descr"
+        },
+        "from_date_field": {
+            "displayname": "$rc:from_date_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Date"
+                ]
+            },
+            "depends": [
+                "in_feature_class"
+            ],
+            "description": "$rc:from_date_field.descr"
+        },
+        "to_date_field": {
+            "displayname": "$rc:to_date_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Date"
+                ]
+            },
+            "depends": [
+                "in_feature_class"
+            ],
+            "description": "$rc:to_date_field.descr"
+        },
+        "derive_from_line_network": {
+            "type": "optional",
+            "displayname": "$rc:derive_from_line_network.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "DERIVE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_DERIVE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:derive_from_line_network.descr"
+        },
+        "line_network_name": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:line_network_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:line_network_name.descr"
+        },
+        "include_fields_to_support_lines": {
+            "type": "optional",
+            "displayname": "$rc:include_fields_to_support_lines.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "INCLUDE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_INCLUDE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:include_fields_to_support_lines.descr"
+        },
+        "line_id_field": {
+            "type": "optional",
+            "displayname": "$rc:line_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain"
+            },
+            "depends": [
+                "in_feature_class"
+            ],
+            "description": "$rc:line_id_field.descr"
+        },
+        "line_name_field": {
+            "type": "optional",
+            "displayname": "$rc:line_name_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_feature_class"
+            ],
+            "description": "$rc:line_name_field.descr"
+        },
+        "line_order_field": {
+            "type": "optional",
+            "displayname": "$rc:line_order_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Long"
+                ]
+            },
+            "depends": [
+                "in_feature_class"
+            ],
+            "description": "$rc:line_order_field.descr"
+        },
+        "out_feature_class": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            }
+        },
+        "route_id_configuration": {
+            "type": "optional",
+            "displayname": "$rc:route_id_configuration.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "AUTOGENERATED_ROUTE_ID",
+                        "code": "$rc:route_id_configuration.domain.AUTOGENERATED_ROUTE_ID"
+                    },
+                    {
+                        "value": "SINGLE_FIELD_ROUTE_ID",
+                        "code": "$rc:route_id_configuration.domain.SINGLE_FIELD_ROUTE_ID"
+                    },
+                    {
+                        "value": "MULTI_FIELD_ROUTE_ID",
+                        "code": "$rc:route_id_configuration.domain.MULTI_FIELD_ROUTE_ID"
+                    }
+                ]
+            },
+            "value": "AUTOGENERATED_ROUTE_ID",
+            "description": "$rc:route_id_configuration.descr"
+        },
+        "individual_route_id_fields": {
+            "type": "optional",
+            "displayname": "$rc:individual_route_id_fields.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_feature_class"
+            ],
+            "description": "$rc:individual_route_id_fields.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

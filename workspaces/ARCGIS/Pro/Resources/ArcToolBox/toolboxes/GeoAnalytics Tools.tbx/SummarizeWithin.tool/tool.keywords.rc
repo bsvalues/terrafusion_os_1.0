@@ -1,0 +1,20 @@
+{
+    "set": [
+        "aggregate",
+        "big data",
+        "binning",
+        "bins",
+        "fishnet",
+        "hexagon",
+        "lines",
+        "points",
+        "polygons",
+        "raster",
+        "simplify",
+        "spatial join",
+        "square",
+        "summary",
+        "visualize",
+        "within polygons"
+    ]
+}

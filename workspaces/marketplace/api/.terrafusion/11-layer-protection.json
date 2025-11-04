@@ -1,0 +1,94 @@
+{
+  "workspace_protection_system": {
+    "workspace_name": "api",
+    "domain": "api_services",
+    "risk_level": "high",
+    "customization_timestamp": "2025-10-16T10:16:02.423114",
+    "eleven_layer_protection": {
+      "L1_role_scope_confirmation": {
+        "workspace_role": "api specialized AI agent",
+        "scope_definition": "Optimize and protect api_services operations",
+        "success_criteria": "Maintain high-level security for api_services",
+        "data_types_handled": [
+          "api_keys",
+          "service_data",
+          "integration_configs"
+        ],
+        "protection_priorities": [
+          "api_security",
+          "rate_limiting",
+          "service_availability"
+        ]
+      },
+      "L2_input_sanitation_threat_modeling": {
+        "threat_model": "api_services_specific_threats",
+        "input_validation": "api_input_sanitization",
+        "injection_prevention": "api_services_injection_protection",
+        "risk_level_controls": "high"
+      },
+      "L3_data_classification": {
+        "data_types": [
+          "api_keys",
+          "service_data",
+          "integration_configs"
+        ],
+        "classification_level": "high",
+        "privacy_requirements": "api_services_privacy_rules",
+        "retention_policies": "api_data_retention",
+        "access_controls": "api_services_access_matrix"
+      },
+      "L4_secrets_hygiene": {
+        "vault_integration": "api_secret_vault",
+        "key_rotation": "api_services_key_management",
+        "credential_management": "api_credential_store",
+        "environment_separation": "high_env_isolation"
+      },
+      "L5_environment_guardrails": {
+        "environment_controls": "api_env_controls",
+        "blast_radius_limits": "api_services_isolation",
+        "feature_flags": "api_feature_management",
+        "deployment_gates": "high_deployment_controls"
+      },
+      "L6_policy_compliance": {
+        "domain_regulations": "api_services_compliance_framework",
+        "government_standards": [
+          "api_security",
+          "rate_limiting",
+          "service_availability"
+        ],
+        "audit_requirements": "api_audit_trail",
+        "compliance_monitoring": "api_services_compliance_checks"
+      },
+      "L7_dependency_license_review": {
+        "sbom_generation": "api_software_bill_of_materials",
+        "vulnerability_scanning": "api_services_vuln_checks",
+        "license_compliance": "api_license_validation",
+        "dependency_monitoring": "high_dependency_tracking"
+      },
+      "L8_reproducibility": {
+        "version_pinning": "api_version_control",
+        "build_determinism": "api_services_build_reproducibility",
+        "configuration_management": "api_config_management",
+        "deployment_consistency": "high_deployment_standards"
+      },
+      "L9_observability_hooks": {
+        "metrics_collection": "api_domain_metrics",
+        "logging_framework": "api_services_specialized_logging",
+        "tracing_system": "api_distributed_tracing",
+        "alerting_rules": "api_services_alert_configuration"
+      },
+      "L10_human_in_loop_gates": {
+        "approval_workflows": "api_approval_matrix",
+        "review_requirements": "api_services_review_gates",
+        "escalation_procedures": "high_escalation_rules",
+        "manual_override_controls": "api_override_procedures"
+      },
+      "L11_red_team_self_check": {
+        "adversarial_testing": "api_penetration_testing",
+        "failure_mode_analysis": "api_services_failure_scenarios",
+        "rollback_procedures": "api_disaster_recovery",
+        "security_validation": "high_security_assessment"
+      }
+    }
+  }
+}

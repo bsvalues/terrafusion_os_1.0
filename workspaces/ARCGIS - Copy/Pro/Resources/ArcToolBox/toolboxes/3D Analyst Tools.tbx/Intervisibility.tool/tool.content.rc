@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Determines the visibility of sight lines using  potential obstructions defined by any combination of  3D features and surfaces.",
+        "obstructions.descr": "The mesh and surface datasets that provide potential obstructions for sight lines. Obstructions can be defined by any combination of multipatch features, integrated mesh scene layers, TIN datasets, and raster surfaces.",
+        "obstructions.title": "Obstructions",
+        "out_feature_class.title": "Output Feature Class",
+        "sight_lines.descr": "The 3D sight lines whose visibility will be determined.",
+        "sight_lines.title": "Sight Lines",
+        "summary": "Determines the visibility of sight lines using potential obstructions defined by any combination of 3D features and surfaces.",
+        "title": "Intervisibility",
+        "visible_field.descr": "<xdoc><p>The name of the field that will store the visibility results. A resulting value of 0 indicates that the sight line&apos;s start and end points are not visible to one another. A value of 1 indicates that the sight line&apos;s start and end points are visible to one another. The default field name is <span class=\"esri_fieldname\">VISIBLE</span>. If the field already exists, its values will be overwritten.</p></xdoc>",
+        "visible_field.title": "Visible Field Name"
+    }
+}

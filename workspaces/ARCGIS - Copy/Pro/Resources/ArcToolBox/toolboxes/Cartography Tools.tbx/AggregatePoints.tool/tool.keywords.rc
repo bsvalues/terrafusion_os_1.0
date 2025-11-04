@@ -1,0 +1,32 @@
+{
+    "set": [
+        "aggregation",
+        "alpha shape",
+        "alpha-shape",
+        "amalgamate",
+        "built up area",
+        "built-up area",
+        "builtup area",
+        "combine",
+        "concave hull",
+        "consolidate",
+        "contextual",
+        "convex",
+        "convex hull",
+        "generalisation",
+        "generalise",
+        "generalization",
+        "generalize",
+        "group",
+        "grouping",
+        "multi-scale",
+        "multiscale",
+        "point to polygon",
+        "scale change",
+        "simplification",
+        "simplify",
+        "small scale",
+        "typification",
+        "typify"
+    ]
+}

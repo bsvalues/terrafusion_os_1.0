@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+
+{% block title %}Run Project Sync{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h6>Start Project Sync Job</h6>
+                    <p class="text-sm mb-0">Configure and start a new database project synchronization job</p>
+                </div>
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="p-4">
+                        <form method="POST" action="{{ url_for('project_sync.run_sync') }}">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="source_connection" class="form-control-label">Source Database</label>
+                                        <select class="form-control" id="source_connection" name="source_connection" required>
+                                            <option value="">Select Source Database</option>
+                                            {% for conn in connections %}
+                                            <option value="{{ conn.connection_string }}">{{ conn.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <small class="form-text text-muted">Database to copy data from</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="target_connection" class="form-control-label">Target Database</label>
+                                        <select class="form-control" id="target_connection" name="target_connection" required>
+                                            <option value="">Select Target Database</option>
+                                            {% for conn in connections %}
+                                            <option value="{{ conn.connection_string }}">{{ conn.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <small class="form-text text-muted">Database to copy data to</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="horizontal dark my-4">
+                            <h6 class="mb-3">Sync Options</h6>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="conflict_strategy" class="form-control-label">Conflict Resolution Strategy</label>
+                                        <select class="form-control" id="conflict_strategy" name="conflict_strategy">
+                                            <option value="source_wins">Source Wins (Default)</option>
+                                            <option value="target_wins">Target Wins</option>
+                                            <option value="newer_wins">Newer Timestamp Wins</option>
+                                            <option value="manual">Manual Resolution</option>
+                                        </select>
+                                        <small class="form-text text-muted">How to handle conflicting data between environments</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="batch_size" class="form-control-label">Batch Size</label>
+                                        <input class="form-control" type="number" value="1000" id="batch_size" name="batch_size" min="1" max="10000">
+                                        <small class="form-text text-muted">Number of records to process at once</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="schema_validation" name="schema_validation" checked>
+                                        <label class="form-check-label" for="schema_validation">Schema Validation</label>
+                                    </div>
+                                    <small class="form-text text-muted d-block mb-3">Validate target database schema before syncing</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="auto_migration" name="auto_migration" checked>
+                                        <label class="form-check-label" for="auto_migration">Auto-Migration</label>
+                                    </div>
+                                    <small class="form-text text-muted d-block mb-3">Automatically apply schema changes to target</small>
+                                </div>
+                            </div>
+
+                            <hr class="horizontal dark my-4">
+                            <h6 class="mb-3">Table Selection</h6>
+
+                            <div class="table-responsive">
+                                <table class="table align-items-center mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Table</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Include</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="table-selection">
+                                        <tr>
+                                            <td colspan="3" class="text-center py-3">
+                                                <p class="text-secondary mb-0">Tables will be loaded after selecting source database</p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-4">
+                                <a href="{{ url_for('project_sync.dashboard') }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-play me-2"></i> Start Sync Job
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sourceConnectionSelect = document.getElementById('source_connection');
+        const targetConnectionSelect = document.getElementById('target_connection');
+        const tableSelectionBody = document.getElementById('table-selection');
+        
+        // When source connection changes, load tables
+        sourceConnectionSelect.addEventListener('change', function() {
+            if (this.value) {
+                // In a real implementation, this would make an AJAX request to get tables
+                // For now, we'll just show a placeholder
+                tableSelectionBody.innerHTML = `
+                    <tr>
+                        <td>
+                            <span class="text-sm">projects</span>
+                        </td>
+                        <td>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="tables[]" value="projects" checked>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="text-xs text-secondary">Main projects table</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="text-sm">project_files</span>
+                        </td>
+                        <td>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="tables[]" value="project_files" checked>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="text-xs text-secondary">Project files and attachments</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="text-sm">project_tasks</span>
+                        </td>
+                        <td>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="tables[]" value="project_tasks" checked>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="text-xs text-secondary">Tasks associated with projects</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="text-sm">project_collaborators</span>
+                        </td>
+                        <td>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="tables[]" value="project_collaborators" checked>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="text-xs text-secondary">Project collaborators and permissions</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <span class="text-sm">project_categories</span>
+                        </td>
+                        <td>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="tables[]" value="project_categories" checked>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="text-xs text-secondary">Categories and classifications for projects</span>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tableSelectionBody.innerHTML = `
+                    <tr>
+                        <td colspan="3" class="text-center py-3">
+                            <p class="text-secondary mb-0">Tables will be loaded after selecting source database</p>
+                        </td>
+                    </tr>
+                `;
+            }
+        });
+        
+        // Prevent selecting the same connection for source and target
+        targetConnectionSelect.addEventListener('change', function() {
+            if (this.value === sourceConnectionSelect.value && this.value !== '') {
+                alert('Source and target databases cannot be the same');
+                this.value = '';
+            }
+        });
+        
+        sourceConnectionSelect.addEventListener('change', function() {
+            if (this.value === targetConnectionSelect.value && this.value !== '') {
+                alert('Source and target databases cannot be the same');
+                targetConnectionSelect.value = '';
+            }
+        });
+    });
+</script>
+{% endblock %}
+
+{% endblock %}

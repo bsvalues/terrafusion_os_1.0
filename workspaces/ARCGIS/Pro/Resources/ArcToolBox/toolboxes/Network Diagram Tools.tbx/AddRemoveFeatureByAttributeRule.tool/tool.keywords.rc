@@ -1,0 +1,12 @@
+{
+    "set": [
+        "configuration",
+        "diagram rule",
+        "diagram template",
+        "network",
+        "network diagram",
+        "remove diagram features",
+        "remove feature",
+        "template configuration"
+    ]
+}

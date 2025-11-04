@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.ServiceBus.Domain</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.ServiceBus.Domain.RegisteredClient">
+            <summary>
+            Domain object to track the live clients connected to the service bus
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.ServiceBus.Domain.RegisteredClient.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.ServiceBus.Domain.RegisteredClient.#ctor(System.String)">
+            <summary>
+            Class constructor -- creates a valid instance of the registered client
+            </summary>
+            <param name="endpoint">The Endpoint being registered</param>
+        </member>
+        <member name="P:TrueAutomation.ServiceBus.Domain.RegisteredClient.EndPoint">
+            <summary>
+            The client's service bus endpoint
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.ServiceBus.Domain.RegisteredClient.DateConnected">
+            <summary>
+            The timestamp the Client First Connected
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.ServiceBus.Domain.RegisteredClient.LastUpdated">
+            <summary>
+            The timestamp of when the client last confirmed they were alive.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.ServiceBus.Domain.RegisteredClient.isActive">
+            <summary>
+            Flag to determine whether the client is still active.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.ServiceBus.Domain.RegisteredClient.UserId">
+            <summary>
+            UserId of the person connected
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.ServiceBus.Domain.RegisteredClient.QueueId">
+            <summary>
+            The Queue to which a person is accessing
+            </summary>
+        </member>
+    </members>
+</doc>

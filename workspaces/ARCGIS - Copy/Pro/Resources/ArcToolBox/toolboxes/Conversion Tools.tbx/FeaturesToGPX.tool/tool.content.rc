@@ -1,0 +1,18 @@
+{
+    "map": {
+        "date_field.descr": "A date/time field from the input features with values used to populate the GPX time tag.",
+        "date_field.title": "Date Field",
+        "description": "Converts point, multipoint, or polyline features to a GPX format file (.gpx).",
+        "description_field.descr": "A field from the input features with values used to populate the GPX desc tag.",
+        "description_field.title": "Description Field",
+        "in_features.descr": "The input point, multipoint, or line features.",
+        "in_features.title": "Input Features",
+        "name_field.descr": "A field from the input features with values used to populate the GPX name tag.",
+        "name_field.title": "Name Field",
+        "out_gpx_file.descr": "The .gpx file that will be created with the geometry and attributes of the input features.",
+        "out_gpx_file.title": "Output GPX File",
+        "title": "Features To GPX",
+        "z_field.descr": "A numeric field from the input features with values used to populate the GPX elevation tag. If an elevation field is not specified, the z-values from the input features' geometries will be used to populate the GPX elevation tag.",
+        "z_field.title": "Z Field"
+    }
+}

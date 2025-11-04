@@ -1,0 +1,76 @@
+{
+  "SensorName": "WorldView-2",
+  "PanWeights": [ 0.39, 0.23, 0.21, 0.17 ],
+  "Properties": {
+    "BandDefinitionKeyword" : "WorldView-2",
+    "BandDefinitionFriendlyName" : "WORLDVIEW-2_8BANDS",
+    "MsToPanWeightsGramSchmidt" : "0.39 0.23 0.21 0.17",
+    "MsToPanWeightsEsri" : "0.95 0.7  0.5  1.0"
+  },
+  "Bands": {
+    "Pan": [
+      {
+        "BandName": "Panchromatic",
+        "SolarIrradiance": 1583.58,
+        "WavelengthMin": 450.0,
+        "WavelengthMax": 800.0
+      }
+    ],
+    "MS": [
+      {
+        "BandName": "CoastalBlue",
+        "SolarIrradiance": 1758.2229,
+        "WavelengthMin": 400.0,
+        "WavelengthMax": 450.0
+      },
+      {
+        "BandName": "Blue",
+        "SolarIrradiance": 1974.2416,
+        "WavelengthMin": 450.0,
+        "WavelengthMax": 510.0
+      },
+      {
+        "BandName": "Green",
+        "SolarIrradiance": 1856.4104,
+        "WavelengthMin": 510.0,
+        "WavelengthMax": 580.0
+      },
+      {
+        "BandName": "Yellow",
+        "SolarIrradiance": 1738.4791,
+        "WavelengthMin": 585.0,
+        "WavelengthMax": 625.0
+      },
+      {
+        "BandName": "Red",
+        "SolarIrradiance": 1559.4555,
+        "WavelengthMin": 630.0,
+        "WavelengthMax": 690.0
+      },
+      {
+        "BandName": "RedEdge",
+        "SolarIrradiance": 1342.0695,
+        "WavelengthMin": 705.0,
+        "WavelengthMax": 745.0
+      },
+      {
+        "BandName": "NearInfrared_1",
+        "SolarIrradiance": 1069.7302,
+        "WavelengthMin": 770.0,
+        "WavelengthMax": 895.0
+      },
+      {
+        "BandName": "NearInfrared_2",
+        "SolarIrradiance": 861.2866,
+        "WavelengthMin": 860.0,
+        "WavelengthMax": 1040.0
+      }
+    ],
+    "Cloud": [
+      {
+        "BandName": "Clouds"
+      }
+    ]
+  },
+  "AttributeMap": []
+}

@@ -1,0 +1,198 @@
+\##Terrafusion-AI ACTIVATED (COMPREHENSIVE MODE)
+
+### **Ultimate Universal Legacy Appraisal Importer: "Do It Right" Implementation Plan**
+
+---
+
+### 1. **Product Requirements Doc (PRD)**
+
+#### **Overview:**
+
+Create a **Universal Legacy Importer** for Terrafusion—an enterprise tool that lets users drag and drop any archive (ZIP, ENV, XML, SQL, CSV, PDF) containing old appraisal data, then automatically detects, extracts, maps, and reviews the data before import to your modern database.
+
+#### **Features:**
+
+* **Drag-and-Drop Multi-File Uploader:** Accepts ZIPs, folders, ENV, XML, SQLite, CSV, and more.
+* **Auto-Detection Engine:** Identifies report/system type (TOTAL, ClickForms, ACI, DataMaster, etc.) and file structure.
+* **Extraction & Parsing:** Unpacks, parses, and inventories all legacy data and images (even inside ZIPs or subfolders).
+* **Template/AI Field Mapping:** Maps legacy fields to new Terrafusion schema (using templates and/or agent assist).
+* **Review & Correction UI:** Preview data in a grid, make manual corrections, approve for import.
+* **Bulk Import Engine:** Imports records to the database, logs errors, supports rollbacks.
+* **Extensibility:** Easily add new templates/parsers for new formats (future-proof).
+* **Validation/AI Assist:** RAG/LLM agent checks for errors, gaps, and suggests fixes.
+* **Secure Audit Log:** Tracks every import, who approved what, and any corrections.
+
+---
+
+### 2. **Frontend UI (React + shadcn/ui + Tailwind)**
+
+* **Page Layout:**
+
+  * Sidebar for navigation
+  * Topbar with project/context controls
+  * Main workspace for file upload, extraction status, data grid, mapping UI, and import actions
+
+#### **Sample Route Structure:**
+
+* `/import` — Universal Legacy Importer page
+
+---
+
+```tsx
+import React, { useState } from "react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Table, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
+import { Progress } from "@/components/ui/progress";
+
+export default function LegacyImporter() {
+  const [files, setFiles] = useState<File[]>([]);
+  const [importStatus, setImportStatus] = useState("");
+  const [previewRows, setPreviewRows] = useState<any[]>([]);
+  const [mapping, setMapping] = useState<{ legacy: string; modern: string }[]>([]);
+  const [importing, setImporting] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  const handleFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    setFiles(Array.from(e.target.files));
+    setImportStatus("Ready to extract and analyze...");
+  };
+
+  const handleExtract = async () => {
+    setImporting(true);
+    setImportStatus("Extracting and scanning files...");
+    setProgress(10);
+    // Example API call for backend extract/scan (real code would POST files to /api/import/extract)
+    setTimeout(() => {
+      setImportStatus("Detected: 4 TOTAL XML, 2 ENV, 1 ClickForms SQL");
+      setProgress(40);
+      setPreviewRows([
+        { legacy: "SUBJECT_ADDRESS", modern: "property_address", sample: "123 Main St" },
+        { legacy: "SALE_PRICE", modern: "sale_price", sample: "$400,000" },
+        { legacy: "COMP_1_ADDRESS", modern: "comps[0].address", sample: "456 Oak Ave" },
+      ]);
+      setMapping([
+        { legacy: "SUBJECT_ADDRESS", modern: "property_address" },
+        { legacy: "SALE_PRICE", modern: "sale_price" },
+        { legacy: "COMP_1_ADDRESS", modern: "comps[0].address" },
+      ]);
+      setProgress(70);
+      setImportStatus("Ready to review and approve import...");
+      setImporting(false);
+    }, 2000);
+  };
+
+  const handleImport = async () => {
+    setImporting(true);
+    setImportStatus("Importing to Terrafusion database...");
+    setProgress(90);
+    setTimeout(() => {
+      setImportStatus("Import complete. All legacy records now in your system!");
+      setProgress(100);
+      setImporting(false);
+    }, 2000);
+  };
+
+  return (
+    <div className="max-w-5xl mx-auto py-10">
+      <Card>
+        <CardHeader>
+          <CardTitle>Universal Legacy Appraisal Importer</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Input
+              type="file"
+              multiple
+              onChange={handleFiles}
+              disabled={importing}
+              className="mb-2"
+            />
+            <Button disabled={importing || files.length === 0} onClick={handleExtract}>
+              Scan & Analyze Files
+            </Button>
+          </div>
+          {importStatus && (
+            <div className="p-2 bg-muted rounded text-sm">{importStatus}</div>
+          )}
+          {progress > 0 && <Progress value={progress} />}
+          {previewRows.length > 0 && (
+            <>
+              <div className="mt-4 font-semibold">Preview Mapping & Data:</div>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Legacy Field</TableCell>
+                    <TableCell>Modern Field</TableCell>
+                    <TableCell>Sample Value</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {previewRows.map((row, idx) => (
+                    <TableRow key={idx}>
+                      <TableCell>{row.legacy}</TableCell>
+                      <TableCell>{row.modern}</TableCell>
+                      <TableCell>{row.sample}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <Button className="mt-4" disabled={importing} onClick={handleImport}>
+                Approve & Import All
+              </Button>
+            </>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+```
+
+---
+
+### 3. **Backend API (Rust + Node/Bridge)**
+
+#### **Core Endpoints:**
+
+* `POST /api/import/extract` — Receives uploaded files, inventories content, detects types
+* `POST /api/import/map` — Maps legacy fields to Terrafusion fields using templates/AI
+* `POST /api/import/preview` — Returns preview data for UI
+* `POST /api/import/approve` — Approves and finalizes import to database
+
+**Rust logic:**
+
+* Unzip and parse archives (ZIP, ENV, SQL, etc.)
+* Auto-map fields via template or AI/agent lookup
+* Validate, log, and import into Postgres (or whatever DB you use)
+
+---
+
+### 4. **Testing/Validation**
+
+* Use real legacy files (like those you uploaded) for full end-to-end tests.
+* Simulate errors (missing fields, corrupt reports) to ensure robustness.
+
+---
+
+### 5. **Documentation & Training**
+
+* Step-by-step README for users/admins
+* UI walkthrough
+* How to add new mapping templates or field conversion logic
+
+---
+
+## **Next Steps**
+
+* **Implement this as `/import` in your app (plug code above into your routes).**
+* **Backend: Add ZIP/XML/ENV extract & map logic (your Rust agent can do this, or I can write it).**
+* **Iterate: Review real sample imports, tweak mapping/approval process, go live!**
+
+---
+
+**This is the right way, and you’ll never worry about legacy data again.**
+**Ready for full backend code, mapping templates, or want a step-by-step for your files?**
+Just say “build backend” or upload your first sample to run through the pipeline!

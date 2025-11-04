@@ -1,0 +1,10 @@
+{
+    "map": {
+        "description": "Clears information about a workspace that has been cached in memory.",
+        "in_data.descr": "The geodatabase, .sde connection file, or folder path representing the workspace that will be removed from the workspace cache. If no value is specified, all contents of the workspace cache will be cleared.",
+        "in_data.title": "Input Workspace",
+        "out_results.title": "Operation succeeded",
+        "summary": "<xdoc><p>Clears information about a workspace that has been cached in memory.</p><note type=\"note\"/>Workspace caching is used by the geoprocessing framework to improve performance when running script tools or repeated processes. The workspace cache may hold a schema lock for a given workspace, and the cache can be cleared to allow other processes or functions to proceed.</xdoc>",
+        "title": "Clear Workspace Cache"
+    }
+}

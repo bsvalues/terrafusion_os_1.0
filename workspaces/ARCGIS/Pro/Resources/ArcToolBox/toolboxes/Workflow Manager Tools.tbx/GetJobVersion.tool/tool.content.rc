@@ -1,0 +1,13 @@
+{
+    "map": {
+        "description": "Gets the job version as an enterprise geodatabase connection file to process data in a version.",
+        "input_databasepath.descr": "The Workflow Manager (Classic) database connection file that contains the job information. If no connection file is specified, the current default Workflow Manager (Classic) database in the project is used.",
+        "input_databasepath.title": "Input Database Path",
+        "input_jobid.descr": "The ID for the job whose version is to be retrieved.",
+        "input_jobid.title": "Input Job ID",
+        "output_jobversion.title": "Job Version",
+        "output_jobversionexists.title": "Job Version Exists",
+        "summary": "<xdoc><p>Gets the job version as an enterprise geodatabase connection file to process data in a version.</p><note type=\"legacy\"/><p group=\"note\">This is a deprecated tool. It is recommended that current Workflow Manager (Classic) users begin new projects using the services-driven ArcGIS Workflow Manager for ArcGIS Pro.</p></xdoc>",
+        "title": "Get Job Version"
+    }
+}

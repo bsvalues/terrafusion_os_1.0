@@ -1,0 +1,21 @@
+{
+    "map": {
+        "area_of_interest.descr": "<xdoc><p>The feature or features that will be compared with the <span class=\"esri_uicontrol\">Input Features</span> value to determine the tracks to select.</p></xdoc>",
+        "area_of_interest.title": "Area Of Interest",
+        "description": "Selects movement tracks based on an area of interest.",
+        "in_features.descr": "<xdoc><p>The features that will be compared with the <span class=\"esri_uicontrol\">Area Of Interest</span> parameter value to identify unique tracks and select the relevant tracks.</p></xdoc>",
+        "in_features.title": "Input Features",
+        "selection_time.descr": "<xdoc><p>The time frame that will be used to select features if <span class=\"esri_uicontrol\">Before</span>, <span class=\"esri_uicontrol\">After</span>, or <span class=\"esri_uicontrol\">Before and after</span> is specified for the <span class=\"esri_uicontrol\">Time Relationship</span> parameter.</p><p>If <span class=\"esri_uicontrol\">Before</span> or <span class=\"esri_uicontrol\">Before and after</span> is specified, the earliest time selected will be the first identified time of the features selected from the initial selection generated from the <span class=\"esri_uicontrol\">Input Features</span> and <span class=\"esri_uicontrol\">Area Of Interest</span> parameters, subtracting the time value specified. If <span class=\"esri_uicontrol\">After</span> or <span class=\"esri_uicontrol\">Before and after</span> is specified, the selection time will be added to the latest time from the initial selection to determine the selected features.</p></xdoc>",
+        "selection_time.title": "Selection Time",
+        "time_relationship.descr": "<xdoc><p>Specifies the time relationship between the <span class=\"esri_uicontrol\">Input Features</span> and <span class=\"esri_uicontrol\">Area Of Interest</span> parameter values. If the <span class=\"esri_uicontrol\">Before</span>, <span class=\"esri_uicontrol\">After</span>, or <span class=\"esri_uicontrol\">Before and after</span> option is specified, only features that are present in the <span class=\"esri_uicontrol\">Area Of Interest</span> value within the specified time window will be included in the output selection.</p><ul><li><span title=\"BEFORE_AFTER\">Before and after</span>—When a feature&apos;s time is before the first time identified and after the last time identified for the <span class=\"esri_uicontrol\">Area Of Interest</span> value but within the specified range of time from the first identified time and the last identified time, the time relationship will be before and after the selection time.</li><li><span title=\"BEFORE\">Before</span>—When a feature&apos;s time is before the first time identified for the <span class=\"esri_uicontrol\">Area Of Interest</span> value but within the specified range of time from the first identified time, the time relationship will be before the selection time.</li><li><span title=\"AFTER\">After</span>—When a feature&apos;s time is after the last time identified for the <span class=\"esri_uicontrol\">Area Of Interest</span> value but within the specified range of time from the last identified time, the time relationship will be after the selection time.</li><li><span title=\"NONE\">None</span>—All tracks associated with the unique identifier specified in <span class=\"esri_uicontrol\">Track ID Field</span> that are present in the <span class=\"esri_uicontrol\">Area Of Interest</span> value will be returned.</li></ul></xdoc>",
+        "time_relationship.domain.AFTER": "After",
+        "time_relationship.domain.BEFORE": "Before",
+        "time_relationship.domain.BEFORE_AFTER": "Before and after",
+        "time_relationship.domain.NONE": "None",
+        "time_relationship.title": "Time Relationship",
+        "title": "Select Movement Tracks",
+        "track_id_field.descr": "The field containing the unique identifiers for the movement track points. The field can be either a number or a string.",
+        "track_id_field.title": "Track ID Field",
+        "updated_featureclass.title": "Updated Features"
+    }
+}

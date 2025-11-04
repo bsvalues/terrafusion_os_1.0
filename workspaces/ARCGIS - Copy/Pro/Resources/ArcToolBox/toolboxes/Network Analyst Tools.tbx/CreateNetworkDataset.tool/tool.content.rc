@@ -1,0 +1,18 @@
+{
+    "map": {
+        "description": "Creates a network dataset in an existing feature dataset. The network dataset can be used to perform network analysis on the data in the feature dataset.",
+        "elevation_model.descr": "<xdoc><p>Specifies the model that will be used to control vertical connectivity in the network dataset.</p><ul><li><span title=\"ELEVATION_FIELDS\">Elevation fields</span>— Coincident endpoints with the same elevation field values will be considered connected in the network dataset. This is the default.</li><li><span title=\"Z_COORDINATES\">Z coordinates</span>—The z-coordinate values in the line feature geometry will be used to determine vertical connectivity. Coincident points are considered connected only if they have matching z-coordinate values.</li><li><span title=\"NO_ELEVATION\">No elevation</span>— Network dataset connectivity will be determined only by horizontal coincidence.</li></ul></xdoc>",
+        "elevation_model.domain.ELEVATION_FIELDS": "Elevation fields",
+        "elevation_model.domain.NO_ELEVATION": "No elevation",
+        "elevation_model.domain.Z_COORDINATES": "Z coordinates",
+        "elevation_model.title": "Elevation Model",
+        "feature_dataset.descr": "<xdoc><p>The feature dataset where the network dataset will be created. The feature dataset should contain the source feature classes that will participate in the network dataset.</p><p>If the feature dataset is in an enterprise geodatabase, the feature dataset and all source feature classes cannot be versioned.</p></xdoc>",
+        "feature_dataset.title": "Target Feature Dataset",
+        "out_name.descr": "<xdoc><p>The name of the network dataset to be created. The <span class=\"esri_uicontrol\">Target Feature Dataset</span> parameter value and its parent geodatabase must not already contain a network dataset with this name.</p></xdoc>",
+        "out_name.title": "Network Dataset Name",
+        "out_network_dataset.title": "Output Network Dataset",
+        "source_feature_class_names.descr": "<xdoc><p>The names of the feature classes to be included in the network dataset as network source features. Specify this parameter as a list of strings.</p><p>You must choose at least one line feature class that is not a turn feature class. This line feature class will act as an edge source in the network dataset. You can optionally choose point feature classes to act as junction sources in the network dataset and turn feature classes to act as turn sources.</p><p>All source feature classes must reside in the <span class=\"esri_uicontrol\">Target Feature Dataset</span> parameter value and must not already participate in a geometric network, a utility network, or another network dataset. Source feature classes cannot have 64-bit object identifier (OID) fields.</p></xdoc>",
+        "source_feature_class_names.title": "Source Feature Classes",
+        "title": "Create Network Dataset"
+    }
+}

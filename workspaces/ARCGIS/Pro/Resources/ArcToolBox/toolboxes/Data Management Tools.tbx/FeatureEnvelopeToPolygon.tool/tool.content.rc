@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Creates a feature class containing polygons, each of which represents the envelope of an input feature.",
+        "in_features.descr": "The input features that can be multipoint, line, polygon, or annotation.",
+        "in_features.title": "Input Features",
+        "out_feature_class.descr": "The output polygon feature class.",
+        "out_feature_class.title": "Output Feature Class",
+        "single_envelope.descr": "<xdoc><p>Specifies whether to use one envelope for each entire multipart feature or one envelope per part of a multipart feature. This parameter will affect the results of multipart input features only.</p><ul><li>Unchecked—Uses one envelope containing an entire multipart feature; therefore, the resulting polygon will be singlepart. This is the default.</li><li>Checked—Uses one envelope for each part of a multipart feature; the resulting polygon of the multipart feature will remain multipart.</li></ul></xdoc>",
+        "single_envelope.title": "Create multipart features",
+        "title": "Feature Envelope To Polygon"
+    }
+}

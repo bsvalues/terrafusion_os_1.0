@@ -1,0 +1,565 @@
+# ============================================================================
+# TerraFusion OS - Prometheus Monitoring Configuration
+# Government. Transcended. - Championship-Level Observability
+# ============================================================================
+# Purpose: Comprehensive monitoring for TerraFusion microservices
+# Features: ServiceMonitor resources, scrape configs, alerting rules
+# Metrics: API, Consciousness (50,000 agents), Gateway, Operations
+# Performance: <5s scrape interval, 15-day retention, efficient storage
+# Compliance: FISMA-High audit logging, metric retention policies
+# ============================================================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+  labels:
+    name: monitoring
+    app.kubernetes.io/name: terrafusion-monitoring
+    terrafusion.compliance: "FISMA-High"
+    terrafusion.environment: "production"
+
+---
+# ============================================================================
+# Prometheus ConfigMap - Scrape Configurations & Rules
+# ============================================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/component: config
+data:
+  prometheus.yml: |
+    # Prometheus Global Configuration
+    global:
+      scrape_interval: 15s      # Scrape metrics every 15 seconds
+      scrape_timeout: 10s        # Timeout after 10 seconds
+      evaluation_interval: 15s   # Evaluate rules every 15 seconds
+      external_labels:
+        cluster: 'terrafusion-prod'
+        environment: 'production'
+        region: 'us-west-2'
+    
+    # Alertmanager Configuration
+    alerting:
+      alertmanagers:
+        - static_configs:
+            - targets:
+                - alertmanager:9093
+          scheme: http
+          timeout: 10s
+    
+    # Load alerting and recording rules
+    rule_files:
+      - /etc/prometheus/rules/*.yml
+    
+    # Scrape Configurations
+    scrape_configs:
+      # ======================================================================
+      # Prometheus Self-Monitoring
+      # ======================================================================
+      - job_name: 'prometheus'
+        static_configs:
+          - targets: ['localhost:9090']
+        metrics_path: /metrics
+        scheme: http
+      
+      # ======================================================================
+      # TerraFusion API Service
+      # ======================================================================
+      - job_name: 'terrafusion-api'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - terrafusion
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app]
+            action: keep
+            regex: terrafusion-api
+          - source_labels: [__meta_kubernetes_pod_name]
+            target_label: pod
+          - source_labels: [__meta_kubernetes_namespace]
+            target_label: namespace
+          - source_labels: [__meta_kubernetes_pod_node_name]
+            target_label: node
+        metrics_path: /metrics
+        scheme: http
+        scrape_interval: 10s
+        scrape_timeout: 5s
+      
+      # ======================================================================
+      # TerraFusion Consciousness Engine (50,000 AI Agents)
+      # ======================================================================
+      - job_name: 'terrafusion-consciousness'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - terrafusion
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app]
+            action: keep
+            regex: terrafusion-consciousness
+          - source_labels: [__meta_kubernetes_pod_name]
+            target_label: pod
+          - source_labels: [__meta_kubernetes_namespace]
+            target_label: namespace
+          - source_labels: [__meta_kubernetes_pod_node_name]
+            target_label: node
+        metrics_path: /metrics
+        scheme: http
+        scrape_interval: 10s
+        scrape_timeout: 5s
+        # AI-specific metric relabeling
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: 'terrafusion_ai_(.*)'
+            target_label: ai_metric
+            replacement: '$1'
+      
+      # ======================================================================
+      # TerraFusion Gateway Service
+      # ======================================================================
+      - job_name: 'terrafusion-gateway'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - terrafusion
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app]
+            action: keep
+            regex: terrafusion-gateway
+          - source_labels: [__meta_kubernetes_pod_name]
+            target_label: pod
+          - source_labels: [__meta_kubernetes_namespace]
+            target_label: namespace
+          - source_labels: [__meta_kubernetes_pod_node_name]
+            target_label: node
+        metrics_path: /metrics
+        scheme: http
+        scrape_interval: 10s
+        scrape_timeout: 5s
+      
+      # ======================================================================
+      # TerraFusion Operations Service
+      # ======================================================================
+      - job_name: 'terrafusion-operations'
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - terrafusion
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app]
+            action: keep
+            regex: terrafusion-operations
+          - source_labels: [__meta_kubernetes_pod_name]
+            target_label: pod
+          - source_labels: [__meta_kubernetes_namespace]
+            target_label: namespace
+          - source_labels: [__meta_kubernetes_pod_node_name]
+            target_label: node
+        metrics_path: /metrics
+        scheme: http
+        scrape_interval: 10s
+        scrape_timeout: 5s
+      
+      # ======================================================================
+      # Kubernetes API Server
+      # ======================================================================
+      - job_name: 'kubernetes-apiservers'
+        kubernetes_sd_configs:
+          - role: endpoints
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+            action: keep
+            regex: default;kubernetes;https
+      
+      # ======================================================================
+      # Kubernetes Nodes (cAdvisor)
+      # ======================================================================
+      - job_name: 'kubernetes-nodes'
+        kubernetes_sd_configs:
+          - role: node
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        relabel_configs:
+          - action: labelmap
+            regex: __meta_kubernetes_node_label_(.+)
+          - target_label: __address__
+            replacement: kubernetes.default.svc:443
+          - source_labels: [__meta_kubernetes_node_name]
+            regex: (.+)
+            target_label: __metrics_path__
+            replacement: /api/v1/nodes/${1}/proxy/metrics
+      
+      # ======================================================================
+      # Kubernetes Pods
+      # ======================================================================
+      - job_name: 'kubernetes-pods'
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+            action: keep
+            regex: true
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+            action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+            target_label: __address__
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_(.+)
+          - source_labels: [__meta_kubernetes_namespace]
+            target_label: kubernetes_namespace
+          - source_labels: [__meta_kubernetes_pod_name]
+            target_label: kubernetes_pod_name
+
+---
+# ============================================================================
+# Prometheus Deployment
+# ============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/component: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+        app.kubernetes.io/name: prometheus
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+    spec:
+      serviceAccountName: prometheus
+      containers:
+        - name: prometheus
+          image: prom/prometheus:v2.48.0
+          args:
+            - '--config.file=/etc/prometheus/prometheus.yml'
+            - '--storage.tsdb.path=/prometheus'
+            - '--storage.tsdb.retention.time=15d'
+            - '--storage.tsdb.retention.size=50GB'
+            - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+            - '--web.console.templates=/usr/share/prometheus/consoles'
+            - '--web.enable-lifecycle'
+            - '--web.enable-admin-api'
+          ports:
+            - name: http
+              containerPort: 9090
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: 9090
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: 9090
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 2000m
+              memory: 4Gi
+          volumeMounts:
+            - name: config
+              mountPath: /etc/prometheus
+            - name: rules
+              mountPath: /etc/prometheus/rules
+            - name: storage
+              mountPath: /prometheus
+      volumes:
+        - name: config
+          configMap:
+            name: prometheus-config
+        - name: rules
+          configMap:
+            name: prometheus-rules
+        - name: storage
+          persistentVolumeClaim:
+            claimName: prometheus-storage
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        fsGroup: 65534
+
+---
+# ============================================================================
+# Prometheus Service
+# ============================================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/component: monitoring
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9090"
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 9090
+      targetPort: 9090
+      protocol: TCP
+  selector:
+    app: prometheus
+
+---
+# ============================================================================
+# Prometheus ServiceAccount & RBAC
+# ============================================================================
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: prometheus
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prometheus
+  labels:
+    app.kubernetes.io/name: prometheus
+rules:
+  - apiGroups: [""]
+    resources:
+      - nodes
+      - nodes/proxy
+      - services
+      - endpoints
+      - pods
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["extensions", "apps"]
+    resources:
+      - deployments
+      - replicasets
+      - statefulsets
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources:
+      - configmaps
+    verbs: ["get"]
+  - nonResourceURLs: ["/metrics"]
+    verbs: ["get"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus
+  labels:
+    app.kubernetes.io/name: prometheus
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus
+subjects:
+  - kind: ServiceAccount
+    name: prometheus
+    namespace: monitoring
+
+---
+# ============================================================================
+# Prometheus PersistentVolumeClaim
+# ============================================================================
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: prometheus-storage
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: prometheus
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: standard
+
+---
+# ============================================================================
+# ServiceMonitor for TerraFusion API
+# ============================================================================
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: terrafusion-api
+  namespace: terrafusion
+  labels:
+    app.kubernetes.io/name: terrafusion-api
+    app.kubernetes.io/component: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: terrafusion-api
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 10s
+      scrapeTimeout: 5s
+  namespaceSelector:
+    matchNames:
+      - terrafusion
+
+---
+# ============================================================================
+# ServiceMonitor for TerraFusion Consciousness
+# ============================================================================
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: terrafusion-consciousness
+  namespace: terrafusion
+  labels:
+    app.kubernetes.io/name: terrafusion-consciousness
+    app.kubernetes.io/component: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: terrafusion-consciousness
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 10s
+      scrapeTimeout: 5s
+    - port: metrics
+      path: /metrics
+      interval: 10s
+      scrapeTimeout: 5s
+  namespaceSelector:
+    matchNames:
+      - terrafusion
+
+---
+# ============================================================================
+# ServiceMonitor for TerraFusion Gateway
+# ============================================================================
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: terrafusion-gateway
+  namespace: terrafusion
+  labels:
+    app.kubernetes.io/name: terrafusion-gateway
+    app.kubernetes.io/component: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: terrafusion-gateway
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 10s
+      scrapeTimeout: 5s
+  namespaceSelector:
+    matchNames:
+      - terrafusion
+
+---
+# ============================================================================
+# ServiceMonitor for TerraFusion Operations
+# ============================================================================
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: terrafusion-operations
+  namespace: terrafusion
+  labels:
+    app.kubernetes.io/name: terrafusion-operations
+    app.kubernetes.io/component: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: terrafusion-operations
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 10s
+      scrapeTimeout: 5s
+  namespaceSelector:
+    matchNames:
+      - terrafusion
+
+# ============================================================================
+# Apply Instructions
+# ============================================================================
+# Prerequisites:
+#   1. Install Prometheus Operator (for ServiceMonitor CRD):
+#      kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/bundle.yaml
+#
+# Apply Prometheus configuration:
+#   kubectl apply -f prometheus-config.yaml
+#
+# View Prometheus pods:
+#   kubectl get pods -n monitoring
+#
+# Access Prometheus UI (port-forward):
+#   kubectl port-forward -n monitoring svc/prometheus 9090:9090
+#   # Open browser: http://localhost:9090
+#
+# View ServiceMonitors:
+#   kubectl get servicemonitor -n terrafusion
+#
+# Check Prometheus targets:
+#   # In Prometheus UI: Status > Targets
+#   # All TerraFusion services should show as "UP"
+#
+# Query metrics examples:
+#   # API request rate
+#   rate(http_requests_total{job="terrafusion-api"}[5m])
+#
+#   # Consciousness AI agent count
+#   terrafusion_ai_agent_count{job="terrafusion-consciousness"}
+#
+#   # Gateway response time P95
+#   histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="terrafusion-gateway"}[5m]))
+#
+#   # Operations error rate
+#   rate(http_requests_total{job="terrafusion-operations",status=~"5.."}[5m])
+#
+# Reload Prometheus configuration:
+#   curl -X POST http://localhost:9090/-/reload
+# ============================================================================

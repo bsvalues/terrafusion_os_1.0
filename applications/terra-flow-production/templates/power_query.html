@@ -1,0 +1,364 @@
+{% extends "layout.html" %}
+
+{% block title %}Power Query{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Power Query</h1>
+    
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Data Sources</h5>
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-primary mb-3" type="button" data-bs-toggle="modal" data-bs-target="#addDataSourceModal">
+                        <i class="fas fa-plus-circle"></i> Add Data Source
+                    </button>
+                    
+                    <div class="list-group" id="data-source-list">
+                        <!-- Data sources will be populated here -->
+                        <div class="text-center py-3 text-muted" id="no-sources-message">
+                            <i class="fas fa-database fa-2x mb-2"></i>
+                            <p>No data sources added yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Saved Queries</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group" id="saved-query-list">
+                        <!-- Saved queries will be populated here -->
+                        <div class="text-center py-3 text-muted" id="no-queries-message">
+                            <i class="fas fa-search fa-2x mb-2"></i>
+                            <p>No saved queries yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Query Builder</h5>
+                    <div>
+                        <button class="btn btn-outline-secondary me-2" id="btn-new-query">
+                            <i class="fas fa-file"></i> New
+                        </button>
+                        <button class="btn btn-outline-primary me-2" id="btn-save-query">
+                            <i class="fas fa-save"></i> Save
+                        </button>
+                        <button class="btn btn-primary" id="btn-run-query">
+                            <i class="fas fa-play"></i> Run
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="query-name" class="form-label">Query Name</label>
+                        <input type="text" class="form-control" id="query-name" placeholder="Enter a name for this query">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="data-source-select" class="form-label">Data Source</label>
+                        <select class="form-select" id="data-source-select">
+                            <option value="">-- Select Data Source --</option>
+                        </select>
+                    </div>
+                    
+                    <div id="query-params-container">
+                        <!-- Query parameters will be rendered here based on data source type -->
+                    </div>
+                    
+                    <div id="sql-query-container" style="display: none;">
+                        <div class="mb-3">
+                            <label for="sql-query" class="form-label">SQL Query</label>
+                            <textarea class="form-control" id="sql-query" rows="6" placeholder="SELECT * FROM table"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <button class="btn btn-sm btn-outline-secondary" id="btn-show-tables">
+                                <i class="fas fa-table"></i> Show Tables
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="transformations-container" style="display: none;">
+                        <h5 class="mt-4 mb-3">Transformations</h5>
+                        
+                        <div class="d-flex mb-3">
+                            <select class="form-select me-2" id="transformation-type">
+                                <option value="">-- Add Transformation --</option>
+                                <option value="filter">Filter</option>
+                                <option value="sort">Sort</option>
+                                <option value="groupby">Group By</option>
+                                <option value="pivot">Pivot</option>
+                            </select>
+                            <button class="btn btn-outline-primary" id="btn-add-transformation">
+                                <i class="fas fa-plus"></i> Add
+                            </button>
+                        </div>
+                        
+                        <div id="transformation-list" class="mb-3">
+                            <!-- Transformations will be added here -->
+                            <div class="text-center py-3 text-muted" id="no-transformations-message">
+                                <p>No transformations added yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card" id="results-container" style="display: none;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Results</h5>
+                    <div>
+                        <button class="btn btn-outline-secondary me-2" id="btn-export-csv">
+                            <i class="fas fa-file-csv"></i> Export CSV
+                        </button>
+                        <button class="btn btn-outline-secondary" id="btn-export-excel">
+                            <i class="fas fa-file-excel"></i> Export Excel
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="query-info" class="alert alert-info mb-3">
+                        <!-- Query info will be displayed here -->
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered" id="results-table">
+                            <thead>
+                                <tr id="results-header">
+                                    <!-- Table headers will be populated here -->
+                                </tr>
+                            </thead>
+                            <tbody id="results-body">
+                                <!-- Table rows will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div id="pagination-container" class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <span id="pagination-info">Showing 1-10 of 0 results</span>
+                        </div>
+                        <div>
+                            <button class="btn btn-sm btn-outline-secondary" id="btn-prev-page" disabled>
+                                <i class="fas fa-chevron-left"></i> Previous
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary ms-2" id="btn-next-page" disabled>
+                                Next <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Data Source Modal -->
+<div class="modal fade" id="addDataSourceModal" tabindex="-1" aria-labelledby="addDataSourceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addDataSourceModalLabel">Add Data Source</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="source-type" class="form-label">Source Type</label>
+                    <select class="form-select" id="source-type">
+                        <option value="">-- Select Source Type --</option>
+                        <option value="sql_server">SQL Server</option>
+                        <option value="postgresql">PostgreSQL</option>
+                        <option value="csv">CSV File</option>
+                        <option value="excel">Excel File</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="source-name" class="form-label">Source Name</label>
+                    <input type="text" class="form-control" id="source-name" placeholder="Enter a name for this data source">
+                </div>
+                
+                <div class="mb-3">
+                    <label for="source-description" class="form-label">Description (Optional)</label>
+                    <textarea class="form-control" id="source-description" rows="2" placeholder="Enter a description for this data source"></textarea>
+                </div>
+                
+                <!-- SQL Server specific fields -->
+                <div id="sql-server-fields" style="display: none;">
+                    <div class="mb-3">
+                        <label for="sql-server" class="form-label">Server</label>
+                        <input type="text" class="form-control" id="sql-server" placeholder="Server name or IP address">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="sql-database" class="form-label">Database</label>
+                        <input type="text" class="form-control" id="sql-database" placeholder="Database name">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="sql-windows-auth">
+                            <label class="form-check-label" for="sql-windows-auth">
+                                Use Windows Authentication
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div id="sql-credentials" class="mb-3">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="sql-username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="sql-username" placeholder="Username">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="sql-password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="sql-password" placeholder="Password">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="sql-port" class="form-label">Port (Optional)</label>
+                        <input type="number" class="form-control" id="sql-port" placeholder="1433" value="1433">
+                    </div>
+                </div>
+                
+                <!-- PostgreSQL specific fields -->
+                <div id="postgresql-fields" style="display: none;">
+                    <div class="mb-3">
+                        <label for="pg-host" class="form-label">Host</label>
+                        <input type="text" class="form-control" id="pg-host" placeholder="Host name or IP address">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="pg-database" class="form-label">Database</label>
+                        <input type="text" class="form-control" id="pg-database" placeholder="Database name">
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="pg-username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="pg-username" placeholder="Username">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="pg-password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="pg-password" placeholder="Password">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="pg-port" class="form-label">Port (Optional)</label>
+                        <input type="number" class="form-control" id="pg-port" placeholder="5432" value="5432">
+                    </div>
+                </div>
+                
+                <!-- CSV specific fields -->
+                <div id="csv-fields" style="display: none;">
+                    <div class="mb-3">
+                        <label for="csv-file" class="form-label">CSV File</label>
+                        <input type="file" class="form-control" id="csv-file" accept=".csv">
+                    </div>
+                </div>
+                
+                <!-- Excel specific fields -->
+                <div id="excel-fields" style="display: none;">
+                    <div class="mb-3">
+                        <label for="excel-file" class="form-label">Excel File</label>
+                        <input type="file" class="form-control" id="excel-file" accept=".xlsx,.xls">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btn-add-data-source">Add Data Source</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tables Modal -->
+<div class="modal fade" id="tablesModal" tabindex="-1" aria-labelledby="tablesModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tablesModalLabel">Database Tables</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="list-group" id="tables-list">
+                    <!-- Tables will be populated here -->
+                    <div class="text-center py-3 text-muted" id="no-tables-message">
+                        <p>No tables found or loading...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Save Query Modal -->
+<div class="modal fade" id="saveQueryModal" tabindex="-1" aria-labelledby="saveQueryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="saveQueryModalLabel">Save Query</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="save-query-name" class="form-label">Query Name</label>
+                    <input type="text" class="form-control" id="save-query-name">
+                </div>
+                <div class="mb-3">
+                    <label for="save-query-description" class="form-label">Description (Optional)</label>
+                    <textarea class="form-control" id="save-query-description" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btn-save-query-confirm">Save Query</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Transformation Settings Modal -->
+<div class="modal fade" id="transformationModal" tabindex="-1" aria-labelledby="transformationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="transformationModalLabel">Configure Transformation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="transformation-settings">
+                    <!-- Transformation settings will be rendered here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btn-save-transformation">Add Transformation</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/power_query.js') }}"></script>
+{% endblock %}

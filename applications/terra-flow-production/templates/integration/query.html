@@ -1,0 +1,494 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h5>Custom Query</h5>
+                    <p class="text-sm">Execute custom queries against connected data sources</p>
+                </div>
+                <div class="card-body">
+                    <div id="alertContainer"></div>
+                    
+                    <form id="queryForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="source_id" class="form-control-label">Data Source</label>
+                                    <select class="form-control" id="source_id" name="source_id" required>
+                                        <option value="">Select a data source...</option>
+                                        {% for source_id, config in data_sources.items() %}
+                                        <option value="{{ source_id }}" {% if request.args.get('source_id') == source_id %}selected{% endif %}>
+                                            {{ source_id }} ({{ config.source_type }})
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="form-text text-muted">
+                                        Data source to query
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mt-3">
+                            <label for="query" class="form-control-label">SQL Query</label>
+                            <textarea class="form-control" id="query" name="query" rows="5" placeholder="Enter SQL query..." required></textarea>
+                            <small class="form-text text-muted">
+                                SQL query to execute against the selected data source
+                            </small>
+                        </div>
+                        
+                        <div class="form-group d-flex justify-content-between mt-4">
+                            <div>
+                                <a href="{{ url_for('integration.index') }}" class="btn btn-secondary">Back to Dashboard</a>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-outline-primary me-2" id="validateButton">
+                                    <i class="fas fa-check me-1"></i> Validate
+                                </button>
+                                <button type="submit" class="btn btn-primary" id="executeButton">
+                                    <i class="fas fa-play me-1"></i> Execute Query
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card" id="resultsCard" style="display: none;">
+                <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5>Query Results</h5>
+                        <p class="text-sm" id="resultsInfo"></p>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary" id="exportResultsBtn" style="display: none;">
+                            <i class="fas fa-download me-1"></i> Export Results
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="resultsContainer">
+                        <div class="text-center p-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Executing query...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header pb-0">
+                    <h5>Query Examples</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Query Type</th>
+                                    <th>Example</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>List all tables</td>
+                                    <td><code>SELECT name FROM sqlite_master WHERE type='table'</code> <em>(SQLite)</em><br>
+                                        <code>SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'</code> <em>(PostgreSQL)</em><br>
+                                        <code>SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE'</code> <em>(SQL Server)</em>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-link p-0 example-query" data-source-type="sqlite" 
+                                                data-query="SELECT name FROM sqlite_master WHERE type='table'">Use</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Table structure</td>
+                                    <td><code>PRAGMA table_info('table_name')</code> <em>(SQLite)</em><br>
+                                        <code>SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'table_name'</code> <em>(PostgreSQL/SQL Server)</em>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-link p-0 example-query" data-source-type="sqlite" 
+                                                data-query="PRAGMA table_info('table_name')">Use</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Property data</td>
+                                    <td><code>SELECT * FROM property_data LIMIT 100</code></td>
+                                    <td>
+                                        <button class="btn btn-link p-0 example-query" 
+                                                data-query="SELECT * FROM property_data LIMIT 100">Use</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Sales data</td>
+                                    <td><code>SELECT * FROM sales_data WHERE sale_date >= '2023-01-01' LIMIT 100</code></td>
+                                    <td>
+                                        <button class="btn btn-link p-0 example-query" 
+                                                data-query="SELECT * FROM sales_data WHERE sale_date >= '2023-01-01' LIMIT 100">Use</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Property valuation</td>
+                                    <td><code>SELECT property_id, parcel_number, assessed_value, land_value, improvement_value FROM property_valuation LIMIT 100</code></td>
+                                    <td>
+                                        <button class="btn btn-link p-0 example-query" 
+                                                data-query="SELECT property_id, parcel_number, assessed_value, land_value, improvement_value FROM property_valuation LIMIT 100">Use</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="alert alert-warning mt-3" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Important:</strong> Only SELECT queries are allowed for security reasons. 
+                        Data modification operations (INSERT, UPDATE, DELETE, ALTER, etc.) are not permitted.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Export Results Modal -->
+<div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="exportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exportModalLabel">Export Results</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="exportFormat" class="form-label">Export Format</label>
+                    <select class="form-control" id="exportFormat">
+                        <option value="csv">CSV</option>
+                        <option value="xlsx">Excel</option>
+                        <option value="json">JSON</option>
+                    </select>
+                </div>
+                <div class="form-group mt-3">
+                    <label for="exportFilename" class="form-label">Filename</label>
+                    <input type="text" class="form-control" id="exportFilename" placeholder="query_results">
+                    <small class="form-text text-muted">
+                        Filename without extension
+                    </small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmExportBtn">Export</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        // Store results for export
+        let queryResults = null;
+        
+        // Query form submission
+        $('#queryForm').submit(function(e) {
+            e.preventDefault();
+            
+            const sourceId = $('#source_id').val();
+            const query = $('#query').val();
+            
+            if (!sourceId) {
+                showAlert('danger', 'Please select a data source');
+                return;
+            }
+            
+            if (!query) {
+                showAlert('danger', 'Please enter a SQL query');
+                return;
+            }
+            
+            // Disable form and show results card
+            $('#executeButton').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i> Executing...');
+            $('#validateButton').prop('disabled', true);
+            $('#resultsCard').show();
+            $('#resultsContainer').html(`
+                <div class="text-center p-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Executing query...</p>
+                </div>
+            `);
+            $('#resultsInfo').text('');
+            $('#exportResultsBtn').hide();
+            
+            // Submit query
+            $.ajax({
+                url: '{{ url_for("integration.query") }}',
+                type: 'POST',
+                data: {
+                    source_id: sourceId,
+                    query: query
+                },
+                success: function(response) {
+                    $('#executeButton').prop('disabled', false).html('<i class="fas fa-play me-1"></i> Execute Query');
+                    $('#validateButton').prop('disabled', false);
+                    
+                    if (response.status === 'success') {
+                        showAlert('success', 'Query executed successfully');
+                        queryResults = response;
+                        showResults(response);
+                        
+                        // Show export button
+                        $('#exportResultsBtn').show();
+                    } else {
+                        showAlert('danger', 'Query failed: ' + response.message);
+                        $('#resultsContainer').html(`
+                            <div class="alert alert-danger">
+                                <h6 class="alert-heading"><i class="fas fa-times-circle me-2"></i> Query Failed</h6>
+                                <p>${response.message}</p>
+                            </div>
+                        `);
+                        $('#resultsInfo').text('Error executing query');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    $('#executeButton').prop('disabled', false).html('<i class="fas fa-play me-1"></i> Execute Query');
+                    $('#validateButton').prop('disabled', false);
+                    showAlert('danger', 'An error occurred: ' + error);
+                    $('#resultsContainer').html(`
+                        <div class="alert alert-danger">
+                            <h6 class="alert-heading"><i class="fas fa-times-circle me-2"></i> Error</h6>
+                            <p>An error occurred during query execution: ${error}</p>
+                        </div>
+                    `);
+                    $('#resultsInfo').text('Error executing query');
+                }
+            });
+        });
+        
+        // Validate button
+        $('#validateButton').click(function() {
+            // Simple SQL validation for now - just check if it starts with SELECT
+            const query = $('#query').val().trim().toUpperCase();
+            
+            if (!query) {
+                showAlert('warning', 'Please enter a SQL query to validate');
+                return;
+            }
+            
+            if (query.startsWith('SELECT')) {
+                showAlert('success', 'Query appears to be valid SELECT statement');
+            } else {
+                showAlert('danger', 'Only SELECT queries are allowed for security reasons');
+            }
+        });
+        
+        // Example query buttons
+        $('.example-query').click(function() {
+            const query = $(this).data('query');
+            const sourceType = $(this).data('source-type');
+            
+            // Set the query
+            $('#query').val(query);
+            
+            // If source type is specified, select a matching data source
+            if (sourceType) {
+                const matchingSource = $('#source_id option').filter(function() {
+                    return $(this).text().toLowerCase().includes(sourceType);
+                }).first().val();
+                
+                if (matchingSource) {
+                    $('#source_id').val(matchingSource);
+                }
+            }
+        });
+        
+        // Export results button
+        $('#exportResultsBtn').click(function() {
+            if (!queryResults) {
+                showAlert('warning', 'No query results to export');
+                return;
+            }
+            
+            // Set default filename based on data source
+            const sourceId = $('#source_id').val();
+            $('#exportFilename').val(sourceId + '_query_results');
+            
+            // Show modal
+            $('#exportModal').modal('show');
+        });
+        
+        // Confirm export button
+        $('#confirmExportBtn').click(function() {
+            const format = $('#exportFormat').val();
+            const filename = $('#exportFilename').val() || 'query_results';
+            
+            if (!queryResults) {
+                return;
+            }
+            
+            // Convert results to the selected format and download
+            if (format === 'csv') {
+                downloadCSV(queryResults.records, filename);
+            } else if (format === 'xlsx') {
+                showAlert('warning', 'Excel export is not implemented in the browser. Using CSV instead.');
+                downloadCSV(queryResults.records, filename);
+            } else if (format === 'json') {
+                downloadJSON(queryResults.records, filename);
+            }
+            
+            // Hide modal
+            $('#exportModal').modal('hide');
+        });
+        
+        // Helper functions
+        function showAlert(type, message) {
+            $('#alertContainer').html(`
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `);
+        }
+        
+        function showResults(data) {
+            const sourceId = $('#source_id').val();
+            
+            // Update info text
+            let infoText = `Showing `;
+            if (data.truncated) {
+                infoText += `first ${data.records.length} of ${data.total_records} records`;
+            } else {
+                infoText += `${data.records.length} records`;
+            }
+            infoText += ` from ${sourceId}`;
+            
+            $('#resultsInfo').text(infoText);
+            
+            // If no records
+            if (!data.records || data.records.length === 0) {
+                $('#resultsContainer').html(`
+                    <div class="alert alert-info">
+                        <h6 class="alert-heading"><i class="fas fa-info-circle me-2"></i> No Results</h6>
+                        <p>The query returned no results.</p>
+                    </div>
+                `);
+                return;
+            }
+            
+            // Build results table
+            let tableHtml = `
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+            `;
+            
+            // Add columns
+            data.columns.forEach(column => {
+                tableHtml += `<th>${column}</th>`;
+            });
+            
+            tableHtml += `
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            // Add rows
+            data.records.forEach(record => {
+                tableHtml += `<tr>`;
+                data.columns.forEach(column => {
+                    const value = record[column];
+                    if (value === null) {
+                        tableHtml += `<td><em class="text-muted">NULL</em></td>`;
+                    } else {
+                        tableHtml += `<td>${value}</td>`;
+                    }
+                });
+                tableHtml += `</tr>`;
+            });
+            
+            tableHtml += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            // Add truncation notice if needed
+            if (data.truncated) {
+                tableHtml += `
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Results are limited to ${data.records.length} records. The full result set contains ${data.total_records} records.
+                    </div>
+                `;
+            }
+            
+            $('#resultsContainer').html(tableHtml);
+        }
+        
+        function downloadCSV(records, filename) {
+            if (!records || !records.length) {
+                showAlert('warning', 'No data to export');
+                return;
+            }
+            
+            const columns = Object.keys(records[0]);
+            let csvContent = columns.join(',') + '\n';
+            
+            records.forEach(record => {
+                const row = columns.map(column => {
+                    const value = record[column];
+                    if (value === null) return '';
+                    if (typeof value === 'string') {
+                        // Escape quotes and wrap in quotes
+                        return '"' + value.replace(/"/g, '""') + '"';
+                    }
+                    return value;
+                });
+                csvContent += row.join(',') + '\n';
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename + '.csv');
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        function downloadJSON(records, filename) {
+            if (!records || !records.length) {
+                showAlert('warning', 'No data to export');
+                return;
+            }
+            
+            const jsonContent = JSON.stringify(records, null, 2);
+            const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename + '.json');
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    });
+</script>
+{% endblock %}

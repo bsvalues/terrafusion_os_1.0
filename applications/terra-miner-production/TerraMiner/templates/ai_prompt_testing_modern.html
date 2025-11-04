@@ -1,0 +1,424 @@
+{% extends "new_unified_base.html" %}
+
+{% block title %}AI Prompt Testing{% endblock %}
+
+{% block styles %}
+<style>
+    .result-card {
+        height: 300px;
+        overflow-y: auto;
+    }
+    .vs-badge {
+        position: absolute;
+        top: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+    }
+    .prompt-editor {
+        min-height: 150px;
+    }
+    .diff-highlight-add {
+        background-color: rgba(16, 185, 129, 0.2);
+    }
+    .diff-highlight-remove {
+        background-color: rgba(239, 68, 68, 0.2);
+    }
+    .metrics-comparison .winner {
+        font-weight: bold;
+        color: #10b981;
+    }
+    .metrics-comparison .loser {
+        color: #ef4444;
+    }
+    .metrics-comparison .tie {
+        color: #6b7280;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold mb-2">AI Prompt A/B Testing</h1>
+        <p class="text-gray-600 dark:text-gray-300">Compare different prompt variations to optimize AI performance.</p>
+    </div>
+
+    <!-- Prompt Testing Form -->
+    <div class="card mb-8">
+        <div class="card-header">
+            <h2 class="text-xl font-semibold">Test Prompt Variations</h2>
+            <div class="text-sm text-gray-500 dark:text-gray-400">
+                Enter two prompt versions to compare their effectiveness
+            </div>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('ai_prompt_testing') }}" id="prompt-test-form">
+                <div class="mb-6">
+                    <label for="agent_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">AI Agent Type</label>
+                    <select id="agent_type" name="agent_type" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                        <option value="property_valuation">Property Valuation Agent</option>
+                        <option value="market_analysis">Market Analysis Agent</option>
+                        <option value="comp_finder">Comparable Property Finder</option>
+                        <option value="investment_detector">Investment Opportunity Detector</option>
+                        <option value="general_assistant">General Real Estate Assistant</option>
+                    </select>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
+                    <!-- Original Prompt -->
+                    <div>
+                        <label for="original_prompt" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Original Prompt (A)</label>
+                        <textarea id="original_prompt" name="original_prompt" rows="6" class="prompt-editor block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
+                        <p class="mt-1 text-sm text-gray-500">Current production prompt</p>
+                    </div>
+                    
+                    <!-- Variant Prompt -->
+                    <div>
+                        <label for="variant_prompt" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Variant Prompt (B)</label>
+                        <textarea id="variant_prompt" name="variant_prompt" rows="6" class="prompt-editor block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
+                        <p class="mt-1 text-sm text-gray-500">New prompt version to test</p>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label for="test_input" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Test Input</label>
+                    <textarea id="test_input" name="test_input" rows="4" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
+                    <p class="mt-1 text-sm text-gray-500">The test data or question to send with both prompts</p>
+                </div>
+                
+                <div class="flex items-center mb-6 space-x-6">
+                    <div class="flex items-center">
+                        <input id="use_gpt4" name="use_gpt4" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <label for="use_gpt4" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                            Use GPT-4 Model
+                        </label>
+                    </div>
+                    <div class="flex items-center">
+                        <input id="save_results" name="save_results" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <label for="save_results" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                            Save Results to History
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end">
+                    <button type="submit" class="btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                        </svg>
+                        Run A/B Test
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    {% if result_a and result_b %}
+    <!-- Test Results -->
+    <div class="card mb-8">
+        <div class="card-header">
+            <h2 class="text-xl font-semibold">Test Results</h2>
+            <div class="text-sm text-gray-500 dark:text-gray-400">
+                Comparison of prompt performance
+            </div>
+        </div>
+        <div class="card-body">
+            <!-- Response Comparison -->
+            <h3 class="text-lg font-medium mb-4">Generated Responses</h3>
+            <div class="relative mb-8">
+                <div class="vs-badge px-4 py-1 bg-blue-600 text-white text-sm font-bold rounded-full">VS</div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Result A -->
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                        <h4 class="font-medium text-blue-700 dark:text-blue-300 mb-2">Response from Original Prompt (A)</h4>
+                        <div class="result-card p-3 bg-gray-50 dark:bg-gray-900 rounded border border-gray-200 dark:border-gray-700">
+                            {% if result_a.result %}
+                                <div class="whitespace-pre-wrap text-gray-700 dark:text-gray-300">{{ result_a.result }}</div>
+                            {% else %}
+                                <div class="text-gray-500 italic">No result generated</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Result B -->
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                        <h4 class="font-medium text-purple-700 dark:text-purple-300 mb-2">Response from Variant Prompt (B)</h4>
+                        <div class="result-card p-3 bg-gray-50 dark:bg-gray-900 rounded border border-gray-200 dark:border-gray-700">
+                            {% if result_b.result %}
+                                <div class="whitespace-pre-wrap text-gray-700 dark:text-gray-300">{{ result_b.result }}</div>
+                            {% else %}
+                                <div class="text-gray-500 italic">No result generated</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Performance Metrics -->
+            <h3 class="text-lg font-medium mb-4">Performance Metrics</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <!-- Response Time -->
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <h4 class="font-medium mb-2">Response Time</h4>
+                    <div class="metrics-comparison">
+                        <div class="flex justify-between items-center mb-2">
+                            <span>Prompt A:</span>
+                            <span class="{% if result_a.metrics.response_time < result_b.metrics.response_time %}winner{% elif result_a.metrics.response_time > result_b.metrics.response_time %}loser{% else %}tie{% endif %}">
+                                {{ result_a.metrics.response_time|default(0) }} ms
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>Prompt B:</span>
+                            <span class="{% if result_b.metrics.response_time < result_a.metrics.response_time %}winner{% elif result_b.metrics.response_time > result_a.metrics.response_time %}loser{% else %}tie{% endif %}">
+                                {{ result_b.metrics.response_time|default(0) }} ms
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Token Usage -->
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <h4 class="font-medium mb-2">Token Usage</h4>
+                    <div class="metrics-comparison">
+                        <div class="flex justify-between items-center mb-2">
+                            <span>Prompt A:</span>
+                            <span class="{% if result_a.metrics.token_usage < result_b.metrics.token_usage %}winner{% elif result_a.metrics.token_usage > result_b.metrics.token_usage %}loser{% else %}tie{% endif %}">
+                                {{ result_a.metrics.token_usage|default(0) }} tokens
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>Prompt B:</span>
+                            <span class="{% if result_b.metrics.token_usage < result_a.metrics.token_usage %}winner{% elif result_b.metrics.token_usage > result_a.metrics.token_usage %}loser{% else %}tie{% endif %}">
+                                {{ result_b.metrics.token_usage|default(0) }} tokens
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Cost Estimate -->
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <h4 class="font-medium mb-2">Cost Estimate</h4>
+                    <div class="metrics-comparison">
+                        <div class="flex justify-between items-center mb-2">
+                            <span>Prompt A:</span>
+                            <span class="{% if result_a.metrics.cost < result_b.metrics.cost %}winner{% elif result_a.metrics.cost > result_b.metrics.cost %}loser{% else %}tie{% endif %}">
+                                ${{ result_a.metrics.cost|default(0) }}
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span>Prompt B:</span>
+                            <span class="{% if result_b.metrics.cost < result_a.metrics.cost %}winner{% elif result_b.metrics.cost > result_a.metrics.cost %}loser{% else %}tie{% endif %}">
+                                ${{ result_b.metrics.cost|default(0) }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Test Summary -->
+            <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                <h3 class="text-lg font-medium text-blue-800 dark:text-blue-300 mb-2">Test Summary</h3>
+                <p class="text-blue-700 dark:text-blue-400 mb-3">Based on performance metrics and output quality:</p>
+                <div class="flex items-center">
+                    {% if result_a.metrics.overall_score > result_b.metrics.overall_score %}
+                        <div class="h-10 w-10 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mr-3">
+                            <span class="text-green-700 dark:text-green-300 text-lg font-bold">A</span>
+                        </div>
+                        <div>
+                            <p class="font-medium">Original Prompt (A) Performed Better</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ result_a.metrics.overall_score|default(0) }} vs {{ result_b.metrics.overall_score|default(0) }} points</p>
+                        </div>
+                    {% elif result_b.metrics.overall_score > result_a.metrics.overall_score %}
+                        <div class="h-10 w-10 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mr-3">
+                            <span class="text-green-700 dark:text-green-300 text-lg font-bold">B</span>
+                        </div>
+                        <div>
+                            <p class="font-medium">Variant Prompt (B) Performed Better</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ result_b.metrics.overall_score|default(0) }} vs {{ result_a.metrics.overall_score|default(0) }} points</p>
+                        </div>
+                    {% else %}
+                        <div class="h-10 w-10 bg-yellow-100 dark:bg-yellow-900 rounded-full flex items-center justify-center mr-3">
+                            <span class="text-yellow-700 dark:text-yellow-300 text-lg font-bold">=</span>
+                        </div>
+                        <div>
+                            <p class="font-medium">Similar Performance</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Both prompts scored {{ result_a.metrics.overall_score|default(0) }} points</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Recent Tests -->
+    <div class="card mb-8">
+        <div class="card-header">
+            <h2 class="text-xl font-semibold">Recent Tests</h2>
+            <div class="text-sm text-gray-500 dark:text-gray-400">
+                History of prompt tests and their results
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead class="bg-gray-50 dark:bg-gray-800">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Agent Type</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Winner</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Improvement</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
+                        <!-- Example Row 1 -->
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">5 hours ago</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">Property Valuation</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                                    Variant (B)
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400">+23% accuracy</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+                                    Implemented
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <a href="#" class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300">View</a>
+                            </td>
+                        </tr>
+                        
+                        <!-- Example Row 2 -->
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">1 day ago</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">Market Analysis</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                                    Original (A)
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">-5% performance</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200">
+                                    Rejected
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <a href="#" class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300">View</a>
+                            </td>
+                        </tr>
+                        
+                        <!-- Example Row 3 -->
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">3 days ago</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">Comp Finder</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                                    Variant (B)
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400">+17% relevance</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200">
+                                    Pending
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <a href="#" class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300">View</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="flex justify-center mt-6">
+                <a href="#" class="btn-outline">
+                    View All Test History
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Navigation Links -->
+    <div class="flex justify-between">
+        <a href="{{ url_for('ai_feedback_analytics') }}" class="btn-outline flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+            </svg>
+            Feedback Analytics
+        </a>
+        <a href="{{ url_for('ai_continuous_learning') }}" class="btn-outline flex items-center">
+            Continuous Learning
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Prefill with example prompts based on agent selection
+        const agentTypeSelect = document.getElementById('agent_type');
+        const originalPromptField = document.getElementById('original_prompt');
+        const variantPromptField = document.getElementById('variant_prompt');
+        const testInputField = document.getElementById('test_input');
+        
+        const examplePrompts = {
+            'property_valuation': {
+                original: 'You are a real estate valuation expert. Analyze the provided property details and determine a fair market value based on comparable properties, location, condition, and current market trends.',
+                variant: 'You are a real estate valuation expert. Analyze the provided property details and determine a fair market value range (low, medium, high estimates) based on comparable properties, location factors, property condition, renovation potential, and current market trends. Include confidence score for your valuation.'
+            },
+            'market_analysis': {
+                original: 'Analyze the real estate market data for the specified area and provide insights on trends, pricing, and activity.',
+                variant: 'Analyze the real estate market data for the specified area and provide detailed insights on price trends, inventory levels, days on market, buyer/seller ratio, and seasonal patterns. Include specific recommendations for buyers or sellers based on current conditions.'
+            },
+            'comp_finder': {
+                original: 'Find comparable properties to the subject property based on similar features and location.',
+                variant: 'Find highly comparable properties to the subject property based on location, size, age, condition, and amenities. Prioritize recently sold properties within the last 6 months and explain the key similarities and differences between each comp and the subject property.'
+            },
+            'investment_detector': {
+                original: 'Analyze the property data and determine if it represents a good investment opportunity based on ROI and market factors.',
+                variant: 'Analyze the property data and determine investment potential with detailed cash flow analysis, cap rate calculation, 1-year and 5-year ROI projections, risk assessment, and neighborhood growth indicators. Include renovation recommendations to maximize returns.'
+            },
+            'general_assistant': {
+                original: 'You are a real estate assistant. Answer questions about properties, markets, and real estate concepts.',
+                variant: 'You are a real estate assistant with expertise in market analysis, property valuation, investment strategy, and legal considerations. Answer questions about properties, markets, and real estate concepts with specific, actionable information tailored to the user\'s needs and local market conditions.'
+            }
+        };
+        
+        const exampleInputs = {
+            'property_valuation': '3 bedroom, 2 bathroom single family home in Seattle, WA. 1,800 sq ft, built in 1985, recently renovated kitchen, new roof in 2020. Located in Green Lake neighborhood with good schools nearby.',
+            'market_analysis': 'Portland, Oregon housing market, focusing on single family homes in the $400,000-600,000 range.',
+            'comp_finder': 'Subject property: 2 bedroom condo in downtown Chicago, 1,200 sq ft, high-rise building with doorman, built in 2005, selling price $450,000.',
+            'investment_detector': 'Multi-family property (4 units) in Austin, TX. Listed at $950,000. Current rental income: $5,500/month total. Property needs approximately $50,000 in repairs. Property taxes: $8,000/year. HOA: None.',
+            'general_assistant': 'What factors should I consider when evaluating a potential investment property in a suburban area?'
+        };
+        
+        // Update example prompts when agent type changes
+        agentTypeSelect.addEventListener('change', function() {
+            const selectedAgent = this.value;
+            if (examplePrompts[selectedAgent]) {
+                originalPromptField.value = examplePrompts[selectedAgent].original;
+                variantPromptField.value = examplePrompts[selectedAgent].variant;
+                testInputField.value = exampleInputs[selectedAgent] || '';
+            }
+        });
+        
+        // Initialize with default selection
+        if (examplePrompts[agentTypeSelect.value]) {
+            originalPromptField.value = examplePrompts[agentTypeSelect.value].original;
+            variantPromptField.value = examplePrompts[agentTypeSelect.value].variant;
+            testInputField.value = exampleInputs[agentTypeSelect.value] || '';
+        }
+    });
+</script>
+{% endblock %}

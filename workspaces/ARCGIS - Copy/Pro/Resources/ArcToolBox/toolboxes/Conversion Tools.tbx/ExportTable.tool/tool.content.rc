@@ -1,0 +1,25 @@
+{
+    "map": {
+        "description": "Exports the rows of a table or table view to a new table.",
+        "field_mapping.descr": "<xdoc><p>The fields that will be transferred to the output dataset with their respective properties and source fields. The output includes all fields from the input dataset by default.</p><p>Use the field map to add, delete, rename, and reorder fields, as well as change other field properties.</p><p>The field map can also be used to combine values from two or more input fields into a single output field.</p></xdoc>",
+        "field_mapping.title": "Field Map",
+        "in_table.descr": "The input table containing the rows to be exported to a new table.",
+        "in_table.title": "Input Table",
+        "out_table.descr": "<xdoc><p>The output table containing the exported rows.</p><p>If the output location is a folder, include an extension such as .csv, .txt, or .dbf to export the table to the respective format. If the output location is a geodatabase, do not specify an extension.</p></xdoc>",
+        "out_table.title": "Output Table",
+        "params.category1": "Filter",
+        "params.category2": "Fields",
+        "params.category3": "Sort",
+        "sort_field.descr": "<xdoc><p>The field or fields whose values will be used to reorder the input records and the direction the records will be sorted.</p><p><ul><li>Ascending—Records will be sorted from low value to high value.</li><li>Descending—Records will be sorted from high value to low value.</li></ul></p></xdoc>",
+        "sort_field.domain.item2.ASCENDING": "Ascending",
+        "sort_field.domain.item2.DESCENDING": "Descending",
+        "sort_field.dt.title1": "Field(s)",
+        "sort_field.dt.title2": "Order",
+        "sort_field.title": "Sort Field",
+        "title": "Export Table",
+        "use_field_alias_as_name.descr": "<xdoc><p>Specifies whether the input&apos;s field names or field aliases will be used as the output field name.</p><ul><li>Unchecked—The input&apos;s field names will be used as the output field names. This is the default.</li><li>Checked—The input&apos;s field aliases will be used as the output field names.</li></ul></xdoc>",
+        "use_field_alias_as_name.title": "Use Field Alias as Name",
+        "where_clause.descr": "An SQL expression used to select a subset of records.",
+        "where_clause.title": "Expression"
+    }
+}

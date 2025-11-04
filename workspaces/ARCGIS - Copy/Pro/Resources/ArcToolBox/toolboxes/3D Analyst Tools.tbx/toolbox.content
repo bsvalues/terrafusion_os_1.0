@@ -1,0 +1,259 @@
+{
+    "version": "1.0",
+    "alias": "3d",
+    "displayname": "$rc:title",
+    "description": "$rc:descr",
+    "helpcontext": "5100000",
+    "toolsets": {
+        "<root>": {
+            "tools": [
+                "AddTerrainPoints",
+                "LayerToKML",
+                "MapToKML",
+                "SurfaceLength",
+                "SurfaceSpot",
+                "TinAspect",
+                "TinContour",
+                "TinDifference",
+                "TinPolygonVolume",
+                "TinSlope"
+            ]
+        },
+        "$rc:toolset14.name": {
+            "tools": [
+                "EncloseMultiPatch",
+                "EnforceRiverMonotonicity",
+                "IsClosed3D",
+                "Simplify3DLine"
+            ]
+        },
+        "$rc:toolset3.name": {
+            "tools": [
+                "ASCII3DToFeatureClass",
+                "FeatureClassZToASCII",
+                "FeaturesFromCityEngineRules",
+                "FeatureTo3DByAttribute",
+                "Import3DFiles",
+                "Layer3DToFeatureClass"
+            ]
+        },
+        "$rc:toolset15.name": {
+            "tools": [
+                "ExtractMultipatchFromMesh",
+                "ExtractPowerLinesFromPointCloud",
+                "ExtractRailsFromPointCloud",
+                "LasBuildingMultipatch",
+                "MultiPatchFootprint",
+                "RegularizeAdjacentBuildingFootprint",
+                "RegularizeBuildingFootprint"
+            ]
+        },
+        "$rc:toolset18.name": {
+            "tools": [
+                "InterpolatePolyToPatch",
+                "InterpolateShape",
+                "UpdateFeatureZ"
+            ]
+        },
+        "$rc:toolset16.name": {
+            "tools": [
+                "FenceDiagram",
+                "Intersect3D",
+                "Intersect3DLines",
+                "Intersect3DLineWithMultiPatch",
+                "Intersect3DLineWithSurface",
+                "StackProfile"
+            ]
+        },
+        "$rc:toolset5.name": {
+            "tools": [
+                "Buffer3D",
+                "GenerateClearanceSurface",
+                "Inside3D",
+                "LocateLasPointsByProximity",
+                "Near3D",
+                "Union3D"
+            ]
+        },
+        "$rc:toolset11.name": {
+            "tools": [
+                "CutFill",
+                "Difference3D",
+                "ExtrudeBetween",
+                "MinimumBoundingVolume",
+                "PolygonVolume",
+                "SurfaceDifference",
+                "SurfaceVolume"
+            ]
+        },
+        "$rc:toolset8.name": {
+            "tools": [
+                "ColorizeLas",
+                "ExtractLas",
+                "ExtractObjectsFromPointCloud",
+                "ThinLas",
+                "TileLas"
+            ]
+        },
+        "$rc:toolset6.name": {
+            "tools": [
+                "ChangeLasClassCodes",
+                "ClassifyLasBuilding",
+                "ClassifyLasByHeight",
+                "ClassifyLasGround",
+                "ClassifyLasNoise",
+                "ClassifyLasOverlap",
+                "SetLasClassCodesUsingFeatures",
+                "SetLasClassCodesUsingRaster"
+            ]
+        },
+        "$rc:toolset7.name": {
+            "tools": [
+                "ClassifyPointCloudUsingTrainedModel",
+                "EvaluatePointCloudClassificationModel",
+                "PreparePointCloudTrainingData",
+                "TrainPointCloudClassificationModel"
+            ]
+        },
+        "$rc:toolset20.name": {
+            "tools": [
+                "LasDatasetToTin",
+                "LASToMultipoint"
+            ]
+        },
+        "$rc:toolset12.name": {
+            "tools": [
+                "DetectObjectsFromPointCloudUsingTrainedModel",
+                "PreparePointCloudObjectDetectionTrainingData",
+                "TrainPointCloudObjectDetectionModel"
+            ]
+        },
+        "$rc:toolset23.name": {
+            "tools": [
+                "RasterDomain",
+                "RasterTin",
+                "RasterToMultipoint"
+            ]
+        },
+        "$rc:toolset17.name": {
+            "tools": [
+                "Idw",
+                "Kriging",
+                "NaturalNeighbor",
+                "Spline",
+                "SplineWithBarriers",
+                "TopoToRaster",
+                "TopoToRasterByFile",
+                "Trend"
+            ]
+        },
+        "$rc:toolset13.name": {
+            "tools": [
+                "Divide",
+                "Float",
+                "Int",
+                "Minus",
+                "Plus",
+                "Times"
+            ]
+        },
+        "$rc:toolset22.name": {
+            "tools": [
+                "Lookup",
+                "ReclassByASCIIFile",
+                "ReclassByTable",
+                "Reclassify",
+                "Slice"
+            ]
+        },
+        "$rc:toolset4.name": {
+            "tools": [
+                "Aspect",
+                "Contour",
+                "ContourList",
+                "ContourWithBarriers",
+                "Curvature",
+                "HillShade",
+                "Slope",
+                "SurfaceParameters"
+            ]
+        },
+        "$rc:toolset2.name": {
+            "tools": [
+                "AddSurfaceInformation",
+                "AddZInformation",
+                "LasHeightMetrics",
+                "LasPointStatsByArea",
+                "PointFileInformation"
+            ]
+        },
+        "$rc:toolset1.name": {
+            "tools": [
+                "AddFeatureClassToTerrain",
+                "AddTerrainPyramidLevel",
+                "AppendTerrainPoints",
+                "BuildTerrain",
+                "ChangeTerrainReferenceScale",
+                "ChangeTerrainResolutionBounds",
+                "CreateTerrain",
+                "DeleteTerrainPoints",
+                "RemoveFeatureClassFromTerrain",
+                "RemoveTerrainPoints",
+                "RemoveTerrainPyramidLevel",
+                "ReplaceTerrainPoints"
+            ]
+        },
+        "$rc:toolset24.name": {
+            "tools": [
+                "TerrainToPoints",
+                "TerrainToRaster",
+                "TerrainToTin"
+            ]
+        },
+        "$rc:toolset10.name": {
+            "tools": [
+                "CopyTin",
+                "CreateTin",
+                "DecimateTinNodes",
+                "DelineateTinDataArea",
+                "EditTin"
+            ]
+        },
+        "$rc:toolset19.name": {
+            "tools": [
+                "LandXMLToTin",
+                "TinDomain",
+                "TinEdge",
+                "TinLine",
+                "TinNode",
+                "TinPolygonTag",
+                "TinRaster",
+                "TinTriangle"
+            ]
+        },
+        "$rc:toolset21.name": {
+            "tools": [
+                "LocateOutliers",
+                "SurfaceAspect",
+                "SurfaceContour",
+                "SurfaceSlope"
+            ]
+        },
+        "$rc:toolset9.name": {
+            "tools": [
+                "ConstructSightLines",
+                "Intervisibility",
+                "LineOfSight",
+                "ObserverPoints",
+                "Skyline",
+                "SkylineBarrier",
+                "SkylineGraph",
+                "SunShadowFrequency",
+                "SunShadowVolume",
+                "Viewshed",
+                "Viewshed2",
+                "Visibility"
+            ]
+        }
+    }
+}

@@ -1,0 +1,197 @@
+name: Documentation
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'src/**'
+      - 'docs/**'
+      - 'package.json'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'src/**'
+      - 'docs/**'
+      - 'package.json'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  docs:
+    name: Generate Documentation
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Generate API documentation
+      run: npm run docs:api
+      env:
+        NODE_ENV: production
+
+    - name: Generate JSDoc
+      run: npm run docs:jsdoc
+      env:
+        NODE_ENV: production
+
+    - name: Generate TypeDoc
+      run: npm run docs:typedoc
+      env:
+        NODE_ENV: production
+
+    - name: Generate Markdown documentation
+      run: npm run docs:markdown
+      env:
+        NODE_ENV: production
+
+    - name: Generate diagrams
+      run: npm run docs:diagrams
+      env:
+        NODE_ENV: production
+
+    - name: Generate architecture documentation
+      run: npm run docs:architecture
+      env:
+        NODE_ENV: production
+
+    - name: Generate API specification
+      run: npm run docs:openapi
+      env:
+        NODE_ENV: production
+
+    - name: Generate changelog
+      run: npm run docs:changelog
+      env:
+        NODE_ENV: production
+
+    - name: Generate contribution guidelines
+      run: npm run docs:contributing
+      env:
+        NODE_ENV: production
+
+    - name: Generate security policy
+      run: npm run docs:security
+      env:
+        NODE_ENV: production
+
+    - name: Generate code of conduct
+      run: npm run docs:code-of-conduct
+      env:
+        NODE_ENV: production
+
+    - name: Generate license
+      run: npm run docs:license
+      env:
+        NODE_ENV: production
+
+    - name: Generate README
+      run: npm run docs:readme
+      env:
+        NODE_ENV: production
+
+    - name: Upload documentation
+      uses: actions/upload-artifact@v3
+      with:
+        name: documentation
+        path: |
+          docs/api
+          docs/jsdoc
+          docs/typedoc
+          docs/markdown
+          docs/diagrams
+          docs/architecture
+          docs/openapi
+          docs/changelog
+          docs/contributing
+          docs/security
+          docs/code-of-conduct
+          docs/license
+          README.md
+        retention-days: 30
+
+    - name: Deploy to GitHub Pages
+      if: github.ref == 'refs/heads/main'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs
+        publish_branch: gh-pages
+        commit_message: 'docs: update documentation'
+
+    - name: Notify on failure
+      if: failure()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  validate:
+    name: Validate Documentation
+    needs: docs
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Download documentation
+      uses: actions/download-artifact@v3
+      with:
+        name: documentation
+        path: docs
+
+    - name: Validate Markdown
+      uses: DavidAnson/markdownlint-action@v1
+      with:
+        config: .markdownlint.json
+
+    - name: Validate OpenAPI specification
+      run: npm run docs:validate:openapi
+      env:
+        NODE_ENV: production
+
+    - name: Validate JSDoc
+      run: npm run docs:validate:jsdoc
+      env:
+        NODE_ENV: production
+
+    - name: Validate TypeDoc
+      run: npm run docs:validate:typedoc
+      env:
+        NODE_ENV: production
+
+    - name: Check for broken links
+      run: npm run docs:check:links
+      env:
+        NODE_ENV: production
+
+    - name: Check for spelling errors
+      run: npm run docs:check:spelling
+      env:
+        NODE_ENV: production
+
+    - name: Create documentation issue
+      if: failure()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const report = JSON.parse(fs.readFileSync('docs/validation/report.json', 'utf8'));
+          
+          await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: 'Documentation Validation Failed',
+            body: `## Documentation Validation Results\n\n${report.summary}\n\n### Details\n\n${report.details}`,
+            labels: ['documentation', 'needs-review']
+          }); 

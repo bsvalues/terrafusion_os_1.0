@@ -1,0 +1,11 @@
+{
+  "name": "PACS Database",
+  "driver": "MSSQL",
+  "server": "jcharrispacs",
+  "port": 1433,
+  "database": "PACS_OLTP",
+  "authentication": "integrated",
+  "options": {
+    "encrypt": false
+  }
+}

@@ -1,0 +1,79 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: terrafusion-platform-prod
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"  # Umbrella chart - coordinates all services
+    notifications.argoproj.io/subscribe.on-deployed.slack: terrafusion-deployments
+    notifications.argoproj.io/subscribe.on-sync-succeeded.slack: terrafusion-deployments
+    notifications.argoproj.io/subscribe.on-health-degraded.slack: terrafusion-critical
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: terrafusion
+  
+  source:
+    repoURL: https://github.com/terrafusion/terrafusion-os
+    targetRevision: main
+    path: backend/helm/terrafusion-platform
+    helm:
+      releaseName: terrafusion-platform
+      valueFiles:
+        - values.yaml
+      parameters:
+        - name: global.environment
+          value: production
+        - name: global.domain
+          value: terrafusion.gov
+        - name: global.imageRegistry
+          value: ghcr.io/terrafusion
+        - name: api.enabled
+          value: "true"
+        - name: consciousness.enabled
+          value: "true"
+        - name: gateway.enabled
+          value: "true"
+        - name: operations.enabled
+          value: "true"
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: terrafusion
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 10m
+  
+  ignoreDifferences:
+    - group: '*'
+      kind: '*'
+      jsonPointers:
+        - /spec/replicas
+        - /status
+  
+  revisionHistoryLimit: 10
+  
+  info:
+    - name: 'Environment'
+      value: 'Production'
+    - name: 'Platform'
+      value: 'TerraFusion OS Complete'
+    - name: 'Services'
+      value: 'API, Consciousness, Gateway, Operations'
+    - name: 'AI Agents'
+      value: '50,000'
+    - name: 'Counties'
+      value: '39'

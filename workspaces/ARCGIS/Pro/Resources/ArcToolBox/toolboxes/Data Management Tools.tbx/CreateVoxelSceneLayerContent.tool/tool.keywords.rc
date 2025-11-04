@@ -1,0 +1,8 @@
+{
+    "set": [
+        "volumetric",
+        "voxel",
+        "netcdf",
+        "scene layer"
+    ]
+}

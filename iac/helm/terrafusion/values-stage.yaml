@@ -1,0 +1,12 @@
+replicaCount: 2
+autoscaling:
+  minReplicas: 2
+  maxReplicas: 6
+ingress:
+  hosts:
+    - host: tf-stage.example.gov
+
+pgAnalytics:
+  enabled: true
+  persistence:
+    size: 100Gi

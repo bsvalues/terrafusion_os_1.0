@@ -1,0 +1,56 @@
+{
+    "type": "FunctionTool",
+    "guid": "{40a3e560-d5f0-4ffd-a6aa-18c8c1e1855b}",
+    "displayname": "$rc:title",
+    "helpcontent": "3120001",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "block_add_to_map",
+        "input_data_change",
+        "param_nocount:in_dataset"
+    ],
+    "params": {
+        "in_dataset": {
+            "displayname": "$rc:in_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPFeatureLayer"
+                    },
+                    {
+                        "type": "DEGeoDatasetType"
+                    }
+                ]
+            },
+            "description": "$rc:in_dataset.descr"
+        },
+        "coor_system": {
+            "displayname": "$rc:coor_system.title",
+            "datatype": {
+                "type": "GPCoordinateSystem"
+            },
+            "defaultenvironmentname": "outputCoordinateSystem",
+            "description": "$rc:coor_system.descr"
+        },
+        "out_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_dataset.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "in_dataset"
+            ]
+        }
+    },
+    "environments": [
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

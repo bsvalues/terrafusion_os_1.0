@@ -1,0 +1,15 @@
+{
+    "map": {
+        "description": "Imports an S-57 file into an ArcGIS Maritime geodatabase.",
+        "in_base_cell.descr": "The base cell file (*.000).",
+        "in_base_cell.title": "Input Base S-57 Cell",
+        "in_product_config.descr": "The product configuration file that will be imported.",
+        "in_product_config.title": "Product Configuration File",
+        "in_update_cells.descr": "Updates cell files (*.001 - *.999).",
+        "in_update_cells.title": "Update Cells",
+        "output_workspace.title": "Output Workspace",
+        "target_workspace.descr": "The workspace where all the objects will be written.",
+        "target_workspace.title": "Target Workspace",
+        "title": "Import S-57 To Geodatabase"
+    }
+}

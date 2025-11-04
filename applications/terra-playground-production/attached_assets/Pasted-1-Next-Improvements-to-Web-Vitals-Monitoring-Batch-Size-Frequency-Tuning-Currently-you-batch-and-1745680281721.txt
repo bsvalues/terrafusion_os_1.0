@@ -1,0 +1,102 @@
+1. Next Improvements to Web-Vitals Monitoring
+Batch Size & Frequency Tuning
+
+Currently you batch and send on navigation. Consider also flushing on “beforeunload” to catch single-page events.
+
+Limit batch size (e.g. 50 events per request) or time window (e.g. send every 5 s) to balance overhead vs. data granularity.
+
+Enrichment with Contextual Metadata
+
+Attach page route, user role (assessor vs. public), device type, and offline/online state to each batch so you can segment metrics.
+
+Include build version and feature-flag state (e.g. “offline‐sync enabled”) to correlate performance shifts with releases.
+
+Sampling for High-Traffic Endpoints
+
+For public-portal pages with very high traffic, implement a 1–5% sampling rate so you still see Web Vitals trends without overload.
+
+Enhanced Error Handling & Retries
+
+If a batch POST fails, retry with exponential backoff up to N times, then cache locally and retry on next page load or background sync.
+
+Privacy & Data Retention
+
+Ensure any user identifiers are pseudonymized or GDPR-compliant.
+
+Add automatic purging of metrics older than your retention policy (e.g. 90 days) at the database level.
+
+2. Dashboard Design for Web-Vitals Visualization
+A. Frontend Tech Stack
+React + Ant Design or Material-UI for rapid component assembly
+
+Recharts or Chart.js for line/area charts
+
+Apollo/REST data layer fetching from your metrics API
+
+B. Core Dashboard Components
+Key Metrics KPIs (top row)
+
+p50/p75/p95 values for FCP, LCP, CLS, TTFB, INP
+
+Traffic volume and sampling rate
+
+Trend Charts
+
+Time-series line or area charts for each metric (selectable via tabs)
+
+Overlay major releases or feature-flag toggles as vertical markers
+
+Distribution Heatmaps
+
+Histogram of LCP durations showing distribution buckets (0–1 s, 1–2 s, >3 s)
+
+Color-coded by percentile
+
+Segment Filters
+
+Break down by platform (Desktop/Mobile), region (if known), user type (internal/external)
+
+Date picker with quick ranges (Last 24 h, 7 d, 30 d)
+
+Alerts Panel
+
+List of any active performance alerts (see Section 3)
+
+Link to drill-in charts for the time of the alert
+
+C. UX Considerations
+Responsive Layout: Two-column on desktop, stacked on mobile
+
+Drill-Down: Click a KPI to open a modal with detailed logs or trace links
+
+Dark Mode Support: For dashboards used in ops rooms
+
+3. Roadmap for Next-Gen Analytics & Monitoring
+
+Phase	Focus	Key Activities & Tools
+A	Real-User Monitoring (RUM)	• Integrate a RUM library (e.g. Sentry Performance, New Relic Browser)
+• Capture Core Web Vitals + Cumulative Layout Shift events in production		
+• Add mobile RUM via Sentry Mobile SDK		
+B	Error & Crash Tracking	• Deploy Sentry (web & React Native) or Rollbar
+• Configure custom breadcrumbs for CRDT sync and conflict failures		
+• Create alert rules for error rate spikes		
+C	Server-Side Observability	• Instrument NestJS with OpenTelemetry
+• Collect metrics on API latency, DB query times, ETL job durations		
+• Send to Prometheus + Grafana (you already have this)		
+D	Distributed Tracing	• Extend OpenTelemetry to trace a request end-to-end: UI → API → DB → ETL
+• Visualize spans in Jaeger or Grafana Tempo		
+E	Performance Alerting & SLOs	• Define SLOs (e.g. 95% LCP < 2 s)
+• Use Prometheus alertmanager to notify Slack/Email on breaches		
+• Create Grafana dashboards with SLO burn-rate graphs		
+Prioritization (30-60 days)
+Enrich & Harden Web-Vitals (this week)
+
+Build the Dashboard (weeks 2–3)
+
+Deploy RUM & Error Tracking (weeks 4–5)
+
+Server Observability & Tracing (weeks 6–7)
+
+SLOs & Alerting (week 8)
+
+By following this plan, you’ll evolve from basic Web-Vitals capture to a full observability stack—ensuring Terrafusion remains performant, reliable, and scalable across web and mobile

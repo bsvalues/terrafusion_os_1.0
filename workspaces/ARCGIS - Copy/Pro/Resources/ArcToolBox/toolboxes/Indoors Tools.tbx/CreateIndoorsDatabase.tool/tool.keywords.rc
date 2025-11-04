@@ -1,0 +1,13 @@
+{
+    "set": [
+        "create database",
+        "create indoor",
+        "create indoor database",
+        "create indoors",
+        "create indoors database",
+        "indoor",
+        "indoor database",
+        "indoors",
+        "indoors database"
+    ]
+}

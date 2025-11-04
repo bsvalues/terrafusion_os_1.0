@@ -1,0 +1,170 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "3380003",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "param_nocount:target_catalog_dataset"
+    ],
+    "params": {
+        "target_catalog_dataset": {
+            "display_order": "0",
+            "displayname": "$rc:target_catalog_dataset.title",
+            "datatype": {
+                "type": "GPCatalogLayer"
+            },
+            "description": "$rc:target_catalog_dataset.descr"
+        },
+        "input_portal_itemtypes": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:input_portal_itemtypes.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "FEATURE_SERVICE",
+                        "code": "$rc:input_portal_itemtypes.domain.FEATURE_SERVICE"
+                    },
+                    {
+                        "value": "MAP_SERVICE",
+                        "code": "$rc:input_portal_itemtypes.domain.MAP_SERVICE"
+                    },
+                    {
+                        "value": "IMAGE_SERVICE",
+                        "code": "$rc:input_portal_itemtypes.domain.IMAGE_SERVICE"
+                    },
+                    {
+                        "value": "SCENE_SERVICE",
+                        "code": "$rc:input_portal_itemtypes.domain.SCENE_SERVICE"
+                    },
+                    {
+                        "value": "VECTOR_TILE_SERVICE",
+                        "code": "$rc:input_portal_itemtypes.domain.VECTOR_TILE_SERVICE"
+                    },
+                    {
+                        "value": "WFS",
+                        "code": "$rc:input_portal_itemtypes.domain.WFS"
+                    },
+                    {
+                        "value": "WMS",
+                        "code": "$rc:input_portal_itemtypes.domain.WMS"
+                    },
+                    {
+                        "value": "WMTS",
+                        "code": "$rc:input_portal_itemtypes.domain.WMTS"
+                    }
+                ]
+            },
+            "description": "$rc:input_portal_itemtypes.descr"
+        },
+        "content": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:content.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MY_CONTENT",
+                        "code": "$rc:content.domain.MY_CONTENT"
+                    },
+                    {
+                        "value": "MY_GROUPS",
+                        "code": "$rc:content.domain.MY_GROUPS"
+                    },
+                    {
+                        "value": "MY_ORGANIZATION",
+                        "code": "$rc:content.domain.MY_ORGANIZATION"
+                    }
+                ]
+            },
+            "description": "$rc:content.descr"
+        },
+        "portal_folders": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:portal_folders.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "description": "$rc:portal_folders.descr"
+        },
+        "portal_groups": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:portal_groups.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "description": "$rc:portal_groups.descr"
+        },
+        "access_level": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:access_level.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PUBLIC",
+                        "code": "$rc:access_level.domain.PUBLIC"
+                    },
+                    {
+                        "value": "ORG",
+                        "code": "$rc:access_level.domain.ORG"
+                    },
+                    {
+                        "value": "SHARED",
+                        "code": "$rc:access_level.domain.SHARED"
+                    },
+                    {
+                        "value": "PRIVATE",
+                        "code": "$rc:access_level.domain.PRIVATE"
+                    }
+                ]
+            },
+            "description": "$rc:access_level.descr"
+        },
+        "out_catalog_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "6",
+            "displayname": "$rc:out_catalog_dataset.title",
+            "datatype": {
+                "type": "GPCatalogLayer"
+            },
+            "depends": [
+                "target_catalog_dataset"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "clonedependency": "true",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    },
+    "environments": [
+        "extent",
+        "geographicTransformations"
+    ]
+}

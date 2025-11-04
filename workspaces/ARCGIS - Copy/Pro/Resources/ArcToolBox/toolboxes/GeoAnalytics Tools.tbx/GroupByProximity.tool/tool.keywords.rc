@@ -1,0 +1,23 @@
+{
+    "set": [
+        "area",
+        "attributes",
+        "big data",
+        "buffer",
+        "close by",
+        "connected",
+        "connecting",
+        "euclidean",
+        "geodesic",
+        "graph",
+        "grouping",
+        "intersect",
+        "match",
+        "near",
+        "planar",
+        "spatial join",
+        "spatiotemporal",
+        "touches",
+        "touching"
+    ]
+}

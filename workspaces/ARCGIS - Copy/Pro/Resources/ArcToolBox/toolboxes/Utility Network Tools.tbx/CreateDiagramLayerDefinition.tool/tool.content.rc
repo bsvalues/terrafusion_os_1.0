@@ -1,0 +1,28 @@
+{
+    "map": {
+        "connectivity_associations.title": "Connectivity Associations",
+        "description": "Create or overwwrite a diagram template layer definitions",
+        "edge_object_polyline_sublayers.dt.title1": "Network Source",
+        "edge_object_polyline_sublayers.dt.title2": "Subtype Layer",
+        "edge_object_polyline_sublayers.title": "Polylines for edge objects",
+        "in_utility_network.title": "Input Network",
+        "junction_object_point_sublayers.dt.title1": "Network Source",
+        "junction_object_point_sublayers.dt.title2": "Subtype Layer",
+        "junction_object_point_sublayers.title": "Points for junction objects",
+        "out_template_name.title": "Output Diagram Template",
+        "out_utility_network.title": "Output Network",
+        "overwrite_all_layers.title": "Overwrite all layers",
+        "params.category1": "Additional SubLayers",
+        "point_sublayers.dt.title1": "Network Source",
+        "point_sublayers.dt.title2": "Subtype Layer",
+        "point_sublayers.title": "Points for edges reduced as junctions and collapsed polygons",
+        "polygon_sublayers.dt.title1": "Network Source",
+        "polygon_sublayers.dt.title2": "Subtype Layer",
+        "polygon_sublayers.title": "Polygons for containers",
+        "reduction_edges.title": "Reduction Edge",
+        "structural_attachments.title": "Structural Attachments",
+        "system_junctions.title": "System Junctions",
+        "template_name.title": "Input Diagram Template",
+        "title": "Create Diagram Layer Definition"
+    }
+}

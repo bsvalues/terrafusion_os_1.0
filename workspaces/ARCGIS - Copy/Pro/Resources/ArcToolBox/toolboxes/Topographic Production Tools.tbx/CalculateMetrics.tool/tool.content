@@ -1,0 +1,241 @@
+{
+    "type": "FunctionTool",
+    "guid": "{26B17338-CB00-45A9-AB9C-858C2E0122C9}/CalculateMetrics",
+    "displayname": "$rc:title",
+    "helpcontent": "46010011",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "46",
+        "49"
+    ],
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "in_metric_types": {
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:in_metric_types.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "LENGTH",
+                        "code": "$rc:in_metric_types.domain.LENGTH"
+                    },
+                    {
+                        "value": "WIDTH",
+                        "code": "$rc:in_metric_types.domain.WIDTH"
+                    },
+                    {
+                        "value": "AREA",
+                        "code": "$rc:in_metric_types.domain.AREA"
+                    },
+                    {
+                        "value": "ANGLE_OF_ORIENTATION",
+                        "code": "$rc:in_metric_types.domain.ANGLE_OF_ORIENTATION"
+                    },
+                    {
+                        "value": "ELEVATION",
+                        "code": "$rc:in_metric_types.domain.ELEVATION"
+                    },
+                    {
+                        "value": "MGRS",
+                        "code": "$rc:in_metric_types.domain.MGRS"
+                    }
+                ]
+            },
+            "value": "LENGTH;WIDTH;AREA;ANGLE_OF_ORIENTATION;ELEVATION;MGRS",
+            "description": "$rc:in_metric_types.descr"
+        },
+        "in_length_attributes": {
+            "type": "optional",
+            "displayname": "$rc:in_length_attributes.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "LEG,LEN,LEN_,LGN,LZN",
+            "description": "$rc:in_length_attributes.descr"
+        },
+        "in_width_attributes": {
+            "type": "optional",
+            "displayname": "$rc:in_width_attributes.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "WID,WID_,WGP",
+            "description": "$rc:in_width_attributes.descr"
+        },
+        "in_area_attributes": {
+            "type": "optional",
+            "displayname": "$rc:in_area_attributes.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "ARA,ARE,ARE_",
+            "description": "$rc:in_area_attributes.descr"
+        },
+        "in_angle_attributes": {
+            "type": "optional",
+            "displayname": "$rc:in_angle_attributes.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "AOO,DOF,FEO,CBO_Rotation",
+            "description": "$rc:in_angle_attributes.descr"
+        },
+        "in_elevation_attributes": {
+            "type": "optional",
+            "displayname": "$rc:in_elevation_attributes.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "ZV2,ZVH",
+            "description": "$rc:in_elevation_attributes.descr"
+        },
+        "in_precision": {
+            "type": "optional",
+            "displayname": "$rc:in_precision.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "0",
+            "description": "$rc:in_precision.descr"
+        },
+        "out_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            }
+        },
+        "mgrs_attributes": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:mgrs_attributes.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "MGRSValue,MGRS",
+            "description": "$rc:mgrs_attributes.descr"
+        },
+        "mgrs_precision": {
+            "type": "optional",
+            "displayname": "$rc:mgrs_precision.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "6x8 (4Q)",
+                        "code": "$rc:mgrs_precision.domain.6x8 (4Q)"
+                    },
+                    {
+                        "value": "100km (4QFJ)",
+                        "code": "$rc:mgrs_precision.domain.100km (4QFJ)"
+                    },
+                    {
+                        "value": "10km (4QFJ16)",
+                        "code": "$rc:mgrs_precision.domain.10km (4QFJ16)"
+                    },
+                    {
+                        "value": "1km (4QFJ1267)",
+                        "code": "$rc:mgrs_precision.domain.1km (4QFJ1267)"
+                    },
+                    {
+                        "value": "100m (4QFJ123678)",
+                        "code": "$rc:mgrs_precision.domain.100m (4QFJ123678)"
+                    },
+                    {
+                        "value": "10m (4QFJ12346789)",
+                        "code": "$rc:mgrs_precision.domain.10m (4QFJ12346789)"
+                    },
+                    {
+                        "value": "1m (4QFJ1234567890)",
+                        "code": "$rc:mgrs_precision.domain.1m (4QFJ1234567890)"
+                    },
+                    {
+                        "value": "Image City Map (1234)",
+                        "code": "$rc:mgrs_precision.domain.Image City Map (1234)"
+                    }
+                ]
+            },
+            "value": "Image City Map (1234)",
+            "description": "$rc:mgrs_precision.descr"
+        },
+        "elevation_raster": {
+            "type": "optional",
+            "displayname": "$rc:elevation_raster.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "description": "$rc:elevation_raster.descr"
+        },
+        "only_populate_null_values": {
+            "type": "optional",
+            "displayname": "$rc:only_populate_null_values.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ONLYPOPNULLVALS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_ONLYPOPNULLVALS"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:only_populate_null_values.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

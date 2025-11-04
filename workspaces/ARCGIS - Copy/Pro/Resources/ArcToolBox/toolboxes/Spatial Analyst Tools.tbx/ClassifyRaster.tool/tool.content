@@ -1,0 +1,119 @@
+{
+    "type": "FunctionTool",
+    "guid": "{8901c9e1-dd61-4e37-bc58-b981e4ccb5c7}",
+    "displayname": "$rc:title",
+    "helpcontent": "8200004",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10",
+        "86"
+    ],
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_raster": {
+            "display_order": "0",
+            "displayname": "$rc:in_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "GPString"
+                    },
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "DEMosaicDataset"
+                    }
+                ]
+            },
+            "description": "$rc:in_raster.descr"
+        },
+        "in_classifier_definition": {
+            "display_order": "1",
+            "displayname": "$rc:in_classifier_definition.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "ecd_remote",
+                            "ecd"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:in_classifier_definition.descr"
+        },
+        "out_raster_dataset": {
+            "direction": "out",
+            "display_order": "2",
+            "displayname": "$rc:out_raster_dataset.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_raster_dataset.descr"
+        },
+        "in_additional_raster": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:in_additional_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "GPString"
+                    },
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "DEMosaicDataset"
+                    }
+                ]
+            },
+            "description": "$rc:in_additional_raster.descr"
+        }
+    },
+    "environments": [
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "nodata",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "pyramid",
+        "rasterStatistics",
+        "resamplingMethod",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

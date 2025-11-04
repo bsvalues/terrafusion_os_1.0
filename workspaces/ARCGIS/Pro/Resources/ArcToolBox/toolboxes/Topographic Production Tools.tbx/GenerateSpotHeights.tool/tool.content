@@ -1,0 +1,179 @@
+{
+    "type": "FunctionTool",
+    "guid": "{26B17338-CB00-45A9-AB9C-858C2E0122C9}/GenerateSpotHeights",
+    "displayname": "$rc:title",
+    "helpcontent": "46080003",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "46",
+        "49"
+    ],
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "in_contour_features": {
+            "displayname": "$rc:in_contour_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_contour_features.descr"
+        },
+        "in_raster": {
+            "displayname": "$rc:in_raster.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "GPRasterLayer"
+                        },
+                        {
+                            "type": "GPMosaicLayer"
+                        }
+                    ]
+                }
+            },
+            "description": "$rc:in_raster.descr"
+        },
+        "target_spot_features": {
+            "displayname": "$rc:target_spot_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:target_spot_features.descr"
+        },
+        "contour_height_field": {
+            "displayname": "$rc:contour_height_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "depends": [
+                "in_contour_features"
+            ],
+            "description": "$rc:contour_height_field.descr"
+        },
+        "spot_height_field": {
+            "displayname": "$rc:spot_height_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "depends": [
+                "target_spot_features"
+            ],
+            "description": "$rc:spot_height_field.descr"
+        },
+        "spot_height_subtype": {
+            "type": "optional",
+            "displayname": "$rc:spot_height_subtype.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "target_spot_features"
+            ],
+            "description": "$rc:spot_height_subtype.descr"
+        },
+        "area_of_interest": {
+            "type": "optional",
+            "displayname": "$rc:area_of_interest.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPLayerDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:area_of_interest.descr"
+        },
+        "updated_spot_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_spot_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "target_spot_features"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "clonedependency": "true"
+            }
+        },
+        "scale": {
+            "type": "optional",
+            "displayname": "$rc:scale.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "1:5,000",
+                        "code": "$rc:scale.domain.1:5,000"
+                    },
+                    {
+                        "value": "1:10,000",
+                        "code": "$rc:scale.domain.1:10,000"
+                    },
+                    {
+                        "value": "1:12,500",
+                        "code": "$rc:scale.domain.1:12,500"
+                    },
+                    {
+                        "value": "1:25,000",
+                        "code": "$rc:scale.domain.1:25,000"
+                    },
+                    {
+                        "value": "1:50,000",
+                        "code": "$rc:scale.domain.1:50,000"
+                    },
+                    {
+                        "value": "1:100,000",
+                        "code": "$rc:scale.domain.1:100,000"
+                    },
+                    {
+                        "value": "1:250,000",
+                        "code": "$rc:scale.domain.1:250,000"
+                    },
+                    {
+                        "value": "1:500,000",
+                        "code": "$rc:scale.domain.1:500,000"
+                    },
+                    {
+                        "value": "1:1,000,000",
+                        "code": "$rc:scale.domain.1:1,000,000"
+                    }
+                ]
+            },
+            "description": "$rc:scale.descr"
+        },
+        "z_factor": {
+            "type": "optional",
+            "displayname": "$rc:z_factor.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "category": "$rc:params.category1",
+            "description": "$rc:z_factor.descr"
+        }
+    }
+}

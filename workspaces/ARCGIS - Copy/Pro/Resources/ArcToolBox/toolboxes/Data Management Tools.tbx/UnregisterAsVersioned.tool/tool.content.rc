@@ -1,0 +1,13 @@
+{
+    "map": {
+        "compress_default.descr": "<xdoc><p>Specifies whether edits will be compressed and unused data will be removed. This option is ignored if the <span class=\"esri_uicontrol\">Do not run if there are versions with edits</span> parameter is checked.</p><p>This parameter is only applicable for traditional versioned datasets.</p><p><ul><li>Checked—Edits in the Default version will be compressed to the base table.</li><li>Unchecked—Any edits remaining in the delta tables will not be compressed. This is the default.</li></ul></p></xdoc>",
+        "compress_default.title": "Compress all edits in the Default version into the base table",
+        "description": "Unregisters an enterprise geodatabase dataset as versioned.",
+        "in_dataset.descr": "The name of the dataset to be unregistered as versioned.",
+        "in_dataset.title": "Input Dataset",
+        "keep_edit.descr": "<xdoc><p>Specifies whether edits made to the versioned data will be maintained.</p><ul><li>Checked—When there are outstanding edits that could be lost, the tool will fail. Outstanding edits include edits in the delta tables (traditional versioned dataset) and edits in named versions (branch versioned dataset). This is the default. For traditional versioned datasets, do not use this option when compressing edits from the Default version in the <span class=\"esri_uicontrol\">Compress all edits in the Default version into the base table</span> parameter.</li><li>Unchecked—When there are outstanding edits, the tool will delete the edits. For traditional versioned datasets, use this option when compressing edits from the Default version in the <span class=\"esri_uicontrol\">Compress all edits in the Default version into the base table</span> parameter.</li></ul></xdoc>",
+        "keep_edit.title": "Do not run if there are versions with edits",
+        "out_dataset.title": "Unregistered Dataset",
+        "title": "Unregister As Versioned"
+    }
+}

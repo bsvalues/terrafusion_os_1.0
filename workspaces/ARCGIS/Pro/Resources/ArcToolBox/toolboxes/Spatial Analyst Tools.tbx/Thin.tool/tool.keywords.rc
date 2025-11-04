@@ -1,0 +1,15 @@
+{
+    "set": [
+        "clean",
+        "contour",
+        "generalize",
+        "image processing",
+        "linear",
+        "raster",
+        "reduce thickness",
+        "reduce width",
+        "simplify",
+        "skeleton",
+        "stream"
+    ]
+}

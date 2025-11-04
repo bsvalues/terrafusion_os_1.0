@@ -1,0 +1,21 @@
+{
+    "set": [
+        "adjust",
+        "control point",
+        "correction",
+        "gcp",
+        "geometric",
+        "georeference",
+        "image",
+        "links",
+        "manipulate",
+        "orient",
+        "polynomial",
+        "reorient",
+        "skew",
+        "spline",
+        "text file",
+        "transform",
+        "twist"
+    ]
+}

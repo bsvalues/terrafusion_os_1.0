@@ -1,0 +1,35 @@
+{
+    "type": "FunctionTool",
+    "guid": "{ab0bd9cd-fc35-41f5-bc3c-95f1ab1bceb0}",
+    "displayname": "$rc:title",
+    "helpcontent": "13030005",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_network_dataset": {
+            "displayname": "$rc:in_network_dataset.title",
+            "datatype": {
+                "type": "GPNetworkDatasetLayer"
+            },
+            "description": "$rc:in_network_dataset.descr"
+        },
+        "alternate_ID_field_name": {
+            "displayname": "$rc:alternate_id_field_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:alternate_id_field_name.descr"
+        },
+        "out_network_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_network_dataset.title",
+            "datatype": {
+                "type": "GPNetworkDatasetLayer"
+            }
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

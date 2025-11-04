@@ -1,0 +1,10 @@
+{
+    "map": {
+        "description": "Merges two or more logical branches into a single output.",
+        "in_values.descr": "A list of values from different branches. The first ready-to-run state value in the list will be the output of the tool.",
+        "in_values.title": "In Values",
+        "out_value.title": "output_value",
+        "summary": "<xdoc><p>Merges two or more logical branches into a single output.</p><p>Branching in a model is accomplished by creating a script tool that implements the necessary if-then-else logic. When branching, you may need to merge two branches into a single process. This means that if you test an input using a condition (for example, whether the data exists on the disk, whether the cell size is greater than 30 meters, or whether the field value is 1), it will create two outputs: True, if the condition is true, and False, if the condition is false. If the condition is True, you&apos;ll run certain processes and if the condition is False, you&apos;ll run different processes, as illustrated below. At any point, only one of the branches will run depending on the condition and the input. The Merge Branch tool is used when it is not possible to determine which branch will run and produce results. The output of both branches becomes the input for the Merge Branch tool. The tool identifies the inputs and passes the last output of a branch that has already run to the next tool. The Merge Branch tool allows any number of inputs and uses the multivalue parameter control.</p></xdoc>",
+        "title": "Merge Branch"
+    }
+}

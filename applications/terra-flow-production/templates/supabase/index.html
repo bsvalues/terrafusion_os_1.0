@@ -1,0 +1,144 @@
+{% extends "layout.html" %}
+
+{% block title %}
+{{ title }} | TerraFlow
+{% endblock %}
+
+{% block main %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2><i class="fas fa-database"></i> Supabase Configuration</h2>
+            <p class="lead">Manage your Supabase environments for the TerraFlow platform.</p>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Environments</h5>
+                </div>
+                <div class="card-body">
+                    <p>Current active environment: <strong class="text-success">{{ current_env }}</strong></p>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Environment</th>
+                                    <th>URL</th>
+                                    <th>API Key</th>
+                                    <th>Service Key</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for env_name, info in environments.items() %}
+                                <tr {% if env_name == current_env %}class="table-success"{% endif %}>
+                                    <td>{{ env_name }}</td>
+                                    <td>
+                                        {% if info.url %}
+                                        <span class="text-success">Configured</span>
+                                        <small class="d-block text-muted">{{ info.url|truncate(30) }}</small>
+                                        {% else %}
+                                        <span class="text-danger">Not configured</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if info.key_available %}
+                                        <span class="text-success"><i class="fas fa-check-circle"></i> Available</span>
+                                        {% else %}
+                                        <span class="text-danger"><i class="fas fa-times-circle"></i> Not set</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if info.service_key_available %}
+                                        <span class="text-success"><i class="fas fa-check-circle"></i> Available</span>
+                                        {% else %}
+                                        <span class="text-warning"><i class="fas fa-exclamation-circle"></i> Not set</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if info.configured %}
+                                        <span class="badge bg-success">Ready</span>
+                                        {% else %}
+                                        <span class="badge bg-warning text-dark">Needs configuration</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            {% if info.configured %}
+                                            <form action="{{ url_for('supabase_config.set_active') }}" method="post">
+                                                <input type="hidden" name="environment" value="{{ env_name }}">
+                                                <button type="submit" class="btn btn-primary" {% if env_name == current_env %}disabled{% endif %}>
+                                                    {% if env_name == current_env %}
+                                                    <i class="fas fa-check"></i> Active
+                                                    {% else %}
+                                                    Set Active
+                                                    {% endif %}
+                                                </button>
+                                            </form>
+                                            {% endif %}
+                                            <a href="{{ url_for('supabase_config.environment_details', env_name=env_name) }}" class="btn btn-info ml-1">Details</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <a href="{{ url_for('supabase_config.configure') }}" class="btn btn-success">
+                                <i class="fas fa-plus-circle"></i> Configure Environment
+                            </a>
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <a href="{{ url_for('supabase_config.test') }}" class="btn btn-info">
+                                <i class="fas fa-vial"></i> Test Connection
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">Test Database Connection</h5>
+                                    <p class="card-text">Verify that your Supabase connection is working properly.</p>
+                                    <a href="{{ url_for('supabase_config.test') }}" class="btn btn-primary">Test Connection</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">Configure Environment</h5>
+                                    <p class="card-text">Add or update Supabase environment configurations.</p>
+                                    <a href="{{ url_for('supabase_config.configure') }}" class="btn btn-success">Configure</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">Environment Details</h5>
+                                    <p class="card-text">View detailed information about the current environment.</p>
+                                    <a href="{{ url_for('supabase_config.environment_details', env_name=current_env) }}" class="btn btn-info">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

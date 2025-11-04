@@ -1,0 +1,16 @@
+{
+    "map": {
+        "add_warning_field.descr": "<xdoc><p>Records if input features are partially or completely covered by the Input rasters.</p><ul><li>Checked—Warning field is added to the output table and populated with a P when a feature is partially covered by raster values.</li><li>Unchecked—Warning field is not added to the output table.</li></ul></xdoc>",
+        "add_warning_field.title": "Add warnings to output table",
+        "description": "Extracts cell values from a set of rasters to a table, based on a point or polygon feature class.",
+        "in_features.descr": "The points or polygon features to be created.",
+        "in_features.title": "Input features",
+        "in_rasters.descr": "The rasters must all have the same extent, coordinate system, and cell size.",
+        "in_rasters.title": "Input rasters",
+        "out_raster_names_table.descr": "Saves the names of the Input rasters to disc.",
+        "out_raster_names_table.title": "Output raster names table",
+        "out_table.descr": "The output table contains a record for each point and each raster that has data. If polygon features are input, they are converted to points that coincide with the raster cell centers.",
+        "out_table.title": "Output table",
+        "title": "Extract Values To Table"
+    }
+}

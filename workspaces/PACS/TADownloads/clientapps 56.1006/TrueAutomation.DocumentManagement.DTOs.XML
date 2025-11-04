@@ -1,0 +1,885 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.DocumentManagement.DTOs</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO">
+            <summary>
+            Base Class for Annotation DTOs
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO.Id">
+            <summary>
+            The integer Identifier of the Annotation Object
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO.Page">
+            <summary>
+            The page number the annotation exists upon.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO.TransformMatrix">
+            <summary>
+            The transform data for all rotations on the Annotation Object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO.TextColor">
+            <summary>
+            The ARGB value of the text color for this Annotation Object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO.FontFamily">
+            <summary>
+            The name of the System font family for this Annotation Object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO.FontHeight">
+            <summary>
+            The height of the font associated with this Annotation Object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO.FontStyle">
+            <summary>
+            The System.Drawing.FontStyle associated with this Annotation Object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO.PenColor">
+            <summary>
+            The ARGB value of the System.Drawing.Color associated with the pen for the Annotation Object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO.PenDashCap">
+            <summary>
+            The integer representation of the System.Drawing.Drawing2D.DashCap value of the pen for the Annotation Object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO.PenDashOffset">
+            <summary>
+            The dash offset value of the pen for the Annotation Object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO.PenDashStyle">
+            <summary>
+            The integer representation of the System.Drawing.Drawing2D.DashStyle value of the pen for the Annotation Object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO.PenStartCap">
+            <summary>
+            The integer representation of the System.Drawing.Drawing2D.LineCap StartCap value of the pen for the Annotation Object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO.PenEndCap">
+            <summary>
+            The integer representation of the System.Drawing.Drawing2D.LineCap EndCap value of the pen for the Annotation Object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO.PenLineJoin">
+            <summary>
+            The integer representation of the System.Drawing.Drawing2D.LineJoin value of the pen for the Annotation Object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO.PenMiterLimit">
+            <summary>
+            The miter limit value of the pen for the Annotation Object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO.PenWidth">
+            <summary>
+            The width value of the pen for the Annotation Object.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.DTOs.Annotations.BoundedAnnotationDTO">
+            <summary>
+            Base class for the Annotation Objects that require X and Y coordinates
+            and Width/Height in order to be displayed.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.BoundedAnnotationDTO.X">
+            <summary>
+            The X Coordinate of the Annotation
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.BoundedAnnotationDTO.Y">
+            <summary>
+            The Y Coordinate of the Annotation
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.BoundedAnnotationDTO.Width">
+            <summary>
+            The Width of the Annotation
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.BoundedAnnotationDTO.Height">
+            <summary>
+            The Height of the Annotation
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.DTOs.Annotations.BookmarkAnnotationDTO">
+            <summary>
+            DTO describing the Note Annotation Object.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.Annotations.BookmarkAnnotationDTO.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.DTOs.Annotations.EllipseAnnotationDTO">
+            <summary>
+            DTO describing the Ellipse Annotation Object
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.Annotations.EllipseAnnotationDTO.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.DTOs.Annotations.HiliteAnnotationDTO">
+            <summary>
+            DTO describing the Hilite Annotation Object.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.Annotations.HiliteAnnotationDTO.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.HiliteAnnotationDTO.Color">
+            <summary>
+            The ARGB value for the Color of the Annotation
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.DTOs.Annotations.LineAnnotationDTO">
+            <summary>
+            DTO describing the Line Annotation Object
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.Annotations.LineAnnotationDTO.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.LineAnnotationDTO.StartX">
+            <summary>
+            The Starting X coordinate for the Line Annotation
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.LineAnnotationDTO.StartY">
+            <summary>
+            The Starting Y coordinate for the Line Annotation
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.LineAnnotationDTO.EndX">
+            <summary>
+            The Ending X coordinate for the Line Annotation
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.LineAnnotationDTO.EndY">
+            <summary>
+            The Ending Y coordinate for the Line Annotation
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.DTOs.Annotations.NoteAnnotationDTO">
+            <summary>
+            DTO describing the Note Annotation Object.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.Annotations.NoteAnnotationDTO.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.NoteAnnotationDTO.ShadowBorderWidth">
+            <summary>
+            The shadow border with of the Annotation Object.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.DTOs.Annotations.RectangleAnnotationDTO">
+            <summary>
+            DTO describing the Rectangle Annotation Object.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.Annotations.RectangleAnnotationDTO.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.DTOs.Annotations.RedactionAnnotationDTO">
+            <summary>
+            DTO describing the Redaction Annotation Object.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.Annotations.RedactionAnnotationDTO.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.DTOs.Annotations.RichTextAnnotationDTO">
+            <summary>
+            DTO Describing the Rich Text Annotation Object
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.Annotations.RichTextAnnotationDTO.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.RichTextAnnotationDTO.Rtf">
+            <summary>
+            The Rtf data for the Rich Text Annotation Object.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampAnnotationDTO">
+            <summary>
+            DTO describing the Rubber Stamp Annotation Object.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampAnnotationDTO.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampAnnotationDTO.Type">
+            <summary>
+            The internal type describing the type of Annotation Stamp Object
+            to create on the viewer.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType">
+            <summary>
+            Enumeration describing the type of Rubber Stamp Annotation Object
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType.Approved">
+            <summary>
+            Approved Rubber Stamp
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType.Assigned">
+            <summary>
+            Assigned Rubber Stamp
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType.Checked">
+            <summary>
+            Checked Rubber Stamp
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType.Client">
+            <summary>
+            Client Rubber Stamp
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType.Copy">
+            <summary>
+            Copy Rubber Stamp
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType.Draft">
+            <summary>
+            Draft Rubber Stamp
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType.Extended">
+            <summary>
+            Extended Rubber Stamp
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType.Fax">
+            <summary>
+            Fax Rubber Stamp
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType.Faxed">
+            <summary>
+            Faxed Rubber Stamp
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType.Important">
+            <summary>
+            Important Rubber Stamp
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType.Invoice">
+            <summary>
+            Invoice Rubber Stamp
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType.Notice">
+            <summary>
+            Notice Rubber Stamp
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType.Official">
+            <summary>
+            Official Rubber Stamp
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType.OnFile">
+            <summary>
+            On File Rubber Stamp
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType.Paid">
+            <summary>
+            Paid Rubber Stamp
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType.Passed">
+            <summary>
+            Passed Rubber Stamp
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType.Pending">
+            <summary>
+            Pending Rubber Stamp
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType.Processed">
+            <summary>
+            Processed Rubber Stamp
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType.Received">
+            <summary>
+            Received Rubber Stamp
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType.Rejected">
+            <summary>
+            Rejected Rubber Stamp
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType.Release">
+            <summary>
+            Release Rubber Stamp
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType.Sent">
+            <summary>
+            Sent Rubber Stamp
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType.Shipped">
+            <summary>
+            Shipped Rubber Stamp
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType.TopSecret">
+            <summary>
+            Top Secret Rubber Stamp
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType.Urgent">
+            <summary>
+            Urgent Rubber Stamp
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.DTOs.Annotations.RubberStampType.Void">
+            <summary>
+            Void Rubber Stamp
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.DTOs.Annotations.StampAnnotationDTO">
+            <summary>
+            DTO describing the Stamp Annotation DTO
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.Annotations.StampAnnotationDTO.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.StampAnnotationDTO.Picture">
+            <summary>
+            The binary data for the Picture property of the Stamp Annotation Object.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.DTOs.Annotations.TextAnnotationDTO">
+            <summary>
+            DTO Describing the Text Annotation Object.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.Annotations.TextAnnotationDTO.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.Annotations.TextAnnotationDTO.Text">
+            <summary>
+            The text data for the Annotation Object.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.DTOs.DocumentFileAnnotationDTO">
+            <summary>
+            Object to hold the DTOs of a DocumentFile and DocumentAnnotation.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.DocumentFileAnnotationDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.DocumentFileAnnotationDTO.#ctor(TrueAutomation.DocumentManagement.DTOs.DocumentFileDTO,System.Collections.Generic.List{TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO})">
+            <summary>
+            Constructor with DTO parameters
+            </summary>
+            <param name="fileDTO"></param>
+            <param name="annotations"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.DocumentFileAnnotationDTO.#ctor(System.Collections.Generic.List{TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO})">
+            <summary>
+            Constructor with only annotation DTO parameters
+            </summary>
+            <param name="annotations"></param>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentFileAnnotationDTO.DocumentFileContents">
+            <summary>
+            The DocumentFile contents
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentFileAnnotationDTO.Annotations">
+            <summary>
+            The DocumentAnnotation DTO
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.DTOs.DocumentFileChunkDTO">
+            <summary>
+             Data Transfer Object to represent the file content (a chunk) of the document.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.DocumentFileChunkDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentFileChunkDTO.Id">
+            <summary>
+            The unique Identifier of the File
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentFileChunkDTO.Content">
+            <summary>
+            Byte array of the content of a document file.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.DTOs.DocumentRecordDTO">
+            <summary>
+            Class representing data
+            for DocumentManagement File Info
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.DocumentRecordDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.DocumentRecordDTO.#ctor(System.Byte[],System.Collections.Generic.List{TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO},System.Byte[],TrueAutomation.DocumentManagement.DTOs.DocumentVersionDTO)">
+            <summary>
+            Contructor with byte arrays of Document changes
+            </summary>
+            <param name="fileContents">File content changes</param>
+            <param name="annotations">Annotation changes</param>
+            <param name="thumbnail">Thumbnail content</param>
+            <param name="version">Working Version</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.DocumentRecordDTO.#ctor(System.Byte[],System.Byte[],System.Collections.Generic.List{TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO},System.Byte[],TrueAutomation.DocumentManagement.DTOs.DocumentVersionDTO)">
+            <summary>
+            Contructor with byte arrays of Document changes and redacted contents
+            </summary>
+            <param name="fileContents"></param>
+            <param name="redactedContents"></param>
+            <param name="annotations"></param>
+            <param name="thumbnail"></param>
+            <param name="version">Working Version</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.DocumentRecordDTO.#ctor(TrueAutomation.DocumentManagement.DTOs.DocumentDTO)">
+            <summary>
+            Constructor with DTO
+            </summary>
+            <param name="dto">Document DTO object</param>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentRecordDTO.Documentdto">
+            <summary>
+            The Document
+            that is currently being edited
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentRecordDTO.FileContents">
+            <summary>
+            Original Document File Content
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentRecordDTO.RedactedContents">
+            <summary>
+            Redacted contents
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentRecordDTO.Thumbnail">
+            <summary>
+            Document Thumbnail Content
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentRecordDTO.Annotations">
+            <summary>
+            Document Annotations Content
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentRecordDTO.IsDirty">
+            <summary>
+            Flag that indicates whether
+            there is any unsaved data
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentRecordDTO.FilePath">
+            <summary>
+            Path of the file to be opened, if new
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentRecordDTO.WorkingVersion">
+            <summary>
+            Version being modified
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.DocumentRecordDTO.SaveChanges">
+            <summary>
+            Save the changes in this record
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.DTOs.VersionDetailsListItemDTO">
+            <summary>
+            DTO to represent Version of the Document.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.VersionDetailsListItemDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.VersionDetailsListItemDTO.ImageIndex">
+            <summary>
+            Index of the Image
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.VersionDetailsListItemDTO.DocumentName">
+            <summary>
+            The Name of the Document
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.VersionDetailsListItemDTO.DocumentId">
+            <summary>
+            A reference to the unique Identifier of the Document
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.VersionDetailsListItemDTO.VersionNumber">
+            <summary>
+            A reference to the DocumentVersion with which this Thumbnail is associated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.VersionDetailsListItemDTO.Thumbnail">
+            <summary>
+            Thumbnail image
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.VersionDetailsListItemDTO.Version">
+            <summary>
+            The associated DocumentVersionDTO this detail item was created from.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.DTOs.FileDetailsListItemDTO">
+            <summary>
+            DTO to represent  Document Details.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.FileDetailsListItemDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.FileDetailsListItemDTO.Id">
+            <summary>
+            The unique Identifier of the File
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.FileDetailsListItemDTO.Key">
+            <summary>
+            Byte array of the thumbnail content of a document file.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.FileDetailsListItemDTO.Value">
+            <summary>
+            A reference to the DocumentVersion with which this File is associated.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.DTOs.DocumentListItemDTO">
+            <summary>
+            DTO to represent a Document List Item.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.DocumentListItemDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentListItemDTO.Id">
+            <summary>
+            The unique Identifier of the File
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentListItemDTO.Content">
+            <summary>
+            Byte array of the thumbnail content of a document file.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentListItemDTO.Name">
+            <summary>
+            A reference to the DocumentVersion with which this File is associated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentListItemDTO.ImageIndex">
+            <summary>
+            A reference to the DocumentVersion with which this File is associated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentListItemDTO.SecurityDescriptorId">
+            <summary>
+            SecurityDescriptorId for the document.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.DTOs.DocumentDTO">
+            <summary>
+            DTO to represent a Document object.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.DocumentDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.DocumentDTO.#ctor(TrueAutomation.DocumentManagement.DTOs.DocumentDTO)">
+            <summary>
+            Copy Constructor
+            </summary>
+            <remarks>Will do a deep copy, but purposefully leave id unset</remarks>
+            <param name="source">Document we wish to copy</param>		
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentDTO.Id">
+            <summary>
+            The unique Identifier of the Document
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentDTO.Name">
+            <summary>
+            The Name of the Document
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentDTO.MetadataFields">
+            <summary>
+            A List of KeyValuePairs for the Document Metadata.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentDTO.Versions">
+            <summary>
+            The List of versions for the Document.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentDTO.SecurityDescriptor">
+            <summary>
+            A Security Descriptor for user permissions on this document.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentDTO.LatestVersionNumber">
+            <summary>
+            The latest version number of the document.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentDTO.WorkingVersionNumber">
+            <summary>
+            The version number of the document that the user is currently accessing/editing.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentDTO.RedactedDocumentFile">
+            <summary>
+            The document file chunks corresponding to this version.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentDTO.PermissionWorkingCopy">
+            <summary>
+            Permission for the logged-in user for this document
+            Might be derived from Queue/Task if not set on the document
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentDTO.CurrentParty">
+            <summary>
+            The Current logged-in user.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentDTO.IncludeFile">
+            <summary>
+            Boolean to indicate if the file contents are to be included with the DTO.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.DocumentDTO.ToString">
+            <summary>
+            ToString implementation
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.DocumentDTO.CompareTo(System.Object)">
+            <summary>
+            Method compares two DocumentDTO objects
+            </summary>
+            <param name="obj">DocumentDTO object</param>
+            <returns>an integer representing a match/mismatch</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.DocumentDTO.GetPermissionAccessLevel(System.Guid,System.Collections.Generic.List{TrueAutomation.AccessControl.DTOs.GroupDTO},TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO)">
+            <summary>
+            Method to get the permission set for the current user at
+            the USER level if present, otherwise at the GROUP level
+            </summary>
+            <param name="userId">Logged-in user id</param>
+            <param name="groups">List of all available groups</param>
+            <param name="securityDescriptor">Security Descriptor of the Document</param>
+            <returns>Permission ACLType</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.DocumentDTO.GetPermissionAccessLevel(System.Guid,TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO)">
+            <summary>
+            Method to get the permission set on this Document for the current user
+            </summary>
+            <param name="userId">Logged-in user id</param>
+            <param name="securityDescriptor">Security Descriptor of the Document</param>
+            <returns>Permission ACLType</returns>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.DTOs.DocumentListDTO">
+            <summary>
+            DTO to represent list of Documents.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.DocumentListDTO.#ctor">
+            <summary>
+            default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentListDTO.Items">
+            <summary>
+            List of Documents loaded
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentListDTO.Count">
+            <summary>
+            total number of Documents remaining in the list
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentListDTO.IsComplete">
+            <summary>
+            flag to know if there are items that have not been loaded yet.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.DTOs.DocumentVersionDTO">
+            <summary>
+            Data Transfer Object to represent the version of a document.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.DocumentVersionDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentVersionDTO.Id">
+            <summary>
+            The unique Identifier of the File
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentVersionDTO.CreationDate">
+            <summary>
+            The date this version of the document was created.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentVersionDTO.UpdatedDate">
+            <summary>
+            The date this version of the document was updated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentVersionDTO.VersionNumber">
+            <summary>
+            The Version Number of the document.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentVersionDTO.DocumentId">
+            <summary>
+            The Document to which this Version Number is associated with.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentVersionDTO.DocumentFile">
+            <summary>
+            The original document file chunks corresponding to this version.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentVersionDTO.DocumentThumbnail">
+            <summary>
+            The document thumbnail corresponding to this version.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentVersionDTO.Annotations">
+            <summary>
+            The set of Annotations corresponding to this version file.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.DTOs.DocumentFileDTO">
+            <summary>
+            Data Transfer Object to represent the file content of a document.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.DocumentFileDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentFileDTO.Id">
+            <summary>
+            The unique Identifier of the File
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentFileDTO.FileContents">
+            <summary>
+            Byte array of the content of a document file.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentFileDTO.HashValue">
+            <summary>
+            MD5 Hash value of the file
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.DTOs.DocumentThumbnailDTO">
+            <summary>
+            Data Transfer Object to represent the thumbnail image of a document.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.DTOs.DocumentThumbnailDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentThumbnailDTO.Id">
+            <summary>
+            The unique Identifier of the File
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentThumbnailDTO.Content">
+            <summary>
+            Byte array of the thumbnail content of a document file.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentThumbnailDTO.VersionId">
+            <summary>
+            A reference to the DocumentVersion with which this Thumbnail is associated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.DTOs.DocumentThumbnailDTO.HashValue">
+            <summary>
+            MD5 Hash value of the thumbnail
+            </summary>
+        </member>
+    </members>
+</doc>

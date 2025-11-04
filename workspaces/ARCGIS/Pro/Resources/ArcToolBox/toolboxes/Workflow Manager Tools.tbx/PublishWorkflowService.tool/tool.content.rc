@@ -1,0 +1,25 @@
+{
+    "map": {
+        "aoi_service_name.descr": "The name of the map service that will be uploaded and shared.",
+        "aoi_service_name.title": "AOI Service Name",
+        "description": "Uploads and shares a workflow service and a map service of job locations for an ArcGIS Workflow Manager (Classic) repository.",
+        "description.descr": "A description of the services that will be published.",
+        "description.title": "Description",
+        "input_database_path.descr": "<xdoc><p>The workflow connection file (.jtc) that contains the information needed to connect to the Workflow Manager (Classic) repository.</p><p>The workflow connection in your ArcGIS Pro project will be used if a workflow connection file is not defined.</p></xdoc>",
+        "input_database_path.title": "Input Database Path (.jtc)",
+        "out_service_draft_location.descr": "The folder where service definitions will be saved.",
+        "out_service_draft_location.title": "Output Service Draft Location",
+        "output_map_service_draft_path.title": "Output Map Service Path (*.sddraft)",
+        "output_workflow_service_draft_path.title": "Output Workflow Service Path (*.sddraft)",
+        "overwrite.descr": "<xdoc><p>Specifies whether the <span class=\"esri_uicontrol\">Service Name</span> and <span class=\"esri_uicontrol\">AOI Service Name</span> services will be overwritten.</p><ul><li>Checked—The services will be overwritten.</li><li>Unchecked—The services will not be overwritten. This is the default.</li></ul></xdoc>",
+        "overwrite.title": "Overwrite Existing Service",
+        "server.descr": "The ArcGIS Server connection file (.ags) that contains the information needed to connect to ArcGIS Server or the URL to the ArcGIS Enterprise portal federated server.",
+        "server.title": "Server",
+        "server_folder.descr": "<xdoc><p>The folder to which the services will be published on ArcGIS Server.</p><p>If a folder is not specified, the services will be published to the root folder of ArcGIS Server.</p></xdoc>",
+        "server_folder.title": "Server Folder",
+        "service_name.descr": "The name of the workflow service that will be uploaded and shared.",
+        "service_name.title": "Service Name",
+        "summary": "<xdoc><p>Uploads and shares a workflow service and a map service of job locations for an ArcGIS Workflow Manager (Classic) repository.</p><note type=\"legacy\"/><p group=\"note\">This is a deprecated tool. It is recommended that current Workflow Manager (Classic) users begin new projects using the services-driven ArcGIS Workflow Manager for ArcGIS Pro.</p></xdoc>",
+        "title": "Publish Workflow Service"
+    }
+}

@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <h1>Batch Sales Verification</h1>
+      <p class="lead">Upload and verify multiple sales records at once.</p>
+      
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{{ url_for('sales_verification.index') }}">Sales Verification</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Batch Verification</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+  
+  <div class="row mt-4">
+    <div class="col-lg-8">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Upload Sales File</h5>
+        </div>
+        <div class="card-body">
+          <form action="{{ url_for('sales_verification.batch_verify_sales') }}" method="post" enctype="multipart/form-data">
+            <div class="mb-4">
+              <label for="sales_file" class="form-label">Sales Data File</label>
+              <input class="form-control" type="file" id="sales_file" name="sales_file" accept=".csv,.xlsx,.xls" required>
+              <div class="form-text">Upload a CSV or Excel file containing sales records.</div>
+            </div>
+            
+            <div class="mb-4">
+              <label class="form-label">File Format Requirements</label>
+              <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Column Name</th>
+                      <th>Description</th>
+                      <th>Required</th>
+                      <th>Format</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>sale_id</td>
+                      <td>Unique identifier for sale</td>
+                      <td>Yes</td>
+                      <td>String</td>
+                    </tr>
+                    <tr>
+                      <td>parcel_number</td>
+                      <td>Parcel identifier</td>
+                      <td>Yes</td>
+                      <td>String (XXXXXX-XXX)</td>
+                    </tr>
+                    <tr>
+                      <td>sale_date</td>
+                      <td>Date of sale</td>
+                      <td>Yes</td>
+                      <td>YYYY-MM-DD</td>
+                    </tr>
+                    <tr>
+                      <td>sale_price</td>
+                      <td>Sale price amount</td>
+                      <td>Yes</td>
+                      <td>Numeric</td>
+                    </tr>
+                    <tr>
+                      <td>property_id</td>
+                      <td>Property identifier</td>
+                      <td>No</td>
+                      <td>String</td>
+                    </tr>
+                    <tr>
+                      <td>buyer_name</td>
+                      <td>Name of buyer</td>
+                      <td>No</td>
+                      <td>String</td>
+                    </tr>
+                    <tr>
+                      <td>seller_name</td>
+                      <td>Name of seller</td>
+                      <td>No</td>
+                      <td>String</td>
+                    </tr>
+                    <tr>
+                      <td>deed_type</td>
+                      <td>Type of deed</td>
+                      <td>No</td>
+                      <td>String</td>
+                    </tr>
+                    <tr>
+                      <td>sale_type</td>
+                      <td>Type of sale</td>
+                      <td>No</td>
+                      <td>String</td>
+                    </tr>
+                    <tr>
+                      <td>property_address</td>
+                      <td>Property address</td>
+                      <td>No</td>
+                      <td>String</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            
+            <div class="mb-4">
+              <label class="form-label">Verification Options</label>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="validate_gis" name="validate_gis" checked>
+                <label class="form-check-label" for="validate_gis">
+                  Perform GIS validation for each sale
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="qualify_sales" name="qualify_sales" checked>
+                <label class="form-check-label" for="qualify_sales">
+                  Evaluate sales qualification status
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="update_database" name="update_database" checked>
+                <label class="form-check-label" for="update_database">
+                  Update database with verification results
+                </label>
+              </div>
+            </div>
+            
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <a href="{{ url_for('sales_verification.index') }}" class="btn btn-secondary me-md-2">Cancel</a>
+              <button type="submit" class="btn btn-primary">Upload and Verify</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-4">
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Batch Verification Process</h5>
+        </div>
+        <div class="card-body">
+          <p>The batch verification process:</p>
+          <ol>
+            <li>Validates file format and data structure</li>
+            <li>Processes each sale record individually</li>
+            <li>Performs GIS validation when enabled</li>
+            <li>Evaluates qualification status per WA standards</li>
+            <li>Generates comprehensive verification report</li>
+          </ol>
+          <p class="small text-muted mt-3">Large files may take several minutes to process.</p>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Sample Files</h5>
+        </div>
+        <div class="card-body">
+          <p>Download sample files in the required format:</p>
+          <div class="d-grid gap-2">
+            <a href="#" class="btn btn-outline-primary btn-sm">
+              <i class="bi bi-file-earmark-excel me-2"></i> Sample Excel Template
+            </a>
+            <a href="#" class="btn btn-outline-primary btn-sm">
+              <i class="bi bi-file-earmark-text me-2"></i> Sample CSV Template
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

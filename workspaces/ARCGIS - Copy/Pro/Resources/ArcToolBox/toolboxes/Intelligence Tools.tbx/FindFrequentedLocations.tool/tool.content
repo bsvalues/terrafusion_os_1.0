@@ -1,0 +1,227 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\FindFrequentedLocations",
+    "displayname": "$rc:title",
+    "helpcontent": "73060006",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "spark"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "track_id_field": {
+            "displayname": "$rc:track_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:track_id_field.descr"
+        },
+        "out_featureclass": {
+            "direction": "out",
+            "displayname": "$rc:out_featureclass.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_featureclass.descr"
+        },
+        "expression": {
+            "type": "optional",
+            "displayname": "$rc:expression.title",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:expression.descr"
+        },
+        "search_distance": {
+            "type": "optional",
+            "displayname": "$rc:search_distance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPUnitDomain",
+                "items": [
+                    "Feet",
+                    "Yards",
+                    "Miles",
+                    "NauticalMiles",
+                    "Meters",
+                    "Kilometers"
+                ]
+            },
+            "value": "100 Meters",
+            "description": "$rc:search_distance.descr"
+        },
+        "minimum_loiter_time": {
+            "type": "optional",
+            "displayname": "$rc:minimum_loiter_time.title",
+            "datatype": {
+                "type": "GPTimeUnit"
+            },
+            "domain": {
+                "type": "GPUnitDomain",
+                "items": [
+                    "Seconds",
+                    "Minutes",
+                    "Hours",
+                    "Days"
+                ]
+            },
+            "value": "10 Minutes",
+            "description": "$rc:minimum_loiter_time.descr"
+        },
+        "time_boundary": {
+            "type": "optional",
+            "displayname": "$rc:time_boundary.title",
+            "datatype": {
+                "type": "GPTimeUnit"
+            },
+            "domain": {
+                "type": "GPUnitDomain",
+                "items": [
+                    "Seconds",
+                    "Minutes",
+                    "Hours",
+                    "Days",
+                    "Weeks"
+                ]
+            },
+            "value": "1 Days",
+            "description": "$rc:time_boundary.descr"
+        },
+        "minimum_dwells": {
+            "type": "optional",
+            "displayname": "$rc:minimum_dwells.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "1",
+            "description": "$rc:minimum_dwells.descr"
+        },
+        "normalize_daily_distribution": {
+            "type": "optional",
+            "displayname": "$rc:normalize_daily_distribution.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "NORMALIZED"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "REAL"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:normalize_daily_distribution.descr"
+        },
+        "summary_fields": {
+            "type": "optional",
+            "displayname": "$rc:summary_fields.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:summary_fields.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:summary_fields.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "DWELL_DURATION",
+                                "code": "$rc:summary_fields.domain.item1.DWELL_DURATION"
+                            },
+                            {
+                                "value": "START_TIME",
+                                "code": "$rc:summary_fields.domain.item1.START_TIME"
+                            },
+                            {
+                                "value": "END_TIME",
+                                "code": "$rc:summary_fields.domain.item1.END_TIME"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "MIN",
+                                "code": "$rc:summary_fields.domain.item2.MIN"
+                            },
+                            {
+                                "value": "MAX",
+                                "code": "$rc:summary_fields.domain.item2.MAX"
+                            },
+                            {
+                                "value": "STD",
+                                "code": "$rc:summary_fields.domain.item2.STD"
+                            },
+                            {
+                                "value": "MEAN",
+                                "code": "$rc:summary_fields.domain.item2.MEAN"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:summary_fields.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "workspace"
+    ]
+}

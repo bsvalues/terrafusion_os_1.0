@@ -1,0 +1,443 @@
+{
+  "type" : "CIMLayerDocument",
+  "version" : "3.4.0",
+  "build" : 53876,
+  "layers" : [
+    "CIMPATH=scene/pressurepipe.json"
+  ],
+  "layerDefinitions" : [
+    {
+      "type" : "CIMFeatureLayer",
+      "name" : "PressurePipe",
+      "uRI" : "CIMPATH=scene/pressurepipe.json",
+      "sourceModifiedTime" : {
+        "type" : "TimeInstant"
+      },
+      "useSourceMetadata" : true,
+      "description" : "PressurePipe",
+      "layerElevation" : {
+        "type" : "CIMLayerElevationSurface"
+      },
+      "layer3DProperties" : {
+        "type" : "CIM3DLayerProperties",
+        "castShadows" : true,
+        "isLayerLit" : true,
+        "layerFaceCulling" : "None",
+        "maxDistance" : -1,
+        "minDistance" : -1,
+        "preloadTextureCutoffHigh" : 0,
+        "preloadTextureCutoffLow" : 0.25,
+        "textureCutoffHigh" : 0.25,
+        "textureCutoffLow" : 1,
+        "useCompressedTextures" : true,
+        "verticalExaggeration" : 1,
+        "exaggerationMode" : "ScaleZ",
+        "verticalUnit" : {
+          "uwkid" : 9003
+        },
+        "lighting" : "OneSideDataNormal",
+        "optimizeMarkerTransparency" : true
+      },
+      "layerType" : "Operational",
+      "showLegends" : true,
+      "visibility" : true,
+      "displayCacheType" : "Permanent",
+      "maxDisplayCacheAge" : 5,
+      "popupInfo" : {
+        "type" : "CIMPopupInfo",
+        "title" : "{aec_Network} - {aec_Name}",
+        "expressionInfos" : [
+          {
+            "type" : "CIMExpressionInfo",
+            "title" : "Custom",
+            "expression" : "var StationlbR = Text($feature.aec_StartSta, '00.00' );  //formatting with decimals after the + sign - if there is not \nvar StationlbL = Text(First(Split($feature.aec_StartSta/100, '.',1)), '###00' )  //Getting rid of the two initial character dividing by 100. formatting result with 2 zeros and room for more characters\n\nIf ($feature.aec_StartSta > 0 || $feature.aec_StartSta < 0) {\nReturn Concatenate([StationlbL, Replace(StationlbR,'-','')], '+')\n}",
+            "name" : "MyStartStation",
+            "returnType" : "String"
+          },
+          {
+            "type" : "CIMExpressionInfo",
+            "title" : "Custom",
+            "expression" : "var StationlbR = Text($feature.aec_EndSta, '00.00' );  //formatting with decimals after the + sign - if there is not \nvar StationlbL = Text(First(Split($feature.aec_EndSta/100, '.',1)), '###00' )  //Getting rid of the two initial character dividing by 100. formatting result with 2 zeros and room for more characters\n\nIf ($feature.aec_EndSta > 0 || $feature.aec_EndSta < 0) {\nConcatenate([StationlbL, Replace(StationlbR,'-','')], '+')\n}",
+            "name" : "MyEndStation",
+            "returnType" : "String"
+          },
+          {
+            "type" : "CIMExpressionInfo",
+            "title" : "Slope",
+            "expression" : "Text($feature.aec_Slop,'#####.00%')",
+            "name" : "Slope",
+            "returnType" : "String"
+          }
+        ],
+        "mediaInfos" : [
+          {
+            "type" : "CIMTextMediaInfo",
+            "refreshRateUnit" : "esriTimeUnitsSeconds",
+            "rowSpan" : 1,
+            "columnSpan" : 1,
+            "text" : "<table> <tr> <h3>Property</h3> <th></th> </tr> \n<tr> <td><strong>Network:</strong></td> <td>{aec_Network}</td> </tr>  \n<tr> <td><strong>Name:</strong></td> <td>{aec_Name}</td> </tr>\n<tr> <td><strong>Description:</strong></td> <td>{aec_Desc}</td> </tr>\n<tr> <td><strong>Style:</strong></td> <td>{aec_Style}</td> </tr>\n<tr> <td><strong>Render Material:</strong></td> <td>{aec_RendMat}</td> </tr>\n<tr> <td><strong>Nominal Diameter Description:</strong></td> <td>{aec_NomDia}</td> </tr>\n<tr> <td><strong>Reference Alignment:</strong></td> <td>{aec_RefAlign}</td> </tr>\n<tr> <td><strong>Reference Surface:</strong></td> <td>{aec_RefSurf}</td> </tr>\n<tr> <td><strong>Start Station:</strong></td> <td>{expression/MyStartStation}</td> </tr>\n<tr> <td><strong>Start Offset:</strong></td> <td>{aec_StartOffst}</td> </tr>\n<tr> <td><strong>End Station:</strong></td> <td>{expression/MyEndStation}</td> </tr>\n<tr> <td><strong>End Offset:</strong></td> <td>{aec_EndOffst}</td> </tr>\n<tr> <td><strong>Start Cover:</strong></td> <td>{aec_StrtCover}</td> </tr>\n<tr> <td><strong>End Cover:</strong></td> <td>{aec_EndCover}</td> </tr>\n<tr> <td><strong>Start Easting:</strong></td> <td>{aec_StrtEast}</td> </tr>\n<tr> <td><strong>Start Northing:</strong></td> <td>{aec_StrtNorth}</td> </tr>\n<tr> <td><strong>End Easting:</strong></td> <td>{aec_EndEast}</td> </tr>\n<tr> <td><strong>End Northing:</strong></td> <td>{aec_EndNorth}</td> </tr>\n<tr> <td><strong>Start Centerline Elevation:</strong></td> <td>{aec_StrtCtlnElev}</td> </tr>\n<tr> <td><strong>End Centerline Elevation:</strong></td> <td>{aec_EndCtlnElev}</td> </tr>\n<tr> <td><strong>Start Elevation Invert:</strong></td> <td>{aec_StrtInvElev}</td> </tr>\n<tr> <td><strong>End Elevation Invert:</strong></td> <td>{aec_EndInvElev}</td> </tr>\n<tr> <td><strong>Start Elevation Outside Crown:</strong></td> <td>{aec_StrtCrwnElev}</td> </tr>\n<tr> <td><strong>End Elevation Outside Crown:</strong></td> <td>{aec_EndCrwnElev}</td> </tr>\n<tr> <td><strong>2D Length:</strong></td> <td>{aec_2dLen}</td> </tr>\n<tr> <td><strong>3D Length:</strong></td> <td>{aec_3dLen}</td> </tr>\n<tr> <td><strong>Bearing:</strong></td> <td>{aec_Bearing}</td> </tr>\n<tr> <td><strong>Slope:</strong></td> <td>{expression/Slope}</td> </tr>\n<tr> <td><strong>Horizontal Radius:</strong></td> <td>{aec_HRadius}</td> </tr>\n<tr> <td><strong>Horizontal Chord Length:</strong></td> <td>{aec_HChrdLen}</td> </tr>\n<tr> <td><strong>Horizontal Radius Point Northing:</strong></td> <td>{aec_HRadPtNorth}</td> </tr>\n<tr> <td><strong>Horizontal Radius Point Easting:</strong></td> <td>{aec_HRadPtEast}</td> </tr>\n<tr> <td><strong>Vertical Radius:</strong></td> <td>{aec_VRadius}</td> </tr></table>"
+          },
+          {
+            "type" : "CIMExpressionMediaInfo",
+            "row" : 1,
+            "refreshRateUnit" : "esriTimeUnitsSeconds",
+            "rowSpan" : 1,
+            "columnSpan" : 1,
+            "expression" : {
+              "type" : "CIMExpressionInfo",
+              "title" : "Custom",
+              "expression" : "var aDict = Schema($feature);\nvar aArray = aDict['fields'];\nvar output = \"<table><h2>Property Sets</h2>\"\nvar p = 0\nfor (var i in $feature){\n    if (!isEmpty($feature[i]) \n        && $feature[i] != 0 \n        && $feature[i] != '-' \n        && Find('aec_',i,0) == -1\n        && i != 'OBJECTID'\n        && i != 'BlkColor'\n        && i != 'BlkLinetype'\n        && i != 'BlkLineWt'\n        && i != 'Color'\n        && i != 'DocId'\n        && i != 'DocName'\n        && i != 'DocPath'\n        && i != 'DocType'\n        && i != 'DocUpdate'\n        && i != 'DocVer'\n        && i != 'Elevation'\n        && i != 'EntColor'\n        && i != 'Entity'\n        && i != 'EntLinetype'\n        && i != 'EntLineWt'\n        && i != 'ExtX'\n        && i != 'ExtY'\n        && i != 'ExtZ'\n        && i != 'Handle'\n        && i != 'IsSimulated'\n        && i != 'Layer'\n        && i != 'Linetype'\n        && i != 'LineWt'\n        && i != 'LTScale'\n        && i != 'LyrColor'\n        && i != 'LyrFrzn'\n        && i != 'LyrHandle'\n        && i != 'LyrLineWt'\n        && i != 'LyrLnType'\n        && i != 'LyrLock'\n        && i != 'LyrOn'\n        && i != 'LyrVPFrzn'\n        && i != 'OID'\n        && i != 'RefName'\n        && i != 'SharedView'\n        && i != 'SharedVer')  {\n           for (var j in aArray) {\n             var dict = aArray[j];\n             if (dict['name'] == i) {\n               output  += \"<tr><td><B>\" + Replace(Split(dict['alias'], ' ',2)[1],'_',' ') + \"  :  \" + \"</B>\" + \"</td><td>\" + $feature[i] +  \"</td></tr>\"\n               p++\n             }\n    }    \n    }\n}\nif (p>0) {\nreturn { \n      type : 'text', \n      text : output + \"</table>\"\n// this property supports html tags \n}\n}",
+              "returnType" : "Default"
+            }
+          },
+          {
+            "type" : "CIMExpressionMediaInfo",
+            "row" : 2,
+            "refreshRateUnit" : "esriTimeUnitsSeconds",
+            "rowSpan" : 1,
+            "columnSpan" : 1,
+            "expression" : {
+              "type" : "CIMExpressionInfo",
+              "title" : "Custom",
+              "expression" : "var returnstring = \"<table><h2>BIM Cloud Connection</h2>\" \nvar p = 0\nfor (var i in $feature) {\n    if (!isEmpty($feature[i]) &&  i == 'SharedView')  {\n        returnstring = returnstring + \"<tr><td><B>\" + i + \": \"+ \"</B>\" + \"</td><td>\" + IIf(i == 'SharedView', \"<p><a href=\" +  $feature[i]  + \">URL</a> </p>\", $feature[i])  + \"</td></tr>\"\np++\n    }\n}\nif (p>0) {\nreturn { \n      type : 'text', \n      text : returnstring + \"</table>\" \n       }\n}\n\n//Expression to show the SharedView file, when exist. And to open file in the BIM site using the URL",
+              "returnType" : "Default"
+            }
+          }
+        ],
+        "gridLayout" : {
+          "type" : "CIMPopupLayout",
+          "columnWidths" : [
+            100
+          ],
+          "borderWidth" : 2,
+          "borderColor" : {
+            "type" : "CIMRGBColor",
+            "values" : [
+              0,
+              169,
+              230,
+              100
+            ]
+          }
+        }
+      },
+      "showPopups" : true,
+      "serviceLayerID" : -1,
+      "refreshRate" : -1,
+      "refreshRateUnit" : "esriTimeUnitsSeconds",
+      "blendingMode" : "Alpha",
+      "allowDrapingOnIntegratedMesh" : true,
+      "autoGenerateFeatureTemplates" : true,
+      "extrusion" : {
+        "type" : "CIMFeatureExtrusion",
+        "extrusionType" : "None",
+        "extrusionUnit" : {
+          "uwkid" : 9003
+        }
+      },
+      "featureElevationExpression" : "Shape.Z",
+      "featureTable" : {
+        "type" : "CIMFeatureTable",
+        "definitionExpression" : "LyrOn=1 And LyrFrzn <>1",
+        "displayField" : "RefName",
+        "editable" : true,
+        "fieldDescriptions" : [
+        ],
+        "dataConnection" : {
+        },
+        "studyAreaSpatialRel" : "esriSpatialRelUndefined",
+        "searchOrder" : "esriSearchOrderSpatial"
+      },
+      "htmlPopupEnabled" : true,
+      "selectable" : true,
+      "featureCacheType" : "Session",
+      "displayFiltersType" : "ByScale",
+      "featureBlendingMode" : "Alpha",
+      "layerEffectsMode" : "Layer",
+      "labelClasses" : [
+        {
+          "type" : "CIMLabelClass",
+          "expression" : "if ($feature.aec_Name != 'Simulated Pipe' ) {\nReturn $feature.aec_Network + '\\r' +  Concatenate([$feature.aec_Name,$feature.aec_NomDia],IIf(IsEmpty($feature.aec_NomDia), ' ', '  ø: '))\n}",
+          "expressionEngine" : "Arcade",
+          "featuresToLabel" : "AllVisibleFeatures",
+          "maplexLabelPlacementProperties" : {
+            "type" : "CIMMaplexLabelPlacementProperties",
+            "featureType" : "Line",
+            "avoidPolygonHoles" : true,
+            "canOverrunFeature" : true,
+            "canPlaceLabelOutsidePolygon" : true,
+            "canRemoveOverlappingLabel" : true,
+            "canStackLabel" : true,
+            "centerLabelAnchorType" : "Symbol",
+            "connectionType" : "MinimizeLabels",
+            "constrainOffset" : "AboveLine",
+            "contourAlignmentType" : "Page",
+            "contourLadderType" : "Straight",
+            "contourMaximumAngle" : 90,
+            "enableConnection" : true,
+            "featureWeight" : 0,
+            "fontHeightReductionLimit" : 4,
+            "fontHeightReductionStep" : 0.5,
+            "fontWidthReductionLimit" : 90,
+            "fontWidthReductionStep" : 5,
+            "graticuleAlignmentType" : "Straight",
+            "keyNumberGroupName" : "Default",
+            "labelBuffer" : 15,
+            "labelLargestPolygon" : true,
+            "labelPriority" : -1,
+            "labelStackingProperties" : {
+              "type" : "CIMMaplexLabelStackingProperties",
+              "stackAlignment" : "ChooseBest",
+              "maximumNumberOfLines" : 3,
+              "minimumNumberOfCharsPerLine" : 3,
+              "maximumNumberOfCharsPerLine" : 24,
+              "separators" : [
+                {
+                  "type" : "CIMMaplexStackingSeparator",
+                  "separator" : " ",
+                  "splitAfter" : true
+                },
+                {
+                  "type" : "CIMMaplexStackingSeparator",
+                  "separator" : ",",
+                  "visible" : true,
+                  "splitAfter" : true
+                }
+              ],
+              "trimStackingSeparators" : true
+            },
+            "lineFeatureType" : "General",
+            "linePlacementMethod" : "OffsetStraightFromLine",
+            "maximumLabelOverrun" : 16,
+            "maximumLabelOverrunUnit" : "Point",
+            "measureFromClippedFeatureGeometry" : true,
+            "minimumFeatureSizeUnit" : "Map",
+            "multiPartOption" : "OneLabelPerFeature",
+            "offsetAlongLineProperties" : {
+              "type" : "CIMMaplexOffsetAlongLineProperties",
+              "placementMethod" : "BestPositionAlongLine",
+              "labelAnchorPoint" : "CenterOfLabel",
+              "distanceUnit" : "Map",
+              "useLineDirection" : true
+            },
+            "pointExternalZonePriorities" : {
+              "type" : "CIMMaplexExternalZonePriorities",
+              "aboveLeft" : 4,
+              "aboveCenter" : 2,
+              "aboveRight" : 1,
+              "centerRight" : 3,
+              "belowRight" : 5,
+              "belowCenter" : 7,
+              "belowLeft" : 8,
+              "centerLeft" : 6
+            },
+            "pointPlacementMethod" : "AroundPoint",
+            "polygonAnchorPointType" : "GeometricCenter",
+            "polygonBoundaryWeight" : 0,
+            "polygonExternalZones" : {
+              "type" : "CIMMaplexExternalZonePriorities",
+              "aboveLeft" : 4,
+              "aboveCenter" : 2,
+              "aboveRight" : 1,
+              "centerRight" : 3,
+              "belowRight" : 5,
+              "belowCenter" : 7,
+              "belowLeft" : 8,
+              "centerLeft" : 6
+            },
+            "polygonFeatureType" : "General",
+            "polygonInternalZones" : {
+              "type" : "CIMMaplexInternalZonePriorities",
+              "center" : 1
+            },
+            "polygonPlacementMethod" : "CurvedInPolygon",
+            "primaryOffset" : 1,
+            "primaryOffsetUnit" : "Point",
+            "removeAmbiguousLabels" : "All",
+            "removeExtraWhiteSpace" : true,
+            "repetitionIntervalUnit" : "Point",
+            "rotationProperties" : {
+              "type" : "CIMMaplexRotationProperties",
+              "rotationType" : "Arithmetic",
+              "alignmentType" : "Straight"
+            },
+            "secondaryOffset" : 100,
+            "secondaryOffsetUnit" : "Percentage",
+            "strategyPriorities" : {
+              "type" : "CIMMaplexStrategyPriorities",
+              "stacking" : 1,
+              "overrun" : 2,
+              "fontCompression" : 3,
+              "fontReduction" : 4,
+              "abbreviation" : 5
+            },
+            "thinningDistanceUnit" : "Point",
+            "truncationMarkerCharacter" : ".",
+            "truncationMinimumLength" : 1,
+            "truncationPreferredCharacters" : "aeiou",
+            "truncationExcludedCharacters" : "0123456789",
+            "polygonAnchorPointPerimeterInsetUnit" : "Point"
+          },
+          "minimumScale" : 100,
+          "name" : "Class 1",
+          "priority" : -1,
+          "standardLabelPlacementProperties" : {
+            "type" : "CIMStandardLabelPlacementProperties",
+            "featureType" : "Line",
+            "featureWeight" : "Low",
+            "labelWeight" : "High",
+            "numLabelsOption" : "OneLabelPerName",
+            "lineLabelPosition" : {
+              "type" : "CIMStandardLineLabelPosition",
+              "above" : true,
+              "inLine" : true,
+              "parallel" : true
+            },
+            "lineLabelPriorities" : {
+              "type" : "CIMStandardLineLabelPriorities",
+              "aboveStart" : 3,
+              "aboveAlong" : 3,
+              "aboveEnd" : 3,
+              "centerStart" : 3,
+              "centerAlong" : 3,
+              "centerEnd" : 3,
+              "belowStart" : 3,
+              "belowAlong" : 3,
+              "belowEnd" : 3
+            },
+            "pointPlacementMethod" : "AroundPoint",
+            "pointPlacementPriorities" : {
+              "type" : "CIMStandardPointPlacementPriorities",
+              "aboveLeft" : 2,
+              "aboveCenter" : 2,
+              "aboveRight" : 1,
+              "centerLeft" : 3,
+              "centerRight" : 2,
+              "belowLeft" : 3,
+              "belowCenter" : 3,
+              "belowRight" : 2
+            },
+            "rotationType" : "Arithmetic",
+            "polygonPlacementMethod" : "AlwaysHorizontal"
+          },
+          "textSymbol" : {
+            "type" : "CIMSymbolReference",
+            "symbol" : {
+              "type" : "CIMTextSymbol",
+              "blockProgression" : "TTB",
+              "depth3D" : 1,
+              "extrapolateBaselines" : true,
+              "fontEffects" : "Normal",
+              "fontEncoding" : "Unicode",
+              "fontFamilyName" : "Tahoma",
+              "fontStyleName" : "Regular",
+              "fontType" : "Unspecified",
+              "haloSize" : 1,
+              "height" : 10,
+              "hinting" : "Default",
+              "horizontalAlignment" : "Left",
+              "kerning" : true,
+              "letterWidth" : 100,
+              "ligatures" : true,
+              "lineGapType" : "ExtraLeading",
+              "symbol" : {
+                "type" : "CIMPolygonSymbol",
+                "symbolLayers" : [
+                  {
+                    "type" : "CIMSolidFill",
+                    "enable" : true,
+                    "color" : {
+                      "type" : "CIMRGBColor",
+                      "values" : [
+                        0,
+                        0,
+                        0,
+                        100
+                      ]
+                    }
+                  }
+                ],
+                "angleAlignment" : "Map"
+              },
+              "textCase" : "Normal",
+              "textDirection" : "LTR",
+              "verticalAlignment" : "Bottom",
+              "verticalGlyphOrientation" : "Right",
+              "wordSpacing" : 100,
+              "billboardMode3D" : "FaceNearPlane"
+            }
+          },
+          "useCodedValue" : true,
+          "visibility" : true,
+          "iD" : -1
+        }
+      ],
+      "labelVisibility" : true,
+      "renderer" : {
+        "type" : "CIMSimpleRenderer",
+        "sampleSize" : 10000,
+        "visualVariables" : [
+          {
+            "type" : "CIMTransparencyVisualVariable",
+            "authoringInfo" : {
+              "type" : "CIMVisualVariableAuthoringInfo",
+              "maxSliderValue" : 100,
+              "heading" : "Custom"
+            },
+            "field" : "Custom",
+            "transparencyValues" : [
+              50,
+              60
+            ],
+            "dataValues" : [
+              0,
+              100
+            ],
+            "normalizationType" : "Nothing",
+            "valueExpressionInfo" : {
+              "type" : "CIMExpressionInfo",
+              "title" : "Custom",
+              "expression" : "if ($feature.aec_Name == 'Simulated Pipe' ) {\nReturn 100\n}",
+              "returnType" : "Default"
+            }
+          }
+        ],
+        "patch" : "Default",
+        "symbol" : {
+          "type" : "CIMSymbolReference",
+          "symbol" : {
+            "type" : "CIMLineSymbol",
+            "symbolLayers" : [
+              {
+                "type" : "CIMSolidStroke",
+                "enable" : true,
+                "capStyle" : "Butt",
+                "joinStyle" : "Round",
+                "lineStyle3D" : "Tube",
+                "miterLimit" : 10,
+                "width" : 0.5,
+                "height3D" : 1,
+                "anchor3D" : "Center",
+                "color" : {
+                  "type" : "CIMRGBColor",
+                  "values" : [
+                    115,
+                    178,
+                    255,
+                    100
+                  ]
+                }
+              }
+            ],
+            "useRealWorldSymbolSizes" : true
+          }
+        }
+      },
+      "scaleSymbols" : true,
+      "snappable" : true,
+      "useRealWorldSymbolSizes" : true
+    }
+  ],
+  "rGBColorProfile" : "sRGB IEC61966-2.1",
+  "cMYKColorProfile" : "U.S. Web Coated (SWOP) v2"
+}

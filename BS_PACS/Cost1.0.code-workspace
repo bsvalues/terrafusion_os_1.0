@@ -1,0 +1,38 @@
+pip.
+PS C:\TotalDashboard> winget install -e --id PostgreSQL.PostgreSQL
+The `msstore` source requires that you view the following agreements before usin
+g.
+Terms of Transaction: https://aka.ms/microsoft-store-terms-of-transaction       
+The source requires the current machine's 2-letter geographic region to be sent 
+to the backend service to function properly (ex. "US").
+
+Do you agree to all the source agreements terms?
+[Y] Yes  [N] No: An unexpected error occurred while executing the command:      
+0x8a150042 : Error reading input in prompt
+PS C:\TotalDashboard> winget install -e --id PostgreSQL.PostgreSQL
+The `msstore` source requires that you view the following agreements before usin
+g.
+Terms of Transaction: https://aka.ms/microsoft-store-terms-of-transaction
+The source requires the current machine's 2-letter geographic region to be sent 
+to the backend service to function properly (ex. "US").
+
+Do you agree to all the source agreements terms?
+[Y] Yes  [N] No:{
+	"folders": [
+		{
+			"path": "../../../Alamode"
+		},
+		{
+			"path": "../../../Program Files (x86)/a la mode"
+		},
+		{
+			"path": "../../../TOTALVICDIRECTORY"
+		},
+		{
+			"path": "D:/APAVS"
+		},
+		{
+			"path": "../Downloads"
+		}
+	]
+}

@@ -1,0 +1,26 @@
+{{/*
+============================================================================
+TerraFusion Consciousness Engine - PodDisruptionBudget Template
+Government. Transcended. - Ensure AI Agent Availability
+============================================================================
+*/}}
+
+{{- if .Values.podDisruptionBudget.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "terrafusion-consciousness.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "terrafusion-consciousness.labels" . | nindent 4 }}
+    terrafusion.io/component: consciousness
+    terrafusion.io/tier: ai
+  annotations:
+    description: "TerraFusion Consciousness Engine PodDisruptionBudget - 50,000 AI agents"
+    compliance: "FISMA-High"
+spec:
+  minAvailable: {{ .Values.podDisruptionBudget.minAvailable }}
+  selector:
+    matchLabels:
+      {{- include "terrafusion-consciousness.selectorLabels" . | nindent 6 }}
+{{- end }}

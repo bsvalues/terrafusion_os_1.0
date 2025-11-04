@@ -1,0 +1,65 @@
+{
+    "type": "FunctionTool",
+    "guid": "{f2ff3f45-6885-44c1-b1a8-be159ef1b09f}",
+    "displayname": "$rc:title",
+    "helpcontent": "3010029",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "block_add_to_map",
+        "input_data_change",
+        "param_nocount:in_datasets"
+    ],
+    "params": {
+        "in_datasets": {
+            "displayname": "$rc:in_datasets.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "GPTableView"
+                        },
+                        {
+                            "type": "DEFeatureDataset"
+                        },
+                        {
+                            "type": "GPLayer"
+                        }
+                    ]
+                }
+            },
+            "description": "$rc:in_datasets.descr"
+        },
+        "out_datasets": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_datasets.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "GPLayer"
+                        },
+                        {
+                            "type": "GPTableView"
+                        },
+                        {
+                            "type": "DEDatasetType"
+                        }
+                    ]
+                }
+            },
+            "depends": [
+                "in_datasets"
+            ],
+            "addtomap": "false"
+        }
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "set": [
+        "sabre",
+        "category",
+        "correlation",
+        "correspondence",
+        "entropy",
+        "intersection",
+        "overlap",
+        "overlay",
+        "region",
+        "regionalization"
+    ]
+}

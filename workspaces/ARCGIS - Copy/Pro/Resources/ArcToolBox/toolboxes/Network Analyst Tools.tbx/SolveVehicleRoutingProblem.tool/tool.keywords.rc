@@ -1,0 +1,16 @@
+{
+    "set": [
+        "bus",
+        "delivery",
+        "depot",
+        "distribute",
+        "driver",
+        "fleet",
+        "order",
+        "pickup",
+        "school",
+        "tour",
+        "truck",
+        "vrp"
+    ]
+}

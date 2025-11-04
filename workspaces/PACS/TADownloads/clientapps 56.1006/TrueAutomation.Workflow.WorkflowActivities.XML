@@ -1,0 +1,628 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.Workflow.WorkflowActivities</name>
+    </assembly>
+    <members>
+        <!-- Badly formed XML comment ignored for member "T:TrueAutomation.Workflow.WorkflowActivities.CheckRunningWFInstances" -->
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.CheckRunningWFInstances.WorkflowId">
+            <summary>
+            This is the Unique Identifier of the workflow that will be looked up
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.CheckRunningWFInstances.#ctor">
+            <summary>
+            Default constructor
+            set the title here
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.CheckRunningWFInstances.Execute(System.Activities.CodeActivityContext)">
+            <summary>
+            Method to execute the activity. This returns true if any instance of the WF is running
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="T:TrueAutomation.Workflow.WorkflowActivities.CheckRunningWFInstancesDesigner">
+            <summary>
+            CheckRunningWFInstancesDesigner
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.CheckRunningWFInstancesDesigner.#ctor">
+            <summary>
+            Instantiate the CheckForRunningWFInstances Designer.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Workflow.WorkflowActivities.CheckRunningWFInstancesDesigner.enabledWorkflows">
+            <summary>
+            The list of enabled workflows
+            that will be displayed in the 
+            drop down
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.CheckRunningWFInstancesDesigner.EnabledWorkflows">
+            <summary>
+            The list of Workflows to Bind the Workflow ID combobox to.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.CheckRunningWFInstancesDesigner.WorkflowId_Loaded(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Method that handles the post combo box load
+            logic, set selection on loading a saved workflow
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.CheckRunningWFInstancesDesigner.WorkflowId_SelectionChanged(System.Object,System.Windows.Data.DataTransferEventArgs)">
+            <summary>
+            Handles selection changes in the drop down
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.CheckRunningWFInstancesDesigner.GetModelItemProperty(System.String)">
+            <summary>
+            Helper method to get objects out of the model.
+            </summary>
+            <param name="propertyName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.CheckRunningWFInstancesDesigner.SetModelItemProperty(System.String,System.Object)">
+            <summary>
+            Method to update the Model object value.
+            </summary>
+            <param name="propertyName"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.CheckRunningWFInstancesDesigner.LoadEnabledWorkflows">
+            <summary>
+            Method to populate the list of Workflows (enabled only)
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.CheckRunningWFInstancesDesigner.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.WorkflowActivities.CreateDataRecord">
+            <summary>
+            This class contains the workflow Activity information which is populated through use of the proper designer.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.CreateDataRecord.SelectedDataRecordDefinitionId">
+            <summary>
+            The Id Number of the Selected Data Record Definition
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.CreateDataRecord.DRDKeyFieldsCollection">
+            <summary>
+            Dictionary to contain the dynamically created DataRecord KeyFields Arguments
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.CreateDataRecord.#ctor">
+            <summary>
+            Default Constructior, sets the name of the workflow task in the designer.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.CreateDataRecord.Execute(System.Activities.NativeActivityContext)">
+            <summary>
+            The Execute Method is fired off whenever the workflow reaches this activity.  
+            While it has no output, it does populate the OutArgument value of the DataRecord;
+            </summary>
+            <param name="context">Activity Context</param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.CreateDataRecord.CacheMetadata(System.Activities.NativeActivityMetadata)">
+            <summary>
+            Override CacheMetadata to create runtime arguments and bind them to the metadata.
+            </summary>
+            <param name="metadata"></param>
+        </member>
+        <member name="T:TrueAutomation.Workflow.WorkflowActivities.CreateDataRecordActivityDesigner">
+            <summary>
+            This class is the UI Element of the Create Data Record Activity
+            </summary>
+            <summary>
+            CreateDataRecordActivityDesigner
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.CreateDataRecordActivityDesigner.#ctor">
+            <summary>
+            Instantiate the Create Data Record Activity Designer.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.CreateDataRecordActivityDesigner.DataRecordDefinitions">
+            <summary>
+            The list of Task Types to Bind the task type combobox to.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.CreateDataRecordActivityDesigner.LoadDataRecordDefinitions">
+            <summary>
+            Method to load the data record definitions from the Task Service
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.CreateDataRecordActivityDesigner.DataRecordDefinition_SelectionChanged(System.Object,System.Windows.Controls.SelectionChangedEventArgs)">
+            <summary>
+            Event handler for DRD Selection Changed
+            </summary>
+            <param name="sender">Sender</param>
+            <param name="e">Event Args</param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.CreateDataRecordActivityDesigner.ClearDRDKeyFieldsCollection">
+            <summary>
+            Clears and Sets the DRDKeyFieldsCollection ModelItem property
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.CreateDataRecordActivityDesigner.RemoveDRDs">
+            <summary>
+            Removes existing DRD keyfield rows on selection changed
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.CreateDataRecordActivityDesigner.GetModelItemProperty(System.String)">
+            <summary>
+            Helper method to get objects out of the model.
+            </summary>
+            <param name="propertyName">Property Name</param>
+            <returns>Object</returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.CreateDataRecordActivityDesigner.SetModelItemProperty(System.String,System.Object)">
+            <summary>
+            Method to update the Model object value.
+            </summary>
+            <param name="propertyName">Property Name</param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.CreateDataRecordActivityDesigner.GetSelectedDataRecordDefinitionIdFromModel">
+            <summary>
+            Method to extract the current instance version value of the Selected Data Record Definition Id from the Model.
+            </summary>
+            <returns>Selected DRD Id</returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.CreateDataRecordActivityDesigner.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.WorkflowActivities.LogException">
+            <summary>
+             This is an activity which will be used to log any exceptions in the workflows.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.LogException.#ctor">
+            <summary>
+            Class constructor -- initializes an instance of the
+            <see cref="T:LogException"/> class.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.LogException.SelectedLogType">
+            <summary>
+            The Type of Information that needs to be logged
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.LogException.exception">
+            <summary>
+            The exception of the workflow that needs to be logged
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.LogException.Information">
+            <summary>
+            The Information string that needs to be logged.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:TrueAutomation.Workflow.WorkflowActivities.LogException.Log" -->
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.LogException.Execute(System.Activities.CodeActivityContext)">
+            <summary>
+            Method to log the exception message 
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="T:TrueAutomation.Workflow.WorkflowActivities.LogExceptionActivityDesigner">
+            <summary>
+            Activity Designer Class for Log Exception
+            </summary>
+            <summary>
+            LogExceptionActivityDesigner
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Workflow.WorkflowActivities.LogExceptionActivityDesigner.logTypes">
+            <summary>
+            The list of Logging Types that will be displayed in the drop down
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.LogExceptionActivityDesigner.#ctor">
+            <summary>
+            Instantiate the Execute Workflow designer
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.LogExceptionActivityDesigner.LogType_Loaded(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Method that handles the post combo box load
+            logic, set selection on loading a saved workflow
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.LogExceptionActivityDesigner.LogType_SelectionChanged(System.Object,System.Windows.Data.DataTransferEventArgs)">
+            <summary>
+            Handles selection changes in the drop down
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.LogExceptionActivityDesigner.LogTypes">
+            <summary>
+            The list of LogTypes to Bind the LogType combobox to.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.LogExceptionActivityDesigner.GetModelItemProperty(System.String)">
+            <summary>
+            Helper method to get objects out of the model.
+            </summary>
+            <param name="propertyName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.LogExceptionActivityDesigner.SetModelItemProperty(System.String,System.Object)">
+            <summary>
+            Method to update the Model object value.
+            </summary>
+            <param name="propertyName"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.LogExceptionActivityDesigner.LoadLogTypes">
+            <summary>
+            Method to populate the list of LogTypes
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.LogExceptionActivityDesigner.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.WorkflowActivities.ExecuteWorkflow">
+            <summary>
+             This is an activity which will send a message to the workflow service to have a workflow started.
+             <remarks>Must be careful to avoid circular references as well as a check to ensure that a selected workflow is enabled</remarks>
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.ExecuteWorkflow.WorkflowId">
+            <summary>
+            This is the Unique Identifier of the workflow to be executed.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.ExecuteWorkflow.#ctor">
+            <summary>
+            Default constructor
+            set the title here
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.ExecuteWorkflow.Execute(System.Activities.CodeActivityContext)">
+            <summary>
+            Method to send a message 
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="T:TrueAutomation.Workflow.WorkflowActivities.ExecuteWorkflowDesigner">
+            <summary>
+            This class handles the interaction logic 
+            for ExecuteWorkflowDesigner.xaml
+            </summary>
+            <summary>
+            ExecuteWorkflowDesigner
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Workflow.WorkflowActivities.ExecuteWorkflowDesigner.enabledWorkflows">
+            <summary>
+            The list of enabled workflows
+            that will be displayed in the 
+            drop down
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.ExecuteWorkflowDesigner.#ctor">
+            <summary>
+            Instantiate the Execute Workflow designer
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.ExecuteWorkflowDesigner.WorkflowId_Loaded(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Method that handles the post combo box load
+            logic, set selection on loading a saved workflow
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.ExecuteWorkflowDesigner.WorkflowId_SelectionChanged(System.Object,System.Windows.Data.DataTransferEventArgs)">
+            <summary>
+            Handles selection changes in the drop down
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.ExecuteWorkflowDesigner.EnabledWorkflows">
+            <summary>
+            The list of Workflows to Bind the Workflow ID combobox to.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.ExecuteWorkflowDesigner.GetModelItemProperty(System.String)">
+            <summary>
+            Helper method to get objects out of the model.
+            </summary>
+            <param name="propertyName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.ExecuteWorkflowDesigner.SetModelItemProperty(System.String,System.Object)">
+            <summary>
+            Method to update the Model object value.
+            </summary>
+            <param name="propertyName"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.ExecuteWorkflowDesigner.LoadEnabledWorkflows">
+            <summary>
+            Method to populate the list of Workflows (enabled only)
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.ExecuteWorkflowDesigner.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.WorkflowActivities.GetTaskDataRecord">
+            <summary>
+            This class contains the workflow Activity information which is populated through use of the proper designer.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.GetTaskDataRecord.TaskIdExpression">
+            <summary>
+            The Id of the Task whose Data Record is to be retrieved
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.GetTaskDataRecord.SelectedTaskTypeId">
+            <summary>
+            The Id Number of the Selected TaskType
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.GetTaskDataRecord.SelectedDataRecordName">
+            <summary>
+            The Name of the Selected Data Record
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.GetTaskDataRecord.DRDKeyFieldValues">
+            <summary>
+            Output argument - DataRecordDTO
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.GetTaskDataRecord.#ctor">
+            <summary>
+            Default Constructior, sets the name of the workflow task in the designer.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.GetTaskDataRecord.Execute(System.Activities.CodeActivityContext)">
+            <summary>
+            The Execute Method is fired off whenever the workflow reaches this activity.  
+            While it has no output, it does populate the OutArgument value of the DataRecord;
+            </summary>
+            <param name="context">Activity Context</param>
+        </member>
+        <member name="T:TrueAutomation.Workflow.WorkflowActivities.GetTaskDataRecordActivityDesigner">
+            <summary>
+            This class is the UI Element of the Get Task Data Record Activity
+            </summary>
+            <summary>
+            GetTaskDataRecordActivityDesigner
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.GetTaskDataRecordActivityDesigner.#ctor">
+            <summary>
+            Instantiate the Create Data Record Activity Designer.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.GetTaskDataRecordActivityDesigner.TaskTypes">
+            <summary>
+            The list of Task Types to Bind the task type combobox to.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.GetTaskDataRecordActivityDesigner.DataRecordDefinitions">
+            <summary>
+            The list of Task Types to Bind the task type combobox to.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.GetTaskDataRecordActivityDesigner.LoadTaskTypes">
+            <summary>
+            Method to populate the list of TaskTypes provided by the DTO Object of the Selected Task Category.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.GetTaskDataRecordActivityDesigner.LoadDataRecordDefinitions">
+            <summary>
+            Method to populate the list of TaskTypes provided by the DTO Object of the Selected Task Category.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.GetTaskDataRecordActivityDesigner.TaskType_SelectionChanged(System.Object,System.Windows.Controls.SelectionChangedEventArgs)">
+            <summary>
+            Event fired when the Task Category Selection changes in order to populate the Task Type list.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.GetTaskDataRecordActivityDesigner.DataRecordDefinition_SelectionChanged(System.Object,System.Windows.Controls.SelectionChangedEventArgs)">
+            <summary>
+            Event handler for Data Record Selection Changed
+            </summary>
+            <param name="sender">Sender</param>
+            <param name="e">Event Args</param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.GetTaskDataRecordActivityDesigner.GetModelItemProperty(System.String)">
+            <summary>
+            Helper method to get objects out of the model.
+            </summary>
+            <param name="propertyName">Property Name</param>
+            <returns>Object</returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.GetTaskDataRecordActivityDesigner.SetModelItemProperty(System.String,System.Object)">
+            <summary>
+            Method to update the Model object value.
+            </summary>
+            <param name="propertyName">Property Name</param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.GetTaskDataRecordActivityDesigner.GetSelectedDataRecordNameFromModel">
+            <summary>
+            Method to extract the current instance version value of the Selected Data Record Name from the Model.
+            </summary>
+            <returns>Selected Data Record Name</returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.GetTaskDataRecordActivityDesigner.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecord">
+            <summary>
+            This class contains the workflow Activity information which is populated through use of the proper designer.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecord.TaskIdExpression">
+            <summary>
+            The Id of the Task whose Data Record is to be updated
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecord.SelectedTaskTypeId">
+            <summary>
+            The Id Number of the Selected TaskType
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecord.SelectedDataRecordName">
+            <summary>
+            The Name of the Selected Data Record
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecord.DRDKeyFieldsCollection">
+            <summary>
+            Dictionary to contain the dynamically created DataRecord KeyFields Arguments
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecord.UpdateCheckBoxCollection">
+            <summary>
+            Dictionary to contain the dynamically created DataRecord KeyFields Arguments
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecord.DRDActionCollection">
+            <summary>
+            Dictionary to contain the dynamically created DataRecord KeyFields Arguments
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecord.UpdatedDataRecord">
+            <summary>
+            Output argument - DataRecordDTO
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecord.UpdateTaskId">
+            <summary>
+            Not used in Execution - Dummy field to help in saving changed 
+            'RefundAction' values after initial execution of the workflow
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecord.#ctor">
+            <summary>
+            Default Constructior, sets the name of the workflow task in the designer.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecord.Execute(System.Activities.CodeActivityContext)">
+            <summary>
+            The Execute Method is fired off whenever the workflow reaches this activity.  
+            While it has no output, it does populate the OutArgument value of the DataRecord;
+            </summary>
+            <param name="context">Activity Context</param>
+        </member>
+        <member name="T:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecordActivityDesigner">
+            <summary>
+            This class is the UI Element of the Create Data Record Activity
+            </summary>
+            <summary>
+            UpdateDataRecordActivityDesigner
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecordActivityDesigner.#ctor">
+            <summary>
+            Instantiate the Create Data Record Activity Designer.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecordActivityDesigner.Actions">
+            <summary>
+            The list of Actions to Bind the Actions combobox to.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecordActivityDesigner.TaskTypes">
+            <summary>
+            The list of Task Types to Bind the task type combobox to.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecordActivityDesigner.DataRecordDefinitions">
+            <summary>
+            The list of Task Types to Bind the task type combobox to.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecordActivityDesigner.LoadTaskTypes">
+            <summary>
+            Method to populate the list of TaskTypes provided by the DTO Object of the Selected Task Category.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecordActivityDesigner.LoadDataRecordDefinitions">
+            <summary>
+            Method to populate the list of TaskTypes provided by the DTO Object of the Selected Task Category.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecordActivityDesigner.TaskType_SelectionChanged(System.Object,System.Windows.Controls.SelectionChangedEventArgs)">
+            <summary>
+            Event fired when the Task Category Selection changes in order to populate the Task Type list.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecordActivityDesigner.DataRecordDefinition_SelectionChanged(System.Object,System.Windows.Controls.SelectionChangedEventArgs)">
+            <summary>
+            Event handler for Data Record Selection Changed
+            </summary>
+            <param name="sender">Sender</param>
+            <param name="e">Event Args</param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecordActivityDesigner.Update_Checked(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Event method executed when a checkbox is set to update the enabled status of each
+            of the various updatable fields in the Update Event.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecordActivityDesigner.ClearDRDKeyFieldsCollection">
+            <summary>
+            Clears and Sets the DRDKeyFieldsCollection ModelItem property
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecordActivityDesigner.RemoveDataRecordFieldTextBoxes">
+            <summary>
+            Removes existing DRD keyfield rows on selection changed
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecordActivityDesigner.GetModelItemProperty(System.String)">
+            <summary>
+            Helper method to get objects out of the model.
+            </summary>
+            <param name="propertyName">Property Name</param>
+            <returns>Object</returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecordActivityDesigner.SetModelItemProperty(System.String,System.Object)">
+            <summary>
+            Method to update the Model object value.
+            </summary>
+            <param name="propertyName">Property Name</param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecordActivityDesigner.GetSelectedDataRecordNameFromModel">
+            <summary>
+            Method to extract the current instance version value of the Selected Data Record Name from the Model.
+            </summary>
+            <returns>Selected Data Record Name</returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActivities.UpdateDataRecordActivityDesigner.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+    </members>
+</doc>

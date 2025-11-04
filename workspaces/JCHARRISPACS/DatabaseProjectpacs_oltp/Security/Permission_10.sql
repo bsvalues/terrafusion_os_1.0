@@ -1,0 +1,5 @@
+GRANT CONNECT TO [CO\RA2];
+
+
+GO
+

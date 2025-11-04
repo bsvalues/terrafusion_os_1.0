@@ -1,0 +1,87 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "69000013",
+    "description": "$rc:description",
+    "product": "300",
+    "attributes": [
+        "spark"
+    ],
+    "params": {
+        "input_layer": {
+            "displayname": "$rc:input_layer.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:input_layer.descr"
+        },
+        "overlay_layer": {
+            "displayname": "$rc:overlay_layer.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:overlay_layer.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "overlay_type": {
+            "displayname": "$rc:overlay_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "INTERSECT",
+                        "code": "$rc:overlay_type.domain.INTERSECT"
+                    },
+                    {
+                        "value": "ERASE",
+                        "code": "$rc:overlay_type.domain.ERASE"
+                    },
+                    {
+                        "value": "IDENTITY",
+                        "code": "$rc:overlay_type.domain.IDENTITY"
+                    },
+                    {
+                        "value": "UNION",
+                        "code": "$rc:overlay_type.domain.UNION"
+                    },
+                    {
+                        "value": "SYMMETRICAL_DIFFERENCE",
+                        "code": "$rc:overlay_type.domain.SYMMETRICAL_DIFFERENCE"
+                    }
+                ]
+            },
+            "value": "INTERSECT",
+            "description": "$rc:overlay_type.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "outputCoordinateSystem",
+        "workspace"
+    ]
+}

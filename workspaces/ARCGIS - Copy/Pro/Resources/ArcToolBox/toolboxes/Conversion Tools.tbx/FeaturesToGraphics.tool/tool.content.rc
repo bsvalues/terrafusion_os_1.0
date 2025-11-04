@@ -1,0 +1,13 @@
+{
+    "map": {
+        "description": "Converts a feature layer's symbolized features into graphic elements in a graphics layer.",
+        "exclude_features.descr": "<xdoc><p>Specifies whether the converted features will be excluded using a query.<ul><li>Checked—The features will be excluded. This is the default.</li><li>Unchecked—The features will not be excluded; they will be preserved.</li></ul></p></xdoc>",
+        "exclude_features.title": "Exclude converted features from drawing",
+        "in_layer.descr": "The layer to convert to graphics.",
+        "in_layer.title": "Input Features",
+        "out_layer.descr": "The graphics layer containing the converted graphic elements.",
+        "out_layer.title": "Output Graphics Layer",
+        "title": "Features To Graphics",
+        "updated_layer.title": "Updated layer"
+    }
+}

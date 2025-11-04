@@ -1,0 +1,45 @@
+{
+    "type": "FunctionTool",
+    "guid": "{9cd757b3-ebc1-4bb9-bfd1-d13384d8a7ee}",
+    "displayname": "$rc:title",
+    "helpcontent": "3050008",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        }
+    },
+    "environments": [
+        "MDomain",
+        "MResolution",
+        "MTolerance",
+        "XYResolution",
+        "XYTolerance",
+        "ZDomain",
+        "ZResolution",
+        "ZTolerance",
+        "extent",
+        "outputCoordinateSystem",
+        "outputMFlag",
+        "outputZFlag",
+        "outputZValue",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

@@ -1,0 +1,94 @@
+{
+    "type": "FunctionTool",
+    "guid": "{7c4b1e37-6ccc-40f4-90e5-aac5721ddb59}",
+    "displayname": "$rc:title",
+    "helpcontent": "61010002",
+    "description": "$rc:description",
+    "product": "200",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "block_add_to_map"
+    ],
+    "params": {
+        "in_utility_network": {
+            "displayname": "$rc:in_utility_network.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    },
+                    {
+                        "type": "GPUtilityNetworkLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_utility_network.descr"
+        },
+        "domain_network_name": {
+            "displayname": "$rc:domain_network_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:domain_network_name.descr"
+        },
+        "tier_definition": {
+            "displayname": "$rc:tier_definition.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "HIERARCHICAL",
+                        "code": "$rc:tier_definition.domain.HIERARCHICAL"
+                    },
+                    {
+                        "value": "PARTITIONED",
+                        "code": "$rc:tier_definition.domain.PARTITIONED"
+                    }
+                ]
+            },
+            "description": "$rc:tier_definition.descr"
+        },
+        "subnetwork_controller_type": {
+            "displayname": "$rc:subnetwork_controller_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SOURCE",
+                        "code": "$rc:subnetwork_controller_type.domain.SOURCE"
+                    },
+                    {
+                        "value": "SINK",
+                        "code": "$rc:subnetwork_controller_type.domain.SINK"
+                    }
+                ]
+            },
+            "description": "$rc:subnetwork_controller_type.descr"
+        },
+        "domain_network_alias_name": {
+            "type": "optional",
+            "displayname": "$rc:domain_network_alias_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:domain_network_alias_name.descr"
+        },
+        "out_utility_network": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_utility_network.title",
+            "datatype": {
+                "type": "DEUtilityNetwork"
+            }
+        }
+    }
+}

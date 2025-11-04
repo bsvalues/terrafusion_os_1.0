@@ -1,0 +1,11 @@
+{
+    "set": [
+        "convert",
+        "create",
+        "gn",
+        "migrate",
+        "network",
+        "trace",
+        "trace network"
+    ]
+}

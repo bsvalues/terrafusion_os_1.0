@@ -1,0 +1,147 @@
+{
+    "type": "FunctionTool",
+    "guid": "{7811a298-e142-456e-98d3-84b60468a8f1}",
+    "displayname": "$rc:title",
+    "helpcontent": "3080003",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "multiref"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple",
+                    "SimpleJunction",
+                    "SimpleEdge",
+                    "ComplexEdge",
+                    "RasterCatalogItem"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "algorithm": {
+            "displayname": "$rc:algorithm.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PAEK",
+                        "code": "$rc:algorithm.domain.PAEK"
+                    },
+                    {
+                        "value": "BEZIER_INTERPOLATION",
+                        "code": "$rc:algorithm.domain.BEZIER_INTERPOLATION"
+                    }
+                ]
+            },
+            "value": "PAEK",
+            "description": "$rc:algorithm.descr"
+        },
+        "tolerance": {
+            "displayname": "$rc:tolerance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:tolerance.descr"
+        },
+        "endpoint_option": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:endpoint_option.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FIXED_CLOSED_ENDPOINT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_FIXED"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:endpoint_option.descr"
+        },
+        "error_option": {
+            "type": "optional",
+            "displayname": "$rc:error_option.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NO_CHECK",
+                        "code": "$rc:error_option.domain.NO_CHECK"
+                    },
+                    {
+                        "value": "FLAG_ERRORS",
+                        "code": "$rc:error_option.domain.FLAG_ERRORS"
+                    },
+                    {
+                        "value": "RESOLVE_ERRORS",
+                        "code": "$rc:error_option.domain.RESOLVE_ERRORS"
+                    }
+                ]
+            },
+            "value": "NO_CHECK",
+            "description": "$rc:error_option.descr"
+        },
+        "in_barriers": {
+            "type": "optional",
+            "displayname": "$rc:in_barriers.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            },
+            "description": "$rc:in_barriers.descr"
+        }
+    },
+    "environments": [
+        "MDomain",
+        "XYDomain",
+        "XYTolerance",
+        "cartographicPartitions",
+        "extent",
+        "outputCoordinateSystem",
+        "outputMFlag",
+        "outputZFlag",
+        "outputZValue",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

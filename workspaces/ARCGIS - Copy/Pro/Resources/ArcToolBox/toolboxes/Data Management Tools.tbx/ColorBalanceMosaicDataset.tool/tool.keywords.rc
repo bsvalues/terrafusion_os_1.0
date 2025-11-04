@@ -1,0 +1,10 @@
+{
+    "set": [
+        "amd",
+        "color balancing",
+        "color correction",
+        "dodging",
+        "match color",
+        "mosaic dataset"
+    ]
+}

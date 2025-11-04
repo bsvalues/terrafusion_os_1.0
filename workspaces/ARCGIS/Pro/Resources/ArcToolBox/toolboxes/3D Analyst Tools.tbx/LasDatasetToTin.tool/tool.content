@@ -1,0 +1,160 @@
+{
+    "type": "FunctionTool",
+    "guid": "{8b68a543-705f-4902-98bd-3d10825a5f18}",
+    "displayname": "$rc:title",
+    "helpcontent": "5110001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9"
+    ],
+    "params": {
+        "in_las_dataset": {
+            "display_order": "0",
+            "displayname": "$rc:in_las_dataset.title",
+            "datatype": {
+                "type": "GPLasDatasetLayer"
+            },
+            "description": "$rc:in_las_dataset.descr"
+        },
+        "out_tin": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_tin.title",
+            "datatype": {
+                "type": "DETin"
+            },
+            "description": "$rc:out_tin.descr"
+        },
+        "thinning_type": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:thinning_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NONE",
+                        "code": "$rc:thinning_type.domain.NONE"
+                    },
+                    {
+                        "value": "RANDOM",
+                        "code": "$rc:thinning_type.domain.RANDOM"
+                    },
+                    {
+                        "value": "WINDOW_SIZE",
+                        "code": "$rc:thinning_type.domain.WINDOW_SIZE"
+                    }
+                ]
+            },
+            "value": "NONE",
+            "description": "$rc:thinning_type.descr"
+        },
+        "thinning_method": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:thinning_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PERCENT",
+                        "code": "$rc:thinning_method.domain.PERCENT"
+                    },
+                    {
+                        "value": "NODE_COUNT",
+                        "code": "$rc:thinning_method.domain.NODE_COUNT"
+                    },
+                    {
+                        "value": "MIN",
+                        "code": "$rc:thinning_method.domain.MIN"
+                    },
+                    {
+                        "value": "MAX",
+                        "code": "$rc:thinning_method.domain.MAX"
+                    },
+                    {
+                        "value": "CLOSEST_TO_MEAN",
+                        "code": "$rc:thinning_method.domain.CLOSEST_TO_MEAN"
+                    }
+                ]
+            },
+            "description": "$rc:thinning_method.descr"
+        },
+        "thinning_value": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:thinning_value.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "value": "0",
+            "description": "$rc:thinning_value.descr"
+        },
+        "max_nodes": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:max_nodes.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "value": "5000000",
+            "description": "$rc:max_nodes.descr"
+        },
+        "z_factor": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:z_factor.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "1",
+            "description": "$rc:z_factor.descr"
+        },
+        "clip_to_extent": {
+            "type": "optional",
+            "displayname": "$rc:clip_to_extent.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CLIP"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_CLIP"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:clip_to_extent.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "tinSaveVersion",
+        "workspace"
+    ]
+}

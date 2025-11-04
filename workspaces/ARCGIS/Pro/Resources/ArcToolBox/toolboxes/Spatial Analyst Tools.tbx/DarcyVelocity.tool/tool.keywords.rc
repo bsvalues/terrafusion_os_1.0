@@ -1,0 +1,18 @@
+{
+    "set": [
+        "advection",
+        "aquifer",
+        "borehole",
+        "capture zone",
+        "contaminant",
+        "contamination",
+        "darcy's law",
+        "dispersion",
+        "flow field",
+        "head",
+        "pollutant",
+        "subsurface",
+        "water",
+        "well"
+    ]
+}

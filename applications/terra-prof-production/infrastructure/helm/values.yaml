@@ -1,0 +1,239 @@
+# Default values for TerraFusionPro Helm chart
+# This is a YAML-formatted file.
+
+# Global values shared across all services
+global:
+  environment: production
+  imageRegistry: ""
+  imagePullSecrets: []
+  imageTag: latest
+
+# Database configuration
+database:
+  enabled: true
+  host: postgres
+  port: 5432
+  user: postgres
+  # password will be provided via Kubernetes secrets
+  database: terrafusionpro
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: ""
+
+# API Gateway configuration
+apiGateway:
+  name: api-gateway
+  image:
+    repository: terrafusion/api-gateway
+    tag: ""  # Defaults to global.imageTag if not set
+    pullPolicy: IfNotPresent
+  replicas: 2
+  port: 5002
+  service:
+    type: ClusterIP
+    port: 80
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+
+# Web Client configuration
+webClient:
+  name: web-client
+  image:
+    repository: terrafusion/web-client
+    tag: ""  # Defaults to global.imageTag if not set
+    pullPolicy: IfNotPresent
+  replicas: 2
+  port: 5000
+  service:
+    type: ClusterIP
+    port: 80
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+
+# Property Service configuration
+propertyService:
+  name: property-service
+  image:
+    repository: terrafusion/property-service
+    tag: ""  # Defaults to global.imageTag if not set
+    pullPolicy: IfNotPresent
+  replicas: 1
+  port: 5003
+  service:
+    type: ClusterIP
+    port: 80
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 70
+
+# User Service configuration
+userService:
+  name: user-service
+  image:
+    repository: terrafusion/user-service
+    tag: ""  # Defaults to global.imageTag if not set
+    pullPolicy: IfNotPresent
+  replicas: 1
+  port: 5004
+  service:
+    type: ClusterIP
+    port: 80
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 70
+
+# Form Service configuration
+formService:
+  name: form-service
+  image:
+    repository: terrafusion/form-service
+    tag: ""  # Defaults to global.imageTag if not set
+    pullPolicy: IfNotPresent
+  replicas: 1
+  port: 5005
+  service:
+    type: ClusterIP
+    port: 80
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 70
+
+# Analysis Service configuration
+analysisService:
+  name: analysis-service
+  image:
+    repository: terrafusion/analysis-service
+    tag: ""  # Defaults to global.imageTag if not set
+    pullPolicy: IfNotPresent
+  replicas: 1
+  port: 5006
+  service:
+    type: ClusterIP
+    port: 80
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 70
+
+# Report Service configuration
+reportService:
+  name: report-service
+  image:
+    repository: terrafusion/report-service
+    tag: ""  # Defaults to global.imageTag if not set
+    pullPolicy: IfNotPresent
+  replicas: 1
+  port: 5007
+  service:
+    type: ClusterIP
+    port: 80
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 70
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - host: app.terrafusionpro.com
+      paths:
+        - path: /
+          pathType: Prefix
+          service: web-client
+          port: 80
+    - host: api.terrafusionpro.com
+      paths:
+        - path: /
+          pathType: Prefix
+          service: api-gateway
+          port: 80
+  tls:
+    - secretName: terrafusionpro-tls
+      hosts:
+        - app.terrafusionpro.com
+        - api.terrafusionpro.com
+
+# Prometheus metrics and monitoring
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+
+# Logging configuration
+logging:
+  enabled: true
+  elasticsearch:
+    enabled: true
+  kibana:
+    enabled: true
+  filebeat:
+    enabled: true

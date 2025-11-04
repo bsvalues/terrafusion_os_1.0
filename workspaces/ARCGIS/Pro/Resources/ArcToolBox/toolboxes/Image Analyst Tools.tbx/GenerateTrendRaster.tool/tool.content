@@ -1,0 +1,333 @@
+{
+    "type": "FunctionTool",
+    "guid": "{b70fe113-44fe-42e7-819b-3eb9a8f05793}",
+    "displayname": "$rc:title",
+    "helpcontent": "66130004",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "58",
+        "86"
+    ],
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_multidimensional_raster": {
+            "display_order": "0",
+            "displayname": "$rc:in_multidimensional_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "DEMosaicDataset"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "DEFile"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPBrowseFiltersDomain",
+                        "filters": [
+                            "esri_browseDialogFilters_netcdf",
+                            "  esri_browseDialogFilters_GRIB_files",
+                            "esri_browseDialogFilters_rasters",
+                            "esri_browseDialogFilters_acsFiles"
+                        ]
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "nc",
+                            "nc4",
+                            "zgroup",
+                            "zarray",
+                            "zarr"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:in_multidimensional_raster.descr"
+        },
+        "out_multidimensional_raster": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_multidimensional_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_multidimensional_raster.descr"
+        },
+        "dimension": {
+            "display_order": "2",
+            "displayname": "$rc:dimension.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:dimension.descr"
+        },
+        "variables": {
+            "type": "optional",
+            "display_order": "3",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:variables.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "description": "$rc:variables.descr"
+        },
+        "line_type": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:line_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "LINEAR",
+                        "code": "$rc:line_type.domain.LINEAR"
+                    },
+                    {
+                        "value": "HARMONIC",
+                        "code": "$rc:line_type.domain.HARMONIC"
+                    },
+                    {
+                        "value": "POLYNOMIAL",
+                        "code": "$rc:line_type.domain.POLYNOMIAL"
+                    },
+                    {
+                        "value": "MANN-KENDALL",
+                        "code": "$rc:line_type.domain.MANN-KENDALL"
+                    },
+                    {
+                        "value": "SEASONAL-KENDALL",
+                        "code": "$rc:line_type.domain.SEASONAL-KENDALL"
+                    }
+                ]
+            },
+            "value": "LINEAR",
+            "description": "$rc:line_type.descr"
+        },
+        "frequency": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:frequency.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "1806645882456",
+            "description": "$rc:frequency.descr"
+        },
+        "ignore_nodata": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:ignore_nodata.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "DATA"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NODATA"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:ignore_nodata.descr"
+        },
+        "cycle_length": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:cycle_length.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:cycle_length.descr"
+        },
+        "cycle_unit": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:cycle_unit.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DAYS",
+                        "code": "$rc:cycle_unit.domain.DAYS"
+                    },
+                    {
+                        "value": "YEARS",
+                        "code": "$rc:cycle_unit.domain.YEARS"
+                    }
+                ]
+            },
+            "description": "$rc:cycle_unit.descr"
+        },
+        "rmse": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:rmse.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "RMSE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_RMSE"
+                    }
+                ]
+            },
+            "value": "true",
+            "category": "$rc:params.category1",
+            "description": "$rc:rmse.descr"
+        },
+        "r2": {
+            "type": "optional",
+            "display_order": "11",
+            "displayname": "$rc:r2.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "R2"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_R2"
+                    }
+                ]
+            },
+            "value": "false",
+            "category": "$rc:params.category1",
+            "description": "$rc:r2.descr"
+        },
+        "slope_p_value": {
+            "type": "optional",
+            "display_order": "12",
+            "displayname": "$rc:slope_p_value.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SLOPEPVALUE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_SLOPEPVALUE"
+                    }
+                ]
+            },
+            "value": "false",
+            "category": "$rc:params.category1",
+            "description": "$rc:slope_p_value.descr"
+        },
+        "seasonal_period": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:seasonal_period.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DAYS",
+                        "code": "$rc:seasonal_period.domain.DAYS"
+                    },
+                    {
+                        "value": "MONTHS",
+                        "code": "$rc:seasonal_period.domain.MONTHS"
+                    }
+                ]
+            },
+            "description": "$rc:seasonal_period.descr"
+        }
+    },
+    "environments": [
+        "cellSize",
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "nodata",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "pyramid",
+        "rasterStatistics",
+        "resamplingMethod",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

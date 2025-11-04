@@ -1,0 +1,10 @@
+{
+    "set": [
+        "amd",
+        "get rid of border",
+        "make pixel invisible",
+        "mosaic dataset",
+        "remove collar",
+        "set nodata"
+    ]
+}

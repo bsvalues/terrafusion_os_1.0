@@ -1,0 +1,7 @@
+{
+    "set": [
+        "building footprint",
+        "footprint",
+        "polygon footprint"
+    ]
+}

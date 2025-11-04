@@ -1,0 +1,191 @@
+{
+    "type": "FunctionTool",
+    "guid": "{33724566-2738-4FE2-903A-A8C439127E50}/BatchUpdateFields",
+    "displayname": "$rc:title",
+    "helpcontent": "3060028",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_table": {
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "out_table": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFeatureClass"
+                    },
+                    {
+                        "type": "DETable"
+                    }
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_table.descr"
+        },
+        "field_definition_table": {
+            "displayname": "$rc:field_definition_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:field_definition_table.descr"
+        },
+        "script_file": {
+            "type": "optional",
+            "displayname": "$rc:script_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "py"
+                ]
+            },
+            "description": "$rc:script_file.descr"
+        },
+        "output_field_name": {
+            "type": "optional",
+            "displayname": "$rc:output_field_name.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "BigInteger",
+                    "Long",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "field_definition_table"
+            ],
+            "description": "$rc:output_field_name.descr"
+        },
+        "source_field_name": {
+            "type": "optional",
+            "displayname": "$rc:source_field_name.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "BigInteger",
+                    "Long",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "field_definition_table"
+            ],
+            "description": "$rc:source_field_name.descr"
+        },
+        "output_field_type": {
+            "type": "optional",
+            "displayname": "$rc:output_field_type.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "BigInteger",
+                    "Long",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "field_definition_table"
+            ],
+            "description": "$rc:output_field_type.descr"
+        },
+        "output_field_decimals_or_length": {
+            "type": "optional",
+            "displayname": "$rc:output_field_decimals_or_length.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "BigInteger",
+                    "Long",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "field_definition_table"
+            ],
+            "description": "$rc:output_field_decimals_or_length.descr"
+        },
+        "output_field_alias": {
+            "type": "optional",
+            "displayname": "$rc:output_field_alias.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "BigInteger",
+                    "Long",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "field_definition_table"
+            ],
+            "description": "$rc:output_field_alias.descr"
+        },
+        "output_field_script": {
+            "type": "optional",
+            "displayname": "$rc:output_field_script.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "BigInteger",
+                    "Long",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "field_definition_table"
+            ],
+            "description": "$rc:output_field_script.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

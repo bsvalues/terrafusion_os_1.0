@@ -1,0 +1,72 @@
+# Terrafusion Full-Stack Monorepo Bootstrap Prompt
+# Drop into Replit AI Agent
+
+# 1. Monorepo & CI/CD Setup
+- Initialize Turborepo at repo root:
+  - Create `turbo.json` with pipeline for lint, test, build, release
+  - Add `pnpm-workspace.yaml` listing apps/* and packages/*  [oai_citation:0‡Turborepo](https://turbo.build/repo/docs/crafting-your-repository/constructing-ci?utm_source=chatgpt.com)
+- Configure GitHub Actions:
+  - `.github/workflows/ci.yml`:
+    • Cache `.turbo` and `node_modules` with actions/cache, using `${{ runner.os }}-turbo-${{ github.sha }}` as key  [oai_citation:1‡Turborepo](https://turbo.build/repo/docs/guides/ci-vendors/github-actions?utm_source=chatgpt.com)
+    • Steps: checkout, cache, setup-node, install, turbo run lint test build
+  - `.github/workflows/release.yml`:
+    • Use semantic-release for automated changelogs & npm releases
+  - `.github/workflows/security-scan.yml`:
+    • Run `npm audit`, `pip-audit`, and dependency scans  [oai_citation:2‡Turborepo](https://turbo.build/repo/docs/crafting-your-repository/constructing-ci?utm_source=chatgpt.com)
+
+# 2. Plugin Marketplace Core
+- In `packages/plugin-loader`:
+  - Ensure `Manifest` schema includes `peerVersion` and `signed` fields
+  - Add `PluginVerifier.verify(manifest)`:
+    • Check semver peerVersion compatibility  [oai_citation:3‡Dev Leader](https://www.devleader.ca/2023/09/07/plugin-architecture-design-pattern-a-beginners-guide-to-modularity?utm_source=chatgpt.com)
+    • Validate cryptographic signature via Cosign command
+  - Implement Stripe integration in `plugin-payment.ts`:
+    • Define `PRODUCT_TERRAFUSION_PLUGIN`
+    • Create checkout sessions and webhooks to toggle `premium` flag  [oai_citation:4‡JetBrains Marketplace](https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html?utm_source=chatgpt.com)
+
+# 3. Observability & Health
+- In `apps/terrafusion-core` (NestJS):
+  - Add Prometheus metrics endpoint `/metrics` using `@willsoto/nestjs-prometheus`  [oai_citation:5‡Kubernetes Training](https://kubernetestraining.io/blog/nestjs-prometheus-monitoring?utm_source=chatgpt.com)
+  - Docker-compose: include `prometheus` and `grafana` services, mount `/metrics`
+  - Install `bull-board` at `/admin/queues` for BullMQ DLQ insights  [oai_citation:6‡Medium](https://medium.com/%40islam.farid16/monitoring-a-nestjs-application-with-prometheus-and-grafana-31436a495d0e?utm_source=chatgpt.com)
+
+# 4. Security Hardening Hooks
+- Dead-Letter Queue & Snapshots:
+  - In `apps/worker-node`: instantiate `etlDLQ` and on job failure forward to DLQ, emit Slack alert
+  - Create `snapshot_metadata` table in Postgres for LSN tracking
+- Nightly Maintenance:
+  - APScheduler/Cron job to run `VACUUM ANALYZE` on PostGIS DB every night  [oai_citation:7‡Turborepo](https://turbo.build/repo/docs/crafting-your-repository/constructing-ci?utm_source=chatgpt.com)
+- SCA Scans:
+  - Add GH Action steps: `npm audit`, `pip-audit` in `security-scan.yml`  [oai_citation:8‡Turborepo](https://turbo.build/repo/docs/crafting-your-repository/constructing-ci?utm_source=chatgpt.com)
+- SBOM & Supply-Chain:
+  - In Docker build step, run `docker build --sbom .` and `cosign sign` the image
+
+# 5. E2E Testing & Quality
+- Add Playwright integration in `apps/web-shell`:
+  - `npm install -D @playwright/test`
+  - Create `playwright.config.ts` and test suite for core flows (login, plugin install, map load)
+  - Add `playwright test` step to CI pipeline  [oai_citation:9‡Stack Overflow](https://stackoverflow.com/questions/58136102/deploy-individual-services-from-a-monorepo-using-github-actions?utm_source=chatgpt.com)
+- Path-based workflow triggers to only run builds/tests for changed packages  [oai_citation:10‡Stack Overflow](https://stackoverflow.com/questions/58136102/deploy-individual-services-from-a-monorepo-using-github-actions?utm_source=chatgpt.com)
+
+# 6. Documentation with Docusaurus
+- Under `docs/`:
+  - Install `@docusaurus/core` + `@docusaurus/preset-classic`
+  - Configure `docusaurus.config.js`, separate sidebars for Admin, Developer, User
+  - Add docs for `core-models`, `plugin-loader`, `geo-api`, `ai-core`  [oai_citation:11‡Dev Leader](https://www.devleader.ca/2023/09/07/plugin-architecture-design-pattern-a-beginners-guide-to-modularity?utm_source=chatgpt.com)
+
+# 7. AI-Provider Resilience
+- In `packages/ai-core/src/services/llm-service.ts`:
+  - Accept `AI_PROVIDER_PRIORITY` env var (e.g. `openai,anthropic`)
+  - Wrap calls in retry loop switching providers on quota/error  [oai_citation:12‡Leantime](https://leantime.io/leantimes-plugin-architecture-building-for-extensibility-and-accessibility/?utm_source=chatgpt.com)
+
+# 8. UI & Shared Libraries
+- In `packages/ui`:
+  - Finalize `design-tokens.css` for colors, spacing, shadows
+  - Enforce import order via ESLint rule (`import/order`)
+- Create sample components: `MapView`, `PropertyCard`, `PluginCard`
+
+# Implementation Notes:
+- Follow existing TypeScript conventions and project lint rules
+- Ensure all new commits pass CI green before moving forward
+- Write JSDoc comments for new public APIs
+- Use incremental Git commits with clear `feat|fix|chore` prefixes

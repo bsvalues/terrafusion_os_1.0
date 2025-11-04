@@ -1,0 +1,101 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\RadialLineOfSight",
+    "displayname": "$rc:title",
+    "helpcontent": "74040004",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_observer_features": {
+            "display_order": "0",
+            "displayname": "$rc:in_observer_features.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_observer_features.descr"
+        },
+        "in_surface": {
+            "display_order": "3",
+            "displayname": "$rc:in_surface.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "DEMosaicDataset"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "description": "$rc:in_surface.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "display_order": "4",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "symbologylayer": "MT_Radial_Line_Of_Sight_Output.lyrx",
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "radius": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:radius.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "1000",
+            "description": "$rc:radius.descr"
+        },
+        "observer_height_above_surface": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:observer_height_above_surface.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "2",
+            "description": "$rc:observer_height_above_surface.descr"
+        }
+    },
+    "environments": [
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

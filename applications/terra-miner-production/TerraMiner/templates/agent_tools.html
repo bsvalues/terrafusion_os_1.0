@@ -1,0 +1,442 @@
+{% extends "base.html" %}
+
+{% block title %}Agent Tools{% endblock %}
+
+{% block styles %}
+<style>
+  .tools-container {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .tool-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 15px;
+    margin-bottom: 15px;
+    border-left: 4px solid #3498db;
+  }
+  
+  .tool-name {
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 5px;
+  }
+  
+  .tool-description {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+  }
+  
+  .tool-badge {
+    display: inline-block;
+    background: #e0f7fa;
+    color: #0288d1;
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 0.8rem;
+    margin-right: 5px;
+    margin-bottom: 5px;
+  }
+  
+  .tool-input {
+    background: #f5f7f9;
+    border-radius: 6px;
+    padding: 10px;
+    margin: 10px 0;
+  }
+  
+  .result-container {
+    background: #f0f4f8;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 20px;
+    border-left: 4px solid #2ecc71;
+    display: none;
+  }
+  
+  .result-content {
+    white-space: pre-wrap;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  
+  .loading-spinner {
+    display: none;
+    text-align: center;
+    margin: 20px 0;
+  }
+  
+  .tool-action-btn {
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  
+  .tool-action-btn:hover {
+    background: #2980b9;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-md-12">
+      <h1 class="mb-4">AI Agent Tools</h1>
+      <p class="lead">Access hundreds of AI-powered tools to enhance real estate data analysis</p>
+      
+      <div class="tools-container">
+        <h3>Tool Search</h3>
+        <div class="row mb-3">
+          <div class="col-md-8">
+            <div class="input-group">
+              <input type="text" class="form-control" id="tool-search-input" placeholder="Search for tools (e.g., 'weather', 'maps', 'search')">
+              <div class="input-group-append">
+                <button class="btn btn-primary" type="button" id="search-btn">Search</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <select class="form-control" id="tool-category-select">
+              <option value="">All Categories</option>
+              <option value="search">Search</option>
+              <option value="maps">Maps</option>
+              <option value="weather">Weather</option>
+              <option value="news">News</option>
+              <option value="finance">Finance</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="loading-spinner" id="search-spinner">
+          <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+          <p>Searching for tools...</p>
+        </div>
+        
+        <div id="search-results" class="mt-3">
+          <!-- Tool results will be populated here -->
+          <div class="alert alert-info">Search for tools to get started</div>
+        </div>
+      </div>
+      
+      <div class="tools-container">
+        <h3>Tool Execution</h3>
+        <div class="row mb-3">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label for="tool-name-input">Tool Name</label>
+              <input type="text" class="form-control" id="tool-name-input" placeholder="Enter tool name (e.g., BRAVE_SEARCH__WEB_SEARCH)">
+            </div>
+          </div>
+        </div>
+        
+        <div class="row mb-3">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label for="tool-args-input">Tool Arguments (JSON)</label>
+              <textarea class="form-control" id="tool-args-input" rows="5" placeholder='{"query": "real estate market trends 2025"}'></textarea>
+            </div>
+          </div>
+        </div>
+        
+        <button class="btn btn-primary" type="button" id="execute-btn">Execute Tool</button>
+        
+        <div class="loading-spinner" id="execute-spinner">
+          <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+          <p>Executing tool...</p>
+        </div>
+        
+        <div class="result-container" id="result-container">
+          <h4>Execution Result</h4>
+          <div class="result-content" id="result-content">
+            <!-- Result will be displayed here -->
+          </div>
+        </div>
+      </div>
+      
+      <div class="tools-container">
+        <h3>Status</h3>
+        <div id="status-container">
+          <p>Loading status...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Load the initial status
+    loadStatus();
+    
+    // Set up search functionality
+    document.getElementById('search-btn').addEventListener('click', searchTools);
+    document.getElementById('tool-search-input').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        searchTools();
+      }
+    });
+    
+    // Set up execute functionality
+    document.getElementById('execute-btn').addEventListener('click', executeTools);
+    
+    // Function to load status
+    function loadStatus() {
+      fetch('/api/agent-tools/status')
+        .then(response => response.json())
+        .then(data => {
+          const statusContainer = document.getElementById('status-container');
+          
+          let statusHtml = '<div class="row">';
+          
+          // API Keys
+          statusHtml += '<div class="col-md-4">';
+          statusHtml += '<h5>API Keys</h5>';
+          statusHtml += '<ul class="list-group">';
+          for (const [key, available] of Object.entries(data.api_keys)) {
+            const statusClass = available ? 'success' : 'danger';
+            const statusText = available ? 'Available' : 'Missing';
+            statusHtml += `<li class="list-group-item d-flex justify-content-between align-items-center">
+              ${key}
+              <span class="badge badge-${statusClass}">${statusText}</span>
+            </li>`;
+          }
+          statusHtml += '</ul>';
+          statusHtml += '</div>';
+          
+          // Components
+          statusHtml += '<div class="col-md-4">';
+          statusHtml += '<h5>Components</h5>';
+          statusHtml += '<ul class="list-group">';
+          for (const [component, initialized] of Object.entries(data.components)) {
+            const statusClass = initialized ? 'success' : 'warning';
+            const statusText = initialized ? 'Initialized' : 'Not initialized';
+            statusHtml += `<li class="list-group-item d-flex justify-content-between align-items-center">
+              ${component}
+              <span class="badge badge-${statusClass}">${statusText}</span>
+            </li>`;
+          }
+          statusHtml += '</ul>';
+          statusHtml += '</div>';
+          
+          // Agent Tools
+          statusHtml += '<div class="col-md-4">';
+          statusHtml += '<h5>Agent Tools</h5>';
+          const agentToolsAvailable = data.agent_tools_available;
+          const statusClass = agentToolsAvailable ? 'success' : 'danger';
+          const statusText = agentToolsAvailable ? 'Available' : 'Unavailable';
+          statusHtml += `<div class="alert alert-${statusClass}">
+            Agent Tools: <strong>${statusText}</strong>
+          </div>`;
+          if (!agentToolsAvailable) {
+            statusHtml += '<div class="alert alert-warning">Agent tools are not available. Please check that the ACI_API_KEY is set.</div>';
+          }
+          statusHtml += '</div>';
+          
+          statusHtml += '</div>';
+          
+          statusContainer.innerHTML = statusHtml;
+        })
+        .catch(error => {
+          console.error('Error loading status:', error);
+          document.getElementById('status-container').innerHTML = `
+            <div class="alert alert-danger">
+              Error loading status: ${error.message}
+            </div>
+          `;
+        });
+    }
+    
+    // Function to search for tools
+    function searchTools() {
+      const query = document.getElementById('tool-search-input').value;
+      const category = document.getElementById('tool-category-select').value;
+      
+      // Show spinner
+      document.getElementById('search-spinner').style.display = 'block';
+      document.getElementById('search-results').innerHTML = '';
+      
+      // Build the query URL
+      let url = `/api/agent-tools/search?query=${encodeURIComponent(query)}`;
+      if (category) {
+        url += `&category=${encodeURIComponent(category)}`;
+      }
+      
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          // Hide spinner
+          document.getElementById('search-spinner').style.display = 'none';
+          
+          const resultsContainer = document.getElementById('search-results');
+          
+          if (data.error) {
+            resultsContainer.innerHTML = `
+              <div class="alert alert-danger">
+                Error: ${data.message}
+              </div>
+            `;
+            return;
+          }
+          
+          if (data.tools.length === 0) {
+            resultsContainer.innerHTML = `
+              <div class="alert alert-warning">
+                No tools found matching '${query}'
+              </div>
+            `;
+            return;
+          }
+          
+          let resultsHtml = `<p>Found ${data.count} tools matching '${query}':</p>`;
+          
+          for (const tool of data.tools) {
+            resultsHtml += `
+              <div class="tool-card">
+                <div class="tool-name">${tool.name}</div>
+                <div class="tool-description">${tool.description || 'No description available'}</div>
+                <div class="mb-2">
+                  ${tool.categories ? tool.categories.map(cat => `<span class="tool-badge">${cat}</span>`).join('') : ''}
+                </div>
+                <button class="tool-action-btn use-tool-btn" data-tool="${tool.name}">Use Tool</button>
+                <button class="tool-action-btn view-def-btn" data-tool="${tool.name}">View Definition</button>
+              </div>
+            `;
+          }
+          
+          resultsContainer.innerHTML = resultsHtml;
+          
+          // Add event listeners for the tool buttons
+          document.querySelectorAll('.use-tool-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+              const toolName = this.getAttribute('data-tool');
+              document.getElementById('tool-name-input').value = toolName;
+              // Scroll to the execution section
+              document.getElementById('tool-name-input').scrollIntoView({
+                behavior: 'smooth'
+              });
+            });
+          });
+          
+          document.querySelectorAll('.view-def-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+              const toolName = this.getAttribute('data-tool');
+              viewToolDefinition(toolName);
+            });
+          });
+        })
+        .catch(error => {
+          // Hide spinner
+          document.getElementById('search-spinner').style.display = 'none';
+          
+          document.getElementById('search-results').innerHTML = `
+            <div class="alert alert-danger">
+              Error searching for tools: ${error.message}
+            </div>
+          `;
+        });
+    }
+    
+    // Function to view tool definition
+    function viewToolDefinition(toolName) {
+      fetch(`/api/agent-tools/definition/${encodeURIComponent(toolName)}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            alert(`Error: ${data.message}`);
+            return;
+          }
+          
+          // Display the definition
+          const resultContainer = document.getElementById('result-container');
+          const resultContent = document.getElementById('result-content');
+          
+          resultContent.textContent = JSON.stringify(data, null, 2);
+          resultContainer.style.display = 'block';
+          
+          // Scroll to the result
+          resultContainer.scrollIntoView({
+            behavior: 'smooth'
+          });
+        })
+        .catch(error => {
+          alert(`Error getting tool definition: ${error.message}`);
+        });
+    }
+    
+    // Function to execute a tool
+    function executeTools() {
+      const toolName = document.getElementById('tool-name-input').value.trim();
+      const argsText = document.getElementById('tool-args-input').value.trim();
+      
+      if (!toolName) {
+        alert('Please enter a tool name');
+        return;
+      }
+      
+      let args = {};
+      try {
+        if (argsText) {
+          args = JSON.parse(argsText);
+        }
+      } catch (error) {
+        alert(`Invalid JSON arguments: ${error.message}`);
+        return;
+      }
+      
+      // Show spinner
+      document.getElementById('execute-spinner').style.display = 'block';
+      document.getElementById('result-container').style.display = 'none';
+      
+      fetch('/api/agent-tools/execute', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          tool_name: toolName,
+          arguments: args
+        })
+      })
+        .then(response => response.json())
+        .then(data => {
+          // Hide spinner
+          document.getElementById('execute-spinner').style.display = 'none';
+          
+          // Display the result
+          const resultContainer = document.getElementById('result-container');
+          const resultContent = document.getElementById('result-content');
+          
+          resultContent.textContent = JSON.stringify(data, null, 2);
+          resultContainer.style.display = 'block';
+          
+          // Scroll to the result
+          resultContainer.scrollIntoView({
+            behavior: 'smooth'
+          });
+        })
+        .catch(error => {
+          // Hide spinner
+          document.getElementById('execute-spinner').style.display = 'none';
+          
+          alert(`Error executing tool: ${error.message}`);
+        });
+    }
+  });
+</script>
+{% endblock %}

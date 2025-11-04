@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Scheduled Reports{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+  <div class="card border-0 shadow-sm">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="card-title">Scheduled Reports</h2>
+        <a href="{{ url_for('monitoring_reports_create') }}" class="btn btn-primary">
+          <i class="bi bi-plus"></i> Create New Report
+        </a>
+      </div>
+      
+      {% if reports %}
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Schedule</th>
+              <th>Recipients</th>
+              <th>Format</th>
+              <th>Last Run</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for report in reports %}
+            <tr>
+              <td>{{ report.name }}</td>
+              <td>{{ report.report_type }}</td>
+              <td>
+                {% if report.schedule_type == 'daily' %}
+                  Daily at 06:00
+                {% elif report.schedule_type == 'weekly' %}
+                  Weekly on Monday at 06:00
+                {% elif report.schedule_type == 'monthly' %}
+                  Monthly on day 1 at 06:00
+                {% elif report.schedule_type == 'custom' %}
+                  Custom ({{ report.cron_expression }})
+                {% else %}
+                  {{ report.schedule_type }}
+                {% endif %}
+              </td>
+              <td>
+                {% if report.recipients_count == 1 %}
+                  {{ report.recipients_count }} recipient
+                {% else %}
+                  {{ report.recipients_count }} recipients
+                {% endif %}
+              </td>
+              <td>{{ report.format }}</td>
+              <td>
+                {% if report.last_run %}
+                  {{ report.last_run.strftime('%Y-%m-%d %H:%M') }}
+                {% else %}
+                  Never
+                {% endif %}
+              </td>
+              <td>
+                {% if report.is_active %}
+                  <span class="badge bg-success">Active</span>
+                {% else %}
+                  <span class="badge bg-secondary">Inactive</span>
+                {% endif %}
+              </td>
+              <td>
+                <div class="btn-group" role="group">
+                  <a href="{{ url_for('monitoring_reports_edit', report_id=report.id) }}" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-pencil"></i>
+                  </a>
+                  <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#runReportModal{{ report.id }}">
+                    <i class="bi bi-play"></i>
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteReportModal{{ report.id }}">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Run Report Modals -->
+      {% for report in reports %}
+      <div class="modal fade" id="runReportModal{{ report.id }}" tabindex="-1" aria-labelledby="runReportModalLabel{{ report.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="runReportModalLabel{{ report.id }}">Run Report Now</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>Are you sure you want to run the report "<strong>{{ report.name }}</strong>" now?</p>
+              <p>The report will be generated and sent to {{ report.recipients_count }} recipient(s).</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <form method="post" action="{{ url_for('monitoring_reports_run', report_id=report.id) }}">
+                <button type="submit" class="btn btn-primary">Run Now</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      
+      <!-- Delete Report Modals -->
+      {% for report in reports %}
+      <div class="modal fade" id="deleteReportModal{{ report.id }}" tabindex="-1" aria-labelledby="deleteReportModalLabel{{ report.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="deleteReportModalLabel{{ report.id }}">Delete Report</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>Are you sure you want to delete the report "<strong>{{ report.name }}</strong>"?</p>
+              <p class="text-danger">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <form method="post" action="{{ url_for('monitoring_reports_delete', report_id=report.id) }}">
+                <button type="submit" class="btn btn-danger">Delete</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      
+      {% else %}
+      <div class="alert alert-info">
+        <h5 class="alert-heading">No reports configured</h5>
+        <p>You haven't set up any scheduled reports yet. Click the button above to create your first report.</p>
+      </div>
+      {% endif %}
+      
+    </div>
+  </div>
+</div>
+{% endblock %}

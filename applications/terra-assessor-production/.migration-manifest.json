@@ -1,0 +1,14 @@
+{
+  "migration_date": "2025-11-03 21:26:42",
+  "tech_stack": "",
+  "target_path": "C:\\Users\\bsval\\terrafusion_os_1.0\\applications\\terra-assessor-production",
+  "priority": "HIGH",
+  "target_name": "terra-assessor-production",
+  "size_mb": 391.1,
+  "status": "OPERATIONAL",
+  "file_count": 25468,
+  "agent": "TerraFusion Elite Government OS Engineering Agent",
+  "source_path": "C:\\Users\\bsval\\OneDrive\\Desktop\\from D\\TerraFusionAssessor_PRODUCTION",
+  "last_verified": "2025-11-04 02:45:44",
+  "system_name": "TerraFusionAssessor_PRODUCTION"
+}

@@ -1,0 +1,5 @@
+<DataType Name="GPRandomNumberGenerator">
+  <DisplayName>Random Number Generator</DisplayName>
+  <Description>Specifies the seed and the generator to use when creating random values.</Description>
+</DataType>
+

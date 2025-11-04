@@ -1,0 +1,7 @@
+{
+    "map": {
+        "descr": "The Knowledge Graph toolbox contains a powerful set of tools to analyze Knowledge Graphs.",
+        "title": "Knowledge Graph Tools",
+        "toolset1.name": "Graph Algorithms"
+    }
+}

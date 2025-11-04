@@ -1,0 +1,9 @@
+{
+    "map": {
+        "descr": "The Utility Network toolbox contains tools to create, configure, and work with utility networks.",
+        "title": "Utility Network Tools",
+        "toolset1.name": "Administration",
+        "toolset2.name": "_un",
+        "toolset3.name": "Trace Configuration"
+    }
+}

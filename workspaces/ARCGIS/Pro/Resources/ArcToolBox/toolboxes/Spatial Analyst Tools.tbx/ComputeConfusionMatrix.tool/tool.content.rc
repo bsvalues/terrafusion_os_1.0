@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Computes a confusion matrix with errors of omission and commission and derives a kappa index of agreement, Intersection over Union (IoU), and an overall accuracy between the classified map and the reference data.",
+        "in_accuracy_assessment_points.descr": "<xdoc><p>The accuracy assessment point feature class created from the Create Accuracy Assessment Points tool, containing the <span class=\"esri_fieldname\">Classified</span> and <span class=\"esri_fieldname\">GrndTruth</span> fields. These fields are both long integer field types.</p></xdoc>",
+        "in_accuracy_assessment_points.title": "Input Accuracy Assessment Points",
+        "out_confusion_matrix.descr": "<xdoc><p>The output file name of the confusion matrix in table format.</p><p>The format of the table is determined by the output location and path. By default, the output will be a geodatabase table. If the path is not in a geodatabase, specify a .dbf extension to save it in dBASE format.</p></xdoc>",
+        "out_confusion_matrix.title": "Output Confusion Matrix",
+        "summary": "<xdoc><p>Computes a confusion matrix with errors of omission and commission and derives a kappa index of agreement, Intersection over Union (IoU), and an overall accuracy between the classified map and the reference data.</p><p>This tool uses the outputs from the Create Accuracy Assessment Points tool or the Update Accuracy Assessment Points tool.</p></xdoc>",
+        "title": "Compute Confusion Matrix"
+    }
+}

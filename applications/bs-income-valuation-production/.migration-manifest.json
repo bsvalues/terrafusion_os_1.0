@@ -1,0 +1,14 @@
+{
+  "migration_date": "2025-11-03 21:26:47",
+  "tech_stack": "Node.js",
+  "target_path": "C:\\Users\\bsval\\terrafusion_os_1.0\\applications\\bs-income-valuation-production",
+  "priority": "MEDIUM",
+  "target_name": "bs-income-valuation-production",
+  "size_mb": 11.99,
+  "status": "OPERATIONAL",
+  "file_count": 297,
+  "agent": "TerraFusion Elite Government OS Engineering Agent",
+  "source_path": "C:\\Users\\bsval\\OneDrive\\Desktop\\from D\\BSIncomeValuation_PRODUCTION",
+  "last_verified": "2025-11-04 02:45:42",
+  "system_name": "BSIncomeValuation_PRODUCTION"
+}

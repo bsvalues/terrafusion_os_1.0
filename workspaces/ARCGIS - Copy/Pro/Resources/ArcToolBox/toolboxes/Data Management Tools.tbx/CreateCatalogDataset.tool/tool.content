@@ -1,0 +1,134 @@
+{
+    "type": "FunctionTool",
+    "guid": "{2b3717b9-ece3-4f62-8afa-831acc45cb0c}",
+    "displayname": "$rc:title",
+    "helpcontent": "3380001",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "param_nocount:template"
+    ],
+    "params": {
+        "out_path": {
+            "displayname": "$rc:out_path.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEWorkspace"
+                    },
+                    {
+                        "type": "DEFeatureDataset"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPWorkspaceDomain",
+                        "workspacetype": [
+                            "Local Database",
+                            "Remote Database"
+                        ]
+                    }
+                ]
+            },
+            "defaultenvironmentname": "workspace",
+            "description": "$rc:out_path.descr"
+        },
+        "out_name": {
+            "displayname": "$rc:out_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:out_name.descr"
+        },
+        "spatial_reference": {
+            "displayname": "$rc:spatial_reference.title",
+            "datatype": {
+                "type": "GPSpatialReference"
+            },
+            "depends": [
+                "out_path"
+            ],
+            "defaultenvironmentname": "outputCoordinateSystem",
+            "description": "$rc:spatial_reference.descr"
+        },
+        "template": {
+            "type": "optional",
+            "displayname": "$rc:template.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPTableView"
+                }
+            },
+            "description": "$rc:template.descr"
+        },
+        "has_z": {
+            "type": "optional",
+            "displayname": "$rc:has_z.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DISABLED",
+                        "code": "$rc:has_z.domain.DISABLED"
+                    },
+                    {
+                        "value": "SAME_AS_TEMPLATE",
+                        "code": "$rc:has_z.domain.SAME_AS_TEMPLATE"
+                    },
+                    {
+                        "value": "ENABLED",
+                        "code": "$rc:has_z.domain.ENABLED"
+                    }
+                ]
+            },
+            "value": "DISABLED",
+            "description": "$rc:has_z.descr"
+        },
+        "out_alias": {
+            "type": "optional",
+            "displayname": "$rc:out_alias.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:out_alias.descr"
+        },
+        "config_keyword": {
+            "type": "optional",
+            "displayname": "$rc:config_keyword.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "defaultenvironmentname": "configKeyword",
+            "description": "$rc:config_keyword.descr"
+        },
+        "out_catalog_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_catalog_dataset.title",
+            "datatype": {
+                "type": "GPCatalogLayer"
+            }
+        }
+    },
+    "environments": [
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "ZResolution",
+        "ZTolerance",
+        "configKeyword",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "outputZFlag",
+        "outputZValue",
+        "transferGDBAttributeProperties"
+    ]
+}

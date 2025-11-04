@@ -1,0 +1,5 @@
+<DataType Name="DECoverageFeatureClass">
+  <DisplayName>Coverage Feature Class</DisplayName>
+  <Description>A coverage feature class, such as point, arc, node, route, route system, section, polygon, and region.</Description>
+</DataType>
+

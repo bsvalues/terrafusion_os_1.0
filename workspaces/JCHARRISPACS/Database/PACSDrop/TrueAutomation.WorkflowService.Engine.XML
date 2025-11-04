@@ -1,0 +1,602 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.WorkflowService.Engine</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.WorkflowService.Engine.IWorkflowManager">
+            <summary>
+            Declares the interface exposed by classes that implement a
+            workflow instance manager.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Engine.IWorkflowManager.Started">
+            <summary>
+            Delegate used to notify the host application that a workflow
+            instance has started. The first method parameter is the id of
+            the workflow being started and the second is an optional table
+            of input parameters to be passed to the new workflow instance.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Engine.IWorkflowManager.Resumed">
+            <summary>
+            Delegate used to notify the host application that a workflow
+            instance has resumed. The first method parameter is the id of
+            the workflow being resumed, the second is the name of the
+            bookmark at which to resume processing, and the third is an
+            optional value being passed into the workflow.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Engine.IWorkflowManager.Completed">
+            <summary>
+            Delegate used to notify the host application that a workflow
+            instance has completed processing. The first method parameter
+            is the id of the workflow that is being completed, the second
+            is a table of output arguments being returned by the completed
+            workflow.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Engine.IWorkflowManager.Idle">
+            <summary>
+            Delegate used to notify the host application that a workflow
+            instance has entered the idle state. The input argument is the
+            id of the workflow going idle.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Engine.IWorkflowManager.PersistableIdle">
+            <summary>
+            Delegate used to notify the host application that a workflow
+            instance has entered the persistable idle state. The input argument
+            is the id of the workflow going idle.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Engine.IWorkflowManager.Unloaded">
+            <summary>
+            Delegate used to notify the host application that a workflow
+            instance has entered the unloaded state. The input argument is
+            the id of the workflow being unloaded.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Engine.IWorkflowManager.Incomplete">
+            <summary>
+            Delegate used to notify the host application that a workflow
+            instance has not completed processing. The first argument is
+            the id of the workflow that failed to complete running. The
+            second is the name of the reason why the workflow didn't
+            complete, such as "Canceled" or "Faulted". The third argument
+            specifies any additional data associated with the event, such
+            as a description of any specific fault that occurredm or other
+            data applicable to the event.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.IWorkflowManager.Start">
+            <summary>
+            Starts the workflow manager.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.IWorkflowManager.Stop">
+            <summary>
+            Stops the workflow manager. This will abort any active workflow
+            instances that are currently in progress.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.IWorkflowManager.GetActiveCount">
+            <summary>
+            Returns the number of active workflow instances in our
+            in-memory lookup table.
+            </summary>
+            <returns>The number of active workflow instances currently
+            contained in our in-memory workflow instance lookup table.</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.IWorkflowManager.ProcessWorkflowMessage(TrueAutomation.WorkflowService.Messages.IWorkflowMessage)">
+            <summary>
+            Processes the specified workflow message. This method will look
+            up any workflows bookmarked as waiting on this message and resume
+            them.
+            </summary>
+            <param name="message">The workflow message to process.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.IWorkflowManager.StartWorkflow(System.Activities.Activity,System.Collections.Generic.IDictionary{System.String,System.Object})">
+            <summary>
+            A generic Start method designed to start a workflow instance using
+            the parameters passed to the method in a dictionary of key to
+            object values. The generic type parameter indicates the workflow
+            type to create and execute. After creating an instance of the
+            workflow type, a <see cref="T:WorkflowApplication"/> is created
+            and added to the dictionary of workflow instances.
+            </summary>
+            <param name="workflow">Specifies the workflow instance to
+            execute.</param>
+            <param name="parameters">A lookup table of parameters to pass to
+            the new workflow instance. May be null if no input arguments are
+            required by the workflow activity.</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.IWorkflowManager.ResumeWorkflow(System.Activities.Activity,System.Guid,System.String,System.Object)">
+            <summary>
+            Resumes the workflow instance with the specified workflow id
+            and bookmark name, optionally passing in a value to the workflow
+            to be used once it's resumed.
+            </summary>
+            <param name="workflow">The workflow instance to resume.</param>
+            <param name="workflowId">The instance id of the workflow to resume.
+            </param>
+            <param name="bookmarkName">The name of the bookmark at which to
+            resume processing in the specified workflow.</param>
+            <param name="value">An optional value to pass into the workflow
+            when it's resumed. This value may be null if no input parameters
+            are required.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.IWorkflowManager.AbortInstance(System.Guid)">
+            <summary>
+            Aborts a running workflow instance
+            </summary>
+            <param name="workflowInstanceId"></param>
+        </member>
+        <member name="E:TrueAutomation.WorkflowService.Engine.IWorkflowManager.Instance_Created">
+            <summary>
+            Event Fired whenever an instance is created;
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowService.Engine.IWorkflowManager.Instance_Updated">
+            <summary>
+            Event Fired whenever an instance is updated;
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Engine.Windsor.Installer">
+            <summary>
+            Utility class to register any components and facilities implemented
+            by this assembly with our Windsor IoC container.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.Windsor.Installer.Install(Castle.Windsor.IWindsorContainer,Castle.MicroKernel.SubSystems.Configuration.IConfigurationStore)">
+            <summary>
+            Registers all our service-related types with the
+            supplied Windsor IoC container.
+            </summary>
+            <param name="container">The container into which to register
+            the service types.</param>
+            <param name="store">Configuration store parameter -- unused in
+            this implementation.</param>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Engine.WorkflowManager">
+            <summary>
+            Implements a workflow manager class capable of tracking
+            running workflow instances on behalf of the host application.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowService.Engine.WorkflowManager.activeInstances">
+            <summary>
+            A lookup table of active workflow instances that exist in
+            memory and don't need to be reloaded from the persistent
+            store.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowService.Engine.WorkflowManager.syncObject">
+            <summary>
+            A synchronization object used for serializing access to
+            the active instances table.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowService.Engine.WorkflowManager.propertyNamespace">
+            <summary>
+            A constant string describing the namespace identifier used for
+            promoted workflow instance properties.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowService.Engine.WorkflowManager.logger">
+            <summary>
+            The logger instance associated with this service host.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowService.Engine.WorkflowManager.WorkflowHostTypePropertyName">
+            <summary>
+            A well known property that is needed by WorkflowApplication and the InstanceStore
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowService.Engine.WorkflowManager.workflowTimer">
+            <summary>
+            A timer to check if any runnable instance is available after every interval of 5 secs
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.#ctor">
+            <summary>
+            Class constructor -- initializes an instance of the
+            <see cref="T:TrueAutomation.WorkflowService.Engine.WorkflowManager"/> class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.Finalize">
+            <summary>
+            Finalizer -- cleans up the object when it's garbage-collected,
+            if it hasn't already been properly disposed via the
+            <see cref="M:Dispose()"/> method. But clients should really be
+            responsible and explicitly dispose of the workflow manager.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Engine.WorkflowManager.Instance">
+            <summary>
+            Retrieves the active instance of the class.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:TrueAutomation.WorkflowService.Engine.WorkflowManager.Logger" -->
+        <member name="P:TrueAutomation.WorkflowService.Engine.WorkflowManager.OwnerHandle">
+            <summary>
+            The OwnerHandle for the store
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Engine.WorkflowManager.WFHostTYpeName">
+            <summary>
+            The HostTypeName associated to the store
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Engine.WorkflowManager.Store">
+            <summary>
+            The persistent store where we store and retrieve active
+            workflow instances.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Engine.WorkflowManager.Started">
+            <summary>
+            Delegate used to notify the host application that a workflow
+            instance has started. The first method parameter is the id of
+            the workflow being started and the second is an optional table
+            of input parameters to be passed to the new workflow instance.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Engine.WorkflowManager.Resumed">
+            <summary>
+            Delegate used to notify the host application that a workflow
+            instance has resumed. The first method parameter is the id of
+            the workflow being resumed, the second is the name of the
+            bookmark at which to resume processing, and the third is an
+            optional value being passed into the workflow.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Engine.WorkflowManager.Completed">
+            <summary>
+            Delegate used to notify the host application that a workflow
+            instance has completed processing. The first method parameter
+            is the id of the workflow that is being completed, the second
+            is a table of output arguments being returned by the completed
+            workflow.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Engine.WorkflowManager.Idle">
+            <summary>
+            Delegate used to notify the host application that a workflow
+            instance has entered the idle state. The input argument is the
+            id of the workflow going idle.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Engine.WorkflowManager.PersistableIdle">
+            <summary>
+            Delegate used to notify the host application that a workflow
+            instance has entered the persistable idle state. The input argument
+            is the id of the workflow going idle.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Engine.WorkflowManager.Unloaded">
+            <summary>
+            Delegate used to notify the host application that a workflow
+            instance has entered the unloaded state. The input argument is
+            the id of the workflow being unloaded.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Engine.WorkflowManager.Incomplete">
+            <summary>
+            Delegate used to notify the host application that a workflow
+            instance has not completed processing. The first argument is
+            the id of the workflow that failed to complete running. The
+            second is the name of the reason why the workflow didn't
+            complete, such as "Canceled" or "Faulted". The third argument
+            specifies any additional data associated with the event, such
+            as a description of any specific fault that occurredm or other
+            data applicable to the event.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowService.Engine.WorkflowManager.Instance_Created">
+            <summary>
+            Event Fired whenever an instance is created;
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.WorkflowService.Engine.WorkflowManager.Instance_Updated">
+            <summary>
+            Event Fired whenever an instance is updated;
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.Start">
+            <summary>
+            Starts the workflow manager.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowService.Engine.WorkflowManager.syncObj">
+            <summary>
+            Object on which lock is applied for executing any workflow whose delay timer has expired
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.workflowTimer_Elapsed(System.Object,System.Timers.ElapsedEventArgs)">
+            <summary>
+            The timer event. After every 4 secs we check if there is a runnable instance in the database.
+            i.e Any workflow with delay has a timer that has expired and is ready to resume execution
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.Stop">
+            <summary>
+            Stops the workflow manager. This will abort any active workflow
+            instances that are currently in progress.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.AbortInstance(System.Guid)">
+            <summary>
+            Aborts a running workflow instance
+            </summary>
+            <param name="workflowInstanceId"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.GetActiveCount">
+            <summary>
+            Returns the number of active workflow instances in our
+            in-memory lookup table.
+            </summary>
+            <returns>The number of active workflow instances currently
+            contained in our in-memory workflow instance lookup table.</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.ProcessWorkflowMessage(TrueAutomation.WorkflowService.Messages.IWorkflowMessage)">
+            <summary>
+            Processes the specified workflow message. This method will look
+            up any workflows bookmarked as waiting on this message and resume
+            them.
+            </summary>
+            <param name="message">The workflow message to process.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.StartWorkflow(System.Activities.Activity,System.Collections.Generic.IDictionary{System.String,System.Object})">
+            <summary>
+            A generic Start method designed to start a workflow instance using
+            the parameters passed to the method in a dictionary of key to
+            object values. The generic type parameter indicates the workflow
+            type to create and execute. After creating an instance of the
+            workflow type, a <see cref="T:WorkflowApplication"/> is created
+            and added to the dictionary of workflow instances.
+            </summary>
+            <param name="workflow">Specifies the workflow instance to
+            execute.</param>
+            <param name="parameters">A lookup table of parameters to pass to
+            the new workflow instance. May be null if no input arguments are
+            required by the workflow activity.</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.ResumeWorkflow(System.Activities.Activity,System.Guid,System.String,System.Object)">
+            <summary>
+            Resumes the workflow instance with the specified workflow id
+            and bookmark name, optionally passing in a value to the workflow
+            to be used once it's resumed.
+            </summary>
+            <param name="workflow">The workflow instance to resume.</param>
+            <param name="instanceId">The instance id of the workflow to resume.
+            </param>
+            <param name="bookmarkName">The name of the bookmark at which to
+            resume processing in the specified workflow.</param>
+            <param name="value">An optional value to pass into the workflow
+            when it's resumed. This value may be null if no input parameters
+            are required.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.Dispose(System.Boolean)">
+            <summary>
+            Implementation method to clean up any resources used by this
+            class. Mostly this means releasing our ownership reference on
+            the workflow instance store.
+            </summary>
+            <param name="disposing"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.Dispose">
+            <summary>
+            Disposes of the object by releasing any resources
+            associated with it.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.WaitForRunnableInstance(System.Runtime.DurableInstancing.InstanceStore,System.Runtime.DurableInstancing.InstanceHandle)">
+            <summary>
+            Waits for the HasRunnableWorkflowEvent in the persistence Store to occur to signal to
+            the host that a runnable instance is available. This would be used by timers for delay
+            </summary>
+            <param name="store"></param>
+            <param name="ownerHandle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.CreateInstanceStore">
+            <summary>
+            Internal implementation method to initialize our instance
+            store for persisting active workflow instance information
+            to a SQL Server database.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.GetRunnableInstanceWorkflows">
+            <summary>
+            Obtains the list of workflow instances that are runnable and can resume execution as the delay has elapsed.
+            </summary>
+            <returns>Workflow instance ids</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.SetupWorkflowInstance(System.Guid@,System.Activities.Activity,System.Collections.Generic.IDictionary{System.String,System.Object},System.Boolean)">
+            <summary>
+            Implementation method responsible for creation of a new
+            <see cref="T:WorkflowApplication"/> instance. This method
+            creates the instance and assigns a set of standard delegate
+            handlers to it for handling various workflow-related events.
+            It also sets the instance store and adds any custom extensions
+            to the workflow application instance. If the method is passed
+            a non-empty instanceId value, the workflow application's
+            <see cref="M:WorkflowApplication.Load(Guid)"/> method is
+            invoked to load the designated workflow instance from the
+            instance store.
+            </summary>
+            <param name="instanceId">The id of the workflow instance to
+            create. If this value is Guid.Empty then a new workflow instance
+            is created, otherwise the method will attempt to load an existing
+            workflow instance with the specified ID from the associated
+            instance store.</param>
+            <param name="workflow">The workflow activity to load.</param>
+            <param name="parameters">A lookup table of parameters to pass to
+            the new workflow instance. May be null if no input arguments are
+            required by the workflow activity.</param>
+            <returns>A fully-initialized workflow instance for the
+            specified workflow.</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.StartWorkflow(TrueAutomation.WorkflowService.Messages.IWorkflowMessage)">
+            <summary>
+            Starts a workflow from the specified <see cref="T:TrueAutomation.WorkflowService.Messages.IWorkflowMessage"/>.
+            </summary>
+            <param name="message">The message containing information
+            regarding the workflow to start.</param>
+            <remarks>XXX This method requires additional effort -- it should
+            look up the message type in some kind of configurable table and
+            initiate the workflow that way. Right now we simply check for a
+            <see cref="T:LaunchWorkflowMessage"/> message and launch any
+            workflow specified therein.</remarks>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:TrueAutomation.WorkflowService.Engine.WorkflowManager.RunDelay(System.Activities.Activity,System.Guid)" -->
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.GetWorkflowActivity(TrueAutomation.WorkflowService.Domain.WorkflowInstance)">
+            <summary>
+            Implementation method to return the workflow <see cref="T:Activity"/>
+            for the specified workflow instance.
+            </summary>
+            <param name="instance">The <see cref="T:WorkflowInstance"/> for
+            which to return the corresponding root-level workflow activity.</param>
+            <returns>The root-level workflow <see cref="T:Activity"/> for
+            the specified workflow instance.</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.GetWorkflowActivity(TrueAutomation.WorkflowService.Domain.Workflow)">
+            <summary>
+            Implementation method to return the workflow <see cref="T:Activity"/>
+            for the specified workflow definition.
+            </summary>
+            <param name="instance">The <see cref="T:Workflow"/> for which
+            to return the corresponding root-level workflow activity.</param>
+            <returns>The root-level workflow <see cref="T:Activity"/> for
+            the specified workflow instance.</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.AppCompleted(System.Activities.WorkflowApplicationCompletedEventArgs)">
+            <summary>
+            The <see cref="M:AppCompleted(WorkflowApplicationCompletedEventArgs)"/>
+            method handles the Completed calls from each
+            <see cref="T:System.Activities.WorkflowApplication"/> instance. The code notifies the
+            host application of the new state and removes the instance from
+            our lookup table.
+            </summary>
+            <param name="e">The event arguments.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.AppIdle(System.Activities.WorkflowApplicationIdleEventArgs)">
+            <summary>
+            Notification handler for notifications from a
+            <see cref="T:WorkflowApplication"/> instance that a workflow
+            is entering the idle state. We fire any <see cref="P:TrueAutomation.WorkflowService.Engine.WorkflowManager.Idle"/>
+            delegate to notify interested parties of this case.
+            </summary>
+            <param name="e">The event arguments.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.AppPersistableIdle(System.Activities.WorkflowApplicationIdleEventArgs)">
+            <summary>
+            Notification handler for notifications from a
+            <see cref="T:WorkflowApplication"/> instance that a workflow
+            is entering the unloaded state. We fire any
+            <see cref="P:TrueAutomation.WorkflowService.Engine.WorkflowManager.PersistableIdle"/>
+            delegate to notify interested parties of this case.
+            </summary>
+            <param name="e">The event arguments.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.AppUnloaded(System.Activities.WorkflowApplicationEventArgs)">
+            <summary>
+            Notification handler for notifications from a
+            <see cref="T:WorkflowApplication"/> instance that a workflow
+            is entering the unloaded state. We fire any <see cref="P:TrueAutomation.WorkflowService.Engine.WorkflowManager.Unloaded"/>
+            delegate to notify interested parties of this case.
+            </summary>
+            <param name="e">The event arguments.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.AppAborted(System.Activities.WorkflowApplicationAbortedEventArgs)">
+            <summary>
+            Notification handler for notifications from a
+            <see cref="T:WorkflowApplication"/> instance that a workflow
+            has been aborted. We fire any <see cref="P:TrueAutomation.WorkflowService.Engine.WorkflowManager.Incomplete"/>
+            delegate to notify interested parties of this case.
+            </summary>
+            <param name="e">The event arguments.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.AppException(System.Activities.WorkflowApplicationUnhandledExceptionEventArgs)">
+            <summary>
+            Notification handler for notifications from a
+            <see cref="T:WorkflowApplication"/> instance that a workflow
+            has encountered an unhandled exception. We fire any
+            <see cref="P:TrueAutomation.WorkflowService.Engine.WorkflowManager.Incomplete"/> delegate to notify interested parties of this case.
+            </summary>
+            <param name="e">The event arguments.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.IsBookmarkValid(System.Activities.WorkflowApplication,System.String)">
+            <summary>
+            Utility method to check whether the specified bookmark name
+            is valid for the supplied workflow application instance.
+            </summary>
+            <param name="workflowApp">The <see cref="T:WorkflowApplication"/>
+            for which to check the validity of the specified bookmark name.</param>
+            <param name="bookmarkName">The bookmark name whose validity should
+            be checked.</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.CreateWorkflowInstance(TrueAutomation.WorkflowService.Domain.Workflow,System.Guid)">
+            <summary>
+            Utility method to create a new workflow instance with the specified
+            id for the supplied workflow definition.
+            </summary>
+            <param name="workflow">The <see cref="T:Workflow"/> definition for
+            which to create a new <see cref="T:WorkflowInstance"/>.</param>
+            <param name="instanceId">The assigned id value for the new workflow
+            instance.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.RemoveInstanceFromTable(System.Guid)">
+            <summary>
+            Implementation method used by other methods to remove an
+            existing <see cref="T:WorkflowApplication"/> instance from
+            our internal lookup table.
+            </summary>
+            <param name="id">The id of the <see cref="T:WorkflowApplication"/>
+            instance to remove from our lookup table.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.UpdateCompletionStatus(System.Guid)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.RemoveInstance(System.Guid)">
+            <summary>
+            Implementation method used by other methods to remove an
+            existing <see cref="T:WorkflowApplication"/> instance from
+            our internal lookup table.
+            </summary>
+            <param name="id">The id of the <see cref="T:WorkflowApplication"/>
+            instance to remove from our lookup table.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.RemoveBookmarks(System.Guid)">
+            <summary>
+            Implementation method to remove any persisted bookmarks for
+            the specified workflow instance.
+            </summary>
+            <param name="instanceId">The id of the workflow instance for
+            which to remove any persisted bookmark information.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.SaveBookmarks(System.Guid,System.Collections.Generic.IList{System.Activities.Hosting.BookmarkInfo})">
+            <summary>
+            Saves any bookmarks associated with the specified
+            workflow instance id.
+            </summary>
+            <param name="instanceId">The id of the workflow instance for
+            which to save any bookmark information.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Engine.WorkflowManager.UpdateWorkflow(TrueAutomation.WorkflowService.Domain.Workflow)">
+            <summary>
+            Update the workflow with any changes. This typically would update stuff like the HasRun flag if an instance is ever executed
+            </summary>
+            <param name="workflow"></param>
+        </member>
+    </members>
+</doc>

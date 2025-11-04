@@ -1,0 +1,15 @@
+{
+    "map": {
+        "data_type.descr": "<xdoc><p>Specifies the data type of the output raster dataset.</p><ul><li><span title=\"INTEGER\">Integer</span>—An integer raster dataset will be created.</li><li><span title=\"FLOAT\">Float</span>—A floating-point raster dataset will be created.</li></ul></xdoc>",
+        "data_type.domain.FLOAT": "Float",
+        "data_type.domain.INTEGER": "Integer",
+        "data_type.title": "Output data type",
+        "description": "Converts an ASCII file representing raster data to a raster dataset.",
+        "in_ascii_file.descr": "The input ASCII file to be converted.",
+        "in_ascii_file.title": "Input ASCII raster file",
+        "out_raster.descr": "<xdoc><p>The output raster dataset to be created.</p><p>If the output raster will not be saved to a geodatabase, specify .tif for TIFF file format, .CRF for CRF file format, .img for ERDAS IMAGINE file format, or no extension for Esri Grid raster format.</p></xdoc>",
+        "out_raster.title": "Output raster",
+        "summary": "<xdoc><p>Converts an ASCII file representing raster data to a raster dataset.</p><note type=\"legacy\"/><p group=\"note\">This is a deprecated tool. The Copy Raster tool can now be used to convert an ASCII file representing raster data to a raster dataset.</p><p group=\"note\">If you are using the browse button text box on the Copy Raster tool, and the input file does not have an .asc extension, you can either rename the file to include that extension, or you can change the filter on the <span class=\"esri_uicontrol\">Input Raster</span> dialog box from <span class=\"esri_uicontrol\">All Supported Types</span> to <span class=\"esri_uicontrol\">Files</span>. Renaming the file is the recommended option.</p></xdoc>",
+        "title": "ASCII To Raster"
+    }
+}

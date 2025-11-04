@@ -3,26 +3,24 @@
 /* Brand Color Palette */
 :root {
   /* Primary TerraFusion Colors */
-  --tf-primary: #00CED1;        /* Cyan gradient start */
-  --tf-secondary: #008B8B;      /* Teal gradient end */
-  --tf-dark: #0A1628;           /* Background navy */
-  --tf-accent: #00FFFF;         /* Glow/highlight */
-  --tf-trust-blue: #0077be;     /* Government trust */
-  --tf-success-green: #4caf50;  /* Operational status */
+  --tf-primary: #00ced1; /* Cyan gradient start */
+  --tf-secondary: #008b8b; /* Teal gradient end */
+  --tf-dark: #0a1628; /* Background navy */
+  --tf-accent: #00ffff; /* Glow/highlight */
+  --tf-trust-blue: #0077be; /* Government trust */
+  --tf-success-green: #4caf50; /* Operational status */
   --tf-transcend-cyan: #40e0d0; /* Transcendence theme */
-  
+
   /* Metallic Gradients */
   --tf-metallic: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --tf-holographic: linear-gradient(45deg, #00CED1, #48cae4, #0077be, #40e0d0);
+  --tf-holographic: linear-gradient(45deg, #00ced1, #48cae4, #0077be, #40e0d0);
   --tf-chrome: linear-gradient(135deg, #c0c0c0 0%, #808080 50%, #c0c0c0 100%);
-  
+
   /* Neumorphic Effects */
-  --tf-emboss-light: 
-    inset -2px -2px 4px rgba(255, 255, 255, 0.1),
-    inset 2px 2px 4px rgba(0, 0, 0, 0.3);
+  --tf-emboss-light:
+    inset -2px -2px 4px rgba(255, 255, 255, 0.1), inset 2px 2px 4px rgba(0, 0, 0, 0.3);
   --tf-emboss-dark:
-    inset 2px 2px 4px rgba(0, 0, 0, 0.5),
-    inset -2px -2px 4px rgba(255, 255, 255, 0.05);
+    inset 2px 2px 4px rgba(0, 0, 0, 0.5), inset -2px -2px 4px rgba(255, 255, 255, 0.05);
 }
 
 /* TerraFusion Logo Components */
@@ -58,9 +56,15 @@
 }
 
 @keyframes shine {
-  0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-  50% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-  100% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  50% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
 }
 
 /* Circular Seal/Badge */
@@ -74,7 +78,7 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  box-shadow: 
+  box-shadow:
     0 0 20px rgba(0, 206, 209, 0.3),
     inset 0 0 20px rgba(0, 206, 209, 0.1);
 }
@@ -106,7 +110,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 
+  box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
@@ -114,7 +118,7 @@
 
 .tf-square-badge:hover {
   transform: translateY(-2px);
-  box-shadow: 
+  box-shadow:
     0 8px 25px rgba(0, 206, 209, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
@@ -141,9 +145,15 @@
   border-radius: 50%;
 }
 
-.tf-browser-dot.close { background: #ff5f56; }
-.tf-browser-dot.minimize { background: #ffbd2e; }
-.tf-browser-dot.maximize { background: #27ca3f; }
+.tf-browser-dot.close {
+  background: #ff5f56;
+}
+.tf-browser-dot.minimize {
+  background: #ffbd2e;
+}
+.tf-browser-dot.maximize {
+  background: #27ca3f;
+}
 
 /* Meme-Ready Templates */
 .tf-meme-template {
@@ -192,8 +202,13 @@
 }
 
 @keyframes holographicShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 /* Glitch Effect for Memes */
@@ -225,29 +240,66 @@
 }
 
 @keyframes glitch {
-  0%, 100% { transform: translate(0); }
-  20% { transform: translate(-2px, 2px); }
-  40% { transform: translate(-2px, -2px); }
-  60% { transform: translate(2px, 2px); }
-  80% { transform: translate(2px, -2px); }
+  0%,
+  100% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(-2px, 2px);
+  }
+  40% {
+    transform: translate(-2px, -2px);
+  }
+  60% {
+    transform: translate(2px, 2px);
+  }
+  80% {
+    transform: translate(2px, -2px);
+  }
 }
 
 @keyframes glitch-1 {
-  0%, 100% { transform: translate(0); }
-  10% { transform: translate(-2px, -1px); }
-  20% { transform: translate(-1px, 1px); }
-  30% { transform: translate(1px, -1px); }
-  40% { transform: translate(-1px, -1px); }
-  50% { transform: translate(1px, 1px); }
+  0%,
+  100% {
+    transform: translate(0);
+  }
+  10% {
+    transform: translate(-2px, -1px);
+  }
+  20% {
+    transform: translate(-1px, 1px);
+  }
+  30% {
+    transform: translate(1px, -1px);
+  }
+  40% {
+    transform: translate(-1px, -1px);
+  }
+  50% {
+    transform: translate(1px, 1px);
+  }
 }
 
 @keyframes glitch-2 {
-  0%, 100% { transform: translate(0); }
-  10% { transform: translate(1px, 0); }
-  20% { transform: translate(-1px, 0); }
-  30% { transform: translate(0, 1px); }
-  40% { transform: translate(0, -1px); }
-  50% { transform: translate(1px, 1px); }
+  0%,
+  100% {
+    transform: translate(0);
+  }
+  10% {
+    transform: translate(1px, 0);
+  }
+  20% {
+    transform: translate(-1px, 0);
+  }
+  30% {
+    transform: translate(0, 1px);
+  }
+  40% {
+    transform: translate(0, -1px);
+  }
+  50% {
+    transform: translate(1px, 1px);
+  }
 }
 
 /* Responsive Brand Elements */
@@ -256,12 +308,12 @@
     width: 48px;
     height: 48px;
   }
-  
+
   .tf-square-badge {
     width: 40px;
     height: 40px;
   }
-  
+
   .tf-logo-embossed {
     padding: 6px 12px;
   }

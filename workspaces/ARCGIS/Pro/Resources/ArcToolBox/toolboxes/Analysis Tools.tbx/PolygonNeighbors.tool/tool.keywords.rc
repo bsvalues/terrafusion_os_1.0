@@ -1,0 +1,11 @@
+{
+    "set": [
+        "adjacent",
+        "first order neighbors",
+        "neighbor",
+        "neighbor polygons",
+        "polygon contiguity",
+        "polygon neighbors",
+        "queen’s case polygon contiguity"
+    ]
+}

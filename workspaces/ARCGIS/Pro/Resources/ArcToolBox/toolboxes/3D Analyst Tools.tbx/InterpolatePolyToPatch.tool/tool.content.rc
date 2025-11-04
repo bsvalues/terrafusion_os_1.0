@@ -1,0 +1,23 @@
+{
+    "map": {
+        "area_field.descr": "The name of the output field containing the planimetric, or 2D, area of the resulting multipatches.",
+        "area_field.title": "Area Field",
+        "description": "Creates surface-conforming  multipatch features by draping polygon features over a surface.",
+        "in_feature_class.descr": "The input polygon feature.",
+        "in_feature_class.title": "Input Feature Class",
+        "in_surface.descr": "The input triangulated irregular network (TIN) or terrain dataset surface.",
+        "in_surface.title": "Input Surface",
+        "max_strip_size.descr": "Controls the maximum number of points used to create an individual triangle strip. Note that each multipatch is usually composed of multiple strips. The default value is 1,024.",
+        "max_strip_size.title": "Maximum Strip Size",
+        "out_feature_class.descr": "The output multipatch feature class.",
+        "out_feature_class.title": "Output Feature Class",
+        "pyramid_level_resolution.descr": "The z-tolerance or window-size resolution of the terrain pyramid level that will be used. The default is 0, or full resolution.",
+        "pyramid_level_resolution.title": "Pyramid Level Resolution",
+        "summary": "Creates surface-conforming multipatch features by draping polygon features over a surface.",
+        "surface_area_field.descr": "The name of the output field containing the 3D area of the resulting multipatches. This area takes the surface undulations into consideration and is always larger than the planimetric area unless the surface is flat, in which case, the two are equal.",
+        "surface_area_field.title": "Surface Area Field",
+        "title": "Interpolate Polygon To Multipatch",
+        "z_factor.descr": "The factor by which z-values will be multiplied. This is typically used to convert z linear units to match x,y linear units. The default is 1, which leaves elevation values unchanged. This parameter is not available if the spatial reference of the input surface has a z-datum with a specified linear unit.",
+        "z_factor.title": "Z Factor"
+    }
+}

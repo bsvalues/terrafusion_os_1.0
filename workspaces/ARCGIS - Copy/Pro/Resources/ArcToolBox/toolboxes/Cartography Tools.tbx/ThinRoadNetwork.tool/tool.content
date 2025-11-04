@@ -1,0 +1,73 @@
+{
+    "type": "FunctionTool",
+    "guid": "{af2807cc-fe67-4983-84f7-d3fa1e6a9098}",
+    "displayname": "$rc:title",
+    "helpcontent": "10060001",
+    "description": "$rc:description",
+    "product": "300",
+    "attributes": [
+        "edit_session",
+        "input_data_change"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "minimum_length": {
+            "displayname": "$rc:minimum_length.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:minimum_length.descr"
+        },
+        "invisibility_field": {
+            "displayname": "$rc:invisibility_field.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:invisibility_field.descr"
+        },
+        "hierarchy_field": {
+            "displayname": "$rc:hierarchy_field.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:hierarchy_field.descr"
+        },
+        "out_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            },
+            "depends": [
+                "in_features"
+            ]
+        }
+    },
+    "environments": [
+        "cartographicCoordinateSystem",
+        "cartographicPartitions",
+        "referenceScale"
+    ]
+}

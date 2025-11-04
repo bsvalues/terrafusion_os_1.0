@@ -1,0 +1,379 @@
+{% macro card(title=None, actions=None, footer=None, content_class='p-4 sm:p-6') %}
+<div class="bg-white dark:bg-secondary-800 rounded-lg shadow overflow-hidden">
+    {% if title %}
+    <div class="px-4 py-5 sm:px-6 border-b border-secondary-200 dark:border-secondary-700 {% if actions %}flex justify-between items-center{% endif %}">
+        <h3 class="text-lg font-medium leading-6 text-secondary-900 dark:text-white">{{ title }}</h3>
+        {% if actions %}
+        <div class="flex space-x-2">
+            {{ actions }}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    <div class="{{ content_class }}">
+        {{ caller() }}
+    </div>
+    {% if footer %}
+    <div class="bg-secondary-50 dark:bg-secondary-900 px-4 py-4 sm:px-6 border-t border-secondary-200 dark:border-secondary-700">
+        {{ footer }}
+    </div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{% macro button(text, href=None, variant='primary', size='md', icon=None, type='button', form=None, attributes='') %}
+{% set base_classes = "inline-flex items-center justify-center border border-transparent font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2" %}
+
+{% set variant_classes = {
+    'primary': "text-white bg-primary-600 hover:bg-primary-700 focus:ring-primary-500 dark:bg-primary-700 dark:hover:bg-primary-600",
+    'secondary': "text-secondary-700 bg-secondary-100 hover:bg-secondary-200 focus:ring-secondary-500 dark:text-secondary-300 dark:bg-secondary-700 dark:hover:bg-secondary-600",
+    'success': "text-white bg-green-600 hover:bg-green-700 focus:ring-green-500 dark:bg-green-700 dark:hover:bg-green-600",
+    'danger': "text-white bg-red-600 hover:bg-red-700 focus:ring-red-500 dark:bg-red-700 dark:hover:bg-red-600",
+    'warning': "text-yellow-900 bg-yellow-100 hover:bg-yellow-200 focus:ring-yellow-500 dark:text-yellow-200 dark:bg-yellow-800 dark:hover:bg-yellow-700",
+    'info': "text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 dark:bg-blue-700 dark:hover:bg-blue-600",
+    'outline': "text-primary-600 bg-transparent border-primary-600 hover:bg-primary-50 focus:ring-primary-500 dark:text-primary-400 dark:border-primary-400 dark:hover:bg-primary-900"
+} %}
+
+{% set size_classes = {
+    'xs': "px-2.5 py-1.5 text-xs",
+    'sm': "px-3 py-2 text-sm",
+    'md': "px-4 py-2 text-sm",
+    'lg': "px-4 py-2 text-base",
+    'xl': "px-6 py-3 text-base"
+} %}
+
+{% set classes = base_classes ~ " " ~ variant_classes[variant] ~ " " ~ size_classes[size] %}
+
+{% if href %}
+<a href="{{ href }}" class="{{ classes }}" {{ attributes|safe }}>
+    {% if icon %}
+    <span class="mr-2">{{ icon|safe }}</span>
+    {% endif %}
+    {{ text }}
+</a>
+{% else %}
+<button type="{{ type }}" {% if form %}form="{{ form }}"{% endif %} class="{{ classes }}" {{ attributes|safe }}>
+    {% if icon %}
+    <span class="mr-2">{{ icon|safe }}</span>
+    {% endif %}
+    {{ text }}
+</button>
+{% endif %}
+{% endmacro %}
+
+{% macro badge(text, variant='primary', size='md') %}
+{% set base_classes = "inline-flex items-center font-medium rounded-full" %}
+
+{% set variant_classes = {
+    'primary': "bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-100",
+    'secondary': "bg-secondary-100 text-secondary-800 dark:bg-secondary-700 dark:text-secondary-300",
+    'success': "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100",
+    'danger': "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100",
+    'warning': "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100",
+    'info': "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100"
+} %}
+
+{% set size_classes = {
+    'sm': "px-2 py-0.5 text-xs",
+    'md': "px-2.5 py-0.5 text-sm",
+    'lg': "px-3 py-1 text-base"
+} %}
+
+<span class="{{ base_classes }} {{ variant_classes[variant] }} {{ size_classes[size] }}">
+    {{ text }}
+</span>
+{% endmacro %}
+
+{% macro alert(title=None, message=None, variant='info', dismissible=false) %}
+{% set variant_classes = {
+    'info': "bg-blue-50 border-blue-400 text-blue-700 dark:bg-blue-900 dark:border-blue-700 dark:text-blue-100",
+    'success': "bg-green-50 border-green-400 text-green-700 dark:bg-green-900 dark:border-green-700 dark:text-green-100",
+    'warning': "bg-yellow-50 border-yellow-400 text-yellow-700 dark:bg-yellow-900 dark:border-yellow-700 dark:text-yellow-100",
+    'error': "bg-red-50 border-red-400 text-red-700 dark:bg-red-900 dark:border-red-700 dark:text-red-100"
+} %}
+
+{% set icons = {
+    'info': '<svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>',
+    'success': '<svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>',
+    'warning': '<svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>',
+    'error': '<svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>'
+} %}
+
+<div class="rounded-md border p-4 {{ variant_classes[variant] }}" role="alert">
+    <div class="flex">
+        <div class="flex-shrink-0">
+            {{ icons[variant]|safe }}
+        </div>
+        <div class="ml-3 flex-1">
+            {% if title %}
+            <h3 class="text-sm font-medium">{{ title }}</h3>
+            {% endif %}
+            
+            {% if message %}
+            <div class="text-sm {% if title %}mt-2{% endif %}">
+                <p>{{ message }}</p>
+            </div>
+            {% elif caller %}
+            <div class="text-sm {% if title %}mt-2{% endif %}">
+                {{ caller() }}
+            </div>
+            {% endif %}
+        </div>
+        
+        {% if dismissible %}
+        <div class="ml-auto pl-3">
+            <div class="-mx-1.5 -my-1.5">
+                <button type="button" class="inline-flex rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2 {{ variant_classes[variant] }} opacity-70 hover:opacity-100">
+                    <span class="sr-only">Dismiss</span>
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endmacro %}
+
+{% macro empty_state(title, message, action_text=None, action_url=None, icon=None) %}
+<div class="text-center py-12 px-4 sm:px-6 lg:px-8 bg-white dark:bg-secondary-800 rounded-lg shadow">
+    {% if icon %}
+    <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-100">
+        {{ icon|safe }}
+    </div>
+    {% else %}
+    <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-primary-100 dark:bg-primary-900">
+        <svg class="h-8 w-8 text-primary-600 dark:text-primary-100" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+        </svg>
+    </div>
+    {% endif %}
+    <h3 class="mt-4 text-lg font-medium text-secondary-900 dark:text-white">{{ title }}</h3>
+    <p class="mt-2 text-sm text-secondary-500 dark:text-secondary-400">{{ message }}</p>
+    {% if action_text and action_url %}
+    <div class="mt-6">
+        <a href="{{ action_url }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+            {{ action_text }}
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{% macro loading_indicator(size='md', text=None, variant='primary') %}
+{% set size_classes = {
+    'sm': 'h-4 w-4',
+    'md': 'h-6 w-6',
+    'lg': 'h-8 w-8',
+    'xl': 'h-12 w-12'
+} %}
+
+{% set variant_classes = {
+    'primary': 'text-primary-600 dark:text-primary-400',
+    'secondary': 'text-secondary-600 dark:text-secondary-400',
+    'white': 'text-white'
+} %}
+
+<div class="flex items-center justify-center space-x-2">
+    <svg class="{{ size_classes[size] }} animate-spin {{ variant_classes[variant] }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+    {% if text %}
+    <span class="text-{{ size }} {{ variant_classes[variant] }}">{{ text }}</span>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{% macro stat_card(title, value, change=None, change_type=None, icon=None, bg_color='bg-blue-500') %}
+<div class="bg-white dark:bg-secondary-800 overflow-hidden shadow rounded-lg">
+    <div class="p-5">
+        <div class="flex items-center">
+            {% if icon %}
+            <div class="flex-shrink-0">
+                <div class="{{ bg_color }} rounded-md p-3">
+                    {{ icon|safe }}
+                </div>
+            </div>
+            {% endif %}
+            <div class="{% if icon %}ml-5{% endif %} w-0 flex-1">
+                <dl>
+                    <dt class="text-sm font-medium text-secondary-500 dark:text-secondary-400 truncate">
+                        {{ title }}
+                    </dt>
+                    <dd>
+                        <div class="text-lg font-medium text-secondary-900 dark:text-white">
+                            {{ value }}
+                        </div>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    {% if change is not none %}
+    <div class="bg-secondary-50 dark:bg-secondary-900 px-5 py-3">
+        <div class="text-sm">
+            {% if change_type == 'increase' %}
+            <span class="text-green-600 dark:text-green-400 font-medium">
+                <svg class="-ml-0.5 mr-0.5 h-4 w-4 inline-block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586l3.293-3.293A1 1 0 0114 7z" clip-rule="evenodd" />
+                </svg>
+                {{ change }}% up
+            </span>
+            {% elif change_type == 'decrease' %}
+            <span class="text-red-600 dark:text-red-400 font-medium">
+                <svg class="-ml-0.5 mr-0.5 h-4 w-4 inline-block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M12 13a1 1 0 110 2H7a1 1 0 01-1-1v-5a1 1 0 112 0v2.586l4.293-4.293a1 1 0 011.414 0L16 9.586l4.293-4.293a1 1 0 111.414 1.414l-5 5a1 1 0 01-1.414 0L12 8.414l-3.293 3.293A1 1 0 018 12v1z" clip-rule="evenodd" />
+                </svg>
+                {{ change }}% down
+            </span>
+            {% else %}
+            <span class="text-secondary-600 dark:text-secondary-400 font-medium">
+                {{ change }}
+            </span>
+            {% endif %}
+            <span class="text-secondary-600 dark:text-secondary-400">from previous period</span>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{% macro progress_bar(value, max=100, size='md', variant='primary', show_percentage=true) %}
+{% set size_classes = {
+    'sm': 'h-1',
+    'md': 'h-2',
+    'lg': 'h-3',
+    'xl': 'h-4'
+} %}
+
+{% set variant_classes = {
+    'primary': 'bg-primary-600 dark:bg-primary-500',
+    'secondary': 'bg-secondary-600 dark:bg-secondary-500',
+    'success': 'bg-green-600 dark:bg-green-500',
+    'danger': 'bg-red-600 dark:bg-red-500',
+    'warning': 'bg-yellow-600 dark:bg-yellow-500',
+    'info': 'bg-blue-600 dark:bg-blue-500'
+} %}
+
+{% set percentage = (value / max * 100)|round %}
+
+<div>
+    {% if show_percentage %}
+    <div class="flex justify-between items-center">
+        <span class="text-sm text-secondary-600 dark:text-secondary-400">Progress</span>
+        <span class="text-sm font-medium text-secondary-900 dark:text-white">{{ percentage }}%</span>
+    </div>
+    {% endif %}
+    <div class="overflow-hidden {{ size_classes[size] }} bg-secondary-200 dark:bg-secondary-700 rounded-full mt-1">
+        <div class="{{ variant_classes[variant] }} {{ size_classes[size] }} rounded-full" style="width: {{ percentage }}%"></div>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro pagination(current_page, total_pages, url_pattern, range=2, show_next_prev=true) %}
+<nav class="px-4 py-3 flex items-center justify-between sm:px-6" aria-label="Pagination">
+    <div class="hidden sm:block">
+        <p class="text-sm text-secondary-700 dark:text-secondary-300">
+            Showing page <span class="font-medium">{{ current_page }}</span> of <span class="font-medium">{{ total_pages }}</span>
+        </p>
+    </div>
+    <div class="flex-1 flex justify-between sm:justify-end">
+        <div class="flex space-x-1">
+            {% if show_next_prev and current_page > 1 %}
+            <a href="{{ url_pattern|replace('_PAGE_', (current_page - 1)|string) }}" class="relative inline-flex items-center px-2 py-2 rounded-md border border-secondary-300 bg-white text-sm font-medium text-secondary-700 hover:bg-secondary-50 dark:bg-secondary-800 dark:border-secondary-600 dark:text-secondary-300 dark:hover:bg-secondary-700">
+                <span class="sr-only">Previous</span>
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+            </a>
+            {% endif %}
+            
+            {% set start_range = [current_page - range, 1]|max %}
+            {% set end_range = [current_page + range, total_pages]|min %}
+            
+            {% if start_range > 1 %}
+            <a href="{{ url_pattern|replace('_PAGE_', '1') }}" class="relative inline-flex items-center px-4 py-2 border border-secondary-300 bg-white text-sm font-medium text-secondary-700 hover:bg-secondary-50 dark:bg-secondary-800 dark:border-secondary-600 dark:text-secondary-300 dark:hover:bg-secondary-700">1</a>
+            {% if start_range > 2 %}
+            <span class="relative inline-flex items-center px-4 py-2 border border-secondary-300 bg-white text-sm font-medium text-secondary-700 dark:bg-secondary-800 dark:border-secondary-600 dark:text-secondary-300">...</span>
+            {% endif %}
+            {% endif %}
+            
+            {% for page in range(start_range, end_range + 1) %}
+            <a href="{{ url_pattern|replace('_PAGE_', page|string) }}" class="relative inline-flex items-center px-4 py-2 border {% if page == current_page %}border-primary-500 bg-primary-50 text-primary-600 dark:bg-primary-900 dark:text-primary-200 dark:border-primary-600{% else %}border-secondary-300 bg-white text-sm font-medium text-secondary-700 hover:bg-secondary-50 dark:bg-secondary-800 dark:border-secondary-600 dark:text-secondary-300 dark:hover:bg-secondary-700{% endif %}">
+                {{ page }}
+            </a>
+            {% endfor %}
+            
+            {% if end_range < total_pages %}
+            {% if end_range < total_pages - 1 %}
+            <span class="relative inline-flex items-center px-4 py-2 border border-secondary-300 bg-white text-sm font-medium text-secondary-700 dark:bg-secondary-800 dark:border-secondary-600 dark:text-secondary-300">...</span>
+            {% endif %}
+            <a href="{{ url_pattern|replace('_PAGE_', total_pages|string) }}" class="relative inline-flex items-center px-4 py-2 border border-secondary-300 bg-white text-sm font-medium text-secondary-700 hover:bg-secondary-50 dark:bg-secondary-800 dark:border-secondary-600 dark:text-secondary-300 dark:hover:bg-secondary-700">{{ total_pages }}</a>
+            {% endif %}
+            
+            {% if show_next_prev and current_page < total_pages %}
+            <a href="{{ url_pattern|replace('_PAGE_', (current_page + 1)|string) }}" class="relative inline-flex items-center px-2 py-2 rounded-md border border-secondary-300 bg-white text-sm font-medium text-secondary-700 hover:bg-secondary-50 dark:bg-secondary-800 dark:border-secondary-600 dark:text-secondary-300 dark:hover:bg-secondary-700">
+                <span class="sr-only">Next</span>
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+{% endmacro %}
+
+{% macro tabs(tabs_data, current_tab) %}
+<div>
+    <div class="border-b border-secondary-200 dark:border-secondary-700">
+        <nav class="-mb-px flex space-x-8">
+            {% for tab in tabs_data %}
+            <a href="{{ tab.url }}" class="{% if tab.id == current_tab %}border-primary-500 text-primary-600 dark:text-primary-400 dark:border-primary-400{% else %}border-transparent text-secondary-500 hover:text-secondary-700 hover:border-secondary-300 dark:text-secondary-400 dark:hover:text-secondary-300 dark:hover:border-secondary-600{% endif %} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                {% if tab.icon %}
+                <span class="mr-2">{{ tab.icon|safe }}</span>
+                {% endif %}
+                {{ tab.label }}
+            </a>
+            {% endfor %}
+        </nav>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro data_table(headers, rows, id=None, class=None, empty_text="No data available") %}
+<div class="overflow-x-auto">
+    <table {% if id %}id="{{ id }}"{% endif %} class="min-w-full divide-y divide-secondary-200 dark:divide-secondary-700 {{ class }}">
+        <thead class="bg-secondary-50 dark:bg-secondary-900">
+            <tr>
+                {% for header in headers %}
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-secondary-500 dark:text-secondary-400 uppercase tracking-wider">
+                    {{ header }}
+                </th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody class="bg-white dark:bg-secondary-800 divide-y divide-secondary-200 dark:divide-secondary-700">
+            {% if rows|length > 0 %}
+                {% for row in rows %}
+                <tr>
+                    {% for cell in row %}
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary-900 dark:text-secondary-300">
+                        {{ cell|safe }}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="{{ headers|length }}" class="px-6 py-10 text-center text-sm text-secondary-500 dark:text-secondary-400">
+                        {{ empty_text }}
+                    </td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endmacro %}

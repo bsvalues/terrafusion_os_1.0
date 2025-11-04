@@ -75,7 +75,7 @@ public class MetricsCollectionService : IMetricsCollectionService
         }
     }
 
-    public async Task<List<MetricSnapshot>> GetMetricsHistoryAsync(TimeSpan period)
+    public Task<List<MetricSnapshot>> GetMetricsHistoryAsync(TimeSpan period)
     {
         try
         {
@@ -111,13 +111,13 @@ public class MetricsCollectionService : IMetricsCollectionService
                 });
             }
 
-            return snapshots;
+            return Task.FromResult(snapshots);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to get metrics history for period: {Period}", period);
             _telemetryService.TrackException(ex);
-            return new List<MetricSnapshot>();
+            return Task.FromResult(new List<MetricSnapshot>());
         }
     }
 
@@ -190,7 +190,7 @@ public class MetricsCollectionService : IMetricsCollectionService
         }
     }
 
-    public async Task<MetricsStatistics> GetMetricsStatisticsAsync()
+    public Task<MetricsStatistics> GetMetricsStatisticsAsync()
     {
         try
         {
@@ -219,7 +219,7 @@ public class MetricsCollectionService : IMetricsCollectionService
             statistics.TotalMetrics = _metricsHistory.Count;
             statistics.TotalDataPoints = _metricsHistory.Values.Sum(list => list.Count);
             
-            return statistics;
+            return Task.FromResult(statistics);
         }
         catch (Exception ex)
         {

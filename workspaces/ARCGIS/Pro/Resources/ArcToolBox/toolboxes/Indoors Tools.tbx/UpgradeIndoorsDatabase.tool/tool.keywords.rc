@@ -1,0 +1,17 @@
+{
+    "set": [
+        "attribute rules",
+        "indoor",
+        "indoor database",
+        "indoors",
+        "indoors database",
+        "information model",
+        "schema",
+        "update",
+        "update database",
+        "update indoor",
+        "update indoor database",
+        "upgrade indoors database",
+        "validation rules"
+    ]
+}

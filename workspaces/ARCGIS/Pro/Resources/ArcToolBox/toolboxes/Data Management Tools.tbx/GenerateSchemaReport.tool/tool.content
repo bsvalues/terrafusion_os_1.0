@@ -1,0 +1,92 @@
+{
+    "type": "FunctionTool",
+    "guid": "{872e8121-cc7b-4c5a-8360-93c576693dfd}",
+    "displayname": "$rc:title",
+    "helpcontent": "3180016",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_dataset": {
+            "displayname": "$rc:in_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEWorkspace"
+                    },
+                    {
+                        "type": "DEFeatureDataset"
+                    },
+                    {
+                        "type": "GPTableView"
+                    }
+                ]
+            },
+            "description": "$rc:in_dataset.descr"
+        },
+        "out_location": {
+            "displayname": "$rc:out_location.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:out_location.descr"
+        },
+        "name": {
+            "displayname": "$rc:name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:name.descr"
+        },
+        "formats": {
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:formats.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "JSON",
+                        "code": "$rc:formats.domain.JSON"
+                    },
+                    {
+                        "value": "XLSX",
+                        "code": "$rc:formats.domain.XLSX"
+                    },
+                    {
+                        "value": "HTML",
+                        "code": "$rc:formats.domain.HTML"
+                    },
+                    {
+                        "value": "PDF",
+                        "code": "$rc:formats.domain.PDF"
+                    }
+                ]
+            },
+            "value_datatype": {
+                "type": "GPString"
+            },
+            "value": "XLSX",
+            "description": "$rc:formats.descr"
+        },
+        "out_files": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_files.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "DEFile"
+                }
+            }
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

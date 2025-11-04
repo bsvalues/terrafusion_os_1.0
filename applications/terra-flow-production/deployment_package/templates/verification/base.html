@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Benton County GIS Data Management System{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Leaflet CSS for map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    
+    <!-- Leaflet measurement plugin CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.measure/2.1.0/leaflet.measure.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/verification.css') }}">
+    
+    {% block styles %}{% endblock %}
+</head>
+<body style="background-color: #1e1e1e !important; color: white !important;">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #005288 !important;">
+        <div class="container">
+            <a class="navbar-brand" href="/">Benton County GIS</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/mcp">MCP Dashboard</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="dataQualityDropdown" role="button" data-bs-toggle="dropdown">
+                            Data Quality
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="dataQualityDropdown">
+                            <li><a class="dropdown-item" href="/data-quality/dashboard">Dashboard</a></li>
+                            <li><a class="dropdown-item" href="/data-quality/reports">Reports</a></li>
+                            <li><a class="dropdown-item" href="/data-quality/alerts">Alerts</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="verificationDropdown" role="button" data-bs-toggle="dropdown">
+                            Verification
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="verificationDropdown">
+                            <li><a class="dropdown-item" href="/verification/">Dashboard</a></li>
+                            <li><a class="dropdown-item" href="/sync/property-export">Property Export</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/file-manager">Files</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/map-viewer">Map</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/power-query">Power Query</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            {% if session.user %}{{ session.user.username }}{% else %}User{% endif %}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                            <li><a class="dropdown-item" href="/settings">Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4" style="background-color: #1e1e1e !important;">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto py-3" style="background-color: #005288 !important; color: white !important;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>&copy; {{ now }} Benton County Assessor's Office</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <p>Version: {{ version }}</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

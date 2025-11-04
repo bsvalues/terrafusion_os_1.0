@@ -1,0 +1,495 @@
+{% extends "base_clean.html" %}
+
+{% block title %}TerraFusion - Dashboard{% endblock %}
+
+{% block head %}
+{{ super() }}
+<style>
+    .dashboard-container {
+        padding: 1rem 0 3rem;
+    }
+    
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .dashboard-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--dark-color);
+    }
+    
+    .dashboard-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .dashboard-welcome {
+        background-color: var(--light-color);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border-left: 4px solid var(--primary-color);
+    }
+    
+    .welcome-heading {
+        font-size: 1.5rem;
+        margin-bottom: 0.75rem;
+        color: var(--dark-color);
+    }
+    
+    .welcome-subheading {
+        font-size: 1.125rem;
+        color: var(--secondary-color);
+        margin-bottom: 1rem;
+    }
+    
+    .role-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-left: 0.5rem;
+    }
+    
+    .role-badge.ITAdmin { background-color: #4299e1; color: white; }
+    .role-badge.Assessor { background-color: #48bb78; color: white; }
+    .role-badge.Staff { background-color: #ed8936; color: white; }
+    .role-badge.Auditor { background-color: #9f7aea; color: white; }
+    
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .dashboard-card {
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s, box-shadow 0.2s;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--border-color);
+    }
+    
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-header {
+        padding: 1.25rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--dark-color);
+        margin: 0;
+    }
+    
+    .card-icon {
+        font-size: 1.5rem;
+        color: var(--primary-color);
+    }
+    
+    .card-body {
+        padding: 1.25rem;
+        flex-grow: 1;
+    }
+    
+    .card-footer {
+        padding: 1rem 1.25rem;
+        border-top: 1px solid var(--border-color);
+        background-color: rgba(247, 250, 252, 0.5);
+    }
+    
+    .card-stats {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+    
+    .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--dark-color);
+    }
+    
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .status-success { background-color: #f0fff4; color: #2f855a; border: 1px solid #c6f6d5; }
+    .status-warning { background-color: #fffaf0; color: #c05621; border: 1px solid #feebc8; }
+    .status-danger { background-color: #fff5f5; color: #c53030; border: 1px solid #fed7d7; }
+    .status-info { background-color: #ebf8ff; color: #2c5282; border: 1px solid #bee3f8; }
+    
+    .recent-activity {
+        margin-top: 2rem;
+    }
+    
+    .activity-title {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: var(--dark-color);
+    }
+    
+    .activity-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .activity-item {
+        display: flex;
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+    
+    .activity-icon {
+        margin-right: 1rem;
+        color: var(--primary-color);
+        font-size: 1.25rem;
+    }
+    
+    .activity-content {
+        flex-grow: 1;
+    }
+    
+    .activity-message {
+        margin: 0 0 0.25rem;
+        color: var(--text-color);
+    }
+    
+    .activity-meta {
+        display: flex;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+    
+    .activity-time {
+        margin-right: 1rem;
+    }
+    
+    .tutorial-reminder {
+        background-color: #ebf8ff;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-top: 2rem;
+        border: 1px solid #bee3f8;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .tutorial-content h3 {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+        color: #2c5282;
+    }
+    
+    .tutorial-content p {
+        color: #4a5568;
+        margin-bottom: 0;
+    }
+    
+    .tutorial-btn {
+        background-color: #4299e1;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color 0.15s ease-in-out;
+    }
+    
+    .tutorial-btn:hover {
+        background-color: #2b6cb0;
+        text-decoration: none;
+        color: white;
+    }
+    
+    @media (max-width: 768px) {
+        .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .tutorial-reminder {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .tutorial-btn {
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">Dashboard</h1>
+        <div class="dashboard-actions">
+            {% if session.get('role') in ['ITAdmin', 'Assessor'] %}
+            <a href="{{ url_for('new_sync_wizard') }}" class="btn btn-primary">New Sync Operation</a>
+            {% endif %}
+            <a href="{{ url_for('sync_dashboard') }}" class="btn btn-outline">View All Sync Operations</a>
+        </div>
+    </div>
+    
+    <div class="dashboard-welcome">
+        <h2 class="welcome-heading">Welcome, {{ user.first_name or user.username }}! <span class="role-badge {{ user.role }}">{{ user.role }}</span></h2>
+        <p class="welcome-subheading">{{ current_date|default('2025-05-08') }}</p>
+        <p>Welcome to the TerraFusion SyncService dashboard. This is your central hub for managing property assessment data synchronization operations.</p>
+    </div>
+    
+    <div class="dashboard-grid">
+        <!-- Quick Stats Card -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3 class="card-title">Quick Stats</h3>
+                <div class="card-icon">📊</div>
+            </div>
+            <div class="card-body">
+                <div class="card-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">{{ stats.sync_pairs|default(12) }}</div>
+                        <div class="stat-label">Sync Pairs</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">{{ stats.active_syncs|default(3) }}</div>
+                        <div class="stat-label">Active</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">{{ stats.completed_syncs|default(45) }}</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                </div>
+                <p>Your sync operations are running smoothly. There are {{ stats.pending_approval|default(2) }} items pending approval.</p>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('sync_dashboard') }}">View All Sync Operations →</a>
+            </div>
+        </div>
+        
+        <!-- System Status Card -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3 class="card-title">System Status</h3>
+                <div class="card-icon">🔋</div>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <strong>Sync Service:</strong> 
+                    <span class="status-badge status-success">Operational</span>
+                </div>
+                <div class="mb-2">
+                    <strong>Database:</strong> 
+                    <span class="status-badge status-success">Connected</span>
+                </div>
+                <div class="mb-2">
+                    <strong>API Gateway:</strong> 
+                    <span class="status-badge status-success">Operational</span>
+                </div>
+                <div>
+                    <strong>Last Check:</strong> {{ system_status.last_check|default('2025-05-08 16:05:32') }}
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('status') }}">View System Status →</a>
+            </div>
+        </div>
+        
+        <!-- Your Tasks Card -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3 class="card-title">Your Tasks</h3>
+                <div class="card-icon">📋</div>
+            </div>
+            <div class="card-body">
+                {% if session.get('role') == 'Assessor' %}
+                <div class="mb-2">
+                    <strong>Pending Approvals:</strong> {{ tasks.pending_approvals|default(2) }}
+                </div>
+                <div class="mb-2">
+                    <strong>Validation Exceptions:</strong> {{ tasks.validation_exceptions|default(3) }}
+                </div>
+                {% elif session.get('role') == 'Staff' %}
+                <div class="mb-2">
+                    <strong>Files to Upload:</strong> {{ tasks.files_to_upload|default(1) }}
+                </div>
+                <div class="mb-2">
+                    <strong>Pairs to Configure:</strong> {{ tasks.pairs_to_configure|default(2) }}
+                </div>
+                {% elif session.get('role') == 'ITAdmin' %}
+                <div class="mb-2">
+                    <strong>System Alerts:</strong> {{ tasks.system_alerts|default(0) }}
+                </div>
+                <div class="mb-2">
+                    <strong>Pending Configurations:</strong> {{ tasks.pending_configs|default(1) }}
+                </div>
+                {% elif session.get('role') == 'Auditor' %}
+                <div class="mb-2">
+                    <strong>New Audit Events:</strong> {{ tasks.new_audit_events|default(14) }}
+                </div>
+                <div class="mb-2">
+                    <strong>Reports Due:</strong> {{ tasks.reports_due|default(1) }}
+                </div>
+                {% endif %}
+                <p>You have {{ tasks.total|default(5) }} pending tasks that require your attention.</p>
+            </div>
+            <div class="card-footer">
+                <a href="#">View All Tasks →</a>
+            </div>
+        </div>
+        
+        <!-- Role-Specific Card -->
+        {% if session.get('role') == 'Assessor' %}
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3 class="card-title">Approvals</h3>
+                <div class="card-icon">✓</div>
+            </div>
+            <div class="card-body">
+                <p>You have <strong>2 assessments</strong> waiting for your review and approval.</p>
+                <ul>
+                    <li>Commercial Property Assessment Batch #2453</li>
+                    <li>Residential Updates for Northeast District</li>
+                </ul>
+            </div>
+            <div class="card-footer">
+                <a href="#">Review Approvals →</a>
+            </div>
+        </div>
+        {% elif session.get('role') == 'Staff' %}
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3 class="card-title">Uploads</h3>
+                <div class="card-icon">⬆️</div>
+            </div>
+            <div class="card-body">
+                <p>Data upload queue is ready for your next submissions.</p>
+                <p>Last upload: <strong>May 7, 2025 at 14:32</strong></p>
+            </div>
+            <div class="card-footer">
+                <a href="#">Upload New Data →</a>
+            </div>
+        </div>
+        {% elif session.get('role') == 'ITAdmin' %}
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3 class="card-title">System Health</h3>
+                <div class="card-icon">🔍</div>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <strong>CPU Usage:</strong> {{ system_health.cpu|default('32%') }}
+                </div>
+                <div class="mb-2">
+                    <strong>Memory:</strong> {{ system_health.memory|default('1.2GB / 4.0GB') }}
+                </div>
+                <div class="mb-2">
+                    <strong>Disk Space:</strong> {{ system_health.disk|default('48% used') }}
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('metrics_dashboard') }}">View Detailed Metrics →</a>
+            </div>
+        </div>
+        {% elif session.get('role') == 'Auditor' %}
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3 class="card-title">Audit Summary</h3>
+                <div class="card-icon">📝</div>
+            </div>
+            <div class="card-body">
+                <p><strong>14 new audit events</strong> have been recorded since your last login.</p>
+                <p>Monthly compliance report is due in <strong>3 days</strong>.</p>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('audit_dashboard') }}">View Audit Trail →</a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="recent-activity">
+        <h2 class="activity-title">Recent Activity</h2>
+        <div class="card">
+            <ul class="activity-list">
+                {% for activity in recent_activities|default([
+                    {'message': 'Sync operation completed for Commercial Properties', 'time': '10 minutes ago', 'user': 'system'},
+                    {'message': 'New sync pair created: Residential Zone 3', 'time': '2 hours ago', 'user': 'admin'},
+                    {'message': 'Data validation exception resolved', 'time': '4 hours ago', 'user': 'assessor'},
+                    {'message': 'System backup completed successfully', 'time': '8 hours ago', 'user': 'system'},
+                    {'message': 'New assessment data uploaded', 'time': '1 day ago', 'user': 'staff'}
+                ]) %}
+                <li class="activity-item">
+                    <div class="activity-icon">
+                        {% if activity.user == 'system' %}🤖{% else %}👤{% endif %}
+                    </div>
+                    <div class="activity-content">
+                        <p class="activity-message">{{ activity.message }}</p>
+                        <div class="activity-meta">
+                            <span class="activity-time">{{ activity.time }}</span>
+                            <span class="activity-user">{{ activity.user }}</span>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    
+    {% if not onboarding_complete %}
+    <div class="tutorial-reminder">
+        <div class="tutorial-content">
+            <h3>Complete Your Onboarding</h3>
+            <p>Learn how to use TerraFusion SyncService with our interactive tutorial.</p>
+        </div>
+        <a href="{{ url_for('onboarding_bp.onboarding_home') }}" class="tutorial-btn">Continue Tutorial</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

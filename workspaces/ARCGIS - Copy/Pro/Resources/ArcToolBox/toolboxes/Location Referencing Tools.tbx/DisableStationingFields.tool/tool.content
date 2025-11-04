@@ -1,0 +1,34 @@
+{
+    "type": "FunctionTool",
+    "guid": "{0A4A9218-07A4-497A-8506-CED528063FB9}/DisableStationingFields",
+    "displayname": "$rc:title",
+    "helpcontent": "23000058",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "78"
+    ],
+    "params": {
+        "in_feature_class": {
+            "displayname": "$rc:in_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:in_feature_class.descr"
+        },
+        "out_feature_class": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            }
+        }
+    }
+}

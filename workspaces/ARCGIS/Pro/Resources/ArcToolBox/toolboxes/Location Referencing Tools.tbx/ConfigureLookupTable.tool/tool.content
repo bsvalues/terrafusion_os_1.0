@@ -1,0 +1,99 @@
+{
+    "type": "FunctionTool",
+    "guid": "{0A4A9218-07A4-497A-8506-CED528063FB9}/ConfigureLookupTable",
+    "displayname": "$rc:title",
+    "helpcontent": "23000045",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "78"
+    ],
+    "params": {
+        "in_feature_class": {
+            "displayname": "$rc:in_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_feature_class.descr"
+        },
+        "lookup_table": {
+            "displayname": "$rc:lookup_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:lookup_table.descr"
+        },
+        "field_applied_to": {
+            "displayname": "$rc:field_applied_to.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:field_applied_to.descr"
+        },
+        "lookup_key": {
+            "displayname": "$rc:lookup_key.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:lookup_key.descr"
+        },
+        "lookup_display": {
+            "type": "optional",
+            "displayname": "$rc:lookup_display.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:lookup_display.descr"
+        },
+        "allow_any_lookup_value": {
+            "type": "optional",
+            "displayname": "$rc:allow_any_lookup_value.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ALLOW_ANY_VALUE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_ALLOW_ANY_VALUE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:allow_any_lookup_value.descr"
+        },
+        "out_feature_class": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            }
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

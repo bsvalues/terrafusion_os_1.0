@@ -1,0 +1,537 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.AccessControl.DTOs</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.AccessControl.DTOs.AccessPermissionDTO">
+            <summary>
+            Class to maintain individual Permission elements for use in the UI.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.AccessPermissionDTO.#ctor(System.String,TrueAutomation.AccessControl.DTOs.AccessState)">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.AccessPermissionDTO.Permission">
+            <summary>
+            String defining the permission 
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.AccessPermissionDTO.Allow">
+            <summary>
+            Nullable boolean for the permission
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.AccessPermissionDTO.Deny">
+            <summary>
+            Nullable boolean for the permission
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.AccessControl.DTOs.ACLDTO">
+            <summary>
+            Data Transfer Objects to represent Security ACL (Access Control List) Related Information.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.ACLDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.ACLDTO.Id">
+            <summary>
+            The Id of the ACL
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.ACLDTO.Entries">
+            <summary>
+            The ACL Entries for this particular ACL
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.ACLDTO.Permission">
+            <summary>
+            A Back reference to the permissions.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.AccessControl.DTOs.ACLType">
+            <summary>
+            List of possible Types for use in ACLs
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.AccessControl.DTOs.ACLType.READ">
+            <summary>
+            Read
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.AccessControl.DTOs.ACLType.WRITE">
+            <summary>
+            Write
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.AccessControl.DTOs.ACLType.OWNER">
+            <summary>
+            Owner
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.AccessControl.DTOs.ACLType.DOCUMENT_OWNER">
+            <summary>
+            Owner of a document
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.AccessControl.DTOs.ACLType.WRITE_FILE">
+            <summary>
+            Write to a file
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.AccessControl.DTOs.ACLType.READ_WITH_ANNOTATIONS">
+            <summary>
+            Read with Annotations
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.AccessControl.DTOs.ACLType.READ_WITHOUT_ANNOTATIONS">
+            <summary>
+            Read without annotations
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.AccessControl.DTOs.ACLType.READ_REDACTED">
+            <summary>
+            Read a redacted file
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.AccessControl.DTOs.ACLEntryDTO">
+            <summary>
+            Data Transfer Objects to represent Security ACL (Access Control List) Entries Related Information.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.ACLEntryDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.ACLEntryDTO.Id">
+            <summary>
+            Unique Identifier of the ACL Entry
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.ACLEntryDTO.PartyId">
+            <summary>
+            The Party Id for the acl entry
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.ACLEntryDTO.IsUser">
+            <summary>
+            Flag to define if the acl entry references a user or a group
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.ACLEntryDTO.Allow">
+            <summary>
+            Flag to see if this ACL Entry is an allow versus deny
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.ACLEntryDTO.Acl_Id">
+            <summary>
+            The ID of the ACL for which this entry exists
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.ACLEntryDTO.SecurityDescriptorId">
+            <summary>
+            The Id of the Security Descriptor
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.AccessControl.DTOs.ApplicationPermissionDTO">
+            <summary>
+            Data Transfer Objects to represent Security Application Permission Information.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.ApplicationPermissionDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.ApplicationPermissionDTO.TargetApp">
+            <summary>
+            The Application targeted by the permission
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.AccessControl.DTOs.UserDTO">
+            <summary>
+            Class describing the basic user needed for access control
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.UserDTO.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.UserDTO.#ctor(System.Guid)">
+            <summary>
+            Constructor for the case in which you only have the id
+            </summary>
+            <param name="id">the identifier of the User</param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.UserDTO.#ctor(System.Guid,System.Collections.Generic.List{System.Guid})">
+            <summary>
+            A constructor for when you don't know the name
+            </summary>
+            <param name="id">the identifier of the user</param>
+            <param name="groups">the list of groups to which the user belongs</param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.UserDTO.#ctor(System.Guid,System.String)">
+            <summary>
+            A constructor for when you don't know the groups
+            </summary>
+            <param name="id">the identifier of the user</param>
+            <param name="name">the name of the user</param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.UserDTO.#ctor(System.Guid,System.String,System.Collections.Generic.List{System.Guid})">
+            <summary>
+            A Complete constructor 
+            </summary>
+            <param name="id">the identifier of the user</param>
+            <param name="name">the name of the user</param>
+            <param name="groups">the list of groups to which the user belongs</param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.UserDTO.#ctor(System.Guid,System.String,System.String,System.Collections.Generic.List{System.Guid})">
+            <summary>
+            A Complete constructor 
+            </summary>
+            <param name="id">the identifier of the user</param>
+            <param name="name">the name of the user</param>
+            <param name="description">the description of the user</param>
+            <param name="groups">the list of groups to which the user belongs</param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.UserDTO.#ctor(System.Guid,System.String,System.String,System.Collections.Generic.List{System.Guid},System.Boolean)">
+            <summary>
+            A Complete constructor 
+            </summary>
+            <param name="id">the identifier of the user</param>
+            <param name="name">the name of the user</param>
+            <param name="description">the description of the user</param>
+            <param name="groups">the list of groups to which the user belongs</param>
+            <param name="isDeleted">indicates Active or Deleted PACS User</param>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.UserDTO.Groups">
+            <summary>
+            Groups to which this User Belongs
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.AccessControl.DTOs.GroupDTO">
+            <summary>
+            Class describing the basic group needed for access control
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.GroupDTO.#ctor">
+            <summary>
+            the default constructor 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.GroupDTO.#ctor(System.Guid,System.Collections.Generic.List{TrueAutomation.AccessControl.DTOs.PartyDTO})">
+            <summary>
+            A constructor for when you don't know the name
+            </summary>
+            <param name="id">the identifier of the group</param>
+            <param name="parties">the list of parties belonging to the group</param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.GroupDTO.#ctor(System.Guid)">
+            <summary>
+            A constructor for when you don't know the parties or the name
+            </summary>
+            <param name="id">the identifier of the group</param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.GroupDTO.#ctor(System.Guid,System.String)">
+            <summary>
+            A constructor for when you don't know the parties
+            </summary>
+            <param name="id">the identifier of the group</param>
+            <param name="name">the name of the group</param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.GroupDTO.#ctor(System.Guid,System.String,System.Collections.Generic.List{TrueAutomation.AccessControl.DTOs.PartyDTO})">
+            <summary>
+            A Complete constructor 
+            </summary>
+            <param name="id">the identifier of the group</param>
+            <param name="name">the name of the group</param>
+            <param name="parties">the list of parties belonging to the group</param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.GroupDTO.#ctor(System.Guid,System.String,System.String,System.Collections.Generic.List{TrueAutomation.AccessControl.DTOs.PartyDTO})">
+            <summary>
+            A Complete constructor 
+            </summary>
+            <param name="id">the identifier of the group</param>
+            <param name="name">the name of the group</param>
+            <param name="description">Description of the group</param>
+            <param name="parties">the list of parties belonging to the group</param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.GroupDTO.#ctor(System.Guid,System.String,System.String,System.Collections.Generic.List{TrueAutomation.AccessControl.DTOs.PartyDTO},System.Boolean)">
+            <summary>
+            A Complete constructor 
+            </summary>
+            <param name="id">the identifier of the group</param>
+            <param name="name">the name of the group</param>
+            <param name="description">Description of the group</param>
+            <param name="parties">the list of parties belonging to the group</param>
+            <param name="isDeleted">indicates Active or Deleted PACS Role/Group</param>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.GroupDTO.Parties">
+            <summary>
+            Members of the Group
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.GroupDTO.CompareTo(System.Object)">
+            <summary>
+            Compare an object to the group in question.
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.AccessControl.DTOs.PartyDTO">
+            <summary>
+            Class describing the basic party needed for access control
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.PartyDTO.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.PartyDTO.#ctor(System.Guid)">
+            <summary>
+            Simple Constructor for when you just don't have the name :)
+            </summary>
+            <param name="id">the identifier of the Party</param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.PartyDTO.#ctor(System.Guid,System.String)">
+            <summary>
+            Simple Constructor for when you just don't know a description 
+            </summary>
+            <param name="id">the identifier of the Party</param>
+            <param name="name">the friendly display name of the party</param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.PartyDTO.#ctor(System.Guid,System.String,System.String)">
+            <summary>
+            Complete Constructor for when you have the id and the name
+            </summary>
+            <param name="id">the identifier of the Party</param>
+            <param name="name">the friendly display name of the party</param>
+            <param name="description">Description of the Party</param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.PartyDTO.#ctor(System.Guid,System.String,System.String,System.Boolean)">
+            <summary>
+            Complete Constructor for when you have the id and the name
+            </summary>
+            <param name="id">the identifier of the Party</param>
+            <param name="name">the friendly display name of the party</param>
+            <param name="description">Description of the Party</param>
+            <param name="isDeleted">indicates Active or Deleted PACS User</param>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.PartyDTO.Id">
+            <summary>
+            The Id of the Party
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.PartyDTO.Name">
+            <summary>
+            The Name of the Party
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.PartyDTO.Description">
+            <summary>
+            The Description of the Party in Question
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.PartyDTO.IsDeleted">
+            <summary>
+            Flag to indicate whether this user is still an 
+            Active user in PACS or has been deleted.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.PartyDTO.ToString">
+            <summary>
+            The string version of the party object.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.AccessControl.DTOs.PermissionDTO">
+            <summary>
+            Data Transfer Objects to represent Security Permission Information.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.PermissionDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.PermissionDTO.Id">
+            <summary>
+            The Id of the Permission
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.PermissionDTO.Code">
+            <summary>
+            The Code of the Permission
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.PermissionDTO.Description">
+            <summary>
+            The Description of the Permission
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.PermissionDTO.ACLs">
+            <summary>
+            The List of ACLs associated with the permission
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO">
+            <summary>
+            Data Transfer Objects to represent a Security Descriptor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO.Id">
+            <summary>
+            The Id of the Security Descriptor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO.SecurityDescriptorEntries">
+            <summary>
+            The List of security descriptor entries
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO.Name">
+            <summary>
+            The Name of the Security Descriptor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO.GroupsCount">
+            <summary>
+            The Number of Groups referenced
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO.UsersCount">
+            <summary>
+            The Number of users referenced
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO.PermissionsForGroupOfParties(System.Collections.Generic.List{TrueAutomation.AccessControl.DTOs.PartyDTO})">
+            <summary>
+            Method to Get the List of Permissions for each user in a group
+            </summary>
+            <param name="parties">members of the group</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO.CollectivePermissionsForGroup(System.Collections.Generic.List{TrueAutomation.AccessControl.DTOs.PartyDTO})">
+            <summary>
+            Obtain the full collection of ACLTypes and allowability of all members of the group collectively for each
+            </summary>
+            <param name="parties">all parties involved</param>
+            <returns>dictionary of allowability broken down by acl type</returns>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO.CollectivePermissionsForGroup(System.Collections.Generic.List{TrueAutomation.AccessControl.DTOs.PartyDTO},TrueAutomation.AccessControl.DTOs.ACLType)">
+            <summary>
+            Obtain whether or not each member in the list of parties has the same permission for a particular
+            security descriptor and ACL Type and if so what that permission is.
+            </summary>
+            <param name="parties">List of users to check for</param>
+            <param name="acl">The ACL Type to check</param>
+            <returns>null if any variance, otherwise the allowability of said group of parties</returns>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO.PermissionsForParty(TrueAutomation.AccessControl.DTOs.PartyDTO)">
+            <summary>
+            Method to get all of the Permissions for a Party
+            </summary>
+            <param name="party">the party to check permissions for</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO.PermissionForParty(TrueAutomation.AccessControl.DTOs.PartyDTO,TrueAutomation.AccessControl.DTOs.ACLType)">
+            <summary>
+            Determine the permission for a specific party for a specific acl
+            </summary>
+            <param name="party">the party to check</param>
+            <param name="acl">the ACL Type to check for</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO.SetPermission(TrueAutomation.AccessControl.DTOs.PartyDTO,TrueAutomation.AccessControl.DTOs.ACLType,System.Boolean)">
+            <summary>
+            Method to set the Permission on a Security descriptor entry
+            </summary>
+            <param name="party"></param>
+            <param name="aclType"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO.HasOwnerPermission">
+            <summary>
+            Determine if this Security Descriptor has atleast
+            one user with OWNER 'Allow' permission
+            </summary>
+            <returns>true if there is OWNER permission</returns>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO.GetUserIds">
+            <summary>
+            Returns a full list of user ids associated to the security descriptor.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO.GetSecurityDescriptorGroupsWithCurrentUser(System.Guid,System.Collections.Generic.List{TrueAutomation.AccessControl.DTOs.GroupDTO})">
+            <summary>
+            Method to retrieve the list of groups in this SecurityDescriptor, 
+            in which the current user is a member.
+            </summary>
+            <returns>Groups list</returns>
+        </member>
+        <member name="T:TrueAutomation.AccessControl.DTOs.AccessState">
+            <summary>
+            the state of the party(s) acl for the security descriptor.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.AccessControl.DTOs.AccessState.unset">
+            <summary>
+            The State has not been set
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.AccessControl.DTOs.AccessState.on">
+            <summary>
+            The State is set to the on position
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.AccessControl.DTOs.AccessState.off">
+            <summary>
+            The State is set to the off position
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.AccessControl.DTOs.AccessState.mixed">
+            <summary>
+            The State is set to both on and off position (in the case of multiple items with differing states)
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.AccessControl.DTOs.SecurityDescriptorEntryDTO">
+            <summary>
+            Data Transfer Objects to represent Security Descriptor Permission
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.DTOs.SecurityDescriptorEntryDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.SecurityDescriptorEntryDTO.Id">
+            <summary>
+            Id, also the display string
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.SecurityDescriptorEntryDTO.SecurityDescriptorId">
+            <summary>
+            The Id of the security descriptor referencing this entry
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.DTOs.SecurityDescriptorEntryDTO.Permission">
+            <summary>
+            A Permission associated with this entry
+            </summary>
+        </member>
+    </members>
+</doc>

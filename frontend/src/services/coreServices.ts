@@ -1,8 +1,8 @@
 /**
  * TerraFusion Core Services API Client
- * 
+ *
  * Provides TypeScript interface to Rust core services via .NET API Gateway
- * 
+ *
  * Architecture:
  * React (this file) → HTTP → .NET API (port 5000) → FFI → Rust Core Services
  */
@@ -135,28 +135,28 @@ export const terraSyncService = {
     const response = await fetch(`${CORE_API}/terra-sync/start`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ county })
+      body: JSON.stringify({ county }),
     });
-    
+
     if (!response.ok) {
       throw new Error(`Sync failed: ${response.statusText}`);
     }
-    
+
     return response.json();
   },
-  
+
   /**
    * Get current sync status
    */
   getStatus: async (): Promise<SyncStatus> => {
     const response = await fetch(`${CORE_API}/terra-sync/status`);
-    
+
     if (!response.ok) {
       throw new Error(`Failed to get status: ${response.statusText}`);
     }
-    
+
     return response.json();
-  }
+  },
 };
 
 // ============================================================================
@@ -180,16 +180,16 @@ export const terraFlowService = {
         workflowId,
         initiator,
         county,
-        data
-      })
+        data,
+      }),
     });
-    
+
     if (!response.ok) {
       throw new Error(`Workflow execution failed: ${response.statusText}`);
     }
-    
+
     return response.json();
-  }
+  },
 };
 
 // ============================================================================
@@ -200,36 +200,40 @@ export const costForgeService = {
   /**
    * AI Property Valuation (379M× faster than Marshall & Swift!)
    */
-  propertyValuation: async (request: PropertyValuationRequest): Promise<PropertyValuationResult> => {
+  propertyValuation: async (
+    request: PropertyValuationRequest
+  ): Promise<PropertyValuationResult> => {
     const response = await fetch(`${CORE_API}/costforge/property-valuation`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(request)
+      body: JSON.stringify(request),
     });
-    
+
     if (!response.ok) {
       throw new Error(`Property valuation failed: ${response.statusText}`);
     }
-    
+
     return response.json();
   },
-  
+
   /**
    * AI Budget Optimization (8-15% typical savings)
    */
-  budgetOptimization: async (request: BudgetOptimizationRequest): Promise<BudgetOptimizationResult> => {
+  budgetOptimization: async (
+    request: BudgetOptimizationRequest
+  ): Promise<BudgetOptimizationResult> => {
     const response = await fetch(`${CORE_API}/costforge/budget-optimization`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(request)
+      body: JSON.stringify(request),
     });
-    
+
     if (!response.ok) {
       throw new Error(`Budget optimization failed: ${response.statusText}`);
     }
-    
+
     return response.json();
-  }
+  },
 };
 
 // ============================================================================
@@ -242,13 +246,13 @@ export const coreOSService = {
    */
   getHealth: async (): Promise<CoreOSHealth> => {
     const response = await fetch(`${CORE_API}/health`);
-    
+
     if (!response.ok) {
       throw new Error(`Failed to get health: ${response.statusText}`);
     }
-    
+
     return response.json();
-  }
+  },
 };
 
 // Export all services
@@ -256,6 +260,5 @@ export default {
   terraSync: terraSyncService,
   terraFlow: terraFlowService,
   costForge: costForgeService,
-  coreOS: coreOSService
+  coreOS: coreOSService,
 };
-

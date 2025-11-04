@@ -1,0 +1,5 @@
+<DataType Name="GPTrajectoryLayer">
+  <DisplayName>Trajectory Layer</DisplayName>
+  <Description>Trajectory layer</Description>
+</DataType>
+

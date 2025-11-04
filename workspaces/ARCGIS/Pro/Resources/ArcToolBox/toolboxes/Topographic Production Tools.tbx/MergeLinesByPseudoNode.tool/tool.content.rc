@@ -1,0 +1,33 @@
+{
+    "map": {
+        "aggregate_operations.descr": "<xdoc><p>Specifies the fields that will be used to calculate the specified statistic. Multiple statistic and field combinations can be specified. Null values are excluded from all statistical calculations.</p><p>Text attribute fields can be summarized using first and last statistics. Numeric attribute fields can be summarized using any statistic.</p><p>Available statistic types are as follows:</p><p><ul><li>Sum—The total value for the specified field will be calculated.</li><li>Mean—The average for the specified field will be calculated.</li><li>Minimum—The smallest value for all records of the specified field will be found.</li><li>Maximum—The largest value for all records of the specified field will be found.</li><li>Range—The range of values (maximum minus minimum) for the specified field will be calculated.</li><li>Standard deviation—The standard deviation of values in the specified field will be calculated.</li><li>Count—The number of values included in statistical calculations will be found. Each value will be counted except null values. To determine the number of null values in a field, create a count on the field in question, create a count on a different field that does not contain null values (for example, the OID if present), and subtract the two values.</li><li>First—The value of the first record in the input will be used.</li><li>Last—The value of the last record in the input will be used.</li><li>Median—The median for all records of the specified field will be calculated.</li><li>Variance—The variance for all records of the specified field will be calculated.</li><li>Unique—The number of unique values of the specified field will be counted.</li></ul></p></xdoc>",
+        "aggregate_operations.domain.item2.COUNT": "Count",
+        "aggregate_operations.domain.item2.FIRST": "First",
+        "aggregate_operations.domain.item2.LAST": "Last",
+        "aggregate_operations.domain.item2.MAX": "Maximum",
+        "aggregate_operations.domain.item2.MEAN": "Mean",
+        "aggregate_operations.domain.item2.MEDIAN": "Median",
+        "aggregate_operations.domain.item2.MIN": "Minimum",
+        "aggregate_operations.domain.item2.RANGE": "Range",
+        "aggregate_operations.domain.item2.STD": "Standard deviation",
+        "aggregate_operations.domain.item2.SUM": "Sum",
+        "aggregate_operations.domain.item2.UNIQUE": "Unique",
+        "aggregate_operations.domain.item2.VARIANCE": "Variance",
+        "aggregate_operations.dt.title1": "Field",
+        "aggregate_operations.dt.title2": "Operation",
+        "aggregate_operations.title": "Aggregate Operations",
+        "description": "Dissolves features where pseudo nodes occur.",
+        "input_features.descr": "The line features from which pseudo nodes will be removed.",
+        "input_features.title": "Input Features",
+        "merge_feature_rule.descr": "<xdoc><p>Specifies which feature&apos;s attributes will be maintained when two features are merged at a pseudo node.</p><ul><li><span title=\"FIRST\">First</span>—The feature with the lowest ObjectID and its attributes will be maintained while merging. The value for the fields with a specified aggregation operation will be updated with the calculated value.</li><li><span title=\"LAST\">Last</span>—The feature with the highest ObjectID and its attributes will be maintained while merging. The value for the fields with a specified aggregation operation will be updated with the calculated value.</li><li><span title=\"BY_LENGTH\">By length</span>—The feature with the longest length and its attributes will be maintained while merging. The value for the fields with a specified aggregation operation will be updated with the calculated value.</li><li><span title=\"USE_DEFAULTS\">Use defaults</span>—The feature with the lowest ObjectID will be maintained while merging. The value for the fields with a specified aggregation operation will be updated with the calculated value. The value for fields that are not merge fields or calculated with an aggregation operation will have the value assigned with the default value from the field or subtype when applicable.</li></ul></xdoc>",
+        "merge_feature_rule.domain.BY_LENGTH": "By length",
+        "merge_feature_rule.domain.FIRST": "First",
+        "merge_feature_rule.domain.LAST": "Last",
+        "merge_feature_rule.domain.USE_DEFAULTS": "Use defaults",
+        "merge_feature_rule.title": "Merge Feature Rule",
+        "merge_fields.descr": "The field or fields on which features will be merged.",
+        "merge_fields.title": "Merge Fields",
+        "title": "Merge Lines By Pseudo Node",
+        "updated_features.title": "Updated Features"
+    }
+}

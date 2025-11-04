@@ -1,0 +1,13 @@
+{
+  "name": "bsbcmaster",
+  "version": "1.0.0",
+  "description": "Terrafusion BSBCmaster Application",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo 'Tests would run here'"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "TRE": "PRADAA",
+  "Source": ["MIL-PRF-89034, DPPDB: Table 9"],
+  "Name": "Product Accuracy Data (Absolute)",
+  "Description": "This TRE contains the DPPDB absolute product accuracy data. All accuracy data is based on 90% confidence (CE, LE, and mensuration).",
+  "Size": 1,
+  "Fields": {
+    "PACE" : {
+      "Name": "DPPDB Absolute CE90",
+      "Description": "This field indicates the DPPDB absolute accuracy (CE90).",
+      "Size": 6,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00
+        },
+        {
+          "Type": "Double"          
+        }
+      ]
+    },
+    "PALE": {
+      "Name": "DPPDB Absolute LE90",
+      "Description": "This field indicates the DPPDB absolute accuracy (LE90).",
+      "Size": 6,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "PSDCE": {
+      "Name": "DPPDB Support Data CE90",
+      "Description": "This field indicates the DPPDB support data CE90.",
+      "Size": 6,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "PSDLE": {
+      "Name": "DPPDB Support Data LE90",
+      "Description": "This field indicates the DPPDB support data LE90.",
+      "Size": 6,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "PMCE": {
+      "Name": "DPPDB Mensuration CE",
+      "Description": "This field indicates the DPPDB mensuration accuracy (1 pixel) CE90.",
+      "Size": 6,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "PMLE": {
+      "Name": "DPPDB Mensuration LE",
+      "Description": "This field indicates the DPPDB mensuration accuracy (1 pixel) LE90.",
+      "Size": 6,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    }    
+  }
+}

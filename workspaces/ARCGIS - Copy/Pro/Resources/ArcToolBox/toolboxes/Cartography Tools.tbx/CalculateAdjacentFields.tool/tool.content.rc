@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Creates fields and calculates values for the neighboring pages (polygon) of a grid polygon feature class.",
+        "in_features.descr": "The polygon grid index features that will be appended with adjacent field data.",
+        "in_features.title": "Input Features",
+        "in_field.descr": "The field whose values will be used to populate adjacent field data.",
+        "in_field.title": "Field Name",
+        "out_features.title": "Output Features",
+        "summary": "<xdoc><p>Creates fields and calculates values for the neighboring pages (polygon) of a grid polygon feature class.</p><p>The most common use case for this tool is to populate fields that can be used to label the adjacent pages in a map book. This tool appends eight new fields (each field representing one of the eight points of the compass: North, Northeast, East, Southeast, South, Southwest, West, and Northwest) to the input feature class and calculates values that identify the adjacent (neighboring) polygons, in each cardinal direction, for each feature in the input feature class.</p></xdoc>",
+        "title": "Calculate Adjacent Fields"
+    }
+}

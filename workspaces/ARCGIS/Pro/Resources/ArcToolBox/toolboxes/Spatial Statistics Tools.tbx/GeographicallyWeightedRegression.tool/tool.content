@@ -1,0 +1,285 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\GeographicallyWeightedRegression",
+    "displayname": "$rc:title",
+    "helpcontent": "9060002",
+    "description": "$rc:description",
+    "product": "300",
+    "extensions": [
+        "6",
+        "10"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "dependent_field": {
+            "displayname": "$rc:dependent_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:dependent_field.descr"
+        },
+        "explanatory_field": {
+            "displayname": "$rc:explanatory_field.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:explanatory_field.descr"
+        },
+        "out_featureclass": {
+            "direction": "out",
+            "displayname": "$rc:out_featureclass.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_featureclass.descr"
+        },
+        "kernel_type": {
+            "displayname": "$rc:kernel_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "FIXED",
+                        "code": "$rc:kernel_type.domain.FIXED"
+                    },
+                    {
+                        "value": "ADAPTIVE",
+                        "code": "$rc:kernel_type.domain.ADAPTIVE"
+                    }
+                ]
+            },
+            "value": "FIXED",
+            "description": "$rc:kernel_type.descr"
+        },
+        "bandwidth_method": {
+            "displayname": "$rc:bandwidth_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "AICc",
+                        "code": "$rc:bandwidth_method.domain.AICc"
+                    },
+                    {
+                        "value": "CV",
+                        "code": "$rc:bandwidth_method.domain.CV"
+                    },
+                    {
+                        "value": "BANDWIDTH_PARAMETER",
+                        "code": "$rc:bandwidth_method.domain.BANDWIDTH_PARAMETER"
+                    }
+                ]
+            },
+            "value": "AICc",
+            "description": "$rc:bandwidth_method.descr"
+        },
+        "distance": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:distance.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "1.7976900000000001e+308"
+            },
+            "description": "$rc:distance.descr"
+        },
+        "number_of_neighbors": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:number_of_neighbors.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "1",
+                "max": "1000"
+            },
+            "value": "30",
+            "description": "$rc:number_of_neighbors.descr"
+        },
+        "weight_field": {
+            "type": "optional",
+            "displayname": "$rc:weight_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:weight_field.descr"
+        },
+        "coefficient_raster_workspace": {
+            "type": "optional",
+            "displayname": "$rc:coefficient_raster_workspace.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "description": "$rc:coefficient_raster_workspace.descr"
+        },
+        "cell_size": {
+            "type": "optional",
+            "displayname": "$rc:cell_size.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "analysis_cell_size"
+            },
+            "description": "$rc:cell_size.descr"
+        },
+        "in_prediction_locations": {
+            "type": "optional",
+            "displayname": "$rc:in_prediction_locations.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_prediction_locations.descr"
+        },
+        "prediction_explanatory_field": {
+            "type": "optional",
+            "control_guid": "{C15EC6FA-35EF-4204-90FB-01E7B4DD6862}",
+            "displayname": "$rc:prediction_explanatory_field.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double"
+                ]
+            },
+            "depends": [
+                "in_prediction_locations"
+            ],
+            "description": "$rc:prediction_explanatory_field.descr"
+        },
+        "out_prediction_featureclass": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_prediction_featureclass.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_prediction_featureclass.descr"
+        },
+        "out_table": {
+            "enabled": "false",
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "out_regression_rasters": {
+            "enabled": "false",
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_regression_rasters.title",
+            "datatype": {
+                "type": "GPRasterLayer"
+            }
+        }
+    },
+    "environments": [
+        "cellSize",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "snapRaster",
+        "workspace"
+    ]
+}

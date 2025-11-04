@@ -1,0 +1,91 @@
+{
+    "type": "FunctionTool",
+    "guid": "{F6243FE3-8552-4511-BBCE-F882B7099A58}/ReportAviationChartChanges",
+    "displayname": "$rc:title",
+    "helpcontent": "64030008",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "53",
+        "70"
+    ],
+    "params": {
+        "aviation_workspace": {
+            "displayname": "$rc:aviation_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "description": "$rc:aviation_workspace.descr"
+        },
+        "base_version": {
+            "displayname": "$rc:base_version.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:base_version.descr"
+        },
+        "comparison_version": {
+            "displayname": "$rc:comparison_version.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:comparison_version.descr"
+        },
+        "report_preference": {
+            "displayname": "$rc:report_preference.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:report_preference.descr"
+        },
+        "report_name": {
+            "displayname": "$rc:report_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:report_name.descr"
+        },
+        "aoi_features": {
+            "type": "optional",
+            "displayname": "$rc:aoi_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:aoi_features.descr"
+        },
+        "report_id": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:report_id.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "report_name"
+            ]
+        },
+        "pad_config_file": {
+            "type": "optional",
+            "displayname": "$rc:pad_config_file.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "DEFile"
+                }
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "json"
+                ]
+            },
+            "description": "$rc:pad_config_file.descr"
+        }
+    }
+}

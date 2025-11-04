@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://www.esri.com/schemas/ArcGIS/3.4.0" xmlns="http://www.esri.com/schemas/ArcGIS/3.4.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:include schemaLocation="Carto.xsd" />
+  <xs:element name="Add">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LayerOrTableID" type="xs:int" />
+        <xs:element name="DataObjects" type="DataObjects" />
+        <xs:element name="GdbVersion" type="xs:string" minOccurs="0" />
+        <xs:element name="RollbackOnFailure" type="xs:boolean" minOccurs="0" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfEditResult" />
+        </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddAttachments">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LayerOrTableID" type="xs:int" />
+        <xs:element name="AttachmentDataArray" type="ArrayOfAttachmentData" />
+        <xs:element name="GdbVersion" type="xs:string" minOccurs="0" />
+        <xs:element name="RollbackOnFailure" type="xs:boolean" minOccurs="0" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddAttachmentsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfEditResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ApplyEdits">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="TableEdits" type="ArrayOfTableEdit" />
+        <xs:element name="GdbVersion" type="xs:string" minOccurs="0" />
+        <xs:element name="RollbackOnFailure" type="xs:boolean" minOccurs="0" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ApplyEditsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfTableEditResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Delete">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LayerOrTableID" type="xs:int" />
+        <xs:element name="DefinitionExpression" type="xs:string" />
+        <xs:element name="QueryFilter" type="QueryFilter" />
+        <xs:element name="GdbVersion" type="xs:string" minOccurs="0" />
+        <xs:element name="RollbackOnFailure" type="xs:boolean" minOccurs="0" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteResponse">
+    <xs:complexType />
+  </xs:element>
+  <xs:element name="DeleteAttachments">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LayerOrTableID" type="xs:int" />
+        <xs:element name="IDsOfAttachmentsToDelete" type="ArrayOfInt" />
+        <xs:element name="GdbVersion" type="xs:string" minOccurs="0" />
+        <xs:element name="RollbackOnFailure" type="xs:boolean" minOccurs="0" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteAttachmentsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfEditResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteByID">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LayerOrTableID" type="xs:int" />
+        <xs:element name="IDsOfObjectsToDelete" type="ArrayOfInt" />
+        <xs:element name="GdbVersion" type="xs:string" minOccurs="0" />
+        <xs:element name="RollbackOnFailure" type="xs:boolean" minOccurs="0" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteByIDResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfEditResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCount">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LayerOrTableID" type="xs:int" />
+        <xs:element name="DefinitionExpression" type="xs:string" />
+        <xs:element name="QueryFilter" type="QueryFilter" />
+        <xs:element name="GdbVersion" type="xs:string" minOccurs="0" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCountResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetLayers">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="SymbolOutputOptions" type="ServerSymbolOutputOptions" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetLayersResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfGraphicFeatureLayer" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+<xs:element name="GetServerInfo">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="GetServerInfoResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="FeatureServerInfo"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+ <xs:element name="GetServiceObjectCount">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LayerOrTableDescriptions" type="ArrayOfGFSTableDescription" />
+        <xs:element name="Geometry" type="Geometry" minOccurs="0" />
+        <xs:element name="GdbVersion" type="xs:string" minOccurs="0" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetServiceObjectCountResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTables">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="SymbolOutputOptions" type="ServerSymbolOutputOptions" />
+        <xs:element name="IgnoreLayers" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTablesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfDataObjectTable" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Query">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LayerOrTableID" type="xs:int" />
+        <xs:element name="DefinitionExpression" type="xs:string" />
+        <xs:element name="QueryFilter" type="QueryFilter" />
+        <xs:element name="ServiceDataOptions" type="ServiceDataOptions" />
+        <xs:element name="GdbVersion" type="xs:string" minOccurs="0" />
+        <xs:element minOccurs="0" default="0.0" name="MaximumAllowableOffset" type="xs:double"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ServiceData" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryAttachmentData">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LayerOrTableID" type="xs:int" />
+        <xs:element name="AttachmentIDs" type="ArrayOfInt" />
+        <xs:element name="TransportType" type="esriTransportType" />
+        <xs:element name="GdbVersion" type="xs:string" minOccurs="0" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryAttachmentDataResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfAttachmentData" />
+      </xs:sequence>
+    </xs:complexType>
+ </xs:element>
+  <xs:element name="QueryAttachmentInfos">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LayerOrTableID" type="xs:int" />
+        <xs:element name="ObjectIDs" type="ArrayOfInt" />
+        <xs:element name="GdbVersion" type="xs:string" minOccurs="0" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryAttachmentInfosResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfAttachmentInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryFromService">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LayerOrTableDescriptions" type="ArrayOfGFSTableDescription" />
+        <xs:element name="Geometry" type="Geometry"  minOccurs="0"/>
+        <xs:element name="OutSR" type="SpatialReference"  minOccurs="0"/>
+        <xs:element name="OutTR" type="TimeReference" minOccurs="0" />
+        <xs:element name="ServiceDataOptions" type="ServiceDataOptions" />
+        <xs:element name="GdbVersion" type="xs:string" minOccurs="0" />
+        <xs:element minOccurs="0" default="0.0" name="MaximumAllowableOffset" type="xs:double"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryFromServiceResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ServiceData" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryHTMLPopups">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LayerOrTableID" type="xs:int" />
+        <xs:element name="ObjectIDs" type="ArrayOfInt" />
+        <xs:element name="GdbVersion" type="xs:string" minOccurs="0" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryHTMLPopupsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfString" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryIDs">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LayerOrTableID" type="xs:int" />
+        <xs:element name="DefinitionExpression" type="xs:string" />
+        <xs:element name="QueryFilter" type="QueryFilter" />
+        <xs:element name="GdbVersion" type="xs:string" minOccurs="0" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryIDsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfInt" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryRelatedObjects">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SourceLayerOrTableID" type="xs:int" />
+        <xs:element name="ObjectIDsInSource" type="ArrayOfInt" />
+        <xs:element name="RelationshipID" type="xs:int" />
+        <xs:element name="TargetDefinitionExpression" type="xs:string" />
+        <xs:element name="TargetTableProps" type="xs:string" />
+        <xs:element name="GroupBySourceOIDs" type="xs:boolean" />
+        <xs:element name="OutSR" type="SpatialReference" minOccurs="0" />
+        <xs:element name="OutTR" type="TimeReference" minOccurs="0" />
+        <xs:element name="ServiceDataOptions" type="ServiceDataOptions" />
+        <xs:element name="GdbVersion" type="xs:string" minOccurs="0" />
+        <xs:element minOccurs="0" default="0.0" name="MaximumAllowableOffset" type="xs:double"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="QueryRelatedObjectsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ServiceData" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Update">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LayerOrTableID" type="xs:int" />
+        <xs:element name="DataObjects" type="DataObjects" />
+        <xs:element name="GdbVersion" type="xs:string" minOccurs="0" />
+        <xs:element name="RollbackOnFailure" type="xs:boolean" minOccurs="0" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfEditResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateAttachments">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LayerOrTableID" type="xs:int" />
+        <xs:element name="AttachmentDataArray" type="ArrayOfAttachmentData" />
+        <xs:element name="GdbVersion" type="xs:string" minOccurs="0" />
+        <xs:element name="RollbackOnFailure" type="xs:boolean" minOccurs="0" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateAttachmentsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfEditResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+</xs:schema>

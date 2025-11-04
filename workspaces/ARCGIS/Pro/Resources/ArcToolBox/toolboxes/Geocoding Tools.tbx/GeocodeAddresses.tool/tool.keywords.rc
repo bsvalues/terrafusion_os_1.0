@@ -1,0 +1,32 @@
+{
+    "set": [
+        "address",
+        "address locator",
+        "address matching",
+        "batch",
+        "candidates",
+        "convert",
+        "dynamic",
+        "end offset",
+        "geocode",
+        "geocoded feature class",
+        "geocoding",
+        "intersection",
+        "loc",
+        "location",
+        "locator",
+        "lox",
+        "map points",
+        "match rate",
+        "match result",
+        "match_addr",
+        "matching",
+        "score",
+        "side offset",
+        "spatial description",
+        "status",
+        "street intersection",
+        "table of addresses",
+        "xy coordinates"
+    ]
+}

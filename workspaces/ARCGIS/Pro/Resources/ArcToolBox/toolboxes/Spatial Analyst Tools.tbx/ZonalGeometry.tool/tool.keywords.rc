@@ -1,0 +1,17 @@
+{
+    "set": [
+        "border",
+        "boundary",
+        "centroid",
+        "edge",
+        "eigenvalue",
+        "eigenvector",
+        "ellipse",
+        "major axis",
+        "minor axis",
+        "orientation",
+        "perimeter",
+        "shape",
+        "zone"
+    ]
+}

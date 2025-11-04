@@ -1,0 +1,12 @@
+{
+    "set": [
+        "best",
+        "dijkstra",
+        "directions",
+        "fastest",
+        "network",
+        "path",
+        "quickest",
+        "shortest"
+    ]
+}

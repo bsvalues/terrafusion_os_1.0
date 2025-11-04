@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TerraFusion</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      overflow: hidden;
+    }
+
+    .splash-container {
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .logo {
+      width: 200px;
+      height: 200px;
+      margin-bottom: 2rem;
+      animation: pulse 2s infinite;
+    }
+
+    .progress-container {
+      width: 80%;
+      max-width: 400px;
+      margin-top: 2rem;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%);
+      transition: width 0.3s ease;
+    }
+
+    .status {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="splash-container">
+    <img src="public/assets/terrafusion-logo.svg" alt="TerraFusion" class="logo">
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress" id="progress"></div>
+      </div>
+      <div class="status" id="status">Initializing TerraFusion...</div>
+    </div>
+  </div>
+
+  <script>
+    const { ipcRenderer } = require('electron');
+    const progress = document.getElementById('progress');
+    const status = document.getElementById('status');
+
+    const steps = [
+      { progress: 20, message: 'Loading core modules...' },
+      { progress: 40, message: 'Initializing data pipeline...' },
+      { progress: 60, message: 'Setting up AI agents...' },
+      { progress: 80, message: 'Preparing visualization...' },
+      { progress: 100, message: 'Ready!' }
+    ];
+
+    let currentStep = 0;
+
+    function updateProgress() {
+      if (currentStep < steps.length) {
+        const step = steps[currentStep];
+        progress.style.width = `${step.progress}%`;
+        status.textContent = step.message;
+        currentStep++;
+        setTimeout(updateProgress, 500);
+      }
+    }
+
+    updateProgress();
+
+    ipcRenderer.on('progress-update', (event, value) => {
+      progress.style.width = `${value}%`;
+    });
+  </script>
+</body>
+</html> 

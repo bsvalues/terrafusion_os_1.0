@@ -1,0 +1,12 @@
+{
+    "set": [
+        "anno",
+        "convert",
+        "create",
+        "generate",
+        "geodatabase",
+        "label",
+        "map",
+        "text"
+    ]
+}

@@ -1,4 +1,13 @@
 {
-  "LastUpdated": "2025-10-15T04:10:55.8821992Z",
-  "Services": {}
+  "LastUpdated": "2025-10-17T22:27:35.1401742Z",
+  "Services": {
+    "TerraFusion.API": {
+      "Name": "",
+      "Port": null,
+      "Url": null,
+      "Status": "stopped",
+      "Pid": null,
+      "StartedAt": null
+    }
+  }
 }

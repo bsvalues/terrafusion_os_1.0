@@ -1,0 +1,395 @@
+{
+    "type": "FunctionTool",
+    "guid": "{0A4A9218-07A4-497A-8506-CED528063FB9}/CreateLRSFromExistingDataset",
+    "displayname": "$rc:title",
+    "helpcontent": "23000028",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "78"
+    ],
+    "params": {
+        "lrs_name": {
+            "displayname": "$rc:lrs_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:lrs_name.descr"
+        },
+        "centerline_feature_class": {
+            "displayname": "$rc:centerline_feature_class.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:centerline_feature_class.descr"
+        },
+        "centerline_centerline_id_field": {
+            "displayname": "$rc:centerline_centerline_id_field.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "GUID",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "centerline_feature_class"
+            ],
+            "description": "$rc:centerline_centerline_id_field.descr"
+        },
+        "centerline_sequence_table": {
+            "displayname": "$rc:centerline_sequence_table.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:centerline_sequence_table.descr"
+        },
+        "centerline_sequence_centerline_id_field": {
+            "displayname": "$rc:centerline_sequence_centerline_id_field.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "GUID",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "centerline_sequence_table"
+            ],
+            "description": "$rc:centerline_sequence_centerline_id_field.descr"
+        },
+        "centerline_sequence_route_id_field": {
+            "displayname": "$rc:centerline_sequence_route_id_field.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text",
+                    "GUID"
+                ]
+            },
+            "depends": [
+                "centerline_sequence_table"
+            ],
+            "description": "$rc:centerline_sequence_route_id_field.descr"
+        },
+        "centerline_sequence_from_date_field": {
+            "displayname": "$rc:centerline_sequence_from_date_field.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Date"
+                ]
+            },
+            "depends": [
+                "centerline_sequence_table"
+            ],
+            "description": "$rc:centerline_sequence_from_date_field.descr"
+        },
+        "centerline_sequence_to_date_field": {
+            "displayname": "$rc:centerline_sequence_to_date_field.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Date"
+                ]
+            },
+            "depends": [
+                "centerline_sequence_table"
+            ],
+            "description": "$rc:centerline_sequence_to_date_field.descr"
+        },
+        "centerline_sequence_network_id_field": {
+            "displayname": "$rc:centerline_sequence_network_id_field.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short"
+                ]
+            },
+            "depends": [
+                "centerline_sequence_table"
+            ],
+            "description": "$rc:centerline_sequence_network_id_field.descr"
+        },
+        "calibration_point_feature_class": {
+            "displayname": "$rc:calibration_point_feature_class.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:calibration_point_feature_class.descr"
+        },
+        "calibration_point_measure_field": {
+            "displayname": "$rc:calibration_point_measure_field.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Double"
+                ]
+            },
+            "depends": [
+                "calibration_point_feature_class"
+            ],
+            "description": "$rc:calibration_point_measure_field.descr"
+        },
+        "calibration_point_from_date_field": {
+            "displayname": "$rc:calibration_point_from_date_field.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Date"
+                ]
+            },
+            "depends": [
+                "calibration_point_feature_class"
+            ],
+            "description": "$rc:calibration_point_from_date_field.descr"
+        },
+        "calibration_point_to_date_field": {
+            "displayname": "$rc:calibration_point_to_date_field.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Date"
+                ]
+            },
+            "depends": [
+                "calibration_point_feature_class"
+            ],
+            "description": "$rc:calibration_point_to_date_field.descr"
+        },
+        "calibration_point_route_id_field": {
+            "displayname": "$rc:calibration_point_route_id_field.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text",
+                    "GUID"
+                ]
+            },
+            "depends": [
+                "calibration_point_feature_class"
+            ],
+            "description": "$rc:calibration_point_route_id_field.descr"
+        },
+        "calibration_point_network_id_field": {
+            "displayname": "$rc:calibration_point_network_id_field.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short"
+                ]
+            },
+            "depends": [
+                "calibration_point_feature_class"
+            ],
+            "description": "$rc:calibration_point_network_id_field.descr"
+        },
+        "redline_feature_class": {
+            "displayname": "$rc:redline_feature_class.title",
+            "category": "$rc:params.category4",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:redline_feature_class.descr"
+        },
+        "redline_from_measure_field": {
+            "displayname": "$rc:redline_from_measure_field.title",
+            "category": "$rc:params.category4",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Double"
+                ]
+            },
+            "depends": [
+                "redline_feature_class"
+            ],
+            "description": "$rc:redline_from_measure_field.descr"
+        },
+        "redline_to_measure_field": {
+            "displayname": "$rc:redline_to_measure_field.title",
+            "category": "$rc:params.category4",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Double"
+                ]
+            },
+            "depends": [
+                "redline_feature_class"
+            ],
+            "description": "$rc:redline_to_measure_field.descr"
+        },
+        "redline_route_id_field": {
+            "displayname": "$rc:redline_route_id_field.title",
+            "category": "$rc:params.category4",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text",
+                    "GUID"
+                ]
+            },
+            "depends": [
+                "redline_feature_class"
+            ],
+            "description": "$rc:redline_route_id_field.descr"
+        },
+        "redline_route_name_field": {
+            "displayname": "$rc:redline_route_name_field.title",
+            "category": "$rc:params.category4",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text"
+                ]
+            },
+            "depends": [
+                "redline_feature_class"
+            ],
+            "description": "$rc:redline_route_name_field.descr"
+        },
+        "redline_effective_date_field": {
+            "displayname": "$rc:redline_effective_date_field.title",
+            "category": "$rc:params.category4",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Date"
+                ]
+            },
+            "depends": [
+                "redline_feature_class"
+            ],
+            "description": "$rc:redline_effective_date_field.descr"
+        },
+        "redline_activity_type_field": {
+            "displayname": "$rc:redline_activity_type_field.title",
+            "category": "$rc:params.category4",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short"
+                ]
+            },
+            "depends": [
+                "redline_feature_class"
+            ],
+            "description": "$rc:redline_activity_type_field.descr"
+        },
+        "redline_network_id_field": {
+            "displayname": "$rc:redline_network_id_field.title",
+            "category": "$rc:params.category4",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short"
+                ]
+            },
+            "depends": [
+                "redline_feature_class"
+            ],
+            "description": "$rc:redline_network_id_field.descr"
+        },
+        "out_path": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_path.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "depends": [
+                "centerline_feature_class"
+            ]
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

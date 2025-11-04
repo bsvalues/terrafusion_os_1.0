@@ -1,0 +1,13 @@
+{
+    "map": {
+        "description": "Adds a new color map or replaces an existing color map on a raster dataset.",
+        "in_raster.descr": "The raster dataset to add or replace a color map.",
+        "in_raster.title": "Input Raster",
+        "in_template_raster.descr": "A raster dataset that has a color map that you want to apply to the input raster dataset.",
+        "in_template_raster.title": "Input Template Raster",
+        "input_clr_file.descr": "Specify a .clr or .act file to use as the color map.",
+        "input_clr_file.title": "Input .clr or .act File",
+        "out_raster.title": "Updated Input Raster",
+        "title": "Add Colormap"
+    }
+}

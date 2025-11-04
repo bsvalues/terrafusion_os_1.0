@@ -1,0 +1,9 @@
+{
+    "set": [
+        "angle",
+        "azimuth",
+        "distance",
+        "fov",
+        "field of view"
+    ]
+}

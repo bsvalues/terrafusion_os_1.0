@@ -1,0 +1,18 @@
+{
+    "map": {
+        "description": "Replaces cells in a raster based on the majority of their contiguous neighboring cells.",
+        "in_raster.descr": "<xdoc><p>The input raster to be filtered based on the majority of contiguous neighboring cells.</p><p>It must be of integer type.</p></xdoc>",
+        "in_raster.title": "Input raster",
+        "majority_definition.descr": "<xdoc><p>Specifies the number of contiguous (spatially connected) cells that must be of the same value before a replacement will occur.</p><ul><li><span title=\"MAJORITY\">Majority</span>—A majority of cells must have the same value and be contiguous. Three out of four or five out of eight connected cells must have the same value.</li><li><span title=\"HALF\">Half</span>—Half of the cells must have the same value and be contiguous. Two out of four or four out of eight connected cells must have the same value. This option will have a more smoothing effect than the other.</li></ul></xdoc>",
+        "majority_definition.domain.HALF": "Half",
+        "majority_definition.domain.MAJORITY": "Majority",
+        "majority_definition.title": "Replacement threshold",
+        "number_neighbors.descr": "<xdoc><p>Determines the number of neighboring cells to use in the kernel of the filter.</p><ul><li><span title=\"FOUR\">Four</span>—The kernel of the filter will be the four direct (orthogonal) neighbors to the present cell. This is the default.</li><li><span title=\"EIGHT\">Eight</span>—The kernel of the filter will be the eight nearest neighbors (a three-by-three window) to the present cell.</li></ul></xdoc>",
+        "number_neighbors.domain.EIGHT": "Eight",
+        "number_neighbors.domain.FOUR": "Four",
+        "number_neighbors.title": "Number of neighbors to use",
+        "out_raster.descr": "<xdoc><p>The output filtered raster.</p><p>The output is always of integer type.</p></xdoc>",
+        "out_raster.title": "Output raster",
+        "title": "Majority Filter"
+    }
+}

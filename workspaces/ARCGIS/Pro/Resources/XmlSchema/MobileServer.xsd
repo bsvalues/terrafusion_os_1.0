@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://www.esri.com/schemas/ArcGIS/3.4.0" xmlns="http://www.esri.com/schemas/ArcGIS/3.4.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:include schemaLocation="Carto.xsd"/>
+  <xs:element name="ExecuteRequest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="requestData" type="xs:base64Binary"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ExecuteRequestResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ExecuteRequestResult" type="xs:base64Binary"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMobileMapInfo">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="GetMobileMapInfoResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="MobileMapInfo"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ExportMapImage">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="MapDescription" type="MapDescription"/>
+        <xs:element name="ImageDescription" type="ImageDescription"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ExportMapImageResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="MapImage"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDefaultMapDescription">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ImageDescription" type="ImageDescription"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDefaultMapDescriptionResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="MapDescription"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

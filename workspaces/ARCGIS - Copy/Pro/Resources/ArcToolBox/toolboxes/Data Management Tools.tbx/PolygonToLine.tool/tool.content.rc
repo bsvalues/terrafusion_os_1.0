@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Creates a feature class containing lines that are converted from polygon boundaries with or without considering neighboring polygons.",
+        "in_features.descr": "The input features that must be polygon.",
+        "in_features.title": "Input Features",
+        "neighbor_option.descr": "<xdoc><p>Specifies whether or not to identify and store polygon neighboring information.<ul><li>Checked— Polygon neighboring relationship will be identified and stored in the output. If different segments of a polygon share boundary with different polygons, the boundary will be split such that each uniquely shared segment will become a line with its two neighboring polygon FIDs stored in the output, as shown in the illustration. This is the default.</li><li>Unchecked— Polygon neighboring relationship will be ignored; every polygon boundary will become a line feature with its original polygon feature ID stored in the output.</li></ul></p></xdoc>",
+        "neighbor_option.title": "Identify and store polygon neighboring information",
+        "out_feature_class.descr": "The output line feature class.",
+        "out_feature_class.title": "Output Feature Class",
+        "title": "Polygon To Line"
+    }
+}

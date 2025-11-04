@@ -1,0 +1,575 @@
+{
+  "version": 2,
+  "projects": {
+    "core-gateway": {
+      "root": "apps/core-gateway",
+      "sourceRoot": "apps/core-gateway/src",
+      "projectType": "application",
+      "targets": {
+        "serve": {
+          "executor": "@nx/js:node",
+          "options": {
+            "buildTarget": "core-gateway:build",
+            "port": 4000
+          }
+        },
+        "build": {
+          "executor": "@nx/js:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/core-gateway",
+            "main": "apps/core-gateway/src/index.js",
+            "assets": []
+          }
+        },
+        "test": {
+          "executor": "@nx/js:node",
+          "options": {
+            "command": "npm test",
+            "cwd": "apps/core-gateway"
+          }
+        }
+      }
+    },
+    "terrafusionsync": {
+      "root": "apps/terrafusionsync",
+      "sourceRoot": "apps/terrafusionsync",
+      "projectType": "application",
+      "targets": {
+        "serve": {
+          "executor": "@nx/js:node",
+          "options": {
+            "buildTarget": "terrafusionsync:build",
+            "port": 3001
+          }
+        },
+        "build": {
+          "executor": "@nx/js:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/terrafusionsync",
+            "main": "apps/terrafusionsync/index.js",
+            "assets": []
+          }
+        },
+        "test": {
+          "executor": "@nx/js:node",
+          "options": {
+            "command": "npm test",
+            "cwd": "apps/terrafusionsync"
+          }
+        }
+      }
+    },
+    "terrafusionpro": {
+      "root": "apps/terrafusionpro",
+      "sourceRoot": "apps/terrafusionpro",
+      "projectType": "application",
+      "targets": {
+        "serve": {
+          "executor": "@nx/js:node",
+          "options": {
+            "buildTarget": "terrafusionpro:build",
+            "port": 3002
+          }
+        },
+        "build": {
+          "executor": "@nx/js:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/terrafusionpro",
+            "main": "apps/terrafusionpro/index.js",
+            "assets": []
+          }
+        },
+        "test": {
+          "executor": "@nx/js:node",
+          "options": {
+            "command": "npm test",
+            "cwd": "apps/terrafusionpro"
+          }
+        }
+      }
+    },
+    "terraflow": {
+      "root": "apps/terraflow",
+      "sourceRoot": "apps/terraflow",
+      "projectType": "application",
+      "targets": {
+        "serve": {
+          "executor": "@nx/js:node",
+          "options": {
+            "buildTarget": "terraflow:build",
+            "port": 3003
+          }
+        },
+        "build": {
+          "executor": "@nx/js:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/terraflow",
+            "main": "apps/terraflow/index.js",
+            "assets": []
+          }
+        },
+        "test": {
+          "executor": "@nx/js:node",
+          "options": {
+            "command": "npm test",
+            "cwd": "apps/terraflow"
+          }
+        }
+      }
+    },
+    "terraminer": {
+      "root": "apps/terraminer",
+      "sourceRoot": "apps/terraminer",
+      "projectType": "application",
+      "targets": {
+        "serve": {
+          "executor": "@nx/js:node",
+          "options": {
+            "buildTarget": "terraminer:build",
+            "port": 3004
+          }
+        },
+        "build": {
+          "executor": "@nx/js:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/terraminer",
+            "main": "apps/terraminer/index.js",
+            "assets": []
+          }
+        },
+        "test": {
+          "executor": "@nx/js:node",
+          "options": {
+            "command": "npm test",
+            "cwd": "apps/terraminer"
+          }
+        }
+      }
+    },
+    "terraagent": {
+      "root": "apps/terraagent",
+      "sourceRoot": "apps/terraagent",
+      "projectType": "application",
+      "targets": {
+        "serve": {
+          "executor": "@nx/js:node",
+          "options": {
+            "buildTarget": "terraagent:build",
+            "port": 3005
+          }
+        },
+        "build": {
+          "executor": "@nx/js:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/terraagent",
+            "main": "apps/terraagent/index.js",
+            "assets": []
+          }
+        },
+        "test": {
+          "executor": "@nx/js:node",
+          "options": {
+            "command": "npm test",
+            "cwd": "apps/terraagent"
+          }
+        }
+      }
+    },
+    "terraf": {
+      "root": "apps/terraf",
+      "sourceRoot": "apps/terraf",
+      "projectType": "application",
+      "targets": {
+        "serve": {
+          "executor": "@nx/js:node",
+          "options": {
+            "buildTarget": "terraf:build",
+            "port": 3006
+          }
+        },
+        "build": {
+          "executor": "@nx/js:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/terraf",
+            "main": "apps/terraf/index.js",
+            "assets": []
+          }
+        },
+        "test": {
+          "executor": "@nx/js:node",
+          "options": {
+            "command": "npm test",
+            "cwd": "apps/terraf"
+          }
+        }
+      }
+    },
+    "terralegislativepulsepub": {
+      "root": "apps/terralegislativepulsepub",
+      "sourceRoot": "apps/terralegislativepulsepub",
+      "projectType": "application",
+      "targets": {
+        "serve": {
+          "executor": "@nx/js:node",
+          "options": {
+            "buildTarget": "terralegislativepulsepub:build",
+            "port": 3007
+          }
+        },
+        "build": {
+          "executor": "@nx/js:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/terralegislativepulsepub",
+            "main": "apps/terralegislativepulsepub/index.js",
+            "assets": []
+          }
+        },
+        "test": {
+          "executor": "@nx/js:node",
+          "options": {
+            "command": "npm test",
+            "cwd": "apps/terralegislativepulsepub"
+          }
+        }
+      }
+    },
+    "bcbscostapp": {
+      "root": "apps/bcbscostapp",
+      "sourceRoot": "apps/bcbscostapp",
+      "projectType": "application",
+      "targets": {
+        "serve": {
+          "executor": "@nx/js:node",
+          "options": {
+            "buildTarget": "bcbscostapp:build",
+            "port": 3008
+          }
+        },
+        "build": {
+          "executor": "@nx/js:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/bcbscostapp",
+            "main": "apps/bcbscostapp/index.js",
+            "assets": []
+          }
+        },
+        "test": {
+          "executor": "@nx/js:node",
+          "options": {
+            "command": "npm test",
+            "cwd": "apps/bcbscostapp"
+          }
+        }
+      }
+    },
+    "bcbsgispro": {
+      "root": "apps/bcbsgispro",
+      "sourceRoot": "apps/bcbsgispro",
+      "projectType": "application",
+      "targets": {
+        "serve": {
+          "executor": "@nx/js:node",
+          "options": {
+            "buildTarget": "bcbsgispro:build",
+            "port": 3009
+          }
+        },
+        "build": {
+          "executor": "@nx/js:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/bcbsgispro",
+            "main": "apps/bcbsgispro/index.js",
+            "assets": []
+          }
+        },
+        "test": {
+          "executor": "@nx/js:node",
+          "options": {
+            "command": "npm test",
+            "cwd": "apps/bcbsgispro"
+          }
+        }
+      }
+    },
+    "bcbslevy": {
+      "root": "apps/bcbslevy",
+      "sourceRoot": "apps/bcbslevy",
+      "projectType": "application",
+      "targets": {
+        "serve": {
+          "executor": "@nx/js:node",
+          "options": {
+            "buildTarget": "bcbslevy:build",
+            "port": 3010
+          }
+        },
+        "build": {
+          "executor": "@nx/js:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/bcbslevy",
+            "main": "apps/bcbslevy/index.js",
+            "assets": []
+          }
+        },
+        "test": {
+          "executor": "@nx/js:node",
+          "options": {
+            "command": "npm test",
+            "cwd": "apps/bcbslevy"
+          }
+        }
+      }
+    },
+    "bcbswebhub": {
+      "root": "apps/bcbswebhub",
+      "sourceRoot": "apps/bcbswebhub",
+      "projectType": "application",
+      "targets": {
+        "serve": {
+          "executor": "@nx/js:node",
+          "options": {
+            "buildTarget": "bcbswebhub:build",
+            "port": 3011
+          }
+        },
+        "build": {
+          "executor": "@nx/js:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/bcbswebhub",
+            "main": "apps/bcbswebhub/index.js",
+            "assets": []
+          }
+        },
+        "test": {
+          "executor": "@nx/js:node",
+          "options": {
+            "command": "npm test",
+            "cwd": "apps/bcbswebhub"
+          }
+        }
+      }
+    },
+    "bcbsdataengine": {
+      "root": "apps/bcbsdataengine",
+      "sourceRoot": "apps/bcbsdataengine",
+      "projectType": "application",
+      "targets": {
+        "serve": {
+          "executor": "@nx/js:node",
+          "options": {
+            "buildTarget": "bcbsdataengine:build",
+            "port": 3012
+          }
+        },
+        "build": {
+          "executor": "@nx/js:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/bcbsdataengine",
+            "main": "apps/bcbsdataengine/index.js",
+            "assets": []
+          }
+        },
+        "test": {
+          "executor": "@nx/js:node",
+          "options": {
+            "command": "npm test",
+            "cwd": "apps/bcbsdataengine"
+          }
+        }
+      }
+    },
+    "bcbspacsmapping": {
+      "root": "apps/bcbspacsmapping",
+      "sourceRoot": "apps/bcbspacsmapping",
+      "projectType": "application",
+      "targets": {
+        "serve": {
+          "executor": "@nx/js:node",
+          "options": {
+            "buildTarget": "bcbspacsmapping:build",
+            "port": 3013
+          }
+        },
+        "build": {
+          "executor": "@nx/js:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/bcbspacsmapping",
+            "main": "apps/bcbspacsmapping/index.js",
+            "assets": []
+          }
+        },
+        "test": {
+          "executor": "@nx/js:node",
+          "options": {
+            "command": "npm test",
+            "cwd": "apps/bcbspacsmapping"
+          }
+        }
+      }
+    },
+    "geoassessmentpro": {
+      "root": "apps/geoassessmentpro",
+      "sourceRoot": "apps/geoassessmentpro",
+      "projectType": "application",
+      "targets": {
+        "serve": {
+          "executor": "@nx/js:node",
+          "options": {
+            "buildTarget": "geoassessmentpro:build",
+            "port": 3014
+          }
+        },
+        "build": {
+          "executor": "@nx/js:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/geoassessmentpro",
+            "main": "apps/geoassessmentpro/index.js",
+            "assets": []
+          }
+        },
+        "test": {
+          "executor": "@nx/js:node",
+          "options": {
+            "command": "npm test",
+            "cwd": "apps/geoassessmentpro"
+          }
+        }
+      }
+    },
+    "bcbsgeoassessmentpro": {
+      "root": "apps/bcbsgeoassessmentpro",
+      "sourceRoot": "apps/bcbsgeoassessmentpro",
+      "projectType": "application",
+      "targets": {
+        "serve": {
+          "executor": "@nx/js:node",
+          "options": {
+            "buildTarget": "bcbsgeoassessmentpro:build",
+            "port": 3015
+          }
+        },
+        "build": {
+          "executor": "@nx/js:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/bcbsgeoassessmentpro",
+            "main": "apps/bcbsgeoassessmentpro/index.js",
+            "assets": []
+          }
+        },
+        "test": {
+          "executor": "@nx/js:node",
+          "options": {
+            "command": "npm test",
+            "cwd": "apps/bcbsgeoassessmentpro"
+          }
+        }
+      }
+    },
+    "bsbcmaster": {
+      "root": "apps/bsbcmaster",
+      "sourceRoot": "apps/bsbcmaster",
+      "projectType": "application",
+      "targets": {
+        "serve": {
+          "executor": "@nx/js:node",
+          "options": {
+            "buildTarget": "bsbcmaster:build",
+            "port": 3016
+          }
+        },
+        "build": {
+          "executor": "@nx/js:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/bsbcmaster",
+            "main": "apps/bsbcmaster/index.js",
+            "assets": []
+          }
+        },
+        "test": {
+          "executor": "@nx/js:node",
+          "options": {
+            "command": "npm test",
+            "cwd": "apps/bsbcmaster"
+          }
+        }
+      }
+    },
+    "bsincomevaluation": {
+      "root": "apps/bsincomevaluation",
+      "sourceRoot": "apps/bsincomevaluation",
+      "projectType": "application",
+      "targets": {
+        "serve": {
+          "executor": "@nx/js:node",
+          "options": {
+            "buildTarget": "bsincomevaluation:build",
+            "port": 3017
+          }
+        },
+        "build": {
+          "executor": "@nx/js:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/bsincomevaluation",
+            "main": "apps/bsincomevaluation/index.js",
+            "assets": []
+          }
+        },
+        "test": {
+          "executor": "@nx/js:node",
+          "options": {
+            "command": "npm test",
+            "cwd": "apps/bsincomevaluation"
+          }
+        }
+      }
+    },
+    "terrafusion_mock-up": {
+      "root": "apps/terrafusion_mock-up",
+      "sourceRoot": "apps/terrafusion_mock-up",
+      "projectType": "application",
+      "targets": {
+        "serve": {
+          "executor": "@nx/js:node",
+          "options": {
+            "buildTarget": "terrafusion_mock-up:build",
+            "port": 3018
+          }
+        },
+        "build": {
+          "executor": "@nx/js:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/terrafusion_mock-up",
+            "main": "apps/terrafusion_mock-up/index.js",
+            "assets": []
+          }
+        },
+        "test": {
+          "executor": "@nx/js:node",
+          "options": {
+            "command": "npm test",
+            "cwd": "apps/terrafusion_mock-up"
+          }
+        }
+      }
+    }
+  }
+}

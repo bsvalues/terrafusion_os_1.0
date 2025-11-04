@@ -1,0 +1,569 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://www.esri.com/schemas/ArcGIS/3.4.0" xmlns="http://www.esri.com/schemas/ArcGIS/3.4.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:include schemaLocation="Carto.xsd" />
+    <xs:element name="GetVersion">
+      <xs:complexType/>
+    </xs:element>
+  <xs:element name="GetVersionResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:decimal"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetServiceInfo">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="GetServiceInfoResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ImageServiceInfo"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetImage">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ImageDescription" type="GeoImageDescription"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetImageResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:base64Binary"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ExportImage">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ImageDescription" type="GeoImageDescription"/>
+        <xs:element name="ImageType" type="ImageType"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ExportImageResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ImageResult"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Execute">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Request" type="AISRequest"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ExecuteResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ExportScaledImage">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ImageDescription" type="GeoImageDescription"/>
+        <xs:element name="ImageType" type="ImageType"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ExportScaledImageResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="MapImage"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetFields">
+    <xs:complexType />
+  </xs:element>
+  <xs:element name="GetFieldsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="Fields"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCatalogItemCount">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="QueryFilter" type="QueryFilter"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCatalogItemCountResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:int"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCatalogItemIDs">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="QueryFilter" type="QueryFilter"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCatalogItemIDsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="FIDSet"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCatalogItems">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="QueryFilter" type="QueryFilter"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCatalogItemsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="RecordSet"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Download">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="FIDs" type="FIDSet"/>
+        <xs:element name="Geometry" type="Geometry" minOccurs="0"/>
+        <xs:element name="Format" type="xs:string" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DownloadResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfImageServerDownloadResult"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetFile">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="File" type="ImageServerDownloadResult"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetFileResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Identify">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Location" type="Geometry"/>
+        <xs:element name="MosaicRule" type="MosaicRule"/>
+        <xs:element name="PixelSize" type="Point"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="IdentifyResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ImageServerIdentifyResult"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="IdentifyAll">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Locations" type="Geometry"/>
+        <xs:element name="MosaicRule" type="MosaicRule"/>
+        <xs:element name="PixelSize" type="Point"/>
+        <xs:element name="RenderingRule" type="RenderingRule"/>
+        <xs:element name="Options" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="IdentifyAllResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfImageServerIdentifyResult"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMetadata">
+    <xs:complexType />
+  </xs:element>
+  <xs:element name="GetMetadataResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetRasterInfo">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="RID" type="xs:int"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetRasterInfoResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="RasterInfo"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPixelBlock">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="RID" type="xs:int"/>
+        <xs:element name="Tx" type="xs:int"/>
+        <xs:element name="Ty" type="xs:int"/>
+        <xs:element name="Level" type="xs:int"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetPixelBlockResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:base64Binary"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetRasterMetadata">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="RID" type="xs:int"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetRasterMetadataResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetThumbnail">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="RID" type="xs:int"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetThumbnailResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ImageResult"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GenerateServiceInfo">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="RenderingRule" type="RenderingRule"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GenerateServiceInfoResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ImageServiceInfo"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetNativeRasterInfo">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="RID" type="xs:int"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetNativeRasterInfoResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfRasterInfo"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetNativePixelBlock">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="RID" type="xs:int"/>
+        <xs:element name="IID" type="xs:int"/>
+        <xs:element name="Tx" type="xs:int"/>
+        <xs:element name="Ty" type="xs:int"/>
+        <xs:element name="Level" type="xs:int"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetNativePixelBlockResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:base64Binary"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Add">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ItemDescriptions" type="ArrayOfRasterItemDescription"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfImageServerEditResult"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Update">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="FIDs" type="FIDSet"/>
+        <xs:element name="ItemDescriptions" type="ArrayOfRasterItemDescription"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfImageServerEditResult"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Delete">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="FIDs" type="FIDSet"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfImageServerEditResult"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Measure">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="From" type="Geometry"/>
+        <xs:element name="To" type="Geometry"/>
+        <xs:element name="MosaicRule" type="MosaicRule"/>
+        <xs:element name="PixelSize" type="Point"/>
+        <xs:element name="Operation" type="esriMensurationOperation"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="MeasureResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ImageServerMeasureResult"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ComputeHistograms">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Geometry" type="Geometry"/>
+        <xs:element name="MosaicRule" type="MosaicRule"/>
+        <xs:element name="PixelSize" type="Point"/>
+        <xs:element name="RenderingRule" type="RenderingRule"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ComputeHistogramsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfRasterHistogram"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetRasterAttributeTable">
+    <xs:complexType />
+  </xs:element>
+  <xs:element name="GetRasterAttributeTableResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="RecordSet"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetKeyProperties">
+    <xs:complexType />
+  </xs:element>
+  <xs:element name="GetKeyPropertiesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="PropertySet"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetRasterKeyProperties">
+    <xs:complexType>
+    <xs:sequence>
+      <xs:element name="RID" type="xs:int"/>
+    </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetRasterKeyPropertiesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="PropertySet"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetView">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="VID" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetViewResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ImageView"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateView">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="View" type="ImageView"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CreateViewResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ImageServerEditResult"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateView">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="VID" type="xs:string"/>
+        <xs:element name="AddFIDs" type="FIDSet"/>
+        <xs:element name="DeleteFIDs" type="FIDSet"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateViewResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfImageServerEditResult"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteView">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="VID" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="DeleteViewResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ImageServerEditResult"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTileCacheInfo">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="GetTileCacheInfoResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="TileCacheInfo"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetImageTile">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Level" type="xs:int"/>
+        <xs:element name="Row" type="xs:int"/>
+        <xs:element name="Column" type="xs:int"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetImageTileResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:base64Binary"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTileImageInfo">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="GetTileImageInfoResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="TileImageInfo"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCacheStorageInfo">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="GetCacheStorageInfoResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="CacheStorageInfo"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="IsFixedScaleImage">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="IsFixedScaleImageResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:boolean"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetVirtualCacheDirectory">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="GetVirtualCacheDirectoryResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCacheDescriptionInfo">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="GetCacheDescriptionInfoResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="CacheDescriptionInfo"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCacheControlInfo">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="GetCacheControlInfoResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="CacheControlInfo"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

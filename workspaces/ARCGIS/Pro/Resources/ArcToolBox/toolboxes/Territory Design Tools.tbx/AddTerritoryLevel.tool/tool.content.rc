@@ -1,0 +1,19 @@
+{
+    "map": {
+        "default_territory_name.descr": "The name to be used as a prefix for new territories that will be created.",
+        "default_territory_name.title": "Default Territory Name",
+        "description": "Creates a new empty feature class to represent a level.",
+        "in_territory_solution.descr": "The input territory solution.",
+        "in_territory_solution.title": "Input Territory Solution",
+        "level_name.descr": "The name of the new territory level.",
+        "level_name.title": "Level Name",
+        "out_territory_solution.title": "Updated Territory Solution",
+        "primary_feature_class.descr": "<xdoc><p>Specifies the class level that will be used for storing level attributes.</p><ul><li><span title=\"TERRITORY_BOUNDARIES\">Territory Boundaries</span>—Polygon features that represent the territory boundaries.</li><li><span title=\"TERRITORY_CENTERS\">Territory Centers</span>— Point features that represent the territory centers.</li><li><span title=\"BASE_BOUNDARIES\">Base Boundaries</span>—Polygon features that represent the base-level feature boundaries.</li><li><span title=\"BASE_CENTERS\">Base Centers</span>—Point features that represent the base-level feature centers.</li></ul></xdoc>",
+        "primary_feature_class.domain.BASE_BOUNDARIES": "Base Boundaries",
+        "primary_feature_class.domain.BASE_CENTERS": "Base Centers",
+        "primary_feature_class.domain.TERRITORY_BOUNDARIES": "Territory Boundaries",
+        "primary_feature_class.domain.TERRITORY_CENTERS": "Territory Centers",
+        "primary_feature_class.title": "Primary Feature Class",
+        "title": "Add Territory Level"
+    }
+}

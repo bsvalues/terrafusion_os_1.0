@@ -1,0 +1,12 @@
+{
+    "set": [
+        "aspect",
+        "curvature",
+        "mean curvature",
+        "normal contour curvature",
+        "normal slope line curvature",
+        "profile curvature",
+        "slope",
+        "tangential curvature"
+    ]
+}

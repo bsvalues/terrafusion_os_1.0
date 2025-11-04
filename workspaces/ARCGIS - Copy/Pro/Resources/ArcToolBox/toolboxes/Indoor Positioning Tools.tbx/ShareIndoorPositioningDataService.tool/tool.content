@@ -1,0 +1,162 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "78000009",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "in_ips_datasets": {
+            "displayname": "$rc:in_ips_datasets.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_ips_datasets.descr"
+        },
+        "ips_dataset_name": {
+            "displayname": "$rc:ips_dataset_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "depends": [
+                "in_ips_datasets"
+            ],
+            "description": "$rc:ips_dataset_name.descr"
+        },
+        "title": {
+            "displayname": "$rc:title.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:title.descr"
+        },
+        "summary": {
+            "type": "optional",
+            "control_guid": "{E5456E51-0C41-4797-9EE4-5269820C6F0E}",
+            "displayname": "$rc:summary.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:summary.descr"
+        },
+        "tags": {
+            "type": "optional",
+            "control_guid": "{E5456E51-0C41-4797-9EE4-5269820C6F0E}",
+            "displayname": "$rc:tags.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:tags.descr"
+        },
+        "folder": {
+            "type": "optional",
+            "displayname": "$rc:folder.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:folder.descr"
+        },
+        "sharing_level": {
+            "type": "optional",
+            "displayname": "$rc:sharing_level.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "OWNER",
+                        "code": "$rc:sharing_level.domain.OWNER"
+                    },
+                    {
+                        "value": "ORGANIZATION",
+                        "code": "$rc:sharing_level.domain.ORGANIZATION"
+                    },
+                    {
+                        "value": "EVERYONE",
+                        "code": "$rc:sharing_level.domain.EVERYONE"
+                    }
+                ]
+            },
+            "value": "OWNER",
+            "description": "$rc:sharing_level.descr"
+        },
+        "group_sharing": {
+            "type": "optional",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:group_sharing.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:group_sharing.descr"
+        },
+        "out_positioning_item_id": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_positioning_item_id.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "out_positioning_item_url": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_positioning_item_url.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "update_existing": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:update_existing.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "UPDATE_EXISTING"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_UPDATE_EXISTING"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:update_existing.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

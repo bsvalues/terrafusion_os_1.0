@@ -1,0 +1,571 @@
+{% extends "base_clean.html" %}
+
+{% block title %}PACS Conversion Dashboard - TerraFusion Platform{% endblock %}
+
+{% block content %}
+    <style>
+        .sidebar {
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px 0;
+            position: fixed;
+            width: 250px;
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 12px 20px;
+            margin: 2px 0;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            color: white;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 0 25px 25px 0;
+            margin-right: 0;
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+        .conversion-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .conversion-card:hover {
+            transform: translateY(-5px);
+        }
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+        }
+        .progress-wrapper {
+            position: relative;
+            margin: 10px 0;
+        }
+        .conversion-template {
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .conversion-template:hover {
+            border-color: #667eea;
+            background-color: #f8f9ff;
+        }
+        .metric-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .metric-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="text-center text-white mb-4">
+            <h5><i class="fas fa-globe"></i> TerraFusion</h5>
+            <small>PACS Conversion Hub</small>
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="/">
+                    <i class="fas fa-home me-2"></i> Main Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="/pacs-conversion-dashboard">
+                    <i class="fas fa-exchange-alt me-2"></i> PACS Conversion
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/project-dashboard">
+                    <i class="fas fa-project-diagram me-2"></i> Project Management
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/gis-dashboard">
+                    <i class="fas fa-map me-2"></i> GIS Services
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/ai-analysis-dashboard">
+                    <i class="fas fa-brain me-2"></i> AI Analysis
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/district-lookup-dashboard">
+                    <i class="fas fa-search-location me-2"></i> District Lookup
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2><i class="fas fa-exchange-alt text-primary"></i> PACS Conversion Dashboard</h2>
+                <p class="text-muted">Bulletproof legacy database conversion management</p>
+            </div>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newConversionModal">
+                <i class="fas fa-plus"></i> New Conversion
+            </button>
+        </div>
+
+        <!-- Metrics Row -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-value">{{ active_conversions }}</div>
+                    <div class="metric-label">Active Conversions</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-value text-success">{{ completed_conversions }}</div>
+                    <div class="metric-label">Completed</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-value text-danger">{{ failed_conversions }}</div>
+                    <div class="metric-label">Failed</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-value text-info">{{ "{:,}".format(total_records_processed) }}</div>
+                    <div class="metric-label">Records Processed</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="row">
+            <!-- Active Conversions -->
+            <div class="col-lg-8">
+                <div class="card conversion-card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-tasks"></i> Active Conversion Jobs</h5>
+                        <button class="btn btn-sm btn-outline-primary" onclick="refreshConversions()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="conversions-list">
+                            {% if recent_jobs %}
+                                {% for job in recent_jobs %}
+                                <div class="conversion-job-item border-bottom pb-3 mb-3">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="mb-1">{{ job.county_name }} County</h6>
+                                            <small class="text-muted">{{ job.source_system_type|title }} System</small>
+                                            <div class="mt-2">
+                                                {% if job.conversion_status == 'COMPLETED' %}
+                                                    <span class="badge bg-success status-badge">Completed</span>
+                                                {% elif job.conversion_status == 'FAILED' %}
+                                                    <span class="badge bg-danger status-badge">Failed</span>
+                                                {% elif job.conversion_status in ['RUNNING', 'PROCESSING'] %}
+                                                    <span class="badge bg-warning status-badge">Processing</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary status-badge">{{ job.conversion_status }}</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="text-end">
+                                            <small class="text-muted">Job ID: {{ job.job_id.split('_')[-2:] | join('_') }}</small>
+                                            {% if job.quality_score > 0 %}
+                                            <div class="mt-1">
+                                                <small class="text-success">Quality: {{ "%.1f"|format(job.quality_score) }}%</small>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% if job.records_total > 0 %}
+                                    <div class="progress-wrapper">
+                                        <div class="progress" style="height: 6px;">
+                                            <div class="progress-bar" role="progressbar" 
+                                                 style="width: {{ (job.records_processed / job.records_total * 100)|round(1) }}%">
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">{{ "{:,}".format(job.records_processed) }} / {{ "{:,}".format(job.records_total) }} records</small>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">No Active Conversions</h5>
+                                <p class="text-muted">Start a new PACS conversion to see job progress here</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Supported Systems -->
+            <div class="col-lg-4">
+                <div class="card conversion-card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-database"></i> Supported PACS Systems</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for system in supported_systems %}
+                        <div class="conversion-template mb-3" onclick="selectTemplate('{{ system }}')">
+                            <i class="fas fa-server fa-2x text-primary mb-2"></i>
+                            <h6>{{ system.replace('_', ' ')|title }}</h6>
+                            <small class="text-muted">Click to use template</small>
+                        </div>
+                        {% endfor %}
+                        
+                        {% if not supported_systems %}
+                        <div class="text-center py-3">
+                            <i class="fas fa-question-circle fa-2x text-muted mb-2"></i>
+                            <p class="text-muted">No templates available</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card conversion-card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-bolt"></i> Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary" onclick="testConnection()">
+                                <i class="fas fa-plug"></i> Test Connection
+                            </button>
+                            <button class="btn btn-outline-success" onclick="downloadTemplate()">
+                                <i class="fas fa-download"></i> Download Config Template
+                            </button>
+                            <button class="btn btn-outline-info" onclick="viewDocumentation()">
+                                <i class="fas fa-book"></i> View Documentation
+                            </button>
+                            <button class="btn btn-outline-warning" onclick="exportReport()">
+                                <i class="fas fa-file-export"></i> Export Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Conversion Modal -->
+    <div class="modal fade" id="newConversionModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create New PACS Conversion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="conversionForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">County Name</label>
+                                    <input type="text" class="form-control" id="countyName" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Source System Type</label>
+                                    <select class="form-select" id="sourceType" required>
+                                        <option value="">Select system type...</option>
+                                        <option value="oracle_pacs">Oracle PACS</option>
+                                        <option value="sqlserver_pacs">SQL Server PACS</option>
+                                        <option value="access_pacs">Microsoft Access</option>
+                                        <option value="as400_pacs">AS/400 Legacy</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Connection String</label>
+                            <textarea class="form-control" id="connectionString" rows="3" 
+                                      placeholder="Enter database connection string..."></textarea>
+                            <div class="form-text">Connection string will be encrypted and stored securely</div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Template Type</label>
+                                    <select class="form-select" id="templateType">
+                                        <option value="">Auto-detect from system type</option>
+                                        <option value="oracle_pacs">Oracle Template</option>
+                                        <option value="sqlserver_pacs">SQL Server Template</option>
+                                        <option value="access_pacs">Access Template</option>
+                                        <option value="as400_pacs">AS/400 Template</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Validation Threshold (%)</label>
+                                    <input type="number" class="form-control" id="validationThreshold" 
+                                           value="95" min="50" max="100">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="enableRollback" checked>
+                                <label class="form-check-label" for="enableRollback">
+                                    Enable automatic rollback on failure
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="validateAddresses" checked>
+                                <label class="form-check-label" for="validateAddresses">
+                                    Validate and standardize addresses
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="createConversion()">
+                        <i class="fas fa-rocket"></i> Start Conversion
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Refresh conversions list
+        function refreshConversions() {
+            fetch('/api/pacs/conversion-jobs')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.jobs) {
+                        updateConversionsList(data.jobs);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching conversions:', error);
+                });
+        }
+
+        // Update conversions list display
+        function updateConversionsList(jobs) {
+            const container = document.getElementById('conversions-list');
+            
+            if (jobs.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-4">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No Active Conversions</h5>
+                        <p class="text-muted">Start a new PACS conversion to see job progress here</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            jobs.forEach(job => {
+                const progress = job.records_total > 0 ? (job.records_processed / job.records_total * 100) : 0;
+                const statusClass = getStatusClass(job.status);
+                
+                html += `
+                    <div class="conversion-job-item border-bottom pb-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">${job.county_name} County</h6>
+                                <small class="text-muted">${job.source_system_type} System</small>
+                                <div class="mt-2">
+                                    <span class="badge ${statusClass} status-badge">${job.status}</span>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <small class="text-muted">Job ID: ${job.job_id.split('_').slice(-2).join('_')}</small>
+                                ${job.quality_score > 0 ? `<div class="mt-1"><small class="text-success">Quality: ${job.quality_score.toFixed(1)}%</small></div>` : ''}
+                            </div>
+                        </div>
+                        ${job.records_total > 0 ? `
+                            <div class="progress-wrapper">
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar" role="progressbar" style="width: ${progress.toFixed(1)}%"></div>
+                                </div>
+                                <small class="text-muted">${job.records_processed.toLocaleString()} / ${job.records_total.toLocaleString()} records</small>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Get status badge class
+        function getStatusClass(status) {
+            switch(status) {
+                case 'COMPLETED': return 'bg-success';
+                case 'FAILED': return 'bg-danger';
+                case 'RUNNING':
+                case 'PROCESSING': return 'bg-warning';
+                default: return 'bg-secondary';
+            }
+        }
+
+        // Select template
+        function selectTemplate(templateType) {
+            document.getElementById('templateType').value = templateType;
+            document.getElementById('sourceType').value = templateType;
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('newConversionModal'));
+            modal.show();
+        }
+
+        // Create new conversion
+        function createConversion() {
+            const formData = {
+                county_name: document.getElementById('countyName').value,
+                source_type: document.getElementById('sourceType').value,
+                connection_config: {
+                    connection_string: document.getElementById('connectionString').value,
+                    type: document.getElementById('sourceType').value,
+                    validation_threshold: document.getElementById('validationThreshold').value,
+                    auto_rollback: document.getElementById('enableRollback').checked,
+                    validate_addresses: document.getElementById('validateAddresses').checked
+                },
+                template_type: document.getElementById('templateType').value || undefined
+            };
+
+            // Validate required fields
+            if (!formData.county_name || !formData.source_type || !formData.connection_config.connection_string) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            fetch('/api/pacs/conversion-jobs', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Close modal
+                    bootstrap.Modal.getInstance(document.getElementById('newConversionModal')).hide();
+                    
+                    // Reset form
+                    document.getElementById('conversionForm').reset();
+                    
+                    // Refresh list
+                    refreshConversions();
+                    
+                    alert(`Conversion job created successfully! Job ID: ${data.job_id}`);
+                } else {
+                    alert(`Error creating conversion: ${data.error}`);
+                }
+            })
+            .catch(error => {
+                console.error('Error creating conversion:', error);
+                alert('Error creating conversion job');
+            });
+        }
+
+        // Test connection
+        function testConnection() {
+            const connectionString = prompt('Enter connection string to test:');
+            const databaseType = prompt('Enter database type (oracle, sqlserver, access, db2):');
+            
+            if (!connectionString || !databaseType) return;
+
+            fetch('/api/pacs/validate-connection', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    connection_string: connectionString,
+                    database_type: databaseType
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.valid) {
+                    alert(`Connection successful!\n\nTables found: ${data.tables_found}\nTotal records: ${data.total_records.toLocaleString()}`);
+                } else {
+                    alert(`Connection failed: ${data.error}`);
+                }
+            })
+            .catch(error => {
+                console.error('Error testing connection:', error);
+                alert('Error testing connection');
+            });
+        }
+
+        // Download template
+        function downloadTemplate() {
+            fetch('/api/pacs/templates')
+                .then(response => response.json())
+                .then(data => {
+                    const blob = new Blob([JSON.stringify(data.templates, null, 2)], {
+                        type: 'application/json'
+                    });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'pacs_conversion_templates.json';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                })
+                .catch(error => {
+                    console.error('Error downloading template:', error);
+                    alert('Error downloading template');
+                });
+        }
+
+        // View documentation
+        function viewDocumentation() {
+            window.open('/USER_GUIDE_COMPLETE.md', '_blank');
+        }
+
+        // Export report
+        function exportReport() {
+            alert('Report export functionality coming soon!');
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(refreshConversions, 30000);
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshConversions();
+        });
+    </script>
+{% endblock %}

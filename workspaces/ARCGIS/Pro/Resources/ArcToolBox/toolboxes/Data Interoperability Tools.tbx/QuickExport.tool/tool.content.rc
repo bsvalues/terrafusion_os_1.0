@@ -1,0 +1,10 @@
+{
+    "map": {
+        "description": "Converts one or more input feature classes or feature layers into any format supported by the ArcGIS Data Interoperability extension.",
+        "input.descr": "The feature layers or feature classes that will be exported.",
+        "input.title": "Input Layer",
+        "output.descr": "The format and dataset to which the data will be exported.",
+        "output.title": "Output Dataset",
+        "title": "Quick Export"
+    }
+}

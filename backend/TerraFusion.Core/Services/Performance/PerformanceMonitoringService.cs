@@ -64,16 +64,16 @@ public class PerformanceMonitoringService : IPerformanceMonitoringService
         return metrics;
     }
 
-    public async Task<List<PerformanceMetrics>> GetMetricsHistoryAsync(TimeSpan period)
+    public Task<List<PerformanceMetrics>> GetMetricsHistoryAsync(TimeSpan period)
     {
         var cutoff = DateTime.UtcNow.Subtract(period);
         
         lock (_lock)
         {
-            return _metricsHistory
+            return Task.FromResult(_metricsHistory
                 .Where(m => m.Timestamp >= cutoff)
                 .OrderBy(m => m.Timestamp)
-                .ToList();
+                .ToList());
         }
     }
 

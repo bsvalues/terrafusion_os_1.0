@@ -1,0 +1,436 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.Core.WCF.NHibernate</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.Core.WCF.NHibernate.SessionManagementServiceBehavior">
+            <summary>
+            Provides a mechanism to modify or insert custom extensions across
+            an entire service, including the ServiceHostBase.
+            We implement this class to bootstrap the initialization of a
+            service class by inserting NHibernate session management
+            facilities into the service.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.SessionManagementServiceBehavior.AddBindingParameters(System.ServiceModel.Description.ServiceDescription,System.ServiceModel.ServiceHostBase,System.Collections.ObjectModel.Collection{System.ServiceModel.Description.ServiceEndpoint},System.ServiceModel.Channels.BindingParameterCollection)">
+            <summary>
+            Provides the ability to pass custom data to binding elements
+            to support the contract implementation.
+            </summary>
+            <param name="serviceDescription">The service description of
+            the service.</param>
+            <param name="serviceHostBase">The host of the service.</param>
+            <param name="endpoints">The service endpoints.</param>
+            <param name="bindingParameters">Custom objects to which binding
+            elements have access.</param>
+            <remarks>Use the AddBindingParameters method to add custom data
+            objects to the parameters collection that binding elements can
+            use to acquire extra information to enable them to support the
+            contract.
+            
+            This method is called once for each listen URI. For example, if
+            a service has four endpoints, and two of them have the same listen
+            URI, then this method gets called three times. The reason is that
+            the bindingParameters target each channel stack and there is one
+            channel stack for each listen URI. Because each call receives those
+            endpoints at that listen URI, two calls each get a single
+            <see cref="T:System.ServiceModel.Description.ServiceEndpoint"/>, and
+            one call gets a collection of two
+            <see cref="T:System.ServiceModel.Description.ServiceEndpoint"/>
+            objects.</remarks>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.SessionManagementServiceBehavior.ApplyDispatchBehavior(System.ServiceModel.Description.ServiceDescription,System.ServiceModel.ServiceHostBase)">
+            <summary>
+            Provides the ability to change run-time property values or insert
+            custom extension objects such as error handlers, message or
+            parameter interceptors, security extensions, and other custom
+            extension objects. We implement this to insert NHibernate session
+            management features into the service host.
+            </summary>
+            <param name="serviceDescription">The service description.</param>
+            <param name="serviceHostBase">The host that is currently being built.
+            </param>
+            <remarks>Implement the ApplyDispatchBehavior method to inspect or
+            modify the ServiceHostBase object that is being constructed in order
+            to support some custom execution scenario.</remarks>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.SessionManagementServiceBehavior.Validate(System.ServiceModel.Description.ServiceDescription,System.ServiceModel.ServiceHostBase)">
+            <summary>
+            Provides the ability to inspect the service host and the service
+            description to confirm that the service can run successfully.
+            </summary>
+            <param name="serviceDescription">The service description.</param>
+            <param name="serviceHostBase">The host that is currently being built.
+            </param>
+        </member>
+        <member name="T:TrueAutomation.Core.WCF.NHibernate.DispatchMessageInspector">
+            <summary>
+            Defines the methods that enable custom inspection or modification
+            of inbound and outbound application messages in service applications.
+            This implementation ensures that all NHibernate sessions for the
+            current instance context are closed before the response is sent
+            back to the client. This guards against resource leaks and other
+            unexpected behavior caused by errors, exceptions, sloppiness, etc.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.DispatchMessageInspector.AfterReceiveRequest(System.ServiceModel.Channels.Message@,System.ServiceModel.IClientChannel,System.ServiceModel.InstanceContext)">
+            <summary>
+            Called after an inbound message has been received but before the
+            message is dispatched to the intended operation.
+            </summary>
+            <param name="request">The request message.</param>
+            <param name="channel">The incoming channel.</param>
+            <param name="instanceContext">The current service instance.</param>
+            <returns>The object used to correlate state. This object is passed
+            back in the BeforeSendReply method.</returns>
+            <remarks>Use the AfterReceiveRequest method to inspect or modify
+            the incoming message, the client channel that provided it, and
+            the current service instance. The return value can be any object
+            that you want to use for correlation purposes; it is returned to
+            you as the correlationState parameter in the BeforeSendReply
+            method.</remarks>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.DispatchMessageInspector.BeforeSendReply(System.ServiceModel.Channels.Message@,System.Object)">
+            <summary>
+            Called after the operation has returned but before the reply
+            message is sent. We implement this method to ensure that any
+            NHibernate sessions associated with the current instance context
+            are closed before we return the result back to the client.
+            </summary>
+            <param name="reply">The reply message. This value is null if
+            the operation is one way.</param>
+            <param name="correlationState">The correlation object returned
+            from the AfterReceiveRequest method.</param>
+        </member>
+        <member name="T:TrueAutomation.Core.WCF.NHibernate.ServiceLocatorInstanceProvider">
+            <summary>
+            Implements a WCF-based instance provider that returns an
+            instance of a specified service type using the global service
+            locator to resolve the type.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.WCF.NHibernate.ServiceLocatorInstanceProvider.serviceType">
+            <summary>
+            The service type associated with this instance provider.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.ServiceLocatorInstanceProvider.#ctor(System.Type)">
+            <summary>
+            Class constructor -- initializes an instance of the service
+            locator instance provider.
+            </summary>
+            <param name="serviceType">Identifies the service type for
+            this instance provider.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.ServiceLocatorInstanceProvider.GetInstance(System.ServiceModel.InstanceContext,System.ServiceModel.Channels.Message)">
+            <summary>
+            Returns an instance of the associated service type for the
+            specified instance context and message.
+            </summary>
+            <param name="instanceContext">The instance context for which
+            to return the associated service type.</param>
+            <param name="message">The message associated with this request.
+            </param>
+            <returns>An instance of the associated service type for the
+            specified instance context.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.ServiceLocatorInstanceProvider.GetInstance(System.ServiceModel.InstanceContext)">
+            <summary>
+            Returns an instance of the associated service type for the
+            specified instance context.
+            </summary>
+            <param name="instanceContext">The instance context for which
+            to return the associated service type.</param>
+            <returns>An instance of the associated service type for the
+            specified instance context.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.ServiceLocatorInstanceProvider.ReleaseInstance(System.ServiceModel.InstanceContext,System.Object)">
+            <summary>
+            Releases the service instance associated with the specified
+            instance context. We simply ignore this method because there
+            are no special release-related actions for us to perform on
+            the services returned by this service locator instance provider
+            implementation.
+            </summary>
+            <param name="instanceContext">The instance context with which
+            the specified service instance is associated.</param>
+            <param name="instance">The service instance to release.</param>
+        </member>
+        <member name="T:TrueAutomation.Core.WCF.NHibernate.SessionExtension">
+            <summary>
+            Implements a WCF extension used to manage NHibernate session
+            storage on a per-instance basis, associated with the corresponding
+            instance context.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.WCF.NHibernate.SessionExtension.sessionStorage">
+            <summary>
+            We use a default session-storage implementation per individual
+            WCF service context (as opposed to one global one) for everything.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.SessionExtension.#ctor">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.SessionExtension.System#ServiceModel#IExtension{System#ServiceModel#InstanceContext}#Attach(System.ServiceModel.InstanceContext)">
+            <summary>
+            Enables an extension object to find out when it has been
+            aggregated. Called when the extension is added to the
+            <see cref="P:System.ServiceModel.IExtensibleObject`1.Extensions"/> property.
+            </summary>
+            <param name="owner">The extensible object that aggregates
+            this extension.</param>
+            <remarks>Use this method to keep track of the
+            <see cref="T:System.ServiceModel.IExtensibleObject`1"/> object to which the current
+            instance of the extension belongs. This call gives extensions
+            a chance to handle events or inspect properties of their owner.
+            </remarks>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.SessionExtension.System#ServiceModel#IExtension{System#ServiceModel#InstanceContext}#Detach(System.ServiceModel.InstanceContext)">
+             <summary>
+             Enables an extension object to find out when it is no longer
+             aggregated. Called when the extension is added to the
+             <see cref="P:System.ServiceModel.IExtensibleObject`1.Extensions"/> property.
+             </summary>
+             <param name="owner">The extensible object that aggregates
+             this extension.</param>
+             <remarks>Use the Detach method to find out when the extension
+             has been removed. An extension can use this to unhook events on
+             the extensible object. An extension can also throw
+             <see cref="T:System.InvalidOperationException"/> from this method
+             to indicate that, once added, the extension cannot be removed.
+            
+             Note that this method is not called when the owner object is
+             disposed or closed. If needed, it is up to the extension or the
+             code adding the extension to hook the appropriate
+             <see cref="T:System.ServiceModel.ICommunicationObject"/> events or
+             implement the appropriate interfaces (for
+             <see cref="T:System.ServiceModel.OperationContext"/>) to observe the
+             lifecycle of the owner.
+             </remarks>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.SessionExtension.GetSessionForKey(System.String)">
+            <summary>
+            Returns the session instance for the specified factory key.
+            </summary>
+            <param name="factoryKey">The factory key identifying the
+            repository session to return.</param>
+            <returns>The repository session for the specified factory key.
+            </returns>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.SessionExtension.SetSessionForKey(System.String,NHibernate.ISession)">
+            <summary>
+            Sets the repository session for the specified factory key.
+            </summary>
+            <param name="factoryKey">The factory key identifying the
+            repository session to return.</param>
+            <param name="session">The session to associate with the
+            specified factory key.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.SessionExtension.GetAllSessions">
+            <summary>
+            Returns a list of all sessions managed by this storage class.
+            </summary>
+            <returns>The complete list of sessions managed by this storage class.
+            </returns>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.SessionExtension.Reset">
+            <summary>
+            Releases any current internal session storage and
+            creates a new one to replace it. Useful for restoring
+            the overall context to a pristine state.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.WCF.NHibernate.SessionInstanceContextInitializer">
+            <summary>
+            Defines the methods necessary to inspect or modify the creation
+            of <see cref="T:System.ServiceModel.InstanceContext"/> objects when
+            required. This implementation adds a <see cref="T:TrueAutomation.Core.WCF.NHibernate.SessionExtension"/>
+            instance to the context's list of extensions.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.SessionInstanceContextInitializer.Initialize(System.ServiceModel.InstanceContext,System.ServiceModel.Channels.Message)">
+            <summary>
+            Provides the ability to modify the newly created
+            <see cref="T:System.ServiceModel.InstanceContext"/> object.
+            This implementation adds a new <see cref="T:TrueAutomation.Core.WCF.NHibernate.SessionExtension"/>
+            instance to the context's list of available extensions.
+            </summary>
+            <param name="instanceContext">The system-supplied instance context.
+            </param>
+            <param name="message">The message that triggered the creation of
+            the instance context.</param>
+        </member>
+        <member name="T:TrueAutomation.Core.WCF.NHibernate.SessionManagingServiceHost">
+            <summary>
+            Implements a WCF service host that incorporates NHibernate
+            session management functionality.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.SessionManagingServiceHost.#ctor(System.Type,System.Uri[])">
+            <summary>
+            Class constructor -- initializes an instance of the service
+            host class.
+            </summary>
+            <param name="serviceType">The type of hosted service.</param>
+            <param name="baseAddresses">An array of type Uri that
+            contains the base addresses for the hosted service.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.SessionManagingServiceHost.OnOpening">
+            <summary>
+            Invoked during the transition of a communication object into the
+            opening state. We override this method here to insert a bunch
+            of custom behaviors related to NHibernate session management.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.WCF.NHibernate.SessionStorage">
+            <summary>
+            Implements a session storage manager appropriate for use
+            by a WCF service. This implementation uses the
+            <see cref="T:TrueAutomation.Core.WCF.NHibernate.SessionExtension"/> extension
+            class to associate independent session storage per instance
+            of a WCF service class based on the instance context of each.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.WCF.NHibernate.SessionStorage.defaultSessionStorage">
+            <summary>
+            The default session storage manager to use when no WCF instance
+            context is available. This is an abnormal case, but it has
+            usefulness in specific situations, like during unit testing.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.SessionStorage.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.SessionStorage.#ctor(TrueAutomation.Core.Persistence.NHibernate.ISessionStorage)">
+            <summary>
+            Class constructor -- initializes an instance of the class
+            with a supplied default session storage manager.
+            </summary>
+            <param name="defaultSessionStorage">The default session storage
+            manager to use for context-less requests, such as in unit testing
+            cases. May be null.</param>
+        </member>
+        <member name="P:TrueAutomation.Core.WCF.NHibernate.SessionStorage.DefaultSessionStorage">
+            <summary>
+            The default session storage manager to use when no WCF instance
+            context is available. This is an abnormal case, but it has
+            usefulness in specific situations, like during unit testing.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.SessionStorage.GetSessionForKey(System.String)">
+            <summary>
+            Returns the session instance for the specified factory key.
+            </summary>
+            <param name="factoryKey">The factory key identifying the
+            repository session to return.</param>
+            <returns>The repository session for the specified factory key.
+            </returns>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.SessionStorage.SetSessionForKey(System.String,NHibernate.ISession)">
+            <summary>
+            Sets the repository session for the specified factory key.
+            </summary>
+            <param name="factoryKey">The factory key identifying the
+            repository session to return.</param>
+            <param name="session">The session to associate with the
+            specified factory key.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.SessionStorage.GetAllSessions">
+            <summary>
+            Returns a list of all sessions managed by this storage class.
+            </summary>
+            <returns>The complete list of sessions managed by this storage class.
+            </returns>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.SessionStorage.EndUnitOfWork(System.Boolean)">
+            <summary>
+            End the current unit of work, by clearing and optionally closing
+            any associated sessions.
+            </summary>
+            <param name="closeSessions">True to close any current sessions,
+            otherwise false to simply clear and re-use the existing sessions.
+            </param>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.SessionStorage.GetSessionExtension">
+            <summary>
+            Returns the session extension for the current operation context.
+            </summary>
+            <returns>The session extension for the current operation context.
+            </returns>
+            <exception cref="T:System.Exception">if no session extension can be
+            found for the current operation context.</exception>
+        </member>
+        <member name="F:TrueAutomation.Core.WCF.NHibernate.ThreadSessionStorage.perThreadSessionStorage">
+            <summary>
+            Implements a thread-safe lookup table of
+            <see cref="T:DefaultSessionStorage"/> instances per thread of
+            operation in the application.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.ThreadSessionStorage.GetSessionForKey(System.String)">
+            <summary>
+            Returns the session instance for the specified factory key.
+            </summary>
+            <param name="factoryKey">The factory key identifying the
+            repository session to return.</param>
+            <returns>The repository session for the specified factory key.
+            </returns>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.ThreadSessionStorage.SetSessionForKey(System.String,NHibernate.ISession)">
+            <summary>
+            Sets the repository session for the specified factory key.
+            </summary>
+            <param name="factoryKey">The factory key identifying the
+            repository session to return.</param>
+            <param name="session">The session to associate with the
+            specified factory key.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.ThreadSessionStorage.GetAllSessions">
+            <summary>
+            Returns a list of all sessions managed by this storage class.
+            </summary>
+            <returns>The complete list of sessions managed by this storage class.
+            </returns>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.ThreadSessionStorage.EndUnitOfWork(System.Boolean)">
+            <summary>
+            End the current unit of work, by clearing and optionally closing
+            any associated sessions.
+            </summary>
+            <param name="closeSessions">True to close any current sessions,
+            otherwise false to simply clear and re-use the existing sessions.
+            </param>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.ThreadSessionStorage.GetSessionStorageForThread">
+            <summary>
+            Returns the <see cref="T:DefaultSessionStorage"/> instance for
+            the current thread of execution.
+            </summary>
+            <returns>A <see cref="T:DefaultSessionStorage"/> instance for
+            the current thread of execution.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.ThreadSessionStorage.GetCurrentThreadName">
+            <summary>
+            Internal implementation method to return the current thread name.
+            </summary>
+            <returns>The unique name for the current thread of execution.
+            </returns>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.NHibernate.Windsor.Installer.Install(Castle.Windsor.IWindsorContainer,Castle.MicroKernel.SubSystems.Configuration.IConfigurationStore)">
+            <summary>
+            Registers all our transaction-related facility types with the
+            supplied Windsor IoC container.
+            </summary>
+            <param name="container">The container into which to register
+            the transaction facility types.</param>
+            <param name="store">Configuration store parameter -- unused in
+            this implementation.</param>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,21 @@
+{
+    "map": {
+        "description": "Creates a table of the file path for each item in a mosaic dataset. You can specify whether the table contains all the file paths or just the ones that are broken.",
+        "export_mode.descr": "<xdoc><p>Populate the table with either all of the paths, or only the broken paths.</p><ul><li><span title=\"ALL\">All paths</span>—Export all paths to the table. This is the default.</li><li><span title=\"BROKEN\">Broken paths only</span>—Export only broken paths to the table.</li></ul></xdoc>",
+        "export_mode.domain.ALL": "All paths",
+        "export_mode.domain.BROKEN": "Broken paths only",
+        "export_mode.title": "Export Mode",
+        "in_mosaic_dataset.descr": "The mosaic dataset containing the file paths to export.",
+        "in_mosaic_dataset.title": "Mosaic Dataset",
+        "out_table.descr": "<xdoc><p>The table to create. The table can be a geodatabase table or a .dbf file.</p><p>The <span class=\"esri_fieldname\">SourceOID</span> field in the output table is derived from the OID of the row in the original mosaic dataset table.</p></xdoc>",
+        "out_table.title": "Output Table",
+        "params.category1": "Advanced Options",
+        "title": "Export Mosaic Dataset Paths",
+        "types_of_paths.descr": "<xdoc><p>Choose to export file paths from only the source raster, only the cache, or both. The default is to export all path types.</p><ul><li><span title=\"RASTER\">Raster</span>—Export file paths from rasters.</li><li><span title=\"ITEM_CACHE\">Item cache</span>—Export file paths from item cache.</li></ul></xdoc>",
+        "types_of_paths.domain.ITEM_CACHE": "Item cache",
+        "types_of_paths.domain.RASTER": "Raster",
+        "types_of_paths.title": "Types of paths to export",
+        "where_clause.descr": "An SQL expression to select specific rasters for export.",
+        "where_clause.title": "Query Definition"
+    }
+}

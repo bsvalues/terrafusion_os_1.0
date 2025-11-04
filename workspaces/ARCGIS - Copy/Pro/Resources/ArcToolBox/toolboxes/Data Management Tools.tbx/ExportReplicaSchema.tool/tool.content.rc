@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Creates a replica schema file with the schema of an input one- or two-way replica.",
+        "in_geodatabase.descr": "The replica geodatabase from which the replica schema will be exported. The geodatabase can be a local or remote geodatabase.",
+        "in_geodatabase.title": "Export from Replica Geodatabase",
+        "in_replica.descr": "The replica from which the schema will be exported.",
+        "in_replica.title": "Replica",
+        "output_replica_schema_file.descr": "The file to which the replica schema will be exported.",
+        "output_replica_schema_file.title": "Output Replica Schema File",
+        "title": "Export Replica Schema"
+    }
+}

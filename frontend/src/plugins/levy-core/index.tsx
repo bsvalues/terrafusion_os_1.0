@@ -42,46 +42,30 @@ function LevyCorePlugin({ context }: { context: any }) {
   return (
     <div className={styles.root}>
       <div className={styles.header}>
-
-
         <div className={styles.title}>Levy Core</div>
-        <div
-
-className={styles.subtitle}>Tax Assessment & Roll Generation</div>
+        <div className={styles.subtitle}>Tax Assessment & Roll Generation</div>
       </div>
 
       <div className={styles.info}>
-
-
         <div>County: {context.countyConfig?.countyId ?? 'unknown'}</div>
-        <div
-
->Legacy: {context.countyConfig?.legacySystem ?? 'unknown'}</div>
+        <div>Legacy: {context.countyConfig?.legacySystem ?? 'unknown'}</div>
         <div>Session: {context.sessionId ?? 'none'}</div>
       </div>
 
       <div className={styles.actions}>
-
-
         <button className={styles.button} onClick={handleCalculateLevy} disabled={loading}>
           {loading ? 'Calculating...' : 'Calculate Levy'}
         </button>
 
-        <button
-
-className={styles.button} onClick={handleGenerateRoll} disabled={loading}>
+        <button className={styles.button} onClick={handleGenerateRoll} disabled={loading}>
           {loading ? 'Generating...' : 'Generate Roll'}
         </button>
       </div>
 
       {calculation && (
         <div className={styles.results}>
-
-
           <div className={styles.resultsTitle}>Results:</div>
-          <pre
-
-className={styles.resultsData}>{JSON.stringify(calculation, null, 2)}</pre>
+          <pre className={styles.resultsData}>{JSON.stringify(calculation, null, 2)}</pre>
         </div>
       )}
     </div>

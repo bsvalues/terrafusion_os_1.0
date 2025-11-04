@@ -1,0 +1,19 @@
+{
+    "set": [
+        "ascii",
+        "chain",
+        "connect",
+        "convert",
+        "coordinate",
+        "csv",
+        "dots",
+        "geometry",
+        "gps",
+        "location",
+        "polyline",
+        "sequence",
+        "track",
+        "vector",
+        "xy"
+    ]
+}

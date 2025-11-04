@@ -1,0 +1,293 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TAPanelObjectBase</name>
+    </assembly>
+    <members>
+        <member name="P:TAPanelObjectBase.IPanelFactory.IsReady">
+            <summary>
+            Returns whether or not the panel factory is initialized and has
+            all managed panel types available.
+            </summary>
+        </member>
+        <member name="M:TAPanelObjectBase.IPanelFactory.CreatePanels">
+            <summary>
+            Creates all panel instances managed by this factory object.
+            </summary>
+        </member>
+        <member name="M:TAPanelObjectBase.IPanelFactory.Reset(System.Boolean)">
+            <summary>
+            Resets the panel factory, optionally clearing any already-created
+            panel instances.
+            </summary>
+            <param name="clearPanels"></param>
+        </member>
+        <member name="M:TAPanelObjectBase.IPanelFactory.GetPanel(System.Type)">
+            <summary>
+            Returns a panel of the specified type.
+            </summary>
+            <param name="panelType">The type of panel to be created.</param>
+            <returns>A panel of the specified type.</returns>
+        </member>
+        <member name="M:TAPanelObjectBase.IPanelFactory.GetPanel(System.Type,System.Boolean)">
+            <summary>
+            Returns a panel of the specified type, optionally as a stub-only
+            implementation.
+            </summary>
+            <param name="panelType">The type of panel to be created.</param>
+            <param name="stubOnly">true to return a simple stub for the specified
+            panel type, otherwise false to return a fully-initialized panel.
+            </param>
+            <returns>A panel of the specified type.</returns>
+        </member>
+        <member name="M:TAPanelObjectBase.IPanelFactory.GetFixedPanel(System.Type)">
+            <summary>
+            Returns a fixed panel of the specified type.
+            </summary>
+            <param name="panelType">The type of fixed panel to be created.</param>
+            <returns>A fixed panel of the specified type.</returns>
+        </member>
+        <member name="P:TAPanelObjectBase.ObjectBaseFixedPanel.PerformValidation">
+            <summary>
+            Determines whether or not a call to <see cref="M:TAPanelObjectBase.ObjectBaseFixedPanel.ValidateData"/> will process validation.
+            </summary>
+        </member>
+        <member name="P:TAPanelObjectBase.ObjectBaseSimpleView.PerformValidation">
+            <summary>
+            Determines whether or not a call to <see cref="M:TAPanelObjectBase.ObjectBaseSimpleView.ValidateData"/> will process validation.
+            </summary>
+        </member>
+        <member name="F:TAPanelObjectBase.ObjectBaseSimpleView.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelObjectBase.ObjectBaseSimpleView.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelObjectBase.ObjectBaseSimpleView.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TAPanelObjectBase.ObjectBaseView.supportsAsyncInitialization">
+            <summary>
+            State flag indicating whether or not this class supports asynchronous
+            initialization and loading of its record data or not.
+            </summary>
+        </member>
+        <member name="F:TAPanelObjectBase.ObjectBaseView.asyncInitializationPanels">
+            <summary>
+            A list of panels that currently need (or "would benefit from")
+            asynchronous initialization at the next available opportunity.
+            The list is not priority-ordered by default, but that could be
+            overridden if desirable by any derived types.
+            </summary>
+        </member>
+        <member name="F:TAPanelObjectBase.ObjectBaseView.initializationCompleteHandler">
+            <summary>
+            An event handler used to notify interested parties when initialization
+            of the object has completed execution.
+            </summary>
+        </member>
+        <member name="E:TAPanelObjectBase.ObjectBaseView.InitializationCompleteHandler">
+            <summary>
+            A post-initialization event used to notify consumers of the view that
+            initialization of the view has been completed, so that they may perform
+            any additional work that applies at that point.
+            // XXX move me to the base class!
+            </summary>
+        </member>
+        <member name="M:TAPanelObjectBase.ObjectBaseView.AddPanels(System.Collections.Generic.SortedDictionary{System.Int32,TAUserInterfaceService.MetaViewPanel})">
+            <summary>
+            This method should ONLY be called by the object resolution service.
+            </summary>
+            <param name="orderedPanels"></param>
+        </member>
+        <member name="P:TAPanelObjectBase.ObjectBaseView.PanelFactory">
+            <summary>
+            Accessor for the class-specific panel factory associated with this
+            class. Derived types must override this property to supply an
+            appropriate panel factory instance.
+            </summary>
+        </member>
+        <member name="M:TAPanelObjectBase.ObjectBaseView.ForceInitializePanels">
+            <summary>
+            This Should Never Be called from the outside.  It only exists for SubsetView Management.
+            </summary>
+        </member>
+        <member name="M:TAPanelObjectBase.ObjectBaseView.LoadRecordData(TAData.IObjectRecords)">
+            <summary>
+            Overridden method for optional loading of the data for a specified
+            records object based on the needs of the current object. The base
+            class implementation here makes use of any field-binding associated
+            with the current object as the basis for loading any record data.
+            Derived types should override as applicable to add in any extra
+            custom data loading not covered by field binding in order to
+            improve UI performance.
+            </summary>
+            <param name="records">the records object for which to load the
+            data applicable to the current object.</param>
+        </member>
+        <member name="M:TAPanelObjectBase.ObjectBaseView.AsyncLoadRecordData">
+            <summary>
+            Utility method intended to implement asynchronous loading of any record
+            data associated with this view. Loading of the data is delegated to the
+            IRecordDataLoader's LoadRecordData() method, and then the
+            OnRecordDataLoaded() handler is invoked on the view's main UI thread to
+            let the view complete any initialization tasks.
+            </summary>
+        </member>
+        <member name="M:TAPanelObjectBase.ObjectBaseView.OnAsyncLoadComplete(System.IAsyncResult)">
+            <summary>
+            Callback handler for asynchronous data load worker thread completion.
+            The default handler does nothing and should apply to almost every case
+            but derived types can override this if there's some compelling reason
+            to do that.
+            </summary>
+            <param name="result">The result of the worker thread operation.</param>
+        </member>
+        <member name="M:TAPanelObjectBase.ObjectBaseView.OnRecordDataLoaded">
+            <summary>
+            Notification handler called when asynchronous data loading has been
+            completed. This handler sets up the view's main UI and updates any
+            child panels correspondingly, then calls the callback handler for
+            notification that the view and panels have been initialized so that
+            derived types can perform any additional post-load initialization.
+            Finally the OnInitializationComplete event is fired to notify any
+            interested listeners that the view is ready to go.
+            </summary>
+        </member>
+        <member name="M:TAPanelObjectBase.ObjectBaseView.OnPanelsAndViewSetupComplete">
+            <summary>
+            Handler called to perform any additional initialization required after
+            any applicable record data has been loaded and the main view UI has
+            been initialized.
+            </summary>
+        </member>
+        <member name="M:TAPanelObjectBase.ObjectBaseView.OnInitializationComplete">
+            <summary>
+            Fires the initialization-complete event to notify any interested
+            parties of that fact.
+            </summary>
+        </member>
+        <member name="F:TAPanelObjectBase.ObjectBaseView.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelObjectBase.ObjectBaseView.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelObjectBase.ObjectBaseView.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TAPanelObjectBase.PanelFactory`1.panelsReady">
+            <summary>
+            State flag indicating whether our cached panels are available
+            </summary>
+        </member>
+        <member name="P:TAPanelObjectBase.PanelFactory`1.IsReady">
+            <summary>
+            Returns whether or not the panel factory is initialized and has
+            all managed panel types available.
+            </summary>
+        </member>
+        <member name="M:TAPanelObjectBase.PanelFactory`1.#ctor">
+            <summary>
+            Constructor -- initializes an instance of the panel factory.
+            </summary>
+        </member>
+        <member name="M:TAPanelObjectBase.PanelFactory`1.Reset(System.Boolean)">
+            <summary>
+            Resets the panel factory, optionally clearing any already-created
+            panel instances.
+            </summary>
+            <param name="clearPanels"></param>
+        </member>
+        <member name="M:TAPanelObjectBase.PanelFactory`1.CreatePanels">
+            <summary>
+            Creates all panel instances managed by this factory object.
+            </summary>
+        </member>
+        <member name="M:TAPanelObjectBase.PanelFactory`1.ClearPanels">
+            <summary>
+            Utility function to clear any created panels. Should be overridden
+            by any concrete subtypes as applicable.
+            </summary>
+        </member>
+        <member name="P:TAPanelObjectBase.ObjectBaseDialog.PerformValidation">
+            <summary>
+            Determines whether or not a call to <see cref="M:TAPanelObjectBase.ObjectBaseDialog.ValidateData"/> will process validation.
+            </summary>
+        </member>
+        <member name="F:TAPanelObjectBase.ObjectBaseDialog.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelObjectBase.ObjectBaseDialog.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelObjectBase.ObjectBaseDialog.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:TAPanelObjectBase.ObjectBasePanel.InitializeToScope">
+            <summary>
+            Override this method to set properties that would normally be set in the designer 
+            based on which view the panel existed on.
+            Ex. ImagesPanel.ImgAssocType
+            </summary>
+        </member>
+        <member name="F:TAPanelObjectBase.ObjectBasePanel.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelObjectBase.ObjectBasePanel.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelObjectBase.ObjectBasePanel.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TAPanelObjectBase.ObjectBaseParagraph.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAPanelObjectBase.ObjectBaseParagraph.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TAPanelObjectBase.ObjectBaseParagraph.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+    </members>
+</doc>

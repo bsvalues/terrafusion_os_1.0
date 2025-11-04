@@ -1,0 +1,9 @@
+{
+    "map": {
+        "description": "Returns the total number of rows for a table.",
+        "in_rows.descr": "The input table view or raster layer. If a selection is defined on the input, the count of the selected rows will be returned.",
+        "in_rows.title": "Input Rows",
+        "row_count.title": "Row Count",
+        "title": "Get Count"
+    }
+}

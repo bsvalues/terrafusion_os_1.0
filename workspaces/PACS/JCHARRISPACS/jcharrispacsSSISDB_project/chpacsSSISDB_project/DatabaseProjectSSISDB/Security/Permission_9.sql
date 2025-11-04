@@ -1,0 +1,5 @@
+GRANT ALTER ANY SYMMETRIC KEY TO [AllSchemaOwner];
+
+
+GO
+

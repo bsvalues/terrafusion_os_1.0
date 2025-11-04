@@ -1,0 +1,101 @@
+{
+    "type": "FunctionTool",
+    "guid": "{288bff38-81f3-4aba-a3c5-64782e23162b}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190215",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "input_mosaic_dataset": {
+            "displayname": "$rc:input_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEMosaicDataset"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "description": "$rc:input_mosaic_dataset.descr"
+        },
+        "input_solution_table": {
+            "displayname": "$rc:input_solution_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:input_solution_table.descr"
+        },
+        "input_solution_point": {
+            "displayname": "$rc:input_solution_point.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:input_solution_point.descr"
+        },
+        "output_report": {
+            "direction": "out",
+            "displayname": "$rc:output_report.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "html",
+                            "pdf",
+                            "json"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:output_report.descr"
+        },
+        "input_control_point_for_adjustment": {
+            "type": "optional",
+            "displayname": "$rc:input_control_point_for_adjustment.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:input_control_point_for_adjustment.descr"
+        },
+        "report_format": {
+            "type": "optional",
+            "displayname": "$rc:report_format.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "HTML",
+                        "code": "$rc:report_format.domain.HTML"
+                    },
+                    {
+                        "value": "PDF",
+                        "code": "$rc:report_format.domain.PDF"
+                    },
+                    {
+                        "value": "JSON",
+                        "code": "$rc:report_format.domain.JSON"
+                    },
+                    {
+                        "value": "BRIEF JSON",
+                        "code": "$rc:report_format.domain.BRIEF JSON"
+                    }
+                ]
+            },
+            "value": "HTML",
+            "description": "$rc:report_format.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

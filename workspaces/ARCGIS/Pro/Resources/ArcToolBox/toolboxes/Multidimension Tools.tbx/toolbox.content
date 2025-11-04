@@ -1,0 +1,37 @@
+{
+    "version": "1.0",
+    "alias": "md",
+    "displayname": "$rc:title",
+    "description": "$rc:descr",
+    "helpcontext": "17000000",
+    "toolsets": {
+        "<root>": {
+            "tools": [
+                "BuildMultidimensionalInfo",
+                "BuildMultidimensionalTranspose",
+                "MakeMultidimensionalRasterLayer",
+                "MakeMultidimensionalVoxelLayer",
+                "MakeOPeNDAPRasterLayer",
+                "ManageMultidimensionalRaster",
+                "MergeMultidimensionalRasters",
+                "SelectByDimension",
+                "SubsetMultidimensionalRaster"
+            ]
+        },
+        "$rc:toolset1.name": {
+            "tools": [
+                "DescribeNetCDFFile",
+                "FeatureToNetCDF",
+                "MakeNetCDFFeatureLayer",
+                "MakeNetCDFRasterLayer",
+                "MakeNetCDFTableView",
+                "NetCDFPointsToFeatureClass",
+                "NetCDFProfilesToFeatureClass",
+                "NetCDFTimeSeriesToFeatureClass",
+                "NetCDFTrajectoriesToFeatureClass",
+                "RasterToNetCDF",
+                "TableToNetCDF"
+            ]
+        }
+    }
+}

@@ -1,0 +1,411 @@
+{% extends "layout.html" %}
+
+{% block title %}MCP Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Master Control Program Dashboard</h1>
+    <p class="lead">Monitor and control the MCP agent system</p>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    System Status
+                </div>
+                <div class="card-body">
+                    <div id="system-status">
+                        <div class="d-flex justify-content-center">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    Task Summary
+                </div>
+                <div class="card-body">
+                    <div id="task-summary">
+                        <div class="d-flex justify-content-center">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>Registered Agents</span>
+                        <button id="refresh-agents" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-arrow-clockwise"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="agent-list">
+                        <div class="d-flex justify-content-center">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>Submit Task</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form id="task-form">
+                        <div class="mb-3">
+                            <label for="agent-select" class="form-label">Select Agent</label>
+                            <select class="form-select" id="agent-select" required>
+                                <option value="">Select an agent...</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="task-type" class="form-label">Task Type</label>
+                            <select class="form-select" id="task-type" required>
+                                <option value="">Select a task type...</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="task-data" class="form-label">Task Data (JSON)</label>
+                            <textarea class="form-control" id="task-data" rows="5" placeholder='{"key": "value"}'></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit Task</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>Recent Tasks</span>
+                        <button id="refresh-tasks" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-arrow-clockwise"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="task-list">
+                        <div class="d-flex justify-content-center">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the initial data
+        fetchSystemStatus();
+        fetchAgents();
+        
+        // Set up refresh buttons
+        document.getElementById('refresh-agents').addEventListener('click', fetchAgents);
+        document.getElementById('refresh-tasks').addEventListener('click', fetchTasks);
+        
+        // Set up task form submission
+        document.getElementById('task-form').addEventListener('submit', submitTask);
+        
+        // When agent is selected, update the task types
+        document.getElementById('agent-select').addEventListener('change', updateTaskTypes);
+    });
+    
+    // Fetch system status information
+    function fetchSystemStatus() {
+        fetch('/mcp/system/status')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    updateSystemStatusUI(data.system_status);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching system status:', error);
+                document.getElementById('system-status').innerHTML = 
+                    '<div class="alert alert-danger">Failed to load system status</div>';
+            });
+    }
+    
+    // Fetch agent information
+    function fetchAgents() {
+        fetch('/mcp/agents')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    updateAgentListUI(data.agents);
+                    populateAgentSelect(data.agents);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching agents:', error);
+                document.getElementById('agent-list').innerHTML = 
+                    '<div class="alert alert-danger">Failed to load agent list</div>';
+            });
+    }
+    
+    // Fetch task information
+    function fetchTasks() {
+        // In a real implementation, we would fetch the task list
+        document.getElementById('task-list').innerHTML = 
+            '<div class="alert alert-info">Task list feature coming soon</div>';
+    }
+    
+    // Update UI with system status
+    function updateSystemStatusUI(status) {
+        const html = `
+            <div class="row">
+                <div class="col-6">
+                    <p class="mb-1"><strong>Status:</strong></p>
+                    <p class="mb-1"><strong>Agents:</strong></p>
+                    <p class="mb-1"><strong>Total Tasks:</strong></p>
+                </div>
+                <div class="col-6">
+                    <p class="mb-1"><span class="badge bg-${status.running ? 'success' : 'danger'}">${status.running ? 'Running' : 'Stopped'}</span></p>
+                    <p class="mb-1">${status.agent_count}</p>
+                    <p class="mb-1">${status.tasks.total}</p>
+                </div>
+            </div>
+            
+            <div class="progress mt-3" style="height: 20px;">
+                <div class="progress-bar bg-success" role="progressbar" 
+                     style="width: ${calculatePercentage(status.tasks.completed, status.tasks.total)}%" 
+                     aria-valuenow="${status.tasks.completed}" aria-valuemin="0" aria-valuemax="${status.tasks.total}">
+                    ${status.tasks.completed} completed
+                </div>
+                <div class="progress-bar bg-warning" role="progressbar" 
+                     style="width: ${calculatePercentage(status.tasks.processing, status.tasks.total)}%" 
+                     aria-valuenow="${status.tasks.processing}" aria-valuemin="0" aria-valuemax="${status.tasks.total}">
+                    ${status.tasks.processing} processing
+                </div>
+                <div class="progress-bar bg-danger" role="progressbar" 
+                     style="width: ${calculatePercentage(status.tasks.failed, status.tasks.total)}%" 
+                     aria-valuenow="${status.tasks.failed}" aria-valuemin="0" aria-valuemax="${status.tasks.total}">
+                    ${status.tasks.failed} failed
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('system-status').innerHTML = html;
+        
+        // Also update task summary
+        const taskSummaryHtml = `
+            <div class="row">
+                <div class="col-md-3 text-center">
+                    <div class="display-4">${status.tasks.completed}</div>
+                    <div>Completed</div>
+                </div>
+                <div class="col-md-3 text-center">
+                    <div class="display-4">${status.tasks.processing}</div>
+                    <div>Processing</div>
+                </div>
+                <div class="col-md-3 text-center">
+                    <div class="display-4">${status.tasks.pending}</div>
+                    <div>Pending</div>
+                </div>
+                <div class="col-md-3 text-center">
+                    <div class="display-4">${status.tasks.failed}</div>
+                    <div>Failed</div>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('task-summary').innerHTML = taskSummaryHtml;
+    }
+    
+    // Update UI with agent list
+    function updateAgentListUI(agents) {
+        if (Object.keys(agents).length === 0) {
+            document.getElementById('agent-list').innerHTML = 
+                '<div class="alert alert-info">No agents registered</div>';
+            return;
+        }
+        
+        let html = '<div class="table-responsive"><table class="table table-striped">';
+        html += '<thead><tr><th>Agent ID</th><th>Type</th><th>Status</th><th>Capabilities</th></tr></thead>';
+        html += '<tbody>';
+        
+        for (const [agentId, agentInfo] of Object.entries(agents)) {
+            html += `
+                <tr>
+                    <td>${agentId}</td>
+                    <td>${agentInfo.type}</td>
+                    <td><span class="badge bg-${getStatusBadgeColor(agentInfo.status)}">${agentInfo.status}</span></td>
+                    <td>${agentInfo.capabilities ? agentInfo.capabilities.join(', ') : 'None'}</td>
+                </tr>
+            `;
+        }
+        
+        html += '</tbody></table></div>';
+        document.getElementById('agent-list').innerHTML = html;
+    }
+    
+    // Populate the agent select dropdown
+    function populateAgentSelect(agents) {
+        const select = document.getElementById('agent-select');
+        
+        // Clear existing options (except the first default option)
+        while (select.options.length > 1) {
+            select.remove(1);
+        }
+        
+        // Add new options
+        for (const [agentId, agentInfo] of Object.entries(agents)) {
+            const option = document.createElement('option');
+            option.value = agentId;
+            option.text = `${agentId} (${agentInfo.type})`;
+            option.dataset.capabilities = JSON.stringify(agentInfo.capabilities || []);
+            select.add(option);
+        }
+    }
+    
+    // Update task types based on selected agent
+    function updateTaskTypes() {
+        const agentSelect = document.getElementById('agent-select');
+        const taskTypeSelect = document.getElementById('task-type');
+        
+        // Clear existing options
+        while (taskTypeSelect.options.length > 1) {
+            taskTypeSelect.remove(1);
+        }
+        
+        if (agentSelect.selectedIndex === 0) {
+            return;
+        }
+        
+        // Get capabilities of selected agent
+        const selectedOption = agentSelect.options[agentSelect.selectedIndex];
+        const capabilities = JSON.parse(selectedOption.dataset.capabilities || '[]');
+        
+        // Add task types based on capabilities
+        capabilities.forEach(capability => {
+            const option = document.createElement('option');
+            option.value = capability;
+            option.text = formatCapabilityName(capability);
+            taskTypeSelect.add(option);
+        });
+    }
+    
+    // Submit a task
+    function submitTask(event) {
+        event.preventDefault();
+        
+        const agentId = document.getElementById('agent-select').value;
+        const taskType = document.getElementById('task-type').value;
+        const taskDataStr = document.getElementById('task-data').value;
+        
+        // Validate
+        if (!agentId || !taskType) {
+            alert('Please select an agent and task type');
+            return;
+        }
+        
+        let taskData = {};
+        try {
+            // If task data is provided, parse it
+            if (taskDataStr.trim()) {
+                taskData = JSON.parse(taskDataStr);
+            }
+            // Add task type to data
+            taskData.task_type = taskType;
+        } catch (e) {
+            alert('Invalid JSON in task data field');
+            return;
+        }
+        
+        // Submit the task
+        fetch('/mcp/tasks', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                agent_id: agentId,
+                task_data: taskData
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert(`Task submitted successfully. Task ID: ${data.task_id}`);
+                // Refresh tasks
+                fetchTasks();
+                // Refresh status
+                fetchSystemStatus();
+            } else {
+                alert(`Error: ${data.message}`);
+            }
+        })
+        .catch(error => {
+            console.error('Error submitting task:', error);
+            alert('Error submitting task. See console for details.');
+        });
+    }
+    
+    // Helper function to calculate percentage
+    function calculatePercentage(value, total) {
+        if (total === 0) return 0;
+        return (value / total) * 100;
+    }
+    
+    // Helper function to get badge color for agent status
+    function getStatusBadgeColor(status) {
+        switch (status) {
+            case 'initialized':
+            case 'idle':
+                return 'success';
+            case 'processing':
+            case 'converting':
+            case 'extracting_metadata':
+            case 'validating':
+            case 'extracting_features':
+                return 'primary';
+            case 'error':
+                return 'danger';
+            case 'shutdown':
+                return 'secondary';
+            default:
+                return 'info';
+        }
+    }
+    
+    // Helper function to format capability name for display
+    function formatCapabilityName(capability) {
+        return capability.split('_')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+    }
+</script>
+{% endblock %}

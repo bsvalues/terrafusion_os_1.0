@@ -1,0 +1,15 @@
+{
+    "set": [
+        "airports",
+        "aviation",
+        "charting",
+        "clearance",
+        "light",
+        "obstacle",
+        "obstacles",
+        "obstruction",
+        "signal",
+        "specifications",
+        "surface"
+    ]
+}

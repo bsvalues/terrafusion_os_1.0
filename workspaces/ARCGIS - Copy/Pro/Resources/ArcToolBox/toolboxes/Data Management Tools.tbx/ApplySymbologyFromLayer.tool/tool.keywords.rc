@@ -1,0 +1,15 @@
+{
+    "set": [
+        "apply",
+        "choropleth",
+        "classified",
+        "color",
+        "graduate",
+        "import",
+        "legend",
+        "lyr",
+        "memory",
+        "model",
+        "symbol"
+    ]
+}

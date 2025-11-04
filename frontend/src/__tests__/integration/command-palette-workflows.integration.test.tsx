@@ -32,10 +32,10 @@ import { Button } from '@/components/ui/button';
 const BasicCommandPalette = ({ onSelect }: { onSelect: (value: string) => void }) => {
   return (
     <Command>
-      <CommandInput placeholder="Type a command or search..." />
+      <CommandInput placeholder='Type a command or search...' />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
-        <CommandGroup heading="Suggestions">
+        <CommandGroup heading='Suggestions'>
           <CommandItem onSelect={() => onSelect('calendar')}>
             <span>📅</span>
             <span>Calendar</span>
@@ -50,7 +50,7 @@ const BasicCommandPalette = ({ onSelect }: { onSelect: (value: string) => void }
           </CommandItem>
         </CommandGroup>
         <CommandSeparator />
-        <CommandGroup heading="Settings">
+        <CommandGroup heading='Settings'>
           <CommandItem onSelect={() => onSelect('profile')}>
             <span>Profile</span>
             <CommandShortcut>⌘P</CommandShortcut>
@@ -85,27 +85,24 @@ const SearchableCommandPalette = ({ onSelect }: { onSelect: (value: string) => v
   ];
 
   const filteredActions = search
-    ? actions.filter(action =>
-        action.label.toLowerCase().includes(search.toLowerCase()) ||
-        action.keywords.some(kw => kw.includes(search.toLowerCase()))
+    ? actions.filter(
+        (action) =>
+          action.label.toLowerCase().includes(search.toLowerCase()) ||
+          action.keywords.some((kw) => kw.includes(search.toLowerCase()))
       )
     : actions;
 
-  const fileActions = filteredActions.filter(a => a.category === 'File');
-  const editActions = filteredActions.filter(a => a.category === 'Edit');
+  const fileActions = filteredActions.filter((a) => a.category === 'File');
+  const editActions = filteredActions.filter((a) => a.category === 'Edit');
 
   return (
     <Command>
-      <CommandInput
-        placeholder="Search actions..."
-        value={search}
-        onValueChange={setSearch}
-      />
+      <CommandInput placeholder='Search actions...' value={search} onValueChange={setSearch} />
       <CommandList>
         <CommandEmpty>No actions found.</CommandEmpty>
         {fileActions.length > 0 && (
-          <CommandGroup heading="File">
-            {fileActions.map(action => (
+          <CommandGroup heading='File'>
+            {fileActions.map((action) => (
               <CommandItem key={action.id} onSelect={() => onSelect(action.id)}>
                 {action.label}
               </CommandItem>
@@ -113,8 +110,8 @@ const SearchableCommandPalette = ({ onSelect }: { onSelect: (value: string) => v
           </CommandGroup>
         )}
         {editActions.length > 0 && (
-          <CommandGroup heading="Edit">
-            {editActions.map(action => (
+          <CommandGroup heading='Edit'>
+            {editActions.map((action) => (
               <CommandItem key={action.id} onSelect={() => onSelect(action.id)}>
                 {action.label}
               </CommandItem>
@@ -147,14 +144,16 @@ const CommandDialogExample = ({ onSelect }: { onSelect: (value: string) => void 
   return (
     <>
       <div>
-        <p>Press <kbd>⌘K</kbd> to open command palette</p>
+        <p>
+          Press <kbd>⌘K</kbd> to open command palette
+        </p>
         <Button onClick={() => setOpen(true)}>Open Command Palette</Button>
       </div>
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Type a command or search..." />
+        <CommandInput placeholder='Type a command or search...' />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Quick Actions">
+          <CommandGroup heading='Quick Actions'>
             <CommandItem
               onSelect={() => {
                 onSelect('new-project');
@@ -181,7 +180,7 @@ const CommandDialogExample = ({ onSelect }: { onSelect: (value: string) => void 
             </CommandItem>
           </CommandGroup>
           <CommandSeparator />
-          <CommandGroup heading="Navigation">
+          <CommandGroup heading='Navigation'>
             <CommandItem
               onSelect={() => {
                 onSelect('dashboard');
@@ -215,21 +214,21 @@ const CommandWithRecent = ({ onSelect }: { onSelect: (value: string) => void }) 
 
   const handleSelect = (value: string) => {
     onSelect(value);
-    setRecentActions(prev => {
-      const updated = [value, ...prev.filter(a => a !== value)].slice(0, 3);
+    setRecentActions((prev) => {
+      const updated = [value, ...prev.filter((a) => a !== value)].slice(0, 3);
       return updated;
     });
   };
 
   return (
     <Command>
-      <CommandInput placeholder="Search..." />
+      <CommandInput placeholder='Search...' />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
         {recentActions.length > 0 && (
           <>
-            <CommandGroup heading="Recent">
-              {recentActions.map(action => (
+            <CommandGroup heading='Recent'>
+              {recentActions.map((action) => (
                 <CommandItem key={`recent-${action}`} onSelect={() => handleSelect(action)}>
                   {action}
                 </CommandItem>
@@ -238,7 +237,7 @@ const CommandWithRecent = ({ onSelect }: { onSelect: (value: string) => void }) 
             <CommandSeparator />
           </>
         )}
-        <CommandGroup heading="All Actions">
+        <CommandGroup heading='All Actions'>
           <CommandItem onSelect={() => handleSelect('create-task')}>Create Task</CommandItem>
           <CommandItem onSelect={() => handleSelect('view-tasks')}>View Tasks</CommandItem>
           <CommandItem onSelect={() => handleSelect('delete-task')}>Delete Task</CommandItem>
@@ -403,7 +402,7 @@ describe('Integration: Searchable Command Palette Workflow', () => {
       render(<SearchableCommandPalette onSelect={handleSelect} />);
 
       const input = screen.getByPlaceholderText(/search actions/i);
-      
+
       // Type search
       await user.type(input, 'file');
       expect(screen.queryByText(/copy/i)).not.toBeInTheDocument();
@@ -439,7 +438,7 @@ describe('Integration: Searchable Command Palette Workflow', () => {
 
       const input = screen.getByPlaceholderText(/search actions/i);
       await user.type(input, 'save');
-      
+
       await user.click(screen.getByText(/save/i));
 
       expect(handleSelect).toHaveBeenCalledWith('save');
@@ -576,7 +575,7 @@ describe('Integration: Command with Recent Actions', () => {
 
       const recentGroup = screen.getByText(/recent/i).closest('[role="group"]');
       const recentItems = within(recentGroup!).getAllByRole('option');
-      
+
       expect(recentItems).toHaveLength(3);
     });
 
@@ -593,7 +592,7 @@ describe('Integration: Command with Recent Actions', () => {
 
       const recentGroup = screen.getByText(/recent/i).closest('[role="group"]');
       const recentItems = within(recentGroup!).getAllByRole('option');
-      
+
       // Should only have 3 items (most recent)
       expect(recentItems).toHaveLength(3);
     });
@@ -606,14 +605,14 @@ describe('Integration: Command with Recent Actions', () => {
       // Select actions
       await user.click(screen.getByText(/create task/i));
       await user.click(screen.getByText(/view tasks/i));
-      
+
       // Select first action again
       const allActionsGroup = screen.getByText(/all actions/i).closest('[role="group"]');
       await user.click(within(allActionsGroup!).getByText(/create task/i));
 
       const recentGroup = screen.getByText(/recent/i).closest('[role="group"]');
       const firstRecentItem = within(recentGroup!).getAllByRole('option')[0];
-      
+
       expect(firstRecentItem).toHaveTextContent(/create task/i);
     });
   });

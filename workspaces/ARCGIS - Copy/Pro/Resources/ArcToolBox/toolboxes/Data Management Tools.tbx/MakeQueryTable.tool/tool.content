@@ -1,0 +1,149 @@
+{
+    "type": "FunctionTool",
+    "guid": "{67332b86-c0d5-444a-81c0-9cfdea0238aa}",
+    "displayname": "$rc:title",
+    "helpcontent": "3110006",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "no_data_change"
+    ],
+    "params": {
+        "in_table": {
+            "display_order": "1",
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "GPTableView"
+                        },
+                        {
+                            "type": "GPRasterLayer"
+                        }
+                    ]
+                }
+            },
+            "domain": {
+                "type": "xmlserialize",
+                "xml": "<GPVirtualTableDomain xsi:type='typens:GPVirtualTableDomain' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/3.4.0'></GPVirtualTableDomain>"
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "out_table": {
+            "direction": "out",
+            "display_order": "4",
+            "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "description": "$rc:out_table.descr"
+        },
+        "in_key_field_option": {
+            "display_order": "5",
+            "displayname": "$rc:in_key_field_option.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "USE_KEY_FIELDS",
+                        "code": "$rc:in_key_field_option.domain.USE_KEY_FIELDS"
+                    },
+                    {
+                        "value": "ADD_VIRTUAL_KEY_FIELD",
+                        "code": "$rc:in_key_field_option.domain.ADD_VIRTUAL_KEY_FIELD"
+                    },
+                    {
+                        "value": "NO_KEY_FIELD",
+                        "code": "$rc:in_key_field_option.domain.NO_KEY_FIELD"
+                    }
+                ]
+            },
+            "value": "USE_KEY_FIELDS",
+            "description": "$rc:in_key_field_option.descr"
+        },
+        "in_key_field": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:in_key_field.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "guid": "{74F6B060-5EB6-4851-8FFD-8B188A845F37}"
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:in_key_field.descr"
+        },
+        "in_field": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:in_field.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:in_field.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:in_field.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "guid": "{9CC43668-43D8-4182-9820-B2D620305BED}"
+                    }
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:in_field.descr"
+        },
+        "where_clause": {
+            "type": "optional",
+            "display_order": "3",
+            "control_guid": "{05DBFF33-F534-4B2B-A1C3-7296E76FE4BF}",
+            "displayname": "$rc:where_clause.title",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:where_clause.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

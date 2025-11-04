@@ -1,0 +1,32 @@
+{
+    "set": [
+        "class",
+        "classification",
+        "classifier",
+        "classifier definition file",
+        "classify",
+        "cluster",
+        "ecd",
+        "feature extraction",
+        "image analysis",
+        "image classification",
+        "image processing",
+        "iso",
+        "isocluster",
+        "isodata",
+        "k-means",
+        "obia",
+        "object",
+        "object-oriented image analysis",
+        "segment",
+        "segmentation",
+        "segmented",
+        "segmenter",
+        "thematic",
+        "train",
+        "training",
+        "training sample",
+        "training sample manager",
+        "unsupervised"
+    ]
+}

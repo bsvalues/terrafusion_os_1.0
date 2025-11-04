@@ -1,0 +1,33 @@
+{
+    "set": [
+        "adjacent",
+        "area",
+        "around",
+        "bevel",
+        "bound",
+        "circle",
+        "close",
+        "cushion",
+        "distance",
+        "doughnut",
+        "expand",
+        "extent",
+        "fall inside",
+        "far",
+        "miter",
+        "near",
+        "nearby",
+        "neighbor",
+        "offset",
+        "outside",
+        "outward",
+        "region",
+        "ring",
+        "round",
+        "square",
+        "square buffer",
+        "surround",
+        "within",
+        "zone"
+    ]
+}

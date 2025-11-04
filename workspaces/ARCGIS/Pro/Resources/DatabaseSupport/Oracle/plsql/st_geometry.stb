@@ -1,0 +1,1048 @@
+/* $Id: st_geometry.stb,v 1.10.1.12, 2015-07-02 16:31:26Z, Sanjay Magal$
+$NoKeywords$ */
+CREATE OR REPLACE Type Body st_geometry AS 
+
+constructor Function st_geometry (geom_str clob, srid number)
+  Return self AS result
+IS
+   temp            varchar2(1);
+   tempraw         raw(1);
+   entity          number;
+   geom_type       number;
+   name            varchar2(32);
+   spref_r         &1..st_spref_util.spatial_ref_record_t;
+   shape           &1..st_geom_util.shape_r;
+   is_empty        boolean := False;
+   rc              number;
+   buffer          clob;
+Begin
+   
+   geom_type := &1..st_geom_util.unspecified_type;
+   buffer := geom_str;
+   &1..st_geom_util.get_type(buffer,entity,geom_type,is_empty,&1..st_geom_util.st_geometry_type);
+ 
+   If entity = &1..st_geom_util.sg_illegal_shape THEN
+     raise_application_error (&1..st_type_util.st_geometry_invalid_type,'ST_GEOMETRY type must be a geometry type.');
+   End If;
+   
+   &1..st_geom_util.get_name(entity,name);
+      
+   spref_r.srid := srid;
+   rc := &1..st_spref_util.select_spref(spref_r);
+   If rc != &1..st_type_user.se_success THEN
+		  raise_application_error (&1..st_type_util.st_no_srid,'SRID '||spref_r.srid||
+		                           ' does not exist in ST_SPATIAL_REFERENCES table.');
+   End If;
+		
+   shape.points := empty_blob();
+   shape.numpts := 0;
+   shape.entity := 0;
+   shape.minx   := 0;
+   shape.miny   := 0;
+   shape.maxx   := 0;
+   shape.maxy   := 0;
+   shape.area   := 0;
+   shape.len    := 0;
+   shape.minz   := NULL;
+   shape.maxz   := NULL;
+   shape.minm   := NULL;
+   shape.maxm   := NULL;
+   
+   temp := lpad('a', 1, 'a');
+   tempraw := utl_raw.cast_to_raw (temp);
+   shape.points := tempraw;
+   
+   If is_empty = False THEN
+     geom_type := &1..st_geom_util.unspecified_type;
+     &1..st_geometry_shapelib_pkg.geometryfromtext(buffer,spref_r.srid,spref_r.x_offset,spref_r.y_offset,spref_r.xyunits,
+                                                   spref_r.z_offset,spref_r.z_scale,spref_r.m_offset,spref_r.m_scale,
+									               spref_r.Definition,geom_type,shape.numpts,shape.entity,shape.minx,shape.miny,
+									               shape.maxx,shape.maxy,shape.minz,shape.maxz,shape.minm,shape.maxm,
+												   shape.area,shape.len,shape.points);
+   ELSE
+     shape.numpts := 0;
+     If geom_type > &1..st_geom_util.unspecified_type Then
+       shape.entity := geom_type;
+     else
+       shape.entity := 0;
+     end if;      
+     shape.minx   := 0;
+     shape.miny   := 0;
+     shape.maxx   := 0;
+     shape.maxy   := 0;
+	 shape.minz   := NULL;
+	 shape.maxz   := NULL;
+	 shape.minm   := NULL;
+	 shape.maxm   := NULL;
+     shape.area   := 0;
+     shape.len    := 0;
+     shape.points := empty_blob();
+     shape.srid   := srid;
+   End If;
+  
+   if(shape.numpts IS NULL and shape.entity = 0) then
+     self.entity    := shape.entity;
+     self.numpts    := 0;
+     self.minx      := 0;
+     self.maxx      := 0;
+     self.miny      := 0;
+     self.maxy      := 0;
+     self.minz      := NULL;
+     self.maxz      := NULL;
+     self.minm      := NULL;
+     self.maxm      := NULL;
+     self.srid      := srid;
+   else
+     self.entity   := shape.entity;
+     self.numpts   := shape.numpts;
+     self.minx     := shape.minx;
+     self.miny     := shape.miny;
+     self.maxx     := shape.maxx;
+     self.maxy     := shape.maxy;
+   
+     if(shape.minz IS NULL) then
+       self.minz := NULL;
+     else
+       self.minz := shape.minz;
+     end if;
+     
+     if(shape.maxz IS NULL) then
+       self.maxz := NULL;
+     else
+       self.maxz := shape.maxz;
+     end if;
+  
+     if(shape.minm IS NULL) then
+       self.minm := NULL;
+     else
+       self.minm := shape.minm;
+     end if;
+     
+     if(shape.maxm IS NULL) then
+       self.maxm := NULL;
+     else
+       self.maxm := shape.maxm;
+     end if;
+     
+   end if;
+   self.area     := shape.area;
+   self.len      := shape.len;
+   self.srid     := srid;
+   self.points   := shape.points;
+   
+   Return;
+End;
+
+constructor Function st_geometry (center_x number,
+                                  center_y number,
+                                  center_z number,
+                                  center_m number,
+                                  semiMajorAxis number,
+                                  semiMinorAxis number,
+                                  angle    number,
+                                  numpts   number,
+                                  srid     integer)
+  Return self AS result
+IS
+   temp            varchar2(1);
+   tempraw         raw(1);
+   entity          number;
+   geom_type       number;
+   numpts_val      number;
+   name            varchar2(32);
+   spref_r         &1..st_spref_util.spatial_ref_record_t;
+   shape           &1..st_geom_util.shape_r;
+   is_empty        boolean := False;
+   rc              number;
+Begin
+
+   If (center_x = NULL OR center_y = NULL OR
+       semiMajorAxis = NULL OR semiMinorAxis = NULL) Then
+     raise_application_error (&1..st_type_util.st_geom_invalid_ellipse_field,'Ellipse field cannot be NULL.');
+   End If;
+   
+   If numpts = NULL Then
+     numpts_val := 80;
+   Else
+     numpts_val := numpts;
+   End If;
+     
+   spref_r.srid := srid;
+   rc := &1..st_spref_util.select_spref(spref_r);
+   If rc != &1..st_type_user.se_success THEN
+		  raise_application_error (&1..st_type_util.st_no_srid,'SRID '||spref_r.srid||
+		                           ' does not exist in ST_SPATIAL_REFERENCES table.');
+   End If;
+		
+   shape.points := empty_blob();
+   shape.numpts := 0;
+   shape.entity := 0;
+   shape.minx   := 0;
+   shape.miny   := 0;
+   shape.maxx   := 0;
+   shape.maxy   := 0;
+   shape.area   := 0;
+   shape.len    := 0;
+   shape.minz   := NULL;
+   shape.maxz   := NULL;
+   shape.minm   := NULL;
+   shape.maxm   := NULL;
+   
+   temp := lpad('a', 1, 'a');
+   tempraw := utl_raw.cast_to_raw (temp);
+   shape.points := tempraw;
+   
+   If is_empty = False THEN
+     &1..st_geometry_shapelib_pkg.generate_ellipse(center_x,center_y,center_z,center_m,semiMajorAxis,
+                                                   semiMinorAxis,angle,numpts_val,spref_r.srid,
+                                                   spref_r.x_offset,spref_r.y_offset,spref_r.xyunits,
+                                                   spref_r.z_offset,spref_r.z_scale,spref_r.m_offset,spref_r.m_scale,
+									               spref_r.Definition,shape.numpts,shape.entity,shape.minx,shape.miny,
+									               shape.maxx,shape.maxy,shape.minz,shape.maxz,shape.minm,shape.maxm,
+												   shape.area,shape.len,shape.points);
+   ELSE
+     shape.numpts := 0;
+     shape.entity := 0;
+     shape.minx   := 0;
+     shape.miny   := 0;
+     shape.maxx   := 0;
+     shape.maxy   := 0;
+	 shape.minz   := NULL;
+	 shape.maxz   := NULL;
+	 shape.minm   := NULL;
+	 shape.maxm   := NULL;
+     shape.area   := 0;
+     shape.len    := 0;
+     shape.points := empty_blob();
+     shape.srid   := srid;
+   End If;
+  
+   if(shape.numpts IS NULL and shape.entity = 0) then
+     self.entity    := shape.entity;
+     self.numpts    := 0;
+     self.minx      := 0;
+     self.maxx      := 0;
+     self.miny      := 0;
+     self.maxy      := 0;
+     self.minz      := NULL;
+     self.maxz      := NULL;
+     self.minm      := NULL;
+     self.maxm      := NULL;
+     self.srid      := srid;
+   else
+     self.entity   := shape.entity;
+     self.numpts   := shape.numpts;
+     self.minx     := shape.minx;
+     self.miny     := shape.miny;
+     self.maxx     := shape.maxx;
+     self.maxy     := shape.maxy;
+   
+     if(shape.minz IS NULL) then
+       self.minz := NULL;
+     else
+       self.minz := shape.minz;
+     end if;
+     
+     if(shape.maxz IS NULL) then
+       self.maxz := NULL;
+     else
+       self.maxz := shape.maxz;
+     end if;
+  
+     if(shape.minm IS NULL) then
+       self.minm := NULL;
+     else
+       self.minm := shape.minm;
+     end if;
+     
+     if(shape.maxm IS NULL) then
+       self.maxm := NULL;
+     else
+       self.maxm := shape.maxm;
+     end if;
+     
+   end if;
+   self.area     := shape.area;
+   self.len      := shape.len;
+   self.srid     := srid;
+   self.points   := shape.points;
+   
+   Return;
+End;
+
+constructor Function st_geometry  (x     number,
+                                   y     number,
+                                   z     number,
+                                   m     number,
+                                   srid  integer)
+  Return self AS result
+IS
+   temp            varchar2(1);
+   tempraw         raw(1);
+   entity          number;
+   geom_type       number;
+   numpts_val      number;
+   name            varchar2(32);
+   spref_r         &1..st_spref_util.spatial_ref_record_t;
+   shape           &1..st_geom_util.shape_r;
+   is_empty        boolean := False;
+   rc              number;
+   
+   str_buf         varchar2(64);
+   type_flag       varchar2(8);
+   flags           varchar2(8);
+   mask            varchar2(8);
+   sys_X           number;
+   sys_Y           number;
+   sys_Z           number;
+   sys_M           number;
+   r_temp          raw(32);
+   r_final         raw(64);
+   r_shape         raw(80);
+   r_len           raw(2);
+   r_type          raw(2);
+   r_flags         raw(4);
+   r_flags2        raw(4);
+   r_0             raw(1);
+   r_h1            raw(6);
+   r_h2            raw(4);
+   r_hbit5         raw(2);
+   r_hbit6         raw(2);
+   r_hbit8         raw(2);
+   length          number;
+
+Begin
+
+   If (x = NULL OR y = NULL) Then
+     raise_application_error (&1..st_type_util.st_geometry_invalid_shape,'X OR Y values cannot be NULL.');
+   End If;
+   
+   spref_r.srid := srid;
+   rc := &1..st_spref_util.select_spref(spref_r);
+   If rc != &1..st_type_user.se_success THEN
+		  raise_application_error (&1..st_type_util.st_no_srid,'SRID '||spref_r.srid||
+		                           ' does not exist in ST_SPATIAL_REFERENCES table.');
+   End If;
+   
+   shape.points := empty_blob();
+   shape.numpts := 0;
+   shape.entity := 0;
+   shape.minx   := 0;
+   shape.miny   := 0;
+   shape.maxx   := 0;
+   shape.maxy   := 0;
+   shape.area   := 0;
+   shape.len    := 0;
+   shape.minz   := NULL;
+   shape.maxz   := NULL;
+   shape.minm   := NULL;
+   shape.maxm   := NULL;
+   
+   temp := lpad('a', 1, 'a');
+   tempraw := utl_raw.cast_to_raw (temp);
+   shape.points := tempraw;
+   
+   -- Convert to system units
+    
+   sys_X := &1..st_geom_util.convert_to_system(x,spref_r.x_offset,spref_r.xyunits);
+   if &1..st_geom_util.sg_coordref_out_of_bounds = sys_X Then
+     raise_application_error (&1..st_geom_util.st_coord_out_of_bounds,'Coordinate reference out of bounds. ');
+   End If;
+    
+   sys_Y := &1..st_geom_util.convert_to_system(y,spref_r.y_offset,spref_r.xyunits);
+   if &1..st_geom_util.sg_coordref_out_of_bounds = sys_Y Then
+     raise_application_error (&1..st_geom_util.st_coord_out_of_bounds,'Coordinate reference out of bounds. ');
+   End If;
+   
+   r_flags := hextoraw(0);
+         
+   If z IS NOT NULL Then
+     sys_Z := &1..st_geom_util.convert_to_system(z,spref_r.m_offset,spref_r.m_scale);
+     if &1..st_geom_util.sg_coordref_out_of_bounds = sys_Z Then
+       raise_application_error (&1..st_geom_util.st_coord_out_of_bounds,'Coordinate reference out of bounds. ');
+     End If;
+     
+     flags   := lpad(trim(to_char(&1..st_geom_util.feature_3D_mask,'XX')),2,'0');
+     r_flags := hextoraw(flags);
+   Else
+     sys_Z := NULL;
+   End If; 
+   
+   If m IS NOT NULL Then
+     sys_M := &1..st_geom_util.convert_to_system(m,spref_r.m_offset,spref_r.m_scale);
+     if &1..st_geom_util.sg_coordref_out_of_bounds = sys_M Then
+       raise_application_error (&1..st_geom_util.st_coord_out_of_bounds,'Coordinate reference out of bounds. ');
+     End If;
+     
+     flags   := lpad(trim(to_char(&1..st_geom_util.feature_measure_mask,'XX')),2,'0');
+     r_flags2 := hextoraw(flags);
+     r_flags := utl_raw.bit_xor(r_flags,r_flags2);
+   Else
+     sys_M := NULL;
+   End If; 
+
+   self.minx := x;
+   self.miny := y;
+   self.maxx := x;
+   self.maxy := y;
+   
+   self.area := 0;
+   self.len  := 0;
+
+   if z IS NOT NULL  Then
+     self.minz := z;
+     self.maxz := z;
+   Else
+     self.minz := 0;
+     self.maxz := 0;
+   End If;
+    
+   if m IS NOT NULL Then
+     self.minm := m;
+     self.maxm := m;
+   Else
+     self.minm := &1..st_geom_util.SG_M_NODATA;
+     self.maxm := &1..st_geom_util.SG_M_NODATA;
+   End If;
+   
+      -- Encode points
+      
+   str_buf := lpad(trim(to_char(0,'XX')),2,'0');
+   r_final := hextoraw(str_buf);
+      
+   &1..st_geom_util.encode_var(Sys_X,r_temp);
+   r_final := utl_raw.concat(r_temp);
+   
+   str_buf := lpad(trim(to_char(0,'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')),32,'0');
+   r_temp := hextoraw(str_buf);
+   
+   &1..st_geom_util.encode_var(Sys_Y,r_temp);
+   r_final := utl_raw.concat(r_final,r_temp);
+   
+   str_buf := lpad(trim(to_char(0,'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')),32,'0');
+   r_temp := hextoraw(str_buf);
+   
+   if sys_Z IS NOT NULL Then
+     &1..st_geom_util.encode_var(Sys_Z,r_temp);
+     r_final := utl_raw.concat(r_final,r_temp);
+     str_buf := lpad(trim(to_char(0,'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')),32,'0');
+     r_temp := hextoraw(str_buf);
+   End If;
+   
+   if m IS NOT NULL Then
+     &1..st_geom_util.encode_var(Sys_M,r_temp);
+     r_final := utl_raw.concat(r_final,r_temp);
+   End If;
+   
+   length := utl_raw.length(r_final);
+
+   str_buf := ltrim(lpad(trim(to_char(length,'XXXX')),4,'0'),0);
+   r_len := hextoraw(str_buf);
+   
+      -- type
+   type_flag := lpad(trim(to_char(&1..st_geom_util.format_high_precision,'XX')),2,'0');
+   r_type := hextoraw(type_flag);
+  
+   r_0 := hextoraw(0);
+   r_h1 := utl_raw.concat(r_len,r_0,r_0,r_0);
+   
+   r_h2 := utl_raw.concat(r_type,r_flags,r_0,r_0);
+
+   self.points := utl_raw.concat(r_h1,r_h2,r_final);
+   
+   self.entity   := &1..st_geom_util.sg_point_shape;
+   self.numpts   := 1;
+   self.srid     := srid;
+ 
+   Return;
+End;
+
+constructor Function st_geometry (center_x number,
+                                  center_y number,
+                                  center_z number,
+                                  center_m number,
+                                  radius  number,
+                                  numpts   number,
+                                  srid     integer)
+  Return self AS result
+IS
+   temp            varchar2(1);
+   tempraw         raw(1);
+   entity          number;
+   geom_type       number;
+   numpts_val      number;
+   name            varchar2(32);
+   spref_r         &1..st_spref_util.spatial_ref_record_t;
+   shape           &1..st_geom_util.shape_r;
+   is_empty        boolean := False;
+   rc              number;
+Begin
+
+   If (center_x = NULL OR center_y = NULL) Then
+     raise_application_error (&1..st_type_util.st_geom_invalid_circle_field,'Circle field cannot be NULL.');
+   End If;
+   
+   If numpts = NULL Then
+     numpts_val := 80;
+   Else
+     numpts_val := numpts;
+   End If;
+     
+   spref_r.srid := srid;
+   rc := &1..st_spref_util.select_spref(spref_r);
+   If rc != &1..st_type_user.se_success THEN
+		  raise_application_error (&1..st_type_util.st_no_srid,'SRID '||spref_r.srid||
+		                           ' does not exist in ST_SPATIAL_REFERENCES table.');
+   End If;
+   
+   shape.points := empty_blob();
+   shape.numpts := 0;
+   shape.entity := 0;
+   shape.minx   := 0;
+   shape.miny   := 0;
+   shape.maxx   := 0;
+   shape.maxy   := 0;
+   shape.area   := 0;
+   shape.len    := 0;
+   shape.minz   := NULL;
+   shape.maxz   := NULL;
+   shape.minm   := NULL;
+   shape.maxm   := NULL;
+   
+   temp := lpad('a', 1, 'a');
+   tempraw := utl_raw.cast_to_raw (temp);
+   shape.points := tempraw;
+   
+   If is_empty = False THEN
+     &1..st_geometry_shapelib_pkg.generate_circle(center_x,center_y,center_z,center_m,radius,numpts_val,
+                                                   spref_r.srid,spref_r.x_offset,spref_r.y_offset,spref_r.xyunits,
+                                                   spref_r.z_offset,spref_r.z_scale,spref_r.m_offset,spref_r.m_scale,
+									               spref_r.Definition,shape.numpts,shape.entity,shape.minx,shape.miny,
+									               shape.maxx,shape.maxy,shape.minz,shape.maxz,shape.minm,shape.maxm,
+												   shape.area,shape.len,shape.points);
+   ELSE
+     shape.numpts := 0;
+     shape.entity := 0;
+     shape.minx   := 0;
+     shape.miny   := 0;
+     shape.maxx   := 0;
+     shape.maxy   := 0;
+	 shape.minz   := NULL;
+	 shape.maxz   := NULL;
+	 shape.minm   := NULL;
+	 shape.maxm   := NULL;
+     shape.area   := 0;
+     shape.len    := 0;
+     shape.points := empty_blob();
+     shape.srid   := srid;
+   End If;
+  
+   if(shape.numpts IS NULL and shape.entity = 0) then
+     self.entity    := shape.entity;
+     self.numpts    := 0;
+     self.minx      := 0;
+     self.maxx      := 0;
+     self.miny      := 0;
+     self.maxy      := 0;
+     self.minz      := NULL;
+     self.maxz      := NULL;
+     self.minm      := NULL;
+     self.maxm      := NULL;
+     self.srid      := srid;
+   else
+     self.entity   := shape.entity;
+     self.numpts   := shape.numpts;
+     self.minx     := shape.minx;
+     self.miny     := shape.miny;
+     self.maxx     := shape.maxx;
+     self.maxy     := shape.maxy;
+   
+     if(shape.minz IS NULL) then
+       self.minz := NULL;
+     else
+       self.minz := shape.minz;
+     end if;
+     
+     if(shape.maxz IS NULL) then
+       self.maxz := NULL;
+     else
+       self.maxz := shape.maxz;
+     end if;
+  
+     if(shape.minm IS NULL) then
+       self.minm := NULL;
+     else
+       self.minm := shape.minm;
+     end if;
+     
+     if(shape.maxm IS NULL) then
+       self.maxm := NULL;
+     else
+       self.maxm := shape.maxm;
+     end if;
+     
+   end if;
+   self.area     := shape.area;
+   self.len      := shape.len;
+   self.srid     := srid;
+   self.points   := shape.points;
+   
+   Return;
+End;
+
+constructor Function st_geometry (center_x number,
+                                  center_y number,
+                                  center_z number,
+                                  center_m number,
+                                  startAngle number,
+                                  endAngle number,
+                                  outerRadius  number,
+                                  innerRadius  number,
+                                  numpts   number,
+                                  srid     integer)
+  Return self AS result
+IS
+   temp            varchar2(1);
+   tempraw         raw(1);
+   entity          number;
+   geom_type       number;
+   numpts_val      number;
+   innerRadius_val number;
+   name            varchar2(32);
+   spref_r         &1..st_spref_util.spatial_ref_record_t;
+   shape           &1..st_geom_util.shape_r;
+   is_empty        boolean := False;
+   rc              number;
+Begin
+
+   If (center_x = NULL OR center_y = NULL OR
+       startAngle = NULL OR endAngle = NULL OR outerRadius = NULL) Then
+     raise_application_error (&1..st_type_util.st_geom_invalid_wedge_field,'Wedge field cannot be NULL.');
+   End If;
+   
+   If numpts = NULL Then
+     numpts_val := 80;
+   Else
+     numpts_val := numpts;
+   End If;
+
+   If innerRadius = NULL Then
+     innerRadius_val := 0;
+   Else
+     innerRadius_val := innerRadius;
+   End If;
+     
+   spref_r.srid := srid;
+   rc := &1..st_spref_util.select_spref(spref_r);
+   If rc != &1..st_type_user.se_success THEN
+		  raise_application_error (&1..st_type_util.st_no_srid,'SRID '||spref_r.srid||
+		                           ' does not exist in ST_SPATIAL_REFERENCES table.');
+   End If;
+		
+   shape.points := empty_blob();
+   shape.numpts := 0;
+   shape.entity := 0;
+   shape.minx   := 0;
+   shape.miny   := 0;
+   shape.maxx   := 0;
+   shape.maxy   := 0;
+   shape.area   := 0;
+   shape.len    := 0;
+   shape.minz   := NULL;
+   shape.maxz   := NULL;
+   shape.minm   := NULL;
+   shape.maxm   := NULL;
+   
+   temp := lpad('a', 1, 'a');
+   tempraw := utl_raw.cast_to_raw (temp);
+   shape.points := tempraw;
+   
+   If is_empty = False THEN
+     &1..st_geometry_shapelib_pkg.generate_wedge(center_x,
+                                                 center_y,
+                                                 center_z,
+                                                 center_m,
+                                                 startAngle,
+                                                 endAngle,
+                                                 outerRadius,
+                                                 innerRadius_val,
+                                                 numpts_val,
+                                                 spref_r.srid,
+                                                 spref_r.x_offset,
+                                                 spref_r.y_offset,
+                                                 spref_r.xyunits,
+                                                 spref_r.z_offset,
+                                                 spref_r.z_scale,
+                                                 spref_r.m_offset,
+                                                 spref_r.m_scale,
+                                                 spref_r.Definition,
+                                                 shape.numpts,
+                                                 shape.entity,
+                                                 shape.minx,
+                                                 shape.miny,
+                                                 shape.maxx,
+                                                 shape.maxy,
+                                                 shape.minz,
+                                                 shape.maxz,
+                                                 shape.minm,
+                                                 shape.maxm,
+                                                 shape.area,
+                                                 shape.len,
+                                                 shape.points);
+   ELSE
+     shape.numpts := 0;
+     shape.entity := 0;
+     shape.minx   := 0;
+     shape.miny   := 0;
+     shape.maxx   := 0;
+     shape.maxy   := 0;
+	 shape.minz   := NULL;
+	 shape.maxz   := NULL;
+	 shape.minm   := NULL;
+	 shape.maxm   := NULL;
+     shape.area   := 0;
+     shape.len    := 0;
+     shape.points := empty_blob();
+     shape.srid   := srid;
+   End If;
+  
+   if(shape.numpts IS NULL and shape.entity = 0) then
+     self.entity    := shape.entity;
+     self.numpts    := 0;
+     self.minx      := 0;
+     self.maxx      := 0;
+     self.miny      := 0;
+     self.maxy      := 0;
+     self.minz      := NULL;
+     self.maxz      := NULL;
+     self.minm      := NULL;
+     self.maxm      := NULL;
+     self.srid      := srid;
+   else
+     self.entity   := shape.entity;
+     self.numpts   := shape.numpts;
+     self.minx     := shape.minx;
+     self.miny     := shape.miny;
+     self.maxx     := shape.maxx;
+     self.maxy     := shape.maxy;
+   
+     if(shape.minz IS NULL) then
+       self.minz := NULL;
+     else
+       self.minz := shape.minz;
+     end if;
+     
+     if(shape.maxz IS NULL) then
+       self.maxz := NULL;
+     else
+       self.maxz := shape.maxz;
+     end if;
+  
+     if(shape.minm IS NULL) then
+       self.minm := NULL;
+     else
+       self.minm := shape.minm;
+     end if;
+     
+     if(shape.maxm IS NULL) then
+       self.maxm := NULL;
+     else
+       self.maxm := shape.maxm;
+     end if;
+     
+   end if;
+   self.area     := shape.area;
+   self.len      := shape.len;
+   self.srid     := srid;
+   self.points   := shape.points;
+   
+   Return;
+End;
+
+constructor Function st_geometry  (minx     number,
+                                   miny     number,
+                                   maxx     number,
+                                   maxy     number,
+								   srid     integer,
+								   dstring  varchar2)
+  Return self AS result
+IS
+   spref_r         &1..st_spref_util.spatial_ref_record_t;
+   rc              number;
+   str_buf         varchar2(64);
+   type_flag       varchar2(8);
+   sys_minX        number;
+   sys_minY        number;
+   sys_maxX        number;
+   sys_maxY        number; 
+   rx4             number;
+   ry4             number;
+   rx3             number;
+   ry3             number;      
+   rx2             number;
+   ry2             number;    
+   rx1             number;
+   ry1             number;
+   rx0             number;
+   ry0             number;    
+   width           number;
+   height          number;     
+   r_temp          raw(32);  
+   r_final         raw(64);
+   r_len           raw(2);
+   r_type          raw(2);
+   r_flags         raw(4);
+   r_0             raw(1);
+   r_h1            raw(6);
+   r_h2            raw(4);
+   length          number;
+
+Begin
+
+   If (minx IS NULL OR miny IS NULL OR 
+       maxx IS NULL OR maxy IS NULL OR
+       srid IS NULL) Then
+     raise_application_error (&1..st_type_util.st_geometry_invalid_shape,
+                              'Parameters for optimized rectangle constructor cannot be NULL.');
+   End If;
+   
+   spref_r.srid := srid;
+   rc := &1..st_spref_util.select_spref(spref_r);
+   If rc != &1..st_type_user.se_success THEN
+          raise_application_error (&1..st_type_util.st_no_srid,'SRID '||spref_r.srid||
+                                   ' does not exist in ST_SPATIAL_REFERENCES table.');
+   End If;
+
+   self := &1..st_geometry(0,0,0,0,0,0,0,0,0,0,0,0,0,empty_blob());
+   
+   -- Set type attributes.   
+   self.minx := minx;
+   self.miny := miny;
+   self.maxx := maxx;
+   self.maxy := maxy;
+  
+   self.minz := NULL;
+   self.maxz := NULL;
+   self.minm := NULL;
+   self.maxm := NULL;
+   
+   self.entity   := &1..st_geom_util.sg_area_shape;
+   self.numpts   := 5;
+   self.srid     := srid;
+
+   width  := maxx - minx;
+   height := maxy - miny;
+  
+   self.area := width * height;
+   self.len  := 2 * (width + height);
+
+   -- Convert to system units.    
+   sys_minX := &1..st_geom_util.convert_to_system(minx,spref_r.x_offset,spref_r.xyunits);
+   if &1..st_geom_util.sg_coordref_out_of_bounds = sys_minX Then
+     raise_application_error (&1..st_geom_util.st_coord_out_of_bounds,'Coordinate reference out of bounds. ');
+   End If;
+    
+   sys_minY := &1..st_geom_util.convert_to_system(miny,spref_r.y_offset,spref_r.xyunits);
+   if &1..st_geom_util.sg_coordref_out_of_bounds = sys_minY Then
+     raise_application_error (&1..st_geom_util.st_coord_out_of_bounds,'Coordinate reference out of bounds. ');
+   End If;
+
+   sys_maxX := &1..st_geom_util.convert_to_system(maxx,spref_r.x_offset,spref_r.xyunits);
+   if &1..st_geom_util.sg_coordref_out_of_bounds = sys_maxX Then
+     raise_application_error (&1..st_geom_util.st_coord_out_of_bounds,'Coordinate reference out of bounds. ');
+   End If;
+    
+   sys_maxY := &1..st_geom_util.convert_to_system(maxy,spref_r.y_offset,spref_r.xyunits);
+   if &1..st_geom_util.sg_coordref_out_of_bounds = sys_maxY Then
+     raise_application_error (&1..st_geom_util.st_coord_out_of_bounds,'Coordinate reference out of bounds. ');
+   End If;
+      
+   r_flags := hextoraw(0);
+             
+   -- Make each XY point relative to the previous point.
+   rx4 := sys_minX - sys_minX; 
+   ry4 := sys_minY - sys_maxY; 
+     
+   rx3 := sys_minX - sys_maxX;         
+   ry3 := sys_maxY - sys_maxY;    
+   
+   rx2 := sys_maxX - sys_maxX;  
+   ry2 := sys_maxY - sys_minY;    
+   
+   rx1 := sys_maxX - sys_minX;    
+   ry1 := sys_minY - sys_minY; 
+   
+   rx0 := sys_minX;
+   ry0 := sys_minY;
+
+   -- Encode points      
+   str_buf := lpad(trim(to_char(0,'XX')),2,'0');
+   r_final := hextoraw(str_buf);
+   
+   &1..st_geom_util.encode_var(rx0,r_temp);
+   r_final := utl_raw.concat(r_temp);
+   
+   str_buf := lpad(trim(to_char(0,'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')),32,'0');
+   r_temp := hextoraw(str_buf);
+   
+   &1..st_geom_util.encode_var(ry0,r_temp);
+   r_final := utl_raw.concat(r_final,r_temp);
+   
+   str_buf := lpad(trim(to_char(0,'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')),32,'0');
+   r_temp := hextoraw(str_buf);
+    
+   &1..st_geom_util.encode_var(rx1,r_temp);
+   r_final := utl_raw.concat(r_final,r_temp);
+   
+   str_buf := lpad(trim(to_char(0,'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')),32,'0');
+   r_temp := hextoraw(str_buf);
+   
+   &1..st_geom_util.encode_var(ry1,r_temp);
+   r_final := utl_raw.concat(r_final,r_temp);
+   
+   str_buf := lpad(trim(to_char(0,'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')),32,'0');
+   r_temp := hextoraw(str_buf);
+   
+   &1..st_geom_util.encode_var(rx2,r_temp);
+   r_final := utl_raw.concat(r_final,r_temp);
+   
+   str_buf := lpad(trim(to_char(0,'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')),32,'0');
+   r_temp := hextoraw(str_buf);
+   
+   &1..st_geom_util.encode_var(ry2,r_temp);
+   r_final := utl_raw.concat(r_final,r_temp);
+   
+   str_buf := lpad(trim(to_char(0,'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')),32,'0');
+   r_temp := hextoraw(str_buf);
+    
+   &1..st_geom_util.encode_var(rx3,r_temp);
+   r_final := utl_raw.concat(r_final,r_temp);
+   
+   str_buf := lpad(trim(to_char(0,'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')),32,'0');
+   r_temp := hextoraw(str_buf);
+   
+   &1..st_geom_util.encode_var(ry3,r_temp);
+   r_final := utl_raw.concat(r_final,r_temp);
+   
+   str_buf := lpad(trim(to_char(0,'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')),32,'0');
+   r_temp := hextoraw(str_buf);
+    
+   &1..st_geom_util.encode_var(rx4,r_temp);
+   r_final := utl_raw.concat(r_final,r_temp);
+   
+   str_buf := lpad(trim(to_char(0,'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')),32,'0');
+   r_temp := hextoraw(str_buf);
+   
+   &1..st_geom_util.encode_var(ry4,r_temp);
+   r_final := utl_raw.concat(r_final,r_temp);
+   
+   str_buf := lpad(trim(to_char(0,'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')),32,'0');
+   r_temp := hextoraw(str_buf);
+   
+   length := utl_raw.length(r_final);
+  
+   str_buf := ltrim(lpad(trim(to_char(length,'XXXX')),4,'0'),0);
+   r_len := hextoraw(str_buf);
+   
+   -- type
+   type_flag := lpad(trim(to_char(&1..st_geom_util.format_high_precision,'XX')),2,'0');
+   r_type := hextoraw(type_flag);
+  
+   r_0 := hextoraw(0);
+   r_h1 := utl_raw.concat(r_len,r_0,r_0,r_0);
+   
+   r_h2 := utl_raw.concat(r_type,r_flags,r_0,r_0);
+
+   self.points := utl_raw.concat(r_h1,r_h2,r_final);
+    
+   Return;
+End;
+
+member Function st_entity Return number IS 
+  Begin 
+     Return self.entity; 
+   End st_entity;
+
+member Function st_numpts Return number IS 
+  Begin 
+    Return numpts; 
+  End st_numpts;
+
+member Function st_minx Return number IS 
+  Begin 
+    Return minx;
+  End st_minx;
+
+member Function st_maxx Return number IS 
+  Begin 
+    Return maxx;
+  End st_maxx;
+
+member Function st_miny Return number IS 
+  Begin 
+    Return miny;
+  End st_miny;
+
+member Function st_maxy Return number IS 
+  Begin 
+    Return maxy;
+  End st_maxy;
+
+member Function st_minm Return number IS 
+  Begin 
+    Return minm;
+  End st_minm;
+
+member Function st_maxm Return number IS 
+  Begin 
+    Return maxm;
+  End st_maxm;
+
+member Function st_minz Return number IS 
+  Begin 
+    Return minz;
+  End st_minz;
+
+member Function st_maxz Return number IS 
+  Begin 
+    Return maxz;
+  End st_maxz;
+
+member Function st_area Return number IS 
+  Begin 
+    Return area;
+  End st_area;
+
+member Function st_len Return number IS
+  Begin
+    Return len;
+   End st_len; 
+
+member Function st_length Return number IS
+  Begin
+    Return len;
+   End st_length; 
+
+member Function st_srid Return number IS 
+  Begin 
+    Return srid;
+  End st_srid;
+  
+MAP member Function st_map Return VARCHAR2 IS 
+    checksum VARCHAR2(40);
+  Begin 
+    checksum := rawtohex(DBMS_CRYPTO.Hash(points, DBMS_CRYPTO.HASH_SH1));
+    Return checksum;
+  End st_map;
+  
+static Function get_release
+  Return number
+  IS
+    c_type_release    Constant pls_integer := 1114;
+	
+  Begin
+    Return c_type_release;
+  End get_release;
+End;
+/
+

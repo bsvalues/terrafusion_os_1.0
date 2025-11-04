@@ -1,0 +1,25 @@
+{
+  "name": "@terrafusion/developer-portal",
+  "version": "0.1.0",
+  "description": "Developer Portal for Terrafusion",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint src --ext .ts",
+    "test": "jest",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "events": "^3.3.0"
+  },
+  "devDependencies": {
+    "@types/events": "^3.0.0",
+    "@types/jest": "^29.5.0",
+    "@types/node": "^18.15.11",
+    "eslint": "^8.38.0",
+    "jest": "^29.5.0",
+    "rimraf": "^5.0.0",
+    "typescript": "^5.0.4"
+  }
+}

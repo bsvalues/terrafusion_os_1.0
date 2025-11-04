@@ -1,0 +1,9 @@
+{
+    "set": [
+        "arc",
+        "inverse",
+        "math",
+        "sine",
+        "trig"
+    ]
+}

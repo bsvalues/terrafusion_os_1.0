@@ -1,0 +1,308 @@
+{
+    "type": "FunctionTool",
+    "guid": "{cbb4090f-a1ff-4577-b7b9-0cc1e1ddbec4}",
+    "displayname": "$rc:title",
+    "helpcontent": "11000035",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "6"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "value_field": {
+            "displayname": "$rc:value_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "BigInteger",
+                    "Float",
+                    "Double"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:value_field.descr"
+        },
+        "out_netcdf_file": {
+            "direction": "out",
+            "display_order": "2",
+            "displayname": "$rc:out_netcdf_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "nc"
+                ]
+            },
+            "description": "$rc:out_netcdf_file.descr"
+        },
+        "power": {
+            "type": "optional",
+            "displayname": "$rc:power.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "1",
+                "max": "100"
+            },
+            "value": "2",
+            "description": "$rc:power.descr"
+        },
+        "elev_inflation_factor": {
+            "type": "optional",
+            "displayname": "$rc:elev_inflation_factor.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "1",
+                "max": "1000"
+            },
+            "description": "$rc:elev_inflation_factor.descr"
+        },
+        "out_cv_features": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_cv_features.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_cv_features.descr"
+        },
+        "x_spacing": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:x_spacing.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "description": "$rc:x_spacing.descr"
+        },
+        "y_spacing": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:y_spacing.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "description": "$rc:y_spacing.descr"
+        },
+        "elevation_spacing": {
+            "type": "optional",
+            "displayname": "$rc:elevation_spacing.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "InchesInt",
+                        "code": "InchesInt"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "FeetInt",
+                        "code": "FeetInt"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "YardsInt",
+                        "code": "YardsInt"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "MilesInt",
+                        "code": "MilesInt"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "NauticalMilesInt",
+                        "code": "NauticalMilesInt"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Inches",
+                        "code": "Inches"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Feet",
+                        "code": "Feet"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Yards",
+                        "code": "Yards"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Miles",
+                        "code": "Miles"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "NauticalMiles",
+                        "code": "NauticalMiles"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Millimeters",
+                        "code": "Millimeters"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Centimeters",
+                        "code": "Centimeters"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Decimeters",
+                        "code": "Decimeters"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Meters",
+                        "code": "Meters"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Kilometers",
+                        "code": "Kilometers"
+                    }
+                ]
+            },
+            "description": "$rc:elevation_spacing.descr"
+        },
+        "in_study_area": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:in_study_area.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:in_study_area.descr"
+        },
+        "min_elev_raster": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:min_elev_raster.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPRasterLayer"
+            },
+            "description": "$rc:min_elev_raster.descr"
+        },
+        "max_elev_raster": {
+            "type": "optional",
+            "display_order": "11",
+            "displayname": "$rc:max_elev_raster.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPRasterLayer"
+            },
+            "description": "$rc:max_elev_raster.descr"
+        },
+        "search_neighborhood": {
+            "type": "optional",
+            "displayname": "$rc:search_neighborhood.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPGASearchNeighborhood"
+            },
+            "domain": {
+                "type": "GPGASearchNeighborhoodDomain",
+                "neighbourtype": [
+                    "NeighbourTypeStandard3D"
+                ]
+            },
+            "value": "NBRTYPE=Standard3D RADIUS=nan NBR_MAX=2 NBR_MIN=1 SECTOR_TYPE=TWELVE_SECTORS",
+            "description": "$rc:search_neighborhood.descr"
+        },
+        "count": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:count.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "0"
+        },
+        "mean_error": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:mean_error.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "NaN"
+        },
+        "root_mean_square": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:root_mean_square.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "NaN"
+        },
+        "out_voxel_layer": {
+            "type": "derived",
+            "direction": "out",
+            "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}",
+            "displayname": "$rc:out_voxel_layer.title",
+            "datatype": {
+                "type": "GPVoxelLayer"
+            }
+        }
+    },
+    "environments": [
+        "coincidentPoints",
+        "extent",
+        "parallelProcessingFactor"
+    ]
+}

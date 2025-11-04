@@ -1,0 +1,15 @@
+{
+    "set": [
+        "cartography",
+        "defense",
+        "defense mapping",
+        "generate product",
+        "layout",
+        "product",
+        "production",
+        "production mapping",
+        "topo",
+        "topographic",
+        "topographic production"
+    ]
+}

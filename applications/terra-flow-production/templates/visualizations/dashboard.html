@@ -1,0 +1,1286 @@
+{% extends 'layout.html' %}
+
+{% block title %}TerraFusion | Real-time Geographic Data Dashboard{% endblock %}
+
+{% block additionalcss %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+<style>
+  .dashboard-container {
+    height: calc(100vh - 170px);
+    min-height: 600px;
+  }
+  .map-container {
+    height: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid var(--tf-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  #realtime-map {
+    height: 100%;
+  }
+  .dashboard-sidebar {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .dashboard-card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    overflow: auto;
+  }
+  .dashboard-card-fixed {
+    flex: 0 0 auto;
+  }
+  .dashboard-card-scrollable {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    max-height: calc(100% - 350px);
+  }
+  .card-title {
+    color: var(--tf-primary);
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .data-stat {
+    padding: 12px;
+    border-radius: 8px;
+    background-color: rgba(var(--tf-primary-rgb), 0.05);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(var(--tf-primary-rgb), 0.1);
+  }
+  .data-stat:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    border-color: var(--tf-primary);
+    background-color: rgba(var(--tf-primary-rgb), 0.08);
+  }
+  .stat-icon {
+    background-color: rgba(var(--tf-primary-rgb), 0.1);
+    color: var(--tf-primary);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+  .stat-icon.alert-icon {
+    background-color: rgba(244, 67, 54, 0.1);
+    color: #F44336;
+  }
+  .stat-content {
+    flex-grow: 1;
+  }
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--tf-primary);
+    line-height: 1.2;
+  }
+  .stat-label {
+    font-size: 0.9rem;
+    color: var(--tf-secondary);
+    font-weight: 500;
+  }
+  .stats-summary {
+    border-top: 1px solid #eaeaea;
+    padding-top: 15px;
+  }
+  .summary-label {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .summary-progress {
+    margin-bottom: 10px;
+  }
+  .progress {
+    height: 10px;
+    border-radius: 5px;
+    background-color: #e9ecef;
+  }
+  .progress-bar {
+    background-color: var(--tf-primary);
+    border-radius: 5px;
+    transition: width 0.6s ease;
+  }
+  .data-filters {
+    margin-bottom: 15px;
+  }
+  .filter-label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--tf-dark);
+  }
+  .table-container {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  .badge-anomaly {
+    background-color: var(--tf-danger);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+  .badge-normal {
+    background-color: var(--tf-success);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+  .legend {
+    padding: 10px;
+    background: white;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.2);
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  .legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    margin-right: 8px;
+  }
+  .legend-label {
+    font-size: 0.9rem;
+    color: #333;
+  }
+  .data-refresh {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  .refresh-indicator {
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--tf-secondary);
+  }
+  .refresh-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(var(--tf-primary-rgb), 0.2);
+    border-top: 2px solid var(--tf-primary);
+    border-radius: 50%;
+    margin-right: 8px;
+    display: none;
+  }
+  .refresh-spinner.active {
+    display: inline-block;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .property-popup {
+    max-width: 300px;
+  }
+  .property-popup h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--tf-primary);
+  }
+  .property-popup .property-detail {
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+  }
+  .property-popup .property-detail strong {
+    font-weight: 600;
+    color: var(--tf-dark);
+  }
+  .chart-container {
+    height: 200px;
+    width: 100%;
+    margin-bottom: 15px;
+    position: relative;
+  }
+  #anomalyTrendChart {
+    width: 100%;
+    height: 100%;
+  }
+  .chart-controls {
+    display: flex;
+    align-items: center;
+  }
+  .chart-selector {
+    width: auto;
+    font-size: 0.85rem;
+    height: 30px;
+    padding: 2px 8px;
+  }
+  .chart-metrics {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+    padding-top: 10px;
+    border-top: 1px solid #eaeaea;
+  }
+  .metric-item {
+    text-align: center;
+    flex: 1;
+  }
+  .metric-label {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 2px;
+  }
+  .metric-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--tf-primary);
+  }
+  .time-filter {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .time-filter .btn {
+    padding: 5px 10px;
+    font-size: 0.85rem;
+  }
+  .time-filter .btn.active {
+    background-color: var(--tf-primary);
+    color: white;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1 class="display-5 mb-0">Real-time Geographic Data Dashboard</h1>
+      <p class="text-muted">Interactive visualization of property assessment data and anomalies</p>
+    </div>
+  </div>
+
+  <div class="row dashboard-container">
+    <!-- Sidebar with controls and statistics -->
+    <div class="col-lg-3">
+      <div class="dashboard-sidebar">
+        <div class="dashboard-card dashboard-card-fixed">
+          <div class="card-title">
+            <span>Overview</span>
+            <div class="refresh-indicator">
+              <div class="refresh-spinner" id="refreshSpinner"></div>
+              <span id="lastUpdated">Updated just now</span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-6">
+              <div class="data-stat">
+                <div class="stat-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/>
+                    <path d="m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6Z"/>
+                  </svg>
+                </div>
+                <div class="stat-content">
+                  <div class="stat-value" id="totalProperties">--</div>
+                  <div class="stat-label">Properties</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="data-stat">
+                <div class="stat-icon alert-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                    <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
+                  </svg>
+                </div>
+                <div class="stat-content">
+                  <div class="stat-value" id="totalAnomalies">--</div>
+                  <div class="stat-label">Anomalies</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-6">
+              <div class="data-stat">
+                <div class="stat-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M11 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm5-4a5 5 0 1 1-10 0 5 5 0 0 1 10 0z"/>
+                    <path d="M9.438 11.944c.047.596.518 1.06 1.363 1.116v.44h.375v-.443c.875-.061 1.386-.529 1.386-1.207 0-.618-.39-.936-1.09-1.1l-.296-.07v-1.2c.376.043.614.248.671.532h.658c-.047-.575-.54-1.024-1.329-1.073V8.5h-.375v.45c-.747.073-1.255.522-1.255 1.158 0 .562.378.92 1.007 1.066l.248.061v1.272c-.384-.058-.639-.27-.696-.563h-.668zm1.36-1.354c-.369-.085-.569-.26-.569-.522 0-.294.216-.514.572-.578v1.1h-.003zm.432.746c.449.104.655.272.655.569 0 .339-.257.571-.709.614v-1.195l.054.012z"/>
+                    <path d="M1 0a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4.083c.058-.344.145-.678.258-1H3a2 2 0 0 0-2-2V3a2 2 0 0 0 2-2h10a2 2 0 0 0 2 2v3.528c.38.34.717.728 1 1.154V1a1 1 0 0 0-1-1H1z"/>
+                    <path d="M9.998 5.083 10 5a2 2 0 1 0-3.132 1.65 5.982 5.982 0 0 1 3.13-1.567z"/>
+                  </svg>
+                </div>
+                <div class="stat-content">
+                  <div class="stat-value" id="averageValue">--</div>
+                  <div class="stat-label">Avg. Value</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="data-stat">
+                <div class="stat-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+                    <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+                  </svg>
+                </div>
+                <div class="stat-content">
+                  <div class="stat-value" id="anomalyRate">--</div>
+                  <div class="stat-label">Anomaly Rate</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="stats-summary mt-3">
+            <div class="summary-progress">
+              <div class="summary-label">Data Completeness</div>
+              <div class="progress">
+                <div id="dataCompleteness" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-card dashboard-card-fixed">
+          <div class="card-title">Data Filters</div>
+          <div class="data-filters">
+            <div class="mb-3">
+              <label class="filter-label">Property Type</label>
+              <select class="form-select" id="propertyTypeFilter">
+                <option value="all">All Types</option>
+                <option value="residential">Residential</option>
+                <option value="commercial">Commercial</option>
+                <option value="agricultural">Agricultural</option>
+                <option value="industrial">Industrial</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="filter-label">Value Range</label>
+              <div class="row">
+                <div class="col-6">
+                  <input type="number" class="form-control" id="valueMin" placeholder="Min">
+                </div>
+                <div class="col-6">
+                  <input type="number" class="form-control" id="valueMax" placeholder="Max">
+                </div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="filter-label">Data View</label>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="showAnomalies" checked>
+                <label class="form-check-label" for="showAnomalies">Show Anomalies</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="showProperties" checked>
+                <label class="form-check-label" for="showProperties">Show Properties</label>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="filter-label">Time Period</label>
+              <div class="time-filter">
+                <button class="btn btn-outline-secondary active" data-period="day">Day</button>
+                <button class="btn btn-outline-secondary" data-period="week">Week</button>
+                <button class="btn btn-outline-secondary" data-period="month">Month</button>
+                <button class="btn btn-outline-secondary" data-period="year">Year</button>
+              </div>
+            </div>
+            <div class="d-grid">
+              <button class="btn btn-primary" id="applyFilters">Apply Filters</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-card dashboard-card-fixed">
+          <div class="card-title">
+            <span>Anomaly Trend</span>
+            <div class="chart-controls">
+              <select id="chartTypeSelector" class="form-select form-select-sm chart-selector">
+                <option value="line">Line Chart</option>
+                <option value="bar">Bar Chart</option>
+                <option value="area">Area Chart</option>
+              </select>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="anomalyTrendChart"></canvas>
+          </div>
+          <div class="chart-metrics">
+            <div class="metric-item">
+              <div class="metric-label">Peak</div>
+              <div class="metric-value" id="peakAnomalies">--</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-label">Average</div>
+              <div class="metric-value" id="avgAnomalies">--</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-label">Total</div>
+              <div class="metric-value" id="totalAnomaliesChart">--</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-card dashboard-card-scrollable">
+          <div class="card-title">Recent Anomalies</div>
+          <div class="table-container">
+            <table class="table table-hover" id="anomalyTable">
+              <thead>
+                <tr>
+                  <th>Property</th>
+                  <th>Type</th>
+                  <th>Severity</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Anomaly data will be loaded here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main map area -->
+    <div class="col-lg-9">
+      <div class="map-container">
+        <div id="realtime-map"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Property Detail Modal -->
+<div class="modal fade" id="propertyDetailModal" tabindex="-1" aria-labelledby="propertyDetailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="propertyDetailModalLabel">Property Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="propertyDetailContent">
+        <!-- Property details will be loaded here -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="viewFullPropertyDetails">Full Details</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Global variables
+  let map;
+  let propertyLayer;
+  let anomalyLayer;
+  let refreshInterval;
+  let anomalyTrendChart;
+  let currentPeriod = 'day';
+  
+  // Initialize the dashboard when the DOM is loaded
+  document.addEventListener('DOMContentLoaded', function() {
+    initializeMap();
+    initializeChart();
+    loadInitialData();
+    setupEventListeners();
+    startRefreshCycle();
+  });
+  
+  // Initialize the map
+  function initializeMap() {
+    // Create the map
+    map = L.map('realtime-map').setView([46.2062, -119.1686], 13);
+    
+    // Add base tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    
+    // Create layers for properties and anomalies
+    propertyLayer = L.layerGroup().addTo(map);
+    anomalyLayer = L.layerGroup().addTo(map);
+    
+    // Add legend
+    addMapLegend();
+  }
+  
+  // Add a legend to the map
+  function addMapLegend() {
+    const legend = L.control({ position: 'bottomright' });
+    
+    legend.onAdd = function(map) {
+      const div = L.DomUtil.create('div', 'legend');
+      div.innerHTML = `
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #4CAF50;"></div>
+          <div class="legend-label">Normal Property</div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #FFC107;"></div>
+          <div class="legend-label">Low Severity Anomaly</div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #FF9800;"></div>
+          <div class="legend-label">Medium Severity Anomaly</div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background-color: #F44336;"></div>
+          <div class="legend-label">High Severity Anomaly</div>
+        </div>
+      `;
+      return div;
+    };
+    
+    legend.addTo(map);
+  }
+  
+  // Initialize the anomaly trend chart
+  function initializeChart() {
+    const ctx = document.getElementById('anomalyTrendChart').getContext('2d');
+    anomalyTrendChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Anomalies',
+          data: [],
+          borderColor: '#F44336',
+          backgroundColor: 'rgba(244, 67, 54, 0.1)',
+          borderWidth: 2,
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              precision: 0
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false
+          }
+        }
+      }
+    });
+  }
+  
+  // Load initial data for the dashboard
+  function loadInitialData() {
+    fetchDashboardData();
+    fetchAnomalyTrend(currentPeriod);
+    fetchRecentAnomalies();
+  }
+  
+  // Setup event listeners
+  function setupEventListeners() {
+    // Apply filters button
+    document.getElementById('applyFilters').addEventListener('click', function() {
+      fetchDashboardData();
+    });
+    
+    // Show/hide anomalies checkbox
+    document.getElementById('showAnomalies').addEventListener('change', function(e) {
+      if (e.target.checked) {
+        map.addLayer(anomalyLayer);
+      } else {
+        map.removeLayer(anomalyLayer);
+      }
+    });
+    
+    // Show/hide properties checkbox
+    document.getElementById('showProperties').addEventListener('change', function(e) {
+      if (e.target.checked) {
+        map.addLayer(propertyLayer);
+      } else {
+        map.removeLayer(propertyLayer);
+      }
+    });
+    
+    // Time period buttons
+    document.querySelectorAll('.time-filter button').forEach(button => {
+      button.addEventListener('click', function() {
+        // Remove active class from all buttons
+        document.querySelectorAll('.time-filter button').forEach(btn => {
+          btn.classList.remove('active');
+        });
+        
+        // Add active class to clicked button
+        this.classList.add('active');
+        
+        // Update current period and fetch data
+        currentPeriod = this.getAttribute('data-period');
+        fetchAnomalyTrend(currentPeriod);
+      });
+    });
+    
+    // Chart type selector
+    document.getElementById('chartTypeSelector').addEventListener('change', function() {
+      const chartType = this.value;
+      updateChartType(chartType);
+    });
+    
+    // View full property details button
+    document.getElementById('viewFullPropertyDetails').addEventListener('click', function() {
+      const propertyId = this.getAttribute('data-property-id');
+      if (propertyId) {
+        window.location.href = '/property/' + propertyId;
+      }
+    });
+    
+    // Add error handling for event listeners
+    try {
+      // Add a window resize event handler to redraw charts when the window size changes
+      window.addEventListener('resize', function() {
+        if (anomalyTrendChart) {
+          anomalyTrendChart.resize();
+        }
+      });
+    } catch (error) {
+      console.error('Error setting up window resize handler:', error);
+    }
+  }
+  
+  // Start the data refresh cycle
+  function startRefreshCycle() {
+    // Refresh data every 30 seconds
+    refreshInterval = setInterval(function() {
+      fetchDashboardData();
+      fetchRecentAnomalies();
+      updateLastUpdatedTime();
+    }, 30000);
+  }
+  
+  // Update the "last updated" text
+  function updateLastUpdatedTime() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('lastUpdated').textContent = `Updated at ${timeString}`;
+  }
+  
+  // Show the loading spinner
+  function showLoadingSpinner() {
+    const spinner = document.getElementById('refreshSpinner');
+    spinner.classList.add('active');
+  }
+  
+  // Hide the loading spinner
+  function hideLoadingSpinner() {
+    const spinner = document.getElementById('refreshSpinner');
+    spinner.classList.remove('active');
+  }
+  
+  // Fetch dashboard data from the API
+  function fetchDashboardData() {
+    showLoadingSpinner();
+    
+    // Get filter values
+    const propertyType = document.getElementById('propertyTypeFilter').value;
+    const valueMin = document.getElementById('valueMin').value;
+    const valueMax = document.getElementById('valueMax').value;
+    
+    // Build query parameters
+    let params = new URLSearchParams();
+    if (propertyType !== 'all') {
+      params.append('property_type', propertyType);
+    }
+    if (valueMin) {
+      params.append('value_min', valueMin);
+    }
+    if (valueMax) {
+      params.append('value_max', valueMax);
+    }
+    
+    // Fetch data from API
+    console.log('Fetching dashboard data from:', '/visualizations/dashboard/api/dashboard?' + params.toString());
+    fetch('/visualizations/dashboard/api/dashboard?' + params.toString())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        console.log('Dashboard API response received:', response);
+        return response.json();
+      })
+      .then(data => {
+        console.log('Dashboard data loaded:', data);
+        updateDashboardStats(data.stats);
+        updateMapData(data.properties, data.anomalies);
+        hideLoadingSpinner();
+        updateLastUpdatedTime();
+      })
+      .catch(error => {
+        console.error('Error fetching dashboard data:', error);
+        hideLoadingSpinner();
+      });
+  }
+  
+  // Fetch anomaly trend data
+  function fetchAnomalyTrend(period) {
+    console.log('Fetching trend data from:', `/visualizations/dashboard/api/dashboard/trend/${period}`);
+    fetch(`/visualizations/dashboard/api/dashboard/trend/${period}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        console.log('Trend API response received:', response);
+        return response.json();
+      })
+      .then(data => {
+        console.log('Trend data loaded:', data);
+        updateAnomalyTrendChart(data);
+      })
+      .catch(error => {
+        console.error('Error fetching anomaly trend data:', error);
+      });
+  }
+  
+  // Fetch recent anomalies
+  function fetchRecentAnomalies() {
+    console.log('Fetching recent anomalies from:', '/visualizations/dashboard/api/dashboard/recent-anomalies');
+    fetch('/visualizations/dashboard/api/dashboard/recent-anomalies')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        console.log('Recent anomalies API response received:', response);
+        return response.json();
+      })
+      .then(data => {
+        console.log('Recent anomalies data loaded:', data);
+        updateRecentAnomaliesTable(data);
+      })
+      .catch(error => {
+        console.error('Error fetching recent anomalies:', error);
+      });
+  }
+  
+  // Update dashboard statistics
+  function updateDashboardStats(stats) {
+    try {
+      if (!stats) {
+        console.error('No stats data provided to updateDashboardStats');
+        return;
+      }
+      
+      const totalPropEl = document.getElementById('totalProperties');
+      if (totalPropEl) totalPropEl.textContent = stats.total_properties.toLocaleString();
+      
+      const totalAnomaliesEl = document.getElementById('totalAnomalies');
+      if (totalAnomaliesEl) totalAnomaliesEl.textContent = stats.total_anomalies.toLocaleString();
+      
+      const avgValueEl = document.getElementById('averageValue');
+      if (avgValueEl) avgValueEl.textContent = '$' + stats.average_value.toLocaleString();
+      
+      const anomalyRateEl = document.getElementById('anomalyRate');
+      if (anomalyRateEl) anomalyRateEl.textContent = stats.anomaly_rate.toFixed(1) + '%';
+    } catch (error) {
+      console.error('Error updating dashboard stats:', error);
+    }
+  }
+  
+  // Update map with property and anomaly data
+  function updateMapData(properties, anomalies) {
+    try {
+      // Clear existing layers
+      if (!propertyLayer || !anomalyLayer) {
+        console.error('Map layers not initialized');
+        return;
+      }
+      
+      propertyLayer.clearLayers();
+      anomalyLayer.clearLayers();
+      
+      // Add properties to the map
+      if (properties && Array.isArray(properties)) {
+        properties.forEach(property => {
+          if (property && property.location) {
+            try {
+              const marker = createPropertyMarker(property);
+              propertyLayer.addLayer(marker);
+            } catch (err) {
+              console.error('Error creating property marker:', err, property);
+            }
+          }
+        });
+      } else {
+        console.warn('No valid properties data for map');
+      }
+      
+      // Add anomalies to the map
+      if (anomalies && Array.isArray(anomalies)) {
+        anomalies.forEach(anomaly => {
+          if (anomaly && anomaly.location) {
+            try {
+              const marker = createAnomalyMarker(anomaly);
+              anomalyLayer.addLayer(marker);
+            } catch (err) {
+              console.error('Error creating anomaly marker:', err, anomaly);
+            }
+          }
+        });
+      } else {
+        console.warn('No valid anomalies data for map');
+      }
+      
+      // Fit map to bounds if there are markers
+      try {
+        // Get all layers with valid markers
+        const validLayers = [];
+        propertyLayer.eachLayer(layer => {
+          if (layer && layer.getLatLng) {
+            validLayers.push(layer);
+          }
+        });
+        anomalyLayer.eachLayer(layer => {
+          if (layer && layer.getLatLng) {
+            validLayers.push(layer);
+          }
+        });
+        
+        if (validLayers.length > 0) {
+          // Create a feature group with only valid layers
+          const group = L.featureGroup(validLayers);
+          const bounds = group.getBounds();
+          
+          // Check if bounds are valid before fitting
+          if (bounds && bounds.isValid()) {
+            map.fitBounds(bounds, {
+              padding: [50, 50],  // Add padding around bounds
+              maxZoom: 15,        // Don't zoom in too far
+              animate: true
+            });
+          } else {
+            // Fallback to Benton County, WA coordinates if bounds are invalid
+            map.setView([46.2062, -119.1686], 11);
+          }
+        } else {
+          // No valid markers, use default view for Benton County, WA
+          map.setView([46.2062, -119.1686], 11);
+          console.log('No valid map markers to display, using default view');
+        }
+      } catch (err) {
+        // Final fallback in case of any error
+        console.error('Error fitting map to bounds:', err);
+        map.setView([46.2062, -119.1686], 11);
+      }
+    } catch (error) {
+      console.error('Error updating map data:', error);
+    }
+  }
+  
+  // Create a marker for a property
+  function createPropertyMarker(property) {
+    try {
+      if (!property || !property.location || !property.location.coordinates || 
+          !Array.isArray(property.location.coordinates) || property.location.coordinates.length < 2) {
+        console.error('Invalid location data for property:', property);
+        return null;
+      }
+      
+      // Create a marker with a popup
+      const latLng = [property.location.coordinates[1], property.location.coordinates[0]];
+      const marker = L.circleMarker(latLng, {
+        radius: 8,
+        fillColor: '#4CAF50',
+        color: '#fff',
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.8
+      });
+      
+      // Create popup content
+      const popupContent = `
+        <div class="property-popup">
+          <h4>${property.address || 'Unnamed Property'}</h4>
+          <div class="property-detail"><strong>Parcel ID:</strong> ${property.parcel_id || 'N/A'}</div>
+          <div class="property-detail"><strong>Type:</strong> ${property.property_type || 'N/A'}</div>
+          <div class="property-detail"><strong>Value:</strong> $${typeof property.total_value === 'number' ? property.total_value.toLocaleString() : '0'}</div>
+          <button class="btn btn-sm btn-primary mt-2" onclick="showPropertyDetails('${property.id}')">View Details</button>
+        </div>
+      `;
+      
+      marker.bindPopup(popupContent);
+      return marker;
+    } catch (error) {
+      console.error('Error creating property marker:', error, property);
+      return null;
+    }
+  }
+  
+  // Create a marker for an anomaly
+  function createAnomalyMarker(anomaly) {
+    try {
+      if (!anomaly || !anomaly.location || !anomaly.location.coordinates || 
+          !Array.isArray(anomaly.location.coordinates) || anomaly.location.coordinates.length < 2) {
+        console.error('Invalid location data for anomaly:', anomaly);
+        return null;
+      }
+      
+      // Determine color based on severity
+      let fillColor;
+      switch (anomaly.severity) {
+        case 'high':
+          fillColor = '#F44336'; // Red
+          break;
+        case 'medium':
+          fillColor = '#FF9800'; // Orange
+          break;
+        case 'low':
+          fillColor = '#FFC107'; // Yellow
+          break;
+        default:
+          fillColor = '#F44336'; // Default to red
+      }
+      
+      // Create a marker with a popup
+      const latLng = [anomaly.location.coordinates[1], anomaly.location.coordinates[0]];
+      const marker = L.circleMarker(latLng, {
+        radius: 10,
+        fillColor: fillColor,
+        color: '#fff',
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.8
+      });
+      
+      // Create popup content
+      const popupContent = `
+        <div class="property-popup">
+          <h4>Anomaly Detected</h4>
+          <div class="property-detail"><strong>Property:</strong> ${anomaly.property_address || 'Unknown Property'}</div>
+          <div class="property-detail"><strong>Type:</strong> ${anomaly.anomaly_type || 'Unknown Type'}</div>
+          <div class="property-detail"><strong>Severity:</strong> ${anomaly.severity || 'low'}</div>
+          <div class="property-detail"><strong>Detected:</strong> ${anomaly.detected_at ? new Date(anomaly.detected_at).toLocaleString() : 'Unknown Date'}</div>
+          ${anomaly.property_id ? `<button class="btn btn-sm btn-primary mt-2" onclick="showPropertyDetails('${anomaly.property_id}')">View Property</button>` : ''}
+        </div>
+      `;
+      
+      marker.bindPopup(popupContent);
+      return marker;
+    } catch (error) {
+      console.error('Error creating anomaly marker:', error, anomaly);
+      return null;
+    }
+  }
+  
+  // Update the anomaly trend chart
+  function updateAnomalyTrendChart(data) {
+    try {
+      if (!data || !data.labels || !data.values) {
+        console.error('Invalid or missing chart data');
+        return;
+      }
+      
+      if (!anomalyTrendChart) {
+        console.error('Chart not initialized');
+        return;
+      }
+      
+      anomalyTrendChart.data.labels = data.labels;
+      anomalyTrendChart.data.datasets[0].data = data.values;
+      anomalyTrendChart.update();
+      
+      // Update chart metrics
+      updateChartMetrics(data.values);
+    } catch (error) {
+      console.error('Error updating trend chart:', error);
+    }
+  }
+  
+  // Update chart metrics (peak, average, total)
+  function updateChartMetrics(values) {
+    try {
+      if (!values || !Array.isArray(values)) {
+        console.warn('No valid data for chart metrics');
+        return;
+      }
+      
+      // Calculate metrics
+      const peak = Math.max(...values);
+      
+      // Calculate average (avoid division by zero)
+      let average = 0;
+      if (values.length > 0) {
+        const sum = values.reduce((a, b) => a + b, 0);
+        average = sum / values.length;
+      }
+      
+      // Calculate total
+      const total = values.reduce((a, b) => a + b, 0);
+      
+      // Update the UI
+      const peakElement = document.getElementById('peakAnomalies');
+      if (peakElement) peakElement.textContent = peak;
+      
+      const avgElement = document.getElementById('avgAnomalies');
+      if (avgElement) avgElement.textContent = average.toFixed(1);
+      
+      const totalElement = document.getElementById('totalAnomaliesChart');
+      if (totalElement) totalElement.textContent = total;
+      
+      // Update data completeness
+      updateDataCompleteness(values);
+    } catch (error) {
+      console.error('Error updating chart metrics:', error);
+    }
+  }
+  
+  // Update the data completeness progress bar
+  function updateDataCompleteness(values) {
+    try {
+      if (!values || !Array.isArray(values)) {
+        return;
+      }
+      
+      // Calculate completeness as percentage of non-zero values
+      const nonZeroCount = values.filter(v => v > 0).length;
+      const completeness = values.length > 0 ? (nonZeroCount / values.length) * 100 : 0;
+      
+      // Update progress bar
+      const progressBar = document.getElementById('dataCompleteness');
+      if (progressBar) {
+        progressBar.style.width = `${completeness}%`;
+        progressBar.setAttribute('aria-valuenow', completeness);
+        progressBar.textContent = `${Math.round(completeness)}%`;
+      }
+    } catch (error) {
+      console.error('Error updating data completeness:', error);
+    }
+  }
+  
+  // Update chart type
+  function updateChartType(chartType) {
+    try {
+      if (!anomalyTrendChart) {
+        console.error('Chart not initialized');
+        return;
+      }
+      
+      // Store current data
+      const currentData = {
+        labels: anomalyTrendChart.data.labels,
+        datasets: anomalyTrendChart.data.datasets
+      };
+      
+      // Update chart type
+      if (chartType === 'bar') {
+        anomalyTrendChart.config.type = 'bar';
+        anomalyTrendChart.data.datasets[0].fill = false;
+        anomalyTrendChart.data.datasets[0].backgroundColor = 'rgba(244, 67, 54, 0.7)';
+      } else if (chartType === 'area') {
+        anomalyTrendChart.config.type = 'line';
+        anomalyTrendChart.data.datasets[0].fill = true;
+        anomalyTrendChart.data.datasets[0].backgroundColor = 'rgba(244, 67, 54, 0.2)';
+        anomalyTrendChart.data.datasets[0].tension = 0.4;
+      } else {
+        // Default: line chart
+        anomalyTrendChart.config.type = 'line';
+        anomalyTrendChart.data.datasets[0].fill = false;
+        anomalyTrendChart.data.datasets[0].tension = 0.2;
+      }
+      
+      // Restore data and update
+      anomalyTrendChart.data = currentData;
+      anomalyTrendChart.update();
+    } catch (error) {
+      console.error('Error updating chart type:', error);
+    }
+  }
+  
+  // Update the recent anomalies table
+  function updateRecentAnomaliesTable(anomalies) {
+    const table = document.getElementById('anomalyTable');
+    if (!table) {
+      console.error('Anomaly table not found in the DOM');
+      return;
+    }
+    
+    let tableBody = table.querySelector('tbody');
+    if (!tableBody) {
+      // Create tbody if it doesn't exist
+      console.log('Table body not found, creating one');
+      tableBody = document.createElement('tbody');
+      table.appendChild(tableBody);
+    }
+    
+    tableBody.innerHTML = '';
+    
+    if (anomalies.length === 0) {
+      const row = document.createElement('tr');
+      row.innerHTML = '<td colspan="4" class="text-center">No recent anomalies</td>';
+      tableBody.appendChild(row);
+      return;
+    }
+    
+    anomalies.forEach(anomaly => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><a href="#" onclick="showPropertyDetails('${anomaly.property_id}'); return false;">${anomaly.property_address || 'Unknown'}</a></td>
+        <td>${anomaly.anomaly_type || 'Unknown'}</td>
+        <td><span class="badge ${anomaly.severity === 'high' ? 'badge-anomaly' : 'badge-normal'}">${anomaly.severity || 'low'}</span></td>
+        <td>${anomaly.detected_at ? new Date(anomaly.detected_at).toLocaleDateString() : 'N/A'}</td>
+      `;
+      tableBody.appendChild(row);
+    });
+  }
+  
+  // Show property details in a modal
+  function showPropertyDetails(propertyId) {
+    // Fetch property details
+    console.log('Fetching property details from:', `/visualizations/dashboard/api/properties/${propertyId}`);
+    fetch(`/visualizations/dashboard/api/properties/${propertyId}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        console.log('Property API response received:', response);
+        return response.json();
+      })
+      .then(property => {
+        // Update modal content
+        const modalContent = document.getElementById('propertyDetailContent');
+        modalContent.innerHTML = `
+          <div class="row">
+            <div class="col-md-6">
+              <h4>Property Information</h4>
+              <table class="table table-striped">
+                <tr>
+                  <th>Address</th>
+                  <td>${property.address}</td>
+                </tr>
+                <tr>
+                  <th>Parcel ID</th>
+                  <td>${property.parcel_id}</td>
+                </tr>
+                <tr>
+                  <th>Property Type</th>
+                  <td>${property.property_type}</td>
+                </tr>
+                <tr>
+                  <th>Year Built</th>
+                  <td>${property.year_built || 'N/A'}</td>
+                </tr>
+                <tr>
+                  <th>Lot Size</th>
+                  <td>${property.lot_size ? property.lot_size.toLocaleString() + ' sq ft' : 'N/A'}</td>
+                </tr>
+                <tr>
+                  <th>Total Area</th>
+                  <td>${property.total_area ? property.total_area.toLocaleString() + ' sq ft' : 'N/A'}</td>
+                </tr>
+              </table>
+            </div>
+            <div class="col-md-6">
+              <h4>Assessment Information</h4>
+              <table class="table table-striped">
+                <tr>
+                  <th>Land Value</th>
+                  <td>$${property.assessment ? property.assessment.land_value.toLocaleString() : 'N/A'}</td>
+                </tr>
+                <tr>
+                  <th>Improvement Value</th>
+                  <td>$${property.assessment ? property.assessment.improvement_value.toLocaleString() : 'N/A'}</td>
+                </tr>
+                <tr>
+                  <th>Total Value</th>
+                  <td>$${property.assessment ? property.assessment.total_value.toLocaleString() : 'N/A'}</td>
+                </tr>
+                <tr>
+                  <th>Assessment Date</th>
+                  <td>${property.assessment ? new Date(property.assessment.assessment_date).toLocaleDateString() : 'N/A'}</td>
+                </tr>
+                <tr>
+                  <th>Status</th>
+                  <td>${property.assessment ? property.assessment.status : 'N/A'}</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          
+          <div class="row mt-3">
+            <div class="col-12">
+              <h4>Recent Anomalies</h4>
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Severity</th>
+                    <th>Detected At</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${property.anomalies && property.anomalies.length > 0 ? 
+                    property.anomalies.map(anomaly => `
+                      <tr>
+                        <td>${anomaly.anomaly_type}</td>
+                        <td><span class="badge ${anomaly.severity === 'high' ? 'badge-anomaly' : 'badge-normal'}">${anomaly.severity}</span></td>
+                        <td>${new Date(anomaly.detected_at).toLocaleString()}</td>
+                        <td>${anomaly.status}</td>
+                      </tr>
+                    `).join('') :
+                    '<tr><td colspan="4" class="text-center">No anomalies detected</td></tr>'
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+        
+        // Set property ID for the "Full Details" button
+        document.getElementById('viewFullPropertyDetails').setAttribute('data-property-id', propertyId);
+        
+        // Show the modal
+        const modal = new bootstrap.Modal(document.getElementById('propertyDetailModal'));
+        modal.show();
+      })
+      .catch(error => {
+        console.error('Error fetching property details:', error);
+        alert('Error loading property details. Please try again.');
+      });
+  }
+</script>
+{% endblock %}

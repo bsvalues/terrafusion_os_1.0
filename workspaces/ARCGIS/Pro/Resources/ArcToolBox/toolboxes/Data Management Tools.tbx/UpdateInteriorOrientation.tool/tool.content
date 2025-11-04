@@ -1,0 +1,121 @@
+{
+    "type": "FunctionTool",
+    "guid": "{a16b30de-9a07-4987-aab0-1a76e7cbf667}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190008",
+    "description": "$rc:description",
+    "product": "200",
+    "params": {
+        "in_mosaic_dataset": {
+            "display_order": "0",
+            "displayname": "$rc:in_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_mosaic_dataset.descr"
+        },
+        "where_clause": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:where_clause.title",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "in_mosaic_dataset"
+            ],
+            "description": "$rc:where_clause.descr"
+        },
+        "fiducial_table": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:fiducial_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:fiducial_table.descr"
+        },
+        "film_coordinate_system": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:film_coordinate_system.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NO_CHANGE",
+                        "code": "$rc:film_coordinate_system.domain.NO_CHANGE"
+                    },
+                    {
+                        "value": "X_RIGHT_Y_UP",
+                        "code": "$rc:film_coordinate_system.domain.X_RIGHT_Y_UP"
+                    },
+                    {
+                        "value": "X_UP_Y_LEFT",
+                        "code": "$rc:film_coordinate_system.domain.X_UP_Y_LEFT"
+                    },
+                    {
+                        "value": "X_LEFT_Y_DOWN",
+                        "code": "$rc:film_coordinate_system.domain.X_LEFT_Y_DOWN"
+                    },
+                    {
+                        "value": "X_DOWN_Y_RIGHT",
+                        "code": "$rc:film_coordinate_system.domain.X_DOWN_Y_RIGHT"
+                    }
+                ]
+            },
+            "value": "NO_CHANGE",
+            "description": "$rc:film_coordinate_system.descr"
+        },
+        "update_footprints": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:update_footprints.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "UPDATE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_UPDATE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:update_footprints.descr"
+        },
+        "out_mosaic_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "5",
+            "displayname": "$rc:out_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "depends": [
+                "in_mosaic_dataset"
+            ]
+        }
+    }
+}

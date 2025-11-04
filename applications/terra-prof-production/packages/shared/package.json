@@ -1,0 +1,26 @@
+{
+  "name": "@terrafusionpro/shared",
+  "version": "1.0.0",
+  "description": "Shared utilities and models for TerraFusionPro",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "db:push": "node scripts/db-push.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "real-estate",
+    "appraisal",
+    "database",
+    "shared"
+  ],
+  "author": "TerraFusionPro Team",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "drizzle-orm": "^0.28.6",
+    "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.19.13"
+  }
+}

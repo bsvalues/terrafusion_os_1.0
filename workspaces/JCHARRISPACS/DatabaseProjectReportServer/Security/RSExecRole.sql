@@ -1,0 +1,6 @@
+CREATE ROLE [RSExecRole]
+    AUTHORIZATION [dbo];
+
+
+GO
+

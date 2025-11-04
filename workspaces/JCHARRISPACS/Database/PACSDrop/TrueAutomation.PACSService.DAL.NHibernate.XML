@@ -1,0 +1,306 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.PACSService.DAL.NHibernate</name>
+    </assembly>
+    <members>
+        <member name="M:TrueAutomation.PACSService.DAL.NHibernate.Mappings.AutoPersistenceModelGenerator.GenerateAutoPersistenceModel">
+            <summary>
+            Generates a Fluent NHibernate auto-persistence model
+            to specify the auto-mapping persistence behavior for
+            the task service domain.
+            </summary>
+            <returns>An auto-persistence model specifying the a
+            set of auto-mapping behaviors and conventions.</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DAL.NHibernate.Mappings.AutoPersistenceModelGenerator.GetConventions">
+            <summary>
+            Returns the set of custom conventions defined in the
+            TrueAutomation.PACSService.DAL.NHibernate.Mappings.Conventions
+            namespace.
+            </summary>
+            <returns>The set of custom mappings specified by this
+            assembly.</returns>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DAL.NHibernate.Mappings.User_RoleMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.PACSService.Domain.User_Role"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DAL.NHibernate.Mappings.User_RoleMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.PACSService.Domain.User_Role})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DAL.NHibernate.Mappings.Pacs_UserMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.PACSService.Domain.Pacs_User"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DAL.NHibernate.Mappings.Pacs_UserMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.PACSService.Domain.Pacs_User})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DAL.NHibernate.Mappings.TaskQuerySelectionFieldMappingMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.PACSService.Domain.TaskQuerySelectionFieldMapping"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DAL.NHibernate.Mappings.TaskQuerySelectionFieldMappingMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.PACSService.Domain.TaskQuerySelectionFieldMapping})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DAL.NHibernate.Mappings.MappingConfiguration">
+            <summary>
+            Defines an NHibernate object mapping configuration for
+            task service-related objects.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:TrueAutomation.PACSService.DAL.NHibernate.Mappings.MappingConfiguration.ShouldMap(System.Type)" -->
+        <member name="M:TrueAutomation.PACSService.DAL.NHibernate.Mappings.MappingConfiguration.ShouldMap(FluentNHibernate.Member)">
+            <summary>
+            Returns whether or not the specified member should be
+            auto-mapped to the underlying database. We currently require
+            any auto-mapped members to be writable, i.e. they should
+            have a public setter implementation.
+            </summary>
+            <param name="member">The type/class member to evaluate.</param>
+            <returns>True if the member should be automatically mapped
+            to the underlying database, otherwise false.</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:TrueAutomation.PACSService.DAL.NHibernate.Mappings.MappingConfiguration.AbstractClassIsLayerSupertype(System.Type)" -->
+        <member name="M:TrueAutomation.PACSService.DAL.NHibernate.Mappings.MappingConfiguration.IsId(FluentNHibernate.Member)">
+            <summary>
+            Returns whether or not the specified type member is a primary
+            key value, i.e. an identifier value. We consider any property
+            named "Id" to be an identifier value.
+            </summary>
+            <param name="member">The type member to be evaluated.</param>
+            <returns>True if the specified type member is an id value,
+            otherwise false.</returns>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DAL.NHibernate.Mappings.Conventions.HasManyConvention">
+            <summary>
+            A Fluent NHibernate convention for specifying the behavior
+            of foreign key values in a one-to-many collection.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DAL.NHibernate.Mappings.Conventions.HasManyConvention.Apply(FluentNHibernate.Conventions.Instances.IOneToManyCollectionInstance)">
+            <summary>
+            Applies the foreign key convention to the specified one-to-many
+            collection instance. This convention specifies a column name of
+            the lowercase version of the foreign entity's name with an "_id"
+            suffix appended to it.
+            </summary>
+            <param name="instance">The one-to-many collection instance for
+            which to specify the corresponding behavior.</param>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DAL.NHibernate.Mappings.Conventions.PrimaryKeyConvention">
+            <summary>
+            A Fluent NHibernate convention for specifying the behavior
+            of primary key values.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DAL.NHibernate.Mappings.Conventions.PrimaryKeyConvention.Apply(FluentNHibernate.Conventions.Instances.IIdentityInstance)">
+            <summary>
+            Applies the primary key convention to the specified identity
+            instance. This convention specifies a column name of "id" and
+            an ID value of zero for transient objects.
+            </summary>
+            <param name="instance">The primary key instance for which to
+            specify the corresponding behavior.</param>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DAL.NHibernate.Mappings.Conventions.TableNameConvention">
+            <summary>
+            A Fluent NHibernate convention for converting class names
+            to their RDBMS table name equivalents.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DAL.NHibernate.Mappings.Conventions.TableNameConvention.Apply(FluentNHibernate.Conventions.Instances.IClassInstance)">
+            <summary>
+            Applies the table-naming convention to the specified class
+            instance. This convention takes the lowercase version of the
+            entity's class name and prepends "pacs_" to it.
+            </summary>
+            <param name="instance">The class instance for which to
+            create the corresponding table name.</param>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DAL.NHibernate.Mappings.AccountMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.PACSService.Domain.Account"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DAL.NHibernate.Mappings.AccountMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.PACSService.Domain.Account})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DAL.NHibernate.Mappings.TaskQueryMappingMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.PACSService.Domain.TaskQueryMapping"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DAL.NHibernate.Mappings.TaskQueryMappingMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.PACSService.Domain.TaskQueryMapping})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DAL.NHibernate.Mappings.TaskQuerySelectionFieldMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.PACSService.Domain.TaskQuerySelectionField"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DAL.NHibernate.Mappings.TaskQuerySelectionFieldMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.PACSService.Domain.TaskQuerySelectionField})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DAL.NHibernate.Mappings.TaskQueryMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.PACSService.Domain.TaskQuery"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DAL.NHibernate.Mappings.TaskQueryMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.PACSService.Domain.TaskQuery})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DAL.NHibernate.Mappings.PropertyMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.PACSService.Domain.Property"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DAL.NHibernate.Mappings.PropertyMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.PACSService.Domain.Property})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DAL.NHibernate.AccountRepository.FindByFileAsName(System.String,System.String)">
+            <summary>
+            Returns accounts with the input File As Name, 
+            and match condition of EQUAL or LIKE
+            </summary>
+            <param name="fileAsName">The accounts with this file as name to return.</param>
+            <param name="matchCondition">LIKE or EQUAL</param>
+            <returns>List of Accounts matchinh this file as name</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DAL.NHibernate.AccountRepository.FindByFileAsNameOrFirstName(System.String,System.String)">
+            <summary>
+            Returns accounts with the input Name found in the file as name OR
+            Firt name fields, 
+            and match condition of EQUAL or LIKE
+            </summary>
+            <param name="Name">The name to search for in the file as name or 
+            first name fields</param>
+            <param name="matchCondition">Equal or LIKE condition</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.DAL.NHibernate.AccountRepository.FindByFileAsNameOrLastName(System.String,System.String)">
+            <summary>
+            Returns accounts with the input Name found in the file as name OR
+            Last name fields, 
+            and match condition of EQUAL or LIKE
+            </summary>
+            <param name="Name">The name to search for in the file as name or 
+            last name fields</param>
+            <param name="matchCondition">Equal or LIKE condition</param>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DAL.NHibernate.Pacs_UserRepository">
+            <summary>
+            Repository class for use with Pacs_User Domain Objects
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DAL.NHibernate.TaskQuerySelectionFieldRepository">
+            <summary>
+            Repository class for use with the TaskQuerySelectionField domain object.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DAL.NHibernate.TaskQueryMappingRepository">
+            <summary>
+            Repository Class for use with the TaskQueryMapping domain objects.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DAL.NHibernate.TaskQueryRepository">
+            <summary>
+            Repository class for use with TaskQuery Domain Objects
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DAL.NHibernate.NamespaceDoc">
+            <summary>
+            These are the namespace comments for <c>TrueAutomation.PACSService.DAL.NHibernate</c>.
+            This class contains the code to perform data access operations on the PACS DB through NHibernate
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.DAL.NHibernate.User_RoleRepository">
+            <summary>
+            Repository class for use with User_Role Domain Objects
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.IAccountRepository.FindByFileAsName(System.String,System.String)">
+            <summary>
+            Returns accounts with the input File As Name, 
+            and match condition of EQUAL or LIKE
+            </summary>
+            <param name="fileAsName">The file as name of accounts to return.</param>
+            <returns>A list of all accounts whose name matches
+            the specified value.</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.IAccountRepository.FindByFileAsNameOrFirstName(System.String,System.String)">
+            <summary>
+            Returns accounts with the input Name found in the file as name OR
+            Firt name fields, 
+            and match condition of EQUAL or LIKE
+            </summary>
+            <param name="Name">The name to search for in the file as name or 
+            first name fields</param>
+            <param name="matchCondition">Equal or LIKE condition</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.IAccountRepository.FindByFileAsNameOrLastName(System.String,System.String)">
+            <summary>
+            Returns accounts with the input Name found in the file as name OR
+            Last name fields, 
+            and match condition of EQUAL or LIKE
+            </summary>
+            <param name="Name">The name to search for in the file as name or 
+            last name fields</param>
+            <param name="matchCondition">Equal or LIKE condition</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,251 @@
+{% extends "new_unified_base.html" %}
+
+{% block title %}Property Search | TerraMiner{% endblock %}
+
+{% block head_extras %}
+<style>
+    .search-card {
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+    .search-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    .tab-button {
+        @apply px-4 py-2 border-b-2 border-transparent font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-600;
+    }
+    .tab-button.active {
+        @apply border-primary-500 text-primary-600 dark:border-primary-400 dark:text-primary-400;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Page Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold mb-2">Property Search</h1>
+            <p class="text-gray-600 dark:text-gray-400">
+                Find and analyze property data from authentic county assessment records
+            </p>
+        </div>
+        
+        <!-- Data Compliance Notice -->
+        <div class="bg-primary-50 border-l-4 border-primary-500 p-4 mb-8 dark:bg-primary-900/30">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-primary-800 dark:text-primary-200">
+                        Property data complies with <span class="font-semibold">IAAO</span> standards and 
+                        <span class="font-semibold">USPAP</span> requirements. All data is sourced directly 
+                        from official county assessment databases.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Search Card -->
+        <div class="card shadow-md mb-8">
+            <div class="card-header">
+                <h2 class="text-xl font-semibold">Search Property Records</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('property_search') }}">
+                    <!-- County Selection -->
+                    <div class="form-group">
+                        <label for="county" class="form-label">
+                            County
+                        </label>
+                        <select id="county" name="county" class="form-select">
+                            {% for county_id, county_info in counties.items() %}
+                                <option value="{{ county_id }}" {% if county_id == 'benton' %}selected{% endif %}>
+                                    {{ county_info.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                            Select the county where the property is located
+                        </p>
+                    </div>
+                    
+                    <!-- Search Tabs -->
+                    <div class="mb-6 border-b border-gray-200 dark:border-gray-700">
+                        <div class="flex" role="tablist" aria-orientation="horizontal">
+                            <button type="button" class="tab-button active" id="tab-address" 
+                                    onclick="switchTab('address')">
+                                Address/Owner
+                            </button>
+                            <button type="button" class="tab-button" id="tab-parcel" 
+                                    onclick="switchTab('parcel')">
+                                Parcel ID
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Address/Owner Tab Content -->
+                    <div id="tab-content-address" class="form-group">
+                        <label for="search_query" class="form-label">
+                            Address or Owner Name
+                        </label>
+                        <input
+                            type="text"
+                            id="search_query"
+                            name="search_query"
+                            placeholder="Enter address or owner name"
+                            class="form-input"
+                        >
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                            Search by street address (e.g., "123 Main St") or property owner name
+                        </p>
+                    </div>
+                    
+                    <!-- Parcel ID Tab Content -->
+                    <div id="tab-content-parcel" class="form-group hidden">
+                        <label for="property_id" class="form-label">
+                            Parcel ID
+                        </label>
+                        <input
+                            type="text"
+                            id="property_id"
+                            name="property_id"
+                            placeholder="Enter parcel ID (e.g., 1009340100020)"
+                            class="form-input"
+                        >
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                            Enter the exact parcel ID number to view a specific property record
+                        </p>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <div class="mt-6">
+                        <button type="submit" class="btn-primary w-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            Search Property Records
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Search Examples Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Address Search Card -->
+            <div class="search-card card shadow-sm">
+                <div class="card-body">
+                    <h3 class="text-lg font-semibold mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline-block text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        Search by Address
+                    </h3>
+                    <ul class="space-y-1 text-sm pl-7 list-disc">
+                        <li>Street name only: "Williams"</li>
+                        <li>Full address: "123 Williams Blvd"</li>
+                        <li>Street with city: "Main St Kennewick"</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Owner Search Card -->
+            <div class="search-card card shadow-sm">
+                <div class="card-body">
+                    <h3 class="text-lg font-semibold mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline-block text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        Search by Owner
+                    </h3>
+                    <ul class="space-y-1 text-sm pl-7 list-disc">
+                        <li>Last name: "Smith"</li>
+                        <li>Full name: "John Smith"</li>
+                        <li>Business: "Properties LLC"</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Parcel Search Card -->
+        <div class="search-card card shadow-sm mb-8">
+            <div class="card-body">
+                <h3 class="text-lg font-semibold mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 inline-block text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    Search by Parcel ID
+                </h3>
+                <ul class="space-y-1 text-sm pl-7 list-disc">
+                    <li>Benton County: "100934010002000"</li>
+                    <li>Formats may include: "1-0093-401-0002-000" or without dashes</li>
+                    <li>Enter the full parcel ID for exact matching</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Data Sources Section -->
+        <div class="card shadow-md">
+            <div class="card-header">
+                <h2 class="text-xl font-semibold">About Our Data Sources</h2>
+            </div>
+            <div class="card-body">
+                <p class="mb-4">
+                    TerraMiner integrates with official county data sources to provide authentic property records:
+                </p>
+                
+                <div class="space-y-4">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center dark:bg-primary-900">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-lg font-medium">Benton County PACS Database</h3>
+                            <p class="text-gray-600 dark:text-gray-400">
+                                Direct connection to the Property Assessment and Collection System (PACS) 
+                                database for real-time assessment data.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center dark:bg-primary-900">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-lg font-medium">Southeastern Washington Counties</h3>
+                            <p class="text-gray-600 dark:text-gray-400">
+                                Official data feeds from county assessor offices throughout Southeastern 
+                                Washington, including Franklin, Walla Walla, and neighboring counties.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchTab(tabId) {
+        // Update tab buttons
+        document.querySelectorAll('.tab-button').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.getElementById('tab-' + tabId).classList.add('active');
+        
+        // Update tab contents
+        document.getElementById('tab-content-address').classList.add('hidden');
+        document.getElementById('tab-content-parcel').classList.add('hidden');
+        document.getElementById('tab-content-' + tabId).classList.remove('hidden');
+    }
+</script>
+{% endblock %}

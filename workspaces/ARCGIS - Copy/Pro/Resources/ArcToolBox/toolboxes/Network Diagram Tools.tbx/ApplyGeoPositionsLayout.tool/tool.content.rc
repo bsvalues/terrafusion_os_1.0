@@ -1,0 +1,15 @@
+{
+    "map": {
+        "description": "Moves each diagram junction and edge feature so they match the geographical positions of the associated network features.",
+        "in_network_diagram_layer.descr": "The network diagram to which the layout will be applied.",
+        "in_network_diagram_layer.title": "Input Network Diagram Layer",
+        "out_network_diagram_layer.title": "Output Network Diagram",
+        "params.category1": "Advanced Options",
+        "restore_edges_geo_positions.descr": "<xdoc><p>Indicates whether or not diagram edges will be restored to the geographic position of their vertices:<ul><li>Checked—Vertices along diagram edges will be restored when possible, moving them to match the geographic positions of the network features. This is the default.</li><li>Unchecked—Vertices along diagram edges will not be restored. They will appear as straight lines between their connecting junctions.</li></ul></p></xdoc>",
+        "restore_edges_geo_positions.title": "Restore edges geographic positions",
+        "run_async.descr": "<xdoc><p>Specifies whether the layout algorithm will run asynchronously or synchronously on the server.<ul><li>Checked—The layout algorithm will run asynchronously on the server. This option dedicates server resources to run the layout algorithm with a longer time-out. Running asynchronously is recommended for layouts that are time consuming and may exceed the server time-out (for example, Partial Overlapping Edges) and applying to large diagrams (more than 25,000 features).</li><li>Unchecked—The layout algorithm will run synchronously on the server. It can fail without completion if it exceeds the service default time-out value of 600 seconds. This is the default.</li></ul></p></xdoc>",
+        "run_async.title": "Run in asynchronous mode on the server",
+        "summary": "<xdoc><p>Moves each diagram junction and edge feature so they match the geographical positions of the associated network features.</p><note type=\"caution\"/><p group=\"note\">If you have an open edit session, you must save your edits prior to running this tool. This ensures that the diagram reflects the latest changes made to the network topology in the database. If you fail to save your edits, the edits will not be reflected in the diagram.</p><note type=\"note\"/><p group=\"note\">Each layout algorithm includes default parameter values. The default parameter values will be used unless otherwise specified. If the input network diagram is based on a template for which this layout has been configured with a different parameter value, that value will be used instead.</p></xdoc>",
+        "title": "Apply Geo Positions Layout"
+    }
+}

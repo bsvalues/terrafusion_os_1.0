@@ -1,0 +1,13 @@
+{
+    "set": [
+        "allocation",
+        "crow",
+        "distance",
+        "eucdistance",
+        "euclidean",
+        "source",
+        "spread",
+        "straight line",
+        "travel cost"
+    ]
+}

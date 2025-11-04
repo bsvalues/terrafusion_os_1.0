@@ -1,0 +1,9 @@
+{
+  "modules": [
+    "ESRI Map",
+    "CAMA Data",
+    "Parcel List",
+    "Pictometry Online",
+    "App to App"
+  ]
+}

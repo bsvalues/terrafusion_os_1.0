@@ -1,0 +1,97 @@
+{
+    "type": "FunctionTool",
+    "guid": "{252e7067-207e-4792-9ed6-8ff31111a38e}",
+    "displayname": "$rc:title",
+    "helpcontent": "11000014",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "out_training_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_training_feature_class.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFeatureClass"
+                    },
+                    {
+                        "type": "DETable"
+                    }
+                ]
+            },
+            "description": "$rc:out_training_feature_class.descr"
+        },
+        "out_test_feature_class": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_test_feature_class.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFeatureClass"
+                    },
+                    {
+                        "type": "DETable"
+                    }
+                ]
+            },
+            "description": "$rc:out_test_feature_class.descr"
+        },
+        "size_of_training_dataset": {
+            "type": "optional",
+            "displayname": "$rc:size_of_training_dataset.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "2.2250738585072014e-308",
+                "max": "100"
+            },
+            "value": "50",
+            "description": "$rc:size_of_training_dataset.descr"
+        },
+        "subset_size_units": {
+            "type": "optional",
+            "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}",
+            "displayname": "$rc:subset_size_units.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "PERCENTAGE_OF_INPUT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "ABSOLUTE_VALUE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:subset_size_units.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "randomGenerator",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

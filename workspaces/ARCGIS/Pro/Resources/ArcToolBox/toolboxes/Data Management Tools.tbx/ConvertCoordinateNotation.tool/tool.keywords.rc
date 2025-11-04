@@ -1,0 +1,21 @@
+{
+    "set": [
+        "dd",
+        "ddm",
+        "decimal",
+        "degrees",
+        "dms",
+        "gars",
+        "georef",
+        "grid",
+        "mgrs",
+        "military",
+        "minutes",
+        "reference",
+        "seconds",
+        "system",
+        "universal transverse mercator",
+        "usng",
+        "utm"
+    ]
+}

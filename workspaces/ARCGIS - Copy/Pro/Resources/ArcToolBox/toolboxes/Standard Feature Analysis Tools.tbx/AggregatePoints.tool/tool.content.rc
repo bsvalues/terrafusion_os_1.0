@@ -1,0 +1,32 @@
+{
+    "map": {
+        "aggregatedlayer.title": "Output Layer",
+        "description": "Uses a layer of point features and a layer of polygon features to determine which points fall within each polygon's area. After determining this point-in-polygon spatial relationship, statistics about all points in the polygon are calculated and assigned to the area.",
+        "groupbyfield.descr": "<xdoc><p>A field name in the pointLayer. Points that have the same value for the group by field will have their own counts and summary field statistics.</p><p>You can create statistical groups using an attribute in the analysis layer. For example, if you are aggregating crimes to neighborhood boundaries, you may have a Crime_type attribute with five different crime types. Each unique crime type forms a group, and the statistics you choose will be calculated for each unique value of Crime_type. When you choose a grouping attribute, two results are created: the result layer and a related table containing the statistics.</p></xdoc>",
+        "groupbyfield.title": "Group By Field",
+        "groupsummary.title": "Output Group Layer",
+        "keepboundarieswithnopoints.descr": "<xdoc><p>Specifies whether the polygons that have no points within them should be returned in the output.<ul><li>Checked—Keep polygons that have no points. This is the default.</li><li>Unchecked—Do not return polygons with no points in the output.</li></ul></p></xdoc>",
+        "keepboundarieswithnopoints.title": "Keep boundaries with no points",
+        "minoritymajority.descr": "<xdoc><p>This Boolean parameter is applicable only when a <span class=\"esri_uicontrol\">Group By Field</span> is specified. If checked, the minority (least dominant) or the majority (most dominant) attribute values for each group field within each boundary are calculated. Two new fields are added to the output layer prefixed with Majority_ and Minority_.<ul><li>Unchecked—Do not add minority and majority fields. This is the default.</li><li>Checked—Add minority and majority fields.</li></ul></p></xdoc>",
+        "minoritymajority.title": "Add minority and majority attributes",
+        "outputname.descr": "The name of the output layer to create on your portal.",
+        "outputname.title": "Output Name",
+        "percentpoints.descr": "<xdoc><p>This Boolean parameter is applicable only when a <span class=\"esri_uicontrol\">Group By Field</span> is specified. If checked, the percentage count of points for each unique <span class=\"esri_uicontrol\">Group By Field</span> value is calculated. A new field is added to the output group summary table containing the percentages of each attribute value within each group. If <span class=\"esri_uicontrol\">Add minority and majority attributes</span> is true, two additional fields are added to the output containing the percentages of the minority and majority attribute values within each group.<ul><li>Unchecked—Do not add percentage fields. This is the default.</li><li>Checked—Add percentage fields.</li></ul></p></xdoc>",
+        "percentpoints.title": "Add percentage",
+        "pointlayer.descr": "The point features that will be aggregated into the polygons in the polygon layer.",
+        "pointlayer.title": "Input Points",
+        "polygonlayer.descr": "The polygon features (areas) into which the input points will be aggregated.",
+        "polygonlayer.title": "Aggregating Polygons",
+        "summary": "<xdoc><p>Uses a layer of point features and a layer of polygon features to determine which points fall within each polygon&apos;s area. After determining this point-in-polygon spatial relationship, statistics about all points in the polygon are calculated and assigned to the area.</p><p>The most basic statistic is the count of the number of points within the polygon, but you can get other statistics as well. For example, if your points represented coffee shops and each point has a <span class=\"esri_fieldname\">TOTAL_SALES</span> attribute, you can get statistics like the sum of all <span class=\"esri_fieldname\">TOTAL_SALES</span> within the polygon, or the minimum or maximum <span class=\"esri_fieldname\">TOTAL_SALES</span> value, or the standard deviation of all sales within the polygon.</p></xdoc>",
+        "summaryfields.descr": "<xdoc><p>A list of field names and statistical summary type that you wish to calculate for all points within each polygon. The count of points within each polygon is always returned. The following statistic types are supported:<ul><li>Sum—The total value.</li><li>Minimum—The smallest value.</li><li>Max—The largest value.</li><li>Mean—The average or mean value.</li><li>Standard deviation—The standard deviation.</li></ul></p></xdoc>",
+        "summaryfields.domain.item2.MAX": "Maximum",
+        "summaryfields.domain.item2.MEAN": "Mean",
+        "summaryfields.domain.item2.MIN": "Minimum",
+        "summaryfields.domain.item2.STDDEV": "Standard deviation",
+        "summaryfields.domain.item2.SUM": "Sum",
+        "summaryfields.dt.title1": "Fields",
+        "summaryfields.dt.title2": "Statistic",
+        "summaryfields.title": "Summary Fields",
+        "title": "Aggregate Points"
+    }
+}

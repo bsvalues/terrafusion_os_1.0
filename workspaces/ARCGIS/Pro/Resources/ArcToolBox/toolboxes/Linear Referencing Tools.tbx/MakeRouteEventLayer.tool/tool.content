@@ -1,0 +1,233 @@
+{
+    "type": "FunctionTool",
+    "guid": "{ead9f8e2-891a-4b7a-aeef-85d44e8af376}",
+    "displayname": "$rc:title",
+    "helpcontent": "7000006",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_routes": {
+            "displayname": "$rc:in_routes.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "xmlserialize",
+                "xml": "<GPRouteDomain xsi:type='typens:GPRouteDomain' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/3.4.0'></GPRouteDomain>"
+            },
+            "description": "$rc:in_routes.descr"
+        },
+        "route_id_field": {
+            "displayname": "$rc:route_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "guid": "{4A4F70B0-913C-4A82-A33F-E190FFA409EA}"
+            },
+            "depends": [
+                "in_routes"
+            ],
+            "description": "$rc:route_id_field.descr"
+        },
+        "in_table": {
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "domain": {
+                "type": "xmlserialize",
+                "xml": "<GPRouteMeasureEventDomain xsi:type='typens:GPRouteMeasureEventDomain' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/3.4.0'></GPRouteMeasureEventDomain>"
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "in_event_properties": {
+            "displayname": "$rc:in_event_properties.title",
+            "datatype": {
+                "type": "GPRouteMeasureEventProperties"
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:in_event_properties.descr"
+        },
+        "out_layer": {
+            "direction": "out",
+            "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}",
+            "displayname": "$rc:out_layer.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:out_layer.descr"
+        },
+        "offset_field": {
+            "type": "optional",
+            "displayname": "$rc:offset_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "guid": "{C06E2425-30D9-4C9D-8CD3-7FE243B3AFCB}"
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:offset_field.descr"
+        },
+        "add_error_field": {
+            "type": "optional",
+            "displayname": "$rc:add_error_field.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ERROR_FIELD"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_ERROR_FIELD"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:add_error_field.descr"
+        },
+        "add_angle_field": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:add_angle_field.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ANGLE_FIELD"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_ANGLE_FIELD"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:add_angle_field.descr"
+        },
+        "angle_type": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:angle_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NORMAL",
+                        "code": "$rc:angle_type.domain.NORMAL"
+                    },
+                    {
+                        "value": "TANGENT",
+                        "code": "$rc:angle_type.domain.TANGENT"
+                    }
+                ]
+            },
+            "value": "NORMAL",
+            "description": "$rc:angle_type.descr"
+        },
+        "complement_angle": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:complement_angle.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "COMPLEMENT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "ANGLE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:complement_angle.descr"
+        },
+        "offset_direction": {
+            "type": "optional",
+            "displayname": "$rc:offset_direction.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "RIGHT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "LEFT"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:offset_direction.descr"
+        },
+        "point_event_type": {
+            "type": "optional",
+            "displayname": "$rc:point_event_type.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "MULTIPOINT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "POINT"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:point_event_type.descr"
+        }
+    },
+    "environments": [
+        "configKeyword",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

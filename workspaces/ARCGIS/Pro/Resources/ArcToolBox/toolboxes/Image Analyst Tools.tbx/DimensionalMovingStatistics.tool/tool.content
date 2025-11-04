@@ -1,0 +1,234 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "66130012",
+    "product": "100",
+    "extensions": [
+        "10",
+        "86"
+    ],
+    "description": "$rc:description",
+    "params": {
+        "in_raster": {
+            "displayname": "$rc:in_raster.title",
+            "datatype": {
+                "type": "GPRasterLayer"
+            },
+            "description": "$rc:in_raster.descr"
+        },
+        "out_raster": {
+            "direction": "out",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "schema": {
+                "type": "GPRasterSchema",
+                "extenttype.rule": "Environment",
+                "cellsize.rule": "Environment",
+                "raster.rule": "FirstDependency",
+                "rasterformat.rule": "CRF",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_raster.descr"
+        },
+        "dimension": {
+            "type": "optional",
+            "displayname": "$rc:dimension.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "in_raster"
+            ],
+            "description": "$rc:dimension.descr"
+        },
+        "backward_window": {
+            "type": "optional",
+            "displayname": "$rc:backward_window.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "10000"
+            },
+            "value": "1",
+            "description": "$rc:backward_window.descr"
+        },
+        "forward_window": {
+            "type": "optional",
+            "displayname": "$rc:forward_window.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "10000"
+            },
+            "value": "1",
+            "description": "$rc:forward_window.descr"
+        },
+        "nodata_handling": {
+            "type": "optional",
+            "displayname": "$rc:nodata_handling.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DATA",
+                        "code": "$rc:nodata_handling.domain.DATA"
+                    },
+                    {
+                        "value": "NODATA",
+                        "code": "$rc:nodata_handling.domain.NODATA"
+                    },
+                    {
+                        "value": "FILL_NODATA",
+                        "code": "$rc:nodata_handling.domain.FILL_NODATA"
+                    }
+                ]
+            },
+            "value": "DATA",
+            "description": "$rc:nodata_handling.descr"
+        },
+        "statistics_type": {
+            "type": "optional",
+            "displayname": "$rc:statistics_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MEAN",
+                        "code": "$rc:statistics_type.domain.MEAN"
+                    },
+                    {
+                        "value": "CIRCULAR_MEAN",
+                        "code": "$rc:statistics_type.domain.CIRCULAR_MEAN"
+                    },
+                    {
+                        "value": "MAJORITY",
+                        "code": "$rc:statistics_type.domain.MAJORITY"
+                    },
+                    {
+                        "value": "MAXIMUM",
+                        "code": "$rc:statistics_type.domain.MAXIMUM"
+                    },
+                    {
+                        "value": "MEDIAN",
+                        "code": "$rc:statistics_type.domain.MEDIAN"
+                    },
+                    {
+                        "value": "MINIMUM",
+                        "code": "$rc:statistics_type.domain.MINIMUM"
+                    },
+                    {
+                        "value": "PERCENTILE",
+                        "code": "$rc:statistics_type.domain.PERCENTILE"
+                    }
+                ]
+            },
+            "value": "MEAN",
+            "description": "$rc:statistics_type.descr"
+        },
+        "percentile_value": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:percentile_value.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "100"
+            },
+            "depends": [
+                "statistics_type"
+            ],
+            "value": "90",
+            "description": "$rc:percentile_value.descr"
+        },
+        "percentile_interpolation_type": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:percentile_interpolation_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "AUTO_DETECT",
+                        "code": "$rc:percentile_interpolation_type.domain.AUTO_DETECT"
+                    },
+                    {
+                        "value": "NEAREST",
+                        "code": "$rc:percentile_interpolation_type.domain.NEAREST"
+                    },
+                    {
+                        "value": "LINEAR",
+                        "code": "$rc:percentile_interpolation_type.domain.LINEAR"
+                    }
+                ]
+            },
+            "depends": [
+                "statistics_type"
+            ],
+            "value": "AUTO_DETECT",
+            "description": "$rc:percentile_interpolation_type.descr"
+        },
+        "circular_wrap_value": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:circular_wrap_value.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "1e-10",
+                "max": "10000000000"
+            },
+            "depends": [
+                "statistics_type"
+            ],
+            "value": "360",
+            "description": "$rc:circular_wrap_value.descr"
+        },
+        "raster_function_arguments_json": {
+            "enabled": "false",
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:raster_function_arguments_json.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "cellSize",
+        "cellSizeProjectionMethod",
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "mask",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

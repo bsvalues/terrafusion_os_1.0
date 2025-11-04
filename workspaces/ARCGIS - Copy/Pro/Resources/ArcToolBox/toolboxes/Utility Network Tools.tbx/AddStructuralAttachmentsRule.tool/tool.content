@@ -1,0 +1,82 @@
+{
+    "type": "FunctionTool",
+    "guid": "{b3981bf0-f114-4d05-ba80-11ff84a654c7}",
+    "displayname": "$rc:title",
+    "helpcontent": "71010030",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "block_add_to_map"
+    ],
+    "params": {
+        "in_utility_network": {
+            "displayname": "$rc:in_utility_network.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    }
+                ]
+            }
+        },
+        "template_name": {
+            "displayname": "$rc:template_name.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "is_active": {
+            "displayname": "$rc:is_active.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ACTIVE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "INACTIVE"
+                    }
+                ]
+            },
+            "value": "true"
+        },
+        "description": {
+            "type": "optional",
+            "control_guid": "{E5456E51-0C41-4797-9EE4-5269820C6F0E}",
+            "displayname": "$rc:description.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "out_utility_network": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_utility_network.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    }
+                ]
+            },
+            "addtomap": "false"
+        },
+        "out_template_name": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_template_name.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        }
+    }
+}

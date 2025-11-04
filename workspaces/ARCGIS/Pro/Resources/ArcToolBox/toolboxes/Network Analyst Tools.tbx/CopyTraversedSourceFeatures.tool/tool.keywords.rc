@@ -1,0 +1,15 @@
+{
+    "set": [
+        "change",
+        "convert",
+        "edge",
+        "export",
+        "feature class",
+        "junction",
+        "path",
+        "result",
+        "route",
+        "street",
+        "traversal"
+    ]
+}

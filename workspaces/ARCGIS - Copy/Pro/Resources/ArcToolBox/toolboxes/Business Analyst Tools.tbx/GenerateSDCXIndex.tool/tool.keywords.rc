@@ -1,0 +1,9 @@
+{
+    "set": [
+        "export",
+        "index",
+        "on-prem",
+        "sdcx",
+        "spatial join"
+    ]
+}

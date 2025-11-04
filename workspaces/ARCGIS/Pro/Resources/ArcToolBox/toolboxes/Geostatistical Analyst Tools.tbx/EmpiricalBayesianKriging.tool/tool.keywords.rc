@@ -1,0 +1,22 @@
+{
+    "set": [
+        "covariance",
+        "ebk",
+        "gaussian",
+        "geostatistical",
+        "geostatistics",
+        "interpolate",
+        "interpolation",
+        "intrinsic random function",
+        "irf",
+        "irf-0",
+        "irf-k",
+        "nonstationarity",
+        "nonstationary",
+        "predict",
+        "semivariogram",
+        "stationarity",
+        "stationary",
+        "variography"
+    ]
+}

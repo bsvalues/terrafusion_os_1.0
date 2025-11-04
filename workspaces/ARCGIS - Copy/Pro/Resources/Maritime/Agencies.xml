@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Agencies>
+	<GENERALINFORMATION description="AGENCY values are from the IHO S-62 List of Data Producer Codes through June 27, 2024"/>
+	<AGENCY code="-1" name="Internal" description="Agency list version XXX"/>
+	<AGENCY code="0" name="1B" description="UKHO test and sample datasets"/>
+	<AGENCY code="1" name="AR" description="Servicio de Hidrografia Naval (SHN)"/>
+	<AGENCY code="10" name="AU" description="Australian Hydrographic Office (AHO)"/>
+	<AGENCY code="11" name="AN" description="Australian Hydrographic Office – Defence forces"/>
+	<AGENCY code="20" name="BH" description="Hydrographic Survey Office"/>
+	<AGENCY code="30" name="BE" description="Maritime and Coastal Services – Flemish Hydrography"/>
+	<AGENCY code="40" name="BR" description="Directorate of Hydrography and Navigation (DHN)"/>
+	<AGENCY code="50" name="CA" description="Canadian Hydrographic Service (CHS)"/>
+	<AGENCY code="51" name="C4" description="Canadian Forces"/>
+	<AGENCY code="60" name="CL" description="Servicio Hidrografico y Oceanografico de la Armada (SHOA)"/>
+	<AGENCY code="70" name="CN" description="Maritime Safety Administration (MSA)"/>
+	<AGENCY code="71" name="C1" description="The Navigation Guarantee Department of The Chinese Navy Headquarters"/>
+	<AGENCY code="72" name="C2" description="Hong Kong Special Administrative Region"/>
+	<AGENCY code="73" name="C3" description="Macau Special Administrative Region"/>
+	<AGENCY code="80" name="HR" description="Hrvatski Hidrografski Institut"/>
+	<AGENCY code="90" name="CU" description="Oficina Nacional de Hidrografia y Geodesia"/>
+	<AGENCY code="100" name="CY" description="Hydrographic Unit of the Department of Lands and Surveys"/>
+	<AGENCY code="110" name="DK" description="Geodatastyrelsen (GST)"/>
+	<AGENCY code="111" name="D1" description="Danish Maritime Authority"/>
+	<AGENCY code="112" name="D2" description="Umhvørvisstovan (Faroe Islands)"/>
+	<AGENCY code="120" name="DO" description="Servicio Hidrografico y Oceanografico, ARD"/>
+	<AGENCY code="130" name="EC" description="Instituto Oceanografico de la Armada (INOCAR)"/>
+	<AGENCY code="140" name="EG" description="Shobat al Misaha al Baharia"/>
+	<AGENCY code="150" name="FJ" description="Fiji Islands Maritime Safety Administration (FIMSA)"/>
+	<AGENCY code="160" name="FI" description="Finnish Transport and Communications Agency (Traficom)"/>
+	<AGENCY code="170" name="FR" description="Service Hydrographique et Oceanographique de la Marine (SHOM)"/>
+	<AGENCY code="180" name="DE" description="Bundesamt fur Seeschiffahrt und Hydrographie (BSH)"/>
+	<AGENCY code="190" name="GR" description="Hellenic Navy Hydrographic Service (HNHS)"/>
+	<AGENCY code="200" name="GT" description="Ministerio de la Defensa Nacional"/>
+	<AGENCY code="201" name="G1" description="Comision Portuaria Nacional"/>
+	<AGENCY code="210" name="IS" description="Icelandic Coast Guard"/>
+	<AGENCY code="220" name="IN" description="National Hydrographic Office"/>
+	<AGENCY code="221" name="I7" description="Indian Navy Specific"/>
+	<AGENCY code="222" name="I8" description="Inland Waterway Authority of India"/>
+	<AGENCY code="230" name="ID" description="Jawatan Hidro-Oseanografi (JANHIDROS)"/>
+	<AGENCY code="240" name="IR" description="Ports and Shipping Organization (PSO)"/>
+	<AGENCY code="250" name="IT" description="Istituto Idrografico della Marina (IIM)"/>
+	<AGENCY code="260" name="JP" description="Japan Hydrographic and Oceanographic Department (JHOD)"/>
+	<AGENCY code="270" name="KP" description="Hydrographic Department"/>
+	<AGENCY code="280" name="KR" description="Korea Hydrographic and Oceanographic Agency (KHOA)"/>
+	<AGENCY code="290" name="MY" description="National Hydrographic Centre"/>
+	<AGENCY code="300" name="MC" description="Direction des Affaires Maritimes"/>
+	<AGENCY code="310" name="NL" description="Koninklijke Marine Dienst der Hydrografie - CZSK"/>
+	<AGENCY code="320" name="NZ" description="Land Information New Zealand (LINZ)"/>
+	<AGENCY code="321" name="N3" description="Geospatial Intelligence New Zealand"/>
+	<AGENCY code="330" name="NG" description="Nigerian Navy Hydrographic Office"/>
+	<AGENCY code="340" name="NO" description="Norwegian Hydrographic Service"/>
+	<AGENCY code="341" name="N1" description="Electronic Chart Centre"/>
+	<AGENCY code="342" name="N2" description="Norwegian Defence"/>
+	<AGENCY code="350" name="OM" description="National Hydrographic Office"/>
+	<AGENCY code="360" name="PK" description="Pakistan Hydrographic Department"/>
+	<AGENCY code="370" name="PG" description="Hydrographic Division, National Maritime Safety Division (NMSA)"/>
+	<AGENCY code="380" name="PE" description="Direccion de Hidrografia y Navegacion (DHN)"/>
+	<AGENCY code="390" name="PH" description="National Mapping and Resource Information Authority, Coast and Geodetic Survey Department"/>
+	<AGENCY code="400" name="PL" description="Biuro Hydrograficzne"/>
+	<AGENCY code="401" name="P1" description="Inland Navigation Office in Szczecin (Urzad Zeglugi Srodladowej w Szczecinie)"/>
+	<AGENCY code="410" name="PT" description="Instituto Hidrografico, Portugal (IHP)"/>
+	<AGENCY code="420" name="RU" description="Head Department of Navigation and Oceanography (DNO)"/>
+	<AGENCY code="425" name="R1" description="Federal State Unitary Hydrographc Department"/>
+	<AGENCY code="430" name="SG" description="Hydrographic Department, Maritime and Port Authority (MPA)"/>
+	<AGENCY code="440" name="ZA" description="South African Navy Hydrographic Office (SANHO)"/>
+	<AGENCY code="450" name="ES" description="Instituto Hidrografico de la Marina (IHM)"/>
+	<AGENCY code="460" name="LK" description="National Hydrographic Office, National Aquatic Resources Research and Development Agency (NARA)"/>
+	<AGENCY code="470" name="SR" description="Maritieme Autoriteit Suriname (MAS)"/>
+	<AGENCY code="480" name="SE" description="Sjofartsverket, Swedish Maritime Administration"/>
+	<AGENCY code="490" name="SY" description="General Directorate of Ports"/>
+	<AGENCY code="500" name="TH" description="Hydrographic Department, Royal Thai Navy"/>
+	<AGENCY code="505" name="TO" description="Tonga Defence Services"/>
+	<AGENCY code="510" name="TT" description="Trinidad and Tobago Hydrographic Unit"/>
+	<AGENCY code="520" name="TR" description="Seyir, Hidrografi ve Osinografi Dairesi Baskanligi, Office of Navigation, Hydrography and Oceanography"/>
+	<AGENCY code="530" name="AE" description="Ministry of Communications"/>
+	<AGENCY code="540" name="GB" description="United Kingdom Hydrographic Office"/>
+	<AGENCY code="541" name="G2" description="UKHO Royal Navy"/>
+	<AGENCY code="550" name="US" description="Office of Coast Survey, National Ocean Service, National Oceanic and Atmospheric Administration (NOS)"/>
+	<AGENCY code="551" name="U1" description="National Geospatial-Intelligence Agency Department of Defense (NGA)"/>
+	<AGENCY code="552" name="U2" description="Commander, Naval Meteorology and Oceanography Command (CNMOC)"/>
+	<AGENCY code="553" name="U3" description="U.S. Army Corps of Engineers (USACE)"/>
+	<AGENCY code="554" name="U4" description="National Geospatial-Intelligence Agency Department of Defense (NGA)"/>
+	<AGENCY code="560" name="UY" description="Not known"/>
+	<AGENCY code="570" name="VE" description="Commandancia General de la Armada, Direccion de Hidrografia y Navegacion (DHN)"/>
+	<AGENCY code="580" name="RS" description="Direkcija Za Unutrasnje Plovne Puteve"/>
+	<AGENCY code="590" name="CD" description="Ministere des Transports et Communications"/>
+	<AGENCY code="600" name="AL" description="Albanian Hydrographic Service"/>
+	<AGENCY code="610" name="DZ" description="Service Hydrographique des Forces Navales"/>
+	<AGENCY code="620" name="AO" description="Not known"/>
+	<AGENCY code="625" name="AI" description="Ministry of Infrastructure, Communications and Utilities"/>
+	<AGENCY code="630" name="AG" description="Antigua and Barbuda Port Authority"/>
+	<AGENCY code="640" name="AW" description="Netherlands ENC charting responsibility"/>
+	<AGENCY code="645" name="AZ" description="Azerbaijan Navy"/>
+	<AGENCY code="650" name="BS" description="Port Department, Ministry of Transport and Aviation"/>
+	<AGENCY code="660" name="BD" description="Hydrographic Department"/>
+	<AGENCY code="670" name="BB" description="Barbados Port Inc"/>
+	<AGENCY code="680" name="BZ" description="Belize Port Authority"/>
+	<AGENCY code="690" name="BJ" description="Direction Generale du Port Autonome de Cotonou"/>
+	<AGENCY code="695" name="BM" description="Ministry of Works, Engineering and Housing"/>
+	<AGENCY code="700" name="BO" description="Servicio Nacional de Hidrografia Naval de Bolivia"/>
+	<AGENCY code="705" name="VG" description="Chief Ministers Office"/>
+	<AGENCY code="710" name="BN" description="Department of Marine"/>
+	<AGENCY code="715" name="B2" description="Survey Department"/>
+	<AGENCY code="720" name="BG" description="Hidrografska Sluzhba Pri Ministerstvo Na Otbranata"/>
+	<AGENCY code="730" name="KH" description="Service de l'Hydrologie et des grands barrages"/>
+	<AGENCY code="740" name="CM" description="Port Autonome de Douala (PAD)"/>
+	<AGENCY code="750" name="CV" description="Instituto Maritímo Portuário (IMP)"/>
+	<AGENCY code="755" name="KY" description="Governor's Office"/>
+	<AGENCY code="760" name="CO" description="Ministerio de Defensa Nacional"/>
+	<AGENCY code="770" name="KM" description="Not Known"/>
+	<AGENCY code="780" name="CG" description="Port Autonome de Pointe Noire"/>
+	<AGENCY code="790" name="CK" description="Maritime Division, Ministry of Tourism and Transport"/>
+	<AGENCY code="800" name="CR" description="Instituto Geografico Nacional (IGN)"/>
+	<AGENCY code="810" name="CI" description="Direction Generale du Port Autonome d'Abidjan"/>
+	<AGENCY code="820" name="DJ" description="Ministere de l'Equipement et des Transports, Direction des Affaires Maritimes"/>
+	<AGENCY code="830" name="DM" description="Not known"/>
+	<AGENCY code="840" name="SV" description="Gerente de Geodesia, Centro Nacional de Registros, Instituto Geografico y del Catastro Nacional"/>
+	<AGENCY code="850" name="GQ" description="Ministry of Transportation and Civil Aviation"/>
+	<AGENCY code="860" name="ER" description="Department of Marine Transport"/>
+	<AGENCY code="870" name="EE" description="Estonian Transport Administration (ETA)"/>
+	<AGENCY code="880" name="ET" description="Ministry of Transport and Communications Marine Transport Authority"/>
+	<AGENCY code="890" name="GA" description="Direction Generale de la Marine Marchande"/>
+	<AGENCY code="900" name="GM" description="Gambia Ports Authority"/>
+	<AGENCY code="905" name="GE" description="State Hydrographic Service of Georgia"/>
+	<AGENCY code="910" name="GH" description="Ghana Ports and Harbours Authority"/>
+	<AGENCY code="920" name="GD" description="Grenada Ports Authority"/>
+	<AGENCY code="930" name="GN" description="Port Autonome de Conakry"/>
+	<AGENCY code="940" name="GW" description="Administraco dos Portos da Guine-Bissau"/>
+	<AGENCY code="950" name="GY" description="Maritime Administration Department Hydrographic Office"/>
+	<AGENCY code="960" name="HT" description="Service Maritime et de Navigation d'Haiti"/>
+	<AGENCY code="970" name="HN" description="Empresa Nacional Portuaria"/>
+	<AGENCY code="980" name="IQ" description="Marine Department, General Company for Iraki Ports"/>
+	<AGENCY code="990" name="IE" description="Maritime Safety Directorate"/>
+	<AGENCY code="1000" name="IL" description="Administration of Shipping and Ports"/>
+	<AGENCY code="1001" name="I1" description="Survey of Israel"/>
+	<AGENCY code="1002" name="I2" description="Israel Navy"/>
+	<AGENCY code="1010" name="JM" description="Surveys and Mapping Division"/>
+	<AGENCY code="1020" name="JO" description="The Ports Corporation, Jordan"/>
+	<AGENCY code="1030" name="KE" description="Survey of Kenya, Kenya Ports Authority"/>
+	<AGENCY code="1040" name="KI" description="Ministry of Transport and Communications"/>
+	<AGENCY code="1050" name="KW" description="Ministry of Communications"/>
+	<AGENCY code="1060" name="LV" description="Maritime Administration of Latvia"/>
+	<AGENCY code="1070" name="LB" description="Lebanese Navy Hydrographic Service"/>
+	<AGENCY code="1080" name="LR" description="Ministry of Lands, Mines and Energy"/>
+	<AGENCY code="1090" name="LY" description="Not known"/>
+	<AGENCY code="1100" name="LT" description="Lithuanian Maritime Safety Administration"/>
+	<AGENCY code="1110" name="MG" description="Institut Geographique et Hydrographique National"/>
+	<AGENCY code="1120" name="MW" description="Hydrographic Survey Unit"/>
+	<AGENCY code="1121" name="M2" description="Marine Department"/>
+	<AGENCY code="1130" name="MV" description="Department of Information and Broadcasting"/>
+	<AGENCY code="1140" name="MT" description="Malta Maritime Authority Ports Directorate, Hydrographic Unit"/>
+	<AGENCY code="1150" name="MH" description="Ministry of Resources and Development"/>
+	<AGENCY code="1160" name="MR" description="Ministere de la Defense Nationale"/>
+	<AGENCY code="1170" name="MU" description="Ministry of Housing and Land, Hydrographic Unit"/>
+	<AGENCY code="1180" name="MX" description="Secretaria de Marina - Armada de Mexico, Direccion General Adjunta de Oceanografia, Hidrografia y Meteorologia"/>
+	<AGENCY code="1190" name="FM" description="Not known"/>
+	<AGENCY code="1197" name="M3" description="Montserrat Port Authority"/>
+	<AGENCY code="1200" name="MA" description="Division Hydrographie et Cartographie (DHC) de la Marine Royale"/>
+	<AGENCY code="1210" name="MZ" description="Instituto Nacional de Hidrografia e Navegacao (INAHINA)"/>
+	<AGENCY code="1220" name="MM" description="Central Naval Hydrographic Depot (CNHD)"/>
+	<AGENCY code="1225" name="ME" description="Ministry of Defence, Navy Headquarters"/>
+	<AGENCY code="1226" name="M1" description="Institute of Hydrometeorology and Seismology"/>
+	<AGENCY code="1230" name="NA" description="Ministry of Works, Transports and Communications"/>
+	<AGENCY code="1240" name="NR" description="Nauru Phosphate Corporation"/>
+	<AGENCY code="1250" name="NI" description="Ministero de la Presidencia, Instituto Nicaraguense de Estudios Territoriales, Direccion de Recursos Hidricos, Departamento de Hidrografia"/>
+	<AGENCY code="1255" name="NU" description="Lands and Survey Division"/>
+	<AGENCY code="1260" name="PW" description="Bureau of Domestic Affairs"/>
+	<AGENCY code="1270" name="PA" description="Autoridad Maritima de Panama"/>
+	<AGENCY code="1280" name="PY" description="Fuerzas Armadas de la Nacion, Armada Paraguaya, Comando de apoyo de combate"/>
+	<AGENCY code="1290" name="QA" description="Urban Planning and Development Authority, Hydrographic Section"/>
+	<AGENCY code="1300" name="RO" description="Directia Hidrografica Maritima"/>
+	<AGENCY code="1310" name="KN" description="St. Christopher Air and Sea Ports Authority, Maritime Division"/>
+	<AGENCY code="1320" name="LC" description="Saint Lucia Air and Sea Ports Authority, Division of Maritime Affairs"/>
+	<AGENCY code="1330" name="VC" description="Ministry of Communications and Works"/>
+	<AGENCY code="1340" name="WS" description="Ministry of Transport, Marine and Shipping Division"/>
+	<AGENCY code="1350" name="ST" description="Not known"/>
+	<AGENCY code="1360" name="SA" description="General Directorate of Military Survey (GDMS)"/>
+	<AGENCY code="1365" name="S1" description="General Commission for Survey (GCS)"/>
+	<AGENCY code="1370" name="SN" description="Service de securite maritime du Senegal, Port autonome de Dakar"/>
+	<AGENCY code="1380" name="SC" description="Hydrographic and Topographic Brigade of the Seychelles"/>
+	<AGENCY code="1390" name="SL" description="Sierra Leone Maritime Administration, Sierra Leone Ports Authority"/>
+	<AGENCY code="1400" name="SI" description="Ministry of Transport Maritime Office"/>
+	<AGENCY code="1410" name="SB" description="Solomon Islands Maritime Safety Administration"/>
+	<AGENCY code="1420" name="SO" description="Somali Hydrographic Office"/>
+	<AGENCY code="1430" name="SD" description="Survey Department"/>
+	<AGENCY code="1440" name="TZ" description="Hydrographic Surveys Section, Surveys and Mapping Division, Ministry of Lands, Housing and Human Settlements Development"/>
+	<AGENCY code="1441" name="T1" description="Tanzania Ports Authority (TPA)"/>
+	<AGENCY code="1450" name="TG" description="University of Lome, Research Department"/>
+	<AGENCY code="1460" name="TK" description="Not known"/>
+	<AGENCY code="1470" name="TN" description="Service Hydrographique et Oceanographique (SHO), Armee de Mer"/>
+	<AGENCY code="1475" name="TC" description="Governor's Office"/>
+	<AGENCY code="1480" name="TV" description="Ministry of Labour, Works and Communications"/>
+	<AGENCY code="1485" name="UG" description="Commissioner for Transport Regulation"/>
+	<AGENCY code="1490" name="UA" description="State Hydrographic Service of Ukraine"/>
+	<AGENCY code="1500" name="VU" description="Vanuatu Hydrographic Unit"/>
+	<AGENCY code="1510" name="VN" description="Viet Nam Maritime People's Navy"/>
+	<AGENCY code="1511" name="V1" description="Viet Nam Maritime Safety-North (VMS-N)"/>
+	<AGENCY code="1512" name="V2" description="Viet Nam Maritime Safety-South (VMS-S)"/>
+	<AGENCY code="1513" name="A1" description="Maritime Geospatial Branch (MGB)"/>
+	<AGENCY code="1514" name="A4" description="Maritime Geospatial Branch (MGB)"/>
+	<AGENCY code="1515" name="G4" description="UKHO Royal Navy"/>
+	<AGENCY code="1516" name="A2" description="Dubai Municipality Survey Department (DMSD)"/>
+	<AGENCY code="1520" name="YE" description="Ministry of Transport, Yemen Ports Authority, Maritime Affairs Authority"/>
+	<AGENCY code="1600" name="QM" description="Antarctic Treaty Consultative Committee"/>
+	<AGENCY code="1610" name="QN" description="International Radio Consultative Committee"/>
+	<AGENCY code="1620" name="QO" description="Comite International Radio-Maritime"/>
+	<AGENCY code="1630" name="QP" description="IHO Data Centre for Digital Bathymetry"/>
+	<AGENCY code="1640" name="QQ" description="Digital Geographic Information Working Group"/>
+	<AGENCY code="1650" name="QR" description="European Communities Commission"/>
+	<AGENCY code="1660" name="QS" description="European Harbour Masters Association"/>
+	<AGENCY code="1670" name="QT" description="Food and Agriculture Organization"/>
+	<AGENCY code="1680" name="QU" description="Federation Internationale des Geometres"/>
+	<AGENCY code="1690" name="QV" description="International Atomic Energy Agency"/>
+	<AGENCY code="1700" name="QW" description="International Association of Geodesy"/>
+	<AGENCY code="1710" name="QX" description="International Association of Institutes of Navigation"/>
+	<AGENCY code="1720" name="QY" description="International Association of Lighthouse Authorities"/>
+	<AGENCY code="1730" name="QZ" description="International Association of Ports and Harbours"/>
+	<AGENCY code="1740" name="XA" description="International Cartographic Association"/>
+	<AGENCY code="1750" name="XB" description="International Cable Protection Committee"/>
+	<AGENCY code="1760" name="XC" description="International Chamber of Shipping"/>
+	<AGENCY code="1770" name="XD" description="International Commission for the Scientific Exploration of the Mediterranean"/>
+	<AGENCY code="1780" name="XE" description="International Council of Scientific Unions"/>
+	<AGENCY code="1790" name="XF" description="International Electrotechnical Commission"/>
+	<AGENCY code="1800" name="XG" description="International Geographical Union"/>
+	<AGENCY code="1810" name="AA" description="International Hydrographic Organization (IHO)"/>
+	<AGENCY code="1820" name="XH" description="International Maritime Academy"/>
+	<AGENCY code="1830" name="XI" description="International Maritime Organization"/>
+	<AGENCY code="1840" name="XJ" description="International Maritime Satellite Organization"/>
+	<AGENCY code="1850" name="XK" description="Intergovernmental Oceanographic Commission"/>
+	<AGENCY code="1860" name="XL" description="International Organization for Standardization"/>
+	<AGENCY code="1870" name="XM" description="International Society for Photogrammetry and Remote Sensing"/>
+	<AGENCY code="1880" name="XN" description="International Telecommunication Union"/>
+	<AGENCY code="1890" name="XO" description="International Union of Geodesy and Geophysics"/>
+	<AGENCY code="1900" name="XP" description="International Union of Surveying and Mapping"/>
+	<AGENCY code="1910" name="XQ" description="Oil Companies International Marine Forum"/>
+	<AGENCY code="1920" name="XR" description="Pan American Institute of Geography and History"/>
+	<AGENCY code="1930" name="XS" description="Radio Technical Commission for Maritime Services"/>
+	<AGENCY code="1940" name="XT" description="Scientific Commission on Antarctic Research"/>
+	<AGENCY code="1950" name="XU" description="The Hydrographic Society"/>
+	<AGENCY code="1960" name="XV" description="World Meteorological Organization"/>
+	<AGENCY code="1970" name="XW" description="United Nations, Office for Ocean Affairs and Law of the Sea"/>
+	<AGENCY code="2010" name="MS" description="Co-operating Hydrographic Offices in the Malacca and Singapore Straits (Indonesia, Japan, Malaysia and Singapore)"/>
+	<AGENCY code="2020" name="PM" description="PRIMAR Regional ENC Coordinating Centre (PRIMAR RENC)"/>
+	<AGENCY code="2030" name="IC" description="International Centre for ENC (IC-ENC)"/>
+	<AGENCY code="2040" name="EA" description="East Asia Hydrographic Commission (EAHC)"/>
+	<AGENCY code="3817" name="0M" description="BMT ARGOSS Ltd"/>
+	<AGENCY code="3878" name="0S" description="OpenSeaMap.Org"/>
+	<AGENCY code="3879" name="0T" description="Naval Meteorological and Oceanographic Office, R.O.C. Taiwan"/>
+	<AGENCY code="6682" name="1A" description="ARAMCO"/>
+	<AGENCY code="7196" name="1C" description="CARIS"/>
+	<AGENCY code="7453" name="1D" description="Amt fuer Geoinformationswesen der Bundeswehr"/>
+	<AGENCY code="7710" name="1E" description="TerraNautical Data"/>
+	<AGENCY code="7967" name="1F" description="Force Technology, Danish Maritime Institute"/>
+	<AGENCY code="7968" name="1G" description="Canadian Coast Guard"/>
+	<AGENCY code="7969" name="1H" description="OVF (General Directorate of Water Management)"/>
+	<AGENCY code="7970" name="1I" description="Navionics S.p.A."/>
+	<AGENCY code="7971" name="1J" description="Navionics test and sample datasets"/>
+	<AGENCY code="7972" name="1K" description="Kingway Technology Co"/>
+	<AGENCY code="7973" name="1L" description="Laser-Scan Ltd"/>
+	<AGENCY code="7974" name="1M" description="Channel of Moscow"/>
+	<AGENCY code="7975" name="1N" description="Nautical Data International, Inc."/>
+	<AGENCY code="7976" name="1O" description="Offshore Systems Ltd."/>
+	<AGENCY code="7977" name="1P" description="Port Of London Authority"/>
+	<AGENCY code="7978" name="1Q" description="Quality Positioning Services"/>
+	<AGENCY code="7979" name="1R" description="Rijkswaterstaat"/>
+	<AGENCY code="7980" name="1S" description="Austrian Supreme Shipping Authority"/>
+	<AGENCY code="7981" name="1T" description="UKHO - private production"/>
+	<AGENCY code="7982" name="1U" description="ENC Center, National Taiwan Ocean University"/>
+	<AGENCY code="7983" name="1V" description="The Volga-Baltic State Territorial Department for Waterways"/>
+	<AGENCY code="7984" name="1W" description="Wasser- und Schiffahrtsverwaltung des Bundes - Direktion SW"/>
+	<AGENCY code="7985" name="1X" description="Noorderzon Software"/>
+	<AGENCY code="7986" name="1Y" description="Ter-Team Ltd., Budapest"/>
+	<AGENCY code="7987" name="1Z" description="JS Co Geocentre-Consulting, Moscow"/>
+	<AGENCY code="10794" name="2A" description="Azienda Regionale Navigazione Interna (ARNI)"/>
+	<AGENCY code="11051" name="2B" description="Bundesanstalt fur Wasserbau, Karlsruhe"/>
+	<AGENCY code="11308" name="2C" description="IIC Technologies"/>
+	<AGENCY code="11565" name="2D" description="SVP, s.p., OZ Bratislava"/>
+	<AGENCY code="11822" name="2E" description="Euronav Ltd UK"/>
+	<AGENCY code="11973" name="2G" description="Chart Pilot Ltd."/>
+	<AGENCY code="12004" name="2Q" description="QUADRANT-ENC"/>
+	<AGENCY code="12055" name="2H" description="DMER, Zagreb"/>
+	<AGENCY code="12056" name="2I" description="Innovative Navigation GmbH"/>
+	<AGENCY code="12060" name="2M" description="MARIN (Maritime Research Institute Netherlands)"/>
+	<AGENCY code="12061" name="2N" description="Hochschule Bremen (Nautik)"/>
+	<AGENCY code="12063" name="2P" description="PLOVPUT Beograd"/>
+	<AGENCY code="12065" name="2R" description="Port of Rotterdam"/>
+	<AGENCY code="12079" name="2S" description="Ssangyong Information and Communications Corp."/>
+	<AGENCY code="12083" name="2J" description="C-Map"/>
+	<AGENCY code="12084" name="2K" description="Kamvodput"/>
+	<AGENCY code="12093" name="2T" description="Wartsila Voyage Limited"/>
+	<AGENCY code="12094" name="2U" description="ULTRANS TM srl"/>
+	<AGENCY code="12095" name="2V" description="The Volga State Territorial Department for Waterways"/>
+	<AGENCY code="12096" name="2W" description="via donau - sterreichische Wasserstrassen-Gesellschaft mbH"/>
+	<AGENCY code="12097" name="2X" description="e-MLX, Korea"/>
+	<AGENCY code="12099" name="2Z" description="Land Information New Zealand Hydrographic Services"/>
+	<AGENCY code="14906" name="3A" description="Azovo-Donskoe State Basin Waterway and Shipping Authority"/>
+	<AGENCY code="15163" name="3B" description="AEMDR, Rousse, Bulgaria"/>
+	<AGENCY code="15420" name="3C" description="Command and Control Technologies GmbH"/>
+	<AGENCY code="15934" name="3E" description="Development Centre for Ship Technology and Transport Systems, Germany"/>
+	<AGENCY code="16012" name="4P" description="Public Works and Government Services Canada - Pacific Region"/>
+	<AGENCY code="16035" name="3D" description="FPAEMDR DRIIREST"/>
+	<AGENCY code="16038" name="3Z" description="Aero Karta Complex Ltd"/>
+	<AGENCY code="16191" name="3F" description="Finnish Navy"/>
+	<AGENCY code="16193" name="3H" description="HYPACK, Inc."/>
+	<AGENCY code="16194" name="3I" description="ICAN"/>
+	<AGENCY code="16199" name="3N" description="Raymarine Ltd"/>
+	<AGENCY code="16200" name="3O" description="Ocean Surveys Inc."/>
+	<AGENCY code="16201" name="3P" description="Pechora Waterways and Navigation Board"/>
+	<AGENCY code="16203" name="3R" description="A.F.D.J. R.A. Galati"/>
+	<AGENCY code="16204" name="3S" description="Leidos"/>
+	<AGENCY code="16205" name="3T" description="Tresco Navigation Systems"/>
+	<AGENCY code="16206" name="3U" description="US Army Corps of Engineers - Channel Condition Data"/>
+	<AGENCY code="16207" name="3V" description="The Volga-Don Waterways And Navigation Board"/>
+	<AGENCY code="16208" name="3W" description="Wasserschutzpolizei-Schule"/>
+	<AGENCY code="19018" name="4A" description="Arctic and Antarctic Research Institute (AARI) of the Russian Federal Service for Hydrometeorology and Environmental Monitoring (Roshydromet)"/>
+	<AGENCY code="19275" name="4B" description="BaikalChart, Russia"/>
+	<AGENCY code="19532" name="4C" description="Rheinschifffahrtsdirektion (RSD) Basel"/>
+	<AGENCY code="20046" name="4E" description="Environmental Systems Research Institute (ESRI)"/>
+	<AGENCY code="20122" name="4G" description="GEOMOD"/>
+	<AGENCY code="20127" name="4L" description="SHOM test data"/>
+	<AGENCY code="20306" name="4I" description="Canadian Ice Service"/>
+	<AGENCY code="20311" name="4N" description="MeteoConsult"/>
+	<AGENCY code="20315" name="4R" description="MD Atlantic Technologies"/>
+	<AGENCY code="20316" name="4S" description="ADVETO Advanced Technology AB"/>
+	<AGENCY code="20317" name="4T" description="OOO Tekhpromcomplect"/>
+	<AGENCY code="20318" name="4U" description="Center for Coastal and Ocean Mapping/Joint Hydrographic Center, University of New Hampshire"/>
+	<AGENCY code="20319" name="4V" description="Voies Navigables de France (VNF)"/>
+	<AGENCY code="20320" name="4W" description="Fachstelle fuer Geoinformationen Sued beim WSA Regensburg"/>
+	<AGENCY code="20323" name="4Z" description="C-Map Russia"/>
+	<AGENCY code="23130" name="5A" description="American Commercial Lines (ACL), Inc."/>
+	<AGENCY code="23644" name="5C" description="CRUP d.o.o., Croatia"/>
+	<AGENCY code="24158" name="5E" description="River Transport Authority (RTA), Egypt"/>
+	<AGENCY code="24168" name="5Z" description="SeaZone Solutions"/>
+	<AGENCY code="24181" name="5B" description="Bremer Schiffsmeldedienst"/>
+	<AGENCY code="24203" name="5X" description="Wasser- und Schifffahrtsverwaltung des Bundes - WSA Bremerhaven"/>
+	<AGENCY code="24418" name="5I" description="European Inland ECDIS Expert Group"/>
+	<AGENCY code="24422" name="5M" description="Hydrographic Office of the Sarawak Marine Department"/>
+	<AGENCY code="24423" name="5N" description="NAVTRON SRL"/>
+	<AGENCY code="24425" name="5P" description="Safe Trip SA, Argentina"/>
+	<AGENCY code="24427" name="5R" description="State Federal Unitary Enterprise NW Regional Production Centre of Geoinformation and Mine Surveying Centre, Sevzapgeoinform (Russia)"/>
+	<AGENCY code="24430" name="5U" description="United Kingdom Royal Navy"/>
+	<AGENCY code="24432" name="5W" description="Wasser- und Schifffahrtsverwaltung des Bundes - WSA Cuxhaven"/>
+	<AGENCY code="24455" name="5T" description="TEC Asociados"/>
+	<AGENCY code="27242" name="6A" description="AMEC"/>
+	<AGENCY code="27499" name="6B" description="C-Tech SRL, Romania"/>
+	<AGENCY code="27756" name="6C" description="Guoy Consultancy Sdn Bhd"/>
+	<AGENCY code="28233" name="6N" description="Navtor AS"/>
+	<AGENCY code="28243" name="6P" description="Panama Canal Authority"/>
+	<AGENCY code="28249" name="6F" description="Mercuries Data Systems Ltd."/>
+	<AGENCY code="28266" name="6W" description="Hochschule Wismar Bereich Seefahrt (MSCW)"/>
+	<AGENCY code="28542" name="6U" description="U.S. Geological Survey (USGS) - Coastal and Marine Geology"/>
+	<AGENCY code="31354" name="7A" description="Azerbaijan Navy, Service of Navigation and Oceanography"/>
+	<AGENCY code="31868" name="7C" description="SevenCs GmbH"/>
+	<AGENCY code="32264" name="7L" description="Latincomp"/>
+	<AGENCY code="32298" name="7J" description="ChartCo Limited"/>
+	<AGENCY code="32320" name="7M" description="Marine Technology sp. o.o."/>
+	<AGENCY code="32323" name="7P" description="PETROBRAS"/>
+	<AGENCY code="32328" name="7U" description="Australian Hydrographic Office – Provisional and sample datasets"/>
+	<AGENCY code="32641" name="7H" description="Petroslav Hydroservice, Russia"/>
+	<AGENCY code="32651" name="7R" description="The Federal Service of Geodesy and Cartography of Russia"/>
+	<AGENCY code="32652" name="7S" description="Centre Sevzapgeoinform (SZGI)"/>
+	<AGENCY code="32653" name="7T" description="Terra Corp"/>
+	<AGENCY code="32655" name="7V" description="De Vlaamse Waterweg"/>
+	<AGENCY code="32656" name="7W" description="Waterwegen en Zeekanaal"/>
+	<AGENCY code="35466" name="8A" description="L-3 Communications Oceania Limited"/>
+	<AGENCY code="35980" name="8C" description="Seebyte Ltd."/>
+	<AGENCY code="36363" name="8T" description="Abris, Llc"/>
+	<AGENCY code="36376" name="8E" description="ATLAS ELEKTRONIK GmbH"/>
+	<AGENCY code="39578" name="9A" description="CherSoft Ltd"/>
+	<AGENCY code="39624" name="9D" description="National Navigation Authority of the Czech Republic"/>
+	<AGENCY code="40092" name="9C" description="Chartworld Gmbh"/>
+	<AGENCY code="40865" name="9H" description="Hamburg Port Authority"/>
+	<AGENCY code="40876" name="9S" description="Solutions from Silicon, Sydney"/>
+	<AGENCY code="40877" name="9T" description="Tresco Engineering bvba"/>
+	<AGENCY code="40883" name="9Z" description="Nobeltec, Inc"/>
+	<AGENCY code="42000" name="6D" description="Marine Geodesy LLC"/>
+	<AGENCY code="42001" name="6G" description="PD Ports"/>
+	<AGENCY code="42002" name="9E" description="The Enisei State Territorial Department for Waterways"/>
+	<AGENCY code="42003" name="4D" description="David Evans and Associates, Inc. | Marine Services Division"/>
+	<AGENCY code="42004" name="6S" description="The Severnaya Dvina State Territorial Department for Waterways"/>
+	<AGENCY code="42005" name="6T" description="TCarta Marine"/>
+	<AGENCY code="42006" name="2O" description="Terra OOO"/>
+	<AGENCY code="42007" name="8W" description="Department of Transport Western Australia"/>
+	<AGENCY code="42008" name="M8" description="Maju Geohydro Sdn Bhd"/>
+	<AGENCY code="42009" name="9W" description="Service Public de Wallonie"/>
+	<AGENCY code="42010" name="5V" description="Nautical Publications Gmbh"/>
+	<AGENCY code="42011" name="4O" description="OceanWise"/>
+	<AGENCY code="42012" name="8V" description="Port of Antwerp (Havenbedrifj Antwerpen NV van publiek recht)"/>
+	<AGENCY code="42013" name="4H" description="Grand Port Maritime du Havre"/>
+	<AGENCY code="42014" name="7N" description="India National Hydrographic Office - Miscellaneous"/>
+	<AGENCY code="42015" name="9P" description="Elbe Pilots Germany"/>
+	<AGENCY code="42016" name="6R" description="Grand Port Maritime de Rouen"/>
+	<AGENCY code="42017" name="6I" description="Imray Laurie Norie and Wilson Ltd"/>
+	<AGENCY code="42018" name="8R" description="Federal Agency for Maritime and River Transport (FAMRT)"/>
+	<AGENCY code="42019" name="7B" description="Port de Barcelona, Espana"/>
+	<AGENCY code="42020" name="9V" description="CoVadem"/>
+	<AGENCY code="42021" name="8S" description="Sorlingas Data Services Ltd"/>
+	<AGENCY code="42022" name="M6" description="MAPMEDIA"/>
+	<AGENCY code="42023" name="3M" description="Meritaito Ltd (Arctia Group)"/>
+	<AGENCY code="42024" name="8M" description="MORIS LLC (Marine and River Information Systems Llc)"/>
+	<AGENCY code="42025" name="3L" description="Lloyd's Register Voyage AS"/>
+	<AGENCY code="42026" name="6M" description="Mapitech Ltd"/>
+	<AGENCY code="42027" name="8N" description="NAUTITEC GmbH and Co. KG"/>
+	<AGENCY code="42028" name="9U" description="Hydrographic Science Research Center, The University of Southern Mississippi"/>
+	<AGENCY code="42029" name="2Y" description="Sii Tech Inc."/>
+	<AGENCY code="43456" name="6V" description="VietNav Ltd, VIETNAM"/>
+	<AGENCY code="44444" name="5S" description="Associated British Ports Southampton"/>
+	<AGENCY code="44445" name="6E" description="ConcENC OOO"/>
+	<AGENCY code="44446" name="2L" description="CTC JSC"/>
+	<AGENCY code="44447" name="7E" description="EGS Survey Pty Ltd"/>
+	<AGENCY code="44448" name="9N" description="North Caspian Operating Company N.V. (NCOC)"/>
+	<AgencyDetails name="4E" description="Environmental Systems Research Institute (ESRI)">
+		<contact>
+			<individualName></individualName>
+			<organisationName>ESRI</organisationName>
+			<positionName></positionName>
+			<contactInfo>
+				<phone>
+					<voice>1-909-793-2853</voice>
+					<facsimile></facsimile>
+				</phone>
+				<address>
+					<deliveryPoint>380 New York St</deliveryPoint>
+					<city>Redlands</city>
+					<administrativeArea>CA</administrativeArea>
+					<postalCode>92373</postalCode>
+					<country>USA</country>
+					<electronicMailAddress>maritime@esri.com</electronicMailAddress>
+				</address>
+				<onlineResource>
+					<linkage>https://www.esri.com/maritime</linkage>
+				</onlineResource>
+				<hoursOfService></hoursOfService>
+			</contactInfo>
+			<role>publisher</role>
+		</contact>
+	</AgencyDetails>
+</Agencies>

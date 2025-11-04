@@ -1,0 +1,346 @@
+{
+    "type": "FunctionTool",
+    "guid": "{2b9b9ebd-873a-410d-9cfe-ff97f6a78249}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190514",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "mCPU",
+        "no_data_change"
+    ],
+    "params": {
+        "in_mosaic_dataset": {
+            "displayname": "$rc:in_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPMosaicLayer"
+            },
+            "description": "$rc:in_mosaic_dataset.descr"
+        },
+        "balancing_method": {
+            "type": "optional",
+            "displayname": "$rc:balancing_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DODGING",
+                        "code": "$rc:balancing_method.domain.DODGING"
+                    },
+                    {
+                        "value": "GLOBAL_FIT",
+                        "code": "$rc:balancing_method.domain.GLOBAL_FIT"
+                    },
+                    {
+                        "value": "HISTOGRAM",
+                        "code": "$rc:balancing_method.domain.HISTOGRAM"
+                    },
+                    {
+                        "value": "STANDARD_DEVIATION",
+                        "code": "$rc:balancing_method.domain.STANDARD_DEVIATION"
+                    }
+                ]
+            },
+            "value": "DODGING",
+            "description": "$rc:balancing_method.descr"
+        },
+        "color_surface_type": {
+            "type": "optional",
+            "displayname": "$rc:color_surface_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SINGLE_COLOR",
+                        "code": "$rc:color_surface_type.domain.SINGLE_COLOR"
+                    },
+                    {
+                        "value": "COLOR_GRID",
+                        "code": "$rc:color_surface_type.domain.COLOR_GRID"
+                    },
+                    {
+                        "value": "FIRST_ORDER",
+                        "code": "$rc:color_surface_type.domain.FIRST_ORDER"
+                    },
+                    {
+                        "value": "SECOND_ORDER",
+                        "code": "$rc:color_surface_type.domain.SECOND_ORDER"
+                    },
+                    {
+                        "value": "THIRD_ORDER",
+                        "code": "$rc:color_surface_type.domain.THIRD_ORDER"
+                    }
+                ]
+            },
+            "value": "FIRST_ORDER",
+            "description": "$rc:color_surface_type.descr"
+        },
+        "target_raster": {
+            "type": "optional",
+            "displayname": "$rc:target_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPInternetTiledLayer"
+                    },
+                    {
+                        "type": "GPMapServerLayer"
+                    }
+                ]
+            },
+            "description": "$rc:target_raster.descr"
+        },
+        "exclude_raster": {
+            "type": "optional",
+            "displayname": "$rc:exclude_raster.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPRasterLayer"
+            },
+            "description": "$rc:exclude_raster.descr"
+        },
+        "stretch_type": {
+            "type": "optional",
+            "displayname": "$rc:stretch_type.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NONE",
+                        "code": "$rc:stretch_type.domain.NONE"
+                    },
+                    {
+                        "value": "STANDARD_DEVIATION",
+                        "code": "$rc:stretch_type.domain.STANDARD_DEVIATION"
+                    },
+                    {
+                        "value": "MINIMUM_MAXIMUM",
+                        "code": "$rc:stretch_type.domain.MINIMUM_MAXIMUM"
+                    },
+                    {
+                        "value": "ADAPTIVE",
+                        "code": "$rc:stretch_type.domain.ADAPTIVE"
+                    }
+                ]
+            },
+            "value": "NONE",
+            "description": "$rc:stretch_type.descr"
+        },
+        "gamma": {
+            "type": "optional",
+            "displayname": "$rc:gamma.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "1",
+            "description": "$rc:gamma.descr"
+        },
+        "block_field": {
+            "type": "optional",
+            "displayname": "$rc:block_field.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:block_field.descr"
+        },
+        "out_mosaic_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPMosaicLayer"
+            },
+            "depends": [
+                "in_mosaic_dataset"
+            ]
+        },
+        "in_DEM_raster": {
+            "type": "optional",
+            "displayname": "$rc:in_dem_raster.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "DEMosaicDataset"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_dem_raster.descr"
+        },
+        "ZFactor": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:zfactor.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "1",
+            "description": "$rc:zfactor.descr"
+        },
+        "ZOffset": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:zoffset.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:zoffset.descr"
+        },
+        "Geoid": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:geoid.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "GEOID"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NONE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:geoid.descr"
+        },
+        "solution_points": {
+            "type": "optional",
+            "displayname": "$rc:solution_points.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:solution_points.descr"
+        },
+        "target_objectid": {
+            "type": "optional",
+            "displayname": "$rc:target_objectid.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:target_objectid.descr"
+        },
+        "refine_estimation": {
+            "type": "optional",
+            "displayname": "$rc:refine_estimation.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "REFINE_ESTIMATION"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_REFINE_ESTIMATION"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:refine_estimation.descr"
+        },
+        "reduce_shadow": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:reduce_shadow.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "REDUCE_SHADOW"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_REDUCE_SHADOW"
+                    }
+                ]
+            },
+            "description": "$rc:reduce_shadow.descr"
+        },
+        "reduce_cloud": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:reduce_cloud.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "REDUCE_CLOUD"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_REDUCE_CLOUD"
+                    }
+                ]
+            },
+            "description": "$rc:reduce_cloud.descr"
+        }
+    },
+    "environments": [
+        "parallelProcessingFactor"
+    ]
+}

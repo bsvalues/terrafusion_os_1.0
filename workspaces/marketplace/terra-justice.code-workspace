@@ -1,0 +1,107 @@
+{
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "node",
+        "cwd": "../../marketplace/terra-justice/frontend",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "name": "Start Terra Justice Frontend"
+      },
+      {
+        "type": "debugpy",
+        "cwd": "../../marketplace/terra-justice/backend",
+        "program": "../../marketplace/terra-justice/backend/main.py",
+        "name": "Start Terra Justice Backend"
+      },
+      {
+        "type": "node",
+        "cwd": "../../marketplace/terra-justice/mcp-server",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "name": "Start Terra Justice MCP Server"
+      }
+    ]
+  },
+  "tasks": {
+    "tasks": [
+      {
+        "cwd": "../../marketplace/terra-justice",
+        "args": [
+          "run",
+          "build"
+        ],
+        "command": "npm",
+        "label": "Build Terra Justice"
+      },
+      {
+        "cwd": "../../marketplace/terra-justice",
+        "args": [
+          "run",
+          "test"
+        ],
+        "command": "npm",
+        "label": "Test Terra Justice"
+      }
+    ],
+    "version": "2.0.0"
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "ms-python.black-formatter"
+    ]
+  },
+  "folders": [
+    {
+      "name": "💼 Terra Justice",
+      "path": "../../marketplace/terra-justice"
+    },
+    {
+      "name": "📦 Platform SDK (read-only)",
+      "path": "../../platform/sdk"
+    },
+    {
+      "name": "🎨 Design System (read-only)",
+      "path": "../../platform/design-system"
+    },
+    {
+      "name": "🧪 Tests",
+      "path": "../../tests/marketplace/terra-justice"
+    },
+    {
+      "name": "📚 Terra Justice Docs",
+      "path": "../../docs/marketplace/terra-justice.md"
+    }
+  ],
+  "settings": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit",
+      "source.fixAll": "explicit"
+    },
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#f59e0b",
+      "titleBar.activeForeground": "#ffffff"
+    },
+    "files.exclude": {
+      "../../os-platform": true,
+      "**/node_modules": true,
+      "../../terrafusion-cos": true,
+      "../../marketplace/*": true,
+      "../../backend": true,
+      "**/dist": true,
+      "../../frontend": true,
+      "!../../marketplace/terra-justice": true
+    },
+    "editor.formatOnSave": true
+  }
+}
+

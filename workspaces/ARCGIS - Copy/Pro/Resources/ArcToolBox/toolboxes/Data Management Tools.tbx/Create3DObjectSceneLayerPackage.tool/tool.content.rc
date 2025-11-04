@@ -1,0 +1,22 @@
+{
+    "map": {
+        "description": "Creates a scene layer package (.slpk) or scene layer content (.i3sREST) from a multipatch or 3D object feature layer input.",
+        "in_dataset.descr": "The input multipatch or 3D object feature layer.",
+        "in_dataset.title": "Input  Dataset",
+        "out_coor_system.descr": "<xdoc><p>The coordinate system of the output scene layer package. It can be any projected or custom coordinate system. Supported geographic coordinate systems include WGS84 and China Geodetic Coordinate System 2000. WGS84 and EGM96 Geoid are the default horizontal and vertical coordinate systems, respectively. The coordinate system can be specified in any of the following ways:<ul><li>Specify the path to a .prj file.</li><li>Reference a dataset with the correct coordinate system.</li><li>Use an arcpy.SpatialReference object.</li></ul></p></xdoc>",
+        "out_coor_system.title": "Output Coordinate System",
+        "out_slpk.descr": "The output scene layer package (.slpk).",
+        "out_slpk.title": "Output Scene Layer Package",
+        "target_cloud_connection.descr": "The target cloud connection file (.acs) where the scene layer content (.i3sREST) will be output.",
+        "target_cloud_connection.title": "Target Cloud Connection",
+        "texture_optimization.descr": "<xdoc><p>Specifies the textures that will be optimized according to the target platform where the scene layer package is used.<note type=\"caution\"/><p group=\"note\">Optimizations that include KTX2 may take significant time to process. For fastest results, use the <span class=\"esri_uicontrol\">Desktop</span> or <span class=\"esri_uicontrol\">None</span> options.</p></p><ul><li><span title=\"ALL\">All</span>—All texture formats will be optimized including JPEG, DXT, and KTX2 for use in desktop, web, and mobile platforms.</li><li><span title=\"DESKTOP\">Desktop</span>—Windows, Linux, and Mac supported textures will be optimized including JPEG and DXT for use in ArcGIS Pro clients on Windows and ArcGIS Maps SDKs desktop clients on Windows, Linux, and Mac. This is the default.</li><li><span title=\"MOBILE\">Mobile</span>—Android and iOS supported textures will be optimized including JPEG and KTX2 for use in ArcGIS Maps SDKs mobile applications.</li><li><span title=\"NONE\">None</span>—JPEG textures will be optimized for use in desktop and web platforms.</li></ul></xdoc>",
+        "texture_optimization.domain.ALL": "All",
+        "texture_optimization.domain.DESKTOP": "Desktop",
+        "texture_optimization.domain.MOBILE": "Mobile",
+        "texture_optimization.domain.NONE": "None",
+        "texture_optimization.title": "Texture Optimization",
+        "title": "Create 3D Object Scene Layer Content",
+        "transform_method.descr": "<xdoc><p>The datum transformation method that will be used when the input layer&apos;s coordinate system uses a datum that differs from the output coordinate system. All transformations are bidirectional, regardless of the direction implied by their names. For example, NAD_1927_to_WGS84_3 will work correctly even if the datum conversion is from WGS84 to NAD 1927.</p><note type=\"note\"/><p group=\"note\">The ArcGIS coordinate system data is required for vertical datum transformations between ellipsoidal and gravity-related and two gravity-related datums.</p></xdoc>",
+        "transform_method.title": "Geographic Transformation"
+    }
+}

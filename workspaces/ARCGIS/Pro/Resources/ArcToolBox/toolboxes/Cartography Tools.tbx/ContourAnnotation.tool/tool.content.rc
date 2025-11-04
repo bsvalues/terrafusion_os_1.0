@@ -1,0 +1,32 @@
+{
+    "map": {
+        "contour_alignment.descr": "<xdoc><p>Specifies how the annotation will be aligned to contour elevations. The annotation can be aligned to the contour elevations so that the top of the text is always placed uphill or downhill. These options allow the annotation to be placed upside down. The contour annotation can also be aligned to the page, ensuring that the text is never placed upside down.</p><ul><li><span title=\"PAGE\">Align top of text to top of page</span>— The annotation will be aligned to the page, ensuring that the text is never placed upside down. This is the default.</li><li><span title=\"UPHILL\">Align top of text uphill</span>—The annotation will be aligned to the contour elevations so that the top of the text is always placed uphill. This option allows the annotation to be placed upside down.</li><li><span title=\"DOWNHILL\">Align top of text downhill</span>—The annotation will be aligned to the contour elevations so that the top of the text is always placed downhill. This option allows the annotation to be placed upside down.</li></ul></xdoc>",
+        "contour_alignment.domain.DOWNHILL": "Align top of text downhill",
+        "contour_alignment.domain.PAGE": "Align top of text  to top of page",
+        "contour_alignment.domain.UPHILL": "Align top of text uphill",
+        "contour_alignment.title": "Contour Alignment",
+        "contour_color.descr": "<xdoc><p>Specifies the color of the output contour layer and annotation features.</p><ul><li><span title=\"BLACK\">Black</span>—The output contour layer and annotation features will be drawn in black. This is the default.</li><li><span title=\"BROWN\">Brown</span>—The output contour layer and annotation features will be drawn in brown.</li><li><span title=\"BLUE\">Blue</span>—The output contour layer and annotation features will be drawn in blue.</li></ul></xdoc>",
+        "contour_color.domain.BLACK": "Black",
+        "contour_color.domain.BLUE": "Blue",
+        "contour_color.domain.BROWN": "Brown",
+        "contour_color.title": "Contour and Label Color",
+        "contour_label_field.descr": "The field in the input layer attribute table on which the annotation text will be based.",
+        "contour_label_field.title": "Contour Label Field",
+        "contour_type_field.descr": "The field in the input layer attribute table containing a value for the type of contour feature. An annotation class will be created for each type value.",
+        "contour_type_field.title": "Contour Type Field",
+        "description": "Creates annotation for contour features.",
+        "enable_laddering.descr": "<xdoc><p>Specifies whether annotation will be placed in ladders. Placing annotation in ladders will place the text so it appears to step up and step down the contours in a straight path. These ladders will run from the top of a hill to the bottom, will not cross each other, will belong to a single slope, and will not cross any other slope.<ul><li>Checked—Annotation will step up and down the contours in a straight path.</li><li>Unchecked—Annotation will not be placed up and down the contours in a straight path. This is the default.</li></ul></p></xdoc>",
+        "enable_laddering.title": "Enable Laddering",
+        "in_features.descr": "The contour line feature class for which the annotation will be created.",
+        "in_features.title": "Input Features",
+        "out_geodatabase.descr": "The workspace where the output feature classes will be saved. The workspace can be an existing geodatabase or an existing feature dataset.",
+        "out_geodatabase.title": "Output Geodatabase",
+        "out_geodatabase2.title": "Output Workspace",
+        "out_layer.descr": "<xdoc><p>The group layer that will contain the contour layer, the annotation, and the mask layer. When working in the <span class=\"esri_uicontrol\">Catalog</span> pane, you can use the Save To Layer File tool to write the output group layer to a layer file. When using ArcGIS Pro, the tool adds the group layer to the display if the <span class=\"esri_uicontrol\">Add output datasets to an open map</span> option is checked on the <span class=\"esri_uicontrol\">Geoprocessing</span> tab on the <span class=\"esri_uicontrol\">Options</span> dialog box. The group layer that is created is temporary and will not persist after the session ends unless the document is saved.</p></xdoc>",
+        "out_layer.title": "Output Layer Name",
+        "reference_scale_value.descr": "The scale that will be used as a reference for the annotation. This sets the scale on which all symbol and text sizes in the annotation will be based.",
+        "reference_scale_value.title": "Reference Scale",
+        "summary": "<xdoc><p>Creates annotation for contour features.</p><p>The tool creates an annotation feature class with corresponding mask polygons based on input contour features.</p></xdoc>",
+        "title": "Contour Annotation"
+    }
+}

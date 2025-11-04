@@ -1,0 +1,26 @@
+{
+    "map": {
+        "area_of_interest.descr": "The extent that contains the spot heights that will be validated. This parameter does not accept point layers as valid input and must have only one selected feature.",
+        "area_of_interest.title": "Area of Interest",
+        "contour_height_field.descr": "<xdoc><p>The field that contains elevation values for the <span class=\"esri_uicontrol\">Input Contours</span> parameter value. The field type must be numeric.</p></xdoc>",
+        "contour_height_field.title": "Contour Height Field",
+        "contour_interval.descr": "The interval, or distance, between contour lines. The value can be any positive number. The default is 20.",
+        "contour_interval.title": "Contour Interval",
+        "description": "Validates that spot heights are higher than or equal to their respective contour top, and based on the contour interval, that a contour top is not missing a contour line between it and a spot height.",
+        "in_contour_features.descr": "The contour features that will be used to validate the spot heights.",
+        "in_contour_features.title": "Input Contours",
+        "in_rasters.descr": "The rasters that will be used to derive elevations of points inside contours.",
+        "in_rasters.title": "Input Rasters",
+        "in_spot_features.descr": "An existing point feature layer that contains spot heights that will be validated.",
+        "in_spot_features.title": "Input Spot Features",
+        "params.category1": "Elevation Values",
+        "spot_height_field.descr": "<xdoc><p>The field that contains elevation values for the <span class=\"esri_uicontrol\">Input Spot Features</span> parameter value.</p></xdoc>",
+        "spot_height_field.title": "Spot Height Field",
+        "title": "Validate Spot Heights",
+        "updated_spot_features.title": "Updated Spot Features",
+        "use_rasters.descr": "<xdoc><p>Specifies whether the <span class=\"esri_uicontrol\">Input Rasters</span> parameter value will be used to validate the spot heights.</p><ul><li>Checked—The <span class=\"esri_uicontrol\">Input Rasters</span> parameter value will be used to validate the spot heights. This is the default.</li><li>Unchecked—The <span class=\"esri_uicontrol\">Input Rasters</span> parameter value will not be used to validate the spot heights.</li></ul></xdoc>",
+        "use_rasters.title": "Use Input Rasters for Validation",
+        "z_factor.descr": "<xdoc><p>The unit conversion factor that will be used when validating spot heights to convert the contour elevation value unit of measurement to match the raster&apos;s unit of measurement. The default is 1.</p><p>For example, if the input raster&apos;s elevation values are in meters but the contours are in feet, set the z-factor to 3.28084 (1 meter = 3.28084 feet).</p></xdoc>",
+        "z_factor.title": "Z Factor"
+    }
+}

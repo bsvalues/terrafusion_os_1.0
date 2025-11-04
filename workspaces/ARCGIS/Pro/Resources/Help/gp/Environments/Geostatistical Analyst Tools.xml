@@ -1,0 +1,58 @@
+<ArrayOfGPEnvironment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:typens="http://www.esri.com/schemas/ArcGIS/3.4.0" xsi:type="typens:ArrayOfGPEnvironment">
+  <GPEnvironment xsi:type="typens:GPEnvironment">
+    <Name>coincidentPoints</Name>
+    <DisplayName>Coincident Points</DisplayName>
+    <Category>Geostatistical Analysis</Category>
+    <Value xsi:type="typens:GPString">
+      <Value>MEAN</Value>
+    </Value>
+    <Domain xsi:type="typens:GPCodedValueDomain">
+      <GPDomainPropertiesArray xsi:type="typens:ArrayOfGPCodedValueDomainProperty">
+        <GPCodedValueDomainProperty xsi:type="typens:GPCodedValueDomainProperty">
+          <Name name="MEAN">Mean of values at coincident locations</Name>
+          <Value xsi:type="typens:GPString">
+            <Value>MEAN</Value>
+          </Value>
+        </GPCodedValueDomainProperty>
+        <GPCodedValueDomainProperty xsi:type="typens:GPCodedValueDomainProperty">
+          <Name name="REMOVE_ALL">Exclude all coincident data</Name>
+          <Value xsi:type="typens:GPString">
+            <Value>REMOVE_ALL</Value>
+          </Value>
+        </GPCodedValueDomainProperty>
+        <GPCodedValueDomainProperty xsi:type="typens:GPCodedValueDomainProperty">
+          <Name name="MIN">Minimum value at coincident locations</Name>
+          <Value xsi:type="typens:GPString">
+            <Value>MIN</Value>
+          </Value>
+        </GPCodedValueDomainProperty>
+        <GPCodedValueDomainProperty xsi:type="typens:GPCodedValueDomainProperty">
+          <Name name="MAX">Maximum value at coincident locations</Name>
+          <Value xsi:type="typens:GPString">
+            <Value>MAX</Value>
+          </Value>
+        </GPCodedValueDomainProperty>
+        <GPCodedValueDomainProperty xsi:type="typens:GPCodedValueDomainProperty">
+          <Name name="INCLUDE_ALL">Include all coincident data</Name>
+          <Value xsi:type="typens:GPString">
+            <Value>INCLUDE_ALL</Value>
+          </Value>
+        </GPCodedValueDomainProperty>
+      </GPDomainPropertiesArray>
+    </Domain>
+    <DataTypeName xsi:type="typens:GPDataTypeName">
+      <Name>GPString</Name>
+      <DisplayName>String</DisplayName>
+      <Description>String</Description>
+      <Category>Data Type</Category>
+      <FactoryCLSID xsi:type="typens:UID">
+        <UID xsi:type="xs:string">{E41CFD44-5741-4F2B-8ACE-1A49E146D329}</UID>
+      </FactoryCLSID>
+    </DataTypeName>
+    <DisplayOrder>-1</DisplayOrder>
+    <ControlCLSID xsi:nil="true"/>
+    <ParamDependencyArray xsi:type="typens:ArrayOfString"/>
+    <Altered>false</Altered>
+  </GPEnvironment>
+</ArrayOfGPEnvironment>
+

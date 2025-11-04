@@ -1,0 +1,19 @@
+{
+    "map": {
+        "derived_las_dataset.title": "Updated Input LAS Dataset",
+        "description": "Adds references for one or more LAS files and  surface constraint features to a LAS dataset.",
+        "folder_recursion.descr": "<xdoc><p>Specifies whether .las files residing in the subdirectories of an input folder will be referenced by the LAS dataset.</p><ul><li>Unchecked—Only .las files residing in an input folder will be added to the LAS dataset. This is the default.</li><li>Checked—All .las files residing in the subdirectories of an input folder will be added to the LAS dataset.</li></ul></xdoc>",
+        "folder_recursion.title": "Include subfolders",
+        "in_files.descr": "<xdoc><p>Inputs that can include any combination of .las files, .zlas files, LAS datasets, and folders containing .las or .zlas data. When a LAS dataset is specified as input, all .las and .zlas files that have a valid path reference will be added to the input LAS dataset.</p><p>In the <span class=\"esri_uicontrol\">Geoprocessing</span> pane, a folder can also be specified as an input by selecting the folder in File Explorer and dragging it onto the parameter&apos;s input box.</p></xdoc>",
+        "in_files.title": "LAS Files or Folders",
+        "in_las_dataset.descr": "The LAS dataset that will be processed.",
+        "in_las_dataset.title": "Input LAS Dataset",
+        "in_surface_constraints.descr": "<xdoc><p>The features that will contribute to the definition of the triangulated surface generated from the LAS dataset.</p><ul><li>Input Features—The features with geometry that will be incorporated into the LAS dataset&apos;s triangulated surface.</li><li>Height Field—The feature&apos;s elevation source can be derived from any numeric field in the feature&apos;s attribute table or the geometry by selecting <span class=\"esri_fieldname\">Shape.Z</span>. If no height is necessary, specify the keyword &lt;None&gt; to create z-less features with elevation that will be interpolated from the surface.</li><li>Type—Defines the feature&apos;s role in the triangulated surface generated from the LAS dataset. Options with hard or soft designation refer to whether the feature edges represent distinct breaks in slope or a gradual change.</li><li>Surface Feature Type—The surface feature type that defines how the feature geometry will be incorporated into the triangulation for the surface. Options with hard or soft designation refer to whether the feature edges represent distinct breaks in slope or a gradual change.<ul><li>anchorpoints—Elevation points that will not be thinned away. This option is only available for single-point feature geometry.</li><li>hardline or <span class=\"esri_uicontrol\">softline</span>—Breaklines that enforce a height value.</li><li>hardclip or <span class=\"esri_uicontrol\">softclip</span>—Polygon dataset that defines the boundary of the LAS dataset.</li><li>harderase or <span class=\"esri_uicontrol\">softerase</span>—Polygon dataset that defines holes in the LAS dataset.</li><li>hardreplace or <span class=\"esri_uicontrol\">softreplace</span>—Polygon dataset that defines areas of constant height.</li></ul></li></ul></xdoc>",
+        "in_surface_constraints.dt.title1": "Input Features",
+        "in_surface_constraints.dt.title2": "Height Field",
+        "in_surface_constraints.dt.title3": "Type",
+        "in_surface_constraints.title": "Surface Constraints",
+        "summary": "Adds references for one or more LAS files and surface constraint features to a LAS dataset.",
+        "title": "Add Files To LAS Dataset"
+    }
+}

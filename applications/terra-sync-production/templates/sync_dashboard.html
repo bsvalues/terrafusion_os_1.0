@@ -1,0 +1,819 @@
+{% extends "base_clean.html" %}
+
+{% block title %}TerraFusion Platform - Sync Dashboard{% endblock %}
+
+{% block head %}
+  {{ super() %}
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .sidebar {
+            width: 250px;
+            transition: all 0.3s;
+        }
+        .main-content {
+            margin-left: 250px;
+            transition: all 0.3s;
+        }
+        .sidebar.collapsed {
+            width: 70px;
+        }
+        .main-content.expanded {
+            margin-left: 70px;
+        }
+        .nav-link span {
+            transition: all 0.3s;
+        }
+        .sidebar.collapsed .nav-link span {
+            display: none;
+        }
+        .sidebar.collapsed .logo-text {
+            display: none;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+            
+            <nav>
+                <ul>
+                    <li class="mb-4">
+                        <a href="/dashboard" class="nav-link flex items-center text-gray-300 hover:text-white">
+                            <i class="fas fa-tachometer-alt w-6"></i>
+                            <span class="ml-2">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="mb-4">
+                        <a href="/gis/dashboard" class="nav-link flex items-center text-gray-300 hover:text-white">
+                            <i class="fas fa-map w-6"></i>
+                            <span class="ml-2">GIS Exports</span>
+                        </a>
+                    </li>
+                    <li class="mb-4">
+                        <a href="/sync/dashboard" class="nav-link flex items-center text-white bg-blue-600 rounded-md p-2">
+                            <i class="fas fa-sync-alt w-6"></i>
+                            <span class="ml-2">Sync Service</span>
+                        </a>
+                    </li>
+                    <li class="mb-4">
+                        <a href="#" class="nav-link flex items-center text-gray-300 hover:text-white">
+                            <i class="fas fa-chart-bar w-6"></i>
+                            <span class="ml-2">Reports</span>
+                        </a>
+                    </li>
+                    <li class="mb-4">
+                        <a href="#" class="nav-link flex items-center text-gray-300 hover:text-white">
+                            <i class="fas fa-cog w-6"></i>
+                            <span class="ml-2">Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div id="mainContent" class="main-content min-h-screen bg-gray-100">
+            <!-- Header -->
+            <header class="bg-white shadow-sm">
+                <div class="flex justify-between items-center p-4">
+                    <h1 class="text-2xl font-semibold text-gray-800">Data Synchronization Dashboard</h1>
+                    <div class="flex items-center">
+                        <div class="relative mr-4">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </span>
+                            <input type="text" class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Search...">
+                        </div>
+                        <div class="flex items-center">
+                            <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="User" class="w-8 h-8 rounded-full mr-2">
+                            <span class="text-gray-700">County Admin</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Dashboard Content -->
+            <div class="p-6">
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="rounded-full bg-blue-100 p-3 mr-4">
+                                <i class="fas fa-sync-alt text-blue-600 text-2xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-gray-500 text-sm">Total Sync Jobs</h3>
+                                <p class="text-2xl font-bold" data-stat="total">{{ total_jobs|default(0) }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="rounded-full bg-green-100 p-3 mr-4">
+                                <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-gray-500 text-sm">Completed</h3>
+                                <p class="text-2xl font-bold" data-stat="completed">{{ completed_jobs|default(0) }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="rounded-full bg-yellow-100 p-3 mr-4">
+                                <i class="fas fa-spinner text-yellow-600 text-2xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-gray-500 text-sm">In Progress</h3>
+                                <p class="text-2xl font-bold" data-stat="in-progress">{{ in_progress_jobs|default(0) }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <div class="flex items-center">
+                            <div class="rounded-full bg-red-100 p-3 mr-4">
+                                <i class="fas fa-exclamation-circle text-red-600 text-2xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-gray-500 text-sm">Failed</h3>
+                                <p class="text-2xl font-bold" data-stat="failed">{{ failed_jobs|default(0) }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Create New Sync Job -->
+                <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+                    <h2 class="text-xl font-semibold mb-4">Create New Sync Job</h2>
+                    <form id="syncForm" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label for="county" class="block text-sm font-medium text-gray-700 mb-1">County</label>
+                                <select id="county" name="county" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 border">
+                                    <option value="benton-wa">Benton County, WA</option>
+                                    <option value="king-wa">King County, WA</option>
+                                    <option value="pierce-wa">Pierce County, WA</option>
+                                    <option value="snohomish-wa">Snohomish County, WA</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="source" class="block text-sm font-medium text-gray-700 mb-1">Source System</label>
+                                <select id="source" name="source" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 border">
+                                    <option value="county-gis">County GIS System</option>
+                                    <option value="county-assessor">County Assessor System</option>
+                                    <option value="legacy-database">Legacy Database</option>
+                                    <option value="field-collection">Field Collection App</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="target" class="block text-sm font-medium text-gray-700 mb-1">Target System</label>
+                                <select id="target" name="target" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 border">
+                                    <option value="terrafusion">TerraFusion Platform</option>
+                                    <option value="cloud-database">Cloud Database</option>
+                                    <option value="reporting-system">Reporting System</option>
+                                    <option value="gis-portal">GIS Portal</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="dataTypes" class="block text-sm font-medium text-gray-700 mb-1">Data Types</label>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                <div class="flex items-center">
+                                    <input id="data-parcels" name="dataTypes" type="checkbox" value="parcels" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="data-parcels" class="ml-2 block text-sm text-gray-700">Parcels</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input id="data-owners" name="dataTypes" type="checkbox" value="owners" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="data-owners" class="ml-2 block text-sm text-gray-700">Owners</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input id="data-buildings" name="dataTypes" type="checkbox" value="buildings" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="data-buildings" class="ml-2 block text-sm text-gray-700">Buildings</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input id="data-permits" name="dataTypes" type="checkbox" value="permits" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="data-permits" class="ml-2 block text-sm text-gray-700">Permits</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input id="data-taxes" name="dataTypes" type="checkbox" value="taxes" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="data-taxes" class="ml-2 block text-sm text-gray-700">Taxes</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input id="data-zoning" name="dataTypes" type="checkbox" value="zoning" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="data-zoning" class="ml-2 block text-sm text-gray-700">Zoning</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="syncParams" class="block text-sm font-medium text-gray-700 mb-1">Additional Parameters</label>
+                            <textarea id="syncParams" name="syncParams" rows="3" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 border" placeholder='{"date_range": {"start": "2025-01-01", "end": "2025-05-01"}, "include_attachments": true}'></textarea>
+                            <p class="text-sm text-gray-500 mt-1">JSON format for additional synchronization parameters</p>
+                        </div>
+                        
+                        <div class="flex justify-end">
+                            <button type="submit" id="submitSync" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <i class="fas fa-sync-alt mr-2"></i>
+                                Create Sync Job
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Recent Sync Jobs -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold">Recent Sync Jobs</h2>
+                        <button id="refreshJobs" class="text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-sync-alt mr-1"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Job ID
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        County
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Source → Target
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Created
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="syncJobsList">
+                                <!-- Sync jobs will be inserted here by JavaScript -->
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        Loading...
+                                    </td>
+                                    <td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        Please wait while we load sync jobs
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sync Job Status Modal -->
+    <div id="statusModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg max-w-lg w-full mx-4">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold" id="modalTitle">Sync Job Status</h3>
+                    <button id="closeModal" class="text-gray-400 hover:text-gray-500">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div id="modalContent" class="mb-4">
+                    <div class="animate-pulse">
+                        <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                        <div class="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
+                        <div class="h-4 bg-gray-200 rounded w-5/6"></div>
+                    </div>
+                </div>
+                <div class="flex justify-end">
+                    <button id="modalReport" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 mr-2 hidden">
+                        <i class="fas fa-file-alt mr-2"></i>
+                        View Report
+                    </button>
+                    <button id="modalCancel" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 mr-2 hidden">
+                        <i class="fas fa-ban mr-2"></i>
+                        Cancel
+                    </button>
+                    <button id="modalClose" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sync Report Modal -->
+    <div id="reportModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg max-w-4xl w-full mx-4">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold" id="reportModalTitle">Sync Job Report</h3>
+                    <button id="closeReportModal" class="text-gray-400 hover:text-gray-500">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div id="reportModalContent" class="mb-4 overflow-y-auto max-h-96">
+                    <div class="animate-pulse">
+                        <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                        <div class="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
+                        <div class="h-4 bg-gray-200 rounded w-5/6"></div>
+                    </div>
+                </div>
+                <div class="flex justify-end">
+                    <button id="reportModalExport" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mr-2">
+                        <i class="fas fa-file-export mr-2"></i>
+                        Export Report
+                    </button>
+                    <button id="reportModalClose" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle sidebar
+        document.getElementById('toggleSidebar').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+            document.getElementById('mainContent').classList.toggle('expanded');
+        });
+
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleString();
+            } catch (e) {
+                console.error('Error formatting date:', e);
+                return dateString;
+            }
+        }
+
+        // Status badge class
+        function getStatusBadgeClass(status) {
+            switch(status) {
+                case 'COMPLETED':
+                    return 'bg-green-100 text-green-800';
+                case 'PENDING':
+                    return 'bg-yellow-100 text-yellow-800';
+                case 'PROCESSING':
+                    return 'bg-blue-100 text-blue-800';
+                case 'FAILED':
+                    return 'bg-red-100 text-red-800';
+                case 'CANCELLED':
+                    return 'bg-gray-100 text-gray-800';
+                default:
+                    return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        // Fetch sync jobs
+        function fetchSyncJobs() {
+            console.log('Fetching sync jobs...');
+            
+            // Show loading indicator
+            document.getElementById('syncJobsList').innerHTML = `
+                <tr>
+                    <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                        <i class="fas fa-spinner fa-spin mr-2"></i> Loading sync jobs...
+                    </td>
+                </tr>
+            `;
+            
+            fetch('/api/v1/sync/jobs')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(jobs => {
+                    console.log('Jobs loaded:', jobs);
+                    const tableBody = document.getElementById('syncJobsList');
+                    
+                    if (!jobs || jobs.length === 0) {
+                        tableBody.innerHTML = `
+                            <tr>
+                                <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                    No sync jobs found. Create your first sync job above!
+                                </td>
+                            </tr>
+                        `;
+                        return;
+                    }
+                    
+                    let html = '';
+                    
+                    jobs.forEach(job => {
+                        if (!job || !job.job_id) {
+                            console.error('Invalid job data:', job);
+                            return;
+                        }
+                        
+                        const shortId = job.job_id.substring(0, 8) + '...';
+                        const statusClass = getStatusBadgeClass(job.status);
+                        
+                        html += `
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" title="${job.job_id}">
+                                    ${shortId}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    ${job.county_id || 'Unknown'}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    ${job.source_system || 'N/A'} → ${job.target_system || 'N/A'}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    ${formatDate(job.created_at)}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">
+                                        ${job.status || 'Unknown'}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <button class="text-blue-600 hover:text-blue-800 mr-2" onclick="viewJobDetails('${job.job_id}')">
+                                        <i class="fas fa-info-circle"></i>
+                                    </button>
+                                    ${job.status === 'COMPLETED' ? 
+                                      `<button class="text-green-600 hover:text-green-800 mr-2" onclick="viewJobReport('${job.job_id}')">
+                                        <i class="fas fa-file-alt"></i>
+                                       </button>` : ''
+                                    }
+                                    ${(job.status === 'PENDING' || job.status === 'PROCESSING') ? 
+                                      `<button class="text-red-600 hover:text-red-800" onclick="cancelJob('${job.job_id}')">
+                                        <i class="fas fa-ban"></i>
+                                       </button>` : ''
+                                    }
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    
+                    tableBody.innerHTML = html;
+                    
+                    // Update stats counters
+                    const total = jobs.length;
+                    const completed = jobs.filter(job => job.status === 'COMPLETED').length;
+                    const inProgress = jobs.filter(job => job.status === 'PENDING' || job.status === 'PROCESSING').length;
+                    const failed = jobs.filter(job => job.status === 'FAILED').length;
+                    
+                    document.querySelector('[data-stat="total"]').textContent = total;
+                    document.querySelector('[data-stat="completed"]').textContent = completed;
+                    document.querySelector('[data-stat="in-progress"]').textContent = inProgress;
+                    document.querySelector('[data-stat="failed"]').textContent = failed;
+                })
+                .catch(error => {
+                    console.error('Error fetching sync jobs:', error);
+                    document.getElementById('syncJobsList').innerHTML = `
+                        <tr>
+                            <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-red-500 text-center">
+                                Error loading sync jobs: ${error.message}. Please try again later.
+                            </td>
+                        </tr>
+                    `;
+                });
+        }
+
+        // View job details
+        function viewJobDetails(jobId) {
+            // Show modal
+            document.getElementById('statusModal').classList.remove('hidden');
+            document.getElementById('modalTitle').innerText = `Sync Job: ${jobId.substring(0, 8)}...`;
+            document.getElementById('modalContent').innerHTML = `
+                <div class="animate-pulse">
+                    <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                    <div class="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
+                    <div class="h-4 bg-gray-200 rounded w-5/6"></div>
+                </div>
+            `;
+            
+            // Hide action buttons initially
+            document.getElementById('modalReport').classList.add('hidden');
+            document.getElementById('modalCancel').classList.add('hidden');
+            
+            // Fetch job details
+            fetch(`/api/v1/sync/jobs/${jobId}`)
+                .then(response => response.json())
+                .then(job => {
+                    let statusClass = getStatusBadgeClass(job.status);
+                    let content = `
+                        <div class="space-y-4">
+                            <div>
+                                <p class="text-sm text-gray-500">Status</p>
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">
+                                    ${job.status}
+                                </span>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">County</p>
+                                <p class="font-medium">${job.county_id}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Source System</p>
+                                <p class="font-medium">${job.source_system}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Target System</p>
+                                <p class="font-medium">${job.target_system}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Data Types</p>
+                                <p class="font-medium">${job.data_types.join(', ')}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Created</p>
+                                <p class="font-medium">${formatDate(job.created_at)}</p>
+                            </div>
+                            ${job.completed_at ? `
+                                <div>
+                                    <p class="text-sm text-gray-500">Completed</p>
+                                    <p class="font-medium">${formatDate(job.completed_at)}</p>
+                                </div>
+                            ` : ''}
+                            ${job.stats && job.stats.records_read > 0 ? `
+                                <div>
+                                    <p class="text-sm text-gray-500">Records Processed</p>
+                                    <p class="font-medium">${job.stats.records_processed} of ${job.stats.records_read}</p>
+                                </div>
+                            ` : ''}
+                            <div>
+                                <p class="text-sm text-gray-500">Message</p>
+                                <p class="font-medium">${job.message}</p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    document.getElementById('modalContent').innerHTML = content;
+                    
+                    // Show relevant action buttons
+                    if (job.status === 'COMPLETED') {
+                        const reportBtn = document.getElementById('modalReport');
+                        reportBtn.classList.remove('hidden');
+                        reportBtn.onclick = function() {
+                            document.getElementById('statusModal').classList.add('hidden');
+                            viewJobReport(job.job_id);
+                        };
+                    }
+                    
+                    if (job.status === 'PENDING' || job.status === 'PROCESSING') {
+                        const cancelBtn = document.getElementById('modalCancel');
+                        cancelBtn.classList.remove('hidden');
+                        cancelBtn.onclick = function() {
+                            cancelJob(job.job_id);
+                        };
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching job details:', error);
+                    document.getElementById('modalContent').innerHTML = `
+                        <div class="text-red-500">
+                            Error loading job details. Please try again later.
+                        </div>
+                    `;
+                });
+        }
+
+        // View job report
+        function viewJobReport(jobId) {
+            // Show report modal
+            document.getElementById('reportModal').classList.remove('hidden');
+            document.getElementById('reportModalTitle').innerText = `Sync Report: ${jobId.substring(0, 8)}...`;
+            document.getElementById('reportModalContent').innerHTML = `
+                <div class="animate-pulse">
+                    <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                    <div class="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
+                    <div class="h-4 bg-gray-200 rounded w-5/6"></div>
+                </div>
+            `;
+            
+            // Fetch job report
+            fetch(`/api/v1/sync/jobs/${jobId}/report`)
+                .then(response => response.json())
+                .then(report => {
+                    // Create report content
+                    let content = `
+                        <div class="space-y-6">
+                            <div class="bg-blue-50 p-4 rounded-lg">
+                                <h4 class="text-lg font-medium mb-2">Sync Job Summary</h4>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <p class="text-sm text-gray-500">County</p>
+                                        <p class="font-medium">${report.county_id}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500">Completed At</p>
+                                        <p class="font-medium">${formatDate(report.completed_at)}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500">Duration</p>
+                                        <p class="font-medium">${report.duration_seconds.toFixed(2)} seconds</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500">User</p>
+                                        <p class="font-medium">${report.username}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-lg font-medium mb-2">Data Synchronization</h4>
+                                <div class="mb-4">
+                                    <p class="text-sm text-gray-500">Source System</p>
+                                    <p class="font-medium">${report.source_system}</p>
+                                </div>
+                                <div class="mb-4">
+                                    <p class="text-sm text-gray-500">Target System</p>
+                                    <p class="font-medium">${report.target_system}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">Data Types</p>
+                                    <p class="font-medium">${report.data_types.join(', ')}</p>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-lg font-medium mb-2">Processing Statistics</h4>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                        <div>
+                                            <p class="text-sm text-gray-500">Records Read</p>
+                                            <p class="font-medium">${report.stats.records_read}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-gray-500">Records Processed</p>
+                                            <p class="font-medium">${report.stats.records_processed}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-gray-500">Records Written</p>
+                                            <p class="font-medium">${report.stats.records_written}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-gray-500">Warnings</p>
+                                            <p class="font-medium">${report.stats.warnings}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-gray-500">Errors</p>
+                                            <p class="font-medium">${report.stats.errors}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-gray-500">Success Rate</p>
+                                            <p class="font-medium">${((report.stats.records_written / report.stats.records_read) * 100).toFixed(2)}%</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-lg font-medium mb-2">Summary</h4>
+                                <ul class="list-disc pl-5 space-y-1">
+                                    ${report.summary.map(item => `<li class="text-gray-700">${item}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                    
+                    document.getElementById('reportModalContent').innerHTML = content;
+                    
+                    // Set export report button
+                    document.getElementById('reportModalExport').onclick = function() {
+                        // In a real application, this would generate a PDF or other export format
+                        alert(`Report export functionality would be implemented in the production version.`);
+                    };
+                })
+                .catch(error => {
+                    console.error('Error fetching job report:', error);
+                    document.getElementById('reportModalContent').innerHTML = `
+                        <div class="text-red-500">
+                            Error loading job report. Please try again later.
+                        </div>
+                    `;
+                });
+        }
+
+        // Cancel job
+        function cancelJob(jobId) {
+            fetch(`/api/v1/sync/jobs/${jobId}/cancel`, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(job => {
+                // Close modal if it's open
+                document.getElementById('statusModal').classList.add('hidden');
+                
+                // Refresh job list
+                fetchSyncJobs();
+                
+                // Show confirmation message
+                alert(`Job ${jobId.substring(0, 8)}... has been cancelled`);
+            })
+            .catch(error => {
+                console.error('Error cancelling job:', error);
+                alert('Error cancelling job. Please try again later.');
+            });
+        }
+
+        // Close modals
+        document.getElementById('closeModal').addEventListener('click', function() {
+            document.getElementById('statusModal').classList.add('hidden');
+        });
+        
+        document.getElementById('modalClose').addEventListener('click', function() {
+            document.getElementById('statusModal').classList.add('hidden');
+        });
+        
+        document.getElementById('closeReportModal').addEventListener('click', function() {
+            document.getElementById('reportModal').classList.add('hidden');
+        });
+        
+        document.getElementById('reportModalClose').addEventListener('click', function() {
+            document.getElementById('reportModal').classList.add('hidden');
+        });
+
+        // Refresh jobs
+        document.getElementById('refreshJobs').addEventListener('click', function() {
+            fetchSyncJobs();
+        });
+
+        // Submit sync form
+        document.getElementById('syncForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const county = document.getElementById('county').value;
+            const sourceSystem = document.getElementById('source').value;
+            const targetSystem = document.getElementById('target').value;
+            const dataTypeCheckboxes = document.querySelectorAll('input[name="dataTypes"]:checked');
+            
+            // Validate data types
+            if (dataTypeCheckboxes.length === 0) {
+                alert('Please select at least one data type to synchronize');
+                return;
+            }
+            
+            // Collect checked data types
+            const dataTypes = Array.from(dataTypeCheckboxes).map(cb => cb.value);
+            
+            // Get parameters (if any)
+            let parameters = {};
+            const paramsText = document.getElementById('syncParams').value.trim();
+            if (paramsText) {
+                try {
+                    parameters = JSON.parse(paramsText);
+                } catch (error) {
+                    alert('Invalid JSON in parameters field');
+                    return;
+                }
+            }
+            
+            // Create sync job request
+            const syncData = {
+                county_id: county,
+                username: "dashboard-user@county.gov",
+                data_types: dataTypes,
+                source_system: sourceSystem,
+                target_system: targetSystem,
+                parameters: parameters
+            };
+            
+            // Submit request
+            fetch('/api/v1/sync/jobs', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(syncData)
+            })
+            .then(response => response.json())
+            .then(job => {
+                if (job.error) {
+                    throw new Error(job.error);
+                }
+                
+                // Refresh job list
+                fetchSyncJobs();
+                
+                // Show confirmation message
+                alert(`Sync job created with ID: ${job.job_id.substring(0, 8)}...`);
+                
+                // Open job details modal
+                viewJobDetails(job.job_id);
+            })
+            .catch(error => {
+                console.error('Error creating sync job:', error);
+                alert(`Error creating sync job: ${error.message}`);
+            });
+        });
+
+        // Initialize by fetching sync jobs
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchSyncJobs();
+        });
+    </script>
+{% endblock %}

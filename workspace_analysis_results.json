@@ -1,0 +1,1169 @@
+{
+  "analyzed_at": "2025-10-16T09:22:14.350477",
+  "total_workspaces": 57,
+  "healthy_workspaces": 57,
+  "workspaces_needing_attention": 0,
+  "critical_issues": 0,
+  "workspace_details": {
+    "backend": {
+      "name": "backend",
+      "path": "workspaces\\backend.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders"
+      ],
+      "folders": 5,
+      "launch_configs": 1,
+      "settings": true,
+      "extensions": 3,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": []
+    },
+    "frontend": {
+      "name": "frontend",
+      "path": "workspaces\\frontend.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "3 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 1,
+      "settings": true,
+      "extensions": 3,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../frontend",
+        "../tests/frontend/core",
+        "../docs/frontend"
+      ]
+    },
+    "marketplace": {
+      "name": "marketplace",
+      "path": "workspaces\\marketplace.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "8 valid folders",
+        "1 Node.js projects"
+      ],
+      "folders": 8,
+      "launch_configs": 2,
+      "settings": true,
+      "extensions": 6,
+      "existing_folders": 8,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../docs/marketplace"
+      ]
+    },
+    "master": {
+      "name": "master",
+      "path": "workspaces\\master.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "8 valid folders",
+        "1 Node.js projects"
+      ],
+      "folders": 8,
+      "launch_configs": 1,
+      "settings": true,
+      "extensions": 9,
+      "existing_folders": 8,
+      "missing_folders": [],
+      "package_json_folders": [
+        ".."
+      ]
+    },
+    "os-platform": {
+      "name": "os-platform",
+      "path": "workspaces\\os-platform.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders"
+      ],
+      "folders": 5,
+      "launch_configs": 1,
+      "settings": true,
+      "extensions": 3,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": []
+    },
+    "terrafusion-cos": {
+      "name": "terrafusion-cos",
+      "path": "workspaces\\terrafusion-cos.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "4 valid folders",
+        "1 Node.js projects"
+      ],
+      "folders": 4,
+      "launch_configs": 1,
+      "settings": true,
+      "extensions": 3,
+      "existing_folders": 4,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../terrafusion-cos"
+      ]
+    },
+    "citizen-services": {
+      "name": "citizen-services",
+      "path": "workspaces\\frontend\\citizen-services.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "6 valid folders",
+        "1 Node.js projects"
+      ],
+      "folders": 6,
+      "launch_configs": 2,
+      "settings": true,
+      "extensions": 7,
+      "existing_folders": 6,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/frontend/citizen-services"
+      ]
+    },
+    "code-enforcement": {
+      "name": "code-enforcement",
+      "path": "workspaces\\frontend\\code-enforcement.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "6 valid folders",
+        "1 Node.js projects"
+      ],
+      "folders": 6,
+      "launch_configs": 1,
+      "settings": true,
+      "extensions": 4,
+      "existing_folders": 6,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/frontend/code-enforcement"
+      ]
+    },
+    "economic-development": {
+      "name": "economic-development",
+      "path": "workspaces\\frontend\\economic-development.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "6 valid folders",
+        "1 Node.js projects"
+      ],
+      "folders": 6,
+      "launch_configs": 1,
+      "settings": true,
+      "extensions": 4,
+      "existing_folders": 6,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/frontend/economic-development"
+      ]
+    },
+    "human-resources": {
+      "name": "human-resources",
+      "path": "workspaces\\frontend\\human-resources.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "6 valid folders",
+        "1 Node.js projects"
+      ],
+      "folders": 6,
+      "launch_configs": 1,
+      "settings": true,
+      "extensions": 4,
+      "existing_folders": 6,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/frontend/human-resources"
+      ]
+    },
+    "legal-judicial": {
+      "name": "legal-judicial",
+      "path": "workspaces\\frontend\\legal-judicial.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "6 valid folders",
+        "1 Node.js projects"
+      ],
+      "folders": 6,
+      "launch_configs": 1,
+      "settings": true,
+      "extensions": 4,
+      "existing_folders": 6,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/frontend/legal-judicial"
+      ]
+    },
+    "public-health": {
+      "name": "public-health",
+      "path": "workspaces\\frontend\\public-health.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "6 valid folders",
+        "1 Node.js projects"
+      ],
+      "folders": 6,
+      "launch_configs": 1,
+      "settings": true,
+      "extensions": 4,
+      "existing_folders": 6,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/frontend/public-health"
+      ]
+    },
+    "public-works": {
+      "name": "public-works",
+      "path": "workspaces\\frontend\\public-works.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "6 valid folders",
+        "1 Node.js projects"
+      ],
+      "folders": 6,
+      "launch_configs": 1,
+      "settings": true,
+      "extensions": 4,
+      "existing_folders": 6,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/frontend/public-works"
+      ]
+    },
+    "api": {
+      "name": "api",
+      "path": "workspaces\\marketplace\\api.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/api",
+        "../../docs/marketplace/api.md"
+      ]
+    },
+    "autonomous-research-engine": {
+      "name": "autonomous-research-engine",
+      "path": "workspaces\\marketplace\\autonomous-research-engine.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "3 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../marketplace/autonomous-research-engine",
+        "../../tests/marketplace/autonomous-research-engine",
+        "../../docs/marketplace/autonomous-research-engine.md"
+      ]
+    },
+    "commercial-suite": {
+      "name": "commercial-suite",
+      "path": "workspaces\\marketplace\\commercial-suite.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/commercial-suite",
+        "../../docs/marketplace/commercial-suite.md"
+      ]
+    },
+    "commercial": {
+      "name": "commercial",
+      "path": "workspaces\\marketplace\\commercial.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "3 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../marketplace/commercial",
+        "../../tests/marketplace/commercial",
+        "../../docs/marketplace/commercial.md"
+      ]
+    },
+    "costforge-ai": {
+      "name": "costforge-ai",
+      "path": "workspaces\\marketplace\\costforge-ai.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/costforge-ai",
+        "../../docs/marketplace/costforge-ai.md"
+      ]
+    },
+    "government-core": {
+      "name": "government-core",
+      "path": "workspaces\\marketplace\\government-core.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/government-core",
+        "../../docs/marketplace/government-core.md"
+      ]
+    },
+    "government-edition": {
+      "name": "government-edition",
+      "path": "workspaces\\marketplace\\government-edition.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/government-edition",
+        "../../docs/marketplace/government-edition.md"
+      ]
+    },
+    "LeafScope": {
+      "name": "LeafScope",
+      "path": "workspaces\\marketplace\\LeafScope.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/LeafScope",
+        "../../docs/marketplace/LeafScope.md"
+      ]
+    },
+    "marketplace-frontend": {
+      "name": "marketplace-frontend",
+      "path": "workspaces\\marketplace\\marketplace-frontend.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/marketplace-frontend",
+        "../../docs/marketplace/marketplace-frontend.md"
+      ]
+    },
+    "plugins": {
+      "name": "plugins",
+      "path": "workspaces\\marketplace\\plugins.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/plugins",
+        "../../docs/marketplace/plugins.md"
+      ]
+    },
+    "property-workbench": {
+      "name": "property-workbench",
+      "path": "workspaces\\marketplace\\property-workbench.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/property-workbench",
+        "../../docs/marketplace/property-workbench.md"
+      ]
+    },
+    "RAGPanel": {
+      "name": "RAGPanel",
+      "path": "workspaces\\marketplace\\RAGPanel.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/RAGPanel",
+        "../../docs/marketplace/RAGPanel.md"
+      ]
+    },
+    "revenue": {
+      "name": "revenue",
+      "path": "workspaces\\marketplace\\revenue.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/revenue",
+        "../../docs/marketplace/revenue.md"
+      ]
+    },
+    "shock-and-awe": {
+      "name": "shock-and-awe",
+      "path": "workspaces\\marketplace\\shock-and-awe.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "3 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../marketplace/shock-and-awe",
+        "../../tests/marketplace/shock-and-awe",
+        "../../docs/marketplace/shock-and-awe.md"
+      ]
+    },
+    "store": {
+      "name": "store",
+      "path": "workspaces\\marketplace\\store.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/store",
+        "../../docs/marketplace/store.md"
+      ]
+    },
+    "submissions": {
+      "name": "submissions",
+      "path": "workspaces\\marketplace\\submissions.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/submissions",
+        "../../docs/marketplace/submissions.md"
+      ]
+    },
+    "templates": {
+      "name": "templates",
+      "path": "workspaces\\marketplace\\templates.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/templates",
+        "../../docs/marketplace/templates.md"
+      ]
+    },
+    "terra-bank": {
+      "name": "terra-bank",
+      "path": "workspaces\\marketplace\\terra-bank.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/terra-bank",
+        "../../docs/marketplace/terra-bank.md"
+      ]
+    },
+    "terra-collections": {
+      "name": "terra-collections",
+      "path": "workspaces\\marketplace\\terra-collections.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/terra-collections",
+        "../../docs/marketplace/terra-collections.md"
+      ]
+    },
+    "terra-flow": {
+      "name": "terra-flow",
+      "path": "workspaces\\marketplace\\terra-flow.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/terra-flow",
+        "../../docs/marketplace/terra-flow.md"
+      ]
+    },
+    "terra-fusion-dashboard": {
+      "name": "terra-fusion-dashboard",
+      "path": "workspaces\\marketplace\\terra-fusion-dashboard.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/terra-fusion-dashboard",
+        "../../docs/marketplace/terra-fusion-dashboard.md"
+      ]
+    },
+    "terra-fusion-sync": {
+      "name": "terra-fusion-sync",
+      "path": "workspaces\\marketplace\\terra-fusion-sync.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/terra-fusion-sync",
+        "../../docs/marketplace/terra-fusion-sync.md"
+      ]
+    },
+    "terra-insight": {
+      "name": "terra-insight",
+      "path": "workspaces\\marketplace\\terra-insight.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/terra-insight",
+        "../../docs/marketplace/terra-insight.md"
+      ]
+    },
+    "terra-justice": {
+      "name": "terra-justice",
+      "path": "workspaces\\marketplace\\terra-justice.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/terra-justice",
+        "../../docs/marketplace/terra-justice.md"
+      ]
+    },
+    "terra-levy": {
+      "name": "terra-levy",
+      "path": "workspaces\\marketplace\\terra-levy.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 9,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/terra-levy",
+        "../../docs/marketplace/terra-levy.md"
+      ]
+    },
+    "terra-net": {
+      "name": "terra-net",
+      "path": "workspaces\\marketplace\\terra-net.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/terra-net",
+        "../../docs/marketplace/terra-net.md"
+      ]
+    },
+    "terra-sync": {
+      "name": "terra-sync",
+      "path": "workspaces\\marketplace\\terra-sync.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/terra-sync",
+        "../../docs/marketplace/terra-sync.md"
+      ]
+    },
+    "terra-university": {
+      "name": "terra-university",
+      "path": "workspaces\\marketplace\\terra-university.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/terra-university",
+        "../../docs/marketplace/terra-university.md"
+      ]
+    },
+    "TerraFusion-PublicRecords": {
+      "name": "TerraFusion-PublicRecords",
+      "path": "workspaces\\marketplace\\TerraFusion-PublicRecords.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/TerraFusion-PublicRecords",
+        "../../docs/marketplace/TerraFusion-PublicRecords.md"
+      ]
+    },
+    "TerraFusionIDE": {
+      "name": "TerraFusionIDE",
+      "path": "workspaces\\marketplace\\TerraFusionIDE.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/TerraFusionIDE",
+        "../../docs/marketplace/TerraFusionIDE.md"
+      ]
+    },
+    "testing": {
+      "name": "testing",
+      "path": "workspaces\\marketplace\\testing.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": []
+    },
+    "unified-system": {
+      "name": "unified-system",
+      "path": "workspaces\\marketplace\\unified-system.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders",
+        "2 Node.js projects"
+      ],
+      "folders": 5,
+      "launch_configs": 3,
+      "settings": true,
+      "extensions": 5,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": [
+        "../../tests/marketplace/unified-system",
+        "../../docs/marketplace/unified-system.md"
+      ]
+    },
+    "ai-systems": {
+      "name": "ai-systems",
+      "path": "workspaces\\platform\\ai-systems.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders"
+      ],
+      "folders": 5,
+      "launch_configs": 1,
+      "settings": true,
+      "extensions": 4,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": []
+    },
+    "auth": {
+      "name": "auth",
+      "path": "workspaces\\platform\\auth.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders"
+      ],
+      "folders": 5,
+      "launch_configs": 1,
+      "settings": true,
+      "extensions": 4,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": []
+    },
+    "consciousness": {
+      "name": "consciousness",
+      "path": "workspaces\\platform\\consciousness.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders"
+      ],
+      "folders": 5,
+      "launch_configs": 1,
+      "settings": true,
+      "extensions": 4,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": []
+    },
+    "development": {
+      "name": "development",
+      "path": "workspaces\\platform\\development.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders"
+      ],
+      "folders": 5,
+      "launch_configs": 1,
+      "settings": true,
+      "extensions": 4,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": []
+    },
+    "engines": {
+      "name": "engines",
+      "path": "workspaces\\platform\\engines.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders"
+      ],
+      "folders": 5,
+      "launch_configs": 1,
+      "settings": true,
+      "extensions": 4,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": []
+    },
+    "infrastructure": {
+      "name": "infrastructure",
+      "path": "workspaces\\platform\\infrastructure.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders"
+      ],
+      "folders": 5,
+      "launch_configs": 1,
+      "settings": true,
+      "extensions": 4,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": []
+    },
+    "monitoring": {
+      "name": "monitoring",
+      "path": "workspaces\\platform\\monitoring.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders"
+      ],
+      "folders": 5,
+      "launch_configs": 1,
+      "settings": true,
+      "extensions": 4,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": []
+    },
+    "performance": {
+      "name": "performance",
+      "path": "workspaces\\platform\\performance.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders"
+      ],
+      "folders": 5,
+      "launch_configs": 1,
+      "settings": true,
+      "extensions": 4,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": []
+    },
+    "security": {
+      "name": "security",
+      "path": "workspaces\\platform\\security.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders"
+      ],
+      "folders": 5,
+      "launch_configs": 1,
+      "settings": true,
+      "extensions": 4,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": []
+    },
+    "services": {
+      "name": "services",
+      "path": "workspaces\\platform\\services.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders"
+      ],
+      "folders": 5,
+      "launch_configs": 1,
+      "settings": true,
+      "extensions": 4,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": []
+    },
+    "specialized": {
+      "name": "specialized",
+      "path": "workspaces\\platform\\specialized.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders"
+      ],
+      "folders": 5,
+      "launch_configs": 1,
+      "settings": true,
+      "extensions": 4,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": []
+    },
+    "trust": {
+      "name": "trust",
+      "path": "workspaces\\platform\\trust.code-workspace",
+      "category": "core",
+      "status": "healthy",
+      "issues": [],
+      "strengths": [
+        "5 valid folders"
+      ],
+      "folders": 5,
+      "launch_configs": 1,
+      "settings": true,
+      "extensions": 4,
+      "existing_folders": 5,
+      "missing_folders": [],
+      "package_json_folders": []
+    }
+  },
+  "categories": {
+    "frontend": {
+      "count": 0,
+      "healthy": 0,
+      "issues": []
+    },
+    "marketplace": {
+      "count": 0,
+      "healthy": 0,
+      "issues": []
+    },
+    "platform": {
+      "count": 0,
+      "healthy": 0,
+      "issues": []
+    },
+    "core": {
+      "count": 57,
+      "healthy": 57,
+      "issues": []
+    }
+  },
+  "development_environment": {
+    "node_js": "v24.6.0",
+    "python": "Python 3.12.10",
+    "rust": "rustc 1.88.0 (6b00bc388 2025-06-23)",
+    "docker": "Docker version 28.4.0, build d8eb465",
+    "git": "git version 2.51.0.windows.2"
+  }
+}

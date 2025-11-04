@@ -1,0 +1,9 @@
+{
+    "map": {
+        "descr": "The Network Analyst toolbox contains tools that perform network analysis and network dataset maintenance. With the tools in this toolbox, you can maintain network datasets that model transportation networks and perform route, closest facility, service area, origin-destination cost matrix, vehicle routing problem, and location-allocation network analyses on transportation networks. Use the tools in this toolbox whenever you want to perform an analysis on a transportation network.",
+        "title": "Network Analyst Tools",
+        "toolset1.name": "Analysis",
+        "toolset2.name": "Network Dataset",
+        "toolset3.name": "Turn Feature Class"
+    }
+}

@@ -1,0 +1,82 @@
+<ArrayOfGPEnvironment xmlns:typens="http://www.esri.com/schemas/ArcGIS/9.3" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="typens:ArrayOfGPEnvironment">
+  <GPEnvironment xsi:type="typens:GPEnvironment">
+    <Name>baDataSource</Name>
+    <DisplayName>Data Source</DisplayName>
+    <Category>Business Analyst</Category>
+    <Value xsi:type="typens:GPString"/>
+    <DataTypeName xsi:type="typens:GPDataTypeName">
+      <Name>GPString</Name>
+      <DisplayName>GPString</DisplayName>
+      <Description>GPString</Description>
+      <Category>Data Type</Category>
+      <FactoryCLSID xsi:type="typens:UID">
+        <UID xsi:type="xs:string">{E41CFD44-5741-4F2B-8ACE-1A49E146D329}</UID>
+      </FactoryCLSID>
+    </DataTypeName>
+    <DisplayOrder>121</DisplayOrder>
+    <ControlCLSID xsi:type="typens:UID">
+      <UID xsi:type="xs:string">{7EFD7FA6-895A-4797-B6D0-95329B0BC131}</UID>
+    </ControlCLSID>
+    <ParamDependencyArray xsi:type="typens:ArrayOfString"/>
+    <Altered>false</Altered>
+  </GPEnvironment>
+  <GPEnvironment xsi:type="typens:GPEnvironment">
+    <Name>baNetworkSource</Name>
+    <DisplayName>Network Source</DisplayName>
+    <Category>Business Analyst</Category>
+    <Value xsi:type="typens:GPString"/>
+    <DataTypeName xsi:type="typens:GPDataTypeName">
+      <Name>GPString</Name>
+      <DisplayName>GPString</DisplayName>
+      <Description>GPString</Description>
+      <Category>Data Type</Category>
+      <FactoryCLSID xsi:type="typens:UID">
+        <UID xsi:type="xs:string">{E41CFD44-5741-4F2B-8ACE-1A49E146D329}</UID>
+      </FactoryCLSID>
+    </DataTypeName>
+    <DisplayOrder>122</DisplayOrder>
+    <ControlCLSID xsi:type="typens:UID">
+      <UID xsi:type="xs:string">{B0B74DCC-FA93-45B9-93CA-7C11A457EF76}</UID>
+    </ControlCLSID>
+    <ParamDependencyArray xsi:type="typens:ArrayOfString"/>
+    <Altered>false</Altered>
+  </GPEnvironment>
+  <GPEnvironment xsi:type="typens:GPEnvironment">
+    <Name>baUseDetailedAggregation</Name>
+    <DisplayName>Use Detailed Aggregation</DisplayName>
+    <Category>Business Analyst</Category>
+    <Value xsi:type="typens:GPBoolean">
+      <Value>false</Value>
+    </Value>
+    <Domain xsi:type="typens:GPCodedValueDomain">
+      <GPDomainPropertiesArray xsi:type="typens:ArrayOfGPCodedValueDomainProperty">
+        <GPCodedValueDomainProperty xsi:type="typens:GPCodedValueDomainProperty">
+          <Name name="DETAILED">DETAILED</Name>
+          <Value xsi:type="typens:GPBoolean">
+            <Value>true</Value>
+          </Value>
+        </GPCodedValueDomainProperty>
+        <GPCodedValueDomainProperty xsi:type="typens:GPCodedValueDomainProperty">
+          <Name name="STANDARD">STANDARD</Name>
+          <Value xsi:type="typens:GPBoolean">
+            <Value>false</Value>
+          </Value>
+        </GPCodedValueDomainProperty>
+      </GPDomainPropertiesArray>
+    </Domain>
+    <DataTypeName xsi:type="typens:GPDataTypeName">
+      <Name>GPBoolean</Name>
+      <DisplayName>Boolean</DisplayName>
+      <Description>Boolean data type</Description>
+      <Category>Data Type</Category>
+      <FactoryCLSID xsi:type="typens:UID">
+        <UID xsi:type="xs:string">{E41CFD44-5741-4F2B-8ACE-1A49E146D329}</UID>
+      </FactoryCLSID>
+    </DataTypeName>
+    <DisplayOrder>-1</DisplayOrder>
+    <ControlCLSID xsi:nil="true"/>
+    <ParamDependencyArray xsi:type="typens:ArrayOfString"/>
+    <Altered>false</Altered>
+  </GPEnvironment>
+</ArrayOfGPEnvironment>
+

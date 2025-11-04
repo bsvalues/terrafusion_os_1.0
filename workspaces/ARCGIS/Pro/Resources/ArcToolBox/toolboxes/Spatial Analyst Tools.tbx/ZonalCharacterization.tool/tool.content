@@ -1,0 +1,395 @@
+{
+    "type": "FunctionTool",
+    "guid": "{e653ad76-d9bb-4b41-aba2-6fd1a2b3fe46}",
+    "displayname": "$rc:title",
+    "helpcontent": "8180008",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10"
+    ],
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "params": {
+        "in_zone_raster_or_features": {
+            "display_order": "0",
+            "displayname": "$rc:in_zone_raster_or_features.title",
+            "datatype": {
+                "type": "GPSAGeoData"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "true",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "DEFeatureClass",
+                    "GPFeatureLayer",
+                    "DETin",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Text"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_zone_raster_or_features.descr"
+        },
+        "in_value_rasters_statistics": {
+            "display_order": "2",
+            "control_guid": "{1AA9A769-D3F3-4EB0-85CB-CC07C79313C8}",
+            "displayname": "$rc:in_value_rasters_statistics.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPSAGeoData",
+                        "displayname": "$rc:in_value_rasters_statistics.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:in_value_rasters_statistics.dt.title2"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:in_value_rasters_statistics.dt.title3"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "GPCompositeDomain",
+                        "items": [
+                            {
+                                "type": "GPCodedValueDomain",
+                                "items": [
+                                    {
+                                        "value": "MEAN",
+                                        "code": "$rc:in_value_rasters_statistics.domain.item2.item1.MEAN"
+                                    },
+                                    {
+                                        "value": "MAJORITY",
+                                        "code": "$rc:in_value_rasters_statistics.domain.item2.item1.MAJORITY"
+                                    },
+                                    {
+                                        "value": "MAJORITY_COUNT",
+                                        "code": "$rc:in_value_rasters_statistics.domain.item2.item1.MAJORITY_COUNT"
+                                    },
+                                    {
+                                        "value": "MAJORITY_PERCENT",
+                                        "code": "$rc:in_value_rasters_statistics.domain.item2.item1.MAJORITY_PERCENT"
+                                    },
+                                    {
+                                        "value": "MAXIMUM",
+                                        "code": "$rc:in_value_rasters_statistics.domain.item2.item1.MAXIMUM"
+                                    },
+                                    {
+                                        "value": "MEDIAN",
+                                        "code": "$rc:in_value_rasters_statistics.domain.item2.item1.MEDIAN"
+                                    },
+                                    {
+                                        "value": "MINIMUM",
+                                        "code": "$rc:in_value_rasters_statistics.domain.item2.item1.MINIMUM"
+                                    },
+                                    {
+                                        "value": "MINORITY",
+                                        "code": "$rc:in_value_rasters_statistics.domain.item2.item1.MINORITY"
+                                    },
+                                    {
+                                        "value": "MINORITY_COUNT",
+                                        "code": "$rc:in_value_rasters_statistics.domain.item2.item1.MINORITY_COUNT"
+                                    },
+                                    {
+                                        "value": "MINORITY_PERCENT",
+                                        "code": "$rc:in_value_rasters_statistics.domain.item2.item1.MINORITY_PERCENT"
+                                    },
+                                    {
+                                        "value": "PERCENTILE",
+                                        "code": "$rc:in_value_rasters_statistics.domain.item2.item1.PERCENTILE"
+                                    },
+                                    {
+                                        "value": "RANGE",
+                                        "code": "$rc:in_value_rasters_statistics.domain.item2.item1.RANGE"
+                                    },
+                                    {
+                                        "value": "STD",
+                                        "code": "$rc:in_value_rasters_statistics.domain.item2.item1.STD"
+                                    },
+                                    {
+                                        "value": "SUM",
+                                        "code": "$rc:in_value_rasters_statistics.domain.item2.item1.SUM"
+                                    },
+                                    {
+                                        "value": "VARIETY",
+                                        "code": "$rc:in_value_rasters_statistics.domain.item2.item1.VARIETY"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "description": "$rc:in_value_rasters_statistics.descr"
+        },
+        "out_statistics_table": {
+            "direction": "out",
+            "display_order": "3",
+            "displayname": "$rc:out_statistics_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "description": "$rc:out_statistics_table.descr"
+        },
+        "out_statistics_features": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "4",
+            "displayname": "$rc:out_statistics_features.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_statistics_features.descr"
+        },
+        "zone_field": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:zone_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "guid": "{4B6CA858-5716-4AC3-A2EE-70EE2D29C1BD}",
+                "userasterfields": "true",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "OID",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_zone_raster_or_features"
+            ],
+            "description": "$rc:zone_field.descr"
+        },
+        "ignore_nodata": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:ignore_nodata.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "DATA"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NODATA"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:ignore_nodata.descr"
+        },
+        "percentile_values": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:percentile_values.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPDouble"
+                }
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                },
+                "high": {
+                    "allow": "true",
+                    "val": "100"
+                }
+            },
+            "depends": [
+                "in_zone_raster_or_features",
+                "in_value_rasters_statistics"
+            ],
+            "description": "$rc:percentile_values.descr"
+        },
+        "percentile_interpolation_type": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:percentile_interpolation_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "AUTO_DETECT",
+                        "code": "$rc:percentile_interpolation_type.domain.AUTO_DETECT"
+                    },
+                    {
+                        "value": "NEAREST",
+                        "code": "$rc:percentile_interpolation_type.domain.NEAREST"
+                    },
+                    {
+                        "value": "LINEAR",
+                        "code": "$rc:percentile_interpolation_type.domain.LINEAR"
+                    }
+                ]
+            },
+            "value": "AUTO_DETECT",
+            "description": "$rc:percentile_interpolation_type.descr"
+        },
+        "circular_calculation": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:circular_calculation.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "ARITHMETIC"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CIRCULAR"
+                    }
+                ]
+            },
+            "depends": [
+                "in_zone_raster_or_features",
+                "in_value_rasters_statistics"
+            ],
+            "value": "false",
+            "description": "$rc:circular_calculation.descr"
+        },
+        "circular_wrap_value": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:circular_wrap_value.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "depends": [
+                "in_value_rasters_statistics",
+                "out_statistics_features"
+            ],
+            "value": "360",
+            "description": "$rc:circular_wrap_value.descr"
+        },
+        "process_as_multidimensional": {
+            "type": "optional",
+            "display_order": "11",
+            "displayname": "$rc:process_as_multidimensional.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "CURRENT_SLICE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ALL_SLICES"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:process_as_multidimensional.descr"
+        },
+        "add_zone_attributes": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:add_zone_attributes.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "ZONE_FIELD_ONLY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ALL"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:add_zone_attributes.descr"
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "cellSize",
+        "cellSizeProjectionMethod",
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "mask",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "qualifiedFieldNames",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "transferDomains",
+        "workspace"
+    ]
+}

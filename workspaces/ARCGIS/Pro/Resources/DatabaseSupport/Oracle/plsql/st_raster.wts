@@ -1,0 +1,143 @@
+/* $Id: st_raster.sts,v 1.1, 2013-02-04 22:10:13Z, Zhiguang Han$ */
+create or replace type SE_RASTERPROPERTY oid '4932B57B0D3C49DFBC35754E2B58F8FB' wrapped 
+a000000
+1
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+d
+8a a6
+VMFLBde+DaLPaFEJyriy7eUmiQowg5n0dLhc55/wKMB0y1KynuebKLiynvTDuHQrpb+bwDLL
+7glpUKXH0jJcZzk4SjX/HEo1YKtg6Mnse2dsnkE/qDhKImvnAWf76r+xykuRuFov5RosFaYd
+tpkuDqsu9jmmFSocNQ==
+
+/
+create or replace type SE_RASTERPROPERTY_LIST oid '19D4571AB9B34F85AE2B05F05500D469'as varray(1048576) of SE_RASTERPROPERTY;
+/
+create or replace type ST_RASTERBAND oid 'A5262FBBF34E46C2A03C22EC7EF04DF6' wrapped 
+a000000
+1
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+d
+15d e7
+J2XmNyl5iLtl8UF9rL0jdMlaJkcwgzJyNcvhqHREabFBUQwuNDfVOcXDSQ559EUG+cRLUmUt
+mcFk52TuHxCa86JbW8xdPnc2a/ZrNi2CCz2zRIisZxPiBDIouM7XyxMDaVxHhUmEL8/12PM4
+8IAN3/sf0K7yo2FLykNR/eOWDS6knkpDudnraAZ5IehZMkO0q0mw4midNA7V/jBYhPn+/dqI
+LHKYKCq1Lhg=
+
+/
+create or replace type ST_RASTERBAND_LIST oid 'BCCA229805654B6495CE184A898AD06B' as varray(4096) of ST_RASTERBAND;
+/
+create or replace type ST_RASTERBLOCK oid '071925E1CA0B495080E6B8B121D4B052' wrapped 
+a000000
+1
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+d
+c4 ba
+Zb3+hl1jV0f3mqQLK2QVggtcjTcwgzL/f8vhf3Q2ZyeH7tMUP2dDVznL3H/A3+bD+bWWS1OM
+pvRiv2FUervypO5oa4fJt/0I3QHlFGpM/eD1MgbcK+LFtNPNPH/Eq77ZWbIjKyQU8RLwtplH
+3vofg++jOoUoGNe1CBBixdbqR1EUitATH4/6Yrc=
+
+/
+create or replace type ST_RASTERAUX oid 'EC42765E293348A08A63F08A04E58039' wrapped 
+a000000
+1
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+d
+88 9e
+MtbUUCwpqR6eqGtfBKAQQe3D3VEwgy5ff56pfHSmkBDpYESqj4mgNdUl8uyp3HO1ll9T0jza
+3E9taye22Jesnx3suT7mfPP/g9jCpisW9bhQ83CSXhV2E7/cl5f92QbT0viB0puq9fH/5tGL
+MjD7Wdks6Q==
+
+/
+create or replace type ST_RASTER oid '1FA71CA2810A4E16B84B9F6D9BC35EFB' wrapped 
+a000000
+1
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+d
+13b1 43a
+LRkwCu33hdSZxn08trLw6CzNH5swg5VU2cIFynTNew+vZVgI5QXifCtIEX98emUzxbW1H5S0
+Si0exOvfgvp050pKFMiicTs3VP5ld3t8RiP+j0Q4GQTIuUN5dQOiQyQ3vpmosclVmbGgLNGk
+zzf6aVpxpgwkJi/FB8j0UBUKWG3geYk5hle0h2gW9myBDLgF2HmLx8VtV4AjHRnHUkw1pKSl
+rzLs6sqsyuJw8suTQ+ZDMWzj8SCYJXuGWF5AaO2RStVYV7knNWizh1E07wl/Yx6H7PfaH8re
+vTiVt6szDosSYImfKdvwBLgZyn7d5sT9S4dXCabgiXFRk24BqgdHYFXBjcZ1uK10lbWb245Y
+pEEwqmquvQHLvfThVoJ6B8tK7vrsfHCfBVxehNmhZEdnLq9DQW3mseNG6mGCis1BMnvWc5mJ
+p3zEqsmIVICQAEedMRCUpTbztMTe3pDk9ak20XtZTTH/iWnoGpIvHZm57bVFz1gf4y6ohGON
+UtUOVds5C5ylZWWq7IvDWSkWjWNugXuKSK6K5nFR7dUYkKdDdvWpM/VAcy/2QJV1cQWjPzyz
+x3CICPGY60LJm7nOdmRys1lhiHlrUc0IMx9TSZQcbTURfvF3jfdSZdlaKgQ9XvTckuOdSLTR
+laMIGz+0wn9jWS1RIPLu1oNS3GhZb/7LJQifOw+ot6er1TSVOH4P/kmtNr3ifKO9/P9q5w6u
+V0rzZOSnzcf4E6OaojrjhJqtSa0Ic2if/QabQxJ7mRL07SJg1rLQIXUvwTIDb/3aZMxsoLHv
+IyNx/UCTj1n7pH0VkVgRZTQa6BkKEq6fBUh9B49y6IaM9/rnFSvNQuPWRSxQ5fJb7RoKAwj6
+42b4Cv0Q3yUMgeSRf8bBaQotMUY+tJzT2nNuDHpxZFJztDgonG8szbpQt1spwdH/Wz21Tust
+CchzEHfeaLtrvVi9MfTxJDPrmJvQRC1OfXRk669+LMQHPAmtfaSQNKUHIiy9M1MP/ZUOpTnx
+F0L+0OabeBU2CjOu1isQMEuawoiPpRx+ALVbM2JLvqgQB7DDCQiGBSDXG6tS
+
+/

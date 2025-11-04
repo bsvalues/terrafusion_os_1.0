@@ -1,0 +1,217 @@
+openapi: 3.0.3
+info:
+  title: Monitoring API
+  description: System monitoring and observability APIs
+  version: 1.0.0
+  contact:
+    name: TerraFusion Government OS API Support
+    email: monitoring-api@terrafusion.gov
+    url: https://docs.terrafusion.gov/platform/monitoring
+  license:
+    name: Government Use License
+    url: https://terrafusion.gov/licenses/government-api
+  termsOfService: https://terrafusion.gov/terms/api-usage
+servers:
+- url: https://api.terrafusion.gov/api/v1/monitoring
+  description: Production TerraFusion Government API
+- url: https://staging-api.terrafusion.gov/api/v1/monitoring
+  description: Staging Environment
+- url: https://dev-api.terrafusion.gov/api/v1/monitoring
+  description: Development Environment
+paths:
+  /metrics:
+    get:
+      tags:
+      - monitoring
+      summary: System metrics
+      description: System metrics - System monitoring and observability APIs
+      operationId: get__metrics
+      security:
+      - OAuth2:
+        - monitoring:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /logs:
+    get:
+      tags:
+      - monitoring
+      summary: Log aggregation
+      description: Log aggregation - System monitoring and observability APIs
+      operationId: get__logs
+      security:
+      - OAuth2:
+        - monitoring:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /alerts:
+    post:
+      tags:
+      - monitoring
+      summary: Alert management
+      description: Alert management - System monitoring and observability APIs
+      operationId: post__alerts
+      security:
+      - OAuth2:
+        - monitoring:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /dashboards:
+    get:
+      tags:
+      - monitoring
+      summary: Monitoring dashboards
+      description: Monitoring dashboards - System monitoring and observability APIs
+      operationId: get__dashboards
+      security:
+      - OAuth2:
+        - monitoring:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: object
+    HealthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - healthy
+          - degraded
+          - unhealthy
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        dependencies:
+          type: object
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
+          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          scopes:
+            monitoring:read: Read access to monitoring resources
+            monitoring:write: Write access to monitoring resources
+            monitoring:admin: Administrative access to monitoring
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+security:
+- OAuth2:
+  - monitoring:read
+- ApiKey: []
+tags:
+- name: monitoring
+  description: Monitoring operations
+  externalDocs:
+    description: Find out more about monitoring
+    url: https://docs.terrafusion.gov/platform/monitoring

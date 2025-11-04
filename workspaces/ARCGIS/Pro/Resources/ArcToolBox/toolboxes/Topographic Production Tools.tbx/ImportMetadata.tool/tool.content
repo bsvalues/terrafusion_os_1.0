@@ -1,0 +1,78 @@
+{
+    "type": "FunctionTool",
+    "guid": "{26B17338-CB00-45A9-AB9C-858C2E0122C9}/ImportMetadata",
+    "displayname": "$rc:title",
+    "helpcontent": "46040003",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "49"
+    ],
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "files": {
+            "displayname": "$rc:files.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "DEFile"
+                }
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "xml"
+                ]
+            },
+            "description": "$rc:files.descr"
+        },
+        "in_cell_features": {
+            "displayname": "$rc:in_cell_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:in_cell_features.descr"
+        },
+        "out_cells": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_cells.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "in_cell_features"
+            ]
+        },
+        "metadata_type": {
+            "type": "optional",
+            "displayname": "$rc:metadata_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MGCP",
+                        "code": "$rc:metadata_type.domain.MGCP"
+                    },
+                    {
+                        "value": "MUVD",
+                        "code": "$rc:metadata_type.domain.MUVD"
+                    }
+                ]
+            },
+            "value": "MGCP",
+            "description": "$rc:metadata_type.descr"
+        }
+    }
+}

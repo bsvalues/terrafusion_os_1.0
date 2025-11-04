@@ -1,0 +1,20 @@
+{
+    "map": {
+        "assetgroup.descr": "The asset group to which the asset type belongs.",
+        "assetgroup.title": "Asset Group",
+        "assettype.descr": "The asset type that will receive the terminal configuration.",
+        "assettype.title": "Asset Type",
+        "description": "Assigns a  terminal configuration to an asset type in a utility network.",
+        "device_featureclass.descr": "The utility network feature class or table to which the asset type belongs.",
+        "device_featureclass.title": "Input Table",
+        "domain_network.descr": "The domain network to which the asset type belongs.",
+        "domain_network.title": "Domain Network",
+        "in_utility_network.descr": "The utility network containing the terminal configuration that will be assigned to a specific asset type.",
+        "in_utility_network.title": "Input Utility Network",
+        "out_utility_network.title": "Updated Utility Network",
+        "summary": "<xdoc><p>Assigns a terminal configuration to an asset type in a utility network.</p><p>Once a terminal configuration has been established, you can use this tool to set the terminal configuration for a utility network asset type of a device feature class or junction object table. When a terminal configuration is assigned to an asset type, a feature created with that asset type includes terminals. More specifically, the feature includes the terminals specified for the terminal configuration.</p><p>To understand what underlying terminals are provided for each asset type, review the <span class=\"esri_uicontrol\">Terminal Configuration</span> section on the <span class=\"esri_uicontrol\">Network Properties</span> dialog box of the utility network layer properties.</p><note type=\"caution\"/><p group=\"note\">The default terminal configuration for all features is <span class=\"esri_uicontrol\">Single terminal</span>. Assigning a terminal configuration to an asset type is permanent and cannot be changed after the network topology is enabled for the first time. This applies even if the network topology is in a disabled state.</p></xdoc>",
+        "terminal_configuration.descr": "The terminal configuration that will be assigned to the asset type.",
+        "terminal_configuration.title": "Terminal Configuration",
+        "title": "Set Terminal Configuration"
+    }
+}

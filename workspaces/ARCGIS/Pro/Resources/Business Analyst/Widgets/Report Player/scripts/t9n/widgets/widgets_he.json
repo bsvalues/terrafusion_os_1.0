@@ -1,0 +1,78 @@
+{
+  "calcite": {
+    "reset": "איפוס",
+    "action": {
+      "sort": "מיין"
+    },
+    "buttons": {
+      "save": "שמור",
+      "edit": "עריכה",
+      "done": "בוצע",
+      "apply": "בצע",
+      "cancel": "ביטול",
+      "close": "סגירה"
+    },
+    "ColorPicker": {
+      "selectColor": "בחר צבע",
+      "noColorSpecified": "לא נבחר צבע",
+      "transparent": "שקוף",
+      "colorTooltip": "<p>Hex: ${hex}</p><p>RGB: ${r}, ${g}, ${b}</p>",
+      "recent": "לאחרונה",
+      "standard": "סטנדרטי",
+      "savedColors": "צבעים שנשמרו",
+      "advanced": "מתקדם"
+    },
+    "DatePickerLink": {
+      "enterDate": "הזן תאריך"
+    },
+    "PaginationContinuous": {
+      "next": "הבא",
+      "previous": "קודם"
+    }
+  },
+  "ImageNavigator": {
+    "paginationLabel": "${n} מתוך ${m}",
+    "noImage": "אין תמונות שנשמרו כעת באתר זה",
+    "previewNotAvailable": "תצוגה מקדימה אינה זמינה"
+  },
+  "PageNavigator": {
+    "currentPageOutOfN": "עמוד ${current} מתוך ${total}"
+  },
+  "PanoramicViewer": {
+    "image-viewer-close": "סגירה",
+    "image-viewer-fullscreen": "מסך מלא",
+    "image-viewer-minimize": "מזער",
+    "image-viewer-title": "מציג תמונות",
+    "image-viewer-show-caption": "הצג כתובית",
+    "image-viewer-hide-caption": "הסתר"
+  },
+  "TextBox": {
+    "error_numberExpected": "המערכת מצפה למספר",
+    "error_range": "ערך צפוי מ-${0} עד ${1}"
+  },
+  "charts": {
+    "histogram": {
+      "minValue": "מינ:<br>${0}",
+      "maxValue": "מקס:<br>${0}",
+      "thisAreaValue": "אזור זה: ${0}",
+      "medianValue": "חציון:<br>${0}",
+      "q1Value": "Q1:<br>${0}",
+      "q3Value": "Q3:<br>${0}",
+      "percentile": "אחוזון ${percent}:<br>${0}",
+      "percentileBottom": "${percent}% תחתון:<br>${0}",
+      "percentileTop": "${percent}% עליון:<br>${0}",
+      "percentile_singleLine": "אחוזון ${percent}: ${0}",
+      "percentileBottom_singleLine": "${percent}% תחתון: ${0}",
+      "percentileTop_singleLine": "${percent}% עליון: ${0}",
+      "sd_singleLine": "${sd} SD: ${0}",
+      "tooltip": {
+        "range_single": "<b>${level}</b> עם ערך בטווח <b>${value}</b> : <b>1</b>",
+        "range_single_precise": "<b>${areaName}</b> בעל ערך של <b>${value}</b>.",
+        "range_multi": "<b>${level}</b> עם ערך בטווח <b>${value}</b> : <b>${count}</b>",
+        "thisArea": "<b>לאזור זה</b> יש ערך של <b>${value}</b>.",
+        "percentileLower": "ל-<b>${percent}%</b> מתוך <b>${level}</b> יש ערך מעל <b>${value}</b>.",
+        "percentileUpper": "ל-<b>${percent}%</b> מתוך <b>${level}</b> יש ערך מתחת ל-<b>${value}</b>."
+      }
+    }
+  }
+}

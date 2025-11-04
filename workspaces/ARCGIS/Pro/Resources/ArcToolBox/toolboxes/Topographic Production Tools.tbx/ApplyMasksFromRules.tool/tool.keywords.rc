@@ -1,0 +1,17 @@
+{
+    "set": [
+        "apply masks",
+        "cartographic refinement",
+        "cartography",
+        "defense",
+        "defense mapping",
+        "masking",
+        "production",
+        "production mapping",
+        "rules",
+        "topo",
+        "topographic",
+        "topographic production",
+        "visual specification"
+    ]
+}

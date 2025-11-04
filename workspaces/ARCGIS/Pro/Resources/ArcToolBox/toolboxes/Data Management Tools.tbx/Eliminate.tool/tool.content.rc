@@ -1,0 +1,16 @@
+{
+    "map": {
+        "description": "Eliminates polygons by merging them with neighboring polygons that have the largest area or the longest shared border. Eliminate is often used to remove small sliver polygons that are the result of overlay operations, such as those performed by Intersect and Union tools.",
+        "ex_features.descr": "An input polyline or polygon feature class or layer that defines polygon boundaries, or portions thereof, that will not be eliminated.",
+        "ex_features.title": "Exclusion Layer",
+        "ex_where_clause.descr": "An SQL expression that will be used to identify features that will not be altered.",
+        "ex_where_clause.title": "Exclusion Expression",
+        "in_features.descr": "The layer with the polygons that will be merged with neighboring polygons.",
+        "in_features.title": "Input Layer",
+        "out_feature_class.descr": "The feature class to be created.",
+        "out_feature_class.title": "Output Feature Class",
+        "selection.descr": "<xdoc><p>Specifies whether the selected polygon will be merged with a polygon with the longest shared border or the largest area.</p><ul><li>Checked—The selected polygon will be merged with the neighboring polygon with the longest shared border. This is the default.</li><li>Unchecked—The selected polygon will be merged with the neighboring polygon with the largest area.</li></ul></xdoc>",
+        "selection.title": "Eliminating polygon by border",
+        "title": "Eliminate"
+    }
+}

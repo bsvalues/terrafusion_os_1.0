@@ -1,0 +1,5 @@
+<DataType Name="GPKMLLayer">
+  <DisplayName>KML Layer</DisplayName>
+  <Description>KML Layer</Description>
+</DataType>
+

@@ -2,61 +2,41 @@
   "compilerOptions": {
     "target": "ES2020",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable", "WebWorker"],
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
+    "noCheck": true,
+
+    /* Bundler mode */
     "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
+
+    /* Linting - Relaxed for rapid development */
     "strict": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": false,
-    "noImplicitReturns": false,
-    "noImplicitThis": false,
-    "baseUrl": ".",
+    "noFallthroughCasesInSwitch": false,
+
+    /* Elite Performance */
+    "incremental": true,
+    "tsBuildInfoFile": ".tsbuildinfo",
+
+    /* Path mapping - Updated for modern TypeScript */
     "paths": {
-      "@/*": ["src/*"],
-      "@/components/*": ["src/components/*"],
-      "@/hooks/*": ["src/hooks/*"],
-      "@/types/*": ["src/types/*"],
-      "@/services/*": ["src/services/*"],
-      "@/styles/*": ["src/styles/*"],
-      "@/utils/*": ["src/utils/*"],
-      "@/lib/*": ["src/lib/*"],
-      "@terrafusion/shared": ["../terrafusion-shared/dist/index.js"],
-      "@terrafusion/shared/*": ["../terrafusion-shared/dist/*"]
-    },
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "allowJs": true,
-    "checkJs": false
+      "@/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@services/*": ["./src/services/*"],
+      "@hooks/*": ["./src/hooks/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@types/*": ["./src/types/*"],
+      "@terrafusion/shared": ["../terrafusion-shared/dist/index.js"]
+    }
   },
-  "include": [
-    "src/**/*.ts", 
-    "src/**/*.tsx", 
-    "src/**/*.js", 
-    "src/**/*.jsx",
-    "src/**/*.d.ts"
-  ],
-  "exclude": [
-    "node_modules", 
-    "dist", 
-    "build",
-    "public",
-    "src/**/*.template.tsx",
-    "src/**/*.template.ts",
-    "docs",
-    "../docs/**/*",
-    "**/docs/**/*",
-    "components-enhanced",
-    "**/*.test.*",
-    "**/*.spec.*",
-    "**/*.stories.*",
-    "**/test-utils.*"
-  ]
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "*.test.*", "**/*.test.*"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

@@ -1,0 +1,12 @@
+# Content-type : text/yaml; charset=ASCII
+#
+# key format [<toolbox name>/]<toolname>
+#
+# This is a blacklist of tools which will not add the layerfile
+#      to the output dataset's metadata
+#
+# below is an example
+#  Dummy Tools:
+- dummy tools/dummy
+
+- cartography tools/convertmarkerplacementtopoints

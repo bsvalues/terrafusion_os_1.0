@@ -1,0 +1,230 @@
+<?xml version="1.0"?>
+<xs:schema xmlns="http://www.esri.com/schemas/ArcGIS/3.4.0" targetNamespace="http://www.esri.com/schemas/ArcGIS/3.4.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:complexType name="PropertySetProperty">
+    <xs:sequence>
+      <xs:element name="Key" type="xs:string" />
+      <xs:element minOccurs="0" name="Value" nillable="true" type="xs:anyType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfPropertySetProperty">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="PropertySetProperty" type="PropertySetProperty" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="PropertySet">
+    <xs:sequence>
+      <xs:element name="PropertyArray" type="ArrayOfPropertySetProperty" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfPropertySet">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="PropertySet" type="PropertySet" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="XMLPersistedObject">
+    <xs:sequence>
+      <xs:element name="Bytes" type="xs:base64Binary" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="NumericFormat">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="RoundingOption" type="esriRoundingOptionEnum" />
+      <xs:element minOccurs="0" name="RoundingValue" type="xs:int" />
+      <xs:element minOccurs="0" name="AlignmentOption" type="esriNumericAlignmentEnum" />
+      <xs:element minOccurs="0" name="AlignmentWidth" type="xs:int" />
+      <xs:element minOccurs="0" name="UseSeparator" type="xs:boolean" />
+      <xs:element minOccurs="0" name="ZeroPad" type="xs:boolean" />
+      <xs:element minOccurs="0" name="ShowPlus" type="xs:boolean" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Name" abstract="true">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="NameString" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfInt">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Int" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfString">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="String" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfDouble">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Double" type="xs:double" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfAnyType">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="AnyType" type="xs:anyType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="esriUnits">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="esriUnknownUnits" />
+      <xs:enumeration value="esriInches" />
+      <xs:enumeration value="esriPoints" />
+      <xs:enumeration value="esriFeet" />
+      <xs:enumeration value="esriYards" />
+      <xs:enumeration value="esriMiles" />
+      <xs:enumeration value="esriNauticalMiles" />
+      <xs:enumeration value="esriMillimeters" />
+      <xs:enumeration value="esriCentimeters" />
+      <xs:enumeration value="esriMeters" />
+      <xs:enumeration value="esriKilometers" />
+      <xs:enumeration value="esriDecimalDegrees" />
+      <xs:enumeration value="esriDecimeters" />
+      <xs:enumeration value="esriIntInches" />
+      <xs:enumeration value="esriIntFeet" />
+      <xs:enumeration value="esriIntYards" />
+      <xs:enumeration value="esriIntMiles" />
+      <xs:enumeration value="esriIntNauticalMiles" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="esriAreaUnits">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="esriUnknownAreaUnits" />
+      <xs:enumeration value="esriSquareInches" />
+      <xs:enumeration value="esriSquareFeet" />
+      <xs:enumeration value="esriSquareYards" />
+      <xs:enumeration value="esriAcres" />
+      <xs:enumeration value="esriSquareMiles" />
+      <xs:enumeration value="esriSquareMillimeters" />
+      <xs:enumeration value="esriSquareCentimeters" />
+      <xs:enumeration value="esriSquareDecimeters" />
+      <xs:enumeration value="esriSquareMeters" />
+      <xs:enumeration value="esriAres" />
+      <xs:enumeration value="esriHectares" />
+      <xs:enumeration value="esriSquareKilometers" />
+      <xs:enumeration value="esriSquareInchesUS" />
+      <xs:enumeration value="esriSquareFeetUS" />
+      <xs:enumeration value="esriSquareYardsUS" />
+      <xs:enumeration value="esriAcresUS" />
+      <xs:enumeration value="esriSquareMilesUS" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="esriRoundingOptionEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="esriRoundNumberOfDecimals" />
+      <xs:enumeration value="esriRoundNumberOfSignificantDigits" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="esriNumericAlignmentEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="esriAlignRight" />
+      <xs:enumeration value="esriAlignLeft" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="esriJobMessageType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="esriJobMessageTypeInformative" />
+      <xs:enumeration value="esriJobMessageTypeWarning" />
+      <xs:enumeration value="esriJobMessageTypeError" />
+      <xs:enumeration value="esriJobMessageTypeEmpty" />
+      <xs:enumeration value="esriJobMessageTypeAbort" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="esriJobStatus">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="esriJobNew" />
+      <xs:enumeration value="esriJobSubmitted" />
+      <xs:enumeration value="esriJobWaiting" />
+      <xs:enumeration value="esriJobExecuting" />
+      <xs:enumeration value="esriJobSucceeded" />
+      <xs:enumeration value="esriJobFailed" />
+      <xs:enumeration value="esriJobTimedOut" />
+      <xs:enumeration value="esriJobCancelling" />
+      <xs:enumeration value="esriJobCancelled" />
+      <xs:enumeration value="esriJobDeleting" />
+      <xs:enumeration value="esriJobDeleted" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="JobMessage">
+    <xs:sequence>
+      <xs:element name="MessageType" type="esriJobMessageType" />
+      <xs:element name="MessageDesc" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfJobMessage">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="JobMessage" type="JobMessage" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="esriArcGISVersion">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="esriArcGISVersion83" />
+      <xs:enumeration value="esriArcGISVersion90" />
+      <xs:enumeration value="esriArcGISVersion92" />
+      <xs:enumeration value="esriArcGISVersion93" />
+      <xs:enumeration value="esriArcGISVersion10" />
+      <xs:enumeration value="esriArcGISVersion101" />
+      <xs:enumeration value="esriArcGISVersion103" />
+      <xs:enumeration value="esriArcGISVersion104" />
+      <xs:enumeration value="esriArcGISVersion105" />
+	  <xs:enumeration value="esriArcGISVersion106" />
+	  <xs:enumeration value="esriArcGISVersion107" />
+	  <xs:enumeration value="esriArcGISVersion108" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="esriTimeUnits">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="esriTimeUnitsUnknown" />
+      <xs:enumeration value="esriTimeUnitsMilliseconds" />
+      <xs:enumeration value="esriTimeUnitsSeconds" />
+      <xs:enumeration value="esriTimeUnitsMinutes" />
+      <xs:enumeration value="esriTimeUnitsHours" />
+      <xs:enumeration value="esriTimeUnitsDays" />
+      <xs:enumeration value="esriTimeUnitsWeeks" />
+      <xs:enumeration value="esriTimeUnitsMonths" />
+      <xs:enumeration value="esriTimeUnitsYears" />
+      <xs:enumeration value="esriTimeUnitsDecades" />
+      <xs:enumeration value="esriTimeUnitsCenturies" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="esriTransportType">
+    <xs:annotation>
+      <xs:documentation>
+        Generic service data transfer format
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="esriTransportTypeEmbedded" />
+      <xs:enumeration value="esriTransportTypeUrl" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="TimeReference">
+    <xs:sequence>
+      <xs:element name="TimeZoneNameID" type="xs:string" />
+      <xs:element minOccurs="0" name="RespectsDaylightSavingTime" type="xs:boolean" />
+      <xs:element minOccurs="0" name="RespectsDynamicAdjustmentRules" type="xs:boolean" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TimeValue">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="TimeReference" type="TimeReference" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="TimeInstant">
+    <xs:complexContent mixed="false">
+      <xs:extension base="TimeValue">
+        <xs:sequence>
+          <xs:element name="Time" type="xs:dateTime" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="TimeExtent">
+    <xs:complexContent mixed="false">
+      <xs:extension base="TimeValue">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="StartTime" type="xs:dateTime" />
+          <xs:element minOccurs="0" name="EndTime" type="xs:dateTime" />
+          <xs:element minOccurs="0" default="false" name="Empty" type="xs:boolean" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+</xs:schema>

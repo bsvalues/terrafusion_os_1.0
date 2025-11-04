@@ -1,0 +1,187 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "3240011",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "block_add_to_map",
+        "param_nocount:in_table",
+        "param_nocount:join_classes"
+    ],
+    "params": {
+        "in_table": {
+            "display_order": "1",
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polyline",
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "out_folder": {
+            "display_order": "2",
+            "displayname": "$rc:out_folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:out_folder.descr"
+        },
+        "join_classes": {
+            "display_order": "4",
+            "displayname": "$rc:join_classes.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polyline",
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:join_classes.descr"
+        },
+        "field_map": {
+            "display_order": "5",
+            "displayname": "$rc:field_map.title",
+            "datatype": {
+                "type": "GPFieldMapping"
+            },
+            "depends": [
+                "join_classes"
+            ],
+            "description": "$rc:field_map.descr"
+        },
+        "where_clause": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:where_clause.title",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:where_clause.descr"
+        },
+        "search_options": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:search_options.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:search_options.dt.title1",
+                        "readonly": "true"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:search_options.dt.title2"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:search_options.dt.title3"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "displayname": "$rc:search_options.dt.title4"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "GEOMETRY",
+                                "code": "$rc:search_options.domain.item2.GEOMETRY"
+                            },
+                            {
+                                "value": "START",
+                                "code": "$rc:search_options.domain.item2.START"
+                            },
+                            {
+                                "value": "END",
+                                "code": "$rc:search_options.domain.item2.END"
+                            },
+                            {
+                                "value": "CENTROID",
+                                "code": "$rc:search_options.domain.item2.CENTROID"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "CONTAINS",
+                                "code": "$rc:search_options.domain.item3.CONTAINS"
+                            },
+                            {
+                                "value": "CROSSES",
+                                "code": "$rc:search_options.domain.item3.CROSSES"
+                            },
+                            {
+                                "value": "ENVELOPE_INTERSECTS",
+                                "code": "$rc:search_options.domain.item3.ENVELOPE_INTERSECTS"
+                            },
+                            {
+                                "value": "INTERSECTS",
+                                "code": "$rc:search_options.domain.item3.INTERSECTS"
+                            },
+                            {
+                                "value": "OVERLAPS",
+                                "code": "$rc:search_options.domain.item3.OVERLAPS"
+                            },
+                            {
+                                "value": "TOUCHES",
+                                "code": "$rc:search_options.domain.item3.TOUCHES"
+                            },
+                            {
+                                "value": "WITHIN",
+                                "code": "$rc:search_options.domain.item3.WITHIN"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "description": "$rc:search_options.descr"
+        },
+        "out_rule_csv": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_rule_csv.title",
+            "datatype": {
+                "type": "DEFile"
+            }
+        }
+    }
+}

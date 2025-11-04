@@ -1,0 +1,12 @@
+{
+    "set": [
+        "change portal owner",
+        "dataset owner",
+        "geodatabase administration",
+        "portal owner",
+        "portal utility network owner",
+        "transfer",
+        "update portal owner",
+        "utility network"
+    ]
+}

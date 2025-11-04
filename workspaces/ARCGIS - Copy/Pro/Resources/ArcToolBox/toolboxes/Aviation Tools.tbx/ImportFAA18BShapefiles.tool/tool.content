@@ -1,0 +1,42 @@
+{
+    "type": "FunctionTool",
+    "guid": "{F6243FE3-8552-4511-BBCE-F882B7099A58}/ImportFAA18BShapefiles",
+    "displayname": "$rc:title",
+    "helpcontent": "45020001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "53",
+        "70"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "DEShapeFile"
+                }
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "airports_workspace": {
+            "displayname": "$rc:airports_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "description": "$rc:airports_workspace.descr"
+        },
+        "out_workspace": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            }
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

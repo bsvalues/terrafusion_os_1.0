@@ -95,7 +95,7 @@ export const DesktopShell: React.FC = () => {
           >
             TF
           </Avatar>
-          
+
           <Typography
             variant='h6'
             component='div'
@@ -198,7 +198,8 @@ export const DesktopShell: React.FC = () => {
                       fontWeight: 500,
                     }}
                   >
-                    50,000+ AI Agents • 379M× Performance • Quantum Computing • Government. Transcended.
+                    50,000+ AI Agents • 379M× Performance • Quantum Computing • Government.
+                    Transcended.
                   </Typography>
                   <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
                     <Chip label='Benton County' color='primary' size='small' />
@@ -271,9 +272,9 @@ export const DesktopShell: React.FC = () => {
               <ListItemIcon>
                 <Dashboard sx={{ color: 'white' }} />
               </ListItemIcon>
-              <ListItemText 
-                primary='System Dashboard' 
-                primaryTypographyProps={{ color: 'white' }} 
+              <ListItemText
+                primary='System Dashboard'
+                primaryTypographyProps={{ color: 'white' }}
               />
             </ListItemButton>
           </ListItem>
@@ -282,10 +283,7 @@ export const DesktopShell: React.FC = () => {
               <ListItemIcon>
                 <Extension sx={{ color: 'white' }} />
               </ListItemIcon>
-              <ListItemText 
-                primary='Module Manager' 
-                primaryTypographyProps={{ color: 'white' }} 
-              />
+              <ListItemText primary='Module Manager' primaryTypographyProps={{ color: 'white' }} />
             </ListItemButton>
           </ListItem>
           <ListItem>
@@ -293,10 +291,7 @@ export const DesktopShell: React.FC = () => {
               <ListItemIcon>
                 <AccountCircle sx={{ color: 'white' }} />
               </ListItemIcon>
-              <ListItemText 
-                primary='User Settings' 
-                primaryTypographyProps={{ color: 'white' }} 
-              />
+              <ListItemText primary='User Settings' primaryTypographyProps={{ color: 'white' }} />
             </ListItemButton>
           </ListItem>
         </List>

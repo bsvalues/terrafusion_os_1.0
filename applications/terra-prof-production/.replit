@@ -1,0 +1,168 @@
+modules = ["nodejs-20", "postgresql-16", "rust"]
+
+[nix]
+channel = "stable-24_05"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "TerraFusionPro Web Client"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "API Gateway"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Property Service"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "User Service"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Report Service"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Form Service"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Analysis Service"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Apollo Federation Gateway"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Real Estate App"
+
+[[workflows.workflow]]
+name = "TerraFusionPro Web Client"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node packages/web-client/index.js"
+waitForPort = 5000
+
+[[workflows.workflow]]
+name = "API Gateway"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node packages/api/index.js"
+waitForPort = 5002
+
+[[workflows.workflow]]
+name = "Property Service"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node services/property-service/index.js"
+waitForPort = 5003
+
+[[workflows.workflow]]
+name = "User Service"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node services/user-service/index.js"
+waitForPort = 5004
+
+[[workflows.workflow]]
+name = "Report Service"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node services/report-service/index.js"
+waitForPort = 5007
+
+[[workflows.workflow]]
+name = "Form Service"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node services/form-service/index.js"
+waitForPort = 5005
+
+[[workflows.workflow]]
+name = "Analysis Service"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node services/analysis-service/index.js"
+waitForPort = 5006
+
+[[workflows.workflow]]
+name = "Apollo Federation Gateway"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node apps/core-gateway/src/index.js"
+waitForPort = 4000
+
+[[workflows.workflow]]
+name = "Real Estate App"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd realapp && node index.js"
+waitForPort = 5000
+
+[deployment]
+run = ["sh", "-c", "node packages/web-client/index.js"]
+
+[[ports]]
+localPort = 4000
+externalPort = 5173
+
+[[ports]]
+localPort = 4001
+externalPort = 6000
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[[ports]]
+localPort = 5002
+externalPort = 3000
+
+[[ports]]
+localPort = 5003
+externalPort = 3001
+
+[[ports]]
+localPort = 5004
+externalPort = 3002
+
+[[ports]]
+localPort = 5005
+externalPort = 4200
+
+[[ports]]
+localPort = 5006
+externalPort = 5000
+
+[[ports]]
+localPort = 5007
+externalPort = 3003

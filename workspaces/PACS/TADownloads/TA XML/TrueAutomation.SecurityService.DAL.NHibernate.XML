@@ -1,0 +1,199 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.SecurityService.DAL.NHibernate</name>
+    </assembly>
+    <members>
+        <member name="M:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.AutoPersistenceModelGenerator.GenerateAutoPersistenceModel">
+            <summary>
+            Generates a Fluent NHibernate auto-persistence model
+            to specify the auto-mapping persistence behavior for
+            the task service domain.
+            </summary>
+            <returns>An auto-persistence model specifying the a
+            set of auto-mapping behaviors and conventions.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.AutoPersistenceModelGenerator.GetConventions">
+            <summary>
+            Returns the set of custom conventions defined in the
+            TrueAutomation.SecurityService.DAL.NHibernate.Mappings.Conventions
+            namespace.
+            </summary>
+            <returns>The set of custom mappings specified by this
+            assembly.</returns>
+        </member>
+        <member name="T:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.Conventions.HasManyConvention">
+            <summary>
+            A Fluent NHibernate convention for specifying the behavior
+            of foreign key values in a one-to-many collection.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.Conventions.HasManyConvention.Apply(FluentNHibernate.Conventions.Instances.IOneToManyCollectionInstance)">
+            <summary>
+            Applies the foreign key convention to the specified one-to-many
+            collection instance. This convention specifies a column name of
+            the lowercase version of the foreign entity's name with an "_id"
+            suffix appended to it.
+            </summary>
+            <param name="instance">The one-to-many collection instance for
+            which to specify the corresponding behavior.</param>
+        </member>
+        <member name="T:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.Conventions.PrimaryKeyConvention">
+            <summary>
+            A Fluent NHibernate convention for specifying the behavior
+            of primary key values.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.Conventions.PrimaryKeyConvention.Apply(FluentNHibernate.Conventions.Instances.IIdentityInstance)">
+            <summary>
+            Applies the primary key convention to the specified identity
+            instance. This convention specifies a column name of "id" and
+            an ID value of zero for transient objects.
+            </summary>
+            <param name="instance">The primary key instance for which to
+            specify the corresponding behavior.</param>
+        </member>
+        <member name="T:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.Conventions.TableNameConvention">
+            <summary>
+            A Fluent NHibernate convention for converting class names
+            to their RDBMS table name equivalents.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.Conventions.TableNameConvention.Apply(FluentNHibernate.Conventions.Instances.IClassInstance)">
+            <summary>
+            Applies the table-naming convention to the specified class
+            instance. This convention takes the lowercase version of the
+            entity's class name and prepends "security_" to it.
+            </summary>
+            <param name="instance">The class instance for which to
+            create the corresponding table name.</param>
+        </member>
+        <member name="T:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.ActiveDirectoryUserSignOnMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.SecurityService.Domain.ActiveDirectoryUserSignOn"/>
+            class.
+            </summary>a
+        </member>
+        <member name="M:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.ActiveDirectoryUserSignOnMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.SecurityService.Domain.ActiveDirectoryUserSignOn})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.CertificateUserSignOnMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.SecurityService.Domain.CertificateUserSignOn"/>
+            class.
+            </summary>a
+        </member>
+        <member name="M:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.CertificateUserSignOnMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.SecurityService.Domain.CertificateUserSignOn})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.PasswordUserSignOnMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.SecurityService.Domain.PasswordUserSignOn"/>
+            class.
+            </summary>a
+        </member>
+        <member name="M:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.PasswordUserSignOnMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.SecurityService.Domain.PasswordUserSignOn})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.UserSignOnMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.SecurityService.Domain.UserSignOn"/>
+            class.
+            </summary>a
+        </member>
+        <member name="M:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.UserSignOnMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.SecurityService.Domain.UserSignOn})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.GroupMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.SecurityService.Domain.Group"/>
+            class.
+            </summary>a
+        </member>
+        <member name="M:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.GroupMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.SecurityService.Domain.Group})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.UserMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.SecurityService.Domain.User"/>
+            class.
+            </summary>a
+        </member>
+        <member name="M:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.UserMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.SecurityService.Domain.User})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.PartyMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.SecurityService.Domain.Party"/>
+            class.
+            </summary>a
+        </member>
+        <member name="M:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.PartyMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.SecurityService.Domain.Party})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.MappingConfiguration">
+            <summary>
+            Defines an NHibernate object mapping configuration for
+            task service-related objects.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.MappingConfiguration.ShouldMap(System.Type)" -->
+        <member name="M:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.MappingConfiguration.ShouldMap(FluentNHibernate.Member)">
+            <summary>
+            Returns whether or not the specified member should be
+            auto-mapped to the underlying database. We currently require
+            any auto-mapped members to be writable, i.e. they should
+            have a public setter implementation.
+            </summary>
+            <param name="member">The type/class member to evaluate.</param>
+            <returns>True if the member should be automatically mapped
+            to the underlying database, otherwise false.</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.MappingConfiguration.AbstractClassIsLayerSupertype(System.Type)" -->
+        <member name="M:TrueAutomation.SecurityService.DAL.NHibernate.Mappings.MappingConfiguration.IsId(FluentNHibernate.Member)">
+            <summary>
+            Returns whether or not the specified type member is a primary
+            key value, i.e. an identifier value. We consider any property
+            named "Id" to be an identifier value.
+            </summary>
+            <param name="member">The type member to be evaluated.</param>
+            <returns>True if the specified type member is an id value,
+            otherwise false.</returns>
+        </member>
+    </members>
+</doc>

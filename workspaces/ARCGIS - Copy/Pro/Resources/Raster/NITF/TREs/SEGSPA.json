@@ -1,0 +1,195 @@
+{
+  "TRE": "SEGSPA",
+  "Source": ["MIL-PRF-89034, DPPDB: Table 34"],
+  "Name": "Segment Model Shear Point Data",
+  "Description": "This TRE contains DPPDB stereo model segment shear point data. Shear is a measurement of how closely aligned stereo segments are to one another.",
+  "Size": 99999,
+  "Fields": {
+    "SISEGID" : {
+      "Name": "Segment Model ID",
+      "Description": "This field indicates the ID of the segment model.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Integer"          
+        }        
+      ]
+    },
+    "NBRSP": {
+      "Name": "Number of Shear Points",
+      "Description": "This field indicates the number of shear points contained within the segment model (SISEGID).",
+      "Size": 2,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 20
+        }
+      ]
+    },
+    "LATSS<NBRSP>": {
+      "Name": "Latitude for Stereo Segment",
+      "Description": "This field indicates the stereo segment latitude.",
+      "Size": 10,
+      "Format": "BCS-AN",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "DMS"          
+        }
+      ]
+    },
+    "LONSS<NBRSP>": {
+      "Name": "Longitude for Stereo Segment",
+      "Description": "This field indicates the stereo segment longitude.",
+      "Size": 11,
+      "Format": "BCS-AN",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Double"          
+        }
+      ]
+    },
+    "ELVSS<NBRSP>": {
+      "Name": "Elevation for Stereo Segment",
+      "Description": "This field indicates the stereo segment elevation.",
+      "Size": 9,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10000.00,
+          "Max": 10000.00          
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "NBRASS<NBRSP>": {
+      "Name": "Number of Adjacent Stereo Segments",
+      "Description": "This field contains the number of adjacent stereo segments for this shear point.",
+      "Size": 1,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 3          
+        }        
+      ]
+    },
+    "ASSID<NBRASS<NBRSP>>": {
+      "Name": "Adjacent Stereo Segment ID",
+      "Description": "This field indicates the adjacent stereo segment ID.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Integer"                    
+        }        
+      ]
+    },
+    "LATASS<NBRASS<NBRSP>>": {
+      "Name": "Latitude for Adjacent Stereo Segment",
+      "Description": "This field indicates the latitude for the adjacent stereo segment.",
+      "Size": 10,
+      "Format": "BCS-AN",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "DMS"                    
+        }        
+      ]
+    },
+    "LONASS<NBRASS<NBRSP>>": {
+      "Name": "Longitude for Adjacent Stereo Segment",
+      "Description": "This field indicates the longitude for the adjacent stereo segment.",
+      "Size": 11,
+      "Format": "BCS-AN",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"                    
+        }        
+      ]
+    },
+    "ELVSS<NBRASS<NBRSP>>": {
+      "Name": "Elevation for Adjacent Stereo Segment",
+      "Description": "This field indicates the elevation of the shear point in the adjacent stereo equipment in meters.",
+      "Size": 9,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10000.00,
+          "Max": 10000.00                    
+        }        
+      ]
+    },
+    "LATSHR<NBRASS<NBRSP>>": {
+      "Name": "Latitude Shear",
+      "Description": "This field contains the latitude shear between the two points.",
+      "Size": 8,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -100.00,
+          "Max": 100.00                    
+        }        
+      ]
+    },
+    "LONSHR<NBRASS<NBRSP>>": {
+      "Name": "Longitude Shear",
+      "Description": "This field contains the longitude shear between the two points.",
+      "Size": 8,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -100.00,
+          "Max": 100.00                    
+        }        
+      ]
+    },
+    "ELVSHR<NBRASS<NBRSP>>": {
+      "Name": "Elevation Shear",
+      "Description": "This field contains the elevation shear between the two points.",
+      "Size": 8,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -100.00,
+          "Max": 100.00                    
+        }        
+      ]
+    }        
+  }
+}

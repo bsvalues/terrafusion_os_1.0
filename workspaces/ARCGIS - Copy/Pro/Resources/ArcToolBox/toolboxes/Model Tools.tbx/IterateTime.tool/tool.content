@@ -1,0 +1,532 @@
+{
+    "type": "FunctionTool",
+    "guid": "{db91b03f-8072-40be-8999-4c8e77aae4e1}",
+    "displayname": "$rc:title",
+    "helpcontent": "32000005",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "input_table": {
+            "display_order": "0",
+            "displayname": "$rc:input_table.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    }
+                ]
+            },
+            "description": "$rc:input_table.descr"
+        },
+        "time_step_interval": {
+            "display_order": "6",
+            "displayname": "$rc:time_step_interval.title",
+            "datatype": {
+                "type": "GPTimeUnit"
+            },
+            "domain": {
+                "type": "GPUnitDomain",
+                "range": {
+                    "unit_type": "Minutes",
+                    "min": "1",
+                    "max": "9.2233720368547758e+18"
+                },
+                "items": [
+                    "Minutes",
+                    "Hours",
+                    "Days",
+                    "Weeks",
+                    "Months",
+                    "Years",
+                    "Decades",
+                    "Centuries"
+                ]
+            },
+            "value": "1 Days",
+            "description": "$rc:time_step_interval.descr"
+        },
+        "start_time_field": {
+            "display_order": "4",
+            "displayname": "$rc:start_time_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Date",
+                    "DateOnly",
+                    "TimeOnly"
+                ]
+            },
+            "depends": [
+                "input_table"
+            ],
+            "description": "$rc:start_time_field.descr"
+        },
+        "end_time_field": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:end_time_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Date",
+                    "DateOnly",
+                    "TimeOnly"
+                ]
+            },
+            "depends": [
+                "input_table"
+            ],
+            "description": "$rc:end_time_field.descr"
+        },
+        "iteration_start_time": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:iteration_start_time.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:iteration_start_time.descr"
+        },
+        "align_iteration_start": {
+            "type": "optional",
+            "display_order": "11",
+            "displayname": "$rc:align_iteration_start.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ALIGN_START_TIME"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_ALIGN_START_TIME"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:align_iteration_start.descr"
+        },
+        "iteration_end_time": {
+            "type": "optional",
+            "display_order": "12",
+            "displayname": "$rc:iteration_end_time.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:iteration_end_time.descr"
+        },
+        "align_iteration_end": {
+            "type": "optional",
+            "display_order": "13",
+            "displayname": "$rc:align_iteration_end.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ALIGN_END_TIME"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_ALIGN_END_TIME"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:align_iteration_end.descr"
+        },
+        "include_start": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:include_start.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "INCLUDE_START"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "EXCLUDE_START"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:include_start.descr"
+        },
+        "include_end": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:include_end.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "INCLUDE_END"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "EXCLUDE_END"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:include_end.descr"
+        },
+        "skip_nulls": {
+            "type": "optional",
+            "display_order": "14",
+            "displayname": "$rc:skip_nulls.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SKIP_NULLS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "KEEP_NULLS"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:skip_nulls.descr"
+        },
+        "format_output_time_string": {
+            "type": "optional",
+            "display_order": "15",
+            "displayname": "$rc:format_output_time_string.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FORMAT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_FORMAT"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:format_output_time_string.descr"
+        },
+        "skip_empty_slices": {
+            "type": "optional",
+            "display_order": "16",
+            "displayname": "$rc:skip_empty_slices.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SKIP_EMPTY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_SKIP_EMPTY"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:skip_empty_slices.descr"
+        },
+        "output_selection": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "17",
+            "displayname": "$rc:output_selection.title",
+            "datatype": {
+                "type": "GPType"
+            }
+        },
+        "start_time": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "18",
+            "displayname": "$rc:start_time.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "end_time": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "19",
+            "displayname": "$rc:end_time.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "count": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "20",
+            "displayname": "$rc:count.title",
+            "datatype": {
+                "type": "GPLong"
+            }
+        },
+        "time_definition": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:time_definition.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DEFAULT",
+                        "code": "$rc:time_definition.domain.DEFAULT"
+                    },
+                    {
+                        "value": "WEEKDAYS",
+                        "code": "$rc:time_definition.domain.WEEKDAYS"
+                    },
+                    {
+                        "value": "MONTHS",
+                        "code": "$rc:time_definition.domain.MONTHS"
+                    }
+                ]
+            },
+            "value": "DEFAULT",
+            "description": "$rc:time_definition.descr"
+        },
+        "months": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:months.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "JAN",
+                        "code": "$rc:months.domain.JAN"
+                    },
+                    {
+                        "value": "FEB",
+                        "code": "$rc:months.domain.FEB"
+                    },
+                    {
+                        "value": "MAR",
+                        "code": "$rc:months.domain.MAR"
+                    },
+                    {
+                        "value": "APR",
+                        "code": "$rc:months.domain.APR"
+                    },
+                    {
+                        "value": "MAY",
+                        "code": "$rc:months.domain.MAY"
+                    },
+                    {
+                        "value": "JUNE",
+                        "code": "$rc:months.domain.JUNE"
+                    },
+                    {
+                        "value": "JULY",
+                        "code": "$rc:months.domain.JULY"
+                    },
+                    {
+                        "value": "AUG",
+                        "code": "$rc:months.domain.AUG"
+                    },
+                    {
+                        "value": "SEPT",
+                        "code": "$rc:months.domain.SEPT"
+                    },
+                    {
+                        "value": "OCT",
+                        "code": "$rc:months.domain.OCT"
+                    },
+                    {
+                        "value": "NOV",
+                        "code": "$rc:months.domain.NOV"
+                    },
+                    {
+                        "value": "DEC",
+                        "code": "$rc:months.domain.DEC"
+                    }
+                ]
+            },
+            "description": "$rc:months.descr"
+        },
+        "days": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:days.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MON",
+                        "code": "$rc:days.domain.MON"
+                    },
+                    {
+                        "value": "TUE",
+                        "code": "$rc:days.domain.TUE"
+                    },
+                    {
+                        "value": "WED",
+                        "code": "$rc:days.domain.WED"
+                    },
+                    {
+                        "value": "THUR",
+                        "code": "$rc:days.domain.THUR"
+                    },
+                    {
+                        "value": "FRI",
+                        "code": "$rc:days.domain.FRI"
+                    },
+                    {
+                        "value": "SAT",
+                        "code": "$rc:days.domain.SAT"
+                    },
+                    {
+                        "value": "SUN",
+                        "code": "$rc:days.domain.SUN"
+                    }
+                ]
+            },
+            "description": "$rc:days.descr"
+        },
+        "subset": {
+            "type": "optional",
+            "display_order": "7",
+            "control_guid": "{F604736F-06D8-47CD-AC15-7055F7FCDAC1}",
+            "displayname": "$rc:subset.title",
+            "category": "$rc:params.category4",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPTimeUnit",
+                        "displayname": "$rc:subset.dt.title1"
+                    },
+                    {
+                        "type": "GPTimeUnit",
+                        "displayname": "$rc:subset.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPUnitDomain",
+                        "range": {
+                            "unit_type": "Minutes",
+                            "min": "0",
+                            "max": "9.2233720368547758e+18"
+                        },
+                        "items": [
+                            "Minutes",
+                            "Hours",
+                            "Days",
+                            "Weeks",
+                            "Months",
+                            "Years",
+                            "Decades",
+                            "Centuries"
+                        ]
+                    },
+                    {
+                        "type": "GPUnitDomain",
+                        "range": {
+                            "unit_type": "Minutes",
+                            "min": "0",
+                            "max": "9.2233720368547758e+18"
+                        },
+                        "items": [
+                            "Minutes",
+                            "Hours",
+                            "Days",
+                            "Weeks",
+                            "Months",
+                            "Years",
+                            "Decades",
+                            "Centuries"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:subset.descr"
+        }
+    }
+}

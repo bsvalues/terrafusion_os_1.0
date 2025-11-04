@@ -21,134 +21,171 @@ const PWAShell: React.FC = () => {
   // Cache busting key - forces fresh module data load
   const _CACHE_VERSION = '2.1.20250825_UNIFIED';
   const BRAND = {
-    essence: "Government. Transcended.",
-    tagline: "Government. Transcended.",
-    slogan: "Turn Complexity into Clarity.",
-    motto: "We do it right the first time.",
-    loadingMessages: ["Preparing transcendence…", "Advancing county intelligence…", "Orchestrating clarity…"],
-    confirmationMessages: ["Transcendence complete.", "Your path is clear.", "All systems: Ready."],
-    errorMessages: ["Let's clear the path—together.", "We anticipate, we adapt, we solve.", "Support is standing by your side."]
+    essence: 'Government. Transcended.',
+    tagline: 'Government. Transcended.',
+    slogan: 'Turn Complexity into Clarity.',
+    motto: 'We do it right the first time.',
+    loadingMessages: [
+      'Preparing transcendence…',
+      'Advancing county intelligence…',
+      'Orchestrating clarity…',
+    ],
+    confirmationMessages: ['Transcendence complete.', 'Your path is clear.', 'All systems: Ready.'],
+    errorMessages: [
+      "Let's clear the path—together.",
+      'We anticipate, we adapt, we solve.',
+      'Support is standing by your side.',
+    ],
   };
 
   // ACTIVE MODULES REGISTRY - Real Terrafusion OS production modules
-  const defaultModules: Module[] = [{
-    id: 'system-monitoring',
-    name: 'System Monitoring Dashboard',
-    description: 'Real-time health monitoring, performance metrics, and system status for all Terrafusion services and AI agents.',
-    icon: '📊',
-    enabled: true,
-    url: '/monitoring'
-  }, {
-    id: 'government-edition',
-    name: 'Government Edition Property Assessment Suite',
-    description: 'Complete property assessment solution with Harris PACS integration. Production ready with 89,247 parcel records.',
-    icon: '🏛️',
-    enabled: true,
-    url: '/modules/government-edition/index.html'
-  }, {
-    id: 'costforge-ai-champion',
-    name: 'CostForge AI Champion',
-    description: 'AI-powered cost estimation and budget forecasting with PropertyValuation, MarketAnalysis, and RiskAssessment models.',
-    icon: '💎',
-    enabled: true,
-    url: '/modules/costforge-ai-champion/index.html'
-  }, {
-    id: 'terra-collections',
-    name: 'Terra Collections',
-    description: 'Tax collection management with payment processing and direct bank API connections.',
-    icon: '💰',
-    enabled: true,
-    url: '/modules/terra-collections/index.html'
-  }, {
-    id: 'terra-levy',
-    name: 'Terra Levy',
-    description: 'WA State RCW compliant levy calculation and rate management system.',
-    icon: '📊',
-    enabled: true,
-    url: '/modules/terra-levy/index.html'
-  }, {
-    id: 'terra-insight',
-    name: 'Terra Insight',
-    description: 'Real-time analytics dashboard and reporting suite with data visualization.',
-    icon: '📈',
-    enabled: true,
-    url: '/modules/terra-insight/index.html'
-  }, {
-    id: 'ai-command-brain',
-    name: 'AI Command Brain',
-    description: '1,008 AI agents with 87 MCP tools (Supreme Commander + Field Generals + Squads) for government operations.',
-    icon: '🧠',
-    enabled: true,
-    url: '/modules/ai-command-brain/index.html'
-  }, {
-    id: 'ai-swarm',
-    name: 'AI Swarm Orchestrator',
-    description: 'Swarm coordination managing 1,008 concurrent agents with task distribution and optimization.',
-    icon: '🤖',
-    enabled: true,
-    url: '/modules/ai-swarm/index.html'
-  }, {
-    id: 'ai-advanced',
-    name: 'Enhanced Revenue Hunter',
-    description: 'Revenue optimization with anomaly detection. Demonstrated 47,231% ROI improvement.',
-    icon: '🎯',
-    enabled: true,
-    url: '/modules/ai-advanced/index.html'
-  }, {
-    id: 'testing-suite',
-    name: 'Testing Suite',
-    description: '716 real tests with 94.7% code coverage plus comprehensive mock testing suite.',
-    icon: '🧪',
-    enabled: true,
-    url: '/modules/testing-suite/index.html'
-  }, {
-    id: 'development',
-    name: 'Development Tools',
-    description: 'DevOps automation and CI/CD pipelines for government module development.',
-    icon: '🔧',
-    enabled: true,
-    url: '/modules/development/index.html'
-  }, {
-    id: 'commercial-suite',
-    name: 'Commercial Suite',
-    description: 'Enterprise licensing system with ROI calculator for commercial implementations.',
-    icon: '💼',
-    enabled: true,
-    url: '/modules/commercial-suite/index.html'
-  }, {
-    id: 'marketplace-champion',
-    name: 'Data Marketplace Champion',
-    description: 'Data exchange platform with REST APIs and GraphQL integration for inter-county data sharing.',
-    icon: '🏪',
-    enabled: true,
-    url: '/modules/marketplace-champion/index.html'
-  }, {
-    id: 'gispro',
-    name: 'GIS Pro Integration',
-    description: 'ArcGIS integration with parcel mapping, zoning layers, and spatial analysis tools.',
-    icon: '🗺️',
-    enabled: true,
-    url: '/modules/gispro/index.html'
-  }, {
-    id: 'Terrafusion-PublicRecords',
-    name: 'Public Records Portal',
-    description: 'FOIA compliant public access portal with role-based access control and audit logging.',
-    icon: '📋',
-    enabled: true,
-    url: '/modules/Terrafusion-PublicRecords/index.html'
-  }, {
-    id: 'property-workbench',
-    name: 'Property Workbench',
-    description: 'Property management dashboard with MLS data feeds and comprehensive property tracking.',
-    icon: '🏠',
-    enabled: true,
-    url: '/modules/property-workbench/index.html'
-  }];
+  const defaultModules: Module[] = [
+    {
+      id: 'system-monitoring',
+      name: 'System Monitoring Dashboard',
+      description:
+        'Real-time health monitoring, performance metrics, and system status for all Terrafusion services and AI agents.',
+      icon: '📊',
+      enabled: true,
+      url: '/monitoring',
+    },
+    {
+      id: 'government-edition',
+      name: 'Government Edition Property Assessment Suite',
+      description:
+        'Complete property assessment solution with Harris PACS integration. Production ready with 89,247 parcel records.',
+      icon: '🏛️',
+      enabled: true,
+      url: '/modules/government-edition/index.html',
+    },
+    {
+      id: 'costforge-ai-champion',
+      name: 'CostForge AI Champion',
+      description:
+        'AI-powered cost estimation and budget forecasting with PropertyValuation, MarketAnalysis, and RiskAssessment models.',
+      icon: '💎',
+      enabled: true,
+      url: '/modules/costforge-ai-champion/index.html',
+    },
+    {
+      id: 'terra-collections',
+      name: 'Terra Collections',
+      description:
+        'Tax collection management with payment processing and direct bank API connections.',
+      icon: '💰',
+      enabled: true,
+      url: '/modules/terra-collections/index.html',
+    },
+    {
+      id: 'terra-levy',
+      name: 'Terra Levy',
+      description: 'WA State RCW compliant levy calculation and rate management system.',
+      icon: '📊',
+      enabled: true,
+      url: '/modules/terra-levy/index.html',
+    },
+    {
+      id: 'terra-insight',
+      name: 'Terra Insight',
+      description: 'Real-time analytics dashboard and reporting suite with data visualization.',
+      icon: '📈',
+      enabled: true,
+      url: '/modules/terra-insight/index.html',
+    },
+    {
+      id: 'ai-command-brain',
+      name: 'AI Command Brain',
+      description:
+        '1,008 AI agents with 87 MCP tools (Supreme Commander + Field Generals + Squads) for government operations.',
+      icon: '🧠',
+      enabled: true,
+      url: '/modules/ai-command-brain/index.html',
+    },
+    {
+      id: 'ai-swarm',
+      name: 'AI Swarm Orchestrator',
+      description:
+        'Swarm coordination managing 1,008 concurrent agents with task distribution and optimization.',
+      icon: '🤖',
+      enabled: true,
+      url: '/modules/ai-swarm/index.html',
+    },
+    {
+      id: 'ai-advanced',
+      name: 'Enhanced Revenue Hunter',
+      description:
+        'Revenue optimization with anomaly detection. Demonstrated 47,231% ROI improvement.',
+      icon: '🎯',
+      enabled: true,
+      url: '/modules/ai-advanced/index.html',
+    },
+    {
+      id: 'testing-suite',
+      name: 'Testing Suite',
+      description: '716 real tests with 94.7% code coverage plus comprehensive mock testing suite.',
+      icon: '🧪',
+      enabled: true,
+      url: '/modules/testing-suite/index.html',
+    },
+    {
+      id: 'development',
+      name: 'Development Tools',
+      description: 'DevOps automation and CI/CD pipelines for government module development.',
+      icon: '🔧',
+      enabled: true,
+      url: '/modules/development/index.html',
+    },
+    {
+      id: 'commercial-suite',
+      name: 'Commercial Suite',
+      description:
+        'Enterprise licensing system with ROI calculator for commercial implementations.',
+      icon: '💼',
+      enabled: true,
+      url: '/modules/commercial-suite/index.html',
+    },
+    {
+      id: 'marketplace-champion',
+      name: 'Data Marketplace Champion',
+      description:
+        'Data exchange platform with REST APIs and GraphQL integration for inter-county data sharing.',
+      icon: '🏪',
+      enabled: true,
+      url: '/modules/marketplace-champion/index.html',
+    },
+    {
+      id: 'gispro',
+      name: 'GIS Pro Integration',
+      description:
+        'ArcGIS integration with parcel mapping, zoning layers, and spatial analysis tools.',
+      icon: '🗺️',
+      enabled: true,
+      url: '/modules/gispro/index.html',
+    },
+    {
+      id: 'Terrafusion-PublicRecords',
+      name: 'Public Records Portal',
+      description:
+        'FOIA compliant public access portal with role-based access control and audit logging.',
+      icon: '📋',
+      enabled: true,
+      url: '/modules/Terrafusion-PublicRecords/index.html',
+    },
+    {
+      id: 'property-workbench',
+      name: 'Property Workbench',
+      description:
+        'Property management dashboard with MLS data feeds and comprehensive property tracking.',
+      icon: '🏠',
+      enabled: true,
+      url: '/modules/property-workbench/index.html',
+    },
+  ];
   useEffect(() => {
     // Rotate loading messages
     const messageInterval = setInterval(() => {
       if (loading) {
-        setLoadingMessage(prev => {
+        setLoadingMessage((prev) => {
           const currentIndex = BRAND.loadingMessages.indexOf(prev);
           const nextIndex = (currentIndex + 1) % BRAND.loadingMessages.length;
           return BRAND.loadingMessages[nextIndex];
@@ -185,7 +222,7 @@ const PWAShell: React.FC = () => {
               description: mod.Description || 'Terrafusion OS Module',
               icon: getModuleIcon(mod.Name),
               enabled: mod.Status === 'Active',
-              url: mod.LaunchPath || `/modules/${mod.Name}/index.html`
+              url: mod.LaunchPath || `/modules/${mod.Name}/index.html`,
             }));
             setModules(convertedModules);
             if (process.env.NODE_ENV === 'development') {
@@ -244,14 +281,14 @@ const PWAShell: React.FC = () => {
         'marketplace-champion': '🏢',
         'commercial-suite': '💼',
         'testing-suite': '🧪',
-        'development': '🔧',
-        'gispro': '🗺️',
+        development: '🔧',
+        gispro: '🗺️',
         'property-workbench': '🏠',
         'unified-system': '⚙️',
         'web-audit-tracker': '📋',
         'terra-collections': '📁',
         'terra-levy': '💰',
-        'terra-insight': '📊'
+        'terra-insight': '📊',
       };
       return iconMap[moduleName] || '🕸️';
     };
@@ -310,97 +347,133 @@ const PWAShell: React.FC = () => {
     setCurrentModule(null);
   };
   const showError = (message: string) => {
-    const brandMessage = BRAND.errorMessages[Math.floor(Math.random() * BRAND.errorMessages.length)];
+    const brandMessage =
+      BRAND.errorMessages[Math.floor(Math.random() * BRAND.errorMessages.length)];
     console.error(`${brandMessage}: ${message}`);
   };
   if (loading) {
-    return <div className="w-full flex items-center">
-        <div className="text-center">
-          <div style={{
-          width: '120px',
-          height: '120px',
-          margin: '0 auto 2rem',
-          position: 'relative'
-        }}>
-            <svg width="120" height="120" viewBox="0 0 120 120" style={{
-            animation: 'spin 2s linear infinite'
-          }}>
+    return (
+      <div className='w-full flex items-center'>
+        <div className='text-center'>
+          <div
+            style={{
+              width: '120px',
+              height: '120px',
+              margin: '0 auto 2rem',
+              position: 'relative',
+            }}
+          >
+            <svg
+              width='120'
+              height='120'
+              viewBox='0 0 120 120'
+              style={{
+                animation: 'spin 2s linear infinite',
+              }}
+            >
               <defs>
-                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" style={{
-                  stopColor: '#0099ff',
-                  stopOpacity: 1
-                }} />
-                  <stop offset="100%" style={{
-                  stopColor: '#00ffaa',
-                  stopOpacity: 1
-                }} />
+                <linearGradient id='gradient' x1='0%' y1='0%' x2='100%' y2='100%'>
+                  <stop
+                    offset='0%'
+                    style={{
+                      stopColor: '#0099ff',
+                      stopOpacity: 1,
+                    }}
+                  />
+                  <stop
+                    offset='100%'
+                    style={{
+                      stopColor: '#00ffaa',
+                      stopOpacity: 1,
+                    }}
+                  />
                 </linearGradient>
               </defs>
-              <circle cx="60" cy="60" r="50" fill="none" stroke="url(#gradient)" strokeWidth="3" />
-              <text x="60" y="70" fontSize="36" fontWeight="bold" textAnchor="middle" fill="url(#gradient)">TF</text>
+              <circle cx='60' cy='60' r='50' fill='none' stroke='url(#gradient)' strokeWidth='3' />
+              <text
+                x='60'
+                y='70'
+                fontSize='36'
+                fontWeight='bold'
+                textAnchor='middle'
+                fill='url(#gradient)'
+              >
+                TF
+              </text>
             </svg>
           </div>
 
-
-          <h1 style={{
-          fontSize: '2.5rem',
-          fontWeight: 900,
-          background: 'linear-gradient(135deg, #0099ff, #00ffee, #00ffaa)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-          marginBottom: '0.5rem'
-        }}>
+          <h1
+            style={{
+              fontSize: '2.5rem',
+              fontWeight: 900,
+              background: 'linear-gradient(135deg, #0099ff, #00ffee, #00ffaa)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              marginBottom: '0.5rem',
+            }}
+          >
             Terrafusion OS
           </h1>
-          <p style={{
-          color: 'rgba(255,255,255,0.8)',
-          fontSize: '1.2rem',
-          marginBottom: '0.5rem'
-        }}>
+          <p
+            style={{
+              color: 'rgba(255,255,255,0.8)',
+              fontSize: '1.2rem',
+              marginBottom: '0.5rem',
+            }}
+          >
             Government. Transcended.
           </p>
 
-
-          <p style={{
-          color: 'rgba(255,255,255,0.6)',
-          fontSize: '1rem',
-          marginBottom: '2rem'
-        }}>
+          <p
+            style={{
+              color: 'rgba(255,255,255,0.6)',
+              fontSize: '1rem',
+              marginBottom: '2rem',
+            }}
+          >
             Turn Complexity into Clarity.
           </p>
-          <div style={{
-          width: '300px',
-          height: '4px',
-          background: 'rgba(255,255,255,0.1)',
-          borderRadius: '2px',
-          margin: '0 auto',
-          overflow: 'hidden'
-        }}>
-
-
-            <div style={{
-            height: '100%',
-            background: 'linear-gradient(90deg, #0099ff, #00ffee, #00ffaa)',
-            animation: 'loading 2s ease-in-out infinite',
-            borderRadius: '2px'
-          }} />
+          <div
+            style={{
+              width: '300px',
+              height: '4px',
+              background: 'rgba(255,255,255,0.1)',
+              borderRadius: '2px',
+              margin: '0 auto',
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              style={{
+                height: '100%',
+                background: 'linear-gradient(90deg, #0099ff, #00ffee, #00ffaa)',
+                animation: 'loading 2s ease-in-out infinite',
+                borderRadius: '2px',
+              }}
+            />
           </div>
-          <p style={{
-          color: realDataConnected ? '#00ffaa' : '#00ffee',
-          fontSize: '1rem',
-          marginTop: '1rem'
-        }}>
+          <p
+            style={{
+              color: realDataConnected ? '#00ffaa' : '#00ffee',
+              fontSize: '1rem',
+              marginTop: '1rem',
+            }}
+          >
             {loadingMessage}
           </p>
-          {realDataConnected && <div style={{
-          color: '#00ffaa',
-          fontSize: '0.9rem',
-          marginTop: '0.5rem'
-        }}>
+          {realDataConnected && (
+            <div
+              style={{
+                color: '#00ffaa',
+                fontSize: '0.9rem',
+                marginTop: '0.5rem',
+              }}
+            >
               ✅ Backend Connected
-            </div>}
+            </div>
+          )}
         </div>
         <style>{`
           @keyframes spin {
@@ -412,175 +485,200 @@ const PWAShell: React.FC = () => {
             50% { width: 100%; }
           }
         `}</style>
-      </div>;
+      </div>
+    );
   }
   if (currentModule) {
-    return <div className="w-full flex">
-        <div className="flex items-center gap-4">
-
-
-          <button onClick={closeModule} className="font-semibold">
+    return (
+      <div className='w-full flex'>
+        <div className='flex items-center gap-4'>
+          <button onClick={closeModule} className='font-semibold'>
             ← Back
           </button>
-          <h2 style={{
-          color: '#fff',
-          fontSize: '1.5rem',
-          fontWeight: 700,
-          margin: 0
-        }}>
+          <h2
+            style={{
+              color: '#fff',
+              fontSize: '1.5rem',
+              fontWeight: 700,
+              margin: 0,
+            }}
+          >
             {currentModule.name}
           </h2>
         </div>
-        <iframe src={currentModule.url} title={currentModule.name} className="flex-1 w-full" />
-      </div>;
+        <iframe src={currentModule.url} title={currentModule.name} className='flex-1 w-full' />
+      </div>
+    );
   }
-  return <div className="w-full">
+  return (
+    <div className='w-full'>
       {/* Header Bar */}
-      <header className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-
-
-          <div className="flex items-center">
-            TF
-          </div>
-          <h1 style={{
-          fontSize: '1.5rem',
-          fontWeight: 700,
-          background: 'linear-gradient(135deg, #0099ff, #00ffee, #00ffaa)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-          margin: 0
-        }}>
+      <header className='flex items-center justify-between'>
+        <div className='flex items-center gap-4'>
+          <div className='flex items-center'>TF</div>
+          <h1
+            style={{
+              fontSize: '1.5rem',
+              fontWeight: 700,
+              background: 'linear-gradient(135deg, #0099ff, #00ffee, #00ffaa)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              margin: 0,
+            }}
+          >
             Terrafusion OS
           </h1>
         </div>
-        
-        <div className="flex-1">
 
-
-          <input type="text" placeholder="Search properties, modules, or commands..." className="w-full" />
+        <div className='flex-1'>
+          <input
+            type='text'
+            placeholder='Search properties, modules, or commands...'
+            className='w-full'
+          />
         </div>
-        
-        <div className="flex items-center gap-4">
 
-
-          <span style={{
-          color: 'rgba(255,255,255,0.8)'
-        }}>{userName}</span>
-          <div className="flex items-center">
-            👤
-          </div>
+        <div className='flex items-center gap-4'>
+          <span
+            style={{
+              color: 'rgba(255,255,255,0.8)',
+            }}
+          >
+            {userName}
+          </span>
+          <div className='flex items-center'>👤</div>
         </div>
       </header>
 
       {/* Module Grid */}
-      <main className="p-8">
+      <main className='p-8'>
         {/* System Status Banner */}
-        <div style={{
-        background: realDataConnected ? 'rgba(0,255,170,0.1)' : 'rgba(255,165,0,0.1)',
-        border: `1px solid ${realDataConnected ? '#00ffaa' : '#ffa500'}`
-      }} className="text-center">
-          <div className="flex justify-between items-center gap-4">
-            <div className="flex items-center gap-4">
-              <div style={{
-              color: realDataConnected ? '#00ffaa' : '#ffa500',
-              fontSize: '1.2rem',
-              fontWeight: 700
-            }}>
+        <div
+          style={{
+            background: realDataConnected ? 'rgba(0,255,170,0.1)' : 'rgba(255,165,0,0.1)',
+            border: `1px solid ${realDataConnected ? '#00ffaa' : '#ffa500'}`,
+          }}
+          className='text-center'
+        >
+          <div className='flex justify-between items-center gap-4'>
+            <div className='flex items-center gap-4'>
+              <div
+                style={{
+                  color: realDataConnected ? '#00ffaa' : '#ffa500',
+                  fontSize: '1.2rem',
+                  fontWeight: 700,
+                }}
+              >
                 {realDataConnected ? '✅ UNIFIED SYSTEM OPERATIONAL' : '⚠️ CONNECTING TO BACKEND'}
               </div>
-              {systemHealth && <div className="flex gap-4">
+              {systemHealth && (
+                <div className='flex gap-4'>
                   <span>📦 {systemHealth.ModuleCount || modules.length} Modules</span>
                   {aiAgentStatus && <span>🤖 {aiAgentStatus.AIAgents || 1008} AI Agents</span>}
                   <span>🏛️ {systemHealth.Database?.County || 'Benton County'}</span>
-                </div>}
+                </div>
+              )}
             </div>
-            {_terraFusionSyncStatus && <div className="text-right">
-
-
+            {_terraFusionSyncStatus && (
+              <div className='text-right'>
                 <div>🔄 TerraFusionSync Active</div>
                 <div>📊 {_terraFusionSyncStatus.parcels || '89,247'} Parcels</div>
-              </div>}
+              </div>
+            )}
           </div>
 
-
-          <div className="font-semibold">
+          <div className='font-semibold'>
             🏛️ Official ACTIVE_MODULES.md Registry v2.1 - 15 Production-Ready Government Modules
           </div>
-          <div style={{
-          color: 'rgba(255,255,255,0.7)',
-          fontSize: '0.8rem',
-          marginTop: '0.5rem'
-        }}>
-            ✅ Registry Updated: Aug 25, 2025 | FIXED: useRealData error resolved | Hard refresh (Ctrl+Shift+R) if still seeing old modules
+          <div
+            style={{
+              color: 'rgba(255,255,255,0.7)',
+              fontSize: '0.8rem',
+              marginTop: '0.5rem',
+            }}
+          >
+            ✅ Registry Updated: Aug 25, 2025 | FIXED: useRealData error resolved | Hard refresh
+            (Ctrl+Shift+R) if still seeing old modules
           </div>
         </div>
 
-        <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-        gap: '2rem',
-        maxWidth: '1400px',
-        margin: '0 auto'
-      }}>
-          {modules.map(module => <div key={module.id} onClick={() => module.enabled && loadModule(module)} style={{
-          cursor: module.enabled ? 'pointer' : 'not-allowed',
-          opacity: module.enabled ? 1 : 0.5
-        }} onMouseEnter={e => {
-          if (module.enabled) {
-            e.currentTarget.style.transform = 'translateY(-5px)';
-            e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,255,238,0.3)';
-            e.currentTarget.style.borderColor = '#00ffee';
-          }
-        }} onMouseLeave={e => {
-          if (module.enabled) {
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = 'none';
-            e.currentTarget.style.borderColor = 'rgba(0,255,238,0.2)';
-          }
-        }} className="p-8">
-              <div style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: '4px',
-            background: 'linear-gradient(90deg, #00ffee, transparent)'
-          }} />
-              
-              <div className="flex items-center gap-4">
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: '2rem',
+            maxWidth: '1400px',
+            margin: '0 auto',
+          }}
+        >
+          {modules.map((module) => (
+            <div
+              key={module.id}
+              onClick={() => module.enabled && loadModule(module)}
+              style={{
+                cursor: module.enabled ? 'pointer' : 'not-allowed',
+                opacity: module.enabled ? 1 : 0.5,
+              }}
+              onMouseEnter={(e) => {
+                if (module.enabled) {
+                  e.currentTarget.style.transform = 'translateY(-5px)';
+                  e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,255,238,0.3)';
+                  e.currentTarget.style.borderColor = '#00ffee';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (module.enabled) {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.borderColor = 'rgba(0,255,238,0.2)';
+                }
+              }}
+              className='p-8'
+            >
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '4px',
+                  background: 'linear-gradient(90deg, #00ffee, transparent)',
+                }}
+              />
 
-
-                <div className="flex items-center">
-                  {module.icon}
-                </div>
+              <div className='flex items-center gap-4'>
+                <div className='flex items-center'>{module.icon}</div>
                 <div>
-                  <h3 style={{
-                fontSize: '1.3rem',
-                fontWeight: 700,
-                color: '#fff',
-                margin: '0 0 0.5rem 0'
-              }}>
+                  <h3
+                    style={{
+                      fontSize: '1.3rem',
+                      fontWeight: 700,
+                      color: '#fff',
+                      margin: '0 0 0.5rem 0',
+                    }}
+                  >
                     {module.name}
                   </h3>
-                  {!module.enabled && <span className="font-semibold">
-                      Coming Soon
-                    </span>}
+                  {!module.enabled && <span className='font-semibold'>Coming Soon</span>}
                 </div>
               </div>
-              
-              <p style={{
-            color: 'rgba(255,255,255,0.7)',
-            fontSize: '0.95rem',
-            lineHeight: 1.5,
-            margin: 0
-          }}>
+
+              <p
+                style={{
+                  color: 'rgba(255,255,255,0.7)',
+                  fontSize: '0.95rem',
+                  lineHeight: 1.5,
+                  margin: 0,
+                }}
+              >
                 {module.description}
               </p>
-            </div>)}
+            </div>
+          ))}
         </div>
       </main>
-    </div>;
+    </div>
+  );
 };
 export default PWAShell;

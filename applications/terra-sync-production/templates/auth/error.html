@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }} - TerraFusion Platform</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    
+    .error-container {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+      padding: 2rem;
+      text-align: center;
+    }
+    
+    .logo-container {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .logo-container img {
+      width: 160px;
+      height: auto;
+    }
+    
+    .error-code {
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: #e53935;
+      margin: 0.5rem 0;
+    }
+    
+    h1 {
+      color: #333;
+      margin-bottom: 1rem;
+      font-size: 1.75rem;
+    }
+    
+    .error-message {
+      color: #555;
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+      line-height: 1.5;
+    }
+    
+    .action-button {
+      display: inline-block;
+      background-color: #4a90e2;
+      color: white;
+      text-decoration: none;
+      padding: 0.85rem 1.5rem;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: background-color 0.2s;
+      border: none;
+      cursor: pointer;
+      margin-right: 1rem;
+    }
+    
+    .action-button:hover {
+      background-color: #3a7bc8;
+    }
+    
+    .secondary-link {
+      display: inline-block;
+      color: #777;
+      text-decoration: none;
+      padding: 0.85rem 0;
+      font-size: 1rem;
+      transition: color 0.2s;
+    }
+    
+    .secondary-link:hover {
+      color: #444;
+      text-decoration: underline;
+    }
+    
+    .footer {
+      margin-top: 2.5rem;
+      color: #888;
+      font-size: 0.8rem;
+    }
+    
+    .footer a {
+      color: #666;
+      text-decoration: none;
+    }
+    
+    .footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="error-container">
+    <div class="logo-container">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="TerraFusion Logo">
+    </div>
+    
+    <div class="error-code">{{ error_code }}</div>
+    <h1>{{ title }}</h1>
+    <div class="error-message">{{ message }}</div>
+    
+    <div>
+      <a href="{{ url_for('root') }}" class="action-button">Return to Home</a>
+      <a href="{{ url_for('auth.login') }}" class="secondary-link">Sign In</a>
+    </div>
+    
+    <div class="footer">
+      <p>TerraFusion Platform &copy; 2025 | <a href="#">Contact Support</a> | <a href="#">Help</a></p>
+    </div>
+  </div>
+</body>
+</html>

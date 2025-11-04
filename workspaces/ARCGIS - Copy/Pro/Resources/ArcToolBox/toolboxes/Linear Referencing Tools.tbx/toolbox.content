@@ -1,0 +1,20 @@
+{
+    "version": "1.0",
+    "alias": "lr",
+    "displayname": "$rc:title",
+    "description": "$rc:descr",
+    "helpcontext": "7000000",
+    "toolsets": {
+        "<root>": {
+            "tools": [
+                "CalibrateRoutes",
+                "CreateRoutes",
+                "DissolveRouteEvents",
+                "LocateFeaturesAlongRoutes",
+                "MakeRouteEventLayer",
+                "OverlayRouteEvents",
+                "TransformRouteEvents"
+            ]
+        }
+    }
+}

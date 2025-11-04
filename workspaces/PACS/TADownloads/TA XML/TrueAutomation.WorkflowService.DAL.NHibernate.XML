@@ -1,0 +1,400 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.WorkflowService.DAL.NHibernate</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.EventRepository">
+            <summary>
+            Defines a typed repository for <see cref="T:Event"/> domain objects.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.IntervalRepository">
+            <summary>
+            Defines a typed repository for <see cref="T:Interval"/> domain objects.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.IWorkflowBookmarkRepository.FindByName(System.String)">
+            <summary>
+            Implements a custom bookmark lookup based on the bookmark name.
+            </summary>
+            <param name="name">The name of the bookmarks to return.</param>
+            <returns>A list of all workflow bookmarks whose name matches
+            the specified value.</returns>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.AutoPersistenceModelGenerator">
+            <summary>
+            Generates a Fluent NHibernate auto-persistence model
+            to specify the auto-mapping persistence behavior for
+            the task service domain.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.AutoPersistenceModelGenerator.GenerateAutoPersistenceModel">
+            <summary>
+            Generates a Fluent NHibernate auto-persistence model
+            to specify the auto-mapping persistence behavior for
+            the task service domain.
+            </summary>
+            <returns>An auto-persistence model specifying the a
+            set of auto-mapping behaviors and conventions.</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.AutoPersistenceModelGenerator.GetConventions">
+            <summary>
+            Returns the set of custom conventions defined in the
+            TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.Conventions
+            namespace.
+            </summary>
+            <returns>The set of custom mappings specified by this
+            assembly.</returns>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.Conventions.HasManyConvention">
+            <summary>
+            A Fluent NHibernate convention for specifying the behavior
+            of foreign key values in a one-to-many collection.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.Conventions.HasManyConvention.Apply(FluentNHibernate.Conventions.Instances.IOneToManyCollectionInstance)">
+            <summary>
+            Applies the foreign key convention to the specified one-to-many
+            collection instance. This convention specifies a column name of
+            the lowercase version of the foreign entity's name with an "_id"
+            suffix appended to it.
+            </summary>
+            <param name="instance">The one-to-many collection instance for
+            which to specify the corresponding behavior.</param>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.Conventions.PrimaryKeyConvention">
+            <summary>
+            A Fluent NHibernate convention for specifying the behavior
+            of primary key values.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.Conventions.PrimaryKeyConvention.Apply(FluentNHibernate.Conventions.Instances.IIdentityInstance)">
+            <summary>
+            Applies the primary key convention to the specified identity
+            instance. This convention specifies a column name of "id" and
+            an ID value of zero for transient objects.
+            </summary>
+            <param name="instance">The primary key instance for which to
+            specify the corresponding behavior.</param>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.Conventions.TableNameConvention">
+            <summary>
+            A Fluent NHibernate convention for converting class names
+            to their RDBMS table name equivalents.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.Conventions.TableNameConvention.Apply(FluentNHibernate.Conventions.Instances.IClassInstance)">
+            <summary>
+            Applies the table-naming convention to the specified class
+            instance. This convention takes the lowercase version of the
+            entity's class name and prepends "security_" to it.
+            </summary>
+            <param name="instance">The class instance for which to
+            create the corresponding table name.</param>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.DailyIntervalMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.WorkflowService.Domain.DailyInterval"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.DailyIntervalMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.WorkflowService.Domain.DailyInterval})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.EventMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.WorkflowService.Domain.Event"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.EventMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.WorkflowService.Domain.Event})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.IntervalMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.WorkflowService.Domain.Interval"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.IntervalMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.WorkflowService.Domain.Interval})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.MappingConfiguration">
+            <summary>
+            Defines an NHibernate object mapping configuration for
+            task service-related objects.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.MappingConfiguration.ShouldMap(System.Type)">
+            <summary>
+            Returns whether or not the specified type should be automatically
+            mapped to the underlying database by Fluent NHibernate. We map any
+            entity objects, i.e. objects derived from
+            <see cref="T:TrueAutomation.Core.Domain.IEntityWithId`1"/> and
+            ignore any pure value objects.
+            </summary>
+            <param name="type">The type to be evaluated for auto-mapping.</param>
+            <returns>True if the specified type should be auto-mapped,
+            otherwise false if it shouldn't.</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.MappingConfiguration.ShouldMap(FluentNHibernate.Member)">
+            <summary>
+            Returns whether or not the specified member should be
+            auto-mapped to the underlying database. We currently require
+            any auto-mapped members to be writable, i.e. they should
+            have a public setter implementation.
+            </summary>
+            <param name="member">The type/class member to evaluate.</param>
+            <returns>True if the member should be automatically mapped
+            to the underlying database, otherwise false.</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.MappingConfiguration.AbstractClassIsLayerSupertype(System.Type)">
+            <summary>
+            Returns whether a specified abstract type is a type of
+            interest from an auto-mapping standpoint. We care about any
+            entity types, i.e. anything derived from either the
+            <see cref="T:TrueAutomation.Core.Domain.IEntityWithId`1"/> or
+            <see cref="T:TrueAutomation.Core.Domain.Entity"/> types.
+            </summary>
+            <param name="type">The abstract type to be considered.</param>
+            <returns>True if the specified type is an entity type of
+            interest, otherwise false.</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.MappingConfiguration.IsId(FluentNHibernate.Member)">
+            <summary>
+            Returns whether or not the specified type member is a primary
+            key value, i.e. an identifier value. We consider any property
+            named "Id" to be an identifier value.
+            </summary>
+            <param name="member">The type member to be evaluated.</param>
+            <returns>True if the specified type member is an id value,
+            otherwise false.</returns>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.MessageEventMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.WorkflowService.Domain.MessageEvent"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.MessageEventMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.WorkflowService.Domain.MessageEvent})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.MessageTypeMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.WorkflowService.Domain.MessageType"/>
+            class.
+            </summary>a
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.MessageTypeMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.WorkflowService.Domain.MessageType})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.MessageTypeRepository">
+            <summary>
+            This is the Scheduled Event Repository.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.MonthlyIntervalMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.WorkflowService.Domain.MonthlyInterval"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.MonthlyIntervalMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.WorkflowService.Domain.MonthlyInterval})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.WeeklyIntervalMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.WorkflowService.Domain.WeeklyInterval"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.WeeklyIntervalMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.WorkflowService.Domain.WeeklyInterval})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.WorkflowBookmarkMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.WorkflowService.Domain.WorkflowBookmark"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.WorkflowBookmarkMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.WorkflowService.Domain.WorkflowBookmark})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.WorkflowInstanceMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.WorkflowService.Domain.WorkflowInstance"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.WorkflowInstanceMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.WorkflowService.Domain.WorkflowInstance})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.WorkflowMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.WorkflowService.Domain.Workflow"/>
+            class.
+            </summary>a
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.WorkflowMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.WorkflowService.Domain.Workflow})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.WorkflowPersistenceInstanceMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.WorkflowService.Domain.WorkflowPersistenceInstance"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.WorkflowPersistenceInstanceMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.WorkflowService.Domain.WorkflowPersistenceInstance})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.YearlyIntervalMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.WorkflowService.Domain.YearlyInterval"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.YearlyIntervalMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.WorkflowService.Domain.YearlyInterval})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.MessageEventRepository">
+            <summary>
+            This is the Scheduled Event Repository.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.ScheduledEventMap">
+            <summary>
+            Implements a custom auto-mapping override for the
+            <see cref="T:TrueAutomation.WorkflowService.Domain.ScheduledEvent"/>
+            class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DAL.NHibernate.Mappings.ScheduledEventMap.Override(FluentNHibernate.Automapping.AutoMapping{TrueAutomation.WorkflowService.Domain.ScheduledEvent})">
+            <summary>
+            Overrides the supplied auto-mapping configuration.
+            </summary>
+            <param name="mapping">The auto-mapping configuration to
+            override.</param>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.ScheduledEventRepository">
+            <summary>
+            This is the Scheduled Event Repository.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.WorkflowBookmarkRepository">
+            <summary>
+            Declares a typed repository for <see cref="T:WorkflowBookmark"/>
+            domain objects.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DAL.NHibernate.WorkflowBookmarkRepository.FindByName(System.String)">
+            <summary>
+            Implements a custom bookmark lookup based on the bookmark name.
+            </summary>
+            <param name="name">The name of the bookmarks to return.</param>
+            <returns>A list of all workflow bookmarks whose name matches
+            the specified value.</returns>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.WorkflowInstanceRepository">
+            <summary>
+            Defines a typed repository for <see cref="T:WorkflowInstance"/>
+            domain objects.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.WorkflowMessageTypeRepository">
+            <summary>
+            Defines a typed repository for <see cref="T:MessageType"/> domain objects.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.WorkflowPersistenceInstanceRepository">
+            <summary>
+            Declares a typed repository for <see cref="T:WorkflowPersistenceInstance"/>
+            domain objects.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.DAL.NHibernate.WorkflowRepository">
+            <summary>
+            Defines a typed repository for <see cref="T:Workflow"/> domain objects.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DAL.NHibernate.WorkflowRepository.FindByName(System.String)">
+            <summary>
+            Returns the newest version of the workflow with the specified name.
+            </summary>
+            <param name="name">The name of the workflow to return.</param>
+            <returns>The newest version of the <see cref="T:Workflow"/> with the
+            specified name.</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.DAL.NHibernate.WorkflowRepository.FindByName(System.String,System.Int32)">
+            <summary>
+            Returns a workflow with the specified name and version.
+            </summary>
+            <param name="name">The name of the workflow to return.</param>
+            <param name="version">The version of the workflow to return.
+            If a value of zero is specified, the newest version of the named
+            workflow will be returned.</param>
+            <returns>The <see cref="T:Workflow"/> with the specified name
+            and version number.</returns>
+        </member>
+    </members>
+</doc>

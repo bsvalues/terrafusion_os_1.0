@@ -1,0 +1,5 @@
+<DataType Name="DEMapServer">
+  <DisplayName>Map Server</DisplayName>
+  <Description>A map server.</Description>
+</DataType>
+

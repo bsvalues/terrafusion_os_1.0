@@ -1,0 +1,79 @@
+{
+    "type": "FunctionTool",
+    "guid": "{5cf90534-93bd-466d-83a3-a3dd1d7b9162}",
+    "displayname": "$rc:title",
+    "helpcontent": "1030003",
+    "description": "$rc:description",
+    "product": "300",
+    "categories": [
+        "{0a2ad811-7215-4a95-92f3-9c29de502e9b}"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Multipoint",
+                    "Point"
+                ],
+                "featuretype": [
+                    "Simple",
+                    "SimpleJunction",
+                    "SimpleEdge",
+                    "ComplexEdge",
+                    "RasterCatalogItem"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "near_features": {
+            "displayname": "$rc:near_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Multipoint",
+                    "Point"
+                ],
+                "featuretype": [
+                    "Simple",
+                    "SimpleJunction",
+                    "SimpleEdge",
+                    "ComplexEdge",
+                    "RasterCatalogItem"
+                ]
+            },
+            "description": "$rc:near_features.descr"
+        },
+        "out_table": {
+            "direction": "out",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "description": "$rc:out_table.descr"
+        },
+        "search_radius": {
+            "type": "optional",
+            "displayname": "$rc:search_radius.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:search_radius.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

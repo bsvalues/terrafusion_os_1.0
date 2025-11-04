@@ -1,0 +1,292 @@
+/**
+ * TerraFusion Dashboard - Global Styles
+ * Government. Transcended. - Quantum-themed CSS
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* === QUANTUM THEME VARIABLES === */
+:root {
+  --terra-cyan: #00FFFF;
+  --terra-midnight: #0A0E1A;
+  --terra-blue: #0080FF;
+  --terra-green: #00FF88;
+  --terra-slate: #1E293B;
+  --quantum-factor: 949;
+  --golden-ratio: 1.618;
+}
+
+/* === BASE STYLES === */
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-slate-950 text-slate-100;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: auto;
+  }
+
+  code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  }
+
+  /* Custom scrollbar for quantum theme */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-slate-900;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-cyan-600/50 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-cyan-500/70;
+  }
+}
+
+/* === COMPONENT STYLES === */
+@layer components {
+  /* Quantum glow effect */
+  .quantum-glow {
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+  }
+
+  .quantum-glow-intense {
+    box-shadow: 0 0 40px rgba(0, 255, 255, 0.5);
+  }
+
+  /* Terra-cyan gradient */
+  .terra-gradient {
+    background: linear-gradient(135deg, #00FFFF 0%, #00FF88 50%, #0080FF 100%);
+  }
+
+  /* Glassmorphism effect */
+  .glass-morphism {
+    backdrop-filter: blur(10px);
+    background: rgba(30, 41, 59, 0.3);
+    border: 1px solid rgba(0, 255, 255, 0.2);
+  }
+
+  /* Quantum pulse animation */
+  .quantum-pulse {
+    animation: quantum-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes quantum-pulse {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.8;
+      transform: scale(1.05);
+    }
+  }
+
+  /* Shimmer effect for loading states */
+  .shimmer {
+    background: linear-gradient(90deg, 
+      rgba(255, 255, 255, 0.1) 0%, 
+      rgba(0, 255, 255, 0.3) 50%, 
+      rgba(255, 255, 255, 0.1) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  /* Quantum scan line effect */
+  .scan-line {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .scan-line::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+      transparent, 
+      rgba(0, 255, 255, 0.4), 
+      transparent
+    );
+    animation: scan 3s ease-in-out infinite;
+  }
+
+  @keyframes scan {
+    0% {
+      left: -100%;
+    }
+    50% {
+      left: 100%;
+    }
+    100% {
+      left: 100%;
+    }
+  }
+}
+
+/* === UTILITY STYLES === */
+@layer utilities {
+  /* Text gradients */
+  .text-terra-gradient {
+    @apply bg-gradient-to-r from-cyan-400 to-green-400 bg-clip-text text-transparent;
+  }
+
+  .text-quantum-gradient {
+    @apply bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent;
+  }
+
+  /* Custom spacing based on golden ratio */
+  .space-golden {
+    margin: calc(1rem * 1.618);
+  }
+
+  .p-golden {
+    padding: calc(1rem * 1.618);
+  }
+
+  /* Quantum optimization indicator */
+  .quantum-optimized::before {
+    content: '⚡';
+    color: var(--terra-cyan);
+    margin-right: 0.5rem;
+  }
+
+  /* Government compliance indicator */
+  .government-compliant::before {
+    content: '🏛️';
+    margin-right: 0.5rem;
+  }
+
+  /* Terra-cyan focus ring */
+  .focus-terra {
+    @apply focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:ring-offset-2 focus:ring-offset-slate-900;
+  }
+
+  /* Quantum button styles */
+  .btn-quantum {
+    @apply px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-medium rounded-lg;
+    @apply hover:from-cyan-400 hover:to-blue-400 transition-all duration-300;
+    @apply focus-terra active:scale-95;
+    box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
+  }
+
+  .btn-quantum:hover {
+    box-shadow: 0 8px 25px rgba(0, 255, 255, 0.4);
+    transform: translateY(-2px);
+  }
+
+  /* Terra status indicators */
+  .status-active {
+    @apply text-green-400 bg-green-400/20 px-2 py-1 rounded text-xs font-medium;
+  }
+
+  .status-inactive {
+    @apply text-yellow-400 bg-yellow-400/20 px-2 py-1 rounded text-xs font-medium;
+  }
+
+  .status-error {
+    @apply text-red-400 bg-red-400/20 px-2 py-1 rounded text-xs font-medium;
+  }
+
+  /* Metric cards */
+  .metric-card {
+    @apply bg-slate-900/70 backdrop-blur-sm border border-cyan-500/30 rounded-xl p-4;
+    @apply hover:border-cyan-400/50 transition-colors duration-300;
+  }
+
+  .metric-card:hover {
+    box-shadow: 0 8px 32px rgba(0, 255, 255, 0.1);
+  }
+
+  /* Chart container */
+  .chart-container {
+    @apply bg-slate-800/50 rounded-lg p-4 border border-slate-700/50;
+  }
+
+  /* Loading spinner with quantum theme */
+  .loading-quantum {
+    @apply animate-spin rounded-full border-2 border-transparent;
+    border-top-color: var(--terra-cyan);
+    border-right-color: var(--terra-cyan);
+  }
+}
+
+/* === RESPONSIVE DESIGN === */
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .widget {
+    min-height: 200px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+/* === ACCESSIBILITY === */
+@media (prefers-reduced-motion: reduce) {
+  .quantum-pulse,
+  .shimmer,
+  .scan-line::after {
+    animation: none;
+  }
+}
+
+/* === HIGH CONTRAST MODE === */
+@media (prefers-contrast: high) {
+  :root {
+    --terra-cyan: #00FFFF;
+    --terra-midnight: #000000;
+    --terra-slate: #333333;
+  }
+
+  .metric-card {
+    @apply border-cyan-400 bg-slate-900;
+  }
+}
+
+/* === PRINT STYLES === */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    @apply bg-white text-black;
+  }
+
+  .metric-card {
+    @apply bg-white border-black;
+  }
+}

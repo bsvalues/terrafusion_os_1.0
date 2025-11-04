@@ -1,0 +1,13 @@
+{
+    "map": {
+        "contour_values.descr": "List of z-values for which to create contours.",
+        "contour_values.title": "Contour values",
+        "description": "Creates a feature class of selected contour values from a raster surface.",
+        "in_raster.descr": "The input surface raster.",
+        "in_raster.title": "Input raster",
+        "out_polyline_features.descr": "The output contour polyline features.",
+        "out_polyline_features.title": "Output polyline features",
+        "summary": "<xdoc><p>Creates a feature class of selected contour values from a raster surface.</p><p>Learn more about how Contouring works</p></xdoc>",
+        "title": "Contour List"
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "set": [
+        "configure route id",
+        "delete event",
+        "delete lrs",
+        "delete route",
+        "fixed length",
+        "length",
+        "modify route id",
+        "null",
+        "padding",
+        "remove event",
+        "remove route"
+    ]
+}

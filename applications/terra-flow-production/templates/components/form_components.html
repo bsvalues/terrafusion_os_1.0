@@ -1,0 +1,303 @@
+{% macro form_input(id, name, label, type="text", value="", required=False, placeholder="", help_text="", min_length=None, max_length=None, pattern=None, min_value=None, max_value=None, readonly=False, disabled=False, classes="", wrapper_classes="mb-3") %}
+<div class="{{ wrapper_classes }}">
+    <label for="{{ id }}" class="form-label">{{ label }}{% if required %}<span class="text-danger">*</span>{% endif %}</label>
+    <input type="{{ type }}" class="form-control {{ classes }}" id="{{ id }}" name="{{ name }}" value="{{ value }}"
+        {% if required %}required{% endif %}
+        {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+        {% if min_length %}minlength="{{ min_length }}"{% endif %}
+        {% if max_length %}maxlength="{{ max_length }}"{% endif %}
+        {% if pattern %}pattern="{{ pattern }}"{% endif %}
+        {% if min_value %}min="{{ min_value }}"{% endif %}
+        {% if max_value %}max="{{ max_value }}"{% endif %}
+        {% if readonly %}readonly{% endif %}
+        {% if disabled %}disabled{% endif %}
+    >
+    {% if help_text %}
+    <div class="form-text">{{ help_text }}</div>
+    {% endif %}
+    <div class="invalid-feedback"></div>
+    <div class="valid-feedback"></div>
+</div>
+{% endmacro %}
+
+{% macro form_textarea(id, name, label, value="", required=False, placeholder="", help_text="", rows=5, min_length=None, max_length=None, readonly=False, disabled=False, classes="", wrapper_classes="mb-3") %}
+<div class="{{ wrapper_classes }}">
+    <label for="{{ id }}" class="form-label">{{ label }}{% if required %}<span class="text-danger">*</span>{% endif %}</label>
+    <textarea class="form-control {{ classes }}" id="{{ id }}" name="{{ name }}" rows="{{ rows }}"
+        {% if required %}required{% endif %}
+        {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+        {% if min_length %}minlength="{{ min_length }}"{% endif %}
+        {% if max_length %}maxlength="{{ max_length }}"{% endif %}
+        {% if readonly %}readonly{% endif %}
+        {% if disabled %}disabled{% endif %}
+    >{{ value }}</textarea>
+    {% if help_text %}
+    <div class="form-text">{{ help_text }}</div>
+    {% endif %}
+    <div class="invalid-feedback"></div>
+    <div class="valid-feedback"></div>
+</div>
+{% endmacro %}
+
+{% macro form_select(id, name, label, options, selected="", required=False, help_text="", disabled=False, classes="", wrapper_classes="mb-3") %}
+<div class="{{ wrapper_classes }}">
+    <label for="{{ id }}" class="form-label">{{ label }}{% if required %}<span class="text-danger">*</span>{% endif %}</label>
+    <select class="form-select {{ classes }}" id="{{ id }}" name="{{ name }}"
+        {% if required %}required{% endif %}
+        {% if disabled %}disabled{% endif %}
+    >
+        <option value="">Select...</option>
+        {% for option in options %}
+            {% if option is mapping %}
+                <option value="{{ option.value }}" {% if option.value == selected %}selected{% endif %}>
+                    {{ option.label }}
+                </option>
+            {% else %}
+                <option value="{{ option }}" {% if option == selected %}selected{% endif %}>
+                    {{ option }}
+                </option>
+            {% endif %}
+        {% endfor %}
+    </select>
+    {% if help_text %}
+    <div class="form-text">{{ help_text }}</div>
+    {% endif %}
+    <div class="invalid-feedback"></div>
+    <div class="valid-feedback"></div>
+</div>
+{% endmacro %}
+
+{% macro form_checkbox(id, name, label, checked=False, required=False, help_text="", disabled=False, classes="", wrapper_classes="mb-3") %}
+<div class="{{ wrapper_classes }}">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input {{ classes }}" id="{{ id }}" name="{{ name }}" value="1"
+            {% if checked %}checked{% endif %}
+            {% if required %}required{% endif %}
+            {% if disabled %}disabled{% endif %}
+        >
+        <label class="form-check-label" for="{{ id }}">
+            {{ label }}{% if required %}<span class="text-danger">*</span>{% endif %}
+        </label>
+    </div>
+    {% if help_text %}
+    <div class="form-text">{{ help_text }}</div>
+    {% endif %}
+    <div class="invalid-feedback"></div>
+    <div class="valid-feedback"></div>
+</div>
+{% endmacro %}
+
+{% macro form_radio_group(id, name, label, options, selected="", required=False, help_text="", disabled=False, classes="", wrapper_classes="mb-3") %}
+<div class="{{ wrapper_classes }}">
+    <div class="form-label">{{ label }}{% if required %}<span class="text-danger">*</span>{% endif %}</div>
+    {% for option in options %}
+        <div class="form-check">
+            {% if option is mapping %}
+                <input type="radio" class="form-check-input {{ classes }}" id="{{ id }}_{{ loop.index }}" name="{{ name }}" value="{{ option.value }}"
+                    {% if option.value == selected %}checked{% endif %}
+                    {% if required %}required{% endif %}
+                    {% if disabled %}disabled{% endif %}
+                >
+                <label class="form-check-label" for="{{ id }}_{{ loop.index }}">
+                    {{ option.label }}
+                </label>
+            {% else %}
+                <input type="radio" class="form-check-input {{ classes }}" id="{{ id }}_{{ loop.index }}" name="{{ name }}" value="{{ option }}"
+                    {% if option == selected %}checked{% endif %}
+                    {% if required %}required{% endif %}
+                    {% if disabled %}disabled{% endif %}
+                >
+                <label class="form-check-label" for="{{ id }}_{{ loop.index }}">
+                    {{ option }}
+                </label>
+            {% endif %}
+        </div>
+    {% endfor %}
+    {% if help_text %}
+    <div class="form-text">{{ help_text }}</div>
+    {% endif %}
+    <div class="invalid-feedback"></div>
+    <div class="valid-feedback"></div>
+</div>
+{% endmacro %}
+
+{% macro form_switch(id, name, label, checked=False, required=False, help_text="", disabled=False, classes="", wrapper_classes="mb-3") %}
+<div class="{{ wrapper_classes }}">
+    <div class="form-check form-switch">
+        <input type="checkbox" class="form-check-input {{ classes }}" id="{{ id }}" name="{{ name }}" value="1"
+            {% if checked %}checked{% endif %}
+            {% if required %}required{% endif %}
+            {% if disabled %}disabled{% endif %}
+        >
+        <label class="form-check-label" for="{{ id }}">
+            {{ label }}{% if required %}<span class="text-danger">*</span>{% endif %}
+        </label>
+    </div>
+    {% if help_text %}
+    <div class="form-text">{{ help_text }}</div>
+    {% endif %}
+    <div class="invalid-feedback"></div>
+    <div class="valid-feedback"></div>
+</div>
+{% endmacro %}
+
+{% macro form_file(id, name, label, accept=None, required=False, help_text="", multiple=False, disabled=False, classes="", wrapper_classes="mb-3") %}
+<div class="{{ wrapper_classes }}">
+    <label for="{{ id }}" class="form-label">{{ label }}{% if required %}<span class="text-danger">*</span>{% endif %}</label>
+    <input type="file" class="form-control {{ classes }}" id="{{ id }}" name="{{ name }}"
+        {% if required %}required{% endif %}
+        {% if accept %}accept="{{ accept }}"{% endif %}
+        {% if multiple %}multiple{% endif %}
+        {% if disabled %}disabled{% endif %}
+    >
+    {% if help_text %}
+    <div class="form-text">{{ help_text }}</div>
+    {% endif %}
+    <div class="invalid-feedback"></div>
+    <div class="valid-feedback"></div>
+</div>
+{% endmacro %}
+
+{% macro form_range(id, name, label, min_value, max_value, step=1, value=None, required=False, help_text="", disabled=False, classes="", wrapper_classes="mb-3") %}
+<div class="{{ wrapper_classes }}">
+    <label for="{{ id }}" class="form-label">{{ label }}{% if required %}<span class="text-danger">*</span>{% endif %}</label>
+    <div class="range-container">
+        <input type="range" class="form-range {{ classes }}" id="{{ id }}" name="{{ name }}" 
+            min="{{ min_value }}" max="{{ max_value }}" step="{{ step }}"
+            {% if value %}value="{{ value }}"{% endif %}
+            {% if required %}required{% endif %}
+            {% if disabled %}disabled{% endif %}
+        >
+        <div class="range-labels">
+            <span>{{ min_value }}</span>
+            <span>{{ (min_value + max_value) / 2 }}</span>
+            <span>{{ max_value }}</span>
+        </div>
+    </div>
+    {% if help_text %}
+    <div class="form-text">{{ help_text }}</div>
+    {% endif %}
+    <div class="invalid-feedback"></div>
+    <div class="valid-feedback"></div>
+</div>
+{% endmacro %}
+
+{% macro form_date(id, name, label, value="", required=False, help_text="", min_date=None, max_date=None, disabled=False, classes="", wrapper_classes="mb-3") %}
+<div class="{{ wrapper_classes }}">
+    <label for="{{ id }}" class="form-label">{{ label }}{% if required %}<span class="text-danger">*</span>{% endif %}</label>
+    <input type="date" class="form-control {{ classes }}" id="{{ id }}" name="{{ name }}"
+        {% if value %}value="{{ value }}"{% endif %}
+        {% if required %}required{% endif %}
+        {% if min_date %}min="{{ min_date }}"{% endif %}
+        {% if max_date %}max="{{ max_date }}"{% endif %}
+        {% if disabled %}disabled{% endif %}
+    >
+    {% if help_text %}
+    <div class="form-text">{{ help_text }}</div>
+    {% endif %}
+    <div class="invalid-feedback"></div>
+    <div class="valid-feedback"></div>
+</div>
+{% endmacro %}
+
+{% macro form_datetime(id, name, label, value="", required=False, help_text="", min_datetime=None, max_datetime=None, disabled=False, classes="", wrapper_classes="mb-3") %}
+<div class="{{ wrapper_classes }}">
+    <label for="{{ id }}" class="form-label">{{ label }}{% if required %}<span class="text-danger">*</span>{% endif %}</label>
+    <input type="datetime-local" class="form-control {{ classes }}" id="{{ id }}" name="{{ name }}"
+        {% if value %}value="{{ value }}"{% endif %}
+        {% if required %}required{% endif %}
+        {% if min_datetime %}min="{{ min_datetime }}"{% endif %}
+        {% if max_datetime %}max="{{ max_datetime }}"{% endif %}
+        {% if disabled %}disabled{% endif %}
+    >
+    {% if help_text %}
+    <div class="form-text">{{ help_text }}</div>
+    {% endif %}
+    <div class="invalid-feedback"></div>
+    <div class="valid-feedback"></div>
+</div>
+{% endmacro %}
+
+{% macro form_floating_input(id, name, label, type="text", value="", required=False, placeholder=" ", min_length=None, max_length=None, pattern=None, min_value=None, max_value=None, readonly=False, disabled=False, classes="", wrapper_classes="form-floating mb-3") %}
+<div class="{{ wrapper_classes }}">
+    <input type="{{ type }}" class="form-control {{ classes }}" id="{{ id }}" name="{{ name }}" value="{{ value }}"
+        {% if required %}required{% endif %}
+        placeholder="{{ placeholder }}"
+        {% if min_length %}minlength="{{ min_length }}"{% endif %}
+        {% if max_length %}maxlength="{{ max_length }}"{% endif %}
+        {% if pattern %}pattern="{{ pattern }}"{% endif %}
+        {% if min_value %}min="{{ min_value }}"{% endif %}
+        {% if max_value %}max="{{ max_value }}"{% endif %}
+        {% if readonly %}readonly{% endif %}
+        {% if disabled %}disabled{% endif %}
+    >
+    <label for="{{ id }}">{{ label }}{% if required %}<span class="text-danger">*</span>{% endif %}</label>
+    <div class="invalid-feedback"></div>
+    <div class="valid-feedback"></div>
+</div>
+{% endmacro %}
+
+{% macro form_input_group(id, name, label, prepend=None, append=None, type="text", value="", required=False, placeholder="", help_text="", min_length=None, max_length=None, pattern=None, min_value=None, max_value=None, readonly=False, disabled=False, classes="", wrapper_classes="mb-3") %}
+<div class="{{ wrapper_classes }}">
+    <label for="{{ id }}" class="form-label">{{ label }}{% if required %}<span class="text-danger">*</span>{% endif %}</label>
+    <div class="input-group">
+        {% if prepend %}
+        <span class="input-group-text">{{ prepend }}</span>
+        {% endif %}
+        <input type="{{ type }}" class="form-control {{ classes }}" id="{{ id }}" name="{{ name }}" value="{{ value }}"
+            {% if required %}required{% endif %}
+            {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+            {% if min_length %}minlength="{{ min_length }}"{% endif %}
+            {% if max_length %}maxlength="{{ max_length }}"{% endif %}
+            {% if pattern %}pattern="{{ pattern }}"{% endif %}
+            {% if min_value %}min="{{ min_value }}"{% endif %}
+            {% if max_value %}max="{{ max_value }}"{% endif %}
+            {% if readonly %}readonly{% endif %}
+            {% if disabled %}disabled{% endif %}
+        >
+        {% if append %}
+        <span class="input-group-text">{{ append }}</span>
+        {% endif %}
+    </div>
+    {% if help_text %}
+    <div class="form-text">{{ help_text }}</div>
+    {% endif %}
+    <div class="invalid-feedback"></div>
+    <div class="valid-feedback"></div>
+</div>
+{% endmacro %}
+
+{% macro form_button(id, text, type="button", classes="btn btn-primary", disabled=False, loading_text="Loading...", data_attrs={}) %}
+<button type="{{ type }}" id="{{ id }}" class="{{ classes }}"
+    {% if disabled %}disabled{% endif %}
+    {% if loading_text %}data-loading-text="{{ loading_text }}"{% endif %}
+    {% for key, value in data_attrs.items() %}
+        data-{{ key }}="{{ value }}"
+    {% endfor %}
+>{{ text }}</button>
+{% endmacro %}
+
+{% macro form_buttons(submit_text="Submit", cancel_text="Cancel", submit_classes="btn btn-primary", cancel_classes="btn btn-secondary me-2", cancel_url=None, wrapper_classes="d-flex justify-content-end mt-4") %}
+<div class="{{ wrapper_classes }}">
+    {% if cancel_url %}
+    <a href="{{ cancel_url }}" class="{{ cancel_classes }}">{{ cancel_text }}</a>
+    {% else %}
+    <button type="button" class="{{ cancel_classes }}">{{ cancel_text }}</button>
+    {% endif %}
+    <button type="submit" class="{{ submit_classes }}">{{ submit_text }}</button>
+</div>
+{% endmacro %}
+
+{% macro form_error_container(id) %}
+<div class="tf-validation-error-container" id="{{ id }}" style="display: none;"></div>
+{% endmacro %}
+
+{% macro form_divider(text=None, classes="my-4") %}
+{% if text %}
+<div class="divider {{ classes }}">
+    <span>{{ text }}</span>
+</div>
+{% else %}
+<hr class="{{ classes }}">
+{% endif %}
+{% endmacro %}

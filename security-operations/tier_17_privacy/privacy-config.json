@@ -1,0 +1,80 @@
+{
+  "workspace": "security-operations",
+  "privacy_framework": "differential_privacy_v2_advanced",
+  "deployment_date": "2025-10-16T11:48:12.897476",
+  "privacy_levels": {
+    "public": {
+      "epsilon": 5.0,
+      "delta": 1e-05,
+      "max_queries_per_minute": 100,
+      "aggregation_threshold": 5
+    },
+    "internal": {
+      "epsilon": 1.0,
+      "delta": 1e-06,
+      "max_queries_per_minute": 50,
+      "aggregation_threshold": 3
+    },
+    "confidential": {
+      "epsilon": 0.1,
+      "delta": 1e-07,
+      "max_queries_per_minute": 10,
+      "aggregation_threshold": 1
+    },
+    "restricted": {
+      "epsilon": 0.01,
+      "delta": 1e-08,
+      "max_queries_per_minute": 1,
+      "aggregation_threshold": 1
+    }
+  },
+  "differential_privacy_params": {
+    "noise_mechanism": "laplace_mechanism",
+    "laplace_scale": 1.0,
+    "gaussian_sigma": 1.0,
+    "sensitivity": 1.0
+  },
+  "federated_learning": {
+    "enabled": true,
+    "model_architecture": "federated_averaging",
+    "local_epochs": 5,
+    "global_rounds": 100,
+    "privacy_budget": 10.0,
+    "secure_aggregation": true
+  },
+  "homomorphic_encryption": {
+    "enabled": true,
+    "scheme": "ckks",
+    "poly_modulus_degree": 8192,
+    "coeff_modulus": [
+      60,
+      40,
+      40,
+      60
+    ],
+    "scale": 40
+  },
+  "privacy_preserving_analytics": {
+    "secure_multiparty_computation": true,
+    "secret_sharing_threshold": 3,
+    "total_parties": 5,
+    "encrypted_inference": true
+  },
+  "data_minimization": {
+    "retention_policies": {
+      "public": "7_years",
+      "internal": "5_years",
+      "confidential": "3_years",
+      "restricted": "1_year"
+    },
+    "automatic_deletion": true,
+    "anonymization_required": true,
+    "pseudonymization_default": true
+  },
+  "privacy_risk_framework": {
+    "re_identification_risk_threshold": 0.01,
+    "information_leakage_threshold": 0.001,
+    "inference_attack_protection": true,
+    "membership_inference_defense": true
+  }
+}

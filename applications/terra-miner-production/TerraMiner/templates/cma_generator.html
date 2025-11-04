@@ -1,0 +1,368 @@
+{% extends "base.html" %}
+
+{% block title %}Generate CMA Report | TerraMiner{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">
+                <i class="fas fa-chart-line mr-2"></i> Generate CMA Report
+            </h2>
+        </div>
+        <div class="card-body">
+            <p class="mb-4">Enter the subject property details below to generate a comprehensive comparative market analysis report.</p>
+            
+            {% if sample_properties %}
+            <div class="card mb-4 bg-light">
+                <div class="card-header">
+                    <h5 class="mb-0">Sample Properties</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Select one of our sample properties to get started quickly:</p>
+                    <div class="row">
+                        {% for key, property in sample_properties.items() %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ property.subject_city }}</h5>
+                                    <p class="card-text">{{ property.subject_address }}</p>
+                                    <div class="small text-muted mb-3">
+                                        {{ property.subject_beds }} beds, {{ property.subject_baths }} baths, {{ property.subject_sqft }} sqft
+                                    </div>
+                                    <a href="{{ url_for('cma_ui.cma_generator', template=key) }}" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-file-import mr-1"></i> Use This Property
+                                    </a>
+                                </div>
+                                <div class="card-footer text-right">
+                                    <strong>${{ "{:,}".format(property.subject_price) }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <form method="post" action="{{ url_for('cma_ui.cma_generator') }}" id="cma-generator-form">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h5 class="mb-3">Property Location</h5>
+                        <div class="form-group">
+                            <label for="subject_address">Address*</label>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" id="subject_address" name="subject_address" 
+                                       placeholder="Enter an address to search..." 
+                                       value="{{ form_data.subject_address if form_data else '' }}" required 
+                                       autocomplete="off">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" type="button" id="search-address-btn">
+                                        <i class="fas fa-search"></i> Search
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Property Search Results Card - More visible than dropdown -->
+                            <div id="property-search-results" class="card mb-3 d-none">
+                                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                    <span>Search Results</span>
+                                    <button type="button" class="close" id="close-search-results">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div class="list-group list-group-flush" id="property-suggestions-list">
+                                        <!-- Property suggestions will be populated here -->
+                                    </div>
+                                    <div id="search-status" class="text-center text-muted p-3 d-none">
+                                        <div class="spinner-border spinner-border-sm" role="status">
+                                            <span class="sr-only">Searching...</span>
+                                        </div>
+                                        <span class="ml-2">Searching for properties...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="subject_city">City*</label>
+                                <input type="text" class="form-control" id="subject_city" name="subject_city" 
+                                       placeholder="San Francisco" value="{{ form_data.subject_city if form_data else '' }}" required>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label for="subject_state">State*</label>
+                                <input type="text" class="form-control" id="subject_state" name="subject_state" 
+                                       placeholder="CA" maxlength="2" value="{{ form_data.subject_state if form_data else '' }}" required>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label for="subject_zip">ZIP Code*</label>
+                                <input type="text" class="form-control" id="subject_zip" name="subject_zip" 
+                                       placeholder="94105" value="{{ form_data.subject_zip if form_data else '' }}" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-light mb-3">
+                            <div class="card-body">
+                                <h6 class="card-title">Why this matters?</h6>
+                                <p class="card-text small">We use the property location to find comparable properties in the same area. Accurate location information helps ensure the most relevant comparable properties are included in your analysis.</p>
+                                <div class="alert alert-info small mb-0">
+                                    <i class="fas fa-info-circle mr-1"></i> Tip: Enter an address, city or zip code in the search field and click the Search button to find properties. You can also use the sample properties above to quickly create a report.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr class="my-4">
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        <h5 class="mb-3">Property Details</h5>
+                        <div class="form-row">
+                            <div class="form-group col-md-3">
+                                <label for="subject_beds">Bedrooms</label>
+                                <input type="number" class="form-control" id="subject_beds" name="subject_beds" 
+                                       min="0" step="1" value="{{ form_data.subject_beds if form_data else '3' }}">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label for="subject_baths">Bathrooms</label>
+                                <input type="number" class="form-control" id="subject_baths" name="subject_baths" 
+                                       min="0" step="0.5" value="{{ form_data.subject_baths if form_data else '2' }}">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label for="subject_sqft">Square Footage</label>
+                                <input type="number" class="form-control" id="subject_sqft" name="subject_sqft" 
+                                       min="0" step="1" value="{{ form_data.subject_sqft if form_data else '1800' }}">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label for="subject_lot_size">Lot Size (sq ft)</label>
+                                <input type="number" class="form-control" id="subject_lot_size" name="subject_lot_size" 
+                                       min="0" step="1" value="{{ form_data.subject_lot_size if form_data else '5000' }}">
+                            </div>
+                        </div>
+                
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="subject_year_built">Year Built</label>
+                                <input type="number" class="form-control" id="subject_year_built" name="subject_year_built" 
+                                       min="1800" max="2025" step="1" value="{{ form_data.subject_year_built if form_data else '2000' }}">
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="subject_property_type">Property Type</label>
+                                <select class="form-control" id="subject_property_type" name="subject_property_type">
+                                    <option value="Single Family" {% if form_data and form_data.subject_property_type == 'Single Family' %}selected{% endif %}>Single Family</option>
+                                    <option value="Condo" {% if form_data and form_data.subject_property_type == 'Condo' %}selected{% endif %}>Condo</option>
+                                    <option value="Townhouse" {% if form_data and form_data.subject_property_type == 'Townhouse' %}selected{% endif %}>Townhouse</option>
+                                    <option value="Multi-Family" {% if form_data and form_data.subject_property_type == 'Multi-Family' %}selected{% endif %}>Multi-Family</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="subject_price">Current Price (optional)</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">$</span>
+                                    </div>
+                                    <input type="number" class="form-control" id="subject_price" name="subject_price" 
+                                           min="0" step="1000" value="{{ form_data.subject_price if form_data else '' }}" placeholder="e.g., 750000">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-light mb-3">
+                            <div class="card-body">
+                                <h6 class="card-title">Why these details matter?</h6>
+                                <p class="card-text small">We use these property characteristics to find the most similar comparable properties and make appropriate price adjustments. The more accurate these details are, the more precise your property valuation will be.</p>
+                                <p class="card-text small">Current price is optional and helps calibrate our AI recommendations.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group mt-4 text-center">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-magic mr-2"></i> Generate Report
+                    </button>
+                    <a href="{{ url_for('cma_ui.cma_home') }}" class="btn btn-secondary btn-lg ml-2">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for property lookup functionality -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const addressInput = document.getElementById('subject_address');
+    const searchButton = document.getElementById('search-address-btn');
+    const searchResultsCard = document.getElementById('property-search-results');
+    const suggestionsList = document.getElementById('property-suggestions-list');
+    const searchStatus = document.getElementById('search-status');
+    const closeSearchResults = document.getElementById('close-search-results');
+    
+    let currentSearchTerm = '';
+    
+    // Function to populate form with property data
+    function populatePropertyData(property) {
+        console.log('Populating form with property data:', property);
+        
+        // Fill in the form fields with property data
+        document.getElementById('subject_address').value = property.address;
+        document.getElementById('subject_city').value = property.city;
+        document.getElementById('subject_state').value = property.state;
+        document.getElementById('subject_zip').value = property.zip_code;
+        document.getElementById('subject_beds').value = property.beds;
+        document.getElementById('subject_baths').value = property.baths;
+        document.getElementById('subject_sqft').value = property.sqft;
+        document.getElementById('subject_lot_size').value = property.lot_size;
+        document.getElementById('subject_year_built').value = property.year_built;
+        
+        // Set property type if it matches one of our options
+        const propertyTypeSelect = document.getElementById('subject_property_type');
+        const propertyType = property.property_type;
+        
+        for (let i = 0; i < propertyTypeSelect.options.length; i++) {
+            if (propertyTypeSelect.options[i].value === propertyType) {
+                propertyTypeSelect.selectedIndex = i;
+                break;
+            }
+        }
+        
+        // Set price if available
+        if (property.price) {
+            document.getElementById('subject_price').value = property.price;
+        }
+        
+        // Hide search results
+        searchResultsCard.classList.add('d-none');
+    }
+    
+    // Function to fetch and display property suggestions
+    function lookupProperty(address) {
+        console.log(`Searching for: "${address}"`);
+        
+        if (address.length < 3) {
+            console.log('Search term too short');
+            alert('Please enter at least 3 characters to search');
+            return;
+        }
+        
+        currentSearchTerm = address;
+        
+        // Show loading indicator and search results card
+        searchResultsCard.classList.remove('d-none');
+        suggestionsList.innerHTML = '';
+        searchStatus.classList.remove('d-none');
+        
+        console.log('Showing search results card and loading indicator');
+        
+        // Make API call to lookup property
+        console.log(`Making API call to /cma/api/lookup-property?address=${encodeURIComponent(address)}`);
+        fetch(`/cma/api/lookup-property?address=${encodeURIComponent(address)}`)
+            .then(response => {
+                console.log(`API response status: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                console.log('API response data:', data);
+                
+                // Hide loading indicator
+                searchStatus.classList.add('d-none');
+                
+                // Clear previous suggestions
+                suggestionsList.innerHTML = '';
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                const properties = data.properties || [];
+                console.log(`Found ${properties.length} properties`);
+                
+                if (properties.length === 0) {
+                    console.log('No properties found, showing empty message');
+                    suggestionsList.innerHTML = `
+                        <div class="list-group-item text-center text-muted py-3">
+                            <i class="fas fa-home mr-2"></i> No properties found matching "${address}"
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // If only one property found and exact match, auto-populate
+                if (properties.length === 1 && 
+                    properties[0].address.toLowerCase() === address.toLowerCase()) {
+                    console.log('Exact match found, auto-populating form');
+                    populatePropertyData(properties[0]);
+                    return;
+                }
+                
+                // Add found properties to suggestions
+                console.log('Adding properties to suggestion list');
+                properties.forEach((property, index) => {
+                    console.log(`Adding property ${index + 1}:`, property);
+                    const item = document.createElement('a');
+                    item.className = 'list-group-item list-group-item-action';
+                    item.href = '#';
+                    
+                    // Format display of property
+                    const displayAddress = `${property.address}, ${property.city}, ${property.state} ${property.zip_code}`;
+                    const details = `${property.beds} beds, ${property.baths} baths, ${property.sqft} sqft`;
+                    console.log(`Display address: ${displayAddress}`);
+                    
+                    item.innerHTML = `
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">${displayAddress}</h6>
+                            ${property.price ? `<span class="text-success">$${property.price.toLocaleString()}</span>` : ''}
+                        </div>
+                        <p class="mb-1 small">${details}</p>
+                        <small>${property.property_type} | Built ${property.year_built}</small>
+                    `;
+                    
+                    // Add click event to populate form
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        console.log('Property selected:', property);
+                        populatePropertyData(property);
+                    });
+                    
+                    suggestionsList.appendChild(item);
+                });
+            })
+            .catch(error => {
+                console.error('Error looking up property:', error);
+                searchStatus.classList.add('d-none');
+                
+                // Show error
+                suggestionsList.innerHTML = `
+                    <div class="list-group-item text-center text-danger py-3">
+                        <i class="fas fa-exclamation-circle mr-2"></i> Error: ${error.message || 'Failed to lookup property'}
+                    </div>
+                `;
+            });
+    }
+    
+    // Search button click event
+    searchButton.addEventListener('click', function() {
+        const address = addressInput.value.trim();
+        lookupProperty(address);
+    });
+    
+    // Close search results button
+    closeSearchResults.addEventListener('click', function() {
+        searchResultsCard.classList.add('d-none');
+    });
+    
+    // Allow pressing enter in the address field to search
+    addressInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Prevent form submission
+            searchButton.click();
+        }
+    });
+});
+</script>
+{% endblock %}

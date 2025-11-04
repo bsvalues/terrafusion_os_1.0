@@ -1,0 +1,145 @@
+Below is a structured playbook you can paste into your Replit AI Agent chat—detailing exactly how to elevate it into a powerful, autonomous orchestrator of your Terrafusion monorepo. Each step is backed by best practices and research, with citations provided for further reading.
+
+Summary: We’ll start by giving the Agent a clear persona and scope, then feed it rich metadata (project structure, diagrams, API schemas), register a broad toolset (HTTP APIs, OpenAPI-driven connectors), layer in advanced memory (multi-tier, vector retrieval), orchestrate complex workflows (event triggers, sub-agents), enable self-monitoring (CI feedback loops, health checks), and bake in security/governance (SCA, SBOM, human-in-the-loop).
+
+⸻
+
+1. Define Agent Persona & Scope
+	1.	System Prompt:
+
+You are the “Terrafusion Migrator Agent.”  
+Your only tasks: analyze, refactor, scaffold, and orchestrate our monorepo according to explicit prompts.  
+Never add new business logic; only move or edit existing code, update CI/workflows, or generate docs.  
+Always confirm before destructive actions.  
+
+Clear role definitions focus the Agent’s “mindset” and reduce hallucinations  .
+
+	2.	Operation Guardrails:
+	•	“Ask for confirmation before deleting code.”
+	•	“Reject any prompt outside migration scope with: ‘Out of scope.’”
+These explicit rules act as guardrails akin to ethical filters in multi-agent frameworks  .
+
+⸻
+
+2. Provide Rich Context & Metadata
+	1.	Directory Tree & Workspaces:
+
+find . -maxdepth 3 -type d > repo-tree.txt
+
+Feed repo-tree.txt so the Agent knows folder layouts and workspace configs  .
+
+	2.	Dependency Graph:
+
+npx depcruise packages --include-only "^packages/" > deps-graph.json
+
+Supplying this JSON lets the Agent understand inter-package relationships for safe refactoring  .
+
+	3.	Architecture Diagrams:
+	•	Attach Mermaid or SVG diagrams for data flows, plugin‐loader design, and ETL pipelines.
+	•	Label each box with file paths and ports.
+These visuals ground the Agent’s decisions in your real architecture  .
+	4.	API & Plugin Contracts:
+	•	Include openapi.yaml (core REST specs).
+	•	Attach manifest.schema.json (plugin manifest).
+Agents using OpenAPI specs generate correct HTTP clients automatically .
+
+⸻
+
+3. Expand & Register Tools Dynamically
+	1.	OpenAPI-Driven Tools:
+
+import { Tool } from "langchain/tools";
+const coreApi = new Tool({  
+  name: "CoreAPI",  
+  schema: require("../openapi.json"),  
+});
+
+Register any new REST endpoint without hand-coding stubs  .
+
+	2.	Zapier-Style Connectors:
+	•	Add a generic triggerWorkflow(eventName: string, payload: any) tool.
+	•	Let non-developer users assemble low-code automations.
+Low-code integrations accelerate cross-system triggers based on database changes .
+	3.	HTTP & CLI Tools:
+Provide shell commands (e.g., git subtree, turbo run build, semantic-release) as callable tools so the Agent can run them directly .
+
+⸻
+
+4. Implement Advanced Memory & Retrieval
+	1.	Multi-Tier Memory:
+	•	Short-term: In-session buffer (last 10 messages).
+	•	Long-term: Vector store (Pinecone) with embeddings for architecture docs and code chunks.
+Use a two-tier design for extended context without overloading the LLM  .
+	2.	Atomic Memory Atoms:
+Store discrete events (e.g., “subtree import done”) as independent records.
+This “atomic agent” pattern improves state reconstruction and audit trails  .
+	3.	On-Demand Retrieval:
+Index code files via embeddings; let the Agent fetch only relevant snippets per prompt, respecting context-window limits  .
+
+⸻
+
+5. Orchestrate Complex Workflows
+	1.	Event-Driven Triggers:
+	•	On GitHub push → Agent automatically runs turbo run build and smoke tests.
+	•	On merge to main → Agent regenerates docs and deploys via docs.yml.
+Configuration via GitHub Actions event hooks makes automation seamless  .
+	2.	Sub-Agent Pipelines:
+	•	SyncAgent for ETL → ModelAgent for API generation → UIAgent for component updates.
+Use a mini-workflow engine (e.g., Airflow or a simple Node orchestrator) to chain tasks  .
+	3.	Interrupt-and-Confirm:
+At critical junctures (e.g., before deleting legacy code), the Agent pauses and asks: “Confirm removal of X? (yes/no)”  .
+
+⸻
+
+6. Enable Multi-Agent Collaboration
+	1.	Specialized Agent Crews:
+	•	ModelAgent: Refactors core-models.
+	•	EtLAgent: Manages ETL connectors.
+	•	UIAgent: Extracts UI components.
+	•	CIAgent: Consolidates workflows.
+Coordinate via a global orchestrator to improve throughput and clarity  .
+	2.	Inter-Agent Messaging:
+Define a JSON-RPC protocol for passing tasks/results.
+This structured communication reduces misalignment and speeds debugging  .
+	3.	Dynamic Role Assignment:
+Have the orchestrator delegate based on workload and code ownership metadata (from CODEOWNERS file)  .
+
+⸻
+
+7. Self-Monitoring & Feedback Loops
+	1.	Automated Test-Driven Fixes:
+On CI failures, Agent reads logs, identifies lint/test errors, and auto-generates PRs with fixes  .
+	2.	Health-Check Agents:
+Periodically call /metrics and /health, then post alerts or self-restart services if thresholds breach  .
+	3.	SLO Enforcement:
+Integrate with Prometheus/Grafana SLO rules; on p95 > 500 ms or error rate >1%, Agent auto-scales or suggests code optimizations  .
+
+⸻
+
+8. Security & Governance Automation
+	1.	Automated SCA & SBOM:
+Run npm audit and pip-audit, generate SBOM with docker build --sbom, and open PRs for vuln fixes  .
+	2.	Secrets Rotation:
+Integrate Vault or AWS Secrets Manager; Agent periodically calls rotation API and updates Replit Secrets accordingly .
+	3.	Policy-Driven PR Checks:
+Enforce dependency pinning, manifest signature verification, and Stripe-webhook gating via GitHub Action policies  .
+
+⸻
+
+9. Self-Improvement via Prompt Refinement
+	1.	Integrate Prochemy (auto-prompt optimizer):
+Periodically refine your system prompts based on performance metrics (e.g., PR success rate) with Prochemy’s auto-refinement loop  .
+	2.	Chain-of-Thought / SCoT:
+Use Structured CoT prompting for code moves: ask the Agent to “List thought steps before refactoring,” improving accuracy on multi-step tasks  .
+
+⸻
+
+10. Continuous Model Management
+	1.	Provider Fallback:
+Declare AI_PROVIDER_PRIORITY=openai,anthropic in env; implement retry logic on quota errors  .
+	2.	A/B Testing Models:
+Route some tasks to GPT-4o and others to GPT-3.5-Turbo, then compare success rates to optimize cost-performance trade-offs  .
+
+⸻
+
+Paste the above into your Replit AI Agent—it’ll execute each numbered block, commit changes, and iterate until the consolidated, fully automated Terrafusion monorepo is production-ready.

@@ -1,0 +1,93 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\CalculateDistanceBand",
+    "displayname": "$rc:title",
+    "helpcontent": "9050008",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "Input_Features": {
+            "displayname": "$rc:input_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Multipoint",
+                    "Polygon",
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:input_features.descr"
+        },
+        "Neighbors": {
+            "displayname": "$rc:neighbors.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "1",
+                "max": "9999"
+            },
+            "value": "1",
+            "description": "$rc:neighbors.descr"
+        },
+        "Distance_Method": {
+            "displayname": "$rc:distance_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "EUCLIDEAN_DISTANCE",
+                        "code": "$rc:distance_method.domain.EUCLIDEAN_DISTANCE"
+                    },
+                    {
+                        "value": "MANHATTAN_DISTANCE",
+                        "code": "$rc:distance_method.domain.MANHATTAN_DISTANCE"
+                    }
+                ]
+            },
+            "value": "EUCLIDEAN_DISTANCE",
+            "description": "$rc:distance_method.descr"
+        },
+        "Minimum_Distance": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:minimum_distance.title",
+            "datatype": {
+                "type": "GPDouble"
+            }
+        },
+        "Average_Distance": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:average_distance.title",
+            "datatype": {
+                "type": "GPDouble"
+            }
+        },
+        "Maximum_Distance": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:maximum_distance.title",
+            "datatype": {
+                "type": "GPDouble"
+            }
+        }
+    },
+    "environments": [
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

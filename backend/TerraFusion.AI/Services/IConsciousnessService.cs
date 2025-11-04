@@ -4,6 +4,6 @@ namespace TerraFusion.AI.Services
 {
     public interface IConsciousnessService
     {
-        Task<ConsciousnessDataDto> GetConsciousnessDataAsync();
+        System.Threading.Tasks.Task<ConsciousnessDataDto> GetConsciousnessDataAsync();
     }
 }

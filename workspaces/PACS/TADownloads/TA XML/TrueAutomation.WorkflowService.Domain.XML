@@ -1,0 +1,618 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.WorkflowService.Domain</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.WorkflowService.Domain.DailyInterval">
+            <summary>
+            Represents a Daily Interval for a Scheduled Event
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Domain.Interval">
+            <summary>
+            Represents an Interval for a Scheduled Event
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.Interval.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.Interval.Frequency">
+            <summary>
+            Frequency for the interval
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.Interval.EndDate">
+            <summary>
+            End date for the event interval
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.DailyInterval.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.DailyInterval.ToDTO">
+            <summary>
+            Converts the Interval to a DTO
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.DailyInterval.GetNextRunDate(System.DateTime)">
+            <summary>
+            Based on the Interval and Frequency set for recurrence,
+            calculates the next run date for this event.
+            </summary>
+            <param name="previousRunDate">Date the event previously ran</param>
+            <returns>Next Run Date for the event</returns>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Domain.Event">
+            <summary>
+            Represents an Event Object
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.Event.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.Event.#ctor(System.String,System.String)">
+            <summary>
+             Class constructor -- initializes an instance of the class
+            with valid data.
+            </summary>
+            <param name="name">The Name of the Event</param>
+            <param name="description">The Description of the Event</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.Event.#ctor(System.String,System.String,TrueAutomation.WorkflowService.Domain.Workflow)">
+            <summary>
+             Class constructor -- initializes an instance of the class
+            with valid data.
+            </summary>
+            <param name="name">The Name of the Event</param>
+            <param name="description">The Description of the Event</param>
+            <param name="workflow">Workflow for the event</param>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.Event.Name">
+            <summary>
+            The Name of the Event
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.Event.Description">
+            <summary>
+            A Brief description of the purpose of the Event
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.Event.Workflow">
+            <summary>
+            The workflow that associated with this event
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Domain.MonthOfYear">
+            <summary>
+            Enumeration for Months of a Year
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowService.Domain.MonthOfYear.January">
+            <summary>
+             Indicates January.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowService.Domain.MonthOfYear.February">
+            <summary>
+             Indicates February.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowService.Domain.MonthOfYear.March">
+            <summary>
+             Indicates March.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowService.Domain.MonthOfYear.April">
+            <summary>
+             Indicates April.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowService.Domain.MonthOfYear.May">
+            <summary>
+             Indicates May.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowService.Domain.MonthOfYear.June">
+            <summary>
+             Indicates June.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowService.Domain.MonthOfYear.July">
+            <summary>
+             Indicates July.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowService.Domain.MonthOfYear.August">
+            <summary>
+             Indicates August.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowService.Domain.MonthOfYear.September">
+            <summary>
+             Indicates September.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowService.Domain.MonthOfYear.October">
+            <summary>
+             Indicates October.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowService.Domain.MonthOfYear.November">
+            <summary>
+             Indicates November.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowService.Domain.MonthOfYear.December">
+            <summary>
+             Indicates December.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Domain.MessageEvent">
+            <summary>
+            Represents a Message Event Object that is derived from the Event object
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.MessageEvent.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.MessageEvent.ToDTO">
+            <summary>
+            Converts the Event to a DTO
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.MessageEvent.MessageType">
+            <summary>
+            The MessageType that triggers this event.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Domain.MessageType">
+            <summary>
+            Represents a MessageType Object
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.MessageType.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.MessageType.#ctor(System.String,System.String)">
+            <summary>
+             Class constructor -- initializes an instance of the class
+            with valid data.
+            </summary>
+            <param name="name">The Name of the MessageType</param>
+            <param name="assemblyName">the qualified name/path of the assembly
+            that this MessageType is associated with.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.MessageType.ToDTO">
+            <summary>
+            Converts the MessageType to a DTO
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.MessageType.DisplayName">
+            <summary>
+            Display Name for the MessageType
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.MessageType.Description">
+            <summary>
+            Description to provide more details about the MessageType.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.MessageType.FullName">
+            <summary>
+            The Full Name of the Event
+            </summary>
+            <remarks>
+            Reflection will require the fully-qualified class name, along with the assembly name
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.MessageType.AssemblyName">
+            <summary>
+            Indicates the qualified name/path of the assembly
+            that this MessageType is associated with.
+            </summary>
+            <remarks>
+            Reflection will require the assembly name, along with the fully-qualified class name
+            </remarks>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Domain.MonthlyInterval">
+            <summary>
+            Represents a Monthly Interval for a Scheduled Event
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.MonthlyInterval.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.MonthlyInterval.ToDTO">
+            <summary>
+            Converts the Interval to a DTO
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.MonthlyInterval.GetNextRunDate(System.DateTime)">
+            <summary>
+            Based on the Interval and Frequency set for recurrence,
+            calculates the next run date for this event.
+            </summary>
+            <param name="previousRunDate">Date the event previously ran</param>
+            <returns>Next Run Date for the event</returns>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.MonthlyInterval.DayOfMonth">
+            <summary>
+            The day of the month when an event is scheduled to run
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Domain.ScheduledEvent">
+            <summary>
+            Represents a ScheduledEvent Object that is derived from the Event object
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.ScheduledEvent.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.ScheduledEvent.ToDTO">
+            <summary>
+            Converts the Event to a DTO
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.ScheduledEvent.GetNextRunDate">
+            <summary>
+            Based on the Interval and Frequency set for recurrence,
+            calculates the next run date for this event.
+            </summary>
+            <returns>Next Run Date for the event</returns>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.ScheduledEvent.EventStartDate">
+            <summary>
+            The Date when this event is triggered.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.ScheduledEvent.NextRunDate">
+            <summary>
+            The Date when this event is triggered next.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.ScheduledEvent.Interval">
+            <summary>
+            The interval for recurrence.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.ScheduledEvent.RunFlag">
+            <summary>
+            Indicates whether the scheduled event has been run.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Domain.WeeklyInterval">
+            <summary>
+            Represents a Weekly Interval for a Scheduled Event
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.WeeklyInterval.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.WeeklyInterval.ToDTO">
+            <summary>
+            Converts the Interval to a DTO
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.WeeklyInterval.GetNextRunDate(System.DateTime)">
+            <summary>
+            Based on the Interval and Frequency set for recurrence,
+            calculates the next run date for this event.
+            </summary>
+            <param name="previousRunDate">Date the event previously ran</param>
+            <returns>Next Run Date for the event</returns>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.WeeklyInterval.Sunday">
+            <summary>
+            Indicates if event is scheduled to run on Sunday
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.WeeklyInterval.Monday">
+            <summary>
+            Indicates if event is scheduled to run on Monday
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.WeeklyInterval.Tuesday">
+            <summary>
+            Indicates if event is scheduled to run on Tuesday
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.WeeklyInterval.Wednesday">
+            <summary>
+            Indicates if event is scheduled to run on Wednesday
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.WeeklyInterval.Thursday">
+            <summary>
+            Indicates if event is scheduled to run on Thursday
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.WeeklyInterval.Friday">
+            <summary>
+            Indicates if event is scheduled to run on Friday
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.WeeklyInterval.Saturday">
+            <summary>
+            Indicates if event is scheduled to run on Saturday
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Domain.Workflow">
+            <summary>
+            Represents a Workflow Object
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.Workflow.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.Workflow.#ctor(System.String,System.String,System.String,System.String,System.Boolean,System.Int32,System.Boolean,System.Guid,System.DateTime)">
+            <summary>
+             Class constructor -- initializes an instance of the class
+            with valid data.
+            </summary>
+            <param name="name">The Name of the Workflow</param>
+            <param name="description">The Description of the Workflow</param>
+            <param name="content">The XAML Content of the Workflow</param>
+            <param name="assemblyName">The name of the assembly containing the
+            implementation of this workflow.</param>
+            <param name="enabled">The flag to determine whether or not a workflow is enabled.</param>
+            <param name="version">The Version of the workflow</param>
+            <param name="hasRun">A flag to determine whether or not the workflow has been run</param>
+            <param name="authorId">The GUID id of the author of the workflow</param>
+            <param name="createdDate">The date the workflow was created.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.Workflow.ToDTO">
+            <summary>
+            Converts the Workflow to a DTO
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.Workflow.Name">
+            <summary>
+            The Name of the Workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.Workflow.Description">
+            <summary>
+            A Brief description of the purpose of the workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.Workflow.Content">
+            <summary>
+            The XAML describing the workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.Workflow.AssemblyName">
+            <summary>
+            Indicates the qualified name/path of the assembly containing
+            the activity that implements this workflow.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.Workflow.Enabled">
+            <summary>
+            Flag to determine whether or not the Workflow should be run
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.Workflow.Retired">
+            <summary>
+            Flag to denote that a workflow is NEVER to be used again.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.Workflow.Version">
+            <summary>
+            Version Number of the Workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.Workflow.HasRun">
+            <summary>
+            Flag to determine if the workflow has had an active instance ever.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.Workflow.AuthorId">
+            <summary>
+            The Guid of the Author who created the workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.Workflow.CreatedDate">
+            <summary>
+            The Date the workflow was created.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.Workflow.IsWorkflowSuspended">
+            <summary>
+            Flag to determine if the workflow has been suspended and no new instance should be run
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Domain.WorkflowBookmark">
+            <summary>
+            Implements a bookmark reference for an active workflow instance.
+            A bookmark specifies a point in the workflow where processing can
+            enter an idle state while waiting on user input or an external
+            stimulus, and from which processing can be resumed.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.WorkflowBookmark.#ctor">
+            <summary>
+            Class constructor -- initializes an instance of the
+            <see cref="T:WorkflowBookmark"/> class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.WorkflowBookmark.#ctor(TrueAutomation.WorkflowService.Domain.WorkflowInstance,System.String)">
+            <summary>
+            Class constructor -- initializes an instance of the
+            <see cref="T:WorkflowBookmark"/> class.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.WorkflowBookmark.WorkflowInstance">
+            <summary>
+            The workflow instance to which this bookmark applies.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.WorkflowBookmark.Name">
+            <summary>
+            The name of the bookmark. The name should uniquely identify
+            both the expected event/message type, as well as any identifier
+            information associated with the event or message. For example,
+            the bookmark name may indicate an event type of
+            "TaskUpdatedMessage" with a task id value of 1234.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Domain.WorkflowInstance">
+            <summary>
+            Represents a single instance of a workflow. By definition a
+            workflow instance is "active" in the sense that it has started
+            processing and hasn't yet completed its processing, although
+            it may be in an idle/unloaded state if it's waiting for user
+            input or some other outside stimulus.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.WorkflowInstance.#ctor">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.WorkflowInstance.#ctor(TrueAutomation.WorkflowService.Domain.Workflow)">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+            <param name="workflow">The workflow definition from which this
+            workflow instance was created.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.WorkflowInstance.SetAssignedId(System.Guid)">
+            <summary>
+            Enables the developer to set the ID assigned to an object.
+            </summary>
+            <param name="id">The id value to set for the current object.</param>
+            <remarks>In general the use of assigned ID values is regrettable
+            but it makes sense for user-defined code file entries.</remarks>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.WorkflowInstance.AddBookmark(TrueAutomation.WorkflowService.Domain.WorkflowBookmark)">
+            <summary>
+            Adds the specified bookmark to this workflow instance.
+            </summary>
+            <param name="bookmark">The <see cref="T:WorkflowBookmark"/> to add
+            to this <see cref="T:WorkflowInstance"/>.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.WorkflowInstance.RemoveBookmark(TrueAutomation.WorkflowService.Domain.WorkflowBookmark)">
+            <summary>
+            Removes the specified bookmark from this workflow instance.
+            </summary>
+            <param name="bookmark">The bookmark to remove from this instance.
+            </param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.WorkflowInstance.RemoveAllBookmarks">
+            <summary>
+            Removes all of the bookmarks associated with this workflow instance.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.WorkflowInstance.Init">
+            <summary>
+            Initializer method to create the internal data structures used
+            by the <see cref="T:WorkflowInstance"/> class.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.WorkflowInstance.Workflow">
+            <summary>
+            This is the workflow definition on which this workflow
+            instance is based.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:TrueAutomation.WorkflowService.Domain.WorkflowInstance.Bookmarks" -->
+        <member name="P:TrueAutomation.WorkflowService.Domain.WorkflowInstance.WorkflowInstanceStartTime">
+            <summary>
+            The time at which the workflow instance starts
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.WorkflowInstance.WorkflowInstanceIdleStateStartTime">
+            <summary>
+            The time at which the workflow instance goes into idle state
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.WorkflowInstance.WorkflowInstanceCompletedTime">
+            <summary>
+            The time at which the workflow instance completes execution
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.WorkflowInstance.Status">
+            <summary>
+            The current status of the workflow instance
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Domain.WorkflowPersistenceInstance">
+            <summary>
+            Implements calls to the workflow persistence tables to get access to active workflow instances.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.WorkflowPersistenceInstance.#ctor">
+            <summary>
+            Class constructor -- initializes an instance of the
+            <see cref="T:WorkflowPersistenceInstance"/> class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.WorkflowPersistenceInstance.#ctor(System.Guid,System.DateTime)">
+            <summary>
+            Class constructor -- initializes an instance of the
+            <see cref="T:WorkflowPersistenceInstance"/> class.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.WorkflowPersistenceInstance.PendingTimer">
+            <summary>
+            The time at which the delay would expire and after which the instance would 
+            be in Runnable state
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Domain.YearlyInterval">
+            <summary>
+            Represents a Yearly Interval for a Scheduled Event
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.YearlyInterval.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.YearlyInterval.ToDTO">
+            <summary>
+            Converts the Interval to a DTO
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Domain.YearlyInterval.GetNextRunDate(System.DateTime)">
+            <summary>
+            Based on the Interval and Frequency set for recurrence,
+            calculates the next run date for this event.
+            </summary>
+            <param name="previousRunDate">Date the event previously ran</param>
+            <returns>Next Run Date for the event</returns>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.YearlyInterval.DayOfMonth">
+            <summary>
+            The Day of the Month when an event is scheduled to run
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Domain.YearlyInterval.MonthOfYear">
+            <summary>
+            The Month of the Year when an event is scheduled to run
+            </summary>
+        </member>
+    </members>
+</doc>

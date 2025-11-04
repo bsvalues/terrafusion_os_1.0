@@ -1,0 +1,151 @@
+{
+    "type": "FunctionTool",
+    "guid": "{0A4A9218-07A4-497A-8506-CED528063FB9}/EnableStationingFields",
+    "displayname": "$rc:title",
+    "helpcontent": "23000057",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "78"
+    ],
+    "params": {
+        "in_feature_class": {
+            "displayname": "$rc:in_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:in_feature_class.descr"
+        },
+        "station_field": {
+            "type": "optional",
+            "displayname": "$rc:station_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_feature_class"
+            ],
+            "description": "$rc:station_field.descr"
+        },
+        "back_station_field": {
+            "type": "optional",
+            "displayname": "$rc:back_station_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_feature_class"
+            ],
+            "description": "$rc:back_station_field.descr"
+        },
+        "station_direction_field": {
+            "type": "optional",
+            "displayname": "$rc:station_direction_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_feature_class"
+            ],
+            "description": "$rc:station_direction_field.descr"
+        },
+        "station_measure_units": {
+            "type": "optional",
+            "displayname": "$rc:station_measure_units.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "INCHES",
+                        "code": "$rc:station_measure_units.domain.INCHES"
+                    },
+                    {
+                        "value": "FEET",
+                        "code": "$rc:station_measure_units.domain.FEET"
+                    },
+                    {
+                        "value": "YARDS",
+                        "code": "$rc:station_measure_units.domain.YARDS"
+                    },
+                    {
+                        "value": "MILES",
+                        "code": "$rc:station_measure_units.domain.MILES"
+                    },
+                    {
+                        "value": "NAUTICAL_MILES",
+                        "code": "$rc:station_measure_units.domain.NAUTICAL_MILES"
+                    },
+                    {
+                        "value": "INTFEET",
+                        "code": "$rc:station_measure_units.domain.INTFEET"
+                    },
+                    {
+                        "value": "MILLIMETERS",
+                        "code": "$rc:station_measure_units.domain.MILLIMETERS"
+                    },
+                    {
+                        "value": "CENTIMETERS",
+                        "code": "$rc:station_measure_units.domain.CENTIMETERS"
+                    },
+                    {
+                        "value": "METERS",
+                        "code": "$rc:station_measure_units.domain.METERS"
+                    },
+                    {
+                        "value": "KILOMETERS",
+                        "code": "$rc:station_measure_units.domain.KILOMETERS"
+                    },
+                    {
+                        "value": "DECIMETERS",
+                        "code": "$rc:station_measure_units.domain.DECIMETERS"
+                    }
+                ]
+            },
+            "description": "$rc:station_measure_units.descr"
+        },
+        "decreasing_station_values": {
+            "type": "optional",
+            "control_guid": "{E5456E51-0C41-4797-9EE4-5269820C6F0E}",
+            "displayname": "$rc:decreasing_station_values.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:decreasing_station_values.descr"
+        },
+        "out_feature_class": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            }
+        }
+    }
+}

@@ -1,0 +1,513 @@
+<?xml version="1.0"?>
+<xs:schema xmlns="http://www.esri.com/schemas/ArcGIS/3.4.0" targetNamespace="http://www.esri.com/schemas/ArcGIS/3.4.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:include schemaLocation="System.xsd" />
+  <xs:simpleType name="esriGeometryType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="esriGeometryNull" />
+      <xs:enumeration value="esriGeometryPoint" />
+      <xs:enumeration value="esriGeometryMultipoint" />
+      <xs:enumeration value="esriGeometryPolyline" />
+      <xs:enumeration value="esriGeometryPolygon" />
+      <xs:enumeration value="esriGeometryEnvelope" />
+      <xs:enumeration value="esriGeometryPath" />
+      <xs:enumeration value="esriGeometryAny" />
+      <xs:enumeration value="esriGeometryMultiPatch" />
+      <xs:enumeration value="esriGeometryRing" />
+      <xs:enumeration value="esriGeometryLine" />
+      <xs:enumeration value="esriGeometryCircularArc" />
+      <xs:enumeration value="esriGeometryBezier3Curve" />
+      <xs:enumeration value="esriGeometryEllipticArc" />
+      <xs:enumeration value="esriGeometryBag" />
+      <xs:enumeration value="esriGeometryTriangleStrip" />
+      <xs:enumeration value="esriGeometryTriangleFan" />      
+      <xs:enumeration value="esriGeometryRay" />      
+      <xs:enumeration value="esriGeometrySphere" />
+      <xs:enumeration value="esriGeometryTriangles" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="ArrayOfGeometry">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Geometry" type="Geometry" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfRelationResult">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="RelationResult" type="RelationResult" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="esriGeometryRelationEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="esriGeometryRelationDisjoint" />
+      <xs:enumeration value="esriGeometryRelationIntersection" />
+      <xs:enumeration value="esriGeometryRelationInteriorIntersection" />
+      <xs:enumeration value="esriGeometryRelationIn" />
+      <xs:enumeration value="esriGeometryRelationWithin" />
+      <xs:enumeration value="esriGeometryRelationPointTouch" />
+      <xs:enumeration value="esriGeometryRelationLineTouch" />
+      <xs:enumeration value="esriGeometryRelationTouch" />
+      <xs:enumeration value="esriGeometryRelationLineCoincidence" />
+      <xs:enumeration value="esriGeometryRelationCross" />
+      <xs:enumeration value="esriGeometryRelationOverlap" />
+      <xs:enumeration value="esriGeometryRelationRelation" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="esriGeometryOffsetEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="esriGeometryOffsetMitered" />
+      <xs:enumeration value="esriGeometryOffsetBevelled" />
+      <xs:enumeration value="esriGeometryOffsetRounded" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="RelationResult">
+    <xs:sequence>
+      <xs:element name="leftIndex" type="xs:int" />
+      <xs:element name="rightIndex" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="GeoTransformation">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="WKT" type="xs:string" />
+      <xs:element minOccurs="0" name="WKID" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="esriTransformDirection">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="esriTransformForward" />
+      <xs:enumeration value="esriTransformReverse" />
+    </xs:restriction>
+  </xs:simpleType>  
+  <xs:complexType name="TransformationItem">
+    <xs:sequence>
+      <xs:element name="Direction" type="esriTransformDirection" />
+      <xs:element name="XForm" type="GeoTransformation" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfTransformationItem">
+    <xs:sequence>
+      <xs:element name="TransformationItem" type="TransformationItem" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="CompositeGeoTransformation">
+    <xs:complexContent>
+      <xs:extension base="GeoTransformation">
+        <xs:sequence>
+          <xs:element name="XForms" type="ArrayOfTransformationItem"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>  
+  <xs:complexType name="Unit" abstract="true">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="WKT" type="xs:string" />
+      <xs:element minOccurs="0" name="WKID" type="xs:int" />
+      <xs:element name="StandardUnitsPerUnit" type="xs:double" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="LinearUnit">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Unit" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="AngularUnit">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Unit" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="AreaUnit">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Unit" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="SpatialReference" abstract="true">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="WKT" type="xs:string" />
+      <xs:element minOccurs="0" name="XOrigin" type="xs:double" />
+      <xs:element minOccurs="0" name="YOrigin" type="xs:double" />
+      <xs:element minOccurs="0" name="XYScale" type="xs:double" />
+      <xs:element minOccurs="0" name="ZOrigin" type="xs:double" />
+      <xs:element minOccurs="0" name="ZScale" type="xs:double" />
+      <xs:element minOccurs="0" name="MOrigin" type="xs:double" />
+      <xs:element minOccurs="0" name="MScale" type="xs:double" />
+      <xs:element minOccurs="0" name="XYTolerance" type="xs:double" />
+      <xs:element minOccurs="0" name="ZTolerance" type="xs:double" />
+      <xs:element minOccurs="0" name="MTolerance" type="xs:double" />
+      <xs:element minOccurs="0" name="HighPrecision" type="xs:boolean" />
+      <xs:element minOccurs="0" name="LeftLongitude" type="xs:double" />
+      <xs:element minOccurs="0" name="WKID" type="xs:int" />
+      <xs:element minOccurs="0" name="LatestWKID" type="xs:int" />
+      <xs:element minOccurs="0" name="VCSWKID" type="xs:int" />
+      <xs:element minOccurs="0" name="LatestVCSWKID" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ProjectedCoordinateSystem">
+    <xs:complexContent mixed="false">
+      <xs:extension base="SpatialReference" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="GeographicCoordinateSystem">
+    <xs:complexContent mixed="false">
+      <xs:extension base="SpatialReference" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="UnknownCoordinateSystem">
+    <xs:complexContent mixed="false">
+      <xs:extension base="SpatialReference">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Unit" type="Unit" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Geometry">
+  </xs:complexType>
+  <xs:complexType name="Curve" abstract="true">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Geometry" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Segment" abstract="true">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Curve">
+        <xs:sequence>
+          <xs:element name="FromPoint" type="Point" />
+          <xs:element name="ToPoint" type="Point" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Polycurve" abstract="true">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Curve" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Envelope" abstract="true">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Geometry" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="EnvelopeN">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Envelope">
+        <xs:sequence>
+          <xs:element name="XMin" type="xs:double" />
+          <xs:element name="YMin" type="xs:double" />
+          <xs:element name="XMax" type="xs:double" />
+          <xs:element name="YMax" type="xs:double" />
+          <xs:element minOccurs="0" name="ZMin" type="xs:double" />
+          <xs:element minOccurs="0" name="ZMax" type="xs:double" />
+          <xs:element minOccurs="0" name="MMin" type="xs:double" />
+          <xs:element minOccurs="0" name="MMax" type="xs:double" />
+          <xs:element minOccurs="0" name="SpatialReference" type="SpatialReference" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="EnvelopeB">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Envelope">
+        <xs:sequence>
+          <xs:element name="Bytes" type="xs:base64Binary" />
+          <xs:element minOccurs="0" name="SpatialReference" type="SpatialReference" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Point" abstract="true">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Geometry" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="PointN">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Point">
+        <xs:sequence>
+          <xs:element name="X" type="xs:double" />
+          <xs:element name="Y" type="xs:double" />
+          <xs:element minOccurs="0" name="M" type="xs:double" />
+          <xs:element minOccurs="0" name="Z" type="xs:double" />
+          <xs:element minOccurs="0" name="ID" type="xs:int" />
+          <xs:element minOccurs="0" name="SpatialReference" type="SpatialReference" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="PointB">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Point">
+        <xs:sequence>
+          <xs:element name="Bytes" type="xs:base64Binary" />
+          <xs:element minOccurs="0" name="SpatialReference" type="SpatialReference" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Multipoint" abstract="true">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Geometry" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="MultipointB">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Multipoint">
+        <xs:sequence>
+          <xs:element name="Bytes" type="xs:base64Binary" />
+          <xs:element minOccurs="0" name="SpatialReference" type="SpatialReference" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="MultipointN">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Multipoint">
+        <xs:sequence>
+          <xs:element name="HasID" type="xs:boolean" />
+          <xs:element name="HasZ" type="xs:boolean" />
+          <xs:element name="HasM" type="xs:boolean" />
+          <xs:element minOccurs="0" name="Extent" type="Envelope" />
+          <xs:element minOccurs="0" name="PointArray" type="ArrayOfPoint" />
+          <xs:element minOccurs="0" name="SpatialReference" type="SpatialReference" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Line">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Segment" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="EllipticArc">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Segment">
+        <xs:sequence>
+          <xs:element name="EllipseStd" type="xs:boolean" />
+          <xs:element name="CenterPoint" type="Point" />
+          <xs:element name="Rotation" type="xs:double" />
+          <xs:element name="MinorMajorRatio" type="xs:double" />
+          <xs:element name="IsCounterClockwise" type="xs:boolean" />
+          <xs:element name="IsMinor" type="xs:boolean" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CircularArc">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Segment">
+        <xs:sequence>
+          <xs:element name="CenterPoint" type="Point" nillable="true"  />
+          <xs:element minOccurs="0" name="FromAngle" type="xs:double" />
+          <xs:element minOccurs="0" name="ToAngle" type="xs:double" />
+          <xs:element name="IsCounterClockwise" type="xs:boolean" />
+          <xs:element name="IsMinor" type="xs:boolean" />
+          <xs:element name="IsLine" type="xs:boolean" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="BezierCurve">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Segment">
+        <xs:sequence>
+          <xs:element name="Degree" type="xs:int" />
+          <xs:element name="ControlPointArray" type="ArrayOfPoint" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Path">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Curve">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="PointArray" type="ArrayOfPoint" />
+          <xs:element minOccurs="0" name="SegmentArray" type="ArrayOfSegment" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Ring">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Path" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Polygon" abstract="true">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Polycurve" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="PolygonN">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Polygon">
+        <xs:sequence>
+          <xs:element name="HasID" type="xs:boolean" />
+          <xs:element name="HasZ" type="xs:boolean" />
+          <xs:element name="HasM" type="xs:boolean" />
+          <xs:element minOccurs="0" name="Extent" type="Envelope" />
+          <xs:element name="RingArray" type="ArrayOfRing" />
+          <xs:element minOccurs="0" name="SpatialReference" type="SpatialReference" />
+          <xs:element minOccurs="0" name="KnownSimple" type="xs:boolean" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="PolygonB">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Polygon">
+        <xs:sequence>
+          <xs:element name="Bytes" type="xs:base64Binary" />
+          <xs:element minOccurs="0" name="SpatialReference" type="SpatialReference" />
+          <xs:element minOccurs="0" name="KnownSimple" type="xs:boolean" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="Polyline" abstract="true">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Polycurve" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="PolylineN">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Polyline">
+        <xs:sequence>
+          <xs:element name="HasID" type="xs:boolean" />
+          <xs:element name="HasZ" type="xs:boolean" />
+          <xs:element name="HasM" type="xs:boolean" />
+          <xs:element minOccurs="0" name="Extent" type="Envelope" />
+          <xs:element name="PathArray" type="ArrayOfPath" />
+          <xs:element minOccurs="0" name="SpatialReference" type="SpatialReference" />
+          <xs:element minOccurs="0" name="KnownSimple" type="xs:boolean" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="PolylineB">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Polyline">
+        <xs:sequence>
+          <xs:element name="Bytes" type="xs:base64Binary" />
+          <xs:element minOccurs="0" name="SpatialReference" type="SpatialReference" />
+          <xs:element minOccurs="0" name="KnownSimple" type="xs:boolean" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfPoint">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Point" type="Point" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfPath">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Path" type="Path" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfRing">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Ring" type="Ring" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfSegment">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Segment" type="Segment" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfPolyline">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Polyline" type="Polyline" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfPolygon">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Polygon" type="Polygon" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="MultiPatch" abstract="true">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Geometry" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="MultiPatchB">
+    <xs:complexContent mixed="false">
+      <xs:extension base="MultiPatch">
+        <xs:sequence>
+          <xs:element name="Bytes" type="xs:base64Binary" />
+          <xs:element minOccurs="0" name="SpatialReference" type="SpatialReference" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="MultiPatchN">
+    <xs:complexContent mixed="false">
+      <xs:extension base="MultiPatch">
+        <xs:sequence>
+          <xs:element name="HasID" type="xs:boolean" />
+          <xs:element name="HasZ" type="xs:boolean" />
+          <xs:element name="HasM" type="xs:boolean" />
+          <xs:element name="Extent" type="Envelope" />
+          <xs:element name="SurfacePatchArray" type="ArrayOfSurfacePatch" />
+          <xs:element minOccurs="0" name="SpatialReference" type="SpatialReference" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfSurfacePatch">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="SurfacePatch" type="Geometry" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Triangles">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Geometry">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="PointArray" type="ArrayOfPoint" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="TriangleFan">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Geometry">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="PointArray" type="ArrayOfPoint" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="TriangleStrip">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Geometry">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="PointArray" type="ArrayOfPoint" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="GeometryBag" abstract="true">
+    <xs:complexContent mixed="false">
+        <xs:extension base="Geometry" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="GeometryBagB">
+    <xs:complexContent mixed="false">
+      <xs:extension base="GeometryBag">
+        <xs:sequence>
+          <xs:element name="Bytes" type="xs:base64Binary" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="GeometryBagN">
+    <xs:complexContent mixed="false">
+      <xs:extension base="GeometryBag">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ArrayOfGeometry" type="ArrayOfGeometry" />
+		  <xs:element minOccurs="0" name="SpatialReference" type="SpatialReference" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfGeoTransformation">
+    <xs:sequence>
+      <xs:element name="GeoTransformation" type="GeoTransformation" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

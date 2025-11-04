@@ -1,0 +1,88 @@
+{
+    "type": "FunctionTool",
+    "guid": "{26B17338-CB00-45A9-AB9C-858C2E0122C9}/UpdateGeoNames",
+    "displayname": "$rc:title",
+    "helpcontent": "46020101",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "46",
+        "49"
+    ],
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Multipoint",
+                    "Polyline",
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "in_geonames_features": {
+            "displayname": "$rc:in_geonames_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:in_geonames_features.descr"
+        },
+        "in_geonames_table": {
+            "displayname": "$rc:in_geonames_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_geonames_table.descr"
+        },
+        "named_feature_id_field": {
+            "displayname": "$rc:named_feature_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "description": "$rc:named_feature_id_field.descr"
+        },
+        "name_id_field": {
+            "displayname": "$rc:name_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "description": "$rc:name_id_field.descr"
+        },
+        "name_field": {
+            "displayname": "$rc:name_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "description": "$rc:name_field.descr"
+        },
+        "out_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            }
+        }
+    }
+}

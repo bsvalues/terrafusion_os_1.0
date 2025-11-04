@@ -1,0 +1,509 @@
+{% extends 'unified_base.html' if ui_template == 'unified' else 'base.html' %}
+
+{% block title %}{{ property.address if property else 'Property Details' }}{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    .feature-badge {
+        background-color: {% if ui_template == 'unified' %}#1e3958{% else %}#f0f0f0{% endif %};
+        color: {% if ui_template == 'unified' %}#fff{% else %}#333{% endif %};
+        border-radius: 20px;
+        padding: 6px 12px;
+        margin: 5px;
+        display: inline-block;
+        font-size: 0.85rem;
+    }
+    
+    .school-rating {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: white;
+    }
+    
+    .rating-high {
+        background-color: #28a745;
+    }
+    
+    .rating-medium {
+        background-color: #ffc107;
+        color: #212529;
+    }
+    
+    .rating-low {
+        background-color: #dc3545;
+    }
+    
+    .property-section {
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 24px;
+        {% if ui_template == 'unified' %}
+        background-color: #142239;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border: none;
+        {% else %}
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        {% endif %}
+    }
+    
+    .property-section-header {
+        padding: 12px 16px;
+        border-bottom: 1px solid {% if ui_template == 'unified' %}#1e3958{% else %}#dee2e6{% endif %};
+        {% if ui_template == 'unified' %}
+        background-color: #1e3958;
+        {% else %}
+        background-color: #f8f9fa;
+        {% endif %}
+    }
+    
+    .property-section-body {
+        padding: 16px;
+    }
+    
+    .image-gallery {
+        position: relative;
+        height: 400px;
+        overflow: hidden;
+        border-radius: 8px;
+    }
+    
+    .image-gallery img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    /* Value trend chart wrapper */
+    .chart-wrapper {
+        height: 300px;
+        position: relative;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    {% if error %}
+    <div class="alert alert-danger">
+        <i class="fas fa-exclamation-triangle me-2"></i>{{ error }}
+        <a href="{{ url_for('property_search') }}" class="btn btn-sm {% if ui_template == 'unified' %}btn-teal{% else %}btn-primary{% endif %} ms-3">Back to Search</a>
+    </div>
+    {% elif property %}
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mb-0 {% if ui_template == 'unified' %}text-white{% endif %}">{{ property.address }}</h2>
+                <a href="{{ url_for('property_search') }}" class="btn btn-sm {% if ui_template == 'unified' %}btn-dark-teal{% else %}btn-outline-primary{% endif %}">
+                    <i class="fas fa-arrow-left me-1"></i>Back to Search
+                </a>
+            </div>
+            <p class="{% if ui_template == 'unified' %}text-light{% else %}text-muted{% endif %}">{{ property.city }}, {{ property.state }} {{ property.zip_code }}</p>
+        </div>
+    </div>
+
+    <!-- Main Property Info -->
+    <div class="row mb-4">
+        <!-- Left Column - Image -->
+        <div class="col-md-7">
+            <div class="image-gallery {% if ui_template == 'unified' %}bg-dark-blue shadow{% endif %}">
+                <img src="{{ property.image_url }}" alt="{{ property.address }}" class="img-fluid">
+            </div>
+        </div>
+        
+        <!-- Right Column - Key Details -->
+        <div class="col-md-5">
+            <div class="property-section">
+                <div class="property-section-header">
+                    <h3 class="h4 mb-0 {% if ui_template == 'unified' %}text-teal{% endif %}">
+                        <i class="fas fa-home me-2"></i>Property Overview
+                    </h3>
+                </div>
+                <div class="property-section-body">
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h4 class="h2 {% if ui_template == 'unified' %}text-teal{% else %}text-primary{% endif %} fw-bold mb-0">${{ property.price|format_number }}</h4>
+                            <p class="text-muted mb-0">
+                                {% set est_diff = ((property.estimated_value - property.price) / property.price * 100)|round(1) %}
+                                {% if est_diff > 0 %}
+                                <span class="text-success"><i class="fas fa-arrow-up"></i> {{ est_diff }}% above estimate</span>
+                                {% elif est_diff < 0 %}
+                                <span class="text-danger"><i class="fas fa-arrow-down"></i> {{ est_diff|abs }}% below estimate</span>
+                                {% else %}
+                                <span>On target with estimate</span>
+                                {% endif %}
+                            </p>
+                            <div class="mt-3">
+                                <a href="{{ url_for('cma_ui.cma_generator', property_id=property.id) }}" class="btn btn-sm {% if ui_template == 'unified' %}btn-teal{% else %}btn-primary{% endif %}">
+                                    <i class="fas fa-chart-bar me-1"></i> Create CMA Report
+                                </a>
+                                <a href="{{ url_for('property_record.view_property_record', property_id=property.id) }}" class="btn btn-sm {% if ui_template == 'unified' %}btn-dark-teal{% else %}btn-outline-primary{% endif %} ms-2">
+                                    <i class="fas fa-file-alt me-1"></i> View Record Card
+                                </a>
+                                <div class="text-muted mt-1 small">County assessment data and property record</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row text-center mb-4">
+                        <div class="col-4">
+                            <div class="p-2 {% if ui_template == 'unified' %}bg-dark-blue{% else %}bg-light{% endif %} rounded">
+                                <p class="mb-1"><i class="fas fa-bed"></i></p>
+                                <h5 class="mb-0">{{ property.bedrooms }}</h5>
+                                <small class="text-muted">Beds</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-2 {% if ui_template == 'unified' %}bg-dark-blue{% else %}bg-light{% endif %} rounded">
+                                <p class="mb-1"><i class="fas fa-bath"></i></p>
+                                <h5 class="mb-0">{{ property.bathrooms }}</h5>
+                                <small class="text-muted">Baths</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-2 {% if ui_template == 'unified' %}bg-dark-blue{% else %}bg-light{% endif %} rounded">
+                                <p class="mb-1"><i class="fas fa-ruler-combined"></i></p>
+                                <h5 class="mb-0">{{ property.sqft|format_number }}</h5>
+                                <small class="text-muted">Sq Ft</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <p class="mb-1 text-muted">Property Type</p>
+                            <p class="mb-0"><strong>{{ property.property_type }}</strong></p>
+                        </div>
+                        <div class="col-6">
+                            <p class="mb-1 text-muted">Year Built</p>
+                            <p class="mb-0"><strong>{{ property.year_built }}</strong></p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <p class="mb-1 text-muted">Lot Size</p>
+                            <p class="mb-0"><strong>{{ property.lot_size }}</strong></p>
+                        </div>
+                        <div class="col-6">
+                            <p class="mb-1 text-muted">Price/SqFt</p>
+                            <p class="mb-0"><strong>${{ property.price_per_sqft|format_number }}</strong></p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            {% if maps_api_key %}
+                            <button class="btn {% if ui_template == 'unified' %}btn-teal{% else %}btn-primary{% endif %} w-100" type="button" data-bs-toggle="modal" data-bs-target="#mapModal">
+                                <i class="fas fa-map-marker-alt me-2"></i>View on Map
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Property Details Sections -->
+    <div class="row">
+        <!-- Left Column -->
+        <div class="col-md-8">
+            <!-- Description -->
+            <div class="property-section">
+                <div class="property-section-header">
+                    <h3 class="h5 mb-0 {% if ui_template == 'unified' %}text-teal{% endif %}">
+                        <i class="fas fa-align-left me-2"></i>Description
+                    </h3>
+                </div>
+                <div class="property-section-body">
+                    <div class="{% if ui_template == 'unified' %}text-light{% endif %}">
+                        {{ property.description|safe }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Features -->
+            <div class="property-section">
+                <div class="property-section-header">
+                    <h3 class="h5 mb-0 {% if ui_template == 'unified' %}text-teal{% endif %}">
+                        <i class="fas fa-star me-2"></i>Features & Amenities
+                    </h3>
+                </div>
+                <div class="property-section-body">
+                    <div class="{% if ui_template == 'unified' %}text-light{% endif %}">
+                        {% for feature in property.features %}
+                        <span class="feature-badge">{{ feature }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Price & Tax History -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="property-section">
+                        <div class="property-section-header">
+                            <h3 class="h5 mb-0 {% if ui_template == 'unified' %}text-teal{% endif %}">
+                                <i class="fas fa-chart-line me-2"></i>Price History
+                            </h3>
+                        </div>
+                        <div class="property-section-body">
+                            <table class="table {% if ui_template == 'unified' %}table-dark{% endif %} table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Price</th>
+                                        <th>Event</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for price in property.price_history %}
+                                    <tr>
+                                        <td>{{ price.date }}</td>
+                                        <td>${{ price.price|format_number }}</td>
+                                        <td>{{ price.event }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="property-section">
+                        <div class="property-section-header">
+                            <h3 class="h5 mb-0 {% if ui_template == 'unified' %}text-teal{% endif %}">
+                                <i class="fas fa-receipt me-2"></i>Tax History
+                            </h3>
+                        </div>
+                        <div class="property-section-body">
+                            <table class="table {% if ui_template == 'unified' %}table-dark{% endif %} table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Year</th>
+                                        <th>Amount</th>
+                                        <th>Change</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for tax in property.tax_history %}
+                                    <tr>
+                                        <td>{{ tax.year }}</td>
+                                        <td>${{ tax.amount|format_number }}</td>
+                                        <td class="{% if tax.change > 0 %}text-success{% elif tax.change < 0 %}text-danger{% endif %}">
+                                            {% if tax.change > 0 %}+{% endif %}{{ tax.change }}%
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Column -->
+        <div class="col-md-4">
+            <!-- Nearby Schools -->
+            <div class="property-section">
+                <div class="property-section-header">
+                    <h3 class="h5 mb-0 {% if ui_template == 'unified' %}text-teal{% endif %}">
+                        <i class="fas fa-school me-2"></i>Nearby Schools
+                    </h3>
+                </div>
+                <div class="property-section-body p-0">
+                    <ul class="list-group list-group-flush {% if ui_template == 'unified' %}bg-transparent{% endif %}">
+                        {% for school in property.nearby_schools %}
+                        <li class="list-group-item d-flex align-items-center {% if ui_template == 'unified' %}bg-transparent text-light border-dark{% endif %}">
+                            <div class="school-rating me-3 {% if school.rating >= 8 %}rating-high{% elif school.rating >= 6 %}rating-medium{% else %}rating-low{% endif %}">
+                                {{ school.rating }}
+                            </div>
+                            <div>
+                                <h6 class="mb-0 {% if ui_template == 'unified' %}text-white{% endif %}">{{ school.name }}</h6>
+                                <small class="text-muted d-block">{{ school.type }}</small>
+                                <small class="text-muted">{{ school.distance }} mi away</small>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Market Trends -->
+            <div class="property-section">
+                <div class="property-section-header">
+                    <h3 class="h5 mb-0 {% if ui_template == 'unified' %}text-teal{% endif %}">
+                        <i class="fas fa-chart-bar me-2"></i>Local Market Trends
+                    </h3>
+                </div>
+                <div class="property-section-body">
+                    <div class="chart-wrapper">
+                        <canvas id="marketTrendChart"></canvas>
+                    </div>
+                    <div class="small text-muted mt-2">
+                        <p>Property values in {{ property.city }} have increased by an average of 5.2% over the past year. This property's estimated value has increased by 2.5% during the same period.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Map Modal -->
+    {% if maps_api_key %}
+    <div class="modal fade" id="mapModal" tabindex="-1" aria-labelledby="mapModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content {% if ui_template == 'unified' %}bg-dark-blue text-white{% endif %}">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="mapModalLabel">{{ property.address }}</h5>
+                    <button type="button" class="btn-close {% if ui_template == 'unified' %}btn-close-white{% endif %}" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="propertyMap" style="height: 400px;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn {% if ui_template == 'unified' %}btn-dark-teal{% else %}btn-secondary{% endif %}" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{% if property %}
+<!-- Chart.js for market trends -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Market trends chart
+        const ctx = document.getElementById('marketTrendChart').getContext('2d');
+        
+        // Sample data for the chart (simulated market trends)
+        const marketTrendChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [
+                    {
+                        label: 'Neighborhood Avg',
+                        data: [750000, 755000, 752000, 760000, 763000, 775000, 780000, 785000, 790000, 788000, 795000, 800000],
+                        borderColor: '#4e73df',
+                        backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: false
+                    },
+                    {
+                        label: 'This Property',
+                        data: [770000, 772000, 775000, 778000, 780000, 782000, 783000, 785000, 788000, 790000, 792000, 795000],
+                        borderColor: '#36b9cc',
+                        backgroundColor: 'rgba(54, 185, 204, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        },
+                        grid: {
+                            color: '{% if ui_template == "unified" %}rgba(255, 255, 255, 0.1){% else %}rgba(0, 0, 0, 0.1){% endif %}'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: '{% if ui_template == "unified" %}rgba(255, 255, 255, 0.1){% else %}rgba(0, 0, 0, 0.1){% endif %}'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '{% if ui_template == "unified" %}rgba(255, 255, 255, 0.8){% else %}rgba(0, 0, 0, 0.8){% endif %}'
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+{% if maps_api_key %}
+<!-- Google Maps for property location -->
+<script src="https://maps.googleapis.com/maps/api/js?key={{ maps_api_key }}&callback=initMap" defer></script>
+<script>
+    function initMap() {
+        const propertyLocation = { lat: {{ property.latitude }}, lng: {{ property.longitude }} };
+        
+        const map = new google.maps.Map(document.getElementById("propertyMap"), {
+            zoom: 15,
+            center: propertyLocation,
+            mapTypeControl: true,
+            streetViewControl: true,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        });
+        
+        // Add marker for the property
+        const marker = new google.maps.Marker({
+            position: propertyLocation,
+            map: map,
+            title: "{{ property.address }}",
+            animation: google.maps.Animation.DROP
+        });
+        
+        // Info window
+        const contentString = `
+            <div style="max-width: 200px;">
+                <h5 style="margin-bottom: 8px;">{{ property.address }}</h5>
+                <p style="margin-bottom: 8px;">{{ property.city }}, {{ property.state }} {{ property.zip_code }}</p>
+                <p style="color: #007bff; font-weight: bold; margin-bottom: 8px;">${{ property.price|format_number }}</p>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.8rem;">
+                    <span>{{ property.bedrooms }} bd</span>
+                    <span>{{ property.bathrooms }} ba</span>
+                    <span>{{ property.sqft|format_number }} sqft</span>
+                </div>
+            </div>
+        `;
+        
+        const infowindow = new google.maps.InfoWindow({
+            content: contentString
+        });
+        
+        // Open info window when marker is clicked
+        marker.addListener("click", () => {
+            infowindow.open(map, marker);
+        });
+        
+        // Open info window by default
+        infowindow.open(map, marker);
+        
+        // Add event listener for modal shown to resize map
+        document.getElementById('mapModal').addEventListener('shown.bs.modal', function () {
+            google.maps.event.trigger(map, 'resize');
+            map.setCenter(propertyLocation);
+        });
+    }
+</script>
+{% endif %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,207 @@
+{
+  "info": {
+    "name": "Economic Development API",
+    "description": "Business development and economic growth APIs - TerraFusion Government API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "oauth2",
+    "oauth2": [
+      {
+        "key": "tokenUrl",
+        "value": "https://auth.terrafusion.gov/oauth/token",
+        "type": "string"
+      },
+      {
+        "key": "authUrl",
+        "value": "https://auth.terrafusion.gov/oauth/authorize",
+        "type": "string"
+      },
+      {
+        "key": "scope",
+        "value": "economic-development:read economic-development:write",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.terrafusion.gov/api/v1/economic-development",
+      "type": "string"
+    },
+    {
+      "key": "workspace",
+      "value": "economic-development",
+      "type": "string"
+    },
+    {
+      "key": "version",
+      "value": "1.0.0",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-TerraFusion-Workspace",
+            "value": "{{workspace}}",
+            "type": "text"
+          },
+          {
+            "key": "X-TerraFusion-Version",
+            "value": "{{version}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "List registered businesses",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-TerraFusion-Workspace",
+            "value": "{{workspace}}",
+            "type": "text"
+          },
+          {
+            "key": "X-TerraFusion-Version",
+            "value": "{{version}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/businesses",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "businesses"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Available business incentives",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-TerraFusion-Workspace",
+            "value": "{{workspace}}",
+            "type": "text"
+          },
+          {
+            "key": "X-TerraFusion-Version",
+            "value": "{{version}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/incentives",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "incentives"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Apply for business permit",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-TerraFusion-Workspace",
+            "value": "{{workspace}}",
+            "type": "text"
+          },
+          {
+            "key": "X-TerraFusion-Version",
+            "value": "{{version}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/permits",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "permits"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Economic development metrics",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-TerraFusion-Workspace",
+            "value": "{{workspace}}",
+            "type": "text"
+          },
+          {
+            "key": "X-TerraFusion-Version",
+            "value": "{{version}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/economic-data",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "economic-data"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

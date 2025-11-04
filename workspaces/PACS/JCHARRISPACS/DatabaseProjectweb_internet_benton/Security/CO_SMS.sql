@@ -1,0 +1,5 @@
+CREATE USER [CO\SMS] FOR LOGIN [CO\SMS];
+
+
+GO
+

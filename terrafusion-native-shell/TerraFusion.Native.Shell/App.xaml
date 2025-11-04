@@ -1,0 +1,62 @@
+<Application x:Class="TerraFusion.Native.Shell.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Application.Resources>
+        <!-- TerraFusion OS Design System - Government. Transcended. -->
+
+        <!-- Color Palette -->
+        <SolidColorBrush x:Key="TrustBlue" Color="#0099FF"/>
+        <SolidColorBrush x:Key="TranscendCyan" Color="#00FFEE"/>
+        <SolidColorBrush x:Key="SuccessGreen" Color="#00FFAA"/>
+        <SolidColorBrush x:Key="DeepSpace" Color="#0B1020"/>
+        <SolidColorBrush x:Key="QuantumGlass" Color="#FFFFFF" Opacity="0.1"/>
+
+        <!-- Typography -->
+        <FontFamily x:Key="QuantumFont">Segoe UI</FontFamily>
+
+        <!-- Quantum Window Style -->
+        <Style x:Key="QuantumWindowStyle" TargetType="Window">
+            <Setter Property="Background" Value="{StaticResource DeepSpace}"/>
+            <Setter Property="Foreground" Value="{StaticResource TranscendCyan}"/>
+            <Setter Property="FontFamily" Value="{StaticResource QuantumFont}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="WindowStyle" Value="None"/>
+            <Setter Property="AllowsTransparency" Value="True"/>
+            <Setter Property="ResizeMode" Value="CanResize"/>
+        </Style>
+
+        <!-- Glass Morphism Button -->
+        <Style x:Key="QuantumButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource QuantumGlass}"/>
+            <Setter Property="Foreground" Value="{StaticResource TranscendCyan}"/>
+            <Setter Property="FontFamily" Value="{StaticResource QuantumFont}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="BorderBrush" Value="{StaticResource TranscendCyan}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="{StaticResource TranscendCyan}"/>
+                                <Setter Property="Foreground" Value="{StaticResource DeepSpace}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Application.Resources>
+</Application>

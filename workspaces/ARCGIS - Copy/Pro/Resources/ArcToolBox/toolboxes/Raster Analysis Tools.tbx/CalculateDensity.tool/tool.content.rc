@@ -1,0 +1,26 @@
+{
+    "map": {
+        "countfield.descr": "A field indicating the number of incidents at each location. For example, if you are making a population density raster, and the input points are cities, it is appropriate to use the population of the city for the count field so cities with larger populations have more impact on the density calculations.",
+        "countfield.title": "Count Field",
+        "description": "Creates a density map from point or line features by spreading known quantities of some phenomenon (represented as attributes of the points or lines) across the map. The result is a layer of areas classified from least dense to most dense.",
+        "inbarriers.descr": "<xdoc><p>The dataset that defines the barriers.</p><p>The barriers can be a feature layer of polyline or polygon features.</p></xdoc>",
+        "inbarriers.title": "Input Barrier Features",
+        "inputpointorlinefeatures.descr": "The input point or line features that will be used to calculate the density raster.",
+        "inputpointorlinefeatures.title": "Input Point or Line Features",
+        "outputareaunits.descr": "<xdoc><p>Specifies the units that will be used for calculating area. Density is count divided by area, and this parameter sets the units of the area in the density calculation.</p><ul><li><span title=\"Square Meters\">Square Meters</span>—Calculate the density per square meter. This is the default.</li><li><span title=\"Square Kilometers\">Square Kilometers</span>—Calculate the density per square kilometer.</li><li><span title=\"Square Feet\">Square Feet</span>—Calculate the density per square foot.</li><li><span title=\"Square Miles\">Square Miles</span>—Calculate the density per square mile.</li></ul></xdoc>",
+        "outputareaunits.domain.Square Feet": "Square Feet",
+        "outputareaunits.domain.Square Kilometers": "Square Kilometers",
+        "outputareaunits.domain.Square Meters": "Square Meters",
+        "outputareaunits.domain.Square Miles": "Square Miles",
+        "outputareaunits.title": "Output Area Units",
+        "outputcellsize.descr": "<xdoc><p>The cell size and units for the output raster.</p><p>The unit values are <span class=\"esri_uicontrol\">Kilometers</span>, <span class=\"esri_uicontrol\">Meters</span>, <span class=\"esri_uicontrol\">Statute Miles</span>, <span class=\"esri_uicontrol\">International Feet</span>, <span class=\"esri_uicontrol\">US Survey Miles</span>, and <span class=\"esri_uicontrol\">US Survey Feet</span>.</p></xdoc>",
+        "outputcellsize.title": "Output Cell Size",
+        "outputname.descr": "<xdoc><p>The name of the output raster service.</p><p>The default name is based on the tool name and the input layer name. If the layer name already exists, you will be prompted to provide another name.</p></xdoc>",
+        "outputname.title": "Output Name",
+        "outputraster.title": "Output Raster",
+        "searchdistance.descr": "<xdoc><p>The search distance and units for the distance. When calculating the density of a cell, all features within this distance will be used in the density calculation for that cell.</p><p>The unit values are <span class=\"esri_uicontrol\">Kilometers</span>, <span class=\"esri_uicontrol\">Meters</span>, <span class=\"esri_uicontrol\">Statute Miles</span>, <span class=\"esri_uicontrol\">International Feet</span>, <span class=\"esri_uicontrol\">US Survey Miles</span>, and <span class=\"esri_uicontrol\">US Survey Feet</span>.</p><p>The default units are meters.</p></xdoc>",
+        "searchdistance.title": "Search Distance",
+        "summary": "<xdoc><p>Creates a density map from point or line features by spreading known quantities of some phenomenon (represented as attributes of the points or lines) across the map. The result is a layer of areas classified from least dense to most dense.</p><p>A barrier can be used to alter the influence of a feature while calculating density.</p></xdoc>",
+        "title": "Calculate Density"
+    }
+}

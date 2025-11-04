@@ -1,0 +1,3 @@
+BentonCounty_DynLoader dest:chpacs dbas:ciaps_dev user:ciaps_dev upwd:ciaps_dev floc:D:\CIAPS\BuildingPermit_Import_Dev
+
+BentonCounty_DynLoader dest:chpacs dbas:ciaps_dev user:ciaps_dev upwd:ciaps_dev floc:\\CHPACS\BuildingPermit_Import_Dev

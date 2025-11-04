@@ -1,0 +1,37 @@
+{
+  "settings": {
+    "workbench.iconTheme": "terrafusion-icons",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit"
+    },
+    "editor.formatOnSave": true,
+    "terrafusion.focus": "Agent Development Kit for AI Agent Creation",
+    "terrafusion.team": "ADK Team",
+    "workbench.colorTheme": "TerraFusion Dark"
+  },
+  "folders": [
+    {
+      "path": "../../terrabuild-modernization/server/mcp",
+      "name": "mcp"
+    },
+    {
+      "path": "../../ai-systems",
+      "name": "ai-systems"
+    },
+    {
+      "path": "../../SDK",
+      "name": "SDK"
+    }
+  ],
+  "extensions": {
+    "recommendations": [
+      "ms-vscode.vscode-typescript-next",
+      "bradlc.vscode-tailwindcss",
+      "ms-dotnettools.csharp",
+      "ms-python.python",
+      "ms-vscode.powershell",
+      "GitHub.copilot",
+      "terrafusion.ai-agent-tools"
+    ]
+  }
+}

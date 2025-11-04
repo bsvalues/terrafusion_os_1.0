@@ -1,0 +1,8 @@
+{
+  "TRE": "CCLSTA",
+  "Source": ["STDI-0002-1 v2021.1, Appendix AB: Retired"],
+  "Name": "Country Code List, Verion A",
+  "Description": "This data extension segment is retired per the NITF Technical Board, and is included for documentation purposes only within ArcGIS Pro.",
+  "Size": 99,
+  "Fields" : {}        
+}

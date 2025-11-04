@@ -1,0 +1,45 @@
+{
+  "name": "terrafusion-quantum-professional",
+  "displayName": "TerraFusion Quantum Professional",
+  "description": "Government. Transcended. - Championship Excellence Developer Theme",
+  "version": "1.0.0",
+  "publisher": "terrafusion-elite",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/terrafusion/quantum-professional-theme"
+  },
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Themes"
+  ],
+  "keywords": [
+    "terrafusion",
+    "government",
+    "transcended",
+    "quantum",
+    "professional",
+    "dark theme",
+    "championship"
+  ],
+  "contributes": {
+    "themes": [
+      {
+        "label": "TerraFusion Quantum Professional",
+        "uiTheme": "vs-dark",
+        "path": "./themes/terrafusion-quantum-professional.json"
+      }
+    ]
+  },
+  "scripts": {
+    "build": "npm run compile-theme",
+    "compile-theme": "node scripts/build-theme.js"
+  },
+  "terrafusion": {
+    "brandCompliance": "transcendent",
+    "excellenceLevel": "championship",
+    "quantumEffects": true,
+    "governmentTranscended": true
+  }
+}

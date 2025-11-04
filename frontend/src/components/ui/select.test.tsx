@@ -1,6 +1,6 @@
 /**
  * Select Component Tests
- * 
+ *
  * Tests for the Select dropdown component and related sub-components.
  * Select allows users to choose one option from a dropdown list.
  * Built on @radix-ui/react-select.
@@ -32,11 +32,11 @@ describe('Select', () => {
       render(
         <Select>
           <SelectTrigger>
-            <SelectValue placeholder="Select an option" />
+            <SelectValue placeholder='Select an option' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="option1">Option 1</SelectItem>
-            <SelectItem value="option2">Option 2</SelectItem>
+            <SelectItem value='option1'>Option 1</SelectItem>
+            <SelectItem value='option2'>Option 2</SelectItem>
           </SelectContent>
         </Select>
       );
@@ -51,9 +51,9 @@ describe('Select', () => {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="a">Option A</SelectItem>
-            <SelectItem value="b">Option B</SelectItem>
-            <SelectItem value="c">Option C</SelectItem>
+            <SelectItem value='a'>Option A</SelectItem>
+            <SelectItem value='b'>Option B</SelectItem>
+            <SelectItem value='c'>Option C</SelectItem>
           </SelectContent>
         </Select>
       );
@@ -72,13 +72,13 @@ describe('Select', () => {
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Fruits</SelectLabel>
-              <SelectItem value="apple">Apple</SelectItem>
-              <SelectItem value="banana">Banana</SelectItem>
+              <SelectItem value='apple'>Apple</SelectItem>
+              <SelectItem value='banana'>Banana</SelectItem>
             </SelectGroup>
             <SelectGroup>
               <SelectLabel>Vegetables</SelectLabel>
-              <SelectItem value="carrot">Carrot</SelectItem>
-              <SelectItem value="potato">Potato</SelectItem>
+              <SelectItem value='carrot'>Carrot</SelectItem>
+              <SelectItem value='potato'>Potato</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
@@ -90,13 +90,13 @@ describe('Select', () => {
 
     it('shows selected value in trigger', () => {
       render(
-        <Select defaultValue="option2">
+        <Select defaultValue='option2'>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="option1">Option 1</SelectItem>
-            <SelectItem value="option2">Option 2</SelectItem>
+            <SelectItem value='option1'>Option 1</SelectItem>
+            <SelectItem value='option2'>Option 2</SelectItem>
           </SelectContent>
         </Select>
       );
@@ -107,11 +107,11 @@ describe('Select', () => {
     it('renders with custom className on trigger', () => {
       render(
         <Select>
-          <SelectTrigger className="custom-select">
+          <SelectTrigger className='custom-select'>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="opt1">Option 1</SelectItem>
+            <SelectItem value='opt1'>Option 1</SelectItem>
           </SelectContent>
         </Select>
       );
@@ -131,11 +131,11 @@ describe('Select', () => {
       render(
         <Select>
           <SelectTrigger>
-            <SelectValue placeholder="Select" />
+            <SelectValue placeholder='Select' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="option1">Option 1</SelectItem>
-            <SelectItem value="option2">Option 2</SelectItem>
+            <SelectItem value='option1'>Option 1</SelectItem>
+            <SelectItem value='option2'>Option 2</SelectItem>
           </SelectContent>
         </Select>
       );
@@ -154,11 +154,11 @@ describe('Select', () => {
       render(
         <Select>
           <SelectTrigger>
-            <SelectValue placeholder="Select" />
+            <SelectValue placeholder='Select' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="option1">Option 1</SelectItem>
-            <SelectItem value="option2">Option 2</SelectItem>
+            <SelectItem value='option1'>Option 1</SelectItem>
+            <SelectItem value='option2'>Option 2</SelectItem>
           </SelectContent>
         </Select>
       );
@@ -181,10 +181,10 @@ describe('Select', () => {
           <button>Outside</button>
           <Select>
             <SelectTrigger>
-              <SelectValue placeholder="Select" />
+              <SelectValue placeholder='Select' />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="option1">Option 1</SelectItem>
+              <SelectItem value='option1'>Option 1</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -210,10 +210,10 @@ describe('Select', () => {
       render(
         <Select disabled>
           <SelectTrigger>
-            <SelectValue placeholder="Select" />
+            <SelectValue placeholder='Select' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="option1">Option 1</SelectItem>
+            <SelectItem value='option1'>Option 1</SelectItem>
           </SelectContent>
         </Select>
       );
@@ -235,11 +235,11 @@ describe('Select', () => {
       render(
         <Select>
           <SelectTrigger>
-            <SelectValue placeholder="Select" />
+            <SelectValue placeholder='Select' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="option1">Option 1</SelectItem>
-            <SelectItem value="option2">Option 2</SelectItem>
+            <SelectItem value='option1'>Option 1</SelectItem>
+            <SelectItem value='option2'>Option 2</SelectItem>
           </SelectContent>
         </Select>
       );
@@ -258,13 +258,13 @@ describe('Select', () => {
     it('changes selection when selecting different option', async () => {
       const user = userEvent.setup();
       render(
-        <Select defaultValue="option1">
+        <Select defaultValue='option1'>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="option1">Option 1</SelectItem>
-            <SelectItem value="option2">Option 2</SelectItem>
+            <SelectItem value='option1'>Option 1</SelectItem>
+            <SelectItem value='option2'>Option 2</SelectItem>
           </SelectContent>
         </Select>
       );
@@ -286,15 +286,15 @@ describe('Select', () => {
     it('does not select disabled option', async () => {
       const user = userEvent.setup();
       const handleChange = jest.fn();
-      
+
       render(
         <Select onValueChange={handleChange}>
           <SelectTrigger>
-            <SelectValue placeholder="Select" />
+            <SelectValue placeholder='Select' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="option1">Option 1</SelectItem>
-            <SelectItem value="option2" disabled>
+            <SelectItem value='option1'>Option 1</SelectItem>
+            <SelectItem value='option2' disabled>
               Option 2 (Disabled)
             </SelectItem>
           </SelectContent>
@@ -314,13 +314,13 @@ describe('Select', () => {
     it('shows checkmark on selected option', async () => {
       const user = userEvent.setup();
       render(
-        <Select defaultValue="option1">
+        <Select defaultValue='option1'>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="option1">Option 1</SelectItem>
-            <SelectItem value="option2">Option 2</SelectItem>
+            <SelectItem value='option1'>Option 1</SelectItem>
+            <SelectItem value='option2'>Option 2</SelectItem>
           </SelectContent>
         </Select>
       );
@@ -346,11 +346,11 @@ describe('Select', () => {
       render(
         <Select>
           <SelectTrigger>
-            <SelectValue placeholder="Select" />
+            <SelectValue placeholder='Select' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="option1">Option 1</SelectItem>
-            <SelectItem value="option2">Option 2</SelectItem>
+            <SelectItem value='option1'>Option 1</SelectItem>
+            <SelectItem value='option2'>Option 2</SelectItem>
           </SelectContent>
         </Select>
       );
@@ -370,10 +370,10 @@ describe('Select', () => {
       render(
         <Select>
           <SelectTrigger>
-            <SelectValue placeholder="Select" />
+            <SelectValue placeholder='Select' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="option1">Option 1</SelectItem>
+            <SelectItem value='option1'>Option 1</SelectItem>
           </SelectContent>
         </Select>
       );
@@ -393,12 +393,12 @@ describe('Select', () => {
       render(
         <Select>
           <SelectTrigger>
-            <SelectValue placeholder="Select" />
+            <SelectValue placeholder='Select' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="option1">Option 1</SelectItem>
-            <SelectItem value="option2">Option 2</SelectItem>
-            <SelectItem value="option3">Option 3</SelectItem>
+            <SelectItem value='option1'>Option 1</SelectItem>
+            <SelectItem value='option2'>Option 2</SelectItem>
+            <SelectItem value='option3'>Option 3</SelectItem>
           </SelectContent>
         </Select>
       );
@@ -424,12 +424,12 @@ describe('Select', () => {
       render(
         <Select>
           <SelectTrigger>
-            <SelectValue placeholder="Select" />
+            <SelectValue placeholder='Select' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="option1">Option 1</SelectItem>
-            <SelectItem value="option2">Option 2</SelectItem>
-            <SelectItem value="option3">Option 3</SelectItem>
+            <SelectItem value='option1'>Option 1</SelectItem>
+            <SelectItem value='option2'>Option 2</SelectItem>
+            <SelectItem value='option3'>Option 3</SelectItem>
           </SelectContent>
         </Select>
       );
@@ -458,11 +458,11 @@ describe('Select', () => {
       render(
         <Select onValueChange={handleChange}>
           <SelectTrigger>
-            <SelectValue placeholder="Select" />
+            <SelectValue placeholder='Select' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="option1">Option 1</SelectItem>
-            <SelectItem value="option2">Option 2</SelectItem>
+            <SelectItem value='option1'>Option 1</SelectItem>
+            <SelectItem value='option2'>Option 2</SelectItem>
           </SelectContent>
         </Select>
       );
@@ -488,10 +488,10 @@ describe('Select', () => {
       render(
         <Select>
           <SelectTrigger>
-            <SelectValue placeholder="Select" />
+            <SelectValue placeholder='Select' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="option1">Option 1</SelectItem>
+            <SelectItem value='option1'>Option 1</SelectItem>
           </SelectContent>
         </Select>
       );
@@ -519,13 +519,13 @@ describe('Select', () => {
   describe('Controlled State', () => {
     it('respects controlled value prop', () => {
       render(
-        <Select value="option2">
+        <Select value='option2'>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="option1">Option 1</SelectItem>
-            <SelectItem value="option2">Option 2</SelectItem>
+            <SelectItem value='option1'>Option 1</SelectItem>
+            <SelectItem value='option2'>Option 2</SelectItem>
           </SelectContent>
         </Select>
       );
@@ -540,11 +540,11 @@ describe('Select', () => {
       render(
         <Select onValueChange={handleValueChange}>
           <SelectTrigger>
-            <SelectValue placeholder="Select" />
+            <SelectValue placeholder='Select' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="option1">Option 1</SelectItem>
-            <SelectItem value="option2">Option 2</SelectItem>
+            <SelectItem value='option1'>Option 1</SelectItem>
+            <SelectItem value='option2'>Option 2</SelectItem>
           </SelectContent>
         </Select>
       );
@@ -570,9 +570,9 @@ describe('Select', () => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="option1">Option 1</SelectItem>
-                <SelectItem value="option2">Option 2</SelectItem>
-                <SelectItem value="option3">Option 3</SelectItem>
+                <SelectItem value='option1'>Option 1</SelectItem>
+                <SelectItem value='option2'>Option 2</SelectItem>
+                <SelectItem value='option3'>Option 3</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -597,14 +597,14 @@ describe('Select', () => {
       const handleValueChange = jest.fn();
 
       render(
-        <Select defaultValue="option1" onValueChange={handleValueChange}>
+        <Select defaultValue='option1' onValueChange={handleValueChange}>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="option1">Option 1</SelectItem>
-            <SelectItem value="option2">Option 2</SelectItem>
-            <SelectItem value="option3">Option 3</SelectItem>
+            <SelectItem value='option1'>Option 1</SelectItem>
+            <SelectItem value='option2'>Option 2</SelectItem>
+            <SelectItem value='option3'>Option 3</SelectItem>
           </SelectContent>
         </Select>
       );
@@ -639,10 +639,10 @@ describe('Select', () => {
       render(
         <Select>
           <SelectTrigger>
-            <SelectValue placeholder="Select" />
+            <SelectValue placeholder='Select' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="option1">Option 1</SelectItem>
+            <SelectItem value='option1'>Option 1</SelectItem>
           </SelectContent>
         </Select>
       );
@@ -656,11 +656,11 @@ describe('Select', () => {
       render(
         <Select>
           <SelectTrigger>
-            <SelectValue placeholder="Select" />
+            <SelectValue placeholder='Select' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="option1">Option 1</SelectItem>
-            <SelectItem value="option2">Option 2</SelectItem>
+            <SelectItem value='option1'>Option 1</SelectItem>
+            <SelectItem value='option2'>Option 2</SelectItem>
           </SelectContent>
         </Select>
       );
@@ -679,10 +679,10 @@ describe('Select', () => {
       render(
         <Select>
           <SelectTrigger>
-            <SelectValue placeholder="Select" />
+            <SelectValue placeholder='Select' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="option1">Option 1</SelectItem>
+            <SelectItem value='option1'>Option 1</SelectItem>
           </SelectContent>
         </Select>
       );
@@ -704,10 +704,10 @@ describe('Select', () => {
       render(
         <Select disabled>
           <SelectTrigger>
-            <SelectValue placeholder="Select" />
+            <SelectValue placeholder='Select' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="option1">Option 1</SelectItem>
+            <SelectItem value='option1'>Option 1</SelectItem>
           </SelectContent>
         </Select>
       );
@@ -718,13 +718,13 @@ describe('Select', () => {
 
     it('has no accessibility violations', async () => {
       const { container } = render(
-        <Select defaultValue="option1">
+        <Select defaultValue='option1'>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="option1">Option 1</SelectItem>
-            <SelectItem value="option2">Option 2</SelectItem>
+            <SelectItem value='option1'>Option 1</SelectItem>
+            <SelectItem value='option2'>Option 2</SelectItem>
           </SelectContent>
         </Select>
       );

@@ -1,0 +1,23 @@
+{
+    "set": [
+        "delivery",
+        "depot",
+        "distribute",
+        "driver",
+        "fleet",
+        "lmd",
+        "last mile delivery",
+        "layer",
+        "make vrp",
+        "network",
+        "network analyst",
+        "network analyst layer",
+        "order",
+        "pickup",
+        "route",
+        "truck",
+        "vrp",
+        "vehicle",
+        "vehicle routing problem"
+    ]
+}

@@ -1,0 +1,16 @@
+{
+    "map": {
+        "description": "Snaps pour points to the cell of highest flow accumulation within a specified distance.",
+        "in_accumulation_raster.descr": "<xdoc><p>The input flow accumulation raster.</p><p>This can be created with the Flow Accumulation tool.</p></xdoc>",
+        "in_accumulation_raster.title": "Input accumulation raster",
+        "in_pour_point_data.descr": "<xdoc><p>The input pour point locations that are to be snapped.</p><p>For a raster input, all cells that are not NoData (that is, have a value) will be considered pour points and will be snapped.</p><p>For a point feature input, this specifies the locations of cells that will be snapped.</p></xdoc>",
+        "in_pour_point_data.title": "Input raster or feature pour point data",
+        "out_raster.descr": "<xdoc><p>The output pour point raster where the original pour point locations have been snapped to locations of higher accumulated flow.</p><p>This output is of integer type.</p></xdoc>",
+        "out_raster.title": "Output raster",
+        "pour_point_field.descr": "<xdoc><p>The field used to assign values to the pour point locations.</p><p>If the pour point dataset is a raster, use <span class=\"esri_fieldname\">Value</span>.</p><p>If the pour point dataset is a feature, use a numeric field. If the field contains floating-point values, they will be truncated into integers.</p></xdoc>",
+        "pour_point_field.title": "Pour point field",
+        "snap_distance.descr": "Maximum distance, in map units, to search for a cell of higher accumulated flow.",
+        "snap_distance.title": "Snap distance",
+        "title": "Snap Pour Point"
+    }
+}

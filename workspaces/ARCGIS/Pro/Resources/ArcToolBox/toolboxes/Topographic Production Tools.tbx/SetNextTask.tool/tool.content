@@ -1,0 +1,43 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "46100003",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "46",
+        "49"
+    ],
+    "params": {
+        "job_id": {
+            "displayname": "$rc:job_id.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:job_id.descr"
+        },
+        "database_path": {
+            "type": "optional",
+            "displayname": "$rc:database_path.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "jtc"
+                ]
+            },
+            "description": "$rc:database_path.descr"
+        },
+        "updated_job_id": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_job_id.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "-1"
+        }
+    }
+}

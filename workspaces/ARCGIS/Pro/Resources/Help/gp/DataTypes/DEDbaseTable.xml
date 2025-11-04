@@ -1,0 +1,5 @@
+<DataType Name="DEDbaseTable">
+  <DisplayName>dBASE Table</DisplayName>
+  <Description>Attribute data stored in dBASE format.</Description>
+</DataType>
+

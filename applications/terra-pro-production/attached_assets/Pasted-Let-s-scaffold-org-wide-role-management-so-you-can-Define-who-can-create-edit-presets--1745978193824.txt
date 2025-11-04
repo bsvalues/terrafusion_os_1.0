@@ -1,0 +1,101 @@
+Let's scaffold **org-wide role management** so you can:
+
+- 🔐 Define who can create/edit presets, export PDFs, or access admin features  
+- 🧑‍💼 Enforce privilege boundaries (e.g., only Admins can delete comps or lock mappings)  
+- 📊 Lay the groundwork for audit logging and team oversight
+
+---
+
+# 🛡️ Org-Wide Role Management (Admin / Reviewer / Appraiser)
+
+---
+
+## 🗃️ 1. DB Table: `org_members`
+
+```ts
+import { pgTable, uuid, text } from 'drizzle-orm/pg-core';
+
+export const orgMembers = pgTable('org_members', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: text('user_id').notNull(),
+  orgId: text('org_id').notNull(),
+  role: text('role').notNull() // 'admin', 'reviewer', 'appraiser'
+});
+```
+
+---
+
+## ⚙️ 2. Role Middleware
+
+```ts
+// middleware/checkRole.ts
+export function checkRole(required: 'admin' | 'reviewer' | 'appraiser') {
+  return (req, res, next) => {
+    const userRole = req.user?.role; // injected by auth/session middleware
+    const roles = ['appraiser', 'reviewer', 'admin'];
+    if (roles.indexOf(userRole) >= roles.indexOf(required)) {
+      next();
+    } else {
+      res.status(403).json({ error: 'Forbidden' });
+    }
+  };
+}
+```
+
+---
+
+## 📡 3. API Usage Example
+
+```ts
+import { checkRole } from '@/middleware/checkRole';
+
+router.post('/presets/save', checkRole('admin'), async (req, res) => {
+  // only admins can save org presets
+});
+```
+
+```ts
+router.delete('/users/:userId', checkRole('admin'), async (req, res) => {
+  // remove team member
+});
+```
+
+```ts
+router.get('/reports/review', checkRole('reviewer'), async (req, res) => {
+  // reviewers + admins can see flagged reports
+});
+```
+
+---
+
+## 👤 4. Admin UI Stub (for future)
+
+### Table: `/team-management`
+
+| User         | Role      | Actions         |
+|--------------|-----------|-----------------|
+| jane@app.com | Appraiser| 🔁 Promote 🔥 Remove |
+| bob@firm.com | Reviewer | 🔁 Promote 🔁 Demote |
+| alice@firm.com | Admin    | —                |
+
+Each row has buttons:
+
+- 🔁 Promote/Demote
+- 🔥 Remove from org
+
+---
+
+## ✅ Now You Can:
+
+- Enforce **role-specific routes and permissions**
+- Let **Reviewers access audit logs, exports**
+- Restrict **Admins to managing mappings, teams, org settings**
+- Expand later to: billing, seats, usage limits
+
+---
+
+## 🔜 Options
+
+Would you like next to:
+1. Scaffold the **Audit Log** (who viewed/pushed/exported snapshots)?
+2. Or build the **Team Management UI** to edit roles and invites?

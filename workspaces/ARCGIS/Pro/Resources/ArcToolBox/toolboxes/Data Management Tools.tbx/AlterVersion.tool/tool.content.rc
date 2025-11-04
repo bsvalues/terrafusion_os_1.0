@@ -1,0 +1,22 @@
+{
+    "map": {
+        "access.descr": "<xdoc><p>Specifies the access permission for the version. If no value is specified, the access permission will not be updated.</p><ul><li><span title=\"PRIVATE\">Private</span>—Only the owner can view the version and modify available feature classes.</li><li><span title=\"PUBLIC\">Public</span>— Any user can view the version and modify available feature classes.</li><li><span title=\"PROTECTED\">Protected</span>—Any user can view the version, but only the owner can modify available feature classes.</li></ul></xdoc>",
+        "access.domain.PRIVATE": "Private",
+        "access.domain.PROTECTED": "Protected",
+        "access.domain.PUBLIC": "Public",
+        "access.title": "Access Permission",
+        "description": "Alters the properties of a geodatabase version.",
+        "description.descr": "The new description of the version.",
+        "description.title": "Version Description",
+        "in_version.descr": "The name of the version to be altered. If altering a branch version from a database connection connected as the geodatabase administrator, the version name must also include the service name, for example, myservice.versionowner.versionname.",
+        "in_version.title": "Input Version",
+        "in_workspace.descr": "<xdoc><p>The database connection file to the enterprise, workgroup, or desktop geodatabase where the version to be altered is located.</p><p>For branch versioning, use a feature service URL (that is, https://mysite.mydomain/server/rest/services/ElectricNetwork/FeatureServer) or the feature layer portal item.</p></xdoc>",
+        "in_workspace.title": "Input Workspace",
+        "name.descr": "The new name of the version.",
+        "name.title": "Version Name",
+        "out_workspace.title": "Updated Geodatabase",
+        "target_owner.descr": "The name of the portal user to which the version ownership will be transferred. Ensure that the target owner user exists; the tool does not check the validity of the owner name specified. This parameter is only applicable for branch versions.",
+        "target_owner.title": "Target Owner",
+        "title": "Alter Version"
+    }
+}

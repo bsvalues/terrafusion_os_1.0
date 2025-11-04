@@ -1,0 +1,67 @@
+{
+    "type": "FunctionTool",
+    "guid": "{44310c38-4cf8-4002-bdd7-0d8db0380458}",
+    "displayname": "$rc:title",
+    "helpcontent": "52000004",
+    "description": "$rc:description",
+    "product": "200",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "edit_session"
+    ],
+    "params": {
+        "in_parcel_fabric": {
+            "displayname": "$rc:in_parcel_fabric.title",
+            "datatype": {
+                "type": "GPParcelLayer"
+            },
+            "description": "$rc:in_parcel_fabric.descr"
+        },
+        "movement_tolerance": {
+            "type": "optional",
+            "displayname": "$rc:movement_tolerance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "0.05 Meters",
+            "description": "$rc:movement_tolerance.descr"
+        },
+        "updated_parcel_fabric": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_parcel_fabric.title",
+            "datatype": {
+                "type": "DEParcelDataset"
+            },
+            "depends": [
+                "in_parcel_fabric"
+            ]
+        },
+        "update_attributes": {
+            "type": "optional",
+            "displayname": "$rc:update_attributes.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "UPDATE_ATTRIBUTES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_UPDATE_ATTRIBUTES"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:update_attributes.descr"
+        }
+    }
+}

@@ -1,0 +1,138 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "3400001",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "source_target_mapping": {
+            "display_order": "0",
+            "control_guid": "{1AA9A769-D3F3-4EB0-85CB-CC07C79313C8}",
+            "displayname": "$rc:source_target_mapping.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "DEType",
+                        "displayname": "$rc:source_target_mapping.dt.title1"
+                    },
+                    {
+                        "type": "DEType",
+                        "displayname": "$rc:source_target_mapping.dt.title2"
+                    }
+                ]
+            },
+            "description": "$rc:source_target_mapping.descr"
+        },
+        "out_folder": {
+            "display_order": "3",
+            "displayname": "$rc:out_folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "domain": {
+                "type": "GPWorkspaceDomain"
+            },
+            "description": "$rc:out_folder.descr"
+        },
+        "match_options": {
+            "type": "optional",
+            "display_order": "1",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:match_options.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MATCH_FIELDS",
+                        "code": "$rc:match_options.domain.MATCH_FIELDS"
+                    },
+                    {
+                        "value": "MATCH_VALUES",
+                        "code": "$rc:match_options.domain.MATCH_VALUES"
+                    }
+                ]
+            },
+            "description": "$rc:match_options.descr"
+        },
+        "mapping_table": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:mapping_table.title",
+            "datatype": {
+                "type": "GPRecordSet"
+            },
+            "value_xml": "<GPRecordSet xsi:type='typens:GPRecordSet' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/3.4.0'><RecordSet xsi:type='typens:RecordSet'><Fields xsi:type='typens:Fields'><FieldArray xsi:type='typens:ArrayOfField'><Field xsi:type='typens:Field'><Name>OBJECTID</Name><Type>esriFieldTypeOID</Type><IsNullable>false</IsNullable><Length>4</Length><Precision>0</Precision><Scale>0</Scale><Required>true</Required><Editable>false</Editable><AliasName>OBJECTID</AliasName></Field><Field xsi:type='typens:Field'><Name>type</Name><Type>esriFieldTypeString</Type><IsNullable>false</IsNullable><Length>10</Length><Precision>0</Precision><Scale>0</Scale><AliasName>Match Type</AliasName><Domain xsi:type='typens:CodedValueDomain'><DomainName>match_types</DomainName><FieldType>esriFieldTypeString</FieldType><MergePolicy>esriMPTDefaultValue</MergePolicy><SplitPolicy>esriSPTDefaultValue</SplitPolicy><Description>Valid list of match types</Description><Owner></Owner><CodedValues xsi:type='typens:ArrayOfCodedValue'><CodedValue xsi:type='typens:CodedValue'><Name>Dataset</Name><Code xsi:type='xs:string'>dataset</Code></CodedValue><CodedValue xsi:type='typens:CodedValue'><Name>Field</Name><Code xsi:type='xs:string'>field</Code></CodedValue><CodedValue xsi:type='typens:CodedValue'><Name>Attribute Domain Coded Value Descriptions</Name><Code xsi:type='xs:string'>value</Code></CodedValue></CodedValues></Domain></Field><Field xsi:type='typens:Field'><Name>SubstringsA</Name><Type>esriFieldTypeString</Type><IsNullable>false</IsNullable><Length>1000</Length><Precision>0</Precision><Scale>0</Scale><AliasName>Substrings A</AliasName></Field><Field xsi:type='typens:Field'><Name>SubstringsB</Name><Type>esriFieldTypeString</Type><IsNullable>false</IsNullable><Length>1000</Length><Precision>0</Precision><Scale>0</Scale><AliasName>Substrings B</AliasName></Field><Field xsi:type='typens:Field'><Name>match_strings</Name><Type>esriFieldTypeString</Type><IsNullable>true</IsNullable><Length>11</Length><Precision>0</Precision><Scale>0</Scale><AliasName>Match</AliasName><DefaultValue xsi:type='xs:string'>yes</DefaultValue><Domain xsi:type='typens:CodedValueDomain'><DomainName>match_string</DomainName><FieldType>esriFieldTypeString</FieldType><MergePolicy>esriMPTDefaultValue</MergePolicy><SplitPolicy>esriSPTDefaultValue</SplitPolicy><Description>Indicates how two strings should be matched or blocked.</Description><Owner></Owner><CodedValues xsi:type='typens:ArrayOfCodedValue'><CodedValue xsi:type='typens:CodedValue'><Name>Predictive Block</Name><Code xsi:type='xs:string'>no</Code></CodedValue><CodedValue xsi:type='typens:CodedValue'><Name>Predictive Match</Name><Code xsi:type='xs:string'>yes</Code></CodedValue><CodedValue xsi:type='typens:CodedValue'><Name>Exact Block</Name><Code xsi:type='xs:string'>exact_block</Code></CodedValue><CodedValue xsi:type='typens:CodedValue'><Name>Exact Match</Name><Code xsi:type='xs:string'>exact_match</Code></CodedValue></CodedValues></Domain></Field></FieldArray></Fields><Records xsi:type='typens:ArrayOfRecord'></Records></RecordSet><OIDFieldName>OBJECTID</OIDFieldName></GPRecordSet>",
+            "description": "$rc:mapping_table.descr"
+        },
+        "calc_stats": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:calc_stats.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CALC_STATS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_STATS"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:calc_stats.descr"
+        },
+        "match_subtypes": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:match_subtypes.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "MATCH_SUBTYPES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_MATCH_SUBTYPES"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:match_subtypes.descr"
+        },
+        "out_loading_workspace": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "6",
+            "displayname": "$rc:out_loading_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "schema": {
+                "type": "GPContainerSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    }
+}

@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Error {{ code }} - TerraFusion Platform{% endblock %}
+
+{% block head %}
+<style>
+    .error-container {
+        max-width: 600px;
+        margin: 4rem auto;
+        padding: 2rem;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+    
+    .error-code {
+        font-size: 6rem;
+        font-weight: 700;
+        color: #dc3545;
+        margin-bottom: 1rem;
+    }
+    
+    .error-title {
+        font-size: 1.8rem;
+        color: #333;
+        margin-bottom: 1.5rem;
+    }
+    
+    .error-message {
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 2rem;
+    }
+    
+    .error-actions {
+        margin-top: 2rem;
+    }
+    
+    .error-actions .btn {
+        margin: 0 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <div class="error-code">{{ code }}</div>
+    
+    <h1 class="error-title">
+        {% if code == 401 %}
+            Authentication Required
+        {% elif code == 403 %}
+            Access Denied
+        {% elif code == 404 %}
+            Page Not Found
+        {% elif code == 400 %}
+            Bad Request
+        {% elif code == 500 %}
+            Server Error
+        {% else %}
+            Error
+        {% endif %}
+    </h1>
+    
+    <div class="error-message">
+        {% if code == 401 %}
+            You need to be logged in to access this page.
+        {% elif code == 403 %}
+            You don't have permission to access this resource.
+        {% elif code == 404 %}
+            The page you were looking for doesn't exist.
+        {% elif code == 400 %}
+            Your request could not be processed.
+        {% elif code == 500 %}
+            Something went wrong on our end. Please try again later.
+        {% else %}
+            An unexpected error occurred.
+        {% endif %}
+    </div>
+    
+    <div class="error-actions">
+        {% if code == 401 %}
+            <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Login</a>
+        {% endif %}
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Go to Home</a>
+    </div>
+</div>
+{% endblock %}

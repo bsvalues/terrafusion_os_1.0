@@ -1,0 +1,62 @@
+{
+  "name": "terra-pilt",
+  "version": "1.0.0",
+  "displayName": "TerraPILT - Payment in Lieu of Taxes Management",
+  "description": "Federal PILT distribution management for government special districts and school systems",
+  "type": "government-revenue",
+  "category": "revenue-management",
+  "targetCounties": ["Benton County, WA", "All WA Counties"],
+  "legacySystems": ["TerraFusionPilt_PRODUCTION"],
+  "permissions": [
+    "load:terra-pilt",
+    "pilt:calculate",
+    "pilt:approve",
+    "pilt:report",
+    "districts:view",
+    "districts:manage"
+  ],
+  "entryPoint": "src/main.tsx",
+  "apiEndpoints": [
+    "GET /api/pilt/status",
+    "GET /api/pilt/receipts",
+    "POST /api/pilt/receipts",
+    "GET /api/pilt/districts",
+    "POST /api/pilt/calculate/:receiptId",
+    "POST /api/pilt/approve/:calculationId",
+    "GET /api/pilt/reports/:year"
+  ],
+  "integrations": {
+    "terra-levy": {
+      "enabled": true,
+      "sharedData": ["school_districts", "assessed_values", "revenue_cycles"],
+      "crossModuleHooks": ["useDistrictData", "useRevenueProjections"]
+    }
+  },
+  "quantum": {
+    "optimizationFactor": 949,
+    "accuracyTarget": 0.995,
+    "enabled": true
+  },
+  "capabilities": [
+    "PILT Assessment",
+    "Special Districts Management",
+    "Federal Property Tracking",
+    "School District Integration",
+    "Revenue Distribution",
+    "Compliance Reporting",
+    "Washington State DOE Integration",
+    "Multi-Year Analysis",
+    "Audit Trail"
+  ],
+  "federalCompliance": {
+    "programs": ["PILT", "Secure Rural Schools (SRS)"],
+    "reportingAgencies": ["US Department of Interior", "WA State DOE"],
+    "fiscalYearAlignment": "Federal (Oct 1 - Sep 30)"
+  },
+  "brandConsistency": {
+    "theme": "terra-cyan",
+    "primaryColor": "#00FFFF",
+    "designSystem": "TerraFusion Quantum UI",
+    "components": "glassmorphic"
+  }
+}

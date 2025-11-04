@@ -1,0 +1,6 @@
+CREATE LOGIN [JCHARRISPACS\SpatialestAdmin]
+    FROM WINDOWS WITH DEFAULT_LANGUAGE = [us_english];
+
+
+GO
+

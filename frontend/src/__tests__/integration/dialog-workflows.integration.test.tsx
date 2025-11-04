@@ -49,7 +49,11 @@ import { Textarea } from '@/components/ui/textarea';
 /**
  * Edit Profile Dialog - Dialog + Form Integration
  */
-const EditProfileDialog = ({ onSave }: { onSave: (data: { name: string; bio: string }) => void }) => {
+const EditProfileDialog = ({
+  onSave,
+}: {
+  onSave: (data: { name: string; bio: string }) => void;
+}) => {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('John Doe');
   const [bio, setBio] = useState('Software Developer');
@@ -71,27 +75,18 @@ const EditProfileDialog = ({ onSave }: { onSave: (data: { name: string; bio: str
             Make changes to your profile here. Click save when you're done.
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4">
+        <div className='space-y-4'>
           <div>
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+            <Label htmlFor='name'>Name</Label>
+            <Input id='name' value={name} onChange={(e) => setName(e.target.value)} />
           </div>
           <div>
-            <Label htmlFor="bio">Bio</Label>
-            <Textarea
-              id="bio"
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
-              rows={3}
-            />
+            <Label htmlFor='bio'>Bio</Label>
+            <Textarea id='bio' value={bio} onChange={(e) => setBio(e.target.value)} rows={3} />
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>
+          <Button variant='outline' onClick={() => setOpen(false)}>
             Cancel
           </Button>
           <Button onClick={handleSave}>Save Changes</Button>
@@ -115,14 +110,14 @@ const DeleteConfirmation = ({ itemName, onDelete }: { itemName: string; onDelete
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive">Delete {itemName}</Button>
+        <Button variant='destructive'>Delete {itemName}</Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete{' '}
-            <strong>{itemName}</strong> from our servers.
+            This action cannot be undone. This will permanently delete <strong>{itemName}</strong>{' '}
+            from our servers.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -137,7 +132,11 @@ const DeleteConfirmation = ({ itemName, onDelete }: { itemName: string; onDelete
 /**
  * Settings Panel - Sheet + Form Integration
  */
-const SettingsPanel = ({ onSave }: { onSave: (settings: { email: string; notifications: boolean }) => void }) => {
+const SettingsPanel = ({
+  onSave,
+}: {
+  onSave: (settings: { email: string; notifications: boolean }) => void;
+}) => {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState('user@example.com');
   const [notifications, setNotifications] = useState(true);
@@ -155,32 +154,30 @@ const SettingsPanel = ({ onSave }: { onSave: (settings: { email: string; notific
       <SheetContent>
         <SheetHeader>
           <SheetTitle>Settings</SheetTitle>
-          <SheetDescription>
-            Manage your account settings and preferences.
-          </SheetDescription>
+          <SheetDescription>Manage your account settings and preferences.</SheetDescription>
         </SheetHeader>
-        <div className="space-y-4 mt-4">
+        <div className='space-y-4 mt-4'>
           <div>
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor='email'>Email</Label>
             <Input
-              id="email"
-              type="email"
+              id='email'
+              type='email'
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
-          <div className="flex items-center space-x-2">
+          <div className='flex items-center space-x-2'>
             <input
-              type="checkbox"
-              id="notifications"
+              type='checkbox'
+              id='notifications'
               checked={notifications}
               onChange={(e) => setNotifications(e.target.checked)}
             />
-            <Label htmlFor="notifications">Enable notifications</Label>
+            <Label htmlFor='notifications'>Enable notifications</Label>
           </div>
         </div>
-        <div className="mt-6 flex justify-end space-x-2">
-          <Button variant="outline" onClick={() => setOpen(false)}>
+        <div className='mt-6 flex justify-end space-x-2'>
+          <Button variant='outline' onClick={() => setOpen(false)}>
             Cancel
           </Button>
           <Button onClick={handleSave}>Save</Button>
@@ -222,7 +219,7 @@ const NestedDialogsExample = ({ onComplete }: { onComplete: (data: string) => vo
           <Input
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Enter value"
+            placeholder='Enter value'
           />
           <DialogFooter>
             <Button onClick={handleMainSubmit}>Continue</Button>
@@ -299,7 +296,7 @@ describe('Integration: Dialog + Form Workflow', () => {
 
       await user.clear(nameInput);
       await user.type(nameInput, 'Jane Smith');
-      
+
       await user.clear(bioInput);
       await user.type(bioInput, 'Senior Developer');
 
@@ -459,7 +456,7 @@ describe('Integration: AlertDialog Confirmation Workflow', () => {
   describe('Component Integration', () => {
     it('should render delete button trigger', () => {
       const handleDelete = jest.fn();
-      render(<DeleteConfirmation itemName="User Account" onDelete={handleDelete} />);
+      render(<DeleteConfirmation itemName='User Account' onDelete={handleDelete} />);
 
       expect(screen.getByRole('button', { name: /delete user account/i })).toBeInTheDocument();
     });
@@ -467,7 +464,7 @@ describe('Integration: AlertDialog Confirmation Workflow', () => {
     it('should open alert dialog when delete is clicked', async () => {
       const user = userEvent.setup();
       const handleDelete = jest.fn();
-      render(<DeleteConfirmation itemName="User Account" onDelete={handleDelete} />);
+      render(<DeleteConfirmation itemName='User Account' onDelete={handleDelete} />);
 
       await user.click(screen.getByRole('button', { name: /delete user account/i }));
 
@@ -478,7 +475,7 @@ describe('Integration: AlertDialog Confirmation Workflow', () => {
     it('should display item name in confirmation message', async () => {
       const user = userEvent.setup();
       const handleDelete = jest.fn();
-      render(<DeleteConfirmation itemName="Project X" onDelete={handleDelete} />);
+      render(<DeleteConfirmation itemName='Project X' onDelete={handleDelete} />);
 
       await user.click(screen.getByRole('button', { name: /delete project x/i }));
 
@@ -490,7 +487,7 @@ describe('Integration: AlertDialog Confirmation Workflow', () => {
     it('should handle delete confirmation workflow', async () => {
       const user = userEvent.setup();
       const handleDelete = jest.fn();
-      render(<DeleteConfirmation itemName="Document" onDelete={handleDelete} />);
+      render(<DeleteConfirmation itemName='Document' onDelete={handleDelete} />);
 
       // Open alert dialog
       await user.click(screen.getByRole('button', { name: /delete document/i }));
@@ -508,7 +505,7 @@ describe('Integration: AlertDialog Confirmation Workflow', () => {
     it('should cancel delete operation', async () => {
       const user = userEvent.setup();
       const handleDelete = jest.fn();
-      render(<DeleteConfirmation itemName="Document" onDelete={handleDelete} />);
+      render(<DeleteConfirmation itemName='Document' onDelete={handleDelete} />);
 
       // Open alert dialog
       await user.click(screen.getByRole('button', { name: /delete document/i }));
@@ -526,7 +523,7 @@ describe('Integration: AlertDialog Confirmation Workflow', () => {
     it('should close on Escape without deleting', async () => {
       const user = userEvent.setup();
       const handleDelete = jest.fn();
-      render(<DeleteConfirmation itemName="Document" onDelete={handleDelete} />);
+      render(<DeleteConfirmation itemName='Document' onDelete={handleDelete} />);
 
       await user.click(screen.getByRole('button', { name: /delete document/i }));
       await user.keyboard('{Escape}');
@@ -539,7 +536,7 @@ describe('Integration: AlertDialog Confirmation Workflow', () => {
   describe('Accessibility: AlertDialog', () => {
     it('should have no accessibility violations', async () => {
       const handleDelete = jest.fn();
-      const { container } = render(<DeleteConfirmation itemName="Item" onDelete={handleDelete} />);
+      const { container } = render(<DeleteConfirmation itemName='Item' onDelete={handleDelete} />);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
@@ -547,7 +544,7 @@ describe('Integration: AlertDialog Confirmation Workflow', () => {
     it('should have no accessibility violations when open', async () => {
       const user = userEvent.setup();
       const handleDelete = jest.fn();
-      const { container } = render(<DeleteConfirmation itemName="Item" onDelete={handleDelete} />);
+      const { container } = render(<DeleteConfirmation itemName='Item' onDelete={handleDelete} />);
 
       await user.click(screen.getByRole('button', { name: /delete item/i }));
 
@@ -558,7 +555,7 @@ describe('Integration: AlertDialog Confirmation Workflow', () => {
     it('should have proper alertdialog role', async () => {
       const user = userEvent.setup();
       const handleDelete = jest.fn();
-      render(<DeleteConfirmation itemName="Item" onDelete={handleDelete} />);
+      render(<DeleteConfirmation itemName='Item' onDelete={handleDelete} />);
 
       await user.click(screen.getByRole('button', { name: /delete item/i }));
 

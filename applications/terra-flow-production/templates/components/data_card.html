@@ -1,0 +1,186 @@
+{% macro data_card(id, title=None, subtitle=None, loader_text='Loading data...', class='', data_url=None) %}
+<div id="{{ id }}" class="data-card tf-card {{ class }}" {% if data_url %}data-fetch-url="{{ data_url }}"{% endif %}>
+    {% if title %}
+    <div class="tf-card-header">
+        <h3 class="tf-card-title">{{ title }}</h3>
+        {% if subtitle %}
+        <p class="tf-card-subtitle">{{ subtitle }}</p>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    <div class="tf-card-body">
+        <div class="data-container tf-card-content">
+            {{ caller() }}
+        </div>
+        
+        <!-- Loading State -->
+        <div class="loading-template d-none">
+            <div class="tf-loading-indicator">
+                <div class="tf-spinner" role="status" aria-hidden="true">
+                    <div class="tf-spinner-circle"></div>
+                </div>
+                <p class="tf-loading-message">{{ loader_text }}</p>
+            </div>
+        </div>
+        
+        <!-- Error State -->
+        <div class="error-template d-none">
+            <div class="tf-error-content">
+                <div class="tf-error-icon">
+                    <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+                </div>
+                <h3 class="tf-error-title">Error Loading Data</h3>
+                <p class="tf-error-message">There was a problem loading the data.</p>
+                <button type="button" class="btn btn-outline-primary tf-retry-button">Retry</button>
+            </div>
+        </div>
+        
+        <!-- Empty State -->
+        <div class="empty-template d-none">
+            <div class="tf-empty-content">
+                <div class="tf-empty-icon">
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                </div>
+                <h3 class="tf-empty-title">No Results Found</h3>
+                <p class="tf-empty-message">No data matches your criteria.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="tf-card-footer d-none">
+        <div class="d-flex justify-content-between align-items-center">
+            <span class="tf-card-updated-at"></span>
+            <button type="button" class="btn btn-sm btn-outline-primary tf-card-refresh">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro property_card(property, class='') %}
+<div class="property-card tf-card {{ class }}">
+    <div class="tf-card-header">
+        <h3 class="tf-card-title">{{ property.address }}</h3>
+        <p class="tf-card-subtitle">Parcel ID: {{ property.parcel_id }}</p>
+    </div>
+    
+    <div class="tf-card-body">
+        <div class="property-details">
+            <div class="property-info-row">
+                <div class="property-info-item">
+                    <span class="property-info-label">Type</span>
+                    <span class="property-info-value">{{ property.property_type }}</span>
+                </div>
+                <div class="property-info-item">
+                    <span class="property-info-label">Size</span>
+                    <span class="property-info-value">{{ property.lot_size }} {{ property.lot_size_unit }}</span>
+                </div>
+            </div>
+            
+            <div class="property-info-row">
+                <div class="property-info-item">
+                    <span class="property-info-label">Owner</span>
+                    <span class="property-info-value">{{ property.owner_name }}</span>
+                </div>
+                <div class="property-info-item">
+                    <span class="property-info-label">Zoning</span>
+                    <span class="property-info-value">{{ property.zoning }}</span>
+                </div>
+            </div>
+            
+            {% if property.assessed_value %}
+            <div class="property-valuation">
+                <div class="valuation-header">
+                    <h4>Assessed Value</h4>
+                    <span class="valuation-year">{{ property.assessment_year }}</span>
+                </div>
+                <div class="valuation-amount">${{ "{:,.2f}".format(property.assessed_value) }}</div>
+                
+                {% if property.previous_value %}
+                <div class="valuation-change {% if property.assessed_value > property.previous_value %}increase{% else %}decrease{% endif %}">
+                    {% if property.assessed_value > property.previous_value %}
+                    <i class="fas fa-arrow-up"></i>
+                    {% else %}
+                    <i class="fas fa-arrow-down"></i>
+                    {% endif %}
+                    {{ "{:.1f}%".format(((property.assessed_value - property.previous_value) / property.previous_value) * 100) }}
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="tf-card-footer">
+        <div class="property-actions">
+            <a href="{{ url_for('property.details', parcel_id=property.parcel_id) }}" class="btn btn-sm btn-primary">
+                <i class="fas fa-info-circle"></i> Details
+            </a>
+            <button type="button" class="btn btn-sm btn-outline-primary" 
+                    data-action="show-on-map" 
+                    data-lat="{{ property.latitude }}" 
+                    data-lng="{{ property.longitude }}">
+                <i class="fas fa-map-marker-alt"></i> Show on Map
+            </button>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro filter_panel(id, title='Filter', class='', collapsible=True) %}
+<div id="{{ id }}" class="tf-filter-panel {{ class }}">
+    <div class="tf-filter-header">
+        <h3 class="tf-filter-title">{{ title }}</h3>
+        {% if collapsible %}
+        <button type="button" class="tf-filter-toggle" data-bs-toggle="collapse" data-bs-target="#{{ id }}-body">
+            <i class="fas fa-chevron-down"></i>
+        </button>
+        {% endif %}
+    </div>
+    
+    <div id="{{ id }}-body" class="tf-filter-body {% if collapsible %}collapse show{% endif %}">
+        {{ caller() }}
+    </div>
+    
+    <div class="tf-filter-footer">
+        <button type="button" class="btn btn-primary tf-filter-apply">Apply Filters</button>
+        <button type="button" class="btn btn-outline-secondary tf-filter-reset">Reset</button>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro status_indicator(status, tooltip=None) %}
+{% set status_map = {
+    'pending': {'class': 'tf-status-pending', 'icon': 'clock', 'text': 'Pending'},
+    'approved': {'class': 'tf-status-success', 'icon': 'check-circle', 'text': 'Approved'},
+    'rejected': {'class': 'tf-status-danger', 'icon': 'times-circle', 'text': 'Rejected'},
+    'in_progress': {'class': 'tf-status-warning', 'icon': 'spinner', 'text': 'In Progress'},
+    'completed': {'class': 'tf-status-success', 'icon': 'check-circle', 'text': 'Completed'},
+    'error': {'class': 'tf-status-danger', 'icon': 'exclamation-circle', 'text': 'Error'},
+    'warning': {'class': 'tf-status-warning', 'icon': 'exclamation-triangle', 'text': 'Warning'}
+} %}
+
+{% set status_info = status_map.get(status, {'class': 'tf-status-secondary', 'icon': 'question-circle', 'text': status|title}) %}
+
+<span class="tf-status-indicator {{ status_info.class }}" {% if tooltip %}data-bs-toggle="tooltip" title="{{ tooltip }}"{% endif %}>
+    <i class="fas fa-{{ status_info.icon }}"></i>
+    <span class="tf-status-text">{{ status_info.text }}</span>
+</span>
+{% endmacro %}
+
+{% macro empty_state(icon='search', title='No Results Found', message='No data available', button_text=None, button_action=None) %}
+<div class="tf-empty-state">
+    <div class="tf-empty-icon">
+        <i class="fas fa-{{ icon }}"></i>
+    </div>
+    <h3 class="tf-empty-title">{{ title }}</h3>
+    <p class="tf-empty-message">{{ message }}</p>
+    {% if button_text and button_action %}
+    <button type="button" class="btn btn-primary tf-empty-action" data-action="{{ button_action }}">
+        {{ button_text }}
+    </button>
+    {% endif %}
+</div>
+{% endmacro %}

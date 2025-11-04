@@ -1,0 +1,55 @@
+Below is a focused proposal to prioritize Mobile & Offline Synchronization as Terrafusion’s next major initiative. Offline-first capabilities are essential for field work, especially in rural or patchy-connectivity environments, and will significantly boost adoption among county assessors and appraisers.
+
+Why Mobile & Offline Sync First?
+
+The ability to work disconnected from the network is no longer a “nice to have” but a core requirement for modern field applications—particularly in government and GIS contexts. Offline-first apps improve reliability, user productivity, and customer satisfaction by ensuring workflows never grind to a halt due to connectivity issues.
+
+Key Components of the Offline-First Strategy
+
+1. CRDT-Based Data Layer
+
+Leverage Yjs, a battle-tested CRDT framework, to handle real-time and offline merges without conflicts. Yjs provides shared types (Map, Array) that automatically reconcile divergent edits  ￼.
+	•	Subdocuments for Scalability: Use one Y.Doc per parcel or task to limit sync payloads and speed up merges  ￼.
+	•	Custom Conflict Policies: While Yjs defaults to Last-Write-Wins, you can implement “source precedence” logic in custom CRDT extensions if business rules demand it  ￼.
+
+2. Local Persistence with Realm
+
+Persist Yjs updates to Realm on the device, ensuring edits survive app restarts and can be queried natively  ￼. Realm’s zero-copy architecture and transaction model make it ideal for mobile CRDT storage:
+	•	On startup, load the latest Yjs snapshot from Realm and replay any pending updates.
+	•	Commit Yjs updates to Realm in a write transaction, preserving both CRDT state and historical versions for audit.
+
+3. Sync Transport & Background Queues
+
+Implement a service worker or background task to queue and dispatch updates when connectivity returns, using resumable REST or WebSocket channels:
+	•	Queue Management: Store pending binary Yjs updates in IndexedDB or Realm until the device is back online .
+	•	Background Sync: Use the browser’s Background Sync API or native mobile equivalents to retry failed uploads automatically .
+
+4. Offline GIS Functionality
+
+Enable offline redlining and map editing by pre-caching vector tile packages (MVT/MBTiles) and GIS layers ahead of time:
+	•	Offline Map Areas: Allow users to define geographic extents for offline download, minimizing storage and ensuring relevant data is available  ￼.
+	•	Layer Management: Support feature services and tiled layers (Esri, OpenStreetMap) in offline mode, with options to update caches  ￼.
+
+5. Conflict Resolution UI
+
+Provide an in-app “Merge Assistant” for edge cases where automated CRDT resolution may not align with assessor judgment:
+	•	Visualize divergent versions side-by-side.
+	•	Let users choose which edit to keep or combine manually.
+	•	Log merge decisions for audit compliance.
+
+Implementation Roadmap
+
+Phase	Duration	Deliverables
+Phase 1: Prototype	2 weeks	Yjs + Realm PoC: sync notes for a single parcel in an Expo mobile app.  ￼ ￼
+Phase 2: Core Integration	4 weeks	Full offline-first CRDT layer across mobile; background sync via service worker/native tasks.
+Phase 3: GIS Caching	3 weeks	Offline map area selection, tile caching, and redlining features using Mapbox/Esri SDKs.  ￼ ￼
+Phase 4: UX & Conflict UI	2 weeks	Merge Assistant UI and conflict-resolution workflows; audit logging.
+Phase 5: Testing & Launch	3 weeks	Automated offline/online lifecycle tests, performance benchmarks, and pilot rollout.
+
+Benefits & Impact
+	•	Reliability: Field teams never lose work, even in zero-connectivity zones.
+	•	Adoption: A polished offline experience becomes a key selling point versus competitors.
+	•	Data Integrity: CRDTs guarantee no conflicts or data loss, with full audit trails.
+	•	Scalability: Modular Yjs+Realm architecture can extend to other offline modules (appeals, levy adjustments).
+
+Prioritizing Mobile & Offline Synchronization delivers tangible value fast, powers critical field workflows, and lays the groundwork for future capabilities (e.g., offline AI agent queries). Let’s kickoff Phase 1 this week by spinning up the Yjs+Realm prototype in our existing Expo-based TerraField app.

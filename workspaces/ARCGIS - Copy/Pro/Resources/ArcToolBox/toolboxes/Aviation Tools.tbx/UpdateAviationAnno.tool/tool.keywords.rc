@@ -1,0 +1,13 @@
+{
+    "set": [
+        "annotation",
+        "annotation features",
+        "aviation",
+        "batch update",
+        "batch update aviation features",
+        "custom tags",
+        "map properties",
+        "scale",
+        "update"
+    ]
+}

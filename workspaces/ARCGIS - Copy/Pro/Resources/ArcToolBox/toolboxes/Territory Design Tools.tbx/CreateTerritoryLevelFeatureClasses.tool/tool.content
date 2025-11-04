@@ -1,0 +1,106 @@
+{
+    "type": "FunctionTool",
+    "guid": "{7b65af0c-d17e-488d-8bba-04b27311ad2d}",
+    "displayname": "$rc:title",
+    "helpcontent": "67020006",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "33"
+    ],
+    "params": {
+        "in_territory_solution": {
+            "displayname": "$rc:in_territory_solution.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPGroupLayer"
+                    },
+                    {
+                        "type": "DEFeatureDataset"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "description": "$rc:in_territory_solution.descr"
+        },
+        "level": {
+            "displayname": "$rc:level.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "depends": [
+                "in_territory_solution"
+            ],
+            "description": "$rc:level.descr"
+        },
+        "feature_classes": {
+            "control_guid": "{C15EC6FA-35EF-4204-90FB-01E7B4DD6862}",
+            "displayname": "$rc:feature_classes.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "TERRITORY_BOUNDARIES",
+                        "code": "$rc:feature_classes.domain.TERRITORY_BOUNDARIES"
+                    },
+                    {
+                        "value": "TERRITORY_CENTERS",
+                        "code": "$rc:feature_classes.domain.TERRITORY_CENTERS"
+                    },
+                    {
+                        "value": "BASE_BOUNDARIES",
+                        "code": "$rc:feature_classes.domain.BASE_BOUNDARIES"
+                    },
+                    {
+                        "value": "BASE_CENTERS",
+                        "code": "$rc:feature_classes.domain.BASE_CENTERS"
+                    },
+                    {
+                        "value": "SEED_POINTS",
+                        "code": "$rc:feature_classes.domain.SEED_POINTS"
+                    },
+                    {
+                        "value": "LINE_BARRIERS",
+                        "code": "$rc:feature_classes.domain.LINE_BARRIERS"
+                    },
+                    {
+                        "value": "POLYGON_BARRIERS",
+                        "code": "$rc:feature_classes.domain.POLYGON_BARRIERS"
+                    },
+                    {
+                        "value": "RESTRICTED_AREAS",
+                        "code": "$rc:feature_classes.domain.RESTRICTED_AREAS"
+                    }
+                ]
+            },
+            "description": "$rc:feature_classes.descr"
+        },
+        "out_territory_solution": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_territory_solution.title",
+            "datatype": {
+                "type": "GPGroupLayer"
+            },
+            "depends": [
+                "in_territory_solution"
+            ]
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

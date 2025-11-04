@@ -1,0 +1,38 @@
+{
+    "type": "FunctionTool",
+    "guid": "{fbd41708-e86d-4a14-b47a-b790565427a1}",
+    "displayname": "$rc:title",
+    "helpcontent": "3020004",
+    "description": "$rc:description",
+    "product": "200",
+    "params": {
+        "in_workspace": {
+            "displayname": "$rc:in_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "domain": {
+                "type": "GPWorkspaceDomain",
+                "workspacetype": [
+                    "Remote Database",
+                    "Local Database"
+                ]
+            }
+        },
+        "dest_delta_database": {
+            "direction": "out",
+            "control_guid": "{F618CB52-29AE-49C8-BF32-9845F642276B}",
+            "displayname": "$rc:dest_delta_database.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "mdb",
+                    "xml"
+                ]
+            }
+        }
+    }
+}

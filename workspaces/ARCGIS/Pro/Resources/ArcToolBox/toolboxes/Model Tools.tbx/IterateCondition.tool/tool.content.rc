@@ -1,0 +1,13 @@
+{
+    "map": {
+        "condition.descr": "<xdoc><p>Specifies whether to iterate until the input values are all true or are all false.</p><ul><li><span title=\"TRUE\">True</span>—The tool will iterate until all the input values are true. This is the default.</li><li><span title=\"FALSE\">False</span>— The tool will iterate until all the input values are false.</li></ul></xdoc>",
+        "condition.domain.FALSE": "False",
+        "condition.domain.TRUE": "True",
+        "condition.title": "Continue if inputs are",
+        "continue.title": "Continue",
+        "description": "Iterates until a condition becomes true or until a condition comes false.",
+        "in_values.descr": "The input values to evaluate to determine whether to continue to iterate.",
+        "in_values.title": "Input Values",
+        "title": "While"
+    }
+}

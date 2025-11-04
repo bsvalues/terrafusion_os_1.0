@@ -1,0 +1,12 @@
+{
+    "set": [
+        "configure",
+        "delete event",
+        "delete lrs",
+        "delete route",
+        "lookup table",
+        "padding",
+        "remove event",
+        "remove route"
+    ]
+}

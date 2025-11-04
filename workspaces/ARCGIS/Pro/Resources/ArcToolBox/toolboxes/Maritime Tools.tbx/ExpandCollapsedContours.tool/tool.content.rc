@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Expands (pulls apart) contour lines that are snapped together. This preserves representative depth areas.",
+        "expansion_distance.descr": "The distance that contours will be expanded based on the coordinate system of the target contours. The default is 5e-7 decimal degrees based on the WGS84 geographic coordinate system.",
+        "expansion_distance.title": "Expansion Distance",
+        "target_contours.descr": "The feature class containing the contours to be expanded.",
+        "target_contours.title": "Target Contours",
+        "title": "Expand Collapsed Contours",
+        "updated_contours.title": "Updated Contours"
+    }
+}

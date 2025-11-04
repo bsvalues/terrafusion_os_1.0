@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Constructs a 3D polygon or polyline delineating the height along the boundary of a raster surface.",
+        "in_raster.descr": "The raster to process.",
+        "in_raster.title": "Input Raster",
+        "out_feature_class.descr": "The feature class that will be produced.",
+        "out_feature_class.title": "Output Feature Class",
+        "out_geometry_type.descr": "<xdoc><p>The geometry of the output feature class.</p><ul><li><span title=\"LINE\">Line</span>—The output will be a z-enabled line feature class.</li><li><span title=\"POLYGON\">Polygon</span>—The output will be a z-enabled polygon feature class.</li></ul></xdoc>",
+        "out_geometry_type.domain.LINE": "Line",
+        "out_geometry_type.domain.POLYGON": "Polygon",
+        "out_geometry_type.title": "Output Feature Class Type",
+        "title": "Raster Domain"
+    }
+}

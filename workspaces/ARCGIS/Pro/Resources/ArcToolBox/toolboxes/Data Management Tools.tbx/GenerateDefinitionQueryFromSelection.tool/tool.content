@@ -1,0 +1,161 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "3110021",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_table": {
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "method": {
+            "type": "optional",
+            "displayname": "$rc:method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MATCH_SELECTION",
+                        "code": "$rc:method.domain.MATCH_SELECTION"
+                    },
+                    {
+                        "value": "USE_FIELD_VALUES",
+                        "code": "$rc:method.domain.USE_FIELD_VALUES"
+                    }
+                ]
+            },
+            "value": "MATCH_SELECTION",
+            "description": "$rc:method.descr"
+        },
+        "field": {
+            "type": "optional",
+            "displayname": "$rc:field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Text",
+                    "GUID"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:field.descr"
+        },
+        "query_name": {
+            "type": "optional",
+            "displayname": "$rc:query_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:query_name.descr"
+        },
+        "invert_where_clause": {
+            "type": "optional",
+            "displayname": "$rc:invert_where_clause.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "INVERT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NON_INVERT"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:invert_where_clause.descr"
+        },
+        "append_active_query": {
+            "type": "optional",
+            "displayname": "$rc:append_active_query.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "APPEND"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NOT_APPEND"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:append_active_query.descr"
+        },
+        "overwrite_where_clause": {
+            "type": "optional",
+            "displayname": "$rc:overwrite_where_clause.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "OVERWRITE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NOT_OVERWRITE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:overwrite_where_clause.descr"
+        },
+        "where_clause": {
+            "type": "optional",
+            "displayname": "$rc:where_clause.title",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:where_clause.descr"
+        },
+        "out_table": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    }
+}

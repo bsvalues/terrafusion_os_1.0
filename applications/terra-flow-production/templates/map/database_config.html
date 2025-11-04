@@ -1,0 +1,872 @@
+{% extends "layout.html" %}
+
+{% block title %}TerraFlow | Database Configuration{% endblock %}
+
+{% block additionalcss %}
+<style>
+    .config-section {
+        background-color: var(--tf-white);
+        border-radius: var(--tf-radius-lg);
+        box-shadow: var(--tf-shadow);
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+    }
+    
+    .config-section h4 {
+        color: var(--tf-flow-aqua);
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--tf-flow-aqua-light);
+    }
+    
+    .query-card {
+        background-color: var(--tf-gray-50);
+        border: 1px solid var(--tf-gray-200);
+        border-radius: var(--tf-radius);
+        margin-bottom: 1.5rem;
+        transition: all 0.2s;
+    }
+    
+    .query-card:hover {
+        border-color: var(--tf-flow-aqua-light);
+        box-shadow: var(--tf-shadow-sm);
+    }
+    
+    .query-header {
+        padding: 0.75rem 1rem;
+        background-color: var(--tf-gray-100);
+        border-bottom: 1px solid var(--tf-gray-200);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .query-title {
+        font-weight: 600;
+        color: var(--tf-gray-800);
+    }
+    
+    .query-body {
+        padding: 1rem;
+    }
+    
+    .query-footer {
+        padding: 0.75rem 1rem;
+        background-color: var(--tf-gray-50);
+        border-top: 1px solid var(--tf-gray-200);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .status-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: var(--tf-radius-full);
+    }
+    
+    .status-badge-success {
+        background-color: var(--tf-success-light);
+        color: #166534;
+    }
+    
+    .status-badge-warning {
+        background-color: var(--tf-warning-light);
+        color: #92400E;
+    }
+    
+    .connection-status-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 0.5rem;
+    }
+    
+    .status-connected {
+        background-color: var(--tf-success);
+    }
+    
+    .status-disconnected {
+        background-color: var(--tf-danger);
+    }
+    
+    .nav-tabs .nav-link.active {
+        color: var(--tf-flow-aqua);
+        font-weight: 600;
+    }
+    
+    .query-sql {
+        font-family: var(--tf-font-family-mono);
+        font-size: 0.875rem;
+        line-height: 1.5;
+        background-color: var(--tf-gray-100);
+        padding: 1rem;
+        border-radius: var(--tf-radius);
+        white-space: pre-wrap;
+        overflow-x: auto;
+    }
+    
+    .keyword {
+        color: #0066cc;
+        font-weight: 600;
+    }
+    
+    .table-name {
+        color: #cc6600;
+    }
+    
+    .field-name {
+        color: #009900;
+    }
+    
+    .string-literal {
+        color: #cc0000;
+    }
+    
+    .numeric-literal {
+        color: #990099;
+    }
+    
+    .comment {
+        color: #666666;
+        font-style: italic;
+    }
+    
+    .test-button {
+        margin-left: 0.5rem;
+    }
+    
+    /* Connection history styles */
+    .connection-history-item {
+        padding: 0.75rem;
+        border-bottom: 1px solid var(--tf-gray-200);
+    }
+    
+    .connection-history-item:last-child {
+        border-bottom: none;
+    }
+    
+    .connection-time {
+        font-size: 0.875rem;
+        color: var(--tf-gray-600);
+    }
+    
+    .connection-details {
+        margin-top: 0.25rem;
+    }
+    
+    .connection-user {
+        font-weight: 600;
+    }
+    
+    /* Test result styles */
+    .test-result {
+        margin-top: 1rem;
+        padding: 1rem;
+        border-radius: var(--tf-radius);
+        border: 1px solid transparent;
+    }
+    
+    .test-result-success {
+        background-color: var(--tf-success-light);
+        border-color: var(--tf-success);
+    }
+    
+    .test-result-error {
+        background-color: var(--tf-danger-light);
+        border-color: var(--tf-danger);
+    }
+    
+    .test-result-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .test-result-message {
+        margin-bottom: 0;
+    }
+    
+    .test-metrics {
+        margin-top: 0.5rem;
+        font-size: 0.875rem;
+    }
+    
+    .test-metric {
+        display: inline-block;
+        margin-right: 1rem;
+    }
+    
+    .test-metric-label {
+        font-weight: 500;
+        color: var(--tf-gray-700);
+    }
+    
+    .test-metric-value {
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Import module components -->
+{% from 'components/module_lockup.html' import module_lockup, module_header %}
+
+<div class="container">
+    <!-- Header -->
+    {{ module_header('Flow', 'Database Configuration', 'Configure database connections for PACS integration') }}
+    
+    <!-- Configuration Tabs -->
+    <ul class="nav nav-tabs mb-4" id="configTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="pacs-tab" data-bs-toggle="tab" data-bs-target="#pacs" type="button" role="tab" aria-controls="pacs" aria-selected="true">
+                <i class="fas fa-database me-1"></i> PACS Database
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="postgresql-tab" data-bs-toggle="tab" data-bs-target="#postgresql" type="button" role="tab" aria-controls="postgresql" aria-selected="false">
+                <i class="fas fa-server me-1"></i> PostgreSQL
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">
+                <i class="fas fa-history me-1"></i> Connection History
+            </button>
+        </li>
+    </ul>
+    
+    <!-- Tab Content -->
+    <div class="tab-content" id="configTabsContent">
+        <!-- PACS Database Configuration -->
+        <div class="tab-pane fade show active" id="pacs" role="tabpanel" aria-labelledby="pacs-tab">
+            <form action="{{ url_for('save_db_config') }}" method="post">
+                <input type="hidden" name="config_type" value="pacs">
+                
+                <!-- Connection Settings -->
+                <div class="config-section">
+                    <h4>Connection Settings</h4>
+                    <p class="text-muted mb-3">Configure the connection to the PACS database</p>
+                    
+                    <div class="row mb-3 align-items-center">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="connection_name" class="form-label">Connection Name</label>
+                                <input type="text" class="form-control" id="connection_name" name="connection_name" value="PACS Database">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="connection_type" class="form-label">Connection Type</label>
+                                <select class="form-select" id="connection_type" name="connection_type">
+                                    <option value="SQLAdvanced" selected>SQL Advanced</option>
+                                    <option value="OLEDB">OLE DB</option>
+                                    <option value="ODBC">ODBC</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="connection_path" class="form-label">Connection Path</label>
+                                <input type="text" class="form-control" id="connection_path" name="connection_path" value="Data Source=JCHARRISPACS;Initial Catalog=pacs_oltp;Integrated Security=True">
+                                <div class="form-text">Connection string for the database</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span>Connection Status</span>
+                                        <div>
+                                            <span class="connection-status-indicator status-connected"></span>
+                                            <span>Connected</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <strong>Server:</strong> <span id="server-info">JCHARRISPACS</span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <strong>Database:</strong> <span id="database-info">pacs_oltp</span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <strong>Authentication:</strong> <span id="auth-info">Windows Authentication</span>
+                                    </div>
+                                    <div>
+                                        <strong>Last Connected:</strong> <span id="last-connected">April 23, 2025 10:15 AM</span>
+                                    </div>
+                                    
+                                    <button type="button" class="btn btn-outline-primary mt-3" id="test-connection-btn">
+                                        <i class="fas fa-plug me-1"></i> Test Connection
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Query Configuration -->
+                <div class="config-section">
+                    <h4>Query Configuration</h4>
+                    <p class="text-muted mb-3">Configure the queries used to fetch data from the PACS database</p>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="key_field" class="form-label">Key Field</label>
+                                <input type="text" class="form-control" id="key_field" name="key_field" value="Property_ID">
+                                <div class="form-text">The primary key field used to identify properties</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="search_fetch_size" class="form-label">Search Fetch Size</label>
+                                <input type="number" class="form-control" id="search_fetch_size" name="search_fetch_size" value="200">
+                                <div class="form-text">Maximum records per search batch</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                <label for="max_data_records" class="form-label">Max Data Records</label>
+                                <input type="number" class="form-control" id="max_data_records" name="max_data_records" value="2000">
+                                <div class="form-text">Maximum records to fetch</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Property Query -->
+                    <div class="query-card">
+                        <div class="query-header">
+                            <div class="query-title">Property Data Query</div>
+                            <span class="status-badge status-badge-success">Verified</span>
+                        </div>
+                        <div class="query-body">
+                            <div class="mb-3">
+                                <label for="query_property_name" class="form-label">Query Name</label>
+                                <input type="text" class="form-control" id="query_property_name" name="query_property_name" value="Property">
+                            </div>
+                            <div class="mb-3">
+                                <label for="query_property_desc" class="form-label">Description</label>
+                                <input type="text" class="form-control" id="query_property_desc" name="query_property_desc" value="Fetch property data for selected properties">
+                            </div>
+                            <div class="mb-3">
+                                <label for="query_property_sql" class="form-label">SQL Query</label>
+                                <textarea class="form-control" id="query_property_sql" name="query_property_sql" rows="6">SELECT t.prop_id as Property_ID, s.situs_display as Situs, t.[prop_val_yr], t.[sup_num], [update_dt], [school_id], [city_id], [state_cd], [class_cd], [land_type_cd], [yr_blt], [living_area], [imprv_unit_price], [imprv_add_val], [land_sqft], [land_acres], [land_front_feet], [land_depth], [land_lot], [land_unit_price], [region], [abs_subdv], [neighborhood], [subset], t.[map_id], t.[appraised_val], [land_num_lots], [land_appr_method], [land_total_sqft], [eff_yr_blt], [condition_cd], [percent_complete], [ls_table], [main_land_unit_price], [main_land_total_adj], [size_adj_pct], [heat_ac_code], [land_total_acres], [zoning], t.[visibility_access_cd], t.[sub_market_cd], [road_access], [land_useable_acres], [land_useable_sqft], t.[property_use_cd], t.[last_appraisal_dt], [utilities], [topography], [num_imprv], [imprv_type_cd], [imprv_det_sub_class_cd], [class_cd_highvalueimprov], [imprv_det_sub_class_cd_highvalueimprov], [living_area_highvalueimprov], [actual_year_built], [characteristic_zoning1], [characteristic_zoning2], [characteristic_view], [actual_age], [mbl_hm_make], [mbl_hm_model], [mbl_hm_sn], [mbl_hm_hud_num], [mbl_hm_title_num], [imprv_det_meth_cd_highvalueimprov], [imprv_building_name_highvalueimprov], [imprv_det_lease_class_highvalueimprov] FROM property_profile as t with(nolock) inner join situs s with(nolock) on t.prop_id = s.prop_id and s.primary_situs='Y' inner join property_val pv with(nolock) on pv.prop_id = t.prop_id and pv.prop_val_yr = t.prop_val_yr and pv.sup_num = t.sup_num and pv.prop_inactive_dt is null Where t.prop_val_yr = @YEAR and t.prop_id in (@KEYFIELD_IDS)</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="query_property_immediate" name="query_property_immediate">
+                                    <label class="form-check-label" for="query_property_immediate">
+                                        Execute Immediately (on selection)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="query-footer">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#viewSqlModal" data-query="property">
+                                <i class="fas fa-code me-1"></i> View Formatted SQL
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-primary test-button" data-query="property">
+                                <i class="fas fa-vial me-1"></i> Test Query
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Sales Query -->
+                    <div class="query-card">
+                        <div class="query-header">
+                            <div class="query-title">Sales Query</div>
+                            <span class="status-badge status-badge-success">Verified</span>
+                        </div>
+                        <div class="query-body">
+                            <div class="mb-3">
+                                <label for="query_sales_name" class="form-label">Query Name</label>
+                                <input type="text" class="form-control" id="query_sales_name" name="query_sales_name" value="Sales">
+                            </div>
+                            <div class="mb-3">
+                                <label for="query_sales_desc" class="form-label">Description</label>
+                                <input type="text" class="form-control" id="query_sales_desc" name="query_sales_desc" value="Fetch sales history for selected properties">
+                            </div>
+                            <div class="mb-3">
+                                <label for="query_sales_sql" class="form-label">SQL Query</label>
+                                <textarea class="form-control" id="query_sales_sql" name="query_sales_sql" rows="6">SELECT pv.prop_id as Property_ID, pv.hood_cd as 'NBHD', pp.state_cd, pp.class_cd, ac.file_as_name as Current_Owner, pv.legal_acreage, s.sl_type_cd, s.sl_ratio_type_cd, s.land_only_sale, pp.ls_table, CAST(s.sl_dt as datetime) as Sale_Date, s.sl_price, s.adjusted_sl_price, case when s.sl_price != 0 then CAST(ROUND((pv.market / s.sl_price), 2) as decimal (10,2)) else 0 end as Sales_Ratio, (pv.land_hstd_val + pv.land_non_hstd_val + pv.timber_market + pv.ag_market) as land_val, (pv.imprv_hstd_val + pv.imprv_non_hstd_val) as imprv_val, pv.market, convert(varchar(20), coo.deed_dt, 101) as Deed_Date, coo.deed_book_id, coo.deed_book_page, coo.deed_num, pv.prop_inactive_dt FROM property_val pv WITH (nolock) INNER JOIN prop_supp_assoc psa WITH (nolock) ON pv.prop_id = psa.prop_id AND pv.prop_val_yr = psa.owner_tax_yr AND pv.sup_num = psa.sup_num and pv.prop_inactive_dt is null INNER JOIN owner o WITH (nolock) ON o.prop_id = pv.prop_id AND o.owner_tax_yr = pv.prop_val_yr AND o.sup_num = pv.sup_num INNER JOIN account ac WITH (nolock) ON ac.acct_id = o.owner_id INNER JOIN chg_of_owner_prop_assoc copa WITH (nolock) ON copa.prop_id = pv.prop_id INNER JOIN chg_of_owner coo WITH (nolock) ON coo.chg_of_owner_id = copa.chg_of_owner_id INNER JOIN sale s WITH (nolock) ON s.chg_of_owner_id = copa.chg_of_owner_id INNER JOIN property_profile pp WITH (nolock) ON pv.prop_id = pp.prop_id AND pv.prop_val_yr = pp.prop_val_yr INNER JOIN pacs_system ps WITH (nolock) ON pv.prop_val_yr = ps.appr_yr WHERE pv.prop_val_yr = ps.appr_yr AND (DATEPART(year, s.sl_dt) = pv.prop_val_yr or DATEPART(year, s.sl_dt) = pv.prop_val_yr -1) AND isnull(s.adjusted_sl_price, 0) > 0 and pv.prop_id in (@KEYFIELD_IDS) ORDER BY pv.hood_cd</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="query_sales_immediate" name="query_sales_immediate">
+                                    <label class="form-check-label" for="query_sales_immediate">
+                                        Execute Immediately (on selection)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="query-footer">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#viewSqlModal" data-query="sales">
+                                <i class="fas fa-code me-1"></i> View Formatted SQL
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-primary test-button" data-query="sales">
+                                <i class="fas fa-vial me-1"></i> Test Query
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="btn btn-outline-primary mt-2" data-bs-toggle="modal" data-bs-target="#addQueryModal">
+                        <i class="fas fa-plus-circle me-1"></i> Add Query
+                    </button>
+                </div>
+                
+                <!-- Submit Button -->
+                <div class="text-end mb-5">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Save Configuration
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- PostgreSQL Configuration -->
+        <div class="tab-pane fade" id="postgresql" role="tabpanel" aria-labelledby="postgresql-tab">
+            <div class="config-section">
+                <h4>PostgreSQL Connection</h4>
+                <p class="text-muted mb-3">Configure the connection to the PostgreSQL database</p>
+                
+                <div class="row mb-3 align-items-center">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="pg_host" class="form-label">Host</label>
+                            <input type="text" class="form-control" id="pg_host" name="pg_host" value="localhost">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="pg_port" class="form-label">Port</label>
+                            <input type="text" class="form-control" id="pg_port" name="pg_port" value="5432">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="pg_database" class="form-label">Database</label>
+                            <input type="text" class="form-control" id="pg_database" name="pg_database" value="terrafusion">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="pg_user" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="pg_user" name="pg_user" value="postgres">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="pg_password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="pg_password" name="pg_password" value="********">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="pg_ssl" name="pg_ssl" checked>
+                                <label class="form-check-label" for="pg_ssl">
+                                    Use SSL Connection
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>Connection Status</span>
+                                    <div>
+                                        <span class="connection-status-indicator status-connected"></span>
+                                        <span>Connected</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <strong>Server Version:</strong> <span id="pg-version">PostgreSQL 15.3</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Database Size:</strong> <span id="pg-size">1.2 GB</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Total Tables:</strong> <span id="pg-tables">48</span>
+                                </div>
+                                <div>
+                                    <strong>Last Connected:</strong> <span id="pg-last-connected">April 23, 2025 10:15 AM</span>
+                                </div>
+                                
+                                <div class="test-result test-result-success mt-3">
+                                    <div class="test-result-title">
+                                        <i class="fas fa-check-circle me-1"></i> Connection Successful
+                                    </div>
+                                    <p class="test-result-message">Successfully connected to PostgreSQL database.</p>
+                                    <div class="test-metrics">
+                                        <div class="test-metric">
+                                            <span class="test-metric-label">Response Time:</span>
+                                            <span class="test-metric-value">42ms</span>
+                                        </div>
+                                        <div class="test-metric">
+                                            <span class="test-metric-label">Active Connections:</span>
+                                            <span class="test-metric-value">5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <button type="button" class="btn btn-outline-primary mt-3" id="test-pg-connection-btn">
+                                    <i class="fas fa-plug me-1"></i> Test Connection
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PostgreSQL Settings -->
+            <div class="config-section">
+                <h4>PostgreSQL Settings</h4>
+                <p class="text-muted mb-3">Configure PostgreSQL database settings</p>
+                
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="pg_pool_size" class="form-label">Connection Pool Size</label>
+                            <input type="number" class="form-control" id="pg_pool_size" name="pg_pool_size" value="10">
+                            <div class="form-text">Maximum number of connections in the pool</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="pg_timeout" class="form-label">Connection Timeout (ms)</label>
+                            <input type="number" class="form-control" id="pg_timeout" name="pg_timeout" value="5000">
+                            <div class="form-text">Timeout for connection attempts</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="pg_idle_timeout" class="form-label">Idle Timeout (ms)</label>
+                            <input type="number" class="form-control" id="pg_idle_timeout" name="pg_idle_timeout" value="10000">
+                            <div class="form-text">Timeout for idle connections</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="pg_auto_reconnect" name="pg_auto_reconnect" checked>
+                                <label class="form-check-label" for="pg_auto_reconnect">
+                                    Auto Reconnect
+                                </label>
+                            </div>
+                            <div class="form-text">Automatically reconnect if the connection is lost</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="pg_pool_ping" name="pg_pool_ping" checked>
+                                <label class="form-check-label" for="pg_pool_ping">
+                                    Enable Connection Ping
+                                </label>
+                            </div>
+                            <div class="form-text">Periodically ping connections to keep them alive</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Submit Button -->
+                <div class="text-end">
+                    <button type="button" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Save PostgreSQL Configuration
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Connection History -->
+        <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+            <div class="config-section">
+                <h4>Connection History</h4>
+                <p class="text-muted mb-3">View the history of database connections</p>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Recent Connections</span>
+                            <div>
+                                <select class="form-select form-select-sm" id="history-filter">
+                                    <option value="all" selected>All Connections</option>
+                                    <option value="success">Successful Only</option>
+                                    <option value="failed">Failed Only</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="connection-history-item">
+                            <div class="d-flex justify-content-between">
+                                <div class="connection-time">April 23, 2025 10:15 AM</div>
+                                <div>
+                                    <span class="status-badge status-badge-success">Success</span>
+                                </div>
+                            </div>
+                            <div class="connection-details">
+                                <span class="connection-user">admin</span> connected to <strong>PACS Database</strong>
+                            </div>
+                        </div>
+                        <div class="connection-history-item">
+                            <div class="d-flex justify-content-between">
+                                <div class="connection-time">April 23, 2025 09:30 AM</div>
+                                <div>
+                                    <span class="status-badge status-badge-success">Success</span>
+                                </div>
+                            </div>
+                            <div class="connection-details">
+                                <span class="connection-user">admin</span> connected to <strong>PostgreSQL</strong>
+                            </div>
+                        </div>
+                        <div class="connection-history-item">
+                            <div class="d-flex justify-content-between">
+                                <div class="connection-time">April 22, 2025 04:45 PM</div>
+                                <div>
+                                    <span class="status-badge status-badge-warning">Failed</span>
+                                </div>
+                            </div>
+                            <div class="connection-details">
+                                <span class="connection-user">admin</span> failed to connect to <strong>PACS Database</strong>
+                            </div>
+                            <div class="text-danger mt-1 small">
+                                Error: Connection timeout after 5000ms
+                            </div>
+                        </div>
+                        <div class="connection-history-item">
+                            <div class="d-flex justify-content-between">
+                                <div class="connection-time">April 22, 2025 03:20 PM</div>
+                                <div>
+                                    <span class="status-badge status-badge-success">Success</span>
+                                </div>
+                            </div>
+                            <div class="connection-details">
+                                <span class="connection-user">admin</span> connected to <strong>PACS Database</strong>
+                            </div>
+                        </div>
+                        <div class="connection-history-item">
+                            <div class="d-flex justify-content-between">
+                                <div class="connection-time">April 22, 2025 10:05 AM</div>
+                                <div>
+                                    <span class="status-badge status-badge-success">Success</span>
+                                </div>
+                            </div>
+                            <div class="connection-details">
+                                <span class="connection-user">john.smith</span> connected to <strong>PostgreSQL</strong>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-muted">Showing 5 of 24 connections</span>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-chevron-left me-1"></i> Previous
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary ms-2">
+                                    Next <i class="fas fa-chevron-right ms-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- View SQL Modal -->
+<div class="modal fade" id="viewSqlModal" tabindex="-1" aria-labelledby="viewSqlModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewSqlModalLabel">Formatted SQL Query</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="query-sql" id="formatted-sql">
+                    <!-- SQL will be inserted here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline-primary" id="copy-sql-btn">
+                    <i class="fas fa-copy me-1"></i> Copy to Clipboard
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Query Modal -->
+<div class="modal fade" id="addQueryModal" tabindex="-1" aria-labelledby="addQueryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addQueryModalLabel">Add Query</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="new-query-name" class="form-label">Query Name</label>
+                    <input type="text" class="form-control" id="new-query-name">
+                </div>
+                <div class="mb-3">
+                    <label for="new-query-desc" class="form-label">Description</label>
+                    <input type="text" class="form-control" id="new-query-desc">
+                </div>
+                <div class="mb-3">
+                    <label for="new-query-sql" class="form-label">SQL Query</label>
+                    <textarea class="form-control" id="new-query-sql" rows="6"></textarea>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="new-query-immediate">
+                        <label class="form-check-label" for="new-query-immediate">
+                            Execute Immediately (on selection)
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="addQueryBtn">Add Query</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Test connection button
+        document.getElementById('test-connection-btn').addEventListener('click', function() {
+            // Simulate connection test
+            alert('Testing connection to PACS Database...');
+            
+            // In a real implementation, this would make an AJAX request to test the connection
+            setTimeout(function() {
+                alert('Connection successful!');
+            }, 1000);
+        });
+        
+        // Test PostgreSQL connection button
+        document.getElementById('test-pg-connection-btn').addEventListener('click', function() {
+            // Simulate connection test
+            alert('Testing connection to PostgreSQL...');
+            
+            // In a real implementation, this would make an AJAX request to test the connection
+            setTimeout(function() {
+                alert('PostgreSQL connection successful!');
+            }, 1000);
+        });
+        
+        // View Formatted SQL buttons
+        const viewSqlButtons = document.querySelectorAll('[data-bs-toggle="modal"][data-bs-target="#viewSqlModal"]');
+        viewSqlButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const queryType = this.getAttribute('data-query');
+                let sqlContent = '';
+                
+                if (queryType === 'property') {
+                    sqlContent = formatSQL(document.getElementById('query_property_sql').value);
+                } else if (queryType === 'sales') {
+                    sqlContent = formatSQL(document.getElementById('query_sales_sql').value);
+                }
+                
+                document.getElementById('formatted-sql').innerHTML = sqlContent;
+                document.getElementById('viewSqlModalLabel').textContent = `${queryType.charAt(0).toUpperCase() + queryType.slice(1)} Query SQL`;
+            });
+        });
+        
+        // Test Query buttons
+        const testQueryButtons = document.querySelectorAll('.test-button');
+        testQueryButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const queryType = this.getAttribute('data-query');
+                
+                // Simulate query test
+                alert(`Testing ${queryType} query...`);
+                
+                // In a real implementation, this would make an AJAX request to test the query
+                setTimeout(function() {
+                    alert(`Query test completed successfully. Returned 10 sample records.`);
+                }, 1000);
+            });
+        });
+        
+        // Copy SQL to clipboard
+        document.getElementById('copy-sql-btn').addEventListener('click', function() {
+            const sql = document.getElementById('formatted-sql').textContent;
+            
+            // Create a temporary element to copy from
+            const el = document.createElement('textarea');
+            el.value = sql;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            
+            // Provide feedback that it was copied
+            this.innerHTML = '<i class="fas fa-check me-1"></i> Copied!';
+            
+            setTimeout(() => {
+                this.innerHTML = '<i class="fas fa-copy me-1"></i> Copy to Clipboard';
+            }, 2000);
+        });
+        
+        // Add Query button
+        document.getElementById('addQueryBtn').addEventListener('click', function() {
+            const name = document.getElementById('new-query-name').value;
+            const desc = document.getElementById('new-query-desc').value;
+            const sql = document.getElementById('new-query-sql').value;
+            const immediate = document.getElementById('new-query-immediate').checked;
+            
+            if (!name || !sql) {
+                alert('Please enter a name and SQL query');
+                return;
+            }
+            
+            // In a real implementation, this would add the query to the database
+            alert(`Query '${name}' added successfully`);
+            
+            // Reset form and close modal
+            document.getElementById('new-query-name').value = '';
+            document.getElementById('new-query-desc').value = '';
+            document.getElementById('new-query-sql').value = '';
+            document.getElementById('new-query-immediate').checked = false;
+            
+            bootstrap.Modal.getInstance(document.getElementById('addQueryModal')).hide();
+        });
+        
+        // Function to format SQL for display
+        function formatSQL(sql) {
+            // Simple SQL formatting - in a real implementation, you would use a proper SQL formatter
+            
+            // Highlight keywords
+            sql = sql.replace(/\b(SELECT|FROM|WHERE|GROUP BY|ORDER BY|INNER JOIN|LEFT JOIN|RIGHT JOIN|OUTER JOIN|ON|AND|OR|AS|WITH|CAST|CASE|WHEN|THEN|ELSE|END|IN|NOT|NULL|IS|JOIN|HAVING|UNION|ALL|ANY|EXISTS|LIKE|BETWEEN)\b/gi, '<span class="keyword">$1</span>');
+            
+            // Highlight table names
+            sql = sql.replace(/\b([a-zA-Z0-9_]+)\b(?=\s*(?:\.|$))/g, '<span class="table-name">$1</span>');
+            
+            // Highlight field names in brackets
+            sql = sql.replace(/\[([^\]]+)\]/g, '[<span class="field-name">$1</span>]');
+            
+            // Highlight string literals
+            sql = sql.replace(/'([^']*)'/g, '<span class="string-literal">\'$1\'</span>');
+            
+            // Highlight numeric literals
+            sql = sql.replace(/\b(\d+(?:\.\d+)?)\b/g, '<span class="numeric-literal">$1</span>');
+            
+            // Return formatted SQL
+            return sql;
+        }
+    });
+</script>
+{% endblock %}

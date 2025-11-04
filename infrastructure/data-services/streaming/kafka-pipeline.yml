@@ -1,0 +1,565 @@
+# TerraFusion OS - Apache Kafka Data Pipeline Service
+# REAL-TIME DATA STREAMING & EVENT PROCESSING
+# Government-Grade Message Bus for 1,008 AI Agents
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrafusion-streaming
+  labels:
+    security.level: high
+    compliance: fisma-high
+    tier: data-services
+
+---
+# Kafka Cluster using Strimzi Operator
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: terrafusion-kafka
+  namespace: terrafusion-streaming
+spec:
+  kafka:
+    version: 3.5.1
+    replicas: 3
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+      - name: tls
+        port: 9093
+        type: internal
+        tls: true
+        authentication:
+          type: tls
+      - name: external
+        port: 9094
+        type: route
+        tls: true
+        authentication:
+          type: tls
+    authorization:
+      type: simple
+      superUsers:
+        - CN=terrafusion-admin
+        - CN=ai-swarm-coordinator
+    config:
+      # Government Performance Requirements
+      offsets.topic.replication.factor: 3
+      transaction.state.log.replication.factor: 3
+      transaction.state.log.min.isr: 2
+      default.replication.factor: 3
+      min.insync.replicas: 2
+      inter.broker.protocol.version: "3.5"
+      
+      # AI Agent Optimizations
+      num.network.threads: 8
+      num.io.threads: 16
+      socket.send.buffer.bytes: 102400
+      socket.receive.buffer.bytes: 102400
+      socket.request.max.bytes: 104857600
+      
+      # Government Compliance
+      auto.create.topics.enable: false
+      delete.topic.enable: false
+      log.retention.hours: 2160  # 90 days for audit compliance
+      log.segment.bytes: 1073741824
+      log.retention.check.interval.ms: 300000
+      
+      # Security Configuration
+      security.inter.broker.protocol: SSL
+      ssl.keystore.type: PKCS12
+      ssl.truststore.type: PKCS12
+      ssl.endpoint.identification.algorithm: HTTPS
+      
+    storage:
+      type: persistent-claim
+      size: 500Gi
+      class: fast-ssd-encrypted
+      deleteClaim: false
+    
+    resources:
+      requests:
+        memory: 4Gi
+        cpu: 2000m
+      limits:
+        memory: 8Gi
+        cpu: 4000m
+    
+    jvmOptions:
+      -Xms: 3g
+      -Xmx: 3g
+      
+    metricsConfig:
+      type: jmxPrometheusExporter
+      valueFrom:
+        configMapKeyRef:
+          name: kafka-metrics
+          key: kafka-metrics-config.yml
+          
+  zookeeper:
+    replicas: 3
+    storage:
+      type: persistent-claim
+      size: 100Gi
+      class: fast-ssd-encrypted
+      deleteClaim: false
+    resources:
+      requests:
+        memory: 1Gi
+        cpu: 500m
+      limits:
+        memory: 2Gi
+        cpu: 1000m
+    jvmOptions:
+      -Xms: 512m
+      -Xmx: 512m
+      
+    metricsConfig:
+      type: jmxPrometheusExporter
+      valueFrom:
+        configMapKeyRef:
+          name: kafka-metrics
+          key: zookeeper-metrics-config.yml
+          
+  entityOperator:
+    topicOperator:
+      resources:
+        requests:
+          memory: 512Mi
+          cpu: 200m
+        limits:
+          memory: 1Gi
+          cpu: 500m
+    userOperator:
+      resources:
+        requests:
+          memory: 512Mi
+          cpu: 200m
+        limits:
+          memory: 1Gi
+          cpu: 500m
+
+---
+# Kafka Topics for TerraFusion Government Operations
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: property-assessments
+  namespace: terrafusion-streaming
+  labels:
+    strimzi.io/cluster: terrafusion-kafka
+spec:
+  partitions: 12
+  replicas: 3
+  config:
+    retention.ms: 7776000000  # 90 days
+    segment.ms: 604800000     # 7 days
+    cleanup.policy: delete
+    compression.type: gzip
+    min.insync.replicas: 2
+
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: ai-agent-coordination
+  namespace: terrafusion-streaming
+  labels:
+    strimzi.io/cluster: terrafusion-kafka
+spec:
+  partitions: 24  # Support 1,008 agents
+  replicas: 3
+  config:
+    retention.ms: 3600000     # 1 hour (high-frequency coordination)
+    segment.ms: 300000        # 5 minutes
+    cleanup.policy: delete
+    compression.type: lz4     # Fast compression for real-time
+    min.insync.replicas: 2
+
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: citizen-interactions
+  namespace: terrafusion-streaming
+  labels:
+    strimzi.io/cluster: terrafusion-kafka
+spec:
+  partitions: 8
+  replicas: 3
+  config:
+    retention.ms: 31536000000  # 1 year (citizen service history)
+    segment.ms: 604800000      # 7 days
+    cleanup.policy: delete
+    compression.type: gzip
+    min.insync.replicas: 2
+
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: audit-trail
+  namespace: terrafusion-streaming
+  labels:
+    strimzi.io/cluster: terrafusion-kafka
+spec:
+  partitions: 6
+  replicas: 3
+  config:
+    retention.ms: 94608000000  # 3 years (government audit requirement)
+    segment.ms: 2592000000     # 30 days
+    cleanup.policy: delete
+    compression.type: gzip
+    min.insync.replicas: 3     # Extra reliability for audit data
+
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: performance-metrics
+  namespace: terrafusion-streaming
+  labels:
+    strimzi.io/cluster: terrafusion-kafka
+spec:
+  partitions: 16
+  replicas: 3
+  config:
+    retention.ms: 7776000000   # 90 days
+    segment.ms: 86400000       # 1 day
+    cleanup.policy: delete
+    compression.type: snappy
+    min.insync.replicas: 2
+
+---
+# Kafka Connect Cluster for External Integrations
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnect
+metadata:
+  name: terrafusion-connect
+  namespace: terrafusion-streaming
+  annotations:
+    strimzi.io/use-connector-resources: "true"
+spec:
+  version: 3.5.1
+  replicas: 3
+  bootstrapServers: terrafusion-kafka-kafka-bootstrap:9092
+  
+  config:
+    group.id: terrafusion-connect-cluster
+    offset.storage.topic: connect-cluster-offsets
+    config.storage.topic: connect-cluster-configs
+    status.storage.topic: connect-cluster-status
+    
+    # Government Performance Tuning
+    key.converter: org.apache.kafka.connect.json.JsonConverter
+    value.converter: org.apache.kafka.connect.json.JsonConverter
+    key.converter.schemas.enable: true
+    value.converter.schemas.enable: true
+    
+    # Increase parallelism for government workloads
+    tasks.max: 8
+    connector.client.config.override.policy: All
+    
+  resources:
+    requests:
+      memory: 2Gi
+      cpu: 1000m
+    limits:
+      memory: 4Gi
+      cpu: 2000m
+      
+  jvmOptions:
+    -Xms: 1g
+    -Xmx: 1g
+    
+  metricsConfig:
+    type: jmxPrometheusExporter
+    valueFrom:
+      configMapKeyRef:
+        name: kafka-metrics
+        key: kafka-connect-metrics-config.yml
+
+---
+# Harris PACS Integration Connector
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  name: harris-pacs-source
+  namespace: terrafusion-streaming
+  labels:
+    strimzi.io/cluster: terrafusion-connect
+spec:
+  class: io.debezium.connector.postgresql.PostgresConnector
+  tasksMax: 2
+  config:
+    database.hostname: harris-pacs.external.gov
+    database.port: 5432
+    database.user: terrafusion_reader
+    database.password: ${vault:secret/harris-pacs:password}
+    database.dbname: pacs_production
+    database.server.name: harris-pacs
+    
+    # Government Security
+    database.sslmode: require
+    database.sslcert: /etc/kafka-connect/certs/harris-pacs.crt
+    database.sslkey: /etc/kafka-connect/certs/harris-pacs.key
+    database.sslrootcert: /etc/kafka-connect/certs/ca.crt
+    
+    # Table whitelist for property data
+    table.whitelist: >
+      public.properties,
+      public.assessments,
+      public.valuations,
+      public.appeals,
+      public.exemptions
+      
+    # Change data capture configuration
+    plugin.name: pgoutput
+    slot.name: terrafusion_cdc_slot
+    publication.name: terrafusion_publication
+    
+    # Topic routing
+    topic.prefix: harris-pacs
+    transforms: route
+    transforms.route.type: org.apache.kafka.connect.transforms.RegexRouter
+    transforms.route.regex: harris-pacs.public.(.*)
+    transforms.route.replacement: property-data-$1
+
+---
+# Tyler Technologies Integration Connector
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  name: tyler-vision-source
+  namespace: terrafusion-streaming
+  labels:
+    strimzi.io/cluster: terrafusion-connect
+spec:
+  class: com.tyler.kafka.connect.TylerVisionSourceConnector
+  tasksMax: 2
+  config:
+    tyler.vision.endpoint: https://vision-api.tyler.com/v2
+    tyler.vision.api.key: ${vault:secret/tyler-vision:api-key}
+    tyler.vision.tenant: benton-county-wa
+    
+    # Data synchronization configuration
+    sync.interval.ms: 300000  # 5 minutes
+    batch.size: 1000
+    max.poll.records: 5000
+    
+    # Government compliance
+    audit.enabled: true
+    audit.topic: audit-trail
+    
+    # Topic configuration
+    topic.prefix: tyler-vision
+    data.types: >
+      parcels,
+      ownership,
+      permits,
+      inspections,
+      violations
+
+---
+# Kafka Schema Registry
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: schema-registry
+  namespace: terrafusion-streaming
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: schema-registry
+  template:
+    metadata:
+      labels:
+        app: schema-registry
+    spec:
+      serviceAccountName: kafka-streams
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+      containers:
+      - name: schema-registry
+        image: confluentinc/cp-schema-registry:7.4.1
+        ports:
+        - containerPort: 8081
+          name: http
+        env:
+        - name: SCHEMA_REGISTRY_HOST_NAME
+          value: "schema-registry"
+        - name: SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS
+          value: "terrafusion-kafka-kafka-bootstrap:9092"
+        - name: SCHEMA_REGISTRY_LISTENERS
+          value: "http://0.0.0.0:8081"
+        - name: SCHEMA_REGISTRY_KAFKASTORE_TOPIC
+          value: "_schemas"
+        - name: SCHEMA_REGISTRY_DEBUG
+          value: "false"
+        - name: SCHEMA_REGISTRY_KAFKASTORE_TOPIC_REPLICATION_FACTOR
+          value: "3"
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            memory: 1Gi
+            cpu: 500m
+          limits:
+            memory: 2Gi
+            cpu: 1000m
+        volumeMounts:
+        - name: tmp-volume
+          mountPath: /tmp
+      volumes:
+      - name: tmp-volume
+        emptyDir:
+          sizeLimit: 1Gi
+
+---
+# Schema Registry Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: schema-registry
+  namespace: terrafusion-streaming
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8081
+    targetPort: 8081
+    protocol: TCP
+    name: http
+  selector:
+    app: schema-registry
+
+---
+# Kafka Metrics Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafka-metrics
+  namespace: terrafusion-streaming
+data:
+  kafka-metrics-config.yml: |
+    rules:
+    # Kafka Broker Metrics
+    - pattern: "kafka.server<type=(.+), name=(.+)><>Value"
+      name: kafka_server_$1_$2
+      type: GAUGE
+    - pattern: "kafka.server<type=(.+), name=(.+), clientId=(.+)><>Value"
+      name: kafka_server_$1_$2
+      type: GAUGE
+      labels:
+        clientId: "$3"
+    # Network Request Metrics
+    - pattern: "kafka.network<type=RequestMetrics, name=(.+), request=(.+)><>Count"
+      name: kafka_network_request_$1
+      type: COUNTER
+      labels:
+        request: "$2"
+    # Topic Metrics
+    - pattern: "kafka.log<type=LogSize, name=Size, topic=(.+), partition=(.+)><>Value"
+      name: kafka_log_size
+      type: GAUGE
+      labels:
+        topic: "$1"
+        partition: "$2"
+        
+  zookeeper-metrics-config.yml: |
+    rules:
+    - pattern: "org.apache.ZooKeeperService<name0=ReplicatedServer_id(\\d+)><>(\\w+)"
+      name: zookeeper_$2
+      type: GAUGE
+      labels:
+        replicaId: "$1"
+    - pattern: "org.apache.ZooKeeperService<name0=ReplicatedServer_id(\\d+), name1=replica.(\\d+)><>(\\w+)"
+      name: zookeeper_$3
+      type: GAUGE
+      labels:
+        replicaId: "$2"
+        
+  kafka-connect-metrics-config.yml: |
+    rules:
+    - pattern: "kafka.connect<type=(.+), name=(.+)><>Value"
+      name: kafka_connect_$1_$2
+      type: GAUGE
+    - pattern: "kafka.connect<type=connector-metrics, connector=(.+)><>([^:]+)"
+      name: kafka_connect_connector_$2
+      type: GAUGE
+      labels:
+        connector: "$1"
+
+---
+# ServiceAccount for Kafka Streams Applications
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kafka-streams
+  namespace: terrafusion-streaming
+
+---
+# Network Policy for Kafka Cluster
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: kafka-network-policy
+  namespace: terrafusion-streaming
+spec:
+  podSelector:
+    matchLabels:
+      strimzi.io/cluster: terrafusion-kafka
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow from TerraFusion services
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: terrafusion-system
+    ports:
+    - protocol: TCP
+      port: 9092
+    - protocol: TCP
+      port: 9093
+  # Allow from streaming namespace (internal communication)
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: terrafusion-streaming
+    ports:
+    - protocol: TCP
+      port: 9092
+    - protocol: TCP
+      port: 9093
+    - protocol: TCP
+      port: 2181  # Zookeeper
+  egress:
+  # Allow to external systems for connectors
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 5432  # PostgreSQL
+  # Allow internal cluster communication
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: terrafusion-streaming
+    ports:
+    - protocol: TCP
+      port: 9092
+    - protocol: TCP
+      port: 9093
+    - protocol: TCP
+      port: 2181

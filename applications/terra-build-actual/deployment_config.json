@@ -1,0 +1,15 @@
+{
+  "environment": "production",
+  "database_path": "terrafusion_enterprise.db",
+  "web_server": {
+    "host": "0.0.0.0",
+    "port": 5001
+  },
+  "ai_orchestrator": {
+    "max_agents": 6,
+    "models": [
+      "gpt-4",
+      "llama3.2"
+    ]
+  }
+}

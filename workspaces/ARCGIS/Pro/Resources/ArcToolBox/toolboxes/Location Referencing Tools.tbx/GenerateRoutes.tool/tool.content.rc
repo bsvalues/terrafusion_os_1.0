@@ -1,0 +1,13 @@
+{
+    "map": {
+        "description": "Re-creates shapes and applies calibration changes for route features in an LRS Network.",
+        "in_route_features.descr": "The LRS Network for which route shapes will be regenerated and calibration changes will be applied.",
+        "in_route_features.title": "Input Route Features",
+        "out_derived_route_features.title": "Output Derived Route Features",
+        "out_details_file.title": "Output Results File",
+        "out_route_features.title": "Output Route Features",
+        "record_calibration_changes.descr": "<xdoc><note type=\"legacy\"/><p group=\"note\">This parameter is no longer supported. Any value provided will be ignored.</p></xdoc>",
+        "record_calibration_changes.title": "Record calibration changes for event location updates",
+        "title": "Generate Routes"
+    }
+}

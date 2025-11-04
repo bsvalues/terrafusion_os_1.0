@@ -1,0 +1,27 @@
+{
+    "map": {
+        "derived_workspace.title": "Updated Output Workspace",
+        "description": "Converts one or more raster datasets to a different format.",
+        "input_rasters.descr": "The raster datasets to convert.",
+        "input_rasters.title": "Input Rasters",
+        "output_workspace.descr": "The folder where the raster dataset will be written.",
+        "output_workspace.title": "Output Workspace",
+        "raster_format.descr": "<xdoc><p>Specifies the format that will be used for the output raster dataset.</p><ul><li><span title=\"BIL\">BIL</span>—The output will be Esri BIL format.</li><li><span title=\"BIP\">BIP</span>—The output will be Esri BIP format.</li><li><span title=\"BMP\">BMP</span>—The output will be Microsoft BMP format.</li><li><span title=\"BSQ\">BSQ</span>—The output will be Esri BSQ format.</li><li><span title=\"CRF\">CRF</span>—The output will be CRF format.</li><li><span title=\"ENVI DAT\">ENVI DAT file</span>—The output will be ENVI DAT format.</li><li><span title=\"GIF\">GIF</span>—The output will be GIF format.</li><li><span title=\"GRID\">Esri Grid</span>—The output will be Esri Grid format.</li><li><span title=\"IMAGINE Image\">ERDAS IMAGINE file</span>—The output will be ERDAS IMAGINE format.</li><li><span title=\"JP2000\">JPEG 2000</span>—The output will be JPEG 2000 format.</li><li><span title=\"JPEG\">JPEG</span>—The output will be JPEG format.</li><li><span title=\"MRF\">MRF</span>—The output will be MRF format.</li><li><span title=\"PNG\">PNG</span>—The output will be PNG format.</li><li><span title=\"TIFF\">TIFF</span>—The output will be TIFF format.</li></ul></xdoc>",
+        "raster_format.domain.BIL": "BIL",
+        "raster_format.domain.BIP": "BIP",
+        "raster_format.domain.BMP": "BMP",
+        "raster_format.domain.BSQ": "BSQ",
+        "raster_format.domain.CRF": "CRF",
+        "raster_format.domain.ENVI DAT": "ENVI DAT file",
+        "raster_format.domain.GIF": "GIF",
+        "raster_format.domain.GRID": "Esri Grid",
+        "raster_format.domain.IMAGINE Image": "ERDAS IMAGINE file",
+        "raster_format.domain.JP2000": "JPEG 2000",
+        "raster_format.domain.JPEG": "JPEG",
+        "raster_format.domain.MRF": "MRF",
+        "raster_format.domain.PNG": "PNG",
+        "raster_format.domain.TIFF": "TIFF",
+        "raster_format.title": "Raster Format",
+        "title": "Raster To Other Format"
+    }
+}

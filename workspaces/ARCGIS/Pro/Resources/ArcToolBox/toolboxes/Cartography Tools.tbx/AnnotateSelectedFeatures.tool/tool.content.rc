@@ -1,0 +1,18 @@
+{
+    "map": {
+        "anno_layers.descr": "The feature-linked annotation layers and the specified sublayers that will have annotation converted into them.",
+        "anno_layers.dt.title1": "Annotation Layer",
+        "anno_layers.dt.title2": "Sublayers",
+        "anno_layers.title": "Annotation Layers",
+        "description": "Creates annotation for the selected features of a layer. The labeling properties defined in the annotation class properties of  the specified related annotation feature classes are used.",
+        "generate_unplaced.descr": "<xdoc><p>Specifies whether to create unplaced annotation from unplaced labels.<ul><li>Unchecked—Annotation will only be created for features that are currently labeled. This is the default.</li><li>Checked—Unplaced annotation are stored in the annotation feature class. The status field for these annotation is set to Unplaced.</li></ul></p></xdoc>",
+        "generate_unplaced.title": "Convert unplaced labels to unplaced annotation",
+        "in_layer.descr": "The layer for which the selected features will have annotation created.",
+        "in_layer.title": "Input Features",
+        "in_map.descr": "The input map.",
+        "in_map.title": "Input Map",
+        "out_anno_layers.title": "Output Annotation Layers",
+        "summary": "Creates annotation for the selected features of a layer. The labeling properties defined in the annotation class properties of the specified related annotation feature classes are used.",
+        "title": "Annotate Selected Features"
+    }
+}

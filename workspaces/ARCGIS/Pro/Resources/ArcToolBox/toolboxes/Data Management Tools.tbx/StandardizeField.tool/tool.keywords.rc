@@ -1,0 +1,14 @@
+{
+    "set": [
+        "fields",
+        "absolute maximum",
+        "maximum",
+        "minimum",
+        "minimum-maximum",
+        "normalization",
+        "robust standardization",
+        "scaling",
+        "standardization",
+        "z score"
+    ]
+}

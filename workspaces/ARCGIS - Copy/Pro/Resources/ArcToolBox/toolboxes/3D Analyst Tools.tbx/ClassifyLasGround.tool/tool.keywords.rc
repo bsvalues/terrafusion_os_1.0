@@ -1,0 +1,10 @@
+{
+    "set": [
+        "classification",
+        "dem",
+        "feature extraction",
+        "ground",
+        "lidar",
+        "point cloud"
+    ]
+}

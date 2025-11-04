@@ -1,0 +1,5 @@
+<DataType Name="DEVPFTable">
+  <DisplayName>VPF Table</DisplayName>
+  <Description>Attribute data stored in Vector Product Format.</Description>
+</DataType>
+

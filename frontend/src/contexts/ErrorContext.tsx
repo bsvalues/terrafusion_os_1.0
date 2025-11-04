@@ -228,12 +228,8 @@ export const ErrorToast: React.FC = () => {
           >
             <div className='flex items-start justify-between'>
               <div className='flex-1'>
-
-
                 <h4 className='text-sm font-medium text-red-800'>Error Occurred</h4>
-                <p
-
-className='text-sm text-red-700 mt-1'>{error.message}</p>
+                <p className='text-sm text-red-700 mt-1'>{error.message}</p>
                 <p className='text-xs text-red-500 mt-1'>
                   {new Date(error.timestamp).toLocaleTimeString()}
                 </p>
@@ -283,16 +279,11 @@ export const GlobalErrorDisplay: React.FC = () => {
             </svg>
           </div>
 
-
           <h3 className='text-lg font-semibold text-gray-900 mb-2'>Critical Error</h3>
 
-          <p
-
-className='text-gray-600 mb-4'>{state.globalError.message}</p>
+          <p className='text-gray-600 mb-4'>{state.globalError.message}</p>
 
           <div className='flex flex-col sm:flex-row gap-2 justify-center'>
-
-
             <button
               onClick={retry}
               className='px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700'
@@ -301,8 +292,7 @@ className='text-gray-600 mb-4'>{state.globalError.message}</p>
             </button>
 
             <button
-
-onClick={() => setGlobalError(null)}
+              onClick={() => setGlobalError(null)}
               className='px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400'
             >
               Dismiss

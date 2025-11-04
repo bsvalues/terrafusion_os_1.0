@@ -1,0 +1,31 @@
+{
+    "set": [
+        "append",
+        "attribute",
+        "by location",
+        "closest",
+        "combine",
+        "common",
+        "contain",
+        "count",
+        "cover",
+        "distance",
+        "inside",
+        "intersect",
+        "join",
+        "match",
+        "move",
+        "near",
+        "number",
+        "on top of",
+        "outside",
+        "overlap",
+        "overlay",
+        "spatial relationship",
+        "superimpose",
+        "topological set",
+        "topology",
+        "transfer",
+        "within"
+    ]
+}

@@ -1,0 +1,107 @@
+{
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "node",
+        "cwd": "../../marketplace/property-workbench/frontend",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "name": "Start Property Workbench Frontend"
+      },
+      {
+        "type": "debugpy",
+        "cwd": "../../marketplace/property-workbench/backend",
+        "program": "../../marketplace/property-workbench/backend/main.py",
+        "name": "Start Property Workbench Backend"
+      },
+      {
+        "type": "node",
+        "cwd": "../../marketplace/property-workbench/mcp-server",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "name": "Start Property Workbench MCP Server"
+      }
+    ]
+  },
+  "tasks": {
+    "tasks": [
+      {
+        "cwd": "../../marketplace/property-workbench",
+        "args": [
+          "run",
+          "build"
+        ],
+        "command": "npm",
+        "label": "Build Property Workbench"
+      },
+      {
+        "cwd": "../../marketplace/property-workbench",
+        "args": [
+          "run",
+          "test"
+        ],
+        "command": "npm",
+        "label": "Test Property Workbench"
+      }
+    ],
+    "version": "2.0.0"
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "ms-python.black-formatter"
+    ]
+  },
+  "folders": [
+    {
+      "name": "💼 Property Workbench",
+      "path": "../../marketplace/property-workbench"
+    },
+    {
+      "name": "📦 Platform SDK (read-only)",
+      "path": "../../platform/sdk"
+    },
+    {
+      "name": "🎨 Design System (read-only)",
+      "path": "../../platform/design-system"
+    },
+    {
+      "name": "🧪 Tests",
+      "path": "../../tests/marketplace/property-workbench"
+    },
+    {
+      "name": "📚 Property Workbench Docs",
+      "path": "../../docs/marketplace/property-workbench.md"
+    }
+  ],
+  "settings": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit",
+      "source.fixAll": "explicit"
+    },
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#f59e0b",
+      "titleBar.activeForeground": "#ffffff"
+    },
+    "files.exclude": {
+      "../../os-platform": true,
+      "**/node_modules": true,
+      "../../terrafusion-cos": true,
+      "../../marketplace/*": true,
+      "../../backend": true,
+      "**/dist": true,
+      "../../frontend": true,
+      "!../../marketplace/property-workbench": true
+    },
+    "editor.formatOnSave": true
+  }
+}
+

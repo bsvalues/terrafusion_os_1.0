@@ -1,0 +1,5 @@
+<DataType Name="GPMDomain">
+  <DisplayName>M Domain</DisplayName>
+  <Description>A range of lowest and highest possible value for m-coordinates.</Description>
+</DataType>
+

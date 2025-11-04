@@ -1,0 +1,14 @@
+{
+    "set": [
+        "apart",
+        "arc",
+        "chop",
+        "cut",
+        "disconnect",
+        "divide",
+        "geometry",
+        "node",
+        "point",
+        "vector"
+    ]
+}

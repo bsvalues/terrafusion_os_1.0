@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced WebSocket Test Tool</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.5;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .connection-section, .message-section {
+            grid-column: span 1;
+        }
+        .log-section {
+            grid-column: span 2;
+        }
+        .log {
+            background-color: #f3f3f3;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-bottom: 1px dashed #ddd;
+        }
+        .log-entry.info {
+            color: #2c3e50;
+        }
+        .log-entry.error {
+            color: #e74c3c;
+        }
+        .log-entry.success {
+            color: #27ae60;
+        }
+        .log-entry.warning {
+            color: #f39c12;
+        }
+        .log-entry.received {
+            color: #3498db;
+        }
+        .log-entry.sent {
+            color: #8e44ad;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-right: 5px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        button.danger {
+            background-color: #e74c3c;
+        }
+        button.danger:hover {
+            background-color: #c0392b;
+        }
+        button.success {
+            background-color: #2ecc71;
+        }
+        button.success:hover {
+            background-color: #27ae60;
+        }
+        input, select, textarea {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .endpoints {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .endpoint {
+            background-color: #e1f5fe;
+            padding: 8px 12px;
+            border-radius: 30px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #bbdefb;
+        }
+        .endpoint:hover {
+            background-color: #bbdefb;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .status.connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status.disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .status.connecting {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .ping-stats {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .ping-stat {
+            display: flex;
+            flex-direction: column;
+        }
+        .ping-stat .value {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .ping-stat .label {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+        .tab {
+            padding: 8px 15px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        .tab.active {
+            border-bottom: 2px solid #3498db;
+            font-weight: bold;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .system-info {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+            color: white;
+            margin-left: 5px;
+        }
+        .badge.success {
+            background-color: #27ae60;
+        }
+        .badge.error {
+            background-color: #e74c3c;
+        }
+        .badge.warning {
+            background-color: #f39c12;
+        }
+    </style>
+</head>
+<body>
+    <h1>WebSocket Connection Test Tool</h1>
+
+    <div class="container">
+        <div class="connection-section">
+            <div class="card">
+                <h2>WebSocket Connection</h2>
+                
+                <div class="form-group">
+                    <label for="ws-url">WebSocket URL:</label>
+                    <input type="text" id="ws-url" placeholder="ws://localhost:3000/ws">
+                </div>
+
+                <h3>Available WebSocket endpoints:</h3>
+                <div class="endpoints" id="endpoints">
+                    <div class="endpoint" data-url="/ws">/ws - Main WebSocket Server</div>
+                    <div class="endpoint" data-url="/ws-legacy">/ws-legacy - Legacy Compatibility</div>
+                    <div class="endpoint" data-url="/ws/collaboration">/ws/collaboration - Collaboration</div>
+                    <div class="endpoint" data-url="/api/agents/ws">/api/agents/ws - Agent System</div>
+                    <div class="endpoint" data-url="/ws/team-collaboration">/ws/team-collaboration - Team Collaboration</div>
+                </div>
+
+                <div class="status disconnected" id="connection-status">Disconnected</div>
+                
+                <div>
+                    <button id="connect-btn" class="success">Connect</button>
+                    <button id="disconnect-btn" disabled class="danger">Disconnect</button>
+                </div>
+
+                <div class="ping-stats">
+                    <div class="ping-stat">
+                        <span class="value" id="latency">--</span>
+                        <span class="label">Latency (ms)</span>
+                    </div>
+                    <div class="ping-stat">
+                        <span class="value" id="messages-count">0</span>
+                        <span class="label">Messages</span>
+                    </div>
+                    <div class="ping-stat">
+                        <span class="value" id="uptime">--</span>
+                        <span class="label">Connection Uptime</span>
+                    </div>
+                    <div class="ping-stat">
+                        <span class="value" id="last-activity">--</span>
+                        <span class="label">Last Activity</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="message-section">
+            <div class="card">
+                <h2>Send Messages</h2>
+                
+                <div class="tabs">
+                    <div class="tab active" data-tab="simple">Simple Message</div>
+                    <div class="tab" data-tab="json">JSON Message</div>
+                    <div class="tab" data-tab="binary">Binary</div>
+                </div>
+                
+                <div class="tab-content active" id="simple-tab">
+                    <div class="form-group">
+                        <label for="message-type">Message Type:</label>
+                        <select id="message-type">
+                            <option value="ping">Ping</option>
+                            <option value="message">Text Message</option>
+                            <option value="echo">Echo Request</option>
+                            <option value="heartbeat">Heartbeat</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message-text">Message Content:</label>
+                        <input type="text" id="message-text" placeholder="Enter message text...">
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="json-tab">
+                    <div class="form-group">
+                        <label for="json-message">JSON Message:</label>
+                        <textarea id="json-message" rows="5">{ "type": "echo", "message": "Test message", "timestamp": 1618826890123 }</textarea>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="binary-tab">
+                    <div class="form-group">
+                        <label for="binary-input">Enter text to convert to binary:</label>
+                        <input type="text" id="binary-input" placeholder="Text to convert to binary...">
+                    </div>
+                </div>
+                
+                <button id="send-btn" disabled>Send Message</button>
+                <button id="ping-btn" disabled>Send Ping</button>
+                <button id="auto-ping-btn" disabled>Auto Ping (5s)</button>
+            </div>
+        </div>
+
+        <div class="log-section">
+            <div class="card">
+                <h2>Connection Log</h2>
+                <button id="clear-log-btn">Clear Log</button>
+                <div class="log" id="connection-log"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="card system-info">
+            <h3>System Information</h3>
+            <p>Browser: <span id="browser-info"></span></p>
+            <p>WebSocket Support: <span id="ws-support"></span></p>
+            <p>Network Information: <span id="network-info"></span></p>
+            <p>Page Loaded: <span id="page-loaded"></span></p>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const wsUrlInput = document.getElementById('ws-url');
+        const connectBtn = document.getElementById('connect-btn');
+        const disconnectBtn = document.getElementById('disconnect-btn');
+        const sendBtn = document.getElementById('send-btn');
+        const pingBtn = document.getElementById('ping-btn');
+        const autoPingBtn = document.getElementById('auto-ping-btn');
+        const clearLogBtn = document.getElementById('clear-log-btn');
+        const messageTypeSelect = document.getElementById('message-type');
+        const messageTextInput = document.getElementById('message-text');
+        const jsonMessageTextarea = document.getElementById('json-message');
+        const binaryInput = document.getElementById('binary-input');
+        const connectionLogDiv = document.getElementById('connection-log');
+        const connectionStatusDiv = document.getElementById('connection-status');
+        const latencyValue = document.getElementById('latency');
+        const messagesCountValue = document.getElementById('messages-count');
+        const uptimeValue = document.getElementById('uptime');
+        const lastActivityValue = document.getElementById('last-activity');
+        const browserInfoSpan = document.getElementById('browser-info');
+        const wsSupport = document.getElementById('ws-support');
+        const networkInfo = document.getElementById('network-info');
+        const pageLoaded = document.getElementById('page-loaded');
+        const endpointsDiv = document.getElementById('endpoints');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        // Variables
+        let socket = null;
+        let autoPingInterval = null;
+        let connectionStartTime = null;
+        let lastActivity = null;
+        let messagesCount = 0;
+        let pingTimestamp = null;
+        let activeTab = 'simple';
+        
+        // Initialize
+        function init() {
+            // Set default WebSocket URL based on page URL
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const host = window.location.host;
+            wsUrlInput.value = `${protocol}//${host}/ws`;
+            
+            // Register event listeners
+            connectBtn.addEventListener('click', connectWebSocket);
+            disconnectBtn.addEventListener('click', disconnectWebSocket);
+            sendBtn.addEventListener('click', sendMessage);
+            pingBtn.addEventListener('click', sendPing);
+            autoPingBtn.addEventListener('click', toggleAutoPing);
+            clearLogBtn.addEventListener('click', clearLog);
+            messageTypeSelect.addEventListener('change', updateMessagePlaceholder);
+            
+            // Setup endpoint click handlers
+            setupEndpointHandlers();
+            
+            // Setup tabs
+            setupTabs();
+            
+            // Set system information
+            detectBrowser();
+            checkWebSocketSupport();
+            getNetworkInfo();
+            pageLoaded.textContent = new Date().toLocaleString();
+            
+            // Log initialization
+            logToConsole('WebSocket Connection Test Tool initialized', 'info');
+            logToConsole(`Available WebSocket endpoints: ${Array.from(document.querySelectorAll('.endpoint')).map(e => e.dataset.url).join(', ')}`, 'info');
+            updateMessagePlaceholder();
+        }
+        
+        function setupEndpointHandlers() {
+            document.querySelectorAll('.endpoint').forEach(endpoint => {
+                endpoint.addEventListener('click', () => {
+                    const url = endpoint.dataset.url;
+                    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                    const host = window.location.host;
+                    wsUrlInput.value = `${protocol}//${host}${url}`;
+                    logToConsole(`Endpoint selected: ${url}`, 'info');
+                });
+            });
+        }
+        
+        function setupTabs() {
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Update active tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Show active content
+                    const tabId = tab.dataset.tab;
+                    activeTab = tabId;
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === `${tabId}-tab`) {
+                            content.classList.add('active');
+                        }
+                    });
+                });
+            });
+        }
+        
+        function updateMessagePlaceholder() {
+            const messageType = messageTypeSelect.value;
+            switch(messageType) {
+                case 'ping':
+                    messageTextInput.placeholder = 'Ping message (optional)';
+                    messageTextInput.value = '';
+                    break;
+                case 'message':
+                    messageTextInput.placeholder = 'Enter text message to send';
+                    messageTextInput.value = 'Hello from WebSocket Test Tool';
+                    break;
+                case 'echo':
+                    messageTextInput.placeholder = 'Text to echo back';
+                    messageTextInput.value = 'Echo this message';
+                    break;
+                case 'heartbeat':
+                    messageTextInput.placeholder = 'Heartbeat message (optional)';
+                    messageTextInput.value = '';
+                    break;
+            }
+        }
+        
+        function updateConnectionStatus(status, additionalInfo = '') {
+            switch(status) {
+                case 'connected':
+                    connectionStatusDiv.textContent = 'Connected' + (additionalInfo ? ` (${additionalInfo})` : '');
+                    connectionStatusDiv.className = 'status connected';
+                    connectBtn.disabled = true;
+                    disconnectBtn.disabled = false;
+                    sendBtn.disabled = false;
+                    pingBtn.disabled = false;
+                    autoPingBtn.disabled = false;
+                    break;
+                case 'disconnected':
+                    connectionStatusDiv.textContent = 'Disconnected' + (additionalInfo ? ` (${additionalInfo})` : '');
+                    connectionStatusDiv.className = 'status disconnected';
+                    connectBtn.disabled = false;
+                    disconnectBtn.disabled = true;
+                    sendBtn.disabled = true;
+                    pingBtn.disabled = true;
+                    autoPingBtn.disabled = true;
+                    
+                    // Clear intervals
+                    if (autoPingInterval) {
+                        clearInterval(autoPingInterval);
+                        autoPingInterval = null;
+                        autoPingBtn.textContent = 'Auto Ping (5s)';
+                    }
+                    
+                    // Reset stats
+                    latencyValue.textContent = '--';
+                    uptimeValue.textContent = '--';
+                    lastActivityValue.textContent = '--';
+                    break;
+                case 'connecting':
+                    connectionStatusDiv.textContent = 'Connecting...' + (additionalInfo ? ` (${additionalInfo})` : '');
+                    connectionStatusDiv.className = 'status connecting';
+                    connectBtn.disabled = true;
+                    disconnectBtn.disabled = false;
+                    sendBtn.disabled = true;
+                    pingBtn.disabled = true;
+                    autoPingBtn.disabled = true;
+                    break;
+            }
+        }
+        
+        function logToConsole(message, level = 'info', details = null) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${level}`;
+            
+            let logMessage = `${timestamp} - ${message}`;
+            if (details) {
+                if (typeof details === 'object') {
+                    try {
+                        logMessage += ` - ${JSON.stringify(details)}`;
+                    } catch (e) {
+                        logMessage += ` - [Object]`;
+                    }
+                } else {
+                    logMessage += ` - ${details}`;
+                }
+            }
+            
+            logEntry.textContent = logMessage;
+            connectionLogDiv.appendChild(logEntry);
+            connectionLogDiv.scrollTop = connectionLogDiv.scrollHeight;
+            
+            // Also log to browser console for debugging
+            console.log(`[WebSocket Test] ${logMessage}`);
+        }
+        
+        function clearLog() {
+            connectionLogDiv.innerHTML = '';
+            logToConsole('Log cleared', 'info');
+        }
+        
+        function connectWebSocket() {
+            try {
+                const url = wsUrlInput.value;
+                if (!url) {
+                    logToConsole('Error: WebSocket URL is required', 'error');
+                    return;
+                }
+                
+                // Update UI
+                updateConnectionStatus('connecting');
+                logToConsole(`Attempting to connect to ${url}`, 'info');
+                
+                // Create WebSocket connection
+                socket = new WebSocket(url);
+                
+                // Connection opened
+                socket.addEventListener('open', (event) => {
+                    // Record connection time
+                    connectionStartTime = Date.now();
+                    lastActivity = Date.now();
+                    
+                    logToConsole(`Connected successfully to ${url}`, 'success');
+                    updateConnectionStatus('connected');
+                    
+                    // Start connection timer
+                    startConnectionTimer();
+                });
+                
+                // Listen for messages
+                socket.addEventListener('message', (event) => {
+                    lastActivity = Date.now();
+                    messagesCount++;
+                    messagesCountValue.textContent = messagesCount;
+                    
+                    // Process the message
+                    try {
+                        const data = JSON.parse(event.data);
+                        logToConsole(`Received message: ${JSON.stringify(data)}`, 'received');
+                        
+                        // Handle ping response/pong
+                        if (data.type === 'pong' && pingTimestamp) {
+                            const latency = Date.now() - pingTimestamp;
+                            latencyValue.textContent = latency;
+                            logToConsole(`Measured latency: ${latency}ms`, 'info');
+                            pingTimestamp = null;
+                        }
+                    } catch (e) {
+                        // Not JSON, treat as text
+                        logToConsole(`Received text message: ${event.data}`, 'received');
+                    }
+                    
+                    // Update last activity
+                    lastActivityValue.textContent = 'Just now';
+                });
+                
+                // Connection closed
+                socket.addEventListener('close', (event) => {
+                    const reason = event.reason || 'No reason provided';
+                    const code = event.code;
+                    
+                    logToConsole(`Connection closed: Code ${code}, Reason: ${reason}`, 'error');
+                    updateConnectionStatus('disconnected', `Code ${code}`);
+                    
+                    // Clear timers
+                    socket = null;
+                    connectionStartTime = null;
+                });
+                
+                // Connection error
+                socket.addEventListener('error', (error) => {
+                    logToConsole('WebSocket connection error occurred', 'error');
+                    
+                    // Detailed error info might not be available due to browser security
+                    logToConsole(`Check browser console for more details. Common issues: incorrect URL, missing server, CORS, firewall`, 'warning');
+                });
+                
+            } catch (error) {
+                logToConsole(`Error creating WebSocket: ${error.message}`, 'error');
+                updateConnectionStatus('disconnected', 'Error');
+            }
+        }
+        
+        function disconnectWebSocket() {
+            if (!socket) {
+                return;
+            }
+            
+            try {
+                logToConsole('Initiating disconnect...', 'info');
+                socket.close(1000, 'User initiated disconnect');
+            } catch (error) {
+                logToConsole(`Error closing WebSocket: ${error.message}`, 'error');
+            }
+        }
+        
+        function sendMessage() {
+            if (!socket || socket.readyState !== WebSocket.OPEN) {
+                logToConsole('Cannot send message: WebSocket is not connected', 'error');
+                return;
+            }
+            
+            try {
+                let messageToSend;
+                
+                switch (activeTab) {
+                    case 'simple':
+                        const messageType = messageTypeSelect.value;
+                        const messageText = messageTextInput.value;
+                        
+                        switch(messageType) {
+                            case 'ping':
+                                messageToSend = {
+                                    type: 'ping',
+                                    timestamp: Date.now(),
+                                    message: messageText
+                                };
+                                break;
+                            case 'message':
+                                messageToSend = {
+                                    type: 'message',
+                                    content: messageText,
+                                    timestamp: Date.now()
+                                };
+                                break;
+                            case 'echo':
+                                messageToSend = {
+                                    type: 'echo',
+                                    message: messageText,
+                                    timestamp: Date.now()
+                                };
+                                break;
+                            case 'heartbeat':
+                                messageToSend = {
+                                    type: 'heartbeat',
+                                    timestamp: Date.now()
+                                };
+                                break;
+                        }
+                        break;
+                        
+                    case 'json':
+                        try {
+                            messageToSend = JSON.parse(jsonMessageTextarea.value);
+                        } catch (e) {
+                            logToConsole(`Invalid JSON: ${e.message}`, 'error');
+                            return;
+                        }
+                        break;
+                        
+                    case 'binary':
+                        const text = binaryInput.value;
+                        if (!text) {
+                            logToConsole('Binary input is empty', 'error');
+                            return;
+                        }
+                        
+                        // Convert text to binary (ArrayBuffer)
+                        const encoder = new TextEncoder();
+                        const binaryData = encoder.encode(text).buffer;
+                        
+                        // Send binary data directly
+                        socket.send(binaryData);
+                        logToConsole(`Sent binary data (${binaryData.byteLength} bytes)`, 'sent');
+                        return;
+                }
+                
+                const messageString = JSON.stringify(messageToSend);
+                socket.send(messageString);
+                logToConsole(`Sent: ${messageString}`, 'sent');
+                
+                // Update stats
+                lastActivity = Date.now();
+                messagesCount++;
+                messagesCountValue.textContent = messagesCount;
+                lastActivityValue.textContent = 'Just now';
+                
+            } catch (error) {
+                logToConsole(`Error sending message: ${error.message}`, 'error');
+            }
+        }
+        
+        function sendPing() {
+            if (!socket || socket.readyState !== WebSocket.OPEN) {
+                logToConsole('Cannot send ping: WebSocket is not connected', 'error');
+                return;
+            }
+            
+            try {
+                pingTimestamp = Date.now();
+                const pingMessage = {
+                    type: 'ping',
+                    timestamp: pingTimestamp
+                };
+                
+                socket.send(JSON.stringify(pingMessage));
+                logToConsole('Sent ping', 'sent');
+                
+            } catch (error) {
+                logToConsole(`Error sending ping: ${error.message}`, 'error');
+            }
+        }
+        
+        function toggleAutoPing() {
+            if (autoPingInterval) {
+                clearInterval(autoPingInterval);
+                autoPingInterval = null;
+                autoPingBtn.textContent = 'Auto Ping (5s)';
+                logToConsole('Auto ping disabled', 'info');
+            } else {
+                autoPingInterval = setInterval(sendPing, 5000);
+                autoPingBtn.textContent = 'Stop Auto Ping';
+                logToConsole('Auto ping enabled (every 5 seconds)', 'info');
+                // Send first ping immediately
+                sendPing();
+            }
+        }
+        
+        function startConnectionTimer() {
+            // Update connection uptime every second
+            setInterval(() => {
+                if (connectionStartTime) {
+                    const uptime = Math.floor((Date.now() - connectionStartTime) / 1000);
+                    if (uptime < 60) {
+                        uptimeValue.textContent = `${uptime}s`;
+                    } else if (uptime < 3600) {
+                        uptimeValue.textContent = `${Math.floor(uptime / 60)}m ${uptime % 60}s`;
+                    } else {
+                        uptimeValue.textContent = `${Math.floor(uptime / 3600)}h ${Math.floor((uptime % 3600) / 60)}m`;
+                    }
+                    
+                    // Update last activity
+                    if (lastActivity) {
+                        const lastActivityTime = Math.floor((Date.now() - lastActivity) / 1000);
+                        if (lastActivityTime < 5) {
+                            lastActivityValue.textContent = 'Just now';
+                        } else if (lastActivityTime < 60) {
+                            lastActivityValue.textContent = `${lastActivityTime}s ago`;
+                        } else if (lastActivityTime < 3600) {
+                            lastActivityValue.textContent = `${Math.floor(lastActivityTime / 60)}m ${lastActivityTime % 60}s ago`;
+                        } else {
+                            lastActivityValue.textContent = `${Math.floor(lastActivityTime / 3600)}h ${Math.floor((lastActivityTime % 3600) / 60)}m ago`;
+                        }
+                    }
+                }
+            }, 1000);
+        }
+        
+        function detectBrowser() {
+            const userAgent = navigator.userAgent;
+            let browserInfo = 'Unknown';
+            
+            if (userAgent.match(/chrome|chromium|crios/i)) {
+                browserInfo = 'Chrome';
+            } else if (userAgent.match(/firefox|fxios/i)) {
+                browserInfo = 'Firefox';
+            } else if (userAgent.match(/safari/i)) {
+                browserInfo = 'Safari';
+            } else if (userAgent.match(/opr\//i)) {
+                browserInfo = 'Opera';
+            } else if (userAgent.match(/edg/i)) {
+                browserInfo = 'Edge';
+            }
+            
+            browserInfoSpan.textContent = `${browserInfo} - ${userAgent}`;
+        }
+        
+        function checkWebSocketSupport() {
+            if ('WebSocket' in window) {
+                wsSupport.textContent = 'Supported';
+                wsSupport.innerHTML += '<span class="badge success">Yes</span>';
+            } else {
+                wsSupport.textContent = 'Not Supported';
+                wsSupport.innerHTML += '<span class="badge error">No</span>';
+                logToConsole('WebSocket is not supported in this browser!', 'error');
+            }
+        }
+        
+        function getNetworkInfo() {
+            if ('connection' in navigator && navigator.connection) {
+                const connection = navigator.connection;
+                const info = [];
+                
+                if (connection.effectiveType) {
+                    info.push(`Effective Type: ${connection.effectiveType}`);
+                }
+                
+                if (connection.downlink) {
+                    info.push(`Downlink: ${connection.downlink} Mbps`);
+                }
+                
+                if ('rtt' in connection) {
+                    info.push(`RTT: ${connection.rtt} ms`);
+                }
+                
+                if ('saveData' in connection && connection.saveData) {
+                    info.push('Data Saver: On');
+                }
+                
+                networkInfo.textContent = info.join(' | ') || 'Information not available';
+            } else {
+                networkInfo.textContent = 'Network Information API not supported';
+            }
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

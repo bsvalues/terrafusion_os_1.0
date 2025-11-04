@@ -1,0 +1,2429 @@
+{
+  "discovery_metadata": {
+    "discovery_date": "2025-10-28T01:23:02.393571",
+    "quantum_factor": 949,
+    "terra_cyan": "#00FFFF",
+    "golden_ratio": 1.618,
+    "locations_scanned": [
+      "from_d",
+      "terrafusion_mono",
+      "d_drive"
+    ]
+  },
+  "executive_summary": {
+    "total_systems_discovered": 68,
+    "already_integrated": 5,
+    "unintegrated_opportunities": 63,
+    "multi_location_systems": 2,
+    "current_foundation_score": 12.05,
+    "total_enhancement_potential": 3.301,
+    "ultimate_foundation_score": 15.351,
+    "transcendence_level": "BEYOND TRANSCENDENCE"
+  },
+  "priority_breakdown": {
+    "HIGH": 4,
+    "MEDIUM": 28,
+    "CRITICAL": 3,
+    "LOW": 28
+  },
+  "top_integration_opportunities": [
+    {
+      "rank": 1,
+      "name": "TerraFusionPilt_PRODUCTION",
+      "foundation_value": 0.112,
+      "priority": "CRITICAL",
+      "quantum_readiness": 98,
+      "integration_potential": 95,
+      "capabilities": [
+        "PILT Assessment",
+        "Professional Tools",
+        "Advanced Features",
+        "Government Property",
+        "Special Districts"
+      ],
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "Vite",
+        "React",
+        "PostgreSQL",
+        "Node.js",
+        "Docker",
+        "Drizzle"
+      ],
+      "locations": [
+        "from_d"
+      ],
+      "system_type": "PRODUCTION"
+    },
+    {
+      "rank": 2,
+      "name": "TerraFusionPlayground_PRODUCTION",
+      "foundation_value": 0.112,
+      "priority": "CRITICAL",
+      "quantum_readiness": 98,
+      "integration_potential": 95,
+      "capabilities": [
+        "Prototyping",
+        "Dev Environment",
+        "Advanced Features",
+        "Professional Tools",
+        "Testing"
+      ],
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "Vite",
+        "React",
+        "PostgreSQL",
+        "Tauri",
+        "Node.js",
+        "Next.js",
+        "Docker"
+      ],
+      "locations": [
+        "from_d"
+      ],
+      "system_type": "PRODUCTION"
+    },
+    {
+      "rank": 3,
+      "name": "TerraFusionPermit_PRODUCTION",
+      "foundation_value": 0.104,
+      "priority": "CRITICAL",
+      "quantum_readiness": 95,
+      "integration_potential": 91,
+      "capabilities": [
+        "Workflow Automation",
+        "Document Intelligence",
+        "AI Processing",
+        "Advanced Features",
+        "Professional Tools"
+      ],
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "Vite",
+        "React",
+        "PostgreSQL",
+        "Node.js",
+        "Drizzle"
+      ],
+      "locations": [
+        "from_d"
+      ],
+      "system_type": "PRODUCTION"
+    },
+    {
+      "rank": 4,
+      "name": "TerraFusionSync_PRODUCTION_OLD_BACKUP",
+      "foundation_value": 0.096,
+      "priority": "HIGH",
+      "quantum_readiness": 88,
+      "integration_potential": 91,
+      "capabilities": [
+        "Data Synchronization",
+        "ETL",
+        "Integration",
+        "Advanced Features",
+        "Professional Tools"
+      ],
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "FastAPI",
+        "Flask",
+        "Docker"
+      ],
+      "locations": [
+        "from_d"
+      ],
+      "system_type": "PRODUCTION"
+    },
+    {
+      "rank": 5,
+      "name": "BCBSWebhub_PRODUCTION",
+      "foundation_value": 0.094,
+      "priority": "HIGH",
+      "quantum_readiness": 90,
+      "integration_potential": 87,
+      "capabilities": [
+        "Citizen Services",
+        "Data Hub",
+        "Web Portal",
+        "Advanced Features",
+        "Professional Tools"
+      ],
+      "technologies": [
+        "TypeScript",
+        "Vite",
+        "React",
+        "Node.js",
+        "Drizzle"
+      ],
+      "locations": [
+        "from_d"
+      ],
+      "system_type": "PRODUCTION"
+    },
+    {
+      "rank": 6,
+      "name": "BCBSGISPRO",
+      "foundation_value": 0.086,
+      "priority": "HIGH",
+      "quantum_readiness": 95,
+      "integration_potential": 91,
+      "capabilities": [
+        "Spatial Analysis",
+        "Mapping",
+        "Advanced Features",
+        "Professional Tools",
+        "Parcel Management"
+      ],
+      "technologies": [
+        "TypeScript",
+        "Vite",
+        "React",
+        "PostgreSQL",
+        "Node.js",
+        "Drizzle"
+      ],
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "system_type": "ACTIVE"
+    },
+    {
+      "rank": 7,
+      "name": "TerraFusionDashboard_PRODUCTION",
+      "foundation_value": 0.085,
+      "priority": "HIGH",
+      "quantum_readiness": 85,
+      "integration_potential": 83,
+      "capabilities": [
+        "Reporting",
+        "Analytics",
+        "Advanced Features",
+        "Professional Tools",
+        "Visualization"
+      ],
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "Flask",
+        "PostgreSQL"
+      ],
+      "locations": [
+        "from_d"
+      ],
+      "system_type": "PRODUCTION"
+    },
+    {
+      "rank": 8,
+      "name": "TerraFusionPro_PRODUCTION",
+      "foundation_value": 0.076,
+      "priority": "MEDIUM",
+      "quantum_readiness": 98,
+      "integration_potential": 86,
+      "capabilities": [
+        "Advanced Features",
+        "Professional Tools"
+      ],
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "Vite",
+        "React",
+        "PostgreSQL",
+        "Flask",
+        "Node.js",
+        "Docker",
+        "Drizzle"
+      ],
+      "locations": [
+        "from_d"
+      ],
+      "system_type": "PRODUCTION"
+    },
+    {
+      "rank": 9,
+      "name": "TerraAgent_PRODUCTION",
+      "foundation_value": 0.072,
+      "priority": "MEDIUM",
+      "quantum_readiness": 78,
+      "integration_potential": 84,
+      "capabilities": [
+        "Advanced Features",
+        "Professional Tools",
+        "AI Agents",
+        "Autonomous Operations"
+      ],
+      "technologies": [
+        "Python",
+        "PostgreSQL",
+        "FastAPI",
+        "Flask",
+        "Docker"
+      ],
+      "locations": [
+        "from_d"
+      ],
+      "system_type": "PRODUCTION"
+    },
+    {
+      "rank": 10,
+      "name": "TerraFusionBuild_ACTUAL",
+      "foundation_value": 0.07,
+      "priority": "MEDIUM",
+      "quantum_readiness": 98,
+      "integration_potential": 89,
+      "capabilities": [
+        "CI/CD",
+        "Build Automation",
+        "Deployment"
+      ],
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "Vite",
+        "React",
+        "PostgreSQL",
+        "Flask",
+        "Node.js",
+        "Docker",
+        "Drizzle"
+      ],
+      "locations": [
+        "from_d"
+      ],
+      "system_type": "ACTIVE"
+    },
+    {
+      "rank": 11,
+      "name": "TerraFusionPlayground-main",
+      "foundation_value": 0.07,
+      "priority": "MEDIUM",
+      "quantum_readiness": 98,
+      "integration_potential": 89,
+      "capabilities": [
+        "Prototyping",
+        "Testing",
+        "Dev Environment"
+      ],
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "Vite",
+        "React",
+        "PostgreSQL",
+        "Tauri",
+        "Node.js",
+        "Next.js",
+        "Docker"
+      ],
+      "locations": [
+        "from_d"
+      ],
+      "system_type": "DEVELOPMENT"
+    },
+    {
+      "rank": 12,
+      "name": "TerraFusionPrimeView_PRODUCTION",
+      "foundation_value": 0.07,
+      "priority": "MEDIUM",
+      "quantum_readiness": 95,
+      "integration_potential": 82,
+      "capabilities": [
+        "Advanced Features",
+        "Professional Tools"
+      ],
+      "technologies": [
+        "TypeScript",
+        "Vite",
+        "React",
+        "PostgreSQL",
+        "Node.js"
+      ],
+      "locations": [
+        "from_d"
+      ],
+      "system_type": "PRODUCTION"
+    },
+    {
+      "rank": 13,
+      "name": "TerraFusionV0Demo_PRODUCTION",
+      "foundation_value": 0.07,
+      "priority": "MEDIUM",
+      "quantum_readiness": 95,
+      "integration_potential": 82,
+      "capabilities": [
+        "Advanced Features",
+        "Professional Tools"
+      ],
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "React",
+        "PostgreSQL",
+        "Kubernetes",
+        "Node.js",
+        "Docker"
+      ],
+      "locations": [
+        "from_d"
+      ],
+      "system_type": "PRODUCTION"
+    },
+    {
+      "rank": 14,
+      "name": "TerraFusionProf_PRODUCTION",
+      "foundation_value": 0.069,
+      "priority": "MEDIUM",
+      "quantum_readiness": 93,
+      "integration_potential": 82,
+      "capabilities": [
+        "Advanced Features",
+        "Professional Tools"
+      ],
+      "technologies": [
+        "TypeScript",
+        "React",
+        "PostgreSQL",
+        "Docker",
+        "Node.js"
+      ],
+      "locations": [
+        "from_d"
+      ],
+      "system_type": "PRODUCTION"
+    },
+    {
+      "rank": 15,
+      "name": "TerraLegislativepulse",
+      "foundation_value": 0.066,
+      "priority": "MEDIUM",
+      "quantum_readiness": 80,
+      "integration_potential": 83,
+      "capabilities": [
+        "Spatial Analysis",
+        "Mapping",
+        "Policy Management",
+        "Parcel Management",
+        "Legislative Tracking"
+      ],
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "Flask",
+        "FastAPI"
+      ],
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "system_type": "ACTIVE"
+    }
+  ],
+  "technology_ecosystem": {
+    "unique_technologies": [
+      "Docker",
+      "Drizzle",
+      "FastAPI",
+      "Flask",
+      "Kubernetes",
+      "Next.js",
+      "Node.js",
+      "PostgreSQL",
+      "Python",
+      "React",
+      "Tauri",
+      "TypeScript",
+      "Vite"
+    ],
+    "technology_count": 13
+  },
+  "capability_ecosystem": {
+    "unique_capabilities": [
+      "AI Agents",
+      "AI Assistant",
+      "AI Integration",
+      "AI Processing",
+      "API Gateway",
+      "Advanced Features",
+      "Agriculture",
+      "Alerting",
+      "Analytics",
+      "Autonomous Operations",
+      "Budget Management",
+      "Build Automation",
+      "CI/CD",
+      "Cap Rate Analysis",
+      "Citizen Portal",
+      "Citizen Services",
+      "Crop Analysis",
+      "DCF Modeling",
+      "Data Hub",
+      "Data Synchronization",
+      "Deployment",
+      "Dev Environment",
+      "Document Intelligence",
+      "ETL",
+      "Field Operations",
+      "Government Property",
+      "Health Checks",
+      "Integration",
+      "Legislative Tracking",
+      "Load Balancing",
+      "Mapping",
+      "Mill Rate",
+      "Mobile",
+      "Model Context Protocol",
+      "NOI Calculation",
+      "Natural Language",
+      "Offline Sync",
+      "PILT Assessment",
+      "Parcel Management",
+      "Plugin Discovery",
+      "Policy Management",
+      "Process Automation",
+      "Professional Tools",
+      "Prototyping",
+      "Public Access",
+      "Reporting",
+      "Self-Service",
+      "Service Marketplace",
+      "Service Routing",
+      "Spatial Analysis",
+      "Special Districts",
+      "State Management",
+      "System Monitoring",
+      "Task Automation",
+      "Tax Calculation",
+      "Testing",
+      "Visualization",
+      "Web Portal",
+      "Workflow Automation",
+      "Workflow Engine",
+      "Yield Prediction"
+    ],
+    "capability_count": 61
+  },
+  "all_systems": [
+    {
+      "name": "BCBSGISPRO_PRODUCTION",
+      "location": "from_d",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\from D\\BCBSGISPRO_PRODUCTION",
+      "size_bytes": 321516984,
+      "last_modified": "2025-09-03T13:25:49.605640",
+      "type": "PRODUCTION",
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "Vite",
+        "React",
+        "Flask",
+        "Node.js",
+        "Drizzle"
+      ],
+      "capabilities": [
+        "Spatial Analysis",
+        "Mapping",
+        "Advanced Features",
+        "Professional Tools",
+        "Parcel Management"
+      ],
+      "quantum_readiness": 90,
+      "integration_potential": 87,
+      "foundation_value": 0.094,
+      "priority": "HIGH",
+      "is_integrated": true,
+      "locations": [
+        "from_d"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "BCBSWebhub_PRODUCTION",
+      "location": "from_d",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\from D\\BCBSWebhub_PRODUCTION",
+      "size_bytes": 32769744,
+      "last_modified": "2025-10-21T13:25:50.466674",
+      "type": "PRODUCTION",
+      "technologies": [
+        "TypeScript",
+        "Vite",
+        "React",
+        "Node.js",
+        "Drizzle"
+      ],
+      "capabilities": [
+        "Citizen Services",
+        "Data Hub",
+        "Web Portal",
+        "Advanced Features",
+        "Professional Tools"
+      ],
+      "quantum_readiness": 90,
+      "integration_potential": 87,
+      "foundation_value": 0.094,
+      "priority": "HIGH",
+      "is_integrated": false,
+      "locations": [
+        "from_d"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "BSIncomeValuation_PRODUCTION",
+      "location": "from_d",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\from D\\BSIncomeValuation_PRODUCTION",
+      "size_bytes": 12569097,
+      "last_modified": "2025-09-03T13:25:48.072781",
+      "type": "PRODUCTION",
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "Vite",
+        "React",
+        "Flask",
+        "Node.js",
+        "Drizzle"
+      ],
+      "capabilities": [
+        "DCF Modeling",
+        "NOI Calculation",
+        "Cap Rate Analysis",
+        "Advanced Features",
+        "Professional Tools"
+      ],
+      "quantum_readiness": 90,
+      "integration_potential": 87,
+      "foundation_value": 0.094,
+      "priority": "HIGH",
+      "is_integrated": true,
+      "locations": [
+        "from_d"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraAgent_PRODUCTION",
+      "location": "from_d",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\from D\\TerraAgent_PRODUCTION",
+      "size_bytes": 211363620,
+      "last_modified": "2025-10-21T22:52:47.118866",
+      "type": "PRODUCTION",
+      "technologies": [
+        "Python",
+        "PostgreSQL",
+        "FastAPI",
+        "Flask",
+        "Docker"
+      ],
+      "capabilities": [
+        "Advanced Features",
+        "Professional Tools",
+        "AI Agents",
+        "Autonomous Operations"
+      ],
+      "quantum_readiness": 78,
+      "integration_potential": 84,
+      "foundation_value": 0.072,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "locations": [
+        "from_d"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFlow_PRODUCTION",
+      "location": "from_d",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\from D\\TerraFlow_PRODUCTION",
+      "size_bytes": 214635124,
+      "last_modified": "2025-10-22T13:14:19.099917",
+      "type": "PRODUCTION",
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "FastAPI",
+        "Flask",
+        "Docker"
+      ],
+      "capabilities": [
+        "Workflow Engine",
+        "Process Automation",
+        "State Management",
+        "Advanced Features",
+        "Professional Tools"
+      ],
+      "quantum_readiness": 88,
+      "integration_potential": 91,
+      "foundation_value": 0.096,
+      "priority": "HIGH",
+      "is_integrated": true,
+      "locations": [
+        "from_d"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionBuild_ACTUAL",
+      "location": "from_d",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\from D\\TerraFusionBuild_ACTUAL",
+      "size_bytes": 2470242821,
+      "last_modified": "2025-10-27T19:14:19.194198",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "Vite",
+        "React",
+        "PostgreSQL",
+        "Flask",
+        "Node.js",
+        "Docker",
+        "Drizzle"
+      ],
+      "capabilities": [
+        "CI/CD",
+        "Build Automation",
+        "Deployment"
+      ],
+      "quantum_readiness": 98,
+      "integration_potential": 89,
+      "foundation_value": 0.07,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "locations": [
+        "from_d"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionDashboard_PRODUCTION",
+      "location": "from_d",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\from D\\TerraFusionDashboard_PRODUCTION",
+      "size_bytes": 991184603,
+      "last_modified": "2025-09-01T12:39:42.238573",
+      "type": "PRODUCTION",
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "Flask",
+        "PostgreSQL"
+      ],
+      "capabilities": [
+        "Reporting",
+        "Analytics",
+        "Advanced Features",
+        "Professional Tools",
+        "Visualization"
+      ],
+      "quantum_readiness": 85,
+      "integration_potential": 83,
+      "foundation_value": 0.085,
+      "priority": "HIGH",
+      "is_integrated": false,
+      "locations": [
+        "from_d"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionGama_PRODUCTION",
+      "location": "from_d",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\from D\\TerraFusionGama_PRODUCTION",
+      "size_bytes": 446098,
+      "last_modified": "2025-10-21T12:53:07.477007",
+      "type": "PRODUCTION",
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "React",
+        "Flask",
+        "Node.js"
+      ],
+      "capabilities": [
+        "Advanced Features",
+        "Professional Tools"
+      ],
+      "quantum_readiness": 85,
+      "integration_potential": 74,
+      "foundation_value": 0.057,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "locations": [
+        "from_d"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionPermit_PRODUCTION",
+      "location": "from_d",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\from D\\TerraFusionPermit_PRODUCTION",
+      "size_bytes": 954585249,
+      "last_modified": "2025-10-21T13:03:25.376801",
+      "type": "PRODUCTION",
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "Vite",
+        "React",
+        "PostgreSQL",
+        "Node.js",
+        "Drizzle"
+      ],
+      "capabilities": [
+        "Workflow Automation",
+        "Document Intelligence",
+        "AI Processing",
+        "Advanced Features",
+        "Professional Tools"
+      ],
+      "quantum_readiness": 95,
+      "integration_potential": 91,
+      "foundation_value": 0.104,
+      "priority": "CRITICAL",
+      "is_integrated": false,
+      "locations": [
+        "from_d"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionPilt_PRODUCTION",
+      "location": "from_d",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\from D\\TerraFusionPilt_PRODUCTION",
+      "size_bytes": 1678091701,
+      "last_modified": "2025-10-21T13:02:26.431197",
+      "type": "PRODUCTION",
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "Vite",
+        "React",
+        "PostgreSQL",
+        "Node.js",
+        "Docker",
+        "Drizzle"
+      ],
+      "capabilities": [
+        "PILT Assessment",
+        "Professional Tools",
+        "Advanced Features",
+        "Government Property",
+        "Special Districts"
+      ],
+      "quantum_readiness": 98,
+      "integration_potential": 95,
+      "foundation_value": 0.112,
+      "priority": "CRITICAL",
+      "is_integrated": false,
+      "locations": [
+        "from_d"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionPlayground-main",
+      "location": "from_d",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\from D\\TerraFusionPlayground-main",
+      "size_bytes": 48514625,
+      "last_modified": "2025-09-01T19:36:16.234429",
+      "type": "DEVELOPMENT",
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "Vite",
+        "React",
+        "PostgreSQL",
+        "Tauri",
+        "Node.js",
+        "Next.js",
+        "Docker"
+      ],
+      "capabilities": [
+        "Prototyping",
+        "Testing",
+        "Dev Environment"
+      ],
+      "quantum_readiness": 98,
+      "integration_potential": 89,
+      "foundation_value": 0.07,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "locations": [
+        "from_d"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionPlayground_PRODUCTION",
+      "location": "from_d",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\from D\\TerraFusionPlayground_PRODUCTION",
+      "size_bytes": 88869891,
+      "last_modified": "2025-10-21T13:00:53.039479",
+      "type": "PRODUCTION",
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "Vite",
+        "React",
+        "PostgreSQL",
+        "Tauri",
+        "Node.js",
+        "Next.js",
+        "Docker"
+      ],
+      "capabilities": [
+        "Prototyping",
+        "Dev Environment",
+        "Advanced Features",
+        "Professional Tools",
+        "Testing"
+      ],
+      "quantum_readiness": 98,
+      "integration_potential": 95,
+      "foundation_value": 0.112,
+      "priority": "CRITICAL",
+      "is_integrated": false,
+      "locations": [
+        "from_d"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionPrimeView_PRODUCTION",
+      "location": "from_d",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\from D\\TerraFusionPrimeView_PRODUCTION",
+      "size_bytes": 1788183,
+      "last_modified": "2025-10-21T14:31:27.270515",
+      "type": "PRODUCTION",
+      "technologies": [
+        "TypeScript",
+        "Vite",
+        "React",
+        "PostgreSQL",
+        "Node.js"
+      ],
+      "capabilities": [
+        "Advanced Features",
+        "Professional Tools"
+      ],
+      "quantum_readiness": 95,
+      "integration_potential": 82,
+      "foundation_value": 0.07,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "locations": [
+        "from_d"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionProf_PRODUCTION",
+      "location": "from_d",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\from D\\TerraFusionProf_PRODUCTION",
+      "size_bytes": 1025419430,
+      "last_modified": "2025-09-03T13:25:59.304504",
+      "type": "PRODUCTION",
+      "technologies": [
+        "TypeScript",
+        "React",
+        "PostgreSQL",
+        "Docker",
+        "Node.js"
+      ],
+      "capabilities": [
+        "Advanced Features",
+        "Professional Tools"
+      ],
+      "quantum_readiness": 93,
+      "integration_potential": 82,
+      "foundation_value": 0.069,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "locations": [
+        "from_d"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionProPlus_PRODUCTION",
+      "location": "from_d",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\from D\\TerraFusionProPlus_PRODUCTION",
+      "size_bytes": 296033722,
+      "last_modified": "2025-10-21T14:31:11.530808",
+      "type": "PRODUCTION",
+      "technologies": [
+        "TypeScript",
+        "React",
+        "Kubernetes",
+        "Docker",
+        "Node.js",
+        "Drizzle"
+      ],
+      "capabilities": [
+        "Advanced Features",
+        "Professional Tools"
+      ],
+      "quantum_readiness": 90,
+      "integration_potential": 78,
+      "foundation_value": 0.063,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "locations": [
+        "from_d"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionPro_PRODUCTION",
+      "location": "from_d",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\from D\\TerraFusionPro_PRODUCTION",
+      "size_bytes": 492790588,
+      "last_modified": "2025-09-03T13:25:53.094753",
+      "type": "PRODUCTION",
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "Vite",
+        "React",
+        "PostgreSQL",
+        "Flask",
+        "Node.js",
+        "Docker",
+        "Drizzle"
+      ],
+      "capabilities": [
+        "Advanced Features",
+        "Professional Tools"
+      ],
+      "quantum_readiness": 98,
+      "integration_potential": 86,
+      "foundation_value": 0.076,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "locations": [
+        "from_d"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionSync_PRODUCTION",
+      "location": "from_d",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\from D\\TerraFusionSync_PRODUCTION",
+      "size_bytes": 418684568,
+      "last_modified": "2025-10-21T22:44:33.817262",
+      "type": "PRODUCTION",
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "FastAPI",
+        "Flask",
+        "Docker"
+      ],
+      "capabilities": [
+        "Data Synchronization",
+        "ETL",
+        "Integration",
+        "Advanced Features",
+        "Professional Tools"
+      ],
+      "quantum_readiness": 88,
+      "integration_potential": 91,
+      "foundation_value": 0.096,
+      "priority": "HIGH",
+      "is_integrated": true,
+      "locations": [
+        "from_d"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionSync_PRODUCTION_OLD_BACKUP",
+      "location": "from_d",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\from D\\TerraFusionSync_PRODUCTION_OLD_BACKUP",
+      "size_bytes": 52240719,
+      "last_modified": "2025-09-01T12:39:46.247624",
+      "type": "PRODUCTION",
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "FastAPI",
+        "Flask",
+        "Docker"
+      ],
+      "capabilities": [
+        "Data Synchronization",
+        "ETL",
+        "Integration",
+        "Advanced Features",
+        "Professional Tools"
+      ],
+      "quantum_readiness": 88,
+      "integration_potential": 91,
+      "foundation_value": 0.096,
+      "priority": "HIGH",
+      "is_integrated": false,
+      "locations": [
+        "from_d"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionV0Demo_PRODUCTION",
+      "location": "from_d",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\from D\\TerraFusionV0Demo_PRODUCTION",
+      "size_bytes": 1458713,
+      "last_modified": "2025-10-21T13:03:59.104725",
+      "type": "PRODUCTION",
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "React",
+        "PostgreSQL",
+        "Kubernetes",
+        "Node.js",
+        "Docker"
+      ],
+      "capabilities": [
+        "Advanced Features",
+        "Professional Tools"
+      ],
+      "quantum_readiness": 95,
+      "integration_potential": 82,
+      "foundation_value": 0.07,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "locations": [
+        "from_d"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraLevy",
+      "location": "from_d",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\from D\\TerraLevy",
+      "size_bytes": 331763560,
+      "last_modified": "2025-10-21T22:28:33.120577",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "FastAPI",
+        "Flask"
+      ],
+      "capabilities": [
+        "Budget Management",
+        "Tax Calculation",
+        "Mill Rate"
+      ],
+      "quantum_readiness": 85,
+      "integration_potential": 81,
+      "foundation_value": 0.055,
+      "priority": "MEDIUM",
+      "is_integrated": true,
+      "locations": [
+        "from_d"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraMiner_PRODUCTION",
+      "location": "from_d",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\from D\\TerraMiner_PRODUCTION",
+      "size_bytes": 978377474,
+      "last_modified": "2025-10-21T13:07:21.292761",
+      "type": "PRODUCTION",
+      "technologies": [
+        "Python",
+        "Flask"
+      ],
+      "capabilities": [
+        "Advanced Features",
+        "Professional Tools"
+      ],
+      "quantum_readiness": 70,
+      "integration_potential": 66,
+      "foundation_value": 0.042,
+      "priority": "LOW",
+      "is_integrated": false,
+      "locations": [
+        "from_d"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "backend",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\backend",
+      "size_bytes": 9354,
+      "last_modified": "2025-09-13T16:24:05.300781",
+      "type": "ACTIVE",
+      "technologies": [
+        "Python",
+        "Docker"
+      ],
+      "capabilities": [],
+      "quantum_readiness": 73,
+      "integration_potential": 64,
+      "foundation_value": 0.023,
+      "priority": "LOW",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "BCBSCostapp",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\bcbscostapp",
+      "size_bytes": 2964734394,
+      "last_modified": "2025-09-15T00:41:47.698762",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "Vite",
+        "React",
+        "PostgreSQL",
+        "Node.js",
+        "Drizzle"
+      ],
+      "capabilities": [],
+      "quantum_readiness": 95,
+      "integration_potential": 76,
+      "foundation_value": 0.036,
+      "priority": "LOW",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "BCBSGISPRO",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\bcbsgispro",
+      "size_bytes": 391791301,
+      "last_modified": "2025-09-15T00:41:47.698762",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "Vite",
+        "React",
+        "PostgreSQL",
+        "Node.js",
+        "Drizzle"
+      ],
+      "capabilities": [
+        "Spatial Analysis",
+        "Mapping",
+        "Advanced Features",
+        "Professional Tools",
+        "Parcel Management"
+      ],
+      "quantum_readiness": 95,
+      "integration_potential": 91,
+      "foundation_value": 0.086,
+      "priority": "HIGH",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "BCBSLEVY",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\bcbslevy",
+      "size_bytes": 93856760,
+      "last_modified": "2025-09-13T08:36:44.679066",
+      "type": "ACTIVE",
+      "technologies": [
+        "Python",
+        "Flask",
+        "PostgreSQL",
+        "FastAPI"
+      ],
+      "capabilities": [
+        "Budget Management",
+        "Tax Calculation",
+        "Mill Rate"
+      ],
+      "quantum_readiness": 75,
+      "integration_potential": 77,
+      "foundation_value": 0.046,
+      "priority": "LOW",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "BCBSWEBHUB",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\bcbswebhub",
+      "size_bytes": 15311412,
+      "last_modified": "2025-09-13T18:50:54.261577",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "Vite",
+        "React",
+        "Node.js",
+        "Drizzle"
+      ],
+      "capabilities": [
+        "Data Hub",
+        "Web Portal",
+        "Citizen Services"
+      ],
+      "quantum_readiness": 90,
+      "integration_potential": 81,
+      "foundation_value": 0.058,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "bsbcmaster",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\bsbcmaster",
+      "size_bytes": 124539728,
+      "last_modified": "2025-09-13T08:38:47.656403",
+      "type": "ACTIVE",
+      "technologies": [
+        "Python",
+        "Flask",
+        "PostgreSQL",
+        "FastAPI"
+      ],
+      "capabilities": [],
+      "quantum_readiness": 75,
+      "integration_potential": 68,
+      "foundation_value": 0.026,
+      "priority": "LOW",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "bsincomevaluation",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\bsincomevaluation",
+      "size_bytes": 221021060,
+      "last_modified": "2025-09-15T00:41:47.698762",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "Vite",
+        "React",
+        "PostgreSQL",
+        "Node.js",
+        "Drizzle"
+      ],
+      "capabilities": [
+        "Cap Rate Analysis",
+        "NOI Calculation",
+        "DCF Modeling"
+      ],
+      "quantum_readiness": 95,
+      "integration_potential": 85,
+      "foundation_value": 0.065,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "citizen-portal",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\citizen-portal",
+      "size_bytes": 0,
+      "last_modified": "unknown",
+      "type": "ACTIVE",
+      "technologies": [],
+      "capabilities": [
+        "Citizen Portal",
+        "Public Access",
+        "Self-Service"
+      ],
+      "quantum_readiness": 70,
+      "integration_potential": 69,
+      "foundation_value": 0.039,
+      "priority": "LOW",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "core-gateway",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\core-gateway",
+      "size_bytes": 200363631,
+      "last_modified": "2025-09-15T00:41:46.409497",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "React",
+        "Docker",
+        "Node.js"
+      ],
+      "capabilities": [
+        "Service Routing",
+        "Load Balancing",
+        "API Gateway"
+      ],
+      "quantum_readiness": 88,
+      "integration_potential": 81,
+      "foundation_value": 0.057,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "crop-health-service",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\crop-health-service",
+      "size_bytes": 35168371,
+      "last_modified": "2025-09-15T00:41:47.469461",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "React",
+        "Node.js"
+      ],
+      "capabilities": [
+        "Agriculture",
+        "Crop Analysis",
+        "Yield Prediction"
+      ],
+      "quantum_readiness": 85,
+      "integration_potential": 77,
+      "foundation_value": 0.052,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "crop-identifier-service",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\crop-identifier-service",
+      "size_bytes": 35160339,
+      "last_modified": "2025-09-15T00:41:47.469461",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "React",
+        "Node.js"
+      ],
+      "capabilities": [
+        "Agriculture",
+        "Crop Analysis",
+        "Yield Prediction"
+      ],
+      "quantum_readiness": 85,
+      "integration_potential": 77,
+      "foundation_value": 0.052,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "gis-service",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\gis-service",
+      "size_bytes": 17524,
+      "last_modified": "2025-09-13T08:38:53.906101",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript"
+      ],
+      "capabilities": [
+        "Parcel Management",
+        "Mapping",
+        "Spatial Analysis"
+      ],
+      "quantum_readiness": 80,
+      "integration_potential": 73,
+      "foundation_value": 0.047,
+      "priority": "LOW",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "marketplace-ui",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\marketplace-ui",
+      "size_bytes": 0,
+      "last_modified": "unknown",
+      "type": "ACTIVE",
+      "technologies": [],
+      "capabilities": [
+        "Plugin Discovery",
+        "Service Marketplace"
+      ],
+      "quantum_readiness": 70,
+      "integration_potential": 66,
+      "foundation_value": 0.032,
+      "priority": "LOW",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "mcpservers",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\mcpservers",
+      "size_bytes": 68987376,
+      "last_modified": "2025-09-15T00:40:52.118931",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "React",
+        "Node.js"
+      ],
+      "capabilities": [
+        "AI Integration",
+        "Model Context Protocol"
+      ],
+      "quantum_readiness": 85,
+      "integration_potential": 74,
+      "foundation_value": 0.044,
+      "priority": "LOW",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "storybook",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\storybook",
+      "size_bytes": 29672,
+      "last_modified": "2025-09-13T08:38:54.238763",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript"
+      ],
+      "capabilities": [],
+      "quantum_readiness": 80,
+      "integration_potential": 64,
+      "foundation_value": 0.026,
+      "priority": "LOW",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraAgent",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\terraagent",
+      "size_bytes": 1676120,
+      "last_modified": "2025-09-13T15:53:41.195079",
+      "type": "ACTIVE",
+      "technologies": [
+        "Python",
+        "Flask",
+        "Docker",
+        "FastAPI"
+      ],
+      "capabilities": [
+        "Autonomous Operations",
+        "AI Agents"
+      ],
+      "quantum_readiness": 73,
+      "integration_potential": 74,
+      "foundation_value": 0.038,
+      "priority": "LOW",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraF",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\terraf",
+      "size_bytes": 127245768,
+      "last_modified": "2025-09-13T08:39:16.065472",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "Flask",
+        "PostgreSQL"
+      ],
+      "capabilities": [],
+      "quantum_readiness": 85,
+      "integration_potential": 68,
+      "foundation_value": 0.029,
+      "priority": "LOW",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraField-mobile",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\terrafield-mobile",
+      "size_bytes": 1074387313,
+      "last_modified": "2025-09-15T00:41:46.409497",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "React",
+        "Node.js"
+      ],
+      "capabilities": [
+        "Offline Sync",
+        "Field Operations",
+        "Mobile"
+      ],
+      "quantum_readiness": 85,
+      "integration_potential": 77,
+      "foundation_value": 0.052,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFlow",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\terraflow",
+      "size_bytes": 130228844,
+      "last_modified": "2025-09-13T17:20:44.777031",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "PostgreSQL",
+        "FastAPI",
+        "Flask",
+        "Docker"
+      ],
+      "capabilities": [
+        "Process Automation",
+        "Workflow Engine",
+        "State Management"
+      ],
+      "quantum_readiness": 88,
+      "integration_potential": 85,
+      "foundation_value": 0.06,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusion-automation-pack",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\terrafusion-automation-pack",
+      "size_bytes": 6453,
+      "last_modified": "2025-09-14T22:22:41.008491",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript"
+      ],
+      "capabilities": [],
+      "quantum_readiness": 80,
+      "integration_potential": 64,
+      "foundation_value": 0.026,
+      "priority": "LOW",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusion-pack-bundle",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\terrafusion-pack-bundle",
+      "size_bytes": 3931,
+      "last_modified": "2025-09-14T22:22:45.356695",
+      "type": "ACTIVE",
+      "technologies": [],
+      "capabilities": [],
+      "quantum_readiness": 70,
+      "integration_potential": 60,
+      "foundation_value": 0.021,
+      "priority": "LOW",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusion-pacs-migration-bundle-v1",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\terrafusion-pacs-migration-bundle-v1",
+      "size_bytes": 7122,
+      "last_modified": "2025-09-14T22:22:49.804657",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "PostgreSQL"
+      ],
+      "capabilities": [],
+      "quantum_readiness": 85,
+      "integration_potential": 68,
+      "foundation_value": 0.029,
+      "priority": "LOW",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionAssistant",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\terrafusionassistant",
+      "size_bytes": 349485629,
+      "last_modified": "2025-09-13T09:13:38.228153",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "PostgreSQL"
+      ],
+      "capabilities": [
+        "AI Assistant",
+        "Natural Language",
+        "Task Automation"
+      ],
+      "quantum_readiness": 85,
+      "integration_potential": 77,
+      "foundation_value": 0.052,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionBuild",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\terrafusionbuild",
+      "size_bytes": 5992257479,
+      "last_modified": "2025-10-21T11:57:44.349658",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "PostgreSQL"
+      ],
+      "capabilities": [
+        "CI/CD",
+        "Build Automation",
+        "Deployment"
+      ],
+      "quantum_readiness": 85,
+      "integration_potential": 77,
+      "foundation_value": 0.052,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionGis",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\terrafusiongis",
+      "size_bytes": 809185934,
+      "last_modified": "2025-09-13T09:21:33.474760",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "PostgreSQL"
+      ],
+      "capabilities": [
+        "Parcel Management",
+        "Mapping",
+        "Spatial Analysis"
+      ],
+      "quantum_readiness": 85,
+      "integration_potential": 77,
+      "foundation_value": 0.052,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono",
+        "d_drive"
+      ],
+      "location_count": 2
+    },
+    {
+      "name": "TerraFusionIncome",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\terrafusionincome",
+      "size_bytes": 242987271,
+      "last_modified": "2025-09-15T00:41:47.698762",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "Vite",
+        "React",
+        "PostgreSQL",
+        "Flask",
+        "Node.js",
+        "Drizzle"
+      ],
+      "capabilities": [
+        "Cap Rate Analysis",
+        "NOI Calculation",
+        "DCF Modeling"
+      ],
+      "quantum_readiness": 95,
+      "integration_potential": 85,
+      "foundation_value": 0.065,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionMonitoring",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\terrafusionmonitoring",
+      "size_bytes": 27202,
+      "last_modified": "2025-09-01T12:39:38.368602",
+      "type": "ACTIVE",
+      "technologies": [
+        "Python"
+      ],
+      "capabilities": [
+        "Alerting",
+        "System Monitoring",
+        "Health Checks"
+      ],
+      "quantum_readiness": 70,
+      "integration_potential": 69,
+      "foundation_value": 0.039,
+      "priority": "LOW",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionPro",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\terrafusionpro",
+      "size_bytes": 295386978,
+      "last_modified": "2025-09-15T00:41:47.698762",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "Vite",
+        "React",
+        "PostgreSQL",
+        "Node.js",
+        "Docker",
+        "Drizzle"
+      ],
+      "capabilities": [
+        "Advanced Features",
+        "Professional Tools"
+      ],
+      "quantum_readiness": 98,
+      "integration_potential": 86,
+      "foundation_value": 0.059,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionSync",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\terrafusionsync",
+      "size_bytes": 2093983,
+      "last_modified": "2025-09-13T08:39:49.321051",
+      "type": "ACTIVE",
+      "technologies": [
+        "Python",
+        "FastAPI"
+      ],
+      "capabilities": [
+        "ETL",
+        "Data Synchronization",
+        "Integration"
+      ],
+      "quantum_readiness": 70,
+      "integration_potential": 73,
+      "foundation_value": 0.041,
+      "priority": "LOW",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono",
+        "terrafusion_mono"
+      ],
+      "location_count": 2
+    },
+    {
+      "name": "TerraFusion_automation_pack",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\terrafusion_automation_pack",
+      "size_bytes": 6453,
+      "last_modified": "2025-04-30T10:39:20",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript"
+      ],
+      "capabilities": [],
+      "quantum_readiness": 80,
+      "integration_potential": 64,
+      "foundation_value": 0.026,
+      "priority": "LOW",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraLegislativepulsepub",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\terralegislativepulsepub",
+      "size_bytes": 52901770,
+      "last_modified": "2025-09-13T08:40:11.605901",
+      "type": "ACTIVE",
+      "technologies": [
+        "Python",
+        "Flask",
+        "FastAPI"
+      ],
+      "capabilities": [
+        "Spatial Analysis",
+        "Mapping",
+        "Policy Management",
+        "Parcel Management",
+        "Legislative Tracking"
+      ],
+      "quantum_readiness": 70,
+      "integration_potential": 79,
+      "foundation_value": 0.055,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraMiner",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\apps\\terraminer",
+      "size_bytes": 8330215,
+      "last_modified": "2025-09-13T08:40:15.191033",
+      "type": "ACTIVE",
+      "technologies": [
+        "Python",
+        "Flask",
+        "FastAPI"
+      ],
+      "capabilities": [],
+      "quantum_readiness": 70,
+      "integration_potential": 64,
+      "foundation_value": 0.022,
+      "priority": "LOW",
+      "is_integrated": false,
+      "monorepo_location": "apps",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionPackage_crdt",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\packages\\crdt",
+      "size_bytes": 25565538,
+      "last_modified": "2025-09-15T00:41:46.409497",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "React",
+        "Node.js"
+      ],
+      "capabilities": [],
+      "quantum_readiness": 85,
+      "integration_potential": 68,
+      "foundation_value": 0.029,
+      "priority": "LOW",
+      "is_integrated": false,
+      "monorepo_location": "packages",
+      "is_shared_package": true,
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionPackage_crop-health",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\packages\\crop-health",
+      "size_bytes": 94976348,
+      "last_modified": "2025-09-15T00:41:47.469461",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "React",
+        "Node.js"
+      ],
+      "capabilities": [
+        "Agriculture",
+        "Crop Analysis",
+        "Yield Prediction"
+      ],
+      "quantum_readiness": 85,
+      "integration_potential": 77,
+      "foundation_value": 0.052,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "monorepo_location": "packages",
+      "is_shared_package": true,
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionPackage_hotswap",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\packages\\hotswap",
+      "size_bytes": 52205,
+      "last_modified": "2025-09-16T17:57:10.478219",
+      "type": "ACTIVE",
+      "technologies": [
+        "React",
+        "Node.js"
+      ],
+      "capabilities": [],
+      "quantum_readiness": 75,
+      "integration_potential": 64,
+      "foundation_value": 0.024,
+      "priority": "LOW",
+      "is_integrated": false,
+      "monorepo_location": "packages",
+      "is_shared_package": true,
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionPackage_mcp",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\packages\\mcp",
+      "size_bytes": 90681121,
+      "last_modified": "2025-09-15T00:41:46.409497",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "React",
+        "Node.js"
+      ],
+      "capabilities": [
+        "AI Integration",
+        "Model Context Protocol"
+      ],
+      "quantum_readiness": 85,
+      "integration_potential": 74,
+      "foundation_value": 0.044,
+      "priority": "LOW",
+      "is_integrated": false,
+      "monorepo_location": "packages",
+      "is_shared_package": true,
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionPackage_schema",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\packages\\schema",
+      "size_bytes": 62401934,
+      "last_modified": "2025-09-15T00:40:52.405601",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "React",
+        "Node.js"
+      ],
+      "capabilities": [],
+      "quantum_readiness": 85,
+      "integration_potential": 68,
+      "foundation_value": 0.029,
+      "priority": "LOW",
+      "is_integrated": false,
+      "monorepo_location": "packages",
+      "is_shared_package": true,
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionPackage_testing",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\packages\\testing",
+      "size_bytes": 0,
+      "last_modified": "unknown",
+      "type": "ACTIVE",
+      "technologies": [],
+      "capabilities": [],
+      "quantum_readiness": 70,
+      "integration_potential": 60,
+      "foundation_value": 0.021,
+      "priority": "LOW",
+      "is_integrated": false,
+      "monorepo_location": "packages",
+      "is_shared_package": true,
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionPackage_theme",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\packages\\theme",
+      "size_bytes": 7080,
+      "last_modified": "2025-09-13T08:40:20.939026",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript"
+      ],
+      "capabilities": [],
+      "quantum_readiness": 80,
+      "integration_potential": 64,
+      "foundation_value": 0.026,
+      "priority": "LOW",
+      "is_integrated": false,
+      "monorepo_location": "packages",
+      "is_shared_package": true,
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionPackage_tools",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\packages\\tools",
+      "size_bytes": 49787,
+      "last_modified": "2025-09-13T08:40:21.384594",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript"
+      ],
+      "capabilities": [],
+      "quantum_readiness": 80,
+      "integration_potential": 64,
+      "foundation_value": 0.026,
+      "priority": "LOW",
+      "is_integrated": false,
+      "monorepo_location": "packages",
+      "is_shared_package": true,
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionPackage_ui",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\packages\\ui",
+      "size_bytes": 5164197,
+      "last_modified": "2025-09-15T00:41:47.490162",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "React",
+        "Node.js"
+      ],
+      "capabilities": [],
+      "quantum_readiness": 85,
+      "integration_potential": 68,
+      "foundation_value": 0.029,
+      "priority": "LOW",
+      "is_integrated": false,
+      "monorepo_location": "packages",
+      "is_shared_package": true,
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "BSIncomeValuation",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\BSIncomeValuation_PRODUCTION",
+      "size_bytes": 12569895,
+      "last_modified": "2025-10-21T12:45:19.530951",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "Vite",
+        "React",
+        "Flask",
+        "Node.js",
+        "Drizzle"
+      ],
+      "capabilities": [
+        "Cap Rate Analysis",
+        "NOI Calculation",
+        "DCF Modeling"
+      ],
+      "quantum_readiness": 90,
+      "integration_potential": 81,
+      "foundation_value": 0.058,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "monorepo_location": "root",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraLegislativepulse",
+      "location": "terrafusion_mono",
+      "path": "c:\\Users\\bsval\\OneDrive\\Desktop\\TerraFusionMono\\TerraFusionMono\\TerraLegislativePulse",
+      "size_bytes": 106769329,
+      "last_modified": "2025-10-21T12:35:48.477716",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "Flask",
+        "FastAPI"
+      ],
+      "capabilities": [
+        "Spatial Analysis",
+        "Mapping",
+        "Policy Management",
+        "Parcel Management",
+        "Legislative Tracking"
+      ],
+      "quantum_readiness": 80,
+      "integration_potential": 83,
+      "foundation_value": 0.066,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "monorepo_location": "root",
+      "locations": [
+        "terrafusion_mono"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "01-terra-agent",
+      "location": "d_drive",
+      "path": "d:\\\\TerraFusion_Tauri_Master_Workspace\\apps\\01-terra-agent",
+      "size_bytes": 11558799,
+      "last_modified": "2025-08-06T10:49:44",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "Vite",
+        "React",
+        "Tauri",
+        "Node.js"
+      ],
+      "capabilities": [
+        "Autonomous Operations",
+        "AI Agents"
+      ],
+      "quantum_readiness": 90,
+      "integration_potential": 78,
+      "foundation_value": 0.049,
+      "priority": "LOW",
+      "is_integrated": false,
+      "locations": [
+        "d_drive"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "02-terra-flow",
+      "location": "d_drive",
+      "path": "d:\\\\TerraFusion_Tauri_Master_Workspace\\apps\\02-terra-flow",
+      "size_bytes": 531437,
+      "last_modified": "2025-08-06T10:49:54",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "Vite",
+        "React",
+        "Tauri",
+        "Node.js"
+      ],
+      "capabilities": [
+        "Process Automation",
+        "Workflow Engine",
+        "State Management"
+      ],
+      "quantum_readiness": 90,
+      "integration_potential": 81,
+      "foundation_value": 0.058,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "locations": [
+        "d_drive"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "04-terra-levy",
+      "location": "d_drive",
+      "path": "d:\\\\TerraFusion_Tauri_Master_Workspace\\apps\\04-terra-levy",
+      "size_bytes": 7900732,
+      "last_modified": "2025-08-06T10:46:46",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "React",
+        "Vite",
+        "Node.js"
+      ],
+      "capabilities": [
+        "Budget Management",
+        "Tax Calculation",
+        "Mill Rate"
+      ],
+      "quantum_readiness": 90,
+      "integration_potential": 81,
+      "foundation_value": 0.058,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "locations": [
+        "d_drive"
+      ],
+      "location_count": 1
+    },
+    {
+      "name": "TerraFusionBuild_actual",
+      "location": "d_drive",
+      "path": "d:\\\\TerraFusion Nexus\\TERRAFUSION_ECOSYSTEM_COMPLETE\\TerraFusionBuild_ACTUAL",
+      "size_bytes": 839511445,
+      "last_modified": "2025-08-10T09:37:56",
+      "type": "ACTIVE",
+      "technologies": [
+        "TypeScript",
+        "Python",
+        "React",
+        "PostgreSQL",
+        "Node.js",
+        "Next.js",
+        "Docker",
+        "Drizzle"
+      ],
+      "capabilities": [
+        "CI/CD",
+        "Build Automation",
+        "Deployment"
+      ],
+      "quantum_readiness": 93,
+      "integration_potential": 85,
+      "foundation_value": 0.063,
+      "priority": "MEDIUM",
+      "is_integrated": false,
+      "locations": [
+        "d_drive"
+      ],
+      "location_count": 1
+    }
+  ]
+}

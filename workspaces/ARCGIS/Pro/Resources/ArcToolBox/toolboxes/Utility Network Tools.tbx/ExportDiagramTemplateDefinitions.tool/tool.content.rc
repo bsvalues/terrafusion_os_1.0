@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Export diagram template definitions to a file",
+        "in_utility_network.title": "Input Network",
+        "out_ndbd_file.title": "Output Rule and Layout Definitions File",
+        "out_ndld_file.title": "Output Diagram Layer Definition File",
+        "out_template_name.title": "Output Diagram Template",
+        "out_utility_network.title": "Output Network",
+        "template_name.title": "Input Diagram Template",
+        "title": "Export Diagram Template Definitions"
+    }
+}

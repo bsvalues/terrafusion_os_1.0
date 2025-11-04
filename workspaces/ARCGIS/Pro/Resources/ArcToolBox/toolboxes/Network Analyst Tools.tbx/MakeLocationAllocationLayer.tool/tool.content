@@ -1,0 +1,300 @@
+{
+    "type": "FunctionTool",
+    "guid": "{4e6cdbc4-9713-4b6b-961e-fa9e5516820e}",
+    "displayname": "$rc:title",
+    "helpcontent": "13010012",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "params": {
+        "in_network_dataset": {
+            "displayname": "$rc:in_network_dataset.title",
+            "datatype": {
+                "type": "GPNetworkDatasetLayer"
+            },
+            "description": "$rc:in_network_dataset.descr"
+        },
+        "out_network_analysis_layer": {
+            "displayname": "$rc:out_network_analysis_layer.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:out_network_analysis_layer.descr"
+        },
+        "impedance_attribute": {
+            "displayname": "$rc:impedance_attribute.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:impedance_attribute.descr"
+        },
+        "loc_alloc_from_to": {
+            "type": "optional",
+            "displayname": "$rc:loc_alloc_from_to.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DEMAND_TO_FACILITY",
+                        "code": "$rc:loc_alloc_from_to.domain.DEMAND_TO_FACILITY"
+                    },
+                    {
+                        "value": "FACILITY_TO_DEMAND",
+                        "code": "$rc:loc_alloc_from_to.domain.FACILITY_TO_DEMAND"
+                    }
+                ]
+            },
+            "value": "FACILITY_TO_DEMAND",
+            "description": "$rc:loc_alloc_from_to.descr"
+        },
+        "loc_alloc_problem_type": {
+            "type": "optional",
+            "displayname": "$rc:loc_alloc_problem_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MINIMIZE_IMPEDANCE",
+                        "code": "$rc:loc_alloc_problem_type.domain.MINIMIZE_IMPEDANCE"
+                    },
+                    {
+                        "value": "MAXIMIZE_COVERAGE",
+                        "code": "$rc:loc_alloc_problem_type.domain.MAXIMIZE_COVERAGE"
+                    },
+                    {
+                        "value": "MAXIMIZE_CAPACITATED_COVERAGE",
+                        "code": "$rc:loc_alloc_problem_type.domain.MAXIMIZE_CAPACITATED_COVERAGE"
+                    },
+                    {
+                        "value": "MINIMIZE_FACILITIES",
+                        "code": "$rc:loc_alloc_problem_type.domain.MINIMIZE_FACILITIES"
+                    },
+                    {
+                        "value": "MAXIMIZE_ATTENDANCE",
+                        "code": "$rc:loc_alloc_problem_type.domain.MAXIMIZE_ATTENDANCE"
+                    },
+                    {
+                        "value": "MAXIMIZE_MARKET_SHARE",
+                        "code": "$rc:loc_alloc_problem_type.domain.MAXIMIZE_MARKET_SHARE"
+                    },
+                    {
+                        "value": "TARGET_MARKET_SHARE",
+                        "code": "$rc:loc_alloc_problem_type.domain.TARGET_MARKET_SHARE"
+                    }
+                ]
+            },
+            "value": "MINIMIZE_IMPEDANCE",
+            "description": "$rc:loc_alloc_problem_type.descr"
+        },
+        "number_facilities_to_find": {
+            "type": "optional",
+            "displayname": "$rc:number_facilities_to_find.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "1",
+            "description": "$rc:number_facilities_to_find.descr"
+        },
+        "impedance_cutoff": {
+            "type": "optional",
+            "displayname": "$rc:impedance_cutoff.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:impedance_cutoff.descr"
+        },
+        "impedance_transformation": {
+            "type": "optional",
+            "displayname": "$rc:impedance_transformation.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "LINEAR",
+                        "code": "$rc:impedance_transformation.domain.LINEAR"
+                    },
+                    {
+                        "value": "POWER",
+                        "code": "$rc:impedance_transformation.domain.POWER"
+                    },
+                    {
+                        "value": "EXPONENTIAL",
+                        "code": "$rc:impedance_transformation.domain.EXPONENTIAL"
+                    }
+                ]
+            },
+            "value": "LINEAR",
+            "description": "$rc:impedance_transformation.descr"
+        },
+        "impedance_parameter": {
+            "type": "optional",
+            "displayname": "$rc:impedance_parameter.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "1",
+            "description": "$rc:impedance_parameter.descr"
+        },
+        "target_market_share": {
+            "type": "optional",
+            "displayname": "$rc:target_market_share.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "10",
+            "description": "$rc:target_market_share.descr"
+        },
+        "accumulate_attribute_name": {
+            "type": "optional",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:accumulate_attribute_name.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:accumulate_attribute_name.descr"
+        },
+        "UTurn_policy": {
+            "type": "optional",
+            "displayname": "$rc:uturn_policy.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ALLOW_UTURNS",
+                        "code": "$rc:uturn_policy.domain.ALLOW_UTURNS"
+                    },
+                    {
+                        "value": "NO_UTURNS",
+                        "code": "$rc:uturn_policy.domain.NO_UTURNS"
+                    },
+                    {
+                        "value": "ALLOW_DEAD_ENDS_ONLY",
+                        "code": "$rc:uturn_policy.domain.ALLOW_DEAD_ENDS_ONLY"
+                    },
+                    {
+                        "value": "ALLOW_DEAD_ENDS_AND_INTERSECTIONS_ONLY",
+                        "code": "$rc:uturn_policy.domain.ALLOW_DEAD_ENDS_AND_INTERSECTIONS_ONLY"
+                    }
+                ]
+            },
+            "value": "ALLOW_UTURNS",
+            "description": "$rc:uturn_policy.descr"
+        },
+        "restriction_attribute_name": {
+            "type": "optional",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:restriction_attribute_name.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:restriction_attribute_name.descr"
+        },
+        "hierarchy": {
+            "type": "optional",
+            "displayname": "$rc:hierarchy.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "USE_HIERARCHY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_HIERARCHY"
+                    }
+                ]
+            },
+            "description": "$rc:hierarchy.descr"
+        },
+        "output_path_shape": {
+            "type": "optional",
+            "displayname": "$rc:output_path_shape.title",
+            "category": "$rc:params.category4",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NO_LINES",
+                        "code": "$rc:output_path_shape.domain.NO_LINES"
+                    },
+                    {
+                        "value": "STRAIGHT_LINES",
+                        "code": "$rc:output_path_shape.domain.STRAIGHT_LINES"
+                    }
+                ]
+            },
+            "value": "STRAIGHT_LINES",
+            "description": "$rc:output_path_shape.descr"
+        },
+        "default_capacity": {
+            "type": "optional",
+            "displayname": "$rc:default_capacity.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "1",
+            "description": "$rc:default_capacity.descr"
+        },
+        "time_of_day": {
+            "type": "optional",
+            "displayname": "$rc:time_of_day.title",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:time_of_day.descr"
+        },
+        "output_layer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_layer.title",
+            "datatype": {
+                "type": "GPNALayer"
+            }
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

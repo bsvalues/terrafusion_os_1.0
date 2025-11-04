@@ -1,0 +1,13 @@
+{
+    "set": [
+        "bayesian",
+        "classification",
+        "classify",
+        "cluster",
+        "ebk",
+        "empirical",
+        "kriging",
+        "partition",
+        "split"
+    ]
+}

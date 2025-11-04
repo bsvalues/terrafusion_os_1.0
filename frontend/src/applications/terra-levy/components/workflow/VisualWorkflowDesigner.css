@@ -1,0 +1,534 @@
+/* Visual Workflow Designer Styles */
+.visual-workflow-designer {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+  color: #ffffff;
+  font-family: 'Quantum UI', 'Segoe UI', sans-serif;
+  overflow: hidden;
+}
+
+/* Control Panel */
+.workflow-controls {
+  width: 320px;
+  background: rgba(26, 26, 58, 0.95);
+  border-right: 2px solid #00ff88;
+  padding: 20px;
+  overflow-y: auto;
+  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
+  box-shadow: 2px 0 20px rgba(0, 255, 136, 0.1);
+}
+
+.control-section {
+  margin-bottom: 30px;
+  border-bottom: 1px solid #333366;
+  padding-bottom: 20px;
+}
+
+.control-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.control-section h3 {
+  color: #00ff88;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0 0 15px 0;
+  border-bottom: 1px solid #00ff88;
+  padding-bottom: 8px;
+}
+
+/* Template List */
+.template-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.template-item {
+  background: rgba(16, 21, 62, 0.8);
+  border: 1px solid #333366;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.template-item:hover {
+  border-color: #00aaff;
+  background: rgba(0, 170, 255, 0.1);
+  transform: translateX(5px);
+}
+
+.template-item.active {
+  border-color: #00ff88;
+  background: rgba(0, 255, 136, 0.15);
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+}
+
+.template-name {
+  font-weight: bold;
+  color: #ffffff;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.template-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.category {
+  background: rgba(0, 136, 255, 0.2);
+  color: #00aaff;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.time {
+  color: #ffaa00;
+  font-size: 11px;
+}
+
+.compliance {
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 9px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.compliance.fisma-high {
+  background: rgba(255, 68, 68, 0.2);
+  color: #ff4444;
+}
+
+.compliance.fisma-moderate {
+  background: rgba(255, 170, 0, 0.2);
+  color: #ffaa00;
+}
+
+.compliance.fisma-low {
+  background: rgba(0, 255, 136, 0.2);
+  color: #00ff88;
+}
+
+/* View Controls */
+.view-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.view-controls button {
+  background: rgba(16, 21, 62, 0.8);
+  border: 1px solid #333366;
+  border-radius: 6px;
+  color: #ffffff;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 12px;
+  text-align: left;
+}
+
+.view-controls button:hover {
+  border-color: #00aaff;
+  background: rgba(0, 170, 255, 0.1);
+}
+
+.view-controls button.active {
+  border-color: #00ff88;
+  background: rgba(0, 255, 136, 0.15);
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+}
+
+/* Component Palette */
+.component-palette {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.component-palette button {
+  background: rgba(16, 21, 62, 0.8);
+  border: 1px solid #333366;
+  border-radius: 6px;
+  color: #ffffff;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 11px;
+  text-align: center;
+}
+
+.component-palette button:hover {
+  border-color: #00aaff;
+  background: rgba(0, 170, 255, 0.1);
+  transform: scale(1.05);
+}
+
+/* Simulation Controls */
+.simulation-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.simulation-controls button {
+  background: linear-gradient(45deg, #ff6600, #ffaa00);
+  border: none;
+  border-radius: 25px;
+  color: #000000;
+  font-weight: bold;
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 12px;
+}
+
+.simulation-controls button:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 5px 20px rgba(255, 102, 0, 0.4);
+}
+
+.simulation-controls button:disabled {
+  background: rgba(68, 68, 68, 0.8);
+  color: #999999;
+  cursor: not-allowed;
+}
+
+.simulation-progress {
+  background: rgba(16, 21, 62, 0.8);
+  border: 1px solid #333366;
+  border-radius: 6px;
+  padding: 8px 12px;
+  text-align: center;
+  color: #00ff88;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Workflow Canvas */
+.workflow-canvas {
+  flex: 1;
+  position: relative;
+  background: radial-gradient(circle at center, rgba(0, 136, 255, 0.05) 0%, transparent 70%);
+}
+
+/* Properties Panel */
+.properties-panel {
+  width: 300px;
+  background: rgba(26, 26, 58, 0.95);
+  border-left: 2px solid #ffaa00;
+  padding: 20px;
+  overflow-y: auto;
+  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
+  box-shadow: -2px 0 20px rgba(255, 170, 0, 0.1);
+}
+
+.properties-panel h3 {
+  color: #ffaa00;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0 0 20px 0;
+  border-bottom: 1px solid #ffaa00;
+  padding-bottom: 8px;
+}
+
+.node-details {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.property-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.property-group label {
+  color: #cccccc;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: bold;
+}
+
+.node-type {
+  padding: 4px 10px;
+  border-radius: 15px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.node-type.start,
+.node-type.end {
+  background: rgba(0, 255, 136, 0.2);
+  color: #00ff88;
+}
+
+.node-type.process {
+  background: rgba(0, 136, 255, 0.2);
+  color: #0088ff;
+}
+
+.node-type.decision {
+  background: rgba(255, 170, 0, 0.2);
+  color: #ffaa00;
+}
+
+.node-type.approval {
+  background: rgba(255, 102, 0, 0.2);
+  color: #ff6600;
+}
+
+.node-type.notification {
+  background: rgba(170, 136, 255, 0.2);
+  color: #aa88ff;
+}
+
+.property-group input {
+  background: rgba(16, 21, 62, 0.9);
+  border: 1px solid #333366;
+  border-radius: 6px;
+  color: #ffffff;
+  padding: 8px 12px;
+  font-size: 12px;
+  transition: all 0.3s ease;
+}
+
+.property-group input:focus {
+  outline: none;
+  border-color: #00ff88;
+  box-shadow: 0 0 8px rgba(0, 255, 136, 0.3);
+}
+
+.ai-suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.suggestion {
+  background: rgba(0, 255, 136, 0.1);
+  border: 1px solid #00ff88;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 11px;
+  color: #00ff88;
+}
+
+.compliance-status {
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.compliance-status.valid {
+  background: rgba(0, 255, 136, 0.2);
+  color: #00ff88;
+}
+
+.compliance-status.warning {
+  background: rgba(255, 170, 0, 0.2);
+  color: #ffaa00;
+}
+
+.compliance-status.error {
+  background: rgba(255, 68, 68, 0.2);
+  color: #ff4444;
+}
+
+/* AI Suggestions Panel */
+.ai-suggestions-panel {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(26, 26, 58, 0.95);
+  border: 2px solid #00aaff;
+  border-radius: 15px;
+  padding: 20px;
+  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
+  max-width: 600px;
+  width: 90%;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.ai-suggestions-panel h3 {
+  color: #00aaff;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0 0 15px 0;
+  border-bottom: 1px solid #00aaff;
+  padding-bottom: 8px;
+}
+
+.suggestions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.suggestion-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(16, 21, 62, 0.8);
+  border: 1px solid #333366;
+  border-radius: 6px;
+  padding: 10px 12px;
+  transition: all 0.3s ease;
+}
+
+.suggestion-item:hover {
+  border-color: #00aaff;
+  background: rgba(0, 170, 255, 0.1);
+}
+
+.suggestion-text {
+  color: #ffffff;
+  font-size: 12px;
+  flex: 1;
+  margin-right: 10px;
+}
+
+.apply-suggestion {
+  background: linear-gradient(45deg, #00aaff, #0088ff);
+  border: none;
+  border-radius: 15px;
+  color: #ffffff;
+  font-weight: bold;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+
+.apply-suggestion:hover {
+  transform: scale(1.05);
+  box-shadow: 0 3px 15px rgba(0, 170, 255, 0.4);
+}
+
+/* Animations */
+@keyframes nodeHighlight {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+}
+
+@keyframes connectionFlow {
+  0% {
+    stroke-dashoffset: 20;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1400px) {
+  .workflow-controls {
+    width: 280px;
+  }
+
+  .properties-panel {
+    width: 260px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .visual-workflow-designer {
+    flex-direction: column;
+  }
+
+  .workflow-controls,
+  .properties-panel {
+    width: 100%;
+    height: 200px;
+    position: relative;
+  }
+
+  .workflow-canvas {
+    height: calc(100vh - 400px);
+  }
+
+  .ai-suggestions-panel {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    transform: none;
+    width: 100%;
+    max-width: 100%;
+    margin: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .template-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .component-palette {
+    grid-template-columns: 1fr;
+  }
+
+  .suggestion-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .apply-suggestion {
+    align-self: flex-end;
+  }
+}
+
+/* Performance optimizations */
+.visual-workflow-designer * {
+  will-change: transform, opacity;
+}
+
+.template-item,
+.view-controls button,
+.component-palette button {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}

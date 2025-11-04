@@ -1,0 +1,12 @@
+{
+    "set": [
+        "add",
+        "combine",
+        "feature",
+        "feature class",
+        "label",
+        "merge",
+        "new",
+        "text"
+    ]
+}

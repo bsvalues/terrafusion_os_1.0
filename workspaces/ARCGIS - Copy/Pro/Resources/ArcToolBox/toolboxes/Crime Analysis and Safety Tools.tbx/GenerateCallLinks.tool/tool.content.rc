@@ -1,0 +1,28 @@
+{
+    "map": {
+        "description": "Creates line features that represent the call links between phones, using cell site points or cell site antenna sectors, based on the start date and time of the call.",
+        "in_primary_features.descr": "The point feature class for the primary phone or sector derived from the Cell Phone Records To Feature Class tool.",
+        "in_primary_features.title": "Input Primary Phone Record Site Points or Sectors",
+        "in_secondary_features.descr": "The point feature class for the secondary phone or sector derived from the Cell Phone Records To Feature Class tool.",
+        "in_secondary_features.title": "Input Secondary Phone Record Site Points or Sectors",
+        "out_feature_class.descr": "The output line features representing the call links between two phones at various locations.",
+        "out_feature_class.title": "Output Call Link Lines",
+        "output_type.descr": "<xdoc><p>Specifies how the relationship of calls between two phones will be analyzed and symbolized.</p><ul><li><span title=\"SUMMARY\">Summary</span>—A summary record of the total number of calls between two phones at various locations will be created. This is the default.</li><li><span title=\"DETAIL\">Detail</span>—An individual record of each call between two phones at various locations will be created.</li></ul></xdoc>",
+        "output_type.domain.DETAIL": "Detail",
+        "output_type.domain.SUMMARY": "Summary",
+        "output_type.title": "Output Type",
+        "primary_destination_field.descr": "The field containing the phone number of the secondary phone.",
+        "primary_destination_field.title": "Primary Phone Call Destination Field",
+        "primary_start_time_field.descr": "The start date and time field of the primary phone records.",
+        "primary_start_time_field.title": "Primary Phone Call Start Date and Time Field",
+        "primary_subscriber_field.descr": "The unique ID field for the primary phone subscriber, usually a phone number.",
+        "primary_subscriber_field.title": "Primary Phone Subscriber ID Field",
+        "secondary_destination_field.descr": "The field containing the phone number of the primary phone.",
+        "secondary_destination_field.title": "Secondary Phone Destination Field",
+        "secondary_start_time_field.descr": "The start date and time field of the secondary phone records.",
+        "secondary_start_time_field.title": "Secondary Phone Call Start Date and Time Field",
+        "secondary_subscriber_field.descr": "The unique ID field for the secondary phone subscriber, usually a phone number.",
+        "secondary_subscriber_field.title": "Secondary Phone Subscriber ID Field",
+        "title": "Generate Call Links"
+    }
+}

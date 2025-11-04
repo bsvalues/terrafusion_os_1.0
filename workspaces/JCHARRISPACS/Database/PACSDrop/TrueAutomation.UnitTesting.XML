@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.UnitTesting</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.UnitTesting.NHibernate.LiveRepositoryTest">
+            <summary>
+            Implements a base class for repository nunit-based unit tests against
+            a live database that exists outside of the test environment. This
+            class wraps all its operations in a transaction that is rolled back
+            at the end of the test so that any changes made during the test are
+            not persisted permanently to the database.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.UnitTesting.NHibernate.LiveRepositoryTest.SetUp">
+            <summary>
+            An NUnit-based setup method for performing unit test setup.
+            This method initializes the gloabl NHibernate session manager
+            using the information in the app.config file and any accompanying
+            nhibernate.cfg.xml file to identify the settings for the
+            underlying database. It then starts a new transaction that
+            will span the lifetime of the test so that any changes can be
+            rolled back in the eventual teardown.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.UnitTesting.NHibernate.LiveRepositoryTest.TearDown">
+            <summary>
+            Implements a standard NUnit-style teardown method to shut down
+            the global NHibernate session manager when the unit test is
+            complete. This method rolls back the transaction used by this
+            test class so that any changes performed by the test will not
+            actually be written to the persistent data store.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.UnitTesting.NHibernate.MemoryRepositoryTestBase">
+            <summary>
+            Implements a base class for repository nunit-based unit tests using
+            a transient database created and populated dynamically at runtime.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.UnitTesting.NHibernate.MemoryRepositoryTestBase.SetUp">
+            <summary>
+            An NUnit-based setup method for performing unit test setup.
+            This method initializes the gloabl NHibernate session manager
+            using the information in the app.config file and any accompanying
+            nhibernate.cfg.xml file to identify the settings for the
+            underlying database. It then invokes the LoadData() method to
+            load any data required for the test.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.UnitTesting.NHibernate.MemoryRepositoryTestBase.TearDown">
+            <summary>
+            Implements a standard NUnit-style teardown method to shut down
+            the global NHibernate session manager when the unit test is
+            complete.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.UnitTesting.NHibernate.MemoryRepositoryTestBase.FlushSessionAndEvict(System.Object)">
+            <summary>
+            Flushes all data in the current session to the underlying
+            database and evicts the specified object instance from the
+            session so that it will be loaded fresh from the database
+            on the next reference.
+            </summary>
+            <param name="instance">The object to evict from the current
+            session.</param>
+        </member>
+        <member name="M:TrueAutomation.UnitTesting.NHibernate.MemoryRepositoryTestBase.PopulateDatabase">
+            <summary>
+            Loads any data required for the unit test. Must be implemented
+            by the derived unit test class.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.UnitTesting.NHibernate.RepositoryHelper">
+            <summary>
+            Implements a utility class with methods for simplifying
+            the implementation of repository-related test cases by
+            supplying commong functionality for NHibernate initialization
+            and termination.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.UnitTesting.NHibernate.RepositoryHelper.InitializeDatabase">
+            <summary>
+            Initializes the NHibernate database.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.UnitTesting.NHibernate.RepositoryHelper.InitializeNHibernateSession">
+            <summary>
+            Initializes the gloabl NHibernate session manager instance
+            on behalf of the application.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.UnitTesting.NHibernate.RepositoryHelper.Shutdown">
+            <summary>
+            Utility method for terminating all NHibernate sessions and
+            resetting the global NHibernate session manager to its
+            original default state.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.UnitTesting.NHibernate.RepositoryHelper.FlushSessionAndEvict(System.Object)">
+            <summary>
+            Flushes all data in the current session to the underlying
+            database and evicts the specified object instance from the
+            session so that it will be loaded fresh from the database
+            on the next reference.
+            </summary>
+            <param name="instance">The object to evict from the current
+            session.</param>
+        </member>
+        <member name="M:TrueAutomation.UnitTesting.NHibernate.RepositoryHelper.GetMappingAssemblies">
+            <summary>
+            Returns the list of mapping assemblies for which to initialize
+            the NHibernate session manager. The list is specified by the
+            "domain.mapping.assemblies" attribute in the application's
+            app.settings file.
+            </summary>
+            <returns>An array of mapping assembly names specified in the
+            application's app.config file.</returns>
+        </member>
+        <member name="M:TrueAutomation.UnitTesting.NHibernate.RepositoryHelper.GetAutoPersistenceModel(System.String[])">
+            <summary>
+            Uses reflection to locate the first
+            <see cref="T:TrueAutomation.Core.Persistence.NHibernate.IAutoPersistenceModelGenerator"/>
+            instance in the specified list of mapping assembly names.
+            </summary>
+            <param name="assemblies">An array containing the mapping assembly
+            names in which to look for a persistence model generator.</param>
+            <returns>The first auto-persistence model generator found in the
+            specified list of assembly names, or null if none was found.
+            </returns>
+        </member>
+    </members>
+</doc>

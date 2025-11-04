@@ -1,0 +1,437 @@
+{% extends 'mobile_layout.html' %}
+
+{% block title %}TerraFlow | Property Detail{% endblock %}
+
+{% block additionalcss %}
+<style>
+    .property-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #eee;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .property-image {
+        width: 100%;
+        height: 180px;
+        background-color: #e9ecef;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+    
+    .property-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .property-map {
+        width: 100%;
+        height: 180px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        overflow: hidden;
+    }
+    
+    .data-row {
+        display: flex;
+        margin-bottom: 8px;
+    }
+    
+    .data-label {
+        width: 120px;
+        font-weight: 600;
+        color: #666;
+    }
+    
+    .data-value {
+        flex: 1;
+    }
+    
+    .assessment-history {
+        height: 150px;
+        margin-top: 10px;
+        margin-bottom: 15px;
+    }
+    
+    .tab-container {
+        margin-bottom: 15px;
+    }
+    
+    .tab-content {
+        padding: 15px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mobile-container">
+    <!-- Property Header -->
+    <div class="property-header">
+        <h1 class="h4 mb-1">{{ property.address }}</h1>
+        <div class="text-muted">Property ID: {{ property.id }}</div>
+        <div class="mt-2">
+            <span class="badge bg-secondary">{{ property.type }}</span>
+            {% if property.status == 'normal' %}
+            <span class="badge bg-success">Normal</span>
+            {% else %}
+            <span class="badge bg-danger">Anomaly Detected</span>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Property Image -->
+    <div class="property-image">
+        <img src="https://maps.googleapis.com/maps/api/streetview?size=600x300&location={{ property.address | urlencode }}" alt="{{ property.address }}">
+    </div>
+    
+    <!-- Tab Navigation -->
+    <ul class="nav nav-tabs" id="propertyTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="details-tab" data-bs-toggle="tab" data-bs-target="#details-tab-pane" type="button" role="tab" aria-controls="details-tab-pane" aria-selected="true">Details</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="map-tab" data-bs-toggle="tab" data-bs-target="#map-tab-pane" type="button" role="tab" aria-controls="map-tab-pane" aria-selected="false">Map</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history-tab-pane" type="button" role="tab" aria-controls="history-tab-pane" aria-selected="false">History</button>
+        </li>
+    </ul>
+    
+    <!-- Tab Content -->
+    <div class="tab-content" id="propertyTabsContent">
+        <!-- Details Tab -->
+        <div class="tab-pane fade show active" id="details-tab-pane" role="tabpanel" aria-labelledby="details-tab" tabindex="0">
+            <div class="mobile-card p-3 mb-3">
+                <h5 class="mb-3">Property Information</h5>
+                
+                <div class="data-row">
+                    <div class="data-label">Type</div>
+                    <div class="data-value">{{ property.type }}</div>
+                </div>
+                
+                <div class="data-row">
+                    <div class="data-label">Value</div>
+                    <div class="data-value">{{ property.value }}</div>
+                </div>
+                
+                <div class="data-row">
+                    <div class="data-label">Features</div>
+                    <div class="data-value">{{ property.features }}</div>
+                </div>
+                
+                <div class="data-row">
+                    <div class="data-label">Last Assessed</div>
+                    <div class="data-value">{{ property.assessment_date }}</div>
+                </div>
+            </div>
+            
+            <div class="mobile-card p-3 mb-3">
+                <h5 class="mb-3">Additional Information</h5>
+                
+                <div class="data-row">
+                    <div class="data-label">Zone</div>
+                    <div class="data-value">R-2 Residential</div>
+                </div>
+                
+                <div class="data-row">
+                    <div class="data-label">Lot Size</div>
+                    <div class="data-value">0.25 acres</div>
+                </div>
+                
+                <div class="data-row">
+                    <div class="data-label">Year Built</div>
+                    <div class="data-value">2005</div>
+                </div>
+                
+                <div class="data-row">
+                    <div class="data-label">Tax District</div>
+                    <div class="data-value">Benton County</div>
+                </div>
+                
+                <div class="data-row">
+                    <div class="data-label">Parcel #</div>
+                    <div class="data-value">123456-7890</div>
+                </div>
+            </div>
+            
+            <div class="mobile-card p-3 mb-3">
+                <h5 class="mb-3">Structure Information</h5>
+                
+                <div class="data-row">
+                    <div class="data-label">Square Feet</div>
+                    <div class="data-value">1,800</div>
+                </div>
+                
+                <div class="data-row">
+                    <div class="data-label">Bedrooms</div>
+                    <div class="data-value">3</div>
+                </div>
+                
+                <div class="data-row">
+                    <div class="data-label">Bathrooms</div>
+                    <div class="data-value">2</div>
+                </div>
+                
+                <div class="data-row">
+                    <div class="data-label">Stories</div>
+                    <div class="data-value">2</div>
+                </div>
+                
+                <div class="data-row">
+                    <div class="data-label">Basement</div>
+                    <div class="data-value">Partial, 800 sqft</div>
+                </div>
+                
+                <div class="data-row">
+                    <div class="data-label">Garage</div>
+                    <div class="data-value">Attached, 2 car</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Map Tab -->
+        <div class="tab-pane fade" id="map-tab-pane" role="tabpanel" aria-labelledby="map-tab" tabindex="0">
+            <div class="property-map" id="propertyMap"></div>
+            
+            <div class="mobile-card p-3 mb-3">
+                <h5 class="mb-3">Location Details</h5>
+                
+                <div class="data-row">
+                    <div class="data-label">Coordinates</div>
+                    <div class="data-value" id="coordinates">Loading...</div>
+                </div>
+                
+                <div class="data-row">
+                    <div class="data-label">Neighborhood</div>
+                    <div class="data-value">Downtown Residential</div>
+                </div>
+                
+                <div class="data-row">
+                    <div class="data-label">School District</div>
+                    <div class="data-value">Benton County School District</div>
+                </div>
+                
+                <div class="data-row">
+                    <div class="data-label">Flood Zone</div>
+                    <div class="data-value">Zone X (Minimal Risk)</div>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <button class="btn btn-outline-primary w-100" id="showBoundariesBtn">
+                    <i class="fas fa-border-style me-2"></i> Show Property Boundaries
+                </button>
+            </div>
+        </div>
+        
+        <!-- History Tab -->
+        <div class="tab-pane fade" id="history-tab-pane" role="tabpanel" aria-labelledby="history-tab" tabindex="0">
+            <div class="mobile-card p-3 mb-3">
+                <h5 class="mb-3">Assessment History</h5>
+                <div class="assessment-history">
+                    <canvas id="assessmentHistoryChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="mobile-card p-3 mb-3">
+                <h5 class="mb-3">Transaction History</h5>
+                
+                <div class="mobile-list">
+                    <div class="mobile-list-item">
+                        <div class="mobile-list-content">
+                            <div class="mobile-list-title">Sale</div>
+                            <div class="mobile-list-subtitle">
+                                $325,000 on October 15, 2020
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mobile-list-item">
+                        <div class="mobile-list-content">
+                            <div class="mobile-list-title">Sale</div>
+                            <div class="mobile-list-subtitle">
+                                $275,000 on March 8, 2015
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mobile-list-item">
+                        <div class="mobile-list-content">
+                            <div class="mobile-list-title">Sale</div>
+                            <div class="mobile-list-subtitle">
+                                $235,000 on June 22, 2010
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mobile-card p-3 mb-3">
+                <h5 class="mb-3">Assessment Log</h5>
+                
+                <div class="mobile-list">
+                    <div class="mobile-list-item">
+                        <div class="mobile-list-content">
+                            <div class="mobile-list-title">Annual Assessment</div>
+                            <div class="mobile-list-subtitle">
+                                January 15, 2025 - Value: $350,000
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mobile-list-item">
+                        <div class="mobile-list-content">
+                            <div class="mobile-list-title">Annual Assessment</div>
+                            <div class="mobile-list-subtitle">
+                                January 15, 2024 - Value: $340,000
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mobile-list-item">
+                        <div class="mobile-list-content">
+                            <div class="mobile-list-title">Annual Assessment</div>
+                            <div class="mobile-list-subtitle">
+                                January 15, 2023 - Value: $335,000
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mobile-list-item">
+                        <div class="mobile-list-content">
+                            <div class="mobile-list-title">Annual Assessment</div>
+                            <div class="mobile-list-subtitle">
+                                January 15, 2022 - Value: $330,000
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="d-grid gap-2 mb-4">
+        <button class="btn btn-primary" id="viewValuationBtn">
+            <i class="fas fa-chart-line me-2"></i> View AI Valuation
+        </button>
+        
+        <button class="btn btn-outline-secondary" id="reportIssueBtn">
+            <i class="fas fa-flag me-2"></i> Report Data Issue
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize property map
+        const propertyMap = L.map('propertyMap').setView([46.2585, -119.2534], 16);
+        
+        // Add base layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(propertyMap);
+        
+        // Add property marker
+        const propertyMarker = L.marker([46.2585, -119.2534]).addTo(propertyMap);
+        propertyMarker.bindPopup("{{ property.address }}").openPopup();
+        
+        // Update coordinates display
+        document.getElementById('coordinates').textContent = '46.2585, -119.2534';
+        
+        // Show boundaries button
+        document.getElementById('showBoundariesBtn').addEventListener('click', function() {
+            // Mock property boundary - in real app would fetch from API
+            const boundaryCoords = [
+                [46.2590, -119.2540],
+                [46.2590, -119.2530],
+                [46.2580, -119.2530],
+                [46.2580, -119.2540],
+                [46.2590, -119.2540]
+            ];
+            
+            // Add boundary polygon
+            const boundary = L.polygon(boundaryCoords, {
+                color: 'blue',
+                weight: 2,
+                fillColor: 'blue',
+                fillOpacity: 0.1
+            }).addTo(propertyMap);
+            
+            // Disable button after click
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-check me-2"></i> Property Boundaries Shown';
+            
+            // Fit map to boundary
+            propertyMap.fitBounds(boundary.getBounds());
+        });
+        
+        // Initialize assessment history chart
+        const ctx = document.getElementById('assessmentHistoryChart').getContext('2d');
+        const assessmentHistoryChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['2022', '2023', '2024', '2025'],
+                datasets: [{
+                    label: 'Property Value ($)',
+                    data: [330000, 335000, 340000, 350000],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    tension: 0.2,
+                    pointRadius: 4,
+                    pointBackgroundColor: 'rgba(75, 192, 192, 1)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return 'Value: $' + context.raw.toLocaleString();
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // View AI Valuation button
+        document.getElementById('viewValuationBtn').addEventListener('click', function() {
+            // In a real app, this would open the AI valuation interface
+            alert('AI Valuation feature will be available in the next update.');
+        });
+        
+        // Report Issue button
+        document.getElementById('reportIssueBtn').addEventListener('click', function() {
+            // In a real app, this would open a form to report issues
+            alert('Issue reporting feature will be available in the next update.');
+        });
+        
+        // Update map when map tab is shown
+        document.getElementById('map-tab').addEventListener('shown.bs.tab', function() {
+            propertyMap.invalidateSize();
+        });
+    });
+</script>
+{% endblock %}

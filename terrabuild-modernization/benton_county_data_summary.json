@@ -1,0 +1,144 @@
+{
+  "regions": [
+    "Central Benton"
+  ],
+  "buildingTypes": [
+    "S2",
+    "C2",
+    "C4",
+    "C3",
+    "R1",
+    "C1",
+    "A1",
+    "I1",
+    "A2",
+    "R2",
+    "S1"
+  ],
+  "totalEntries": 983,
+  "averageCost": 16190.342141400823,
+  "medianCost": 4500.0,
+  "minCost": -13.86,
+  "maxCost": 3260000.0,
+  "regionAnalysis": {
+    "Central Benton": {
+      "count": 983,
+      "avg_base_cost": 16190.342141400823,
+      "median_base_cost": 4500.0,
+      "min_cost": -13.86,
+      "max_cost": 3260000.0,
+      "std_dev": 37271.585060982645
+    }
+  },
+  "buildingTypeAnalysis": {
+    "S2": {
+      "count": 6,
+      "avg_base_cost": 149.32074074074075,
+      "median_base_cost": 148.94142857142856,
+      "min_cost": 58.73,
+      "max_cost": 336.49,
+      "std_dev": 16.985766891209416,
+      "description": "Special Purpose - School"
+    },
+    "C2": {
+      "count": 14,
+      "avg_base_cost": 1211.8501729024945,
+      "median_base_cost": 1020.8333333333334,
+      "min_cost": 37.25,
+      "max_cost": 9100.0,
+      "std_dev": 1370.4877512644414,
+      "description": "Commercial - Office"
+    },
+    "C4": {
+      "count": 8,
+      "avg_base_cost": 54.281488095238096,
+      "median_base_cost": 56.37696428571428,
+      "min_cost": 19.56,
+      "max_cost": 144.02,
+      "std_dev": 10.888064054759422,
+      "description": "Commercial - Warehouse"
+    },
+    "C3": {
+      "count": 3,
+      "avg_base_cost": 158.8329232804233,
+      "median_base_cost": 150.00972222222222,
+      "min_cost": 71.71,
+      "max_cost": 402.0,
+      "std_dev": 19.850540391389977,
+      "description": "Commercial - Restaurant"
+    },
+    "R1": {
+      "count": 3,
+      "avg_base_cost": 169.0288095238095,
+      "median_base_cost": 103.81428571428572,
+      "min_cost": 32.15,
+      "max_cost": 750.0,
+      "std_dev": 158.7499791745661,
+      "description": "Residential - Single Family"
+    },
+    "C1": {
+      "count": 933,
+      "avg_base_cost": 17026.281346591666,
+      "median_base_cost": 5111.111111111111,
+      "min_cost": -13.86,
+      "max_cost": 3260000.0,
+      "std_dev": 38077.21740969831,
+      "description": "Commercial - Retail"
+    },
+    "A1": {
+      "count": 2,
+      "avg_base_cost": 4132.5,
+      "median_base_cost": 4132.5,
+      "min_cost": 750.0,
+      "max_cost": 9100.0,
+      "std_dev": 1662.8794470903642,
+      "description": "Agricultural - Farm"
+    },
+    "I1": {
+      "count": 6,
+      "avg_base_cost": 105.02596031746032,
+      "median_base_cost": 101.07645238095239,
+      "min_cost": 0.0,
+      "max_cost": 320.0,
+      "std_dev": 72.28903837159352,
+      "description": "Industrial - Manufacturing"
+    },
+    "A2": {
+      "count": 1,
+      "avg_base_cost": 229.13285714285715,
+      "median_base_cost": 229.13285714285715,
+      "min_cost": 122.0,
+      "max_cost": 354.51,
+      "std_dev": 0,
+      "description": "Agricultural - Ranch"
+    },
+    "R2": {
+      "count": 3,
+      "avg_base_cost": 132.01225396825396,
+      "median_base_cost": 134.18,
+      "min_cost": 66.86,
+      "max_cost": 251.61,
+      "std_dev": 6.0372090571970745,
+      "description": "Residential - Multi-Family"
+    },
+    "S1": {
+      "count": 4,
+      "avg_base_cost": 196.45981944444446,
+      "median_base_cost": 197.66049603174602,
+      "min_cost": 86.1,
+      "max_cost": 425.15,
+      "std_dev": 49.73498678405443,
+      "description": "Special Purpose - Hospital"
+    }
+  },
+  "costRanges": {
+    "< 1000": 34.89,
+    "1000-2500": 2.75,
+    "2500-5000": 14.04,
+    "5000-7500": 4.37,
+    "7500-10000": 1.32,
+    "> 10000": 42.62
+  },
+  "dataPoints": 24944,
+  "year": 2025
+}

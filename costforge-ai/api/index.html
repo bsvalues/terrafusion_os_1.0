@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>CostForge AI - Elite Launchpad</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style type="text/css">
+    body { font-family: Segoe UI, Roboto, Arial, sans-serif; margin: 0; background: #0b1020; color: #eef3ff; }
+    header { padding: 24px; background: linear-gradient(135deg,#0099ff,#00ffee,#00ffaa); color: #02131b; }
+    h1 { margin: 0; font-size: 28px; }
+    main { max-width: 900px; margin: 24px auto; padding: 0 16px; }
+    .card { background: rgba(255,255,255,0.06); border: 1px solid rgba(0,255,238,0.25); border-radius: 12px; padding: 16px 20px; margin: 12px 0; }
+    .title { font-weight: 600; color: #00ffee; margin-bottom: 6px; }
+    a.btn { display: inline-block; margin-top: 8px; padding: 10px 14px; border-radius: 8px; background: #00ffee; color: #041018; text-decoration: none; font-weight: 600; }
+    .small { color: #9fb7cc; font-size: 13px; }
+    code { background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🏗️ CostForge AI — Elite Launchpad</h1>
+    <div class="small">Government-Grade Construction Cost Estimation • 379M× faster than Marshall & Swift</div>
+  </header>
+  <main>
+    <div class="card">
+      <div class="title">Elite Dashboard</div>
+      <div>Interactive, branded experience to run a live construction cost calculation.</div>
+      <a class="btn" href="costforge_elite_dashboard.html">Open Elite Dashboard</a>
+    </div>
+
+    <div class="card">
+      <div class="title">Construction Cost Calculator (simple)</div>
+      <div>Lightweight calculator UI backed by the Enterprise API.</div>
+      <a class="btn" href="construction_cost_calculator.html">Open Calculator</a>
+    </div>
+
+    <div class="card">
+      <div class="title">API Status</div>
+      <div class="small">These open the local API served by Flask.</div>
+      <div>
+        • Health: <a href="http://localhost:8000/api/health">http://localhost:8000/api/health</a><br />
+        • Stats: <a href="http://localhost:8000/api/stats">http://localhost:8000/api/stats</a><br />
+        • Cost Matrices: <a href="http://localhost:8000/api/cost-matrices">http://localhost:8000/api/cost-matrices</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="title">If you see a 404 here</div>
+      <div class="small">Make sure the static server is running from this directory. You can start it with:</div>
+      <pre class="small"><code>cd costforge-ai\api
+python -m http.server 8080</code></pre>
+    </div>
+  </main>
+</body>
+</html>

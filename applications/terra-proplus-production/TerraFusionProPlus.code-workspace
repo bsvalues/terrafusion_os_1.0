@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../Dev_Environment"
+		},
+		{
+			"path": "../../../../terrafusion_os_1.0"
+		}
+	],
+	"settings": {}
+}

@@ -1,0 +1,10 @@
+{
+    "set": [
+        "arc",
+        "cosine",
+        "hyperbolic",
+        "inverse",
+        "math",
+        "trig"
+    ]
+}

@@ -1,0 +1,168 @@
+{
+    "type": "FunctionTool",
+    "guid": "{b59debfa-98e4-4b78-9a1b-f411780045cd}",
+    "displayname": "$rc:title",
+    "helpcontent": "7000007",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_table": {
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "domain": {
+                "type": "xmlserialize",
+                "xml": "<GPRouteMeasureEventDomain xsi:type='typens:GPRouteMeasureEventDomain' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/3.4.0'></GPRouteMeasureEventDomain>"
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "in_event_properties": {
+            "displayname": "$rc:in_event_properties.title",
+            "datatype": {
+                "type": "GPRouteMeasureEventProperties"
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:in_event_properties.descr"
+        },
+        "overlay_table": {
+            "displayname": "$rc:overlay_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "domain": {
+                "type": "xmlserialize",
+                "xml": "<GPRouteMeasureEventDomain xsi:type='typens:GPRouteMeasureEventDomain' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/3.4.0'></GPRouteMeasureEventDomain>"
+            },
+            "description": "$rc:overlay_table.descr"
+        },
+        "overlay_event_properties": {
+            "displayname": "$rc:overlay_event_properties.title",
+            "datatype": {
+                "type": "GPRouteMeasureEventProperties"
+            },
+            "depends": [
+                "overlay_table"
+            ],
+            "description": "$rc:overlay_event_properties.descr"
+        },
+        "overlay_type": {
+            "displayname": "$rc:overlay_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "INTERSECT",
+                        "code": "$rc:overlay_type.domain.INTERSECT"
+                    },
+                    {
+                        "value": "UNION",
+                        "code": "$rc:overlay_type.domain.UNION"
+                    }
+                ]
+            },
+            "value": "INTERSECT",
+            "description": "$rc:overlay_type.descr"
+        },
+        "out_table": {
+            "direction": "out",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "description": "$rc:out_table.descr"
+        },
+        "out_event_properties": {
+            "displayname": "$rc:out_event_properties.title",
+            "datatype": {
+                "type": "GPRouteMeasureEventProperties"
+            },
+            "description": "$rc:out_event_properties.descr"
+        },
+        "zero_length_events": {
+            "type": "optional",
+            "displayname": "$rc:zero_length_events.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ZERO"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_ZERO"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:zero_length_events.descr"
+        },
+        "in_fields": {
+            "type": "optional",
+            "displayname": "$rc:in_fields.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FIELDS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_FIELDS"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:in_fields.descr"
+        },
+        "build_index": {
+            "type": "optional",
+            "displayname": "$rc:build_index.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "INDEX"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_INDEX"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:build_index.descr"
+        }
+    },
+    "environments": [
+        "configKeyword",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

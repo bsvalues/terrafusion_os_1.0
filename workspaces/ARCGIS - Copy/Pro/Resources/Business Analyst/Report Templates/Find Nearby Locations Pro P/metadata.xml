@@ -1,0 +1,146 @@
+<DataCollection ScriptLanguage="Python" Title="Find Nearby Locations" ReportID="">
+  <Metadata>
+    <reportType>esriReportTemplatePointAndMarketBased</reportType>
+    <creationDate>1638931545112</creationDate>
+    <lastRevisionDate>1638931545112</lastRevisionDate>
+    <description>Business Analyst Find Nearby Locations Report Template</description>
+    <author>Esri</author>
+    <typekeywords>
+      <typekeyword>Business Analyst</typekeyword>
+    </typekeywords>
+  </Metadata>
+  <Parameters>
+    <Layer Name="STORES" Alias="Stores Layer" LayerType="Stores" ShapeType="Point"/>
+    <Fields Name="STORE_ID_FIELD" Alias="Store Id Field" FieldRole="StoreId" LayerParameter="STORES" />
+    <Fields Name="STORE_FIELDS" Alias="Store Fields" Count="11" LayerParameter="STORES">
+      <Value>
+        <FieldParamValue Name="STORE_NAME" Alias="Store Name" />
+        <FieldParamValue Name="ADDRESS" Alias="Address" />
+        <FieldParamValue Name="STORE_LAT" Alias="Latitude" />
+        <FieldParamValue Name="STORE_LONG" Alias="Longitude" />
+        <FieldParamValue Name="AREA_DESC" Alias="Desription" />
+        <FieldParamValue Name="TOTAL_LOC" Alias="Total Locations" />
+        <FieldParamValue Name="MED_DIST" Alias="Median Distance" />
+        <FieldParamValue Name="CLOSEST_DIST" Alias="Closest Distance" />
+        <FieldParamValue Name="CLOSEST_NAME" Alias="Closest Location" />
+        <FieldParamValue Name="FARTHEST_DIST" Alias="Farthest Distance" />
+        <FieldParamValue Name="FARTHEST_NAME" Alias="Farthest Location" />
+      </Value>
+    </Fields>
+    <Layer Name="LOCATIONS" Alias="Locations Layer" LayerType="Locations" ShapeType="Point"/>
+    <Fields Name="LOCATIONS_STORE_ID_FIELD" Alias="Locations Store Id Field" FieldRole="StoreId" LayerParameter="LOCATIONS" />
+    <Fields Name="LOCATION_FIELDS" Alias="Location Fields" Count="8" LayerParameter="LOCATIONS">
+      <Value>
+        <FieldParamValue Name="NAME" Alias="Location Name" />
+        <FieldParamValue Name="LOCATOR1" Alias="Locator 1" />
+        <FieldParamValue Name="LOCATOR2" Alias="Locator 2" />
+        <FieldParamValue Name="LOCATOR3" Alias="Locator 3" />
+        <FieldParamValue Name="LOCATOR4" Alias="Locator 4" />
+      </Value>
+    </Fields>
+  </Parameters>
+  <Calculators>
+    <Locator Name="stores" Points="{STORES}" PointsTitle="Input Points">
+      <PointFields>
+        <Field Name="STORE_ID" MapTo="STORE_ID" Type="String"/>
+        <Field Name="STORE_NAME" MapTo="STORE_NAME" Type="String"/>
+        <Field Name="ADDRESS" MapTo="ADDRESS" Type="String"/>
+        <Field Name="STORE_LAT" MapTo="STORE_LAT" Type="String"/>
+        <Field Name="STORE_LONG" MapTo="STORE_LONG" Type="String"/>
+        <Field Name="AREA_DESC" MapTo="AREA_DESC" Type="String"/>
+        <Field Name="TOTAL_LOC" MapTo="TOTAL_LOC" Type="Integer"/>
+        <Field Name="MED_DIST" MapTo="MED_DIST" Type="Double"/>
+        <Field Name="CLOSEST_DIST" MapTo="CLOSEST_DIST" Type="Double"/>
+        <Field Name="CLOSEST_NAME" MapTo="CLOSEST_NAME" Type="String"/>
+        <Field Name="FARTHEST_DIST" MapTo="FARTHEST_DIST" Type="Double"/>
+        <Field Name="FARTHEST_NAME" MapTo="FARTHEST_NAME" Type="String"/>
+      </PointFields>
+      <Fields/>
+    </Locator>
+    <Locator Name="locations" Points="{LOCATIONS}" PointsTitle="Locations">
+      <PointFields>
+        <Field Name="STORE_ID" MapTo="STORE_ID" Type="String"/>
+        <Field Name="NAME" MapTo="NAME" Type="String"/>
+        <Field Name="LOCATOR1" MapTo="LOCATOR1" Type="String"/>
+        <Field Name="LOCATOR2" Type="String" MapTo="LOCATOR2"/>
+        <Field Name="LOCATOR3" Type="String" MapTo="LOCATOR3"/>
+        <Field Name="LOCATOR4" Type="String" MapTo="LOCATOR4"/>
+      </PointFields>
+      <Fields>
+        <Direction Name="DIRECTION" Type="String" Alias="Direction"/>
+        <Distance Name="DISTANCE" Type="Double" Units="esriMiles" Decimals="2" Alias="Distance"/>
+      </Fields>
+      <Sort>
+        <Field Name="DISTANCE" Order="asc"/>
+      </Sort>
+    </Locator>
+    <Maps Name="images">
+      <RawFields>
+        <Field Name="STORE_ID" MapTo="STORE_ID" Type="String"/>
+      </RawFields>
+      <Fields>
+        <Map Name="ImageData" Width="2377" Height="1343" DPI="300" PointBased="true">
+          <Layers>
+            <Layer PortalItemId="{basemap:lightGray}" MapName="0320_Light_Gray.*" />
+            <LocatorResultsLayer CalculatorName="stores">
+              <Renderer type="object">
+                <type type="string">simple</type>
+                <symbol type="object">
+                  <type type="string">esriSMS</type>
+                  <style type="string">esriSMSCircle</style>
+                  <color type="array">
+                    <item type="number">255</item>
+                    <item type="number">0</item>
+                    <item type="number">0</item>
+                    <item type="number">255</item>
+                  </color>
+                  <size type="number">12</size>
+                  <angle type="number">0</angle>
+                  <xoffset type="number">0</xoffset>
+                  <yoffset type="number">0</yoffset>
+                  <outline type="object">
+                    <color type="array">
+                      <item type="number">0</item>
+                      <item type="number">0</item>
+                      <item type="number">0</item>
+                      <item type="number">255</item>
+                    </color>
+                    <width type="number">0.7</width>
+                  </outline>
+                </symbol>
+              </Renderer>
+            </LocatorResultsLayer>
+            <LocatorResultsLayer CalculatorName="locations">
+              <Renderer type="object">
+                <type type="string">simple</type>
+                <symbol type="object">
+                  <type type="string">esriSMS</type>
+                  <style type="string">esriSMSCircle</style>
+                  <color type="array">
+                    <item type="number">163</item>
+                    <item type="number">255</item>
+                    <item type="number">115</item>
+                    <item type="number">255</item>
+                  </color>
+                  <size type="number">4</size>
+                  <angle type="number">0</angle>
+                  <xoffset type="number">0</xoffset>
+                  <yoffset type="number">0</yoffset>
+                  <outline type="object">
+                    <color type="array">
+                      <item type="number">0</item>
+                      <item type="number">0</item>
+                      <item type="number">0</item>
+                      <item type="number">255</item>
+                    </color>
+                    <width type="number">0.7</width>
+                  </outline>
+                </symbol>
+              </Renderer>
+            </LocatorResultsLayer>
+          </Layers>
+        </Map>
+      </Fields>
+    </Maps>
+  </Calculators>
+</DataCollection>

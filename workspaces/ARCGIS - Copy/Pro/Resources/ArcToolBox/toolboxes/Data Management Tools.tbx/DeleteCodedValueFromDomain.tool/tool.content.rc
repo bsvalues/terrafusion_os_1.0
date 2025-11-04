@@ -1,0 +1,13 @@
+{
+    "map": {
+        "code.descr": "The value(s) to be deleted from the specified domain.",
+        "code.title": "Code Value",
+        "description": "Removes a value from a coded value domain.",
+        "domain_name.descr": "The name of the coded value domain to be updated.",
+        "domain_name.title": "Domain Name",
+        "in_workspace.descr": "The workspace containing the domain to be updated.",
+        "in_workspace.title": "Input Workspace",
+        "out_workspace.title": "Updated Input Workspace",
+        "title": "Delete Coded Value From Domain"
+    }
+}

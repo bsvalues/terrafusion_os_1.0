@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <h1>Sale Verification Result</h1>
+      
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{{ url_for('sales_verification.index') }}">Sales Verification</a></li>
+          <li class="breadcrumb-item"><a href="{{ url_for('sales_verification.verify_sale') }}">Verify Sale</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Result</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+  
+  <div class="row mt-4">
+    <div class="col-lg-8">
+      <!-- Sale Information Card -->
+      <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Sale Information</h5>
+          {% if result.status == 'verified' %}
+            <span class="badge bg-success">Verified</span>
+          {% elif result.status == 'not_qualified' %}
+            <span class="badge bg-danger">Not Qualified</span>
+          {% else %}
+            <span class="badge bg-warning">Issues Found</span>
+          {% endif %}
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>Sale ID:</strong> {{ sale_data.sale_id }}</p>
+              <p><strong>Parcel Number:</strong> {{ sale_data.parcel_number }}</p>
+              <p><strong>Sale Date:</strong> {{ sale_data.sale_date }}</p>
+              <p><strong>Sale Price:</strong> ${{ '%0.2f'|format(sale_data.sale_price|float) }}</p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Property ID:</strong> {{ sale_data.property_id or 'N/A' }}</p>
+              <p><strong>Sale Type:</strong> {{ sale_data.sale_type or 'N/A' }}</p>
+              <p><strong>Deed Type:</strong> {{ sale_data.deed_type or 'N/A' }}</p>
+              <p><strong>Address:</strong> {{ sale_data.property_address or 'N/A' }}</p>
+            </div>
+          </div>
+          
+          <div class="row mt-3">
+            <div class="col-md-6">
+              <p><strong>Buyer:</strong> {{ sale_data.buyer_name or 'N/A' }}</p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Seller:</strong> {{ sale_data.seller_name or 'N/A' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Verification Summary Card -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Verification Summary</h5>
+        </div>
+        <div class="card-body">
+          <div class="alert 
+            {% if result.status == 'verified' %}
+              alert-success
+            {% elif result.status == 'not_qualified' %}
+              alert-danger
+            {% else %}
+              alert-warning
+            {% endif %}">
+            <h5 class="alert-heading">
+              {% if result.status == 'verified' %}
+                Sale Verified Successfully
+              {% elif result.status == 'not_qualified' %}
+                Sale Not Qualified for Assessment
+              {% else %}
+                Verification Issues Detected
+              {% endif %}
+            </h5>
+            <p>{{ result.message }}</p>
+            
+            {% if result.status == 'not_qualified' and result.qualification and result.qualification.disqualification_reason %}
+              <hr>
+              <p class="mb-0"><strong>Reason:</strong> {{ result.qualification.disqualification_reason }}</p>
+              {% if result.qualification.disqualification_code %}
+                <p class="mb-0"><strong>Code:</strong> {{ result.qualification.disqualification_code }}</p>
+              {% endif %}
+            {% endif %}
+          </div>
+          
+          <h6 class="mt-4 mb-3">Verification Details</h6>
+          
+          <!-- Data Validation Results -->
+          <div class="mb-4">
+            <h6>Data Validation</h6>
+            {% if result.validation and result.validation.valid %}
+              <div class="d-flex align-items-center text-success mb-2">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <span>All data passed validation checks</span>
+              </div>
+            {% elif result.validation %}
+              <div class="d-flex align-items-center text-danger mb-2">
+                <i class="bi bi-x-circle-fill me-2"></i>
+                <span>Data validation failed</span>
+              </div>
+              {% if result.validation.errors %}
+                <ul class="small text-danger">
+                  {% for error in result.validation.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            {% else %}
+              <div class="text-muted">No validation data available</div>
+            {% endif %}
+          </div>
+          
+          <!-- Spatial Validation Results -->
+          <div class="mb-4">
+            <h6>Spatial Validation</h6>
+            {% if result.spatial_validation and result.spatial_validation.valid %}
+              <div class="d-flex align-items-center text-success mb-2">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <span>Spatial data validated successfully</span>
+              </div>
+            {% elif result.spatial_validation and result.spatial_validation.valid == false %}
+              <div class="d-flex align-items-center text-danger mb-2">
+                <i class="bi bi-x-circle-fill me-2"></i>
+                <span>Spatial validation failed</span>
+              </div>
+              {% if result.spatial_validation.errors %}
+                <ul class="small text-danger">
+                  {% for error in result.spatial_validation.errors %}
+                    <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            {% else %}
+              <div class="text-muted">No spatial validation data available</div>
+            {% endif %}
+          </div>
+          
+          <!-- Sale Qualification Results -->
+          <div>
+            <h6>Sale Qualification</h6>
+            {% if result.qualification and result.qualification.qualified %}
+              <div class="d-flex align-items-center text-success mb-2">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <span>Sale qualified for assessment purposes</span>
+              </div>
+            {% elif result.qualification %}
+              <div class="d-flex align-items-center text-danger mb-2">
+                <i class="bi bi-x-circle-fill me-2"></i>
+                <span>Sale not qualified for assessment</span>
+              </div>
+              <p class="small text-danger">
+                <strong>Reason:</strong> {{ result.qualification.disqualification_reason or 'Not specified' }}
+                {% if result.qualification.disqualification_code %}
+                  <br><strong>Code:</strong> {{ result.qualification.disqualification_code }}
+                {% endif %}
+              </p>
+            {% else %}
+              <div class="text-muted">No qualification data available</div>
+            {% endif %}
+          </div>
+          
+          <!-- Timestamp -->
+          <p class="text-muted small mt-4">
+            Verification completed: {{ result.timestamp }}
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-4">
+      <!-- Actions Card -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Actions</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            {% if result.status != 'verified' %}
+              <a href="{{ url_for('sales_verification.verify_sale') }}?edit={{ sale_data.sale_id }}" class="btn btn-primary">
+                <i class="bi bi-pencil me-2"></i> Edit Sale Information
+              </a>
+            {% endif %}
+            
+            <a href="{{ url_for('sales_verification.gis_validation', parcel_id=sale_data.parcel_number) }}" class="btn btn-outline-primary">
+              <i class="bi bi-geo-alt me-2"></i> View GIS Data
+            </a>
+            
+            <button class="btn btn-outline-primary" onclick="printReport()">
+              <i class="bi bi-printer me-2"></i> Print Report
+            </button>
+            
+            {% if result.status == 'verified' %}
+              <a href="#" class="btn btn-success">
+                <i class="bi bi-check-circle me-2"></i> Use for Valuation
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      
+      <!-- Washington DOR Guidelines Card -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Washington DOR Guidelines</h5>
+        </div>
+        <div class="card-body">
+          <p class="small">Washington Department of Revenue guidelines for sale verification:</p>
+          <ul class="small">
+            <li>Sales must be arms-length transactions</li>
+            <li>Sales should be within 12 months of assessment date when possible</li>
+            <li>Verification of recording document and sale price is required</li>
+            <li>Special financing terms must be evaluated for market consistency</li>
+            <li>Non-real property components must be excluded from valuation</li>
+          </ul>
+          <p class="small">For detailed standards, refer to Washington Administrative Code (WAC) 458-53-130.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function printReport() {
+    window.print();
+  }
+</script>
+{% endblock %}

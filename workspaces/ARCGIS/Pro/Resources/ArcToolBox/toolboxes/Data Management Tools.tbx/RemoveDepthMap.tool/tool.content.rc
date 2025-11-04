@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Removes the depth map from a mosaic dataset.  Other than the depth map removal, the tool will not update the mosaic dataset.",
+        "in_mosaic_dataset.descr": "The mosaic dataset that will have the depth map removed.",
+        "in_mosaic_dataset.title": "Input Mosaic Dataset",
+        "out_mosaic_dataset.title": "Output Mosaic Dataset",
+        "summary": "<xdoc><p>Removes the depth map from a mosaic dataset. Other than the depth map removal, the tool will not update the mosaic dataset.</p><p>Depth maps are created by running the Compute Depth Map tool.</p></xdoc>",
+        "title": "Remove Depth Map",
+        "where_clause.descr": "An SQL expression that will be used to select items in the mosaic dataset depth map to be removed. If not specified, all depth map content in the source raster’s folder will be removed.",
+        "where_clause.title": "Query Definition"
+    }
+}

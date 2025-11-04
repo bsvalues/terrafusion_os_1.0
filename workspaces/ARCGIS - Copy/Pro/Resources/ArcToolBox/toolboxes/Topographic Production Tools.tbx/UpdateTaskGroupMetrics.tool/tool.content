@@ -1,0 +1,96 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "46030303",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "46",
+        "49"
+    ],
+    "params": {
+        "job_id": {
+            "displayname": "$rc:job_id.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:job_id.descr"
+        },
+        "status_layer": {
+            "type": "optional",
+            "displayname": "$rc:status_layer.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:status_layer.descr"
+        },
+        "status_field": {
+            "type": "optional",
+            "displayname": "$rc:status_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Date",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "status_layer"
+            ],
+            "description": "$rc:status_field.descr"
+        },
+        "database_path": {
+            "type": "optional",
+            "displayname": "$rc:database_path.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "jtc"
+                ]
+            },
+            "description": "$rc:database_path.descr"
+        },
+        "updated_job_id": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_job_id.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "depends": [
+                "job_id"
+            ],
+            "value": "-1"
+        },
+        "updated_status_layer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_status_layer.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "status_layer"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    }
+}

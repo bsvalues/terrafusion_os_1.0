@@ -1,0 +1,162 @@
+{
+    "type": "FunctionTool",
+    "guid": "{dbb08e59-1539-4b4f-8244-ca1fea4ce34f}",
+    "displayname": "$rc:title",
+    "helpcontent": "61010020",
+    "description": "$rc:description",
+    "product": "200",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "block_add_to_map"
+    ],
+    "params": {
+        "in_utility_network": {
+            "displayname": "$rc:in_utility_network.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    },
+                    {
+                        "type": "GPUtilityNetworkLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_utility_network.descr"
+        },
+        "domain_network": {
+            "displayname": "$rc:domain_network.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "in_utility_network"
+            ],
+            "description": "$rc:domain_network.descr"
+        },
+        "featureclass": {
+            "displayname": "$rc:featureclass.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "domain_network"
+            ],
+            "description": "$rc:featureclass.descr"
+        },
+        "assetgroup": {
+            "displayname": "$rc:assetgroup.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "featureclass"
+            ],
+            "description": "$rc:assetgroup.descr"
+        },
+        "assettype": {
+            "displayname": "$rc:assettype.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "assetgroup"
+            ],
+            "description": "$rc:assettype.descr"
+        },
+        "association_role_type": {
+            "displayname": "$rc:association_role_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NONE",
+                        "code": "$rc:association_role_type.domain.NONE"
+                    },
+                    {
+                        "value": "CONTAINER",
+                        "code": "$rc:association_role_type.domain.CONTAINER"
+                    },
+                    {
+                        "value": "STRUCTURE",
+                        "code": "$rc:association_role_type.domain.STRUCTURE"
+                    }
+                ]
+            },
+            "description": "$rc:association_role_type.descr"
+        },
+        "association_deletion_semantics": {
+            "displayname": "$rc:association_deletion_semantics.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "CASCADE",
+                        "code": "$rc:association_deletion_semantics.domain.CASCADE"
+                    },
+                    {
+                        "value": "SET_TO_NONE",
+                        "code": "$rc:association_deletion_semantics.domain.SET_TO_NONE"
+                    },
+                    {
+                        "value": "RESTRICTED",
+                        "code": "$rc:association_deletion_semantics.domain.RESTRICTED"
+                    }
+                ]
+            },
+            "description": "$rc:association_deletion_semantics.descr"
+        },
+        "view_scale": {
+            "type": "optional",
+            "displayname": "$rc:view_scale.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "depends": [
+                "association_role_type"
+            ],
+            "description": "$rc:view_scale.descr"
+        },
+        "split_content": {
+            "type": "optional",
+            "displayname": "$rc:split_content.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SPLIT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_SPLIT"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:split_content.descr"
+        },
+        "out_utility_network": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_utility_network.title",
+            "datatype": {
+                "type": "DEUtilityNetwork"
+            }
+        }
+    }
+}

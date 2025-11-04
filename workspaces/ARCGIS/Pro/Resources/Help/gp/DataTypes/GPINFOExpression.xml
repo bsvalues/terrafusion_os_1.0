@@ -1,0 +1,5 @@
+<DataType Name="GPINFOExpression">
+  <DisplayName>INFO Expression</DisplayName>
+  <Description>A syntax for defining and manipulating data in an INFO table.</Description>
+</DataType>
+

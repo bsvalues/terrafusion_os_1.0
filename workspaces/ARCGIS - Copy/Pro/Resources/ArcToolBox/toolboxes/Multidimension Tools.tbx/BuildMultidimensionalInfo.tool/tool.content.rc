@@ -1,0 +1,23 @@
+{
+    "map": {
+        "delete_multidimensional_info.descr": "<xdoc><p>Specifies whether existing multidimensional information will be deleted.</p><ul><li>Unchecked—If multidimensional information exists in the mosaic dataset, it will not be deleted. This is the default.</li><li>Checked—If multidimensional information exists in the mosaic dataset, it will be deleted.</li></ul></xdoc>",
+        "delete_multidimensional_info.title": "Delete Multidimensional Info",
+        "description": "Generates multidimensional metadata in the mosaic dataset, including information regarding variables and dimensions.",
+        "dimension_fields.descr": "<xdoc><p>The fields in the mosaic dataset that store the dimension information and are used to populate a new field named <span class=\"esri_fieldname\">Dimensions</span>.</p><p>If the <span class=\"esri_fieldname\">Dimensions</span> field already exists, the tool will update the multidimensional information only.</p></xdoc>",
+        "dimension_fields.dt.title1": "Dimension Field",
+        "dimension_fields.dt.title2": "Description",
+        "dimension_fields.dt.title3": "Units",
+        "dimension_fields.title": "Dimension Fields",
+        "in_mosaic_dataset.descr": "The input multidimensional mosaic dataset.",
+        "in_mosaic_dataset.title": "Mosaic Dataset",
+        "out_mosaic_dataset.title": "Mosaic Dataset",
+        "title": "Build Multidimensional Info",
+        "variable_desc_units.descr": "<xdoc><p>Specify additional information about the <span class=\"esri_fieldname\">Variable</span> field.</p></xdoc>",
+        "variable_desc_units.dt.title1": "Variable Name",
+        "variable_desc_units.dt.title2": "Description",
+        "variable_desc_units.dt.title3": "Units",
+        "variable_desc_units.title": "Variable Info",
+        "variable_field.descr": "<xdoc><p>The field in the mosaic dataset that stores the variable names and is used to populate a new field named <span class=\"esri_fieldname\">Variable</span>. If all rasters in the mosaic dataset represent the same variable, type the name of the variable, for example, Temperature.</p><p>If the <span class=\"esri_fieldname\">Variable</span> field does not already exist, an existing field or string value must be specified. If the <span class=\"esri_fieldname\">Variable</span> field exists, the tool will update the multidimensional information only.</p></xdoc>",
+        "variable_field.title": "Variable Field"
+    }
+}

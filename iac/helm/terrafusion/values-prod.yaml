@@ -1,0 +1,21 @@
+replicaCount: 4
+autoscaling:
+  minReplicas: 4
+  maxReplicas: 20
+resources:
+  requests: { cpu: '1', memory: '1Gi' }
+  limits: { cpu: '2', memory: '2Gi' }
+ingress:
+  hosts:
+    - host: tf.example.gov
+  tls:
+    - secretName: tf-tls
+      hosts: [tf.example.gov]
+
+pgOltp:
+  persistence:
+    size: 100Gi
+pgAnalytics:
+  enabled: true
+  persistence:
+    size: 500Gi

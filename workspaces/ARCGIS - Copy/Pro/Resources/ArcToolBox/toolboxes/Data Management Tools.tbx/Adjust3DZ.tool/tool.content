@@ -1,0 +1,186 @@
+{
+    "type": "FunctionTool",
+    "guid": "{74641a00-d25b-4c95-b302-b6e3efcce1ed}",
+    "displayname": "$rc:title",
+    "helpcontent": "3050017",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "edit_session",
+        "input_data_change"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "reverse_sign": {
+            "type": "optional",
+            "displayname": "$rc:reverse_sign.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NO_REVERSE",
+                        "code": "$rc:reverse_sign.domain.NO_REVERSE"
+                    },
+                    {
+                        "value": "REVERSE",
+                        "code": "$rc:reverse_sign.domain.REVERSE"
+                    }
+                ]
+            },
+            "value": "NO_REVERSE",
+            "description": "$rc:reverse_sign.descr"
+        },
+        "adjust_value": {
+            "type": "optional",
+            "control_guid": "{BEDF969C-20D2-4C41-96DA-32408CA72BF6}",
+            "displayname": "$rc:adjust_value.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPDouble"
+                    },
+                    {
+                        "type": "Field"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "OID",
+                            "Short",
+                            "Long",
+                            "Float",
+                            "Double",
+                            "Text"
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "value_datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:adjust_value.descr"
+        },
+        "from_units": {
+            "type": "optional",
+            "displayname": "$rc:from_units.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MILLIMETERS",
+                        "code": "$rc:from_units.domain.MILLIMETERS"
+                    },
+                    {
+                        "value": "CENTIMETERS",
+                        "code": "$rc:from_units.domain.CENTIMETERS"
+                    },
+                    {
+                        "value": "METERS",
+                        "code": "$rc:from_units.domain.METERS"
+                    },
+                    {
+                        "value": "INCHES",
+                        "code": "$rc:from_units.domain.INCHES"
+                    },
+                    {
+                        "value": "FEET",
+                        "code": "$rc:from_units.domain.FEET"
+                    },
+                    {
+                        "value": "YARDS",
+                        "code": "$rc:from_units.domain.YARDS"
+                    },
+                    {
+                        "value": "FATHOMS",
+                        "code": "$rc:from_units.domain.FATHOMS"
+                    }
+                ]
+            },
+            "description": "$rc:from_units.descr"
+        },
+        "to_units": {
+            "type": "optional",
+            "displayname": "$rc:to_units.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MILLIMETERS",
+                        "code": "$rc:to_units.domain.MILLIMETERS"
+                    },
+                    {
+                        "value": "CENTIMETERS",
+                        "code": "$rc:to_units.domain.CENTIMETERS"
+                    },
+                    {
+                        "value": "METERS",
+                        "code": "$rc:to_units.domain.METERS"
+                    },
+                    {
+                        "value": "INCHES",
+                        "code": "$rc:to_units.domain.INCHES"
+                    },
+                    {
+                        "value": "FEET",
+                        "code": "$rc:to_units.domain.FEET"
+                    },
+                    {
+                        "value": "YARDS",
+                        "code": "$rc:to_units.domain.YARDS"
+                    },
+                    {
+                        "value": "FATHOMS",
+                        "code": "$rc:to_units.domain.FATHOMS"
+                    }
+                ]
+            },
+            "description": "$rc:to_units.descr"
+        },
+        "out_feature_class": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "in_features"
+            ]
+        }
+    },
+    "environments": [
+        "extent",
+        "workspace"
+    ]
+}

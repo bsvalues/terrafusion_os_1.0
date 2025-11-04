@@ -13,7 +13,7 @@ const TerraFusionLogo: React.FC<TerraFusionLogoProps> = ({
   variant = 'monogram',
   size = 'medium',
   animated = true,
-  className = ''
+  className = '',
 }) => {
   const getSizeStyles = () => {
     switch (size) {
@@ -32,7 +32,7 @@ const TerraFusionLogo: React.FC<TerraFusionLogoProps> = ({
     case 'monogram':
       return (
         <Typography
-          variant="h4"
+          variant='h4'
           className={`tf-logo-monogram ${animated ? 'tf-holographic' : ''} ${className}`}
           sx={{ fontSize: sizeStyles.fontSize, fontWeight: 900 }}
         >
@@ -44,17 +44,17 @@ const TerraFusionLogo: React.FC<TerraFusionLogoProps> = ({
       return (
         <Box
           className={`tf-logo-embossed ${animated ? 'tf-token-glow' : ''} ${className}`}
-          sx={{ 
-            width: sizeStyles.width, 
+          sx={{
+            width: sizeStyles.width,
             height: sizeStyles.height,
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
           }}
         >
           <Typography
-            variant="h6"
-            className="tf-logo-monogram"
+            variant='h6'
+            className='tf-logo-monogram'
             sx={{ fontSize: `${Number(sizeStyles.fontSize || 16) * 0.7}px`, fontWeight: 900 }}
           >
             TF
@@ -68,16 +68,12 @@ const TerraFusionLogo: React.FC<TerraFusionLogoProps> = ({
           className={`tf-seal-badge ${animated ? 'tf-token-glow' : ''} ${className}`}
           sx={{ width: sizeStyles.width, height: sizeStyles.height }}
         >
-          <Box className="tf-seal-text">
-
-
-            <Typography variant="caption" sx={{ fontSize: '8px', fontWeight: 700 }}>
+          <Box className='tf-seal-text'>
+            <Typography variant='caption' sx={{ fontSize: '8px', fontWeight: 700 }}>
               TERRA
             </Typography>
-            <br
-
-/>
-            <Typography variant="caption" sx={{ fontSize: '8px', fontWeight: 700 }}>
+            <br />
+            <Typography variant='caption' sx={{ fontSize: '8px', fontWeight: 700 }}>
               FUSION
             </Typography>
           </Box>
@@ -91,8 +87,8 @@ const TerraFusionLogo: React.FC<TerraFusionLogoProps> = ({
           sx={{ width: sizeStyles.width, height: sizeStyles.height }}
         >
           <Typography
-            variant="h6"
-            className="tf-logo-monogram"
+            variant='h6'
+            className='tf-logo-monogram'
             sx={{ fontSize: `${Number(sizeStyles.fontSize || 16) * 0.6}px`, fontWeight: 900 }}
           >
             TF
@@ -103,17 +99,15 @@ const TerraFusionLogo: React.FC<TerraFusionLogoProps> = ({
     case 'browser':
       return (
         <Box className={`tf-browser-mockup ${className}`}>
-          <Box className="tf-browser-dots">
-            <Box className="tf-browser-dot close" />
-            <Box className="tf-browser-dot minimize" />
+          <Box className='tf-browser-dots'>
+            <Box className='tf-browser-dot close' />
+            <Box className='tf-browser-dot minimize' />
 
-
-            <Box className="tf-browser-dot maximize" />
+            <Box className='tf-browser-dot maximize' />
           </Box>
           <Typography
-
-variant="body2"
-            className="tf-logo-monogram"
+            variant='body2'
+            className='tf-logo-monogram'
             sx={{ ml: 2, fontSize: '14px', fontWeight: 700 }}
           >
             Terrafusion OS
@@ -124,7 +118,7 @@ variant="body2"
     default:
       return (
         <Typography
-          variant="h4"
+          variant='h4'
           className={`tf-logo-monogram ${className}`}
           sx={{ fontSize: sizeStyles.fontSize, fontWeight: 900 }}
         >

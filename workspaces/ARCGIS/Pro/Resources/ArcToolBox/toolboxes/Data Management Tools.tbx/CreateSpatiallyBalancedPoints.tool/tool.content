@@ -1,0 +1,56 @@
+{
+    "type": "FunctionTool",
+    "guid": "{4670e0b3-54b2-4874-84e5-014c7db0d966}",
+    "displayname": "$rc:title",
+    "helpcontent": "3330005",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_probability_raster": {
+            "displayname": "$rc:in_probability_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_probability_raster.descr"
+        },
+        "number_output_points": {
+            "displayname": "$rc:number_output_points.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "1",
+                "max": "2147483647"
+            },
+            "description": "$rc:number_output_points.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "randomGenerator",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

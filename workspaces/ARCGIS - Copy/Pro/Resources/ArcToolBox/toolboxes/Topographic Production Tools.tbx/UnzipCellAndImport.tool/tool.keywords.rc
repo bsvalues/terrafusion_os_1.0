@@ -1,0 +1,17 @@
+{
+    "set": [
+        "cell",
+        "data management",
+        "defense",
+        "defense mapping",
+        "geodatabase",
+        "geodatabase management",
+        "import",
+        "mgcp",
+        "topo",
+        "topographic",
+        "topographic production",
+        "unzip",
+        "unzip cell"
+    ]
+}

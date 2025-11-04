@@ -1,0 +1,442 @@
+{
+  "TRE": "SISDDA",
+  "Source": ["MIL-PRF-89034, DPPDB: Table 32"],
+  "Name": "Stereo Image Segment Data",
+  "Description": "This TRE contains DPPDB stereo segment model data. It is a user-defined file included in the data extension subheader. All fields are repeated for each segment model.",
+  "Size": 99999,
+  "Fields": {
+    "SISEGID" : {
+      "Name": "Segment Model ID",
+      "Description": "This field indicates the ID of the DPPDB segment model.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Integer"          
+        }        
+      ]
+    },
+    "SNACE": {
+      "Name": "Segment Absolute CE90",
+      "Description": "This field indicates the segment absolute circular error at 90% confidence.",
+      "Size": 8,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "SNALE": {
+      "Name": "Segment Absolute LE90",
+      "Description": "This field indicates the segment absolute linear error at 90% confidence.",
+      "Size": 8,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "SNMCE": {
+      "Name": "Segment Mensuration (1 pixel) CE90",
+      "Description": "This field indicates the segment mensuration circular error (1 pixel) at 90% confidence.",
+      "Size": 8,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "SNMLE": {
+      "Name": "Segment Mensuration (1 pixel) LE90",
+      "Description": "This field indicates the segment mensuration linear error (1 pixel) at 90% confidence.",
+      "Size": 8,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "EXACERF": {
+      "Name": "Exceeds Absolute CE Rqmt Flag",
+      "Description": "This field indicates whether the segment exceeds the absolute CE requirement flag.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["Y", "N"]          
+        }        
+      ]
+    },
+    "EXALERF": {
+      "Name": "Exceeds Absolute LE Rqmt Flag",
+      "Description": "This field indicates whether the segment exceeds the absolute LE requirement flag.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["Y", "N"]          
+        }        
+      ]
+    },
+    "SNRCE0_1": {
+      "Name": "Segment Relative CEP (0-1 nm), (50%)",
+      "Description": "This field indicates the segment relative CEP (0-1 nm) at 50% confidence.",
+      "Size": 8,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "SNRLE0_1": {
+      "Name": "Segment Relative LEP (0-1 nm), (50%)",
+      "Description": "This field indicates the segment relative LEP (0-1 nm) at 50% confidence.",
+      "Size": 8,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "SNRCE1_5": {
+      "Name": "Segment Relative CEP (1-5 nm), (50%)",
+      "Description": "This field indicates the segment relative CEP (1-5 nm) at 50% confidence.",
+      "Size": 8,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "SNRLE1_5": {
+      "Name": "Segment Relative LEP (1-5 nm), (50%)",
+      "Description": "This field indicates the segment relative LEP (1-5 nm) at 50% confidence.",
+      "Size": 8,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "SNRCE5_15": {
+      "Name": "Segment Relative CEP (5-15 nm), (50%)",
+      "Description": "This field indicates the segment relative CEP (5-15 nm) at 50% confidence.",
+      "Size": 8,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "SNRLE5_15": {
+      "Name": "Segment Relative LEP (5-15 nm), (50%)",
+      "Description": "This field indicates the segment relative LEP (5-15 nm) at 50% confidence.",
+      "Size": 8,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "SNRCE15_30": {
+      "Name": "Segment Relative CEP (15-30 nm), (50%)",
+      "Description": "This field indicates the segment relative CEP (15-30 nm) at 50% confidence.",
+      "Size": 8,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "SNRLE15_30": {
+      "Name": "Segment Relative LEP (15-30 nm), (50%)",
+      "Description": "This field indicates the segment relative LEP (15-30 nm) at 50% confidence.",
+      "Size": 8,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "SNRCE30": {
+      "Name": "Segment Relative CEP (>30 nm), (50%)",
+      "Description": "This field indicates the segment relative CEP (>30 nm) at 50% confidence.",
+      "Size": 8,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "SNRLE30": {
+      "Name": "Segment Relative LEP (>30 nm), (50%)",
+      "Description": "This field indicates the segment relative LEP (>30 nm) at 50% confidence.",
+      "Size": 8,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100.00
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "EXRCE0_1": {
+      "Name": "Exceeds Relative CEP (0-1 nm) Rqmt Flag",
+      "Description": "This field indicates whether the segment exceeds the relative CEP (0-1 nm) requirement flag.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["Y", "N"]          
+        }        
+      ]
+    },
+    "EXRLE0_1": {
+      "Name": "Exceeds Relative LEP (0-1 nm) Rqmt Flag",
+      "Description": "This field indicates whether the segment exceeds the relative LEP (0-1 nm) requirement flag.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["Y", "N"]          
+        }        
+      ]
+    },
+    "EXRCE1_5": {
+      "Name": "Exceeds Relative CEP (1-5 nm) Rqmt Flag",
+      "Description": "This field indicates whether the segment exceeds the relative CEP (1-5 nm) requirement flag.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["Y", "N"]          
+        }        
+      ]
+    },
+    "EXRLE1_5": {
+      "Name": "Exceeds Relative LEP (1-5 nm) Rqmt Flag",
+      "Description": "This field indicates whether the segment exceeds the relative LEP (1-5 nm) requirement flag.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["Y", "N"]          
+        }        
+      ]
+    },
+    "EXRCE5_15": {
+      "Name": "Exceeds Relative CEP (5-15 nm) Rqmt Flag",
+      "Description": "This field indicates whether the segment exceeds the relative CEP (5-15 nm) requirement flag.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["Y", "N"]          
+        }        
+      ]
+    },
+    "EXRLE5_15": {
+      "Name": "Exceeds Relative LEP (5-15 nm) Rqmt Flag",
+      "Description": "This field indicates whether the segment exceeds the relative LEP (5-15 nm) requirement flag.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["Y", "N"]          
+        }        
+      ]
+    },
+    "EXRCE15_30": {
+      "Name": "Exceeds Relative CEP (15-30 nm) Rqmt Flag",
+      "Description": "This field indicates whether the segment exceeds the relative CEP (15-30 nm) requirement flag.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["Y", "N"]          
+        }        
+      ]
+    },
+    "EXRLE15_30": {
+      "Name": "Exceeds Relative LEP (15-30 nm) Rqmt Flag",
+      "Description": "This field indicates whether the segment exceeds the relative LEP (15-30 nm) requirement flag.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["Y", "N"]          
+        }        
+      ]
+    },
+    "EXRCE30": {
+      "Name": "Exceeds Relative CEP (>30 nm) Rqmt Flag",
+      "Description": "This field indicates whether the segment exceeds the relative CEP (>30 nm) requirement flag.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["Y", "N"]          
+        }        
+      ]
+    },
+    "EXRLE30": {
+      "Name": "Exceeds Relative LEP (>30 nm) Rqmt Flag",
+      "Description": "This field indicates whether the segment exceeds the relative LEP (>30 nm) requirement flag.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["Y", "N"]          
+        }        
+      ]
+    }    
+  }
+}

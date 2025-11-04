@@ -1,0 +1,5 @@
+<DataType Name="DETable">
+  <DisplayName>Table</DisplayName>
+  <Description>Tabular data.</Description>
+</DataType>
+

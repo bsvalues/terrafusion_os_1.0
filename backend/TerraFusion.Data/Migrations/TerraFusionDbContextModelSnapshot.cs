@@ -1119,6 +1119,9 @@ namespace TerraFusion.Data.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("numeric(18,2)");
 
+                    b.Property<DateTime>("AssessmentDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<Guid>("CountyId")
                         .HasColumnType("uuid");
 
@@ -1130,6 +1133,9 @@ namespace TerraFusion.Data.Migrations
 
                     b.Property<decimal>("LandValue")
                         .HasColumnType("numeric");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal>("MarketValue")
                         .HasColumnType("numeric");
@@ -1152,9 +1158,17 @@ namespace TerraFusion.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<string>("PropertyId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
                     b.Property<string>("PropertyType")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
+
+                    b.Property<int>("TaxYear")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");

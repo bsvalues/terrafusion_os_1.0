@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('terra_fusion_ui.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('terra_fusion_ui.job_details', job_id=job.id) }}">Job Details</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Audit Log</li>
+                </ol>
+            </nav>
+            <h1 class="terrafusion-title">Audit Log</h1>
+            <p class="lead">Job ID: {{ job.id }}</p>
+        </div>
+        <div class="col-auto">
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-download"></i> Export
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                    <li><a class="dropdown-item" href="#" onclick="exportAudit('csv')">CSV</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="exportAudit('json')">JSON</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="exportAudit('pdf')">PDF</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Filters</h5>
+        </div>
+        <div class="card-body">
+            <form id="filterForm" class="row">
+                <div class="col-md-3">
+                    <div class="form-group mb-3">
+                        <label for="eventTypeFilter" class="form-label">Event Type</label>
+                        <select class="form-select" id="eventTypeFilter">
+                            <option value="">All Event Types</option>
+                            {% if audit_events %}
+                                {% set event_types = audit_events|map(attribute='type')|unique|list %}
+                                {% for event_type in event_types %}
+                                    <option value="{{ event_type }}">{{ event_type }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group mb-3">
+                        <label for="categoryFilter" class="form-label">Category</label>
+                        <select class="form-select" id="categoryFilter">
+                            <option value="">All Categories</option>
+                            {% if audit_events %}
+                                {% set categories = audit_events|map(attribute='category')|unique|list %}
+                                {% for category in categories %}
+                                    <option value="{{ category }}">{{ category }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group mb-3">
+                        <label for="dateFilter" class="form-label">Date Range</label>
+                        <select class="form-select" id="dateFilter">
+                            <option value="">All Time</option>
+                            <option value="today">Today</option>
+                            <option value="yesterday">Yesterday</option>
+                            <option value="last7days">Last 7 Days</option>
+                            <option value="last30days">Last 30 Days</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="button" class="btn btn-primary mb-3 w-100" onclick="applyFilters()">Apply Filters</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Audit Summary -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Events</h5>
+                    <h2 class="display-4">{{ audit_events|length }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Success</h5>
+                    <h2 class="display-4">{{ audit_events|selectattr('category', 'equalto', 'success')|list|length }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Warning</h5>
+                    <h2 class="display-4">{{ audit_events|selectattr('category', 'equalto', 'warning')|list|length }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Error</h5>
+                    <h2 class="display-4">{{ audit_events|selectattr('category', 'equalto', 'error')|list|length }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audit Timeline -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Audit Events</h5>
+        </div>
+        <div class="card-body p-0">
+            {% if audit_events and audit_events|length > 0 %}
+                <div class="timeline">
+                    {% for event in audit_events %}
+                        <div class="timeline-item audit-event" 
+                             data-event-type="{{ event.type }}" 
+                             data-category="{{ event.category }}" 
+                             data-time="{{ event.time }}">
+                            <div class="timeline-marker bg-{% if event.category == 'success' %}success{% elif event.category == 'warning' %}warning{% elif event.category == 'error' %}danger{% else %}info{% endif %}"></div>
+                            <div class="timeline-content">
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h6 class="mb-0">{{ event.type }}</h6>
+                                            <small class="text-muted">{{ event.time }}</small>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">{{ event.message }}</p>
+                                        {% if event.details %}
+                                            <div class="collapse" id="details{{ loop.index }}">
+                                                <div class="card card-body bg-light">
+                                                    <pre class="mb-0"><code>{{ event.details|tojson(indent=2) }}</code></pre>
+                                                </div>
+                                            </div>
+                                            <button class="btn btn-sm btn-outline-secondary mt-2" type="button" data-bs-toggle="collapse" data-bs-target="#details{{ loop.index }}" aria-expanded="false" aria-controls="details{{ loop.index }}">
+                                                Show Details
+                                            </button>
+                                        {% endif %}
+                                        
+                                        {% if event.table %}
+                                            <span class="badge bg-secondary">Table: {{ event.table }}</span>
+                                        {% endif %}
+                                        
+                                        {% if event.component %}
+                                            <span class="badge bg-secondary">Component: {{ event.component }}</span>
+                                        {% endif %}
+                                        
+                                        {% if event.user %}
+                                            <span class="badge bg-secondary">User: {{ event.user }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info m-3">
+                    No audit events found for this job.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    // Filter functionality
+    function applyFilters() {
+        const eventTypeFilter = document.getElementById('eventTypeFilter').value;
+        const categoryFilter = document.getElementById('categoryFilter').value;
+        const dateFilter = document.getElementById('dateFilter').value;
+        
+        const items = document.querySelectorAll('.audit-event');
+        
+        items.forEach(item => {
+            const eventType = item.dataset.eventType;
+            const category = item.dataset.category;
+            const time = new Date(item.dataset.time);
+            
+            // Event type filter
+            const eventTypeMatch = !eventTypeFilter || eventType === eventTypeFilter;
+            
+            // Category filter
+            const categoryMatch = !categoryFilter || category === categoryFilter;
+            
+            // Date filter
+            let dateMatch = true;
+            if (dateFilter) {
+                const now = new Date();
+                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                
+                if (dateFilter === 'today') {
+                    dateMatch = time >= today;
+                } else if (dateFilter === 'yesterday') {
+                    const yesterday = new Date(today);
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    dateMatch = time >= yesterday && time < today;
+                } else if (dateFilter === 'last7days') {
+                    const last7Days = new Date(today);
+                    last7Days.setDate(last7Days.getDate() - 7);
+                    dateMatch = time >= last7Days;
+                } else if (dateFilter === 'last30days') {
+                    const last30Days = new Date(today);
+                    last30Days.setDate(last30Days.getDate() - 30);
+                    dateMatch = time >= last30Days;
+                }
+            }
+            
+            if (eventTypeMatch && categoryMatch && dateMatch) {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+    
+    // Export functionality
+    function exportAudit(format) {
+        // In a real implementation, this would make a request to the server
+        // to generate the export file. For now, just show an alert.
+        alert(`Export in ${format.toUpperCase()} format requested. This feature would be implemented in the production version.`);
+    }
+</script>
+{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    .terrafusion-title {
+        color: #3f51b5;
+        border-bottom: 2px solid #3f51b5;
+        padding-bottom: 8px;
+    }
+    
+    .card {
+        transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .timeline {
+        position: relative;
+        padding: 1rem;
+        margin: 0 auto;
+    }
+    
+    .timeline-item {
+        position: relative;
+        padding-left: 40px;
+        margin-bottom: 1rem;
+    }
+    
+    .timeline-marker {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 15px;
+        border-radius: 3px;
+    }
+    
+    .timeline-content {
+        padding-left: 1rem;
+    }
+    
+    pre {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.25rem;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+</style>
+{% endblock %}

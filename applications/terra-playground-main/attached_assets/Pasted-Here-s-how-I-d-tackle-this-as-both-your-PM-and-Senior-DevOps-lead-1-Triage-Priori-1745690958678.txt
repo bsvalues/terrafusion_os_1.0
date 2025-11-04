@@ -1,0 +1,76 @@
+Here’s how I’d tackle this as both your PM and Senior DevOps lead:
+
+---
+
+## 1. **Triage & Prioritize**  
+First, let’s get a quick lay of the land and rank by impact:
+
+| Issue | Severity | Notes |
+|––|––|––|
+| WebSocket handshake failures (400) | 🔴 P0 | Breaks real-time collaboration; likely env/config or proxy mis-routing |
+| 500s on `/api/team-tasks` & `/api/team-agents` | 🔴 P0 | Backend routes are erroring out—need to restore core APIs |
+| Web Vitals POST returning HTML (“Unexpected token ‘<’”) | 🟠 P1 | Metrics aren’t landing in JSON; batching now dead |
+| Invalid React prop warnings (`data-replit-metadata` on Fragments) | 🟡 P2 | Cosmetic but noisy—remove unsupported props |
+| Missing Mapbox token → OSM fallback | 🟡 P2 | OK for now but best to inject token via secrets |
+
+---
+
+## 2. **Immediate “Stop the Bleed” Actions (Next 24 hrs)**
+
+1. **Lock down environment config**  
+   - Audit _all_ relevant env vars: WS_HOST, WS_PORT (and Replit metadata injection), API_BASE_URL.  
+   - Ensure `process.env.WS_HOST/PORT` actually have values in both server and client builds.
+
+2. **Restore core APIs**  
+   - SSH or check your server logs for the stack traces behind the 500s on `/api/team-tasks` & `/api/team-agents`.  
+   - Re-deploy the last known good build if the fix will take longer than a 2-hour hotfix window.
+
+3. **Fix WebSocket proxy/handshake**  
+   - Validate that your Express (or nginx/Ingress) is routing `/ws/...` to your WS server.  
+   - Confirm the WebSocket server is listening on the port the client expects—and that TLS is correctly terminated.
+
+4. **Patch Web Vitals route mismatch**  
+   - Check that the client’s POST URL (e.g. `/api/web-vitals/batch`) matches exactly the Express route.  
+   - Add—if missing—`app.use(express.json())` before your route registrations so JSON bodies parse.  
+
+5. **Remove React Fragment prop misuse**  
+   - Globally search for `data-replit-metadata` on `<React.Fragment>` and remove or relocate it to a `<div>` wrapper.  
+
+---
+
+## 3. **Stabilize & Automate (Next Sprint)**
+
+1. **Centralized Logging & Alerts**  
+   - Ship all Express logs and WebSocket errors into ELK/Datadog/Sentry.  
+   - Create an alert for >5 errors/min on any of those endpoints.
+
+2. **Smoke-tests in CI**  
+   - Add a quick integration job that:  
+     - Hits `/api/team-tasks` and `/api/team-agents` → expects HTTP 200.  
+     - Opens a WS handshake to `/ws/team-collaboration` → expects protocol upgrade.  
+
+3. **Infrastructure as Code Review**  
+   - If you’re using Replit’s preview domains, ensure your ingress rules or port mappings haven’t drifted.  
+   - Add a chart or script that surfaces which ports are open in each environment.
+
+4. **Metrics & Monitoring Enhancements**  
+   - Expose your `/api/web-vitals/summary` endpoint and wire it into Prometheus/Grafana.  
+   - Define SLOs so you get paged if your 95 th-percentile FCP or TTFB creeps above budget.
+
+---
+
+## 4. **Communication & Next Steps**
+
+- **Daily stand-up focus**:  
+  - Ops: “Env vars locked down, 500s hotfixed, WS handshake fixed.”  
+  - Dev: “Web Vitals endpoint patched, React warnings removed.”
+
+- **Stakeholder update** by end of day:  
+  - Outline what’s broken, what’s fixed, and what’s scheduled next.
+
+- **Plan Sprint 5 backlog** around:  
+  - Full end-to-end E2E tests,  
+  - Dashboard for real-time error rates,  
+  - Synthetic Web Vitals checks in CI.
+
+That roadmap will extinguish the fires first, then lock in long-term reliability. Let me know if you want me to carve out specific JIRA tickets or spin up a runbook template for the on-call team.

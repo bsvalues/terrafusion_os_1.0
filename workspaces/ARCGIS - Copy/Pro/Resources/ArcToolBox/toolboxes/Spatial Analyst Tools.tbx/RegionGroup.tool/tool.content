@@ -1,0 +1,149 @@
+{
+    "type": "FunctionTool",
+    "guid": "{463d71e2-a543-4d3c-91b6-413273932c4e}",
+    "displayname": "$rc:title",
+    "helpcontent": "8050006",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9",
+        "10"
+    ],
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "params": {
+        "in_raster": {
+            "displayname": "$rc:in_raster.title",
+            "datatype": {
+                "type": "GPSAGeoData"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "true",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_raster.descr"
+        },
+        "out_raster": {
+            "direction": "out",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_raster.descr"
+        },
+        "number_neighbors": {
+            "type": "optional",
+            "displayname": "$rc:number_neighbors.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "FOUR",
+                        "code": "$rc:number_neighbors.domain.FOUR"
+                    },
+                    {
+                        "value": "EIGHT",
+                        "code": "$rc:number_neighbors.domain.EIGHT"
+                    }
+                ]
+            },
+            "value": "FOUR",
+            "description": "$rc:number_neighbors.descr"
+        },
+        "zone_connectivity": {
+            "type": "optional",
+            "displayname": "$rc:zone_connectivity.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "WITHIN",
+                        "code": "$rc:zone_connectivity.domain.WITHIN"
+                    },
+                    {
+                        "value": "CROSS",
+                        "code": "$rc:zone_connectivity.domain.CROSS"
+                    }
+                ]
+            },
+            "value": "WITHIN",
+            "description": "$rc:zone_connectivity.descr"
+        },
+        "add_link": {
+            "type": "optional",
+            "displayname": "$rc:add_link.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ADD_LINK"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_LINK"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:add_link.descr"
+        },
+        "excluded_value": {
+            "type": "optional",
+            "displayname": "$rc:excluded_value.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:excluded_value.descr"
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "cellSize",
+        "cellSizeProjectionMethod",
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "mask",
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

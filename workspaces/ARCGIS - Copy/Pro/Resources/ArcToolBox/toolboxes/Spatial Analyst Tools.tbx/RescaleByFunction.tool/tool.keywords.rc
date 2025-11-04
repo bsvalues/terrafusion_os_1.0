@@ -1,0 +1,14 @@
+{
+    "set": [
+        "continuous",
+        "linear",
+        "modeling",
+        "nonlinear",
+        "reclassification",
+        "reclassify",
+        "rescale",
+        "scale",
+        "suitability",
+        "transformation"
+    ]
+}

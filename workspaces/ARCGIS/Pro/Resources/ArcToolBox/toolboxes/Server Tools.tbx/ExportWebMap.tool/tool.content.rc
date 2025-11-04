@@ -1,0 +1,32 @@
+{
+    "map": {
+        "description": "Returns a printable page layout or basic map of a specified area of interest based on the state of a web app (for example, included services, layer visibility settings, and client-side graphics).",
+        "format.descr": "<xdoc><p>Specifies the format in which the map image for printing will be delivered.</p><ul><li><span title=\"PNG8\">8-bit Portable Network Graphics (PNG8)</span>—8-bit Portable Network Graphics (PNG8) will be used. This is the default.</li><li><span title=\"PDF\">Portable Document Format (PDF)</span>—Portable Document Format (PDF) will be used.</li><li><span title=\"PNG32\">32-bit Portable Network Graphics (PNG32)</span>—32-bit Portable Network Graphics (PNG32) will be used.</li><li><span title=\"JPG\">Joint Photographic Experts Group (JPG)</span>— Joint Photographic Experts Group (JPG) will be used.</li><li><span title=\"GIF\">Graphics Interchange Format (GIF)</span>— Graphics Interchange Format (GIF) will be used.</li><li><span title=\"EPS\">Encapsulated PostScript (EPS)</span>— Encapsulated PostScript (EPS) will be used.</li><li><span title=\"SVG\">Scalable Vector Graphics (SVG)</span>—Scalable Vector Graphics (SVG) will be used.</li><li><span title=\"SVGZ\">Compressed Scalable Vector Graphics (SVGZ)</span>—Compressed Scalable Vector Graphics (SVGZ) will be used.</li><li><span title=\"AIX\">Adobe Illustrator Exchange (AIX)</span>—Adobe Illustrator Exchange (AIX) will be used.</li><li><span title=\"TIFF\">Tag Image File Format (TIFF)</span>—Tag Image File Format (TIFF) will be used.</li></ul><note type=\"note\"/><p group=\"note\">The background of the output file is always opaque.</p></xdoc>",
+        "format.domain.AIX": "Adobe Illustrator Exchange (AIX)",
+        "format.domain.EPS": "Encapsulated PostScript (EPS)",
+        "format.domain.GIF": "Graphics Interchange Format (GIF)",
+        "format.domain.JPG": "Joint Photographic Experts Group (JPG)",
+        "format.domain.PDF": "Portable Document Format (PDF)",
+        "format.domain.PNG32": "32-bit Portable Network Graphics (PNG32)",
+        "format.domain.PNG8": "8-bit Portable Network Graphics (PNG8)",
+        "format.domain.SVG": "Scalable Vector Graphics (SVG)",
+        "format.domain.SVGZ": "Compressed Scalable Vector Graphics (SVGZ)",
+        "format.domain.TIFF": "Tag Image File Format (TIFF)",
+        "format.title": "Format",
+        "layout_item_id.descr": "<xdoc><p>The portal ID (in JSON format) of the layout item that will be used for templates. Use the format: {&quot;id&quot;: &quot;&lt;portal-id&gt;&quot;}. When a value is provided, this parameter takes precedence over the <span class=\"esri_uicontrol\">Layout Template</span> parameter.</p></xdoc>",
+        "layout_item_id.title": "Layout Item ID",
+        "layout_template.descr": "The name of a template from the list or the keyword MAP_ONLY. When MAP_ONLY is used or an empty string is passed in, the output map will not contain any page layout elements such as title, legend, or scale bar.",
+        "layout_template.title": "Layout Template",
+        "layout_templates_folder.descr": "The full path to the folder containing layout or report pages (.pagx, .rptx, and .rptt files) to be used as templates. The default location is <install_directory>\\Resources\\ArcToolBox\\Templates\\ExportWebMapTemplates.",
+        "layout_templates_folder.title": "Templates Folder",
+        "output_file.descr": "<xdoc><p>The output file name. The extension of the file depends on the <span class=\"esri_uicontrol\">Format</span> parameter value.</p></xdoc>",
+        "output_file.title": "Output File",
+        "report_item_id.descr": "<xdoc><p>The portal ID (in JSON format) of the report item that will be used for templates. Use the format: {&quot;id&quot;: &quot;&lt;portal-id&gt;&quot;}. When a value is provided, this parameter takes precedence over the <span class=\"esri_uicontrol\">Report Template</span> parameter.</p></xdoc>",
+        "report_item_id.title": "Report Item ID",
+        "report_template.descr": "<xdoc><p>The name of the report template.</p><p>When this parameter value is provided, the <span class=\"esri_uicontrol\">Format</span> parameter must be set to <span class=\"esri_uicontrol\">Portable Document Format (PDF)</span>. When this parameter is unspecified, the output file will not contain any reports.</p></xdoc>",
+        "report_template.title": "Report Template",
+        "title": "Export Web Map",
+        "web_map_as_json.descr": "A JSON representation of the state of the map to be exported as it appears in the web app. See the ExportWebMap specification to understand how to format this text. ArcGIS API for JavaScript allows you to get this JSON string from the map.",
+        "web_map_as_json.title": "Web Map as JSON"
+    }
+}

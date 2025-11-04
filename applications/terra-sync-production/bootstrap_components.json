@@ -1,0 +1,449 @@
+{
+  "terrafusion_design_system": {
+    "version": "2.0.0",
+    "framework": "Bootstrap 5.3.2",
+    "theme": "Terrafusion Enterprise Dark",
+    "description": "Complete design system for Terrafusion Platform with enterprise-grade components and unified branding",
+    
+    "color_palette": {
+      "primary": {
+        "brand_blue": "#001529",
+        "description": "Primary brand color - deep navy blue for backgrounds and main elements"
+      },
+      "accent": {
+        "cyan_bright": "#00e5ff",
+        "description": "Accent color - bright cyan for highlights, buttons, and interactive elements"
+      },
+      "neutral": {
+        "white": "#ffffff",
+        "light_gray": "#f8f9fa",
+        "medium_gray": "#6c757d",
+        "dark_gray": "#343a40",
+        "charcoal": "#212529"
+      },
+      "semantic": {
+        "success": "#28a745",
+        "warning": "#ffc107",
+        "danger": "#dc3545",
+        "info": "#17a2b8"
+      }
+    },
+
+    "typography": {
+      "font_family": {
+        "primary": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+        "monospace": "'SF Mono', Monaco, Inconsolata, 'Roboto Mono', 'Source Code Pro', monospace"
+      },
+      "font_sizes": {
+        "h1": "2.5rem",
+        "h2": "2rem", 
+        "h3": "1.75rem",
+        "h4": "1.5rem",
+        "h5": "1.25rem",
+        "h6": "1rem",
+        "body": "1rem",
+        "small": "0.875rem",
+        "xs": "0.75rem"
+      },
+      "font_weights": {
+        "light": 300,
+        "normal": 400,
+        "medium": 500,
+        "semibold": 600,
+        "bold": 700
+      }
+    },
+
+    "spacing": {
+      "base_unit": "0.25rem",
+      "scale": {
+        "xs": "0.25rem",
+        "sm": "0.5rem", 
+        "md": "1rem",
+        "lg": "1.5rem",
+        "xl": "3rem",
+        "xxl": "4.5rem"
+      }
+    },
+
+    "components": {
+      "navbar": {
+        "class": "navbar navbar-expand-lg navbar-dark",
+        "background": "#001529",
+        "brand_color": "#00e5ff",
+        "link_color": "#ffffff",
+        "link_hover_color": "#00e5ff",
+        "height": "64px",
+        "example": "<nav class=\"navbar navbar-expand-lg navbar-dark\" style=\"background-color: #001529;\"><div class=\"container-fluid\"><a class=\"navbar-brand\" href=\"#\" style=\"color: #00e5ff;\">Terrafusion</a></div></nav>"
+      },
+
+      "sidebar": {
+        "class": "sidebar bg-dark",
+        "background": "#001529",
+        "width": "250px",
+        "link_color": "#ffffff",
+        "link_hover_background": "rgba(0, 229, 255, 0.1)",
+        "link_active_color": "#00e5ff",
+        "example": "<div class=\"sidebar bg-dark\" style=\"background-color: #001529; width: 250px;\"><ul class=\"nav flex-column\"><li class=\"nav-item\"><a class=\"nav-link text-white\" href=\"#\">Dashboard</a></li></ul></div>"
+      },
+
+      "cards": {
+        "default": {
+          "class": "card",
+          "background": "#ffffff",
+          "border": "1px solid #dee2e6",
+          "border_radius": "0.375rem",
+          "shadow": "0 0.125rem 0.25rem rgba(0, 0, 0, 0.075)"
+        },
+        "dark": {
+          "class": "card bg-dark text-white",
+          "background": "#343a40",
+          "border": "1px solid #495057",
+          "color": "#ffffff"
+        },
+        "metric": {
+          "class": "card metric-card",
+          "background": "linear-gradient(135deg, #001529 0%, #003a5c 100%)",
+          "color": "#ffffff",
+          "accent_color": "#00e5ff"
+        }
+      },
+
+      "buttons": {
+        "primary": {
+          "class": "btn btn-primary",
+          "background": "#00e5ff",
+          "color": "#001529",
+          "border": "1px solid #00e5ff",
+          "hover_background": "#00b8cc",
+          "example": "<button class=\"btn btn-primary\" style=\"background-color: #00e5ff; border-color: #00e5ff; color: #001529;\">Primary Action</button>"
+        },
+        "secondary": {
+          "class": "btn btn-outline-primary",
+          "background": "transparent",
+          "color": "#00e5ff",
+          "border": "1px solid #00e5ff",
+          "hover_background": "#00e5ff",
+          "hover_color": "#001529"
+        },
+        "dark": {
+          "class": "btn btn-dark",
+          "background": "#001529",
+          "color": "#ffffff",
+          "border": "1px solid #001529"
+        }
+      },
+
+      "tables": {
+        "default": {
+          "class": "table table-striped table-hover",
+          "header_background": "#001529",
+          "header_color": "#ffffff",
+          "row_hover": "rgba(0, 229, 255, 0.1)",
+          "example": "<table class=\"table table-striped table-hover\"><thead class=\"table-dark\"><tr><th>Column 1</th><th>Column 2</th></tr></thead><tbody><tr><td>Data 1</td><td>Data 2</td></tr></tbody></table>"
+        },
+        "dark": {
+          "class": "table table-dark table-striped table-hover",
+          "background": "#343a40",
+          "color": "#ffffff"
+        }
+      },
+
+      "forms": {
+        "input": {
+          "class": "form-control",
+          "border": "1px solid #ced4da",
+          "focus_border": "#00e5ff",
+          "focus_shadow": "0 0 0 0.2rem rgba(0, 229, 255, 0.25)"
+        },
+        "select": {
+          "class": "form-select",
+          "border": "1px solid #ced4da",
+          "focus_border": "#00e5ff"
+        },
+        "label": {
+          "class": "form-label",
+          "color": "#495057",
+          "font_weight": 500
+        }
+      },
+
+      "alerts": {
+        "success": {
+          "class": "alert alert-success",
+          "background": "#d1f2eb",
+          "border": "#b7e4c7",
+          "color": "#155724"
+        },
+        "warning": {
+          "class": "alert alert-warning", 
+          "background": "#fff3cd",
+          "border": "#ffeaa7",
+          "color": "#856404"
+        },
+        "danger": {
+          "class": "alert alert-danger",
+          "background": "#f8d7da",
+          "border": "#f5c6cb", 
+          "color": "#721c24"
+        },
+        "info": {
+          "class": "alert alert-info",
+          "background": "#cce8f4",
+          "border": "#b3e0ff",
+          "color": "#0c5460"
+        }
+      },
+
+      "badges": {
+        "success": {
+          "class": "badge bg-success",
+          "background": "#28a745",
+          "color": "#ffffff"
+        },
+        "warning": {
+          "class": "badge bg-warning",
+          "background": "#ffc107",
+          "color": "#212529"
+        },
+        "danger": {
+          "class": "badge bg-danger",
+          "background": "#dc3545",
+          "color": "#ffffff"
+        },
+        "primary": {
+          "class": "badge bg-primary",
+          "background": "#00e5ff",
+          "color": "#001529"
+        }
+      },
+
+      "progress_bars": {
+        "default": {
+          "class": "progress",
+          "background": "#e9ecef",
+          "bar_background": "#00e5ff",
+          "height": "1rem"
+        },
+        "striped": {
+          "class": "progress",
+          "bar_class": "progress-bar progress-bar-striped progress-bar-animated",
+          "background": "#00e5ff"
+        }
+      },
+
+      "modals": {
+        "default": {
+          "class": "modal fade",
+          "dialog_class": "modal-dialog modal-lg",
+          "content_class": "modal-content",
+          "header_background": "#001529",
+          "header_color": "#ffffff",
+          "close_button_color": "#ffffff"
+        }
+      },
+
+      "pagination": {
+        "default": {
+          "class": "pagination",
+          "item_class": "page-item",
+          "link_class": "page-link",
+          "active_background": "#00e5ff",
+          "active_color": "#001529"
+        }
+      },
+
+      "dropdowns": {
+        "default": {
+          "class": "dropdown",
+          "menu_class": "dropdown-menu",
+          "item_class": "dropdown-item",
+          "hover_background": "rgba(0, 229, 255, 0.1)"
+        }
+      }
+    },
+
+    "layout_patterns": {
+      "dashboard_grid": {
+        "container": "container-fluid",
+        "row": "row g-3",
+        "metric_cards": "col-xl-3 col-lg-4 col-md-6 col-sm-12",
+        "charts": "col-xl-8 col-lg-12",
+        "side_panel": "col-xl-4 col-lg-12"
+      },
+      
+      "two_column": {
+        "container": "container-fluid",
+        "main_content": "col-lg-9 col-md-8",
+        "sidebar": "col-lg-3 col-md-4"
+      },
+
+      "three_column": {
+        "container": "container-fluid", 
+        "left_sidebar": "col-xl-2 col-lg-3",
+        "main_content": "col-xl-8 col-lg-6",
+        "right_sidebar": "col-xl-2 col-lg-3"
+      }
+    },
+
+    "utility_classes": {
+      "text_colors": {
+        "brand": "text-primary",
+        "accent": "text-info", 
+        "muted": "text-muted",
+        "white": "text-white",
+        "dark": "text-dark"
+      },
+      
+      "background_colors": {
+        "brand": "bg-primary",
+        "dark": "bg-dark",
+        "light": "bg-light",
+        "white": "bg-white"
+      },
+
+      "spacing": {
+        "margin": "m-0, m-1, m-2, m-3, m-4, m-5",
+        "padding": "p-0, p-1, p-2, p-3, p-4, p-5",
+        "margin_top": "mt-0, mt-1, mt-2, mt-3, mt-4, mt-5",
+        "padding_bottom": "pb-0, pb-1, pb-2, pb-3, pb-4, pb-5"
+      }
+    },
+
+    "custom_css": {
+      "variables": {
+        ":root": {
+          "--tf-brand-blue": "#001529",
+          "--tf-accent-cyan": "#00e5ff",
+          "--tf-white": "#ffffff",
+          "--tf-gray-100": "#f8f9fa",
+          "--tf-gray-600": "#6c757d",
+          "--tf-gray-900": "#212529"
+        }
+      },
+
+      "component_overrides": {
+        ".navbar-brand": {
+          "font-weight": "bold",
+          "font-size": "1.5rem",
+          "color": "var(--tf-accent-cyan) !important"
+        },
+        
+        ".btn-primary": {
+          "background-color": "var(--tf-accent-cyan)",
+          "border-color": "var(--tf-accent-cyan)",
+          "color": "var(--tf-brand-blue)"
+        },
+
+        ".btn-primary:hover": {
+          "background-color": "#00b8cc",
+          "border-color": "#00b8cc",
+          "color": "var(--tf-brand-blue)"
+        },
+
+        ".table-dark": {
+          "background-color": "var(--tf-brand-blue)"
+        },
+
+        ".bg-primary": {
+          "background-color": "var(--tf-brand-blue) !important"
+        },
+
+        ".text-primary": {
+          "color": "var(--tf-accent-cyan) !important"
+        },
+
+        ".metric-card": {
+          "background": "linear-gradient(135deg, var(--tf-brand-blue) 0%, #003a5c 100%)",
+          "border": "none",
+          "color": "var(--tf-white)"
+        },
+
+        ".metric-card .card-title": {
+          "color": "var(--tf-accent-cyan)",
+          "font-size": "2.5rem",
+          "font-weight": "bold",
+          "margin-bottom": "0.5rem"
+        },
+
+        ".sidebar .nav-link": {
+          "color": "var(--tf-white)",
+          "padding": "0.75rem 1rem",
+          "border-radius": "0.375rem",
+          "margin-bottom": "0.25rem"
+        },
+
+        ".sidebar .nav-link:hover": {
+          "background-color": "rgba(0, 229, 255, 0.1)",
+          "color": "var(--tf-accent-cyan)"
+        },
+
+        ".sidebar .nav-link.active": {
+          "background-color": "var(--tf-accent-cyan)",
+          "color": "var(--tf-brand-blue)"
+        }
+      }
+    },
+
+    "responsive_breakpoints": {
+      "xs": "0px",
+      "sm": "576px", 
+      "md": "768px",
+      "lg": "992px",
+      "xl": "1200px",
+      "xxl": "1400px"
+    },
+
+    "accessibility": {
+      "focus_indicators": "Visible focus rings using --tf-accent-cyan with 0.2rem offset",
+      "color_contrast": "WCAG AA compliant - minimum 4.5:1 ratio for normal text",
+      "keyboard_navigation": "Full keyboard support for all interactive elements",
+      "screen_reader": "Proper ARIA labels and semantic HTML structure"
+    },
+
+    "implementation_examples": {
+      "metric_dashboard": {
+        "html": "<div class=\"row g-3\"><div class=\"col-xl-3 col-lg-4 col-md-6\"><div class=\"card metric-card\"><div class=\"card-body\"><h5 class=\"card-title\">99.2%</h5><p class=\"card-text\">System Uptime</p></div></div></div></div>"
+      },
+
+      "data_table": {
+        "html": "<div class=\"table-responsive\"><table class=\"table table-striped table-hover\"><thead class=\"table-dark\"><tr><th>Property ID</th><th>Owner</th><th>Assessment</th><th>Status</th></tr></thead><tbody><tr><td>PAR-001</td><td>John Doe</td><td>$250,000</td><td><span class=\"badge bg-success\">Active</span></td></tr></tbody></table></div>"
+      },
+
+      "action_buttons": {
+        "html": "<div class=\"btn-group\" role=\"group\"><button type=\"button\" class=\"btn btn-primary\">Start Sync</button><button type=\"button\" class=\"btn btn-outline-primary\">Export Data</button><button type=\"button\" class=\"btn btn-dark\">Settings</button></div>"
+      },
+
+      "status_indicators": {
+        "html": "<div class=\"d-flex align-items-center\"><div class=\"spinner-border spinner-border-sm text-primary me-2\" role=\"status\"></div><span class=\"text-muted\">Processing...</span></div>"
+      }
+    },
+
+    "icon_system": {
+      "library": "Bootstrap Icons",
+      "cdn": "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css",
+      "common_icons": {
+        "dashboard": "bi-speedometer2",
+        "sync": "bi-arrow-repeat", 
+        "export": "bi-download",
+        "settings": "bi-gear",
+        "users": "bi-people",
+        "analytics": "bi-graph-up",
+        "map": "bi-geo-alt",
+        "database": "bi-server",
+        "success": "bi-check-circle-fill",
+        "warning": "bi-exclamation-triangle-fill",
+        "error": "bi-x-circle-fill",
+        "info": "bi-info-circle-fill"
+      }
+    },
+
+    "animation_patterns": {
+      "fade_in": "animate__animated animate__fadeIn",
+      "slide_in_left": "animate__animated animate__slideInLeft", 
+      "pulse": "animate__animated animate__pulse animate__infinite",
+      "loading_spinner": "spinner-border text-primary",
+      "progress_bar": "progress-bar progress-bar-striped progress-bar-animated"
+    }
+  }
+}

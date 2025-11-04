@@ -1,0 +1,8 @@
+{
+    "map": {
+        "description": "Estimate Raster Analysis Cost",
+        "in_task.title": "Input Raster Analysis Task",
+        "out_cost.title": "Output Cost",
+        "title": "Estimate Raster Analysis Cost"
+    }
+}

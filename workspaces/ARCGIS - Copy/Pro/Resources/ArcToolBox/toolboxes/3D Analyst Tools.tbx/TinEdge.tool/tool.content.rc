@@ -1,0 +1,19 @@
+{
+    "map": {
+        "description": "Creates 3D line features using the triangle edges of a triangulated irregular network (TIN) dataset.",
+        "edge_type.descr": "<xdoc><p>The triangle edge that will be exported.</p><ul><li><span title=\"DATA\">Data Area</span>—Edges representing the interpolation zone. This is the default.</li><li><span title=\"SOFT\">Soft Breaklines</span>—Edges representing gradual breaks in slope.</li><li><span title=\"HARD\">Hard Breaklines</span>—Edges representing distinct breaks in slope.</li><li><span title=\"ENFORCED\">Enforced Edges</span>—Edges that were not introduced by the TIN&apos;s triangulation.</li><li><span title=\"REGULAR\">Regular Edges</span>—Edges that were created by the TIN&apos;s triangulation.</li><li><span title=\"OUTSIDE\">Excluded Edges</span>—Edges that are excluded from the interpolation zone.</li><li><span title=\"ALL\">All Edges</span>—All edges, included those that were excluded from the interpolation zone.</li></ul></xdoc>",
+        "edge_type.domain.ALL": "All Edges",
+        "edge_type.domain.DATA": "Data Area",
+        "edge_type.domain.ENFORCED": "Enforced Edges",
+        "edge_type.domain.HARD": "Hard Breaklines",
+        "edge_type.domain.OUTSIDE": "Excluded Edges",
+        "edge_type.domain.REGULAR": "Regular Edges",
+        "edge_type.domain.SOFT": "Soft Breaklines",
+        "edge_type.title": "Edge Type",
+        "in_tin.descr": "The TIN dataset that will be processed.",
+        "in_tin.title": "Input TIN",
+        "out_feature_class.descr": "The feature class that will be produced.",
+        "out_feature_class.title": "Output Feature Class",
+        "title": "TIN Edge"
+    }
+}

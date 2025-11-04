@@ -1,0 +1,3595 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.Core</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.Core.Domain.BaseObject">
+            <summary>
+            Provides a standard base class for simplifying object comparison.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.Domain.BaseObject.HASH_MULTIPLIER">
+            <summary>
+            Arbitrary value to help ensure hashcode uniqueness.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.Domain.BaseObject.signatureProperties">
+            <summary>
+            Caches the domain signature properties to avoid looking them up for 
+            each instance of the same type.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.BaseObject.Equals(System.Object)">
+            <summary>
+            Override of the Equals() operator to facilitate comparisons of
+            two base objects.
+            </summary>
+            <param name="obj">The object with which to compare the current one
+            for equality.</param>
+            <returns>true if the two objects are equal, otherwise false.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.BaseObject.GetHashCode">
+            <summary>
+            Provides the hashcode of an object using its signature properties.
+            Since it's recommended that GetHashCode change infrequently, if at all,
+            in an object's lifetime, it's important that properties are carefully
+            selected which truly represent the signature of an object.
+            </summary>
+            <returns>a hashcode identifying the current object.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.BaseObject.HasSameObjectSignatureAs(TrueAutomation.Core.Domain.BaseObject)">
+            <summary>
+            Override this method to provide your own comparison routine.
+            </summary>
+            <returns>true if the comparison object has the same signature
+            as this object, otherwise false.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.BaseObject.GetSignatureProperties">
+            <summary>
+            Returns an enumeration of all the signature properties for
+            the current object, using reflection to locate those properties.
+            </summary>
+            <returns>An enumeration of the signature properties for the
+            current object type.</returns>
+            <remarks>This method caches the signature properties for the
+            current type and returns the cached value on subsequent requests
+            for the signature properties for the same type.</remarks>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.BaseObject.GetTypeUnproxied">
+            <summary>
+            Returns the unproxied type of this class, in case it's currently
+            being proxied (by, say, nHibernate or something that behaves in a
+            similar fashion).
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.BaseObject.GetTypeSpecificSignatureProperties">
+            <summary>
+            Enforces the template method pattern to have child objects determine
+            which specific properties should and should not be included in the
+            object signature comparison.
+            </summary>
+            <returns>An enumeration of the signature properties for any
+            objects of the current object's type.</returns>
+        </member>
+        <member name="T:TrueAutomation.Core.Domain.BaseObjectEqualityComparer`1">
+            <summary>
+            Provides a comparer for comparing objects of type <see cref="T:TrueAutomation.Core.Domain.BaseObject" />
+            and anything  that derives from it, such as <see cref="T:TrueAutomation.Core.Domain.Entity" /> and
+            <see cref="T:TrueAutomation.Core.Domain.ValueObject" />.
+            </summary>
+            <typeparam name="T">Specifies the type of object to which this
+            comparer class applies.</typeparam>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.BaseObjectEqualityComparer`1.Equals(`0,`0)">
+            <summary>
+            Defines methods to support the comparison of two objects
+            for equality.
+            </summary>
+            <param name="first">The first object to be compared.</param>
+            <param name="second">The second object to be compared.</param>
+            <returns>True if the two objects are equal, otherwise false.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.BaseObjectEqualityComparer`1.GetHashCode(`0)">
+            <summary>
+            Returns the hashcode for the specified object.
+            </summary>
+            <param name="obj">The object for which to return the hashcode.</param>
+            <returns>The hashcode for the specified object.</returns>
+        </member>
+        <member name="T:TrueAutomation.Core.Domain.Entity">
+            <summary>
+            Provides a base class for any entity objects that will be persisted to
+            a database. This base class supports both an interger-based ID property
+            for the entity as well as comparison support.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.Domain.EntitySignatureAttribute">
+            <summary>
+            Attribute used to indicate a property that makes up part of the unique
+            signature of an entity.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.Domain.EntityWithId`1">
+            <summary>
+            This is the base class for entity types supporting an identifier
+            attribute of variable types.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.Domain.EntityWithId`1.HASH_MULTIPLIER">
+            <summary>
+            Arbitrary value to help ensure hashcode uniqueness.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.Domain.EntityWithId`1.cachedHashcode">
+            <summary>
+            A cached copy of the computed hashcode for the current entity.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Domain.EntityWithId`1.Id">
+            <summary>
+            The Id property may be of type string, int, custom type, etc.
+            
+            This is ignored for XML serialization because it does not have a
+            public setter (which is very much by design).
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.EntityWithId`1.IsTransient">
+            <summary>
+            Transient objects are not associated with an item already in storage.
+            </summary>
+            <remarks>By default, entities are considered transient if they have
+            a null identifier value, or an identifier equal to the default value
+            for the identifier type.</remarks>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.EntityWithId`1.GetTypeSpecificSignatureProperties">
+            <summary>
+            Enforces the template method pattern to have child objects determine
+            which specific properties should and should not be included in the
+            object signature comparison.
+            </summary>
+            <returns>An enumeration of the signature properties for any
+            objects of the current object's type.</returns>
+            <remarks>
+            The signature properties should only include the properties which
+            make up the "domain signature" of the object.
+            
+            If you choose not to override this method (which should be the most
+            common scenario), then you should decorate the appropriate properties
+            with [EntitySignature] and they will be compared automatically.
+            This is the preferred method of managing the domain signature of
+            entity objects.
+            </remarks>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.EntityWithId`1.Equals(System.Object)">
+            <summary>
+            Overloaded Equals() method.
+            </summary>
+            <param name="obj">The entity object to which this one should
+            be compared.</param>
+            <returns>True if the objects are equal, otherwise false.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.EntityWithId`1.GetHashCode">
+            <summary>
+            Overloaded GetHashCode() method to return a hashcode for the
+            current object. For performance reasons we cache the hashcode for
+            the current object and return the cached value on subsequent calls
+            to GetHashCode().
+            </summary>
+            <returns>A hashcode for the current entity object based on all
+            of its signature properties.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.EntityWithId`1.HasSameNonDefaultIdAs(TrueAutomation.Core.Domain.EntityWithId{`0})">
+            <summary>
+            Returns true if the current object and the provided entity have the
+            same id values and those ids are not of the default id value.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.Domain.IDataRecordReference">
+            <summary>
+            Provides an interface for objects that need 
+            to implement a Data Record Reference
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.IDataRecordReference.GetCount">
+            <summary>
+            Returns the number of Data Record references
+            </summary>
+            <returns>The count of the data records</returns>
+        </member>
+        <member name="T:TrueAutomation.Core.Domain.IEntityWithId`1">
+            <summary>
+            This serves as a base interface for entity types.
+            </summary>
+            <typeparam name="T">Specifies the type of ID value that identifies
+            objects of the current object's type.</typeparam>
+        </member>
+        <member name="P:TrueAutomation.Core.Domain.IEntityWithId`1.Id">
+            <summary>
+            The unique identifier associated with this entity.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.IEntityWithId`1.IsTransient">
+            <summary>
+            Indicates whether or not the current entity is transient, i.e. an
+            entity that isn't necessarily one that actually needs to be
+            persisted to a database.
+            </summary>
+            <returns>True if the entity is transient and doesn't require any
+            persistence, otherwise false if it is non-transient.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.IEntityWithId`1.GetSignatureProperties">
+            <summary>
+            Returns the set of signature properties that uniquely define any
+            objects of the current type.
+            </summary>
+            <returns>An enumeration of the signature properties for objects
+            of the current object's type.</returns>
+        </member>
+        <member name="T:TrueAutomation.Core.Domain.IHasAssignedId`1">
+            <summary>
+            An interface in order to let the ID assigned to an object be
+            specified explicitly. Normally we expect entities to *not* have any
+            explicitly assigned IDs.
+            </summary>
+            <typeparam name="T">The type of the ID value.</typeparam>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.IHasAssignedId`1.SetAssignedId(`0)">
+            <summary>
+            Enables the developer to set the ID assigned to an object.
+            </summary>
+            <param name="id">The id value to set for the current object.</param>
+        </member>
+        <member name="T:TrueAutomation.Core.Domain.ValidatableObject">
+            <summary>
+            Implements a base object with validation support.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Domain.ValidatableObject.Validator">
+            <summary>
+            Returns the object validator for objects of the current type.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.ValidatableObject.IsValid">
+            <summary>
+            Returns whether or not the current object is valid.
+            </summary>
+            <returns>Returns true if the current object is valid,
+            otherwise false.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.ValidatableObject.ValidationResults">
+            <summary>
+            Returns the set of validation results for the current object.
+            </summary>
+            <returns>The set of validation results for the current object.</returns>
+        </member>
+        <member name="T:TrueAutomation.Core.Domain.ValueObject">
+            <summary>
+            Provides a standard base class for comparable value objects.
+            Comparison of value objects makes use of all the object's properties,
+            as opposed to entity types which use only the signature properties
+            of the object.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.ValueObject.GetTypeSpecificSignatureProperties">
+            <summary>
+            Enforces the template method pattern to have child objects determine
+            which specific properties should and should not be included in the
+            object signature comparison.
+            </summary>
+            <returns>An enumeration of the signature properties for any
+            objects of the current object's type.</returns>
+            <remarks>
+            For value objects, the signature should include all of the object's
+            properties (because that's part of the definition of a value object.)
+            </remarks>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.ValueObject.op_Equality(TrueAutomation.Core.Domain.ValueObject,TrueAutomation.Core.Domain.ValueObject)">
+            <summary>
+            Overloaded equality operator.
+            </summary>
+            <param name="obj1">The first value object to be compared.</param>
+            <param name="obj2">The second value object to be compared.</param>
+            <returns>True if the objects are equal, otherwise false.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.ValueObject.op_Inequality(TrueAutomation.Core.Domain.ValueObject,TrueAutomation.Core.Domain.ValueObject)">
+            <summary>
+            Overloaded inequality operator.
+            </summary>
+            <param name="obj1">The first value object to be compared.</param>
+            <param name="obj2">The second value object to be compared.</param>
+            <returns>True if the objects are unequal, otherwise false.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.ValueObject.Equals(System.Object)">
+            <summary>
+            Overloaded Equals() method.
+            </summary>
+            <param name="obj">The value object to which this one should
+            be compared.</param>
+            <returns>True if the objects are equal, otherwise false.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.ValueObject.GetHashCode">
+            <summary>
+            Overloaded GetHashCode() method.
+            </summary>
+            <returns>A hashcode for the current value object based on all
+            of its properties.</returns>
+        </member>
+        <member name="T:TrueAutomation.Core.Domain.IValidatable">
+            <summary>
+            Provides the world's simplest interface for objects that are
+            validatable in some way.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.IValidatable.IsValid">
+            <summary>
+            Returns whether or not the current object is valid.
+            </summary>
+            <returns>Returns true if the current object is valid,
+            otherwise false.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.IValidatable.ValidationResults">
+            <summary>
+            Returns the set of validation results for the current object.
+            </summary>
+            <returns>The set of validation results for the current object.</returns>
+        </member>
+        <member name="T:TrueAutomation.Core.Domain.IValidationResult">
+            <summary>
+            Defines a validation result that may be applicable in the context
+            of a specific class and property context.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Domain.IValidationResult.ClassContext">
+            <summary>
+            Specifies the class type to which the validation result is
+            applicable. This  property should never be null.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Domain.IValidationResult.PropertyName">
+            <summary>
+            Specifies the name of the specific property to which this validation
+            result applies, if it's applicable to a specific property.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Domain.IValidationResult.Message">
+            <summary>
+            A message describing the validation result for the associated
+            ClassContext and/or PropertyName.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Domain.IValidationResult.FailedValue">
+            <summary>
+            The value that was determined to be invalid.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.Domain.IValidator">
+            <summary>
+            Defines a simple object validator interface.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.IValidator.IsValid(System.Object)">
+            <summary>
+            Determines whether the specified object is valid or not.
+            </summary>
+            <param name="value">The object to be checked for validity.</param>
+            <returns>Returns true if the specified object is valid,
+            otherwise false.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Domain.IValidator.ValidationResultsFor(System.Object)">
+            <summary>
+            Returns the set of validation results for the specified object.
+            </summary>
+            <param name="value">The object for which to determine the set of
+            validation results.</param>
+            <returns>A collection of validation results for the specified object.
+            The validation results will specify the class context and/or property
+            values that are applicable to the specified object.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.DTO.CriteriaDTO.#ctor">
+            <summary>
+            default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.DTO.CriteriaDTO.TopRange">
+            <summary>
+            Top range for Grouping
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.DTO.CriteriaDTO.BottomRange">
+            <summary>
+            Bottom range for Grouping
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.DTO.CriteriaDTO.GroupList">
+            <summary>
+            Grouping List
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.DTO.CriteriaDTO.LeftCriteria">
+            <summary>
+            Set of criteria used for the left hand side of a binary tree representation of search terms
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.DTO.CriteriaDTO.RightCriteria">
+            <summary>
+            Set of criteria used for the right hand side of a binary tree representation of search terms
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.DTO.CriteriaDTO.JoinType">
+            <summary>
+            The type of join for the binary tree
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.DTO.CriteriaDTO.IsGroup">
+            <summary>
+            Indicates whether the Left Criteria and Right Criteria are being grouped in the binary tree
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.DTO.CriteriaDTO.Expression">
+            <summary>
+            The expression to evaluate at the leaves of the binary tree.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.DTO.CriteriaDTO.AllExpressionFields">
+            <summary>
+            Method to extract a list of all fields being searched over in the criteria.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Core.DTO.CriteriaDTO.GetValueAtFieldName(System.String)">
+            <summary>
+            Method to get the value associated with the fieldname in question.
+            </summary>
+            <param name="fieldname"></param>
+            <returns>the value of a criteria for a given field for comparison</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.DTO.CriteriaDTO.Equals(TrueAutomation.Core.DTO.CriteriaDTO)">
+            <summary>
+            Compares the contents of two CriteriaDTO in order to determine equality.
+            </summary>
+            <param name="other">The Criteria to compare against</param>
+            <returns>true if they have the same values.</returns>
+        </member>
+        <member name="T:TrueAutomation.Core.DTO.JoinType">
+            <summary>
+            enumeration of the types of joins available to the criteria.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.DTO.JoinType.none">
+            <summary>
+            No join
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.DTO.JoinType.and">
+            <summary>
+            'And' join type
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.DTO.JoinType.or">
+            <summary>
+            'Or' join type
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.DTO.ExpressionDTO">
+            <summary>
+            Class represents a DTO for a Criteria Expression
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.DTO.ExpressionDTO.FieldName">
+            <summary>
+            The Name of the field used for evaluting an expression
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.DTO.ExpressionDTO.Values">
+            <summary>
+            List of values used for comparison purposes
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.DTO.ExpressionDTO.IsAdded">
+            <summary>
+            Boolean to denote an added expression
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.DTO.ExpressionDTO.Operand">
+            <summary>
+            The Operand for this expression
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.DTO.ExpressionDTO.RowNumber">
+            <summary>
+            Row number in a criteria expression
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.DTO.ExpressionDTO.JoinDisplay">
+            <summary>
+            The join type at the row where the expression is. This is for display purpose
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.DTO.ExpressionDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.DTO.ExpressionDTO.Equals(TrueAutomation.Core.DTO.ExpressionDTO)">
+             <summary>
+             Compares the contents of two ExpressiondTO in order to determine equality.
+             </summary>
+            <param name="other">The Expression to compare against</param>
+             <returns>true if they have the same values.</returns>
+        </member>
+        <member name="T:TrueAutomation.Core.DTO.ExpressionOperand">
+            <summary>
+            Enum class denoting Expression Operands
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.DTO.ExpressionOperand.none">
+            <summary>
+            No Operand
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.DTO.ExpressionOperand.isEqualTo">
+            <summary>
+            '=' Operand
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.DTO.ExpressionOperand.notEquals">
+            <summary>
+            'Not Equal to' Operand
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.DTO.ExpressionOperand.like">
+            <summary>
+            'like' Operand
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.DTO.ExpressionOperand.between">
+            <summary>
+            'between' Operand
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.DTO.ExpressionOperand.isNull">
+            <summary>
+            'is null' Operand
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.DTO.ExpressionOperand.isNotNull">
+            <summary>
+            'is not null' Operand
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.DTO.ExpressionOperand.existsIn">
+            <summary>
+            'Exists In' Operand
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.DTO.ExpressionOperand.greaterThan">
+            <summary>
+            '>' Operand
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.DTO.ExpressionOperand.greaterThanOrEqualTo">
+            <summary>
+            '>=' Operand
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.DTO.ExpressionOperand.lessThan">
+            <summary>
+            'less than' Operand
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.DTO.ExpressionOperand.lessThanOrEqualTo">
+            <summary>
+            'less than or =' Operand
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.DTO.ExpressionOperand.contains">
+            <summary>
+            'contains' Operand
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.DTO.ExpressionOperand.isContainedIn">
+            <summary>
+            'is contained in' Operand
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.DTO.ExpressionOperand.doesNotContain">
+            <summary>
+            'does not contain' Operand
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.DTO.SearchGroupDTO">
+            <summary>
+            DTO class that is used to search for groups in a criteria
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.DTO.SearchGroupDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.DTO.SearchGroupDTO.FirstRow">
+            <summary>
+            First row of the grouping
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.DTO.SearchGroupDTO.LastRow">
+            <summary>
+            Last row of the grouping
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.MVP.Binding.AttributeBasedPresenterDiscoveryStrategy">
+            <summary>
+            Implements a presenter discovery strategy based on inspection of any
+            custom <see cref="T:TrueAutomation.Core.MVP.PresenterBindingAttribute"/>s associated with a
+            particular view class or its host container.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.Binding.AttributeBasedPresenterDiscoveryStrategy.attributeTable">
+            <summary>
+            A convenient lookup table mapping the runtime type handle for a class
+            to the corresponding presenter binding attribute, if any. Caching this
+            information saves on unnecessary redundant reflection calls at runtime.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.AttributeBasedPresenterDiscoveryStrategy.#ctor">
+            <summary>
+            Constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.AttributeBasedPresenterDiscoveryStrategy.LocateBindings(System.Collections.Generic.IEnumerable{System.Object},System.Collections.Generic.IEnumerable{TrueAutomation.Core.MVP.IView})">
+            <summary>
+            Locates the bindings for a specified set of views.
+            </summary>
+            <param name="hosts">The set of hosts for the specified view instances.
+            The host may be an application, parent container, configuration, etc.
+            and serves as a "namespace" of sorts for differentiating different
+            possible bindings.</param>
+            <param name="views">The set of views for which to locate the applicable
+            presenter bindings.</param>
+            <returns>A set of discovery results detailing the presenter bindings
+            for the specified set of views.</returns>
+            <exception cref="T:System.ArgumentNullException">If hosts or views is
+            null.</exception>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.AttributeBasedPresenterDiscoveryStrategy.GetAttributes(System.Type,System.Boolean)">
+            <summary>
+            Returns the list of presenter binding attributes for the specified
+            type. This result may be a cached value from the result of a previous
+            lookup, or an on-demand reflection-based operation. In the latter
+            case, the result will be cached in the associated lookup table for
+            quicker lookups in the future.
+            </summary>
+            <param name="type">The type for which to return the list of presenter
+            binding attributes.</param>
+            <param name="restrictMode">True to restrict the binding mode to the
+            default mode, i.e. <see cref="F:TrueAutomation.Core.MVP.PresenterBindingMode.Unique"/>. This
+            restriction should be used when looking up suitable binding attributes
+            for MVP view types directly, as opposed to aggregate composite views
+            or the like. Specify false if no restrictions are required.</param>
+            <returns>An enumerable collection of presenter binding attributes
+            for the specified type.</returns>
+            <exception cref="T:System.ArgumentNullException">if hosts is null.
+            </exception>
+            <exception cref="T:System.NotSupportedException">if the binding mode
+            specified in any of the presenter binding attributes is not
+            <see cref="F:TrueAutomation.Core.MVP.PresenterBindingMode.Unique"/>
+            when restrictMode is set to true.</exception>
+        </member>
+        <member name="T:TrueAutomation.Core.MVP.Binding.CompositePresenterDiscoveryStrategy">
+            <summary>
+            Implements a presenter discovery strategy that wraps multiple other
+            discovery strategies and transparently treats them as a single strategy.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.CompositePresenterDiscoveryStrategy.#ctor(TrueAutomation.Core.MVP.Binding.IPresenterDiscoveryStrategy[])">
+            <summary>
+            Class constructor -- initializes an instance of the
+            CompositePresenterDiscoveryStrategy class.
+            </summary>
+            <param name="strategies">An array of discovery strategies
+            to be aggregated into this composite strategy instance.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.CompositePresenterDiscoveryStrategy.#ctor(System.Collections.Generic.IEnumerable{TrueAutomation.Core.MVP.Binding.IPresenterDiscoveryStrategy})">
+            <summary>
+            Class constructor -- initializes an instance of the
+            CompositePresenterDiscoveryStrategy class.
+            </summary>
+            <param name="strategies">An enumeration of discovery strategies
+            to be aggregated into this composite strategy instance.</param>
+            <exception cref="T:System.ArgumentNullException">when strategies
+            is null.</exception>
+            <exception cref="T:System.ArgumentException">when strategies is non-null
+            but specifies no presenter discovery strategies.</exception>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.CompositePresenterDiscoveryStrategy.LocateBindings(System.Collections.Generic.IEnumerable{System.Object},System.Collections.Generic.IEnumerable{TrueAutomation.Core.MVP.IView})">
+            <summary>
+            Locates the bindings for a specified set of views.
+            </summary>
+            <param name="hosts">The set of hosts for the specified view instances.
+            The host may be an application, parent container, configuration, etc.
+            and serves as a "namespace" of sorts for differentiating different
+            possible bindings.</param>
+            <param name="views">The set of views for which to locate the applicable
+            presenter bindings.</param>
+            <returns>A set of discovery results detailing the presenter bindings
+            for the specified set of views.</returns>
+            <exception cref="T:System.ArgumentNullException">when hosts or views
+            is null.</exception>
+        </member>
+        <member name="T:TrueAutomation.Core.MVP.Binding.CompositeViewTypeFactory">
+            <summary>
+            A basic factory class suitable for creation of composite view types
+            based on other, simple view types. Classes are dynamically generated
+            based on the existing view interface supplied.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.Binding.CompositeViewTypeFactory.syncObject">
+            <summary>
+            Synchronization object for the view type lookup table.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.Binding.CompositeViewTypeFactory.viewTypes">
+            <summary>
+            A lookup table of composite view types mapped to the runtime type
+            handle of their corresponding simple view types.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.CompositeViewTypeFactory.#ctor">
+            <summary>
+            Default class constructor -- initializes an instance of the
+            composite view type factory class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.CompositeViewTypeFactory.CreateCompositeViewType(System.Type)">
+            <summary>
+            Creates a composite view type based on the specified simple view
+            interface type.
+            <para>The composite view may be used to aggregate a series of
+            simple views such that they can be treated as a single entity by
+            an associated presenter instance. This method caches the newly-
+            created type so that subsequent requests for that type are
+            appropriately performant.
+            </para>
+            <para>The dynamically-generated class is equivalent to the
+            following, for a simple view type of ISimpleView that exposes
+            no additional properties or events beyond those exposed by
+            the <see cref="T:TrueAutomation.Core.MVP.IView"/> interface itself.
+            </para>
+            <code>
+            public sealed class ISimpleView__@CompositeView :
+            	: CompositeView&lt;ISimpleView&gt;, ISimpleView
+            {
+            	public SimpleViewModel Model
+            	{
+            		get
+            		{
+            			return Views.First().Model;
+            		}
+            		set
+            		{
+            			foreach (var view in Views)
+            			{
+            				view.Model = value;
+            			}
+            		}
+            	}
+            	
+            	public event EventHandler MyEvent
+            	{
+            		add
+            		{
+            			foreach (var view in Views)
+            			{
+            				view.MyEvent += value;
+            			}
+            		}
+            		remove
+            		{
+            			foreach (var view in Views)
+            			{
+            				view.MyEvent -= value;
+            			}
+            		}
+            	}
+            }
+            </code>
+            </summary>
+            <param name="viewType">the simple view type on which to base the new
+            composite view type to be created.</param>
+            <returns>a composite view type based on and compatible with the
+            supplied simple view type.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.CompositeViewTypeFactory.DoCreateCompositeViewType(System.Type)">
+            <summary>
+            Dynamically creates a composite view based on the supplied simple view
+            type. The composite view exposes the same properties and events as the
+            simple view, and is derived from the generic <see cref="T:TrueAutomation.Core.MVP.CompositeView`1"/>
+            class.
+            The returned composite view may be used to aggregate several matching
+            simple views into a single view suitable for use with a single
+            presenter instance.
+            </summary>
+            <param name="viewType">The simple view type on which to base the
+            new dynamic composite view. The simple view should be an interface type
+            derived from the <see cref="T:TrueAutomation.Core.MVP.IView"/> interface,
+            and must be public or otherwise accessible.</param>
+            <returns>A dynamically-created composite view that matches the view
+            interface supplied to the method.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.CompositeViewTypeFactory.ValidateViewType(System.Type)">
+            <summary>
+            Utility function to validate whether a specified view type is a
+            suitable template for creation of a composite view type. The
+            type should represent a publicly-accessible interface type that
+            is derived from IView. An <see cref="T:System.ArgumentException"/>
+            is thrown in the event that the specified view type is invalid.
+            </summary>
+            <param name="viewType">The view type to validate.</param>
+            <exception cref="T:System.ArgumentNullException">when viewType is
+            null on entry into the method.</exception>
+            <exception cref="T:System.ArgumentException">when viewType does not
+            represent an interface type, or an interface type not derived from
+            <see cref="T:TrueAutomation.Core.MVP.IView"/>, or isn't publicly
+            accessible.</exception>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.CompositeViewTypeFactory.CreateMethod(System.Reflection.Emit.TypeBuilder,System.String,System.String,System.Type,System.Type[])">
+            <summary>
+            Internal method to dynamically create a new method for the specified
+            class/type. The method is public and virtual, takes the form
+            prefix_methodName, takes the specified parameter types and returns
+            the specified return type. No code is generated for the method; that
+            is the responsibility of the caller.
+            </summary>
+            <param name="type">The type for which to create the new method.</param>
+            <param name="prefix">The prefix to prepend to the method name.</param>
+            <param name="methodName">The main part of the method name.</param>
+            <param name="returnType">The return type of the method.</param>
+            <param name="paramTypes">An array of parameter types accepted by
+            the newly-created method.</param>
+            <returns>A new <see cref="T:System.Reflection.Emit.MethodBuilder"/>
+            instance based on the supplied parameters.</returns>
+            <exception cref="T:System.ArgumentNullException">if type, prefix,
+            methodName, returnType or paramTypes is null on entry into the
+            method.</exception>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.CompositeViewTypeFactory.DiscoverProperties(System.Type)">
+            <summary>
+            Internal utility method used to discover the properties exposed by
+            the specified view type, filtering out any properties that are already
+            implemented by the base <see cref="T:TrueAutomation.Core.MVP.CompositeView`1"/> class.
+            </summary>
+            <param name="type">The view type for which to discover all exposed
+            properties.</param>
+            <returns>An enumeration of <see cref="T:System.Reflection.PropertyInfo"/>
+            records corresponding to the properties exposed by the specified
+            view type.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.CompositeViewTypeFactory.DoDiscoverProperties(System.Type)">
+            <summary>
+            Recursive method to discover all the properties exposed by the
+            specified view type and all its base interfaces.
+            </summary>
+            <param name="type">The view type for which to discover all exposed
+            properties.</param>
+            <returns>An enumeration of <see cref="T:System.Reflection.PropertyInfo"/>
+            records corresponding to the properties exposed by the specified
+            view type.</returns>
+            <exception cref="T:System.ArgumentNullException">if type is null.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.CompositeViewTypeFactory.CreateProperties(System.Reflection.Emit.TypeBuilder,System.Type,System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo})">
+            <summary>
+            Utility method to dynamically create a set of properties for the
+            specified type, based on the properties exposed by the specified
+            view type.
+            </summary>
+            <param name="type">The new dynamic type for which to create the
+            properties.</param>
+            <param name="viewType">The view type on which to base the set of
+            dynamically-created properties.</param>
+            <param name="properties">An enumeration of properties to create
+            for the specified dynamic type.</param>
+            <exception cref="T:System.ArgumentNullException">if type, viewType
+            or properties is null on entry into the method.</exception>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.CompositeViewTypeFactory.CreateProperty(System.Reflection.Emit.TypeBuilder,System.Type,System.Reflection.PropertyInfo)">
+            <summary>
+            Utility method to create a single property for the specified
+            dynamic type.
+            </summary>
+            <param name="type">The dynamic type for which to create the new
+            property.</param>
+            <param name="viewType">The view type on which to base the newly-
+            created property.</param>
+            <param name="info">a <see cref="T:System.Reflection.PropertyInfo"/>
+            record describing the property to be created.</param>
+            <exception cref="T:System.ArgumentNullException">when type, viewType
+            or info is null on entry into the method.</exception>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.CompositeViewTypeFactory.CreatePropertyGetter(System.Reflection.Emit.TypeBuilder,System.Type,System.Reflection.PropertyInfo)">
+            <summary>
+            Internal utility method to create a "get" function for the
+            specified property type, based on the implementation in the
+            specified view type.
+            <para>The code emitted for this function is roughly equivalent
+            to the following:
+            <code>
+            	get
+            	{
+            		return Views.First().PropertyName;
+            	}
+            </code>
+            </para>
+            </summary>
+            <param name="type">the dynamic type for which to create the
+            new property getter method.</param>
+            <param name="viewType">the view type on which to base the newly-created
+            getter method.</param>
+            <param name="propInfo">A <see cref="T:System.Reflection.PropertyInfo"/>
+            record describing the property for which to create the corresponding
+            getter method.</param>
+            <returns>a new getter method for the specified property.</returns>
+            <exception cref="T:System.ArgumentNullException">when type, viewType or
+            propInfo is null on entry into the method.</exception>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.CompositeViewTypeFactory.CreatePropertySetter(System.Reflection.Emit.TypeBuilder,System.Type,System.Reflection.PropertyInfo)">
+            <summary>
+            Internal utility method to create a "set" function for the
+            specified property type, based on the implementation in the
+            specified view type.
+            <para>The code emitted for this function is roughly equivalent
+            to the following:
+            <code>
+            	set
+            	{
+            		foreach (var view in Views)
+            		{
+            			view.PropertyName = value;
+            		}
+            	}
+            </code>
+            </para>
+            </summary>
+            <param name="type">the dynamic type for which to create the
+            new property setter method.</param>
+            <param name="viewType">the view type on which to base the newly-created
+            setter method.</param>
+            <param name="propInfo">A <see cref="T:System.Reflection.PropertyInfo"/>
+            record describing the property for which to create the corresponding
+            setter method.</param>
+            <returns>a new setter method for the specified property.</returns>
+            <exception cref="T:System.ArgumentNullException">when type, viewType or
+            propInfo is null on entry into the method.</exception>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.CompositeViewTypeFactory.DiscoverEvents(System.Type)">
+            <summary>
+            Recursive method to discover all the events exposed by the
+            specified view type and all its base interfaces.
+            </summary>
+            <param name="type">The view type for which to discover all exposed
+            events.</param>
+            <returns>An enumeration of <see cref="T:System.Reflection.EventInfo"/>
+            records corresponding to the events exposed by the specified
+            view type.</returns>
+            <exception cref="T:System.ArgumentNullException">when type is null on
+            entry into the method.</exception>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.CompositeViewTypeFactory.CreateEvents(System.Reflection.Emit.TypeBuilder,System.Type,System.Collections.Generic.IEnumerable{System.Reflection.EventInfo})">
+            <summary>
+            Utility method to dynamically create a set of events for the
+            specified type, based on the events exposed by the specified
+            view type.
+            </summary>
+            <param name="type">The new dynamic type for which to create the
+            events.</param>
+            <param name="viewType">The view type on which to base the set of
+            dynamically-created events.</param>
+            <param name="events">An enumeration of events to create
+            for the specified dynamic type.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.CompositeViewTypeFactory.CreateEvent(System.Reflection.Emit.TypeBuilder,System.Type,System.Reflection.EventInfo)">
+            <summary>
+            Utility method to create a single events for the specified
+            dynamic type.
+            </summary>
+            <param name="type">The dynamic type for which to create the new
+            event.</param>
+            <param name="viewType">The view type on which to base the newly-
+            created event.</param>
+            <param name="info">a <see cref="T:System.Reflection.PropertyInfo"/>
+            record describing the event to be created.</param>
+            <exception cref="T:System.ArgumentNullException">when type, viewType or
+            info is null on entry into the method.</exception>
+            <exception cref="T:System.ArgumentException">when info does not specify
+            an event handler type.</exception>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.CompositeViewTypeFactory.CreateAddEventMethod(System.Reflection.Emit.TypeBuilder,System.Type,System.Reflection.EventInfo)">
+            <summary>
+            Internal utility method to create an "add" function for the
+            specified event type, based on the implementation in the
+            specified view type.
+            <para>The code emitted for this function is roughly equivalent
+            to the following:
+            <code>
+            	add
+            	{
+            		foreach (var view in Views)
+            		{
+            			view.EventName += value;
+            		}
+            	}
+            </code>
+            </para>
+            </summary>
+            <param name="type">the dynamic type for which to create the
+            new event adder method.</param>
+            <param name="viewType">the view type on which to base the newly-created
+            add method.</param>
+            <param name="info">A <see cref="T:System.Reflection.EventInfo"/>
+            record describing the event for which to create the corresponding
+            add method.</param>
+            <returns>a new add method for the specified event.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.CompositeViewTypeFactory.CreateRemoveEventMethod(System.Reflection.Emit.TypeBuilder,System.Type,System.Reflection.EventInfo)">
+            <summary>
+            Internal utility method to create a "remove" function for the
+            specified event type, based on the implementation in the
+            specified view type.
+            <para>The code emitted for this function is roughly equivalent
+            to the following:
+            <code>
+            	remove
+            	{
+            		foreach (var view in Views)
+            		{
+            			view.EventName -= value;
+            		}
+            	}
+            </code>
+            </para>
+            </summary>
+            <param name="type">the dynamic type for which to create the
+            new event remover method.</param>
+            <param name="viewType">the view type on which to base the newly-created
+            remove method.</param>
+            <param name="info">A <see cref="T:System.Reflection.EventInfo"/>
+            record describing the event for which to create the corresponding
+            remove method.</param>
+            <returns>a new remove method for the specified event.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.CompositeViewTypeFactory.EmitForeachViewIL(System.Type,System.Reflection.Emit.ILGenerator,System.Action)">
+            <summary>
+            Internal utility method for emitting generic IL code to implement a
+            foreach loop over an enumerable collection of views, emitting custom
+            code inside the loop based on the output of a supplied callback method.
+            </summary>
+            <param name="viewType">The view type over which to construct the
+            corresponding foreach logic.</param>
+            <param name="generator">The IL code generator with which to generate
+            the IL for the foreach loop.</param>
+            <param name="action">A callback function used to supply the IL for
+            the body of the foreach loop.</param>
+        </member>
+        <member name="T:TrueAutomation.Core.MVP.Binding.DefaultPresenterFactory">
+            <summary>
+            A simple presenter factory class that creates instances of
+            various presenter types based on cached dynamic construction
+            code for performance improvement over simple reflection.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.Binding.DefaultPresenterFactory.buildMethods">
+            <summary>
+            A lookup table of pre-JITted builder methods mapped to unique
+            combinations of presenter and view types.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.DefaultPresenterFactory.Create(System.Type,System.Type,TrueAutomation.Core.MVP.IView)">
+            <summary>
+            Creates and returns a new presenter instance of the specified type,
+            for the specified view.
+            </summary>
+            <param name="presenterType">the type of presenter instance to create.
+            </param>
+            <param name="viewType">the type of view with which the presenter should
+            be associated.</param>
+            <param name="view">the instance of the view with which the presenter
+            should be associated.</param>
+            <returns>a new properly-initialized presenter instance.</returns>
+            <exception cref="T:System.ArgumentNullException">when presenterType,
+            viewType or view is null on entry into the method.</exception>
+            <exception cref="T:System.InvalidOperationException">when the dynamic
+            build method for the specified combination of view and presenter
+            types fails with an exception.</exception>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.DefaultPresenterFactory.Release(TrueAutomation.Core.MVP.IPresenter)">
+            <summary>
+            Releases the specified presenter instance.
+            </summary>
+            <param name="presenter">the presenter instance to release.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.DefaultPresenterFactory.GetBuildMethod(System.Type,System.Type)">
+            <summary>
+            Returns a pre-JITted dynamic build method that calls the one-argument
+            constructor of the specified presenter type that takes an argument of
+            the type indicated by the specified view type.
+            </summary>
+            <param name="presenterType">the type of presenter for which to return
+            the corresponding build method.</param>
+            <param name="viewType">the type of view with which the presenter should
+            be constructed.</param>
+            <returns>a dynamic method capable of calling the constructor for the
+            specified types. this method may be cached for performance.</returns>
+            <exception cref="T:System.ArgumentException">when presenterType specifies
+            a presenter type that is not public, or is missing a one-argument
+            constructor taking an argument of the specified view type.</exception>
+        </member>
+        <member name="T:TrueAutomation.Core.MVP.Binding.ICompositeViewTypeFactory">
+            <summary>
+            Defines the contract for a factory class suitable for creation of
+            composite view types based on a simple view type.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.ICompositeViewTypeFactory.CreateCompositeViewType(System.Type)">
+            <summary>
+            Creates a composite view type based on the specified simple view
+            type. The composite view may be used to aggregate a series of
+            simple views such that they can be treated as a single entity by
+            an associated presenter instance.
+            </summary>
+            <param name="type">the simple view type on which to base the new
+            composite view type to be created.</param>
+            <returns>a composite view type based on and compatible with the
+            supplied simple view type.</returns>
+        </member>
+        <member name="T:TrueAutomation.Core.MVP.Binding.IPresenterDiscoveryStrategy">
+            <summary>
+            Defines the contract for a presenter discovery strategy implementation.
+            A presenter discovery strategy enccapsulates logic for discovering the
+            presenter(s) applicable to a specified set of view(s).
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.IPresenterDiscoveryStrategy.LocateBindings(System.Collections.Generic.IEnumerable{System.Object},System.Collections.Generic.IEnumerable{TrueAutomation.Core.MVP.IView})">
+            <summary>
+            Locates the bindings for a specified set of views.
+            </summary>
+            <param name="hosts">The set of hosts for the specified view instances.
+            The host may be an application, parent container, configuration, etc.
+            and serves as a "namespace" of sorts for differentiating different
+            possible bindings.</param>
+            <param name="views">The set of views for which to locate the applicable
+            presenter bindings.</param>
+            <returns>A set of discovery results detailing the presenter bindings
+            for the specified set of views.</returns>
+        </member>
+        <member name="T:TrueAutomation.Core.MVP.Binding.IPresenterFactory">
+            <summary>
+            Defines the contract for presenter factory classes.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.IPresenterFactory.Create(System.Type,System.Type,TrueAutomation.Core.MVP.IView)">
+            <summary>
+            Creates and returns a new presenter instance of the specified type,
+            for the specified view.
+            </summary>
+            <param name="presenterType">the type of presenter instance to create.
+            </param>
+            <param name="viewType">the type of view with which the presenter should
+            be associated.</param>
+            <param name="view">the instance of the view with which the presenter
+            should be associated.</param>
+            <returns>a new properly-initialized presenter instance.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.IPresenterFactory.Release(TrueAutomation.Core.MVP.IPresenter)">
+            <summary>
+            Releases the specified presenter instance.
+            </summary>
+            <param name="presenter">the presenter instance to release.</param>
+        </member>
+        <member name="T:TrueAutomation.Core.MVP.Binding.NameBasedPresenterDiscoveryStrategy">
+            <summary>
+            Encapsulates a presenter discovery strategy based on built-in default
+            view and namespace naming conventions. This class should generally be
+            used only as a fallback to attribute-based or other explicit presenter
+            binding strategies.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.Binding.NameBasedPresenterDiscoveryStrategy.viewSuffixes">
+            <summary>
+            An array of suffixes normally associated with view types.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.Binding.NameBasedPresenterDiscoveryStrategy.fullPresenterNames">
+            <summary>
+            An array of format strings for full presenter names. For efficiency's
+            sake the list should be ordered such that the most commonly used naming
+            pattern is at the top of the list and the least used is at the bottom,
+            so that we can abort any (expensive, reflection-based) searches as
+            early as possible.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.Binding.NameBasedPresenterDiscoveryStrategy.viewPresenters">
+            <summary>
+            A lookup table mapping presenter search results to view type, in order
+            to speed up searches that have already been performed.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.Binding.NameBasedPresenterDiscoveryStrategy.typeViewInterfaces">
+            <summary>
+            A lookup table mapping implementation types to a list of IView-based
+            interfaces implemented by those types.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.NameBasedPresenterDiscoveryStrategy.#ctor">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.NameBasedPresenterDiscoveryStrategy.LocateBindings(System.Collections.Generic.IEnumerable{System.Object},System.Collections.Generic.IEnumerable{TrueAutomation.Core.MVP.IView})">
+            <summary>
+            Locates the bindings for a specified set of views.
+            </summary>
+            <param name="hosts">The set of hosts for the specified view instances.
+            The host may be an application, parent container, configuration, etc.
+            and serves as a "namespace" of sorts for differentiating different
+            possible bindings.</param>
+            <param name="views">The set of views for which to locate the applicable
+            presenter bindings.</param>
+            <returns>A set of discovery results detailing the presenter bindings
+            for the specified set of views.</returns>
+            <exception cref="T:System.ArgumentNullException">when hosts or views is
+            null on entry into the method.</exception>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.NameBasedPresenterDiscoveryStrategy.GetViewInterfaces(System.Type)">
+            <summary>
+            Returns an enumeration of IView-derived interfaces implemented
+            by the specified type.
+            </summary>
+            <param name="type">the type for which to check for any IView interface
+            implementation</param>
+            <returns>an enumeration of any IView interfaces implemented by the
+            specified type.</returns>
+            <exception cref="T:System.ArgumentNullException">when type is null on
+            entry into the method.</exception>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.NameBasedPresenterDiscoveryStrategy.GetBinding(TrueAutomation.Core.MVP.IView)">
+            <summary>
+            Returns a presenter discovery result for the specified view,
+            based on type naming logic involving the view type name suffixes
+            and any namespace organization logic specified by the built-in
+            list of namespaces.
+            </summary>
+            <param name="view">the view for which to find a presenter discovery
+            result.</param>
+            <returns>a presenter discovery result for the specified view</returns>
+            <exception cref="T:System.ArgumentNullException">when view is null on
+            entry into the method.</exception>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.NameBasedPresenterDiscoveryStrategy.DoSearch(TrueAutomation.Core.MVP.IView)">
+            <summary>
+            Searches for presenter types applicable to the specified view.
+            </summary>
+            <param name="view">the view instance for which to search for
+            applicable presenter types</param>
+            <returns>the presenter type applicable to the specified view</returns>
+            <exception cref="T:System.ArgumentNullException">when view is null on
+            entry into the method.</exception>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.NameBasedPresenterDiscoveryStrategy.BuildPresenterTypeNamesFromInterfaceTypes(System.Collections.Generic.IEnumerable{System.Type})">
+            <summary>
+            Builds a set of presenter type names from the specified list of
+            interface type names. Presenter type names are constructed by
+            dropping any leading "I" and trailing "View" from the name of each
+            interface. References to the base IView MVP classes are discarded.
+            </summary>
+            <param name="interfaceTypes">a list of interface type names from which
+            to construct the corresponding presenter base names.</param>
+            <returns>a list of presenter base names corresponding to the list
+            of supplied interface type names.</returns>
+            <exception cref="T:System.ArgumentNullException">when interfaceTypes,
+            is null on entry into the method.</exception>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.NameBasedPresenterDiscoveryStrategy.BuildPresenterTypeNameFromViewType(System.Type)">
+            <summary>
+            Compares the name of the specified view type against our built-in
+            list of known view suffixes and builds the corresponding presenter
+            name by removing the suffix and appending "Presenter". In the case
+            where no known suffix was found, we simply append "Presenter" to
+            the full view name instead.
+            </summary>
+            <param name="viewType">The view type for which to construct the
+            corresponding presenter type name.</param>
+            <returns>The name of the presenter type corresponding to the specified
+            view type.</returns>
+            <exception cref="T:System.ArgumentNullException">when viewType is null
+            on entry into the method.</exception>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.NameBasedPresenterDiscoveryStrategy.BuildPresenterTypeFullNames(System.Type,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Returns an enumeration of all possible presenter type full names
+            for the specified view type.
+            </summary>
+            <param name="viewType">the view type for which to return any
+            potential presenter type names.</param>
+            <param name="presenterTypeNames">the presenter type base names that
+            are applicable to the specified view type.</param>
+            <returns>an enumeration of all presenter type full names for the
+            specified view type.</returns>
+        </member>
+        <member name="T:TrueAutomation.Core.MVP.Binding.PresenterCreatedEventArgs">
+            <summary>
+            Provides data for the
+            <see cref="E:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder.PresenterCreated"/>
+            event.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.Binding.PresenterCreatedEventArgs.presenter">
+            <summary>
+            The presenter that was created during the presenter creation event
+            signalled by this object.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.PresenterCreatedEventArgs.#ctor(TrueAutomation.Core.MVP.IPresenter)">
+            <summary>
+            The presenter that was created during the presenter creation event
+            signalled by this object.
+            </summary>
+            <param name="presenter">The presenter instance that was created.</param>
+        </member>
+        <member name="P:TrueAutomation.Core.MVP.Binding.PresenterCreatedEventArgs.Presenter">
+            <summary>
+            The presenter that was created during the presenter creation event
+            signalled by this object.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.MVP.Binding.PresenterDiscoveryResult">
+            <summary>
+            Encapsulates the result of the presenter discovery mechanism for
+            locating presenter types applicable to a specified type of view.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.PresenterDiscoveryResult.#ctor(System.Collections.Generic.IEnumerable{TrueAutomation.Core.MVP.IView},System.Collections.Generic.IEnumerable{TrueAutomation.Core.MVP.Binding.ViewPresenterBinding})">
+            <summary>
+            Initializes an instance of the presenter discovery result class.
+            </summary>
+            <param name="views">The views to which this discovery result applies.
+            </param>
+            <param name="bindings">The view-presenter bindings applicable to the
+            specified set of views.</param>
+        </member>
+        <member name="P:TrueAutomation.Core.MVP.Binding.PresenterDiscoveryResult.Views">
+            <summary>
+            The set of views to which this discovery result applies.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.MVP.Binding.PresenterDiscoveryResult.Bindings">
+            <summary>
+            The set of view-presenter bindings applicable to the associated
+            set of view instances.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.PresenterDiscoveryResult.Equals(System.Object)">
+            <summary>
+            Checks whether a specified presenter discovery result instance is
+            equal to the current one.
+            </summary>
+            <param name="obj">The PresenterDiscoveryResult instance to compare
+            to the current one.</param>
+            <returns>True if the specified instance is the same as the current
+            one, otherwise false.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.PresenterDiscoveryResult.GetHashCode">
+            <summary>
+            Implements a simple hash function for the presenter discovery result
+            type.</summary>
+            <returns>A hash code for the current object instance.</returns>
+        </member>
+        <member name="T:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder">
+            <summary>
+            Implements the logic for binding an appropriate presenter to a
+            specified view in the MVP framework.
+            <para>The view-presenter binder class delegates most of its
+            actual functionality to other classes, notably a presenter
+            factory for creation of the presenter instances, a presenter
+            discovery strategy pattern for locating suitable presenters for
+            a given view or views, and a composite view type factory for
+            dynamic generation of composite views in cases where a shared
+            presenter is required.</para>
+            </summary>
+            <seealso cref="T:TrueAutomation.Core.MVP.IView"/>
+            <seealso cref="T:TrueAutomation.Core.MVP.IPresenter"/>
+            <seealso cref="T:TrueAutomation.Core.MVP.Binding.IPresenterDiscoveryStrategy"/>
+            <seealso cref="T:TrueAutomation.Core.MVP.Binding.ICompositeViewTypeFactory"/>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder.factory">
+            <summary>
+            The global factory instance that will be used to create
+            new presenter instances.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder.discoveryStrategy">
+            <summary>
+            The strategy the binder will use to determine what presenters
+            should be mapped to which view instances.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder.compositeViewTypeFactory">
+            <summary>
+            The factory to be used for creation of new composite view types.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder.hosts">
+            <summary>
+            A list of hosts in the logical domain with which the views and
+            presenters managed by this binder instance are associated.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder.pendingViews">
+            <summary>
+            A list of views for which presenter binding has yet to be performed.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder.presenters">
+            <summary>
+            A list of presenter instances.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder.messageBus">
+            <summary>
+            A message bus implementation for cross-view event notifications.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder.initialBindingComplete">
+            <summary>
+            Status flag indicating whether any initial presenter binding work
+            has been completed or not.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder.PresenterCreated">
+            <summary>
+            An event handler for notifications of presenter instantiation events.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder.#ctor(System.Object)">
+            <summary>
+            Class constructor -- initializes an instance of the binder class.
+            </summary>
+            <param name="host">The default host for views/presenters in the
+            current logical domain.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder.#ctor(System.Collections.Generic.IEnumerable{System.Object})">
+            <summary>
+            Class constructor -- initializes an instance of the binder class.
+            </summary>
+            <param name="hosts">The array of hosts for views/presenters in the
+            current logical domain.</param>
+        </member>
+        <member name="P:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder.Factory">
+            <summary>
+            The global factory instance that will be used to create new
+            presenter instances. If no factory is specified, an instance of
+            <see cref="T:TrueAutomation.Core.MVP.Binding.DefaultPresenterFactory"/>
+            will be used by default. Once the presenter factory has been
+            set (either explicitly, or via the default mechanism) it may not
+            be changed.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">when attempting to
+            set a null value for this property.</exception>
+            <exception cref="T:System.InvalidOperationException">when attempting
+            to set this property after a presenter factory has already been
+            created (by default) or explicitly set.</exception>
+        </member>
+        <member name="P:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder.DiscoveryStrategy">
+            <summary>
+            The strategy the binder will use to determine what presenters
+            should be mapped to which view instances. If no strategy is
+            provided, then an instance of
+            <see cref="T:TrueAutomation.Core.MVP.Binding.CompositePresenterDiscoveryStrategy"/>
+            will be used by default.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">when attempting to
+            set a null value for this property.</exception>
+        </member>
+        <member name="P:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder.MessageBus">
+            <summary>
+            The message bus instance shared amongst all presenters for
+            cross-view event notifications.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder.RegisterView(TrueAutomation.Core.MVP.IView)">
+            <summary>
+            Registers a view as a view instance requiring binding of an
+            appropriate presenter instance.
+            </summary>
+            <param name="view">The view instance to register for binding.</param>
+            <exception cref="T:System.ArgumentNullException">when view is null
+            on entry into the method.</exception>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder.BindPresenters">
+            <summary>
+            Performs presenter binding for any views that are currently
+            registered with the binder and awaiting a presenter.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder.Release">
+            <summary>
+            Shuts down the presenter binder. This method closes the associated
+            message bus, releases any views associated with the associated list
+            of presenters, and then releases each presenter from the associated
+            factory instance.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder.BindPresenters(System.Collections.Generic.IEnumerable{System.Object},System.Collections.Generic.IEnumerable{TrueAutomation.Core.MVP.IView},TrueAutomation.Core.MVP.Binding.IPresenterDiscoveryStrategy,TrueAutomation.Core.MVP.IMessageBus,TrueAutomation.Core.MVP.Binding.IPresenterFactory,System.Action{TrueAutomation.Core.MVP.IPresenter})">
+            <summary>
+            Implementation method to conduct the binding of an appropriate
+            presenter to each view in the specified list of views.
+            </summary>
+            <param name="hosts">The hosts for which to find the appropriate
+            presenters for the specified set of views.</param>
+            <param name="views">The views for which to locate and bind any
+            presenter instances.</param>
+            <param name="strategy">The presenter discovery strategy to use
+            for locating the right presenter classes for each view.</param>
+            <param name="messageBus">A message bus instance to associate with
+            each created presenter instance.</param>
+            <param name="factory">The presenter factory to use for creation
+            and initialization of any presenter instances.</param>
+            <param name="callback">An optional callback method to be invoked
+            for notification of each presenter creation instance.</param>
+            <returns>An enumeration of presenters for the specified set of
+            views, in association with the specified set of hosts.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder.LocateBindings(System.Collections.Generic.IEnumerable{System.Object},System.Collections.Generic.IEnumerable{TrueAutomation.Core.MVP.IView},TrueAutomation.Core.MVP.Binding.IPresenterDiscoveryStrategy)">
+            <summary>
+            Locates any bindings for the specified set of views in the domain
+            bounded by the specified set of hosts.
+            </summary>
+            <param name="hosts">The set of host domains in which to search for
+            any view-presenter bindings.</param>
+            <param name="views">The set of views for which to locate any
+            relevant presenter bindings.</param>
+            <param name="strategy">The presenter discovery strategy to use for
+            locating any relevant view-presenter bindings.</param>
+            <returns>An enumeration of view-presenter bindings for the set of
+            specified views in the domain bounded by the specified set of hosts.
+            </returns>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder.CreatePresenters(System.Collections.Generic.IEnumerable{TrueAutomation.Core.MVP.Binding.ViewPresenterBinding},TrueAutomation.Core.MVP.Binding.IPresenterFactory,TrueAutomation.Core.MVP.IMessageBus,System.Action{TrueAutomation.Core.MVP.IPresenter})">
+            <summary>
+            Instantiates and initializes any presenter instances for the
+            specified set of view-presenter bindings.
+            </summary>
+            <param name="bindings">The bindings for which to create the
+            specified presenter instances.</param>
+            <param name="factory">The presenter factory instance to use
+            for creation of new presenter instances.</param>
+            <param name="messageBus">The shared message bus to associate
+            with each created presenter.</param>
+            <param name="callback">An optional callback action to invoke
+            for each created presenter.</param>
+            <returns>An enumeratio of presenters for the specified set of
+            view-presenter bindings.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder.CreatePresentersForBinding(TrueAutomation.Core.MVP.Binding.ViewPresenterBinding,TrueAutomation.Core.MVP.Binding.IPresenterFactory,TrueAutomation.Core.MVP.IMessageBus,System.Action{TrueAutomation.Core.MVP.IPresenter})">
+            <summary>
+            Creates the list of presenters for the views specified in a single
+            view-presenter binding.
+            </summary>
+            <param name="binding">The view-presenter binding for which to
+            create the corresponding presenter instances.</param>
+            <param name="factory">The presenter factory to use for instantiating
+            new presenter instances.</param>
+            <param name="messageBus">The shared message bus to associate with
+            each created presenter for cross-presenter notifications.</param>
+            <param name="callback">An optional callback action to invoke for
+            each presenter created.</param>
+            <returns>An enumeration of presenter instances corresponding to
+            the views specified in the supplied view-presenter binding.
+            </returns>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder.CreatePresenterForView(TrueAutomation.Core.MVP.Binding.ViewPresenterBinding,TrueAutomation.Core.MVP.IView,TrueAutomation.Core.MVP.Binding.IPresenterFactory,TrueAutomation.Core.MVP.IMessageBus,System.Action{TrueAutomation.Core.MVP.IPresenter})">
+            <summary>
+            Creates the presenter for a specified view, based on the bindings
+            specified in the supplied view-presenter binding.
+            </summary>
+            <param name="binding">The view-presenter binding specifying the
+            view and presenter types to associate together, along with the
+            corresponding binding mode.</param>
+            <param name="view">The view to associate with the new presenter
+            instance.</param>
+            <param name="factory">The presenter factory to use for creation
+            of the new presenter instance.</param>
+            <param name="messageBus">The shared message bus to associate with
+            the new presenter instance, for cross-presenter event notifications.
+            </param>
+            <param name="callback">An optional callback action to invoke when
+            the new presenter instance is created.</param>
+            <returns>A new presenter instance corresponding to and associated
+            with the specified view, based on the data in the supplied view-
+            presenter binding.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder.CreateCompositeView(System.Type,System.Collections.Generic.IEnumerable{TrueAutomation.Core.MVP.IView})">
+            <summary>
+            Internal utility method to create a new composite view of the
+            specified type, with a set of child aggregated views of a
+            compatible type.
+            </summary>
+            <param name="type">The view type from which to create a new
+            composite view.</param>
+            <param name="views">The list of child views to aggregate under
+            the new composite view.</param>
+            <returns>The newly-created and initialized composite view instance.
+            </returns>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder.ThrowExceptionsForViewsWithNoPresenterBinding(System.Collections.Generic.IEnumerable{TrueAutomation.Core.MVP.Binding.PresenterDiscoveryResult})">
+            <summary>
+            Internal utility method that validates the supplied list of
+            presenter discovery results by ensuring that a suitable presenter
+            binding has been located for each view that requires one. If
+            any view for which the <see cref="P:TrueAutomation.Core.MVP.IView.RequiresPresenter"/>
+            property is true is missing a compatible presenter binding, this
+            function will throw a <see cref="T:System.InvalidOperationException"/>.
+            </summary>
+            <param name="results">The list of presenter discovery results to
+            be validated.</param>
+            <exception cref="T:System.InvalidOperationException">when a view whose
+            <see cref="P:TrueAutomation.Core.MVP.IView.RequiresPresenter"/> property is
+            true but there is no suitable presenter in the corresponding presenter
+            discovery result.</exception>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.ViewPresenterBinder.OnPresenterCreated(TrueAutomation.Core.MVP.Binding.PresenterCreatedEventArgs)">
+            <summary>
+            Implementation method used to notify any interested observers about
+            presenter creation events.
+            </summary>
+            <param name="args">Any arguments associated with this event.</param>
+        </member>
+        <member name="T:TrueAutomation.Core.MVP.Binding.ViewPresenterBinding">
+            <summary>
+            Defines a class that implements a view-presenter binding, i.e. a
+            specification of the presenter type associated with a particular
+            view type, and the mode of that association.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.ViewPresenterBinding.#ctor(System.Type,System.Type,TrueAutomation.Core.MVP.PresenterBindingMode,System.Collections.Generic.IEnumerable{TrueAutomation.Core.MVP.IView})">
+            <summary>
+            Initializes an instance of the ViewPresenterBinding class.
+            </summary>
+            <param name="viewType">The view type for which this binding applies.
+            </param>
+            <param name="presenterType">The presenter type for which this binding
+            applies.</param>
+            <param name="bindingMode">The binding mode applicable to the
+            associated view-presenter pair.</param>
+            <param name="views">A list of any associated view instances.</param>
+        </member>
+        <member name="P:TrueAutomation.Core.MVP.Binding.ViewPresenterBinding.ViewType">
+            <summary>
+            The type of view for which this presenter binding applies.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.MVP.Binding.ViewPresenterBinding.PresenterType">
+            <summary>
+            The type of presenter for which this view binding applies.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.MVP.Binding.ViewPresenterBinding.BindingMode">
+            <summary>
+            The binding mode applicable to this view-presenter pair.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.MVP.Binding.ViewPresenterBinding.Views">
+            <summary>
+            A list of all known view instances to which this presenter
+            binding applies.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.ViewPresenterBinding.Equals(System.Object)">
+            <summary>
+            Checks whether a specified ViewPresenterBinding instance is
+            equal to the current one.
+            </summary>
+            <param name="obj">The binding instance to compare to the current one.
+            </param>
+            <returns>True if the specified binding instance is the same
+            as the current one, otherwise false.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Binding.ViewPresenterBinding.GetHashCode">
+            <summary>
+            Implements a simple hash function for the presenter binding type.
+            </summary>
+            <returns>A hash code for the current object instance.</returns>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.CompositeView`1.views">
+            <summary>
+            A list of simple views aggregated by this composite view.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.MVP.CompositeView`1.Views">
+            <summary>
+            An enumeration of the simple views aggregated by this composite view.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.CompositeView`1.Add(TrueAutomation.Core.MVP.IView)">
+            <summary>
+            Adds the specified view instance to this composite view.
+            </summary>
+            <param name="view">the view instance to add to this composite
+            view.</param>
+            <exception cref="T:System.ArgumentNullException">when view is null
+            on entry into the method.</exception>
+            <exception cref="T:System.ArgumentException">when view is an
+            incompatible <see cref="T:TrueAutomation.Core.MVP.IView"/> that
+            is not an instance of the generic type T.</exception>
+        </member>
+        <member name="P:TrueAutomation.Core.MVP.CompositeView`1.RequiresPresenter">
+            <summary>
+            Indicates whether or not a presenter is required for this view
+            instance; the view will throw an exception if this value is true
+            and no presenter is associated with it.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.Core.MVP.CompositeView`1.Load">
+            <summary>
+            Optional event handler to deal with notifications fired when the
+            view is first loaded. For most implementations this is fired
+            during the normal windows forms Load event.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.MVP.IAsyncTaskManager">
+            <summary>
+            Describes the contract for a class used to execute a collection of
+            asynchronous tasks.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.IAsyncTaskManager.RegisterTask(TrueAutomation.Core.MVP.TaskHandler,TrueAutomation.Core.MVP.PostTaskHandler,TrueAutomation.Core.MVP.PostTaskHandler,System.Object,System.Boolean)">
+            <summary>
+            Registers a new task with this asynchronous task handler.
+            </summary>
+            <param name="taskHandler">the handler to call to execute the task.
+            </param>
+            <param name="doneHandler">the handler to call upon successful
+            completion of the task within the timeout period.</param>
+            <param name="timeoutHandler">the handler to call when the task is
+            not completed within the timeout period.</param>
+            <param name="state">state information associated with the task.</param>
+            <param name="parallel">true to specify that the task may be executed in
+            parallel with other tasks, otherwise false.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.IAsyncTaskManager.ExecuteTasks">
+            <summary>
+            Executes all asynchronous tasks currently registered with this
+            task manager instance.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.MVP.ICloseableMessageBus">
+            <summary>
+            Declares the contract for a closeable message bus class, which is a
+            message bus with defined close/terminate semantics.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.ICloseableMessageBus.Close">
+            <summary>
+            Closes the message bus, causing any subscribers that have not
+            received any messages to be notified that no messages were received.
+            Once the message bus has been closed, any additional calls to
+            <see cref="M:IMessageBus.Subscribe{T}(object, Action{T})"/> or
+            <see cref="M:IMessageBus.Publish{T}(T)"/> are invalid.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.MVP.ICompositeView">
+            <summary>
+            Defines the contract for composite view wrapper classes in a
+            model-view-presenter architecture. A composite view may be
+            convenient in cases where we want to associate a single presenter
+            instance with multiple views, treated as one larger view for
+            convenience.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.ICompositeView.Add(TrueAutomation.Core.MVP.IView)">
+            <summary>
+            Adds the specified view instance to this composite view.
+            </summary>
+            <param name="view">the view instance to add to this composite
+            view.</param>
+        </member>
+        <member name="T:TrueAutomation.Core.MVP.IMessageBus">
+            <summary>
+            Declares the interface for a simple messaging bus.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.IMessageBus.Subscribe``1(System.Object,System.Action{``0})">
+            <summary>
+            Subscribes to messages of the specified type. If there are any
+            published messages pending that match this type or one of its base
+            classes then they will be received by the subscriber.
+            </summary>
+            <typeparam name="T">the message type to which to subscribe.</typeparam>
+            <param name="subscriber">the object subscribing to the specified
+            message type.</param>
+            <param name="messageReceived">a callback delegate that will be invoked
+            for each matching message published to the message bus.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.IMessageBus.Subscribe``1(System.Object,System.Action{``0},System.Action)">
+            <summary>
+            Subscribes to messages of the specified type. If there are any
+            published messages pending that match this type or one of its base
+            classes then they will be received by the subscriber. If no matching
+            messages are ever received, the neverReceived callback will be invoked
+            one time for this subscriber when the message bus is closed.
+            </summary>
+            <typeparam name="T">the message type to which to subscribe.</typeparam>
+            <param name="subscriber">the object subscribing to the specified
+            message type.</param>
+            <param name="messageReceived">a callback delegate that will be invoked
+            for each matching message published to the message bus.</param>
+            <param name="neverReceived">a callback delegate invoked one time if no
+            matching messages were ever received over this message bus.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.IMessageBus.Unsubscribe``1(System.Object)">
+            <summary>
+            Unsubscribes the specified subscriber from notifications about the
+            specified event type.
+            </summary>
+            <typeparam name="T">the message type to which to subscribe.</typeparam>
+            <param name="subscriber">the object subscribing to the specified
+            message type.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.IMessageBus.Publish``1(``0)">
+            <summary>
+            Publishes a message to the message bus. Any subscribers to messages of
+            this type (or to a base class of this type) will be notified.
+            </summary>
+            <typeparam name="T">the type of the message to be published.</typeparam>
+            <param name="message">the actual message to publish.</param>
+        </member>
+        <member name="T:TrueAutomation.Core.MVP.IPresenter">
+            <summary>
+            Defines the contract for a class that serves as a presenter in a
+            model-view-presenter architecture.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.MVP.IPresenter.TaskManager">
+            <summary>
+            An asynchronous task manager reference suitable for optional processing
+            of asynchronous tasks in the context of the associated view.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.MVP.IPresenter.MessageBus">
+            <summary>
+            A reference to a message bus for sending and receiving event
+            notifications across presenter instances.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.IPresenter.ReleaseView">
+            <summary>
+            Releases the associated view.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.MVP.IPresenterWithView`1">
+            <summary>
+            Defines the contract for a presenter associated with a
+            strongly-typed view.
+            </summary>
+            <typeparam name="T">The type of the view associated with this
+            presenter type.</typeparam>
+        </member>
+        <member name="P:TrueAutomation.Core.MVP.IPresenterWithView`1.View">
+            <summary>
+            The view instance currently associated with this presenter.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.MVP.IView">
+            <summary>
+            Defines the contract for a class representing a view in a
+            model-view-presenter architecture.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.MVP.IView.RequiresPresenter">
+            <summary>
+            Indicates whether or not a presenter is required for this view
+            instance; the view will throw an exception if this value is true
+            and no presenter is associated with it.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.Core.MVP.IView.Load">
+            <summary>
+            Optional event handler to deal with notifications fired when the
+            view is first loaded. For most implementations this is fired
+            during the normal windows forms Load event.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.MVP.IViewWithModel`1">
+            <summary>
+            Represents a view type that is associated with a strongly-typed
+            model instance. The presenter class is normally responsible for
+            setting the view's model property at initialization time.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="P:TrueAutomation.Core.MVP.IViewWithModel`1.Model">
+            <summary>
+            The model instance associated with this object.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.Core.MVP.IViewWithModel`1.ModelSet">
+            <summary>
+            An event handler fired when the model is set for this object.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.MVP.MessageBus">
+            <summary>
+            Implements a message bus suitable for dispatching event notification
+            messages between presenters in an MVP-based design.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.MVP.MessageBus.Subscription`1">
+            <summary>
+            Encapsulates a simple event subscription, which matches an event
+            subscriber with a handler delegate for the event.
+            </summary>
+            <typeparam name="T">The type of handler delegate for the event to
+            which this subscription applies.</typeparam>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.MessageBus.Subscription`1.#ctor(System.Object,`0)">
+            <summary>
+            Initializes an instance of the subscription class.
+            </summary>
+            <param name="subscriber">The subscriber interested in notifications
+            about the corresponding event.</param>
+            <param name="callback">The callback handler delegate to be called in
+            response to any subscribed events.</param>
+        </member>
+        <member name="P:TrueAutomation.Core.MVP.MessageBus.Subscription`1.Subscriber">
+            <summary>
+            The subscriber object interested in notifications about the
+            associated event type.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.MVP.MessageBus.Subscription`1.Callback">
+            <summary>
+            The callback handler to be invoked on behalf of the subscriber
+            in response to event notifications of the appropriate type.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.MessageBus.closed">
+            <summary>
+            State flag indicating whether the message bus has been closed.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.MessageBus.messages">
+            <summary>
+            A lookup table of messages associated with a given message type.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.MessageBus.receiveCallbacks">
+            <summary>
+            A lookup table of registered callbacks for reception of various
+            message types.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.MessageBus.unreceivedCallbacks">
+            <summary>
+            A lookup table of registered callbacks to be invoked when a given type
+            of message was never received.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.MessageBus.syncObject">
+            <summary>
+            A synchronization object for maintaining thread safety across multiple
+            threads of execution.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.MessageBus.#ctor">
+            <summary>
+            Constructor -- initializes a new instance of the message bus class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.MessageBus.Subscribe``1(System.Object,System.Action{``0})">
+            <summary>
+            Subscribes to messages of the specified type. If there are any
+            published messages pending that match this type or one of its base
+            classes then they will be received by the subscriber.
+            </summary>
+            <typeparam name="T">the message type to which to subscribe.</typeparam>
+            <param name="subscriber">the object subscribing to the specified
+            message type.</param>
+            <param name="messageReceived">a callback delegate that will be invoked
+            for each matching message published to the message bus.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.MessageBus.Subscribe``1(System.Object,System.Action{``0},System.Action)">
+            <summary>
+            Subscribes to messages of the specified type. If there are any
+            published messages pending that match this type or one of its base
+            classes then they will be received by the subscriber. If no matching
+            messages are ever received, the neverReceived callback will be invoked
+            one time for this subscriber when the message bus is closed.
+            </summary>
+            <typeparam name="T">the message type to which to subscribe.</typeparam>
+            <param name="subscriber">the object subscribing to the specified
+            message type.</param>
+            <param name="messageReceived">a callback delegate that will be invoked
+            for each matching message published to the message bus.</param>
+            <param name="neverReceived">a callback delegate invoked one time if no
+            matching messages were ever received over this message bus.</param>
+            <exception cref="T:System.ArgumentNullException">when subscriber or
+            messageReceived is null on entry into the method.</exception>
+            <exception cref="T:System.InvalidOperationException">when the message bus has
+            already been closed at the time of the attempted Subscribe() request.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.MessageBus.Unsubscribe``1(System.Object)">
+            <summary>
+            Unsubscribes the specified subscriber from notifications about the
+            specified event type.
+            </summary>
+            <typeparam name="T">the message type to which to subscribe.</typeparam>
+            <param name="subscriber">the object subscribing to the specified
+            message type.</param>
+            <exception cref="T:System.ArgumentNullException">when subscriber is null
+            on entry into the method.</exception>
+            <exception cref="T:System.InvalidOperationException">when the message bus has
+            already been closed at the time of the attempted Unsubscribe() request.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.MessageBus.Publish``1(``0)">
+            <summary>
+            Publishes a message to the message bus. Any subscribers to messages of
+            this type (or to a base class of this type) will be notified.
+            </summary>
+            <typeparam name="T">the type of the message to be published.</typeparam>
+            <param name="message">the actual message to publish.</param>
+            <exception cref="T:System.InvalidOperationException">when the message bus has
+            already been closed at the time of the attempted Publish() request.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.MessageBus.Close">
+            <summary>
+            Closes the message bus, causing any subscribers that have not
+            received any messages to be notified that no messages were received.
+            Once the message bus has been closed, any additional calls to
+            <see cref="M:Subscribe{T}(T,Action{T})"/> or
+            <see cref="M:Publish{T}(T)"/> are invalid.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.MessageBus.RegisterReceiveHandler``1(System.Object,System.Action{``0})">
+            <summary>
+            Implementation method to register a new subscription handler
+            for events of the specified type.
+            </summary>
+            <typeparam name="T">The type of event for which to register the
+            new subscription handler.</typeparam>
+            <param name="subscriber">the object subscribing to the specified
+            message type.</param>
+            <param name="messageReceived">The message handler callback with
+            which to process notifications of the specified type.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.MessageBus.RegisterUnreceivedHandler``1(System.Object,System.Action)">
+            <summary>
+            Implementation method to register a new subscription handler
+            for the case where events of the specified type were never
+            received by the subscriber.
+            </summary>
+            <typeparam name="T">The type of event for which to register the
+            new subscription handler.</typeparam>
+            <param name="subscriber">the object subscribing to the specified
+            message type.</param>
+            <param name="neverReceived">The message handler callback with
+            which to process notifications about the specified event type.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.MessageBus.DispatchMessage``1(``0)">
+            <summary>
+            Implementation method that sends the specified message synchronously
+            to any interested subscribers.
+            </summary>
+            <typeparam name="T">The type of the message.</typeparam>
+            <param name="message">The message to send.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.MessageBus.SendUnreceivedNotifications">
+            <summary>
+            Implementation method to send any "never-received" notifications
+            to subscribers to any event notifications for which no corresponding
+            event notification was ever invoked.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.MessageBus.SaveMessage``1(``0)">
+            <summary>
+            Saves the specified message to the list of sent messages so that
+            it can eventually be relayed to any interested subscribers.
+            </summary>
+            <typeparam name="T">The type of the message.</typeparam>
+            <param name="message">The message to be saved.</param>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.Presenter`1.view">
+            <summary>
+            The view with which this presenter is associated.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.Presenter`1.messageBus">
+            <summary>
+            The message bus associated with this presenter.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Presenter`1.#ctor(`0)">
+            <summary>
+            Constructor -- initializes an instance of the presenter class with
+            a specified view instance.
+            </summary>
+            <param name="view">the view instance with which to associate this
+            presenter instance.</param>
+        </member>
+        <member name="E:TrueAutomation.Core.MVP.Presenter`1.MessageBusSet">
+            <summary>
+            An event handler fired when the message bus is set for this object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.MVP.Presenter`1.View">
+            <summary>
+            The view instance currently associated with this presenter.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.MVP.Presenter`1.TaskManager">
+            <summary>
+            An asynchronous task manager reference suitable for optional processing
+            of asynchronous tasks in the context of the associated view.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.MVP.Presenter`1.MessageBus">
+            <summary>
+            A reference to a message bus for sending and receiving event
+            notifications across presenter instances.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">if the value passed into
+            the message bus property is null.</exception>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Presenter`1.ReleaseView">
+            <summary>
+            Releases the associated view. Must be implemented by derived classes.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Presenter`1.OnMessageBusSet">
+            <summary>
+            Helper method to fire the message bus-set notification to any
+            interested listeners.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Presenter`1.CreateViewModel(`0)">
+            <summary>
+            Checks the supplied view for an implementation of
+            <see cref="T:TrueAutomation.Core.MVP.IViewWithModel`1"/> and
+            if it finds one, dynamically instantiates an instance of the view's
+            model type and assigns it to the view.
+            </summary>
+            <param name="view">The view for which to assign the model instance.
+            </param>
+            <exception cref="T:System.ArgumentException">when the specified view
+            does not implement the <see cref="T:TrueAutomation.Core.MVP.IViewWithModel`1"/>
+            interface expected by this method.</exception>
+        </member>
+        <member name="T:TrueAutomation.Core.MVP.PresenterBindingAttribute">
+            <summary>
+            Defines a presenter binding attribute, which is an attribute that
+            describes the presenter applicable to a particular view type. It is
+            possible to specify more than one presenter attribute for a given
+            view type.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.PresenterBindingAttribute.#ctor(System.Type)">
+            <summary>
+            Constructor -- initializes an instance of the binding attribute
+            class.
+            </summary>
+            <param name="presenter"></param>
+        </member>
+        <member name="P:TrueAutomation.Core.MVP.PresenterBindingAttribute.ViewType">
+            <summary>
+            The view type with which to associate the specified presenter type.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.MVP.PresenterBindingAttribute.PresenterType">
+            <summary>
+            The presenter type with which to associate the specified view type.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.MVP.PresenterBindingAttribute.Mode">
+            <summary>
+            The mode of the binding between the specified presenter and view types.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.MVP.PresenterBindingMode">
+            <summary>
+            An enumeration defining the available modes for binding
+            a presenter to a view.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.PresenterBindingMode.Unique">
+            <summary>
+            A unique presenter is created for each view.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.MVP.PresenterBindingMode.Shared">
+            <summary>
+            A single presenter instance is created and shared amongst all
+            matching views
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.MVP.Util.CollectionUtil">
+            <summary>
+            Assorted utility functions for collection classes.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Util.CollectionUtil.CompareElements``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0})">
+            <summary>
+            Determines whether two collections are equal by comparing
+            their elements, without requiring the same order.
+            </summary>
+            <typeparam name="T">The type of object contained in the collections
+            to be compared.</typeparam>
+            <param name="left">The first collection to be compared.</param>
+            <param name="right">The second collection to be compared.</param>
+            <returns>True if both collections have the same contents, independent
+            of the order of elements in either collection, otherwise false.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">when left or
+            right is null on entry into the method.</exception>
+        </member>
+        <member name="T:TrueAutomation.Core.MVP.Util.TypedListComparer`1">
+            <summary>
+            A custom equality comparer for enumerable types of a specified
+            object type. This equality comparer compares the contents of two
+            enumerations of the specified object type, without regards to the
+            order of elements in either enumeration.
+            </summary>
+            <typeparam name="T">The type of object for which to implement the
+            comparer for enumerations of that type/</typeparam>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Util.TypedListComparer`1.Equals(System.Collections.Generic.IEnumerable{`0},System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Compares two typed collections, without regard to the order
+            of items in either collection.
+            </summary>
+            <param name="left">The first collection to be compared.</param>
+            <param name="right">The second collection to be compared.</param>
+            <returns>True if both collections have the same contents, independent
+            of the order of elements in either collection, otherwise false.
+            </returns>
+        </member>
+        <member name="M:TrueAutomation.Core.MVP.Util.TypedListComparer`1.GetHashCode(System.Collections.Generic.IEnumerable{`0})">
+            <summary>
+            Returns a hash code for the specified collection, which is based
+            on the combined independent hashes of each of the items in that
+            collection.
+            </summary>
+            <param name="list">The collection of items for which to compute
+            the hash code.</param>
+            <returns>The hash code for the set of items in the specified collection
+            or zero if the collection has no elements.</returns>
+            <exception cref="T:System.ArgumentNullException">when list is null on
+            entry into the method.</exception>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.IDatabaseContext">
+            <summary>
+            Defines an interface for a database context that supports
+            distinctly-committable changesets and transactional semantics.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.IDatabaseContext.CommitChanges">
+            <summary>
+            Commits any pending changes to the underlying database.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.IDatabaseContext.BeginTransaction">
+            <summary>
+            Begins a transaction in the underlying database.
+            </summary>
+            <returns>A transaction instance corresponding to the
+            newly-created transaction.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.IDatabaseContext.CommitTransaction">
+            <summary>
+            Commits any current transaction to the underlying database.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.IDatabaseContext.RollbackTransaction">
+            <summary>
+            Rolls back any current transaction in the underlying database.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.IDuplicateEntityChecker">
+            <summary>
+            Defines an interface for objects that support detection of
+            duplicate typed entities.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.IDuplicateEntityChecker.DoesDuplicateExist``1(TrueAutomation.Core.Domain.IEntityWithId{``0})">
+            <summary>
+            Returns whether or not a duplicate entity exists for the
+            specified typed entity. A duplicate entity is a different
+            instance of the entity with the same ID value.
+            </summary>
+            <typeparam name="T">The type of the entity to be checked for
+            duplicate values.</typeparam>
+            <param name="entity">The entity to check for a duplicate value.</param>
+            <returns>True if a duplicate entity exists for the specified
+            entity.</returns>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.IRepository`1">
+            <summary>
+            Provides a standard interface for data access objects (DAOs) which
+            are data-access mechanism agnostic. This implementation manages items
+            with an integer-based ID value.
+            <typeparam name="T">The object type associated with this repository.
+            </typeparam>
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.Persistence.IRepositoryWithId`2">
+            <summary>
+            Provides a standard interface for data access objects (DAOs) which are
+            data-access mechanism agnostic.
+            </summary>
+            <typeparam name="T">The object type associated with this repository.
+            </typeparam>
+            <typeparam name="IdT">The type of the ID value for the object
+            type managed by this repository type.</typeparam>
+        </member>
+        <member name="P:TrueAutomation.Core.Persistence.IRepositoryWithId`2.DatabaseContext">
+            <summary>
+            Provides a handle to the application-wide database context in order
+            to perform activities such as committing any pending changes,
+            beginning a transaction, rolling back a transaction, etc.
+            </summary>
+            <returns>The database context with which this repository is
+            associated.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.IRepositoryWithId`2.Get(`1)">
+            <summary>
+            Returns the object of type T with the specified ID value.
+            </summary>
+            <returns>Returns the object of type T with the specified ID value,
+            or null if a row is not found matching the provided id.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.IRepositoryWithId`2.GetAll">
+            <summary>
+            Returns all items of a given type.
+            </summary>
+            <returns>A list of all the objects managed by this repository.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.IRepositoryWithId`2.FindAll(System.Collections.Generic.IDictionary{System.String,System.Object})">
+            <summary>
+            Looks for zero or more instances of the item type managed by this
+            repository type using the <see cref="T:IDictionary{string, object}"/>
+            provided.
+            The key of the collection should be the property name and the value
+            should be the value of the property to use as a filter.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.IRepositoryWithId`2.FindOne(System.Collections.Generic.IDictionary{System.String,System.Object})">
+            <summary>
+            Looks for a single instance of the item type managed by this
+            repository type using the property/values provided.
+            </summary>
+            <returns>The matching item instance, or null if no matching
+            item was found in the repository.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.IRepositoryWithId`2.SaveOrUpdate(`0)">
+            <summary>
+            For entities with automatatically generated id values, SaveOrUpdate
+            may be called when saving or updating an entity. Updating also allows
+            you to commit changes to a detached object.
+            </summary>
+            <returns>The entity that was saved or updated.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Persistence.IRepositoryWithId`2.Delete(`0)">
+            <summary>
+            Deletes the specified entity from the repository.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.Util.Config.NamedConfigurationElement">
+            <summary>
+            Implements a configuration element that exposes a name
+            value which is required and acts as the key value for the
+            configuration element.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Util.Config.NamedConfigurationElement.Name">
+            <summary>
+            Gets or sets the name of this configuration element.
+            </summary>
+            <value>The name of the configuration element.</value>
+        </member>
+        <member name="T:TrueAutomation.Core.Util.Config.NamedConfigurationElementCollection`1">
+            <summary>
+            Implements a custom collection of configuration elements.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Util.Config.NamedConfigurationElementCollection`1.Item(System.Int32)">
+            <summary>
+            Gets or sets the <see cref="T:System.Configuration.ConfigurationElement"/> at
+            the specified index in the corresponding configuration section.
+            </summary>
+            <param name="index">The index of the configuration element to
+            retrieve or set.</param>
+            <returns>The <see cref="T:System.Configuration.ConfigurationElement"/> at the
+            specified configuration section index.</returns>
+        </member>
+        <member name="P:TrueAutomation.Core.Util.Config.NamedConfigurationElementCollection`1.Item(System.String)">
+            <summary>
+            Gets the <see cref="T:System.Configuration.ConfigurationElement"/> with the
+            specified name in the application's databases configuration
+            section.
+            </summary>
+            <param name="name">The name of the configuration element to
+            retrieve.</param>
+            <returns>The <see cref="T:System.Configuration.ConfigurationElement"/> with the
+            specified name in the corresponding configuration section.</returns>
+        </member>
+        <member name="P:TrueAutomation.Core.Util.Config.NamedConfigurationElementCollection`1.CollectionType">
+            <summary>
+            Returns the type of this configuration element collection.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Config.NamedConfigurationElementCollection`1.CreateNewElement">
+            <summary>
+            Creates a new <see cref="T:System.Configuration.ConfigurationElement"/> for
+            use with this element collection.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Config.NamedConfigurationElementCollection`1.GetElementKey(System.Configuration.ConfigurationElement)">
+            <summary>
+            Returns the element key for a specified configuration element.
+            </summary>
+            <param name="element">The configuration element for which to
+            return the corresponding key.</param>
+            <returns>An object that acts as the key for the specified
+            configuration element.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Config.NamedConfigurationElementCollection`1.IndexOf(`0)">
+            <summary>
+            Returns the index of the specified configuration element.
+            </summary>
+            <param name="element">The element for which to return the
+            corresponding configuration index value.</param>
+            <returns>The index of the specified configuration element.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Config.NamedConfigurationElementCollection`1.Add(`0)">
+            <summary>
+            Adds the specified element to the corresponding configuration.
+            </summary>
+            <param name="element">The configuration element to add
+            to the applicable configuration section.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Config.NamedConfigurationElementCollection`1.BaseAdd(System.Configuration.ConfigurationElement)">
+            <summary>
+            Adds the specified element to the corresponding configuration.
+            </summary>
+            <param name="element">The configuration element to add
+            to the corresponding configuration.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Config.NamedConfigurationElementCollection`1.Remove(`0)">
+            <summary>
+            Removes the specified element from the corresponding configuration.
+            </summary>
+            <param name="element">The configuration element to remove from
+            the collection.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Config.NamedConfigurationElementCollection`1.RemoveAt(System.Int32)">
+            <summary>
+            Removes the configuration element at the specified index
+            from the appropriate configuration section.
+            </summary>
+            <param name="index">The index of the configuration element
+            to remove from the applicable configuration.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Config.NamedConfigurationElementCollection`1.Remove(System.String)">
+            <summary>
+            Removes the named configuration element from the
+            services configuration.
+            </summary>
+            <param name="name">The name of the configuration element to
+            remove from the associated configuration section.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Config.NamedConfigurationElementCollection`1.Clear">
+            <summary>
+            Clears all configuration elements from this collection.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.Util.Directories">
+            <summary>
+            This class contains the references for all of the directories utilized by PACS.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Util.Directories.ConnectionMRUDirectory">
+            <summary>
+            The root path to where connection specific information will be stored.
+            This must be specified before calling MakeDirectories
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.FileCache.RetrieveFromCache``1(System.String)">
+            <summary>
+            Deserializes a data file into an object of type {T}.
+            </summary>
+            <typeparam name="T">Type of object to deseralize
+            and return.</typeparam>
+            <param name="path">Full path to file containing serialized
+            data.</param>
+            <returns>An object of type {T} if the object was successfully
+            deseralized, otherwise null.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown if the path
+            parameter is null or empty.</exception>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.FileCache.StoreInCache``1(``0,System.String)">
+            <summary>
+            Serialize the given object of type {T} to a file at the given path.
+            </summary>
+            <param name="obj">An object of type {T} to serialize.</param>
+            <param name="path">The path of the cache file in which to
+            store the serialized data.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if the config
+            parameter is null.</exception>
+            <exception cref="T:System.ArgumentNullException">Thrown if the path
+            parameter is null or empty.</exception>
+        </member>
+        <member name="T:TrueAutomation.Core.Util.Inflector">
+            <summary>
+            A utility class for converting singular words to their plural
+            equivalents and vice versa, as well as other randomly useful
+            conversion types.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.Util.Inflector.Rule">
+            <summary>
+            Implements a simple regex-based matching rule for replacing
+            text values that match a specified pattern.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.Util.Inflector.Rule.regex">
+            <summary>
+            A regular expression describing the pattern matched by this rule.
+            The pattern matching is case-insensitive.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.Util.Inflector.Rule.replacement">
+            <summary>
+            The replacement string to use when matching the pattern that
+            is associated with this rule.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Inflector.Rule.#ctor(System.String,System.String)">
+            <summary>
+            Class constructor -- initializes a rule instance with a pattern
+            to match and a corresponding replacement value.
+            </summary>
+            <param name="pattern">The pattern to be matched by this rule.
+            </param>
+            <param name="replacement">The replacement value with which to
+            replace any text matching the match pattern.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Inflector.Rule.Apply(System.String)">
+            <summary>
+            Applies this rule to a specified word, replacing any text
+            that matches the rule's pattern with the corresponding
+            replacement value.
+            </summary>
+            <param name="word">The word to which to apply this rule.</param>
+            <returns>An updated copy of the word with any matching
+            pattern replaced, or null if there was no matching pattern.
+            </returns>
+        </member>
+        <member name="F:TrueAutomation.Core.Util.Inflector.pluralRules">
+            <summary>
+            A list of pattern matching rules for matching plural words.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.Util.Inflector.singularRules">
+            <summary>
+            A list of pattern matching rules for matching singular words.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.Util.Inflector.oddballWords">
+            <summary>
+            A list of words that are impossible to match for the purposes
+            of converting from singular to plural or vice versa.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Inflector.Pluralize(System.String)">
+            <summary>
+            Returns the plural version of the specified singular word.
+            </summary>
+            <param name="word">The singular word to pluralize.</param>
+            <returns>The plural version of the specified word.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Inflector.Singularize(System.String)">
+            <summary>
+            Returns the singular version of the specified plural word.
+            </summary>
+            <param name="word">The plural word to singularize.</param>
+            <returns>The singular version of the specified word.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Inflector.Capitalize(System.String)">
+            <summary>
+            Capitalizes the first letter of the specified word.
+            </summary>
+            <param name="word">The word to capitalize.</param>
+            <returns>An updated copy of the word with any replacements
+            applied.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Inflector.Uncapitalize(System.String)">
+            <summary>
+            Un-capitalizes the first letter of the specified word.
+            </summary>
+            <param name="word">The word to un-capitalize.</param>
+            <returns>An updated copy of the word with any replacements
+            applied.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Inflector.Underscore(System.String)">
+            <summary>
+            Splits up a pascal-cased word, de-capitalizes the inter-capped
+            letters, and spaces the words with underscores.
+            </summary>
+            <param name="pascalCasedWord">The pascal-cased word to modify.</param>
+            <returns>An updated copy of the word with replacements applied.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Inflector.Dasherize(System.String)">
+            <summary>
+            Replaces any underscores in the specified word with dashes.
+            </summary>
+            <param name="underscoredWord">The word for which to replace
+            any underscores with dashes.</param>
+            <returns>An updated copy of the word with all replacements
+            applied.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Inflector.Humanize(System.String)">
+            <summary>
+            Replaces any underscores in the specified lowercase word with
+            spaces, i.e. returns a string containing the set of distinct
+            words in the original string, separated by spaces.
+            </summary>
+            <param name="lowercaseAndUnderscoredWord">The word to be updated.
+            </param>
+            <returns>An updated copy of the word with replacements applied.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Inflector.Titleize(System.String)">
+            <summary>
+            Titleizes the specified word.
+            </summary>
+            <param name="word">The word to un-capitalize.</param>
+            <returns>An updated copy of the word with any replacements
+            applied.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Inflector.Pascalize(System.String)">
+            <summary>
+            Changes a specified word string using lowercase and underscores
+            to separate the words into a Pascal-cased version of the word.
+            That is, it removes the underscores and capitalizes each word
+            in the list of words.
+            </summary>
+            <param name="lowercaseAndUnderscoredWord">The word to be
+            Pascal-ized.</param>
+            <returns>An updated copy of the word.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Inflector.Camelize(System.String)">
+            <summary>
+            Changes a specified word string using lowercase and underscores
+            to separate the words into a camel-cased version of the word.
+            That is, it removes the underscores and capitalizes each word
+            in the list of words except for the first one, which is always
+            in lowercase.
+            </summary>
+            <param name="lowercaseAndUnderscoredWord">The word to be
+            camel-ized.</param>
+            <returns>An updated copy of the word.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Inflector.Ordinalize(System.String)">
+            <summary>
+            Returns the value of a numeric string as an ordinal value.
+            That is, a value of "1" becomes "1st", "2" becomes "2nd",
+            "3" becomes "3rd" and so on.
+            </summary>
+            <param name="number">A numeric string to convert to an ordinal
+            value.</param>
+            <returns>The ordinal value of the specified numeric string.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Inflector.AddSingularRule(System.String,System.String)">
+            <summary>
+            Adds a rule for converting a plural word to its singular equivalent.
+            </summary>
+            <param name="rule">The pattern matching the plural word.</param>
+            <param name="replacement">The replacement pattern for converting
+            the plural word to singular.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Inflector.AddPluralRule(System.String,System.String)">
+            <summary>
+            Adds a rule for converting a singular word to its plural equivalent.
+            </summary>
+            <param name="rule">The pattern matching the plural word.</param>
+            <param name="replacement">The replacement pattern for converting
+            the singular word to plural.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Inflector.AddIrregularRule(System.String,System.String)">
+            <summary>
+            Adds a rule for converting an irregular word from singular to
+            plural and vice versa.
+            </summary>
+            <param name="singular">The pattern matching the singular word.</param>
+            <param name="plural">The plural version of the word.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Inflector.AddOddballWord(System.String)">
+            <summary>
+            Adds a known word with no singular-plural distinction, such as
+            "information" for which there is no conversion possible.
+            </summary>
+            <param name="word">The impossible word to add to our internal
+            list of such words.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Inflector.ApplyRules(System.Collections.Generic.List{TrueAutomation.Core.Util.Inflector.Rule},System.String)">
+            <summary>
+            Applies a particular list of rules to the specified word,
+            returning any converted value returned by matching of the
+            rules to the word.
+            </summary>
+            <param name="rules">The list of rules to use to attempt to
+            match the supplied word.</param>
+            <param name="word">The word to match.</param>
+            <returns>The converted word, or null if no matching rule
+            was found for the specified word.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ObjectFileSerializer.RetrieveFromCache``1(System.String)">
+            <summary>
+            Deserializes a data file into an object of type T.
+            </summary>
+            <typeparam name="T">Type of object to deseralize and return.</typeparam>
+            <param name="path">Full path to file containing serialized data.</param>
+            <returns>If object is successfully deseralized, the object of type
+            T, otherwise null.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown if the path parameter
+            is null or empty.</exception>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ObjectFileSerializer.StoreInCache``1(``0,System.String)">
+            <summary>
+            Serialize the specified object of type T to a file at the given path.
+            </summary>
+            <typeparam name="T">The type of object to serialize.</typeparam>
+            <param name="obj">The object to serialize and store in a file.</param>
+            <param name="path">Full path of file to store the serialized data.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if the obj or path
+            parameters are null.</exception>
+        </member>
+        <member name="T:TrueAutomation.Core.Util.FastInvocationHandler">
+            <summary>
+            A delegate for invoking a specific method on a target object.
+            </summary>
+            <param name="target">The target object on which to invoke the
+            method.</param>
+            <param name="parameters">An array of parameters to pass to the
+            invoked method.</param>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.Core.Util.Reflection">
+            <summary>
+            A utility class that implements various reflection-related
+            helper methods.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Reflection.GetMethodInvoker(System.String,System.Type,System.Reflection.BindingFlags)">
+            <summary>
+            Allows retrieving a FastInvocationHandler without extracting
+            the MethodInfo signature first.
+            </summary>
+            <param name="methodName">The name of the method to invoke.</param>
+            <param name="targetType">The type of the class implementing the
+            method to be invoked.</param>
+            <param name="bindingFlags">The set of binding flags to use for
+            the method invocation.</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Reflection.GetMethodInvoker(System.Reflection.MethodInfo)">
+            <summary>
+            Returns an invocation delegate that improves the invocation cost
+            of a standard MethodInfo.Invoke and if an exception is generated
+            returns the actual exception and not the standard
+            <see cref="T:System.Reflection.TargetInvocationException"/> generated by 
+            the usual Invoke method.
+            </summary>
+            <param name="methodInfo">Describes the method to invoke.</param>
+            <returns>A <see cref="T:TrueAutomation.Core.Util.FastInvocationHandler"/> suitable for
+            invoking the specified method.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Reflection.EmitCastToReference(System.Reflection.Emit.ILGenerator,System.Type)">
+            <summary>
+            Generates the IL to unbox a cast.
+            </summary>
+            <param name="il">The IL generator to use for emitting the
+            required unboxing code.</param>
+            <param name="type">The type of object to unbox.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Reflection.EmitBoxIfNeeded(System.Reflection.Emit.ILGenerator,System.Type)">
+            <summary>
+            Boxes the type if needed.
+            </summary>
+            <param name="il">The IL generator to use for emitting the
+            required boxing code.</param>
+            <param name="type">The type of object to box.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Reflection.EmitFastInt(System.Reflection.Emit.ILGenerator,System.Int32)">
+            <summary>
+            Sets the IL opcode for fast access.
+            </summary>
+            <param name="il">The IL generator to use for emitting the
+            required integer value access code.</param>
+            <param name="value">The integer value for which to emit the
+            corresponding IL.</param>
+        </member>
+        <member name="T:TrueAutomation.Core.Util.ServiceLocation.ActivationException">
+            <summary>
+            The standard exception thrown when a ServiceLocator has an error
+            in resolving an object.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ServiceLocation.ActivationException.#ctor">
+            <summary>
+            Initializes a new instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ServiceLocation.ActivationException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the class with a specified error message.
+            </summary>
+            <param name="message">The message that describes the error. </param>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ServiceLocation.ActivationException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the class with a specified error message
+            and a reference to the inner exception that is the cause of this
+            exception.
+            </summary>
+            <param name="message">The error message that explains the reason for
+            the exception. </param>
+            <param name="innerException">The exception that is the cause of the
+            current exception, or a null reference if no inner exception is
+            specified.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ServiceLocation.ActivationException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the class with serialized data.
+            </summary>
+            <param name="info">
+            The <see cref="T:System.Runtime.Serialization.SerializationInfo" />
+            that holds the serialized object data about the exception being thrown.
+            </param>
+            <param name="context">
+            The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that
+            contains contextual information about the source or destination. 
+            </param>
+            <exception cref="T:System.ArgumentNullException">
+            The <paramref name="info" /> parameter is null. 
+            </exception>
+            <exception cref="T:System.Runtime.Serialization.SerializationException">
+            The class name is null or <see cref="P:System.Exception.HResult" />
+            is zero (0). 
+            </exception>
+        </member>
+        <member name="T:TrueAutomation.Core.Util.ServiceLocation.IServiceLocator">
+            <summary>
+            The generic Service Locator interface. This interface is used
+            to retrieve services (instances identified by type and optional
+            name) from a container.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ServiceLocation.IServiceLocator.GetInstance(System.Type)">
+            <summary>
+            Returns an instance of the given <paramref name="serviceType"/>.
+            </summary>
+            <param name="serviceType">The type of object requested.</param>
+            <exception cref="T:TrueAutomation.Core.Util.ServiceLocation.ActivationException">There was an error resolving
+            the service instance.</exception>
+            <returns>The requested service instance.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ServiceLocation.IServiceLocator.GetInstance(System.Type,System.String)">
+            <summary>
+            Returns an instance of the given named
+            <paramref name="serviceType"/>.
+            </summary>
+            <param name="serviceType">The type of object requested.</param>
+            <param name="key">The name the object was registered with.</param>
+            <exception cref="T:TrueAutomation.Core.Util.ServiceLocation.ActivationException">There was an error resolving
+            the service instance.</exception>
+            <returns>The requested service instance.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ServiceLocation.IServiceLocator.GetAllInstances(System.Type)">
+            <summary>
+            Returns all instances of the given <paramref name="serviceType"/>
+            currently registered in the container.
+            </summary>
+            <param name="serviceType">The type of object requested.</param>
+            <exception cref="T:TrueAutomation.Core.Util.ServiceLocation.ActivationException">There were errors resolving
+            the service instance.</exception>
+            <returns>A sequence of instances of the requested
+            <paramref name="serviceType"/>.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ServiceLocation.IServiceLocator.GetInstance``1">
+            <summary>
+            Returns an instance of the given <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">The type of object requested.</typeparam>
+            <exception cref="T:TrueAutomation.Core.Util.ServiceLocation.ActivationException">There were errors resolving
+            the service instance.</exception>
+            <returns>The requested service instance.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ServiceLocation.IServiceLocator.GetInstance``1(System.String)">
+            <summary>
+            Returns an instance of the given named <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">The type of object requested.</typeparam>
+            <param name="key">The name the object was registered with.</param>
+            <exception cref="T:TrueAutomation.Core.Util.ServiceLocation.ActivationException">There were errors resolving
+            the service instance.</exception>
+            <returns>The requested service instance.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ServiceLocation.IServiceLocator.GetAllInstances``1">
+            <summary>
+            Returns all instances of the given <typeparamref name="T"/>
+            currently registered in the container.
+            </summary>
+            <typeparam name="T">The type of object requested.</typeparam>
+            <exception cref="T:TrueAutomation.Core.Util.ServiceLocation.ActivationException">There were errors resolving
+            the service instance.</exception>
+            <returns>A sequence of instances of the requested <typeparamref name="T"/>.
+            </returns>
+        </member>
+        <member name="T:TrueAutomation.Core.Util.ServiceLocation.SafeServiceLocator`1">
+            <summary>
+            Safe wrapper around the service locator class, which throws
+            exceptions if it hasn't been initialized at the time of the call.
+            </summary>
+            <typeparam name="T">The type of service to be located.</typeparam>
+        </member>
+        <member name="T:TrueAutomation.Core.Util.ServiceLocation.ServiceLocator">
+            <summary>
+            This class provides the global container for this application. Use
+            ServiceLocator.Current to get the current application container.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.Util.ServiceLocation.ServiceLocator.currentProvider">
+            <summary>
+            The current global service locator provider instance.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Util.ServiceLocation.ServiceLocator.Current">
+            <summary>
+            The current application container.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ServiceLocation.ServiceLocator.SetLocatorProvider(TrueAutomation.Core.Util.ServiceLocation.ServiceLocatorProvider)">
+            <summary>
+            Sets the delegate that is used to retrieve the current container.
+            </summary>
+            <param name="newProvider">Delegate that, when called, will return
+            the current application container.</param>
+        </member>
+        <member name="T:TrueAutomation.Core.Util.ServiceLocation.ServiceLocatorImplBase">
+            <summary>
+            This class is a helper that provides a default implementation
+            for most of the methods of <see cref="T:TrueAutomation.Core.Util.ServiceLocation.IServiceLocator"/>.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ServiceLocation.ServiceLocatorImplBase.GetService(System.Type)">
+            <summary>
+            Returns an instance of the given <paramref name="serviceType"/>.
+            </summary>
+            <param name="serviceType">The type of object requested.</param>
+            <exception cref="T:TrueAutomation.Core.Util.ServiceLocation.ActivationException">There was an error resolving
+            the service instance.</exception>
+            <returns>The requested service instance.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ServiceLocation.ServiceLocatorImplBase.GetInstance(System.Type)">
+            <summary>
+            Returns an instance of the given <paramref name="serviceType"/>.
+            </summary>
+            <param name="serviceType">The type of object requested.</param>
+            <exception cref="T:TrueAutomation.Core.Util.ServiceLocation.ActivationException">There was an error resolving
+            the service instance.</exception>
+            <returns>The requested service instance.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ServiceLocation.ServiceLocatorImplBase.GetInstance(System.Type,System.String)">
+            <summary>
+            Returns an instance of the given named <paramref name="serviceType"/>.
+            </summary>
+            <param name="serviceType">The type of object requested.</param>
+            <param name="key">The name the object was registered with.</param>
+            <exception cref="T:TrueAutomation.Core.Util.ServiceLocation.ActivationException">There was an error resolving
+            the service instance.</exception>
+            <returns>The requested service instance.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ServiceLocation.ServiceLocatorImplBase.GetAllInstances(System.Type)">
+            <summary>
+            Returns all instances of the given <paramref name="serviceType"/>
+            currently registered in the container.
+            </summary>
+            <param name="serviceType">The type of object requested.</param>
+            <exception cref="T:TrueAutomation.Core.Util.ServiceLocation.ActivationException">There were errors resolving
+            the service instance.</exception>
+            <returns>A sequence of instances of the requested
+            <paramref name="serviceType"/>.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ServiceLocation.ServiceLocatorImplBase.GetInstance``1">
+            <summary>
+            Returns an instance of the given <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">The type of object requested.</typeparam>
+            <exception cref="T:TrueAutomation.Core.Util.ServiceLocation.ActivationException">There were errors resolving
+            the service instance.</exception>
+            <returns>The requested service instance.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ServiceLocation.ServiceLocatorImplBase.GetInstance``1(System.String)">
+            <summary>
+            Returns an instance of the given named <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">The type of object requested.</typeparam>
+            <param name="key">The name the object was registered with.</param>
+            <exception cref="T:TrueAutomation.Core.Util.ServiceLocation.ActivationException">There were errors resolving
+            the service instance.</exception>
+            <returns>The requested service instance.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ServiceLocation.ServiceLocatorImplBase.GetAllInstances``1">
+            <summary>
+            Returns all instances of the given <typeparamref name="T"/>
+            currently registered in the container.
+            </summary>
+            <typeparam name="T">The type of object requested.</typeparam>
+            <exception cref="T:TrueAutomation.Core.Util.ServiceLocation.ActivationException">There were errors resolving
+            the service instance.</exception>
+            <returns>A sequence of instances of the requested <typeparamref name="T"/>.
+            </returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ServiceLocation.ServiceLocatorImplBase.DoGetInstance(System.Type,System.String)">
+            <summary>
+            Abstract method to be implemented by inheriting classes, which will
+            do the actual work of resolving the requested service instance.
+            </summary>
+            <param name="serviceType">The type of instance requested.</param>
+            <param name="key">The name of the registered service desired.
+            May be null.</param>
+            <returns>The requested service instance.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ServiceLocation.ServiceLocatorImplBase.DoGetAllInstances(System.Type)">
+            <summary>
+            Abstract method to be implemented by inheriting classes, which will
+            do the actual work of resolving all the requested service instances.
+            </summary>
+            <param name="serviceType">The type of service requested.</param>
+            <returns>Sequence of service instance objects.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ServiceLocation.ServiceLocatorImplBase.FormatActivationExceptionMessage(System.Exception,System.Type,System.String)">
+            <summary>
+            Formats an exception message for use in an
+            <see cref="T:TrueAutomation.Core.Util.ServiceLocation.ActivationException"/> that occurs while resolving a
+            single service.
+            </summary>
+            <param name="actualException">The actual exception thrown by the
+            implementation.</param>
+            <param name="serviceType">The type of service requested.</param>
+            <param name="key">The name of the service requested.</param>
+            <returns>The formatted exception message string.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ServiceLocation.ServiceLocatorImplBase.FormatActivateAllExceptionMessage(System.Exception,System.Type)">
+            <summary>
+            Formats an exception message for use in an
+            <see cref="T:TrueAutomation.Core.Util.ServiceLocation.ActivationException"/> that occurs while resolving
+            multiple service instances.
+            </summary>
+            <param name="actualException">The actual exception thrown by the
+            implementation.</param>
+            <param name="serviceType">The type of service requested.</param>
+            <returns>The formatted exception message string.</returns>
+        </member>
+        <member name="T:TrueAutomation.Core.Util.ServiceLocation.ServiceLocatorProvider">
+            <summary>
+            This delegate type is used to provide a method that will
+            return the current container. Used with the <see cref="T:TrueAutomation.Core.Util.ServiceLocation.ServiceLocator"/>
+            static accessor class.
+            </summary>
+            <returns>An <see cref="T:TrueAutomation.Core.Util.ServiceLocation.IServiceLocator"/>.</returns>
+        </member>
+        <member name="T:TrueAutomation.Core.Util.ServiceLocation.Windsor.IWindsorContainerOwner">
+            <summary>
+            Defines an interface for classes that own an
+            <see cref="T:IWindsorContainer"/> instance and can return it.
+            This is actually something of a hack that's used to retrieve
+            the actual Windsor IoC container, because some third-party
+            libraries want to use it. In our own code, we generally
+            avoid direct references to the castle container and resolve
+            all our services via the generic <see cref="T:ServiceLocator"/>
+            class instead.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Util.ServiceLocation.Windsor.IWindsorContainerOwner.WindsorContainer">
+            <summary>
+            Returns the <see cref="T:IWindsorContainer"/> instance
+            associated with this object.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ServiceLocation.Windsor.WindsorExtensions.FirstNonGenericCoreInterface(Castle.MicroKernel.Registration.ServiceDescriptor,System.String)">
+            <summary>
+            Searches for the first interface found associated with the 
+            <see cref="T:Castle.MicroKernel.Registration.ServiceDescriptor" /> that isn't generic and which 
+            is found in the specified namespace.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.Util.ServiceLocation.Windsor.WindsorServiceLocator">
+            <summary>
+            Implements a service locator based on the Castle Windsor
+            IoC container.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.Util.ServiceLocation.Windsor.WindsorServiceLocator.container">
+            <summary>
+            The Castle Windsor IoC container managed by this service locator.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ServiceLocation.Windsor.WindsorServiceLocator.#ctor(Castle.Windsor.IWindsorContainer)">
+            <summary>
+            Initializes a new instance of the <see cref="T:TrueAutomation.Core.Util.ServiceLocation.Windsor.WindsorServiceLocator"/>
+            class.
+            </summary>
+            <param name="container">The Castle Windows IoC container to
+            associate with this service locator instance.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ServiceLocation.Windsor.WindsorServiceLocator.DoGetInstance(System.Type,System.String)">
+            <summary>
+            Abstract method to be implemented by inheriting classes, which will
+            do the actual work of resolving the requested service instance.
+            This implementation uses the associated Castle Windor container
+            to resolve the requested service type.
+            </summary>
+            <param name="serviceType">The type of instance requested.</param>
+            <param name="key">The name of the registered service desired.
+            May be null.</param>
+            <returns>The requested service instance.</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.ServiceLocation.Windsor.WindsorServiceLocator.DoGetAllInstances(System.Type)">
+            <summary>
+            Abstract method to be implemented by inheriting classes, which will
+            do the actual work of resolving all the requested service instances.
+            This implementation delegates the actual work to the associated
+            Castle Windsor IoC container.
+            </summary>
+            <param name="serviceType">The type of service requested.</param>
+            <returns>Sequence of service instance objects.</returns>
+        </member>
+        <member name="T:TrueAutomation.Core.Util.Windsor.AttributeControlledFacility">
+            <summary>
+            Implements a custom facility class for injecting Castle-style
+            interceptors based on attributes that decorate a class.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.Util.Windsor.AttributeControlledFacility.interceptorType">
+            <summary>
+            The type of interceptor to be created.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.Util.Windsor.AttributeControlledFacility.lifestyleType">
+            <summary>
+            The lifestyle type for the new interceptor.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Windsor.AttributeControlledFacility.#ctor(System.Type,Castle.Core.LifestyleType)">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+            <param name="interceptorType">The type of interceptor to create.
+            </param>
+            <param name="lifestyleType">An optional lifestyle type that
+            defines the runtime behavior of the interceptor.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Windsor.AttributeControlledFacility.Init">
+            <summary>
+            Initializes this facility class. We use this opportunity to
+            register our interceptor type with the Castle kernel and to
+            set up a handler for other kernel component registration events.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Windsor.AttributeControlledFacility.KernelComponentRegistered(System.String,Castle.MicroKernel.IHandler)">
+            <summary>
+            Callback delegate to handle component registration events in
+            the Castle kernel. We use this opportunity to get the list of
+            attributes for the target component, determine whether those
+            attributes specify that an interceptor of the type this class
+            manages should be added, and then create the required interceptor
+            if necessary.
+            </summary>
+            <param name="key">Unused parameter in this implementation</param>
+            <param name="handler">The handler specifying the component
+            that's currently being registered and additional context
+            information.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Windsor.AttributeControlledFacility.AddInterceptorIfNeeded(Castle.MicroKernel.IHandler,System.Collections.Generic.List{System.Attribute})">
+            <summary>
+            Internal utility function to create any interceptor references
+            for the specified handler's component model, for the list of
+            matching attributes supplied to the method.
+            </summary>
+            <param name="handler">The handler specifying the component
+            that's currently being registered and additional context
+            information.</param>
+            <param name="attributes">The list of attributes for which
+            to create any interceptors.</param>
+            <returns>True if an interceptor was created, otherwise false.
+            </returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.Windsor.AttributeControlledFacility.GetAttributes(Castle.MicroKernel.IHandler)">
+            <summary>
+            Abstract method intended to return a list of attributes that
+            are relevant to this interceptor facility class for the
+            target object specified in the supplied handler.
+            </summary>
+            <param name="handler">The handler specifying the component
+            that's currently being registered and additional context
+            information.</param>
+            <returns>A list of attributes on the target object that are
+            relevant to this interceptor facility.</returns>
+        </member>
+        <member name="T:TrueAutomation.Core.Util.XmlSerialization">
+            <summary>
+            Summary description for XmlSerialization.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.XmlSerialization.UTF8ByteArrayToString(System.Byte[])">
+            <summary>
+            To convert a Byte Array of Unicode values (UTF-8 encoded) to a complete String.
+            </summary>
+            <param name="characters">Unicode Byte Array to be converted to String</param>
+            <returns>String converted from Unicode Byte Array</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.XmlSerialization.StringToUTF8ByteArray(System.String)">
+            <summary>
+            Converts the String to UTF8 Byte array and is used in De serialization
+            </summary>
+            <param name="pXmlString"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.XmlSerialization.SerializeObjectWithKnownTypes(System.Object,System.Type,System.Collections.Generic.List{System.Type})">
+            <summary>
+            Serialize a complex object using DataContractSerializer with a list of known types. 
+            </summary>
+            <param name="pObject">Object to be serialized</param>
+            <param name="type">Type to be serialized into</param>
+            <param name="knownTypes">List of known types to be used during serialization</param>
+            <returns>Xml string</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.XmlSerialization.DeserializeObjectWithKnownTypes(System.String,System.Type,System.Collections.Generic.List{System.Type})">
+            <summary>
+            Deserialize an Xml string into a complex object using DataContractSerializer with a list of known types. 
+            </summary>
+            <param name="pXmlizedString">The string to be deserialized</param>
+            <param name="type">Type to be deserialized into</param>
+            <param name="knownTypes">List of known types to be used during serialization</param>
+            <returns>Deserialized object of specified Type</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.XmlSerialization.DeserializeObject(System.String,System.Type)">
+            <summary>
+            Method to reconstruct an Object from XML string
+            </summary>
+            <param name="pXmlizedString"></param>
+            <param name="type">The type of object that will be deserialized from the xml.</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.XmlSerialization.SerializableDictionaryObject``2(System.Collections.Generic.Dictionary{``0,``1})">
+            <summary>
+            Method to create a serializable list of key value pairs from a dictionary.
+            This is done to utilize serializing dictionaries.
+            </summary>
+            <typeparam name="K">The key type of the dictionary</typeparam>
+            <typeparam name="V">The value type of the dictionary</typeparam>
+            <param name="dictionary"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.XmlSerialization.DeSerializedDictionaryObject``2(System.Collections.Generic.List{TrueAutomation.Core.Util.SerializedKeyValuePair{``0,``1}})">
+            <summary>
+            Method to deserialize list of key value pairs to a dictionary.
+            </summary>
+            <typeparam name="K">The key type</typeparam>
+            <typeparam name="V">The value type</typeparam>
+            <param name="serializableDictionary"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Core.Util.XmlSerialization.DeserializeXmlStringToDictionary(System.String,System.Collections.Generic.List{System.Type})">
+            <summary>
+            Method to Deserialize an xml string object into a Dictionary(string, object)
+            </summary>
+            <param name="xmlString">The string that should be deserialized</param>
+            <param name="knownTypes">List of Known Types for the DataContractSerializer</param>
+            <returns>Dictionary of deserialized (string, object) values</returns>
+        </member>
+        <member name="T:TrueAutomation.Core.Util.SerializedKeyValuePair`2">
+            <summary>
+            Class that mimics a dictionary item object.
+            This is done to utilize serializing dictionaries.
+            </summary>
+            <typeparam name="K">The type of the dictionary key</typeparam>
+            <typeparam name="V">The type of the dictionary value</typeparam>
+        </member>
+        <member name="P:TrueAutomation.Core.Util.SerializedKeyValuePair`2.Key">
+            <summary>
+            The Key of the dictionary item
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.Util.SerializedKeyValuePair`2.Value">
+            <summary>
+            The catual value of the dictionary item
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.WCF.Config.ServiceConfigurationElement">
+            <summary>
+            Encapsulates a single service-related configuration element
+            in an application-level configuration file.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.WCF.Config.ServiceConfigurationElement.Service">
+            <summary>
+            Gets or sets the interface type of this service configuration element.
+            </summary>
+            <value>The interface type of the configuration element.</value>
+        </member>
+        <member name="P:TrueAutomation.Core.WCF.Config.ServiceConfigurationElement.Enabled">
+            <summary>
+            Gets or sets the enabled flag for the associated service type.
+            Services that are flagged as enabled will be started by the
+            service host, while non-enabled services will be ignored.
+            </summary>
+            <value>The type of the configuration element.</value>
+        </member>
+        <member name="T:TrueAutomation.Core.WCF.Config.ServicesConfigurationSection">
+            <summary>
+            Encapsulates the services configuration section in an application's
+            configuration file.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.WCF.Config.ServicesConfigurationSection.Services">
+            <summary>
+            Returns the collection of service-related configuration
+            elements in the "services" section of the application
+            configuration file.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.WCF.MultiServiceHostBase">
+            <summary>
+            Implements a Windows service that hosts a WCF-enabled service.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.WCF.MultiServiceHostBase.container">
+            <summary>
+            A service container instance for managing the set of
+            all hosted WCF services.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.MultiServiceHostBase.#ctor(TrueAutomation.Core.WCF.ServiceHostContainer)">
+            <summary>
+            Class constructor -- initializes an instance of the
+            <see cref="T:TrueAutomation.Core.WCF.MultiServiceHostBase"/> class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.MultiServiceHostBase.OnStart(System.String[])">
+            <summary>
+            Callback method invoked when a "start" command is sent to the
+            service by the global service control manager (SCM). We use the
+            start event to start all hosted services defined in the
+            application's configuration file.
+            </summary>
+            <param name="args">An array of arguments passed to the
+            service as part of the start command.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.MultiServiceHostBase.OnStop">
+            <summary>
+            Callback method invoked when a "stop" command is sent to the
+            service by the global service control manager (SCM). We use the
+            stop event to stop all hosted services currently running in
+            this service host process.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.WCF.MultiServiceHostBase.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.MultiServiceHostBase.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.MultiServiceHostBase.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Core.WCF.ServiceHostContainer">
+            <summary>
+            A simple container class that manages all the services configured
+            in the service host's application configuration file.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.WCF.ServiceHostContainer.factory">
+            <summary>
+            A service host factory for creation of service hosts
+            in this service host container.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.WCF.ServiceHostContainer.hosts">
+            <summary>
+            A list of configured service hosts.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.WCF.ServiceHostContainer.logger">
+            <summary>
+            The logger instance associated with this service host.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.ServiceHostContainer.#ctor">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.ServiceHostContainer.#ctor(System.ServiceModel.Activation.ServiceHostFactory)">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+            <param name="factory">The service host factory to use for
+            creation of any configured service hosts.</param>
+        </member>
+        <member name="P:TrueAutomation.Core.WCF.ServiceHostContainer.Logger">
+            <summary>
+            The logger associated with this service host instance.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Core.WCF.ServiceHostContainer.Factory">
+            <summary>
+            The service host factory to use for this service container.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.ServiceHostContainer.StartServices">
+            <summary>
+            Starts all the services specified in the service host's
+            application configuration file.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.ServiceHostContainer.StopServices">
+            <summary>
+            Stops all hosted services.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.ServiceHostContainer.GetHostedServiceNames">
+            <summary>
+            Returns an array containing all hosted service names.
+            </summary>
+            <returns>An array of all hosted service names</returns>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.ServiceHostContainer.CloseHost(System.ServiceModel.ServiceHost)">
+            <summary>
+            Closes the specified service host.
+            </summary>
+            <param name="host">The service host to close.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.ServiceHostContainer.GetServiceHostDescription(System.ServiceModel.ServiceHostBase)">
+            <summary>
+            Returns a descriptive string for the specified
+            <see cref="T:ServiceHostBase"/> instance.
+            </summary>
+            <param name="host">The <see cref="T:ServiceHostBase"/> instance for
+            which to format the descriptive string.</param>
+            <returns>A string containing the name of the specified service
+            host and any configured endpoints.</returns>
+        </member>
+        <member name="T:TrueAutomation.Core.WCF.ServiceHostInstaller">
+            <summary>
+            A custom installer class used to install the service host.
+            This installer is designed to allow multiple versions of
+            the service host to exist simultaneously, using different
+            service names to distinguish them from one another.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.WCF.ServiceHostInstaller.KEY_NAME">
+            <summary>
+            The value of the "name" key for service installation.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.WCF.ServiceHostInstaller.KEY_DISPLAYNAME">
+            <summary>
+            The value of the "displayname" key for service installation.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.WCF.ServiceHostInstaller.KEY_DESCRIPTION">
+            <summary>
+            The value of the "description" key for service installation.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.WCF.ServiceHostInstaller.KEY_USAGE">
+            <summary>
+            The value of the "usage" key for service installation.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.WCF.ServiceHostInstaller.processInstaller">
+            <summary>
+            Our process installer, used for performing process
+            installation functions.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.WCF.ServiceHostInstaller.serviceInstaller">
+            <summary>
+            Our service installer, used for performing service
+            installation functions.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.ServiceHostInstaller.#ctor">
+            <summary>
+            Class constructor -- initializes an instance of the service
+            host installer class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.ServiceHostInstaller.OnBeforeInstall(System.Collections.IDictionary)">
+            <summary>
+            Method invoked before installation operations are performed.
+            </summary>
+            <param name="savedState">
+            An <see cref="T:System.Collections.IDictionary"/> that contains the
+            state of the computer before the installers in the
+            <see cref="P:System.Configuration.Install.Installer.Installers"/>
+            property are installed. This
+            <see cref="T:System.Collections.IDictionary"/> object should be
+            empty at this point.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.ServiceHostInstaller.OnBeforeUninstall(System.Collections.IDictionary)">
+            <summary>
+            Method invoked before uninstallation operations are performed.
+            </summary>
+            <param name="savedState">
+            An <see cref="T:System.Collections.IDictionary"/> that contains
+            the state of the computer before the installers in the
+            <see cref="P:System.Configuration.Install.Installer.Installers"/>
+            property uninstall their installations.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.ServiceHostInstaller.SetParameters">
+            <summary>
+            Sets the installer parameters from the command line.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.ServiceHostInstaller.DoInstall">
+            <summary>
+            Performs any installation-related functions.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.ServiceHostInstaller.DisplayUsage">
+            <summary>
+            Displays the usage information for the installer.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Core.WCF.ServiceHostInstaller.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.ServiceHostInstaller.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.Core.WCF.ServiceHostInstaller.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Core.Windsor.Installer.Install(Castle.Windsor.IWindsorContainer,Castle.MicroKernel.SubSystems.Configuration.IConfigurationStore)">
+            <summary>
+            Registers all our transaction-related facility types with the
+            supplied Windsor IoC container.
+            </summary>
+            <param name="container">The container into which to register
+            the transaction facility types.</param>
+            <param name="store">Configuration store parameter -- unused in
+            this implementation.</param>
+        </member>
+    </members>
+</doc>

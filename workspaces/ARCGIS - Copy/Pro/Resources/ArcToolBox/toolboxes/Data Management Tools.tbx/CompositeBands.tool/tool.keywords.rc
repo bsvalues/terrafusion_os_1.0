@@ -1,0 +1,19 @@
+{
+    "set": [
+        "assemble",
+        "color",
+        "combine",
+        "create",
+        "landsat",
+        "merge",
+        "multiband",
+        "multiple band",
+        "new",
+        "preparation",
+        "processing",
+        "reorder",
+        "rgb",
+        "subset",
+        "subset raster"
+    ]
+}

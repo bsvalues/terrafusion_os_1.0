@@ -1,0 +1,230 @@
+{
+    "type": "FunctionTool",
+    "guid": "{a8f56933-104d-40b7-9400-3131c844e0ed}",
+    "displayname": "$rc:title",
+    "helpcontent": "1030006",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{0a2ad811-7215-4a95-92f3-9c29de502e9b}"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "featuretype": [
+                    "Simple",
+                    "SimpleJunction",
+                    "SimpleEdge",
+                    "ComplexEdge",
+                    "RasterCatalogItem"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "near_features": {
+            "displayname": "$rc:near_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "featuretype": [
+                    "Simple",
+                    "SimpleJunction",
+                    "SimpleEdge",
+                    "ComplexEdge",
+                    "RasterCatalogItem"
+                ]
+            },
+            "description": "$rc:near_features.descr"
+        },
+        "out_table": {
+            "direction": "out",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "description": "$rc:out_table.descr"
+        },
+        "search_radius": {
+            "type": "optional",
+            "displayname": "$rc:search_radius.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:search_radius.descr"
+        },
+        "location": {
+            "type": "optional",
+            "displayname": "$rc:location.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "LOCATION"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_LOCATION"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:location.descr"
+        },
+        "angle": {
+            "type": "optional",
+            "displayname": "$rc:angle.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ANGLE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_ANGLE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:angle.descr"
+        },
+        "closest": {
+            "type": "optional",
+            "displayname": "$rc:closest.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CLOSEST"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "ALL"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:closest.descr"
+        },
+        "closest_count": {
+            "type": "optional",
+            "displayname": "$rc:closest_count.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "0",
+            "description": "$rc:closest_count.descr"
+        },
+        "method": {
+            "type": "optional",
+            "displayname": "$rc:method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PLANAR",
+                        "code": "$rc:method.domain.PLANAR"
+                    },
+                    {
+                        "value": "GEODESIC",
+                        "code": "$rc:method.domain.GEODESIC"
+                    }
+                ]
+            },
+            "value": "PLANAR",
+            "description": "$rc:method.descr"
+        },
+        "distance_unit": {
+            "type": "optional",
+            "displayname": "$rc:distance_unit.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "Kilometers",
+                        "code": "$rc:distance_unit.domain.Kilometers"
+                    },
+                    {
+                        "value": "Meters",
+                        "code": "$rc:distance_unit.domain.Meters"
+                    },
+                    {
+                        "value": "NauticalMilesInt",
+                        "code": "$rc:distance_unit.domain.NauticalMilesInt"
+                    },
+                    {
+                        "value": "MilesInt",
+                        "code": "$rc:distance_unit.domain.MilesInt"
+                    },
+                    {
+                        "value": "YardsInt",
+                        "code": "$rc:distance_unit.domain.YardsInt"
+                    },
+                    {
+                        "value": "FeetInt",
+                        "code": "$rc:distance_unit.domain.FeetInt"
+                    },
+                    {
+                        "value": "NauticalMiles",
+                        "code": "$rc:distance_unit.domain.NauticalMiles"
+                    },
+                    {
+                        "value": "Miles",
+                        "code": "$rc:distance_unit.domain.Miles"
+                    },
+                    {
+                        "value": "Yards",
+                        "code": "$rc:distance_unit.domain.Yards"
+                    },
+                    {
+                        "value": "Feet",
+                        "code": "$rc:distance_unit.domain.Feet"
+                    }
+                ]
+            },
+            "description": "$rc:distance_unit.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

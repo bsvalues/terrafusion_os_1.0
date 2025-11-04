@@ -1,0 +1,157 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.Workflow.PACSActions</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.Workflow.PACSActions.Account">
+            <summary>
+            Static methods to call retrieve data from the PACS Service
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActions.Account.GetAccountsBy(TrueAutomation.PACSService.DTOs.PACSSearchDTO)">
+            <summary>
+            Get a list of Accounts <cref>TrueAutomation.PACSService.WCF.PACSService.GetAccountsBy</cref>
+            </summary>
+            <param name="searchCriteria">PACSSearchDTO</param>
+            <returns>A List of AccountDTOs</returns>
+        </member>
+        <member name="T:TrueAutomation.Workflow.PACSActions.PaymentImport">
+            <summary>
+             Static Methods used to execute calls against the Pacs Service and Workflow Service API regarding Payment Import.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActions.PaymentImport.ExecutePaymentImport(System.String)">
+            <summary>
+            Executes Payment Import
+            </summary>
+            <returns>A flag to indicate the status of the PaymentImport</returns>
+        </member>
+        <member name="T:TrueAutomation.Workflow.PACSActions.QueryResultsToExcel">
+            <summary>
+            Static Methods used to execute calls against the PACS Service API to make sql calls on the PACS db. The results are exported to an excel sheet.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActions.QueryResultsToExcel.ExportQueryResultsToExcel(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Method that makes web service calls to fetch sql query results and then exports them to a specified excel sheet
+            </summary>
+            <param name="query"></param>
+            <param name="exportLocation">Full path of the excel file</param>
+            <param name="excelSheetName"></param>
+            <param name="overwrite"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActions.QueryResultsToExcel.CreateDataTable(System.String)">
+            <summary>
+            Creates a datatable to export the sql query results to an excel
+            </summary>
+            <param name="query"></param>
+            <returns>A datatable with results of the sql query</returns>
+        </member>
+        <member name="P:TrueAutomation.Workflow.PACSActions.QueryResultsToExcel.Log">
+            <summary>
+            Logger to log warnings/error messages
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActions.QueryResultsToExcel.ExcelImport(System.String,System.String,System.Data.DataTable)">
+            <summary>
+            Method that makes an OleDbConnection to an excel and writes to it.
+            </summary>
+            <param name="exportLocation"></param>
+            <param name="excelSheetName"></param>
+            <param name="dt"></param>
+        </member>
+        <member name="T:TrueAutomation.Workflow.PACSActions.REETExport">
+            <summary>
+             Static Methods used to execute calls against the Pacs Service and Workflow Service API regarding REET Export.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActions.REETExport.ExecuteREETExport(System.String,System.DateTime,System.Boolean)">
+            <summary>
+            Executes REET Export
+            </summary>
+            <returns>The REET Export DTO with all information related to the exported REET record</returns>
+        </member>
+        <member name="T:TrueAutomation.Workflow.PACSActions.RunTAMTCommand">
+            <summary>
+             Static Methods used to execute calls against the Pacs Service API to run a middle tier TAMTCommand.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActions.RunTAMTCommand.ExecuteCommand(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},System.Boolean)">
+            <summary>
+            Executes TAMTCommand through an API call
+            </summary>
+            <param name="commandName">The TAMTCommand name to execute</param>
+            <param name="parameters">Parameters to execute the Command</param>
+            <returns>Return value object of the TAMTCommand Query Execution</returns>
+        </member>
+        <member name="T:TrueAutomation.Workflow.PACSActions.TaskQueryMapping">
+            <summary>
+            Static methods to call retrieve data from the PACS Service
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActions.TaskQueryMapping.GetTaskQueryMappingList">
+            <summary>
+            returns all available Task Query mappings 
+            that can be executed, if needed
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActions.TaskQueryMapping.GetTaskQueryList">
+            <summary>
+            returns all available Task Query mappings 
+            that can be executed, if needed
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActions.TaskQueryMapping.GetMappedQueryData(System.Guid)">
+            <summary>
+            Get Query Mapping data, this includes column names
+            returned from  the Query, the raw data rows, and mapped 
+            data rows
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActions.TaskQueryMapping.GetPACSQueryData(System.Guid)">
+            <summary>
+            Get PACS Query data, this includes column names
+            returned from  the Query and the raw data rows
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActions.TaskQueryMapping.GetPACSQueryData(System.String)">
+            <summary>
+            Get PACS Query data, by running the query as a SQL Query. The result
+            includes column names returned from  the Query and the raw data rows.
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.Workflow.PACSActions.NamespaceDoc">
+            <summary>
+            These are the namespace comments for <c>TrueAutomation.Workflow.PACSActions</c>.
+            
+            This class contains the codes to perform various actions on the workflow activities.  
+            In order to avoid exposing the entire set
+            of PACS Service API calls to the workflow activity library (and thus the workflow designer), 
+            the set of calls to the PACS service have
+            been moved here and are accessible using the classes within.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.PACSActions.Property">
+            <summary>
+            Static methods to call retrieve data from the PACS Service
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActions.Property.GetPropertiesBy(TrueAutomation.PACSService.DTOs.PACSSearchDTO)">
+            <summary>
+            Get a list of Properties <cref>TrueAutomation.PACSService.WCF.PACSService.GetPropertiesBy</cref>
+            </summary>
+            <param name="searchCriteria">PACSSearchDTO</param>
+            <returns>A List of PropertyDTOs</returns>
+        </member>
+    </members>
+</doc>

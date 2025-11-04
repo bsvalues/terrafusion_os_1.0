@@ -1,0 +1,339 @@
+{% extends "new_unified_base.html" %}
+
+{% block title %}Price Trends Visualization{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold mb-2">Real Estate Price Trends</h1>
+        <p class="text-gray-600 dark:text-gray-300">Interactive visualization of property price changes over time.</p>
+    </div>
+
+    <!-- Error message if passed -->
+    {% if error_message %}
+    <div class="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 mb-6">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                </svg>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm text-red-800 dark:text-red-200">{{ error_message }}</p>
+                {% if error_id %}
+                <p class="text-xs text-red-700 dark:text-red-300 mt-1">Error ID: {{ error_id }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Filter Controls -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+        <div class="card p-4">
+            <h3 class="font-semibold mb-3">Location Filters</h3>
+            <div class="space-y-4">
+                <div>
+                    <label for="state-filter" class="form-label">State</label>
+                    <select id="state-filter" class="form-select w-full">
+                        <option value="">All States</option>
+                        {% for state in states %}
+                        <option value="{{ state }}">{{ state }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="city-filter" class="form-label">City</label>
+                    <select id="city-filter" class="form-select w-full">
+                        <option value="">All Cities</option>
+                        {% for city in cities %}
+                        <option value="{{ city }}">{{ city }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-4">
+            <h3 class="font-semibold mb-3">Time Period</h3>
+            <div class="space-y-4">
+                <div>
+                    <label for="start-date" class="form-label">Start Date</label>
+                    <input type="date" id="start-date" class="form-input w-full" 
+                           min="{{ date_range.min or '' }}" max="{{ date_range.max or '' }}">
+                </div>
+                <div>
+                    <label for="end-date" class="form-label">End Date</label>
+                    <input type="date" id="end-date" class="form-input w-full"
+                           min="{{ date_range.min or '' }}" max="{{ date_range.max or '' }}">
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-4">
+            <h3 class="font-semibold mb-3">Property Type</h3>
+            <div class="space-y-2">
+                <label class="flex items-center space-x-2">
+                    <input type="checkbox" class="form-checkbox" value="single_family" checked>
+                    <span>Single Family</span>
+                </label>
+                <label class="flex items-center space-x-2">
+                    <input type="checkbox" class="form-checkbox" value="condo" checked>
+                    <span>Condo</span>
+                </label>
+                <label class="flex items-center space-x-2">
+                    <input type="checkbox" class="form-checkbox" value="townhouse" checked>
+                    <span>Townhouse</span>
+                </label>
+                <label class="flex items-center space-x-2">
+                    <input type="checkbox" class="form-checkbox" value="multi_family" checked>
+                    <span>Multi-Family</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="card p-4">
+            <h3 class="font-semibold mb-3">Display Options</h3>
+            <div class="space-y-4">
+                <div>
+                    <label for="chart-type" class="form-label">Chart Type</label>
+                    <select id="chart-type" class="form-select w-full">
+                        <option value="line">Line Chart</option>
+                        <option value="bar">Bar Chart</option>
+                        <option value="area">Area Chart</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="price-metric" class="form-label">Price Metric</label>
+                    <select id="price-metric" class="form-select w-full">
+                        <option value="median">Median Price</option>
+                        <option value="average">Average Price</option>
+                        <option value="price_sqft">Price per Sq.Ft.</option>
+                    </select>
+                </div>
+                <button id="update-chart" class="btn-primary w-full mt-4">Update Chart</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart Container -->
+    <div class="card p-4 mb-8">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold">Price Trends Over Time</h2>
+            <div class="flex space-x-2">
+                <button id="download-csv" class="btn-outline btn-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                    CSV
+                </button>
+                <button id="download-image" class="btn-outline btn-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                    </svg>
+                    Image
+                </button>
+            </div>
+        </div>
+        <div id="chart-container" class="w-full h-96 bg-gray-50 dark:bg-gray-800 rounded-lg flex items-center justify-center">
+            {% if show_chart_error %}
+                <div class="text-center p-8">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <p class="mt-4 text-gray-600 dark:text-gray-300">Chart data is currently unavailable. Please try again later.</p>
+                </div>
+            {% else %}
+                <!-- Chart will be rendered here by JavaScript -->
+                <div class="text-center p-8">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                    <p class="mt-4 text-gray-600 dark:text-gray-300">Loading chart data...</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Data Summary -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div class="card p-4">
+            <h3 class="font-semibold mb-3">Data Summary</h3>
+            <div class="divide-y divide-gray-200 dark:divide-gray-700">
+                <div class="py-2 flex justify-between">
+                    <span class="text-gray-600 dark:text-gray-400">Total Records</span>
+                    <span class="font-medium">{{ trend_count }}</span>
+                </div>
+                <div class="py-2 flex justify-between">
+                    <span class="text-gray-600 dark:text-gray-400">Cities Covered</span>
+                    <span class="font-medium">{{ city_count }}</span>
+                </div>
+                <div class="py-2 flex justify-between">
+                    <span class="text-gray-600 dark:text-gray-400">Date Range</span>
+                    <span class="font-medium">{{ date_range.min or 'N/A' }} to {{ date_range.max or 'N/A' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-4">
+            <h3 class="font-semibold mb-3">Top Price Increases</h3>
+            <div class="space-y-2">
+                <!-- Placeholder data - would be populated from real data -->
+                <div class="flex justify-between">
+                    <span>Austin, TX</span>
+                    <span class="text-green-600 dark:text-green-400">+15.2%</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Boise, ID</span>
+                    <span class="text-green-600 dark:text-green-400">+12.8%</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Phoenix, AZ</span>
+                    <span class="text-green-600 dark:text-green-400">+11.5%</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Tampa, FL</span>
+                    <span class="text-green-600 dark:text-green-400">+10.2%</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Nashville, TN</span>
+                    <span class="text-green-600 dark:text-green-400">+9.8%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card p-4">
+            <h3 class="font-semibold mb-3">Top Price Decreases</h3>
+            <div class="space-y-2">
+                <!-- Placeholder data - would be populated from real data -->
+                <div class="flex justify-between">
+                    <span>San Francisco, CA</span>
+                    <span class="text-red-600 dark:text-red-400">-5.7%</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>New York, NY</span>
+                    <span class="text-red-600 dark:text-red-400">-4.2%</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Seattle, WA</span>
+                    <span class="text-red-600 dark:text-red-400">-3.6%</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Boston, MA</span>
+                    <span class="text-red-600 dark:text-red-400">-2.8%</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Chicago, IL</span>
+                    <span class="text-red-600 dark:text-red-400">-1.9%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Links -->
+    <div class="flex justify-between">
+        <a href="{{ url_for('monitoring_dashboard') }}" class="btn-outline flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+            </svg>
+            Dashboard
+        </a>
+        <a href="{{ url_for('monitoring_locations') }}" class="btn-outline flex items-center">
+            Map View
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Setup chart
+        const ctx = document.createElement('canvas');
+        document.getElementById('chart-container').innerHTML = '';
+        document.getElementById('chart-container').appendChild(ctx);
+        
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Median Home Price',
+                    data: [450000, 460000, 470000, 465000, 480000, 500000, 510000, 505000, 520000, 515000, 530000, 540000],
+                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 2,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return '$' + context.raw.toLocaleString();
+                            }
+                        }
+                    },
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Real Estate Price Trends (Demonstration Data)'
+                    }
+                }
+            }
+        });
+        
+        // Update chart with new settings
+        document.getElementById('update-chart').addEventListener('click', function() {
+            const chartType = document.getElementById('chart-type').value;
+            const priceMetric = document.getElementById('price-metric').value;
+            
+            // Update chart type
+            chart.config.type = chartType;
+            
+            // Update chart title based on metric
+            let metricTitle = 'Median Home Price';
+            if (priceMetric === 'average') metricTitle = 'Average Home Price';
+            if (priceMetric === 'price_sqft') metricTitle = 'Price per Sq.Ft.';
+            
+            chart.data.datasets[0].label = metricTitle;
+            chart.options.plugins.title.text = `Real Estate ${metricTitle} Trends (Demonstration Data)`;
+            
+            // In a real app, we would fetch new data based on filters
+            // For demo, just randomize the data
+            const newData = Array(12).fill(0).map(() => 
+                Math.floor(Math.random() * 200000) + 350000
+            );
+            
+            chart.data.datasets[0].data = newData;
+            chart.update();
+        });
+        
+        // Handle download buttons (demo only)
+        document.getElementById('download-csv').addEventListener('click', function() {
+            alert('In a production app, this would download CSV data of the current chart');
+        });
+        
+        document.getElementById('download-image').addEventListener('click', function() {
+            alert('In a production app, this would download a PNG image of the current chart');
+        });
+    });
+</script>
+{% endblock %}

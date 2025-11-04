@@ -1,0 +1,12 @@
+{
+    "set": [
+        "block adjust",
+        "bundle adjust",
+        "bundle adjustment",
+        "centerz",
+        "mosaic dataset",
+        "triangulation",
+        "depth map",
+        "measurement"
+    ]
+}

@@ -1,0 +1,24 @@
+{
+    "set": [
+        "describe",
+        "descriptive",
+        "focal",
+        "iqr",
+        "interquartile range",
+        "local",
+        "mean",
+        "median",
+        "pattern",
+        "percentile",
+        "point pattern analysis",
+        "quantile",
+        "quartile",
+        "skew",
+        "skewness",
+        "smoothing",
+        "standard deviation",
+        "summarize",
+        "summary",
+        "voronoi"
+    ]
+}

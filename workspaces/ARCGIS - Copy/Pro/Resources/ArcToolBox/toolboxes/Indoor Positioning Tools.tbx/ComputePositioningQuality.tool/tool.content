@@ -1,0 +1,90 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "78020002",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "target_ips_quality_dataset": {
+            "displayname": "$rc:target_ips_quality_dataset.title",
+            "datatype": {
+                "type": "DEDatasetType"
+            },
+            "description": "$rc:target_ips_quality_dataset.descr"
+        },
+        "in_ips_recordings_features": {
+            "displayname": "$rc:in_ips_recordings_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_ips_recordings_features.descr"
+        },
+        "in_sight_blocking_details_features": {
+            "type": "optional",
+            "displayname": "$rc:in_sight_blocking_details_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_sight_blocking_details_features.descr"
+        },
+        "out_ips_quality_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_ips_quality_dataset.title",
+            "datatype": {
+                "type": "DEDatasetType"
+            },
+            "depends": [
+                "target_ips_quality_dataset"
+            ]
+        },
+        "out_reference_positions": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_reference_positions.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "out_computed_positions": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_computed_positions.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "set": [
+        "add",
+        "aggregate",
+        "append",
+        "attach",
+        "combine",
+        "concatenate",
+        "dataset",
+        "fuse",
+        "join",
+        "map",
+        "new",
+        "union",
+        "unite"
+    ]
+}

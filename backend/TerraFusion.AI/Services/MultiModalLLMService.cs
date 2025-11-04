@@ -28,11 +28,11 @@ namespace TerraFusion.AI.Services
         private readonly Dictionary<string, ILanguageModel> _operationalModels;
 
         // Multi-Modal Processing Components
-        private ITextProcessor _textProcessor;
-        private IImageProcessor _imageProcessor;
-        private IAudioProcessor _audioProcessor;
-        private ISpatialProcessor _spatialProcessor;
-        private IVideoProcessor _videoProcessor;
+        private ITextProcessor _textProcessor = null!;
+        private IImageProcessor _imageProcessor = null!;
+        private IAudioProcessor _audioProcessor = null!;
+        private ISpatialProcessor _spatialProcessor = null!;
+        private IVideoProcessor _videoProcessor = null!;
 
         // Model Performance Tracking
         private readonly Dictionary<string, ModelPerformance> _modelPerformance;
@@ -55,7 +55,7 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Initialize the complete multi-modal LLM stack
         /// </summary>
-        public async Task<bool> InitializeMultiModalStack()
+        public async System.Threading.Tasks.Task<bool> InitializeMultiModalStack()
         {
             _logger.LogInformation("🧠 Initializing Multi-Modal LLM Stack...");
 
@@ -96,7 +96,7 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Process multi-modal AI request using hierarchical model selection
         /// </summary>
-        public async Task<TerraFusion.AI.Interfaces.LLMResponse> ProcessMultiModalRequest(MultiModalRequest request)
+        public async System.Threading.Tasks.Task<TerraFusion.AI.Interfaces.LLMResponse> ProcessMultiModalRequest(MultiModalRequest request)
         {
             _logger.LogInformation($"🎯 Processing Multi-Modal Request: {request.RequestId}");
 
@@ -168,7 +168,7 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Get performance metrics for a specific model
         /// </summary>
-        public async Task<ModelPerformance> GetModelPerformance(string modelId)
+        public async System.Threading.Tasks.Task<ModelPerformance> GetModelPerformance(string modelId)
         {
             if (_modelPerformance.ContainsKey(modelId))
             {
@@ -178,7 +178,7 @@ namespace TerraFusion.AI.Services
                 performance.LastUpdated = _lastModelUpdate.GetValueOrDefault(modelId, DateTime.MinValue);
                 performance.UptimePercentage = await CalculateModelUptime(modelId);
                 performance.TokensProcessed = await GetTokensProcessed(modelId);
-                performance.AverageLatency = await GetAverageLatency(modelId);
+                performance.Latency = await GetAverageLatency(modelId);
 
                 return performance;
             }
@@ -197,7 +197,7 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Initialize strategic planning models (Tier 1)
         /// </summary>
-        private async Task InitializeStrategicModels()
+        private async System.Threading.Tasks.Task InitializeStrategicModels()
         {
             try
             {
@@ -234,7 +234,7 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Initialize domain specialist models (Tier 2)
         /// </summary>
-        private async Task InitializeDomainModels()
+        private async System.Threading.Tasks.Task InitializeDomainModels()
         {
             try
             {
@@ -274,7 +274,7 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Initialize operational intelligence models (Tier 3)
         /// </summary>
-        private async Task InitializeOperationalModels()
+        private async System.Threading.Tasks.Task InitializeOperationalModels()
         {
             try
             {
@@ -285,7 +285,7 @@ namespace TerraFusion.AI.Services
                     ["Domain-Generals"] = (1000, "Specialized mastery"),
                     ["Process-Coordinators"] = (3000, "Workflow optimization"),
                     ["Expert-Specialists"] = (10000, "Deep knowledge systems"),
-                    ["Adaptive-Executors"] = (20000, "Dynamic task completion"),
+                    ["Adaptive-Executors"] = (20000, "Dynamic System.Threading.Tasks.Task completion"),
                     ["Micro-Optimizers"] = (15780, "Granular perfection")
                 };
 
@@ -317,7 +317,7 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Initialize multi-modal processing components
         /// </summary>
-        private async Task InitializeMultiModalProcessors()
+        private async System.Threading.Tasks.Task InitializeMultiModalProcessors()
         {
             try
             {
@@ -339,7 +339,7 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Analyze request complexity for model routing
         /// </summary>
-        private async Task<RoutingDecision> AnalyzeRequestComplexity(MultiModalRequest request)
+        private async System.Threading.Tasks.Task<RoutingDecision> AnalyzeRequestComplexity(MultiModalRequest request)
         {
             // Analyze various factors to determine optimal model tier
             var complexity = 0;
@@ -386,7 +386,7 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Pre-process multi-modal inputs
         /// </summary>
-        private async Task<ProcessedInputs> PreprocessMultiModalInputs(MultiModalRequest request)
+        private async System.Threading.Tasks.Task<ProcessedInputs> PreprocessMultiModalInputs(MultiModalRequest request)
         {
             var processedInputs = new ProcessedInputs
             {
@@ -427,7 +427,7 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Select optimal model based on routing decision
         /// </summary>
-        private async Task<ILanguageModel> SelectOptimalModel(RoutingDecision routing, ProcessedInputs inputs)
+        private async System.Threading.Tasks.Task<ILanguageModel> SelectOptimalModel(RoutingDecision routing, ProcessedInputs inputs)
         {
             var models = routing.TargetTier switch
             {
@@ -494,7 +494,7 @@ namespace TerraFusion.AI.Services
             return TimeSpan.FromMilliseconds(complexity * 100 + 500); // Base 500ms + complexity factor
         }
 
-        private async Task<string> SelectBestModelInTier(ModelTier tier, MultiModalRequest request)
+        private async System.Threading.Tasks.Task<string> SelectBestModelInTier(ModelTier tier, MultiModalRequest request)
         {
             // Logic to select the best model within a tier based on request characteristics
             return tier switch
@@ -539,7 +539,7 @@ namespace TerraFusion.AI.Services
         }
 
         // Placeholder implementations for complex operations
-        private async Task<ILanguageModel> InitializeModel(string modelId, ModelType type, ModelConfig config)
+        private async System.Threading.Tasks.Task<ILanguageModel> InitializeModel(string modelId, ModelType type, ModelConfig config)
         {
             await System.Threading.Tasks.Task.Delay(10); // Simulate initialization
 
@@ -562,20 +562,20 @@ namespace TerraFusion.AI.Services
             return model;
         }
 
-        private async Task<string> LoadDomainKnowledge(string domain) => $"Domain knowledge for {domain}";
-        private async Task ValidateModelPerformance() => await System.Threading.Tasks.Task.Delay(1);
-        private async Task<ITextProcessor> InitializeTextProcessor() => new TextProcessorImpl();
-        private async Task<IImageProcessor> InitializeImageProcessor() => new ImageProcessorImpl();
-        private async Task<IAudioProcessor> InitializeAudioProcessor() => new AudioProcessorImpl();
-        private async Task<ISpatialProcessor> InitializeSpatialProcessor() => new SpatialProcessorImpl();
-        private async Task<IVideoProcessor> InitializeVideoProcessor() => new VideoProcessorImpl();
-        private async Task<ModelResponse> ProcessWithModel(ILanguageModel model, ProcessedInputs inputs, RequestContext context) => new ModelResponse();
-        private async Task<EnhancedResponse> PostProcessResponse(ModelResponse response, RoutingDecision routing) => new EnhancedResponse();
-        private async Task<ReasoningChain> GenerateReasoningChain(MultiModalRequest request, ModelResponse response, RoutingDecision routing) => new ReasoningChain();
-        private async Task UpdateModelMetrics(ILanguageModel model, ModelResponse response, DateTime startTime) => await System.Threading.Tasks.Task.Delay(1);
-        private async Task<double> CalculateModelUptime(string modelId) => 0.999; // 99.9% uptime
-        private async Task<long> GetTokensProcessed(string modelId) => 1000000; // 1M tokens
-        private async Task<double> GetAverageLatency(string modelId) => 75.5; // 75.5ms average
+        private async System.Threading.Tasks.Task<string> LoadDomainKnowledge(string domain) => $"Domain knowledge for {domain}";
+        private async System.Threading.Tasks.Task ValidateModelPerformance() => await System.Threading.Tasks.Task.Delay(1);
+        private async System.Threading.Tasks.Task<ITextProcessor> InitializeTextProcessor() => new TextProcessorImpl();
+        private async System.Threading.Tasks.Task<IImageProcessor> InitializeImageProcessor() => new ImageProcessorImpl();
+        private async System.Threading.Tasks.Task<IAudioProcessor> InitializeAudioProcessor() => new AudioProcessorImpl();
+        private async System.Threading.Tasks.Task<ISpatialProcessor> InitializeSpatialProcessor() => new SpatialProcessorImpl();
+        private async System.Threading.Tasks.Task<IVideoProcessor> InitializeVideoProcessor() => new VideoProcessorImpl();
+        private async System.Threading.Tasks.Task<ModelResponse> ProcessWithModel(ILanguageModel model, ProcessedInputs inputs, RequestContext context) => new ModelResponse();
+        private async System.Threading.Tasks.Task<EnhancedResponse> PostProcessResponse(ModelResponse response, RoutingDecision routing) => new EnhancedResponse();
+        private async System.Threading.Tasks.Task<ReasoningChain> GenerateReasoningChain(MultiModalRequest request, ModelResponse response, RoutingDecision routing) => new ReasoningChain();
+        private async System.Threading.Tasks.Task UpdateModelMetrics(ILanguageModel model, ModelResponse response, DateTime startTime) => await System.Threading.Tasks.Task.Delay(1);
+        private async System.Threading.Tasks.Task<double> CalculateModelUptime(string modelId) => 0.999; // 99.9% uptime
+        private async System.Threading.Tasks.Task<long> GetTokensProcessed(string modelId) => 1000000; // 1M tokens
+        private async System.Threading.Tasks.Task<double> GetAverageLatency(string modelId) => 75.5; // 75.5ms average
 
         #endregion
 
@@ -658,17 +658,17 @@ namespace TerraFusion.AI.Services
         }
 
         // Processor interfaces and implementations
-        public interface ITextProcessor { Task<string> ProcessAsync(string text); }
-        public interface IImageProcessor { Task<object> ProcessAsync(byte[] image); }
-        public interface IAudioProcessor { Task<object> ProcessAsync(string audio); }
-        public interface ISpatialProcessor { Task<object> ProcessAsync(Dictionary<string, object> spatial); }
-        public interface IVideoProcessor { Task<object> ProcessAsync(byte[] video); }
+        public interface ITextProcessor { System.Threading.Tasks.Task<string> ProcessAsync(string text); }
+        public interface IImageProcessor { System.Threading.Tasks.Task<object> ProcessAsync(byte[] image); }
+        public interface IAudioProcessor { System.Threading.Tasks.Task<object> ProcessAsync(string audio); }
+        public interface ISpatialProcessor { System.Threading.Tasks.Task<object> ProcessAsync(Dictionary<string, object> spatial); }
+        public interface IVideoProcessor { System.Threading.Tasks.Task<object> ProcessAsync(byte[] video); }
 
-        public class TextProcessorImpl : ITextProcessor { public async Task<string> ProcessAsync(string text) { await System.Threading.Tasks.Task.Delay(1); return text; } }
-        public class ImageProcessorImpl : IImageProcessor { public async Task<object> ProcessAsync(byte[] image) { await System.Threading.Tasks.Task.Delay(1); return new object(); } }
-        public class AudioProcessorImpl : IAudioProcessor { public async Task<object> ProcessAsync(string audio) { await System.Threading.Tasks.Task.Delay(1); return new object(); } }
-        public class SpatialProcessorImpl : ISpatialProcessor { public async Task<object> ProcessAsync(Dictionary<string, object> spatial) { await System.Threading.Tasks.Task.Delay(1); return new object(); } }
-        public class VideoProcessorImpl : IVideoProcessor { public async Task<object> ProcessAsync(byte[] video) { await System.Threading.Tasks.Task.Delay(1); return new object(); } }
+        public class TextProcessorImpl : ITextProcessor { public async System.Threading.Tasks.Task<string> ProcessAsync(string text) { await System.Threading.Tasks.Task.Delay(1); return text; } }
+        public class ImageProcessorImpl : IImageProcessor { public async System.Threading.Tasks.Task<object> ProcessAsync(byte[] image) { await System.Threading.Tasks.Task.Delay(1); return new object(); } }
+        public class AudioProcessorImpl : IAudioProcessor { public async System.Threading.Tasks.Task<object> ProcessAsync(string audio) { await System.Threading.Tasks.Task.Delay(1); return new object(); } }
+        public class SpatialProcessorImpl : ISpatialProcessor { public async System.Threading.Tasks.Task<object> ProcessAsync(Dictionary<string, object> spatial) { await System.Threading.Tasks.Task.Delay(1); return new object(); } }
+        public class VideoProcessorImpl : IVideoProcessor { public async System.Threading.Tasks.Task<object> ProcessAsync(byte[] video) { await System.Threading.Tasks.Task.Delay(1); return new object(); } }
 
         #endregion
     }

@@ -1,0 +1,524 @@
+{
+  "IDs": {
+    "NCDRDProducts-Max1Bands": [
+      "#NCDRDProduct-Basic-Panchromatic",
+      "#NCDRDProduct-Geo-Panchromatic",
+      "#NCDRDProduct-Ortho-Panchromatic",
+      "#NCDRDProduct-Generic"
+    ],
+    "NCDRDProducts-Max3Bands": [
+      "#NCDRDProduct-Basic-Panchromatic",
+      "#NCDRDProduct-Basic-RGB",
+      "#NCDRDProduct-Geo-RGB",
+      "#NCDRDProduct-Geo-PSH3",
+      "#NCDRDProduct-Ortho-Panchromatic",
+      "#NCDRDProduct-Ortho-RGB",
+      "#NCDRDProduct-Ortho-PSH3",
+      "#NCDRDProduct-Generic"
+    ],
+    "NCDRDProducts-Max4Bands": [
+      "#NCDRDProduct-Basic-Panchromatic",
+      "#NCDRDProduct-Basic-MSI4",
+      "#NCDRDProduct-Geo-Panchromatic",
+      "#NCDRDProduct-Geo-MSI4",
+      "#NCDRDProduct-Geo-PSH3",
+      "#NCDRDProduct-Geo-PSH4",
+      "#NCDRDProduct-Ortho-Panchromatic",
+      "#NCDRDProduct-Ortho-MSI4",
+      "#NCDRDProduct-Ortho-PSH3",
+      "#NCDRDProduct-Ortho-PSH4",
+      "#NCDRDProduct-Generic"
+    ],
+    "NCDRDProducts-Max8Bands": [
+      "#NCDRDProduct-Basic-Panchromatic",
+      "#NCDRDProduct-Basic-MSI4",
+      "#NCDRDProduct-Basic-MSI8",
+      "#NCDRDProduct-Geo-Panchromatic",
+      "#NCDRDProduct-Geo-MSI4",
+      "#NCDRDProduct-Geo-MSI8",
+      "#NCDRDProduct-Geo-PSH3",
+      "#NCDRDProduct-Geo-PSH4",
+      "#NCDRDProduct-Ortho-Panchromatic",
+      "#NCDRDProduct-Ortho-MSI4",
+      "#NCDRDProduct-Ortho-MSI8",
+      "#NCDRDProduct-Ortho-PSH3",
+      "#NCDRDProduct-Ortho-PSH4",
+      "#NCDRDProduct-Generic"
+    ],
+    "NCDRDProducts-Max8BandsCAVISSWIR": [
+      "#NCDRDProduct-Basic-Panchromatic",
+      "#NCDRDProduct-Basic-MSI4",
+      "#NCDRDProduct-Basic-MSI8",
+      "#NCDRDProduct-Basic-SWIR8",
+      "#NCDRDProduct-Basic-CAVIS6",
+      "#NCDRDProduct-Geo-Panchromatic",
+      "#NCDRDProduct-Geo-MSI4",
+      "#NCDRDProduct-Geo-MSI8",
+      "#NCDRDProduct-Geo-SWIR8",
+      "#NCDRDProduct-Geo-CAVIS6",
+      "#NCDRDProduct-Geo-PSH3",
+      "#NCDRDProduct-Geo-PSH4",
+      "#NCDRDProduct-Ortho-Panchromatic",
+      "#NCDRDProduct-Ortho-MSI4",
+      "#NCDRDProduct-Ortho-MSI8",
+      "#NCDRDProduct-Ortho-SWIR8",
+      "#NCDRDProduct-Ortho-CAVIS6",
+      "#NCDRDProduct-Ortho-PSH3",
+      "#NCDRDProduct-Ortho-PSH4",
+      "#NCDRDProduct-Generic"
+    ],
+    "Properties-Base": {
+      "MapBackgroundColor": {
+        "Aliases": [],
+        "SourcePaths": [
+          "$/FileHeader/FBKGC$"
+        ]
+      }
+    },
+    "NCDRDProduct-Base": {
+      "Title": "Properties.json#TitleFormat",
+      "Priority": 100,
+      "ShowGeneric": false,
+      "Base": "Generic",
+      "Properties": "#Properties-Base"
+    },
+    "NCDRDProduct-Generic": {
+      "ref": "#NCDRDProduct-Base",
+      "Name": "@{SensorName} Generic",
+      "Type": "Generic",
+      "Match": [
+        "MatchRules.json#MatchRule-MatchMission",
+        "MatchRules.json#MatchRule-ProductIsNOT"
+      ],
+      "LayerDefinitions": [
+        "LayerDefinitions.json#NCDRDPrimaryImage-Panchromatic-Basic",
+        "LayerDefinitions.json#NCDRDPrimaryImage-Multispectral3Bands-Basic",
+        "LayerDefinitions.json#NCDRDPrimaryImage-Multispectral4Bands-Basic",
+        "LayerDefinitions.json#NCDRDPrimaryImage-Multispectral8Bands-Basic",
+        "LayerDefinitions.json#NCDRDPrimaryImage-SWIR8",
+        "LayerDefinitions.json#NCDRDPrimaryImage-CAVIS6",
+        
+        "LayerDefinitions.json#NCDRDCatalogImage-Panchromatic-Basic",
+        "LayerDefinitions.json#NCDRDCatalogImage-Multispectral3Bands-Basic",
+        "LayerDefinitions.json#NCDRDCatalogImage-Multispectral4Bands-Basic",
+        "LayerDefinitions.json#NCDRDCatalogImage-Multispectral8Bands-Basic",
+        "LayerDefinitions.json#NCDRDCatalogImage-SWIR8",
+        "LayerDefinitions.json#NCDRDCatalogImage-CAVIS6"
+      ],
+      "MosaicDefinitions": [
+        "MosaicDefinitions.json#MosaicDefinition-Default-Base",
+        "MosaicDefinitions.json#MosaicDefinition-Catalog-Generic-Pan",
+        "MosaicDefinitions.json#MosaicDefinition-Catalog-Generic-MSI4"
+      ]
+    },
+    "NCDRDProduct-Basic-Panchromatic": {
+      "ref": "#NCDRDProduct-Base",
+      "Name": "@{SensorName} Basic Panchromatic",
+      "Type": "Basic Panchromatic",
+      "Match": [
+        "MatchRules.json#MatchRule-MatchMission",
+        "MatchRules.json#MatchRule-ProductIsP1",
+        "MatchRules.json#MatchRule-ImageHasICATIsVIS"
+      ],
+      "LayerDefinitions": [
+        "LayerDefinitions.json#NCDRDPrimaryImage-Panchromatic-Basic",
+        "LayerDefinitions.json#NCDRDCatalogImage-Panchromatic-Basic"
+      ],
+      "MosaicDefinitions": [
+        "MosaicDefinitions.json#MosaicDefinition-Default-BasicPan",
+        "MosaicDefinitions.json#MosaicDefinition-Catalog-BasicPan"
+      ]
+    },
+    "NCDRDProduct-Basic-RGB": {
+      "ref": "#NCDRDProduct-Base",
+      "Name": "@{SensorName} Basic RGB",
+      "Type": "Basic RGB",
+      "Match": [
+        "MatchRules.json#MatchRule-MatchMission",
+        "MatchRules.json#MatchRule-ProductIsP2",
+        "MatchRules.json#MatchRule-ImageHasICATIsMS",
+        "MatchRules.json#MatchRule-ImageIs3Bands"
+      ],
+      "LayerDefinitions": [
+        "LayerDefinitions.json#NCDRDPrimaryImage-Multispectral3Bands-RGB",
+        "LayerDefinitions.json#NCDRDCatalogImage-Multispectral3Bands-RGB"
+      ],
+      "MosaicDefinitions": [
+        "MosaicDefinitions.json#MosaicDefinition-Default-BasicRGB",
+        "MosaicDefinitions.json#MosaicDefinition-Catalog-BasicRGB"
+      ]
+    },
+	"NCDRDProduct-Basic-MSI4": {
+      "ref": "#NCDRDProduct-Base",
+      "Name": "@{SensorName} Basic MSI (4 Bands)",
+      "Type": "Basic MSI",
+      "Match": [
+        "MatchRules.json#MatchRule-MatchMission",
+        "MatchRules.json#MatchRule-ProductIsP2",
+        "MatchRules.json#MatchRule-ImageHasICATIsMS",
+        "MatchRules.json#MatchRule-ImageIs4Bands"
+      ],
+      "LayerDefinitions": [
+        "LayerDefinitions.json#NCDRDPrimaryImage-Multispectral4Bands-Basic",
+        "LayerDefinitions.json#NCDRDCatalogImage-Multispectral4Bands-Basic"
+      ],
+      "MosaicDefinitions": [
+        "MosaicDefinitions.json#MosaicDefinition-Default-BasicMSI",
+        "MosaicDefinitions.json#MosaicDefinition-Catalog-BasicMSI4"
+      ]
+    },
+    "NCDRDProduct-Basic-MSI8": {
+      "ref": "#NCDRDProduct-Base",
+      "Name": "@{SensorName} Basic MSI (8 Bands)",
+      "Type": "Basic MSI",
+      "Match": [
+        "MatchRules.json#MatchRule-MatchMission",
+        "MatchRules.json#MatchRule-ProductIsP2",
+        "MatchRules.json#MatchRule-ImageHasICATIsMS",
+        "MatchRules.json#MatchRule-ImageIs8Bands"
+      ],
+      "LayerDefinitions": [
+        "LayerDefinitions.json#NCDRDPrimaryImage-Multispectral8Bands-Basic",
+        "LayerDefinitions.json#NCDRDCatalogImage-Multispectral8Bands-Basic"
+      ],
+      "MosaicDefinitions": [
+        "MosaicDefinitions.json#MosaicDefinition-Default-BasicMSI",
+        "MosaicDefinitions.json#MosaicDefinition-Catalog-BasicMSI8"
+      ]
+    },
+    "NCDRDProduct-Basic-SWIR8": {
+      "ref": "#NCDRDProduct-Base",
+      "Name": "@{SensorName} Basic SWIR (8 Bands)",
+      "Type": "Basic SWIR",
+      "Match": [
+        "MatchRules.json#MatchRule-MatchMission",
+        "MatchRules.json#MatchRule-ProductIsP2",
+        "MatchRules.json#MatchRule-ImageHasICATIsSWIR"
+      ],
+      "LayerDefinitions": [
+        "LayerDefinitions.json#NCDRDPrimaryImage-SWIR8",
+        "LayerDefinitions.json#NCDRDCatalogImage-SWIR8"
+      ],
+      "MosaicDefinitions": [
+        "MosaicDefinitions.json#MosaicDefinition-Default-BasicSWIR",
+        "MosaicDefinitions.json#MosaicDefinition-Catalog-BasicSWIR"
+      ]
+    },
+    "NCDRDProduct-Basic-CAVIS6": {
+      "ref": "#NCDRDProduct-Base",
+      "Name": "@{SensorName} Basic CAVIS (6 Bands)",
+      "Type": "Basic CAVIS",
+      "Match": [
+        "MatchRules.json#MatchRule-MatchMission",
+        "MatchRules.json#MatchRule-ProductIsP2",
+        "MatchRules.json#MatchRule-ImageHasICATIsCAVIS"
+      ],
+      "LayerDefinitions": [
+        "LayerDefinitions.json#NCDRDPrimaryImage-CAVIS6",
+        "LayerDefinitions.json#NCDRDCatalogImage-CAVIS6"
+      ],
+      "MosaicDefinitions": [
+        "MosaicDefinitions.json#MosaicDefinition-Default-BasicCAVIS",
+        "MosaicDefinitions.json#MosaicDefinition-Catalog-BasicCAVIS"
+      ]
+    },
+    "NCDRDProduct-Geo-Panchromatic": {
+      "ref": "#NCDRDProduct-Base",
+      "Name": "@{SensorName} Geo Panchromatic",
+      "Type": "Geo Panchromatic",
+      "Match": [
+        "MatchRules.json#MatchRule-MatchMission",
+        "MatchRules.json#MatchRule-ProductIsG1",
+        "MatchRules.json#MatchRule-ImageHasICATIsVIS"
+      ],
+      "LayerDefinitions": [
+        "LayerDefinitions.json#NCDRDPrimaryImage-Panchromatic-Basic",
+        "LayerDefinitions.json#NCDRDCatalogImage-Panchromatic-Basic"
+      ],
+      "MosaicDefinitions": [
+        "MosaicDefinitions.json#MosaicDefinition-Default-GeoPan",
+        "MosaicDefinitions.json#MosaicDefinition-Catalog-GeoPan"
+      ]
+    },
+    "NCDRDProduct-Geo-RGB": {
+      "ref": "#NCDRDProduct-Base",
+      "Name": "@{SensorName} Geo RGB",
+      "Type": "Geo RGB",
+      "Match": [
+        "MatchRules.json#MatchRule-MatchMission",
+        "MatchRules.json#MatchRule-ProductIsG2",
+        "MatchRules.json#MatchRule-ImageIs3Bands"
+      ],
+      "LayerDefinitions": [
+        "LayerDefinitions.json#NCDRDPrimaryImage-Multispectral3Bands-RGB",
+        "LayerDefinitions.json#NCDRDCatalogImage-Multispectral3Bands-RGB"
+      ],
+      "MosaicDefinitions": [
+        "MosaicDefinitions.json#MosaicDefinition-Default-GeoRGB",
+        "MosaicDefinitions.json#MosaicDefinition-Catalog-GeoRGB"
+      ]
+    },    
+    "NCDRDProduct-Geo-MSI4": {
+      "ref": "#NCDRDProduct-Base",
+      "Name": "@{SensorName} Geo MSI (4 Bands)",
+      "Type": "Geo MSI",
+      "Match": [
+        "MatchRules.json#MatchRule-MatchMission",
+        "MatchRules.json#MatchRule-ProductIsG2",
+        "MatchRules.json#MatchRule-ImageIs4Bands"
+      ],
+      "LayerDefinitions": [
+        "LayerDefinitions.json#NCDRDPrimaryImage-Multispectral4Bands-Basic",
+        "LayerDefinitions.json#NCDRDCatalogImage-Multispectral4Bands-Basic"
+      ],
+      "MosaicDefinitions": [
+        "MosaicDefinitions.json#MosaicDefinition-Default-GeoMSI",
+        "MosaicDefinitions.json#MosaicDefinition-Catalog-GeoMSI4"
+      ]
+    },
+    "NCDRDProduct-Geo-MSI8": {
+      "ref": "#NCDRDProduct-Base",
+      "Name": "@{SensorName} Geo MSI (8 Bands)",
+      "Type": "Geo MSI",
+      "Match": [
+        "MatchRules.json#MatchRule-MatchMission",
+        "MatchRules.json#MatchRule-ProductIsG2",
+        "MatchRules.json#MatchRule-ImageHasICATIsMS",
+        "MatchRules.json#MatchRule-ImageIs8Bands"
+      ],
+      "LayerDefinitions": [
+        "LayerDefinitions.json#NCDRDPrimaryImage-Multispectral8Bands-Basic",
+        "LayerDefinitions.json#NCDRDCatalogImage-Multispectral8Bands-Basic"
+      ],
+      "MosaicDefinitions": [
+        "MosaicDefinitions.json#MosaicDefinition-Default-GeoMSI",
+        "MosaicDefinitions.json#MosaicDefinition-Catalog-GeoMSI8"
+      ]
+    },
+    "NCDRDProduct-Geo-SWIR8": {
+      "ref": "#NCDRDProduct-Base",
+      "Name": "@{SensorName} Geo SWIR (8 Bands)",
+      "Type": "Geo SWIR",
+      "Match": [
+        "MatchRules.json#MatchRule-MatchMission",
+        "MatchRules.json#MatchRule-ProductIsG2",
+        "MatchRules.json#MatchRule-ImageHasICATIsSWIR"
+      ],
+      "LayerDefinitions": [
+        "LayerDefinitions.json#NCDRDPrimaryImage-SWIR8",
+        "LayerDefinitions.json#NCDRDCatalogImage-SWIR8"
+      ],
+      "MosaicDefinitions": [
+        "MosaicDefinitions.json#MosaicDefinition-Default-GeoSWIR",
+        "MosaicDefinitions.json#MosaicDefinition-Catalog-GeoSWIR"
+      ]
+    },
+    "NCDRDProduct-Geo-CAVIS6": {
+      "ref": "#NCDRDProduct-Base",
+      "Name": "@{SensorName} Geo CAVIS (6 Bands)",
+      "Type": "Geo CAVIS",
+      "Match": [
+        "MatchRules.json#MatchRule-MatchMission",
+        "MatchRules.json#MatchRule-ProductIsG2",
+        "MatchRules.json#MatchRule-ImageHasICATIsCAVIS"
+      ],
+      "LayerDefinitions": [
+        "LayerDefinitions.json#NCDRDPrimaryImage-CAVIS6",
+        "LayerDefinitions.json#NCDRDCatalogImage-CAVIS6"
+      ],
+      "MosaicDefinitions": [
+        "MosaicDefinitions.json#MosaicDefinition-Default-GeoCAVIS",
+        "MosaicDefinitions.json#MosaicDefinition-Catalog-GeoCAVIS"
+      ]
+    },
+    "NCDRDProduct-Geo-PSH3": {
+      "ref": "#NCDRDProduct-Base",
+      "Name": "@{SensorName} Geo Pansharpened (3 Bands)",
+      "Type": "Geo Pansharpened",
+      "Match": [
+        "MatchRules.json#MatchRule-MatchMission",
+        "MatchRules.json#MatchRule-ProductIsG3",
+        "MatchRules.json#MatchRule-ImageHasIREPIsRGBorMULTI",
+        "MatchRules.json#MatchRule-ImageIs3Bands"
+      ],
+      "LayerDefinitions": [
+        "LayerDefinitions.json#NCDRDPrimaryImage-Multispectral3Bands-Psh-RGB",
+        "LayerDefinitions.json#NCDRDPrimaryImage-Multispectral3Bands-Psh-BGR",
+        "LayerDefinitions.json#NCDRDCatalogImage-Multispectral3Bands-Psh-RGB",
+        "LayerDefinitions.json#NCDRDCatalogImage-Multispectral3Bands-Psh-BGR"
+      ],
+      "MosaicDefinitions": [
+        "MosaicDefinitions.json#MosaicDefinition-Default-GeoPansharpened",
+        "MosaicDefinitions.json#MosaicDefinition-Catalog-GeoPansharpened"
+      ]
+    },
+    "NCDRDProduct-Geo-PSH4": {
+      "ref": "#NCDRDProduct-Base",
+      "Name": "@{SensorName} Geo Pansharpened (4 Bands)",
+      "Type": "Geo Pansharpened",
+      "Match": [
+        "MatchRules.json#MatchRule-MatchMission",
+        "MatchRules.json#MatchRule-ProductIsG3",
+        "MatchRules.json#MatchRule-ImageHasIREPIsMULTI",
+        "MatchRules.json#MatchRule-ImageIs4Bands"
+      ],
+      "LayerDefinitions": [
+        "LayerDefinitions.json#NCDRDPrimaryImage-Multispectral4Bands-Basic",
+        "LayerDefinitions.json#NCDRDCatalogImage-Multispectral4Bands-Basic"
+      ],
+      "MosaicDefinitions": [
+        "MosaicDefinitions.json#MosaicDefinition-Default-GeoPansharpened",
+        "MosaicDefinitions.json#MosaicDefinition-Catalog-GeoPansharpened"
+      ]
+    },
+    "NCDRDProduct-Ortho-Panchromatic": {
+      "ref": "#NCDRDProduct-Base",
+      "Name": "@{SensorName} Ortho Panchromatic",
+      "Type": "Ortho Panchromatic",
+      "Match": [
+        "MatchRules.json#MatchRule-MatchMission",
+        "MatchRules.json#MatchRule-ProductIsR1",
+        "MatchRules.json#MatchRule-ImageHasICATIsVIS"
+      ],
+      "LayerDefinitions": [
+        "LayerDefinitions.json#NCDRDPrimaryImage-Panchromatic-Basic",
+        "LayerDefinitions.json#NCDRDCatalogImage-Panchromatic-Basic"
+      ],
+      "MosaicDefinitions": [
+        "MosaicDefinitions.json#MosaicDefinition-Default-OrthoPan",
+        "MosaicDefinitions.json#MosaicDefinition-Catalog-OrthoPan"
+      ]
+    },
+    "NCDRDProduct-Ortho-RGB": {
+      "ref": "#NCDRDProduct-Base",
+      "Name": "@{SensorName} Ortho RGB",
+      "Type": "Ortho RGB",
+      "Match": [
+        "MatchRules.json#MatchRule-MatchMission",
+        "MatchRules.json#MatchRule-ProductIsR2",
+        "MatchRules.json#MatchRule-ImageIs3Bands"
+      ],
+      "LayerDefinitions": [
+        "LayerDefinitions.json#NCDRDPrimaryImage-Multispectral3Bands-RGB",
+        "LayerDefinitions.json#NCDRDCatalogImage-Multispectral3Bands-RGB"
+      ],
+      "MosaicDefinitions": [
+        "MosaicDefinitions.json#MosaicDefinition-Default-OrthoRGB",
+        "MosaicDefinitions.json#MosaicDefinition-Catalog-OrthoRGB"
+      ]
+    },
+    "NCDRDProduct-Ortho-MSI4": {
+      "ref": "#NCDRDProduct-Base",
+      "Name": "@{SensorName} Ortho MSI (4 Bands)",
+      "Type": "Ortho MSI",
+      "Match": [
+        "MatchRules.json#MatchRule-MatchMission",
+        "MatchRules.json#MatchRule-ProductIsR2",
+        "MatchRules.json#MatchRule-ImageIs4Bands"
+      ],
+      "LayerDefinitions": [
+        "LayerDefinitions.json#NCDRDPrimaryImage-Multispectral4Bands-Basic",
+        "LayerDefinitions.json#NCDRDCatalogImage-Multispectral4Bands-Basic"
+      ],
+      "MosaicDefinitions": [
+        "MosaicDefinitions.json#MosaicDefinition-Default-OrthoMSI",
+        "MosaicDefinitions.json#MosaicDefinition-Catalog-OrthoMSI4"
+      ]
+    },
+    "NCDRDProduct-Ortho-MSI8": {
+      "ref": "#NCDRDProduct-Base",
+      "Name": "@{SensorName} Ortho MSI (8 Bands)",
+      "Type": "Ortho MSI",
+      "Match": [
+        "MatchRules.json#MatchRule-MatchMission",
+        "MatchRules.json#MatchRule-ProductIsR2",
+        "MatchRules.json#MatchRule-ImageHasICATIsMS",
+        "MatchRules.json#MatchRule-ImageIs8Bands"
+      ],
+      "LayerDefinitions": [
+        "LayerDefinitions.json#NCDRDPrimaryImage-Multispectral8Bands-Basic",
+        "LayerDefinitions.json#NCDRDCatalogImage-Multispectral8Bands-Basic"
+      ],
+      "MosaicDefinitions": [
+        "MosaicDefinitions.json#MosaicDefinition-Default-OrthoMSI",
+        "MosaicDefinitions.json#MosaicDefinition-Catalog-OrthoMSI8"
+      ]
+    },
+    "NCDRDProduct-Ortho-SWIR8": {
+      "ref": "#NCDRDProduct-Base",
+      "Name": "@{SensorName} Ortho SWIR (8 Bands)",
+      "Type": "Ortho SWIR",
+      "Match": [
+        "MatchRules.json#MatchRule-MatchMission",
+        "MatchRules.json#MatchRule-ProductIsR2",
+        "MatchRules.json#MatchRule-ImageHasICATIsSWIR"
+      ],
+      "LayerDefinitions": [
+        "LayerDefinitions.json#NCDRDPrimaryImage-SWIR8",
+        "LayerDefinitions.json#NCDRDCatalogImage-SWIR8"
+      ],
+      "MosaicDefinitions": [
+        "MosaicDefinitions.json#MosaicDefinition-Default-OrthoSWIR",
+        "MosaicDefinitions.json#MosaicDefinition-Catalog-OrthoSWIR"
+      ]
+    },
+    "NCDRDProduct-Ortho-CAVIS6": {
+      "ref": "#NCDRDProduct-Base",
+      "Name": "@{SensorName} Ortho CAVIS (6 Bands)",
+      "Type": "Ortho CAVIS",
+      "Match": [
+        "MatchRules.json#MatchRule-MatchMission",
+        "MatchRules.json#MatchRule-ProductIsR2",
+        "MatchRules.json#MatchRule-ImageHasICATIsCAVIS"
+      ],
+      "LayerDefinitions": [
+        "LayerDefinitions.json#NCDRDPrimaryImage-CAVIS6",
+        "LayerDefinitions.json#NCDRDCatalogImage-CAVIS6"
+      ],
+      "MosaicDefinitions": [
+        "MosaicDefinitions.json#MosaicDefinition-Default-OrthoCAVIS",
+        "MosaicDefinitions.json#MosaicDefinition-Catalog-OrthoCAVIS"
+      ]
+    },
+    "NCDRDProduct-Ortho-PSH3": {
+      "ref": "#NCDRDProduct-Base",
+      "Name": "@{SensorName} Ortho Pansharpened (3 Bands)",
+      "Type": "Ortho Pansharpened",
+      "Match": [
+        "MatchRules.json#MatchRule-MatchMission",
+        "MatchRules.json#MatchRule-ProductIsR3",
+        "MatchRules.json#MatchRule-ImageHasIREPIsRGBorMULTI",
+        "MatchRules.json#MatchRule-ImageIs3Bands"
+      ],
+      "LayerDefinitions": [
+        "LayerDefinitions.json#NCDRDPrimaryImage-Multispectral3Bands-Psh-RGB",
+        "LayerDefinitions.json#NCDRDPrimaryImage-Multispectral3Bands-Psh-BGR",
+        "LayerDefinitions.json#NCDRDCatalogImage-Multispectral3Bands-Psh-RGB",
+        "LayerDefinitions.json#NCDRDCatalogImage-Multispectral3Bands-Psh-BGR"
+      ],
+      "MosaicDefinitions": [
+        "MosaicDefinitions.json#MosaicDefinition-Default-OrthoPansharpened",
+        "MosaicDefinitions.json#MosaicDefinition-Catalog-OrthoPansharpened"
+      ]
+    },
+    "NCDRDProduct-Ortho-PSH4": {
+      "ref": "#NCDRDProduct-Base",
+      "Name": "@{SensorName} Ortho Pansharpened (4 Bands)",
+      "Type": "Ortho Pansharpened",
+      "Match": [
+        "MatchRules.json#MatchRule-MatchMission",
+        "MatchRules.json#MatchRule-ProductIsR3",
+        "MatchRules.json#MatchRule-ImageHasIREPIsMULTI",
+        "MatchRules.json#MatchRule-ImageIs4Bands"
+      ],
+      "LayerDefinitions": [
+        "LayerDefinitions.json#NCDRDPrimaryImage-Multispectral4Bands-Basic",
+        "LayerDefinitions.json#NCDRDCatalogImage-Multispectral4Bands-Basic"
+      ],
+      "MosaicDefinitions": [
+        "MosaicDefinitions.json#MosaicDefinition-Default-OrthoPansharpened",
+        "MosaicDefinitions.json#MosaicDefinition-Catalog-OrthoPansharpened"
+      ]
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+    "set": [
+        "create",
+        "delay",
+        "elevator",
+        "floor",
+        "generate",
+        "indoor",
+        "indoors",
+        "level",
+        "lift",
+        "stairs",
+        "stairway",
+        "transitions",
+        "wheelchair"
+    ]
+}

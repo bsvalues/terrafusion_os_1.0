@@ -1,0 +1,15 @@
+{
+    "map": {
+        "coordinate_system.descr": "The coordinate system that will be evaluated.",
+        "coordinate_system.domain.item2.Geographic": "Geographic",
+        "coordinate_system.domain.item2.Projected": "Projected",
+        "coordinate_system.title": "Coordinate System",
+        "description": "Evaluates the input data for  the specified coordinate system.",
+        "false.title": "False",
+        "in_data.descr": "The input data element to be evaluated.",
+        "in_data.title": "Input Data Element",
+        "summary": "Evaluates the input data for the specified coordinate system.",
+        "title": "If Coordinate System Is",
+        "true.title": "True"
+    }
+}

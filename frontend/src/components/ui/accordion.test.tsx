@@ -1,12 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from './accordion';
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './accordion';
 
 expect.extend(toHaveNoViolations);
 
@@ -14,12 +9,12 @@ describe('Accordion', () => {
   describe('Rendering (Single/Multiple)', () => {
     it('renders with single collapsible type', () => {
       render(
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1">
+        <Accordion type='single' collapsible>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question 1</AccordionTrigger>
             <AccordionContent>Answer 1</AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-2">
+          <AccordionItem value='item-2'>
             <AccordionTrigger>Question 2</AccordionTrigger>
             <AccordionContent>Answer 2</AccordionContent>
           </AccordionItem>
@@ -32,12 +27,12 @@ describe('Accordion', () => {
 
     it('renders with multiple type', () => {
       render(
-        <Accordion type="multiple">
-          <AccordionItem value="item-1">
+        <Accordion type='multiple'>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Item 1</AccordionTrigger>
             <AccordionContent>Content 1</AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-2">
+          <AccordionItem value='item-2'>
             <AccordionTrigger>Item 2</AccordionTrigger>
             <AccordionContent>Content 2</AccordionContent>
           </AccordionItem>
@@ -50,16 +45,16 @@ describe('Accordion', () => {
 
     it('renders multiple items', () => {
       render(
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1">
+        <Accordion type='single' collapsible>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Q1</AccordionTrigger>
             <AccordionContent>A1</AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-2">
+          <AccordionItem value='item-2'>
             <AccordionTrigger>Q2</AccordionTrigger>
             <AccordionContent>A2</AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-3">
+          <AccordionItem value='item-3'>
             <AccordionTrigger>Q3</AccordionTrigger>
             <AccordionContent>A3</AccordionContent>
           </AccordionItem>
@@ -71,8 +66,8 @@ describe('Accordion', () => {
 
     it('applies custom className to AccordionItem', () => {
       render(
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1" className="custom-class">
+        <Accordion type='single' collapsible>
+          <AccordionItem value='item-1' className='custom-class'>
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
@@ -86,12 +81,12 @@ describe('Accordion', () => {
 
     it('renders with default value open', () => {
       render(
-        <Accordion type="single" defaultValue="item-1" collapsible>
-          <AccordionItem value="item-1">
+        <Accordion type='single' defaultValue='item-1' collapsible>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question 1</AccordionTrigger>
             <AccordionContent>Answer 1</AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-2">
+          <AccordionItem value='item-2'>
             <AccordionTrigger>Question 2</AccordionTrigger>
             <AccordionContent>Answer 2</AccordionContent>
           </AccordionItem>
@@ -107,8 +102,8 @@ describe('Accordion', () => {
     it('expands item when trigger is clicked', async () => {
       const user = userEvent.setup();
       render(
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1">
+        <Accordion type='single' collapsible>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
@@ -128,8 +123,8 @@ describe('Accordion', () => {
     it('collapses item when clicking open trigger in single mode', async () => {
       const user = userEvent.setup();
       render(
-        <Accordion type="single" defaultValue="item-1" collapsible>
-          <AccordionItem value="item-1">
+        <Accordion type='single' defaultValue='item-1' collapsible>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
@@ -149,12 +144,12 @@ describe('Accordion', () => {
     it('closes previous item when opening new item in single mode', async () => {
       const user = userEvent.setup();
       render(
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1">
+        <Accordion type='single' collapsible>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question 1</AccordionTrigger>
             <AccordionContent>Answer 1</AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-2">
+          <AccordionItem value='item-2'>
             <AccordionTrigger>Question 2</AccordionTrigger>
             <AccordionContent>Answer 2</AccordionContent>
           </AccordionItem>
@@ -179,12 +174,12 @@ describe('Accordion', () => {
     it('allows multiple items open in multiple mode', async () => {
       const user = userEvent.setup();
       render(
-        <Accordion type="multiple">
-          <AccordionItem value="item-1">
+        <Accordion type='multiple'>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question 1</AccordionTrigger>
             <AccordionContent>Answer 1</AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-2">
+          <AccordionItem value='item-2'>
             <AccordionTrigger>Question 2</AccordionTrigger>
             <AccordionContent>Answer 2</AccordionContent>
           </AccordionItem>
@@ -206,8 +201,8 @@ describe('Accordion', () => {
     it('displays content when expanded', async () => {
       const user = userEvent.setup();
       render(
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1">
+        <Accordion type='single' collapsible>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer content here</AccordionContent>
           </AccordionItem>
@@ -227,8 +222,8 @@ describe('Accordion', () => {
     it('expands item with Space key', async () => {
       const user = userEvent.setup();
       render(
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1">
+        <Accordion type='single' collapsible>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
@@ -249,8 +244,8 @@ describe('Accordion', () => {
     it('expands item with Enter key', async () => {
       const user = userEvent.setup();
       render(
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1">
+        <Accordion type='single' collapsible>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
@@ -270,12 +265,12 @@ describe('Accordion', () => {
     it('navigates between triggers with Tab', async () => {
       const user = userEvent.setup();
       render(
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1">
+        <Accordion type='single' collapsible>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question 1</AccordionTrigger>
             <AccordionContent>Answer 1</AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-2">
+          <AccordionItem value='item-2'>
             <AccordionTrigger>Question 2</AccordionTrigger>
             <AccordionContent>Answer 2</AccordionContent>
           </AccordionItem>
@@ -296,12 +291,12 @@ describe('Accordion', () => {
     it('navigates with ArrowDown between triggers', async () => {
       const user = userEvent.setup();
       render(
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1">
+        <Accordion type='single' collapsible>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question 1</AccordionTrigger>
             <AccordionContent>Answer 1</AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-2">
+          <AccordionItem value='item-2'>
             <AccordionTrigger>Question 2</AccordionTrigger>
             <AccordionContent>Answer 2</AccordionContent>
           </AccordionItem>
@@ -320,12 +315,12 @@ describe('Accordion', () => {
     it('navigates with ArrowUp between triggers', async () => {
       const user = userEvent.setup();
       render(
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1">
+        <Accordion type='single' collapsible>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question 1</AccordionTrigger>
             <AccordionContent>Answer 1</AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-2">
+          <AccordionItem value='item-2'>
             <AccordionTrigger>Question 2</AccordionTrigger>
             <AccordionContent>Answer 2</AccordionContent>
           </AccordionItem>
@@ -344,16 +339,16 @@ describe('Accordion', () => {
     it('focuses first trigger with Home key', async () => {
       const user = userEvent.setup();
       render(
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1">
+        <Accordion type='single' collapsible>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question 1</AccordionTrigger>
             <AccordionContent>Answer 1</AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-2">
+          <AccordionItem value='item-2'>
             <AccordionTrigger>Question 2</AccordionTrigger>
             <AccordionContent>Answer 2</AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-3">
+          <AccordionItem value='item-3'>
             <AccordionTrigger>Question 3</AccordionTrigger>
             <AccordionContent>Answer 3</AccordionContent>
           </AccordionItem>
@@ -372,16 +367,16 @@ describe('Accordion', () => {
     it('focuses last trigger with End key', async () => {
       const user = userEvent.setup();
       render(
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1">
+        <Accordion type='single' collapsible>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question 1</AccordionTrigger>
             <AccordionContent>Answer 1</AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-2">
+          <AccordionItem value='item-2'>
             <AccordionTrigger>Question 2</AccordionTrigger>
             <AccordionContent>Answer 2</AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-3">
+          <AccordionItem value='item-3'>
             <AccordionTrigger>Question 3</AccordionTrigger>
             <AccordionContent>Answer 3</AccordionContent>
           </AccordionItem>
@@ -401,8 +396,8 @@ describe('Accordion', () => {
   describe('Disabled Items', () => {
     it('renders disabled trigger', () => {
       render(
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1" disabled>
+        <Accordion type='single' collapsible>
+          <AccordionItem value='item-1' disabled>
             <AccordionTrigger>Disabled Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
@@ -416,8 +411,8 @@ describe('Accordion', () => {
     it('does not expand disabled item when clicked', async () => {
       const user = userEvent.setup();
       render(
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1" disabled>
+        <Accordion type='single' collapsible>
+          <AccordionItem value='item-1' disabled>
             <AccordionTrigger>Disabled Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
@@ -433,16 +428,16 @@ describe('Accordion', () => {
     it('skips disabled items in keyboard navigation', async () => {
       const user = userEvent.setup();
       render(
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1">
+        <Accordion type='single' collapsible>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question 1</AccordionTrigger>
             <AccordionContent>Answer 1</AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-2" disabled>
+          <AccordionItem value='item-2' disabled>
             <AccordionTrigger>Disabled Question</AccordionTrigger>
             <AccordionContent>Answer 2</AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-3">
+          <AccordionItem value='item-3'>
             <AccordionTrigger>Question 3</AccordionTrigger>
             <AccordionContent>Answer 3</AccordionContent>
           </AccordionItem>
@@ -463,12 +458,12 @@ describe('Accordion', () => {
   describe('Controlled State', () => {
     it('respects controlled value prop in single mode', () => {
       render(
-        <Accordion type="single" value="item-2" collapsible>
-          <AccordionItem value="item-1">
+        <Accordion type='single' value='item-2' collapsible>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question 1</AccordionTrigger>
             <AccordionContent>Answer 1</AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-2">
+          <AccordionItem value='item-2'>
             <AccordionTrigger>Question 2</AccordionTrigger>
             <AccordionContent>Answer 2</AccordionContent>
           </AccordionItem>
@@ -484,16 +479,16 @@ describe('Accordion', () => {
 
     it('respects controlled value prop in multiple mode', () => {
       render(
-        <Accordion type="multiple" value={['item-1', 'item-3']}>
-          <AccordionItem value="item-1">
+        <Accordion type='multiple' value={['item-1', 'item-3']}>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question 1</AccordionTrigger>
             <AccordionContent>Answer 1</AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-2">
+          <AccordionItem value='item-2'>
             <AccordionTrigger>Question 2</AccordionTrigger>
             <AccordionContent>Answer 2</AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-3">
+          <AccordionItem value='item-3'>
             <AccordionTrigger>Question 3</AccordionTrigger>
             <AccordionContent>Answer 3</AccordionContent>
           </AccordionItem>
@@ -514,8 +509,8 @@ describe('Accordion', () => {
       const user = userEvent.setup();
 
       render(
-        <Accordion type="single" onValueChange={handleValueChange} collapsible>
-          <AccordionItem value="item-1">
+        <Accordion type='single' onValueChange={handleValueChange} collapsible>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
@@ -535,12 +530,12 @@ describe('Accordion', () => {
       const user = userEvent.setup();
 
       render(
-        <Accordion type="multiple" onValueChange={handleValueChange}>
-          <AccordionItem value="item-1">
+        <Accordion type='multiple' onValueChange={handleValueChange}>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question 1</AccordionTrigger>
             <AccordionContent>Answer 1</AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-2">
+          <AccordionItem value='item-2'>
             <AccordionTrigger>Question 2</AccordionTrigger>
             <AccordionContent>Answer 2</AccordionContent>
           </AccordionItem>
@@ -566,8 +561,8 @@ describe('Accordion', () => {
   describe('ARIA and Accessibility', () => {
     it('has proper ARIA roles and attributes', () => {
       render(
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1">
+        <Accordion type='single' collapsible>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
@@ -581,8 +576,8 @@ describe('Accordion', () => {
 
     it('sets aria-expanded to false when collapsed', () => {
       render(
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1">
+        <Accordion type='single' collapsible>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
@@ -595,8 +590,8 @@ describe('Accordion', () => {
 
     it('sets aria-expanded to true when expanded', () => {
       render(
-        <Accordion type="single" defaultValue="item-1" collapsible>
-          <AccordionItem value="item-1">
+        <Accordion type='single' defaultValue='item-1' collapsible>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
@@ -609,8 +604,8 @@ describe('Accordion', () => {
 
     it('has data-state attribute on item', () => {
       render(
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1">
+        <Accordion type='single' collapsible>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
@@ -624,8 +619,8 @@ describe('Accordion', () => {
 
     it('has data-state="open" when expanded', () => {
       render(
-        <Accordion type="single" defaultValue="item-1" collapsible>
-          <AccordionItem value="item-1">
+        <Accordion type='single' defaultValue='item-1' collapsible>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
@@ -639,8 +634,8 @@ describe('Accordion', () => {
 
     it('has no accessibility violations (collapsed)', async () => {
       const { container } = render(
-        <Accordion type="single" collapsible>
-          <AccordionItem value="item-1">
+        <Accordion type='single' collapsible>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
@@ -653,8 +648,8 @@ describe('Accordion', () => {
 
     it('has no accessibility violations (expanded)', async () => {
       const { container } = render(
-        <Accordion type="single" defaultValue="item-1" collapsible>
-          <AccordionItem value="item-1">
+        <Accordion type='single' defaultValue='item-1' collapsible>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question</AccordionTrigger>
             <AccordionContent>Answer</AccordionContent>
           </AccordionItem>
@@ -667,16 +662,16 @@ describe('Accordion', () => {
 
     it('has no accessibility violations (multiple items)', async () => {
       const { container } = render(
-        <Accordion type="multiple" defaultValue={['item-1', 'item-3']}>
-          <AccordionItem value="item-1">
+        <Accordion type='multiple' defaultValue={['item-1', 'item-3']}>
+          <AccordionItem value='item-1'>
             <AccordionTrigger>Question 1</AccordionTrigger>
             <AccordionContent>Answer 1</AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-2">
+          <AccordionItem value='item-2'>
             <AccordionTrigger>Question 2</AccordionTrigger>
             <AccordionContent>Answer 2</AccordionContent>
           </AccordionItem>
-          <AccordionItem value="item-3">
+          <AccordionItem value='item-3'>
             <AccordionTrigger>Question 3</AccordionTrigger>
             <AccordionContent>Answer 3</AccordionContent>
           </AccordionItem>

@@ -1,0 +1,75 @@
+{% extends 'layout.html' %}
+
+{% block title %}API Test Setup{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">API Test Setup</h1>
+    
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        Use this page to set up test data for API testing. This will import sample GeoJSON data into your account.
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Import Test GeoJSON Data</h5>
+        </div>
+        <div class="card-body">
+            <p>This will import the sample GeoJSON file containing building, street, and utility features.</p>
+            <form action="{{ url_for('import_test_data') }}" method="post">
+                <div class="mb-3">
+                    <label for="project_name" class="form-label">Project Name</label>
+                    <input type="text" class="form-control" id="project_name" name="project_name" value="Test Project" required>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="2">Sample GeoJSON test data for API testing.</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Import Test Data</button>
+            </form>
+        </div>
+    </div>
+    
+    {% if test_files %}
+    <div class="card">
+        <div class="card-header">
+            <h5>Imported Test Files</h5>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>File ID</th>
+                        <th>Filename</th>
+                        <th>Project</th>
+                        <th>Size</th>
+                        <th>Type</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for file in test_files %}
+                    <tr>
+                        <td>{{ file.id }}</td>
+                        <td>{{ file.original_filename }}</td>
+                        <td>{{ file.project.name if file.project else 'None' }}</td>
+                        <td>{{ (file.file_size / 1024)|round(1) }} KB</td>
+                        <td>{{ file.file_type }}</td>
+                        <td>
+                            <a href="{{ url_for('download_file', file_id=file.id) }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-download"></i>
+                            </a>
+                            <a href="{{ url_for('map_viewer') }}?file_id={{ file.id }}" class="btn btn-sm btn-success">
+                                <i class="fas fa-map"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

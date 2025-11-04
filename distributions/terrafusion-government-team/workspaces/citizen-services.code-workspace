@@ -1,0 +1,158 @@
+{
+  "folders": [
+    {
+      "path": "../../frontend/citizen-services-portal",
+      "name": "🏛️ Citizen Services Portal"
+    },
+    {
+      "path": "../../platform/design-system",
+      "name": "🎨 Design System (read-only)"
+    },
+    {
+      "path": "../../platform/sdk",
+      "name": "📦 Platform SDK (read-only)"
+    },
+    {
+      "path": "../../tests/frontend/citizen-services",
+      "name": "🧪 Tests"
+    },
+    {
+      "path": "../../docs/portals",
+      "name": "📚 Portal Docs"
+    },
+    {
+      "path": "../../config",
+      "name": "⚙️ Config (shared)"
+    }
+  ],
+  "settings": {
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#10b981",
+      "titleBar.activeForeground": "#ffffff"
+    },
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "../../frontend/*-portal": true,
+      "!../../frontend/citizen-services-portal": false,
+      "../../marketplace": true,
+      "../../backend": true,
+      "../../os-platform": true,
+      "../../terrafusion-cos": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "../../marketplace": true,
+      "../../backend": true
+    },
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "eslint.workingDirectories": [
+      "./frontend/citizen-services-portal"
+    ],
+    "[typescript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescriptreact]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "bradlc.vscode-tailwindcss",
+      "ms-vscode.vscode-typescript-next",
+      "streetsidesoftware.code-spell-checker",
+      "usernamehw.errorlens",
+      "dsznajder.es7-react-js-snippets"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Start Citizen Services Portal",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/frontend/citizen-services-portal",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "console": "integratedTerminal"
+      },
+      {
+        "name": "Debug Citizen Services Portal",
+        "type": "chrome",
+        "request": "launch",
+        "url": "http://localhost:3000",
+        "webRoot": "${workspaceFolder}/frontend/citizen-services-portal",
+        "sourceMaps": true
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build Portal",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "build"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/frontend/citizen-services-portal"
+        },
+        "problemMatcher": [
+          "$tsc"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Test Portal",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "test"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/frontend/citizen-services-portal"
+        },
+        "problemMatcher": [],
+        "group": {
+          "kind": "test",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Lint Portal",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "lint"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/frontend/citizen-services-portal"
+        },
+        "problemMatcher": [
+          "$eslint-stylish"
+        ]
+      }
+    ]
+  }
+}
+

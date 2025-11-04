@@ -1,0 +1,147 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\AverageNearestNeighbor",
+    "displayname": "$rc:title",
+    "helpcontent": "9010004",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "Input_Feature_Class": {
+            "displayname": "$rc:input_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Multipoint",
+                    "Polygon",
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:input_feature_class.descr"
+        },
+        "Distance_Method": {
+            "displayname": "$rc:distance_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "EUCLIDEAN_DISTANCE",
+                        "code": "$rc:distance_method.domain.EUCLIDEAN_DISTANCE"
+                    },
+                    {
+                        "value": "MANHATTAN_DISTANCE",
+                        "code": "$rc:distance_method.domain.MANHATTAN_DISTANCE"
+                    }
+                ]
+            },
+            "value": "EUCLIDEAN_DISTANCE",
+            "description": "$rc:distance_method.descr"
+        },
+        "Generate_Report": {
+            "type": "optional",
+            "displayname": "$rc:generate_report.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "GENERATE_REPORT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_REPORT"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:generate_report.descr"
+        },
+        "Area": {
+            "type": "optional",
+            "displayname": "$rc:area.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "999999999999999"
+            },
+            "description": "$rc:area.descr"
+        },
+        "NNRatio": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:nnratio.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0"
+        },
+        "NNZScore": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:nnzscore.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0"
+        },
+        "PValue": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:pvalue.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0"
+        },
+        "NNExpected": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:nnexpected.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0"
+        },
+        "NNObserved": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:nnobserved.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0"
+        },
+        "Report_File": {
+            "enabled": "false",
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:report_file.title",
+            "datatype": {
+                "type": "DEFile"
+            }
+        }
+    },
+    "environments": [
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

@@ -1,0 +1,29 @@
+{
+    "map": {
+        "add_chainage_fields.descr": "<xdoc><p>Specifies whether the accumulated distance and sequence fields will be added to the output.</p><ul><li>Checked—The accumulated distance (<span class=\"esri_fieldname\">ORIG_LEN</span>) and sequence (<span class=\"esri_fieldname\">ORIG_SEQ</span>) fields will be added to the output. Distance values are added in the units of the <span class=\"esri_uicontrol\">Input Features</span> value&apos;s spatial reference.</li><li>Unchecked—The accumulated distance and sequence fields will not be added to the output. This is the default.</li></ul></xdoc>",
+        "add_chainage_fields.title": "Add accumulated distance and sequence fields",
+        "description": "Creates point features along lines or polygons.",
+        "distance.descr": "<xdoc><p>The interval from the beginning of the feature at which points will be placed.</p><p>This parameter is active when the <span class=\"esri_uicontrol\">Point Placement</span> parameter is set to <span class=\"esri_uicontrol\">By Distance</span>.</p></xdoc>",
+        "distance.title": "Distance",
+        "distance_field.descr": "<xdoc><p>A field from the input features that will be used to place output points.</p><p>If the field is a numeric type, the field value will be used to place points at that interval.</p><p>If the field is a string type, the field values must be organized as a semicolon-delimited string of distances. Points will be placed at those distances.</p><p>Field values that are zero or negative vales will be ignored. Field values that exceed the length of a feature will be ignored for that feature.</p><p>The distances will be in the linear units of the input&apos;s spatial reference.</p><p>This parameter is active when the <span class=\"esri_uicontrol\">Point Placement</span> parameter is set to <span class=\"esri_uicontrol\">By Distance Field</span>.</p></xdoc>",
+        "distance_field.title": "Distance Field",
+        "distance_method.descr": "<xdoc><p>Specifies the measurement method that will be used to create the points.</p><p>This parameter is active when the <span class=\"esri_uicontrol\">Point Placement</span> parameter is set to <span class=\"esri_uicontrol\">By Distance</span>.</p><ul><li><span title=\"PLANAR\">Planar</span>—Points will be created using a planar method. Planar measurements use 2D Cartesian mathematics. This is the default.</li><li><span title=\"GEODESIC\">Geodesic</span>—Points will be created using a geodesic method. Geodesic measurements calculate the distance between two points on the earth&apos;s surface. This is the default when the input has a geographic coordinate system.</li></ul></xdoc>",
+        "distance_method.domain.GEODESIC": "Geodesic",
+        "distance_method.domain.PLANAR": "Planar",
+        "distance_method.title": "Distance Method",
+        "include_end_points.descr": "<xdoc><p>Specifies whether additional points will be included at the start point and end point of the feature.</p><ul><li>Checked—Additional points will be included at the start point and end point of the feature.</li><li>Unchecked—No additional points will be included at the start point and end point of the feature. This is the default.</li></ul></xdoc>",
+        "include_end_points.title": "Include end points",
+        "input_features.descr": "The line or polygon features that will be used to place points.",
+        "input_features.title": "Input Features",
+        "output_feature_class.descr": "The point feature class that will be created from the input features.",
+        "output_feature_class.title": "Output Feature Class",
+        "percentage.descr": "<xdoc><p>The percentage from the beginning of the feature at which points will be placed. For example, if a percentage of 40 is used, points will be placed at 40 percent and 80 percent of the feature&apos;s distance.</p><p>This parameter is active when the <span class=\"esri_uicontrol\">Point Placement</span> parameter is set to <span class=\"esri_uicontrol\">By Percentage</span>.</p></xdoc>",
+        "percentage.title": "Percentage",
+        "point_placement.descr": "<xdoc><p>Specifies the method that will be used to place points.</p><ul><li><span title=\"PERCENTAGE\">By Percentage</span>—The <span class=\"esri_uicontrol\">Percentage</span> parameter value will be used to place points along the features by percentage.</li><li><span title=\"DISTANCE\">By Distance</span>—The <span class=\"esri_uicontrol\">Distance</span> parameter value will be used to place points at fixed distances along the features. This is the default.</li><li><span title=\"DISTANCE_FIELD\">By Distance Field</span>—Field values from the <span class=\"esri_uicontrol\">Distance Field</span> parameter value will be used to place points along the features.</li></ul></xdoc>",
+        "point_placement.domain.DISTANCE": "By Distance",
+        "point_placement.domain.DISTANCE_FIELD": "By Distance Field",
+        "point_placement.domain.PERCENTAGE": "By Percentage",
+        "point_placement.title": "Point Placement",
+        "title": "Generate Points Along Lines"
+    }
+}

@@ -1,0 +1,218 @@
+openapi: 3.0.3
+info:
+  title: Ai Systems API
+  description: AI infrastructure and model management APIs
+  version: 1.0.0
+  contact:
+    name: TerraFusion Government OS API Support
+    email: ai-systems-api@terrafusion.gov
+    url: https://docs.terrafusion.gov/platform/ai-systems
+  license:
+    name: Government Use License
+    url: https://terrafusion.gov/licenses/government-api
+  termsOfService: https://terrafusion.gov/terms/api-usage
+servers:
+- url: https://api.terrafusion.gov/api/v1/ai
+  description: Production TerraFusion Government API
+- url: https://staging-api.terrafusion.gov/api/v1/ai
+  description: Staging Environment
+- url: https://dev-api.terrafusion.gov/api/v1/ai
+  description: Development Environment
+paths:
+  /models:
+    get:
+      tags:
+      - ai-systems
+      summary: AI model registry
+      description: AI model registry - AI infrastructure and model management APIs
+      operationId: get__models
+      security:
+      - OAuth2:
+        - ai-systems:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /inference:
+    post:
+      tags:
+      - ai-systems
+      summary: AI inference requests
+      description: AI inference requests - AI infrastructure and model management
+        APIs
+      operationId: post__inference
+      security:
+      - OAuth2:
+        - ai-systems:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /training:
+    post:
+      tags:
+      - ai-systems
+      summary: Model training jobs
+      description: Model training jobs - AI infrastructure and model management APIs
+      operationId: post__training
+      security:
+      - OAuth2:
+        - ai-systems:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /monitoring:
+    get:
+      tags:
+      - ai-systems
+      summary: AI system monitoring
+      description: AI system monitoring - AI infrastructure and model management APIs
+      operationId: get__monitoring
+      security:
+      - OAuth2:
+        - ai-systems:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: object
+    HealthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - healthy
+          - degraded
+          - unhealthy
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        dependencies:
+          type: object
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
+          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          scopes:
+            ai-systems:read: Read access to ai-systems resources
+            ai-systems:write: Write access to ai-systems resources
+            ai-systems:admin: Administrative access to ai-systems
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+security:
+- OAuth2:
+  - ai-systems:read
+- ApiKey: []
+tags:
+- name: ai-systems
+  description: Ai Systems operations
+  externalDocs:
+    description: Find out more about ai-systems
+    url: https://docs.terrafusion.gov/platform/ai-systems

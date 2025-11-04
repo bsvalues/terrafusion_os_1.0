@@ -1,23 +1,30 @@
 import { useState, useEffect, useCallback } from 'react';
 
-import { realDataService, PropertyStats, DatabaseConnectionStatus, RealProperty, RealPermit, DatabaseHealth } from '../services/RealDataService';
+import {
+  realDataService,
+  PropertyStats,
+  DatabaseConnectionStatus,
+  RealProperty,
+  RealPermit,
+  DatabaseHealth,
+} from '../services/RealDataService';
 
 export interface UseRealDataResult {
   // Connection Status
   connectionStatus: DatabaseConnectionStatus | null;
   isConnectionLoading: boolean;
   connectionError: string | null;
-  
+
   // Property Stats
   propertyStats: PropertyStats | null;
   isStatsLoading: boolean;
   statsError: string | null;
-  
+
   // Database Health
   databaseHealth: DatabaseHealth | null;
   isHealthLoading: boolean;
   healthError: string | null;
-  
+
   // Methods
   refreshConnectionStatus: () => Promise<void>;
   refreshPropertyStats: () => Promise<void>;
@@ -25,7 +32,10 @@ export interface UseRealDataResult {
   refreshAll: () => Promise<void>;
 }
 
-export const useRealData = (autoRefresh: boolean = true, refreshInterval: number = 30000): UseRealDataResult => {
+export const useRealData = (
+  autoRefresh: boolean = true,
+  refreshInterval: number = 30000
+): UseRealDataResult => {
   // Connection Status State
   const [connectionStatus, setConnectionStatus] = useState<DatabaseConnectionStatus | null>(null);
   const [isConnectionLoading, setIsConnectionLoading] = useState(true);
@@ -45,7 +55,7 @@ export const useRealData = (autoRefresh: boolean = true, refreshInterval: number
   const refreshConnectionStatus = useCallback(async () => {
     setIsConnectionLoading(true);
     setConnectionError(null);
-    
+
     try {
       const status = await realDataService.getConnectionStatus();
       setConnectionStatus(status);
@@ -62,7 +72,7 @@ export const useRealData = (autoRefresh: boolean = true, refreshInterval: number
   const refreshPropertyStats = useCallback(async () => {
     setIsStatsLoading(true);
     setStatsError(null);
-    
+
     try {
       const stats = await realDataService.getPropertyStats();
       setPropertyStats(stats);
@@ -79,7 +89,7 @@ export const useRealData = (autoRefresh: boolean = true, refreshInterval: number
   const refreshDatabaseHealth = useCallback(async () => {
     setIsHealthLoading(true);
     setHealthError(null);
-    
+
     try {
       const health = await realDataService.getDatabaseHealth();
       setDatabaseHealth(health);
@@ -94,11 +104,7 @@ export const useRealData = (autoRefresh: boolean = true, refreshInterval: number
 
   // Refresh All Data
   const refreshAll = useCallback(async () => {
-    await Promise.all([
-      refreshConnectionStatus(),
-      refreshPropertyStats(),
-      refreshDatabaseHealth(),
-    ]);
+    await Promise.all([refreshConnectionStatus(), refreshPropertyStats(), refreshDatabaseHealth()]);
   }, [refreshConnectionStatus, refreshPropertyStats, refreshDatabaseHealth]);
 
   // Initial Load
@@ -122,17 +128,17 @@ export const useRealData = (autoRefresh: boolean = true, refreshInterval: number
     connectionStatus,
     isConnectionLoading,
     connectionError,
-    
+
     // Property Stats
     propertyStats,
     isStatsLoading,
     statsError,
-    
+
     // Database Health
     databaseHealth,
     isHealthLoading,
     healthError,
-    
+
     // Methods
     refreshConnectionStatus,
     refreshPropertyStats,
@@ -158,7 +164,7 @@ export const usePropertySearch = (): UsePropertySearchResult => {
   const search = useCallback(async (query: string, page: number = 1, pageSize: number = 50) => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const results = await realDataService.getProperties(page, pageSize, query);
       setProperties(results);
@@ -201,7 +207,7 @@ export const usePermits = (): UsePermitsResult => {
   const loadPermits = useCallback(async (page: number = 1, pageSize: number = 50) => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const results = await realDataService.getPermits(page, pageSize);
       setPermits(results);

@@ -1,0 +1,184 @@
+{
+    "type": "FunctionTool",
+    "guid": "{16c97389-6da8-4ca1-b7c5-eb74d87a3d74}",
+    "displayname": "$rc:title",
+    "helpcontent": "3130001",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "block_add_to_map",
+        "input_data_change",
+        "param_nocount:destination_table",
+        "param_nocount:origin_table"
+    ],
+    "params": {
+        "origin_table": {
+            "displayname": "$rc:origin_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:origin_table.descr"
+        },
+        "destination_table": {
+            "displayname": "$rc:destination_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:destination_table.descr"
+        },
+        "out_relationship_class": {
+            "direction": "out",
+            "displayname": "$rc:out_relationship_class.title",
+            "datatype": {
+                "type": "DERelationshipClass"
+            },
+            "description": "$rc:out_relationship_class.descr"
+        },
+        "relationship_type": {
+            "displayname": "$rc:relationship_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SIMPLE",
+                        "code": "$rc:relationship_type.domain.SIMPLE"
+                    },
+                    {
+                        "value": "COMPOSITE",
+                        "code": "$rc:relationship_type.domain.COMPOSITE"
+                    }
+                ]
+            },
+            "value": "SIMPLE",
+            "description": "$rc:relationship_type.descr"
+        },
+        "forward_label": {
+            "displayname": "$rc:forward_label.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:forward_label.descr"
+        },
+        "backward_label": {
+            "displayname": "$rc:backward_label.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:backward_label.descr"
+        },
+        "message_direction": {
+            "displayname": "$rc:message_direction.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "FORWARD",
+                        "code": "$rc:message_direction.domain.FORWARD"
+                    },
+                    {
+                        "value": "BACKWARD",
+                        "code": "$rc:message_direction.domain.BACKWARD"
+                    },
+                    {
+                        "value": "BOTH",
+                        "code": "$rc:message_direction.domain.BOTH"
+                    },
+                    {
+                        "value": "NONE",
+                        "code": "$rc:message_direction.domain.NONE"
+                    }
+                ]
+            },
+            "value": "NONE",
+            "description": "$rc:message_direction.descr"
+        },
+        "cardinality": {
+            "displayname": "$rc:cardinality.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ONE_TO_ONE",
+                        "code": "$rc:cardinality.domain.ONE_TO_ONE"
+                    },
+                    {
+                        "value": "ONE_TO_MANY",
+                        "code": "$rc:cardinality.domain.ONE_TO_MANY"
+                    },
+                    {
+                        "value": "MANY_TO_MANY",
+                        "code": "$rc:cardinality.domain.MANY_TO_MANY"
+                    }
+                ]
+            },
+            "value": "ONE_TO_ONE",
+            "description": "$rc:cardinality.descr"
+        },
+        "attributed": {
+            "displayname": "$rc:attributed.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ATTRIBUTED"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NONE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:attributed.descr"
+        },
+        "origin_primary_key": {
+            "displayname": "$rc:origin_primary_key.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:origin_primary_key.descr"
+        },
+        "origin_foreign_key": {
+            "displayname": "$rc:origin_foreign_key.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:origin_foreign_key.descr"
+        },
+        "destination_primary_key": {
+            "type": "optional",
+            "displayname": "$rc:destination_primary_key.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:destination_primary_key.descr"
+        },
+        "destination_foreign_key": {
+            "type": "optional",
+            "displayname": "$rc:destination_foreign_key.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:destination_foreign_key.descr"
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "workspace"
+    ]
+}

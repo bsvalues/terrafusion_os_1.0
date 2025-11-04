@@ -1,0 +1,54 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;
+; Locator Template for Composite Address Locator
+;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+LocFileUseUTF8 = True
+Category = Address
+Description = "Geocode addresses against multiple address locators."
+
+BuildVersion = $Revision: 14$
+BuildVersionDate = $Date: 1/31/2012 5:36:09 PM$
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;  ESRI Geocoder Properties
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+WriteXYCoordFields = True
+WriteStandardizedAddressField = False
+WriteReferenceIDField = False
+WritePercentAlongField = False
+Version = 10.0
+
+UseRelativePaths = TRUE
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;
+; Properties Required by ArcGIS Client User Interface
+;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+CLSID              = {29B85A89-D2CE-4aeb-BC3F-661A3D2C296E}
+UICLSID            = {3D486637-6BCF-4A0C-83DB-A02D437FB8FC}
+
+CL.SkipBadLocators = FALSE
+
+RuntimeMemoryLimit = 1024000000
+
+
+SingleLineField      = SingleLine
+
+SingleLineFieldAlias = "Single Line Input"
+
+SingleLineFieldSize  = 200
+
+SingleLineFieldNames = Address
+SingleLineFieldNames = SingleLine
+SingleLineFieldNames = FullAddress
+SingleLineFieldNames = Customer
+
+MaxSuggestCandidates = 10
+
+AdditionalReverseOutputs = Addr_type
+AdditionalReverseOutputs = Type

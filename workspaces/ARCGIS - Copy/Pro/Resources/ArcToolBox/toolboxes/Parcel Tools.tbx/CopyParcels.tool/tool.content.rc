@@ -1,0 +1,16 @@
+{
+    "map": {
+        "description": "Copies parcels from an input parcel fabric to a new parcel fabric in a new feature dataset.",
+        "in_parcel_fabric.descr": "The input parcels that will be copied to the new parcel fabric. The input parcel fabric can be from a file, enterprise, or mobile geodatabase, or from a feature service.",
+        "in_parcel_fabric.title": "Input Parcel Fabric",
+        "out_dataset.title": "Output Feature Dataset",
+        "out_dataset_name.descr": "The name of the feature dataset that will be created for the new parcel fabric.",
+        "out_dataset_name.title": "Feature Dataset Name",
+        "out_fabric_name.descr": "The name of the new parcel fabric.",
+        "out_fabric_name.title": "Parcel Fabric Name",
+        "out_parcel_fabric.title": "Output Parcel Fabric",
+        "target_database.descr": "The geodatabase in which the new parcel fabric will be created. The geodatabase can be a file, enterprise, or mobile geodatabase.",
+        "target_database.title": "Target Database",
+        "title": "Copy Parcels"
+    }
+}

@@ -1,0 +1,224 @@
+🔥 Perfect — let’s **do both**:  
+First, we’ll **scaffold the Audit Log**, then follow it with the **Team Management UI**.
+
+---
+
+# 📜 Part 1: Snapshot Audit Log
+
+### ✅ Tracks:
+- 🧿 Snapshot Viewed
+- 📥 Snapshot Pushed to Form
+- 🖨 Snapshot Exported (PDF or bulk)
+
+---
+
+## 🗃️ 1. DB Table: `snapshot_audit_log`
+
+```ts
+import { pgTable, uuid, text, timestamp } from 'drizzle-orm/pg-core';
+
+export const snapshotAuditLog = pgTable('snapshot_audit_log', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  snapshotId: text('snapshot_id').notNull(),
+  userId: text('user_id').notNull(),
+  orgId: text('org_id').notNull(),
+  action: text('action').notNull(), // 'viewed', 'pushed', 'exported'
+  context: text('context'),         // optional: formId, export batch, etc.
+  at: timestamp('at').defaultNow()
+});
+```
+
+---
+
+## 🧠 2. Helper Function: `logSnapshotEvent.ts`
+
+```ts
+export async function logSnapshotEvent({
+  snapshotId,
+  userId,
+  orgId,
+  action,
+  context
+}: {
+  snapshotId: string;
+  userId: string;
+  orgId: string;
+  action: 'viewed' | 'pushed' | 'exported';
+  context?: string;
+}) {
+  await db.insert(snapshotAuditLog).values({
+    snapshotId,
+    userId,
+    orgId,
+    action,
+    context
+  });
+}
+```
+
+---
+
+## 🔁 3. Usage in Code
+
+**On snapshot view:**
+```ts
+await logSnapshotEvent({ snapshotId, userId, orgId, action: 'viewed' });
+```
+
+**On push-to-form:**
+```ts
+await logSnapshotEvent({ snapshotId, userId, orgId, action: 'pushed', context: formId });
+```
+
+**On PDF export:**
+```ts
+await logSnapshotEvent({ snapshotId, userId, orgId, action: 'exported' });
+```
+
+---
+
+## 📡 4. API: `GET /api/audit/:snapshotId`
+
+```ts
+router.get('/audit/:snapshotId', checkRole('reviewer'), async (req, res) => {
+  const { snapshotId } = req.params;
+  const { org } = req;
+
+  const logs = await db.query.snapshotAuditLog.findMany({
+    where: (l) => l.snapshotId.eq(snapshotId).and(l.orgId.eq(org.id)),
+    orderBy: (l) => l.at.desc()
+  });
+
+  res.json({ logs });
+});
+```
+
+---
+
+## 📊 Optional Frontend Display
+
+```tsx
+<a onClick={() => fetchAudit(snapshot.id)} className="text-xs text-blue-500 underline">
+  View Audit Log
+</a>
+
+<ul className="mt-2 text-xs text-gray-700">
+  {logs.map((log) => (
+    <li key={log.id}>
+      {log.action} by {log.userId} on {new Date(log.at).toLocaleString()}
+    </li>
+  ))}
+</ul>
+```
+
+---
+
+# 👥 Part 2: Team Management UI
+
+---
+
+## 🧩 Route: `/team-management`
+
+### Displays:
+
+| Member | Role      | Actions                    |
+|--------|-----------|----------------------------|
+| alice@firm.com | Admin | 🔒 Cannot Demote |
+| bob@firm.com   | Reviewer | ⬆ Promote ⬇ Demote 🔥 Remove |
+| jane@firm.com  | Appraiser | ⬆ Promote 🔥 Remove |
+
+---
+
+## 🧠 Backend API
+
+### `GET /api/org/members`
+
+```ts
+router.get('/org/members', checkRole('admin'), async (req, res) => {
+  const { org } = req;
+  const members = await db.query.orgMembers.findMany({
+    where: (m) => m.orgId.eq(org.id),
+  });
+
+  res.json({ members });
+});
+```
+
+### `POST /api/org/members/update`
+
+```ts
+// { userId, newRole }
+router.post('/org/members/update', checkRole('admin'), async (req, res) => {
+  const { userId, newRole } = req.body;
+  await db.update(orgMembers).set({ role: newRole }).where((m) => m.userId.eq(userId));
+  res.json({ success: true });
+});
+```
+
+### `DELETE /api/org/members/:userId`
+
+```ts
+router.delete('/org/members/:userId', checkRole('admin'), async (req, res) => {
+  await db.delete(orgMembers).where((m) => m.userId.eq(req.params.userId));
+  res.json({ success: true });
+});
+```
+
+---
+
+## 🧪 React Table Component
+
+```tsx
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+
+function TeamManagementPanel() {
+  const [members, setMembers] = useState([]);
+
+  useEffect(() => {
+    axios.get('/api/org/members').then(res => setMembers(res.data.members));
+  }, []);
+
+  const promote = (userId) => axios.post('/api/org/members/update', { userId, newRole: 'reviewer' });
+  const remove = (userId) => axios.delete(`/api/org/members/${userId}`);
+
+  return (
+    <table className="w-full">
+      <thead>
+        <tr><th>User</th><th>Role</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {members.map(m => (
+          <tr key={m.userId}>
+            <td>{m.userId}</td>
+            <td>{m.role}</td>
+            <td>
+              {m.role !== 'admin' && (
+                <>
+                  <button onClick={() => promote(m.userId)}>Promote</button>
+                  <button onClick={() => remove(m.userId)} className="text-red-600">Remove</button>
+                </>
+              )}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+```
+
+---
+
+## ✅ What You Now Have
+
+- 📜 Auditable snapshot interactions
+- 🧑‍💼 Admin-controlled org roles
+- 🔐 Enforced access to presets, export, review features
+- ⚙️ Extendable UI for SaaS team management
+
+---
+
+Would you like to:
+- Add **invite flow** (invite by email → accept into org)?
+- Or extend audit logs to **form-level change tracking** (CRDT ops & history)?

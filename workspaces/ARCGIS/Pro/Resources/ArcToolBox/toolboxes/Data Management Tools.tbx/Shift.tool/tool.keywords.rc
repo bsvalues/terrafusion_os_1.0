@@ -1,0 +1,17 @@
+{
+    "set": [
+        "adjust",
+        "align",
+        "down",
+        "image",
+        "left",
+        "move",
+        "nudge",
+        "orient",
+        "reorient",
+        "reposition",
+        "right",
+        "slide",
+        "up"
+    ]
+}

@@ -1,0 +1,221 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-notifications-cm
+  namespace: argocd
+data:
+  # Slack integration
+  service.slack: |
+    token: $slack-token
+    
+  # Email integration
+  service.email.gmail: |
+    username: $email-username
+    password: $email-password
+    host: smtp.gmail.com
+    port: 465
+    from: argocd@terrafusion.gov
+  
+  # Webhook integration
+  service.webhook.terrafusion: |
+    url: https://hooks.terrafusion.gov/argocd
+    headers:
+    - name: Authorization
+      value: Bearer $webhook-token
+  
+  # Templates for notifications
+  template.app-deployed: |
+    message: |
+      🚀 **Application Deployed**
+      - Application: {{.app.metadata.name}}
+      - Environment: {{.app.metadata.labels.environment}}
+      - Revision: {{.app.status.sync.revision}}
+      - Status: {{.app.status.health.status}}
+      - Sync Status: {{.app.status.sync.status}}
+      - Time: {{.app.status.operationState.finishedAt}}
+    slack:
+      attachments: |
+        [{
+          "title": "{{ .app.metadata.name}}",
+          "title_link": "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+          "color": "#18be52",
+          "fields": [
+            {
+              "title": "Sync Status",
+              "value": "{{.app.status.sync.status}}",
+              "short": true
+            },
+            {
+              "title": "Health Status", 
+              "value": "{{.app.status.health.status}}",
+              "short": true
+            },
+            {
+              "title": "Revision",
+              "value": "{{.app.status.sync.revision}}",
+              "short": true
+            },
+            {
+              "title": "Environment",
+              "value": "{{.app.metadata.labels.environment}}",
+              "short": true
+            }
+          ]
+        }]
+  
+  template.app-health-degraded: |
+    message: |
+      ⚠️ **Application Health Degraded**
+      - Application: {{.app.metadata.name}}
+      - Environment: {{.app.metadata.labels.environment}}
+      - Health Status: {{.app.status.health.status}}
+      - Message: {{.app.status.health.message}}
+      - Time: {{.app.status.operationState.finishedAt}}
+    slack:
+      attachments: |
+        [{
+          "title": "{{ .app.metadata.name}}",
+          "title_link": "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+          "color": "#f4c030",
+          "fields": [
+            {
+              "title": "Health Status",
+              "value": "{{.app.status.health.status}}",
+              "short": true
+            },
+            {
+              "title": "Environment",
+              "value": "{{.app.metadata.labels.environment}}",
+              "short": true
+            },
+            {
+              "title": "Message",
+              "value": "{{.app.status.health.message}}",
+              "short": false
+            }
+          ]
+        }]
+  
+  template.app-sync-failed: |
+    message: |
+      ❌ **Application Sync Failed**
+      - Application: {{.app.metadata.name}}
+      - Environment: {{.app.metadata.labels.environment}}
+      - Sync Status: {{.app.status.sync.status}}
+      - Message: {{.app.status.operationState.message}}
+      - Time: {{.app.status.operationState.finishedAt}}
+    slack:
+      attachments: |
+        [{
+          "title": "{{ .app.metadata.name}}",
+          "title_link": "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+          "color": "#E96D76",
+          "fields": [
+            {
+              "title": "Sync Status",
+              "value": "{{.app.status.sync.status}}",
+              "short": true
+            },
+            {
+              "title": "Environment",
+              "value": "{{.app.metadata.labels.environment}}",
+              "short": true
+            },
+            {
+              "title": "Error Message",
+              "value": "{{.app.status.operationState.message}}",
+              "short": false
+            }
+          ]
+        }]
+  
+  template.app-sync-succeeded: |
+    message: |
+      ✅ **Application Synced Successfully**
+      - Application: {{.app.metadata.name}}
+      - Environment: {{.app.metadata.labels.environment}}
+      - Revision: {{.app.status.sync.revision}}
+      - Time: {{.app.status.operationState.finishedAt}}
+    slack:
+      attachments: |
+        [{
+          "title": "{{ .app.metadata.name}}",
+          "title_link": "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+          "color": "#18be52",
+          "fields": [
+            {
+              "title": "Sync Status",
+              "value": "Synced",
+              "short": true
+            },
+            {
+              "title": "Environment",
+              "value": "{{.app.metadata.labels.environment}}",
+              "short": true
+            }
+          ]
+        }]
+  
+  # Triggers - when to send notifications
+  trigger.on-deployed: |
+    - description: Application is synced and healthy
+      send:
+      - app-deployed
+      when: app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
+  
+  trigger.on-health-degraded: |
+    - description: Application health is degraded
+      send:
+      - app-health-degraded
+      when: app.status.health.status == 'Degraded'
+  
+  trigger.on-sync-failed: |
+    - description: Application sync failed
+      send:
+      - app-sync-failed
+      when: app.status.operationState.phase in ['Error', 'Failed']
+  
+  trigger.on-sync-succeeded: |
+    - description: Application synced successfully
+      send:
+      - app-sync-succeeded
+      when: app.status.operationState.phase in ['Succeeded']
+  
+  # Subscriptions - which channels get which notifications
+  subscriptions: |
+    # Production alerts to critical channel
+    - recipients:
+      - slack:terrafusion-critical
+      triggers:
+      - on-health-degraded
+      - on-sync-failed
+      selector: metadata.labels.environment == 'production'
+    
+    # All deployments to deployments channel
+    - recipients:
+      - slack:terrafusion-deployments
+      triggers:
+      - on-deployed
+      - on-sync-succeeded
+    
+    # Email notifications for production failures
+    - recipients:
+      - email:platform-team@terrafusion.gov
+      - email:sre-team@terrafusion.gov
+      triggers:
+      - on-health-degraded
+      - on-sync-failed
+      selector: metadata.labels.environment == 'production'
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: argocd-notifications-secret
+  namespace: argocd
+type: Opaque
+stringData:
+  slack-token: ${SLACK_TOKEN}
+  email-username: ${EMAIL_USERNAME}
+  email-password: ${EMAIL_PASSWORD}
+  webhook-token: ${WEBHOOK_TOKEN}

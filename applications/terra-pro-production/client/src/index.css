@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+  
+  /* Custom variable for progress component colors */
+  :root {
+    --green-100: #dcfce7;
+    --green-500: #22c55e;
+    --blue-100: #dbeafe;
+    --blue-500: #3b82f6;
+  }
+  
+  /* Custom styles for progress component */
+  .progress[style*="--progress-fill-color"] {
+    --tw-progress-fill: var(--progress-fill-color);
+  }
+}
+
+/* Fix for ensuring interactivity */
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+#root {
+  z-index: 1;
+  pointer-events: auto !important;
+}
+
+button, a, [role="button"] {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 10;
+}

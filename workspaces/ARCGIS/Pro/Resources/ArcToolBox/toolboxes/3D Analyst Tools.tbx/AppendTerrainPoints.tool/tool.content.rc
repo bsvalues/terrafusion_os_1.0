@@ -1,0 +1,16 @@
+{
+    "map": {
+        "derived_out_terrain.title": "Updated Input Terrain",
+        "description": "Appends points to a point  feature referenced by a terrain dataset.",
+        "in_point_features.descr": "The feature class of points or multipoints to add as an additional data source for the terrain dataset.",
+        "in_point_features.title": "Input Points",
+        "in_terrain.descr": "The terrain dataset that will be processed.",
+        "in_terrain.title": "Input Terrain",
+        "polygon_features_or_extent.descr": "Specify a polygon feature class or extent values to define the area where point features will be added. This parameter is empty by default, which results in all the points from the input feature class being loaded to the terrain feature.",
+        "polygon_features_or_extent.title": "Area of Interest",
+        "summary": "Appends points to a point feature referenced by a terrain dataset.",
+        "terrain_feature_class.descr": "The feature class that contributes to the terrain dataset into which the points or multipoints will be added.",
+        "terrain_feature_class.title": "Input Terrain Data Source",
+        "title": "Append Terrain Points"
+    }
+}

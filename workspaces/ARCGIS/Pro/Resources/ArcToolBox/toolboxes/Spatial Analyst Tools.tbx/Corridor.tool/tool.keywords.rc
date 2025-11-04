@@ -1,0 +1,14 @@
+{
+    "set": [
+        "accumulative",
+        "cost",
+        "distance",
+        "euclidean",
+        "friction",
+        "least",
+        "optimal",
+        "path",
+        "proximity",
+        "shortest"
+    ]
+}

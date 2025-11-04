@@ -1,0 +1,77 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "78000007",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "target_workspace": {
+            "displayname": "$rc:target_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "domain": {
+                "type": "GPWorkspaceDomain",
+                "workspacetype": [
+                    "Local Database",
+                    "Remote Database"
+                ]
+            },
+            "defaultenvironmentname": "workspace",
+            "description": "$rc:target_workspace.descr"
+        },
+        "out_workspace": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "depends": [
+                "target_workspace"
+            ],
+            "schema": {
+                "type": "GPContainerSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "coordinate_system": {
+            "displayname": "$rc:coordinate_system.title",
+            "datatype": {
+                "type": "GPCoordinateSystem"
+            },
+            "value": "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]",
+            "description": "$rc:coordinate_system.descr"
+        },
+        "setup_indoors_model_for_ips": {
+            "type": "optional",
+            "displayname": "$rc:setup_indoors_model_for_ips.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SETUP_INDOORS_MODEL"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_SETUP_INDOORS_MODEL"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:setup_indoors_model_for_ips.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "map": {
+        "code.descr": "The value to be added to the specified domain's coded value list.",
+        "code.title": "Code Value",
+        "code_description.descr": "A description of what the coded value represents.",
+        "code_description.title": "Code Description",
+        "description": "Adds a value to a domain's coded value list.",
+        "domain_name.descr": "The name of the attribute domain that will have a value added to its coded value list.",
+        "domain_name.title": "Domain Name",
+        "in_workspace.descr": "The geodatabase containing the domain to be updated.",
+        "in_workspace.title": "Input Workspace",
+        "out_workspace.title": "Updated Workspace",
+        "title": "Add Coded Value To Domain"
+    }
+}

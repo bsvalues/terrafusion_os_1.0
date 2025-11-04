@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<metadata xml:lang="en">
+  <Esri>
+    <CreaDate>20191011</CreaDate>
+    <CreaTime>15161400</CreaTime>
+    <ArcGISFormat>1.0</ArcGISFormat>
+    <SyncOnce>TRUE</SyncOnce>
+  </Esri>
+  <dataIdInfo>
+    <idCitation>
+      <resTitle>Record Driven Workflows</resTitle>
+    </idCitation>
+    <idAbs>&lt;P&gt;A collection of common record-driven, parcel editing workflows. &lt;/P&gt;&lt;P&gt;Record-driven, parcel editing workflows are triggered by changes in the legal record. Record-driven editing workflow are supported by legal, recorded documents&lt;/P&gt;&lt;P&gt;Record-driven workflows create parcel lineage. &lt;/P&gt;</idAbs>
+    <idPurp>Common record driven parcel editing workflows.</idPurp>
+    <searchKeys>
+      <keyword>parcel fabric</keyword>
+      <keyword>editing</keyword>
+      <keyword>record driven</keyword>
+    </searchKeys>
+    <resConst>
+      <Consts>
+        <useLimit>&lt;P&gt;None&lt;/P&gt;</useLimit>
+      </Consts>
+    </resConst>
+  </dataIdInfo>
+</metadata>

@@ -1,0 +1,78 @@
+{
+  "calcite": {
+    "reset": "Επαναφορά",
+    "action": {
+      "sort": "Ταξινόμηση"
+    },
+    "buttons": {
+      "save": "Αποθήκευση",
+      "edit": "Επεξεργασία",
+      "done": "Τέλος",
+      "apply": "Εφαρμογή",
+      "cancel": "Ακύρωση",
+      "close": "Κλείσιμο"
+    },
+    "ColorPicker": {
+      "selectColor": "Επιλογή χρώματος",
+      "noColorSpecified": "Δεν προσδιορίζεται κανένα χρώμα",
+      "transparent": "Διαφανές",
+      "colorTooltip": "<p>Δεκαεξαδικό: ${hex}</p><p>RGB: ${r}, ${g}, ${b}</p>",
+      "recent": "Πρόσφατα",
+      "standard": "Βασικό",
+      "savedColors": "Αποθηκευμένα χρώματα",
+      "advanced": "Για προχωρημένους"
+    },
+    "DatePickerLink": {
+      "enterDate": "Καταχώριση ημερομηνίας"
+    },
+    "PaginationContinuous": {
+      "next": "Επόμενο",
+      "previous": "Προηγούμενο"
+    }
+  },
+  "ImageNavigator": {
+    "paginationLabel": "${n} από ${m}",
+    "noImage": "Αυτή τη στιγμή δεν υπάρχουν φωτογραφίες αποθηκευμένες στον ιστότοπο αυτόν",
+    "previewNotAvailable": "Η προεπισκόπηση δεν είναι διαθέσιμη"
+  },
+  "PageNavigator": {
+    "currentPageOutOfN": "Σελίδα ${current} από ${total}"
+  },
+  "PanoramicViewer": {
+    "image-viewer-close": "Κλείσιμο",
+    "image-viewer-fullscreen": "Πλήρης οθόνη",
+    "image-viewer-minimize": "Ελαχιστοποίηση",
+    "image-viewer-title": "Photo Viewer",
+    "image-viewer-show-caption": "Εμφάνιση λεζάντας",
+    "image-viewer-hide-caption": "Απόκρυψη"
+  },
+  "TextBox": {
+    "error_numberExpected": "Αναμένεται ένας αριθμός",
+    "error_range": "Αναμένεται τιμή από ${0} έως ${1}"
+  },
+  "charts": {
+    "histogram": {
+      "minValue": "Ελάχ.:<br>${0}",
+      "maxValue": "Μέγ.:<br>${0}",
+      "thisAreaValue": "Αυτή η περιοχή: ${0}",
+      "medianValue": "Διάμεσος:<br>${0}",
+      "q1Value": "Q1:<br>${0}",
+      "q3Value": "Q3:<br>${0}",
+      "percentile": "Εκατοστημόριο ${percent}:<br>${0}",
+      "percentileBottom": "Κάτω ${percent}%:<br>${0}",
+      "percentileTop": "Κορυφή ${percent}%:<br>${0}",
+      "percentile_singleLine": "Εκατοστημόριο ${percent}: ${0}",
+      "percentileBottom_singleLine": "Κάτω ${percent}%: ${0}",
+      "percentileTop_singleLine": "Κορυφή ${percent}%: ${0}",
+      "sd_singleLine": "${sd} Κάρτα SD: ${0}",
+      "tooltip": {
+        "range_single": "<b>${level}</b> με τιμή εντός <b>${value}</b> : <b>1</b>",
+        "range_single_precise": "<b>${areaName}</b> έχει τιμή <b>${value}</b>.",
+        "range_multi": "<b>${level}</b> με τιμή εντός <b>${value}</b> : <b>${count}</b>",
+        "thisArea": "<b>Αυτή η περιοχή</b> έχει τιμή <b>${value}</b>.",
+        "percentileLower": "<b>${percent}%</b> από <b>${level}</b> έχουν τιμή πάνω από <b>${value}</b>.",
+        "percentileUpper": "<b>${percent}%</b> από <b>${level}</b> έχουν τιμή κάτω από <b>${value}</b>."
+      }
+    }
+  }
+}

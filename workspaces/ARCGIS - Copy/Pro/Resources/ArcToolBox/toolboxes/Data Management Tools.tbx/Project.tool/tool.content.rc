@@ -1,0 +1,22 @@
+{
+    "map": {
+        "description": "Projects spatial data from one coordinate system to another.",
+        "in_coor_system.descr": "The coordinate system of the input feature class or dataset. This parameter becomes active when the input has an unknown or unspecified coordinate system. This allows you to specify the data's coordinate system without having to modify the input data (which may not be possible if the input is in read-only format).",
+        "in_coor_system.title": "Input Coordinate System",
+        "in_dataset.descr": "The feature class, feature layer, feature dataset, scene layer, scene layer package, or OGC Geopackage to be projected.",
+        "in_dataset.title": "Input Dataset or Feature Class",
+        "max_deviation.descr": "<xdoc><p>The distance a projected line or polygon can deviate from its exact projected location when the <span class=\"esri_uicontrol\">Preserve Shape</span> parameter is checked. The default is 100 times the x,y tolerance of the spatial reference of the output dataset.</p></xdoc>",
+        "max_deviation.title": "Maximum Offset Deviation",
+        "out_coor_system.descr": "The coordinate system to which the input data will be projected.",
+        "out_coor_system.title": "Output Coordinate System",
+        "out_dataset.descr": "The output dataset to which the results will be written.",
+        "out_dataset.title": "Output Dataset or Feature Class",
+        "preserve_shape.descr": "<xdoc><p>Specifies whether extra vertices will be added to the output lines or polygons so their projected shape is more accurate.</p><p><ul><li>Unchecked—Extra vertices will not be added to the output lines or polygons. This is the default.</li><li>Checked—Extra vertices will be added to the output lines or polygons as needed, so their projected shape is more accurate.</li></ul></p></xdoc>",
+        "preserve_shape.title": "Preserve Shape",
+        "title": "Project",
+        "transform_method.descr": "<xdoc><p>This method can be used to convert data between two geographic coordinate systems or datums. This optional parameter may be required if the input and output coordinate systems have different datums.</p><note type=\"tip\"/><p group=\"note\">The tool automatically applies a default transformation. You can choose a different transformation from the drop-down list. Transformations are bidirectional. For example, if you&apos;re converting data from WGS84 to NAD 1927, you can choose the NAD_1927_to_WGS_1984_3 transformation, and the tool will apply it correctly.</p><p>The parameter provides a drop-down list of valid transformation methods. See the usage tips for additional information about how to choose one or more appropriate transformations.</p></xdoc>",
+        "transform_method.title": "Geographic Transformation",
+        "vertical.descr": "<xdoc><p>Specifies whether a vertical transformation will be applied.</p><p>This parameter is only active when the input and output coordinate systems have a vertical coordinate system and the input feature class coordinates have z-values. Also, many vertical transformations require additional data files that must be installed using the ArcGIS Coordinate Systems Data installation package.</p><p>When this parameter is checked, the <span class=\"esri_uicontrol\">Geographic Transformation</span> parameter can include ellipsoidal transformations and transformations between vertical datums. For example, ~NAD_1983_To_NAVD88_CONUS_GEOID12B_Height + NAD_1983_To_WGS_1984_1 transforms geometry vertices that are defined on NAD 1983 datum with NAVD 1988 heights into vertices on the WGS84 ellipsoid (with z-values representing ellipsoidal heights). The tilde (~) indicates the reversed direction of transformation.</p><p>This parameter is not compatible with the <span class=\"esri_uicontrol\">Preserve Shape</span> parameter.</p><p><ul><li>Unchecked—A vertical transformation will not be applied. The z-values of geometry coordinates will be ignored and the z-values will not be modified. This is the default.</li><li>Checked—The transformation specified in the <span class=\"esri_uicontrol\">Geographic Transformation</span> parameter will be applied. The x-, y-, and z-values of geometry coordinates will be transformed.</li></ul></p></xdoc>",
+        "vertical.title": "Vertical"
+    }
+}

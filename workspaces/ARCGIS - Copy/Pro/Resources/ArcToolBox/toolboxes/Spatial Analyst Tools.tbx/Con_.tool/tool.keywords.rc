@@ -1,0 +1,15 @@
+{
+    "set": [
+        "case",
+        "condition",
+        "else",
+        "evaluate",
+        "expression",
+        "false",
+        "if",
+        "logical",
+        "query",
+        "test",
+        "true"
+    ]
+}

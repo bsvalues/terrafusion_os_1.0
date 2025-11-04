@@ -1,0 +1,580 @@
+{% extends "base.html" %}
+
+{% block title %}Data Quality Alerts{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-gradient-primary text-white">
+                    <div class="row">
+                        <div class="col-6">
+                            <h5 class="mb-0 text-white">Data Quality Alerts</h5>
+                            <p class="text-sm mb-0">Manage and monitor data quality alerts</p>
+                        </div>
+                        <div class="col-6 text-end">
+                            <button type="button" class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#createAlertModal">
+                                <i class="fas fa-plus me-2"></i>Create Alert
+                            </button>
+                            <a href="{{ url_for('data_quality.api_check_all_alerts') }}" class="btn btn-sm btn-light" id="check-all-alerts">
+                                <i class="fas fa-sync me-2"></i>Run All Checks
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-3">
+                    <div class="table-responsive">
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Alert Name</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Check Type</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Threshold</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Severity</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Last Checked</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for alert in alerts %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{{ alert.name }}</h6>
+                                                <p class="text-xs text-secondary mb-0">{{ alert.description }}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <p class="text-sm font-weight-bold mb-0">{{ alert.check_type }}</p>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <span class="text-secondary text-xs font-weight-bold">{{ alert.threshold }}</span>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <span class="badge badge-sm bg-gradient-{% if alert.severity == 'low' %}info{% elif alert.severity == 'medium' %}warning{% else %}danger{% endif %}">
+                                            {{ alert.severity }}
+                                        </span>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        {% if alert.last_status == 'triggered' %}
+                                        <span class="badge badge-sm bg-gradient-danger">Triggered</span>
+                                        {% elif alert.last_status == 'passed' %}
+                                        <span class="badge badge-sm bg-gradient-success">Passed</span>
+                                        {% elif alert.last_status == 'error' %}
+                                        <span class="badge badge-sm bg-gradient-warning">Error</span>
+                                        {% else %}
+                                        <span class="badge badge-sm bg-gradient-secondary">Not Checked</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <span class="text-secondary text-xs font-weight-bold">
+                                            {% if alert.last_checked %}
+                                                {{ alert.last_checked|timestamp_to_date }}
+                                            {% else %}
+                                                Never
+                                            {% endif %}
+                                        </span>
+                                    </td>
+                                    <td class="align-middle">
+                                        <button type="button" class="btn btn-link text-secondary mb-0 check-alert-btn" 
+                                                data-alert-id="{{ alert.id }}" 
+                                                data-alert-name="{{ alert.name }}">
+                                            <i class="fas fa-sync fa-lg"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-link text-primary mb-0 edit-alert-btn"
+                                                data-alert-id="{{ alert.id }}"
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#editAlertModal">
+                                            <i class="fas fa-edit fa-lg"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-link text-danger mb-0 delete-alert-btn"
+                                                data-alert-id="{{ alert.id }}"
+                                                data-alert-name="{{ alert.name }}">
+                                            <i class="fas fa-trash fa-lg"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                
+                                {% if not alerts %}
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">
+                                        <p class="text-secondary mb-0">No alerts configured. Click "Create Alert" to add a new alert.</p>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Alert Modal -->
+<div class="modal fade" id="createAlertModal" tabindex="-1" aria-labelledby="createAlertModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createAlertModalLabel">Create Data Quality Alert</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createAlertForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="alertName" class="form-control-label">Alert Name</label>
+                                <input class="form-control" type="text" id="alertName" name="name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="checkType" class="form-control-label">Check Type</label>
+                                <select class="form-control" id="checkType" name="check_type" required>
+                                    <option value="">Select Check Type</option>
+                                    <option value="completeness">Completeness</option>
+                                    <option value="format">Format</option>
+                                    <option value="range">Range</option>
+                                    <option value="consistency">Consistency</option>
+                                    <option value="outlier">Outlier</option>
+                                    <option value="valuation">Valuation</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="description" class="form-control-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="threshold" class="form-control-label">Threshold (0-1)</label>
+                                <input class="form-control" type="number" id="threshold" name="threshold" step="0.01" min="0" max="1" value="0.95" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="severity" class="form-control-label">Severity</label>
+                                <select class="form-control" id="severity" name="severity" required>
+                                    <option value="low">Low</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="enabled" class="form-control-label">Status</label>
+                                <select class="form-control" id="enabled" name="enabled">
+                                    <option value="true" selected>Enabled</option>
+                                    <option value="false">Disabled</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="notificationChannels" class="form-control-label">Notification Channels</label>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="notifyLog" name="notification_channels" value="log" checked>
+                            <label class="form-check-label" for="notifyLog">System Log</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="notifyEmail" name="notification_channels" value="email">
+                            <label class="form-check-label" for="notifyEmail">Email</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="notifySms" name="notification_channels" value="sms">
+                            <label class="form-check-label" for="notifySms">SMS</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="parameters" class="form-control-label">Parameters (JSON)</label>
+                        <textarea class="form-control" id="parameters" name="parameters" rows="5" placeholder='{"dataset_name": "properties", "field_names": ["address", "parcel_id"]}'></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveAlertBtn">Create Alert</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Alert Modal -->
+<div class="modal fade" id="editAlertModal" tabindex="-1" aria-labelledby="editAlertModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editAlertModalLabel">Edit Data Quality Alert</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editAlertForm">
+                    <input type="hidden" id="editAlertId" name="id">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editAlertName" class="form-control-label">Alert Name</label>
+                                <input class="form-control" type="text" id="editAlertName" name="name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editCheckType" class="form-control-label">Check Type</label>
+                                <select class="form-control" id="editCheckType" name="check_type" required>
+                                    <option value="">Select Check Type</option>
+                                    <option value="completeness">Completeness</option>
+                                    <option value="format">Format</option>
+                                    <option value="range">Range</option>
+                                    <option value="consistency">Consistency</option>
+                                    <option value="outlier">Outlier</option>
+                                    <option value="valuation">Valuation</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDescription" class="form-control-label">Description</label>
+                        <textarea class="form-control" id="editDescription" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="editThreshold" class="form-control-label">Threshold (0-1)</label>
+                                <input class="form-control" type="number" id="editThreshold" name="threshold" step="0.01" min="0" max="1" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="editSeverity" class="form-control-label">Severity</label>
+                                <select class="form-control" id="editSeverity" name="severity" required>
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="editEnabled" class="form-control-label">Status</label>
+                                <select class="form-control" id="editEnabled" name="enabled">
+                                    <option value="true">Enabled</option>
+                                    <option value="false">Disabled</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editNotificationChannels" class="form-control-label">Notification Channels</label>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="editNotifyLog" name="notification_channels" value="log">
+                            <label class="form-check-label" for="editNotifyLog">System Log</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="editNotifyEmail" name="notification_channels" value="email">
+                            <label class="form-check-label" for="editNotifyEmail">Email</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="editNotifySms" name="notification_channels" value="sms">
+                            <label class="form-check-label" for="editNotifySms">SMS</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editParameters" class="form-control-label">Parameters (JSON)</label>
+                        <textarea class="form-control" id="editParameters" name="parameters" rows="5"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="updateAlertBtn">Update Alert</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Function to get notification channels from checkboxes
+        function getNotificationChannels(form) {
+            const checkboxes = form.querySelectorAll('input[name="notification_channels"]:checked');
+            return Array.from(checkboxes).map(cb => cb.value);
+        }
+
+        // Save Alert Button
+        document.getElementById('saveAlertBtn').addEventListener('click', function() {
+            const form = document.getElementById('createAlertForm');
+            
+            // Build the alert data
+            let alertData = {
+                name: form.querySelector('#alertName').value,
+                description: form.querySelector('#description').value,
+                check_type: form.querySelector('#checkType').value,
+                threshold: parseFloat(form.querySelector('#threshold').value),
+                severity: form.querySelector('#severity').value,
+                enabled: form.querySelector('#enabled').value === 'true',
+                notification_channels: getNotificationChannels(form)
+            };
+            
+            // Add parameters if provided
+            const parametersStr = form.querySelector('#parameters').value;
+            if (parametersStr.trim()) {
+                try {
+                    alertData.parameters = JSON.parse(parametersStr);
+                } catch (e) {
+                    alert('Invalid JSON in parameters field');
+                    return;
+                }
+            } else {
+                alertData.parameters = {};
+            }
+            
+            // Submit to API
+            fetch('{{ url_for("data_quality.api_create_alert") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(alertData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Close modal and reload page
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('createAlertModal'));
+                    modal.hide();
+                    location.reload();
+                } else {
+                    alert('Error creating alert: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to create alert');
+            });
+        });
+
+        // Update Alert Button
+        document.getElementById('updateAlertBtn').addEventListener('click', function() {
+            const form = document.getElementById('editAlertForm');
+            const alertId = form.querySelector('#editAlertId').value;
+            
+            // Build the alert data
+            let alertData = {
+                name: form.querySelector('#editAlertName').value,
+                description: form.querySelector('#editDescription').value,
+                check_type: form.querySelector('#editCheckType').value,
+                threshold: parseFloat(form.querySelector('#editThreshold').value),
+                severity: form.querySelector('#editSeverity').value,
+                enabled: form.querySelector('#editEnabled').value === 'true',
+                notification_channels: getNotificationChannels(form)
+            };
+            
+            // Add parameters if provided
+            const parametersStr = form.querySelector('#editParameters').value;
+            if (parametersStr.trim()) {
+                try {
+                    alertData.parameters = JSON.parse(parametersStr);
+                } catch (e) {
+                    alert('Invalid JSON in parameters field');
+                    return;
+                }
+            } else {
+                alertData.parameters = {};
+            }
+            
+            // Submit to API
+            fetch(`{{ url_for("data_quality.api_update_alert", alert_id="") }}${alertId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(alertData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Close modal and reload page
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('editAlertModal'));
+                    modal.hide();
+                    location.reload();
+                } else {
+                    alert('Error updating alert: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to update alert');
+            });
+        });
+
+        // Delete Alert buttons
+        document.querySelectorAll('.delete-alert-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const alertId = this.getAttribute('data-alert-id');
+                const alertName = this.getAttribute('data-alert-name');
+                
+                if (confirm(`Are you sure you want to delete the alert "${alertName}"?`)) {
+                    // Submit to API
+                    fetch(`{{ url_for("data_quality.api_delete_alert", alert_id="") }}${alertId}`, {
+                        method: 'DELETE'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        } else {
+                            alert('Error deleting alert: ' + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Failed to delete alert');
+                    });
+                }
+            });
+        });
+
+        // Check Alert buttons
+        document.querySelectorAll('.check-alert-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const alertId = this.getAttribute('data-alert-id');
+                const alertName = this.getAttribute('data-alert-name');
+                
+                // Display loading indicator
+                this.innerHTML = '<i class="fas fa-spinner fa-spin fa-lg"></i>';
+                this.disabled = true;
+                
+                // Submit to API
+                fetch(`{{ url_for("data_quality.api_check_alert", alert_id="") }}${alertId}`, {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Reset button
+                    this.innerHTML = '<i class="fas fa-sync fa-lg"></i>';
+                    this.disabled = false;
+                    
+                    if (data.success) {
+                        // Show result
+                        let statusClass = '';
+                        let statusText = '';
+                        
+                        if (data.status === 'triggered') {
+                            statusClass = 'danger';
+                            statusText = 'TRIGGERED';
+                        } else if (data.status === 'passed') {
+                            statusClass = 'success';
+                            statusText = 'PASSED';
+                        } else {
+                            statusClass = 'warning';
+                            statusText = 'ERROR';
+                        }
+                        
+                        alert(`Alert "${alertName}" check result: ${statusText}\nValue: ${data.value}\nThreshold: ${data.threshold}`);
+                        
+                        // Reload page to show updated status
+                        location.reload();
+                    } else {
+                        alert('Error checking alert: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    // Reset button
+                    this.innerHTML = '<i class="fas fa-sync fa-lg"></i>';
+                    this.disabled = false;
+                    
+                    console.error('Error:', error);
+                    alert('Failed to check alert');
+                });
+            });
+        });
+
+        // Edit Alert button - load data into modal
+        document.querySelectorAll('.edit-alert-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const alertId = this.getAttribute('data-alert-id');
+                
+                // Fetch alert data
+                fetch(`{{ url_for("data_quality.api_get_alert", alert_id="") }}${alertId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const alert = data.alert;
+                        const form = document.getElementById('editAlertForm');
+                        
+                        // Populate form fields
+                        form.querySelector('#editAlertId').value = alert.id;
+                        form.querySelector('#editAlertName').value = alert.name;
+                        form.querySelector('#editDescription').value = alert.description;
+                        form.querySelector('#editCheckType').value = alert.check_type;
+                        form.querySelector('#editThreshold').value = alert.threshold;
+                        form.querySelector('#editSeverity').value = alert.severity;
+                        form.querySelector('#editEnabled').value = alert.enabled.toString();
+                        form.querySelector('#editParameters').value = JSON.stringify(alert.parameters, null, 2);
+                        
+                        // Set notification channels
+                        form.querySelector('#editNotifyLog').checked = alert.notification_channels.includes('log');
+                        form.querySelector('#editNotifyEmail').checked = alert.notification_channels.includes('email');
+                        form.querySelector('#editNotifySms').checked = alert.notification_channels.includes('sms');
+                    } else {
+                        alert('Error loading alert data: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to load alert data');
+                });
+            });
+        });
+
+        // Check All Alerts button
+        document.getElementById('check-all-alerts').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Show loading state
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Running...';
+            this.classList.add('disabled');
+            
+            // Submit to API
+            fetch('{{ url_for("data_quality.api_check_all_alerts") }}', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Reset button
+                this.innerHTML = '<i class="fas fa-sync me-2"></i>Run All Checks';
+                this.classList.remove('disabled');
+                
+                if (data.success) {
+                    // Show summary
+                    alert(`Checked ${data.enabled_alerts} alerts:\n${data.triggered_alerts} triggered\n${data.passed_alerts} passed\n${data.failed_alerts} failed`);
+                    
+                    // Reload page to show updated statuses
+                    location.reload();
+                } else {
+                    alert('Error checking alerts: ' + data.error);
+                }
+            })
+            .catch(error => {
+                // Reset button
+                this.innerHTML = '<i class="fas fa-sync me-2"></i>Run All Checks';
+                this.classList.remove('disabled');
+                
+                console.error('Error:', error);
+                alert('Failed to check alerts');
+            });
+        });
+    });
+</script>
+{% endblock %}

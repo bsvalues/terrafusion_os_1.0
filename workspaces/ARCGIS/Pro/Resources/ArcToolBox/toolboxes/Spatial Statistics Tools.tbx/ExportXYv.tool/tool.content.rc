@@ -1,0 +1,20 @@
+{
+    "map": {
+        "add_field_names_to_output.descr": "<xdoc><p>Specifies whether field names will be included as the first line in the output text file.</p><ul><li>Checked—Field names will be written to the output text file.</li><li>Unchecked—Field names will not be written to the output text file. This is the default.</li></ul></xdoc>",
+        "add_field_names_to_output.title": "Add Field Names to Output",
+        "delimiter.descr": "<xdoc><p>Specifies how feature coordinates and attribute values will be separated in the output ASCII file.</p><ul><li><span title=\"SPACE\">Space</span>—Feature coordinates and attribute values will be separated by a space in the output. This is the default.</li><li><span title=\"COMMA\">Comma</span>—Feature coordinates and attribute values will be separated by a comma in the output.</li><li><span title=\"SEMI-COLON\">Semicolon</span>—Feature coordinates and attribute values will be separated by a semicolon in the output.</li><li><span title=\"TAB\">Tab</span>—Feature coordinates and attribute values will be separated by a tab in the output.</li></ul></xdoc>",
+        "delimiter.domain.COMMA": "Comma",
+        "delimiter.domain.SEMI-COLON": "Semicolon",
+        "delimiter.domain.SPACE": "Space",
+        "delimiter.domain.TAB": "Tab",
+        "delimiter.title": "Delimiter",
+        "description": "Exports feature class coordinates and attribute values to a space-, comma-, tab-, or semicolon-delimited ASCII text file.",
+        "input_feature_class.descr": "The feature class from which the feature coordinates and attribute values will be exported.",
+        "input_feature_class.title": "Input Feature Class",
+        "output_ascii_file.descr": "The ASCII text file that will contain the feature coordinates and attribute values.",
+        "output_ascii_file.title": "Output ASCII File",
+        "title": "Export Feature Attribute To ASCII",
+        "value_field.descr": "The field or fields in the input feature class containing the values to export to an ASCII text file.",
+        "value_field.title": "Value Field"
+    }
+}

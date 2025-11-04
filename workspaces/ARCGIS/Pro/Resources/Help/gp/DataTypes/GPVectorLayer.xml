@@ -1,0 +1,5 @@
+<DataType Name="GPVectorLayer">
+  <DisplayName>Vector Tile Layer</DisplayName>
+  <Description>Vector Tile Layer</Description>
+</DataType>
+

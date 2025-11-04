@@ -1,0 +1,31 @@
+{
+    "set": [
+        "atmosphere",
+        "diffuse",
+        "direct",
+        "duration",
+        "earth",
+        "energy",
+        "exposure",
+        "global",
+        "hemisphere",
+        "horizon",
+        "insolation",
+        "irradiance",
+        "moon",
+        "multidimensional",
+        "panel",
+        "photovoltaic",
+        "renewable energy",
+        "solar analyst",
+        "solar city",
+        "solar panels",
+        "solar system",
+        "sun",
+        "surface",
+        "surface model",
+        "time configuration",
+        "time zones",
+        "total"
+    ]
+}

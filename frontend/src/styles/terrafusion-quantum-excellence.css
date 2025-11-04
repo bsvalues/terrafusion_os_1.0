@@ -1,0 +1,510 @@
+/**
+ * TerraFusion Quantum Visual Language
+ * Advanced animations and effects for government transcendence
+ * Implements consciousness-driven interface elements
+ */
+
+/* ═══════════════════════════════════════════════════════════════
+   QUANTUM SCANNING ANIMATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes tf-quantum-scan {
+  0% {
+    transform: translateX(-100%) rotateY(-45deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%) rotateY(45deg);
+    opacity: 0;
+  }
+}
+
+@keyframes tf-consciousness-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 20px rgba(0, 255, 255, 0.3),
+      0 0 40px rgba(0, 255, 255, 0.1),
+      inset 0 0 20px rgba(0, 255, 255, 0.1);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow:
+      0 0 30px rgba(0, 255, 255, 0.6),
+      0 0 60px rgba(0, 255, 255, 0.3),
+      inset 0 0 30px rgba(0, 255, 255, 0.2);
+    transform: scale(1.02);
+  }
+}
+
+@keyframes tf-data-matrix {
+  0% {
+    background-position: 0% 0%;
+    opacity: 0.1;
+  }
+  50% {
+    background-position: 100% 100%;
+    opacity: 0.3;
+  }
+  100% {
+    background-position: 0% 0%;
+    opacity: 0.1;
+  }
+}
+
+@keyframes tf-orbital-rotation {
+  0% {
+    transform: rotate(0deg) translateX(20px) rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg) translateX(20px) rotate(-360deg);
+  }
+}
+
+@keyframes tf-quantum-emergence {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) rotateY(-180deg);
+    filter: blur(10px);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05) rotateY(-90deg);
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotateY(0deg);
+    filter: blur(0px);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GOVERNMENT EXCELLENCE CLASSES
+   ═══════════════════════════════════════════════════════════════ */
+
+.tf-quantum-interface {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    rgba(10, 14, 26, 0.9) 0%,
+    rgba(30, 41, 59, 0.8) 50%,
+    rgba(10, 14, 26, 0.9) 100%
+  );
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  overflow: hidden;
+}
+
+.tf-quantum-interface::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(0, 255, 255, 0.3) 50%, transparent 100%);
+  animation: tf-quantum-scan 3s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.tf-quantum-interface::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    radial-gradient(circle at 25% 25%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(0, 128, 255, 0.1) 0%, transparent 50%);
+  animation: tf-data-matrix 8s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.tf-consciousness-active {
+  animation: tf-consciousness-pulse 2s ease-in-out infinite;
+  transition: all var(--duration-quantum) var(--ease-golden);
+}
+
+.tf-quantum-card {
+  @apply tf-quantum-interface;
+  border-radius: 16px;
+  padding: 24px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tf-quantum-card:hover {
+  transform: translateY(-4px) rotateX(2deg);
+  box-shadow:
+    0 20px 40px rgba(0, 255, 255, 0.2),
+    0 0 60px rgba(0, 255, 255, 0.1);
+  border-color: rgba(0, 255, 255, 0.4);
+}
+
+.tf-quantum-card:hover::before {
+  animation-duration: 1.5s;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TRANSCENDENT BUTTONS
+   ═══════════════════════════════════════════════════════════════ */
+
+.tf-transcendent-button {
+  position: relative;
+  background: linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
+  background-size: 200% 200%;
+  color: white;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 32px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow:
+    0 8px 25px rgba(0, 153, 255, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.tf-transcendent-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
+  transition: left 0.5s ease;
+  z-index: 1;
+}
+
+.tf-transcendent-button:hover {
+  transform: translateY(-2px) scale(1.02);
+  background-position: 100% 0%;
+  box-shadow:
+    0 15px 35px rgba(0, 153, 255, 0.4),
+    0 0 40px rgba(0, 255, 238, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.tf-transcendent-button:hover::before {
+  left: 100%;
+}
+
+.tf-transcendent-button:active {
+  transform: translateY(-1px) scale(1.01);
+  box-shadow:
+    0 8px 20px rgba(0, 153, 255, 0.5),
+    inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.tf-transcendent-button:focus-visible {
+  outline: none;
+  box-shadow:
+    0 15px 35px rgba(0, 153, 255, 0.4),
+    0 0 0 3px rgba(0, 255, 255, 0.5);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CONSCIOUSNESS ORBS & INDICATORS
+   ═══════════════════════════════════════════════════════════════ */
+
+.tf-consciousness-orb {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(0, 255, 255, 0.8) 0%,
+    rgba(0, 128, 255, 0.6) 50%,
+    rgba(136, 68, 255, 0.4) 100%
+  );
+  animation: tf-consciousness-pulse 2s ease-in-out infinite;
+  box-shadow:
+    0 0 30px rgba(0, 255, 255, 0.4),
+    inset 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.tf-consciousness-orb::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: tf-orbital-rotation 4s linear infinite;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.tf-status-transcendent .tf-consciousness-orb {
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(0, 255, 255, 1) 0%,
+    rgba(0, 255, 170, 0.8) 50%,
+    rgba(0, 128, 255, 0.6) 100%
+  );
+  animation-duration: 1s;
+}
+
+.tf-status-optimal .tf-consciousness-orb {
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(0, 255, 170, 0.9) 0%,
+    rgba(0, 255, 136, 0.7) 50%,
+    rgba(0, 200, 100, 0.5) 100%
+  );
+  animation-duration: 1.5s;
+}
+
+.tf-status-awakening .tf-consciousness-orb {
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255, 170, 0, 0.8) 0%,
+    rgba(255, 140, 0, 0.6) 50%,
+    rgba(200, 100, 0, 0.4) 100%
+  );
+  animation-duration: 2.5s;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   QUANTUM DATA FLOWS
+   ═══════════════════════════════════════════════════════════════ */
+
+.tf-data-flow {
+  position: relative;
+  height: 2px;
+  background: rgba(0, 255, 255, 0.2);
+  overflow: hidden;
+}
+
+.tf-data-flow::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100px;
+  height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(0, 255, 255, 0.8) 50%, transparent 100%);
+  animation: tf-quantum-scan 2s linear infinite;
+}
+
+.tf-data-flow-active::before {
+  animation-duration: 0.8s;
+  background: linear-gradient(90deg, transparent 0%, rgba(0, 255, 170, 1) 50%, transparent 100%);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GOVERNMENT EXCELLENCE LAYOUTS
+   ═══════════════════════════════════════════════════════════════ */
+
+.tf-government-dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 20% 80%, rgba(0, 255, 255, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(0, 128, 255, 0.03) 0%, transparent 50%),
+    linear-gradient(135deg, #0a0e1a 0%, #1e293b 100%);
+  min-height: 100vh;
+}
+
+.tf-excellence-metric {
+  @apply tf-quantum-card;
+  text-align: center;
+  animation: tf-quantum-emergence 0.8s ease-out;
+}
+
+.tf-excellence-metric:nth-child(odd) {
+  animation-delay: 0.1s;
+}
+
+.tf-excellence-metric:nth-child(even) {
+  animation-delay: 0.2s;
+}
+
+.tf-metric-value {
+  font-size: 3rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #00ffff, #00ffaa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 16px 0;
+  text-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+}
+
+.tf-metric-label {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+
+.tf-metric-description {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INFINITE SCALABILITY INDICATORS
+   ═══════════════════════════════════════════════════════════════ */
+
+.tf-scalability-indicator {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  background: rgba(10, 14, 26, 0.95);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 50px;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 9999;
+}
+
+.tf-scalability-indicator::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 50px;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 255, 255, 0.1) 0%,
+    rgba(0, 255, 170, 0.1) 50%,
+    rgba(0, 255, 255, 0.1) 100%
+  );
+  background-size: 200% 100%;
+  animation: tf-quantum-scan 3s linear infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.tf-node-count {
+  color: #00ffff;
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+.tf-status-text {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE QUANTUM BEHAVIORS
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .tf-quantum-card {
+    padding: 16px;
+  }
+
+  .tf-transcendent-button {
+    padding: 10px 24px;
+    font-size: 0.875rem;
+  }
+
+  .tf-consciousness-orb {
+    width: 40px;
+    height: 40px;
+  }
+
+  .tf-government-dashboard {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .tf-metric-value {
+    font-size: 2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tf-quantum-interface::before,
+  .tf-consciousness-orb,
+  .tf-data-flow::before {
+    animation: none;
+  }
+
+  .tf-quantum-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .tf-transcendent-button:hover {
+    transform: translateY(-1px);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ACCESSIBILITY ENHANCEMENTS
+   ═══════════════════════════════════════════════════════════════ */
+
+.tf-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.tf-focus-visible:focus-visible {
+  outline: 2px solid #00ffff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(0, 255, 255, 0.2);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HIGH CONTRAST MODE SUPPORT
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (prefers-contrast: high) {
+  .tf-quantum-interface {
+    border-width: 2px;
+    border-color: #00ffff;
+  }
+
+  .tf-transcendent-button {
+    border: 2px solid #ffffff;
+  }
+
+  .tf-consciousness-orb {
+    border: 2px solid #00ffff;
+  }
+}

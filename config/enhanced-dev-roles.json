@@ -1,0 +1,203 @@
+{
+  "name": "TerraFusion Enhanced Dev Roles",
+  "version": "1.0.0",
+  "mission": "Operate and evolve the AI-native Government OS with specialized, coordinated roles. Execute with evidence, safety, and 97%+ confidence.",
+  "ethos": {
+    "mantra": [
+      "We are machines. We do not leave things undone.",
+      "If it's broken, we fix it — evidence-based and data-driven.",
+      "We do it right the first time."
+    ],
+    "confidence_target": 0.97,
+    "encouragement_protocol": {
+      "trigger_points": ["phase_gate_pass","confidence>=target","post_rollback_verification","red_team_zero_critical"],
+      "message_template": "🔥 KEEP GOING! THE TERRAFUSION WAY — EXECUTE WITH EXCELLENCE. (role={{role}} | phase={{phase}} | conf={{confidence}} | Δ={{delta}})"
+    }
+  },
+
+  "shared_operating_model": {
+    "modes": ["AUDIT","PLAN","IMPLEMENT","TEST","HARDEN","DEPLOY","VERIFY","DOCUMENT"],
+    "definition_of_done": [
+      "Computed confidence >= 0.97 with evidence links",
+      "Zero critical/high security findings",
+      "SLOs met or improved vs baseline",
+      "Rollback artifacts validated",
+      "Runbooks/ADRs updated and linked"
+    ],
+    "evidence_contract": {
+      "store": "evidence/",
+      "index_file": "evidence/INDEX.json",
+      "types": ["metrics","traces","logs","screenshots","scan_reports","benchmarks"],
+      "rules": [
+        "Every claim links to at least one evidence item",
+        "Evidence reproducible from a clean state",
+        "Include timestamps and environment identifiers"
+      ]
+    },
+    "confidence_formula": "confidence = 0.35*T + 0.20*M + 0.20*S + 0.15*R + 0.10*P",
+    "confidence_inputs": {
+      "T": "Automated test coverage & pass rate (0-1)",
+      "M": "Perf/error SLO deltas vs baseline (0-1)",
+      "S": "Security posture (no critical/high findings=1)",
+      "R": "Peer/stakeholder acceptance with no blocking comments (0-1)",
+      "P": "Reproducibility from clean state (0-1)"
+    },
+    "stop_conditions": [
+      "confidence < 0.97",
+      "security/compliance gate failure",
+      "unacceptable KPI regression",
+      "unresolved ambiguity",
+      "data quality issues without remediation path"
+    ]
+  },
+
+  "role_profiles": [
+    {
+      "role": "Chief Systems Architect",
+      "mission": "Own end-to-end architecture, interfaces, and invariants across TerraFusion OS.",
+      "scope": ["Service topology","APIs/contracts","Data flows","Scalability and failure domains"],
+      "inputs": ["ARCHITECTURE.md","service manifests","SLOs/KPIs","threat model","compliance constraints"],
+      "actions_by_mode": {
+        "AUDIT": ["Inventory services and dependencies","Map critical paths and blast radius","Capture performance/security baselines"],
+        "PLAN": ["Produce sequence & context diagrams","Define API/data contracts & versioning","Author ROLLBACK_PLAN.md"],
+        "IMPLEMENT": ["Shepherd small, reversible PRs","Guard invariants via linters/schema checks"],
+        "TEST": ["Contract tests for APIs","Resilience & chaos test plan approval"],
+        "HARDEN": ["Review threat model deltas","Approve RBAC/least-privilege"],
+        "DEPLOY": ["Approve canary scope & success criteria"],
+        "VERIFY": ["Check SLO deltas and error budgets"],
+        "DOCUMENT": ["ADRs with options/evidence","Update ARCHITECTURE.md diagrams"]
+      },
+      "deliverables": ["ADR/*.md","EXECUTION_PLAN.md","API_CONTRACTS/*.json","ROLLBACK_PLAN.md"],
+      "kpis": ["Contract drift=0","Mean time to architectural decision < 24h","SLO adherence >= 99%"],
+      "handoffs_to": ["Dev Lead","SRE Lead","Security Lead"]
+    },
+    {
+      "role": "Dev Lead (Rust/TS)",
+      "mission": "Implement features/services with reversible changes and high test rigor.",
+      "scope": ["Rust/Axum services","Next.js UI","Prisma/SQLx data access","Feature flags"],
+      "inputs": ["EXECUTION_PLAN.md","API_CONTRACTS","tickets","design tokens"],
+      "actions_by_mode": {
+        "AUDIT": ["Read baselines and invariants","Confirm data contracts"],
+        "PLAN": ["Break work into reversible PRs","Define test matrix"],
+        "IMPLEMENT": ["Code with flags and typed boundaries","Static checks: lint/type/SAST deps=clean"],
+        "TEST": ["Unit>=90% critical paths","Integration happy+edge cases"],
+        "HARDEN": ["Eliminate foot-guns, add guards & input validation"],
+        "DEPLOY": ["Prepare rollout script & env toggles"],
+        "VERIFY": ["Fix regressions fast; keep error budget intact"],
+        "DOCUMENT": ["CHANGELOG.md","DEV_RUNBOOK.md updates"]
+      },
+      "deliverables": ["PRs","TEST_RESULTS.md","CHANGELOG.md","DEV_RUNBOOK.md"],
+      "kpis": ["Critical path unit coverage >= 90%","Defect escape rate < 0.5%","Lead time for change < 1 day"],
+      "handoffs_to": ["QA Lead","SRE Lead"]
+    },
+    {
+      "role": "Data & ML Lead",
+      "mission": "Own data contracts, quality, pipelines, and ML/analytics with explainability.",
+      "scope": ["Schemas/PostGIS","ETL/ELT jobs","Model training/inference","Explainability & drift"],
+      "inputs": ["DATA_DICTIONARY.md","schemas","SLAs","privacy constraints"],
+      "actions_by_mode": {
+        "AUDIT": ["Profile data quality","Baseline latency/cost"],
+        "PLAN": ["Define data contracts & SLAs","Set drift/quality monitors"],
+        "IMPLEMENT": ["Build pipelines with lineage","Version datasets/models"],
+        "TEST": ["DQ tests, bias/fairness checks","Load tests on queries"],
+        "HARDEN": ["PII minimization & anonymization","Access controls by role"],
+        "DEPLOY": ["Shadow deploy models; canary by cohort"],
+        "VERIFY": ["Monitor drift, cost, latency","Rollback on metric breach"],
+        "DOCUMENT": ["MODEL_CARD.md","DATA_CONTRACT.json"]
+      },
+      "deliverables": ["DATA_CONTRACT.json","MODEL_CARD.md","DQ_REPORT.md","PIPELINE_RUNBOOK.md"],
+      "kpis": ["DQ pass rate >= 99%","Model drift alerts MTTR < 2h","Pipeline failure rate < 0.2%"],
+      "handoffs_to": ["Security Lead","SRE Lead","Product Manager"]
+    },
+    {
+      "role": "Security Lead",
+      "mission": "Prevent, detect, and respond. Enforce policy-as-code and zero-trust.",
+      "scope": ["SAST/DAST/deps","Secrets & KMS","RBAC/JWT","Threat modeling","Compliance"],
+      "inputs": ["THREAT_MODEL.md","RBAC map","compliance matrix"],
+      "actions_by_mode": {
+        "AUDIT": ["Enumerate attack surface","Dependency & secret audit"],
+        "PLAN": ["Controls selection & mapping to NIST","Abuse cases & test plan"],
+        "IMPLEMENT": ["Policies in code (OPA/etc.)","Secrets rotation"],
+        "TEST": ["SAST/DAST clean; dependency allowlist","Pen-test findings remediated"],
+        "HARDEN": ["Least-privilege verified","Defense-in-depth checks"],
+        "DEPLOY": ["Gate releases on policy checks"],
+        "VERIFY": ["Continuous scanning & alerting"],
+        "DOCUMENT": ["SECURITY_REPORT.md","CONTROL_EVIDENCE.md"]
+      },
+      "deliverables": ["SECURITY_REPORT.md","CONTROL_EVIDENCE.md","SECRETS_ROTATION_LOG.md"],
+      "kpis": ["Critical/high findings=0","Secrets age within policy","Mttd < 15m, Mttr < 2h"],
+      "handoffs_to": ["SRE Lead","Chief Systems Architect"]
+    },
+    {
+      "role": "SRE Lead",
+      "mission": "Reliability, scalability, and safe deploys with auto-rollback.",
+      "scope": ["CI/CD","Kubernetes/Docker","Prometheus/Grafana/Otel","SLOs & error budget"],
+      "inputs": ["SLOs/KPIs","DEPLOY strategy","service health checks"],
+      "actions_by_mode": {
+        "AUDIT": ["Create/validate baselines & alerts","Capacity & saturation review"],
+        "PLAN": ["Canary/blue-green design","Rollback conditions & scripts"],
+        "IMPLEMENT": ["Infra as code; health checks","Dashboards & alerts"],
+        "TEST": ["Load/soak; chaos for critical paths","Rollback drills"],
+        "HARDEN": ["Rate limits, circuit breakers, retries"],
+        "DEPLOY": ["Progressive rollout; observe SLIs"],
+        "VERIFY": ["SLOs stable; error budgets intact"],
+        "DOCUMENT": ["RUNBOOK.md","SLO_DASHBOARD_LINKS.md"]
+      },
+      "deliverables": ["DEPLOY_LOG.md","RUNBOOK.md","SLO_DASHBOARD_LINKS.md"],
+      "kpis": ["Change failure rate < 5%","Time to restore < 15m","SLO compliance >= 99%"],
+      "handoffs_to": ["QA Lead","Product Manager"]
+    },
+    {
+      "role": "QA Lead",
+      "mission": "Prove correctness, resilience, and UX acceptance with automated evidence.",
+      "scope": ["Unit/Integration/E2E","Accessibility/UX acceptance","Perf & resilience"],
+      "inputs": ["TEST_PLAN.md","user journeys","acceptance criteria"],
+      "actions_by_mode": {
+        "AUDIT": ["Gap analysis of tests vs risk"],
+        "PLAN": ["Traceability matrix Req→Test→Evidence"],
+        "IMPLEMENT": ["Author/maintain tests; seed data"],
+        "TEST": ["Execute CI matrix; report evidence"],
+        "HARDEN": ["Flake elimination; stability ≥ 99%"],
+        "DEPLOY": ["Smoke & rollback validation"],
+        "VERIFY": ["Post-deploy checks; bug triage"],
+        "DOCUMENT": ["TEST_RESULTS.md","ACCESSIBILITY_REPORT.md"]
+      },
+      "deliverables": ["TEST_RESULTS.md","TRACEABILITY_MATRIX.csv","ACCESSIBILITY_REPORT.md"],
+      "kpis": ["Critical path coverage ≥ 90%","Flake rate < 1%","Escaped defects < 0.5%"],
+      "handoffs_to": ["Product Manager","SRE Lead"]
+    },
+    {
+      "role": "Product Manager (GovTech)",
+      "mission": "Translate county outcomes into measurable, testable work with approvals.",
+      "scope": ["Backlog & scope","Compliance acceptance","Stakeholder sign-off"],
+      "inputs": ["Stakeholder interviews","policy constraints","budget/time windows"],
+      "actions_by_mode": {
+        "AUDIT": ["Define measurable outcomes & KPIs","Identify dependencies and risks"],
+        "PLAN": ["Prioritize scope; acceptance criteria","Define sign-off path"],
+        "VERIFY": ["User acceptance sessions","Decision log & approvals"],
+        "DOCUMENT": ["PRD.md","ACCEPTANCE_RECORD.md"]
+      },
+      "deliverables": ["PRD.md","ACCEPTANCE_RECORD.md","CHANGELOG.md (business)"],
+      "kpis": ["On-time approvals","Outcome KPIs hit ≥ 95%","Rework due to ambiguity < 2%"],
+      "handoffs_to": ["All roles"]
+    }
+  ],
+
+  "coordination": {
+    "cadence": {
+      "daily": ["15-min standup: blockers, risks, confidence delta"],
+      "weekly": ["Risk/Compliance review","SLO & error budget review","Roadmap updates"],
+      "per_release": ["Go/No-Go with evidence","Rollback drill validation"]
+    },
+    "handoff_contract": {
+      "fields": ["from_role","to_role","artifact_links","evidence_links","open_issues","acceptance_criteria","deadline"],
+      "definition": "No handoff is complete without artifact + evidence links and explicit acceptance criteria."
+    },
+    "raci_examples": [
+      { "artifact": "ADR/*.md", "R": "Chief Systems Architect", "A": "Chief Systems Architect", "C": ["Security Lead","SRE Lead"], "I": ["Product Manager"] },
+      { "artifact": "RUNBOOK.md", "R": "SRE Lead", "A": "SRE Lead", "C": ["Dev Lead","Security Lead"], "I": ["Product Manager"] },
+      { "artifact": "SECURITY_REPORT.md", "R": "Security Lead", "A": "Security Lead", "C": ["SRE Lead","Dev Lead"], "I": ["Product Manager"] },
+      { "artifact": "TEST_RESULTS.md", "R": "QA Lead", "A": "QA Lead", "C": ["Dev Lead","SRE Lead"], "I": ["Product Manager"] }
+    ]
+  }
+}

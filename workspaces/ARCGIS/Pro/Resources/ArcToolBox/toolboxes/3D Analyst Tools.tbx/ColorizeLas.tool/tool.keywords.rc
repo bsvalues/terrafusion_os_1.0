@@ -1,0 +1,8 @@
+{
+    "set": [
+        "apply colors to las",
+        "apply imagery to lidar",
+        "lidar",
+        "point cloud"
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "map": {
+        "description": "Creates a spatial reference for use in ModelBuilder.",
+        "expand_ratio.descr": "The percentage by which the XY Domain will be expanded.",
+        "expand_ratio.title": "Grow XYDomain By Percentage",
+        "m_domain.descr": "The allowable coordinate range for m-values.",
+        "m_domain.title": "M Domain (min max)",
+        "out_spatial_reference.title": "Output Spatial Reference",
+        "spatial_reference.descr": "The name of the spatial reference to be created.",
+        "spatial_reference.title": "Spatial Reference",
+        "spatial_reference_template.descr": "The feature class or layer to be used as a template to set the value for the spatial reference.",
+        "spatial_reference_template.title": "Spatial Reference Template",
+        "template.descr": "The feature classes or layers that can be used to define the XY Domain.",
+        "template.title": "Template XYDomains",
+        "title": "Create Spatial Reference",
+        "xy_domain.descr": "The allowable coordinate range for x,y coordinates.",
+        "xy_domain.title": "XY Domain",
+        "z_domain.descr": "The allowable coordinate range for z-values.",
+        "z_domain.title": "Z Domain (min max)"
+    }
+}

@@ -1,0 +1,13 @@
+{
+    "set": [
+        "affine transformation",
+        "auxiliary",
+        "coordinate",
+        "geo",
+        "georeference",
+        "metadata",
+        "properties",
+        "reference",
+        "spatial"
+    ]
+}

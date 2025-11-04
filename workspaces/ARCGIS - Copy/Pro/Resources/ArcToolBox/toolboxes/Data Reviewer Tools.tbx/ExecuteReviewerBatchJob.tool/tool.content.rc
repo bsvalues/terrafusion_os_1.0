@@ -1,0 +1,22 @@
+{
+    "map": {
+        "analysis_area.descr": "Polygon features or extent values that define the area that will be used to build a validation processing area.",
+        "analysis_area.title": "Analysis Area",
+        "batch_job_file.descr": "The path to the Reviewer batch job file that will be run.",
+        "batch_job_file.title": "Batch Job File",
+        "changed_features.descr": "<xdoc><p>Specifies the type of features, changed or unchanged, that will be validated when the production workspace references data in an enterprise geodatabase.</p><ul><li>Checked—Only features that changed from the parent to the child version will be validated.</li><li>Unchecked—All features in the data referenced by the batch job will be validated. This is the default.</li></ul></xdoc>",
+        "changed_features.title": "Changed Features Only",
+        "description": "Runs a Reviewer batch job on a workspace and writes the results to a Reviewer session. A Reviewer batch job contains groups of Reviewer checks. Checks validate data based on conditions, rules, and spatial relationships. Checks also specify sets of features or rows to validate and their source workspace. A Reviewer session stores information about validation tasks performed by Reviewer checks. This information is stored in a table and a dataset in the Reviewer workspace.",
+        "production_workspace.descr": "The enterprise or file geodatabase that contains the features that will be validated.",
+        "production_workspace.title": "Production Workspace",
+        "production_workspaceversion.descr": "The version of the production workspace that will be validated by the batch job. This is only applicable when the production workspace is an enterprise geodatabase.",
+        "production_workspaceversion.title": "Production Workspace Version",
+        "reviewer_workspace.descr": "The workspace where the Reviewer batch job results will be written.",
+        "reviewer_workspace.title": "Reviewer Workspace",
+        "session.descr": "The identifier and name for the Reviewer session. The session must exist in the Reviewer workspace.",
+        "session.title": "Session",
+        "summary": "<xdoc><p>Runs a Reviewer batch job on a workspace and writes the results to a Reviewer session. A Reviewer batch job contains groups of Reviewer checks. Checks validate data based on conditions, rules, and spatial relationships. Checks also specify sets of features or rows to validate and their source workspace. A Reviewer session stores information about validation tasks performed by Reviewer checks. This information is stored in a table and a dataset in the Reviewer workspace.</p><note type=\"legacy\"/><p group=\"note\">ArcMap-based Reviewer workflows will soon be deprecated. It is recommended that current users begin converting their workflows from Reviewer batch jobs to ArcGIS Pro attribute rules.</p></xdoc>",
+        "tableview.title": "BATCHRUNTABLE_View",
+        "title": "Execute Reviewer Batch Job"
+    }
+}

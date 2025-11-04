@@ -1,0 +1,62 @@
+{
+    "type": "FunctionTool",
+    "guid": "{9627c727-bdc4-469e-8e34-99439e76955c}",
+    "displayname": "$rc:title",
+    "helpcontent": "3150003",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_rows": {
+            "displayname": "$rc:in_rows.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_rows.descr"
+        },
+        "out_table": {
+            "direction": "out",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "domain": {
+                "type": "GPBrowseFiltersDomain",
+                "filters": [
+                    "esri_browseDialogFilters_tables_all"
+                ]
+            },
+            "description": "$rc:out_table.descr"
+        },
+        "config_keyword": {
+            "type": "optional",
+            "displayname": "$rc:config_keyword.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "defaultenvironmentname": "configKeyword",
+            "description": "$rc:config_keyword.descr"
+        }
+    },
+    "environments": [
+        "configKeyword",
+        "extent",
+        "maintainAttachments",
+        "preserveGlobalIds",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

@@ -1,0 +1,24 @@
+{
+    "map": {
+        "algorithm.descr": "<xdoc><p>Specifies the simplification algorithm.</p><ul><li><span title=\"POINT_REMOVE\">Retain critical points (Douglas-Peucker)</span>—Retains critical points that preserve the essential shape of a polygon outline and removes all other points (Douglas-Peucker). This is the default.</li><li><span title=\"BEND_SIMPLIFY\">Retain critical bends (Wang-Müller)</span>— Retains the critical bends and removes extraneous bends from a line (Wang-Müller).</li><li><span title=\"WEIGHTED_AREA\">Retain weighted effective areas (Zhou-Jones)</span>—Retains vertices that form triangles of effective area that have been weighted by triangle shape (Zhou-Jones).</li><li><span title=\"EFFECTIVE_AREA\">Retain effective areas (Visvalingam-Whyatt)</span>— Retains vertices that form triangles of effective area (Visvalingam-Whyatt).</li></ul></xdoc>",
+        "algorithm.domain.BEND_SIMPLIFY": "Retain critical bends (Wang-Müller)",
+        "algorithm.domain.EFFECTIVE_AREA": "Retain effective areas (Visvalingam-Whyatt)",
+        "algorithm.domain.POINT_REMOVE": "Retain critical points (Douglas-Peucker)",
+        "algorithm.domain.WEIGHTED_AREA": "Retain weighted effective areas (Zhou-Jones)",
+        "algorithm.title": "Simplification Algorithm",
+        "description": "Simplifies the edges of input features while maintaining the topological relationship with edges shared with other features.",
+        "in_barriers.descr": "Point, line, or polygon features that act as barriers for the simplification. The simplified features will not touch or cross barrier features.",
+        "in_barriers.title": "Input Barrier Layers",
+        "in_features.descr": "The lines or polygons to be simplified.",
+        "in_features.title": "Input Features",
+        "minimum_area.descr": "The minimum area for a polygon to be retained. The default value is zero, which will retain all polygons. A unit can be specified; if no unit is specified, the unit of the input will be used. This parameter is available only when at least one of the inputs is a polygon feature class.",
+        "minimum_area.title": "Minimum Area",
+        "out_feature_class.title": "Output Feature Class",
+        "out_shared_edge_feature_class.title": "Output Feature Class",
+        "shared_edge_features.descr": "Line or polygon features that will be simplified along edges shared with input features. Other edges are not simplified.",
+        "shared_edge_features.title": "Shared Edge Features",
+        "title": "Simplify Shared Edges",
+        "tolerance.descr": "<xdoc><p>Determines the degree of simplification. If a unit is not specified, the units of the input will be used.</p><ul><li>For the <span class=\"esri_uicontrol\">Retain critical points (Douglas-Peucker)</span> algorithm, the tolerance is the maximum allowable perpendicular distance between each vertex and the new line created.</li><li>For the <span class=\"esri_uicontrol\">Retain critical bends (Wang-Müller)</span> algorithm, the tolerance is the diameter of a circle that approximates a significant bend.</li><li>For the <span class=\"esri_uicontrol\">Retain weighted effective areas (Zhou-Jones)</span> algorithm, the square of the tolerance is the area of a significant triangle defined by three adjacent vertices. The further a triangle deviates from equilateral, the higher weight it is given, and the less likely it is to be removed.</li><li>For the <span class=\"esri_uicontrol\">Retain effective areas (Visvalingam-Whyatt)</span> algorithm, the square of the tolerance is the area of a significant triangle defined by three adjacent vertices.</li></ul></xdoc>",
+        "tolerance.title": "Simplification Tolerance"
+    }
+}

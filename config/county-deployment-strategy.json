@@ -1,0 +1,58 @@
+{
+  "tier_1_immediate_deployment": {
+    "counties": [
+      "Spokane County",
+      "Clark County",
+      "Whatcom County",
+      "Thurston County",
+      "Kitsap County"
+    ],
+    "priority": "HIGH",
+    "deployment_timeline": "Week 1-2",
+    "population_impact": "High-density urban centers",
+    "strategic_value": "Major government operation hubs"
+  },
+  "tier_2_rapid_expansion": {
+    "counties": [
+      "Yakima County",
+      "Benton County",
+      "Skagit County",
+      "Island County",
+      "Jefferson County",
+      "Clallam County",
+      "Grays Harbor County",
+      "Lewis County",
+      "Mason County",
+      "Pacific County"
+    ],
+    "priority": "MEDIUM_HIGH",
+    "deployment_timeline": "Week 3-4",
+    "population_impact": "Regional centers and coastal counties",
+    "strategic_value": "Diverse government service requirements"
+  },
+  "tier_3_comprehensive_coverage": {
+    "counties": [
+      "Chelan County",
+      "Douglas County",
+      "Grant County",
+      "Okanogan County",
+      "Stevens County",
+      "Ferry County",
+      "Pend Oreille County",
+      "Lincoln County",
+      "Adams County",
+      "Franklin County",
+      "Walla Walla County",
+      "Columbia County",
+      "Garfield County",
+      "Asotin County",
+      "Whitman County",
+      "Klickitat County",
+      "Skamania County"
+    ],
+    "priority": "STRATEGIC_COMPLETION",
+    "deployment_timeline": "Week 5-6",
+    "population_impact": "Rural and specialized counties",
+    "strategic_value": "Complete state coverage and unique requirements"
+  }
+}

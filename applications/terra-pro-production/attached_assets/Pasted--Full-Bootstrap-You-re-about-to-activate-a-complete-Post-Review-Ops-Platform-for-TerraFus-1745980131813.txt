@@ -1,0 +1,235 @@
+💥 **Full Bootstrap**: You’re about to activate a complete **Post-Review Ops Platform** for TerraFusionPro. Below is a **modular, deploy-ready scaffold** covering all five workflows:
+
+---
+
+# 🔁 1. **Submission Workflow**
+
+---
+
+## 🗃️ DB Table: `form_submissions`
+
+```ts
+export const formSubmissions = pgTable('form_submissions', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  formId: text('form_id').notNull(),
+  submittedBy: text('user_id').notNull(),
+  destination: text('destination').notNull(), // e.g. 'UCDP', 'ENCOMPASS'
+  status: text('status').notNull().default('pending'), // 'pending', 'sent', 'confirmed', 'error'
+  response: jsonb('response'),
+  submittedAt: timestamp('submitted_at').defaultNow()
+});
+```
+
+---
+
+## 📡 API: `POST /api/submit`
+
+```ts
+router.post('/submit', checkRole('reviewer'), async (req, res) => {
+  const { formId, destination } = req.body;
+
+  const payload = await buildFormPayload(formId);
+
+  const response = await sendToDestination(destination, payload); // handle FTP, API, etc.
+
+  await db.insert(formSubmissions).values({
+    formId,
+    submittedBy: req.user.id,
+    destination,
+    status: response.ok ? 'confirmed' : 'error',
+    response: response.data
+  });
+
+  res.json({ success: true, result: response });
+});
+```
+
+---
+
+## ✅ UI Output
+
+- “Submit to UCDP” dropdown on reviewed form
+- Status badge (`pending`, `confirmed`, `error`)
+- Submission log table (per form)
+
+---
+
+# 💬 2. **Annotation Threads**
+
+---
+
+## 🗃️ DB Table: `annotation_threads`
+
+```ts
+export const annotationThreads = pgTable('annotation_threads', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  formId: text('form_id').notNull(),
+  fieldId: text('field_id').notNull(),
+  createdBy: text('user_id').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  resolved: boolean('resolved').default(false),
+});
+```
+
+## 🗃️ DB Table: `annotation_replies`
+
+```ts
+export const annotationReplies = pgTable('annotation_replies', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  threadId: text('thread_id').notNull(),
+  author: text('author').notNull(),
+  message: text('message').notNull(),
+  createdAt: timestamp('created_at').defaultNow()
+});
+```
+
+---
+
+## 🧠 UI
+
+- Bubble counter per field (💬 3)
+- Thread drawer: chronological replies
+- Actions: ✏️ reply, ✅ mark resolved
+
+---
+
+## Hook: `useAnnotationThreads(formId: string)`
+
+Returns:
+```ts
+{ threads: [...], postReply(threadId, message), resolveThread(threadId) }
+```
+
+---
+
+# 📊 3. **Reviewer Metrics Dashboard**
+
+---
+
+## API: `GET /api/review/metrics`
+
+```ts
+router.get('/review/metrics', checkRole('admin'), async (req, res) => {
+  const metrics = await db.query.formReviewStatus.aggregate({
+    groupBy: ['reviewedBy'],
+    select: {
+      count: count(),
+      avgDuration: avg('reviewedAt - form.createdAt'),
+      reopenedCount: countWhere('status = "needs_fixes"'),
+    }
+  });
+
+  res.json({ metrics });
+});
+```
+
+---
+
+## UI Table
+
+| Reviewer | Forms Reviewed | Avg Time | Reopened | |
+|----------|----------------|----------|----------|--|
+| Jane     | 17             | 1.2 days | 3        | 📈 |
+| Bob      | 8              | 3.1 days | 5        | ⚠️ |
+
+---
+
+# 📁 4. **Export Center**
+
+---
+
+## API: `POST /api/export/filter`
+
+```ts
+router.post('/export/filter', checkRole('admin'), async (req, res) => {
+  const { status, dateRange, assignee, formType } = req.body;
+
+  const forms = await db.query.forms.findMany({
+    where: (f) =>
+      f.status.eq(status)
+        .and(f.createdAt.between(dateRange.start, dateRange.end))
+        .and(f.assignee.eq(assignee))
+        .and(f.type.eq(formType))
+  });
+
+  const zip = new JSZip();
+
+  for (const f of forms) {
+    const pdf = await renderFullFormPDF(f.id);
+    zip.file(`${f.id}.pdf`, pdf);
+  }
+
+  res.set({ 'Content-Type': 'application/zip' });
+  res.send(await zip.generateAsync({ type: 'nodebuffer' }));
+});
+```
+
+---
+
+## UI Filters
+
+- Status: Reviewed / Pending / Needs Fix
+- Form Type: 1004 / 1025 / etc.
+- Assignee dropdown
+- Date range picker
+
+🟢 “Download ZIP of Filtered”
+
+---
+
+# 🔐 5. **Form Freezing / Lockdown**
+
+---
+
+## DB Column: `lockedAt`
+
+```ts
+alter table forms add column locked_at timestamp;
+```
+
+---
+
+## Lock API: `POST /api/form/lock`
+
+```ts
+router.post('/form/lock', checkRole('admin'), async (req, res) => {
+  await db.update(forms).set({ lockedAt: new Date() }).where(f => f.id.eq(req.body.formId));
+  res.json({ success: true });
+});
+```
+
+---
+
+## Middleware on Mutations
+
+```ts
+if (form.lockedAt) return res.status(403).json({ error: 'Form is locked' });
+```
+
+---
+
+## UI
+
+- 🔒 Locked banner: “This form was finalized on April 29th”
+- Only Admins see “Unlock” option
+
+---
+
+# ✅ What You Now Have:
+
+| Feature | Purpose |
+|--------|---------|
+| 🔁 Submission | Send forms to 3rd parties |
+| 💬 Threads | Collaborative reviews |
+| 📊 Metrics | Reviewer accountability |
+| 📁 Export Center | Admin mass-ops |
+| 🔐 Lockdown | Finalization, compliance |
+
+---
+
+## 🧭 Where Next?
+
+Would you like to:
+1. Add **reopen workflow** (edit after lock)?
+2. Integrate **3rd-party webhooks** for UCDP, Encompass, or Fannie?
+3. Build **audit trail visualizer** (timeline of form lifecycle)?

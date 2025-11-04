@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion Interactive Dashboard</title>
+    
+    <!-- React and React DOM from CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f9fafb;
+            color: #111827;
+        }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .card { background: white; border-radius: 8px; padding: 20px; margin: 10px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn { padding: 12px 24px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; margin: 5px; }
+        .btn:hover { background: #2563eb; }
+        .btn-outline { background: transparent; color: #3b82f6; border: 1px solid #3b82f6; }
+        .btn-outline:hover { background: #3b82f6; color: white; }
+        .btn-success { background: #10b981; }
+        .btn-success:hover { background: #059669; }
+        .grid { display: grid; gap: 20px; }
+        .grid-2 { grid-template-columns: 1fr 1fr; }
+        .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+        .grid-4 { grid-template-columns: repeat(4, 1fr); }
+        .flex { display: flex; align-items: center; gap: 10px; }
+        .justify-between { justify-content: space-between; }
+        .text-center { text-align: center; }
+        .mb-4 { margin-bottom: 16px; }
+        .mb-6 { margin-bottom: 24px; }
+        .p-4 { padding: 16px; }
+        .bg-blue-50 { background-color: #eff6ff; }
+        .bg-green-50 { background-color: #ecfdf5; }
+        .bg-purple-50 { background-color: #faf5ff; }
+        .bg-yellow-50 { background-color: #fefce8; }
+        .text-blue-600 { color: #2563eb; }
+        .text-green-600 { color: #059669; }
+        .text-purple-600 { color: #7c3aed; }
+        .text-orange-600 { color: #ea580c; }
+        .font-bold { font-weight: bold; }
+        .text-2xl { font-size: 24px; }
+        .text-xl { font-size: 20px; }
+        .text-lg { font-size: 18px; }
+        .rounded { border-radius: 6px; }
+        .shadow { box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .mt-4 { margin-top: 16px; }
+        .space-y-2 > * + * { margin-top: 8px; }
+        .status-indicator { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+        .status-green { background-color: #10b981; }
+        .status-yellow { background-color: #f59e0b; }
+        .status-red { background-color: #ef4444; }
+        .animate-pulse { animation: pulse 2s infinite; }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .tab-nav {
+            display: flex;
+            border-bottom: 2px solid #e5e7eb;
+            margin-bottom: 20px;
+        }
+        
+        .tab-button {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+        }
+        
+        .tab-button.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+        }
+        
+        .metric-card {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .metric-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .metric-label {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: #3b82f6;
+            transition: width 0.3s ease;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useCallback } = React;
+        
+        // Main TerraFusion Interactive Dashboard
+        const TerraFusionApp = () => {
+            const [activeTab, setActiveTab] = useState('overview');
+            const [dashboardData, setDashboardData] = useState({});
+            const [loading, setLoading] = useState(false);
+            const [connectionStatus, setConnectionStatus] = useState('checking');
+            
+            const API_BASE = 'http://localhost:8787';
+            
+            // Check backend connection
+            const checkConnection = useCallback(async () => {
+                try {
+                    const response = await axios.get(`${API_BASE}/health`);
+                    setConnectionStatus('connected');
+                    return true;
+                } catch (error) {
+                    setConnectionStatus('disconnected');
+                    return false;
+                }
+            }, []);
+            
+            useEffect(() => {
+                checkConnection();
+                const interval = setInterval(checkConnection, 30000);
+                return () => clearInterval(interval);
+            }, [checkConnection]);
+            
+            // Overview Tab Component
+            const OverviewTab = () => (
+                <div>
+                    <div className="grid grid-4 mb-6">
+                        <div className="metric-card bg-blue-50">
+                            <div className="text-2xl">🔒</div>
+                            <div className="metric-value text-blue-600">147</div>
+                            <div className="metric-label">Privacy Queries Today</div>
+                        </div>
+                        <div className="metric-card bg-green-50">
+                            <div className="text-2xl">🎮</div>
+                            <div className="metric-value text-green-600">23</div>
+                            <div className="metric-label">Immersive Sessions</div>
+                        </div>
+                        <div className="metric-card bg-purple-50">
+                            <div className="text-2xl">🌐</div>
+                            <div className="metric-value text-purple-600">7/7</div>
+                            <div className="metric-label">Counties Online</div>
+                        </div>
+                        <div className="metric-card bg-yellow-50">
+                            <div className="text-2xl">⚡</div>
+                            <div className="metric-value text-orange-600">45</div>
+                            <div className="metric-label">Real-time Connections</div>
+                        </div>
+                    </div>
+                    
+                    <div className="grid grid-2 gap-6">
+                        <div className="card">
+                            <h3 className="text-lg font-bold mb-4">🏛️ Federation Status</h3>
+                            <div className="space-y-2">
+                                {['King County', 'Pierce County', 'Snohomish County', 'Spokane County'].map(county => (
+                                    <div key={county} className="flex justify-between">
+                                        <span>{county}</span>
+                                        <span className="flex">
+                                            <span className="status-indicator status-green animate-pulse"></span>
+                                            Connected
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        
+                        <div className="card">
+                            <h3 className="text-lg font-bold mb-4">📊 System Health</h3>
+                            <div className="space-y-3">
+                                <div>
+                                    <div className="flex justify-between mb-1">
+                                        <span>Privacy Budget Used</span>
+                                        <span>2.3ε / 10ε</span>
+                                    </div>
+                                    <div className="progress-bar">
+                                        <div className="progress-fill" style={{width: '23%'}}></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="flex justify-between mb-1">
+                                        <span>System Load</span>
+                                        <span>45%</span>
+                                    </div>
+                                    <div className="progress-bar">
+                                        <div className="progress-fill" style={{width: '45%'}}></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+            
+            // Privacy Dashboard Tab
+            const PrivacyTab = () => {
+                const [queryType, setQueryType] = useState('population_count');
+                const [county, setCounty] = useState('King');
+                const [privacyBudget, setPrivacyBudget] = useState(0.1);
+                const [executing, setExecuting] = useState(false);
+                
+                const executeQuery = async () => {
+                    setExecuting(true);
+                    try {
+                        const queryData = {
+                            county,
+                            query_type: queryType,
+                            privacy_budget: privacyBudget,
+                            aggregation_type: "count"
+                        };
+                        
+                        if (connectionStatus === 'connected') {
+                            await axios.post(`${API_BASE}/api/privacy/query`, queryData);
+                            alert('Privacy query executed successfully!');
+                        } else {
+                            alert('Demo: Privacy query would execute with these parameters');
+                        }
+                    } catch (error) {
+                        alert('Demo mode: Query would execute in production');
+                    }
+                    setExecuting(false);
+                };
+                
+                return (
+                    <div>
+                        <div className="grid grid-2 gap-6 mb-6">
+                            <div className="card">
+                                <h3 className="text-lg font-bold mb-4">🔍 Execute Privacy Query</h3>
+                                <div className="input-group">
+                                    <label>Target County</label>
+                                    <select value={county} onChange={(e) => setCounty(e.target.value)}>
+                                        <option value="King">King County</option>
+                                        <option value="Pierce">Pierce County</option>
+                                        <option value="Snohomish">Snohomish County</option>
+                                        <option value="Spokane">Spokane County</option>
+                                    </select>
+                                </div>
+                                <div className="input-group">
+                                    <label>Query Type</label>
+                                    <select value={queryType} onChange={(e) => setQueryType(e.target.value)}>
+                                        <option value="population_count">Population Count</option>
+                                        <option value="demographic_stats">Demographic Statistics</option>
+                                        <option value="income_analysis">Income Analysis</option>
+                                        <option value="housing_data">Housing Data</option>
+                                    </select>
+                                </div>
+                                <div className="input-group">
+                                    <label>Privacy Budget: {privacyBudget}ε</label>
+                                    <input 
+                                        type="range" 
+                                        min="0.01" 
+                                        max="1.0" 
+                                        step="0.01" 
+                                        value={privacyBudget}
+                                        onChange={(e) => setPrivacyBudget(parseFloat(e.target.value))}
+                                    />
+                                </div>
+                                <button 
+                                    className="btn btn-success" 
+                                    onClick={executeQuery}
+                                    disabled={executing}
+                                    style={{width: '100%'}}
+                                >
+                                    {executing ? '🔄 Executing...' : '🚀 Execute Query'}
+                                </button>
+                            </div>
+                            
+                            <div className="card">
+                                <h3 className="text-lg font-bold mb-4">📈 Recent Queries</h3>
+                                <div className="space-y-2">
+                                    <div className="p-4 bg-gray-50 rounded">
+                                        <div className="flex justify-between">
+                                            <span className="font-medium">King County Population</span>
+                                            <span className="text-green-600">✅ Completed</span>
+                                        </div>
+                                        <div className="text-sm text-gray-600">Cost: 0.05ε • 2 min ago</div>
+                                    </div>
+                                    <div className="p-4 bg-gray-50 rounded">
+                                        <div className="flex justify-between">
+                                            <span className="font-medium">Pierce Demographic Analysis</span>
+                                            <span className="text-blue-600">🔄 Processing</span>
+                                        </div>
+                                        <div className="text-sm text-gray-600">Cost: 0.12ε • 5 min ago</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="card">
+                            <h3 className="text-lg font-bold mb-4">🤝 Federated Learning</h3>
+                            <div className="grid grid-2 gap-4">
+                                <button className="btn btn-outline">Start New FL Session</button>
+                                <button className="btn btn-outline">View Active Sessions</button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+            
+            // Immersive Dashboard Tab
+            const ImmersiveTab = () => {
+                const [sessionType, setSessionType] = useState('3d');
+                const [sessionName, setSessionName] = useState('');
+                const [creating, setCreating] = useState(false);
+                
+                const createSession = async () => {
+                    setCreating(true);
+                    try {
+                        if (connectionStatus === 'connected') {
+                            const endpoint = `${API_BASE}/api/immersive/${sessionType}/create`;
+                            await axios.post(endpoint, {
+                                name: sessionName,
+                                county_data: ['King'],
+                                visualization_type: 'demographic_visualization',
+                                privacy_enhanced: true
+                            });
+                            alert(`${sessionType.toUpperCase()} session created successfully!`);
+                        } else {
+                            alert(`Demo: ${sessionType.toUpperCase()} session would be created`);
+                        }
+                        setSessionName('');
+                    } catch (error) {
+                        alert('Demo mode: Session would be created in production');
+                    }
+                    setCreating(false);
+                };
+                
+                return (
+                    <div>
+                        <div className="grid grid-2 gap-6 mb-6">
+                            <div className="card">
+                                <h3 className="text-lg font-bold mb-4">🎮 Create Immersive Session</h3>
+                                <div className="input-group">
+                                    <label>Session Type</label>
+                                    <select value={sessionType} onChange={(e) => setSessionType(e.target.value)}>
+                                        <option value="3d">🎮 3D Visualization</option>
+                                        <option value="vr">🥽 VR Experience</option>
+                                        <option value="ar">📱 AR Overlay</option>
+                                        <option value="metaverse">🌐 Metaverse Space</option>
+                                    </select>
+                                </div>
+                                <div className="input-group">
+                                    <label>Session Name</label>
+                                    <input 
+                                        type="text" 
+                                        placeholder="Enter session name..."
+                                        value={sessionName}
+                                        onChange={(e) => setSessionName(e.target.value)}
+                                    />
+                                </div>
+                                <div className="checkbox-group">
+                                    <input type="checkbox" id="privacy-enhanced" defaultChecked />
+                                    <label htmlFor="privacy-enhanced">Enable Privacy Enhancement</label>
+                                </div>
+                                <button 
+                                    className="btn btn-success" 
+                                    onClick={createSession}
+                                    disabled={creating || !sessionName}
+                                    style={{width: '100%'}}
+                                >
+                                    {creating ? '🔄 Creating...' : `🚀 Create ${sessionType.toUpperCase()} Session`}
+                                </button>
+                            </div>
+                            
+                            <div className="card">
+                                <h3 className="text-lg font-bold mb-4">📊 Active Sessions</h3>
+                                <div className="space-y-2">
+                                    <div className="p-4 bg-blue-50 rounded">
+                                        <div className="flex justify-between">
+                                            <span className="font-medium">🎮 King County 3D View</span>
+                                            <span className="text-green-600">✅ Active</span>
+                                        </div>
+                                        <div className="text-sm text-gray-600">12 users • Created 1h ago</div>
+                                    </div>
+                                    <div className="p-4 bg-purple-50 rounded">
+                                        <div className="flex justify-between">
+                                            <span className="font-medium">🥽 Pierce VR Tour</span>
+                                            <span className="text-blue-600">🔄 Loading</span>
+                                        </div>
+                                        <div className="text-sm text-gray-600">5 users • Created 30m ago</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="card">
+                            <h3 className="text-lg font-bold mb-4">📡 Real-time Features</h3>
+                            <div className="grid grid-3 gap-4">
+                                <button className="btn btn-outline">WebSocket Monitor</button>
+                                <button className="btn btn-outline">Device Compatibility</button>
+                                <button className="btn btn-outline">Performance Metrics</button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+            
+            return (
+                <div className="container">
+                    {/* Header */}
+                    <div className="card mb-6">
+                        <div className="flex justify-between">
+                            <div>
+                                <h1 className="text-2xl font-bold">🌍 TerraFusion Interactive Dashboard</h1>
+                                <p>Washington State Federation • Full UI/UX Interface</p>
+                            </div>
+                            <div className="flex">
+                                <span className={`status-indicator ${connectionStatus === 'connected' ? 'status-green' : 'status-yellow'} animate-pulse`}></span>
+                                <span>{connectionStatus === 'connected' ? 'Backend Connected' : 'Demo Mode'}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Tab Navigation */}
+                    <div className="tab-nav">
+                        <button 
+                            className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('overview')}
+                        >
+                            📊 Overview
+                        </button>
+                        <button 
+                            className={`tab-button ${activeTab === 'privacy' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('privacy')}
+                        >
+                            🔒 Privacy Dashboard
+                        </button>
+                        <button 
+                            className={`tab-button ${activeTab === 'immersive' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('immersive')}
+                        >
+                            🎮 Immersive Platform
+                        </button>
+                    </div>
+                    
+                    {/* Tab Content */}
+                    <div>
+                        {activeTab === 'overview' && <OverviewTab />}
+                        {activeTab === 'privacy' && <PrivacyTab />}
+                        {activeTab === 'immersive' && <ImmersiveTab />}
+                    </div>
+                </div>
+            );
+        };
+        
+        // Render the app
+        ReactDOM.render(<TerraFusionApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>

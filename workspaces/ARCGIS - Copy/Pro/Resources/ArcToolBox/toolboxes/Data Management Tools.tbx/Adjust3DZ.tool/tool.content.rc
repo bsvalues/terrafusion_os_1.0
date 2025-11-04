@@ -1,0 +1,33 @@
+{
+    "map": {
+        "adjust_value.descr": "A numeric value or field from the input features that will be used to adjust the z of each vertex in the input features. A positive value will shift the feature higher, while a negative number will shift it lower along the z-axis.",
+        "adjust_value.title": "Adjust Z Value",
+        "description": "Modifies z-values of 3D features.",
+        "from_units.descr": "<xdoc><p>Specifies the existing units of the z-values. This parameter is used in conjunction with the <span class=\"esri_uicontrol\">Convert To Units</span> parameter.</p><ul><li><span title=\"MILLIMETERS\">Millimeters</span>—The units will be millimeters.</li><li><span title=\"CENTIMETERS\">Centimeters</span>—The units will be centimeters.</li><li><span title=\"METERS\">Meters</span>—The units will be meters.</li><li><span title=\"INCHES\">Inches</span>—The units will be inches.</li><li><span title=\"FEET\">Feet</span>—The units will be feet.</li><li><span title=\"YARDS\">Yards</span>—The units will be yards.</li><li><span title=\"FATHOMS\">Fathoms</span>—The units will be fathoms.</li></ul></xdoc>",
+        "from_units.domain.CENTIMETERS": "Centimeters",
+        "from_units.domain.FATHOMS": "Fathoms",
+        "from_units.domain.FEET": "Feet",
+        "from_units.domain.INCHES": "Inches",
+        "from_units.domain.METERS": "Meters",
+        "from_units.domain.MILLIMETERS": "Millimeters",
+        "from_units.domain.YARDS": "Yards",
+        "from_units.title": "Convert From Units",
+        "in_features.descr": "The 3D features with the z-values that will be modified.",
+        "in_features.title": "Input Features",
+        "out_feature_class.title": "Updated Features",
+        "reverse_sign.descr": "<xdoc><p>Specifies whether features will be inverted along the z-axis.</p><ul><li><span title=\"REVERSE\">Reverse Z Orientation</span>—The sign of z-values will be inverted causing the feature to flip upside down.</li><li><span title=\"NO_REVERSE\">Maintain Z Orientation</span>—The sign of z-values will not be inverted; it will be maintained. This is the default.</li></ul></xdoc>",
+        "reverse_sign.domain.NO_REVERSE": "Maintain Z Orientation",
+        "reverse_sign.domain.REVERSE": "Reverse Z Orientation",
+        "reverse_sign.title": "Reverse Sign of Z Values",
+        "title": "Adjust 3D Z",
+        "to_units.descr": "<xdoc><p>Specifies the units that existing z-values will be converted to.</p><ul><li><span title=\"MILLIMETERS\">Millimeters</span>—The units will be millimeters.</li><li><span title=\"CENTIMETERS\">Centimeters</span>—The units will be centimeters.</li><li><span title=\"METERS\">Meters</span>—The units will be meters.</li><li><span title=\"INCHES\">Inches</span>—The units will be inches.</li><li><span title=\"FEET\">Feet</span>—The units will be feet.</li><li><span title=\"YARDS\">Yards</span>—The units will be yards.</li><li><span title=\"FATHOMS\">Fathoms</span>—The units will be fathoms.</li></ul></xdoc>",
+        "to_units.domain.CENTIMETERS": "Centimeters",
+        "to_units.domain.FATHOMS": "Fathoms",
+        "to_units.domain.FEET": "Feet",
+        "to_units.domain.INCHES": "Inches",
+        "to_units.domain.METERS": "Meters",
+        "to_units.domain.MILLIMETERS": "Millimeters",
+        "to_units.domain.YARDS": "Yards",
+        "to_units.title": "Convert To Units"
+    }
+}

@@ -1,0 +1,153 @@
+mode: deployment
+
+replicaCount: 2
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8888"
+
+resources:
+  limits:
+    cpu: 1
+    memory: 2Gi
+  requests:
+    cpu: 200m
+    memory: 400Mi
+
+config:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
+    prometheus:
+      config:
+        scrape_configs:
+          - job_name: 'otel-collector'
+            scrape_interval: 10s
+            static_configs:
+              - targets: ['${MY_POD_IP}:8888']
+          - job_name: 'terrafusion-api'
+            scrape_interval: 10s
+            kubernetes_sd_configs:
+              - role: pod
+            relabel_configs:
+              - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+                action: keep
+                regex: terrafusion
+              - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+                action: keep
+                regex: true
+    jaeger:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:14250
+        thrift_http:
+          endpoint: 0.0.0.0:14268
+    zipkin:
+      endpoint: 0.0.0.0:9411
+
+  processors:
+    batch:
+      timeout: 10s
+      send_batch_size: 1024
+    memory_limiter:
+      check_interval: 5s
+      limit_percentage: 80
+      spike_limit_percentage: 25
+    resource:
+      attributes:
+        - key: service.environment
+          value: production
+          action: upsert
+        - key: deployment.environment
+          value: production
+          action: upsert
+    filter:
+      metrics:
+        include:
+          match_type: regexp
+          metric_names:
+            - .*api.request.duration.*
+            - .*api.request.count.*
+            - .*api.error.count.*
+            - .*system.cpu.usage.*
+            - .*system.memory.usage.*
+            - .*system.disk.usage.*
+    tail_sampling:
+      policies:
+        [
+          {
+            name: error-policy,
+            type: status_code,
+            status_code: { status_codes: [ERROR] }
+          },
+          {
+            name: app-policy,
+            type: string_attribute,
+            string_attribute: { key: "service.name", values: ["terrafusion-api"] }
+          }
+        ]
+      decision_wait: 10s
+
+  exporters:
+    prometheus:
+      endpoint: 0.0.0.0:8889
+      namespace: terrafusion
+    jaeger:
+      endpoint: jaeger-collector.monitoring:14250
+      tls:
+        insecure: true
+    otlp:
+      endpoint: tempo.monitoring.svc.cluster.local:4317
+      tls:
+        insecure: true
+    loki:
+      endpoint: http://loki-gateway.monitoring.svc.cluster.local:3100/loki/api/v1/push
+      tenant_id: "terrafusion"
+      format: json
+      labels:
+        resource:
+          service.name: "service_name"
+          service.namespace: "service_namespace"
+          service.instance.id: "service_instance_id"
+
+  service:
+    pipelines:
+      traces:
+        receivers: [otlp, jaeger, zipkin]
+        processors: [memory_limiter, batch, resource, tail_sampling]
+        exporters: [otlp, jaeger]
+      metrics:
+        receivers: [otlp, prometheus]
+        processors: [memory_limiter, batch, resource, filter]
+        exporters: [prometheus]
+      logs:
+        receivers: [otlp]
+        processors: [memory_limiter, batch, resource]
+        exporters: [loki]
+
+ports:
+  jaeger-compact:
+    enabled: false
+  jaeger-thrift:
+    enabled: true
+  jaeger-grpc:
+    enabled: true
+  zipkin:
+    enabled: true
+  metrics:
+    enabled: true
+    servicePort: 8889
+    containerPort: 8889
+  prometheus-exporter:
+    enabled: true
+    containerPort: 8889
+
+service:
+  type: ClusterIP
+
+serviceAccount:
+  create: true

@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Sets the default value or code for the input table's subtype.",
+        "in_table.descr": "The input table or feature class whose subtype default value will be set.",
+        "in_table.title": "Input Table",
+        "out_table.title": "Updated Input Table",
+        "subtype_code.descr": "The unique default value for a subtype.",
+        "subtype_code.title": "Subtype Code",
+        "title": "Set Default Subtype"
+    }
+}

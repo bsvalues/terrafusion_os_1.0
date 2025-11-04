@@ -1,0 +1,1363 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.TaskService.DTOs</name>
+    </assembly>
+    <members>
+        <member name="M:TrueAutomation.TaskService.DTOs.AttachmentDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.ChecklistItemDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DTOs.QueryRecordDTO">
+            <summary>
+            DTO to represent a particular Query Record
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.QueryRecordDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.QueryRecordDTO.DataRow">
+            <summary>
+            The DataRow of the MappedQuery record
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DTOs.QueryRecordListDTO">
+            <summary>
+            DTO to represent a List of Query Records
+            contains raw results and list
+            of all column names returned
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.QueryRecordListDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.QueryRecordListDTO.GetDataRow(System.Int32)">
+            <summary>
+            Gets the data for the specified row
+            </summary>
+            <param name="rowNumber">0 based row number</param>
+            <returns>QueryRecordDTO of the data</returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.QueryRecordListDTO.GetDataFromRowForColumnIndex(System.Int32,System.Int32)">
+            <summary>
+            Get data for a specific column from a row
+            by column index
+            </summary>
+            <param name="rowNumber">0 based row number</param>
+            <param name="columnIndex">0 based column number</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.QueryRecordListDTO.GetDataFromRowForColumnName(System.Int32,System.String)">
+            <summary>
+            Get data for a specific column from a row
+            by column name
+            </summary>
+            <param name="rowNumber">0 based row number</param>
+            <param name="name">name of the column</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.QueryRecordListDTO.Subset(System.String,System.Object)">
+            <summary>
+            Creates a subset of the Query Record
+            </summary>
+            <param name="columnName"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.QueryRecordListDTO.Data">
+            <summary>
+            Data associated with this DTO
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.QueryRecordListDTO.ColumnNames">
+            <summary>
+            The Column names of the Query record
+            in the same order as the datarow
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.ServiceProviderDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.ServiceProviderDTO.CompareTo(System.Object)">
+            <summary>
+            Custom Sort implementation
+            Sort by sort order
+            </summary>
+            <param name="compareToObject"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DTOs.TaskTypeCacheItemDTO">
+            <summary>
+            	Data transformation Object representing Task Type Information.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskTypeCacheItemDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskTypeCacheItemDTO.#ctor(TrueAutomation.TaskService.DTOs.TaskTypeDTO)">
+            <summary>
+            Copy Constructor
+            </summary>
+            <remarks>Does a deep copy, but will purposefully leave Ids unset on the Task Type and any steps or DRDs</remarks>
+            <param name="source">Task Type we wish to copy</param>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskTypeCacheItemDTO.CompareTo(System.Object)">
+            <summary>
+            Custom Sort implementation
+            Sort by sort order
+            </summary>
+            <param name="compareToObject"></param>
+            <returns></returns>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskTypeCacheItemDTO.Id">
+            <summary>
+            Unique Identifier of a Task Type
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskTypeCacheItemDTO.Name">
+            <summary>
+            Name of the Task Type.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskTypeCacheItemDTO.Description">
+            <summary>
+            Description of the task type
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskTypeCacheItemDTO.Instructions">
+            <summary>
+            Instructions on how to perform the task
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskTypeCacheItemDTO.CategoryId">
+            <summary>
+            Unique identifier of the Category to which the task type belongs.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskTypeCacheItemDTO.RetiredDate">
+            <summary>
+            The date of which the task type was retired (taken out of service)
+            <remarks>Null implies the task type is still in service</remarks>
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskCategoryCacheItemDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskCategoryCacheItemDTO.#ctor(TrueAutomation.TaskService.DTOs.TaskCategoryDTO)">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskCategoryCacheItemDTO.CompareTo(System.Object)">
+            <summary>
+            Custom Sort implementation
+            Sort by name
+            </summary>
+            <param name="compareToObject"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DTOs.CustomOrderedListDTO">
+            <summary>
+            	Data transformation Object representing Custom Ordered List Information.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.CustomOrderedListDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.CustomOrderedListDTO.#ctor(TrueAutomation.TaskService.DTOs.CustomOrderedListDTO)">
+            <summary>
+            Copy Constructor
+            </summary>
+            <remarks>Does a deep copy, but will purposefully leave Ids unset on the Custom Ordered List and any Custom Ordered List Items</remarks>
+            <param name="source">Custom Ordered List we wish to copy</param>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.CustomOrderedListDTO.CompareTo(System.Object)">
+            <summary>
+            Custom Sort implementation
+            Sort by sort order
+            </summary>
+            <param name="compareToObject"></param>
+            <returns></returns>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.CustomOrderedListDTO.Id">
+            <summary>
+            Unique Identifier of a Custom Ordered List
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.CustomOrderedListDTO.CustomOrderedListName">
+            <summary>
+            Name of the Custom Ordered List.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.CustomOrderedListDTO.CustomOrderedListType">
+            <summary>
+            Type of the Custom Ordered List
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.CustomOrderedListDTO.CustomOrderListItems">
+            <summary>
+            The various Custom Ordered List Items that may be included with a Custom Ordered List
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DTOs.CustomOrderedListItemDTO">
+            <summary>
+            	Data transformation Object representing Custom Ordered List Item Information.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.CustomOrderedListItemDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.CustomOrderedListItemDTO.#ctor(TrueAutomation.TaskService.DTOs.CustomOrderedListItemDTO)">
+            <summary>
+            Copy Constructor
+            </summary>
+            <remarks>Does a deep copy</remarks>
+            <param name="source">Custom Ordered List Item we wish to copy</param>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.CustomOrderedListItemDTO.CompareTo(System.Object)">
+            <summary>
+            Comparer based on sorting defined by custom type
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.CustomOrderedListItemDTO.Id">
+            <summary>
+            Unique Identifier of a Custom Ordered List Item
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.CustomOrderedListItemDTO.ItemId">
+            <summary>
+            Unique Identifier of the item in its original repository
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.CustomOrderedListItemDTO.DisplayText">
+            <summary>
+            Text to be displayed for the Custom Ordered List Item.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.CustomOrderedListItemDTO.Order">
+            <summary>
+            The priority order of the item
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.CustomOrderedListItemDTO.CustomOrderedListId">
+            <summary>
+            Unique Identifier of the Custom Ordered List to which this Item belongs.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.CustomOrderedListItemDTO.TaskProperty">
+            <summary>
+            The task property associated with this item
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DTOs.CustomOrderListTypeDTO">
+            <summary>
+            	Data transformation Object representing Custom Ordered List Type full assembly name and type name Information.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.CustomOrderListTypeDTO.Id">
+            <summary>
+            Unique identifier of the CustomOrderListTypeDTO
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.CustomOrderListTypeDTO.DisplayName">
+            <summary>
+            The general type name of the CustomOrderListTypeDTO
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.CustomOrderListTypeDTO.TypeName">
+            <summary>
+            The full assembly name of the CustomOrderListTypeDTO. 
+            This is used to create an instance of this type to fetch all items from this types repository for the custom orderd list.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.EmailNotificationDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.EmailNotificationDTO.FromEmail">
+            <summary>
+            From Email Address
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.EmailNotificationDTO.ToEmail">
+            <summary>
+            To Email Address
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.EmailNotificationDTO.Subject">
+            <summary>
+            Subject of the Email
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.EmailNotificationDTO.Body">
+            <summary>
+            Email Body / Content
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.EmailNotificationDTO.Attachment">
+            <summary>
+            Email Attachment
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.SMSNotificationDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.SMSNotificationDTO.ToNumber">
+            <summary>
+            To Phone Number
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.SMSNotificationDTO.ServiceProvider">
+            <summary>
+            Phone Service Provider
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.SMSNotificationDTO.Body">
+            <summary>
+            SMS Body / Content
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DTOs.StatusType">
+            <summary>
+            Represents a user-defined status type
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DTOs.SearchDTO">
+            <summary>
+            Data Transformation Object representing a Task Query Saved Search.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.SearchDTO.#ctor">
+            <summary>
+            default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.SearchDTO.GetPermissionAccessLevel(System.Guid,System.Collections.Generic.List{TrueAutomation.AccessControl.DTOs.GroupDTO},TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO)">
+            <summary>
+            Method to get the permission set for the current user at
+            the USER level if present, otherwise at the GROUP level
+            </summary>
+            <param name="userId">Logged-in user id</param>
+            <param name="securityDescriptor">Security Descriptor of the Query</param>
+            <returns>Permission ACLType</returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.SearchDTO.GetPermissionAccessLevel(System.Guid,TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO)">
+            <summary>
+            Method to get the permission set on this Search for the current user
+            </summary>
+            <param name="userId">Logged-in user id</param>
+            <param name="securityDescriptor">Security Descriptor of the Search</param>
+            <returns>Permission ACLType</returns>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.SearchDTO.Id">
+            <summary>
+            The unique identifier of the search
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.SearchDTO.Name">
+            <summary>
+            The friendly name of the search being performed.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.SearchDTO.Criteria">
+            <summary>
+            The criteria to search on.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.SearchDTO.IsComplete">
+            <summary>
+            Flag to determine if the DTO contains a complete representation
+            of the search or if another request is needed to retrieve it.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.SearchDTO.creator">
+            <summary>
+            The User that created the search.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.SearchDTO.SecurityDescriptor">
+            <summary>
+            Security Descriptor for this Query
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.SearchDTO.UserPermission">
+            <summary>
+            Permission Access level for this Search for the logged-in User
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DTOs.MappedQueryRecordListDTO">
+            <summary>
+            DTO to represent a List of MappedQuery Records
+            contains raw results, mapped results and list
+            of all column names returned
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.MappedQueryRecordListDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.MappedQueryRecordListDTO.GetDataRow(System.Int32)">
+            <summary>
+            Gets the data for the specified row
+            </summary>
+            <param name="rowNumber">0 based row number</param>
+            <returns>MappedQueryRecordDTO of the data</returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.MappedQueryRecordListDTO.GetDataFromRowForColumnIndex(System.Int32,System.Int32)">
+            <summary>
+            Get data for a specific column from a row
+            by column index
+            </summary>
+            <param name="rowNumber">0 based row number</param>
+            <param name="columnIndex">0 based column number</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.MappedQueryRecordListDTO.GetDataFromRowForColumnName(System.Int32,System.String)">
+            <summary>
+            Get data for a specific column from a row
+            by column name
+            </summary>
+            <param name="rowNumber">0 based row number</param>
+            <param name="name">name of the column</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.MappedQueryRecordListDTO.Subset(System.String,System.Object)">
+            <summary>
+            Creates a subset of the Mapped Query Record
+            </summary>
+            <param name="columnName"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.MappedQueryRecordListDTO.Data">
+            <summary>
+            Data associated with this DTO
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.MappedQueryRecordListDTO.ColumnNames">
+            <summary>
+            The Column names of the MappedQuery record
+            in the same order as the datarow
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DTOs.MappedQueryRecordDTO">
+            <summary>
+            DTO to represent a particular MappedQuery Record
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.MappedQueryRecordDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.MappedQueryRecordDTO.DataRecordReference">
+            <summary>
+            The DataRecordReference of the MappedQuery record
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.MappedQueryRecordDTO.DataRow">
+            <summary>
+            The DataRow of the MappedQuery record
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DTOs.DataRecordListDTO">
+            <summary>
+            DTO to represent what a List of Data Records to be attached to a Task
+            <remarks>Shortcut to prevent the need to create Arrays of DataRecordDTOs in the Workflow Designer</remarks>
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DTOs.DataRecordDTO">
+            <summary>
+            DTO to represent a particular Data Record
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.DataRecordDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.DataRecordDTO.#ctor(TrueAutomation.TaskService.DTOs.DataRecordDTO)">
+            <summary>
+            copy constructor
+            </summary>
+            <param name="record">The DataRecord to copy</param>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.DataRecordDTO.Id">
+            <summary>
+            The unique Identifier of the Data Record Definition
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.DataRecordDTO.Name">
+            <summary>
+            The Name of the DataRecord
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.DataRecordDTO.Type">
+            <summary>
+            The Type of DataRecord
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.DataRecordDTO.DataRecordDefinitionId">
+            <summary>
+            The definition of the data record
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.DataRecordDTO.Parameters">
+            <summary>
+            A List of KeyValuePairs for the fields and objects in the DataRecord.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DTOs.DataRecordDefinitionDTO">
+            <summary>
+            DTO to represent what a particular Data Record should look like.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.DataRecordDefinitionDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.DataRecordDefinitionDTO.#ctor(TrueAutomation.TaskService.DTOs.DataRecordDefinitionDTO)">
+            <summary>
+            Copy Constructor
+            </summary>
+            <remarks>Will do a deep copy, but purposefully leave id unset</remarks>
+            <param name="source">DRD we wish to copy</param>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.DataRecordDefinitionDTO.Id">
+            <summary>
+            The unique Identifier of the Data Record Definition
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.DataRecordDefinitionDTO.Name">
+            <summary>
+            The Name of the DataRecord
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.DataRecordDefinitionDTO.Type">
+            <summary>
+            The Type of DataRecord
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.DataRecordDefinitionDTO.Required">
+            <summary>
+            A flag to determine whether or not the particular Data Record is required
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.DataRecordDefinitionDTO.KeyFields">
+            <summary>
+            A List of KeyValuePairs for the fields and types required in the DataRecord.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.DataRecordDefinitionDTO.TaskTypeId">
+            <summary>
+            Associated Task Type Id
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.DataRecordDefinitionDTO.TaskStepId">
+            <summary>
+            Associates Task step Id
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.HistoryValueDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.PriorityDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.PriorityDTO.CompareTo(System.Object)">
+            <summary>
+            Custom Sort implementation
+            Sort by sort order
+            </summary>
+            <param name="compareToObject"></param>
+            <returns></returns>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.PriorityDTO.Id">
+            <summary>
+            Id, also the display name/string
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.PriorityDTO.Description">
+            <summary>
+            Description of this item
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.PriorityDTO.SortOrder">
+            <summary>
+            Sort order when displayed
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.PriorityDTO.IsModifiedCreate">
+            <summary>
+            Indicates if this is a new item
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.PriorityDTO.IsModifiedUpdate">
+            <summary>
+            Indicates if this is a modified item
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.PriorityDTO.IsModifiedDelete">
+            <summary>
+            Indicates if this item
+            is to be deleted
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.PriorityDTO.InUse">
+            <summary>
+            Flag to indicate if a status is in use by a task
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.StatusDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.StatusDTO.CompareTo(System.Object)">
+            <summary>
+            Custom Sort implementation
+            Sort by sort order
+            </summary>
+            <param name="compareToObject"></param>
+            <returns></returns>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.StatusDTO.Id">
+            <summary>
+            Id, also the display string
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.StatusDTO.Description">
+            <summary>
+            Description of this item
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.StatusDTO.IsModifiedCreate">
+            <summary>
+            Indicates if this is a new item
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.StatusDTO.IsModifiedUpdate">
+            <summary>
+            Indicates if this is a modified item
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.StatusDTO.IsModifiedDelete">
+            <summary>
+            Indicates if this item
+            is to be deleted
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.StatusDTO.StatusType">
+            <summary>
+            Indicates the Status type that
+            this status is tied to
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.StatusDTO.IsDefaultForThisStatusType">
+            <summary>
+            Flag indicating if this Status is 
+            the default for the Status type 
+            this Status belongs to
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.StatusDTO.InUse">
+            <summary>
+            Flag to indicate if a status is in use by a task
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskCategoryDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskCategoryDTO.CompareTo(System.Object)">
+            <summary>
+            Custom Sort implementation
+            Sort by name
+            </summary>
+            <param name="compareToObject"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskDTO.GetCount">
+            <summary>
+            Will return a count of the data records present
+            </summary>
+            <returns>Count</returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskDTO.GetPermissionWorkingCopy(System.Guid,System.Collections.Generic.List{TrueAutomation.AccessControl.DTOs.GroupDTO},TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO)">
+            <summary>
+            Method to get the permission set on this Task for the current user.
+            If NO Permission is set for this user on the task, get the Permission 
+            set for the user on the associated Task Queue and return it.
+            </summary>
+            <param name="userId">Logged-in user id</param>
+            <param name="securityDescriptor">Security Descriptor of the Task</param>
+            <returns>Permission ACLType</returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskDTO.GetPermissionAccessLevel(System.Guid,System.Collections.Generic.List{TrueAutomation.AccessControl.DTOs.GroupDTO},TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO)">
+            <summary>
+            Method to get the permission set for the current user at
+            the USER level if present, otherwise at the GROUP level
+            </summary>
+            <param name="userId">Logged-in user id</param>
+            <param name="securityDescriptor">Security Descriptor of the Task</param>
+            <returns>Permission ACLType</returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskDTO.GetPermissionAccessLevel(System.Guid,TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO)">
+            <summary>
+            Method to get the permission set on this Task for the current user
+            </summary>
+            <param name="userId">Logged-in user id</param>
+            <param name="securityDescriptor">Security Descriptor of the Task</param>
+            <returns>Permission ACLType</returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskDTO.ToTaskListItemDTO">
+            <summary>
+            Converts a Task dto Item to a Task List Item DTO Object.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskDTO.Metadata">
+            <summary>
+            Metadata associated with the task
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskDTO.PermissionWorkingCopy">
+            <summary>
+            User Permission set on Task.
+            If not set on Task, derive it from the associated Task Queue
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskDTO.SecurityDescriptor">
+            <summary>
+            Security Descriptor for this Queue
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DTOs.TaskEditDTO">
+            <summary>
+            DTO To handle editing of values of more than 1 task.  Uses flags to determine if the Task should be updated.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskEditDTO.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskEditDTO.IsStatusEdited">
+            <summary>
+            Flag to say whether or not to change the value of the status
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskEditDTO.Status">
+            <summary>
+            The value to set the status to.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskEditDTO.IsPriorityEdited">
+            <summary>
+            Flag to say whether or not to change the value of the priority
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskEditDTO.Priority">
+            <summary>
+            The value to set the priority to
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskEditDTO.IsStartDateEdited">
+            <summary>
+            Flag to say whether or not to change the value of the start dates
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskEditDTO.StartDate">
+            <summary>
+            The Start Dates for the tasks
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskEditDTO.IsDueDateEdited">
+            <summary>
+            Flag to say whether or not to change the value of the due dates
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskEditDTO.DueDate">
+            <summary>
+            The Due Date for the Tasks
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskEditDTO.IsAssignedToEdited">
+            <summary>
+            Flag to say whether or not to change who the task is assigned to
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskEditDTO.AssignedTo">
+            <summary>
+            The value to set the assignment to
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskEditDTO.IsQueueEdited">
+            <summary>
+            Flag to say whether or not to change the value of the Task Queue
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskEditDTO.Queue">
+            <summary>
+            The value to set the Task Queues to
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskEditDTO.TaskIds">
+            <summary>
+            List of Task Ids to Edit the values of
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskHistoryItemDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DTOs.TaskListDTO">
+            <summary>
+            DTO to represent a list of tasks
+            <remarks>useful for paging as it will allow to track how many items are loaded vs how many still need to be loaded.</remarks>
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskListDTO.#ctor">
+            <summary>
+            default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskListDTO.Items">
+            <summary>
+            List of tasks loaded
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskListDTO.Count">
+            <summary>
+            total number of tasks remaining in the list
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskListDTO.IsComplete">
+            <summary>
+            flag to know if there are items that have not been loaded yet.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DTOs.TaskListItemDTO">
+            <summary>
+            Data Transformation Object containing a streamlined set of data objects needed to display a list of tasks.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskListItemDTO.#ctor">
+            <summary>
+            The Default Constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskListItemDTO.ID">
+            <summary>
+            Unique Identifier of the task
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskListItemDTO.Title">
+            <summary>
+            The Title of the Task
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskListItemDTO.Status">
+            <summary>
+            The current status of the task 
+            <remarks>used the entire DTO in order to properly sort the objects</remarks>
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskListItemDTO.StatusType">
+            <summary>
+            The current statusType of the status of the task 
+            <remarks>This is required for default filtering of records that are not of type Closed</remarks>
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskListItemDTO.Priority">
+            <summary>
+            The current priority of the task 
+            <remarks>used the entire DTO in order to properly sort the objects</remarks>
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskListItemDTO.DueDate">
+            <summary>
+            The Date the task is due
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskListItemDTO.StartDate">
+            <summary>
+            The Date the task is started
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskListItemDTO.CreatedDate">
+            <summary>
+            The Date the task was created.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskListItemDTO.QueueName">
+            <summary>
+            The name of the queue in which the task can be found.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskListItemDTO.QueueId">
+            <summary>
+            The Id of the queue being displayed.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskListItemDTO.OwnerId">
+            <summary>
+            The Id of the person to whom the task is assigned.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskListItemDTO.Category">
+            <summary>
+            The category for which the tasktype belongs.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskListItemDTO.Type">
+            <summary>
+            The task type of the task.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskListItemDTO.AssignedTo">
+            <summary>
+            the name of the user that the task has been assigned to.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskListItemDTO.PercentComplete">
+            <summary>
+            How far along the task is towards completion.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskListItemDTO.SecurityDescriptor">
+            <summary>
+            Task Security Descriptor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskListItemDTO.Metadata">
+            <summary>
+            Metadata associated with the task
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DTOs.QueueType">
+            <summary>
+            List of possible queue types
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DTOs.TaskLookupDTO">
+            <summary>
+            Class designed for the use of looking up tasks based on set parameters.  Primarily to have a common method for retrieving a list of tasks be it from a queue or a search 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskLookupDTO.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskLookupDTO.Criteria">
+            <summary>
+            The Critieria being looked for
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskLookupDTO.QueueType">
+            <summary>
+            Enumeration determining what kind of queue is being used.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskLookupDTO.Name">
+            <summary>
+            The name of the lookup
+            <remarks>name might be a queue name or a saved search name</remarks>
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskNoteDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskQueueDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskQueueDTO.CompareTo(System.Object)">
+            <summary>
+            Compare function, by name 
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskQueueDTO.GetPermissionAccessLevel(System.Guid,System.Collections.Generic.List{TrueAutomation.AccessControl.DTOs.GroupDTO},TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO)">
+            <summary>
+            Method to get the permission set on the Queue for the current
+            user at the USER level if present, otherwise at the GROUP level
+            </summary>
+            <param name="userId">Logged-in user id</param>
+            <param name="securityDescriptor">Security Descriptor of the Task</param>
+            <returns>Permission ACLType</returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskQueueDTO.GetPermissionAccessLevel(System.Guid,TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO)">
+            <summary>
+            Method to get the permission set on this Queue for the current user
+            </summary>
+            <param name="userId">Logged-in user id</param>
+            <param name="securityDescriptor">Security Descriptor of the Queue</param>
+            <returns>Permission ACLType</returns>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskQueueDTO.Id">
+            <summary>
+            Task Queue Id
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskQueueDTO.Name">
+            <summary>
+            Queue name
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskQueueDTO.Description">
+            <summary>
+            Queue description
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskQueueDTO.SecurityDescriptor">
+            <summary>
+            Security Descriptor for this Queue
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskQueueDTO.TaskCount">
+            <summary>
+            The Number of Tasks in the queue
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskQueueDTO.UsersCount">
+            <summary>
+            The count of users with security
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskQueueDTO.GroupsCount">
+            <summary>
+            The count of groups with security
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskQueueDTO.UserPermission">
+            <summary>
+            Permission Access level for this Queue for the logged-in User
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskStepDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskStepDTO.#ctor(TrueAutomation.TaskService.DTOs.TaskStepDTO)">
+            <summary>
+            Copy Constructor
+            </summary>
+            <remarks>Does a deep copy, but purposefully leaves id unset</remarks>
+            <param name="source">Task Step we wish to copy</param>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskStepDTO.DataRecordDefinitions">
+            <summary>
+            The list of Data Record Definitions to tie into the UserInface and Steps.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DTOs.TaskTypeDTO">
+            <summary>
+            	Data transformation Object representing Task Type Information.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskTypeDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskTypeDTO.#ctor(TrueAutomation.TaskService.DTOs.TaskTypeDTO)">
+            <summary>
+            Copy Constructor
+            </summary>
+            <remarks>Does a deep copy, but will purposefully leave Ids unset on the Task Type and any steps or DRDs</remarks>
+            <param name="source">Task Type we wish to copy</param>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.TaskTypeDTO.CompareTo(System.Object)">
+            <summary>
+            Custom Sort implementation
+            Sort by sort order
+            </summary>
+            <param name="compareToObject"></param>
+            <returns></returns>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskTypeDTO.Id">
+            <summary>
+            Unique Identifier of a Task Type
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskTypeDTO.Name">
+            <summary>
+            Name of the Task Type.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskTypeDTO.Description">
+            <summary>
+            Description of the task type
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskTypeDTO.Instructions">
+            <summary>
+            Instructions on how to perform the task
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskTypeDTO.CategoryId">
+            <summary>
+            Unique identifier of the Category to which the task type belongs.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskTypeDTO.RetiredDate">
+            <summary>
+            The date of which the task type was retired (taken out of service)
+            <remarks>Null implies the task type is still in service</remarks>
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskTypeDTO.UserInterface">
+            <summary>
+            The UI Element attached to the task type
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskTypeDTO.Steps">
+            <summary>
+            The various steps that may be included with a task
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.TaskTypeDTO.DataRecordDefinitions">
+            <summary>
+            The list of Data Record Definitions to tie into the UserInface and Steps.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DTOs.TimeTrackingType">
+            <summary>
+            Represents how the time is being tracked on a task
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DTOs.UICustomizationCategoryDTO">
+            <summary>
+            	Data transformation Object representing UI Customization Category Information.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.UICustomizationCategoryDTO.#ctor">
+            <summary>
+            General constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UICustomizationCategoryDTO.Id">
+            <summary>
+            The identifier of the category
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UICustomizationCategoryDTO.CategoryName">
+            <summary>
+            The name of the category
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UICustomizationCategoryDTO.CategoryDescription">
+            <summary>
+            The description of the category
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.UICustomizationDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UICustomizationDTO.UIElements">
+            <summary>
+            List of UI Elements associated with this UI Customization
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.DTOs.UIElementDTO">
+            <summary>
+            The DTO for a UI Element object
+            Used as part of the custom UI
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.UIElementDTO.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UIElementDTO.Id">
+            <summary>
+            The unique ID of the UI Element
+            </summary>
+            <remarks>
+            Used by NHibernate for the association
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UIElementDTO.FullName">
+            <summary>
+            The Full Name of the UI Element
+            </summary>
+            <remarks>
+            Reflection will require the fully-qualified class name, along with the assembly name
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UIElementDTO.Assembly">
+            <summary>
+            The Assembly of the UI Element
+            </summary>
+            <remarks>
+            Reflection will require the assembly name, along with the fully-qualified class name
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UIElementDTO.DataRecordDefinition">
+            <summary>
+            The Data Record Definition that corresponds to the UI Element
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UIElementDTO.DataRecordDefinitionName">
+            <summary>
+            The unique name of the specific data record definition associated with this UI element
+            </summary>
+            <remarks>optional</remarks>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UIElementDTO.DisplayOrder">
+            <summary>
+            Determines in what order this UI Element is displayed, relative to other UI Elements
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UIElementDTO.UICustomizationId">
+            <summary>
+            Back-reference Id of the assoicated UI Customization
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UIElementDTO.PanelDisplayName">
+            <summary>
+            The name to display at the top of the panel.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UIElementDTO.UIContext">
+            <summary>
+            The context for which the UI Element is being used.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UIElementDTO.ContextChoices">
+            <summary>
+            The List of available Contexts for a particular UI Element
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UIElementDTO.CustomDialogAssemblyName">
+            <summary>
+            The assembly name of the custom dialog that would be launched
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UIElementDTO.CustomDialogLauncherButtonText">
+            <summary>
+            The text of the button used to launch the custom dialog
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UIElementDTO.CustomDialogPayLoad">
+            <summary>
+            The payload or data that would be desrialized in the custom dialog
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UIElementDTO.Category">
+            <summary>
+            The Category to which the element belongs
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UIElementDTO.DisplayName">
+            <summary>
+            The friendly name which will displayed to the user
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.DTOs.UserDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UserDTO.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UserDTO.Name">
+            <summary>
+            Name of the user
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UserDTO.Description">
+            <summary>
+            Description for this User
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UserDTO.ExternalPartyId">
+            <summary>
+            The External User DTO
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UserDTO.IsModifiedCreate">
+            <summary>
+            Indicates if this is a new item
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UserDTO.IsModifiedUpdate">
+            <summary>
+            Indicates if this is a modified item
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UserDTO.IsModifiedDelete">
+            <summary>
+            Indicates if this item
+            is to be deleted
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UserDTO.TaskCount">
+            <summary>
+            The number of tasks this user is assigned to.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UserDTO.NoteCount">
+            <summary>
+            The number of notes the user has authored.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.DTOs.UserDTO.IsDeleted">
+            <summary>
+            Flag to indicate whether this user is still an 
+            Active user in PACS or has been deleted.
+            </summary>
+        </member>
+    </members>
+</doc>

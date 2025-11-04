@@ -1,0 +1,10 @@
+{
+    "map": {
+        "description": "Calculates the absolute value of the cells in a raster.",
+        "in_raster_or_constant.descr": "<xdoc><p>The input raster for which to calculate the absolute values.</p><p>To use a number as an input for this parameter, the cell size and extent must first be set in the environment.</p></xdoc>",
+        "in_raster_or_constant.title": "Input raster or constant value",
+        "out_raster.descr": "<xdoc><p>The output raster.</p><p>The cell values are the absolute value of the cells of the input raster.</p></xdoc>",
+        "out_raster.title": "Output raster",
+        "title": "Abs"
+    }
+}

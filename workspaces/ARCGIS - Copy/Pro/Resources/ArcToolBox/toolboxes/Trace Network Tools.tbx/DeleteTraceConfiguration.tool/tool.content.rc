@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Deletes one or more named trace configurations from a trace network.",
+        "in_trace_network.descr": "The trace network containing the named trace configuration to be deleted.",
+        "in_trace_network.title": "Input Trace Network",
+        "title": "Delete Trace Configuration",
+        "trace_config_name.descr": "The named trace configurations to be deleted.",
+        "trace_config_name.title": "Trace Configuration",
+        "updated_trace_network.title": "Updated Trace Network"
+    }
+}

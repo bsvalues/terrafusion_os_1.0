@@ -1,0 +1,110 @@
+name: Trivy Security Scan
+
+on:
+  workflow_call:
+    inputs:
+      scan_type:
+        required: false
+        type: string
+        default: 'fs'
+        description: 'Type of scan to run (fs, repo, image, config)'
+      target:
+        required: false
+        type: string
+        default: '.'
+        description: 'Target to scan (path or image name)'
+      severity:
+        required: false
+        type: string
+        default: 'CRITICAL,HIGH'
+        description: 'Severities to scan for (CRITICAL,HIGH,MEDIUM,LOW)'
+      format:
+        required: false
+        type: string
+        default: 'table'
+        description: 'Output format (table, json, sarif)'
+      fail_on_critical:
+        required: false
+        type: boolean
+        default: true
+        description: 'Fail the workflow if critical vulnerabilities are found'
+
+jobs:
+  trivy-scan:
+    name: TerraFusion Security Scan (Trivy)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: ${{ inputs.scan_type }}
+          scan-ref: ${{ inputs.target }}
+          format: ${{ inputs.format }}
+          severity: ${{ inputs.severity }}
+          output: 'trivy-results.${{ inputs.format }}'
+          exit-code: ${{ inputs.fail_on_critical == true && '1' || '0' }}
+      
+      - name: Upload Trivy Scan Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: trivy-scan-results
+          path: trivy-results.${{ inputs.format }}
+          retention-days: 30
+      
+      - name: Generate SARIF report
+        if: ${{ inputs.format != 'sarif' }}
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/workspace \
+            aquasec/trivy:latest \
+            ${{ inputs.scan_type }} -f sarif -o /workspace/trivy-results.sarif \
+            --severity ${{ inputs.severity }} /workspace/${{ inputs.target }}
+      
+      - name: Upload SARIF report
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+      
+      - name: Generate Security Report Summary
+        if: ${{ success() || failure() }}
+        run: |
+          echo "# TerraFusion Security Report Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f "trivy-results.${{ inputs.format }}" ]; then
+            echo "## Trivy Scan Results" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            
+            if [ "${{ inputs.format }}" = "json" ]; then
+              CRITICAL_COUNT=$(cat trivy-results.json | grep -o '"Severity":"CRITICAL"' | wc -l)
+              HIGH_COUNT=$(cat trivy-results.json | grep -o '"Severity":"HIGH"' | wc -l)
+              MEDIUM_COUNT=$(cat trivy-results.json | grep -o '"Severity":"MEDIUM"' | wc -l)
+              LOW_COUNT=$(cat trivy-results.json | grep -o '"Severity":"LOW"' | wc -l)
+              
+              echo "| Severity | Count |" >> $GITHUB_STEP_SUMMARY
+              echo "| --- | --- |" >> $GITHUB_STEP_SUMMARY
+              echo "| 🔴 Critical | $CRITICAL_COUNT |" >> $GITHUB_STEP_SUMMARY
+              echo "| 🟠 High | $HIGH_COUNT |" >> $GITHUB_STEP_SUMMARY
+              echo "| 🟡 Medium | $MEDIUM_COUNT |" >> $GITHUB_STEP_SUMMARY
+              echo "| 🟢 Low | $LOW_COUNT |" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              
+              if [ $CRITICAL_COUNT -gt 0 ]; then
+                echo "⚠️ **Critical security issues detected. Please review the full report.**" >> $GITHUB_STEP_SUMMARY
+              elif [ $HIGH_COUNT -gt 0 ]; then
+                echo "⚠️ **High severity issues detected. Please review the full report.**" >> $GITHUB_STEP_SUMMARY
+              elif [ $MEDIUM_COUNT -gt 0 ]; then
+                echo "ℹ️ **Medium severity issues detected. Please review when convenient.**" >> $GITHUB_STEP_SUMMARY
+              elif [ $LOW_COUNT -gt 0 ]; then
+                echo "ℹ️ **Low severity issues detected.**" >> $GITHUB_STEP_SUMMARY
+              else
+                echo "✅ **No security issues detected.**" >> $GITHUB_STEP_SUMMARY
+              fi
+            else
+              echo "Please check the uploaded artifacts for detailed scan results." >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "❌ **Error: Trivy scan results not found.**" >> $GITHUB_STEP_SUMMARY
+          fi

@@ -1,0 +1,5 @@
+CREATE USER [AllSchemaOwner] WITHOUT LOGIN;
+
+
+GO
+

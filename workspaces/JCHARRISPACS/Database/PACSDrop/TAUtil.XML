@@ -1,0 +1,712 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TAUtil</name>
+    </assembly>
+    <members>
+        <member name="T:TAUtil.AskPassword">
+            <summary>
+            Summary description for AskPassword.
+            </summary>
+        </member>
+        <member name="F:TAUtil.AskPassword.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TAUtil.AskPassword.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:TAUtil.AskPassword.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_WORKSTATION">
+            <summary>
+            All workstations
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_SERVER">
+            <summary>
+            All computers that have the server service running
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_SQLSERVER">
+            <summary>
+            Any server running Microsoft SQL Server
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_DOMAIN_CTRL">
+            <summary>
+            Primary domain controller
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_DOMAIN_BAKCTRL">
+            <summary>
+            Backup domain controller
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_TIME_SOURCE">
+            <summary>
+            Server running the Timesource service
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_AFP">
+            <summary>
+            Apple File Protocol servers
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_NOVELL">
+            <summary>
+            Novell servers
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_DOMAIN_MEMBER">
+            <summary>
+            LAN Manager 2.x domain member
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_PRINTQ_SERVER">
+            <summary>
+            Server sharing print queue
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_DIALIN_SERVER">
+            <summary>
+            Server running dial-in service
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_XENIX_SERVER">
+            <summary>
+            Xenix server
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_NT">
+            <summary>
+            Windows NT workstation or server
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_WFW">
+            <summary>
+            Server running Windows for Workgroups
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_SERVER_MFPN">
+            <summary>
+            Microsoft File and Print for NetWare
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_SERVER_NT">
+            <summary>
+            Server that is not a domain controller
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_POTENTIAL_BROWSER">
+            <summary>
+            Server that can run the browser service
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_BACKUP_BROWSER">
+            <summary>
+            Server running a browser service as backup
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_MASTER_BROWSER">
+            <summary>
+            Server running the master browser service
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_DOMAIN_MASTER">
+            <summary>
+            Server running the domain master browser
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_WINDOWS">
+            <summary>
+            Windows 95 or later
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_DFS">
+            <summary>
+            Root of a DFS tree
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_TERMINALSERVER">
+            <summary>
+            Terminal Server
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_CLUSTER_NT">
+            <summary>
+            Server clusters available in the domain
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_CLUSTER_VS_NT">
+            <summary>
+            Cluster virtual servers available in the domain
+            (Not supported for Windows 2000/NT)
+            </summary>			
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_DCE">
+            <summary>
+            IBM DSS (Directory and Security Services) or equivalent
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_ALTERNATE_XPORT">
+            <summary>
+            Return list for alternate transport
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_LOCAL_LIST_ONLY">
+            <summary>
+            Return local list only
+            </summary>
+        </member>
+        <member name="F:TAUtil.CompEnum.ServerType.SV_TYPE_DOMAIN_ENUM">
+            <summary>
+            Lists available domains
+            </summary>
+        </member>
+        <member name="M:TAUtil.CompEnum.#ctor(TAUtil.CompEnum.ServerType,System.String)">
+            <summary>
+            Converts ServerType to its underlying value
+            </summary>
+            <param name="serverType">One of the ServerType values</param>
+            <param name="domain">The domain to search for computers in</param>
+        </member>
+        <member name="M:TAUtil.CompEnum.#ctor(System.UInt32,System.String)">
+            <summary>
+            Populates with broadcasting computers.
+            </summary>
+            <param name="serverType">Server type filter</param>
+            <param name="domainName">The domain to search for computers in</param>
+        </member>
+        <member name="P:TAUtil.CompEnum.Length">
+            <summary>
+            Total computers in the collection
+            </summary>
+        </member>
+        <member name="P:TAUtil.CompEnum.LastError">
+            <summary>
+            Last error message
+            </summary>
+        </member>
+        <member name="M:TAUtil.CompEnum.GetEnumerator">
+            <summary>
+            Obtains the enumerator for ComputerEnumerator class
+            </summary>
+            <returns>IEnumerator</returns>
+        </member>
+        <member name="P:TAUtil.CompEnum.NetworkComputers.Name">
+            <summary>
+            Name of computer
+            </summary>
+        </member>
+        <member name="P:TAUtil.CompEnum.NetworkComputers.Comment">
+            <summary>
+            Server comment
+            </summary>
+        </member>
+        <member name="P:TAUtil.CompEnum.NetworkComputers.VersionMajor">
+            <summary>
+            Major version number of OS
+            </summary>
+        </member>
+        <member name="P:TAUtil.CompEnum.NetworkComputers.VersionMinor">
+            <summary>
+            Minor version number of OS
+            </summary>
+        </member>
+        <member name="T:TAUtil.CompEnum.ComputerEnumerator">
+            <summary>
+            Enumerates the collection of computers
+            </summary>
+        </member>
+        <member name="T:TAUtil.ConfigurationUtility">
+            <summary>
+            Class to replace/evaluate the values of nodes in config files.
+            </summary>
+        </member>
+        <member name="P:TAUtil.ConfigurationUtility.Location">
+            <summary>
+            Defines the location of the config file
+            </summary>
+        </member>
+        <member name="P:TAUtil.ConfigurationUtility.NodePath">
+            <summary>
+            Defines the xml path that needs to be looked up/modified
+            </summary>
+        </member>
+        <member name="M:TAUtil.ConfigurationUtility.SetEndPointAddress(System.Collections.Generic.Dictionary{System.String,System.String})">
+            <summary>
+            Set the endpoint address in the application Excecutable config (app config) based on the mapping of contract.
+            </summary>
+            <param name="attributeMappings"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TAUtil.ConfigurationUtility.GetAttribute(System.String)">
+            <summary>
+            Get the value of an attribute of the particular node
+            </summary>
+            <param name="attribute"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TAUtil.ConfigurationUtility.SetAttribute(System.String,System.String)">
+            <summary>
+            Set the value of an attribute of the particular node
+            </summary>
+            <param name="attribute"></param>
+            <param name="attributeValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TAUtil.ConfigurationUtility.loadConfigDocument">
+            <summary>
+            Load the config file at location specified in Location.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TAUtil.ConfigurationUtility.GetNodes">
+            <summary>
+            Return a list of nodes from the config based on the nodepath. 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TAUtil.ConfigurationUtility.GetNode">
+            <summary>
+            Return the first node from the config based on the nodepath. 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TAUtil.ConfigurationUtility.getConfigFilePath">
+            <summary>
+            returns the full config file location
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="F:TAUtil.ConfigurationUtility.shouldWorkflowVerbsDisabled">
+            <summary>
+            This flag is used to determine if workflow menus need to be enabled or disabled based on availability of workflow services
+            </summary>
+        </member>
+        <member name="F:TAUtil.ConfigurationUtility.showWorkflowVerbs">
+            <summary>
+            This flag is used to determine if workflow menus need to be visble or invisible
+            </summary>
+        </member>
+        <member name="M:TAUtil.ControlHelper.ForceFocusChange(System.Windows.Forms.Control)">
+            <summary>
+            Forces focus to change on the particular form so that databinding can occur in the correct order.
+            </summary>
+            <param name="control">Any control that is part of the form that you want to force the change on.</param>
+        </member>
+        <member name="M:TAUtil.ControlHelper.IsDesignMode(System.Windows.Forms.Control)">
+            <summary>
+            /// Purpose: Accurately determines if the <see cref="T:System.Windows.Forms.Control"/> is in design mode or not.
+            </summary>
+            <param name="control"><see cref="T:System.Windows.Forms.Control"/> reference to check the design mode state against.</param>
+            <returns>Whether the <see cref="T:System.Windows.Forms.Control"/> is on a design surface, if the control reference is null, then false.</returns>
+        </member>
+        <member name="M:TAUtil.ControlHelper.ClearControls(System.Windows.Forms.Control,System.Predicate{System.Windows.Forms.Control})">
+            <summary>
+            Properly removes and disposes the controls from the specified container.  This is only to be used
+            when the controls are no longer going to be referenced.  This must be used if controls are permanately
+            being removed/replaced but the containing form is not being disposed.
+            </summary>
+            <param name="control">The Container for which controls are to be removed from.</param>
+            <param name="removeCondition">Predicate that allows conditional removal.  null to remove all controls.</param>
+        </member>
+        <member name="T:TAUtil.Directories">
+            <summary>
+            This class contains the references for all of the directories utilized by PACS.
+            </summary>
+        </member>
+        <member name="P:TAUtil.Directories.ConnectionMRUDirectory">
+            <summary>
+            The root path to where connection specific information will be stored.
+            This must be specified before calling MakeDirectories
+            </summary>
+        </member>
+        <member name="T:TAUtil.NetworkSelect">
+            <summary>
+            Allows you to browse the Network and pick shares, computers, directories or files. 
+            Will ask for a password if a computer is not accessible.
+            </summary>
+        </member>
+        <member name="M:TAUtil.NetworkSelect.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:TAUtil.NetworkSelect.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TAUtil.ScreenCapture">
+            <summary>
+            Provides functions to capture the entire screen, or a particular window, and save it to a file.
+            </summary>
+        </member>
+        <member name="M:TAUtil.ScreenCapture.CaptureScreen">
+            <summary>
+            Creates an Image object containing a screen shot of the entire desktop
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TAUtil.ScreenCapture.CaptureWindow(System.IntPtr)">
+            <summary>
+            Creates an Image object containing a screen shot of a specific window
+            </summary>
+            <param name="handle">The handle to the window. (In windows forms, this is obtained by the Handle property)</param>
+            <returns></returns>
+        </member>
+        <member name="M:TAUtil.ScreenCapture.CaptureWindowToFile(System.IntPtr,System.String,System.Drawing.Imaging.ImageFormat)">
+            <summary>
+            Captures a screen shot of a specific window, and saves it to a file
+            </summary>
+            <param name="handle"></param>
+            <param name="filename"></param>
+            <param name="format"></param>
+        </member>
+        <member name="M:TAUtil.ScreenCapture.CaptureScreenToFile(System.String,System.Drawing.Imaging.ImageFormat)">
+            <summary>
+            Captures a screen shot of the entire desktop, and saves it to a file
+            </summary>
+            <param name="filename"></param>
+            <param name="format"></param>
+        </member>
+        <member name="T:TAUtil.ScreenCapture.GDI32">
+            <summary>
+            Helper class containing Gdi32 API functions
+            </summary>
+        </member>
+        <member name="T:TAUtil.ScreenCapture.User32">
+            <summary>
+            Helper class containing User32 API functions
+            </summary>
+        </member>
+        <member name="T:TAUtil.ShareType">
+            <summary>
+            Type of share
+            </summary>
+        </member>
+        <member name="F:TAUtil.ShareType.Disk">
+            <summary>Disk share</summary>
+        </member>
+        <member name="F:TAUtil.ShareType.Printer">
+            <summary>Printer share</summary>
+        </member>
+        <member name="F:TAUtil.ShareType.Device">
+            <summary>Device share</summary>
+        </member>
+        <member name="F:TAUtil.ShareType.IPC">
+            <summary>IPC share</summary>
+        </member>
+        <member name="F:TAUtil.ShareType.Special">
+            <summary>Special share</summary>
+        </member>
+        <member name="T:TAUtil.Share">
+            <summary>
+            Information about a local share
+            </summary>
+        </member>
+        <member name="M:TAUtil.Share.#ctor(System.String,System.String,System.String,TAUtil.ShareType,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="server"></param>
+            <param name="netName"></param>
+            <param name="path"></param>
+            <param name="shareType"></param>
+            <param name="remark"></param>
+        </member>
+        <member name="P:TAUtil.Share.Server">
+            <summary>
+            The name of the computer that this share belongs to
+            </summary>
+        </member>
+        <member name="P:TAUtil.Share.NetName">
+            <summary>
+            Share name
+            </summary>
+        </member>
+        <member name="P:TAUtil.Share.Path">
+            <summary>
+            Local path
+            </summary>
+        </member>
+        <member name="P:TAUtil.Share.ShareType">
+            <summary>
+            Share type
+            </summary>
+        </member>
+        <member name="P:TAUtil.Share.Remark">
+            <summary>
+            Comment
+            </summary>
+        </member>
+        <member name="P:TAUtil.Share.IsFileSystem">
+            <summary>
+            Returns true if this is a file system share
+            </summary>
+        </member>
+        <member name="P:TAUtil.Share.Root">
+            <summary>
+            Get the root of a disk-based share
+            </summary>
+        </member>
+        <member name="M:TAUtil.Share.ToString">
+            <summary>
+            Returns the path to this share
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TAUtil.Share.MatchesPath(System.String)">
+            <summary>
+            Returns true if this share matches the local path
+            </summary>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TAUtil.ShareCollection">
+            <summary>
+            A collection of shares
+            </summary>
+        </member>
+        <member name="P:TAUtil.ShareCollection.IsNT">
+            <summary>
+            Is this an NT platform?
+            </summary>
+        </member>
+        <member name="P:TAUtil.ShareCollection.IsW2KUp">
+            <summary>
+            Returns true if this is Windows 2000 or higher
+            </summary>
+        </member>
+        <member name="F:TAUtil.ShareCollection.MAX_PATH">
+            <summary>Maximum path length</summary>
+        </member>
+        <member name="F:TAUtil.ShareCollection.NO_ERROR">
+            <summary>No error</summary>
+        </member>
+        <member name="F:TAUtil.ShareCollection.ERROR_ACCESS_DENIED">
+            <summary>Access denied</summary>
+        </member>
+        <member name="F:TAUtil.ShareCollection.ERROR_WRONG_LEVEL">
+            <summary>Access denied</summary>
+        </member>
+        <member name="F:TAUtil.ShareCollection.ERROR_MORE_DATA">
+            <summary>More data available</summary>
+        </member>
+        <member name="F:TAUtil.ShareCollection.ERROR_NOT_CONNECTED">
+            <summary>Not connected</summary>
+        </member>
+        <member name="F:TAUtil.ShareCollection.UNIVERSAL_NAME_INFO_LEVEL">
+            <summary>Level 1</summary>
+        </member>
+        <member name="F:TAUtil.ShareCollection.MAX_SI50_ENTRIES">
+            <summary>Max extries (9x)</summary>
+        </member>
+        <member name="T:TAUtil.ShareCollection.UNIVERSAL_NAME_INFO">
+            <summary>Unc name</summary>
+        </member>
+        <member name="T:TAUtil.ShareCollection.SHARE_INFO_2">
+            <summary>Share information, NT, level 2</summary>
+            <remarks>
+            Requires admin rights to work. 
+            </remarks>
+        </member>
+        <member name="T:TAUtil.ShareCollection.SHARE_INFO_1">
+            <summary>Share information, NT, level 1</summary>
+            <remarks>
+            Fallback when no admin rights.
+            </remarks>
+        </member>
+        <member name="T:TAUtil.ShareCollection.SHARE_INFO_50">
+            <summary>Share information, Win9x</summary>
+        </member>
+        <member name="T:TAUtil.ShareCollection.SHARE_INFO_1_9x">
+            <summary>Share information level 1, Win9x</summary>
+        </member>
+        <member name="M:TAUtil.ShareCollection.WNetAddConnection2A(TAUtil.ShareCollection.structNetResource@,System.String,System.String,System.Int32)">
+            <summary>Connect To Share with username and password</summary>
+        </member>
+        <member name="M:TAUtil.ShareCollection.WNetGetUniversalName(System.String,System.Int32,TAUtil.ShareCollection.UNIVERSAL_NAME_INFO@,System.Int32@)">
+            <summary>Get a UNC name</summary>
+        </member>
+        <member name="M:TAUtil.ShareCollection.WNetGetUniversalName(System.String,System.Int32,System.IntPtr,System.Int32@)">
+            <summary>Get a UNC name</summary>
+        </member>
+        <member name="M:TAUtil.ShareCollection.NetShareEnum(System.String,System.Int32,System.IntPtr@,System.Int32,System.Int32@,System.Int32@,System.Int32@)">
+            <summary>Enumerate shares (NT)</summary>
+        </member>
+        <member name="M:TAUtil.ShareCollection.NetShareEnum(System.String,System.Int32,System.IntPtr,System.UInt16,System.UInt16@,System.UInt16@)">
+            <summary>Enumerate shares (9x)</summary>
+        </member>
+        <member name="M:TAUtil.ShareCollection.NetApiBufferFree(System.IntPtr)">
+            <summary>Free the buffer (NT)</summary>
+        </member>
+        <member name="M:TAUtil.ShareCollection.EnumerateSharesNT(System.String,TAUtil.ShareCollection,System.Boolean@)">
+            <summary>
+            Enumerates the shares on Windows NT
+            </summary>
+            <param name="server">The server name</param>
+            <param name="shares">The ShareCollection</param>
+            <param name="accessDenied">Indicates where access is denied to the server</param>
+        </member>
+        <member name="M:TAUtil.ShareCollection.EnumerateShares9x(System.String,TAUtil.ShareCollection,System.Boolean@)">
+            <summary>
+            Enumerates the shares on Windows 9x
+            </summary>
+            <param name="server">The server name</param>
+            <param name="shares">The ShareCollection</param>
+            <param name="accessDenied">Indicates where access is denied to the server</param>
+        </member>
+        <member name="M:TAUtil.ShareCollection.EnumerateShares(System.String,TAUtil.ShareCollection,System.Boolean@)">
+            <summary>
+            Enumerates the shares
+            </summary>
+            <param name="server">The server name</param>
+            <param name="shares">The ShareCollection</param>
+            <param name="accessDenied">Indicates where access is denied to the server</param>
+        </member>
+        <member name="M:TAUtil.ShareCollection.IsValidFilePath(System.String)">
+            <summary>
+            Returns true if fileName is a valid local file-name of the form:
+            X:\, where X is a drive letter from A-Z
+            </summary>
+            <param name="fileName">The filename to check</param>
+            <returns></returns>
+        </member>
+        <member name="M:TAUtil.ShareCollection.ConnectToComputer(System.String,System.String,System.String)">
+            <summary>
+            Connects to remote share with username and password
+            </summary>
+            <param name="UNCcomputer">Remote Computer</param>
+            <param name="username">User Name</param>
+            <param name="password">Password</param>
+            <returns>nothing, just hooks up to remote share</returns>
+        </member>
+        <member name="M:TAUtil.ShareCollection.PathToUnc(System.String)">
+            <summary>
+            Returns the UNC path for a mapped drive or local share.
+            </summary>
+            <param name="fileName">The path to map</param>
+            <returns>The UNC path (if available)</returns>
+        </member>
+        <member name="M:TAUtil.ShareCollection.PathToShare(System.String)">
+            <summary>
+            Returns the local <see cref="T:TAUtil.Share"/> object with the best match
+            to the specified path.
+            </summary>
+            <param name="fileName"></param>
+            <returns></returns>
+        </member>
+        <member name="F:TAUtil.ShareCollection._local">
+            <summary>The local shares</summary>
+        </member>
+        <member name="P:TAUtil.ShareCollection.LocalShares">
+            <summary>
+            Return the local shares
+            </summary>
+        </member>
+        <member name="M:TAUtil.ShareCollection.GetShares(System.String)">
+            <summary>
+            Return the shares for a specified machine
+            </summary>
+            <param name="server"></param>
+            <returns></returns>
+        </member>
+        <member name="F:TAUtil.ShareCollection._server">
+            <summary>The name of the server this collection represents</summary>
+        </member>
+        <member name="M:TAUtil.ShareCollection.#ctor">
+            <summary>
+            Default constructor - local machine
+            </summary>
+        </member>
+        <member name="M:TAUtil.ShareCollection.#ctor(System.String)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="server"></param>
+        </member>
+        <member name="P:TAUtil.ShareCollection.AccessDenied">
+            <summary>
+            Returns true if Access Denied error
+            </summary>
+        </member>
+        <member name="P:TAUtil.ShareCollection.Server">
+            <summary>
+            Returns the name of the server this collection represents
+            </summary>
+        </member>
+        <member name="P:TAUtil.ShareCollection.Item(System.Int32)">
+            <summary>
+            Returns the <see cref="T:TAUtil.Share"/> at the specified index.
+            </summary>
+        </member>
+        <member name="P:TAUtil.ShareCollection.Item(System.String)">
+            <summary>
+            Returns the <see cref="T:TAUtil.Share"/> which matches a given local path
+            </summary>
+            <param name="path">The path to match</param>
+        </member>
+        <member name="M:TAUtil.ShareCollection.CopyTo(TAUtil.Share[],System.Int32)">
+            <summary>
+            Copy this collection to an array
+            </summary>
+            <param name="array"></param>
+            <param name="index"></param>
+        </member>
+        <member name="F:TAUtil.Singleton`1.instance">
+            <summary>
+            The static instance of the associated type. Note the lazy instantiation.
+            </summary>
+        </member>
+        <member name="P:TAUtil.Singleton`1.Instance">
+            <summary>
+            Returns the static instance of the associated singleton type.
+            </summary>
+        </member>
+        <member name="M:TAUtil.UIThreadProxy.UpdateUIElement(System.Windows.Forms.Control,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="control"></param>
+            <param name="text"></param>
+        </member>
+        <member name="T:TAUtil.XmlSerialization">
+            <summary>
+            Summary description for XmlSerialization.
+            </summary>
+        </member>
+        <member name="M:TAUtil.XmlSerialization.UTF8ByteArrayToString(System.Byte[])">
+            <summary>
+            To convert a Byte Array of Unicode values (UTF-8 encoded) to a complete String.
+            </summary>
+            <param name="characters">Unicode Byte Array to be converted to String</param>
+            <returns>String converted from Unicode Byte Array</returns>
+        </member>
+        <member name="M:TAUtil.XmlSerialization.StringToUTF8ByteArray(System.String)">
+            <summary>
+            Converts the String to UTF8 Byte array and is used in De serialization
+            </summary>
+            <param name="pXmlString"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TAUtil.XmlSerialization.DeserializeObject(System.String,System.Type)">
+            <summary>
+            Method to reconstruct an Object from XML string
+            </summary>
+            <param name="pXmlizedString"></param>
+            <param name="type">The type of object that will be deserialized from the xml.</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

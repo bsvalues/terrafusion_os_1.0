@@ -86,82 +86,50 @@ const HarrisPacsPlugin: React.FC<HarrisPacsPluginProps> = ({ context }) => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-
-
         <h2>Harris PACS 9.0 Migration</h2>
-        <p
-
->Benton County Legacy System Integration</p>
+        <p>Benton County Legacy System Integration</p>
       </div>
 
       {status && (
         <div>
           <div className={styles.statusGrid}>
             <div className={styles.statusCard}>
-
-
               <h3>Migration Progress</h3>
-              <div
-
-className={styles.progressBar}>
-
-
+              <div className={styles.progressBar}>
                 <div
                   className={styles.progressFill}
                   style={{ width: `${status.migrationStatus.completionPercentage}%` }}
                 />
               </div>
-              <div
-
-className={styles.progressText}>
+              <div className={styles.progressText}>
                 {status.migrationStatus.completionPercentage.toFixed(1)}% Complete
               </div>
             </div>
 
             <div className={styles.statusCard}>
-
-
               <h3>Record Status</h3>
-              <div
-
-className={styles.recordStats}>
+              <div className={styles.recordStats}>
                 <div className={styles.stat}>
-
-
                   <span className={styles.statLabel}>Total:</span>
-                  <span
-
-className={styles.statValue}>
+                  <span className={styles.statValue}>
                     {status.migrationStatus.totalRecords.toLocaleString()}
                   </span>
                 </div>
                 <div className={styles.stat}>
-
-
                   <span className={styles.statLabel}>Valid:</span>
-                  <span
-
-className={`${styles.statValue} ${styles.valid}`}>
+                  <span className={`${styles.statValue} ${styles.valid}`}>
                     {status.migrationStatus.validRecords.toLocaleString()}
                   </span>
                 </div>
                 <div className={styles.stat}>
-
-
                   <span className={styles.statLabel}>Invalid:</span>
-                  <span
-
-className={`${styles.statValue} ${styles.invalid}`}>
+                  <span className={`${styles.statValue} ${styles.invalid}`}>
                     {status.migrationStatus.invalidRecords.toLocaleString()}
                   </span>
                 </div>
                 <div className={styles.stat}>
-
-
                   <span className={styles.statLabel}>Pending:</span>
-                  <span
-
-className={`${styles.statValue} ${styles.pending}`}>
+                  <span className={`${styles.statValue} ${styles.pending}`}>
                     {status.migrationStatus.pendingRecords.toLocaleString()}
                   </span>
                 </div>
@@ -169,12 +137,8 @@ className={`${styles.statValue} ${styles.pending}`}>
             </div>
 
             <div className={styles.statusCard}>
-
-
               <h3>System Mapping</h3>
-              <div
-
-className={styles.mappingInfo}>
+              <div className={styles.mappingInfo}>
                 <div className={styles.mappingRow}>
                   <span>PACS Parcel ID → {status.conversionMappings.pacsParcelId}</span>
                 </div>
@@ -182,27 +146,20 @@ className={styles.mappingInfo}>
                   <span>PACS Owner Rec → {status.conversionMappings.pacsOwnerRec}</span>
                 </div>
                 <div className={styles.mappingStats}>
-
-
                   <span>Mapped: {status.conversionMappings.totalMapped.toLocaleString()}</span>
-                  <span
-
->Errors: {status.conversionMappings.mappingErrors}</span>
+                  <span>Errors: {status.conversionMappings.mappingErrors}</span>
                 </div>
               </div>
             </div>
           </div>
 
           <div className={styles.actions}>
-
-
             <button className={styles.primaryButton} onClick={startImport} disabled={importRunning}>
               {importRunning ? 'Starting Import...' : 'Start PACS Import'}
             </button>
 
             <button
-
-className={styles.secondaryButton}
+              className={styles.secondaryButton}
               onClick={loadImportStatus}
               disabled={loading}
             >
@@ -212,22 +169,14 @@ className={styles.secondaryButton}
 
           <div className={styles.timeline}>
             <div className={styles.timelineItem}>
-
-
               <span className={styles.timelineLabel}>Last Import:</span>
-              <span
-
-className={styles.timelineValue}>
+              <span className={styles.timelineValue}>
                 {new Date(status.migrationStatus.lastImport).toLocaleString()}
               </span>
             </div>
             <div className={styles.timelineItem}>
-
-
               <span className={styles.timelineLabel}>Next Scheduled:</span>
-              <span
-
-className={styles.timelineValue}>
+              <span className={styles.timelineValue}>
                 {new Date(status.migrationStatus.nextScheduledImport).toLocaleString()}
               </span>
             </div>

@@ -1,0 +1,10 @@
+{
+    "set": [
+        "delete calibration point",
+        "delete centerline",
+        "delete event",
+        "delete route",
+        "integrity",
+        "pipeline"
+    ]
+}

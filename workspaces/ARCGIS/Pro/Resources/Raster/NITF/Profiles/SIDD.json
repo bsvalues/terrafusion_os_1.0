@@ -1,0 +1,267 @@
+{
+  "@Variables": {
+    "CollectorName": "$Images/0/ISORCE$",
+    "CollectType": "$Images/0/ICAT$",
+    "CollectMode": "$/DESs/%i/XML/SIDD/ExploitationFeatures/Collection/Information/RadarMode/ModeType$",
+    "CollectStart": "/DESs/%i/XML/SIDD/ExploitationFeatures/Collection/Information/CollectionDateTime",
+    "CollectDuration": "/DESs/%i/XML/SIDD/ExploitationFeatures/Collection/Information/CollectionDuration"
+  },
+  "Products": [
+    {
+      "Title": "Commercial/Properties.json#TitleFormat",
+      "Priority": 100,
+      "Name": "Sensor Independent Derived Data",
+      "Type": "SAR SIDD",
+      "Match": [
+        {
+          "Key": "$/Images/%i/IID1?exp=@,(.{4}).*,\\1,regex$",
+          "Operator": "Equals",
+          "Value": "SIDD"
+        },
+        {
+          "Key": "@{CollectorName}",
+          "Operator": "NotEqual",
+          "Value": ""
+        }
+      ],
+      "LayerDefinitions": [
+        {
+          "@Variables" : {
+            "SourceTemplate" : "RasterInfo-Geometric"
+          },
+          "ref": "#LayerDefinition-1Band-Base",
+          "Key": "SAR_@{CollectorName}_@{CollectType}_@{CollectMode}_Image_1Band_$%i+1$"
+        },
+        {
+          "@Variables" : {
+            "SourceTemplate" : "Catalog-1band-SIDD-RGB"
+          },
+          "ref": "#LayerDefinition-1Band-Base",
+          "Key": "SAR_@{CollectorName}_@{CollectType}_@{CollectMode}_Catalog_Image_1Band_$%i+1$",
+          "Disposition": "None"
+        },
+        {
+          "@Variables" : {
+            "SourceTemplate" : "RasterInfo-Geometric"
+          },
+          "ref": "#LayerDefinition-3Bands-Base",
+          "Key": "SAR_@{CollectorName}_@{CollectType}_@{CollectMode}_Image_3Bands_$%i+1$"
+        },
+        {
+          "@Variables" : {
+            "SourceTemplate" : "Catalog-3band-SIDD-RGB"
+          },
+          "ref": "#LayerDefinition-3Bands-Base",
+          "Key": "SAR_@{CollectorName}_@{CollectType}_@{CollectMode}_Catalog_Image_3Bands_$%i+1$",
+          "Disposition": "None"
+        }
+      ],
+      "MosaicDefinitions": [
+        {
+          "@Variables": {
+            "LayerObject": "SAR_@{CollectorName}_@{CollectType}_@{CollectMode}_Image_1Band_$%i+1$"
+          },
+          "ref": "#MosaicDefinition-Base",
+          "Match": ["Commercial/MatchRules.json#MatchRule-ImageIs1Band"]
+        },
+        {
+          "@Variables": {
+            "LayerObject": "SAR_@{CollectorName}_@{CollectType}_@{CollectMode}_Catalog_Image_1Band_$%i+1$"
+          },
+          "ref": "#MosaicDefinition-Base",
+          "ProcessingTemplate": "Catalog",
+          "Match": ["Commercial/MatchRules.json#MatchRule-ImageIs1Band"]
+        },
+        {
+          "@Variables": {
+            "LayerObject": "SAR_@{CollectorName}_@{CollectType}_@{CollectMode}_Image_3Bands_$%i+1$"
+          },
+          "ref": "#MosaicDefinition-Base",
+          "Match": ["Commercial/MatchRules.json#MatchRule-ImageIs3Bands"]
+        },
+        {
+          "@Variables": {
+            "LayerObject": "SAR_@{CollectorName}_@{CollectType}_@{CollectMode}_Catalog_Image_3Bands_$%i+1$"
+          },
+          "ref": "#MosaicDefinition-Base",
+          "ProcessingTemplate": "Catalog",
+          "Match": ["Commercial/MatchRules.json#MatchRule-ImageIs3Bands"]
+        }
+      ]
+    }
+  ],
+  "IDs": {
+    "CIM-Base": {
+      "type": "CIMNitfImageSubLayer",
+      "name": "($/Images/%i/ICAT$) $/Images/%i/IID1$ / $/Images/%i/IID2$",
+      "description": "$uri.path$/$uri.profile$##$uri.object$",
+      "visibility": true,
+      "dataConnection": {
+        "type": "CIMStandardDataConnection",
+        "workspaceConnectionString": "DATABASE=$uri.parent_path$",
+        "workspaceFactory": "Custom",
+        "customWorkspaceFactoryCLSID": "{AE8E160A-E739-4999-8275-93532DEBAA50}",
+        "dataset": "$uri.file_name$/$uri.profile$##$uri.object$",
+        "datasetType": "esriDTAny"
+      },
+      "colorizer": {
+        "type": "CIMRasterStretchColorizer",
+        "resamplingType": "BilinearInterpolation",
+        "noDataColor": {
+          "type": "CIMRGBColor",
+          "values": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "backgroundColor": {
+          "type": "CIMRGBColor",
+          "values": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "backgroundValue": 0,
+        "displayBackgroundValue": false,
+        "stretchType": "PercentMinimumMaximum",
+        "statsType": "AreaOfView",
+        "minPercent": 0.25,
+        "maxPercent": 0.25
+      },
+      "autoComputeStatsHistogram": true
+    },
+    "LayerDefinition-Base": {
+      "@Variables": {
+      },
+      "Type": "Image",
+      "Key": "SAR_@{CollectorName}_@{CollectType}_@{CollectMode}_Image_$%i+1$",
+      "Title": "($/Images/%i/ICAT$) $/Images/%i/IID1$ / $/Images/%i/IID2$",
+      "DisplayLevel": "$/Images/%i/IDLVL?parse=double$",
+      "CIM": "#CIM-Base",
+      "Source": {
+        "Template": "@{SourceTemplate}",
+        "Arguments": {
+          "Raster:Raster": "$uri.path$##IM_$%i$"
+        }
+      },
+      "Bands": [],
+      "Properties": {
+        "ref": "Commercial/Properties.json#Properties",
+
+        "SensorName": "@{CollectorName}",
+        "ProductName": "@{CollectType}",
+        "Mission": "@{CollectorName}",
+        "SensorMode": "@{CollectMode}",
+        "SAR_Product_MissionId": "@{CollectorName}",
+        "SAR_Product_Mode": "@{CollectMode}",
+        "SAR_Product_ProductType": "SIDD",
+        "SAR_Product_StartTime": "$@{CollectStart}?parse=FDT$",
+        "SAR_Product_StopTime": "$@{CollectDuration}$",
+
+        "SAR_Product_Polarization": "$/DESs/%i/XML/SIDD/ImageFormation/TxRcvPolarizationProc?exp=@,(.*):(.*),\\1\\2,regex$",
+
+
+        "SAR_Product_Rows": "$/DESs/%i/XML/SIDD/ImageData/NumRows$",
+        "SAR_Product_Cols": "$/DESs/%i/XML/SIDD/ImageData/NumCols$",
+        "SAR_Product_SlantRange": "$/DESs/%i/XML/SIDD/SCPCOA/SlantRange$",
+        "SAR_Product_GroundRange": "$/DESs/%i/XML/SIDD/SCPCOA/GroundRange$",
+        "SAR_Product_DopplerConeAng": "$/DESs/%i/XML/SIDD/SCPCOA/DopplerConeAng$",
+        "SAR_Product_GrazeAng": "$/DESs/%i/XML/SIDD/ExploitationFeatures/Collection/Geometry/Graze$",
+        "SAR_Product_IncidenceAng": "$/DESs/%i/XML/SIDD/SCPCOA/IncidenceAng$",
+        "SAR_Product_TwistAng": "$/DESs/%i/XML/SIDD/SCPCOA/TwistAng$",
+        "SAR_Product_SlopeAng": "$/DESs/%i/XML/SIDD/SCPCOA/SlopeAng$",
+        "SAR_Product_AzimAng": "$/DESs/%i/XML/SIDD/ExploitationFeatures/Collection/Geometry/Azimuth$",
+        "SAR_Product_LayoverAng": "$/DESs/%i/XML/SIDD/SCPCOA/LayoverAng$"
+      },
+      "Properties-": {
+        "SAR_Product_CalibrationFactor": "",
+        "SAR_Product_IncidenceAnglePolyOrder": "",
+        "SAR_Product_RangePixelSpacing": "",
+        "SAR_Product_IncidenceAngleCoefficients": "",
+        "SAR_Product_ThermalNoiseCorrectionPerformed": "",
+        "SAR_Product_OrbitStateVectors": "",
+        "SAR_Product_AcquisitionType": "",
+        "SAR_Product_BeamModeMnemonic": ""
+      }
+    },
+    "LayerDefinition-1Band-Base": {
+      "ref": "#LayerDefinition-Base",
+      "Match": [
+        {
+          "Key": "$/Images/%i/ICAT$",
+          "Operator": "Equals",
+          "Value": "SAR"
+        },
+        "Commercial/MatchRules.json#MatchRule-ImageIs1Band",
+        {
+          "Key": "$/FileHeader/NUMI$",
+          "Operator": "Equals",
+          "Value": "001"
+        }
+      ]
+    },
+    "LayerDefinition-3Bands-Base": {
+      "@Variables": {
+        "RedBandIndex": 0,
+        "GreenBandIndex": 1,
+        "BlueBandIndex": 2
+      },
+      "ref": "#LayerDefinition-Base",
+      "Match": [
+        {
+          "Key": "$/Images/%i/ICAT$",
+          "Operator": "Equals",
+          "Value": "SAR"
+        },
+        "Commercial/MatchRules.json#MatchRule-ImageIs3Bands",
+        {
+          "Key": "$/FileHeader/NUMI$",
+          "Operator": "Equals",
+          "Value": "001"
+        }
+      ],
+      "CIM": {
+        "type": "CIMNitfImageSubLayer",
+        "name": "($/Images/%i/ICAT$) $/Images/%i/IID1$ / $/Images/%i/IID2$",
+        "description": "$uri.path$/$uri.profile$##$uri.object$",
+        "visibility": true,
+        "dataConnection": {
+          "type": "CIMStandardDataConnection",
+          "workspaceConnectionString": "DATABASE=$uri.parent_path$",
+          "workspaceFactory": "Custom",
+          "customWorkspaceFactoryCLSID": "{AE8E160A-E739-4999-8275-93532DEBAA50}",
+          "dataset": "$uri.file_name$/$uri.profile$##$uri.object$",
+          "datasetType": "esriDTAny"
+        },
+        "colorizer": "Commercial/Colorizers.json#ThreeBandsColorizerWithDRA",
+        "autoComputeStatsHistogram": true
+      }
+    },
+    "MosaicDefinition-Base" : {
+      "ItemURI": {
+        "Path": "$uri.path$/$uri.profile$##@{LayerObject}",
+        "Key": "",
+        "Tag": "SAR",
+        "Group": "SAR-$/Images/0/IDATIM$",
+        "DisplayName": "$uri.stem$:$%i$",
+        "ProductName": "@{CollectType}",
+        "SourceTimeStamp": "$uri.modifiedDateTime$",
+        "AuxiliaryPaths": [],
+        "Properties": {
+          "ImageRepresentation": "MONO",
+          "ImageCategory": "SAR",
+          "SensorName": "@{CollectorName}"
+        }
+      },
+      "Footprint": "",
+      "ProcessingTemplate": "Default",
+      "Variables": {
+      },
+      "Properties": {}
+    }
+  }
+}

@@ -1,0 +1,89 @@
+{
+    "type": "FunctionTool",
+    "guid": "{C5CD7E91-50D4-44D2-B98B-151009423D52}/ExportS101Cell",
+    "displayname": "$rc:title",
+    "helpcontent": "63000003",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "50"
+    ],
+    "params": {
+        "in_feature_catalogue": {
+            "display_order": "0",
+            "displayname": "$rc:in_feature_catalogue.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "xml"
+                ]
+            },
+            "defaultenvironmentname": "S100FeatureCatalogueFile",
+            "description": "$rc:in_feature_catalogue.descr"
+        },
+        "in_s101_workspace": {
+            "display_order": "1",
+            "displayname": "$rc:in_s101_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "domain": {
+                "type": "GPWorkspaceDomain",
+                "workspacetype": [
+                    "Local Database",
+                    "Remote Database"
+                ]
+            },
+            "description": "$rc:in_s101_workspace.descr"
+        },
+        "product": {
+            "display_order": "2",
+            "displayname": "$rc:product.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:product.descr"
+        },
+        "export_type": {
+            "display_order": "3",
+            "displayname": "$rc:export_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NEW_EDITION",
+                        "code": "$rc:export_type.domain.NEW_EDITION"
+                    }
+                ]
+            },
+            "value": "NEW_EDITION",
+            "description": "$rc:export_type.descr"
+        },
+        "output_location": {
+            "display_order": "4",
+            "displayname": "$rc:output_location.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:output_location.descr"
+        },
+        "out_output_file": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_output_file.title",
+            "datatype": {
+                "type": "DEFile"
+            }
+        }
+    },
+    "environments": [
+        "S100FeatureCatalogueFile",
+        "workspace"
+    ]
+}

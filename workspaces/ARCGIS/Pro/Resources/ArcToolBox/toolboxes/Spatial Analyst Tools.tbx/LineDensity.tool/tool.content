@@ -1,0 +1,202 @@
+{
+    "type": "FunctionTool",
+    "guid": "{8aa466bf-858a-4b5b-8dfe-537310f5f2ed}",
+    "displayname": "$rc:title",
+    "helpcontent": "8020002",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10"
+    ],
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "params": {
+        "in_polyline_features": {
+            "displayname": "$rc:in_polyline_features.title",
+            "datatype": {
+                "type": "GPSAGeoData"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "false",
+                "singleband": "false",
+                "datatype": [
+                    "DEFeatureClass",
+                    "GPFeatureLayer",
+                    "GPTableView",
+                    "DETextFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double"
+                ],
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_polyline_features.descr"
+        },
+        "population_field": {
+            "displayname": "$rc:population_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Geometry"
+                ],
+                "key.field": [
+                    "NONE"
+                ]
+            },
+            "depends": [
+                "in_polyline_features"
+            ],
+            "description": "$rc:population_field.descr"
+        },
+        "out_raster": {
+            "direction": "out",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_raster.descr"
+        },
+        "cell_size": {
+            "type": "optional",
+            "displayname": "$rc:cell_size.title",
+            "datatype": {
+                "type": "analysis_cell_size"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "false",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "analysis_cell_size",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:cell_size.descr"
+        },
+        "search_radius": {
+            "type": "optional",
+            "displayname": "$rc:search_radius.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "depends": [
+                "in_polyline_features"
+            ],
+            "description": "$rc:search_radius.descr"
+        },
+        "area_unit_scale_factor": {
+            "type": "optional",
+            "displayname": "$rc:area_unit_scale_factor.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SQUARE_MAP_UNITS",
+                        "code": "$rc:area_unit_scale_factor.domain.SQUARE_MAP_UNITS"
+                    },
+                    {
+                        "value": "SQUARE_MILES",
+                        "code": "$rc:area_unit_scale_factor.domain.SQUARE_MILES"
+                    },
+                    {
+                        "value": "SQUARE_KILOMETERS",
+                        "code": "$rc:area_unit_scale_factor.domain.SQUARE_KILOMETERS"
+                    },
+                    {
+                        "value": "ACRES",
+                        "code": "$rc:area_unit_scale_factor.domain.ACRES"
+                    },
+                    {
+                        "value": "HECTARES",
+                        "code": "$rc:area_unit_scale_factor.domain.HECTARES"
+                    },
+                    {
+                        "value": "SQUARE_YARDS",
+                        "code": "$rc:area_unit_scale_factor.domain.SQUARE_YARDS"
+                    },
+                    {
+                        "value": "SQUARE_FEET",
+                        "code": "$rc:area_unit_scale_factor.domain.SQUARE_FEET"
+                    },
+                    {
+                        "value": "SQUARE_INCHES",
+                        "code": "$rc:area_unit_scale_factor.domain.SQUARE_INCHES"
+                    },
+                    {
+                        "value": "SQUARE_METERS",
+                        "code": "$rc:area_unit_scale_factor.domain.SQUARE_METERS"
+                    },
+                    {
+                        "value": "SQUARE_CENTIMETERS",
+                        "code": "$rc:area_unit_scale_factor.domain.SQUARE_CENTIMETERS"
+                    },
+                    {
+                        "value": "SQUARE_MILLIMETERS",
+                        "code": "$rc:area_unit_scale_factor.domain.SQUARE_MILLIMETERS"
+                    }
+                ]
+            },
+            "depends": [
+                "in_polyline_features"
+            ],
+            "value": "SQUARE_MAP_UNITS",
+            "description": "$rc:area_unit_scale_factor.descr"
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "cellSize",
+        "cellSizeProjectionMethod",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "mask",
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

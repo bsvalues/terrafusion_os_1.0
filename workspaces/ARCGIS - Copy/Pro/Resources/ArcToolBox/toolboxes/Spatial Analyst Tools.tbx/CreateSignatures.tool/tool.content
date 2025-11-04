@@ -1,0 +1,168 @@
+{
+    "type": "FunctionTool",
+    "guid": "{0230db62-0134-4fcf-8eef-e57e444bf963}",
+    "displayname": "$rc:title",
+    "helpcontent": "8120003",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10"
+    ],
+    "params": {
+        "in_raster_bands": {
+            "display_order": "0",
+            "displayname": "$rc:in_raster_bands.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPSAGeoData"
+                }
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "false",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "analysis_cell_size",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_raster_bands.descr"
+        },
+        "in_sample_data": {
+            "display_order": "1",
+            "displayname": "$rc:in_sample_data.title",
+            "datatype": {
+                "type": "GPSAGeoData"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "true",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "DEFeatureClass",
+                    "GPFeatureLayer",
+                    "DETin",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "OID",
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Geometry"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_sample_data.descr"
+        },
+        "out_signature_file": {
+            "direction": "out",
+            "display_order": "3",
+            "displayname": "$rc:out_signature_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "GSG"
+                ]
+            },
+            "description": "$rc:out_signature_file.descr"
+        },
+        "compute_covariance": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:compute_covariance.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "COVARIANCE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "MEAN_ONLY"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:compute_covariance.descr"
+        },
+        "sample_field": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:sample_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "userasterfields": "true",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "OID",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_sample_data"
+            ],
+            "description": "$rc:sample_field.descr"
+        }
+    },
+    "environments": [
+        "cellSize",
+        "cellSizeProjectionMethod",
+        "extent",
+        "geographicTransformations",
+        "mask",
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "snapRaster",
+        "workspace"
+    ]
+}

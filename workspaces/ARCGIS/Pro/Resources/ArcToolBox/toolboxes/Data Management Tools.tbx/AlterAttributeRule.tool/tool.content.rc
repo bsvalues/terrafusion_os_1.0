@@ -1,0 +1,31 @@
+{
+    "map": {
+        "description": "Alters the properties of an attribute rule.",
+        "description.descr": "<xdoc><p>The description of the attribute rule.</p><p>To clear the existing value of the description, choose the <span class=\"esri_uicontrol\">Reset</span> option from the drop-down menu.</p></xdoc>",
+        "description.title": "Description",
+        "error_message.descr": "<xdoc><p>The error message of the attribute rule.</p><p>To clear the existing error message value for a calculation rule, choose the <span class=\"esri_uicontrol\">Reset</span> option from the drop-down menu. Error message is a required property for constraint and validation rules and cannot be cleared for those rule types.</p></xdoc>",
+        "error_message.title": "Error Message",
+        "error_number.descr": "<xdoc><p>The error number of the attribute rule.</p><p>To clear the existing error number value for a calculation rule, choose the <span class=\"esri_uicontrol\">Reset</span> option from the drop-down menu. Error number is a required property for constraint and validation rules and cannot be cleared for those rule types.</p></xdoc>",
+        "error_number.title": "Error Number",
+        "exclude_from_client_evaluation.descr": "<xdoc><p>Specifies whether the application will evaluate the rule locally before applying the edits to the workspace.</p><p>The default for this parameter corresponds to the existing value set for the rule. That is, if the input rule has the exclude from client evaluation parameter set to false, the default for this parameter will be unchecked so the rule will not be automatically excluded. This parameter is not applicable for validation rules or batch calculation rules.<ul><li>Checked—The rule will be excluded from client evaluation.</li><li>Unchecked—The rule will not be excluded from client evaluation.</li></ul></p></xdoc>",
+        "exclude_from_client_evaluation.title": "Exclude From Client Evaluation",
+        "in_table.descr": "The table containing the attribute rule that will be altered.",
+        "in_table.title": "Input Table",
+        "name.descr": "The name of the attribute rule that will be altered.",
+        "name.title": "Rule Name",
+        "script_expression.descr": "An ArcGIS Arcade expression that defines the rule. To keep the existing expression, leave this parameter empty. If an expression is provided for this parameter, it will replace the existing Arcade expression of the rule. If you alter the script expression of a batch calculation or validation rule, the rule must be reevaluated.",
+        "script_expression.title": "Script Expression",
+        "tags.descr": "<xdoc><p>The tags for the attribute rule.</p><p>To clear all tags, click the delete button to remove each tag from the list, and choose <span class=\"esri_uicontrol\">Reset</span> from the drop-down menu.</p></xdoc>",
+        "tags.domain.RESET": "Reset",
+        "tags.title": "Tags",
+        "title": "Alter Attribute Rule",
+        "triggering_events.descr": "<xdoc><p>Specifies the editing events that will trigger the attribute rule to take effect. Triggering events are only applicable for constraint rules and immediate calculation rules. The new values will replace existing triggering events. To keep the existing triggering events, leave this parameter empty.</p><ul><li><span title=\"INSERT\">Insert</span>—The rule will be applied when a new feature is added.</li><li><span title=\"UPDATE\">Update</span>—The rule will be applied when a feature is updated.</li><li><span title=\"DELETE\">Delete</span>—The rule will be applied when a feature is deleted.</li></ul></xdoc>",
+        "triggering_events.domain.DELETE": "Delete",
+        "triggering_events.domain.INSERT": "Insert",
+        "triggering_events.domain.UPDATE": "Update",
+        "triggering_events.title": "Triggering Events",
+        "triggering_fields.descr": "<xdoc><p>A list of fields that will trigger an attribute rule to run when an editing event occurs during an update trigger for calculation and constraint attribute rules. If no fields are specified, the tool will use all fields.</p><p>To enter multiple triggering fields, use a semicolon delimiter, for example, Field1;Field2;Field3.</p></xdoc>",
+        "triggering_fields.title": "Triggering Fields",
+        "updated_table.title": "Updated Table"
+    }
+}

@@ -1,0 +1,14 @@
+{
+  "migration_date": "2025-11-04 02:46:04",
+  "tech_stack": "Node.js, Docker",
+  "target_path": "C:\\Users\\bsval\\terrafusion_os_1.0\\applications\\terra-v0demo-production",
+  "priority": "PRODUCTION",
+  "target_name": "terra-v0demo-production",
+  "size_mb": 1.39,
+  "status": "OPERATIONAL",
+  "file_count": 191,
+  "agent": "TerraFusion Elite Government OS Engineering Agent",
+  "source_path": "MIGRATED",
+  "last_verified": "2025-11-04 02:46:04",
+  "system_name": "terra-v0demo-production"
+}

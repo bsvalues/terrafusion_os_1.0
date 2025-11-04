@@ -1,0 +1,80 @@
+{
+    "type": "FunctionTool",
+    "guid": "{a587ee3c-e1d2-4b29-9214-531562ced854}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190525",
+    "description": "$rc:description",
+    "product": "200",
+    "categories": [
+        "{0a2ad811-7215-4a95-92f3-9c29de502e9b}"
+    ],
+    "params": {
+        "in_mosaic_dataset": {
+            "display_order": "0",
+            "displayname": "$rc:in_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPMosaicLayer"
+            },
+            "description": "$rc:in_mosaic_dataset.descr"
+        },
+        "delete_overview_images": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:delete_overview_images.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "DELETE_OVERVIEW_IMAGES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_DELETE_OVERVIEW_IMAGES"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:delete_overview_images.descr"
+        },
+        "delete_item_cache": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:delete_item_cache.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "DELETE_ITEM_CACHE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_DELETE_ITEM_CACHE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:delete_item_cache.descr"
+        },
+        "out_results": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_results.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "value": "false"
+        }
+    }
+}

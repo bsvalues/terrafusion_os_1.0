@@ -1,0 +1,15 @@
+{
+    "map": {
+        "description": "Resets paths to source imagery if you have moved or copied a mosaic dataset.",
+        "in_mosaic_dataset.descr": "The mosaic dataset with the broken paths.",
+        "in_mosaic_dataset.title": "Mosaic Dataset",
+        "out_mosaic_dataset.title": "Repaired Input Mosaic Dataset",
+        "paths_list.descr": "A list of the paths to remap. Include the current path stored in the mosaic dataset and the path to which it will be changed. You can enter an asterisk (*) as the original path if you wish to change all your paths.",
+        "paths_list.dt.title1": "Original Path",
+        "paths_list.dt.title2": "New Path",
+        "paths_list.title": "Paths List",
+        "title": "Repair Mosaic Dataset Paths",
+        "where_clause.descr": "An SQL expression to limit the repairs to selected rasters within the mosaic dataset.",
+        "where_clause.title": "Query Definition"
+    }
+}

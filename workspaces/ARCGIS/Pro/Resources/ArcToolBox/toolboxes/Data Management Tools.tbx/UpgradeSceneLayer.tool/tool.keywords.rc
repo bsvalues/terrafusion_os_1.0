@@ -1,0 +1,10 @@
+{
+    "set": [
+        "cloud",
+        "i3s",
+        "i3srest",
+        "scene layer",
+        "slpk",
+        "upgrade"
+    ]
+}

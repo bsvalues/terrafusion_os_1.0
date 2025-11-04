@@ -1,0 +1,207 @@
+{
+  "info": {
+    "name": "Security API",
+    "description": "Cybersecurity and threat management APIs - TerraFusion Government API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "oauth2",
+    "oauth2": [
+      {
+        "key": "tokenUrl",
+        "value": "https://auth.terrafusion.gov/oauth/token",
+        "type": "string"
+      },
+      {
+        "key": "authUrl",
+        "value": "https://auth.terrafusion.gov/oauth/authorize",
+        "type": "string"
+      },
+      {
+        "key": "scope",
+        "value": "security:read security:write",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.terrafusion.gov/api/v1/security",
+      "type": "string"
+    },
+    {
+      "key": "workspace",
+      "value": "security",
+      "type": "string"
+    },
+    {
+      "key": "version",
+      "value": "1.0.0",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-TerraFusion-Workspace",
+            "value": "{{workspace}}",
+            "type": "text"
+          },
+          {
+            "key": "X-TerraFusion-Version",
+            "value": "{{version}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Threat intelligence",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-TerraFusion-Workspace",
+            "value": "{{workspace}}",
+            "type": "text"
+          },
+          {
+            "key": "X-TerraFusion-Version",
+            "value": "{{version}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/threats",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "threats"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Security incident reporting",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-TerraFusion-Workspace",
+            "value": "{{workspace}}",
+            "type": "text"
+          },
+          {
+            "key": "X-TerraFusion-Version",
+            "value": "{{version}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/incidents",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "incidents"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Security scanning",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-TerraFusion-Workspace",
+            "value": "{{workspace}}",
+            "type": "text"
+          },
+          {
+            "key": "X-TerraFusion-Version",
+            "value": "{{version}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/scanning",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "scanning"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Security alerts",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-TerraFusion-Workspace",
+            "value": "{{workspace}}",
+            "type": "text"
+          },
+          {
+            "key": "X-TerraFusion-Version",
+            "value": "{{version}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/alerts",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "alerts"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

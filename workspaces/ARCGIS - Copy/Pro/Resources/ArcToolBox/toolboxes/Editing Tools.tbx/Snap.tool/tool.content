@@ -1,0 +1,89 @@
+{
+    "type": "FunctionTool",
+    "guid": "{fe353998-5466-4e07-8281-9f9eae917056}",
+    "displayname": "$rc:title",
+    "helpcontent": "24000006",
+    "description": "$rc:description",
+    "product": "200",
+    "categories": [
+        "{0a2ad811-7215-4a95-92f3-9c29de502e9b}"
+    ],
+    "attributes": [
+        "edit_session",
+        "input_data_change"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "snap_environment": {
+            "displayname": "$rc:snap_environment.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPFeatureLayer",
+                        "displayname": "$rc:snap_environment.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:snap_environment.dt.title2"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "displayname": "$rc:snap_environment.dt.title3"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "END",
+                                "code": "$rc:snap_environment.domain.item2.END"
+                            },
+                            {
+                                "value": "VERTEX",
+                                "code": "$rc:snap_environment.domain.item2.VERTEX"
+                            },
+                            {
+                                "value": "EDGE",
+                                "code": "$rc:snap_environment.domain.item2.EDGE"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:snap_environment.descr"
+        },
+        "out_feature_class": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "clonedependency": "true"
+            }
+        }
+    },
+    "environments": [
+        "extent",
+        "workspace"
+    ]
+}

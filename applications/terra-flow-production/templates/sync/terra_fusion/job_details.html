@@ -1,0 +1,337 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('terra_fusion_ui.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Job Details</li>
+                </ol>
+            </nav>
+            <h1 class="terrafusion-title">Job Details: {{ job.id }}</h1>
+        </div>
+        <div class="col-auto">
+            <div class="btn-group">
+                {% if job.status == 'running' %}
+                    <form method="POST" action="{{ url_for('terra_fusion_ui.control_job', job_id=job.id, action='stop') }}">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-pause"></i> Stop
+                        </button>
+                    </form>
+                {% elif job.status in ['stopped', 'failed'] %}
+                    <form method="POST" action="{{ url_for('terra_fusion_ui.control_job', job_id=job.id, action='resume') }}">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-play"></i> Resume
+                        </button>
+                    </form>
+                {% endif %}
+                <form method="POST" action="{{ url_for('terra_fusion_ui.control_job', job_id=job.id, action='delete') }}">
+                    <button type="submit" class="btn btn-danger"
+                            onclick="return confirm('Are you sure you want to delete this job?')">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Overview Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Overview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Status:</strong>
+                        <span class="badge bg-
+                            {% if job.status == 'completed' %}success
+                            {% elif job.status == 'running' %}warning
+                            {% elif job.status == 'failed' %}danger
+                            {% elif job.status == 'stopped' %}secondary
+                            {% else %}info{% endif %}">
+                            {{ job.status }}
+                        </span>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Type:</strong>
+                        <span class="badge bg-{% if job.type == 'full' %}primary{% else %}info{% endif %}">
+                            {{ job.type }}
+                        </span>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Created:</strong>
+                        <span>{{ job.created_at|default('N/A') }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Updated:</strong>
+                        <span>{{ job.updated_at|default('N/A') }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Configuration Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Configuration</h5>
+                </div>
+                <div class="card-body">
+                    {% if job.config %}
+                        <div class="mb-3">
+                            <strong>Batch Size:</strong>
+                            <span>{{ job.config.batch_size|default(1000) }}</span>
+                        </div>
+                        <div class="mb-3">
+                            <strong>Detection Strategy:</strong>
+                            <span>{{ job.config.detection_strategy|default('hash') }}</span>
+                        </div>
+                        <div class="mb-3">
+                            <strong>Conflict Strategy:</strong>
+                            <span>{{ job.config.conflict_strategy|default('source_wins') }}</span>
+                        </div>
+                        <div class="mb-3">
+                            <strong>Parallel Tables:</strong>
+                            <span>{{ job.config.max_parallel_tables|default(1) }}</span>
+                        </div>
+                        <div class="mb-3">
+                            <strong>Parallel Operations:</strong>
+                            <span>{{ job.config.max_parallel_operations|default(5) }}</span>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">No configuration available</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Progress</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Overall:</strong>
+                        <div class="progress mb-2">
+                            <div class="progress-bar progress-bar-striped
+                                {% if job.status == 'running' %}progress-bar-animated{% endif %}"
+                                role="progressbar"
+                                style="width: {{ job.progress or 0 }}%">
+                                {{ job.progress or 0 }}%
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Tables:</strong>
+                        <span>{{ job.tables_processed|default(0) }} / {{ job.tables_total|default(0) }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Records:</strong>
+                        <span>{{ job.records_processed|default(0) }} / {{ job.records_total|default(0) }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Conflicts:</strong>
+                        <span>{{ job.conflicts|default([])|length }}</span>
+                        {% if job.conflicts and job.conflicts|length > 0 %}
+                            <a href="{{ url_for('terra_fusion_ui.conflicts_page', job_id=job.id) }}" class="btn btn-sm btn-outline-primary ms-2">
+                                View Conflicts
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-4" id="jobTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tables-tab" data-bs-toggle="tab" data-bs-target="#tables" type="button" role="tab" aria-controls="tables" aria-selected="true">Tables</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="errors-tab" data-bs-toggle="tab" data-bs-target="#errors" type="button" role="tab" aria-controls="errors" aria-selected="false">Errors</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="audit-tab" data-bs-toggle="tab" data-bs-target="#audit" type="button" role="tab" aria-controls="audit" aria-selected="false">Audit</button>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('terra_fusion_ui.schema_page', job_id=job.id) }}">Schema Validation</a>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="jobTabsContent">
+        <!-- Tables Tab -->
+        <div class="tab-pane fade show active" id="tables" role="tabpanel" aria-labelledby="tables-tab">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Tables</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Table Name</th>
+                                    <th>Status</th>
+                                    <th>Records</th>
+                                    <th>Changes</th>
+                                    <th>Conflicts</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if job.tables %}
+                                    {% for table in job.tables %}
+                                        <tr>
+                                            <td>{{ table.name }}</td>
+                                            <td>
+                                                <span class="badge bg-
+                                                    {% if table.status == 'completed' %}success
+                                                    {% elif table.status == 'running' %}warning
+                                                    {% elif table.status == 'failed' %}danger
+                                                    {% elif table.status == 'stopped' %}secondary
+                                                    {% else %}info{% endif %}">
+                                                    {{ table.status }}
+                                                </span>
+                                            </td>
+                                            <td>{{ table.records_processed|default(0) }} / {{ table.records_total|default(0) }}</td>
+                                            <td>{{ table.changes|default(0) }}</td>
+                                            <td>{{ table.conflicts|default(0) }}</td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <a href="{{ url_for('terra_fusion_ui.schema_page', job_id=job.id) }}?table={{ table.name }}" class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-table"></i> Schema
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4">
+                                            <div class="alert alert-info mb-0">
+                                                No table data available
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Errors Tab -->
+        <div class="tab-pane fade" id="errors" role="tabpanel" aria-labelledby="errors-tab">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Errors</h5>
+                </div>
+                <div class="card-body">
+                    {% if job.errors and job.errors|length > 0 %}
+                        <div class="list-group">
+                            {% for error in job.errors %}
+                                <div class="list-group-item list-group-item-danger">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">{{ error.type }}</h5>
+                                        <small>{{ error.time }}</small>
+                                    </div>
+                                    <p class="mb-1">{{ error.message }}</p>
+                                    {% if error.table %}
+                                        <small>Table: {{ error.table }}</small>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-success">
+                            No errors detected
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Audit Tab -->
+        <div class="tab-pane fade" id="audit" role="tabpanel" aria-labelledby="audit-tab">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Audit Events</h5>
+                        <a href="{{ url_for('terra_fusion_ui.audit_page', job_id=job.id) }}" class="btn btn-sm btn-outline-primary">
+                            Full Audit Log
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if job.audit_events and job.audit_events|length > 0 %}
+                        <div class="list-group">
+                            {% for event in job.audit_events[:5] %}
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">{{ event.type }}</h5>
+                                        <small>{{ event.time }}</small>
+                                    </div>
+                                    <p class="mb-1">{{ event.message }}</p>
+                                    {% if event.details %}
+                                        <small>{{ event.details }}</small>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {% if job.audit_events|length > 5 %}
+                            <div class="text-center mt-3">
+                                <a href="{{ url_for('terra_fusion_ui.audit_page', job_id=job.id) }}" class="btn btn-sm btn-outline-primary">
+                                    View all {{ job.audit_events|length }} events
+                                </a>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="alert alert-info">
+                            No audit events available
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    .terrafusion-title {
+        color: #3f51b5;
+        border-bottom: 2px solid #3f51b5;
+        padding-bottom: 8px;
+    }
+    
+    .card {
+        transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .nav-tabs .nav-link {
+        font-weight: 500;
+    }
+    
+    .nav-tabs .nav-link.active {
+        border-color: #3f51b5;
+        color: #3f51b5;
+    }
+</style>
+{% endblock %}

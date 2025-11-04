@@ -1,0 +1,21 @@
+{
+    "map": {
+        "description": "Creates feature classes for a specified territory level.",
+        "feature_classes.descr": "<xdoc><p>Specifies the feature classes that will be created at the specified <span class=\"esri_uicontrol\">Level</span> parameter value.</p><ul><li><span title=\"TERRITORY_BOUNDARIES\">Territory Boundaries</span>—Polygon features that represent the territory boundaries will be created.</li><li><span title=\"TERRITORY_CENTERS\">Territory Centers</span>—Point features that represent the territory centers will be created.</li><li><span title=\"BASE_BOUNDARIES\">Base Boundaries</span>—Polygon features that represent the base boundaries will be created.</li><li><span title=\"BASE_CENTERS\">Base Centers</span>— Point features that represent the base centers will be created.</li><li><span title=\"LINE_BARRIERS\">Line Barriers</span>—Line features that restrict traversal across a line will be created.</li><li><span title=\"SEED_POINTS\">Seed Points</span>—Point features from which territories are derived will be created.</li><li><span title=\"RESTRICTED_AREAS\">Restricted Areas</span>—Polygon features that prevent the creation of territories will be created.</li><li><span title=\"POLYGON_BARRIERS\">Polygon Barriers</span>—Polygon features that restrict traversal across a polygon will be created.</li></ul></xdoc>",
+        "feature_classes.domain.BASE_BOUNDARIES": "Base Boundaries",
+        "feature_classes.domain.BASE_CENTERS": "Base Centers",
+        "feature_classes.domain.LINE_BARRIERS": "Line Barriers",
+        "feature_classes.domain.POLYGON_BARRIERS": "Polygon Barriers",
+        "feature_classes.domain.RESTRICTED_AREAS": "Restricted Areas",
+        "feature_classes.domain.SEED_POINTS": "Seed Points",
+        "feature_classes.domain.TERRITORY_BOUNDARIES": "Territory Boundaries",
+        "feature_classes.domain.TERRITORY_CENTERS": "Territory Centers",
+        "feature_classes.title": "Feature Classes",
+        "in_territory_solution.descr": "The Territory Design solution layer that will be used in the analysis.",
+        "in_territory_solution.title": "Input Territory Solution",
+        "level.descr": "The level to which the feature classes will be added.",
+        "level.title": "Level",
+        "out_territory_solution.title": "Updated Territory Solution",
+        "title": "Create Territory Level Feature Classes"
+    }
+}

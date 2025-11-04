@@ -1,0 +1,18 @@
+{
+    "map": {
+        "description": "Prepares interactive pop-up charts for web display by saving them as image attachments to a feature class.",
+        "img_height.descr": "The height, in pixels, of each image attachment.",
+        "img_height.title": "Height",
+        "img_width.descr": "The width, in pixels, of each image attachment.",
+        "img_width.title": "Width",
+        "in_features.descr": "<xdoc><p>The feature class that contains the <span class=\"esri_fieldname\">HTML_CHART</span> field with the HTML code to create a pop-up chart. The feature class must have a 32 bit ObjectID - 64 bit Object IDs are not supported.</p></xdoc>",
+        "in_features.title": "Input Features",
+        "out_feature_class.descr": "The output feature class that will contain the pop-up chart of each feature saved as an image attachment.",
+        "out_feature_class.title": "Output Features",
+        "params.category1": "Image Properties",
+        "rotate_x_axis_labels.descr": "<xdoc><p>Specifies whether the x-axis labels will be rotated.<ul><li>Checked—The x-axis labels will be rotated 20 degrees.</li><li>Unchecked—The x-axis labels will not be rotated. This is the default.</li></ul></p></xdoc>",
+        "rotate_x_axis_labels.title": "Rotate X Axis Labels",
+        "summary": "<xdoc><p>Prepares interactive pop-up charts for web display by saving them as image attachments to a feature class.</p><p>Several tools in the Spatial Statistics and Space Time Pattern Mining toolboxes create output feature classes that include an <span class=\"esri_fieldname\">HTML_CHART</span> field. If you click a feature that contains this field, an interactive chart will appear in the pop-up pane. However, if you share this feature class as a web layer to ArcGIS Online and click a feature in Map Viewer, the chart will not appear in the pop-ups. This tool creates a feature class that contains the pop-up charts as image attachments. If the feature class with image attachments is shared as a web service to ArcGIS Online, the charts will appear in the pop-ups of the web feature layer.</p></xdoc>",
+        "title": "Convert Spatial Statistics Popup Charts for Web Display"
+    }
+}

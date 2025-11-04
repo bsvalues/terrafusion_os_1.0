@@ -1,0 +1,102 @@
+{
+    "type": "FunctionTool",
+    "guid": "{0A4A9218-07A4-497A-8506-CED528063FB9}/ModifyNetworkCalibrationRules",
+    "displayname": "$rc:title",
+    "helpcontent": "23000046",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "78"
+    ],
+    "params": {
+        "in_feature_class": {
+            "displayname": "$rc:in_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_feature_class.descr"
+        },
+        "calibration_rule": {
+            "type": "optional",
+            "displayname": "$rc:calibration_rule.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "AS_IS",
+                        "code": "$rc:calibration_rule.domain.AS_IS"
+                    },
+                    {
+                        "value": "ADDING_EUCLIDEAN_DISTANCE",
+                        "code": "$rc:calibration_rule.domain.ADDING_EUCLIDEAN_DISTANCE"
+                    },
+                    {
+                        "value": "STEPPING_INCREMENT",
+                        "code": "$rc:calibration_rule.domain.STEPPING_INCREMENT"
+                    },
+                    {
+                        "value": "ADDING_INCREMENT",
+                        "code": "$rc:calibration_rule.domain.ADDING_INCREMENT"
+                    }
+                ]
+            },
+            "value": "AS_IS",
+            "description": "$rc:calibration_rule.descr"
+        },
+        "calibration_offset": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:calibration_offset.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:calibration_offset.descr"
+        },
+        "out_feature_class": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            }
+        },
+        "update_measure_cartorealign": {
+            "type": "optional",
+            "displayname": "$rc:update_measure_cartorealign.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "AS_IS",
+                        "code": "$rc:update_measure_cartorealign.domain.AS_IS"
+                    },
+                    {
+                        "value": "ENABLE",
+                        "code": "$rc:update_measure_cartorealign.domain.ENABLE"
+                    },
+                    {
+                        "value": "DISABLE",
+                        "code": "$rc:update_measure_cartorealign.domain.DISABLE"
+                    }
+                ]
+            },
+            "value": "AS_IS",
+            "description": "$rc:update_measure_cartorealign.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

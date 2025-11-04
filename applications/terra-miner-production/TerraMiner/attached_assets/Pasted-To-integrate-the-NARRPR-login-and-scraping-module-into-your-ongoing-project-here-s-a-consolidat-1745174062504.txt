@@ -1,0 +1,171 @@
+To integrate the **NARRPR login and scraping module** into your ongoing project, here’s a consolidated approach to efficiently implement and connect it with the existing ETL workflows and database:
+
+---
+
+### **Integration Plan**
+
+#### **1. Directory Structure**
+Organize the project for scalability:
+```
+project/
+├── etl/
+│   ├── __init__.py
+│   ├── mls_scraper.py        # Web scraping scripts
+│   ├── narrpr_scraper.py     # NARRPR scraping module
+│   ├── file_parser.py        # ETL for file conversions
+├── db/
+│   ├── __init__.py
+│   ├── database.py           # Database connection and queries
+├── main.py                   # Entry point for the project
+├── requirements.txt          # Python dependencies
+├── README.md
+```
+
+---
+
+#### **2. Code: NARRPR Scraper Module**
+Save the following as `etl/narrpr_scraper.py`:
+
+```python
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.keys import Keys
+from time import sleep
+from webdriver_manager.chrome import ChromeDriverManager
+import pandas as pd
+
+def narrpr_login_and_scrape(username, password):
+    """
+    Automates login and data scraping from NARRPR.
+    """
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+
+    try:
+        # Navigate to Login Page
+        driver.get("https://www.narrpr.com/home")
+        sleep(2)
+
+        # Perform Login
+        driver.find_element(By.ID, "login-email").send_keys(username)
+        driver.find_element(By.ID, "login-password").send_keys(password)
+        driver.find_element(By.ID, "login-button").click()
+        sleep(5)
+
+        # Verify Login
+        if "dashboard" in driver.current_url:
+            print("Login successful!")
+        else:
+            print("Login failed!")
+            return []
+
+        # Navigate to Reports Section
+        driver.get("https://www.narrpr.com/reports-v2")
+        sleep(5)
+
+        # Scrape Report Data
+        properties = []
+        reports = driver.find_elements(By.CLASS_NAME, "report-item")
+        for report in reports:
+            title = report.find_element(By.CLASS_NAME, "report-title").text
+            date = report.find_element(By.CLASS_NAME, "report-date").text
+            properties.append({'title': title, 'date': date})
+
+        return properties
+
+    finally:
+        driver.quit()
+
+def save_to_csv(data, file_path="narrpr_data.csv"):
+    """
+    Saves scraped data to a CSV file.
+    """
+    df = pd.DataFrame(data)
+    df.to_csv(file_path, index=False)
+    print(f"Data saved to {file_path}")
+```
+
+---
+
+#### **3. Integrate with ETL Workflow**
+In `main.py`, integrate the scraping module with your ETL pipeline.
+
+```python
+from etl.narrpr_scraper import narrpr_login_and_scrape, save_to_csv
+
+def main():
+    # Login Credentials
+    username = "billspencerappraisal@gmail.com"
+    password = "Bspassword@1"
+
+    # Scrape Data
+    data = narrpr_login_and_scrape(username, password)
+
+    # Save to CSV
+    if data:
+        save_to_csv(data)
+    else:
+        print("No data scraped.")
+
+if __name__ == "__main__":
+    main()
+```
+
+---
+
+#### **4. Add Dependencies**
+Add required libraries to `requirements.txt`:
+
+```
+selenium
+webdriver-manager
+pandas
+```
+
+Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+#### **5. Extend Database Integration**
+Modify the `db/database.py` to handle data insertion:
+
+```python
+from sqlalchemy import create_engine
+import pandas as pd
+
+# Setup database connection
+engine = create_engine('sqlite:///real_estate.db')
+
+def save_to_database(data, table_name="narrpr_reports"):
+    """
+    Save data to the database.
+    """
+    df = pd.DataFrame(data)
+    df.to_sql(table_name, con=engine, if_exists='append', index=False)
+    print(f"Data saved to the '{table_name}' table.")
+```
+
+Update the `main.py` to include database saving:
+```python
+from db.database import save_to_database
+
+# After scraping:
+if data:
+    save_to_csv(data)
+    save_to_database(data)
+```
+
+---
+
+### **Next Steps**
+1. **Testing:**
+   - Run `main.py` to ensure the scraper successfully logs in, extracts data, and saves it to the database.
+2. **Error Handling:**
+   - Add exception handling for login failures, connection issues, and unexpected changes in the website structure.
+3. **Scheduling:**
+   - Use `APScheduler` to schedule periodic scraping.
+
+Would you like assistance in adding **scheduling** or moving to the **next module**?

@@ -1,0 +1,114 @@
+{% extends 'layout.html' %}
+
+{% block title %}Property Export{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Property Access Export</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        This tool executes the ExportPropertyAccess stored procedure to create or update a web database
+                        for the True Automation PropertyAccess website. This procedure runs exactly as designed without any
+                        modifications, preserving its existing functionality.
+                    </p>
+                    
+                    <form action="{{ url_for('sync.run_property_export') }}" method="post">
+                        <div class="mb-3">
+                            <label for="database_name" class="form-label">Target Database Name</label>
+                            <input type="text" class="form-control" id="database_name" name="database_name" 
+                                   placeholder="web_internet_benton_auto" 
+                                   aria-describedby="databaseNameHelp">
+                            <div id="databaseNameHelp" class="form-text">
+                                Optional. If left blank, the default database name will be used (typically web_internet_benton_auto).
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="num_years" class="form-label">Number of Years</label>
+                            <input type="number" class="form-control" id="num_years" name="num_years" 
+                                   value="-1" min="-1" max="20">
+                            <div class="form-text">
+                                Number of years to include in the export. Use -1 for all years (default).
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="min_bill_years" class="form-label">Minimum Billing Years</label>
+                            <input type="number" class="form-control" id="min_bill_years" name="min_bill_years" 
+                                   value="2" min="1" max="10">
+                            <div class="form-text">
+                                Minimum number of billing years to include (default: 2).
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Important:</strong> This operation can take a long time to complete, especially for large datasets.
+                            The process will run in the background, and you can check the job status on the job details page.
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-database me-2"></i>Start Property Export
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="card-title mb-0">Recent Export Jobs</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_jobs %}
+                    <ul class="list-group">
+                        {% for job in recent_jobs %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <a href="{{ url_for('sync.job_details', job_id=job.job_id) }}">{{ job.name }}</a>
+                                <br>
+                                <small class="text-muted">{{ job.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                            </div>
+                            <span class="badge {% if job.status == 'completed' %}bg-success{% elif job.status == 'failed' %}bg-danger{% elif job.status == 'running' %}bg-primary{% else %}bg-secondary{% endif %}">
+                                {{ job.status | capitalize }}
+                            </span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="card-text text-center">No recent export jobs found.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0">Information</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">
+                        The property export functionality executes the existing ExportPropertyAccess stored procedure
+                        in SQL Server to create or update the web database used by the True Automation PropertyAccess website.
+                    </p>
+                    <p class="card-text">
+                        This integration allows you to run the export process from within the Data Hub platform
+                        while preserving all the existing functionality of the original procedure.
+                    </p>
+                    <p class="card-text">
+                        The procedure builds a comprehensive database including property details, improvements,
+                        valuations, ownership history, and more, formatted specifically for the PropertyAccess website.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

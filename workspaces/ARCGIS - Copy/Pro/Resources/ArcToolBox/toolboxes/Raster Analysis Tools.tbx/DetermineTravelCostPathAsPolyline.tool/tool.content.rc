@@ -1,0 +1,23 @@
+{
+    "map": {
+        "description": "Calculates the least-cost polyline path between sources and destinations.",
+        "destinationfield.descr": "<xdoc><p>The field used to obtain values for the destination locations.</p><p>Input feature data must contain at least one valid integer field.</p></xdoc>",
+        "destinationfield.title": "Destination Field",
+        "inputcostraster.descr": "<xdoc><p>The name of a cost raster image service to be used to determine the least-cost path from the sources to the destinations.</p><p>The value at each cell location represents the cost-per-unit distance for moving through the cell. Each cell location value is multiplied by the cell resolution while also compensating for diagonal movement to obtain the total cost of passing through the cell.</p><p>The values of the cost raster can be integer or floating point, but they cannot be negative or zero (you cannot have a negative or zero cost).</p></xdoc>",
+        "inputcostraster.title": "Input Cost Raster",
+        "inputdestinationrasterorfeatures.descr": "An image service or feature service that identifies the cells to which the least-cost path is calculated.",
+        "inputdestinationrasterorfeatures.title": "Input Destination Raster or Features",
+        "inputsourcerasterorfeatures.descr": "<xdoc><p>An image service or feature service that identifies the cells from which the least-cost path is determined to the destinations.</p><p>If the input is an image service, the input consists of cells that have valid values (zero is a valid value), and the remaining cells must be assigned NoData.</p></xdoc>",
+        "inputsourcerasterorfeatures.title": "Input Source Raster or Features",
+        "outputpolylinefeatures.title": "Output Polyline Features",
+        "outputpolylinename.descr": "<xdoc><p>The name of the output polyline feature service.</p><p>The polyline feature service of the optimum (least-cost) paths connecting sources and destinations.</p><p>Each path (or line) is uniquely numbered, and has an additional field in the attribute table called <span class=\"esri_fieldname\">DestID</span>, which connects it back to the unique identifier on the destination raster.</p><p>Since each path is represented by a unique line, there can be multiple lines in locations where paths travel the same route.</p></xdoc>",
+        "outputpolylinename.title": "Output Polyline Name",
+        "pathtype.descr": "<xdoc><p>Specifies the manner in which the values and zones on the input destination data will be interpreted in the cost path calculations.</p><ul><li><span title=\"EACH_CELL\">To each cell</span>—For each cell or location with valid values on the input destination data, a least-cost path is determined and saved on the output. With this option, each cell or location of the input destination data is treated separately, and a least-cost path is determined for each from cell.</li><li><span title=\"EACH_ZONE\">To each zone</span>—For each zone on the input destination data, a least-cost path is determined and saved to the output. With this option, the least-cost path for each zone begins at the location with the lowest cost distance weighting in the zone.</li><li><span title=\"BEST_SINGLE\">Best single</span>—For all locations on the input destination data, the least-cost path is derived from the location with the minimum of the least-cost paths to source locations. This is the default.</li></ul></xdoc>",
+        "pathtype.domain.BEST_SINGLE": "Best single",
+        "pathtype.domain.EACH_CELL": "To each cell",
+        "pathtype.domain.EACH_ZONE": "To each zone",
+        "pathtype.title": "Path Type",
+        "summary": "<xdoc><p>Calculates the least-cost polyline path between sources and destinations.</p><note type=\"legacy\"/><p group=\"note\">This tool is deprecated and will be removed in a future release.</p><p group=\"note\">The Distance Accumulation and Optimal Path As Line tools provide enhanced functionality or performance.</p></xdoc>",
+        "title": "Determine Travel Cost Path As Polyline"
+    }
+}

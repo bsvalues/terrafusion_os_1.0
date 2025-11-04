@@ -1,0 +1,21 @@
+{
+    "map": {
+        "data_type.descr": "<xdoc><p>The output accumulation raster can be integer, floating point, or double type.</p><ul><li><span title=\"FLOAT\">Float</span>—The output raster will be floating point type. This is the default.</li><li><span title=\"INTEGER\">Integer</span>—The output raster will be integer type.</li><li><span title=\"DOUBLE\">Double</span>—The output raster will be double type.</li></ul></xdoc>",
+        "data_type.domain.DOUBLE": "Double",
+        "data_type.domain.FLOAT": "Float",
+        "data_type.domain.INTEGER": "Integer",
+        "data_type.title": "Output data type",
+        "description": "Creates a raster of accumulated flow into each cell. A weight factor can optionally be applied.",
+        "flow_direction_type.descr": "<xdoc><p>Specifies the input flow direction raster type.</p><ul><li><span title=\"D8\">D8</span>—The input flow direction raster is of type D8. This is the default.</li><li><span title=\"MFD\">MFD</span>—The input flow direction raster is of type Multi Flow Direction (MFD).</li><li><span title=\"DINF\">DINF</span>—The input flow direction raster is of type D-Infinity (DINF).</li></ul></xdoc>",
+        "flow_direction_type.domain.D8": "D8",
+        "flow_direction_type.domain.DINF": "DINF",
+        "flow_direction_type.title": "Input flow direction type",
+        "in_flow_direction_raster.descr": "<xdoc><p>The input raster that shows the direction of flow out of each cell.</p><p>The flow direction raster can be created using the Flow Direction tool.</p><p>The flow direction raster can be created using the D8, Multiple Flow Direction (MFD), or D-Infinity method. Use the <span class=\"esri_uicontrol\">Input flow direction type</span> parameter to specify the method used when the flow direction raster was created.</p></xdoc>",
+        "in_flow_direction_raster.title": "Input flow direction raster",
+        "in_weight_raster.descr": "<xdoc><p>An optional input raster for applying a weight to each cell.</p><p>If no weight raster is specified, a default weight of 1 will be applied to each cell. For each cell in the output raster, the result will be the number of cells that flow into it.</p></xdoc>",
+        "in_weight_raster.title": "Input weight raster",
+        "out_accumulation_raster.descr": "The output raster that shows the accumulated flow to each cell.",
+        "out_accumulation_raster.title": "Output accumulation raster",
+        "title": "Flow Accumulation"
+    }
+}

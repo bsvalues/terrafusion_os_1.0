@@ -1,0 +1,9 @@
+{
+    "set": [
+        "administration",
+        "delete",
+        "network",
+        "rule",
+        "utility network"
+    ]
+}

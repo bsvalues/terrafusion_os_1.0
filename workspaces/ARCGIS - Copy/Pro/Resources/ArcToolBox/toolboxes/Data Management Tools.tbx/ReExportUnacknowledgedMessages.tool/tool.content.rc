@@ -1,0 +1,16 @@
+{
+    "map": {
+        "description": "Creates an output delta file containing unacknowledged replica updates from a one-way or two-way replica geodatabase.",
+        "in_export_option.descr": "<xdoc><p>Specifies the changes that will be reexported.</p><ul><li><span title=\"ALL_UNACKNOWLEDGED\">All unacknowledged</span>—All changes with unacknowledged messages will be reexported.</li><li><span title=\"MOST_RECENT\">Most recent</span>—Only those changes made since the last set of exported changes was sent will be reexported.</li></ul></xdoc>",
+        "in_export_option.domain.ALL_UNACKNOWLEDGED": "All unacknowledged",
+        "in_export_option.domain.MOST_RECENT": "Most recent",
+        "in_export_option.title": "Export options",
+        "in_geodatabase.descr": "The replica geodatabase from which the unacknowledged messages will be reexported. The geodatabase can be a local geodatabase or a geodata service.",
+        "in_geodatabase.title": "Export from Replica Geodatabase",
+        "in_replica.descr": "The replica from which the unacknowledged messages will be reexported.",
+        "in_replica.title": "Replica",
+        "output_delta_file.descr": "The delta file to which data changes will be reexported.",
+        "output_delta_file.title": "Output Delta File",
+        "title": "Re-export Unacknowledged Messages"
+    }
+}

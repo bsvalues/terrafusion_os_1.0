@@ -10,11 +10,14 @@ using System.Text;
 using System.Security.Cryptography;
 using System.IO;
 
+
+#pragma warning disable CS1998
+
 namespace TerraFusion.Core.Services
 {
     public interface IAPIResponseCachingService
     {
-        Task<T> GetCachedResponseAsync<T>(string cacheKey);
+        Task<T?> GetCachedResponseAsync<T>(string cacheKey);
         Task SetCachedResponseAsync<T>(string cacheKey, T response, TimeSpan? expiration = null, string[]? tags = null);
         Task InvalidateCacheAsync(string cacheKey);
         Task InvalidateByTagAsync(string tag);
@@ -64,7 +67,7 @@ namespace TerraFusion.Core.Services
         private readonly ILogger<APIResponseCachingService> _logger;
         private readonly IConfiguration _configuration;
         private readonly IRedisCacheService _cacheService;
-        
+
         // Cache configuration
         private readonly TimeSpan _defaultTTL;
         private readonly bool _enableCaching;
@@ -101,7 +104,7 @@ namespace TerraFusion.Core.Services
                 .Get<string[]>() ?? new[] { "/api/auth", "/api/security", "/api/realtime" };
         }
 
-        public async Task<T> GetCachedResponseAsync<T>(string cacheKey)
+        public async Task<T?> GetCachedResponseAsync<T>(string cacheKey)
         {
             if (!_enableCaching)
             {
@@ -114,17 +117,17 @@ namespace TerraFusion.Core.Services
                 Interlocked.Increment(ref _totalRequests);
 
                 var cachedResponse = await _cacheService.GetAsync<CachedResponse>(cacheKey);
-                
+
                 if (cachedResponse != null)
                 {
                     Interlocked.Increment(ref _cacheHits);
-                    
+
                     // Update hit count for the cached item
                     var hitCountKey = $"{cacheKey}:hits";
                     await _cacheService.IncrementAsync(hitCountKey);
 
                     _logger.LogDebug("Cache hit for key: {CacheKey}", cacheKey);
-                    
+
                     // Deserialize the response data
                     var responseData = JsonSerializer.Deserialize<T>(cachedResponse.Data);
                     return responseData;
@@ -193,7 +196,7 @@ namespace TerraFusion.Core.Services
                     }
                 }
 
-                _logger.LogDebug("Cached response for key: {CacheKey}, Size: {Size} bytes, TTL: {TTL}", 
+                _logger.LogDebug("Cached response for key: {CacheKey}, Size: {Size} bytes, TTL: {TTL}",
                     cacheKey, responseSize, ttl);
             }
             catch (Exception ex)
@@ -209,7 +212,7 @@ namespace TerraFusion.Core.Services
                 await _cacheService.RemoveAsync(cacheKey);
                 await _cacheService.RemoveAsync($"{cacheKey}:metadata");
                 await _cacheService.RemoveAsync($"{cacheKey}:hits");
-                
+
                 _logger.LogInformation("Invalidated cache for key: {CacheKey}", cacheKey);
             }
             catch (Exception ex)
@@ -280,7 +283,7 @@ namespace TerraFusion.Core.Services
                 // Include user context if available
                 if (request.HttpContext.User?.Identity?.IsAuthenticated == true)
                 {
-                    var userId = request.HttpContext.User.FindFirst("sub")?.Value ?? 
+                    var userId = request.HttpContext.User.FindFirst("sub")?.Value ??
                                 request.HttpContext.User.FindFirst("id")?.Value;
                     if (!string.IsNullOrEmpty(userId))
                     {
@@ -325,7 +328,7 @@ namespace TerraFusion.Core.Services
 
                     // Check content type
                     var contentType = objectResult.ContentTypes?.FirstOrDefault();
-                    if (!string.IsNullOrEmpty(contentType) && 
+                    if (!string.IsNullOrEmpty(contentType) &&
                         !_cacheableContentTypes.Any(ct => contentType.StartsWith(ct, StringComparison.OrdinalIgnoreCase)))
                     {
                         return false;
@@ -354,7 +357,7 @@ namespace TerraFusion.Core.Services
             try
             {
                 var cacheStats = await _cacheService.GetStatisticsAsync();
-                
+
                 var metrics = new CacheMetrics
                 {
                     TotalRequests = _totalRequests,
@@ -399,12 +402,12 @@ namespace TerraFusion.Core.Services
                         // This would typically make HTTP requests to the endpoints
                         // For now, we'll just log the warmup attempt
                         _logger.LogInformation("Warming up cache for endpoint: {Endpoint}", item.Endpoint);
-                        
+
                         // In a real implementation, you would:
                         // 1. Make HTTP request to the endpoint with parameters
                         // 2. Cache the response with specified TTL and tags
                         // 3. Handle any errors gracefully
-                        
+
                         await Task.Delay(100); // Simulate warmup delay
                     }
                     catch (Exception ex)
@@ -427,11 +430,11 @@ namespace TerraFusion.Core.Services
             try
             {
                 var items = new List<CachedItem>();
-                
+
                 // This is a simplified implementation
                 // In a real scenario, you'd iterate through Redis keys matching the pattern
                 // and retrieve metadata for each cached item
-                
+
                 _logger.LogDebug("Retrieved cached items with pattern: {Pattern}", pattern ?? "all");
                 return items;
             }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Box,
+import {
+  Box,
   Paper,
   Typography,
   IconButton,
@@ -13,8 +14,10 @@ import { Box,
   Divider,
   Chip,
   LinearProgress,
-  Alert } from '@mui/material';
-import { Notifications as NotificationsIcon,
+  Alert,
+} from '@mui/material';
+import {
+  Notifications as NotificationsIcon,
   Memory as MemoryIcon,
   Speed as SpeedIcon,
   Security as SecurityIcon,
@@ -23,7 +26,8 @@ import { Notifications as NotificationsIcon,
   Warning as WarningIcon,
   CheckCircle as CheckCircleIcon,
   Error as ErrorIcon,
-  Info as InfoIcon } from '@mui/icons-material';
+  Info as InfoIcon,
+} from '@mui/icons-material';
 
 interface SystemMetric {
   id: string;
@@ -256,15 +260,11 @@ export const SystemTray: React.FC = () => {
             gutterBottom
             sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
           >
-
-
             <SpeedIcon />
             System Metrics
           </Typography>
 
-          <List
-
-dense>
+          <List dense>
             {metrics.map((metric) => (
               <ListItem key={metric.id} sx={{ px: 0 }}>
                 <ListItemIcon>
@@ -278,14 +278,11 @@ dense>
                   primary={metric.name}
                   secondary={
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
-
-
                       <Typography variant='body2' component='span'>
                         {formatValue(metric)}
                       </Typography>
                       <Chip
-
-label={metric.status}
+                        label={metric.status}
                         size='small'
                         color={getStatusColor(metric.status) as any}
                       />
@@ -299,14 +296,11 @@ label={metric.status}
           <Divider sx={{ my: 1 }} />
 
           <Box sx={{ mt: 2 }}>
-
-
             <Typography variant='body2' color='text.secondary' gutterBottom>
               Terrafusion OS Status: All Systems Operational
             </Typography>
             <LinearProgress
-
-variant='determinate'
+              variant='determinate'
               value={95}
               color='success'
               sx={{ height: 8, borderRadius: 4 }}
@@ -356,12 +350,9 @@ variant='determinate'
                     '&:hover': { bgcolor: 'action.selected' },
                   }}
                 >
-
-
                   <ListItemIcon>{getNotificationIcon(notification.type)}</ListItemIcon>
                   <ListItemText
-
-primary={
+                    primary={
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Typography variant='subtitle2'>{notification.title}</Typography>
                         {!notification.read && (
@@ -378,14 +369,10 @@ primary={
                     }
                     secondary={
                       <Box>
-
-
                         <Typography variant='body2' sx={{ mb: 0.5 }}>
                           {notification.message}
                         </Typography>
-                        <Typography
-
-variant='caption' color='text.secondary'>
+                        <Typography variant='caption' color='text.secondary'>
                           {notification.timestamp.toLocaleTimeString()}
                         </Typography>
                       </Box>

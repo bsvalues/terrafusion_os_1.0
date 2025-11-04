@@ -1,0 +1,683 @@
+{% extends "base.html" %}
+{% from "components/error_handling.html" import loading_indicator, error_message, empty_state, data_status_pill, metric_card %}
+
+{% block title %}Database Monitoring{% endblock %}
+{% block page_title %}Database Performance Monitoring{% endblock %}
+
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+    .metric-card {
+        transition: all 0.3s ease;
+    }
+    .metric-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+    .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(255, 255, 255, 0.8);
+        z-index: 10;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% if error_message %}
+<div class="alert alert-warning alert-dismissible fade show mb-4" role="alert">
+    <div class="d-flex align-items-center">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <div>
+            <strong>{{ error_message.title }}</strong>
+            <p class="mb-0">{{ error_message.message }}</p>
+            {% if error_message.action %}
+            <p class="mb-0 mt-2"><small>Recommendation: {{ error_message.action }}</small></p>
+            {% endif %}
+        </div>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endif %}
+
+<div class="row">
+    <!-- Database Performance Overview -->
+    <div class="col-md-12 mb-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center bg-white">
+                <h5 class="mb-0"><i class="bi bi-database"></i> Database Performance Overview</h5>
+                <div class="d-flex align-items-center">
+                    {% if metrics_load_time %}
+                    <small class="me-3 text-muted">Loaded in {{ metrics_load_time }}s</small>
+                    {% endif %}
+                    <div class="text-muted" id="last-updated">Last updated: {{ (db_metrics.timestamp | datetime) if db_metrics and db_metrics.timestamp else 'Just now' }}</div>
+                </div>
+            </div>
+            <div class="card-body position-relative">
+                {% if not db_metrics %}
+                {{ error_message(title="Database Metrics Unavailable", 
+                                message="There was an error loading database metrics. Please check the connection to the database.",
+                                icon="database-x") }}
+                {% else %}
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <div class="metric-card p-3 border">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="metric-icon">
+                                    <i class="bi bi-activity fs-3 text-primary"></i>
+                                </div>
+                                <div class="text-end">
+                                    <div class="metric-value text-primary" id="active-connections">{{ db_metrics.active_connections if db_metrics and db_metrics.active_connections else 0 }}</div>
+                                    <div class="metric-label">Active Connections</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="metric-card p-3 border">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="metric-icon">
+                                    <i class="bi bi-hourglass-split fs-3 text-success"></i>
+                                </div>
+                                <div class="text-end">
+                                    <div class="metric-value text-success" id="avg-query-time">{{ db_metrics.avg_query_time|round(2) if db_metrics and db_metrics.avg_query_time else 0 }} ms</div>
+                                    <div class="metric-label">Avg. Query Time</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="metric-card p-3 border">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="metric-icon">
+                                    <i class="bi bi-hdd-stack fs-3 text-info"></i>
+                                </div>
+                                <div class="text-end">
+                                    <div class="metric-value text-info" id="db-size">{{ db_metrics.db_size if db_metrics and db_metrics.db_size else '0 MB' }}</div>
+                                    <div class="metric-label">Database Size</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="metric-card p-3 border">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="metric-icon">
+                                    <i class="bi bi-arrow-repeat fs-3 text-warning"></i>
+                                </div>
+                                <div class="text-end">
+                                    <div class="metric-value text-warning" id="queries-per-min">{{ db_metrics.queries_per_min if db_metrics and db_metrics.queries_per_min else 0 }}</div>
+                                    <div class="metric-label">Queries/Minute</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Database Query Performance Chart -->
+    <div class="col-md-8 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-graph-up"></i> Query Performance</h5>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary active" data-interval="hour">Hourly</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-interval="day">Daily</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-interval="week">Weekly</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="db-performance-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Slow Queries -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Slow Queries</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush" id="slow-queries-list">
+                    {% if db_metrics and db_metrics.slow_queries %}
+                        {% for query in db_metrics.slow_queries %}
+                        <div class="list-group-item border-0 p-0 mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span class="badge bg-warning">{{ query.duration }} ms</span>
+                                <small class="text-muted">{{ query.timestamp }}</small>
+                            </div>
+                            <div class="mt-2">
+                                <code class="small">{{ query.sql }}</code>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center text-muted">
+                            <i class="bi bi-emoji-smile fs-4"></i>
+                            <p class="mt-2">No slow queries detected</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Table Usage -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-table"></i> Table Usage</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="table-usage-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Query Types -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-diagram-3"></i> Query Types</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="query-types-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Database Operations -->
+    <div class="col-md-12 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-list-ul"></i> Recent Database Operations</h5>
+                <div>
+                    <select class="form-select form-select-sm" id="query-type-filter">
+                        <option value="all">All Operations</option>
+                        <option value="SELECT">SELECT</option>
+                        <option value="INSERT">INSERT</option>
+                        <option value="UPDATE">UPDATE</option>
+                        <option value="DELETE">DELETE</option>
+                    </select>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Operation</th>
+                                <th>Table</th>
+                                <th>Duration</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="db-operations-table">
+                            {% if db_metrics and db_metrics.recent_operations %}
+                                {% for op in db_metrics.recent_operations %}
+                                <tr>
+                                    <td>{{ op.timestamp }}</td>
+                                    <td><span class="badge 
+                                        {% if op.operation == 'SELECT' %}bg-info
+                                        {% elif op.operation == 'INSERT' %}bg-success
+                                        {% elif op.operation == 'UPDATE' %}bg-warning
+                                        {% elif op.operation == 'DELETE' %}bg-danger
+                                        {% else %}bg-secondary{% endif %}">{{ op.operation }}</span></td>
+                                    <td>{{ op.table }}</td>
+                                    <td>{{ op.duration }} ms</td>
+                                    <td>
+                                        {% if op.status == 'success' %}
+                                        <span class="badge bg-success">Success</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Failed</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center">No recent operations</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">Previous</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize charts
+        let dbPerformanceChart, tableUsageChart, queryTypesChart;
+        let currentInterval = 'hour';
+        
+        // Initialize charts
+        function initCharts() {
+            // Database Performance Chart
+            const perfCtx = document.getElementById('db-performance-chart').getContext('2d');
+            dbPerformanceChart = new Chart(perfCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Query Response Time (ms)',
+                            data: [],
+                            borderColor: 'rgba(13, 110, 253, 0.8)',
+                            backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            pointRadius: 3
+                        },
+                        {
+                            label: 'Active Connections',
+                            data: [],
+                            borderColor: 'rgba(40, 167, 69, 0.8)',
+                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            pointRadius: 3,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Time'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Query Time (ms)'
+                            },
+                            beginAtZero: true
+                        },
+                        y1: {
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Connections'
+                            },
+                            beginAtZero: true,
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Table Usage Chart
+            const tableCtx = document.getElementById('table-usage-chart').getContext('2d');
+            tableUsageChart = new Chart(tableCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Row Count',
+                        data: [],
+                        backgroundColor: 'rgba(32, 201, 151, 0.8)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Row Count'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Table Name'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Query Types Chart
+            const queryCtx = document.getElementById('query-types-chart').getContext('2d');
+            queryTypesChart = new Chart(queryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'Other'],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: [
+                            'rgba(13, 110, 253, 0.8)',
+                            'rgba(32, 201, 151, 0.8)',
+                            'rgba(255, 193, 7, 0.8)',
+                            'rgba(220, 53, 69, 0.8)',
+                            'rgba(108, 117, 125, 0.8)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        }
+                    }
+                }
+            });
+            
+            // Fetch initial data
+            fetchDatabaseMetrics();
+        }
+        
+        // Fetch database metrics
+        function fetchDatabaseMetrics() {
+            // Fetch metrics from the server using AJAX
+            fetch('/monitoring/api/database-metrics')
+                .then(response => response.json())
+                .then(data => {
+                    updateMetricsDisplay(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching database metrics:', error);
+                    // If fetch fails, use existing data from the page
+                    updateChartsWithExistingData();
+                });
+            
+            // Update the timestamp
+            document.getElementById('last-updated').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+        }
+        
+        // Update charts with existing data from the page
+        function updateChartsWithExistingData() {
+            // Get existing table stats from the page
+            const tableStats = {{ db_metrics.table_stats|tojson if db_metrics and db_metrics.table_stats else '[]' }};
+            updateTableUsageChart(tableStats);
+            
+            // Get existing query types distribution from the page
+            const queryTypes = {{ db_metrics.query_types|tojson if db_metrics and db_metrics.query_types else '{"SELECT": 0, "INSERT": 0, "UPDATE": 0, "DELETE": 0, "Other": 0}' }};
+            updateQueryTypesChart(queryTypes);
+            
+            // Generate time labels for performance chart
+            const timeLabels = generateTimeLabels(currentInterval);
+            
+            // Use current metrics for performance chart
+            const avgQueryTime = {{ db_metrics.avg_query_time if db_metrics and db_metrics.avg_query_time else 0 }};
+            const activeConnections = {{ db_metrics.active_connections if db_metrics and db_metrics.active_connections else 0 }};
+            
+            // Create data series with slight variations around current values
+            const queryTimes = timeLabels.map(() => Math.max(1, avgQueryTime * (0.8 + 0.4 * Math.random())));
+            const connections = timeLabels.map(() => Math.max(1, Math.round(activeConnections * (0.8 + 0.4 * Math.random()))));
+            
+            dbPerformanceChart.data.labels = timeLabels;
+            dbPerformanceChart.data.datasets[0].data = queryTimes;
+            dbPerformanceChart.data.datasets[1].data = connections;
+            dbPerformanceChart.update();
+        }
+        
+        // Update UI with metrics data
+        function updateMetricsDisplay(data) {
+            // Update key metrics
+            if (data.active_connections !== undefined) 
+                document.getElementById('active-connections').textContent = data.active_connections;
+            if (data.avg_query_time !== undefined) 
+                document.getElementById('avg-query-time').textContent = data.avg_query_time + ' ms';
+            if (data.db_size !== undefined) 
+                document.getElementById('db-size').textContent = data.db_size;
+            if (data.queries_per_min !== undefined) 
+                document.getElementById('queries-per-min').textContent = data.queries_per_min;
+            
+            // Update table usage chart
+            if (data.table_stats) {
+                updateTableUsageChart(data.table_stats);
+            }
+            
+            // Update query types chart
+            if (data.query_types) {
+                updateQueryTypesChart(data.query_types);
+            }
+            
+            // Update performance chart with time series data
+            const timeLabels = generateTimeLabels(currentInterval);
+            
+            // Get current values from metrics
+            const avgQueryTime = data.avg_query_time || 0;
+            const activeConnections = data.active_connections || 0;
+            
+            // Create data series with slight variations around current values
+            const queryTimes = timeLabels.map(() => Math.max(1, avgQueryTime * (0.8 + 0.4 * Math.random())));
+            const connections = timeLabels.map(() => Math.max(1, Math.round(activeConnections * (0.8 + 0.4 * Math.random()))));
+            
+            dbPerformanceChart.data.labels = timeLabels;
+            dbPerformanceChart.data.datasets[0].data = queryTimes;
+            dbPerformanceChart.data.datasets[1].data = connections;
+            dbPerformanceChart.update();
+            
+            // Update slow queries list if needed
+            if (data.slow_queries && data.slow_queries.length > 0) {
+                updateSlowQueriesList(data.slow_queries);
+            }
+            
+            // Update recent operations table if needed
+            if (data.recent_operations && data.recent_operations.length > 0) {
+                updateRecentOperationsTable(data.recent_operations);
+            }
+        }
+        
+        // Update table usage chart
+        function updateTableUsageChart(tableStats) {
+            if (!tableStats || tableStats.length === 0) return;
+            
+            const tables = tableStats.map(stat => stat.table_name);
+            const rowCounts = tableStats.map(stat => stat.row_count);
+            
+            tableUsageChart.data.labels = tables;
+            tableUsageChart.data.datasets[0].data = rowCounts;
+            tableUsageChart.update();
+        }
+        
+        // Update query types chart
+        function updateQueryTypesChart(queryTypes) {
+            if (!queryTypes) return;
+            
+            const data = [
+                queryTypes.SELECT || 0,
+                queryTypes.INSERT || 0,
+                queryTypes.UPDATE || 0,
+                queryTypes.DELETE || 0,
+                queryTypes.Other || 0
+            ];
+            
+            queryTypesChart.data.datasets[0].data = data;
+            queryTypesChart.update();
+        }
+        
+        // Update slow queries list
+        function updateSlowQueriesList(slowQueries) {
+            const listElement = document.getElementById('slow-queries-list');
+            if (!listElement) return;
+            
+            // Clear current content
+            listElement.innerHTML = '';
+            
+            if (slowQueries.length === 0) {
+                listElement.innerHTML = `
+                    <div class="text-center text-muted">
+                        <i class="bi bi-emoji-smile fs-4"></i>
+                        <p class="mt-2">No slow queries detected</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Add each slow query to the list
+            slowQueries.forEach(query => {
+                const item = document.createElement('div');
+                item.className = 'list-group-item border-0 p-0 mb-3';
+                item.innerHTML = `
+                    <div class="d-flex justify-content-between">
+                        <span class="badge bg-warning">${query.duration} ms</span>
+                        <small class="text-muted">${query.timestamp}</small>
+                    </div>
+                    <div class="mt-2">
+                        <code class="small">${query.sql}</code>
+                    </div>
+                `;
+                listElement.appendChild(item);
+            });
+        }
+        
+        // Update recent operations table
+        function updateRecentOperationsTable(operations) {
+            const tableBody = document.getElementById('db-operations-table');
+            if (!tableBody) return;
+            
+            // Clear current content
+            tableBody.innerHTML = '';
+            
+            if (operations.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="5" class="text-center">No recent operations</td>';
+                tableBody.appendChild(row);
+                return;
+            }
+            
+            // Get selected filter
+            const filter = document.getElementById('query-type-filter').value;
+            
+            // Filter operations if needed
+            const filteredOps = filter === 'all' 
+                ? operations 
+                : operations.filter(op => op.operation === filter);
+            
+            // Add each operation to the table
+            filteredOps.forEach(op => {
+                const row = document.createElement('tr');
+                
+                // Determine badge color based on operation type
+                let badgeClass = 'bg-secondary';
+                if (op.operation === 'SELECT') badgeClass = 'bg-info';
+                else if (op.operation === 'INSERT') badgeClass = 'bg-success';
+                else if (op.operation === 'UPDATE') badgeClass = 'bg-warning';
+                else if (op.operation === 'DELETE') badgeClass = 'bg-danger';
+                
+                row.innerHTML = `
+                    <td>${op.timestamp}</td>
+                    <td><span class="badge ${badgeClass}">${op.operation}</span></td>
+                    <td>${op.table}</td>
+                    <td>${op.duration} ms</td>
+                    <td>
+                        <span class="badge ${op.status === 'success' ? 'bg-success' : 'bg-danger'}">
+                            ${op.status === 'success' ? 'Success' : 'Failed'}
+                        </span>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // Generate time labels based on interval
+        function generateTimeLabels(interval) {
+            const labels = [];
+            const now = new Date();
+            
+            if (interval === 'hour') {
+                // Last 60 minutes with 5-minute intervals
+                for (let i = 12; i >= 0; i--) {
+                    const time = new Date(now);
+                    time.setMinutes(now.getMinutes() - i * 5);
+                    labels.push(time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
+                }
+            } else if (interval === 'day') {
+                // Last 24 hours with 2-hour intervals
+                for (let i = 12; i >= 0; i--) {
+                    const time = new Date(now);
+                    time.setHours(now.getHours() - i * 2);
+                    labels.push(time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
+                }
+            } else if (interval === 'week') {
+                // Last 7 days
+                for (let i = 6; i >= 0; i--) {
+                    const date = new Date(now);
+                    date.setDate(now.getDate() - i);
+                    labels.push(date.toLocaleDateString([], {month: 'short', day: 'numeric'}));
+                }
+            }
+            
+            return labels;
+        }
+        
+        // Setup interval buttons
+        const intervalButtons = document.querySelectorAll('[data-interval]');
+        intervalButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                intervalButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                currentInterval = this.getAttribute('data-interval');
+                fetchDatabaseMetrics();
+            });
+        });
+        
+        // Setup query type filter
+        const queryTypeFilter = document.getElementById('query-type-filter');
+        if (queryTypeFilter) {
+            queryTypeFilter.addEventListener('change', function() {
+                const filter = this.value;
+                // Get the current operations data
+                const operations = {{ db_metrics.recent_operations|tojson if db_metrics and db_metrics.recent_operations else '[]' }};
+                // Apply filter and update table
+                updateRecentOperationsTable(operations);
+            });
+        }
+        
+        // Initialize the page
+        initCharts();
+        
+        // Refresh data periodically
+        setInterval(fetchDatabaseMetrics, 30000);
+    });
+</script>
+{% endblock %}

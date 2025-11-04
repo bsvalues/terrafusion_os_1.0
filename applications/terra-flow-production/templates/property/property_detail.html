@@ -1,0 +1,605 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ property.parcel_id }} - Property Details{% endblock %}
+
+{% block additionalcss %}
+<style>
+    .property-header {
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .property-title {
+        margin-bottom: 5px;
+        font-weight: 600;
+    }
+    
+    .property-address {
+        font-size: 1.1rem;
+        color: #495057;
+    }
+    
+    .property-id {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    
+    .property-value {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #198754;
+    }
+    
+    .property-status {
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    
+    .status-active {
+        background-color: #d1e7dd;
+        color: #0f5132;
+    }
+    
+    .status-inactive {
+        background-color: #f8d7da;
+        color: #842029;
+    }
+    
+    .status-pending {
+        background-color: #fff3cd;
+        color: #664d03;
+    }
+    
+    .status-exempt {
+        background-color: #cff4fc;
+        color: #055160;
+    }
+    
+    .info-label {
+        font-weight: 500;
+        color: #495057;
+        font-size: 0.9rem;
+    }
+    
+    .info-value {
+        font-weight: 400;
+        font-size: 1rem;
+    }
+    
+    .map-container {
+        height: 300px;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+    
+    .action-buttons {
+        margin-top: 20px;
+    }
+    
+    .section-header {
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        margin-top: 30px;
+        font-weight: 600;
+    }
+    
+    .property-card {
+        border-radius: 10px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .property-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .empty-state {
+        padding: 30px;
+        text-align: center;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        margin: 20px 0;
+    }
+    
+    .history-timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+    
+    .history-timeline::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 10px;
+        width: 2px;
+        background-color: #dee2e6;
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 20px;
+    }
+    
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -30px;
+        top: 5px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background-color: #fff;
+        border: 2px solid #6c757d;
+    }
+    
+    .timeline-item-primary::before {
+        border-color: #0d6efd;
+    }
+    
+    .timeline-item-success::before {
+        border-color: #198754;
+    }
+    
+    .timeline-item-warning::before {
+        border-color: #ffc107;
+    }
+    
+    .timeline-item-danger::before {
+        border-color: #dc3545;
+    }
+    
+    .timeline-date {
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin-bottom: 5px;
+    }
+    
+    .timeline-content {
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+    }
+    
+    .tab-content {
+        padding: 20px;
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        border-top: none;
+        border-radius: 0 0 5px 5px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('property.property_list') }}">Properties</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ property.parcel_id }}</li>
+        </ol>
+    </nav>
+    
+    <!-- Property Header -->
+    <div class="property-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="property-title h2">
+                    {{ property.address }}{% if property.city %}, {{ property.city }}{% endif %}{% if property.state %}, {{ property.state }}{% endif %}{% if property.zip_code %} {{ property.zip_code }}{% endif %}
+                </h1>
+                <div class="property-id">
+                    <span class="text-muted">Parcel ID:</span> {{ property.parcel_id }}
+                    {% if property.account_number %}
+                    | <span class="text-muted">Account #:</span> {{ property.account_number }}
+                    {% endif %}
+                </div>
+                <div class="mt-3">
+                    <span class="property-status status-{{ property.status|lower }}">
+                        {{ property.status|title }}
+                    </span>
+                    
+                    {% if property.property_class %}
+                    <span class="badge bg-primary ms-2">{{ property.property_class|title }}</span>
+                    {% endif %}
+                    
+                    {% if property.zoning %}
+                    <span class="badge bg-secondary ms-2">Zoning: {{ property.zoning }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div class="property-value mb-1">
+                    {{ property.total_value|format_currency }}
+                </div>
+                <small class="text-muted">Total Assessed Value</small>
+                
+                <div class="action-buttons">
+                    {% if has_permission('property.edit') %}
+                    <a href="{{ url_for('property.property_edit', property_id=property.id) }}" class="btn btn-outline-primary">
+                        <i class="fas fa-edit me-1"></i> Edit
+                    </a>
+                    {% endif %}
+                    
+                    <div class="btn-group ms-2">
+                        <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('property.property_assessments', property_id=property.id) }}">
+                                    <i class="fas fa-chart-line me-2"></i> View Assessments
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('property.property_files', property_id=property.id) }}">
+                                    <i class="fas fa-file me-2"></i> View Files
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            {% if has_permission('property.delete') %}
+                            <li>
+                                <a class="dropdown-item text-danger" href="#" data-bs-toggle="modal" data-bs-target="#deletePropertyModal">
+                                    <i class="fas fa-trash-alt me-2"></i> Delete Property
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Left Column - Property Information -->
+        <div class="col-lg-8">
+            <!-- Tabs Navigation -->
+            <ul class="nav nav-tabs" id="propertyTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab" aria-controls="details" aria-selected="true">
+                        <i class="fas fa-info-circle me-1"></i> Details
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="valuation-tab" data-bs-toggle="tab" data-bs-target="#valuation" type="button" role="tab" aria-controls="valuation" aria-selected="false">
+                        <i class="fas fa-dollar-sign me-1"></i> Valuation
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="owner-tab" data-bs-toggle="tab" data-bs-target="#owner" type="button" role="tab" aria-controls="owner" aria-selected="false">
+                        <i class="fas fa-user me-1"></i> Owner
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">
+                        <i class="fas fa-history me-1"></i> History
+                    </button>
+                </li>
+            </ul>
+            
+            <!-- Tab Content -->
+            <div class="tab-content" id="propertyTabsContent">
+                <!-- Details Tab -->
+                <div class="tab-pane fade show active" id="details" role="tabpanel" aria-labelledby="details-tab">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <div class="info-label">Property Class</div>
+                                <div class="info-value">{{ property.property_class|title if property.property_class else 'Not specified' }}</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="info-label">Zoning</div>
+                                <div class="info-value">{{ property.zoning if property.zoning else 'Not specified' }}</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="info-label">Year Built</div>
+                                <div class="info-value">{{ property.year_built if property.year_built else 'Unknown' }}</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="info-label">Living Area</div>
+                                <div class="info-value">{{ property.living_area|format_number if property.living_area else 'N/A' }} sq ft</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <div class="info-label">Bedrooms</div>
+                                <div class="info-value">{{ property.bedrooms if property.bedrooms else 'N/A' }}</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="info-label">Bathrooms</div>
+                                <div class="info-value">{{ property.bathrooms if property.bathrooms else 'N/A' }}</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="info-label">Land Area</div>
+                                <div class="info-value">{{ property.land_area|format_number if property.land_area else 'N/A' }} sq ft</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="info-label">Lot Size</div>
+                                <div class="info-value">{{ property.lot_size if property.lot_size else 'N/A' }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="info-label">Legal Description</div>
+                        <div class="info-value">{{ property.legal_description if property.legal_description else 'Not available' }}</div>
+                    </div>
+                </div>
+                
+                <!-- Valuation Tab -->
+                <div class="tab-pane fade" id="valuation" role="tabpanel" aria-labelledby="valuation-tab">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card border-0 bg-light mb-3">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title text-muted mb-3">Land Value</h5>
+                                    <h2 class="card-text mb-0">{{ property.land_value|format_currency }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="card border-0 bg-light mb-3">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title text-muted mb-3">Improvement Value</h5>
+                                    <h2 class="card-text mb-0">{{ property.improvement_value|format_currency }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="card border-0 bg-success text-white mb-3">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title mb-3">Total Value</h5>
+                                    <h2 class="card-text mb-0">{{ property.total_value|format_currency }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h5>Last Sale Information</h5>
+                        <hr>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <div class="info-label">Last Sale Date</div>
+                                    <div class="info-value">{{ property.last_sale_date|format_date if property.last_sale_date else 'N/A' }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <div class="info-label">Last Sale Price</div>
+                                    <div class="info-value">{{ property.last_sale_price|format_currency if property.last_sale_price else 'N/A' }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <div class="info-label">Last Sale Document</div>
+                                    <div class="info-value">{{ property.last_sale_document if property.last_sale_document else 'N/A' }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-end mt-3">
+                            <a href="{{ url_for('property.property_assessments', property_id=property.id) }}" class="btn btn-outline-primary">
+                                <i class="fas fa-chart-line me-1"></i> View Assessment History
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Owner Tab -->
+                <div class="tab-pane fade" id="owner" role="tabpanel" aria-labelledby="owner-tab">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ property.owner_name if property.owner_name else 'Owner information not available' }}</h5>
+                            {% if property.owner_address %}
+                            <p class="card-text">
+                                {{ property.owner_address }}<br>
+                                {% if property.owner_city %}{{ property.owner_city }}{% endif %}{% if property.owner_state %}, {{ property.owner_state }}{% endif %}{% if property.owner_zip %} {{ property.owner_zip }}{% endif %}
+                            </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <p class="text-muted mt-3"><i class="fas fa-info-circle me-1"></i> Owner information is based on county records.</p>
+                </div>
+                
+                <!-- History Tab -->
+                <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+                    <div class="history-timeline">
+                        {% if property.created_at %}
+                        <div class="timeline-item timeline-item-primary">
+                            <div class="timeline-date">{{ property.created_at|format_date('%-m/%-d/%Y') }}</div>
+                            <div class="timeline-content">
+                                <h5 class="timeline-title h6">Property Record Created</h5>
+                                <p class="mb-0">Property record was added to the system.</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if property.last_sale_date %}
+                        <div class="timeline-item timeline-item-success">
+                            <div class="timeline-date">{{ property.last_sale_date|format_date('%-m/%-d/%Y') }}</div>
+                            <div class="timeline-content">
+                                <h5 class="timeline-title h6">Property Sold</h5>
+                                <p class="mb-0">Property sold for {{ property.last_sale_price|format_currency }}.</p>
+                                {% if property.last_sale_document %}
+                                <small class="text-muted">Document: {{ property.last_sale_document }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if property.updated_at and property.updated_at != property.created_at %}
+                        <div class="timeline-item">
+                            <div class="timeline-date">{{ property.updated_at|format_date('%-m/%-d/%Y') }}</div>
+                            <div class="timeline-content">
+                                <h5 class="timeline-title h6">Record Updated</h5>
+                                <p class="mb-0">Property information was updated.</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="text-end mt-4">
+                            <a href="{{ url_for('property.property_assessments', property_id=property.id) }}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-chart-line me-1"></i> Assessment History
+                            </a>
+                            <a href="{{ url_for('property.property_files', property_id=property.id) }}" class="btn btn-sm btn-outline-secondary ms-2">
+                                <i class="fas fa-file me-1"></i> Document History
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Column - Map and Quick Info -->
+        <div class="col-lg-4">
+            <!-- Map Section -->
+            <div class="map-container bg-light d-flex justify-content-center align-items-center">
+                <div class="text-center">
+                    <i class="fas fa-map-marked-alt fa-4x text-secondary mb-3"></i>
+                    <h4 class="h5 text-muted">Map View</h4>
+                    <p class="text-muted small">
+                        {% if property.latitude and property.longitude %}
+                        Property location will be displayed here
+                        {% else %}
+                        Location coordinates not available
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Quick Info Cards -->
+            <div class="card mb-3">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">Quick Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <span class="d-block text-muted small">Year Built</span>
+                            <span class="h5">{{ property.year_built if property.year_built else 'N/A' }}</span>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <span class="d-block text-muted small">Living Area</span>
+                            <span class="h5">{{ property.living_area|format_number if property.living_area else 'N/A' }}</span>
+                            <small class="d-block text-muted">sq ft</small>
+                        </div>
+                        <div class="col-6">
+                            <span class="d-block text-muted small">Bedrooms</span>
+                            <span class="h5">{{ property.bedrooms if property.bedrooms else 'N/A' }}</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="d-block text-muted small">Bathrooms</span>
+                            <span class="h5">{{ property.bathrooms if property.bathrooms else 'N/A' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Links -->
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">Quick Links</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('property.property_assessments', property_id=property.id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-chart-line me-2"></i> Assessments
+                        </div>
+                        <span class="badge bg-primary rounded-pill">View</span>
+                    </a>
+                    <a href="{{ url_for('property.property_files', property_id=property.id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-file me-2"></i> Files & Documents
+                        </div>
+                        <span class="badge bg-primary rounded-pill">View</span>
+                    </a>
+                    {% if has_permission('property.edit') %}
+                    <a href="{{ url_for('property.property_edit', property_id=property.id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-edit me-2"></i> Edit Property
+                        </div>
+                        <span class="badge bg-secondary rounded-pill">Edit</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Property Modal -->
+{% if has_permission('property.delete') %}
+<div class="modal fade" id="deletePropertyModal" tabindex="-1" aria-labelledby="deletePropertyModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deletePropertyModalLabel">Delete Property</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the property at <strong>{{ property.address }}</strong>?</p>
+                <p class="text-danger"><strong>Warning:</strong> This action cannot be undone. All related assessments and files will also be deleted.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="{{ url_for('property.property_delete', property_id=property.id) }}" method="post">
+                    <button type="submit" class="btn btn-danger">Delete Property</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle tab switching through URL hash
+        const triggerTabList = document.querySelectorAll('#propertyTabs button')
+        triggerTabList.forEach(function(triggerEl) {
+            const tabTrigger = new bootstrap.Tab(triggerEl)
+            
+            triggerEl.addEventListener('click', function(event) {
+                event.preventDefault()
+                tabTrigger.show()
+                history.pushState(null, null, '#' + triggerEl.id.replace('-tab', ''))
+            })
+        })
+        
+        // Activate tab based on hash
+        const hash = window.location.hash.substring(1)
+        if (hash) {
+            const tab = document.getElementById(hash + '-tab')
+            if (tab) {
+                const tabInstance = new bootstrap.Tab(tab)
+                tabInstance.show()
+            }
+        }
+    })
+</script>
+{% endblock %}

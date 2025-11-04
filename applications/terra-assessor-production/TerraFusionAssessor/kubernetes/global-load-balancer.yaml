@@ -1,0 +1,51 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: terrafusion-ssl-cert
+spec:
+  domains:
+    - terrafusion.com
+    - api.terrafusion.com
+    - quantum.terrafusion.com
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: terrafusion-global-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "terrafusion-global-ip"
+    networking.gke.io/managed-certificates: "terrafusion-ssl-cert"
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.allow-http: "false"
+spec:
+  rules:
+  - host: terrafusion.com
+    http:
+      paths:
+      - path: /*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: terrafusion-app-service
+            port:
+              number: 80
+  - host: api.terrafusion.com
+    http:
+      paths:
+      - path: /*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: terrafusion-api-service
+            port:
+              number: 80
+  - host: quantum.terrafusion.com
+    http:
+      paths:
+      - path: /*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: terrafusion-quantum-service
+            port:
+              number: 80

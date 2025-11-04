@@ -1,0 +1,21 @@
+{
+    "map": {
+        "description": "Synchronizes multiple Workflow Manager (Classic) repositories participating in a Workflow Manager (Classic) cluster. The tool performs two-way synchronization; changes from the child repositories are sent to the parent repository and changes from the parent are sent to all child repositories.",
+        "input_multi_name.descr": "<xdoc><p>The child repositories that will be updated with the parent repository configuration. To add a child repository, provide the repository name and click the <span class=\"esri_uicontrol\">Add</span> button. After adding the child, enter values for <span class=\"esri_uicontrol\">Connected</span>, <span class=\"esri_uicontrol\">URL</span>, and <span class=\"esri_uicontrol\">Last Sync Time</span> as follows:<ul><li>Connected—The only accepted value is true. If any other value is provided, the child will not be synchronized.</li><li>URL—The URL of the child repository.</li><li>Last Sync Time—The date and time in the system format. For example, if your system data and time format is MM:DD:YY HH:MM:SS, the value will be 08/01/2013 11:30:45.</li></ul></p></xdoc>",
+        "input_multi_name.dt.title1": "Repository Name",
+        "input_multi_name.dt.title2": "Connected replica",
+        "input_multi_name.dt.title3": "URL",
+        "input_multi_name.dt.title4": "Last Sync",
+        "input_multi_name.title": "Child Repository Names and URLs",
+        "input_parent_repository_name.descr": "The parent repository that will distribute the Workflow Manager (Classic) jobs and configuration elements.",
+        "input_parent_repository_name.title": "Parent Repository Name",
+        "input_parent_repository_url.descr": "The URL for the parent repository will be the Workflow Manager (Classic) server URL, for example, http://localhost/arcgis/rest/services/parent/wmserver.",
+        "input_parent_repository_url.title": "Parent Repository URL",
+        "output_lastsync.dt.title1": "Repository Name",
+        "output_lastsync.dt.title2": "Last Sync",
+        "output_lastsync.title": "Last Synchronized",
+        "output_synchronizereplicastatus.title": "Status of Replica Synchronization",
+        "summary": "<xdoc><p>Synchronizes multiple Workflow Manager (Classic) repositories participating in a Workflow Manager (Classic) cluster. The tool performs two-way synchronization; changes from the child repositories are sent to the parent repository and changes from the parent are sent to all child repositories.</p><p>You must have ArcGIS Workflow Manager (Classic) installed and configured across all participating nodes to run this tool.</p><note type=\"legacy\"/><p group=\"note\">This is a deprecated tool. It is recommended that current Workflow Manager (Classic) users begin new projects using the services-driven ArcGIS Workflow Manager for ArcGIS Pro.</p></xdoc>",
+        "title": "Synchronize Job Data"
+    }
+}

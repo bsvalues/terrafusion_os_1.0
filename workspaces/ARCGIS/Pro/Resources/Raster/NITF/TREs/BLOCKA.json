@@ -1,0 +1,206 @@
+{
+  "TRE": "BLOCKA",
+  "Source": [
+    "STDI-0002-1 v2021.1, Appendix E: ASDE"
+  ],
+  "Name": "Image Block Information Extension Format",
+  "Description": "The Image Block Information TRE is optional, but often needed for exploitation of imagery. BLOCK is placed in the image subheader with the corresponding AIMID and ACFT extensions.  The format for the user defined fields of the BLOCKA extension and a description of their contents is detailed in table E-9.",
+  "Size": 123,
+  "Fields": {
+    "BLOCK_INSTANCE": {
+      "Name": "Block Number",
+      "Description": "This field represents the block number of this image block.",
+      "Size": 2,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 99
+        }
+      ]
+    },
+    "N_GRAY": {
+      "Name": "Number of Gray Pixels",
+      "Description": "This field represents the number of gray fill pixels. EO-IR: 00000.",
+      "Size": 5,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 99999
+        }
+      ]
+    },
+    "L_LINES": {
+      "Name": "Row Count",
+      "Description": "This field represents the row count of the image.",
+      "Size": 5,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 99999
+        }
+      ]
+    },
+    "LAYOVER_ANGLE": {
+      "Name": "Layover Angle",
+      "Description": "This field represents the SAR angle between the first row of pixels (NITF row 1) and the layover direction in the image, measured in a clockwise direction. It defaults to spaces. EO-IR: spaces.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "<R>",
+      "Units": [
+        "degrees"
+      ],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 359
+        }
+      ]
+    },
+    "SHADOW_ANGLE": {
+      "Name": "Shadow Angle",
+      "Description": "This field represents the SAR angle between the first row of pixels (NITF row 1) and the radar shadow in the image, measured in a clockwise direction.  Defaults to spaces.EO-IR: spaces.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "<R>",
+      "Units": [
+        "degrees"
+      ],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 359
+        }
+      ]
+    },
+    "RESERVED_001": {
+      "Name": "Reserved 1",
+      "Description": "This field is reserved for future use. The value of this field shall be 16 spaces until specified otherwise.",
+      "Size": 16,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [
+            " "
+          ]
+        }
+      ]
+    },
+    "FRLC_LOC": {
+      "Name": "First Row Last Column Location",
+      "Description": "This field represents the location of the first row, last column of the image block. The location may be expressed in either degrees-minutes-seconds or in decimal degrees. The format Xddmmss.ss represents degrees (00 to 89), minutes (00 to 59), seconds (00 to 59), and hundredths of seconds (00 to 99) of latitude with X = N for north or S for south, and Ydddmmss.ss represents degrees (000 to 179), minutes (00 to 59), seconds (00 to 59), and hundredths of seconds (00 to 99) of longitude, with Y = E for east or W for west. The format +/-dd.dddddd indicates degrees of latitude (north is positive) and +/-ddd.dddddd represents degrees of longitude (east is positive).",
+      "Size": 21,
+      "Format": "BCS-N",
+      "Type": "<R>",
+      "Units": [
+        "degrees"
+      ],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [
+            "Xddmmss.ssYdddmmss.ss"
+          ]
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "LRLC_LOC": {
+      "Name": "Last Row Last Column Location",
+      "Description": "This field represents the location of the last row, last column of the image block. The location may be expressed in either degrees-minutes-seconds or in decimal degrees. The format Xddmmss.ss represents degrees (00 to 89), minutes (00 to 59), seconds (00 to 59), and hundredths of seconds (00 to 99) of latitude with X = N for north or S for south, and Ydddmmss.ss represents degrees (000 to 179), minutes (00 to 59), seconds (00 to 59), and hundredths of seconds (00 to 99) of longitude, with Y = E for east or W for west. The format +/-dd.dddddd indicates degrees of latitude (north is positive) and +/-ddd.dddddd represents degrees of longitude (east is positive).",
+      "Size": 21,
+      "Format": "BCS-N",
+      "Type": "<R>",
+      "Units": [
+        "degrees"
+      ],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [
+            "Xddmmss.ssYdddmmss.ss"
+          ]
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "LRFC_LOC": {
+      "Name": "Last Row First Column Location",
+      "Description": "This field represents the location of the last row, first column of the image block. The location may be expressed in either degrees-minutes-seconds or in decimal degrees. The format Xddmmss.ss represents degrees (00 to 89), minutes (00 to 59), seconds (00 to 59), and hundredths of seconds (00 to 99) of latitude with X = N for north or S for south, and Ydddmmss.ss represents degrees (000 to 179), minutes (00 to 59), seconds (00 to 59), and hundredths of seconds (00 to 99) of longitude, with Y = E for east or W for west. The format +/-dd.dddddd indicates degrees of latitude (north is positive) and +/-ddd.dddddd represents degrees of longitude (east is positive).",
+      "Size": 21,
+      "Format": "BCS-N",
+      "Type": "<R>",
+      "Units": [
+        "degrees"
+      ],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [
+            "Xddmmss.ssYdddmmss.ss"
+          ]
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "FRFC_LOC": {
+      "Name": "First Row First Column Location",
+      "Description": "This field represents the location of the first row, first column of the image block. The location may be expressed in either degrees-minutes-seconds or in decimal degrees. The format Xddmmss.ss represents degrees (00 to 89), minutes (00 to 59), seconds (00 to 59), and hundredths of seconds (00 to 99) of latitude with X = N for north or S for south, and Ydddmmss.ss represents degrees (000 to 179), minutes (00 to 59), seconds (00 to 59), and hundredths of seconds (00 to 99) of longitude, with Y = E for east or W for west. The format +/-dd.dddddd indicates degrees of latitude (north is positive) and +/-ddd.dddddd represents degrees of longitude (east is positive).",
+      "Size": 21,
+      "Format": "BCS-N",
+      "Type": "<R>",
+      "Units": [
+        "degrees"
+      ],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [
+            "Xddmmss.ssYdddmmss.ss"
+          ]
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "RESERVED_002": {
+      "Name": "Reserved 2",
+      "Description": "This field shall be reserved for future use. The value of this field is 010.0 until otherwise specified.",
+      "Size": 5,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [
+            "010.0"
+          ]
+        }
+      ]
+    }
+  }
+}

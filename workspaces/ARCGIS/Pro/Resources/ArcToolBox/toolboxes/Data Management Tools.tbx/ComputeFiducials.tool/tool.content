@@ -1,0 +1,107 @@
+{
+    "type": "FunctionTool",
+    "guid": "{a55177dc-1a0e-48c5-af17-f84bfd25117c}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190006",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_mosaic_dataset": {
+            "display_order": "0",
+            "displayname": "$rc:in_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_mosaic_dataset.descr"
+        },
+        "out_fiducial_table": {
+            "direction": "out",
+            "display_order": "2",
+            "displayname": "$rc:out_fiducial_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "description": "$rc:out_fiducial_table.descr"
+        },
+        "where_clause": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:where_clause.title",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "in_mosaic_dataset"
+            ],
+            "description": "$rc:where_clause.descr"
+        },
+        "fiducial_templates": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:fiducial_templates.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "DEFile"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "description": "$rc:fiducial_templates.descr"
+        },
+        "film_coordinate_system": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:film_coordinate_system.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NO_CHANGE",
+                        "code": "$rc:film_coordinate_system.domain.NO_CHANGE"
+                    },
+                    {
+                        "value": "X_RIGHT_Y_UP",
+                        "code": "$rc:film_coordinate_system.domain.X_RIGHT_Y_UP"
+                    },
+                    {
+                        "value": "X_UP_Y_LEFT",
+                        "code": "$rc:film_coordinate_system.domain.X_UP_Y_LEFT"
+                    },
+                    {
+                        "value": "X_LEFT_Y_DOWN",
+                        "code": "$rc:film_coordinate_system.domain.X_LEFT_Y_DOWN"
+                    },
+                    {
+                        "value": "X_DOWN_Y_RIGHT",
+                        "code": "$rc:film_coordinate_system.domain.X_DOWN_Y_RIGHT"
+                    }
+                ]
+            },
+            "value": "NO_CHANGE",
+            "description": "$rc:film_coordinate_system.descr"
+        }
+    },
+    "environments": [
+        "parallelProcessingFactor",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

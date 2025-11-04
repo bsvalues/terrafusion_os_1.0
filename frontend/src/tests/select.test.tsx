@@ -1,7 +1,7 @@
 /**
  * Select Component Tests - TerraFusion Design System
  * Week 2, Day 2 - Testing Phase
- * 
+ *
  * Purpose: Comprehensive testing of Select component
  * - Rendering (trigger, options, placeholder)
  * - Selection behavior (single value)
@@ -38,14 +38,14 @@ function SelectDemo({
 }) {
   return (
     <Select defaultValue={defaultValue} onValueChange={onValueChange} disabled={disabled}>
-      <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Select a fruit" />
+      <SelectTrigger className='w-[180px]'>
+        <SelectValue placeholder='Select a fruit' />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="apple">Apple</SelectItem>
-        <SelectItem value="banana">Banana</SelectItem>
-        <SelectItem value="orange">Orange</SelectItem>
-        <SelectItem value="grape">Grape</SelectItem>
+        <SelectItem value='apple'>Apple</SelectItem>
+        <SelectItem value='banana'>Banana</SelectItem>
+        <SelectItem value='orange'>Orange</SelectItem>
+        <SelectItem value='grape'>Grape</SelectItem>
       </SelectContent>
     </Select>
   );
@@ -54,19 +54,19 @@ function SelectDemo({
 function SelectWithGroups() {
   return (
     <Select>
-      <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Select a fruit" />
+      <SelectTrigger className='w-[180px]'>
+        <SelectValue placeholder='Select a fruit' />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
           <SelectLabel>Fruits</SelectLabel>
-          <SelectItem value="apple">Apple</SelectItem>
-          <SelectItem value="banana">Banana</SelectItem>
+          <SelectItem value='apple'>Apple</SelectItem>
+          <SelectItem value='banana'>Banana</SelectItem>
         </SelectGroup>
         <SelectGroup>
           <SelectLabel>Vegetables</SelectLabel>
-          <SelectItem value="carrot">Carrot</SelectItem>
-          <SelectItem value="potato">Potato</SelectItem>
+          <SelectItem value='carrot'>Carrot</SelectItem>
+          <SelectItem value='potato'>Potato</SelectItem>
         </SelectGroup>
       </SelectContent>
     </Select>
@@ -83,7 +83,7 @@ describe('Select Component', () => {
     });
 
     it('should render select trigger with selected value', () => {
-      render(<SelectDemo defaultValue="apple" />);
+      render(<SelectDemo defaultValue='apple' />);
       expect(screen.getByRole('combobox')).toBeInTheDocument();
       expect(screen.getByText('Apple')).toBeInTheDocument();
     });
@@ -99,7 +99,7 @@ describe('Select Component', () => {
       render(<SelectWithGroups />);
       const trigger = screen.getByRole('combobox');
       fireEvent.click(trigger);
-      
+
       expect(screen.getByText('Fruits')).toBeInTheDocument();
       expect(screen.getByText('Vegetables')).toBeInTheDocument();
     });
@@ -107,11 +107,11 @@ describe('Select Component', () => {
     it('should apply custom className to trigger', () => {
       const { container } = render(
         <Select>
-          <SelectTrigger className="custom-class w-full">
+          <SelectTrigger className='custom-class w-full'>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="test">Test</SelectItem>
+            <SelectItem value='test'>Test</SelectItem>
           </SelectContent>
         </Select>
       );
@@ -126,61 +126,61 @@ describe('Select Component', () => {
       const user = userEvent.setup();
       const onValueChange = vi.fn();
       render(<SelectDemo onValueChange={onValueChange} />);
-      
+
       const trigger = screen.getByRole('combobox');
       await user.click(trigger);
-      
+
       const option = screen.getByText('Banana');
       await user.click(option);
-      
+
       expect(onValueChange).toHaveBeenCalledWith('banana');
     });
 
     it('should display selected value in trigger', async () => {
       const user = userEvent.setup();
       render(<SelectDemo />);
-      
+
       const trigger = screen.getByRole('combobox');
       await user.click(trigger);
-      
+
       const option = screen.getByText('Orange');
       await user.click(option);
-      
+
       expect(screen.getByText('Orange')).toBeInTheDocument();
     });
 
     it('should change selection when different option clicked', async () => {
       const user = userEvent.setup();
       const onValueChange = vi.fn();
-      render(<SelectDemo defaultValue="apple" onValueChange={onValueChange} />);
-      
+      render(<SelectDemo defaultValue='apple' onValueChange={onValueChange} />);
+
       const trigger = screen.getByRole('combobox');
       await user.click(trigger);
-      
+
       const option = screen.getByText('Grape');
       await user.click(option);
-      
+
       expect(onValueChange).toHaveBeenCalledWith('grape');
     });
 
     it('should close dropdown after selection', async () => {
       const user = userEvent.setup();
       render(<SelectDemo />);
-      
+
       const trigger = screen.getByRole('combobox');
       await user.click(trigger);
-      
+
       expect(screen.getByText('Banana')).toBeInTheDocument();
-      
+
       const option = screen.getByText('Banana');
       await user.click(option);
-      
+
       // Content should be closed (removed from DOM)
       expect(screen.queryByText('Orange')).not.toBeInTheDocument();
     });
 
     it('should show default value on initial render', () => {
-      render(<SelectDemo defaultValue="banana" />);
+      render(<SelectDemo defaultValue='banana' />);
       expect(screen.getByText('Banana')).toBeInTheDocument();
     });
   });
@@ -190,46 +190,46 @@ describe('Select Component', () => {
     it('should open dropdown on Enter key', async () => {
       const user = userEvent.setup();
       render(<SelectDemo />);
-      
+
       const trigger = screen.getByRole('combobox');
       trigger.focus();
       await user.keyboard('{Enter}');
-      
+
       expect(screen.getByText('Apple')).toBeInTheDocument();
     });
 
     it('should open dropdown on Space key', async () => {
       const user = userEvent.setup();
       render(<SelectDemo />);
-      
+
       const trigger = screen.getByRole('combobox');
       trigger.focus();
       await user.keyboard(' ');
-      
+
       expect(screen.getByText('Apple')).toBeInTheDocument();
     });
 
     it('should close dropdown on Escape key', async () => {
       const user = userEvent.setup();
       render(<SelectDemo />);
-      
+
       const trigger = screen.getByRole('combobox');
       await user.click(trigger);
-      
+
       expect(screen.getByText('Apple')).toBeInTheDocument();
-      
+
       await user.keyboard('{Escape}');
-      
+
       expect(screen.queryByText('Apple')).not.toBeInTheDocument();
     });
 
     it('should navigate options with Arrow Down', async () => {
       const user = userEvent.setup();
       render(<SelectDemo />);
-      
+
       const trigger = screen.getByRole('combobox');
       await user.click(trigger);
-      
+
       await user.keyboard('{ArrowDown}');
       // First option should be focused (Apple is default first)
       // Note: Radix UI handles focus internally
@@ -239,10 +239,10 @@ describe('Select Component', () => {
     it('should navigate options with Arrow Up', async () => {
       const user = userEvent.setup();
       render(<SelectDemo />);
-      
+
       const trigger = screen.getByRole('combobox');
       await user.click(trigger);
-      
+
       await user.keyboard('{ArrowUp}');
       expect(screen.getByText('Apple')).toBeInTheDocument();
     });
@@ -251,13 +251,13 @@ describe('Select Component', () => {
       const user = userEvent.setup();
       const onValueChange = vi.fn();
       render(<SelectDemo onValueChange={onValueChange} />);
-      
+
       const trigger = screen.getByRole('combobox');
       await user.click(trigger);
-      
+
       await user.keyboard('{ArrowDown}');
       await user.keyboard('{Enter}');
-      
+
       expect(onValueChange).toHaveBeenCalled();
     });
   });
@@ -273,10 +273,10 @@ describe('Select Component', () => {
     it('should not open when disabled', async () => {
       const user = userEvent.setup();
       render(<SelectDemo disabled />);
-      
+
       const trigger = screen.getByRole('combobox');
       await user.click(trigger);
-      
+
       expect(screen.queryByText('Apple')).not.toBeInTheDocument();
     });
 
@@ -290,11 +290,11 @@ describe('Select Component', () => {
     it('should not respond to keyboard when disabled', async () => {
       const user = userEvent.setup();
       render(<SelectDemo disabled />);
-      
+
       const trigger = screen.getByRole('combobox');
       trigger.focus();
       await user.keyboard('{Enter}');
-      
+
       expect(screen.queryByText('Apple')).not.toBeInTheDocument();
     });
 
@@ -302,20 +302,20 @@ describe('Select Component', () => {
       render(
         <Select>
           <SelectTrigger>
-            <SelectValue placeholder="Select" />
+            <SelectValue placeholder='Select' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="enabled">Enabled</SelectItem>
-            <SelectItem value="disabled" disabled>
+            <SelectItem value='enabled'>Enabled</SelectItem>
+            <SelectItem value='disabled' disabled>
               Disabled
             </SelectItem>
           </SelectContent>
         </Select>
       );
-      
+
       const trigger = screen.getByRole('combobox');
       fireEvent.click(trigger);
-      
+
       const disabledOption = screen.getByText('Disabled');
       expect(disabledOption.closest('[data-disabled]')).toHaveAttribute('data-disabled');
     });
@@ -338,10 +338,10 @@ describe('Select Component', () => {
     it('should update aria-expanded when opened', async () => {
       const user = userEvent.setup();
       render(<SelectDemo />);
-      
+
       const trigger = screen.getByRole('combobox');
       await user.click(trigger);
-      
+
       expect(trigger).toHaveAttribute('aria-expanded', 'true');
     });
 
@@ -352,7 +352,7 @@ describe('Select Component', () => {
     });
 
     it('should not have data-placeholder when value is selected', () => {
-      render(<SelectDemo defaultValue="apple" />);
+      render(<SelectDemo defaultValue='apple' />);
       const trigger = screen.getByRole('combobox');
       expect(trigger).not.toHaveAttribute('data-placeholder');
     });
@@ -360,10 +360,10 @@ describe('Select Component', () => {
     it('should have proper data-state attributes', async () => {
       const user = userEvent.setup();
       render(<SelectDemo />);
-      
+
       const trigger = screen.getByRole('combobox');
       expect(trigger).toHaveAttribute('data-state', 'closed');
-      
+
       await user.click(trigger);
       expect(trigger).toHaveAttribute('data-state', 'open');
     });
@@ -374,69 +374,69 @@ describe('Select Component', () => {
     it('should work with form submission', async () => {
       const handleSubmit = vi.fn((e) => e.preventDefault());
       const user = userEvent.setup();
-      
+
       render(
         <form onSubmit={handleSubmit}>
           <SelectDemo />
-          <button type="submit">Submit</button>
+          <button type='submit'>Submit</button>
         </form>
       );
-      
+
       const trigger = screen.getByRole('combobox');
       await user.click(trigger);
-      
+
       const option = screen.getByText('Banana');
       await user.click(option);
-      
+
       const submitButton = screen.getByRole('button', { name: 'Submit' });
       await user.click(submitButton);
-      
+
       expect(handleSubmit).toHaveBeenCalled();
     });
 
     it('should work with controlled component', () => {
       const onValueChange = vi.fn();
       const { rerender } = render(
-        <Select value="apple" onValueChange={onValueChange}>
+        <Select value='apple' onValueChange={onValueChange}>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="apple">Apple</SelectItem>
-            <SelectItem value="banana">Banana</SelectItem>
+            <SelectItem value='apple'>Apple</SelectItem>
+            <SelectItem value='banana'>Banana</SelectItem>
           </SelectContent>
         </Select>
       );
-      
+
       expect(screen.getByText('Apple')).toBeInTheDocument();
-      
+
       rerender(
-        <Select value="banana" onValueChange={onValueChange}>
+        <Select value='banana' onValueChange={onValueChange}>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="apple">Apple</SelectItem>
-            <SelectItem value="banana">Banana</SelectItem>
+            <SelectItem value='apple'>Apple</SelectItem>
+            <SelectItem value='banana'>Banana</SelectItem>
           </SelectContent>
         </Select>
       );
-      
+
       expect(screen.getByText('Banana')).toBeInTheDocument();
     });
 
     it('should have name attribute for form submission', () => {
       render(
-        <Select name="fruit">
+        <Select name='fruit'>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="apple">Apple</SelectItem>
+            <SelectItem value='apple'>Apple</SelectItem>
           </SelectContent>
         </Select>
       );
-      
+
       const trigger = screen.getByRole('combobox');
       expect(trigger).toHaveAttribute('name', 'fruit');
     });
@@ -445,14 +445,14 @@ describe('Select Component', () => {
       render(
         <Select required>
           <SelectTrigger>
-            <SelectValue placeholder="Select (required)" />
+            <SelectValue placeholder='Select (required)' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="apple">Apple</SelectItem>
+            <SelectItem value='apple'>Apple</SelectItem>
           </SelectContent>
         </Select>
       );
-      
+
       const trigger = screen.getByRole('combobox');
       expect(trigger).toHaveAttribute('required');
     });
@@ -463,12 +463,12 @@ describe('Select Component', () => {
     it('should be keyboard accessible', async () => {
       const user = userEvent.setup();
       render(<SelectDemo />);
-      
+
       const trigger = screen.getByRole('combobox');
       trigger.focus();
-      
+
       expect(trigger).toHaveFocus();
-      
+
       await user.keyboard('{Enter}');
       expect(screen.getByText('Apple')).toBeInTheDocument();
     });
@@ -476,10 +476,10 @@ describe('Select Component', () => {
     it('should maintain focus management', async () => {
       const user = userEvent.setup();
       render(<SelectDemo />);
-      
+
       const trigger = screen.getByRole('combobox');
       await user.click(trigger);
-      
+
       // Focus should be on the content after opening
       expect(document.activeElement).toBeTruthy();
     });
@@ -487,7 +487,7 @@ describe('Select Component', () => {
     it('should have visible focus indicator', () => {
       render(<SelectDemo />);
       const trigger = screen.getByRole('combobox');
-      
+
       trigger.focus();
       expect(trigger).toHaveClass('focus:outline-none');
       expect(trigger).toHaveClass('focus:ring-1');
@@ -496,15 +496,15 @@ describe('Select Component', () => {
     it('should work with screen readers (ARIA labels)', () => {
       render(
         <Select>
-          <SelectTrigger aria-label="Select a fruit">
+          <SelectTrigger aria-label='Select a fruit'>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="apple">Apple</SelectItem>
+            <SelectItem value='apple'>Apple</SelectItem>
           </SelectContent>
         </Select>
       );
-      
+
       const trigger = screen.getByRole('combobox');
       expect(trigger).toHaveAttribute('aria-label', 'Select a fruit');
     });
@@ -512,10 +512,10 @@ describe('Select Component', () => {
     it('should announce options to screen readers', async () => {
       const user = userEvent.setup();
       render(<SelectDemo />);
-      
+
       const trigger = screen.getByRole('combobox');
       await user.click(trigger);
-      
+
       const option = screen.getByText('Apple');
       expect(option).toBeInTheDocument();
       expect(option).toBeVisible();
@@ -527,7 +527,7 @@ describe('Select Component', () => {
     it('should show focus ring when focused', () => {
       render(<SelectDemo />);
       const trigger = screen.getByRole('combobox');
-      
+
       trigger.focus();
       expect(trigger).toHaveClass('focus:ring-1');
       expect(trigger).toHaveClass('focus:ring-ring');
@@ -535,11 +535,11 @@ describe('Select Component', () => {
 
     it('should show check icon on selected item', async () => {
       const user = userEvent.setup();
-      render(<SelectDemo defaultValue="apple" />);
-      
+      render(<SelectDemo defaultValue='apple' />);
+
       const trigger = screen.getByRole('combobox');
       await user.click(trigger);
-      
+
       // Selected item should have a check icon
       const selectedItem = screen.getByText('Apple').closest('[data-state="checked"]');
       expect(selectedItem).toBeTruthy();
@@ -548,7 +548,7 @@ describe('Select Component', () => {
     it('should apply hover styles to trigger', () => {
       render(<SelectDemo />);
       const trigger = screen.getByRole('combobox');
-      
+
       expect(trigger).toHaveClass('border');
       expect(trigger).toHaveClass('rounded-md');
     });
@@ -556,7 +556,7 @@ describe('Select Component', () => {
     it('should show placeholder in muted color', () => {
       render(<SelectDemo />);
       const trigger = screen.getByRole('combobox');
-      
+
       expect(trigger).toHaveAttribute('data-placeholder');
       expect(trigger).toHaveClass('data-[placeholder]:text-muted-foreground');
     });

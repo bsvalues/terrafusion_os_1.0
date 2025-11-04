@@ -1,0 +1,30 @@
+{
+    "map": {
+        "compression_quality.descr": "<xdoc><p>The compression quality that will be used when pyramids are built with the <span class=\"esri_uicontrol\">JPEG</span> compression type. The value must be between 0 and 100. The values closer to 100 will produce a higher-quality image, but the compression ratio will be lower.</p></xdoc>",
+        "compression_quality.title": "Compression quality (1-100)",
+        "compression_type.descr": "<xdoc><p>Specifies the compression type that will be used when building the raster pyramids.</p><ul><li><span title=\"DEFAULT\">Default</span>—If the source data is compressed using a wavelet compression, it will build pyramids with the <span class=\"esri_uicontrol\">JPEG</span> compression type; otherwise, <span class=\"esri_uicontrol\">LZ77</span> will be used. This is the default compression method.</li><li><span title=\"LZ77\">LZ77</span>—The <span class=\"esri_uicontrol\">LZ77</span> compression algorithm will be used to build the pyramids. <span class=\"esri_uicontrol\">LZ77</span> can be used for any data type.</li><li><span title=\"JPEG\">Jpeg</span>—The <span class=\"esri_uicontrol\">JPEG</span> compression algorithm will be used to build pyramids. Only data that adheres to the JPEG compression specification can use this compression type. If <span class=\"esri_uicontrol\">JPEG</span> is chosen, you can then set the compression quality.</li><li><span title=\"JPEG_YCbCr\">Jpeg Luma and Chroma</span>—A lossy compression using the luma (Y) and chroma (Cb and Cr) color space components will be used to build pyramids.</li><li><span title=\"NONE\">No compression</span>—No compression will be used when building pyramids.</li></ul></xdoc>",
+        "compression_type.domain.DEFAULT": "Default",
+        "compression_type.domain.JPEG": "Jpeg",
+        "compression_type.domain.JPEG_YCbCr": "Jpeg Luma and Chroma",
+        "compression_type.domain.LZ77": "LZ77",
+        "compression_type.domain.NONE": "No compression",
+        "compression_type.title": "Pyramid compression type",
+        "description": "Builds raster pyramids for your raster dataset.",
+        "in_raster_dataset.descr": "<xdoc><p>The raster dataset for which you want to build pyramids.</p><p>The input should have more than 1,024 rows and 1,024 columns.</p></xdoc>",
+        "in_raster_dataset.title": "Input Raster Dataset",
+        "out_raster.title": "Updated Input Raster",
+        "pyramid_level.descr": "<xdoc><p>The number of reduced-resolution dataset layers that will be built. The default value is -1, which will build full pyramids. A value of 0 will result in no pyramid levels.</p><p>To delete pyramids, set the number of levels to <span class=\"esri_uicontrol\">0</span>.</p><p>The maximum number of pyramid levels you can specify is 29. Any value that is 30 or higher will revert to a value of -1, which will create a full set of pyramids.</p></xdoc>",
+        "pyramid_level.title": "Pyramid levels",
+        "resample_technique.descr": "<xdoc><p>Specifies the resampling technique that will be used to build the pyramids.</p><ul><li><span title=\"NEAREST\">Nearest</span>—The value of the closest pixel will be used to assign a value to the output pixel when resampling. This is the default.</li><li><span title=\"BILINEAR\">Bilinear</span>—The new value of a pixel will be based on a weighted distance average of the four nearest input pixel centers.</li><li><span title=\"CUBIC\">Cubic</span>—The new value of a pixel will be based on fitting a smooth curve through the 16 nearest input pixel centers.</li></ul></xdoc>",
+        "resample_technique.domain.BILINEAR": "Bilinear",
+        "resample_technique.domain.CUBIC": "Cubic",
+        "resample_technique.domain.NEAREST": "Nearest",
+        "resample_technique.title": "Pyramid resampling technique",
+        "skip_existing.descr": "<xdoc><p>Specifies whether pyramids will be built only when they are missing or will be regenerated even if they exist.</p><ul><li>Unchecked—Pyramids will be built even if they already exist, and existing pyramids will be overwritten. This is the default.</li><li>Checked—Pyramids will only be built if they do not already exist.</li></ul></xdoc>",
+        "skip_existing.title": "Skip Existing",
+        "skip_first.descr": "<xdoc><p>Specifies whether the first pyramid level will be skipped. Skipping the first level will take up slightly less disk space but will slow down performance at these scales.<ul><li>Unchecked—The first pyramid level will not be skipped; it will be built. This is the default.</li><li>Checked—The first pyramid level will be skipped; it will not be built.</li></ul></p></xdoc>",
+        "skip_first.title": "Skip first level",
+        "summary": "<xdoc><p>Builds raster pyramids for your raster dataset.</p><p>This tool can also be used to delete pyramids. To delete pyramids, set the <span class=\"esri_uicontrol\">Pyramids Levels</span> parameter to <span class=\"esri_uicontrol\">0</span>.</p></xdoc>",
+        "title": "Build Pyramids"
+    }
+}

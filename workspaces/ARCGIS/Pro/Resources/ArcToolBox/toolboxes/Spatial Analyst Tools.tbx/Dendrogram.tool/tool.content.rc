@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Constructs a tree diagram (dendrogram) showing attribute distances between sequentially merged classes in a signature file.",
+        "distance_calculation.descr": "<xdoc><p>Specifies the manner in which the distances between classes in multidimensional attribute space are defined.</p><ul><li>Checked—The distances between classes will be computed based on the variances and the Euclidean distance between the means of their signatures.</li><li>Unchecked—The distances between classes will be determined by the Euclidean distances between the means of the class signatures only.</li></ul></xdoc>",
+        "distance_calculation.title": "Use variance in distance calculations",
+        "in_signature_file.descr": "<xdoc><p>Input signature file whose class signatures are used to produce a dendrogram.</p><p>A .gsg extension is required.</p></xdoc>",
+        "in_signature_file.title": "Input signature file",
+        "line_width.descr": "<xdoc><p>Sets the width of the dendrogram in number of characters on a line.</p><p>The default is 78.</p></xdoc>",
+        "line_width.title": "Line width of dendrogram",
+        "out_dendrogram_file.descr": "<xdoc><p>The output dendrogram ASCII file.</p><p>The extension can be .txt or .asc.</p></xdoc>",
+        "out_dendrogram_file.title": "Output dendrogram file",
+        "title": "Dendrogram"
+    }
+}

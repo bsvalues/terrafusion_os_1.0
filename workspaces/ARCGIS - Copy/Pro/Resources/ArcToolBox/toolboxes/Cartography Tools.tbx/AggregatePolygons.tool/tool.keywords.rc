@@ -1,0 +1,25 @@
+{
+    "set": [
+        "aggregation",
+        "area aggregation",
+        "combine polygons",
+        "contextual",
+        "generalisation",
+        "generalise",
+        "generalization",
+        "generalize",
+        "merge",
+        "multi-scale",
+        "multiscale",
+        "orthogonal",
+        "partition",
+        "partitioning",
+        "scale change",
+        "shared edge",
+        "simplification",
+        "simplify",
+        "small scale",
+        "typification",
+        "typify"
+    ]
+}

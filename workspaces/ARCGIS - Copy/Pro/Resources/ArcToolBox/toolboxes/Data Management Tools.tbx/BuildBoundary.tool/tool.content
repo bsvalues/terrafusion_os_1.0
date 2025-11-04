@@ -1,0 +1,113 @@
+{
+    "type": "FunctionTool",
+    "guid": "{e4f202e0-d4ab-4d67-9dc3-daab022c0af7}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190501",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "mCPU",
+        "no_data_change"
+    ],
+    "params": {
+        "in_mosaic_dataset": {
+            "display_order": "0",
+            "displayname": "$rc:in_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_mosaic_dataset.descr"
+        },
+        "where_clause": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:where_clause.title",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "in_mosaic_dataset"
+            ],
+            "description": "$rc:where_clause.descr"
+        },
+        "append_to_existing": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:append_to_existing.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "APPEND"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "OVERWRITE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:append_to_existing.descr"
+        },
+        "simplification_method": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:simplification_method.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NONE",
+                        "code": "$rc:simplification_method.domain.NONE"
+                    },
+                    {
+                        "value": "CONVEX_HULL",
+                        "code": "$rc:simplification_method.domain.CONVEX_HULL"
+                    },
+                    {
+                        "value": "ENVELOPE",
+                        "code": "$rc:simplification_method.domain.ENVELOPE"
+                    }
+                ]
+            },
+            "value": "NONE",
+            "description": "$rc:simplification_method.descr"
+        },
+        "out_mosaic_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "4",
+            "displayname": "$rc:out_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "depends": [
+                "in_mosaic_dataset"
+            ]
+        }
+    },
+    "environments": [
+        "parallelProcessingFactor"
+    ]
+}

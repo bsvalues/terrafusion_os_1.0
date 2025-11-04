@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrafusion
+  labels:
+    name: terrafusion
+    app.kubernetes.io/name: terrafusion
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: kubectl

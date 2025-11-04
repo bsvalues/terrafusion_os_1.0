@@ -1,0 +1,1809 @@
+{
+	"TRE": "SENSRB",
+	"Source": [
+		"STDI-0002-1 v2021.1, Appendix B: SENSRB"
+	],
+	"Name": "General Electro-Optical Sensor Parameters",
+	"Description": "The General Electro-Optical (Visible, Infrared, Multi- and Hyperspectral) Sensor Parameters (SENSRB) TRE is for imaging electro-optical (EO) sensors. This controlled extension is required for airborne EO sensors and can also be used for other EO sensors. The TRE is intended for applications where the earth's surface is imaged; nevertheless, it may also accommodate the imaging of features or phenomena above or below the earth's surface.",
+	"Size": 106,
+	"Fields": {
+		"GENERAL_DATA" : {
+			"Name": "General Data Flag",
+			"Description": "This flag field indicates the presence of general data. This module provides identifying information for the associated NITF image segment and sets reference systems for subsequent module parameters. Y = the presence of the Fields 01a to 01r; N = Fields 01a and 01r are omitted. The value of this field must be Y for the first instance of SENSRB associated with each NITF image segment. See Z.5.1 General Data Module for more information.",
+			"Size": 1,
+			"Format": "BCS-A",
+			"Type": "R",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Value",
+					"Values": ["Y", "N"]
+				}
+			]
+		},
+		"SENSOR" : {
+			"Name": "Sensor Registered Name or Model",
+			"Description": "This field identifies the common name for the payload sensor that collected the image segment. The 25 character name must be unique, explicit, and registered with the NTB. For sensor payloads made up of multiple sensors, SENSOR_URI (index 01b), DETECTION (index 02a), METHOD (index 04a), and MODE (index 04b) fields allow for further characterization of the imagery source. See the NTB registry for approved values for this field.",
+			"Size": 25,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Alpha"
+				}
+			]
+		},
+		"SENSOR_URI" : {
+			"Name": "Sensor Uniform Resource Identifier",
+			"Description": "This optional field allows a unique identifier specific to the collecting sensor. This field supports serial numbers or, preferably, Uniform Resource Identifiers (URI), which can facilitate access to more detailed sensor information, such as geometric or radiometric calibration data, via the internet. The 32-character field supports Internet Protocol v6. BCS hyphens are allowed for the entire field.",
+			"Size": 32,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Alpha"
+				}
+			]
+		},
+		"PLATFORM" : {
+			"Name": "Platform Common Name",
+			"Description": "This field identifies the platform type upon which the sensor is operating. The 25-character name must be unique, explicit, and registered with the NTB. See the NTB registry for approved values for this field.",
+			"Size": 25,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Alpha"
+				}
+			]
+		},
+		"PLATFORM_URI" : {
+			"Name": "Platform Uniform Resource Identifier",
+			"Description": "This optional field allows a unique platform identification, especially for non-aircraft platforms where ACFTB TRE AC_TAIL_NO does not apply. The 32-byte field accommodates a Uniform Resource Identifier (URI), which can facilitate access to more detailed platform information via Internet Protocol v6. BCS hyphens are allowed for the entire field.",
+			"Size": 32,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Alpha"
+				}
+			]
+		},
+		"OPERATION_DOMAIN" : {
+			"Name": "Operation Domain",
+			"Description": "This field specifies the sensor platform's domain of operating during the collection, providing some indication of the imagery perspective. Currently approved values are: Airborne, Waterborne, Spaceborne, and Ground. See the NTB registry for all approved values for this field.",
+			"Size": 10,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Alpha"
+				}
+			]
+		},
+		"CONTENT_LEVEL" : {
+			"Name": "Content Level",
+			"Description": "This field quantifies the level of SENSRB data content to enhance data discovery. This single value allows users to imply and/or infer if imagery will meet certain exploitation requirements and discover data with a specific content level.",
+			"Size": 1,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 9
+				}
+			]
+		},
+		"GEODETIC_SYSTEM" : {
+			"Name": "Geodetic Reference System",
+			"Description": "This field specifies the geodetic system to which the geocoordinates in this TRE are referenced. The default is WGS84 for World Geodetic System - 1984. See the NTB registry for approved values for this field.",
+			"Size": 5,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Alpha"
+				}
+			]
+		},
+		"GEODETIC_TYPE" : {
+			"Name": "Geodetic Coordinate Type",
+			"Description": "This field specifies the coordinate system used to report the sensor location and the reference system for attitudes and velocities. The two values of this field are: G (Geographic/Geodetic) and C (geocentric Cartesian). The local geographic coordinate frame shall be North-East-Down (NED).",
+			"Size": 1,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Value",
+					"Values": ["G", "C"]
+				}
+			]
+		},
+		"ELEVATION_DATUM" : {
+			"Name": "Elevation and Altitude Datum",
+			"Description": "This field specifies the reference datum from which elevations and altitudes will be reported. The three allowed values are: HAE (height above ellipsoid), MSL (height above mean sea level), and AGL (height above ground level). HAE is strongly encouraged.",
+			"Size": 3,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Value",
+					"Values": ["HAE", "MSL", "AGL"]
+				}
+			]
+		},
+		"LENGTH_UNIT" : {
+			"Name": "Length Unit System",
+			"Description": "This field specifies the unit system for the spatial parameters within this TRE. The two allowed field values are: SI (International System of Units) an dEE (English Engineering Unit System). SI is encouraged.",
+			"Size": 2,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Value",
+					"Values": ["SI", "EE"]
+				}
+			]
+		},
+		"ANGULAR_UNIT" : {
+			"Name": "Angle Unit Type",
+			"Description": "This field specifies the angular units used for the angular parameters within this TRE (unless explicitly overridden by the UNITS column). The three allowed field values are: DEG (degrees), RAD (radians), or SMC (semi-circles). DEG is encouraged.",
+			"Size": 3,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Value",
+					"Values": ["DEG", "RAD", "SMC"]
+				}
+			]
+		},
+		"START_DATE" : {
+			"Name": "Imaging Start Date",
+			"Description": "The date at the start of the NITF image segment collection, formatted as YYYYMMDD and referenced to UTC.",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Date"
+				}
+			]
+		},
+		"START_TIME" : {
+			"Name": "Imaging Start Time",
+			"Description": "The number of UTC seconds into the day, specified in START_DATE (index 01l), when the first photon contacted the detector for the first collected pixel stored in the NITF image segment. The day starts at the UTC zero seconds (0.000000000 s) and ends just before the start of the next day (86399.99999999 s). The values may be equal to END_TIME for imagery sensors modeled as instantaneous collectors.",
+			"Size": 14,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["seconds"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 86399.99999999
+				}
+			]
+		},
+		"END_DATE" : {
+			"Name": "Imaging End Date",
+			"Description": "The date at the end of the NITF image segment collection, formatted as YYYYMMDD and referenced to UTC. Must be the same as the imaging start date (or after for imagery collections extending into a subsequent day).",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Date"
+				}
+			]
+		},
+		"END_TIME" : {
+			"Name": "Imaging End Time",
+			"Description": "The number of UTC seconds into the day, specified in END_DATE (index 01n), when the last photon contacted the detector for the last collected pixel stored in the NITF image segment. See START_TIME (index 01m) for more guidance. END_DATE and END_TIME may be equal to START_DATE and START_TIME, respectively, for imagery collections modeled as instantaneously collected.",
+			"Size": 14,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 86399.99999999
+				}
+			]
+		},
+		"GENERATION_COUNT" : {
+			"Name": "Generation Count",
+			"Description": "The number of times the data contained in this TRE has been updated or adjusted. Zero (00) shall represent that the data is in the original NITF form, which might have undergone manipulations reflected in Module 4. If subsequent modifications are made to this metadata through resection or adjustments, this count will be incremented accordingly.",
+			"Size": 2,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 99
+				}
+			]
+		},
+		"GENERATION_DATE" : {
+			"Name": "Generation Date",
+			"Description": "The date when the current resection or adjustment was made, formatted as YYYYMMDD. This value is ignored if generation count is zero but must maintain a valid date if generation count is greater than zero. BCS hyphens are allowed for the entire field.",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Date"
+				}
+			]
+		},
+		"GENERATION_TIME" : {
+			"Name": "Generation Time",
+			"Description": "The UTC time of day when the current resection or adjustment was made, formatted as HHMMSS.sss. This value is ignored if generation count is zero but must be a valid time if generation count is greater than zero. BCS hyphens are allowed for the entire field.",
+			"Size": 10,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 235959.999
+				}
+			]
+		},
+		"SENSOR_ARRAY_DATA" : {
+			"Name": "Sensor Array Data Flag",
+			"Description": "This flag field indicates the presence of data describing the sensor array. This module provides information regarding the image collection hardware and process, as if often needed for geopositioning. Y = Fields 02a to 02i are present; N = Fields 02a to 02i are omitted. Units depend on the values for LENGTH_UNIT (index 01j) and ANGULAR_UNIT (index 01k).",
+			"Size": 1,
+			"Format": "BCS-A",
+			"Type": "R",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Value",
+					"Values": ["Y", "N"]
+				}
+			]
+		},
+		"DETECTION" : {
+			"Name": "Detection Type",
+			"Description": "This field specifies the detection spectrum of the sensor array. See the NTB registry for approved values for this field.",
+			"Size": 20,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Alpha"
+				}
+			]
+		},
+		"ROW_DETECTORS" : {
+			"Name": "Number of Detector Rows",
+			"Description": "The number of detector rows used in the \"instantaneous\" collection process. (This number is equivalent to the number of detectors in a column.) This number shall correspond with the used sensor array's physical dimension (ROW_METRIC, index 02d).",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "UnsignedInteger"
+				}
+			]
+		},
+		"COLUMN_DETECTORS" : {
+			"Name": "Number of Detector Columns",
+			"Description": "The number of detector columns used in the \"instantaneous\" collection process. (This number is equivalent to the number of detectors in a row.) This number shall correspond with the used sensor array's physical dimension (COLUMN_METRIC, index 02e).",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "UnsignedInteger"
+				}
+			]
+		},
+		"ROW_METRIC" : {
+			"Name": "Physical Dimension of Set of All Used Rows",
+			"Description": "The physical length of the sensor array used in the \"instantaneous\" collection process as measured along the direction of increasing row indices. This dimension shall correspond with the number of row detectors used (ROW_DETECTORS, index 02b). BCS hyphens are allowed for the entire field.",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["centimeters", "inches"],
+			"Values": [
+				{
+					"Type": "UnsignedInteger"
+				}
+			]
+		},
+		"COLUMN_METRIC" : {
+			"Name": "Physical Dimension of Set of All Used Columns",
+			"Description": "The physical length of the sensor array used in the \"instantaneous\" collection process as measured along the direction of increasing column indices. This dimension shall correspond with the number of column detectors used (COLUMN_DETECTORS, index 02c). BCS hyphens are allowed for the entire field.",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["centimeters", "inches"],
+			"Values": [
+				{
+					"Type": "UnsignedInteger"
+				}
+			]
+		},
+		"FOCAL_LENGTH" : {
+			"Name": "Best Known Focal Length",
+			"Description": "The best known value of the effective focal length. If the sensor's focal length varies with band, provide a nominal value and use the BANDSB TRE to provide the per-band focal lengths. BCS hyphens are allowed for the entire field.",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["centimeters", "inches"],
+			"Values": [
+				{
+					"Type": "UnsignedInteger"
+				}
+			]
+		},
+		"ROW_FOV" : {
+			"Name": "Field of View Encompassed by Sensor Array Rows",
+			"Description": "The angle measuring the effective field-of-view (FOV) projected onto the sensor array center column (i.e., Sensor Vertical FOV, not the half-angle FOV). The valid value range for this field is 0 to 270 degrees, 0 to 3/2pi radians, or 0 to 3/2 semi-circles. BCS hyphens are allowed for the entire field.",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["degrees", "radians", "semi-circles"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 270
+				},
+				{
+					"Type": "Range",
+					"Min": "0",
+					"Max": "3/2pi"
+				},
+				{
+					"Type": "Range",
+					"Min": "0",
+					"Max": "3/2"
+				}
+			]
+		},
+		"COLUMN_FOV" : {
+			"Name": "Field of View Encompassed by Sensor Array Columns",
+			"Description": "The angle measuring the effective field-of-view (FOV) projected onto the sensor array center row (i.e., Sensor Horizontal FOV, not the half-angle FOV). The valid value range for this field is 0 to 270 degrees, 0 to 3/2pi radians, or 0 to 3/2 semi-circles. BCS hyphens are allowed for the entire field.",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["degrees", "radians", "semi-circles"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 270
+				},
+				{
+					"Type": "Range",
+					"Min": "0",
+					"Max": "3/2pi"
+				},
+				{
+					"Type": "Range",
+					"Min": "0",
+					"Max": "3/2"
+				}
+			]
+		},
+		"CALIBRATED" : {
+			"Name": "Focal Length Calibration Flag",
+			"Description": "This field indicates if the provided focal length and/or fields of view are based on a geometric calibration process. Y = the focal length and/or fields of view with the detector metrics are based on a geometric calibration; N = they are not.",
+			"Size": 1,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Value",
+					"Values": ["Y", "N"]
+				}
+			]
+		},
+		"SENSOR_CALIBRATION_DATA" : {
+			"Name": "Sensor Calibration Data Flag",
+			"Description": "This flag field indicates the presence of geometric sensor calibration parameters. This module provides sensor geometric calibration values and coefficients to facilitate precision geopositioning. Y = Fields 03a to 03l are present; N = Fields 03a to 03l are omitted.",
+			"Size": 1,
+			"Format": "BCS-A",
+			"Type": "R",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Value",
+					"Values": ["Y", "N"]
+				}
+			]
+		},
+		"CALIBRATION_UNIT" : {
+			"Name": "Calibration Unit System",
+			"Description": "This field identifies the unit system used for the subsequent calibration parameters. If 'mm', then the parameters are referenced to millimeters. If 'px' then the parameters are referenced to pixel units.",
+			"Size": 2,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Value",
+					"Values": ["mm", "px"]
+				}
+			]
+		},
+		"PRINCIPAL_POINT_OFFSET_X" : {
+			"Name": "Principle Point Offset in X-Direction (X_0)",
+			"Description": "The number of row-aligned units (+/-) from the center of the image where the optical axis of the sensor intersects the effective sensor array. Positive values are in the direction of the positive X_I axis. BCS hyphens are allowed for the entire field.",
+			"Size": 9,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["millimeters", "pixels"],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"PRINCIPAL_POINT_OFFSET_Y" : {
+			"Name": "Principle Point Offset in Y-Direction (Y_0)",
+			"Description": "The number of column-aligned units (+/-) from the center of the image where the optical axis of the sensor intersects the effective sensor array. Positive values are in the direction of the positive Y_I axis. BCS hyphens are allowed for the entire field.",
+			"Size": 9,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["millimeters", "pixels"],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"RADIAL_DISTORT_1" : {
+			"Name": "First Radial Distortion Coefficient (k_1)",
+			"Description": "The value for this field is defined in Z.5.3.3 Radial Distortion. BCS hyphens are allowed for the entire field.",
+			"Size": 12,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": ["millimeters^-2", "pixels^-2"],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"RADIAL_DISTORT_2" : {
+			"Name": "Second Radial Distortion Coefficient (k_2)",
+			"Description": "The value for this field is defined in Z.5.3.3 Radial Distortion. BCS hyphens are allowed for the entire field.",
+			"Size": 12,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": ["millimeters^-4", "pixels^-4"],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"RADIAL_DISTORT_3" : {
+			"Name": "Third Radial Distortion Coefficient (k_3)",
+			"Description": "The value for this field is defined in Z.5.3.3 Radial Distortion. BCS hyphens are allowed for the entire field.",
+			"Size": 12,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": ["millimeters^-6", "pixels^-6"],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"RADIAL_DISTORT_LIMIT" : {
+			"Name": "Limit of Radial Distortion Fit",
+			"Description": "The maximum valid radial distance (from the principle point) for the application of the polynomial distortion correction given in Z.5.3.3 Radial Distortion. BCS hyphens are allowed for the entire field.",
+			"Size": 9,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["millimeters", "pixels"],
+			"Values": [
+				{
+					"Type": "Double"
+				}
+			]
+		},
+		"DECENT_DISTORT_1" : {
+			"Name": "First Decentering Distortion Coefficient (p_1)",
+			"Description": "The values for this field are defined in Z.5.3.4 Additional Distortions. BCS hyphens are allowed for the entire field.",
+			"Size": 12,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": ["millimeters^-1", "pixels^-1"],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"DECENT_DISTORT_2" : {
+			"Name": "Second Decentering Distortion Coefficient (p_2)",
+			"Description": "The values for this field are defined in Z.5.3.4 Additional Distortions. BCS hyphens are allowed for the entire field.",
+			"Size": 12,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": ["millimeters^-1", "pixels^-1"],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"AFFINITY_DISTORT_1" : {
+			"Name": "First Affinity Distortion Coefficient (b_1)",
+			"Description": "The values for this field are defined in Z.5.3.4 Additional Distortions. BCS hyphens are allowed for the entire field.",
+			"Size": 12,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"AFFINITY_DISTORT_2" : {
+			"Name": "Second Affinity Distortion Coefficient (b_2)",
+			"Description": "The values for this field are defined in Z.5.3.4 Additional Distortions. BCS hyphens are allowed for the entire field.",
+			"Size": 12,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"CALIBRATION_DATE" : {
+			"Name": "Calibration Report Date",
+			"Description": "This field contains the date when the calibration values above, indices 03a to 03k, were computed. This field shall be formatted as YYYYMMDD. BCS hyphens are allowed for the entire field.",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Date"
+				}
+			]
+		},
+		"IMAGE_FORMATION_DATA" : {
+			"Name": "Image Formation Data Flag",
+			"Description": "This flag field indicates the presence of parameters describing the image formation process. This module provides information regarding how the image array (which may be equal to the recorded NITF array) was formed from the sensor array. This data is typically needed for geopositioning. Y = Fields 04a to 04k are present; N = Fields 04a to 04k are omitted.",
+			"Size": 1,
+			"Format": "BCS-A",
+			"Type": "R",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Value",
+					"Values": ["Y", "N"]
+				}
+			]
+		},
+		"METHOD" : {
+			"Name": "Imaging Method",
+			"Description": "This field specifies the method the sensor utilized to collect the image data. See the NTB registry for approved values.",
+			"Size": 15,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Alpha"
+				}
+			]
+		},
+		"MODE" : {
+			"Name": "Imaging Mode",
+			"Description": "This field contains a registered three-digit code indicating the actual operating mode within the sensor system that is used to collect or detect the image data. These three-digit codes are the same codes as used in ACFTB's MPLAN, which relates a physical sensor with its various modes of operation. MODE will generally be the same as the \"planned mode\" given in ACFTB's MPLAN. It would differ from MPLAN if the actual mode (MODE) were different from the planned mode (MPLAN). See the NTB registry for approved values.",
+			"Size": 3,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Alpha"
+				}
+			]
+		},
+		"ROW_COUNT" : {
+			"Name": "Row Count",
+			"Description": "The number of rows (m) in the Initial Image array.",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["pixels"],
+			"Values": [
+				{
+					"Type": "UnsignedInteger"
+				}
+			]
+		},
+		"COLUMN_COUNT" : {
+			"Name": "Column Count",
+			"Description": "The number of columns (n) in the Initial Image array.",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["pixels"],
+			"Values": [
+				{
+					"Type": "UnsignedInteger"
+				}
+			]
+		},
+		"ROW_SET" : {
+			"Name": "Row Detection Set",
+			"Description": "The number of rows collected simultaneously to form the physical sensor array. Typically this value will be equal to the module 02 field ROW_DETECTORS (index 02b). This value can also be less than the module 02 detector count when only a subset of the physical sensor is used to populate each framelet of the Initial Image array. It is generally the case that the ratio of the row set to the row count will be an integer, meaning that an integer number of sets (framelets) are required to populate each direction of the Initial Image. For instantaneous framing sensors, this value shall be equal to the row count (04c). For single-line pushbroom (as an example), one of ROW_SET and COLUMN_SET will have a meaningful value (equal to the row or column count) and the other shall be one.",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["pixels"],
+			"Values": [
+				{
+					"Type": "UnsignedInteger"
+				}
+			]
+		},
+		"COLUMN_SET" : {
+			"Name": "Column Detection Set",
+			"Description": "The number of columns collected simultaneously to form the physical sensor array. Typically this value will be equal to the module 02 field COLUMN_DETECTORS (index 02c). This value can also be less than the module 02 detector count when only a subset of the physical sensor is used to populate each framelet of the Initial Image array. It is generally the case that the ratio of the column set to the column count will be an integer, meaning that an integer number of sets (framelets) are required to populate each direction of the Initial Image. For instantaneous framing sensors, this value shall be equal to the column count (04d). For single-line pushbroom (as an example), one of ROW_SET and COLUMN_SET will have a meaningful value (equal to the row or column count) and the other shall be one.",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["pixels"],
+			"Values": [
+				{
+					"Type": "UnsignedInteger"
+				}
+			]
+		},
+		"ROW_RATE" : {
+			"Name": "Row Detection Rate",
+			"Description": "The duration of time, the \"step time\", between starting the capture of the first detection set and starting the capture of the second detection set in that same row when forming the image. For framing sensors, both ROW_RATE and COLUMN_RATE will be zeros (or optionally the shutter speed or integration time). For pushbroom sensors, one of ROW_RATE or COLUMN_RATE (in the direction of the scanning) shall have a meaningful value and the other shall be zero (or the shutter speed/integration time).",
+			"Size": 10,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["seconds"],
+			"Values": [
+				{
+					"Type": "Double"
+				}
+			]
+		},
+		"COLUMN_RATE" : {
+			"Name": "Column Detection Rate",
+			"Description": "The duration of time, the \"step time\", between starting the capture of the first detection set and starting the capture of the second detection set in that same column when forming the image. For framing sensors, both ROW_RATE and COLUMN_RATE will be zeros (or optionally the shutter speed or integration time). For pushbroom sensors, one of ROW_RATE or COLUMN_RATE (in the direction of the scanning) shall have a meaningful value and the other shall be zero (or the shutter speed/integration time).",
+			"Size": 10,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["seconds"],
+			"Values": [
+				{
+					"Type": "Double"
+				}
+			]
+		},
+		"FIRST_PIXEL_ROW" : {
+			"Name": "Row of First Collected Pixel",
+			"Description": "The row within the Initial Image array containing the first collected pixel or line set of the image array.",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["pixels"],
+			"Values": [
+				{
+					"Type": "UnsignedInteger"
+				}
+			]
+		},
+		"FIRST_PIXEL_COLUMN" : {
+			"Name": "Column of First Collected Pixel",
+			"Description": "The column within the Initial Image array containing the first collected pixel or line set of the image array.",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["pixels"],
+			"Values": [
+				{
+					"Type": "UnsignedInteger"
+				}
+			]
+		},
+		"TRANSFORM_PARAMS" : {
+			"Name": "Number of Image Transform Parameters Provided",
+			"Description": "This flag field indicates the number of subsequent fields (indices 04l to 04s) that are present; \"0\" omits the presence of these fields.",
+			"Size": 1,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 8
+				}
+			]
+		},
+		"TRANSFORM_PARAM_1" : {
+			"Name": "Image Transform Parameter (h_1)",
+			"Description": "This and related parameters are defined in Z.5.4.5.3 Image Transformation Equations. They provide the coefficients of the transformation equations that convert between the image coordinates associated with the metadata in this TRE and those corresponding to the NITF image segment's data array. If the metadata values in this TRE correspond with the NITF-stored image array, these parameters would be the elements of an identity matrix, which would be assumed if 04k is 0. A Transform Parameter must be provided if its number is less than or equal to TRANSFORM_PARAMS. Otherwise, the parameter is not provided. A meaningful value for each provided parameter is required.",
+			"Size": 12,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"TRANSFORM_PARAM_2" : {
+			"Name": "Image Transform Parameter (h_2)",
+			"Description": "This and related parameters are defined in Z.5.4.5.3 Image Transformation Equations. They provide the coefficients of the transformation equations that convert between the image coordinates associated with the metadata in this TRE and those corresponding to the NITF image segment's data array. If the metadata values in this TRE correspond with the NITF-stored image array, these parameters would be the elements of an identity matrix, which would be assumed if 04k is 0. A Transform Parameter must be provided if its number is less than or equal to TRANSFORM_PARAMS. Otherwise, the parameter is not provided. A meaningful value for each provided parameter is required.",
+			"Size": 12,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"TRANSFORM_PARAM_3" : {
+			"Name": "Image Transform Parameter (h_3)",
+			"Description": "This and related parameters are defined in Z.5.4.5.3 Image Transformation Equations. They provide the coefficients of the transformation equations that convert between the image coordinates associated with the metadata in this TRE and those corresponding to the NITF image segment's data array. If the metadata values in this TRE correspond with the NITF-stored image array, these parameters would be the elements of an identity matrix, which would be assumed if 04k is 0. A Transform Parameter must be provided if its number is less than or equal to TRANSFORM_PARAMS. Otherwise, the parameter is not provided. A meaningful value for each provided parameter is required.",
+			"Size": 12,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"TRANSFORM_PARAM_4" : {
+			"Name": "Image Transform Parameter (h_4)",
+			"Description": "This and related parameters are defined in Z.5.4.5.3 Image Transformation Equations. They provide the coefficients of the transformation equations that convert between the image coordinates associated with the metadata in this TRE and those corresponding to the NITF image segment's data array. If the metadata values in this TRE correspond with the NITF-stored image array, these parameters would be the elements of an identity matrix, which would be assumed if 04k is 0. A Transform Parameter must be provided if its number is less than or equal to TRANSFORM_PARAMS. Otherwise, the parameter is not provided. A meaningful value for each provided parameter is required.",
+			"Size": 12,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"TRANSFORM_PARAM_5" : {
+			"Name": "Image Transform Parameter (h_5)",
+			"Description": "This and related parameters are defined in Z.5.4.5.3 Image Transformation Equations. They provide the coefficients of the transformation equations that convert between the image coordinates associated with the metadata in this TRE and those corresponding to the NITF image segment's data array. If the metadata values in this TRE correspond with the NITF-stored image array, these parameters would be the elements of an identity matrix, which would be assumed if 04k is 0. A Transform Parameter must be provided if its number is less than or equal to TRANSFORM_PARAMS. Otherwise, the parameter is not provided. A meaningful value for each provided parameter is required.",
+			"Size": 12,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"TRANSFORM_PARAM_6" : {
+			"Name": "Image Transform Parameter (h_6)",
+			"Description": "This and related parameters are defined in Z.5.4.5.3 Image Transformation Equations. They provide the coefficients of the transformation equations that convert between the image coordinates associated with the metadata in this TRE and those corresponding to the NITF image segment's data array. If the metadata values in this TRE correspond with the NITF-stored image array, these parameters would be the elements of an identity matrix, which would be assumed if 04k is 0. A Transform Parameter must be provided if its number is less than or equal to TRANSFORM_PARAMS. Otherwise, the parameter is not provided. A meaningful value for each provided parameter is required.",
+			"Size": 12,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"TRANSFORM_PARAM_7" : {
+			"Name": "Image Transform Parameter (h_7)",
+			"Description": "This and related parameters are defined in Z.5.4.5.3 Image Transformation Equations. They provide the coefficients of the transformation equations that convert between the image coordinates associated with the metadata in this TRE and those corresponding to the NITF image segment's data array. If the metadata values in this TRE correspond with the NITF-stored image array, these parameters would be the elements of an identity matrix, which would be assumed if 04k is 0. A Transform Parameter must be provided if its number is less than or equal to TRANSFORM_PARAMS. Otherwise, the parameter is not provided. A meaningful value for each provided parameter is required.",
+			"Size": 12,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"TRANSFORM_PARAM_8" : {
+			"Name": "Image Transform Parameter (h_8)",
+			"Description": "This and related parameters are defined in Z.5.4.5.3 Image Transformation Equations. They provide the coefficients of the transformation equations that convert between the image coordinates associated with the metadata in this TRE and those corresponding to the NITF image segment's data array. If the metadata values in this TRE correspond with the NITF-stored image array, these parameters would be the elements of an identity matrix, which would be assumed if 04k is 0. A Transform Parameter must be provided if its number is less than or equal to TRANSFORM_PARAMS. Otherwise, the parameter is not provided. A meaningful value for each provided parameter is required.",
+			"Size": 12,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"REFERENCE_TIME" : {
+			"Name": "Reference Time of Applicability",
+			"Description": "This is the time for which the values in this TRE are to be applied. The value is in seconds before (negative) or after (positive) START_TIME. A zero value places the reference time at the imaging start time, such as would be the case for sensors modeled with instantaneous collections, where START_TIME equals END_TIME. This field shall contain a valid time if either REFERENCE_PIXEL_ROW or REFERENCE_PIXEL_COLUMN (index 05b or 05c) is unspecified. BCS hyphens are allowed for the entire field.",
+			"Size": 12,
+			"Format": "BCS-N",
+			"Type": "R",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Time"
+				}
+			]
+		},
+		"REFERENCE_ROW" : {
+			"Name": "Reference Pixel Row of Applicability",
+			"Description": "The reference row index relative to the NITF image segment at which the field values in this TRE apply. The pixel index shall refer to the original NITF image segment associated with this TRE. Pixel indexing is per the standard NITF raster order: column indices increasing to the right and row indices increasing downward from the viewer's perspective. This field shall contain valid values if REFERENCE_TIME (index 05a) is unspecified. BCS hyphens are allowed for the entire field.",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "R",
+			"Units": ["decimal", "pixels"],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"REFERENCE_COLUMN" : {
+			"Name": "Reference Pixel Column of Applicability",
+			"Description": "The reference column index relative to the NITF image segment at which the field values in this TRE apply. The pixel index shall refer to the original NITF image segment associated with this TRE. Pixel indexing is per the standard NITF raster order: column indices increasing to the right and row indices increasing downward from the viewer's perspective. This field shall contain valid values if REFERENCE_TIME (index 05a) is unspecified. BCS hyphens are allowed for the entire field.",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "R",
+			"Units": ["decimal", "pixels"],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"LATITUDE_OR_X" : {
+			"Name": "Sensor or Platform Latitude or ECEF X Position",
+			"Description": "The values of LATITUDE_OR_X, LONGITUDE_OR_Y, and ALTITUDE_OR_Z provide the platform or sensor geolocation. They shall reflect the geodetic type specified in GEODETIC_TYPE (index 01h). If geodetic coordinates are used, the latitude shall be in degrees between 0 and +/-90. If geocentric coordinates are used, the X_E coordinate shall reflect the units specified in LENGTH_UNIT (index 01j).",
+			"Size": 11,
+			"Format": "BCS-N",
+			"Type": "R",
+			"Units": ["degrees", "meters", "feet"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -90,
+					"Max": 90
+				},
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"LONGITUDE_OR_Y" : {
+			"Name": "Sensor or Platform Longitude or ECEF Y Position",
+			"Description": "The values of LATITUDE_OR_X, LONGITUDE_OR_Y, and ALTITUDE_OR_Z provide the platform or sensor geolocation. They shall reflect the geodetic type specified in GEODETIC_TYPE (index 01h). If geodetic coordinates are used, the longitude shall be in degrees between 0 and +/-180. If geocentric coordinates are used, the Y_E coordinate shall reflect the units specified in LENGTH_UNIT (index 01j).",
+			"Size": 11,
+			"Format": "BCS-N",
+			"Type": "R",
+			"Units": ["degrees", "meters", "feet"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -180,
+					"Max": 180
+				},
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"ALTITUDE_OR_Z" : {
+			"Name": "Sensor or Platform Altitude or ECEF Z Position",
+			"Description": "The values of LATITUDE_OR_X, LONGITUDE_OR_Y, and ALTITUDE_OR_Z provide the platform or sensor geolocation. They shall reflect the geodetic type specified in GEODETIC_TYPE (index 01h). If geodetic coordinates are used, the altitude will be relative to the datum specified by ELEVATION_DATUM (index 01i). Its units are specified by LENGTH_UNIT (index 01j) and can be any numeric value (positive or negative) fitting within the field size. If geocentric coordinates are used, the Z_E coordinates shall reflect the units specified in LENGTH_UNIT (index 01j).",
+			"Size": 11,
+			"Format": "BCS-N",
+			"Type": "R",
+			"Units": ["meters", "feet"],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"SENSOR_X_OFFSET" : {
+			"Name": "Sensor X Position Offset Relative to Platform Coordinate System",
+			"Description": "The location of the sensor perspective center relative to the above-reported position, measured in the platform's X direction. This value shall reflect the units specified in LENGTH_UNIT (index 01j).",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "R",
+			"Units": ["meters", "feet"],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"SENSOR_Y_OFFSET" : {
+			"Name": "Sensor Y Position Offset Relative to Platform Coordinate System",
+			"Description": "The location of the sensor perspective center relative to the above-reported position, measured in the platform's Y direction. This value shall reflect the units specified in LENGTH_UNIT (index 01j).",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "R",
+			"Units": ["meters", "feet"],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"SENSOR_Z_OFFSET" : {
+			"Name": "Sensor Z Position Offset Relative to Platform Coordinate System",
+			"Description": "The location of the sensor perspective center relative to the above-reported position, measured in the platform's Z direction. This value shall reflect the units specified in LENGTH_UNIT (index 01j).",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "R",
+			"Units": ["meters", "feet"],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"ATTITUDE_EULER_ANGLES" : {
+			"Name": "Attitude Euler Angle Flag",
+			"Description": "This flag field indicates the combined presence of platform and sensor Euler angle values. This module provides platform sensor attitude measurements in terms of their respective Euler angles. The sensor attitude, as provided either by this module or by Modules 8 or 9, is typically required for geopositioning. If provided, the parameter values in Modules 8 and 9 take precedence over Module 7. Y = Fields 07a to 07h are present; N = Fields 07a to 07h are omitted. The units depend on the value of ANGULAR_UNIT (index 01k).",
+			"Size": 1,
+			"Format": "BCS-A",
+			"Type": "R",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Value",
+					"Values": ["Y", "N"]
+				}
+			]
+		},
+		"SENSOR_ANGLE_MODLE" : {
+			"Name": "Type of Sensor Angle Rotations",
+			"Description": "This field specifies the Euler angle model using a coded value. Typically the model type will depend on the sensor's mounting and/or pointing gimbal layout. The definitions for the types of sensor angle rotations are provided in Z.5.7.3.1 Sensor Angle Model.",
+			"Size": 1,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Value",
+					"Values": ["1", "2", "3"]
+				}
+			]
+		},
+		"SENSOR_ANGLE_1" : {
+			"Name": "First Sensor Rotation Angle",
+			"Description": "This field contains the rotation to the sensor coordinate system from the platform or local-level coordinate system. The rotation definition depend on SENSOR_ANGLE_MODEL and PLATFORM_RELATIVE (indices 07a and 07e). This field should be populated with a meaningful value when present.",
+			"Size": 10,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["degrees", "radians", "semi-circles"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -180,
+					"Max": 180
+				}
+			]
+		},
+		"SENSOR_ANGLE_2" : {
+			"Name": "Second Sensor Rotation Angle",
+			"Description": "This field contains the rotation to the sensor coordinate system from the platform or local-level coordinate system. The rotation definition depend on SENSOR_ANGLE_MODEL and PLATFORM_RELATIVE (indices 07a and 07e). This field should be populated with a meaningful value when present.",
+			"Size": 9,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["degrees", "radians", "semi-circles"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -90,
+					"Max": 90
+				}
+			]
+		},
+		"SENSOR_ANGLE_3" : {
+			"Name": "Third Sensor Rotation Angle",
+			"Description": "This field contains the rotation to the sensor coordinate system from the platform or local-level coordinate system. The rotation definition depend on SENSOR_ANGLE_MODEL and PLATFORM_RELATIVE (indices 07a and 07e). This field should be populated with a meaningful value when present.",
+			"Size": 10,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["degrees", "radians", "semi-circles"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -180,
+					"Max": 180
+				}
+			]
+		},
+		"PLATFORM_RELATIVE" : {
+			"Name": "Sensor Angles Relative to Platform Flag",
+			"Description": "This field contains a flag relating to the sensor angles relative to the platform. If this field is set to 'Y', the above sensor angles are relative to the platform coordinate system; otherwise, the above angles are relative to the time-relevant, sensor-local NED coordinate system, regardless of the GEODETIC_TYPE (index 01h). In other words, even when GEODETIC_TYPE is geocentric, these values (if not platform relative) are local NED relative.",
+			"Size": 1,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Value",
+					"Values": ["Y", "N"]
+				}
+			]
+		},
+		"PLATFORM_HEADING" : {
+			"Name": "Platform Heading Angle",
+			"Description": "This field contains an Euler angle that defines the attitude of the platform system. This angle is relative to teh time-relevant, platform/sensor-local NED, regardless of the GEODETIC_TYPE (index 01h). Meaningful values for this field are required if PLATFORM_RELATIVE (index 07e) is set to 'Y'; otherwise, this angle may contain the unspecified indicator. BCS hyphens are allowed for the entire field.",
+			"Size": 9,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["degrees", "radians", "semi-circles"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 360
+				}
+			]
+		},
+		"PLATFORM_PITCH" : {
+			"Name": "Platform Pitch Angle",
+			"Description": "This field contains an Euler angle that defines the attitude of the platform system. This angle is relative to teh time-relevant, platform/sensor-local NED, regardless of the GEODETIC_TYPE (index 01h). Meaningful values for this field are required if PLATFORM_RELATIVE (index 07e) is set to 'Y'; otherwise, this angle may contain the unspecified indicator. BCS hyphens are allowed for the entire field.",
+			"Size": 9,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["degrees", "radians", "semi-circles"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -90,
+					"Max": 90
+				}
+			]
+		},
+		"PLATFORM_ROLL" : {
+			"Name": "Platform Roll Angle",
+			"Description": "This field contains an Euler angle that defines the attitude of the platform system. This angle is relative to teh time-relevant, platform/sensor-local NED, regardless of the GEODETIC_TYPE (index 01h). Meaningful values for this field are required if PLATFORM_RELATIVE (index 07e) is set to 'Y'; otherwise, this angle may contain the unspecified indicator. BCS hyphens are allowed for the entire field.",
+			"Size": 10,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["degrees", "radians", "semi-circles"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -180,
+					"Max": 180
+				}
+			]
+		},
+		"ATTITUDE_UNIT_VECTORS" : {
+			"Name": "Attitude Unit Vector Flag",
+			"Description": "This flag field indicates the presence of image coordinate system's unit vectors components. This module provides the image coordinate system direction cosines relative to the sensor-local NED or the ECEF coordinate system. The sensor attitude, as provided either by this module or by Modules 7 or 9, is typically required for geopositioning. The parameter values in this module take precedence over those in Modules 7 and 9. Y = Fields 08a to 08i are present; N = Fields 08a to 08i are omitted.",
+			"Size": 1,
+			"Format": "BCS-A",
+			"Type": "R",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Value",
+					"Values": ["Y", "N"]
+				}
+			]
+		},
+		"ICX_NORTH_OR_X" : {
+			"Name": "Image Coordinate (IC) System X Axes Attitude Unit Vector X Relative to NED or ECEF",
+			"Description": "The coordinates of the image coordinate system-aligned unit vector (or equivalently the image coordinate system's direction cosine). This component value is relative to either the sensor-local NED or the ECEF coordinate system, as specified by GEODETIC_TYPE (index 01h). This field must be populated with a meaningful value when it is present.",
+			"Size": 10,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -1,
+					"Max": 1
+				}
+			]
+		},
+		"ICX_EAST_OR_Y" : {
+			"Name": "Image Coordinate (IC) System X Axes Attitude Unit Vector Y Relative to NED or ECEF",
+			"Description": "The coordinates of the image coordinate system-aligned unit vector (or equivalently the image coordinate system's direction cosine). This component value is relative to either the sensor-local NED or the ECEF coordinate system, as specified by GEODETIC_TYPE (index 01h). This field must be populated with a meaningful value when it is present.",
+			"Size": 10,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -1,
+					"Max": 1
+				}
+			]
+		},
+		"ICX_DOWN_OR_Z" : {
+			"Name": "Image Coordinate (IC) System X Axes Attitude Unit Vector Z Relative to NED or ECEF",
+			"Description": "The coordinates of the image coordinate system-aligned unit vector (or equivalently the image coordinate system's direction cosine). This component value is relative to either the sensor-local NED or the ECEF coordinate system, as specified by GEODETIC_TYPE (index 01h). This field must be populated with a meaningful value when it is present.",
+			"Size": 10,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -1,
+					"Max": 1
+				}
+			]
+		},
+		"ICY_NORTH_OR_X" : {
+			"Name": "Image Coordinate (IC) System Y Axes Attitude Unit Vector X Relative to NED or ECEF",
+			"Description": "The coordinates of the image coordinate system-aligned unit vector (or equivalently the image coordinate system's direction cosine). This component value is relative to either the sensor-local NED or the ECEF coordinate system, as specified by GEODETIC_TYPE (index 01h). This field must be populated with a meaningful value when it is present.",
+			"Size": 10,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -1,
+					"Max": 1
+				}
+			]
+		},
+		"ICY_EAST_OR_Y" : {
+			"Name": "Image Coordinate (IC) System Y Axes Attitude Unit Vector Y Relative to NED or ECEF",
+			"Description": "The coordinates of the image coordinate system-aligned unit vector (or equivalently the image coordinate system's direction cosine). This component value is relative to either the sensor-local NED or the ECEF coordinate system, as specified by GEODETIC_TYPE (index 01h). This field must be populated with a meaningful value when it is present.",
+			"Size": 10,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -1,
+					"Max": 1
+				}
+			]
+		},
+		"ICY_DOWN_OR_Z" : {
+			"Name": "Image Coordinate (IC) System Y Axes Attitude Unit Vector Z Relative to NED or ECEF",
+			"Description": "The coordinates of the image coordinate system-aligned unit vector (or equivalently the image coordinate system's direction cosine). This component value is relative to either the sensor-local NED or the ECEF coordinate system, as specified by GEODETIC_TYPE (index 01h). This field must be populated with a meaningful value when it is present.",
+			"Size": 10,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -1,
+					"Max": 1
+				}
+			]
+		},
+		"ICZ_NORTH_OR_X" : {
+			"Name": "Image Coordinate (IC) System Z Axes Attitude Unit Vector X Relative to NED or ECEF",
+			"Description": "The coordinates of the image coordinate system-aligned unit vector (or equivalently the image coordinate system's direction cosine). This component value is relative to either the sensor-local NED or the ECEF coordinate system, as specified by GEODETIC_TYPE (index 01h). This field must be populated with a meaningful value when it is present.",
+			"Size": 10,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -1,
+					"Max": 1
+				}
+			]
+		},
+		"ICZ_EAST_OR_Y" : {
+			"Name": "Image Coordinate (IC) System Z Axes Attitude Unit Vector Y Relative to NED or ECEF",
+			"Description": "The coordinates of the image coordinate system-aligned unit vector (or equivalently the image coordinate system's direction cosine). This component value is relative to either the sensor-local NED or the ECEF coordinate system, as specified by GEODETIC_TYPE (index 01h). This field must be populated with a meaningful value when it is present.",
+			"Size": 10,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -1,
+					"Max": 1
+				}
+			]
+		},
+		"ICZ_DOWN_OR_Z" : {
+			"Name": "Image Coordinate (IC) System Z Axes Attitude Unit Vector Z Relative to NED or ECEF",
+			"Description": "The coordinates of the image coordinate system-aligned unit vector (or equivalently the image coordinate system's direction cosine). This component value is relative to either the sensor-local NED or the ECEF coordinate system, as specified by GEODETIC_TYPE (index 01h). This field must be populated with a meaningful value when it is present.",
+			"Size": 10,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -1,
+					"Max": 1
+				}
+			]
+		},
+		"ATTITUDE_QUATERNION" : {
+			"Name": "Attitude Quaternion Flag",
+			"Description": "This flag field indicates the presence of a sensor attitude quaternion. This module provides the sensor attitude using a quaternion relative to the sensor-local NED or the ECEF coordinate system. The sensor attitude, as provided either by this module or by Modules 7 or 9, is typically required for geopositioing. The parameter values in this module take precedence over those in Module 7, but those in Module 8 take precedence over these. Y = Fields 09a to 09d are present; N = Fields 09a to 09d are omitted.",
+			"Size": 1,
+			"Format": "BCS-A",
+			"Type": "R",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Value",
+					"Values": ["Y", "N"]
+				}
+			]
+		},
+		"ATTITUDE_Q1" : {
+			"Name": "Attitude Quaternion Vector Component 1",
+			"Description": "This is the first of three vector elements of a normalized quaternion defining the conceptual sensor attitude relative to either the sensor-local NED or the ECEF coordinate system, as specified by GEODETIC_TYPE (index 01h).",
+			"Size": 10,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -1,
+					"Max": 1
+				}
+			]
+		},
+		"ATTITUDE_Q2" : {
+			"Name": "Attitude Quaternion Vector Component 2",
+			"Description": "This is the second of three vector elements of a normalized quaternion defining the conceptual sensor attitude relative to either the sensor-local NED or the ECEF coordinate system, as specified by GEODETIC_TYPE (index 01h).",
+			"Size": 10,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -1,
+					"Max": 1
+				}
+			]
+		},
+		"ATTITUDE_Q3" : {
+			"Name": "Attitude Quaternion Vector Component 3",
+			"Description": "This is the final of three vector elements of a normalized quaternion defining the conceptual sensor attitude relative to either the sensor-local NED or the ECEF coordinate system, as specified by GEODETIC_TYPE (index 01h).",
+			"Size": 10,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -1,
+					"Max": 1
+				}
+			]
+		},
+		"ATTITUDE_Q4" : {
+			"Name": "Attitude Quaternion Scalar Component",
+			"Description": "This is the fourth (scalar) element of a normalized quaternion (absolute magnitude of the four-element quaternion is unity). See ATTITUDE_Q1 (index 09a) for a more detailed description.",
+			"Size": 10,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -1,
+					"Max": 1
+				}
+			]
+		},
+		"SENSOR_VELOCITY_DATA" : {
+			"Name": "Sensor Velocity Data Flag",
+			"Description": "This flag field indicates the presence of sensor velocity data. This module provides the sensor velocity components relative to the sensor-local NED or the ECEF coordinate system, as may be useful with a pushbroom or whiskbroom sensor. Y = Fields 10a to 10c are present; N = Fields 10a to 10c are omitted.",
+			"Size": 1,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Value",
+					"Values": ["Y", "N"]
+				}
+			]
+		},
+		"VELOCITY_NORTH_OR_X" : {
+			"Name": "Sensor North Velocity Vector",
+			"Description": "The velocity vector component of the sensor's velocity vector. This velocity component is relative to either the sensor-local NED or the ECEF coordinate system, as specified by GEODETIC_TYPE (index 01h). Units are specified by LENGTH_UNIT (index 01j).",
+			"Size": 9,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["meters/second", "feet/second"],
+			"Values": [
+				{
+					"Type": "Double"
+				}
+			]
+		},
+		"VELOCITY_EAST_OR_Y" : {
+			"Name": "Sensor East Velocity Vector",
+			"Description": "The velocity vector component of the sensor's velocity vector. This velocity component is relative to either the sensor-local NED or the ECEF coordinate system, as specified by GEODETIC_TYPE (index 01h). Units are specified by LENGTH_UNIT (index 01j).",
+			"Size": 9,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["meters/second", "feet/second"],
+			"Values": [
+				{
+					"Type": "Double"
+				}
+			]
+		},
+		"VELOCITY_DOWN_OR_Z" : {
+			"Name": "Sensor Down Velocity Vector",
+			"Description": "The velocity vector component of the sensor's velocity vector. This velocity component is relative to either the sensor-local NED or the ECEF coordinate system, as specified by GEODETIC_TYPE (index 01h). Units are specified by LENGTH_UNIT (index 01j).",
+			"Size": 9,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["meters/second", "feet/second"],
+			"Values": [
+				{
+					"Type": "Double"
+				}
+			]
+		},
+		"POINT_SET_DATA" : {
+			"Name": "Polygon or Point Set Count Flag",
+			"Description": "This flag field indicates the number of point sets associated with the NITF image segment. This module provides point sets (a set of one or more points such as polygon vertices) to identify or bound features within the image and provides geometric information associated with those points. '00' in this field omits the presence of Fields 11a to 11h. A non-zero value defines the number of point sets included in this TRE.",
+			"Size": 2,
+			"Format": "BCS-N",
+			"Type": "R",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 99
+				}
+			]
+		},
+		"POINT_SET_TYPE_MM<POINT_SET_DATA>" : {
+			"Name": "Type of Mth Point Set",
+			"Description": "The type of point set. This field identifies the current type of feature being identified or bound by the mth point set. This field required NTB registration. Current values are: Sensor Aimpoint, Image Center, Image Footprint, Ground Area, Ground Points, Point of Interest, Area of Interest, and LFR Measurements. See the NTB registry for approved values for this field.",
+			"Size": 25,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Alpha"
+				}
+			]
+		},
+		"POINT_COUNT_MM<POINT_SET_DATA>" : {
+			"Name": "Number of Points in Mth Set",
+			"Description": "The number of points used to bound the mth feature identified by POINT_SET_TYPE_MM (index 11a.m). For the mth occurrence of fields 11a and 11b, fields 11c through 11h occur POINT_COUNT_MM (index11b.m) times.",
+			"Size": 3,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 1,
+					"Max": 999
+				}
+			]
+		},
+		"P_ROW_NNN<POINT_COUNT_MM<POINT_SET_DATA>>" : {
+			"Name": "Row Location for Nth Point",
+			"Description": "The NITF-stored array coordinates for the nth point in the mth point set.",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["decimal", "pixels"],
+			"Values": [
+				{
+					"Type": "UnsignedInteger"
+				}
+			]
+		},
+		"P_COLUMN_NNN<POINT_COUNT_MM<POINT_SET_DATA>>" : {
+			"Name": "Column Location for Nth Point",
+			"Description": "The NITF-stored array coordinates for the nth point in the mth point set.",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["decimal", "pixels"],
+			"Values": [
+				{
+					"Type": "UnsignedInteger"
+				}
+			]
+		},
+		"P_LATITUDE_NNN<POINT_COUNT_MM<POINT_SET_DATA>>" : {
+			"Name": "Latitude for Nth Point",
+			"Description": "The fields P_LATITUDE_NNN, P_LONGITUDE_NNN, P_ELEVATION_NNN, and P_RANGE_NNN create the estimated geographic coordinates and elevation, as well as the measured range (line-of-sight distance from sensor to point), for the nth point in the mth point set. The geographic coordinates of the imaged feature or region will be provided using the latitude and longitude, regardless of the value specified in GEODETIC_TYPE (index 01h). The elevation will be relative to the datum specified by ELEVATION_DATUM (index 01i). Fields needing data that is unavailable should use the unspecified indicator. BCS hyphens are allowed for the entire field.",
+			"Size": 10,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["degrees"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -90,
+					"Max": 90
+				}
+			]
+		},
+		"P_LONGITUDE_NNN<POINT_COUNT_MM<POINT_SET_DATA>>" : {
+			"Name": "Longitude for Nth Point",
+			"Description": "The fields P_LATITUDE_NNN, P_LONGITUDE_NNN, P_ELEVATION_NNN, and P_RANGE_NNN create the estimated geographic coordinates and elevation, as well as the measured range (line-of-sight distance from sensor to point), for the nth point in the mth point set. The geographic coordinates of the imaged feature or region will be provided using the latitude and longitude, regardless of the value specified in GEODETIC_TYPE (index 01h). The elevation will be relative to the datum specified by ELEVATION_DATUM (index 01i). Fields needing data that is unavailable should use the unspecified indicator. BCS hyphens are allowed for the entire field.",
+			"Size": 11,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["degrees"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -180,
+					"Max": 180
+				}
+			]
+		},
+		"P_ELEVATION_NNN<POINT_COUNT_MM<POINT_SET_DATA>>" : {
+			"Name": "Elevation for Nth Point",
+			"Description": "The fields P_LATITUDE_NNN, P_LONGITUDE_NNN, P_ELEVATION_NNN, and P_RANGE_NNN create the estimated geographic coordinates and elevation, as well as the measured range (line-of-sight distance from sensor to point), for the nth point in the mth point set. The geographic coordinates of the imaged feature or region will be provided using the latitude and longitude, regardless of the value specified in GEODETIC_TYPE (index 01h). The elevation will be relative to the datum specified by ELEVATION_DATUM (index 01i). Fields needing data that is unavailable should use the unspecified indicator. BCS hyphens are allowed for the entire field.",
+			"Size": 6,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["meters", "feet"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -500,
+					"Max": 9000
+				},
+				{
+					"Type": "Range",
+					"Min": -1500,
+					"Max": 30000
+				}
+			]
+		},
+		"P_RANGE_NNN<POINT_COUNT_MM<POINT_SET_DATA>>" : {
+			"Name": "Latitude for Nth Point",
+			"Description": "The fields P_LATITUDE_NNN, P_LONGITUDE_NNN, P_ELEVATION_NNN, and P_RANGE_NNN create the estimated geographic coordinates and elevation, as well as the measured range (line-of-sight distance from sensor to point), for the nth point in the mth point set. The geographic coordinates of the imaged feature or region will be provided using the latitude and longitude, regardless of the value specified in GEODETIC_TYPE (index 01h). The elevation will be relative to the datum specified by ELEVATION_DATUM (index 01i). Fields needing data that is unavailable should use the unspecified indicator. BCS hyphens are allowed for the entire field.",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["meters", "feet"],
+			"Values": [
+				{
+					"Type": "UnsignedInteger"
+				}
+			]
+		},
+		"TIME_STAMPED_DATA_SETS" : {
+			"Name": "Time Stamp Count Flag",
+			"Description": "This flag field indicates the number of dynamic parameters recorded with time-stamps in this TRE. This module associated parameter values directly to multiple specific reference times. '00' in this field omits the presence of Fields 12a to 12d. A non-zero value defines the number of time-stamped parameters present in this module. The presence of this module indicates the values stored in this index-referenced fields prior to this module shall be nominal, average, or approximate values per the entire image segment.",
+			"Size": 2,
+			"Format": "BCS-N",
+			"Type": "R",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 99
+				}
+			]
+		},
+		"TIME_STAMP_TYPE_MM<TIME_STAMPED_DATA_SETS>" : {
+			"Name": "Index of the Mth Time-Stamped Parameter",
+			"Description": "The mth time-stamped parameter's index value. Indexing is limited to reasonably applicable fields (dynamic parameters) in the value range. The values for this field are any index valid in this TRE from 02a to 10c.",
+			"Size": 3,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"TIME_STAMP_COUNT_MM<TIME_STAMPED_DATA_SETS>" : {
+			"Name": "Number of Occurrences of Mth Parameter",
+			"Description": "The number of time stamps for which this parameter's value is recorded. This field determines the number of times the two fields below (12c and 12d) repeat to record the time stamps and values of the mth indexed parameter.",
+			"Size": 4,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 1,
+					"Max": 9999
+				}
+			]
+		},
+		"TIME_STAMP_TIME_NNNN<TIME_STAMP_COUNT_MM<TIME_STAMPED_DATA_SETS>>" : {
+			"Name": "The Nth Instance of a Time-Stamp Time",
+			"Description": "The reference time in seconds relative to START_TIME (index 01m) associated with the subsequent value of the mth parameter. Negative times are possible if the parameter is measured before the imaging start time.",
+			"Size": 12,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["seconds"],
+			"Values": [
+				{
+					"Type": "Double"
+				}
+			]
+		},
+		"TIME_STAMP_VALUE_NNNN<TIME_STAMP_COUNT_MM<TIME_STAMPED_DATA_SETS>>" : {
+			"Name": "The Nth Instance of the Mth Time-Stamped Parameter's Value",
+			"Description": "The parameter value at the time-stamp above (TIME_STAMP_TIME_NNN, index 12c.m.n). The values of this field are any index in this TRE from 02a to 10c.",
+			"Size": 3,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"PIXEL_REFERENCED_DATA_SETS" : {
+			"Name": "Pixel Reference Count Flag",
+			"Description": "This flag field indicates the number of dynamic parameters recorded with references to pixel indices. This module associates parameter values directly to multiple NITF image segment locations. '00' in this field omits the presence of Fields 13a to 13e. A non-zero value defines the number of pixel-referenced parameters present in the module. The presence of this module indicates the values stored in the index-referenced fields prior to this module shall be nominal, average, or approximate values per the entire image segment.",
+			"Size": 2,
+			"Format": "BCS-N",
+			"Type": "R",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 99
+				}
+			]
+		},
+		"PIXEL_REFERENCE_TYPE_MM<PIXEL_REFERENCED_DATA_SETS>" : {
+			"Name": "Index of the Mth Pixel-Referenced Parameter",
+			"Description": "The mth pixel-referenced parameter's index value. Indexing is limited to reasonably applicable fields (dynamic parameters) in the value range. The values for this field are any index valid in this TRE from 02a to 10c.",
+			"Size": 3,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"PIXEL_REFERENCE_COUNT_MM<PIXEL_REFERENCED_DATA_SETS>" : {
+			"Name": "Number of Occurrences of Mth Parameter",
+			"Description": "The number of pixel references for which this parameter's value is recorded. This field determines the number of times the three fields (13c, 13d, 13e) repeat to record the pixel locations and values of the mth indexed parameter.",
+			"Size": 4,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 1,
+					"Max": 9999
+				}
+			]
+		},
+		"PIXEL_REFERENCE_ROW_NNNN<PIXEL_REFERENCE_COUNT_MM<PIXEL_REFERENCED_DATA_SETS>>" : {
+			"Name": "The Nth Instance of a Reference Pixel Row Index",
+			"Description": "The row index for the reference pixel associated with the subsequent value of the mth parameter. The center row index shall be used when the parameter is only column-varying. Each set of pixel coordinates pertains to the NITF-stored image segment.",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["decimal", "pixel"],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"PIXEL_REFERENCE_COLUMN_NNNN<PIXEL_REFERENCE_COUNT_MM<PIXEL_REFERENCED_DATA_SETS>>" : {
+			"Name": "The Nth Instance of a Reference Pixel Column Index",
+			"Description": "The column index for the reference pixel associated with the subsequent value of the mth parameter. The center column index shall be used when the parameter is only row-varying. Each set of pixel coordinates pertains to the NITF-stored image segment.",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["decimal", "pixel"],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"PIXEL_REFERENCE_VALUE_NNNN<PIXEL_REFERENCE_COUNT_MM<PIXEL_REFERENCED_DATA_SETS>>" : {
+			"Name": "The Nth Instance of the Mth Pixel-Reference Parameter's Value",
+			"Description": "The parameter value associated with the reference pixel location defined above (indices 13.c.m.n and 13.d.m.n). The values for this field are any valid index within this TRE from 02a to 10c.",
+			"Size": 3,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"UNCERTAINTY_DATA" : {
+			"Name": "Uncertainty Data Flag",
+			"Description": "This flag field indicates the number of uncertainty-related values in this module. This module provides estimated standard derivations or correlation coefficients for select parameters. '000' in this field omits the presence of Fields 14a to 14c. A non-zero value defines the number of data sets (parameter index pairs and uncertainty values) found in this module. When provided, parameter uncertainties can be projected or propagated into the object space as geoposition uncertainty estimates. These estimated geoposition uncertainties are required for a number of applications.",
+			"Size": 3,
+			"Format": "BCS-N",
+			"Type": "R",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 999
+				}
+			]
+		},
+		"UNCERTAINTY_FIRST_TYPE_NNN<UNCERTAINTY_DATA>" : {
+			"Name": "First Index of Parameter with Reported Uncertainty or Correlation",
+			"Description": "The first index for the nth parameter pair to which the subsequent (nth) uncertainty estimate or correlation coefficient (UNCERTAINTY_VALUE_NNN, index 14c.n) pertains. Indexing is limited to reasonably applicable fields in the value range (spatial or temporal parameters with potential uncertainties). Indices for looping-conditional fields can be followed by up to seven digits with a decimal point separator. The digits before the separator identify the mth parameter (outer loop), and the digits after the separator identify the nth instance (inner loop) of that mth parameter. The values for this field are any appropriate index between 02b and 15d.",
+			"Size": 11,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"UNCERTAINTY_SECOND_TYPE_NNN<UNCERTAINTY_DATA>" : {
+			"Name": "Second Index of Parameter with Reported Uncertainty or Correlation",
+			"Description": "The second index for the nth parameter pair to which the subsequent uncertainty estimate or correlation coefficient pertains. This field shall either be unspecified or identical to the first index to indicate the subsequent value (index14c.n) is a standard deviation. Must be an appropriate index, different from the first index, to indicate that the subsequent value is a correlation coefficient (related the two indexed parameters). See UNCERTAINTY_FIRST_TYPE_NNN (index 14a.n) above for guidance. The values for this field are any appropriate index between 02b and 15d. BCS hyphens are allowed for the entire field.",
+			"Size": 11,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"UNCERTAINTY_VALUE_NNN<UNCERTAINTY_DATA>" : {
+			"Name": "Uncertainty or Correlation Value",
+			"Description": "The uncertainty estimate or correlation coefficient associated with the previously-identified-parameters' value(s). If the nth UNCERTAINTY_SECOND_TYPE_NNN (index 14b.n) is unspecified or is identical to the nth UNCERTAINTY_FIRST_TYPE_NNN (index 14a.n), this nth value shall be the standard deviation (1 sigma) estimate for the indexed parameter. If two different indices appear in the two index fields (14a.n and 14b.n), then the value is a correlation coefficient relating those two indexed parameters. If the value for this field is standard deviations, the value may be any positive number, whereas for correlation coefficients, the value range is -1 to 1.",
+			"Size": 10,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 9999999999
+				}
+			]
+		},
+		"ADDITIONAL_PARAMETER_DATA" : {
+			"Name": "Additional Parameter Flag",
+			"Description": "This flag field indicates the number of additional parameters in this module. This module allows for the registration of new data fields to accommodate requirements not already met by SENSRB. '000' in this field omits the presence of Fields 15a to 15d. A non-zero value defines the number of parameter sets (parameter name, size, count, and value(s)) found in this module.",
+			"Size": 3,
+			"Format": "BCS-N",
+			"Type": "R",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 999
+				}
+			]
+		},
+		"PARAMETER_NAME_MMM<ADDITIONAL_PARAMETER_DATA>" : {
+			"Name": "Additional Parameter Name",
+			"Description": "The name of the nth additional parameter. This name must be unique, explicit, and registered with the NTB. Registration will ensure uniqueness to avoid ambiguity and will document the parameter definition and utility for community awareness and future TRE developments. As with all alphanumeric data, the name should be left justified and blank filled. See the NTB registry for approved values for this field.",
+			"Size": 25,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"PARAMETER_SIZE_MMM<ADDITIONAL_PARAMETER_DATA>" : {
+			"Name": "Additional Parameter Field Size",
+			"Description": "The size of the mth additional parameter value field. This user-specified size allows for parameters of variable sizes. This size shall apply to all instantiations of PARAMETER_VALUE_NNNN associated with the mth additional parameter.",
+			"Size": 3,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["bytes"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 1,
+					"Max": 999
+				}
+			]
+		},
+		"PARAMETER_COUNT_MMM<ADDITIONAL_PARAMETER_DATA>" : {
+			"Name": "Number of Occurrences of the Additional Parameter",
+			"Description": "The number of times the mth parameter is recorded herein. This field determines the number of times the field below (PARAMETER_VALUE_NNNN, index 15d) is repeated for the mth additional parameter.",
+			"Size": 4,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 1,
+					"Max": 9999
+				}
+			]
+		},
+		"PARAMETER_VALUE_NNNN<PARAMETER_COUNT_MMM<ADDITIONAL_PARAMETER_DATA>>" : {
+			"Name": "Additional Parameter Value",
+			"Description": "The value for the nth instantiation of the mth additional parameter. The units, range, and character set will be established for each additional parameter as part of the NTB registration process. The size (byte allotment) for this parameter is as specified by PARAMETER_SIZE_MMM (index 15b.m).",
+			"Size": 0,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Value",
+					"Values": ["*"]
+				}
+			]
+		}
+	}
+}

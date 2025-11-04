@@ -1,0 +1,27 @@
+create view COMPONENT_COST_proval as 
+SELECT [ID]
+      ,[COMPONENT_ID]
+      ,[CCM_GROUP_ID]
+      ,[QUALITY_ID]
+      ,[CONSTRUCTION_CLASS_ID]
+      ,[VALUATION_METHOD_ID]
+      ,[CMP_VALUE_1]
+      ,[CMP_VALUE_2]
+      ,[CMP_VALUE_3]
+      ,[CMP_VALUE_4]
+      ,[CMP_VALUE_5]
+      ,[CMP_VALUE_6]
+      ,[CMP_SELECT_1]
+      ,[CMP_SELECT_2]
+      ,[CMP_SELECT_3]
+      ,[CMP_SELECT_4]
+      ,[CMP_SELECT_5]
+      ,[CMP_SELECT_6]
+      ,[GROUP_CODE]
+      ,[NB_STORY_MULTIPLIER_GROUP_CODE]
+      ,[STORY_HEIGHT_MULTIP_GROUP_CODE]
+      ,[ARCHITECT_FEE_PERCENT]
+  FROM [mvp_cost_3Q2016].[mvp].[COMPONENT_COST]
+
+GO
+

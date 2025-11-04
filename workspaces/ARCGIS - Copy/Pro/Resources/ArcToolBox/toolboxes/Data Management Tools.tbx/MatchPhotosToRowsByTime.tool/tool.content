@@ -1,0 +1,110 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "3290002",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "Input_Folder": {
+            "displayname": "$rc:input_folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:input_folder.descr"
+        },
+        "Input_Table": {
+            "displayname": "$rc:input_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:input_table.descr"
+        },
+        "Time_Field": {
+            "displayname": "$rc:time_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Date"
+                ]
+            },
+            "depends": [
+                "Input_Table"
+            ],
+            "description": "$rc:time_field.descr"
+        },
+        "Output_Table": {
+            "direction": "out",
+            "displayname": "$rc:output_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:output_table.descr"
+        },
+        "Unmatched_Photos_Table": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:unmatched_photos_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:unmatched_photos_table.descr"
+        },
+        "Add_Photos_As_Attachments": {
+            "type": "optional",
+            "displayname": "$rc:add_photos_as_attachments.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ADD_ATTACHMENTS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_ATTACHMENTS"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:add_photos_as_attachments.descr"
+        },
+        "Time_Tolerance": {
+            "type": "optional",
+            "displayname": "$rc:time_tolerance.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:time_tolerance.descr"
+        },
+        "Clock_Offset": {
+            "type": "optional",
+            "displayname": "$rc:clock_offset.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:clock_offset.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "workspace"
+    ]
+}

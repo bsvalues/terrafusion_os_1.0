@@ -1,0 +1,31 @@
+{
+    "map": {
+        "description": "Calculates summary statistics for fields in a feature class.",
+        "fields.descr": "<xdoc><p>A field or fields used to summarize similar features. For example, if you choose a single field called <span class=\"esri_fieldname\">PropertyType</span> with the values of commercial and residential, all of the fields with the value residential fields will be summarized together, with summary statistics calculated, and all of the fields with the value commercial will be summarized together. This example will results in two rows in the output, one for commercial, and one for residential summary values.</p><p>You can optionally select no fields and summarize all features in a single summary result.</p></xdoc>",
+        "fields.title": "Fields",
+        "input_layer.descr": "The point, polyline, or polygon layer to be summarized.",
+        "input_layer.title": "Input Layer",
+        "out_table.descr": "A new table with the summarized attributes.",
+        "out_table.title": "Output Table",
+        "summary_fields.descr": "The statistics that will be calculated on specified fields.",
+        "summary_fields.domain.item2.ANY": "Any",
+        "summary_fields.domain.item2.COUNT": "Count",
+        "summary_fields.domain.item2.MAX": "Maximum",
+        "summary_fields.domain.item2.MEAN": "Mean",
+        "summary_fields.domain.item2.MIN": "Minimum",
+        "summary_fields.domain.item2.RANGE": "Range",
+        "summary_fields.domain.item2.STDDEV": "Standard deviation",
+        "summary_fields.domain.item2.SUM": "Sum",
+        "summary_fields.domain.item2.VAR": "Variance",
+        "summary_fields.dt.title1": "Field",
+        "summary_fields.dt.title2": "Statistics",
+        "summary_fields.title": "Summary Fields",
+        "time_step_interval.descr": "<xdoc><p>A value that specifies the duration of the time step. This parameter is only available if the input points are time enabled and represent an instant in time.</p><p>Time stepping can only be applied if time is enabled on the input.</p></xdoc>",
+        "time_step_interval.title": "Time step interval",
+        "time_step_reference.descr": "A date that specifies the reference time with which to align the time steps. The default is January 1, 1970, at 12:00 a.m. This parameter is only available if the input points are time enabled and represent an instant in time.",
+        "time_step_reference.title": "Time step reference",
+        "time_step_repeat.descr": "A value that specifies how often the time-step interval occurs. This parameter is only available if the input points are time enabled and represent an instant in time.",
+        "time_step_repeat.title": "Time step repeat",
+        "title": "Summarize Attributes"
+    }
+}

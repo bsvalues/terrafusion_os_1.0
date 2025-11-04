@@ -1,0 +1,94 @@
+{
+    "type": "FunctionTool",
+    "guid": "{37716233-d0e5-4c72-b2ee-b6ee49a28d23}",
+    "displayname": "$rc:title",
+    "helpcontent": "3170001",
+    "description": "$rc:description",
+    "product": "200",
+    "params": {
+        "in_workspace": {
+            "displayname": "$rc:in_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "domain": {
+                "type": "GPWorkspaceDomain",
+                "workspacetype": [
+                    "Remote Database",
+                    "Feature Service"
+                ]
+            },
+            "description": "$rc:in_workspace.descr"
+        },
+        "in_version": {
+            "displayname": "$rc:in_version.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:in_version.descr"
+        },
+        "name": {
+            "type": "optional",
+            "displayname": "$rc:name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:name.descr"
+        },
+        "description": {
+            "type": "optional",
+            "displayname": "$rc:description.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:description.descr"
+        },
+        "access": {
+            "type": "optional",
+            "displayname": "$rc:access.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PRIVATE",
+                        "code": "$rc:access.domain.PRIVATE"
+                    },
+                    {
+                        "value": "PUBLIC",
+                        "code": "$rc:access.domain.PUBLIC"
+                    },
+                    {
+                        "value": "PROTECTED",
+                        "code": "$rc:access.domain.PROTECTED"
+                    }
+                ]
+            },
+            "description": "$rc:access.descr"
+        },
+        "out_workspace": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "depends": [
+                "in_workspace"
+            ]
+        },
+        "target_owner": {
+            "type": "optional",
+            "displayname": "$rc:target_owner.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:target_owner.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

@@ -1,0 +1,120 @@
+{% extends "base_clean.html" %}
+
+{% block title %}System Logs - TerraFusion SyncService{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="my-4">System Logs</h1>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Log Console</h5>
+                <div>
+                    <button class="btn btn-sm btn-outline-primary" id="refreshLogsBtn">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary ms-2" id="downloadLogsBtn">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                Check out the new UI for an enhanced logging experience.
+                <a href="/logs?new_ui=1" class="btn btn-sm btn-primary ms-2">Try New UI</a>
+            </div>
+            
+            <div class="log-console p-3 bg-light" style="height: 400px; overflow-y: auto; font-family: monospace; font-size: 0.9em;">
+                <div class="text-center my-5 text-muted">
+                    <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                    <p>Loading logs...</p>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer text-muted">
+            <small>Last updated: <span id="lastUpdated">Never</span></small>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Simple log display for the legacy UI
+    document.addEventListener('DOMContentLoaded', function() {
+        const logConsole = document.querySelector('.log-console');
+        const refreshBtn = document.getElementById('refreshLogsBtn');
+        const downloadBtn = document.getElementById('downloadLogsBtn');
+        const lastUpdated = document.getElementById('lastUpdated');
+        
+        // Sample logs for demo
+        const sampleLogs = [
+            '[2025-04-26 14:32:15.123] [INFO] [api_gateway] API Gateway started',
+            '[2025-04-26 14:32:16.234] [INFO] [api_gateway] Connected to database',
+            '[2025-04-26 14:32:17.345] [INFO] [sync_service] SyncService started',
+            '[2025-04-26 14:32:18.456] [INFO] [api_gateway] Authentication service initialized',
+            '[2025-04-26 14:32:25.567] [WARNING] [api_gateway] Slow database query detected (2.3s)',
+            '[2025-04-26 14:33:15.678] [ERROR] [sync_service] Failed to connect to external system PACS',
+            '[2025-04-26 14:34:10.789] [INFO] [api_gateway] Metrics collection completed',
+            '[2025-04-26 14:35:05.890] [DEBUG] [sync_service] Processing sync operation #1234',
+            '[2025-04-26 14:36:20.901] [INFO] [sync_service] Sync operation #1234 completed successfully',
+            '[2025-04-26 14:37:30.012] [WARNING] [sync_service] Rate limit approaching for CAMA system API'
+        ];
+        
+        // Display logs
+        function displayLogs() {
+            logConsole.innerHTML = '';
+            
+            sampleLogs.forEach(log => {
+                const logLine = document.createElement('div');
+                logLine.className = 'log-line';
+                
+                // Color-code based on log level
+                if (log.includes('[ERROR]')) {
+                    logLine.style.color = '#dc3545';
+                } else if (log.includes('[WARNING]')) {
+                    logLine.style.color = '#ffc107';
+                } else if (log.includes('[DEBUG]')) {
+                    logLine.style.color = '#6c757d';
+                }
+                
+                logLine.textContent = log;
+                logConsole.appendChild(logLine);
+            });
+            
+            lastUpdated.textContent = new Date().toLocaleTimeString();
+        }
+        
+        // Initial display
+        displayLogs();
+        
+        // Refresh button
+        refreshBtn.addEventListener('click', function() {
+            refreshBtn.disabled = true;
+            refreshBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+            
+            setTimeout(() => {
+                displayLogs();
+                refreshBtn.disabled = false;
+                refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
+            }, 500);
+        });
+        
+        // Download button
+        downloadBtn.addEventListener('click', function() {
+            const logText = sampleLogs.join('\n');
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(logText));
+            element.setAttribute('download', 'terrafusion-logs.txt');
+            element.style.display = 'none';
+            
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        });
+    });
+</script>
+{% endblock %}

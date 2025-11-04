@@ -1,0 +1,217 @@
+openapi: 3.0.3
+info:
+  title: Commercial API
+  description: Commercial operations APIs
+  version: 1.0.0
+  contact:
+    name: TerraFusion Government OS API Support
+    email: commercial-api@terrafusion.gov
+    url: https://docs.terrafusion.gov/marketplace/commercial
+  license:
+    name: Government Use License
+    url: https://terrafusion.gov/licenses/government-api
+  termsOfService: https://terrafusion.gov/terms/api-usage
+servers:
+- url: https://api.terrafusion.gov/api/v1/commercial
+  description: Production TerraFusion Government API
+- url: https://staging-api.terrafusion.gov/api/v1/commercial
+  description: Staging Environment
+- url: https://dev-api.terrafusion.gov/api/v1/commercial
+  description: Development Environment
+paths:
+  /health:
+    get:
+      tags:
+      - commercial
+      summary: Health check
+      description: Health check - Commercial operations APIs
+      operationId: get__health
+      security:
+      - OAuth2:
+        - commercial:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /data:
+    get:
+      tags:
+      - commercial
+      summary: Data retrieval
+      description: Data retrieval - Commercial operations APIs
+      operationId: get__data
+      security:
+      - OAuth2:
+        - commercial:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /operations:
+    post:
+      tags:
+      - commercial
+      summary: Operation execution
+      description: Operation execution - Commercial operations APIs
+      operationId: post__operations
+      security:
+      - OAuth2:
+        - commercial:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /status:
+    get:
+      tags:
+      - commercial
+      summary: Service status
+      description: Service status - Commercial operations APIs
+      operationId: get__status
+      security:
+      - OAuth2:
+        - commercial:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: object
+    HealthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - healthy
+          - degraded
+          - unhealthy
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        dependencies:
+          type: object
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
+          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          scopes:
+            commercial:read: Read access to commercial resources
+            commercial:write: Write access to commercial resources
+            commercial:admin: Administrative access to commercial
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+security:
+- OAuth2:
+  - commercial:read
+- ApiKey: []
+tags:
+- name: commercial
+  description: Commercial operations
+  externalDocs:
+    description: Find out more about commercial
+    url: https://docs.terrafusion.gov/marketplace/commercial

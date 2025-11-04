@@ -1,0 +1,47 @@
+{
+  "name": "TerraFlow",
+  "short_name": "TerraFlow",
+  "description": "TerraFlow - Part of the Terrafusion Platform for Benton County Assessor's Office",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0d6efd",
+  "icons": [
+    {
+      "src": "/static/img/logo/terrafusion-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/static/img/screenshots/desktop.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/static/img/screenshots/mobile.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "orientation": "portrait-primary",
+  "categories": ["productivity", "utilities", "government"],
+  "shortcuts": [
+    {
+      "name": "Map Viewer",
+      "short_name": "Map",
+      "url": "/map-viewer",
+      "icons": [{ "src": "/static/img/icons/map-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Property Search",
+      "short_name": "Search",
+      "url": "/search",
+      "icons": [{ "src": "/static/img/icons/search-192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}

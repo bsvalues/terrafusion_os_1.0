@@ -1,0 +1,10 @@
+{
+    "map": {
+        "description": "Converts a binary spatial weights matrix file (.swm) to a table.",
+        "input_spatial_weights_matrix_file.descr": "The full pathname for the spatial weights matrix file (.swm) you want to convert.",
+        "input_spatial_weights_matrix_file.title": "Input Spatial Weights Matrix File",
+        "output_table.descr": "A full pathname to the table you want to create.",
+        "output_table.title": "Output Table",
+        "title": "Convert Spatial Weights Matrix to Table"
+    }
+}

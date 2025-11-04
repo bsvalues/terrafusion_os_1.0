@@ -50,7 +50,7 @@ describe('Table', () => {
 
     it('accepts custom className', () => {
       render(
-        <Table className="custom-table">
+        <Table className='custom-table'>
           <tbody>
             <tr>
               <td>Cell</td>
@@ -127,7 +127,7 @@ describe('Table', () => {
     it('accepts custom className', () => {
       render(
         <Table>
-          <TableHeader className="custom-header">
+          <TableHeader className='custom-header'>
             <tr>
               <th>Header</th>
             </tr>
@@ -197,7 +197,7 @@ describe('Table', () => {
     it('accepts custom className', () => {
       render(
         <Table>
-          <TableBody className="custom-body">
+          <TableBody className='custom-body'>
             <tr>
               <td>Cell</td>
             </tr>
@@ -273,7 +273,7 @@ describe('Table', () => {
     it('accepts custom className', () => {
       render(
         <Table>
-          <TableFooter className="custom-footer">
+          <TableFooter className='custom-footer'>
             <tr>
               <td>Footer</td>
             </tr>
@@ -338,7 +338,7 @@ describe('Table', () => {
       render(
         <Table>
           <TableBody>
-            <TableRow className="custom-row">
+            <TableRow className='custom-row'>
               <td>Cell</td>
             </TableRow>
           </TableBody>
@@ -353,7 +353,7 @@ describe('Table', () => {
       render(
         <Table>
           <TableBody>
-            <TableRow data-state="selected">
+            <TableRow data-state='selected'>
               <td>Selected row</td>
             </TableRow>
           </TableBody>
@@ -368,7 +368,7 @@ describe('Table', () => {
       render(
         <Table>
           <TableBody>
-            <TableRow data-state="selected">
+            <TableRow data-state='selected'>
               <td>Cell</td>
             </TableRow>
           </TableBody>
@@ -422,7 +422,7 @@ describe('Table', () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="custom-head">Header</TableHead>
+              <TableHead className='custom-head'>Header</TableHead>
             </TableRow>
           </TableHeader>
         </Table>
@@ -456,7 +456,7 @@ describe('Table', () => {
           <TableHeader>
             <TableRow>
               <TableHead>
-                <input type="checkbox" role="checkbox" />
+                <input type='checkbox' role='checkbox' />
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -506,7 +506,7 @@ describe('Table', () => {
         <Table>
           <TableBody>
             <TableRow>
-              <TableCell className="custom-cell">Content</TableCell>
+              <TableCell className='custom-cell'>Content</TableCell>
             </TableRow>
           </TableBody>
         </Table>
@@ -536,7 +536,7 @@ describe('Table', () => {
           <TableBody>
             <TableRow>
               <TableCell>
-                <input type="checkbox" role="checkbox" />
+                <input type='checkbox' role='checkbox' />
               </TableCell>
             </TableRow>
           </TableBody>
@@ -604,7 +604,7 @@ describe('Table', () => {
     it('accepts custom className', () => {
       render(
         <Table>
-          <TableCaption className="custom-caption">Caption</TableCaption>
+          <TableCaption className='custom-caption'>Caption</TableCaption>
           <TableBody>
             <TableRow>
               <TableCell>Cell</TableCell>
@@ -836,10 +836,10 @@ describe('Table', () => {
 
       const table = screen.getByRole('table');
       expect(table).toBeInTheDocument();
-      
+
       const columnheader = screen.getByRole('columnheader');
       expect(columnheader).toBeInTheDocument();
-      
+
       const cell = screen.getByRole('cell');
       expect(cell).toBeInTheDocument();
     });
@@ -941,7 +941,7 @@ describe('Table', () => {
           <TableHeader>
             <TableRow>
               <TableHead>
-                <input type="checkbox" role="checkbox" aria-label="Select all" />
+                <input type='checkbox' role='checkbox' aria-label='Select all' />
               </TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Status</TableHead>
@@ -950,14 +950,14 @@ describe('Table', () => {
           <TableBody>
             <TableRow>
               <TableCell>
-                <input type="checkbox" role="checkbox" aria-label="Select row" />
+                <input type='checkbox' role='checkbox' aria-label='Select row' />
               </TableCell>
               <TableCell>Item 1</TableCell>
               <TableCell>Active</TableCell>
             </TableRow>
-            <TableRow data-state="selected">
+            <TableRow data-state='selected'>
               <TableCell>
-                <input type="checkbox" role="checkbox" checked aria-label="Select row" />
+                <input type='checkbox' role='checkbox' checked aria-label='Select row' />
               </TableCell>
               <TableCell>Item 2</TableCell>
               <TableCell>Active</TableCell>
@@ -1045,7 +1045,7 @@ describe('Table', () => {
     it('handles very long cell content', () => {
       const longText =
         'This is a very long text that might overflow the table cell and needs to be handled properly with appropriate styling and overflow behavior to ensure the table remains usable and readable.';
-      
+
       render(
         <Table>
           <TableBody>

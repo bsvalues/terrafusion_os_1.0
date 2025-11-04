@@ -1,0 +1,5 @@
+<DataType Name="DEDatasetType">
+  <DisplayName>Dataset</DisplayName>
+  <Description>A collection of related data, usually grouped or stored together.</Description>
+</DataType>
+

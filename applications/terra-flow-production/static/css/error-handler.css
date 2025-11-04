@@ -1,0 +1,222 @@
+/**
+ * TerraFusion Error Handling System Styles
+ * Consistent styling for error handling across the application
+ */
+
+/* Global error container */
+#tf-global-error-container {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 800px;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+#tf-global-error-container > * {
+  pointer-events: auto;
+}
+
+/* Error container base styles */
+.tf-error-container {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: var(--radius, 0.25rem);
+  border-left: 4px solid var(--danger, #dc3545);
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: var(--shadow-md, 0 4px 6px rgba(0, 0, 0, 0.1));
+  animation: tf-error-slide-in 0.3s ease;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  max-width: 100%;
+}
+
+@keyframes tf-error-slide-in {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Error content */
+.tf-error-content {
+  flex: 1;
+}
+
+/* Error icon */
+.tf-error-icon {
+  color: var(--danger, #dc3545);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+/* Error title */
+.tf-error-title {
+  color: var(--danger, #dc3545);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+/* Error message */
+.tf-error-message {
+  margin-bottom: 0;
+}
+
+/* Error details */
+.tf-error-details {
+  padding: 0.75rem;
+  background-color: rgba(220, 53, 69, 0.05);
+  border: 1px solid rgba(220, 53, 69, 0.2);
+  border-radius: var(--radius-sm, 0.2rem);
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: 0.875rem;
+  word-break: break-word;
+}
+
+.tf-error-details pre {
+  margin: 0;
+  white-space: pre-wrap;
+  font-family: monospace;
+  font-size: 0.8125rem;
+}
+
+/* Error details toggle button */
+.tf-error-details-toggle {
+  font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Error action buttons */
+.tf-error-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+/* Error container states */
+.tf-error-container.tf-error-warning {
+  border-left-color: var(--warning, #ffc107);
+}
+
+.tf-error-container.tf-error-warning .tf-error-icon,
+.tf-error-container.tf-error-warning .tf-error-title {
+  color: var(--warning, #ffc107);
+}
+
+.tf-error-container.tf-error-info {
+  border-left-color: var(--info, #17a2b8);
+}
+
+.tf-error-container.tf-error-info .tf-error-icon,
+.tf-error-container.tf-error-info .tf-error-title {
+  color: var(--info, #17a2b8);
+}
+
+/* Inline error styling */
+.tf-inline-error {
+  display: block;
+  color: var(--danger, #dc3545);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.tf-inline-error::before {
+  content: '';
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 0.25rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23dc3545' viewBox='0 0 16 16'%3E%3Cpath d='M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z'/%3E%3Cpath d='M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  vertical-align: middle;
+}
+
+/* Error page state */
+.tf-error-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+.tf-error-page-icon {
+  font-size: 4rem;
+  color: var(--danger, #dc3545);
+  margin-bottom: 1rem;
+}
+
+.tf-error-page-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.tf-error-page-message {
+  max-width: 600px;
+  margin: 0 auto 1.5rem;
+}
+
+.tf-error-page-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* Dark mode support */
+.dark-mode .tf-error-container,
+.dark-theme .tf-error-container {
+  background-color: rgba(33, 37, 41, 0.95);
+  border-left-color: rgba(220, 53, 69, 0.8);
+}
+
+.dark-mode .tf-error-details,
+.dark-theme .tf-error-details {
+  background-color: rgba(220, 53, 69, 0.1);
+  border-color: rgba(220, 53, 69, 0.3);
+}
+
+/* Accessibility improvements */
+.tf-error-container:focus-within {
+  outline: 2px solid var(--danger, #dc3545);
+  outline-offset: 2px;
+}
+
+/* Mobile optimizations */
+@media (max-width: 576px) {
+  #tf-global-error-container {
+    width: calc(100% - 2rem);
+    max-width: none;
+  }
+  
+  .tf-error-container {
+    padding: 0.75rem;
+  }
+  
+  .tf-error-details {
+    max-height: 150px;
+  }
+}
+
+/* Required for screen readers */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

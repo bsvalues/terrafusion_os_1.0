@@ -1,0 +1,14 @@
+{
+    "set": [
+        "geospatial index",
+        "grid",
+        "h3",
+        "heat map",
+        "hexbin",
+        "hot spot",
+        "placekey",
+        "resolution",
+        "tessellation",
+        "trade areas"
+    ]
+}

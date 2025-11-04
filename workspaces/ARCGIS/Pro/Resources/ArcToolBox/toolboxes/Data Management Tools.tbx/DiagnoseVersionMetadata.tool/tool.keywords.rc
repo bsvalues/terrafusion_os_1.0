@@ -1,0 +1,10 @@
+{
+    "set": [
+        "geodatabase administration",
+        "sdegdbrepair",
+        "states",
+        "system tables",
+        "troubleshoot",
+        "versioning"
+    ]
+}

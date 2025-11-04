@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title %}TerraFusion - Geographic Information System{% endblock %}</title>
+    
+    <!-- Critical CSS inlined for faster rendering -->
+    <style>
+        {% include 'critical_css.html' %}
+    </style>
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    
+    <!-- Preload essential assets -->
+    <link rel="preload" href="{{ url_for('static', filename='css/terrafusion.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="{{ url_for('static', filename='js/core.js') }}" as="script">
+    <link rel="preload" href="{{ url_for('static', filename='fonts/terraflow-icons.woff2') }}" as="font" type="font/woff2" crossorigin>
+    
+    <!-- Fallback for preload -->
+    <noscript>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/terrafusion.css') }}">
+    </noscript>
+    
+    <!-- Defer non-critical CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}" media="print" onload="this.media='all'">
+    
+    <!-- Deferred scripts -->
+    <script defer src="{{ url_for('static', filename='js/core.js') }}"></script>
+    
+    {% block head_extra %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+    <header class="navbar">
+        <a href="{{ url_for('index') }}" class="navbar-brand">TerraFusion</a>
+        <nav>
+            <ul class="navbar-menu">
+                <li class="navbar-item"><a href="{{ url_for('index') }}" class="navbar-link">Home</a></li>
+                <li class="navbar-item"><a href="{{ url_for('map_viewer') }}" class="navbar-link">Map Viewer</a></li>
+                <li class="navbar-item"><a href="{{ url_for('assessment_map') }}" class="navbar-link">Assessment Map</a></li>
+                {% if current_user.is_authenticated %}
+                <li class="navbar-item"><a href="{{ url_for('user_profile') }}" class="navbar-link">Profile</a></li>
+                <li class="navbar-item"><a href="{{ url_for('logout') }}" class="navbar-link">Logout</a></li>
+                {% else %}
+                <li class="navbar-item"><a href="{{ url_for('login') }}" class="navbar-link">Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Benton County. TerraFusion GIS Platform.</p>
+        </div>
+    </footer>
+
+    <!-- Load non-critical JavaScript at the end -->
+    {% block scripts %}{% endblock %}
+    
+    <!-- Preload page-specific resources based on current page -->
+    <script>
+        // Detect which page we're on and preload relevant resources
+        (function() {
+            var path = window.location.pathname;
+            
+            if (path.includes('map-viewer') || path.includes('assessment-map')) {
+                // Preload map resources
+                var mapCssLink = document.createElement('link');
+                mapCssLink.rel = 'preload';
+                mapCssLink.as = 'style';
+                mapCssLink.href = "{{ url_for('static', filename='css/map.css') }}";
+                document.head.appendChild(mapCssLink);
+                
+                var mapJsLink = document.createElement('link');
+                mapJsLink.rel = 'preload';
+                mapJsLink.as = 'script';
+                mapJsLink.href = "{{ url_for('static', filename='js/map.js') }}";
+                document.head.appendChild(mapJsLink);
+            }
+        })();
+    </script>
+</body>
+</html>

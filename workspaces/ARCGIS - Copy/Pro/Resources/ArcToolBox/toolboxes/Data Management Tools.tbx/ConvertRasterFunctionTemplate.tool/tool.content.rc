@@ -1,0 +1,15 @@
+{
+    "map": {
+        "description": "Converts a raster function template between formats (rft.xml, json, and binary).",
+        "format.descr": "<xdoc><p>The output function template file format.</p><ul><li><span title=\"XML\">XML</span>—XML output format.</li><li><span title=\"JSON\">JSON</span>—JSON output format. This is the default.</li><li><span title=\"BINARY\">Binary</span>—Binary output format.</li></ul></xdoc>",
+        "format.domain.BINARY": "Binary",
+        "format.domain.JSON": "JSON",
+        "format.domain.XML": "XML",
+        "format.title": "Format",
+        "in_raster_function_template.descr": "The input raster function template file. The input template file can be XML, JSON, or binary format.",
+        "in_raster_function_template.title": "Input Raster Function Template",
+        "out_raster_function_template_file.descr": "The output raster function template file path and file name.",
+        "out_raster_function_template_file.title": "Output Raster Function Template File",
+        "title": "Convert Raster Function Template"
+    }
+}

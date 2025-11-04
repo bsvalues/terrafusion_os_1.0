@@ -1,0 +1,13 @@
+{
+    "set": [
+        "automatic layout",
+        "configuration",
+        "diagram layout",
+        "diagram template",
+        "dispatch layout",
+        "network",
+        "network diagram",
+        "spatial dispatch",
+        "template configuration"
+    ]
+}

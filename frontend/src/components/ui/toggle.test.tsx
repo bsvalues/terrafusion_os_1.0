@@ -16,8 +16,8 @@ describe('Toggle', () => {
 
     it('renders with icon', () => {
       render(
-        <Toggle aria-label="Bold">
-          <Bold className="h-4 w-4" />
+        <Toggle aria-label='Bold'>
+          <Bold className='h-4 w-4' />
         </Toggle>
       );
 
@@ -27,7 +27,7 @@ describe('Toggle', () => {
     it('renders with icon and text', () => {
       render(
         <Toggle>
-          <Bold className="mr-2 h-4 w-4" />
+          <Bold className='mr-2 h-4 w-4' />
           Bold
         </Toggle>
       );
@@ -36,7 +36,7 @@ describe('Toggle', () => {
     });
 
     it('applies custom className', () => {
-      render(<Toggle className="custom-toggle">Toggle</Toggle>);
+      render(<Toggle className='custom-toggle'>Toggle</Toggle>);
 
       expect(screen.getByRole('button')).toHaveClass('custom-toggle');
     });
@@ -49,7 +49,7 @@ describe('Toggle', () => {
     });
 
     it('applies outline variant', () => {
-      render(<Toggle variant="outline">Toggle</Toggle>);
+      render(<Toggle variant='outline'>Toggle</Toggle>);
 
       const button = screen.getByRole('button');
       expect(button.className).toContain('border');
@@ -111,7 +111,11 @@ describe('Toggle', () => {
       const onPressedChange = jest.fn();
       const user = userEvent.setup();
 
-      render(<Toggle pressed={true} onPressedChange={onPressedChange}>Toggle</Toggle>);
+      render(
+        <Toggle pressed={true} onPressedChange={onPressedChange}>
+          Toggle
+        </Toggle>
+      );
 
       await user.click(screen.getByRole('button'));
 
@@ -127,7 +131,7 @@ describe('Toggle', () => {
             <Toggle pressed={pressed} onPressedChange={setPressed}>
               Toggle
             </Toggle>
-            <div data-testid="state">State: {String(pressed)}</div>
+            <div data-testid='state'>State: {String(pressed)}</div>
           </div>
         );
       };
@@ -145,14 +149,14 @@ describe('Toggle', () => {
 
   describe('Variants and Sizes', () => {
     it('renders default variant', () => {
-      render(<Toggle variant="default">Toggle</Toggle>);
+      render(<Toggle variant='default'>Toggle</Toggle>);
 
       const button = screen.getByRole('button');
       expect(button.className).toContain('bg-transparent');
     });
 
     it('renders outline variant', () => {
-      render(<Toggle variant="outline">Toggle</Toggle>);
+      render(<Toggle variant='outline'>Toggle</Toggle>);
 
       const button = screen.getByRole('button');
       expect(button.className).toContain('border');
@@ -160,21 +164,21 @@ describe('Toggle', () => {
     });
 
     it('renders small size', () => {
-      render(<Toggle size="sm">Toggle</Toggle>);
+      render(<Toggle size='sm'>Toggle</Toggle>);
 
       const button = screen.getByRole('button');
       expect(button.className).toContain('h-9');
     });
 
     it('renders default size', () => {
-      render(<Toggle size="default">Toggle</Toggle>);
+      render(<Toggle size='default'>Toggle</Toggle>);
 
       const button = screen.getByRole('button');
       expect(button.className).toContain('h-10');
     });
 
     it('renders large size', () => {
-      render(<Toggle size="lg">Toggle</Toggle>);
+      render(<Toggle size='lg'>Toggle</Toggle>);
 
       const button = screen.getByRole('button');
       expect(button.className).toContain('h-11');
@@ -182,7 +186,7 @@ describe('Toggle', () => {
 
     it('combines variant and size', () => {
       render(
-        <Toggle variant="outline" size="sm">
+        <Toggle variant='outline' size='sm'>
           Toggle
         </Toggle>
       );
@@ -322,11 +326,9 @@ describe('Toggle', () => {
     });
 
     it('supports aria-label', () => {
-      render(<Toggle aria-label="Toggle bold formatting">Toggle</Toggle>);
+      render(<Toggle aria-label='Toggle bold formatting'>Toggle</Toggle>);
 
-      expect(
-        screen.getByRole('button', { name: /toggle bold formatting/i })
-      ).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /toggle bold formatting/i })).toBeInTheDocument();
     });
 
     it('has accessible name from content', () => {
@@ -337,8 +339,8 @@ describe('Toggle', () => {
 
     it('has accessible name from aria-label when icon only', () => {
       render(
-        <Toggle aria-label="Bold">
-          <Bold className="h-4 w-4" />
+        <Toggle aria-label='Bold'>
+          <Bold className='h-4 w-4' />
         </Toggle>
       );
 
@@ -376,7 +378,7 @@ describe('Toggle', () => {
     });
 
     it('has no accessibility violations (outline variant)', async () => {
-      const { container } = render(<Toggle variant="outline">Toggle</Toggle>);
+      const { container } = render(<Toggle variant='outline'>Toggle</Toggle>);
 
       const results = await axe(container);
       expect(results).toHaveNoViolations();
@@ -384,8 +386,8 @@ describe('Toggle', () => {
 
     it('has no accessibility violations (with icon)', async () => {
       const { container } = render(
-        <Toggle aria-label="Bold">
-          <Bold className="h-4 w-4" />
+        <Toggle aria-label='Bold'>
+          <Bold className='h-4 w-4' />
         </Toggle>
       );
 
@@ -396,7 +398,7 @@ describe('Toggle', () => {
     it('has no accessibility violations (icon and text)', async () => {
       const { container } = render(
         <Toggle>
-          <Bold className="mr-2 h-4 w-4" />
+          <Bold className='mr-2 h-4 w-4' />
           Bold
         </Toggle>
       );

@@ -1,0 +1,14 @@
+{
+    "set": [
+        "big data",
+        "combine",
+        "copy",
+        "copy table",
+        "data management",
+        "field mapping",
+        "match",
+        "merging attributes",
+        "remove",
+        "rename"
+    ]
+}

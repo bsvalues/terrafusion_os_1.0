@@ -1,0 +1,5 @@
+<DataType Name="GPRasterLayer">
+  <DisplayName>Raster Layer</DisplayName>
+  <Description>A reference to a raster, including symbology and rendering properties.</Description>
+</DataType>
+

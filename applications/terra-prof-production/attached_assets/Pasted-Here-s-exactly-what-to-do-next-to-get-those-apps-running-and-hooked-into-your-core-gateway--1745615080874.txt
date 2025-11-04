@@ -1,0 +1,139 @@
+Here’s exactly what to do next to get those apps running and hooked into your core-gateway:
+
+---
+
+## 1. Run the import script
+
+In your `TerraFusionMono/` root, make sure `import-all-apps.sh` (from our last message) is executable and then:
+
+```bash
+chmod +x import-all-apps.sh
+./import-all-apps.sh
+```
+
+This will:
+
+1. Clone each of your public/private repos into `apps/…`
+2. Strip out their `.git` so they become part of this mono-repo
+3. Register them in `workspace.json`
+4. Install dependencies and prettify the workspace config
+5. Commit & push everything
+
+---
+
+## 2. Verify each app can serve
+
+For each app, run:
+
+```bash
+nx serve <app-name>
+```
+
+Where `<app-name>` is the lowercase folder name under `apps/`. For example:
+
+```bash
+nx serve terrafusionsync
+nx serve bcbsgeoassessmentpro
+nx serve terrafusionpro
+# …etc.
+```
+
+Fix any port conflicts or missing dependencies in their individual `package.json` if something fails.
+
+---
+
+## 3. Wire them into your API Gateway (Apollo Federation)
+
+Open your core-gateway entrypoint (e.g. `apps/core-gateway/src/index.ts` or `packages/api/src/index.ts`) and update the ApolloGateway (or proxy) config to include each new service. For example:
+
+```ts
+import { ApolloGateway } from '@apollo/gateway';
+import { ApolloServer } from 'apollo-server';
+
+const gateway = new ApolloGateway({
+  serviceList: [
+    { name: 'core-gateway',          url: 'http://localhost:4000/graphql' }, // if needed
+    { name: 'terrafusionsync',       url: 'http://localhost:3001/graphql' },
+    { name: 'terrafusionpro',        url: 'http://localhost:3002/graphql' },
+    { name: 'terraflow',             url: 'http://localhost:3003/graphql' },
+    { name: 'terraminer',            url: 'http://localhost:3004/graphql' },
+    { name: 'terraagent',            url: 'http://localhost:3005/graphql' },
+    { name: 'terraf',                url: 'http://localhost:3006/graphql' },
+    { name: 'terralegislativepulsepub', url: 'http://localhost:3007/graphql' },
+    { name: 'bcbscostapp',           url: 'http://localhost:3008/graphql' },
+    { name: 'bcbsgeoassessmentpro',  url: 'http://localhost:3009/graphql' },
+    { name: 'bcbslevy',              url: 'http://localhost:3010/graphql' },
+    { name: 'bcbswebhub',            url: 'http://localhost:3011/graphql' },
+    { name: 'bcbsdataengine',        url: 'http://localhost:3012/graphql' },
+    { name: 'bcbspacsmapping',       url: 'http://localhost:3013/graphql' },
+    { name: 'geoassessmentpro',      url: 'http://localhost:3014/graphql' },
+    { name: 'bsbcmaster',            url: 'http://localhost:3015/graphql' },
+    { name: 'bsincomevaluation',     url: 'http://localhost:3016/graphql' },
+    { name: 'terrafusionmock-up',    url: 'http://localhost:3017/graphql' },
+  ],
+});
+
+// Then start your server as usual
+const server = new ApolloServer({ gateway, subscriptions: false });
+server.listen({ port: 4000 }).then(({ url }) => {
+  console.log(`🚀 Gateway ready at ${url}`);
+});
+```
+
+**Adjust ports** to match each app’s `serve` port (set in their `project.json`/`workspace.json`).
+
+---
+
+## 4. Update CI to build + test all apps
+
+In your `.github/workflows/ci.yml`, expand the build matrix:
+
+```yaml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project: [ 
+          terrafusionsync, terraflow, terrafusionpro, terraminer, terraagent,
+          terraf, terralegislativepulsepub, bcbscostapp, bcbsgeoassessmentpro,
+          bcbslevy, bcbswebhub, bcbsdataengine, bcbspacsmapping,
+          geoassessmentpro, bsbcmaster, bsincomevaluation, terrafusionmock-up
+        ]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - run: pnpm install
+      - run: pnpm nx build ${{ matrix.project }}
+      - run: pnpm nx test ${{ matrix.project }}
+```
+
+This ensures every app is built & tested on each commit.
+
+---
+
+## 5. Smoke-test end-to-end
+
+Finally, add a simple smoke test step after deployment:
+
+```bash
+# after deploying gateway + services
+curl -f http://gateway-host:4000/health || exit 1
+curl -f http://gateway-host:4000/api/terralegislativepulsepub/health || exit 1
+# etc.
+```
+
+Place this in your CD pipeline to catch any broken connections.
+
+---
+
+Once you’ve completed all of the above, you’ll have:
+
+1. **All repos** living under one Nx monorepo  
+2. **Each app** serving locally via `nx serve`  
+3. **Gateway** federating or proxying them all  
+4. **CI/CD** building, testing, and smoke-testing everything  
+
+Let me know if you hit any errors in those steps!

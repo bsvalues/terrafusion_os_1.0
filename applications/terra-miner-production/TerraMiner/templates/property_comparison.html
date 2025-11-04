@@ -1,0 +1,1131 @@
+{% extends "base.html" %}
+
+{% block title %}Property Comparison | TerraMiner{% endblock %}
+
+{% block head %}
+<!-- Cache busting meta tag -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
+<!-- noUiSlider CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@14.6.3/distribute/nouislider.min.css">
+
+<!-- noUiSlider JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/nouislider@14.6.3/distribute/nouislider.min.js"></script>
+{% endblock %}
+
+{% block additional_styles %}
+<style>
+  :root {
+    --primary: #0e1b4d;
+    --primary-light: #192f83;
+    --accent: #00b4d8;
+    --accent-light: #48cae4;
+    --accent-dark: #0077b6;
+    --success: #4ade80;
+    --error: #ef4444;
+    --text-light: rgba(255, 255, 255, 0.85);
+    --text-muted: rgba(255, 255, 255, 0.6);
+    --border-color: rgba(0, 180, 216, 0.3);
+  }
+
+  /* Card styling */
+  .comparison-card {
+    border-radius: 0.75rem;
+    border: 1px solid var(--border-color);
+    background-color: rgba(14, 27, 77, 0.7);
+    height: 100%;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+  
+  .comparison-card:hover {
+    box-shadow: 0 0 20px rgba(0, 180, 216, 0.4);
+    transform: translateY(-5px);
+  }
+  
+  .comparison-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    border-bottom: 2px solid var(--accent);
+    padding: 1.25rem;
+  }
+  
+  .comparison-content {
+    padding: 1.5rem;
+  }
+  
+  /* Property features styling */
+  .property-feature {
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.75rem;
+    transition: background-color 0.2s;
+  }
+  
+  .property-feature:hover {
+    background-color: rgba(0, 180, 216, 0.05);
+  }
+  
+  .feature-label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 400;
+  }
+  
+  .feature-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-light);
+  }
+  
+  .price-tag {
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: var(--accent);
+    text-shadow: 0 0 10px rgba(0, 180, 216, 0.3);
+  }
+  
+  .property-address {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  /* Filter card styling */
+  .filter-card {
+    background: linear-gradient(180deg, rgba(14, 27, 77, 0.9) 0%, rgba(25, 47, 131, 0.7) 100%);
+    border-radius: 0.75rem;
+    padding: 1.75rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .filter-card h5 {
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 1.25rem;
+    position: relative;
+    padding-bottom: 0.5rem;
+  }
+  
+  .filter-card h5:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 2px;
+    background-color: var(--accent);
+  }
+  
+  /* Buttons styling */
+  .add-property-btn {
+    background-color: var(--primary);
+    border: 1px solid var(--accent);
+    color: #ffffff;
+    border-radius: 0.375rem;
+    padding: 0.5rem 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+  
+  .add-property-btn:hover {
+    background-color: var(--primary-light);
+    border-color: var(--accent-light);
+    box-shadow: 0 0 8px rgba(0, 180, 216, 0.5);
+  }
+  
+  .btn-outline-primary {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  
+  .btn-outline-primary:hover {
+    background-color: var(--accent);
+    color: white;
+  }
+  
+  /* Property image styling */
+  .property-img {
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 0.5rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .property-img::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, transparent 100%);
+  }
+  
+  /* Metric badges */
+  .metric-badge {
+    display: inline-block;
+    padding: 0.25em 0.6em;
+    font-size: 0.75rem;
+    font-weight: bold;
+    border-radius: 0.25rem;
+    margin-left: 0.5rem;
+  }
+  
+  .compare-highlight {
+    background-color: rgba(0, 180, 216, 0.15);
+    border-radius: 0.25rem;
+    padding: 0.25rem 0.5rem;
+  }
+  
+  .better-than-avg {
+    color: var(--success);
+  }
+  
+  .worse-than-avg {
+    color: var(--error);
+  }
+  
+  /* Property suggestion styling */
+  .property-suggestion {
+    cursor: pointer;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    background-color: rgba(14, 27, 77, 0.6);
+    border: 1px solid rgba(0, 180, 216, 0.15);
+    transition: all 0.3s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .property-suggestion:hover {
+    background-color: rgba(25, 47, 131, 0.8);
+    border-color: rgba(0, 180, 216, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .suggestion-price {
+    color: var(--accent);
+    font-weight: bold;
+    font-size: 1.15rem;
+  }
+  
+  /* Empty state styling */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    text-align: center;
+    padding: 3rem;
+    background: linear-gradient(135deg, rgba(14, 27, 77, 0.6) 0%, rgba(25, 47, 131, 0.4) 100%);
+    border-radius: 0.75rem;
+    border: 1px dashed var(--border-color);
+    box-shadow: inset 0 0 20px rgba(0, 180, 216, 0.1);
+  }
+  
+  .empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    color: var(--accent);
+    opacity: 0.8;
+  }
+  
+  /* Form controls */
+  .form-label {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .form-select, .form-control {
+    background-color: rgba(14, 27, 77, 0.8);
+    border: 1px solid rgba(0, 180, 216, 0.2);
+    color: var(--text-light);
+    transition: all 0.2s;
+  }
+  
+  .form-select:focus, .form-control:focus {
+    background-color: rgba(14, 27, 77, 0.9);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 0.25rem rgba(0, 180, 216, 0.25);
+  }
+  
+  /* Progress bar styling */
+  .progress {
+    background-color: rgba(255, 255, 255, 0.1);
+    height: 10px;
+    border-radius: 5px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+  
+  .progress-bar.bg-info {
+    background-color: var(--accent) !important;
+  }
+  
+  /* Responsive tables */
+  .table-responsive .table-dark {
+    background-color: transparent;
+    border-color: rgba(0, 180, 216, 0.1);
+  }
+  
+  .table-dark th {
+    color: var(--accent);
+    border-color: rgba(0, 180, 216, 0.2);
+    font-weight: 500;
+    background-color: rgba(0, 180, 216, 0.05);
+  }
+  
+  .table-dark td {
+    border-color: rgba(0, 180, 216, 0.1);
+  }
+  
+  /* Analysis cards */
+  .card-header.bg-primary {
+    background: linear-gradient(90deg, var(--accent-dark) 0%, var(--accent) 100%) !important;
+    border-bottom: none;
+  }
+  
+  /* Badge styling */
+  .badge.bg-info {
+    background-color: var(--accent) !important;
+  }
+  
+  .badge.ms-1 {
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.6;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  /* Custom styling for noUiSlider */
+  .noUi-target {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 5px;
+    box-shadow: none;
+    height: 6px;
+  }
+  
+  .noUi-connect {
+    background: linear-gradient(90deg, var(--accent-dark), var(--accent));
+  }
+  
+  .noUi-handle {
+    width: 18px !important;
+    height: 18px !important;
+    border-radius: 50%;
+    background-color: white;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    border: 2px solid var(--accent);
+    cursor: pointer;
+    top: -7px !important;
+  }
+  
+  .noUi-handle:before, 
+  .noUi-handle:after {
+    display: none;
+  }
+  
+  .noUi-tooltip {
+    background-color: var(--accent);
+    border: none;
+    color: white;
+    font-size: 0.8rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+  }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Define price range slider options
+    const minPrice = 0;
+    const maxPrice = 2000000; // $2M max price
+    const startMin = {{ request.args.get('min_price', 0)|int }};
+    const startMax = {{ request.args.get('max_price', 1000000)|int }};
+    
+    // Initialize the price range slider
+    const priceSlider = document.getElementById('priceRangeSlider');
+    
+    if (priceSlider) {
+      noUiSlider.create(priceSlider, {
+        start: [startMin, startMax],
+        connect: true,
+        step: 10000, // $10K increments
+        range: {
+          'min': minPrice,
+          'max': maxPrice
+        },
+        format: {
+          to: function(value) {
+            return Math.round(value);
+          },
+          from: function(value) {
+            return Math.round(value);
+          }
+        }
+      });
+      
+      // Get the display and hidden input elements
+      const minPriceDisplay = document.getElementById('minPriceDisplay');
+      const maxPriceDisplay = document.getElementById('maxPriceDisplay');
+      const minPriceInput = document.getElementById('minPrice');
+      const maxPriceInput = document.getElementById('maxPrice');
+      
+      // Format price values with commas for display
+      function formatPrice(price) {
+        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      }
+      
+      // Update the display elements and hidden inputs when slider values change
+      priceSlider.noUiSlider.on('update', function(values, handle) {
+        const value = Math.round(values[handle]);
+        
+        // Update the appropriate display and input elements
+        if (handle === 0) {
+          minPriceDisplay.textContent = formatPrice(value);
+          minPriceInput.value = value;
+        } else {
+          maxPriceDisplay.textContent = formatPrice(value);
+          maxPriceInput.value = value;
+        }
+      });
+      
+      // Update slider with animation when resetting
+      document.addEventListener('click', function(e) {
+        // If the clear comparison button is clicked, reset the slider
+        if (e.target.closest('.btn-outline-danger') && e.target.closest('.btn-outline-danger').textContent.includes('Clear Comparison')) {
+          priceSlider.noUiSlider.set([minPrice, maxPrice]);
+          
+          // Animate the slider thumbs
+          const handles = priceSlider.querySelectorAll('.noUi-handle');
+          handles.forEach(handle => {
+            handle.style.transition = 'transform 0.3s ease';
+            handle.style.transform = 'scale(1.3)';
+            setTimeout(() => {
+              handle.style.transform = 'scale(1)';
+            }, 300);
+          });
+        }
+      });
+    }
+    
+    // Search button functionality
+    const searchButton = document.getElementById('searchPropertiesBtn');
+    if (searchButton) {
+      searchButton.addEventListener('click', function() {
+        // Get the form values
+        const propertyType = document.getElementById('propertyType').value;
+        const state = document.getElementById('state').value;
+        const city = document.getElementById('city').value;
+        const minPrice = document.getElementById('minPrice').value;
+        const maxPrice = document.getElementById('maxPrice').value;
+        
+        // Construct URL with query parameters
+        let url = '/property/comparison?';
+        if (propertyType) url += `property_type=${encodeURIComponent(propertyType)}&`;
+        if (state) url += `state=${encodeURIComponent(state)}&`;
+        if (city) url += `city=${encodeURIComponent(city)}&`;
+        if (minPrice) url += `min_price=${encodeURIComponent(minPrice)}&`;
+        if (maxPrice) url += `max_price=${encodeURIComponent(maxPrice)}&`;
+        
+        // Remove trailing &
+        if (url.endsWith('&')) {
+          url = url.slice(0, -1);
+        }
+        
+        // Navigate to the URL
+        window.location.href = url;
+      });
+    }
+  });
+</script>
+{% endblock %}
+
+{% block content %}
+<!-- New Header with Background Image -->
+<div class="comparison-hero" style="background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1773&q=80'); background-size: cover; background-position: center; padding: 60px 0; margin-bottom: 30px; border-radius: 0 0 50px 50px;">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 text-center">
+        <h1 class="display-4 text-white mb-3" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
+          Property Comparison Tool
+        </h1>
+        <p class="lead text-white mb-4" style="max-width: 700px; margin: 0 auto; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+          Compare real estate properties side-by-side to make informed investment decisions
+        </p>
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-center">
+            <li class="breadcrumb-item"><a href="/monitoring/dashboard" class="text-info">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="/monitoring/locations" class="text-info">Property Locations</a></li>
+            <li class="breadcrumb-item active text-white" aria-current="page">Property Comparison</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <!-- Quick Stats Cards -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="stat-card" style="background: linear-gradient(135deg, #0e1b4d 0%, #192f83 100%); border-radius: 15px; padding: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); text-align: center;">
+        <i class="feather icon-home" style="font-size: 36px; color: var(--accent);"></i>
+        <h3 class="mt-3 text-white">{{ property_types|length }}</h3>
+        <p class="text-muted mb-0">Property Types</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card" style="background: linear-gradient(135deg, #0e1b4d 0%, #192f83 100%); border-radius: 15px; padding: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); text-align: center;">
+        <i class="feather icon-map" style="font-size: 36px; color: var(--accent);"></i>
+        <h3 class="mt-3 text-white">{{ states|length }}</h3>
+        <p class="text-muted mb-0">States</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card" style="background: linear-gradient(135deg, #0e1b4d 0%, #192f83 100%); border-radius: 15px; padding: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); text-align: center;">
+        <i class="feather icon-map-pin" style="font-size: 36px; color: var(--accent);"></i>
+        <h3 class="mt-3 text-white">{{ cities|length }}</h3>
+        <p class="text-muted mb-0">Cities</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card" style="background: linear-gradient(135deg, #0e1b4d 0%, #192f83 100%); border-radius: 15px; padding: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); text-align: center;">
+        <i class="feather icon-dollar-sign" style="font-size: 36px; color: var(--accent);"></i>
+        <h3 class="mt-3 text-white">${{ avg_price }}</h3>
+        <p class="text-muted mb-0">Avg. Price</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="row">
+    <!-- Left Column - Filters & Search -->
+    <div class="col-lg-4">
+      <div class="filter-card mb-4" style="border-radius: 20px; overflow: hidden;">
+        <div style="background: linear-gradient(90deg, var(--accent-dark) 0%, var(--accent) 100%); padding: 15px; border-radius: 20px 20px 0 0;">
+          <h5 class="text-white mb-0">
+            <i class="feather icon-filter me-2"></i>
+            Find Properties
+          </h5>
+        </div>
+        
+        <div style="padding: 25px;">
+          <form id="propertySearchForm" action="/property/comparison" method="GET">
+            <div class="mb-3">
+              <label class="form-label">Property Type</label>
+              <div class="input-group">
+                <span class="input-group-text" style="background-color: var(--accent); border: none;">
+                  <i class="feather icon-home text-white"></i>
+                </span>
+                <select class="form-select" id="propertyType">
+                  <option value="">All Types</option>
+                  {% for type in property_types %}
+                  <option value="{{ type }}">{{ type }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">State</label>
+              <div class="input-group">
+                <span class="input-group-text" style="background-color: var(--accent); border: none;">
+                  <i class="feather icon-map text-white"></i>
+                </span>
+                <select class="form-select" id="state">
+                  <option value="">All States</option>
+                  {% for state in states %}
+                  <option value="{{ state }}">{{ state }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">City</label>
+              <div class="input-group">
+                <span class="input-group-text" style="background-color: var(--accent); border: none;">
+                  <i class="feather icon-map-pin text-white"></i>
+                </span>
+                <select class="form-select" id="city">
+                  <option value="">All Cities</option>
+                  {% for city in cities %}
+                  <option value="{{ city }}">{{ city }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            
+            <div class="mb-4">
+              <label class="form-label">Price Range</label>
+              <div class="price-slider-container" style="padding: 15px 10px 5px;">
+                <!-- Price range slider -->
+                <div id="priceRangeSlider" style="height: 10px;"></div>
+                
+                <!-- Price display -->
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                  <div class="price-display">
+                    <span class="input-group-text" style="background-color: var(--accent); border: none; border-radius: 20px; padding: 5px 10px; font-size: 0.9rem;">
+                      <i class="feather icon-dollar-sign text-white me-1"></i>
+                      <span id="minPriceDisplay" style="color: white; font-weight: 500;">0</span>
+                    </span>
+                  </div>
+                  <span class="text-muted">to</span>
+                  <div class="price-display">
+                    <span class="input-group-text" style="background-color: var(--accent); border: none; border-radius: 20px; padding: 5px 10px; font-size: 0.9rem;">
+                      <i class="feather icon-dollar-sign text-white me-1"></i>
+                      <span id="maxPriceDisplay" style="color: white; font-weight: 500;">1,000,000</span>
+                    </span>
+                  </div>
+                </div>
+                
+                <!-- Hidden inputs to store the actual values -->
+                <input type="hidden" id="minPrice" name="min_price" value="0">
+                <input type="hidden" id="maxPrice" name="max_price" value="1000000">
+              </div>
+            </div>
+            
+            <div class="d-grid">
+              <button type="button" class="btn btn-primary btn-lg" id="searchPropertiesBtn" style="background: linear-gradient(90deg, var(--accent-dark) 0%, var(--accent) 100%); border: none; border-radius: 10px; padding: 12px;">
+                <i class="feather icon-search me-2"></i> Search Properties
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      <!-- Results from search -->
+      <div id="searchResults" class="mb-4" style="display: none;">
+        <div style="background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%); padding: 15px; border-radius: 20px 20px 0 0;">
+          <h5 class="text-white mb-0">
+            <i class="feather icon-list me-2"></i>
+            Search Results
+          </h5>
+        </div>
+        
+        <div class="p-3" style="background: rgba(14, 27, 77, 0.8); border-radius: 0 0 20px 20px;">
+          <div id="propertyList" class="property-list">
+            <!-- Property results will go here -->
+          </div>
+        </div>
+      </div>
+      
+      <!-- Suggested Properties Section -->
+      {% if suggested_properties %}
+      <div class="mb-4">
+        <div style="background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%); padding: 15px; border-radius: 20px 20px 0 0;">
+          <h5 class="text-white mb-0">
+            <i class="feather icon-star me-2"></i>
+            Suggested Comparisons
+          </h5>
+        </div>
+        
+        <div class="p-3" style="background: rgba(14, 27, 77, 0.8); border-radius: 0 0 20px 20px;">
+          {% for property in suggested_properties %}
+          <div class="property-suggestion mb-3" data-property-id="{{ property.id }}">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <div style="font-weight: 600; color: var(--text-light);">{{ property.property_type }}</div>
+                <div class="small text-muted">{{ property.city }}, {{ property.state }}</div>
+              </div>
+              <div class="suggestion-price">${{ (property.price_value / 100) | int }}</div>
+            </div>
+            <div class="mt-1 small d-flex justify-content-between">
+              <span><i class="feather icon-home me-1" style="color: var(--accent);"></i>{{ property.bedrooms }} bd</span>
+              <span><i class="feather icon-droplet me-1" style="color: var(--accent);"></i>{{ property.bathrooms }} ba</span>
+              <span><i class="feather icon-square me-1" style="color: var(--accent);"></i>{{ property.square_feet }} sqft</span>
+            </div>
+            <button class="btn btn-sm btn-outline-primary w-100 mt-2 add-to-compare-btn" data-property-id="{{ property.id }}">
+              <i class="feather icon-plus-circle me-1"></i> Add to Comparison
+            </button>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+    
+    <!-- Right Column - Comparison Cards -->
+    <div class="col-lg-8">
+      {% if selected_properties %}
+      <!-- Property Comparison Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="m-0">Comparing {{ selected_properties|length }} Properties</h3>
+        <a href="/property/comparison" class="btn btn-outline-danger">
+          <i class="feather icon-refresh-cw me-1"></i> Clear Comparison
+        </a>
+      </div>
+      
+      <!-- Comparison Cards -->
+      <div class="row">
+        {% for property in selected_properties %}
+        <div class="col-md-6 mb-4">
+          <div class="comparison-card" style="border-radius: 20px; overflow: hidden; border: none; box-shadow: 0 10px 20px rgba(0,0,0,0.15);">
+            <!-- Property Image -->
+            <div class="property-img position-relative" style="height: 220px; background-image: url('https://via.placeholder.com/400x300?text=Property+Image');">
+              <div class="position-absolute" style="top: 15px; left: 15px; background-color: var(--accent); color: white; padding: 5px 10px; border-radius: 30px; font-weight: 600; font-size: 0.9rem;">
+                {{ property.property_type }}
+              </div>
+              <div class="position-absolute" style="bottom: 15px; left: 15px; right: 15px;">
+                <div class="price-tag" style="font-size: 2rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">${{ (property.price_value / 100) | int }}</div>
+                <div class="property-address" style="color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.7);">{{ property.street_address }}, {{ property.city }}, {{ property.state }}</div>
+              </div>
+            </div>
+            
+            <div class="comparison-content p-4">
+              <!-- Property Features in Grid Layout -->
+              <div class="row mb-4">
+                <div class="col-4 text-center">
+                  <div class="feature-circle" style="width: 60px; height: 60px; border-radius: 50%; background-color: rgba(0, 180, 216, 0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto; border: 2px solid var(--accent);">
+                    <span style="font-size: 1.5rem; font-weight: bold; color: var(--accent);">{{ property.bedrooms }}</span>
+                  </div>
+                  <div class="mt-2 small text-muted">Bedrooms</div>
+                </div>
+                <div class="col-4 text-center">
+                  <div class="feature-circle" style="width: 60px; height: 60px; border-radius: 50%; background-color: rgba(0, 180, 216, 0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto; border: 2px solid var(--accent);">
+                    <span style="font-size: 1.5rem; font-weight: bold; color: var(--accent);">{{ property.bathrooms }}</span>
+                  </div>
+                  <div class="mt-2 small text-muted">Bathrooms</div>
+                </div>
+                <div class="col-4 text-center">
+                  <div class="feature-circle" style="width: 60px; height: 60px; border-radius: 50%; background-color: rgba(0, 180, 216, 0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto; border: 2px solid var(--accent);">
+                    <span style="font-size: 1.5rem; font-weight: bold; color: var(--accent);">{{ property.year_built }}</span>
+                  </div>
+                  <div class="mt-2 small text-muted">Year Built</div>
+                </div>
+              </div>
+              
+              <!-- Advanced Metrics -->
+              <div class="property-feature d-flex justify-content-between align-items-center p-3 mb-3" style="background-color: rgba(0, 180, 216, 0.1); border-radius: 10px; border: none;">
+                <div>
+                  <div class="small text-muted">Square Footage</div>
+                  <div class="feature-value">{{ property.square_feet }} sqft</div>
+                </div>
+                <div>
+                  {% if property.square_feet > avg_sqft %}
+                  <span class="metric-badge better-than-avg" style="background-color: rgba(74, 222, 128, 0.2); padding: 5px 10px; border-radius: 20px;">
+                    <i class="feather icon-trending-up me-1"></i>+{{ ((property.square_feet - avg_sqft) / avg_sqft * 100) | int }}%
+                  </span>
+                  {% elif property.square_feet < avg_sqft %}
+                  <span class="metric-badge worse-than-avg" style="background-color: rgba(239, 68, 68, 0.2); padding: 5px 10px; border-radius: 20px;">
+                    <i class="feather icon-trending-down me-1"></i>-{{ ((avg_sqft - property.square_feet) / avg_sqft * 100) | int }}%
+                  </span>
+                  {% endif %}
+                </div>
+              </div>
+              
+              <div class="property-feature d-flex justify-content-between align-items-center p-3 mb-3" style="background-color: rgba(0, 180, 216, 0.1); border-radius: 10px; border: none;">
+                <div>
+                  <div class="small text-muted">Price per sqft</div>
+                  <div class="feature-value">
+                    {% if property.price_per_sqft %}
+                    ${{ property.price_per_sqft }}
+                    {% else %}
+                    N/A
+                    {% endif %}
+                  </div>
+                </div>
+                <div>
+                  {% set avg_price_per_sqft = avg_price / avg_sqft %}
+                  {% if property.price_per_sqft and property.price_per_sqft < avg_price_per_sqft %}
+                  <span class="metric-badge better-than-avg" style="background-color: rgba(74, 222, 128, 0.2); padding: 5px 10px; border-radius: 20px;">
+                    <i class="feather icon-check me-1"></i>Below Avg
+                  </span>
+                  {% elif property.price_per_sqft and property.price_per_sqft > avg_price_per_sqft %}
+                  <span class="metric-badge worse-than-avg" style="background-color: rgba(239, 68, 68, 0.2); padding: 5px 10px; border-radius: 20px;">
+                    <i class="feather icon-alert-circle me-1"></i>Above Avg
+                  </span>
+                  {% endif %}
+                </div>
+              </div>
+              
+              <!-- Actions -->
+              <div class="d-flex mt-4">
+                <a href="/monitoring/locations?property_id={{ property.id }}" class="btn btn-outline-primary flex-grow-1 me-2" style="border-radius: 10px;">
+                  <i class="feather icon-map-pin me-1"></i> View on Map
+                </a>
+                <a href="#" class="btn btn-outline-danger flex-grow-1 remove-property" data-property-id="{{ property.id }}" style="border-radius: 10px;">
+                  <i class="feather icon-trash-2 me-1"></i> Remove
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      
+      <!-- Comparison Analysis -->
+      <div class="card bg-dark mt-4 mb-5" style="border: none; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+        <div class="card-header" style="background: linear-gradient(90deg, var(--accent-dark) 0%, var(--accent) 100%); padding: 15px 20px;">
+          <h5 class="mb-0 text-white">
+            <i class="feather icon-bar-chart-2 me-2"></i>
+            Comparative Market Analysis
+          </h5>
+        </div>
+        <div class="card-body p-4">
+          <div class="row">
+            <div class="col-md-6 mb-4">
+              <!-- Price Comparison with Visuals -->
+              <h6 class="text-accent mb-3"><i class="feather icon-dollar-sign me-2"></i>Price Comparison</h6>
+              <div class="p-3" style="background: rgba(0, 180, 216, 0.05); border-radius: 10px;">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span style="color: var(--text-muted);">Price Range:</span>
+                  <span style="font-weight: 600; color: var(--text-light);">${{ min_price }} - ${{ max_price }}</span>
+                </div>
+                <div class="position-relative mb-3" style="height: 30px;">
+                  <!-- Range Bar -->
+                  <div style="position: absolute; top: 50%; left: 0; right: 0; height: 6px; transform: translateY(-50%); background-color: rgba(255,255,255,0.1); border-radius: 3px;"></div>
+                  
+                  <!-- Property Markers -->
+                  {% for property in selected_properties %}
+                  {% set position = ((property.price_value / 100) - min_price) / (max_price - min_price) * 100 %}
+                  <div style="position: absolute; top: 50%; left: {{ position }}%; width: 16px; height: 16px; background-color: var(--accent); border-radius: 50%; transform: translate(-50%, -50%); z-index: 2; box-shadow: 0 0 0 4px rgba(0, 180, 216, 0.2);"
+                       data-bs-toggle="tooltip" title="${{ (property.price_value / 100) | int }}"></div>
+                  {% endfor %}
+                  
+                  <!-- Average Price Marker -->
+                  {% set avg_position = (avg_price - min_price) / (max_price - min_price) * 100 %}
+                  <div style="position: absolute; top: 50%; left: {{ avg_position }}%; width: 2px; height: 20px; background-color: var(--success); transform: translate(-50%, -50%);"
+                       data-bs-toggle="tooltip" title="Avg: ${{ avg_price }}"></div>
+                </div>
+                
+                <div class="small text-center text-muted">
+                  <span class="me-3"><i class="feather icon-circle" style="color: var(--accent); font-size: 8px;"></i> Property Price</span>
+                  <span><i class="feather icon-minus" style="color: var(--success); font-size: 8px;"></i> Market Average</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-6 mb-4">
+              <!-- Square Footage Analysis -->
+              <h6 class="text-accent mb-3"><i class="feather icon-square me-2"></i>Square Footage Analysis</h6>
+              <div class="p-3" style="background: rgba(0, 180, 216, 0.05); border-radius: 10px;">
+                {% for property in selected_properties %}
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between align-items-center small mb-1">
+                    <span class="text-muted">Property #{{ loop.index }}</span>
+                    <span style="font-weight: 600; color: var(--text-light);">{{ property.square_feet }} sqft</span>
+                  </div>
+                  <div class="d-flex align-items-center">
+                    <div class="flex-grow-1 me-2" style="height: 8px; background-color: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+                      {% set sqft_percent = (property.square_feet / (avg_sqft * 2)) * 100 %}
+                      {% if sqft_percent > 100 %}{% set sqft_percent = 100 %}{% endif %}
+                      <div style="height: 100%; width: {{ sqft_percent }}%; background-color: var(--accent);"></div>
+                    </div>
+                    <div>
+                      {% if property.square_feet > avg_sqft %}
+                      <span class="better-than-avg">+{{ ((property.square_feet - avg_sqft) / avg_sqft * 100) | int }}%</span>
+                      {% elif property.square_feet < avg_sqft %}
+                      <span class="worse-than-avg">-{{ ((avg_sqft - property.square_feet) / avg_sqft * 100) | int }}%</span>
+                      {% else %}
+                      <span>0%</span>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+                <div class="small text-center text-muted mt-3">
+                  Average square footage in market: {{ avg_sqft }} sqft
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-12">
+              <!-- Value Analysis -->
+              <h6 class="text-accent mb-3"><i class="feather icon-trending-up me-2"></i>Value Analysis</h6>
+              <div class="p-3" style="background: rgba(0, 180, 216, 0.05); border-radius: 10px;">
+                <div class="table-responsive">
+                  <table class="table table-sm table-dark" style="border-collapse: separate; border-spacing: 0 5px;">
+                    <thead>
+                      <tr>
+                        <th scope="col" style="border: none; color: var(--text-muted);">Property</th>
+                        <th scope="col" style="border: none; color: var(--text-muted);">Price</th>
+                        <th scope="col" style="border: none; color: var(--text-muted);">$/sqft</th>
+                        <th scope="col" style="border: none; color: var(--text-muted);">Value Rating</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for property in selected_properties %}
+                      <tr style="background-color: rgba(14, 27, 77, 0.4);">
+                        <td style="border: none;">
+                          <strong style="color: var(--text-light);">#{{ loop.index }}</strong>
+                          <div class="small text-muted">{{ property.city }}, {{ property.state }}</div>
+                        </td>
+                        <td style="border: none;">${{ (property.price_value / 100) | int }}</td>
+                        <td style="border: none;">
+                          {% if property.price_per_sqft %}
+                          ${{ property.price_per_sqft }}
+                          {% else %}
+                          N/A
+                          {% endif %}
+                        </td>
+                        <td style="border: none;">
+                          {% set avg_price_per_sqft = avg_price / avg_sqft %}
+                          {% if property.price_per_sqft %}
+                            {% if property.price_per_sqft < avg_price_per_sqft * 0.9 %}
+                            <div style="display: inline-block; width: 100px; height: 6px; background-color: rgba(255,255,255,0.1); border-radius: 3px;">
+                              <div style="height: 100%; width: 90%; background-color: var(--success);"></div>
+                            </div>
+                            <span class="text-success ms-2">Excellent</span>
+                            {% elif property.price_per_sqft < avg_price_per_sqft %}
+                            <div style="display: inline-block; width: 100px; height: 6px; background-color: rgba(255,255,255,0.1); border-radius: 3px;">
+                              <div style="height: 100%; width: 75%; background-color: var(--success);"></div>
+                            </div>
+                            <span class="text-success ms-2">Good</span>
+                            {% elif property.price_per_sqft < avg_price_per_sqft * 1.1 %}
+                            <div style="display: inline-block; width: 100px; height: 6px; background-color: rgba(255,255,255,0.1); border-radius: 3px;">
+                              <div style="height: 100%; width: 50%; background-color: var(--accent);"></div>
+                            </div>
+                            <span class="text-info ms-2">Fair</span>
+                            {% else %}
+                            <div style="display: inline-block; width: 100px; height: 6px; background-color: rgba(255,255,255,0.1); border-radius: 3px;">
+                              <div style="height: 100%; width: 25%; background-color: var(--error);"></div>
+                            </div>
+                            <span class="text-danger ms-2">Premium</span>
+                            {% endif %}
+                          {% else %}
+                            N/A
+                          {% endif %}
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {% else %}
+      <!-- Empty State - No Properties Selected -->
+      <div class="empty-state" style="position: relative; border-radius: 20px; overflow: hidden; padding: 80px 40px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1773&q=80'); background-size: cover; background-position: center; opacity: 0.1;"></div>
+        
+        <div class="empty-icon" style="position: relative; z-index: 1;">
+          <i class="feather icon-home" style="font-size: 5rem;"></i>
+        </div>
+        <h3 style="position: relative; z-index: 1; margin-bottom: 1rem; color: var(--text-light);">No Properties Selected</h3>
+        <p class="mb-4" style="position: relative; z-index: 1; color: var(--text-muted); max-width: 500px; text-align: center;">
+          Select properties to compare using the search panel on the left. You can compare up to 3 properties side-by-side to make informed investment decisions.
+        </p>
+        <div style="position: relative; z-index: 1; display: flex; gap: 15px;">
+          <a href="/monitoring/locations" class="btn btn-primary" style="padding: 10px 20px; border-radius: 10px;">
+            <i class="feather icon-map-pin me-2"></i> Browse Property Map
+          </a>
+          <button type="button" class="btn btn-outline-primary" style="padding: 10px 20px; border-radius: 10px;" id="searchPropertiesBtn">
+            <i class="feather icon-search me-2"></i> Search Properties
+          </button>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block additional_scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Handle property search
+    document.getElementById('searchPropertiesBtn').addEventListener('click', function() {
+      // Get search parameters
+      const propertyType = document.getElementById('propertyType').value;
+      const state = document.getElementById('state').value;
+      const city = document.getElementById('city').value;
+      const minPrice = document.getElementById('minPrice').value;
+      const maxPrice = document.getElementById('maxPrice').value;
+      
+      // Show loading indicator
+      const searchResults = document.getElementById('searchResults');
+      searchResults.style.display = 'block';
+      const propertyList = document.getElementById('propertyList');
+      propertyList.innerHTML = '<div class="text-center py-3"><div class="spinner-border text-primary" role="status"></div><div class="mt-2">Searching properties...</div></div>';
+      
+      // Build search URL with parameters
+      let searchUrl = '/api/property/search?limit=10';
+      if (propertyType) searchUrl += `&property_type=${encodeURIComponent(propertyType)}`;
+      if (state) searchUrl += `&state=${encodeURIComponent(state)}`;
+      if (city) searchUrl += `&city=${encodeURIComponent(city)}`;
+      if (minPrice) searchUrl += `&min_price=${encodeURIComponent(minPrice)}`;
+      if (maxPrice) searchUrl += `&max_price=${encodeURIComponent(maxPrice)}`;
+      
+      // Fetch properties from API
+      fetch(searchUrl)
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            // Clear the property list before adding new items
+            propertyList.innerHTML = '';
+            
+            if (data.data.length === 0) {
+              propertyList.innerHTML = '<div class="text-center py-3">No properties found matching your criteria</div>';
+              return;
+            }
+            
+            // Add each property to the list
+            data.data.forEach(property => {
+              const propertyElement = document.createElement('div');
+              propertyElement.className = 'property-suggestion';
+              propertyElement.setAttribute('data-property-id', property.id);
+              
+              let bedroomText = property.bedrooms ? `${property.bedrooms} bd` : '';
+              let bathroomText = property.bathrooms ? `${property.bathrooms} ba` : '';
+              let squareFeetText = property.square_feet ? `${property.square_feet} sqft` : '';
+              let featuresText = [bedroomText, bathroomText, squareFeetText].filter(t => t).join(' | ');
+              
+              propertyElement.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <div>${property.property_type || 'Property'}</div>
+                    <div class="small text-muted">${property.city || ''}, ${property.state || ''}</div>
+                  </div>
+                  <div class="suggestion-price">${property.price ? '$' + property.price : 'N/A'}</div>
+                </div>
+                <div class="mt-1 small">
+                  ${featuresText}
+                </div>
+                <button class="btn btn-sm btn-outline-primary mt-1 search-add-btn" data-property-id="${property.id}">
+                  <i class="feather icon-plus"></i> Add to Compare
+                </button>
+              `;
+              propertyList.appendChild(propertyElement);
+            });
+            
+            // Add event listeners to the "Add to Compare" buttons
+            document.querySelectorAll('.search-add-btn').forEach(btn => {
+              btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const propertyId = this.getAttribute('data-property-id');
+                window.location.href = addPropertyToComparison(propertyId);
+              });
+            });
+            
+            // Add click event to the entire property suggestion
+            document.querySelectorAll('.property-suggestion').forEach(card => {
+              card.addEventListener('click', function(e) {
+                // Only trigger if the click was not on the Add button (which has its own handler)
+                if (!e.target.closest('.search-add-btn')) {
+                  const propertyId = this.getAttribute('data-property-id');
+                  window.location.href = addPropertyToComparison(propertyId);
+                }
+              });
+            });
+          } else {
+            // Show error
+            propertyList.innerHTML = `
+              <div class="alert alert-danger">
+                Error searching properties: ${data.message || 'Unknown error'}
+              </div>
+            `;
+          }
+        })
+        .catch(error => {
+          console.error('Error searching properties:', error);
+          propertyList.innerHTML = `
+            <div class="alert alert-danger">
+              Network error. Please try again later.
+            </div>
+          `;
+        });
+    });
+    
+    // Handle "Add to Compare" buttons in suggestions
+    document.querySelectorAll('.add-to-compare-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const propertyId = this.getAttribute('data-property-id');
+        window.location.href = addPropertyToComparison(propertyId);
+      });
+    });
+    
+    // Handle "Remove" buttons
+    document.querySelectorAll('.remove-property').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const propertyId = this.getAttribute('data-property-id');
+        window.location.href = removePropertyFromComparison(propertyId);
+      });
+    });
+    
+    // Click on the entire suggestion card
+    document.querySelectorAll('.property-suggestion').forEach(card => {
+      card.addEventListener('click', function(e) {
+        // Only trigger if the click was not on the Add button (which has its own handler)
+        if (!e.target.closest('.add-to-compare-btn')) {
+          const propertyId = this.getAttribute('data-property-id');
+          window.location.href = addPropertyToComparison(propertyId);
+        }
+      });
+    });
+    
+    // Helper function to add a property to the URL
+    function addPropertyToComparison(propertyId) {
+      const url = new URL(window.location.href);
+      const params = new URLSearchParams(url.search);
+      
+      // Get all current property IDs
+      const currentIds = params.getAll('property_id');
+      
+      // Only add if not already in the list and we have less than 3 properties
+      if (!currentIds.includes(propertyId) && currentIds.length < 3) {
+        params.append('property_id', propertyId);
+      }
+      
+      url.search = params.toString();
+      return url.toString();
+    }
+    
+    // Helper function to remove a property from the URL
+    function removePropertyFromComparison(propertyId) {
+      const url = new URL(window.location.href);
+      const params = new URLSearchParams(url.search);
+      
+      // Get all current property IDs
+      const currentIds = params.getAll('property_id');
+      
+      // Remove the specified ID and re-add all others
+      params.delete('property_id');
+      currentIds.forEach(id => {
+        if (id !== propertyId) {
+          params.append('property_id', id);
+        }
+      });
+      
+      url.search = params.toString();
+      return url.toString();
+    }
+  });
+</script>
+{% endblock %}

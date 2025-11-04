@@ -1,0 +1,198 @@
+{
+    "type": "FunctionTool",
+    "guid": "{0ec29ffb-e1de-45e4-8d71-366a4d9df589}",
+    "displayname": "$rc:title",
+    "helpcontent": "66110003",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "86"
+    ],
+    "params": {
+        "in_video": {
+            "displayname": "$rc:in_video.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "TS",
+                    "PS",
+                    "MPG",
+                    "MPEG",
+                    "MP2",
+                    "MPEG2",
+                    "MP4",
+                    "MPG4",
+                    "MPEG4",
+                    "VOB",
+                    "M2TS",
+                    "AVI",
+                    "MOV"
+                ]
+            },
+            "description": "$rc:in_video.descr"
+        },
+        "csv_file": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:csv_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "CSV",
+                    "JSON"
+                ]
+            },
+            "description": "$rc:csv_file.descr"
+        },
+        "flightpath": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:flightpath.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain"
+            },
+            "description": "$rc:flightpath.descr"
+        },
+        "flightpath_type": {
+            "type": "optional",
+            "displayname": "$rc:flightpath_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "POINT",
+                        "code": "$rc:flightpath_type.domain.POINT"
+                    },
+                    {
+                        "value": "POLYLINE",
+                        "code": "$rc:flightpath_type.domain.POLYLINE"
+                    }
+                ]
+            },
+            "value": "POLYLINE",
+            "description": "$rc:flightpath_type.descr"
+        },
+        "imagepath": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:imagepath.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain"
+            },
+            "description": "$rc:imagepath.descr"
+        },
+        "imagepath_type": {
+            "type": "optional",
+            "displayname": "$rc:imagepath_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "POINT",
+                        "code": "$rc:imagepath_type.domain.POINT"
+                    },
+                    {
+                        "value": "POLYLINE",
+                        "code": "$rc:imagepath_type.domain.POLYLINE"
+                    }
+                ]
+            },
+            "value": "POLYLINE",
+            "description": "$rc:imagepath_type.descr"
+        },
+        "footprint": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:footprint.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain"
+            },
+            "description": "$rc:footprint.descr"
+        },
+        "start_time": {
+            "type": "optional",
+            "displayname": "$rc:start_time.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTimeUnit"
+                    },
+                    {
+                        "type": "GPDate"
+                    }
+                ]
+            },
+            "description": "$rc:start_time.descr"
+        },
+        "stop_time": {
+            "type": "optional",
+            "displayname": "$rc:stop_time.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTimeUnit"
+                    },
+                    {
+                        "type": "GPDate"
+                    }
+                ]
+            },
+            "description": "$rc:stop_time.descr"
+        },
+        "min_distance": {
+            "type": "optional",
+            "displayname": "$rc:min_distance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "description": "$rc:min_distance.descr"
+        },
+        "min_time": {
+            "type": "optional",
+            "displayname": "$rc:min_time.title",
+            "datatype": {
+                "type": "GPTimeUnit"
+            },
+            "description": "$rc:min_time.descr"
+        },
+        "vmti": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "7",
+            "displayname": "$rc:vmti.title",
+            "datatype": {
+                "type": "DEFeatureDataset"
+            },
+            "domain": {
+                "type": "GPDatasetDomain"
+            },
+            "description": "$rc:vmti.descr"
+        }
+    },
+    "environments": [
+        "outputZFlag"
+    ]
+}

@@ -1,0 +1,28 @@
+{
+    "map": {
+        "description": "Finds where the source line features spatially match the target line features and transfers specified attributes from source features to matched target features.",
+        "match_fields.descr": "Lists of fields from source and target features. If provided, each pair of fields are checked for match candidates to help determine the right match.",
+        "match_fields.dt.title1": "Source Fields",
+        "match_fields.dt.title2": "Target Fields",
+        "match_fields.title": "Match Fields",
+        "out_feature_class.title": "Updated Target Features",
+        "out_match_table.descr": "The output table containing complete feature matching information.",
+        "out_match_table.title": "Output Match Table",
+        "search_distance.descr": "The distance that will be used to search for match candidates. A distance must be specified and it must be greater than zero. You can choose a preferred unit. The default is the feature unit.",
+        "search_distance.title": "Search Distance",
+        "source_features.descr": "The line features from which attributes will be transferred.",
+        "source_features.title": "Source Features",
+        "summary": "<xdoc><p>Finds where the source line features spatially match the target line features and transfers specified attributes from source features to matched target features.</p><p>Attribute transfer is typically used to copy attributes from features in one dataset to corresponding features in another dataset. For example, it can be used to transfer the names of road features from a digitized and maintained dataset to features in a new dataset that are newly collected and more accurate. The two datasets are usually referred to as source features and target features. This tool finds corresponding source and target line features within the specified search distance and transfers the specified attributes from source lines to target lines.</p></xdoc>",
+        "target_features.descr": "The line features to which attributes will be transferred. The transfer fields will be added to the target features.",
+        "target_features.title": "Target Features",
+        "title": "Transfer Attributes",
+        "transfer_fields.descr": "A list of source fields that will be transferred to target features. At least one field must be provided.",
+        "transfer_fields.title": "Transfer Field(s)",
+        "transfer_rule_fields.descr": "<xdoc><p>The rules that control which source feature will be used to transfer attributes from when multiple source features matched target features. The source feature that will be used for the transfer is determined by the specified rule fields and the ruling values, which are ranked from high to low priority as they appear in the specified list. If no rules are set, the longest of the multiple matched source features will be used for the transfer.</p><p>Available rule types are as follows:</p><ul><li>MIN—The minimum value for an integer or date field. For a date field, use the most recent date.</li><li>MAX—The maximum value for an integer or date field. For a date field, use the oldest date.</li><li>A text or integer value that may exist in the source features.</li></ul></xdoc>",
+        "transfer_rule_fields.domain.item2.MAX": "Maximum",
+        "transfer_rule_fields.domain.item2.MIN": "Minimum",
+        "transfer_rule_fields.dt.title1": "Field",
+        "transfer_rule_fields.dt.title2": "Rule",
+        "transfer_rule_fields.title": "Transfer Rule Field(s)"
+    }
+}

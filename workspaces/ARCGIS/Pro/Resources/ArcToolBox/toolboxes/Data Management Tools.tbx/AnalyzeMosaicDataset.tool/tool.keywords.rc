@@ -1,0 +1,14 @@
+{
+    "set": [
+        "amd",
+        "detect",
+        "error",
+        "find",
+        "fix",
+        "message",
+        "mosaic dataset",
+        "optimize",
+        "report",
+        "warning"
+    ]
+}

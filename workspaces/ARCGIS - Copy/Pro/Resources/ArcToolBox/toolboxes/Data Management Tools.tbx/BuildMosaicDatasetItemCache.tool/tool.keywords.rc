@@ -1,0 +1,6 @@
+{
+    "set": [
+        "create cache",
+        "generate cache"
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Defines the split policy for related features.",
+        "in_rel_class.descr": "The relationship class on which the split policy will be set. The origin feature class must be a polyline or polygon feature class and the destination must be a nonspatial table.",
+        "in_rel_class.title": "Input Relationship Class",
+        "out_rel_class.title": "Output Relationship Class",
+        "split_policy.descr": "<xdoc><p>Specifies the split policy to apply to the relationship class.</p><ul><li><span title=\"DEFAULT_COMPOSITE\">Default (composite)</span>— If the feature class split model is Delete/Insert/Insert, the relationships and the part objects will be deleted. If the feature class split model is Update/Insert, the relationships on the largest resulting feature will be preserved. This is the default split policy for composite relationship classes.</li><li><span title=\"DEFAULT_SIMPLE\">Default (simple)</span>— The relationships on the largest resulting feature will be preserved. This is the default split policy for simple relationship classes.</li><li><span title=\"DUPLICATE_RELATED_OBJECTS\">Duplicate related objects</span>—Copies of the related objects will be generated and assigned to both resulting parts. The relationship class must be Global ID based to use this split policy.</li></ul></xdoc>",
+        "split_policy.domain.DEFAULT_COMPOSITE": "Default (composite)",
+        "split_policy.domain.DEFAULT_SIMPLE": "Default (simple)",
+        "split_policy.domain.DUPLICATE_RELATED_OBJECTS": "Duplicate related objects",
+        "split_policy.title": "Split Policy",
+        "title": "Set Relationship Class Split Policy"
+    }
+}

@@ -10,21 +10,18 @@ interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
 
 /**
  * Custom render function that wraps components with necessary providers
- * 
+ *
  * @example
  * ```tsx
  * import { renderWithProviders } from '@/test-utils';
- * 
+ *
  * test('renders button', () => {
  *   const { getByRole } = renderWithProviders(<Button>Click me</Button>);
  *   expect(getByRole('button')).toHaveTextContent('Click me');
  * });
  * ```
  */
-export function renderWithProviders(
-  ui: ReactElement,
-  options?: CustomRenderOptions
-): RenderResult {
+export function renderWithProviders(ui: ReactElement, options?: CustomRenderOptions): RenderResult {
   // Wrapper component with all necessary providers
   function Wrapper({ children }: { children: ReactNode }) {
     return (

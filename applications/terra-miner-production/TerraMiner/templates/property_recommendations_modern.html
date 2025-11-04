@@ -1,0 +1,582 @@
+{% extends "unified_base.html" %}
+
+{% block title %}AI Property Recommendations{% endblock %}
+
+{% block head_extras %}
+<style>
+    .property-card {
+        transition: all 0.3s ease;
+    }
+    
+    .property-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    
+    .match-score-ring {
+        transition: stroke-dashoffset 1s ease-in-out;
+    }
+    
+    .match-tag {
+        transition: all 0.2s ease;
+    }
+    
+    .match-tag:hover {
+        transform: scale(1.05);
+    }
+    
+    .match-reasons {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+    }
+    
+    .match-reasons.expanded {
+        max-height: 500px;
+    }
+    
+    .preferences-panel {
+        transition: all 0.3s ease;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-8">
+        <!-- Main content area -->
+        <div class="flex-1">
+            <div class="mb-8">
+                <h1 class="text-2xl font-bold mb-2">AI-Powered Property Recommendations</h1>
+                <p class="text-gray-600 dark:text-gray-300">
+                    Personalized property recommendations based on your preferences and search history.
+                </p>
+            </div>
+            
+            <!-- Loading spinner -->
+            <div id="loading-spinner" class="hidden py-12 flex justify-center">
+                <div class="loader">
+                    <svg class="animate-spin h-12 w-12 text-primary-600 dark:text-primary-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
+            </div>
+            
+            <!-- Error message -->
+            <div id="error-message" class="hidden alert-danger mb-8"></div>
+            
+            <!-- No recommendations message -->
+            <div id="no-recommendations" class="hidden text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No recommendations available</h3>
+                <p class="text-gray-500 dark:text-gray-400 max-w-lg mx-auto">
+                    We couldn't find any property recommendations matching your criteria. Try adjusting your preferences or come back later.
+                </p>
+            </div>
+            
+            <!-- Recommendations container -->
+            <div id="recommendations-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Recommendations will be loaded here -->
+            </div>
+        </div>
+        
+        <!-- Preferences sidebar -->
+        <div class="w-full md:w-80 lg:w-96">
+            <div class="preferences-panel sticky top-24 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <h2 class="text-lg font-bold mb-4">Your Preferences</h2>
+                <form id="preferences-form" class="space-y-4">
+                    <div class="form-group">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text" id="location" name="location" class="form-input" placeholder="City, State, or ZIP">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="property_type" class="form-label">Property Type</label>
+                        <select id="property_type" name="property_type" class="form-select">
+                            <option value="">Any</option>
+                            <option value="House">House</option>
+                            <option value="Condo">Condo</option>
+                            <option value="Townhouse">Townhouse</option>
+                            <option value="Apartment">Apartment</option>
+                            <option value="Land">Land</option>
+                        </select>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="form-group">
+                            <label for="min_price" class="form-label">Min Price</label>
+                            <input type="number" id="min_price" name="min_price" class="form-input" placeholder="Min $" min="0" step="1000">
+                        </div>
+                        <div class="form-group">
+                            <label for="max_price" class="form-label">Max Price</label>
+                            <input type="number" id="max_price" name="max_price" class="form-input" placeholder="Max $" min="0" step="1000">
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="form-group">
+                            <label for="min_bedrooms" class="form-label">Bedrooms</label>
+                            <select id="min_bedrooms" name="min_bedrooms" class="form-select">
+                                <option value="">Any</option>
+                                <option value="1">1+</option>
+                                <option value="2">2+</option>
+                                <option value="3">3+</option>
+                                <option value="4">4+</option>
+                                <option value="5">5+</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="min_bathrooms" class="form-label">Bathrooms</label>
+                            <select id="min_bathrooms" name="min_bathrooms" class="form-select">
+                                <option value="">Any</option>
+                                <option value="1">1+</option>
+                                <option value="1.5">1.5+</option>
+                                <option value="2">2+</option>
+                                <option value="2.5">2.5+</option>
+                                <option value="3">3+</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Must-Have Features</label>
+                        <div class="flex flex-wrap gap-2 mt-1">
+                            <div class="feature-tag cursor-pointer px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm" data-feature="Garage">
+                                Garage
+                            </div>
+                            <div class="feature-tag cursor-pointer px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm" data-feature="Pool">
+                                Pool
+                            </div>
+                            <div class="feature-tag cursor-pointer px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm" data-feature="Fireplace">
+                                Fireplace
+                            </div>
+                            <div class="feature-tag cursor-pointer px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm" data-feature="Central AC">
+                                Central AC
+                            </div>
+                            <div class="feature-tag cursor-pointer px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm" data-feature="Hardwood Floors">
+                                Hardwood Floors
+                            </div>
+                            <div class="feature-tag cursor-pointer px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm" data-feature="Fenced Yard">
+                                Fenced Yard
+                            </div>
+                        </div>
+                        <input type="hidden" id="features" name="features" value="">
+                    </div>
+                    
+                    <div class="mt-6">
+                        <button type="submit" class="btn-primary w-full flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                            Update Recommendations
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Property card template -->
+<template id="property-card-template">
+    <div class="property-card card overflow-hidden">
+        <div class="relative">
+            <img src="" alt="Property" class="property-image w-full h-48 object-cover">
+            <div class="absolute top-4 right-4">
+                <div class="match-score-container relative h-16 w-16 flex items-center justify-center">
+                    <svg class="match-score-ring absolute inset-0" viewBox="0 0 36 36">
+                        <circle class="match-score-bg" cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#e2e8f0" stroke-width="2"></circle>
+                        <circle class="match-score-progress" cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#3b82f6" stroke-width="2" stroke-dasharray="100" stroke-dashoffset="35"></circle>
+                    </svg>
+                    <span class="match-score-text relative z-10 text-lg font-bold"></span>
+                </div>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 px-4 py-2 bg-gradient-to-t from-black to-transparent">
+                <div class="text-white font-bold property-price"></div>
+            </div>
+        </div>
+        
+        <div class="p-4">
+            <h3 class="property-address text-lg font-bold text-gray-900 dark:text-white mb-2 truncate"></h3>
+            
+            <div class="property-specs flex space-x-4 text-sm text-gray-500 dark:text-gray-400 mb-3">
+                <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    <span class="property-type"></span>
+                </div>
+                <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                    <span class="property-beds-baths"></span>
+                </div>
+                <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
+                    </svg>
+                    <span class="property-sqft"></span>
+                </div>
+            </div>
+            
+            <p class="property-description text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-2"></p>
+            
+            <div class="match-tags flex flex-wrap gap-2 mb-3">
+                <!-- Match tags will be added here -->
+            </div>
+            
+            <div class="match-explanation mb-3">
+                <button class="toggle-explanation text-sm text-primary-600 dark:text-primary-400 flex items-center focus:outline-none hover:underline">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 toggle-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                    <span>Why this property matches you</span>
+                </button>
+                <div class="match-reasons mt-2 px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 rounded-md text-gray-700 dark:text-gray-300">
+                    <ul class="list-disc list-inside space-y-1">
+                        <!-- Match reasons will be added here -->
+                    </ul>
+                </div>
+            </div>
+            
+            <a href="#" class="property-link btn-primary w-full block text-center">View Details</a>
+        </div>
+    </div>
+</template>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // DOM elements
+    const recommendationsContainer = document.getElementById('recommendations-container');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const errorMessage = document.getElementById('error-message');
+    const noRecommendations = document.getElementById('no-recommendations');
+    const preferencesForm = document.getElementById('preferences-form');
+    const featureTags = document.querySelectorAll('.feature-tag');
+    const featuresInput = document.getElementById('features');
+    
+    // Selected features
+    const selectedFeatures = new Set();
+    
+    // Initialize the feature tags
+    featureTags.forEach(tag => {
+        tag.addEventListener('click', () => {
+            const feature = tag.dataset.feature;
+            
+            if (selectedFeatures.has(feature)) {
+                selectedFeatures.delete(feature);
+                tag.classList.remove('bg-primary-100', 'dark:bg-primary-900', 'text-primary-800', 'dark:text-primary-200');
+                tag.classList.add('bg-gray-100', 'dark:bg-gray-700', 'text-gray-800', 'dark:text-gray-200');
+            } else {
+                selectedFeatures.add(feature);
+                tag.classList.remove('bg-gray-100', 'dark:bg-gray-700', 'text-gray-800', 'dark:text-gray-200');
+                tag.classList.add('bg-primary-100', 'dark:bg-primary-900', 'text-primary-800', 'dark:text-primary-200');
+            }
+            
+            // Update the hidden input
+            featuresInput.value = Array.from(selectedFeatures).join(',');
+        });
+    });
+    
+    // Load saved preferences
+    loadPreferences();
+    
+    // Load recommendations on page load
+    loadRecommendations();
+    
+    // Form submission
+    preferencesForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        savePreferences();
+        loadRecommendations();
+    });
+    
+    /**
+     * Load property recommendations from the API
+     */
+    function loadRecommendations() {
+        // Show loading state
+        recommendationsContainer.innerHTML = '';
+        loadingSpinner.classList.remove('hidden');
+        errorMessage.classList.add('hidden');
+        noRecommendations.classList.add('hidden');
+        
+        // Build the query parameters
+        const params = new URLSearchParams();
+        const formData = new FormData(preferencesForm);
+        
+        for (const [key, value] of formData.entries()) {
+            if (value) {
+                params.append(key, value);
+            }
+        }
+        
+        // Fetch recommendations
+        fetch(`/api/property-recommendations?${params.toString()}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Server responded with status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Hide loading state
+                loadingSpinner.classList.add('hidden');
+                
+                if (data.error) {
+                    // Show error message
+                    errorMessage.textContent = data.error;
+                    errorMessage.classList.remove('hidden');
+                    return;
+                }
+                
+                const recommendations = data.recommendations || [];
+                
+                if (recommendations.length === 0) {
+                    // Show no recommendations message
+                    noRecommendations.classList.remove('hidden');
+                    return;
+                }
+                
+                // Render recommendations
+                renderRecommendations(recommendations);
+            })
+            .catch(error => {
+                // Hide loading state and show error
+                loadingSpinner.classList.add('hidden');
+                errorMessage.textContent = `Error loading recommendations: ${error.message}`;
+                errorMessage.classList.remove('hidden');
+                console.error('Error loading recommendations:', error);
+            });
+    }
+    
+    /**
+     * Render property recommendations in the container
+     */
+    function renderRecommendations(recommendations) {
+        recommendationsContainer.innerHTML = '';
+        
+        recommendations.forEach(property => {
+            const card = createPropertyCard(property);
+            recommendationsContainer.appendChild(card);
+        });
+        
+        // Add event listeners for expanding/collapsing match reasons
+        document.querySelectorAll('.toggle-explanation').forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                const reasonsElement = toggle.nextElementSibling;
+                const toggleIcon = toggle.querySelector('.toggle-icon');
+                
+                if (reasonsElement.classList.contains('expanded')) {
+                    reasonsElement.classList.remove('expanded');
+                    toggleIcon.style.transform = 'rotate(0deg)';
+                } else {
+                    reasonsElement.classList.add('expanded');
+                    toggleIcon.style.transform = 'rotate(90deg)';
+                }
+            });
+        });
+    }
+    
+    /**
+     * Create a property card element from the template
+     */
+    function createPropertyCard(property) {
+        const template = document.getElementById('property-card-template');
+        const card = template.content.cloneNode(true);
+        
+        // Set property image
+        const imageElement = card.querySelector('.property-image');
+        imageElement.src = property.image_url || '/static/images/property-placeholder.svg';
+        imageElement.alt = property.address || 'Property';
+        
+        // Set match score
+        const matchScore = property.match_score || 0;
+        const matchScoreText = card.querySelector('.match-score-text');
+        matchScoreText.textContent = `${Math.round(matchScore * 100)}%`;
+        
+        // Set match score ring
+        const matchScoreRing = card.querySelector('.match-score-progress');
+        matchScoreRing.style.strokeDashoffset = 100 - (matchScore * 100);
+        
+        // Set color based on score
+        if (matchScore >= 0.8) {
+            matchScoreRing.style.stroke = '#22c55e'; // Green
+        } else if (matchScore >= 0.6) {
+            matchScoreRing.style.stroke = '#3b82f6'; // Blue
+        } else if (matchScore >= 0.4) {
+            matchScoreRing.style.stroke = '#f59e0b'; // Orange
+        } else {
+            matchScoreRing.style.stroke = '#ef4444'; // Red
+        }
+        
+        // Set property price
+        const priceElement = card.querySelector('.property-price');
+        priceElement.textContent = property.price ? `$${property.price.toLocaleString()}` : 'Price not available';
+        
+        // Set property address
+        const addressElement = card.querySelector('.property-address');
+        addressElement.textContent = property.address || 'Address not available';
+        
+        // Set property type
+        const typeElement = card.querySelector('.property-type');
+        typeElement.textContent = property.property_type || 'Property';
+        
+        // Set beds/baths
+        const bedsElement = card.querySelector('.property-beds-baths');
+        if (property.bedrooms && property.bathrooms) {
+            bedsElement.textContent = `${property.bedrooms} bd, ${property.bathrooms} ba`;
+        } else if (property.bedrooms) {
+            bedsElement.textContent = `${property.bedrooms} bd`;
+        } else if (property.bathrooms) {
+            bedsElement.textContent = `${property.bathrooms} ba`;
+        } else {
+            bedsElement.textContent = 'N/A';
+        }
+        
+        // Set square feet
+        const sqftElement = card.querySelector('.property-sqft');
+        sqftElement.textContent = property.square_feet ? `${property.square_feet.toLocaleString()} sqft` : 'N/A';
+        
+        // Set description
+        const descriptionElement = card.querySelector('.property-description');
+        descriptionElement.textContent = property.description || '';
+        
+        // Set match tags
+        const matchTagsContainer = card.querySelector('.match-tags');
+        
+        // Generate tags from match reasons
+        if (property.match_reasons && property.match_reasons.length > 0) {
+            const tagColors = [
+                'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+                'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+                'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+                'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+                'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
+                'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200'
+            ];
+            
+            // Extract key phrases for tags (first 3-4 words of each reason)
+            const tags = property.match_reasons.map(reason => {
+                const words = reason.split(' ');
+                return words.length > 4 ? words.slice(0, 3).join(' ') + '...' : reason;
+            }).slice(0, 3); // Limit to 3 tags
+            
+            tags.forEach((tag, index) => {
+                const tagElement = document.createElement('span');
+                tagElement.className = `match-tag px-2 py-1 rounded-full text-xs font-medium ${tagColors[index % tagColors.length]}`;
+                tagElement.textContent = tag;
+                matchTagsContainer.appendChild(tagElement);
+            });
+        }
+        
+        // Set match reasons
+        const matchReasonsContainer = card.querySelector('.match-reasons ul');
+        
+        if (property.match_reasons && property.match_reasons.length > 0) {
+            property.match_reasons.forEach(reason => {
+                const reasonElement = document.createElement('li');
+                reasonElement.textContent = reason;
+                matchReasonsContainer.appendChild(reasonElement);
+            });
+        } else if (property.explanation) {
+            const reasonElement = document.createElement('li');
+            reasonElement.textContent = property.explanation;
+            matchReasonsContainer.appendChild(reasonElement);
+        } else {
+            const reasonElement = document.createElement('li');
+            reasonElement.textContent = 'This property matches your search criteria.';
+            matchReasonsContainer.appendChild(reasonElement);
+        }
+        
+        // Set property link
+        const linkElement = card.querySelector('.property-link');
+        linkElement.href = `/property/${property.id}`;
+        
+        return card;
+    }
+    
+    /**
+     * Save preferences to the session
+     */
+    function savePreferences() {
+        const formData = new FormData(preferencesForm);
+        const preferences = {};
+        
+        for (const [key, value] of formData.entries()) {
+            if (value) {
+                preferences[key] = value;
+            }
+        }
+        
+        // Save to local storage for demo purposes
+        localStorage.setItem('propertyPreferences', JSON.stringify(preferences));
+        
+        // Save to server
+        fetch('/api/save-preferences', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify(preferences)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Preferences saved:', data);
+        })
+        .catch(error => {
+            console.error('Error saving preferences:', error);
+        });
+    }
+    
+    /**
+     * Load saved preferences from session
+     */
+    function loadPreferences() {
+        // Load from local storage for demo purposes
+        const savedPreferences = localStorage.getItem('propertyPreferences');
+        
+        if (savedPreferences) {
+            try {
+                const preferences = JSON.parse(savedPreferences);
+                
+                // Set form values
+                for (const [key, value] of Object.entries(preferences)) {
+                    const input = document.getElementById(key);
+                    
+                    if (input) {
+                        input.value = value;
+                    }
+                }
+                
+                // Set features
+                if (preferences.features) {
+                    const features = preferences.features.split(',');
+                    
+                    features.forEach(feature => {
+                        const featureTag = document.querySelector(`.feature-tag[data-feature="${feature}"]`);
+                        
+                        if (featureTag) {
+                            selectedFeatures.add(feature);
+                            featureTag.classList.remove('bg-gray-100', 'dark:bg-gray-700', 'text-gray-800', 'dark:text-gray-200');
+                            featureTag.classList.add('bg-primary-100', 'dark:bg-primary-900', 'text-primary-800', 'dark:text-primary-200');
+                        }
+                    });
+                    
+                    featuresInput.value = Array.from(selectedFeatures).join(',');
+                }
+            } catch (error) {
+                console.error('Error parsing saved preferences:', error);
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

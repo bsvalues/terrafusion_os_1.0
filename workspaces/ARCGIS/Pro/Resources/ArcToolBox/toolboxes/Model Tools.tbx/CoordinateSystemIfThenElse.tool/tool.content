@@ -1,0 +1,94 @@
+{
+    "type": "FunctionTool",
+    "guid": "{f6e96ed7-782d-4820-9e72-79aba3def377}",
+    "displayname": "$rc:title",
+    "helpcontent": "32030006",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_data": {
+            "displayname": "$rc:in_data.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEType"
+                    },
+                    {
+                        "type": "GPLayer"
+                    },
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPGraph"
+                    },
+                    {
+                        "type": "DEUtilityNetwork"
+                    }
+                ]
+            },
+            "description": "$rc:in_data.descr"
+        },
+        "coordinate_system": {
+            "displayname": "$rc:coordinate_system.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "GPSpatialReference"
+                        },
+                        {
+                            "type": "GPString"
+                        }
+                    ]
+                }
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "Geographic",
+                                "code": "$rc:coordinate_system.domain.item2.Geographic"
+                            },
+                            {
+                                "value": "Projected",
+                                "code": "$rc:coordinate_system.domain.item2.Projected"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:coordinate_system.descr"
+        },
+        "true": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:true.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "value": "false"
+        },
+        "false": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:false.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "value": "false"
+        }
+    }
+}

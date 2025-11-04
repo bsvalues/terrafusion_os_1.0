@@ -1,0 +1,26 @@
+{
+    "map": {
+        "description": "Consolidates one or more toolboxes into a specified output folder.",
+        "in_toolbox.descr": "The toolboxes to be consolidated.",
+        "in_toolbox.title": "Toolbox",
+        "output_folder.descr": "<xdoc><p>The output folder that will contain the consolidated toolbox.</p><p>If the specified folder does not exist, a folder will be created.</p></xdoc>",
+        "output_folder.title": "Output Folder",
+        "title": "Consolidate Toolbox",
+        "version.descr": "<xdoc><p>Specifies the target ArcGIS Pro version of the consolidated toolbox. Specifying a version allows toolboxes to be used by previous versions of ArcGIS.</p><ul><li><span title=\"CURRENT\">Current version</span>—The consolidated folder will contain tools compatible with the current version of the ArcGIS Pro release. This is the default.</li><li><span title=\"2.2\">ArcGIS Pro2.2</span>— The consolidated folder will contain tools compatible with ArcGIS Pro version 2.2.</li><li><span title=\"2.3\">ArcGIS Pro2.3</span>—The consolidated folder will contain tools compatible with ArcGIS Pro version 2.3.</li><li><span title=\"2.4\">ArcGIS Pro2.4</span>—The consolidated folder will contain tools compatible with ArcGIS Pro version 2.4.</li><li><span title=\"2.5\">ArcGIS Pro2.5</span>—The consolidated folder will contain tools compatible with ArcGIS Pro version 2.5.</li><li><span title=\"2.6\">ArcGIS Pro2.6</span>—The consolidated folder will contain tools compatible with ArcGIS Pro version 2.6.</li><li><span title=\"2.7\">ArcGIS Pro2.7</span>—The consolidated folder will contain tools compatible with ArcGIS Pro version 2.7.</li><li><span title=\"2.8\">ArcGIS Pro2.8</span>—The consolidated folder will contain tools compatible with ArcGIS Pro version 2.8.</li><li><span title=\"2.9\">ArcGIS Pro2.9</span>—The consolidated folder will contain tools compatible with ArcGIS Pro version 2.9.</li><li><span title=\"3.0\">ArcGIS Pro3.0</span>—The consolidated folder will contain tools compatible with ArcGIS Pro version 3.0.</li><li><span title=\"3.1\">ArcGIS Pro3.1</span>—The consolidated folder will contain tools compatible with ArcGIS Pro version 3.1.</li><li><span title=\"3.2\">ArcGIS Pro3.2</span>—The consolidated folder will contain tools compatible with ArcGIS Pro version 3.2.</li><li><span title=\"3.3\">ArcGIS Pro3.3</span>—The consolidated folder will contain tools compatible with ArcGIS Pro version 3.3.</li><li><span title=\"3.4\">ArcGIS Pro3.4</span>—The consolidated folder will contain tools compatible with ArcGIS Pro version 3.4.</li></ul></xdoc>",
+        "version.domain.2.2": "ArcGIS Pro 2.2",
+        "version.domain.2.3": "ArcGIS Pro 2.3",
+        "version.domain.2.4": "ArcGIS Pro 2.4",
+        "version.domain.2.5": "ArcGIS Pro 2.5",
+        "version.domain.2.6": "ArcGIS Pro 2.6",
+        "version.domain.2.7": "ArcGIS Pro 2.7",
+        "version.domain.2.8": "ArcGIS Pro 2.8",
+        "version.domain.2.9": "ArcGIS Pro 2.9",
+        "version.domain.3.0": "ArcGIS Pro 3.0",
+        "version.domain.3.1": "ArcGIS Pro 3.1",
+        "version.domain.3.2": "ArcGIS Pro 3.2",
+        "version.domain.3.3": "ArcGIS Pro 3.3",
+        "version.domain.3.4": "ArcGIS Pro 3.4",
+        "version.domain.CURRENT": "Current version",
+        "version.title": "Version"
+    }
+}

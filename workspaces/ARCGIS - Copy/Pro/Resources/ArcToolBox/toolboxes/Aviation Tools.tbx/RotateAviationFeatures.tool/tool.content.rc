@@ -1,0 +1,19 @@
+{
+    "map": {
+        "description": "Aligns features to a grid or to the page.",
+        "in_map.descr": "The map containing aviation features.",
+        "in_map.title": "Input Map",
+        "rotate_option.descr": "<xdoc><p>Specifies how the features will be rotated.</p><ul><li><span title=\"ROTATE_TO_GRID\">Rotate to the map&apos;s grid</span>—The features will be rotated to the map&apos;s grid. This is the default.</li><li><span title=\"ROTATE_TO_PAGE_TOP\">Rotate to the top of the page</span>—The features will be rotated to the top of the page.</li><li><span title=\"ROTATE_TO_PAGE_LEFT\">Rotate to the left of the page</span>—The features will be rotated to the left side of the page.</li><li><span title=\"ROTATE_TO_PAGE_BOTTOM\">Rotate to the bottom of the page</span>—The features will be rotated to the bottom of the page.</li><li><span title=\"ROTATE_TO_PAGE_RIGHT\">Rotate to the right of the page</span>—The features will be rotated to the right side of the page.</li></ul></xdoc>",
+        "rotate_option.domain.ROTATE_TO_GRID": "Rotate to the map's grid",
+        "rotate_option.domain.ROTATE_TO_PAGE_BOTTOM": "Rotate to the bottom of the page",
+        "rotate_option.domain.ROTATE_TO_PAGE_LEFT": "Rotate to the left of the page",
+        "rotate_option.domain.ROTATE_TO_PAGE_RIGHT": "Rotate to the right of the page",
+        "rotate_option.domain.ROTATE_TO_PAGE_TOP": "Rotate to the top of the page",
+        "rotate_option.title": "Rotate Option",
+        "summary": "<xdoc><p>Aligns features to a grid or to the page.</p><p>Using the Rotate Aviation Features tool, you can automate the rotation of point and annotation features on a chart to make them easier to read.</p></xdoc>",
+        "target_layers.descr": "The point or annotation feature layers that will be rotated.",
+        "target_layers.title": "Target Point or Annotation Layers",
+        "title": "Rotate Aviation Features",
+        "updated_layers.title": "Updated Layers"
+    }
+}

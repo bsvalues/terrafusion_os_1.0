@@ -1,0 +1,696 @@
+# ============================================================================
+# TerraFusion OS - Grafana Dashboards ConfigMap
+# Government. Transcended. - Pre-Configured Championship Dashboards
+# ============================================================================
+# Purpose: Pre-configured Grafana dashboards for TerraFusion OS monitoring
+# Dashboards: Overview, API, Consciousness (AI), Gateway, Operations, K8s
+# Features: Real-time metrics, quantum factor tracking, IAAO compliance
+# ============================================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: grafana
+    grafana_dashboard: "1"
+data:
+  # ==========================================================================
+  # Dashboard 1: TerraFusion OS Overview
+  # ==========================================================================
+  terrafusion-overview.json: |
+    {
+      "dashboard": {
+        "title": "TerraFusion OS - System Overview",
+        "tags": ["terrafusion", "overview", "government"],
+        "timezone": "browser",
+        "editable": false,
+        "graphTooltip": 1,
+        "panels": [
+          {
+            "id": 1,
+            "title": "🏛️ System Health",
+            "type": "stat",
+            "gridPos": {"x": 0, "y": 0, "w": 6, "h": 4},
+            "targets": [
+              {
+                "expr": "count(up{namespace=\"terrafusion\"} == 1)",
+                "legendFormat": "Services Up"
+              }
+            ],
+            "options": {
+              "graphMode": "none",
+              "colorMode": "value",
+              "textMode": "value_and_name"
+            }
+          },
+          {
+            "id": 2,
+            "title": "🤖 AI Agent Count",
+            "type": "stat",
+            "gridPos": {"x": 6, "y": 0, "w": 6, "h": 4},
+            "targets": [
+              {
+                "expr": "terrafusion_ai_agent_count{job=\"terrafusion-consciousness\"}",
+                "legendFormat": "Active Agents"
+              }
+            ],
+            "options": {
+              "graphMode": "area",
+              "colorMode": "value",
+              "textMode": "value_and_name"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {"value": 0, "color": "red"},
+                    {"value": 40000, "color": "yellow"},
+                    {"value": 45000, "color": "green"}
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "id": 3,
+            "title": "⚡ Quantum Factor",
+            "type": "gauge",
+            "gridPos": {"x": 12, "y": 0, "w": 6, "h": 4},
+            "targets": [
+              {
+                "expr": "terrafusion_ai_quantum_factor{job=\"terrafusion-consciousness\"}",
+                "legendFormat": "Quantum Optimization"
+              }
+            ],
+            "options": {
+              "showThresholdLabels": true,
+              "showThresholdMarkers": true
+            },
+            "fieldConfig": {
+              "defaults": {
+                "min": 0,
+                "max": 1000,
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    {"value": 0, "color": "red"},
+                    {"value": 900, "color": "yellow"},
+                    {"value": 949, "color": "green"}
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "id": 4,
+            "title": "📊 Request Rate (All Services)",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 4, "w": 12, "h": 8},
+            "targets": [
+              {
+                "expr": "sum(rate(http_requests_total{namespace=\"terrafusion\"}[5m])) by (job)",
+                "legendFormat": "{{job}}"
+              }
+            ],
+            "yaxes": [
+              {"format": "reqps", "label": "Requests/sec"},
+              {"format": "short"}
+            ]
+          },
+          {
+            "id": 5,
+            "title": "🔥 Error Rate (All Services)",
+            "type": "graph",
+            "gridPos": {"x": 12, "y": 4, "w": 12, "h": 8},
+            "targets": [
+              {
+                "expr": "sum(rate(http_requests_total{namespace=\"terrafusion\",status=~\"5..\"}[5m])) by (job)",
+                "legendFormat": "{{job}}"
+              }
+            ],
+            "yaxes": [
+              {"format": "reqps", "label": "Errors/sec"},
+              {"format": "short"}
+            ],
+            "alert": {
+              "conditions": [
+                {
+                  "evaluator": {"type": "gt", "params": [10]},
+                  "operator": {"type": "and"},
+                  "query": {"params": ["A", "5m", "now"]},
+                  "reducer": {"type": "avg"},
+                  "type": "query"
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "title": "⏱️ Response Time P95 (All Services)",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 12, "w": 24, "h": 8},
+            "targets": [
+              {
+                "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{namespace=\"terrafusion\"}[5m])) by (job, le))",
+                "legendFormat": "{{job}} P95"
+              }
+            ],
+            "yaxes": [
+              {"format": "s", "label": "Response Time"},
+              {"format": "short"}
+            ]
+          }
+        ]
+      }
+    }
+
+  # ==========================================================================
+  # Dashboard 2: TerraFusion API
+  # ==========================================================================
+  terrafusion-api.json: |
+    {
+      "dashboard": {
+        "title": "TerraFusion API - Service Metrics",
+        "tags": ["terrafusion", "api", "backend"],
+        "timezone": "browser",
+        "editable": false,
+        "panels": [
+          {
+            "id": 1,
+            "title": "📈 Request Rate (by endpoint)",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+            "targets": [
+              {
+                "expr": "sum(rate(http_requests_total{job=\"terrafusion-api\"}[5m])) by (endpoint)",
+                "legendFormat": "{{endpoint}}"
+              }
+            ],
+            "yaxes": [{"format": "reqps"}, {"format": "short"}]
+          },
+          {
+            "id": 2,
+            "title": "🎯 Success Rate",
+            "type": "stat",
+            "gridPos": {"x": 12, "y": 0, "w": 6, "h": 4},
+            "targets": [
+              {
+                "expr": "(sum(rate(http_requests_total{job=\"terrafusion-api\",status=~\"2..\"}[5m])) / sum(rate(http_requests_total{job=\"terrafusion-api\"}[5m]))) * 100",
+                "legendFormat": "Success Rate %"
+              }
+            ],
+            "options": {"colorMode": "value", "textMode": "value_and_name"},
+            "fieldConfig": {
+              "defaults": {
+                "unit": "percent",
+                "thresholds": {
+                  "steps": [
+                    {"value": 0, "color": "red"},
+                    {"value": 95, "color": "yellow"},
+                    {"value": 99, "color": "green"}
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "id": 3,
+            "title": "⚡ Response Time Distribution",
+            "type": "heatmap",
+            "gridPos": {"x": 0, "y": 8, "w": 24, "h": 8},
+            "targets": [
+              {
+                "expr": "sum(rate(http_request_duration_seconds_bucket{job=\"terrafusion-api\"}[5m])) by (le)",
+                "format": "heatmap",
+                "legendFormat": "{{le}}"
+              }
+            ],
+            "dataFormat": "tsbuckets"
+          },
+          {
+            "id": 4,
+            "title": "📊 Response Time Percentiles",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 16, "w": 12, "h": 8},
+            "targets": [
+              {
+                "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket{job=\"terrafusion-api\"}[5m]))",
+                "legendFormat": "P50"
+              },
+              {
+                "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=\"terrafusion-api\"}[5m]))",
+                "legendFormat": "P95"
+              },
+              {
+                "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{job=\"terrafusion-api\"}[5m]))",
+                "legendFormat": "P99"
+              }
+            ],
+            "yaxes": [{"format": "s"}, {"format": "short"}]
+          },
+          {
+            "id": 5,
+            "title": "🔥 Error Breakdown (by status code)",
+            "type": "piechart",
+            "gridPos": {"x": 12, "y": 16, "w": 12, "h": 8},
+            "targets": [
+              {
+                "expr": "sum(rate(http_requests_total{job=\"terrafusion-api\",status=~\"[45]..\"}[5m])) by (status)",
+                "legendFormat": "{{status}}"
+              }
+            ]
+          }
+        ]
+      }
+    }
+
+  # ==========================================================================
+  # Dashboard 3: TerraFusion Consciousness (AI Engine)
+  # ==========================================================================
+  terrafusion-consciousness.json: |
+    {
+      "dashboard": {
+        "title": "TerraFusion Consciousness - AI Agent Monitoring",
+        "tags": ["terrafusion", "ai", "consciousness", "agents"],
+        "timezone": "browser",
+        "editable": false,
+        "panels": [
+          {
+            "id": 1,
+            "title": "🤖 AI Agent Count (Target: 50,000)",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+            "targets": [
+              {
+                "expr": "terrafusion_ai_agent_count{job=\"terrafusion-consciousness\"}",
+                "legendFormat": "Active Agents"
+              }
+            ],
+            "yaxes": [
+              {"format": "short", "label": "Agent Count"},
+              {"format": "short"}
+            ],
+            "alert": {
+              "conditions": [
+                {
+                  "evaluator": {"type": "lt", "params": [45000]},
+                  "operator": {"type": "and"},
+                  "query": {"params": ["A", "5m", "now"]},
+                  "reducer": {"type": "avg"},
+                  "type": "query"
+                }
+              ],
+              "name": "Low AI Agent Count"
+            }
+          },
+          {
+            "id": 2,
+            "title": "⚡ Quantum Optimization Factor",
+            "type": "graph",
+            "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+            "targets": [
+              {
+                "expr": "terrafusion_ai_quantum_factor{job=\"terrafusion-consciousness\"}",
+                "legendFormat": "Quantum Factor (Target: 949)"
+              }
+            ],
+            "yaxes": [
+              {"format": "short", "label": "Quantum Factor", "min": 0, "max": 1000},
+              {"format": "short"}
+            ]
+          },
+          {
+            "id": 3,
+            "title": "🎯 AI Agent Utilization %",
+            "type": "gauge",
+            "gridPos": {"x": 0, "y": 8, "w": 8, "h": 6},
+            "targets": [
+              {
+                "expr": "(terrafusion_ai_active_agents{job=\"terrafusion-consciousness\"} / terrafusion_ai_agent_count{job=\"terrafusion-consciousness\"}) * 100",
+                "legendFormat": "Agent Utilization"
+              }
+            ],
+            "options": {"showThresholdMarkers": true},
+            "fieldConfig": {
+              "defaults": {
+                "unit": "percent",
+                "min": 0,
+                "max": 100,
+                "thresholds": {
+                  "steps": [
+                    {"value": 0, "color": "blue"},
+                    {"value": 50, "color": "green"},
+                    {"value": 80, "color": "yellow"},
+                    {"value": 95, "color": "red"}
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "id": 4,
+            "title": "🧠 ML Model Cache Hit Rate",
+            "type": "stat",
+            "gridPos": {"x": 8, "y": 8, "w": 8, "h": 6},
+            "targets": [
+              {
+                "expr": "(sum(rate(ml_cache_hits_total{job=\"terrafusion-consciousness\"}[5m])) / sum(rate(ml_cache_requests_total{job=\"terrafusion-consciousness\"}[5m]))) * 100",
+                "legendFormat": "Cache Hit Rate"
+              }
+            ],
+            "options": {"colorMode": "value"},
+            "fieldConfig": {
+              "defaults": {
+                "unit": "percent",
+                "thresholds": {
+                  "steps": [
+                    {"value": 0, "color": "red"},
+                    {"value": 80, "color": "yellow"},
+                    {"value": 95, "color": "green"}
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "id": 5,
+            "title": "📊 AI Processing Latency (P95)",
+            "type": "graph",
+            "gridPos": {"x": 16, "y": 8, "w": 8, "h": 6},
+            "targets": [
+              {
+                "expr": "histogram_quantile(0.95, rate(ai_processing_duration_seconds_bucket{job=\"terrafusion-consciousness\"}[5m]))",
+                "legendFormat": "P95 Latency"
+              }
+            ],
+            "yaxes": [{"format": "s"}, {"format": "short"}]
+          },
+          {
+            "id": 6,
+            "title": "🔬 AI Agent Tasks (by type)",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 14, "w": 12, "h": 8},
+            "targets": [
+              {
+                "expr": "sum(rate(ai_tasks_total{job=\"terrafusion-consciousness\"}[5m])) by (task_type)",
+                "legendFormat": "{{task_type}}"
+              }
+            ],
+            "yaxes": [{"format": "ops"}, {"format": "short"}]
+          },
+          {
+            "id": 7,
+            "title": "🏆 IAAO Compliance Score",
+            "type": "gauge",
+            "gridPos": {"x": 12, "y": 14, "w": 12, "h": 8},
+            "targets": [
+              {
+                "expr": "iaao_compliance_score{job=\"terrafusion-consciousness\"} * 100",
+                "legendFormat": "Compliance %"
+              }
+            ],
+            "options": {"showThresholdMarkers": true},
+            "fieldConfig": {
+              "defaults": {
+                "unit": "percent",
+                "min": 0,
+                "max": 100,
+                "thresholds": {
+                  "steps": [
+                    {"value": 0, "color": "red"},
+                    {"value": 95, "color": "yellow"},
+                    {"value": 99.5, "color": "green"}
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+
+  # ==========================================================================
+  # Dashboard 4: TerraFusion Gateway
+  # ==========================================================================
+  terrafusion-gateway.json: |
+    {
+      "dashboard": {
+        "title": "TerraFusion Gateway - Routing & Traffic",
+        "tags": ["terrafusion", "gateway", "routing"],
+        "timezone": "browser",
+        "editable": false,
+        "panels": [
+          {
+            "id": 1,
+            "title": "🌐 Gateway Request Rate",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+            "targets": [
+              {
+                "expr": "sum(rate(http_requests_total{job=\"terrafusion-gateway\"}[5m])) by (route)",
+                "legendFormat": "{{route}}"
+              }
+            ],
+            "yaxes": [{"format": "reqps"}, {"format": "short"}]
+          },
+          {
+            "id": 2,
+            "title": "🚦 Rate Limiting",
+            "type": "stat",
+            "gridPos": {"x": 12, "y": 0, "w": 6, "h": 4},
+            "targets": [
+              {
+                "expr": "sum(rate(rate_limit_exceeded_total{job=\"terrafusion-gateway\"}[5m]))",
+                "legendFormat": "Rate Limits Exceeded"
+              }
+            ],
+            "options": {"colorMode": "value"}
+          },
+          {
+            "id": 3,
+            "title": "🔀 Backend Service Distribution",
+            "type": "piechart",
+            "gridPos": {"x": 18, "y": 0, "w": 6, "h": 8},
+            "targets": [
+              {
+                "expr": "sum(rate(gateway_backend_requests_total{job=\"terrafusion-gateway\"}[5m])) by (backend)",
+                "legendFormat": "{{backend}}"
+              }
+            ]
+          },
+          {
+            "id": 4,
+            "title": "⏱️ Gateway Latency (by percentile)",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 8, "w": 24, "h": 8},
+            "targets": [
+              {
+                "expr": "histogram_quantile(0.50, rate(gateway_request_duration_seconds_bucket{job=\"terrafusion-gateway\"}[5m]))",
+                "legendFormat": "P50"
+              },
+              {
+                "expr": "histogram_quantile(0.95, rate(gateway_request_duration_seconds_bucket{job=\"terrafusion-gateway\"}[5m]))",
+                "legendFormat": "P95"
+              },
+              {
+                "expr": "histogram_quantile(0.99, rate(gateway_request_duration_seconds_bucket{job=\"terrafusion-gateway\"}[5m]))",
+                "legendFormat": "P99"
+              }
+            ],
+            "yaxes": [{"format": "s"}, {"format": "short"}]
+          }
+        ]
+      }
+    }
+
+  # ==========================================================================
+  # Dashboard 5: TerraFusion Operations (County Data)
+  # ==========================================================================
+  terrafusion-operations.json: |
+    {
+      "dashboard": {
+        "title": "TerraFusion Operations - County Data Processing",
+        "tags": ["terrafusion", "operations", "county-data"],
+        "timezone": "browser",
+        "editable": false,
+        "panels": [
+          {
+            "id": 1,
+            "title": "📊 County Data Processing Rate",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+            "targets": [
+              {
+                "expr": "sum(rate(county_data_processed_total{job=\"terrafusion-operations\"}[5m])) by (county)",
+                "legendFormat": "{{county}}"
+              }
+            ],
+            "yaxes": [{"format": "ops"}, {"format": "short"}]
+          },
+          {
+            "id": 2,
+            "title": "🏛️ Active Counties",
+            "type": "stat",
+            "gridPos": {"x": 12, "y": 0, "w": 6, "h": 4},
+            "targets": [
+              {
+                "expr": "count(count(county_data_processed_total{job=\"terrafusion-operations\"}) by (county))",
+                "legendFormat": "Active Counties"
+              }
+            ],
+            "options": {"colorMode": "value"}
+          },
+          {
+            "id": 3,
+            "title": "🔄 Harris PACS Sync Status",
+            "type": "stat",
+            "gridPos": {"x": 18, "y": 0, "w": 6, "h": 4},
+            "targets": [
+              {
+                "expr": "harris_pacs_sync_success{job=\"terrafusion-operations\"}",
+                "legendFormat": "Sync Success"
+              }
+            ],
+            "options": {"colorMode": "value"},
+            "fieldConfig": {
+              "defaults": {
+                "thresholds": {
+                  "steps": [
+                    {"value": 0, "color": "red"},
+                    {"value": 1, "color": "green"}
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "id": 4,
+            "title": "📈 Property Assessment Volume",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 8, "w": 24, "h": 8},
+            "targets": [
+              {
+                "expr": "sum(rate(property_assessments_total{job=\"terrafusion-operations\"}[5m])) by (assessment_type)",
+                "legendFormat": "{{assessment_type}}"
+              }
+            ],
+            "yaxes": [{"format": "ops"}, {"format": "short"}]
+          }
+        ]
+      }
+    }
+
+  # ==========================================================================
+  # Dashboard 6: Kubernetes Cluster Overview
+  # ==========================================================================
+  kubernetes-cluster.json: |
+    {
+      "dashboard": {
+        "title": "Kubernetes Cluster - TerraFusion Infrastructure",
+        "tags": ["kubernetes", "infrastructure", "cluster"],
+        "timezone": "browser",
+        "editable": false,
+        "panels": [
+          {
+            "id": 1,
+            "title": "🖥️ Node CPU Usage",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8},
+            "targets": [
+              {
+                "expr": "sum(rate(node_cpu_seconds_total{mode!=\"idle\"}[5m])) by (instance)",
+                "legendFormat": "{{instance}}"
+              }
+            ],
+            "yaxes": [{"format": "percentunit"}, {"format": "short"}]
+          },
+          {
+            "id": 2,
+            "title": "💾 Node Memory Usage",
+            "type": "graph",
+            "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8},
+            "targets": [
+              {
+                "expr": "(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes",
+                "legendFormat": "{{instance}}"
+              }
+            ],
+            "yaxes": [{"format": "percentunit"}, {"format": "short"}]
+          },
+          {
+            "id": 3,
+            "title": "📦 Pod Count by Namespace",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8},
+            "targets": [
+              {
+                "expr": "sum(kube_pod_info) by (namespace)",
+                "legendFormat": "{{namespace}}"
+              }
+            ],
+            "yaxes": [{"format": "short"}, {"format": "short"}]
+          },
+          {
+            "id": 4,
+            "title": "🔄 Pod Restarts (Last 1h)",
+            "type": "stat",
+            "gridPos": {"x": 12, "y": 8, "w": 6, "h": 4},
+            "targets": [
+              {
+                "expr": "sum(increase(kube_pod_container_status_restarts_total{namespace=\"terrafusion\"}[1h]))",
+                "legendFormat": "Total Restarts"
+              }
+            ],
+            "options": {"colorMode": "value"},
+            "fieldConfig": {
+              "defaults": {
+                "thresholds": {
+                  "steps": [
+                    {"value": 0, "color": "green"},
+                    {"value": 5, "color": "yellow"},
+                    {"value": 10, "color": "red"}
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "id": 5,
+            "title": "💿 Persistent Volume Usage",
+            "type": "graph",
+            "gridPos": {"x": 0, "y": 16, "w": 24, "h": 8},
+            "targets": [
+              {
+                "expr": "(kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes) * 100",
+                "legendFormat": "{{persistentvolumeclaim}}"
+              }
+            ],
+            "yaxes": [{"format": "percent"}, {"format": "short"}]
+          }
+        ]
+      }
+    }
+
+# ============================================================================
+# Apply Instructions
+# ============================================================================
+# Apply dashboards ConfigMap:
+#   kubectl apply -f grafana-dashboards-configmap.yaml
+#
+# Restart Grafana to load dashboards:
+#   kubectl rollout restart deployment/grafana -n monitoring
+#
+# Verify dashboards loaded:
+#   # Login to Grafana UI
+#   # Navigate to: Dashboards > Browse
+#   # TerraFusion OS folder should contain 6 dashboards:
+#   #   1. TerraFusion OS - System Overview
+#   #   2. TerraFusion API - Service Metrics
+#   #   3. TerraFusion Consciousness - AI Agent Monitoring
+#   #   4. TerraFusion Gateway - Routing & Traffic
+#   #   5. TerraFusion Operations - County Data Processing
+#   #   6. Kubernetes Cluster - TerraFusion Infrastructure
+# ============================================================================

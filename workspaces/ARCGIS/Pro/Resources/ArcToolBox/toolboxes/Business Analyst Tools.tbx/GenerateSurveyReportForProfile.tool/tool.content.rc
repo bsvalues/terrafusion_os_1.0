@@ -1,0 +1,28 @@
+{
+    "map": {
+        "base_profile.descr": "A segmentation profile representing the base profile segments. This is the segmentation used for comparison. The base profile usually represents your market area segmentation profile.",
+        "base_profile.title": "Base Profile",
+        "description": "Displays characteristics from the consumer survey data for your target profile to determine customer lifestyle habits and preferences.",
+        "output_report.title": "Output Report",
+        "params.category1": "Report Options",
+        "report_folder.descr": "The output location where the report will be saved.",
+        "report_folder.title": "Output Report Folder",
+        "report_format.descr": "The report output format. The default value is PDF. Additional available formats are XLSX, HTML, CSV, and PAGX.",
+        "report_format.title": "Report Formats",
+        "report_title.descr": "The title of the report.",
+        "report_title.title": "Report Title",
+        "sort_column.descr": "<xdoc><p>Specifies the column to use to sort the report.</p><ul><li><span title=\"EXPECTED_NUMBER\">Expected Number</span>—Sort is based on counts—for example, number of adults. This is the default.</li><li><span title=\"INDEX\">Index</span>—Sort is based on rank.</li></ul></xdoc>",
+        "sort_column.domain.EXPECTED_NUMBER": "Expected Number",
+        "sort_column.domain.INDEX": "Index",
+        "sort_column.title": "Sort Column",
+        "sort_order.descr": "<xdoc><p>Specifies the order of the report, based on the sort column, in ascending or descending order.</p><ul><li><span title=\"ASCENDING\">Ascending</span>—Sort in ascending order.</li><li><span title=\"DESCENDING\">Descending</span>—Sort in descending order. This is the default.</li></ul></xdoc>",
+        "sort_order.domain.ASCENDING": "Ascending",
+        "sort_order.domain.DESCENDING": "Descending",
+        "sort_order.title": "Sort Order",
+        "survey_category.descr": "A category that contains characteristics from the consumer survey.",
+        "survey_category.title": "Survey Category",
+        "target_profile.descr": "A segmentation profile representing the segments to be analyzed. The target profile usually represents your customer segmentation profile.",
+        "target_profile.title": "Target Profile",
+        "title": "Generate Survey Report For Profile"
+    }
+}

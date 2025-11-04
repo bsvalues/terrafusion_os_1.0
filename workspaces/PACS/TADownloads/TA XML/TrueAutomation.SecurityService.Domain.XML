@@ -1,0 +1,330 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.SecurityService.Domain</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.SecurityService.Domain.CertificateUserSignOn">
+            <summary>
+            Represents an CertificateUserSignOn for details
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.SecurityService.Domain.UserSignOn">
+            <summary>
+            Represents an UserSignOn for details
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.Domain.UserSignOn.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.Domain.UserSignOn.#ctor(TrueAutomation.SecurityService.Domain.User,System.String,System.String,System.String,System.String)">
+            <summary>
+            Class constructor -- initializes an instance of the class
+            with valid data.
+            </summary>
+            <param name="user"></param>
+            <param name="type"></param>
+            <param name="details"></param>
+            <param name="targetAppId"></param>
+            <param name="targetApp"></param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.Domain.UserSignOn.ToDTO">
+            <summary>
+            Converts the UserSignOn object to a DTO
+            </summary>
+            <returns>UserSignOnDTO</returns>
+        </member>
+        <member name="P:TrueAutomation.SecurityService.Domain.UserSignOn.Type">
+            <summary>
+            The full name of the user
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.SecurityService.Domain.UserSignOn.Details">
+            <summary>
+            Additional details for the user 
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.SecurityService.Domain.UserSignOn.TargetApp">
+            <summary>
+            External AppName where this
+            User details exists
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.SecurityService.Domain.UserSignOn.TargetAppId">
+            <summary>
+            String representation of the 
+            external UserId in the TargetApp
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.SecurityService.Domain.UserSignOn.User">
+            <summary>
+            The User attached to the this UserSignOn
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.Domain.CertificateUserSignOn.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.Domain.CertificateUserSignOn.#ctor(TrueAutomation.SecurityService.Domain.User,System.String,System.String)">
+            <summary>
+            Class constructor -- initializes an instance of the class
+            with valid data.
+            </summary>
+            <param name="user"></param>
+            <param name="username"></param>
+            <param name="certificateData"></param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.Domain.CertificateUserSignOn.ToDTO">
+            <summary>
+            Converts the CertificateUserSignOn to a DTO
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.SecurityService.Domain.CertificateUserSignOn.Username">
+            <summary>
+            The  login name 
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.SecurityService.Domain.CertificateUserSignOn.CertificateData">
+            <summary>
+            The password
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.SecurityService.Domain.ActiveDirectoryUserSignOn">
+            <summary>
+            Represents an ActiveDirectoryUserSignOn for details
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.Domain.ActiveDirectoryUserSignOn.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.Domain.ActiveDirectoryUserSignOn.#ctor(TrueAutomation.SecurityService.Domain.User,System.String,System.String,System.String)">
+            <summary>
+            Class constructor -- initializes an instance of the class
+            with valid data.
+            </summary>
+            <param name="user"></param>
+            <param name="username"></param>
+            <param name="password"></param>
+            <param name="domainname"></param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.Domain.ActiveDirectoryUserSignOn.ToDTO">
+            <summary>
+            Converts the ActiveDirectoryUserSignOn to a DTO
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.SecurityService.Domain.ActiveDirectoryUserSignOn.Username">
+            <summary>
+            The  login name 
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.SecurityService.Domain.ActiveDirectoryUserSignOn.Domainname">
+            <summary>
+            The  domain name
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.SecurityService.Domain.ActiveDirectoryUserSignOn.Password">
+            <summary>
+            The password
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.SecurityService.Domain.PasswordUserSignOn">
+            <summary>
+            Represents an PasswordUserSignOn for details
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.Domain.PasswordUserSignOn.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.Domain.PasswordUserSignOn.#ctor(TrueAutomation.SecurityService.Domain.User,System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Class constructor -- initializes an instance of the class
+            with valid data.		
+            </summary>
+            <param name="user"></param>
+            <param name="username"></param>
+            <param name="password"></param>
+            <param name="type"></param>
+            <param name="details"></param>
+            <param name="targetApp"></param>
+            <param name="targetAppId"></param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.Domain.PasswordUserSignOn.ToDTO">
+            <summary>
+            Converts the PasswordUserSignOn to a DTO
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.SecurityService.Domain.PasswordUserSignOn.Username">
+            <summary>
+            The  login name 
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.SecurityService.Domain.PasswordUserSignOn.Password">
+            <summary>
+            The password
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.SecurityService.Domain.Group">
+            <summary>
+            Represents a Group for the purposes of security
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="T:TrueAutomation.SecurityService.Domain.Party">
+            <summary>
+            Represents a Party for the purposes of security (ie Group or User)
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.Domain.Party.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.Domain.Party.#ctor(System.String,System.String)">
+            <summary>
+            Class constructor -- initializes an instance of the class
+            with valid data.
+            </summary>
+            <param name="name">The name of the access type</param>
+            <param name="description">The description of the access type</param>
+        </member>
+        <member name="P:TrueAutomation.SecurityService.Domain.Party.Name">
+            <summary>
+            The name of the access type
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.SecurityService.Domain.Party.Description">
+            <summary>
+            The description of the access type
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.SecurityService.Domain.Party.IsDeleted">
+            <summary>
+            Flag to indicate whether this user is still an 
+            Active user in PACS or has been deleted.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.Domain.Group.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.Domain.Group.#ctor(System.String,System.String,System.String,System.String)">
+            <summary>
+            Class constructor -- initializes an instance of the class
+            with valid data.
+            </summary>
+            <param name="name"></param>
+            <param name="description"></param>
+            <param name="targetApp"></param>
+            <param name="targetAppId"></param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.Domain.Group.ToDTO">
+            <summary>
+            Converts the Group to a DTO
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.Domain.Group.AddUser(TrueAutomation.SecurityService.Domain.User)">
+            <summary>
+            Adds the specified user to this queue.
+            </summary>
+            <param name="user">The user to add to this queue.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified
+            task was null.</exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.Domain.Group.RemoveUser(TrueAutomation.SecurityService.Domain.User)">
+            <summary>
+            Removes the specified user from a group
+            </summary>
+            <param name="user">The user to remove from this group.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified
+            user was null.</exception>
+            <exception cref="T:System.ArgumentException">If the specified user
+            is not contained in this queue.</exception>"
+        </member>
+        <member name="P:TrueAutomation.SecurityService.Domain.Group.Users">
+            <summary>
+            A list of users in the group
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.SecurityService.Domain.Group.Groups">
+            <summary>
+            A list of groups in the group
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.SecurityService.Domain.Group.TargetApp">
+            <summary>
+            External AppName where this
+            Group details exists
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.SecurityService.Domain.Group.TargetAppId">
+            <summary>
+            String representation of the 
+            external  groupId in the TargetApp
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.SecurityService.Domain.User">
+            <summary>
+            Represents a User for the purposes of security (ie Group or User)
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.Domain.User.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.Domain.User.#ctor(System.String,System.String,System.String,System.String)">
+            <summary>
+            Class constructor -- initializes an instance of the class
+            with valid data.
+            </summary>
+            <param name="name"></param>
+            <param name="description"></param>
+            <param name="fullname"></param>
+            <param name="details"></param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.Domain.User.AddUserSignOn(TrueAutomation.SecurityService.Domain.UserSignOn)">
+            <summary>
+            Adds the specified userSignOn to this user.
+            </summary>
+            <param name="userSignOn">The userSignOn to add to this user.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified
+            userSignOn was null.</exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.Domain.User.RemoveUserSignOn(TrueAutomation.SecurityService.Domain.UserSignOn)">
+            <summary>
+            Removes the specified userSignOn from this userSignOn user.
+            </summary>
+            <param name="userSignOn">The UserSignOn object</param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.Domain.User.ToDTO">
+            <summary>
+            Converts the User to a DTO
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.SecurityService.Domain.User.FullName">
+            <summary>
+            The FullName of the user
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.SecurityService.Domain.User.Details">
+            <summary>
+            The Details of the user
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.SecurityService.Domain.User.UserSignOns">
+            <summary>
+            The List of UserSignOn types and their respective details
+            </summary>
+        </member>
+    </members>
+</doc>

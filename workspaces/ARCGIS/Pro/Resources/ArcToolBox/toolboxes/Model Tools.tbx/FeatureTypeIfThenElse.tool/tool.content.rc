@@ -1,0 +1,20 @@
+{
+    "map": {
+        "description": "Evaluates whether a feature class is of the specified feature type.",
+        "false.title": "False",
+        "feature_type.descr": "<xdoc><p>Specifies the type of feature that will be evaluated.</p><ul><li><span title=\"ANNOTATION\">Annotation</span>—Input annotation features will be evaluated.</li><li><span title=\"DIMENSION\">Dimension</span>—Input dimension features will be evaluated.</li><li><span title=\"EDGE\">Edge</span>—Input edge features will be evaluated.</li><li><span title=\"JUNCTION\">Junction</span>—Input junction features will be evaluated.</li><li><span title=\"LINE\">Line</span>— Input line features will be evaluated.</li><li><span title=\"POINT\">Point</span>—Input point features will be evaluated.</li><li><span title=\"POLYGON\">Polygon</span>—Input polygon features will be evaluated.</li><li><span title=\"MULTIPATCH\">Multipatch</span>—Input multipatch features will be evaluated.</li></ul></xdoc>",
+        "feature_type.domain.ANNOTATION": "Annotation",
+        "feature_type.domain.DIMENSION": "Dimension",
+        "feature_type.domain.EDGE": "Edge",
+        "feature_type.domain.JUNCTION": "Junction",
+        "feature_type.domain.LINE": "Line",
+        "feature_type.domain.MULTIPATCH": "Multipatch",
+        "feature_type.domain.POINT": "Point",
+        "feature_type.domain.POLYGON": "Polygon",
+        "feature_type.title": "Feature Type",
+        "in_features.descr": "The input feature layer that will be evaluated.",
+        "in_features.title": "Input Features",
+        "title": "If Feature Type Is",
+        "true.title": "True"
+    }
+}

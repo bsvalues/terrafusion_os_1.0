@@ -1,0 +1,144 @@
+Let’s wire up **cloud-backed mapping presets** — because it:
+
+- 🔐 Unlocks cross-device consistency  
+- 📡 Preps you for multi-user / team accounts  
+- 🧩 Fits directly into your existing backend (Node + Drizzle/Postgres)
+
+---
+
+# ☁️ Step-by-Step: Backend-Persisted Mapping Presets
+
+---
+
+## 📁 DB Schema – `mapping_presets`
+
+```ts
+// drizzle schema
+import { pgTable, text, jsonb, uuid } from 'drizzle-orm/pg-core';
+
+export const mappingPresets = pgTable('mapping_presets', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: text('user_id').notNull(),        // Auth hook integration
+  formType: text('form_type').notNull(),    // e.g. '1004'
+  name: text('name').notNull(),             // e.g. 'My 1004 Map'
+  mapping: jsonb('mapping').notNull(),      // { gla: "G1", salePrice: "G2" }
+});
+```
+
+---
+
+## 🔌 API Routes – `/api/presets/*`
+
+### POST `/api/presets/save`
+
+```ts
+// body: { formType, name, mapping }
+formsRouter.post('/presets/save', async (req, res) => {
+  const { user } = req; // auth middleware injects
+  const { formType, name, mapping } = req.body;
+
+  await db.insert(mappingPresets).values({
+    userId: user.id,
+    formType,
+    name,
+    mapping,
+  });
+
+  res.json({ success: true });
+});
+```
+
+---
+
+### GET `/api/presets/:formType`
+
+```ts
+formsRouter.get('/presets/:formType', async (req, res) => {
+  const { user } = req;
+  const { formType } = req.params;
+
+  const results = await db.query.mappingPresets.findMany({
+    where: (p) => p.userId.eq(user.id).and(p.formType.eq(formType)),
+  });
+
+  res.json({ presets: results });
+});
+```
+
+---
+
+### DELETE `/api/presets/:id`
+
+```ts
+formsRouter.delete('/presets/:id', async (req, res) => {
+  const { user } = req;
+  const { id } = req.params;
+
+  await db.delete(mappingPresets).where((p) => p.id.eq(id).and(p.userId.eq(user.id)));
+
+  res.json({ success: true });
+});
+```
+
+---
+
+## 💻 Frontend Hook – `useCloudPresets.ts`
+
+```ts
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+
+export function useCloudPresets(formType: string) {
+  const [presets, setPresets] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    axios.get(`/api/presets/${formType}`).then(({ data }) => {
+      setPresets(data.presets);
+      setLoading(false);
+    });
+  }, [formType]);
+
+  async function savePreset(name: string, mapping: Record<string, string>) {
+    await axios.post('/api/presets/save', { formType, name, mapping });
+    await refresh();
+  }
+
+  async function deletePreset(id: string) {
+    await axios.delete(`/api/presets/${id}`);
+    await refresh();
+  }
+
+  async function refresh() {
+    const { data } = await axios.get(`/api/presets/${formType}`);
+    setPresets(data.presets);
+  }
+
+  return { presets, savePreset, deletePreset, loading };
+}
+```
+
+---
+
+## 🧪 Wire into `MappingPresetManager.tsx`
+
+Replace localStorage logic with:
+```tsx
+const { presets, savePreset, deletePreset, loading } = useCloudPresets(formType);
+```
+
+---
+
+## ✅ Cloud-Powered Results
+
+- ☁️ Presets follow user across devices
+- 🔒 Secure, per-user scoped
+- 🔄 Live-sync UI with server
+- 🧠 Ready for team-wide sharing (if you want to enable later)
+
+---
+
+Would you like me to:
+
+1. Scaffold a **PDF Export Pipeline** next (snapshot → form → branded PDF)?
+2. Or extend this with **team sharing** (admins define org-wide field presets)?

@@ -1,51 +1,43 @@
-# TerraFusion OS 1.0 - Code Ownership and Review Requirements
+# TerraFusion master Government Code Ownership
+# THE TERRAFUSION WAY - Government approval processes
 
-# Global ownership - all files require review
-* @bsvalues/terrafusion-core-team
+# Global ownership
+* @government-leads @platform-team @security-team
 
-# Backend components
-/backend/ @bsvalues/backend-team @bsvalues/security-team
-/backend/TerraFusion.Core/ @bsvalues/core-architects
-/backend/TerraFusion.AI/ @bsvalues/ai-team
+# AI Agent Guidance & Instructions (CRITICAL PROTECTION)
+.github/copilot-instructions.md @government-leads @platform-team @ai-infrastructure-team @security-team
+config/ai-system-prompts.json @government-leads @ai-infrastructure-team @platform-team
+TERRAFUSION_COPILOT_VALIDATION_REPORT.md @government-leads @platform-team @ai-infrastructure-team
 
-# Frontend components
-/frontend/ @bsvalues/frontend-team @bsvalues/ux-team
-/frontend/components-enhanced/ @bsvalues/ai-team
+# AI Swarm Infrastructure (PRODUCTION CRITICAL)
+os-platform/ai-systems/ @ai-infrastructure-team @government-leads @security-team
+**/SwarmOrchestrator.ts @ai-infrastructure-team @platform-team @security-team
 
-# AI and ML components
-/.ai/ @bsvalues/ai-team @bsvalues/ml-engineers
-/modules/ai-advanced/ @bsvalues/ai-team
-**/quantum*.ts @bsvalues/quantum-team
-**/probabilistic*.ts @bsvalues/ai-team
-**/swarm*.ts @bsvalues/ai-team
+# Platform specific
+src/ @platform-team @architecture-team
+config/ @devops-team @security-team
+scripts/ @devops-team @platform-team
 
-# Infrastructure and DevOps
-/infrastructure/ @bsvalues/devops-team @bsvalues/security-team
-/deployment/ @bsvalues/devops-team
-/.github/ @bsvalues/devops-team
-/ops/ @bsvalues/devops-team
-/compose/ @bsvalues/devops-team
-Dockerfile @bsvalues/devops-team
-docker-compose*.yml @bsvalues/devops-team
+# Government compliance
+compliance/ @compliance-team @legal-team @security-team
+security/ @security-team @cybersecurity-team
 
-# Security-sensitive files
-/.env* @bsvalues/security-team
-/config/ @bsvalues/security-team
-**/security*.* @bsvalues/security-team
-**/auth*.* @bsvalues/security-team
+# Testing & Validation Infrastructure
+tests/ @qa-team @security-team
+**/testing-suite/ @qa-team @ai-infrastructure-team @platform-team
+**/PluginValidator.ts @security-team @platform-team @qa-team
+*.test.* @qa-team
+*.spec.* @qa-team
+
+# Infrastructure
+.github/ @devops-team @security-team
+docker* @devops-team @security-team
+k8s/ @devops-team @platform-team
 
 # Documentation
-/docs/ @bsvalues/documentation-team
-README.md @bsvalues/documentation-team
-*.md @bsvalues/documentation-team
+README.md @documentation-team
+docs/ @documentation-team
 
-# Performance and testing
-/tests/ @bsvalues/qa-team
-**/performance*.* @bsvalues/performance-team
-**/benchmark*.* @bsvalues/performance-team
-championship*.* @bsvalues/performance-team
-
-# Database and data
-/data/ @bsvalues/data-team @bsvalues/security-team
-**/migration*.* @bsvalues/data-team
-**/schema*.* @bsvalues/data-team
+# Government sensitive
+*.gov @government-leads @security-team @legal-team
+*.classified @government-leads @security-team @legal-team

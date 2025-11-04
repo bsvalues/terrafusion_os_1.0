@@ -1,0 +1,104 @@
+{
+    "type": "FunctionTool",
+    "guid": "{5a969a9d-5081-44c3-a624-9d25d62687f1}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190007",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_raster": {
+            "displayname": "$rc:in_raster.title",
+            "datatype": {
+                "type": "GPSAGeoData"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "guid": "{91BF8D7D-195F-4E08-8D03-D204FA3C7A13}",
+                "checkfield": "true",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_raster.descr"
+        },
+        "out_rasterlayer": {
+            "direction": "out",
+            "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}",
+            "displayname": "$rc:out_rasterlayer.title",
+            "datatype": {
+                "type": "GPRasterLayer"
+            },
+            "description": "$rc:out_rasterlayer.descr"
+        },
+        "where_clause": {
+            "type": "optional",
+            "control_guid": "{A8C053CF-C114-418C-B9D5-449FB1482EF6}",
+            "displayname": "$rc:where_clause.title",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "in_raster"
+            ],
+            "description": "$rc:where_clause.descr"
+        },
+        "envelope": {
+            "type": "optional",
+            "control_guid": "{15F0D1C1-F783-49BC-8D16-619B8E92F668}",
+            "displayname": "$rc:envelope.title",
+            "datatype": {
+                "type": "GPExtent"
+            },
+            "depends": [
+                "in_raster"
+            ],
+            "description": "$rc:envelope.descr"
+        },
+        "band_index": {
+            "type": "optional",
+            "displayname": "$rc:band_index.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPLong",
+                        "displayname": "$rc:band_index.dt.title1"
+                    }
+                ]
+            },
+            "depends": [
+                "in_raster"
+            ],
+            "description": "$rc:band_index.descr"
+        }
+    },
+    "environments": [
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

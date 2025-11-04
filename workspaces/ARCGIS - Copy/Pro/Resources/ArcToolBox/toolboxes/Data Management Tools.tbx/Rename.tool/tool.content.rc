@@ -1,0 +1,13 @@
+{
+    "map": {
+        "data_type.descr": "<xdoc><p>The type of data to be renamed.</p><p>This parameter is only necessary in the event of a name conflict between two different data types. For example, a geodatabase can contain a relationship class with an identical name to a feature class. If that is the case, specify the relevant keyword.</p><ul><li>FeatureClass—In the event of duplicate names, the feature class will be used.</li><li>FeatureDataset—In the event of duplicate names, the feature dataset will be used.</li><li>MosaicDataset—In the event of duplicate names, the mosaic dataset will be used.</li><li>ParcelFabric—In the event of duplicate names, the parcel fabric will be used.</li><li>RelationshipClass—In the event of duplicate names, the relationship class will be used.</li><li>Topology—In the event of duplicate names, the topology will be used.</li></ul></xdoc>",
+        "data_type.title": "Data Type",
+        "description": "Changes the name of a dataset.  This includes a variety of data types, including feature dataset, raster, table, and shapefile.",
+        "in_data.descr": "The input data to be renamed.",
+        "in_data.title": "Input Data Element",
+        "out_data.descr": "The name of the output data.",
+        "out_data.title": "Output Data Element",
+        "summary": "Changes the name of a dataset. This includes a variety of data types, including feature dataset, raster, table, and shapefile.",
+        "title": "Rename"
+    }
+}

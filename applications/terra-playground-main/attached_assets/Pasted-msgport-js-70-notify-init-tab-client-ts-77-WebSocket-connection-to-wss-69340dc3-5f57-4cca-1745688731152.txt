@@ -1,0 +1,213 @@
+msgport.js:70 {"notify":"init_tab"}
+client.ts:77  WebSocket connection to 'wss://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev/' failed: Error during WebSocket handshake: Unexpected response code: 400
+setupWebSocket @ client.ts:77
+client.ts:77  Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/' is invalid.
+    at setupWebSocket (client.ts:77:18)
+    at fallback (client.ts:42:16)
+    at WebSocket.<anonymous> (client.ts:99:7)
+hook.js:608  Warning: Invalid prop `data-replit-metadata` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props. Error Component Stack
+    at NavMenu.tsx:248:5
+    at div (<anonymous>)
+    at aside (<anonymous>)
+    at _c (Sidebar.tsx:89:5)
+    at div (<anonymous>)
+    at aside (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at AppShell (AppShell.tsx:61:3)
+    at NewAppLayout (new-app-layout.tsx:256:51)
+    at Route (index.js:227:18)
+    at Switch (index.js:314:19)
+    at Router (<anonymous>)
+    at GISProvider (GISContext.tsx:110:72)
+    at AIAssistantProvider (ai-assistant-provider.tsx:35:75)
+    at ExtensionProvider (extension-provider.tsx:24:37)
+    at QueryClientProvider (QueryClientProvider.tsx:30:3)
+    at App (<anonymous>)
+    at AuthProvider (auth-provider.tsx:26:32)
+overrideMethod @ hook.js:608
+hook.js:608  Warning: Invalid prop `data-replit-metadata` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props. Error Component Stack
+    at NavMenu.tsx:248:5
+    at div (<anonymous>)
+    at aside (<anonymous>)
+    at _c (Sidebar.tsx:89:5)
+    at div (<anonymous>)
+    at aside (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at AppShell (AppShell.tsx:61:3)
+    at NewAppLayout (new-app-layout.tsx:256:51)
+    at Route (index.js:227:18)
+    at Switch (index.js:314:19)
+    at Router (<anonymous>)
+    at GISProvider (GISContext.tsx:110:72)
+    at AIAssistantProvider (ai-assistant-provider.tsx:35:75)
+    at ExtensionProvider (extension-provider.tsx:24:37)
+    at QueryClientProvider (QueryClientProvider.tsx:30:3)
+    at App (<anonymous>)
+    at AuthProvider (auth-provider.tsx:26:32)
+overrideMethod @ hook.js:608
+hook.js:608  Warning: Invalid prop `data-replit-metadata` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props. Error Component Stack
+    at NavMenu.tsx:248:5
+    at div (<anonymous>)
+    at aside (<anonymous>)
+    at _c (Sidebar.tsx:89:5)
+    at div (<anonymous>)
+    at aside (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at AppShell (AppShell.tsx:61:3)
+    at NewAppLayout (new-app-layout.tsx:256:51)
+    at Route (index.js:227:18)
+    at Switch (index.js:314:19)
+    at Router (<anonymous>)
+    at GISProvider (GISContext.tsx:110:72)
+    at AIAssistantProvider (ai-assistant-provider.tsx:35:75)
+    at ExtensionProvider (extension-provider.tsx:24:37)
+    at QueryClientProvider (QueryClientProvider.tsx:30:3)
+    at App (<anonymous>)
+    at AuthProvider (auth-provider.tsx:26:32)
+overrideMethod @ hook.js:608
+hook.js:608  Warning: Invalid prop `data-replit-metadata` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props. Error Component Stack
+    at NavMenu.tsx:248:5
+    at div (<anonymous>)
+    at aside (<anonymous>)
+    at _c (Sidebar.tsx:89:5)
+    at div (<anonymous>)
+    at aside (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at AppShell (AppShell.tsx:61:3)
+    at NewAppLayout (new-app-layout.tsx:256:51)
+    at Route (index.js:227:18)
+    at Switch (index.js:314:19)
+    at Router (<anonymous>)
+    at GISProvider (GISContext.tsx:110:72)
+    at AIAssistantProvider (ai-assistant-provider.tsx:35:75)
+    at ExtensionProvider (extension-provider.tsx:24:37)
+    at QueryClientProvider (QueryClientProvider.tsx:30:3)
+    at App (<anonymous>)
+    at AuthProvider (auth-provider.tsx:26:32)
+overrideMethod @ hook.js:608
+hook.js:608  Warning: Invalid prop `data-replit-metadata` supplied to `React.Fragment`. React.Fragment can only have `key` and `children` props. Error Component Stack
+    at NavMenu.tsx:248:5
+    at div (<anonymous>)
+    at aside (<anonymous>)
+    at _c (Sidebar.tsx:89:5)
+    at div (<anonymous>)
+    at aside (<anonymous>)
+    at div (<anonymous>)
+    at div (<anonymous>)
+    at AppShell (AppShell.tsx:61:3)
+    at NewAppLayout (new-app-layout.tsx:256:51)
+    at Route (index.js:227:18)
+    at Switch (index.js:314:19)
+    at Router (<anonymous>)
+    at GISProvider (GISContext.tsx:110:72)
+    at AIAssistantProvider (ai-assistant-provider.tsx:35:75)
+    at ExtensionProvider (extension-provider.tsx:24:37)
+    at QueryClientProvider (QueryClientProvider.tsx:30:3)
+    at App (<anonymous>)
+    at AuthProvider (auth-provider.tsx:26:32)
+overrideMethod @ hook.js:608
+TeamAgentsPage.tsx:196 [TeamAgents WebSocket] Using URL: wss://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev:443/ws/team-collaboration
+TeamAgentsPage.tsx:197 [TeamAgents WebSocket] hostname: 69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev
+TeamAgentsPage.tsx:198 [TeamAgents WebSocket] port: 443
+TeamAgentsPage.tsx:199 [TeamAgents WebSocket] protocol: wss:
+GISContext.tsx:155 No Mapbox token found in environment variables, using OpenStreetMap fallback
+extension-service.ts:37 Fetching extensions from API...
+extension-service.ts:85 Fetching webviews from API...
+api/team-tasks:1 
+            
+            
+            Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+hook.js:608  Query data cannot be undefined. Please make sure to return a value other than undefined from your query function. Affected query key: ["/api/team-tasks"]
+overrideMethod @ hook.js:608
+api/team-agents:1 
+            
+            
+            Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+hook.js:608  Query data cannot be undefined. Please make sure to return a value other than undefined from your query function. Affected query key: ["/api/team-agents"]
+overrideMethod @ hook.js:608
+RealUserMonitoring.tsx:428 Web Vital: FCP Object
+extension-service.ts:95 Successfully loaded 2 webviews
+extension-service.ts:47 Successfully loaded 1 extensions
+RealUserMonitoring.tsx:428 Web Vital: TTFB Object
+TeamAgentsPage.tsx:207  WebSocket connection to 'wss://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev/ws/team-collaboration' failed: Error during WebSocket handshake: Unexpected response code: 400
+connectWebSocket @ TeamAgentsPage.tsx:207
+hook.js:608  WebSocket error: Event
+overrideMethod @ hook.js:608
+TeamAgentsPage.tsx:239 WebSocket connection closed: 1006 
+TeamAgentsPage.tsx:196 [TeamAgents WebSocket] Using URL: wss://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev:443/ws/team-collaboration
+TeamAgentsPage.tsx:197 [TeamAgents WebSocket] hostname: 69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev
+TeamAgentsPage.tsx:198 [TeamAgents WebSocket] port: 443
+TeamAgentsPage.tsx:199 [TeamAgents WebSocket] protocol: wss:
+TeamAgentsPage.tsx:207  WebSocket connection to 'wss://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev/ws/team-collaboration' failed: Error during WebSocket handshake: Unexpected response code: 400
+connectWebSocket @ TeamAgentsPage.tsx:207
+hook.js:608  WebSocket error: Event
+overrideMethod @ hook.js:608
+TeamAgentsPage.tsx:239 WebSocket connection closed: 1006 
+TeamAgentsPage.tsx:196 [TeamAgents WebSocket] Using URL: wss://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev:443/ws/team-collaboration
+TeamAgentsPage.tsx:197 [TeamAgents WebSocket] hostname: 69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev
+TeamAgentsPage.tsx:198 [TeamAgents WebSocket] port: 443
+TeamAgentsPage.tsx:199 [TeamAgents WebSocket] protocol: wss:
+TeamAgentsPage.tsx:207  WebSocket connection to 'wss://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev/ws/team-collaboration' failed: Error during WebSocket handshake: Unexpected response code: 400
+connectWebSocket @ TeamAgentsPage.tsx:207
+hook.js:608  WebSocket error: Event
+overrideMethod @ hook.js:608
+TeamAgentsPage.tsx:239 WebSocket connection closed: 1006 
+RealUserMonitoring.tsx:261 Web Vitals Report (Batch 1745688704977-1sqj07s76, Attempt 1): Object
+hook.js:608  Error reporting Web Vitals metrics (Batch 1745688704977-1sqj07s76, Attempt 1): SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+overrideMethod @ hook.js:608
+RealUserMonitoring.tsx:301 Retrying batch 1745688704977-1sqj07s76 in 930.4701305725275ms (Attempt 2/4)
+TeamAgentsPage.tsx:196 [TeamAgents WebSocket] Using URL: wss://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev:443/ws/team-collaboration
+TeamAgentsPage.tsx:197 [TeamAgents WebSocket] hostname: 69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev
+TeamAgentsPage.tsx:198 [TeamAgents WebSocket] port: 443
+TeamAgentsPage.tsx:199 [TeamAgents WebSocket] protocol: wss:
+RealUserMonitoring.tsx:261 Web Vitals Report (Batch 1745688704977-1sqj07s76, Attempt 2): Object
+hook.js:608  Error reporting Web Vitals metrics (Batch 1745688704977-1sqj07s76, Attempt 2): SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+overrideMethod @ hook.js:608
+RealUserMonitoring.tsx:301 Retrying batch 1745688704977-1sqj07s76 in 1805.1784114166926ms (Attempt 3/4)
+TeamAgentsPage.tsx:207  WebSocket connection to 'wss://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev/ws/team-collaboration' failed: Error during WebSocket handshake: Unexpected response code: 400
+connectWebSocket @ TeamAgentsPage.tsx:207
+hook.js:608  WebSocket error: Event
+overrideMethod @ hook.js:608
+TeamAgentsPage.tsx:239 WebSocket connection closed: 1006 
+RealUserMonitoring.tsx:261 Web Vitals Report (Batch 1745688704977-1sqj07s76, Attempt 3): Object
+hook.js:608  Error reporting Web Vitals metrics (Batch 1745688704977-1sqj07s76, Attempt 3): SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+overrideMethod @ hook.js:608
+RealUserMonitoring.tsx:301 Retrying batch 1745688704977-1sqj07s76 in 3619.7861798179356ms (Attempt 4/4)
+TeamAgentsPage.tsx:196 [TeamAgents WebSocket] Using URL: wss://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev:443/ws/team-collaboration
+TeamAgentsPage.tsx:197 [TeamAgents WebSocket] hostname: 69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev
+TeamAgentsPage.tsx:198 [TeamAgents WebSocket] port: 443
+TeamAgentsPage.tsx:199 [TeamAgents WebSocket] protocol: wss:
+TeamAgentsPage.tsx:207  WebSocket connection to 'wss://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev/ws/team-collaboration' failed: Error during WebSocket handshake: Unexpected response code: 400
+connectWebSocket @ TeamAgentsPage.tsx:207
+hook.js:608  WebSocket error: Event
+overrideMethod @ hook.js:608
+TeamAgentsPage.tsx:239 WebSocket connection closed: 1006 
+RealUserMonitoring.tsx:261 Web Vitals Report (Batch 1745688704977-1sqj07s76, Attempt 4): Object
+hook.js:608  Error reporting Web Vitals metrics (Batch 1745688704977-1sqj07s76, Attempt 4): SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+overrideMethod @ hook.js:608
+hook.js:608  Max retry attempts (3) reached for batch 1745688704977-1sqj07s76
+overrideMethod @ hook.js:608
+TeamAgentsPage.tsx:196 [TeamAgents WebSocket] Using URL: wss://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev:443/ws/team-collaboration
+TeamAgentsPage.tsx:197 [TeamAgents WebSocket] hostname: 69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev
+TeamAgentsPage.tsx:198 [TeamAgents WebSocket] port: 443
+TeamAgentsPage.tsx:199 [TeamAgents WebSocket] protocol: wss:
+TeamAgentsPage.tsx:207  WebSocket connection to 'wss://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev/ws/team-collaboration' failed: Error during WebSocket handshake: Unexpected response code: 400
+connectWebSocket @ TeamAgentsPage.tsx:207
+TeamAgentsPage.tsx:228  WebSocket error: Event {isTrusted: true, type: 'error', target: WebSocket, currentTarget: WebSocket, eventPhase: 2, …}
+overrideMethod @ hook.js:608
+ws.onerror @ TeamAgentsPage.tsx:228
+TeamAgentsPage.tsx:239 WebSocket connection closed: 1006 
+TeamAgentsPage.tsx:196 [TeamAgents WebSocket] Using URL: wss://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev:443/ws/team-collaboration
+TeamAgentsPage.tsx:197 [TeamAgents WebSocket] hostname: 69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev
+TeamAgentsPage.tsx:198 [TeamAgents WebSocket] port: 443
+TeamAgentsPage.tsx:199 [TeamAgents WebSocket] protocol: wss:
+TeamAgentsPage.tsx:207  WebSocket connection to 'wss://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev/ws/team-collaboration' failed: Error during WebSocket handshake: Unexpected response code: 400
+connectWebSocket @ TeamAgentsPage.tsx:207
+TeamAgentsPage.tsx:228  WebSocket error: Event {isTrusted: true, type: 'error', target: WebSocket, currentTarget: WebSocket, eventPhase: 2, …}
+overrideMethod @ hook.js:608
+ws.onerror @ TeamAgentsPage.tsx:228
+TeamAgentsPage.tsx:239 WebSocket connection closed: 1006 

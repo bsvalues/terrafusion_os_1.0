@@ -1,0 +1,123 @@
+{
+    "type": "FunctionTool",
+    "guid": "{26B17338-CB00-45A9-AB9C-858C2E0122C9}/GenerateAdjoiningSheetsFeatures",
+    "displayname": "$rc:title",
+    "helpcontent": "46050001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "46",
+        "49"
+    ],
+    "params": {
+        "in_feature_dataset": {
+            "displayname": "$rc:in_feature_dataset.title",
+            "datatype": {
+                "type": "DEFeatureDataset"
+            },
+            "description": "$rc:in_feature_dataset.descr"
+        },
+        "area_of_interest": {
+            "displayname": "$rc:area_of_interest.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPLayerDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:area_of_interest.descr"
+        },
+        "land_features": {
+            "type": "optional",
+            "displayname": "$rc:land_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:land_features.descr"
+        },
+        "scale": {
+            "type": "optional",
+            "displayname": "$rc:scale.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "None",
+                        "code": "$rc:scale.domain.None"
+                    },
+                    {
+                        "value": "1:25000",
+                        "code": "$rc:scale.domain.1:25000"
+                    },
+                    {
+                        "value": "1:50000",
+                        "code": "$rc:scale.domain.1:50000"
+                    },
+                    {
+                        "value": "1:100000",
+                        "code": "$rc:scale.domain.1:100000"
+                    }
+                ]
+            },
+            "value": "1:50000",
+            "description": "$rc:scale.descr"
+        },
+        "clip_aoi_to_sheets": {
+            "type": "optional",
+            "displayname": "$rc:clip_aoi_to_sheets.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CLIP_AOI"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DONT_CLIP_AOI"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:clip_aoi_to_sheets.descr"
+        },
+        "modified_feature_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:modified_feature_dataset.title",
+            "datatype": {
+                "type": "DEFeatureDataset"
+            }
+        },
+        "buffer_size": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:buffer_size.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "0 Meters",
+            "description": "$rc:buffer_size.descr"
+        }
+    }
+}

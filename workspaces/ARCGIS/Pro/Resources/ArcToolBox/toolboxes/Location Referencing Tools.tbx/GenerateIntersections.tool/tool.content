@@ -1,0 +1,94 @@
+{
+    "type": "FunctionTool",
+    "guid": "{0A4A9218-07A4-497A-8506-CED528063FB9}/GenerateIntersections",
+    "displayname": "$rc:title",
+    "helpcontent": "23000052",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "78"
+    ],
+    "params": {
+        "in_intersection_feature_class": {
+            "displayname": "$rc:in_intersection_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:in_intersection_feature_class.descr"
+        },
+        "in_network_layer": {
+            "type": "optional",
+            "displayname": "$rc:in_network_layer.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_network_layer.descr"
+        },
+        "start_date": {
+            "type": "optional",
+            "displayname": "$rc:start_date.title",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:start_date.descr"
+        },
+        "edited_by_current_user": {
+            "type": "optional",
+            "displayname": "$rc:edited_by_current_user.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CURRENT_USER"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "ALL_USERS"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:edited_by_current_user.descr"
+        },
+        "out_intersection_feature_class": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_intersection_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "in_intersection_feature_class"
+            ]
+        },
+        "out_details_file": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_details_file.title",
+            "datatype": {
+                "type": "DETextFile"
+            }
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

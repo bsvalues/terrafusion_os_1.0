@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Converts data in any format supported by the ArcGIS Data Interoperability extension into feature classes.",
+        "input.descr": "The data to be imported.",
+        "input.title": "Input Dataset",
+        "output.descr": "The output file geodatabase.",
+        "output.title": "Output Geodatabase",
+        "summary": "<xdoc><p>Converts data in any format supported by the ArcGIS Data Interoperability extension into feature classes.</p><p>The output is stored in a geodatabase. The geodatabase can then be used directly or further post-processing can be performed.</p></xdoc>",
+        "title": "Quick Import"
+    }
+}

@@ -1,0 +1,995 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.PACSService.Domain</name>
+    </assembly>
+    <members>
+        <member name="M:TrueAutomation.PACSService.Domain.Pacs_User.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.Pacs_User.#ctor(System.Int32,System.String,System.String,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.DateTime,System.DateTime,System.DateTime,System.DateTime,System.DateTime,System.DateTime,System.String,System.String,System.Int32,System.String,System.String,System.Decimal,System.DateTime,System.Byte[])">
+            <summary>
+            Initializes an instance
+            of this class
+            </summary>
+            <param name="id"></param>
+            <param name="pacsUserName"></param>
+            <param name="fullName"></param>
+            <param name="description"></param>
+            <param name="mruPropId1"></param>
+            <param name="mruPropId2"></param>
+            <param name="mruPropId3"></param>
+            <param name="mruPropId4"></param>
+            <param name="mruPropId5"></param>
+            <param name="mruPropId6"></param>
+            <param name="mruPropId7"></param>
+            <param name="mruPropId8"></param>
+            <param name="mruAcctId1"></param>
+            <param name="mruAcctId2"></param>
+            <param name="mruAcctId3"></param>
+            <param name="mruAcctId4"></param>
+            <param name="mruAcctId5"></param>
+            <param name="mruAcctId6"></param>
+            <param name="mruAcctId7"></param>
+            <param name="mruAcctId8"></param>
+            <param name="mruBillId1"></param>
+            <param name="mruBillId2"></param>
+            <param name="mruBillId3"></param>
+            <param name="mruBillId4"></param>
+            <param name="mruBillId5"></param>
+            <param name="mruBillId6"></param>
+            <param name="mruBillId7"></param>
+            <param name="mruBillId8"></param>
+            <param name="logonStart"></param>
+            <param name="logonEnd"></param>
+            <param name="weekendLogonStart"></param>
+            <param name="weekendLogonEnd"></param>
+            <param name="accountExpirationEnd"></param>
+            <param name="passwordExpirationEnd"></param>
+            <param name="mustChangePassword"></param>
+            <param name="remoteUser"></param>
+            <param name="dailyBatchId"></param>
+            <param name="tNTUserName"></param>
+            <param name="tNTPassword"></param>
+            <param name="searchRowCount"></param>
+            <param name="lastPasswordChangeDate"></param>
+            <param name="passwordHash"></param>
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.Pacs_User.#ctor(System.Int32,System.String,System.String,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.DateTime,System.DateTime,System.DateTime,System.DateTime,System.DateTime,System.DateTime,System.String,System.String,System.Int32,System.String,System.String,System.Decimal,System.DateTime,System.Byte[],System.Collections.Generic.IList{TrueAutomation.PACSService.Domain.User_Role})">
+            <summary>
+            Initializes an instance
+            of this class
+            </summary>
+            <param name="id"></param>
+            <param name="pacsUserName"></param>
+            <param name="fullName"></param>
+            <param name="description"></param>
+            <param name="mruPropId1"></param>
+            <param name="mruPropId2"></param>
+            <param name="mruPropId3"></param>
+            <param name="mruPropId4"></param>
+            <param name="mruPropId5"></param>
+            <param name="mruPropId6"></param>
+            <param name="mruPropId7"></param>
+            <param name="mruPropId8"></param>
+            <param name="mruAcctId1"></param>
+            <param name="mruAcctId2"></param>
+            <param name="mruAcctId3"></param>
+            <param name="mruAcctId4"></param>
+            <param name="mruAcctId5"></param>
+            <param name="mruAcctId6"></param>
+            <param name="mruAcctId7"></param>
+            <param name="mruAcctId8"></param>
+            <param name="mruBillId1"></param>
+            <param name="mruBillId2"></param>
+            <param name="mruBillId3"></param>
+            <param name="mruBillId4"></param>
+            <param name="mruBillId5"></param>
+            <param name="mruBillId6"></param>
+            <param name="mruBillId7"></param>
+            <param name="mruBillId8"></param>
+            <param name="logonStart"></param>
+            <param name="logonEnd"></param>
+            <param name="weekendLogonStart"></param>
+            <param name="weekendLogonEnd"></param>
+            <param name="accountExpirationEnd"></param>
+            <param name="passwordExpirationEnd"></param>
+            <param name="mustChangePassword"></param>
+            <param name="remoteUser"></param>
+            <param name="dailyBatchId"></param>
+            <param name="tNTUserName"></param>
+            <param name="tNTPassword"></param>
+            <param name="searchRowCount"></param>
+            <param name="lastPasswordChangeDate"></param>
+            <param name="passwordHash"></param>
+            <param name="userRoles"></param>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.PacsUserName">
+            <summary>
+            From PACS DB - Pacs_User.pacs_user_name
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.FullName">
+            <summary>
+            From PACS DB - Pacs_User.full_name
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.Description">
+            <summary>
+            From PACS DB - Pacs_User.description
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.UserRoles">
+            <summary>
+            List of Roles assigned for this user
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.MruPropId1">
+            <summary>
+            From PACS DB - Pacs_User.mru_prop_id1
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.MruPropId2">
+            <summary>
+            From PACS DB - Pacs_User.mru_prop_id2
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.MruPropId3">
+            <summary>
+            From PACS DB - Pacs_User.mru_prop_id3
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.MruPropId4">
+            <summary>
+            From PACS DB - Pacs_User.mru_prop_id4
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.MruPropId5">
+            <summary>
+            From PACS DB - Pacs_User.mru_prop_id5
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.MruPropId6">
+            <summary>
+            From PACS DB - Pacs_User.mru_prop_id6
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.MruPropId7">
+            <summary>
+            From PACS DB - Pacs_User.mru_prop_id7
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.MruPropId8">
+            <summary>
+            From PACS DB - Pacs_User.mru_prop_id8
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.MruAcctId1">
+            <summary>
+            From PACS DB - Pacs_User.mru_acct_id1
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.MruAcctId2">
+            <summary>
+            From PACS DB - Pacs_User.mru_acct_id2
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.MruAcctId3">
+            <summary>
+            From PACS DB - Pacs_User.mru_acct_id3
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.MruAcctId4">
+            <summary>
+            From PACS DB - Pacs_User.mru_acct_id4
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.MruAcctId5">
+            <summary>
+            From PACS DB - Pacs_User.mru_acct_id5
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.MruAcctId6">
+            <summary>
+            From PACS DB - Pacs_User.mru_acct_id6
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.MruAcctId7">
+            <summary>
+            From PACS DB - Pacs_User.mru_acct_id7
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.MruAcctId8">
+            <summary>
+            From PACS DB - Pacs_User.mru_acct_id8
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.MruBillId1">
+            <summary>
+            From PACS DB - Pacs_User.mru_bill_id1
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.MruBillId2">
+            <summary>
+            From PACS DB - Pacs_User.mru_bill_id2
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.MruBillId3">
+            <summary>
+            From PACS DB - Pacs_User.mru_bill_id3
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.MruBillId4">
+            <summary>
+            From PACS DB - Pacs_User.mru_bill_id4
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.MruBillId5">
+            <summary>
+            From PACS DB - Pacs_User.mru_bill_id5
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.MruBillId6">
+            <summary>
+            From PACS DB - Pacs_User.mru_bill_id6
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.MruBillId7">
+            <summary>
+            From PACS DB - Pacs_User.mru_bill_id7
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.MruBillId8">
+            <summary>
+            From PACS DB - Pacs_User.mru_bill_id8
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.LogonStart">
+            <summary>
+            From PACS DB - Pacs_User.logon_start
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.LogonEnd">
+            <summary>
+            From PACS DB - Pacs_User.logon_end
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.WeekendLogonStart">
+            <summary>
+            From PACS DB - Pacs_User.weeknd_logon_start
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.WeekendLogonEnd">
+            <summary>
+            From PACS DB - Pacs_User.weeknd_logon_end
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.AccountExpirationEnd">
+            <summary>
+            From PACS DB - Pacs_User.acct_exp_end
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.PasswordExpirationEnd">
+            <summary>
+            From PACS DB - Pacs_User.psw_exp_end
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.MustChangePassword">
+            <summary>
+            From PACS DB - Pacs_User.must_chg_psw
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.RemoteUser">
+            <summary>
+            From PACS DB - Pacs_User.remote_user
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.TNTUserName">
+            <summary>
+            From PACS DB - Pacs_User.tnt_user_name
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.TNTPassword">
+            <summary>
+            From PACS DB - Pacs_User.tnt_password
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.SearchRowCount">
+            <summary>
+            From PACS DB - Pacs_User.search_row_count
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.LastPasswordChangeDate">
+            <summary>
+            From PACS DB - Pacs_User.last_password_chg_dt
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Pacs_User.PasswordHash">
+            <summary>
+            From PACS DB - Pacs_User.password_hash
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.Pacs_User.ToDTO(System.Boolean)">
+            <summary>
+            Converts to a DTO
+            </summary>
+            <returns>Pacs_UserDTO</returns>
+        </member>
+        <member name="T:TrueAutomation.PACSService.Domain.TaskQuerySelectionFieldMapping">
+            <summary>
+            A class to reference the fields returned by a query.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.TaskQuerySelectionFieldMapping.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.TaskQuerySelectionFieldMapping.DataRecordDefinitionFieldName">
+            <summary>
+            The name of the field in the Data Record Definition being mapped to
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.TaskQuerySelectionFieldMapping.SelectionField">
+            <summary>
+            The Selection field mapping to the DRD field.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.PACSService.Domain.TaskQueryMapping">
+            <summary>
+            Domain Object representing the Mappings of Task Queries to data record definitions
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.TaskQueryMapping.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.TaskQueryMapping.Name">
+            <summary>
+            The name of the mapping
+            </summary>
+            <remarks>Used for retrieval in listing the available queries</remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.TaskQueryMapping.Description">
+            <summary>
+            A Description of the mapping/query
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.TaskQueryMapping.Query">
+            <summary>
+            A copy of the Task Query being mapped.  
+            </summary>
+            <remarks>Using a copy because the original query might be edited and could break the mapping.</remarks>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.TaskQueryMapping.DataRecordDefinitionId">
+            <summary>
+            The Unique Identifier of the Data Record Definition being mapped to the query.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.TaskQueryMapping.Fields">
+            <summary>
+            A dictionary showing the relationships between the DataRecordDefinition fields and the Query's returned fields.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.TaskQueryMapping.AddTaskQuerySelectionFieldMapping(TrueAutomation.PACSService.Domain.TaskQuerySelectionFieldMapping)">
+            <summary>
+            Adds aTaskQuerySelectionField to this Mapping
+            </summary>
+            <param name="taskQuerySelectionFieldMapping">The Field to add to this Mapping.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified field was null.</exception>
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.TaskQueryMapping.RemoveTaskQuerySelectionFieldMapping(TrueAutomation.PACSService.Domain.TaskQuerySelectionFieldMapping)">
+            <summary>
+            Removes the specified field from this Mapping.
+            </summary>
+            <param name="taskQuerySelectionFieldMapping">Thefield to remove from this mapping.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified	field was null.</exception>
+            <exception cref="T:System.ArgumentException">If the specified field is not contained in this mapping.</exception>"
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.TaskQueryMapping.ClearMappingList">
+            <summary>
+            Method to remove all mapping from the list.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.TaskQueryMapping.ToDTO">
+            <summary>
+            /// Converts to a DTO
+            </summary>
+            <returns>TaskQueryMappingDTO</returns>
+        </member>
+        <member name="T:TrueAutomation.PACSService.Domain.TaskQuerySelectionField">
+            <summary>
+            A class to reference the fields returned by a query.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.TaskQuerySelectionField.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.TaskQuerySelectionField.Name">
+            <summary>
+            The name of the field being returned.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.TaskQuerySelectionField.FieldType">
+            <summary>
+            The type of the return value referenced by this field.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.TaskQuerySelectionField.length">
+            <summary>
+            The length of the field in the query
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.TaskQuerySelectionField.colorder">
+            <summary>
+            The order of the columns within the query.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.TaskQuerySelectionField.Query">
+            <summary>
+            A back reference to the Taskquery to which this field belongs.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.TaskQuerySelectionField.ToDTO">
+            <summary>
+            /// Converts to a DTO
+            </summary>
+            <returns>TaskQuerySelectionFieldDTO</returns>
+        </member>
+        <member name="T:TrueAutomation.PACSService.Domain.TaskQuery">
+            <summary>
+            A class to define a Query and the selection of fields it returns.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.TaskQuery.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.TaskQuery.Name">
+            <summary>
+            The Name of the Query
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.TaskQuery.SqlQuery">
+            <summary>
+            The string of sql to execute.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.TaskQuery.Description">
+            <summary>
+            The description of the Query
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.TaskQuery.PACSQueryId">
+            <summary>
+            The QueryId of the associated query in PACS.Query
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.TaskQuery.CreationDate">
+            <summary>
+            Creation Time of associated record in PACS.Query
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.TaskQuery.ExpirationDate">
+            <summary>
+            Expiration Date set in PACS.Query
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.TaskQuery.PacsUser">
+            <summary>
+            UserName of the Pacs User responsible for the creation of the query.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.TaskQuery.Fields">
+            <summary>
+            The fields (name/type) returned by the query.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.TaskQuery.Mapping">
+            <summary>
+            Back reference for the case where the Query is contained within a Query Mapping.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.TaskQuery.AddTaskQuerySelectionField(TrueAutomation.PACSService.Domain.TaskQuerySelectionField)">
+            <summary>
+            Adds aTaskQuerySelectionField to this Query
+            </summary>
+            <param name="taskQuerySelectionField">The Field to add to this query.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified field was null.</exception>
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.TaskQuery.RemoveTaskQuerySelectionField(TrueAutomation.PACSService.Domain.TaskQuerySelectionField)">
+            <summary>
+            Removes the specified field from this query.
+            </summary>
+            <param name="taskQuerySelectionField">Thefield to remove from this query.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified	field was null.</exception>
+            <exception cref="T:System.ArgumentException">If the specified field is not contained in this query.</exception>"
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.TaskQuery.ToDTO">
+            <summary>
+            /// Converts to a DTO
+            </summary>
+            <returns>TaskQueryDTO</returns>
+        </member>
+        <member name="T:TrueAutomation.PACSService.Domain.NamespaceDoc">
+            <summary>
+            These are the namespace comments for <c>TrueAutomation.PACSService.Domain</c>.
+            
+            This class contains the Domain objects that is used in conjunction with
+            the NHibernate module to get/set data to/from PACS DB
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.Property.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.Property.#ctor(System.Int32,System.DateTime,System.String,System.String,System.String,System.String,System.String,System.DateTime,System.String,System.Int32,System.Int32,System.Int32,System.Boolean,System.String,System.DateTime,System.String,System.String,System.String,System.Int32,System.Int32,System.String,System.Boolean,System.DateTime,System.Int32,System.Int32,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Initializes an instance
+            of this class
+            </summary>
+            <param name="id"></param>
+            <param name="aMSLoadDate"></param>
+            <param name="propertyComment"></param>
+            <param name="propertySicCode"></param>
+            <param name="propertyTypeCode"></param>
+            <param name="referenceID1"></param>
+            <param name="referenceID2"></param>
+            <param name="propertyCreatedDate"></param>
+            <param name="geoId"></param>
+            <param name="ownerId"></param>
+            <param name="agentId"></param>
+            <param name="autoPayId"></param>
+            <param name="agentOverride"></param>
+            <param name="alternateDBAName"></param>
+            <param name="agentUpdateDate"></param>
+            <param name="dBAName"></param>
+            <param name="exemptReset"></param>
+            <param name="gPMIrrigation"></param>
+            <param name="massCreatedFrom"></param>
+            <param name="massCreateRunId"></param>
+            <param name="other"></param>
+            <param name="ownerOverride"></param>
+            <param name="ownerUpdateDate"></param>
+            <param name="ownerYear"></param>
+            <param name="penpadRunId"></param>
+            <param name="referenceDescription"></param>
+            <param name="referenceFlag"></param>
+            <param name="remarks"></param>
+            <param name="roadAccess"></param>
+            <param name="simpleGeoId"></param>
+            <param name="stateCode"></param>
+            <param name="topography"></param>
+            <param name="utilities"></param>
+            <param name="zoning"></param>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.PropertyTypeCode">
+            <summary>
+            From PACS DB - property.prop_type_cd
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.PropertyCreatedDate">
+            <summary>
+            From PACS DB - property.prop_create_dt
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.ReferenceID1">
+            <summary>
+            From PACS DB - property.ref_id1
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.ReferenceID2">
+            <summary>
+            From PACS DB - property.ref_id2
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.GeoId">
+            <summary>
+            From PACS DB - property.geo_id
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.AMSLoadDate">
+            <summary>
+            From PACS DB - property.ams_load_dt
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.PropertyComment">
+            <summary>
+            From PACS DB - property.prop_cmnt
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.PropertySicCode">
+            <summary>
+            From PACS DB - property.prop_sic_cd
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.OwnerId">
+            <summary>
+            From PACS DB - property.col_owner_id
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.AgentId">
+            <summary>
+            From PACS DB - property.col_agent_id
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.AutoPayId">
+            <summary>
+            From PACS DB - property.col_autopay_id
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.DBAName">
+            <summary>
+            From PACS DB - property.dba_name
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.AlternateDBAName">
+            <summary>
+            From PACS DB - property.alt_dba_name
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.ExemptReset">
+            <summary>
+            From PACS DB - property.exmpt_reset
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.GPMIrrigation">
+            <summary>
+            From PACS DB - property.gpm_irrig
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.Utilities">
+            <summary>
+            From PACS DB - property.utilities
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.Topography">
+            <summary>
+            From PACS DB - property.topography
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.RoadAccess">
+            <summary>
+            From PACS DB - property.road_access
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.Other">
+            <summary>
+            From PACS DB - property.other
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.Zoning">
+            <summary>
+            From PACS DB - property.zoning
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.Remarks">
+            <summary>
+            From PACS DB - property.remarks
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.StateCode">
+            <summary>
+            From PACS DB - property.state_cd
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.MassCreatedFrom">
+            <summary>
+            From PACS DB - property.mass_created_from
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.SimpleGeoId">
+            <summary>
+            From PACS DB - property.simple_geo_id
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.ReferenceFlag">
+            <summary>
+            From PACS DB - property.reference_flag
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.PenpadRunId">
+            <summary>
+            From PACS DB - property.penpad_run_id
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.ReferenceDescription">
+            <summary>
+            From PACS DB - property.reference_desc
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.OwnerYear">
+            <summary>
+            From PACS DB - property.col_owner_yr
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.OwnerOverride">
+            <summary>
+            From PACS DB - property.col_owner_override
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.AgentOverride">
+            <summary>
+            From PACS DB - property.col_agent_override
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.OwnerUpdateDate">
+            <summary>
+            From PACS DB - property.col_owner_update_dt
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.AgentUpdateDate">
+            <summary>
+            From PACS DB - property.col_agent_update_dt
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Property.MassCreateRunId">
+            <summary>
+            From PACS DB - property.mass_create_run_id
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.Property.ToDTO">
+            <summary>
+            /// Converts to a DTO
+            </summary>
+            <returns>PropertyDTO</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.Account.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.Account.#ctor(System.Int32,System.String,System.String,System.String,System.String,System.String,System.DateTime,System.String,System.DateTime,System.Decimal,System.String,System.String,System.String,System.String,System.Int32,System.String,System.String,System.String,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.String,System.String,System.String,System.DateTime,System.String,System.Int32)">
+            <summary>
+            Initializes an instance
+            of this class
+            </summary>
+            <param name="Id"></param>
+            <param name="FirstName"></param>
+            <param name="LastName"></param>
+            <param name="FileAsName"></param>
+            <param name="DrivingLicenseNumber"></param>
+            <param name="DrivingLicenseState"></param>
+            <param name="DrivingLicenseExpiryDate"></param>
+            <param name="MergedAccountId"></param>
+            <param name="AccountCreatedDate"></param>
+            <param name="OpeningBalance"></param>
+            <param name="Comment"></param>
+            <param name="MiscellaneousCode"></param>
+            <param name="ReferenceId1"></param>
+            <param name="Source"></param>
+            <param name="ReferenceAccountId"></param>
+            <param name="ConfidentialFlag"></param>
+            <param name="ConfidentialFileAsName"></param>
+            <param name="ConfidentialFirstName"></param>
+            <param name="ConfidentialLastName"></param>
+            <param name="DistrictMNO"></param>
+            <param name="DistrictINS"></param>
+            <param name="DistrictPI"></param>
+            <param name="DistrictAttorneyFees"></param>
+            <param name="DistrictOverages"></param>
+            <param name="DistrictTaxCertificationFees"></param>
+            <param name="DistrictMiscellaneousFees"></param>
+            <param name="DistrictVIT"></param>
+            <param name="EmailAddress"></param>
+            <param name="WebAddress"></param>
+            <param name="FTPAddress"></param>
+            <param name="UpdateDate"></param>
+            <param name="WebSuppression"></param>
+            <param name="AppraisalCompanyId"></param>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.FirstName">
+            <summary>
+            From PACS DB - account.first_name
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.LastName">
+            <summary>
+            From PACS DB - account.last_name
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.FileAsName">
+            <summary>
+            From PACS DB - account.file_as_name
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.DrivingLicenseNumber">
+            <summary>
+            From PACS DB - account.dl_num
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.DrivingLicenseState">
+            <summary>
+            From PACS DB - account.dl_state
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.DrivingLicenseExpiryDate">
+            <summary>
+            From PACS DB - account.dl_expir_dt
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.MergedAccountId">
+            <summary>
+            From PACS DB - account.merged_acct_id
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.AccountCreatedDate">
+            <summary>
+            From PACS DB - account.acct_create_dt
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.OpeningBalance">
+            <summary>
+            From PACS DB - account.opening_balance
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.Comment">
+            <summary>
+            From PACS DB - account.comment
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.MiscellaneousCode">
+            <summary>
+            From PACS DB - account.misc_code
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.ReferenceId1">
+            <summary>
+            From PACS DB - account.ref_id1
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.Source">
+            <summary>
+            From PACS DB - account.source
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.ReferenceAccountId">
+            <summary>
+            From PACS DB - account.ref_acct_id
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.ConfidentialFlag">
+            <summary>
+            From PACS DB - account.confidential_flag
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.ConfidentialFileAsName">
+            <summary>
+            From PACS DB - account.confidential_file_as_name
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.ConfidentialFirstName">
+            <summary>
+            From PACS DB - account.confidential_first_name
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.ConfidentialLastName">
+            <summary>
+            From PACS DB - account.confidential_last_name
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.DistrictMNO">
+            <summary>
+            From PACS DB - account.dist_m_n_o
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.DistrictINS">
+            <summary>
+            From PACS DB - account.dist_i_n_s
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.DistrictPI">
+            <summary>
+            From PACS DB - account.dist_pi
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.DistrictAttorneyFees">
+            <summary>
+            From PACS DB - account.dist_atty_fees
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.DistrictOverages">
+            <summary>
+            From PACS DB - account.dist_overages
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.DistrictTaxCertificationFees">
+            <summary>
+            From PACS DB - account.dist_tax_cert_fees
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.DistrictMiscellaneousFees">
+            <summary>
+            From PACS DB - account.dist_misc_fees
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.DistrictVIT">
+            <summary>
+            From PACS DB - account.dist_vit
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.EmailAddress">
+            <summary>
+            From PACS DB - account.email_addr
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.WebAddress">
+            <summary>
+            From PACS DB - account.web_addr
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.FTPAddress">
+            <summary>
+            From PACS DB - account.ftp_addr
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.UpdateDate">
+            <summary>
+            From PACS DB - account.update_dt
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.WebSuppression">
+            <summary>
+            From PACS DB - account.web_suppression
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.Account.AppraisalCompanyId">
+            <summary>
+            From PACS DB - account.appr_company_id
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.Account.ToDTO">
+            <summary>
+            Converts to a DTO
+            </summary>
+            <returns>AccountDTO</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.User_Role.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.User_Role.#ctor(System.Int32,System.String,System.Byte,System.Byte)">
+            <summary>
+            Initializes an instance of this class
+            </summary>
+            <param name="id"></param>
+            <param name="description"></param>
+            <param name="roleType"></param>
+            <param name="subAttribute"></param>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.User_Role.RoleDescription">
+            <summary>
+            From PACS DB - User_Role.role_description
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.User_Role.RoleType">
+            <summary>
+            From PACS DB - User_Role.role_type
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.User_Role.RoleSubAttribute">
+            <summary>
+            From PACS DB - User_Role.role_sub_attribute
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.PACSService.Domain.User_Role.Users">
+            <summary>
+            List of Users assigned with this role
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.Domain.User_Role.ToDTO(System.Boolean)">
+            <summary>
+            Converts to a DTO
+            </summary>
+            <returns>User_RoleDTO</returns>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,29 @@
+{
+    "map": {
+        "area_of_interest.descr": "One or more polygons by which the layers will be clipped.",
+        "area_of_interest.title": "Area of Interest",
+        "description": "Extracts the data in the specified layers and area of interest to the selected format and spatial reference, zips the data, and emails it to the specified address. This tool can be used to create a Data Extraction geoprocessing service.",
+        "feature_format.descr": "<xdoc><p>Specifies the format of the output features. The format should be specified as follows:<ul><li>Name or format - Short Name - extension (if any)</li></ul></p><p>The hyphens are required and there must be one space before and after the hyphen.</p><p>For example:<ul><li>File Geodatabase - GDB - .gdb</li><li>Shapefile - SHP - .shp</li><li>Autodesk AutoCAD - DXF_R2007 - .dxf</li><li>Autodesk AutoCAD - DWG_R2007 - .dwg</li><li>Bentley Microstation Design (V8) - DGN_V8 - .dgn</li></ul></p><p>The list of short names supported includes DGN_V8, DWG_R14, DWG_R2000, DWG_R2004, DWG_R2005, DWG_R2007, DWG_R2010, DXF_R14, DXF_R2000, DXF_R2004, DXF_R2005, DXF_R2007, and DXF_R2010.</p></xdoc>",
+        "feature_format.domain.File Geodatabase - GDB - .gdb": "File Geodatabase - GDB - .gdb",
+        "feature_format.domain.Shapefile - SHP - .shp": "Shapefile - SHP - .shp",
+        "feature_format.title": "Feature Format",
+        "layers_to_clip.descr": "The layers to be clipped. Layers must be feature or raster; layer files are not supported.",
+        "layers_to_clip.title": "Layers to Clip",
+        "raster_format.descr": "<xdoc><p>Specifies the format of the output raster datasets. The format should be specified as follows:<ul><li>Name of format - Short Name - extension (if any)</li></ul></p><p>The hyphens are required and there must be one space before and after the hyphen.</p><p>For example:<ul><li>Esri GRID - GRID</li><li>File Geodatabase - GDB - .gdb</li><li>ERDAS IMAGINE - IMG - .img</li><li>Tagged Image File Format - TIFF - .tif</li><li>Portable Network Graphics - PNG - .png</li><li>Graphic Interchange Format - GIF - .gif</li><li>Joint Photographics Experts Group - JPEG - .jpg</li><li>Joint Photographics Experts Group - JPEG - .jp2</li><li>Bitmap - BMP - .bmp</li></ul></p><p>Some of the above raster formats have limitations and not all data can be converted to the format.</p></xdoc>",
+        "raster_format.domain.Bitmap - BMP - .bmp": "Bitmap - BMP - .bmp",
+        "raster_format.domain.ERDAS IMAGINE - IMG - .img": "ERDAS IMAGINE - IMG - .img",
+        "raster_format.domain.ESRI GRID - GRID": "ESRI GRID - GRID",
+        "raster_format.domain.File Geodatabase - GDB - .gdb": "File Geodatabase - GDB - .gdb",
+        "raster_format.domain.Graphic Interchange Format - GIF - .gif": "Graphic Interchange Format - GIF - .gif",
+        "raster_format.domain.Joint Photographics Experts Group - JPEG - .jpg": "Joint Photographics Experts Group - JPEG - .jpg",
+        "raster_format.domain.Joint Photographics Experts Group - JPEG 2000 - .jp2": "Joint Photographics Experts Group - JPEG 2000 - .jp2",
+        "raster_format.domain.Portable Network Graphics - PNG - .png": "Portable Network Graphics - PNG - .png",
+        "raster_format.domain.Tagged Image File Format - TIFF - .tif": "Tagged Image File Format - TIFF - .tif",
+        "raster_format.title": "Raster Format",
+        "sent.title": "Send Email Succeeded",
+        "summary": "<xdoc><p>Extracts the data in the specified layers and area of interest to the selected format and spatial reference, zips the data, and emails it to the specified address. This tool can be used to create a Data Extraction geoprocessing service.</p><note type=\"caution\"/><p group=\"note\">This tool is intended primarily for use as a part of a geoprocessing service. When using this tool as a part of a geoprocessing service, copy the tool into a custom toolbox, edit the model, and reconfigure it as necessary. It is important to note that this tool will not work unless you open and edit the model (as described below) before publishing the model as a service.</p></xdoc>",
+        "title": "Extract Data and Email Task",
+        "to.descr": "<xdoc><p>The email address of the recipient.</p><note type=\"caution\"/><p group=\"note\">This tool will be able to email to this address if and only if the SMTP server has been configured within this model.</p></xdoc>",
+        "to.title": "To"
+    }
+}

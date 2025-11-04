@@ -1,0 +1,30 @@
+{
+    "version": "1.0",
+    "alias": "ca",
+    "displayname": "$rc:title",
+    "description": "$rc:descr",
+    "helpcontext": "75000000",
+    "toolsets": {
+        "<root>": {
+            "tools": [
+                "AddDateAttributes",
+                "EightyTwentyAnalysis",
+                "FeatureTo3DByTime",
+                "FindSpaceTimeMatches",
+                "JoinAttributesFromPolygon",
+                "SelectLayerByDateAndTime",
+                "SummarizeIncidentCount",
+                "SummarizePercentChange",
+                "UpdateFeaturesWithIncidentRecords"
+            ]
+        },
+        "$rc:toolset1.name": {
+            "tools": [
+                "CellPhoneRecordsToFeatureClass",
+                "CellSiteRecordsToFeatureClass",
+                "GenerateCallLinks",
+                "GenerateSectorLines"
+            ]
+        }
+    }
+}

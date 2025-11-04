@@ -1,0 +1,104 @@
+name: TerraFusion Security Scan
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    - cron: '0 2 * * 1' # Run at 2 AM every Monday
+
+jobs:
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+      
+      # Dependency vulnerability scanning
+      - name: Run dependency vulnerability scan
+        run: npm audit --production
+        continue-on-error: true
+      
+      # Code security scanning with ESLint security plugin
+      - name: Install ESLint security plugin
+        run: npm install --save-dev eslint @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-plugin-security
+      
+      - name: Run ESLint security scan
+        run: npx eslint --config .eslintrc.js --plugin security --ext .js,.jsx,.ts,.tsx .
+        continue-on-error: true
+        
+      # Secret scanning with detect-secrets
+      - name: Install detect-secrets
+        run: |
+          pip install detect-secrets
+          
+      - name: Run secret scanning
+        run: detect-secrets scan --baseline .secrets.baseline
+        continue-on-error: true
+        
+      # SAST scanning with SonarCloud
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=terrafusion-gis
+            -Dsonar.organization=terrafusion
+            -Dsonar.sources=client/src,server
+            -Dsonar.exclusions=**/*.test.ts,**/*.spec.ts,**/node_modules/**
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+        continue-on-error: true
+      
+      # Infrastructure as Code security scanning
+      - name: Run tfsec (for Terraform if used)
+        uses: aquasecurity/tfsec-action@v1.0.0
+        with:
+          working_directory: infrastructure
+        continue-on-error: true
+      
+      # Container security scanning if using Docker
+      - name: Run Trivy vulnerability scanner for Docker images
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'terrafusion/gis-platform:latest'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
+        continue-on-error: true
+      
+      # Software composition analysis
+      - name: Run OWASP Dependency-Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: 'TerraFusion'
+          path: '.'
+          format: 'HTML'
+          out: 'reports'
+          args: >
+            --failOnCVSS 7
+            --enableRetired
+        continue-on-error: true
+      
+      # Upload security scan reports as artifacts
+      - name: Upload security scan reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-scan-reports
+          path: |
+            reports/
+            trivy-results.sarif

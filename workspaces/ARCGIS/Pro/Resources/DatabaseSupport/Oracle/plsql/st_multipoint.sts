@@ -1,0 +1,11 @@
+/* $Id: st_multipoint.sts,v 1.5.1.0, 2008-03-10 23:15:48Z, Kevin Watt$ 
+$NoKeywords$ */ 
+CREATE OR REPLACE Type &1..st_multipoint 
+        OID 'A618FA8DD1D84E13B35784E171530107' 
+        under &1..st_geomcollection 
+        --C_Type_Release 1001
+(
+  constructor Function st_multipoint(geom_str clob,srid number) Return self AS result deterministic,
+  static Function get_release Return number
+);
+/

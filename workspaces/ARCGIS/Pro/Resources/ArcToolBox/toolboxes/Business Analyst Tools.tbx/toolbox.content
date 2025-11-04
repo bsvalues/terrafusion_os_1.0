@@ -1,0 +1,83 @@
+{
+    "version": "1.0",
+    "alias": "ba",
+    "displayname": "$rc:title",
+    "description": "$rc:descr",
+    "helpcontext": "62000000",
+    "toolsets": {
+        "$rc:toolset4.name": {
+            "tools": [
+                "CalculateMarketPenetration",
+                "ColorCodedLayer",
+                "DesireLines",
+                "EnrichLayer",
+                "FindNearbyLocations",
+                "GenerateGridsAndHexagons",
+                "GeneratePointsFromBusinessListings"
+            ]
+        },
+        "$rc:toolset6.name": {
+            "tools": [
+                "HuffModel",
+                "HuffModelCalibration"
+            ]
+        },
+        "$rc:toolset7.name": {
+            "tools": [
+                "ImportBusinessAnalystReportTemplate",
+                "SummaryReports"
+            ]
+        },
+        "$rc:toolset5.name": {
+            "tools": [
+                "GenerateSDCXIndex"
+            ]
+        },
+        "$rc:toolset1.name": {
+            "tools": [
+                "AddFieldBasedSuitabilityCriteria",
+                "AddPointLayerBasedSuitabilityCriteria",
+                "AddVariableBasedSuitabilityCriteria",
+                "CalculateSuitabilityScore",
+                "MakeSuitabilityAnalysisLayer",
+                "RemoveSuitabilityCriteria",
+                "SetCriteriaProperties",
+                "SetTargetSite"
+            ]
+        },
+        "$rc:toolset2.name": {
+            "tools": [
+                "AnalyzeMarketAreaGap",
+                "AnalyzeMarketPotential",
+                "CreateTargetGroup",
+                "ExportSegmentationProfile",
+                "GenerateCustomerProfile",
+                "GenerateMarketAreaProfile",
+                "GenerateSegmentationProfileReport",
+                "GenerateSurveyReportForProfile",
+                "GenerateSurveyReportForTargets",
+                "GenerateTargetGroupLayer",
+                "GenerateTargetLayer",
+                "GenerateTargetPenetrationLayer",
+                "ImportSegmentationProfile",
+                "ImportSurveyProfiles"
+            ]
+        },
+        "$rc:toolset3.name": {
+            "tools": [
+                "AssignCustomersByDistance",
+                "CustomerDerivedTA",
+                "GenerateApproximateDriveTimes",
+                "GenerateDriveTimeTradeArea",
+                "GenerateGeographiesFromOverlay",
+                "GenerateThresholdDriveTimeTradeArea",
+                "GenerateThresholdRingTradeArea",
+                "GenerateTradeAreaRings",
+                "MeasureCannibalization",
+                "RemoveOverlap",
+                "RemoveOverlapMultiple",
+                "StandardGeographyTA"
+            ]
+        }
+    }
+}

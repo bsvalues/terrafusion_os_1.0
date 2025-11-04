@@ -1,0 +1,31 @@
+{
+    "set": [
+        "area",
+        "bearing",
+        "calculate",
+        "calculator",
+        "centroid",
+        "coordinates",
+        "count",
+        "curves",
+        "end",
+        "geodesic",
+        "geometry",
+        "holes",
+        "inside",
+        "length",
+        "m",
+        "measurement",
+        "mid",
+        "midpoint",
+        "part",
+        "perimeter",
+        "point",
+        "shape",
+        "start",
+        "x",
+        "xy",
+        "y",
+        "z"
+    ]
+}

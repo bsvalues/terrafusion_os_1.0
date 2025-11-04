@@ -1,0 +1,17 @@
+{
+    "map": {
+        "description": "Orthorectifies the input synthetic aperture radar (SAR) data using a range-Doppler backgeocoding algorithm.",
+        "geoid.descr": "<xdoc><p>Specifies whether the vertical reference system of the input DEM will be transformed to ellipsoidal height. Most elevation datasets are referenced to sea level orthometric height, so a correction is required in these cases to convert to ellipsoidal height.<ul><li>Checked—A geoid correction will be made to convert orthometric height to ellipsoidal height (based on EGM96 geoid). This is the default.</li><li>Unchecked—No geoid correction will be made. Use this option only if the DEM is provided in ellipsoidal height.</li></ul></p></xdoc>",
+        "geoid.title": "Apply geoid correction",
+        "in_dem_raster.descr": "<xdoc><p>The input DEM.</p><p>If no DEM is specified or in areas that are not covered by a specified DEM, an approximated DEM, interpolated from metadata tie points, will be created.</p><p>Use the tie-point approach for full ocean radar scenes only; specify a DEM whenever land features are included in the radar scene.</p></xdoc>",
+        "in_dem_raster.title": "DEM Raster",
+        "in_radar_data.descr": "The input radar data.",
+        "in_radar_data.title": "Input Radar  Data",
+        "out_radar_data.descr": "The corrected geometric terrain radar data.",
+        "out_radar_data.title": "Output Radar Data",
+        "polarization_bands.descr": "<xdoc><p>The polarization bands that will be corrected.</p><p>The first band is selected by default.</p></xdoc>",
+        "polarization_bands.title": "Polarization Bands",
+        "summary": "<xdoc><p>Orthorectifies the input synthetic aperture radar (SAR) data using a range-Doppler backgeocoding algorithm.</p><p>The range-Doppler backgeocoding approach computes the radar range and azimuth indices for every DEM grid point using the orbit state vectors. If no DEM is provided, the tool uses the tie points included in the metadata to perform the range-Doppler terrain correction.</p></xdoc>",
+        "title": "Apply Geometric Terrain Correction"
+    }
+}

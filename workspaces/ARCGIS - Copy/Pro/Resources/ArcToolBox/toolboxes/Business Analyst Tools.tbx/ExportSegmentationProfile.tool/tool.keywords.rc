@@ -1,0 +1,14 @@
+{
+    "set": [
+        "base",
+        "customer",
+        "milton",
+        "potential",
+        "profiles",
+        "segment",
+        "segmentation",
+        "table",
+        "tapestry",
+        "target"
+    ]
+}

@@ -1,0 +1,5 @@
+<DataType Name="GPSACellSize">
+  <DisplayName>Cell Size</DisplayName>
+  <Description>The cell size used by the ArcGIS Spatial Analyst extension.</Description>
+</DataType>
+

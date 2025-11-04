@@ -1,0 +1,81 @@
+{
+    "type": "FunctionTool",
+    "guid": "{d11e0f7e-98d8-42f2-94cf-1e6fc6b02652}",
+    "displayname": "$rc:title",
+    "helpcontent": "3320001",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "block_add_to_map"
+    ],
+    "params": {
+        "in_dataset": {
+            "displayname": "$rc:in_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DETable"
+                    },
+                    {
+                        "type": "DEFeatureClass"
+                    },
+                    {
+                        "type": "DEFeatureDataset"
+                    }
+                ]
+            },
+            "description": "$rc:in_dataset.descr"
+        },
+        "preserve_history": {
+            "type": "optional",
+            "displayname": "$rc:preserve_history.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "PRESERVE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DELETE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:preserve_history.descr"
+        },
+        "out_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DETable"
+                    },
+                    {
+                        "type": "DEFeatureClass"
+                    },
+                    {
+                        "type": "DEFeatureDataset"
+                    }
+                ]
+            },
+            "depends": [
+                "in_dataset"
+            ],
+            "addtomap": "false"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

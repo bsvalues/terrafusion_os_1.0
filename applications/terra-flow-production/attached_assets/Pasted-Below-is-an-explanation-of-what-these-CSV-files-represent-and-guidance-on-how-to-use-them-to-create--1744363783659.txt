@@ -1,0 +1,87 @@
+Below is an explanation of what these CSV files represent and guidance on how to use them to create or verify the mirror for pacs_training based on the production pacs_oltp setup.
+
+---
+
+## **Understanding the CSV Files**
+
+The files you’ve provided appear to be exports of various database metadata objects from your production pacs_oltp environment:
+
+- **foreign keys.csv / sys.foreign_keys.csv:**  
+  These files list the foreign key relationships defined in pacs_oltp. They include information about which tables reference which other tables via foreign keys.
+
+- **INFORMATION_SCHEMA.VIEWS.csv:**  
+  This file contains information about the views defined in your database, such as their names, definitions, and schema details.
+
+- **ProcedureName.csv:**  
+  Likely a list of stored procedures (and possibly functions) that are part of pacs_oltp. This may include names, definitions, and possibly parameters.
+
+- **sys tables.csv:**  
+  This file gives you details about the system tables in your production database—essentially listing the user-defined tables along with relevant metadata.
+
+- **sys.indexes.csv:**  
+  Contains information about the indexes defined on tables in pacs_oltp, including which indexes exist on which tables and the index properties.
+
+---
+
+## **Goal: Creating a Mirror in pacs_training**
+
+Since pacs_training is your backup/mirror database, the objective is to ensure that its structure matches that of pacs_oltp. Essentially, for every database object (tables, views, stored procedures, indexes, foreign keys, etc.) in pacs_oltp, you want to have an equivalent object in pacs_training.
+
+### **Steps to Achieve This:**
+
+1. **Review the Production Schema:**
+   - Use the CSV files as reference documentation. They tell you which tables, views, stored procedures, indexes, and foreign key relationships exist in pacs_oltp.
+   - Open these CSV files in Excel or any CSV viewer to examine the structure and relationships.
+
+2. **Generate Scripts from Production:**
+   - In SSMS, you can generate the complete schema from pacs_oltp using the "Generate Scripts" wizard. This will include scripts for tables, indexes, foreign keys, views, and stored procedures.
+   - Export the generated SQL scripts. Then, manually or using a script, replace occurrences of `pacs_oltp` with `pacs_training` in the scripts. This ensures that the backup schema matches the production schema but uses the pacs_training namespace.
+
+3. **Apply Schema to pacs_training:**
+   - Run the modified SQL scripts in pacs_training (using SSMS) to create or update the schema objects accordingly.
+   - Verify that all tables, views, procedures, indexes, and foreign key constraints are in place.
+
+4. **Validation:**
+   - Compare the metadata between pacs_oltp and pacs_training:
+     - You can query the `INFORMATION_SCHEMA.TABLES`, `INFORMATION_SCHEMA.COLUMNS`, and `INFORMATION_SCHEMA.VIEWS` in both databases to ensure consistency.
+     - Use the sys.* views (e.g., `sys.foreign_keys`, `sys.indexes`) to check that all relationships and indexes have been correctly replicated.
+   - Leverage your CSV exports to cross-reference the objects in pacs_training.
+
+5. **Automation (Optional):**
+   - Consider developing a script that automates the detection of schema differences between pacs_oltp and pacs_training. Tools such as Redgate SQL Compare can assist with this—but if you prefer open source, you can write custom T-SQL scripts or use PowerShell to compare schemas.
+   - Integrate these checks into your CI/CD pipeline so that any schema drift can be flagged and corrected.
+
+---
+
+## **Key Considerations:**
+
+- **Manual vs. Automated:**
+  - **Manual Approach:**  
+    You can manually generate and modify scripts from SSMS to replicate your production schema in pacs_training.
+  - **Automated Tools:**  
+    Tools like Redgate SQL Compare or open-source alternatives can automate schema comparison and synchronization.
+  
+- **Testing the Mirror:**
+  - After applying the scripts to pacs_training, run queries against both environments to ensure that table structures, constraints, and indexes are identical.
+  - Validate that your Data Quality Agent and other applications perform as expected using pacs_training as the data source.
+
+- **Documentation & Backup:**
+  - Keep detailed records of the schema transformation process.
+  - Document any schema differences and the steps taken to align pacs_training with pacs_oltp.
+
+---
+
+## **Summary**
+
+- **CSV File Usage:**  
+  The CSV files provide a detailed snapshot of the pacs_oltp schema, covering foreign keys, views, stored procedures, tables, and indexes.
+- **Objective:**  
+  Use this metadata to generate or adjust your schema scripts, substituting `pacs_oltp` with `pacs_training` to create a mirror environment.
+- **Next Steps:**  
+  1. Generate schema scripts from pacs_oltp using SSMS.
+  2. Modify the scripts to use the pacs_training schema.
+  3. Apply the scripts in SSMS to pacs_training.
+  4. Validate the mirror using metadata queries and compare against your CSV references.
+  5. Optionally, automate schema comparisons for ongoing maintenance.
+
+Would you like further details on any of these steps, such as guidance on using the Generate Scripts wizard in SSMS or automating schema comparisons, or do you have other specific questions about integrating the schema?

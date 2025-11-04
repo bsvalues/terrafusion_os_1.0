@@ -1,0 +1,8 @@
+{
+    "map": {
+        "descr": "Ready To Use tools are ArcGIS Online geoprocessing services that use the hosted data and analysis capabilities of ArcGIS Online. All you need to provide are input features; all the other data necessary for the analysis and the computation is hosted in ArcGIS Online.",
+        "title": "Ready To Use Tools",
+        "toolset1.name": "Elevation",
+        "toolset2.name": "Hydrology"
+    }
+}

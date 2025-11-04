@@ -1,0 +1,15 @@
+{
+    "map": {
+        "description": "Add a set starting point by attribute rule to a diagram template",
+        "description.title": "Description",
+        "in_utility_network.title": "Input Network",
+        "is_active.title": "Active",
+        "junction_terminals.title": "Junction Terminal(s)",
+        "network_source.title": "Network Source",
+        "out_template_name.title": "Output Diagram Template",
+        "out_utility_network.title": "Output Network",
+        "template_name.title": "Input Diagram Template",
+        "title": "Add Set Starting Point By Attribute Rule",
+        "where_clause.title": "Expression"
+    }
+}

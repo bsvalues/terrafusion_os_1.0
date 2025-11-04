@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion SVG Icon System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0e1a 0%, #0d1117 100%);
+            color: #f1f5f9;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            font-weight: 200;
+            background: linear-gradient(135deg, #00ffff, #0080ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+        
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 3rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.9rem;
+        }
+        
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+        
+        .icon-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .icon-card:hover {
+            transform: translateY(-4px);
+            border-color: #00ffff;
+            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.2);
+        }
+        
+        .icon-container {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+        
+        .icon-name {
+            color: #00ffff;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .icon-size {
+            color: #64748b;
+            font-size: 0.8rem;
+        }
+        
+        .section {
+            margin-bottom: 4rem;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            color: #00ffff;
+            margin-bottom: 1rem;
+            font-weight: 300;
+        }
+        
+        .download-btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #00ffff, #0080ff);
+            color: #0a0e1a;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.3);
+        }
+        
+        .code-block {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+        
+        /* Hidden SVG definitions */
+        svg.hidden {
+            position: absolute;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <!-- SVG Definitions (Hidden) -->
+    <svg class="hidden" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <!-- Gradient Definitions -->
+            <linearGradient id="terraGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#00ffff;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#0080ff;stop-opacity:1" />
+            </linearGradient>
+            
+            <radialGradient id="terraGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" style="stop-color:#00ffff;stop-opacity:0.8" />
+                <stop offset="100%" style="stop-color:#00ffff;stop-opacity:0" />
+            </radialGradient>
+        </defs>
+    </svg>
+
+    <div class="container">
+        <h1>TerraFusion Icon System</h1>
+        <p class="subtitle">Complete SVG Icon Library for All Applications</p>
+
+        <!-- Primary Icons -->
+        <section class="section">
+            <h2 class="section-title">Primary Icons</h2>
+            <div class="icon-grid">
+                
+                <!-- TerraSphere Full -->
+                <div class="icon-card">
+                    <div class="icon-container">
+                        <svg width="80" height="80" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Outer Sphere Grid -->
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="#00ffff" stroke-width="0.5" opacity="0.3"/>
+                            <ellipse cx="50" cy="50" rx="45" ry="20" fill="none" stroke="#00ffff" stroke-width="0.5" opacity="0.3"/>
+                            <ellipse cx="50" cy="50" rx="45" ry="20" fill="none" stroke="#00ffff" stroke-width="0.5" opacity="0.3" transform="rotate(30 50 50)"/>
+                            <ellipse cx="50" cy="50" rx="45" ry="20" fill="none" stroke="#00ffff" stroke-width="0.5" opacity="0.3" transform="rotate(60 50 50)"/>
+                            <ellipse cx="50" cy="50" rx="45" ry="20" fill="none" stroke="#00ffff" stroke-width="0.5" opacity="0.3" transform="rotate(90 50 50)"/>
+                            <ellipse cx="50" cy="50" rx="45" ry="20" fill="none" stroke="#00ffff" stroke-width="0.5" opacity="0.3" transform="rotate(120 50 50)"/>
+                            <ellipse cx="50" cy="50" rx="45" ry="20" fill="none" stroke="#00ffff" stroke-width="0.5" opacity="0.3" transform="rotate(150 50 50)"/>
+                            
+                            <!-- Vertical lines -->
+                            <ellipse cx="50" cy="50" rx="20" ry="45" fill="none" stroke="#00ffff" stroke-width="0.5" opacity="0.3"/>
+                            <ellipse cx="50" cy="50" rx="20" ry="45" fill="none" stroke="#00ffff" stroke-width="0.5" opacity="0.3" transform="rotate(30 50 50)"/>
+                            <ellipse cx="50" cy="50" rx="20" ry="45" fill="none" stroke="#00ffff" stroke-width="0.5" opacity="0.3" transform="rotate(60 50 50)"/>
+                            
+                            <!-- Core Vortex -->
+                            <g transform="translate(50, 50)">
+                                <path d="M 0,-20 Q 10,-10 10,0 T 0,20 T -20,0 T 0,-20" 
+                                      fill="none" stroke="#00ffff" stroke-width="2" opacity="0.8">
+                                    <animateTransform attributeName="transform" type="rotate" 
+                                                      from="0" to="360" dur="10s" repeatCount="indefinite"/>
+                                </path>
+                                <circle r="15" fill="url(#terraGlow)"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="icon-name">TerraSphere Full</div>
+                    <div class="icon-size">100x100</div>
+                </div>
+
+                <!-- TF Monogram -->
+                <div class="icon-card">
+                    <div class="icon-container">
+                        <svg width="80" height="80" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="10" y="10" width="80" height="80" rx="12" fill="none" stroke="#00ffff" stroke-width="1" opacity="0.3"/>
+                            <rect x="10" y="10" width="80" height="80" rx="12" fill="rgba(0,255,255,0.05)"/>
+                            
+                            <!-- TF Monogram -->
+                            <g transform="translate(50, 50)">
+                                <!-- T -->
+                                <path d="M -20,-20 L 0,-20 M -10,-20 L -10,0" 
+                                      stroke="url(#terraGradient)" stroke-width="3" fill="none" stroke-linecap="round"/>
+                                <!-- F -->
+                                <path d="M 5,-20 L 5,20 M 5,-20 L 20,-20 M 5,0 L 15,0" 
+                                      stroke="url(#terraGradient)" stroke-width="3" fill="none" stroke-linecap="round"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="icon-name">TF Monogram</div>
+                    <div class="icon-size">100x100</div>
+                </div>
+
+                <!-- TF Badge -->
+                <div class="icon-card">
+                    <div class="icon-container">
+                        <svg width="80" height="80" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="50" r="40" fill="none" stroke="#00ffff" stroke-width="1.5"/>
+                            <circle cx="50" cy="50" r="35" fill="none" stroke="#00ffff" stroke-width="0.5" opacity="0.5"/>
+                            
+                            <!-- Text around circle -->
+                            <path id="textCircle" d="M 50,15 A 35,35 0 1,1 49.9,15" fill="none"/>
+                            <text font-size="8" fill="#00ffff" opacity="0.7" font-family="monospace" letter-spacing="3">
+                                <textPath href="#textCircle">TERRAFUSION • TERRAFUSION •</textPath>
+                            </text>
+                            
+                            <!-- TF Center -->
+                            <g transform="translate(50, 50)">
+                                <path d="M -12,-12 L 0,-12 M -6,-12 L -6,8" 
+                                      stroke="#00ffff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                                <path d="M 3,-12 L 3,12 M 3,-12 L 12,-12 M 3,0 L 10,0" 
+                                      stroke="#00ffff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="icon-name">TF Badge</div>
+                    <div class="icon-size">100x100</div>
+                </div>
+
+                <!-- TF Minimal -->
+                <div class="icon-card">
+                    <div class="icon-container">
+                        <svg width="80" height="80" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <g transform="translate(50, 50)">
+                                <!-- Simplified TF -->
+                                <path d="M -20,-25 L 5,-25 M -7.5,-25 L -7.5,25" 
+                                      stroke="#00ffff" stroke-width="4" fill="none" stroke-linecap="round"/>
+                                <path d="M 10,-25 L 10,25 M 10,-25 L 25,-25 M 10,0 L 22,0" 
+                                      stroke="#00ffff" stroke-width="4" fill="none" stroke-linecap="round"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="icon-name">TF Minimal</div>
+                    <div class="icon-size">100x100</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Favicon Variants -->
+        <section class="section">
+            <h2 class="section-title">Favicon Variants</h2>
+            <div class="icon-grid">
+                
+                <!-- 16x16 Favicon -->
+                <div class="icon-card">
+                    <div class="icon-container">
+                        <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="16" height="16" fill="#0a0e1a"/>
+                            <circle cx="8" cy="8" r="7" fill="none" stroke="#00ffff" stroke-width="0.5"/>
+                            <path d="M 4,5 L 8,5 M 6,5 L 6,11 M 9,5 L 9,11 M 9,5 L 12,5 M 9,8 L 11,8" 
+                                  stroke="#00ffff" stroke-width="1" fill="none"/>
+                        </svg>
+                    </div>
+                    <div class="icon-name">Favicon 16x16</div>
+                    <div class="icon-size">16x16</div>
+                </div>
+
+                <!-- 32x32 Favicon -->
+                <div class="icon-card">
+                    <div class="icon-container">
+                        <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="32" height="32" fill="#0a0e1a"/>
+                            <circle cx="16" cy="16" r="14" fill="none" stroke="#00ffff" stroke-width="1"/>
+                            <path d="M 8,10 L 16,10 M 12,10 L 12,22 M 18,10 L 18,22 M 18,10 L 24,10 M 18,16 L 22,16" 
+                                  stroke="#00ffff" stroke-width="2" fill="none" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="icon-name">Favicon 32x32</div>
+                    <div class="icon-size">32x32</div>
+                </div>
+
+                <!-- 64x64 Favicon -->
+                <div class="icon-card">
+                    <div class="icon-container">
+                        <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="64" height="64" rx="8" fill="#0a0e1a"/>
+                            <rect x="8" y="8" width="48" height="48" rx="6" fill="none" stroke="#00ffff" stroke-width="1" opacity="0.5"/>
+                            <g transform="translate(32, 32)">
+                                <path d="M -12,-12 L 0,-12 M -6,-12 L -6,12" 
+                                      stroke="#00ffff" stroke-width="3" fill="none" stroke-linecap="round"/>
+                                <path d="M 4,-12 L 4,12 M 4,-12 L 12,-12 M 4,0 L 10,0" 
+                                      stroke="#00ffff" stroke-width="3" fill="none" stroke-linecap="round"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="icon-name">Favicon 64x64</div>
+                    <div class="icon-size">64x64</div>
+                </div>
+
+                <!-- 180x180 Apple Touch -->
+                <div class="icon-card">
+                    <div class="icon-container">
+                        <svg width="80" height="80" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="180" height="180" rx="20" fill="#0a0e1a"/>
+                            <rect x="20" y="20" width="140" height="140" rx="15" fill="none" stroke="#00ffff" stroke-width="2" opacity="0.3"/>
+                            <g transform="translate(90, 90)">
+                                <circle r="60" fill="none" stroke="#00ffff" stroke-width="1" opacity="0.2"/>
+                                <circle r="50" fill="none" stroke="#00ffff" stroke-width="1" opacity="0.3"/>
+                                <path d="M -30,-30 L 0,-30 M -15,-30 L -15,30" 
+                                      stroke="url(#terraGradient)" stroke-width="6" fill="none" stroke-linecap="round"/>
+                                <path d="M 10,-30 L 10,30 M 10,-30 L 30,-30 M 10,0 L 25,0" 
+                                      stroke="url(#terraGradient)" stroke-width="6" fill="none" stroke-linecap="round"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="icon-name">Apple Touch Icon</div>
+                    <div class="icon-size">180x180</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- UI Component Icons -->
+        <section class="section">
+            <h2 class="section-title">UI Component Icons</h2>
+            <div class="icon-grid">
+                
+                <!-- Button Icon -->
+                <div class="icon-card">
+                    <div class="icon-container">
+                        <svg width="80" height="40" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="2" y="2" width="116" height="56" rx="28" fill="none" stroke="#00ffff" stroke-width="2"/>
+                            <rect x="2" y="2" width="116" height="56" rx="28" fill="rgba(0,255,255,0.1)"/>
+                            <g transform="translate(30, 30)">
+                                <path d="M -8,-8 L 0,-8 M -4,-8 L -4,8" 
+                                      stroke="#00ffff" stroke-width="2" fill="none" stroke-linecap="round"/>
+                                <path d="M 4,-8 L 4,8 M 4,-8 L 10,-8 M 4,0 L 8,0" 
+                                      stroke="#00ffff" stroke-width="2" fill="none" stroke-linecap="round"/>
+                            </g>
+                            <text x="60" y="35" font-family="monospace" font-size="10" fill="#00ffff">FUSION</text>
+                        </svg>
+                    </div>
+                    <div class="icon-name">Button Icon</div>
+                    <div class="icon-size">120x60</div>
+                </div>
+
+                <!-- Link Icon -->
+                <div class="icon-card">
+                    <div class="icon-container">
+                        <svg width="80" height="80" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <g stroke="#00ffff" stroke-width="2" fill="none" stroke-linecap="round">
+                                <path d="M 4,6 L 10,6 M 7,6 L 7,14"/>
+                                <path d="M 12,6 L 12,14 M 12,6 L 17,6 M 12,10 L 16,10"/>
+                                <path d="M 3,18 L 21,18" opacity="0.3"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="icon-name">Link Icon</div>
+                    <div class="icon-size">24x24</div>
+                </div>
+
+                <!-- Loading Spinner -->
+                <div class="icon-card">
+                    <div class="icon-container">
+                        <svg width="80" height="80" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <g transform="translate(50, 50)">
+                                <circle r="40" fill="none" stroke="#00ffff" stroke-width="2" opacity="0.2"/>
+                                <circle r="40" fill="none" stroke="#00ffff" stroke-width="2" 
+                                        stroke-dasharray="62.8 188.4" stroke-linecap="round">
+                                    <animateTransform attributeName="transform" type="rotate" 
+                                                      from="0" to="360" dur="1.5s" repeatCount="indefinite"/>
+                                </circle>
+                                <path d="M -8,-8 L 0,-8 M -4,-8 L -4,8 M 4,-8 L 4,8 M 4,-8 L 12,-8 M 4,0 L 10,0" 
+                                      stroke="#00ffff" stroke-width="1.5" fill="none" opacity="0.8"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="icon-name">Loading Spinner</div>
+                    <div class="icon-size">100x100</div>
+                </div>
+
+                <!-- Notification Icon -->
+                <div class="icon-card">
+                    <div class="icon-container">
+                        <svg width="80" height="80" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="20" y="20" width="60" height="60" rx="12" fill="rgba(0,255,255,0.1)" stroke="#00ffff" stroke-width="2"/>
+                            <circle cx="75" cy="25" r="8" fill="#ff4444">
+                                <animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite"/>
+                            </circle>
+                            <g transform="translate(50, 50)">
+                                <path d="M -10,-10 L 2,-10 M -4,-10 L -4,10 M 4,-10 L 4,10 M 4,-10 L 14,-10 M 4,0 L 12,0" 
+                                      stroke="#00ffff" stroke-width="2" fill="none"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="icon-name">Notification Badge</div>
+                    <div class="icon-size">100x100</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Social Media Icons -->
+        <section class="section">
+            <h2 class="section-title">Social Media Icons</h2>
+            <div class="icon-grid">
+                
+                <!-- Square Social -->
+                <div class="icon-card">
+                    <div class="icon-container">
+                        <svg width="80" height="80" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="400" height="400" fill="#0a0e1a"/>
+                            <rect x="50" y="50" width="300" height="300" rx="40" fill="none" stroke="#00ffff" stroke-width="4"/>
+                            <g transform="translate(200, 200)">
+                                <circle r="100" fill="none" stroke="#00ffff" stroke-width="2" opacity="0.3"/>
+                                <path d="M -50,-50 L 0,-50 M -25,-50 L -25,50" 
+                                      stroke="url(#terraGradient)" stroke-width="12" fill="none" stroke-linecap="round"/>
+                                <path d="M 20,-50 L 20,50 M 20,-50 L 50,-50 M 20,0 L 45,0" 
+                                      stroke="url(#terraGradient)" stroke-width="12" fill="none" stroke-linecap="round"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="icon-name">Social Square</div>
+                    <div class="icon-size">400x400</div>
+                </div>
+
+                <!-- Circle Social -->
+                <div class="icon-card">
+                    <div class="icon-container">
+                        <svg width="80" height="80" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="200" cy="200" r="190" fill="#0a0e1a"/>
+                            <circle cx="200" cy="200" r="180" fill="none" stroke="#00ffff" stroke-width="4"/>
+                            <g transform="translate(200, 200)">
+                                <path d="M -60,-60 L 0,-60 M -30,-60 L -30,60" 
+                                      stroke="#00ffff" stroke-width="16" fill="none" stroke-linecap="round"/>
+                                <path d="M 25,-60 L 25,60 M 25,-60 L 60,-60 M 25,0 L 55,0" 
+                                      stroke="#00ffff" stroke-width="16" fill="none" stroke-linecap="round"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="icon-name">Social Circle</div>
+                    <div class="icon-size">400x400</div>
+                </div>
+
+                <!-- Banner Icon -->
+                <div class="icon-card">
+                    <div class="icon-container">
+                        <svg width="80" height="40" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="1200" height="630" fill="#0a0e1a"/>
+                            <rect x="20" y="20" width="1160" height="590" fill="none" stroke="#00ffff" stroke-width="2" opacity="0.3"/>
+                            <g transform="translate(600, 315)">
+                                <circle r="200" fill="none" stroke="#00ffff" stroke-width="2" opacity="0.2"/>
+                                <path d="M -100,-100 L 0,-100 M -50,-100 L -50,100" 
+                                      stroke="url(#terraGradient)" stroke-width="30" fill="none" stroke-linecap="round"/>
+                                <path d="M 40,-100 L 40,100 M 40,-100 L 100,-100 M 40,0 L 90,0" 
+                                      stroke="url(#terraGradient)" stroke-width="30" fill="none" stroke-linecap="round"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="icon-name">Social Banner</div>
+                    <div class="icon-size">1200x630</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Usage Examples -->
+        <section class="section">
+            <h2 class="section-title">Implementation Examples</h2>
+            
+            <div class="code-block">
+                <pre>&lt;!-- HTML Implementation --&gt;
+&lt;link rel="icon" type="image/svg+xml" href="/favicon.svg"&gt;
+&lt;link rel="alternate icon" href="/favicon.ico"&gt;
+&lt;link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.svg"&gt;
+
+&lt;!-- Inline SVG for Buttons --&gt;
+&lt;button class="terra-btn"&gt;
+    &lt;svg width="24" height="24" viewBox="0 0 24 24"&gt;
+        &lt;path d="M 4,6 L 10,6 M 7,6 L 7,14" stroke="currentColor"/&gt;
+        &lt;path d="M 12,6 L 12,14 M 12,6 L 17,6" stroke="currentColor"/&gt;
+    &lt;/svg&gt;
+    TerraFusion
+&lt;/button&gt;
+
+/* CSS Usage */
+.terra-icon {
+    background-image: url('data:image/svg+xml;base64,...');
+    width: 32px;
+    height: 32px;
+}</pre>
+            </div>
+
+            <div class="code-block">
+                <pre>// React Component
+export const TerraIcon = ({ size = 32, variant = 'default' }) =&gt; (
+    &lt;svg width={size} height={size} viewBox="0 0 100 100"&gt;
+        &lt;g stroke="#00ffff" fill="none"&gt;
+            &lt;path d="M 20,30 L 40,30 M 30,30 L 30,70" /&gt;
+            &lt;path d="M 50,30 L 50,70 M 50,30 L 70,30" /&gt;
+        &lt;/g&gt;
+    &lt;/svg&gt;
+);</pre>
+            </div>
+        </section>
+
+        <!-- Download Section -->
+        <section class="section">
+            <h2 class="section-title">Export Formats</h2>
+            <p style="margin-bottom: 1rem;">All icons are available in multiple formats for maximum compatibility:</p>
+            
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <a href="#" class="download-btn" onclick="downloadSVGs(); return false;">Download SVG Pack</a>
+                <a href="#" class="download-btn" onclick="downloadPNGs(); return false;">Download PNG Pack</a>
+                <a href="#" class="download-btn" onclick="downloadICO(); return false;">Download ICO File</a>
+                <a href="#" class="download-btn" onclick="copyToClipboard(); return false;">Copy SVG Code</a>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Download functions
+        function downloadSVGs() {
+            alert('SVG pack would be downloaded here. In production, this would trigger a download of all SVG files.');
+        }
+        
+        function downloadPNGs() {
+            alert('PNG pack would be downloaded here. In production, this would convert SVGs to PNGs and download.');
+        }
+        
+        function downloadICO() {
+            alert('ICO file would be downloaded here. In production, this would generate a multi-resolution ICO file.');
+        }
+        
+        function copyToClipboard() {
+            const svgCode = `<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+    <rect width="32" height="32" fill="#0a0e1a"/>
+    <circle cx="16" cy="16" r="14" fill="none" stroke="#00ffff" stroke-width="1"/>
+    <path d="M 8,10 L 16,10 M 12,10 L 12,22 M 18,10 L 18,22 M 18,10 L 24,10 M 18,16 L 22,16" 
+          stroke="#00ffff" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>`;
+            
+            navigator.clipboard.writeText(svgCode).then(() => {
+                alert('SVG code copied to clipboard!');
+            });
+        }
+        
+        // Animation for hover effects
+        document.querySelectorAll('.icon-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                const svg = this.querySelector('svg');
+                if (svg) {
+                    const animatables = svg.querySelectorAll('circle, path');
+                    animatables.forEach(el => {
+                        if (el.hasAttribute('stroke')) {
+                            el.style.strokeWidth = parseFloat(el.getAttribute('stroke-width') || 1) * 1.2 + '';
+                        }
+                    });
+                }
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                const svg = this.querySelector('svg');
+                if (svg) {
+                    const animatables = svg.querySelectorAll('circle, path');
+                    animatables.forEach(el => {
+                        if (el.hasAttribute('stroke-width')) {
+                            el.style.strokeWidth = el.getAttribute('stroke-width');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

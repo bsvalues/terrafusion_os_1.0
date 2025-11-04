@@ -1,0 +1,24 @@
+{
+    "map": {
+        "createmultipartfeatures.descr": "<xdoc><p>Specifies whether the output polygons will consist of single-part or multipart features.</p><ul><li>Checked— Multipart features will be created based on polygons that have the same value.</li><li>Unchecked— Individual (single-part) features will be created for each polygon. This is the default.</li></ul></xdoc>",
+        "createmultipartfeatures.title": "Create Multipart Features",
+        "description": "Converts a raster to a feature dataset as points, lines, or polygons.",
+        "field.descr": "<xdoc><p>A field that specifies the conversion value.</p><p>It can be any integer or text value.</p><p>A field containing floating-point values can only be used if the output is to a point dataset.</p><p>The default is the <span class=\"esri_fieldname\">Value</span> field, which contains the value in each raster cell.</p></xdoc>",
+        "field.title": "Field",
+        "inputraster.descr": "The input raster layer.",
+        "inputraster.title": "Input Raster Layer",
+        "maxverticesperfeature.descr": "<xdoc><p>The vertex limit used to subdivide a polygon into smaller polygons. This parameter produces similar output as that created by the Dice tool in the Data Management toolbox.</p><p>If left empty, the output polygons will not be split. This is the default.</p><p>This parameter is only supported if <span class=\"esri_uicontrol\">Output Type</span> is <span class=\"esri_uicontrol\">Polygon</span>.</p></xdoc>",
+        "maxverticesperfeature.title": "Maximum Vertices Per Polygon Feature",
+        "outputfeatures.title": "Output Feature",
+        "outputname.descr": "The output feature class that will contain the converted points, lines, or polygons.",
+        "outputname.title": "Output Name",
+        "outputtype.descr": "<xdoc><p>Specifies the output type.</p><ul><li><span title=\"POINT\">Point</span>—The raster will be converted to a point dataset. This is the default.</li><li><span title=\"LINE\">Line</span>—The raster will be converted to a line feature dataset.</li><li><span title=\"POLYGON\">Polygon</span>—The raster will be converted to a polygon feature dataset.</li></ul><p>If the output type is <span class=\"esri_uicontrol\">Line</span> or <span class=\"esri_uicontrol\">Polygon</span>, an additional parameter appears allowing the simplification of lines or polygons.</p></xdoc>",
+        "outputtype.domain.LINE": "Line",
+        "outputtype.domain.POINT": "Point",
+        "outputtype.domain.POLYGON": "Polygon",
+        "outputtype.title": "Output Type",
+        "simplifylinesorpolygons.descr": "<xdoc><p>Specifies whether lines or polygons will be simplified (smoothed). The smoothing is done in such a way that the line contains a minimum number of segments while remaining as close as possible to the original raster cell edges.</p><ul><li>Checked—The line or polygon features will be smoothed to produce a more generalized result. This is the default.</li><li>Unchecked—The line or polygon features will not be smoothed and will follow the cell boundaries of the raster dataset.</li></ul></xdoc>",
+        "simplifylinesorpolygons.title": "Simplify Lines or Polygons",
+        "title": "Convert Raster To Feature"
+    }
+}

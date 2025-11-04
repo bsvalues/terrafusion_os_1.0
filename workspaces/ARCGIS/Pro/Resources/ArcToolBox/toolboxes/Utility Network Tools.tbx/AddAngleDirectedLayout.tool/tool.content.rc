@@ -1,0 +1,17 @@
+{
+    "map": {
+        "are_containers_preserved.title": "Preserve container layout",
+        "description": "Add the angle directed layout to a diagram template",
+        "in_utility_network.title": "Input Network",
+        "is_active.title": "Active",
+        "iterations_number.title": "Number of Iterations",
+        "number_of_directions.domain.EIGHT_DIRECTIONS": "EIGHT_DIRECTIONS",
+        "number_of_directions.domain.FOUR_DIRECTIONS": "FOUR_DIRECTIONS",
+        "number_of_directions.domain.TWELVE_DIRECTIONS": "TWELVE_DIRECTIONS",
+        "number_of_directions.title": "Number of Directions",
+        "out_template_name.title": "Output Diagram Template",
+        "out_utility_network.title": "Output Network",
+        "template_name.title": "Input Diagram Template",
+        "title": "Add Angle Directed Layout"
+    }
+}

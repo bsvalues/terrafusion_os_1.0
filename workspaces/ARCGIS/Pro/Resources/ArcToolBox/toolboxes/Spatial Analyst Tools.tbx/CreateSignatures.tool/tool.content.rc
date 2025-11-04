@@ -1,0 +1,16 @@
+{
+    "map": {
+        "compute_covariance.descr": "<xdoc><p>Specifies whether covariance matrices in addition to the means are calculated.</p><ul><li>Checked—Both the covariance matrices and the means for all classes of the input sample data will be computed. This is the default.</li><li>Unchecked—Only the means for all classes of the input sample data will be calculated.</li></ul></xdoc>",
+        "compute_covariance.title": "Compute covariance matrices",
+        "description": "Creates an ASCII signature file of classes defined by input sample data and a set of raster bands.",
+        "in_raster_bands.descr": "<xdoc><p>The input raster bands for which to create the signatures.</p><p>They can be integer or floating point type.</p></xdoc>",
+        "in_raster_bands.title": "Input raster bands",
+        "in_sample_data.descr": "<xdoc><p>The input delineating the set of class samples.</p><p>The input can be an integer raster or a feature dataset.</p></xdoc>",
+        "in_sample_data.title": "Input raster or feature sample data",
+        "out_signature_file.descr": "<xdoc><p>The output signature file.</p><p>A .gsg extension must be specified.</p></xdoc>",
+        "out_signature_file.title": "Output signature file",
+        "sample_field.descr": "<xdoc><p>Field of the input raster or feature sample data to assign values to the sampled locations (classes).</p><p>Only integer or string fields are valid fields. The specified number or string will be used as the Class name in the output signature file.</p></xdoc>",
+        "sample_field.title": "Sample field",
+        "title": "Create Signatures"
+    }
+}

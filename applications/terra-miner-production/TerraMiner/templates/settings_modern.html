@@ -1,0 +1,691 @@
+{% extends "new_unified_base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block styles %}
+<style>
+    .settings-section {
+        border-left: 4px solid transparent;
+    }
+    .settings-section:hover {
+        border-left-color: #3b82f6;
+    }
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 48px;
+        height: 24px;
+    }
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 24px;
+    }
+    .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    input:checked + .toggle-slider {
+        background-color: #3b82f6;
+    }
+    input:checked + .toggle-slider:before {
+        transform: translateX(24px);
+    }
+    .test-badge {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        background-color: #facc15;
+        color: #78350f;
+        padding: 0.125rem 0.375rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        letter-spacing: 0.025em;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold mb-2">Settings</h1>
+        <p class="text-gray-600 dark:text-gray-300">Configure system behavior and preferences.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Settings Navigation -->
+        <div class="lg:col-span-1">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+                <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-lg font-semibold">Settings Categories</h2>
+                </div>
+                <nav class="p-2">
+                    <a href="#general-settings" class="flex items-center p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        General
+                    </a>
+                    <a href="#api-settings" class="flex items-center p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                        </svg>
+                        API Configuration
+                    </a>
+                    <a href="#scraper-settings" class="flex items-center p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+                        </svg>
+                        Scraper Settings
+                    </a>
+                    <a href="#notification-settings" class="flex items-center p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        Notifications
+                    </a>
+                    <a href="#data-settings" class="flex items-center p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                        </svg>
+                        Data Management
+                    </a>
+                    <a href="#user-settings" class="flex items-center p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        User Preferences
+                    </a>
+                    <a href="#ai-settings" class="flex items-center p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                        AI Configuration
+                    </a>
+                </nav>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow mt-6 p-4">
+                <h3 class="font-medium mb-3">System Information</h3>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-gray-500 dark:text-gray-400">TerraMiner Version:</span>
+                        <span>3.5.2</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500 dark:text-gray-400">Database:</span>
+                        <span>PostgreSQL 14.5</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500 dark:text-gray-400">Last Update:</span>
+                        <span>2025-05-01</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500 dark:text-gray-400">API Version:</span>
+                        <span>2.0</span>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <button class="text-blue-600 dark:text-blue-400 text-sm hover:underline">
+                        Check for Updates
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Settings Content -->
+        <div class="lg:col-span-2">
+            <!-- General Settings -->
+            <div id="general-settings" class="settings-section bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4">General Settings</h2>
+                
+                <div class="space-y-6">
+                    <!-- Application Title -->
+                    <div>
+                        <label for="app-title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Application Title</label>
+                        <input type="text" id="app-title" name="app-title" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" value="{{ config.app_title|default('TerraMiner - Real Estate Analytics') }}">
+                        <p class="mt-1 text-xs text-gray-500">This will appear in browser tabs and the application header.</p>
+                    </div>
+                    
+                    <!-- Color Theme -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Color Theme</label>
+                        <div class="flex space-x-4 mt-2">
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="color-theme" value="light" class="h-4 w-4 text-blue-600 focus:ring-blue-500" {% if config.theme == 'light' %}checked{% endif %}>
+                                <span class="ml-2 text-sm">Light</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="color-theme" value="dark" class="h-4 w-4 text-blue-600 focus:ring-blue-500" {% if config.theme == 'dark' %}checked{% endif %}>
+                                <span class="ml-2 text-sm">Dark</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="color-theme" value="system" class="h-4 w-4 text-blue-600 focus:ring-blue-500" {% if config.theme == 'system' or not config.theme %}checked{% endif %}>
+                                <span class="ml-2 text-sm">System Preference</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- UI Preference -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">UI Preference</label>
+                        <div class="mt-2 flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <div>
+                                <span class="font-medium">Use Modern UI</span>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Enable the new redesigned interface with improved navigation</p>
+                            </div>
+                            <div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="modern-ui-toggle" {% if config.ui_preference == 'modern' %}checked{% endif %}>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Default Page -->
+                    <div>
+                        <label for="default-page" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default Landing Page</label>
+                        <select id="default-page" name="default-page" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                            <option value="dashboard" {% if config.default_page == 'dashboard' %}selected{% endif %}>Dashboard</option>
+                            <option value="reports" {% if config.default_page == 'reports' %}selected{% endif %}>Reports</option>
+                            <option value="property-search" {% if config.default_page == 'property-search' %}selected{% endif %}>Property Search</option>
+                            <option value="monitoring" {% if config.default_page == 'monitoring' %}selected{% endif %}>Monitoring</option>
+                        </select>
+                        <p class="mt-1 text-xs text-gray-500">The page you see when first logging in.</p>
+                    </div>
+                    
+                    <!-- Language -->
+                    <div>
+                        <label for="language" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Language</label>
+                        <select id="language" name="language" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                            <option value="en" {% if config.language == 'en' or not config.language %}selected{% endif %}>English</option>
+                            <option value="es" {% if config.language == 'es' %}selected{% endif %}>Español</option>
+                            <option value="fr" {% if config.language == 'fr' %}selected{% endif %}>Français</option>
+                            <option value="de" {% if config.language == 'de' %}selected{% endif %}>Deutsch</option>
+                            <option value="zh" {% if config.language == 'zh' %}selected{% endif %}>中文</option>
+                        </select>
+                        <p class="mt-1 text-xs text-gray-500">Interface language preference.</p>
+                    </div>
+                    
+                    <!-- Date Format -->
+                    <div>
+                        <label for="date-format" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date Format</label>
+                        <select id="date-format" name="date-format" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                            <option value="MM/DD/YYYY" {% if config.date_format == 'MM/DD/YYYY' %}selected{% endif %}>MM/DD/YYYY (US)</option>
+                            <option value="DD/MM/YYYY" {% if config.date_format == 'DD/MM/YYYY' %}selected{% endif %}>DD/MM/YYYY (Europe)</option>
+                            <option value="YYYY-MM-DD" {% if config.date_format == 'YYYY-MM-DD' or not config.date_format %}selected{% endif %}>YYYY-MM-DD (ISO)</option>
+                            <option value="MMM D, YYYY" {% if config.date_format == 'MMM D, YYYY' %}selected{% endif %}>MMM D, YYYY (Jan 1, 2025)</option>
+                        </select>
+                        <p class="mt-1 text-xs text-gray-500">How dates will be displayed throughout the application.</p>
+                    </div>
+                </div>
+                
+                <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <div class="flex justify-between">
+                        <button type="button" class="btn-outline">
+                            Reset to Defaults
+                        </button>
+                        <button type="button" class="btn-primary" id="save-general-settings">
+                            Save Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- API Settings -->
+            <div id="api-settings" class="settings-section bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+                <div class="flex justify-between items-start mb-4">
+                    <h2 class="text-xl font-semibold">API Configuration</h2>
+                    <span class="test-badge">Beta</span>
+                </div>
+                
+                <div class="space-y-6">
+                    <!-- API Credentials -->
+                    <div>
+                        <label for="narrpr-api-key" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">NARRPR API Key</label>
+                        <div class="flex">
+                            <input type="password" id="narrpr-api-key" name="narrpr-api-key" class="block w-full rounded-l-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" value="•••••••••••••••••••••••••••">
+                            <button type="button" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-r-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">Your NARRPR API access credentials.</p>
+                    </div>
+                    
+                    <div>
+                        <label for="narrpr-agent-id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">NARRPR Agent ID</label>
+                        <input type="text" id="narrpr-agent-id" name="narrpr-agent-id" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" value="{{ config.narrpr_agent_id|default('') }}">
+                        <p class="mt-1 text-xs text-gray-500">Your NARRPR agent identifier.</p>
+                    </div>
+                    
+                    <!-- Rate Limiting & Timeouts -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="request-timeout" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Request Timeout (seconds)</label>
+                            <input type="number" id="request-timeout" name="request-timeout" min="5" max="120" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" value="{{ config.request_timeout|default(30) }}">
+                        </div>
+                        <div>
+                            <label for="rate-limit" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rate Limit (requests/minute)</label>
+                            <input type="number" id="rate-limit" name="rate-limit" min="1" max="60" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" value="{{ config.rate_limit|default(20) }}">
+                        </div>
+                    </div>
+                    
+                    <!-- Retry Settings -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="max-retries" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Max Retries</label>
+                            <input type="number" id="max-retries" name="max-retries" min="0" max="10" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" value="{{ config.max_retries|default(3) }}">
+                        </div>
+                        <div>
+                            <label for="retry-delay" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Retry Delay (seconds)</label>
+                            <input type="number" id="retry-delay" name="retry-delay" min="1" max="60" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" value="{{ config.retry_delay|default(5) }}">
+                        </div>
+                    </div>
+                    
+                    <!-- API Status -->
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <h3 class="font-medium mb-2">API Status</h3>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <div class="flex items-center">
+                                    <div class="h-2.5 w-2.5 rounded-full bg-green-500 mr-2"></div>
+                                    <span>NARRPR API: <span class="font-medium">Online</span></span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <div class="h-2.5 w-2.5 rounded-full bg-green-500 mr-2"></div>
+                                    <span>Zillow API: <span class="font-medium">Online</span></span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <div class="h-2.5 w-2.5 rounded-full bg-green-500 mr-2"></div>
+                                    <span>OpenAI API: <span class="font-medium">Online</span></span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <div class="h-2.5 w-2.5 rounded-full bg-yellow-500 mr-2"></div>
+                                    <span>MLS Connect: <span class="font-medium">Limited</span></span>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="text-blue-600 dark:text-blue-400 text-sm hover:underline mt-3">
+                            Check All API Status
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <div class="flex justify-between">
+                        <button type="button" class="btn-secondary">
+                            Test Connection
+                        </button>
+                        <button type="button" class="btn-primary" id="save-api-settings">
+                            Save API Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Scraper Settings -->
+            <div id="scraper-settings" class="settings-section bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4">Scraper Settings</h2>
+                
+                <div class="space-y-6">
+                    <!-- Browser Options -->
+                    <div>
+                        <label for="browser-type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Browser Type</label>
+                        <select id="browser-type" name="browser-type" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                            <option value="chrome" {% if config.browser_type == 'chrome' or not config.browser_type %}selected{% endif %}>Chrome</option>
+                            <option value="firefox" {% if config.browser_type == 'firefox' %}selected{% endif %}>Firefox</option>
+                            <option value="edge" {% if config.browser_type == 'edge' %}selected{% endif %}>Edge</option>
+                            <option value="safari" {% if config.browser_type == 'safari' %}selected{% endif %}>Safari</option>
+                        </select>
+                        <p class="mt-1 text-xs text-gray-500">Browser to use for scraping operations.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="headless-mode" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Browser Mode</label>
+                            <div class="mt-2">
+                                <div class="flex items-center">
+                                    <input id="headless-true" name="headless-mode" type="radio" value="true" class="h-4 w-4 text-blue-600 focus:ring-blue-500" {% if config.headless_mode|default(true) %}checked{% endif %}>
+                                    <label for="headless-true" class="ml-2 text-sm">Headless (invisible)</label>
+                                </div>
+                                <div class="flex items-center mt-2">
+                                    <input id="headless-false" name="headless-mode" type="radio" value="false" class="h-4 w-4 text-blue-600 focus:ring-blue-500" {% if not config.headless_mode|default(true) %}checked{% endif %}>
+                                    <label for="headless-false" class="ml-2 text-sm">Visible (for debugging)</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="wait-timeout" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Element Wait Timeout (seconds)</label>
+                            <input type="number" id="wait-timeout" name="wait-timeout" min="5" max="60" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" value="{{ config.wait_timeout|default(30) }}">
+                            <p class="mt-1 text-xs text-gray-500">Max time to wait for elements to load.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Advanced Scraper Settings -->
+                    <div class="mt-8">
+                        <h3 class="font-medium mb-3 text-lg">Advanced Settings</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div>
+                                    <span class="font-medium">Automatic Captcha Solving</span>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Use AI to solve captchas automatically</p>
+                                </div>
+                                <div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="captcha-solving" {% if config.auto_solve_captcha|default(true) %}checked{% endif %}>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div>
+                                    <span class="font-medium">Random User Agent Rotation</span>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Rotate between different browser user agents</p>
+                                </div>
+                                <div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="user-agent-rotation" {% if config.rotate_user_agents|default(true) %}checked{% endif %}>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div>
+                                    <span class="font-medium">Proxy Support</span>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Use proxy servers for scraping operations</p>
+                                </div>
+                                <div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="proxy-support" {% if config.use_proxies|default(false) %}checked{% endif %}>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label for="proxy-list" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Proxy List</label>
+                                <textarea id="proxy-list" name="proxy-list" rows="3" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" {% if not config.use_proxies|default(false) %}disabled{% endif %}>{{ config.proxy_list|default('') }}</textarea>
+                                <p class="mt-1 text-xs text-gray-500">Enter one proxy per line in format: ip:port:username:password</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <div class="flex justify-between">
+                        <button type="button" class="btn-outline">
+                            Reset to Defaults
+                        </button>
+                        <button type="button" class="btn-primary" id="save-scraper-settings">
+                            Save Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Simplified Stubs for Other Settings Sections -->
+            <div id="notification-settings" class="settings-section bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4">Notification Settings</h2>
+                <p class="text-gray-600 dark:text-gray-300 mb-4">Configure how and when you receive notifications.</p>
+                
+                <!-- Preview content for demonstration -->
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <div>
+                            <span class="font-medium">Email Notifications</span>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Receive important updates via email</p>
+                        </div>
+                        <div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <div>
+                            <span class="font-medium">Browser Notifications</span>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Show desktop notifications when available</p>
+                        </div>
+                        <div>
+                            <label class="toggle-switch">
+                                <input type="checkbox">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <div class="flex justify-end">
+                        <button type="button" class="btn-primary">
+                            Save Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="data-settings" class="settings-section bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4">Data Management</h2>
+                <p class="text-gray-600 dark:text-gray-300 mb-4">Manage data storage and database settings.</p>
+                
+                <!-- Sample content for demonstration -->
+                <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg mb-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-medium">Database Usage</h3>
+                        <span class="text-sm">4.2 GB of 10 GB</span>
+                    </div>
+                    <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5">
+                        <div class="bg-blue-600 h-2.5 rounded-full" style="width: 42%"></div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <button class="btn-secondary w-full">Data Backup</button>
+                    <button class="btn-secondary w-full">Database Optimization</button>
+                </div>
+                
+                <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <div class="flex justify-end">
+                        <button type="button" class="btn-primary">
+                            Save Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="user-settings" class="settings-section bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4">User Preferences</h2>
+                <p class="text-gray-600 dark:text-gray-300 mb-4">Customize your personal experience.</p>
+                
+                <!-- Sample content for demonstration -->
+                <div class="space-y-4">
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email Address</label>
+                        <input type="email" id="email" name="email" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" value="user@example.com">
+                    </div>
+                    
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+                        <input type="password" id="password" name="password" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" placeholder="••••••••">
+                        <p class="mt-1 text-xs text-gray-500">Leave blank to keep current password.</p>
+                    </div>
+                </div>
+                
+                <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <div class="flex justify-end">
+                        <button type="button" class="btn-primary">
+                            Save Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="ai-settings" class="settings-section bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4">AI Configuration</h2>
+                <p class="text-gray-600 dark:text-gray-300 mb-4">Configure AI models and integrations.</p>
+                
+                <!-- Sample content for demonstration -->
+                <div class="space-y-4">
+                    <div>
+                        <label for="openai-api-key" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">OpenAI API Key</label>
+                        <div class="flex">
+                            <input type="password" id="openai-api-key" name="openai-api-key" class="block w-full rounded-l-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" value="•••••••••••••••••••••••••••">
+                            <button type="button" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-r-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="default-model" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Default AI Model</label>
+                        <select id="default-model" name="default-model" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                            <option value="gpt-4">GPT-4</option>
+                            <option value="gpt-3.5-turbo" selected>GPT-3.5 Turbo</option>
+                            <option value="claude-3-opus">Claude 3 Opus</option>
+                            <option value="claude-3-sonnet">Claude 3 Sonnet</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <div class="flex justify-between">
+                        <button type="button" class="btn-secondary">
+                            Test AI Connection
+                        </button>
+                        <button type="button" class="btn-primary">
+                            Save Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // UI Preference toggle
+        const modernUiToggle = document.getElementById('modern-ui-toggle');
+        if (modernUiToggle) {
+            modernUiToggle.addEventListener('change', function() {
+                // Send AJAX request to update UI preference
+                fetch('/api/set-ui-preference', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        preference: this.checked ? 'modern' : 'legacy'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Show success message
+                        alert('UI preference updated successfully.');
+                    } else {
+                        // Show error message
+                        alert('Failed to update UI preference: ' + data.message);
+                        // Revert the checkbox state
+                        this.checked = !this.checked;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating UI preference:', error);
+                    alert('An error occurred while updating UI preference.');
+                    // Revert the checkbox state
+                    this.checked = !this.checked;
+                });
+            });
+        }
+        
+        // Proxy support toggle
+        const proxyToggle = document.getElementById('proxy-support');
+        const proxyList = document.getElementById('proxy-list');
+        if (proxyToggle && proxyList) {
+            proxyToggle.addEventListener('change', function() {
+                proxyList.disabled = !this.checked;
+            });
+        }
+        
+        // Save settings buttons
+        const saveButtons = document.querySelectorAll('[id$="-settings"]');
+        saveButtons.forEach(button => {
+            if (button) {
+                button.addEventListener('click', function() {
+                    const section = this.id.replace('save-', '');
+                    // Simulate saving settings
+                    console.log(`Saving ${section}...`);
+                    
+                    // Show success message after a brief delay
+                    setTimeout(() => {
+                        alert(`${section.replace('-', ' ')} saved successfully!`);
+                    }, 500);
+                });
+            }
+        });
+        
+        // Smooth scrolling for navigation links
+        const navLinks = document.querySelectorAll('a[href^="#"]');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    // Remove active class from all links
+                    navLinks.forEach(link => link.classList.remove('text-blue-600', 'dark:text-blue-400', 'font-medium'));
+                    
+                    // Add active class to clicked link
+                    this.classList.add('text-blue-600', 'dark:text-blue-400', 'font-medium');
+                    
+                    // Scroll to the target element
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

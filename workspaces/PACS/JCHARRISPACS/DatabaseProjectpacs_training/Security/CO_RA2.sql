@@ -1,0 +1,5 @@
+CREATE USER [CO\RA2] FOR LOGIN [CO\RA2];
+
+
+GO
+

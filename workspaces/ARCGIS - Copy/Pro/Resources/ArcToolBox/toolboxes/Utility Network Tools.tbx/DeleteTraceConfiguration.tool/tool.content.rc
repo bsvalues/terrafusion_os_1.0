@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Deletes one or more named trace configurations  from a utility network.",
+        "in_utility_network.descr": "The utility network containing the named trace configuration to be deleted.",
+        "in_utility_network.title": "Input Utility Network",
+        "out_utility_network.title": "Updated Utility Network",
+        "summary": "Deletes one or more named trace configurations from a utility network.",
+        "title": "Delete Trace Configuration",
+        "trace_config_name.descr": "The named trace configurations to be deleted.",
+        "trace_config_name.title": "Trace Configuration"
+    }
+}

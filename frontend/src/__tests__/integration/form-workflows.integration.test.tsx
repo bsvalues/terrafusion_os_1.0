@@ -14,7 +14,13 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 // ============================================================================
@@ -24,7 +30,11 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 /**
  * Login Form - Input + Label + Button
  */
-const LoginForm = ({ onSubmit }: { onSubmit: (data: { email: string; password: string }) => void }) => {
+const LoginForm = ({
+  onSubmit,
+}: {
+  onSubmit: (data: { email: string; password: string }) => void;
+}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
@@ -32,56 +42,56 @@ const LoginForm = ({ onSubmit }: { onSubmit: (data: { email: string; password: s
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: { email?: string; password?: string } = {};
-    
+
     if (!email) newErrors.email = 'Email is required';
     else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = 'Email is invalid';
-    
+
     if (!password) newErrors.password = 'Password is required';
     else if (password.length < 8) newErrors.password = 'Password must be at least 8 characters';
-    
+
     setErrors(newErrors);
-    
+
     if (Object.keys(newErrors).length === 0) {
       onSubmit({ email, password });
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} aria-label="Login form">
-      <div className="space-y-4">
+    <form onSubmit={handleSubmit} aria-label='Login form'>
+      <div className='space-y-4'>
         <div>
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor='email'>Email</Label>
           <Input
-            id="email"
-            type="email"
+            id='email'
+            type='email'
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             aria-invalid={!!errors.email}
             aria-describedby={errors.email ? 'email-error' : undefined}
           />
           {errors.email && (
-            <p id="email-error" role="alert" className="text-red-500 text-sm">
+            <p id='email-error' role='alert' className='text-red-500 text-sm'>
               {errors.email}
             </p>
           )}
         </div>
         <div>
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor='password'>Password</Label>
           <Input
-            id="password"
-            type="password"
+            id='password'
+            type='password'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             aria-invalid={!!errors.password}
             aria-describedby={errors.password ? 'password-error' : undefined}
           />
           {errors.password && (
-            <p id="password-error" role="alert" className="text-red-500 text-sm">
+            <p id='password-error' role='alert' className='text-red-500 text-sm'>
               {errors.password}
             </p>
           )}
         </div>
-        <Button type="submit">Login</Button>
+        <Button type='submit'>Login</Button>
       </div>
     </form>
   );
@@ -90,7 +100,11 @@ const LoginForm = ({ onSubmit }: { onSubmit: (data: { email: string; password: s
 /**
  * Contact Form - Textarea + Checkbox + Submit
  */
-const ContactForm = ({ onSubmit }: { onSubmit: (data: { name: string; message: string; agree: boolean }) => void }) => {
+const ContactForm = ({
+  onSubmit,
+}: {
+  onSubmit: (data: { name: string; message: string; agree: boolean }) => void;
+}) => {
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
   const [agree, setAgree] = useState(false);
@@ -99,41 +113,41 @@ const ContactForm = ({ onSubmit }: { onSubmit: (data: { name: string; message: s
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: { name?: string; message?: string; agree?: string } = {};
-    
+
     if (!name) newErrors.name = 'Name is required';
     if (!message) newErrors.message = 'Message is required';
     else if (message.length < 10) newErrors.message = 'Message must be at least 10 characters';
     if (!agree) newErrors.agree = 'You must agree to the terms';
-    
+
     setErrors(newErrors);
-    
+
     if (Object.keys(newErrors).length === 0) {
       onSubmit({ name, message, agree });
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} aria-label="Contact form">
-      <div className="space-y-4">
+    <form onSubmit={handleSubmit} aria-label='Contact form'>
+      <div className='space-y-4'>
         <div>
-          <Label htmlFor="name">Name</Label>
+          <Label htmlFor='name'>Name</Label>
           <Input
-            id="name"
+            id='name'
             value={name}
             onChange={(e) => setName(e.target.value)}
             aria-invalid={!!errors.name}
             aria-describedby={errors.name ? 'name-error' : undefined}
           />
           {errors.name && (
-            <p id="name-error" role="alert" className="text-red-500 text-sm">
+            <p id='name-error' role='alert' className='text-red-500 text-sm'>
               {errors.name}
             </p>
           )}
         </div>
         <div>
-          <Label htmlFor="message">Message</Label>
+          <Label htmlFor='message'>Message</Label>
           <Textarea
-            id="message"
+            id='message'
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             rows={4}
@@ -141,27 +155,27 @@ const ContactForm = ({ onSubmit }: { onSubmit: (data: { name: string; message: s
             aria-describedby={errors.message ? 'message-error' : undefined}
           />
           {errors.message && (
-            <p id="message-error" role="alert" className="text-red-500 text-sm">
+            <p id='message-error' role='alert' className='text-red-500 text-sm'>
               {errors.message}
             </p>
           )}
         </div>
-        <div className="flex items-center space-x-2">
+        <div className='flex items-center space-x-2'>
           <Checkbox
-            id="agree"
+            id='agree'
             checked={agree}
             onCheckedChange={(checked) => setAgree(checked === true)}
             aria-invalid={!!errors.agree}
             aria-describedby={errors.agree ? 'agree-error' : undefined}
           />
-          <Label htmlFor="agree">I agree to the terms and conditions</Label>
+          <Label htmlFor='agree'>I agree to the terms and conditions</Label>
         </div>
         {errors.agree && (
-          <p id="agree-error" role="alert" className="text-red-500 text-sm">
+          <p id='agree-error' role='alert' className='text-red-500 text-sm'>
             {errors.agree}
           </p>
         )}
-        <Button type="submit">Submit</Button>
+        <Button type='submit'>Submit</Button>
       </div>
     </form>
   );
@@ -181,53 +195,53 @@ const ProfileForm = ({ onSubmit }: { onSubmit: (data: any) => void }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: Record<string, string> = {};
-    
+
     if (!formData.username) newErrors.username = 'Username is required';
     if (!formData.country) newErrors.country = 'Country is required';
-    
+
     setErrors(newErrors);
-    
+
     if (Object.keys(newErrors).length === 0) {
       onSubmit(formData);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} aria-label="Profile form">
-      <div className="space-y-4">
+    <form onSubmit={handleSubmit} aria-label='Profile form'>
+      <div className='space-y-4'>
         <div>
-          <Label htmlFor="username">Username</Label>
+          <Label htmlFor='username'>Username</Label>
           <Input
-            id="username"
+            id='username'
             value={formData.username}
             onChange={(e) => setFormData({ ...formData, username: e.target.value })}
             aria-invalid={!!errors.username}
             aria-describedby={errors.username ? 'username-error' : undefined}
           />
           {errors.username && (
-            <p id="username-error" role="alert" className="text-red-500 text-sm">
+            <p id='username-error' role='alert' className='text-red-500 text-sm'>
               {errors.username}
             </p>
           )}
         </div>
         <div>
-          <Label htmlFor="country">Country</Label>
+          <Label htmlFor='country'>Country</Label>
           <Select
             value={formData.country}
             onValueChange={(value) => setFormData({ ...formData, country: value })}
           >
-            <SelectTrigger id="country" aria-invalid={!!errors.country}>
-              <SelectValue placeholder="Select a country" />
+            <SelectTrigger id='country' aria-invalid={!!errors.country}>
+              <SelectValue placeholder='Select a country' />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="us">United States</SelectItem>
-              <SelectItem value="uk">United Kingdom</SelectItem>
-              <SelectItem value="ca">Canada</SelectItem>
-              <SelectItem value="au">Australia</SelectItem>
+              <SelectItem value='us'>United States</SelectItem>
+              <SelectItem value='uk'>United Kingdom</SelectItem>
+              <SelectItem value='ca'>Canada</SelectItem>
+              <SelectItem value='au'>Australia</SelectItem>
             </SelectContent>
           </Select>
           {errors.country && (
-            <p id="country-error" role="alert" className="text-red-500 text-sm">
+            <p id='country-error' role='alert' className='text-red-500 text-sm'>
               {errors.country}
             </p>
           )}
@@ -238,21 +252,21 @@ const ProfileForm = ({ onSubmit }: { onSubmit: (data: any) => void }) => {
             value={formData.notification}
             onValueChange={(value) => setFormData({ ...formData, notification: value })}
           >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="email" id="email-radio" />
-              <Label htmlFor="email-radio">Email</Label>
+            <div className='flex items-center space-x-2'>
+              <RadioGroupItem value='email' id='email-radio' />
+              <Label htmlFor='email-radio'>Email</Label>
             </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="sms" id="sms-radio" />
-              <Label htmlFor="sms-radio">SMS</Label>
+            <div className='flex items-center space-x-2'>
+              <RadioGroupItem value='sms' id='sms-radio' />
+              <Label htmlFor='sms-radio'>SMS</Label>
             </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="none" id="none-radio" />
-              <Label htmlFor="none-radio">None</Label>
+            <div className='flex items-center space-x-2'>
+              <RadioGroupItem value='none' id='none-radio' />
+              <Label htmlFor='none-radio'>None</Label>
             </div>
           </RadioGroup>
         </div>
-        <Button type="submit">Save Profile</Button>
+        <Button type='submit'>Save Profile</Button>
       </div>
     </form>
   );
@@ -294,7 +308,7 @@ describe('Integration: Login Form Workflow', () => {
       // Fill out form
       await user.type(screen.getByLabelText(/email/i), 'user@example.com');
       await user.type(screen.getByLabelText(/password/i), 'password123');
-      
+
       // Submit form
       await user.click(screen.getByRole('button', { name: /login/i }));
 
@@ -317,10 +331,10 @@ describe('Integration: Login Form Workflow', () => {
       // Tab through form
       await user.tab();
       expect(emailInput).toHaveFocus();
-      
+
       await user.tab();
       expect(passwordInput).toHaveFocus();
-      
+
       await user.tab();
       expect(submitButton).toHaveFocus();
     });
@@ -338,7 +352,7 @@ describe('Integration: Login Form Workflow', () => {
       // Verify errors appear
       expect(screen.getByRole('alert', { name: /email is required/i })).toBeInTheDocument();
       expect(screen.getByRole('alert', { name: /password is required/i })).toBeInTheDocument();
-      
+
       // Verify submission didn't happen
       expect(handleSubmit).not.toHaveBeenCalled();
     });
@@ -369,7 +383,9 @@ describe('Integration: Login Form Workflow', () => {
       await user.click(screen.getByRole('button', { name: /login/i }));
 
       // Verify password validation error
-      expect(screen.getByRole('alert', { name: /password must be at least 8 characters/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('alert', { name: /password must be at least 8 characters/i })
+      ).toBeInTheDocument();
       expect(handleSubmit).not.toHaveBeenCalled();
     });
 
@@ -405,10 +421,10 @@ describe('Integration: Login Form Workflow', () => {
       const user = userEvent.setup();
       const handleSubmit = jest.fn();
       const { container } = render(<LoginForm onSubmit={handleSubmit} />);
-      
+
       // Trigger errors
       await user.click(screen.getByRole('button', { name: /login/i }));
-      
+
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
@@ -485,9 +501,12 @@ describe('Integration: Contact Form Workflow', () => {
 
       // Fill out form
       await user.type(screen.getByLabelText(/name/i), 'John Doe');
-      await user.type(screen.getByLabelText(/message/i), 'This is a test message with enough characters.');
+      await user.type(
+        screen.getByLabelText(/message/i),
+        'This is a test message with enough characters.'
+      );
       await user.click(screen.getByLabelText(/agree to the terms/i));
-      
+
       // Submit form
       await user.click(screen.getByRole('button', { name: /submit/i }));
 
@@ -510,7 +529,9 @@ describe('Integration: Contact Form Workflow', () => {
       await user.click(screen.getByRole('button', { name: /submit/i }));
 
       // Verify checkbox error
-      expect(screen.getByRole('alert', { name: /you must agree to the terms/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('alert', { name: /you must agree to the terms/i })
+      ).toBeInTheDocument();
       expect(handleSubmit).not.toHaveBeenCalled();
     });
   });
@@ -528,7 +549,9 @@ describe('Integration: Contact Form Workflow', () => {
       await user.click(screen.getByRole('button', { name: /submit/i }));
 
       // Verify validation error
-      expect(screen.getByRole('alert', { name: /message must be at least 10 characters/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('alert', { name: /message must be at least 10 characters/i })
+      ).toBeInTheDocument();
       expect(handleSubmit).not.toHaveBeenCalled();
     });
 
@@ -564,9 +587,9 @@ describe('Integration: Contact Form Workflow', () => {
       const user = userEvent.setup();
       const handleSubmit = jest.fn();
       const { container } = render(<ContactForm onSubmit={handleSubmit} />);
-      
+
       await user.click(screen.getByRole('button', { name: /submit/i }));
-      
+
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
@@ -627,7 +650,7 @@ describe('Integration: Profile Form Workflow', () => {
       await user.click(screen.getByRole('combobox', { name: /country/i }));
       await user.click(screen.getByRole('option', { name: /canada/i }));
       await user.click(screen.getByLabelText('SMS'));
-      
+
       // Submit form
       await user.click(screen.getByRole('button', { name: /save profile/i }));
 
@@ -664,15 +687,15 @@ describe('Integration: Profile Form Workflow', () => {
       await user.type(screen.getByLabelText(/username/i), 'user1');
       await user.click(screen.getByRole('combobox', { name: /country/i }));
       await user.click(screen.getByRole('option', { name: /australia/i }));
-      
+
       // Change username again
       const usernameInput = screen.getByLabelText(/username/i);
       await user.clear(usernameInput);
       await user.type(usernameInput, 'user2');
-      
+
       // Change radio selection
       await user.click(screen.getByLabelText('None'));
-      
+
       // Submit
       await user.click(screen.getByRole('button', { name: /save profile/i }));
 
@@ -697,9 +720,9 @@ describe('Integration: Profile Form Workflow', () => {
       const user = userEvent.setup();
       const handleSubmit = jest.fn();
       const { container } = render(<ProfileForm onSubmit={handleSubmit} />);
-      
+
       await user.click(screen.getByRole('combobox', { name: /country/i }));
-      
+
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
@@ -715,12 +738,12 @@ describe('Integration: Profile Form Workflow', () => {
       await user.type(screen.getByLabelText(/username/i), 'a');
       await user.type(screen.getByLabelText(/username/i), 'b');
       await user.type(screen.getByLabelText(/username/i), 'c');
-      
+
       // Rapid radio changes
       await user.click(screen.getByLabelText('SMS'));
       await user.click(screen.getByLabelText('None'));
       await user.click(screen.getByLabelText('Email'));
-      
+
       expect(screen.getByLabelText(/username/i)).toHaveValue('abc');
       expect(screen.getByLabelText('Email')).toBeChecked();
     });

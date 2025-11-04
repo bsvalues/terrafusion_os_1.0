@@ -1,0 +1,14 @@
+{
+    "set": [
+        "additive",
+        "combine",
+        "multiple rasters",
+        "reclassify",
+        "scale",
+        "site selection",
+        "siting",
+        "suitability",
+        "suitability modeling",
+        "weight"
+    ]
+}

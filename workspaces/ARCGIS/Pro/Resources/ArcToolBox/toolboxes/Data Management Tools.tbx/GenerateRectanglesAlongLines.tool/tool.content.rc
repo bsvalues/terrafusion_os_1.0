@@ -1,0 +1,20 @@
+{
+    "map": {
+        "description": "Creates a series of rectangular polygons that follow a single linear feature or a group of linear features.",
+        "in_features.descr": "The input polyline features defining the path of the features.",
+        "in_features.title": "Input Line Features",
+        "length_along_line.descr": "The length of the output polygon features along the input line features. The default value is determined by the spatial reference of the input line features. This value will be 1/100 of the input feature class extent along the x-axis.",
+        "length_along_line.title": "Length Along the Line",
+        "length_perpendicular_to_line.descr": "The length of the output polygon features perpendicular to the input line features. The default value is determined by the spatial reference of the input line features. This value will be one-half the number used for the length along the line.",
+        "length_perpendicular_to_line.title": "Length Perpendicular to the Line",
+        "out_feature_class.descr": "The output polygon feature class.",
+        "out_feature_class.title": "Output Feature Class",
+        "spatial_sort_method.descr": "<xdoc><p>Output features are created in a sequential order and require a spatial starting point. Setting the direction type to upper right will start the output features in the upper right of each input feature.</p><ul><li><span title=\"UR\">Upper right</span>—Features start in the upper right corner. This is the default.</li><li><span title=\"UL\">Upper left</span>—Features start in the upper left corner.</li><li><span title=\"LR\">Lower right</span>—Features starts in the lower right corner.</li><li><span title=\"LL\">Lower left</span>—Features starts in the lower left corner.</li></ul></xdoc>",
+        "spatial_sort_method.domain.LL": "Lower left",
+        "spatial_sort_method.domain.LR": "Lower right",
+        "spatial_sort_method.domain.UL": "Upper left",
+        "spatial_sort_method.domain.UR": "Upper right",
+        "spatial_sort_method.title": "Spatial Sort Method",
+        "title": "Generate Rectangles Along Lines"
+    }
+}

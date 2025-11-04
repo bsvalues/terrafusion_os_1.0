@@ -1,0 +1,471 @@
+# ============================================================================
+# TerraFusion OS - Promtail Log Collector
+# Government. Transcended. - Championship Log Collection
+# ============================================================================
+# Purpose: Deploy Promtail DaemonSet for log collection from all pods
+# Features: Container log collection, label extraction, parsing rules
+# Target: Loki server for centralized log storage
+# Coverage: All TerraFusion services across all nodes
+# ============================================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: promtail-config
+  namespace: logging
+  labels:
+    app.kubernetes.io/name: promtail
+data:
+  promtail.yaml: |
+    # ========================================================================
+    # Server Configuration
+    # ========================================================================
+    server:
+      http_listen_port: 9080
+      grpc_listen_port: 0
+      log_level: info
+    
+    # ========================================================================
+    # Client Configuration (Loki connection)
+    # ========================================================================
+    clients:
+      - url: http://loki.logging.svc.cluster.local:3100/loki/api/v1/push
+        batchwait: 1s
+        batchsize: 1048576  # 1MB
+        backoff_config:
+          min_period: 500ms
+          max_period: 5m
+          max_retries: 10
+        timeout: 10s
+    
+    # ========================================================================
+    # Positions Configuration (track read progress)
+    # ========================================================================
+    positions:
+      filename: /run/promtail/positions.yaml
+    
+    # ========================================================================
+    # Scrape Configurations
+    # ========================================================================
+    scrape_configs:
+      # ======================================================================
+      # Kubernetes Pod Logs
+      # ======================================================================
+      - job_name: kubernetes-pods
+        kubernetes_sd_configs:
+          - role: pod
+        pipeline_stages:
+          # Stage 1: Extract metadata from Kubernetes labels
+          - docker: {}
+          
+          # Stage 2: Parse JSON logs (structured logging)
+          - json:
+              expressions:
+                timestamp: timestamp
+                level: level
+                message: message
+                trace_id: trace_id
+                span_id: span_id
+                service: service
+                method: method
+                path: path
+                status_code: status_code
+                duration_ms: duration_ms
+                error: error
+                county_id: county_id
+                user_id: user_id
+          
+          # Stage 3: Extract timestamp
+          - timestamp:
+              source: timestamp
+              format: RFC3339Nano
+          
+          # Stage 4: Add static labels
+          - labels:
+              level:
+              service:
+              trace_id:
+              county_id:
+          
+          # Stage 5: Add output to log entry
+          - output:
+              source: message
+        
+        relabel_configs:
+          # Extract namespace
+          - source_labels: [__meta_kubernetes_namespace]
+            target_label: namespace
+          
+          # Extract pod name
+          - source_labels: [__meta_kubernetes_pod_name]
+            target_label: pod
+          
+          # Extract container name
+          - source_labels: [__meta_kubernetes_pod_container_name]
+            target_label: container
+          
+          # Extract node name
+          - source_labels: [__meta_kubernetes_pod_node_name]
+            target_label: node
+          
+          # Extract service label (from pod label)
+          - source_labels: [__meta_kubernetes_pod_label_app]
+            target_label: service
+          
+          # Extract component label
+          - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_component]
+            target_label: component
+          
+          # Only scrape pods in terrafusion namespace
+          - source_labels: [__meta_kubernetes_namespace]
+            regex: terrafusion|logging|monitoring|tracing
+            action: keep
+          
+          # Set path to container logs
+          - source_labels: [__meta_kubernetes_pod_uid, __meta_kubernetes_pod_container_name]
+            target_label: __path__
+            separator: /
+            replacement: /var/log/pods/*$1/*.log
+      
+      # ======================================================================
+      # TerraFusion API Logs (specialized parsing)
+      # ======================================================================
+      - job_name: terrafusion-api
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - terrafusion
+        pipeline_stages:
+          - docker: {}
+          - json:
+              expressions:
+                timestamp: timestamp
+                level: level
+                message: message
+                trace_id: TraceId
+                span_id: SpanId
+                request_id: RequestId
+                method: RequestMethod
+                path: RequestPath
+                status_code: StatusCode
+                duration_ms: Duration
+                user_id: UserId
+                error: Exception
+          - timestamp:
+              source: timestamp
+              format: RFC3339Nano
+          - labels:
+              level:
+              trace_id:
+              status_code:
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app]
+            regex: terrafusion-api
+            action: keep
+          - source_labels: [__meta_kubernetes_pod_name]
+            target_label: pod
+          - source_labels: [__meta_kubernetes_namespace]
+            target_label: namespace
+      
+      # ======================================================================
+      # TerraFusion Consciousness (AI Agent Logs)
+      # ======================================================================
+      - job_name: terrafusion-consciousness
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+                - terrafusion
+        pipeline_stages:
+          - docker: {}
+          - json:
+              expressions:
+                timestamp: timestamp
+                level: level
+                message: message
+                trace_id: TraceId
+                agent_id: AgentId
+                agent_type: AgentType
+                task_id: TaskId
+                quantum_factor: QuantumFactor
+                processing_time_ms: ProcessingTimeMs
+                accuracy_score: AccuracyScore
+          - timestamp:
+              source: timestamp
+              format: RFC3339Nano
+          - labels:
+              level:
+              agent_type:
+              trace_id:
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app]
+            regex: terrafusion-consciousness
+            action: keep
+          - source_labels: [__meta_kubernetes_pod_name]
+            target_label: pod
+      
+      # ======================================================================
+      # System Logs (Node-level logs)
+      # ======================================================================
+      - job_name: system-logs
+        static_configs:
+          - targets:
+              - localhost
+            labels:
+              job: varlogs
+              __path__: /var/log/*.log
+
+---
+# ============================================================================
+# Promtail DaemonSet (runs on every node)
+# ============================================================================
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: promtail
+  namespace: logging
+  labels:
+    app.kubernetes.io/name: promtail
+spec:
+  selector:
+    matchLabels:
+      app: promtail
+  template:
+    metadata:
+      labels:
+        app: promtail
+        app.kubernetes.io/name: promtail
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9080"
+    spec:
+      serviceAccountName: promtail
+      securityContext:
+        runAsNonRoot: false
+        runAsUser: 0
+      containers:
+        - name: promtail
+          image: grafana/promtail:2.9.3
+          args:
+            - -config.file=/etc/promtail/promtail.yaml
+          ports:
+            - containerPort: 9080
+              name: http-metrics
+              protocol: TCP
+          env:
+            - name: HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          volumeMounts:
+            - name: promtail-config
+              mountPath: /etc/promtail
+            - name: varlog
+              mountPath: /var/log
+              readOnly: true
+            - name: varlibdockercontainers
+              mountPath: /var/lib/docker/containers
+              readOnly: true
+            - name: positions
+              mountPath: /run/promtail
+          livenessProbe:
+            httpGet:
+              path: /ready
+              port: 9080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 9080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+      volumes:
+        - name: promtail-config
+          configMap:
+            name: promtail-config
+        - name: varlog
+          hostPath:
+            path: /var/log
+        - name: varlibdockercontainers
+          hostPath:
+            path: /var/lib/docker/containers
+        - name: positions
+          emptyDir: {}
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+
+---
+# ============================================================================
+# Promtail ServiceAccount
+# ============================================================================
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: promtail
+  namespace: logging
+  labels:
+    app.kubernetes.io/name: promtail
+
+---
+# ============================================================================
+# Promtail ClusterRole
+# ============================================================================
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: promtail
+  labels:
+    app.kubernetes.io/name: promtail
+rules:
+  - apiGroups: [""]
+    resources:
+      - nodes
+      - nodes/proxy
+      - services
+      - endpoints
+      - pods
+    verbs: ["get", "list", "watch"]
+
+---
+# ============================================================================
+# Promtail ClusterRoleBinding
+# ============================================================================
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: promtail
+  labels:
+    app.kubernetes.io/name: promtail
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: promtail
+subjects:
+  - kind: ServiceAccount
+    name: promtail
+    namespace: logging
+
+---
+# ============================================================================
+# LogQL Query Examples
+# ============================================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logql-examples
+  namespace: logging
+  labels:
+    app.kubernetes.io/name: loki
+data:
+  queries.md: |
+    # LogQL Query Examples for TerraFusion OS
+    
+    ## Basic Queries
+    
+    # All logs from API service
+    {service="terrafusion-api"}
+    
+    # Error logs across all services
+    {namespace="terrafusion"} |= "error"
+    
+    # Logs from specific pod
+    {pod="terrafusion-api-76d5f8c9b-xk7lm"}
+    
+    ## Advanced Filtering
+    
+    # HTTP 5xx errors in API
+    {service="terrafusion-api"} | json | status_code >= 500
+    
+    # Slow requests (>1s duration)
+    {service="terrafusion-api"} | json | duration_ms > 1000
+    
+    # AI agent processing logs
+    {service="terrafusion-consciousness"} | json | agent_type="property-valuation"
+    
+    # County-specific logs
+    {namespace="terrafusion"} | json | county_id="benton"
+    
+    ## Trace Correlation
+    
+    # Find logs for specific trace
+    {namespace="terrafusion"} | json | trace_id="00-abc123def456-789012-01"
+    
+    # All logs in trace timeline
+    {namespace="terrafusion"} | json | trace_id!="" | line_format "{{.timestamp}} [{{.level}}] {{.message}}"
+    
+    ## Metrics from Logs
+    
+    # Request rate per service
+    sum(rate({namespace="terrafusion"} | json | method="GET" [5m])) by (service)
+    
+    # Error rate percentage
+    sum(rate({namespace="terrafusion"} | json | level="error" [5m])) 
+    / 
+    sum(rate({namespace="terrafusion"} [5m]))
+    
+    # P95 request duration
+    quantile_over_time(0.95, {service="terrafusion-api"} | json | unwrap duration_ms [5m])
+    
+    ## Pattern Matching
+    
+    # Exception stack traces
+    {namespace="terrafusion"} |~ "Exception.*at System"
+    
+    # Authentication failures
+    {service="terrafusion-api"} |= "authentication" |= "failed"
+    
+    # Database connection errors
+    {namespace="terrafusion"} |~ "database.*connection.*error"
+    
+    ## Multi-line Log Parsing
+    
+    # Extract JSON fields
+    {service="terrafusion-api"} 
+    | json timestamp, level, message, trace_id, status_code
+    | line_format "{{.timestamp}} [{{.level}}] {{.message}}"
+    
+    # Filter by multiple conditions
+    {namespace="terrafusion"} 
+    | json 
+    | level="error" 
+    | status_code >= 500 
+    | duration_ms > 1000
+
+# ============================================================================
+# Apply Instructions
+# ============================================================================
+# 1. Apply Promtail DaemonSet:
+#    kubectl apply -f promtail-daemonset.yaml
+#
+# 2. Verify Promtail pods running on all nodes:
+#    kubectl get daemonset -n logging
+#    kubectl get pods -n logging -l app=promtail
+#
+# 3. Check Promtail logs:
+#    kubectl logs -n logging daemonset/promtail
+#
+# 4. Test log ingestion:
+#    # Make requests to TerraFusion services
+#    # Wait ~10 seconds for logs to appear in Loki
+#
+# 5. Query logs in Grafana:
+#    # Navigate to: Explore > Select Loki datasource
+#    # Run query: {service="terrafusion-api"} |= "error"
+#
+# 6. View LogQL examples:
+#    kubectl get configmap logql-examples -n logging -o yaml
+# ============================================================================

@@ -1,0 +1,375 @@
+#═══════════════════════════════════════════════════════════════
+# TERRAFUSION OS - CODEX 3-6-9 QUALITY GATE
+# Divine Mathematical Balance Engine - CI/CD Integration
+# Ensures Championship Excellence Before Production Deployment
+# THE TERRAFUSION WAY - GOVERNMENT. TRANSCENDED.
+#═══════════════════════════════════════════════════════════════
+
+name: Codex 3-6-9 Quality Gate
+
+on:
+  push:
+    branches: [main, develop, staging, production]
+  pull_request:
+    branches: [main, develop, staging, production]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - staging
+          - production
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  NODE_VERSION: '20.x'
+
+  # Codex 3-6-9 Thresholds
+  PRODUCTION_MIN_SCORE: 10.0      # Championship Mode required
+  STAGING_MIN_SCORE: 8.0          # Operational Excellence required
+  DEVELOPMENT_MIN_SCORE: 6.0      # Basic functionality required
+
+  # Divine Balance Targets
+  DIVINE_BALANCE_MIN: 11.5
+  DIVINE_BALANCE_MAX: 12.0
+  ULTIMATE_TARGET: 12.0
+
+jobs:
+  # ============================================================================
+  # BUILD & TEST - Foundation for Codex Metrics
+  # ============================================================================
+  build-and-test:
+    name: Build & Test - Codex Foundation
+    runs-on: ubuntu-latest
+
+    outputs:
+      test-coverage: ${{ steps.coverage.outputs.percentage }}
+      build-success: ${{ steps.build.outputs.success }}
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: 📦 Restore .NET dependencies
+        run: dotnet restore backend/TerraFusion.sln
+
+      - name: 📦 Install frontend dependencies
+        run: npm ci --prefix frontend
+
+      - name: 🏗️ Build backend
+        id: build
+        run: |
+          dotnet build backend/TerraFusion.sln --no-restore --configuration Release
+          echo "success=true" >> $GITHUB_OUTPUT
+
+      - name: 🏗️ Build frontend
+        run: npm run build --prefix frontend
+
+      - name: 🧪 Run backend tests
+        run: |
+          dotnet test backend/TerraFusion.sln \
+            --no-build \
+            --configuration Release \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./coverage
+
+      - name: 🧪 Run frontend tests
+        run: npm run test:coverage --prefix frontend
+
+      - name: 📊 Calculate test coverage
+        id: coverage
+        run: |
+          COVERAGE=$(dotnet test backend/TerraFusion.sln --collect:"XPlat Code Coverage" --no-build | grep -oP 'Line.*?(\d+\.\d+)%' | grep -oP '\d+\.\d+' | head -1)
+          echo "percentage=$COVERAGE" >> $GITHUB_OUTPUT
+          echo "✅ Test coverage: $COVERAGE%"
+
+  # ============================================================================
+  # CODEX 3-6-9 CALCULATION - Divine Balance Assessment
+  # ============================================================================
+  calculate-codex-score:
+    name: Calculate Codex 3-6-9 Score
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    outputs:
+      ultimate-power-score: ${{ steps.codex.outputs.ultimate_power_score }}
+      in-divine-balance: ${{ steps.codex.outputs.in_divine_balance }}
+      is-championship-mode: ${{ steps.codex.outputs.is_championship_mode }}
+      framework-healthy: ${{ steps.codex.outputs.framework_healthy }}
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: 🚀 Start TerraFusion.API
+        run: |
+          cd backend
+          dotnet run --project TerraFusion.API --no-build --configuration Release &
+          API_PID=$!
+          echo "API_PID=$API_PID" >> $GITHUB_ENV
+
+          # Wait for API to be ready (max 60 seconds)
+          for i in {1..60}; do
+            if curl -sf http://localhost:5000/health > /dev/null; then
+              echo "✅ API is ready"
+              break
+            fi
+            echo "⏳ Waiting for API... ($i/60)"
+            sleep 1
+          done
+
+      - name: 🧮 Calculate Codex 3-6-9 Score
+        id: codex
+        run: |
+          # Call Codex API endpoint
+          RESPONSE=$(curl -s http://localhost:5000/api/codex/system-wide)
+
+          # Extract metrics using jq
+          ULTIMATE_POWER=$(echo "$RESPONSE" | jq -r '.currentPowerScore')
+          IN_DIVINE_BALANCE=$(echo "$RESPONSE" | jq -r '.ultimatePower.inDivineBalance')
+          IS_CHAMPIONSHIP=$(echo "$RESPONSE" | jq -r '.ultimatePower.isChampionshipMode')
+          FRAMEWORK_HEALTHY=$(echo "$RESPONSE" | jq -r '.frameworkHealthy')
+          BALANCE_PROXIMITY=$(echo "$RESPONSE" | jq -r '.ultimatePower.balanceProximity')
+
+          # Output results
+          echo "ultimate_power_score=$ULTIMATE_POWER" >> $GITHUB_OUTPUT
+          echo "in_divine_balance=$IN_DIVINE_BALANCE" >> $GITHUB_OUTPUT
+          echo "is_championship_mode=$IS_CHAMPIONSHIP" >> $GITHUB_OUTPUT
+          echo "framework_healthy=$FRAMEWORK_HEALTHY" >> $GITHUB_OUTPUT
+
+          # Display results
+          echo "═══════════════════════════════════════════════════════"
+          echo "           CODEX 3-6-9 FRAMEWORK RESULTS"
+          echo "═══════════════════════════════════════════════════════"
+          echo ""
+          echo "🎯 LEVEL 9: ULTIMATE POWER"
+          echo "   Score: $ULTIMATE_POWER / 12.0"
+          echo "   Balance Proximity: $(echo "$BALANCE_PROXIMITY * 100" | bc -l | xargs printf "%.1f")%"
+          echo ""
+          echo "📊 STATUS"
+          echo "   Divine Balance (11.5-12.0): $IN_DIVINE_BALANCE"
+          echo "   Championship Mode (≥10.0): $IS_CHAMPIONSHIP"
+          echo "   Framework Healthy: $FRAMEWORK_HEALTHY"
+          echo ""
+
+          # Display domain scores
+          echo "🔬 LEVEL 6: AMPLIFICATION (Domain Scores)"
+          echo "$RESPONSE" | jq -r '.amplificationMetrics[] | "   \(.displayName): \(.amplifiedScore | tonumber | . * 100 / 12 | round / 100) / 12 [\(.alertLevel)]"'
+          echo ""
+
+          # Display foundation metrics (top 10)
+          echo "⚙️  LEVEL 3: FOUNDATION (Top 10 Metrics)"
+          echo "$RESPONSE" | jq -r '.foundationMetrics[:10][] | "   \(.displayName // .metricName): \(.scaledValue | tonumber | . * 100 / 12 | round / 100) / 12"'
+          echo ""
+          echo "═══════════════════════════════════════════════════════"
+
+      - name: 🛑 Stop API
+        if: always()
+        run: kill $API_PID || true
+
+  # ============================================================================
+  # QUALITY GATE VALIDATION - Environment-Specific Thresholds
+  # ============================================================================
+  validate-quality-gate:
+    name: Validate Quality Gate
+    runs-on: ubuntu-latest
+    needs: calculate-codex-score
+
+    steps:
+      - name: 📊 Display Codex Results
+        run: |
+          echo "Ultimate Power Score: ${{ needs.calculate-codex-score.outputs.ultimate-power-score }}"
+          echo "Divine Balance: ${{ needs.calculate-codex-score.outputs.in-divine-balance }}"
+          echo "Championship Mode: ${{ needs.calculate-codex-score.outputs.is-championship-mode }}"
+          echo "Framework Healthy: ${{ needs.calculate-codex-score.outputs.framework-healthy }}"
+
+      - name: 🏆 PRODUCTION - Championship Mode Required (≥10.0)
+        if: github.ref == 'refs/heads/production' || github.ref == 'refs/heads/main'
+        run: |
+          SCORE=${{ needs.calculate-codex-score.outputs.ultimate-power-score }}
+
+          echo "🎯 Production Deployment Quality Gate"
+          echo "Required: Championship Mode (≥$PRODUCTION_MIN_SCORE)"
+          echo "Current Score: $SCORE"
+
+          if (( $(echo "$SCORE >= $PRODUCTION_MIN_SCORE" | bc -l) )); then
+            if (( $(echo "$SCORE >= $DIVINE_BALANCE_MIN" | bc -l) )); then
+              echo "🌟 DIVINE BALANCE ACHIEVED! Score: $SCORE/12"
+              echo "✅ Production deployment APPROVED with DIVINE EXCELLENCE"
+            else
+              echo "🏆 CHAMPIONSHIP MODE! Score: $SCORE/12"
+              echo "✅ Production deployment APPROVED"
+            fi
+          else
+            echo "❌ FAILED: Score $SCORE < $PRODUCTION_MIN_SCORE"
+            echo "❌ Production requires Championship Mode for deployment"
+            exit 1
+          fi
+
+      - name: ⚠️ STAGING - Operational Excellence Required (≥8.0)
+        if: github.ref == 'refs/heads/staging'
+        run: |
+          SCORE=${{ needs.calculate-codex-score.outputs.ultimate-power-score }}
+
+          echo "🎯 Staging Deployment Quality Gate"
+          echo "Required: Operational Excellence (≥$STAGING_MIN_SCORE)"
+          echo "Current Score: $SCORE"
+
+          if (( $(echo "$SCORE >= $STAGING_MIN_SCORE" | bc -l) )); then
+            if (( $(echo "$SCORE >= $PRODUCTION_MIN_SCORE" | bc -l) )); then
+              echo "🏆 CHAMPIONSHIP MODE! Ready for production promotion"
+            fi
+            echo "✅ Staging deployment APPROVED"
+          else
+            echo "❌ FAILED: Score $SCORE < $STAGING_MIN_SCORE"
+            echo "❌ Staging requires Operational Excellence for deployment"
+            exit 1
+          fi
+
+      - name: ℹ️ DEVELOPMENT - Basic Functionality Required (≥6.0)
+        if: github.ref == 'refs/heads/develop'
+        run: |
+          SCORE=${{ needs.calculate-codex-score.outputs.ultimate-power-score }}
+
+          echo "🎯 Development Quality Gate"
+          echo "Required: Basic Functionality (≥$DEVELOPMENT_MIN_SCORE)"
+          echo "Current Score: $SCORE"
+
+          if (( $(echo "$SCORE >= $DEVELOPMENT_MIN_SCORE" | bc -l) )); then
+            echo "✅ Development quality gate PASSED"
+          else
+            echo "⚠️ WARNING: Score $SCORE < $DEVELOPMENT_MIN_SCORE"
+            echo "⚠️ Development quality is below minimum threshold"
+            # Don't fail on development branch, just warn
+          fi
+
+      - name: 🔍 Framework Health Check
+        run: |
+          HEALTHY=${{ needs.calculate-codex-score.outputs.framework-healthy }}
+
+          if [ "$HEALTHY" = "true" ]; then
+            echo "✅ Codex Framework is HEALTHY"
+          else
+            echo "⚠️ WARNING: Codex Framework reports unhealthy status"
+            echo "⚠️ Review amplification metrics and alerts"
+          fi
+
+  # ============================================================================
+  # DIVINE BALANCE CELEBRATION - Special Recognition
+  # ============================================================================
+  celebrate-divine-balance:
+    name: 🌟 Divine Balance Achievement
+    runs-on: ubuntu-latest
+    needs: calculate-codex-score
+    if: needs.calculate-codex-score.outputs.in-divine-balance == 'true'
+
+    steps:
+      - name: 🌟 Celebrate Divine Balance
+        run: |
+          SCORE=${{ needs.calculate-codex-score.outputs.ultimate-power-score }}
+
+          echo "═══════════════════════════════════════════════════════"
+          echo "                                                       "
+          echo "          🌟  DIVINE BALANCE ACHIEVED!  🌟           "
+          echo "                                                       "
+          echo "           Ultimate Power: $SCORE / 12.0              "
+          echo "                                                       "
+          echo "     THE TERRAFUSION WAY - GOVERNMENT. TRANSCENDED.   "
+          echo "                                                       "
+          echo "═══════════════════════════════════════════════════════"
+
+      - name: 📢 Create Divine Balance Issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const score = ${{ needs.calculate-codex-score.outputs.ultimate-power-score }};
+            const title = `🌟 Divine Balance Achieved - Score: ${score}/12`;
+            const body = `## Divine Balance Achievement
+
+            The Codex 3-6-9 Framework has achieved **Divine Balance**!
+
+            ### Metrics
+            - **Ultimate Power Score**: ${score} / 12.0
+            - **Status**: Divine Balance (11.5 - 12.0 range)
+            - **Timestamp**: ${new Date().toISOString()}
+            - **Branch**: ${{ github.ref_name }}
+            - **Commit**: ${{ github.sha }}
+
+            ### What This Means
+            The system has achieved the highest level of operational excellence across all measured domains:
+            - System Performance
+            - Code Quality
+            - Government Compliance
+            - User Experience
+
+            This represents **perfect operational harmony** and demonstrates championship-grade excellence.
+
+            ### THE TERRAFUSION WAY - GOVERNMENT. TRANSCENDED.
+            `;
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              labels: ['divine-balance', 'codex-369', 'excellence']
+            });
+
+  # ============================================================================
+  # SUMMARY REPORT - Comprehensive Results
+  # ============================================================================
+  generate-summary:
+    name: Generate Quality Gate Summary
+    runs-on: ubuntu-latest
+    needs: [build-and-test, calculate-codex-score, validate-quality-gate]
+    if: always()
+
+    steps:
+      - name: 📋 Create Summary
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << 'EOF'
+          # Codex 3-6-9 Quality Gate Report
+
+          ## 🎯 Ultimate Power Score
+          **${{ needs.calculate-codex-score.outputs.ultimate-power-score }} / 12.0**
+
+          ### Status
+          - **Divine Balance (11.5-12.0)**: ${{ needs.calculate-codex-score.outputs.in-divine-balance == 'true' && '✅ ACHIEVED' || '❌ Not Achieved' }}
+          - **Championship Mode (≥10.0)**: ${{ needs.calculate-codex-score.outputs.is-championship-mode == 'true' && '✅ ACTIVE' || '❌ Inactive' }}
+          - **Framework Healthy**: ${{ needs.calculate-codex-score.outputs.framework-healthy == 'true' && '✅ HEALTHY' || '⚠️ Unhealthy' }}
+
+          ## 📊 Build Metrics
+          - **Test Coverage**: ${{ needs.build-and-test.outputs.test-coverage }}%
+          - **Build Status**: ${{ needs.build-and-test.outputs.build-success == 'true' && '✅ Success' || '❌ Failed' }}
+
+          ## 🚀 Deployment Readiness
+          ${{ github.ref == 'refs/heads/production' && '**Production**: Championship Mode Required (≥10.0)' || '' }}
+          ${{ github.ref == 'refs/heads/staging' && '**Staging**: Operational Excellence Required (≥8.0)' || '' }}
+          ${{ github.ref == 'refs/heads/develop' && '**Development**: Basic Functionality Required (≥6.0)' || '' }}
+
+          ---
+          *THE TERRAFUSION WAY - GOVERNMENT. TRANSCENDED.*
+          EOF
+
+          echo "✅ Quality gate summary generated"

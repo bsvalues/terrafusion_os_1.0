@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Adds a database-maintained, incrementing ID field to an existing table or feature class in a Dameng, IBM Db2, Microsoft Azure SQL Database, Microsoft SQL Server, Oracle, or PostgreSQL database. A database-maintained ID field is required for all feature classes or tables you plan to edit through a feature service.",
+        "field_name.descr": "<xdoc><p>The name to be used for the ID field. If no input is provided, the default <span class=\"esri_fieldname\">ObjectID</span> will be used.</p></xdoc>",
+        "field_name.title": "Field Name",
+        "in_table.descr": "The location and name of the table or feature class to which an ID field will be added.",
+        "in_table.title": "Input Table",
+        "out_table.title": "Updated Input Table",
+        "title": "Add Incrementing ID Field"
+    }
+}

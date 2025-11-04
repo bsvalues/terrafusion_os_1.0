@@ -1,0 +1,41 @@
+{
+    "type": "FunctionTool",
+    "guid": "{e69424f7-f641-4a8c-8ede-8fa2924e04ea}",
+    "displayname": "$rc:title",
+    "helpcontent": "71010036",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "block_add_to_map"
+    ],
+    "params": {
+        "in_network_diagram_layer": {
+            "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}",
+            "displayname": "$rc:in_network_diagram_layer.title",
+            "datatype": {
+                "type": "GPDiagramLayer"
+            }
+        },
+        "out_ndld_file": {
+            "direction": "out",
+            "displayname": "$rc:out_ndld_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "ndld"
+                ]
+            }
+        },
+        "out_network_diagram_layer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_network_diagram_layer.title",
+            "datatype": {
+                "type": "GPDiagramLayer"
+            }
+        }
+    }
+}

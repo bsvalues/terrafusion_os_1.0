@@ -1,13 +1,16 @@
 /// <reference types="vite/client" />
+/// <reference types="react" />
+/// <reference types="react-dom" />
+/// <reference path="./types/jsx.d.ts" />
 
 interface ImportMetaEnv {
-  readonly VITE_API_BASE_URL: string
-  readonly VITE_API_URL: string
+  readonly VITE_API_BASE_URL: string;
+  readonly VITE_API_URL: string;
   // more env variables...
 }
 
 interface ImportMeta {
-  readonly env: ImportMetaEnv
+  readonly env: ImportMetaEnv;
 }
 
 // Electron preload API typing

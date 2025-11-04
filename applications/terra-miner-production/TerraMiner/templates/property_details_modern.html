@@ -1,0 +1,458 @@
+{% extends 'new_unified_base.html' %}
+
+{% block title %}{{ property.address if property else 'Property Details' }}{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    .feature-badge {
+        background-color: #1e3958;
+        color: #fff;
+        padding: 4px 8px;
+        border-radius: 4px;
+        margin-right: 8px;
+        margin-bottom: 8px;
+        display: inline-block;
+        font-size: 0.85rem;
+    }
+    
+    .price-history-item, .tax-history-item {
+        padding: 12px;
+        margin-bottom: 10px;
+        border-radius: 6px;
+        border-left: 3px solid #1e3958;
+    }
+    
+    .status-badge {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+    }
+    
+    .gallery-img {
+        height: 200px;
+        object-fit: cover;
+        cursor: pointer;
+        border-radius: 6px;
+        transition: transform 0.3s;
+    }
+    
+    .gallery-img:hover {
+        transform: scale(1.02);
+    }
+    
+    .main-image {
+        height: 400px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+    
+    .detail-icon {
+        color: #1e3958;
+        margin-right: 8px;
+    }
+    
+    .property-header {
+        position: relative;
+        padding: 30px;
+        background-size: cover;
+        background-position: center;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        min-height: 150px;
+    }
+    
+    .property-header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 8px;
+    }
+    
+    .property-header-content {
+        position: relative;
+        z-index: 1;
+        color: white;
+    }
+    
+    .section-heading {
+        border-bottom: 2px solid #1e3958;
+        padding-bottom: 8px;
+        margin-bottom: 20px;
+        color: #1e3958;
+    }
+    
+    .map-container {
+        height: 350px;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    #propertyMap {
+        height: 100%;
+    }
+    
+    .similar-property-card {
+        transition: transform 0.3s, box-shadow 0.3s;
+        height: 100%;
+    }
+    
+    .similar-property-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .similar-property-img {
+        height: 180px;
+        object-fit: cover;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    {% if property %}
+        <!-- Property Header -->
+        <div class="property-header" style="background-image: url('{{ property.main_image_url if property.main_image_url else 'https://via.placeholder.com/1200x400?text=No+Property+Image+Available' }}');">
+            <div class="property-header-content">
+                <h1 class="mb-2">{{ property.address }}</h1>
+                <h3 class="mb-3">{{ property.city }}, {{ property.state }} {{ property.zip_code }}</h3>
+                <div class="d-flex align-items-center">
+                    <span class="status-badge bg-success text-white me-3">{{ property.status }}</span>
+                    <h2>${{ property.price | format_number if property.price else 'Price Not Available' }}</h2>
+                </div>
+            </div>
+        </div>
+    
+        <div class="row">
+            <!-- Property Details Column -->
+            <div class="col-lg-8">
+                <!-- Quick Info -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-4 border-end">
+                                <div><i class="bi bi-house-door detail-icon fs-4"></i></div>
+                                <div class="text-muted">Bedrooms</div>
+                                <div class="fs-4 fw-bold">{{ property.bedrooms if property.bedrooms else 'N/A' }}</div>
+                            </div>
+                            <div class="col-4 border-end">
+                                <div><i class="bi bi-droplet detail-icon fs-4"></i></div>
+                                <div class="text-muted">Bathrooms</div>
+                                <div class="fs-4 fw-bold">{{ property.bathrooms if property.bathrooms else 'N/A' }}</div>
+                            </div>
+                            <div class="col-4">
+                                <div><i class="bi bi-aspect-ratio detail-icon fs-4"></i></div>
+                                <div class="text-muted">Square Feet</div>
+                                <div class="fs-4 fw-bold">{{ property.square_feet | format_number if property.square_feet else 'N/A' }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                <!-- Description -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-info-circle detail-icon"></i> Description</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ property.description if property.description else 'No description available for this property.' }}</p>
+                    </div>
+                </div>
+            
+                <!-- Features -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-list-check detail-icon"></i> Features</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if property.features and property.features|length > 0 %}
+                            {% for feature in property.features %}
+                                <span class="feature-badge">{{ feature }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <p>No features listed for this property.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            
+                <!-- Image Gallery -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-images detail-icon"></i> Property Images</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if property.images and property.images|length > 0 %}
+                            <div class="row">
+                                {% for image in property.images %}
+                                    <div class="col-md-4 mb-3">
+                                        <img src="{{ image.url }}" alt="Property Image {{ loop.index }}" class="img-fluid gallery-img w-100" data-bs-toggle="modal" data-bs-target="#imageModal" data-src="{{ image.url }}">
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-3">
+                                <i class="bi bi-camera text-muted fs-1"></i>
+                                <p class="mt-2">No images available for this property.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            
+                <!-- Price History -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-currency-dollar detail-icon"></i> Price History</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if property.price_history and property.price_history|length > 0 %}
+                            {% for price in property.price_history %}
+                                <div class="price-history-item bg-light">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="text-muted">Date</div>
+                                            <div class="fw-bold">{{ price.date }}</div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="text-muted">Price</div>
+                                            <div class="fw-bold">${{ price.price | format_number }}</div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="text-muted">Event</div>
+                                            <div class="fw-bold">{{ price.event }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p>No price history available for this property.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            
+                <!-- Tax History -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-file-text detail-icon"></i> Tax History</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if property.tax_history and property.tax_history|length > 0 %}
+                            {% for tax in property.tax_history %}
+                                <div class="tax-history-item bg-light">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="text-muted">Year</div>
+                                            <div class="fw-bold">{{ tax.year }}</div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="text-muted">Tax Amount</div>
+                                            <div class="fw-bold">${{ tax.amount | format_number }}</div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="text-muted">Assessed Value</div>
+                                            <div class="fw-bold">${{ tax.assessed_value | format_number }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p>No tax history available for this property.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Contact Agent Card -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-person detail-icon"></i> Contact Agent</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-3">
+                            <img src="https://via.placeholder.com/100x100?text=Agent" alt="Agent" class="rounded-circle" width="100" height="100">
+                            <h5 class="mt-2">{{ property.agent_name if property.agent_name else 'No Agent Information' }}</h5>
+                            <p class="text-muted">Real Estate Professional</p>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contactName" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="contactName">
+                        </div>
+                        <div class="mb-3">
+                            <label for="contactEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="contactEmail">
+                        </div>
+                        <div class="mb-3">
+                            <label for="contactPhone" class="form-label">Phone</label>
+                            <input type="tel" class="form-control" id="contactPhone">
+                        </div>
+                        <div class="mb-3">
+                            <label for="contactMessage" class="form-label">Message</label>
+                            <textarea class="form-control" id="contactMessage" rows="3"></textarea>
+                        </div>
+                        <button class="btn btn-primary w-100">Contact Now</button>
+                    </div>
+                </div>
+            
+                <!-- Map Card -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-geo-alt detail-icon"></i> Location</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="map-container">
+                            <div id="propertyMap">
+                                {% if property.latitude and property.longitude %}
+                                    <iframe 
+                                        width="100%" 
+                                        height="100%" 
+                                        frameborder="0" 
+                                        scrolling="no" 
+                                        marginheight="0" 
+                                        marginwidth="0" 
+                                        src="https://maps.google.com/maps?q={{ property.latitude }},{{ property.longitude }}&z=15&output=embed">
+                                    </iframe>
+                                {% else %}
+                                    <div class="d-flex flex-column align-items-center justify-content-center h-100 bg-light">
+                                        <i class="bi bi-map text-muted fs-1"></i>
+                                        <p class="mt-2">Location data not available</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                <!-- Mortgage Calculator -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-calculator detail-icon"></i> Mortgage Calculator</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="mortgagePrice" class="form-label">Home Price</label>
+                            <input type="number" class="form-control" id="mortgagePrice" value="{{ property.price if property.price else 300000 }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="downPayment" class="form-label">Down Payment (%)</label>
+                            <input type="number" class="form-control" id="downPayment" value="20">
+                        </div>
+                        <div class="mb-3">
+                            <label for="interestRate" class="form-label">Interest Rate (%)</label>
+                            <input type="number" class="form-control" id="interestRate" value="5.5" step="0.1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="loanTerm" class="form-label">Loan Term (years)</label>
+                            <select class="form-select" id="loanTerm">
+                                <option value="15">15 years</option>
+                                <option value="20">20 years</option>
+                                <option value="30" selected>30 years</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary w-100 mb-3" id="calculateMortgage">Calculate</button>
+                        <div class="text-center p-3 border rounded mt-3 d-none" id="mortgageResult">
+                            <h6 class="mb-2">Estimated Monthly Payment</h6>
+                            <h3 class="mb-0" id="monthlyPayment">$1,520</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Similar Properties -->
+        <div class="row">
+            <div class="col-12">
+                <h2 class="section-heading">Similar Properties</h2>
+            </div>
+        </div>
+        <div class="row">
+            {% if property.similar_properties and property.similar_properties|length > 0 %}
+                {% for similar in property.similar_properties %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card similar-property-card">
+                            <img src="{{ similar.image_url if similar.image_url else 'https://via.placeholder.com/400x300?text=No+Image' }}" class="card-img-top similar-property-img" alt="{{ similar.address }}">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ similar.address }}</h5>
+                                <p class="card-text text-primary fw-bold">${{ similar.price | format_number }}</p>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <span><i class="bi bi-house-door"></i> {{ similar.bedrooms }} bd</span>
+                                    <span><i class="bi bi-droplet"></i> {{ similar.bathrooms }} ba</span>
+                                    <span><i class="bi bi-aspect-ratio"></i> {{ similar.square_feet | format_number }} sqft</span>
+                                </div>
+                                <a href="/property/{{ similar.id }}" class="btn btn-outline-primary w-100">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info">No similar properties available at this time.</div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Image Modal -->
+        <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="imageModalLabel">Property Image</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img src="" id="modalImage" class="img-fluid" alt="Property Image">
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-warning">
+            <h4 class="alert-heading">Property Not Found</h4>
+            <p>Sorry, we couldn't find the property you were looking for. It may have been removed or the URL is incorrect.</p>
+            <hr>
+            <a href="/properties" class="btn btn-primary">Browse Properties</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle image modal
+        document.querySelectorAll('.gallery-img').forEach(img => {
+            img.addEventListener('click', function() {
+                document.getElementById('modalImage').src = this.dataset.src;
+            });
+        });
+        
+        // Mortgage calculator
+        document.getElementById('calculateMortgage').addEventListener('click', function() {
+            const price = parseFloat(document.getElementById('mortgagePrice').value) || 0;
+            const downPaymentPercent = parseFloat(document.getElementById('downPayment').value) || 0;
+            const interestRate = parseFloat(document.getElementById('interestRate').value) || 0;
+            const loanTerm = parseInt(document.getElementById('loanTerm').value) || 30;
+            
+            const downPayment = price * (downPaymentPercent / 100);
+            const loanAmount = price - downPayment;
+            const monthlyInterest = interestRate / 100 / 12;
+            const payments = loanTerm * 12;
+            
+            let monthlyPayment = 0;
+            if (interestRate > 0) {
+                monthlyPayment = loanAmount * (monthlyInterest * Math.pow(1 + monthlyInterest, payments)) / (Math.pow(1 + monthlyInterest, payments) - 1);
+            } else {
+                monthlyPayment = loanAmount / payments;
+            }
+            
+            document.getElementById('monthlyPayment').textContent = '$' + monthlyPayment.toFixed(2);
+            document.getElementById('mortgageResult').classList.remove('d-none');
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,141 @@
+{
+    "type": "FunctionTool",
+    "guid": "{d758b4e5-7db7-4b29-979c-b4b0731d3e7f}",
+    "displayname": "$rc:title",
+    "helpcontent": "67010001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "33"
+    ],
+    "params": {
+        "in_territory_solution": {
+            "displayname": "$rc:in_territory_solution.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPGroupLayer"
+                    },
+                    {
+                        "type": "DEFeatureDataset"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "description": "$rc:in_territory_solution.descr"
+        },
+        "level": {
+            "displayname": "$rc:level.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "depends": [
+                "in_territory_solution"
+            ],
+            "description": "$rc:level.descr"
+        },
+        "base_level": {
+            "displayname": "$rc:base_level.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "depends": [
+                "in_territory_solution"
+            ],
+            "description": "$rc:base_level.descr"
+        },
+        "variables": {
+            "displayname": "$rc:variables.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:variables.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:variables.dt.title2"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:variables.dt.title3"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:variables.dt.title4"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "COUNT",
+                                "code": "$rc:variables.domain.item2.COUNT"
+                            },
+                            {
+                                "value": "SUM",
+                                "code": "$rc:variables.domain.item2.SUM"
+                            },
+                            {
+                                "value": "MAXIMUM",
+                                "code": "$rc:variables.domain.item2.MAXIMUM"
+                            },
+                            {
+                                "value": "MINIMUM",
+                                "code": "$rc:variables.domain.item2.MINIMUM"
+                            },
+                            {
+                                "value": "AVERAGE",
+                                "code": "$rc:variables.domain.item2.AVERAGE"
+                            },
+                            {
+                                "value": "MEDIAN",
+                                "code": "$rc:variables.domain.item2.MEDIAN"
+                            },
+                            {
+                                "value": "STANDARD_DEVIATION",
+                                "code": "$rc:variables.domain.item2.STANDARD_DEVIATION"
+                            },
+                            {
+                                "value": "PERCENT_OF_TOTAL",
+                                "code": "$rc:variables.domain.item2.PERCENT_OF_TOTAL"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:variables.descr"
+        },
+        "out_territory_solution": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_territory_solution.title",
+            "datatype": {
+                "type": "GPGroupLayer"
+            },
+            "depends": [
+                "in_territory_solution"
+            ]
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

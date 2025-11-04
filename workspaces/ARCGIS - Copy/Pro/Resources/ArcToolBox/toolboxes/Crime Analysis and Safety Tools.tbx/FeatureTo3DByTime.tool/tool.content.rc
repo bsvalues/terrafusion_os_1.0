@@ -1,0 +1,19 @@
+{
+    "map": {
+        "base_date.descr": "<xdoc><p>The date and time on which the time extrusion will be based.</p><p>When no value is specified, the minimum date value of the input will be used.</p></xdoc>",
+        "base_date.title": "Base Date and Time",
+        "base_z.descr": "The base z-value from which the output feature will start the extrusion.",
+        "base_z.title": "Base z-value",
+        "date_field.descr": "A date field from the input that will be used to calculate the extrusion of the feature..",
+        "date_field.title": "Date Field",
+        "description": "Creates a 3D feature class using date values from\ninput features.",
+        "in_features.descr": "The features used to create 3D features.",
+        "in_features.title": "Input Features",
+        "out_feature_class.descr": "The output z-enabled feature class.",
+        "out_feature_class.title": "Output Feature Class",
+        "summary": "Creates a 3D feature class using date values from input features.",
+        "time_z_unit.descr": "<xdoc><p>The time interval and unit that will be represented by one vertical linear unit in the output feature class.</p><p>For example, if the output feature class has a vertical coordinate system based in meters and this parameter has a value of 1 second, the resulting feature class will have features extruded in which 1 meter of elevation is equal to 1 second of time.</p></xdoc>",
+        "time_z_unit.title": "Time Z Interval and Unit",
+        "title": "Feature To 3D By Time"
+    }
+}

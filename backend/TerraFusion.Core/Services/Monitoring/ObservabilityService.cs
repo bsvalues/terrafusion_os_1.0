@@ -341,7 +341,7 @@ public class ObservabilityService : IObservabilityService
         return totalRequests > 0 ? (double)totalErrors / totalRequests * 100 : 0;
     }
 
-    private async Task<double> GetDiskUsageAsync()
+    private Task<double> GetDiskUsageAsync()
     {
         // Simplified disk usage calculation
         try
@@ -349,11 +349,11 @@ public class ObservabilityService : IObservabilityService
             var drives = DriveInfo.GetDrives().Where(d => d.IsReady);
             var totalUsed = drives.Sum(d => d.TotalSize - d.TotalFreeSpace);
             var totalSize = drives.Sum(d => d.TotalSize);
-            return totalSize > 0 ? (double)totalUsed / totalSize * 100 : 0;
+            return Task.FromResult(totalSize > 0 ? (double)totalUsed / totalSize * 100 : 0);
         }
         catch
         {
-            return 0;
+            return Task.FromResult(0.0);
         }
     }
 

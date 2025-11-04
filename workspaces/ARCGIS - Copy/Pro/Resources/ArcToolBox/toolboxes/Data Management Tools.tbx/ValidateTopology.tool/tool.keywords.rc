@@ -1,0 +1,26 @@
+{
+    "set": [
+        "bad",
+        "break",
+        "build",
+        "check",
+        "clean",
+        "cluster",
+        "coincident",
+        "confirm",
+        "crack",
+        "error",
+        "find",
+        "force",
+        "geometry",
+        "problem",
+        "relationship",
+        "rule",
+        "share",
+        "spatial",
+        "topology",
+        "valid",
+        "vertex",
+        "vertices"
+    ]
+}

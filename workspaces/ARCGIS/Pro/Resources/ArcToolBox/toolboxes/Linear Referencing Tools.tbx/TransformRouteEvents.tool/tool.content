@@ -1,0 +1,139 @@
+{
+    "type": "FunctionTool",
+    "guid": "{b5b5dc5e-dd4c-41a8-b21d-4756e6785e0d}",
+    "displayname": "$rc:title",
+    "helpcontent": "7000008",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_table": {
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "domain": {
+                "type": "xmlserialize",
+                "xml": "<GPRouteMeasureEventDomain xsi:type='typens:GPRouteMeasureEventDomain' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/3.4.0'></GPRouteMeasureEventDomain>"
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "in_event_properties": {
+            "displayname": "$rc:in_event_properties.title",
+            "datatype": {
+                "type": "GPRouteMeasureEventProperties"
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:in_event_properties.descr"
+        },
+        "in_routes": {
+            "displayname": "$rc:in_routes.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "xmlserialize",
+                "xml": "<GPRouteDomain xsi:type='typens:GPRouteDomain' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/3.4.0'></GPRouteDomain>"
+            },
+            "description": "$rc:in_routes.descr"
+        },
+        "route_id_field": {
+            "displayname": "$rc:route_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "guid": "{4A4F70B0-913C-4A82-A33F-E190FFA409EA}"
+            },
+            "depends": [
+                "in_routes"
+            ],
+            "description": "$rc:route_id_field.descr"
+        },
+        "target_routes": {
+            "displayname": "$rc:target_routes.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "xmlserialize",
+                "xml": "<GPRouteDomain xsi:type='typens:GPRouteDomain' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/3.4.0'></GPRouteDomain>"
+            },
+            "description": "$rc:target_routes.descr"
+        },
+        "target_route_id_field": {
+            "displayname": "$rc:target_route_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "guid": "{4A4F70B0-913C-4A82-A33F-E190FFA409EA}"
+            },
+            "depends": [
+                "target_routes"
+            ],
+            "description": "$rc:target_route_id_field.descr"
+        },
+        "out_table": {
+            "direction": "out",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "description": "$rc:out_table.descr"
+        },
+        "out_event_properties": {
+            "displayname": "$rc:out_event_properties.title",
+            "datatype": {
+                "type": "GPRouteMeasureEventProperties"
+            },
+            "description": "$rc:out_event_properties.descr"
+        },
+        "cluster_tolerance": {
+            "displayname": "$rc:cluster_tolerance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "target_routes"
+            ],
+            "value": "0 Unknown",
+            "description": "$rc:cluster_tolerance.descr"
+        },
+        "in_fields": {
+            "type": "optional",
+            "displayname": "$rc:in_fields.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FIELDS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_FIELDS"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:in_fields.descr"
+        }
+    },
+    "environments": [
+        "configKeyword",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

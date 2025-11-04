@@ -1,0 +1,204 @@
+<?xml version="1.0"?>
+<xs:schema xmlns="http://www.esri.com/schemas/ArcGIS/3.4.0" targetNamespace="http://www.esri.com/schemas/ArcGIS/3.4.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:include schemaLocation="GeoDatabaseExtensions.xsd" />
+  <xs:include schemaLocation="NetworkAnalyst.xsd" />
+  <xs:simpleType name="esriExecutionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="esriExecutionTypeAsynchronous" />
+      <xs:enumeration value="esriExecutionTypeSynchronous" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="esriGPParameterDirection">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="esriGPParameterDirectionInput" />
+      <xs:enumeration value="esriGPParameterDirectionOutput" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="esriGPParameterType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="esriGPParameterTypeRequired" />
+      <xs:enumeration value="esriGPParameterTypeOptional" />
+      <xs:enumeration value="esriGPParameterTypeDerived" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="GPResult">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Values" type="GPValues" />
+      <xs:element minOccurs="0" name="Messages" type="ArrayOfJobMessage" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="GPToolInfo">
+    <xs:sequence>
+      <xs:element name="Name" type="xs:string" />
+      <xs:element name="DisplayName" type="xs:string" />
+      <xs:element name="Category" type="xs:string" />
+      <xs:element name="Help" type="xs:string" />
+      <xs:element minOccurs="0" name="ParameterInfo" type="ArrayOfGPParameterInfo" />
+      <xs:element minOccurs="0" name="Extent" type="Envelope" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfGPToolInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="GPToolInfo" type="GPToolInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="GPParameterInfo">
+    <xs:sequence>
+      <xs:element name="Name" type="xs:string" />
+      <xs:element name="DisplayName" type="xs:string" />
+      <xs:element name="Category" type="xs:string" />
+      <xs:element name="DataType" type="xs:string" />
+      <xs:element name="Direction" type="esriGPParameterDirection" />
+      <xs:element name="ParamType" type="esriGPParameterType" />
+      <xs:element minOccurs="0" name="ChoiceList" type="ArrayOfString" />
+      <xs:element minOccurs="0" name="Value" type="GPValue" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="GPResultOptions">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="DensifyFeatures" type="xs:boolean" />
+      <xs:element minOccurs="0" name="TransportType" type="esriGDSTransportType" />
+      <xs:element minOccurs="0" name="SpatialReference" type="SpatialReference" />
+      <xs:element minOccurs="0" name="Format" type="xs:string" />
+      <xs:element minOccurs="0" name="FormatProperties" type="PropertySet" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfGPParameterInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="GPParameterInfo" type="GPParameterInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="GPValue" abstract="true" />
+  <xs:complexType name="GPString">
+    <xs:complexContent mixed="false">
+      <xs:extension base="GPValue">
+        <xs:sequence>
+          <xs:element name="Value" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="GPDouble">
+    <xs:complexContent mixed="false">
+      <xs:extension base="GPValue">
+        <xs:sequence>
+          <xs:element name="Value" type="xs:double" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="GPLong">
+    <xs:complexContent mixed="false">
+      <xs:extension base="GPValue">
+        <xs:sequence>
+          <xs:element name="Value" type="xs:int" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="GPBoolean">
+    <xs:complexContent mixed="false">
+      <xs:extension base="GPValue">
+        <xs:sequence>
+          <xs:element name="Value" type="xs:boolean" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="GPDate">
+    <xs:complexContent mixed="false">
+      <xs:extension base="GPValue">
+        <xs:sequence>
+          <xs:element name="Value" type="xs:dateTime" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="GPRecordSet">
+    <xs:complexContent mixed="false">
+      <xs:extension base="GPValue">
+        <xs:sequence>
+          <xs:element name="RecordSet" type="RecordSet" />
+          <xs:element minOccurs="0" name="OIDFieldName" type="xs:string" />
+          <xs:element minOccurs="0" name="ExceededTransferLimit" type="xs:boolean" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="GPRasterData">
+    <xs:complexContent mixed="false">
+      <xs:extension base="GPValue">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Data" type="GDSData" />
+          <xs:element minOccurs="0" name="Format" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="GPDataFile">
+    <xs:complexContent mixed="false">
+      <xs:extension base="GPValue">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Data" type="GDSData" />
+          <xs:element minOccurs="0" name="File" type="xs:string" />
+          <xs:element minOccurs="0" name="DatasetName" type="xs:string" />
+          <xs:element minOccurs="0" name="DataType" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="GPValues">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="GPValue" type="GPValue" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="GPLinearUnit">
+    <xs:complexContent mixed="false">
+      <xs:extension base="GPValue">
+        <xs:sequence>
+          <xs:element name="Value" type="xs:double" />
+          <xs:element name="Units" type="esriUnits" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="GPFeatureRecordSetLayer">
+    <xs:complexContent mixed="false">
+      <xs:extension base="GPValue">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="RecordSet" type="RecordSet" />
+          <xs:element minOccurs="0" name="OIDFieldName" type="xs:string" />
+          <xs:element minOccurs="0" name="ShapeFieldName" type="xs:string" />
+          <xs:element minOccurs="0" name="LayerDrawingDescription" type="LayerDrawingDescription" />
+          <xs:element minOccurs="0" name="ExceededTransferLimit" type="xs:boolean" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="GPRasterDataLayer">
+    <xs:complexContent mixed="false">
+      <xs:extension base="GPValue">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Data" type="GDSData" />
+          <xs:element minOccurs="0" name="Format" type="xs:string" />
+          <xs:element minOccurs="0" name="LayerDrawingDescription" type="LayerDrawingDescription" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfNetworkSource">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="NetworkSource" type="NetworkSource" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="GPMultiValue">
+    <xs:complexContent mixed="false">
+      <xs:extension base="GPValue">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="MemberDataType" type="xs:string" />
+          <xs:element minOccurs="0" name="Values" type="GPValues" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+</xs:schema>

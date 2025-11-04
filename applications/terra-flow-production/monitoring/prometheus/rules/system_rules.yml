@@ -1,0 +1,102 @@
+groups:
+  - name: system_rules
+    rules:
+      - alert: HighCPUUsage
+        expr: terrafusion_cpu_usage > 80
+        for: 15m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "High CPU Usage"
+          description: "CPU usage is {{ $value }}%"
+          
+      - alert: CriticalCPUUsage
+        expr: terrafusion_cpu_usage > 95
+        for: 5m
+        labels:
+          severity: critical
+          service: system
+        annotations:
+          summary: "Critical CPU Usage"
+          description: "CPU usage is {{ $value }}%"
+          
+      - alert: HighMemoryUsage
+        expr: terrafusion_memory_usage_percent > 85
+        for: 15m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "High Memory Usage"
+          description: "Memory usage is {{ $value }}%"
+          
+      - alert: CriticalMemoryUsage
+        expr: terrafusion_memory_usage_percent > 95
+        for: 5m
+        labels:
+          severity: critical
+          service: system
+        annotations:
+          summary: "Critical Memory Usage"
+          description: "Memory usage is {{ $value }}%"
+          
+      - alert: HighDiskUsage
+        expr: terrafusion_disk_usage_percent{mountpoint="/"} > 80
+        for: 30m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "High Disk Usage"
+          description: "Disk usage on {{ $labels.mountpoint }} is {{ $value }}%"
+          
+      - alert: CriticalDiskUsage
+        expr: terrafusion_disk_usage_percent{mountpoint="/"} > 95
+        for: 5m
+        labels:
+          severity: critical
+          service: system
+        annotations:
+          summary: "Critical Disk Usage"
+          description: "Disk usage on {{ $labels.mountpoint }} is {{ $value }}%"
+          
+      - alert: SlowPageLoad
+        expr: terrafusion_page_load_time_ms{page="/"} > 2000
+        for: 10m
+        labels:
+          severity: warning
+          service: web
+        annotations:
+          summary: "Slow Page Load"
+          description: "Page {{ $labels.page }} is loading slowly: {{ $value }}ms"
+          
+      - alert: HighErrorRate
+        expr: rate(terrafusion_http_5xx_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+          service: web
+        annotations:
+          summary: "High Error Rate"
+          description: "High rate of 5xx errors over the last 5 minutes"
+          
+      - alert: InstanceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: system
+        annotations:
+          summary: "Instance Down"
+          description: "Instance {{ $labels.instance }} is down"
+          
+      - alert: WebServiceUnavailable
+        expr: terrafusion_health_check_success == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: web
+        annotations:
+          summary: "Web Service Unavailable"
+          description: "The TerraFusion web service is not responding to health checks"

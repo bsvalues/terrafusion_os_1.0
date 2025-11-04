@@ -1,0 +1,82 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\CompareNeighborhoodConceptualizations",
+    "displayname": "$rc:title",
+    "helpcontent": "9060019",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "input_fields": {
+            "displayname": "$rc:input_fields.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "BigInteger"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:input_fields.descr"
+        },
+        "out_swm": {
+            "direction": "out",
+            "displayname": "$rc:out_swm.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "swm"
+                ]
+            },
+            "description": "$rc:out_swm.descr"
+        },
+        "id_field": {
+            "displayname": "$rc:id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "BigInteger"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:id_field.descr"
+        }
+    }
+}

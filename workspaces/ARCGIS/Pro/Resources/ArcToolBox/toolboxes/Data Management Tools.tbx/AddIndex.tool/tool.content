@@ -1,0 +1,147 @@
+{
+    "type": "FunctionTool",
+    "guid": "{7bc5463b-faac-4809-81fc-21c440d67d61}",
+    "displayname": "$rc:title",
+    "helpcontent": "3090001",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "block_add_to_map",
+        "input_data_change",
+        "param_nocount:in_table"
+    ],
+    "params": {
+        "in_table": {
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "fields": {
+            "displayname": "$rc:fields.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "BigInteger",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Date",
+                    "DateOnly",
+                    "TimeOnly",
+                    "TimestampOffset",
+                    "GUID",
+                    "GlobalID"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:fields.descr"
+        },
+        "index_name": {
+            "type": "optional",
+            "displayname": "$rc:index_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:index_name.descr"
+        },
+        "unique": {
+            "type": "optional",
+            "displayname": "$rc:unique.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "UNIQUE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NON_UNIQUE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:unique.descr"
+        },
+        "ascending": {
+            "type": "optional",
+            "displayname": "$rc:ascending.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ASCENDING"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NON_ASCENDING"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:ascending.descr"
+        },
+        "out_table": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "depends": [
+                "in_table"
+            ]
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

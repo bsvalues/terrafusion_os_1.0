@@ -1,0 +1,1 @@
+{"title":"Wind Rose Report - FINAL 7","properties":{"formats":"pdf,xlsx","categories":"Custom","dataVintageDescription":"layersSource.Map Layers","dataVersion":"3.1","type":"esriReportTemplateStandard","author":"Garry Burgess","coverage":"US","countries":"US","hierarchy":"census","keywords":"Business Analyst, Custom Report"},"portalUrl":"https://qaext.arcgis.com"}

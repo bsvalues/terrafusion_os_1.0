@@ -1,0 +1,23 @@
+{
+    "map": {
+        "ceiling_height.descr": "A constant height that will be used to define the highest height of the fence diagram.",
+        "ceiling_height.title": "Ceiling Height",
+        "description": "Constructs a vertical cross section of a collection of surfaces.",
+        "floor_height.descr": "A constant height that will be used to define the lowest height of the fence diagram.",
+        "floor_height.title": "Floor Height",
+        "in_line_features.descr": "The line features that will be used to construct the fence diagram.",
+        "in_line_features.title": "Input Line Features",
+        "in_surface.descr": "The raster and TIN surfaces that will be used to construct the fence diagram.",
+        "in_surface.title": "Input Surface",
+        "method.descr": "<xdoc><p>Specifies the interpolation method that will be used to obtain z-values from TIN surfaces when constructing the fence diagram. This parameter does not apply to raster surfaces.</p><ul><li><span title=\"LINEAR\">Linear</span>—Linear interpolation will be used. This is the default.</li><li><span title=\"NATURAL_NEIGHBORS\">Natural Neighbors</span>—Natural neighbors interpolation will be used.</li></ul></xdoc>",
+        "method.domain.LINEAR": "Linear",
+        "method.domain.NATURAL_NEIGHBORS": "Natural Neighbors",
+        "method.title": "Interpolation Method",
+        "out_feature_class.descr": "The output multipatch that is composed of vertical faces that depict the fence diagram.",
+        "out_feature_class.title": "Output Multipatch Feature Class",
+        "params.category1": "Height Extensions",
+        "sample_distance.descr": "The horizontal distance that will be used to determine the positions where height measurements are interpolated from the underlying surfaces.",
+        "sample_distance.title": "Sample Distance",
+        "title": "Fence Diagram"
+    }
+}

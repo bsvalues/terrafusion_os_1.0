@@ -1,0 +1,16 @@
+{
+    "map": {
+        "are_containers_preserved.title": "Preserve container layout",
+        "description": "Apply the compression layout to a diagram",
+        "grouping_distance_absolute.title": "Maximum Distance for Grouping",
+        "in_network_diagram_layer.title": "Input Network Diagram Layer",
+        "out_network_diagram_layer.title": "Output Network Diagram",
+        "params.category1": "Advanced Options",
+        "run_async.title": "Run in asynchronous mode on the server",
+        "title": "Apply Compression Layout",
+        "vertices_removal_rule.domain.ALL": "ALL",
+        "vertices_removal_rule.domain.OUTER": "OUTER",
+        "vertices_removal_rule.domain.OUTER_EXCEPT_FIRST": "OUTER_EXCEPT_FIRST",
+        "vertices_removal_rule.title": "Vertex Removal Rule"
+    }
+}

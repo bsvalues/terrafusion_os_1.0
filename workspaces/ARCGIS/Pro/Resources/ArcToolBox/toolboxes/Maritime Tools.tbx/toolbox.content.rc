@@ -1,0 +1,12 @@
+{
+    "map": {
+        "descr": "The Maritime toolbox contains tools that manage S-57, S-100, VPF, paper charting, and bathymetric data.",
+        "title": "Maritime Tools",
+        "toolset1.name": "Cartography",
+        "toolset2.name": "S-100",
+        "toolset3.name": "S-57\\Management",
+        "toolset4.name": "Data Management",
+        "toolset5.name": "VPF",
+        "toolset6.name": "S-57\\Validation"
+    }
+}

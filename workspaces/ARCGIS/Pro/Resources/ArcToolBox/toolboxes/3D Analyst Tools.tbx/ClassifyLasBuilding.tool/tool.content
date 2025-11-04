@@ -1,0 +1,347 @@
+{
+    "type": "FunctionTool",
+    "guid": "{46d8ebb2-169e-4d28-90b7-140b77120e2e}",
+    "displayname": "$rc:title",
+    "helpcontent": "5090002",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9"
+    ],
+    "attributes": [
+        "input_data_change",
+        "mCPU"
+    ],
+    "params": {
+        "in_las_dataset": {
+            "display_order": "0",
+            "displayname": "$rc:in_las_dataset.title",
+            "datatype": {
+                "type": "GPLasDatasetLayer"
+            },
+            "description": "$rc:in_las_dataset.descr"
+        },
+        "min_height": {
+            "display_order": "1",
+            "displayname": "$rc:min_height.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "description": "$rc:min_height.descr"
+        },
+        "min_area": {
+            "display_order": "3",
+            "displayname": "$rc:min_area.title",
+            "datatype": {
+                "type": "GPArealUnit"
+            },
+            "description": "$rc:min_area.descr"
+        },
+        "compute_stats": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:compute_stats.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "COMPUTE_STATS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_COMPUTE_STATS"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:compute_stats.descr"
+        },
+        "extent": {
+            "type": "optional",
+            "display_order": "14",
+            "displayname": "$rc:extent.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPExtent"
+            },
+            "description": "$rc:extent.descr"
+        },
+        "boundary": {
+            "type": "optional",
+            "display_order": "15",
+            "displayname": "$rc:boundary.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:boundary.descr"
+        },
+        "process_entire_files": {
+            "type": "optional",
+            "display_order": "16",
+            "displayname": "$rc:process_entire_files.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "PROCESS_ENTIRE_FILES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "PROCESS_EXTENT"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:process_entire_files.descr"
+        },
+        "derived_las_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "17",
+            "displayname": "$rc:derived_las_dataset.title",
+            "datatype": {
+                "type": "GPLasDatasetLayer"
+            },
+            "depends": [
+                "in_las_dataset"
+            ]
+        },
+        "point_spacing": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:point_spacing.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "description": "$rc:point_spacing.descr"
+        },
+        "reuse_building": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:reuse_building.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "REUSE_BUILDING"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "RECLASSIFY_BUILDING"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:reuse_building.descr"
+        },
+        "photogrammetric_data": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:photogrammetric_data.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "PHOTOGRAMMETRIC_DATA"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NOT_PHOTOGRAMMETRIC_DATA"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:photogrammetric_data.descr"
+        },
+        "method": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "STANDARD",
+                        "code": "$rc:method.domain.STANDARD"
+                    },
+                    {
+                        "value": "CONSERVATIVE",
+                        "code": "$rc:method.domain.CONSERVATIVE"
+                    },
+                    {
+                        "value": "AGGRESSIVE",
+                        "code": "$rc:method.domain.AGGRESSIVE"
+                    }
+                ]
+            },
+            "value": "STANDARD",
+            "description": "$rc:method.descr"
+        },
+        "classify_above_roof": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:classify_above_roof.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CLASSIFY_ABOVE_ROOF"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_CLASSIFY_ABOVE_ROOF"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:classify_above_roof.descr"
+        },
+        "above_roof_height": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:above_roof_height.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "description": "$rc:above_roof_height.descr"
+        },
+        "above_roof_code": {
+            "type": "optional",
+            "display_order": "11",
+            "displayname": "$rc:above_roof_code.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                }
+            },
+            "description": "$rc:above_roof_code.descr"
+        },
+        "classify_below_roof": {
+            "type": "optional",
+            "display_order": "12",
+            "displayname": "$rc:classify_below_roof.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CLASSIFY_BELOW_ROOF"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_CLASSIFY_BELOW_ROOF"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:classify_below_roof.descr"
+        },
+        "below_roof_code": {
+            "type": "optional",
+            "display_order": "13",
+            "displayname": "$rc:below_roof_code.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                }
+            },
+            "description": "$rc:below_roof_code.descr"
+        },
+        "update_pyramid": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:update_pyramid.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "UPDATE_PYRAMID"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_UPDATE_PYRAMID"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:update_pyramid.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "parallelProcessingFactor"
+    ]
+}

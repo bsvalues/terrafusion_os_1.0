@@ -1,0 +1,8 @@
+﻿<?xml version="1.0"?>
+<model name="GPI">
+  <dataset Label="Dataset" ParamName="dataset1" dataset-type="DSA-XX">
+    <field />
+    <field optional="true" />
+  </dataset>
+  <value name="Power">2</value>
+</model>

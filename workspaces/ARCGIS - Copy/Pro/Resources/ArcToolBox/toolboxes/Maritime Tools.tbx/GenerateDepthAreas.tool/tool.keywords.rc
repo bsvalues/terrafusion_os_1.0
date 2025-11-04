@@ -1,0 +1,24 @@
+{
+    "set": [
+        "areas",
+        "cartography",
+        "catalog",
+        "catalogue",
+        "cell",
+        "depth",
+        "enc",
+        "export",
+        "generate",
+        "import",
+        "inland enc",
+        "load",
+        "maritime",
+        "s-100",
+        "s-101",
+        "s-57",
+        "s100",
+        "s101",
+        "tin",
+        "s57"
+    ]
+}

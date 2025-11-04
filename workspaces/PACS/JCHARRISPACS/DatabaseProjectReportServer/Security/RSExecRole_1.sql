@@ -1,0 +1,6 @@
+CREATE SCHEMA [RSExecRole]
+    AUTHORIZATION [RSExecRole];
+
+
+GO
+

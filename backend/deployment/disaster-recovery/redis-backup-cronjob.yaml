@@ -1,0 +1,62 @@
+# Redis backup using redis-cli --rdb to capture a portable RDB snapshot
+# Requirements:
+# - A Secret "redis-backup-credentials" with keys: REDIS_HOST, REDIS_PORT, REDIS_PASSWORD
+# - A PersistentVolumeClaim named "redis-backups" (RWX preferred)
+# Note: For managed Redis providers with built-in snapshots, prefer provider-native backups.
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: redis-backup
+  namespace: terrafusion
+  labels:
+    app.kubernetes.io/name: redis-backup
+    app.kubernetes.io/part-of: terrafusion-os
+spec:
+  schedule: "15 */6 * * *"  # Offset from Postgres by 15 minutes
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            fsGroup: 1000
+          containers:
+            - name: backup
+              image: redis:7-alpine
+              imagePullPolicy: IfNotPresent
+              envFrom:
+                - secretRef:
+                    name: redis-backup-credentials
+              command: ["/bin/sh","-c"]
+              args:
+                - |
+                  set -euo pipefail
+                  TS=$(date +"%Y%m%d-%H%M%S")
+                  FILE="/backups/redis-${TS}.rdb"
+                  echo "[redis-backup] capturing RDB to $FILE"
+                  if [ -n "${REDIS_PASSWORD:-}" ]; then \
+                    redis-cli -h "$REDIS_HOST" -p "$REDIS_PORT" -a "$REDIS_PASSWORD" --rdb "$FILE" ; \
+                  else \
+                    redis-cli -h "$REDIS_HOST" -p "$REDIS_PORT" --rdb "$FILE" ; \
+                  fi
+                  echo "[redis-backup] completed: $FILE"
+              volumeMounts:
+                - name: backups
+                  mountPath: /backups
+              resources:
+                requests:
+                  cpu: "50m"
+                  memory: "128Mi"
+                limits:
+                  cpu: "250m"
+                  memory: "256Mi"
+          volumes:
+            - name: backups
+              persistentVolumeClaim:
+                claimName: redis-backups

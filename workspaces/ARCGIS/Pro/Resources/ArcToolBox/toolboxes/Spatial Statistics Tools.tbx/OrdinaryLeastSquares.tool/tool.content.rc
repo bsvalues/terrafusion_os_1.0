@@ -1,0 +1,24 @@
+{
+    "map": {
+        "coefficient_output_table.descr": "The full path to an optional table that will receive model coefficients, standardized coefficients, standard errors, and probabilities for each explanatory variable.",
+        "coefficient_output_table.title": "Coefficient Output Table",
+        "dependent_variable.descr": "The numeric field containing values for what you are trying to model.",
+        "dependent_variable.title": "Dependent Variable",
+        "description": "Performs global Ordinary Least Squares (OLS) linear regression to generate predictions or to model a dependent variable in terms of its relationships to a set of explanatory variables.",
+        "diagnostic_output_table.descr": "The full path to an optional table that will receive model summary diagnostics.",
+        "diagnostic_output_table.title": "Diagnostic Output Table",
+        "explanatory_variables.descr": "A list of fields representing explanatory variables in your regression model.",
+        "explanatory_variables.title": "Explanatory Variables",
+        "input_feature_class.descr": "The feature class containing the dependent and independent variables for analysis.",
+        "input_feature_class.title": "Input Feature Class",
+        "output_feature_class.descr": "The output feature class that will receive dependent variable estimates and residuals.",
+        "output_feature_class.title": "Output Feature Class",
+        "output_report_file.descr": "The path to the optional PDF file the tool will create. This report file includes model diagnostics, graphs, and notes to help you interpret the OLS results.",
+        "output_report_file.title": "Output Report File",
+        "params.category1": "Additional Options",
+        "summary": "<xdoc><p>Performs global Ordinary Least Squares (OLS) linear regression to generate predictions or to model a dependent variable in terms of its relationships to a set of explanatory variables.</p><note type=\"note\"/><p group=\"note\">The functionality of this tool is included in the Generalized Linear Regression tool added at ArcGIS Pro 2.3. The Generalized Linear Regression tool supports additional models.</p></xdoc>",
+        "title": "Ordinary Least Squares (OLS)",
+        "unique_id_field.descr": "<xdoc><p>An integer field containing a different value for every feature in the <span class=\"esri_uicontrol\">Input Feature Class</span>.</p></xdoc>",
+        "unique_id_field.title": "Unique ID Field"
+    }
+}

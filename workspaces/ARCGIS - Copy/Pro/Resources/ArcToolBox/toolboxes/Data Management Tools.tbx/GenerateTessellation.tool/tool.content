@@ -1,0 +1,206 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "3330001",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "Output_Feature_Class": {
+            "direction": "out",
+            "display_order": "0",
+            "displayname": "$rc:output_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "geometrytype.rule": "AsSpecified",
+                "geometrytype": "Polygon",
+                "fields": [
+                    {
+                        "name": "GRID_ID",
+                        "type": "esriFieldTypeString",
+                        "isNullable": "true",
+                        "length": "12",
+                        "precision": "0",
+                        "scale": "0"
+                    }
+                ],
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:output_feature_class.descr"
+        },
+        "Extent": {
+            "display_order": "1",
+            "control_guid": "{15F0D1C1-F783-49BC-8D16-619B8E92F668}",
+            "displayname": "$rc:extent.title",
+            "datatype": {
+                "type": "GPExtent"
+            },
+            "defaultenvironmentname": "extent",
+            "description": "$rc:extent.descr"
+        },
+        "Shape_Type": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:shape_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SQUARE",
+                        "code": "$rc:shape_type.domain.SQUARE"
+                    },
+                    {
+                        "value": "TRIANGLE",
+                        "code": "$rc:shape_type.domain.TRIANGLE"
+                    },
+                    {
+                        "value": "HEXAGON",
+                        "code": "$rc:shape_type.domain.HEXAGON"
+                    },
+                    {
+                        "value": "DIAMOND",
+                        "code": "$rc:shape_type.domain.DIAMOND"
+                    },
+                    {
+                        "value": "TRANSVERSE_HEXAGON",
+                        "code": "$rc:shape_type.domain.TRANSVERSE_HEXAGON"
+                    },
+                    {
+                        "value": "H3_HEXAGON",
+                        "code": "$rc:shape_type.domain.H3_HEXAGON"
+                    }
+                ]
+            },
+            "value": "HEXAGON",
+            "description": "$rc:shape_type.descr"
+        },
+        "Size": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:size.title",
+            "datatype": {
+                "type": "GPArealUnit"
+            },
+            "description": "$rc:size.descr"
+        },
+        "Spatial_Reference": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:spatial_reference.title",
+            "datatype": {
+                "type": "GPSpatialReference"
+            },
+            "description": "$rc:spatial_reference.descr"
+        },
+        "H3_Resolution": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:h3_resolution.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPLong",
+                        "value": "0",
+                        "code": "0"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "1",
+                        "code": "1"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "2",
+                        "code": "2"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "3",
+                        "code": "3"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "4",
+                        "code": "4"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "5",
+                        "code": "5"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "6",
+                        "code": "6"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "7",
+                        "code": "7"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "8",
+                        "code": "8"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "9",
+                        "code": "9"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "10",
+                        "code": "10"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "11",
+                        "code": "11"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "12",
+                        "code": "12"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "13",
+                        "code": "13"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "14",
+                        "code": "14"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "15",
+                        "code": "15"
+                    }
+                ]
+            },
+            "value": "7",
+            "description": "$rc:h3_resolution.descr"
+        }
+    },
+    "environments": [
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

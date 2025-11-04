@@ -1,0 +1,8 @@
+{
+    "map": {
+        "description": "Apply the preconfigured template layouts",
+        "in_network_diagram_layer.title": "Input Network Diagram Layer",
+        "out_network_diagram_layer.title": "Output Network Diagram",
+        "title": "Apply Template Layouts"
+    }
+}

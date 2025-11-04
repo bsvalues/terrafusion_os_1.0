@@ -1,0 +1,11 @@
+{
+    "set": [
+        "common scale",
+        "group",
+        "reclassification",
+        "reclassify",
+        "remap",
+        "replace",
+        "replace values"
+    ]
+}

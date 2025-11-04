@@ -1,0 +1,28 @@
+{
+    "set": [
+        "adjacent",
+        "angle",
+        "azimuth",
+        "bearing",
+        "close",
+        "coordinate",
+        "distance",
+        "euclidean",
+        "far",
+        "from",
+        "length",
+        "location",
+        "long",
+        "matrix",
+        "near",
+        "neighbor",
+        "radius",
+        "search",
+        "separation",
+        "short",
+        "straight line",
+        "to",
+        "x",
+        "y"
+    ]
+}

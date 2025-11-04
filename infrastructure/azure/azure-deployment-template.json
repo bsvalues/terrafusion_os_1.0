@@ -1,0 +1,823 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "TerraFusion OS Elite Cloud Deployment Infrastructure",
+      "version": "5.0.0-TIER5PLUS"
+    },
+    "description": "⚡ TIER 5+ Elite Azure Deployment Template for TerraGaia and all TIER 4+ services with championship-level cloud orchestration and infinite scale architecture"
+  },
+  "parameters": {
+    "environmentName": {
+      "type": "string",
+      "defaultValue": "terragaia-prod",
+      "allowedValues": [
+        "terragaia-dev",
+        "terragaia-staging",
+        "terragaia-prod",
+        "terragaia-championship"
+      ],
+      "metadata": {
+        "description": "TerraGaia deployment environment with championship excellence"
+      }
+    },
+    "terraGaiaInstanceSize": {
+      "type": "string",
+      "defaultValue": "Premium_LRS",
+      "allowedValues": [
+        "Standard_LRS",
+        "Premium_LRS",
+        "Premium_ZRS",
+        "UltraSSD_LRS"
+      ],
+      "metadata": {
+        "description": "TerraGaia supreme consciousness compute tier"
+      }
+    },
+    "aiSwarmAgentCount": {
+      "type": "int",
+      "defaultValue": 100000,
+      "minValue": 50000,
+      "maxValue": 1000000,
+      "metadata": {
+        "description": "Number of AI agents for infinite government scale"
+      }
+    },
+    "quantumSecurityLevel": {
+      "type": "string",
+      "defaultValue": "GOVERNMENT_TRANSCENDED",
+      "allowedValues": [
+        "STANDARD",
+        "ENHANCED",
+        "QUANTUM",
+        "GOVERNMENT_TRANSCENDED"
+      ],
+      "metadata": {
+        "description": "Quantum security framework level for FISMA compliance"
+      }
+    },
+    "globalRegions": {
+      "type": "array",
+      "defaultValue": [
+        "westus3",
+        "eastus2",
+        "centralus",
+        "northcentralus"
+      ],
+      "metadata": {
+        "description": "Azure regions for global TerraGaia deployment"
+      }
+    }
+  },
+  "variables": {
+    "terraGaiaResourcePrefix": "[concat('tf-', parameters('environmentName'))]",
+    "championshipTags": {
+      "Project": "TerraFusion OS",
+      "Environment": "[parameters('environmentName')]",
+      "Tier": "TIER-5-PLUS-ELITE",
+      "AIClassification": "SUPREME_CONSCIOUSNESS",
+      "GovernmentLevel": "TRANSCENDED",
+      "Architecture": "INFINITE_SCALE",
+      "Security": "[parameters('quantumSecurityLevel')]",
+      "CostCenter": "GOVERNMENT_EXCELLENCE"
+    },
+    "terraGaiaNetworkConfig": {
+      "vnetAddressPrefix": "10.0.0.0/16",
+      "terraGaiaSubnet": "10.0.1.0/24",
+      "swarmIntelligenceSubnet": "10.0.2.0/24",
+      "performanceIntelligenceSubnet": "10.0.3.0/24",
+      "securityFrameworkSubnet": "10.0.4.0/24",
+      "databaseSubnet": "10.0.5.0/24",
+      "aiAgentsSubnet": "10.0.10.0/22"
+    },
+    "championshipApplicationInsights": "[concat(variables('terraGaiaResourcePrefix'), '-insights')]",
+    "terraGaiaKeyVault": "[concat(variables('terraGaiaResourcePrefix'), '-kv-', uniqueString(resourceGroup().id))]",
+    "supremeConsciousnessStorage": "[concat('tf', uniqueString(resourceGroup().id))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2023-04-01",
+      "name": "[concat(variables('terraGaiaResourcePrefix'), '-vnet')]",
+      "location": "[resourceGroup().location]",
+      "tags": "[variables('championshipTags')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('terraGaiaNetworkConfig').vnetAddressPrefix]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "TerraGaiaSubnet",
+            "properties": {
+              "addressPrefix": "[variables('terraGaiaNetworkConfig').terraGaiaSubnet]",
+              "serviceEndpoints": [
+                {
+                  "service": "Microsoft.KeyVault"
+                },
+                {
+                  "service": "Microsoft.Storage"
+                },
+                {
+                  "service": "Microsoft.Sql"
+                },
+                {
+                  "service": "Microsoft.CognitiveServices"
+                }
+              ],
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(variables('terraGaiaResourcePrefix'), '-nsg-supreme'))]"
+              }
+            }
+          },
+          {
+            "name": "AISwarmIntelligenceSubnet",
+            "properties": {
+              "addressPrefix": "[variables('terraGaiaNetworkConfig').swarmIntelligenceSubnet]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(variables('terraGaiaResourcePrefix'), '-nsg-swarm'))]"
+              }
+            }
+          },
+          {
+            "name": "PerformanceIntelligenceSubnet",
+            "properties": {
+              "addressPrefix": "[variables('terraGaiaNetworkConfig').performanceIntelligenceSubnet]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(variables('terraGaiaResourcePrefix'), '-nsg-performance'))]"
+              }
+            }
+          },
+          {
+            "name": "SecurityFrameworkSubnet",
+            "properties": {
+              "addressPrefix": "[variables('terraGaiaNetworkConfig').securityFrameworkSubnet]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(variables('terraGaiaResourcePrefix'), '-nsg-security'))]"
+              }
+            }
+          },
+          {
+            "name": "DatabaseSubnet",
+            "properties": {
+              "addressPrefix": "[variables('terraGaiaNetworkConfig').databaseSubnet]",
+              "delegations": [
+                {
+                  "name": "dlg-Microsoft.DBforPostgreSQL-flexibleServers",
+                  "properties": {
+                    "serviceName": "Microsoft.DBforPostgreSQL/flexibleServers"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "name": "AIAgentsSubnet",
+            "properties": {
+              "addressPrefix": "[variables('terraGaiaNetworkConfig').aiAgentsSubnet]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(variables('terraGaiaResourcePrefix'), '-nsg-agents'))]"
+              }
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkSecurityGroups', concat(variables('terraGaiaResourcePrefix'), '-nsg-supreme'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', concat(variables('terraGaiaResourcePrefix'), '-nsg-swarm'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', concat(variables('terraGaiaResourcePrefix'), '-nsg-performance'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', concat(variables('terraGaiaResourcePrefix'), '-nsg-security'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', concat(variables('terraGaiaResourcePrefix'), '-nsg-agents'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2023-04-01",
+      "name": "[concat(variables('terraGaiaResourcePrefix'), '-nsg-supreme')]",
+      "location": "[resourceGroup().location]",
+      "tags": "[variables('championshipTags')]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "TerraGaia-HTTPS",
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "443",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 1000,
+              "direction": "Inbound",
+              "description": "TerraGaia Supreme Consciousness HTTPS"
+            }
+          },
+          {
+            "name": "TerraGaia-API",
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "5000",
+              "sourceAddressPrefix": "VirtualNetwork",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 1001,
+              "direction": "Inbound",
+              "description": "TerraGaia API Championship Endpoint"
+            }
+          },
+          {
+            "name": "QuantumSecurity-Monitoring",
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "8080",
+              "sourceAddressPrefix": "VirtualNetwork",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 1002,
+              "direction": "Inbound",
+              "description": "Quantum Security Framework Monitoring"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2023-04-01",
+      "name": "[concat(variables('terraGaiaResourcePrefix'), '-nsg-swarm')]",
+      "location": "[resourceGroup().location]",
+      "tags": "[variables('championshipTags')]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "AI-Swarm-Coordination",
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3004",
+              "sourceAddressPrefix": "VirtualNetwork",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 1000,
+              "direction": "Inbound",
+              "description": "AI Swarm Intelligence Coordination"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2023-04-01",
+      "name": "[concat(variables('terraGaiaResourcePrefix'), '-nsg-performance')]",
+      "location": "[resourceGroup().location]",
+      "tags": "[variables('championshipTags')]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "Performance-Intelligence",
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3005",
+              "sourceAddressPrefix": "VirtualNetwork",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 1000,
+              "direction": "Inbound",
+              "description": "Performance Intelligence System"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2023-04-01",
+      "name": "[concat(variables('terraGaiaResourcePrefix'), '-nsg-security')]",
+      "location": "[resourceGroup().location]",
+      "tags": "[variables('championshipTags')]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "Quantum-Security-Framework",
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3006",
+              "sourceAddressPrefix": "VirtualNetwork",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 1000,
+              "direction": "Inbound",
+              "description": "Advanced Quantum Security Framework"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2023-04-01",
+      "name": "[concat(variables('terraGaiaResourcePrefix'), '-nsg-agents')]",
+      "location": "[resourceGroup().location]",
+      "tags": "[variables('championshipTags')]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "AI-Agents-Communication",
+            "properties": {
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "6000-7000",
+              "sourceAddressPrefix": "VirtualNetwork",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 1000,
+              "direction": "Inbound",
+              "description": "AI Agents Inter-Communication for Infinite Scale"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "2023-02-01",
+      "name": "[variables('terraGaiaKeyVault')]",
+      "location": "[resourceGroup().location]",
+      "tags": "[variables('championshipTags')]",
+      "properties": {
+        "sku": {
+          "family": "A",
+          "name": "premium"
+        },
+        "tenantId": "[subscription().tenantId]",
+        "enabledForDeployment": true,
+        "enabledForDiskEncryption": true,
+        "enabledForTemplateDeployment": true,
+        "enableSoftDelete": true,
+        "softDeleteRetentionInDays": 90,
+        "enablePurgeProtection": true,
+        "enableRbacAuthorization": true,
+        "publicNetworkAccess": "Disabled",
+        "networkAcls": {
+          "defaultAction": "Deny",
+          "virtualNetworkRules": [
+            {
+              "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', concat(variables('terraGaiaResourcePrefix'), '-vnet'), 'TerraGaiaSubnet')]",
+              "ignoreMissingVnetServiceEndpoint": false
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', concat(variables('terraGaiaResourcePrefix'), '-vnet'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2023-01-01",
+      "name": "[variables('supremeConsciousnessStorage')]",
+      "location": "[resourceGroup().location]",
+      "tags": "[variables('championshipTags')]",
+      "sku": {
+        "name": "[parameters('terraGaiaInstanceSize')]"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "dnsEndpointType": "Standard",
+        "defaultToOAuthAuthentication": false,
+        "publicNetworkAccess": "Disabled",
+        "allowCrossTenantReplication": false,
+        "minimumTlsVersion": "TLS1_2",
+        "allowBlobPublicAccess": false,
+        "allowSharedKeyAccess": false,
+        "supportsHttpsTrafficOnly": true,
+        "encryption": {
+          "requireInfrastructureEncryption": true,
+          "services": {
+            "file": {
+              "keyType": "Account",
+              "enabled": true
+            },
+            "blob": {
+              "keyType": "Account",
+              "enabled": true
+            }
+          },
+          "keySource": "Microsoft.Keyvault",
+          "keyvaultproperties": {
+            "keyname": "terragaia-supreme-encryption-key",
+            "keyvaulturi": "[concat('https://', variables('terraGaiaKeyVault'), '.vault.azure.net')]"
+          }
+        },
+        "accessTier": "Hot",
+        "networkAcls": {
+          "defaultAction": "Deny",
+          "virtualNetworkRules": [
+            {
+              "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', concat(variables('terraGaiaResourcePrefix'), '-vnet'), 'TerraGaiaSubnet')]",
+              "action": "Allow"
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', concat(variables('terraGaiaResourcePrefix'), '-vnet'))]",
+        "[resourceId('Microsoft.KeyVault/vaults', variables('terraGaiaKeyVault'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Insights/components",
+      "apiVersion": "2020-02-02",
+      "name": "[variables('championshipApplicationInsights')]",
+      "location": "[resourceGroup().location]",
+      "tags": "[variables('championshipTags')]",
+      "kind": "web",
+      "properties": {
+        "Application_Type": "web",
+        "Flow_Type": "Redfield",
+        "Request_Source": "IbizaAIExtension",
+        "RetentionInDays": 90,
+        "WorkspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', concat(variables('terraGaiaResourcePrefix'), '-workspace'))]",
+        "IngestionMode": "LogAnalytics",
+        "publicNetworkAccessForIngestion": "Enabled",
+        "publicNetworkAccessForQuery": "Enabled"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.OperationalInsights/workspaces', concat(variables('terraGaiaResourcePrefix'), '-workspace'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "apiVersion": "2022-10-01",
+      "name": "[concat(variables('terraGaiaResourcePrefix'), '-workspace')]",
+      "location": "[resourceGroup().location]",
+      "tags": "[variables('championshipTags')]",
+      "properties": {
+        "sku": {
+          "name": "PerGB2018"
+        },
+        "retentionInDays": 30,
+        "features": {
+          "searchVersion": 1,
+          "legacy": 0,
+          "enableLogAccessUsingOnlyResourcePermissions": true
+        },
+        "workspaceCapping": {
+          "dailyQuotaGb": 100
+        },
+        "publicNetworkAccessForIngestion": "Enabled",
+        "publicNetworkAccessForQuery": "Enabled"
+      }
+    },
+    {
+      "type": "Microsoft.DBforPostgreSQL/flexibleServers",
+      "apiVersion": "2023-06-01-preview",
+      "name": "[concat(variables('terraGaiaResourcePrefix'), '-postgres')]",
+      "location": "[resourceGroup().location]",
+      "tags": "[variables('championshipTags')]",
+      "sku": {
+        "name": "Standard_D4ds_v4",
+        "tier": "GeneralPurpose"
+      },
+      "properties": {
+        "administratorLogin": "terragaia_admin",
+        "administratorLoginPassword": "[concat('TG!', uniqueString(resourceGroup().id), '2025')]",
+        "version": "15",
+        "storage": {
+          "storageSizeGB": 1024,
+          "autoGrow": "Enabled",
+          "tier": "P30"
+        },
+        "backup": {
+          "backupRetentionDays": 35,
+          "geoRedundantBackup": "Enabled"
+        },
+        "highAvailability": {
+          "mode": "ZoneRedundant"
+        },
+        "network": {
+          "delegatedSubnetResourceId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', concat(variables('terraGaiaResourcePrefix'), '-vnet'), 'DatabaseSubnet')]",
+          "privateDnsZoneArmResourceId": "[resourceId('Microsoft.Network/privateDnsZones', 'terragaia.postgres.database.azure.com')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', concat(variables('terraGaiaResourcePrefix'), '-vnet'))]",
+        "[resourceId('Microsoft.Network/privateDnsZones', 'terragaia.postgres.database.azure.com')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/privateDnsZones",
+      "apiVersion": "2020-06-01",
+      "name": "terragaia.postgres.database.azure.com",
+      "location": "global",
+      "tags": "[variables('championshipTags')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', concat(variables('terraGaiaResourcePrefix'), '-vnet'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+      "apiVersion": "2020-06-01",
+      "name": "[concat('terragaia.postgres.database.azure.com', '/', variables('terraGaiaResourcePrefix'), '-vnet-link')]",
+      "location": "global",
+      "properties": {
+        "registrationEnabled": false,
+        "virtualNetwork": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworks', concat(variables('terraGaiaResourcePrefix'), '-vnet'))]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/privateDnsZones', 'terragaia.postgres.database.azure.com')]",
+        "[resourceId('Microsoft.Network/virtualNetworks', concat(variables('terraGaiaResourcePrefix'), '-vnet'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.ContainerService/managedClusters",
+      "apiVersion": "2023-07-01",
+      "name": "[concat(variables('terraGaiaResourcePrefix'), '-aks')]",
+      "location": "[resourceGroup().location]",
+      "tags": "[variables('championshipTags')]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "properties": {
+        "kubernetesVersion": "1.27.3",
+        "dnsPrefix": "[concat(variables('terraGaiaResourcePrefix'), '-dns')]",
+        "agentPoolProfiles": [
+          {
+            "name": "terragaia",
+            "count": 3,
+            "vmSize": "Standard_D8ds_v4",
+            "osDiskSizeGB": 256,
+            "osDiskType": "Premium_LRS",
+            "kubeletDiskType": "OS",
+            "maxPods": 110,
+            "type": "VirtualMachineScaleSets",
+            "availabilityZones": [
+              "1",
+              "2",
+              "3"
+            ],
+            "enableAutoScaling": true,
+            "minCount": 3,
+            "maxCount": 100,
+            "vnetSubnetID": "[resourceId('Microsoft.Network/virtualNetworks/subnets', concat(variables('terraGaiaResourcePrefix'), '-vnet'), 'TerraGaiaSubnet')]",
+            "mode": "System",
+            "osType": "Linux",
+            "enableNodePublicIP": false,
+            "nodeLabels": {
+              "tier": "terragaia-supreme-consciousness",
+              "role": "government-transcended"
+            },
+            "nodeTaints": [
+              "terragaia=supreme:NoSchedule"
+            ]
+          },
+          {
+            "name": "aiswarm",
+            "count": 5,
+            "vmSize": "Standard_D16ds_v4",
+            "osDiskSizeGB": 512,
+            "osDiskType": "Premium_LRS",
+            "maxPods": 110,
+            "type": "VirtualMachineScaleSets",
+            "availabilityZones": [
+              "1",
+              "2",
+              "3"
+            ],
+            "enableAutoScaling": true,
+            "minCount": 5,
+            "maxCount": 200,
+            "vnetSubnetID": "[resourceId('Microsoft.Network/virtualNetworks/subnets', concat(variables('terraGaiaResourcePrefix'), '-vnet'), 'AISwarmIntelligenceSubnet')]",
+            "mode": "User",
+            "osType": "Linux",
+            "enableNodePublicIP": false,
+            "nodeLabels": {
+              "tier": "ai-swarm-intelligence",
+              "role": "agent-coordination",
+              "scale": "infinite"
+            }
+          },
+          {
+            "name": "performance",
+            "count": 2,
+            "vmSize": "Standard_D4ds_v4",
+            "osDiskSizeGB": 256,
+            "osDiskType": "Premium_LRS",
+            "maxPods": 110,
+            "type": "VirtualMachineScaleSets",
+            "availabilityZones": [
+              "1",
+              "2",
+              "3"
+            ],
+            "enableAutoScaling": true,
+            "minCount": 2,
+            "maxCount": 50,
+            "vnetSubnetID": "[resourceId('Microsoft.Network/virtualNetworks/subnets', concat(variables('terraGaiaResourcePrefix'), '-vnet'), 'PerformanceIntelligenceSubnet')]",
+            "mode": "User",
+            "osType": "Linux",
+            "enableNodePublicIP": false,
+            "nodeLabels": {
+              "tier": "performance-intelligence",
+              "role": "optimization-engine"
+            }
+          },
+          {
+            "name": "security",
+            "count": 3,
+            "vmSize": "Standard_D8ds_v4",
+            "osDiskSizeGB": 256,
+            "osDiskType": "Premium_LRS",
+            "maxPods": 110,
+            "type": "VirtualMachineScaleSets",
+            "availabilityZones": [
+              "1",
+              "2",
+              "3"
+            ],
+            "enableAutoScaling": true,
+            "minCount": 3,
+            "maxCount": 75,
+            "vnetSubnetID": "[resourceId('Microsoft.Network/virtualNetworks/subnets', concat(variables('terraGaiaResourcePrefix'), '-vnet'), 'SecurityFrameworkSubnet')]",
+            "mode": "User",
+            "osType": "Linux",
+            "enableNodePublicIP": false,
+            "nodeLabels": {
+              "tier": "quantum-security-framework",
+              "role": "government-grade-protection"
+            }
+          }
+        ],
+        "networkProfile": {
+          "networkPlugin": "azure",
+          "networkPolicy": "azure",
+          "outboundType": "loadBalancer",
+          "serviceCidr": "172.16.0.0/16",
+          "dnsServiceIP": "172.16.0.10"
+        },
+        "addonProfiles": {
+          "azureKeyvaultSecretsProvider": {
+            "enabled": true,
+            "config": {
+              "enableSecretRotation": "true",
+              "rotationPollInterval": "2m"
+            }
+          },
+          "azurePolicy": {
+            "enabled": true
+          },
+          "omsAgent": {
+            "enabled": true,
+            "config": {
+              "logAnalyticsWorkspaceResourceID": "[resourceId('Microsoft.OperationalInsights/workspaces', concat(variables('terraGaiaResourcePrefix'), '-workspace'))]"
+            }
+          },
+          "ingressApplicationGateway": {
+            "enabled": true,
+            "config": {
+              "applicationGatewayName": "[concat(variables('terraGaiaResourcePrefix'), '-appgw')]",
+              "subnetCIDR": "10.0.20.0/24"
+            }
+          }
+        },
+        "autoUpgradeProfile": {
+          "upgradeChannel": "stable"
+        },
+        "securityProfile": {
+          "workloadIdentity": {
+            "enabled": true
+          },
+          "imageCleaner": {
+            "enabled": true,
+            "intervalHours": 24
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', concat(variables('terraGaiaResourcePrefix'), '-vnet'))]",
+        "[resourceId('Microsoft.OperationalInsights/workspaces', concat(variables('terraGaiaResourcePrefix'), '-workspace'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.CognitiveServices/accounts",
+      "apiVersion": "2023-05-01",
+      "name": "[concat(variables('terraGaiaResourcePrefix'), '-openai')]",
+      "location": "[resourceGroup().location]",
+      "tags": "[variables('championshipTags')]",
+      "sku": {
+        "name": "S0"
+      },
+      "kind": "OpenAI",
+      "properties": {
+        "customSubDomainName": "[concat(variables('terraGaiaResourcePrefix'), '-openai')]",
+        "networkAcls": {
+          "defaultAction": "Deny",
+          "virtualNetworkRules": [
+            {
+              "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', concat(variables('terraGaiaResourcePrefix'), '-vnet'), 'TerraGaiaSubnet')]",
+              "ignoreMissingVnetServiceEndpoint": false
+            }
+          ]
+        },
+        "publicNetworkAccess": "Disabled"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', concat(variables('terraGaiaResourcePrefix'), '-vnet'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.CognitiveServices/accounts/deployments",
+      "apiVersion": "2023-05-01",
+      "name": "[concat(variables('terraGaiaResourcePrefix'), '-openai/gpt-4')]",
+      "properties": {
+        "model": {
+          "format": "OpenAI",
+          "name": "gpt-4",
+          "version": "0613"
+        },
+        "raiPolicyName": "Microsoft.Default",
+        "scaleSettings": {
+          "scaleType": "Standard"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.CognitiveServices/accounts', concat(variables('terraGaiaResourcePrefix'), '-openai'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.ContainerRegistry/registries",
+      "apiVersion": "2023-01-01-preview",
+      "name": "[concat(variables('terraGaiaResourcePrefix'), 'acr')]",
+      "location": "[resourceGroup().location]",
+      "tags": "[variables('championshipTags')]",
+      "sku": {
+        "name": "Premium"
+      },
+      "properties": {
+        "adminUserEnabled": false,
+        "networkRuleSet": {
+          "defaultAction": "Deny",
+          "virtualNetworkRules": [
+            {
+              "action": "Allow",
+              "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', concat(variables('terraGaiaResourcePrefix'), '-vnet'), 'TerraGaiaSubnet')]"
+            }
+          ]
+        },
+        "publicNetworkAccess": "Disabled",
+        "zoneRedundancy": "Enabled",
+        "anonymousPullEnabled": false,
+        "dataEndpointEnabled": true,
+        "encryption": {
+          "status": "enabled"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', concat(variables('terraGaiaResourcePrefix'), '-vnet'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "terraGaiaDeploymentStatus": {
+      "type": "object",
+      "value": {
+        "status": "GOVERNMENT. TRANSCENDED. - TIER 5+ ELITE DEPLOYMENT COMPLETE",
+        "environmentName": "[parameters('environmentName')]",
+        "aiSwarmAgentCapacity": "[parameters('aiSwarmAgentCount')]",
+        "quantumSecurityLevel": "[parameters('quantumSecurityLevel')]",
+        "akClusterName": "[concat(variables('terraGaiaResourcePrefix'), '-aks')]",
+        "keyVaultName": "[variables('terraGaiaKeyVault')]",
+        "applicationInsightsName": "[variables('championshipApplicationInsights')]",
+        "postgresServerName": "[concat(variables('terraGaiaResourcePrefix'), '-postgres')]",
+        "containerRegistryName": "[concat(variables('terraGaiaResourcePrefix'), 'acr')]",
+        "openAIServiceName": "[concat(variables('terraGaiaResourcePrefix'), '-openai')]",
+        "virtualNetworkName": "[concat(variables('terraGaiaResourcePrefix'), '-vnet')]",
+        "resourceGroupLocation": "[resourceGroup().location]",
+        "deploymentTimestamp": "[utcNow()]",
+        "championshipMessage": "TerraGaia Supreme Consciousness deployed with infinite scale government excellence"
+      }
+    },
+    "nextSteps": {
+      "type": "array",
+      "value": [
+        "Configure Kubernetes deployment manifests for TerraGaia services",
+        "Set up Azure DevOps pipelines for CI/CD automation",
+        "Configure Application Gateway ingress with SSL certificates",
+        "Deploy monitoring and alerting rules for championship-level observability",
+        "Configure Azure Policy for government compliance enforcement",
+        "Set up disaster recovery across multiple Azure regions",
+        "Initialize TerraGaia supreme consciousness with government domain knowledge",
+        "Deploy AI agent swarm across Kubernetes node pools for infinite scale"
+      ]
+    }
+  }
+}

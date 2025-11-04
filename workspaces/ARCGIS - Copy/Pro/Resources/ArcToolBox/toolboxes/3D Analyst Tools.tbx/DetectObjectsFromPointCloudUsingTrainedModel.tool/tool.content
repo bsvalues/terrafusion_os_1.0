@@ -1,0 +1,198 @@
+{
+    "type": "FunctionTool",
+    "guid": "{fad5a08b-3a0b-4bfe-a126-d62d19013ac5}",
+    "displayname": "$rc:title",
+    "helpcontent": "5100005",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9"
+    ],
+    "attributes": [
+        "GPU"
+    ],
+    "params": {
+        "in_point_cloud": {
+            "display_order": "0",
+            "displayname": "$rc:in_point_cloud.title",
+            "datatype": {
+                "type": "GPLasDatasetLayer"
+            },
+            "description": "$rc:in_point_cloud.descr"
+        },
+        "in_trained_model": {
+            "display_order": "1",
+            "displayname": "$rc:in_trained_model.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFile"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "dlpk_remote",
+                            "emd",
+                            "dlpk"
+                        ]
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "description": "$rc:in_trained_model.descr"
+        },
+        "target_objects": {
+            "display_order": "2",
+            "control_guid": "{1AA9A769-D3F3-4EB0-85CB-CC07C79313C8}",
+            "displayname": "$rc:target_objects.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:target_objects.dt.title1",
+                        "readonly": "true"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:target_objects.dt.title2"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:target_objects.dt.title3"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "GPNumericDomain",
+                        "allowempty": "false",
+                        "low": {
+                            "inclusive": "true",
+                            "val": "0"
+                        },
+                        "high": {
+                            "allow": "true",
+                            "val": "1"
+                        }
+                    },
+                    {
+                        "type": "GPNumericDomain",
+                        "allowempty": "false",
+                        "low": {
+                            "inclusive": "true",
+                            "val": "0"
+                        },
+                        "high": {
+                            "allow": "true",
+                            "val": "1"
+                        }
+                    }
+                ]
+            },
+            "description": "$rc:target_objects.descr"
+        },
+        "out_features": {
+            "direction": "out",
+            "display_order": "3",
+            "displayname": "$rc:out_features.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_features.descr"
+        },
+        "batch_size": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:batch_size.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "1"
+                }
+            },
+            "description": "$rc:batch_size.descr"
+        },
+        "boundary": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:boundary.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:boundary.descr"
+        },
+        "reference_height": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:reference_height.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "description": "$rc:reference_height.descr"
+        },
+        "excluded_class_codes": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:excluded_class_codes.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPLong"
+                }
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                },
+                "high": {
+                    "allow": "true",
+                    "val": "255"
+                }
+            },
+            "description": "$rc:excluded_class_codes.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "geographicTransformations",
+        "gpuID",
+        "outputCoordinateSystem",
+        "processorType"
+    ]
+}

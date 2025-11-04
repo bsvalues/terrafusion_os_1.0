@@ -1,0 +1,12 @@
+{
+    "set": [
+        "align",
+        "align features",
+        "border",
+        "conflation",
+        "edge matching",
+        "source",
+        "spatial adjustment",
+        "target"
+    ]
+}

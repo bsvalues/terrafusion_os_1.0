@@ -1,0 +1,628 @@
+# REVOLUTIONARY: TerraFusion OS 1.0 Microservices Architecture
+# Government-grade container orchestration with quantum AI enhancement
+
+version: '3.8'
+
+# Global configuration for all TerraFusion services
+x-common-variables: &common-variables
+  TERRAFUSION_ENVIRONMENT: ${TERRAFUSION_ENVIRONMENT:-development}
+  CONSUL_HOST: consul
+  CONSUL_PORT: 8500
+  REDIS_HOST: redis
+  REDIS_PORT: 6379
+  POSTGRES_HOST: postgres
+  POSTGRES_PORT: 5432
+  POSTGRES_DB: terrafusion_os
+  POSTGRES_USER: ${POSTGRES_USER:-terrafusion}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-TerraFusion2024!}
+  JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-for-development}
+  ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+
+x-common-labels: &common-labels
+  - "traefik.enable=true"
+  - "terrafusion.system=microservices"
+  - "terrafusion.version=1.0"
+  - "government.compliance=FISMA-HIGH"
+
+networks:
+  terrafusion-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16
+
+volumes:
+  consul-data:
+  postgres-data:
+  redis-data:
+  prometheus-data:
+  grafana-data:
+
+services:
+  # ==================================================
+  # INFRASTRUCTURE SERVICES
+  # ==================================================
+  
+  # Service Discovery and Configuration
+  consul:
+    image: consul:1.15
+    container_name: terrafusion-consul
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+    ports:
+      - "8500:8500"
+      - "8600:8600/udp"
+    volumes:
+      - consul-data:/consul/data
+    environment:
+      CONSUL_BIND_INTERFACE: eth0
+    command: >
+      consul agent 
+      -server 
+      -bootstrap-expect=1 
+      -datacenter=terrafusion-dc1
+      -data-dir=/consul/data
+      -bind=0.0.0.0
+      -client=0.0.0.0
+      -retry-join=consul
+      -ui
+    labels: *common-labels
+    healthcheck:
+      test: ["CMD", "consul", "members"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: terrafusion-postgres
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_DB: terrafusion_os
+      POSTGRES_USER: ${POSTGRES_USER:-terrafusion}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-TerraFusion2024!}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    labels: *common-labels
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Caching and Session Store
+  redis:
+    image: redis:7-alpine
+    container_name: terrafusion-redis
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-TerraFusion2024!}
+    labels: *common-labels
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Message Broker
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: terrafusion-rabbitmq
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-terrafusion}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-TerraFusion2024!}
+      RABBITMQ_DEFAULT_VHOST: terrafusion
+    labels: *common-labels
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==================================================
+  # MONITORING AND OBSERVABILITY
+  # ==================================================
+  
+  # Metrics Collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: terrafusion-prometheus
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+    ports:
+      - "9090:9090"
+    volumes:
+      - prometheus-data:/prometheus
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    labels: *common-labels
+
+  # Visualization and Dashboards
+  grafana:
+    image: grafana/grafana:latest
+    container_name: terrafusion-grafana
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-TerraFusion2024!}
+      GF_INSTALL_PLUGINS: grafana-piechart-panel
+    labels: *common-labels
+
+  # ==================================================
+  # TERRAFUSION MICROSERVICES
+  # ==================================================
+  
+  # API Gateway (Entry Point)
+  gateway:
+    build:
+      context: .
+      dockerfile: TerraFusion.Gateway/Dockerfile
+    container_name: terrafusion-gateway
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+    ports:
+      - "5000:5000"
+    environment:
+      <<: *common-variables
+      SERVICE_NAME: gateway
+      SERVICE_PORT: 5000
+      OCELOT_CONFIG_PATH: /app/ocelot.json
+    depends_on:
+      - consul
+      - redis
+      - postgres
+    labels:
+      <<: *common-labels
+      - "traefik.http.routers.gateway.rule=Host(`api.terrafusion.local`)"
+      - "traefik.http.services.gateway.loadbalancer.server.port=5000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Property Assessment Service
+  property-service:
+    build:
+      context: .
+      dockerfile: TerraFusion.PropertyService/Dockerfile
+    container_name: terrafusion-property-service
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+    ports:
+      - "5001:5001"
+    environment:
+      <<: *common-variables
+      SERVICE_NAME: property-assessment
+      SERVICE_PORT: 5001
+    depends_on:
+      - consul
+      - postgres
+      - redis
+    labels: *common-labels
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Citizen Services
+  citizen-service:
+    build:
+      context: .
+      dockerfile: TerraFusion.CitizenService/Dockerfile
+    container_name: terrafusion-citizen-service
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+    ports:
+      - "5002:5002"
+    environment:
+      <<: *common-variables
+      SERVICE_NAME: citizen-services
+      SERVICE_PORT: 5002
+    depends_on:
+      - consul
+      - postgres
+      - redis
+    labels: *common-labels
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Document Management Service
+  document-service:
+    build:
+      context: .
+      dockerfile: TerraFusion.DocumentService/Dockerfile
+    container_name: terrafusion-document-service
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+    ports:
+      - "5003:5003"
+    environment:
+      <<: *common-variables
+      SERVICE_NAME: document-management
+      SERVICE_PORT: 5003
+    depends_on:
+      - consul
+      - postgres
+      - redis
+    labels: *common-labels
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Compliance Monitoring Service
+  compliance-service:
+    build:
+      context: .
+      dockerfile: TerraFusion.ComplianceService/Dockerfile
+    container_name: terrafusion-compliance-service
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+    ports:
+      - "5004:5004"
+    environment:
+      <<: *common-variables
+      SERVICE_NAME: compliance-monitoring
+      SERVICE_PORT: 5004
+    depends_on:
+      - consul
+      - postgres
+      - redis
+    labels: *common-labels
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # AI Intelligence Service
+  ai-service:
+    build:
+      context: .
+      dockerfile: TerraFusion.AIService/Dockerfile
+    container_name: terrafusion-ai-service
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+    ports:
+      - "5005:5005"
+    environment:
+      <<: *common-variables
+      SERVICE_NAME: ai-intelligence
+      SERVICE_PORT: 5005
+      AI_MODEL_PATH: /app/models
+      QUANTUM_OPTIMIZATION: "enabled"
+    depends_on:
+      - consul
+      - postgres
+      - redis
+    volumes:
+      - ./ai-models:/app/models:ro
+    labels: *common-labels
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5005/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Knowledge Graph Service
+  knowledge-service:
+    build:
+      context: .
+      dockerfile: TerraFusion.KnowledgeService/Dockerfile
+    container_name: terrafusion-knowledge-service
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+    ports:
+      - "5006:5006"
+    environment:
+      <<: *common-variables
+      SERVICE_NAME: knowledge-graph
+      SERVICE_PORT: 5006
+      GRAPH_DATABASE: neo4j
+    depends_on:
+      - consul
+      - postgres
+      - redis
+    labels: *common-labels
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5006/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Emotional Intelligence Service
+  emotion-service:
+    build:
+      context: .
+      dockerfile: TerraFusion.EmotionService/Dockerfile
+    container_name: terrafusion-emotion-service
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+    ports:
+      - "5007:5007"
+    environment:
+      <<: *common-variables
+      SERVICE_NAME: emotional-intelligence
+      SERVICE_PORT: 5007
+      SENTIMENT_ANALYSIS: "enabled"
+      EMOTION_DETECTION: "enabled"
+    depends_on:
+      - consul
+      - postgres
+      - redis
+    labels: *common-labels
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5007/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Communication Hub Service
+  communication-service:
+    build:
+      context: .
+      dockerfile: TerraFusion.CommunicationService/Dockerfile
+    container_name: terrafusion-communication-service
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+    ports:
+      - "5008:5008"
+    environment:
+      <<: *common-variables
+      SERVICE_NAME: communication-hub
+      SERVICE_PORT: 5008
+    depends_on:
+      - consul
+      - postgres
+      - redis
+      - rabbitmq
+    labels: *common-labels
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5008/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Analytics and Reporting Service
+  analytics-service:
+    build:
+      context: .
+      dockerfile: TerraFusion.AnalyticsService/Dockerfile
+    container_name: terrafusion-analytics-service
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+    ports:
+      - "5009:5009"
+    environment:
+      <<: *common-variables
+      SERVICE_NAME: analytics-reporting
+      SERVICE_PORT: 5009
+      REAL_TIME_ANALYTICS: "enabled"
+    depends_on:
+      - consul
+      - postgres
+      - redis
+    labels: *common-labels
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5009/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Event Streaming Service
+  event-service:
+    build:
+      context: .
+      dockerfile: TerraFusion.EventService/Dockerfile
+    container_name: terrafusion-event-service
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+    ports:
+      - "5010:5010"
+    environment:
+      <<: *common-variables
+      SERVICE_NAME: event-streaming
+      SERVICE_PORT: 5010
+      EVENT_STORE_TYPE: postgresql
+    depends_on:
+      - consul
+      - postgres
+      - redis
+      - rabbitmq
+    labels: *common-labels
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5010/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Identity and Access Management Service
+  identity-service:
+    build:
+      context: .
+      dockerfile: TerraFusion.IdentityService/Dockerfile
+    container_name: terrafusion-identity-service
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+    ports:
+      - "5011:5011"
+    environment:
+      <<: *common-variables
+      SERVICE_NAME: identity-access
+      SERVICE_PORT: 5011
+      OAUTH_ENABLED: "true"
+      MULTI_FACTOR_AUTH: "required"
+    depends_on:
+      - consul
+      - postgres
+      - redis
+    labels: *common-labels
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5011/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Audit and Logging Service
+  audit-service:
+    build:
+      context: .
+      dockerfile: TerraFusion.AuditService/Dockerfile
+    container_name: terrafusion-audit-service
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+    ports:
+      - "5012:5012"
+    environment:
+      <<: *common-variables
+      SERVICE_NAME: audit-logging
+      SERVICE_PORT: 5012
+      FORENSIC_LOGGING: "enabled"
+      COMPLIANCE_LEVEL: "FISMA-HIGH"
+    depends_on:
+      - consul
+      - postgres
+      - redis
+    labels: *common-labels
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5012/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Backup and Recovery Service
+  backup-service:
+    build:
+      context: .
+      dockerfile: TerraFusion.BackupService/Dockerfile
+    container_name: terrafusion-backup-service
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+    ports:
+      - "5013:5013"
+    environment:
+      <<: *common-variables
+      SERVICE_NAME: backup-recovery
+      SERVICE_PORT: 5013
+      BACKUP_SCHEDULE: "0 2 * * *"
+      ENCRYPTION_ENABLED: "true"
+    depends_on:
+      - consul
+      - postgres
+      - redis
+    volumes:
+      - ./backups:/app/backups
+    labels: *common-labels
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5013/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# ==================================================
+# DEVELOPMENT TOOLS (Optional)
+# ==================================================
+
+  # Consul UI (Development only)
+  consul-ui:
+    image: consul:1.15
+    container_name: terrafusion-consul-ui
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+    ports:
+      - "8501:8500"
+    command: consul agent -dev -client=0.0.0.0 -ui
+    profiles:
+      - development
+    labels: *common-labels
+
+  # Redis Commander (Development only)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: terrafusion-redis-commander
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+    ports:
+      - "8081:8081"
+    environment:
+      REDIS_HOSTS: local:redis:6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-TerraFusion2024!}
+    depends_on:
+      - redis
+    profiles:
+      - development
+    labels: *common-labels
+
+  # pgAdmin (Development only)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: terrafusion-pgadmin
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+    ports:
+      - "8080:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@terrafusion.local
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-TerraFusion2024!}
+    depends_on:
+      - postgres
+    profiles:
+      - development
+    labels: *common-labels

@@ -1,0 +1,5 @@
+<DataType Name="DEToolbox">
+  <DisplayName>Toolbox</DisplayName>
+  <Description>A geoprocessing toolbox.</Description>
+</DataType>
+

@@ -1,0 +1,13 @@
+{
+    "map": {
+        "aoi_layer.descr": "The layer name for the location of interest retrieved. The output layer has either the polygon representing the area of interest (AOI) of the job or point representing the point of interest (POI) of the job.",
+        "aoi_layer.title": "AOI Layer",
+        "description": "Gets the job's location of interest (LOI)  as a feature layer. The output layer has either the polygon representing the area of interest (AOI) of the job or point representing the point of interest (POI) of the job.",
+        "input_databasepath.descr": "The Workflow Manager (Classic) database connection file for the input job. If no connection file is specified, the current default Workflow Manager (Classic) database in the project is used.",
+        "input_databasepath.title": "Input Database Path",
+        "input_jobid.descr": "The ID of the job whose AOI is to be retrieved.",
+        "input_jobid.title": "Input Job ID",
+        "summary": "<xdoc><p>Gets the job&apos;s location of interest (LOI) as a feature layer. The output layer has either the polygon representing the area of interest (AOI) of the job or point representing the point of interest (POI) of the job.</p><note type=\"legacy\"/><p group=\"note\">This is a deprecated tool. It is recommended that current Workflow Manager (Classic) users begin new projects using the services-driven ArcGIS Workflow Manager for ArcGIS Pro.</p></xdoc>",
+        "title": "Get Job AOI"
+    }
+}

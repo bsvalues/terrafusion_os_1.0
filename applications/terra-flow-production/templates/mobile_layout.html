@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{% block title %}TerraFlow | Mobile{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css/mobile.css') }}" rel="stylesheet">
+    
+    {% block head_extra %}{% endblock %}
+    
+    <style>
+        :root {
+            --tf-green: #28a745;
+            --tf-blue: #007bff;
+            --tf-purple: #6f42c1;
+            --tf-orange: #fd7e14;
+            --tf-yellow: #ffc107;
+            --tf-red: #dc3545;
+            --tf-teal: #20c997;
+            --tf-cyan: #17a2b8;
+            --tf-gray: #6c757d;
+            --tf-flow-blue: #5b77f1;
+            --tf-flow-aqua: #25c9d0;
+            --tf-mobile-bg: #f8f9fa;
+            --tf-mobile-nav-bg: #ffffff;
+            --tf-mobile-nav-active: #f1f3f6;
+            --tf-mobile-card-bg: #ffffff;
+            --tf-mobile-text: #343a40;
+            --tf-mobile-text-muted: #6c757d;
+            --tf-mobile-border: #dee2e6;
+        }
+        
+        /* Base styles */
+        body {
+            background-color: var(--tf-mobile-bg);
+            color: var(--tf-mobile-text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            padding-bottom: 70px; /* Space for bottom nav */
+            overflow-x: hidden;
+        }
+        
+        /* Dark mode */
+        body.dark-mode {
+            --tf-mobile-bg: #1e1e1e;
+            --tf-mobile-nav-bg: #2d2d2d;
+            --tf-mobile-nav-active: #3d3d3d;
+            --tf-mobile-card-bg: #2d2d2d;
+            --tf-mobile-text: #f8f9fa;
+            --tf-mobile-text-muted: #adb5bd;
+            --tf-mobile-border: #444;
+            
+            background-color: var(--tf-mobile-bg);
+            color: var(--tf-mobile-text);
+        }
+        
+        body.dark-mode .mobile-card {
+            background-color: var(--tf-mobile-card-bg);
+            border-color: var(--tf-mobile-border);
+        }
+        
+        body.dark-mode .mobile-nav {
+            background-color: var(--tf-mobile-nav-bg);
+            border-top-color: var(--tf-mobile-border);
+        }
+        
+        body.dark-mode .mobile-nav a {
+            color: var(--tf-mobile-text-muted);
+        }
+        
+        body.dark-mode .mobile-nav a.active {
+            color: var(--tf-flow-aqua);
+            background-color: var(--tf-mobile-nav-active);
+        }
+        
+        body.dark-mode .mobile-section-title {
+            color: var(--tf-mobile-text);
+        }
+        
+        body.dark-mode .mobile-header {
+            background-color: var(--tf-mobile-nav-bg);
+            border-bottom-color: var(--tf-mobile-border);
+        }
+        
+        body.dark-mode .list-group-item {
+            background-color: var(--tf-mobile-card-bg);
+            border-color: var(--tf-mobile-border);
+            color: var(--tf-mobile-text);
+        }
+        
+        body.dark-mode .form-control,
+        body.dark-mode .form-select {
+            background-color: #333;
+            border-color: var(--tf-mobile-border);
+            color: var(--tf-mobile-text);
+        }
+        
+        body.dark-mode .modal-content,
+        body.dark-mode .bottom-sheet {
+            background-color: var(--tf-mobile-nav-bg);
+            color: var(--tf-mobile-text);
+        }
+        
+        /* Layout components */
+        .mobile-container {
+            padding: 15px;
+            max-width: 100%;
+        }
+        
+        .mobile-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 56px;
+            background-color: var(--tf-mobile-nav-bg);
+            border-bottom: 1px solid var(--tf-mobile-border);
+            padding: 0 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .mobile-header .title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin: 0;
+        }
+        
+        .mobile-header .logo {
+            height: 32px;
+        }
+        
+        .mobile-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: var(--tf-mobile-nav-bg);
+            border-top: 1px solid var(--tf-mobile-border);
+            display: flex;
+            z-index: 1000;
+        }
+        
+        .mobile-nav a {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--tf-mobile-text-muted);
+            text-decoration: none;
+            font-size: 0.8rem;
+            padding: 8px 0;
+        }
+        
+        .mobile-nav a i {
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+        }
+        
+        .mobile-nav a.active {
+            color: var(--tf-flow-blue);
+            background-color: var(--tf-mobile-nav-active);
+        }
+        
+        .mobile-card {
+            background-color: var(--tf-mobile-card-bg);
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        
+        .mobile-section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 15px 0 10px;
+            color: var(--tf-mobile-text);
+        }
+        
+        /* Form elements */
+        .mobile-form-control {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--tf-mobile-border);
+            background-color: var(--tf-mobile-card-bg);
+            color: var(--tf-mobile-text);
+            margin-bottom: 15px;
+            transition: border-color 0.15s ease-in-out;
+        }
+        
+        .mobile-form-control:focus {
+            border-color: var(--tf-flow-blue);
+            outline: none;
+        }
+        
+        .mobile-form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--tf-mobile-text);
+        }
+        
+        /* Stats cards */
+        .stat-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 15px;
+            height: 100%;
+        }
+        
+        .stat-card .icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        
+        .stat-card .value {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .stat-card .label {
+            font-size: 0.9rem;
+            color: var(--tf-mobile-text-muted);
+        }
+        
+        /* Floating action button */
+        .action-button {
+            position: fixed;
+            bottom: 75px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 28px;
+            background-color: var(--tf-flow-blue);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 900;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            text-decoration: none;
+        }
+        
+        .action-button:hover,
+        .action-button:focus {
+            background-color: #4a66e0;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .action-button i {
+            font-size: 1.5rem;
+        }
+        
+        /* Bottom sheet */
+        .bottom-sheet-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 9999;
+            display: none;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .bottom-sheet {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--tf-mobile-card-bg);
+            border-radius: 16px 16px 0 0;
+            padding: 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease-out;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .bottom-sheet-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--tf-mobile-border);
+        }
+        
+        .bottom-sheet-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .bottom-sheet-close {
+            border: none;
+            background: none;
+            color: var(--tf-mobile-text-muted);
+            font-size: 1.5rem;
+            line-height: 1;
+            padding: 0;
+        }
+        
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.3s forwards;
+        }
+        
+        .slide-up {
+            animation: slideUp 0.3s forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        
+        /* Responsive */
+        @media (min-width: 768px) {
+            .mobile-container {
+                max-width: 540px;
+                margin: 0 auto;
+            }
+            
+            .mobile-header {
+                max-width: 540px;
+                margin: 0 auto;
+                left: 0;
+                right: 0;
+            }
+            
+            .mobile-nav {
+                max-width: 540px;
+                margin: 0 auto;
+                left: 0;
+                right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="mobile-header">
+        <div>
+            <span class="title">{% block header_title %}TerraFlow{% endblock %}</span>
+        </div>
+        <div>
+            <svg width="32" height="32" viewBox="0 0 100 100" fill="none">
+                <path d="M50 10L10 50L50 90L90 50L50 10Z" fill="#5b77f1"/>
+                <path d="M50 30L30 50L50 70L70 50L50 30Z" fill="#25c9d0"/>
+            </svg>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Bottom Navigation -->
+    <nav class="mobile-nav">
+        <a href="/mobile" class="{{ 'active' if request.path == '/mobile' or request.path == '/mobile/' }}">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="/mobile/properties" class="{{ 'active' if request.path.startswith('/mobile/properties') or request.path.startswith('/mobile/property/') }}">
+            <i class="fas fa-building"></i>
+            <span>Properties</span>
+        </a>
+        <a href="/mobile/anomalies" class="{{ 'active' if request.path.startswith('/mobile/anomalies') or request.path.startswith('/mobile/anomaly/') }}">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Anomalies</span>
+        </a>
+        <a href="/mobile/search" class="{{ 'active' if request.path.startswith('/mobile/search') }}">
+            <i class="fas fa-search"></i>
+            <span>Search</span>
+        </a>
+        <a href="/mobile/settings" class="{{ 'active' if request.path.startswith('/mobile/settings') }}">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+        </a>
+    </nav>
+    
+    <!-- Action Button -->
+    {% block action_button %}{% endblock %}
+    
+    <!-- Bottom Sheet -->
+    <div class="bottom-sheet-container" id="bottomSheetContainer">
+        <div class="bottom-sheet" id="bottomSheet">
+            <div class="bottom-sheet-header">
+                <h5 class="bottom-sheet-title">{% block sheet_title %}Sheet Title{% endblock %}</h5>
+                <button class="bottom-sheet-close" onclick="hideBottomSheet()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="bottom-sheet-content">
+                {% block sheet_content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        // Bottom sheet functionality
+        function showBottomSheet() {
+            const container = document.getElementById('bottomSheetContainer');
+            const sheet = document.getElementById('bottomSheet');
+            
+            container.style.display = 'block';
+            container.classList.add('fade-in');
+            sheet.classList.add('slide-up');
+            
+            // Prevent scrolling of main content
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function hideBottomSheet() {
+            const container = document.getElementById('bottomSheetContainer');
+            const sheet = document.getElementById('bottomSheet');
+            
+            container.classList.remove('fade-in');
+            sheet.classList.remove('slide-up');
+            
+            // Use transition end to hide the container
+            sheet.addEventListener('transitionend', function handler() {
+                container.style.display = 'none';
+                document.body.style.overflow = '';
+                sheet.removeEventListener('transitionend', handler);
+            });
+            
+            // Transform back to hidden state
+            sheet.style.transform = 'translateY(100%)';
+            
+            // Ensure the container is hidden even if transition fails
+            setTimeout(() => {
+                container.style.display = 'none';
+                document.body.style.overflow = '';
+                sheet.style.transform = '';
+            }, 300);
+        }
+        
+        // Close sheet when clicking outside
+        document.getElementById('bottomSheetContainer').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideBottomSheet();
+            }
+        });
+        
+        // Check for dark mode
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                document.body.classList.add('dark-mode');
+            }
+        });
+    </script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

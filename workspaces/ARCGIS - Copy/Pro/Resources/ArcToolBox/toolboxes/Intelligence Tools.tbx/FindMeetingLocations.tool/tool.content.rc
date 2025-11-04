@@ -1,0 +1,27 @@
+{
+    "map": {
+        "description": "Identifies  locations where multiple unique movement tracks have dwelled for a defined time period.",
+        "in_features.descr": "The input movement track points that will be analyzed for possible meeting locations. This layer must be time enabled.",
+        "in_features.title": "Input Features",
+        "max_meeting_duration.descr": "The maximum meeting duration that will be used for the meeting to be included in the output.",
+        "max_meeting_duration.title": "Maximum Meeting Duration",
+        "min_meeting_duration.descr": "The minimum meeting duration that will be used for the meeting to be included in the output.",
+        "min_meeting_duration.title": "Minimum Meeting Duration",
+        "minimum_loiter_time.descr": "The minimum amount of time a movement track point can loiter in an area before it is considered to be dwelling. This helps identify possible meeting locations where multiple unique movement tracks are dwelling in the same time and space. The default is 10 minutes.",
+        "minimum_loiter_time.title": "Minimum Loiter Time",
+        "out_area_features.descr": "The output area features that represent the extent of the identified meeting location.",
+        "out_area_features.title": "Output Area Features",
+        "out_point_features.descr": "The output point features that represent the centroid of the area of the individual meeting. Multiple meetings can occur at a given meeting location. This feature class contains all of the details regarding the individual meetings including participants, duration, and start and end times.",
+        "out_point_features.title": "Output Point Features",
+        "search_distance.descr": "The maximum distance a movement track can loiter before it is no longer considered part of a meeting. The default is 100 meters.",
+        "search_distance.title": "Search Distance",
+        "summary": "Identifies locations where multiple unique movement tracks have dwelled for a defined time period.",
+        "temporal_relationship.descr": "<xdoc><p>Specifies the time criteria that will be used to match features.</p><ul><li><span title=\"OVERLAPS\">Overlaps</span>—When a target time interval starts and ends before the start and end of the join time interval, the target time will overlap the join time.</li><li><span title=\"INTERSECTS\">Intersects</span>—When any part of a target time occurs at the same time as the join time, the target time will intersect the join time. This is the default.</li></ul></xdoc>",
+        "temporal_relationship.domain.INTERSECTS": "Intersects",
+        "temporal_relationship.domain.OVERLAPS": "Overlaps",
+        "temporal_relationship.title": "Temporal Relationship",
+        "title": "Find Meeting Locations",
+        "unique_name_field.descr": "The field containing the unique identifiers for movement track points.",
+        "unique_name_field.title": "In Features Name Field"
+    }
+}

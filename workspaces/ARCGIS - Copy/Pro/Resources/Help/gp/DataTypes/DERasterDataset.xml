@@ -1,0 +1,5 @@
+<DataType Name="DERasterDataset">
+  <DisplayName>Raster Dataset</DisplayName>
+  <Description>A single dataset built from one or more rasters.</Description>
+</DataType>
+

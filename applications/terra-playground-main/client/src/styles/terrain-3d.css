@@ -1,0 +1,269 @@
+/**
+ * Advanced 3D Terrain Visualization Styles
+ * 
+ * Enhanced styling for 3D terrain visualization with advanced effects:
+ * - True 3D rendering effects
+ * - Dynamic lighting and shadows
+ * - Property extrusion visualization
+ * - Viewshed analysis styling
+ */
+
+/* Base 3D terrain effect - extended from terrain-visualization.css */
+.terrain-3d-effect {
+  position: relative;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.terrain-3d-effect::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 10;
+  background: 
+    linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%, rgba(0,0,0,0.2) 100%);
+  mix-blend-mode: overlay;
+  border-radius: inherit;
+}
+
+/* Enhanced canvas effects for 3D terrains */
+.terrain-3d-effect .ol-layer canvas {
+  transform: scale(1.005);
+  transition: transform 0.3s ease-out;
+  will-change: transform;
+  filter: saturate(1.2) contrast(1.1);
+}
+
+/* Z-scale variations */
+.terrain-z-scale-low .ol-layer canvas {
+  filter: contrast(1.05) saturate(1.1);
+}
+
+.terrain-z-scale-medium .ol-layer canvas {
+  filter: contrast(1.15) saturate(1.2);
+}
+
+.terrain-z-scale-high .ol-layer canvas {
+  filter: contrast(1.3) saturate(1.4);
+}
+
+.terrain-z-scale-custom .ol-layer canvas {
+  filter: contrast(calc(1 + (var(--terrain-z-scale, 1.5) * 0.1))) 
+          saturate(calc(1 + (var(--terrain-z-scale, 1.5) * 0.15)));
+}
+
+/* Lighting direction effects */
+.terrain-lighting-morning .ol-layer canvas {
+  --light-angle: 90deg;
+  box-shadow: inset -5px -5px 10px rgba(255, 255, 255, 0.1),
+              inset 5px 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.terrain-lighting-noon .ol-layer canvas {
+  --light-angle: 180deg;
+  box-shadow: inset 0px -5px 10px rgba(255, 255, 255, 0.1),
+              inset 0px 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.terrain-lighting-evening .ol-layer canvas {
+  --light-angle: 270deg;
+  box-shadow: inset 5px -5px 10px rgba(255, 255, 255, 0.1),
+              inset -5px 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.terrain-lighting-custom .ol-layer canvas {
+  --light-angle: var(--custom-light-angle, 315deg);
+  --light-elevation: var(--custom-light-elevation, 45deg);
+  filter: brightness(calc(1 + (var(--light-elevation, 45) - 45) / 200));
+}
+
+/* Terrain visualization enhanced effects */
+.terrain-visualization-container.enhanced {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 
+              0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.terrain-visualization-container.enhanced:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.2), 
+              0 10px 15px -6px rgba(0, 0, 0, 0.1);
+}
+
+/* Property extrusion effects */
+.property-extrusion {
+  transition: transform 0.2s ease-out;
+}
+
+.property-extrusion:hover {
+  transform: translateY(-5px) scale(1.05);
+  z-index: 100;
+}
+
+.property-extrusion-tooltip {
+  background-color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+  font-size: 0.75rem;
+  z-index: 1000;
+  transform: translate(-50%, -100%);
+  margin-top: -5px;
+}
+
+.property-extrusion-tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px 5px 0;
+  border-style: solid;
+  border-color: white transparent transparent;
+}
+
+/* Viewshed analysis styling */
+.viewshed-overlay-container {
+  pointer-events: none;
+}
+
+.viewshed-overlay {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  top: -200px;
+  left: -200px;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0.6;
+  mix-blend-mode: multiply;
+  transition: all 0.3s ease;
+}
+
+.viewshed-point {
+  width: 12px;
+  height: 12px;
+  background-color: red;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  transition: transform 0.2s ease;
+}
+
+.viewshed-point:hover {
+  transform: scale(1.2);
+}
+
+/* Enhanced elevation profile */
+.terrain-elevation-profile-enhanced {
+  border-radius: 0.25rem;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  background-color: rgba(255, 255, 255, 0.9);
+  transition: all 0.3s ease;
+}
+
+.terrain-elevation-profile-enhanced:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.terrain-elevation-profile-enhanced canvas {
+  width: 100%;
+  height: 100%;
+}
+
+/* Interactive terrain controls */
+.terrain-3d-controls {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 12px;
+  transition: all 0.3s ease;
+}
+
+.terrain-3d-controls:hover {
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.terrain-3d-control-button {
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.terrain-3d-control-button:hover {
+  background-color: var(--primary);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.terrain-3d-control-button.active {
+  background-color: var(--primary);
+  color: white;
+}
+
+/* Animation for loading 3D terrain visualization */
+@keyframes terrain3dLoad {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.terrain-visualization-container.loaded-3d {
+  animation: terrain3dLoad 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* 3D terrain markers */
+.terrain-3d-marker {
+  width: 24px;
+  height: 24px;
+  transform-origin: bottom center;
+  transform: translate(-50%, -100%);
+  filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.2));
+  transition: all 0.2s ease;
+}
+
+.terrain-3d-marker:hover {
+  transform: translate(-50%, -100%) scale(1.2);
+  filter: drop-shadow(0 8px 8px rgba(0, 0, 0, 0.3));
+}
+
+/* Property type color indicators */
+.property-type-residential {
+  color: #4285F4;
+}
+
+.property-type-commercial {
+  color: #34A853;
+}
+
+.property-type-industrial {
+  color: #FBBC05;
+}
+
+.property-type-agricultural {
+  color: #EA4335;
+}
+
+.property-type-vacant {
+  color: #673AB7;
+}
+
+.property-type-mixed-use {
+  color: #3F51B5;
+}

@@ -1,0 +1,27 @@
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="600" fill="#f0f4f8"/>
+  
+  <!-- House outline -->
+  <g transform="translate(200, 100)">
+    <!-- Roof -->
+    <path d="M0,200 L200,50 L400,200 Z" fill="#cbd5e0" stroke="#64748b" stroke-width="2"/>
+    
+    <!-- House body -->
+    <rect x="50" y="200" width="300" height="200" fill="#e2e8f0" stroke="#64748b" stroke-width="2"/>
+    
+    <!-- Door -->
+    <rect x="160" y="300" width="80" height="100" fill="#a0aec0" stroke="#64748b" stroke-width="2"/>
+    <circle cx="220" cy="350" r="5" fill="#4a5568"/>
+    
+    <!-- Windows -->
+    <rect x="80" y="230" width="60" height="60" fill="#e0f2fe" stroke="#64748b" stroke-width="2"/>
+    <rect x="260" y="230" width="60" height="60" fill="#e0f2fe" stroke="#64748b" stroke-width="2"/>
+    
+    <!-- Chimney -->
+    <rect x="300" y="100" width="30" height="70" fill="#a0aec0" stroke="#64748b" stroke-width="2"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="400" y="400" font-family="Arial, sans-serif" font-size="24" fill="#4a5568" text-anchor="middle">Property Image</text>
+</svg>

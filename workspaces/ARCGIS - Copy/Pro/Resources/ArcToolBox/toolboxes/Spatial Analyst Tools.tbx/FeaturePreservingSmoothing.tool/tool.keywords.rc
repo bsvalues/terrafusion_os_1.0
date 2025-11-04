@@ -1,0 +1,13 @@
+{
+    "set": [
+        "dem",
+        "digital elevation model",
+        "elevation",
+        "filter",
+        "landscape features",
+        "neighborhood",
+        "noise",
+        "normal vector",
+        "smoothing"
+    ]
+}

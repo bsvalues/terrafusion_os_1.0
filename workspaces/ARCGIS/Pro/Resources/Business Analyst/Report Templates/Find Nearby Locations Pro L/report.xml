@@ -1,0 +1,268 @@
+<HTMLextReport version="10.1" pagesize="letter" orientation="landscape" left="0.72" right="0.72" top="0.72" bottom="0.72" style="font-size:7.5;font-family:Arial;">
+  <queries>
+    <query name="locations" table="locations" groupBy="locations.STORE_ID">
+      <sort>
+        <field name="locations.DISTANCE" order="Ascending" />
+      </sort>
+    </query>
+    <query name="stores" table="stores" groupBy="stores.STORE_ID">
+      <join table="images" />
+    </query>
+  </queries>
+  <def align="left" lineSpacing="1"/>
+  <section type="PageHeader" query="stores">
+    <table width="790.55" widths="188.1;7.8;319.2;2.9;251.55;21">
+      <tr height="3.6525">
+        <td style="background-color:#3179bb;color:#000000;" colspan="6"/>
+      </tr>
+      <tr height="8">
+        <td style="background-color:#3179bb;" rowspan="6">
+          <img width="138.91331" height="77.74999" src="5zeq7g3ii9dd.png"/>
+        </td>
+        <td style="background-color:#3179bb;" colspan="4"/>
+        <td style="color:#ffffff;background-color:#3179bb;"/>
+      </tr>
+      <tr height="24">
+        <td style="font-size:18;background-color:#3179bb;color:#ffffff;font-weight:normal;font-family:Arial;font-style:normal;text-decoration:none;" valign="center" pad="4.5" colspan="4">
+          <reportName/>
+        </td>
+        <td style="color:#ffffff;background-color:#3179bb;"/>
+      </tr>
+      <tr height="7.5">
+        <td style="background-color:#3179bb;" colspan="4"/>
+        <td style="color:#ffffff;background-color:#3179bb;"/>
+      </tr>
+      <tr height="13">
+        <td style="background-color:#3179bb;"/>
+        <td style="background-color:#3179bb;color:#ffffff;font-size:9;">
+          <d f="stores.STORE_NAME"/>
+        </td>
+        <td style="background-color:#3179bb;color:#ffffff;font-size:9;" align="right" colspan="2">
+          <reportTitle2/>
+        </td>
+        <td style="color:#ffffff;background-color:#3179bb;"/>
+      </tr>
+      <tr height="13">
+        <td style="background-color:#3179bb;"/>
+        <td style="background-color:#3179bb;color:#ffffff;font-size:9;" colspan="2">
+          <d f="stores.STORE_ADDR"/>
+        </td>
+        <td style="background-color:#3179bb;color:#ffffff;" align="right">
+          <d f="stores.STORE_LAT"/>
+        </td>
+        <td style="color:#ffffff;background-color:#3179bb;"/>
+      </tr>
+      <tr height="13">
+        <td style="background-color:#3179bb;"/>
+        <td style="background-color:#3179bb;color:#ffffff;font-size:9;" colspan="2">
+          <d f="stores.AREA_DESC"/>
+        </td>
+        <td style="background-color:#3179bb;color:#ffffff;" align="right">
+          <d f="stores.STORE_LONG"/>
+        </td>
+        <td style="color:#ffffff;background-color:#3179bb;"/>
+      </tr>
+      <tr height="4.7475">
+        <td style="background-color:#3179bb;" colspan="5"/>
+        <td style="color:#ffffff;background-color:#3179bb;font-size:9;"/>
+      </tr>
+    </table>
+  </section>
+  <section type="GroupHeader" query="stores" level="1">
+    <table width="790.55" spaceAfter="1.395" widths="25.05;185.1;185.1;185.1;185.1;25.1">
+      <tr height="5">
+        <td style="background-color:#ffffff;color:#000000;" align="center" valign="center"/>
+        <td style="font-size:9;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;background-color:#ffffff;color:#000000;"/>
+        <td style="font-size:9;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;background-color:#ffffff;color:#000000;"/>
+        <td style="background-color:#ffffff;color:#000000;" align="center" valign="center"/>
+        <td style="background-color:#ffffff;color:#000000;" align="center" valign="center"/>
+        <td style="background-color:#ffffff;color:#000000;" align="center" valign="center"/>
+      </tr>
+      <tr height="27.5">
+        <td align="center" valign="center" overrideStyle="Default"/>
+        <td style="font-family:Verdana;font-size:11.25;font-weight:bold;color:#3179bb;background-color:rgba(0, 0, 0, 0);" valign="center" colspan="2">Key Indicators and Information</td>
+        <td align="center" valign="center" overrideStyle="Default"/>
+        <td style="font-size:6.75;font-family:Verdana;background-color:#ffffff;color:#000000;" align="right" valign="bottom">Distance units: <text name="Units"/></td>
+        <td align="center" valign="center" overrideStyle="Default"/>
+      </tr>
+      <tr height="50">
+        <td style="background-color:#ffffff;color:#000000;" align="center" valign="center"/>
+        <td style="background-color:#ffffff;color:#000000;" align="center" valign="center">
+          <img width="185.1" height="50" src="jk8sdillilev.png"/>
+        </td>
+        <td style="font-family:Verdana;font-size:9.75;background-color:#ffffff;color:#000000;" align="center" valign="center">
+          <img width="185.1" height="50" src="493j093fpyj2.png"/>
+        </td>
+        <td style="background-color:#ffffff;color:#000000;" align="center" valign="center">
+          <img width="185.1" height="50" src="1srztul9ya7a.png"/>
+        </td>
+        <td style="font-family:Verdana;font-size:9.75;background-color:#ffffff;color:#000000;" align="center" valign="center">
+          <img width="185.1" height="50" src="7elja5cria5e.png"/>
+        </td>
+        <td style="background-color:#ffffff;color:#000000;" align="center" valign="center"/>
+      </tr>
+      <tr height="30">
+        <td style="font-size:9;background-color:#ffffff;color:#000000;" align="center" valign="center"/>
+        <td style="color:#3179bb;font-size:24;font-family:Verdana;font-weight:normal;background-color:#ffffff;" align="center" valign="center"><d f="stores.TOTAL_LOC"/></td>
+        <td style="color:#3179bb;font-size:24;font-family:Verdana;font-weight:normal;background-color:#ffffff;" align="center" valign="center"><d f="stores.MED_DIST" m="#,#0.00"/></td>
+        <td style="color:#3179bb;font-size:24;font-family:Verdana;font-weight:normal;background-color:#ffffff;" align="center" valign="center"><d f="stores.CLOSEST_DIST" m="#,#0.00"/></td>
+        <td style="color:#3179bb;font-size:24;font-family:Verdana;font-weight:normal;background-color:#ffffff;" align="center" valign="center"><d f="stores.FARTHEST_DIST" m="#,#0.00"/></td>
+        <td style="font-size:9;background-color:#ffffff;color:#000000;" align="center" valign="center"/>
+      </tr>
+      <tr height="20">
+        <td style="font-size:9;background-color:#ffffff;color:#000000;" align="center" valign="center"/>
+        <td style="font-size:9.75;font-family:Verdana;background-color:#ffffff;" align="center" valign="center">Total Locations</td>
+        <td style="font-family:Verdana;font-size:9.75;background-color:#ffffff;" align="center" valign="center">Median Distance</td>
+        <td style="font-size:9.75;font-family:Verdana;background-color:#ffffff;" align="center" valign="center">Closest Location</td>
+        <td style="font-family:Verdana;font-size:9.75;background-color:#ffffff;" align="center" valign="center">Farthest Location</td>
+        <td style="font-size:9;background-color:#ffffff;" align="center" valign="center"/>
+      </tr>
+      <tr height="24">
+        <td style="font-size:9;background-color:#ffffff;color:#000000;" align="center" valign="center"/>
+        <td style="font-size:9.75;font-family:Verdana;background-color:#ffffff;color:#000000;" align="center" valign="center"/>
+        <td style="font-size:9.75;font-family:Verdana;background-color:#ffffff;color:#000000;" align="center" valign="center"/>
+        <td style="font-size:9.75;font-family:Verdana;background-color:#ffffff;color:#3179bb;" align="center" valign="center"><d f="stores.CLOSEST_NAME"/></td>
+        <td style="font-size:9.75;font-family:Verdana;background-color:#ffffff;color:#3179bb;" align="center" valign="center"><d f="stores.FARTHEST_NAME"/></td>
+        <td style="font-size:9;background-color:#ffffff;color:#000000;" align="center" valign="center"/>
+      </tr>
+    </table>
+    <table width="789.65" widths="25;739.35;25.3">
+      <tr height="5">
+        <td overrideStyle="Default"/>
+        <td overrideStyle="Default"/>
+        <td overrideStyle="Default"/>
+      </tr>
+      <tr height="231.5">
+        <td/>
+        <td>
+          <mapImage width="739.35" height="231.5" />
+        </td>
+        <td/>
+      </tr>
+    </table>
+    <table spaceAfter="3"/>
+    <table width="790.55" spaceAfter="1.395" widths="25;142.95;94.5;122.7;109.95;168.5;101.9;25.05">
+      <tr height="5.25">
+        <td style="background-color:#ffffff;color:#000000;"/>
+        <td style="color:#3179bb;font-size:13.5;font-family:Arial;font-weight:bold;font-style:normal;text-decoration:none;background-color:#ffffff;" valign="center"/>
+        <td style="background-color:#ffffff;color:#000000;"/>
+        <td style="background-color:#ffffff;color:#000000;"/>
+        <td style="background-color:#ffffff;color:#000000;"/>
+        <td style="background-color:#ffffff;color:#000000;"/>
+        <td style="background-color:#ffffff;color:#000000;"/>
+        <td style="color:#3179bb;font-size:13.5;font-weight:bold;background-color:#ffffff;" valign="center"/>
+      </tr>
+      <tr height="20">
+        <td overrideStyle="Default"/>
+        <td style="font-size:11.25;font-weight:bold;color:#3179bb;background-color:#ffffff;font-family:Verdana;font-style:normal;text-decoration:none;" valign="center" colspan="6">About this report</td>
+        <td style="font-size:13.5;font-weight:bold;color:#3179bb;background-color:#ffffff;" valign="center"/>
+      </tr>
+      <tr height="33.5">
+        <td style="background-color:#ffffff;color:#000000;"/>
+        <td style="font-size:9.75;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;color:#000000;background-color:rgba(0, 0, 0, 0);" valign="center" colspan="6">This report summarizes the nearby locations around a site. It highlights key indicators and information from the analysis and returns all locations that meet the analysis conditions. The map on this page shows the extent of analysis.</td>
+        <td style="font-size:9.75;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;color:#000000;background-color:rgba(0, 0, 0, 0);" valign="center"/>
+      </tr>
+      <tr height="18.5">
+        <td overrideStyle="Default"/>
+        <td style="font-size:9.75;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;" valign="center" overrideStyle="Default">Distance limit:</td>
+        <td style="color:#000000;font-size:9.75;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;background-color:rgba(0, 0, 0, 0);" valign="center"><text name="MinDist"/></td>
+        <td style="font-size:9.75;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;background-color:#ffffff;color:#000000;" valign="center">Maximum locations:</td>
+        <td style="font-size:9.75;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;background-color:#ffffff;color:#000000;" valign="center"><text name="MaxLocations"/></td>
+        <td style="font-size:9.75;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;background-color:#ffffff;color:#000000;" valign="center">Percent of locations:</td>
+        <td style="font-size:9.75;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;background-color:#ffffff;color:#000000;" valign="center"><text name="PercLocations"/></td>
+        <td style="color:#000000;font-size:9.75;font-family:Verdana;font-weight:normal;font-style:normal;text-decoration:none;background-color:rgba(0, 0, 0, 0);" valign="center"/>
+      </tr>
+    </table>
+    <pageBreak/>
+  </section>
+  <section type="DetailsHeader" query="locations">
+    <table width="790.55" spaceAfter="0.75" widths="25;176.85;95;89;123;111.25;69;77;24.45" alternatingStyle="AlternatingRow">
+      <tr height="5">
+        <td style="color:#000000;background-color:rgba(0, 0, 0, 0);"/>
+        <td style="color:#ffffff;font-size:9.75;font-family:Verdana;font-weight:bold;background-color:rgba(0, 0, 0, 0);" valign="center"/>
+        <td style="color:#ffffff;font-size:9.75;font-family:Verdana;font-weight:bold;background-color:rgba(0, 0, 0, 0);" valign="center"/>
+        <td style="color:#ffffff;font-size:9.75;font-family:Verdana;font-weight:bold;background-color:rgba(0, 0, 0, 0);" valign="center"/>
+        <td style="color:#ffffff;font-size:9.75;font-family:Verdana;font-weight:bold;background-color:rgba(0, 0, 0, 0);" align="right" valign="center"/>
+        <td style="color:#ffffff;font-size:9.75;font-family:Verdana;font-weight:bold;background-color:rgba(0, 0, 0, 0);" align="right" valign="center"/>
+        <td style="color:#ffffff;font-size:9.75;font-family:Verdana;font-weight:bold;background-color:rgba(0, 0, 0, 0);" align="center" valign="center"/>
+        <td style="color:#ffffff;font-size:9.75;font-family:Verdana;font-weight:bold;background-color:rgba(0, 0, 0, 0);" align="right" valign="center"/>
+        <td style="color:#000000;background-color:rgba(0, 0, 0, 0);" align="right"/>
+      </tr>
+      <tr height="25">
+        <td style="background-color:#ffffff;color:#000000;"/>
+        <td style="font-family:Verdana;font-size:9.75;font-weight:bold;background-color:#3179bb;color:#ffffff;font-style:normal;text-decoration:none;" valign="center" pad="3">Name</td>
+        <td style="font-family:Verdana;font-size:9.75;font-weight:bold;background-color:#3179bb;color:#ffffff;font-style:normal;text-decoration:none;" valign="center" pad="3"><text name="HEADER1"/></td>
+        <td style="font-family:Verdana;font-size:9.75;font-weight:bold;background-color:#3179bb;color:#ffffff;font-style:normal;text-decoration:none;" valign="center" pad="3"><text name="HEADER2"/></td>
+        <td style="font-family:Verdana;font-size:9.75;font-weight:bold;background-color:#3179bb;color:#ffffff;" align="center" valign="center"><text name="HEADER3"/></td>
+        <td style="font-family:Verdana;font-size:9.75;font-weight:bold;background-color:#3179bb;color:#ffffff;" align="center" valign="center"><text name="HEADER4"/></td>
+        <td style="font-family:Verdana;font-size:9.75;font-weight:bold;background-color:#3179bb;color:#ffffff;" align="center" valign="center">Direction</td>
+        <td style="font-family:Verdana;font-size:9.75;font-weight:bold;background-color:#3179bb;color:#ffffff;" align="center" valign="center" pad="3.2">Distance</td>
+        <td style="background-color:#ffffff;color:#000000;" align="right"/>
+      </tr>
+    </table>
+  </section>
+  <section type="Details" query="locations">
+    <table width="790.55" widths="25;176.95;95;89;123;111.3;69.75;80.4;20.15" alternatingStyle="AlternatingRow">
+      <tr height="31.75">
+        <td style="font-family:Verdana;font-size:9.75;background-color:#ffffff;" valign="center"/>
+        <td style="font-family:Verdana;font-size:9.75;" valign="center" pad="3">
+          <d f="locations.NAME"/>
+        </td>
+        <td style="font-family:Verdana;font-size:9.75;" valign="center" pad="3">
+          <d f="locations.LOCATOR1"/>
+        </td>
+        <td style="font-family:Verdana;font-size:9.75;" valign="center" pad="3">
+          <d f="locations.LOCATOR2"/>
+        </td>
+        <td style="font-family:Verdana;font-size:9.75;" align="center" valign="center">
+          <d f="locations.LOCATOR3"/>
+        </td>
+        <td style="font-family:Verdana;font-size:9.75;" align="center" valign="center">
+          <d f="locations.LOCATOR4"/>
+        </td>
+        <td style="font-family:Verdana;font-size:9.75;" align="center" valign="center">
+          <d f="locations.DIRECTION"/>
+        </td>
+        <td style="font-family:Verdana;font-size:9.75;" align="center" valign="center">
+          <d f="locations.DISTANCE" m="#,#0.00"/>
+        </td>
+        <td style="font-family:Verdana;font-size:9.75;background-color:#ffffff;" align="right" valign="center"/>
+      </tr>
+    </table>
+  </section>
+  <section type="GroupFooter" query="locations" level="1">
+    <table spaceAfter="2.25"/>
+  </section>
+  <section type="GroupFooter" query="locations" level="1">
+    <hr height="0.75" style="background-color:#888888;"/>
+    <table width="790.55" spaceBefore="3.75" spaceAfter="14.25" widths="25.9;407;332.35;25.3">
+      <tr height="31.75">
+        <td/>
+        <td style="font-family:Verdana;font-size:9.75;" valign="center" pad="3">Count of nearby locations</td>
+        <td style="font-family:Verdana;font-size:9.75;font-weight:bold;" align="right" valign="center">
+          <groupCount/>
+        </td>
+        <td style="font-family:Verdana;font-size:9.75;font-weight:bold;" align="right" valign="center"/>
+      </tr>
+    </table>
+  </section>
+  <section type="GroupFooter"  query="locations" level="1">
+    <pageBreak/>
+  </section>
+  <section type="PageFooter">
+    <table width="790.55" widths="72.35;127.4;95.7;79.95;74.95;312.4;27.8">
+      <tr height="13.5">
+        <td style="background-color:#3179bb;color:#ffffff;" colspan="7" rowspan="2"/>
+      </tr>
+      <tr height="11.7525"/>
+      <tr height="15">
+        <td style="font-size:7.995;background-color:#3179bb;color:#ffffff;" pad="4">Ⓒ Esri, 2024</td>
+        <td style="background-color:#3179bb;color:#ffffff;" colspan="4"><a href="https://links.esri.com/business-analyst/pro/report/interpret-find-nearby-locations"><u>Learn more...</u></a></td>
+        <td style="font-size:9;background-color:#3179bb;color:#ffffff;" align="right">
+          <currPage/>
+        </td>
+        <td style="color:#ffffff;background-color:#3179bb;"/>
+      </tr>
+    </table>
+  </section>
+</HTMLextReport>

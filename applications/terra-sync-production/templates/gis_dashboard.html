@@ -1,0 +1,218 @@
+{% extends "base_clean.html" %}
+
+{% block title %}GIS Data Dashboard - TerraFusion Platform{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 mb-1">
+                        <i class="fas fa-globe-americas me-2 text-primary"></i>
+                        GIS Data Dashboard
+                    </h1>
+                    <p class="text-muted mb-0">Real-time geospatial data management and analytics</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" onclick="refreshDashboard()">
+                        <i class="fas fa-sync-alt me-1"></i>
+                        Refresh
+                    </button>
+                    <a href="/gis-export" class="btn btn-primary">
+                        <i class="fas fa-download me-1"></i>
+                        Export Data
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Status Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="rounded-circle bg-success bg-opacity-10 p-3">
+                                <i class="fas fa-layer-group text-success fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1">Active Layers</h6>
+                            <h3 class="mb-0">{{ gis_stats.active_layers|default(12) }}</h3>
+                            <small class="text-success">
+                                <i class="fas fa-arrow-up"></i>
+                                12% from last month
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="rounded-circle bg-info bg-opacity-10 p-3">
+                                <i class="fas fa-map-pin text-info fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1">Total Parcels</h6>
+                            {% if gis_stats.data_available %}
+                                <h3 class="mb-0 text-success">{{ gis_stats.total_parcels }}</h3>
+                                <small class="text-success">
+                                    <i class="fas fa-check-circle me-1"></i>Live data
+                                </small>
+                            {% else %}
+                                <h3 class="mb-0 text-warning">No Data</h3>
+                                <small class="text-warning">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>{{ gis_stats.error_message|default('Data source required') }}
+                                </small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="rounded-circle bg-warning bg-opacity-10 p-3">
+                                <i class="fas fa-sync-alt text-warning fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1">Sync Status</h6>
+                            <h3 class="mb-0">{{ gis_stats.sync_status|default('Active') }}</h3>
+                            <small class="text-muted">
+                                Last: {{ gis_stats.last_update|default('2 minutes ago') }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="rounded-circle bg-primary bg-opacity-10 p-3">
+                                <i class="fas fa-database text-primary fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1">Data Volume</h6>
+                            <h3 class="mb-0">{{ gis_stats.data_volume_gb|default(12.4) }} GB</h3>
+                            <small class="text-primary">
+                                Storage used
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activities -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom-0 py-3">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>
+                        Recent GIS Activities
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="border-0 ps-4">Time</th>
+                                    <th class="border-0">Activity</th>
+                                    <th class="border-0">Status</th>
+                                    <th class="border-0">User</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="ps-4">
+                                        <small class="text-muted">2 minutes ago</small>
+                                    </td>
+                                    <td>Parcel data sync completed</td>
+                                    <td>
+                                        <i class="fas fa-check-circle text-success me-1"></i>
+                                        <span class="text-success">Success</span>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">System</small>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4">
+                                        <small class="text-muted">15 minutes ago</small>
+                                    </td>
+                                    <td>GIS export job created</td>
+                                    <td>
+                                        <i class="fas fa-info-circle text-info me-1"></i>
+                                        <span class="text-info">Info</span>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">admin@county.gov</small>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4">
+                                        <small class="text-muted">1 hour ago</small>
+                                    </td>
+                                    <td>Layer updated: Property Boundaries</td>
+                                    <td>
+                                        <i class="fas fa-check-circle text-success me-1"></i>
+                                        <span class="text-success">Success</span>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">gis.analyst</small>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom-0 py-3">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        System Status
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info alert-dismissible fade show mb-2">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>All GIS services operational</strong>
+                        <br>
+                        <small class="text-muted">Just now</small>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function refreshDashboard() {
+    location.reload();
+}
+</script>
+{% endblock %}

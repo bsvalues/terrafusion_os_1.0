@@ -1,0 +1,78 @@
+{
+  "calcite": {
+    "reset": "Vrati izvorno",
+    "action": {
+      "sort": "Sortiraj"
+    },
+    "buttons": {
+      "save": "Spremi",
+      "edit": "Uredi",
+      "done": "Gotovo",
+      "apply": "Primijeni",
+      "cancel": "Odustani",
+      "close": "Zatvori"
+    },
+    "ColorPicker": {
+      "selectColor": "Odaberi boju",
+      "noColorSpecified": "Boja nije odabrana",
+      "transparent": "Transparentno",
+      "colorTooltip": "<p>Hex: ${hex}</p><p>RGB: ${r}, ${g}, ${b}</p>",
+      "recent": "Nedavno",
+      "standard": "Standard",
+      "savedColors": "Spremljeno boje",
+      "advanced": "Napredno"
+    },
+    "DatePickerLink": {
+      "enterDate": "Unesi datum"
+    },
+    "PaginationContinuous": {
+      "next": "Sljedeće",
+      "previous": "Prethodno"
+    }
+  },
+  "ImageNavigator": {
+    "paginationLabel": "${n} od ${m}",
+    "noImage": "Na ovom web-mjestu trenutačno nema spremljenih fotografija",
+    "previewNotAvailable": "Pretpregled nije dostupan"
+  },
+  "PageNavigator": {
+    "currentPageOutOfN": "Stranica ${current} od ${total}"
+  },
+  "PanoramicViewer": {
+    "image-viewer-close": "Zatvori",
+    "image-viewer-fullscreen": "Preko cijelog zaslona",
+    "image-viewer-minimize": "Smanji",
+    "image-viewer-title": "Preglednik fotografija",
+    "image-viewer-show-caption": "Prikaži naslov",
+    "image-viewer-hide-caption": "Sakrij"
+  },
+  "TextBox": {
+    "error_numberExpected": "Očekuje se broj",
+    "error_range": "Očekivana vrijednost od ${0} do ${1}."
+  },
+  "charts": {
+    "histogram": {
+      "minValue": "Min:<br>${0}",
+      "maxValue": "Maks:<br>${0}",
+      "thisAreaValue": "Ovo područje: ${0}",
+      "medianValue": "Medijan:<br>${0}",
+      "q1Value": "Q1:<br>${0}",
+      "q3Value": "Q3:<br>${0}",
+      "percentile": "Postotak ${percent}:<br>${0}",
+      "percentileBottom": "Donjih ${percent}%:<br>${0}",
+      "percentileTop": "Gornjih ${percent}%:<br>${0}",
+      "percentile_singleLine": "Postotak ${percent}: ${0}",
+      "percentileBottom_singleLine": "Donjih ${percent}%: ${0}",
+      "percentileTop_singleLine": "Gornjih ${percent}%: ${0}",
+      "sd_singleLine": "${sd} SD: ${0}",
+      "tooltip": {
+        "range_single": "<b>${level}</b> ima vrijednost unutar <b>${value}</b> : <b>1</b>",
+        "range_single_precise": "<b>${areaName}</b> ima vrijednost od <b>${value}</b>.",
+        "range_multi": "<b>${level}</b> ima vrijednost unutar <b>${value}</b> : <b>${count}</b>",
+        "thisArea": "<b>Ovo područje</b> ima vrijednost od <b>${value}</b>.",
+        "percentileLower": "<b>${percent}%</b> od <b>${level}</b> imaju vrijednost iznad <b>${value}</b>.",
+        "percentileUpper": "<b>${percent}%</b> od <b>${level}</b> imaju vrijednost ispod <b>${value}</b>."
+      }
+    }
+  }
+}

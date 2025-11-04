@@ -1,0 +1,508 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.Workflow.PACSActivities</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.Workflow.PACSActivities.GetAccounts">
+            <summary>
+            Get Accounts informatino class
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.PACSActivities.GetAccounts.FileAsNameExpression">
+            <summary>
+            An expression for defining the File As Name
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.GetAccounts.#ctor">
+            <summary>
+            Default constructor
+            set the Title
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.GetAccounts.Execute(System.Activities.CodeActivityContext)">
+            <summary>
+            Method that runs during the course of the workflow execution for this activity.
+            It retrieves Account Records based on search parameters.
+            </summary>
+            <param name="context">the context of the running workflow</param>
+            <returns>An array of AccountDTO records</returns>
+        </member>
+        <member name="T:TrueAutomation.Workflow.PACSActivities.GetAccountsActivityDesigner">
+            <summary>
+            GetAccountsActivityDesigner
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.GetAccountsActivityDesigner.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.PACSActivities.ExecuteTAMTCommand">
+            <summary>
+            This class contains the ExecuteTAMTCommand Activity information 
+            which is populated through use of the proper designer.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.PACSActivities.ExecuteTAMTCommand.TAMTCommandName">
+            <summary>
+            An expression defining the Name of the TAMTCommand that is to be executed
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.PACSActivities.ExecuteTAMTCommand.CommandParameters">
+            <summary>
+            An expression defining the Parameters list needed to execute the TAMTCommand
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.PACSActivities.ExecuteTAMTCommand.UseNamedParameters">
+            <summary>
+            True if name/value pairs will be passed to the server method, false to pass a list of objects
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.ExecuteTAMTCommand.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.ExecuteTAMTCommand.Execute(System.Activities.CodeActivityContext)">
+            <summary>
+            The Execute Method is fired off whenever the workflow reaches this activity
+            OutArgument - Return Value of the TAMTCommand Query Execution
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="T:TrueAutomation.Workflow.PACSActivities.ExecuteTAMTCommandActivityDesigner">
+            <summary>
+            This class is the UI Element of the ExecuteTAMTCommand Activity
+            </summary>
+            <summary>
+            ExecuteTAMTCommandActivityDesigner
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.ExecuteTAMTCommandActivityDesigner.#ctor">
+            <summary>
+            Default Constructior.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.ExecuteTAMTCommandActivityDesigner.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.PACSActivities.ExportQueryResultsToExcel">
+            <summary>
+            This class contains the workflow Activity information which is populated through use of the corresponding designer.
+            This Activity is for exporting sql query results to an excel sheet.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.PACSActivities.ExportQueryResultsToExcel.SqlQuery">
+            <summary>
+            The sql query whose results will be exported to EXCEL
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.PACSActivities.ExportQueryResultsToExcel.ExcelLocation">
+            <summary>
+            An expression Defining the location where the excel file will be created
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.PACSActivities.ExportQueryResultsToExcel.ExcelFile">
+            <summary>
+            The name of the excel file
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.PACSActivities.ExportQueryResultsToExcel.OverwriteFlag">
+            <summary>
+            Flag defining if an existing excel file will be overwritten
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.PACSActivities.ExportQueryResultsToExcel.ExcelSheetName">
+            <summary>
+            The sheet name of the excel
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.ExportQueryResultsToExcel.Execute(System.Activities.CodeActivityContext)">
+            <summary>
+            The Execute Method is fired off when the workflow containing the activity is launched. This exports the query results to an excel file
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="P:TrueAutomation.Workflow.PACSActivities.ExportQueryResultsToExcel.Log">
+            <summary>
+            Logger tolog warnings/error messages
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.PACSActivities.ExportQueryResultsToExcelActivityDesigner">
+            <summary>
+            ExportQueryResultsToExcelActivityDesigner
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.ExportQueryResultsToExcelActivityDesigner.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.PACSActivities.GetProperties">
+            <summary>
+            Get Properties information class
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.PACSActivities.GetProperties.OwnerIDExpression">
+            <summary>
+            An expression defining the owner ID
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.GetProperties.#ctor">
+            <summary>
+            Default constructor
+            set the title
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.GetProperties.Execute(System.Activities.CodeActivityContext)">
+            <summary>
+            Method that runs during the course of the workflow execution for this activity.
+            It returns Property records based on search parameters
+            </summary>
+            <param name="context">The context of the running workflow</param>
+            <returns>An Array of PropertyDTO records.</returns>
+        </member>
+        <member name="T:TrueAutomation.Workflow.PACSActivities.GetPropertiesActivityDesigner">
+            <summary>
+            GetPropertiesActivityDesigner
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.GetPropertiesActivityDesigner.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.PACSActivities.ExecuteREETExport">
+            <summary>
+            This class contains the REET Export Activity information which is populated through use of the proper designer.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.PACSActivities.ExecuteREETExport.FilePath">
+            <summary>
+            An expression defining the Path of the file where the REET Export would be saved to.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.PACSActivities.ExecuteREETExport.FileName">
+            <summary>
+            An expression defining the file name where the exported REET would be saved to.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.PACSActivities.ExecuteREETExport.AsOfDate">
+            <summary>
+            An expression to define the As Of Date for REET Export.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.PACSActivities.ExecuteREETExport.RedoFlag">
+            <summary>
+            An expression to define the As Of Date for REET Export.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.ExecuteREETExport.#ctor">
+            <summary>
+            Default Constructior
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.ExecuteREETExport.Execute(System.Activities.CodeActivityContext)">
+            <summary>
+            The Execute Method is fired off whenever the workflow reaches this activity
+            OutArgument - DTO with REET Export details.
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.ExecuteREETExport.CacheMetadata(System.Activities.CodeActivityMetadata)">
+            <summary>
+            Override CacheMetadata to create runtime arguments and bind them to the metadata.
+            </summary>
+            <param name="metadata"></param>
+        </member>
+        <member name="P:TrueAutomation.Workflow.PACSActivities.ExecuteREETExport.Log">
+            <summary>
+            Logger tolog warnings/error messages
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.PACSActivities.REETExportActivityDesigner">
+            <summary>
+            REETExportActivityDesigner
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.REETExportActivityDesigner.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.PACSActivities.GetPACSQueryRecords">
+            <summary>
+            Get PACSQueryRecords information class
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.PACSActivities.GetPACSQueryRecords.SelectedPACSQueryId">
+            <summary>
+            The selected PACS Query Id
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.PACSActivities.GetPACSQueryRecords.QueryExpression">
+            <summary>
+            An expression defining the SQL content of the Query.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.GetPACSQueryRecords.#ctor">
+            <summary>
+            Default constructor
+            set the Title
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.GetPACSQueryRecords.Execute(System.Activities.CodeActivityContext)">
+            <summary>
+            Method that runs during the course of the workflow execution for this activity.
+            It retrieves PACS Query Records
+            </summary>
+            <param name="context">the context of the running workflow</param>
+            <returns>An array of QueryRecordDTO records</returns>
+        </member>
+        <member name="P:TrueAutomation.Workflow.PACSActivities.GetPACSQueryRecords.Log">
+            <summary>
+            Logger tolog warnings/error messages
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.PACSActivities.GetPACSQueryActivityDesigner">
+            <summary>
+            GetPACSQueryActivityDesigner
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.GetPACSQueryActivityDesigner.PACSQuery_SelectionChanged(System.Object,System.Windows.Controls.SelectionChangedEventArgs)">
+            <summary>
+            Event fired when the PACS Query Selection changes in order 
+            to populate the Query Content ExpressionTextBox.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.GetPACSQueryActivityDesigner.LoadQueryContent">
+            <summary>
+            Method to populate the SQL Query Content provided by the DTO Object of the Selected PACS Query.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.GetPACSQueryActivityDesigner.LoadQueries">
+            <summary>
+            Method to populate the List retrieved 
+            from the Task Service 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.GetPACSQueryActivityDesigner.GetSelectedQueryFromModel">
+            <summary>
+            Method to extract the current instance version value of the Selected Task Type Id from the Model.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.GetPACSQueryActivityDesigner.GetModelItemProperty(System.String)">
+            <summary>
+            Helper method to get objects out of the model.
+            </summary>
+            <param name="propertyName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.GetPACSQueryActivityDesigner.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.PACSActivities.GetTaskQueryMappings">
+            <summary>
+            Get TaskQueryMappings information class
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.PACSActivities.GetTaskQueryMappings.SelectedTaskQueryMappingId">
+            <summary>
+            The selected Task Query Mapping Id
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.GetTaskQueryMappings.#ctor">
+            <summary>
+            Default constructor
+            set the Title
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.GetTaskQueryMappings.Execute(System.Activities.CodeActivityContext)">
+            <summary>
+            Method that runs during the course of the workflow execution for this activity.
+            It retrieves Task Query Mapping Records
+            </summary>
+            <param name="context">the context of the running workflow</param>
+            <returns>An array of TaskQueryMappingDTO records</returns>
+        </member>
+        <member name="T:TrueAutomation.Workflow.PACSActivities.GetPACSQueryRecordsActivityDesigner">
+            <summary>
+            GetPACSQueryRecordsActivityDesigner
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Workflow.PACSActivities.GetPACSQueryRecordsActivityDesigner.taskQueryMappings">
+            <summary>
+            The list of all available Task Query mappings
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.GetPACSQueryRecordsActivityDesigner.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.PACSActivities.GetPACSQueryRecordsActivityDesigner.TaskQueryMappings">
+            <summary>
+            The list of QueryMappings to Bind the combobox to.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.GetPACSQueryRecordsActivityDesigner.TaskQueryMapping_Loaded(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Method to set the Task Query Mapping selected index based on the saved values.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.GetPACSQueryRecordsActivityDesigner.LoadQueryMappings">
+            <summary>
+            Method to populate the List retrieved 
+            from the Task Service 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.GetPACSQueryRecordsActivityDesigner.TaskQueryMapping_SelectionChanged(System.Object,System.Windows.Controls.SelectionChangedEventArgs)">
+            <summary>
+            Event fired when the Task QueryMappings Selection changes in order to populate the Task Type list.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.GetPACSQueryRecordsActivityDesigner.GetSelectedMappedQueryFromModel">
+            <summary>
+            Method to extract the current instance version value of the Selected Task Type Id from the Model.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.GetPACSQueryRecordsActivityDesigner.GetModelItemProperty(System.String)">
+            <summary>
+            Helper method to get objects out of the model.
+            </summary>
+            <param name="propertyName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PACSActivities.GetPACSQueryRecordsActivityDesigner.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.PaymentImportActivities.ExecutePaymentImport">
+            <summary>
+            This class contains the PaymentImport Activity information which is populated through use of the proper designer.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.PaymentImportActivities.ExecutePaymentImport.DirectoryPath">
+            <summary>
+            An expression Defining the Path of the files for the Payment import
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PaymentImportActivities.ExecutePaymentImport.#ctor">
+            <summary>
+            Default Constructior
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PaymentImportActivities.ExecutePaymentImport.Execute(System.Activities.CodeActivityContext)">
+            <summary>
+            The Execute Method is fired off whenever the workflow reaches this activity
+            OutArgument status of the PaymentImport ;
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PaymentImportActivities.ExecutePaymentImport.CacheMetadata(System.Activities.CodeActivityMetadata)">
+            <summary>
+            Override CacheMetadata to create runtime arguments and bind them to the metadata.
+            </summary>
+            <param name="metadata"></param>
+        </member>
+        <member name="T:TrueAutomation.Workflow.PaymentImportActivities.PaymentImportActivityDesigner">
+            <summary>
+            This class is the UI Element of the Payment Import Activity
+            </summary>
+            <summary>
+            PaymentImportActivityDesigner
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PaymentImportActivities.PaymentImportActivityDesigner.#ctor">
+            <summary>
+            Default Constructior.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.PaymentImportActivities.PaymentImportActivityDesigner.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.ScanDirectoryActivities.ScanDirectory">
+            <summary>
+            This class contains the ScanDirectory Activity information which is populated through use of the proper designer.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.ScanDirectoryActivities.ScanDirectory.Directory">
+            <summary>
+            An expression Defining the Path of the files 
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.ScanDirectoryActivities.ScanDirectory.NewLocation">
+            <summary>
+            An expression Defining the Path of the files to be moved
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.ScanDirectoryActivities.ScanDirectory.SelectedMoveFileOption">
+            <summary>
+            An option that indicates  files to be moved or not after processing.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.ScanDirectoryActivities.ScanDirectory.#ctor">
+            <summary>
+            Default Constructior
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.ScanDirectoryActivities.ScanDirectory.Execute(System.Activities.CodeActivityContext)">
+            <summary>
+            The Execute Method is fired off whenever the workflow reaches this activity
+            OutArgument status of the PaymentImport ;
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.ScanDirectoryActivities.ScanDirectory.CacheMetadata(System.Activities.CodeActivityMetadata)">
+            <summary>
+            Override CacheMetadata to create runtime arguments and bind them to the metadata.
+            </summary>
+            <param name="metadata"></param>
+        </member>
+        <member name="T:TrueAutomation.Workflow.ScanDirectoryActivities.ScanDirectoryActivityDesigner">
+            <summary>
+            This class is the UI Element of the Scan Directory Activity
+            </summary>
+            <summary>
+            ScanDirectoryActivityDesigner
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.ScanDirectoryActivities.ScanDirectoryActivityDesigner.MoveFileOptions">
+            <summary>
+            The list of options to Bind the Move File Options combobox to.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.ScanDirectoryActivities.ScanDirectoryActivityDesigner.#ctor">
+            <summary>
+            Default Constructior.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.ScanDirectoryActivities.ScanDirectoryActivityDesigner.RemoveNewLocation">
+            <summary>
+            Removes existing rows on selection changed
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.ScanDirectoryActivities.ScanDirectoryActivityDesigner.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+    </members>
+</doc>

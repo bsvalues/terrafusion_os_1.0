@@ -16,17 +16,23 @@ describe('Textarea', () => {
     it('applies default styling', () => {
       render(<Textarea />);
       const textarea = screen.getByRole('textbox');
-      expect(textarea).toHaveClass('min-h-[60px]', 'w-full', 'rounded-md', 'border', 'border-input');
+      expect(textarea).toHaveClass(
+        'min-h-[60px]',
+        'w-full',
+        'rounded-md',
+        'border',
+        'border-input'
+      );
     });
 
     it('renders with custom className', () => {
-      render(<Textarea className="custom-textarea" />);
+      render(<Textarea className='custom-textarea' />);
       const textarea = screen.getByRole('textbox');
       expect(textarea).toHaveClass('custom-textarea');
     });
 
     it('renders with placeholder', () => {
-      render(<Textarea placeholder="Enter your message..." />);
+      render(<Textarea placeholder='Enter your message...' />);
       const textarea = screen.getByPlaceholderText('Enter your message...');
       expect(textarea).toBeInTheDocument();
     });
@@ -34,13 +40,13 @@ describe('Textarea', () => {
 
   describe('Value and Input', () => {
     it('renders with initial value', () => {
-      render(<Textarea value="Initial text" onChange={() => {}} />);
+      render(<Textarea value='Initial text' onChange={() => {}} />);
       const textarea = screen.getByRole('textbox') as HTMLTextAreaElement;
       expect(textarea.value).toBe('Initial text');
     });
 
     it('renders with defaultValue', () => {
-      render(<Textarea defaultValue="Default text" />);
+      render(<Textarea defaultValue='Default text' />);
       const textarea = screen.getByRole('textbox') as HTMLTextAreaElement;
       expect(textarea.value).toBe('Default text');
     });
@@ -49,7 +55,7 @@ describe('Textarea', () => {
       const user = userEvent.setup();
       render(<Textarea />);
       const textarea = screen.getByRole('textbox');
-      
+
       await user.type(textarea, 'Hello world');
       expect(textarea).toHaveValue('Hello world');
     });
@@ -59,7 +65,7 @@ describe('Textarea', () => {
       const handleChange = jest.fn();
       render(<Textarea onChange={handleChange} />);
       const textarea = screen.getByRole('textbox');
-      
+
       await user.type(textarea, 'Test');
       expect(handleChange).toHaveBeenCalled();
     });
@@ -68,7 +74,7 @@ describe('Textarea', () => {
       const user = userEvent.setup();
       render(<Textarea />);
       const textarea = screen.getByRole('textbox');
-      
+
       await user.type(textarea, 'Line 1{Enter}Line 2{Enter}Line 3');
       expect(textarea).toHaveValue('Line 1\nLine 2\nLine 3');
     });
@@ -91,7 +97,7 @@ describe('Textarea', () => {
       const user = userEvent.setup();
       render(<Textarea disabled />);
       const textarea = screen.getByRole('textbox');
-      
+
       await user.type(textarea, 'Test');
       expect(textarea).toHaveValue('');
     });
@@ -101,7 +107,7 @@ describe('Textarea', () => {
       const handleChange = jest.fn();
       render(<Textarea disabled onChange={handleChange} />);
       const textarea = screen.getByRole('textbox');
-      
+
       await user.type(textarea, 'Test');
       expect(handleChange).not.toHaveBeenCalled();
     });
@@ -109,7 +115,7 @@ describe('Textarea', () => {
 
   describe('Read-only State', () => {
     it('renders read-only textarea', () => {
-      render(<Textarea readOnly value="Read-only text" />);
+      render(<Textarea readOnly value='Read-only text' />);
       const textarea = screen.getByRole('textbox') as HTMLTextAreaElement;
       expect(textarea).toHaveAttribute('readonly');
       expect(textarea.value).toBe('Read-only text');
@@ -117,9 +123,9 @@ describe('Textarea', () => {
 
     it('does not accept input when read-only', async () => {
       const user = userEvent.setup();
-      render(<Textarea readOnly defaultValue="Initial" />);
+      render(<Textarea readOnly defaultValue='Initial' />);
       const textarea = screen.getByRole('textbox');
-      
+
       await user.type(textarea, 'New text');
       expect(textarea).toHaveValue('Initial');
     });
@@ -171,7 +177,7 @@ describe('Textarea', () => {
       const user = userEvent.setup();
       render(<Textarea maxLength={10} />);
       const textarea = screen.getByRole('textbox');
-      
+
       await user.type(textarea, 'This is a very long text that exceeds the limit');
       expect((textarea as HTMLTextAreaElement).value.length).toBeLessThanOrEqual(10);
     });
@@ -182,7 +188,7 @@ describe('Textarea', () => {
       const user = userEvent.setup();
       render(<Textarea />);
       const textarea = screen.getByRole('textbox');
-      
+
       await user.click(textarea);
       expect(textarea).toHaveFocus();
     });
@@ -190,7 +196,7 @@ describe('Textarea', () => {
     it('can be focused programmatically', () => {
       const ref = React.createRef<HTMLTextAreaElement>();
       render(<Textarea ref={ref} />);
-      
+
       ref.current?.focus();
       expect(ref.current).toHaveFocus();
     });
@@ -204,25 +210,25 @@ describe('Textarea', () => {
 
   describe('HTML Attributes', () => {
     it('applies id attribute', () => {
-      render(<Textarea id="message" />);
+      render(<Textarea id='message' />);
       const textarea = screen.getByRole('textbox');
       expect(textarea).toHaveAttribute('id', 'message');
     });
 
     it('applies name attribute', () => {
-      render(<Textarea name="comment" />);
+      render(<Textarea name='comment' />);
       const textarea = screen.getByRole('textbox');
       expect(textarea).toHaveAttribute('name', 'comment');
     });
 
     it('applies data attributes', () => {
-      render(<Textarea data-testid="custom-textarea" data-value="test" />);
+      render(<Textarea data-testid='custom-textarea' data-value='test' />);
       const textarea = screen.getByTestId('custom-textarea');
       expect(textarea).toHaveAttribute('data-value', 'test');
     });
 
     it('applies aria-label', () => {
-      render(<Textarea aria-label="Message input" />);
+      render(<Textarea aria-label='Message input' />);
       const textarea = screen.getByRole('textbox', { name: /message input/i });
       expect(textarea).toBeInTheDocument();
     });
@@ -230,8 +236,8 @@ describe('Textarea', () => {
     it('applies aria-describedby', () => {
       render(
         <div>
-          <Textarea aria-describedby="helper-text" />
-          <div id="helper-text">Helper text here</div>
+          <Textarea aria-describedby='helper-text' />
+          <div id='helper-text'>Helper text here</div>
         </div>
       );
       const textarea = screen.getByRole('textbox');
@@ -239,7 +245,7 @@ describe('Textarea', () => {
     });
 
     it('applies aria-invalid', () => {
-      render(<Textarea aria-invalid="true" />);
+      render(<Textarea aria-invalid='true' />);
       const textarea = screen.getByRole('textbox');
       expect(textarea).toHaveAttribute('aria-invalid', 'true');
     });
@@ -247,7 +253,7 @@ describe('Textarea', () => {
 
   describe('Accessibility', () => {
     it('has no accessibility violations', async () => {
-      const { container } = render(<Textarea aria-label="Message" />);
+      const { container } = render(<Textarea aria-label='Message' />);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
@@ -255,8 +261,8 @@ describe('Textarea', () => {
     it('has no accessibility violations with label', async () => {
       const { container } = render(
         <div>
-          <label htmlFor="message">Message</label>
-          <Textarea id="message" />
+          <label htmlFor='message'>Message</label>
+          <Textarea id='message' />
         </div>
       );
       const results = await axe(container);
@@ -264,7 +270,7 @@ describe('Textarea', () => {
     });
 
     it('has no accessibility violations when disabled', async () => {
-      const { container } = render(<Textarea disabled aria-label="Message" />);
+      const { container } = render(<Textarea disabled aria-label='Message' />);
       const results = await axe(container);
       expect(results).toHaveNoViolations();
     });
@@ -272,8 +278,8 @@ describe('Textarea', () => {
     it('has no accessibility violations when required', async () => {
       const { container } = render(
         <div>
-          <label htmlFor="required-message">Message *</label>
-          <Textarea id="required-message" required />
+          <label htmlFor='required-message'>Message *</label>
+          <Textarea id='required-message' required />
         </div>
       );
       const results = await axe(container);
@@ -283,9 +289,9 @@ describe('Textarea', () => {
     it('has no accessibility violations with error state', async () => {
       const { container } = render(
         <div>
-          <label htmlFor="error-message">Message</label>
-          <Textarea id="error-message" aria-invalid="true" aria-describedby="error-text" />
-          <div id="error-text">This field is required</div>
+          <label htmlFor='error-message'>Message</label>
+          <Textarea id='error-message' aria-invalid='true' aria-describedby='error-text' />
+          <div id='error-text'>This field is required</div>
         </div>
       );
       const results = await axe(container);
@@ -295,25 +301,25 @@ describe('Textarea', () => {
 
   describe('Custom Styling', () => {
     it('applies custom height', () => {
-      render(<Textarea className="min-h-[120px]" />);
+      render(<Textarea className='min-h-[120px]' />);
       const textarea = screen.getByRole('textbox');
       expect(textarea).toHaveClass('min-h-[120px]');
     });
 
     it('applies custom width', () => {
-      render(<Textarea className="w-1/2" />);
+      render(<Textarea className='w-1/2' />);
       const textarea = screen.getByRole('textbox');
       expect(textarea).toHaveClass('w-1/2');
     });
 
     it('applies custom border styling', () => {
-      render(<Textarea className="border-2 border-blue-500" />);
+      render(<Textarea className='border-2 border-blue-500' />);
       const textarea = screen.getByRole('textbox');
       expect(textarea).toHaveClass('border-2', 'border-blue-500');
     });
 
     it('applies custom padding', () => {
-      render(<Textarea className="p-4" />);
+      render(<Textarea className='p-4' />);
       const textarea = screen.getByRole('textbox');
       expect(textarea).toHaveClass('p-4');
     });
@@ -323,8 +329,8 @@ describe('Textarea', () => {
     it('renders as comment field', () => {
       render(
         <div>
-          <label htmlFor="comment">Leave a comment</label>
-          <Textarea id="comment" placeholder="Write your comment here..." />
+          <label htmlFor='comment'>Leave a comment</label>
+          <Textarea id='comment' placeholder='Write your comment here...' />
         </div>
       );
       const textarea = screen.getByPlaceholderText('Write your comment here...');
@@ -334,8 +340,8 @@ describe('Textarea', () => {
     it('renders as message field with character limit', () => {
       render(
         <div>
-          <label htmlFor="message">Message (max 280 characters)</label>
-          <Textarea id="message" maxLength={280} placeholder="What's on your mind?" />
+          <label htmlFor='message'>Message (max 280 characters)</label>
+          <Textarea id='message' maxLength={280} placeholder="What's on your mind?" />
         </div>
       );
       const textarea = screen.getByPlaceholderText("What's on your mind?");
@@ -345,12 +351,8 @@ describe('Textarea', () => {
     it('renders as description field', () => {
       render(
         <div>
-          <label htmlFor="description">Product Description</label>
-          <Textarea
-            id="description"
-            rows={5}
-            placeholder="Describe your product in detail..."
-          />
+          <label htmlFor='description'>Product Description</label>
+          <Textarea id='description' rows={5} placeholder='Describe your product in detail...' />
         </div>
       );
       const textarea = screen.getByPlaceholderText('Describe your product in detail...');
@@ -360,28 +362,28 @@ describe('Textarea', () => {
     it('renders as feedback form', async () => {
       const user = userEvent.setup();
       const handleSubmit = jest.fn((e) => e.preventDefault());
-      
+
       render(
         <form onSubmit={handleSubmit}>
-          <label htmlFor="feedback">Your Feedback</label>
-          <Textarea id="feedback" required placeholder="Tell us what you think..." />
-          <button type="submit">Submit</button>
+          <label htmlFor='feedback'>Your Feedback</label>
+          <Textarea id='feedback' required placeholder='Tell us what you think...' />
+          <button type='submit'>Submit</button>
         </form>
       );
-      
+
       const textarea = screen.getByPlaceholderText('Tell us what you think...');
       await user.type(textarea, 'Great product!');
-      
+
       const button = screen.getByRole('button', { name: /submit/i });
       await user.click(button);
-      
+
       expect(handleSubmit).toHaveBeenCalled();
     });
   });
 
   describe('Edge Cases', () => {
     it('handles empty value', () => {
-      render(<Textarea value="" onChange={() => {}} />);
+      render(<Textarea value='' onChange={() => {}} />);
       const textarea = screen.getByRole('textbox');
       expect(textarea).toHaveValue('');
     });
@@ -397,7 +399,7 @@ describe('Textarea', () => {
       const user = userEvent.setup();
       render(<Textarea />);
       const textarea = screen.getByRole('textbox');
-      
+
       await user.type(textarea, '<script>alert("XSS")</script>');
       expect(textarea).toHaveValue('<script>alert("XSS")</script>');
     });
@@ -406,7 +408,7 @@ describe('Textarea', () => {
       const user = userEvent.setup();
       render(<Textarea />);
       const textarea = screen.getByRole('textbox');
-      
+
       await user.type(textarea, '🎉 Hello 世界! 🌍');
       expect(textarea).toHaveValue('🎉 Hello 世界! 🌍');
     });
@@ -415,7 +417,7 @@ describe('Textarea', () => {
       const user = userEvent.setup();
       render(<Textarea />);
       const textarea = screen.getByRole('textbox');
-      
+
       await user.type(textarea, '  Line with spaces  {Enter}{Enter}Another line  ');
       expect(textarea).toHaveValue('  Line with spaces  \n\nAnother line  ');
     });
@@ -429,17 +431,17 @@ describe('Textarea', () => {
         const formData = new FormData(e.currentTarget);
         return formData.get('message');
       });
-      
+
       render(
         <form onSubmit={handleSubmit}>
-          <Textarea name="message" defaultValue="Test message" />
-          <button type="submit">Submit</button>
+          <Textarea name='message' defaultValue='Test message' />
+          <button type='submit'>Submit</button>
         </form>
       );
-      
+
       const button = screen.getByRole('button');
       await user.click(button);
-      
+
       expect(handleSubmit).toHaveBeenCalled();
     });
 
@@ -447,11 +449,11 @@ describe('Textarea', () => {
       const user = userEvent.setup();
       render(
         <form>
-          <Textarea name="message" required />
-          <button type="submit">Submit</button>
+          <Textarea name='message' required />
+          <button type='submit'>Submit</button>
         </form>
       );
-      
+
       const textarea = screen.getByRole('textbox');
       expect(textarea).toBeRequired();
     });

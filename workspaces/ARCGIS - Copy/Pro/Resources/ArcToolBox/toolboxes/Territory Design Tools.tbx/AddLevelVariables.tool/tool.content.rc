@@ -1,0 +1,27 @@
+{
+    "map": {
+        "base_level.descr": "The level below the territory level to which the attribute value will be added.",
+        "base_level.title": "Base Level",
+        "description": "Adds a new field at the specified level.",
+        "in_territory_solution.descr": "The input territory solution.",
+        "in_territory_solution.title": "Input Territory Solution",
+        "level.descr": "The level to which the calculated field will be added.",
+        "level.title": "Level",
+        "out_territory_solution.title": "Updated Territory Solution",
+        "title": "Add Level Variables",
+        "variables.descr": "<xdoc><p>The variables that will be added to the level.</p><p><span class=\"esri_uicontrol\">Statistic Field</span>—The field that will be used for the statistical calculation.</p><p><span class=\"esri_uicontrol\">Statistic</span>—The type of statistical calculation.<ul><li>Count—The number of values included in the calculation will be identified.</li><li>Sum—The values for the specified field will be added together.</li><li>Maximum—The largest value for the specified field will be identified.</li><li>Minimum—The smallest value for the specified field will be identified.</li><li>Average—The average of the values for the specified field will be calculated.</li><li>Median—The median of the values for the specified field will be calculated.</li><li>Standard Deviation—The standard deviation of values for the specified field will be calculated.</li><li>Percent of Total—The percentage of each value for the specified field will be calculated from the total sum of the values for the field.</li></ul></p><p><span class=\"esri_uicontrol\">Field Name</span>—The valid name of the field on the level where the calculated data will be stored.</p><p><span class=\"esri_uicontrol\">Field Alias Name</span>—The readable and understandable name of the calculated field.</p></xdoc>",
+        "variables.domain.item2.AVERAGE": "Average",
+        "variables.domain.item2.COUNT": "Count",
+        "variables.domain.item2.MAXIMUM": "Maximum",
+        "variables.domain.item2.MEDIAN": "Median",
+        "variables.domain.item2.MINIMUM": "Minimum",
+        "variables.domain.item2.PERCENT_OF_TOTAL": "Percent of Total",
+        "variables.domain.item2.STANDARD_DEVIATION": "Standard Deviation",
+        "variables.domain.item2.SUM": "Sum",
+        "variables.dt.title1": "Statistic Field",
+        "variables.dt.title2": "Statistic",
+        "variables.dt.title3": "Field Name",
+        "variables.dt.title4": "Field Alias Name",
+        "variables.title": "Variables"
+    }
+}

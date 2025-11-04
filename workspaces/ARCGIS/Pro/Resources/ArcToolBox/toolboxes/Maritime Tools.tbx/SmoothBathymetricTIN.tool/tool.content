@@ -1,0 +1,60 @@
+{
+    "type": "FunctionTool",
+    "guid": "{C5CD7E91-50D4-44D2-B98B-151009423D52}/SmoothBathymetricTIN",
+    "displayname": "$rc:title",
+    "helpcontent": "63000004",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "69"
+    ],
+    "params": {
+        "in_tin": {
+            "display_order": "0",
+            "displayname": "$rc:in_tin.title",
+            "datatype": {
+                "type": "GPTinLayer"
+            },
+            "description": "$rc:in_tin.descr"
+        },
+        "out_tin": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_tin.title",
+            "datatype": {
+                "type": "DETin"
+            },
+            "description": "$rc:out_tin.descr"
+        },
+        "depth_direction": {
+            "display_order": "2",
+            "displayname": "$rc:depth_direction.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "POSITIVE_UP",
+                        "code": "$rc:depth_direction.domain.POSITIVE_UP"
+                    },
+                    {
+                        "value": "POSITIVE_DOWN",
+                        "code": "$rc:depth_direction.domain.POSITIVE_DOWN"
+                    }
+                ]
+            },
+            "value": "POSITIVE_UP",
+            "description": "$rc:depth_direction.descr"
+        },
+        "smoothing_iterations": {
+            "display_order": "3",
+            "displayname": "$rc:smoothing_iterations.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:smoothing_iterations.descr"
+        }
+    }
+}

@@ -1,0 +1,26 @@
+{
+    "map": {
+        "description": "Adds information about elevation properties of features in a z-enabled feature class.",
+        "in_feature_class.descr": "The input features that will be processed.",
+        "in_feature_class.title": "Input Features",
+        "noise_filtering.descr": "An numeric value that will be used to exclude portions of features from the resulting calculations. This can be useful when the 3D input contains relatively small features with extreme slopes which may bias statistical results. If the 3D input's linear units are meters, specifying a value of 0.001 will result in the exclusion of lines or polygon edges that are shorter than 0.001 meters. For multipatch features, the same value will result in the exclusion of its subparts that have an area less than 0.001 square meters. This parameter does not apply to point and multipoint features.",
+        "noise_filtering.title": "Noise Filtering",
+        "out_property.descr": "<xdoc><p>Specifies the z-properties that will be added to the attribute table of the input feature class.</p><ul><li><span title=\"Z\">Spot Z</span>—Spot elevation of single-point feature.</li><li><span title=\"POINT_COUNT\">Point Count</span>—Number of points in each multipoint feature.</li><li><span title=\"Z_MIN\">Lowest Z</span>—Lowest z-value found in each multipoint, polyline, polygon, or multipatch feature.</li><li><span title=\"Z_MAX\">Highest Z</span>—Highest z-value found in each multipoint, polyline, polygon, or multipatch feature.</li><li><span title=\"Z_MEAN\">Average Z</span>—Average z-value found in each multipoint, polyline, polygon, or multipatch feature.</li><li><span title=\"LENGTH_3D\">3-Dimensional Length</span>—3-dimensional length of each polyline or polygon feature.</li><li><span title=\"SURFACE_AREA\">Surface Area</span>—Total area of the surface of a multipatch feature.</li><li><span title=\"VERTEX_COUNT\">Vertex Count</span>—Total number of vertices in each polyline or polygon feature.</li><li><span title=\"MIN_SLOPE\">Lowest Slope</span>—Lowest slope value calculated for each polyline, polygon, or multipatch feature.</li><li><span title=\"MAX_SLOPE\">Highest Slope</span>—Highest slope value calculated for each polyline, polygon, or multipatch feature.</li><li><span title=\"AVG_SLOPE\">Average Slope</span>—Average slope value calculated for each polyline, polygon, or multipatch feature.</li><li><span title=\"VOLUME\">Volume</span>—Volume of space enclosed by each multipatch feature.</li></ul></xdoc>",
+        "out_property.domain.AVG_SLOPE": "Average Slope",
+        "out_property.domain.LENGTH_3D": "3-Dimensional Length",
+        "out_property.domain.MAX_SLOPE": "Highest Slope",
+        "out_property.domain.MIN_SLOPE": "Lowest Slope",
+        "out_property.domain.POINT_COUNT": "Point Count",
+        "out_property.domain.SURFACE_AREA": "Surface Area",
+        "out_property.domain.VERTEX_COUNT": "Vertex Count",
+        "out_property.domain.VOLUME": "Volume",
+        "out_property.domain.Z": "Spot Z",
+        "out_property.domain.Z_MAX": "Highest Z",
+        "out_property.domain.Z_MEAN": "Average Z",
+        "out_property.domain.Z_MIN": "Lowest Z",
+        "out_property.title": "Output Property",
+        "output_feature_class.title": "Updated Input Features",
+        "summary": "<xdoc><p>Adds information about elevation properties of features in a z-enabled feature class.</p><p>Each 3D shape is examined and the selected properties are appended to the attribute table of the input feature class. The output options vary based on the feature&apos;s geometry.</p></xdoc>",
+        "title": "Add Z Information"
+    }
+}

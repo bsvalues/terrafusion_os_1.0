@@ -1,0 +1,448 @@
+{% extends 'layout.html' %}
+
+{% block title %}AI Feedback Report Settings{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>AI Feedback Report Settings</h2>
+        <div>
+            <a href="{{ url_for('ai_feedback_analytics') }}" class="btn btn-outline-primary me-2">
+                <i class="bi bi-bar-chart-line me-2"></i>Analytics Dashboard
+            </a>
+            <a href="{{ url_for('ai_demo') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-robot me-2"></i>AI Demo
+            </a>
+        </div>
+    </div>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Report Schedule Settings</h5>
+        </div>
+        <div class="card-body">
+            <form id="reportSettingsForm" method="POST" action="{{ url_for('save_ai_report_settings') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6 class="mb-3">Email Recipients</h6>
+                        <div class="mb-3">
+                            <label for="adminEmail" class="form-label">Primary Admin Email</label>
+                            <input type="email" class="form-control" id="adminEmail" name="admin_email" 
+                                value="{{ settings.admin_email or '' }}" required>
+                            <div class="form-text">Primary recipient for all reports</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="additionalRecipients" class="form-label">Additional Recipients</label>
+                            <textarea class="form-control" id="additionalRecipients" name="additional_recipients" 
+                                rows="3" placeholder="Enter one email per line">{{ additional_recipients }}</textarea>
+                            <div class="form-text">Optional additional recipients (one email per line)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h6 class="mb-3">Report Schedule</h6>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="sendDailyReports" name="send_daily_reports" 
+                                {{ 'checked' if settings.send_daily_reports }}>
+                            <label class="form-check-label" for="sendDailyReports">Send Daily Reports</label>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="sendWeeklyReports" name="send_weekly_reports" 
+                                    {{ 'checked' if settings.send_weekly_reports }}>
+                                <label class="form-check-label" for="sendWeeklyReports">Send Weekly Reports</label>
+                            </div>
+                            <div class="ms-4 mt-2">
+                                <label for="weeklyReportDay" class="form-label">Day of Week</label>
+                                <select class="form-select" id="weeklyReportDay" name="weekly_report_day">
+                                    <option value="0" {{ 'selected' if settings.weekly_report_day == 0 }}>Monday</option>
+                                    <option value="1" {{ 'selected' if settings.weekly_report_day == 1 }}>Tuesday</option>
+                                    <option value="2" {{ 'selected' if settings.weekly_report_day == 2 }}>Wednesday</option>
+                                    <option value="3" {{ 'selected' if settings.weekly_report_day == 3 }}>Thursday</option>
+                                    <option value="4" {{ 'selected' if settings.weekly_report_day == 4 }}>Friday</option>
+                                    <option value="5" {{ 'selected' if settings.weekly_report_day == 5 }}>Saturday</option>
+                                    <option value="6" {{ 'selected' if settings.weekly_report_day == 6 }}>Sunday</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="sendMonthlyReports" name="send_monthly_reports" 
+                                    {{ 'checked' if settings.send_monthly_reports }}>
+                                <label class="form-check-label" for="sendMonthlyReports">Send Monthly Reports</label>
+                            </div>
+                            <div class="ms-4 mt-2">
+                                <label for="monthlyReportDay" class="form-label">Day of Month</label>
+                                <input type="number" class="form-control" id="monthlyReportDay" name="monthly_report_day" 
+                                    min="1" max="31" value="{{ settings.monthly_report_day or 1 }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6 class="mb-3">Report Content</h6>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="includeDetailedFeedback" name="include_detailed_feedback" 
+                                {{ 'checked' if settings.include_detailed_feedback }}>
+                            <label class="form-check-label" for="includeDetailedFeedback">Include Detailed Feedback</label>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="includeCsvAttachment" name="include_csv_attachment" 
+                                {{ 'checked' if settings.include_csv_attachment }}>
+                            <label class="form-check-label" for="includeCsvAttachment">Include CSV Attachment</label>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="includeExcelAttachment" name="include_excel_attachment" 
+                                {{ 'checked' if settings.include_excel_attachment }}>
+                            <label class="form-check-label" for="includeExcelAttachment">Include Excel Attachment</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-2"></i>Save Settings
+                    </button>
+                    <button type="button" class="btn btn-outline-info" id="sendTestReport">
+                        <i class="bi bi-envelope me-2"></i>Send Test Report
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Scheduled Reports Status</h5>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0">Scheduler Status</h6>
+                        <p class="text-muted mb-0" id="schedulerStatus">Checking status...</p>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-sm btn-outline-success me-2" id="startScheduler">
+                            <i class="bi bi-play-fill me-1"></i>Start
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-danger me-2" id="stopScheduler">
+                            <i class="bi bi-stop-fill me-1"></i>Stop
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="refreshStatus">
+                            <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <h6 class="mb-3">Active Scheduled Reports</h6>
+                <div class="table-responsive">
+                    <table class="table table-striped table-sm">
+                        <thead>
+                            <tr>
+                                <th>Report Type</th>
+                                <th>Schedule</th>
+                                <th>Recipients</th>
+                                <th>Next Run</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scheduledReportsTable">
+                            <tr>
+                                <td colspan="4" class="text-center py-3">
+                                    <div class="spinner-border spinner-border-sm" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <span class="ms-2">Loading scheduled reports...</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Test Report Modal -->
+<div class="modal fade" id="testReportModal" tabindex="-1" aria-labelledby="testReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="testReportModalLabel">Send Test Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="testReportForm">
+                    <div class="mb-3">
+                        <label for="testReportEmail" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="testReportEmail" name="email" 
+                            value="{{ settings.admin_email or '' }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="testReportType" class="form-label">Report Type</label>
+                        <select class="form-select" id="testReportType" name="report_type">
+                            <option value="daily">Daily Report</option>
+                            <option value="weekly" selected>Weekly Report</option>
+                            <option value="monthly">Monthly Report</option>
+                        </select>
+                    </div>
+                </form>
+                <div id="testReportStatus" class="mt-3 d-none">
+                    <div class="alert alert-info">
+                        <div class="d-flex align-items-center">
+                            <div class="spinner-border spinner-border-sm me-2" role="status">
+                                <span class="visually-hidden">Sending...</span>
+                            </div>
+                            <span>Sending test report, please wait...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="sendTestReportSubmit">Send Report</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check scheduler status on page load
+        checkSchedulerStatus();
+        
+        // Set up event handlers
+        document.getElementById('refreshStatus').addEventListener('click', checkSchedulerStatus);
+        document.getElementById('startScheduler').addEventListener('click', startScheduler);
+        document.getElementById('stopScheduler').addEventListener('click', stopScheduler);
+        
+        // Test report button
+        document.getElementById('sendTestReport').addEventListener('click', function() {
+            const modal = new bootstrap.Modal(document.getElementById('testReportModal'));
+            modal.show();
+        });
+        
+        // Test report submit
+        document.getElementById('sendTestReportSubmit').addEventListener('click', sendTestReport);
+    });
+    
+    function checkSchedulerStatus() {
+        fetch('/api/ai/feedback/scheduler/status')
+            .then(response => response.json())
+            .then(data => {
+                updateSchedulerStatus(data);
+                loadScheduledReports();
+            })
+            .catch(error => {
+                document.getElementById('schedulerStatus').innerHTML = `
+                    <span class="text-danger">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                        Error checking status: ${error.message}
+                    </span>
+                `;
+            });
+    }
+    
+    function updateSchedulerStatus(data) {
+        const statusElement = document.getElementById('schedulerStatus');
+        
+        if (data.status === 'success') {
+            if (data.running) {
+                statusElement.innerHTML = `
+                    <span class="text-success">
+                        <i class="bi bi-check-circle-fill me-1"></i>
+                        Running
+                    </span>
+                `;
+            } else {
+                statusElement.innerHTML = `
+                    <span class="text-secondary">
+                        <i class="bi bi-stop-circle-fill me-1"></i>
+                        Stopped
+                    </span>
+                `;
+            }
+        } else {
+            statusElement.innerHTML = `
+                <span class="text-danger">
+                    <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                    Error: ${data.message || 'Unknown error'}
+                </span>
+            `;
+        }
+    }
+    
+    function loadScheduledReports() {
+        fetch('/api/ai/feedback/scheduler/jobs')
+            .then(response => response.json())
+            .then(data => {
+                renderScheduledReports(data);
+            })
+            .catch(error => {
+                document.getElementById('scheduledReportsTable').innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center text-danger">
+                            Error loading scheduled reports: ${error.message}
+                        </td>
+                    </tr>
+                `;
+            });
+    }
+    
+    function renderScheduledReports(data) {
+        const tableBody = document.getElementById('scheduledReportsTable');
+        
+        if (data.status !== 'success' || !data.jobs || data.jobs.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-center">
+                        No scheduled reports found.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        let html = '';
+        data.jobs.forEach(job => {
+            html += `
+                <tr>
+                    <td>${formatReportType(job.job_type)}</td>
+                    <td>${job.schedule}</td>
+                    <td>${job.recipients}</td>
+                    <td>${job.next_run}</td>
+                </tr>
+            `;
+        });
+        
+        tableBody.innerHTML = html;
+    }
+    
+    function formatReportType(type) {
+        switch(type) {
+            case 'daily':
+                return 'Daily Report';
+            case 'weekly':
+                return 'Weekly Report';
+            case 'monthly':
+                return 'Monthly Report';
+            default:
+                return type;
+        }
+    }
+    
+    function startScheduler() {
+        fetch('/api/ai/feedback/scheduler/start', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                checkSchedulerStatus();
+            } else {
+                alert('Error starting scheduler: ' + (data.message || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            alert('Error starting scheduler: ' + error.message);
+        });
+    }
+    
+    function stopScheduler() {
+        fetch('/api/ai/feedback/scheduler/stop', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                checkSchedulerStatus();
+            } else {
+                alert('Error stopping scheduler: ' + (data.message || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            alert('Error stopping scheduler: ' + error.message);
+        });
+    }
+    
+    function sendTestReport() {
+        const form = document.getElementById('testReportForm');
+        const email = form.elements.email.value;
+        const reportType = form.elements.report_type.value;
+        
+        if (!email) {
+            alert('Please enter an email address.');
+            return;
+        }
+        
+        // Show sending status
+        const statusElement = document.getElementById('testReportStatus');
+        statusElement.classList.remove('d-none');
+        
+        // Disable submit button
+        const submitButton = document.getElementById('sendTestReportSubmit');
+        submitButton.disabled = true;
+        
+        fetch('/api/ai/feedback/report/test', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: email,
+                report_type: reportType
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Hide spinner, show result
+            statusElement.innerHTML = data.status === 'success' 
+                ? `<div class="alert alert-success">Test report sent successfully!</div>`
+                : `<div class="alert alert-danger">Error sending test report: ${data.message || 'Unknown error'}</div>`;
+                
+            // Re-enable submit button
+            submitButton.disabled = false;
+            
+            // Close modal after success
+            if (data.status === 'success') {
+                setTimeout(() => {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('testReportModal'));
+                    modal.hide();
+                    statusElement.classList.add('d-none');
+                }, 2000);
+            }
+        })
+        .catch(error => {
+            statusElement.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+            submitButton.disabled = false;
+        });
+    }
+</script>
+{% endblock %}

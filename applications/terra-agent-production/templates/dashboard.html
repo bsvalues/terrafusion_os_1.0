@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | TerraAgent</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="/static/css/styles.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Skip to content link for keyboard users -->
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
+    
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1><i class="fas fa-chart-line me-2" aria-hidden="true"></i>TerraAgent Dashboard</h1>
+                    <p class="lead">Monitoring and analytics for your property assessment AI assistant</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="/" class="btn btn-outline-info">
+                        <i class="fas fa-comments me-1" aria-hidden="true"></i> Return to Chat
+                    </a>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main id="main-content">
+            <!-- Quick Stats Row -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card bg-dark text-center">
+                        <div class="card-body">
+                            <h2 class="card-title text-info"><i class="fas fa-database" aria-hidden="true"></i></h2>
+                            <h5>Database Status</h5>
+                            <span class="badge bg-success">Connected</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-dark text-center">
+                        <div class="card-body">
+                            <h2 class="card-title text-warning"><i class="fas fa-question-circle" aria-hidden="true"></i></h2>
+                            <h5>Total Queries</h5>
+                            <p class="fs-4">{{ data.total_queries if data else 0 }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-dark text-center">
+                        <div class="card-body">
+                            <h2 class="card-title text-danger"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i></h2>
+                            <h5>Errors</h5>
+                            <p class="fs-4">{{ data.error_count if data else 0 }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-dark text-center">
+                        <div class="card-body">
+                            <h2 class="card-title text-success"><i class="fas fa-clock" aria-hidden="true"></i></h2>
+                            <h5>Avg Response Time</h5>
+                            <p class="fs-4">{{ data.avg_time if data else 0.0 }}s</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <!-- Query Distribution Chart -->
+                <div class="col-md-6">
+                    <div class="card bg-dark mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-pie me-2"></i>Query Distribution</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="queryChart" height="250"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Response Time Chart -->
+                <div class="col-md-6">
+                    <div class="card bg-dark mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-chart-line me-2"></i>Response Times</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="responseTimeChart" height="250"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <!-- Recent Errors -->
+                <div class="col-md-12">
+                    <div class="card bg-dark mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-exclamation-circle me-2"></i>Recent Errors</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if data and data.recent_errors %}
+                                <table class="table table-dark table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Query</th>
+                                            <th>Error</th>
+                                            <th>Type</th>
+                                            <th>Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for error in data.recent_errors %}
+                                        <tr>
+                                            <td>{{ error.query }}</td>
+                                            <td>{{ error.error }}</td>
+                                            <td><span class="badge bg-secondary">{{ error.type }}</span></td>
+                                            <td>{{ error.timestamp }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                <p class="text-muted text-center py-4">No errors recorded</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <!-- System Information -->
+                <div class="col-md-6">
+                    <div class="card bg-dark mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-info-circle me-2"></i>System Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-dark">
+                                <tbody>
+                                    <tr>
+                                        <td>Database</td>
+                                        <td>PostgreSQL - cama_data</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Authentication</td>
+                                        <td>PostgreSQL Auth</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Vector Store</td>
+                                        <td>Not Available</td>
+                                    </tr>
+                                    <tr>
+                                        <td>LLM Model</td>
+                                        <td>OpenAI GPT-4o</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Metrics</td>
+                                        <td>http://localhost:8001/metrics</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Resources -->
+                <div class="col-md-6">
+                    <div class="card bg-dark mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-file-upload me-2"></i>Document Ingestion</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="documentForm">
+                                <div class="mb-3">
+                                    <label for="docUrl" class="form-label">URL</label>
+                                    <input type="url" class="form-control" id="docUrl" 
+                                           placeholder="https://example.com/document" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="docTitle" class="form-label">Title (Optional)</label>
+                                    <input type="text" class="form-control" id="docTitle" 
+                                           placeholder="Document Title">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="docType" class="form-label">Document Type</label>
+                                    <select class="form-select" id="docType">
+                                        <option value="webpage">Webpage</option>
+                                        <option value="report">Report</option>
+                                        <option value="regulation">Regulation</option>
+                                        <option value="manual">Manual</option>
+                                        <option value="memo">Memo</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="docDescription" class="form-label">Description (Optional)</label>
+                                    <textarea class="form-control" id="docDescription" rows="2"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Ingest Document</button>
+                            </form>
+                            <div id="ingestStatus" class="mt-3 d-none alert alert-info">
+                                Processing document...
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card bg-dark mb-4">
+                        <div class="card-header">
+                            <h5><i class="fas fa-link me-2"></i>Resources</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group">
+                                <a href="http://localhost:8001/metrics" class="list-group-item list-group-item-action bg-dark">
+                                    <i class="fas fa-chart-bar me-2"></i>Prometheus Metrics
+                                </a>
+                                <a href="/" class="list-group-item list-group-item-action bg-dark">
+                                    <i class="fas fa-robot me-2"></i>TerraAgent Chat
+                                </a>
+                                <a href="/api/documents" class="list-group-item list-group-item-action bg-dark">
+                                    <i class="fas fa-book me-2"></i>View Documents API
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Footer -->
+        <footer class="footer">
+            <p>TerraAgent &copy; 2025 | Powered by LangChain + PostgreSQL</p>
+        </footer>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Notification System -->
+    <script src="/static/js/notifications.js"></script>
+    
+    <!-- Dashboard Charts and Functionality -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize notifications
+            if (window.Notifications) {
+                window.Notifications.init();
+                // Show welcome notification on dashboard
+                window.Notifications.info('Welcome to TerraAgent Dashboard. View system stats and manage documents here.');
+            }
+            
+            // Document Ingestion Form Handler
+            const documentForm = document.getElementById('documentForm');
+            const ingestStatus = document.getElementById('ingestStatus');
+            
+            if (documentForm) {
+                documentForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    
+                    // Get form values
+                    const url = document.getElementById('docUrl').value;
+                    const title = document.getElementById('docTitle').value;
+                    const docType = document.getElementById('docType').value;
+                    const description = document.getElementById('docDescription').value;
+                    
+                    // Show status with both inline and notification
+                    ingestStatus.classList.remove('d-none', 'alert-success', 'alert-danger');
+                    ingestStatus.classList.add('alert-info');
+                    ingestStatus.textContent = 'Processing document...';
+                    
+                    // Show processing notification
+                    const processingNotification = window.Notifications?.info('Processing document. This may take a few moments...', 0) || null;
+                    
+                    try {
+                        // Send API request
+                        const response = await fetch('/api/ingest_document', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                url,
+                                title: title || null,
+                                type: docType,
+                                description: description || null
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        // Dismiss processing notification
+                        if (processingNotification && window.Notifications) {
+                            window.Notifications.dismiss(processingNotification);
+                        }
+                        
+                        if (response.ok) {
+                            // Success - update inline status
+                            ingestStatus.classList.remove('alert-info', 'alert-danger');
+                            ingestStatus.classList.add('alert-success');
+                            ingestStatus.textContent = `Document "${result.title}" ingested successfully!`;
+                            
+                            // Show success notification
+                            window.Notifications?.success(`Document "${result.title}" added successfully!`);
+                            
+                            // Clear form
+                            documentForm.reset();
+                        } else {
+                            // Error - update inline status
+                            ingestStatus.classList.remove('alert-info', 'alert-success');
+                            ingestStatus.classList.add('alert-danger');
+                            ingestStatus.textContent = `Error: ${result.error}`;
+                            
+                            // Show error notification
+                            window.Notifications?.error(`Failed to add document: ${result.error}`);
+                        }
+                    } catch (error) {
+                        // Dismiss processing notification
+                        if (processingNotification && window.Notifications) {
+                            window.Notifications.dismiss(processingNotification);
+                        }
+                        
+                        // Network error - update inline status
+                        ingestStatus.classList.remove('alert-info', 'alert-success');
+                        ingestStatus.classList.add('alert-danger');
+                        ingestStatus.textContent = `Network error: ${error.message}`;
+                        
+                        // Show error notification
+                        window.Notifications?.error(`Network error: ${error.message}`);
+                    }
+                });
+            }
+            
+            // Query Distribution Chart
+            const queryCtx = document.getElementById('queryChart')?.getContext('2d');
+            if (queryCtx) {
+                const queryChart = new Chart(queryCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['General', 'Document Search', 'Levy Calc', 'Trends', 'DBA'],
+                        datasets: [{
+                            data: [
+                                {{ data.query_types.general if data and data.query_types.general else 0 }},
+                                {{ data.query_types.rag if data and data.query_types.rag else 0 }},
+                                {{ data.query_types.levy if data and data.query_types.levy else 0 }},
+                                {{ data.query_types.trends if data and data.query_types.trends else 0 }},
+                                {{ data.query_types.dbatools if data and data.query_types.dbatools else 0 }}
+                            ],
+                            backgroundColor: [
+                                '#0d6efd', '#6c757d', '#ffc107', '#198754', '#dc3545'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Response Time Chart
+            const timeCtx = document.getElementById('responseTimeChart')?.getContext('2d');
+            if (timeCtx) {
+                const timeChart = new Chart(timeCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['1h ago', '50m ago', '40m ago', '30m ago', '20m ago', '10m ago', 'Now'],
+                        datasets: [{
+                            label: 'Response Time (s)',
+                            data: [1.2, 0.8, 2.5, 1.7, 0.9, 1.5, {{ data.avg_time if data else 1.1 }}],
+                            borderColor: '#0dcaf0',
+                            backgroundColor: 'rgba(13, 202, 240, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

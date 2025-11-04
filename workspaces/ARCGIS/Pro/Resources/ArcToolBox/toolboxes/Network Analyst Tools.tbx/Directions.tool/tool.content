@@ -1,0 +1,194 @@
+{
+    "type": "FunctionTool",
+    "guid": "{046914df-5b8b-44d4-a3d1-ff1863cab269}",
+    "displayname": "$rc:title",
+    "helpcontent": "13010008",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "8"
+    ],
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "param_nocount:in_network_analysis_layer"
+    ],
+    "params": {
+        "in_network_analysis_layer": {
+            "displayname": "$rc:in_network_analysis_layer.title",
+            "datatype": {
+                "type": "GPNALayer"
+            },
+            "description": "$rc:in_network_analysis_layer.descr"
+        },
+        "file_type": {
+            "displayname": "$rc:file_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "TEXT",
+                        "code": "$rc:file_type.domain.TEXT"
+                    },
+                    {
+                        "value": "XML",
+                        "code": "$rc:file_type.domain.XML"
+                    },
+                    {
+                        "value": "HTML",
+                        "code": "$rc:file_type.domain.HTML"
+                    }
+                ]
+            },
+            "value": "XML",
+            "description": "$rc:file_type.descr"
+        },
+        "out_directions_file": {
+            "direction": "out",
+            "displayname": "$rc:out_directions_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain"
+            },
+            "description": "$rc:out_directions_file.descr"
+        },
+        "report_units": {
+            "displayname": "$rc:report_units.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "Feet",
+                        "code": "$rc:report_units.domain.Feet"
+                    },
+                    {
+                        "value": "Yards",
+                        "code": "$rc:report_units.domain.Yards"
+                    },
+                    {
+                        "value": "Miles",
+                        "code": "$rc:report_units.domain.Miles"
+                    },
+                    {
+                        "value": "Meters",
+                        "code": "$rc:report_units.domain.Meters"
+                    },
+                    {
+                        "value": "Kilometers",
+                        "code": "$rc:report_units.domain.Kilometers"
+                    },
+                    {
+                        "value": "NauticalMiles",
+                        "code": "$rc:report_units.domain.NauticalMiles"
+                    }
+                ]
+            },
+            "description": "$rc:report_units.descr"
+        },
+        "report_time": {
+            "type": "optional",
+            "displayname": "$rc:report_time.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "REPORT_TIME"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_REPORT_TIME"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:report_time.descr"
+        },
+        "time_attribute": {
+            "type": "optional",
+            "displayname": "$rc:time_attribute.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:time_attribute.descr"
+        },
+        "language": {
+            "type": "optional",
+            "displayname": "$rc:language.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:language.descr"
+        },
+        "style_name": {
+            "type": "optional",
+            "displayname": "$rc:style_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NA Desktop",
+                        "code": "$rc:style_name.domain.NA Desktop"
+                    },
+                    {
+                        "value": "NA Navigation",
+                        "code": "$rc:style_name.domain.NA Navigation"
+                    },
+                    {
+                        "value": "NA Campus",
+                        "code": "$rc:style_name.domain.NA Campus"
+                    }
+                ]
+            },
+            "description": "$rc:style_name.descr"
+        },
+        "stylesheet": {
+            "type": "optional",
+            "displayname": "$rc:stylesheet.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "xsl"
+                ]
+            },
+            "description": "$rc:stylesheet.descr"
+        },
+        "output_layer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_layer.title",
+            "datatype": {
+                "type": "GPNALayer"
+            }
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

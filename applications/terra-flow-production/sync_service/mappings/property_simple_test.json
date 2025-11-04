@@ -1,0 +1,11 @@
+{
+  "data_type": "property",
+  "name": "simple_test",
+  "mapping": {
+    "property_id": "PropertyID",
+    "parcel_number": "ParcelNumber",
+    "property_type": "PropertyType",
+    "address": "StreetAddress"
+  },
+  "created": "2025-04-15T13:35:16.168672"
+}

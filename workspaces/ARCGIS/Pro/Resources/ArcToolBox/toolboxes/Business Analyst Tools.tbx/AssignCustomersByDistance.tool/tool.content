@@ -1,0 +1,183 @@
+{
+    "type": "FunctionTool",
+    "guid": "{33724566-2738-4FE2-903A-A8C439127E50}/AssignCustomersByDistance",
+    "displayname": "$rc:title",
+    "helpcontent": "62030009",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "33",
+        "35"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "in_store_features": {
+            "displayname": "$rc:in_store_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:in_store_features.descr"
+        },
+        "store_id_field": {
+            "displayname": "$rc:store_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text",
+                    "Short",
+                    "BigInteger",
+                    "Long",
+                    "GUID",
+                    "GlobalID"
+                ]
+            },
+            "depends": [
+                "in_store_features"
+            ],
+            "description": "$rc:store_id_field.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "featuretype.rule": "AsSpecified",
+                "featuretype": "Simple",
+                "geometrytype.rule": "AsSpecified",
+                "geometrytype": "Point",
+                "extenttype.rule": "Union",
+                "fields.rule": "None",
+                "clonedependency": "true",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "link_field": {
+            "type": "optional",
+            "displayname": "$rc:link_field.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:link_field.descr"
+        },
+        "distance_type": {
+            "type": "optional",
+            "displayname": "$rc:distance_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "value": "STRAIGHT_LINE_DISTANCE",
+            "description": "$rc:distance_type.descr"
+        },
+        "distance_units": {
+            "type": "optional",
+            "displayname": "$rc:distance_units.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:distance_units.descr"
+        },
+        "travel_direction": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:travel_direction.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "TOWARD_STORES",
+                        "code": "$rc:travel_direction.domain.TOWARD_STORES"
+                    },
+                    {
+                        "value": "AWAY_FROM_STORES",
+                        "code": "$rc:travel_direction.domain.AWAY_FROM_STORES"
+                    }
+                ]
+            },
+            "description": "$rc:travel_direction.descr"
+        },
+        "time_of_day": {
+            "type": "optional",
+            "displayname": "$rc:time_of_day.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:time_of_day.descr"
+        },
+        "time_zone": {
+            "type": "optional",
+            "displayname": "$rc:time_zone.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "UTC",
+                        "code": "$rc:time_zone.domain.UTC"
+                    },
+                    {
+                        "value": "TIME_ZONE_AT_LOCATION",
+                        "code": "$rc:time_zone.domain.TIME_ZONE_AT_LOCATION"
+                    }
+                ]
+            },
+            "value": "TIME_ZONE_AT_LOCATION",
+            "description": "$rc:time_zone.descr"
+        },
+        "search_tolerance": {
+            "type": "optional",
+            "displayname": "$rc:search_tolerance.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "description": "$rc:search_tolerance.descr"
+        }
+    },
+    "environments": [
+        "baDataSource",
+        "baNetworkSource",
+        "workspace"
+    ]
+}

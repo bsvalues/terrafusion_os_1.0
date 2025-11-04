@@ -5,6 +5,9 @@ using System.Collections.Concurrent;
 using System.Security.Cryptography;
 using TerraFusion.Core.Services.QuantumEnhanced;
 
+
+#pragma warning disable CS1998
+
 namespace TerraFusion.Core.Services
 {
     public interface ISwarmRevenueOptimizer

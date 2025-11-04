@@ -1,0 +1,12 @@
+{
+    "map": {
+        "additional_files.title": "Additional Files",
+        "copy_arcsde_locator.title": "Composite locator only: copy participating locators in ArcSDE database instead of referencing them",
+        "description": "Package Locator",
+        "in_locator.title": "Input Locator",
+        "output_file.title": "Output File",
+        "summary.title": "Summary",
+        "tags.title": "Tags",
+        "title": "Package Locator"
+    }
+}

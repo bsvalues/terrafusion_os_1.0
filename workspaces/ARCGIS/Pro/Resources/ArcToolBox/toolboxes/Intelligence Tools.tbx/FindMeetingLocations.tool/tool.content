@@ -1,0 +1,157 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\FindMeetingLocations",
+    "displayname": "$rc:title",
+    "helpcontent": "73060001",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "spark"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "out_area_features": {
+            "direction": "out",
+            "displayname": "$rc:out_area_features.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_area_features.descr"
+        },
+        "out_point_features": {
+            "direction": "out",
+            "displayname": "$rc:out_point_features.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_point_features.descr"
+        },
+        "unique_name_field": {
+            "displayname": "$rc:unique_name_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:unique_name_field.descr"
+        },
+        "search_distance": {
+            "type": "optional",
+            "displayname": "$rc:search_distance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "100 Meters",
+            "description": "$rc:search_distance.descr"
+        },
+        "minimum_loiter_time": {
+            "type": "optional",
+            "displayname": "$rc:minimum_loiter_time.title",
+            "datatype": {
+                "type": "GPTimeUnit"
+            },
+            "domain": {
+                "type": "GPUnitDomain",
+                "items": [
+                    "Seconds",
+                    "Minutes",
+                    "Hours"
+                ]
+            },
+            "value": "10 Minutes",
+            "description": "$rc:minimum_loiter_time.descr"
+        },
+        "temporal_relationship": {
+            "type": "optional",
+            "displayname": "$rc:temporal_relationship.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "OVERLAPS",
+                        "code": "$rc:temporal_relationship.domain.OVERLAPS"
+                    },
+                    {
+                        "value": "INTERSECTS",
+                        "code": "$rc:temporal_relationship.domain.INTERSECTS"
+                    }
+                ]
+            },
+            "value": "INTERSECTS",
+            "description": "$rc:temporal_relationship.descr"
+        },
+        "min_meeting_duration": {
+            "type": "optional",
+            "displayname": "$rc:min_meeting_duration.title",
+            "datatype": {
+                "type": "GPTimeUnit"
+            },
+            "domain": {
+                "type": "GPUnitDomain",
+                "items": [
+                    "Seconds",
+                    "Minutes",
+                    "Hours"
+                ]
+            },
+            "description": "$rc:min_meeting_duration.descr"
+        },
+        "max_meeting_duration": {
+            "type": "optional",
+            "displayname": "$rc:max_meeting_duration.title",
+            "datatype": {
+                "type": "GPTimeUnit"
+            },
+            "domain": {
+                "type": "GPUnitDomain",
+                "items": [
+                    "Seconds",
+                    "Minutes",
+                    "Hours"
+                ]
+            },
+            "description": "$rc:max_meeting_duration.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "workspace"
+    ]
+}

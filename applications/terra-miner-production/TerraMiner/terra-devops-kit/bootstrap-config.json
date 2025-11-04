@@ -1,0 +1,182 @@
+{
+  "project": "TerraMiner",
+  "version": "1.0.0",
+  "environments": {
+    "dev": {
+      "aws_region": "us-west-2",
+      "vpc_cidr": "10.0.0.0/16",
+      "eks_cluster_name": "terraminer-dev-eks",
+      "eks_version": "1.27",
+      "node_groups": {
+        "standard": {
+          "instance_types": ["t3.medium"],
+          "desired_size": 2,
+          "min_size": 1,
+          "max_size": 3
+        },
+        "compute": {
+          "instance_types": ["m5.xlarge"],
+          "desired_size": 1,
+          "min_size": 0,
+          "max_size": 5
+        }
+      },
+      "database": {
+        "engine": "postgres",
+        "engine_version": "15.3",
+        "instance_class": "db.t3.medium",
+        "allocated_storage": 20,
+        "multi_az": false
+      },
+      "data_warehouse": {
+        "cluster_type": "single-node",
+        "node_type": "dc2.large",
+        "number_of_nodes": 1
+      },
+      "domains": {
+        "api": "api-dev.terraminer.io",
+        "ui": "dev.terraminer.io",
+        "argocd": "argocd-dev.terraminer.io",
+        "grafana": "grafana-dev.terraminer.io"
+      }
+    },
+    "staging": {
+      "aws_region": "us-west-2",
+      "vpc_cidr": "10.1.0.0/16",
+      "eks_cluster_name": "terraminer-staging-eks",
+      "eks_version": "1.27",
+      "node_groups": {
+        "standard": {
+          "instance_types": ["t3.medium"],
+          "desired_size": 2,
+          "min_size": 2,
+          "max_size": 4
+        },
+        "compute": {
+          "instance_types": ["m5.xlarge"],
+          "desired_size": 1,
+          "min_size": 1,
+          "max_size": 5
+        }
+      },
+      "database": {
+        "engine": "postgres",
+        "engine_version": "15.3",
+        "instance_class": "db.t3.large",
+        "allocated_storage": 50,
+        "multi_az": true
+      },
+      "data_warehouse": {
+        "cluster_type": "multi-node",
+        "node_type": "dc2.large",
+        "number_of_nodes": 2
+      },
+      "domains": {
+        "api": "api-staging.terraminer.io",
+        "ui": "staging.terraminer.io",
+        "argocd": "argocd-staging.terraminer.io",
+        "grafana": "grafana-staging.terraminer.io"
+      }
+    },
+    "prod": {
+      "aws_region": "us-west-2",
+      "vpc_cidr": "10.2.0.0/16",
+      "eks_cluster_name": "terraminer-prod-eks",
+      "eks_version": "1.27",
+      "node_groups": {
+        "standard": {
+          "instance_types": ["m5.large"],
+          "desired_size": 3,
+          "min_size": 2,
+          "max_size": 5
+        },
+        "compute": {
+          "instance_types": ["m5.2xlarge"],
+          "desired_size": 2,
+          "min_size": 1,
+          "max_size": 8
+        }
+      },
+      "database": {
+        "engine": "postgres",
+        "engine_version": "15.3",
+        "instance_class": "db.m5.large",
+        "allocated_storage": 100,
+        "multi_az": true
+      },
+      "data_warehouse": {
+        "cluster_type": "multi-node",
+        "node_type": "dc2.large",
+        "number_of_nodes": 4
+      },
+      "domains": {
+        "api": "api.terraminer.io",
+        "ui": "terraminer.io",
+        "argocd": "argocd.terraminer.io",
+        "grafana": "grafana.terraminer.io"
+      }
+    }
+  },
+  "services": {
+    "api_gateway": {
+      "repository": "terraminer/api-gateway",
+      "port": 8080,
+      "resources": {
+        "dev": {
+          "cpu": "100m",
+          "memory": "256Mi"
+        },
+        "staging": {
+          "cpu": "200m",
+          "memory": "512Mi"
+        },
+        "prod": {
+          "cpu": "500m",
+          "memory": "1Gi"
+        }
+      }
+    },
+    "data_processor": {
+      "repository": "terraminer/data-processor",
+      "port": 8081,
+      "resources": {
+        "dev": {
+          "cpu": "200m",
+          "memory": "512Mi"
+        },
+        "staging": {
+          "cpu": "500m",
+          "memory": "1Gi"
+        },
+        "prod": {
+          "cpu": "1000m",
+          "memory": "2Gi"
+        }
+      }
+    },
+    "ml_service": {
+      "repository": "terraminer/ml-service",
+      "port": 8082,
+      "resources": {
+        "dev": {
+          "cpu": "500m",
+          "memory": "1Gi"
+        },
+        "staging": {
+          "cpu": "1000m",
+          "memory": "2Gi"
+        },
+        "prod": {
+          "cpu": "2000m",
+          "memory": "4Gi"
+        }
+      }
+    }
+  },
+  "monitoring": {
+    "retention_days": 14,
+    "scrape_interval": "15s",
+    "alert_managers": ["ops@terraminer.io", "devops@terraminer.io"],
+    "dashboards": ["infrastructure", "application", "business"]
+  }
+}

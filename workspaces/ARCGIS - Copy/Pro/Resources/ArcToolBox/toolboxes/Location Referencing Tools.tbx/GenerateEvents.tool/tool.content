@@ -1,0 +1,46 @@
+{
+    "type": "FunctionTool",
+    "guid": "{0A4A9218-07A4-497A-8506-CED528063FB9}/GenerateEvents",
+    "displayname": "$rc:title",
+    "helpcontent": "23000022",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "78"
+    ],
+    "params": {
+        "in_event_layer": {
+            "displayname": "$rc:in_event_layer.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_event_layer.descr"
+        },
+        "out_event_layers": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_event_layers.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            }
+        },
+        "out_details_file": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_details_file.title",
+            "datatype": {
+                "type": "DETextFile"
+            }
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

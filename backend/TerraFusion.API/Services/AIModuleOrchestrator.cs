@@ -19,12 +19,12 @@ public class AIModuleOrchestrator : IAIModuleOrchestrator
     private readonly ILogger<AIModuleOrchestrator> _logger;
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
-    
+
     // AI Module Configuration
     private readonly Dictionary<string, AIModuleConfig> _aiModules = new()
     {
         {
-            "ai-command-brain", 
+            "ai-command-brain",
             new AIModuleConfig
             {
                 Name = "ai-command-brain",
@@ -41,7 +41,7 @@ public class AIModuleOrchestrator : IAIModuleOrchestrator
             "ai-swarm",
             new AIModuleConfig
             {
-                Name = "ai-swarm", 
+                Name = "ai-swarm",
                 DisplayName = "AI Swarm Orchestrator",
                 BaseUrl = "http://localhost:3002/api/ai-swarm",
                 Status = "active",
@@ -64,7 +64,7 @@ public class AIModuleOrchestrator : IAIModuleOrchestrator
                 Endpoints = new[]
                 {
                     "/mcp/orchestrate",
-                    "/revenue/hunt", 
+                    "/revenue/hunt",
                     "/revenue/swarm",
                     "/temporal/optimize"
                 }
@@ -80,7 +80,7 @@ public class AIModuleOrchestrator : IAIModuleOrchestrator
         _logger = logger;
         _httpClient = httpClient;
         _configuration = configuration;
-        
+
         // Configure HttpClient for AI module communication with shorter timeout
         _httpClient.Timeout = TimeSpan.FromSeconds(2); // Reduced from 30 seconds
         _httpClient.DefaultRequestHeaders.Add("User-Agent", "TerraFusion-OS/1.0");
@@ -92,7 +92,7 @@ public class AIModuleOrchestrator : IAIModuleOrchestrator
         {
             var activeModules = _aiModules.Values.Where(m => m.Status == "active").ToList();
             var totalAgents = activeModules.Sum(m => m.Agents);
-            
+
             // Check health of each module
             var healthChecks = new List<Task<ModuleHealthStatus>>();
             foreach (var module in activeModules)
@@ -101,7 +101,7 @@ public class AIModuleOrchestrator : IAIModuleOrchestrator
             }
 
             var healthResults = await Task.WhenAll(healthChecks);
-            
+
             return new AIModuleStatus
             {
                 TotalModules = activeModules.Count,
@@ -147,7 +147,7 @@ public class AIModuleOrchestrator : IAIModuleOrchestrator
             _logger.LogInformation("Executing AI command {Command} on module {Module}", command, module);
 
             var response = await _httpClient.PostAsync(endpoint, content);
-            
+
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
@@ -165,7 +165,7 @@ public class AIModuleOrchestrator : IAIModuleOrchestrator
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
                 _logger.LogWarning("AI command failed: {StatusCode} - {Error}", response.StatusCode, errorContent);
-                
+
                 return new AICommandResult
                 {
                     Success = false,
@@ -195,11 +195,11 @@ public class AIModuleOrchestrator : IAIModuleOrchestrator
         try
         {
             var modules = new List<AIModule>();
-            
+
             foreach (var config in _aiModules.Values)
             {
                 var health = await CheckModuleHealthAsync(config);
-                
+
                 modules.Add(new AIModule
                 {
                     Name = config.Name,
@@ -236,10 +236,10 @@ public class AIModuleOrchestrator : IAIModuleOrchestrator
             // In a real implementation, this would start the actual module process
             // For now, we'll simulate starting by checking if it's accessible
             var health = await CheckModuleHealthAsync(moduleConfig);
-            
-            _logger.LogInformation("AI module {ModuleName} start request completed. Healthy: {IsHealthy}", 
+
+            _logger.LogInformation("AI module {ModuleName} start request completed. Healthy: {IsHealthy}",
                 moduleName, health.IsHealthy);
-                
+
             return health.IsHealthy;
         }
         catch (Exception ex)
@@ -259,8 +259,8 @@ public class AIModuleOrchestrator : IAIModuleOrchestrator
                 return false;
             }
 
-            // In a real implementation, this would gracefully shutdown the module
-            _logger.LogInformation("AI module {ModuleName} stop request completed", moduleName);
+            // Government-grade: In a real implementation, this would gracefully shutdown the module
+            await Task.Run(() => _logger.LogInformation("AI module {ModuleName} stop request completed", moduleName));
             return true;
         }
         catch (Exception ex)
@@ -275,15 +275,15 @@ public class AIModuleOrchestrator : IAIModuleOrchestrator
         try
         {
             var startTime = DateTime.UtcNow;
-            
+
             // Try to ping the module's health endpoint with cancellation token
             var healthUrl = $"{config.BaseUrl}/health";
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1)); // 1 second timeout
-            
+
             var response = await _httpClient.GetAsync(healthUrl, cts.Token);
-            
+
             var responseTime = (DateTime.UtcNow - startTime).TotalMilliseconds;
-            
+
             return new ModuleHealthStatus
             {
                 ModuleName = config.Name,

@@ -1,0 +1,16 @@
+{
+    "set": [
+        "accumulative",
+        "belt",
+        "cost",
+        "distance",
+        "euclidean",
+        "fixed width",
+        "friction",
+        "optimum",
+        "passageway",
+        "proximity",
+        "swath",
+        "travel cost"
+    ]
+}

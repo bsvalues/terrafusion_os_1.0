@@ -1,0 +1,5 @@
+<DataType Name="GPDouble">
+  <DisplayName>Double</DisplayName>
+  <Description>Any floating-point number stored as a double precision, 64-bit value.</Description>
+</DataType>
+

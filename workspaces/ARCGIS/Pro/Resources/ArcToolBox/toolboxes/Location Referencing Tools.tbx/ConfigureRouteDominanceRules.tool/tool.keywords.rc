@@ -1,0 +1,13 @@
+{
+    "set": [
+        "concurrent routes",
+        "delete event",
+        "delete lrs",
+        "delete route",
+        "dominance rules",
+        "remove event",
+        "remove route",
+        "route concurrency",
+        "route dominance"
+    ]
+}

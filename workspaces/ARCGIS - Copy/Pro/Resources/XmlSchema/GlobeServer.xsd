@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://www.esri.com/schemas/ArcGIS/3.4.0" xmlns="http://www.esri.com/schemas/ArcGIS/3.4.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:include schemaLocation="GlobeCore.xsd" />
+  <xs:element name="GetVersion">
+    <xs:complexType />
+  </xs:element>
+  <xs:element name="GetVersionResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:decimal" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetLayerCount">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ParentID" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetLayerCountResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Find">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LayerID" type="xs:int" />
+        <xs:element name="SearchString" type="xs:string" />
+        <xs:element name="Contains" type="xs:boolean" />
+        <xs:element name="SearchFields" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="FindResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfGlobeServerFindResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Identify">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LayerID" type="xs:int" />
+        <xs:element name="OID" type="xs:int" />
+        <xs:element name="SearchShape" type="Geometry" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="IdentifyResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfGlobeServerIdentifyResult" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetLayerInfos">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ParentID" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetLayerInfosResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfGlobeLayerInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetLegendInfos">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LayerIDs" type="ArrayOfInt" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetLegendInfosResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="ArrayOfGlobeLegendInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetConfig">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LayerID" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetConfigResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:base64Binary" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMQT">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LayerID" type="xs:int" />
+        <xs:element name="Face" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMQTResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:base64Binary" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetConfiguration">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LayerID" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetConfigurationResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:base64Binary" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTile">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LayerID" type="xs:int" />
+        <xs:element name="Face" type="xs:int" />
+        <xs:element name="Level" type="xs:int" />
+        <xs:element name="Row" type="xs:int" />
+        <xs:element name="Column" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTileResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:base64Binary" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetSymbols">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LayerID" type="xs:int" />
+        <xs:element name="SymbolIDs" type="ArrayOfInt" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetSymbolsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:base64Binary" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTextures">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LayerID" type="xs:int" />
+        <xs:element name="TextureIDs" type="ArrayOfInt" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTexturesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:base64Binary" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTexturesEx">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LayerID" type="xs:int" />
+        <xs:element name="TextureIDs" type="ArrayOfInt" />
+        <xs:element name="GetDDT" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetTexturesExResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:base64Binary" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAnimation">
+    <xs:complexType />
+  </xs:element>
+  <xs:element name="GetAnimationResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:base64Binary" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetVirtualCacheDirectory">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="LayerID" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetVirtualCacheDirectoryResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCacheControlInfo">
+    <xs:annotation>
+      <xs:documentation>Gets the cache control information of a Globe Service.</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCacheControlInfoResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="CacheControlInfo" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+ </xs:schema>

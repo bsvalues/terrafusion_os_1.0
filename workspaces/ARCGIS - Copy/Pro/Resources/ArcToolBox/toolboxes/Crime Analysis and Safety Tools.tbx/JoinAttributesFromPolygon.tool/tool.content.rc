@@ -1,0 +1,15 @@
+{
+    "map": {
+        "description": "Joins attributes from input polygon features to input point features.",
+        "fields.descr": "The fields from the input polygon features that will be appended to the target point features.",
+        "fields.title": "Join Fields",
+        "in_features.descr": "The input polygon features.",
+        "in_features.title": "Input Polygon Features",
+        "out_features.title": "Updated Point Features",
+        "overwrite_option.descr": "<xdoc><p>Specifies whether existing fields in the <span class=\"esri_uicontrol\">Target Point Features</span> parameter value that have names that match fields in the <span class=\"esri_uicontrol\">Join Fields</span> parameter value will be overwritten.</p><ul><li>Checked—The matching fields will be overwritten.</li><li>Unchecked—The existing fields will not be overwritten, and new fields will be generated. This is the default.</li></ul></xdoc>",
+        "overwrite_option.title": "Overwrite matching fields in target point features",
+        "target_features.descr": "<xdoc><p>The point features that will be updated with attributes from the <span class=\"esri_uicontrol\">Input Polygon Features</span> parameter value.</p><p>The point features that will be updated with attributes from the in_features parameter value.</p></xdoc>",
+        "target_features.title": "Target Point Features",
+        "title": "Join Attributes From Polygon"
+    }
+}

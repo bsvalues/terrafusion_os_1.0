@@ -1,0 +1,14 @@
+{
+  "migration_date": "2025-11-04 02:46:00",
+  "tech_stack": "Node.js, Docker",
+  "target_path": "C:\\Users\\bsval\\terrafusion_os_1.0\\applications\\terra-playground-main",
+  "priority": "PRODUCTION",
+  "target_name": "terra-playground-main",
+  "size_mb": 46.27,
+  "status": "OPERATIONAL",
+  "file_count": 1434,
+  "agent": "TerraFusion Elite Government OS Engineering Agent",
+  "source_path": "MIGRATED",
+  "last_verified": "2025-11-04 02:46:00",
+  "system_name": "terra-playground-main"
+}

@@ -1,0 +1,44 @@
+{
+  "name": "terrafusion-gis-workflow-assistant",
+  "version": "1.0.0",
+  "description": "Local LLM + RAG Agent Mesh for Benton County, Washington GIS Workflows",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "echo \"No tests specified\" && exit 0",
+    "setup-rag": "python ../rag/rag-setup.py",
+    "health-check": "curl http://localhost:3001/health"
+  },
+  "keywords": [
+    "gis",
+    "workflow",
+    "benton-county",
+    "assessment",
+    "llm",
+    "rag",
+    "local",
+    "offline"
+  ],
+  "author": "Terrafusion AI",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "local"
+  },
+  "config": {
+    "county": "Benton County, Washington",
+    "offline_mode": true,
+    "llm_required": true,
+    "rag_enabled": true
+  }
+}

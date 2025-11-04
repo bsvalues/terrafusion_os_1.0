@@ -1,0 +1,67 @@
+Real-user segmentation is a perfect next step—it’ll let us slice performance by geography, app version, A/B cohort, etc., so we can pinpoint trouble spots. Here’s how I’d tackle it:
+
+---
+
+## 1. Instrumentation in the Frontend  
+1. **Capture user context**  
+   - **Country/Region**: e.g. via `navigator.language` or an IP-lookup service  
+   - **App Version**: baked into your build (set a global `__APP_VERSION__`)  
+   - **Cohort/Feature Flag**: if you’re running experiments, pull the active flag  
+2. **Propagate as Metric Labels**  
+   - In your RealUserMonitoring code, include those values on each batch POST and on every metric you record.
+
+```ts
+// pseudocode in RealUserMonitoring
+const labels = {
+  route: window.location.pathname,
+  device: isMobile() ? 'mobile' : 'desktop',
+  country: getUserLocale(),       // e.g. "en-US" → "US"
+  version: __APP_VERSION__,       // e.g. "1.4.2"
+  cohort: currentExperiment || 'none'
+};
+
+reportWebVitals(metrics, { labels });
+```
+
+---
+
+## 2. Update the Prometheus Exporter  
+Modify your `/metrics` handler so all histograms/counters accept those extra labels:
+
+```js
+// server/metrics.js
+const lcpHistogram = new client.Histogram({
+  name: 'webvitals_lcp',
+  help: 'LCP distribution',
+  labelNames: ['le', 'route', 'device', 'country', 'version', 'cohort']
+});
+```
+
+Make sure every time you observe a value you pass in the full label set.
+
+---
+
+## 3. Grafana Dashboard Enhancements  
+- **Add new template vars** for `country`, `version`, and `cohort`.  
+- Update each panel’s PromQL to include those filters:
+
+```
+histogram_quantile(0.95, sum(rate(webvitals_lcp_bucket{country="$country",version="$version"}[5m])) by (le))
+```
+
+This will let you pick, for example, “95th-percentile LCP in US users on v1.4.2.”
+
+---
+
+## 4. Alerting Considerations  
+- You may want to set different budgets per region or version (e.g. mobile users in APAC get a slightly higher LCP threshold).  
+- In Alertmanager, you can use `country`/`version` as grouping labels so you can suppress noisy alerts if they’re tied to a known beta cohort.
+
+---
+
+### Next Steps & Timeline  
+- **Spike (1 day):** wire up country & version labels in the client and confirm they arrive at `/metrics`.  
+- **Story (2 days):** expand exporter and dashboards; add template selectors.  
+- **Story (1 day):** refine alerts to group by cohort or region, update runbook.
+
+Shall I start by adding the country & version labels in the RealUserMonitoring component today?

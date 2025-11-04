@@ -1,0 +1,9 @@
+{
+    "set": [
+        "geodatabase",
+        "geodatabase administration",
+        "oracle",
+        "project instance",
+        "user schema"
+    ]
+}

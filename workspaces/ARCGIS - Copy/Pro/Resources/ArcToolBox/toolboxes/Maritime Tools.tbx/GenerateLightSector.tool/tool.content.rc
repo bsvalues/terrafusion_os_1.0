@@ -1,0 +1,31 @@
+{
+    "map": {
+        "coordinate_system.descr": "The coordinate system that will be used when creating the output features. The default is the current map coordinate system.",
+        "coordinate_system.title": "Coordinate System",
+        "description": "Creates navigational light sector lines and arcs based on attributes in a specified point feature class.",
+        "in_features.descr": "The feature class that contains the light features.",
+        "in_features.title": "Input Features",
+        "output_feature_class.title": "Output Feature Class",
+        "reference_scale.descr": "The scale at which the features will be generated when using page units.",
+        "reference_scale.title": "Reference Scale",
+        "sector_arc_radius.descr": "<xdoc><p>The value that represents where the radius for the line sectors will be generated in relation to the light. The arc falls between two boundaries of the light sector. The radius is generated at a distance from the light sector using the units of measurement you select. You can specify a value for the radius or choose a field in the feature class that contains the radius values.</p><ul><li>Double—The radius will be generated based on the specified value.</li><li>Field—The radius will be generated based on the value in the specified field.</li></ul></xdoc>",
+        "sector_arc_radius.title": "Sector Arc Radius",
+        "sector_line_length.descr": "<xdoc><p>The length of the boundary lines for the light sector. This is the line that appears on the chart. The value for the line length can be populated based on a specified value or from a field.</p><ul><li>Double—The line length will be determined by the specified value.</li><li>Field—The line length will be determined by an appropriate field you are using for the line sectors. One field that can be used is <span class=\"esri_fieldname\">Value of Nominal Range (VALNMR)</span>.</li></ul></xdoc>",
+        "sector_line_length.title": "Sector Line Length",
+        "sector_unit.descr": "<xdoc><p>Specifies the unit of measurement that will be used for the radius arc that extends between the two light sector boundaries.</p><p>To use page units, the map must be projected and the reference scale must be set.</p><ul><li><span title=\"CENTIMETERS\">Centimeters (page unit)</span>—The page units will be centimeters.</li><li><span title=\"DECIMAL_DEGREES\">Decimal Degrees</span>—The map units will be decimal degrees.</li><li><span title=\"DECIMETERS\">Decimeters</span>—The map units will be decimeters.</li><li><span title=\"FEET\">Feet</span>—The map units will be feet.</li><li><span title=\"INCHES\">Inches (page unit)</span>—The page units will be inches.</li><li><span title=\"KILOMETERS\">Kilometers</span>—The map units will be kilometers.</li><li><span title=\"METERS\">Meters</span>—The map units will be meters.</li><li><span title=\"MILLIMETERS\">Millimeters (page unit)</span>—The page units will be millimeters.</li><li><span title=\"NAUTICAL_MILES\">Nautical Miles</span>—The map units will be nautical miles.</li><li><span title=\"POINTS\">Points (page unit)</span>—The page units will be points.</li><li><span title=\"YARDS\">Yards</span>—The map units will be yards.</li></ul></xdoc>",
+        "sector_unit.domain.CENTIMETERS": "Centimeters (page unit)",
+        "sector_unit.domain.DECIMAL_DEGREES": "Decimal Degrees",
+        "sector_unit.domain.DECIMETERS": "Decimeters",
+        "sector_unit.domain.FEET": "Feet",
+        "sector_unit.domain.INCHES": "Inches (page unit)",
+        "sector_unit.domain.KILOMETERS": "Kilometers",
+        "sector_unit.domain.METERS": "Meters",
+        "sector_unit.domain.MILLIMETERS": "Millimeters (page unit)",
+        "sector_unit.domain.NAUTICAL_MILES": "Nautical Miles",
+        "sector_unit.domain.POINTS": "Points (page unit)",
+        "sector_unit.domain.YARDS": "Yards",
+        "sector_unit.title": "Sector Unit",
+        "summary": "<xdoc><p>Creates navigational light sector lines and arcs based on attributes in a specified point feature class.</p><p>Light sectors are used on nautical charts and depict the distance and direction that a navigational light can be seen at sea.</p></xdoc>",
+        "title": "Generate Light Sector"
+    }
+}

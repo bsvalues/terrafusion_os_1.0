@@ -1,0 +1,56 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\GenerateHLZSuitability",
+    "displayname": "$rc:title",
+    "helpcontent": "73030005",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_slope_raster": {
+            "displayname": "$rc:in_slope_raster.title",
+            "datatype": {
+                "type": "GPRasterLayer"
+            },
+            "description": "$rc:in_slope_raster.descr"
+        },
+        "in_land_cover_raster": {
+            "displayname": "$rc:in_land_cover_raster.title",
+            "datatype": {
+                "type": "GPRasterLayer"
+            },
+            "description": "$rc:in_land_cover_raster.descr"
+        },
+        "in_obstacle_buffer_features": {
+            "displayname": "$rc:in_obstacle_buffer_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_obstacle_buffer_features.descr"
+        },
+        "out_raster": {
+            "direction": "out",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "schema": {
+                "type": "GPRasterSchema",
+                "extenttype.rule": "Environment",
+                "cellsize.rule": "Environment",
+                "raster.rule": "FirstDependency",
+                "rasterformat.rule": "IMG",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_raster.descr"
+        }
+    }
+}

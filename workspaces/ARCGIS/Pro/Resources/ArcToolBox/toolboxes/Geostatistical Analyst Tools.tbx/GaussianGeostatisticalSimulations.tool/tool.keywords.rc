@@ -1,0 +1,12 @@
+{
+    "set": [
+        "conditional",
+        "esda",
+        "geostatistics",
+        "ggs",
+        "realization",
+        "simple kriging",
+        "simulation",
+        "unconditional"
+    ]
+}

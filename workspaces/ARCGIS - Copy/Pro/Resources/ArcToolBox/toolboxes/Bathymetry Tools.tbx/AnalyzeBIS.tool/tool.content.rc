@@ -1,0 +1,21 @@
+{
+    "map": {
+        "bis_checks.descr": "<xdoc><p>Specifies the checks that will be performed on the BIS.</p><ul><li><span title=\"BIS_STRUCTURE\">BIS Structure</span>—The structure of the BIS will be analyzed to ensure it is a valid BIS.</li><li><span title=\"BISCATALOG_LINKS\">BisCatalog Links</span>—The BisCatalog will be analyzed for broken links.</li><li><span title=\"BISBDI_LINKS\">BisBDI Links</span>—The BisBDI will be analyzed for broken links.</li><li><span title=\"BISCATALOG_BISBDI_SYNC\">BisCatalog/BisBDI Sync</span>—The catalog dataset will be compared to the mosaic dataset to detect entries that do not match.</li><li><span title=\"PROXY_RASTER_CHECK\">Proxy Raster Check</span>—Proxy raster problems will be identified.</li></ul></xdoc>",
+        "bis_checks.domain.BISBDI_LINKS": "BisBDI Links",
+        "bis_checks.domain.BISCATALOG_BISBDI_SYNC": "BisCatalog/BisBDI Sync",
+        "bis_checks.domain.BISCATALOG_LINKS": "BisCatalog Links",
+        "bis_checks.domain.BIS_STRUCTURE": "BIS Structure",
+        "bis_checks.domain.PROXY_RASTER_CHECK": "Proxy Raster Check",
+        "bis_checks.title": "BIS Checks",
+        "description": "Analyzes a Bathymetric Information System (BIS).",
+        "in_bis.descr": "The input BIS.",
+        "in_bis.title": "BIS",
+        "repair_operations.descr": "<xdoc><p>Specifies the repair operations that will be performed.</p><ul><li><span title=\"REMOVE_EXCESS_PROXY_RASTERS\">Remove Excess Proxy Rasters</span>—Unused proxy rasters will be deleted.</li><li><span title=\"REGENERATE_BISBDI\">Regenerate BisBDI</span>—The new BisBDI will be created with the rasters and proxy rasters from the BisCatalog. The rasters and proxy rasters will be added with default values. This operation modifies the schema of the BIS. Any existing BisBDI must be deleted before performing this operation. Use the Delete Mosaic Dataset tool to remove the existing BisBDI and verify that the mosaic dataset was deleted before attempting to regenerate the BisBDI.<note type=\"note\"/><p group=\"note\">You must be the owner of the database to perform this repair operation.</p></li><li><span title=\"UPDATE_OVERVIEWS\">Update Overviews</span>—The overviews and statistics for the BisBDI mosaic dataset will be calculated and updated.</li></ul></xdoc>",
+        "repair_operations.domain.REGENERATE_BISBDI": "Regenerate BisBDI",
+        "repair_operations.domain.REMOVE_EXCESS_PROXY_RASTERS": "Remove Excess Proxy Rasters",
+        "repair_operations.domain.UPDATE_OVERVIEWS": "Update Overviews",
+        "repair_operations.title": "Repair Operations",
+        "title": "Analyze BIS",
+        "updated_bis.title": "Updated BIS"
+    }
+}

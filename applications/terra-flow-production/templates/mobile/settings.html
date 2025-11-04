@@ -1,0 +1,289 @@
+{% extends 'mobile_layout.html' %}
+
+{% block title %}TerraFlow | Settings{% endblock %}
+
+{% block content %}
+<div class="mobile-container">
+    <div class="mobile-section-title">Settings</div>
+
+    <!-- User Profile Card -->
+    <div class="mobile-card mb-3">
+        <div class="p-3">
+            <div class="d-flex align-items-center mb-3">
+                <div class="user-avatar me-3">
+                    {% if user.avatar_path %}
+                    <img src="{{ user.avatar_path }}" alt="{{ user.username }}" class="rounded-circle" style="width: 60px; height: 60px;">
+                    {% else %}
+                    <div class="avatar-placeholder rounded-circle d-flex align-items-center justify-content-center bg-primary text-white" style="width: 60px; height: 60px;">
+                        {{ user.username|upper|first }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div>
+                    <h5 class="mb-0">{{ user.full_name or user.username }}</h5>
+                    <div class="text-muted">{{ user.email }}</div>
+                    {% if user.department %}
+                    <div class="small">{{ user.department }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="d-grid">
+                <button class="btn btn-outline-primary" id="editProfileBtn">
+                    <i class="fas fa-user-edit me-2"></i> Edit Profile
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Options -->
+    <div class="list-group mb-3">
+        <a href="#" class="list-group-item list-group-item-action d-flex align-items-center" id="displaySettingsBtn">
+            <div class="me-3">
+                <i class="fas fa-sliders-h text-primary fa-lg"></i>
+            </div>
+            <div class="flex-grow-1">
+                <div>Display Settings</div>
+                <div class="text-muted small">Theme, text size, map preferences</div>
+            </div>
+            <div>
+                <i class="fas fa-chevron-right text-muted"></i>
+            </div>
+        </a>
+        
+        <a href="#" class="list-group-item list-group-item-action d-flex align-items-center" id="notificationSettingsBtn">
+            <div class="me-3">
+                <i class="fas fa-bell text-warning fa-lg"></i>
+            </div>
+            <div class="flex-grow-1">
+                <div>Notifications</div>
+                <div class="text-muted small">Alert preferences, frequencies</div>
+            </div>
+            <div>
+                <i class="fas fa-chevron-right text-muted"></i>
+            </div>
+        </a>
+        
+        <a href="#" class="list-group-item list-group-item-action d-flex align-items-center" id="securitySettingsBtn">
+            <div class="me-3">
+                <i class="fas fa-shield-alt text-danger fa-lg"></i>
+            </div>
+            <div class="flex-grow-1">
+                <div>Security</div>
+                <div class="text-muted small">Password, MFA, login settings</div>
+            </div>
+            <div>
+                <i class="fas fa-chevron-right text-muted"></i>
+            </div>
+        </a>
+        
+        <a href="#" class="list-group-item list-group-item-action d-flex align-items-center" id="dataSettingsBtn">
+            <div class="me-3">
+                <i class="fas fa-database text-success fa-lg"></i>
+            </div>
+            <div class="flex-grow-1">
+                <div>Data & Storage</div>
+                <div class="text-muted small">Offline data, cache settings</div>
+            </div>
+            <div>
+                <i class="fas fa-chevron-right text-muted"></i>
+            </div>
+        </a>
+        
+        <a href="#" class="list-group-item list-group-item-action d-flex align-items-center" id="aiSettingsBtn">
+            <div class="me-3">
+                <i class="fas fa-robot text-info fa-lg"></i>
+            </div>
+            <div class="flex-grow-1">
+                <div>AI & Insights</div>
+                <div class="text-muted small">Configure analysis preferences</div>
+            </div>
+            <div>
+                <i class="fas fa-chevron-right text-muted"></i>
+            </div>
+        </a>
+    </div>
+    
+    <!-- System Information -->
+    <div class="mobile-section-title">System Information</div>
+    <div class="mobile-card mb-3">
+        <div class="list-group list-group-flush">
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>App Version</div>
+                <div class="text-muted">{{ version_info.app_version }}</div>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>Database</div>
+                <div class="text-muted">{{ version_info.db_version }}</div>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>Last Sync</div>
+                <div class="text-muted">{{ version_info.last_sync }}</div>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>Data Status</div>
+                <div>
+                    {% if version_info.data_status == 'synced' %}
+                    <span class="badge bg-success">Synced</span>
+                    {% elif version_info.data_status == 'syncing' %}
+                    <span class="badge bg-warning">Syncing</span>
+                    {% else %}
+                    <span class="badge bg-danger">Out of sync</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="d-grid gap-2 mb-3">
+        <button class="btn btn-primary" id="syncDataBtn">
+            <i class="fas fa-sync-alt me-2"></i> Sync Data
+        </button>
+        <button class="btn btn-outline-danger" id="logoutBtn">
+            <i class="fas fa-sign-out-alt me-2"></i> Logout
+        </button>
+    </div>
+    
+    <div class="text-center mb-4">
+        <button class="btn btn-link text-muted" id="aboutBtn">About</button>
+        <button class="btn btn-link text-muted" id="helpBtn">Help & Support</button>
+        <button class="btn btn-link text-muted" id="privacyBtn">Privacy Policy</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block action_button %}
+<!-- No action button needed on this page -->
+{% endblock %}
+
+{% block sheet_title %}Edit Profile{% endblock %}
+
+{% block sheet_content %}
+<form id="profileForm">
+    <div class="mb-3">
+        <label for="fullName" class="form-label">Full Name</label>
+        <input type="text" class="form-control" id="fullName" value="{{ user.full_name or '' }}">
+    </div>
+    
+    <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="email" value="{{ user.email }}">
+    </div>
+    
+    <div class="mb-3">
+        <label for="department" class="form-label">Department</label>
+        <select class="form-select" id="department">
+            <option value="">Select Department</option>
+            <option value="Administration" {% if user.department == 'Administration' %}selected{% endif %}>Administration</option>
+            <option value="Field Assessment" {% if user.department == 'Field Assessment' %}selected{% endif %}>Field Assessment</option>
+            <option value="Valuation" {% if user.department == 'Valuation' %}selected{% endif %}>Valuation</option>
+            <option value="GIS" {% if user.department == 'GIS' %}selected{% endif %}>GIS</option>
+            <option value="IT" {% if user.department == 'IT' %}selected{% endif %}>IT</option>
+            <option value="Records" {% if user.department == 'Records' %}selected{% endif %}>Records</option>
+        </select>
+    </div>
+    
+    <div class="mb-3">
+        <label for="phone" class="form-label">Phone</label>
+        <input type="tel" class="form-control" id="phone" value="{{ user.phone or '' }}">
+    </div>
+    
+    <div class="mb-3">
+        <label for="bio" class="form-label">Bio</label>
+        <textarea class="form-control" id="bio" rows="3">{{ user.bio or '' }}</textarea>
+    </div>
+    
+    <div class="mb-3">
+        <label class="form-label">Profile Photo</label>
+        <div class="d-flex align-items-center mb-2">
+            {% if user.avatar_path %}
+            <img src="{{ user.avatar_path }}" alt="{{ user.username }}" class="rounded-circle me-3" style="width: 60px; height: 60px;">
+            {% else %}
+            <div class="avatar-placeholder rounded-circle d-flex align-items-center justify-content-center bg-primary text-white me-3" style="width: 60px; height: 60px;">
+                {{ user.username|upper|first }}
+            </div>
+            {% endif %}
+            <button type="button" class="btn btn-sm btn-outline-primary" id="changePhotoBtn">Change Photo</button>
+        </div>
+    </div>
+    
+    <div class="d-grid gap-2">
+        <button type="button" class="btn btn-primary" id="saveProfileBtn">Save Changes</button>
+        <button type="button" class="btn btn-outline-secondary" onclick="hideBottomSheet()">Cancel</button>
+    </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Edit Profile Button
+        document.getElementById('editProfileBtn').addEventListener('click', function() {
+            showBottomSheet();
+        });
+        
+        // Save Profile Button
+        document.getElementById('saveProfileBtn').addEventListener('click', function() {
+            // Here we would normally post the form data to the server
+            // For this demo, we'll just close the bottom sheet and show a success message
+            hideBottomSheet();
+            
+            // Show success toast
+            const toast = document.createElement('div');
+            toast.className = 'position-fixed bottom-0 end-0 p-3';
+            toast.style.zIndex = '11';
+            toast.innerHTML = `
+                <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header">
+                        <strong class="me-auto">Success</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        Profile updated successfully!
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            
+            // Remove the toast after 3 seconds
+            setTimeout(function() {
+                document.body.removeChild(toast);
+            }, 3000);
+        });
+        
+        // Logout Button
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            window.location.href = '/logout';
+        });
+        
+        // Sync Data Button
+        document.getElementById('syncDataBtn').addEventListener('click', function() {
+            // Show syncing indicator
+            this.innerHTML = '<i class="fas fa-sync-alt fa-spin me-2"></i> Syncing...';
+            this.disabled = true;
+            
+            // Simulate syncing process
+            setTimeout(function() {
+                document.getElementById('syncDataBtn').innerHTML = '<i class="fas fa-check me-2"></i> Sync Complete';
+                
+                // Reset button after 2 seconds
+                setTimeout(function() {
+                    document.getElementById('syncDataBtn').innerHTML = '<i class="fas fa-sync-alt me-2"></i> Sync Data';
+                    document.getElementById('syncDataBtn').disabled = false;
+                }, 2000);
+            }, 3000);
+        });
+        
+        // Add click handlers for the other setting options
+        // These would normally navigate to different setting pages
+        ['displaySettingsBtn', 'notificationSettingsBtn', 'securitySettingsBtn', 
+         'dataSettingsBtn', 'aiSettingsBtn', 'aboutBtn', 'helpBtn', 'privacyBtn'].forEach(btnId => {
+            document.getElementById(btnId).addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('This feature is not yet implemented.');
+            });
+        });
+    });
+</script>
+{% endblock %}

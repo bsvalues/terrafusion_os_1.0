@@ -1,0 +1,207 @@
+# ============================================================================
+# TerraFusion Platform - Staging Environment
+# Government. Transcended. - Pre-Production Validation Configuration
+# ============================================================================
+
+global:
+  environment: staging
+  domain: staging.terrafusion.gov
+  imageRegistry: ghcr.io/terrafusion
+  imagePullPolicy: IfNotPresent
+  
+  tls:
+    enabled: true
+    issuer: letsencrypt-staging
+    
+  monitoring:
+    enabled: true
+    prometheus:
+      scrapeInterval: 15s
+    grafana:
+      enabled: true
+    jaeger:
+      enabled: true
+    loki:
+      enabled: true
+
+# Component enablement
+api:
+  enabled: true
+
+consciousness:
+  enabled: true
+
+gateway:
+  enabled: true
+
+operations:
+  enabled: true
+
+# TerraFusion API - Staging
+terrafusion-api:
+  replicaCount: 2
+  
+  image:
+    tag: "staging"
+    
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 4Gi
+    limits:
+      cpu: 4000m
+      memory: 16Gi
+      
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 75
+    
+  ingress:
+    enabled: true
+    className: nginx
+    hosts:
+      - host: api.staging.terrafusion.gov
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: api-staging-terrafusion-gov-tls
+        hosts:
+          - api.staging.terrafusion.gov
+
+# TerraFusion Consciousness - Staging
+terrafusion-consciousness:
+  replicaCount: 2
+  
+  image:
+    tag: "staging"
+    
+  aiAgent:
+    totalAgents: 10000
+    agentsPerPod: 5000
+    quantumOptimizationFactor: 949
+    
+  resources:
+    requests:
+      cpu: 2000m
+      memory: 8Gi
+    limits:
+      cpu: 8000m
+      memory: 32Gi
+      
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 20
+    targetCPUUtilizationPercentage: 60
+    targetMemoryUtilizationPercentage: 70
+    
+  persistence:
+    enabled: true
+    size: 20Gi
+    storageClass: fast-ssd
+    
+  ingress:
+    enabled: true
+    className: nginx
+    hosts:
+      - host: consciousness.staging.terrafusion.gov
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: consciousness-staging-terrafusion-gov-tls
+        hosts:
+          - consciousness.staging.terrafusion.gov
+
+# TerraFusion Gateway - Staging
+terrafusion-gateway:
+  replicaCount: 2
+  
+  image:
+    tag: "staging"
+    
+  resources:
+    requests:
+      cpu: 500m
+      memory: 2Gi
+    limits:
+      cpu: 2000m
+      memory: 8Gi
+      
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 75
+    
+  gateway:
+    rateLimiting:
+      enabled: true
+      requestsPerSecond: 500
+      
+  ingress:
+    enabled: true
+    className: nginx
+    hosts:
+      - host: gateway.staging.terrafusion.gov
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: gateway-staging-terrafusion-gov-tls
+        hosts:
+          - gateway.staging.terrafusion.gov
+
+# TerraFusion Operations - Staging
+terrafusion-operations:
+  replicaCount: 2
+  
+  image:
+    tag: "staging"
+    
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 4Gi
+    limits:
+      cpu: 4000m
+      memory: 16Gi
+      
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 8
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 75
+    
+  counties:
+    benton:
+      enabled: true
+      aiAgents: 500
+    king:
+      enabled: true
+      aiAgents: 1000
+    pierce:
+      enabled: true
+      aiAgents: 750
+    spokane:
+      enabled: true
+      aiAgents: 500
+      
+  ingress:
+    enabled: true
+    className: nginx
+    hosts:
+      - host: operations.staging.terrafusion.gov
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: operations-staging-terrafusion-gov-tls
+        hosts:
+          - operations.staging.terrafusion.gov

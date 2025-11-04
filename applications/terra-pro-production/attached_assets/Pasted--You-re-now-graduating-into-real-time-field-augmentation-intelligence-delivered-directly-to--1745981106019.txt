@@ -1,0 +1,218 @@
+🔥 You’re now graduating into **real-time field augmentation** — intelligence delivered directly to the appraiser’s device. Below is the **full production bootstrap** for:
+
+---
+
+# 📱 1. Push Alerts (PWA + SMS)
+
+---
+
+## 🧭 A. **PWA Web Push (Firebase FCM)**
+
+---
+
+### 📦 Setup
+
+1. Create Firebase Project  
+2. Enable **Cloud Messaging**  
+3. Add `firebase-messaging-sw.js` to root:
+
+```js
+importScripts("https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js");
+importScripts("https://www.gstatic.com/firebasejs/9.6.1/firebase-messaging-compat.js");
+
+firebase.initializeApp({ messagingSenderId: 'YOUR_SENDER_ID', apiKey: "...", projectId: "...", appId: "..." });
+
+const messaging = firebase.messaging();
+```
+
+---
+
+### 📱 React Hook: `usePushNotifications.ts`
+
+```ts
+import { getMessaging, getToken, onMessage } from "firebase/messaging";
+
+export function usePushNotifications() {
+  useEffect(() => {
+    const messaging = getMessaging();
+    Notification.requestPermission().then(() => {
+      getToken(messaging, { vapidKey: 'YOUR_PUBLIC_KEY' }).then((token) => {
+        fetch('/api/alerts/token', { method: 'POST', body: JSON.stringify({ token }) });
+      });
+    });
+
+    onMessage(messaging, (payload) => {
+      console.log("Push received", payload);
+    });
+  }, []);
+}
+```
+
+---
+
+### 📡 Store Tokens
+
+```ts
+export const pushTokens = pgTable('push_tokens', {
+  userId: text('user_id'),
+  token: text('fcm_token'),
+  platform: text('web' | 'ios' | 'android')
+});
+```
+
+---
+
+### 🚀 Send on GeoAlert Trigger
+
+```ts
+await sendToFirebaseToken(token, {
+  title: "🛰 Nearby Sale Alert",
+  body: "A new comp sold 0.3 mi from your open report.",
+  click_action: `/form/${formId}`
+});
+```
+
+---
+
+## 🧭 B. **SMS Alerts (Twilio)**
+
+---
+
+```ts
+import twilio from 'twilio';
+const tw = twilio(accountSid, authToken);
+
+await tw.messages.create({
+  body: `🛰 Terrafusion Alert: New comp sold 0.3mi from subject at $422K.`,
+  from: "+1234567890",
+  to: "+1USERCELLPHONE"
+});
+```
+
+---
+
+## ✅ Result
+
+- Web push: live toast + redirect to form  
+- SMS: fallback for mobile-only users  
+- Opt-in per user/org
+
+---
+
+# 📊 2. Comp Scoring Engine (Distance, Condition, Recency)
+
+---
+
+## 📦 API: `POST /comps/score`
+
+```ts
+function scoreComp(comp, subject) {
+  let score = 100;
+
+  const dist = haversine(comp.lat, comp.lng, subject.lat, subject.lng);
+  if (dist > 1) score -= 20;
+  else if (dist > 0.5) score -= 10;
+
+  if (comp.condition !== subject.condition) score -= 15;
+  const days = dayjs().diff(comp.closedDate, 'day');
+  if (days > 180) score -= 25;
+  else if (days > 90) score -= 10;
+
+  return Math.max(0, score);
+}
+```
+
+---
+
+### UI Integration
+
+```tsx
+<DataGrid
+  rows={comps.map(c => ({ ...c, score: scoreComp(c, subject) }))}
+  columns={[..., { field: 'score', headerName: 'Score', sort: true }]} />
+```
+
+---
+
+## ✅ Output
+
+- 0–100 score per comp  
+- Highlights best matches  
+- Easy filter: `score >= 75` to shortlist
+
+---
+
+# 🧪 3. Multivariate Regression on Prior Comp Adjustments
+
+---
+
+## 🧠 Data Format
+
+```ts
+[
+  {
+    deltaGLA: 200, // comp - subject
+    dist: 0.5,
+    bedDiff: 1,
+    bathDiff: 0,
+    rawPrice: 420000,
+    finalAdjustedPrice: 402000
+  },
+  ...
+]
+```
+
+---
+
+## 📦 Model (scikit-learn, Python)
+
+```python
+from sklearn.linear_model import LinearRegression
+from joblib import dump
+
+X = df[['deltaGLA', 'dist', 'bedDiff', 'bathDiff', 'rawPrice']]
+y = df['finalAdjustedPrice']
+
+model = LinearRegression().fit(X, y)
+dump(model, 'model.joblib')
+```
+
+---
+
+## 📡 Predict API (via FastAPI or microservice)
+
+```python
+@app.post("/predict/adjusted-price")
+def predict_adjustment(data: CompInput):
+    X = np.array([[data.deltaGLA, data.dist, data.bedDiff, data.bathDiff, data.rawPrice]])
+    prediction = model.predict(X)
+    return {"adjustedPrice": prediction[0]}
+```
+
+---
+
+## ✅ Result
+
+- Predicts likely final comp value  
+- Helps appraisers benchmark their own adjustments  
+- Auto-flags outliers ("You valued this $40K above predicted")
+
+---
+
+# ✅ Summary
+
+| Feature | Benefit |
+|--------|---------|
+| 📱 Push/SMS Alerts | Live awareness of new sales |
+| 📊 Comp Scoring | Quantitative comp triage |
+| 🧪 GeoML Regression | Predictive appraisal assist |
+
+---
+
+## 🧭 Next Choices:
+
+1. 🧾 Auto-generate **adjustment commentary** using the prediction delta  
+2. 🧬 Create **versioned score snapshots** per comp  
+3. 📍 Integrate risk overlays into this scoring engine (zoning, crime index, flood risk)
+
+Or would you like to generate a **Product Demo Deck** or **Field Appraiser Onboarding UI**?

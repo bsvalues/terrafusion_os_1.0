@@ -1,0 +1,14 @@
+{
+    "map": {
+        "case_field.descr": "Field used to group features for separate directional mean calculations. The case field can be of integer, date, or string type.",
+        "case_field.title": "Case Field",
+        "description": "Identifies the mean direction, length, and geographic center for a set of lines.",
+        "input_feature_class.descr": "The feature class containing vectors for which the mean direction will be calculated.",
+        "input_feature_class.title": "Input Feature Class",
+        "orientation_only.descr": "<xdoc><p>Specifies whether to include direction (From and To nodes) information in the analysis.</p><ul><li>Checked—The From and To node information is ignored.</li><li>Unchecked—The From and To nodes are utilized in calculating the mean. This is the default.</li></ul></xdoc>",
+        "orientation_only.title": "Orientation Only",
+        "output_feature_class.descr": "A line feature class that will contain the features representing the mean directions of the input feature class.",
+        "output_feature_class.title": "Output Feature Class",
+        "title": "Linear Directional Mean"
+    }
+}

@@ -1,0 +1,153 @@
+{
+    "type": "FunctionTool",
+    "guid": "{26B17338-CB00-45A9-AB9C-858C2E0122C9}/GenerateProductLayout",
+    "displayname": "$rc:title",
+    "helpcontent": "46020006",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "46",
+        "49"
+    ],
+    "params": {
+        "geodatabase": {
+            "displayname": "$rc:geodatabase.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "description": "$rc:geodatabase.descr"
+        },
+        "aoi_layer": {
+            "displayname": "$rc:aoi_layer.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPLayerDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:aoi_layer.descr"
+        },
+        "product": {
+            "displayname": "$rc:product.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:product.descr"
+        },
+        "version": {
+            "displayname": "$rc:version.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:version.descr"
+        },
+        "output_location": {
+            "displayname": "$rc:output_location.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:output_location.descr"
+        },
+        "rasters": {
+            "type": "optional",
+            "displayname": "$rc:rasters.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "GPRasterLayer"
+                        },
+                        {
+                            "type": "GPMosaicLayer"
+                        }
+                    ]
+                }
+            },
+            "description": "$rc:rasters.descr"
+        },
+        "template": {
+            "type": "optional",
+            "displayname": "$rc:template.title",
+            "datatype": {
+                "type": "GPLayout"
+            },
+            "description": "$rc:template.descr"
+        },
+        "out_template": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_template.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPLayout"
+                    },
+                    {
+                        "type": "DEFile"
+                    }
+                ]
+            }
+        },
+        "output_type": {
+            "type": "optional",
+            "displayname": "$rc:output_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PAGX",
+                        "code": "$rc:output_type.domain.PAGX"
+                    },
+                    {
+                        "value": "APRX",
+                        "code": "$rc:output_type.domain.APRX"
+                    },
+                    {
+                        "value": "PDF",
+                        "code": "$rc:output_type.domain.PDF"
+                    },
+                    {
+                        "value": "TIFF",
+                        "code": "$rc:output_type.domain.TIFF"
+                    },
+                    {
+                        "value": "PPKX",
+                        "code": "$rc:output_type.domain.PPKX"
+                    }
+                ]
+            },
+            "value": "PAGX",
+            "description": "$rc:output_type.descr"
+        },
+        "export_file": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:export_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "xprt"
+                ]
+            },
+            "description": "$rc:export_file.descr"
+        }
+    }
+}

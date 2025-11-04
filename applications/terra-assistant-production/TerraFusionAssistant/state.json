@@ -1,0 +1,54 @@
+{
+    "current_phase": "planning",
+    "phase_statuses": {
+        "planning": "in_progress",
+        "solution_design": "pending",
+        "ticket_breakdown": "pending",
+        "implementation": "pending",
+        "testing": "pending",
+        "reporting": "pending"
+    },
+    "phase_data": {
+        "planning": {
+            "progress": 35,
+            "completed": false,
+            "tasks": []
+        },
+        "solution_design": {
+            "progress": 0,
+            "completed": false,
+            "tasks": []
+        },
+        "ticket_breakdown": {
+            "progress": 0,
+            "completed": false,
+            "tasks": []
+        },
+        "implementation": {
+            "progress": 0,
+            "completed": false,
+            "tasks": []
+        },
+        "testing": {
+            "progress": 0,
+            "completed": false,
+            "tasks": []
+        },
+        "reporting": {
+            "progress": 0,
+            "completed": false,
+            "tasks": []
+        }
+    },
+    "tasks": {},
+    "reports": {},
+    "system_status": {
+        "services": {
+            "backend_api": "online",
+            "database": "online",
+            "storage": "online",
+            "ai_service": "online"
+        },
+        "last_updated": 1749997446.1634543
+    }
+}

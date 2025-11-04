@@ -1,0 +1,21 @@
+{
+    "map": {
+        "are_containers_preserved.title": "Preserve container layout",
+        "breakpoint_position.title": "Break Point Relative Position (%)",
+        "degree_freedom.domain.HIGH": "HIGH",
+        "degree_freedom.domain.LOW": "LOW",
+        "degree_freedom.domain.MEDIUM": "MEDIUM",
+        "degree_freedom.title": "Degree of Freedom",
+        "description": "Apply the force directed layout to a diagram",
+        "edge_display_type.domain.CURVED_EDGES": "CURVED_EDGES",
+        "edge_display_type.domain.REGULAR_EDGES": "REGULAR_EDGES",
+        "edge_display_type.title": "Edge Display Type",
+        "in_network_diagram_layer.title": "Input Network Diagram Layer",
+        "iterations_number.title": "Number of Iterations",
+        "out_network_diagram_layer.title": "Output Network Diagram",
+        "params.category1": "Advanced Options",
+        "repel_factor.title": "Repel Factor",
+        "run_async.title": "Run in asynchronous mode on the server",
+        "title": "Apply Force Directed Layout"
+    }
+}

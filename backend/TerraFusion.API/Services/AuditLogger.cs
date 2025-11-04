@@ -50,7 +50,7 @@ namespace TerraFusion.API.Services
             try
             {
                 var auditLog = CreateAuditLog(action, details, success);
-                
+
                 if (_logToDatabase)
                 {
                     await LogToDatabaseAsync(auditLog);
@@ -61,12 +61,27 @@ namespace TerraFusion.API.Services
                     LogToFile(auditLog);
                 }
 
-                            stopwatch.Stop();
-            // Duration is stored in the Changes JSON
+                stopwatch.Stop();
+                // Duration is stored in the Changes JSON
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to write audit log for action: {Action}", action);
+            }
+        }
+
+        public async System.Threading.Tasks.Task LogAsync(string type, object data)
+        {
+            if (!_isEnabled) return;
+
+            try
+            {
+                var serializedData = JsonSerializer.Serialize(data);
+                await LogAsync(type, serializedData, true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to serialize and log audit data for type: {Type}", type);
             }
         }
 
@@ -101,9 +116,9 @@ namespace TerraFusion.API.Services
                 InnerException = exception.InnerException?.Message
             });
 
-            await LogEventAsync("Error", "Error", details, 
-                userId: userId, 
-                success: false, 
+            await LogEventAsync("Error", "Error", details,
+                userId: userId,
+                success: false,
                 errorMessage: exception.Message);
         }
 
@@ -197,7 +212,7 @@ namespace TerraFusion.API.Services
             {
                 Id = Guid.NewGuid(),
                 Type = action,
-                Data = JsonSerializer.Serialize(new 
+                Data = JsonSerializer.Serialize(new
                 {
                     Details = details,
                     Success = success,
@@ -207,7 +222,7 @@ namespace TerraFusion.API.Services
                 UserId = userId,
                 UserEmail = user?.Identity?.Name,
                 Timestamp = DateTime.UtcNow,
-                IpAddress = GetClientIpAddress(httpContext),
+                IpAddress = GetClientIpAddress(httpContext ?? new DefaultHttpContext()),
                 UserAgent = httpContext?.Request.Headers["User-Agent"].ToString()
             };
         }
@@ -218,7 +233,7 @@ namespace TerraFusion.API.Services
             {
                 using var scope = _serviceProvider.CreateScope();
                 var dbContext = scope.ServiceProvider.GetService<TerraFusionDbContext>();
-                
+
                 if (dbContext != null)
                 {
                     await dbContext.Set<AuditLog>().AddAsync(auditLog);
@@ -236,8 +251,8 @@ namespace TerraFusion.API.Services
         {
             // Check success from the Changes JSON if needed
             var logLevel = LogLevel.Information;
-            var logMessage = JsonSerializer.Serialize(auditLog, new JsonSerializerOptions 
-            { 
+            var logMessage = JsonSerializer.Serialize(auditLog, new JsonSerializerOptions
+            {
                 WriteIndented = false,
                 DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
             });
@@ -245,7 +260,7 @@ namespace TerraFusion.API.Services
             _logger.Log(logLevel, "AUDIT: {AuditLog}", logMessage);
         }
 
-        private string GetClientIpAddress(HttpContext httpContext)
+        private string? GetClientIpAddress(HttpContext httpContext)
         {
             if (httpContext == null) return null;
 
@@ -261,7 +276,7 @@ namespace TerraFusion.API.Services
                 return realIp;
             }
 
-            return httpContext.Connection.RemoteIpAddress?.ToString();
+            return httpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
         }
     }
 }

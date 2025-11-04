@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Resolves graphic conflicts among symbolized road features by adjusting portions of line segments.",
+        "hierarchy_field.descr": "The field that contains hierarchical ranking of feature importance in which 1 is very important and larger integers reflect decreasing importance. A value of 0 (zero) locks the feature to ensure that it is not moved. This field must be present and named the same for all input feature classes. The data type must be short or long integer.",
+        "hierarchy_field.title": "Hierarchy Field",
+        "in_layers.descr": "The input feature layers containing symbolized road features that may be in conflict.",
+        "in_layers.title": "Input Road Layers",
+        "out_displacement_features.descr": "The output polygon features containing the degree and direction of road displacement that will be used by the Propagate Displacement tool to preserve spatial relationships.",
+        "out_displacement_features.title": "Output Displacement Feature Class",
+        "out_layers.title": "Output Layers",
+        "summary": "<xdoc><p>Resolves graphic conflicts among symbolized road features by adjusting portions of line segments.</p><p><note type=\"caution\"/><p group=\"note\">This tool does not produce output layers. Instead, it alters the geometry of the source feature classes of the input layers. It is recommended that you make a copy of the input features before you run this tool.</p></p><p><note type=\"caution\"/><p group=\"note\">A warning is issued if the input features are not in a projected coordinate system. This tool relies on linear distance units, which will create unexpected results in an unprojected coordinate system. It is recommended that you run this tool on data in a projected coordinate system to ensure valid results. An error occurs and the tool will not process if the coordinate system is missing or unknown.</p></p></xdoc>",
+        "title": "Resolve Road Conflicts"
+    }
+}

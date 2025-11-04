@@ -1,0 +1,28 @@
+{
+    "map": {
+        "description": "Exports the parcel features of a selected parcel  to individual feature classes. The individual feature classes can be added to a map to create parcel layouts or title map layouts.\nFields are added to the feature classes so that  parcel features can be labeled and tabulated  in a clockwise sequence.",
+        "in_parcel_polygon_feature.descr": "The parcel that will be exported to individual feature classes. Only one parcel polygon can be selected.",
+        "in_parcel_polygon_feature.title": "Input Parcel Feature",
+        "lines_sequence_format.descr": "<xdoc><p>The sequence numbering format that will be used for lines in the <span class=\"esri_fieldname\">Sequence</span> field. Use a # character to denote the incrementing sequence number. Multiple # characters will add zeros before the sequence number. Letters can be placed on either side of the # character. The following are examples:<ul><li># is formatted as a sequence starting with 1.</li><li>## is formatted as a sequence starting with 01.</li><li>L# is formatted as a sequence starting with L1.</li><li>ABC-##1 is formatted as a sequence starting with ABC-001.</li><li>#L is formatted as a sequence starting with 1L.</li></ul></p></xdoc>",
+        "lines_sequence_format.title": "Lines Sequence Format",
+        "out_connection_lines_feature_class.title": "Output Connection Lines Feature Class",
+        "out_lines_feature_class.title": "Output Lines Feature Class",
+        "out_parcel_feature_class.title": "Output Parcel Feature Class",
+        "out_points_feature_class.title": "Output Points Feature Class",
+        "out_record_feature_class.title": "Output Record Feature Class",
+        "points_sequence_format.descr": "<xdoc><p>The sequence numbering format that will be used for points in the <span class=\"esri_fieldname\">Sequence</span> field. Use a # character to denote the incrementing sequence number. Multiple # characters will add zeros before the sequence number. Letters can be placed on either side of the # character. The following are examples:<ul><li># is formatted as a sequence starting with 1.</li><li>## is formatted as a sequence starting with 01.</li><li>P# is formatted as a sequence starting with P1.</li><li>ABC-##1 is formatted as a sequence starting with ABC-001.</li><li>#P is formatted as a sequence starting with 1P.</li></ul></p></xdoc>",
+        "points_sequence_format.title": "Points Sequence Format",
+        "sequence_curves_separately.descr": "<xdoc><p>Specifies whether curves will be sequenced separately when exporting parcel lines.<ul><li>Checked—The sequence numbering in the <span class=\"esri_fieldname\">Sequence</span> field will restart at 1 for the first curve encountered in the clockwise sequence and will increment for each additional curve found.</li><li>Unchecked—The sequence numbering in the <span class=\"esri_fieldname\">Sequence</span> field will not be incremented separately for curved lines. This is the default.</li></ul></p></xdoc>",
+        "sequence_curves_separately.title": "Sequence Curves Separately",
+        "start_sequence_corner.descr": "<xdoc><p>Specifies the parcel corner where the line and point sequence numbering will start. The sequence number is populated in the <span class=\"esri_fieldname\">Sequence</span> field on the exported lines and points feature class.</p><ul><li><span title=\"NE\">North East</span>—The line or point sequence will start at the northeast parcel corner point. This is the default.</li><li><span title=\"SE\">South East</span>—The line or point sequence will start at the southeast parcel corner point.</li><li><span title=\"SW\">South West</span>—The line or point sequence will start at the southwest parcel corner point.</li><li><span title=\"NW\">North West</span>—The line or point sequence will start at the northwest parcel corner point.</li></ul></xdoc>",
+        "start_sequence_corner.domain.NE": "North East",
+        "start_sequence_corner.domain.NW": "North West",
+        "start_sequence_corner.domain.SE": "South East",
+        "start_sequence_corner.domain.SW": "South West",
+        "start_sequence_corner.title": "Start Sequence Corner",
+        "summary": "Exports the parcel features of a selected parcel to individual feature classes. The individual feature classes can be added to a map to create parcel layouts or title map layouts. Fields are added to the feature classes so that parcel features can be labeled and tabulated in a clockwise sequence.",
+        "target_feature_dataset.descr": "The feature dataset where the exported parcel feature classes will reside.",
+        "target_feature_dataset.title": "Target Feature Dataset",
+        "title": "Export Sequenced Parcel Features"
+    }
+}

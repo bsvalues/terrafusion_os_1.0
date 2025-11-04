@@ -1,0 +1,408 @@
+{% extends "new_unified_base.html" %}
+
+{% block title %}AI Capabilities Demo{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold mb-2">AI Capabilities Demo</h1>
+        <p class="text-gray-600 dark:text-gray-300">Experience the power of integrated AI in the TerraMiner platform.</p>
+    </div>
+
+    <!-- AI Components Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        <!-- Automated Market Analysis -->
+        <div class="card hover:shadow-lg transition-shadow duration-300">
+            <div class="card-header bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
+                <h2 class="text-xl font-semibold">Automated Market Analysis</h2>
+            </div>
+            <div class="card-body">
+                <div class="mb-4 flex justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                </div>
+                <p class="text-gray-700 dark:text-gray-300 mb-4">AI-powered analysis of market trends, prices, and activity in any specified region.</p>
+                <ul class="space-y-2 mb-6">
+                    <li class="flex items-start">
+                        <svg class="h-5 w-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Predictive analytics for price trends</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="h-5 w-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Market sentiment analysis</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="h-5 w-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Seasonal pattern recognition</span>
+                    </li>
+                </ul>
+                <button class="btn-primary w-full" onclick="demoFunction('market-analysis')">Try Demo</button>
+            </div>
+        </div>
+
+        <!-- Property Valuation -->
+        <div class="card hover:shadow-lg transition-shadow duration-300">
+            <div class="card-header bg-gradient-to-r from-green-500 to-teal-600 text-white">
+                <h2 class="text-xl font-semibold">AI Property Valuation</h2>
+            </div>
+            <div class="card-body">
+                <div class="mb-4 flex justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                </div>
+                <p class="text-gray-700 dark:text-gray-300 mb-4">Accurate property valuations using machine learning models trained on millions of properties.</p>
+                <ul class="space-y-2 mb-6">
+                    <li class="flex items-start">
+                        <svg class="h-5 w-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>90%+ accuracy rate</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="h-5 w-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Considers 150+ property factors</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="h-5 w-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Real-time market adjustments</span>
+                    </li>
+                </ul>
+                <button class="btn-primary w-full" onclick="demoFunction('property-valuation')">Try Demo</button>
+            </div>
+        </div>
+
+        <!-- Comparable Property Finder -->
+        <div class="card hover:shadow-lg transition-shadow duration-300">
+            <div class="card-header bg-gradient-to-r from-purple-500 to-indigo-600 text-white">
+                <h2 class="text-xl font-semibold">Smart Comparables Finder</h2>
+            </div>
+            <div class="card-body">
+                <div class="mb-4 flex justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                    </svg>
+                </div>
+                <p class="text-gray-700 dark:text-gray-300 mb-4">AI automatically finds truly comparable properties based on multiple similarity factors.</p>
+                <ul class="space-y-2 mb-6">
+                    <li class="flex items-start">
+                        <svg class="h-5 w-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Advanced similarity scoring</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="h-5 w-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Automated CMA creation</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="h-5 w-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Adjustable property weighting</span>
+                    </li>
+                </ul>
+                <button class="btn-primary w-full" onclick="demoFunction('comparables-finder')">Try Demo</button>
+            </div>
+        </div>
+
+        <!-- Natural Language Property Search -->
+        <div class="card hover:shadow-lg transition-shadow duration-300">
+            <div class="card-header bg-gradient-to-r from-red-500 to-pink-600 text-white">
+                <h2 class="text-xl font-semibold">Natural Language Search</h2>
+            </div>
+            <div class="card-body">
+                <div class="mb-4 flex justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                <p class="text-gray-700 dark:text-gray-300 mb-4">Search for properties using natural language with advanced understanding of real estate concepts.</p>
+                <ul class="space-y-2 mb-6">
+                    <li class="flex items-start">
+                        <svg class="h-5 w-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>GPT-4 powered understanding</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="h-5 w-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Context-aware queries</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="h-5 w-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Fuzzy matching & error correction</span>
+                    </li>
+                </ul>
+                <button class="btn-primary w-full" onclick="demoFunction('natural-language')">Try Demo</button>
+            </div>
+        </div>
+
+        <!-- Investment Opportunity Detector -->
+        <div class="card hover:shadow-lg transition-shadow duration-300">
+            <div class="card-header bg-gradient-to-r from-yellow-500 to-amber-600 text-white">
+                <h2 class="text-xl font-semibold">Investment Opportunity Detector</h2>
+            </div>
+            <div class="card-body">
+                <div class="mb-4 flex justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <p class="text-gray-700 dark:text-gray-300 mb-4">AI scanning of markets to identify potential investment opportunities based on multiple factors.</p>
+                <ul class="space-y-2 mb-6">
+                    <li class="flex items-start">
+                        <svg class="h-5 w-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Cash flow analysis</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="h-5 w-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>ROI potential indicators</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="h-5 w-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Risk assessment scores</span>
+                    </li>
+                </ul>
+                <button class="btn-primary w-full" onclick="demoFunction('investment-detector')">Try Demo</button>
+            </div>
+        </div>
+
+        <!-- Smart ETL Automation -->
+        <div class="card hover:shadow-lg transition-shadow duration-300">
+            <div class="card-header bg-gradient-to-r from-cyan-500 to-blue-600 text-white">
+                <h2 class="text-xl font-semibold">Smart ETL Automation</h2>
+            </div>
+            <div class="card-body">
+                <div class="mb-4 flex justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                    </svg>
+                </div>
+                <p class="text-gray-700 dark:text-gray-300 mb-4">AI-powered ETL processes that automatically adapt to changing data sources and formats.</p>
+                <ul class="space-y-2 mb-6">
+                    <li class="flex items-start">
+                        <svg class="h-5 w-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Self-healing ETL pipelines</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="h-5 w-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Adaptive data cleaning</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="h-5 w-5 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Automated schema adjustment</span>
+                    </li>
+                </ul>
+                <button class="btn-primary w-full" onclick="demoFunction('etl-automation')">Try Demo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Integration Framework Section -->
+    <div class="card mb-12">
+        <div class="card-header">
+            <h2 class="text-xl font-bold">AI Integration Framework</h2>
+            <p class="text-gray-600 dark:text-gray-300 mt-1">Unified system architecture for all AI capabilities</p>
+        </div>
+        <div class="card-body">
+            <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg mb-6">
+                <div class="max-w-3xl mx-auto">
+                    <!-- Simplified architecture diagram -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
+                        <!-- Data Sources -->
+                        <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                            <h3 class="font-semibold text-center mb-2">Data Sources</h3>
+                            <ul class="text-sm space-y-1">
+                                <li class="py-1 px-2 bg-white dark:bg-gray-700 rounded">NARRPR API</li>
+                                <li class="py-1 px-2 bg-white dark:bg-gray-700 rounded">MLS Integrations</li>
+                                <li class="py-1 px-2 bg-white dark:bg-gray-700 rounded">Public Records</li>
+                                <li class="py-1 px-2 bg-white dark:bg-gray-700 rounded">Market Data Feeds</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- AI Processing -->
+                        <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                            <h3 class="font-semibold text-center mb-2">AI Processing</h3>
+                            <ul class="text-sm space-y-1">
+                                <li class="py-1 px-2 bg-white dark:bg-gray-700 rounded">Large Language Models</li>
+                                <li class="py-1 px-2 bg-white dark:bg-gray-700 rounded">Computer Vision</li>
+                                <li class="py-1 px-2 bg-white dark:bg-gray-700 rounded">Predictive Analytics</li>
+                                <li class="py-1 px-2 bg-white dark:bg-gray-700 rounded">Machine Learning</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Output Interfaces -->
+                        <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                            <h3 class="font-semibold text-center mb-2">Output Interfaces</h3>
+                            <ul class="text-sm space-y-1">
+                                <li class="py-1 px-2 bg-white dark:bg-gray-700 rounded">Interactive Dashboards</li>
+                                <li class="py-1 px-2 bg-white dark:bg-gray-700 rounded">API Endpoints</li>
+                                <li class="py-1 px-2 bg-white dark:bg-gray-700 rounded">Data Exports</li>
+                                <li class="py-1 px-2 bg-white dark:bg-gray-700 rounded">Real-time Alerts</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Connecting arrows -->
+                    <div class="flex justify-center items-center my-2">
+                        <div class="h-0.5 w-2/3 bg-gray-300 dark:bg-gray-600"></div>
+                    </div>
+                    
+                    <!-- Integration layer -->
+                    <div class="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
+                        <h3 class="font-semibold text-center">Unified AI Integration Layer</h3>
+                        <p class="text-sm text-center mt-1">Orchestrates data flow and AI capabilities across the platform</p>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="text-lg font-semibold mb-3">Key Framework Components</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                <div>
+                    <h4 class="font-medium text-blue-700 dark:text-blue-300 mb-2">Model Management</h4>
+                    <p class="text-gray-700 dark:text-gray-300">Centralized system for deploying, monitoring, and updating AI models across the platform.</p>
+                </div>
+                <div>
+                    <h4 class="font-medium text-green-700 dark:text-green-300 mb-2">Data Pipelines</h4>
+                    <p class="text-gray-700 dark:text-gray-300">Automated flows for data extraction, transformation, and loading with built-in quality checks.</p>
+                </div>
+                <div>
+                    <h4 class="font-medium text-purple-700 dark:text-purple-300 mb-2">API Gateway</h4>
+                    <p class="text-gray-700 dark:text-gray-300">Unified access point for all AI capabilities with consistent authentication and rate limiting.</p>
+                </div>
+                <div>
+                    <h4 class="font-medium text-red-700 dark:text-red-300 mb-2">Continuous Learning</h4>
+                    <p class="text-gray-700 dark:text-gray-300">System for gathering feedback and automatically improving AI model performance over time.</p>
+                </div>
+            </div>
+            
+            <div class="flex justify-center mt-6">
+                <a href="{{ url_for('ai_integration_automation') }}" class="btn-primary">Explore AI Integration Settings</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Performance Metrics -->
+    <div class="card mb-12">
+        <div class="card-header">
+            <h2 class="text-xl font-bold">AI Performance Metrics</h2>
+            <p class="text-gray-600 dark:text-gray-300 mt-1">Real-time monitoring of AI system performance</p>
+        </div>
+        <div class="card-body">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="font-semibold">Accuracy</h3>
+                        <span class="text-green-600 dark:text-green-400 font-medium">92.7%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                        <div class="bg-green-600 h-2.5 rounded-full" style="width: 92.7%"></div>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                        Overall accuracy across all models and predictions.
+                    </p>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="font-semibold">Response Time</h3>
+                        <span class="text-blue-600 dark:text-blue-400 font-medium">187 ms</span>
+                    </div>
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                        <div class="bg-blue-600 h-2.5 rounded-full" style="width: 85%"></div>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                        Average response time for AI-powered queries.
+                    </p>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="font-semibold">Usage</h3>
+                        <span class="text-purple-600 dark:text-purple-400 font-medium">3,428 / day</span>
+                    </div>
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                        <div class="bg-purple-600 h-2.5 rounded-full" style="width: 78%"></div>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                        Total AI operations processed daily.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="flex justify-center">
+                <a href="{{ url_for('monitoring_ai') }}" class="btn-outline">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+                    </svg>
+                    View Detailed AI Performance Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Navigation Links -->
+    <div class="flex justify-between">
+        <a href="{{ url_for('monitoring_dashboard') }}" class="btn-outline flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+            </svg>
+            Monitoring Dashboard
+        </a>
+        <a href="{{ url_for('ai_feedback_analytics') }}" class="btn-outline flex items-center">
+            AI Feedback Analytics
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Mock demo function - would trigger specific AI demos in production
+    function demoFunction(demoType) {
+        const demoNames = {
+            'market-analysis': 'Automated Market Analysis',
+            'property-valuation': 'AI Property Valuation',
+            'comparables-finder': 'Smart Comparables Finder',
+            'natural-language': 'Natural Language Search',
+            'investment-detector': 'Investment Opportunity Detector',
+            'etl-automation': 'Smart ETL Automation'
+        };
+        
+        alert(`Demo of ${demoNames[demoType]} would be shown here.\n\nIn a production environment, this would launch the interactive AI demo experience.`);
+    }
+</script>
+{% endblock %}

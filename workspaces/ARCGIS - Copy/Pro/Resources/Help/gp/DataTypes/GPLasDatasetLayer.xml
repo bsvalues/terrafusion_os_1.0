@@ -1,0 +1,5 @@
+<DataType Name="GPLasDatasetLayer">
+  <DisplayName>LAS Dataset Layer</DisplayName>
+  <Description>A layer that references a LAS dataset on disk. This layer can apply filters on lidar files and surface constraints referenced by a LAS dataset.</Description>
+</DataType>
+

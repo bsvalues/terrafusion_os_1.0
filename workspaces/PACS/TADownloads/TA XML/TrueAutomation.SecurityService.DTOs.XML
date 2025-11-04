@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.SecurityService.DTOs</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.SecurityService.DTOs.NamespaceDoc">
+            <summary>
+            These are the namespace comments for <c>TrueAutomation.SecurityService.DTOs</c>.
+            
+            This class contains the code to send/retrieve data from the Security Service
+            using these Data Transfer Objects
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.SecurityService.DTOs.ActiveDirectoryUserSignOnDTO">
+            <summary>
+            Data Transfer Objects to represent Active Directory Users Sign On Information.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.SecurityService.DTOs.UserSignOnDTO">
+            <summary>
+            Data Transfer Objects to represent User Sign On  Information.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.DTOs.UserSignOnDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.DTOs.ActiveDirectoryUserSignOnDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.SecurityService.DTOs.CertificateUserSignOnDTO">
+            <summary>
+            Data Transfer Objects to represent Certificate User Sign On Information.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.DTOs.CertificateUserSignOnDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.SecurityService.DTOs.PasswordUserSignOnDTO">
+            <summary>
+            Data Transfer Objects to represent Password User Sign On Information.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.DTOs.PasswordUserSignOnDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.SecurityService.DTOs.GroupDTO">
+            <summary>
+            Data Transfer Objects to represent a Security Group.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.SecurityService.DTOs.PartyDTO">
+            <summary>
+            Data Transfer Objects to represent basic information on a Party (user or group)
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.DTOs.PartyDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.SecurityService.DTOs.PartyDTO.IsDeleted">
+            <summary>
+            Flag to indicate whether this user/group is
+            still Active in PACS or has been deleted.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.DTOs.GroupDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.SecurityService.DTOs.UserDTO">
+            <summary>
+            Data Transfer Objects to represent User Information.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.DTOs.UserDTO.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+    </members>
+</doc>

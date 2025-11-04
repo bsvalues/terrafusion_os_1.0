@@ -1,0 +1,582 @@
+{
+  "id": null,
+  "title": "Segmented Web Vitals Dashboard",
+  "tags": ["web-vitals", "segmentation"],
+  "description": "Enhanced dashboard with network quality and page type segmentation",
+  "panels": [
+    {
+      "type": "row",
+      "title": "Overview",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "collapsed": false
+    },
+    {
+      "type": "stat",
+      "title": "Total Metrics Today",
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 0,
+        "y": 1
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(web_vitals_records_total[24h]))",
+          "legendFormat": "Total Records"
+        }
+      ],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        }
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Budget Breaches Today",
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 4,
+        "y": 1
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(web_vitals_budget_breaches_total{network=~\"$network\", page_type=~\"$pageType\"}[24h]))",
+          "legendFormat": "Budget Breaches"
+        }
+      ],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 5, "color": "yellow" },
+              { "value": 20, "color": "red" }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "piechart",
+      "title": "Budget Breaches by Network",
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 1
+      },
+      "targets": [
+        {
+          "expr": "sum by (network) (increase(web_vitals_budget_breaches_total{network=~\"$network\", page_type=~\"$pageType\"}[24h]))",
+          "legendFormat": "{{network}}"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "values": ["percent", "value"]
+        }
+      }
+    },
+    {
+      "type": "piechart",
+      "title": "Budget Breaches by Page Type",
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 1
+      },
+      "targets": [
+        {
+          "expr": "sum by (page_type) (increase(web_vitals_budget_breaches_total{network=~\"$network\", page_type=~\"$pageType\"}[24h]))",
+          "legendFormat": "{{page_type}}"
+        }
+      ],
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "values": ["percent", "value"]
+        }
+      }
+    },
+    {
+      "type": "row",
+      "title": "LCP (Largest Contentful Paint)",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 9
+      },
+      "collapsed": false
+    },
+    {
+      "type": "timeseries",
+      "title": "LCP by Network (95th Percentile)",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 10
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le, network) (rate(web_vitals_lcp_bucket{network=~\"$network\", page_type=~\"$pageType\"}[5m])))",
+          "legendFormat": "{{network}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 2500, "color": "yellow" },
+              { "value": 4000, "color": "red" }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "LCP by Page Type (95th Percentile)",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 10
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le, page_type) (rate(web_vitals_lcp_bucket{network=~\"$network\", page_type=~\"$pageType\"}[5m])))",
+          "legendFormat": "{{page_type}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 2500, "color": "yellow" },
+              { "value": 4000, "color": "red" }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "row",
+      "title": "CLS (Cumulative Layout Shift)",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      },
+      "collapsed": false
+    },
+    {
+      "type": "timeseries",
+      "title": "CLS by Network (95th Percentile)",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 19
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le, network) (rate(web_vitals_cls_bucket{network=~\"$network\", page_type=~\"$pageType\"}[5m])))",
+          "legendFormat": "{{network}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 0.1, "color": "yellow" },
+              { "value": 0.25, "color": "red" }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "CLS by Page Type (95th Percentile)",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 19
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le, page_type) (rate(web_vitals_cls_bucket{network=~\"$network\", page_type=~\"$pageType\"}[5m])))",
+          "legendFormat": "{{page_type}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 0.1, "color": "yellow" },
+              { "value": 0.25, "color": "red" }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "row",
+      "title": "TTFB (Time to First Byte)",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 27
+      },
+      "collapsed": false
+    },
+    {
+      "type": "timeseries",
+      "title": "TTFB by Network (95th Percentile)",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 28
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le, network) (rate(web_vitals_ttfb_bucket{network=~\"$network\", page_type=~\"$pageType\"}[5m])))",
+          "legendFormat": "{{network}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 800, "color": "yellow" },
+              { "value": 1800, "color": "red" }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "TTFB by Page Type (95th Percentile)",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 28
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le, page_type) (rate(web_vitals_ttfb_bucket{network=~\"$network\", page_type=~\"$pageType\"}[5m])))",
+          "legendFormat": "{{page_type}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 800, "color": "yellow" },
+              { "value": 1800, "color": "red" }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "row",
+      "title": "FID (First Input Delay)",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 36
+      },
+      "collapsed": false
+    },
+    {
+      "type": "timeseries",
+      "title": "FID by Network (95th Percentile)",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 37
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le, network) (rate(web_vitals_fid_bucket{network=~\"$network\", page_type=~\"$pageType\"}[5m])))",
+          "legendFormat": "{{network}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 100, "color": "yellow" },
+              { "value": 300, "color": "red" }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "FID by Page Type (95th Percentile)",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 37
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le, page_type) (rate(web_vitals_fid_bucket{network=~\"$network\", page_type=~\"$pageType\"}[5m])))",
+          "legendFormat": "{{page_type}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 100, "color": "yellow" },
+              { "value": 300, "color": "red" }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "row",
+      "title": "INP (Interaction to Next Paint)",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 45
+      },
+      "collapsed": false
+    },
+    {
+      "type": "timeseries",
+      "title": "INP by Network (95th Percentile)",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 46
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le, network) (rate(web_vitals_inp_bucket{network=~\"$network\", page_type=~\"$pageType\"}[5m])))",
+          "legendFormat": "{{network}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 200, "color": "yellow" },
+              { "value": 500, "color": "red" }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "INP by Page Type (95th Percentile)",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 46
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le, page_type) (rate(web_vitals_inp_bucket{network=~\"$network\", page_type=~\"$pageType\"}[5m])))",
+          "legendFormat": "{{page_type}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 200, "color": "yellow" },
+              { "value": 500, "color": "red" }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "row",
+      "title": "Heatmaps",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 54
+      },
+      "collapsed": false
+    },
+    {
+      "type": "heatmap",
+      "title": "LCP by Network & Page Type (last 24h)",
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 55
+      },
+      "targets": [
+        {
+          "expr": "avg by (network, page_type) (rate(web_vitals_lcp_sum{network=~\"$network\", page_type=~\"$pageType\"}[24h]) / rate(web_vitals_lcp_count{network=~\"$network\", page_type=~\"$pageType\"}[24h]))",
+          "format": "table",
+          "instant": true
+        }
+      ],
+      "options": {
+        "calculate": false,
+        "calculation": "",
+        "cellGap": 1,
+        "color": {
+          "exponent": 0.5,
+          "fill": "blue-red",
+          "scheme": "RdYlBu",
+          "steps": 128
+        },
+        "exemplars": {
+          "color": "rgba(255,0,255,0.7)"
+        },
+        "legend": {
+          "show": true
+        },
+        "showValue": "auto",
+        "tooltip": {
+          "show": true,
+          "yHistogram": false
+        },
+        "yAxis": {
+          "axisPlacement": "left",
+          "reverse": false,
+          "unit": "ms"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 2500, "color": "yellow" },
+              { "value": 4000, "color": "red" }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "network",
+        "label": "Network Quality",
+        "type": "query",
+        "query": "label_values(web_vitals_lcp_bucket, network)",
+        "multi": true,
+        "includeAll": true
+      },
+      {
+        "name": "pageType",
+        "label": "Page Type",
+        "type": "query",
+        "query": "label_values(web_vitals_lcp_bucket, page_type)",
+        "multi": true,
+        "includeAll": true
+      },
+      {
+        "name": "route",
+        "label": "Route",
+        "type": "query",
+        "query": "label_values(web_vitals_lcp_bucket, route)",
+        "multi": true,
+        "includeAll": true
+      },
+      {
+        "name": "device",
+        "label": "Device",
+        "type": "query",
+        "query": "label_values(web_vitals_lcp_bucket, device_type)",
+        "multi": true,
+        "includeAll": true
+      }
+    ]
+  },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "refresh": "1m"
+}

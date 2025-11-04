@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="600" height="400" viewBox="0 0 600 400" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="600" height="400" fill="#f8fafc" rx="20" ry="20"/>
+  
+  <!-- Server Rack -->
+  <g transform="translate(250, 80)">
+    <!-- Rack Outline -->
+    <rect x="0" y="0" width="140" height="220" rx="5" ry="5" fill="#334155" stroke="#1e293b" stroke-width="2"/>
+    
+    <!-- Rack Ears -->
+    <rect x="-10" y="10" width="10" height="20" rx="2" ry="2" fill="#64748b"/>
+    <rect x="-10" y="190" width="10" height="20" rx="2" ry="2" fill="#64748b"/>
+    <rect x="140" y="10" width="10" height="20" rx="2" ry="2" fill="#64748b"/>
+    <rect x="140" y="190" width="10" height="20" rx="2" ry="2" fill="#64748b"/>
+    
+    <!-- Server 1 -->
+    <rect x="10" y="20" width="120" height="30" rx="2" ry="2" fill="#475569" stroke="#334155" stroke-width="1"/>
+    <circle cx="20" cy="35" r="5" fill="#22c55e"/>
+    <rect x="30" y="30" width="40" height="10" rx="1" ry="1" fill="#1e293b"/>
+    <rect x="80" y="32" width="40" height="6" rx="3" ry="3" fill="#1e293b"/>
+    
+    <!-- Server 2 -->
+    <rect x="10" y="60" width="120" height="30" rx="2" ry="2" fill="#475569" stroke="#334155" stroke-width="1"/>
+    <circle cx="20" cy="75" r="5" fill="#22c55e"/>
+    <rect x="30" y="70" width="40" height="10" rx="1" ry="1" fill="#1e293b"/>
+    <rect x="80" y="72" width="40" height="6" rx="3" ry="3" fill="#1e293b"/>
+    
+    <!-- Server 3 -->
+    <rect x="10" y="100" width="120" height="30" rx="2" ry="2" fill="#475569" stroke="#334155" stroke-width="1"/>
+    <circle cx="20" cy="115" r="5" fill="#ef4444"/>
+    <rect x="30" y="110" width="40" height="10" rx="1" ry="1" fill="#1e293b"/>
+    <rect x="80" y="112" width="40" height="6" rx="3" ry="3" fill="#1e293b"/>
+    
+    <!-- Storage Array -->
+    <rect x="10" y="140" width="120" height="60" rx="2" ry="2" fill="#475569" stroke="#334155" stroke-width="1"/>
+    <circle cx="20" cy="155" r="5" fill="#22c55e"/>
+    <rect x="30" y="150" width="80" height="10" rx="1" ry="1" fill="#1e293b"/>
+    
+    <!-- Drive Bays -->
+    <rect x="20" y="170" width="20" height="5" rx="1" ry="1" fill="#0ea5e9"/>
+    <rect x="50" y="170" width="20" height="5" rx="1" ry="1" fill="#0ea5e9"/>
+    <rect x="80" y="170" width="20" height="5" rx="1" ry="1" fill="#0ea5e9"/>
+    <rect x="110" y="170" width="10" height="5" rx="1" ry="1" fill="#0ea5e9"/>
+    
+    <rect x="20" y="180" width="20" height="5" rx="1" ry="1" fill="#0ea5e9"/>
+    <rect x="50" y="180" width="20" height="5" rx="1" ry="1" fill="#0ea5e9"/>
+    <rect x="80" y="180" width="20" height="5" rx="1" ry="1" fill="#0ea5e9"/>
+    <rect x="110" y="180" width="10" height="5" rx="1" ry="1" fill="#0ea5e9"/>
+    
+    <rect x="20" y="190" width="20" height="5" rx="1" ry="1" fill="#0ea5e9"/>
+    <rect x="50" y="190" width="20" height="5" rx="1" ry="1" fill="#0ea5e9"/>
+    <rect x="80" y="190" width="20" height="5" rx="1" ry="1" fill="#0ea5e9"/>
+    <rect x="110" y="190" width="10" height="5" rx="1" ry="1" fill="#0ea5e9"/>
+  </g>
+  
+  <!-- Person -->
+  <g transform="translate(140, 160)">
+    <!-- Head -->
+    <circle cx="0" cy="0" r="25" fill="#fbbf24"/>
+    
+    <!-- Face -->
+    <circle cx="-10" cy="-5" r="3" fill="#1e293b"/> <!-- Left eye -->
+    <circle cx="10" cy="-5" r="3" fill="#1e293b"/> <!-- Right eye -->
+    <path d="M -10 15 Q 0 20 10 15" stroke="#1e293b" stroke-width="2" fill="none"/> <!-- Smile -->
+    
+    <!-- Torso -->
+    <rect x="-25" y="25" width="50" height="70" rx="5" ry="5" fill="#2563eb"/>
+    
+    <!-- Arms -->
+    <rect x="-60" y="30" width="35" height="15" rx="5" ry="5" fill="#2563eb"/>
+    <rect x="25" y="30" width="35" height="15" rx="5" ry="5" fill="#2563eb"/>
+    
+    <!-- Hand holographic display -->
+    <rect x="-70" y="0" width="40" height="30" rx="5" ry="5" fill="#0ea5e9" fill-opacity="0.2" stroke="#0ea5e9" stroke-width="1"/>
+    <rect x="-65" y="5" width="15" height="5" rx="1" ry="1" fill="#0ea5e9" fill-opacity="0.6"/>
+    <rect x="-65" y="15" width="30" height="3" rx="1" ry="1" fill="#0ea5e9" fill-opacity="0.6"/>
+    <rect x="-65" y="22" width="25" height="3" rx="1" ry="1" fill="#0ea5e9" fill-opacity="0.6"/>
+    
+    <!-- Hand -->
+    <circle cx="-70" cy="37" r="7" fill="#fbbf24"/>
+    
+    <!-- Legs -->
+    <rect x="-25" y="95" width="18" height="50" rx="5" ry="5" fill="#1e40af"/>
+    <rect x="7" y="95" width="18" height="50" rx="5" ry="5" fill="#1e40af"/>
+  </g>
+  
+  <!-- Connection Lines -->
+  <path d="M 150 37 C 180 37, 230 80, 250 80" stroke="#0ea5e9" stroke-width="2" stroke-dasharray="5,5" fill="none"/>
+  <path d="M 150 37 C 180 37, 230 150, 250 150" stroke="#0ea5e9" stroke-width="2" stroke-dasharray="5,5" fill="none"/>
+  <path d="M 150 37 C 180 37, 230 220, 250 220" stroke="#0ea5e9" stroke-width="2" stroke-dasharray="5,5" fill="none"/>
+  
+  <!-- Network Nodes -->
+  <circle cx="150" cy="37" r="10" fill="#0ea5e9"/>
+  <circle cx="150" cy="37" r="5" fill="white"/>
+  
+  <!-- Text -->
+  <text x="300" y="330" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#0f172a">
+    IT Administrator Onboarding
+  </text>
+  <text x="300" y="360" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="#475569">
+    Manage and configure the TerraFusion platform
+  </text>
+</svg>

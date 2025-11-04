@@ -1,0 +1,87 @@
+replicaCount: 3
+
+image:
+  repository: ghcr.io/terrafusion/terrafusion-pro-1
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/rate-limit: "1000"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+  hosts:
+    - host: terrafusion.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: terrafusion-tls
+      hosts:
+        - terrafusion.com
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+resources:
+  limits:
+    cpu: 2000m
+    memory: 4Gi
+  requests:
+    cpu: 500m
+    memory: 1Gi
+
+nodeSelector: {}
+tolerations: []
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 100
+      podAffinityTerm:
+        labelSelector:
+          matchExpressions:
+          - key: app.kubernetes.io/name
+            operator: In
+            values:
+            - terrafusion-pro
+        topologyKey: kubernetes.io/hostname
+
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: "terrafusion-secure-password"
+    database: "terrafusion_pro"
+  primary:
+    persistence:
+      enabled: true
+      size: 100Gi
+  readReplicas:
+    replicaCount: 2
+
+redis:
+  enabled: true
+  auth:
+    enabled: true
+    password: "redis-secure-password"
+  master:
+    persistence:
+      enabled: true
+      size: 50Gi
+
+monitoring:
+  prometheus:
+    enabled: true
+  grafana:
+    enabled: true
+    adminPassword: "grafana-admin-password"

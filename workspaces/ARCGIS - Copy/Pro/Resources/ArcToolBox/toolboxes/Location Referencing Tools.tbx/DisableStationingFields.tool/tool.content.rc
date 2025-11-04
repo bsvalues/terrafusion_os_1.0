@@ -1,0 +1,10 @@
+{
+    "map": {
+        "description": "Disables stationing fields for the registered LRS event.",
+        "in_feature_class.descr": "An existing event feature class or feature layer that is registered to an LRS.",
+        "in_feature_class.title": "Event Feature Class",
+        "out_feature_class.title": "Output Event Feature Class",
+        "summary": "<xdoc><p>Disables stationing fields for the registered LRS event.</p><p>Learn more about stationing in the ArcGIS Pipeline Referencing events data model or stationing in the ArcGIS Roads and Highways events data model.</p></xdoc>",
+        "title": "Disable Stationing Fields"
+    }
+}

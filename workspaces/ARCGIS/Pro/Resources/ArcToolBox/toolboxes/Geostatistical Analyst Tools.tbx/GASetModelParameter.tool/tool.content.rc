@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Sets parameter values in an existing geostatistical model source.",
+        "in_ga_model_source.descr": "The geostatistical model source to be analyzed.",
+        "in_ga_model_source.title": "Input geostatistical model source",
+        "in_param_value.descr": "Value for the parameter defined by the XML path.",
+        "in_param_value.title": "Parameter value",
+        "model_param_xpath.descr": "XML path to the required model parameter.",
+        "model_param_xpath.title": "Parameter XML Path",
+        "out_ga_model.descr": "Geostatistical model created with the parameter value defined in the XML path.",
+        "out_ga_model.title": "Output model",
+        "title": "Set Model Parameter"
+    }
+}

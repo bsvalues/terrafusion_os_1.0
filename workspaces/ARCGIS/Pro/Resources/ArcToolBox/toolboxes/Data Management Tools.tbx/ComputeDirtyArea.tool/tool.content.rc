@@ -1,0 +1,15 @@
+{
+    "map": {
+        "description": "Identifies areas within a mosaic dataset that have changed since a specified point in time. This is used commonly when a mosaic dataset is updated or synchronized, or when  derived products, such as cache, need to be updated. This tool will enable you to limit such processes to only the areas that have changed.",
+        "in_mosaic_dataset.descr": "The mosaic dataset that you want to analyze for changes.",
+        "in_mosaic_dataset.title": "Mosaic Dataset",
+        "out_feature_class.descr": "The feature class containing the areas that have changed.",
+        "out_feature_class.title": "Output Feature Class",
+        "summary": "Identifies areas within a mosaic dataset that have changed since a specified point in time. This is used commonly when a mosaic dataset is updated or synchronized, or when derived products, such as cache, need to be updated. This tool will enable you to limit such processes to only the areas that have changed.",
+        "timestamp.descr": "<xdoc><p>Compute the areas that have changed since the input time.</p><p>XML time syntax:<ul><li>YYYY-MM-DD T hh:mm:ss</li><li>YYYY-MM-DD T hh:mm:ss.ssss Z</li><li>2002-10-10 T 12:00:00.ssss-00:00</li><li>2002-10-10 T 12:00:00+00:00</li></ul></p><p>Non-XML time syntax:</p><ul><li>2002/12/25 23:59:58.123</li></ul></xdoc>",
+        "timestamp.title": "Start Date and Time",
+        "title": "Compute Dirty Area",
+        "where_clause.descr": "SQL expression to select specific rasters within the mosaic dataset on which to compute dirty areas.",
+        "where_clause.title": "Query Definition"
+    }
+}

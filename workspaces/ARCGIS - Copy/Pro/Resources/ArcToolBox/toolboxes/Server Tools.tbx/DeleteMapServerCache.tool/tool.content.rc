@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Deletes an existing map image layer cache, including all associated files on disk.",
+        "input_service.descr": "<xdoc><p>The map image layer whose cache tiles you want to delete. You can choose it by browsing to the desired service in Portal or you can drag and drop a web tile layer from the <span class=\"esri_uicontrol\">Project</span> pane <span class=\"esri_uicontrol\">Portal</span> tab to supply this parameter.</p></xdoc>",
+        "input_service.title": "Input Service",
+        "num_of_caching_service_instances.descr": "Defines the number of instances that will be used to update/generate the tiles. The value for this parameter is set to unlimited (-1) and cannot be modified.",
+        "num_of_caching_service_instances.title": "Number of caching service instances",
+        "out_job_url.title": "Output Map Service URL",
+        "title": "Delete Map Server Cache"
+    }
+}

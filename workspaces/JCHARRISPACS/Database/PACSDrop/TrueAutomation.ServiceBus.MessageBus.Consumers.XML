@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.ServiceBus.MessageBus.Consumers</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.ServiceBus.MessageBus.Consumers.WorkflowConsumer">
+            <summary>
+            The IWorkflowMessage consumer that looks up and starts corresponding workflows 
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.ServiceBus.MessageBus.Consumers.WorkflowConsumer.serviceBus">
+            <summary>
+            The service bus with which this consumer is associated.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.ServiceBus.MessageBus.Consumers.WorkflowConsumer.logger">
+            <summary>
+            The logger instance used by this class for logging.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.ServiceBus.MessageBus.Consumers.WorkflowConsumer.Logger">
+            <summary>
+            The logger instance used by this class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.ServiceBus.MessageBus.Consumers.WorkflowConsumer.#ctor(Rhino.ServiceBus.IServiceBus)">
+            <summary>
+            Class constructor -- initializes an instance of the
+            <see cref="T:LaunchWorkflowConsumer"/> class.
+            </summary>
+            <param name="serviceBus">The <see cref="T:IServiceBus"/> with which
+            this message is associated. This bus may be used to publish any
+            replies back to the originator of the message.</param>
+        </member>
+        <member name="M:TrueAutomation.ServiceBus.MessageBus.Consumers.WorkflowConsumer.Consume(TrueAutomation.WorkflowService.Messages.IWorkflowMessage)">
+            <summary>
+            Method used to consume incoming messages on the workflow
+            message bus.
+            </summary>
+            <param name="message">The incoming generic workflow message.</param>
+        </member>
+        <member name="M:TrueAutomation.ServiceBus.MessageBus.Consumers.WorkflowConsumer.Notify(TrueAutomation.WorkflowService.Messages.IWorkflowMessage)">
+            <summary>
+            Puts a message on the bus to be absorbed by subscribers. 
+            </summary>
+            <param name="msg"></param>
+        </member>
+    </members>
+</doc>

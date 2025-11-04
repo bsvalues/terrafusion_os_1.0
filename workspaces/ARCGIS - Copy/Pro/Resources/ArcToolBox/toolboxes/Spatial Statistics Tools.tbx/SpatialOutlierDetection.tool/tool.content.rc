@@ -1,0 +1,28 @@
+{
+    "map": {
+        "description": "Identifies global or local spatial outliers in point features.",
+        "in_features.descr": "The point features that will be used to build the spatial outlier detection model. Each point will be classified as an outlier or inlier based on its local outlier factor.",
+        "in_features.title": "Input Features",
+        "keep_type.descr": "<xdoc><p>Specifies whether the output features will contain all input features or only features identified as spatial outliers.<ul><li>Checked—The output features will only contain features identified as spatial outliers.</li><li>Unchecked—The output features will contain all input features. This is the default.</li></ul></p></xdoc>",
+        "keep_type.title": "Keep Only Spatial Outliers",
+        "n_neighbors.descr": "<xdoc><p>The number of neighbors that will be used to detect spatial outliers for each input point.</p><p>For local outlier detection, the value must be at least 2, and all features within the neighborhood will be used as neighbors. If no value is specified, a value is estimated at run time and is displayed as a geoprocessing message.</p><p>For global outlier detection, only the farthest neighbor in the neighborhood will be used, and the default is 1 (the closest neighbor). For example, a value of 3 indicates that global outliers are detected using distances to the third nearest neighbor of each point.</p></xdoc>",
+        "n_neighbors.title": "Number of Neighbors",
+        "outlier_type.descr": "<xdoc><p>Specifies the type of outlier that will be detected. A global outlier is a point that is far away from all other points in the feature class. A local outlier is a point that is farther away from its neighbors than would be expected by the density of points in the surrounding area.</p><ul><li><span title=\"GLOBAL\">Global</span>—Global outliers of input points will be detected. This is the default.</li><li><span title=\"LOCAL\">Local</span>—Local outliers of input points will be detected.</li></ul></xdoc>",
+        "outlier_type.domain.GLOBAL": "Global",
+        "outlier_type.domain.LOCAL": "Local",
+        "outlier_type.title": "Outlier Type",
+        "output_features.descr": "The output feature class containing the local outlier factor for each input feature as well as an indicator of whether the point is a spatial outlier.",
+        "output_features.title": "Output Features",
+        "output_raster.descr": "<xdoc><p>The output raster containing the local outlier factors at each cell, which is calculated based on the spatial distribution of the input features.</p><p>This parameter is only available with a Desktop Advanced license.</p></xdoc>",
+        "output_raster.title": "Output Prediction Raster",
+        "percent_outlier.descr": "The percent of locations that will be identified as spatial outliers by defining the threshold of the local outlier factor. If no value is specified, a value is estimated at run time and is displayed as a geoprocessing message. A maximum of 50 percent of the features can be identified as spatial outliers.",
+        "percent_outlier.title": "Percent of Locations Considered Outliers",
+        "sensitivity.descr": "<xdoc><p>Specifies the sensitivity level that will be used to detect global outliers. The higher the sensitivity, the more points that will be detected as outliers.</p><p>The sensitivity value will determine the threshold, and any point with a neighbor distance larger than this threshold will be identified as a global outlier. The thresholds are determined using the box plot rule, in which the threshold for high sensitivity is one interquartile range above the third quartile. For medium sensitivity, the threshold is 1.5 interquartile ranges above the third quartile. For low sensitivity, the threshold is two interquartile ranges above the third quartile.</p><ul><li><span title=\"LOW\">Low</span>—Outliers will be detected using low sensitivity. This option will detect the fewest outliers.</li><li><span title=\"MEDIUM\">Medium</span>—Outliers will be detected using moderate sensitivity. This is the default.</li><li><span title=\"HIGH\">High</span>—Outliers will be detected using high sensitivity. This option will detect the most outliers.</li></ul></xdoc>",
+        "sensitivity.domain.HIGH": "High",
+        "sensitivity.domain.LOW": "Low",
+        "sensitivity.domain.MEDIUM": "Medium",
+        "sensitivity.title": "Detection Sensitivity",
+        "summary": "<xdoc><p>Identifies global or local spatial outliers in point features.</p><p>A global outlier is a point that is far away from all other points in a feature class. Global outliers are detected by examining distances between each point and one of its closest neighbors (by default, the closest neighbor) and detecting points where the distance is large.</p><p>A local outlier is a point that is farther away from its neighbors than would be expected by the density of points in the surrounding area. Local outliers are detected by calculating the local outlier factor (LOF) of each feature. The LOF is a measure that describes how isolated a location is compared to its local neighbors. A higher LOF value indicates greater isolation. The tool can also be used to produce a raster prediction surface that can be used to estimate whether new features will be classified as outliers based on the spatial distribution of the data.</p></xdoc>",
+        "title": "Spatial Outlier Detection"
+    }
+}

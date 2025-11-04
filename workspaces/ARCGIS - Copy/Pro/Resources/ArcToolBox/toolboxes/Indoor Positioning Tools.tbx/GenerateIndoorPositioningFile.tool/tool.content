@@ -1,0 +1,78 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "78000001",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "in_ips_recordings": {
+            "displayname": "$rc:in_ips_recordings.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_ips_recordings.descr"
+        },
+        "target_ips_positioning": {
+            "displayname": "$rc:target_ips_positioning.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:target_ips_positioning.descr"
+        },
+        "in_ips_transitions": {
+            "type": "optional",
+            "displayname": "$rc:in_ips_transitions.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_ips_transitions.descr"
+        },
+        "in_ips_comment": {
+            "type": "optional",
+            "displayname": "$rc:in_ips_comment.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:in_ips_comment.descr"
+        },
+        "out_ips_positioning": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_ips_positioning.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "depends": [
+                "target_ips_positioning"
+            ],
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

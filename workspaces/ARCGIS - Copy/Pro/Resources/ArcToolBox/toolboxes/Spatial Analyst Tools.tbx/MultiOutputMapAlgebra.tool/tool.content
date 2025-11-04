@@ -1,0 +1,19 @@
+{
+    "type": "FunctionTool",
+    "guid": "{b027071c-ec72-4d73-9f70-15928fdf28c9}",
+    "displayname": "$rc:title",
+    "helpcontent": "8100001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10"
+    ],
+    "params": {
+        "expression_string": {
+            "displayname": "$rc:expression_string.title",
+            "datatype": {
+                "type": "GPSAMapAlgebraExp"
+            }
+        }
+    }
+}

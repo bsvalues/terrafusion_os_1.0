@@ -1,0 +1,107 @@
+{
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "node",
+        "cwd": "../../marketplace/terra-insight/frontend",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "name": "Start Terra Insight Frontend"
+      },
+      {
+        "type": "debugpy",
+        "cwd": "../../marketplace/terra-insight/backend",
+        "program": "../../marketplace/terra-insight/backend/main.py",
+        "name": "Start Terra Insight Backend"
+      },
+      {
+        "type": "node",
+        "cwd": "../../marketplace/terra-insight/mcp-server",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "name": "Start Terra Insight MCP Server"
+      }
+    ]
+  },
+  "tasks": {
+    "tasks": [
+      {
+        "cwd": "../../marketplace/terra-insight",
+        "args": [
+          "run",
+          "build"
+        ],
+        "command": "npm",
+        "label": "Build Terra Insight"
+      },
+      {
+        "cwd": "../../marketplace/terra-insight",
+        "args": [
+          "run",
+          "test"
+        ],
+        "command": "npm",
+        "label": "Test Terra Insight"
+      }
+    ],
+    "version": "2.0.0"
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "ms-python.black-formatter"
+    ]
+  },
+  "folders": [
+    {
+      "name": "💼 Terra Insight",
+      "path": "../../marketplace/terra-insight"
+    },
+    {
+      "name": "📦 Platform SDK (read-only)",
+      "path": "../../platform/sdk"
+    },
+    {
+      "name": "🎨 Design System (read-only)",
+      "path": "../../platform/design-system"
+    },
+    {
+      "name": "🧪 Tests",
+      "path": "../../tests/marketplace/terra-insight"
+    },
+    {
+      "name": "📚 Terra Insight Docs",
+      "path": "../../docs/marketplace/terra-insight.md"
+    }
+  ],
+  "settings": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit",
+      "source.fixAll": "explicit"
+    },
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#f59e0b",
+      "titleBar.activeForeground": "#ffffff"
+    },
+    "files.exclude": {
+      "../../os-platform": true,
+      "**/node_modules": true,
+      "../../terrafusion-cos": true,
+      "../../marketplace/*": true,
+      "!../../marketplace/terra-insight": true,
+      "../../backend": true,
+      "**/dist": true,
+      "../../frontend": true
+    },
+    "editor.formatOnSave": true
+  }
+}
+

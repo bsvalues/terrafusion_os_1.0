@@ -1,0 +1,18 @@
+{
+    "map": {
+        "aoi_features.descr": "A layer of AOI polygon features that will be used to spatially filter source features.",
+        "aoi_features.title": "Area of Interest Features",
+        "carto_feature_classes.title": "Updated Cartographic Feature Classes",
+        "description": "Creates cartographic  features based on the area of interest (AOI) in which they're located.",
+        "extraction_query_table.descr": "A table of where clauses that will be used to further filter source features based on an attribute query.",
+        "extraction_query_table.title": "Extraction Query Table",
+        "inclusion_exclusion_table.descr": "A table identifying manually included or excluded source features.",
+        "inclusion_exclusion_table.title": "Cartographic Exceptions Table",
+        "source_target_carto_features.descr": "<xdoc><p>Associates source feature classes with the cartographic feature classes in which they will be generating features.</p><p>The first row is the source feature class that features will be copied from, and the second row is the target cartographic feature class that features will be copied to.</p></xdoc>",
+        "source_target_carto_features.dt.title1": "Source Features",
+        "source_target_carto_features.dt.title2": "Target Features",
+        "source_target_carto_features.title": "Source and Target Cartographic Features",
+        "summary": "<xdoc><p>Creates cartographic features based on the area of interest (AOI) in which they&apos;re located.</p><p>Features can also be created based on attribute queries that further refine the criteria for candidate features or manual inclusion or exclusion of features.</p></xdoc>",
+        "title": "Generate Aviation Cartographic Features"
+    }
+}

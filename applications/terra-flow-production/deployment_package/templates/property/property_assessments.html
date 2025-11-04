@@ -1,0 +1,561 @@
+{% extends "layout.html" %}
+
+{% block title %}Assessments | {{ property.parcel_id }}{% endblock %}
+
+{% block additionalcss %}
+<style>
+    .property-header {
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .property-title {
+        margin-bottom: 5px;
+        font-weight: 600;
+    }
+    
+    .property-address {
+        font-size: 1.1rem;
+        color: #495057;
+    }
+    
+    .property-id {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    
+    .section-header {
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        margin-top: 30px;
+        font-weight: 600;
+    }
+    
+    .assessment-card {
+        border-radius: 10px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 20px;
+    }
+    
+    .assessment-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .assessment-card-header {
+        font-weight: 600;
+        padding: 15px;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    
+    .assessment-value {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #198754;
+    }
+    
+    .assessment-meta {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+    
+    .assessment-status {
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    
+    .status-pending {
+        background-color: #fff3cd;
+        color: #664d03;
+    }
+    
+    .status-reviewed {
+        background-color: #cfe2ff;
+        color: #084298;
+    }
+    
+    .status-approved {
+        background-color: #d1e7dd;
+        color: #0f5132;
+    }
+    
+    .status-final {
+        background-color: #c3e6cb;
+        color: #155724;
+    }
+    
+    .status-appealed {
+        background-color: #f8d7da;
+        color: #842029;
+    }
+    
+    .comparison-card {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .value-change {
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+    
+    .value-increase {
+        color: #198754;
+    }
+    
+    .value-decrease {
+        color: #dc3545;
+    }
+    
+    .value-neutral {
+        color: #6c757d;
+    }
+    
+    .value-change-icon {
+        font-size: 0.9rem;
+    }
+    
+    .chart-container {
+        height: 300px;
+        margin-bottom: 20px;
+    }
+    
+    .empty-state {
+        padding: 30px;
+        text-align: center;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        margin: 20px 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('property.property_list') }}">Properties</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('property.property_detail', property_id=property.id) }}">{{ property.parcel_id }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Assessments</li>
+        </ol>
+    </nav>
+    
+    <!-- Property Header -->
+    <div class="property-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="property-title h2">
+                    {{ property.address }}{% if property.city %}, {{ property.city }}{% endif %}{% if property.state %}, {{ property.state }}{% endif %}{% if property.zip_code %} {{ property.zip_code }}{% endif %}
+                </h1>
+                <div class="property-id">
+                    <span class="text-muted">Parcel ID:</span> {{ property.parcel_id }}
+                    {% if property.account_number %}
+                    | <span class="text-muted">Account #:</span> {{ property.account_number }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end">
+                {% if has_permission('property.assessment.create') %}
+                <a href="{{ url_for('property.assessment_create', property_id=property.id) }}" class="btn btn-primary">
+                    <i class="fas fa-plus-circle me-1"></i> Add Assessment
+                </a>
+                {% endif %}
+                
+                <a href="{{ url_for('property.property_detail', property_id=property.id) }}" class="btn btn-outline-secondary ms-2">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Property
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Left Column: Assessments List -->
+        <div class="col-md-8">
+            <h2 class="h4 mb-4">Assessment History</h2>
+            
+            {% if assessments %}
+                {% for assessment in assessments %}
+                <div class="card assessment-card">
+                    <div class="assessment-card-header d-flex justify-content-between align-items-center bg-light">
+                        <div>
+                            <span class="h5 mb-0">Tax Year {{ assessment.tax_year }}</span>
+                            <span class="assessment-status status-{{ assessment.assessment_status|lower }} ms-2">
+                                {{ assessment.assessment_status|title }}
+                            </span>
+                        </div>
+                        <div class="assessment-meta">
+                            {{ assessment.assessment_date|format_date if assessment.assessment_date }}
+                            {% if assessment.assessment_type != 'standard' %}
+                            | {{ assessment.assessment_type|title }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-7">
+                                <div class="row mb-3">
+                                    <div class="col-6">
+                                        <div class="text-muted small">Land Value</div>
+                                        <div class="h5">{{ assessment.land_value|format_currency }}</div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="text-muted small">Improvement Value</div>
+                                        <div class="h5">{{ assessment.improvement_value|format_currency }}</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="text-muted small">Exemption Value</div>
+                                        <div class="h5">{{ assessment.exemption_value|format_currency }}</div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="text-muted small">Taxable Value</div>
+                                        <div class="h5">{{ assessment.taxable_value|format_currency }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-5 text-md-end">
+                                <div class="assessment-value mb-1">
+                                    {{ assessment.total_value|format_currency }}
+                                </div>
+                                <small class="text-muted">Total Assessed Value</small>
+                                
+                                <div class="mt-3">
+                                    {% if has_permission('property.assessment.edit') %}
+                                    <a href="{{ url_for('property.assessment_edit', property_id=property.id, assessment_id=assessment.id) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-edit me-1"></i> Edit
+                                    </a>
+                                    {% endif %}
+                                    
+                                    {% if has_permission('property.assessment.delete') %}
+                                    <button type="button" class="btn btn-sm btn-outline-danger ms-1" data-bs-toggle="modal" data-bs-target="#deleteModal{{ assessment.id }}">
+                                        <i class="fas fa-trash-alt me-1"></i> Delete
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% if assessment.notes %}
+                        <div class="mt-3 pt-3 border-top">
+                            <div class="text-muted small mb-1">Notes:</div>
+                            <div>{{ assessment.notes }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Delete Modal for this assessment -->
+                {% if has_permission('property.assessment.delete') %}
+                <div class="modal fade" id="deleteModal{{ assessment.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ assessment.id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModalLabel{{ assessment.id }}">Delete Assessment</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Are you sure you want to delete the assessment for tax year {{ assessment.tax_year }}?</p>
+                                <p class="text-danger"><strong>Warning:</strong> This action cannot be undone.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <form action="{{ url_for('property.assessment_delete', property_id=property.id, assessment_id=assessment.id) }}" method="post">
+                                    <button type="submit" class="btn btn-danger">Delete Assessment</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                    <h3 class="h4">No Assessments Found</h3>
+                    <p class="text-muted">There are no assessments recorded for this property yet.</p>
+                    {% if has_permission('property.assessment.create') %}
+                    <a href="{{ url_for('property.assessment_create', property_id=property.id) }}" class="btn btn-primary mt-2">
+                        <i class="fas fa-plus-circle me-1"></i> Add First Assessment
+                    </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Right Column: Analysis -->
+        <div class="col-md-4">
+            <!-- Valuation Overview Card -->
+            {% if latest_assessment %}
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h3 class="h5 mb-0">Current Valuation</h3>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <span class="assessment-value display-5">{{ latest_assessment.total_value|format_currency }}</span>
+                        <div class="assessment-meta">Tax Year {{ latest_assessment.tax_year }}</div>
+                    </div>
+                    
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <div class="text-muted small">Land Value</div>
+                            <div class="fw-bold">{{ latest_assessment.land_value|format_currency }}</div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="text-muted small">Improvement Value</div>
+                            <div class="fw-bold">{{ latest_assessment.improvement_value|format_currency }}</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-muted small">Exemption</div>
+                            <div class="fw-bold">{{ latest_assessment.exemption_value|format_currency }}</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-muted small">Taxable Value</div>
+                            <div class="fw-bold">{{ latest_assessment.taxable_value|format_currency }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Year-over-Year Comparison -->
+            {% if latest_assessment and second_latest_assessment %}
+            <div class="comparison-card">
+                <h3 class="h5 mb-3">Year-over-Year Comparison</h3>
+                
+                <div class="mb-3">
+                    <small class="text-muted">Comparing Tax Years:</small>
+                    <div class="fw-bold">{{ latest_assessment.tax_year }} vs {{ second_latest_assessment.tax_year }}</div>
+                </div>
+                
+                <!-- Total Value Change -->
+                {% set value_change = latest_assessment.total_value - second_latest_assessment.total_value %}
+                {% set change_percentage = (value_change / second_latest_assessment.total_value * 100) if second_latest_assessment.total_value else 0 %}
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <div class="text-muted small">Total Value Change:</div>
+                    </div>
+                    <div class="
+                        value-change 
+                        {% if value_change > 0 %}value-increase{% elif value_change < 0 %}value-decrease{% else %}value-neutral{% endif %}
+                    ">
+                        {% if value_change > 0 %}
+                            <i class="fas fa-arrow-up value-change-icon"></i>
+                        {% elif value_change < 0 %}
+                            <i class="fas fa-arrow-down value-change-icon"></i>
+                        {% else %}
+                            <i class="fas fa-minus value-change-icon"></i>
+                        {% endif %}
+                        {{ value_change|format_currency }} ({{ change_percentage|round(1) }}%)
+                    </div>
+                </div>
+                
+                <!-- Component Changes -->
+                <div class="row">
+                    <div class="col-6">
+                        {% set land_change = latest_assessment.land_value - second_latest_assessment.land_value %}
+                        <div class="text-muted small">Land Value:</div>
+                        <div class="
+                            {% if land_change > 0 %}text-success{% elif land_change < 0 %}text-danger{% else %}text-muted{% endif %}
+                        ">
+                            {% if land_change > 0 %}
+                                <i class="fas fa-arrow-up fa-xs me-1"></i>
+                            {% elif land_change < 0 %}
+                                <i class="fas fa-arrow-down fa-xs me-1"></i>
+                            {% else %}
+                                <i class="fas fa-minus fa-xs me-1"></i>
+                            {% endif %}
+                            {{ land_change|format_currency }}
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        {% set imp_change = latest_assessment.improvement_value - second_latest_assessment.improvement_value %}
+                        <div class="text-muted small">Improvement Value:</div>
+                        <div class="
+                            {% if imp_change > 0 %}text-success{% elif imp_change < 0 %}text-danger{% else %}text-muted{% endif %}
+                        ">
+                            {% if imp_change > 0 %}
+                                <i class="fas fa-arrow-up fa-xs me-1"></i>
+                            {% elif imp_change < 0 %}
+                                <i class="fas fa-arrow-down fa-xs me-1"></i>
+                            {% else %}
+                                <i class="fas fa-minus fa-xs me-1"></i>
+                            {% endif %}
+                            {{ imp_change|format_currency }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Valuation Trend Chart -->
+            {% if assessments|length > 1 %}
+            <div class="card mb-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h3 class="h5 mb-0">Valuation Trend</h3>
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Chart type">
+                        <button type="button" class="btn btn-outline-secondary active" id="lineChartBtn">Line</button>
+                        <button type="button" class="btn btn-outline-secondary" id="barChartBtn">Bar</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="valuationChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Assessment Types Legend -->
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h3 class="h5 mb-0">Assessment Status Types</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <span class="assessment-status status-pending me-2">Pending</span>
+                        <small class="text-muted">Assessment is in draft or preparation stage</small>
+                    </div>
+                    <div class="mb-2">
+                        <span class="assessment-status status-reviewed me-2">Reviewed</span>
+                        <small class="text-muted">Assessment has been reviewed but not finalized</small>
+                    </div>
+                    <div class="mb-2">
+                        <span class="assessment-status status-approved me-2">Approved</span>
+                        <small class="text-muted">Assessment has been approved by the assessor</small>
+                    </div>
+                    <div class="mb-2">
+                        <span class="assessment-status status-final me-2">Final</span>
+                        <small class="text-muted">Assessment is finalized and on the tax roll</small>
+                    </div>
+                    <div>
+                        <span class="assessment-status status-appealed me-2">Appealed</span>
+                        <small class="text-muted">Assessment is being appealed by the property owner</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if assessments|length > 1 %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Prepare data for charts
+        const years = [{% for assessment in assessments|sort(attribute='tax_year') %}'{{ assessment.tax_year }}'{% if not loop.last %}, {% endif %}{% endfor %}];
+        const totalValues = [{% for assessment in assessments|sort(attribute='tax_year') %}{{ assessment.total_value or 0 }}{% if not loop.last %}, {% endif %}{% endfor %}];
+        const landValues = [{% for assessment in assessments|sort(attribute='tax_year') %}{{ assessment.land_value or 0 }}{% if not loop.last %}, {% endif %}{% endfor %}];
+        const improvementValues = [{% for assessment in assessments|sort(attribute='tax_year') %}{{ assessment.improvement_value or 0 }}{% if not loop.last %}, {% endif %}{% endfor %}];
+        
+        // Create chart
+        const ctx = document.getElementById('valuationChart').getContext('2d');
+        
+        // Format currency for labels
+        const currencyFormatter = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
+        
+        // Create the chart
+        const chartConfig = {
+            type: 'line',
+            data: {
+                labels: years,
+                datasets: [
+                    {
+                        label: 'Total Value',
+                        data: totalValues,
+                        backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                        borderColor: 'rgba(40, 167, 69, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Land Value',
+                        data: landValues,
+                        backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                        borderColor: 'rgba(0, 123, 255, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Improvement Value',
+                        data: improvementValues,
+                        backgroundColor: 'rgba(255, 193, 7, 0.2)',
+                        borderColor: 'rgba(255, 193, 7, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return currencyFormatter.format(value);
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + currencyFormatter.format(context.raw);
+                            }
+                        }
+                    }
+                }
+            }
+        };
+        
+        // Initialize chart
+        const valuationChart = new Chart(ctx, chartConfig);
+        
+        // Toggle between line and bar chart
+        document.getElementById('lineChartBtn').addEventListener('click', function() {
+            valuationChart.destroy();
+            chartConfig.type = 'line';
+            document.getElementById('lineChartBtn').classList.add('active');
+            document.getElementById('barChartBtn').classList.remove('active');
+            new Chart(ctx, chartConfig);
+        });
+        
+        document.getElementById('barChartBtn').addEventListener('click', function() {
+            valuationChart.destroy();
+            chartConfig.type = 'bar';
+            document.getElementById('barChartBtn').classList.add('active');
+            document.getElementById('lineChartBtn').classList.remove('active');
+            new Chart(ctx, chartConfig);
+        });
+    });
+</script>
+{% endif %}
+{% endblock %}

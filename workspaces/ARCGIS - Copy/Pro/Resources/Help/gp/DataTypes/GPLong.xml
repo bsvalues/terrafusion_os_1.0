@@ -1,0 +1,5 @@
+<DataType Name="GPLong">
+  <DisplayName>Long</DisplayName>
+  <Description>An integer number value.</Description>
+</DataType>
+

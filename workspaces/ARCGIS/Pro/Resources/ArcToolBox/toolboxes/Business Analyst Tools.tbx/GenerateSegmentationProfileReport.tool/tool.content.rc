@@ -1,0 +1,18 @@
+{
+    "map": {
+        "base_profile.descr": "A segmentation profile representing the base profile segments. This is the segmentation used for comparison. The base profile usually represents your market area segmentation profile.",
+        "base_profile.title": "Base Profile",
+        "description": "Creates a report that displays segments of your customers and compares them to the study area (base profile).",
+        "output_report.title": "Output Report",
+        "params.category1": "Report Options",
+        "report_folder.descr": "The output location where the report will be saved.",
+        "report_folder.title": "Output Report Folder",
+        "report_format.descr": "The report output format. The default value is PDF. Additional available formats are XLSX, HTML, CSV, and PAGX.",
+        "report_format.title": "Report Output Formats",
+        "report_title.descr": "The title of the report.",
+        "report_title.title": "Report Title",
+        "target_profile.descr": "A segmentation profile representing the segments to be profiled. The target profile usually represents your customer segmentation profile.",
+        "target_profile.title": "Target Profile",
+        "title": "Generate Segmentation Profile Report"
+    }
+}

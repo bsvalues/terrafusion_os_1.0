@@ -1,0 +1,78 @@
+{
+  "calcite": {
+    "reset": "Obnovit",
+    "action": {
+      "sort": "Seřadit"
+    },
+    "buttons": {
+      "save": "Uložit",
+      "edit": "Upravit",
+      "done": "Hotovo",
+      "apply": "Použít",
+      "cancel": "Storno",
+      "close": "Zavřít"
+    },
+    "ColorPicker": {
+      "selectColor": "Vybrat barvu",
+      "noColorSpecified": "Není specifikována žádná barva",
+      "transparent": "Transparentní",
+      "colorTooltip": "<p>Hex: ${hex}</p><p>RGB: ${r}, ${g}, ${b}</p>",
+      "recent": "Aktuální",
+      "standard": "Standardní",
+      "savedColors": "Uložené barvy",
+      "advanced": "Pokročilý"
+    },
+    "DatePickerLink": {
+      "enterDate": "Zadat datum"
+    },
+    "PaginationContinuous": {
+      "next": "Další",
+      "previous": "Předchozí"
+    }
+  },
+  "ImageNavigator": {
+    "paginationLabel": "${n} z ${m}",
+    "noImage": "Na těchto stránkách nejsou momentálně uloženy žádné fotografie",
+    "previewNotAvailable": "Náhled není k dispozici"
+  },
+  "PageNavigator": {
+    "currentPageOutOfN": "Stránka ${current} z ${total}"
+  },
+  "PanoramicViewer": {
+    "image-viewer-close": "Zavřít",
+    "image-viewer-fullscreen": "Celá obrazovka",
+    "image-viewer-minimize": "Minimalizovat",
+    "image-viewer-title": "Prohlížeč fotografií",
+    "image-viewer-show-caption": "Zobrazit popisek",
+    "image-viewer-hide-caption": "Skrýt"
+  },
+  "TextBox": {
+    "error_numberExpected": "Je očekáváno číslo",
+    "error_range": "Je očekávána hodnota v rozmezí od ${0} do ${1}"
+  },
+  "charts": {
+    "histogram": {
+      "minValue": "Min.:<br>${0}",
+      "maxValue": "Max.:<br>${0}",
+      "thisAreaValue": "Tato oblast: ${0}",
+      "medianValue": "Medián:<br>${0}",
+      "q1Value": "Q1:<br>${0}",
+      "q3Value": "Q3:<br>${0}",
+      "percentile": "Percentil ${percent}:<br>${0}",
+      "percentileBottom": "Spodní ${percent}%:<br>${0}",
+      "percentileTop": "Horní ${percent}%:<br>${0}",
+      "percentile_singleLine": "Percentil ${percent}: ${0}",
+      "percentileBottom_singleLine": "Spodní ${percent}%: ${0}",
+      "percentileTop_singleLine": "Horní ${percent}%: ${0}",
+      "sd_singleLine": "${sd} SD: ${0}",
+      "tooltip": {
+        "range_single": "<b>${level}</b> s hodnotou v rámci <b>${value}</b> : <b>1</b>",
+        "range_single_precise": "<b>${areaName}</b> má hodnotu <b>${value}</b>.",
+        "range_multi": "<b>${level}</b> s hodnotou v rámci <b>${value}</b> : <b>${count}</b>",
+        "thisArea": "<b>Tato oblast</b> má hodnotu <b>${value}</b>.",
+        "percentileLower": "<b>${percent} %</b> z <b>${level}</b> má hodnotu nad <b>${value}</b>.",
+        "percentileUpper": "<b>${percent} %</b> z <b>${level}</b> má hodnotu pod <b>${value}</b>."
+      }
+    }
+  }
+}

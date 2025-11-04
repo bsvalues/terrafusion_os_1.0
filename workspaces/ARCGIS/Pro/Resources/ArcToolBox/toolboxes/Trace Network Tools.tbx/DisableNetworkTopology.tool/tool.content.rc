@@ -1,0 +1,9 @@
+{
+    "map": {
+        "description": "Disables the network topology for an existing trace network.",
+        "in_trace_network.descr": "The trace network where the network topology will be disabled.",
+        "in_trace_network.title": "Input Trace Network",
+        "out_trace_network.title": "Updated Trace Network",
+        "title": "Disable Network Topology"
+    }
+}

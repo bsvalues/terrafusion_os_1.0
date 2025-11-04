@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Browser Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-result {
+            margin-top: 10px;
+        }
+        .success {
+            color: #4CAF50;
+        }
+        .error {
+            color: #f44336;
+        }
+        .endpoint-input {
+            width: 400px;
+            padding: 8px;
+            margin-right: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .method-select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+            margin-top: 10px;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+        .tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            margin-right: 5px;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+        .tab.active {
+            background-color: white;
+            border-bottom: 1px solid white;
+            margin-bottom: -1px;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .run-all-tests {
+            background-color: #2196F3;
+            margin-top: 20px;
+            padding: 12px 24px;
+            font-size: 16px;
+        }
+        .run-all-tests:hover {
+            background-color: #0b7dda;
+        }
+    </style>
+</head>
+<body>
+    <h1>API Browser Test Tool</h1>
+    <p>This tool tests API endpoints directly within the browser context to avoid CORS or middleware issues.</p>
+    
+    <div class="tabs">
+        <div class="tab active" data-tab="basic-api">Basic API</div>
+        <div class="tab" data-tab="agent-api">Agent System</div>
+        <div class="tab" data-tab="gis-api">GIS</div>
+        <div class="tab" data-tab="llm-api">LLM</div>
+        <div class="tab" data-tab="custom-api">Custom Request</div>
+    </div>
+    
+    <div class="tab-content active" id="basic-api">
+        <h2>Basic API Tests</h2>
+        
+        <div class="test-section">
+            <h3>Health Check</h3>
+            <button onclick="testEndpoint('health')">Test Health</button>
+            <div class="test-result" id="health-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Get Properties</h3>
+            <button onclick="testEndpoint('properties')">Test Properties</button>
+            <div class="test-result" id="properties-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Get System Activities</h3>
+            <button onclick="testEndpoint('system-activities')">Test System Activities</button>
+            <div class="test-result" id="system-activities-result"></div>
+        </div>
+    </div>
+    
+    <div class="tab-content" id="agent-api">
+        <h2>Agent System Tests</h2>
+        
+        <div class="test-section">
+            <h3>Get Agents</h3>
+            <button onclick="testEndpoint('ai-agents')">Test Agents</button>
+            <div class="test-result" id="ai-agents-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Agent System Status</h3>
+            <button onclick="testEndpoint('agent-system/status')">Test Agent Status</button>
+            <div class="test-result" id="agent-system-status-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Agent Capabilities</h3>
+            <button onclick="testPostEndpoint('agent-system/property-assessment/analyze/BC001', {})">Test Agent Capability</button>
+            <div class="test-result" id="agent-system-property-assessment-analyze-BC001-result"></div>
+        </div>
+    </div>
+    
+    <div class="tab-content" id="gis-api">
+        <h2>GIS Tests</h2>
+        
+        <div class="test-section">
+            <h3>GIS Layers</h3>
+            <button onclick="testEndpoint('gis/layers')">Test GIS Layers</button>
+            <div class="test-result" id="gis-layers-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>MapBox Token</h3>
+            <button onclick="testEndpoint('gis/mapbox-token')">Test MapBox Token</button>
+            <div class="test-result" id="gis-mapbox-token-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Spatial Query</h3>
+            <button onclick="testPostEndpoint('gis/query/properties', {
+                bbox: {
+                    minLon: -97.5,
+                    minLat: 45.0,
+                    maxLon: -97.0,
+                    maxLat: 45.5
+                },
+                limit: 10
+            })">Test Spatial Query</button>
+            <div class="test-result" id="gis-query-properties-result"></div>
+        </div>
+    </div>
+    
+    <div class="tab-content" id="llm-api">
+        <h2>LLM Tests</h2>
+        
+        <div class="test-section">
+            <h3>LLM Providers</h3>
+            <button onclick="testEndpoint('ai-assistant/providers')">Test LLM Providers</button>
+            <div class="test-result" id="ai-assistant-providers-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>LLM API Key Validation</h3>
+            <button onclick="testEndpoint('ai-assistant/validate-keys')">Test API Keys</button>
+            <div class="test-result" id="ai-assistant-validate-keys-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>LLM Generation</h3>
+            <p>
+                <input type="text" id="llm-prompt" class="endpoint-input" value="Explain CAMA in property assessment">
+                <select id="llm-provider" class="method-select">
+                    <option value="openai">OpenAI</option>
+                    <option value="anthropic">Anthropic</option>
+                    <option value="perplexity">Perplexity</option>
+                </select>
+            </p>
+            <button onclick="testLlmGeneration()">Test LLM Generation</button>
+            <div class="test-result" id="ai-assistant-generate-result"></div>
+        </div>
+    </div>
+    
+    <div class="tab-content" id="custom-api">
+        <h2>Custom API Request</h2>
+        
+        <div class="test-section">
+            <p>
+                <select id="request-method" class="method-select">
+                    <option value="GET">GET</option>
+                    <option value="POST">POST</option>
+                    <option value="PUT">PUT</option>
+                    <option value="DELETE">DELETE</option>
+                </select>
+                <input type="text" id="request-endpoint" class="endpoint-input" placeholder="Endpoint (e.g., properties)">
+                <button onclick="testCustomEndpoint()">Send Request</button>
+            </p>
+            <p>Request Body (for POST/PUT):</p>
+            <textarea id="request-body" placeholder='{"key": "value"}'></textarea>
+            <div class="test-result" id="custom-request-result"></div>
+        </div>
+    </div>
+    
+    <button class="run-all-tests" onclick="runAllTests()">Run All Tests</button>
+    <div class="test-result" id="all-tests-result"></div>
+    
+    <script src="test-api-browser.js"></script>
+    <script>
+        // Tab functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and content
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                
+                // Show corresponding content
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // Display test result
+        function displayResult(elementId, result) {
+            const resultElement = document.getElementById(elementId);
+            
+            let resultHtml = '';
+            if (result.success) {
+                resultHtml += `<p class="success">✅ Success (Status: ${result.status})</p>`;
+                resultHtml += '<pre>' + JSON.stringify(result.data, null, 2) + '</pre>';
+            } else {
+                resultHtml += `<p class="error">❌ Error: ${result.error || 'Unknown error'}</p>`;
+                if (result.status) {
+                    resultHtml += `<p>Status: ${result.status}</p>`;
+                }
+                if (result.text) {
+                    resultHtml += `<p>Response text (truncated):</p><pre>${result.text}</pre>`;
+                } else if (result.data) {
+                    resultHtml += '<pre>' + JSON.stringify(result.data, null, 2) + '</pre>';
+                }
+            }
+            
+            resultElement.innerHTML = resultHtml;
+        }
+        
+        // Test a GET endpoint
+        async function testEndpoint(endpoint) {
+            const resultId = endpoint.replace(/\//g, '-') + '-result';
+            const resultElement = document.getElementById(resultId);
+            
+            if (resultElement) {
+                resultElement.innerHTML = '<p>Testing...</p>';
+                
+                try {
+                    const result = await window.apiTests.makeApiRequest(endpoint);
+                    displayResult(resultId, result);
+                    return result;
+                } catch (error) {
+                    console.error(`Error testing ${endpoint}:`, error);
+                    resultElement.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+                    return {
+                        success: false,
+                        error: error.message
+                    };
+                }
+            } else {
+                console.error(`Result element not found for endpoint: ${endpoint}`);
+            }
+        }
+        
+        // Test a POST endpoint
+        async function testPostEndpoint(endpoint, body) {
+            const resultId = endpoint.replace(/\//g, '-') + '-result';
+            const resultElement = document.getElementById(resultId);
+            
+            if (resultElement) {
+                resultElement.innerHTML = '<p>Testing...</p>';
+                
+                try {
+                    const result = await window.apiTests.makeApiRequest(endpoint, 'POST', body);
+                    displayResult(resultId, result);
+                    return result;
+                } catch (error) {
+                    console.error(`Error testing ${endpoint}:`, error);
+                    resultElement.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+                    return {
+                        success: false,
+                        error: error.message
+                    };
+                }
+            } else {
+                console.error(`Result element not found for endpoint: ${endpoint}`);
+            }
+        }
+        
+        // Test LLM generation
+        async function testLlmGeneration() {
+            const prompt = document.getElementById('llm-prompt').value;
+            const provider = document.getElementById('llm-provider').value;
+            const resultId = 'ai-assistant-generate-result';
+            const resultElement = document.getElementById(resultId);
+            
+            resultElement.innerHTML = '<p>Testing...</p>';
+            
+            try {
+                const result = await window.apiTests.makeApiRequest('ai-assistant/generate', 'POST', {
+                    prompt,
+                    provider,
+                    max_tokens: 150
+                });
+                
+                displayResult(resultId, result);
+                return result;
+            } catch (error) {
+                console.error('Error testing LLM generation:', error);
+                resultElement.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+                return {
+                    success: false,
+                    error: error.message
+                };
+            }
+        }
+        
+        // Test a custom endpoint
+        async function testCustomEndpoint() {
+            const method = document.getElementById('request-method').value;
+            const endpoint = document.getElementById('request-endpoint').value;
+            const bodyText = document.getElementById('request-body').value;
+            const resultId = 'custom-request-result';
+            const resultElement = document.getElementById(resultId);
+            
+            if (!endpoint) {
+                resultElement.innerHTML = '<p class="error">❌ Error: Endpoint is required</p>';
+                return;
+            }
+            
+            resultElement.innerHTML = '<p>Testing...</p>';
+            
+            let body = null;
+            if ((method === 'POST' || method === 'PUT') && bodyText.trim()) {
+                try {
+                    body = JSON.parse(bodyText);
+                } catch (error) {
+                    resultElement.innerHTML = `<p class="error">❌ Error parsing JSON body: ${error.message}</p>`;
+                    return;
+                }
+            }
+            
+            try {
+                const result = await window.apiTests.makeApiRequest(endpoint, method, body);
+                displayResult(resultId, result);
+            } catch (error) {
+                console.error(`Error testing custom endpoint ${endpoint}:`, error);
+                resultElement.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Run all tests
+        async function runAllTests() {
+            const resultElement = document.getElementById('all-tests-result');
+            resultElement.innerHTML = '<p>Running all tests...</p>';
+            
+            try {
+                const results = await window.apiTests.runAllTests();
+                
+                let resultHtml = '<h3>All Test Results</h3>';
+                
+                // Basic API tests
+                resultHtml += '<h4>Basic API Tests</h4>';
+                resultHtml += createResultSummary('Health', results.health);
+                resultHtml += createResultSummary('Properties', results.properties);
+                
+                // Agent System tests
+                resultHtml += '<h4>Agent System Tests</h4>';
+                resultHtml += createResultSummary('Agent Status', results.agentSystemStatus);
+                
+                // GIS tests
+                resultHtml += '<h4>GIS Tests</h4>';
+                resultHtml += createResultSummary('GIS Layers', results.gisLayers);
+                
+                // LLM tests
+                resultHtml += '<h4>LLM Tests</h4>';
+                resultHtml += createResultSummary('LLM Providers', results.llmProviders);
+                resultHtml += createResultSummary('LLM API Key Validation', results.llmApiKeyValidation);
+                resultHtml += createResultSummary('LLM Generation', results.llmGeneration);
+                
+                resultElement.innerHTML = resultHtml;
+            } catch (error) {
+                console.error('Error running all tests:', error);
+                resultElement.innerHTML = `<p class="error">❌ Error running all tests: ${error.message}</p>`;
+            }
+        }
+        
+        // Create a result summary for a test
+        function createResultSummary(name, result) {
+            if (result.success) {
+                return `<p class="success">✅ ${name}: Success</p>`;
+            } else {
+                return `<p class="error">❌ ${name}: Failed - ${result.error || 'Unknown error'}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

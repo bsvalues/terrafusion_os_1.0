@@ -1,0 +1,5 @@
+GRANT CREATE CERTIFICATE TO [AllSchemaOwner];
+
+
+GO
+

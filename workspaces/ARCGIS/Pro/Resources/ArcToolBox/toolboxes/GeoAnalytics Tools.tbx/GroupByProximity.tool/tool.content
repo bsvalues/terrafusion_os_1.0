@@ -1,0 +1,193 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "51040003",
+    "description": "$rc:description",
+    "product": "300",
+    "attributes": [
+        "spark"
+    ],
+    "params": {
+        "input_layer": {
+            "display_order": "0",
+            "displayname": "$rc:input_layer.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "featuretype": [
+                    "Simple"
+                ],
+                "portaltype": [
+                    "DataStoreCatalogLayer"
+                ]
+            },
+            "description": "$rc:input_layer.descr"
+        },
+        "output_name": {
+            "display_order": "1",
+            "displayname": "$rc:output_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:output_name.descr"
+        },
+        "spatial_relationship": {
+            "display_order": "2",
+            "displayname": "$rc:spatial_relationship.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NEAR_PLANAR",
+                        "code": "$rc:spatial_relationship.domain.NEAR_PLANAR"
+                    },
+                    {
+                        "value": "NEAR_GEODESIC",
+                        "code": "$rc:spatial_relationship.domain.NEAR_GEODESIC"
+                    },
+                    {
+                        "value": "TOUCHES",
+                        "code": "$rc:spatial_relationship.domain.TOUCHES"
+                    },
+                    {
+                        "value": "INTERSECTS",
+                        "code": "$rc:spatial_relationship.domain.INTERSECTS"
+                    }
+                ]
+            },
+            "value": "INTERSECTS",
+            "description": "$rc:spatial_relationship.descr"
+        },
+        "spatial_near_distance": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:spatial_near_distance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPUnitDomain",
+                "items": [
+                    "Feet",
+                    "Yards",
+                    "Miles",
+                    "NauticalMiles",
+                    "Meters",
+                    "Kilometers",
+                    "FeetInt",
+                    "YardsInt",
+                    "MilesInt",
+                    "NauticalMilesInt"
+                ]
+            },
+            "description": "$rc:spatial_near_distance.descr"
+        },
+        "temporal_relationship": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:temporal_relationship.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "INTERSECTS",
+                        "code": "$rc:temporal_relationship.domain.INTERSECTS"
+                    },
+                    {
+                        "value": "NEAR",
+                        "code": "$rc:temporal_relationship.domain.NEAR"
+                    },
+                    {
+                        "value": "NONE",
+                        "code": "$rc:temporal_relationship.domain.NONE"
+                    }
+                ]
+            },
+            "value": "NONE",
+            "description": "$rc:temporal_relationship.descr"
+        },
+        "temporal_near_distance": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:temporal_near_distance.title",
+            "datatype": {
+                "type": "GPTimeUnit"
+            },
+            "domain": {
+                "type": "GPUnitDomain",
+                "items": [
+                    "Milliseconds",
+                    "Seconds",
+                    "Minutes",
+                    "Hours",
+                    "Days",
+                    "Weeks",
+                    "Months",
+                    "Years"
+                ]
+            },
+            "description": "$rc:temporal_near_distance.descr"
+        },
+        "data_store": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:data_store.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SPATIOTEMPORAL_DATA_STORE",
+                        "code": "$rc:data_store.domain.SPATIOTEMPORAL_DATA_STORE"
+                    },
+                    {
+                        "value": "RELATIONAL_DATA_STORE",
+                        "code": "$rc:data_store.domain.RELATIONAL_DATA_STORE"
+                    }
+                ]
+            },
+            "value": "SPATIOTEMPORAL_DATA_STORE",
+            "description": "$rc:data_store.descr"
+        },
+        "output": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "8",
+            "displayname": "$rc:output.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "attribute_relationship": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:attribute_relationship.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:attribute_relationship.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "outputCoordinateSystem",
+        "workspace"
+    ]
+}

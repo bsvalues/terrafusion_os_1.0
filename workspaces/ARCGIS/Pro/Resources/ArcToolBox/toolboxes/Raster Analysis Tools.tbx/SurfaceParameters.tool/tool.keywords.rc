@@ -1,0 +1,22 @@
+{
+    "set": [
+        "aspect",
+        "casorati curvature",
+        "contour geodesic torsion",
+        "curvature",
+        "dem",
+        "digital elevation model",
+        "elevation",
+        "gaussian curvature",
+        "mean curvature",
+        "normal contour curvature",
+        "normal slope line curvature",
+        "plan curvature",
+        "profile curvature",
+        "projected contour curvature",
+        "slope",
+        "tangential curvature",
+        "topography",
+        "z"
+    ]
+}

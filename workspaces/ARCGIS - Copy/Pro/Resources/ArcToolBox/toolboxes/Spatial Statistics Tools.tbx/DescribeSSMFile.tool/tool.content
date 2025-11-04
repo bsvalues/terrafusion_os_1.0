@@ -1,0 +1,57 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\DescribeSSMFile",
+    "displayname": "$rc:title",
+    "helpcontent": "9050004",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "input_model": {
+            "display_order": "0",
+            "displayname": "$rc:input_model.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "ssm"
+                ]
+            },
+            "description": "$rc:input_model.descr"
+        },
+        "explanatory_variables": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:explanatory_variables.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            }
+        },
+        "explanatory_distance_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:explanatory_distance_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            }
+        },
+        "explanatory_rasters": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:explanatory_rasters.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            }
+        }
+    }
+}

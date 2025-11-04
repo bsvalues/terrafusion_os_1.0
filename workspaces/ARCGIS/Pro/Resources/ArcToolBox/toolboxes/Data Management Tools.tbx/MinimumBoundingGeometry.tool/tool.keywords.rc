@@ -1,0 +1,24 @@
+{
+    "set": [
+        "aggregate",
+        "alpha",
+        "box",
+        "circle",
+        "cluster",
+        "convex",
+        "cover",
+        "ellipse",
+        "envelope",
+        "extent",
+        "geometry",
+        "group",
+        "hull",
+        "in",
+        "max",
+        "min",
+        "out",
+        "rectangle",
+        "shape",
+        "vector"
+    ]
+}

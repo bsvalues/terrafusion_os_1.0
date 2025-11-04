@@ -1,0 +1,12 @@
+{
+    "set": [
+        "create event",
+        "create lrs event",
+        "delete event",
+        "delete lrs",
+        "delete route",
+        "register event",
+        "remove event",
+        "remove route"
+    ]
+}

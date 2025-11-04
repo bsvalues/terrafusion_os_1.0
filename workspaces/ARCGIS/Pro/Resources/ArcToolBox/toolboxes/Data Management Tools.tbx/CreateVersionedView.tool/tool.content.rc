@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Creates a versioned view on a table or feature class.",
+        "in_dataset.descr": "Input table or feature class for which a versioned view will be created.",
+        "in_dataset.title": "Input Table or Feature Class",
+        "in_name.descr": "Name for the versioned view that is created. If nothing is specified the output versioned view name is the name of the table or feature class with _evw appended to the end.",
+        "in_name.title": "Versioned View Name",
+        "out_dataset.title": "Output Table or Feature Class",
+        "summary": "<xdoc><p>Creates a versioned view on a table or feature class.</p><note type=\"legacy\"/><p group=\"note\">This is a deprecated tool. This functionality is no longer needed because versioned views are automatically created when data is registered as versioned.</p></xdoc>",
+        "title": "Create Versioned View"
+    }
+}

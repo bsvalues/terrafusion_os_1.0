@@ -1,0 +1,460 @@
+# TerraFusion OS - Network Security & Microsegmentation
+# ZERO-TRUST NETWORK ARCHITECTURE
+# Government-Grade Network Isolation
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrafusion-network-security
+  labels:
+    security.level: critical
+    compliance: fisma-high
+
+---
+# Default Deny-All Network Policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: terrafusion-system
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  # No rules = deny all traffic
+
+---
+# Frontend Tier Network Policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: frontend-network-policy
+  namespace: terrafusion-system
+spec:
+  podSelector:
+    matchLabels:
+      tier: frontend
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow traffic from ingress controller
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 3000
+    - protocol: TCP
+      port: 3002
+    - protocol: TCP
+      port: 3004
+  # Allow traffic from load balancer
+  - from:
+    - podSelector:
+        matchLabels:
+          app: load-balancer
+    ports:
+    - protocol: TCP
+      port: 80
+    - protocol: TCP
+      port: 443
+  egress:
+  # Allow to backend services
+  - to:
+    - podSelector:
+        matchLabels:
+          tier: backend
+    ports:
+    - protocol: TCP
+      port: 5000
+    - protocol: TCP
+      port: 5001
+    - protocol: TCP
+      port: 5002
+  # Allow DNS
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 53
+    - protocol: UDP
+      port: 53
+  # Allow HTTPS for external APIs
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+
+---
+# Backend API Network Policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: backend-api-network-policy
+  namespace: terrafusion-system
+spec:
+  podSelector:
+    matchLabels:
+      tier: backend
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow from frontend
+  - from:
+    - podSelector:
+        matchLabels:
+          tier: frontend
+    ports:
+    - protocol: TCP
+      port: 5000
+  # Allow from API Gateway
+  - from:
+    - podSelector:
+        matchLabels:
+          app: api-gateway
+    ports:
+    - protocol: TCP
+      port: 5000
+  # Allow health checks from monitoring
+  - from:
+    - podSelector:
+        matchLabels:
+          tier: monitoring
+    ports:
+    - protocol: TCP
+      port: 8080  # Health/metrics endpoint
+  egress:
+  # Allow to database
+  - to:
+    - podSelector:
+        matchLabels:
+          tier: database
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow to Redis
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis
+    ports:
+    - protocol: TCP
+      port: 6379
+  # Allow to AI services
+  - to:
+    - podSelector:
+        matchLabels:
+          tier: ai-services
+    ports:
+    - protocol: TCP
+      port: 8080
+  # Allow DNS
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 53
+    - protocol: UDP
+      port: 53
+  # Allow external government APIs
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+
+---
+# AI Services Network Policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ai-services-network-policy
+  namespace: terrafusion-system
+spec:
+  podSelector:
+    matchLabels:
+      tier: ai-services
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow from backend API
+  - from:
+    - podSelector:
+        matchLabels:
+          tier: backend
+    ports:
+    - protocol: TCP
+      port: 8080
+  # Allow from other AI services (swarm communication)
+  - from:
+    - podSelector:
+        matchLabels:
+          tier: ai-services
+    ports:
+    - protocol: TCP
+      port: 8080
+    - protocol: TCP
+      port: 8081  # AI mesh communication
+  # Allow monitoring
+  - from:
+    - podSelector:
+        matchLabels:
+          tier: monitoring
+    ports:
+    - protocol: TCP
+      port: 9090  # Metrics
+  egress:
+  # Allow to Redis for coordination
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis
+    ports:
+    - protocol: TCP
+      port: 6379
+  # Allow to database for AI model storage
+  - to:
+    - podSelector:
+        matchLabels:
+          tier: database
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow AI-to-AI communication
+  - to:
+    - podSelector:
+        matchLabels:
+          tier: ai-services
+    ports:
+    - protocol: TCP
+      port: 8080
+    - protocol: TCP
+      port: 8081
+  # Allow DNS
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 53
+    - protocol: UDP
+      port: 53
+  # Allow external ML APIs
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+
+---
+# Database Network Policy (Most Restrictive)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: database-network-policy
+  namespace: terrafusion-system
+spec:
+  podSelector:
+    matchLabels:
+      tier: database
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Only allow from backend services
+  - from:
+    - podSelector:
+        matchLabels:
+          tier: backend
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow from AI services (limited access)
+  - from:
+    - podSelector:
+        matchLabels:
+          tier: ai-services
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow from backup services
+  - from:
+    - podSelector:
+        matchLabels:
+          app: backup-service
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow monitoring (read-only)
+  - from:
+    - podSelector:
+        matchLabels:
+          tier: monitoring
+    ports:
+    - protocol: TCP
+      port: 9187  # PostgreSQL exporter
+  egress:
+  # Minimal egress - only DNS for updates
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 53
+    - protocol: UDP
+      port: 53
+  # Allow backup to external storage
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443  # S3/Cloud storage
+
+---
+# Monitoring Network Policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: monitoring-network-policy
+  namespace: terrafusion-system
+spec:
+  podSelector:
+    matchLabels:
+      tier: monitoring
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow from ingress for Grafana UI
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 3000  # Grafana
+    - protocol: TCP
+      port: 9090  # Prometheus
+  egress:
+  # Allow to scrape all services
+  - to:
+    - podSelector: {}
+    ports:
+    - protocol: TCP
+      port: 8080  # Metrics endpoints
+    - protocol: TCP
+      port: 9090
+    - protocol: TCP
+      port: 9187
+  # Allow DNS
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 53
+    - protocol: UDP
+      port: 53
+  # Allow external alerting (email, Slack)
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 587  # SMTP
+
+---
+# Security Services Network Policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: security-services-network-policy
+  namespace: terrafusion-security
+spec:
+  podSelector:
+    matchLabels:
+      tier: security
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow from all services for authentication
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: terrafusion-system
+    ports:
+    - protocol: TCP
+      port: 8200  # Vault
+  # Allow from ingress for Vault UI (restricted)
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    - podSelector:
+        matchLabels:
+          role: admin
+    ports:
+    - protocol: TCP
+      port: 8200
+  egress:
+  # Allow to database for secrets storage
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: terrafusion-system
+    - podSelector:
+        matchLabels:
+          app: postgres
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow DNS
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 53
+    - protocol: UDP
+      port: 53
+
+---
+# Calico GlobalNetworkPolicy for Cluster-wide Security
+apiVersion: crd.projectcalico.org/v1
+kind: GlobalNetworkPolicy
+metadata:
+  name: terrafusion-global-security
+spec:
+  # Deny all traffic by default
+  order: 1000
+  selector: projectcalico.org/namespace != "kube-system"
+  types:
+  - Ingress
+  - Egress
+  # Default deny (no rules)
+
+---
+# Calico GlobalNetworkPolicy for Essential Services
+apiVersion: crd.projectcalico.org/v1
+kind: GlobalNetworkPolicy
+metadata:
+  name: allow-essential-services
+spec:
+  order: 100
+  selector: projectcalico.org/namespace == "kube-system"
+  types:
+  - Ingress
+  - Egress
+  ingress:
+  - action: Allow
+  egress:
+  - action: Allow
+
+---
+# Network Security Monitoring
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: network-security-metrics
+  namespace: terrafusion-system
+spec:
+  selector:
+    matchLabels:
+      app: calico-node
+  endpoints:
+  - port: http-metrics
+    interval: 30s
+    path: /metrics

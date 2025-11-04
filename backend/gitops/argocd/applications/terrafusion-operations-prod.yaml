@@ -1,0 +1,88 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: terrafusion-operations-prod
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"  # Deploy after consciousness
+    notifications.argoproj.io/subscribe.on-deployed.slack: terrafusion-deployments
+    notifications.argoproj.io/subscribe.on-health-degraded.slack: terrafusion-alerts
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: terrafusion
+  
+  source:
+    repoURL: https://github.com/terrafusion/terrafusion-os
+    targetRevision: main
+    path: backend/helm/terrafusion-operations
+    helm:
+      releaseName: terrafusion-operations
+      valueFiles:
+        - values.yaml
+      parameters:
+        - name: global.environment
+          value: production
+        - name: image.tag
+          value: "1.0.0"
+        - name: replicaCount
+          value: "3"
+        - name: counties.benton.enabled
+          value: "true"
+        - name: counties.benton.aiAgents
+          value: "1500"
+        - name: counties.king.enabled
+          value: "true"
+        - name: counties.king.aiAgents
+          value: "3000"
+        - name: counties.pierce.enabled
+          value: "true"
+        - name: counties.pierce.aiAgents
+          value: "2000"
+        - name: counties.spokane.enabled
+          value: "true"
+        - name: counties.spokane.aiAgents
+          value: "1500"
+        - name: autoscaling.enabled
+          value: "true"
+        - name: autoscaling.minReplicas
+          value: "3"
+        - name: autoscaling.maxReplicas
+          value: "15"
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: terrafusion
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
+  
+  revisionHistoryLimit: 10
+  
+  info:
+    - name: 'Environment'
+      value: 'Production'
+    - name: 'Service'
+      value: 'TerraFusion Operations'
+    - name: 'Counties'
+      value: '39 Washington State'
+    - name: 'Port'
+      value: '5003'

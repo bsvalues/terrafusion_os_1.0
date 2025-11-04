@@ -1,0 +1,53 @@
+{
+    "version": "1.0",
+    "alias": "mb",
+    "browsable": "false",
+    "displayname": "$rc:title",
+    "description": "$rc:descr",
+    "helpcontext": "3000000",
+    "toolsets": {
+        "$rc:toolset2.name": {
+            "tools": [
+                "IterateCondition",
+                "IterateCount",
+                "IterateDatasets",
+                "IterateFeatureClasses",
+                "IterateFeatureSelection",
+                "IterateFields",
+                "IterateFieldValues",
+                "IterateFiles",
+                "IterateLayers",
+                "IterateMultivalue",
+                "IterateRasters",
+                "IterateRowSelection",
+                "IterateTables",
+                "IterateTime",
+                "IterateWorkspaces"
+            ]
+        },
+        "$rc:toolset1.name": {
+            "tools": [
+                "CalculateValue",
+                "CollectValues",
+                "CoordinateSystemIfThenElse",
+                "CustomMessage",
+                "DataExistsIfThenElse",
+                "DataTypeIfThenElse",
+                "ExpressionIfThenElse",
+                "FeatureTypeIfThenElse",
+                "FieldExistsIfThenElse",
+                "FieldValueIsIfThenElse",
+                "GetFieldValue",
+                "MergeBranch",
+                "ParsePath",
+                "ParsePathExt",
+                "RowCountIfThenElse",
+                "SelectData",
+                "SelectionExistsIfThenElse",
+                "SpatialRelationshipIfThenElse",
+                "Stop",
+                "ValueIsIfThenElse"
+            ]
+        }
+    }
+}

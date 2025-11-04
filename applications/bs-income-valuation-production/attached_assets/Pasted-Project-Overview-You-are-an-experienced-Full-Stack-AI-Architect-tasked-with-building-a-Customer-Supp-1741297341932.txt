@@ -1,0 +1,72 @@
+Project Overview
+You are an experienced Full-Stack AI Architect tasked with building a Customer Support Application that harnesses the power of Large Language Models (LLMs). The system must integrate seamlessly into our existing infrastructure, prioritize data security and compliance, and enable a clear path for ongoing enhancements and feature expansions.
+
+1. Core Functionalities & Roadmap
+
+Dynamic Roadmap & Jira Integration
+Integrate with our existing Jira boards to automatically update tickets, track progress, and reflect real-time status changes.
+Provide a dashboard to visualize the development roadmap at a granular level (sprints, tasks, subtasks) and high-level milestones.
+AI-Driven Troubleshooting & Ticket Analysis
+The application should flag tickets that lack sufficient information and request additional details from users automatically.
+Suggest relevant articles from the knowledge base or FAQ to users before a ticket is escalated, reducing overall resolution time.
+Modular File/Folder Structure
+Create a specialized support_agents folder (or module) dedicated to custom AI agents for various support tasks—ticket triage, automated replies, user sentiment analysis, etc.
+Follow best practices for separating front-end, back-end, DevOps scripts, and AI-related code.
+Development Environment (Docker Compose)
+Provide a Docker Compose setup that allows any remote developer to spin up an identical environment locally.
+Ensure all microservices (backend API, LLM service, database, etc.) can be run and tested in isolation or collectively.
+Documentation & API Endpoints
+Thoroughly document all APIs for ticketing, knowledge base updates, AI agent interactions, and user management.
+Include architecture diagrams, environment setup guides, and usage examples (such as cURL/Postman requests).
+AI Agent Playground
+Include a web-based “playground” environment where developers and support leads can fine-tune or experiment with conversation flows, FAQ data, and real historical transcripts.
+Provide versioning so that each iteration of the model (or prompt) is stored and can be rolled back if needed.
+Kubernetes-Based Deployment
+Deploy the entire stack to a Kubernetes cluster.
+Configure auto-scaling rules based on ticket volume and concurrency, ensuring minimal downtime and cost-effectiveness.
+AI-Driven Testing & Continuous Feedback
+Implement automated tests for AI responses (checking correctness, completeness, tone).
+Collect continuous feedback from user satisfaction scores (e.g., star ratings, survey results) and automatically retrain or update LLM prompts based on performance.
+Store historical tickets for model fine-tuning and to inform better answers over time.
+2. Constraints & Considerations
+
+Security & Compliance
+Must adhere to data privacy regulations (GDPR, CCPA, or internal compliance standards).
+Sensitive ticket data should be encrypted at rest and in transit.
+Access control and audit logs for all AI interactions.
+Scalability & Reliability
+System must handle peak loads gracefully (e.g., sudden influx of tickets).
+Use caching or rate limiting to protect LLM endpoints from being overwhelmed.
+Customization & Extensibility
+The design should allow easy addition of new features (e.g., new AI agents for billing questions, advanced sentiment analysis) without major refactoring.
+Provide plugin-like architecture for integrating third-party services, such as payment processors or additional knowledge-base modules.
+Team Collaboration & Workflow
+The solution must be maintainable by a distributed team with varied skill sets (front-end, back-end, ML/AI, DevOps).
+Each microservice or major feature should have an assigned owner in the Jira board.
+3. Deliverables & Success Criteria
+
+Source Code
+A complete, well-structured repository (or set of repositories) that includes front-end, back-end, and AI components.
+A docker-compose.yml (and possibly helm charts or Kubernetes manifests) for local and production deployment.
+Technical Documentation
+Architectural overview diagram showing data flow and microservice interactions.
+API specs detailing endpoints, request/response formats, authentication, and error handling.
+CI/CD pipeline instructions, including testing strategies and rollout procedures.
+AI Agent Playground
+Fully functional UI for prompt engineering, dataset uploads, and model fine-tuning experiments.
+Logging and versioning of all changes.
+Live Deployment
+A Kubernetes deployment that auto-scales based on ticket volume, with a dedicated test environment (staging) mirroring production.
+Implementation of real-time monitoring and alerting for performance metrics (CPU, memory) and business metrics (tickets per minute, resolution time).
+Testing & Feedback Loops
+Automated tests (unit, integration, AI content validation).
+Mechanism to collect user feedback on AI-generated solutions, store it, and feed it back into iterative training.
+Performance baseline: Aim for at least a 30% reduction in average ticket resolution time compared to our current system.
+4. Next Steps
+
+Requirements Confirmation: Verify each item with the product team and clarify any ambiguous points (e.g., license costs for certain LLM providers).
+Rapid Prototype: Build a minimal viable product (MVP) focusing on core AI triage and knowledge base integration.
+Testing & Iteration: Use real or synthetic data to refine AI responses; gather feedback from a beta group of support agents.
+Production Rollout: Migrate existing tickets, launch a pilot with limited user groups, and monitor performance before full rollout.
+Objective
+By the end of this project, deliver a robust, scalable, and AI-driven Customer Support system that improves resolution speed, reduces operational overhead, and enhances user satisfaction through intelligent ticket analysis, self-service, and continuous learning.

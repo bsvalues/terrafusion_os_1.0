@@ -1,0 +1,15 @@
+{
+    "set": [
+        "base",
+        "core",
+        "customer",
+        "developmental",
+        "groups",
+        "market",
+        "niche",
+        "profiles",
+        "segmentation",
+        "tapestry",
+        "target"
+    ]
+}

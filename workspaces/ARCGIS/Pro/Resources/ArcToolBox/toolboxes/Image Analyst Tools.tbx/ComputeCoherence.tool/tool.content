@@ -1,0 +1,98 @@
+{
+    "type": "FunctionTool",
+    "guid": "{326aad93-04c2-4de6-879f-db86af78c115}",
+    "displayname": "$rc:title",
+    "helpcontent": "66160022",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "86"
+    ],
+    "params": {
+        "in_reference_radar_data": {
+            "display_order": "0",
+            "displayname": "$rc:in_reference_radar_data.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_reference_radar_data.descr"
+        },
+        "in_secondary_radar_data": {
+            "display_order": "1",
+            "displayname": "$rc:in_secondary_radar_data.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_secondary_radar_data.descr"
+        },
+        "out_radar_data": {
+            "direction": "out",
+            "display_order": "2",
+            "displayname": "$rc:out_radar_data.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_radar_data.descr"
+        },
+        "polarization_bands": {
+            "type": "optional",
+            "display_order": "3",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:polarization_bands.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "description": "$rc:polarization_bands.descr"
+        },
+        "range_window_size": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:range_window_size.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:range_window_size.descr"
+        },
+        "azimuth_window_size": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:azimuth_window_size.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:azimuth_window_size.descr"
+        }
+    },
+    "environments": [
+        "cellAlignment",
+        "compression",
+        "nodata",
+        "parallelProcessingFactor",
+        "pyramid",
+        "rasterStatistics",
+        "resamplingMethod",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

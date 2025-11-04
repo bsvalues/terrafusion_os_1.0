@@ -1,0 +1,557 @@
+{% extends "base.html" %}
+
+{% block title %}Data Quality Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-gradient-primary text-white">
+                    <div class="row">
+                        <div class="col-6">
+                            <h5 class="mb-0 text-white">Data Quality Dashboard</h5>
+                            <p class="text-sm mb-0">Monitor and manage data quality across the platform</p>
+                        </div>
+                        <div class="col-6 text-end">
+                            <a href="{{ url_for('data_quality.api_check_all_alerts') }}" class="btn btn-sm btn-light" id="check-all-alerts">
+                                Run All Checks
+                            </a>
+                            <a href="{{ url_for('data_quality.alerts_page') }}" class="btn btn-sm btn-light">
+                                Manage Alerts
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+                            <div class="card">
+                                <div class="card-body p-3">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <div class="numbers">
+                                                <p class="text-sm mb-0 text-uppercase font-weight-bold">Quality Score</p>
+                                                <h5 class="font-weight-bolder" id="quality-score">
+                                                    94%
+                                                </h5>
+                                                <p class="mb-0 text-sm">
+                                                    <span class="text-success text-sm font-weight-bolder">+3%</span>
+                                                    since last month
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <div class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
+                                                <i class="ni ni-chart-bar-32 text-lg opacity-10" aria-hidden="true"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+                            <div class="card">
+                                <div class="card-body p-3">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <div class="numbers">
+                                                <p class="text-sm mb-0 text-uppercase font-weight-bold">Active Alerts</p>
+                                                <h5 class="font-weight-bolder" id="active-alerts">
+                                                    5
+                                                </h5>
+                                                <p class="mb-0 text-sm">
+                                                    <span class="text-danger text-sm font-weight-bolder">+2</span>
+                                                    since last week
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <div class="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
+                                                <i class="ni ni-bell-55 text-lg opacity-10" aria-hidden="true"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+                            <div class="card">
+                                <div class="card-body p-3">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <div class="numbers">
+                                                <p class="text-sm mb-0 text-uppercase font-weight-bold">Completeness</p>
+                                                <h5 class="font-weight-bolder" id="completeness-score">
+                                                    97%
+                                                </h5>
+                                                <p class="mb-0 text-sm">
+                                                    <span class="text-success text-sm font-weight-bolder">+5%</span>
+                                                    since last quarter
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <div class="icon icon-shape bg-gradient-success shadow-success text-center rounded-circle">
+                                                <i class="ni ni-check-bold text-lg opacity-10" aria-hidden="true"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+                            <div class="card">
+                                <div class="card-body p-3">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <div class="numbers">
+                                                <p class="text-sm mb-0 text-uppercase font-weight-bold">Format Compliance</p>
+                                                <h5 class="font-weight-bolder" id="format-compliance">
+                                                    99%
+                                                </h5>
+                                                <p class="mb-0 text-sm">
+                                                    <span class="text-success text-sm font-weight-bolder">+1%</span>
+                                                    since last month
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <div class="icon icon-shape bg-gradient-info shadow-info text-center rounded-circle">
+                                                <i class="ni ni-ruler-pencil text-lg opacity-10" aria-hidden="true"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-lg-7 mb-4">
+                            <div class="card">
+                                <div class="card-header pb-0 p-3">
+                                    <div class="d-flex justify-content-between">
+                                        <h6 class="mb-0">Data Quality Trends</h6>
+                                        <button type="button" class="btn btn-sm btn-outline-primary">
+                                            <i class="ni ni-calendar-grid-58"></i> Filter
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body p-3">
+                                    <div class="chart">
+                                        <canvas id="quality-trends-chart" class="chart-canvas" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-5 mb-4">
+                            <div class="card">
+                                <div class="card-header pb-0 p-3">
+                                    <h6 class="mb-0">Recent Alerts</h6>
+                                </div>
+                                <div class="card-body p-3">
+                                    <div class="table-responsive">
+                                        <table class="table align-items-center mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Alert Name</th>
+                                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Status</th>
+                                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Severity</th>
+                                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Last Check</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="recent-alerts-table">
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex px-2 py-1">
+                                                            <div class="d-flex flex-column justify-content-center">
+                                                                <h6 class="mb-0 text-sm">Property Data Completeness Check</h6>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge badge-sm bg-gradient-success">Passed</span>
+                                                    </td>
+                                                    <td class="align-middle text-center text-sm">
+                                                        <span class="badge badge-sm bg-gradient-warning">Medium</span>
+                                                    </td>
+                                                    <td class="align-middle text-center">
+                                                        <span class="text-secondary text-xs font-weight-bold">23 min ago</span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex px-2 py-1">
+                                                            <div class="d-flex flex-column justify-content-center">
+                                                                <h6 class="mb-0 text-sm">Open Space Valuation Check</h6>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge badge-sm bg-gradient-danger">Triggered</span>
+                                                    </td>
+                                                    <td class="align-middle text-center text-sm">
+                                                        <span class="badge badge-sm bg-gradient-danger">High</span>
+                                                    </td>
+                                                    <td class="align-middle text-center">
+                                                        <span class="text-secondary text-xs font-weight-bold">1 hour ago</span>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header pb-0 p-3">
+                                    <h6 class="mb-0">Data Quality by Category</h6>
+                                </div>
+                                <div class="card-body p-3">
+                                    <div class="row">
+                                        <div class="col-lg-6 col-md-12">
+                                            <div class="chart">
+                                                <canvas id="quality-by-category-chart" class="chart-canvas" height="300"></canvas>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 col-md-12">
+                                            <div class="table-responsive">
+                                                <table class="table align-items-center mb-0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Category</th>
+                                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Score</th>
+                                                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Trend</th>
+                                                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Issues</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <div class="d-flex px-2 py-1">
+                                                                    <div class="d-flex flex-column justify-content-center">
+                                                                        <h6 class="mb-0 text-sm">Residential Properties</h6>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="d-flex">
+                                                                    <span class="text-sm font-weight-bold me-2">97%</span>
+                                                                    <div class="progress w-75">
+                                                                        <div class="progress-bar bg-gradient-info" role="progressbar" aria-valuenow="97" aria-valuemin="0" aria-valuemax="100" style="width: 97%;"></div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="align-middle text-center text-sm">
+                                                                <span class="text-success me-2">
+                                                                    <i class="fa fa-arrow-up"></i> 2%
+                                                                </span>
+                                                            </td>
+                                                            <td class="align-middle text-center">
+                                                                <span class="text-secondary text-xs font-weight-bold">3</span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <div class="d-flex px-2 py-1">
+                                                                    <div class="d-flex flex-column justify-content-center">
+                                                                        <h6 class="mb-0 text-sm">Commercial Properties</h6>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="d-flex">
+                                                                    <span class="text-sm font-weight-bold me-2">94%</span>
+                                                                    <div class="progress w-75">
+                                                                        <div class="progress-bar bg-gradient-info" role="progressbar" aria-valuenow="94" aria-valuemin="0" aria-valuemax="100" style="width: 94%;"></div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="align-middle text-center text-sm">
+                                                                <span class="text-success me-2">
+                                                                    <i class="fa fa-arrow-up"></i> 1%
+                                                                </span>
+                                                            </td>
+                                                            <td class="align-middle text-center">
+                                                                <span class="text-secondary text-xs font-weight-bold">7</span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <div class="d-flex px-2 py-1">
+                                                                    <div class="d-flex flex-column justify-content-center">
+                                                                        <h6 class="mb-0 text-sm">Agricultural Properties</h6>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="d-flex">
+                                                                    <span class="text-sm font-weight-bold me-2">91%</span>
+                                                                    <div class="progress w-75">
+                                                                        <div class="progress-bar bg-gradient-warning" role="progressbar" aria-valuenow="91" aria-valuemin="0" aria-valuemax="100" style="width: 91%;"></div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="align-middle text-center text-sm">
+                                                                <span class="text-danger me-2">
+                                                                    <i class="fa fa-arrow-down"></i> 1%
+                                                                </span>
+                                                            </td>
+                                                            <td class="align-middle text-center">
+                                                                <span class="text-secondary text-xs font-weight-bold">12</span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <div class="d-flex px-2 py-1">
+                                                                    <div class="d-flex flex-column justify-content-center">
+                                                                        <h6 class="mb-0 text-sm">Public/Govt Properties</h6>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="d-flex">
+                                                                    <span class="text-sm font-weight-bold me-2">88%</span>
+                                                                    <div class="progress w-75">
+                                                                        <div class="progress-bar bg-gradient-warning" role="progressbar" aria-valuenow="88" aria-valuemin="0" aria-valuemax="100" style="width: 88%;"></div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="align-middle text-center text-sm">
+                                                                <span class="text-success me-2">
+                                                                    <i class="fa fa-arrow-up"></i> 3%
+                                                                </span>
+                                                            </td>
+                                                            <td class="align-middle text-center">
+                                                                <span class="text-secondary text-xs font-weight-bold">9</span>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize quality trends chart
+        var ctx1 = document.getElementById('quality-trends-chart').getContext('2d');
+        var qualityTrendsChart = new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+                datasets: [{
+                    label: 'Overall Quality',
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointRadius: 3,
+                    backgroundColor: 'rgba(45, 206, 137, 0.2)',
+                    borderColor: '#2dce89',
+                    fill: true,
+                    data: [90, 92, 91, 93, 95, 94, 93, 94, 94],
+                }, {
+                    label: 'Completeness',
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointRadius: 3,
+                    backgroundColor: 'transparent',
+                    borderColor: '#fb6340',
+                    data: [93, 94, 95, 94, 96, 97, 96, 97, 97],
+                    fill: false
+                }, {
+                    label: 'Format Compliance',
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointRadius: 3,
+                    backgroundColor: 'transparent',
+                    borderColor: '#5e72e4',
+                    data: [96, 98, 97, 98, 99, 98, 98, 99, 99],
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            boxWidth: 20,
+                            padding: 20
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#fff',
+                        titleColor: '#1e293b',
+                        bodyColor: '#1e293b',
+                        borderColor: '#e9ecef',
+                        borderWidth: 1,
+                        usePointStyle: true
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 80,
+                        max: 100,
+                        ticks: {
+                            stepSize: 5
+                        },
+                        grid: {
+                            drawBorder: false,
+                            display: true,
+                            drawOnChartArea: true,
+                            drawTicks: false,
+                            borderDash: [5, 5]
+                        }
+                    },
+                    x: {
+                        grid: {
+                            drawBorder: false,
+                            display: true,
+                            drawOnChartArea: true,
+                            drawTicks: true,
+                            borderDash: [5, 5]
+                        }
+                    }
+                }
+            }
+        });
+
+        // Initialize quality by category chart
+        var ctx2 = document.getElementById('quality-by-category-chart').getContext('2d');
+        var qualityByCategoryChart = new Chart(ctx2, {
+            type: 'radar',
+            data: {
+                labels: [
+                    'Completeness',
+                    'Format Compliance',
+                    'Range Validation',
+                    'Consistency',
+                    'Outlier Detection',
+                    'Valuation Validation'
+                ],
+                datasets: [{
+                    label: 'Residential',
+                    data: [97, 99, 94, 95, 96, 92],
+                    fill: true,
+                    backgroundColor: 'rgba(94, 114, 228, 0.2)',
+                    borderColor: '#5e72e4',
+                    pointBackgroundColor: '#5e72e4',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#5e72e4'
+                }, {
+                    label: 'Commercial',
+                    data: [94, 96, 92, 93, 90, 91],
+                    fill: true,
+                    backgroundColor: 'rgba(45, 206, 137, 0.2)',
+                    borderColor: '#2dce89',
+                    pointBackgroundColor: '#2dce89',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#2dce89'
+                }, {
+                    label: 'Agricultural',
+                    data: [91, 93, 89, 88, 87, 90],
+                    fill: true,
+                    backgroundColor: 'rgba(251, 99, 64, 0.2)',
+                    borderColor: '#fb6340',
+                    pointBackgroundColor: '#fb6340',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#fb6340'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                elements: {
+                    line: {
+                        tension: 0.000001
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    tooltip: {
+                        backgroundColor: '#fff',
+                        titleColor: '#1e293b',
+                        bodyColor: '#1e293b',
+                        borderColor: '#e9ecef',
+                        borderWidth: 1
+                    }
+                },
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: true,
+                            color: 'rgba(0,0,0,0.1)'
+                        },
+                        suggestedMin: 80,
+                        suggestedMax: 100,
+                        ticks: {
+                            stepSize: 5
+                        }
+                    }
+                }
+            }
+        });
+
+        // Function to fetch and update data
+        function fetchDashboardData() {
+            // This would normally fetch data from the API
+            // For now, using simulated values
+            document.getElementById('quality-score').textContent = '94%';
+            document.getElementById('active-alerts').textContent = '5';
+            document.getElementById('completeness-score').textContent = '97%';
+            document.getElementById('format-compliance').textContent = '99%';
+        }
+
+        // Initialize data
+        fetchDashboardData();
+
+        // Setup check all alerts button
+        document.getElementById('check-all-alerts').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Show loading state
+            this.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Running...';
+            this.classList.add('disabled');
+            
+            // In a real implementation, this would make an AJAX call to the API endpoint
+            // For demonstration, simulate API call
+            setTimeout(() => {
+                // Reset button state
+                this.innerHTML = 'Run All Checks';
+                this.classList.remove('disabled');
+                
+                // Show success message
+                alert('All data quality checks completed successfully!');
+                
+                // Refresh dashboard data
+                fetchDashboardData();
+            }, 2000);
+        });
+    });
+</script>
+{% endblock %}

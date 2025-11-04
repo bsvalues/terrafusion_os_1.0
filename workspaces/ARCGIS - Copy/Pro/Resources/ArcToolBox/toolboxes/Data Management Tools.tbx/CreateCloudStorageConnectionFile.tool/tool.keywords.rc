@@ -1,0 +1,9 @@
+{
+    "set": [
+        "crf",
+        "connection file",
+        "workspace",
+        "bucket",
+        "cloud storage"
+    ]
+}

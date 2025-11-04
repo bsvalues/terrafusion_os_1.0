@@ -1,0 +1,30 @@
+{
+    "set": [
+        "aggregate",
+        "analysis",
+        "big data",
+        "binning",
+        "clustering",
+        "cold spots",
+        "emerging",
+        "geoanalytics",
+        "hot spot",
+        "mann kendall",
+        "netcdf",
+        "pattern mining",
+        "points",
+        "simplify",
+        "space time",
+        "spatial",
+        "spatial statistics",
+        "spatiotemporal",
+        "statistics",
+        "stats",
+        "temporal",
+        "time step",
+        "times",
+        "trend",
+        "trends",
+        "visualize"
+    ]
+}

@@ -31,7 +31,7 @@ namespace TerraFusion.API.Security
             _audience = _configuration["JwtSettings:Audience"] ?? "TerraFusionAPI";
             _secretKey = _configuration["JwtSettings:SecretKey"] ?? GenerateDefaultKey();
             _expirationMinutes = int.Parse(_configuration["JwtSettings:ExpirationMinutes"] ?? "60");
-            
+
             if (_secretKey == GenerateDefaultKey())
             {
                 Console.WriteLine("⚠️  WARNING: Using default JWT key. Set JwtSettings:SecretKey in appsettings.json for production!");
@@ -73,7 +73,7 @@ namespace TerraFusion.API.Security
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public ClaimsPrincipal ValidateToken(string token)
+        public ClaimsPrincipal? ValidateToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var validationParameters = GetValidationParameters();
@@ -85,7 +85,7 @@ namespace TerraFusion.API.Security
             }
             catch (Exception)
             {
-                return null;
+                return null; // Government-grade: Explicit null return for invalid tokens
             }
         }
 

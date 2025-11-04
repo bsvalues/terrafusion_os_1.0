@@ -1,5 +1,8 @@
 /**
- * Performance monitoring service for frontend
+import React from 'react';
+
+// Core performance tracking utilities
+// Quantum-enhanced performance monitoring with terra-cyan themed metrics
  */
 
 interface PerformanceMetrics {
@@ -29,7 +32,7 @@ class FrontendPerformanceService {
       enableUserTiming: true,
       enableLongTaskTracking: true,
       reportingInterval: 30000, // 30 seconds
-      ...config
+      ...config,
     };
 
     this.initialize();
@@ -119,26 +122,27 @@ class FrontendPerformanceService {
 
   private trackLongTask(entry: any) {
     console.warn(`Long task detected: ${entry.duration}ms at ${entry.startTime}`);
-    
+
     // Report long tasks to analytics
     this.reportMetric('longtask', {
       duration: entry.duration,
       startTime: entry.startTime,
-      url: window.location.href
+      url: window.location.href,
     });
   }
 
   private trackResource(entry: PerformanceResourceTiming) {
     // Track slow resources
     const loadTime = entry.responseEnd - entry.startTime;
-    if (loadTime > 1000) { // Resources taking more than 1 second
+    if (loadTime > 1000) {
+      // Resources taking more than 1 second
       console.warn(`Slow resource: ${entry.name} took ${loadTime}ms`);
-      
+
       this.reportMetric('slow-resource', {
         name: entry.name,
         duration: loadTime,
         type: entry.initiatorType,
-        size: entry.transferSize || 0
+        size: entry.transferSize || 0,
       });
     }
   }
@@ -152,7 +156,7 @@ class FrontendPerformanceService {
       download: entry.responseEnd - entry.responseStart,
       domProcessing: entry.domContentLoadedEventStart - entry.responseEnd,
       onLoad: entry.loadEventEnd - entry.loadEventStart,
-      total: entry.loadEventEnd - (entry.fetchStart || 0)
+      total: entry.loadEventEnd - (entry.fetchStart || 0),
     };
 
     this.reportMetric('navigation', metrics);
@@ -161,7 +165,7 @@ class FrontendPerformanceService {
   private trackPaint(entry: PerformancePaintTiming) {
     this.reportMetric('paint', {
       name: entry.name,
-      startTime: entry.startTime
+      startTime: entry.startTime,
     });
   }
 
@@ -175,13 +179,13 @@ class FrontendPerformanceService {
     if (this.config.enableUserTiming && 'performance' in window) {
       performance.mark(`${name}-end`);
       performance.measure(name, `${name}-start`, `${name}-end`);
-      
+
       const measures = performance.getEntriesByName(name, 'measure');
       if (measures.length > 0) {
         const measure = measures[measures.length - 1];
         this.reportMetric('user-timing', {
           name,
-          duration: measure.duration
+          duration: measure.duration,
         });
       }
     }
@@ -192,7 +196,7 @@ class FrontendPerformanceService {
       action,
       timestamp: Date.now(),
       url: window.location.href,
-      ...data
+      ...data,
     });
   }
 
@@ -203,7 +207,7 @@ class FrontendPerformanceService {
       context,
       url: window.location.href,
       userAgent: navigator.userAgent,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -214,11 +218,11 @@ class FrontendPerformanceService {
       memory: this.getMemoryInfo(),
       connection: this.getConnectionInfo(),
       resources: this.getResourceTiming(),
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     this.metrics.push(metrics);
-    
+
     // Keep only last 100 metric snapshots
     if (this.metrics.length > 100) {
       this.metrics = this.metrics.slice(-100);
@@ -249,7 +253,12 @@ class FrontendPerformanceService {
 
   private getConnectionInfo(): any {
     // @ts-ignore - Network Information API
-    return (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection || null;
+    return (
+      (navigator as any).connection ||
+      (navigator as any).mozConnection ||
+      (navigator as any).webkitConnection ||
+      null
+    );
   }
 
   private getResourceTiming(): PerformanceResourceTiming[] {
@@ -265,15 +274,15 @@ class FrontendPerformanceService {
       await fetch('/api/performance/frontend-metrics', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           type,
           data,
           timestamp: Date.now(),
           url: window.location.href,
-          userAgent: navigator.userAgent
-        })
+          userAgent: navigator.userAgent,
+        }),
       });
     } catch (error) {
       // Fail silently for performance reporting
@@ -291,7 +300,7 @@ class FrontendPerformanceService {
 
   public destroy() {
     // Clean up observers
-    this.observers.forEach(observer => observer.disconnect());
+    this.observers.forEach((observer) => observer.disconnect());
     this.observers = [];
   }
 }
@@ -304,8 +313,9 @@ export function withPerformanceTracking<T extends React.ComponentType<any>>(
   WrappedComponent: T,
   componentName?: string
 ): T {
-  const name = componentName || WrappedComponent.displayName || WrappedComponent.name || 'Component';
-  
+  const name =
+    componentName || WrappedComponent.displayName || WrappedComponent.name || 'Component';
+
   const PerformanceTrackedComponent = (props: any) => {
     React.useEffect(() => {
       performanceService.startTiming(`${name}-render`);
@@ -318,7 +328,7 @@ export function withPerformanceTracking<T extends React.ComponentType<any>>(
   };
 
   PerformanceTrackedComponent.displayName = `withPerformanceTracking(${name})`;
-  
+
   return PerformanceTrackedComponent as T;
 }
 
@@ -333,6 +343,6 @@ export function usePerformanceTracking(name: string) {
 
   return {
     trackAction: (action: string, data?: any) => performanceService.trackUserAction(action, data),
-    trackError: (error: Error, context?: string) => performanceService.trackError(error, context)
+    trackError: (error: Error, context?: string) => performanceService.trackError(error, context),
   };
 }

@@ -1,0 +1,18 @@
+{
+    "set": [
+        "append",
+        "attribute",
+        "constrain",
+        "create",
+        "domains",
+        "export",
+        "field",
+        "import",
+        "integrity",
+        "limit",
+        "replace",
+        "restrict",
+        "subtype",
+        "update"
+    ]
+}

@@ -1,0 +1,115 @@
+global:
+  resolve_timeout: 5m
+  # Slack configuration would go here in production
+  # slack_api_url: 'https://hooks.slack.com/services/YOUR_SLACK_WEBHOOK'
+
+# The root route on which each incoming alert enters.
+route:
+  # The root route must not have any matchers as it is the entry point for
+  # all alerts. It needs to have a receiver configured so alerts that do not
+  # match any of the sub-routes are sent to someone.
+  receiver: 'email-notifications'
+
+  # The labels by which incoming alerts are grouped together. For example,
+  # multiple alerts coming in for cluster=A and alertname=LatencyHigh would
+  # be batched into a single group.
+  group_by: ['alertname', 'severity']
+
+  # When a new group of alerts is created by an incoming alert, wait at
+  # least 'group_wait' to send the initial notification.
+  # This way ensures that you get multiple alerts for the same group that start
+  # firing shortly after another are batched together on the first
+  # notification.
+  group_wait: 30s
+
+  # When the first notification was sent, wait 'group_interval' to send a batch
+  # of new alerts that started firing for that group.
+  group_interval: 5m
+
+  # If an alert has successfully been sent, wait 'repeat_interval' to
+  # resend them.
+  repeat_interval: 4h
+
+  # Child routes
+  routes:
+    # Critical alerts
+    - match:
+        severity: critical
+      receiver: 'email-notifications'
+      continue: true
+      routes:
+        - match:
+            service: database
+          receiver: 'database-team'
+        - match:
+            service: web
+          receiver: 'web-team'
+
+    # Warning alerts
+    - match:
+        severity: warning
+      receiver: 'email-notifications'
+      group_wait: 1m
+      group_interval: 10m
+      repeat_interval: 1h
+      
+    # System alerts  
+    - match:
+        job: node
+      receiver: 'system-notifications'
+      group_interval: 5m
+      repeat_interval: 1h
+
+# Inhibition rules allow to mute a set of alerts given that another alert is
+# firing. We use this to mute alerts when a related critical alert is already
+# firing.
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    # Apply inhibition if the alertname is the same.
+    equal: ['alertname', 'instance']
+
+# Receivers are the endpoints to which alerts will be sent
+receivers:
+  - name: 'email-notifications'
+    email_configs:
+      - to: 'alerts@terrafusion.example.com'
+        from: 'alertmanager@terrafusion.example.com'
+        smarthost: 'smtp.example.com:587'
+        auth_username: 'alertmanager'
+        auth_password: 'password'
+        require_tls: true
+        # In production, these would be configured properly
+        # send_resolved: true
+
+  - name: 'database-team'
+    email_configs:
+      - to: 'database-team@terrafusion.example.com'
+        from: 'alertmanager@terrafusion.example.com'
+        smarthost: 'smtp.example.com:587'
+        auth_username: 'alertmanager'
+        auth_password: 'password'
+        require_tls: true
+        # send_resolved: true
+
+  - name: 'web-team'
+    email_configs:
+      - to: 'web-team@terrafusion.example.com'
+        from: 'alertmanager@terrafusion.example.com'
+        smarthost: 'smtp.example.com:587'
+        auth_username: 'alertmanager'
+        auth_password: 'password'
+        require_tls: true
+        # send_resolved: true
+
+  - name: 'system-notifications'
+    email_configs:
+      - to: 'sysadmin@terrafusion.example.com'
+        from: 'alertmanager@terrafusion.example.com'
+        smarthost: 'smtp.example.com:587'
+        auth_username: 'alertmanager'
+        auth_password: 'password'
+        require_tls: true
+        # send_resolved: true

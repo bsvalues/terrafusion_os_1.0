@@ -1,0 +1,33 @@
+{
+    "set": [
+        "binary",
+        "cause",
+        "coefficient",
+        "correlation",
+        "dependent",
+        "effect",
+        "glr",
+        "gwr",
+        "local",
+        "logistic",
+        "model",
+        "modeling",
+        "multiple",
+        "negative",
+        "poisson",
+        "positive",
+        "predict",
+        "prediction",
+        "r squared",
+        "rates",
+        "regional variation",
+        "relate",
+        "square",
+        "stationarity",
+        "value",
+        "variable",
+        "vary",
+        "exploratory data analysis",
+        "regression"
+    ]
+}

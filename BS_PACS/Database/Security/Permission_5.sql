@@ -1,0 +1,5 @@
+GRANT CONNECT TO [PACS\davidb];
+
+
+GO
+

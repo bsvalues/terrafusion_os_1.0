@@ -1,0 +1,5 @@
+<DataType Name="GPTinLayer">
+  <DisplayName>TIN Layer</DisplayName>
+  <Description>A reference to a TIN, including topological relationships, symbology, and rendering properties.</Description>
+</DataType>
+

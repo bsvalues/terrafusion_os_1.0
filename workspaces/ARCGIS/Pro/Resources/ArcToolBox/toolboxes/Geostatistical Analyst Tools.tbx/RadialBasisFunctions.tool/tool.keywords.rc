@@ -1,0 +1,18 @@
+{
+    "set": [
+        "esda",
+        "estimate",
+        "geostatistical",
+        "geostatistics",
+        "interpolate",
+        "interpolation",
+        "multiquadratic",
+        "predict",
+        "rbf",
+        "regularized",
+        "smooth interpolation",
+        "spline",
+        "tension",
+        "thin plate"
+    ]
+}

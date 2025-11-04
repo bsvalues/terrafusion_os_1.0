@@ -1,0 +1,58 @@
+{
+    "type": "FunctionTool",
+    "guid": "{93fc0a4c-ce9d-4f34-8218-496f3fca34a1}",
+    "displayname": "$rc:title",
+    "helpcontent": "5180003",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9"
+    ],
+    "params": {
+        "in_terrain": {
+            "display_order": "0",
+            "displayname": "$rc:in_terrain.title",
+            "datatype": {
+                "type": "GPTerrainLayer"
+            },
+            "description": "$rc:in_terrain.descr"
+        },
+        "pyramid_type": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:pyramid_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:pyramid_type.descr"
+        },
+        "pyramid_level_definition": {
+            "display_order": "1",
+            "displayname": "$rc:pyramid_level_definition.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "description": "$rc:pyramid_level_definition.descr"
+        },
+        "derived_out_terrain": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "3",
+            "displayname": "$rc:derived_out_terrain.title",
+            "datatype": {
+                "type": "GPTerrainLayer"
+            },
+            "depends": [
+                "in_terrain"
+            ]
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "workspace"
+    ]
+}

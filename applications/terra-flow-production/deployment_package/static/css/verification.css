@@ -1,0 +1,246 @@
+/* Verification Dashboard Styles */
+
+/* Base theme */
+body {
+    background-color: #f8f9fa !important;
+    color: #333333 !important;
+}
+
+/* Main container and headers */
+.container-fluid {
+    background-color: #f8f9fa !important;
+    padding: 20px !important;
+}
+
+h1, h2, h3, .lead {
+    color: #333333 !important;
+}
+
+/* Navbar - Benton County blue */
+.navbar {
+    background-color: #005288 !important;
+}
+
+/* Status Cards - Light backgrounds with colored headers */
+.card {
+    background-color: #ffffff !important;
+    color: #333333 !important;
+    border: 1px solid #dee2e6 !important;
+    margin-bottom: 20px !important;
+    border-radius: 4px !important;
+}
+
+.card-header {
+    padding: 10px 15px !important;
+    font-weight: bold !important;
+    color: white !important;
+    border-radius: 0 !important;
+    border-bottom: 1px solid #dee2e6 !important;
+}
+
+.card-body {
+    background-color: #ffffff !important;
+    color: #333333 !important;
+    padding: 15px !important;
+    border: none !important;
+}
+
+/* Card titles and text */
+.card-title {
+    color: #333333 !important;
+    font-weight: bold !important;
+}
+
+.card-text {
+    color: #333333 !important;
+}
+
+/* Status Card Headers - Colors matching the image */
+.sql-server-card .card-header, #sql-server-card .card-header {
+    background-color: #d9534f !important; /* Red */
+}
+
+.stored-procedure-card .card-header, #stored-procedure-card .card-header {
+    background-color: #f0ad4e !important; /* Orange/Yellow */
+}
+
+.api-endpoints-card .card-header, #api-endpoints-card .card-header {
+    background-color: #4e73df !important; /* Blue */
+}
+
+.overall-status-card .card-header, #overall-status-card .card-header {
+    background-color: #d9534f !important; /* Red */
+}
+
+/* Section Headers - All blue background */
+#advanced-verification-section .card-header,
+#verification-results-section .card-header,
+#logs-section .card-header,
+#jobs-section .card-header {
+    background-color: #005288 !important; /* Benton County blue */
+}
+
+/* Button styles */
+.btn-primary {
+    background-color: #005288 !important;
+    border-color: #005288 !important;
+}
+
+.btn-primary:hover {
+    background-color: #003c64 !important;
+    border-color: #003c64 !important;
+}
+
+.btn-outline-primary {
+    color: #005288 !important;
+    border-color: #005288 !important;
+    background-color: transparent !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: #005288 !important;
+    color: white !important;
+}
+
+.test-btn {
+    margin: 5px !important;
+}
+
+/* Tables */
+.table {
+    color: #333333 !important;
+}
+
+.table thead th {
+    background-color: #f8f9fa !important;
+    color: #333333 !important;
+    border-color: #dee2e6 !important;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+.alert-info {
+    background-color: #d1ecf1 !important;
+    color: #0c5460 !important;
+    border-color: #bee5eb !important;
+}
+
+/* Footer */
+.footer {
+    background-color: #005288 !important;
+    color: white !important;
+    padding: 15px 0 !important;
+}
+
+/* Light theme for modals */
+.modal-content {
+    background-color: #ffffff !important;
+    color: #333333 !important;
+}
+
+.modal-header, .modal-footer {
+    background-color: #f8f9fa !important;
+    border-color: #dee2e6 !important;
+}
+
+/* Add section header class for direct targeting */
+.verification-section-header {
+    background-color: #005288 !important;
+    color: white !important;
+    padding: 10px 15px !important;
+    font-weight: bold !important;
+}
+
+/* Override any dark theme elements */
+.bg-light, .bg-white {
+    background-color: #ffffff !important;
+}
+
+.text-dark {
+    color: #333333 !important;
+}
+
+/* Clear button styling */
+#clear-results-btn {
+    background-color: transparent !important;
+    border-color: #6c757d !important;
+    color: #6c757d !important;
+}
+
+#clear-results-btn:hover {
+    background-color: #6c757d !important;
+    color: white !important;
+}
+
+/* Results containers */
+.result-item {
+    background-color: #ffffff !important;
+    color: #333333 !important;
+    padding: 15px !important;
+    margin-bottom: 10px !important;
+    border-radius: 4px !important;
+    border: 1px solid #dee2e6 !important;
+}
+
+.result-success {
+    border-left: 5px solid #28a745 !important; /* Green */
+}
+
+.result-error {
+    border-left: 5px solid #dc3545 !important; /* Red */
+}
+
+pre, code {
+    background-color: #f8f9fa !important;
+    color: #333333 !important;
+    border: 1px solid #dee2e6 !important;
+}
+
+/* Log entries styling */
+.log-entry {
+    padding: 8px !important;
+    margin-bottom: 5px !important;
+    border-radius: 4px !important;
+    background-color: #f8f9fa !important;
+    color: #333333 !important;
+    border: 1px solid #dee2e6 !important;
+}
+
+.log-error {
+    border-left: 4px solid #dc3545 !important;
+}
+
+.log-warning {
+    border-left: 4px solid #f0ad4e !important;
+}
+
+.log-info {
+    border-left: 4px solid #17a2b8 !important;
+}
+
+.log-debug {
+    border-left: 4px solid #6c757d !important;
+}
+
+/* Badge colors */
+.badge-success {
+    background-color: #28a745 !important;
+}
+
+.badge-danger {
+    background-color: #dc3545 !important;
+}
+
+.badge-primary {
+    background-color: #005288 !important;
+}
+
+.badge-info {
+    background-color: #17a2b8 !important;
+}
+
+.badge-secondary {
+    background-color: #6c757d !important;
+}

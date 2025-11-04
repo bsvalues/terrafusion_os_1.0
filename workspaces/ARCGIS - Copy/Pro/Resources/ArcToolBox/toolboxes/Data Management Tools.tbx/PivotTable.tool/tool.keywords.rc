@@ -1,0 +1,12 @@
+{
+    "set": [
+        "record",
+        "row",
+        "sort",
+        "summarize",
+        "summary",
+        "switch",
+        "tbl",
+        "value"
+    ]
+}

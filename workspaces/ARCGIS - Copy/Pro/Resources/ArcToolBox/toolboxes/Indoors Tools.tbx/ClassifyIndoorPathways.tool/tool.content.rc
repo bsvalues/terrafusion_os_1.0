@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Classifies pathways that pass through selected unit spaces, such as conference rooms or service areas, as lower priority.",
+        "in_unit_features.descr": "<xdoc><p>The input polygon features representing spaces in a building for which the <span class=\"esri_uicontrol\">Target Pathways</span> parameter values will be classified. In the ArcGIS Indoors Information Model, this is the Units layer. Select features in the units layer before running the tool.</p></xdoc>",
+        "in_unit_features.title": "Input Unit Features",
+        "summary": "<xdoc><p>Classifies pathways that pass through selected unit spaces, such as conference rooms or service areas, as lower priority.</p><p>Pathways located in the selected unit features are ranked as secondary. When the classified pathways are used to generate an indoor network, network elements ranked as primary will be preferred, so that travel along primary pathways will have a lower cost than travel along secondary pathways.</p></xdoc>",
+        "target_pathways.descr": "The existing feature class or feature layer in which pathways will be updated. In the Indoors model, this is the Pathways layer.",
+        "target_pathways.title": "Target Pathways",
+        "title": "Classify Indoor Pathways",
+        "updated_pathways.title": "Updated Pathways"
+    }
+}

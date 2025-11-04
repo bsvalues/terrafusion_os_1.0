@@ -1,0 +1,118 @@
+🔥 Then let’s go **foundational first** — I’ll build you the **real, working draft of `/api/comps/search`**, which is the **heartbeat** of the Comps DB integration.
+
+This will let your **CompsMap** and **CompsGrid** pull from **live, TerraMiner-backed data** — making everything else (snapshots, form integration) snap together immediately afterward.
+
+---
+
+# ✅ `/api/comps/search` — Real API Draft (Node.js + TypeScript + Express)
+
+### 📂 File: `server/routes/comps.ts`
+
+```ts
+import express from "express";
+import { z } from "zod";
+import { db } from "@/lib/drizzle"; // Assuming Drizzle ORM
+import { properties, snapshots } from "@/db/schema";
+import turfBooleanWithin from "@turf/boolean-within";
+import * as turf from "@turf/helpers";
+
+export const compsRouter = express.Router();
+
+// Schema for incoming search filters
+const SearchRequest = z.object({
+  filters: z.object({
+    glaRange: z.tuple([z.number(), z.number()]).optional(),
+    saleDateMaxDays: z.number().optional(),
+    bedsMin: z.number().optional(),
+    bathsMin: z.number().optional(),
+  }),
+  polygon: z.any().optional(), // GeoJSON Polygon
+});
+
+// Route handler
+compsRouter.post("/search", async (req, res) => {
+  const parse = SearchRequest.safeParse(req.body);
+  if (!parse.success) return res.status(400).json({ error: parse.error });
+
+  const { filters, polygon } = parse.data;
+
+  // 1. Fetch potential candidates from DB (simplified)
+  const records = await db
+    .select()
+    .from(properties)
+    .leftJoin(snapshots, snapshots.propertyId.eq(properties.id))
+    .where(snapshots.saleDate.gte(new Date(Date.now() - (filters.saleDateMaxDays || 180) * 86400_000)))
+    .limit(500);
+
+  // 2. Optional spatial filter
+  const polygonFeature = polygon ? turf.polygon(polygon.coordinates) : null;
+
+  const filtered = records.filter((rec) => {
+    const { gla, beds, baths, lat, lng } = rec.snapshots;
+
+    const passGla = !filters.glaRange || (gla >= filters.glaRange[0] && gla <= filters.glaRange[1]);
+    const passBeds = !filters.bedsMin || beds >= filters.bedsMin;
+    const passBaths = !filters.bathsMin || baths >= filters.bathsMin;
+
+    const passGeo = polygonFeature
+      ? turfBooleanWithin(turf.point([lng, lat]), polygonFeature)
+      : true;
+
+    return passGla && passBeds && passBaths && passGeo;
+  });
+
+  // 3. Respond with lean property info
+  res.json({
+    count: filtered.length,
+    records: filtered.map((r) => ({
+      id: r.properties.id,
+      address: r.properties.address,
+      lat: r.properties.lat,
+      lng: r.properties.lng,
+      gla: r.snapshots.gla,
+      salePrice: r.snapshots.salePrice,
+      saleDate: r.snapshots.saleDate,
+      source: r.snapshots.source,
+    })),
+  });
+});
+```
+
+---
+
+# ⚙️ Dev Notes
+
+- Uses **Zod** for runtime validation
+- Uses **Drizzle ORM** (but easy to swap for Prisma or raw SQL)
+- Applies **polygon filtering** with [Turf.js](https://turfjs.org/)
+- Returns simplified records ideal for map pins and grid rows
+
+---
+
+# 🧪 Next Step
+
+You can now wire this into your frontend using:
+
+```ts
+const { data } = await axios.post("/api/comps/search", {
+  filters: { glaRange: [1200, 1800], saleDateMaxDays: 180 },
+  polygon: drawnGeoJSONPolygon,
+});
+```
+
+---
+
+## 🔜 What This Unblocks
+
+✅ `<CompsMap />`: Show pins from search results  
+✅ `<CompsGrid />`: Display rows, sorted by price/date/etc.  
+✅ `onRowClick`: Fetch full `/api/comps/history/:id` next  
+✅ “Push to form” = call `/api/forms/push` with snapshot + mapping
+
+---
+
+Would you like me to:
+- Sketch **`/api/comps/history/:id`** next?
+- Or wire this endpoint directly into a working `<CompsMap />` or `<CompsGrid />` React scaffold?
+
+You’re on the edge of it becoming real — let’s fuse the UI in next.

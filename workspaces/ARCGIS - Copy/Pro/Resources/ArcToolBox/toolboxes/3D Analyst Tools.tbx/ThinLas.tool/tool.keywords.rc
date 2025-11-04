@@ -1,0 +1,10 @@
+{
+    "set": [
+        "downsample",
+        "grid",
+        "lidar",
+        "lower resolution",
+        "point cloud",
+        "reduce"
+    ]
+}

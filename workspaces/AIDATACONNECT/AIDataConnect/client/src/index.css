@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+/* ReactFlow styles */
+.react-flow__node {
+  @apply font-sans;
+}
+
+.react-flow__handle {
+  @apply w-3 h-3 bg-primary border-2 border-background;
+}
+
+.react-flow__handle-top {
+  @apply top-0;
+}
+
+.react-flow__handle-bottom {
+  @apply bottom-0;
+}
+
+.react-flow__edge-path {
+  @apply stroke-2 stroke-primary;
+}
+
+.react-flow__node-dragHandle {
+  @apply cursor-grab;
+}
+
+.react-flow__panel {
+  @apply bg-background/80 backdrop-blur-sm border rounded-lg shadow-sm;
+}
+
+.react-flow__attribution {
+  @apply hidden;
+}
+
+.react-flow__controls-button {
+  @apply border-border hover:bg-accent;
+}

@@ -1,0 +1,24 @@
+{
+    "map": {
+        "cell_size.descr": "The cell size of the output raster surface.",
+        "cell_size.title": "Cell Size",
+        "description": "Generates a raster surface modeling the clearance zone around 3D line features.",
+        "flare_angle.descr": "The arithmetic angle that defines the direction of the flare at the end of the clearance zone. A positive value indicates the flare angle will extend upward, and a negative value indicates the flare will extend downward.",
+        "flare_angle.title": "Flare Angle",
+        "flare_distance.descr": "<xdoc><p>The 3D length that will extend from the edge of the clearance zone along the direction provided by the <span class=\"esri_uicontrol\">Flare Angle</span> parameter. A flare angle of 45° and a flare distance of 7 meters mean the edge of the clearance zone defined by its horizontal distance will extended by 7 meters at an upward angle of 45°.</p></xdoc>",
+        "flare_distance.title": "Flare Distance",
+        "horizontal_clearance.descr": "The horizontal displacement of the clearance zone from each side of the input features.",
+        "horizontal_clearance.title": "Horizontal Clearance",
+        "in_3d_features.descr": "The 3D line features that will be used to generate the clearance zone.",
+        "in_3d_features.title": "Input 3D Features",
+        "out_surface.descr": "The output raster surface that represents the clearance zone.",
+        "out_surface.title": "Output Raster Surface",
+        "overlap_method.descr": "<xdoc><p>Specifies the method that will be used to define the clearance zone in places where the zone around multiple features overlap.</p><ul><li><span title=\"MINIMUM\">Lowest Clearance</span>—The lowest clearance will be used to define the clearance zone. This is the default.</li><li><span title=\"MAXIMUM\">Highest Clearance</span>—The highest clearance will be used to define the clearance zone.</li></ul></xdoc>",
+        "overlap_method.domain.MAXIMUM": "Highest Clearance",
+        "overlap_method.domain.MINIMUM": "Lowest Clearance",
+        "overlap_method.title": "Overlap Method",
+        "title": "Generate Clearance Surface",
+        "vertical_clearance.descr": "<xdoc><p>The vertical displacement of the clearance zone from each input feature. The direction of the vertical displacement is indicated by the <span class=\"esri_uicontrol\">Overlap Method</span> parameter value. If the <span class=\"esri_uicontrol\">Lowest Clearance</span> option is specified, the vertical displacement will be lower than the input features. If the <span class=\"esri_uicontrol\">Highest Clearance</span> option is specified, the displacement will be higher than the input features.</p></xdoc>",
+        "vertical_clearance.title": "Vertical Clearance"
+    }
+}

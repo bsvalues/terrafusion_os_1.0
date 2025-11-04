@@ -1,0 +1,24 @@
+{
+    "set": [
+        "change",
+        "continue",
+        "dangle",
+        "exist",
+        "gap",
+        "hang",
+        "increase",
+        "input",
+        "intersection",
+        "length",
+        "longer",
+        "magnet",
+        "modify",
+        "snap",
+        "stretch",
+        "tolerance",
+        "undershoot",
+        "update",
+        "vertex",
+        "vertices"
+    ]
+}

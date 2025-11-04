@@ -1,0 +1,5 @@
+GRANT UPDATE TO [RSExecRole];
+
+
+GO
+

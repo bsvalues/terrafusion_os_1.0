@@ -1,0 +1,106 @@
+{
+    "type": "FunctionTool",
+    "guid": "{33724566-2738-4FE2-903A-A8C439127E50}/ImportSegmentationProfile",
+    "displayname": "$rc:title",
+    "helpcontent": "62070009",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "33",
+        "35"
+    ],
+    "params": {
+        "in_table": {
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "fields.rule": "None"
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "segmentation_base": {
+            "displayname": "$rc:segmentation_base.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:segmentation_base.descr"
+        },
+        "out_profile": {
+            "direction": "out",
+            "displayname": "$rc:out_profile.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "sgprofile"
+                ]
+            },
+            "description": "$rc:out_profile.descr"
+        },
+        "segment_id_field": {
+            "displayname": "$rc:segment_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:segment_id_field.descr"
+        },
+        "count_field": {
+            "displayname": "$rc:count_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:count_field.descr"
+        },
+        "total_volume_field": {
+            "type": "optional",
+            "displayname": "$rc:total_volume_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "BigInteger",
+                    "Long",
+                    "Float",
+                    "Double"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:total_volume_field.descr"
+        }
+    },
+    "environments": [
+        "baDataSource",
+        "workspace"
+    ]
+}

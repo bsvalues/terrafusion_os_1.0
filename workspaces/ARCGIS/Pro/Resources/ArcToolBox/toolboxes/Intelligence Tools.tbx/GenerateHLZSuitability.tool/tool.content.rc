@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Creates a helicopter landing zone (HLZ) suitability raster layer from reclassified slope, reclassified land cover, and obstacle buffers.",
+        "in_land_cover_raster.descr": "The reclassified land cover raster with values 1 (acceptable) and 2 (acceptable with caution). All other values will be excluded from the analysis.",
+        "in_land_cover_raster.title": "Input Land Cover Raster",
+        "in_obstacle_buffer_features.descr": "Obstacle area features representing approach and departure safety buffers around obstacles.",
+        "in_obstacle_buffer_features.title": "Input Obstacle Buffer Features",
+        "in_slope_raster.descr": "The reclassified slope raster with values 1 (acceptable) and 2 (acceptable with caution). All other values will be excluded from the analysis.",
+        "in_slope_raster.title": "Input Slope Raster",
+        "out_raster.descr": "The output raster dataset.",
+        "out_raster.title": "Output Raster",
+        "title": "Generate HLZ Suitability"
+    }
+}

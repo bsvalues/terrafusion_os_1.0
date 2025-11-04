@@ -1,0 +1,577 @@
+{% extends "base.html" %}
+
+{% block title %}Template Details - {{ template.name }}{% endblock %}
+
+{% block head %}
+<style>
+    .section-card {
+        margin-bottom: 20px;
+        border: 1px solid #eee;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .section-header {
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #eee;
+        border-radius: 10px 10px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .section-body {
+        padding: 20px;
+    }
+    .template-info {
+        margin-bottom: 30px;
+    }
+    .template-meta {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-bottom: 15px;
+    }
+    .meta-item {
+        margin-bottom: 5px;
+    }
+    .template-description {
+        color: #6c757d;
+        margin-bottom: 20px;
+    }
+    .template-badge {
+        display: inline-block;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        margin-right: 10px;
+    }
+    .badge-property {
+        background-color: #e3f7ea;
+        color: #1d8348;
+    }
+    .badge-geospatial {
+        background-color: #e3f2fd;
+        color: #0d6efd;
+    }
+    .badge-anomaly {
+        background-color: #feebef;
+        color: #d9534f;
+    }
+    .badge-custom {
+        background-color: #f5f5f5;
+        color: #6c757d;
+    }
+    .template-tag {
+        display: inline-block;
+        padding: 3px 10px;
+        background-color: #f8f9fa;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        margin-right: 5px;
+        margin-bottom: 5px;
+        color: #6c757d;
+    }
+    .section-type-badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        background-color: #e9ecef;
+        color: #495057;
+        margin-left: 10px;
+    }
+    .field-list {
+        padding: 10px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        margin-top: 10px;
+    }
+    .field-item {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: #e9ecef;
+        border-radius: 20px;
+        margin: 5px;
+        font-size: 0.8rem;
+    }
+    .template-action-btn {
+        min-width: 130px;
+    }
+    .content-block {
+        margin-bottom: 15px;
+    }
+    .content-block-title {
+        font-weight: 500;
+        margin-bottom: 5px;
+    }
+    .content-block-value {
+        padding: 8px 12px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        font-size: 0.9em;
+    }
+    .section-preview {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        margin-top: 15px;
+        overflow: hidden;
+    }
+    .preview-header {
+        background-color: #f8f9fa;
+        padding: 10px 15px;
+        border-bottom: 1px solid #e9ecef;
+        font-weight: 500;
+    }
+    .preview-body {
+        padding: 15px;
+    }
+    .data-placeholder {
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        margin-top: 15px;
+        border: 1px dashed #dee2e6;
+        color: #6c757d;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('reports.reports_dashboard') }}">Reports</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('reports.list_templates') }}">Templates</a></li>
+                    <li class="breadcrumb-item active">{{ template.name }}</li>
+                </ol>
+            </nav>
+            <h1>{{ template.name }}</h1>
+            
+            {% if template.template_type == 'property_assessment' %}
+            <span class="template-badge badge-property">Property Assessment</span>
+            {% elif template.template_type == 'geospatial_analysis' %}
+            <span class="template-badge badge-geospatial">Geospatial Analysis</span>
+            {% elif template.template_type == 'anomaly_report' %}
+            <span class="template-badge badge-anomaly">Anomaly Report</span>
+            {% else %}
+            <span class="template-badge badge-custom">Custom</span>
+            {% endif %}
+        </div>
+        
+        <div class="d-flex">
+            <a href="{{ url_for('reports.generate_report') }}?template_id={{ template.template_id }}" class="btn btn-success template-action-btn me-2">
+                <i class="fas fa-file-export"></i> Generate Report
+            </a>
+            <a href="{{ url_for('reports.edit_template', template_id=template.template_id) }}" class="btn btn-primary template-action-btn me-2">
+                <i class="fas fa-edit"></i> Edit Template
+            </a>
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                    <li>
+                        <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#cloneModal">
+                            <i class="fas fa-clone"></i> Clone Template
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-danger" href="#" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                            <i class="fas fa-trash"></i> Delete Template
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Template Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="template-meta">
+                        <div class="meta-item">
+                            <strong>Template ID:</strong> {{ template.template_id }}
+                        </div>
+                        <div class="meta-item">
+                            <strong>Created:</strong> {{ template.metadata.created_at.split('T')[0] if template.metadata and template.metadata.created_at and 'T' in template.metadata.created_at else template.metadata.created_at if template.metadata and template.metadata.created_at else 'N/A' }}
+                        </div>
+                        <div class="meta-item">
+                            <strong>Last Modified:</strong> {{ template.metadata.modified_at.split('T')[0] if template.metadata and template.metadata.modified_at and 'T' in template.metadata.modified_at else template.metadata.modified_at if template.metadata and template.metadata.modified_at else 'N/A' }}
+                        </div>
+                        <div class="meta-item">
+                            <strong>Type:</strong> {{ template.template_type | replace('_', ' ') | title }}
+                        </div>
+                        {% if template.metadata and template.metadata.created_by %}
+                        <div class="meta-item">
+                            <strong>Created By:</strong> {{ template.metadata.created_by }}
+                        </div>
+                        {% endif %}
+                        {% if template.metadata and template.metadata.version %}
+                        <div class="meta-item">
+                            <strong>Version:</strong> {{ template.metadata.version }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <h6>Description</h6>
+                    <div class="template-description mb-4">
+                        {{ template.description or 'No description provided.' }}
+                    </div>
+                    
+                    {% if template.metadata and template.metadata.tags %}
+                    <h6>Tags</h6>
+                    <div class="template-tags mb-3">
+                        {% for tag in template.metadata.tags %}
+                            {% if tag %}
+                            <span class="template-tag">{{ tag }}</span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <h6>Sections ({{ template.sections|length }})</h6>
+                    <ul class="list-group">
+                        {% for section in template.sections %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ section.title }}
+                            <span class="badge bg-secondary rounded-pill">{{ section.section_type }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Template Preview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> This is a preview of how the report will be structured. The actual report will use real data.
+                    </div>
+                    
+                    {% if template.sections %}
+                        {% for section in template.sections %}
+                        <div class="section-card">
+                            <div class="section-header">
+                                <div>
+                                    <span class="section-title">{{ section.title }}</span>
+                                    <span class="section-type-badge">{{ section.section_type }}</span>
+                                </div>
+                            </div>
+                            <div class="section-body">
+                                {% if section.section_type == 'text' %}
+                                <div class="content-block">
+                                    <div class="content-block-value">
+                                        {{ section.content.text if section.content and section.content.text else 'Text content will appear here.' }}
+                                    </div>
+                                </div>
+                                
+                                {% elif section.section_type == 'property_info' %}
+                                <div class="content-block">
+                                    <div class="content-block-title">Property Fields</div>
+                                    <div class="field-list">
+                                        {% if section.content and section.content.fields %}
+                                            {% for field in section.content.fields %}
+                                            <span class="field-item">{{ field }}</span>
+                                            {% endfor %}
+                                        {% else %}
+                                            <span class="text-muted">No fields defined</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="section-preview">
+                                    <div class="preview-header">Preview</div>
+                                    <div class="preview-body">
+                                        <table class="table table-bordered table-sm">
+                                            <tbody>
+                                                {% if section.content and section.content.fields %}
+                                                    {% for field in section.content.fields %}
+                                                    <tr>
+                                                        <th style="width: 40%">{{ field | replace('_', ' ') | title }}</th>
+                                                        <td class="text-muted">[{{ field }} value]</td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <tr>
+                                                        <td colspan="2" class="text-center text-muted">No property fields defined</td>
+                                                    </tr>
+                                                {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                
+                                {% elif section.section_type == 'valuation' %}
+                                <div class="content-block">
+                                    <div class="content-block-title">Valuation Fields</div>
+                                    <div class="field-list">
+                                        {% if section.content and section.content.fields %}
+                                            {% for field in section.content.fields %}
+                                            <span class="field-item">{{ field }}</span>
+                                            {% endfor %}
+                                        {% else %}
+                                            <span class="text-muted">No fields defined</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="section-preview">
+                                    <div class="preview-header">Preview</div>
+                                    <div class="preview-body">
+                                        <table class="table table-bordered table-sm">
+                                            <tbody>
+                                                {% if section.content and section.content.fields %}
+                                                    {% for field in section.content.fields %}
+                                                    <tr>
+                                                        <th style="width: 40%">{{ field | replace('_', ' ') | title }}</th>
+                                                        <td class="text-muted">[{{ field }} value]</td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <tr>
+                                                        <td colspan="2" class="text-center text-muted">No valuation fields defined</td>
+                                                    </tr>
+                                                {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                
+                                {% elif section.section_type == 'table' %}
+                                <div class="content-block">
+                                    <div class="content-block-title">Table Configuration</div>
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <div class="mb-2">Columns:</div>
+                                            <div class="field-list">
+                                                {% if section.content and section.content.columns %}
+                                                    {% for column in section.content.columns %}
+                                                    <span class="field-item">{{ column }}</span>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <span class="text-muted">No columns defined</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-2">Data Key:</div>
+                                            <div class="content-block-value">
+                                                {{ section.content.data_key if section.content and section.content.data_key else 'N/A' }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="section-preview">
+                                    <div class="preview-header">Preview</div>
+                                    <div class="preview-body">
+                                        {% if section.content and section.content.columns %}
+                                        <table class="table table-bordered table-sm">
+                                            <thead>
+                                                <tr>
+                                                    {% for column in section.content.columns %}
+                                                    <th>{{ column | replace('_', ' ') | title }}</th>
+                                                    {% endfor %}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    {% for column in section.content.columns %}
+                                                    <td class="text-muted">[{{ column }} value]</td>
+                                                    {% endfor %}
+                                                </tr>
+                                                <tr>
+                                                    {% for column in section.content.columns %}
+                                                    <td class="text-muted">[{{ column }} value]</td>
+                                                    {% endfor %}
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        {% else %}
+                                        <div class="text-center text-muted">Table preview will appear here once columns are defined</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                {% elif section.section_type == 'map' %}
+                                <div class="content-block">
+                                    <div class="content-block-title">Map Configuration</div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-2">Map Type:</div>
+                                            <div class="content-block-value">
+                                                {{ section.content.map_type | replace('_', ' ') | title if section.content and section.content.map_type else 'Property Location' }}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-2">Zoom Level:</div>
+                                            <div class="content-block-value">
+                                                {{ section.content.zoom_level if section.content and section.content.zoom_level else '15' }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="data-placeholder text-center">
+                                    <i class="fas fa-map-marked-alt fa-3x mb-3"></i>
+                                    <div>Map visualization will be rendered here with actual data</div>
+                                </div>
+                                
+                                {% elif section.section_type == 'chart' %}
+                                <div class="content-block">
+                                    <div class="content-block-title">Chart Configuration</div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-2">Chart Type:</div>
+                                            <div class="content-block-value">
+                                                {{ section.content.chart_type | replace('_', ' ') | title if section.content and section.content.chart_type else 'Bar' }}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-2">Data Key:</div>
+                                            <div class="content-block-value">
+                                                {{ section.content.data_key if section.content and section.content.data_key else 'N/A' }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="data-placeholder text-center">
+                                    <i class="fas fa-chart-bar fa-3x mb-3"></i>
+                                    <div>Chart visualization will be rendered here with actual data</div>
+                                </div>
+                                
+                                {% elif section.section_type == 'comparable_properties' %}
+                                <div class="content-block">
+                                    <div class="content-block-title">Comparable Properties Configuration</div>
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <div class="mb-2">Property Fields:</div>
+                                            <div class="field-list">
+                                                {% if section.content and section.content.fields %}
+                                                    {% for field in section.content.fields %}
+                                                    <span class="field-item">{{ field }}</span>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <span class="text-muted">No fields defined</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-2">Max Properties:</div>
+                                            <div class="content-block-value">
+                                                {{ section.content.max_properties if section.content and section.content.max_properties else '5' }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="section-preview">
+                                    <div class="preview-header">Preview</div>
+                                    <div class="preview-body">
+                                        {% if section.content and section.content.fields %}
+                                        <table class="table table-bordered table-sm">
+                                            <thead>
+                                                <tr>
+                                                    {% for field in section.content.fields %}
+                                                    <th>{{ field | replace('_', ' ') | title }}</th>
+                                                    {% endfor %}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    {% for field in section.content.fields %}
+                                                    <td class="text-muted">[{{ field }} value]</td>
+                                                    {% endfor %}
+                                                </tr>
+                                                <tr>
+                                                    {% for field in section.content.fields %}
+                                                    <td class="text-muted">[{{ field }} value]</td>
+                                                    {% endfor %}
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        {% else %}
+                                        <div class="text-center text-muted">Comparable properties will appear here</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                {% else %}
+                                <div class="text-muted">
+                                    <p>Content for section type "{{ section.section_type }}" will be rendered here.</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i> This template has no sections defined.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Clone Template Modal -->
+<div class="modal fade" id="cloneModal" tabindex="-1" aria-labelledby="cloneModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cloneModalLabel">Clone Template</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('reports.clone_template_route', template_id=template.template_id) }}" method="post">
+                <div class="modal-body">
+                    <p>You are about to clone <strong>{{ template.name }}</strong>.</p>
+                    <div class="form-group">
+                        <label for="new_name">New Template Name</label>
+                        <input type="text" class="form-control" id="new_name" name="new_name" required value="Copy of {{ template.name }}">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Clone Template</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Template Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Delete Template</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('reports.delete_template_route', template_id=template.template_id) }}" method="post">
+                <div class="modal-body">
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle"></i> Warning
+                    </div>
+                    <p>You are about to delete <strong>{{ template.name }}</strong>. This action cannot be undone.</p>
+                    <p>All reports generated from this template will still be available, but you won't be able to generate new reports using this template.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete Template</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

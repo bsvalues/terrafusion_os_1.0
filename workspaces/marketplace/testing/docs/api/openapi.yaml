@@ -1,0 +1,217 @@
+openapi: 3.0.3
+info:
+  title: Testing API
+  description: Testing operations APIs
+  version: 1.0.0
+  contact:
+    name: TerraFusion Government OS API Support
+    email: testing-api@terrafusion.gov
+    url: https://docs.terrafusion.gov/marketplace/testing
+  license:
+    name: Government Use License
+    url: https://terrafusion.gov/licenses/government-api
+  termsOfService: https://terrafusion.gov/terms/api-usage
+servers:
+- url: https://api.terrafusion.gov/api/v1/testing
+  description: Production TerraFusion Government API
+- url: https://staging-api.terrafusion.gov/api/v1/testing
+  description: Staging Environment
+- url: https://dev-api.terrafusion.gov/api/v1/testing
+  description: Development Environment
+paths:
+  /health:
+    get:
+      tags:
+      - testing
+      summary: Health check
+      description: Health check - Testing operations APIs
+      operationId: get__health
+      security:
+      - OAuth2:
+        - testing:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /data:
+    get:
+      tags:
+      - testing
+      summary: Data retrieval
+      description: Data retrieval - Testing operations APIs
+      operationId: get__data
+      security:
+      - OAuth2:
+        - testing:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /operations:
+    post:
+      tags:
+      - testing
+      summary: Operation execution
+      description: Operation execution - Testing operations APIs
+      operationId: post__operations
+      security:
+      - OAuth2:
+        - testing:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /status:
+    get:
+      tags:
+      - testing
+      summary: Service status
+      description: Service status - Testing operations APIs
+      operationId: get__status
+      security:
+      - OAuth2:
+        - testing:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: object
+    HealthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - healthy
+          - degraded
+          - unhealthy
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        dependencies:
+          type: object
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
+          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          scopes:
+            testing:read: Read access to testing resources
+            testing:write: Write access to testing resources
+            testing:admin: Administrative access to testing
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+security:
+- OAuth2:
+  - testing:read
+- ApiKey: []
+tags:
+- name: testing
+  description: Testing operations
+  externalDocs:
+    description: Find out more about testing
+    url: https://docs.terrafusion.gov/marketplace/testing

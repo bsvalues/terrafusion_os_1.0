@@ -1,0 +1,2497 @@
+/* $Id: st_domain_stats.stb,v 1.11.1.12, 2013-02-08 21:52:07Z, Kevin Watt$
+$NoKeywords$ */ 
+CREATE OR REPLACE Type Body st_domain_stats
+IS
+    -- Get InterFaces --
+/***********************************************************************
+  *
+  *N  {ODCIGetInterfaces}
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *P  Purpose: Get Interface descriptions/methods.
+  *     
+
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *A  Parameters:
+  *
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *X  Exceptions:
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *H  History:
+  *
+  *    Thomas Brown        12/01/06           Original coding.
+  *
+  *E
+  ***********************************************************************/
+  static Function odcigetinterfaces(ifclist Out sys.odciobjectlist)
+       Return number  
+  IS
+
+  Begin
+
+    ifclist := sys.odciobjectlist(sys.odciobject('SYS','ODCISTATS2'));
+    Return odciconst.success;
+
+  End odcigetinterfaces;
+ 
+/***********************************************************************
+  *
+  *N  {ODCIStatsCollect}
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *P  Purpose: Called by dbms_stats when gathering table statistics,
+  *            calculates the geometry attribute's statistics
+  *            (association established with st_geometry).
+  * 
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *A  Parameters:
+  *     
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *X  Exceptions:
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *H  History:
+  *
+  *    Thomas Brown        12/01/06           Original coding.
+  *
+  *E
+  ***********************************************************************/  
+  static Function odcistatscollect(col        sys.odcicolinfo,
+                                   options    sys.odcistatsoptions, 
+                                   rawstats   Out raw,
+                                   env        sys.odcienv) 
+       Return number  
+  IS
+    
+	PRAGMA AUTONOMOUS_TRANSACTION;
+
+    Cursor c_geom_stats (owner_wanted IN varchar2, table_wanted IN varchar2, 
+                         column_wanted IN varchar2) IS
+      SELECT *
+      FROM   &1..st_geometry_index
+      WHERE  owner = owner_wanted AND table_name = table_wanted 
+      AND column_name = column_wanted;
+
+    geom_stats  &1..st_geometry_index%Rowtype;
+
+    Cursor c1 (owner_wanted IN varchar2, table_wanted IN varchar2, 
+               column_wanted IN varchar2) IS
+      SELECT nullable, column_id, num_nulls
+      FROM all_tab_cols
+      WHERE owner = owner_wanted AND table_name = table_wanted 
+      AND column_name = column_wanted;
+
+    Cursor c_part_numnull (owner_wanted IN varchar2, table_wanted IN varchar2, 
+                           column_wanted IN varchar2) IS
+      SELECT sum(num_nulls)
+      FROM   &1..st_partition_index
+      WHERE  owner = owner_wanted AND table_name = table_wanted 
+      AND column_name = column_wanted;
+
+    isnullable  varchar2(1);
+    col_id      number;
+    null_cnt    number DEFAULT 0;
+    col_name    &1..st_type_user.a_identifier_t;
+
+  Begin
+
+    If(env.callproperty = odciconst.finalcall) Then
+
+      Open c_part_numnull (col.tableschema, col.tablename, REPLACE(col.colname,'"',''));
+      Fetch c_part_numnull INTO null_cnt;
+      If c_part_numnull%NOTFOUND THEN
+        Close c_part_numnull;
+        Return odciconst.error;
+      End If;
+      Close c_part_numnull;
+
+      rawstats := utl_raw.cast_to_raw(''||to_char(REPLACE(col.colname,'"',''))||':'||to_char(null_cnt)||'');
+      Return odciconst.success;
+    End If;
+
+    Open c_geom_stats (col.tableschema, col.tablename, REPLACE(col.colname,'"',''));
+    Fetch c_geom_stats INTO geom_stats;
+    If c_geom_stats%NOTFOUND THEN
+      Close c_geom_stats;
+      Return odciconst.error;
+    End If;
+    Close c_geom_stats;
+
+    Open c1 (geom_stats.owner, geom_stats.table_name, geom_stats.column_name);
+    Fetch c1 INTO isnullable, col_id, null_cnt;
+    If c1%NOTFOUND THEN
+      Close c1;
+      Return odciconst.error;
+    End If;
+    Close c1;
+
+    If isnullable = 'N' THEN
+      null_cnt := 0;
+     ELSE
+      Case
+        When col_id < 6 THEN
+          col_name := 'SYS_NC0000'||to_char(col_id + 4)||'$';
+        When col_id < 96 THEN
+          col_name := 'SYS_NC000'||to_char(col_id + 4)||'$';
+        When col_id < 996 THEN
+          col_name := 'SYS_NC00'||to_char(col_id + 4)||'$';
+      End Case;
+      Open c1 (geom_stats.owner, geom_stats.table_name, col_name);
+      Fetch c1 INTO isnullable, col_id, null_cnt;
+      If c1%NOTFOUND THEN
+        Close c1;
+        Return odciconst.error;
+      End If;
+      Close c1;
+    End If;
+
+    If(env.callproperty = odciconst.intermediatecall AND col.tablepartition IS NOT NULL) Then
+      &1..spx_util.update_partition_numnulls(geom_stats.owner,
+                                             geom_stats.table_name,
+                                             geom_stats.column_name,
+                                             col.tablepartition,
+                                             null_cnt);
+    Else
+      &1..spx_util.update_index_numnulls(geom_stats.owner,
+                                         geom_stats.table_name,
+                                         geom_stats.column_name,
+                                         null_cnt);
+    End If;
+
+    rawstats := utl_raw.cast_to_raw(''||to_char(geom_stats.column_name)||':'||to_char(null_cnt)||'');
+    COMMIT;
+    Return odciconst.success;
+
+  End odcistatscollect;
+  
+/***********************************************************************
+  *
+  *N  {ODCIStatsdelete}
+  *                          
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *P  Purpose: Called by dbms_stats.delete_column_stats or
+  *            dbms_stats.delete_table_stats.
+  *  
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *A  Parameters:
+  *     
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *X  &1. Exceptions:
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *H  History:
+  *
+  *    Thomas Brown        12/01/06           Original coding.
+  *
+  *E
+  ***********************************************************************/    
+  static Function odcistatsdelete(col        sys.odcicolinfo,
+                                  ia         sys.odciindexinfo,  
+                                  rawstats   Out raw,
+                                  env        sys.odcienv) 
+       Return number  
+  IS
+    Cursor c_geom_stats (owner_wanted IN varchar2, table_wanted IN varchar2, 
+                         column_wanted IN varchar2) IS
+      SELECT *
+      FROM   &1..st_geometry_index
+      WHERE  owner = owner_wanted AND table_name = table_wanted 
+      AND column_name = column_wanted;
+
+    idx_table     &1..st_type_user.a_identifier_t;
+    geom_stats    &1..st_geometry_index%Rowtype;
+
+  Begin
+    Open c_geom_stats (col.tableschema, col.tablename, REPLACE(col.colname,'"',''));
+    Fetch c_geom_stats INTO geom_stats;
+    If c_geom_stats%NOTFOUND THEN
+      Close c_geom_stats;
+      Return odciconst.error;
+    End If;
+    Close c_geom_stats;
+
+    If(env.callproperty = odciconst.intermediatecall AND col.tablepartition IS NOT NULL) Then
+
+      idx_table := 'S'||geom_stats.index_id||col.tablepartition;
+
+      &1..spx_util.update_partition_numnulls(geom_stats.owner,
+                                             geom_stats.table_name,
+                                             geom_stats.column_name,
+                                             idx_table,
+                                             NULL);
+    Else
+      &1..spx_util.update_index_numnulls(geom_stats.owner,
+                                         geom_stats.table_name,
+                                         geom_stats.column_name,
+                                         NULL);
+    End If;
+    rawstats := NULL;
+    Commit;
+    Return odciconst.success;
+
+  End odcistatsdelete;
+  
+/***********************************************************************
+  *
+  *N  {ODCIStatsCollect}
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *P  Purpose: Called by dbms_stats when gathering table or index
+  *            statistics, calculates the domain index's statistics
+  *            (association established with st_spatial_index).
+  *  
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *A  Parameters:
+  *     
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *X  Exceptions:
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *H  History:
+  *
+  *    Thomas Brown        12/01/06           Original coding.
+  *
+  *E
+  ***********************************************************************/  
+  static Function odcistatscollect(ia         sys.odciindexinfo,
+                                   options    sys.odcistatsoptions,
+                                   rawstats   Out raw,
+                                   env        sys.odcienv)
+       Return number
+  IS
+
+    Cursor c_geom_stats (owner_wanted IN varchar2, table_wanted IN varchar2, 
+                         column_wanted IN varchar2) IS
+      SELECT *
+      FROM   &1..st_geometry_index
+      WHERE  owner = owner_wanted AND table_name = table_wanted 
+      AND column_name = column_wanted;
+
+    geom_stats  &1..st_geometry_index%Rowtype;
+ 
+    Cursor c1 (owner_wanted IN varchar2, idx_name IN varchar2) IS
+      SELECT blevel, leaf_blocks, status, domidx_status, domidx_opstatus
+      FROM all_indexes
+      WHERE owner = owner_wanted AND index_name = idx_name;
+
+    Cursor c2 (owner_wanted IN varchar2, table_wanted IN varchar2) IS
+      SELECT num_rows
+      FROM all_tables 
+      WHERE owner = owner_wanted AND table_name = table_wanted;
+
+    col1_values   dbms_sql.number_table;
+    col2_values   dbms_sql.number_table;
+    col3_values   dbms_sql.number_table;
+    istatus       varchar2(8);
+    idomidxstatus varchar2(12);
+    idomidxopstat varchar2(6);
+    l_cursor      integer;
+    cur_status    number;
+    b_level       number DEFAULT 0;
+    leafblocks    number DEFAULT 0;
+    clst_fct      number DEFAULT 0;
+    row_val       number DEFAULT 0;
+    low_val       number DEFAULT 0;
+    high_val      number DEFAULT 0;
+    avg_cellcnt   number DEFAULT 0;
+    numrows       number DEFAULT 0;
+    sample_size   number DEFAULT 0;
+    stmt          varchar2(1024);
+    buffer        VARCHAR2(2);
+    min_sample    NUMBER(9);
+    idx_table     &1..st_type_user.a_identifier_t;
+    idx_index     &1..st_type_user.a_identifier_t;
+    eminx         number := &1..spx_util.int_max;
+    eminy         number := &1..spx_util.int_max;
+    emaxx         number := 0;
+    emaxy         number := 0;
+
+  Begin
+
+    If(env.callproperty = odciconst.finalcall) Then
+      &1..spx_util.calc_extent(ia,eminx,eminy,emaxx,emaxy);
+
+      &1..spx_util.update_index_mbr(ia.indexcols(1).tableschema,
+                                    ia.indexcols(1).tablename,
+                                    REPLACE(ia.indexcols(1).colname,'"',''),
+                                    eminx,
+                                    eminy,
+                                    emaxx,
+                                    emaxy);
+    End If;
+
+    Open c1 (ia.indexcols(1).tableschema, UPPER(ia.indexname));
+    Fetch c1 INTO b_level, leafblocks, istatus, idomidxstatus, idomidxopstat;
+    If c1%NOTFOUND THEN
+      Close c1;
+      Return odciconst.error;
+    End If;
+    Close c1;
+
+    If istatus <> 'VALID' OR idomidxstatus <> 'VALID' OR idomidxopstat <> 'VALID' THEN
+      Return odciconst.error;
+    End If;
+
+    Open c_geom_stats (ia.indexcols(1).tableschema, ia.indexcols(1).tablename,
+                       REPLACE(ia.indexcols(1).colname,'"',''));
+    Fetch c_geom_stats INTO geom_stats;
+    If c_geom_stats%NOTFOUND THEN
+      Close c_geom_stats;
+      Return odciconst.error;
+    End If;
+    Close c_geom_stats;
+
+    If(env.callproperty = odciconst.intermediatecall AND ia.indexpartition IS NOT NULL) Then
+      idx_table := 'S'||geom_stats.index_id||ia.indexpartition;
+      idx_index := 'S'||geom_stats.index_id||ia.indexpartition||'P';
+    Else
+      idx_table := 'S'||geom_stats.index_id||'_IDX$';
+      idx_index := 'S'||geom_stats.index_id||'$_IX1';
+    End If;
+
+    dbms_stats.gather_table_stats(geom_stats.owner, idx_table);
+
+    Open c1 (geom_stats.owner, idx_index);
+    Fetch c1 INTO b_level, leafblocks, istatus, idomidxstatus, idomidxopstat;
+    If c1%NOTFOUND THEN
+      Close c1;
+      Return odciconst.error;
+    End If;
+    Close c1;
+
+    If leafblocks > 0 THEN
+      Open c2 (geom_stats.owner, idx_table);
+      Fetch c2 INTO numrows;
+      If c2%NOTFOUND THEN
+        Close c2;
+        Return odciconst.error;
+      End If;
+      Close c2;
+
+    -- Calculate clustering factor
+
+      If numrows < 2500000 THEN    
+        l_cursor := dbms_sql.open_cursor;
+
+        stmt := 'SELECT /*+ no_parallel(b) no_parallel_index(b) dbms_stats '||
+                 'cursor_sharing_exact use_weak_name_resl dynamic_sampling(0) '||
+                 'no_monitoring */ dbms_rowid.rowid_block_number(b.rowid) FROM '||
+                 '(SELECT s.sp_id, s.gx, s.gy, row_number() over ( '||
+                 'Partition BY s.sp_id ORDER BY s.gx, s.gy) rncol FROM '||
+                 geom_stats.owner||'.'||idx_table||' s) sp,'||
+                 geom_stats.owner||'.'||ia.indexcols(1).tablename||' b WHERE '||
+                 'rncol = 1 AND b.rowid = sp.sp_id ORDER BY sp.gx, sp.gy, sp.sp_id';
+        dbms_sql.parse(l_cursor,stmt,dbms_sql.native);
+        dbms_sql.define_array(l_cursor,1,col1_values,100,1);
+        cur_status := dbms_sql.execute(l_cursor);
+
+        Loop
+          cur_status := dbms_sql.fetch_rows(l_cursor);
+          dbms_sql.column_value(l_cursor,1,col1_values);
+          Exit When cur_status != 100;
+        End Loop;
+
+        dbms_sql.close_cursor(l_cursor);
+
+        FOR i IN col1_values.first..col1_values.last Loop
+          If col1_values(i) != row_val THEN
+            clst_fct := clst_fct + 1;
+          End If;
+          row_val := col1_values(i);
+        End Loop;
+        col1_values.DELETE;
+      ELSE
+
+        SELECT value INTO buffer FROM nls_session_parameters WHERE parameter = 'NLS_NUMERIC_CHARACTERS';
+
+        IF SUBSTR(buffer,1,1) = ',' THEN
+          min_sample := TO_NUMBER('0,000001');
+         ELSE
+          min_sample := .000001;
+        END IF;
+
+        If options.sample < min_sample OR options.sample > 99 Then
+          If options.sample < min_sample Then
+            sample_size := 1;            
+          ELSE
+            sample_size := 99;
+          End If; 
+        ELSE
+          sample_size := options.sample;
+        End If;
+        
+        l_cursor := dbms_sql.open_cursor;
+        stmt := 'SELECT /*+ use_hash(sp) no_parallel(b) no_parallel_index(b) dbms_stats '||
+                 'cursor_sharing_exact use_weak_name_resl dynamic_sampling(0) '||
+                 'no_monitoring */ dbms_rowid.rowid_block_number(b.rowid) FROM '||
+                 '(SELECT sp_id FROM '||geom_stats.owner||'.'||idx_table||
+                 ' sample block ('||sample_size||') ORDER BY gx, gy, sp_id) sp,'||
+                 geom_stats.owner||'.'||ia.indexcols(1).tablename||' b WHERE '||
+                 'b.rowid = sp.sp_id';
+        dbms_sql.parse(l_cursor,stmt,dbms_sql.native);
+        dbms_sql.define_array(l_cursor,1,col1_values,100,1);
+        cur_status := dbms_sql.execute(l_cursor);
+
+        Loop
+          cur_status := dbms_sql.fetch_rows(l_cursor);
+          dbms_sql.column_value(l_cursor,1,col1_values);
+          Exit When cur_status != 100;
+        End Loop;
+
+        dbms_sql.close_cursor(l_cursor);
+
+        FOR i IN col1_values.first..col1_values.last Loop
+          If col1_values(i) != row_val THEN
+            clst_fct := clst_fct + 1;
+          End If;
+          row_val := col1_values(i);
+        End Loop;
+
+        clst_fct := round(clst_fct * (100/sample_size));
+        col1_values.DELETE;
+      End If;
+ 
+      -- Avg rows per cell (density)
+      l_cursor := dbms_sql.open_cursor;
+      stmt := 'SELECT /*+ no_parallel(b) no_parallel_index(b) dbms_stats '||
+              'cursor_sharing_exact use_weak_name_resl dynamic_sampling(0) '||
+              'no_monitoring */ b.tenth, MIN(b.rwcnt), MAX(b.rwcnt) FROM '||
+              '(SELECT rwcnt, ntile(10) over (ORDER BY rwcnt) tenth FROM '||
+              '(SELECT count(*) rwcnt FROM '||geom_stats.owner||'.'||idx_table||
+              ' GROUP BY gx, gy HAVING count(*) > 0)) b '||
+              'GROUP BY b.tenth ORDER BY b.tenth'; 
+      dbms_sql.parse(l_cursor,stmt,dbms_sql.native);
+      dbms_sql.define_array(l_cursor,1,col1_values,10,1);
+      dbms_sql.define_array(l_cursor,2,col2_values,10,1);
+      dbms_sql.define_array(l_cursor,3,col3_values,10,1);
+      cur_status := dbms_sql.execute(l_cursor);
+
+      Loop
+        cur_status := dbms_sql.fetch_rows(l_cursor);
+        dbms_sql.column_value(l_cursor,1,col1_values);
+        dbms_sql.column_value(l_cursor,2,col2_values);
+        dbms_sql.column_value(l_cursor,3,col3_values);
+        Exit When cur_status != 100;
+      End Loop;
+
+      dbms_sql.close_cursor(l_cursor);
+
+      row_val := col1_values.count;
+
+      Case
+        When row_val = 0 THEN
+          avg_cellcnt := 0;
+        When row_val = 1 THEN
+          low_val := col2_values(1);
+          high_val := col3_values(1);
+        When row_val = 2 THEN
+          low_val := col2_values(1);
+          high_val := col3_values(2);
+        When row_val > 2 THEN
+          low_val := col2_values(2);
+          high_val := col3_values(row_val - 1);
+      End Case;
+
+      col1_values.DELETE;
+      col2_values.DELETE;
+      col3_values.DELETE;
+ 
+      If row_val > 0 THEN
+        l_cursor := dbms_sql.open_cursor;
+        stmt := 'SELECT /*+ no_parallel(b) no_parallel_index(b) dbms_stats '||
+                'cursor_sharing_exact use_weak_name_resl dynamic_sampling(0) '||
+                'no_monitoring */ AVG(b.rwcnt) FROM (SELECT COUNT(*) rwcnt FROM '||
+                geom_stats.owner||'.'||idx_table||
+                ' GROUP BY gx, gy HAVING count(*) > 0) b '||
+                'WHERE b.rwcnt BETWEEN '||low_val||' AND '||high_val;
+        dbms_sql.parse(l_cursor,stmt,dbms_sql.native);
+        dbms_sql.define_column(l_cursor,1,avg_cellcnt);
+        cur_status := dbms_sql.execute(l_cursor);
+        If dbms_sql.fetch_rows(l_cursor) > 0 THEN
+          dbms_sql.column_value(l_cursor,1,avg_cellcnt);
+         ELSE
+          Return odciconst.error;
+        End If;
+        dbms_sql.close_cursor(l_cursor);
+      End If;
+    End If;
+
+    If(env.callproperty = odciconst.intermediatecall AND ia.indexpartition IS NOT NULL) Then
+      &1..spx_util.update_partition_stats(geom_stats.owner,
+                                          ia.indexcols(1).tablename,
+                                          geom_stats.column_name,
+                                          ia.indexpartition,
+                                          b_level,
+                                          leafblocks,
+                                          clst_fct,
+                                          avg_cellcnt,
+                                          numrows,
+                                          sample_size,
+                                          NULL,
+                                          NULL,
+                                          NULL,
+                                          NULL,
+                                          NULL);
+    Elsif(env.callproperty = odciconst.none AND ia.indexpartition IS NULL) Then
+
+      If ia.indexcols(1).tablename <> geom_stats.table_name THEN
+        &1..spx_util.update_index_table(geom_stats.owner,
+                                        ia.indexcols(1).tablename,
+                                        REPLACE(ia.indexcols(1).colname,'"',''),
+                                        ia.indexname);
+      End If;
+
+
+      &1..spx_util.calc_extent(ia,eminx,eminy,emaxx,emaxy);
+      &1..spx_util.update_index_mbr(geom_stats.owner,
+                                    ia.indexcols(1).tablename,
+                                    geom_stats.column_name,
+                                    eminx,
+                                    eminy,
+                                    emaxx,
+                                    emaxy);
+
+      &1..spx_util.update_index_stats(geom_stats.owner,
+                                          ia.indexcols(1).tablename,
+                                          geom_stats.column_name,
+                                          b_level,
+                                          leafblocks,
+                                          clst_fct,
+                                          avg_cellcnt,
+                                          numrows,
+                                          sample_size,
+                                          NULL);
+    End If;
+
+    If(env.callproperty = odciconst.intermediatecall AND ia.indexpartition IS NOT NULL) Then
+      rawstats := utl_raw.cast_to_raw(''||idx_index||':'||b_level||':'||leafblocks||':'||clst_fct||':'||round(avg_cellcnt,2)||':'||numrows||':'||SYSDATE||'');
+    Else
+      rawstats := utl_raw.cast_to_raw(''||ia.indexname||':'||b_level||':'||leafblocks||':'||clst_fct||':'||round(avg_cellcnt,2)||':'||numrows||':'||SYSDATE||'');
+    End If;
+    Commit;
+    Return odciconst.success;
+
+  End odcistatscollect;
+  
+/***********************************************************************
+  *
+  *N  {ODCIStatsdelete}
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *P  Purpose: Called by dbms_stats.delete_index_stats, 
+  *            NULL statistic values.
+  *  
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *A  Parameters:
+  *     
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *X  Exceptions:
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *H  History:
+  *
+  *    Thomas Brown        12/01/06           Original coding.
+  *
+  *E
+  ***********************************************************************/    
+  static Function odcistatsdelete(ia        sys.odciindexinfo, 
+                                  rawstats  Out raw,
+                                  env       sys.odcienv) 
+         Return number  
+  IS
+  Begin
+
+    If(env.callproperty = odciconst.intermediatecall AND ia.indexpartition IS NOT NULL) Then
+      &1..spx_util.update_partition_stats(ia.indexschema,
+                                          ia.indexcols(1).tablename,
+                                          REPLACE(ia.indexcols(1).colname,'"',''),
+                                          ia.indexpartition,
+                                          NULL,
+                                          NULL,
+                                          NULL,
+                                          NULL,
+                                          NULL,
+                                          NULL,
+                                          NULL,
+                                          NULL,
+                                          NULL,
+                                          NULL,
+                                          NULL);
+    Else
+      &1..spx_util.update_index_stats(ia.indexschema,
+                                      ia.indexcols(1).tablename,
+                                      REPLACE(ia.indexcols(1).colname,'"',''),
+                                      NULL,
+                                      NULL,
+                                      NULL,
+                                      NULL,
+                                      NULL,
+                                      NULL,
+                                      NULL);
+    End If;
+    rawstats := NULL;
+    Commit;
+    Return odciconst.success;
+
+  End odcistatsdelete;
+
+/***********************************************************************
+  *
+  *N  {ODCIStatsSelectivity}
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *P  Purpose: Computes the selectivity for st_relation_operators.
+  * 
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *A  Parameters:
+  *     
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *X  Exceptions:
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *H  History:
+  *
+  *    Thomas Brown        12/01/06           Original coding.
+  *
+  *E
+  ***********************************************************************/
+  STATIC FUNCTION odcistatsselectivity(pred     sys.odcipredinfo,
+                                       sel      Out number, 
+                                       args     sys.odciargdesclist,
+                                       strt     number,
+                                       stop     number, 
+                                       object1  &1..st_geometry,
+                                       object2  &1..st_geometry,
+                                       env      sys.odcienv) 
+       Return number  
+  IS
+
+    CURSOR c_geom_stats (owner_wanted IN VARCHAR2, table_wanted IN VARCHAR2, 
+                         column_wanted IN VARCHAR2) IS
+      SELECT *
+      FROM   &1..st_geometry_index
+      WHERE  owner = owner_wanted AND table_name = table_wanted 
+      AND column_name = column_wanted;
+
+    geom_stats1  &1..st_geometry_index%ROWTYPE;
+    geom_stats2  &1..st_geometry_index%ROWTYPE;
+    array_pnt1   NUMBER DEFAULT 0;
+    array_pnt2   NUMBER DEFAULT 0;
+    num_nulls1   NUMBER;
+    num_nulls2   NUMBER;
+    func_name    VARCHAR2(32);
+    pos1         NUMBER;
+    pos2         NUMBER;
+    lng          NUMBER;
+    usersel      VARCHAR2(28);
+    buffer       VARCHAR2(2);
+    dens_mult    NUMBER(9,5);
+    
+  BEGIN
+
+    FOR i IN 1..args.COUNT LOOP
+      IF args(i).tablename IS NOT NULL THEN
+        IF array_pnt1 = 0 THEN   
+          array_pnt1 := i;          -- IF (A.SHAPE) derived from a layer, otherwise input is ST_GEOMETRY object.
+         ELSE
+          array_pnt2 := i;          -- IF (B.SHAPE) derived from a layer, otherwise input is ST_GEOMETRY object.
+        END IF;
+      END IF;
+    END LOOP;
+    
+    IF array_pnt1 > 0 THEN
+      OPEN c_geom_stats (args(array_pnt1).tableschema, args(array_pnt1).tablename,
+                         REPLACE(args(array_pnt1).colname,'"',''));
+      FETCH c_geom_stats INTO geom_stats1;
+      IF c_geom_stats%NOTFOUND THEN
+        array_pnt1 := 0;
+      END IF;
+      CLOSE c_geom_stats;
+    END IF;
+    
+    IF geom_stats1.num_nulls IS NULL THEN
+      num_nulls1 := 0;
+     ELSE
+      num_nulls1 := geom_stats1.num_nulls;
+    END IF;
+
+    IF array_pnt2 > 0 THEN
+      OPEN c_geom_stats (args(array_pnt2).tableschema, args(array_pnt2).tablename,
+           REPLACE(args(array_pnt2).colname,'"',''));
+      FETCH c_geom_stats INTO geom_stats2;
+      IF c_geom_stats%NOTFOUND THEN
+        array_pnt2 := 0;
+      END IF;
+      CLOSE c_geom_stats;
+    END IF;
+
+    IF geom_stats2.num_nulls IS NULL THEN
+      num_nulls2 := 0;
+     ELSE
+      num_nulls2 := geom_stats2.num_nulls;
+    END IF;
+
+    CASE 
+      WHEN array_pnt1 <> 0 AND array_pnt2 <> 0 THEN
+        IF geom_stats1.st_funcs IS NOT NULL THEN
+          FOR i IN 1..geom_stats1.st_funcs.COUNT LOOP
+            pos1 := INSTR(geom_stats1.st_funcs(i),':');
+            pos2 := INSTR(geom_stats1.st_funcs(i),',');
+            func_name := SUBSTR(geom_stats1.st_funcs(i),1,pos1 - 1);
+            IF func_name = 'ST_ENVINTERSECTS' THEN
+              func_name := func_name||'_ENV_F';
+             ELSE 
+              func_name := func_name||'_F';
+            END IF;
+            IF UPPER(func_name) = pred.methodname THEN
+              lng := LENGTH(geom_stats1.st_funcs(i));
+              usersel := SUBSTR(geom_stats1.st_funcs(i),-(lng - pos2),lng - pos2);
+              IF usersel <> 'NULL' THEN
+                sel := TO_NUMBER(usersel);
+               ELSE
+                EXIT;
+              END IF;
+              IF strt = 0 OR (strt = 1 AND pred.methodname = 'ST_DISJOINT_F') THEN
+                sel := 100 - sel;
+              END IF;
+              RETURN odciconst.success;
+            END IF;
+          END LOOP;
+        END IF;
+        
+        IF geom_stats1.num_rows IS NOT NULL AND geom_stats2.num_rows IS NOT NULL THEN
+          sel := ((geom_stats1.num_rows - num_nulls1)/geom_stats1.num_rows) *
+                 ((geom_stats2.num_rows - num_nulls2)/geom_stats2.num_rows) /
+                 GREATEST(geom_stats1.num_rows - num_nulls1, geom_stats2.num_rows - num_nulls2);
+          IF strt = 0 OR (strt = 1 AND pred.methodname = 'ST_DISJOINT_F') THEN
+            sel := 100 - sel;
+          END IF;
+        ELSE
+          IF strt = 0 OR (strt = 1 AND pred.methodname = 'ST_DISJOINT_F') THEN
+            sel := 99;
+           ELSE
+            sel := 1;
+          END IF;
+        END IF;
+        
+      WHEN array_pnt1 <> 0 AND array_pnt2 = 0 THEN
+        IF geom_stats1.st_funcs IS NOT NULL THEN
+          FOR i IN 1..geom_stats1.st_funcs.COUNT LOOP
+            pos1 := INSTR(geom_stats1.st_funcs(i),':');
+            pos2 := INSTR(geom_stats1.st_funcs(i),',');
+            func_name := SUBSTR(geom_stats1.st_funcs(i),1,pos1 - 1)||'_F';
+            IF UPPER(func_name) = pred.methodname THEN
+              lng := LENGTH(geom_stats1.st_funcs(i));
+              usersel := SUBSTR(geom_stats1.st_funcs(i),-(lng - pos2),lng - pos2);
+              IF usersel <> 'NULL' THEN
+                sel := TO_NUMBER(usersel);
+               ELSE
+                EXIT;
+              END IF;
+              IF strt = 0 OR (strt = 1 AND pred.methodname = 'ST_DISJOINT_F') THEN
+                sel := 100 - sel;
+              END IF;
+              RETURN odciconst.success;
+            END IF;
+          END LOOP;
+        END IF;
+        
+        IF geom_stats1.num_rows IS NOT NULL THEN
+          SELECT value INTO buffer FROM nls_session_parameters WHERE parameter = 'NLS_NUMERIC_CHARACTERS';
+
+          IF SUBSTR(buffer,1,1) = ',' THEN
+            dens_mult := TO_NUMBER('0,1');
+           ELSE
+            dens_mult := .1;
+          END IF;
+
+          sel := CEIL(geom_stats1.density * dens_mult)/(geom_stats1.num_rows - num_nulls1) * 100;
+          IF strt = 0 OR (strt = 1 AND pred.methodname = 'ST_DISJOINT_F') THEN
+            sel := 100 - sel;
+          END IF;
+        ELSE
+          IF strt = 0 OR (strt = 1 AND pred.methodname = 'ST_DISJOINT_F') THEN
+            sel := 99;
+          ELSE
+            sel := 1;
+          END IF;
+        END IF;
+        
+      WHEN array_pnt1 = 0 AND array_pnt2 <> 0 THEN
+        IF geom_stats2.st_funcs IS NOT NULL THEN
+          FOR i IN 1..geom_stats2.st_funcs.COUNT LOOP
+            pos1 := INSTR(geom_stats2.st_funcs(i),':');
+            pos2 := INSTR(geom_stats2.st_funcs(i),',');
+            func_name := SUBSTR(geom_stats2.st_funcs(i),1,pos1 - 1)||'_F';
+            IF UPPER(func_name) = pred.methodname THEN
+              lng := LENGTH(geom_stats2.st_funcs(i));
+              usersel := SUBSTR(geom_stats1.st_funcs(i),-(lng - pos2),lng - pos2);
+              IF usersel <> 'NULL' THEN
+                sel := TO_NUMBER(usersel);
+               ELSE
+                EXIT;
+              END IF;
+              IF strt = 0 OR (strt = 1 AND pred.methodname = 'ST_DISJOINT_F') THEN
+                sel := 100 - sel;
+              END IF;
+              RETURN odciconst.success;
+            END IF;
+          END LOOP;
+        END IF;
+        
+        IF geom_stats2.num_rows IS NOT NULL THEN
+          SELECT value INTO buffer FROM nls_session_parameters WHERE parameter = 'NLS_NUMERIC_CHARACTERS';
+
+          IF SUBSTR(buffer,1,1) = ',' THEN
+            dens_mult := TO_NUMBER('0,1');
+           ELSE
+            dens_mult := .1;
+          END IF;
+
+          sel := CEIL(geom_stats2.density * dens_mult)/(geom_stats2.num_rows - num_nulls2) * 100;
+          IF strt = 0 OR (strt = 1 AND pred.methodname = 'ST_DISJOINT_F') THEN
+            sel := 100 - sel;
+          END IF;
+        ELSE
+          IF strt = 0 OR (strt = 1 AND pred.methodname = 'ST_DISJOINT_F') THEN
+            sel := 99;
+          ELSE
+            sel := 1;
+          END IF;
+        END IF;
+        
+      WHEN array_pnt1 = 0 AND array_pnt2 = 0 THEN
+        IF strt = 0 OR (strt = 1 AND pred.methodname = 'ST_DISJOINT_F') THEN
+          sel := 99;
+        ELSE
+          sel := 1;
+        END IF;
+
+    END CASE;
+
+    RETURN odciconst.success;
+	
+  END odcistatsselectivity;
+ 
+/***********************************************************************
+  *
+  *N  {ODCIStatsSelectivity}
+
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *P  Purpose: Computes the selectivity for st_domain_operators.
+  * 
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *A  Parameters:
+  *     
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *X  Exceptions:
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *H  History:
+  *
+  *    Thomas Brown        12/01/06           Original coding.
+  *
+  *E
+  ***********************************************************************/
+  STATIC FUNCTION odcistatsselectivity(pred    sys.odcipredinfo,
+                                       sel     Out number, 
+                                       args    sys.odciargdesclist,
+                                       strt    number,
+                                       stop    number, 
+                                       object  &1..st_geometry, 
+                                       minx    number, 
+                                       miny    number,
+                                       maxx    number,
+                                       maxy    number,
+                                       env     sys.odcienv) 
+       Return number  
+  IS
+
+    CURSOR c_geom_stats (owner_wanted IN VARCHAR2, table_wanted IN VARCHAR2, 
+                         column_wanted IN VARCHAR2) IS
+      SELECT *
+      FROM   &1..st_geometry_index
+      WHERE  owner = owner_wanted AND table_name = table_wanted 
+      AND column_name = column_wanted;
+
+    geom_stats  &1..st_geometry_index%ROWTYPE;
+    array_pnt   NUMBER;
+    null_cnt    NUMBER;
+    pos1        NUMBER;
+    pos2        NUMBER;
+    lng         NUMBER;
+    usersel     VARCHAR2(28);
+
+  BEGIN
+
+    FOR i IN 1..args.COUNT LOOP
+      IF args(i).tablename IS NOT NULL THEN
+        array_pnt := i;
+        EXIT;
+      END IF;
+    END LOOP;
+     
+    OPEN c_geom_stats (args(array_pnt).tableschema, args(array_pnt).tablename, 
+                       REPLACE(args(array_pnt).colname,'"',''));
+    FETCH c_geom_stats INTO geom_stats;
+    IF c_geom_stats%NOTFOUND THEN
+      CLOSE c_geom_stats;
+      RETURN odciconst.error;
+    END IF;
+    CLOSE c_geom_stats;
+
+    IF geom_stats.st_funcs IS NOT NULL THEN
+      FOR i IN 1..geom_stats.st_funcs.COUNT LOOP
+        pos1 := INSTR(geom_stats.st_funcs(i),':');
+        pos2 := INSTR(geom_stats.st_funcs(i),',');
+        IF SUBSTR(geom_stats.st_funcs(i),1,pos1 - 1) = 'ST_ENVINTERSECTS' THEN
+          lng := LENGTH(geom_stats.st_funcs(i));
+          usersel := SUBSTR(geom_stats.st_funcs(i),-(lng - pos2),lng - pos2);
+          IF usersel <> 'NULL' THEN
+            sel := TO_NUMBER(usersel);
+           ELSE
+            EXIT;
+          END IF;
+          IF strt = 0 THEN
+            sel := 100 - sel;
+          END IF;
+          RETURN odciconst.success;
+        END IF;
+      END LOOP;
+    END IF;
+
+    IF geom_stats.num_nulls IS NULL THEN
+      null_cnt := 0;
+    ELSE
+      null_cnt := geom_stats.num_nulls;
+    END IF;
+
+    IF geom_stats.density IS NULL OR geom_stats.grid.grid1 IS NULL THEN
+      sel := 1;
+    ELSIF geom_stats.density = 0 THEN
+      sel := 0;
+    ELSE 
+      sel := ((maxx - minx) * (maxy - miny)) * (geom_stats.density/(geom_stats.grid.grid1 
+             * geom_stats.grid.grid1))/(geom_stats.num_rows - null_cnt) * 100;
+      IF sel > 100 THEN
+        sel := 100;
+      END IF;
+    END IF;
+
+    IF strt = 0 THEN
+      sel := 100 - sel;
+    END IF;
+
+    RETURN odciconst.success;
+	
+  END odcistatsselectivity;
+
+/***********************************************************************
+  *
+  *N  {ODCIStatsSelectivity}
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *P  Purpose: Computes the selectivity for st_relation_operators,
+  *            specifically st_relate.
+  * 
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *A  Parameters:
+  *     
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *X  Exceptions:
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *H  History:
+  *
+  *    Thomas Brown        12/01/06           Original coding.
+  *
+  *E
+  ***********************************************************************/
+  STATIC FUNCTION odcistatsselectivity(pred     sys.odcipredinfo,
+                                       sel      Out number, 
+                                       args     sys.odciargdesclist,
+                                       strt     number,
+                                       stop     number, 
+                                       object1  &1..st_geometry,
+                                       object2  &1..st_geometry,
+                                       matrix   varchar2,
+                                       env      sys.odcienv) 
+       Return number  
+  IS
+
+    CURSOR c_geom_stats (owner_wanted IN VARCHAR2, table_wanted IN VARCHAR2, 
+                         column_wanted IN VARCHAR2) IS
+      SELECT *
+      FROM   &1..st_geometry_index
+      WHERE  owner = owner_wanted AND table_name = table_wanted 
+      AND column_name = column_wanted;
+
+    geom_stats1        &1..st_geometry_index%ROWTYPE;
+    geom_stats2        &1..st_geometry_index%ROWTYPE;
+    array_pnt1         NUMBER DEFAULT 0;
+    array_pnt2         NUMBER DEFAULT 0;
+    num_nulls1         NUMBER;
+    num_nulls2         NUMBER;
+    func_name          VARCHAR2(32);
+    pos1               NUMBER;
+    pos2               NUMBER;
+    lng                NUMBER;
+    usersel            VARCHAR2(28);
+    relate_operator    VARCHAR2(32) := '';
+    buffer             VARCHAR2(2);
+    dens_mult          NUMBER(9,5);
+    
+  BEGIN
+  
+    relate_operator := &1..st_geom_util.get_relation_operation(matrix);
+
+    FOR i IN 1..args.COUNT LOOP
+      IF args(i).tablename IS NOT NULL THEN
+        IF array_pnt1 = 0 THEN   
+          array_pnt1 := i;          -- IF (A.SHAPE) derived from a layer, otherwise input is ST_GEOMETRY object.
+         ELSE
+          array_pnt2 := i;          -- IF (B.SHAPE) derived from a layer, otherwise input is ST_GEOMETRY object.
+        END IF;
+      END IF;
+    END LOOP;
+
+    IF array_pnt1 > 0 THEN   
+      OPEN c_geom_stats (args(array_pnt1).tableschema, args(array_pnt1).tablename,
+                         REPLACE(args(array_pnt1).colname,'"',''));
+      FETCH c_geom_stats INTO geom_stats1;
+      IF c_geom_stats%NOTFOUND THEN
+        array_pnt1 := 0;
+      END IF;
+      CLOSE c_geom_stats;
+    END IF;
+
+    IF geom_stats1.num_nulls IS NULL THEN
+      num_nulls1 := 0;
+     ELSE
+      num_nulls1 := geom_stats1.num_nulls;
+    END IF;
+    
+    IF array_pnt2 > 0 THEN
+      OPEN c_geom_stats (args(array_pnt2).tableschema, args(array_pnt2).tablename,
+           REPLACE(args(array_pnt2).colname,'"',''));
+      FETCH c_geom_stats INTO geom_stats2;
+      IF c_geom_stats%NOTFOUND THEN
+        array_pnt2 := 0;
+      END IF;
+      CLOSE c_geom_stats;
+    END IF;
+    
+    IF geom_stats2.num_nulls IS NULL THEN
+      num_nulls2 := 0;
+     ELSE
+      num_nulls2 := geom_stats2.num_nulls;
+    END IF;
+
+    CASE 
+      WHEN array_pnt1 <> 0 AND array_pnt2 <> 0 THEN
+        IF geom_stats1.st_funcs IS NOT NULL THEN
+          FOR i IN 1..geom_stats1.st_funcs.COUNT LOOP
+            pos1 := INSTR(geom_stats1.st_funcs(i),':');
+            pos2 := INSTR(geom_stats1.st_funcs(i),',');
+            func_name := SUBSTR(geom_stats1.st_funcs(i),1,pos1 - 1)||'_F';
+            IF UPPER(func_name) = relate_operator THEN
+              lng := LENGTH(geom_stats1.st_funcs(i));
+              usersel := SUBSTR(geom_stats1.st_funcs(i),-(lng - pos2),lng - pos2);
+              IF usersel <> 'NULL' THEN
+                sel := TO_NUMBER(usersel);
+               ELSE
+                EXIT;
+              END IF;
+              IF strt = 0 OR (strt = 1 AND relate_operator = 'ST_DISJOINT') THEN
+                sel := 100 - sel;
+              END IF;
+              RETURN odciconst.success;
+            END IF;
+          END LOOP;
+        END IF;
+        
+        IF geom_stats1.num_rows IS NOT NULL AND geom_stats2.num_rows IS NOT NULL THEN
+          sel := ((geom_stats1.num_rows - num_nulls1)/geom_stats1.num_rows) *
+                 ((geom_stats2.num_rows - num_nulls2)/geom_stats2.num_rows) /
+                 GREATEST(geom_stats1.num_rows - num_nulls1, geom_stats2.num_rows - num_nulls2);
+          IF strt = 0 OR (strt = 1 AND relate_operator = 'ST_DISJOINT') THEN
+            sel := 100 - sel;
+          END IF;
+        ELSE
+          IF strt = 0 OR (strt = 1 AND relate_operator = 'ST_DISJOINT') THEN
+            sel := 99;
+           ELSE
+            sel := 1;
+          END IF;
+        END IF;
+        
+      WHEN array_pnt1 <> 0 AND array_pnt2 = 0 THEN
+        IF geom_stats1.st_funcs IS NOT NULL THEN
+          FOR i IN 1..geom_stats1.st_funcs.COUNT LOOP
+            pos1 := INSTR(geom_stats1.st_funcs(i),':');
+            pos2 := INSTR(geom_stats1.st_funcs(i),',');
+            func_name := SUBSTR(geom_stats1.st_funcs(i),1,pos1 - 1)||'_F';
+            IF UPPER(func_name) = relate_operator THEN
+              lng := LENGTH(geom_stats1.st_funcs(i));
+              usersel := SUBSTR(geom_stats1.st_funcs(i),-(lng - pos2),lng - pos2);
+              IF usersel <> 'NULL' THEN
+                sel := TO_NUMBER(usersel);
+               ELSE
+                EXIT;
+              END IF;
+              IF strt = 0 OR (strt = 1 AND relate_operator = 'ST_DISJOINT') THEN
+                sel := 100 - sel;
+              END IF;
+              RETURN odciconst.success;
+            END IF;
+          END LOOP;
+        END IF;
+        
+        IF geom_stats1.num_rows IS NOT NULL THEN
+          SELECT value INTO buffer FROM nls_session_parameters WHERE parameter = 'NLS_NUMERIC_CHARACTERS';
+
+          IF SUBSTR(buffer,1,1) = ',' THEN
+            dens_mult := TO_NUMBER('0,1');
+           ELSE
+            dens_mult := .1;
+          END IF;
+
+          sel := CEIL(geom_stats1.density * dens_mult)/(geom_stats1.num_rows - num_nulls1) * 100;
+          IF strt = 0 OR (strt = 1 AND relate_operator = 'ST_DISJOINT') THEN
+            sel := 100 - sel;
+          END IF;
+        ELSE
+          IF strt = 0 OR (strt = 1 AND relate_operator = 'ST_DISJOINT') THEN
+            sel := 99;
+          ELSE
+            sel := 1;
+          END IF;
+        END IF;
+        
+      WHEN array_pnt1 = 0 AND array_pnt2 <> 0 THEN
+        IF geom_stats2.st_funcs IS NOT NULL THEN
+          FOR i IN 1..geom_stats2.st_funcs.COUNT LOOP
+            pos1 := INSTR(geom_stats2.st_funcs(i),':');
+            pos2 := INSTR(geom_stats2.st_funcs(i),',');
+            func_name := SUBSTR(geom_stats2.st_funcs(i),1,pos1 - 1)||'_F';
+            IF UPPER(func_name) = relate_operator THEN
+              lng := LENGTH(geom_stats2.st_funcs(i));
+              usersel := SUBSTR(geom_stats1.st_funcs(i),-(lng - pos2),lng - pos2);
+              IF usersel <> 'NULL' THEN
+                sel := TO_NUMBER(usersel);
+               ELSE
+                EXIT;
+              END IF;
+              IF strt = 0 OR (strt = 1 AND relate_operator = 'ST_DISJOINT') THEN
+                sel := 100 - sel;
+              END IF;
+              RETURN odciconst.success;
+            END IF;
+          END LOOP;
+        END IF;
+        
+        IF geom_stats2.num_rows IS NOT NULL THEN
+          SELECT value INTO buffer FROM nls_session_parameters WHERE parameter = 'NLS_NUMERIC_CHARACTERS';
+
+          IF SUBSTR(buffer,1,1) = ',' THEN
+            dens_mult := TO_NUMBER('0,1');
+           ELSE
+            dens_mult := .1;
+          END IF;
+
+          sel := CEIL(geom_stats2.density * dens_mult)/(geom_stats2.num_rows - num_nulls2) * 100;
+          IF strt = 0 OR (strt = 1 AND relate_operator = 'ST_DISJOINT') THEN
+            sel := 100 - sel;
+          END IF;
+        ELSE
+          IF strt = 0 OR (strt = 1 AND relate_operator = 'ST_DISJOINT') THEN
+            sel := 99;
+          ELSE
+            sel := 1;
+          END IF;
+        END IF;
+        
+      WHEN array_pnt1 = 0 AND array_pnt2 = 0 THEN
+        IF strt = 0 OR (strt = 1 AND pred.methodname = 'ST_DISJOINT_F') THEN
+          sel := 99;
+        ELSE
+          sel := 1;
+        END IF;
+    END CASE;
+      
+    RETURN odciconst.success;
+	
+  END odcistatsselectivity;
+
+
+/***********************************************************************
+  *
+  *N  {ODCIStatsSelectivity}
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *P  Purpose: Computes the selectivity for st_relation_operators,
+  *            specifically st_buffer_intersects.
+  * 
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *A  Parameters:
+  *     
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *X  Exceptions:
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *H  History:
+  *
+  *    Thomas Brown        03/10/08           Original coding.
+  *
+  *E
+  ***********************************************************************/
+  STATIC FUNCTION odcistatsselectivity(pred     sys.odcipredinfo,
+                                       sel      Out number, 
+                                       args     sys.odciargdesclist,
+                                       strt     number,
+                                       stop     number, 
+                                       object1  &1..st_geometry,
+                                       object2  &1..st_geometry,
+                                       distance number,
+                                       env      sys.odcienv) 
+       Return number  
+  IS
+
+    CURSOR c_geom_stats (owner_wanted IN VARCHAR2, table_wanted IN VARCHAR2, 
+                         column_wanted IN VARCHAR2) IS
+      SELECT *
+      FROM   &1..st_geometry_index
+      WHERE  owner = owner_wanted AND table_name = table_wanted 
+      AND column_name = column_wanted;
+
+    geom_stats1        &1..st_geometry_index%ROWTYPE;
+    geom_stats2        &1..st_geometry_index%ROWTYPE;
+    array_pnt1         NUMBER DEFAULT 0;
+    array_pnt2         NUMBER DEFAULT 0;
+    num_nulls1         NUMBER;
+    num_nulls2         NUMBER;
+    func_name          VARCHAR2(32);
+    pos1               NUMBER;
+    pos2               NUMBER;
+    lng                NUMBER;
+    usersel            VARCHAR2(28);
+    relate_operator    VARCHAR2(32) := '';
+    buffer             VARCHAR2(2);
+    dens_mult          NUMBER(9,5);
+    
+  BEGIN
+   
+    FOR i IN 1..args.COUNT LOOP
+      IF args(i).tablename IS NOT NULL THEN
+        IF array_pnt1 = 0 THEN   
+          array_pnt1 := i;          -- IF (A.SHAPE) derived from a layer, otherwise input is ST_GEOMETRY object.
+         ELSE
+          array_pnt2 := i;          -- IF (B.SHAPE) derived from a layer, otherwise input is ST_GEOMETRY object.
+        END IF;
+      END IF;
+    END LOOP;
+
+    IF array_pnt1 > 0 THEN   
+      OPEN c_geom_stats (args(array_pnt1).tableschema, args(array_pnt1).tablename,
+                         REPLACE(args(array_pnt1).colname,'"',''));
+      FETCH c_geom_stats INTO geom_stats1;
+      IF c_geom_stats%NOTFOUND THEN
+        array_pnt1 := 0;
+      END IF;
+      CLOSE c_geom_stats;
+    END IF;
+
+    IF geom_stats1.num_nulls IS NULL THEN
+      num_nulls1 := 0;
+     ELSE
+      num_nulls1 := geom_stats1.num_nulls;
+    END IF;
+    
+    IF array_pnt2 > 0 THEN
+      OPEN c_geom_stats (args(array_pnt2).tableschema, args(array_pnt2).tablename,
+           REPLACE(args(array_pnt2).colname,'"',''));
+      FETCH c_geom_stats INTO geom_stats2;
+      IF c_geom_stats%NOTFOUND THEN
+        array_pnt2 := 0;
+      END IF;
+      CLOSE c_geom_stats;
+    END IF;
+    
+    IF geom_stats2.num_nulls IS NULL THEN
+      num_nulls2 := 0;
+     ELSE
+      num_nulls2 := geom_stats2.num_nulls;
+    END IF;
+
+    CASE 
+      WHEN array_pnt1 <> 0 AND array_pnt2 <> 0 THEN
+        IF geom_stats1.st_funcs IS NOT NULL THEN
+          FOR i IN 1..geom_stats1.st_funcs.COUNT LOOP
+            pos1 := INSTR(geom_stats1.st_funcs(i),':');
+            pos2 := INSTR(geom_stats1.st_funcs(i),',');
+            func_name := SUBSTR(geom_stats1.st_funcs(i),1,pos1 - 1)||'_F';
+            IF UPPER(func_name) = relate_operator THEN
+              lng := LENGTH(geom_stats1.st_funcs(i));
+              usersel := SUBSTR(geom_stats1.st_funcs(i),-(lng - pos2),lng - pos2);
+              IF usersel <> 'NULL' THEN
+                sel := TO_NUMBER(usersel);
+               ELSE
+                EXIT;
+              END IF;
+              IF strt = 0 THEN
+                sel := 100 - sel;
+              END IF;
+              RETURN odciconst.success;
+            END IF;
+          END LOOP;
+        END IF;
+        
+        IF geom_stats1.num_rows IS NOT NULL AND geom_stats2.num_rows IS NOT NULL THEN
+          sel := ((geom_stats1.num_rows - num_nulls1)/geom_stats1.num_rows) *
+                 ((geom_stats2.num_rows - num_nulls2)/geom_stats2.num_rows) /
+                 GREATEST(geom_stats1.num_rows - num_nulls1, geom_stats2.num_rows - num_nulls2);
+          IF strt = 0 THEN
+            sel := 100 - sel;
+          END IF;
+        ELSE
+          IF strt = 0 THEN
+            sel := 99;
+           ELSE
+            sel := 1;
+          END IF;
+        END IF;
+        
+      WHEN array_pnt1 <> 0 AND array_pnt2 = 0 THEN
+        IF geom_stats1.st_funcs IS NOT NULL THEN
+          FOR i IN 1..geom_stats1.st_funcs.COUNT LOOP
+            pos1 := INSTR(geom_stats1.st_funcs(i),':');
+            pos2 := INSTR(geom_stats1.st_funcs(i),',');
+            func_name := SUBSTR(geom_stats1.st_funcs(i),1,pos1 - 1)||'_F';
+            IF UPPER(func_name) = relate_operator THEN
+              lng := LENGTH(geom_stats1.st_funcs(i));
+              usersel := SUBSTR(geom_stats1.st_funcs(i),-(lng - pos2),lng - pos2);
+              IF usersel <> 'NULL' THEN
+                sel := TO_NUMBER(usersel);
+               ELSE
+                EXIT;
+              END IF;
+              IF strt = 0 THEN
+                sel := 100 - sel;
+              END IF;
+              RETURN odciconst.success;
+            END IF;
+          END LOOP;
+        END IF;
+        
+        IF geom_stats1.num_rows IS NOT NULL THEN
+          SELECT value INTO buffer FROM nls_session_parameters WHERE parameter = 'NLS_NUMERIC_CHARACTERS';
+
+          IF SUBSTR(buffer,1,1) = ',' THEN
+            dens_mult := TO_NUMBER('0,1');
+           ELSE
+            dens_mult := .1;
+          END IF;
+
+          sel := CEIL(geom_stats1.density * dens_mult)/(geom_stats1.num_rows - num_nulls1) * 100;
+          IF strt = 0 THEN
+            sel := 100 - sel;
+          END IF;
+        ELSE
+          IF strt = 0 THEN
+            sel := 99;
+          ELSE
+            sel := 1;
+          END IF;
+        END IF;
+        
+      WHEN array_pnt1 = 0 AND array_pnt2 <> 0 THEN
+        IF geom_stats2.st_funcs IS NOT NULL THEN
+          FOR i IN 1..geom_stats2.st_funcs.COUNT LOOP
+            pos1 := INSTR(geom_stats2.st_funcs(i),':');
+            pos2 := INSTR(geom_stats2.st_funcs(i),',');
+            func_name := SUBSTR(geom_stats2.st_funcs(i),1,pos1 - 1)||'_F';
+            IF UPPER(func_name) = relate_operator THEN
+              lng := LENGTH(geom_stats2.st_funcs(i));
+              usersel := SUBSTR(geom_stats1.st_funcs(i),-(lng - pos2),lng - pos2);
+              IF usersel <> 'NULL' THEN
+                sel := TO_NUMBER(usersel);
+               ELSE
+                EXIT;
+              END IF;
+              IF strt = 0 THEN
+                sel := 100 - sel;
+              END IF;
+              RETURN odciconst.success;
+            END IF;
+          END LOOP;
+        END IF;
+        
+        IF geom_stats2.num_rows IS NOT NULL THEN
+          SELECT value INTO buffer FROM nls_session_parameters WHERE parameter = 'NLS_NUMERIC_CHARACTERS';
+
+          IF SUBSTR(buffer,1,1) = ',' THEN
+            dens_mult := TO_NUMBER('0,1');
+           ELSE
+            dens_mult := .1;
+          END IF;
+
+          sel := CEIL(geom_stats2.density * dens_mult)/(geom_stats2.num_rows - num_nulls2) * 100;
+          IF strt = 0 THEN
+            sel := 100 - sel;
+          END IF;
+        ELSE
+          IF strt = 0 THEN
+            sel := 99;
+          ELSE
+            sel := 1;
+          END IF;
+        END IF;
+        
+      WHEN array_pnt1 = 0 AND array_pnt2 = 0 THEN
+        IF strt = 0 THEN
+          sel := 99;
+        ELSE
+          sel := 1;
+        END IF;
+    END CASE;
+      
+    RETURN odciconst.success;
+	
+  END odcistatsselectivity;
+
+ /***********************************************************************
+  *
+  *N  {ODCIStatsIndexCost}                              
+
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *P  Purpose: Compute the domain index cost for st_relation_operators.
+  *  
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *A  Parameters:
+  *     
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *X  Exceptions:
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *H  History:
+  *
+  *    Thomas Brown        12/01/06           Original coding.
+  *
+  *E
+  ***********************************************************************/  
+  STATIC FUNCTION odcistatsindexcost(ia      sys.odciindexinfo,
+                                     sel     number,
+                                     cost    Out sys.odcicost,
+                                     qi      sys.odciqueryinfo,
+                                     pred    sys.odcipredinfo,
+                                     args    sys.odciargdesclist,
+                                     strt    number,
+                                     stop    number,
+                                     object  &1..st_geometry,
+                                     env     sys.odcienv)
+       Return number  
+  IS
+
+    CURSOR c_geom_stats (owner_wanted IN VARCHAR2, table_wanted IN VARCHAR2, 
+                         column_wanted IN VARCHAR2) IS
+      SELECT *
+      FROM   &1..st_geometry_index
+      WHERE  owner = owner_wanted AND table_name = table_wanted 
+      AND column_name = column_wanted;
+
+    geom_stats  &1..st_geometry_index%ROWTYPE;
+    null_cnt    NUMBER;
+    buffer      VARCHAR2(2);
+    cpu_seed    NUMBER(9,5);
+
+  BEGIN
+
+    cost := sys.odcicost(NULL, NULL, NULL, NULL);
+    
+    IF sel IS NULL OR sel = -1 THEN
+      cost.cpucost := NULL;
+      cost.iocost := NULL;
+      cost.networkcost := NULL;
+      cost.indexcostinfo := '(Sel: Default - Undefined)';
+      RETURN odciconst.success;
+    END IF;
+    
+    IF sel = 0 THEN
+      cost.cpucost := 0;
+      cost.iocost := 1;
+      cost.networkcost := 0;
+      cost.indexcostinfo := '(Sel: 0)';
+      RETURN odciconst.success;
+    END IF;
+    
+    IF strt = 1 AND pred.objectname = 'ST_DISJOINT' THEN
+      cost.cpucost := 999999999999999;
+      cost.iocost := 999999999999999;
+      cost.networkcost := 0;
+      RETURN odciconst.success;
+    END IF;
+
+    IF strt = 0 AND pred.objectname <> 'ST_DISJOINT' THEN
+      cost.cpucost := 999999999999999;
+      cost.iocost := 999999999999999;
+      cost.networkcost := 0;
+      RETURN odciconst.success;
+    END IF;
+
+    OPEN c_geom_stats (ia.indexschema, ia.indexcols(1).tablename, 
+                       REPLACE(ia.indexcols(1).colname,'"',''));
+    FETCH c_geom_stats INTO geom_stats;
+    IF c_geom_stats%NOTFOUND THEN
+      CLOSE c_geom_stats;
+      RETURN odciconst.error;
+    END IF;
+    CLOSE c_geom_stats;
+
+    IF geom_stats.blevel IS NULL OR geom_stats.leaf_blocks IS NULL 
+     OR geom_stats.clustering_factor IS NULL OR geom_stats.num_rows IS NULL THEN
+      cost.cpucost := NULL;
+      cost.iocost := NULL;
+      cost.networkcost := NULL;
+      cost.indexcostinfo := '(Sel: Default - No Stats)';
+      RETURN odciconst.success;
+    END IF;
+
+    IF geom_stats.num_nulls IS NULL THEN
+      null_cnt := 0;
+     ELSE
+      null_cnt := geom_stats.num_nulls;
+    END IF;
+
+    SELECT value INTO buffer FROM nls_session_parameters WHERE parameter = 'NLS_NUMERIC_CHARACTERS';
+
+    IF SUBSTR(buffer,1,1) = ',' THEN
+      cpu_seed := TO_NUMBER('0,00005');
+     ELSE
+      cpu_seed := .00005;
+    END IF;
+
+    cost.cpucost := (dbms_odci.estimate_cpu_units(cpu_seed) * 1000) * 
+                    ((sel/100) * (geom_stats.num_rows - null_cnt));
+    cost.iocost := geom_stats.blevel + CEIL(geom_stats.leaf_blocks * (sel/100)) + 
+                   CEIL(geom_stats.clustering_factor * (sel/100));
+    cost.networkcost := 0;
+    cost.indexcostinfo := '(Sel: '||ROUND(sel,7)||')';
+
+    RETURN odciconst.success;
+	
+  END odcistatsindexcost;
+
+ /***********************************************************************
+  *
+  *N  {ODCIStatsIndexCost}                              
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *P  Purpose: Compute the domain index cost for st_domain_operators.
+  *  
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *A  Parameters:
+  *     
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *X  Exceptions:
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *H  History:
+  *
+  *    Thomas Brown        12/01/06           Original coding.
+  *
+  *E
+  ***********************************************************************/  
+  STATIC FUNCTION odcistatsindexcost(ia      sys.odciindexinfo,
+                                     sel     number,
+                                     cost    Out sys.odcicost, 
+                                     qi      sys.odciqueryinfo,
+                                     pred    sys.odcipredinfo,
+                                     args    sys.odciargdesclist,
+                                     strt    number,
+                                     stop    number,
+                                     minx    number,
+                                     miny    number, 
+                                     maxx    number, 
+                                     maxy    number,
+                                     env     sys.odcienv)
+       Return number  
+  IS
+
+    CURSOR c_geom_stats (owner_wanted IN VARCHAR2, table_wanted IN VARCHAR2, 
+                         column_wanted IN VARCHAR2) IS
+      SELECT *
+      FROM   &1..st_geometry_index
+      WHERE  owner = owner_wanted AND table_name = table_wanted 
+      AND column_name = column_wanted;
+
+    geom_stats  &1..st_geometry_index%ROWTYPE;
+    null_cnt    NUMBER;
+    buffer      VARCHAR2(2);
+    cpu_seed    NUMBER(9,5);
+
+  BEGIN
+
+    cost := sys.odcicost(NULL, NULL, NULL, NULL);
+
+    IF sel IS NULL OR sel = -1 THEN
+      cost.cpucost := NULL;
+      cost.iocost := NULL;
+      cost.networkcost := NULL;
+      cost.indexcostinfo := '(Sel: Default - Undefined)';
+      RETURN odciconst.success;
+    END IF;
+
+    IF sel = 0 THEN
+      cost.cpucost := 0;
+      cost.iocost := 1;
+      cost.networkcost := 0;
+      cost.indexcostinfo := '(Sel: 0)';
+      RETURN odciconst.success;
+    END IF;
+        
+    IF strt = 1 AND pred.objectname = 'ST_DISJOINT' THEN
+      cost.cpucost := 999999999999999;
+      cost.iocost := 999999999999999;
+      cost.networkcost := 0;
+      RETURN odciconst.success;
+    END IF;
+ 
+    IF strt = 0 AND pred.objectname <> 'ST_DISJOINT' THEN
+      cost.cpucost := 999999999999999;
+      cost.iocost := 999999999999999;
+      cost.networkcost := 0;
+      RETURN odciconst.success;
+    END IF;
+    			
+    OPEN c_geom_stats (ia.indexschema, ia.indexcols(1).tablename,
+                       REPLACE(ia.indexcols(1).colname,'"',''));
+    FETCH c_geom_stats INTO geom_stats;
+    IF c_geom_stats%NOTFOUND THEN
+      CLOSE c_geom_stats;
+      RETURN odciconst.error;
+    END IF;
+    CLOSE c_geom_stats;
+
+    IF geom_stats.blevel IS NULL OR geom_stats.leaf_blocks IS NULL 
+    OR geom_stats.clustering_factor IS NULL OR geom_stats.num_rows IS NULL THEN
+      cost.cpucost := NULL;
+      cost.iocost := NULL;
+      cost.networkcost := NULL;
+      cost.indexcostinfo := '(Sel: Default - No Stats)';
+      RETURN odciconst.success;
+    END IF;
+
+    IF geom_stats.num_nulls IS NULL THEN
+      null_cnt := 0;
+     ELSE
+      null_cnt := geom_stats.num_nulls;
+    END IF;
+
+    SELECT value INTO buffer FROM nls_session_parameters WHERE parameter = 'NLS_NUMERIC_CHARACTERS';
+
+    IF SUBSTR(buffer,1,1) = ',' THEN
+      cpu_seed := TO_NUMBER('0,00005');
+     ELSE
+      cpu_seed := .00005;
+    END IF;
+
+    cost.cpucost := (dbms_odci.estimate_cpu_units(cpu_seed) * 1000) * 
+                    ((sel/100) * (geom_stats.num_rows - null_cnt));
+    cost.iocost := geom_stats.blevel + CEIL(geom_stats.leaf_blocks * (sel/100)) + 
+                   CEIL(geom_stats.clustering_factor * (sel/100));
+    cost.networkcost := 0;
+    cost.indexcostinfo := '(Sel: '||ROUND(sel,7)||')';
+
+    RETURN odciconst.success;
+	
+  END odcistatsindexcost;
+
+ /***********************************************************************
+  *
+  *N  {ODCIStatsIndexCost}                              
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *P  Purpose: Compute the domain index cost for st_relation_operators,
+  *            specifically st_relate.
+  *  
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *A  Parameters:
+  *     
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *X  Exceptions:
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *H  History:
+  *
+  *    Thomas Brown        12/01/06           Original coding.
+  *
+  *E
+  ***********************************************************************/  
+  STATIC FUNCTION odcistatsindexcost(ia      sys.odciindexinfo,
+                                     sel     number,
+                                     cost    Out sys.odcicost,
+                                     qi      sys.odciqueryinfo,
+                                     pred    sys.odcipredinfo,
+                                     args    sys.odciargdesclist,
+                                     strt    number,
+                                     stop    number,
+                                     object  &1..st_geometry,
+                                     matrix  varchar2,
+                                     env     sys.odcienv)
+       Return number  
+  IS
+
+    CURSOR c_geom_stats (owner_wanted IN VARCHAR2, table_wanted IN VARCHAR2, 
+                         column_wanted IN VARCHAR2) IS
+      SELECT *
+      FROM   &1..st_geometry_index
+      WHERE  owner = owner_wanted AND table_name = table_wanted 
+      AND column_name = column_wanted;
+
+    geom_stats  &1..st_geometry_index%ROWTYPE;
+    null_cnt    NUMBER;
+    pos         PLS_INTEGER := 0;
+    buffer      VARCHAR2(2);
+    cpu_seed    NUMBER(9,5);
+
+  BEGIN
+
+    cost := sys.odcicost(NULL, NULL, NULL, NULL);
+    
+    IF sel IS NULL OR sel = -1 THEN
+      cost.cpucost := NULL;
+      cost.iocost := NULL;
+      cost.networkcost := NULL;
+      cost.indexcostinfo := '(Sel: Default - Undefined)';
+      RETURN odciconst.success;
+    END IF;
+
+    IF sel = 0 THEN
+      cost.cpucost := 0;
+      cost.iocost := 1;
+      cost.networkcost := 0;
+      cost.indexcostinfo := '(Sel: 0)';
+      RETURN odciconst.success;
+    END IF;
+    
+    pos := instr(UPPER(matrix),'FF*FF****',1);  -- ST_Disjoint case
+     
+    IF pos > 0 AND strt = 1 THEN
+      cost.cpucost := 999999999999999;
+      cost.iocost := 999999999999999;
+      cost.networkcost := 0;
+      RETURN odciconst.success;
+    END IF;   
+
+    IF strt = 0 OR INSTR(UPPER(matrix),'T') = 0 THEN
+      IF pos = 0 THEN
+        cost.cpucost := 999999999999999;
+        cost.iocost := 999999999999999;
+        cost.networkcost := 0;
+        RETURN odciconst.success;
+      END IF;
+    END IF;
+
+    OPEN c_geom_stats (ia.indexschema, ia.indexcols(1).tablename, 
+                       REPLACE(ia.indexcols(1).colname,'"',''));
+    FETCH c_geom_stats INTO geom_stats;
+    IF c_geom_stats%NOTFOUND THEN
+      CLOSE c_geom_stats;
+      RETURN odciconst.error;
+    END IF;
+    CLOSE c_geom_stats;
+
+    IF geom_stats.blevel IS NULL OR geom_stats.leaf_blocks IS NULL 
+     OR geom_stats.clustering_factor IS NULL OR geom_stats.num_rows IS NULL THEN
+      cost.cpucost := NULL;
+      cost.iocost := NULL;
+      cost.networkcost := NULL;
+      cost.indexcostinfo := '(Sel: Default - No Stats)';
+      RETURN odciconst.success;
+    END IF;
+
+    IF geom_stats.num_nulls IS NULL THEN
+      null_cnt := 0;
+     ELSE
+      null_cnt := geom_stats.num_nulls;
+    END IF;
+
+    SELECT value INTO buffer FROM nls_session_parameters WHERE parameter = 'NLS_NUMERIC_CHARACTERS';
+
+    IF SUBSTR(buffer,1,1) = ',' THEN
+      cpu_seed := TO_NUMBER('0,00005');
+     ELSE
+      cpu_seed := .00005;
+    END IF;
+  
+    cost.cpucost := (dbms_odci.estimate_cpu_units(cpu_seed) * 1000) * 
+                    ((sel/100) * (geom_stats.num_rows - null_cnt));
+    cost.iocost := geom_stats.blevel + CEIL(geom_stats.leaf_blocks * (sel/100)) + 
+                   CEIL(geom_stats.clustering_factor * (sel/100));
+    cost.networkcost := 0;
+    cost.indexcostinfo := '(Sel: '||ROUND(sel,7)||')';
+
+    RETURN odciconst.success;
+
+  END odcistatsindexcost;
+
+/***********************************************************************
+  *
+  *N  {ODCIStatsIndexCost}                              
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *P  Purpose: Compute the domain index cost for st_relation_operators,
+  *            specifically st_buffer_intersects.
+  *  
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *A  Parameters:
+  *     
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *X  Exceptions:
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *H  History:
+  *
+  *    Thomas Brown        12/01/06           Original coding.
+  *
+  *E
+  ***********************************************************************/  
+  STATIC FUNCTION odcistatsindexcost(ia      sys.odciindexinfo,
+                                     sel     number,
+                                     cost    Out sys.odcicost,
+                                     qi      sys.odciqueryinfo,
+                                     pred    sys.odcipredinfo,
+                                     args    sys.odciargdesclist,
+                                     strt    number,
+                                     stop    number,
+                                     object  &1..st_geometry,
+                                     distance number,
+                                     env     sys.odcienv)                                      
+       Return number  
+  IS
+
+    CURSOR c_geom_stats (owner_wanted IN VARCHAR2, table_wanted IN VARCHAR2, 
+                         column_wanted IN VARCHAR2) IS
+      SELECT *
+      FROM   &1..st_geometry_index
+      WHERE  owner = owner_wanted AND table_name = table_wanted 
+      AND column_name = column_wanted;
+
+    geom_stats  &1..st_geometry_index%ROWTYPE;
+    null_cnt    NUMBER;
+    pos         PLS_INTEGER := 0;
+    buffer      VARCHAR2(2);
+    cpu_seed    NUMBER(9,5);
+
+  BEGIN
+
+    cost := sys.odcicost(NULL, NULL, NULL, NULL);
+    
+    IF sel IS NULL OR sel = -1 THEN
+      cost.cpucost := NULL;
+      cost.iocost := NULL;
+      cost.networkcost := NULL;
+      cost.indexcostinfo := '(Sel: Default - Undefined)';
+      RETURN odciconst.success;
+    END IF;
+
+    IF sel = 0 THEN
+      cost.cpucost := 0;
+      cost.iocost := 1;
+      cost.networkcost := 0;
+      cost.indexcostinfo := '(Sel: 0)';
+      RETURN odciconst.success;
+    END IF;
+    
+    IF strt = 0 THEN
+      cost.cpucost := 999999999999999;
+      cost.iocost := 999999999999999;
+      cost.networkcost := 0;
+      RETURN odciconst.success;
+    END IF;
+
+    OPEN c_geom_stats (ia.indexschema, ia.indexcols(1).tablename, 
+                       REPLACE(ia.indexcols(1).colname,'"',''));
+    FETCH c_geom_stats INTO geom_stats;
+    IF c_geom_stats%NOTFOUND THEN
+      CLOSE c_geom_stats;
+      RETURN odciconst.error;
+    END IF;
+    CLOSE c_geom_stats;
+
+    IF geom_stats.blevel IS NULL OR geom_stats.leaf_blocks IS NULL 
+     OR geom_stats.clustering_factor IS NULL OR geom_stats.num_rows IS NULL THEN
+      cost.cpucost := NULL;
+      cost.iocost := NULL;
+      cost.networkcost := NULL;
+      cost.indexcostinfo := '(Sel: Default - No Stats)';
+      RETURN odciconst.success;
+    END IF;
+
+    IF geom_stats.num_nulls IS NULL THEN
+      null_cnt := 0;
+     ELSE
+      null_cnt := geom_stats.num_nulls;
+    END IF;
+
+    SELECT value INTO buffer FROM nls_session_parameters WHERE parameter = 'NLS_NUMERIC_CHARACTERS';
+
+    IF SUBSTR(buffer,1,1) = ',' THEN
+      cpu_seed := TO_NUMBER('0,00005');
+     ELSE
+      cpu_seed := .00005;
+    END IF;
+
+    cost.cpucost := (dbms_odci.estimate_cpu_units(cpu_seed) * 1000) * 
+                    ((sel/100) * (geom_stats.num_rows - null_cnt));
+    cost.iocost := geom_stats.blevel + CEIL(geom_stats.leaf_blocks * (sel/100)) + 
+                   CEIL(geom_stats.clustering_factor * (sel/100));
+    cost.networkcost := 0;
+    cost.indexcostinfo := '(Sel: '||ROUND(sel,7)||')';
+
+    RETURN odciconst.success;
+
+  END odcistatsindexcost;
+
+/***********************************************************************
+  *
+  *N  {ODCIStatsFunctionCost}
+  *                               
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *P  Purpose: Set function cost for st_relation_operators.
+  *  
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *A  Parameters:
+  *     
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *X  &1. Exceptions:
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *H  History:
+  *
+  *    Thomas Brown        12/01/06           Original coding.
+  *
+  *E
+  ***********************************************************************/
+  STATIC FUNCTION odcistatsfunctioncost(func     sys.odcifuncinfo,
+                                        cost     Out sys.odcicost, 
+                                        args     sys.odciargdesclist,
+                                        object1  &1..st_geometry,
+                                        object2  &1..st_geometry,
+                                        env      sys.odcienv)  
+       Return number  
+  IS
+
+    CURSOR c_geom_stats (owner_wanted IN VARCHAR2, table_wanted IN VARCHAR2, 
+                         column_wanted IN VARCHAR2) IS
+      SELECT *
+      FROM   &1..st_geometry_index
+      WHERE  owner = owner_wanted AND table_name = table_wanted 
+      AND column_name = column_wanted;
+
+    geom_stats  &1..st_geometry_index%ROWTYPE;
+    array_pnt   NUMBER;
+    func_name   VARCHAR2(32);
+    pos1        NUMBER;
+    pos2        NUMBER;
+    lng         NUMBER;
+    op_found    BOOLEAN DEFAULT FALSE;
+    usercost    VARCHAR2(28);
+  
+  BEGIN
+
+    FOR i IN 1..args.COUNT LOOP
+      IF args(i).tablename IS NOT NULL THEN
+        array_pnt := i;
+        EXIT;
+      END IF;
+    END LOOP;
+
+    OPEN c_geom_stats (args(array_pnt).tableschema, args(array_pnt).tablename,
+                       REPLACE(args(array_pnt).colname,'"',''));
+    FETCH c_geom_stats INTO geom_stats;
+    IF c_geom_stats%NOTFOUND THEN
+      CLOSE c_geom_stats;
+      RETURN odciconst.error;
+    END IF;
+    CLOSE c_geom_stats;
+
+    cost := sys.odcicost(NULL, NULL, NULL, NULL);
+  
+    IF geom_stats.st_funcs IS NOT NULL THEN
+      FOR i IN 1..geom_stats.st_funcs.COUNT LOOP
+        pos1 := INSTR(geom_stats.st_funcs(i),':');
+        pos2 := INSTR(geom_stats.st_funcs(i),',');
+        func_name := SUBSTR(geom_stats.st_funcs(i),1,pos1 - 1)||'_F';
+        IF UPPER(func_name) = func.methodname THEN
+          lng := LENGTH(geom_stats.st_funcs(i));
+          usercost := SUBSTR(geom_stats.st_funcs(i),-(lng - pos1),pos2 - (pos1 + 1));
+          IF usercost <> 'NULL' THEN
+            op_found := TRUE;
+            cost.cpucost := TO_NUMBER(usercost);
+           ELSE
+            EXIT;
+          END IF;
+          EXIT; 
+        END IF;
+      END LOOP;
+    END IF;
+ 
+    IF op_found = FALSE THEN
+      CASE
+        WHEN func.methodname = 'ST_ENVINTERSECTS_SHAPE_F' THEN
+          cost.cpucost := 1001;
+        WHEN func.methodname = 'ST_INTERSECTS_F' THEN
+          cost.cpucost := 1002;
+        WHEN func.methodname = 'ST_OVERLAPS_F' THEN
+          cost.cpucost := 1003;
+        WHEN func.methodname = 'ST_CONTAINS_F' THEN
+          cost.cpucost := 1004;
+        WHEN func.methodname = 'ST_WITHIN_F' THEN
+          cost.cpucost := 1005;
+        WHEN func.methodname = 'ST_TOUCHES_F' THEN
+          cost.cpucost := 1006;
+        WHEN func.methodname = 'ST_DISTANCE_F' THEN
+          cost.cpucost := 1007;
+        WHEN func.methodname = 'ST_ORDERINEQUALS_F' THEN
+          cost.cpucost := 1008;
+        WHEN func.methodname = 'ST_EQUALS_F' THEN
+          cost.cpucost := 1009;
+        WHEN func.methodname = 'ST_DISJOINT_F' THEN
+          cost.cpucost := 1010;
+        WHEN func.methodname = 'ST_CROSSES_F' THEN
+          cost.cpucost := 1011;
+        ELSE
+          cost.cpucost := 1012;
+      END CASE;
+    END IF;
+
+    cost.iocost := 0;
+    cost.networkcost := 0;
+    RETURN odciconst.success;
+  
+  END odcistatsfunctioncost;
+
+/***********************************************************************
+  *
+  *N  {ODCIStatsFunctionCost}
+  *                               
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *P  Purpose: Set function cost for st_domain_operators.
+  *  
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *A  Parameters:
+  *     
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *X  &1. Exceptions:
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *H  History:
+  *
+  *    Thomas Brown        12/01/06           Original coding.
+  *
+  *E
+  ***********************************************************************/
+  STATIC FUNCTION odcistatsfunctioncost(func     sys.odcifuncinfo,
+                                        cost     Out sys.odcicost, 
+                                        args     sys.odciargdesclist,
+                                        object   &1..st_geometry, 
+                                        minx     number, 
+                                        miny     number, 
+                                        maxx     number, 
+                                        maxy     number,
+                                        env      sys.odcienv)
+       Return number  
+  IS
+
+    CURSOR c_geom_stats (owner_wanted IN VARCHAR2, table_wanted IN VARCHAR2, 
+                         column_wanted IN VARCHAR2) IS
+      SELECT *
+      FROM   &1..st_geometry_index
+      WHERE  owner = owner_wanted AND table_name = table_wanted 
+      AND column_name = column_wanted;
+
+    geom_stats  &1..st_geometry_index%ROWTYPE;
+    array_pnt   NUMBER;
+    pos1        NUMBER;
+    pos2        NUMBER;
+    lng         NUMBER;
+    usercost    VARCHAR2(28);
+  
+  BEGIN
+
+    FOR i IN 1..args.COUNT LOOP
+      IF args(i).tablename IS NOT NULL THEN
+        array_pnt := i;
+        EXIT;
+      END IF;
+    END LOOP;
+
+    OPEN c_geom_stats (args(array_pnt).tableschema, args(array_pnt).tablename,
+                       REPLACE(args(array_pnt).colname,'"',''));
+    FETCH c_geom_stats INTO geom_stats;
+    IF c_geom_stats%NOTFOUND THEN
+      CLOSE c_geom_stats;
+      RETURN odciconst.error;
+    END IF;
+    CLOSE c_geom_stats;
+
+    cost := sys.odcicost(NULL, NULL, NULL, NULL);
+  
+    IF geom_stats.st_funcs IS NOT NULL THEN
+      FOR i IN 1..geom_stats.st_funcs.COUNT LOOP
+        pos1 := INSTR(geom_stats.st_funcs(i),':');
+        pos2 := INSTR(geom_stats.st_funcs(i),',');
+        IF SUBSTR(geom_stats.st_funcs(i),1,pos1 - 1) = 'ST_ENVINTERSECTS' THEN
+          lng := LENGTH(geom_stats.st_funcs(i));
+          usercost := SUBSTR(geom_stats.st_funcs(i),-(lng - pos1),pos2 - (pos1 + 1));
+          IF usercost <> 'NULL' THEN
+            cost.cpucost := TO_NUMBER(usercost);
+           ELSE
+            cost.cpucost := 1000;
+          END IF;
+          EXIT; 
+        END IF;
+      END LOOP;
+     ELSE
+      cost.cpucost := 1000;
+    END IF;
+
+    cost.iocost := 0;
+    cost.networkcost := 0;
+    RETURN odciconst.success;
+  
+  END odcistatsfunctioncost;
+
+/***********************************************************************
+  *
+  *N  {ODCIStatsFunctionCost}
+  *                               
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *P  Purpose: Set function cost for st_relation_operators,
+  *            specifically for st_relate.
+  *  
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *A  Parameters:
+  *     
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *X  &1. Exceptions:
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *H  History:
+  *
+  *    Thomas Brown        1/03/07           Original coding.
+  *
+  *E
+  ***********************************************************************/
+  STATIC FUNCTION odcistatsfunctioncost(func     sys.odcifuncinfo,
+                                        cost     Out sys.odcicost, 
+                                        args     sys.odciargdesclist,
+                                        object1  &1..st_geometry,
+                                        object2  &1..st_geometry,
+                                        matrix   varchar2,
+                                        env      sys.odcienv)  
+       Return number  
+  IS
+
+    CURSOR c_geom_stats (owner_wanted IN VARCHAR2, table_wanted IN VARCHAR2, 
+                         column_wanted IN VARCHAR2) IS
+      SELECT *
+      FROM   &1..st_geometry_index
+      WHERE  owner = owner_wanted AND table_name = table_wanted 
+      AND column_name = column_wanted;
+
+    geom_stats  &1..st_geometry_index%ROWTYPE;
+    array_pnt   NUMBER;
+    func_name   VARCHAR2(32);
+    pos1        NUMBER;
+    pos2        NUMBER;
+    lng         NUMBER;
+    op_found    BOOLEAN DEFAULT FALSE;
+    usercost    VARCHAR2(28);
+  
+  BEGIN
+
+    FOR i IN 1..args.COUNT LOOP
+      IF args(i).tablename IS NOT NULL THEN
+        array_pnt := i;
+        EXIT;
+      END IF;
+    END LOOP;
+
+    OPEN c_geom_stats (args(array_pnt).tableschema, args(array_pnt).tablename,
+                       REPLACE(args(array_pnt).colname,'"',''));
+    FETCH c_geom_stats INTO geom_stats;
+    IF c_geom_stats%NOTFOUND THEN
+      CLOSE c_geom_stats;
+      RETURN odciconst.error;
+    END IF;
+    CLOSE c_geom_stats;
+
+    cost := sys.odcicost(NULL, NULL, NULL, NULL);
+  
+    IF geom_stats.st_funcs IS NOT NULL THEN
+      FOR i IN 1..geom_stats.st_funcs.COUNT LOOP
+        pos1 := INSTR(geom_stats.st_funcs(i),':');
+        pos2 := INSTR(geom_stats.st_funcs(i),',');
+        func_name := SUBSTR(geom_stats.st_funcs(i),1,pos1 - 1)||'_F';
+        IF UPPER(func_name) = func.methodname THEN
+          lng := LENGTH(geom_stats.st_funcs(i));
+          usercost := SUBSTR(geom_stats.st_funcs(i),-(lng - pos1),pos2 - (pos1 + 1));
+          IF usercost <> 'NULL' THEN
+            op_found := TRUE;
+            cost.cpucost := TO_NUMBER(usercost);
+           ELSE
+            EXIT;
+          END IF;
+          EXIT; 
+        END IF;
+      END LOOP;
+    END IF;
+
+    IF op_found = FALSE THEN
+      CASE
+        WHEN UPPER(matrix) = 'T********' THEN  -- Intersects
+          cost.cpucost := 1002;
+        WHEN UPPER(matrix) = '*T*******' THEN  -- Intersects
+          cost.cpucost := 1002;
+        WHEN UPPER(matrix) = '**T******' THEN  -- Intersects
+          cost.cpucost := 1002;
+        WHEN UPPER(matrix) = '***T*****' THEN  -- Intersects
+          cost.cpucost := 1002;
+        WHEN UPPER(matrix) = 'T*T***T**' THEN  -- Overlap
+          cost.cpucost := 1003;
+        WHEN UPPER(matrix) = '1*T***T**' THEN  -- Overlap
+          cost.cpucost := 1003;
+        WHEN UPPER(matrix) = 'T*****FF*' THEN  -- Contains
+          cost.cpucost := 1004;
+        WHEN UPPER(matrix) = 'T*F**F***' THEN  -- Within
+          cost.cpucost := 1005;
+        WHEN UPPER(matrix) = 'F**T*****' THEN  -- Touch
+          cost.cpucost := 1006;
+        WHEN UPPER(matrix) = 'F***T****' THEN  -- Touch
+          cost.cpucost := 1006;
+        WHEN UPPER(matrix) = 'T*F**FFF*' THEN  -- Equality
+          cost.cpucost := 1009;
+        WHEN UPPER(matrix) = 'FF*FF****' THEN  -- Disjoint
+          cost.cpucost := 1010;
+        WHEN UPPER(matrix) = 'T*T******' THEN  -- Crosses
+          cost.cpucost := 1011;
+        WHEN UPPER(matrix) = '0********' THEN  -- Crosses
+          cost.cpucost := 1011;
+        ELSE
+          cost.cpucost := 1012;
+      END CASE;
+    END IF;
+
+    cost.iocost := 0;
+    cost.networkcost := 0;
+    RETURN odciconst.success;
+  
+  END odcistatsfunctioncost;
+
+/***********************************************************************
+  *
+  *N  {ODCIStatsFunctionCost}
+  *                               
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *P  Purpose: Set function cost for st_relation_operators,
+  *            specifically for st_buffer_intersects.
+  *  
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *A  Parameters:
+  *     
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *X  &1. Exceptions:
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *H  History:
+  *
+  *    Thomas Brown        03/10/08           Original coding.
+  *
+  *E
+  ***********************************************************************/
+  STATIC FUNCTION odcistatsfunctioncost(func     sys.odcifuncinfo,
+                                        cost     Out sys.odcicost, 
+                                        args     sys.odciargdesclist,
+                                        object1  &1..st_geometry,
+                                        object2  &1..st_geometry,
+                                        distance number,
+                                        env      sys.odcienv)  
+       Return number  
+  IS
+
+    CURSOR c_geom_stats (owner_wanted IN VARCHAR2, table_wanted IN VARCHAR2, 
+                         column_wanted IN VARCHAR2) IS
+      SELECT *
+      FROM   &1..st_geometry_index
+      WHERE  owner = owner_wanted AND table_name = table_wanted 
+      AND column_name = column_wanted;
+
+    geom_stats  &1..st_geometry_index%ROWTYPE;
+    array_pnt   NUMBER;
+    pos1        NUMBER;
+    pos2        NUMBER;
+    lng         NUMBER;
+    usercost    VARCHAR2(28);
+  
+  BEGIN
+
+    FOR i IN 1..args.COUNT LOOP
+      IF args(i).tablename IS NOT NULL THEN
+        array_pnt := i;
+        EXIT;
+      END IF;
+    END LOOP;
+
+    OPEN c_geom_stats (args(array_pnt).tableschema, args(array_pnt).tablename,
+                       REPLACE(args(array_pnt).colname,'"',''));
+    FETCH c_geom_stats INTO geom_stats;
+    IF c_geom_stats%NOTFOUND THEN
+      CLOSE c_geom_stats;
+      RETURN odciconst.error;
+    END IF;
+    CLOSE c_geom_stats;
+
+    cost := sys.odcicost(NULL, NULL, NULL, NULL);
+  
+    IF geom_stats.st_funcs IS NOT NULL THEN
+      FOR i IN 1..geom_stats.st_funcs.COUNT LOOP
+        pos1 := INSTR(geom_stats.st_funcs(i),':');
+        pos2 := INSTR(geom_stats.st_funcs(i),',');
+        IF SUBSTR(geom_stats.st_funcs(i),1,pos1 - 1) = 'ST_BUFFER_INTERSECTS' THEN
+          lng := LENGTH(geom_stats.st_funcs(i));
+          usercost := SUBSTR(geom_stats.st_funcs(i),-(lng - pos1),pos2 - (pos1 + 1));
+          IF usercost <> 'NULL' THEN
+            cost.cpucost := TO_NUMBER(usercost);
+           ELSE
+            cost.cpucost := 1013;
+          END IF;
+          EXIT; 
+        END IF;
+      END LOOP;
+     ELSE
+      cost.cpucost := 1013;
+    END IF;
+
+    cost.iocost := 0;
+    cost.networkcost := 0;
+    RETURN odciconst.success;
+  
+  END odcistatsfunctioncost;
+
+  STATIC FUNCTION get_release
+       RETURN NUMBER
+  IS
+    c_type_release  CONSTANT pls_integer := 1116;
+  BEGIN
+    RETURN c_type_release;
+  END get_release;
+
+END;
+/

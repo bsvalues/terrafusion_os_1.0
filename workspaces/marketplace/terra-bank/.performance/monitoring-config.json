@@ -1,0 +1,87 @@
+{
+  "workspace": "terra-bank",
+  "risk_level": "MEDIUM",
+  "monitoring": {
+    "sla": {
+      "uptime_target": 99.5,
+      "response_time_p95_ms": 150,
+      "response_time_p99_ms": 300,
+      "max_error_rate": 0.2,
+      "throughput_target": "100 req/sec"
+    },
+    "collection": {
+      "interval_seconds": 30,
+      "retention_days": 90,
+      "aggregation_periods": [
+        "1m",
+        "5m",
+        "15m",
+        "1h",
+        "1d"
+      ]
+    },
+    "metrics": [
+      "request_count",
+      "response_time",
+      "error_rate",
+      "throughput",
+      "cpu_usage",
+      "memory_usage",
+      "database_connections",
+      "cache_hit_rate",
+      "authentication_latency",
+      "api_gateway_latency"
+    ]
+  },
+  "alerts": {
+    "priority": "MEDIUM",
+    "escalation_minutes": [
+      10,
+      30,
+      60
+    ],
+    "rules": [
+      {
+        "metric": "response_time_p95",
+        "threshold": 180.0,
+        "severity": "warning"
+      },
+      {
+        "metric": "response_time_p95",
+        "threshold": 225.0,
+        "severity": "critical"
+      },
+      {
+        "metric": "error_rate",
+        "threshold": 0.30000000000000004,
+        "severity": "warning"
+      },
+      {
+        "metric": "error_rate",
+        "threshold": 0.4,
+        "severity": "critical"
+      },
+      {
+        "metric": "uptime",
+        "threshold": 98.505,
+        "severity": "warning"
+      },
+      {
+        "metric": "uptime",
+        "threshold": 94.52499999999999,
+        "severity": "critical"
+      }
+    ]
+  },
+  "dashboards": {
+    "real_time": true,
+    "refresh_interval_seconds": 10,
+    "views": [
+      "overview",
+      "performance",
+      "sla",
+      "alerts",
+      "optimization"
+    ]
+  }
+}

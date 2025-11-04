@@ -1,0 +1,33 @@
+{
+    "map": {
+        "boundary.descr": "The polygon features defining the area that will be clipped.",
+        "boundary.title": "Extraction Boundary",
+        "compression.descr": "<xdoc><p>Specifies whether the output .las file will be in a compressed format or the standard LAS format.</p><ul><li><span title=\"NO_COMPRESSION\">No Compression</span>—The output will be in the standard LAS format (*.las file). This is the default.</li><li><span title=\"ZLAS\">zLAS Compression</span>—Output .las files will be compressed in the zLAS format.</li></ul></xdoc>",
+        "compression.domain.NO_COMPRESSION": "No Compression",
+        "compression.domain.ZLAS": "zLAS Compression",
+        "compression.title": "Compression",
+        "compute_stats.descr": "<xdoc><p>Specifies whether statistics will be computed for the .las files referenced by the LAS dataset. Computing statistics provides a spatial index for each .las file, which improves analysis and display performance. Statistics also enhance the filtering and symbology experience by limiting the display of LAS attributes, such as classification codes and return information, to values that are present in the .las file.</p><ul><li>Checked—Statistics will be computed. This is the default.</li><li>Unchecked—Statistics will not be computed.</li></ul></xdoc>",
+        "compute_stats.title": "Compute statistics",
+        "description": "Converts an integrated mesh into a LAS format point cloud.",
+        "extent.descr": "<xdoc><p>The extent of the integrated mesh that will be exported to the point cloud. If the processing extent is specified with an extraction boundary polygon, both the intersection of the extent and the boundary will be exported.</p><ul><li>Current Display Extent—The extent will be based on the active map or scene.</li><li>Draw Extent—The extent will be based on a rectangle drawn on the map or scene.</li><li>Extent of a Layer—The extent will be based on an active map layer. Choose an available layer or use the <span class=\"esri_uicontrol\">Extent of data in all layers</span> option. Each map layer has the following options:<p><ul><li>All Features—The extent of all features.</li><li>Selected Features —The extent of the selected features.</li><li>Visible Features—The extent of visible features.</li></ul></p></li><li>Browse—The extent will be based on a dataset.</li><li>Clipboard—The extent can be copied to and from the clipboard.<ul><li>Copy Extent—Copies the extent and coordinate system to the clipboard.</li><li>Paste Extent—Pastes the extent and coordinate system from the clipboard. If the clipboard does not include a coordinate system, the extent will use the map’s coordinate system.</li></ul></li><li>Reset Extent—The extent will be reset to the default value.</li></ul><p>When coordinates are manually provided, the coordinates must be numeric values and in the active map&apos;s coordinate system. The map may use different display units than the provided coordinates. Use a negative value sign for south and west coordinates.</p></xdoc>",
+        "extent.title": "Processing Extent",
+        "in_mesh.descr": "The integrated mesh scene layer package or I3S service that will be exported to the LAS format point cloud.",
+        "in_mesh.title": "Input Integrated Mesh",
+        "maximum_triangle_area.descr": "<xdoc><p>Controls the density of points created from the integrated mesh by defining the maximum area of each triangle that contributes points. Any mesh triangle that is larger than this value will be subdivided. If no value is provided, one point will be sampled from the face of each triangle.</p><p>This parameter is only used when the <span class=\"esri_uicontrol\">Method</span> parameter is set to <span class=\"esri_uicontrol\">Sample Points From Faces</span></p></xdoc>",
+        "maximum_triangle_area.title": "Maximum Triangle Area",
+        "method.descr": "<xdoc><p>Specifies the method that will be used to create the point cloud from the integrated mesh.</p><ul><li><span title=\"SAMPLE_POINTS_FROM_FACES\">Sample Points From Faces</span>—Points will be sampled from the integrated mesh triangle faces. Triangles may potentially be subdivided based on the <span class=\"esri_uicontrol\">Maximum Triangle Area</span> parameter value. The centroid of each triangle or subdivided triangle will be converted to points. This is the default.</li><li><span title=\"USE_TRIANGLE_VERTICES\">Use Triangle Vertices</span>—Points will be created from the vertices of the integrated mesh.</li></ul></xdoc>",
+        "method.domain.SAMPLE_POINTS_FROM_FACES": "Sample Points From Faces",
+        "method.domain.USE_TRIANGLE_VERTICES": "Use Triangle Vertices",
+        "method.title": "Method",
+        "out_folder.title": "Output Folder",
+        "out_las_dataset.descr": "The output LAS dataset that will reference the LAS format files created by the conversion process.",
+        "out_las_dataset.title": "Output LAS Dataset",
+        "params.category1": "Processing Extent",
+        "params.category2": "LAS File Options",
+        "rearrange_points.descr": "<xdoc><p>Specifies whether points in the .las files will be rearranged.</p><ul><li>Unchecked—The order of the points in the .las files will not be rearranged.</li><li>Checked—The points in the .las files will be rearranged. This is the default.</li></ul></xdoc>",
+        "rearrange_points.title": "Rearrange LAS Points",
+        "target_folder.descr": "The folder where the output LAS format files that will be created from the integrated mesh will be stored.",
+        "target_folder.title": "Target Folder",
+        "title": "Mesh To LAS"
+    }
+}

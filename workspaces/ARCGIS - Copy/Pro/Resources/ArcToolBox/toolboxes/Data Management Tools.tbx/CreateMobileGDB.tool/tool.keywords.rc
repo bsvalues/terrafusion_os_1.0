@@ -1,0 +1,12 @@
+{
+    "set": [
+        ".geodatabase",
+        "mobile",
+        "mobile gdb",
+        "runtime",
+        "sqlite",
+        "workspace",
+        "geodatabase",
+        "offline geodatabase"
+    ]
+}

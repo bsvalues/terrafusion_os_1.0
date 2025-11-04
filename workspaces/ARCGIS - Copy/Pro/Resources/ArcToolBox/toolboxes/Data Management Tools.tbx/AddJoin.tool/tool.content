@@ -1,0 +1,234 @@
+{
+    "type": "FunctionTool",
+    "guid": "{1445de8a-f00c-467e-a72c-06a543bfd244}",
+    "displayname": "$rc:title",
+    "helpcontent": "3100001",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "no_data_change",
+        "param_nocount:in_layer_or_view",
+        "param_nocount:join_table"
+    ],
+    "params": {
+        "in_layer_or_view": {
+            "displayname": "$rc:in_layer_or_view.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPLayersAndTablesDomain",
+                "hidesubtypelayers": "true",
+                "hidesubtypegrouplayers": "true"
+            },
+            "description": "$rc:in_layer_or_view.descr"
+        },
+        "in_field": {
+            "displayname": "$rc:in_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Date",
+                    "OID",
+                    "GUID",
+                    "GlobalID",
+                    "BigInteger",
+                    "DateOnly",
+                    "TimeOnly",
+                    "TimestampOffset"
+                ]
+            },
+            "depends": [
+                "in_layer_or_view"
+            ],
+            "description": "$rc:in_field.descr"
+        },
+        "join_table": {
+            "displayname": "$rc:join_table.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "description": "$rc:join_table.descr"
+        },
+        "join_field": {
+            "displayname": "$rc:join_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Date",
+                    "OID",
+                    "GUID",
+                    "GlobalID",
+                    "BigInteger",
+                    "DateOnly",
+                    "TimeOnly",
+                    "TimestampOffset"
+                ]
+            },
+            "depends": [
+                "join_table"
+            ],
+            "description": "$rc:join_field.descr"
+        },
+        "join_type": {
+            "type": "optional",
+            "displayname": "$rc:join_type.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "KEEP_ALL"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "KEEP_COMMON"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:join_type.descr"
+        },
+        "out_layer_or_view": {
+            "type": "derived",
+            "direction": "out",
+            "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}",
+            "displayname": "$rc:out_layer_or_view.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "depends": [
+                "in_layer_or_view"
+            ]
+        },
+        "index_join_fields": {
+            "type": "optional",
+            "displayname": "$rc:index_join_fields.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "INDEX_JOIN_FIELDS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_INDEX_JOIN_FIELDS"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:index_join_fields.descr"
+        },
+        "rebuild_index": {
+            "type": "optional",
+            "displayname": "$rc:rebuild_index.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "REBUILD_INDEX"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_REBUILD_INDEX"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:rebuild_index.descr"
+        },
+        "join_operation": {
+            "type": "optional",
+            "displayname": "$rc:join_operation.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "JOIN_ONE_TO_FIRST",
+                        "code": "$rc:join_operation.domain.JOIN_ONE_TO_FIRST"
+                    },
+                    {
+                        "value": "JOIN_ONE_TO_MANY",
+                        "code": "$rc:join_operation.domain.JOIN_ONE_TO_MANY"
+                    }
+                ]
+            },
+            "description": "$rc:join_operation.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

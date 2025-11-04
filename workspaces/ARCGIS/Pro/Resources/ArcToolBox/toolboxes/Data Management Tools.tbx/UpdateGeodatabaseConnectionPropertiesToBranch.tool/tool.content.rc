@@ -1,0 +1,9 @@
+{
+    "map": {
+        "description": "Updates an enterprise geodatabase connection to work with branch versioning.",
+        "input_database.descr": "The input enterprise geodatabase connection to update.",
+        "input_database.title": "Input Geodatabase Connection",
+        "out_workspace.title": "Updated Geodatabase Connection Properties To Branch",
+        "title": "Update Geodatabase Connection Properties To Branch"
+    }
+}

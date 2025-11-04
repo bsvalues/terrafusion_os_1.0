@@ -1,35 +1,88 @@
 /* TerraFusion OS - Official Brand Implementation */
 /* Government. Transcended. */
 :root {
-  /* Official TerraFusion Brand Colors */
-  --tf-primary: #0099ff;        /* Trust & Technology */
-  --tf-primary-dark: #0077cc;   /* Primary Dark Variant */
-  --tf-accent: #00ffaa;         /* Growth & Success */
-  --tf-accent-dark: #00cc88;    /* Accent Dark Variant */
-  --tf-transcend: #00ffee;      /* Transcendence & Innovation */
-  --tf-dark: #0b1020;           /* Depth & Sophistication */
-  --tf-dark-lighter: #1a1f3a;   /* Dark Lighter Variant */
-  --tf-light: #ffffff;          /* Pure White */
-  --tf-gray: #888888;           /* Neutral Gray */
-  --tf-gray-light: #cccccc;     /* Light Gray */
-  
+  /* Official TerraFusion Quantum Brand Colors */
+  --tf-primary: #00ffff; /* Terra-Cyan - The Consciousness Color */
+  --tf-primary-dark: #00cccc; /* Terra-Cyan Dark Variant */
+  --tf-accent: #00ffaa; /* Quantum Growth & Success */
+  --tf-accent-dark: #00cc88; /* Accent Dark Variant */
+  --tf-transcend: #00ffee; /* Transcendence & Innovation */
+  --tf-dark: #0a0e1a; /* Terra-Midnight - The Void */
+  --tf-dark-lighter: #1e293b; /* Terra-Slate - Surface Foundation */
+  --tf-light: #ffffff; /* Pure White */
+  --tf-gray: #888888; /* Neutral Gray */
+  --tf-gray-light: #cccccc; /* Light Gray */
+
   /* Semantic Colors */
-  --tf-success: #00ff88;        /* Achievement */
-  --tf-error: #ff3333;          /* Attention */
-  --tf-warning: #ffaa00;        /* Caution */
-  --tf-clarity: #e0f7ff;        /* Understanding */
+  --tf-success: #00ff88; /* Achievement */
+  --tf-error: #ff3333; /* Attention */
+  --tf-warning: #ffaa00; /* Caution */
+  --tf-clarity: #e0f7ff; /* Understanding */
+
+  /* Quantum Design Tokens */
+  --terra-cyan: #00ffff;
+  --terra-midnight: #0a0e1a;
+  --terra-blue: #0080ff;
+  --terra-slate: #1e293b;
 }
 
 /* Global Styles */
 body {
   background: linear-gradient(135deg, var(--tf-dark), var(--tf-dark-lighter));
   color: var(--tf-light);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   margin: 0;
   padding: 0;
   min-height: 100vh;
   overflow-x: hidden;
   scroll-behavior: smooth;
+  animation: quantum-consciousness 20s infinite linear;
+}
+
+@keyframes quantum-consciousness {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Revolutionary Quantum Background Effect */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(circle at 20% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(0, 255, 170, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(102, 51, 255, 0.1) 0%, transparent 50%);
+  animation: quantum-field 30s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes quantum-field {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+  33% {
+    opacity: 0.8;
+    transform: scale(1.1) rotate(120deg);
+  }
+  66% {
+    opacity: 0.6;
+    transform: scale(0.9) rotate(240deg);
+  }
 }
 
 /* TerraFusion Transcendence Brand Styles */
@@ -37,365 +90,552 @@ body {
 
 /* Transcendence Effects */
 .transcend-glow {
-    box-shadow: 
-        0 0 20px rgba(0, 255, 238, 0.4),
-        0 0 40px rgba(0, 153, 255, 0.3),
-        0 0 60px rgba(0, 255, 170, 0.2);
-    transition: all 0.3s ease;
+  box-shadow:
+    0 0 20px rgba(0, 255, 238, 0.4),
+    0 0 40px rgba(0, 153, 255, 0.3),
+    0 0 60px rgba(0, 255, 170, 0.2);
+  transition: all 0.3s ease;
 }
 
 .transcend-glow:hover {
-    box-shadow: 
-        0 0 30px rgba(0, 255, 238, 0.6),
-        0 0 60px rgba(0, 153, 255, 0.4),
-        0 0 90px rgba(0, 255, 170, 0.3);
+  box-shadow:
+    0 0 30px rgba(0, 255, 238, 0.6),
+    0 0 60px rgba(0, 153, 255, 0.4),
+    0 0 90px rgba(0, 255, 170, 0.3);
 }
 
 /* Clarity Gradient */
 .clarity-gradient {
-    background: linear-gradient(135deg, 
-        var(--tf-primary) 0%, 
-        var(--tf-transcend) 50%, 
-        var(--tf-accent) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--tf-primary) 0%,
+    var(--tf-transcend) 50%,
+    var(--tf-accent) 100%
+  );
 }
 
 .clarity-gradient-text {
-    background: linear-gradient(135deg, 
-        var(--tf-primary) 0%, 
-        var(--tf-transcend) 50%, 
-        var(--tf-accent) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  background: linear-gradient(
+    135deg,
+    var(--tf-primary) 0%,
+    var(--tf-transcend) 50%,
+    var(--tf-accent) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* Intelligence Pulse */
 @keyframes intelligencePulse {
-    0%, 100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-    50% {
-        transform: scale(1.05);
-        opacity: 0.9;
-    }
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
 }
 
 .intelligence-pulse {
-    animation: intelligencePulse 3s ease-in-out infinite;
+  animation: intelligencePulse 3s ease-in-out infinite;
 }
 
 /* Transcendence Animations */
 @keyframes transcendenceReveal {
-    0% {
-        opacity: 0;
-        transform: translateY(20px) scale(0.95);
-        filter: blur(5px);
-    }
-    50% {
-        filter: blur(2px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-        filter: blur(0);
-    }
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    filter: blur(5px);
+  }
+  50% {
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
 }
 
 .transcend-reveal {
-    animation: transcendenceReveal 0.8s ease-out forwards;
+  animation: transcendenceReveal 0.8s ease-out forwards;
 }
 
 /* Clarity Ripple Effect */
 @keyframes clarityRipple {
-    0% {
-        transform: scale(0);
-        opacity: 1;
-    }
-    100% {
-        transform: scale(4);
-        opacity: 0;
-    }
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
 }
 
 .clarity-ripple {
-    position: relative;
+  position: relative;
 }
 
 .clarity-ripple::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 100%;
-    height: 100%;
-    transform: translate(-50%, -50%);
-    background: radial-gradient(circle, 
-        rgba(0, 255, 238, 0.3) 0%, 
-        transparent 70%);
-    border-radius: 50%;
-    transform-origin: center;
-    animation: clarityRipple 0.6s ease-out;
-    pointer-events: none;
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(0, 255, 238, 0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  transform-origin: center;
+  animation: clarityRipple 0.6s ease-out;
+  pointer-events: none;
 }
 
 /* Government Transcended Badge */
 .transcended-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background: linear-gradient(135deg, 
-        rgba(0, 153, 255, 0.1) 0%, 
-        rgba(0, 255, 238, 0.1) 100%);
-    border: 1px solid var(--tf-transcend);
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--tf-transcend);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, rgba(0, 153, 255, 0.1) 0%, rgba(0, 255, 238, 0.1) 100%);
+  border: 1px solid var(--tf-transcend);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--tf-transcend);
 }
 
 /* Module Transcendence States */
 .module-transcending {
-    position: relative;
-    overflow: hidden;
+  position: relative;
+  overflow: hidden;
 }
 
 .module-transcending::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(45deg, 
-        var(--tf-primary), 
-        var(--tf-transcend), 
-        var(--tf-accent), 
-        var(--tf-transcend), 
-        var(--tf-primary));
-    background-size: 400% 400%;
-    animation: transcendenceFlow 3s ease infinite;
-    z-index: -1;
-    opacity: 0;
-    transition: opacity 0.3s ease;
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(
+    45deg,
+    var(--tf-primary),
+    var(--tf-transcend),
+    var(--tf-accent),
+    var(--tf-transcend),
+    var(--tf-primary)
+  );
+  background-size: 400% 400%;
+  animation: transcendenceFlow 3s ease infinite;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .module-transcending:hover::before {
-    opacity: 1;
+  opacity: 1;
 }
 
 @keyframes transcendenceFlow {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 /* Success State - Transcendence Complete */
 .transcendence-complete {
-    position: relative;
-    overflow: hidden;
+  position: relative;
+  overflow: hidden;
 }
 
 .transcendence-complete::after {
-    content: '✨';
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 20px;
-    animation: sparkle 2s ease-in-out infinite;
+  content: '✨';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 20px;
+  animation: sparkle 2s ease-in-out infinite;
 }
 
 @keyframes sparkle {
-    0%, 100% {
-        opacity: 0.5;
-        transform: scale(1) rotate(0deg);
-    }
-    50% {
-        opacity: 1;
-        transform: scale(1.2) rotate(180deg);
-    }
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2) rotate(180deg);
+  }
 }
 
 /* Loading States - Path to Clarity */
 .clarity-loading {
-    position: relative;
-    color: var(--tf-transcend);
+  position: relative;
+  color: var(--tf-transcend);
 }
 
 .clarity-loading::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, 
-        transparent, 
-        var(--tf-transcend), 
-        transparent);
-    animation: clarityProgress 1.5s ease-in-out infinite;
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--tf-transcend), transparent);
+  animation: clarityProgress 1.5s ease-in-out infinite;
 }
 
 @keyframes clarityProgress {
-    0% {
-        transform: translateX(-100%);
-    }
-    100% {
-        transform: translateX(100%);
-    }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 /* Empty State - Future Begins */
 .future-begins {
-    text-align: center;
-    padding: 60px 40px;
-    background: radial-gradient(circle at center, 
-        rgba(0, 255, 238, 0.05) 0%, 
-        transparent 70%);
-    border: 2px dashed rgba(0, 255, 238, 0.2);
-    border-radius: 12px;
-    position: relative;
+  text-align: center;
+  padding: 60px 40px;
+  background: radial-gradient(circle at center, rgba(0, 255, 238, 0.05) 0%, transparent 70%);
+  border: 2px dashed rgba(0, 255, 238, 0.2);
+  border-radius: 12px;
+  position: relative;
 }
 
 .future-begins::before {
-    content: '🚀';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 80px;
-    opacity: 0.1;
-    animation: float 6s ease-in-out infinite;
+  content: '🚀';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 80px;
+  opacity: 0.1;
+  animation: float 6s ease-in-out infinite;
 }
 
 @keyframes float {
-    0%, 100% {
-        transform: translate(-50%, -50%) translateY(0);
-    }
-    50% {
-        transform: translate(-50%, -50%) translateY(-20px);
-    }
+  0%,
+  100% {
+    transform: translate(-50%, -50%) translateY(0);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateY(-20px);
+  }
 }
 
 /* Button States - Call to Transcendence */
 .btn-transcend {
-    background: linear-gradient(135deg, 
-        var(--tf-primary) 0%, 
-        var(--tf-transcend) 100%);
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
+  background: linear-gradient(135deg, var(--tf-primary) 0%, var(--tf-transcend) 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 .btn-transcend:hover {
-    transform: translateY(-2px);
-    box-shadow: 
-        0 10px 20px rgba(0, 255, 238, 0.3),
-        0 6px 6px rgba(0, 153, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow:
+    0 10px 20px rgba(0, 255, 238, 0.3),
+    0 6px 6px rgba(0, 153, 255, 0.2);
 }
 
 .btn-transcend::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition:
+    width 0.6s,
+    height 0.6s;
 }
 
 .btn-transcend:active::after {
-    width: 300px;
-    height: 300px;
+  width: 300px;
+  height: 300px;
 }
 
 /* Motto Display */
 .motto-display {
-    font-size: 14px;
-    font-style: italic;
-    color: var(--tf-gray-light);
-    letter-spacing: 0.5px;
-    opacity: 0.8;
-    transition: all 0.3s ease;
+  font-size: 14px;
+  font-style: italic;
+  color: var(--tf-gray-light);
+  letter-spacing: 0.5px;
+  opacity: 0.8;
+  transition: all 0.3s ease;
 }
 
 .motto-display:hover {
-    color: var(--tf-transcend);
-    opacity: 1;
+  color: var(--tf-transcend);
+  opacity: 1;
 }
 
 /* Transcendence Complete Notification */
 .notification-transcendence {
-    background: linear-gradient(135deg, 
-        rgba(0, 255, 238, 0.1) 0%, 
-        rgba(0, 255, 170, 0.1) 100%);
-    border-left: 4px solid var(--tf-transcend);
-    padding: 16px 20px;
-    border-radius: 8px;
-    position: relative;
-    animation: slideInRight 0.5s ease-out;
+  background: linear-gradient(135deg, rgba(0, 255, 238, 0.1) 0%, rgba(0, 255, 170, 0.1) 100%);
+  border-left: 4px solid var(--tf-transcend);
+  padding: 16px 20px;
+  border-radius: 8px;
+  position: relative;
+  animation: slideInRight 0.5s ease-out;
 }
 
 .notification-transcendence::before {
-    content: '✨';
-    position: absolute;
-    left: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 24px;
+  content: '✨';
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24px;
 }
 
 /* Focus States - Path to Clarity */
 input:focus,
 textarea:focus,
 select:focus {
-    outline: none;
-    border-color: var(--tf-transcend);
-    box-shadow: 
-        0 0 0 3px rgba(0, 255, 238, 0.1),
-        0 0 20px rgba(0, 255, 238, 0.1);
+  outline: none;
+  border-color: var(--tf-transcend);
+  box-shadow:
+    0 0 0 3px rgba(0, 255, 238, 0.1),
+    0 0 20px rgba(0, 255, 238, 0.1);
 }
 
 /* Scrollbar - Transcendence Theme */
 ::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
+  width: 12px;
+  height: 12px;
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--tf-dark);
+  background: var(--tf-dark);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, 
-        var(--tf-primary) 0%, 
-        var(--tf-transcend) 100%);
-    border-radius: 6px;
+  background: linear-gradient(180deg, var(--tf-primary) 0%, var(--tf-transcend) 100%);
+  border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, 
-        var(--tf-transcend) 0%, 
-        var(--tf-accent) 100%);
+  background: linear-gradient(180deg, var(--tf-transcend) 0%, var(--tf-accent) 100%);
+}
+
+/* TerraFusion OS Quantum Extensions */
+/* Additional classes for the desktop OS interface */
+
+/* Custom TerraFusion colors for OS components */
+.bg-terra-cyan {
+  background-color: var(--tf-primary);
+}
+.bg-terra-midnight {
+  background-color: var(--tf-dark);
+}
+.bg-terra-blue {
+  background-color: #0080ff;
+}
+.bg-terra-slate {
+  background-color: var(--tf-dark-lighter);
+}
+
+.text-terra-cyan {
+  color: var(--tf-primary);
+}
+.text-terra-midnight {
+  color: var(--tf-dark);
+}
+.text-terra-blue {
+  color: #0080ff;
+}
+.text-terra-slate {
+  color: var(--tf-dark-lighter);
+}
+
+.border-terra-cyan {
+  border-color: var(--tf-primary);
+}
+.border-terra-midnight {
+  border-color: var(--tf-dark);
+}
+.border-terra-blue {
+  border-color: #0080ff;
+}
+.border-terra-slate {
+  border-color: var(--tf-dark-lighter);
+}
+
+/* Opacity variants for OS glassmorphism */
+.bg-terra-cyan\/20 {
+  background-color: rgba(0, 255, 255, 0.2);
+}
+.bg-terra-cyan\/30 {
+  background-color: rgba(0, 255, 255, 0.3);
+}
+.bg-terra-midnight\/90 {
+  background-color: rgba(10, 14, 26, 0.9);
+}
+.bg-terra-midnight\/95 {
+  background-color: rgba(10, 14, 26, 0.95);
+}
+.bg-terra-slate\/20 {
+  background-color: rgba(30, 41, 59, 0.2);
+}
+.bg-terra-slate\/30 {
+  background-color: rgba(30, 41, 59, 0.3);
+}
+
+.text-terra-cyan\/50 {
+  color: rgba(0, 255, 255, 0.5);
+}
+.text-terra-cyan\/60 {
+  color: rgba(0, 255, 255, 0.6);
+}
+.text-terra-cyan\/70 {
+  color: rgba(0, 255, 255, 0.7);
+}
+.text-terra-cyan\/80 {
+  color: rgba(0, 255, 255, 0.8);
+}
+
+.border-terra-cyan\/10 {
+  border-color: rgba(0, 255, 255, 0.1);
+}
+.border-terra-cyan\/20 {
+  border-color: rgba(0, 255, 255, 0.2);
+}
+.border-terra-cyan\/30 {
+  border-color: rgba(0, 255, 255, 0.3);
+}
+
+/* Quantum animations for OS */
+@keyframes quantum-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes quantum-flow {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes quantum-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes quantum-orbital {
+  0% {
+    transform: rotate(0deg) translateX(2px) rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg) translateX(2px) rotate(-360deg);
+  }
+}
+
+/* Quantum effect classes */
+.quantum-pulse {
+  animation: quantum-pulse 2s ease-in-out infinite;
+}
+
+.quantum-delay-1 {
+  animation-delay: 0.5s;
+}
+
+.quantum-delay-2 {
+  animation-delay: 1s;
+}
+
+.quantum-glow {
+  animation: transcendenceGlow 3s ease-in-out infinite;
+}
+
+.quantum-flow {
+  background-size: 200% 100%;
+  animation: quantum-flow 2s ease-in-out infinite;
+}
+
+.quantum-shimmer {
+  background-size: 200% 100%;
+  animation: quantum-shimmer 2s ease-in-out infinite;
+}
+
+.quantum-orbital {
+  animation: quantum-orbital 20s linear infinite;
+}
+
+.quantum-hover {
+  transition: all 0.3s ease;
+}
+
+.quantum-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 255, 255, 0.4);
+}
+
+/* TerraFusion Glass Morphism for OS */
+.terra-glass {
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  background: rgba(30, 41, 59, 0.1);
+  border: 1px solid rgba(0, 255, 255, 0.1);
+}
+
+/* Golden Ratio Typography for OS */
+.golden-ratio-text {
+  font-size: 1.618rem;
+  line-height: 1.618;
+}
+
+/* Quantum Grid Pattern for desktop */
+.quantum-grid {
+  background-image: radial-gradient(circle at 1px 1px, var(--tf-primary) 1px, transparent 0);
+  background-size: 40px 40px;
+  opacity: 0.05;
+}
+
+/* OS System font */
+.font-system-ui {
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 /* TerraFusion Dashboard Header Styles */
@@ -441,13 +681,23 @@ select:focus {
 }
 
 @keyframes pulse-green {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 
 @keyframes pulse-red {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
 }
 
 .tf-status-text {

@@ -1,0 +1,21 @@
+{
+    "map": {
+        "are_containers_preserved.descr": "<xdoc><p>Specifies how the algorithm will process containers.<ul><li>Checked—The layout algorithm will apply to the top graph of the diagram so containers are preserved.</li><li>Unchecked—The layout algorithm will apply to both content and noncontent features in the diagram. This is the default.</li></ul></p></xdoc>",
+        "are_containers_preserved.title": "Preserve container layout",
+        "cell_height_absolute.descr": "The height of each grid cell. The default is 2 in the units of the diagram's coordinate system.",
+        "cell_height_absolute.title": "Cell Height",
+        "cell_width_absolute.descr": "The width of each grid cell. The default is 2 in the units of the diagram's coordinate system.",
+        "cell_width_absolute.title": "Cell Width",
+        "description": "Adds the Grid Layout algorithm to the list of layouts to be automatically chained at the end of the building of diagrams based on a given template. This tool also presets the Grid Layout algorithm parameters for any diagram based on that template.",
+        "in_utility_network.descr": "The utility network or trace network containing the diagram template that will be modified.",
+        "in_utility_network.title": "Input Network",
+        "is_active.descr": "<xdoc><p>Specifies whether the layout algorithm will automatically run when generating diagrams based on the specified template.<ul><li>Checked—The added layout algorithm will automatically run during the generation of any diagram that is based on the <span class=\"esri_uicontrol\">Input Diagram Template</span> parameter value. This is the default.<p>The parameter values specified for the layout algorithm are used to run the layout during diagram generation. They are also loaded by default when the algorithm is to be run on any diagram based on the input template.</p></li><li>Unchecked—All the parameter values currently specified for the added layout algorithm will be loaded by default when the algorithm is to be run on any diagram based on the input template.</li></ul></p></xdoc>",
+        "is_active.title": "Active",
+        "out_template_name.title": "Output Diagram Template",
+        "out_utility_network.title": "Output Network",
+        "summary": "<xdoc><p>Adds the Grid Layout algorithm to the list of layouts to be automatically chained at the end of the building of diagrams based on a given template. This tool also presets the Grid Layout algorithm parameters for any diagram based on that template.</p><p>This layout algorithm positions diagram junctions relative to a magnetic grid that has cell sizes fixed by the <span class=\"esri_uicontrol\">Cell Width</span> and <span class=\"esri_uicontrol\">Cell Height</span> parameter values.</p><note type=\"caution\"/><p group=\"note\">This tool is a configuration and administration tool.</p><note type=\"note\"/><p group=\"note\">This tool impacts the consistency of any existing diagrams based on the input diagram template. All of the existing diagrams become inconsistent and open with a consistency warning icon until they are updated.</p></xdoc>",
+        "template_name.descr": "The name of the diagram template that will be modified.",
+        "template_name.title": "Input Diagram Template",
+        "title": "Add Grid Layout"
+    }
+}

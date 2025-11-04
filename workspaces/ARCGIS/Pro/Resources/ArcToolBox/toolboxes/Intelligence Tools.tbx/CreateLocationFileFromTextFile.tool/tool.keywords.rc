@@ -1,0 +1,8 @@
+{
+    "set": [
+        "locatext",
+        "geonames",
+        "locations",
+        "placenames"
+    ]
+}

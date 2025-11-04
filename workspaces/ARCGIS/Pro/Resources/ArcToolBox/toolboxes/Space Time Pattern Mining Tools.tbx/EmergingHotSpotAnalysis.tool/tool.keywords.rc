@@ -1,0 +1,21 @@
+{
+    "set": [
+        "cold spots",
+        "diminishing",
+        "getis-ord",
+        "gi*",
+        "mann kendall",
+        "netcdf",
+        "persistent",
+        "space",
+        "space-time cube",
+        "spatial",
+        "sporadic",
+        "statistics",
+        "stats",
+        "time",
+        "trend",
+        "trends",
+        "space-time"
+    ]
+}

@@ -1,0 +1,23 @@
+{
+  "app_name": "TerraFusionDashboard",
+  "brand_colors": {
+    "cosmic_blue": "#0891b2",
+    "quantum_teal": "#00d2ff",
+    "neural_purple": "#667eea",
+    "stellar_white": "#ffffff",
+    "deep_space": "#0a0f1c",
+    "dark_teal": "#1a2f3a",
+    "accent_cyan": "#22d3ee",
+    "glass_bg": "rgba(255, 255, 255, 0.05)",
+    "glass_border": "rgba(0, 210, 255, 0.2)"
+  },
+  "logo_assets": [
+    "animated_logo",
+    "ai_tagline_logo",
+    "suite_overview",
+    "build_flyer",
+    "sync_flyer"
+  ],
+  "deployment_time": "2025-06-21T20:32:38.451143",
+  "version": "1.0.0"
+}

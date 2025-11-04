@@ -1,0 +1,330 @@
+{
+    "type": "FunctionTool",
+    "guid": "{c587c530-2f06-470a-83e6-611474dc9250}",
+    "displayname": "$rc:title",
+    "helpcontent": "13010024",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "params": {
+        "network_data_source": {
+            "displayname": "$rc:network_data_source.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPNetworkDatasetLayer"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "description": "$rc:network_data_source.descr"
+        },
+        "layer_name": {
+            "type": "optional",
+            "displayname": "$rc:layer_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:layer_name.descr"
+        },
+        "travel_mode": {
+            "type": "optional",
+            "displayname": "$rc:travel_mode.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:travel_mode.descr"
+        },
+        "time_units": {
+            "type": "optional",
+            "displayname": "$rc:time_units.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "Minutes",
+                        "code": "$rc:time_units.domain.Minutes"
+                    },
+                    {
+                        "value": "Seconds",
+                        "code": "$rc:time_units.domain.Seconds"
+                    },
+                    {
+                        "value": "Hours",
+                        "code": "$rc:time_units.domain.Hours"
+                    },
+                    {
+                        "value": "Days",
+                        "code": "$rc:time_units.domain.Days"
+                    }
+                ]
+            },
+            "value": "Minutes",
+            "description": "$rc:time_units.descr"
+        },
+        "distance_units": {
+            "type": "optional",
+            "displayname": "$rc:distance_units.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "Miles",
+                        "code": "$rc:distance_units.domain.Miles"
+                    },
+                    {
+                        "value": "Kilometers",
+                        "code": "$rc:distance_units.domain.Kilometers"
+                    },
+                    {
+                        "value": "Feet",
+                        "code": "$rc:distance_units.domain.Feet"
+                    },
+                    {
+                        "value": "Yards",
+                        "code": "$rc:distance_units.domain.Yards"
+                    },
+                    {
+                        "value": "Meters",
+                        "code": "$rc:distance_units.domain.Meters"
+                    },
+                    {
+                        "value": "Inches",
+                        "code": "$rc:distance_units.domain.Inches"
+                    },
+                    {
+                        "value": "Centimeters",
+                        "code": "$rc:distance_units.domain.Centimeters"
+                    },
+                    {
+                        "value": "Millimeters",
+                        "code": "$rc:distance_units.domain.Millimeters"
+                    },
+                    {
+                        "value": "Decimeters",
+                        "code": "$rc:distance_units.domain.Decimeters"
+                    },
+                    {
+                        "value": "NauticalMiles",
+                        "code": "$rc:distance_units.domain.NauticalMiles"
+                    }
+                ]
+            },
+            "value": "Miles",
+            "description": "$rc:distance_units.descr"
+        },
+        "default_date": {
+            "type": "optional",
+            "displayname": "$rc:default_date.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:default_date.descr"
+        },
+        "time_zone_for_time_fields": {
+            "type": "optional",
+            "displayname": "$rc:time_zone_for_time_fields.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "UTC",
+                        "code": "$rc:time_zone_for_time_fields.domain.UTC"
+                    },
+                    {
+                        "value": "LOCAL_TIME_AT_LOCATIONS",
+                        "code": "$rc:time_zone_for_time_fields.domain.LOCAL_TIME_AT_LOCATIONS"
+                    }
+                ]
+            },
+            "value": "LOCAL_TIME_AT_LOCATIONS",
+            "description": "$rc:time_zone_for_time_fields.descr"
+        },
+        "line_shape": {
+            "type": "optional",
+            "displayname": "$rc:line_shape.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NO_LINES",
+                        "code": "$rc:line_shape.domain.NO_LINES"
+                    },
+                    {
+                        "value": "STRAIGHT_LINES",
+                        "code": "$rc:line_shape.domain.STRAIGHT_LINES"
+                    },
+                    {
+                        "value": "ALONG_NETWORK",
+                        "code": "$rc:line_shape.domain.ALONG_NETWORK"
+                    }
+                ]
+            },
+            "value": "ALONG_NETWORK",
+            "description": "$rc:line_shape.descr"
+        },
+        "time_window_factor": {
+            "type": "optional",
+            "displayname": "$rc:time_window_factor.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "High",
+                        "code": "$rc:time_window_factor.domain.High"
+                    },
+                    {
+                        "value": "Medium",
+                        "code": "$rc:time_window_factor.domain.Medium"
+                    },
+                    {
+                        "value": "Low",
+                        "code": "$rc:time_window_factor.domain.Low"
+                    }
+                ]
+            },
+            "value": "Medium",
+            "description": "$rc:time_window_factor.descr"
+        },
+        "excess_transit_factor": {
+            "type": "optional",
+            "displayname": "$rc:excess_transit_factor.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "High",
+                        "code": "$rc:excess_transit_factor.domain.High"
+                    },
+                    {
+                        "value": "Medium",
+                        "code": "$rc:excess_transit_factor.domain.Medium"
+                    },
+                    {
+                        "value": "Low",
+                        "code": "$rc:excess_transit_factor.domain.Low"
+                    }
+                ]
+            },
+            "value": "Medium",
+            "description": "$rc:excess_transit_factor.descr"
+        },
+        "generate_directions_on_solve": {
+            "type": "optional",
+            "displayname": "$rc:generate_directions_on_solve.title",
+            "category": "$rc:params.category4",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "DIRECTIONS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_DIRECTIONS"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:generate_directions_on_solve.descr"
+        },
+        "spatial_clustering": {
+            "type": "optional",
+            "displayname": "$rc:spatial_clustering.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CLUSTER"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_CLUSTER"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:spatial_clustering.descr"
+        },
+        "out_network_analysis_layer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_network_analysis_layer.title",
+            "datatype": {
+                "type": "GPNALayer"
+            }
+        },
+        "ignore_invalid_locations": {
+            "type": "optional",
+            "displayname": "$rc:ignore_invalid_locations.title",
+            "category": "$rc:params.category5",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SKIP"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "HALT"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:ignore_invalid_locations.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Returns the content of report files and templates in JSON format. Report files (.rptx) and report templates  (.rptt) are used to store report definitions.",
+        "output_json.title": "JSON String",
+        "report_item_id.descr": "The portal ID (in JSON format) of the report item that will be used for the templates. Use the format {\"id\": \"<portal-id>\"}.",
+        "report_item_id.title": "Report Item ID",
+        "report_templates_folder.descr": "The full path to the folder where the report files (.rptx or .rptt) that will be used as report templates are located. The default location is <install_directory>\\Resources\\ArcToolBox\\Templates\\ExportWebMapTemplates.",
+        "report_templates_folder.title": "Report Templates Folder",
+        "summary": "Returns the content of report files and templates in JSON format. Report files (.rptx) and report templates (.rptt) are used to store report definitions.",
+        "title": "Get Report Templates Info"
+    }
+}

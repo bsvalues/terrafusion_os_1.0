@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Test Scenario: {{ scenario.persona_name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                    <li class="breadcrumb-item">Testing</li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ scenario.title }}</li>
+                </ol>
+            </nav>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">{{ scenario.title }}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="test-persona-badge persona-{{ scenario.persona }}">
+                        {{ scenario.persona_name }}
+                    </div>
+                    
+                    <p class="lead">{{ scenario.description }}</p>
+                    
+                    <div id="scenario-{{ scenario.persona }}" class="test-guide mt-4">
+                        <div class="test-guide-title">Testing Steps</div>
+                        
+                        {% for step in scenario.steps %}
+                            <div class="test-step">
+                                <div class="test-step-number">{{ loop.index }}</div>
+                                <div>{{ step }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mt-4">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle-fill me-2"></i>
+                            <strong>Test Instructions:</strong> Follow the steps above to test this scenario. Use the checkboxes to track your progress. Click the feedback button at any time to report issues or suggestions.
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-primary">
+                            <i class="bi bi-arrow-left"></i> Back to Dashboard
+                        </a>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#feedbackModal">
+                            <i class="bi bi-chat-dots"></i> Provide Feedback
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Testing Resources</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <i class="bi bi-file-earmark-text me-2"></i>
+                                    <a href="#" target="_blank">Testing Guide (PDF)</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <i class="bi bi-table me-2"></i>
+                                    <a href="#" target="_blank">Sample Data Reference</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <i class="bi bi-question-circle me-2"></i>
+                                    <a href="#" target="_blank">FAQ</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Other Personas</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group">
+                                <a href="{{ url_for('test_scenario', scenario_type='assessor') }}" class="list-group-item list-group-item-action d-flex align-items-center {% if scenario.persona == 'assessor' %}active{% endif %}">
+                                    <span class="test-persona-badge persona-assessor me-2">CA</span>
+                                    County Assessor
+                                </a>
+                                <a href="{{ url_for('test_scenario', scenario_type='appraiser') }}" class="list-group-item list-group-item-action d-flex align-items-center {% if scenario.persona == 'appraiser' %}active{% endif %}">
+                                    <span class="test-persona-badge persona-appraiser me-2">FA</span>
+                                    Field Appraiser
+                                </a>
+                                <a href="{{ url_for('test_scenario', scenario_type='analyst') }}" class="list-group-item list-group-item-action d-flex align-items-center {% if scenario.persona == 'analyst' %}active{% endif %}">
+                                    <span class="test-persona-badge persona-analyst me-2">DA</span>
+                                    Data Analyst
+                                </a>
+                                <a href="{{ url_for('test_scenario', scenario_type='gis') }}" class="list-group-item list-group-item-action d-flex align-items-center {% if scenario.persona == 'gis' %}active{% endif %}">
+                                    <span class="test-persona-badge persona-gis me-2">GS</span>
+                                    GIS Specialist
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Additional scenario-specific JavaScript can be added here
+    });
+</script>
+{% endblock %}

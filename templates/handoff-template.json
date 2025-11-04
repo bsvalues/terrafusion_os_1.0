@@ -1,0 +1,53 @@
+{
+  "handoff_id": "HO-20251019-153206",
+  "from_role": "[Source Role]",
+  "to_role": "[Target Role]",
+  "created": "2025-10-19T15:32:06.394925",
+  "status": "pending",
+  "artifact_links": [
+    {
+      "type": "document",
+      "path": "[path]",
+      "description": "[desc]"
+    },
+    {
+      "type": "code",
+      "path": "[path]",
+      "description": "[desc]"
+    }
+  ],
+  "evidence_links": [
+    {
+      "type": "metrics",
+      "path": "evidence/metrics/[file]",
+      "description": "[desc]"
+    },
+    {
+      "type": "scan_report",
+      "path": "evidence/scan_reports/[file]",
+      "description": "[desc]"
+    }
+  ],
+  "open_issues": [
+    {
+      "id": "ISS-001",
+      "description": "[issue]",
+      "severity": "low|medium|high",
+      "owner": "[role]"
+    }
+  ],
+  "acceptance_criteria": [
+    {
+      "criterion": "[criteria]",
+      "status": "pending|met|failed",
+      "evidence": "[link]"
+    }
+  ],
+  "deadline": "[YYYY-MM-DD]",
+  "confidence_score": 0.0,
+  "signatures": {
+    "from_role_accepted": false,
+    "to_role_accepted": false,
+    "timestamp": null
+  }
+}

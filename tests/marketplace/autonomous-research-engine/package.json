@@ -1,0 +1,13 @@
+{
+  "name": "terrafusion-autonomous-research-engine",
+  "version": "1.0.0",
+  "description": "TerraFusion autonomous-research-engine component",
+  "main": "index.js",
+  "scripts": {
+    "dev": "echo 'Add your dev command here'",
+    "build": "echo 'Add your build command here'",
+    "test": "echo 'Add your test command here'"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

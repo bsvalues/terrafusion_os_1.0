@@ -1,0 +1,177 @@
+Absolutely. You’re now unlocking the *next-gen valuation assistant*. Here's a **full production bootstrap** for:
+
+> 🧾 **AI-Generated Adjustment Commentary**  
+> 🧬 **Versioned Scoring Snapshots (per comp)**  
+> 📍 **Risk Overlay Fusion in Comp Scores**
+
+---
+
+## 🧾 1. Auto-Generate Adjustment Commentary (via Prediction Delta)
+
+---
+
+### 🧠 Use Case
+
+> Predictive engine says: $395,000  
+> Appraiser entered: $420,000  
+> Commentary: “Adjustment justified due to superior lot and recent renovation.”
+
+---
+
+### 📡 API: `POST /commentary/generate`
+
+```ts
+router.post('/commentary/generate', async (req, res) => {
+  const { comp, subject, predictedPrice, userAdjustedPrice } = req.body;
+
+  const delta = userAdjustedPrice - predictedPrice;
+  const reasonHints = [];
+
+  if (comp.renovated && !subject.renovated) reasonHints.push("recent renovation");
+  if (comp.lotSize > subject.lotSize * 1.2) reasonHints.push("superior lot size");
+  if (comp.dateSold > subject.dateSold) reasonHints.push("greater market recency");
+
+  const prompt = `
+Explain why the adjusted price of $${userAdjustedPrice} is reasonable compared to a model prediction of $${predictedPrice}. Focus on: ${reasonHints.join(", ")}.
+Write 1–2 sentences suitable for a UAD-compliant report.
+  `;
+
+  const response = await openai.createCompletion({
+    model: 'gpt-4',
+    prompt,
+    max_tokens: 100,
+    temperature: 0.4
+  });
+
+  res.json({ commentary: response.data.choices[0].text.trim() });
+});
+```
+
+---
+
+### ✅ Output
+
+> “Although the model estimated $395,000, the subject’s recent renovation and premium lot justify the $420,000 adjusted value.”
+
+---
+
+### 🖼️ UI Hook
+
+- Appears inline under adjusted value  
+- One-click “Accept/Edit” → inject into Addenda / Comments
+
+---
+
+## 🧬 2. Versioned Score Snapshots (Comp Evaluation History)
+
+---
+
+### 📦 Table: `comp_score_snapshots`
+
+```ts
+export const compScoreSnapshots = pgTable('comp_score_snapshots', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  formId: text('form_id'),
+  compId: text('mls_id'),
+  userId: text('user_id'),
+  score: float('score'),
+  criteria: jsonb('criteria'), // { distance: 0.4, daysOld: 72, glaDelta: 120 }
+  createdAt: timestamp('created_at').defaultNow()
+});
+```
+
+---
+
+### 🧠 Auto-capture
+
+- On form save  
+- On comp add/remove  
+- On prediction or adjustment
+
+---
+
+### 🔁 Diff History View
+
+```tsx
+<CompScoreHistory compId="xyz" formId="abc" />
+
+// Shows chart or timeline:
+[
+  { date: '2024-04-01', score: 83 },
+  { date: '2024-04-15', score: 79 },
+  { date: '2024-04-29', score: 88 }
+]
+```
+
+---
+
+## 📍 3. Risk Overlay Fusion in Scoring
+
+---
+
+### 📦 Risk Zones Table
+
+```ts
+export const riskZones = pgTable('risk_zones', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  label: text('label'), // "Flood", "Crime", "Zoning"
+  polygon: jsonb('geojson'), // GeoJSON Polygon
+  severity: float('severity') // 0–1 risk multiplier
+});
+```
+
+---
+
+### 📡 Scoring Hook Update
+
+```ts
+const baseScore = computeScore(comp, subject);
+const inFlood = await pointInPolygon(comp.lat, comp.lng, 'Flood');
+const inHighCrime = await pointInPolygon(comp.lat, comp.lng, 'Crime');
+
+let riskPenalty = 0;
+if (inFlood) riskPenalty += 15;
+if (inHighCrime) riskPenalty += 10;
+
+const finalScore = Math.max(0, baseScore - riskPenalty);
+```
+
+---
+
+### ✅ Result
+
+- 🔥 Real-world risk layers baked into score  
+- 🚫 “Comp A was strong, but it's in a FEMA flood zone”  
+- 🧠 Commentary generation can reflect:  
+  > “While this comp is similar, risk overlays reduce its suitability.”
+
+---
+
+### 📊 Filter UI
+
+```tsx
+<Checkbox label="Exclude flood-prone comps" />
+<Checkbox label="Only show crime score < 0.2" />
+```
+
+---
+
+# ✅ What You Now Have
+
+| Module | Benefit |
+|--------|---------|
+| 🧾 AI Commentary | Justify deltas with humanlike narrative |
+| 🧬 Score Snapshots | Audit trail of evolving comp strength |
+| 📍 Risk Fusion | Adds spatial realism + defensibility to scoring |
+
+---
+
+## 🧭 What’s Next?
+
+Would you like to:
+
+1. 📂 Generate **ZIP bundles of comps + maps + commentary**?  
+2. 💡 Add **AI-recommended comp replacement** if score drops too low?  
+3. 🚦 Trigger **supervisor review if adjusted price deviates >X% from model**?
+
+Or... I can roll this into a **Regulator-Ready Appraisal Defense Toolkit**.

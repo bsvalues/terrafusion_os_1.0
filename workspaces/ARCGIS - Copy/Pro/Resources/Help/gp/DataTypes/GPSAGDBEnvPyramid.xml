@@ -1,0 +1,5 @@
+<DataType Name="GPSAGDBEnvPyramid">
+  <DisplayName>Pyramid</DisplayName>
+  <Description>Specifies if pyramids are built.</Description>
+</DataType>
+

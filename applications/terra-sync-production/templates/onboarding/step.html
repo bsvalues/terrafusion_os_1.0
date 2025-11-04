@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+
+{% block title %}{{ step.title }} - TerraFusion{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    .step-container {
+        padding: 2rem 0;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .step-header {
+        position: relative;
+        margin-bottom: 2rem;
+    }
+    
+    .step-back {
+        position: absolute;
+        left: 0;
+        top: 0.5rem;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+    
+    .step-back:hover {
+        color: var(--primary-color);
+    }
+    
+    .step-back-icon {
+        margin-right: 0.5rem;
+    }
+    
+    .step-title-container {
+        text-align: center;
+    }
+    
+    .step-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--dark-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .step-description {
+        font-size: 1.25rem;
+        color: var(--text-secondary);
+    }
+    
+    .progress-container {
+        max-width: 800px;
+        margin: 0 auto 2rem;
+        text-align: center;
+    }
+    
+    .progress-bar-outer {
+        height: 8px;
+        background-color: var(--border-color);
+        border-radius: 4px;
+        margin-bottom: 0.5rem;
+        overflow: hidden;
+    }
+    
+    .progress-bar-inner {
+        height: 100%;
+        background-color: var(--primary-color);
+        border-radius: 4px;
+        transition: width 0.3s ease;
+    }
+    
+    .progress-text {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .step-content {
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border: 1px solid var(--border-color);
+    }
+    
+    .step-content h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: var(--dark-color);
+    }
+    
+    .step-content p {
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+        color: var(--text-color);
+    }
+    
+    .step-content ul, .step-content ol {
+        margin-bottom: 1.5rem;
+        padding-left: 1.5rem;
+    }
+    
+    .step-content li {
+        margin-bottom: 0.5rem;
+    }
+    
+    .step-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2rem;
+    }
+    
+    .step-completed {
+        display: flex;
+        align-items: center;
+        color: var(--success-color);
+        font-weight: 600;
+    }
+    
+    .step-completed-icon {
+        margin-right: 0.5rem;
+        font-size: 1.25rem;
+    }
+    
+    .step-navigation {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1.5rem;
+    }
+    
+    .step-nav-btn {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1.25rem;
+        border-radius: 0.25rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    
+    .step-prev {
+        color: var(--text-secondary);
+    }
+    
+    .step-prev:hover {
+        background-color: var(--light-color);
+    }
+    
+    .step-prev-icon {
+        margin-right: 0.5rem;
+    }
+    
+    .step-next {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .step-next:hover {
+        background-color: var(--primary-dark);
+        text-decoration: none;
+        color: white;
+    }
+    
+    .step-next-icon {
+        margin-left: 0.5rem;
+    }
+    
+    .step-complete-btn {
+        background-color: var(--success-color);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.25rem;
+        border-radius: 0.25rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        display: flex;
+        align-items: center;
+    }
+    
+    .step-complete-btn:hover {
+        background-color: #38a169;
+        text-decoration: none;
+        color: white;
+    }
+    
+    .step-complete-btn:disabled {
+        background-color: var(--secondary-color);
+        cursor: not-allowed;
+    }
+    
+    .step-complete-icon {
+        margin-right: 0.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .step-container {
+            padding: 1rem 0;
+        }
+        
+        .step-title {
+            font-size: 1.5rem;
+        }
+        
+        .step-description {
+            font-size: 1rem;
+        }
+        
+        .step-content {
+            padding: 1.5rem;
+        }
+        
+        .step-navigation {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .step-nav-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="step-container">
+    <div class="step-header">
+        <a href="{{ url_for('onboarding_bp.tutorial_home') }}" class="step-back">
+            <span class="step-back-icon">←</span> Back to Tutorial
+        </a>
+        
+        <div class="step-title-container">
+            <h1 class="step-title">{{ step.title }}</h1>
+            <p class="step-description">{{ step.description }}</p>
+        </div>
+    </div>
+    
+    <div class="progress-container">
+        <div class="progress-bar-outer">
+            <div class="progress-bar-inner" style="width: {{ progress }}%;"></div>
+        </div>
+        <div class="progress-text">
+            <span>{{ completed_steps|length }} of {{ tutorial.steps|length }} steps completed</span>
+            <span>{{ progress }}% Complete</span>
+        </div>
+    </div>
+    
+    <div class="step-content">
+        {{ step.content|safe }}
+    </div>
+    
+    <div class="step-actions">
+        {% if completed %}
+        <div class="step-completed">
+            <span class="step-completed-icon">✓</span> Step Completed
+        </div>
+        {% else %}
+        <button id="complete-step" class="step-complete-btn">
+            <span class="step-complete-icon">✓</span> Mark as Completed
+        </button>
+        {% endif %}
+    </div>
+    
+    <div class="step-navigation">
+        {% if prev_step %}
+        <a href="{{ url_for('onboarding_bp.tutorial_step', step_id=prev_step.id) }}" class="step-nav-btn step-prev">
+            <span class="step-prev-icon">←</span> Previous: {{ prev_step.title }}
+        </a>
+        {% else %}
+        <div></div>
+        {% endif %}
+        
+        {% if next_step %}
+        <a href="{{ url_for('onboarding_bp.tutorial_step', step_id=next_step.id) }}" class="step-nav-btn step-next">
+            Next: {{ next_step.title }} <span class="step-next-icon">→</span>
+        </a>
+        {% else %}
+        <a href="{{ url_for('onboarding_bp.onboarding_complete') }}" class="step-nav-btn step-next">
+            Finish Tutorial <span class="step-next-icon">→</span>
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    {% if not completed %}
+    document.getElementById('complete-step').addEventListener('click', function() {
+        const button = this;
+        button.disabled = true;
+        button.innerHTML = 'Saving...';
+        
+        fetch('{{ url_for("onboarding_bp.complete_step", step_id=step.id) }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                button.innerHTML = '<span class="step-complete-icon">✓</span> Mark as Completed';
+                button.disabled = false;
+                alert('Error completing step. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            button.innerHTML = '<span class="step-complete-icon">✓</span> Mark as Completed';
+            button.disabled = false;
+            alert('Error completing step. Please try again.');
+        });
+    });
+    {% endif %}
+</script>
+{% endblock %}

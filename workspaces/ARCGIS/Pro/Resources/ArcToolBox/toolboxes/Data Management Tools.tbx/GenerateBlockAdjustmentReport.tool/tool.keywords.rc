@@ -1,0 +1,15 @@
+{
+    "set": [
+        "block adjustment",
+        "dem",
+        "adjustment",
+        "aerial photo",
+        "drone",
+        "ortho mapping",
+        "ortho mosaic",
+        "orthorectification",
+        "photogrammetry",
+        "quality assessment",
+        "report"
+    ]
+}

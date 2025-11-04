@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export Log</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: rgba(0,0,0,0.5);
+            margin: 0;
+            padding: 0;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .modal {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+            width: 400px;
+            max-width: 90%;
+            padding: 25px;
+            text-align: center;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        p {
+            margin-bottom: 20px;
+        }
+        .button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0 5px;
+        }
+        .success-icon {
+            font-size: 48px;
+            color: #2ecc71;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="modal">
+        <div class="success-icon">✓</div>
+        <h2>Export Ready</h2>
+        <p>Your sync log has been prepared for download. Click the button below to download the CSV file.</p>
+        <a href="#" class="button">Download CSV</a>
+        <button class="button" style="background-color: #95a5a6;">Cancel</button>
+    </div>
+</body>
+</html>

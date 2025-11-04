@@ -1,0 +1,131 @@
+{
+    "type": "FunctionTool",
+    "guid": "{8d4998ee-2730-4677-8725-3122802c8910}",
+    "displayname": "$rc:title",
+    "helpcontent": "66080008",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10",
+        "86"
+    ],
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_raster": {
+            "display_order": "0",
+            "displayname": "$rc:in_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "description": "$rc:in_raster.descr"
+        },
+        "in_training_features": {
+            "display_order": "1",
+            "displayname": "$rc:in_training_features.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPFeatureLayer"
+                    },
+                    {
+                        "type": "GPRasterCatalogLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_training_features.descr"
+        },
+        "in_classifier_definition": {
+            "display_order": "2",
+            "displayname": "$rc:in_classifier_definition.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "ecd"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:in_classifier_definition.descr"
+        },
+        "out_training_feature_class": {
+            "direction": "out",
+            "display_order": "3",
+            "displayname": "$rc:out_training_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_training_feature_class.descr"
+        },
+        "out_misclassified_raster": {
+            "direction": "out",
+            "display_order": "4",
+            "displayname": "$rc:out_misclassified_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_misclassified_raster.descr"
+        },
+        "in_additional_raster": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:in_additional_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "description": "$rc:in_additional_raster.descr"
+        }
+    },
+    "environments": [
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "nodata",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "pyramid",
+        "rasterStatistics",
+        "resamplingMethod",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

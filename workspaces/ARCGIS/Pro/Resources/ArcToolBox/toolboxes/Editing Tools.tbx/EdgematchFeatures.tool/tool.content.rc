@@ -1,0 +1,20 @@
+{
+    "map": {
+        "adjacent_features.descr": "The line features that are adjacent to the input features. If provided, both the input and adjacent features will be adjusted to meet at new connecting locations, either the midpoints of the edgematch links or locations nearest to the midpoints of the links on the border features (if provided).",
+        "adjacent_features.title": "Adjacent Features",
+        "border_features.descr": "The line or polygon features representing borders between the input and adjacent features. When you specify border features, both input and adjacent features will be adjusted to meet at new connecting locations nearest to the midpoints of the links on the border features.",
+        "border_features.title": "Border Features",
+        "description": "Modifies input line features by spatially adjusting their shapes, guided by the specified edgematch links, so they become connected with the lines in the adjacent dataset.",
+        "in_features.descr": "The input line features that will be adjusted.",
+        "in_features.title": "Input Features",
+        "in_link_features.descr": "The input line features representing edgematch links.",
+        "in_link_features.title": "Input Link Features",
+        "method.descr": "<xdoc><p>Specifies the edgematch method that will be used to adjust input features only or input features and adjacent features to new connecting locations.</p><ul><li><span title=\"MOVE_ENDPOINT\">Move endpoint</span>—The endpoint of a line will be moved to the new connecting location. This is the default.</li><li><span title=\"ADD_SEGMENT\">Add segment</span>—A straight segment will be added to the end of a line so it ends at the new connecting location.</li><li><span title=\"ADJUST_VERTICES\">Adjust vertices</span>—The endpoint of a line will be adjusted to the new connecting location. The remaining vertices will also be adjusted so that the positional changes are gradually reduced toward the opposite end of the line.</li></ul></xdoc>",
+        "method.domain.ADD_SEGMENT": "Add segment",
+        "method.domain.ADJUST_VERTICES": "Adjust vertices",
+        "method.domain.MOVE_ENDPOINT": "Move endpoint",
+        "method.title": "Method",
+        "out_feature_class.title": "Updated Input Features",
+        "title": "Edgematch Features"
+    }
+}

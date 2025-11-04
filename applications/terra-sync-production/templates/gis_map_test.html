@@ -1,0 +1,130 @@
+{% extends "base_clean.html" %}
+
+{% block title %}GIS Map Test - TerraFusion Platform{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="h2 mb-4">
+                <i class="fas fa-map-marked-alt me-2 text-primary"></i>
+                GIS Map Component Test
+            </h1>
+            
+            <!-- GIS Map Container -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div id="terrafusion-gis-map" class="terrafusion-gis-map-container" data-county-id="benton-wa">
+                        <!-- Map component will be rendered here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- API Test Results -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Properties API Test</h5>
+                        </div>
+                        <div class="card-body">
+                            <button id="test-properties-api" class="btn btn-outline-primary">Test Properties API</button>
+                            <div id="properties-result" class="mt-3"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">Districts API Test</h5>
+                        </div>
+                        <div class="card-body">
+                            <button id="test-districts-api" class="btn btn-outline-success">Test Districts API</button>
+                            <div id="districts-result" class="mt-3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/terrafusion-gis-map.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize the GIS map component
+    const mapComponent = new TerraFusionGISMap('terrafusion-gis-map', {
+        countyId: 'benton-wa'
+    });
+    
+    // API test functions
+    document.getElementById('test-properties-api').addEventListener('click', async function() {
+        const resultDiv = document.getElementById('properties-result');
+        resultDiv.innerHTML = '<div class="spinner-border spinner-border-sm"></div> Testing...';
+        
+        try {
+            const response = await fetch('/api/v1/gis-map/properties?county_id=benton-wa&limit=3');
+            const data = await response.json();
+            
+            if (Array.isArray(data.properties)) {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        <strong>Success!</strong> API returned ${data.properties.length} properties as an array.
+                    </div>
+                    <pre class="bg-light p-2 small">${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Warning!</strong> Properties is not an array: ${typeof data.properties}
+                    </div>
+                `;
+            }
+        } catch (error) {
+            resultDiv.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-times-circle"></i>
+                    <strong>Error!</strong> ${error.message}
+                </div>
+            `;
+        }
+    });
+    
+    document.getElementById('test-districts-api').addEventListener('click', async function() {
+        const resultDiv = document.getElementById('districts-result');
+        resultDiv.innerHTML = '<div class="spinner-border spinner-border-sm"></div> Testing...';
+        
+        try {
+            const response = await fetch('/api/v1/gis-map/districts?county_id=benton-wa');
+            const data = await response.json();
+            
+            if (Array.isArray(data.districts)) {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        <strong>Success!</strong> API returned ${data.districts.length} districts as an array.
+                    </div>
+                    <pre class="bg-light p-2 small">${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Warning!</strong> Districts is not an array: ${typeof data.districts}
+                    </div>
+                `;
+            }
+        } catch (error) {
+            resultDiv.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-times-circle"></i>
+                    <strong>Error!</strong> ${error.message}
+                </div>
+            `;
+        }
+    });
+});
+</script>
+{% endblock %}

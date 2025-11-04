@@ -1,0 +1,84 @@
+{
+    "type": "FunctionTool",
+    "guid": "{56668036-7f12-477d-b209-048626a0adaf}",
+    "displayname": "$rc:title",
+    "helpcontent": "71010032",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "block_add_to_map"
+    ],
+    "params": {
+        "in_utility_network": {
+            "displayname": "$rc:in_utility_network.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    },
+                    {
+                        "type": "DETraceNetwork"
+                    }
+                ]
+            }
+        },
+        "template_name": {
+            "displayname": "$rc:template_name.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "ndbd_file": {
+            "type": "optional",
+            "displayname": "$rc:ndbd_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "ndbd"
+                ]
+            }
+        },
+        "ndld_file": {
+            "type": "optional",
+            "displayname": "$rc:ndld_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "ndld"
+                ]
+            }
+        },
+        "out_utility_network": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_utility_network.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    },
+                    {
+                        "type": "DETraceNetwork"
+                    }
+                ]
+            },
+            "addtomap": "false"
+        },
+        "out_template_name": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_template_name.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        }
+    }
+}

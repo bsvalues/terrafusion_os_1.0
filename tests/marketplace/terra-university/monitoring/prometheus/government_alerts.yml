@@ -1,0 +1,93 @@
+groups:
+- name: terra-university_government_compliance
+  rules:
+  - alert: GovernmentServiceDown
+    expr: up{job="terrafusion-terra-university"} == 0
+    for: 1m
+    labels:
+      severity: critical
+      government: 'true'
+      citizen_impact: high
+    annotations:
+      summary: Government service terra-university is down
+      description: The terra-university government service has been down for more
+        than 1 minute. Citizen services are impacted.
+      impact: Citizens cannot access government services
+      action: Immediate investigation required
+  - alert: GovernmentResponseTimeSLA
+    expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="terrafusion-terra-university"}[5m]))
+      > 0.1
+    for: 2m
+    labels:
+      severity: warning
+      government: 'true'
+      sla: violated
+    annotations:
+      summary: Government service terra-university response time SLA violation
+      description: 95th percentile response time for terra-university is above 100ms
+        government standard for { $value }s
+      impact: Government performance standards not met
+      threshold: 100ms maximum response time
+  - alert: AccessibilityComplianceFailure
+    expr: accessibility_wcag_violations{service="terra-university"} > 0
+    for: 0m
+    labels:
+      severity: critical
+      compliance: wcag_2_2_aa
+      accessibility: violation
+    annotations:
+      summary: WCAG 2.2 AA compliance violation in terra-university
+      description: 'Accessibility violations detected: { $value } issues found'
+      impact: Citizens with disabilities cannot access services
+      requirement: Section 508 compliance mandatory
+  - alert: SecurityVulnerabilityDetected
+    expr: security_vulnerabilities{service="terra-university"} > 0
+    for: 0m
+    labels:
+      severity: critical
+      security: vulnerability
+      government: 'true'
+    annotations:
+      summary: Security vulnerability detected in terra-university
+      description: '{ $value } security vulnerabilities found in government service'
+      impact: Government data and citizen information at risk
+      action: Immediate security review required
+  - alert: GovernmentLoadCapacity
+    expr: rate(http_requests_total{job="terrafusion-terra-university"}[5m]) > 800
+    for: 5m
+    labels:
+      severity: warning
+      capacity: approaching_limit
+      government: 'true'
+    annotations:
+      summary: Government service terra-university approaching capacity
+      description: Request rate is { $value } req/sec, approaching 1000 req/sec limit
+      impact: Service may become unavailable to citizens
+      action: Scale up infrastructure or implement load balancing
+- name: terra-university_citizen_experience
+  rules:
+  - alert: CitizenExperienceDegraded
+    expr: (rate(http_requests_total{job="terrafusion-terra-university",status=~"5.."}[5m])
+      / rate(http_requests_total{job="terrafusion-terra-university"}[5m])) > 0.05
+    for: 3m
+    labels:
+      severity: warning
+      citizen_impact: medium
+      experience: degraded
+    annotations:
+      summary: Citizen experience degraded for terra-university
+      description: Error rate is { $value | humanizePercentage }, above 5% threshold
+      impact: Citizens experiencing service errors
+      threshold: 5% maximum error rate
+  - alert: GovernmentAuditTrailFailure
+    expr: audit_log_failures{service="terra-university"} > 0
+    for: 0m
+    labels:
+      severity: critical
+      audit: failure
+      compliance: required
+    annotations:
+      summary: Audit trail failure in terra-university
+      description: '{ $value } audit log failures detected'
+      impact: Government compliance and accountability compromised
+      requirement: Complete audit trail mandatory for government services

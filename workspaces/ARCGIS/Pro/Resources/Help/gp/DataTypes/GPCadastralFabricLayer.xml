@@ -1,0 +1,5 @@
+<DataType Name="GPCadastralFabricLayer">
+  <DisplayName>Parcel Fabric Layer for ArcMap</DisplayName>
+  <Description>A layer referencing a parcel fabric for ArcMap on disk. This layer works as a group layer organizing a set of related layers under a single layer.</Description>
+</DataType>
+

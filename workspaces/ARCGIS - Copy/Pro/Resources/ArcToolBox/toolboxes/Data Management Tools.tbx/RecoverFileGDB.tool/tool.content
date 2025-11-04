@@ -1,0 +1,42 @@
+{
+    "type": "FunctionTool",
+    "guid": "{42f8e769-6f67-471b-b63a-37a9f5e3040e}",
+    "displayname": "$rc:title",
+    "helpcontent": "3230003",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "block_add_to_map"
+    ],
+    "params": {
+        "input_file_gdb": {
+            "displayname": "$rc:input_file_gdb.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "description": "$rc:input_file_gdb.descr"
+        },
+        "output_location": {
+            "displayname": "$rc:output_location.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:output_location.descr"
+        },
+        "out_name": {
+            "displayname": "$rc:out_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:out_name.descr"
+        },
+        "out_file_gdb": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_file_gdb.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            }
+        }
+    }
+}

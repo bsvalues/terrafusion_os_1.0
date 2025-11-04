@@ -1,0 +1,14 @@
+{
+    "set": [
+        "bicubic",
+        "bilinear interpolation",
+        "cell",
+        "cubic convolution",
+        "majority",
+        "nearest neighbor",
+        "pixel",
+        "preparation",
+        "processing",
+        "size"
+    ]
+}

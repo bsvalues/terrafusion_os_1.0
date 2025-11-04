@@ -1,0 +1,82 @@
+{
+    "type": "FunctionTool",
+    "guid": "{94e04cfc-fbb4-49e1-a0b0-944ecec470b3}",
+    "displayname": "$rc:title",
+    "helpcontent": "1020008",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint",
+                    "Point"
+                ],
+                "featuretype": [
+                    "Simple",
+                    "SimpleJunction",
+                    "SimpleEdge",
+                    "ComplexEdge",
+                    "RasterCatalogItem"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "min_overlap_count": {
+            "type": "optional",
+            "displayname": "$rc:min_overlap_count.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "1",
+            "description": "$rc:min_overlap_count.descr"
+        },
+        "out_overlap_table": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_overlap_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "description": "$rc:out_overlap_table.descr"
+        }
+    },
+    "environments": [
+        "MDomain",
+        "MResolution",
+        "MTolerance",
+        "XYResolution",
+        "XYTolerance",
+        "ZResolution",
+        "ZTolerance",
+        "configKeyword",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "outputMFlag",
+        "outputZFlag",
+        "outputZValue",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

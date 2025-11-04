@@ -1,0 +1,32 @@
+{
+    "set": [
+        "average",
+        "circular",
+        "circular standard deviation",
+        "circular mean",
+        "cube",
+        "dissimilar",
+        "largest",
+        "least frequent",
+        "least often",
+        "majority",
+        "max",
+        "maximum",
+        "median",
+        "min",
+        "minimum",
+        "most frequent",
+        "most often",
+        "multidimensional",
+        "smallest",
+        "standard deviation",
+        "statistical",
+        "std",
+        "sum",
+        "total",
+        "unique",
+        "value",
+        "variety",
+        "zone"
+    ]
+}

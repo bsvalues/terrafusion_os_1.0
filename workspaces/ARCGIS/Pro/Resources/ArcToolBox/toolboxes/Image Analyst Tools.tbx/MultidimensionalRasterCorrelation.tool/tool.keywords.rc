@@ -1,0 +1,17 @@
+{
+    "set": [
+        "data cube",
+        "dimension",
+        "image cube",
+        "kendall",
+        "mosaic dataset",
+        "multidimensional",
+        "pearson",
+        "scientific data",
+        "spearman",
+        "correlation",
+        "lag",
+        "netcdf",
+        "variable"
+    ]
+}

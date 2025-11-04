@@ -1,0 +1,212 @@
+{
+    "type": "FunctionTool",
+    "guid": "{9ea94c2d-54ed-4c52-b23e-9415992ee185}",
+    "displayname": "$rc:title",
+    "helpcontent": "3350003",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Multipoint",
+                    "Point"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "bin_type": {
+            "type": "optional",
+            "displayname": "$rc:bin_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "FLAT_HEXAGON",
+                        "code": "$rc:bin_type.domain.FLAT_HEXAGON"
+                    },
+                    {
+                        "value": "POINTY_HEXAGON",
+                        "code": "$rc:bin_type.domain.POINTY_HEXAGON"
+                    },
+                    {
+                        "value": "SQUARE",
+                        "code": "$rc:bin_type.domain.SQUARE"
+                    },
+                    {
+                        "value": "GEOHASH",
+                        "code": "$rc:bin_type.domain.GEOHASH"
+                    }
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:bin_type.descr"
+        },
+        "max_lod": {
+            "type": "optional",
+            "displayname": "$rc:max_lod.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "WORLD",
+                        "code": "$rc:max_lod.domain.WORLD"
+                    },
+                    {
+                        "value": "CONTINENTS",
+                        "code": "$rc:max_lod.domain.CONTINENTS"
+                    },
+                    {
+                        "value": "CONTINENT",
+                        "code": "$rc:max_lod.domain.CONTINENT"
+                    },
+                    {
+                        "value": "COUNTRIES",
+                        "code": "$rc:max_lod.domain.COUNTRIES"
+                    },
+                    {
+                        "value": "COUNTRY",
+                        "code": "$rc:max_lod.domain.COUNTRY"
+                    },
+                    {
+                        "value": "STATES",
+                        "code": "$rc:max_lod.domain.STATES"
+                    },
+                    {
+                        "value": "STATE",
+                        "code": "$rc:max_lod.domain.STATE"
+                    },
+                    {
+                        "value": "COUNTIES",
+                        "code": "$rc:max_lod.domain.COUNTIES"
+                    },
+                    {
+                        "value": "COUNTY",
+                        "code": "$rc:max_lod.domain.COUNTY"
+                    },
+                    {
+                        "value": "CITIES",
+                        "code": "$rc:max_lod.domain.CITIES"
+                    },
+                    {
+                        "value": "CITY",
+                        "code": "$rc:max_lod.domain.CITY"
+                    }
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:max_lod.descr"
+        },
+        "add_cache_statistics": {
+            "type": "optional",
+            "displayname": "$rc:add_cache_statistics.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:add_cache_statistics.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:add_cache_statistics.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Short",
+                            "Long",
+                            "BigInteger",
+                            "Float",
+                            "Double"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "SUM",
+                                "code": "$rc:add_cache_statistics.domain.item2.SUM"
+                            },
+                            {
+                                "value": "AVG",
+                                "code": "$rc:add_cache_statistics.domain.item2.AVG"
+                            },
+                            {
+                                "value": "MIN",
+                                "code": "$rc:add_cache_statistics.domain.item2.MIN"
+                            },
+                            {
+                                "value": "MAX",
+                                "code": "$rc:add_cache_statistics.domain.item2.MAX"
+                            },
+                            {
+                                "value": "STDDEV",
+                                "code": "$rc:add_cache_statistics.domain.item2.STDDEV"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:add_cache_statistics.descr"
+        },
+        "delete_cache_statistics": {
+            "type": "optional",
+            "displayname": "$rc:delete_cache_statistics.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:delete_cache_statistics.descr"
+        },
+        "out_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "addtomap": "false"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

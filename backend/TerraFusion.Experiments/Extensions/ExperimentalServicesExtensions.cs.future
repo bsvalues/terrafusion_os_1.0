@@ -1,0 +1,156 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * TERRAFUSION OS - EXPERIMENTS SERVICE REGISTRATION
+ * Elite Quantum Consciousness Experimental Service Configuration
+ * Dependency Injection for PhD-Level Research Environment
+ * THE TERRAFUSION WAY - GOVERNMENT. TRANSCENDED.
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+using TerraFusion.Experiments.Services;
+
+namespace TerraFusion.Experiments.Extensions
+{
+    /// <summary>
+    /// Elite service registration for quantum consciousness experimental capabilities
+    /// Configures advanced experimental research environment for Harvard/MIT PhD researchers
+    /// </summary>
+    public static class ExperimentalServicesExtensions
+    {
+        /// <summary>
+        /// Register elite experimental services for quantum consciousness research
+        /// </summary>
+        /// <param name="services">Service collection</param>
+        /// <param name="configuration">Application configuration</param>
+        /// <returns>Configured service collection</returns>
+        public static IServiceCollection AddEliteExperimentalServices(
+            this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            // Core experimental orchestration services
+            services.AddScoped<IQuantumConsciousnessOrchestrator, QuantumConsciousnessOrchestrator>();
+            services.AddScoped<IEliteAICoordinator, EliteAICoordinator>();
+            services.AddScoped<IResearchAnalyticsService, ResearchAnalyticsService>();
+            services.AddScoped<IEliteExperimentalInterface, EliteExperimentalInterface>();
+
+            // Advanced experimental coordination services
+            services.AddScoped<IConsciousnessVisualizationService, ConsciousnessVisualizationService>();
+            services.AddScoped<IQuantumAlgorithmTuningService, QuantumAlgorithmTuningService>();
+            services.AddScoped<IPhDResearchEnvironmentManager, PhDResearchEnvironmentManager>();
+            services.AddScoped<IStatisticalValidationEngine, StatisticalValidationEngine>();
+
+            // Cross-workspace integration services
+            services.AddScoped<ICrossWorkspaceSync, CrossWorkspaceSync>();
+            services.AddScoped<ITerraSyncQuantumBridge, TerraSyncQuantumBridge>();
+            services.AddScoped<IUnifiedResearchEnvironment, UnifiedResearchEnvironment>();
+
+            // Performance and monitoring services
+            services.AddScoped<IElitePerformanceMonitor, ElitePerformanceMonitor>();
+            services.AddScoped<IQuantumMetricsCollector, QuantumMetricsCollector>();
+            services.AddScoped<IRealTimeConsciousnessTracker, RealTimeConsciousnessTracker>();
+
+            // Security and compliance services
+            services.AddScoped<IResearchSecurityValidator, ResearchSecurityValidator>();
+            services.AddScoped<IPhDCredentialsValidator, PhDCredentialsValidator>();
+            services.AddScoped<IGovernmentComplianceEngine, GovernmentComplianceEngine>();
+
+            // Configuration binding
+            services.Configure<QuantumConsciousnessConfig>(
+                configuration.GetSection("QuantumConsciousness"));
+            services.Configure<EliteExperimentConfig>(
+                configuration.GetSection("EliteExperiments"));
+            services.Configure<ResearchAnalyticsConfig>(
+                configuration.GetSection("ResearchAnalytics"));
+            services.Configure<CrossWorkspaceSyncConfig>(
+                configuration.GetSection("CrossWorkspaceSync"));
+
+            return services;
+        }
+
+        /// <summary>
+        /// Register SignalR hubs for real-time experimental monitoring
+        /// </summary>
+        /// <param name="services">Service collection</param>
+        /// <returns>Configured service collection</returns>
+        public static IServiceCollection AddExperimentalSignalRHubs(this IServiceCollection services)
+        {
+            services.AddSignalR(options =>
+            {
+                // Elite real-time configuration for PhD-level research
+                options.EnableDetailedErrors = true;
+                options.KeepAliveInterval = TimeSpan.FromSeconds(10);
+                options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
+                options.HandshakeTimeout = TimeSpan.FromSeconds(15);
+                options.MaximumParallelInvocationsPerClient = 10;
+                options.StreamBufferCapacity = 100;
+            });
+
+            return services;
+        }
+
+        /// <summary>
+        /// Register background services for experimental orchestration
+        /// </summary>
+        /// <param name="services">Service collection</param>
+        /// <returns>Configured service collection</returns>
+        public static IServiceCollection AddExperimentalBackgroundServices(this IServiceCollection services)
+        {
+            // Elite experimental orchestration background service
+            services.AddHostedService<EliteExperimentOrchestrationService>();
+
+            // Quantum consciousness monitoring service
+            services.AddHostedService<QuantumConsciousnessMonitoringService>();
+
+            // Cross-workspace synchronization service
+            services.AddHostedService<CrossWorkspaceSyncService>();
+
+            // Research analytics processing service
+            services.AddHostedService<ResearchAnalyticsProcessingService>();
+
+            return services;
+        }
+    }
+
+    /// <summary>
+    /// Configuration classes for experimental services
+    /// </summary>
+    public class QuantumConsciousnessConfig
+    {
+        public int MaxAgentCount { get; set; } = 50000;
+        public string DefaultConsciousnessLevel { get; set; } = "quantum";
+        public bool QuantumEntanglementEnabled { get; set; } = true;
+        public int SwarmCoordinationInterval { get; set; } = 100; // milliseconds
+        public double ConsciousnessThreshold { get; set; } = 0.85;
+        public string ConsciousnessServiceUrl { get; set; } = "http://localhost:3004";
+    }
+
+    public class EliteExperimentConfig
+    {
+        public int MaxConcurrentExperiments { get; set; } = 10;
+        public int DefaultExperimentTimeout { get; set; } = 3600; // seconds
+        public bool RealTimeMonitoringEnabled { get; set; } = true;
+        public bool CrossWorkspaceIntegrationEnabled { get; set; } = true;
+        public string[] AuthorizedInstitutions { get; set; } = { "Harvard", "MIT", "Stanford", "Caltech" };
+        public string ExperimentDataPath { get; set; } = "/experiments/data";
+    }
+
+    public class ResearchAnalyticsConfig
+    {
+        public int MetricsRetentionDays { get; set; } = 365;
+        public bool AdvancedAnalyticsEnabled { get; set; } = true;
+        public bool StatisticalValidationEnabled { get; set; } = true;
+        public double AccuracyTarget { get; set; } = 0.999;
+        public string AnalyticsStorageConnectionString { get; set; } = string.Empty;
+    }
+
+    public class CrossWorkspaceSyncConfig
+    {
+        public bool TerraSyncIntegrationEnabled { get; set; } = true;
+        public string TerraSyncServiceUrl { get; set; } = "http://localhost:5020";
+        public int SynchronizationInterval { get; set; } = 5000; // milliseconds
+        public bool QuantumBridgeEnabled { get; set; } = true;
+        public string[] AuthorizedWorkspaces { get; set; } = { "TerraSync", "PropertyWorkbench" };
+    }
+}

@@ -1,0 +1,61 @@
+{
+    "type": "FunctionTool",
+    "guid": "{ae48e3c7-3e93-4c72-834e-37a7be36ae43}",
+    "displayname": "$rc:title",
+    "helpcontent": "5010001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9"
+    ],
+    "params": {
+        "in_features": {
+            "display_order": "0",
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "MultiPatch"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "grid_size": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:grid_size.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "value": "0.15",
+            "description": "$rc:grid_size.descr"
+        }
+    },
+    "environments": [
+        "XYDomain",
+        "XYResolution",
+        "ZDomain",
+        "ZResolution",
+        "autoCommit",
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "workspace"
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "map": {
+        "description": "Evaluates geodatabase rules and functionality.",
+        "evaluation_types.descr": "<xdoc><p>Specifies the types of evaluation that will be used.</p><ul><li><span title=\"CALCULATION_RULES\">Calculation rules</span>—Batch calculation attribute rules will be evaluated.</li><li><span title=\"VALIDATION_RULES\">Validation rules</span>—Validation attribute rules will be evaluated.</li></ul></xdoc>",
+        "evaluation_types.domain.CALCULATION_RULES": "Calculation rules",
+        "evaluation_types.domain.VALIDATION_RULES": "Validation rules",
+        "evaluation_types.title": "Evaluation Types",
+        "extent.descr": "<xdoc><p>The extent to be evaluated. If there is a selection in the map, only selected features within the specified extent will be evaluated.</p><ul><li>Current Display Extent—The extent will be based on the active map or scene.</li><li>Draw Extent—The extent will be based on a rectangle drawn on the map or scene.</li><li>Extent of a Layer—The extent will be based on an active map layer. Choose an available layer or use the <span class=\"esri_uicontrol\">Extent of data in all layers</span> option. Each map layer has the following options:<p><ul><li>All Features—The extent of all features.</li><li>Selected Features —The extent of the selected features.</li><li>Visible Features—The extent of visible features.</li></ul></p></li><li>Browse—The extent will be based on a dataset.</li><li>Intersection of Inputs—The extent will be the intersecting extent of all inputs.</li><li>Union of Inputs—The extent will be the combined extent of all inputs.</li><li>Clipboard—The extent can be copied to and from the clipboard.<ul><li>Copy Extent—Copies the extent and coordinate system to the clipboard.</li><li>Paste Extent—Pastes the extent and coordinate system from the clipboard. If the clipboard does not include a coordinate system, the extent will use the map’s coordinate system.</li></ul></li><li>Reset Extent—The extent will be reset to the default value.</li></ul><p>When coordinates are manually provided, the coordinates must be numeric values and in the active map&apos;s coordinate system. The map may use different display units than the provided coordinates. Use a negative value sign for south and west coordinates.</p></xdoc>",
+        "extent.title": "Extent",
+        "in_workspace.descr": "A file geodatabase, mobile geodatabase, or feature service URL. An example of a feature service URL is https://myserver/server/rest/services/myservicename/FeatureServer.",
+        "in_workspace.title": "Input Workspace",
+        "run_async.descr": "<xdoc><p>Specifies whether the evaluation will run synchronously or asynchronously. This parameter is only supported when the input workspace is a feature service.<ul><li>Checked—The evaluation will run asynchronously. This option dedicates server resources to run the evaluation with a longer time-out. Running asynchronously is recommended when evaluating large datasets that contain many features requiring calculation or validation. This is the default.</li><li>Unchecked—The evaluation will run synchronously. This option has a shorter time-out and is best used when evaluating an extent with a small number of features requiring calculation or validation.</li></ul></p></xdoc>",
+        "run_async.title": "Async",
+        "title": "Evaluate Rules",
+        "updated_workspace.title": "Updated Workspace"
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "set": [
+        "anno",
+        "create",
+        "generate",
+        "geodatabase",
+        "label",
+        "map cache",
+        "map document",
+        "map service",
+        "polygon",
+        "supertile",
+        "text",
+        "tile",
+        "tiling scheme"
+    ]
+}

@@ -1,0 +1,10 @@
+{
+    "map": {
+        "featureservices.title": "Feature Services",
+        "mapareaitemid.title": "Map Area Item ID",
+        "maplayerstoignore.title": "Map layers to ignore",
+        "packages.title": "Packages",
+        "tileservices.title": "Tile Services",
+        "title": "ServerTool 8"
+    }
+}

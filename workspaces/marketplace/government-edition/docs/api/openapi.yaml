@@ -1,0 +1,217 @@
+openapi: 3.0.3
+info:
+  title: Government Edition API
+  description: Government Edition operations APIs
+  version: 1.0.0
+  contact:
+    name: TerraFusion Government OS API Support
+    email: government-edition-api@terrafusion.gov
+    url: https://docs.terrafusion.gov/marketplace/government-edition
+  license:
+    name: Government Use License
+    url: https://terrafusion.gov/licenses/government-api
+  termsOfService: https://terrafusion.gov/terms/api-usage
+servers:
+- url: https://api.terrafusion.gov/api/v1/government-edition
+  description: Production TerraFusion Government API
+- url: https://staging-api.terrafusion.gov/api/v1/government-edition
+  description: Staging Environment
+- url: https://dev-api.terrafusion.gov/api/v1/government-edition
+  description: Development Environment
+paths:
+  /health:
+    get:
+      tags:
+      - government-edition
+      summary: Health check
+      description: Health check - Government Edition operations APIs
+      operationId: get__health
+      security:
+      - OAuth2:
+        - government-edition:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /data:
+    get:
+      tags:
+      - government-edition
+      summary: Data retrieval
+      description: Data retrieval - Government Edition operations APIs
+      operationId: get__data
+      security:
+      - OAuth2:
+        - government-edition:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /operations:
+    post:
+      tags:
+      - government-edition
+      summary: Operation execution
+      description: Operation execution - Government Edition operations APIs
+      operationId: post__operations
+      security:
+      - OAuth2:
+        - government-edition:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /status:
+    get:
+      tags:
+      - government-edition
+      summary: Service status
+      description: Service status - Government Edition operations APIs
+      operationId: get__status
+      security:
+      - OAuth2:
+        - government-edition:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: object
+    HealthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - healthy
+          - degraded
+          - unhealthy
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        dependencies:
+          type: object
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
+          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          scopes:
+            government-edition:read: Read access to government-edition resources
+            government-edition:write: Write access to government-edition resources
+            government-edition:admin: Administrative access to government-edition
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+security:
+- OAuth2:
+  - government-edition:read
+- ApiKey: []
+tags:
+- name: government-edition
+  description: Government Edition operations
+  externalDocs:
+    description: Find out more about government-edition
+    url: https://docs.terrafusion.gov/marketplace/government-edition

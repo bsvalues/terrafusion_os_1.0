@@ -1,0 +1,42 @@
+{
+    "version": "1.0",
+    "alias": "parcel",
+    "displayname": "$rc:title",
+    "description": "$rc:descr",
+    "helpcontext": "52000000",
+    "toolsets": {
+        "<root>": {
+            "tools": [
+                "AnalyzeParcelsByLeastSquaresAdjustment",
+                "AppendParcels",
+                "ApplyParcelLeastSquaresAdjustment",
+                "BuildParcelFabric",
+                "CopyParcels",
+                "CreateParcelSeeds",
+                "DeleteParcels",
+                "DuplicateParcels",
+                "ExportParcelRecordFeatures",
+                "ExportSequencedParcelFeatures",
+                "FindAdjacentParcelPoints",
+                "FindGapsAndOverlaps",
+                "GenerateParcelFabricLinks",
+                "ImportParcelFabricPoints",
+                "MergeCollinearParcelBoundaries",
+                "SelectParcelFeatures",
+                "SetParcelLineLabelPosition",
+                "ValidateParcelFabric"
+            ]
+        },
+        "$rc:toolset1.name": {
+            "tools": [
+                "AddParcelType",
+                "CreateParcelFabric",
+                "CreateParcelRecords",
+                "DisableParcelTopology",
+                "EnableParcelTopology",
+                "RemoveParcelType",
+                "UpgradeArcMapParcelFabric"
+            ]
+        }
+    }
+}

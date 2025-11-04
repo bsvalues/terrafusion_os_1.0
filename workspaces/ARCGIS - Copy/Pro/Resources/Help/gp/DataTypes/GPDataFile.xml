@@ -1,0 +1,5 @@
+<DataType Name="GPDataFile">
+  <DisplayName>Data File</DisplayName>
+  <Description>A data file.</Description>
+</DataType>
+

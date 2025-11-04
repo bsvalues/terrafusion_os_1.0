@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Recalculates the xy, z, and m extent properties of a feature class based on the features in the feature class.",
+        "in_features.descr": "The shapefile or geodatabase feature class that will be updated.",
+        "in_features.title": "Input Feature Class",
+        "out_features.title": "Updated Feature Class",
+        "store_extent.descr": "<xdoc><p>Specifies whether the extent will be stored for feature classes that are not registered. This parameter is only active when the input feature class is an unregistered spatial table in a database or enterprise geodatabase.</p><p>If the input feature class is updated frequently, you may choose not to store the recalculated extent value. If you choose to store the extent, the extent will not be recalculated each time the feature class is added to a map.</p><ul><li>Checked—The extent will be stored for the input feature class.</li><li>Unchecked—The extent will not be stored for the input feature class. This is the default.</li></ul></xdoc>",
+        "store_extent.title": "Store Extent",
+        "summary": "<xdoc><p>Recalculates the xy, z, and m extent properties of a feature class based on the features in the feature class.</p><p>A feature class has a spatial extent that is based on all the coordinates in the feature class. This spatial extent is used when adding a feature class to a map to recenter and display all the features. Rather than examining every feature in the feature class each time the feature class is added to a map (a potentially long process), a feature class has an extent property containing the last known spatial extent. However, this extent property is not always updated when features in the feature class are edited. This means that the values in the extent property may not contain the actual spatial extent of the features. The Recalculate Feature Class Extent tool reads all the features and updates the extent property.</p><note type=\"note\"/><p group=\"note\">XY, Z, and M extents are not the same as spatial reference domains. The XY, Z, and M domains in a spatial reference define the valid range of coordinate values that can be stored in a feature class. The feature class extents reflect the actual range of coordinate values that exist in the feature class. These extents cannot be larger than the domains.</p></xdoc>",
+        "title": "Recalculate Feature Class Extent"
+    }
+}

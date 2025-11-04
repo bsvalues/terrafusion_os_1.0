@@ -1,0 +1,61 @@
+{
+    "type": "FunctionTool",
+    "guid": "{dd0d9c51-a77a-479b-bf7f-6629452be148}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190302",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_rasters": {
+            "displayname": "$rc:in_rasters.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "DEMosaicDataset"
+                        },
+                        {
+                            "type": "GPMosaicLayer"
+                        },
+                        {
+                            "type": "DERasterDataset"
+                        },
+                        {
+                            "type": "GPRasterLayer"
+                        }
+                    ]
+                }
+            },
+            "description": "$rc:in_rasters.descr"
+        },
+        "out_raster": {
+            "direction": "out",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_raster.descr"
+        }
+    },
+    "environments": [
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "nodata",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "pyramid",
+        "rasterStatistics",
+        "resamplingMethod",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

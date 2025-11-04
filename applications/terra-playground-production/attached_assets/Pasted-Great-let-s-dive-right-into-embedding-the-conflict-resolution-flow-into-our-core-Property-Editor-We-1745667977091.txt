@@ -1,0 +1,97 @@
+Great—let’s dive right into embedding the conflict-resolution flow into our core Property Editor. We’ll knock out all three steps in one go:
+
+⸻
+
+1. Scaffold a PropertyEditor Wrapped with ConflictManager
+	1.	Create src/components/PropertyEditor.tsx (or similar) in your main app.
+	2.	Import the CRDT store hook and ConflictManager UI:
+
+import { usePropertyDoc } from 'offline-sync';
+import { ConflictManager } from 'ui-components/conflict-resolution';
+
+
+	3.	Wrap your existing editor UI so that if there’s a conflict, ConflictManager takes over; otherwise render the normal form:
+
+export function PropertyEditor({ propertyId }: { propertyId: string }) {
+  const { doc, hasConflict, resolveConflict } = usePropertyDoc(propertyId);
+
+  if (hasConflict) {
+    return (
+      <ConflictManager
+        localState={doc.local}
+        remoteState={doc.remote}
+        onResolve={(mergedState) => {
+          resolveConflict(mergedState);
+        }}
+      />
+    );
+  }
+
+  // Fallback: no conflict, show standard editor binding directly to `doc.shared`
+  return <StandardPropertyForm doc={doc.shared} />;
+}
+
+
+
+⸻
+
+2. Wire the CRDT Store into the Conflict-Resolution Hook
+	1.	Extend your CRDT store in offline-sync/src/crdt-sync.ts to expose local vs. remote “snapshots” when a divergence is detected.
+	2.	Expose from your hook (usePropertyDoc) a triple { shared, local, remote } plus a hasConflict boolean and a resolveConflict() method.
+	3.	Inside usePropertyDoc:
+
+const ydoc = useYDoc(`property-${propertyId}`);
+const awareness = useAwareness(ydoc);
+const [conflict, setConflict] = useState(false);
+const [remoteSnapshot, setRemote] = useState<StateType>();
+
+// subscribe to remote updates from server
+useEffect(() => {
+  subscribeToRemote(propertyId, (update) => {
+    const localState = ydoc.getState();
+    const remoteState = applyUpdateToClone(ydoc, update);
+    if (!deepEqual(localState, remoteState)) {
+      setConflict(true);
+      setRemote(remoteState);
+    }
+  });
+}, [propertyId]);
+
+// resolveConflict handler writes mergedState back into Yjs
+const resolveConflict = (merged: StateType) => {
+  ydoc.transact(() => ydoc.applyDelta(merged));
+  pushUpdate(ydoc); // push merged CRDT to server
+  setConflict(false);
+};
+
+return {
+  shared: ydoc.getState(),
+  local: ydoc.getState(),
+  remote: remoteSnapshot,
+  hasConflict: conflict,
+  resolveConflict,
+};
+
+
+
+⸻
+
+3. Build a Live Conflict Demo
+	1.	Add a demo route or Storybook story at /conflict-demo that:
+	•	Loads two tabs/windows with the same propertyId.
+	•	Edits each in isolation (simulate offline).
+	•	Reconnects one tab to trigger the conflict flow in the other.
+	2.	Observe the ConflictManager popping up, showing diffs, and choosing “Keep Local,” “Accept Remote,” or manual merge.
+	3.	Verify that after resolution, both tabs converge to the merged state and no further conflict appears.
+
+⸻
+
+Next Steps
+
+Once this is wired up and validated, your users will immediately see and control offline sync conflicts in the main application—huge trust and adoption booster. From there, we can pivot to either:
+	•	React Native + Realm for mobile parity
+	•	Performance testing to harden large-scale use
+	•	Documentation so third-parties and end users know exactly how to leverage the new flow
+	•	Service worker to finalize web background sync
+
+But first, let’s get this Property Editor conflict flow fully embedded. Let me know when you’re ready, and I’ll push the code blueprint into your Replit AI Agent.

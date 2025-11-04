@@ -1,0 +1,29 @@
+{
+    "map": {
+        "analysis_variable.descr": "The numeric variable of the space-time cube containing the time series values of each location.",
+        "analysis_variable.title": "Analysis Variable",
+        "change_type.descr": "<xdoc><p>Specifies the type of change that will be detected. Each option specifies a statistical property of the time series that is assumed to be constant in each segment. The value changes to a new constant value at each change point in the time series.</p><ul><li><span title=\"MEAN\">Mean shift</span>—Shifts in mean value will be detected. This is the default.</li><li><span title=\"STANDARD_DEVIATION\">Standard deviation</span>—Changes in standard deviation will be detected.</li><li><span title=\"SLOPE\">Slope (Linear trend)</span>—Changes in slope (linear trend) will be detected.</li><li><span title=\"COUNT\">Count</span>—Changes in the mean of count data will be detected.</li></ul></xdoc>",
+        "change_type.domain.COUNT": "Count",
+        "change_type.domain.MEAN": "Mean shift",
+        "change_type.domain.SLOPE": "Slope (Linear trend)",
+        "change_type.domain.STANDARD_DEVIATION": "Standard deviation",
+        "change_type.title": "Change Type",
+        "description": "Detects time steps when a statistical property of the time series changes for each location of a space-time cube.",
+        "in_cube.descr": "The space-time cube containing the variable to be analyzed. Space-time cubes have a .nc file extension and are created using various tools in the Space Time Pattern Mining toolbox.",
+        "in_cube.title": "Input Space Time Cube",
+        "method.descr": "<xdoc><p>Specifies whether the number of change points will be detected automatically or specified by a defined number of change points used for all locations.</p><ul><li><span title=\"AUTO_DETECT\">Auto-detect number of change points (PELT)</span>—The number of change points will be detected automatically. The sensitivity of the detection will be defined by the <span class=\"esri_uicontrol\">Detection Sensitivity</span> parameter. This is the default.</li><li><span title=\"DEFINED_NUMBER\">Defined number of change points (SegNeigh)</span>—The number of change points will be defined by the <span class=\"esri_uicontrol\">Number of Change Points</span> parameter.</li></ul></xdoc>",
+        "method.domain.AUTO_DETECT": "Auto-detect number of change points (PELT)",
+        "method.domain.DEFINED_NUMBER": "Defined number of change points (SegNeigh)",
+        "method.title": "Method",
+        "min_seg_len.descr": "The minimum number of time steps within each segment. The change points will divide each time series into segments in which each segment has at least this number of time steps. For change in mean, standard deviation, and count, the default is 1, meaning that every time step can be a change point. For change in slope (linear trend), the default is 2 because at least two values are required to fit a line. The value must be less than half the number of time steps in the time series.",
+        "min_seg_len.title": "Minimum Segment Length",
+        "num_change_points.descr": "The number of change points that will be detected at each location. The default is 1.",
+        "num_change_points.title": "Number of Change Points",
+        "output_features.descr": "The output feature class that will contain the change point detection results. The layer displays the number of change points detected at each location and contains pop-up line charts showing the time series values, change points, and estimates of mean or standard deviation of each segment.",
+        "output_features.title": "Output Features",
+        "sensitivity.descr": "A number between 0 and 1 that defines the sensitivity of the detection. Larger values will result in more detected change points at each location. The default is 0.5.",
+        "sensitivity.title": "Detection Sensitivity",
+        "summary": "<xdoc><p>Detects time steps when a statistical property of the time series changes for each location of a space-time cube.</p><p>The tool can detect changes in the mean value, standard deviation, or linear trend of continuous variables as well as changes in the mean of count variables. The number of change points at each location can be determined by the tool or a defined number of change points can be provided that will be used for all locations. The change points divide each time series into segments in which the values in each segment have a similar mean, standard deviation, or linear trend. Change points are defined as the first time step in each new segment, so the number of change points is always one less than the number of segments.</p></xdoc>",
+        "title": "Change Point Detection"
+    }
+}

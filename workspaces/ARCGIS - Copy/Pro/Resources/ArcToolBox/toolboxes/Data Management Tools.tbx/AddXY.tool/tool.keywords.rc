@@ -1,0 +1,13 @@
+{
+    "set": [
+        "geometry",
+        "latitude",
+        "longitude",
+        "m",
+        "point",
+        "vector",
+        "x",
+        "y",
+        "z"
+    ]
+}

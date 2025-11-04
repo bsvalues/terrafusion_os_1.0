@@ -134,9 +134,12 @@ describe('Toast (Sonner)', () => {
 
       await user.click(screen.getByRole('button', { name: /undo/i }));
 
-      await waitFor(() => {
-        expect(screen.queryByText('Message')).not.toBeInTheDocument();
-      }, { timeout: 2000 });
+      await waitFor(
+        () => {
+          expect(screen.queryByText('Message')).not.toBeInTheDocument();
+        },
+        { timeout: 2000 }
+      );
     });
 
     it('renders cancel button', async () => {
@@ -417,9 +420,12 @@ describe('Toast (Sonner)', () => {
         expect(screen.getByText('Loading...')).toBeInTheDocument();
       });
 
-      await waitFor(() => {
-        expect(screen.getByText('Success!')).toBeInTheDocument();
-      }, { timeout: 2000 });
+      await waitFor(
+        () => {
+          expect(screen.getByText('Success!')).toBeInTheDocument();
+        },
+        { timeout: 2000 }
+      );
     });
 
     it('shows loading toast', async () => {

@@ -1,0 +1,265 @@
+{
+    "type": "FunctionTool",
+    "guid": "{33724566-2738-4FE2-903A-A8C439127E50}/SetCriteriaProperties",
+    "displayname": "$rc:title",
+    "helpcontent": "62050006",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "33",
+        "35"
+    ],
+    "params": {
+        "in_analysis_layer": {
+            "displayname": "$rc:in_analysis_layer.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPFeatureLayer"
+                    },
+                    {
+                        "type": "GPGroupLayer"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Polygon"
+                        ]
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "description": "$rc:in_analysis_layer.descr"
+        },
+        "criteria_properties": {
+            "displayname": "$rc:criteria_properties.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:criteria_properties.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:criteria_properties.dt.title2"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:criteria_properties.dt.title3"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:criteria_properties.dt.title4"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:criteria_properties.dt.title5"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:criteria_properties.dt.title6"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:criteria_properties.dt.title7"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "displayname": "$rc:criteria_properties.dt.title8"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "POSITIVE",
+                                "code": "$rc:criteria_properties.domain.item4.POSITIVE"
+                            },
+                            {
+                                "value": "INVERSE",
+                                "code": "$rc:criteria_properties.domain.item4.INVERSE"
+                            },
+                            {
+                                "value": "IDEAL",
+                                "code": "$rc:criteria_properties.domain.item4.IDEAL"
+                            },
+                            {
+                                "value": "TARGET",
+                                "code": "$rc:criteria_properties.domain.item4.TARGET"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "description": "$rc:criteria_properties.descr"
+        },
+        "out_analysis_layer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_analysis_layer.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPFeatureLayer"
+                    },
+                    {
+                        "type": "GPGroupLayer"
+                    }
+                ]
+            },
+            "depends": [
+                "in_analysis_layer"
+            ]
+        },
+        "criteria_score_preset": {
+            "type": "optional",
+            "displayname": "$rc:criteria_score_preset.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SUM_SCALED",
+                        "code": "$rc:criteria_score_preset.domain.SUM_SCALED"
+                    },
+                    {
+                        "value": "GEOMEAN_SCALED",
+                        "code": "$rc:criteria_score_preset.domain.GEOMEAN_SCALED"
+                    },
+                    {
+                        "value": "CUSTOM",
+                        "code": "$rc:criteria_score_preset.domain.CUSTOM"
+                    }
+                ]
+            },
+            "value": "SUM_SCALED",
+            "description": "$rc:criteria_score_preset.descr"
+        },
+        "preprocessing": {
+            "type": "optional",
+            "displayname": "$rc:preprocessing.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MINMAX",
+                        "code": "$rc:preprocessing.domain.MINMAX"
+                    },
+                    {
+                        "value": "PERCENTILE",
+                        "code": "$rc:preprocessing.domain.PERCENTILE"
+                    },
+                    {
+                        "value": "ZSCORE",
+                        "code": "$rc:preprocessing.domain.ZSCORE"
+                    },
+                    {
+                        "value": "RAW",
+                        "code": "$rc:preprocessing.domain.RAW"
+                    }
+                ]
+            },
+            "value": "MINMAX",
+            "description": "$rc:preprocessing.descr"
+        },
+        "criteria_score_method": {
+            "type": "optional",
+            "displayname": "$rc:criteria_score_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SUM",
+                        "code": "$rc:criteria_score_method.domain.SUM"
+                    },
+                    {
+                        "value": "MEAN",
+                        "code": "$rc:criteria_score_method.domain.MEAN"
+                    },
+                    {
+                        "value": "PRODUCT",
+                        "code": "$rc:criteria_score_method.domain.PRODUCT"
+                    },
+                    {
+                        "value": "GEOMETRIC_MEAN",
+                        "code": "$rc:criteria_score_method.domain.GEOMETRIC_MEAN"
+                    }
+                ]
+            },
+            "value": "SUM",
+            "description": "$rc:criteria_score_method.descr"
+        },
+        "final_score_method": {
+            "type": "optional",
+            "displayname": "$rc:final_score_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "METHOD_0_1",
+                        "code": "$rc:final_score_method.domain.METHOD_0_1"
+                    },
+                    {
+                        "value": "METHOD_0_100",
+                        "code": "$rc:final_score_method.domain.METHOD_0_100"
+                    },
+                    {
+                        "value": "NONE",
+                        "code": "$rc:final_score_method.domain.NONE"
+                    }
+                ]
+            },
+            "value": "NONE",
+            "description": "$rc:final_score_method.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

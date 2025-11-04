@@ -1,0 +1,12 @@
+{
+    "map": {
+        "config_keyword.descr": "The configuration keyword containing the appropriate parameter values for the migration. Parameter values are set by the geodatabase administrator. Contact your geodatabase administrator if you are unsure which configuration keyword to use.",
+        "config_keyword.title": "Configuration Keyword",
+        "description": "Migrates the data from a binary, spatial, or spatial attribute column of one data type to a new column of a different data type in geodatabases in Oracle and SQL Server. The configuration keyword you specify when migrating determines the data type used for the new column.",
+        "in_datasets.descr": "The datasets to be migrated. The connection you use to access the datasets must be connecting as the dataset owner.",
+        "in_datasets.title": "Input Datasets",
+        "out_datasetss.title": "Updated Input Datasets",
+        "summary": "<xdoc><p>Migrates the data from a binary, spatial, or spatial attribute column of one data type to a new column of a different data type in geodatabases in Oracle and SQL Server. The configuration keyword you specify when migrating determines the data type used for the new column.</p><note type=\"caution\"/><p group=\"note\">After migrating the data type, you must disconnect from and reconnect to the geodatabase to reload the columns. If you do not, subsequent actions run on the newly migrated datasets may fail.</p></xdoc>",
+        "title": "Migrate Storage"
+    }
+}

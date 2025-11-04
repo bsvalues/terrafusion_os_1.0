@@ -1,0 +1,13 @@
+{
+    "map": {
+        "description": "Defines the behavior of a split operation on a feature class.",
+        "in_feature_class.descr": "The feature class on which the split model will be set.",
+        "in_feature_class.title": "Input Feature Class",
+        "out_feature_class.title": "Output Feature Class",
+        "split_model.descr": "<xdoc><p>Specifies the split model that will be applied to the input feature class.</p><ul><li><span title=\"DELETE_INSERT_INSERT\">Delete/Insert/Insert</span>—The original feature will be deleted, and both parts of the split feature will be inserted as new features with two new rows in the table.</li><li><span title=\"UPDATE_INSERT\">Update/Insert</span>—The original feature will be updated, becoming the largest feature, and the smaller feature will be inserted as a new row in the table. This is the default.</li></ul></xdoc>",
+        "split_model.domain.DELETE_INSERT_INSERT": "Delete/Insert/Insert",
+        "split_model.domain.UPDATE_INSERT": "Update/Insert",
+        "split_model.title": "Split Model",
+        "title": "Set Feature Class Split Model"
+    }
+}

@@ -1,0 +1,26 @@
+{
+    "set": [
+        "cluster",
+        "clustering",
+        "cold",
+        "distribution",
+        "geographic",
+        "high",
+        "hot spot",
+        "hotspot",
+        "local",
+        "low",
+        "p",
+        "p-value",
+        "point pattern analysis",
+        "random",
+        "resource allocation",
+        "space",
+        "space-time",
+        "temporal",
+        "time",
+        "value",
+        "z",
+        "z-score"
+    ]
+}

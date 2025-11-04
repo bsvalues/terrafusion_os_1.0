@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TerraMiner{% endblock %}</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    
+    <!-- Feather Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                            950: '#082f49',
+                        },
+                        secondary: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        },
+                        success: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                            950: '#052e16',
+                        },
+                        warning: {
+                            50: '#fffbeb',
+                            100: '#fef3c7',
+                            200: '#fde68a',
+                            300: '#fcd34d',
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            700: '#b45309',
+                            800: '#92400e',
+                            900: '#78350f',
+                            950: '#451a03',
+                        },
+                        danger: {
+                            50: '#fef2f2',
+                            100: '#fee2e2',
+                            200: '#fecaca',
+                            300: '#fca5a5',
+                            400: '#f87171',
+                            500: '#ef4444',
+                            600: '#dc2626',
+                            700: '#b91c1c',
+                            800: '#991b1b',
+                            900: '#7f1d1d',
+                            950: '#450a0a',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer components {
+            .btn {
+                @apply px-4 py-2 rounded-md font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+            }
+            .btn-primary {
+                @apply btn bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 dark:bg-primary-700 dark:hover:bg-primary-800;
+            }
+            .btn-secondary {
+                @apply btn bg-secondary-100 text-secondary-800 hover:bg-secondary-200 focus:ring-secondary-500 dark:bg-secondary-700 dark:text-secondary-100 dark:hover:bg-secondary-600;
+            }
+            .btn-success {
+                @apply btn bg-success-600 text-white hover:bg-success-700 focus:ring-success-500 dark:bg-success-700 dark:hover:bg-success-800;
+            }
+            .btn-warning {
+                @apply btn bg-warning-500 text-white hover:bg-warning-600 focus:ring-warning-500 dark:bg-warning-600 dark:hover:bg-warning-700;
+            }
+            .btn-danger {
+                @apply btn bg-danger-600 text-white hover:bg-danger-700 focus:ring-danger-500 dark:bg-danger-700 dark:hover:bg-danger-800;
+            }
+            .btn-outline {
+                @apply btn bg-transparent border border-secondary-300 text-secondary-700 hover:bg-secondary-50 focus:ring-secondary-500 dark:border-secondary-600 dark:text-secondary-200 dark:hover:bg-secondary-800;
+            }
+            .btn-link {
+                @apply btn bg-transparent text-primary-600 hover:underline focus:ring-primary-500 dark:text-primary-400;
+            }
+            .btn-sm {
+                @apply px-2 py-1 text-sm;
+            }
+            .btn-lg {
+                @apply px-6 py-3 text-lg;
+            }
+
+            .card {
+                @apply bg-white rounded-lg shadow-md overflow-hidden dark:bg-secondary-800 dark:border dark:border-secondary-700;
+            }
+            .card-header {
+                @apply px-6 py-4 bg-secondary-50 border-b border-secondary-200 dark:bg-secondary-700 dark:border-secondary-600;
+            }
+            .card-body {
+                @apply p-6;
+            }
+            .card-footer {
+                @apply px-6 py-4 bg-secondary-50 border-t border-secondary-200 dark:bg-secondary-700 dark:border-secondary-600;
+            }
+            
+            .stat-card {
+                @apply card flex flex-col p-6;
+            }
+            .stat-title {
+                @apply text-secondary-500 text-sm font-medium dark:text-secondary-400;
+            }
+            .stat-value {
+                @apply text-3xl font-bold mt-2 text-secondary-900 dark:text-white;
+            }
+            .stat-desc {
+                @apply text-sm text-secondary-500 mt-1 dark:text-secondary-400;
+            }
+            .stat-trend-up {
+                @apply text-success-600 dark:text-success-500;
+            }
+            .stat-trend-down {
+                @apply text-danger-600 dark:text-danger-500;
+            }
+            
+            .form-label {
+                @apply block text-sm font-medium text-secondary-700 mb-1 dark:text-secondary-300;
+            }
+            .form-input {
+                @apply block w-full rounded-md border-secondary-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-secondary-700 dark:border-secondary-600 dark:text-white;
+            }
+            .form-select {
+                @apply block w-full rounded-md border-secondary-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-secondary-700 dark:border-secondary-600 dark:text-white;
+            }
+            .form-checkbox {
+                @apply rounded border-secondary-300 text-primary-600 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-offset-0 dark:border-secondary-600 dark:bg-secondary-700;
+            }
+            .form-radio {
+                @apply border-secondary-300 text-primary-600 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-offset-0 dark:border-secondary-600 dark:bg-secondary-700;
+            }
+            .form-group {
+                @apply mb-4;
+            }
+            
+            .table-container {
+                @apply w-full overflow-hidden rounded-lg shadow-md;
+            }
+            .table {
+                @apply min-w-full divide-y divide-secondary-200 dark:divide-secondary-700;
+            }
+            .table-header {
+                @apply bg-secondary-50 dark:bg-secondary-700;
+            }
+            .table-header-cell {
+                @apply px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider dark:text-secondary-400;
+            }
+            .table-body {
+                @apply bg-white divide-y divide-secondary-200 dark:bg-secondary-800 dark:divide-secondary-700;
+            }
+            .table-row {
+                @apply hover:bg-secondary-50 dark:hover:bg-secondary-700;
+            }
+            .table-cell {
+                @apply px-6 py-4 whitespace-nowrap text-sm text-secondary-900 dark:text-secondary-200;
+            }
+            
+            .badge {
+                @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+            }
+            .badge-primary {
+                @apply badge bg-primary-100 text-primary-800 dark:bg-primary-800 dark:text-primary-200;
+            }
+            .badge-secondary {
+                @apply badge bg-secondary-100 text-secondary-800 dark:bg-secondary-700 dark:text-secondary-200;
+            }
+            .badge-success {
+                @apply badge bg-success-100 text-success-800 dark:bg-success-800 dark:text-success-200;
+            }
+            .badge-warning {
+                @apply badge bg-warning-100 text-warning-800 dark:bg-warning-800 dark:text-warning-200;
+            }
+            .badge-danger {
+                @apply badge bg-danger-100 text-danger-800 dark:bg-danger-800 dark:text-danger-200;
+            }
+            
+            .alert {
+                @apply p-4 rounded-md mb-4;
+            }
+            .alert-info {
+                @apply alert bg-primary-50 text-primary-800 dark:bg-primary-900 dark:text-primary-200;
+            }
+            .alert-success {
+                @apply alert bg-success-50 text-success-800 dark:bg-success-900 dark:text-success-200;
+            }
+            .alert-warning {
+                @apply alert bg-warning-50 text-warning-800 dark:bg-warning-900 dark:text-warning-200;
+            }
+            .alert-danger {
+                @apply alert bg-danger-50 text-danger-800 dark:bg-danger-900 dark:text-danger-200;
+            }
+            
+            .toast {
+                @apply fixed top-4 right-4 p-4 rounded-md shadow-lg max-w-md z-50 transform transition-all duration-300 ease-in-out;
+            }
+            .toast-success {
+                @apply toast bg-success-600 text-white dark:bg-success-700;
+            }
+            .toast-info {
+                @apply toast bg-primary-600 text-white dark:bg-primary-700;
+            }
+            .toast-warning {
+                @apply toast bg-warning-500 text-white dark:bg-warning-600;
+            }
+            .toast-error {
+                @apply toast bg-danger-600 text-white dark:bg-danger-700;
+            }
+        }
+        
+        /* Navigation specific styles */
+        .nav-link {
+            @apply px-3 py-2 rounded-md text-sm font-medium text-secondary-600 hover:bg-secondary-100 hover:text-secondary-900 dark:text-secondary-300 dark:hover:bg-secondary-700 dark:hover:text-white;
+        }
+        .nav-link-active {
+            @apply px-3 py-2 rounded-md text-sm font-medium bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300;
+        }
+        .dropdown-menu {
+            @apply origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 dark:bg-secondary-800 dark:ring-secondary-700;
+        }
+        .dropdown-item {
+            @apply block px-4 py-2 text-sm text-secondary-700 hover:bg-secondary-100 dark:text-secondary-300 dark:hover:bg-secondary-700;
+        }
+    </style>
+    
+    {% block head_extras %}{% endblock %}
+</head>
+<body class="antialiased bg-secondary-50 text-secondary-900 dark:bg-secondary-900 dark:text-white min-h-screen flex flex-col">
+    <!-- Optional flashed messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="fixed top-4 right-4 z-50">
+                {% for category, message in messages %}
+                    {% set alert_class = {
+                        'success': 'alert-success',
+                        'info': 'alert-info',
+                        'warning': 'alert-warning',
+                        'danger': 'alert-danger',
+                        'error': 'alert-danger'
+                    } %}
+                    <div class="{{ alert_class.get(category, 'alert-info') }} shadow-lg mb-2 flex items-center">
+                        <div class="flex-1">{{ message }}</div>
+                        <button type="button" class="ml-auto -mx-1.5 -my-1.5 rounded-lg p-1.5 inline-flex h-8 w-8" onclick="this.parentElement.remove()">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Top Navigation -->
+    <header class="bg-white shadow-sm dark:bg-secondary-800 dark:border-b dark:border-secondary-700 sticky top-0 z-40">
+        <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="flex-shrink-0 flex items-center">
+                        <img class="h-8 w-auto" src="{{ url_for('static', filename='img/logo.svg') }}" alt="TerraMiner Logo">
+                        <span class="ml-2 text-xl font-bold text-primary-600 dark:text-primary-400">TerraMiner</span>
+                    </a>
+                    <nav class="ml-6 flex space-x-1">
+                        <a href="{{ url_for('index') }}" class="{% if request.path == url_for('index') %}nav-link-active{% else %}nav-link{% endif %}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                            Home
+                        </a>
+                        
+                        <!-- 1. PROPERTIES SECTION -->
+                        <div class="relative group">
+                            <button class="{% if 'property' in request.path or 'zillow_properties' in request.path %}nav-link-active{% else %}nav-link{% endif %} flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                                Properties
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div class="hidden group-hover:block absolute left-0 w-48 mt-1 bg-white dark:bg-secondary-800 rounded-md shadow-lg z-50">
+                                <div class="py-1">
+                                    <a href="{{ url_for('property_search') }}" class="dropdown-item">Search Properties</a>
+                                    <a href="{{ url_for('property_comparison') }}" class="dropdown-item">Compare Properties</a>
+                                    <a href="{{ url_for('monitoring_locations') }}" class="dropdown-item">Property Map</a>
+                                    <a href="{{ url_for('zillow_properties') }}" class="dropdown-item">Zillow Properties</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 2. ANALYTICS & REPORTS SECTION -->
+                        <div class="relative group">
+                            <button class="{% if 'monitoring_price_trends' in request.path or 'reports' in request.path or 'zillow_market_data' in request.path %}nav-link-active{% else %}nav-link{% endif %} flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                </svg>
+                                Analytics & Reports
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div class="hidden group-hover:block absolute left-0 w-48 mt-1 bg-white dark:bg-secondary-800 rounded-md shadow-lg z-50">
+                                <div class="py-1">
+                                    <a href="{{ url_for('monitoring_price_trends') }}" class="dropdown-item">Market Trends</a>
+                                    <a href="{{ url_for('zillow_market_data') }}" class="dropdown-item">Market Data</a>
+                                    <a href="{{ url_for('reports') }}" class="dropdown-item">Property Reports</a>
+                                    <a href="{{ url_for('monitoring_reports_scheduled') }}" class="dropdown-item">Scheduled Reports</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 3. AI TOOLS SECTION -->
+                        <div class="relative group">
+                            <button class="{% if 'ai' in request.path or 'agent_tools_page' in request.path %}nav-link-active{% else %}nav-link{% endif %} flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                                AI Insights
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div class="hidden group-hover:block absolute left-0 w-48 mt-1 bg-white dark:bg-secondary-800 rounded-md shadow-lg z-50">
+                                <div class="py-1">
+                                    <a href="{{ url_for('ai_demo') }}" class="dropdown-item">Property Analysis</a>
+                                    <a href="{{ url_for('ai_sidebar_demo') }}" class="dropdown-item">AI Assistant</a>
+                                    <a href="{{ url_for('agent_tools_page') }}" class="dropdown-item">Agent Tools</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 4. ADMIN SECTION (Only for admins) -->
+                        <div class="relative group">
+                            <button class="{% if 'monitoring' in request.path and request.path != url_for('monitoring_price_trends') and request.path != url_for('monitoring_locations') and request.path != url_for('monitoring_reports_scheduled') %}nav-link-active{% else %}nav-link{% endif %} flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                System
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            <div class="hidden group-hover:block absolute left-0 w-48 mt-1 bg-white dark:bg-secondary-800 rounded-md shadow-lg z-50">
+                                <div class="py-1">
+                                    <a href="{{ url_for('monitoring_dashboard') }}" class="dropdown-item">System Dashboard</a>
+                                    <a href="{{ url_for('monitoring_system') }}" class="dropdown-item">System Performance</a>
+                                    <a href="{{ url_for('monitoring_api') }}" class="dropdown-item">API Performance</a>
+                                    <a href="{{ url_for('monitoring_database') }}" class="dropdown-item">Database</a>
+                                    <a href="{{ url_for('data_sources_manager') }}" class="dropdown-item">Data Sources</a>
+                                    <a href="{{ url_for('monitoring_alerts_active') }}" class="dropdown-item">Active Alerts</a>
+                                    <a href="{{ url_for('settings') }}" class="dropdown-item">Settings</a>
+                                    <hr class="my-1 border-secondary-200 dark:border-secondary-700">
+                                    <a href="{{ url_for('design_guide') }}" class="dropdown-item">Design Guide</a>
+                                    <a href="{{ url_for('ui_pattern_library') }}" class="dropdown-item">UI Pattern Library</a>
+                                </div>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+                <div class="flex items-center">
+                    <button id="darkModeToggle" class="p-2 rounded-full text-secondary-500 dark:text-secondary-400 hover:bg-secondary-100 dark:hover:bg-secondary-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                    </button>
+                    <div class="ml-3 relative">
+                        <div>
+                            <button type="button" class="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 items-center space-x-2" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+                                <div class="h-8 w-8 rounded-full bg-primary-700 flex items-center justify-center text-white">
+                                    <span>TD</span>
+                                </div>
+                                <span class="hidden md:inline-block text-sm">Admin</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                        </div>
+                        <!-- User dropdown menu - hidden by default -->
+                        <div class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-secondary-800 dark:ring-secondary-700" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1" id="user-dropdown">
+                            <a href="{{ url_for('settings') }}" class="dropdown-item" role="menuitem">Settings</a>
+                            <a href="#" class="dropdown-item" role="menuitem">Sign out</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white shadow-inner dark:bg-secondary-800 dark:border-t dark:border-secondary-700 mt-auto">
+        <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center py-6">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <img class="h-6 w-auto" src="{{ url_for('static', filename='img/logo.svg') }}" alt="TerraMiner Logo">
+                    <span class="ml-2 text-sm text-secondary-500 dark:text-secondary-400">© 2025 TerraMiner. All rights reserved.</span>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-sm text-secondary-500 hover:text-secondary-700 dark:text-secondary-400 dark:hover:text-secondary-300">Privacy Policy</a>
+                    <a href="#" class="text-sm text-secondary-500 hover:text-secondary-700 dark:text-secondary-400 dark:hover:text-secondary-300">Terms of Service</a>
+                    <a href="#" class="text-sm text-secondary-500 hover:text-secondary-700 dark:text-secondary-400 dark:hover:text-secondary-300">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Common JavaScript -->
+    <script>
+        // Initialize Feather Icons
+        if (typeof feather !== 'undefined') {
+            feather.replace();
+        }
+        
+        // User dropdown toggle
+        document.getElementById('user-menu-button')?.addEventListener('click', function() {
+            document.getElementById('user-dropdown').classList.toggle('hidden');
+        });
+
+        // Dark mode toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        if (darkModeToggle) {
+            darkModeToggle.addEventListener('click', function() {
+                document.documentElement.classList.toggle('dark');
+                localStorage.setItem('darkMode', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+            });
+
+            // Set initial dark mode based on user preference or system preference
+            if (localStorage.getItem('darkMode') === 'dark' || 
+                (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+        }
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

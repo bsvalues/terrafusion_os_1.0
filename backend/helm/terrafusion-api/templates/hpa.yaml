@@ -1,0 +1,59 @@
+{{/*
+============================================================================
+TerraFusion API - HorizontalPodAutoscaler Template
+Government. Transcended. - Dynamic Scaling (2-20 replicas)
+============================================================================
+*/}}
+
+{{- if .Values.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "terrafusion-api.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "terrafusion-api.labels" . | nindent 4 }}
+    terrafusion.io/component: api
+    terrafusion.io/tier: core
+  annotations:
+    description: "TerraFusion API Autoscaling"
+    compliance: "FISMA-High"
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "terrafusion-api.fullname" . }}
+  minReplicas: {{ .Values.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.autoscaling.maxReplicas }}
+  metrics:
+    # CPU utilization target
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.autoscaling.targetCPUUtilizationPercentage }}
+    
+    # Memory utilization target
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.autoscaling.targetMemoryUtilizationPercentage }}
+    
+    # Custom metrics (if Prometheus Adapter installed)
+    # - type: Pods
+    #   pods:
+    #     metric:
+    #       name: http_requests_per_second
+    #     target:
+    #       type: AverageValue
+    #       averageValue: "1000"
+  
+  behavior:
+    scaleDown:
+      {{- toYaml .Values.autoscaling.behavior.scaleDown | nindent 6 }}
+    scaleUp:
+      {{- toYaml .Values.autoscaling.behavior.scaleUp | nindent 6 }}
+{{- end }}

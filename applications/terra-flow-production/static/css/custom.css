@@ -1,0 +1,497 @@
+/**
+ * TerraFlow - Custom Bootstrap Overrides
+ * 
+ * This file contains custom overrides for Bootstrap components
+ * to match the TerraFusion design system.
+ */
+
+/* Navbar customization */
+.navbar {
+    padding: 0.75rem 1rem;
+    background-color: #fff;
+    border-bottom: 1px solid var(--tf-gray-200);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.navbar-brand .brand-prefix {
+    color: var(--tf-primary);
+}
+
+.navbar-brand .tf-flow {
+    color: var(--tf-flow-aqua);
+}
+
+.navbar-brand .tf-map {
+    color: var(--tf-map-green);
+}
+
+.navbar-brand .tf-insight {
+    color: var(--tf-insight-violet);
+}
+
+.navbar-brand .tf-sketch {
+    color: var(--tf-sketch-orange);
+}
+
+.dropdown-item.active, 
+.dropdown-item:active {
+    background-color: var(--tf-primary-light);
+}
+
+/* Card customizations */
+.card {
+    border: none;
+    box-shadow: var(--tf-shadow);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--tf-shadow-md);
+}
+
+.card-header {
+    font-weight: 600;
+    border-bottom: 1px solid var(--tf-gray-200);
+}
+
+/* Button customizations */
+.btn {
+    font-weight: 500;
+    letter-spacing: 0.01em;
+}
+
+.btn-primary {
+    background-color: var(--tf-primary);
+    border-color: var(--tf-primary);
+}
+
+.btn-primary:hover, 
+.btn-primary:focus {
+    background-color: var(--tf-primary-dark);
+    border-color: var(--tf-primary-dark);
+}
+
+.btn-success {
+    background-color: var(--tf-success);
+    border-color: var(--tf-success);
+}
+
+.btn-info {
+    background-color: var(--tf-info);
+    border-color: var(--tf-info);
+    color: #fff;
+}
+
+.btn-warning {
+    background-color: var(--tf-warning);
+    border-color: var(--tf-warning);
+}
+
+.btn-danger {
+    background-color: var(--tf-danger);
+    border-color: var(--tf-danger);
+}
+
+.btn-outline-primary {
+    border-color: var(--tf-primary);
+    color: var(--tf-primary);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--tf-primary);
+    color: white;
+}
+
+/* Form customizations */
+.form-control:focus {
+    border-color: var(--tf-primary-light);
+    box-shadow: 0 0 0 0.2rem rgba(15, 76, 92, 0.15);
+}
+
+.form-label {
+    font-weight: 500;
+    color: var(--tf-gray-700);
+}
+
+.form-text {
+    color: var(--tf-gray-500);
+}
+
+/* Badge customizations */
+.badge {
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 0.35em 0.65em;
+}
+
+.badge-primary {
+    background-color: var(--tf-primary);
+}
+
+.badge-flow {
+    background-color: var(--tf-flow-aqua);
+    color: #fff;
+}
+
+.badge-map {
+    background-color: var(--tf-map-green);
+    color: #fff;
+}
+
+.badge-insight {
+    background-color: var(--tf-insight-violet);
+    color: #fff;
+}
+
+.badge-sketch {
+    background-color: var(--tf-sketch-orange);
+    color: #fff;
+}
+
+/* Alert customizations */
+.alert {
+    border: none;
+    border-left: 4px solid transparent;
+    border-radius: 0.25rem;
+    padding: 1rem 1.5rem;
+    font-weight: 500;
+}
+
+.alert-primary {
+    background-color: rgba(15, 76, 92, 0.1);
+    border-left-color: var(--tf-primary);
+    color: var(--tf-primary-dark);
+}
+
+.alert-success {
+    background-color: var(--tf-success-light);
+    border-left-color: var(--tf-success);
+    color: #166534;
+}
+
+.alert-info {
+    background-color: var(--tf-info-light);
+    border-left-color: var(--tf-info);
+    color: #1E40AF;
+}
+
+.alert-warning {
+    background-color: var(--tf-warning-light);
+    border-left-color: var(--tf-warning);
+    color: #92400E;
+}
+
+.alert-danger {
+    background-color: var(--tf-danger-light);
+    border-left-color: var(--tf-danger);
+    color: #B91C1C;
+}
+
+/* Table customizations */
+.table {
+    --bs-table-hover-bg: var(--tf-gray-100);
+}
+
+.table thead th {
+    background-color: var(--tf-gray-100);
+    border-bottom: 2px solid var(--tf-gray-300);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-size: 0.75rem;
+    color: var(--tf-gray-700);
+}
+
+/* Modal customizations */
+.modal-header {
+    border-bottom: 1px solid var(--tf-gray-200);
+}
+
+.modal-footer {
+    border-top: 1px solid var(--tf-gray-200);
+}
+
+/* Pagination customizations */
+.page-link {
+    color: var(--tf-primary);
+    border-color: var(--tf-gray-200);
+}
+
+.page-link:hover {
+    color: var(--tf-primary-dark);
+    background-color: var(--tf-gray-100);
+    border-color: var(--tf-gray-300);
+}
+
+.page-item.active .page-link {
+    background-color: var(--tf-primary);
+    border-color: var(--tf-primary);
+}
+
+/* Nav tabs customization */
+.nav-tabs {
+    border-bottom: 1px solid var(--tf-gray-300);
+}
+
+.nav-tabs .nav-link {
+    color: var(--tf-gray-600);
+    font-weight: 500;
+    border: 1px solid transparent;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+    padding: 0.75rem 1.25rem;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: var(--tf-gray-200) var(--tf-gray-200) var(--tf-gray-300);
+    background-color: var(--tf-gray-50);
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--tf-primary);
+    background-color: #fff;
+    border-color: var(--tf-gray-300) var(--tf-gray-300) #fff;
+    font-weight: 600;
+}
+
+/* Progress bar customization */
+.progress {
+    height: 0.75rem;
+    background-color: var(--tf-gray-200);
+}
+
+.progress-bar {
+    background-color: var(--tf-primary);
+}
+
+/* List group customization */
+.list-group-item.active {
+    background-color: var(--tf-primary);
+    border-color: var(--tf-primary);
+}
+
+/* Dropdown customization */
+.dropdown-menu {
+    border: none;
+    box-shadow: var(--tf-shadow-md);
+    border-radius: 0.375rem;
+}
+
+.dropdown-item {
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+}
+
+.dropdown-item:hover {
+    background-color: var(--tf-gray-100);
+}
+
+.dropdown-item:active {
+    background-color: var(--tf-primary);
+}
+
+/* Collapse customization */
+.accordion-button:not(.collapsed) {
+    background-color: var(--tf-gray-100);
+    color: var(--tf-primary);
+}
+
+.accordion-button:focus {
+    border-color: var(--tf-primary-light);
+    box-shadow: 0 0 0 0.25rem rgba(15, 76, 92, 0.15);
+}
+
+/* Toast customization */
+.toast {
+    background-color: #fff;
+    border: none;
+    box-shadow: var(--tf-shadow-md);
+}
+
+.toast-header {
+    background-color: var(--tf-gray-100);
+    border-bottom: 1px solid var(--tf-gray-200);
+    font-weight: 600;
+}
+
+/* Tooltip customization */
+.tooltip-inner {
+    background-color: var(--tf-gray-800);
+    font-weight: 500;
+}
+
+/* Popover customization */
+.popover {
+    border: none;
+    box-shadow: var(--tf-shadow-md);
+}
+
+.popover-header {
+    background-color: var(--tf-gray-100);
+    border-bottom: 1px solid var(--tf-gray-200);
+    font-weight: 600;
+}
+
+/* Badge customization */
+.badge {
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
+/* Module Lockup customization */
+.module-lockup {
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.brand-prefix {
+    color: var(--tf-primary);
+}
+
+.module-name-wrapper {
+    font-weight: 800;
+}
+
+/* Specific module styles */
+.module-flow .module-name-wrapper {
+    color: var(--tf-flow-aqua);
+}
+
+.module-map .module-name-wrapper {
+    color: var(--tf-map-green);
+}
+
+.module-insight .module-name-wrapper {
+    color: var(--tf-insight-violet);
+}
+
+.module-sketch .module-name-wrapper {
+    color: var(--tf-sketch-orange);
+}
+
+/* Dashboard cards */
+.stats-card {
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    background-color: white;
+    box-shadow: var(--tf-shadow);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--tf-shadow-lg);
+}
+
+.stats-card .stats-icon {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 2.5rem;
+    opacity: 0.15;
+}
+
+.stats-card .stats-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.stats-card .stats-label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--tf-gray-600);
+}
+
+.stats-card.flow-card {
+    border-top: 4px solid var(--tf-flow-aqua);
+}
+
+.stats-card.map-card {
+    border-top: 4px solid var(--tf-map-green);
+}
+
+.stats-card.insight-card {
+    border-top: 4px solid var(--tf-insight-violet);
+}
+
+.stats-card.sketch-card {
+    border-top: 4px solid var(--tf-sketch-orange);
+}
+
+/* Custom utility classes */
+.bg-light-primary {
+    background-color: rgba(15, 76, 92, 0.1);
+}
+
+.bg-light-success {
+    background-color: var(--tf-success-light);
+}
+
+.bg-light-danger {
+    background-color: var(--tf-danger-light);
+}
+
+.bg-light-warning {
+    background-color: var(--tf-warning-light);
+}
+
+.bg-light-info {
+    background-color: var(--tf-info-light);
+}
+
+.text-flow {
+    color: var(--tf-flow-aqua) !important;
+}
+
+.text-map {
+    color: var(--tf-map-green) !important;
+}
+
+.text-insight {
+    color: var(--tf-insight-violet) !important;
+}
+
+.text-sketch {
+    color: var(--tf-sketch-orange) !important;
+}
+
+.bg-flow {
+    background-color: var(--tf-flow-aqua) !important;
+}
+
+.bg-map {
+    background-color: var(--tf-map-green) !important;
+}
+
+.bg-insight {
+    background-color: var(--tf-insight-violet) !important;
+}
+
+.bg-sketch {
+    background-color: var(--tf-sketch-orange) !important;
+}
+
+.bg-flow-light {
+    background-color: var(--tf-flow-aqua-light) !important;
+}
+
+.bg-map-light {
+    background-color: var(--tf-map-green-light) !important;
+}
+
+.bg-insight-light {
+    background-color: var(--tf-insight-violet-light) !important;
+}
+
+.bg-sketch-light {
+    background-color: var(--tf-sketch-orange-light) !important;
+}

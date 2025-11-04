@@ -1,0 +1,83 @@
+{
+    "type": "FunctionTool",
+    "guid": "{053ca6c1-7f96-43af-b121-76d74a07db77}",
+    "displayname": "$rc:title",
+    "helpcontent": "1030005",
+    "description": "$rc:description",
+    "product": "300",
+    "categories": [
+        "{0a2ad811-7215-4a95-92f3-9c29de502e9b}"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Multipoint",
+                    "Point"
+                ],
+                "featuretype": [
+                    "Simple",
+                    "SimpleJunction",
+                    "SimpleEdge",
+                    "ComplexEdge",
+                    "RasterCatalogItem"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "fields_to_copy": {
+            "type": "optional",
+            "displayname": "$rc:fields_to_copy.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ONLY_FID",
+                        "code": "$rc:fields_to_copy.domain.ONLY_FID"
+                    },
+                    {
+                        "value": "ALL",
+                        "code": "$rc:fields_to_copy.domain.ALL"
+                    }
+                ]
+            },
+            "value": "ONLY_FID",
+            "description": "$rc:fields_to_copy.descr"
+        }
+    },
+    "environments": [
+        "MDomain",
+        "MResolution",
+        "MTolerance",
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "ZDomain",
+        "ZResolution",
+        "ZTolerance",
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "outputMFlag",
+        "outputZFlag",
+        "outputZValue",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "set": [
+        "attribute",
+        "combine",
+        "copy",
+        "create",
+        "criteria",
+        "expression",
+        "join",
+        "meet",
+        "memory",
+        "select",
+        "sql",
+        "temporary",
+        "where clause"
+    ]
+}

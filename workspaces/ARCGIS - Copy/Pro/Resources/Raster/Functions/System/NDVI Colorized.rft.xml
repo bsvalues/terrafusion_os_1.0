@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RasterFunctionTemplate xsi:type="typens:RasterFunctionTemplate" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:typens="http://www.esri.com/schemas/ArcGIS/1.1.0">
+  <Name>NDVI Colorized</Name>
+  <Description>Compute a NDVI from the the input image and colorize the result using a colormap. This process requires one input.</Description>
+  <Function xsi:type="typens:ColormapFunction" id="ID1">
+    <Name>Symbology</Name>
+    <Description>Changes pixel values to display the raster data as either a grayscale or a red, green, blue (RGB) image, based on a colormap or a color ramp.</Description>
+    <PixelType>UNKNOWN</PixelType>
+  </Function>
+  <Arguments xsi:type="typens:ColormapFunctionArguments" id="ID2">
+    <Names xsi:type="typens:ArrayOfString" id="ID3">
+      <String>Raster</String>
+      <String>ColorSchemeType</String>
+      <String>Colormap</String>
+      <String>ColormapName</String>
+      <String>ColorRamp</String>
+    </Names>
+    <Values xsi:type="typens:ArrayOfAnyType" id="ID4">
+      <AnyType xsi:type="typens:RasterFunctionTemplate" id="ID5">
+        <Name>Raster Function Template</Name>
+        <Description>A raster function template.</Description>
+        <Function xsi:type="typens:NDVIFunction" id="ID6">
+          <Name>NDVI</Name>
+          <Description>Creates a single band dataset that represents vegetation health, based on the difference between the red and near infrared bands. The negative values represent clouds, water, and snow, and values near zero represent rock and bare soil.</Description>
+          <PixelType>UNKNOWN</PixelType>
+        </Function>
+        <Arguments xsi:type="typens:NDVIFunctionArguments" id="ID7">
+          <Names xsi:type="typens:ArrayOfString" id="ID8">
+            <String>Raster</String>
+            <String>VisibleBandID</String>
+            <String>InfraredBandID</String>
+          </Names>
+          <Values xsi:type="typens:ArrayOfAnyType" id="ID9">
+            <AnyType xsi:type="typens:RasterFunctionVariable" id="ID10">
+              <Name>Raster</Name>
+              <Description></Description>
+              <Value></Value>
+              <IsDataset>true</IsDataset>
+            </AnyType>
+            <AnyType xsi:type="typens:RasterFunctionVariable" id="ID11">
+              <Name>VisibleBandID</Name>
+              <Description></Description>
+              <Value xsi:type="xs:int">0</Value>
+              <IsDataset>false</IsDataset>
+            </AnyType>
+            <AnyType xsi:type="typens:RasterFunctionVariable" id="ID12">
+              <Name>InfraredBandID</Name>
+              <Description></Description>
+              <Value xsi:type="xs:int">0</Value>
+              <IsDataset>false</IsDataset>
+            </AnyType>
+          </Values>
+        </Arguments>
+        <Aliases xsi:type="typens:ArrayOfString" id="ID13">
+          <String>__tans__(Raster,VisibleBandID,InfraredBandID)</String>
+        </Aliases>
+        <Help></Help>
+        <Type>0</Type>
+        <Thumbnail xsi:type="xs:string"></Thumbnail>
+        <Definition></Definition>
+        <Group></Group>
+        <Tag></Tag>
+      </AnyType>
+      <AnyType xsi:type="typens:RasterFunctionVariable" id="ID14">
+        <Name>ColorSchemeType</Name>
+        <Description></Description>
+        <Value xsi:type="xs:int">0</Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+      <AnyType xsi:type="typens:RasterFunctionVariable" id="ID15">
+        <Name>Colormap</Name>
+        <Description></Description>
+        <Value></Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+      <AnyType xsi:type="typens:RasterFunctionVariable" id="ID16">
+        <Name>ColormapName</Name>
+        <Description></Description>
+        <Value xsi:type="xs:string">NDVI3</Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+      <AnyType xsi:type="typens:RasterFunctionVariable" id="ID17">
+        <Name>ColorRamp</Name>
+        <Description></Description>
+        <Value></Value>
+        <IsDataset>false</IsDataset>
+      </AnyType>
+    </Values>
+  </Arguments>
+  <Aliases xsi:type="typens:ArrayOfString" id="ID18">
+    <String>__tans__(ColorSchemeType,ColormapName,ColorRamp)</String>
+  </Aliases>
+  <Help></Help>
+  <Type>0</Type>
+  <Thumbnail xsi:type="xs:string"></Thumbnail>
+  <Definition></Definition>
+  <Group></Group>
+  <Tag></Tag>
+  <Image>RasterImageAnalysisNDVI32.png</Image>
+</RasterFunctionTemplate>

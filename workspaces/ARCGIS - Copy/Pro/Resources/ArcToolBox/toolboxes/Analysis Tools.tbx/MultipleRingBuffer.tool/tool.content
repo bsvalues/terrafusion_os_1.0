@@ -1,0 +1,205 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "1030004",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "Input_Features": {
+            "displayname": "$rc:input_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:input_features.descr"
+        },
+        "Output_Feature_class": {
+            "direction": "out",
+            "displayname": "$rc:output_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "depends": [
+                "Input_Features"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "featuretype.rule": "AsSpecified",
+                "featuretype": "Simple",
+                "geometrytype.rule": "AsSpecified",
+                "geometrytype": "Polygon",
+                "fields.rule": "FirstDependency",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:output_feature_class.descr"
+        },
+        "Distances": {
+            "displayname": "$rc:distances.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPDouble"
+                }
+            },
+            "description": "$rc:distances.descr"
+        },
+        "Buffer_Unit": {
+            "type": "optional",
+            "displayname": "$rc:buffer_unit.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "Default",
+                        "code": "$rc:buffer_unit.domain.Default"
+                    },
+                    {
+                        "value": "Centimeters",
+                        "code": "$rc:buffer_unit.domain.Centimeters"
+                    },
+                    {
+                        "value": "DecimalDegrees",
+                        "code": "$rc:buffer_unit.domain.DecimalDegrees"
+                    },
+                    {
+                        "value": "Feet",
+                        "code": "$rc:buffer_unit.domain.Feet"
+                    },
+                    {
+                        "value": "Inches",
+                        "code": "$rc:buffer_unit.domain.Inches"
+                    },
+                    {
+                        "value": "Kilometers",
+                        "code": "$rc:buffer_unit.domain.Kilometers"
+                    },
+                    {
+                        "value": "Meters",
+                        "code": "$rc:buffer_unit.domain.Meters"
+                    },
+                    {
+                        "value": "Miles",
+                        "code": "$rc:buffer_unit.domain.Miles"
+                    },
+                    {
+                        "value": "Millimeters",
+                        "code": "$rc:buffer_unit.domain.Millimeters"
+                    },
+                    {
+                        "value": "NauticalMiles",
+                        "code": "$rc:buffer_unit.domain.NauticalMiles"
+                    },
+                    {
+                        "value": "Points",
+                        "code": "$rc:buffer_unit.domain.Points"
+                    },
+                    {
+                        "value": "Yards",
+                        "code": "$rc:buffer_unit.domain.Yards"
+                    },
+                    {
+                        "value": "Decimeters",
+                        "code": "$rc:buffer_unit.domain.Decimeters"
+                    }
+                ]
+            },
+            "value": "Default",
+            "description": "$rc:buffer_unit.descr"
+        },
+        "Field_Name": {
+            "type": "optional",
+            "displayname": "$rc:field_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "distance",
+            "description": "$rc:field_name.descr"
+        },
+        "Dissolve_Option": {
+            "type": "optional",
+            "displayname": "$rc:dissolve_option.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ALL",
+                        "code": "$rc:dissolve_option.domain.ALL"
+                    },
+                    {
+                        "value": "NONE",
+                        "code": "$rc:dissolve_option.domain.NONE"
+                    }
+                ]
+            },
+            "value": "ALL",
+            "description": "$rc:dissolve_option.descr"
+        },
+        "Outside_Polygons_Only": {
+            "type": "optional",
+            "displayname": "$rc:outside_polygons_only.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "OUTSIDE_ONLY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "FULL"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:outside_polygons_only.descr"
+        },
+        "Method": {
+            "type": "optional",
+            "displayname": "$rc:method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PLANAR",
+                        "code": "$rc:method.domain.PLANAR"
+                    },
+                    {
+                        "value": "GEODESIC",
+                        "code": "$rc:method.domain.GEODESIC"
+                    }
+                ]
+            },
+            "description": "$rc:method.descr"
+        }
+    },
+    "environments": [
+        "MResolution",
+        "MTolerance",
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "ZResolution",
+        "ZTolerance",
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "outputMFlag",
+        "outputZFlag",
+        "outputZValue",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

@@ -1,0 +1,10 @@
+{
+    "set": [
+        "bayesian",
+        "cokriging",
+        "explanatory",
+        "interpolate",
+        "interpolation",
+        "kriging"
+    ]
+}

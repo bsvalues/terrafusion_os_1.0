@@ -1,0 +1,19 @@
+{
+    "map": {
+        "compare_status.title": "Compare Status",
+        "continue_compare.descr": "<xdoc><p>Indicates whether to compare all properties after encountering the first mismatch.<ul><li>Unchecked—Stops after encountering the first mismatch. This is the default.</li><li>Checked—Compares other properties after encountering the first mismatch.</li></ul></p></xdoc>",
+        "continue_compare.title": "Continue Comparison",
+        "description": "Compares two files and returns the comparison results..",
+        "file_type.descr": "<xdoc><p>The type of files being compared.</p><ul><li><span title=\"ASCII\">ASCII</span>—Compare using ASCII characters. This is the default.</li><li><span title=\"BINARY\">Binary</span>—Perform a binary compare.</li></ul></xdoc>",
+        "file_type.domain.ASCII": "ASCII",
+        "file_type.domain.BINARY": "Binary",
+        "file_type.title": "File Type",
+        "in_base_file.descr": "<xdoc><p>The <span class=\"esri_uicontrol\">Input Base File</span> is compared with the <span class=\"esri_uicontrol\">Input Test File</span>. The<span class=\"esri_uicontrol\"> Input Base File</span> refers to a file that you have declared valid. This base file has the correct content and information.</p></xdoc>",
+        "in_base_file.title": "Input Base File",
+        "in_test_file.descr": "<xdoc><p>The <span class=\"esri_uicontrol\">Input Test File</span> is compared against the <span class=\"esri_uicontrol\">Input Base File</span>. The <span class=\"esri_uicontrol\">Input Test File</span> refers to a file that you have made changes to by editing or compiling new information.</p></xdoc>",
+        "in_test_file.title": "Input Test File",
+        "out_compare_file.descr": "<xdoc><p>This file will contain all similarities and differences between the <span class=\"esri_uicontrol\">Input Base File</span> and the <span class=\"esri_uicontrol\">Input Test File</span>. This file is a comma-delimited text file which can be viewed and used as a table in ArcGIS.</p></xdoc>",
+        "out_compare_file.title": "Output Compare File",
+        "title": "File Compare"
+    }
+}

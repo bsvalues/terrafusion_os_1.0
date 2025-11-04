@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  terra-fusion-app:
+    build: .
+    container_name: terra-fusion-main
+    ports:
+      - "5000:5000"
+      - "8001:8001"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - SESSION_SECRET=${SESSION_SECRET}
+    volumes:
+      - .:/app
+    depends_on:
+      - postgres
+    networks:
+      - terra-fusion-network
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15
+    container_name: terra-fusion-db
+    environment:
+      - POSTGRES_DB=terra_fusion
+      - POSTGRES_USER=terra_admin
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - terra-fusion-network
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: terra-fusion-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - terra-fusion-app
+    networks:
+      - terra-fusion-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  terra-fusion-network:
+    driver: bridge

@@ -1,0 +1,12 @@
+{
+    "set": [
+        "mem",
+        "moran",
+        "component",
+        "eigenvector",
+        "matrix",
+        "pattern",
+        "swm",
+        "weights"
+    ]
+}

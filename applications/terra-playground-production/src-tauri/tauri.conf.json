@@ -1,0 +1,85 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/schemas/app-schema.json",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devPath": "http://localhost:3000",
+    "beforeBuildCommand": "npm run build",
+    "distDir": "../out"
+  },
+  "package": {
+    "productName": "TerraFusionLauncher",
+    "version": "0.1.0"
+  },
+  "tauri": {
+    "bundle": {
+      "active": true,
+      "targets": "all",
+      "identifier": "com.terrafusion.launcher",
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ],
+      "windows": {
+        "allowLaf": false
+      },
+      "deb": {
+        "depends": []
+      },
+      "macOS": {
+        "deb": {
+          "depends": []
+        },
+        "dmg": {
+          "extraBundledFiles": []
+        },
+        "frameworks": [],
+        "exceptionDomain": "",
+        "forceCodesign": false,
+        "providerShortName": null,
+        "signingIdentity": null
+      },
+      "externalBin": [],
+      "resources": [],
+      "badging": true,
+      "longDescription": "",
+      "category": "DeveloperTool",
+      "copyright": "",
+      "shortDescription": "",
+      "presignedAppPaths": null,
+      "injectClasses": false
+    },
+    "security": {
+      "csp": null
+    },
+    "allowlist": {
+      "all": true,
+      "shell": {
+        "all": true,
+        "execute": true,
+        "open": true,
+        "scope": [
+          {
+            "name": "cmd",
+            "cmd": ["/C", "$SCRIPT_PATH"]
+          },
+          {
+            "name": "sh",
+            "cmd": ["$SCRIPT_PATH"]
+          }
+        ]
+      }
+    },
+    "windows": [
+      {
+        "title": "Terrafusion Launcher",
+        "width": 800,
+        "height": 600,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ]
+  }
+} 

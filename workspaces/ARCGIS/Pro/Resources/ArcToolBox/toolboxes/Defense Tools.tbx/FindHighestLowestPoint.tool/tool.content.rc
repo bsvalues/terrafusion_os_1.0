@@ -1,0 +1,17 @@
+{
+    "map": {
+        "description": "Finds the highest or lowest point  of the input surface within a defined area.",
+        "high_low_operation_type.descr": "<xdoc><p>Specifies the type of operation the tool will perform.</p><ul><li><span title=\"HIGHEST\">Highest points</span>—The highest points will be found. This is the default.</li><li><span title=\"LOWEST\">Lowest points</span>—The lowest points will be found.</li></ul></xdoc>",
+        "high_low_operation_type.domain.HIGHEST": "Highest points",
+        "high_low_operation_type.domain.LOWEST": "Lowest points",
+        "high_low_operation_type.title": "Highest or Lowest Point",
+        "in_feature.descr": "The input polygon feature class within which the highest or lowest point will be found.",
+        "in_feature.title": "Input Area",
+        "in_surface.descr": "The input elevation raster surface.",
+        "in_surface.title": "Input Surface",
+        "out_feature_class.descr": "The feature class containing the output highest or lowest point.",
+        "out_feature_class.title": "Output Feature Class",
+        "summary": "Finds the highest or lowest point of the input surface within a defined area.",
+        "title": "Find Highest Or Lowest Point"
+    }
+}

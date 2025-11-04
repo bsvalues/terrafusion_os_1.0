@@ -1,0 +1,206 @@
+{
+    "type": "FunctionTool",
+    "guid": "{736de2fe-acdb-4bc4-af37-618180285733}",
+    "displayname": "$rc:title",
+    "helpcontent": "11000010",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "6"
+    ],
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_geostat_layer": {
+            "display_order": "0",
+            "displayname": "$rc:in_geostat_layer.title",
+            "datatype": {
+                "type": "GPGALayer"
+            },
+            "description": "$rc:in_geostat_layer.descr"
+        },
+        "in_locations": {
+            "display_order": "1",
+            "displayname": "$rc:in_locations.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:in_locations.descr"
+        },
+        "z_field": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:z_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double"
+                ],
+                "exclude.field": [
+                    "Predicted",
+                    "StdError",
+                    "Error",
+                    "Stdd_Error",
+                    "NormValue",
+                    "Source_ID",
+                    "Included"
+                ]
+            },
+            "depends": [
+                "in_locations"
+            ],
+            "description": "$rc:z_field.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "display_order": "3",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "append_all_fields": {
+            "type": "optional",
+            "displayname": "$rc:append_all_fields.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ALL"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "FID_ONLY"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:append_all_fields.descr"
+        },
+        "elevation_field": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:elevation_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "BigInteger",
+                    "Float",
+                    "Double"
+                ]
+            },
+            "depends": [
+                "in_locations"
+            ],
+            "description": "$rc:elevation_field.descr"
+        },
+        "elevation_units": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:elevation_units.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "INCH_INT",
+                        "code": "$rc:elevation_units.domain.INCH_INT"
+                    },
+                    {
+                        "value": "FOOT_INT",
+                        "code": "$rc:elevation_units.domain.FOOT_INT"
+                    },
+                    {
+                        "value": "YARD_INT",
+                        "code": "$rc:elevation_units.domain.YARD_INT"
+                    },
+                    {
+                        "value": "MILE_INT",
+                        "code": "$rc:elevation_units.domain.MILE_INT"
+                    },
+                    {
+                        "value": "NAUTICAL_MILE_INT",
+                        "code": "$rc:elevation_units.domain.NAUTICAL_MILE_INT"
+                    },
+                    {
+                        "value": "INCH",
+                        "code": "$rc:elevation_units.domain.INCH"
+                    },
+                    {
+                        "value": "FOOT",
+                        "code": "$rc:elevation_units.domain.FOOT"
+                    },
+                    {
+                        "value": "YARD",
+                        "code": "$rc:elevation_units.domain.YARD"
+                    },
+                    {
+                        "value": "MILE_US",
+                        "code": "$rc:elevation_units.domain.MILE_US"
+                    },
+                    {
+                        "value": "NAUTICAL_MILE",
+                        "code": "$rc:elevation_units.domain.NAUTICAL_MILE"
+                    },
+                    {
+                        "value": "MILLIMETER",
+                        "code": "$rc:elevation_units.domain.MILLIMETER"
+                    },
+                    {
+                        "value": "CENTIMETER",
+                        "code": "$rc:elevation_units.domain.CENTIMETER"
+                    },
+                    {
+                        "value": "DECIMETER",
+                        "code": "$rc:elevation_units.domain.DECIMETER"
+                    },
+                    {
+                        "value": "METER",
+                        "code": "$rc:elevation_units.domain.METER"
+                    },
+                    {
+                        "value": "KILOMETER",
+                        "code": "$rc:elevation_units.domain.KILOMETER"
+                    }
+                ]
+            },
+            "value": "METER",
+            "description": "$rc:elevation_units.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

@@ -1,0 +1,486 @@
+{% extends "unified_base.html" %}
+
+{% from "components/ui_components.html" import card, chart_container, icon_button, tabs %}
+{% from "components/data_components.html" import db_connection_status %}
+
+{% block title %}Database Monitoring - TerraMiner{% endblock %}
+
+{% block page_title %}Database Monitoring{% endblock %}
+
+{% block page_actions %}
+<div class="btn-group">
+    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-calendar3 me-1"></i>
+        Time Range
+    </button>
+    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end">
+        <li><a class="dropdown-item active" href="#" data-range="1h">Last Hour</a></li>
+        <li><a class="dropdown-item" href="#" data-range="6h">Last 6 Hours</a></li>
+        <li><a class="dropdown-item" href="#" data-range="24h">Last 24 Hours</a></li>
+        <li><a class="dropdown-item" href="#" data-range="7d">Last 7 Days</a></li>
+        <li><a class="dropdown-item" href="#" data-range="30d">Last 30 Days</a></li>
+    </ul>
+</div>
+<button type="button" class="btn btn-primary ms-2" id="refreshDBData">
+    <i class="bi bi-arrow-clockwise me-1"></i>
+    Refresh
+</button>
+{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    {{ db_connection_status(
+        status=db_status.status|default('connected'),
+        connection_count=db_status.connections|default(3),
+        response_time=db_status.response_time|default(15),
+        max_connections=db_status.max_connections|default(10)
+    ) }}
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6 col-lg-3 mb-3 mb-lg-0">
+        <div class="card bg-dark border-secondary text-center h-100">
+            <div class="card-body">
+                <h6 class="text-muted mb-1">Query Count</h6>
+                <h2 class="mb-0">{{ db_metrics.query_count|default('0') }}</h2>
+                <div class="text-success small mt-2">
+                    <i class="bi bi-arrow-up-short"></i>
+                    {{ db_metrics.query_increase|default('0') }}% vs yesterday
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-3 mb-lg-0">
+        <div class="card bg-dark border-secondary text-center h-100">
+            <div class="card-body">
+                <h6 class="text-muted mb-1">Avg Query Time</h6>
+                <h2 class="mb-0">{{ db_metrics.avg_query_time|default('0') }}ms</h2>
+                <div class="text-success small mt-2">
+                    <i class="bi bi-arrow-down-short"></i>
+                    {{ db_metrics.query_time_decrease|default('0') }}% vs yesterday
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-3 mb-lg-0">
+        <div class="card bg-dark border-secondary text-center h-100">
+            <div class="card-body">
+                <h6 class="text-muted mb-1">Cache Hit Ratio</h6>
+                <h2 class="mb-0">{{ db_metrics.cache_hit_ratio|default('0') }}%</h2>
+                <div class="text-success small mt-2">
+                    <i class="bi bi-arrow-up-short"></i>
+                    {{ db_metrics.cache_hit_increase|default('0') }}% vs yesterday
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card bg-dark border-secondary text-center h-100">
+            <div class="card-body">
+                <h6 class="text-muted mb-1">Active Tables</h6>
+                <h2 class="mb-0">{{ db_metrics.active_tables|default('0') }}</h2>
+                <div class="text-muted small mt-2">
+                    <i class="bi bi-arrow-up-short"></i>
+                    {{ db_metrics.tables_increase|default('0') }} new
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        {% call card(title="Database Performance Overview", subtitle="Query execution time") %}
+            {{ chart_container(id="dbPerformanceChart", height="300px", loading=true) }}
+        {% endcall %}
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        {% call card(title="Connection Pool Usage", subtitle="Active connections over time") %}
+            {{ chart_container(id="connectionPoolChart", height="300px", loading=true) }}
+        {% endcall %}
+    </div>
+    <div class="col-md-6">
+        {% call card(title="Database Size", subtitle="Growth over time") %}
+            {{ chart_container(id="dbSizeChart", height="300px", loading=true) }}
+        {% endcall %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        {% call card(title="Slow Queries", subtitle="Queries taking more than 500ms") %}
+            <div class="table-responsive">
+                <table class="table table-sm table-dark" id="slowQueriesTable">
+                    <thead>
+                        <tr>
+                            <th>Query</th>
+                            <th>Execution Time</th>
+                            <th>Rows Returned</th>
+                            <th>Last Executed</th>
+                            <th>Frequency</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for query in slow_queries %}
+                            <tr>
+                                <td>
+                                    <div class="text-truncate" style="max-width: 350px;">{{ query.sql }}</div>
+                                </td>
+                                <td>{{ query.execution_time }}ms</td>
+                                <td>{{ query.rows_returned }}</td>
+                                <td>{{ query.last_executed }}</td>
+                                <td>{{ query.frequency }} times/day</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button type="button" class="btn btn-outline-primary view-query-btn" 
+                                                data-query-id="{{ query.id }}" title="View Details">
+                                            <i class="bi bi-search"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-success analyze-query-btn" 
+                                                data-query-id="{{ query.id }}" title="Analyze Query">
+                                            <i class="bi bi-graph-up"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4">
+                                    <i class="bi bi-check2-circle text-success d-block mb-2" style="font-size: 2rem;"></i>
+                                    <p class="mb-0 text-muted">No slow queries detected. Your database is performing well!</p>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endcall %}
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        {% call card(title="Table Statistics", subtitle="Usage and size metrics") %}
+            <div class="table-responsive">
+                <table class="table table-sm table-dark" id="tableStatsTable">
+                    <thead>
+                        <tr>
+                            <th>Table Name</th>
+                            <th>Row Count</th>
+                            <th>Size</th>
+                            <th>Index Size</th>
+                            <th>Last Vacuum</th>
+                            <th>Last Analyzed</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for table in table_stats %}
+                            <tr>
+                                <td>{{ table.name }}</td>
+                                <td>{{ table.row_count }}</td>
+                                <td>{{ table.size }}</td>
+                                <td>{{ table.index_size }}</td>
+                                <td>{{ table.last_vacuum }}</td>
+                                <td>{{ table.last_analyzed }}</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button type="button" class="btn btn-outline-primary view-table-btn" 
+                                                data-table-name="{{ table.name }}" title="View Details">
+                                            <i class="bi bi-table"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-warning vacuum-table-btn" 
+                                                data-table-name="{{ table.name }}" title="Vacuum Table">
+                                            <i class="bi bi-box-seam"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <i class="bi bi-table text-muted d-block mb-2" style="font-size: 2rem;"></i>
+                                    <p class="mb-0 text-muted">No table statistics available.</p>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endcall %}
+    </div>
+</div>
+
+<!-- Query Details Modal -->
+<div class="modal fade" id="queryDetailsModal" tabindex="-1" aria-labelledby="queryDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark text-light border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title" id="queryDetailsModalLabel">Query Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">SQL Query</label>
+                    <div class="p-3 bg-black rounded border border-secondary">
+                        <pre class="mb-0 query-sql-display" style="color: #00bfb3;"></pre>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Query Execution Plan</label>
+                    <div class="p-3 bg-black rounded border border-secondary">
+                        <pre class="mb-0 query-plan-display" style="color: #f9fafc;"></pre>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Performance Metrics</label>
+                            <ul class="list-group list-group-flush bg-dark">
+                                <li class="list-group-item bg-dark border-secondary d-flex justify-content-between">
+                                    <span>Average Execution Time:</span>
+                                    <span class="query-avg-time">95ms</span>
+                                </li>
+                                <li class="list-group-item bg-dark border-secondary d-flex justify-content-between">
+                                    <span>Max Execution Time:</span>
+                                    <span class="query-max-time">350ms</span>
+                                </li>
+                                <li class="list-group-item bg-dark border-secondary d-flex justify-content-between">
+                                    <span>Total Executions:</span>
+                                    <span class="query-executions">1,245</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Performance Trend</label>
+                            <div style="height: 150px;">
+                                <canvas id="queryPerformanceChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Optimization Suggestions</label>
+                    <div class="p-3 rounded border border-primary bg-dark">
+                        <ul class="query-suggestions-list mb-0">
+                            <li>Consider adding an index on the <code>created_at</code> column for better date range filtering.</li>
+                            <li>The table scan on <code>large_table</code> could be optimized with a more specific WHERE clause.</li>
+                            <li>This query might benefit from materializing results using a temporary table for repetitive operations.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary optimize-query-btn">
+                    <i class="bi bi-lightning me-1"></i>
+                    Optimize Query
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize charts
+    const dbPerformanceChart = createChart('dbPerformanceChart', 'line', {
+        labels: ['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00'],
+        datasets: [
+            {
+                label: 'Avg Query Time (ms)',
+                data: [35, 32, 40, 45, 55, 60, 45, 40],
+                borderWidth: 2,
+                tension: 0.3
+            },
+            {
+                label: 'Max Query Time (ms)',
+                data: [120, 110, 180, 220, 250, 270, 200, 180],
+                borderWidth: 2,
+                tension: 0.3
+            },
+            {
+                label: 'Min Query Time (ms)',
+                data: [10, 8, 12, 15, 18, 15, 12, 10],
+                borderWidth: 2,
+                tension: 0.3
+            }
+        ]
+    });
+    
+    const connectionPoolChart = createChart('connectionPoolChart', 'line', {
+        labels: ['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00'],
+        datasets: [
+            {
+                label: 'Active Connections',
+                data: [3, 4, 5, 6, 8, 5, 4, 3],
+                borderWidth: 2,
+                tension: 0.3,
+                fill: true
+            }
+        ]
+    }, {
+        scales: {
+            y: {
+                min: 0,
+                max: 10,
+                title: {
+                    display: true,
+                    text: 'Connections'
+                }
+            }
+        }
+    });
+    
+    const dbSizeChart = createChart('dbSizeChart', 'line', {
+        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8'],
+        datasets: [
+            {
+                label: 'Database Size (MB)',
+                data: [120, 150, 180, 220, 260, 310, 350, 400],
+                borderWidth: 2,
+                tension: 0.3,
+                fill: true
+            },
+            {
+                label: 'Index Size (MB)',
+                data: [40, 50, 65, 78, 90, 110, 125, 145],
+                borderWidth: 2,
+                tension: 0.3,
+                fill: true
+            }
+        ]
+    });
+    
+    // Hide loading overlays
+    setTimeout(() => {
+        document.querySelectorAll('.chart-container').forEach(container => {
+            const loading = container.querySelector('.chart-loading');
+            if (loading) loading.style.display = 'none';
+        });
+    }, 1000);
+    
+    // Refresh button handler
+    document.getElementById('refreshDBData').addEventListener('click', function() {
+        document.querySelectorAll('.chart-container').forEach(container => {
+            const chartId = container.querySelector('canvas').id;
+            showLoading(chartId, 'Refreshing data...');
+        });
+        
+        // Simulate API call
+        setTimeout(() => {
+            // Update charts with new random data
+            dbPerformanceChart.data.datasets.forEach((dataset, index) => {
+                if (index === 0) { // Avg query time
+                    dataset.data = dataset.data.map(() => Math.floor(Math.random() * 30) + 30);
+                } else if (index === 1) { // Max query time
+                    dataset.data = dataset.data.map(() => Math.floor(Math.random() * 100) + 150);
+                } else { // Min query time
+                    dataset.data = dataset.data.map(() => Math.floor(Math.random() * 10) + 5);
+                }
+            });
+            dbPerformanceChart.update();
+            
+            connectionPoolChart.data.datasets[0].data = connectionPoolChart.data.datasets[0].data.map(() => 
+                Math.floor(Math.random() * 7) + 2
+            );
+            connectionPoolChart.update();
+            
+            // No updates to DB size chart as that shouldn't change frequently
+            
+            // Hide loading states
+            document.querySelectorAll('.chart-container').forEach(container => {
+                const chartId = container.querySelector('canvas').id;
+                hideLoading(chartId);
+            });
+            
+            // Show success message
+            showToast('Database monitoring data refreshed successfully', 'success', {
+                duration: 3000
+            });
+        }, 1500);
+    });
+    
+    // Query details modal handling
+    const queryDetailsModal = new bootstrap.Modal(document.getElementById('queryDetailsModal'));
+    
+    document.querySelectorAll('.view-query-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const queryId = this.getAttribute('data-query-id');
+            // In a real app, you would fetch detailed data for this query
+            
+            // For demo, show the modal with some sample data
+            document.querySelector('.query-sql-display').textContent = 
+                `SELECT p.*, c.name as category_name\nFROM products p\nJOIN categories c ON p.category_id = c.id\nWHERE p.created_at > '2025-01-01'\nORDER BY p.name\nLIMIT 100;`;
+            
+            document.querySelector('.query-plan-display').textContent = 
+                `Limit  (cost=35.84..35.86 rows=100 width=325)\n  ->  Sort  (cost=35.84..36.09 rows=100 width=325)\n        Sort Key: p.name\n        ->  Hash Join  (cost=12.42..33.84 rows=100 width=325)\n              Hash Cond: (p.category_id = c.id)\n              ->  Seq Scan on products p  (cost=0.00..18.50 rows=100 width=280)\n                    Filter: (created_at > '2025-01-01 00:00:00'::timestamp without time zone)\n              ->  Hash  (cost=8.20..8.20 rows=339 width=45)\n                    ->  Seq Scan on categories c  (cost=0.00..8.20 rows=339 width=45)`;
+            
+            // Display metrics
+            document.querySelector('.query-avg-time').textContent = '120ms';
+            document.querySelector('.query-max-time').textContent = '450ms';
+            document.querySelector('.query-executions').textContent = '2,456';
+            
+            // Create performance trend chart
+            createChart('queryPerformanceChart', 'line', {
+                labels: ['7 days ago', '6 days ago', '5 days ago', '4 days ago', '3 days ago', '2 days ago', 'Yesterday', 'Today'],
+                datasets: [
+                    {
+                        label: 'Execution Time (ms)',
+                        data: [140, 135, 150, 165, 130, 125, 120, 110],
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: false
+                    }
+                ]
+            }, {
+                plugins: {
+                    legend: { display: false }
+                }
+            });
+            
+            // Show the modal
+            queryDetailsModal.show();
+        });
+    });
+    
+    // Vacuum table button handling
+    document.querySelectorAll('.vacuum-table-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tableName = this.getAttribute('data-table-name');
+            showToast(`Starting VACUUM operation on table: ${tableName}. This may take some time...`, 'info', {
+                duration: 5000
+            });
+        });
+    });
+    
+    // Analyze query button handling
+    document.querySelectorAll('.analyze-query-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const queryId = this.getAttribute('data-query-id');
+            showToast('Query analysis started. This may take a few moments.', 'info', {
+                duration: 3000
+            });
+        });
+    });
+    
+    // Optimize query button handling
+    document.querySelector('.optimize-query-btn').addEventListener('click', function() {
+        showToast('Generating optimized query version. This may take a few moments.', 'info', {
+            duration: 3000
+        });
+    });
+});
+</script>
+{% endblock %}

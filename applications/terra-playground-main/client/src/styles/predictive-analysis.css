@@ -1,0 +1,277 @@
+/**
+ * Predictive Analysis Layer Styles
+ * 
+ * Styling for AI-powered prediction visualization components
+ */
+
+.predictive-analysis-container {
+  position: relative;
+  z-index: 10;
+}
+
+/* Control panel */
+.predictive-analysis-controls {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 270px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.predictive-analysis-controls:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Details panel for selected properties */
+.predictive-analysis-details {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 300px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  transform-origin: bottom left;
+  animation: slide-up 0.3s ease;
+}
+
+@keyframes slide-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Badge styling for prediction types */
+.badge-value-increase {
+  background-color: rgba(0, 128, 0, 0.1);
+  color: rgb(0, 100, 0);
+  border-color: rgba(0, 128, 0, 0.2);
+}
+
+.badge-value-decrease {
+  background-color: rgba(255, 0, 0, 0.1);
+  color: rgb(180, 0, 0);
+  border-color: rgba(255, 0, 0, 0.2);
+}
+
+.badge-risk-high {
+  background-color: rgba(255, 0, 0, 0.1);
+  color: rgb(180, 0, 0);
+  border-color: rgba(255, 0, 0, 0.2);
+}
+
+.badge-risk-medium {
+  background-color: rgba(255, 165, 0, 0.1);
+  color: rgb(180, 120, 0);
+  border-color: rgba(255, 165, 0, 0.2);
+}
+
+.badge-risk-low {
+  background-color: rgba(0, 128, 0, 0.1);
+  color: rgb(0, 100, 0);
+  border-color: rgba(0, 128, 0, 0.2);
+}
+
+.badge-development-high {
+  background-color: rgba(75, 0, 130, 0.1);
+  color: rgb(75, 0, 130);
+  border-color: rgba(75, 0, 130, 0.2);
+}
+
+.badge-development-medium {
+  background-color: rgba(147, 112, 219, 0.1);
+  color: rgb(100, 70, 160);
+  border-color: rgba(147, 112, 219, 0.2);
+}
+
+.badge-development-low {
+  background-color: rgba(230, 230, 250, 0.2);
+  color: rgb(100, 100, 140);
+  border-color: rgba(230, 230, 250, 0.4);
+}
+
+/* Prediction legends */
+.prediction-legend {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+}
+
+.prediction-legend-item {
+  display: flex;
+  align-items: center;
+  font-size: 0.6rem;
+}
+
+.prediction-legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  margin-right: 4px;
+}
+
+/* Heatmap gradient visualization */
+.prediction-gradient-value {
+  background: linear-gradient(to right, 
+    rgba(255, 0, 0, 0.6), 
+    rgba(255, 255, 0, 0.6), 
+    rgba(0, 255, 0, 0.6)
+  );
+  height: 10px;
+  border-radius: 5px;
+  margin: 5px 0;
+}
+
+.prediction-gradient-risk {
+  background: linear-gradient(to right, 
+    rgba(0, 128, 0, 0.6), 
+    rgba(255, 255, 0, 0.6), 
+    rgba(255, 0, 0, 0.6)
+  );
+  height: 10px;
+  border-radius: 5px;
+  margin: 5px 0;
+}
+
+.prediction-gradient-development {
+  background: linear-gradient(to right, 
+    rgba(230, 230, 250, 0.6), 
+    rgba(147, 112, 219, 0.6), 
+    rgba(75, 0, 130, 0.6)
+  );
+  height: 10px;
+  border-radius: 5px;
+  margin: 5px 0;
+}
+
+/* Visualization mode styles */
+.visualization-mode-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  height: 2rem;
+}
+
+.visualization-mode-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.visualization-mode-button.active {
+  background-color: var(--primary);
+  color: white;
+}
+
+/* Confidence indicator */
+.confidence-indicator {
+  display: flex;
+  align-items: center;
+  font-size: 0.7rem;
+}
+
+.confidence-indicator-bar {
+  flex-grow: 1;
+  height: 4px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+  margin: 0 8px;
+  position: relative;
+}
+
+.confidence-indicator-fill {
+  position: absolute;
+  height: 100%;
+  border-radius: 2px;
+  background-color: var(--primary);
+}
+
+/* Value change arrow indicators */
+.change-arrow-up {
+  color: rgb(0, 100, 0);
+}
+
+.change-arrow-down {
+  color: rgb(180, 0, 0);
+}
+
+/* Timeline scrubber for temporal predictions */
+.timeline-scrubber {
+  margin-top: 10px;
+  padding: 0 5px;
+}
+
+.timeline-scrubber-track {
+  height: 4px;
+  background-color: rgba(0, 0, 0, 0.1);
+  position: relative;
+  border-radius: 2px;
+}
+
+.timeline-scrubber-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.timeline-scrubber-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+  font-size: 0.6rem;
+  color: var(--muted-foreground);
+}
+
+/* Prediction popup animation */
+@keyframes prediction-popup-fade {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.prediction-popup {
+  animation: prediction-popup-fade 0.2s ease forwards;
+}
+
+/* Media queries for responsive design */
+@media (max-width: 768px) {
+  .predictive-analysis-controls {
+    width: calc(100% - 40px);
+    max-width: 400px;
+  }
+  
+  .predictive-analysis-details {
+    width: calc(100% - 40px);
+    max-width: 400px;
+  }
+}

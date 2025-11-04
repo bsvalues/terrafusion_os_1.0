@@ -1,0 +1,475 @@
+/* $Id: st_point.stb,v 1.6.1.4, 2012-06-11 15:50:31Z, Sanjay Magal$ 
+$NoKeywords$ */ 
+CREATE OR REPLACE Type Body st_point AS
+
+constructor Function st_point(geom_str varchar2,srid number) 
+    Return self AS result
+ IS
+   temp          varchar2(1);
+   tempraw       raw(1);
+   entity        number;
+   geom_type     number;
+   name          varchar2(32);
+   spref_r       &1..spx_util.spatial_ref_record_t;
+   shape         &1..st_geom_util.shape_r;
+   is_empty      boolean := False;
+   rc            number;
+   buffer        clob;
+
+ Begin
+  
+   geom_type := &1..st_geom_util.unspecified_type; 
+   buffer := geom_str;
+   &1..st_geom_util.get_type(buffer,entity,geom_type,is_empty,&1..st_geom_util.point_type);
+   If entity = &1..st_geom_util.sg_illegal_shape THEN
+     raise_application_error (&1..st_type_util.st_geometry_invalid_type,'Invalid ST_POINT type.');
+   End If;
+   
+   &1..st_geom_util.get_name(entity,name);
+ 
+   If name != 'POINT' THEN
+     raise_application_error (&1..st_type_util.st_geometry_invalid_type,'ST_Point must use a POINT type.');
+   End If;
+   
+   spref_r.srid := srid;
+   rc := &1..st_spref_util.select_spref(spref_r);
+   If rc != &1..st_type_user.se_success THEN
+		  raise_application_error (&1..st_type_util.st_no_srid,'SRID '||spref_r.srid||
+		                           ' does not exist in ST_SPATIAL_REFERENCES table.');
+   End If;
+		
+   shape.points := empty_blob();
+   shape.numpts := 0;
+   shape.entity := 0;
+   shape.minx   := 0;
+   shape.miny   := 0;
+   shape.maxx   := 0;
+   shape.maxy   := 0;
+   shape.area   := 0;
+   shape.len    := 0;
+   shape.minz   := NULL;
+   shape.maxz   := NULL;
+   shape.minm   := NULL;
+   shape.maxm   := NULL;
+   
+   temp := lpad('a', 1, 'a');
+   tempraw := utl_raw.cast_to_raw (temp);
+   shape.points := tempraw;
+
+   If is_empty = False THEN
+     &1..st_geometry_shapelib_pkg.geometryfromtext(buffer,spref_r.srid,spref_r.x_offset,spref_r.y_offset,spref_r.xyunits,
+                                                   spref_r.z_offset,spref_r.z_scale,spref_r.m_offset,spref_r.m_scale,
+									               spref_r.Definition,geom_type,shape.numpts,shape.entity,shape.minx,shape.miny,
+									               shape.maxx,shape.maxy,shape.minz,shape.maxz,shape.minm,shape.maxm,
+												   shape.area,shape.len,shape.points);
+   ELSE
+     shape.numpts := 0;
+     If geom_type > &1..st_geom_util.unspecified_type Then
+       shape.entity := geom_type;
+     else
+       shape.entity := 0;
+     end if;      
+     shape.minx   := 0;
+     shape.miny   := 0;
+     shape.maxx   := 0;
+     shape.maxy   := 0;
+	 shape.minz   := NULL;
+	 shape.maxz   := NULL;
+	 shape.minm   := NULL;
+	 shape.maxm   := NULL;
+     shape.area   := 0;
+     shape.len    := 0;
+     shape.points := empty_blob();
+     shape.srid   := srid;
+   End If;
+  
+   if(shape.numpts IS NULL and shape.entity = 0) then
+     self.entity    := shape.entity;
+     self.numpts    := 0;
+     self.minx      := 0;
+     self.maxx      := 0;
+     self.miny      := 0;
+     self.maxy      := 0;
+     self.minz      := NULL;
+     self.maxz      := NULL;
+     self.minm      := NULL;
+     self.maxm      := NULL;
+     self.srid      := srid;
+   else
+     self.entity   := shape.entity;
+     self.numpts   := shape.numpts;
+     self.minx     := shape.minx;
+     self.miny     := shape.miny;
+     self.maxx     := shape.maxx;
+     self.maxy     := shape.maxy;
+   
+     if(shape.minz IS NULL) then
+       self.minz := NULL;
+     else
+       self.minz := shape.minz;
+     end if;
+     
+     if(shape.maxz IS NULL) then
+       self.maxz := NULL;
+     else
+       self.maxz := shape.maxz;
+     end if;
+  
+     if(shape.minm IS NULL) then
+       self.minm := NULL;
+     else
+       self.minm := shape.minm;
+     end if;
+     
+     if(shape.maxm IS NULL) then
+       self.maxm := NULL;
+     else
+       self.maxm := shape.maxm;
+     end if;
+     
+   end if;
+   
+   self.area     := 0;
+   self.len      := 0;
+   self.srid     := srid;
+   self.points   := shape.points;
+   
+   Return;
+ End;
+ 
+constructor Function st_point(pt_x number,pt_y number,srid number) 
+   Return self AS result
+ IS
+   temp          varchar2(1);
+   tempraw       raw(1);
+   spref_r       &1..spx_util.spatial_ref_record_t;
+   geom_type     number;
+   geom_clob     clob;
+   shape         &1..st_geom_util.shape_r;
+   rc            number;
+   
+ Begin
+
+   geom_type := &1..st_geom_util.point_type;
+   
+   spref_r.srid := srid;
+   rc := &1..st_spref_util.select_spref(spref_r);
+   If rc <> &1..st_type_user.se_success THEN
+		  raise_application_error (&1..st_type_util.spx_no_srid,'Parameter ST_SRID '||spref_r.srid||
+		                           ' does not exist in ST_SPATIAL_REFERENCES table.');
+   End If;
+		
+   shape.points := empty_blob();
+   shape.numpts := 0;
+   shape.entity := 0;
+   shape.minx   := 0;
+   shape.miny   := 0;
+   shape.maxx   := 0;
+   shape.maxy   := 0;
+   shape.area   := 0;
+   shape.len    := 0;
+   shape.minz   := NULL;
+   shape.maxz   := NULL;
+   shape.minm   := NULL;
+   shape.maxm   := NULL;
+   
+   -- Initialize POINTS blob.
+   temp := lpad('a', 1, 'a');
+   tempraw := utl_raw.cast_to_raw (temp);
+   shape.points := tempraw;
+   
+   geom_clob := 'POINT('||pt_x||' '||pt_y||')';
+
+   &1..st_geometry_shapelib_pkg.geometryfromtext(geom_clob,spref_r.srid,spref_r.x_offset,spref_r.y_offset,spref_r.xyunits,
+                                                 spref_r.z_offset,spref_r.z_scale,spref_r.m_offset,spref_r.m_scale,
+									             spref_r.Definition,geom_type,shape.numpts,shape.entity,shape.minx,shape.miny,
+									             shape.maxx,shape.maxy,shape.minz,shape.maxz,shape.minm,shape.maxm,
+												 shape.area,shape.len,shape.points);
+
+   if(shape.numpts IS NULL and shape.entity = 0) then
+     self.entity    := shape.entity;
+     self.numpts    := 0;
+     self.minx      := 0;
+     self.maxx      := 0;
+     self.miny      := 0;
+     self.maxy      := 0;
+     self.minz      := NULL;
+     self.maxz      := NULL;
+     self.minm      := NULL;
+     self.maxm      := NULL;
+     self.srid      := srid;
+   else
+     self.entity   := shape.entity;
+     self.numpts   := shape.numpts;
+     self.minx     := shape.minx;
+     self.miny     := shape.miny;
+     self.maxx     := shape.maxx;
+     self.maxy     := shape.maxy;
+   
+     if(shape.minz IS NULL) then
+       self.minz := NULL;
+     else
+       self.minz := shape.minz;
+     end if;
+     
+     if(shape.maxz IS NULL) then
+       self.maxz := NULL;
+     else
+       self.maxz := shape.maxz;
+     end if;
+  
+     if(shape.minm IS NULL) then
+       self.minm := NULL;
+     else
+       self.minm := shape.minm;
+     end if;
+     
+     if(shape.maxm IS NULL) then
+       self.maxm := NULL;
+     else
+       self.maxm := shape.maxm;
+     end if;
+     
+   end if;
+   
+   self.area     := 0;
+   self.len      := 0;
+   self.srid     := srid;
+   self.points   := shape.points;
+   Return;
+ End;
+ 
+ 
+ constructor Function st_point(pt_x number,pt_y number,pt_z number,srid number) 
+   Return self AS result
+ IS
+   temp          varchar2(1);
+   tempraw       raw(1);
+   spref_r       &1..spx_util.spatial_ref_record_t;
+   geom_type     number;
+   geom_clob     clob;
+   shape         &1..st_geom_util.shape_r;
+   rc            number;
+   
+ Begin
+
+   geom_type := &1..st_geom_util.pointz_type;
+   
+   spref_r.srid := srid;
+   rc := &1..st_spref_util.select_spref(spref_r);
+   If rc <> &1..st_type_user.se_success THEN
+		  raise_application_error (&1..st_type_util.spx_no_srid,'Parameter ST_SRID '||spref_r.srid||
+		                           ' does not exist in ST_SPATIAL_REFERENCES table.');
+   End If;
+		
+   shape.points := empty_blob();
+   shape.numpts := 0;
+   shape.entity := 0;
+   shape.minx   := 0;
+   shape.miny   := 0;
+   shape.maxx   := 0;
+   shape.maxy   := 0;
+   shape.area   := 0;
+   shape.len    := 0;
+   shape.minz   := NULL;
+   shape.maxz   := NULL;
+   shape.minm   := NULL;
+   shape.maxm   := NULL;
+   
+   -- Initialize POINTS blob.
+   temp := lpad('a', 1, 'a');
+   tempraw := utl_raw.cast_to_raw (temp);
+   shape.points := tempraw;
+   
+   geom_clob := 'POINT Z('||pt_x||' '||pt_y||' '||pt_z||')';
+ 
+   &1..st_geometry_shapelib_pkg.geometryfromtext(geom_clob,spref_r.srid,spref_r.x_offset,spref_r.y_offset,spref_r.xyunits,
+                                                 spref_r.z_offset,spref_r.z_scale,spref_r.m_offset,spref_r.m_scale,
+									             spref_r.Definition,geom_type,shape.numpts,shape.entity,shape.minx,shape.miny,
+									             shape.maxx,shape.maxy,shape.minz,shape.maxz,shape.minm,shape.maxm,
+												 shape.area,shape.len,shape.points);
+
+   if(shape.numpts IS NULL and shape.entity = 0) then
+     self.entity    := shape.entity;
+     self.numpts    := 0;
+     self.minx      := 0;
+     self.maxx      := 0;
+     self.miny      := 0;
+     self.maxy      := 0;
+     self.minz      := NULL;
+     self.maxz      := NULL;
+     self.minm      := NULL;
+     self.maxm      := NULL;
+     self.srid      := srid;
+   else
+     self.entity   := shape.entity;
+     self.numpts   := shape.numpts;
+     self.minx     := shape.minx;
+     self.miny     := shape.miny;
+     self.maxx     := shape.maxx;
+     self.maxy     := shape.maxy;
+   
+     if(shape.minz IS NULL) then
+       self.minz := NULL;
+     else
+       self.minz := shape.minz;
+     end if;
+     
+     if(shape.maxz IS NULL) then
+       self.maxz := NULL;
+     else
+       self.maxz := shape.maxz;
+     end if;
+  
+     if(shape.minm IS NULL) then
+       self.minm := NULL;
+     else
+       self.minm := shape.minm;
+     end if;
+     
+     if(shape.maxm IS NULL) then
+       self.maxm := NULL;
+     else
+       self.maxm := shape.maxm;
+     end if;
+     
+   end if;
+   
+   self.area     := 0;
+   self.len      := 0;
+   self.srid     := srid;
+   self.points   := shape.points;
+   Return;
+ End;
+ 
+ 
+ constructor Function st_point(pt_x number,pt_y number,pt_z number,measure number,srid number) 
+   Return self AS result
+ IS
+   temp          varchar2(1);
+   tempraw       raw(1);
+   spref_r       &1..spx_util.spatial_ref_record_t;
+   geom_type     number;
+   geom_clob     clob;
+   shape         &1..st_geom_util.shape_r;
+   rc            number;
+   type_val      number;
+   
+ Begin
+
+   geom_type := &1..st_geom_util.pointzm_type;
+   
+   spref_r.srid := srid;
+   rc := &1..st_spref_util.select_spref(spref_r);
+   If rc <> &1..st_type_user.se_success THEN
+		  raise_application_error (&1..st_type_util.spx_no_srid,'Parameter ST_SRID '||spref_r.srid||
+		                           ' does not exist in ST_SPATIAL_REFERENCES table.');
+   End If;
+		
+   shape.points := empty_blob();
+   shape.numpts := 0;
+   shape.entity := 0;
+   shape.minx   := 0;
+   shape.miny   := 0;
+   shape.maxx   := 0;
+   shape.maxy   := 0;
+   shape.area   := 0;
+   shape.len    := 0;
+   shape.minz   := NULL;
+   shape.maxz   := NULL;
+   shape.minm   := NULL;
+   shape.maxm   := NULL;
+   
+   -- Initialize POINTS blob.
+   temp := lpad('a', 1, 'a');
+   tempraw := utl_raw.cast_to_raw (temp);
+   shape.points := tempraw;
+   
+   If pt_z IS NOT NULL AND measure IS NOT NULL THEN
+     geom_clob := 'POINT ZM('||pt_x||'  '||pt_y||'  '||pt_z||'  '||measure||')';
+     type_val := 0;
+   Elsif pt_z IS NOT NULL AND measure IS NULL THEN
+     geom_clob := 'POINT Z('||pt_x||'  '||pt_y||'  '||pt_z||')';
+     type_val := 1;
+   Elsif pt_z IS NULL AND measure IS NOT NULL THEN
+     geom_clob := 'POINT M('||pt_x||'  '||pt_y||'  '||measure||')';
+     type_val := 2;
+   End If;
+
+   &1..st_geometry_shapelib_pkg.geometryfromtext(geom_clob,spref_r.srid,spref_r.x_offset,spref_r.y_offset,spref_r.xyunits,
+                                                 spref_r.z_offset,spref_r.z_scale,spref_r.m_offset,spref_r.m_scale,
+									             spref_r.Definition,geom_type,shape.numpts,shape.entity,shape.minx,shape.miny,
+									             shape.maxx,shape.maxy,shape.minz,shape.maxz,shape.minm,shape.maxm,
+												 shape.area,shape.len,shape.points);
+
+   If type_val = 1 THEN
+     shape.minm := NULL;
+     shape.maxm := NULL;
+   Elsif type_val = 2 THEN
+     shape.minz := NULL;
+     shape.maxz := NULL;
+   End If;
+   
+   if(shape.numpts IS NULL and shape.entity = 0) then
+     self.entity    := shape.entity;
+     self.numpts    := 0;
+     self.minx      := 0;
+     self.maxx      := 0;
+     self.miny      := 0;
+     self.maxy      := 0;
+     self.minz      := NULL;
+     self.maxz      := NULL;
+     self.minm      := NULL;
+     self.maxm      := NULL;
+     self.srid      := srid;
+   else
+     self.entity   := shape.entity;
+     self.numpts   := shape.numpts;
+     self.minx     := shape.minx;
+     self.miny     := shape.miny;
+     self.maxx     := shape.maxx;
+     self.maxy     := shape.maxy;
+   
+     if(shape.minz IS NULL) then
+       self.minz := NULL;
+     else
+       self.minz := shape.minz;
+     end if;
+     
+     if(shape.maxz IS NULL) then
+       self.maxz := NULL;
+     else
+       self.maxz := shape.maxz;
+     end if;
+  
+     if(shape.minm IS NULL) then
+       self.minm := NULL;
+     else
+       self.minm := shape.minm;
+     end if;
+     
+     if(shape.maxm IS NULL) then
+       self.maxm := NULL;
+     else
+       self.maxm := shape.maxm;
+     end if;
+     
+   end if;
+   
+   self.area     := 0;
+   self.len      := 0;
+   self.srid     := srid;
+   self.points   := shape.points;
+   Return;
+ End;
+
+static Function get_release
+  Return number
+  IS
+    c_type_release    Constant pls_integer := 1007;
+	
+  Begin
+    Return c_type_release;
+  End get_release;
+End;
+/

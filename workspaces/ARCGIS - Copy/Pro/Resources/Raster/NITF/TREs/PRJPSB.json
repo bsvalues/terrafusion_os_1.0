@@ -1,0 +1,95 @@
+{
+  "TRE": "PRJPSB",
+  "Source": [
+    "STDI-0002-1 v2021.1, Appendix P: GEOSDE"
+  ],
+  "Name": "Projection Parameters",
+  "Description": "The Projection Parameters (PRJPSB) TRE contains the projection parameters of the absolute coordinate system when it's a cartographic (grid) coordinate system. This extension shall be present when the coordinate units (GEOPS.UNI Field) are meters (M).",
+  "Size": 113,
+  "Fields": {
+    "PRN": {
+      "Name": "Projection Name",
+      "Description": "This field shall contain the name of the projection to which the Image Segment refers. The default value is \"Transverse Mercator\". The values for this field are found in Table P-20 (originally from DIGEST Part 3-6, Edition 2.1, Table 6-5).",
+      "Size": 3,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "PCO": {
+      "Name": "Projection Code",
+      "Description": "This field shall contain the code of the projection to which the Image Segment refers. The default is \"TC\". The values for this field are found in Table P-20 (originally from DIGEST Part 3-6, Edition 2.1, Table 6-5).",
+      "Size": 2,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "NUM_PRJ": {
+      "Name": "Number of Projection Parameters",
+      "Description": "This field shall contain the number of projection parameters. The PRJn field should be repeated as necessary depending on the projection code (see Table P-20; originallly from DIGEST Ed. 2.1 Part 3-6). If the number of projection parameters provided is lower than specified in Table P-20 (originally from Part 3-6 of DIGEST), then the missing parameter values are 0.",
+      "Size": 1,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 9
+        }
+      ]
+    },
+    "PRJ<NUM_PRJ>": {
+      "Name": "nth Projection Parameter",
+      "Description": "This field contains the nth projection parameter. Each occurrence of this field provides an approximate parameter to accurately describe the projection. See Table P-20 (originally from Part 3-6 of DIGEST Ed. 2.1) to know the kind of parameters needed for each projection code and the values allowed for this field.",
+      "Size": 15,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "XOR": {
+      "Name": "Projection False X (Easting) Origin",
+      "Description": "This field shall contain the projection false X (easting) origin. The default value, 000000000000000, implies that there is no projection false X origin.",
+      "Size": 15,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [
+        "meters"
+      ],
+      "Values": [
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "YOR": {
+      "Name": "Projection False Y (Northing) Origin",
+      "Description": "This field shall contain the projection false Y (northing) origin. The default value, 000000000000000, implies that there is no projection false Y origin.",
+      "Size": 15,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [
+        "meters"
+      ],
+      "Values": [
+        {
+          "Type": "Double"
+        }
+      ]
+    }
+  }
+}

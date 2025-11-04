@@ -1,0 +1,314 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\DimensionReduction",
+    "displayname": "$rc:title",
+    "helpcontent": "9050011",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_table": {
+            "display_order": "0",
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "output_data": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "2",
+            "displayname": "$rc:output_data.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFeatureClass"
+                    },
+                    {
+                        "type": "DETable"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "depends": [
+                "append_to_input"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:output_data.descr"
+        },
+        "fields": {
+            "display_order": "3",
+            "control_guid": "{C15EC6FA-35EF-4204-90FB-01E7B4DD6862}",
+            "displayname": "$rc:fields.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "BigInteger"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:fields.descr"
+        },
+        "method": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PCA",
+                        "code": "$rc:method.domain.PCA"
+                    },
+                    {
+                        "value": "LDA",
+                        "code": "$rc:method.domain.LDA"
+                    }
+                ]
+            },
+            "value": "PCA",
+            "description": "$rc:method.descr"
+        },
+        "scale": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:scale.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SCALE_DATA"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_SCALE_DATA"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:scale.descr"
+        },
+        "categorical_field": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:categorical_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text",
+                    "Short",
+                    "Long",
+                    "BigInteger"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:categorical_field.descr"
+        },
+        "min_variance": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:min_variance.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "1",
+                "max": "100"
+            },
+            "description": "$rc:min_variance.descr"
+        },
+        "min_components": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:min_components.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "1",
+                "max": "65534"
+            },
+            "description": "$rc:min_components.descr"
+        },
+        "append_fields": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:append_fields.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "APPEND"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_APPEND"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:append_fields.descr"
+        },
+        "output_eigenvalues_table": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "10",
+            "displayname": "$rc:output_eigenvalues_table.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:output_eigenvalues_table.descr"
+        },
+        "output_eigenvectors_table": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "11",
+            "displayname": "$rc:output_eigenvectors_table.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:output_eigenvectors_table.descr"
+        },
+        "number_of_permutations": {
+            "type": "optional",
+            "display_order": "12",
+            "displayname": "$rc:number_of_permutations.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPLong",
+                        "value": "0",
+                        "code": "0"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "99",
+                        "code": "99"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "199",
+                        "code": "199"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "499",
+                        "code": "499"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "999",
+                        "code": "999"
+                    }
+                ]
+            },
+            "value": "0",
+            "description": "$rc:number_of_permutations.descr"
+        },
+        "append_to_input": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:append_to_input.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "APPEND_TO_INPUT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NEW_OUTPUT"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:append_to_input.descr"
+        },
+        "updated_table": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    },
+    "environments": [
+        "outputCoordinateSystem",
+        "randomGenerator"
+    ]
+}

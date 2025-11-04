@@ -1,0 +1,18 @@
+{
+    "map": {
+        "description": "Performs unsupervised classification on a series of input raster bands using the Iso Cluster and Maximum Likelihood Classification tools.",
+        "input_raster_bands.descr": "<xdoc><p>The input raster bands.</p><p>They can be integer or floating point type.</p></xdoc>",
+        "input_raster_bands.title": "Input raster bands",
+        "minimum_class_size.descr": "<xdoc><p>Minimum number of cells in a valid class.</p><p>The default is 20.</p></xdoc>",
+        "minimum_class_size.title": "Minimum class size",
+        "number_of_classes.descr": "Number of classes into which to group the cells.",
+        "number_of_classes.title": "Number of classes",
+        "output_classified_raster.descr": "The output classified raster.",
+        "output_classified_raster.title": "Output classified raster",
+        "output_signature_file.descr": "<xdoc><p>The output signature file.</p><p>A .gsg extension must be specified.</p></xdoc>",
+        "output_signature_file.title": "Output signature file",
+        "sample_interval.descr": "<xdoc><p>The interval to be used for sampling.</p><p>The default is 10.</p></xdoc>",
+        "sample_interval.title": "Sample interval",
+        "title": "Iso Cluster Unsupervised Classification"
+    }
+}

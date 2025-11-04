@@ -1,0 +1,184 @@
+{
+    "type": "FunctionTool",
+    "guid": "{C5CD7E91-50D4-44D2-B98B-151009423D52}/GenerateLightSector",
+    "displayname": "$rc:title",
+    "helpcontent": "63040003",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "50"
+    ],
+    "params": {
+        "in_features": {
+            "display_order": "0",
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain"
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "sector_line_length": {
+            "display_order": "2",
+            "control_guid": "{BEDF969C-20D2-4C41-96DA-32408CA72BF6}",
+            "displayname": "$rc:sector_line_length.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPDouble"
+                    },
+                    {
+                        "type": "Field"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Double",
+                            "Long"
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:sector_line_length.descr"
+        },
+        "sector_arc_radius": {
+            "display_order": "3",
+            "control_guid": "{BEDF969C-20D2-4C41-96DA-32408CA72BF6}",
+            "displayname": "$rc:sector_arc_radius.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPDouble"
+                    },
+                    {
+                        "type": "Field"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Double",
+                            "Long"
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:sector_arc_radius.descr"
+        },
+        "sector_unit": {
+            "display_order": "4",
+            "displayname": "$rc:sector_unit.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "CENTIMETERS",
+                        "code": "$rc:sector_unit.domain.CENTIMETERS"
+                    },
+                    {
+                        "value": "DECIMAL_DEGREES",
+                        "code": "$rc:sector_unit.domain.DECIMAL_DEGREES"
+                    },
+                    {
+                        "value": "DECIMETERS",
+                        "code": "$rc:sector_unit.domain.DECIMETERS"
+                    },
+                    {
+                        "value": "FEET",
+                        "code": "$rc:sector_unit.domain.FEET"
+                    },
+                    {
+                        "value": "INCHES",
+                        "code": "$rc:sector_unit.domain.INCHES"
+                    },
+                    {
+                        "value": "KILOMETERS",
+                        "code": "$rc:sector_unit.domain.KILOMETERS"
+                    },
+                    {
+                        "value": "METERS",
+                        "code": "$rc:sector_unit.domain.METERS"
+                    },
+                    {
+                        "value": "MILLIMETERS",
+                        "code": "$rc:sector_unit.domain.MILLIMETERS"
+                    },
+                    {
+                        "value": "NAUTICAL_MILES",
+                        "code": "$rc:sector_unit.domain.NAUTICAL_MILES"
+                    },
+                    {
+                        "value": "POINTS",
+                        "code": "$rc:sector_unit.domain.POINTS"
+                    },
+                    {
+                        "value": "YARDS",
+                        "code": "$rc:sector_unit.domain.YARDS"
+                    }
+                ]
+            },
+            "value": "MILLIMETERS",
+            "description": "$rc:sector_unit.descr"
+        },
+        "reference_scale": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:reference_scale.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:reference_scale.descr"
+        },
+        "coordinate_system": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:coordinate_system.title",
+            "datatype": {
+                "type": "GPCoordinateSystem"
+            },
+            "description": "$rc:coordinate_system.descr"
+        },
+        "output_feature_class": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "depends": [
+                "in_features"
+            ]
+        }
+    },
+    "environments": [
+        "cartographicCoordinateSystem"
+    ]
+}

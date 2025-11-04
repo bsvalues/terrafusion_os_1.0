@@ -1,0 +1,716 @@
+{% extends "base.html" %}
+
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block title %}System Monitoring{% endblock %}
+{% block page_title %}System Performance{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Current System Metrics -->
+    <div class="col-md-12 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-speedometer2"></i> Current System Metrics</h5>
+                <div class="text-muted" id="last-updated">Last updated: Just now</div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <div class="metric-card p-3 border">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="metric-icon">
+                                    <i class="bi bi-cpu fs-3 text-primary"></i>
+                                </div>
+                                <div class="text-end">
+                                    <div class="metric-value text-primary" id="cpu-usage">0%</div>
+                                    <div class="metric-label">CPU Usage</div>
+                                </div>
+                            </div>
+                            <div class="progress mt-2" style="height: 5px;">
+                                <div class="progress-bar" id="cpu-progress" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="metric-card p-3 border">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="metric-icon">
+                                    <i class="bi bi-memory fs-3 text-warning"></i>
+                                </div>
+                                <div class="text-end">
+                                    <div class="metric-value text-warning" id="memory-usage">0%</div>
+                                    <div class="metric-label">Memory Usage</div>
+                                </div>
+                            </div>
+                            <div class="progress mt-2" style="height: 5px;">
+                                <div class="progress-bar bg-warning" id="memory-progress" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="metric-card p-3 border">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="metric-icon">
+                                    <i class="bi bi-hdd fs-3 text-success"></i>
+                                </div>
+                                <div class="text-end">
+                                    <div class="metric-value text-success" id="disk-usage">0%</div>
+                                    <div class="metric-label">Disk Usage</div>
+                                </div>
+                            </div>
+                            <div class="progress mt-2" style="height: 5px;">
+                                <div class="progress-bar bg-success" id="disk-progress" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="metric-card p-3 border">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="metric-icon">
+                                    <i class="bi bi-diagram-3 fs-3 text-info"></i>
+                                </div>
+                                <div class="text-end">
+                                    <div class="metric-value text-info" id="process-count">0</div>
+                                    <div class="metric-label">Processes</div>
+                                </div>
+                            </div>
+                            <div class="progress mt-2" style="height: 5px;">
+                                <div class="progress-bar bg-info" id="process-progress" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body">
+                                <h6 class="card-title">Memory Details</h6>
+                                <table class="table table-sm">
+                                    <tr>
+                                        <td>Total Memory</td>
+                                        <td class="text-end" id="total-memory">0 MB</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Used Memory</td>
+                                        <td class="text-end" id="used-memory">0 MB</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Available Memory</td>
+                                        <td class="text-end" id="available-memory">0 MB</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body">
+                                <h6 class="card-title">Disk Details</h6>
+                                <table class="table table-sm">
+                                    <tr>
+                                        <td>Total Disk</td>
+                                        <td class="text-end" id="total-disk">0 GB</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Used Disk</td>
+                                        <td class="text-end" id="used-disk">0 GB</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Free Disk</td>
+                                        <td class="text-end" id="free-disk">0 GB</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body">
+                                <h6 class="card-title">System Load</h6>
+                                <table class="table table-sm">
+                                    <tr>
+                                        <td>1 minute avg</td>
+                                        <td class="text-end" id="load-1min">0.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td>5 minute avg</td>
+                                        <td class="text-end" id="load-5min">0.00</td>
+                                    </tr>
+                                    <tr>
+                                        <td>15 minute avg</td>
+                                        <td class="text-end" id="load-15min">0.00</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- System Metrics Over Time -->
+    <div class="col-md-12 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-graph-up"></i> System Metrics Over Time</h5>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary active" data-metric="cpu">CPU</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-metric="memory">Memory</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-metric="disk">Disk</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-metric="load">System Load</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="system-metrics-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- System Metrics Table -->
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-table"></i> System Metrics History</h5>
+                <div>
+                    <select class="form-select form-select-sm d-inline-block w-auto" id="metric-filter">
+                        <option value="all">All Metrics</option>
+                        <option value="cpu">CPU</option>
+                        <option value="memory">Memory</option>
+                        <option value="disk">Disk</option>
+                        <option value="load">System Load</option>
+                        <option value="processes">Processes</option>
+                    </select>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover" id="metrics-table">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Value</th>
+                                <th>Unit</th>
+                                <th>Category</th>
+                                <th>Component</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="6" class="text-center">Loading metrics data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <nav>
+                    <ul class="pagination justify-content-center" id="pagination">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">&laquo; Previous</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#">Next &raquo;</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let systemMetricsChart;
+        const chartData = {
+            cpu: {
+                labels: [],
+                datasets: [{
+                    label: 'CPU Usage (%)',
+                    data: [],
+                    borderColor: 'rgba(13, 110, 253, 1)',
+                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            memory: {
+                labels: [],
+                datasets: [{
+                    label: 'Memory Usage (%)',
+                    data: [],
+                    borderColor: 'rgba(255, 193, 7, 1)',
+                    backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            disk: {
+                labels: [],
+                datasets: [{
+                    label: 'Disk Usage (%)',
+                    data: [],
+                    borderColor: 'rgba(25, 135, 84, 1)',
+                    backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            load: {
+                labels: [],
+                datasets: [
+                    {
+                        label: '1 min load',
+                        data: [],
+                        borderColor: 'rgba(13, 110, 253, 1)',
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        tension: 0.4
+                    },
+                    {
+                        label: '5 min load',
+                        data: [],
+                        borderColor: 'rgba(255, 193, 7, 1)',
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        tension: 0.4
+                    },
+                    {
+                        label: '15 min load',
+                        data: [],
+                        borderColor: 'rgba(25, 135, 84, 1)',
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        tension: 0.4
+                    }
+                ]
+            }
+        };
+        
+        // Initialize chart
+        function initChart() {
+            const ctx = document.getElementById('system-metrics-chart').getContext('2d');
+            systemMetricsChart = new Chart(ctx, {
+                type: 'line',
+                data: chartData.cpu,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            min: 0,
+                            title: {
+                                display: true,
+                                text: 'Usage (%)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Update current metrics
+        function updateCurrentMetrics() {
+            fetch('/api/metrics?category=performance&component=system&days=1')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const metrics = data.metrics;
+                        
+                        // Find latest metrics
+                        const latestMetrics = {};
+                        metrics.forEach(metric => {
+                            if (!latestMetrics[metric.metric_name] || new Date(metric.timestamp) > new Date(latestMetrics[metric.metric_name].timestamp)) {
+                                latestMetrics[metric.metric_name] = metric;
+                            }
+                        });
+                        
+                        // Update CPU
+                        if (latestMetrics['cpu_usage']) {
+                            const cpuValue = latestMetrics['cpu_usage'].metric_value;
+                            document.getElementById('cpu-usage').textContent = `${cpuValue.toFixed(1)}%`;
+                            document.getElementById('cpu-progress').style.width = `${cpuValue}%`;
+                            
+                            // Update color based on value
+                            if (cpuValue > 90) {
+                                document.getElementById('cpu-usage').className = 'metric-value text-danger';
+                                document.getElementById('cpu-progress').className = 'progress-bar bg-danger';
+                            } else if (cpuValue > 75) {
+                                document.getElementById('cpu-usage').className = 'metric-value text-warning';
+                                document.getElementById('cpu-progress').className = 'progress-bar bg-warning';
+                            } else {
+                                document.getElementById('cpu-usage').className = 'metric-value text-primary';
+                                document.getElementById('cpu-progress').className = 'progress-bar bg-primary';
+                            }
+                        }
+                        
+                        // Update Memory
+                        if (latestMetrics['memory_usage']) {
+                            const memValue = latestMetrics['memory_usage'].metric_value;
+                            document.getElementById('memory-usage').textContent = `${memValue.toFixed(1)}%`;
+                            document.getElementById('memory-progress').style.width = `${memValue}%`;
+                            
+                            // Update color based on value
+                            if (memValue > 90) {
+                                document.getElementById('memory-usage').className = 'metric-value text-danger';
+                                document.getElementById('memory-progress').className = 'progress-bar bg-danger';
+                            } else if (memValue > 75) {
+                                document.getElementById('memory-usage').className = 'metric-value text-warning';
+                                document.getElementById('memory-progress').className = 'progress-bar bg-warning';
+                            } else {
+                                document.getElementById('memory-usage').className = 'metric-value text-primary';
+                                document.getElementById('memory-progress').className = 'progress-bar bg-primary';
+                            }
+                        }
+                        
+                        // Update Disk
+                        if (latestMetrics['disk_usage']) {
+                            const diskValue = latestMetrics['disk_usage'].metric_value;
+                            document.getElementById('disk-usage').textContent = `${diskValue.toFixed(1)}%`;
+                            document.getElementById('disk-progress').style.width = `${diskValue}%`;
+                            
+                            // Update color based on value
+                            if (diskValue > 90) {
+                                document.getElementById('disk-usage').className = 'metric-value text-danger';
+                                document.getElementById('disk-progress').className = 'progress-bar bg-danger';
+                            } else if (diskValue > 75) {
+                                document.getElementById('disk-usage').className = 'metric-value text-warning';
+                                document.getElementById('disk-progress').className = 'progress-bar bg-warning';
+                            } else {
+                                document.getElementById('disk-usage').className = 'metric-value text-success';
+                                document.getElementById('disk-progress').className = 'progress-bar bg-success';
+                            }
+                        }
+                        
+                        // Update Process Count
+                        if (latestMetrics['process_count']) {
+                            const processCount = latestMetrics['process_count'].metric_value;
+                            document.getElementById('process-count').textContent = Math.round(processCount);
+                            // Set progress based on arbitrary reference (100 processes = 100%)
+                            const processPercent = Math.min(100, processCount / 100 * 100);
+                            document.getElementById('process-progress').style.width = `${processPercent}%`;
+                        }
+                        
+                        // Update Memory Details
+                        if (latestMetrics['memory_used'] && latestMetrics['memory_available']) {
+                            const usedMemory = latestMetrics['memory_used'].metric_value;
+                            const availableMemory = latestMetrics['memory_available'].metric_value;
+                            const totalMemory = usedMemory + availableMemory;
+                            
+                            document.getElementById('used-memory').textContent = `${Math.round(usedMemory)} MB`;
+                            document.getElementById('available-memory').textContent = `${Math.round(availableMemory)} MB`;
+                            document.getElementById('total-memory').textContent = `${Math.round(totalMemory)} MB`;
+                        }
+                        
+                        // Update Disk Details
+                        if (latestMetrics['disk_used'] && latestMetrics['disk_free']) {
+                            const usedDisk = latestMetrics['disk_used'].metric_value;
+                            const freeDisk = latestMetrics['disk_free'].metric_value;
+                            const totalDisk = usedDisk + freeDisk;
+                            
+                            document.getElementById('used-disk').textContent = `${usedDisk.toFixed(1)} GB`;
+                            document.getElementById('free-disk').textContent = `${freeDisk.toFixed(1)} GB`;
+                            document.getElementById('total-disk').textContent = `${totalDisk.toFixed(1)} GB`;
+                        }
+                        
+                        // Update System Load
+                        if (latestMetrics['load_avg_1min'] && latestMetrics['load_avg_5min'] && latestMetrics['load_avg_15min']) {
+                            document.getElementById('load-1min').textContent = latestMetrics['load_avg_1min'].metric_value.toFixed(2);
+                            document.getElementById('load-5min').textContent = latestMetrics['load_avg_5min'].metric_value.toFixed(2);
+                            document.getElementById('load-15min').textContent = latestMetrics['load_avg_15min'].metric_value.toFixed(2);
+                        }
+                        
+                        // Update last updated time
+                        document.getElementById('last-updated').textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching current metrics:', error);
+                });
+        }
+        
+        // Load metrics history for chart
+        function loadMetricsHistory(days = 7) {
+            fetch(`/api/metrics?category=performance&component=system&days=${days}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const metrics = data.metrics;
+                        
+                        // Process metrics for each chart type
+                        processChartData(metrics);
+                        
+                        // Update the currently displayed chart
+                        updateChart(getCurrentMetricType());
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching metrics history:', error);
+                });
+        }
+        
+        function processChartData(metrics) {
+            // Clear existing data
+            for (const type in chartData) {
+                chartData[type].labels = [];
+                chartData[type].datasets.forEach(dataset => {
+                    dataset.data = [];
+                });
+            }
+            
+            // Group metrics by timestamp (rounded to hours)
+            const metricsByHour = {};
+            metrics.forEach(metric => {
+                const timestamp = new Date(metric.timestamp);
+                const hourKey = new Date(timestamp.getFullYear(), timestamp.getMonth(), timestamp.getDate(), timestamp.getHours()).toISOString();
+                
+                if (!metricsByHour[hourKey]) {
+                    metricsByHour[hourKey] = {};
+                }
+                
+                if (!metricsByHour[hourKey][metric.metric_name]) {
+                    metricsByHour[hourKey][metric.metric_name] = [];
+                }
+                
+                metricsByHour[hourKey][metric.metric_name].push(metric.metric_value);
+            });
+            
+            // Sort hours
+            const sortedHours = Object.keys(metricsByHour).sort();
+            
+            // Process data for each chart
+            sortedHours.forEach(hour => {
+                const date = new Date(hour);
+                const hourData = metricsByHour[hour];
+                const formattedDate = `${date.toLocaleDateString()} ${date.getHours()}:00`;
+                
+                // CPU data
+                if (hourData['cpu_usage']) {
+                    const avgCpu = hourData['cpu_usage'].reduce((sum, val) => sum + val, 0) / hourData['cpu_usage'].length;
+                    chartData.cpu.labels.push(formattedDate);
+                    chartData.cpu.datasets[0].data.push(avgCpu);
+                }
+                
+                // Memory data
+                if (hourData['memory_usage']) {
+                    const avgMemory = hourData['memory_usage'].reduce((sum, val) => sum + val, 0) / hourData['memory_usage'].length;
+                    chartData.memory.labels.push(formattedDate);
+                    chartData.memory.datasets[0].data.push(avgMemory);
+                }
+                
+                // Disk data
+                if (hourData['disk_usage']) {
+                    const avgDisk = hourData['disk_usage'].reduce((sum, val) => sum + val, 0) / hourData['disk_usage'].length;
+                    chartData.disk.labels.push(formattedDate);
+                    chartData.disk.datasets[0].data.push(avgDisk);
+                }
+                
+                // System load data
+                if (hourData['load_avg_1min'] && hourData['load_avg_5min'] && hourData['load_avg_15min']) {
+                    const avgLoad1 = hourData['load_avg_1min'].reduce((sum, val) => sum + val, 0) / hourData['load_avg_1min'].length;
+                    const avgLoad5 = hourData['load_avg_5min'].reduce((sum, val) => sum + val, 0) / hourData['load_avg_5min'].length;
+                    const avgLoad15 = hourData['load_avg_15min'].reduce((sum, val) => sum + val, 0) / hourData['load_avg_15min'].length;
+                    
+                    chartData.load.labels.push(formattedDate);
+                    chartData.load.datasets[0].data.push(avgLoad1);
+                    chartData.load.datasets[1].data.push(avgLoad5);
+                    chartData.load.datasets[2].data.push(avgLoad15);
+                }
+            });
+        }
+        
+        function getCurrentMetricType() {
+            const activeButton = document.querySelector('.btn-group .btn.active');
+            return activeButton ? activeButton.getAttribute('data-metric') : 'cpu';
+        }
+        
+        function updateChart(metricType) {
+            if (systemMetricsChart) {
+                systemMetricsChart.data = chartData[metricType];
+                
+                // Update y-axis title and limits
+                if (metricType === 'cpu' || metricType === 'memory' || metricType === 'disk') {
+                    systemMetricsChart.options.scales.y.title.text = 'Usage (%)';
+                    systemMetricsChart.options.scales.y.min = 0;
+                    systemMetricsChart.options.scales.y.max = 100;
+                } else if (metricType === 'load') {
+                    systemMetricsChart.options.scales.y.title.text = 'Load Average';
+                    systemMetricsChart.options.scales.y.min = 0;
+                    systemMetricsChart.options.scales.y.max = undefined;
+                }
+                
+                systemMetricsChart.update();
+            }
+        }
+        
+        // Load metrics data for table
+        function loadMetricsData(page = 1, filter = 'all') {
+            const pageSize = 10;
+            
+            fetch(`/api/metrics?category=performance&component=system&days=7`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const metrics = data.metrics;
+                        
+                        // Apply filter
+                        let filteredMetrics = metrics;
+                        if (filter !== 'all') {
+                            switch (filter) {
+                                case 'cpu':
+                                    filteredMetrics = metrics.filter(m => m.metric_name.includes('cpu'));
+                                    break;
+                                case 'memory':
+                                    filteredMetrics = metrics.filter(m => m.metric_name.includes('memory'));
+                                    break;
+                                case 'disk':
+                                    filteredMetrics = metrics.filter(m => m.metric_name.includes('disk'));
+                                    break;
+                                case 'load':
+                                    filteredMetrics = metrics.filter(m => m.metric_name.includes('load'));
+                                    break;
+                                case 'processes':
+                                    filteredMetrics = metrics.filter(m => m.metric_name.includes('process'));
+                                    break;
+                            }
+                        }
+                        
+                        // Sort by timestamp (newest first)
+                        filteredMetrics.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                        
+                        // Paginate
+                        const totalPages = Math.ceil(filteredMetrics.length / pageSize);
+                        const startIndex = (page - 1) * pageSize;
+                        const pagedMetrics = filteredMetrics.slice(startIndex, startIndex + pageSize);
+                        
+                        // Update table
+                        const tableBody = document.getElementById('metrics-table').querySelector('tbody');
+                        let tableHtml = '';
+                        
+                        if (pagedMetrics.length > 0) {
+                            pagedMetrics.forEach(metric => {
+                                const date = new Date(metric.timestamp);
+                                tableHtml += `
+                                    <tr>
+                                        <td>${metric.metric_name}</td>
+                                        <td>${metric.metric_value.toFixed(2)}</td>
+                                        <td>${metric.metric_unit || '-'}</td>
+                                        <td>${metric.category}</td>
+                                        <td>${metric.component}</td>
+                                        <td>${date.toLocaleString()}</td>
+                                    </tr>
+                                `;
+                            });
+                        } else {
+                            tableHtml = `<tr><td colspan="6" class="text-center">No metrics found</td></tr>`;
+                        }
+                        
+                        tableBody.innerHTML = tableHtml;
+                        
+                        // Update pagination
+                        updatePagination(page, totalPages, filter);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching metrics data:', error);
+                    const tableBody = document.getElementById('metrics-table').querySelector('tbody');
+                    tableBody.innerHTML = `<tr><td colspan="6" class="text-center">Error loading metrics data</td></tr>`;
+                });
+        }
+        
+        function updatePagination(currentPage, totalPages, filter) {
+            const pagination = document.getElementById('pagination');
+            let paginationHtml = '';
+            
+            // Previous button
+            paginationHtml += `
+                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" data-page="${currentPage - 1}" data-filter="${filter}">&laquo; Previous</a>
+                </li>
+            `;
+            
+            // Page numbers
+            const maxPages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxPages / 2));
+            let endPage = Math.min(totalPages, startPage + maxPages - 1);
+            
+            if (endPage - startPage + 1 < maxPages) {
+                startPage = Math.max(1, endPage - maxPages + 1);
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                paginationHtml += `
+                    <li class="page-item ${i === currentPage ? 'active' : ''}">
+                        <a class="page-link" href="#" data-page="${i}" data-filter="${filter}">${i}</a>
+                    </li>
+                `;
+            }
+            
+            // Next button
+            paginationHtml += `
+                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="#" data-page="${currentPage + 1}" data-filter="${filter}">Next &raquo;</a>
+                </li>
+            `;
+            
+            pagination.innerHTML = paginationHtml;
+            
+            // Add click event listeners
+            pagination.querySelectorAll('.page-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (!this.parentElement.classList.contains('disabled')) {
+                        const page = parseInt(this.getAttribute('data-page'));
+                        const filter = this.getAttribute('data-filter');
+                        loadMetricsData(page, filter);
+                    }
+                });
+            });
+        }
+        
+        // Event listeners for chart type buttons
+        document.querySelectorAll('.btn-group .btn').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.btn-group .btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                updateChart(this.getAttribute('data-metric'));
+            });
+        });
+        
+        // Event listener for metric filter
+        document.getElementById('metric-filter').addEventListener('change', function() {
+            loadMetricsData(1, this.value);
+        });
+        
+        // Initialize
+        initChart();
+        updateCurrentMetrics();
+        loadMetricsHistory();
+        loadMetricsData();
+        
+        // Auto-refresh every 60 seconds
+        setInterval(updateCurrentMetrics, 60000);
+        setInterval(() => {
+            loadMetricsHistory();
+            loadMetricsData(1, document.getElementById('metric-filter').value);
+        }, 300000); // Every 5 minutes
+    });
+</script>
+{% endblock %}

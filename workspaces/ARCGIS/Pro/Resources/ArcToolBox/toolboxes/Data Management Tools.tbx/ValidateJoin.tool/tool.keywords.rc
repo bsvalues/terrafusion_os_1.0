@@ -1,0 +1,23 @@
+{
+    "set": [
+        "attribute",
+        "column",
+        "combine",
+        "common",
+        "data",
+        "field",
+        "join",
+        "joins and relates",
+        "match",
+        "move",
+        "relate",
+        "source",
+        "table",
+        "check",
+        "check join",
+        "evaluate",
+        "test",
+        "valid",
+        "verify"
+    ]
+}

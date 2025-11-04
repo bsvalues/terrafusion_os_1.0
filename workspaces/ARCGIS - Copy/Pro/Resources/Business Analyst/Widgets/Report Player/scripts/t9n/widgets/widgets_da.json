@@ -1,0 +1,78 @@
+{
+  "calcite": {
+    "reset": "Nulstil",
+    "action": {
+      "sort": "Sortér"
+    },
+    "buttons": {
+      "save": "Gem",
+      "edit": "Redigér",
+      "done": "Udført",
+      "apply": "Anvend",
+      "cancel": "Annuller",
+      "close": "Luk"
+    },
+    "ColorPicker": {
+      "selectColor": "Vælg farve",
+      "noColorSpecified": "Ingen farve angivet",
+      "transparent": "Gennemsigtig",
+      "colorTooltip": "<p>Hex: ${hex}</p><p>RGB: ${r}, ${g}, ${b}</p>",
+      "recent": "Nylig",
+      "standard": "Standard",
+      "savedColors": "Gemte farver",
+      "advanced": "Avanceret"
+    },
+    "DatePickerLink": {
+      "enterDate": "Indtast dato"
+    },
+    "PaginationContinuous": {
+      "next": "Næste",
+      "previous": "Forrige"
+    }
+  },
+  "ImageNavigator": {
+    "paginationLabel": "${n} for ${m}",
+    "noImage": "Ingen fotos er på nuværende tidspunkt gemt på dette websted",
+    "previewNotAvailable": "Der er ikke noget eksempel"
+  },
+  "PageNavigator": {
+    "currentPageOutOfN": "Side ${current} af ${total}"
+  },
+  "PanoramicViewer": {
+    "image-viewer-close": "Luk",
+    "image-viewer-fullscreen": "Fuld skærm",
+    "image-viewer-minimize": "Minimer",
+    "image-viewer-title": "Photo Viewer",
+    "image-viewer-show-caption": "Vis billedtekst",
+    "image-viewer-hide-caption": "Hide"
+  },
+  "TextBox": {
+    "error_numberExpected": "Der forventes et tal",
+    "error_range": "Forventet værdi fra ${0} til ${1}"
+  },
+  "charts": {
+    "histogram": {
+      "minValue": "Min.:<br>${0}",
+      "maxValue": "Maks.:<br>${0}",
+      "thisAreaValue": "Dette område: ${0}",
+      "medianValue": "Median:<br>${0}",
+      "q1Value": "Q1:<br>${0}",
+      "q3Value": "Q3:<br>${0}",
+      "percentile": "Percentil ${percent}:<br>${0}",
+      "percentileBottom": "Nederste ${percent} %:<br>${0}",
+      "percentileTop": "Top ${percent} %:<br>${0}",
+      "percentile_singleLine": "Percentil ${percent}: ${0}",
+      "percentileBottom_singleLine": "Nederste ${percent} %: ${0}",
+      "percentileTop_singleLine": "Top ${percent} %: ${0}",
+      "sd_singleLine": "${sd} SD: ${0}",
+      "tooltip": {
+        "range_single": "<b>${level}</b> med værdi inden for <b>${value}</b> : <b>1</b>",
+        "range_single_precise": "<b>${areaName}</b> har værdien <b>${value}</b>.",
+        "range_multi": "<b>${level}</b> med værdi inden for <b>${value}</b> : <b>${count}</b>",
+        "thisArea": "<b>Dette område</b> har værdien <b>${value}</b>.",
+        "percentileLower": "<b>${percent}%</b> af <b>${level}</b> har en værdi over <b>${value}</b>.",
+        "percentileUpper": "<b>${percent}%</b> af <b>${level}</b> har en værdi under <b>${value}</b>."
+      }
+    }
+  }
+}

@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en" class="tf-app">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion Playground | Unified Development Platform</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Monaco Editor -->
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+    
+    <!-- TerraFusion Unified Brand System -->
+    <link href="shared_assets/terrafusion-unified-brand.css" rel="stylesheet">
+    <link href="shared_assets/terrafusion-brand-system.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        :root {
+            --tf-cosmic-blue: #0891b2;
+            --tf-quantum-teal: #00d2ff;
+            --tf-deep-space: #0a0f1c;
+        }
+        
+        .tf-tabs {
+            background: linear-gradient(135deg, var(--tf-cosmic-blue), var(--tf-quantum-teal));
+            border-radius: 12px 12px 0 0;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .tf-tab-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 15px 25px;
+            font-weight: 600;
+            border-radius: 12px 12px 0 0;
+            transition: all 0.3s ease;
+            margin-right: 2px;
+        }
+        
+        .tf-tab-btn.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .tf-tab-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .tf-tab-content {
+            background: rgba(8, 145, 178, 0.05);
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            border-radius: 0 12px 12px 12px;
+            min-height: 600px;
+            padding: 0;
+        }
+        
+        .tf-tab-pane {
+            display: none;
+            height: 100%;
+            padding: 20px;
+        }
+        
+        .tf-tab-pane.active {
+            display: block;
+        }
+        
+        #monaco-editor {
+            height: 500px;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            border-radius: 8px;
+        }
+        
+        .tf-editor-toolbar {
+            background: linear-gradient(135deg, rgba(8, 145, 178, 0.1), rgba(0, 210, 255, 0.05));
+            padding: 10px 15px;
+            border-radius: 8px 8px 0 0;
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            border-bottom: none;
+        }
+        
+        .tf-ai-chat {
+            background: rgba(8, 145, 178, 0.05);
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            border-radius: 8px;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .tf-chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+        
+        .tf-chat-input {
+            padding: 15px;
+            border-top: 1px solid rgba(0, 210, 255, 0.2);
+        }
+        
+        .tf-message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+        
+        .tf-message.user {
+            background: linear-gradient(135deg, var(--tf-cosmic-blue), var(--tf-quantum-teal));
+            color: white;
+            margin-left: auto;
+        }
+        
+        .tf-message.ai {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--tf-deep-space), #1a1a2e);
+            color: white;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body class="tf-app">
+    <!-- TerraFusion Unified Navigation -->
+    <nav class="navbar navbar-expand-lg tf-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-rocket me-2"></i>
+                <strong class="tf-text-gradient">TerraFusion</strong>
+                <small class="ms-2 opacity-75">Playground</small>
+            </a>
+
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-cog me-1"></i>Platform
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="http://localhost:5001">
+                            <i class="fas fa-wave-square me-2"></i>TerraFlow
+                        </a></li>
+                        <li><a class="dropdown-item" href="http://localhost:5002">
+                            <i class="fas fa-sync-alt me-2"></i>TerraSync
+                        </a></li>
+                        <li><a class="dropdown-item" href="http://localhost:5003">
+                            <i class="fas fa-robot me-2"></i>TerraAgent
+                        </a></li>
+                        <li><a class="dropdown-item" href="http://localhost:5000">
+                            <i class="fas fa-building me-2"></i>TerraFusion Build
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="tf-container tf-section">
+        <!-- Header Section -->
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h1 class="tf-title">
+                    <i class="fas fa-rocket me-3 text-info"></i>
+                    TerraFusion <span class="tf-text-gradient">Playground</span>
+                </h1>
+                <p class="lead tf-subtitle">Unified Development Platform & Ecosystem Launcher</p>
+
+                <div class="tf-status-indicator online">
+                    <i class="fas fa-circle me-2"></i>Development Environment Active
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Tabbed Interface -->
+        <div class="row">
+            <div class="col-12">
+                <!-- Tab Navigation -->
+                <div class="tf-tabs">
+                    <button class="tf-tab-btn active" onclick="switchTab('launcher')">
+                        <i class="fas fa-rocket me-2"></i>Ecosystem Launcher
+                    </button>
+                    <button class="tf-tab-btn" onclick="switchTab('editor')">
+                        <i class="fas fa-code me-2"></i>Code Editor
+                    </button>
+                    <button class="tf-tab-btn" onclick="switchTab('ai')">
+                        <i class="fas fa-robot me-2"></i>AI Assistant
+                    </button>
+                    <button class="tf-tab-btn" onclick="switchTab('deploy')">
+                        <i class="fas fa-cloud-upload-alt me-2"></i>Deploy
+                    </button>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="tf-tab-content">
+                    <!-- Launcher Tab -->
+                    <div id="launcher-tab" class="tf-tab-pane active">
+                        <div class="row g-4">
+                            <!-- TerraAgent -->
+                            <div class="col-lg-4 col-md-6">
+                                <div class="tf-card tf-card-hover">
+                                    <div class="tf-card-header">
+                                        <h3><i class="fas fa-robot me-2 text-info"></i>TerraAgent</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">AI-powered assistant for property assessment and CAMA data analysis</p>
+                                        <div class="mb-3">
+                                            <strong>Status:</strong>
+                                            <span id="terraAgentStatus" class="tf-status-badge">Not Launched</span>
+                                        </div>
+                                        <div class="d-grid gap-2">
+                                            <button class="tf-btn-primary" onclick="launchApp('TerraAgent', 5003)">
+                                                <i class="fas fa-play me-2"></i>Launch TerraAgent
+                                            </button>
+                                            <a href="http://localhost:5003" class="tf-btn-secondary" target="_blank">
+                                                <i class="fas fa-external-link-alt me-2"></i>Open Dashboard
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TerraFlow -->
+                            <div class="col-lg-4 col-md-6">
+                                <div class="tf-card tf-card-hover">
+                                    <div class="tf-card-header">
+                                        <h3><i class="fas fa-wave-square me-2 text-success"></i>TerraFlow</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">Workflow management engine for data processing and automation</p>
+                                        <div class="mb-3">
+                                            <strong>Status:</strong>
+                                            <span id="terraFlowStatus" class="tf-status-badge">Not Launched</span>
+                                        </div>
+                                        <div class="d-grid gap-2">
+                                            <button class="tf-btn-primary" onclick="launchApp('TerraFlow', 5001)">
+                                                <i class="fas fa-play me-2"></i>Launch TerraFlow
+                                            </button>
+                                            <a href="http://localhost:5001" class="tf-btn-secondary" target="_blank">
+                                                <i class="fas fa-external-link-alt me-2"></i>Open Dashboard
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TerraSync -->
+                            <div class="col-lg-4 col-md-6">
+                                <div class="tf-card tf-card-hover">
+                                    <div class="tf-card-header">
+                                        <h3><i class="fas fa-sync-alt me-2 text-warning"></i>TerraSync</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">Data synchronization hub for enterprise geospatial systems</p>
+                                        <div class="mb-3">
+                                            <strong>Status:</strong>
+                                            <span id="terraSyncStatus" class="tf-status-badge">Not Launched</span>
+                                        </div>
+                                        <div class="d-grid gap-2">
+                                            <button class="tf-btn-primary" onclick="launchApp('TerraSync', 5002)">
+                                                <i class="fas fa-play me-2"></i>Launch TerraSync
+                                            </button>
+                                            <a href="http://localhost:5002" class="tf-btn-secondary" target="_blank">
+                                                <i class="fas fa-external-link-alt me-2"></i>Open Dashboard
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TerraFusion Build -->
+                            <div class="col-lg-4 col-md-6">
+                                <div class="tf-card tf-card-hover">
+                                    <div class="tf-card-header">
+                                        <h3><i class="fas fa-building me-2 text-primary"></i>TerraFusion Build</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">Property assessment platform with AI valuation engine</p>
+                                        <div class="mb-3">
+                                            <strong>Status:</strong>
+                                            <span id="terraFusionStatus" class="tf-status-badge">Not Launched</span>
+                                        </div>
+                                        <div class="d-grid gap-2">
+                                            <button class="tf-btn-primary" onclick="launchApp('TerraFusion', 5000)">
+                                                <i class="fas fa-play me-2"></i>Launch TerraFusion
+                                            </button>
+                                            <a href="http://localhost:5000" class="tf-btn-secondary" target="_blank">
+                                                <i class="fas fa-external-link-alt me-2"></i>Open Dashboard
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TerraMiner -->
+                            <div class="col-lg-4 col-md-6">
+                                <div class="tf-card tf-card-hover">
+                                    <div class="tf-card-header">
+                                        <h3><i class="fas fa-chart-line me-2 text-purple"></i>TerraMiner</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">Advanced data mining and analytics for property insights</p>
+                                        <div class="mb-3">
+                                            <strong>Status:</strong>
+                                            <span id="terraMinerStatus" class="tf-status-badge">Not Launched</span>
+                                        </div>
+                                        <div class="d-grid gap-2">
+                                            <button class="tf-btn-primary" onclick="launchApp('TerraMiner', 5006)">
+                                                <i class="fas fa-play me-2"></i>Launch TerraMiner
+                                            </button>
+                                            <a href="http://localhost:5006" class="tf-btn-secondary" target="_blank">
+                                                <i class="fas fa-external-link-alt me-2"></i>Open Dashboard
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TerraLevy -->
+                            <div class="col-lg-4 col-md-6">
+                                <div class="tf-card tf-card-hover">
+                                    <div class="tf-card-header">
+                                        <h3><i class="fas fa-calculator me-2 text-danger"></i>TerraLevy</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">Tax levy management system with advanced calculations</p>
+                                        <div class="mb-3">
+                                            <strong>Status:</strong>
+                                            <span id="terraLevyStatus" class="tf-status-badge">Not Launched</span>
+                                        </div>
+                                        <div class="d-grid gap-2">
+                                            <button class="tf-btn-primary" onclick="launchApp('TerraLevy', 5007)">
+                                                <i class="fas fa-play me-2"></i>Launch TerraLevy
+                                            </button>
+                                            <a href="http://localhost:5007" class="tf-btn-secondary" target="_blank">
+                                                <i class="fas fa-external-link-alt me-2"></i>Open Dashboard
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Code Editor Tab -->
+                    <div id="editor-tab" class="tf-tab-pane">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="tf-editor-toolbar">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <select id="language-select" class="form-select form-select-sm" style="width: auto; display: inline-block;">
+                                                <option value="javascript">JavaScript</option>
+                                                <option value="typescript">TypeScript</option>
+                                                <option value="python">Python</option>
+                                                <option value="html">HTML</option>
+                                                <option value="css">CSS</option>
+                                                <option value="json">JSON</option>
+                                                <option value="sql">SQL</option>
+                                                <option value="rust">Rust</option>
+                                            </select>
+                                            <span class="ms-3 text-muted">TerraFusion Application Generator</span>
+                                        </div>
+                                        <div>
+                                            <button class="btn btn-sm btn-outline-info me-2" onclick="generateCode()">
+                                                <i class="fas fa-magic me-1"></i>AI Generate
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success me-2" onclick="saveCode()">
+                                                <i class="fas fa-save me-1"></i>Save
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-warning" onclick="deployCode()">
+                                                <i class="fas fa-rocket me-1"></i>Deploy
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="monaco-editor"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Assistant Tab -->
+                    <div id="ai-tab" class="tf-tab-pane">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="tf-ai-chat">
+                                    <div class="tf-chat-messages" id="chat-messages">
+                                        <div class="tf-message ai">
+                                            <strong>TerraFusion AI:</strong> Welcome to the TerraFusion development environment! I can help you:
+                                            <ul class="mt-2 mb-0">
+                                                <li>Generate TerraFusion applications</li>
+                                                <li>Analyze and debug code</li>
+                                                <li>Explain property assessment workflows</li>
+                                                <li>Optimize database queries</li>
+                                                <li>Deploy applications to the ecosystem</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="tf-chat-input">
+                                        <div class="input-group">
+                                            <input type="text" id="chat-input" class="form-control" placeholder="Ask me anything about TerraFusion development...">
+                                            <button class="btn btn-outline-info" onclick="sendMessage()">
+                                                <i class="fas fa-paper-plane"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="tf-card">
+                                    <div class="tf-card-header">
+                                        <h5><i class="fas fa-lightbulb me-2"></i>Quick Actions</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="d-grid gap-2">
+                                            <button class="btn btn-outline-info btn-sm" onclick="askAI('Create a property assessment Flask app')">
+                                                Generate Property App
+                                            </button>
+                                            <button class="btn btn-outline-success btn-sm" onclick="askAI('Analyze the current TerraFusion ecosystem')">
+                                                Analyze Ecosystem
+                                            </button>
+                                            <button class="btn btn-outline-warning btn-sm" onclick="askAI('Optimize database performance')">
+                                                Optimize Database
+                                            </button>
+                                            <button class="btn btn-outline-danger btn-sm" onclick="askAI('Debug application errors')">
+                                                Debug Errors
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Deploy Tab -->
+                    <div id="deploy-tab" class="tf-tab-pane">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="tf-card">
+                                    <div class="tf-card-header">
+                                        <h5><i class="fas fa-cloud-upload-alt me-2"></i>Deploy to Ecosystem</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="deploy-form">
+                                            <div class="mb-3">
+                                                <label for="app-name" class="form-label">Application Name</label>
+                                                <input type="text" class="form-control" id="app-name" placeholder="MyTerraFusionApp">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="app-port" class="form-label">Port</label>
+                                                <input type="number" class="form-control" id="app-port" placeholder="5014" min="5000" max="9999">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="app-type" class="form-label">Application Type</label>
+                                                <select class="form-select" id="app-type">
+                                                    <option value="flask">Flask (Python)</option>
+                                                    <option value="express">Express (Node.js)</option>
+                                                    <option value="fastapi">FastAPI (Python)</option>
+                                                    <option value="rust">Rust (Axum)</option>
+                                                </select>
+                                            </div>
+                                            <div class="d-grid">
+                                                <button type="button" class="btn btn-primary" onclick="deployApplication()">
+                                                    <i class="fas fa-rocket me-2"></i>Deploy Application
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="tf-card">
+                                    <div class="tf-card-header">
+                                        <h5><i class="fas fa-list me-2"></i>Deployment Status</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="deployment-status">
+                                            <p class="text-muted">No deployments in progress</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Enhanced Application Script -->
+    <script src="script.js"></script>
+
+    <script>
+        let monacoEditor;
+
+        // Initialize Monaco Editor
+        require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' }});
+        require(['vs/editor/editor.main'], function () {
+            monacoEditor = monaco.editor.create(document.getElementById('monaco-editor'), {
+                value: `# TerraFusion Application Template
+# Generate your property assessment application here
+
+from flask import Flask, render_template, jsonify
+import sqlite3
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return render_template('dashboard.html')
+
+@app.route('/api/properties')
+def get_properties():
+    # Your property data logic here
+    return jsonify({'properties': []})
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5014, debug=True)
+`,
+                language: 'python',
+                theme: 'vs-dark',
+                automaticLayout: true,
+                minimap: { enabled: true },
+                scrollBeyondLastLine: false,
+                fontSize: 14,
+                lineNumbers: 'on',
+                renderWhitespace: 'selection',
+                wordWrap: 'on'
+            });
+
+            // Language change handler
+            document.getElementById('language-select').addEventListener('change', function(e) {
+                monaco.editor.setModelLanguage(monacoEditor.getModel(), e.target.value);
+            });
+        });
+
+        // Tab switching functionality
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tf-tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.tf-tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            
+            // Resize Monaco editor when editor tab is shown
+            if (tabName === 'editor' && monacoEditor) {
+                setTimeout(() => monacoEditor.layout(), 100);
+            }
+        }
+
+        // AI Chat functionality
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            addMessage('user', message);
+            input.value = '';
+
+            // Simulate AI response
+            setTimeout(() => {
+                const response = generateAIResponse(message);
+                addMessage('ai', response);
+            }, 1000);
+        }
+
+        function askAI(question) {
+            document.getElementById('chat-input').value = question;
+            sendMessage();
+        }
+
+        function addMessage(type, content) {
+            const messagesDiv = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `tf-message ${type}`;
+            messageDiv.innerHTML = type === 'user' ? 
+                `<strong>You:</strong> ${content}` : 
+                `<strong>TerraFusion AI:</strong> ${content}`;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function generateAIResponse(message) {
+            const responses = {
+                'property': 'I can help you create a property assessment application. Would you like me to generate a Flask app with database integration?',
+                'ecosystem': 'The TerraFusion ecosystem currently has 6 core services running. Let me analyze their status and performance.',
+                'database': 'For database optimization, I recommend adding indexes on frequently queried columns and implementing connection pooling.',
+                'debug': 'I can help debug your application. Please share the error logs or describe the issue you\'re experiencing.'
+            };
+
+            for (const [key, response] of Object.entries(responses)) {
+                if (message.toLowerCase().includes(key)) {
+                    return response;
+                }
+            }
+
+            return 'I understand you want to work with TerraFusion development. Could you be more specific about what you\'d like me to help you with?';
+        }
+
+        // Code generation
+        function generateCode() {
+            const language = document.getElementById('language-select').value;
+            const templates = {
+                'python': `# TerraFusion Property Assessment Service
+from flask import Flask, render_template, jsonify, request
+import sqlite3
+from datetime import datetime
+
+app = Flask(__name__)
+
+class PropertyService:
+    def __init__(self):
+        self.db_path = 'properties.db'
+    
+    def get_properties(self, limit=20):
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT prop_id, address, market_value, assessment_date
+            FROM properties 
+            ORDER BY market_value DESC 
+            LIMIT ?
+        """, (limit,))
+        return [dict(zip([col[0] for col in cursor.description], row)) 
+                for row in cursor.fetchall()]
+
+@app.route('/')
+def dashboard():
+    return render_template('dashboard.html')
+
+@app.route('/api/properties')
+def api_properties():
+    service = PropertyService()
+    properties = service.get_properties()
+    return jsonify({'properties': properties, 'count': len(properties)})
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5014, debug=True)`,
+                'javascript': `// TerraFusion Property Assessment API
+const express = require('express');
+const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
+
+const app = express();
+const PORT = 5014;
+
+// Middleware
+app.use(express.json());
+app.use(express.static('public'));
+
+// Database connection
+const db = new sqlite3.Database('properties.db');
+
+// Property service class
+class PropertyService {
+    static getProperties(limit = 20) {
+        return new Promise((resolve, reject) => {
+            db.all(\`
+                SELECT prop_id, address, market_value, assessment_date
+                FROM properties 
+                ORDER BY market_value DESC 
+                LIMIT ?
+            \`, [limit], (err, rows) => {
+                if (err) reject(err);
+                else resolve(rows);
+            });
+        });
+    }
+}
+
+// Routes
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+});
+
+app.get('/api/properties', async (req, res) => {
+    try {
+        const properties = await PropertyService.getProperties();
+        res.json({ properties, count: properties.length });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.listen(PORT, () => {
+    console.log(\`TerraFusion Property Service running on port \${PORT}\`);
+});`
+            };
+
+            if (monacoEditor && templates[language]) {
+                monacoEditor.setValue(templates[language]);
+            }
+        }
+
+        // Save code
+        function saveCode() {
+            const code = monacoEditor.getValue();
+            const language = document.getElementById('language-select').value;
+            
+            // Create download
+            const blob = new Blob([code], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = \`terrafusion-app.${language === 'javascript' ? 'js' : language}\`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Deploy code
+        function deployCode() {
+            const code = monacoEditor.getValue();
+            const appName = prompt('Enter application name:') || 'TerraFusionApp';
+            const port = prompt('Enter port number:') || '5014';
+            
+            // Simulate deployment
+            document.getElementById('deployment-status').innerHTML = \`
+                <div class="alert alert-info">
+                    <i class="fas fa-spinner fa-spin me-2"></i>
+                    Deploying \${appName} to port \${port}...
+                </div>
+            \`;
+            
+            setTimeout(() => {
+                document.getElementById('deployment-status').innerHTML = \`
+                    <div class="alert alert-success">
+                        <i class="fas fa-check me-2"></i>
+                        \${appName} deployed successfully to port \${port}
+                    </div>
+                \`;
+            }, 3000);
+        }
+
+        // Deploy application
+        function deployApplication() {
+            const appName = document.getElementById('app-name').value;
+            const port = document.getElementById('app-port').value;
+            const type = document.getElementById('app-type').value;
+            
+            if (!appName || !port) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            document.getElementById('deployment-status').innerHTML = \`
+                <div class="alert alert-info">
+                    <i class="fas fa-spinner fa-spin me-2"></i>
+                    Deploying \${appName} (\${type}) to port \${port}...
+                </div>
+            \`;
+            
+            setTimeout(() => {
+                document.getElementById('deployment-status').innerHTML = \`
+                    <div class="alert alert-success">
+                        <i class="fas fa-check me-2"></i>
+                        \${appName} deployed successfully!<br>
+                        <small>Access at: <a href="http://localhost:\${port}" target="_blank">http://localhost:\${port}</a></small>
+                    </div>
+                \`;
+            }, 3000);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Chat input enter key
+            document.getElementById('chat-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            console.log('🚀 TerraFusion Playground Enhanced - LOADED');
+        });
+    </script>
+</body>
+</html> 

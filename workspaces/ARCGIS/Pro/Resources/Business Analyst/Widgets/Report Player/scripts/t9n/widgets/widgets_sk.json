@@ -1,0 +1,78 @@
+{
+  "calcite": {
+    "reset": "Resetovať",
+    "action": {
+      "sort": "Zoradiť"
+    },
+    "buttons": {
+      "save": "Uložiť",
+      "edit": "Editovať",
+      "done": "Hotovo",
+      "apply": "Použiť",
+      "cancel": "Zrušiť",
+      "close": "Zatvoriť"
+    },
+    "ColorPicker": {
+      "selectColor": "Vybrať farbu",
+      "noColorSpecified": "Nie je špecifikovaná farba",
+      "transparent": "Transparentný",
+      "colorTooltip": "<p>Hex: ${hex}</p><p>RGB: ${r}, ${g}, ${b}</p>",
+      "recent": "Najnovšie",
+      "standard": "Štandardné",
+      "savedColors": "Uložené farby",
+      "advanced": "Pokročilé"
+    },
+    "DatePickerLink": {
+      "enterDate": "Zadajte dátum"
+    },
+    "PaginationContinuous": {
+      "next": "Ďalší",
+      "previous": "Predchádzajúci"
+    }
+  },
+  "ImageNavigator": {
+    "paginationLabel": "${n} z ${m}",
+    "noImage": "Na tejto stránke nie sú momentálne uložené žiadne fotky",
+    "previewNotAvailable": "Náhľad nie je k dispozícii"
+  },
+  "PageNavigator": {
+    "currentPageOutOfN": "Strana ${current} z ${total}"
+  },
+  "PanoramicViewer": {
+    "image-viewer-close": "Zatvoriť",
+    "image-viewer-fullscreen": "Celá obrazovka",
+    "image-viewer-minimize": "Minimalizovať",
+    "image-viewer-title": "Zobrazovač fotiek",
+    "image-viewer-show-caption": "Zobraziť popis",
+    "image-viewer-hide-caption": "Skryť"
+  },
+  "TextBox": {
+    "error_numberExpected": "Očakáva sa číslo",
+    "error_range": "Očakávaná hodnota od ${0} do ${1}"
+  },
+  "charts": {
+    "histogram": {
+      "minValue": "Min:<br>${0}",
+      "maxValue": "Max:<br>${0}",
+      "thisAreaValue": "Táto oblasť: ${0}",
+      "medianValue": "Medián:<br>${0}",
+      "q1Value": "Q1:<br>${0}",
+      "q3Value": "Q3:<br>${0}",
+      "percentile": "Percentil ${percent}:<br>${0}",
+      "percentileBottom": "Spodná časť ${percent}%:<br>${0}",
+      "percentileTop": "Vrchná časť ${percent}%:<br>${0}",
+      "percentile_singleLine": "Percentil ${percent}: ${0}",
+      "percentileBottom_singleLine": "Spodná časť ${percent}%: ${0}",
+      "percentileTop_singleLine": "Vrchná časť ${percent}%: ${0}",
+      "sd_singleLine": "${sd} SD: ${0}",
+      "tooltip": {
+        "range_single": "<b>${level}</b> s hodnotou v rámci <b>${value}</b> : <b>1</b>",
+        "range_single_precise": "<b>${areaName}</b> má hodnotu <b>${value}</b>.",
+        "range_multi": "<b>${level}</b> s hodnotu v rámci <b>${value}</b> : <b>${count}</b>",
+        "thisArea": "<b>Táto oblasť</b> má hodnotu <b>${value}</b>.",
+        "percentileLower": "<b>${percent}%</b> z <b>${level}</b> má hodnotu viac ako <b>${value}</b>.",
+        "percentileUpper": "<b>${percent}%</b> z <b>${level}</b> má hodnotu menej ako <b>${value}</b>."
+      }
+    }
+  }
+}

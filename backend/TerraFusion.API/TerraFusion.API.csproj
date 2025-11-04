@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -30,14 +31,23 @@
     <PackageReference Include="StackExchange.Redis" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="prometheus-net.AspNetCore" />
+    <PackageReference Include="Microsoft.ML" />
+    <PackageReference Include="Microsoft.ML.AutoML" />
+    <PackageReference Include="Microsoft.ML.FastTree" />
+    <PackageReference Include="Microsoft.ML.LightGbm" />
+    <PackageReference Include="Microsoft.ML.Mkl.Components" />
+    <PackageReference Include="Microsoft.ML.OnnxTransformer" />
+    <PackageReference Include="Microsoft.ML.TimeSeries" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\TerraFusion.Core\TerraFusion.Core.csproj" />
     <ProjectReference Include="..\TerraFusion.Data\TerraFusion.Data.csproj" />
     <ProjectReference Include="..\TerraFusion.Abstractions\TerraFusion.Abstractions.csproj" />
-    <!-- Temporarily removed AI project until dependencies resolved -->
-    <!-- <ProjectReference Include="..\TerraFusion.AI\TerraFusion.AI.csproj" /> -->
+    <ProjectReference Include="..\TerraFusion.AI\TerraFusion.AI.csproj" />
+    <ProjectReference Include="..\TerraFusion.Operations\TerraFusion.Operations.csproj" />
+    <ProjectReference Include="..\TerraFusion.CostForge\TerraFusion.CostForge.csproj" />
+    <ProjectReference Include="..\TerraFusion.Levy\TerraFusion.Levy.csproj" />
   </ItemGroup>
 
   <ItemGroup>

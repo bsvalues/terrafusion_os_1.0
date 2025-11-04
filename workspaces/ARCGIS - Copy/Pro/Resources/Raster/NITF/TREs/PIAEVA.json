@@ -1,0 +1,36 @@
+{
+  "TRE": "PIAEVA",
+  "Source": ["STDI-0002-1 v2021.1, Appendix C: PIAE"],
+  "Name": "Profile for Imagery Access Event Extension",
+  "Description": "The Event Extension is designed to provide an area for specific information about an event or events that are identified on an image. This extension shall be present for each event identified in an image. There may be up to 100 of these extensions present for each data type in a NITF file. When present, these extension(s) shall be contained within the appropriate data type (image, symbol, label or text) extended subheader data field of the data type subheader or within an overflow DES if there is insufficient room to place the entire extension(s) within the data type extended subheader data field.",
+  "Size": 46,
+  "Fields": {
+    "EVENTNAME" : {
+      "Name": "Name of the event",
+      "Description": "This field indicates the recognized name of the event.",
+      "Size": 38,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [        
+        {
+          "Type": "AlphaNumeric"          
+        }
+      ]
+    },
+    "EVENTTYPE": {
+      "Name": "Type of the Event",
+      "Description": "This field indicates the generic type of event associated with the product.",
+      "Size": 8,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["POL", "DIS", "COMMO", "MILEX", "ECON", "NUC", "SPACE", "MILMOV", "CIVIL"]
+        }
+      ]
+    }    
+  }
+}

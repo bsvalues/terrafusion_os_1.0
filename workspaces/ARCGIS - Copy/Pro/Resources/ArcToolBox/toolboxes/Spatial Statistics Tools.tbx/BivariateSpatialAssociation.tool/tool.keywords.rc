@@ -1,0 +1,8 @@
+{
+    "set": [
+        "autocorrelation",
+        "correlation",
+        "pearson",
+        "relationship"
+    ]
+}

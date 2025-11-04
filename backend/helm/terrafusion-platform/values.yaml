@@ -1,0 +1,286 @@
+# ============================================================================
+# TerraFusion Platform - Umbrella Chart Values
+# Government. Transcended. - Unified Configuration for Complete AI Platform
+# ============================================================================
+
+# Global values shared across all sub-charts
+global:
+  # Environment configuration
+  environment: production  # development | staging | production
+  domain: terrafusion.gov
+  
+  # Container registry
+  imageRegistry: ghcr.io/terrafusion
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets: []
+  
+  # Kubernetes cluster configuration
+  clusterName: terrafusion-prod
+  storageClass: fast-ssd
+  
+  # TLS configuration
+  tls:
+    enabled: true
+    issuer: letsencrypt-prod
+    
+  # Database configuration (PostgreSQL)
+  database:
+    host: postgres.terrafusion.svc.cluster.local
+    port: 5432
+    name: terrafusion
+    # Credentials in secrets
+    
+  # Cache configuration (Redis)
+  redis:
+    host: redis.terrafusion.svc.cluster.local
+    port: 6379
+    # Credentials in secrets
+    
+  # Service mesh
+  serviceMesh:
+    enabled: false  # Istio/Linkerd optional
+    
+  # Monitoring
+  monitoring:
+    enabled: true
+    prometheus:
+      namespace: monitoring
+      scrapeInterval: 15s
+    grafana:
+      enabled: true
+    jaeger:
+      enabled: true
+      namespace: tracing
+    loki:
+      enabled: true
+      namespace: logging
+      
+  # Security
+  security:
+    podSecurityPolicy: true
+    networkPolicy: true
+    rbac: true
+    
+  # Compliance
+  compliance:
+    fisma:
+      enabled: true
+      level: HIGH
+      auditLogging: true
+      dataEncryption: true
+
+# ============================================================================
+# Component Enablement
+# ============================================================================
+
+api:
+  enabled: true
+
+consciousness:
+  enabled: true
+
+gateway:
+  enabled: true
+
+operations:
+  enabled: true
+
+# ============================================================================
+# TerraFusion API Configuration Overrides
+# ============================================================================
+
+terrafusion-api:
+  replicaCount: 3
+  
+  image:
+    tag: "1.0.0"
+    
+  resources:
+    requests:
+      cpu: 2000m
+      memory: 8Gi
+    limits:
+      cpu: 8000m
+      memory: 32Gi
+      
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 20
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 75
+    
+  ingress:
+    enabled: true
+    className: nginx
+    hosts:
+      - host: api.terrafusion.gov
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: api-terrafusion-gov-tls
+        hosts:
+          - api.terrafusion.gov
+          
+  monitoring:
+    prometheus:
+      enabled: true
+    jaeger:
+      enabled: true
+
+# ============================================================================
+# TerraFusion Consciousness Engine Configuration Overrides
+# ============================================================================
+
+terrafusion-consciousness:
+  replicaCount: 5
+  
+  image:
+    tag: "1.0.0"
+    
+  aiAgent:
+    totalAgents: 50000
+    agentsPerPod: 10000
+    quantumOptimizationFactor: 949
+    
+  resources:
+    requests:
+      cpu: 4000m
+      memory: 16Gi
+    limits:
+      cpu: 16000m
+      memory: 64Gi
+      
+  autoscaling:
+    enabled: true
+    minReplicas: 5
+    maxReplicas: 50
+    targetCPUUtilizationPercentage: 60
+    targetMemoryUtilizationPercentage: 70
+    
+  persistence:
+    enabled: true
+    size: 50Gi
+    storageClass: fast-ssd
+    
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          preference:
+            matchExpressions:
+              - key: gpu.terrafusion.io/type
+                operator: In
+                values:
+                  - nvidia-tesla-t4
+                  - nvidia-a100
+                  
+  ingress:
+    enabled: true
+    className: nginx
+    hosts:
+      - host: consciousness.terrafusion.gov
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: consciousness-terrafusion-gov-tls
+        hosts:
+          - consciousness.terrafusion.gov
+
+# ============================================================================
+# TerraFusion Gateway Configuration Overrides
+# ============================================================================
+
+terrafusion-gateway:
+  replicaCount: 3
+  
+  image:
+    tag: "1.0.0"
+    
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 4Gi
+    limits:
+      cpu: 4000m
+      memory: 16Gi
+      
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 20
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 75
+    
+  gateway:
+    rateLimiting:
+      enabled: true
+      requestsPerSecond: 1000
+      
+  ingress:
+    enabled: true
+    className: nginx
+    hosts:
+      - host: gateway.terrafusion.gov
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: gateway-terrafusion-gov-tls
+        hosts:
+          - gateway.terrafusion.gov
+
+# ============================================================================
+# TerraFusion Operations Configuration Overrides
+# ============================================================================
+
+terrafusion-operations:
+  replicaCount: 3
+  
+  image:
+    tag: "1.0.0"
+    
+  resources:
+    requests:
+      cpu: 2000m
+      memory: 8Gi
+    limits:
+      cpu: 8000m
+      memory: 32Gi
+      
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 15
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 75
+    
+  # County-specific configurations
+  counties:
+    benton:
+      enabled: true
+      aiAgents: 1500
+    king:
+      enabled: true
+      aiAgents: 3000
+    pierce:
+      enabled: true
+      aiAgents: 2000
+    spokane:
+      enabled: true
+      aiAgents: 1500
+      
+  ingress:
+    enabled: true
+    className: nginx
+    hosts:
+      - host: operations.terrafusion.gov
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: operations-terrafusion-gov-tls
+        hosts:
+          - operations.terrafusion.gov

@@ -1,0 +1,117 @@
+{
+  "workspace_name": "property-workbench",
+  "workspace_id": 18,
+  "deployment_date": "2025-10-16T11:38:32.913655",
+  "tier": 16,
+  "tier_name": "Advanced Governance & Compliance Automation",
+  "governance_policies": {
+    "data_governance": {
+      "data_classification": [
+        "public",
+        "internal",
+        "confidential",
+        "restricted"
+      ],
+      "retention_policies": {
+        "public": "7 years",
+        "internal": "5 years",
+        "confidential": "7 years",
+        "restricted": "10 years"
+      },
+      "access_controls": "Role-based with attribute-based conditions",
+      "encryption_required": true,
+      "audit_logging": "100%"
+    },
+    "regulatory_compliance": {
+      "frameworks": [
+        "GDPR",
+        "HIPAA",
+        "FISMA",
+        "SOC2",
+        "ISO27001"
+      ],
+      "enforcement": "Automated",
+      "violation_response": "Immediate escalation",
+      "audit_frequency": "Continuous"
+    },
+    "access_governance": {
+      "approval_workflows": "Multi-level",
+      "access_review_frequency": "90 days",
+      "privileged_access_management": "MFA + biometric",
+      "session_recording": "All privileged access"
+    },
+    "change_management": {
+      "change_approval_required": true,
+      "emergency_change_process": "Expedited with post-review",
+      "rollback_procedures": "Automated",
+      "change_validation": "Pre and post-deployment"
+    },
+    "risk_management": {
+      "risk_assessment_frequency": "Monthly",
+      "risk_scoring": "CVSS v3.1",
+      "remediation_sla": "Based on severity",
+      "risk_reporting": "Executive dashboard"
+    }
+  },
+  "compliance_requirements": {
+    "GDPR": {
+      "requirements": [
+        "Right to be forgotten",
+        "Data portability",
+        "Privacy by design",
+        "Consent management",
+        "Data breach notification (72h)"
+      ],
+      "automated_checks": true,
+      "continuous_monitoring": true
+    },
+    "HIPAA": {
+      "requirements": [
+        "Encryption at rest and in transit",
+        "Access controls",
+        "Audit controls",
+        "Integrity controls",
+        "Business associate agreements"
+      ],
+      "automated_checks": true,
+      "continuous_monitoring": true
+    },
+    "FISMA": {
+      "requirements": [
+        "Security categorization",
+        "Control selection",
+        "Control implementation",
+        "Assessment and monitoring",
+        "Authorization decisions"
+      ],
+      "automated_checks": true,
+      "continuous_monitoring": true
+    },
+    "SOC2": {
+      "requirements": [
+        "Security criteria",
+        "Availability criteria",
+        "Processing integrity",
+        "Confidentiality criteria",
+        "Privacy criteria"
+      ],
+      "automated_checks": true,
+      "continuous_monitoring": true
+    }
+  },
+  "audit_framework": {
+    "audit_trail_retention": "10 years",
+    "audit_events_tracked": [
+      "User authentication",
+      "Data access",
+      "Policy changes",
+      "Configuration changes",
+      "Compliance violations",
+      "Access grants/revokes",
+      "Data exports",
+      "Security incidents"
+    ],
+    "real_time_alerting": true,
+    "analytics_enabled": true
+  }
+}

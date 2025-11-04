@@ -1,0 +1,65 @@
+{% extends "modern_base.html" %}
+
+{% block title %}Voice-Activated Property Search{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/voice-search.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<meta name="description" content="Search for properties using your voice with natural language understanding">
+{% endblock %}
+
+{% block content %}
+<section class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="mb-8 text-center">
+            <h1 class="text-3xl font-bold mb-2">Voice-Activated Property Search</h1>
+            <p class="text-gray-600 dark:text-gray-300">
+                Search for properties using natural voice commands. Simply click the microphone and speak naturally.
+            </p>
+        </div>
+
+        <div class="voice-search-container bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8">
+            <div class="voice-search-wrapper">
+                <button id="voice-search-button" class="voice-search-button" aria-label="Start voice search">
+                    <i class="fas fa-microphone"></i>
+                </button>
+            </div>
+            <div id="search-status" class="search-status ready">
+                Click the microphone icon and speak your property search request
+            </div>
+            <div class="text-center text-sm text-gray-500 dark:text-gray-400">
+                <p class="mb-2 italic">Try saying something like:</p>
+                <ul class="space-y-1">
+                    <li>"Find three-bedroom houses in Seattle under $800,000"</li>
+                    <li>"Show me condos with a pool and garage near downtown"</li>
+                    <li>"I'm looking for waterfront properties with at least 4 bedrooms"</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="search-results" class="mt-8">
+            <!-- Search results will be displayed here -->
+            <div class="text-center py-12 text-gray-500 dark:text-gray-400">
+                <i class="fas fa-search text-4xl mb-4 opacity-30"></i>
+                <p>Your search results will appear here</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/voice-search.js') }}"></script>
+<script>
+    // Initialize voice search with custom options if needed
+    document.addEventListener('DOMContentLoaded', () => {
+        const voiceSearch = new VoicePropertySearch({
+            // You can customize options here
+            searchEndpoint: '{{ url_for("voice_search_api.voice_property_search") }}',
+            voiceButtonId: 'voice-search-button',
+            searchResultsId: 'search-results',
+            searchStatusId: 'search-status'
+        });
+    });
+</script>
+{% endblock %}

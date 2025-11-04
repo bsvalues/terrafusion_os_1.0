@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Creates a cross-reference geodatabase that the Load Data tool uses to map source data to target data when loading batch data.",
+        "mapping_file.descr": "<xdoc><p>An Excel spreadsheet that contains information on how the source features, fields, and attribute value will be mapped to the <span class=\"esri_uicontrol\">Target Database</span> parameter value.</p></xdoc>",
+        "mapping_file.title": "Mapping File",
+        "out_database.descr": "<xdoc><p>The file geodatabase that will be created containing the mapping from the <span class=\"esri_uicontrol\">Source Workspace</span> parameter value to the <span class=\"esri_uicontrol\">Target Database</span> parameter value.</p></xdoc>",
+        "out_database.title": "Output Database",
+        "source_workspace.descr": "The workspace, either a geodatabase or shapefile directory, that contains the schema of data that will be mapped to the target workspace.",
+        "source_workspace.title": "Source Workspace",
+        "target_database.descr": "The geodatabase that contains the schema of the database to which the source will be mapped.",
+        "target_database.title": "Target Database",
+        "title": "Create Cross-Reference Geodatabase"
+    }
+}

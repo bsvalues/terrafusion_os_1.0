@@ -74,20 +74,6 @@ export class TerraFusionConfiguration {
         neuralConsciousness: true,
         advancedAnalytics: true,
         realTimeCollaboration: true,
-        multiCountySupport: true
-      };
-    }
-    
-    if (this.variant === 'enterprise') {
-      return {
-        ...baseFeatures,
-        aiSwarm: true,
-        agentCount: 1008,
-        quantumOptimization: true,
-        harrisPacsIntegration: true,
-        neuralConsciousness: true,
-        advancedAnalytics: true,
-        realTimeCollaboration: true,
         multiCountySupport: true,
         federalCompliance: true
       };

@@ -1,0 +1,18 @@
+{
+    "set": [
+        "csv",
+        "create",
+        "employees",
+        "excel",
+        "import",
+        "indoor",
+        "indoors",
+        "load",
+        "occupant",
+        "occupants",
+        "people",
+        "person",
+        "points",
+        "space planner"
+    ]
+}

@@ -1,0 +1,16 @@
+{
+    "map": {
+        "description": "Creates a feature class with coincident point counts. Coincident point counts for line and point features are determined by a specified maximum distance. Point counts for polygon features are determine by whether point features or portions of features overlap with the polygon feature.",
+        "group_field.descr": "A field containing the value used to split point counts. Additional fields containing counts for each unique value in the group field will be generated.",
+        "group_field.title": "Group Field",
+        "in_features.descr": "The input features to which coincident point counts will be calculated.",
+        "in_features.title": "Input Features",
+        "in_sum_features.descr": "The point features coincident with the input features.",
+        "in_sum_features.title": "Input Summary Features",
+        "out_feature_class.descr": "The output choropleth count feature class, symbolized by total count.",
+        "out_feature_class.title": "Output Feature Class",
+        "search_radius.descr": "<xdoc><p>The maximum distance from an <span class=\"esri_uicontrol\">Input Features</span> point or line that a point feature will be considered coincident.</p><p>This parameter is not active when the <span class=\"esri_uicontrol\">Input Features</span> is a polygon.</p></xdoc>",
+        "search_radius.title": "Search Radius",
+        "title": "Summarize Incident Count"
+    }
+}

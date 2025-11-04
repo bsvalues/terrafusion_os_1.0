@@ -1,0 +1,215 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\SimilaritySearch",
+    "displayname": "$rc:title",
+    "helpcontent": "9030006",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "Input_Features_To_Match": {
+            "displayname": "$rc:input_features_to_match.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Multipoint",
+                    "Polygon",
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:input_features_to_match.descr"
+        },
+        "Candidate_Features": {
+            "displayname": "$rc:candidate_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Multipoint",
+                    "Polygon",
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:candidate_features.descr"
+        },
+        "Output_Features": {
+            "direction": "out",
+            "displayname": "$rc:output_features.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:output_features.descr"
+        },
+        "Collapse_Output_To_Points": {
+            "enabled": "false",
+            "displayname": "$rc:collapse_output_to_points.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "COLLAPSE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_COLLAPSE"
+                    }
+                ]
+            },
+            "description": "$rc:collapse_output_to_points.descr"
+        },
+        "Most_Or_Least_Similar": {
+            "displayname": "$rc:most_or_least_similar.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MOST_SIMILAR",
+                        "code": "$rc:most_or_least_similar.domain.MOST_SIMILAR"
+                    },
+                    {
+                        "value": "LEAST_SIMILAR",
+                        "code": "$rc:most_or_least_similar.domain.LEAST_SIMILAR"
+                    },
+                    {
+                        "value": "BOTH",
+                        "code": "$rc:most_or_least_similar.domain.BOTH"
+                    }
+                ]
+            },
+            "depends": [
+                "Input_Features"
+            ],
+            "value": "MOST_SIMILAR",
+            "description": "$rc:most_or_least_similar.descr"
+        },
+        "Match_Method": {
+            "displayname": "$rc:match_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ATTRIBUTE_VALUES",
+                        "code": "$rc:match_method.domain.ATTRIBUTE_VALUES"
+                    },
+                    {
+                        "value": "RANKED_ATTRIBUTE_VALUES",
+                        "code": "$rc:match_method.domain.RANKED_ATTRIBUTE_VALUES"
+                    },
+                    {
+                        "value": "ATTRIBUTE_PROFILES",
+                        "code": "$rc:match_method.domain.ATTRIBUTE_PROFILES"
+                    }
+                ]
+            },
+            "value": "ATTRIBUTE_VALUES",
+            "description": "$rc:match_method.descr"
+        },
+        "Number_Of_Results": {
+            "displayname": "$rc:number_of_results.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "value": "10",
+            "description": "$rc:number_of_results.descr"
+        },
+        "Attributes_Of_Interest": {
+            "control_guid": "{C15EC6FA-35EF-4204-90FB-01E7B4DD6862}",
+            "displayname": "$rc:attributes_of_interest.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "BigInteger"
+                ]
+            },
+            "depends": [
+                "Input_Features_To_Match"
+            ],
+            "description": "$rc:attributes_of_interest.descr"
+        },
+        "Fields_To_Append_To_Output": {
+            "type": "optional",
+            "control_guid": "{C15EC6FA-35EF-4204-90FB-01E7B4DD6862}",
+            "displayname": "$rc:fields_to_append_to_output.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Date",
+                    "BigInteger"
+                ]
+            },
+            "depends": [
+                "Candidate_Features"
+            ],
+            "description": "$rc:fields_to_append_to_output.descr"
+        }
+    },
+    "environments": [
+        "MResolution",
+        "MTolerance",
+        "XYResolution",
+        "XYTolerance",
+        "ZResolution",
+        "ZTolerance",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "outputMFlag",
+        "outputZFlag",
+        "outputZValue",
+        "qualifiedFieldNames",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

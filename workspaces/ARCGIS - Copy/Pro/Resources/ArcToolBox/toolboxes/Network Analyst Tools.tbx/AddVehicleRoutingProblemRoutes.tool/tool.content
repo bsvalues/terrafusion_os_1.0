@@ -1,0 +1,257 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "13010026",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "param_nocount:in_vrp_layer"
+    ],
+    "params": {
+        "in_vrp_layer": {
+            "displayname": "$rc:in_vrp_layer.title",
+            "datatype": {
+                "type": "GPNALayer"
+            },
+            "description": "$rc:in_vrp_layer.descr"
+        },
+        "number_of_routes": {
+            "displayname": "$rc:number_of_routes.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:number_of_routes.descr"
+        },
+        "route_name_prefix": {
+            "displayname": "$rc:route_name_prefix.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "Route",
+            "description": "$rc:route_name_prefix.descr"
+        },
+        "start_depot_name": {
+            "type": "optional",
+            "displayname": "$rc:start_depot_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:start_depot_name.descr"
+        },
+        "end_depot_name": {
+            "type": "optional",
+            "displayname": "$rc:end_depot_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:end_depot_name.descr"
+        },
+        "earliest_start_time": {
+            "type": "optional",
+            "displayname": "$rc:earliest_start_time.title",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "value": "08:00:00",
+            "description": "$rc:earliest_start_time.descr"
+        },
+        "latest_start_time": {
+            "type": "optional",
+            "displayname": "$rc:latest_start_time.title",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "value": "10:00:00",
+            "description": "$rc:latest_start_time.descr"
+        },
+        "max_order_count": {
+            "type": "optional",
+            "displayname": "$rc:max_order_count.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:max_order_count.descr"
+        },
+        "capacities": {
+            "type": "optional",
+            "control_guid": "{1A1CA7EC-A47A-4187-A15C-6EDBA4FE0CF7}",
+            "displayname": "$rc:capacities.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:capacities.dt.title1"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:capacities.dt.title2"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:capacities.dt.title3"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:capacities.dt.title4"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:capacities.dt.title5"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:capacities.dt.title6"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:capacities.dt.title7"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:capacities.dt.title8"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:capacities.dt.title9"
+                    }
+                ]
+            },
+            "description": "$rc:capacities.descr"
+        },
+        "route_constraints": {
+            "type": "optional",
+            "control_guid": "{1A1CA7EC-A47A-4187-A15C-6EDBA4FE0CF7}",
+            "displayname": "$rc:route_constraints.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:route_constraints.dt.title1"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:route_constraints.dt.title2"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:route_constraints.dt.title3"
+                    }
+                ]
+            },
+            "description": "$rc:route_constraints.descr"
+        },
+        "costs": {
+            "type": "optional",
+            "control_guid": "{1A1CA7EC-A47A-4187-A15C-6EDBA4FE0CF7}",
+            "displayname": "$rc:costs.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:costs.dt.title1"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:costs.dt.title2"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:costs.dt.title3"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:costs.dt.title4"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:costs.dt.title5"
+                    }
+                ]
+            },
+            "value": "# 1 # # #",
+            "description": "$rc:costs.descr"
+        },
+        "additional_route_time": {
+            "type": "optional",
+            "control_guid": "{1A1CA7EC-A47A-4187-A15C-6EDBA4FE0CF7}",
+            "displayname": "$rc:additional_route_time.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:additional_route_time.dt.title1"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:additional_route_time.dt.title2"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:additional_route_time.dt.title3"
+                    }
+                ]
+            },
+            "description": "$rc:additional_route_time.descr"
+        },
+        "append_to_existing_routes": {
+            "type": "optional",
+            "displayname": "$rc:append_to_existing_routes.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "APPEND"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "CLEAR"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:append_to_existing_routes.descr"
+        },
+        "out_vrp_layer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_vrp_layer.title",
+            "datatype": {
+                "type": "GPNALayer"
+            }
+        },
+        "date_and_time": {
+            "type": "optional",
+            "display_order": "8",
+            "control_guid": "{1A1CA7EC-A47A-4187-A15C-6EDBA4FE0CF7}",
+            "displayname": "$rc:date_and_time.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPDate",
+                        "displayname": "$rc:date_and_time.dt.title1"
+                    },
+                    {
+                        "type": "GPDate",
+                        "displayname": "$rc:date_and_time.dt.title2"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:date_and_time.dt.title3"
+                    }
+                ]
+            },
+            "description": "$rc:date_and_time.descr"
+        }
+    }
+}

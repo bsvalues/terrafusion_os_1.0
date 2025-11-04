@@ -1,0 +1,21 @@
+{
+    "map": {
+        "description": "Creates a readable XML document of the geodatabase contents.",
+        "export_metadata.descr": "<xdoc><p>Specifies whether the metadata will be exported.</p><ul><li>Checked—If the input contains metadata, it will be exported. This is the default.</li><li>Unchecked—Metadata will not be exported.</li></ul></xdoc>",
+        "export_metadata.title": "Export Metadata",
+        "export_type.descr": "<xdoc><p>Specifies whether the output XML workspace document will contain all of the data from the input (table and feature class records, including geometry) or only the schema.</p><ul><li><span title=\"DATA\">Data</span>—The schema and the data will be exported. This is the default.</li><li><span title=\"SCHEMA_ONLY\">Schema only</span>—Only the schema will be exported.</li></ul></xdoc>",
+        "export_type.domain.DATA": "Data",
+        "export_type.domain.SCHEMA_ONLY": "Schema only",
+        "export_type.title": "Export Options",
+        "in_data.descr": "The input datasets that will be exported and represented in an XML workspace document. The input data can be a geodatabase, feature dataset, feature class, table, raster, or raster catalog. If there are multiple inputs, the inputs must be from the same workspace. Multiple input workspaces are not supported.",
+        "in_data.title": "Input Data",
+        "out_file.descr": "The XML workspace document file that will be created. The output can be XML (with an .xml file extension) or compressed XML (with a .zip or .z file extension).",
+        "out_file.title": "Output File",
+        "storage_type.descr": "<xdoc><p>Specifies how feature geometry will be stored when data is exported from a feature class.</p><ul><li><span title=\"BINARY\">Binary</span>—The geometry will be stored in a compressed base64 binary format. This binary format will produce a smaller XML workspace document. Use this option when the XML workspace document will be read by a custom program that uses ArcObjects. This is the default.</li><li><span title=\"NORMALIZED\">Normalized</span>—The geometry will be stored in an uncompressed format. Using this option will result in a larger file. Use this option when the XML workspace document will be read by a custom program that does not use ArcObjects.</li></ul></xdoc>",
+        "storage_type.domain.BINARY": "Binary",
+        "storage_type.domain.NORMALIZED": "Normalized",
+        "storage_type.title": "Storage Type",
+        "summary": "<xdoc><p>Creates a readable XML document of the geodatabase contents.</p><p>The XML workspace document is useful for sharing geodatabase schemas or copying geodatabase schemas from one type to another.</p></xdoc>",
+        "title": "Export XML Workspace Document"
+    }
+}

@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+        <RootNamespace>TerraFusion.Performance.Tests</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- xUnit Testing Framework - No version (CPM managed) -->
+        <PackageReference Include="xunit" />
+        <PackageReference Include="xunit.runner.visualstudio">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="coverlet.collector">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+
+        <!-- BenchmarkDotNet for Performance Benchmarking -->
+        <PackageReference Include="BenchmarkDotNet" />
+        <PackageReference Include="BenchmarkDotNet.Diagnostics.Windows" />
+
+        <!-- NBomber for Load/Stress Testing -->
+        <PackageReference Include="NBomber" />
+        <PackageReference Include="NBomber.Http" />
+
+        <!-- Mocking & Test Utilities -->
+        <PackageReference Include="Moq" />
+        <PackageReference Include="FluentAssertions" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+
+        <!-- HTTP Client for API Testing -->
+        <PackageReference Include="Microsoft.AspNet.WebApi.Client" />
+
+        <!-- Test Data Generation -->
+        <PackageReference Include="Bogus" />
+
+        <!-- Performance Monitoring -->
+        <PackageReference Include="System.Diagnostics.PerformanceCounter" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Reference TerraFusion Projects -->
+        <ProjectReference Include="..\..\TerraFusion.Core\TerraFusion.Core.csproj" />
+        <ProjectReference Include="..\..\TerraFusion.API\TerraFusion.API.csproj" />
+        <ProjectReference Include="..\..\TerraFusion.Data\TerraFusion.Data.csproj" />
+    </ItemGroup>
+
+</Project>

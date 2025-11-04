@@ -1,0 +1,9 @@
+{
+    "map": {
+        "description": "Creates an index for a Statistical Data Collection (SDCX). The index will improve performance when using the custom data in analysis tools such as Enrich Layer.",
+        "sdcx_file.descr": "The input Statistical Data Collection file (.sdcx).",
+        "sdcx_file.title": "Input SDCX File",
+        "title": "Generate SDCX Index",
+        "updated_sdcx_file.title": "Updated SDCX File"
+    }
+}

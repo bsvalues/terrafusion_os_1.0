@@ -1,0 +1,29 @@
+Our new GeoAssessmentPro application is designed to eventually replace our legacy production system. However, we need to test it using a training environment that uses a backup of our production data. The goal is to build a sync service that allows us to:
+1. Perform an initial full data migration from our legacy/training system into our new Supabase-managed database.
+2. Set up a periodic incremental sync that pulls delta updates from our training database and pushes them into the new system.
+3. Ensure that our new system (which includes modules for data ingestion, mapping, reporting, and orchestration) can work with real data in a safe, non-disruptive way while running in parallel with the current production system.
+
+Please update our codebase as follows:
+
+1. **Initial Migration:**
+   - Enhance data_migrator.py to support a full data migration (with a dry-run mode and rollback mechanism) from our training database into Supabase.
+   - Log detailed outcomes, and verify data integrity post-migration.
+
+2. **Incremental Sync:**
+   - Modify service_orchestrator.py to implement a periodic (e.g., hourly or daily) sync process that detects and pushes only new or updated records from the training database to Supabase.
+   - Include robust error handling and logging.
+
+3. **Deployment Configuration:**
+   - Update configuration modules (config_loader.py) to support separate environment variables for training and production (e.g., ENV_MODE, DATABASE_URL_TRAINING, DATABASE_URL_PRODUCTION, etc.).
+   - Containerize the application using Docker, ensuring that the container can be run in either training or production mode by setting the appropriate environment variables.
+
+4. **Realtime and Other Supabase Integrations:**
+   - Ensure our realtime subscription code (using Supabase's Python client) is configured for the training environment.
+   - Validate that authentication and storage integration continue to function with the training data.
+
+5. **Documentation and Testing:**
+   - Update the README and inline comments, detailing the procedure for performing a full migration and incremental sync.
+   - Add unit tests and integration tests that simulate both a full data migration and incremental sync.
+   - Provide instructions on how to monitor and, if necessary, rollback a migration.
+
+Generate full, updated code for all affected modules (data_migrator.py, service_orchestrator.py, config_loader.py, Dockerfile, and any related modules), complete with detailed comments and documentation.

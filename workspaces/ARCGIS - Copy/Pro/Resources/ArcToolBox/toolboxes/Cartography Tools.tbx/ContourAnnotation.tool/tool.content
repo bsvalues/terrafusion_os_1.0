@@ -1,0 +1,205 @@
+{
+    "type": "FunctionTool",
+    "guid": "{fe44a01e-5490-eed2-bb09-76fe4a0f0101}",
+    "displayname": "$rc:title",
+    "helpcontent": "10080003",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_features": {
+            "display_order": "1",
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "out_geodatabase": {
+            "display_order": "2",
+            "displayname": "$rc:out_geodatabase.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEWorkspace"
+                    },
+                    {
+                        "type": "DEFeatureDataset"
+                    }
+                ]
+            },
+            "defaultenvironmentname": "workspace",
+            "description": "$rc:out_geodatabase.descr"
+        },
+        "contour_label_field": {
+            "display_order": "3",
+            "displayname": "$rc:contour_label_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:contour_label_field.descr"
+        },
+        "reference_scale_value": {
+            "display_order": "5",
+            "control_guid": "{B23D9E8D-E360-4670-919E-A7F8FFF0DC19}",
+            "displayname": "$rc:reference_scale_value.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:reference_scale_value.descr"
+        },
+        "out_layer": {
+            "direction": "out",
+            "display_order": "6",
+            "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}",
+            "displayname": "$rc:out_layer.title",
+            "datatype": {
+                "type": "GPGroupLayer"
+            },
+            "value": "Contours",
+            "description": "$rc:out_layer.descr"
+        },
+        "contour_color": {
+            "display_order": "7",
+            "displayname": "$rc:contour_color.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "BLACK",
+                        "code": "$rc:contour_color.domain.BLACK"
+                    },
+                    {
+                        "value": "BROWN",
+                        "code": "$rc:contour_color.domain.BROWN"
+                    },
+                    {
+                        "value": "BLUE",
+                        "code": "$rc:contour_color.domain.BLUE"
+                    }
+                ]
+            },
+            "value": "BLACK",
+            "description": "$rc:contour_color.descr"
+        },
+        "contour_type_field": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:contour_type_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:contour_type_field.descr"
+        },
+        "contour_alignment": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:contour_alignment.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PAGE",
+                        "code": "$rc:contour_alignment.domain.PAGE"
+                    },
+                    {
+                        "value": "UPHILL",
+                        "code": "$rc:contour_alignment.domain.UPHILL"
+                    },
+                    {
+                        "value": "DOWNHILL",
+                        "code": "$rc:contour_alignment.domain.DOWNHILL"
+                    }
+                ]
+            },
+            "value": "PAGE",
+            "description": "$rc:contour_alignment.descr"
+        },
+        "enable_laddering": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:enable_laddering.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ENABLE_LADDERING"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NOT_ENABLE_LADDERING"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:enable_laddering.descr"
+        },
+        "out_geodatabase2": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_geodatabase2.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEWorkspace"
+                    },
+                    {
+                        "type": "DEFeatureDataset"
+                    }
+                ]
+            }
+        }
+    },
+    "environments": [
+        "annotationTextStringFieldLength",
+        "outputCoordinateSystem",
+        "referenceScale"
+    ]
+}

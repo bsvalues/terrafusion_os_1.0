@@ -1,0 +1,215 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\ExploratoryRegression",
+    "displayname": "$rc:title",
+    "helpcontent": "9060005",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "Input_Features": {
+            "displayname": "$rc:input_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Multipoint",
+                    "Polygon",
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:input_features.descr"
+        },
+        "Dependent_Variable": {
+            "displayname": "$rc:dependent_variable.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "BigInteger"
+                ]
+            },
+            "depends": [
+                "Input_Features"
+            ],
+            "description": "$rc:dependent_variable.descr"
+        },
+        "Candidate_Explanatory_Variables": {
+            "control_guid": "{C15EC6FA-35EF-4204-90FB-01E7B4DD6862}",
+            "displayname": "$rc:candidate_explanatory_variables.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "BigInteger"
+                ]
+            },
+            "depends": [
+                "Input_Features"
+            ],
+            "description": "$rc:candidate_explanatory_variables.descr"
+        },
+        "Weights_Matrix_File": {
+            "type": "optional",
+            "displayname": "$rc:weights_matrix_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "swm",
+                    "gwt"
+                ]
+            },
+            "description": "$rc:weights_matrix_file.descr"
+        },
+        "Output_Report_File": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:output_report_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "txt"
+                ]
+            },
+            "description": "$rc:output_report_file.descr"
+        },
+        "Output_Results_Table": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:output_results_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:output_results_table.descr"
+        },
+        "Maximum_Number_of_Explanatory_Variables": {
+            "type": "optional",
+            "displayname": "$rc:maximum_number_of_explanatory_variables.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "5",
+            "description": "$rc:maximum_number_of_explanatory_variables.descr"
+        },
+        "Minimum_Number_of_Explanatory_Variables": {
+            "type": "optional",
+            "displayname": "$rc:minimum_number_of_explanatory_variables.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "1",
+            "description": "$rc:minimum_number_of_explanatory_variables.descr"
+        },
+        "Minimum_Acceptable_Adj_R_Squared": {
+            "type": "optional",
+            "displayname": "$rc:minimum_acceptable_adj_r_squared.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "1"
+            },
+            "value": "0.5",
+            "description": "$rc:minimum_acceptable_adj_r_squared.descr"
+        },
+        "Maximum_Coefficient_p_value_Cutoff": {
+            "type": "optional",
+            "displayname": "$rc:maximum_coefficient_p_value_cutoff.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "1"
+            },
+            "value": "0.05",
+            "description": "$rc:maximum_coefficient_p_value_cutoff.descr"
+        },
+        "Maximum_VIF_Value_Cutoff": {
+            "type": "optional",
+            "displayname": "$rc:maximum_vif_value_cutoff.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "99999999"
+            },
+            "value": "7.5",
+            "description": "$rc:maximum_vif_value_cutoff.descr"
+        },
+        "Minimum_Acceptable_Jarque_Bera_p_value": {
+            "type": "optional",
+            "displayname": "$rc:minimum_acceptable_jarque_bera_p_value.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "1"
+            },
+            "value": "0.1",
+            "description": "$rc:minimum_acceptable_jarque_bera_p_value.descr"
+        },
+        "Minimum_Acceptable_Spatial_Autocorrelation_p_value": {
+            "type": "optional",
+            "displayname": "$rc:minimum_acceptable_spatial_autocorrelation_p_value.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "1"
+            },
+            "value": "0.1",
+            "description": "$rc:minimum_acceptable_spatial_autocorrelation_p_value.descr"
+        }
+    },
+    "environments": [
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

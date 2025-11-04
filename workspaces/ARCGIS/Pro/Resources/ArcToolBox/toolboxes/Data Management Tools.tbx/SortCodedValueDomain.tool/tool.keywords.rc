@@ -1,0 +1,16 @@
+{
+    "set": [
+        "arrange",
+        "attribute",
+        "constrain",
+        "domains",
+        "field",
+        "integrity",
+        "limit",
+        "order",
+        "rearrange",
+        "reorder",
+        "restrict",
+        "subtype"
+    ]
+}

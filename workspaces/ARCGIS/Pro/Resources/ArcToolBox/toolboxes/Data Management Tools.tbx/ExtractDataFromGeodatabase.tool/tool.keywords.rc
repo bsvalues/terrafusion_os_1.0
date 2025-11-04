@@ -1,0 +1,13 @@
+{
+    "set": [
+        "copy",
+        "distributed geodatabase",
+        "export",
+        "extract",
+        "extract data wizard",
+        "from geodatabase",
+        "subset",
+        "to geodatabase",
+        "xml"
+    ]
+}

@@ -1,0 +1,5 @@
+<DataType Name="GPSARemap">
+  <DisplayName>Remap</DisplayName>
+  <Description>A table that defines how raster cell values are reclassified.</Description>
+</DataType>
+

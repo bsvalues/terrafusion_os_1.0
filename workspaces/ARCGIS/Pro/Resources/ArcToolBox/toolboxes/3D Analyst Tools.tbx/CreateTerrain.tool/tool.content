@@ -1,0 +1,192 @@
+{
+    "type": "FunctionTool",
+    "guid": "{845a84fd-6b91-4f78-aa64-704d47594c3c}",
+    "displayname": "$rc:title",
+    "helpcontent": "5180007",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9"
+    ],
+    "params": {
+        "in_feature_dataset": {
+            "display_order": "0",
+            "displayname": "$rc:in_feature_dataset.title",
+            "datatype": {
+                "type": "DEFeatureDataset"
+            },
+            "description": "$rc:in_feature_dataset.descr"
+        },
+        "out_terrain_name": {
+            "display_order": "1",
+            "displayname": "$rc:out_terrain_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:out_terrain_name.descr"
+        },
+        "average_point_spacing": {
+            "display_order": "2",
+            "displayname": "$rc:average_point_spacing.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:average_point_spacing.descr"
+        },
+        "max_overview_size": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:max_overview_size.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "50000",
+            "description": "$rc:max_overview_size.descr"
+        },
+        "config_keyword": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:config_keyword.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "defaultenvironmentname": "configKeyword",
+            "description": "$rc:config_keyword.descr"
+        },
+        "pyramid_type": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:pyramid_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "WINDOWSIZE",
+                        "code": "$rc:pyramid_type.domain.WINDOWSIZE"
+                    },
+                    {
+                        "value": "ZTOLERANCE",
+                        "code": "$rc:pyramid_type.domain.ZTOLERANCE"
+                    }
+                ]
+            },
+            "value": "WINDOWSIZE",
+            "description": "$rc:pyramid_type.descr"
+        },
+        "windowsize_method": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:windowsize_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ZMIN",
+                        "code": "$rc:windowsize_method.domain.ZMIN"
+                    },
+                    {
+                        "value": "ZMAX",
+                        "code": "$rc:windowsize_method.domain.ZMAX"
+                    },
+                    {
+                        "value": "ZMEAN",
+                        "code": "$rc:windowsize_method.domain.ZMEAN"
+                    },
+                    {
+                        "value": "ZMINMAX",
+                        "code": "$rc:windowsize_method.domain.ZMINMAX"
+                    }
+                ]
+            },
+            "value": "ZMIN",
+            "description": "$rc:windowsize_method.descr"
+        },
+        "secondary_thinning_method": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:secondary_thinning_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NONE",
+                        "code": "$rc:secondary_thinning_method.domain.NONE"
+                    },
+                    {
+                        "value": "MILD",
+                        "code": "$rc:secondary_thinning_method.domain.MILD"
+                    },
+                    {
+                        "value": "MODERATE",
+                        "code": "$rc:secondary_thinning_method.domain.MODERATE"
+                    },
+                    {
+                        "value": "STRONG",
+                        "code": "$rc:secondary_thinning_method.domain.STRONG"
+                    }
+                ]
+            },
+            "value": "NONE",
+            "description": "$rc:secondary_thinning_method.descr"
+        },
+        "secondary_thinning_threshold": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:secondary_thinning_threshold.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "1",
+            "description": "$rc:secondary_thinning_threshold.descr"
+        },
+        "derived_out_terrain": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "10",
+            "displayname": "$rc:derived_out_terrain.title",
+            "datatype": {
+                "type": "DETerrain"
+            }
+        },
+        "triangulation_method": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:triangulation_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DELAUNAY",
+                        "code": "$rc:triangulation_method.domain.DELAUNAY"
+                    },
+                    {
+                        "value": "CONSTRAINED_DELAUNAY",
+                        "code": "$rc:triangulation_method.domain.CONSTRAINED_DELAUNAY"
+                    }
+                ]
+            },
+            "value": "DELAUNAY",
+            "description": "$rc:triangulation_method.descr"
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "configKeyword",
+        "workspace"
+    ]
+}

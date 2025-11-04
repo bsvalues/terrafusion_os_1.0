@@ -1,0 +1,25 @@
+{
+    "set": [
+        "atmosphere",
+        "diffuse",
+        "direct",
+        "duration",
+        "earth",
+        "energy",
+        "exposure",
+        "global",
+        "hemisphere",
+        "horizon",
+        "insolation",
+        "irradiance",
+        "renewable energy",
+        "skymap",
+        "solar analyst",
+        "sun",
+        "sunmap",
+        "surface",
+        "surface model",
+        "time configuration",
+        "total"
+    ]
+}

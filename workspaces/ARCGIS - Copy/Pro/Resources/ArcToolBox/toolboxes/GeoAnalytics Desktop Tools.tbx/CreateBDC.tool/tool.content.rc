@@ -1,0 +1,20 @@
+{
+    "map": {
+        "bdc_location.descr": "The folder where the .mfc file will be created.",
+        "bdc_location.title": "Multifile Feature Connection Output Location",
+        "bdc_name.descr": "The name of the .mfc file to be created.",
+        "bdc_name.title": "Output Multifile Feature Connection Name",
+        "connection_type.descr": "<xdoc><p>Specifies the type of connection to be created.</p><ul><li><span title=\"FOLDER\">Folder</span>—Connect to a file system location. This is the default.</li></ul></xdoc>",
+        "connection_type.domain.FOLDER": "Folder",
+        "connection_type.title": "Connection Type",
+        "data_source_folder.descr": "The folder containing the datasets to be registered with the MFC.",
+        "data_source_folder.title": "Data Source Folder",
+        "description": "Creates a multifile feature connection file (.mfc) and item. Datasets registered in a multifile feature connection (MFC) can be used as input to GeoAnalytics Desktop tools and other geoprocessing tools.",
+        "output_bdc.title": "Output MFC",
+        "title": "Create Multifile Feature Connection",
+        "visible_geometry.descr": "<xdoc><p>Specifies whether the fields used to specify the geometry will be visible as fields when the MFC file is used as input to other geoprocessing tools. When the geometry fields are not visible, geometry is still applied to the dataset. The geometry visibility setting can be modified in the MFC.<ul><li>Checked—Geometry fields will be included as fields for analysis. This is the default.</li><li>Unchecked—Geometry fields will not be included as fields for analysis.</li></ul></p></xdoc>",
+        "visible_geometry.title": "Visible Geometry Fields",
+        "visible_time.descr": "<xdoc><p>Specifies whether the fields used to specify the time will be visible as fields when the MFC file is used as input to other geoprocessing tools. When the time fields are not visible, time is still applied to the dataset. The time visibility setting can be modified in the MFC.<ul><li>Checked—Time fields will be included as fields for analysis. This is the default.</li><li>Unchecked—Time fields will not be included as fields for analysis.</li></ul></p></xdoc>",
+        "visible_time.title": "Visible Time Fields"
+    }
+}

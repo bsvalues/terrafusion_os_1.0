@@ -8,14 +8,16 @@ import {
   Chip,
   IconButton,
   Badge,
-  Avatar
+  Avatar,
 } from '@mui/material';
-import { Notifications,
+import {
+  Notifications,
   AccountCircle,
   Business,
   Analytics,
   Security,
-  CloudQueue } from '@mui/icons-material';
+  CloudQueue,
+} from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
@@ -49,7 +51,7 @@ const SystemStats = styled(Box)(({ theme }) => ({
 
 const ProfessionalHeader: React.FC = () => {
   return (
-    <StyledAppBar position="static" elevation={0}>
+    <StyledAppBar position='static' elevation={0}>
       <Toolbar sx={{ justifyContent: 'space-between', py: 1 }}>
         <LogoContainer>
           <Box
@@ -64,17 +66,11 @@ const ProfessionalHeader: React.FC = () => {
               boxShadow: '0 4px 20px rgba(0, 210, 255, 0.3)',
             }}
           >
-
-
             <Business sx={{ color: 'white', fontSize: 28 }} />
           </Box>
-          <Box
-
->
-
-
+          <Box>
             <Typography
-              variant="h5"
+              variant='h5'
               sx={{
                 fontWeight: 700,
                 color: 'white',
@@ -85,8 +81,7 @@ const ProfessionalHeader: React.FC = () => {
               Terrafusion OS
             </Typography>
             <Typography
-
-variant="caption"
+              variant='caption'
               sx={{
                 color: 'rgba(255, 255, 255, 0.8)',
                 fontWeight: 500,
@@ -100,32 +95,15 @@ variant="caption"
         </LogoContainer>
 
         <SystemStats>
-          <StatusChip
-            icon={<CloudQueue />}
-            label="1,008 AI Agents Active"
-            size="small"
-          />
-          <StatusChip
-            icon={<Analytics />}
-            label="County System Online"
-            size="small"
-          />
+          <StatusChip icon={<CloudQueue />} label='1,008 AI Agents Active' size='small' />
+          <StatusChip icon={<Analytics />} label='County System Online' size='small' />
 
-
-          <StatusChip
-            icon={<Security />}
-            label="FISMA Compliant"
-            size="small"
-          />
+          <StatusChip icon={<Security />} label='FISMA Compliant' size='small' />
         </SystemStats>
 
-        <Box
-
-sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-
-
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Button
-            variant="outlined"
+            variant='outlined'
             sx={{
               color: 'white',
               borderColor: 'rgba(255, 255, 255, 0.3)',
@@ -137,15 +115,13 @@ sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           >
             Admin Portal
           </Button>
-          
-          <IconButton
 
-sx={{ color: 'white' }}>
-            <Badge badgeContent={3} color="error">
+          <IconButton sx={{ color: 'white' }}>
+            <Badge badgeContent={3} color='error'>
               <Notifications />
             </Badge>
           </IconButton>
-          
+
           <Avatar
             sx={{
               background: 'linear-gradient(135deg, #667eea, #764ba2)',

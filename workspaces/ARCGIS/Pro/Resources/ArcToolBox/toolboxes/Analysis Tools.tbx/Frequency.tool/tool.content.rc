@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Reads a table and a set of fields and creates a new table containing unique field values and the number of occurrences of each unique field value.",
+        "frequency_fields.descr": "The field(s) used to calculate frequency statistics. Each unique combination of field values will be included as a new row in the output table.",
+        "frequency_fields.title": "Frequency Field(s)",
+        "in_table.descr": "The table containing the field(s) that will be used to calculate frequency statistics.",
+        "in_table.title": "Input Table",
+        "out_table.descr": "The output table that will store the frequency statistics.",
+        "out_table.title": "Output Table",
+        "summary_fields.descr": "The attribute field(s) to sum and add to the output table. Values will be summed for each unique combination of frequency fields. Null values are excluded from this calculation.",
+        "summary_fields.title": "Summary Field(s)",
+        "title": "Frequency"
+    }
+}

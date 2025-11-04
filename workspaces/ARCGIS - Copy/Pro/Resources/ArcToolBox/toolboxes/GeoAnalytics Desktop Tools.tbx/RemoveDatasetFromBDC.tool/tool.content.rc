@@ -1,0 +1,9 @@
+{
+    "map": {
+        "bdc_datasets.descr": "The datasets to remove from the .mfc file.",
+        "bdc_datasets.title": "Multifile Feature Connection Datasets",
+        "description": "Removes one or more datasets from an existing multifile feature connection (MFC). This tool only removes the dataset from the MFC file, the source data is not modified.",
+        "title": "Remove Dataset From Multifile Feature Connection",
+        "updated_bdc.title": "Updated MFC"
+    }
+}

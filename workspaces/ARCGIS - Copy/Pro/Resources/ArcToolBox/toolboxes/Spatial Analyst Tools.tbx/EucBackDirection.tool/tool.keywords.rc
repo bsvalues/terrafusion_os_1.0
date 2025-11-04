@@ -1,0 +1,11 @@
+{
+    "set": [
+        "bearing",
+        "distance",
+        "heading",
+        "proximity",
+        "source",
+        "spread",
+        "straight line"
+    ]
+}

@@ -89,7 +89,7 @@ class RealDataService {
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${this.baseUrl}/api/realdata${endpoint}`;
-    
+
     const response = await fetch(url, {
       headers: {
         'Content-Type': 'application/json',
@@ -116,7 +116,11 @@ class RealDataService {
   }
 
   // Properties
-  async getProperties(page: number = 1, pageSize: number = 50, search?: string): Promise<RealProperty[]> {
+  async getProperties(
+    page: number = 1,
+    pageSize: number = 50,
+    search?: string
+  ): Promise<RealProperty[]> {
     const params = new URLSearchParams({
       page: page.toString(),
       pageSize: pageSize.toString(),
@@ -145,7 +149,9 @@ class RealDataService {
 
   // Assessments
   async getAssessments(parcelId: string): Promise<RealAssessment[]> {
-    return this.request<RealAssessment[]>(`/properties/${encodeURIComponent(parcelId)}/assessments`);
+    return this.request<RealAssessment[]>(
+      `/properties/${encodeURIComponent(parcelId)}/assessments`
+    );
   }
 
   // Database Health

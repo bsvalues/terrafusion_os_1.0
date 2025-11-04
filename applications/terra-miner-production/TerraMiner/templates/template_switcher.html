@@ -1,0 +1,34 @@
+{# Template Switcher Component - For toggling between old and new UI during migration #}
+
+{% macro template_switcher(page_url, current_template='legacy') %}
+<div class="template-switcher position-fixed bottom-0 end-0 m-3 p-3 rounded shadow-lg" 
+     style="z-index: 1050; 
+            background-color: {% if current_template == 'unified' %}#153249{% else %}#343a40{% endif %}; 
+            border: 3px solid {% if current_template == 'unified' %}#00BFB3{% else %}#ffc107{% endif %};">
+    
+    <h6 class="mb-2 text-center" 
+        style="color: {% if current_template == 'unified' %}#00BFB3{% else %}#ffc107{% endif %}; 
+               font-weight: bold;">
+        UI Mode Switcher
+    </h6>
+    
+    <div class="btn-group btn-group-lg w-100" role="group" aria-label="UI Template Selector">
+        <a href="{{ page_url }}?ui=legacy" 
+           class="btn {% if current_template == 'legacy' %}btn-warning{% else %}btn-outline-light{% endif %}"
+           style="{% if current_template == 'legacy' %}font-weight: bold;{% endif %}">
+            Legacy UI
+        </a>
+        <a href="{{ page_url }}?ui=unified" 
+           class="btn {% if current_template == 'unified' %}btn-info{% else %}btn-outline-light{% endif %}"
+           style="{% if current_template == 'unified' %}background-color: #00BFB3; border-color: #00BFB3; font-weight: bold;{% endif %}">
+            New UI
+        </a>
+    </div>
+    
+    <div class="mt-2 text-center">
+        <div class="badge {% if current_template == 'unified' %}bg-info{% else %}bg-warning{% endif %} text-dark">
+            Current: {{ current_template|title }}
+        </div>
+    </div>
+</div>
+{% endmacro %}

@@ -1,0 +1,20 @@
+{
+    "map": {
+        "accuracy.descr": "The expected difference between transformed (output) coordinates and their true values. Because any transformation in general degrades the quality of the dataset, the accuracy value is always the maximum absolute expected error in meters.",
+        "accuracy.title": "Accuracy",
+        "custom_geot.descr": "<xdoc><p>The custom transformation method that will be used.</p><p>A list of the methods and parameters is available in the.</p><p>From the drop-down list, choose the transformation method that will be used to transform the data from the input geographic coordinate system to the output geographic coordinate system. Once chosen, additional options will appear below the transformation method.</p></xdoc>",
+        "custom_geot.title": "Custom Geographic Transformation",
+        "description": "Creates a transformation definition for converting data between two geographic coordinate systems or datums. The output of this tool can be used as a transformation for any tool with a parameter that requires a geographic transformation.",
+        "extent.descr": "<xdoc><p>The geographic area where the transformation is applicable. Transformed data within the provided extent is guaranteed to be converted with the specified level of accuracy</p><ul><li>Current Display Extent—The extent will be based on the active map or scene.</li><li>Draw Extent—The extent will be based on a rectangle drawn on the map or scene.</li><li>Extent of a Layer—The extent will be based on an active map layer. Choose an available layer or use the <span class=\"esri_uicontrol\">Extent of data in all layers</span> option. Each map layer has the following options:<p><ul><li>All Features—The extent of all features.</li><li>Selected Features —The extent of the selected features.</li><li>Visible Features—The extent of visible features.</li></ul></p></li><li>Browse—The extent will be based on a dataset.</li><li>Clipboard—The extent can be copied to and from the clipboard.<ul><li>Copy Extent—Copies the extent and coordinate system to the clipboard.</li><li>Paste Extent—Pastes the extent and coordinate system from the clipboard. If the clipboard does not include a coordinate system, the extent will use the map’s coordinate system.</li></ul></li><li>Reset Extent—The extent will be reset to the default value.</li></ul><p>When coordinates are manually provided, the coordinates must be numeric values and in the active map&apos;s coordinate system. The map may use different display units than the provided coordinates. Use a negative value sign for south and west coordinates.</p></xdoc>",
+        "extent.title": "Extent",
+        "geot_name.descr": "The name of the custom transformation definition.",
+        "geot_name.title": "Geographic Transformation Name",
+        "in_coor_system.descr": "<xdoc><p>The starting geographic coordinate system.</p><p>Provide a well known ID (WKID) or use the <span class=\"esri_uicontrol\">Select Coordinate System</span> button  to select a coordinate system.</p></xdoc>",
+        "in_coor_system.title": "Input Geographic Coordinate System",
+        "out_coor_system.descr": "<xdoc><p>The final geographic coordinate system.</p><p>Provide a WKID or use the <span class=\"esri_uicontrol\">Select Coordinate System</span> button  to select a coordinate system.</p></xdoc>",
+        "out_coor_system.title": "Output Geographic Coordinate System",
+        "out_transformation.dt.title1": "Geographic Transformation Name",
+        "out_transformation.title": "Output Transformation",
+        "title": "Create Custom Geographic Transformation"
+    }
+}

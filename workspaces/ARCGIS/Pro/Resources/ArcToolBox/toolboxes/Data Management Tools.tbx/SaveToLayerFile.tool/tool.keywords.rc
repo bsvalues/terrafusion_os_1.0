@@ -1,0 +1,12 @@
+{
+    "set": [
+        "classified",
+        "color",
+        "disk",
+        "legend",
+        "lyr",
+        "lyrx",
+        "memory",
+        "symbol"
+    ]
+}

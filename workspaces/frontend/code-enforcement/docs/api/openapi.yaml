@@ -1,0 +1,219 @@
+openapi: 3.0.3
+info:
+  title: Code Enforcement API
+  description: Regulatory compliance and code enforcement APIs
+  version: 1.0.0
+  contact:
+    name: TerraFusion Government OS API Support
+    email: code-enforcement-api@terrafusion.gov
+    url: https://docs.terrafusion.gov/frontend/code-enforcement
+  license:
+    name: Government Use License
+    url: https://terrafusion.gov/licenses/government-api
+  termsOfService: https://terrafusion.gov/terms/api-usage
+servers:
+- url: https://api.terrafusion.gov/api/v1/code-enforcement
+  description: Production TerraFusion Government API
+- url: https://staging-api.terrafusion.gov/api/v1/code-enforcement
+  description: Staging Environment
+- url: https://dev-api.terrafusion.gov/api/v1/code-enforcement
+  description: Development Environment
+paths:
+  /violations:
+    get:
+      tags:
+      - code-enforcement
+      summary: List code violations
+      description: List code violations - Regulatory compliance and code enforcement
+        APIs
+      operationId: get__violations
+      security:
+      - OAuth2:
+        - code-enforcement:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+      - code-enforcement
+      summary: Report violation
+      description: Report violation - Regulatory compliance and code enforcement APIs
+      operationId: post__violations
+      security:
+      - OAuth2:
+        - code-enforcement:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /inspections/{id}:
+    get:
+      tags:
+      - code-enforcement
+      summary: Get inspection details
+      description: Get inspection details - Regulatory compliance and code enforcement
+        APIs
+      operationId: get__inspections_id
+      security:
+      - OAuth2:
+        - code-enforcement:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /enforcement-actions:
+    post:
+      tags:
+      - code-enforcement
+      summary: Create enforcement action
+      description: Create enforcement action - Regulatory compliance and code enforcement
+        APIs
+      operationId: post__enforcement-actions
+      security:
+      - OAuth2:
+        - code-enforcement:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: object
+    HealthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - healthy
+          - degraded
+          - unhealthy
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        dependencies:
+          type: object
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
+          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          scopes:
+            code-enforcement:read: Read access to code-enforcement resources
+            code-enforcement:write: Write access to code-enforcement resources
+            code-enforcement:admin: Administrative access to code-enforcement
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+security:
+- OAuth2:
+  - code-enforcement:read
+- ApiKey: []
+tags:
+- name: code-enforcement
+  description: Code Enforcement operations
+  externalDocs:
+    description: Find out more about code-enforcement
+    url: https://docs.terrafusion.gov/frontend/code-enforcement

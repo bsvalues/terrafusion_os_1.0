@@ -1,0 +1,16 @@
+{
+    "map": {
+        "delete_identical.descr": "<xdoc><p>Specifies whether identical overlapping lines will be deleted. When this parameter is checked, overlapping lines will be deleted if the line shapes are identical (lines are coincident) and they have the following matching attributes:<ul><li>Directions in the <span class=\"esri_fieldname\">Direction</span> field. This includes directions that are reversed by 180 degrees.</li><li>Distances in the <span class=\"esri_fieldname\">Distance</span> field. Distances are rounded to four decimal places.</li><li>Records in the <span class=\"esri_fieldname\">Created By Record</span> field.</li><li>Records in the <span class=\"esri_fieldname\">Retired By Record</span> field.</li></ul></p><ul><li>Checked—Identical overlapping lines will be deleted.</li><li>Unchecked—Identical overlapping lines will not be deleted. This is the default.</li></ul></xdoc>",
+        "delete_identical.title": "Delete identical overlapping lines",
+        "description": "Upgrades an ArcMap  parcel fabric to an ArcGIS Pro parcel fabric.",
+        "in_parcel_fabric.descr": "The ArcMap parcel fabric that will be upgraded to an ArcGIS Pro parcel fabric.",
+        "in_parcel_fabric.title": "Input Parcel Fabric For ArcMap",
+        "name.descr": "The name of the upgraded ArcGIS Pro parcel fabric.",
+        "name.title": "Name",
+        "out_parcel_fabric.title": "Output Parcel Fabric",
+        "summary": "<xdoc><p>Upgrades an ArcMap parcel fabric to an ArcGIS Pro parcel fabric.</p><p>The tool creates a parcel fabric in a feature dataset and transfers data from the ArcMap parcel fabric feature classes to the ArcGIS Pro parcel fabric feature classes. The existing ArcMap parcel fabric is not altered.</p></xdoc>",
+        "target_dataset.descr": "The feature dataset that will contain the upgraded ArcGIS Pro parcel fabric.",
+        "target_dataset.title": "Target Feature Dataset",
+        "title": "Upgrade ArcMap Parcel Fabric"
+    }
+}

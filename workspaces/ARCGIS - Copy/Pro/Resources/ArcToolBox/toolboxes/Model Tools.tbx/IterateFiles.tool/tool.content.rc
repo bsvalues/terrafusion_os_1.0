@@ -1,0 +1,16 @@
+{
+    "map": {
+        "description": "Iterates over files in a folder.",
+        "extension.descr": "The file extension, such as TXT, ZIP, and so on. Only files with the extension will be iterated. Do not use a period before the file extension.",
+        "extension.title": "FileType",
+        "file.title": "File",
+        "in_folder.descr": "Folder in which the input files are located.",
+        "in_folder.title": "Folder",
+        "name.title": "Name",
+        "recursive.descr": "<xdoc><p>Determines if all subfolders of the main folder will be recursively iterated through.</p><ul><li>Checked—Will iterate through all subfolders.</li><li>Unchecked—Will not iterate through all subfolders.</li></ul></xdoc>",
+        "recursive.title": "Recursive",
+        "title": "Iterate Files",
+        "wildcard.descr": "A combination of * and characters that help to limit the results. The asterisk is the same as specifying ALL. If no wildcard is specified, all inputs will be returned. You can use this parameter to restrict iteration over input names starting with a certain character or word (for example, A* or Ari* or Land* and so on).",
+        "wildcard.title": "Wildcard"
+    }
+}

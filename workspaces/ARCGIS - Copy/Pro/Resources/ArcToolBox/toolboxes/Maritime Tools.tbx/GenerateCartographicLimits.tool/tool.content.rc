@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Converts polygon features to polylines and removes all segments coincident with the erase features.",
+        "erase_features.descr": "<xdoc><p>The polyline features that will be used to identify coincident features in the <span class=\"esri_uicontrol\">Input Polygons</span> parameter value that will be removed from the <span class=\"esri_uicontrol\">Target Feature Class</span> parameter value.</p></xdoc>",
+        "erase_features.title": "Erase Features",
+        "input_polygons.descr": "<xdoc><p>The polygon features that will be converted to polylines to create feature outlines where they are not coincident with the <span class=\"esri_uicontrol\">Erase Features</span> parameter value.</p></xdoc>",
+        "input_polygons.title": "Input Polygons",
+        "summary": "<xdoc><p>Converts polygon features to polylines and removes all segments coincident with the erase features.</p><p>For nautical charting purposes, this tool can be used when certain features, such as regulated areas, intersect and follow the coastline or neatline. The tool can be used to generate an outline of the polygon feature class, such as regulated areas or seabed areas, for editing of intersecting and overlapping features without affecting the polygon geometry or underlying data. The polygon features are output as line features (cartographic limits) that are created for cartographic purposes only.</p><p>The tool can be used to improve the cartographic display of digital and hard-copy nautical charts in the following ways:<ul><li>Establish a seaward limit of features coincident with a coastline.</li><li>Reduce the number of features rendered on a chart.</li><li>Decrease drawing and export times of nautical products.</li></ul></p></xdoc>",
+        "target_feature_class.descr": "The feature class containing the cartographic limit features that will be converted.",
+        "target_feature_class.title": "Target Feature Class",
+        "title": "Generate Cartographic Limits",
+        "updated_target_feature_class.title": "Updated Target Feature Class"
+    }
+}

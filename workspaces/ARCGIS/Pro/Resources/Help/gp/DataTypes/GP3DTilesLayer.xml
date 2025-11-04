@@ -1,0 +1,5 @@
+<DataType Name="GP3DTilesLayer">
+  <DisplayName>3D Tiles Layer</DisplayName>
+  <Description>A 3D tiles layer references a tileset that defines an integrated mesh or 3D object type data in a hierarchical data structure.</Description>
+</DataType>
+

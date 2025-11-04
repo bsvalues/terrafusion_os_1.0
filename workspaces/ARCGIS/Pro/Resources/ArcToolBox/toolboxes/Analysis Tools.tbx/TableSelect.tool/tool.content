@@ -1,0 +1,52 @@
+{
+    "type": "FunctionTool",
+    "guid": "{89ce9fe7-7102-4d7e-b4c9-4dc970169170}",
+    "displayname": "$rc:title",
+    "helpcontent": "1010004",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_table": {
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "out_table": {
+            "direction": "out",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "description": "$rc:out_table.descr"
+        },
+        "where_clause": {
+            "type": "optional",
+            "displayname": "$rc:where_clause.title",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:where_clause.descr"
+        }
+    },
+    "environments": [
+        "configKeyword",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

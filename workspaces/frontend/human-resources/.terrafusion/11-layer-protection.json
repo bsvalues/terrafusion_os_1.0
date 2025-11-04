@@ -1,0 +1,96 @@
+{
+  "workspace_protection_system": {
+    "workspace_name": "human-resources",
+    "domain": "employee_management",
+    "risk_level": "critical",
+    "customization_timestamp": "2025-10-16T10:16:02.413646",
+    "eleven_layer_protection": {
+      "L1_role_scope_confirmation": {
+        "workspace_role": "human-resources specialized AI agent",
+        "scope_definition": "Optimize and protect employee_management operations",
+        "success_criteria": "Maintain critical-level security for employee_management",
+        "data_types_handled": [
+          "employee_PII",
+          "payroll",
+          "performance_data",
+          "benefits"
+        ],
+        "protection_priorities": [
+          "employee_privacy",
+          "payroll_security",
+          "compliance_tracking"
+        ]
+      },
+      "L2_input_sanitation_threat_modeling": {
+        "threat_model": "employee_management_specific_threats",
+        "input_validation": "human-resources_input_sanitization",
+        "injection_prevention": "employee_management_injection_protection",
+        "risk_level_controls": "critical"
+      },
+      "L3_data_classification": {
+        "data_types": [
+          "employee_PII",
+          "payroll",
+          "performance_data",
+          "benefits"
+        ],
+        "classification_level": "critical",
+        "privacy_requirements": "employee_management_privacy_rules",
+        "retention_policies": "human-resources_data_retention",
+        "access_controls": "employee_management_access_matrix"
+      },
+      "L4_secrets_hygiene": {
+        "vault_integration": "human-resources_secret_vault",
+        "key_rotation": "employee_management_key_management",
+        "credential_management": "human-resources_credential_store",
+        "environment_separation": "critical_env_isolation"
+      },
+      "L5_environment_guardrails": {
+        "environment_controls": "human-resources_env_controls",
+        "blast_radius_limits": "employee_management_isolation",
+        "feature_flags": "human-resources_feature_management",
+        "deployment_gates": "critical_deployment_controls"
+      },
+      "L6_policy_compliance": {
+        "domain_regulations": "employee_management_compliance_framework",
+        "government_standards": [
+          "employee_privacy",
+          "payroll_security",
+          "compliance_tracking"
+        ],
+        "audit_requirements": "human-resources_audit_trail",
+        "compliance_monitoring": "employee_management_compliance_checks"
+      },
+      "L7_dependency_license_review": {
+        "sbom_generation": "human-resources_software_bill_of_materials",
+        "vulnerability_scanning": "employee_management_vuln_checks",
+        "license_compliance": "human-resources_license_validation",
+        "dependency_monitoring": "critical_dependency_tracking"
+      },
+      "L8_reproducibility": {
+        "version_pinning": "human-resources_version_control",
+        "build_determinism": "employee_management_build_reproducibility",
+        "configuration_management": "human-resources_config_management",
+        "deployment_consistency": "critical_deployment_standards"
+      },
+      "L9_observability_hooks": {
+        "metrics_collection": "human-resources_domain_metrics",
+        "logging_framework": "employee_management_specialized_logging",
+        "tracing_system": "human-resources_distributed_tracing",
+        "alerting_rules": "employee_management_alert_configuration"
+      },
+      "L10_human_in_loop_gates": {
+        "approval_workflows": "human-resources_approval_matrix",
+        "review_requirements": "employee_management_review_gates",
+        "escalation_procedures": "critical_escalation_rules",
+        "manual_override_controls": "human-resources_override_procedures"
+      },
+      "L11_red_team_self_check": {
+        "adversarial_testing": "human-resources_penetration_testing",
+        "failure_mode_analysis": "employee_management_failure_scenarios",
+        "rollback_procedures": "human-resources_disaster_recovery",
+        "security_validation": "critical_security_assessment"
+      }
+    }
+  }
+}

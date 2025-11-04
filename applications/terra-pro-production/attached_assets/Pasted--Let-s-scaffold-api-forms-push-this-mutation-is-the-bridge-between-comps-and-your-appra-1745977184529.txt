@@ -1,0 +1,112 @@
+🎯 Let’s **scaffold `/api/forms/push`** — this mutation is **the bridge between comps and your appraisal form**, and it completes the loop from data search → form entry.
+
+---
+
+# 🧩 `/api/forms/push` — Mutation API (TerraFusionPro)
+
+## 📌 Purpose:
+Takes a selected `ComparableSnapshot`, maps its values to CRDT-backed form fields, and updates the Yjs document.
+
+---
+
+## 📁 Suggested File: `server/routes/forms.ts`
+
+```ts
+import express from 'express';
+import { z } from 'zod';
+import { updateCRDTForm } from '@/services/crdt';
+import { getSnapshotById } from '@/services/comps';
+
+export const formsRouter = express.Router();
+
+const PushRequest = z.object({
+  formId: z.string(),
+  snapshotId: z.string(),
+  fieldMappings: z.record(z.string(), z.string()) // e.g., { salePrice: "G1", gla: "G2" }
+});
+
+formsRouter.post('/forms/push', async (req, res) => {
+  const parse = PushRequest.safeParse(req.body);
+  if (!parse.success) return res.status(400).json({ error: parse.error });
+
+  const { formId, snapshotId, fieldMappings } = parse.data;
+
+  const snapshot = await getSnapshotById(snapshotId);
+  if (!snapshot) return res.status(404).json({ error: 'Snapshot not found' });
+
+  const updates = Object.entries(fieldMappings).reduce((acc, [snapshotKey, formField]) => {
+    const value = snapshot.fields[snapshotKey as keyof typeof snapshot.fields];
+    if (value !== undefined) acc[formField] = value;
+    return acc;
+  }, {} as Record<string, any>);
+
+  await updateCRDTForm(formId, updates);
+
+  res.json({ success: true });
+});
+```
+
+---
+
+## ⚙️ Service Example: `updateCRDTForm.ts`
+
+```ts
+import { getYDoc } from './ydoc-store';
+
+export async function updateCRDTForm(formId: string, updates: Record<string, any>) {
+  const ydoc = await getYDoc(formId);
+  const formMap = ydoc.getMap('form');
+
+  for (const [fieldId, value] of Object.entries(updates)) {
+    formMap.set(fieldId, value);
+  }
+
+  ydoc.emit('update'); // Optional, if broadcasting manually
+}
+```
+
+---
+
+## 🧪 Frontend Usage (from `SnapshotTile.tsx`)
+
+```tsx
+async function handlePushToForm(snapshot) {
+  await axios.post('/api/forms/push', {
+    formId: currentFormId,
+    snapshotId: snapshot.id,
+    fieldMappings: {
+      salePrice: 'G1',
+      gla: 'G2',
+      beds: 'G3',
+      baths: 'G4'
+    }
+  });
+  toast.success("Snapshot pushed to form");
+}
+```
+
+---
+
+## ✅ Result
+
+- CRDT doc is live-updated
+- Users see the comp values populate instantly
+- Appraiser keeps full control via field mappings
+
+---
+
+## 🔜 Optional Add-Ons
+
+- Mapping UI: Let user choose which snapshot field goes to which form field
+- History log: Track all pushes into form (source, user, timestamp)
+- Rollback: Support “undo push” via CRDT snapshots
+
+---
+
+Would you like to:
+1. Build a **“Field Mapping Assistant” UI modal** to let users customize mappings visually?
+2. Move on to the **diff viewer** (`SnapshotDiff.tsx`)?
+3. Wrap this viewer in a **CompsGrid drawer integration**?
+
+You’ve got the brain → hand connection now.
+Time to polish the user’s control of that hand. 👁️‍🗨️🫴

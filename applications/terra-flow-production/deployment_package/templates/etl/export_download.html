@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Download Export{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h1 class="mb-4">Download Export</h1>
+  
+  <div class="card">
+    <div class="card-header bg-success text-white">
+      <h5 class="mb-0">Export Ready</h5>
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">Your export is ready for download</h5>
+      <p class="card-text">File: {{ filename }}</p>
+      
+      <div class="alert alert-info">
+        <p>Your export file has been created and is ready for download. Click the button below to download the file.</p>
+      </div>
+      
+      <a href="/exports/{{ filename }}" class="btn btn-primary" download>
+        <i class="bi bi-download"></i> Download File
+      </a>
+    </div>
+  </div>
+  
+  <div class="mt-4">
+    <a href="{{ url_for('etl.export_data') }}" class="btn btn-success">Create Another Export</a>
+    <a href="{{ url_for('etl.etl_dashboard') }}" class="btn btn-secondary ms-2">Back to ETL Dashboard</a>
+  </div>
+</div>
+{% endblock %}

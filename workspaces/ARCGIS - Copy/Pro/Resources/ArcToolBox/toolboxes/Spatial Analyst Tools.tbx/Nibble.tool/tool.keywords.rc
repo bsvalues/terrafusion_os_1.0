@@ -1,0 +1,17 @@
+{
+    "set": [
+        "clean",
+        "erroneous",
+        "generalize",
+        "image processing",
+        "mask",
+        "nearest",
+        "neighbor",
+        "nodata",
+        "remove",
+        "salt and pepper",
+        "simplify",
+        "speckle",
+        "zone"
+    ]
+}

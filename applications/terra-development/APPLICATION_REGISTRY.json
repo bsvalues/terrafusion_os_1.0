@@ -1,0 +1,388 @@
+{
+  "platform": {
+    "name": "TerraFusion",
+    "version": "2.0.0",
+    "description": "AI-Native County Assessment Marketplace Platform",
+    "last_updated": "2025-01-06T15:00:00Z",
+    "total_applications": 16,
+    "architecture": "3-tier plug-and-play marketplace",
+    "client": "Benton County, Washington (Pilot)"
+  },
+  "marketplace_tiers": {
+    "tier_1_core_foundation": {
+      "description": "Essential modernization tools - Entry level for small counties",
+      "target_market": "Small counties (population < 50,000)",
+      "pricing_model": "monthly_subscription"
+    },
+    "tier_2_premium_addons": {
+      "description": "Individual modules available à la carte after Core Foundation",
+      "target_market": "All counties - pay for what you use",
+      "pricing_model": "per_module_monthly"
+    },
+    "tier_3_enterprise_suite": {
+      "description": "Advanced features for large counties",
+      "target_market": "Large counties (population > 200,000)",
+      "pricing_model": "enterprise_monthly"
+    }
+  },
+  "applications": {
+    "tier_1_core_foundation": {
+      "TerraFusionSync": {
+        "name": "TerraFusionSync",
+        "description": "Core orchestration hub with Property Workbench and Record Card",
+        "technology": "Flask + SQLAlchemy",
+        "port": 5000,
+        "status": "production",
+        "directory": "TerraFusionSync/TerraFusionSync",
+        "main_file": "app.py",
+        "database": "terrafusionsync_real.db",
+        "startup_command": "python app.py",
+        "dependencies": ["PostgreSQL", "SQLite"],
+        "features": ["Orchestration Hub", "Property Workbench", "Property Record Card", "Legacy CAMA Integration"],
+        "tier": "core_foundation",
+        "pricing": "included_in_foundation"
+      },
+      "BasicAssessmentTools": {
+        "name": "Basic Assessment Tools",
+        "description": "Standard valuation and calculation utilities",
+        "technology": "Flask + SQLAlchemy",
+        "port": 5001,
+        "status": "development",
+        "directory": "TerraFusionSync/TerraFusionSync",
+        "main_file": "assessment_tools.py",
+        "database": "terrafusionsync_real.db",
+        "startup_command": "integrated with TerraFusionSync",
+        "dependencies": ["TerraFusionSync"],
+        "features": ["Standard Valuation", "Basic Calculations", "Simple Reports"],
+        "tier": "core_foundation",
+        "pricing": "included_in_foundation"
+      },
+      "LegacyIntegration": {
+        "name": "Legacy CAMA/System Integration",
+        "description": "Universal connector for existing assessment systems",
+        "technology": "Python + ETL",
+        "port": 5002,
+        "status": "development",
+        "directory": "TerraFusionSync/TerraFusionSync/src/legacy",
+        "main_file": "legacy_integration.py",
+        "database": "multiple",
+        "startup_command": "integrated with TerraFusionSync",
+        "dependencies": ["TerraFusionSync", "Legacy Systems"],
+        "features": ["PACS Integration", "CAMA Connectors", "Data Migration", "Real-time Sync"],
+        "tier": "core_foundation",
+        "pricing": "included_in_foundation"
+      }
+    },
+    "tier_2_premium_addons": {
+      "CostForge": {
+        "name": "CostForge",
+        "description": "🚀 FLAGSHIP - AI-Native Assessment Platform (Made by Assessors for Assessors)",
+        "technology": "Next.js 15 + FastAPI + AI",
+        "port": 5004,
+        "status": "production",
+        "directory": "CostForge/TerraFusionBuild",
+        "main_file": "server.js",
+        "database": "cost_models.db",
+        "startup_command": "npm run dev",
+        "dependencies": ["Next.js", "TypeScript", "AI Models", "ML Libraries"],
+        "features": ["AI-Native Assessment", "ML Valuation Models", "Cost Analysis", "Predictive Assessment"],
+        "tier": "flagship_premium",
+        "pricing": "premium_flagship",
+        "marketing_position": "primary_revenue_driver"
+      },
+      "TerraAgent": {
+        "name": "TerraAgent",
+        "description": "AI-powered property assessment system",
+        "technology": "Flask + LangChain",
+        "port": 5003,
+        "status": "production",
+        "directory": "TerraAgent_PRODUCTION",
+        "main_file": "app.py",
+        "database": "property_assessments.db",
+        "startup_command": "python app.py",
+        "dependencies": ["OpenAI", "LangChain", "Property Data"],
+        "features": ["AI Assessment", "Property Valuation", "Market Analysis", "Automated Reports"],
+        "tier": "premium_addon",
+        "pricing": "per_module"
+      },
+      "TerraFusionPermit": {
+        "name": "TerraFusionPermit",
+        "description": "Building permit management system",
+        "technology": "Next.js 15 + TypeScript",
+        "port": 5005,
+        "status": "production",
+        "directory": "TerraFusionPermit",
+        "main_file": "server.ts",
+        "database": "permits.db",
+        "startup_command": "npm run dev",
+        "dependencies": ["Next.js", "TypeScript", "Prisma"],
+        "features": ["Permit Tracking", "Application Processing", "Approval Workflows", "Integration"],
+        "tier": "premium_addon",
+        "pricing": "per_module"
+      },
+      "TerraLevy": {
+        "name": "TerraLevy",
+        "description": "Tax levy management system",
+        "technology": "Flask + PostgreSQL",
+        "port": 5006,
+        "status": "production",
+        "directory": "TerraLevy",
+        "main_file": "app.py",
+        "database": "levy_management.db",
+        "startup_command": "python app.py",
+        "dependencies": ["PostgreSQL", "Tax Data"],
+        "features": ["Tax Calculation", "Levy Management", "Payment Processing", "Compliance"],
+        "tier": "premium_addon",
+        "pricing": "per_module"
+      },
+      "WebAuditTracker": {
+        "name": "WebAuditTracker",
+        "description": "Assessment audit and compliance management",
+        "technology": "Next.js 15 + TypeScript",
+        "port": 5007,
+        "status": "production",
+        "directory": "WebAuditTracker",
+        "main_file": "server.ts",
+        "database": "audit_tracker.db",
+        "startup_command": "npm run dev",
+        "dependencies": ["Next.js", "TypeScript", "Prisma"],
+        "features": ["Audit Tracking", "Compliance", "Reporting", "Management"],
+        "tier": "premium_addon",
+        "pricing": "per_module"
+      },
+      "GISPro": {
+        "name": "GIS Pro",
+        "description": "Advanced geospatial analysis and mapping",
+        "technology": "Python + ArcGIS + React",
+        "port": 5008,
+        "status": "development",
+        "directory": "TerraFusionGIS",
+        "main_file": "app.py",
+        "database": "gis_data.db",
+        "startup_command": "python app.py",
+        "dependencies": ["ArcGIS", "GDAL", "Shapely"],
+        "features": ["GIS Integration", "Spatial Analysis", "Advanced Mapping", "Geocoding"],
+        "tier": "premium_addon",
+        "pricing": "per_module"
+      },
+      "MarketAnalytics": {
+        "name": "Market Analytics",
+        "description": "Comparative market analysis and reporting",
+        "technology": "React + D3 + Python",
+        "port": 5009,
+        "status": "development",
+        "directory": "TerraInsight",
+        "main_file": "app.js",
+        "database": "insights.db",
+        "startup_command": "npm start",
+        "dependencies": ["React", "D3", "Chart.js", "Python Analytics"],
+        "features": ["Market Analysis", "Comparative Reports", "Data Visualization", "Trend Analysis"],
+        "tier": "premium_addon",
+        "pricing": "per_module"
+      }
+    },
+    "tier_3_enterprise_features": {
+      "AdvancedAIValuation": {
+        "name": "Advanced AI Valuation",
+        "description": "Machine learning property valuation models",
+        "technology": "Python + TensorFlow + MLOps",
+        "port": 5010,
+        "status": "development",
+        "directory": "TerraFusionPro",
+        "main_file": "app.py",
+        "database": "ai_models.db",
+        "startup_command": "python app.py",
+        "dependencies": ["TensorFlow", "scikit-learn", "MLOps"],
+        "features": ["ML Models", "Predictive Valuation", "Model Training", "Advanced Analytics"],
+        "tier": "enterprise",
+        "pricing": "enterprise_only"
+      },
+      "FlowEnterprise": {
+        "name": "Flow Enterprise",
+        "description": "Complex data pipeline orchestration",
+        "technology": "Python + Apache Airflow",
+        "port": 5011,
+        "status": "development",
+        "directory": "TerraFlow",
+        "main_file": "app.py",
+        "database": "data_flows.db",
+        "startup_command": "python app.py",
+        "dependencies": ["Apache Airflow", "Celery", "Redis"],
+        "features": ["Data Pipelines", "ETL Processing", "Workflow Management", "Enterprise Integration"],
+        "tier": "enterprise",
+        "pricing": "enterprise_only"
+      },
+      "MobileInspectorPro": {
+        "name": "Mobile Inspector Pro",
+        "description": "Field inspection tools and mobile applications",
+        "technology": "React Native + FastAPI",
+        "port": 5012,
+        "status": "development",
+        "directory": "MobileInspector",
+        "main_file": "mobile_app.js",
+        "database": "inspections.db",
+        "startup_command": "expo start",
+        "dependencies": ["React Native", "Expo", "FastAPI"],
+        "features": ["Mobile Apps", "Field Inspection", "Photo Upload", "Offline Capability"],
+        "tier": "enterprise",
+        "pricing": "enterprise_only"
+      },
+      "CustomReportingSuite": {
+        "name": "Custom Reporting Suite",
+        "description": "Advanced analytics and business intelligence",
+        "technology": "React + Python + BI Tools",
+        "port": 5013,
+        "status": "development",
+        "directory": "CustomReporting",
+        "main_file": "reporting_app.py",
+        "database": "reporting.db",
+        "startup_command": "python reporting_app.py",
+        "dependencies": ["Pandas", "Plotly", "Business Intelligence"],
+        "features": ["Custom Reports", "Advanced Analytics", "BI Dashboard", "Data Export"],
+        "tier": "enterprise",
+        "pricing": "enterprise_only"
+      },
+      "MultiCountyManagement": {
+        "name": "Multi-County Management",
+        "description": "Regional deployment and management tools",
+        "technology": "Kubernetes + Microservices",
+        "port": 5014,
+        "status": "development",
+        "directory": "MultiCounty",
+        "main_file": "orchestrator.py",
+        "database": "multi_county.db",
+        "startup_command": "kubectl apply -f deployment.yaml",
+        "dependencies": ["Kubernetes", "Docker", "Microservices"],
+        "features": ["Multi-Tenant", "Regional Management", "Centralized Admin", "Scaling"],
+        "tier": "enterprise",
+        "pricing": "enterprise_only"
+      },
+      "WhiteLabelPlatform": {
+        "name": "White-label Platform",
+        "description": "Custom branding and deployment options",
+        "technology": "Multi-stack + DevOps",
+        "port": 5015,
+        "status": "development",
+        "directory": "WhiteLabel",
+        "main_file": "branding_platform.py",
+        "database": "white_label.db",
+        "startup_command": "python branding_platform.py",
+        "dependencies": ["Custom Branding", "DevOps", "CI/CD"],
+        "features": ["Custom Branding", "White-label Deployment", "Custom Domains", "Brand Management"],
+        "tier": "enterprise",
+        "pricing": "enterprise_only"
+      }
+    }
+  },
+  "integrations": {
+    "legacy_systems": {
+      "PACS": {
+        "name": "Property Assessment Computer System",
+        "description": "Legacy property assessment system (Benton County pilot)",
+        "status": "integrated",
+        "connection_type": "database_sync"
+      },
+      "CAMA_Generic": {
+        "name": "Computer Assisted Mass Appraisal Systems",
+        "description": "Generic CAMA system integration",
+        "status": "in_development",
+        "connection_type": "api_bridge"
+      },
+      "Aumentum": {
+        "name": "Aumentum (Tyler Technologies)",
+        "description": "Tyler Technologies assessment system",
+        "status": "planned",
+        "connection_type": "api"
+      },
+      "iasWorld": {
+        "name": "iasWorld (Tyler Technologies)",
+        "description": "Tyler Technologies property tax system",
+        "status": "planned",
+        "connection_type": "api"
+      }
+    },
+    "external_apis": {
+      "ArcGIS": {
+        "name": "ArcGIS Online/Pro",
+        "description": "Geographic information systems",
+        "status": "integrated",
+        "connection_type": "api"
+      },
+      "Spatialest": {
+        "name": "Spatialest",
+        "description": "Spatial data services",
+        "status": "integrated",
+        "connection_type": "api"
+      }
+    }
+  },
+  "databases": {
+    "development": {
+      "terrafusionsync_real.db": {
+        "size": "37MB",
+        "type": "SQLite",
+        "description": "Main property database with real Benton County data",
+        "records": {
+          "properties": 94149,
+          "addresses": 113087,
+          "permits": 48056
+        }
+      },
+      "real_pacs.db": {
+        "size": "25MB",
+        "type": "SQLite",
+        "description": "PACS system integration data"
+      }
+    },
+    "production": {
+      "postgresql_cluster": {
+        "type": "PostgreSQL",
+        "description": "Production scalable storage with replication",
+        "status": "configured"
+      }
+    }
+  },
+  "deployment": {
+    "development": {
+      "environment": "local",
+      "orchestration": "docker-compose",
+      "database": "sqlite"
+    },
+    "production": {
+      "environment": "cloud",
+      "orchestration": "kubernetes",
+      "database": "postgresql"
+    }
+  },
+  "monitoring": {
+    "health_checks": {
+      "enabled": true,
+      "interval": "30s",
+      "endpoints": ["/health", "/ready", "/metrics"]
+    },
+    "metrics": {
+      "prometheus": "enabled",
+      "grafana": "configured",
+      "custom_metrics": "enabled"
+    }
+  },
+  "scripts": {
+    "startup": {
+      "start_platform": "./scripts/start_platform.sh",
+      "start_app": "./scripts/start_app.sh [app-name]",
+      "health_check": "./scripts/health_check.sh"
+    },
+    "development": {
+      "setup": "./scripts/setup_development.sh",
+      "test": "./scripts/run_tests.sh",
+      "deploy": "./scripts/deploy.sh [environment]"
+    }
+  },
+  "documentation": {
+    "architecture": "TERRAFUSION_MARKETPLACE_ARCHITECTURE.md",
+    "project_structure": "PROJECT_STRUCTURE_GUIDE.md",
+    "development": "DEVELOPMENT_GUIDE.md",
+    "api": "API_REFERENCE.md",
+    "deployment": "DEPLOYMENT_GUIDE.md"
+  }
+}

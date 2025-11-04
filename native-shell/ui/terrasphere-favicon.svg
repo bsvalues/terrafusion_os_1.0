@@ -1,0 +1,35 @@
+<svg width="32" height="32" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradients for the TerraSphere -->
+    <radialGradient id="sphereGradient" cx="0.3" cy="0.3" r="0.8">
+      <stop offset="0%" stop-color="#00FFFF" stop-opacity="0.9"/>
+      <stop offset="50%" stop-color="#0080FF" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#0A0E1A" stop-opacity="1"/>
+    </radialGradient>
+
+    <radialGradient id="coreGradient" cx="0.5" cy="0.5" r="0.6">
+      <stop offset="0%" stop-color="#00FFFF" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#0080FF" stop-opacity="0.8"/>
+    </radialGradient>
+
+    <linearGradient id="rimGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00FFFF" stop-opacity="0.8"/>
+      <stop offset="50%" stop-color="#8844FF" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#00FF88" stop-opacity="0.8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Main sphere -->
+  <circle cx="50" cy="50" r="40" fill="url(#sphereGradient)" stroke="url(#rimGlow)" stroke-width="2"/>
+
+  <!-- Inner rings -->
+  <circle cx="50" cy="50" r="30" fill="none" stroke="#00FFFF" stroke-width="1" opacity="0.4"/>
+  <circle cx="50" cy="50" r="20" fill="none" stroke="#0080FF" stroke-width="1" opacity="0.6"/>
+
+  <!-- Central core -->
+  <circle cx="50" cy="50" r="12" fill="url(#coreGradient)"/>
+
+  <!-- Orbital rings -->
+  <ellipse cx="50" cy="50" rx="42" ry="15" fill="none" stroke="#00FFFF" stroke-width="1" opacity="0.3" transform="rotate(45 50 50)"/>
+  <ellipse cx="50" cy="50" rx="42" ry="15" fill="none" stroke="#8844FF" stroke-width="1" opacity="0.3" transform="rotate(-45 50 50)"/>
+</svg>

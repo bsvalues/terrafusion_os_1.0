@@ -1,0 +1,18 @@
+{
+    "map": {
+        "description": "Creates a feature class containing points generated from specified vertices or locations of the input features.",
+        "in_features.descr": "The input features that can be line or polygon.",
+        "in_features.title": "Input Features",
+        "out_feature_class.descr": "The output point feature class.",
+        "out_feature_class.title": "Output Feature Class",
+        "point_location.descr": "<xdoc><p>Specifies where an output point will be created.</p><ul><li><span title=\"ALL\">All vertices</span>—A point will be created at each input feature vertex. This is the default.</li><li><span title=\"MID\">Midpoint</span>—A point will be created at the midpoint, not necessarily a vertex, of each input line or polygon boundary.</li><li><span title=\"START\">Start vertex</span>—A point will be created at the start point (first vertex) of each input feature.</li><li><span title=\"END\">End vertex</span>—A point will be created at the end point (last vertex) of each input feature.</li><li><span title=\"BOTH_ENDS\">Both start and end vertex</span>—Two points will be created, one at the start point and another at the endpoint of each input feature.</li><li><span title=\"DANGLE\">Dangling vertex</span>—A dangle point will be created for any start or end point of an input line, if that point is not connected to another line at any location along that line. This option does not apply to polygon input.</li></ul></xdoc>",
+        "point_location.domain.ALL": "All vertices",
+        "point_location.domain.BOTH_ENDS": "Both start and end vertex",
+        "point_location.domain.DANGLE": "Dangling vertex",
+        "point_location.domain.END": "End vertex",
+        "point_location.domain.MID": "Midpoint",
+        "point_location.domain.START": "Start vertex",
+        "point_location.title": "Point Type",
+        "title": "Feature Vertices To Points"
+    }
+}

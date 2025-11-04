@@ -1,0 +1,12 @@
+{
+    "set": [
+        "child repository names",
+        "child repository url",
+        "connected",
+        "job synchronization",
+        "parent repository name",
+        "parent repository url",
+        "replication",
+        "workflow manager"
+    ]
+}

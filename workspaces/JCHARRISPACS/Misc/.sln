@@ -1,0 +1,51 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".vscode", ".vscode", "{C2579004-3DCB-D3E2-08DC-728321549DFE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "extensions", "extensions", "{E51DB534-A65E-529C-30FB-61440E27761B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "vsciot-vscode.azure-iot-toolkit-2.17.1", "vsciot-vscode.azure-iot-toolkit-2.17.1", "{F8FB6DA4-28A8-D983-B14A-C3910FFF5D3E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "resources", "resources", "{5F6BA74A-F215-F332-F8B9-0A9735D05C1D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "code-template", "code-template", "{6EEEF527-B181-EABC-72D4-B750F2A6AEBF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "csharp", "csharp", "{15070E78-ABF9-1F8B-BB7A-DFC5C1108F86}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeviceManageDeviceTwin", ".vscode\extensions\vsciot-vscode.azure-iot-toolkit-2.17.1\resources\code-template\csharp\deviceManageDeviceTwin\DeviceManageDeviceTwin.csproj", "{055C9DA2-EA4F-07FA-85D3-6258C80A1553}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "simulated-device", ".vscode\extensions\vsciot-vscode.azure-iot-toolkit-2.17.1\resources\code-template\csharp\sendD2C\simulated-device.csproj", "{F039B873-54EC-4379-36C7-7B9A2D10EA42}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{055C9DA2-EA4F-07FA-85D3-6258C80A1553}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{055C9DA2-EA4F-07FA-85D3-6258C80A1553}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{055C9DA2-EA4F-07FA-85D3-6258C80A1553}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{055C9DA2-EA4F-07FA-85D3-6258C80A1553}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F039B873-54EC-4379-36C7-7B9A2D10EA42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F039B873-54EC-4379-36C7-7B9A2D10EA42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F039B873-54EC-4379-36C7-7B9A2D10EA42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F039B873-54EC-4379-36C7-7B9A2D10EA42}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E51DB534-A65E-529C-30FB-61440E27761B} = {C2579004-3DCB-D3E2-08DC-728321549DFE}
+		{F8FB6DA4-28A8-D983-B14A-C3910FFF5D3E} = {E51DB534-A65E-529C-30FB-61440E27761B}
+		{5F6BA74A-F215-F332-F8B9-0A9735D05C1D} = {F8FB6DA4-28A8-D983-B14A-C3910FFF5D3E}
+		{6EEEF527-B181-EABC-72D4-B750F2A6AEBF} = {5F6BA74A-F215-F332-F8B9-0A9735D05C1D}
+		{15070E78-ABF9-1F8B-BB7A-DFC5C1108F86} = {6EEEF527-B181-EABC-72D4-B750F2A6AEBF}
+		{055C9DA2-EA4F-07FA-85D3-6258C80A1553} = {15070E78-ABF9-1F8B-BB7A-DFC5C1108F86}
+		{F039B873-54EC-4379-36C7-7B9A2D10EA42} = {15070E78-ABF9-1F8B-BB7A-DFC5C1108F86}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D65032AF-2DCF-4AF1-8922-4D3D97AC7FAC}
+	EndGlobalSection
+EndGlobal

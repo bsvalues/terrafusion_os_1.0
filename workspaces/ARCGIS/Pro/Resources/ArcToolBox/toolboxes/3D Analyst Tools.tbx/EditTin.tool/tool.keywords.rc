@@ -1,0 +1,12 @@
+{
+    "set": [
+        "add",
+        "conforming",
+        "constrained",
+        "delaunay",
+        "edit",
+        "modify",
+        "tin",
+        "triangulated irregular network"
+    ]
+}

@@ -1,0 +1,981 @@
+# TerraField Mobile Integration Bootstrap Kit
+
+This bootstrap kit contains ready-to-paste instructions and code for implementing the TerraField mobile companion app with offline-first capabilities. Follow these steps sequentially to deliver a functional vertical slice showing offline parcel note editing with CRDT-powered synchronization.
+
+## Step 1: Mobile Scaffold Setup (apps/terrafield-mobile)
+
+```bash
+# Create the directory structure
+mkdir -p apps/terrafield-mobile
+
+# Initialize Expo with TypeScript template
+cd apps/terrafield-mobile
+npx create-expo-app . --template expo-template-typescript
+
+# Install required dependencies
+yarn add @react-navigation/native @react-navigation/native-stack react-native-screens react-native-safe-area-context realm
+
+# Create directory structure
+mkdir -p src/screens src/components src/services src/hooks src/utils
+
+# Update package.json to include workspace reference
+cat > package.json << 'EOF'
+{
+  "name": "terrafield-mobile",
+  "version": "0.1.0",
+  "private": true,
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@react-navigation/native": "^6.1.9",
+    "@react-navigation/native-stack": "^6.9.17",
+    "expo": "~49.0.15",
+    "expo-status-bar": "~1.6.0",
+    "react": "18.2.0",
+    "react-native": "0.72.6",
+    "react-native-safe-area-context": "4.6.3",
+    "react-native-screens": "~3.22.0",
+    "realm": "^12.3.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@types/react": "~18.2.14",
+    "jest": "^29.7.0",
+    "jest-expo": "~49.0.0",
+    "typescript": "^5.1.3"
+  },
+  "jest": {
+    "preset": "jest-expo"
+  }
+}
+EOF
+
+# Create navigation configuration
+cat > src/navigation.tsx << 'EOF'
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import HomeScreen from './screens/HomeScreen';
+import ParcelNoteScreen from './screens/ParcelNoteScreen';
+
+export type RootStackParamList = {
+  Home: undefined;
+  ParcelNote: { parcelId: string };
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+export default function Navigation() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'TerraField' }} />
+        <Stack.Screen 
+          name="ParcelNote" 
+          component={ParcelNoteScreen} 
+          options={({ route }) => ({ title: `Parcel ${route.params.parcelId}` })}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+EOF
+
+# Create basic HomeScreen
+cat > src/screens/HomeScreen.tsx << 'EOF'
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TextInput, Button, FlatList } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation';
+
+type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
+
+export default function HomeScreen() {
+  const navigation = useNavigation<HomeScreenNavigationProp>();
+  const [parcelId, setParcelId] = useState('');
+  const [recentParcels, setRecentParcels] = useState(['ABC123', 'DEF456', 'GHI789']);
+
+  const handleOpenParcel = () => {
+    if (parcelId.trim()) {
+      navigation.navigate('ParcelNote', { parcelId: parcelId.trim() });
+      
+      // Add to recent parcels if not already there
+      if (!recentParcels.includes(parcelId.trim())) {
+        setRecentParcels([parcelId.trim(), ...recentParcels.slice(0, 4)]);
+      }
+      
+      setParcelId('');
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>TerraField Mobile</Text>
+      <Text style={styles.subtitle}>Offline-First Field Companion</Text>
+      
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter Parcel ID"
+          value={parcelId}
+          onChangeText={setParcelId}
+          autoCapitalize="characters"
+        />
+        <Button title="Open" onPress={handleOpenParcel} />
+      </View>
+      
+      <Text style={styles.recentTitle}>Recent Parcels</Text>
+      <FlatList
+        data={recentParcels}
+        keyExtractor={(item) => item}
+        renderItem={({ item }) => (
+          <View style={styles.recentItem}>
+            <Text>{item}</Text>
+            <Button 
+              title="Open" 
+              onPress={() => navigation.navigate('ParcelNote', { parcelId: item })} 
+            />
+          </View>
+        )}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    marginBottom: 24,
+    color: '#666',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    marginBottom: 24,
+  },
+  input: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    padding: 8,
+    marginRight: 8,
+  },
+  recentTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  recentItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+});
+EOF
+
+# Update App.tsx to use navigation
+cat > App.tsx << 'EOF'
+import Navigation from './src/navigation';
+import { StatusBar } from 'expo-status-bar';
+
+export default function App() {
+  return (
+    <>
+      <Navigation />
+      <StatusBar style="auto" />
+    </>
+  );
+}
+EOF
+
+# Stub for ParcelNoteScreen (will be updated in Step 3)
+cat > src/screens/ParcelNoteScreen.tsx << 'EOF'
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { RootStackParamList } from '../navigation';
+
+type ParcelNoteRouteProp = RouteProp<RootStackParamList, 'ParcelNote'>;
+
+export default function ParcelNoteScreen() {
+  const route = useRoute<ParcelNoteRouteProp>();
+  const { parcelId } = route.params;
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Parcel {parcelId}</Text>
+      <Text>Note editor will be implemented in Step 3</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+});
+EOF
+
+# Create a Realm schema helper (stub for now)
+cat > src/utils/realm.ts << 'EOF'
+import Realm from 'realm';
+
+// This will be expanded in Step 3
+const ParcelNoteSchema = {
+  name: 'ParcelNote',
+  primaryKey: 'parcelId',
+  properties: {
+    parcelId: 'string',
+    yDocData: 'string', // Base64 encoded Y.Doc update
+    updatedAt: 'date',
+  },
+};
+
+export const getRealmInstance = () => {
+  return new Realm({
+    schema: [ParcelNoteSchema],
+    schemaVersion: 1,
+  });
+};
+EOF
+
+# Add tsconfig.json
+cat > tsconfig.json << 'EOF'
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true
+  }
+}
+EOF
+
+# Commit changes
+git add .
+git commit -m "feat(mobile): Initialize TerraField mobile app scaffold with navigation and storage"
+```
+
+## Step 2: CRDT Implementation (packages/crdt)
+
+```bash
+# Create directory structure
+mkdir -p packages/crdt/src packages/crdt/src/__tests__
+
+# Initialize package
+cd packages/crdt
+yarn init -y
+
+# Update package.json
+cat > package.json << 'EOF'
+{
+  "name": "@your-org/crdt",
+  "version": "0.1.0",
+  "description": "CRDT implementation using Yjs for TerraField",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "prepublish": "yarn build"
+  },
+  "dependencies": {
+    "yjs": "^13.6.8",
+    "@syncedstore/core": "^0.6.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.1.3",
+    "@types/jest": "^29.5.3",
+    "jest": "^29.6.1",
+    "ts-jest": "^29.1.1"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node"
+  }
+}
+EOF
+
+# Install dependencies
+yarn install
+
+# Create tsconfig.json
+cat > tsconfig.json << 'EOF'
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "module": "commonjs",
+    "declaration": true,
+    "outDir": "./dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "**/__tests__/*"]
+}
+EOF
+
+# Implement the CRDT core functionality
+cat > src/index.ts << 'EOF'
+import * as Y from 'yjs';
+import { syncedStore, getYjsDoc } from '@syncedstore/core';
+
+export interface ParcelStore {
+  notes: string;
+}
+
+/**
+ * Creates a CRDT-enabled store for a parcel
+ * @param parcelId The unique identifier for the parcel
+ * @returns A synchronized store with CRDT capabilities
+ */
+export function createParcelStore(parcelId: string) {
+  // Create a synced store with a notes field
+  const store = syncedStore<ParcelStore>({ notes: '' });
+  
+  // Get the underlying Yjs document
+  const doc = getYjsDoc(store);
+  
+  // Set the clientID to ensure consistent merges
+  doc.clientID = generateClientId(parcelId);
+  
+  return {
+    store,
+    doc,
+  };
+}
+
+/**
+ * Generates a deterministic client ID based on parcel ID
+ * This helps with consistent conflict resolution
+ */
+function generateClientId(parcelId: string): number {
+  let hash = 0;
+  for (let i = 0; i < parcelId.length; i++) {
+    const char = parcelId.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return Math.abs(hash);
+}
+
+/**
+ * Encodes a Yjs document update as a Base64 string
+ * @param doc The Yjs document
+ * @returns Base64 encoded update
+ */
+export function encodeDocUpdate(doc: Y.Doc): string {
+  const update = Y.encodeStateAsUpdate(doc);
+  return Buffer.from(update).toString('base64');
+}
+
+/**
+ * Decodes a Base64 encoded update and applies it to a Yjs document
+ * @param doc The target Yjs document
+ * @param base64Update The Base64 encoded update
+ */
+export function applyEncodedUpdate(doc: Y.Doc, base64Update: string): void {
+  const update = Buffer.from(base64Update, 'base64');
+  Y.applyUpdate(doc, update);
+}
+
+/**
+ * Merges an encoded update into a document and returns the new state
+ * @param doc The target Yjs document
+ * @param base64Update The Base64 encoded update to merge
+ * @returns The Base64 encoded state after merge
+ */
+export function mergeUpdates(doc: Y.Doc, base64Update: string): string {
+  applyEncodedUpdate(doc, base64Update);
+  return encodeDocUpdate(doc);
+}
+EOF
+
+# Create test for CRDT functionality
+cat > src/__tests__/crdt.test.ts << 'EOF'
+import * as Y from 'yjs';
+import { createParcelStore, encodeDocUpdate, applyEncodedUpdate, mergeUpdates } from '../index';
+
+describe('CRDT functionality', () => {
+  test('createParcelStore initializes with empty notes', () => {
+    const { store } = createParcelStore('TEST123');
+    expect(store.notes).toBe('');
+  });
+
+  test('consistent merge with concurrent edits', () => {
+    // Create two independent stores for the same parcel
+    const { store: store1, doc: doc1 } = createParcelStore('TEST123');
+    const { store: store2, doc: doc2 } = createParcelStore('TEST123');
+
+    // Make different edits in each store
+    store1.notes = 'Update from device 1';
+    store2.notes = 'Update from device 2';
+
+    // Capture updates from both devices
+    const update1 = encodeDocUpdate(doc1);
+    const update2 = encodeDocUpdate(doc2);
+
+    // Create a third store to test both merges in different orders
+    const { store: storeA, doc: docA } = createParcelStore('TEST123');
+    const { store: storeB, doc: docB } = createParcelStore('TEST123');
+
+    // Apply updates in different orders
+    applyEncodedUpdate(docA, update1);
+    applyEncodedUpdate(docA, update2);
+
+    applyEncodedUpdate(docB, update2);
+    applyEncodedUpdate(docB, update1);
+
+    // Both stores should converge to the same state
+    expect(storeA.notes).toBe(storeB.notes);
+    
+    // Final result should contain essence of both updates (actual merge depends on Yjs algorithm)
+    const finalResult = storeA.notes;
+    expect(
+      finalResult.includes('device 1') || finalResult.includes('device 2')
+    ).toBeTruthy();
+  });
+
+  test('encode and decode preserves document state', () => {
+    const { store, doc } = createParcelStore('TEST123');
+    store.notes = 'Test content for encoding';
+    
+    // Encode the document
+    const encoded = encodeDocUpdate(doc);
+    expect(typeof encoded).toBe('string');
+    
+    // Create a new document and apply the update
+    const { store: newStore, doc: newDoc } = createParcelStore('TEST123');
+    applyEncodedUpdate(newDoc, encoded);
+    
+    // The new store should have the same content
+    expect(newStore.notes).toBe('Test content for encoding');
+  });
+
+  test('mergeUpdates correctly applies an update', () => {
+    // Create initial doc with content
+    const { store, doc } = createParcelStore('TEST123');
+    store.notes = 'Initial content';
+    
+    // Create another doc with different content
+    const { store: store2, doc: doc2 } = createParcelStore('TEST123');
+    store2.notes = 'Updated content';
+    
+    const update = encodeDocUpdate(doc2);
+    
+    // Merge the update into the first doc
+    mergeUpdates(doc, update);
+    
+    // The first store should now have the merged content
+    expect(store.notes).toBe('Updated content');
+  });
+});
+EOF
+
+# Create Jest config
+cat > jest.config.js << 'EOF'
+module.exports = {
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+};
+EOF
+
+# Build the package
+yarn build
+
+# Run tests
+yarn test
+
+# Commit changes
+git add .
+git commit -m "feat(crdt): Add shared CRDT implementation with Yjs for offline synchronization"
+```
+
+## Step 3: Offline Note Prototype (apps/terrafield-mobile)
+
+```bash
+cd apps/terrafield-mobile
+
+# Add CRDT dependency to mobile app
+yarn add @your-org/crdt@workspace:packages/crdt
+
+# Create services for API communication
+mkdir -p src/services
+
+# Create API service
+cat > src/services/api.service.ts << 'EOF'
+import { Platform } from 'react-native';
+
+// Base API URL - should come from environment in a real app
+const API_URL = 'https://api.terrafusion.example/v1';
+
+export interface SyncRequest {
+  parcelId: string;
+  update: string; // Base64 encoded Yjs update
+}
+
+export interface SyncResponse {
+  update: string; // Base64 encoded merged state
+  timestamp: string;
+}
+
+class ApiService {
+  private token: string | null = null;
+  
+  /**
+   * Set the authentication token for API requests
+   */
+  setToken(token: string) {
+    this.token = token;
+  }
+  
+  /**
+   * Get the headers for API requests
+   */
+  private getHeaders(): HeadersInit {
+    return {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'User-Agent': `TerraField-Mobile/${Platform.OS}`,
+      ...(this.token ? { 'Authorization': `Bearer ${this.token}` } : {}),
+    };
+  }
+  
+  /**
+   * Send a sync request to the server
+   */
+  async syncParcelNote(req: SyncRequest): Promise<SyncResponse> {
+    try {
+      const response = await fetch(`${API_URL}/mobile-sync`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(req),
+      });
+      
+      if (!response.ok) {
+        if (response.status === 402) {
+          throw new Error('Subscription required for mobile sync');
+        }
+        throw new Error(`API error: ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Sync error:', error);
+      throw error;
+    }
+  }
+}
+
+export const apiService = new ApiService();
+EOF
+
+# Create a SyncService for offline handling
+cat > src/services/sync.service.ts << 'EOF'
+import Realm from 'realm';
+import { apiService, SyncRequest } from './api.service';
+import { getRealmInstance } from '../utils/realm';
+
+interface QueuedSync {
+  parcelId: string;
+  update: string;
+  timestamp: Date;
+}
+
+class SyncService {
+  private syncQueue: QueuedSync[] = [];
+  private isOnline: boolean = true;
+  private isProcessing: boolean = false;
+  
+  constructor() {
+    // Load any queued syncs from persistent storage
+    this.loadQueue();
+    
+    // In a real app, add network listeners to detect connectivity changes
+  }
+  
+  /**
+   * Load queued syncs from storage
+   */
+  private loadQueue() {
+    try {
+      const realm = getRealmInstance();
+      const queuedSyncs = realm.objects('SyncQueue').sorted('timestamp');
+      
+      this.syncQueue = Array.from(queuedSyncs).map(item => ({
+        parcelId: item.parcelId,
+        update: item.update,
+        timestamp: item.timestamp,
+      }));
+      
+      realm.close();
+    } catch (error) {
+      console.error('Failed to load sync queue:', error);
+    }
+  }
+  
+  /**
+   * Save the queue to persistent storage
+   */
+  private saveQueue() {
+    try {
+      const realm = getRealmInstance();
+      
+      realm.write(() => {
+        // Clear existing queue
+        const existingQueue = realm.objects('SyncQueue');
+        realm.delete(existingQueue);
+        
+        // Add current queue items
+        this.syncQueue.forEach(item => {
+          realm.create('SyncQueue', {
+            parcelId: item.parcelId,
+            update: item.update,
+            timestamp: item.timestamp,
+          });
+        });
+      });
+      
+      realm.close();
+    } catch (error) {
+      console.error('Failed to save sync queue:', error);
+    }
+  }
+  
+  /**
+   * Queue a sync operation
+   */
+  queueSync(parcelId: string, update: string) {
+    this.syncQueue.push({
+      parcelId,
+      update,
+      timestamp: new Date(),
+    });
+    
+    this.saveQueue();
+    
+    // Try to process the queue immediately if we're online
+    if (this.isOnline) {
+      this.processQueue();
+    }
+  }
+  
+  /**
+   * Process the sync queue
+   */
+  async processQueue() {
+    if (this.isProcessing || !this.isOnline || this.syncQueue.length === 0) {
+      return;
+    }
+    
+    this.isProcessing = true;
+    
+    try {
+      // Process queue in order
+      while (this.syncQueue.length > 0 && this.isOnline) {
+        const item = this.syncQueue[0];
+        
+        await this.syncItem(item);
+        
+        // Remove the processed item
+        this.syncQueue.shift();
+        this.saveQueue();
+      }
+    } catch (error) {
+      console.error('Error processing sync queue:', error);
+    } finally {
+      this.isProcessing = false;
+    }
+  }
+  
+  /**
+   * Sync a single item
+   */
+  private async syncItem(item: QueuedSync) {
+    try {
+      const req: SyncRequest = {
+        parcelId: item.parcelId,
+        update: item.update,
+      };
+      
+      const response = await apiService.syncParcelNote(req);
+      
+      // Update local storage with merged state
+      const realm = getRealmInstance();
+      realm.write(() => {
+        realm.create('ParcelNote', {
+          parcelId: item.parcelId,
+          yDocData: response.update,
+          updatedAt: new Date(),
+        }, Realm.UpdateMode.Modified);
+      });
+      realm.close();
+      
+      return true;
+    } catch (error) {
+      console.error(`Failed to sync parcel ${item.parcelId}:`, error);
+      
+      // If it's a network error, set offline mode
+      // if (error instanceof NetworkError) {
+      //   this.isOnline = false;
+      // }
+      
+      throw error;
+    }
+  }
+  
+  /**
+   * Manually trigger sync process
+   */
+  async forceSyncAll() {
+    this.isOnline = true; // Assume we're online for a manual sync
+    return this.processQueue();
+  }
+  
+  /**
+   * Set online status
+   */
+  setOnlineStatus(isOnline: boolean) {
+    this.isOnline = isOnline;
+    
+    if (isOnline) {
+      this.processQueue();
+    }
+  }
+}
+
+export const syncService = new SyncService();
+EOF
+
+# Update Realm schema to include SyncQueue
+cat > src/utils/realm.ts << 'EOF'
+import Realm from 'realm';
+
+const ParcelNoteSchema = {
+  name: 'ParcelNote',
+  primaryKey: 'parcelId',
+  properties: {
+    parcelId: 'string',
+    yDocData: 'string', // Base64 encoded Y.Doc update
+    updatedAt: 'date',
+  },
+};
+
+const SyncQueueSchema = {
+  name: 'SyncQueue',
+  properties: {
+    parcelId: 'string',
+    update: 'string', // Base64 encoded Y.Doc update
+    timestamp: 'date',
+  },
+};
+
+export const getRealmInstance = () => {
+  return new Realm({
+    schema: [ParcelNoteSchema, SyncQueueSchema],
+    schemaVersion: 1,
+  });
+};
+EOF
+
+# Create a hook for managing parcel notes
+cat > src/hooks/useParcelNote.ts << 'EOF'
+import { useState, useEffect } from 'react';
+import { createParcelStore, encodeDocUpdate, applyEncodedUpdate } from '@your-org/crdt';
+import { getRealmInstance } from '../utils/realm';
+import { syncService } from '../services/sync.service';
+
+export function useParcelNote(parcelId: string) {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [lastSynced, setLastSynced] = useState<Date | null>(null);
+  
+  // Create CRDT store
+  const { store, doc } = createParcelStore(parcelId);
+  
+  // Load data from local storage
+  useEffect(() => {
+    const loadFromRealm = async () => {
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        const realm = getRealmInstance();
+        const note = realm.objectForPrimaryKey('ParcelNote', parcelId);
+        
+        if (note && note.yDocData) {
+          // Apply stored updates to the doc
+          applyEncodedUpdate(doc, note.yDocData);
+          setLastSynced(note.updatedAt);
+        }
+        
+        realm.close();
+      } catch (loadError) {
+        setError(`Failed to load note: ${loadError.message}`);
+        console.error('Load error:', loadError);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadFromRealm();
+  }, [parcelId, doc]);
+  
+  // Save changes to Realm
+  const saveChanges = async () => {
+    try {
+      const encodedUpdate = encodeDocUpdate(doc);
+      const realm = getRealmInstance();
+      
+      realm.write(() => {
+        realm.create('ParcelNote', {
+          parcelId,
+          yDocData: encodedUpdate,
+          updatedAt: new Date(),
+        }, Realm.UpdateMode.Modified);
+      });
+      
+      realm.close();
+    } catch (saveError) {
+      console.error('Save error:', saveError);
+      setError(`Failed to save note: ${saveError.message}`);
+    }
+  };
+  
+  // Sync with server
+  const syncWithServer = async () => {
+    setIsSyncing(true);
+    setError(null);
+    
+    try {
+      const encodedUpdate = encodeDocUpdate(doc);
+      
+      // Queue sync operation
+      syncService.queueSync(parcelId, encodedUpdate);
+      
+      // Save locally
+      await saveChanges();
+      
+      // Force immediate sync
+      await syncService.forceSyncAll();
+      
+      setLastSynced(new Date());
+    } catch (syncError) {
+      setError(`Sync failed: ${syncError.message}`);
+      console.error('Sync error:', syncError);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+  
+  return {
+    note: store.notes,
+    setNote: (content: string) => {
+      store.notes = content;
+      saveChanges();
+    },
+    isLoading,
+    isSyncing,
+    error,
+    lastSynced,
+    sync: syncWithServer,
+  };
+}
+EOF
+
+# Create the ParcelNoteScreen component
+cat > src/screens/ParcelNoteScreen.tsx << 'EOF'
+import React, { useState } from 'react';
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  TextInput, 
+  Button, 
+  ActivityIndicator,
+  ScrollView,
+  Alert,
+  Platform,
+  Switch
+} from 'react-native';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { RootStackParamList } from '../navigation';
+import { useParcelNote } from '../hooks/useParcelNote';
+
+type ParcelNoteRouteProp = RouteProp<RootStackParamList, 'ParcelNote'>;
+
+export default function ParcelNoteScreen() {
+  const route = useRoute<ParcelNoteRouteProp>();
+  const { parcelId } = route.params;
+  const [isAirplaneModeSimulated, setIsAirplaneModeSimulated] = useState(false);
+
+  const { 
+    note, 
+    setNote, 
+    isLoading, 
+    isSyncing, 
+    error, 
+    lastSynced, 
+    sync 
+  } = useParcelNote(parcelId);
+
+  const handleSync = async () => {
+    if (isAirplaneModeSimulated) {
+      Alert.alert(
+        "Offline Mode",
+        "Device is currently offline. Changes will sync when you're back online.",
+        [{ text: "OK" }]
+      );
+      return;
+    }
+    
+    try {
+      await sync();
+    } catch (e) {
+      Alert.alert("Sync Failed", e.message);
+    }
+  };
+
+  const toggleAirplaneMode = () => {
+    setIsAirplaneModeSimulated(!isAirplaneModeSimulated);
+  };
+
+  if (isLoading) {
+    return (
+      <View style={styles.centerContainer}>
+        <ActivityIndicator size="large" color="#0066cc" />
+        <Text style={styles.loadingText}>Loading parcel note...</Text>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.parcelId}>Parcel ID: {parcelId}</Text>
+        <Text style={styles.syncStatus

@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CostForge AI - Quantum Intelligence Monitor</title>
+    <link rel="stylesheet" href="terrafusion-enhanced.css">
+    <style>
+        /* TerraFusion Color Palette */
+        :root {
+            --trust-blue: #0099ff;
+            --transcend-cyan: #00ffee;
+            --success-green: #00ffaa;
+            --deep-space: #0b1020;
+            --warning-orange: #ffaa00;
+            --error-red: #ff4444;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --clarity-gradient: linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--deep-space) 0%, #1a1a2e 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Glass Morphism Effects */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 238, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 48px rgba(0, 255, 238, 0.2);
+            border-color: rgba(0, 255, 238, 0.4);
+        }
+
+        /* Header */
+        .header {
+            padding: 32px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 200%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 238, 0.1), transparent);
+            animation: scan 3s infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: var(--clarity-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header .tagline {
+            font-size: 1.2rem;
+            color: var(--transcend-cyan);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .header .quantum-factor {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        /* Status Cards */
+        .status-card {
+            text-align: center;
+            position: relative;
+        }
+
+        .status-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .status-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .status-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Control Panel */
+        .control-panel {
+            margin-bottom: 32px;
+        }
+
+        .control-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        /* Form Styling */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--transcend-cyan);
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 238, 0.3);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--transcend-cyan);
+            box-shadow: 0 0 0 3px rgba(0, 255, 238, 0.2);
+        }
+
+        /* Button Styling */
+        .btn {
+            background: var(--clarity-gradient);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 255, 238, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* Results Display */
+        .results-section {
+            margin-top: 32px;
+        }
+
+        .result-card {
+            margin-bottom: 16px;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--success-green);
+        }
+
+        .confidence-score {
+            background: var(--clarity-gradient);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .factors-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .factor-item {
+            background: rgba(0, 255, 238, 0.1);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(0, 255, 238, 0.2);
+        }
+
+        /* Loading States */
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(0, 255, 238, 0.3);
+            border-top: 3px solid var(--transcend-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .control-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Success/Error Messages */
+        .message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+
+        .message.success {
+            background: rgba(0, 255, 170, 0.2);
+            border: 1px solid var(--success-green);
+            color: var(--success-green);
+        }
+
+        .message.error {
+            background: rgba(255, 68, 68, 0.2);
+            border: 1px solid var(--error-red);
+            color: var(--error-red);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="container">
+            <h1>CostForge AI</h1>
+            <div class="tagline">Government. Transcended.</div>
+            <div class="quantum-factor">Quantum Intelligence Monitor • Factor: 949</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- System Status Dashboard -->
+        <div class="dashboard-grid">
+            <div class="glass-card status-card">
+                <span class="status-icon">🧠</span>
+                <div class="status-value" id="systemStatus">OPTIMAL</div>
+                <div class="status-label">System Status</div>
+            </div>
+
+            <div class="glass-card status-card">
+                <span class="status-icon">🤖</span>
+                <div class="status-value" id="agentCount">1,008</div>
+                <div class="status-label">Active Agents</div>
+            </div>
+
+            <div class="glass-card status-card">
+                <span class="status-icon">⚡</span>
+                <div class="status-value" id="accuracy">99.5%</div>
+                <div class="status-label">Accuracy Rate</div>
+            </div>
+
+            <div class="glass-card status-card">
+                <span class="status-icon">🚀</span>
+                <div class="status-value" id="throughput">847</div>
+                <div class="status-label">Calculations/Sec</div>
+            </div>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <div class="control-grid">
+                <!-- Property Valuation Form -->
+                <div class="glass-card">
+                    <h2 style="margin-bottom: 24px; color: var(--transcend-cyan);">
+                        🏡 Quantum Property Valuation
+                    </h2>
+
+                    <form id="valuationForm">
+                        <div class="form-group">
+                            <label for="parcelId">Parcel ID</label>
+                            <input type="text" id="parcelId" value="KNG-2025-001" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="countyId">County ID</label>
+                            <input type="text" id="countyId" value="KING" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="squareFootage">Square Footage</label>
+                            <input type="number" id="squareFootage" value="2400" min="1" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lotSize">Lot Size (acres)</label>
+                            <input type="number" id="lotSize" value="0.25" step="0.01" min="0.01" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="yearBuilt">Year Built</label>
+                            <input type="number" id="yearBuilt" value="2015" min="1800" max="2025" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bedrooms">Bedrooms</label>
+                            <input type="number" id="bedrooms" value="4" min="0" max="20" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bathrooms">Bathrooms</label>
+                            <input type="number" id="bathrooms" value="3" step="0.5" min="0" max="20" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="propertyType">Property Type</label>
+                            <select id="propertyType" required>
+                                <option value="single_family">Single Family</option>
+                                <option value="townhouse">Townhouse</option>
+                                <option value="condo">Condominium</option>
+                                <option value="commercial">Commercial</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="zoning">Zoning</label>
+                            <input type="text" id="zoning" value="R1" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="latitude">Latitude</label>
+                            <input type="number" id="latitude" value="47.6062" step="0.0001" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="longitude">Longitude</label>
+                            <input type="number" id="longitude" value="-122.3321" step="0.0001" required>
+                        </div>
+
+                        <button type="submit" class="btn">Calculate Valuation</button>
+                    </form>
+                </div>
+
+                <!-- Real-time Stats -->
+                <div class="glass-card">
+                    <h2 style="margin-bottom: 24px; color: var(--transcend-cyan);">
+                        📊 Real-time Metrics
+                    </h2>
+
+                    <div style="margin-bottom: 20px;">
+                        <div style="font-size: 0.9rem; color: rgba(255,255,255,0.7); margin-bottom: 4px;">Processing Time</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--success-green);" id="processingTime">47ms</div>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <div style="font-size: 0.9rem; color: rgba(255,255,255,0.7); margin-bottom: 4px;">Total Calculations</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--trust-blue);" id="totalCalculations">0</div>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <div style="font-size: 0.9rem; color: rgba(255,255,255,0.7); margin-bottom: 4px;">System Uptime</div>
+                        <div style="font-size: 1.2rem; font-weight: 600; color: var(--transcend-cyan);" id="uptime">Starting...</div>
+                    </div>
+
+                    <div>
+                        <div style="font-size: 0.9rem; color: rgba(255,255,255,0.7); margin-bottom: 8px;">Quantum Status</div>
+                        <div style="background: var(--clarity-gradient); padding: 8px 16px; border-radius: 20px; text-align: center; font-weight: 600;">
+                            TRANSCENDENT
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section" id="resultsSection" style="display: none;">
+            <div class="glass-card">
+                <h2 style="margin-bottom: 24px; color: var(--transcend-cyan);">
+                    🎯 Valuation Results
+                </h2>
+                <div id="results"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Components Script -->
+    <script src="enhanced-components.js"></script>
+
+    <!-- Demo System Script -->
+    <script src="demo-system.js"></script>
+
+    <script>
+        // CostForge AI UI Controller
+        class CostForgeUI {
+            constructor() {
+                this.apiBaseUrl = 'http://localhost:8000/api';
+                this.startTime = Date.now();
+                this.initializeEventListeners();
+                this.startRealTimeUpdates();
+                this.initializeEnhancedFeatures();
+            }
+
+            initializeEnhancedFeatures() {
+                // Add floating action buttons
+                this.createFloatingActions();
+
+                // Add quantum animations
+                this.initializeQuantumAnimations();
+
+                // Add keyboard shortcuts
+                this.initializeKeyboardShortcuts();
+            }
+
+            createFloatingActions() {
+                const fab = document.createElement('div');
+                fab.style.cssText = `
+                    position: fixed;
+                    bottom: 30px;
+                    right: 30px;
+                    z-index: 1000;
+                `;
+
+                fab.innerHTML = `
+                    <div class="fab-container">
+                        <button class="fab-main glass-card" onclick="costForgeUI.toggleQuickActions()" style="
+                            width: 60px;
+                            height: 60px;
+                            border-radius: 50%;
+                            background: var(--clarity-gradient);
+                            border: 1px solid var(--transcend-cyan);
+                            color: white;
+                            font-size: 1.5rem;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                            box-shadow: 0 8px 32px rgba(0, 255, 238, 0.3);
+                        ">⚡</button>
+
+                        <div class="fab-actions" id="fabActions" style="
+                            position: absolute;
+                            bottom: 70px;
+                            right: 0;
+                            display: none;
+                            flex-direction: column;
+                            gap: 12px;
+                        ">
+                            <button class="fab-action glass-card" onclick="costForgeUI.quickCalculate()" style="
+                                width: 50px;
+                                height: 50px;
+                                border-radius: 50%;
+                                background: var(--glass-bg);
+                                border: 1px solid var(--success-green);
+                                color: var(--success-green);
+                                font-size: 1.2rem;
+                                cursor: pointer;
+                                transition: all 0.3s ease;
+                            ">🧮</button>
+
+                            <button class="fab-action glass-card" onclick="costForgeUI.openPropertyMap()" style="
+                                width: 50px;
+                                height: 50px;
+                                border-radius: 50%;
+                                background: var(--glass-bg);
+                                border: 1px solid var(--trust-blue);
+                                color: var(--trust-blue);
+                                font-size: 1.2rem;
+                                cursor: pointer;
+                                transition: all 0.3s ease;
+                            ">🗺️</button>
+
+                            <button class="fab-action glass-card" onclick="costForgeUI.exportReport()" style="
+                                width: 50px;
+                                height: 50px;
+                                border-radius: 50%;
+                                background: var(--glass-bg);
+                                border: 1px solid var(--warning-orange);
+                                color: var(--warning-orange);
+                                font-size: 1.2rem;
+                                cursor: pointer;
+                                transition: all 0.3s ease;
+                            ">📊</button>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(fab);
+            }
+
+            toggleQuickActions() {
+                const actions = document.getElementById('fabActions');
+                if (actions.style.display === 'none') {
+                    actions.style.display = 'flex';
+                    actions.style.animation = 'fadeInUp 0.3s ease';
+                } else {
+                    actions.style.display = 'none';
+                }
+            }
+
+            quickCalculate() {
+                // Populate form with sample data for quick testing
+                document.getElementById('squareFootage').value = '2200';
+                document.getElementById('lotSize').value = '8000';
+                document.getElementById('yearBuilt').value = '2015';
+                document.getElementById('bedrooms').value = '4';
+                document.getElementById('bathrooms').value = '2.5';
+
+                // Trigger calculation
+                this.handleQuickCalculation();
+
+                if (window.notifications) {
+                    window.notifications.show('Quick calculation populated with sample data', 'info');
+                }
+            }
+
+            async handleQuickCalculation() {
+                try {
+                    const requestData = {
+                        parcel_id: 'QUICK-' + Date.now(),
+                        county_id: 'DEMO',
+                        square_footage: 2200,
+                        lot_size: 8000,
+                        year_built: 2015,
+                        bedrooms: 4,
+                        bathrooms: 2.5,
+                        property_type: 'Single Family',
+                        zoning: 'Residential'
+                    };
+
+                    const response = await fetch(`${this.apiBaseUrl}/costforge/valuation`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(requestData)
+                    });
+
+                    const result = await response.json();
+                    this.displayValuationResult(result);
+                } catch (error) {
+                    console.error('Quick calculation error:', error);
+                }
+            }
+
+            openPropertyMap() {
+                // Scroll to property map if it exists
+                const mapElement = document.getElementById('propertyMap');
+                if (mapElement) {
+                    mapElement.scrollIntoView({ behavior: 'smooth' });
+
+                    if (window.notifications) {
+                        window.notifications.show('Property map location updated', 'success');
+                    }
+                }
+            }
+
+            exportReport() {
+                // Generate and download report
+                const reportData = {
+                    timestamp: new Date().toISOString(),
+                    systemStatus: 'Operational',
+                    metrics: {
+                        quantumFactor: 949,
+                        accuracy: '99.2%',
+                        throughput: '1,247 calc/min'
+                    }
+                };
+
+                const blob = new Blob([JSON.stringify(reportData, null, 2)], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `costforge-report-${Date.now()}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+
+                if (window.notifications) {
+                    window.notifications.show('Report exported successfully', 'success');
+                }
+            }
+
+            initializeQuantumAnimations() {
+                // Add CSS animations
+                if (!document.getElementById('quantumAnimations')) {
+                    const style = document.createElement('style');
+                    style.id = 'quantumAnimations';
+                    style.textContent = `
+                        @keyframes quantumScan {
+                            0%, 100% { opacity: 0; transform: translateY(0); }
+                            50% { opacity: 0.8; transform: translateY(200px); }
+                        }
+
+                        @keyframes fadeInUp {
+                            from {
+                                opacity: 0;
+                                transform: translateY(20px);
+                            }
+                            to {
+                                opacity: 1;
+                                transform: translateY(0);
+                            }
+                        }
+
+                        .fab-action:hover {
+                            transform: scale(1.1);
+                            box-shadow: 0 4px 20px rgba(0, 255, 238, 0.4);
+                        }
+
+                        .glass-card:hover {
+                            transform: translateY(-2px);
+                            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+            }
+
+            initializeKeyboardShortcuts() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey) {
+                        switch(e.key) {
+                            case 'Enter':
+                                e.preventDefault();
+                                this.quickCalculate();
+                                break;
+                            case 'r':
+                                e.preventDefault();
+                                this.exportReport();
+                                break;
+                            case 'm':
+                                e.preventDefault();
+                                this.openPropertyMap();
+                                break;
+                        }
+                    }
+                });
+            }
+
+            initializeEventListeners() {
+                const form = document.getElementById('valuationForm');
+                form.addEventListener('submit', (e) => this.handleValuationSubmit(e));
+            }
+
+            async handleValuationSubmit(event) {
+                event.preventDefault();
+
+                const formData = new FormData(event.target);
+                const requestData = {
+                    parcel_id: formData.get('parcelId') || document.getElementById('parcelId').value,
+                    county_id: formData.get('countyId') || document.getElementById('countyId').value,
+                    square_footage: parseFloat(document.getElementById('squareFootage').value),
+                    lot_size: parseFloat(document.getElementById('lotSize').value),
+                    year_built: parseInt(document.getElementById('yearBuilt').value),
+                    bedrooms: parseInt(document.getElementById('bedrooms').value),
+                    bathrooms: parseFloat(document.getElementById('bathrooms').value),
+                    property_type: document.getElementById('propertyType').value,
+                    zoning: document.getElementById('zoning').value,
+                    latitude: parseFloat(document.getElementById('latitude').value),
+                    longitude: parseFloat(document.getElementById('longitude').value)
+                };
+
+                this.showLoading();
+
+                try {
+                    const startTime = Date.now();
+                    const response = await fetch(`${this.apiBaseUrl}/costforge/calculate-valuation`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(requestData)
+                    });
+
+                    const processingTime = Date.now() - startTime;
+                    document.getElementById('processingTime').textContent = `${processingTime}ms`;
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    this.displayResults(result);
+                    this.updateTotalCalculations();
+
+                } catch (error) {
+                    this.showError(`Calculation failed: ${error.message}`);
+                } finally {
+                    this.hideLoading();
+                }
+            }
+
+            showLoading() {
+                const resultsSection = document.getElementById('resultsSection');
+                resultsSection.style.display = 'block';
+                resultsSection.innerHTML = `
+                    <div class="glass-card">
+                        <div class="loading">
+                            <div class="loading-spinner"></div>
+                            <div>Quantum algorithms computing...</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            hideLoading() {
+                // Loading is replaced by results or error message
+            }
+
+            displayResults(result) {
+                const resultsSection = document.getElementById('resultsSection');
+                resultsSection.style.display = 'block';
+
+                const formatCurrency = (value) =>
+                    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+
+                const resultsHTML = `
+                    <div class="glass-card">
+                        <h2 style="margin-bottom: 24px; color: var(--transcend-cyan);">
+                            🎯 Valuation Results - ${result.parcel_id}
+                        </h2>
+
+                        <div class="result-header">
+                            <div class="result-value">${formatCurrency(result.estimated_value)}</div>
+                            <div class="confidence-score">${result.confidence_score.toFixed(1)}% Confidence</div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px;">
+                            <div>
+                                <div style="font-size: 0.9rem; color: rgba(255,255,255,0.7);">Land Value</div>
+                                <div style="font-size: 1.3rem; font-weight: 600; color: var(--trust-blue);">${formatCurrency(result.land_value)}</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.9rem; color: rgba(255,255,255,0.7);">Improvement Value</div>
+                                <div style="font-size: 1.3rem; font-weight: 600; color: var(--success-green);">${formatCurrency(result.improvement_value)}</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.9rem; color: rgba(255,255,255,0.7);">Calculation Method</div>
+                                <div style="font-size: 1rem; color: var(--transcend-cyan);">${result.calculation_method}</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <h3 style="color: var(--transcend-cyan); margin-bottom: 12px;">Factors Considered</h3>
+                            <div class="factors-list">
+                                ${result.factors_considered.map(factor => `<div class="factor-item">${factor}</div>`).join('')}
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 style="color: var(--transcend-cyan); margin-bottom: 12px;">Comparable Properties</h3>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px;">
+                                ${Object.entries(result.comparable_properties).map(([id, value]) => `
+                                    <div style="background: rgba(0,153,255,0.1); padding: 12px; border-radius: 8px; text-align: center;">
+                                        <div style="font-size: 0.8rem; color: rgba(255,255,255,0.7);">${id}</div>
+                                        <div style="font-size: 1.1rem; font-weight: 600; color: var(--trust-blue);">${formatCurrency(value)}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                resultsSection.innerHTML = resultsHTML;
+            }
+
+            showError(message) {
+                const resultsSection = document.getElementById('resultsSection');
+                resultsSection.style.display = 'block';
+                resultsSection.innerHTML = `
+                    <div class="glass-card">
+                        <div class="message error">
+                            ❌ ${message}
+                        </div>
+                    </div>
+                `;
+            }
+
+            async updateSystemStatus() {
+                try {
+                    const response = await fetch(`${this.apiBaseUrl}/costforge/status`);
+                    if (response.ok) {
+                        const status = await response.json();
+                        document.getElementById('systemStatus').textContent = status.status.toUpperCase();
+                        document.getElementById('totalCalculations').textContent = status.total_inferences.toLocaleString();
+                    }
+                } catch (error) {
+                    console.warn('Failed to update system status:', error);
+                }
+            }
+
+            async updateAgentStatus() {
+                try {
+                    const response = await fetch(`${this.apiBaseUrl}/costforge/agents/status`);
+                    if (response.ok) {
+                        const status = await response.json();
+                        document.getElementById('agentCount').textContent = status.active_agents.toLocaleString();
+                    }
+                } catch (error) {
+                    console.warn('Failed to update agent status:', error);
+                }
+            }
+
+            async updatePerformanceMetrics() {
+                try {
+                    const response = await fetch(`${this.apiBaseUrl}/costforge/performance/metrics`);
+                    if (response.ok) {
+                        const metrics = await response.json();
+                        document.getElementById('accuracy').textContent = `${metrics.avg_confidence_score.toFixed(1)}%`;
+                        document.getElementById('throughput').textContent = Math.round(1000 / metrics.avg_processing_time_ms);
+                    }
+                } catch (error) {
+                    console.warn('Failed to update performance metrics:', error);
+                }
+            }
+
+            updateTotalCalculations() {
+                const current = parseInt(document.getElementById('totalCalculations').textContent.replace(/,/g, '')) || 0;
+                document.getElementById('totalCalculations').textContent = (current + 1).toLocaleString();
+            }
+
+            updateUptime() {
+                const elapsed = Date.now() - this.startTime;
+                const hours = Math.floor(elapsed / 3600000);
+                const minutes = Math.floor((elapsed % 3600000) / 60000);
+                const seconds = Math.floor((elapsed % 60000) / 1000);
+
+                document.getElementById('uptime').textContent =
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+
+            startRealTimeUpdates() {
+                // Update uptime every second
+                setInterval(() => this.updateUptime(), 1000);
+
+                // Update system metrics every 5 seconds
+                setInterval(() => {
+                    this.updateSystemStatus();
+                    this.updateAgentStatus();
+                    this.updatePerformanceMetrics();
+                }, 5000);
+
+                // Initial load
+                this.updateSystemStatus();
+                this.updateAgentStatus();
+                this.updatePerformanceMetrics();
+            }
+        }
+
+        // Initialize the UI when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new CostForgeUI();
+        });
+    </script>
+</body>
+</html>

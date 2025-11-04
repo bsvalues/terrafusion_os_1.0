@@ -1,0 +1,104 @@
+{
+    "type": "FunctionTool",
+    "guid": "{496f50d2-2502-4f8e-8633-4a623b436c3d}",
+    "displayname": "$rc:title",
+    "helpcontent": "10050003",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "featuretype": [
+                    "Simple",
+                    "SimpleJunction",
+                    "SimpleEdge",
+                    "ComplexEdge"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "angle_field": {
+            "displayname": "$rc:angle_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Float",
+                    "Double",
+                    "Short",
+                    "Long"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:angle_field.descr"
+        },
+        "rotation_method": {
+            "type": "optional",
+            "displayname": "$rc:rotation_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "GEOGRAPHIC",
+                        "code": "$rc:rotation_method.domain.GEOGRAPHIC"
+                    },
+                    {
+                        "value": "ARITHMETIC",
+                        "code": "$rc:rotation_method.domain.ARITHMETIC"
+                    },
+                    {
+                        "value": "GRAPHIC",
+                        "code": "$rc:rotation_method.domain.GRAPHIC"
+                    }
+                ]
+            },
+            "value": "GEOGRAPHIC",
+            "description": "$rc:rotation_method.descr"
+        },
+        "coordinate_sys_field": {
+            "type": "optional",
+            "displayname": "$rc:coordinate_sys_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text"
+                ],
+                "key.field": [
+                    "NONE"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "value": "NONE",
+            "description": "$rc:coordinate_sys_field.descr"
+        },
+        "out_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            }
+        }
+    },
+    "environments": [
+        "cartographicCoordinateSystem",
+        "workspace"
+    ]
+}

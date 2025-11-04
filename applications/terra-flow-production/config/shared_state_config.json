@@ -1,0 +1,495 @@
+{
+  "base_layer_name": "Imagery",
+  "saved_locations": [
+    {
+      "name": "",
+      "description": "my sub divsion",
+      "spatial_reference_wkid": 102100,
+      "x_min": -10732428.312289072,
+      "y_min": 3887403.3981508096,
+      "x_max": -10727131.882723967,
+      "y_max": 3889245.611858123
+    },
+    {
+      "name": "",
+      "description": "hood 1",
+      "spatial_reference_wkid": 102100,
+      "x_min": -10731580.871576982,
+      "y_min": 3888260.945155521,
+      "x_max": -10728678.860285364,
+      "y_max": 3889182.0520091774
+    },
+    {
+      "name": "",
+      "description": "Year built hood",
+      "spatial_reference_wkid": 3857,
+      "x_min": -10737120.598997863,
+      "y_min": 3888668.509002252,
+      "x_max": -10732572.595814893,
+      "y_max": 3889815.500993796
+    },
+    {
+      "name": "",
+      "description": "Year built hood 2",
+      "spatial_reference_wkid": 3857,
+      "x_min": -10734211.474257603,
+      "y_min": 3886804.4867678564,
+      "x_max": -10725115.467891641,
+      "y_max": 3889872.3956623394
+    },
+    {
+      "name": "",
+      "description": "hood 2 yb",
+      "spatial_reference_wkid": 3857,
+      "x_min": -10734073.0915814,
+      "y_min": 3885884.3305779384,
+      "x_max": -10721482.65443723,
+      "y_max": 3890130.8441077187
+    },
+    {
+      "name": "",
+      "description": "lukes house",
+      "spatial_reference_wkid": 3857,
+      "x_min": -10718142.109793805,
+      "y_min": 3878704.9444261924,
+      "x_max": -10710544.958665717,
+      "y_max": 3880449.3475512546
+    },
+    {
+      "name": "",
+      "description": "new subs",
+      "spatial_reference_wkid": 3857,
+      "x_min": -10731081.068227492,
+      "y_min": 3889059.468275232,
+      "x_max": -10729685.298743593,
+      "y_max": 3890139.4536823393
+    },
+    {
+      "name": "",
+      "description": "city view",
+      "spatial_reference_wkid": 3857,
+      "x_min": -10728381.617103226,
+      "y_min": 3875536.699120396,
+      "x_max": -10726577.360757597,
+      "y_max": 3876109.2309433753
+    },
+    {
+      "name": "",
+      "description": "permits",
+      "spatial_reference_wkid": 3857,
+      "x_min": -10725145.88196022,
+      "y_min": 3879459.2373834313,
+      "x_max": -10719061.715975309,
+      "y_max": 3884088.3371588276
+    },
+    {
+      "name": "",
+      "description": "mobile homes",
+      "spatial_reference_wkid": 3857,
+      "x_min": -10728983.320160596,
+      "y_min": 3882594.0892482908,
+      "x_max": -10725605.31725279,
+      "y_max": 3884802.5574212833
+    },
+    {
+      "name": "",
+      "description": "Commercial Properties",
+      "spatial_reference_wkid": 3857,
+      "x_min": -10738725.944775186,
+      "y_min": 3882813.8569813273,
+      "x_max": -10735182.498742506,
+      "y_max": 3885022.3251543227
+    },
+    {
+      "name": "",
+      "description": "playground",
+      "spatial_reference_wkid": 3857,
+      "x_min": -10737123.02110212,
+      "y_min": 3887290.6384035004,
+      "x_max": -10735726.871447053,
+      "y_max": 3888831.192348312
+    },
+    {
+      "name": "",
+      "description": "Google street view",
+      "spatial_reference_wkid": 3857,
+      "x_min": -10728374.500443906,
+      "y_min": 3887879.076680337,
+      "x_max": -10728228.491092125,
+      "y_max": 3888086.6624448495
+    },
+    {
+      "name": "",
+      "description": "new development",
+      "spatial_reference_wkid": 3857,
+      "x_min": -10730123.681273649,
+      "y_min": 3888224.9166373555,
+      "x_max": -10729012.804349972,
+      "y_max": 3889582.19584521
+    }
+  ],
+  "map_user_settings": [
+    {
+      "name": "",
+      "layout_name": "Default Layout",
+      "zoom_to_selected": false,
+      "zoom_to_highlighted": false,
+      "show_scale_bar": false,
+      "show_legend": true,
+      "show_layers": true,
+      "show_legal": false,
+      "show_title": false,
+      "append_search": false,
+      "layer_states": []
+    },
+    {
+      "name": "",
+      "layout_name": "Res",
+      "zoom_to_selected": false,
+      "zoom_to_highlighted": false,
+      "show_scale_bar": false,
+      "show_legend": true,
+      "show_layers": true,
+      "show_legal": false,
+      "show_title": false,
+      "append_search": false,
+      "layer_states": []
+    },
+    {
+      "name": "",
+      "layout_name": "Comercial",
+      "zoom_to_selected": false,
+      "zoom_to_highlighted": false,
+      "show_scale_bar": false,
+      "show_legend": true,
+      "show_layers": true,
+      "show_legal": false,
+      "show_title": false,
+      "append_search": false,
+      "layer_states": []
+    },
+    {
+      "name": "",
+      "layout_name": "Default Layout",
+      "zoom_to_selected": false,
+      "zoom_to_highlighted": false,
+      "show_scale_bar": false,
+      "show_legend": true,
+      "show_layers": true,
+      "show_legal": false,
+      "show_title": false,
+      "append_search": false,
+      "layer_states": []
+    },
+    {
+      "name": "",
+      "layout_name": "Default Layout",
+      "zoom_to_selected": false,
+      "zoom_to_highlighted": false,
+      "show_scale_bar": false,
+      "show_legend": true,
+      "show_layers": true,
+      "show_legal": false,
+      "show_title": false,
+      "append_search": false,
+      "layer_states": []
+    },
+    {
+      "name": "",
+      "layout_name": "Default Layout",
+      "zoom_to_selected": false,
+      "zoom_to_highlighted": false,
+      "show_scale_bar": false,
+      "show_legend": true,
+      "show_layers": true,
+      "show_legal": false,
+      "show_title": false,
+      "append_search": false,
+      "layer_states": []
+    },
+    {
+      "name": "",
+      "layout_name": "Default Layout",
+      "zoom_to_selected": false,
+      "zoom_to_highlighted": false,
+      "show_scale_bar": false,
+      "show_legend": true,
+      "show_layers": true,
+      "show_legal": false,
+      "show_title": false,
+      "append_search": false,
+      "layer_states": []
+    },
+    {
+      "name": "",
+      "layout_name": "Default Layout",
+      "zoom_to_selected": false,
+      "zoom_to_highlighted": false,
+      "show_scale_bar": false,
+      "show_legend": true,
+      "show_layers": true,
+      "show_legal": false,
+      "show_title": false,
+      "append_search": false,
+      "layer_states": []
+    },
+    {
+      "name": "",
+      "layout_name": "Default Layout",
+      "zoom_to_selected": false,
+      "zoom_to_highlighted": false,
+      "show_scale_bar": false,
+      "show_legend": true,
+      "show_layers": true,
+      "show_legal": false,
+      "show_title": false,
+      "append_search": false,
+      "layer_states": []
+    },
+    {
+      "name": "",
+      "layout_name": "Default Layout",
+      "zoom_to_selected": false,
+      "zoom_to_highlighted": false,
+      "show_scale_bar": false,
+      "show_legend": true,
+      "show_layers": true,
+      "show_legal": false,
+      "show_title": false,
+      "append_search": false,
+      "layer_states": []
+    },
+    {
+      "name": "",
+      "layout_name": "Default Layout",
+      "zoom_to_selected": false,
+      "zoom_to_highlighted": false,
+      "show_scale_bar": false,
+      "show_legend": true,
+      "show_layers": true,
+      "show_legal": false,
+      "show_title": false,
+      "append_search": false,
+      "layer_states": []
+    },
+    {
+      "name": "",
+      "layout_name": "Default Layout",
+      "zoom_to_selected": false,
+      "zoom_to_highlighted": false,
+      "show_scale_bar": false,
+      "show_legend": true,
+      "show_layers": true,
+      "show_legal": false,
+      "show_title": false,
+      "append_search": false,
+      "layer_states": []
+    },
+    {
+      "name": "",
+      "layout_name": "my desktop",
+      "zoom_to_selected": false,
+      "zoom_to_highlighted": false,
+      "show_scale_bar": false,
+      "show_legend": true,
+      "show_layers": true,
+      "show_legal": false,
+      "show_title": false,
+      "append_search": false,
+      "layer_states": []
+    },
+    {
+      "name": "",
+      "layout_name": "Data view",
+      "zoom_to_selected": true,
+      "zoom_to_highlighted": true,
+      "show_scale_bar": false,
+      "show_legend": true,
+      "show_layers": true,
+      "show_legal": false,
+      "show_title": false,
+      "append_search": false,
+      "layer_states": []
+    },
+    {
+      "name": "",
+      "layout_name": "my desktop d",
+      "zoom_to_selected": false,
+      "zoom_to_highlighted": false,
+      "show_scale_bar": false,
+      "show_legend": true,
+      "show_layers": true,
+      "show_legal": false,
+      "show_title": false,
+      "append_search": false,
+      "layer_states": []
+    },
+    {
+      "name": "",
+      "layout_name": "Desktop with google",
+      "zoom_to_selected": false,
+      "zoom_to_highlighted": false,
+      "show_scale_bar": false,
+      "show_legend": true,
+      "show_layers": true,
+      "show_legal": false,
+      "show_title": false,
+      "append_search": false,
+      "layer_states": []
+    },
+    {
+      "name": "",
+      "layout_name": "Desktop review screen",
+      "zoom_to_selected": false,
+      "zoom_to_highlighted": false,
+      "show_scale_bar": false,
+      "show_legend": true,
+      "show_layers": true,
+      "show_legal": false,
+      "show_title": false,
+      "append_search": false,
+      "layer_states": []
+    },
+    {
+      "name": "",
+      "layout_name": "Desktop review",
+      "zoom_to_selected": false,
+      "zoom_to_highlighted": false,
+      "show_scale_bar": false,
+      "show_legend": true,
+      "show_layers": true,
+      "show_legal": false,
+      "show_title": false,
+      "append_search": false,
+      "layer_states": []
+    },
+    {
+      "name": "",
+      "layout_name": "App to App1",
+      "zoom_to_selected": true,
+      "zoom_to_highlighted": true,
+      "show_scale_bar": false,
+      "show_legend": true,
+      "show_layers": true,
+      "show_legal": false,
+      "show_title": false,
+      "append_search": false,
+      "layer_states": [
+        {
+          "id": "Selection",
+          "is_enabled": true,
+          "is_expanded": false,
+          "child_layers": []
+        },
+        {
+          "id": "Parcels",
+          "is_enabled": true,
+          "is_expanded": false,
+          "child_layers": []
+        },
+        {
+          "id": "Imagery",
+          "is_enabled": true,
+          "is_expanded": false,
+          "child_layers": [
+            {
+              "id": "World Imagery",
+              "is_enabled": true,
+              "is_expanded": false
+            },
+            {
+              "id": "Low Resolution 15m Imagery",
+              "is_enabled": true,
+              "is_expanded": false
+            },
+            {
+              "id": "High Resolution 60cm Imagery",
+              "is_enabled": true,
+              "is_expanded": false
+            },
+            {
+              "id": "High Resolution 30cm Imagery",
+              "is_enabled": true,
+              "is_expanded": false
+            },
+            {
+              "id": "Citations",
+              "is_enabled": true,
+              "is_expanded": false
+            },
+            {
+              "id": "1.9cm Resolution Metadata",
+              "is_enabled": true,
+              "is_expanded": false
+            },
+            {
+              "id": "3.7cm Resolution Metadata",
+              "is_enabled": true,
+              "is_expanded": false
+            },
+            {
+              "id": "7.5cm Resolution Metadata",
+              "is_enabled": true,
+              "is_expanded": false
+            },
+            {
+              "id": "15cm Resolution Metadata",
+              "is_enabled": true,
+              "is_expanded": false
+            },
+            {
+              "id": "30cm Resolution Metadata",
+              "is_enabled": true,
+              "is_expanded": false
+            },
+            {
+              "id": "60cm Resolution Metadata",
+              "is_enabled": true,
+              "is_expanded": false
+            },
+            {
+              "id": "1.2m Resolution Metadata",
+              "is_enabled": true,
+              "is_expanded": false
+            },
+            {
+              "id": "2.4m Resolution Metadata",
+              "is_enabled": true,
+              "is_expanded": false
+            },
+            {
+              "id": "4.8m Resolution Metadata",
+              "is_enabled": true,
+              "is_expanded": false
+            },
+            {
+              "id": "9.6m Resolution Metadata",
+              "is_enabled": true,
+              "is_expanded": false
+            },
+            {
+              "id": "19m Resolution Metadata",
+              "is_enabled": true,
+              "is_expanded": false
+            },
+            {
+              "id": "38m Resolution Metadata",
+              "is_enabled": true,
+              "is_expanded": false
+            },
+            {
+              "id": "75m Resolution Metadata",
+              "is_enabled": true,
+              "is_expanded": false
+            },
+            {
+              "id": "150m Resolution Metadata",
+              "is_enabled": true,
+              "is_expanded": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

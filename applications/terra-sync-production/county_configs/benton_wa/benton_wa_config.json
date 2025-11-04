@@ -1,0 +1,97 @@
+{
+  "county_id": "benton_wa",
+  "county_friendly_name": "Benton County, WA",
+  "legacy_system_type": "PACS",
+  "timezone": "America/Los_Angeles",
+  "configuration_version": "1.0.0",
+  "last_updated": "2025-05-14T14:00:00Z",
+  "contact": {
+    "name": "Benton County IT Lead",
+    "email": "it_lead@benton.co.wa.us"
+  },
+  "data_ingestion_settings": {
+    "pacs_db_host_env_var": "PACS_DB_HOST_BENTON_WA_SOURCE",
+    "pacs_db_port_env_var": "PACS_DB_PORT_BENTON_WA_SOURCE",
+    "pacs_db_name_env_var": "PACS_DB_NAME_BENTON_WA_SOURCE",
+    "pacs_db_user_env_var": "PACS_DB_USER_BENTON_WA_SOURCE",
+    "pacs_db_password_env_var": "PACS_DB_PASSWORD_BENTON_WA_SOURCE",
+    "mapping_file_path": "county_configs/benton_wa/mappings/benton_wa_mappings.yaml",
+    "sync_schedule_cron": "0 2 * * *",
+    "enable_cdc": true
+  },
+  "rbac_settings": {
+    "user_definitions_path": "county_configs/benton_wa/rbac/benton_wa_users.json",
+    "roles": {
+      "Assessor": {
+        "description": "Lead Assessor with approval rights for valuations and reports.",
+        "permissions": [
+          "view_dashboard",
+          "run_valuation", "view_valuation_status", "view_valuation_results", "approve_valuation",
+          "run_report", "view_report_status", "view_report_results", "approve_report",
+          "run_market_analysis", "view_market_analysis_status", "view_market_analysis_results",
+          "run_gis_export", "view_gis_export_status", "view_gis_export_results",
+          "view_file_uploads", "approve_file_upload"
+        ]
+      },
+      "ValuationStaff": {
+        "description": "Staff performing valuation tasks.",
+        "permissions": [
+          "view_dashboard",
+          "run_valuation", "view_valuation_status", "view_valuation_results"
+        ]
+      },
+      "ReportingStaff": {
+        "description": "Staff generating and viewing reports.",
+        "permissions": [
+          "view_dashboard",
+          "run_report", "view_report_status", "view_report_results"
+        ]
+      },
+      "ITAdmin": {
+        "description": "System administrator with full operational control.",
+        "permissions": ["superuser"]
+      },
+      "Auditor": {
+        "description": "View-only access for audit purposes.",
+        "permissions": [
+          "view_dashboard",
+          "view_valuation_status", "view_valuation_results",
+          "view_report_status", "view_report_results",
+          "view_market_analysis_status", "view_market_analysis_results",
+          "view_gis_export_status", "view_gis_export_results",
+          "view_file_uploads", "view_audit_logs"
+        ]
+      }
+    }
+  },
+  "plugin_settings": {
+    "valuation": {
+      "default_avm_model": "comparable_sales_v2",
+      "confidence_threshold_for_review": 0.75
+    },
+    "reporting": {
+      "standard_report_types": ["sales_ratio_study_annual", "assessment_roll_summary"],
+      "default_export_format": "PDF"
+    },
+    "market_analysis": {
+      "default_trend_period_years": 3
+    },
+    "gis_export": {
+      "available_formats": ["GeoJSON", "Shapefile", "KML"],
+      "default_coordinate_system": "EPSG:4326",
+      "max_export_area_sq_km": 750,
+      "default_simplify_tolerance": 0.0001,
+      "include_attributes_default": true
+    },
+    "file_ingestion": {
+        "allowed_file_types": [".csv", ".txt", ".xml"],
+        "max_file_size_mb": 100
+    }
+  },
+  "ui_settings": {
+    "dashboard_branding_logo_url": "/static/county_logos/benton_wa_logo.png",
+    "default_map_extent": {
+      "min_lat": 46.0, "min_lon": -120.0, "max_lat": 46.5, "max_lon": -119.0
+    }
+  }
+}

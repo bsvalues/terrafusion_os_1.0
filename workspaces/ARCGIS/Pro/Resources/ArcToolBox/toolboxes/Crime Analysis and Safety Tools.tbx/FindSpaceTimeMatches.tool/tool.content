@@ -1,0 +1,210 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\FindSpaceTimeMatches",
+    "displayname": "$rc:title",
+    "helpcontent": "75000004",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_primary_features": {
+            "displayname": "$rc:in_primary_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:in_primary_features.descr"
+        },
+        "in_comparison_features": {
+            "displayname": "$rc:in_comparison_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:in_comparison_features.descr"
+        },
+        "out_primary_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_primary_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_primary_feature_class.descr"
+        },
+        "out_comparison_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_comparison_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_comparison_feature_class.descr"
+        },
+        "match_types": {
+            "control_guid": "{172840BF-D385-4F83-80E8-2AC3B79EB0E0}",
+            "displayname": "$rc:match_types.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SPACE_AND_TIME",
+                        "code": "$rc:match_types.domain.SPACE_AND_TIME"
+                    },
+                    {
+                        "value": "SPACE_ONLY",
+                        "code": "$rc:match_types.domain.SPACE_ONLY"
+                    },
+                    {
+                        "value": "TIME_ONLY",
+                        "code": "$rc:match_types.domain.TIME_ONLY"
+                    }
+                ]
+            },
+            "description": "$rc:match_types.descr"
+        },
+        "search_radius": {
+            "type": "optional",
+            "displayname": "$rc:search_radius.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPUnitDomain",
+                "items": [
+                    "Meters",
+                    "Feet",
+                    "FeetInt",
+                    "Kilometers",
+                    "Miles",
+                    "MilesInt",
+                    "Yards",
+                    "YardsInt"
+                ]
+            },
+            "description": "$rc:search_radius.descr"
+        },
+        "temporal_search_radius": {
+            "type": "optional",
+            "displayname": "$rc:temporal_search_radius.title",
+            "datatype": {
+                "type": "GPTimeUnit"
+            },
+            "domain": {
+                "type": "GPUnitDomain",
+                "items": [
+                    "Seconds",
+                    "Minutes",
+                    "Hours",
+                    "Days",
+                    "Weeks"
+                ]
+            },
+            "description": "$rc:temporal_search_radius.descr"
+        },
+        "primary_start_date_field": {
+            "type": "optional",
+            "displayname": "$rc:primary_start_date_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Date",
+                    "TimestampOffset"
+                ]
+            },
+            "depends": [
+                "in_primary_features"
+            ],
+            "description": "$rc:primary_start_date_field.descr"
+        },
+        "comparison_start_date_field": {
+            "type": "optional",
+            "displayname": "$rc:comparison_start_date_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Date",
+                    "TimestampOffset"
+                ]
+            },
+            "depends": [
+                "in_comparison_features"
+            ],
+            "description": "$rc:comparison_start_date_field.descr"
+        },
+        "primary_end_date_field": {
+            "type": "optional",
+            "displayname": "$rc:primary_end_date_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Date",
+                    "TimestampOffset"
+                ]
+            },
+            "depends": [
+                "in_primary_features"
+            ],
+            "description": "$rc:primary_end_date_field.descr"
+        },
+        "comparison_end_date_field": {
+            "type": "optional",
+            "displayname": "$rc:comparison_end_date_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Date",
+                    "TimestampOffset"
+                ]
+            },
+            "depends": [
+                "in_comparison_features"
+            ],
+            "description": "$rc:comparison_end_date_field.descr"
+        }
+    },
+    "environments": [
+        "MDomain",
+        "MResolution",
+        "MTolerance",
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "ZDomain",
+        "ZResolution",
+        "ZTolerance",
+        "autoCommit",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "maintainAttachments",
+        "outputCoordinateSystem",
+        "outputMFlag",
+        "outputZFlag",
+        "outputZValue",
+        "qualifiedFieldNames",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

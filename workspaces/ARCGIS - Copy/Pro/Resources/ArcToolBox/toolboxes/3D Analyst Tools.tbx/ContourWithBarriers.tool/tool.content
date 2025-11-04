@@ -1,0 +1,217 @@
+{
+    "type": "FunctionTool",
+    "guid": "{f679c5fa-967d-4161-8328-dded019320e0}",
+    "displayname": "$rc:title",
+    "helpcontent": "5160004",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9",
+        "10"
+    ],
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "params": {
+        "in_raster": {
+            "display_order": "1",
+            "displayname": "$rc:in_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEMosaicDataset"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_raster.descr"
+        },
+        "out_contour_feature_class": {
+            "direction": "out",
+            "display_order": "3",
+            "displayname": "$rc:out_contour_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline",
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:out_contour_feature_class.descr"
+        },
+        "in_barrier_features": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:in_barrier_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline",
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:in_barrier_features.descr"
+        },
+        "in_contour_type": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:in_contour_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "POLYLINES",
+                        "code": "$rc:in_contour_type.domain.POLYLINES"
+                    },
+                    {
+                        "value": "POLYGONS",
+                        "code": "$rc:in_contour_type.domain.POLYGONS"
+                    }
+                ]
+            },
+            "value": "POLYLINES",
+            "description": "$rc:in_contour_type.descr"
+        },
+        "in_contour_values_file": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:in_contour_values_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "description": "$rc:in_contour_values_file.descr"
+        },
+        "explicit_only": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:explicit_only.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "EXPLICIT_VALUES_ONLY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_EXPLICIT_VALUES_ONLY"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:explicit_only.descr"
+        },
+        "in_base_contour": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:in_base_contour.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:in_base_contour.descr"
+        },
+        "in_contour_interval": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:in_contour_interval.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "description": "$rc:in_contour_interval.descr"
+        },
+        "in_indexed_contour_interval": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:in_indexed_contour_interval.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                }
+            },
+            "value": "0",
+            "description": "$rc:in_indexed_contour_interval.descr"
+        },
+        "in_contour_list": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:in_contour_list.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPDouble"
+                }
+            },
+            "description": "$rc:in_contour_list.descr"
+        },
+        "in_z_factor": {
+            "type": "optional",
+            "display_order": "11",
+            "displayname": "$rc:in_z_factor.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "value": "1",
+            "description": "$rc:in_z_factor.descr"
+        }
+    },
+    "environments": [
+        "MDomain",
+        "MResolution",
+        "MTolerance",
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "ZDomain",
+        "ZResolution",
+        "ZTolerance",
+        "autoCommit",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "maintainSpatialIndex",
+        "outputCoordinateSystem",
+        "outputMFlag",
+        "outputZFlag",
+        "outputZValue",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

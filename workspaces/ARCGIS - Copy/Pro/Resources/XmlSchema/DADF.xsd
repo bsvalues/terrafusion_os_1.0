@@ -1,0 +1,1228 @@
+<?xml version="1.0" encoding="uTF-8"?>
+<!--
+  Schema definition for Dakota Framework Extensibility
+
+  Copyright (c) ESRI Corporation. All rights reserved.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0"
+  targetNamespace="http://schemas.esri.com/DADF/Registry"
+  xmlns="http://schemas.esri.com/DADF/Registry"
+  elementFormDefault="qualified"
+  attributeFormDefault="unqualified">
+
+  <!-- Root Element -->
+  <xs:element name="DADF">
+    <xs:annotation>
+      <xs:documentation>DADF root element</xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:choice minOccurs="0"  maxOccurs="unbounded">
+        <xs:element name="accelerators" type="CT_UpdateAccelerators"/>
+        <xs:element name="conditions" type="CT_InsertConditions"/>
+        <xs:element name="extensions" type="CT_UpdateExtensions"/>
+        <xs:element name="propertySheets" type="CT_UpdateSheets"/>
+      </xs:choice>
+      <xs:attribute name="defaultAssembly" type="ST_String" use="optional"/>
+      <xs:attribute name="defaultNamespace" type="ST_String" use="optional"/>
+      <xs:attribute name="defaultPublicKeyToken" type="ST_String" use="optional"/>
+      <xs:attribute name="defaultVersion" type="ST_String" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!--
+	 Conditions
+	-->
+  <xs:complexType name="CT_Conditions">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="condition" type="CT_Condition"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_InsertConditions">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="insertCondition" type="CT_Condition"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_Condition">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="state" type="CT_State"/>
+      <xs:element name="and" type="CT_Operator"/>
+      <xs:element name="or" type="CT_Operator"/>
+      <xs:element name="not" type="CT_Operator"/>
+    </xs:choice>
+    <xs:attribute name="id" type="ST_UniqueID" use="required"/>
+    <xs:attribute name="caption" type="ST_String" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="CT_State">
+    <xs:attribute name="id" type="ST_ID" use="required"/>
+  </xs:complexType>
+  <xs:complexType name="CT_Operator">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="state" type="CT_State"/>
+      <xs:element name="and" type="CT_Operator"/>
+      <xs:element name="or" type="CT_Operator"/>
+      <xs:element name="not" type="CT_Operator"/>
+    </xs:choice>
+  </xs:complexType>
+  <!--
+	 Property Sheets 
+	-->
+  <xs:complexType name="CT_PropertySheets">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="sheet" type="CT_Sheet"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateSheets">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="deleteSheet" type="CT_Delete"/>
+      <xs:element name="insertSheet" type="CT_Sheet"/>
+      <xs:element name="updateSheet" type="CT_UpdateSheet"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_Sheet">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="page" type="CT_Page"/>
+    </xs:choice>
+    <xs:attribute name="id" type="ST_UniqueID" use="required"/>
+    <xs:attribute name="caption" type="ST_String" use="required"/>
+    <xs:attribute name="pageWidth" type="xs:integer" use="optional"/>
+    <xs:attribute name="pageHeight" type="xs:integer" use="optional"/>
+    <xs:attribute name="hideApply" type="xs:boolean" use="optional"/>
+    <xs:attribute name="resizable" type="xs:boolean" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateSheet">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="deletePage" type="CT_Delete"/>
+      <xs:element name="insertPage" type="CT_Page"/>
+      <xs:element name="updatePage" type="CT_UpdatePage"/>
+    </xs:choice>
+    <xs:attribute name="refID" type="ST_ID" use="required"/>
+    <xs:attribute name="caption" type="ST_String" use="optional"/>
+    <xs:attribute name="pageWidth" type="xs:integer" use="optional"/>
+    <xs:attribute name="pageHeight" type="xs:integer" use="optional"/>
+    <xs:attribute name="hideApply" type="xs:boolean" use="optional"/>
+    <xs:attribute name="resizable" type="xs:boolean" use="optional"/>
+  </xs:complexType>
+  <!--
+	 Property Pages
+	-->
+  <xs:complexType name="CT_Page">
+    <xs:sequence minOccurs="0" maxOccurs="1">
+      <xs:element name="tooltip" type="CT_Tooltip"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="componentGroup"/>
+    <xs:attribute name="category" type="ST_String" use="optional"/>
+    <xs:attribute name="helpString" type="ST_String" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdatePage">
+    <xs:sequence minOccurs="0" maxOccurs="1">
+      <xs:element name="tooltip" type="CT_Tooltip"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="AG_UpdateDeclarativeGroup"/>
+    <xs:attribute name="insert" type="ST_Insert" use="optional"/>
+    <xs:attribute name="placeWith" type="ST_ID" use="optional"/>
+  </xs:complexType>
+  <!--
+	 Extensions
+	-->
+  <xs:complexType name="CT_Extensions">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="extension" type="CT_Extension"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateExtensions">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="insertExtension" type="CT_Extension"/>
+      <xs:element name="updateExtension" type="CT_UpdateExtension"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_Extension">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="controls" type="CT_Controls"/>
+      <xs:element name="tabs" type="CT_Tabs"/>
+      <xs:element name="tabGroups" type="CT_TabGroups"/>
+      <xs:element name="groups" type="CT_Groups"/>
+      <xs:element name="galleries" type="CT_Galleries"/>
+      <xs:element name="splitButtons" type="CT_SplitButtons"/>
+      <xs:element name="toolPalettes" type="CT_ToolPalettes"/>
+      <xs:element name="menus" type="CT_Menus"/>
+      <xs:element name="menubar" type="CT_Menubar"/>
+      <xs:element name="views" type="CT_Views"/>
+      <xs:element name="dockViews" type="CT_DockViews"/>
+      <xs:element name="dependencies" type="CT_Dependencies"/>
+      <xs:element name="components" type="CT_Components"/>
+    </xs:choice>
+    <xs:attributeGroup ref="componentGroup"/>
+    <xs:attribute name="autoLoad" type="xs:boolean" use="optional"/>
+    <xs:attribute name="description" type="ST_LongString" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateExtension">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="controls" type="CT_UpdateControls"/>
+      <xs:element name="tabs" type="CT_UpdateTabs"/>
+      <xs:element name="tabGroups" type="CT_UpdateTabGroups"/>
+      <xs:element name="groups" type="CT_UpdateGroups"/>
+      <xs:element name="galleries" type="CT_UpdateGalleries"/>
+      <xs:element name="splitButtons" type="CT_UpdateSplitButtons"/>
+      <xs:element name="toolPalettes" type="CT_UpdateToolPalettes"/>
+      <xs:element name="menus" type="CT_UpdateMenus"/>
+      <xs:element name="menubar" type="CT_UpdateMenubar"/>
+      <xs:element name="views" type="CT_UpdateViews"/>
+      <xs:element name="dockViews" type="CT_UpdateDockViews"/>
+      <xs:element name="dependencies" type="CT_UpdateDependencies"/>
+      <xs:element name="components" type="CT_UpdateComponents"/>
+    </xs:choice>
+    <xs:attributeGroup ref="AG_UpdateDeclarativeGroup"/>
+    <xs:attribute name="description" type="ST_LongString" use="optional"/>
+  </xs:complexType>
+  <!--
+   Components
+  -->
+  <xs:complexType name="CT_Components">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="component" type="CT_Component"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateComponents">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="deleteComponent" type="CT_Delete"/>
+      <xs:element name="insertComponent" type="CT_Component"/>
+      <xs:element name="updateComponent" type="CT_UpdateComponent"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_Component">
+    <xs:attributeGroup ref="componentGroup"/>
+    <xs:attribute name="category" type="ST_String" use="optional"/>
+    <xs:attribute name="image" type="ST_Uri" use="optional"/>
+    <xs:attribute name="data" type="ST_String" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateComponent">
+    <xs:attributeGroup ref="AG_UpdateDeclarativeGroup"/>
+    <xs:attribute name="category" type="ST_String" use="optional"/>
+    <xs:attribute name="image" type="ST_Uri" use="optional"/>
+    <xs:attribute name="data" type="ST_String" use="optional"/>
+  </xs:complexType>
+  <!--
+	 Controls 
+	-->
+  <xs:complexType name="CT_Controls">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="button" type="CT_Command"/>
+      <xs:element name="tool" type="CT_Command"/>
+      <xs:element name="comboBox" type="CT_ComboBox"/>
+      <xs:element name="editBox" type="CT_EditBox"/>
+      <xs:element name="labelControl" type="CT_LabelControl"/>
+      <xs:element name="checkBox" type="CT_CheckBox"/>
+      <xs:element name="spinner" type="CT_Spinner"/>
+      <xs:element name="dynamicMenu" type="CT_DynamicMenu"/>
+      <xs:element name="customControl" type="CT_Command"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateControls">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="deleteButton" type="CT_Delete"/>
+      <xs:element name="insertButton" type="CT_Command"/>
+      <xs:element name="updateButton" type="CT_UpdateCommand"/>
+      <xs:element name="deleteTool" type="CT_Delete"/>
+      <xs:element name="insertTool" type="CT_Command"/>
+      <xs:element name="updateTool" type="CT_UpdateCommand"/>
+      <xs:element name="deleteEditBox" type="CT_Delete"/>
+      <xs:element name="insertEditBox" type="CT_EditBox"/>
+      <xs:element name="updateEditBox" type="CT_UpdateEditBox"/>
+      <xs:element name="deleteComboBox" type="CT_Delete"/>
+      <xs:element name="insertComboBox" type="CT_ComboBox"/>
+      <xs:element name="updateComboBox" type="CT_UpdateComboBox"/>
+      <xs:element name="deleteLabelControl" type="CT_Delete"/>
+      <xs:element name="insertLabelControl" type="CT_LabelControl"/>
+      <xs:element name="updateLabelControl" type="CT_UpdateLabelControl"/>
+      <xs:element name="deleteCheckBox" type="CT_Delete"/>
+      <xs:element name="insertCheckBox" type="CT_CheckBox"/>
+      <xs:element name="updateCheckBox" type="CT_UpdateCheckBox"/>
+      <xs:element name="insertSpinner" type="CT_Spinner"/>
+      <xs:element name="updateSpinner" type="CT_UpdateSpinner"/>
+      <xs:element name="deleteSpinner" type="CT_Delete"/>
+      <xs:element name="insertDynamicMenu" type="CT_DynamicMenu"/>
+      <xs:element name="updateDynamicMenu" type="CT_UpdateDynamicMenu"/>
+      <xs:element name="deleteDynamicMenu" type="CT_Delete"/>
+      <xs:element name="insertCustomControl" type="CT_Command"/>
+      <xs:element name="updateCustomControl" type="CT_UpdateCommand"/>
+      <xs:element name="deleteCustomControl" type="CT_Delete"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateSizedControlRefs">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="deleteButton" type="CT_Delete"/>
+      <xs:element name="insertButton" type="CT_SizedButtonRef"/>
+      <xs:element name="updateButton" type="CT_SizedButtonRef"/>
+      <xs:element name="deleteTool" type="CT_Delete"/>
+      <xs:element name="insertTool" type="CT_SizedButtonRef"/>
+      <xs:element name="updateTool" type="CT_SizedButtonRef"/>
+      <xs:element name="deleteMenu" type="CT_Delete"/>
+      <xs:element name="insertMenu" type="CT_SizedMenuButtonRef"/>
+      <xs:element name="updateMenu" type="CT_SizedMenuButtonRef"/>
+      <xs:element name="deleteEditBox" type="CT_Delete"/>
+      <xs:element name="insertEditBox" type="CT_EditBoxRef"/>
+      <xs:element name="updateEditBox" type="CT_EditBoxRef"/>
+      <xs:element name="deleteComboBox" type="CT_Delete"/>
+      <xs:element name="insertComboBox" type="CT_ComboBoxRef"/>
+      <xs:element name="updateComboBox" type="CT_ComboBoxRef"/>
+      <xs:element name="deleteLabelControl" type="CT_Delete"/>
+      <xs:element name="insertLabelControl" type="CT_LabelControlRef"/>
+      <xs:element name="updateLabelControl" type="CT_LabelControlRef"/>
+      <xs:element name="deleteCheckBox" type="CT_Delete"/>
+      <xs:element name="insertCheckBox" type="CT_CheckBoxRef"/>
+      <xs:element name="updateCheckBox" type="CT_CheckBoxRef"/>
+      <xs:element name="deleteGallery" type="CT_Delete"/>
+      <xs:element name="insertGallery" type="CT_SizedGalleryRef"/>
+      <xs:element name="updateGallery" type="CT_SizedGalleryRef"/>
+      <xs:element name="deleteSplitButton" type="CT_Delete"/>
+      <xs:element name="insertSplitButton" type="CT_SplitButtonRef"/>
+      <xs:element name="updateSplitButton" type="CT_SplitButtonRef"/>
+      <xs:element name="deleteToolPalette" type="CT_Delete"/>
+      <xs:element name="insertToolPalette" type="CT_ToolPaletteRef"/>
+      <xs:element name="updateToolPalette" type="CT_ToolPaletteRef"/>
+      <xs:element name="insertSpinner" type="CT_Spinner"/>
+      <xs:element name="updateSpinner" type="CT_UpdateSpinner"/>
+      <xs:element name="deleteSpinner" type="CT_Delete"/>
+      <xs:element name="deleteDynamicMenu" type="CT_Delete"/>
+      <xs:element name="insertDynamicMenu" type="CT_SizedMenuButtonRef"/>
+      <xs:element name="updateDynamicMenu" type="CT_SizedMenuButtonRef"/>
+      <xs:element name="insertCustomControl" type="CT_SizedButtonRef"/>
+      <xs:element name="updateCustomControl" type="CT_SizedButtonRef"/>
+      <xs:element name="deleteCustomControl" type="CT_Delete"/>
+    </xs:choice>
+    <xs:attributeGroup ref="AG_UpdateDeclarativeGroup"/>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateControlRefs">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="deleteButton" type="CT_Delete"/>
+      <xs:element name="insertButton" type="CT_ButtonRef"/>
+      <xs:element name="updateButton" type="CT_ButtonRef"/>
+      <xs:element name="deleteTool" type="CT_Delete"/>
+      <xs:element name="insertTool" type="CT_ButtonRef"/>
+      <xs:element name="updateTool" type="CT_SizedButtonRef"/>
+      <xs:element name="deleteMenu" type="CT_Delete"/>
+      <xs:element name="insertMenu" type="CT_MenuButtonRef"/>
+      <xs:element name="updateMenu" type="CT_MenuButtonRef"/>
+      <xs:element name="deleteEditBox" type="CT_Delete"/>
+      <xs:element name="insertEditBox" type="CT_EditBoxRef"/>
+      <xs:element name="updateEditBox" type="CT_EditBoxRef"/>
+      <xs:element name="deleteComboBox" type="CT_Delete"/>
+      <xs:element name="insertComboBox" type="CT_ComboBoxRef"/>
+      <xs:element name="updateComboBox" type="CT_ComboBoxRef"/>
+      <xs:element name="insertSpinner" type="CT_Spinner"/>
+      <xs:element name="updateSpinner" type="CT_UpdateSpinner"/>
+      <xs:element name="deleteSpinner" type="CT_Delete"/>
+    </xs:choice>
+    <xs:attributeGroup ref="AG_UpdateDeclarativeGroup"/>
+  </xs:complexType>
+
+  <xs:complexType name="CT_UpdateCommands">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="deleteCommand" type="CT_Delete"/>
+      <xs:element name="insertCommand" type="CT_Command"/>
+      <xs:element name="updateCommand" type="CT_UpdateCommand"/>
+    </xs:choice>
+  </xs:complexType>
+
+  <!--
+	 Command (buttons, tools, editBox, comboBox, etc)
+	-->
+  <xs:complexType name="CT_Tooltip" mixed="true">
+    <xs:attribute name="image" type="ST_Uri" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="CT_Command">
+    <xs:sequence minOccurs="0" maxOccurs="1">
+      <xs:element name="tooltip" type="CT_Tooltip"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="componentGroup"/>
+    <xs:attribute name="image" type="ST_Uri" use="optional"/>
+    <xs:attribute name="condition" type="ST_ID" use="optional"/>
+    <xs:attribute name="loadOnClick" type="xs:boolean" use="optional" default="true"/>
+    <xs:attribute name="helpString" type="ST_String" use="optional"/>
+    <xs:attribute name="showHelp" type="xs:boolean" use="optional" default="true"/>
+  </xs:complexType>
+
+  <xs:complexType name="CT_UpdateCommand">
+    <xs:sequence minOccurs="0" maxOccurs="1">
+      <xs:element name="tooltip" type="CT_Tooltip"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="AG_UpdateDeclarativeGroup"/>
+    <xs:attribute name="image" type="ST_Uri" use="optional"/>
+  </xs:complexType>
+  <!--
+	 Button
+	-->
+  <xs:complexType name="CT_ButtonRef">
+    <xs:attribute name="showImage" type="xs:boolean" use="optional"/>
+    <xs:attribute name="showCaption" type="xs:boolean" use="optional"/>
+    <xs:attribute name="refID" type="ST_ID" use="required"/>
+    <xs:attribute name="separator" type="xs:boolean" use="optional"/>
+    <xs:attribute name="insert" type="ST_Insert" use="optional"/>
+    <xs:attribute name="placeWith" type="ST_ID" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="CT_SizedButtonRef">
+    <xs:complexContent>
+      <xs:extension base="CT_ButtonRef">
+        <xs:attribute name="size" type="ST_Size" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <!--
+	 Menu
+	-->
+  <xs:complexType name="CT_MenuButtonRef">
+    <xs:attribute name="refID" type="ST_ID" use="required"/>
+    <xs:attribute name="insert" type="ST_Insert" use="optional"/>
+    <xs:attribute name="placeWith" type="ST_ID" use="optional"/>
+    <xs:attribute name="separator" type="xs:boolean" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="CT_SizedMenuButtonRef">
+    <xs:complexContent>
+      <xs:extension base="CT_MenuButtonRef">
+        <xs:attribute name="size" type="ST_Size" use="optional"/>
+        <xs:attribute name="showImage" type="xs:boolean" use="optional"/>
+        <xs:attribute name="showCaption" type="xs:boolean" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <!--
+	 SplitButton
+	-->
+  <xs:complexType name="CT_SplitButtons">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="splitButton" type="CT_SplitButton"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateSplitButtons">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="deleteSplitButton" type="CT_Delete"/>
+      <xs:element name="insertSplitButton" type="CT_SplitButton"/>
+      <xs:element name="updateSplitButton" type="CT_UpdateSplitButton"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_SplitButtonButton">
+    <xs:attribute name="refID" type="ST_ID" use="required"/>
+    <xs:attribute name="showCaption" type="xs:boolean" use="optional"/>
+    <xs:attribute name="showImage" type="xs:boolean" use="optional"/>
+    <xs:attribute name="separator" type="xs:boolean" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="CT_SplitButton">
+    <xs:sequence>
+      <xs:choice minOccurs="1" maxOccurs="1">
+        <xs:element name="button" type="CT_SplitButtonButton" />
+        <xs:element name="tool" type="CT_SplitButtonButton" />
+      </xs:choice>
+      <xs:choice>
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element name="button" type="CT_SplitButtonButton" />
+          <xs:choice minOccurs="0" maxOccurs="unbounded" >
+            <xs:element name="button" type="CT_SplitButtonButton" />
+            <xs:element name="gallery" type="CT_GalleryMenuButtonRef"/>
+          </xs:choice>
+        </xs:sequence>
+        <xs:sequence>
+          <xs:element name="gallery" type="CT_GalleryMenuButtonRef" maxOccurs="1"/>
+        </xs:sequence>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="id" type="ST_UniqueID" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="CT_UpdateSplitButton">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="updateButton" type="CT_SplitButtonButton"/>
+    </xs:choice>
+    <xs:attribute name="refID" type="ST_ID" use="required"/>
+  </xs:complexType>
+  <xs:complexType name="CT_SplitButtonRef">
+    <xs:complexContent>
+      <xs:extension base="CT_SizedButtonRef">
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <!--
+	 ToolPalette
+	-->
+  <xs:complexType name="CT_ToolPalettes">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="toolPalette" type="CT_ToolPalette"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateToolPalettes">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="deleteToolPalette" type="CT_Delete"/>
+      <xs:element name="insertToolPalette" type="CT_ToolPalette"/>
+      <xs:element name="updateToolPalette" type="CT_UpdateToolPalette"/>
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:complexType name="CT_ToolPalette">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="tool" type="CT_MenuButtonRef" />
+    </xs:choice>
+    <xs:attribute name="id" type="ST_UniqueID" use="required"/>
+    <xs:attribute name="itemSizeString" type="ST_String" use="optional"/>
+    <xs:attribute name="showItemCaption" type="xs:boolean" use="optional"/>
+    <xs:attribute name="imageSize" type="xs:integer" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="CT_UpdateToolPalette">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="updateTool" type="CT_MenuButtonRef"/>
+      <xs:element name="insertTool" type="CT_MenuButtonRef"/>
+      <xs:element name="deleteTool" type="CT_Delete"/>
+    </xs:choice>
+    <xs:attributeGroup ref="AG_UpdateDeclarativeGroup"/>
+    <xs:attribute name="itemSizeString" type="ST_String" use="optional"/>
+    <xs:attribute name="showItemCaption" type="xs:boolean" use="optional"/>
+    <xs:attribute name="imageSize" type="xs:integer" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="CT_ToolPaletteRef">
+    <xs:complexContent>
+      <xs:extension base="CT_SizedButtonRef">
+        <xs:attribute name="grid" type="xs:boolean" use="optional"/>
+        <xs:attribute name="rows" type="xs:integer" use="optional"/>
+        <xs:attribute name="columns" type="xs:integer" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <!--
+	 CheckBox
+	-->
+  <xs:complexType name="CT_CheckBox">
+    <xs:complexContent>
+      <xs:restriction base="CT_Command">
+        <xs:sequence minOccurs="0" maxOccurs="1">
+          <xs:element name="tooltip" type="CT_Tooltip"/>
+        </xs:sequence>
+        <xs:attribute name="image" use="prohibited"/>
+        <xs:attribute name="loadOnClick" use="prohibited"/>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateCheckBox">
+    <xs:sequence minOccurs="0" maxOccurs="1">
+      <xs:element name="tooltip" type="CT_Tooltip"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="AG_UpdateDeclarativeGroup"/>
+  </xs:complexType>
+  <xs:complexType name="CT_CheckBoxRef">
+    <xs:complexContent>
+      <xs:restriction base="CT_ButtonRef">
+        <xs:attribute name="showCaption" use="prohibited"/>
+        <xs:attribute name="showImage" use="prohibited"/>
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <!--
+	 EditBox
+	-->
+  <xs:complexType name="CT_EditBox">
+    <xs:sequence minOccurs="0" maxOccurs="1">
+      <xs:element name="tooltip" type="CT_Tooltip"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="componentGroup"/>
+    <xs:attribute name="image" type="ST_Uri" use="optional"/>
+    <xs:attribute name="condition" type="ST_ID" use="optional"/>
+    <xs:attribute name="editHint" type="ST_String"/>
+    <xs:attribute name="helpString" type="ST_String" use="optional"/>
+    <xs:attribute name="showHelp" type="xs:boolean" use="optional" default="true"/>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateEditBox">
+    <xs:sequence minOccurs="0" maxOccurs="1">
+      <xs:element name="tooltip" type="CT_Tooltip"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="AG_UpdateDeclarativeGroup"/>
+    <xs:attribute name="image" type="ST_Uri" use="optional"/>
+    <xs:attribute name="editHint" type="ST_String"/>
+  </xs:complexType>
+  <xs:complexType name="CT_EditBoxRef">
+    <xs:complexContent>
+      <xs:extension base="CT_ButtonRef">
+        <xs:attribute name="sizeString" type="ST_String" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <!--
+	 Spinner
+	-->
+  <xs:complexType name="CT_Spinner">
+    <xs:sequence minOccurs="0" maxOccurs="1">
+      <xs:element name="tooltip" type="CT_Tooltip"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="componentGroup"/>
+    <xs:attribute name="image" type="ST_Uri" use="optional"/>
+    <xs:attribute name="condition" type="ST_ID" use="optional"/>
+    <xs:attribute name="helpString" type="ST_String" use="optional"/>
+    <xs:attribute name="showHelp" type="xs:boolean" use="optional" default="true"/>
+    <xs:attribute name="editHint" type="ST_String" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateSpinner">
+    <xs:sequence minOccurs="0" maxOccurs="1">
+      <xs:element name="tooltip" type="CT_Tooltip"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="AG_UpdateDeclarativeGroup"/>
+    <xs:attribute name="image" type="ST_Uri" use="optional"/>
+    <xs:attribute name="editHint" type="ST_String" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="CT_SpinnerRef">
+    <xs:complexContent>
+      <xs:extension base="CT_ButtonRef">
+        <xs:attribute name="sizeString" type="ST_String" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <!--
+	 ComboBox
+	-->
+  <xs:complexType name="CT_ComboBox">
+    <xs:sequence minOccurs="0" maxOccurs="1">
+      <xs:element name="tooltip" type="CT_Tooltip"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="componentGroup"/>
+    <xs:attribute name="image" type="ST_Uri" use="optional"/>
+    <xs:attribute name="condition" type="ST_ID" use="optional"/>
+    <xs:attribute name="noEdit" type="xs:boolean" use="optional"/>
+    <xs:attribute name="editHint" type="ST_String" use="optional"/>
+    <xs:attribute name="imageSize" type="xs:integer" use="optional"/>
+    <xs:attribute name="helpString" type="ST_String" use="optional"/>
+    <xs:attribute name="showHelp" type="xs:boolean" use="optional" default="true"/>
+    <xs:attribute name="resizable" type="xs:boolean" use="optional" default="true"/>
+  </xs:complexType>
+
+  <xs:complexType name="CT_UpdateComboBox">
+    <xs:sequence minOccurs="0" maxOccurs="1">
+      <xs:element name="tooltip" type="CT_Tooltip"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="AG_UpdateDeclarativeGroup"/>
+    <xs:attribute name="image" type="ST_Uri" use="optional"/>
+    <xs:attribute name="noEdit" type="xs:boolean" use="optional"/>
+    <xs:attribute name="editHint" type="ST_String"/>
+    <xs:attribute name="imageSize" type="xs:integer" use="optional"/>
+    <xs:attribute name="resizable" type="xs:boolean" use="optional" default="true"/>
+  </xs:complexType>
+
+  <xs:complexType name="CT_ComboBoxRef">
+    <xs:complexContent>
+      <xs:extension base="CT_EditBoxRef">
+        <xs:sequence>
+          <xs:element name="item" type="CT_ListItem" minOccurs="0" maxOccurs="1000"/>
+        </xs:sequence>
+        <xs:attribute name="rows" type="xs:integer" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!--
+	 DynamicMenu
+	-->
+  <xs:complexType name="CT_DynamicMenu">
+    <xs:sequence minOccurs="0" maxOccurs="1">
+      <xs:element name="tooltip" type="CT_Tooltip"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="componentGroup"/>
+    <xs:attribute name="condition" type="ST_ID" use="optional"/>
+    <xs:attribute name="contextMenu" type="xs:boolean" use="optional"/>
+    <xs:attribute name="image" type="ST_Uri" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateDynamicMenu">
+    <xs:sequence minOccurs="0" maxOccurs="1">
+      <xs:element name="tooltip" type="CT_Tooltip"/>
+    </xs:sequence>
+    <xs:attributeGroup ref="AG_UpdateDeclarativeGroup"/>
+  </xs:complexType>
+  <xs:complexType name="CT_DynamicMenuRef">
+    <xs:complexContent>
+      <xs:extension base="CT_MenuButtonRef"/>
+    </xs:complexContent>
+  </xs:complexType>
+  <!--
+	 Tabs
+	-->
+  <xs:complexType name="CT_Tabs">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="tab" type="CT_Tab"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateTabs">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="deleteTab" type="CT_Delete"/>
+      <xs:element name="insertTab" type="CT_Tab"/>
+      <xs:element name="updateTab" type="CT_UpdateTab"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_Tab">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="group" type="CT_GroupRef"/>
+    </xs:choice>
+    <xs:attribute name="id" type="ST_ID" use="required"/>
+    <xs:attribute name="caption" type="xs:string" use="required"/>
+    <xs:attribute name="condition" type="ST_ID" use="optional"/>
+    <xs:attribute name="placeWith" type="ST_ID" use="optional"/>
+    <xs:attribute name="insert" type="ST_Insert" use="optional"/>
+    <xs:attribute name="tabGroupID" type="ST_ID" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateTab">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="deleteGroup" type="CT_Delete"/>
+      <xs:element name="insertGroup" type="CT_GroupRef"/>
+      <xs:element name="updateGroup" type="CT_GroupRef"/>
+    </xs:choice>
+    <xs:attributeGroup ref="AG_UpdateDeclarativeGroup"/>
+    <xs:attribute name="placeWith" type="ST_ID" use="optional"/>
+    <xs:attribute name="insert" type="ST_Insert" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="CT_GroupRef">
+    <xs:attribute name="refID" type="ST_ID" use="required"/>
+    <xs:attribute name="placeWith" type="ST_ID" use="optional"/>
+    <xs:attribute name="insert" type="ST_Insert" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="CT_TabGroups">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="tabGroup" type="CT_TabGroup"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateTabGroups">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="deleteTabGroup" type="CT_Delete"/>
+      <xs:element name="insertTabGroup" type="CT_TabGroup"/>
+      <xs:element name="updateTabGroup" type="CT_UpdateTabGroup"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_TabGroup">
+    <xs:attribute name="id" type="ST_ID" use="required"/>
+    <xs:attribute name="caption" type="xs:string" use="optional"/>
+    <xs:attribute name="color" type="xs:string"/>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateTabGroup">
+    <xs:attributeGroup ref="AG_UpdateDeclarativeGroup"/>
+    <xs:attribute name="color" type="xs:string"/>
+  </xs:complexType>
+  <!--
+	 Groups
+	-->
+  <xs:complexType name="CT_Groups">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="group" type="CT_Group"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateGroups">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="deleteGroup" type="CT_Delete"/>
+      <xs:element name="insertGroup" type="CT_Group"/>
+      <xs:element name="updateGroup" type="CT_UpdateGroup"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_Group">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="button" type="CT_SizedButtonRef"/>
+      <xs:element name="tool" type="CT_SizedButtonRef"/>
+      <xs:element name="menu" type="CT_SizedMenuButtonRef"/>
+      <xs:element name="splitButton" type="CT_SplitButtonRef"/>
+      <xs:element name="editBox" type="CT_EditBoxRef"/>
+      <xs:element name="comboBox" type="CT_ComboBoxRef"/>
+      <xs:element name="labelControl" type="CT_LabelControlRef"/>
+      <xs:element name="checkBox" type="CT_CheckBoxRef"/>
+      <xs:element name="gallery" type="CT_SizedGalleryRef"/>
+      <xs:element name="toolPalette" type="CT_ToolPaletteRef"/>
+      <xs:element name="spinner" type="CT_SpinnerRef"/>
+      <xs:element name="dynamicMenu" type="CT_SizedMenuButtonRef"/>
+      <xs:element name="customControl" type="CT_SizedMenuButtonRef"/>
+    </xs:choice>
+    <xs:attributeGroup ref="declarativeGroup"/>
+    <xs:attribute name="optionButton" type="ST_ID" use="optional"/>
+    <xs:attribute name="boxing" type="xs:boolean" use="optional"/>
+    <xs:attribute name="image" type="ST_Uri" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateGroup">
+    <xs:complexContent>
+      <xs:extension base="CT_UpdateSizedControlRefs">
+        <xs:attribute name="optionButton" type="ST_ID" use="optional"/>
+        <xs:attribute name="boxing" type="xs:boolean" use="optional"/>
+        <xs:attribute name="image" type="ST_Uri" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <!--
+	 Galleries
+	-->
+  <xs:complexType name="CT_Galleries">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="gallery" type="CT_Gallery"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateGalleries">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="deleteGallery" type="CT_Delete"/>
+      <xs:element name="insertGallery" type="CT_Gallery"/>
+      <xs:element name="updateGallery" type="CT_UpdateGallery"/>
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:complexType name="CT_Gallery">
+    <xs:sequence>
+      <xs:sequence minOccurs="0" maxOccurs="1">
+        <xs:element name="tooltip" type="CT_Tooltip"/>
+      </xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="button" type="CT_MenuButtonRef"/>
+        <xs:element name="gallery" type="CT_GalleryMenuButtonRef"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attributeGroup ref="componentGroup"/>
+    <xs:attribute name="image" type="ST_Uri" use="optional"/>
+    <xs:attribute name="menuStyle" type="xs:boolean" use="optional"/>
+    <xs:attribute name="condition" type="ST_ID" use="optional"/>
+    <xs:attribute name="imageSize" type="ST_ImageSize" use="optional"/>
+    <xs:attribute name="itemSizeString" type="ST_String" use="optional"/>
+    <xs:attribute name="showItemCaption" type="xs:boolean" use="optional"/>
+    <xs:attribute name="showItemCaptionBelow" type="xs:boolean" use="optional"/>
+    <xs:attribute name="itemBackgroundOpaque" type="xs:boolean" use="optional"/>
+    <xs:attribute name="resizable" type="xs:boolean" use="optional"/>
+    <xs:attribute name="helpString" type="ST_String" use="optional"/>
+    <xs:attribute name="showHelp" type="xs:boolean" use="optional" default="true"/>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateGallery">
+    <xs:sequence>
+      <xs:sequence minOccurs="0" maxOccurs="1">
+        <xs:element name="tooltip" type="CT_Tooltip"/>
+      </xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="insertButton" type="CT_MenuButtonRef"/>
+        <xs:element name="updateButton" type="CT_MenuButtonRef"/>
+        <xs:element name="deleteButton" type="CT_Delete"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attributeGroup ref="AG_UpdateDeclarativeGroup"/>
+    <xs:attribute name="image" type="ST_Uri" use="optional"/>
+    <xs:attribute name="menuStyle" type="xs:boolean" use="optional"/>
+    <xs:attribute name="imageSize" type="ST_String" use="optional"/>
+    <xs:attribute name="itemSizeString" type="ST_String" use="optional"/>
+    <xs:attribute name="showItemCaption" type="xs:boolean" use="optional"/>
+    <xs:attribute name="showItemCaptionBelow" type="xs:boolean" use="optional"/>
+    <xs:attribute name="itemBackgroundOpaque" type="xs:boolean" use="optional"/>
+    <xs:attribute name="resizable" type="xs:boolean" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="CT_GalleryRef">
+    <xs:complexContent>
+      <xs:extension base="CT_ButtonRef">
+        <xs:attribute name="columns" type="xs:integer" use="optional"/>
+        <xs:attribute name="rows" type="xs:integer" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CT_GalleryMenuButtonRef">
+    <xs:complexContent>
+      <xs:extension base="CT_MenuButtonRef">
+        <xs:attribute name="columns" type="xs:integer" use="optional"/>
+        <xs:attribute name="rows" type="xs:integer" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CT_SizedGalleryRef">
+    <xs:complexContent>
+      <xs:extension base="CT_GalleryRef">
+        <xs:attribute name="size" type="ST_Size" use="optional"/>
+        <xs:attribute name="inline" type="xs:boolean" use="optional"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <!--
+   Labels
+  -->
+  <xs:complexType name="CT_LabelControlRef">
+    <xs:attribute name="refID" type="ST_ID" use="required"/>
+    <xs:attribute name="showCaption" use="optional"/>
+    <xs:attribute name="separator" type="xs:boolean" use="optional"/>
+    <xs:attribute name="insert" type="ST_Insert" use="optional"/>
+    <xs:attribute name="placeWith" type="ST_ID" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="CT_LabelControl">
+    <xs:attribute name="id" type="ST_UniqueID" use="required"/>
+    <xs:attribute name="caption" type="ST_String" use="required"/>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateLabelControl">
+    <xs:attribute name="refID" type="ST_ID" use="required"/>
+    <xs:attribute name="caption" type="ST_String" use="optional"/>
+  </xs:complexType>
+  <!--
+	 Menus 
+	-->
+  <xs:complexType name="CT_Menus">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="menu" type="CT_Menu"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateMenus">
+
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="deleteMenu" type="CT_Delete"/>
+      <xs:element name="insertMenu" type="CT_Menu"/>
+      <xs:element name="updateMenu" type="CT_UpdateMenu"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_Menu">
+    <xs:sequence>
+      <xs:sequence minOccurs="0" maxOccurs="1">
+        <xs:element name="tooltip" type="CT_Tooltip"/>
+      </xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="button" type="CT_MenuButtonRef"/>
+          <xs:element name="menu" type="CT_MenuButtonRef"/>
+          <xs:element name="gallery" type="CT_GalleryMenuButtonRef"/>
+          <xs:element name="dynamicMenu" type="CT_MenuButtonRef"/>
+          <xs:element name="splitButton" type="CT_MenuButtonRef"/>
+        </xs:choice>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attributeGroup ref="declarativeGroup"/>
+    <xs:attribute name="contextMenu" type="xs:boolean" use="optional"/>
+    <xs:attribute name="image" type="ST_Uri" use="optional"/>
+    <xs:attribute name="helpString" type="ST_String" use="optional"/>
+    <xs:attribute name="showHelp" type="xs:boolean" use="optional" default="true"/>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateMenu">
+    <xs:sequence>
+      <xs:sequence minOccurs="0" maxOccurs="1">
+        <xs:element name="tooltip" type="CT_Tooltip"/>
+      </xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="deleteButton" type="CT_Delete"/>
+        <xs:element name="insertButton" type="CT_MenuButtonRef"/>
+        <xs:element name="updateButton" type="CT_MenuButtonRef"/>
+        <xs:element name="deleteMenu" type="CT_Delete"/>
+        <xs:element name="insertMenu" type="CT_Item"/>
+        <xs:element name="updateMenu" type="CT_Item"/>
+        <xs:element name="insertGallery" type="CT_GalleryMenuButtonRef"/>
+        <xs:element name="updateGallery" type="CT_GalleryMenuButtonRef"/>
+        <xs:element name="deleteGallery" type="CT_Delete"/>
+        <xs:element name="insertDynamicMenu" type="CT_MenuButtonRef"/>
+        <xs:element name="updateDynamicMenu" type="CT_MenuButtonRef"/>
+        <xs:element name="deleteDynamicMenu" type="CT_Delete"/>
+        <xs:element name="insertSplitButton" type="CT_MenuButtonRef"/>
+        <xs:element name="updateSplitButton" type="CT_MenuButtonRef"/>
+        <xs:element name="deleteSplitButton" type="CT_Delete"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attributeGroup ref="AG_UpdateDeclarativeGroup"/>
+    <xs:attribute name="contextMenu" type="xs:boolean" use="optional"/>
+    <xs:attribute name="image" type="ST_Uri" use="optional"/>
+  </xs:complexType>
+  <!--
+	Menubar 
+	-->
+  <xs:complexType name="CT_Menubar">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="menu" type="CT_RootMenu"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateMenubar">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="deleteMenu" type="CT_Delete"/>
+      <xs:element name="insertMenu" type="CT_RootMenu"/>
+      <xs:element name="updateMenu" type="CT_RootMenu"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_RootMenu">
+    <xs:attributeGroup ref="menubarGroup"/>
+  </xs:complexType>
+  <xs:attributeGroup name="menubarGroup">
+    <xs:attribute name="refID" type="ST_ID" use="required"/>
+    <xs:attribute name="insert" type="ST_Insert" use="optional"/>
+    <xs:attribute name="placeWith" type="ST_ID" use="optional"/>
+    <xs:attribute name="condition" type="ST_ID" use="optional"/>
+  </xs:attributeGroup>
+  <!--
+	 Views 
+	-->
+  <xs:complexType name="CT_Views">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="view" type="CT_View"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateViews">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="deleteView" type="CT_Delete"/>
+      <xs:element name="insertView" type="CT_View"/>
+      <xs:element name="updateView" type="CT_UpdateView"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_View">
+    <xs:attributeGroup ref="componentGroup"/>
+    <xs:attribute name="image" type="ST_Uri" use="optional"/>
+    <xs:attribute name="defaultTool" type="ST_ID" use="optional"/>
+    <xs:attribute name="defaultTab" type="ST_ID" use="optional"/>
+    <xs:attribute name="isClosable" type="xs:boolean" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateView">
+    <xs:attributeGroup ref="AG_UpdateDeclarativeGroup"/>
+    <xs:attribute name="image" type="ST_Uri" use="optional"/>
+    <xs:attribute name="defaultTool" type="ST_ID" use="optional"/>
+    <xs:attribute name="defaultTab" type="ST_ID" use="optional"/>
+  </xs:complexType>
+  <!--
+	 DockViews 
+	-->
+  <xs:complexType name="CT_DockViews">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="dockView" type="CT_DockView"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateDockViews">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="deleteDockView" type="CT_Delete"/>
+      <xs:element name="insertDockView" type="CT_DockView"/>
+      <xs:element name="updateDockView" type="CT_UpdateDockView"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_DockView">
+    <xs:attributeGroup ref="componentGroup"/>
+    <xs:attributeGroup ref="dockViewGroup"/>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateDockView">
+    <xs:attributeGroup ref="AG_UpdateDeclarativeGroup"/>
+    <xs:attributeGroup ref="dockViewGroup"/>
+  </xs:complexType>
+  <xs:attributeGroup name="dockViewGroup">
+    <xs:attribute name="image" type="ST_Uri" use="optional"/>
+    <xs:attribute name="dockWith" type="ST_ID" use="optional"/>
+    <xs:attribute name="dock" type="ST_DockFlag" use="optional"/>
+    <xs:attribute name="autoHide" type="xs:boolean"/>
+    <xs:attribute name="visible" type="xs:boolean"/>
+    <xs:attribute name="condition" type="ST_ID" use="optional"/>
+  </xs:attributeGroup>
+  <!-- 
+	 Accelerators 
+	-->
+  <xs:complexType name="CT_Accelerators">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="accelerator" type="CT_Accelerator"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateAccelerators">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="deleteAccelerator" type="CT_DeleteAccelerator"/>
+      <xs:element name="insertAccelerator" type="CT_Accelerator"/>
+      <xs:element name="updateAccelerator" type="CT_Accelerator"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_Accelerator">
+    <xs:attribute name="refID" type="ST_ID" use="required"/>
+    <xs:attribute name="key" type="xs:integer" use="required"/>
+    <xs:attribute name="flags" type="ST_AcceleratorKeyFlag" use="required"/>
+  </xs:complexType>
+  <xs:complexType name="CT_DeleteAccelerator">
+    <xs:attribute name="key" type="xs:integer" use="required"/>
+    <xs:attribute name="flags" type="ST_AcceleratorKeyFlag" use="required"/>
+  </xs:complexType>
+  <!--
+	 Dependencies 
+	-->
+  <xs:complexType name="CT_Dependencies">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="dependency" type="CT_Dependency"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_UpdateDependencies">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="deleteDependency" type="CT_Dependency"/>
+      <xs:element name="insertDependency" type="CT_Dependency"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="CT_Dependency">
+    <xs:attribute name="refID" type="ST_ID" use="required"/>
+  </xs:complexType>
+  <!--
+	 Base Types 
+	-->
+  <xs:complexType name="CT_Delete">
+    <xs:attribute name="refID" type="ST_ID" use="required"/>
+  </xs:complexType>
+
+  <xs:attributeGroup name="declarativeGroup">
+    <xs:attribute name="id" type="ST_UniqueID" use="required"/>
+    <xs:attribute name="caption" type="ST_String" use="required"/>
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="componentGroup">
+    <xs:attribute name="assembly" use="optional"/>
+    <xs:attribute name="className" use="optional"/>
+    <xs:attribute name="publicKeyToken" use="optional"/>
+    <xs:attribute name="version" use="optional"/>
+    <xs:attributeGroup ref="declarativeGroup"/>
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="AG_UpdateDeclarativeGroup">
+    <xs:attribute name="refID" type="ST_ID" use="required"/>
+    <xs:attribute name="caption" type="ST_String" use="optional"/>
+  </xs:attributeGroup>
+
+  <xs:complexType name="CT_ListItem">
+    <xs:attribute name="id" type="ST_UniqueID" use="required"/>
+    <xs:attribute name="caption" type="ST_String" use="optional"/>
+    <xs:attribute name="image" type="ST_Uri" use="optional"/>
+    <xs:attribute name="tip" type="ST_String" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="CT_Item">
+    <xs:attribute name="refID" type="ST_ID" use="required"/>
+    <xs:attribute name="separator" type="xs:boolean" use="optional"/>
+    <xs:attribute name="style" type="ST_Style" use="optional"/>
+    <xs:attribute name="insert" type="ST_Insert" use="optional"/>
+    <xs:attribute name="placeWith" type="ST_ID" use="optional"/>
+  </xs:complexType>
+
+  <xs:simpleType name="ST_Insert">
+    <xs:restriction base="ST_String">
+      <xs:enumeration value="before"/>
+      <xs:enumeration value="after"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ST_AndOr">
+    <xs:restriction base="ST_String">
+      <xs:enumeration value="and"/>
+      <xs:enumeration value="or"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ST_CmdType">
+    <xs:restriction base="ST_String">
+      <xs:enumeration value="button"/>
+      <xs:enumeration value="tool"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ST_DockFlag">
+    <xs:restriction base="ST_String">
+      <xs:enumeration value="top"/>
+      <xs:enumeration value="left"/>
+      <xs:enumeration value="right"/>
+      <xs:enumeration value="bottom"/>
+      <xs:enumeration value="float"/>
+      <xs:enumeration value="group"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ST_AcceleratorKeyFlag">
+    <xs:restriction base="ST_String">
+      <xs:enumeration value="none"/>
+      <xs:enumeration value="shift"/>
+      <xs:enumeration value="ctrl"/>
+      <xs:enumeration value="alt"/>
+      <xs:enumeration value="ctrl+shift"/>
+      <xs:enumeration value="alt+shift"/>
+      <xs:enumeration value="ctrl+alt"/>
+      <xs:enumeration value="ctrl+alt+shift"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ST_ID">
+    <xs:annotation>
+      <xs:documentation>
+        Specifies the custom ID of a control.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:NCName">
+      <xs:minLength value="1"/>
+      <xs:maxLength value="1024"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ST_UniqueID">
+    <xs:annotation>
+      <xs:documentation>
+        Specifies ID of a custom UI element. IDs must be unique across all customizations.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:ID">
+      <xs:minLength value="1"/>
+      <xs:maxLength value="1024"/>
+      <xs:pattern value="[^.]*"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ST_String">
+    <xs:annotation>
+      <xs:documentation>
+        Specifies a string argument.
+        String length is limited to 1024 characters.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+      <xs:maxLength value="1024"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ST_LongString">
+    <xs:annotation>
+      <xs:documentation>
+        Specifies a string argument.
+        String length is limited to 4096 characters.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+      <xs:maxLength value="4096"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ST_Uri">
+    <xs:annotation>
+      <xs:documentation>
+        Specifies a string argument which is a path to a file or a resource.
+        String length is limited to 1024 characters.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+      <xs:maxLength value="1024"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ST_Guid">
+    <xs:restriction base="ST_String">
+      <xs:pattern value="[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ST_Style">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="default"/>
+      <xs:enumeration value="textOnly"/>
+      <xs:enumeration value="iconOnly"/>
+      <xs:enumeration value="iconAndText"/>
+      <xs:enumeration value="iconOverText"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ST_UIType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="classic"/>
+      <xs:enumeration value="ribbon"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ST_Size">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="normal"/>
+      <xs:enumeration value="large"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ST_ImageSize">
+    <xs:annotation>
+      <xs:documentation>
+        Use Normal for 16x16 or Large for 32x32.  Otherwise specify the size using x:y.
+        For square items you can just specify x.  For example, use 28:14 for a rectangle or just 16 for a square.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="ST_String"/>
+  </xs:simpleType>
+</xs:schema>

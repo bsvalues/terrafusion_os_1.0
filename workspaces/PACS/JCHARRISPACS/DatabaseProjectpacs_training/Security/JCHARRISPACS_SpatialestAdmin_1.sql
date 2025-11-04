@@ -1,0 +1,5 @@
+CREATE USER [JCHARRISPACS\SpatialestAdmin] FOR LOGIN [JCHARRISPACS\SpatialestAdmin];
+
+
+GO
+

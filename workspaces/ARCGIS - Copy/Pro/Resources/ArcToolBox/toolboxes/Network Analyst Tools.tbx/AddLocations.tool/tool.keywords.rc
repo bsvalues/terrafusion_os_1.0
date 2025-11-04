@@ -1,0 +1,21 @@
+{
+    "set": [
+        "barrier",
+        "break",
+        "demand",
+        "depot",
+        "destination",
+        "facility",
+        "incident",
+        "layer",
+        "network analyst layer",
+        "origin",
+        "pair",
+        "renewal",
+        "route",
+        "seed",
+        "specialty",
+        "stop",
+        "zone"
+    ]
+}

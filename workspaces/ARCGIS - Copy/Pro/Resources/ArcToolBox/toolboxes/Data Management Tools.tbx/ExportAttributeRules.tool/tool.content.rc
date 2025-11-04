@@ -1,0 +1,10 @@
+{
+    "map": {
+        "description": "Exports attribute rules from a dataset to a comma-separated values file (.csv).",
+        "in_table.descr": "The table or feature class from which the attribute rules will be exported.",
+        "in_table.title": "Input Table",
+        "out_csv_file.descr": "The folder location and name of the .csv file that will be created.",
+        "out_csv_file.title": "Output File",
+        "title": "Export Attribute Rules"
+    }
+}

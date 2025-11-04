@@ -1,0 +1,28 @@
+run = "python run_monitoring.py"
+language = "python3"
+hidden = false
+entrypoint = "run_monitoring.py"
+
+[packager]
+language = "python3"
+ignoredPaths = [".git", ".github", "node_modules", "venv", ".venv"]
+
+[languages]
+
+[languages.python3]
+pattern = "**/*.py"
+syntax = "python"
+
+[languages.python3.languageServer]
+start = "pylsp"
+
+[nix]
+channel = "stable-22_11"
+
+[env]
+PYTHONPATH = "."
+PROMETHEUS_PORT = "9090"
+GRAFANA_PORT = "3000"
+
+[deployment]
+run = ["sh", "-c", "gunicorn --bind 0.0.0.0:5000 main:app"]

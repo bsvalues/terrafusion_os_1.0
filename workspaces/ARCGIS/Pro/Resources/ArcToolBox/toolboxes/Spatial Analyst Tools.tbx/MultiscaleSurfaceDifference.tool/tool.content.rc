@@ -1,0 +1,33 @@
+{
+    "map": {
+        "analysis_target_device.descr": "<xdoc><p>Specifies the device that will be used to perform the calculation.</p><ul><li><span title=\"GPU_THEN_CPU\">GPU then CPU</span>—If a compatible GPU is found, it will be used to perform the calculation. Otherwise, the CPU will be used. This is the default.</li><li><span title=\"CPU_ONLY\">CPU only</span>—The calculation will only be performed on the CPU.</li><li><span title=\"GPU_ONLY\">GPU only</span>—The calculation will only be performed on the GPU.</li></ul></xdoc>",
+        "analysis_target_device.domain.CPU_ONLY": "CPU only",
+        "analysis_target_device.domain.GPU_ONLY": "GPU only",
+        "analysis_target_device.domain.GPU_THEN_CPU": "GPU then CPU",
+        "analysis_target_device.title": "Target Device for Analysis",
+        "description": "Calculates the maximum difference from the mean elevation across a range of spatial scales.",
+        "distance_units.descr": "<xdoc><p>Specifies the distance unit that will be used for the <span class=\"esri_uicontrol\">Minimum Neighborhood Distance</span>, <span class=\"esri_uicontrol\">Maximum Neighborhood Distance</span>, and <span class=\"esri_uicontrol\">Distance Increment</span> parameters.</p><p>Distance will be measured in the number of cells or specified unit. The default is the map unit of the spatial reference for the <span class=\"esri_uicontrol\">Input Surface Raster</span> value.</p><ul><li><span title=\"CELLS\">Cells</span>—The distance unit will be cells.</li><li><span title=\"METERS\">Meters</span>—The distance unit will be meters.</li><li><span title=\"CENTIMETERS\">Centimeters</span>—The distance unit will be centimeters.</li><li><span title=\"KILOMETERS\">Kilometers</span>—The distance unit will be kilometers.</li><li><span title=\"INCHES\">Inches</span>—The distance unit will be inches.</li><li><span title=\"FEET\">Feet</span>—The distance unit will be feet.</li><li><span title=\"YARDS\">Yard</span>—The distance unit will be yards.</li><li><span title=\"MILES\">Miles</span>—The distance unit will be miles.</li></ul></xdoc>",
+        "distance_units.domain.CELLS": "Cells",
+        "distance_units.domain.CENTIMETERS": "Centimeters",
+        "distance_units.domain.FEET": "Feet",
+        "distance_units.domain.INCHES": "Inches",
+        "distance_units.domain.KILOMETERS": "Kilometers",
+        "distance_units.domain.METERS": "Meters",
+        "distance_units.domain.MILES": "Miles",
+        "distance_units.domain.YARDS": "Yard",
+        "distance_units.title": "Distance Units",
+        "in_raster.descr": "The input surface raster.",
+        "in_raster.title": "Input Surface Raster",
+        "increment.descr": "<xdoc><p>The increase in neighborhood distance between scales.</p><p>This parameter value cannot be less than the <span class=\"esri_uicontrol\">Input Surface Raster</span> cell size or 1 cell.</p><p>The default value is the cell size of the <span class=\"esri_uicontrol\">Input Surface Raster</span> parameter value.</p></xdoc>",
+        "increment.title": "Distance Increment",
+        "max_scale.descr": "<xdoc><p>The distance that defines the maximum neighborhood scale that elevation difference will be calculated for. This is the distance from the target cell center, creating a square of cells around the target cell.</p><p>This value must be greater than or equal to the <span class=\"esri_uicontrol\">Minimum Neighborhood Distance</span> parameter value and the input raster cell size or one cell.</p><p>The default value is 13 times the cell size of the <span class=\"esri_uicontrol\">Input Surface Raster</span> parameter value, resulting in a 27 by 27 cell neighborhood.</p></xdoc>",
+        "max_scale.title": "Maximum Neighborhood Distance",
+        "min_scale.descr": "<xdoc><p>The distance that defines the minimum neighborhood scale that elevation difference will be calculated for. This is the distance from the target cell center, creating a square of cells around the target cell.</p><p>This value must be less than or equal to the <span class=\"esri_uicontrol\">Maximum Neighborhood Distance</span> parameter value and greater than or equal to the input raster cell size or one cell.</p><p>The default value is 4 times the cell size of the <span class=\"esri_uicontrol\">Input Surface Raster</span> parameter value, resulting in a 9 by 9 cell neighborhood.</p></xdoc>",
+        "min_scale.title": "Minimum Neighborhood Distance",
+        "out_difference_raster.descr": "<xdoc><p>The output raster containing the maximum difference from the mean elevation for each cell.</p><p>It will be floating-point type.</p></xdoc>",
+        "out_difference_raster.title": "Output Difference Raster",
+        "out_scale_raster.descr": "<xdoc><p>The output raster containing the scale at which the most extreme difference was found for each cell. Scales are represented as their neighborhood distance values.</p><p>It will be floating-point type.</p></xdoc>",
+        "out_scale_raster.title": "Output Scale Raster",
+        "title": "Multiscale Surface Difference"
+    }
+}

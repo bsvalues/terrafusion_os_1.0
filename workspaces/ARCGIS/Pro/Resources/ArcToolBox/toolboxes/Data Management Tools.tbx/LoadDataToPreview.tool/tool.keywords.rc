@@ -1,0 +1,10 @@
+{
+    "set": [
+        "load data to preview",
+        "data loading",
+        "mapping table",
+        "schema",
+        "source",
+        "target"
+    ]
+}

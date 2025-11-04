@@ -1,0 +1,217 @@
+openapi: 3.0.3
+info:
+  title: Submissions API
+  description: Submissions operations APIs
+  version: 1.0.0
+  contact:
+    name: TerraFusion Government OS API Support
+    email: submissions-api@terrafusion.gov
+    url: https://docs.terrafusion.gov/marketplace/submissions
+  license:
+    name: Government Use License
+    url: https://terrafusion.gov/licenses/government-api
+  termsOfService: https://terrafusion.gov/terms/api-usage
+servers:
+- url: https://api.terrafusion.gov/api/v1/submissions
+  description: Production TerraFusion Government API
+- url: https://staging-api.terrafusion.gov/api/v1/submissions
+  description: Staging Environment
+- url: https://dev-api.terrafusion.gov/api/v1/submissions
+  description: Development Environment
+paths:
+  /health:
+    get:
+      tags:
+      - submissions
+      summary: Health check
+      description: Health check - Submissions operations APIs
+      operationId: get__health
+      security:
+      - OAuth2:
+        - submissions:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /data:
+    get:
+      tags:
+      - submissions
+      summary: Data retrieval
+      description: Data retrieval - Submissions operations APIs
+      operationId: get__data
+      security:
+      - OAuth2:
+        - submissions:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /operations:
+    post:
+      tags:
+      - submissions
+      summary: Operation execution
+      description: Operation execution - Submissions operations APIs
+      operationId: post__operations
+      security:
+      - OAuth2:
+        - submissions:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /status:
+    get:
+      tags:
+      - submissions
+      summary: Service status
+      description: Service status - Submissions operations APIs
+      operationId: get__status
+      security:
+      - OAuth2:
+        - submissions:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: object
+    HealthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - healthy
+          - degraded
+          - unhealthy
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        dependencies:
+          type: object
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
+          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          scopes:
+            submissions:read: Read access to submissions resources
+            submissions:write: Write access to submissions resources
+            submissions:admin: Administrative access to submissions
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+security:
+- OAuth2:
+  - submissions:read
+- ApiKey: []
+tags:
+- name: submissions
+  description: Submissions operations
+  externalDocs:
+    description: Find out more about submissions
+    url: https://docs.terrafusion.gov/marketplace/submissions

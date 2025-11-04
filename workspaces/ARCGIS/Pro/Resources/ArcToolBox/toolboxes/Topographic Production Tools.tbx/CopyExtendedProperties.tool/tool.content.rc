@@ -1,0 +1,18 @@
+{
+    "map": {
+        "database_path.descr": "The Workflow Manager (Classic) database connection file (.jtc) that contains the job information. If no connection file is specified, the current default Workflow Manager (Classic) database will be used.",
+        "database_path.title": "Input Database Path",
+        "description": "Copies extended property values from one job to another job in the same Workflow Manager (Classic) repository.",
+        "property_fields.descr": "The properties to be copied from the source job to the target job.",
+        "property_fields.title": "Property Fields",
+        "property_table_name.descr": "The name of the extended properties table that will be updated.",
+        "property_table_name.title": "Properties Table Name",
+        "source_job_id.descr": "The Job ID of the Workflow Manager (Classic) job that contains the properties to copy.",
+        "source_job_id.title": "Source Job ID",
+        "summary": "<xdoc><p>Copies extended property values from one job to another job in the same Workflow Manager (Classic) repository.</p><note type=\"caution\"/><p group=\"note\">This tool is designed to be run as a step in a Workflow Manager (Classic) workflow. Running this tool outside of Workflow Manager (Classic) does not honor all Workflow Manager (Classic) constraints such as job assignment, dependencies, or holds and may cause a job to enter an unusable state.</p><note type=\"caution\"/><p group=\"note\">This tool is intended for use with the Topographic Mapping production workflows and will not support an improperly configured Workflow Manager (Classic) repository. Sample workflows and instructions for configuring Topographic Mapping production workflows are available as part of the product file installer.</p><note type=\"tip\"/><p group=\"note\">It is recommended that current Workflow Manager (Classic) users begin new projects using the services-driven version of ArcGIS Workflow Manager for ArcGIS Pro.</p></xdoc>",
+        "target_job_id.descr": "The Job ID of the target job that will have its properties updated.",
+        "target_job_id.title": "Target Job ID",
+        "title": "Copy Extended Properties",
+        "updated_job_id.title": "Updated Job ID"
+    }
+}

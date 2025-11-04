@@ -1,0 +1,217 @@
+openapi: 3.0.3
+info:
+  title: Terra Bank API
+  description: Terra Bank operations APIs
+  version: 1.0.0
+  contact:
+    name: TerraFusion Government OS API Support
+    email: terra-bank-api@terrafusion.gov
+    url: https://docs.terrafusion.gov/marketplace/terra-bank
+  license:
+    name: Government Use License
+    url: https://terrafusion.gov/licenses/government-api
+  termsOfService: https://terrafusion.gov/terms/api-usage
+servers:
+- url: https://api.terrafusion.gov/api/v1/terra-bank
+  description: Production TerraFusion Government API
+- url: https://staging-api.terrafusion.gov/api/v1/terra-bank
+  description: Staging Environment
+- url: https://dev-api.terrafusion.gov/api/v1/terra-bank
+  description: Development Environment
+paths:
+  /health:
+    get:
+      tags:
+      - terra-bank
+      summary: Health check
+      description: Health check - Terra Bank operations APIs
+      operationId: get__health
+      security:
+      - OAuth2:
+        - terra-bank:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /data:
+    get:
+      tags:
+      - terra-bank
+      summary: Data retrieval
+      description: Data retrieval - Terra Bank operations APIs
+      operationId: get__data
+      security:
+      - OAuth2:
+        - terra-bank:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /operations:
+    post:
+      tags:
+      - terra-bank
+      summary: Operation execution
+      description: Operation execution - Terra Bank operations APIs
+      operationId: post__operations
+      security:
+      - OAuth2:
+        - terra-bank:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /status:
+    get:
+      tags:
+      - terra-bank
+      summary: Service status
+      description: Service status - Terra Bank operations APIs
+      operationId: get__status
+      security:
+      - OAuth2:
+        - terra-bank:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: object
+    HealthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - healthy
+          - degraded
+          - unhealthy
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        dependencies:
+          type: object
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
+          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          scopes:
+            terra-bank:read: Read access to terra-bank resources
+            terra-bank:write: Write access to terra-bank resources
+            terra-bank:admin: Administrative access to terra-bank
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+security:
+- OAuth2:
+  - terra-bank:read
+- ApiKey: []
+tags:
+- name: terra-bank
+  description: Terra Bank operations
+  externalDocs:
+    description: Find out more about terra-bank
+    url: https://docs.terrafusion.gov/marketplace/terra-bank

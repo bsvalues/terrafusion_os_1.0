@@ -1,0 +1,10 @@
+{
+    "set": [
+        "administration",
+        "configuration",
+        "network",
+        "set",
+        "terminal",
+        "utility network"
+    ]
+}

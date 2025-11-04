@@ -1,0 +1,22 @@
+{
+    "map": {
+        "address_number_field.descr": "The field in the Site Address feature class that contains information for the site address number.",
+        "address_number_field.title": "Address Number Field",
+        "description": "Configures the Address Range and Site Address feature classes from the Address Data Management solution for use with a linear referencing system (LRS) with the ArcGIS Roads and Highways extension.",
+        "in_address_range_features.descr": "The input LRS centerline or LRS line event feature class that is the Address Management Address Range feature class.",
+        "in_address_range_features.title": "Input Address Range Feature Layer",
+        "in_site_address_features.descr": "The input point feature class that is the Address Management Site Address feature class.",
+        "in_site_address_features.title": "Input Site Address Features",
+        "left_from_address_field.descr": "The field in the Address Range feature class that contains information for the first address on the left side of a roadway.",
+        "left_from_address_field.title": "Left From Address Field",
+        "left_to_address_field.descr": "The field in the Address Range feature class that contains information for the last address on the left side of a roadway.",
+        "left_to_address_field.title": "Left To Address Field",
+        "out_address_range_features.title": "Output Address Range Features",
+        "out_site_address_features.title": "Output Site Address Features",
+        "right_from_address_field.descr": "The field in the Address Range feature class that contains information for the first address on the right side of a roadway.",
+        "right_from_address_field.title": "Right From Address Field",
+        "right_to_address_field.descr": "The field in the Address Range feature class that contains information for the last address on the right side of a roadway.",
+        "right_to_address_field.title": "Right To Address Field",
+        "title": "Configure Address Feature Classes"
+    }
+}

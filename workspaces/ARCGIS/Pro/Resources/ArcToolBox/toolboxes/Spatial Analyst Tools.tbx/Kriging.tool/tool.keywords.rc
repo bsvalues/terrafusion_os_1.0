@@ -1,0 +1,15 @@
+{
+    "set": [
+        "estimate",
+        "interpolate",
+        "interpolation",
+        "interpolator",
+        "lag",
+        "nugget",
+        "predict",
+        "range",
+        "semivariogram",
+        "sill",
+        "surface"
+    ]
+}

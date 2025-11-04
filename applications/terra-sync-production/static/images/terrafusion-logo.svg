@@ -1,0 +1,31 @@
+<svg width="200" height="60" viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="tfGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#0891b2;stop-opacity:1" />
+            <stop offset="50%" style="stop-color:#00d2ff;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#0891b2;stop-opacity:1" />
+        </linearGradient>
+        <linearGradient id="tfTextGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#0891b2;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#00d2ff;stop-opacity:1" />
+        </linearGradient>
+        <filter id="glow">
+            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+            <feMerge> 
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+        </filter>
+    </defs>
+    
+    <!-- TF Icon -->
+    <g transform="translate(5,5)">
+        <rect x="0" y="0" width="50" height="50" rx="12" fill="url(#tfGradient)" filter="url(#glow)"/>
+        <path d="M8 15 L42 15 L42 20 L28 20 L28 40 L22 40 L22 20 L8 20 Z" fill="white" opacity="0.9"/>
+        <path d="M15 25 L35 25 L35 30 L28 30 L28 40 L22 40 L22 30 L15 30 Z" fill="white" opacity="0.7"/>
+    </g>
+    
+    <!-- TerraFusion Text -->
+    <text x="65" y="25" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="url(#tfTextGradient)">TerraFusion</text>
+    <text x="65" y="42" font-family="Arial, sans-serif" font-size="10" fill="#00d2ff" opacity="0.8">Intelligence That Counties Envy</text>
+</svg>

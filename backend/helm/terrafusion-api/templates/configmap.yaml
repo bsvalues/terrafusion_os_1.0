@@ -1,0 +1,40 @@
+{{/*
+============================================================================
+TerraFusion API - ConfigMap Template
+Government. Transcended. - Application Configuration
+============================================================================
+*/}}
+
+{{- if .Values.configMap.create -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "terrafusion-api.fullname" . }}-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "terrafusion-api.labels" . | nindent 4 }}
+    terrafusion.io/component: api
+    terrafusion.io/tier: core
+  annotations:
+    description: "TerraFusion API Configuration"
+    compliance: "FISMA-High"
+data:
+  {{- toYaml .Values.configMap.data | nindent 2 }}
+  
+  # Additional runtime configuration
+  ENVIRONMENT: {{ .Values.global.environment | quote }}
+  LOG_LEVEL: "Information"
+  ENABLE_METRICS: "true"
+  ENABLE_TRACING: {{ .Values.monitoring.jaeger.enabled | quote }}
+  ENABLE_AUDIT_LOGGING: {{ .Values.compliance.fisma.auditLogging | quote }}
+  
+  # County configuration
+  COUNTY_COUNT: "39"
+  COUNTY_ISOLATION: {{ .Values.compliance.multiTenancy.isolationLevel | quote }}
+  
+  # Feature flags
+  AI_AGENT_ENABLED: {{ .Values.aiAgent.enabled | quote }}
+  QUANTUM_OPTIMIZATION_FACTOR: {{ .Values.aiAgent.quantumOptimizationFactor | quote }}
+  PROPERTY_ASSESSMENT_ENABLED: {{ .Values.propertyAssessment.enabled | quote }}
+  IAAO_COMPLIANCE_TARGET: {{ .Values.propertyAssessment.iaaoComplianceTarget | quote }}
+{{- end }}

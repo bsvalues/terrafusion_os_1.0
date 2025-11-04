@@ -1,0 +1,13 @@
+{
+    "set": [
+        "alter",
+        "clean",
+        "coarse",
+        "generalize",
+        "image processing",
+        "reduce",
+        "resample",
+        "resolution",
+        "simplify"
+    ]
+}

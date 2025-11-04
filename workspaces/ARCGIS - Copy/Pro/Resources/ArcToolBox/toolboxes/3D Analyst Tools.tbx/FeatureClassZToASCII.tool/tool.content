@@ -1,0 +1,165 @@
+{
+    "type": "FunctionTool",
+    "guid": "{f6e70950-1844-431b-b2fa-5bda6223b4f7}",
+    "displayname": "$rc:title",
+    "helpcontent": "5020002",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_feature_class": {
+            "displayname": "$rc:in_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline",
+                    "Polygon",
+                    "Point",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_feature_class.descr"
+        },
+        "output_location": {
+            "displayname": "$rc:output_location.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:output_location.descr"
+        },
+        "out_file": {
+            "displayname": "$rc:out_file.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "pf.txt",
+            "description": "$rc:out_file.descr"
+        },
+        "format": {
+            "type": "optional",
+            "displayname": "$rc:format.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "GENERATE",
+                        "code": "$rc:format.domain.GENERATE"
+                    },
+                    {
+                        "value": "XYZ",
+                        "code": "$rc:format.domain.XYZ"
+                    },
+                    {
+                        "value": "PROFILE",
+                        "code": "$rc:format.domain.PROFILE"
+                    }
+                ]
+            },
+            "value": "GENERATE",
+            "description": "$rc:format.descr"
+        },
+        "delimiter": {
+            "type": "optional",
+            "displayname": "$rc:delimiter.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "COMMA",
+                        "code": "$rc:delimiter.domain.COMMA"
+                    },
+                    {
+                        "value": "SPACE",
+                        "code": "$rc:delimiter.domain.SPACE"
+                    }
+                ]
+            },
+            "value": "SPACE",
+            "description": "$rc:delimiter.descr"
+        },
+        "decimal_format": {
+            "type": "optional",
+            "displayname": "$rc:decimal_format.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "AUTOMATIC",
+                        "code": "$rc:decimal_format.domain.AUTOMATIC"
+                    },
+                    {
+                        "value": "FIXED",
+                        "code": "$rc:decimal_format.domain.FIXED"
+                    }
+                ]
+            },
+            "value": "AUTOMATIC",
+            "description": "$rc:decimal_format.descr"
+        },
+        "digits_after_decimal": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:digits_after_decimal.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "3",
+            "description": "$rc:digits_after_decimal.descr"
+        },
+        "decimal_separator": {
+            "type": "optional",
+            "displayname": "$rc:decimal_separator.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DECIMAL_POINT",
+                        "code": "$rc:decimal_separator.domain.DECIMAL_POINT"
+                    },
+                    {
+                        "value": "DECIMAL_COMMA",
+                        "code": "$rc:decimal_separator.domain.DECIMAL_COMMA"
+                    }
+                ]
+            },
+            "value": "DECIMAL_POINT",
+            "description": "$rc:decimal_separator.descr"
+        },
+        "derived_output": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:derived_output.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFolder"
+                    },
+                    {
+                        "type": "DEFile"
+                    }
+                ]
+            }
+        }
+    },
+    "environments": [
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "workspace"
+    ]
+}

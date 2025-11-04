@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Creates polygon features using tag values in a triangulated irregular network (TIN) dataset.",
+        "in_tin.descr": "The TIN dataset that will be processed.",
+        "in_tin.title": "Input TIN",
+        "out_feature_class.descr": "The feature class that will be produced.",
+        "out_feature_class.title": "Output Feature Class",
+        "tag_field.descr": "The name of the field storing the tag attribute in the output feature class. The default field name is Tag_Value.",
+        "tag_field.title": "Tag Value Field",
+        "title": "TIN Polygon Tag"
+    }
+}

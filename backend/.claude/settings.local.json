@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//mnt/c/Users/bsval/terrafusion_os_1.0/.github/**)",
+      "Bash(cat TerraFusion.API/Program.cs)",
+      "Bash(cat TerraFusion.Consciousness/Program.cs)",
+      "Read(//mnt/c/Users/bsval/terrafusion_os_1.0/**)",
+      "Bash(cat tailwind.config.js)",
+      "Bash(awk:*)",
+      "Bash(find:*)",
+      "Bash(xargs basename:*)",
+      "Bash(dotnet build:*)",
+      "Bash(Select-String \"error CS|Build succeeded|Build FAILED\")",
+      "Bash(Select-Object -First 10)",
+      "Bash(tee:*)",
+      "Bash(TerraFusion.API/Services/DataMigrationEngine.cs.tmp)",
+      "Bash(powershell -Command:*)",
+      "Bash(npm install:*)",
+      "Bash(Select-Object -Last 30)",
+      "Bash(dotnet clean:*)",
+      "Bash(AdvancedAIAgentOrchestrator.cs.tmp)",
+      "Bash(git checkout:*)",
+      "Bash(Select-Object -First 20)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

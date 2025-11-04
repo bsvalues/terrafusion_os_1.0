@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "Z:/"
+		},
+		{
+			"name": "DatabaseProjectpacs_oltp",
+			"path": "DatabaseProjectpacs_oltp"
+		},
+		{
+			"name": "DatabaseProjectCIAPS",
+			"path": "DatabaseProjectCIAPS"
+		}
+	],
+	"settings": {}
+}

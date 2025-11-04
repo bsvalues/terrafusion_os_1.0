@@ -1,0 +1,362 @@
+{
+    "type": "FunctionTool",
+    "guid": "{7250812e-1653-44a8-bf0e-902e7a10ec4c}",
+    "displayname": "$rc:title",
+    "helpcontent": "10040015",
+    "description": "$rc:description",
+    "product": "300",
+    "params": {
+        "in_layer": {
+            "displayname": "$rc:in_layer.title",
+            "datatype": {
+                "type": "GPLayer"
+            },
+            "domain": {
+                "type": "GPLayerDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:in_layer.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "create_multipoints": {
+            "type": "optional",
+            "displayname": "$rc:create_multipoints.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CREATE_MULTIPOINTS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "CREATE_POINTS"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:create_multipoints.descr"
+        },
+        "boundary_option": {
+            "type": "optional",
+            "displayname": "$rc:boundary_option.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MAY_CROSS_BOUNDARY",
+                        "code": "$rc:boundary_option.domain.MAY_CROSS_BOUNDARY"
+                    },
+                    {
+                        "value": "FIXED_DISTANCE",
+                        "code": "$rc:boundary_option.domain.FIXED_DISTANCE"
+                    },
+                    {
+                        "value": "VALUE_FROM_FIELD",
+                        "code": "$rc:boundary_option.domain.VALUE_FROM_FIELD"
+                    }
+                ]
+            },
+            "value": "MAY_CROSS_BOUNDARY",
+            "description": "$rc:boundary_option.descr"
+        },
+        "boundary_distance": {
+            "type": "optional",
+            "displayname": "$rc:boundary_distance.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                }
+            },
+            "value": "0",
+            "description": "$rc:boundary_distance.descr"
+        },
+        "boundary_distance_field": {
+            "type": "optional",
+            "displayname": "$rc:boundary_distance_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "BigInteger"
+                ]
+            },
+            "depends": [
+                "in_layer"
+            ],
+            "description": "$rc:boundary_distance_field.descr"
+        },
+        "boundary_distance_unit": {
+            "type": "optional",
+            "displayname": "$rc:boundary_distance_unit.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "Kilometers",
+                        "code": "$rc:boundary_distance_unit.domain.Kilometers"
+                    },
+                    {
+                        "value": "Meters",
+                        "code": "$rc:boundary_distance_unit.domain.Meters"
+                    },
+                    {
+                        "value": "Decimeters",
+                        "code": "$rc:boundary_distance_unit.domain.Decimeters"
+                    },
+                    {
+                        "value": "Centimeters",
+                        "code": "$rc:boundary_distance_unit.domain.Centimeters"
+                    },
+                    {
+                        "value": "Millimeters",
+                        "code": "$rc:boundary_distance_unit.domain.Millimeters"
+                    },
+                    {
+                        "value": "Nautical Miles",
+                        "code": "$rc:boundary_distance_unit.domain.Nautical Miles"
+                    },
+                    {
+                        "value": "Statute Miles",
+                        "code": "$rc:boundary_distance_unit.domain.Statute Miles"
+                    },
+                    {
+                        "value": "Yards",
+                        "code": "$rc:boundary_distance_unit.domain.Yards"
+                    },
+                    {
+                        "value": "Feet",
+                        "code": "$rc:boundary_distance_unit.domain.Feet"
+                    },
+                    {
+                        "value": "Inches",
+                        "code": "$rc:boundary_distance_unit.domain.Inches"
+                    },
+                    {
+                        "value": "Degrees",
+                        "code": "$rc:boundary_distance_unit.domain.Degrees"
+                    },
+                    {
+                        "value": "Points",
+                        "code": "$rc:boundary_distance_unit.domain.Points"
+                    }
+                ]
+            },
+            "value": "Points",
+            "description": "$rc:boundary_distance_unit.descr"
+        },
+        "in_barriers": {
+            "type": "optional",
+            "displayname": "$rc:in_barriers.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPLayer",
+                        "displayname": "$rc:in_barriers.dt.title1"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:in_barriers.dt.title2"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:in_barriers.dt.title3"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:in_barriers.dt.title4"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPLayerDomain",
+                        "geometrytype": [
+                            "Polygon",
+                            "Polyline",
+                            "Point"
+                        ]
+                    },
+                    {
+                        "type": "GPNumericDomain",
+                        "allowempty": "true",
+                        "low": {
+                            "inclusive": "true",
+                            "val": "0"
+                        }
+                    },
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Short",
+                            "Long",
+                            "Float",
+                            "Double",
+                            "BigInteger"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "Kilometers",
+                                "code": "$rc:in_barriers.domain.item4.Kilometers"
+                            },
+                            {
+                                "value": "Meters",
+                                "code": "$rc:in_barriers.domain.item4.Meters"
+                            },
+                            {
+                                "value": "Decimeters",
+                                "code": "$rc:in_barriers.domain.item4.Decimeters"
+                            },
+                            {
+                                "value": "Centimeters",
+                                "code": "$rc:in_barriers.domain.item4.Centimeters"
+                            },
+                            {
+                                "value": "Millimeters",
+                                "code": "$rc:in_barriers.domain.item4.Millimeters"
+                            },
+                            {
+                                "value": "Nautical Miles",
+                                "code": "$rc:in_barriers.domain.item4.Nautical Miles"
+                            },
+                            {
+                                "value": "Statute Miles",
+                                "code": "$rc:in_barriers.domain.item4.Statute Miles"
+                            },
+                            {
+                                "value": "Yards",
+                                "code": "$rc:in_barriers.domain.item4.Yards"
+                            },
+                            {
+                                "value": "Feet",
+                                "code": "$rc:in_barriers.domain.item4.Feet"
+                            },
+                            {
+                                "value": "Inches",
+                                "code": "$rc:in_barriers.domain.item4.Inches"
+                            },
+                            {
+                                "value": "Degrees",
+                                "code": "$rc:in_barriers.domain.item4.Degrees"
+                            },
+                            {
+                                "value": "Points",
+                                "code": "$rc:in_barriers.domain.item4.Points"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:in_barriers.descr"
+        },
+        "keep_at_least_one_marker": {
+            "type": "optional",
+            "displayname": "$rc:keep_at_least_one_marker.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "KEEP_AT_LEAST_ONE_MARKER"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_KEEP_AT_LEAST_ONE_MARKER"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:keep_at_least_one_marker.descr"
+        },
+        "displacement_method": {
+            "type": "optional",
+            "displayname": "$rc:displacement_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DO_NOT_DISPLACE",
+                        "code": "$rc:displacement_method.domain.DO_NOT_DISPLACE"
+                    },
+                    {
+                        "value": "DISPLACE_TOWARD_GRID",
+                        "code": "$rc:displacement_method.domain.DISPLACE_TOWARD_GRID"
+                    },
+                    {
+                        "value": "DISPLACE_APART",
+                        "code": "$rc:displacement_method.domain.DISPLACE_APART"
+                    }
+                ]
+            },
+            "value": "DO_NOT_DISPLACE",
+            "description": "$rc:displacement_method.descr"
+        },
+        "minimum_marker_distance": {
+            "type": "optional",
+            "displayname": "$rc:minimum_marker_distance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                }
+            },
+            "value": "0 Points",
+            "description": "$rc:minimum_marker_distance.descr"
+        }
+    },
+    "environments": [
+        "cartographicCoordinateSystem",
+        "referenceScale"
+    ]
+}

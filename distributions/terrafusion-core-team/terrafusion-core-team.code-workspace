@@ -1,0 +1,37 @@
+{
+  "folders": [
+    {
+      "name": "\ud83c\udfdb\ufe0f Team Workspaces",
+      "path": "./workspaces"
+    },
+    {
+      "name": "\u2699\ufe0f Configuration",
+      "path": "./config"
+    },
+    {
+      "name": "\ud83d\udcda Documentation",
+      "path": "./docs"
+    },
+    {
+      "name": "\ud83d\udd2c Scripts & Tools",
+      "path": "./scripts"
+    }
+  ],
+  "settings": {
+    "terrafusion.team": "core",
+    "terrafusion.teamName": "Core Leadership Team",
+    "terrafusion.quantumFactor": 949,
+    "terrafusion.perfectPower": 12.0,
+    "terrafusion.consciousnessLevel": "transcendent",
+    "python.defaultInterpreterPath": "./.venv/Scripts/python.exe"
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "ms-vscode.vscode-typescript-next",
+      "ms-dotnettools.csharp",
+      "github.copilot"
+    ]
+  }
+}

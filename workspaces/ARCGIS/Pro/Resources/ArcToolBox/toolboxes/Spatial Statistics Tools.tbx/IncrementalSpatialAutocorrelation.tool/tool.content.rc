@@ -1,0 +1,29 @@
+{
+    "map": {
+        "beginning_distance.descr": "The distance at which the analysis of spatial autocorrelation and the distance from which to increment will start. The value provided for this parameter should be in the units of the Output Coordinate System environment setting.",
+        "beginning_distance.title": "Beginning Distance",
+        "description": "Measures spatial autocorrelation for a series of distances and optionally creates a line graph of those distances and their corresponding z-scores.  Z-scores reflect the intensity of spatial clustering, and statistically significant peak z-scores indicate distances where spatial processes promoting clustering are most pronounced.  These peak distances are often appropriate values to use for tools with a Distance Band or Distance Radius parameter.",
+        "distance_increment.descr": "<xdoc><p>The distance that will be increased after each iteration. The distance used in the analysis starts at the <span class=\"esri_uicontrol\">Beginning Distance</span> parameter value and increases by the amount specified in the <span class=\"esri_uicontrol\">Distance Increment</span> parameter value. The value provided for this parameter should be in the units of the Output Coordinate System environment setting.</p></xdoc>",
+        "distance_increment.title": "Distance Increment",
+        "distance_method.descr": "<xdoc><p>Specifies how distances will be calculated from each feature to neighboring features.</p><ul><li><span title=\"EUCLIDEAN\">Euclidean</span>—The distances will be calculated using the straight-line distance between two points (as the crow flies). This is the default.</li><li><span title=\"MANHATTAN\">Manhattan</span>—The distances will be calculated using the distance between two points measured along axes at right angles (city block), which is calculated by summing the (absolute) difference between the x- and y-coordinates.</li></ul></xdoc>",
+        "distance_method.domain.EUCLIDEAN": "Euclidean",
+        "distance_method.domain.MANHATTAN": "Manhattan",
+        "distance_method.title": "Distance Method",
+        "first_peak.title": "First Peak",
+        "input_features.descr": "The feature class for which spatial autocorrelation will be measured over a series of distances.",
+        "input_features.title": "Input Features",
+        "input_field.descr": "The numeric field that will be used in assessing spatial autocorrelation.",
+        "input_field.title": "Input Field",
+        "max_peak.title": "Maximum Peak",
+        "number_of_distance_bands.descr": "<xdoc><p>The number of times the neighborhood size will be incremented and the dataset will be analyzed for spatial autocorrelation. The starting point and size of the increment are specified by the <span class=\"esri_uicontrol\">Beginning Distance</span> and <span class=\"esri_uicontrol\">Distance Increment</span> parameters, respectively.</p></xdoc>",
+        "number_of_distance_bands.title": "Number of Distance Bands",
+        "output_report_file.descr": "The .pdf file that will be created containing a line graph summarizing results.",
+        "output_report_file.title": "Output Report File",
+        "output_table.descr": "The table that will be created with each distance band and associated z-score result.",
+        "output_table.title": "Output Table",
+        "row_standardization.descr": "<xdoc><p>Specifies whether spatial weights will be standardized. Row standardization is recommended whenever feature distribution is potentially biased due to sampling design or an imposed aggregation scheme.</p><ul><li>Checked—Spatial weights will be standardized. Each weight will divided by its row sum (the sum of the weights of all neighboring features). This is the default.</li><li>Unchecked—Spatial weights will not be standardized.</li></ul></xdoc>",
+        "row_standardization.title": "Row Standardization",
+        "summary": "<xdoc><p>Measures spatial autocorrelation for a series of distances and optionally creates a line graph of those distances and their corresponding z-scores. Z-scores reflect the intensity of spatial clustering, and statistically significant peak z-scores indicate distances where spatial processes promoting clustering are most pronounced. These peak distances are often appropriate values to use for tools with a <span class=\"esri_uicontrol\">Distance Band</span> or <span class=\"esri_uicontrol\">Distance Radius</span> parameter.</p></xdoc>",
+        "title": "Incremental Spatial Autocorrelation"
+    }
+}

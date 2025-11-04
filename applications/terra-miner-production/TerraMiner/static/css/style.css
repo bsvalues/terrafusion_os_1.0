@@ -1,0 +1,88 @@
+/* Custom styles for NARRPR Data Scraper */
+
+/* Global styles */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Card styling */
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Navbar styling */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-brand svg {
+    margin-right: 10px;
+}
+
+/* Button styling */
+.btn {
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn svg {
+    margin-right: 5px;
+}
+
+/* Icon styling */
+[data-feather] {
+    width: 18px;
+    height: 18px;
+    stroke-width: 2;
+}
+
+.card-title [data-feather] {
+    width: 24px;
+    height: 24px;
+}
+
+/* Status indicators */
+.status-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.status-success {
+    background-color: var(--bs-success);
+}
+
+.status-warning {
+    background-color: var(--bs-warning);
+}
+
+.status-danger {
+    background-color: var(--bs-danger);
+}
+
+/* Media queries */
+@media (max-width: 767px) {
+    .card {
+        margin-bottom: 20px;
+    }
+}

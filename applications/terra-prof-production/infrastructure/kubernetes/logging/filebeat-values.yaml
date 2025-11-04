@@ -1,0 +1,178 @@
+## Filebeat Helm chart values for TerraFusionPro
+
+# DaemonSet to ensure Filebeat runs on every node
+daemonset:
+  enabled: true
+  
+# Configuration for Filebeat
+filebeatConfig:
+  filebeat.yml: |
+    filebeat.autodiscover:
+      providers:
+        - type: kubernetes
+          node: ${NODE_NAME}
+          hints.enabled: true
+          hints.default_config.enabled: true
+          hints.default_config:
+            type: container
+            paths:
+              - /var/log/containers/*${data.kubernetes.container.id}.log
+          templates:
+            - config:
+                - type: container
+                  paths:
+                    - /var/log/containers/*${data.kubernetes.container.id}.log
+                  exclude_lines: ["^\\s+[\\-`('.|_]"]  # drop ascii-art, dividers, etc
+                  processors:
+                    - add_kubernetes_metadata:
+                        host: ${NODE_NAME}
+                        matchers:
+                        - logs_path:
+                            logs_path: "/var/log/containers/"
+                    - add_tags:
+                        tags: ["kubernetes"]
+                    - add_fields:
+                        target: ''
+                        fields:
+                          environment: "${ENVIRONMENT}"
+    
+    # Special handling for TerraFusionPro services
+    - condition:
+        contains:
+          kubernetes.labels.app: "terrafusionpro"
+      config:
+        - module: nginx
+          access:
+            enabled: true
+            var.paths: ["/var/log/containers/*nginx*.log"]
+          error:
+            enabled: true
+            var.paths: ["/var/log/containers/*nginx*.log"]
+          processors:
+            - add_tags:
+                tags: ["nginx", "terrafusionpro"]
+        - module: postgresql
+          log:
+            enabled: true
+            var.paths: ["/var/log/containers/*postgres*.log"]
+          processors:
+            - add_tags:
+                tags: ["postgresql", "terrafusionpro"]
+        - module: nodejs
+          log:
+            enabled: true
+            var.paths: ["/var/log/containers/*node*.log"]
+          processors:
+            - add_tags:
+                tags: ["nodejs", "terrafusionpro"]
+    
+    # Output configuration
+    output.elasticsearch:
+      hosts: ["${ELASTICSEARCH_HOSTS}"]
+      username: "${ELASTICSEARCH_USERNAME}"
+      password: "${ELASTICSEARCH_PASSWORD}"
+      index: "terrafusionpro-%{[agent.version]}-%{+yyyy.MM.dd}"
+      
+    # Processor pipeline
+    processors:
+      - add_host_metadata:
+          when.not.contains.tags: forwarded
+      - add_cloud_metadata: ~
+      - add_kubernetes_metadata: ~
+      - add_fields:
+          target: ''
+          fields:
+            service: terrafusionpro
+            environment: ${ENVIRONMENT}
+
+# Environment variables
+extraEnvs:
+  - name: ELASTICSEARCH_HOSTS
+    value: "elasticsearch-master:9200"
+  - name: ELASTICSEARCH_USERNAME
+    value: "filebeat"
+  - name: ELASTICSEARCH_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: filebeat-credentials
+        key: password
+  - name: NODE_NAME
+    valueFrom:
+      fieldRef:
+        fieldPath: spec.nodeName
+  - name: ENVIRONMENT
+    value: "production"  # This can be overridden in environment-specific deployments
+
+# Resource configuration
+resources:
+  requests:
+    cpu: "100m"
+    memory: "200Mi"
+  limits:
+    cpu: "300m"
+    memory: "500Mi"
+
+# Pod security context
+podSecurityContext:
+  runAsUser: 0
+  privileged: false
+
+# Role-based access control
+rbac:
+  create: true
+  serviceAccountName: filebeat
+
+# Persistence
+extraVolumeMounts:
+  - name: varlogcontainers
+    mountPath: /var/log/containers
+  - name: varlogpods
+    mountPath: /var/log/pods
+  - name: varlibdockercontainers
+    mountPath: /var/lib/docker/containers
+    readOnly: true
+
+extraVolumes:
+  - name: varlogcontainers
+    hostPath:
+      path: /var/log/containers
+  - name: varlogpods
+    hostPath:
+      path: /var/log/pods
+  - name: varlibdockercontainers
+    hostPath:
+      path: /var/lib/docker/containers
+
+# Security settings
+securityContext:
+  runAsUser: 0
+  privileged: false
+
+# Toleration to run on all nodes
+tolerations:
+  - operator: Exists
+
+# Health checks
+livenessProbe:
+  exec:
+    command:
+      - sh
+      - -c
+      - |
+        #!/usr/bin/env bash -e
+        curl --fail 127.0.0.1:5066
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+
+readinessProbe:
+  exec:
+    command:
+      - sh
+      - -c
+      - |
+        #!/usr/bin/env bash -e
+        filebeat test output
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5

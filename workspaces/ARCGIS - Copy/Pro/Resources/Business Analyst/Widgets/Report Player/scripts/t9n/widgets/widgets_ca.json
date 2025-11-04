@@ -1,0 +1,78 @@
+{
+  "calcite": {
+    "reset": "Restableix",
+    "action": {
+      "sort": "Ordena"
+    },
+    "buttons": {
+      "save": "Desa",
+      "edit": "Edita",
+      "done": "Fet",
+      "apply": "Aplica",
+      "cancel": "Cancel·la",
+      "close": "Tanca"
+    },
+    "ColorPicker": {
+      "selectColor": "Seleccioneu un color",
+      "noColorSpecified": "No s'ha especificat cap color",
+      "transparent": "Transparent",
+      "colorTooltip": "<p>Hexadecimal: ${hex}</p><p>RGB: ${r}, ${g}, ${b}</p>",
+      "recent": "Recent",
+      "standard": "Estàndard",
+      "savedColors": "Colors desats",
+      "advanced": "Opcions avançades"
+    },
+    "DatePickerLink": {
+      "enterDate": "Introduïu una data"
+    },
+    "PaginationContinuous": {
+      "next": "Següent",
+      "previous": "Anterior"
+    }
+  },
+  "ImageNavigator": {
+    "paginationLabel": "${n} de ${m}",
+    "noImage": "Ara mateix no hi ha cap foto desada amb aquest lloc",
+    "previewNotAvailable": "Visualització prèvia no disponible"
+  },
+  "PageNavigator": {
+    "currentPageOutOfN": "Pàgina ${current} de ${total}"
+  },
+  "PanoramicViewer": {
+    "image-viewer-close": "Tanca",
+    "image-viewer-fullscreen": "Pantalla completa",
+    "image-viewer-minimize": "Minimitza",
+    "image-viewer-title": "Visor de fotos",
+    "image-viewer-show-caption": "Mostra el títol",
+    "image-viewer-hide-caption": "Amaga"
+  },
+  "TextBox": {
+    "error_numberExpected": "S'espera un número",
+    "error_range": "Valor previst de ${0} a ${1}"
+  },
+  "charts": {
+    "histogram": {
+      "minValue": "Mín.:<br>${0}",
+      "maxValue": "Màx.:<br>${0}",
+      "thisAreaValue": "Aquesta àrea: ${0}",
+      "medianValue": "Mediana:<br>${0}",
+      "q1Value": "T1:<br>${0}",
+      "q3Value": "T3:<br>${0}",
+      "percentile": "Percentil ${percent}:<br>${0}",
+      "percentileBottom": "${percent}% inferior:<br>${0}",
+      "percentileTop": "${percent}% superior:<br>${0}",
+      "percentile_singleLine": "Percentil ${percent}: ${0}",
+      "percentileBottom_singleLine": "${percent}% inferior: ${0}",
+      "percentileTop_singleLine": "${percent}% superior: ${0}",
+      "sd_singleLine": "${sd} SD: ${0}",
+      "tooltip": {
+        "range_single": "<b>${level}</b> amb un valor dins de <b>${value}</b> : <b>1</b>",
+        "range_single_precise": "<b>${areaName}</b> té el valor <b>${value}</b>.",
+        "range_multi": "<b>${level}</b> amb un valor dins de <b>${value}</b> : <b>${count}</b>",
+        "thisArea": "<b>Aquesta àrea</b> té un valor de <b>${value}</b>.",
+        "percentileLower": "Un <b>${percent} %</b> de <b>${level}</b> tenen un valor per sobre de <b>${value}</b>.",
+        "percentileUpper": "Un <b>${percent} %</b> de <b>${level}</b> tenen un valor per sota de <b>${value}</b>."
+      }
+    }
+  }
+}

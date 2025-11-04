@@ -1,0 +1,78 @@
+{
+    "type": "FunctionTool",
+    "guid": "{35b9328a-b531-4499-91d4-92a52f482e58}",
+    "displayname": "$rc:title",
+    "helpcontent": "1050005",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "input_data_change",
+        "mCPU"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPFeatureLayer",
+                        "displayname": "$rc:in_features.dt.title1"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Polygon",
+                            "Polyline",
+                            "Point",
+                            "Multipoint"
+                        ]
+                    },
+                    {
+                        "type": "GPRangeDomain",
+                        "min": "0",
+                        "max": "50"
+                    }
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "cluster_tolerance": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:cluster_tolerance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:cluster_tolerance.descr"
+        },
+        "out_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            },
+            "depends": [
+                "in_features"
+            ]
+        }
+    },
+    "environments": [
+        "XYTolerance",
+        "extent",
+        "parallelProcessingFactor",
+        "workspace"
+    ]
+}

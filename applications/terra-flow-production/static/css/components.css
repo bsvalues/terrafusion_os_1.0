@@ -1,0 +1,428 @@
+/**
+ * TerraFlow UI Component Styles
+ * Part of the TerraFusion Platform unified design system
+ */
+
+/* Card Components
+-------------------------------------------------- */
+.tf-card {
+  border-radius: var(--radius-lg);
+  background-color: white;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--neutral-200);
+  margin-bottom: var(--space-lg);
+  overflow: hidden;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.tf-card:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.tf-card-header {
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--neutral-200);
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+}
+
+.tf-card-title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--neutral-900);
+  line-height: var(--line-height-tight);
+}
+
+.tf-card-subtitle {
+  margin: 0.25rem 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--neutral-600);
+  line-height: var(--line-height-base);
+}
+
+.tf-card-body {
+  padding: var(--space-lg);
+  position: relative;
+  min-height: 100px;
+}
+
+.tf-card-footer {
+  padding: var(--space-md) var(--space-lg);
+  border-top: 1px solid var(--neutral-200);
+  background-color: var(--neutral-100);
+}
+
+/* Data Card States 
+-------------------------------------------------- */
+.tf-loading-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl) 0;
+  text-align: center;
+}
+
+.tf-spinner {
+  width: 48px;
+  height: 48px;
+  margin-bottom: var(--space-md);
+  position: relative;
+}
+
+.tf-spinner-circle {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 4px solid var(--neutral-200);
+  border-top-color: var(--primary-600);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.tf-loading-message {
+  font-size: var(--font-size-base);
+  color: var(--neutral-600);
+  margin: 0;
+}
+
+.tf-error-content,
+.tf-empty-content {
+  text-align: center;
+  padding: var(--space-xl) var(--space-lg);
+}
+
+.tf-error-icon {
+  font-size: 3rem;
+  color: var(--danger-500);
+  margin-bottom: var(--space-md);
+}
+
+.tf-error-title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--danger-700);
+  margin: 0 0 var(--space-xs);
+}
+
+.tf-error-message {
+  color: var(--neutral-700);
+  margin: 0 0 var(--space-lg);
+}
+
+.tf-retry-button {
+  min-width: 100px;
+}
+
+.tf-empty-icon {
+  font-size: 3rem;
+  color: var(--neutral-400);
+  margin-bottom: var(--space-md);
+}
+
+.tf-empty-title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--neutral-700);
+  margin: 0 0 var(--space-xs);
+}
+
+.tf-empty-message {
+  color: var(--neutral-600);
+  margin: 0 0 var(--space-lg);
+}
+
+.tf-empty-action {
+  min-width: 120px;
+}
+
+/* Status Indicators
+-------------------------------------------------- */
+.tf-status-indicator {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-pill);
+  font-weight: 500;
+  font-size: var(--font-size-sm);
+}
+
+.tf-status-indicator i {
+  margin-right: 0.5rem;
+}
+
+.tf-status-success {
+  background-color: var(--success-100);
+  color: var(--success-700);
+}
+
+.tf-status-danger {
+  background-color: var(--danger-100);
+  color: var(--danger-700);
+}
+
+.tf-status-warning {
+  background-color: var(--warning-100);
+  color: var(--warning-700);
+}
+
+.tf-status-secondary {
+  background-color: var(--neutral-200);
+  color: var(--neutral-700);
+}
+
+.tf-status-pending {
+  background-color: var(--neutral-200);
+  color: var(--neutral-700);
+}
+
+/* Property Card
+-------------------------------------------------- */
+.property-card {
+  border-radius: var(--radius-lg);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.property-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.property-info-row {
+  display: flex;
+  gap: var(--space-lg);
+}
+
+.property-info-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.property-info-label {
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--neutral-600);
+  margin-bottom: 0.25rem;
+}
+
+.property-info-value {
+  font-weight: 500;
+  color: var(--neutral-900);
+}
+
+.property-valuation {
+  margin-top: var(--space-md);
+  padding: var(--space-md);
+  background-color: var(--neutral-100);
+  border-radius: var(--radius-md);
+}
+
+.valuation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.valuation-header h4 {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  margin: 0;
+}
+
+.valuation-year {
+  font-size: var(--font-size-xs);
+  color: var(--neutral-600);
+}
+
+.valuation-amount {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--neutral-900);
+  margin-bottom: 0.25rem;
+}
+
+.valuation-change {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.valuation-change.increase {
+  color: var(--success-500);
+}
+
+.valuation-change.decrease {
+  color: var(--danger-500);
+}
+
+.property-actions {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+/* Filter Panel
+-------------------------------------------------- */
+.tf-filter-panel {
+  border-radius: var(--radius-lg);
+  background-color: white;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--neutral-200);
+  margin-bottom: var(--space-lg);
+  overflow: hidden;
+}
+
+.tf-filter-header {
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--neutral-200);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+}
+
+.tf-filter-title {
+  margin: 0;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--neutral-900);
+}
+
+.tf-filter-toggle {
+  background: none;
+  border: none;
+  color: var(--neutral-600);
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.tf-filter-toggle[aria-expanded="false"] {
+  transform: rotate(180deg);
+}
+
+.tf-filter-body {
+  padding: var(--space-lg);
+}
+
+.tf-filter-footer {
+  padding: var(--space-md) var(--space-lg);
+  border-top: 1px solid var(--neutral-200);
+  background-color: var(--neutral-100);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+}
+
+/* Form Field Groups 
+-------------------------------------------------- */
+.tf-field-group {
+  margin-bottom: var(--space-md);
+}
+
+.tf-field-label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: var(--space-xxs);
+  color: var(--neutral-800);
+}
+
+.tf-field-help {
+  display: block;
+  font-size: var(--font-size-xs);
+  color: var(--neutral-600);
+  margin-top: var(--space-xxs);
+}
+
+.tf-field-error {
+  display: block;
+  font-size: var(--font-size-xs);
+  color: var(--danger-500);
+  margin-top: var(--space-xxs);
+}
+
+/* Range Slider
+-------------------------------------------------- */
+.tf-range-slider {
+  margin: var(--space-md) 0;
+}
+
+.tf-range-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--space-xxs);
+}
+
+.tf-range-min,
+.tf-range-max {
+  font-size: var(--font-size-xs);
+  color: var(--neutral-600);
+}
+
+.tf-range-value {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--primary-600);
+  margin-top: var(--space-xs);
+  text-align: center;
+}
+
+/* Mobile Overrides
+-------------------------------------------------- */
+@media (max-width: 767.98px) {
+  .tf-card {
+    margin-bottom: var(--space-md);
+  }
+  
+  .tf-card-header,
+  .tf-card-body,
+  .tf-card-footer {
+    padding: var(--space-md);
+  }
+  
+  .property-info-row {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+  
+  .tf-filter-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1020;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    max-height: 80vh;
+    overflow-y: auto;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+  }
+  
+  .tf-filter-panel.open {
+    transform: translateY(0);
+  }
+  
+  .tf-filter-handle {
+    width: 40px;
+    height: 4px;
+    background-color: var(--neutral-300);
+    border-radius: 2px;
+    margin: 10px auto;
+  }
+}

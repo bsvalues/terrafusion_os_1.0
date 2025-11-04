@@ -1,0 +1,15 @@
+{
+    "map": {
+        "description": "Enables a network topology for a trace network.",
+        "in_trace_network.descr": "The trace network for which the network topology will be enabled.",
+        "in_trace_network.title": "Input Trace Network",
+        "max_number_of_errors.descr": "<xdoc><p>The maximum number of errors that can be discovered before the process of enabling the network topology will stop. Errors will be recorded in the errors tables. When no value is provided for this parameter, an infinite number of errors can be discovered. The default value is 10000.</p><note type=\"caution\"/><p group=\"note\">Increasing the maximum number of errors value will increase the length of time it takes to enable the topology.</p></xdoc>",
+        "max_number_of_errors.title": "Maximum number of errors",
+        "only_generate_errors.descr": "<xdoc><p>Specifies whether the topology will be enabled or only network errors will be generated.</p><ul><li>Checked—The trace network will only be evaluated for network errors The topology will not be enabled. If you are working with an enterprise geodatabase, the data cannot be registered as versioned. This allows you to inspect and fix errors in the network until you enable the topology.</li><li>Unchecked—The topology will be enabled and any existing errors will generate error features. This is the default.</li></ul></xdoc>",
+        "only_generate_errors.title": "Only generate errors",
+        "out_trace_network.title": "Updated Trace Network",
+        "params.category1": "Advanced Options",
+        "summary": "<xdoc><p>Enables a network topology for a trace network.</p><p>A network topology is necessary for analytic operations such as tracing and to use network diagrams. A network topology can also be enabled to find error features.</p></xdoc>",
+        "title": "Enable Network Topology"
+    }
+}

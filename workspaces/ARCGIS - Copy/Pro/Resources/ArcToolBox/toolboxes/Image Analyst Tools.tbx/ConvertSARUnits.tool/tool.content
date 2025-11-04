@@ -1,0 +1,90 @@
+{
+    "type": "FunctionTool",
+    "guid": "{5ce865c3-1aa3-4e36-905f-9c2bbd895b96}",
+    "displayname": "$rc:title",
+    "helpcontent": "66160007",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "86"
+    ],
+    "params": {
+        "in_radar_data": {
+            "display_order": "0",
+            "displayname": "$rc:in_radar_data.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_radar_data.descr"
+        },
+        "out_radar_data": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_radar_data.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_radar_data.descr"
+        },
+        "conversion_type": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:conversion_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "LINEAR_TO_DB",
+                        "code": "$rc:conversion_type.domain.LINEAR_TO_DB"
+                    },
+                    {
+                        "value": "DB_TO_LINEAR",
+                        "code": "$rc:conversion_type.domain.DB_TO_LINEAR"
+                    },
+                    {
+                        "value": "AMPLITUDE_TO_INTENSITY",
+                        "code": "$rc:conversion_type.domain.AMPLITUDE_TO_INTENSITY"
+                    },
+                    {
+                        "value": "INTENSITY_TO_AMPLITUDE",
+                        "code": "$rc:conversion_type.domain.INTENSITY_TO_AMPLITUDE"
+                    },
+                    {
+                        "value": "COMPLEX_TO_INTENSITY",
+                        "code": "$rc:conversion_type.domain.COMPLEX_TO_INTENSITY"
+                    }
+                ]
+            },
+            "value": "LINEAR_TO_DB",
+            "description": "$rc:conversion_type.descr"
+        }
+    },
+    "environments": [
+        "cellAlignment",
+        "cellSize",
+        "compression",
+        "extent",
+        "geographicTransformations",
+        "nodata",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "pyramid",
+        "rasterStatistics",
+        "resamplingMethod",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

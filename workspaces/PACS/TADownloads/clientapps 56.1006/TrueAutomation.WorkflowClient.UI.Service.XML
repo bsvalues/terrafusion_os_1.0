@@ -1,0 +1,336 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.WorkflowClient.UI.Service</name>
+    </assembly>
+    <members>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.SetCurrentLoggedInUserByExternalId(System.String,System.String)">
+            <summary>
+            Method to set the current user 	based on an id from a given system.
+            </summary>
+            <param name="id">unique identifier for given system</param>
+            <param name="system">system from which the user was authenticated</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.SetCurrentLoggedInUserTaskUserId(System.Int32)">
+            <summary>
+            Method to convert a TaskUserId into a TaskUserDTO for use within the task client.
+            </summary>
+            <param name="TaskUserId">The Task User's Id</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowTaskNoteDialog(System.Windows.Forms.Form,TrueAutomation.TaskService.DTOs.TaskNoteDTO,System.Boolean,System.Nullable{TrueAutomation.AccessControl.DTOs.ACLType})">
+            <summary>
+            Launches the Add Note Dialog
+            </summary>
+            <param name="parent">Parent Form, used for modality</param>
+            <param name="note">The Note to be Viewd</param>
+            <param name="ReadOnly">The State of the dialog</param>
+            <returns>DialogData object</returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowAddTaskView(System.Windows.Forms.Form,TrueAutomation.TaskService.DTOs.DataRecordListDTO,TrueAutomation.TaskService.DTOs.TaskDTO)">
+            <summary>
+            Displays the Add new Task View
+            </summary>
+            <param name="parent">Parent form, used for modality</param>
+            <param name="dataRecords">Data Records to attach to the Task</param>
+            <param name="Task">A TaskDTO containing the default values for the task</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowQueueView(System.Windows.Forms.Form,System.Int32)">
+            <summary>
+            Show the Task Queue view
+            New or Edit based in the queueId
+            </summary>
+            <param name="parent"></param>
+            <param name="queueId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowAddEditTaskCategoryDialog(System.Windows.Forms.Form,System.Int32)">
+            <summary>
+            Launches the Add/Edit Task Category details dialog 
+            for the specified Category Id, if this Id is 0
+            behaves as an Add new Dialog
+            </summary>
+            <param name="parent"></param>
+            <param name="categoryId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowAddEditTaskTypeDialog(System.Windows.Forms.Form,TrueAutomation.WorkflowClient.UI.Service.DetailsDialogOperation,System.Int32,System.Int32)">
+            <summary>
+            Launches the Add/Edit Task Type details dialog 
+            for the specified Type Id, if this Id is 0
+            behaves as an Add new Dialog
+            </summary>
+            <param name="parent"></param>
+            <param name="op"></param>
+            <param name="typeId"></param>
+            <param name="categoryId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowManageCodeFiles(System.Windows.Forms.Form)">
+            <summary>
+            Launches the Code Files maintenace Dialog
+            </summary>
+            <param name="parent"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowAddEditCodeFileDetailsDialog(System.Windows.Forms.Form,System.Int32,System.String)">
+            <summary>
+            Launches the Code File Details
+            Dialog
+            </summary>
+            <param name="parent"></param>
+            <param name="codeFileId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowAddEditCodeFileDetailsDialog(System.Windows.Forms.Form,System.Int32,System.String,TrueAutomation.TaskService.DTOs.StatusType)">
+            <summary>
+            Launches the Code File Details
+            Dialog
+            </summary>
+            <param name="parent"></param>
+            <param name="codeFileId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowQuerySelectionDialog(System.Windows.Forms.Form,TAUserInterfaceService.IDialogData)">
+            <summary>
+            Launches the dialog to select a query from the PACS.Query system.
+            </summary>
+            <param name="parent"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowQueryMappingView(System.Windows.Forms.Form)">
+            <summary>
+            Launches the  Query Mapping View
+            </summary>
+            <param name="parent"></param>
+            <returns></returns>
+            
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowQueryMappingView(System.Windows.Forms.Form,System.Guid)">
+            <summary>
+            Launches the  Query Mapping View
+            </summary>
+            <param name="parent"></param>
+            <param name="mappingId">Guid identifier</param>
+            <returns></returns>
+            
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowQueryMappingsListView(System.Windows.Forms.Form)">
+            <summary>
+            Launches the  Query Mapping List View
+            </summary>
+            <param name="parent"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowUICustomizationDialog(System.Windows.Forms.Form)">
+            <summary>
+            Launches the UI Customization Management dialog
+            </summary>
+            <param name="parent"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ScanForNewUIElements(System.Windows.Forms.Form)">
+            <summary>
+            Launch the UI Element Scanner to check for new Custom UI Elements within all of the assemblies.
+            </summary>
+            <param name="parent"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowUICustomizationDetailsDialog(System.Windows.Forms.Form)">
+            <summary>
+            Launches the UI Customization Details Dialog
+            </summary>
+            <remarks>
+            Use this one for adding a new UI Customization
+            </remarks>
+            <param name="parent">Parent Form for modality</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowUICustomizationDetailsDialog(System.Windows.Forms.Form,System.Int32)">
+            <summary>
+            Launches the UI Customization Details Dialog
+            </summary>
+            <remarks>
+            Use this one for opening an existing UI Customization
+            </remarks>
+            <param name="parent">Parent form for modality</param>
+            <param name="uiCustomizationId">Id of the UI Customization to open</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowUIElementSelectionDialog(System.Windows.Forms.Form)">
+            <summary>
+            Launches the UI Element Selection Dialog
+            </summary>
+            <param name="parent">Parent Form for modality</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowTaskStepDetailsDialog(System.Windows.Forms.Form,System.Int32,System.Collections.Generic.List{TrueAutomation.TaskService.DTOs.TaskStepDTO})">
+            <summary>
+            Launches the Task Step Details Dialog
+            </summary>
+            <remarks>
+            Use this one for creating a new task step
+            </remarks>
+            <param name="parent">Parent form for modality</param>
+            <param name="taskTypeId">Id of Task Type this step is for</param>
+            <param name="taskSteps">Existing Task steps on the Task Type</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowTaskStepDetailsDialog(System.Windows.Forms.Form,TrueAutomation.TaskService.DTOs.TaskStepDTO,System.Int32,System.Collections.Generic.List{TrueAutomation.TaskService.DTOs.TaskStepDTO},System.Boolean,System.Boolean)">
+            <summary>
+            Launches the Task Step Details Dialog
+            </summary>
+            <remarks>
+            Use this one for opening an existing Task Step
+            </remarks>
+            <param name="parent">Parent form for modality</param>
+            <param name="step">DTO of step to open</param>
+            <param name="taskTypeId">Id of Task Type this step is for</param>
+            <param name="taskSteps">Existing Task steps on the Task Type</param>
+            <param name="isNew">Flag to indicate that this is a newly copied step</param>
+            <param name="readOnly">Is Readonly boolean</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowMassUpdateTasksDialog(System.Windows.Forms.Form,System.Collections.Generic.List{System.Int32})">
+            <summary>
+            Launches the Mass Update Tasks Dialog
+            </summary>
+            <param name="parent">Parent Form for modality</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowDataRecordDefinitionDialog(System.Windows.Forms.Form)">
+            <summary>																		 
+            Launches the Data Record Definition View Dialog
+            </summary>
+            <param name="parent">Parent Form for modality</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowDataRecordDefinitionDialog(System.Windows.Forms.Form,System.Int32)">
+            <summary>																		 
+            Launches the Data Record Definition View Dialog for a specific DRD
+            </summary>
+            <param name="parent">Parent Form for modality</param>
+            <param name="DRDid">The Id of the DRD to view</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowUserListView(System.Windows.Forms.Form)">
+            <summary>
+            Launches the Users list dialog
+            
+            </summary>
+            <param name="parent"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowTaskHistory(System.Windows.Forms.Form,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            Launches the Task History View Dialog
+            </summary>
+            <param name="parent">Parent Form for modality</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowAboutDialog(System.Windows.Forms.Form)">
+            <summary>
+            Show the About dialog
+            </summary>
+            <param name="parent"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowTaskQueuesView(TAUserInterface.MdiParentBase,TrueAutomation.TaskService.DTOs.TaskLookupDTO)">
+            <summary>
+            Show the Task Queues view based on preset lookup values
+            </summary>
+            <param name="parent"></param>
+            <param name="lookupDTO"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowTaskQueueManagementDialog(System.Windows.Forms.Form)">
+            <summary>
+            Launches the Task Queue Management dialog
+            </summary>
+            <param name="parent"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowTaskQueryView(TAUserInterface.MdiParentBase)">
+            <summary>
+            Launches the Search query view
+            </summary>
+            <param name="parent"></param>
+            <returns></returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowTaskQueryView(TAUserInterface.MdiParentBase,System.Int32)" -->
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowCustomOrderedListDialog(System.Windows.Forms.Form)">
+            <summary>
+            Launches the Custom Order List Management dialog
+            </summary>
+            <param name="parent"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowCustomOrderedListDetailsDialog(System.Windows.Forms.Form)">
+            <summary>
+            Launches the Custom Ordered List Details Dialog
+            </summary>
+            <remarks>
+            Use this one for adding a new Custom Ordered List
+            </remarks>
+            <param name="parent">Parent Form for modality</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowCustomOrderedListDetailsDialog(System.Windows.Forms.Form,System.Int32)">
+            <summary>
+            Launches the Custom Ordered List Details Dialog
+            </summary>
+            <remarks>
+            Use this one for opening an existing Custom Ordered List
+            </remarks>
+            <param name="parent">Parent form for modality</param>
+            <param name="uiCustomizationId">Id of the Custom Ordered List to open</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowCustomOrderedListItemSelectionDialog(System.Windows.Forms.Form,TrueAutomation.TaskService.DTOs.CustomOrderListTypeDTO,TrueAutomation.TaskService.DTOs.CustomOrderedListDTO)">
+            <summary>
+            Launches the Custom Ordered List Item Selection Dialog
+            </summary>
+            <param name="parent">Parent Form for modality</param>
+            <returns></returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowDocumentView(System.Windows.Forms.Form,System.Guid,System.Boolean)" -->
+        <!-- Badly formed XML comment ignored for member "M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowDocumentView(System.Windows.Forms.Form,System.Guid,System.Boolean,TrueAutomation.AccessControl.DTOs.ACLType,System.String,System.String)" -->
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.DeleteAttachments(System.Guid)">
+            <summary>
+            Removes a document that is attached to a task.
+            </summary>
+            <param name="documentId"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.DeleteAttachmentVersion(System.Guid,System.Int32)">
+            <summary>
+            Method to delete a specific version of the document.
+            </summary>
+            <param name="documentId">Document Guid</param>
+            <param name="versionNumber">Version number to delete</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowRoutingDialogView(System.Windows.Forms.Form,System.Type,System.String,System.String)">
+            <summary>
+            Displays the Custom Routing dialog
+            </summary>
+            <param name="parent"></param>
+            <param name="dialogType"></param>
+            <param name="payLoad"></param>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.UI.Service.IWorkflowClientDialogService.ShowDocumentSaveSplashScreen(System.Windows.Forms.Form,TrueAutomation.DocumentManagement.DTOs.DocumentRecordDTO,TrueAutomation.DocumentManagement.DTOs.DocumentRecordDTO,System.String,System.Guid,System.Int32)">
+            <summary>
+            Display the splash screen when a documnment is being saved
+            </summary>
+            <param name="parent"></param>
+            <param name="record"></param>
+            <param name="saveRecord"></param>
+            <param name="userName"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.UI.Service.DetailsDialogOperation">
+            <summary>
+            Enumeration of operations performed by the details dialog
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,12 @@
+{
+  "name": "terrafusion-pro-shared",
+  "version": "1.0.0",
+  "description": "Terrafusion Professional - Shared Code",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "drizzle-orm": "^0.28.6",
+    "drizzle-zod": "^0.5.1",
+    "zod": "^3.22.4"
+  }
+}

@@ -1,0 +1,135 @@
+{
+    "type": "FunctionTool",
+    "guid": "{294e1bd4-18b5-4511-a569-a6dddb6afee4}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190210",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_mosaic_dataset": {
+            "displayname": "$rc:in_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEMosaicDataset"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_mosaic_dataset.descr"
+        },
+        "minimum_angle": {
+            "type": "optional",
+            "displayname": "$rc:minimum_angle.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "5",
+            "description": "$rc:minimum_angle.descr"
+        },
+        "maximum_angle": {
+            "type": "optional",
+            "displayname": "$rc:maximum_angle.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "90",
+            "description": "$rc:maximum_angle.descr"
+        },
+        "minimum_overlap": {
+            "type": "optional",
+            "displayname": "$rc:minimum_overlap.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0.5",
+            "description": "$rc:minimum_overlap.descr"
+        },
+        "maximum_diff_OP": {
+            "type": "optional",
+            "displayname": "$rc:maximum_diff_op.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:maximum_diff_op.descr"
+        },
+        "maximum_diff_GSD": {
+            "type": "optional",
+            "displayname": "$rc:maximum_diff_gsd.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "2",
+            "description": "$rc:maximum_diff_gsd.descr"
+        },
+        "group_by": {
+            "type": "optional",
+            "displayname": "$rc:group_by.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Date",
+                    "OID",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_mosaic_dataset"
+            ],
+            "description": "$rc:group_by.descr"
+        },
+        "out_mosaic_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEMosaicDataset"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "depends": [
+                "in_mosaic_dataset"
+            ]
+        },
+        "same_flight": {
+            "type": "optional",
+            "displayname": "$rc:same_flight.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SAMEFLIGHT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_SAMEFLIGHT"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:same_flight.descr"
+        }
+    }
+}

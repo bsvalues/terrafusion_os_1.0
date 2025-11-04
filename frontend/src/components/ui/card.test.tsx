@@ -1,13 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from './card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from './card';
 
 expect.extend(toHaveNoViolations);
 
@@ -21,11 +14,17 @@ describe('Card', () => {
     it('applies default styling', () => {
       const { container } = render(<Card>Content</Card>);
       const card = container.firstChild;
-      expect(card).toHaveClass('rounded-lg', 'border', 'bg-card', 'text-card-foreground', 'shadow-sm');
+      expect(card).toHaveClass(
+        'rounded-lg',
+        'border',
+        'bg-card',
+        'text-card-foreground',
+        'shadow-sm'
+      );
     });
 
     it('renders with custom className', () => {
-      const { container } = render(<Card className="custom-card">Content</Card>);
+      const { container } = render(<Card className='custom-card'>Content</Card>);
       const card = container.firstChild;
       expect(card).toHaveClass('custom-card');
     });
@@ -36,13 +35,13 @@ describe('Card', () => {
     });
 
     it('applies id attribute', () => {
-      const { container } = render(<Card id="my-card">Content</Card>);
+      const { container } = render(<Card id='my-card'>Content</Card>);
       const card = container.firstChild;
       expect(card).toHaveAttribute('id', 'my-card');
     });
 
     it('applies data attributes', () => {
-      const { container } = render(<Card data-testid="test-card">Content</Card>);
+      const { container } = render(<Card data-testid='test-card'>Content</Card>);
       const card = screen.getByTestId('test-card');
       expect(card).toBeInTheDocument();
     });
@@ -61,7 +60,7 @@ describe('Card', () => {
     });
 
     it('renders with custom className', () => {
-      const { container } = render(<CardHeader className="custom-header">Header</CardHeader>);
+      const { container } = render(<CardHeader className='custom-header'>Header</CardHeader>);
       const header = container.firstChild;
       expect(header).toHaveClass('custom-header');
     });
@@ -97,13 +96,13 @@ describe('Card', () => {
     });
 
     it('renders with custom className', () => {
-      render(<CardTitle className="custom-title">Title</CardTitle>);
+      render(<CardTitle className='custom-title'>Title</CardTitle>);
       const title = screen.getByText('Title');
       expect(title).toHaveClass('custom-title');
     });
 
     it('applies id attribute', () => {
-      render(<CardTitle id="card-title">Title</CardTitle>);
+      render(<CardTitle id='card-title'>Title</CardTitle>);
       const title = screen.getByText('Title');
       expect(title).toHaveAttribute('id', 'card-title');
     });
@@ -128,7 +127,7 @@ describe('Card', () => {
     });
 
     it('renders with custom className', () => {
-      render(<CardDescription className="custom-description">Description</CardDescription>);
+      render(<CardDescription className='custom-description'>Description</CardDescription>);
       const description = screen.getByText('Description');
       expect(description).toHaveClass('custom-description');
     });
@@ -147,7 +146,7 @@ describe('Card', () => {
     });
 
     it('renders with custom className', () => {
-      const { container } = render(<CardContent className="custom-content">Content</CardContent>);
+      const { container } = render(<CardContent className='custom-content'>Content</CardContent>);
       const content = container.firstChild;
       expect(content).toHaveClass('custom-content');
     });
@@ -177,7 +176,7 @@ describe('Card', () => {
     });
 
     it('renders with custom className', () => {
-      const { container } = render(<CardFooter className="custom-footer">Footer</CardFooter>);
+      const { container } = render(<CardFooter className='custom-footer'>Footer</CardFooter>);
       const footer = container.firstChild;
       expect(footer).toHaveClass('custom-footer');
     });
@@ -289,7 +288,7 @@ describe('Card', () => {
           </CardHeader>
           <CardContent>
             <button>Click me</button>
-            <a href="#test">Link</a>
+            <a href='#test'>Link</a>
           </CardContent>
         </Card>
       );
@@ -299,9 +298,9 @@ describe('Card', () => {
 
     it('supports aria-labelledby with title', () => {
       const { container } = render(
-        <Card aria-labelledby="card-title">
+        <Card aria-labelledby='card-title'>
           <CardHeader>
-            <CardTitle id="card-title">Accessible Card</CardTitle>
+            <CardTitle id='card-title'>Accessible Card</CardTitle>
           </CardHeader>
           <CardContent>Content</CardContent>
         </Card>
@@ -312,10 +311,10 @@ describe('Card', () => {
 
     it('supports aria-describedby with description', () => {
       const { container } = render(
-        <Card aria-describedby="card-description">
+        <Card aria-describedby='card-description'>
           <CardHeader>
             <CardTitle>Title</CardTitle>
-            <CardDescription id="card-description">Description text</CardDescription>
+            <CardDescription id='card-description'>Description text</CardDescription>
           </CardHeader>
           <CardContent>Content</CardContent>
         </Card>
@@ -327,31 +326,27 @@ describe('Card', () => {
 
   describe('Custom Styling', () => {
     it('applies custom card styling', () => {
-      const { container } = render(
-        <Card className="max-w-md bg-slate-100 p-8">Content</Card>
-      );
+      const { container } = render(<Card className='max-w-md bg-slate-100 p-8'>Content</Card>);
       const card = container.firstChild;
       expect(card).toHaveClass('max-w-md', 'bg-slate-100', 'p-8');
     });
 
     it('applies custom header styling', () => {
       const { container } = render(
-        <CardHeader className="bg-blue-50 rounded-t-lg">Header</CardHeader>
+        <CardHeader className='bg-blue-50 rounded-t-lg'>Header</CardHeader>
       );
       const header = container.firstChild;
       expect(header).toHaveClass('bg-blue-50', 'rounded-t-lg');
     });
 
     it('applies custom title styling', () => {
-      render(<CardTitle className="text-4xl text-blue-600">Custom Title</CardTitle>);
+      render(<CardTitle className='text-4xl text-blue-600'>Custom Title</CardTitle>);
       const title = screen.getByText('Custom Title');
       expect(title).toHaveClass('text-4xl', 'text-blue-600');
     });
 
     it('applies custom footer styling', () => {
-      const { container } = render(
-        <CardFooter className="justify-end gap-4">Footer</CardFooter>
-      );
+      const { container } = render(<CardFooter className='justify-end gap-4'>Footer</CardFooter>);
       const footer = container.firstChild;
       expect(footer).toHaveClass('justify-end', 'gap-4');
     });
@@ -424,12 +419,12 @@ describe('Card', () => {
           </CardHeader>
           <CardContent>
             <form>
-              <input type="email" placeholder="Email" />
-              <input type="password" placeholder="Password" />
+              <input type='email' placeholder='Email' />
+              <input type='password' placeholder='Password' />
             </form>
           </CardContent>
           <CardFooter>
-            <button type="submit">Sign In</button>
+            <button type='submit'>Sign In</button>
           </CardFooter>
         </Card>
       );
@@ -461,7 +456,8 @@ describe('Card', () => {
     });
 
     it('handles long description text', () => {
-      const longDescription = 'This is a very long description that contains multiple sentences and might span several lines depending on the card width and layout.';
+      const longDescription =
+        'This is a very long description that contains multiple sentences and might span several lines depending on the card width and layout.';
       render(<CardDescription>{longDescription}</CardDescription>);
       expect(screen.getByText(longDescription)).toBeInTheDocument();
     });

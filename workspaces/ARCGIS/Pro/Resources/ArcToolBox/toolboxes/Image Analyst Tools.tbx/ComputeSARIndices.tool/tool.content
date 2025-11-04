@@ -1,0 +1,86 @@
+{
+    "type": "FunctionTool",
+    "guid": "{2e062d82-3f63-4bce-bc04-b0b6e1edfc69}",
+    "displayname": "$rc:title",
+    "helpcontent": "66160012",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "86"
+    ],
+    "params": {
+        "in_radar_data": {
+            "display_order": "0",
+            "displayname": "$rc:in_radar_data.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_radar_data.descr"
+        },
+        "out_raster": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_raster.descr"
+        },
+        "index": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:index.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "RVI",
+                        "code": "$rc:index.domain.RVI"
+                    },
+                    {
+                        "value": "RFDI",
+                        "code": "$rc:index.domain.RFDI"
+                    },
+                    {
+                        "value": "CSI",
+                        "code": "$rc:index.domain.CSI"
+                    }
+                ]
+            },
+            "value": "RVI",
+            "description": "$rc:index.descr"
+        },
+        "polarization_bands": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:polarization_bands.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "HH_HV",
+            "description": "$rc:polarization_bands.descr"
+        }
+    },
+    "environments": [
+        "compression",
+        "nodata",
+        "parallelProcessingFactor",
+        "pyramid",
+        "rasterStatistics",
+        "resamplingMethod",
+        "scratchWorkspace",
+        "tileSize"
+    ]
+}

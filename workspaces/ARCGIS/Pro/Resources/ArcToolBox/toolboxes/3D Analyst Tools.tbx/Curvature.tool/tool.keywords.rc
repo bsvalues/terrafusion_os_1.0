@@ -1,0 +1,13 @@
+{
+    "set": [
+        "concave",
+        "convex",
+        "gradient",
+        "plan",
+        "profile",
+        "second derivative",
+        "slope",
+        "upward",
+        "z-factor"
+    ]
+}

@@ -1,0 +1,127 @@
+{
+    "type": "FunctionTool",
+    "guid": "{bcd4b3e8-6a58-4b2c-852c-f9f3bc698da7}",
+    "displayname": "$rc:title",
+    "helpcontent": "5230008",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9"
+    ],
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "params": {
+        "in_observer_point_features": {
+            "displayname": "$rc:in_observer_point_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:in_observer_point_features.descr"
+        },
+        "in_line_features": {
+            "displayname": "$rc:in_line_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_line_features.descr"
+        },
+        "base_visibility_angle": {
+            "type": "optional",
+            "displayname": "$rc:base_visibility_angle.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:base_visibility_angle.descr"
+        },
+        "additional_fields": {
+            "type": "optional",
+            "displayname": "$rc:additional_fields.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ADDITIONAL_FIELDS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_ADDITIONAL_FIELDS"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:additional_fields.descr"
+        },
+        "out_angles_table": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_angles_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "description": "$rc:out_angles_table.descr"
+        },
+        "out_graph": {
+            "enabled": "false",
+            "type": "optional",
+            "direction": "out",
+            "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}",
+            "displayname": "$rc:out_graph.title",
+            "datatype": {
+                "type": "GPGraph"
+            },
+            "description": "$rc:out_graph.descr"
+        },
+        "out_visibility_ratio": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_visibility_ratio.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0"
+        },
+        "out_image_file": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_image_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "png",
+                    "jpg",
+                    "jpeg",
+                    "svg"
+                ]
+            },
+            "description": "$rc:out_image_file.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "geographicTransformations",
+        "workspace"
+    ]
+}

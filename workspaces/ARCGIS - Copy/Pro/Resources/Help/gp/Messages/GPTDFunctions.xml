@@ -1,0 +1,9 @@
+<Messages STARTID='85000'>
+<Message><ID>85011</ID><Description>The value is not a Territory Solution layer or layer is invalid.</Description></Message>
+<Message><ID>85054</ID><Description>Selected territory level does not have variables suitable for balance or constrain territories.</Description></Message>
+<Message><ID>85055</ID><Description>Cannot calculate optimal number of territories. Level requires an attribute or distance constraint.</Description></Message>
+<Message><ID>85056</ID><Description>Failed to update Territory Solution layer.</Description></Message>
+<Message><ID>85057</ID><Description>No variables are available at the selected territory level.</Description></Message>
+<Message><ID>85058</ID><Description>Detailed realignment report supports a maximum of 15 variables. Only the first 15 variables will be displayed in the Realignment Details section.</Description></Message>
+<Message><ID>85059</ID><Description>Territory Solution output workspace type must be file geodatabase.</Description></Message>
+</Messages>

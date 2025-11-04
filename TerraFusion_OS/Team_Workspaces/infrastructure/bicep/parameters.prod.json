@@ -1,0 +1,24 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environment": {
+      "value": "prod"
+    },
+    "primaryLocation": {
+      "value": "usgovvirginia"
+    },
+    "quantumFactor": {
+      "value": 949
+    },
+    "harmonyIndex": {
+      "value": "0.999"
+    },
+    "counties": {
+      "value": 39
+    },
+    "aiAgents": {
+      "value": 1008
+    }
+  }
+}

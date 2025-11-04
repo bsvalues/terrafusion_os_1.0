@@ -1,0 +1,188 @@
+{
+    "type": "FunctionTool",
+    "guid": "{77546d13-df11-4fc3-96f4-5e9010d974b8}",
+    "displayname": "$rc:title",
+    "helpcontent": "82000007",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_mosaic_dataset": {
+            "display_order": "0",
+            "displayname": "$rc:in_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEMosaicDataset"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_mosaic_dataset.descr"
+        },
+        "out_control_points": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_control_points.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_control_points.descr"
+        },
+        "similarity": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:similarity.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "LOW",
+                        "code": "$rc:similarity.domain.LOW"
+                    },
+                    {
+                        "value": "MEDIUM",
+                        "code": "$rc:similarity.domain.MEDIUM"
+                    },
+                    {
+                        "value": "HIGH",
+                        "code": "$rc:similarity.domain.HIGH"
+                    }
+                ]
+            },
+            "value": "MEDIUM",
+            "description": "$rc:similarity.descr"
+        },
+        "in_mask_dataset": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:in_mask_dataset.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:in_mask_dataset.descr"
+        },
+        "out_image_features": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "7",
+            "displayname": "$rc:out_image_features.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_image_features.descr"
+        },
+        "density": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:density.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "LOW",
+                        "code": "$rc:density.domain.LOW"
+                    },
+                    {
+                        "value": "MEDIUM",
+                        "code": "$rc:density.domain.MEDIUM"
+                    },
+                    {
+                        "value": "HIGH",
+                        "code": "$rc:density.domain.HIGH"
+                    }
+                ]
+            },
+            "value": "MEDIUM",
+            "description": "$rc:density.descr"
+        },
+        "distribution": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:distribution.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "RANDOM",
+                        "code": "$rc:distribution.domain.RANDOM"
+                    },
+                    {
+                        "value": "REGULAR",
+                        "code": "$rc:distribution.domain.REGULAR"
+                    }
+                ]
+            },
+            "value": "RANDOM",
+            "description": "$rc:distribution.descr"
+        },
+        "location_accuracy": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:location_accuracy.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "LOW",
+                        "code": "$rc:location_accuracy.domain.LOW"
+                    },
+                    {
+                        "value": "MEDIUM",
+                        "code": "$rc:location_accuracy.domain.MEDIUM"
+                    },
+                    {
+                        "value": "HIGH",
+                        "code": "$rc:location_accuracy.domain.HIGH"
+                    }
+                ]
+            },
+            "value": "MEDIUM",
+            "description": "$rc:location_accuracy.descr"
+        },
+        "options": {
+            "type": "optional",
+            "display_order": "8",
+            "control_guid": "{F604736F-06D8-47CD-AC15-7055F7FCDAC0}",
+            "displayname": "$rc:options.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:options.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:options.dt.title2"
+                    }
+                ]
+            },
+            "description": "$rc:options.descr"
+        }
+    },
+    "environments": [
+        "gpuID",
+        "parallelProcessingFactor",
+        "processorType",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

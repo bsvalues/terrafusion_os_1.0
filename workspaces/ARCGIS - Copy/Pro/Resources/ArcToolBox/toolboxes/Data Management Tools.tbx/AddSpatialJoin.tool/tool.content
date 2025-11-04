@@ -1,0 +1,317 @@
+{
+    "type": "FunctionTool",
+    "guid": "{daef9d68-6348-44d1-b90a-847c477bbbd3}",
+    "displayname": "$rc:title",
+    "helpcontent": "3100007",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "target_features": {
+            "display_order": "0",
+            "displayname": "$rc:target_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon",
+                    "Polyline",
+                    "Point",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:target_features.descr"
+        },
+        "join_features": {
+            "display_order": "1",
+            "displayname": "$rc:join_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon",
+                    "Polyline",
+                    "Point",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:join_features.descr"
+        },
+        "out_feature_class": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "2",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "target_features"
+            ]
+        },
+        "join_operation": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:join_operation.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "JOIN_ONE_TO_ONE",
+                        "code": "$rc:join_operation.domain.JOIN_ONE_TO_ONE"
+                    },
+                    {
+                        "value": "JOIN_ONE_TO_MANY",
+                        "code": "$rc:join_operation.domain.JOIN_ONE_TO_MANY"
+                    }
+                ]
+            },
+            "value": "JOIN_ONE_TO_ONE",
+            "description": "$rc:join_operation.descr"
+        },
+        "join_type": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:join_type.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "KEEP_ALL"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "KEEP_COMMON"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:join_type.descr"
+        },
+        "field_mapping": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:field_mapping.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPFieldMapping"
+            },
+            "depends": [
+                "join_features"
+            ],
+            "description": "$rc:field_mapping.descr"
+        },
+        "match_option": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:match_option.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "INTERSECT",
+                        "code": "$rc:match_option.domain.INTERSECT"
+                    },
+                    {
+                        "value": "INTERSECT_3D",
+                        "code": "$rc:match_option.domain.INTERSECT_3D"
+                    },
+                    {
+                        "value": "LARGEST_OVERLAP",
+                        "code": "$rc:match_option.domain.LARGEST_OVERLAP"
+                    },
+                    {
+                        "value": "WITHIN_A_DISTANCE_GEODESIC",
+                        "code": "$rc:match_option.domain.WITHIN_A_DISTANCE_GEODESIC"
+                    },
+                    {
+                        "value": "WITHIN_A_DISTANCE",
+                        "code": "$rc:match_option.domain.WITHIN_A_DISTANCE"
+                    },
+                    {
+                        "value": "WITHIN_A_DISTANCE_3D",
+                        "code": "$rc:match_option.domain.WITHIN_A_DISTANCE_3D"
+                    },
+                    {
+                        "value": "CONTAINS",
+                        "code": "$rc:match_option.domain.CONTAINS"
+                    },
+                    {
+                        "value": "COMPLETELY_CONTAINS",
+                        "code": "$rc:match_option.domain.COMPLETELY_CONTAINS"
+                    },
+                    {
+                        "value": "CONTAINS_CLEMENTINI",
+                        "code": "$rc:match_option.domain.CONTAINS_CLEMENTINI"
+                    },
+                    {
+                        "value": "WITHIN",
+                        "code": "$rc:match_option.domain.WITHIN"
+                    },
+                    {
+                        "value": "COMPLETELY_WITHIN",
+                        "code": "$rc:match_option.domain.COMPLETELY_WITHIN"
+                    },
+                    {
+                        "value": "WITHIN_CLEMENTINI",
+                        "code": "$rc:match_option.domain.WITHIN_CLEMENTINI"
+                    },
+                    {
+                        "value": "ARE_IDENTICAL_TO",
+                        "code": "$rc:match_option.domain.ARE_IDENTICAL_TO"
+                    },
+                    {
+                        "value": "BOUNDARY_TOUCHES",
+                        "code": "$rc:match_option.domain.BOUNDARY_TOUCHES"
+                    },
+                    {
+                        "value": "SHARE_A_LINE_SEGMENT_WITH",
+                        "code": "$rc:match_option.domain.SHARE_A_LINE_SEGMENT_WITH"
+                    },
+                    {
+                        "value": "CROSSED_BY_THE_OUTLINE_OF",
+                        "code": "$rc:match_option.domain.CROSSED_BY_THE_OUTLINE_OF"
+                    },
+                    {
+                        "value": "HAVE_THEIR_CENTER_IN",
+                        "code": "$rc:match_option.domain.HAVE_THEIR_CENTER_IN"
+                    },
+                    {
+                        "value": "CLOSEST_GEODESIC",
+                        "code": "$rc:match_option.domain.CLOSEST_GEODESIC"
+                    },
+                    {
+                        "value": "CLOSEST",
+                        "code": "$rc:match_option.domain.CLOSEST"
+                    }
+                ]
+            },
+            "value": "INTERSECT",
+            "description": "$rc:match_option.descr"
+        },
+        "search_radius": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:search_radius.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "target_features"
+            ],
+            "description": "$rc:search_radius.descr"
+        },
+        "distance_field_name": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:distance_field_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:distance_field_name.descr"
+        },
+        "permanent_join": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:permanent_join.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "PERMANENT_FIELDS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_PERMANENT_FIELDS"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:permanent_join.descr"
+        },
+        "match_fields": {
+            "type": "optional",
+            "control_guid": "{C99D0042-EF42-4B04-8A0B-1A53F6DB67A6}",
+            "displayname": "$rc:match_fields.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:match_fields.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:match_fields.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Date",
+                    "Blob",
+                    "Raster",
+                    "XML",
+                    "GUID",
+                    "GlobalID",
+                    "OID"
+                ],
+                "exclude.field": [
+                    "SHAPE_Length",
+                    "SHAPE_Area"
+                ]
+            },
+            "depends": [
+                "target_features",
+                "join_features"
+            ],
+            "description": "$rc:match_fields.descr"
+        }
+    },
+    "environments": [
+        "MDomain",
+        "MResolution",
+        "MTolerance",
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "ZDomain",
+        "ZResolution",
+        "ZTolerance",
+        "configKeyword",
+        "extent",
+        "outputCoordinateSystem",
+        "outputMFlag",
+        "outputZFlag",
+        "outputZValue"
+    ]
+}

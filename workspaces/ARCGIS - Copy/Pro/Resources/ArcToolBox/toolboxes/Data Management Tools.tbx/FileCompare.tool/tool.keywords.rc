@@ -1,0 +1,17 @@
+{
+    "set": [
+        "ascii",
+        "base",
+        "binary",
+        "difference",
+        "different",
+        "find",
+        "identical",
+        "mask",
+        "properties",
+        "search",
+        "similar",
+        "test",
+        "data comparison"
+    ]
+}

@@ -1,0 +1,7 @@
+{
+    "set": [
+        "las",
+        "lidar",
+        "stats"
+    ]
+}

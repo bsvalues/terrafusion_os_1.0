@@ -1,0 +1,5 @@
+CREATE USER [CO\JLL] FOR LOGIN [CO\JLL];
+
+
+GO
+

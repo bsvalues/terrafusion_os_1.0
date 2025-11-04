@@ -1,0 +1,55 @@
+{
+    "type": "FunctionTool",
+    "guid": "{3c677e7c-3500-48a2-b830-d49a572b68f4}",
+    "displayname": "$rc:title",
+    "helpcontent": "68010007",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "target_gdb": {
+            "displayname": "$rc:target_gdb.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "domain": {
+                "type": "GPWorkspaceDomain",
+                "workspacetype": [
+                    "Local Database",
+                    "Remote Database"
+                ]
+            },
+            "defaultenvironmentname": "workspace",
+            "description": "$rc:target_gdb.descr"
+        },
+        "indoor_network_dataset_name": {
+            "displayname": "$rc:indoor_network_dataset_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "IndoorNetwork",
+            "description": "$rc:indoor_network_dataset_name.descr"
+        },
+        "spatial_reference": {
+            "displayname": "$rc:spatial_reference.title",
+            "datatype": {
+                "type": "GPSpatialReference"
+            },
+            "depends": [
+                "indoor_network_dataset_name"
+            ],
+            "description": "$rc:spatial_reference.descr"
+        },
+        "output_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_dataset.title",
+            "datatype": {
+                "type": "DEFeatureDataset"
+            }
+        }
+    },
+    "environments": [
+        "configKeyword",
+        "workspace"
+    ]
+}

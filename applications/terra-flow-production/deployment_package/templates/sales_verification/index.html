@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <h1>Sales Verification Dashboard</h1>
+      <p class="lead">Verify and analyze property sales data for accurate assessment.</p>
+    </div>
+  </div>
+  
+  <div class="row mt-4">
+    <div class="col-md-6 col-lg-3 mb-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">Single Sale Verification</h5>
+          <p class="card-text">Verify an individual property sale record.</p>
+          <a href="{{ url_for('sales_verification.verify_sale') }}" class="btn btn-primary">Verify Sale</a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-3 mb-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">Batch Verification</h5>
+          <p class="card-text">Upload and verify multiple sales records.</p>
+          <a href="{{ url_for('sales_verification.batch_verify_sales') }}" class="btn btn-primary">Batch Verify</a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-3 mb-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">GIS Validation</h5>
+          <p class="card-text">Validate spatial data for property sales.</p>
+          <form action="{{ url_for('sales_verification.gis_validation', parcel_id='placeholder') }}" method="get" id="gisForm">
+            <div class="input-group mb-3">
+              <input type="text" class="form-control" id="parcelIdInput" placeholder="Enter Parcel ID">
+              <button class="btn btn-primary" type="button" onclick="submitGisForm()">Validate</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-3 mb-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">Sales Trends</h5>
+          <p class="card-text">Analyze sales trends and market dynamics.</p>
+          <a href="{{ url_for('sales_verification.sales_trends') }}" class="btn btn-primary">View Trends</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row mt-4">
+    <div class="col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5 class="mb-0">Recent Verification Activity</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Parcel #</th>
+                  <th>Sale Price</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- This would be populated from database in production -->
+                <tr>
+                  <td>2024-03-15</td>
+                  <td>12345-678</td>
+                  <td>$350,000</td>
+                  <td><span class="badge bg-success">Verified</span></td>
+                  <td><a href="#" class="btn btn-sm btn-outline-primary">View</a></td>
+                </tr>
+                <tr>
+                  <td>2024-03-14</td>
+                  <td>98765-432</td>
+                  <td>$425,000</td>
+                  <td><span class="badge bg-warning">Issues Found</span></td>
+                  <td><a href="#" class="btn btn-sm btn-outline-primary">View</a></td>
+                </tr>
+                <tr>
+                  <td>2024-03-12</td>
+                  <td>45678-901</td>
+                  <td>$275,000</td>
+                  <td><span class="badge bg-danger">Not Qualified</span></td>
+                  <td><a href="#" class="btn btn-sm btn-outline-primary">View</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5 class="mb-0">Verification Status Summary</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="verificationChart" width="400" height="300"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Function to handle GIS validation form submission
+  function submitGisForm() {
+    const parcelId = document.getElementById('parcelIdInput').value;
+    if (parcelId.trim() !== '') {
+      const form = document.getElementById('gisForm');
+      form.action = form.action.replace('placeholder', parcelId);
+      form.submit();
+    } else {
+      alert('Please enter a Parcel ID');
+    }
+  }
+  
+  // Chart for verification status summary
+  document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('verificationChart').getContext('2d');
+    const verificationChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: ['Verified', 'Issues Found', 'Not Qualified'],
+        datasets: [{
+          label: 'Verification Status',
+          data: [65, 20, 15],
+          backgroundColor: [
+            '#28a745',
+            '#ffc107',
+            '#dc3545'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'right',
+          },
+          title: {
+            display: true,
+            text: 'March 2024'
+          }
+        }
+      }
+    });
+  });
+</script>
+{% endblock %}

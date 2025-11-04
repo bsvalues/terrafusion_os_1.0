@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Parses an input into its file name, extension, path, and the last workspace name. The output can be used as an inline variable in the output name of other tools.",
+        "extension_type.title": "Extension",
+        "format.descr": "<xdoc><p>Removes all reserved characters. Given the input value of C:\\1Tool Data\\InputFC.shp:<ul><li>Path—The output will be the file path, for example, C:\\1Tool Data.</li><li>Name—The output will be the file name, for example, InputFC.</li><li>Extension—The output will be the file extension, for example, shp.</li><li>Workspace Name—The output will be the workspace name, for example, _1Tool_Data.</li></ul></p></xdoc>",
+        "format.title": "Format Name, Extension and Workspace",
+        "in_data_element.descr": "The input values to parse.",
+        "in_data_element.title": "Input Values",
+        "name.title": "Name",
+        "path.title": "Path",
+        "title": "Parse Path",
+        "workspace_name.title": "Workspace Name"
+    }
+}

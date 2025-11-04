@@ -1,0 +1,47 @@
+{
+    "type": "FunctionTool",
+    "guid": "{e8770c4f-9f5c-485b-9598-9572603173af}",
+    "displayname": "$rc:title",
+    "helpcontent": "13010015",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "8"
+    ],
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "params": {
+        "network_dataset_template": {
+            "displayname": "$rc:network_dataset_template.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "xml"
+                ]
+            },
+            "description": "$rc:network_dataset_template.descr"
+        },
+        "output_feature_dataset": {
+            "displayname": "$rc:output_feature_dataset.title",
+            "datatype": {
+                "type": "DEFeatureDataset"
+            },
+            "description": "$rc:output_feature_dataset.descr"
+        },
+        "output_network": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_network.title",
+            "datatype": {
+                "type": "DENetworkDataset"
+            }
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

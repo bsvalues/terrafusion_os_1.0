@@ -1,0 +1,239 @@
+{
+    "type": "FunctionTool",
+    "guid": "{3e081dd7-a462-4633-92ad-f5dafc4c532d}",
+    "displayname": "$rc:title",
+    "helpcontent": "8170016",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10"
+    ],
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "params": {
+        "in_surface_raster": {
+            "display_order": "0",
+            "displayname": "$rc:in_surface_raster.title",
+            "datatype": {
+                "type": "GPSAGeoData"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "true",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_surface_raster.descr"
+        },
+        "out_landforms_raster": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_landforms_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_landforms_raster.descr"
+        },
+        "out_geomorphons_raster": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "2",
+            "displayname": "$rc:out_geomorphons_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_geomorphons_raster.descr"
+        },
+        "angle_threshold": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:angle_threshold.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "false",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                },
+                "high": {
+                    "allow": "false",
+                    "val": "90"
+                }
+            },
+            "value": "1",
+            "description": "$rc:angle_threshold.descr"
+        },
+        "distance_units": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:distance_units.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "CELLS",
+                        "code": "$rc:distance_units.domain.CELLS"
+                    },
+                    {
+                        "value": "METERS",
+                        "code": "$rc:distance_units.domain.METERS"
+                    },
+                    {
+                        "value": "CENTIMETERS",
+                        "code": "$rc:distance_units.domain.CENTIMETERS"
+                    },
+                    {
+                        "value": "KILOMETERS",
+                        "code": "$rc:distance_units.domain.KILOMETERS"
+                    },
+                    {
+                        "value": "INCHES",
+                        "code": "$rc:distance_units.domain.INCHES"
+                    },
+                    {
+                        "value": "FEET",
+                        "code": "$rc:distance_units.domain.FEET"
+                    },
+                    {
+                        "value": "YARDS",
+                        "code": "$rc:distance_units.domain.YARDS"
+                    },
+                    {
+                        "value": "MILES",
+                        "code": "$rc:distance_units.domain.MILES"
+                    }
+                ]
+            },
+            "value": "CELLS",
+            "description": "$rc:distance_units.descr"
+        },
+        "search_distance": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:search_distance.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "value": "10",
+            "description": "$rc:search_distance.descr"
+        },
+        "skip_distance": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:skip_distance.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                }
+            },
+            "description": "$rc:skip_distance.descr"
+        },
+        "z_unit": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:z_unit.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "INCH",
+                        "code": "$rc:z_unit.domain.INCH"
+                    },
+                    {
+                        "value": "FOOT",
+                        "code": "$rc:z_unit.domain.FOOT"
+                    },
+                    {
+                        "value": "YARD",
+                        "code": "$rc:z_unit.domain.YARD"
+                    },
+                    {
+                        "value": "MILE_US",
+                        "code": "$rc:z_unit.domain.MILE_US"
+                    },
+                    {
+                        "value": "NAUTICAL_MILE",
+                        "code": "$rc:z_unit.domain.NAUTICAL_MILE"
+                    },
+                    {
+                        "value": "MILLIMETER",
+                        "code": "$rc:z_unit.domain.MILLIMETER"
+                    },
+                    {
+                        "value": "CENTIMETER",
+                        "code": "$rc:z_unit.domain.CENTIMETER"
+                    },
+                    {
+                        "value": "METER",
+                        "code": "$rc:z_unit.domain.METER"
+                    },
+                    {
+                        "value": "KILOMETER",
+                        "code": "$rc:z_unit.domain.KILOMETER"
+                    },
+                    {
+                        "value": "DECIMETER",
+                        "code": "$rc:z_unit.domain.DECIMETER"
+                    }
+                ]
+            },
+            "depends": [
+                "in_surface_raster"
+            ],
+            "value": "METER",
+            "description": "$rc:z_unit.descr"
+        }
+    },
+    "environments": [
+        "cellSize",
+        "cellSizeProjectionMethod",
+        "extent",
+        "mask",
+        "outputCoordinateSystem",
+        "snapRaster",
+        "workspace"
+    ]
+}

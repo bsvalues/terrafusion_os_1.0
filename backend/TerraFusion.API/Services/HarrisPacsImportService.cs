@@ -14,14 +14,14 @@ namespace TerraFusion.API.Services
             IConfiguration configuration)
         {
             _logger = logger;
-            _connectionString = configuration.GetConnectionString("DefaultConnection") 
+            _connectionString = configuration.GetConnectionString("DefaultConnection")
                 ?? throw new InvalidOperationException("Database connection string not configured");
         }
 
         public async Task<ImportResult> ImportPacsDataAsync(string filePath, string countyId = "benton")
         {
             var result = new ImportResult { CountyId = countyId, StartTime = DateTimeOffset.UtcNow };
-            
+
             try
             {
                 _logger.LogInformation("Starting Harris PACS import for county {County} from {FilePath}", countyId, filePath);
@@ -55,11 +55,11 @@ namespace TerraFusion.API.Services
 
                 // Run validation on imported records
                 await ValidateImportedData(connection, countyId);
-                
+
                 result.EndTime = DateTimeOffset.UtcNow;
                 result.Success = result.FailedImports == 0;
 
-                _logger.LogInformation("Harris PACS import completed for {County}: {Success}/{Total} records", 
+                _logger.LogInformation("Harris PACS import completed for {County}: {Success}/{Total} records",
                     countyId, result.SuccessfulImports, result.TotalRecords);
 
                 return result;
@@ -121,7 +121,7 @@ namespace TerraFusion.API.Services
                     @ParcelId, @OwnerName, @PropertyAddress, @LegalDescription,
                     @AssessedValue, @MarketValue, @Acres, @PropertyClass, @Zoning, @TaxYear
                 )
-                ON CONFLICT (pacs_parcel_id, tax_year) 
+                ON CONFLICT (pacs_parcel_id, tax_year)
                 DO UPDATE SET
                     owner_name = EXCLUDED.owner_name,
                     property_address = EXCLUDED.property_address,
@@ -147,7 +147,7 @@ namespace TerraFusion.API.Services
         private async Task ValidateImportedData(Npgsql.NpgsqlConnection connection, string countyId)
         {
             const string sql = @"
-                SELECT import_id FROM harris_import.pacs_parcels 
+                SELECT import_id FROM harris_import.pacs_parcels
                 WHERE validation_status = 'pending'";
 
             using var cmd = new Npgsql.NpgsqlCommand(sql, connection);
@@ -171,19 +171,19 @@ namespace TerraFusion.API.Services
             _logger.LogInformation("Validated {Count} imported records for county {County}", importIds.Count, countyId);
         }
 
-        public async Task<MigrationStatus> GetMigrationStatusAsync(string countyId = "benton")
+        public async Task<MigrationProgress> GetMigrationStatusAsync(string countyId = "benton")
         {
             using var connection = new Npgsql.NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
 
             const string sql = @"
-                SELECT validation_status, record_count, percentage 
+                SELECT validation_status, record_count, percentage
                 FROM harris_import.migration_status";
 
             using var cmd = new Npgsql.NpgsqlCommand(sql, connection);
             using var reader = await cmd.ExecuteReaderAsync();
 
-            var status = new MigrationStatus { CountyId = countyId };
+            var status = new MigrationProgress { CountyId = countyId };
             while (await reader.ReadAsync())
             {
                 var validationStatus = reader.GetString(0);
@@ -236,7 +236,7 @@ namespace TerraFusion.API.Services
         public TimeSpan Duration => EndTime - StartTime;
     }
 
-    public sealed class MigrationStatus
+    public sealed class MigrationProgress
     {
         public string CountyId { get; set; } = "";
         public int TotalRecords { get; set; }

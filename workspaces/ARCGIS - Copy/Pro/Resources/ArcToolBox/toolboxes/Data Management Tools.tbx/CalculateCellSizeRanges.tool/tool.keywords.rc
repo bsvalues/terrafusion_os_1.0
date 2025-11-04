@@ -1,0 +1,16 @@
+{
+    "set": [
+        "amd",
+        "area",
+        "compute",
+        "highps",
+        "image",
+        "level",
+        "lowps",
+        "maxps",
+        "minps",
+        "mosaic dataset",
+        "overview",
+        "pixel"
+    ]
+}

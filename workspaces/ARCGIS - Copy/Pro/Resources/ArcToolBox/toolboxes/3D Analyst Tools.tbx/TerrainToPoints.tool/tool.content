@@ -1,0 +1,83 @@
+{
+    "type": "FunctionTool",
+    "guid": "{d174b215-b0cc-4a98-800a-65a770de206c}",
+    "displayname": "$rc:title",
+    "helpcontent": "5190001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9"
+    ],
+    "params": {
+        "in_terrain": {
+            "displayname": "$rc:in_terrain.title",
+            "datatype": {
+                "type": "GPTerrainLayer"
+            },
+            "description": "$rc:in_terrain.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "pyramid_level_resolution": {
+            "type": "optional",
+            "displayname": "$rc:pyramid_level_resolution.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:pyramid_level_resolution.descr"
+        },
+        "source_embedded_feature_class": {
+            "type": "optional",
+            "displayname": "$rc:source_embedded_feature_class.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "value": "<NONE>",
+            "description": "$rc:source_embedded_feature_class.descr"
+        },
+        "out_geometry_type": {
+            "type": "optional",
+            "displayname": "$rc:out_geometry_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MULTIPOINT",
+                        "code": "$rc:out_geometry_type.domain.MULTIPOINT"
+                    },
+                    {
+                        "value": "POINT",
+                        "code": "$rc:out_geometry_type.domain.POINT"
+                    }
+                ]
+            },
+            "value": "MULTIPOINT",
+            "description": "$rc:out_geometry_type.descr"
+        }
+    },
+    "environments": [
+        "XYResolution",
+        "XYTolerance",
+        "ZResolution",
+        "ZTolerance",
+        "autoCommit",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "workspace"
+    ]
+}

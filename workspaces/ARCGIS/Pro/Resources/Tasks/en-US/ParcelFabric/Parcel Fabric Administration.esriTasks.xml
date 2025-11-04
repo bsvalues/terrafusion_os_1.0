@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<metadata xml:lang="en">
+  <Esri>
+    <CreaDate>20210831</CreaDate>
+    <CreaTime>16083400</CreaTime>
+    <ArcGISFormat>1.0</ArcGISFormat>
+    <SyncOnce>TRUE</SyncOnce>
+  </Esri>
+  <dataIdInfo>
+    <idCitation>
+      <resTitle>Parcel Fabric Administration</resTitle>
+    </idCitation>
+    <idAbs>&lt;P&gt;A collection of parcel fabric administration Tasks for creating and publishing a parcel fabric. Tasks apply to both single user (file geodatabase) and multi user (enterprise geodatabase) deployments.&lt;/P&gt;</idAbs>
+    <searchKeys>
+      <keyword>Parcel fabric</keyword>
+      <keyword>administration</keyword>
+      <keyword>migration</keyword>
+      <keyword>upgrade</keyword>
+    </searchKeys>
+    <idPurp>Common tasks for creating, migrating and upgrading to the parcel fabric in ArcGIS Pro.</idPurp>
+    <resConst>
+      <Consts>
+        <useLimit>&lt;P&gt;None&lt;/P&gt;</useLimit>
+      </Consts>
+    </resConst>
+  </dataIdInfo>
+</metadata>

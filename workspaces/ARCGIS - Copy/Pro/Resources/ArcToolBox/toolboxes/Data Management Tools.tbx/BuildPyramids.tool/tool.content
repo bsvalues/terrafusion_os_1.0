@@ -1,0 +1,174 @@
+{
+    "type": "FunctionTool",
+    "guid": "{ca1fb5e3-c6f3-4a35-a22a-6ca075cddaec}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190404",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_raster_dataset": {
+            "displayname": "$rc:in_raster_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_raster_dataset.descr"
+        },
+        "pyramid_level": {
+            "type": "optional",
+            "displayname": "$rc:pyramid_level.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:pyramid_level.descr"
+        },
+        "SKIP_FIRST": {
+            "type": "optional",
+            "displayname": "$rc:skip_first.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SKIP_FIRST"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NONE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:skip_first.descr"
+        },
+        "resample_technique": {
+            "type": "optional",
+            "displayname": "$rc:resample_technique.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NEAREST",
+                        "code": "$rc:resample_technique.domain.NEAREST"
+                    },
+                    {
+                        "value": "BILINEAR",
+                        "code": "$rc:resample_technique.domain.BILINEAR"
+                    },
+                    {
+                        "value": "CUBIC",
+                        "code": "$rc:resample_technique.domain.CUBIC"
+                    }
+                ]
+            },
+            "value": "NEAREST",
+            "description": "$rc:resample_technique.descr"
+        },
+        "compression_type": {
+            "type": "optional",
+            "displayname": "$rc:compression_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DEFAULT",
+                        "code": "$rc:compression_type.domain.DEFAULT"
+                    },
+                    {
+                        "value": "JPEG",
+                        "code": "$rc:compression_type.domain.JPEG"
+                    },
+                    {
+                        "value": "LZ77",
+                        "code": "$rc:compression_type.domain.LZ77"
+                    },
+                    {
+                        "value": "NONE",
+                        "code": "$rc:compression_type.domain.NONE"
+                    },
+                    {
+                        "value": "JPEG_YCbCr",
+                        "code": "$rc:compression_type.domain.JPEG_YCbCr"
+                    }
+                ]
+            },
+            "value": "DEFAULT",
+            "description": "$rc:compression_type.descr"
+        },
+        "compression_quality": {
+            "type": "optional",
+            "displayname": "$rc:compression_quality.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "75",
+            "description": "$rc:compression_quality.descr"
+        },
+        "skip_existing": {
+            "type": "optional",
+            "displayname": "$rc:skip_existing.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SKIP_EXISTING"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "OVERWRITE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:skip_existing.descr"
+        },
+        "out_raster": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "7",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "depends": [
+                "in_raster_dataset"
+            ]
+        }
+    },
+    "environments": [
+        "parallelProcessingFactor",
+        "pyramid",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

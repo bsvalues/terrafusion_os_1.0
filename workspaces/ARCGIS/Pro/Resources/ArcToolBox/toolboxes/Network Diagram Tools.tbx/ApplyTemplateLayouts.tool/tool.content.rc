@@ -1,0 +1,10 @@
+{
+    "map": {
+        "description": "Applies the list of layout algorithms currently configured for the diagram template to the input network diagram layer.",
+        "in_network_diagram_layer.descr": "The network diagram to which the layout will be applied.",
+        "in_network_diagram_layer.title": "Input Network Diagram Layer",
+        "out_network_diagram_layer.title": "Output Network Diagram",
+        "summary": "<xdoc><p>Applies the list of layout algorithms currently configured for the diagram template to the input network diagram layer.</p><note type=\"caution\"/><p group=\"note\">If you have an open edit session, you must save your edits prior to running this tool. This ensures that the diagram reflects the latest changes made to the network topology in the database. If you fail to save your edits, the edits will not be reflected in the diagram.</p></xdoc>",
+        "title": "Apply Template Layouts"
+    }
+}

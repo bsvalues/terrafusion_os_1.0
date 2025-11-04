@@ -1,0 +1,19 @@
+{
+    "set": [
+        "classify",
+        "hallway",
+        "indoor",
+        "indoors",
+        "interior",
+        "make",
+        "network",
+        "path",
+        "pathway",
+        "pathway rank",
+        "primary pathway",
+        "route",
+        "secondary pathway",
+        "walking",
+        "walkway"
+    ]
+}

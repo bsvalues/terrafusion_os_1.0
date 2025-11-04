@@ -1,0 +1,7 @@
+{
+    "map": {
+        "descr": "The Editing tools allow you to apply bulk editing to all (or selected) features in a feature class.",
+        "title": "Editing Tools",
+        "toolset1.name": "Conflation"
+    }
+}

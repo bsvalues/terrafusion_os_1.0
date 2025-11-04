@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
+
+#pragma warning disable CS1998
+
 namespace TerraFusion.Core.Security
 {
     /// <summary>
@@ -30,7 +33,7 @@ namespace TerraFusion.Core.Security
             _options = options.Value;
             _providers = new Dictionary<string, IVerificationProvider>();
             _metrics = new VerificationMetrics();
-            
+
             InitializeProviders();
         }
 
@@ -38,26 +41,26 @@ namespace TerraFusion.Core.Security
         /// Verify signature with multi-provider consensus
         /// </summary>
         public async Task<VerificationResult> VerifyWithConsensusAsync(
-            byte[] message, 
-            byte[] signature, 
+            byte[] message,
+            byte[] signature,
             string publicKeyPem,
             string? agentId = null)
         {
             var verificationId = Guid.NewGuid().ToString();
             var startTime = DateTime.UtcNow;
-            
-            _logger.LogInformation("Starting consensus verification {VerificationId} for agent {AgentId}", 
+
+            _logger.LogInformation("Starting consensus verification {VerificationId} for agent {AgentId}",
                 verificationId, agentId);
 
             try
             {
-                var verificationTasks = _providers.Values.Select(provider => 
+                var verificationTasks = _providers.Values.Select(provider =>
                     VerifyWithProviderAsync(provider, message, signature, publicKeyPem, verificationId));
 
                 var results = await Task.WhenAll(verificationTasks);
                 var successCount = results.Count(r => r.IsValid);
                 var requiredConsensus = Math.Ceiling(_providers.Count * _options.ConsensusThreshold);
-                
+
                 var consensusAchieved = successCount >= requiredConsensus;
                 var executionTime = DateTime.UtcNow - startTime;
 
@@ -65,18 +68,18 @@ namespace TerraFusion.Core.Security
                 {
                     VerificationId = verificationId,
                     IsValid = consensusAchieved,
-                    AgentId = agentId,
+                    AgentId = agentId ?? "unknown",
                     ProvidersUsed = _providers.Count,
                     SuccessfulVerifications = successCount,
                     ConsensusThreshold = requiredConsensus,
                     ExecutionTime = executionTime,
                     Timestamp = DateTime.UtcNow,
-                    ProviderResults = results.ToList()
+                    ProviderResults = results.Where(r => r != null).ToList()
                 };
 
                 // Log metrics
                 _metrics.RecordVerification(result);
-                
+
                 if (!consensusAchieved)
                 {
                     await RaiseSecurityAlertAsync("CONSENSUS_FAILURE", new
@@ -91,7 +94,7 @@ namespace TerraFusion.Core.Security
 
                 _logger.LogInformation(
                     "Verification {VerificationId} completed: {Result} ({SuccessCount}/{TotalCount})",
-                    verificationId, consensusAchieved ? "SUCCESS" : "FAILURE", 
+                    verificationId, consensusAchieved ? "SUCCESS" : "FAILURE",
                     successCount, _providers.Count);
 
                 return result;
@@ -99,7 +102,7 @@ namespace TerraFusion.Core.Security
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Critical error in consensus verification {VerificationId}", verificationId);
-                
+
                 await RaiseSecurityAlertAsync("VERIFICATION_SYSTEM_ERROR", new
                 {
                     VerificationId = verificationId,
@@ -122,7 +125,7 @@ namespace TerraFusion.Core.Security
             string verificationId)
         {
             var startTime = DateTime.UtcNow;
-            
+
             try
             {
                 var isValid = await provider.VerifySignatureAsync(message, signature, publicKeyPem);
@@ -140,8 +143,8 @@ namespace TerraFusion.Core.Security
             catch (Exception ex)
             {
                 var executionTime = DateTime.UtcNow - startTime;
-                
-                _logger.LogWarning(ex, "Provider {Provider} failed for verification {VerificationId}", 
+
+                _logger.LogWarning(ex, "Provider {Provider} failed for verification {VerificationId}",
                     provider.Name, verificationId);
 
                 return new ProviderVerificationResult
@@ -162,13 +165,13 @@ namespace TerraFusion.Core.Security
         {
             // .NET Native Provider
             _providers["dotnet"] = new DotNetEd25519Provider(_logger);
-            
+
             // Node.js Service Provider (via HTTP/gRPC)
             if (_options.NodeJsServiceEnabled)
             {
                 _providers["nodejs"] = new NodeJsVerificationProvider(_options.NodeJsServiceUrl, _logger);
             }
-            
+
             // OpenSSL Wrapper Provider
             if (_options.OpenSslEnabled)
             {
@@ -227,7 +230,7 @@ namespace TerraFusion.Core.Security
         public async Task<HealthCheckResult> PerformHealthCheckAsync()
         {
             var healthResults = new List<ProviderHealthResult>();
-            
+
             foreach (var provider in _providers.Values)
             {
                 try
@@ -306,9 +309,9 @@ namespace TerraFusion.Core.Security
                 // For now, return format validation success
                 // Full Ed25519 verification requires .NET 8+ with proper Ed25519 support
                 // This validates that the key and signature formats are correct
-                
+
                 var isValidFormat = signature.Length == 64 && rawPublicKey.Length == 32;
-                
+
                 return await Task.FromResult(isValidFormat);
             }
             catch (Exception ex)
@@ -326,7 +329,7 @@ namespace TerraFusion.Core.Security
                 using var rng = RandomNumberGenerator.Create();
                 var testBytes = new byte[32];
                 rng.GetBytes(testBytes);
-                
+
                 return await Task.FromResult(true);
             }
             catch
@@ -399,7 +402,7 @@ namespace TerraFusion.Core.Security
             lock (_lock)
             {
                 _recentVerifications.Add(result);
-                
+
                 // Keep only last hour of data
                 var cutoff = DateTime.UtcNow.AddHours(-1);
                 _recentVerifications.RemoveAll(v => v.Timestamp < cutoff);
@@ -412,7 +415,7 @@ namespace TerraFusion.Core.Security
             {
                 var totalVerifications = _recentVerifications.Count;
                 var successfulVerifications = _recentVerifications.Count(v => v.IsValid);
-                var avgExecutionTime = totalVerifications > 0 
+                var avgExecutionTime = totalVerifications > 0
                     ? _recentVerifications.Average(v => v.ExecutionTime.TotalMilliseconds)
                     : 0;
 

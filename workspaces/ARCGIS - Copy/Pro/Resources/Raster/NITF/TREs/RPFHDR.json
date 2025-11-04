@@ -1,0 +1,19 @@
+{
+  "TRE": "RPFHDR",
+  "Source": ["STDI-0002-1 v2021.1, Appendix T: Retired"],
+  "Name": "Raster Product Format Header",
+  "Description": "This data extension segment is retired per the NITF Technical Board, and is included for documentation purposes only within ArcGIS Pro.",
+  "Size": 99,
+  "Fields": {
+    "ENDIAN" : {},
+    "HDR_SEC_LEN" : {},
+    "FILENAME" : {},
+    "NEW_FLAG" : {},
+    "STANDARD_NUM" : {},
+    "STANDARD_DATE" : {},
+    "CLASSIFICATION" : {},
+    "COUNTRY" : {},
+    "RELEASE" : {},
+    "LOC_SEC_LOC" : {}
+  }
+}

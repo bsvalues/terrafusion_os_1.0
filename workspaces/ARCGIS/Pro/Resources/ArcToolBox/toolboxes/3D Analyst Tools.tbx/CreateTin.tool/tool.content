@@ -1,0 +1,110 @@
+{
+    "type": "FunctionTool",
+    "guid": "{d9a88b33-b6af-11d5-a124-00508bd60cb9}",
+    "displayname": "$rc:title",
+    "helpcontent": "5200003",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9"
+    ],
+    "params": {
+        "out_tin": {
+            "direction": "out",
+            "displayname": "$rc:out_tin.title",
+            "datatype": {
+                "type": "DETin"
+            },
+            "description": "$rc:out_tin.descr"
+        },
+        "spatial_reference": {
+            "type": "optional",
+            "displayname": "$rc:spatial_reference.title",
+            "datatype": {
+                "type": "GPCoordinateSystem"
+            },
+            "defaultenvironmentname": "outputCoordinateSystem",
+            "description": "$rc:spatial_reference.descr"
+        },
+        "in_features": {
+            "type": "optional",
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPFeatureLayer",
+                        "displayname": "$rc:in_features.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:in_features.dt.title2"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:in_features.dt.title3"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:in_features.dt.title4"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Point",
+                            "Polyline",
+                            "Polygon",
+                            "Multipoint"
+                        ]
+                    },
+                    {
+                        "type": "GPCompositeDomain"
+                    },
+                    {
+                        "type": "GPCompositeDomain"
+                    },
+                    {
+                        "type": "GPCompositeDomain"
+                    }
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "constrained_delaunay": {
+            "type": "optional",
+            "displayname": "$rc:constrained_delaunay.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CONSTRAINED_DELAUNAY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DELAUNAY"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:constrained_delaunay.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "tinSaveVersion",
+        "workspace"
+    ]
+}

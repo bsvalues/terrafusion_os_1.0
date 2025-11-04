@@ -1,13 +1,13 @@
 /**
  * Grid Component - TerraFusion Design System
  * Week 2, Day 1 - Layout Components Phase
- * 
+ *
  * Purpose: CSS Grid wrapper for creating responsive grid layouts
  * - Column-based layouts (1-12 columns)
  * - Responsive grid patterns
  * - Gap utilities for spacing
  * - Auto-fit and auto-fill patterns
- * 
+ *
  * @example
  * // Basic 3-column grid
  * <Grid cols={3} gap="md">
@@ -15,7 +15,7 @@
  *   <div>Item 2</div>
  *   <div>Item 3</div>
  * </Grid>
- * 
+ *
  * @example
  * // Responsive grid (1 col on mobile, 2 on tablet, 3 on desktop)
  * <Grid cols={{ base: 1, md: 2, lg: 3 }} gap="lg">
@@ -149,7 +149,7 @@ export function Grid({
 }: GridProps) {
   // Build column classes
   let columnClasses = '';
-  
+
   if (autoFit) {
     // Auto-fit creates responsive columns automatically
     columnClasses = '';
@@ -159,11 +159,18 @@ export function Grid({
   } else {
     // Responsive object
     const responsiveCols: string[] = [];
-    if (cols.base) responsiveCols.push(responsiveColClasses.base[cols.base as keyof typeof responsiveColClasses.base]);
-    if (cols.sm) responsiveCols.push(responsiveColClasses.sm[cols.sm as keyof typeof responsiveColClasses.sm]);
-    if (cols.md) responsiveCols.push(responsiveColClasses.md[cols.md as keyof typeof responsiveColClasses.md]);
-    if (cols.lg) responsiveCols.push(responsiveColClasses.lg[cols.lg as keyof typeof responsiveColClasses.lg]);
-    if (cols.xl) responsiveCols.push(responsiveColClasses.xl[cols.xl as keyof typeof responsiveColClasses.xl]);
+    if (cols.base)
+      responsiveCols.push(
+        responsiveColClasses.base[cols.base as keyof typeof responsiveColClasses.base]
+      );
+    if (cols.sm)
+      responsiveCols.push(responsiveColClasses.sm[cols.sm as keyof typeof responsiveColClasses.sm]);
+    if (cols.md)
+      responsiveCols.push(responsiveColClasses.md[cols.md as keyof typeof responsiveColClasses.md]);
+    if (cols.lg)
+      responsiveCols.push(responsiveColClasses.lg[cols.lg as keyof typeof responsiveColClasses.lg]);
+    if (cols.xl)
+      responsiveCols.push(responsiveColClasses.xl[cols.xl as keyof typeof responsiveColClasses.xl]);
     columnClasses = responsiveCols.join(' ');
   }
 

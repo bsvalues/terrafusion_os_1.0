@@ -1,0 +1,30 @@
+{
+    "map": {
+        "description": "Creates contours from a raster surface. The inclusion of barrier features allows you to independently generate contours on either side of a barrier.",
+        "explicit_only.descr": "<xdoc><p>Only explicit contour values are used. Base contour, contour interval, and indexed contour intervals are not specified.</p><ul><li>Unchecked—The default, contour interval must be specified.</li><li>Checked—Only explicit contour values are specified.</li></ul></xdoc>",
+        "explicit_only.title": "Enter Explicit Contour Values Only",
+        "in_barrier_features.descr": "<xdoc><p>The input barrier features.</p><p>The features can be polyline or polygon type.</p></xdoc>",
+        "in_barrier_features.title": "Input Barrier Features",
+        "in_base_contour.descr": "<xdoc><p>The base contour value.</p><p>Contours are generated above and below this value as needed to cover the entire value range of the input raster. The default is zero.</p></xdoc>",
+        "in_base_contour.title": "Base Contour",
+        "in_contour_interval.descr": "<xdoc><p>The interval, or distance, between contour lines.</p><p>This can be any positive number.</p></xdoc>",
+        "in_contour_interval.title": "Contour Interval",
+        "in_contour_list.descr": "Explicit values at which to create contours.",
+        "in_contour_list.title": "Explicit Contour Values",
+        "in_contour_type.descr": "<xdoc><p>The type of contour to create.</p><ul><li><span title=\"POLYLINES\">Polylines</span>— The contour or isoline representation of the input raster.</li><li><span title=\"POLYGONS\">Polygons</span>— Closed polygons representing the contours.</li></ul></xdoc>",
+        "in_contour_type.domain.POLYGONS": "Polygons",
+        "in_contour_type.domain.POLYLINES": "Polylines",
+        "in_contour_type.title": "Type of Contours",
+        "in_contour_values_file.descr": "The base contour, contour interval, indexed contour interval, and explicit contour values can also be specified via a text file.",
+        "in_contour_values_file.title": "File Containing Contour Value Specifications",
+        "in_indexed_contour_interval.descr": "Contours will also be generated for this interval and will be flagged accordingly in the output feature class.",
+        "in_indexed_contour_interval.title": "Indexed Contour Interval",
+        "in_raster.descr": "The input surface raster.",
+        "in_raster.title": "Input Raster",
+        "in_z_factor.descr": "<xdoc><p>The unit conversion factor used when generating contours. The default value is 1.</p><p>The contour lines are generated based on the z-values in the input raster, which are often measured in units of meters or feet. With the default value of 1, the contours will be in the same units as the z-values of the input raster. To create contours in a unit other than that of the z-values, set an appropriate value for the z-factor. It is not necessary to have the ground x,y and surface z-units be consistent for this tool.</p><p>For example, if the elevation values in the input raster are in feet, but you want the contours to be generated based on units of meters, set the z-factor to 0.3048 (1 foot = 0.3048 meter).</p></xdoc>",
+        "in_z_factor.title": "Factor Applied to Raster Z-values",
+        "out_contour_feature_class.descr": "The output contour features.",
+        "out_contour_feature_class.title": "Output Contour Features",
+        "title": "Contour with Barriers"
+    }
+}

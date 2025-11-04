@@ -1,0 +1,823 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Messages STARTID="100000">
+  <Message>
+    <ID>100001</ID>
+    <Description>Aggregate Points failed.</Description>
+  </Message>
+  <Message>
+    <ID>100002</ID>
+    <Description>The geometry type of Point Layer must be points.</Description>
+  </Message>
+  <Message>
+    <ID>100003</ID>
+    <Description>The geometry type of  Polygon Layer must be polygons.</Description>
+  </Message>
+  <Message>
+    <ID>100004</ID>
+    <Description>The field  %s  provided for Summary Fields does not exist.</Description>
+  </Message>
+  <Message>
+    <ID>100005</ID>
+    <Description>The field  %s  provided for Summary Fields is not numeric.</Description>
+  </Message>
+  <Message>
+    <ID>100006</ID>
+    <Description>The summary type %s  provided for field %s  is invalid.</Description>
+  </Message>
+  <Message>
+    <ID>100007</ID>
+    <Description>Find Hot Spots failed.</Description>
+  </Message>
+  <Message>
+    <ID>100008</ID>
+    <Description>The geometry type for the boundingPolygonLayer must be polygon.</Description>
+  </Message>
+  <Message>
+    <ID>100009</ID>
+    <Description>The geometry type of Analysis Layer must be points or polygons.</Description>
+  </Message>
+  <Message>
+    <ID>100010</ID>
+    <Description>The geometry type of Aggregation Polygon Layer must be polygon.</Description>
+  </Message>
+  <Message>
+    <ID>100011</ID>
+    <Description>Must provide an Analysis Field for polygon Analysis Layer.</Description>
+  </Message>
+  <Message>
+    <ID>100012</ID>
+    <Description>Create Buffers failed.</Description>
+  </Message>
+  <Message>
+    <ID>100013</ID>
+    <Description>Overlay Layers failed.</Description>
+  </Message>
+  <Message>
+    <ID>100014</ID>
+    <Description>Summarize Within failed.</Description>
+  </Message>
+  <Message>
+    <ID>100015</ID>
+    <Description>The geometry type of Summarize Layer input must be point, line, or polygons.</Description>
+  </Message>
+  <Message>
+    <ID>100016</ID>
+    <Description>The geometry type of Summarize Layer input must be point or line.</Description>
+  </Message>
+  <Message>
+    <ID>100017</ID>
+    <Description>The geometry type of Summarize Layer input must be point.</Description>
+  </Message>
+  <Message>
+    <ID>100018</ID>
+    <Description>Sum Units %s  is not applicable for %s  shape type.</Description>
+  </Message>
+  <Message>
+    <ID>100019</ID>
+    <Description>At least one of the parameters, Summarize Shape or  Summary Fields is required.</Description>
+  </Message>
+  <Message>
+    <ID>100020</ID>
+    <Description>Enrich Layer failed.</Description>
+  </Message>
+  <Message>
+    <ID>100021</ID>
+    <Description>The geometry type of Input Layer must be point, line or polygon.</Description>
+  </Message>
+  <Message>
+    <ID>100022</ID>
+    <Description>Units %s  is not supported for Buffer type %s .</Description>
+  </Message>
+  <Message>
+    <ID>100023</ID>
+    <Description>Unable to enrich layer for input spatial reference %s .</Description>
+  </Message>
+  <Message>
+    <ID>100024</ID>
+    <Description>The number of features in %s  is zero.</Description>
+  </Message>
+  <Message>
+    <ID>100025</ID>
+    <Description>Summarize Nearby failed.</Description>
+  </Message>
+  <Message>
+    <ID>100026</ID>
+    <Description>Extract Data failed.</Description>
+  </Message>
+  <Message>
+    <ID>100027</ID>
+    <Description>Dissolve Boundaries failed.</Description>
+  </Message>
+  <Message>
+    <ID>100028</ID>
+    <Description>Create Drive Time Areas failed.</Description>
+  </Message>
+  <Message>
+    <ID>100029</ID>
+    <Description>Merge Layers failed.</Description>
+  </Message>
+  <Message>
+    <ID>100030</ID>
+    <Description>Find Nearest failed.</Description>
+  </Message>
+  <Message>
+    <ID>100031</ID>
+    <Description>The number of nearest locations to find can not be greater than 100.</Description>
+  </Message>
+  <Message>
+    <ID>100032</ID>
+    <Description>The number of features in %s  is zero.</Description>
+  </Message>
+  <Message>
+    <ID>100033</ID>
+    <Description>The number of features in %s  is zero.</Description>
+  </Message>
+  <Message>
+    <ID>100034</ID>
+    <Description>The number of features in %s  can not be greater than 1000.</Description>
+  </Message>
+  <Message>
+    <ID>100035</ID>
+    <Description>The number of features in %s  can not be greater than 1000.</Description>
+  </Message>
+  <Message>
+    <ID>100036</ID>
+    <Description>The %s  layer must have a point geometry type when using %s  as the measurement type.</Description>
+  </Message>
+  <Message>
+    <ID>100037</ID>
+    <Description>The %s  layer must have a point geometry type when using %s  as the measurement type.</Description>
+  </Message>
+  <Message>
+    <ID>100038</ID>
+    <Description>The search cutoff cannot be less than zero.</Description>
+  </Message>
+  <Message>
+    <ID>100039</ID>
+    <Description>The %s  must have a point geometry type.</Description>
+  </Message>
+  <Message>
+    <ID>100040</ID>
+    <Description>The number of features in %s  can not be greater than %s .</Description>
+  </Message>
+  <Message>
+    <ID>100041</ID>
+    <Description>Buffer type parameter is supported only for layers containing points or lines.</Description>
+  </Message>
+  <Message>
+    <ID>100042</ID>
+    <Description>The geometry type %s  of Nearby Layer is not supported for Near type %s </Description>
+  </Message>
+  <Message>
+    <ID>100043</ID>
+    <Description>Units %s  is not supported for Near type %s .</Description>
+  </Message>
+  <Message>
+    <ID>100044</ID>
+    <Description>Distance value should be greater than 0</Description>
+  </Message>
+  <Message>
+    <ID>100045</ID>
+    <Description>Distance and units are required when Buffer type is specified</Description>
+  </Message>
+  <Message>
+    <ID>100046</ID>
+    <Description>Failed to access GeoEnrichment server.</Description>
+  </Message>
+  <Message>
+    <ID>100047</ID>
+    <Description>Enrichment may not be available for some features.</Description>
+  </Message>
+  <Message>
+    <ID>100048</ID>
+    <Description>The input layer %s  contains multipoint geometry and has been converted to single point geometry.</Description>
+  </Message>
+  <Message>
+    <ID>100049</ID>
+    <Description>No features in the processing extent for any input layers.</Description>
+  </Message>
+  <Message>
+    <ID>100050</ID>
+    <Description>No fields exist in the input layer for data extraction.</Description>
+  </Message>
+  <Message>
+    <ID>100051</ID>
+    <Description>No features in the processing extent for any input layers and none of the input layers have fields for data extraction. </Description>
+  </Message>
+  <Message>
+    <ID>100052</ID>
+    <Description>The field name %s  does not exist in the %s .</Description>
+  </Message>
+  <Message>
+    <ID>100053</ID>
+    <Description>Required keys %s  are missing in attribute expression %s .</Description>
+  </Message>
+  <Message>
+    <ID>100054</ID>
+    <Description>Required keys %s  are missing in spatial relationship expression %s .</Description>
+  </Message>
+  <Message>
+    <ID>100055</ID>
+    <Description>Invalid expression; malformed JSON.</Description>
+  </Message>
+  <Message>
+    <ID>100056</ID>
+    <Description>Invalid layer index in expression %s .</Description>
+  </Message>
+  <Message>
+    <ID>100057</ID>
+    <Description>Layer index exceeds the number of input layers in expression %s .</Description>
+  </Message>
+  <Message>
+    <ID>100058</ID>
+    <Description>%s  spatial relationship does not support %s /%s  geometry types for layer/selectingLayer in expression %s .</Description>
+  </Message>
+  <Message>
+    <ID>100059</ID>
+    <Description>%s  in expression %s .</Description>
+  </Message>
+  <Message>
+    <ID>100060</ID>
+    <Description>Query expression failed in expression %s .</Description>
+  </Message>
+  <Message>
+    <ID>100061</ID>
+    <Description>FindExistingLocations failed.</Description>
+  </Message>
+  <Message>
+    <ID>100062</ID>
+    <Description>Invalid distance and/or units in expression %s </Description>
+  </Message>
+  <Message>
+    <ID>100063</ID>
+    <Description>PlanRoutes failed.</Description>
+  </Message>
+  <Message>
+    <ID>100064</ID>
+    <Description>The number of features in %s  is zero.</Description>
+  </Message>
+  <Message>
+    <ID>100065</ID>
+    <Description>The number of features in %s  is zero.</Description>
+  </Message>
+  <Message>
+    <ID>100066</ID>
+    <Description>The maximum number of vehicles to route cannot be less than zero and greater than %s .</Description>
+  </Message>
+  <Message>
+    <ID>100067</ID>
+    <Description>The maximum number of stops per vehicle cannot be less than zero and greater than %s .</Description>
+  </Message>
+  <Message>
+    <ID>100068</ID>
+    <Description>The number of features in %s  cannot be greater than %s .</Description>
+  </Message>
+  <Message>
+    <ID>100069</ID>
+    <Description>The number of features in %s  cannot be greater than %s .</Description>
+  </Message>
+  <Message>
+    <ID>100070</ID>
+    <Description>The number of features in %s  cannot be greater than %s .</Description>
+  </Message>
+  <Message>
+    <ID>100071</ID>
+    <Description>The %s  layer must have a point geometry type.</Description>
+  </Message>
+  <Message>
+    <ID>100072</ID>
+    <Description>The %s  layer must have a point geometry.</Description>
+  </Message>
+  <Message>
+    <ID>100073</ID>
+    <Description>The %s  layer must have a point geometry.</Description>
+  </Message>
+  <Message>
+    <ID>100074</ID>
+    <Description>The time spent at each stop cannot be less than zero.</Description>
+  </Message>
+  <Message>
+    <ID>100075</ID>
+    <Description>The total route time per vehicle should be greater than zero and less than one year (525600 minutes).</Description>
+  </Message>
+  <Message>
+    <ID>100076</ID>
+    <Description>The %s  should not be specified if return to start is true.</Description>
+  </Message>
+  <Message>
+    <ID>100077</ID>
+    <Description>Find Similar Locations failed.</Description>
+  </Message>
+  <Message>
+    <ID>100078</ID>
+    <Description>Invalid field name in expression %s </Description>
+  </Message>
+  <Message>
+    <ID>100079</ID>
+    <Description>Derive New Locations failed.</Description>
+  </Message>
+  <Message>
+    <ID>100080</ID>
+    <Description>Connect Origins To Destinations failed.</Description>
+  </Message>
+  <Message>
+    <ID>100081</ID>
+    <Description>Field Calculator failed.</Description>
+  </Message>
+  <Message>
+    <ID>100082</ID>
+    <Description>A field name and an expression are required.</Description>
+  </Message>
+  <Message>
+    <ID>100083</ID>
+    <Description>A field type is required for creating a new field.</Description>
+  </Message>
+  <Message>
+    <ID>100084</ID>
+    <Description>Field type is required to be String, Integer, Double or Date.</Description>
+  </Message>
+  <Message>
+    <ID>100088</ID>
+    <Description>Field(s) %s  must be in both the reference and candidate search layers.</Description>
+  </Message>
+  <Message>
+    <ID>100089</ID>
+    <Description>The following fields lack sufficient variation for use in this analysis: %s .</Description>
+  </Message>
+  <Message>
+    <ID>100090</ID>
+    <Description>This tool requires at least 2 candidate search locations that are not also reference locations.</Description>
+  </Message>
+  <Message>
+    <ID>100091</ID>
+    <Description>The geometry type of %s  must be Points</Description>
+  </Message>
+  <Message>
+    <ID>100092</ID>
+    <Description>The geometry type of boundingPolygonLayer must be Polygons</Description>
+  </Message>
+  <Message>
+    <ID>100093</ID>
+    <Description>The classification type Manual requires classbreaks value.</Description>
+  </Message>
+  <Message>
+    <ID>100094</ID>
+    <Description>The maximum number of vehicles to route must be equal to the number of features in %s .</Description>
+  </Message>
+  <Message>
+    <ID>100095</ID>
+    <Description>The number of features in %s  must be equal to the number of features in %s .</Description>
+  </Message>
+  <Message>
+    <ID>100096</ID>
+    <Description>The %s  in %s  does not have unique values.</Description>
+  </Message>
+  <Message>
+    <ID>100097</ID>
+    <Description>The %s  in %s  does not have unique values.</Description>
+  </Message>
+  <Message>
+    <ID>100098</ID>
+    <Description>The values in %s  in %s  do not have a one-to-one match with the values in %s  in %s .</Description>
+  </Message>
+  <Message>
+    <ID>100099</ID>
+    <Description>All break values must be greater than zero.</Description>
+  </Message>
+  <Message>
+    <ID>100100</ID>
+    <Description>The features in %s  are not within the data coverage area. See availability at %s .</Description>
+  </Message>
+  <Message>
+    <ID>100101</ID>
+    <Description>No features in %s  are within a distance of %s  kilometers from streets.</Description>
+  </Message>
+  <Message>
+    <ID>100102</ID>
+    <Description>All features in %s  must be in the same time zone when using traffic and creating areas with dissolve or split options.</Description>
+  </Message>
+  <Message>
+    <ID>100103</ID>
+    <Description>The %s  value cannot be greater than %s  %s .</Description>
+  </Message>
+  <Message>
+    <ID>100104</ID>
+    <Description>InterpolatePoints failed.</Description>
+  </Message>
+  <Message>
+    <ID>100105</ID>
+    <Description>CalculateDensity failed</Description>
+  </Message>
+  <Message>
+    <ID>100106</ID>
+    <Description>Field %s  is not numeric.</Description>
+  </Message>
+  <Message>
+    <ID>100107</ID>
+    <Description>Field %s  does not have any positive values.</Description>
+  </Message>
+  <Message>
+    <ID>100108</ID>
+    <Description>Field %s  has negative values, only positive values will be considered for calculating density.</Description>
+  </Message>
+  <Message>
+    <ID>100109</ID>
+    <Description>The geometry type for the input layer must be points or lines.</Description>
+  </Message>
+  <Message>
+    <ID>100110</ID>
+    <Description>Your user role does not include the geoEnrichment privilege</Description>
+  </Message>
+  <Message>
+    <ID>100111</ID>
+    <Description>Your user role does not include the network analysis privilege</Description>
+  </Message>
+  <Message>
+    <ID>100112</ID>
+    <Description>Your user role does not include the publish hosted features privilege</Description>
+  </Message>
+  <Message>
+    <ID>100113</ID>
+    <Description>None of the stops were assigned to any routes. Check the Status and Violated Constraints fields in the output unassigned stops layer for more information.</Description>
+  </Message>
+  <Message>
+    <ID>100114</ID>
+    <Description>The time spent at each stop, %s  minutes, must be less than the total route time per vehicle, %s  minutes.</Description>
+  </Message>
+  <Message>
+    <ID>100115</ID>
+    <Description>Some stops were not assigned to any routes. Check the Violated Constraints field in the output unassigned stops layer for more information.</Description>
+  </Message>
+  <Message>
+    <ID>100116</ID>
+    <Description>Only %s  out of %s  routes are needed to reach all stops. If you want to use more routes, run Plan Routes again but reduce the limits on the maximum number of stops or the total route time per vehicle.</Description>
+  </Message>
+  <Message>
+    <ID>100117</ID>
+    <Description>Driving a truck is currently not supported outside of North America and Central America.</Description>
+  </Message>
+  <Message>
+    <ID>100118</ID>
+    <Description>Your user role does not include the create, update and delete content privilege.</Description>
+  </Message>
+  <Message>
+    <ID>100119</ID>
+    <Description>The geometry type of WithinLayer input must be polygons</Description>
+  </Message>
+  <Message>
+    <ID>100120</ID>
+    <Description>The features in the layer are beyond max request size limit and cannot be enriched</Description>
+  </Message>
+  <Message>
+    <ID>100121</ID>
+    <Description>CreateViewshed Failed</Description>
+  </Message>
+  <Message>
+    <ID>100122</ID>
+    <Description>TraceDownstream Failed</Description>
+  </Message>
+  <Message>
+    <ID>100123</ID>
+    <Description>CreateWatersheds Failed</Description>
+  </Message>
+  <Message>
+    <ID>100124</ID>
+    <Description>The geometry type of Input Layer must be point for buffer type %s </Description>
+  </Message>
+  <Message>
+    <ID>100125</ID>
+    <Description>The groupby field %s  must be integers, text or date.</Description>
+  </Message>
+  <Message>
+    <ID>100126</ID>
+    <Description>The features in the input layer are beyond max request size and hence simplified</Description>
+  </Message>
+  <Message>
+    <ID>100127</ID>
+    <Description>All input points fall outside of the data coverage area</Description>
+  </Message>
+  <Message>
+    <ID>100128</ID>
+    <Description>The point field provided must be string or integer</Description>
+  </Message>
+  <Message>
+    <ID>100129</ID>
+    <Description>The point falls outside the catchment extent</Description>
+  </Message>
+  <Message>
+    <ID>100130</ID>
+    <Description>The point falls outside the processing unit extent</Description>
+  </Message>
+  <Message>
+    <ID>100131</ID>
+    <Description>The maximum viewing distance parameter cannot be more than %s %s </Description>
+  </Message>
+  <Message>
+    <ID>100132</ID>
+    <Description>The DEM source data is not available in the input points area.</Description>
+  </Message>
+  <Message>
+    <ID>100133</ID>
+    <Description>The input DEM resolution is not supported at the specified maximum distance value. Specify a smaller maximum distance value.</Description>
+  </Message>
+  <Message>
+    <ID>100136</ID>
+    <Description>The geometry type for Extent Layer must be polygon.</Description>
+  </Message>
+  <Message>
+    <ID>100137</ID>
+    <Description>A value for the  %s  is required.</Description>
+  </Message>
+  <Message>
+    <ID>100138</ID>
+    <Description>Some origins were not connected to their paired destinations. Check the Status field in output unassigned origins and unassigned destinations layers for more information.</Description>
+  </Message>
+  <Message>
+    <ID>100139</ID>
+    <Description>None of the origins could be connected to destinations.</Description>
+  </Message>
+  <Message>
+    <ID>100140</ID>
+    <Description>The features in the Extent Layer are beyond max request size and hence simplified.</Description>
+  </Message>
+  <Message>
+    <ID>100141</ID>
+    <Description>The features in the Extent Layer are beyond max request size limit and cannot be extracted.</Description>
+  </Message>
+  <Message>
+    <ID>100142</ID>
+    <Description>The extent of the input point features exceeds the allowed maximum extent.</Description>
+  </Message>
+  <Message>
+    <ID>100143</ID>
+    <Description>Your user role doesn't include the elevation analysis privilege.</Description>
+  </Message>
+  <Message>
+    <ID>100144</ID>
+    <Description>The %s  utility is not registered for the portal.</Description>
+  </Message>
+  <Message>
+    <ID>100145</ID>
+    <Description>The following travel mode is invalid: %s .</Description>
+  </Message>
+  <Message>
+    <ID>100146</ID>
+    <Description>The chosen break units, %s , and travel mode, %s , are incompatible. They are not mutually time or distance values.</Description>
+  </Message>
+  <Message>
+    <ID>100147</ID>
+    <Description>The travel mode does not specify a time-based impedance attribute.</Description>
+  </Message>
+  <Message>
+    <ID>100148</ID>
+    <Description>You do not have permissions to access the utility %s </Description>
+  </Message>
+  <Message>
+    <ID>100149</ID>
+    <Description>Unable to access registered url for utility %s : %s </Description>
+  </Message>
+  <Message>
+    <ID>100150</ID>
+    <Description>Choose Best Facilities failed.</Description>
+  </Message>
+  <Message>
+    <ID>100151</ID>
+    <Description>The chosen travel range units, %s , and travel mode, %s , are incompatible. They are not mutually time or distance values.</Description>
+  </Message>
+  <Message>
+    <ID>100152</ID>
+    <Description>The combined count of features in %s  and %s  cannot be greater than %s .</Description>
+  </Message>
+  <Message>
+    <ID>100153</ID>
+    <Description>The value for the %s  parameter must be greater than zero.</Description>
+  </Message>
+  <Message>
+    <ID>100154</ID>
+    <Description>Either specify a value for %s  or %s  parameter.</Description>
+  </Message>
+  <Message>
+    <ID>100155</ID>
+    <Description>The candidate facilities layer, %s , should not be specified for Allocate goal.</Description>
+  </Message>
+  <Message>
+    <ID>100156</ID>
+    <Description>The percentage of demand to cover must be greater than zero and less than or equal to one hundred.</Description>
+  </Message>
+  <Message>
+    <ID>100157</ID>
+    <Description>The number of candidates to choose cannot be less than the number of features in the required facilities layer.</Description>
+  </Message>
+  <Message>
+    <ID>100158</ID>
+    <Description>The number of candidates to choose cannot be greater than %s .</Description>
+  </Message>
+  <Message>
+    <ID>100159</ID>
+    <Description>%s .</Description>
+  </Message>
+  <Message>
+    <ID>100160</ID>
+    <Description>Some of the features have invalid geometry and have been removed from the result</Description>
+  </Message>
+  <Message>
+    <ID>100161</ID>
+    <Description>Batch Geocode failed.</Description>
+  </Message>
+  <Message>
+    <ID>100162</ID>
+    <Description>Analyze Geocode Input failed.</Description>
+  </Message>
+  <Message>
+    <ID>100163</ID>
+    <Description>Your text qualifier is invalid.</Description>
+  </Message>
+  <Message>
+    <ID>100164</ID>
+    <Description>You must enter either inputTable, inputFileItem or columnNames. All three cannot be empty.</Description>
+  </Message>
+  <Message>
+    <ID>100165</ID>
+    <Description>If your header row does not exist, you must enter columnNames.</Description>
+  </Message>
+  <Message>
+    <ID>100166</ID>
+    <Description>If your fileType is table, then you must enter an inputTable.</Description>
+  </Message>
+  <Message>
+    <ID>100167</ID>
+    <Description>CSV Collection is not a supported input type. Please input a CSV or Microsoft Excel spreadsheet.</Description>
+  </Message>
+  <Message>
+    <ID>100168</ID>
+    <Description>Your filename or extension is too long.</Description>
+  </Message>
+  <Message>
+    <ID>100169</ID>
+    <Description>Your zip file cannot be opened.</Description>
+  </Message>
+  <Message>
+    <ID>100170</ID>
+    <Description>There is no file of the specified format in your zip file.</Description>
+  </Message>
+  <Message>
+    <ID>100171</ID>
+    <Description>Invalid geocodeServiceURL.</Description>
+  </Message>
+  <Message>
+    <ID>100172</ID>
+    <Description>The Geoprocessing service and Geocoding service must have the same level of security on the same federated server.</Description>
+  </Message>
+  <Message>
+    <ID>100173</ID>
+    <Description>The user does not have geocoding privileges.</Description>
+  </Message>
+  <Message>
+    <ID>100174</ID>
+    <Description>The geocoding service must be on a federated server.</Description>
+  </Message>
+  <Message>
+    <ID>100175</ID>
+    <Description>Invalid token.</Description>
+  </Message>
+  <Message>
+    <ID>100176</ID>
+    <Description>Your file has a corrupt or empty header.</Description>
+  </Message>
+  <Message>
+    <ID>100177</ID>
+    <Description>Your Excel file is corrupted and cannot be opened.</Description>
+  </Message>
+  <Message>
+    <ID>100178</ID>
+    <Description>Your file's first row is empty. Please edit your file and resubmit.</Description>
+  </Message>
+  <Message>
+    <ID>100179</ID>
+    <Description>You must define column widths if your file is fixed width.</Description>
+  </Message>
+  <Message>
+    <ID>100180</ID>
+    <Description>Your column widths must be integers separated by commas like so: 5,7,13.</Description>
+  </Message>
+  <Message>
+    <ID>100181</ID>
+    <Description>The file's header row could not be parsed.</Description>
+  </Message>
+  <Message>
+    <ID>100182</ID>
+    <Description>%s  could map to 2 possible alias fields {field_one} and {field_two}.</Description>
+  </Message>
+  <Message>
+    <ID>100183</ID>
+    <Description>Field mapping entered in an incorrect format.</Description>
+  </Message>
+  <Message>
+    <ID>100184</ID>
+    <Description>Incorrect outputFields. Enter outputFields like so: x,y,score,match_addr.</Description>
+  </Message>
+  <Message>
+    <ID>100185</ID>
+    <Description>chars_per_row must be an integer.</Description>
+  </Message>
+  <Message>
+    <ID>100186</ID>
+    <Description>Incorrect widths_of_cols. Enter widths_of_cols like so: 10,15,6.</Description>
+  </Message>
+  <Message>
+    <ID>100187</ID>
+    <Description>Your outputName must be blank to get out a Feature Collection.</Description>
+  </Message>
+  <Message>
+    <ID>100188</ID>
+    <Description>Your outputName cannot be empty.</Description>
+  </Message>
+  <Message>
+    <ID>100189</ID>
+    <Description>Incorrect geocodeServiceURL, verify that the geocoding service is online and has a valid geocodeAddresses REST endpoint.</Description>
+  </Message>
+  <Message>
+    <ID>100190</ID>
+    <Description>There were more lines read than there are lines. Check your header_rows_to_skip parameter.</Description>
+  </Message>
+  <Message>
+    <ID>100191</ID>
+    <Description>Unable to write header: check to see if your headerRowsToSkip is incorrect or if the geocoding service is down.</Description>
+  </Message>
+  <Message>
+    <ID>100192</ID>
+    <Description>If your header row exists, you must provide the headerRowsToSkip.</Description>
+  </Message>
+  <Message>
+    <ID>100193</ID>
+    <Description>Your headerRowsToSkip must be a positive number less than the number of rows in the inputTable or inputFileItem.</Description>
+  </Message>
+  <Message>
+    <ID>100194</ID>
+    <Description>Results file is being edited by another program.</Description>
+  </Message>
+  <Message>
+    <ID>100195</ID>
+    <Description>File entered was empty, returning an empty file.</Description>
+  </Message>
+  <Message>
+    <ID>100196</ID>
+    <Description>Field mapping must be a list of lists.</Description>
+  </Message>
+  <Message>
+    <ID>100197</ID>
+    <Description>Your geocodingServiceURL may be incorrect, it does not have a maxBatchSize on the info page.</Description>
+  </Message>
+  <Message>
+    <ID>100198</ID>
+    <Description>Edit your field mapping and resubmit, none of your fields are mapped to valid locator fields.</Description>
+  </Message>
+  <Message>
+    <ID>100199</ID>
+    <Description>Edit your field mapping and resubmit, your mapping includes a locator field that is not supported.</Description>
+  </Message>
+  <Message>
+    <ID>100200</ID>
+    <Description>%s .</Description>
+  </Message>
+  <Message>
+    <ID>100201</ID>
+    <Description>%s  not present in your input file: {supported_fields}.</Description>
+  </Message>
+  <Message>
+    <ID>100202</ID>
+    <Description>Could not make a REST request from the server machine verify that the server machine can connect to the internet.</Description>
+  </Message>
+  <Message>
+    <ID>100203</ID>
+    <Description>The geocodeServiceURL entered should be https instead of http.</Description>
+  </Message>
+  <Message>
+    <ID>100204</ID>
+    <Description>The inputTable has over 100,000 records and is not supported.</Description>
+  </Message>
+  <Message>
+    <ID>100205</ID>
+    <Description>Your column delimiter is invalid.</Description>
+  </Message>
+  <Message>
+    <ID>100206</ID>
+    <Description>%s </Description>
+  </Message>
+  <Message>
+    <ID>100207</ID>
+    <Description>%s </Description>
+  </Message>
+  <Message>
+    <ID>100208</ID>
+    <Description>Your header row is not the same length as the number of lists in your field mapping.</Description>
+  </Message>
+  <Message>
+    <ID>100209</ID>
+    <Description>Your headerRowsToSkip must be a positive number less than the number of rows in the inputTable or inputFileItem.</Description>
+  </Message>
+  <Message>
+    <ID>100210</ID>
+    <Description>Your input file has too many rows. xls only supports up to 65536 rows. Please submit a different outputType.</Description>
+  </Message>
+</Messages>

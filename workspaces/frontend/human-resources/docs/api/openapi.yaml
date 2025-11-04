@@ -1,0 +1,219 @@
+openapi: 3.0.3
+info:
+  title: Human Resources API
+  description: Employee management and HR operations APIs
+  version: 1.0.0
+  contact:
+    name: TerraFusion Government OS API Support
+    email: human-resources-api@terrafusion.gov
+    url: https://docs.terrafusion.gov/frontend/human-resources
+  license:
+    name: Government Use License
+    url: https://terrafusion.gov/licenses/government-api
+  termsOfService: https://terrafusion.gov/terms/api-usage
+servers:
+- url: https://api.terrafusion.gov/api/v1/hr
+  description: Production TerraFusion Government API
+- url: https://staging-api.terrafusion.gov/api/v1/hr
+  description: Staging Environment
+- url: https://dev-api.terrafusion.gov/api/v1/hr
+  description: Development Environment
+paths:
+  /employees:
+    get:
+      tags:
+      - human-resources
+      summary: Employee directory (authorized)
+      description: Employee directory (authorized) - Employee management and HR operations
+        APIs
+      operationId: get__employees
+      security:
+      - OAuth2:
+        - human-resources:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /payroll:
+    get:
+      tags:
+      - human-resources
+      summary: Payroll information
+      description: Payroll information - Employee management and HR operations APIs
+      operationId: get__payroll
+      security:
+      - OAuth2:
+        - human-resources:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /benefits:
+    get:
+      tags:
+      - human-resources
+      summary: Employee benefits
+      description: Employee benefits - Employee management and HR operations APIs
+      operationId: get__benefits
+      security:
+      - OAuth2:
+        - human-resources:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /performance:
+    post:
+      tags:
+      - human-resources
+      summary: Performance evaluations
+      description: Performance evaluations - Employee management and HR operations
+        APIs
+      operationId: post__performance
+      security:
+      - OAuth2:
+        - human-resources:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: object
+    HealthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - healthy
+          - degraded
+          - unhealthy
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        dependencies:
+          type: object
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
+          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          scopes:
+            human-resources:read: Read access to human-resources resources
+            human-resources:write: Write access to human-resources resources
+            human-resources:admin: Administrative access to human-resources
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+security:
+- OAuth2:
+  - human-resources:read
+- ApiKey: []
+tags:
+- name: human-resources
+  description: Human Resources operations
+  externalDocs:
+    description: Find out more about human-resources
+    url: https://docs.terrafusion.gov/frontend/human-resources

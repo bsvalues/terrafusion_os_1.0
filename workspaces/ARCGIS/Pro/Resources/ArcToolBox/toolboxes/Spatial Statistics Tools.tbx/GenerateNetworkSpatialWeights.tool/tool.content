@@ -1,0 +1,288 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\GenerateNetworkSpatialWeights",
+    "displayname": "$rc:title",
+    "helpcontent": "9060004",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "Input_Feature_Class": {
+            "displayname": "$rc:input_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:input_feature_class.descr"
+        },
+        "Unique_ID_Field": {
+            "displayname": "$rc:unique_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long"
+                ]
+            },
+            "depends": [
+                "Input_Feature_Class"
+            ],
+            "description": "$rc:unique_id_field.descr"
+        },
+        "Output_Spatial_Weights_Matrix_File": {
+            "direction": "out",
+            "displayname": "$rc:output_spatial_weights_matrix_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "swm"
+                ]
+            },
+            "description": "$rc:output_spatial_weights_matrix_file.descr"
+        },
+        "Input_Network": {
+            "displayname": "$rc:input_network.title",
+            "datatype": {
+                "type": "GPNetworkDatasetLayer"
+            },
+            "description": "$rc:input_network.descr"
+        },
+        "Impedance_Attribute": {
+            "displayname": "$rc:impedance_attribute.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:impedance_attribute.descr"
+        },
+        "Impedance_Cutoff": {
+            "type": "optional",
+            "displayname": "$rc:impedance_cutoff.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:impedance_cutoff.descr"
+        },
+        "Maximum_Number_of_Neighbors": {
+            "type": "optional",
+            "displayname": "$rc:maximum_number_of_neighbors.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:maximum_number_of_neighbors.descr"
+        },
+        "Barriers": {
+            "type": "optional",
+            "displayname": "$rc:barriers.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:barriers.descr"
+        },
+        "U-turn_Policy": {
+            "type": "optional",
+            "displayname": "$rc:u-turn_policy.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ALLOW_UTURNS",
+                        "code": "$rc:u-turn_policy.domain.ALLOW_UTURNS"
+                    },
+                    {
+                        "value": "NO_UTURNS",
+                        "code": "$rc:u-turn_policy.domain.NO_UTURNS"
+                    },
+                    {
+                        "value": "ALLOW_DEAD_ENDS_ONLY",
+                        "code": "$rc:u-turn_policy.domain.ALLOW_DEAD_ENDS_ONLY"
+                    },
+                    {
+                        "value": "ALLOW_DEAD_ENDS_AND_INTERSECTIONS_ONLY",
+                        "code": "$rc:u-turn_policy.domain.ALLOW_DEAD_ENDS_AND_INTERSECTIONS_ONLY"
+                    }
+                ]
+            },
+            "value": "ALLOW_UTURNS",
+            "description": "$rc:u-turn_policy.descr"
+        },
+        "Restrictions": {
+            "type": "optional",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:restrictions.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:restrictions.descr"
+        },
+        "Use_Hierarchy_in_Analysis": {
+            "type": "optional",
+            "displayname": "$rc:use_hierarchy_in_analysis.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "USE_HIERARCHY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_HIERARCHY"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:use_hierarchy_in_analysis.descr"
+        },
+        "Search_Tolerance": {
+            "type": "optional",
+            "displayname": "$rc:search_tolerance.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPUnitDomain",
+                "items": [
+                    "Feet",
+                    "Meters",
+                    "Kilometers",
+                    "Miles",
+                    "FeetInt",
+                    "MilesInt"
+                ]
+            },
+            "value": "5000 Meters",
+            "description": "$rc:search_tolerance.descr"
+        },
+        "Conceptualization_of_Spatial_Relationships": {
+            "type": "optional",
+            "displayname": "$rc:conceptualization_of_spatial_relationships.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "INVERSE",
+                        "code": "$rc:conceptualization_of_spatial_relationships.domain.INVERSE"
+                    },
+                    {
+                        "value": "FIXED",
+                        "code": "$rc:conceptualization_of_spatial_relationships.domain.FIXED"
+                    }
+                ]
+            },
+            "value": "INVERSE",
+            "description": "$rc:conceptualization_of_spatial_relationships.descr"
+        },
+        "Exponent": {
+            "type": "optional",
+            "displayname": "$rc:exponent.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "1",
+            "description": "$rc:exponent.descr"
+        },
+        "Row_Standardization": {
+            "type": "optional",
+            "displayname": "$rc:row_standardization.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ROW_STANDARDIZATION"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_STANDARDIZATION"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:row_standardization.descr"
+        },
+        "Travel_Mode": {
+            "type": "optional",
+            "displayname": "$rc:travel_mode.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:travel_mode.descr"
+        },
+        "Time_of_Day": {
+            "type": "optional",
+            "displayname": "$rc:time_of_day.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:time_of_day.descr"
+        }
+    },
+    "environments": [
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

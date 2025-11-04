@@ -1,0 +1,151 @@
+{
+    "type": "FunctionTool",
+    "guid": "{0A4A9218-07A4-497A-8506-CED528063FB9}/AppendEvents",
+    "displayname": "$rc:title",
+    "helpcontent": "23000015",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "78"
+    ],
+    "params": {
+        "in_dataset": {
+            "displayname": "$rc:in_dataset.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_dataset.descr"
+        },
+        "in_target_event": {
+            "displayname": "$rc:in_target_event.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_target_event.descr"
+        },
+        "field_mapping": {
+            "displayname": "$rc:field_mapping.title",
+            "datatype": {
+                "type": "GPFieldMapping"
+            },
+            "depends": [
+                "in_dataset"
+            ],
+            "description": "$rc:field_mapping.descr"
+        },
+        "load_type": {
+            "type": "optional",
+            "displayname": "$rc:load_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ADD",
+                        "code": "$rc:load_type.domain.ADD"
+                    },
+                    {
+                        "value": "RETIRE_OVERLAPS",
+                        "code": "$rc:load_type.domain.RETIRE_OVERLAPS"
+                    },
+                    {
+                        "value": "RETIRE_BY_EVENT_ID",
+                        "code": "$rc:load_type.domain.RETIRE_BY_EVENT_ID"
+                    },
+                    {
+                        "value": "REPLACE_BY_EVENT_ID",
+                        "code": "$rc:load_type.domain.REPLACE_BY_EVENT_ID"
+                    }
+                ]
+            },
+            "depends": [
+                "in_target_event"
+            ],
+            "value": "ADD",
+            "description": "$rc:load_type.descr"
+        },
+        "generate_event_ids": {
+            "type": "optional",
+            "displayname": "$rc:generate_event_ids.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "GENERATE_EVENT_IDS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_GENERATE_EVENT_IDS"
+                    }
+                ]
+            },
+            "depends": [
+                "in_target_event"
+            ],
+            "value": "false",
+            "description": "$rc:generate_event_ids.descr"
+        },
+        "generate_shapes": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:generate_shapes.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "GENERATE_SHAPES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_SHAPES"
+                    }
+                ]
+            },
+            "depends": [
+                "in_dataset"
+            ],
+            "value": "true",
+            "description": "$rc:generate_shapes.descr"
+        },
+        "out_target_event": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_target_event.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            }
+        },
+        "out_details_file": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_details_file.title",
+            "datatype": {
+                "type": "DETextFile"
+            }
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

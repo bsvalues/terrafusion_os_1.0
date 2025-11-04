@@ -1,0 +1,898 @@
+{% extends "base.html" %}
+
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block title %}AI Performance Monitoring{% endblock %}
+{% block page_title %}AI Performance Monitoring{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- AI Performance Overview -->
+    <div class="col-md-12 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-robot"></i> AI Performance Overview</h5>
+                <div class="text-muted" id="last-updated">Last updated: Just now</div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <div class="metric-card p-3 border">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="metric-icon">
+                                    <i class="bi bi-arrow-repeat fs-3 text-primary"></i>
+                                </div>
+                                <div class="text-end">
+                                    <div class="metric-value text-primary" id="total-requests">0</div>
+                                    <div class="metric-label">Total Requests</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="metric-card p-3 border">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="metric-icon">
+                                    <i class="bi bi-stars fs-3 text-warning"></i>
+                                </div>
+                                <div class="text-end">
+                                    <div class="metric-value text-warning" id="avg-rating">0.0</div>
+                                    <div class="metric-label">Average Rating</div>
+                                </div>
+                            </div>
+                            <div class="progress mt-2" style="height: 5px;">
+                                <div class="progress-bar bg-warning" id="rating-progress" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="metric-card p-3 border">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="metric-icon">
+                                    <i class="bi bi-stopwatch fs-3 text-info"></i>
+                                </div>
+                                <div class="text-end">
+                                    <div class="metric-value text-info" id="avg-response-time">0 ms</div>
+                                    <div class="metric-label">Avg. Response Time</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="metric-card p-3 border">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="metric-icon">
+                                    <i class="bi bi-exclamation-triangle fs-3 text-danger"></i>
+                                </div>
+                                <div class="text-end">
+                                    <div class="metric-value text-danger" id="error-rate">0%</div>
+                                    <div class="metric-label">Error Rate</div>
+                                </div>
+                            </div>
+                            <div class="progress mt-2" style="height: 5px;">
+                                <div class="progress-bar bg-danger" id="error-progress" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Agent Performance Comparison -->
+    <div class="col-md-8 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Agent Performance Comparison</h5>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary active" data-metric="requests">Requests</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-metric="ratings">Ratings</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-metric="response_time">Response Time</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-metric="errors">Errors</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="agent-comparison-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Token Usage -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Token Usage Distribution</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="token-usage-chart"></canvas>
+                </div>
+                <div class="text-center mt-3">
+                    <h5 id="total-tokens">0</h5>
+                    <p class="text-muted mb-0">Total Tokens Used</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Daily Metrics Trend -->
+    <div class="col-md-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-graph-up"></i> Daily Metrics Trend</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="daily-trend-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Agent Performance Details -->
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-table"></i> Agent Performance Details</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Agent Type</th>
+                                <th>Active Prompt Version</th>
+                                <th>Requests</th>
+                                <th>Rating</th>
+                                <th>Response Time</th>
+                                <th>Token Usage</th>
+                                <th>Error Rate</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="agent-table-body">
+                            <tr>
+                                <td colspan="8" class="text-center py-4">Loading agent data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Agent Detail Modal -->
+<div class="modal fade" id="agentDetailModal" tabindex="-1" aria-labelledby="agentDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="agentDetailModalLabel">Agent Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <h6>Agent Type</h6>
+                            <p id="agent-type" class="mb-0">-</p>
+                        </div>
+                        <div class="mb-3">
+                            <h6>Active Prompt Version</h6>
+                            <p id="agent-prompt-version" class="mb-0">-</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <h6>Total Requests</h6>
+                            <p id="agent-requests" class="mb-0">-</p>
+                        </div>
+                        <div class="mb-3">
+                            <h6>Total Tokens</h6>
+                            <p id="agent-tokens" class="mb-0">-</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <h6>Performance Metrics</h6>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 text-center">
+                                <div class="mb-3">
+                                    <h1 id="agent-rating" class="display-4 mb-0">0.0</h1>
+                                    <p class="text-muted">Average Rating</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="mb-3">
+                                    <h1 id="agent-response-time" class="display-4 mb-0">0</h1>
+                                    <p class="text-muted">Response Time (ms)</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="mb-3">
+                                    <h1 id="agent-error-rate" class="display-4 mb-0">0%</h1>
+                                    <p class="text-muted">Error Rate</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h6>Daily Performance Trend</h6>
+                <div class="chart-container">
+                    <canvas id="agent-trend-chart"></canvas>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="view-feedback-btn">View Feedback</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let agentComparisonChart;
+        let tokenUsageChart;
+        let dailyTrendChart;
+        let agentTrendChart;
+        let currentMetric = 'requests';
+        let agentDetailModal;
+        let currentAgentType = null;
+        let agentData = {};
+        
+        // Initialize charts
+        function initCharts() {
+            // Agent Comparison Chart
+            const comparisonCtx = document.getElementById('agent-comparison-chart').getContext('2d');
+            agentComparisonChart = new Chart(comparisonCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Requests',
+                        data: [],
+                        backgroundColor: 'rgba(13, 110, 253, 0.8)',
+                        borderColor: 'rgba(13, 110, 253, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Requests'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Token Usage Chart
+            const tokenCtx = document.getElementById('token-usage-chart').getContext('2d');
+            tokenUsageChart = new Chart(tokenCtx, {
+                type: 'pie',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: [
+                            'rgba(13, 110, 253, 0.8)',
+                            'rgba(255, 193, 7, 0.8)',
+                            'rgba(25, 135, 84, 0.8)',
+                            'rgba(220, 53, 69, 0.8)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        }
+                    }
+                }
+            });
+            
+            // Daily Trend Chart
+            const trendCtx = document.getElementById('daily-trend-chart').getContext('2d');
+            dailyTrendChart = new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Requests',
+                            data: [],
+                            borderColor: 'rgba(13, 110, 253, 1)',
+                            backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                            yAxisID: 'y',
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'Average Rating',
+                            data: [],
+                            borderColor: 'rgba(255, 193, 7, 1)',
+                            backgroundColor: 'transparent',
+                            yAxisID: 'y1',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Number of Requests'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            min: 0,
+                            max: 5,
+                            title: {
+                                display: true,
+                                text: 'Average Rating'
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Initialize modal and chart
+            agentDetailModal = new bootstrap.Modal(document.getElementById('agentDetailModal'));
+            
+            // Agent Trend Chart (in modal)
+            const agentTrendCtx = document.getElementById('agent-trend-chart').getContext('2d');
+            agentTrendChart = new Chart(agentTrendCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Requests',
+                            data: [],
+                            borderColor: 'rgba(13, 110, 253, 1)',
+                            backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'Rating',
+                            data: [],
+                            borderColor: 'rgba(255, 193, 7, 1)',
+                            backgroundColor: 'transparent',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Error Rate',
+                            data: [],
+                            borderColor: 'rgba(220, 53, 69, 1)',
+                            backgroundColor: 'transparent',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Fetch AI metrics data
+        function fetchAIMetrics() {
+            fetch('/api/metrics/ai-agent/summary')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        updateAIOverview(data.summary);
+                        updateAgentTable(data.summary);
+                        updateCharts(data.summary);
+                        
+                        // Save data for later use
+                        data.summary.forEach(agent => {
+                            agentData[agent.agent_type] = agent;
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching AI metrics:', error);
+                });
+            
+            // Fetch daily trend data
+            fetch('/api/metrics/ai-agent/daily-trend')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        updateDailyTrend(data.trend);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching daily trend data:', error);
+                });
+            
+            // Update last updated time
+            document.getElementById('last-updated').textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+        }
+        
+        // Update AI overview metrics
+        function updateAIOverview(data) {
+            // Calculate overall metrics from agent data
+            let totalRequests = 0;
+            let totalErrors = 0;
+            let totalTokens = 0;
+            let weightedRatingSum = 0;
+            let weightedResponseTimeSum = 0;
+            
+            data.forEach(agent => {
+                totalRequests += agent.total_requests;
+                totalErrors += agent.total_errors;
+                totalTokens += agent.total_tokens;
+                weightedRatingSum += agent.avg_rating * agent.total_requests;
+                weightedResponseTimeSum += agent.avg_response_time * agent.total_requests;
+            });
+            
+            // Calculate averages
+            const avgRating = totalRequests > 0 ? (weightedRatingSum / totalRequests).toFixed(1) : 0;
+            const avgResponseTime = totalRequests > 0 ? (weightedResponseTimeSum / totalRequests).toFixed(0) : 0;
+            const errorRate = totalRequests > 0 ? ((totalErrors / totalRequests) * 100).toFixed(1) : 0;
+            
+            // Update UI
+            document.getElementById('total-requests').textContent = totalRequests.toLocaleString();
+            document.getElementById('avg-rating').textContent = avgRating;
+            document.getElementById('avg-response-time').textContent = `${avgResponseTime} ms`;
+            document.getElementById('error-rate').textContent = `${errorRate}%`;
+            document.getElementById('total-tokens').textContent = totalTokens.toLocaleString();
+            
+            // Update progress bars
+            document.getElementById('rating-progress').style.width = `${(avgRating / 5) * 100}%`;
+            document.getElementById('error-progress').style.width = `${errorRate}%`;
+        }
+        
+        // Update agent table
+        function updateAgentTable(data) {
+            const tableBody = document.getElementById('agent-table-body');
+            
+            if (data && data.length > 0) {
+                let html = '';
+                
+                data.forEach(agent => {
+                    const errorRate = agent.total_requests > 0 ? ((agent.total_errors / agent.total_requests) * 100).toFixed(1) : 0;
+                    
+                    // Color coding for rating
+                    let ratingClass = 'text-muted';
+                    if (agent.avg_rating >= 4.5) ratingClass = 'text-success';
+                    else if (agent.avg_rating >= 3.5) ratingClass = 'text-primary';
+                    else if (agent.avg_rating >= 2.5) ratingClass = 'text-warning';
+                    else if (agent.avg_rating > 0) ratingClass = 'text-danger';
+                    
+                    html += `
+                        <tr>
+                            <td>${agent.agent_type}</td>
+                            <td>${agent.active_prompt_version || 'N/A'}</td>
+                            <td>${agent.total_requests.toLocaleString()}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="${ratingClass} me-2 fw-bold">${agent.avg_rating.toFixed(1)}</span>
+                                    <div class="stars">
+                                        ${generateStarRating(agent.avg_rating)}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>${agent.avg_response_time.toFixed(0)} ms</td>
+                            <td>${agent.total_tokens.toLocaleString()}</td>
+                            <td>${errorRate}%</td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-outline-primary view-agent-btn" data-agent="${agent.agent_type}">
+                                    <i class="bi bi-eye"></i> Details
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                tableBody.innerHTML = html;
+                
+                // Add event listeners to view buttons
+                document.querySelectorAll('.view-agent-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const agentType = this.getAttribute('data-agent');
+                        viewAgentDetails(agentType);
+                    });
+                });
+            } else {
+                // Demo data if no real data is available
+                const demoAgents = [
+                    {
+                        agent_type: 'summarizer', 
+                        active_prompt_version: 'v2.1',
+                        total_requests: 248,
+                        avg_rating: 4.7,
+                        avg_response_time: 523,
+                        total_tokens: 56328,
+                        error_rate: 0.4
+                    },
+                    {
+                        agent_type: 'market_analyzer', 
+                        active_prompt_version: 'v1.3',
+                        total_requests: 186,
+                        avg_rating: 4.2,
+                        avg_response_time: 875,
+                        total_tokens: 97124,
+                        error_rate: 1.1
+                    },
+                    {
+                        agent_type: 'recommender', 
+                        active_prompt_version: 'v1.0',
+                        total_requests: 93,
+                        avg_rating: 3.8,
+                        avg_response_time: 456,
+                        total_tokens: 37502,
+                        error_rate: 2.2
+                    },
+                    {
+                        agent_type: 'nl_search', 
+                        active_prompt_version: 'v2.0',
+                        total_requests: 312,
+                        avg_rating: 4.5,
+                        avg_response_time: 354,
+                        total_tokens: 42897,
+                        error_rate: 0.6
+                    }
+                ];
+                
+                let html = '';
+                demoAgents.forEach(agent => {
+                    // Color coding for rating
+                    let ratingClass = 'text-muted';
+                    if (agent.avg_rating >= 4.5) ratingClass = 'text-success';
+                    else if (agent.avg_rating >= 3.5) ratingClass = 'text-primary';
+                    else if (agent.avg_rating >= 2.5) ratingClass = 'text-warning';
+                    else if (agent.avg_rating > 0) ratingClass = 'text-danger';
+                    
+                    html += `
+                        <tr>
+                            <td>${agent.agent_type}</td>
+                            <td>${agent.active_prompt_version}</td>
+                            <td>${agent.total_requests.toLocaleString()}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="${ratingClass} me-2 fw-bold">${agent.avg_rating.toFixed(1)}</span>
+                                    <div class="stars">
+                                        ${generateStarRating(agent.avg_rating)}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>${agent.avg_response_time} ms</td>
+                            <td>${agent.total_tokens.toLocaleString()}</td>
+                            <td>${agent.error_rate}%</td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-outline-primary view-agent-btn" data-agent="${agent.agent_type}">
+                                    <i class="bi bi-eye"></i> Details
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    
+                    // Save demo data for later use
+                    agentData[agent.agent_type] = agent;
+                });
+                
+                tableBody.innerHTML = html;
+                
+                // Add event listeners to view buttons
+                document.querySelectorAll('.view-agent-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const agentType = this.getAttribute('data-agent');
+                        viewAgentDetails(agentType);
+                    });
+                });
+            }
+        }
+        
+        // Update charts based on agent data
+        function updateCharts(data) {
+            if (!data || data.length === 0) {
+                // Use demo data if no real data is available
+                data = [
+                    {
+                        agent_type: 'summarizer', 
+                        total_requests: 248,
+                        avg_rating: 4.7,
+                        avg_response_time: 523,
+                        total_tokens: 56328,
+                        total_errors: 1
+                    },
+                    {
+                        agent_type: 'market_analyzer', 
+                        total_requests: 186,
+                        avg_rating: 4.2,
+                        avg_response_time: 875,
+                        total_tokens: 97124,
+                        total_errors: 2
+                    },
+                    {
+                        agent_type: 'recommender', 
+                        total_requests: 93,
+                        avg_rating: 3.8,
+                        avg_response_time: 456,
+                        total_tokens: 37502,
+                        total_errors: 2
+                    },
+                    {
+                        agent_type: 'nl_search', 
+                        total_requests: 312,
+                        avg_rating: 4.5,
+                        avg_response_time: 354,
+                        total_tokens: 42897,
+                        total_errors: 2
+                    }
+                ];
+            }
+            
+            // Update agent comparison chart based on current metric
+            updateAgentComparisonChart(data, currentMetric);
+            
+            // Update token usage chart
+            if (tokenUsageChart) {
+                const labels = data.map(agent => agent.agent_type);
+                const tokens = data.map(agent => agent.total_tokens);
+                
+                tokenUsageChart.data.labels = labels;
+                tokenUsageChart.data.datasets[0].data = tokens;
+                tokenUsageChart.update();
+            }
+        }
+        
+        // Update agent comparison chart
+        function updateAgentComparisonChart(data, metric) {
+            if (!agentComparisonChart) return;
+            
+            const labels = data.map(agent => agent.agent_type);
+            let chartData = [];
+            let yAxisLabel = '';
+            
+            // Set data based on metric
+            switch (metric) {
+                case 'requests':
+                    chartData = data.map(agent => agent.total_requests);
+                    yAxisLabel = 'Number of Requests';
+                    agentComparisonChart.data.datasets[0].label = 'Requests';
+                    agentComparisonChart.data.datasets[0].backgroundColor = 'rgba(13, 110, 253, 0.8)';
+                    agentComparisonChart.data.datasets[0].borderColor = 'rgba(13, 110, 253, 1)';
+                    break;
+                case 'ratings':
+                    chartData = data.map(agent => agent.avg_rating);
+                    yAxisLabel = 'Average Rating (1-5)';
+                    agentComparisonChart.data.datasets[0].label = 'Rating';
+                    agentComparisonChart.data.datasets[0].backgroundColor = 'rgba(255, 193, 7, 0.8)';
+                    agentComparisonChart.data.datasets[0].borderColor = 'rgba(255, 193, 7, 1)';
+                    break;
+                case 'response_time':
+                    chartData = data.map(agent => agent.avg_response_time);
+                    yAxisLabel = 'Average Response Time (ms)';
+                    agentComparisonChart.data.datasets[0].label = 'Response Time';
+                    agentComparisonChart.data.datasets[0].backgroundColor = 'rgba(13, 202, 240, 0.8)';
+                    agentComparisonChart.data.datasets[0].borderColor = 'rgba(13, 202, 240, 1)';
+                    break;
+                case 'errors':
+                    chartData = data.map(agent => agent.total_requests > 0 ? (agent.total_errors / agent.total_requests) * 100 : 0);
+                    yAxisLabel = 'Error Rate (%)';
+                    agentComparisonChart.data.datasets[0].label = 'Error Rate';
+                    agentComparisonChart.data.datasets[0].backgroundColor = 'rgba(220, 53, 69, 0.8)';
+                    agentComparisonChart.data.datasets[0].borderColor = 'rgba(220, 53, 69, 1)';
+                    break;
+            }
+            
+            // Update chart data
+            agentComparisonChart.data.labels = labels;
+            agentComparisonChart.data.datasets[0].data = chartData;
+            
+            // Update axis label
+            agentComparisonChart.options.scales.x.title.text = yAxisLabel;
+            
+            agentComparisonChart.update();
+        }
+        
+        // Update daily trend chart
+        function updateDailyTrend(trendData) {
+            if (!dailyTrendChart) return;
+            
+            if (!trendData || trendData.length === 0) {
+                // Generate demo data
+                trendData = [];
+                const now = new Date();
+                
+                for (let i = 13; i >= 0; i--) {
+                    const date = new Date(now);
+                    date.setDate(now.getDate() - i);
+                    
+                    trendData.push({
+                        date: date.toISOString().split('T')[0],
+                        requests: Math.floor(Math.random() * 100) + 50,
+                        avg_rating: (Math.random() * 1.5) + 3.5,
+                        avg_response_time: Math.floor(Math.random() * 300) + 300
+                    });
+                }
+            }
+            
+            // Extract data for chart
+            const labels = trendData.map(day => day.date);
+            const requestData = trendData.map(day => day.requests);
+            const ratingData = trendData.map(day => day.avg_rating);
+            
+            // Update chart data
+            dailyTrendChart.data.labels = labels;
+            dailyTrendChart.data.datasets[0].data = requestData;
+            dailyTrendChart.data.datasets[1].data = ratingData;
+            dailyTrendChart.update();
+        }
+        
+        // View agent details
+        function viewAgentDetails(agentType) {
+            currentAgentType = agentType;
+            const agent = agentData[agentType];
+            
+            if (!agent) {
+                console.error(`No data found for agent: ${agentType}`);
+                return;
+            }
+            
+            // Update modal content
+            document.getElementById('agentDetailModalLabel').textContent = `Agent: ${agentType}`;
+            document.getElementById('agent-type').textContent = agentType;
+            document.getElementById('agent-prompt-version').textContent = agent.active_prompt_version || 'N/A';
+            document.getElementById('agent-requests').textContent = agent.total_requests.toLocaleString();
+            document.getElementById('agent-tokens').textContent = agent.total_tokens.toLocaleString();
+            document.getElementById('agent-rating').textContent = agent.avg_rating.toFixed(1);
+            document.getElementById('agent-response-time').textContent = agent.avg_response_time.toFixed(0);
+            
+            const errorRate = agent.total_requests > 0 ? ((agent.total_errors / agent.total_requests) * 100).toFixed(1) : 0;
+            document.getElementById('agent-error-rate').textContent = `${errorRate}%`;
+            
+            // Fetch and update agent trend chart
+            fetchAgentTrendData(agentType);
+            
+            // Show the modal
+            agentDetailModal.show();
+        }
+        
+        // Fetch agent trend data
+        function fetchAgentTrendData(agentType) {
+            // In a real implementation, this would fetch trend data for a specific agent
+            // For now, generate some demo data
+            const trendData = [];
+            const now = new Date();
+            
+            for (let i = 13; i >= 0; i--) {
+                const date = new Date(now);
+                date.setDate(now.getDate() - i);
+                
+                trendData.push({
+                    date: date.toISOString().split('T')[0],
+                    requests: Math.floor(Math.random() * 30) + 10,
+                    rating: (Math.random() * 1) + 4.0,
+                    error_rate: Math.random() * 2
+                });
+            }
+            
+            // Update chart
+            if (agentTrendChart) {
+                const labels = trendData.map(day => day.date);
+                const requestData = trendData.map(day => day.requests);
+                const ratingData = trendData.map(day => day.rating);
+                const errorData = trendData.map(day => day.error_rate);
+                
+                agentTrendChart.data.labels = labels;
+                agentTrendChart.data.datasets[0].data = requestData;
+                agentTrendChart.data.datasets[1].data = ratingData;
+                agentTrendChart.data.datasets[2].data = errorData;
+                agentTrendChart.update();
+            }
+        }
+        
+        // Generate star rating HTML
+        function generateStarRating(rating) {
+            const fullStars = Math.floor(rating);
+            const halfStar = rating % 1 >= 0.5;
+            const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+            
+            let html = '';
+            
+            // Full stars
+            for (let i = 0; i < fullStars; i++) {
+                html += '<i class="bi bi-star-fill text-warning"></i>';
+            }
+            
+            // Half star
+            if (halfStar) {
+                html += '<i class="bi bi-star-half text-warning"></i>';
+            }
+            
+            // Empty stars
+            for (let i = 0; i < emptyStars; i++) {
+                html += '<i class="bi bi-star text-muted"></i>';
+            }
+            
+            return html;
+        }
+        
+        // Event listeners for metric buttons
+        document.querySelectorAll('[data-metric]').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('[data-metric]').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                currentMetric = this.getAttribute('data-metric');
+                updateAgentComparisonChart(Object.values(agentData), currentMetric);
+            });
+        });
+        
+        // Event listener for view feedback button
+        document.getElementById('view-feedback-btn').addEventListener('click', function() {
+            if (currentAgentType) {
+                window.location.href = `/ai/feedback?agent=${currentAgentType}`;
+            }
+        });
+        
+        // Initialize charts and load data
+        initCharts();
+        fetchAIMetrics();
+        
+        // Auto-refresh every 60 seconds
+        setInterval(fetchAIMetrics, 60000);
+    });
+</script>
+{% endblock %}

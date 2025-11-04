@@ -1,0 +1,157 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\ConvertRasterToFeature",
+    "displayname": "$rc:title",
+    "helpcontent": "54070001",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "inputRaster": {
+            "displayname": "$rc:inputraster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "description": "$rc:inputraster.descr"
+        },
+        "field": {
+            "type": "optional",
+            "displayname": "$rc:field.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "Value",
+            "description": "$rc:field.descr"
+        },
+        "outputType": {
+            "type": "optional",
+            "displayname": "$rc:outputtype.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "POINT",
+                        "code": "$rc:outputtype.domain.POINT"
+                    },
+                    {
+                        "value": "LINE",
+                        "code": "$rc:outputtype.domain.LINE"
+                    },
+                    {
+                        "value": "POLYGON",
+                        "code": "$rc:outputtype.domain.POLYGON"
+                    }
+                ]
+            },
+            "value": "POINT",
+            "description": "$rc:outputtype.descr"
+        },
+        "simplifyLinesOrPolygons": {
+            "type": "optional",
+            "displayname": "$rc:simplifylinesorpolygons.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SIMPLIFY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_SIMPLIFY"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:simplifylinesorpolygons.descr"
+        },
+        "outputName": {
+            "displayname": "$rc:outputname.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:outputname.descr"
+        },
+        "outputFeatures": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:outputfeatures.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "createMultipartFeatures": {
+            "type": "optional",
+            "displayname": "$rc:createmultipartfeatures.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "MULTIPLE_OUTER_PART"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "SINGLE_OUTER_PART"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:createmultipartfeatures.descr"
+        },
+        "maxVerticesPerFeature": {
+            "type": "optional",
+            "displayname": "$rc:maxverticesperfeature.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:maxverticesperfeature.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "outputCoordinateSystem",
+        "snapRaster"
+    ]
+}

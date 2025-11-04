@@ -4,7 +4,7 @@ namespace TerraFusion.AI.Services
 {
     public class SecurityService : ISecurityService
     {
-        public Task<SecurityDataDto> GetSecurityDataAsync()
+        public System.Threading.Tasks.Task<SecurityDataDto> GetSecurityDataAsync()
         {
             var mockData = new SecurityDataDto
             {

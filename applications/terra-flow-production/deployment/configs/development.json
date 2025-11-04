@@ -1,0 +1,62 @@
+{
+  "name": "development",
+  "description": "Development environment configuration",
+  "application": {
+    "host": "0.0.0.0",
+    "port": 5000,
+    "workers": 1,
+    "debug": true,
+    "log_level": "DEBUG",
+    "secret_key": "${SESSION_SECRET}"
+  },
+  "database": {
+    "host": "localhost",
+    "port": 5432,
+    "user": "postgres",
+    "password": "${PGPASSWORD}",
+    "name": "geoassessment_dev",
+    "pool_size": 5,
+    "max_overflow": 10,
+    "ssl_mode": "prefer"
+  },
+  "services": {
+    "gis_service": {
+      "url": "http://localhost:5001",
+      "api_key": "${GIS_API_KEY}"
+    },
+    "storage": {
+      "type": "local",
+      "path": "./instance/uploads",
+      "max_size_mb": 100
+    },
+    "supabase": {
+      "enabled": true,
+      "url": "${SUPABASE_URL}",
+      "key": "${SUPABASE_KEY}",
+      "jwt_secret": "${SUPABASE_JWT}"
+    }
+  },
+  "features": {
+    "mobile_responsive": true,
+    "offline_mode": true,
+    "real_time_alerts": true,
+    "anomaly_detection": true,
+    "audit_logging": true,
+    "data_quality_checks": true
+  },
+  "security": {
+    "allowed_hosts": ["localhost", "127.0.0.1"],
+    "cors_origins": ["http://localhost:5000", "http://127.0.0.1:5000"],
+    "content_security_policy": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https://*.tile.openstreetmap.org;"
+  },
+  "caching": {
+    "enabled": true,
+    "type": "simple",
+    "timeout": 300
+  },
+  "monitoring": {
+    "enabled": true,
+    "log_dir": "./logs",
+    "error_reporting": true
+  }
+}

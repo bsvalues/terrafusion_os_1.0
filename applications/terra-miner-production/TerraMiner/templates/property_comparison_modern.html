@@ -1,0 +1,608 @@
+{% extends "new_unified_base.html" %}
+
+{% block title %}Property Comparison | TerraMiner{% endblock %}
+
+{% block head %}
+<!-- Cache busting meta tag -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
+<!-- noUiSlider CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@14.6.3/distribute/nouislider.min.css">
+
+<!-- noUiSlider JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/nouislider@14.6.3/distribute/nouislider.min.js"></script>
+{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+  .comparison-header {
+    background-color: #1e3958;
+    color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+  }
+  
+  .property-card {
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    overflow: hidden;
+    height: 100%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .property-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .property-image {
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  .property-card .card-body {
+    padding: 1.25rem;
+  }
+  
+  .property-card .card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  .property-card .price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e3958;
+    margin-bottom: 1rem;
+  }
+  
+  .property-features {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  
+  .feature-item {
+    text-align: center;
+  }
+  
+  .feature-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+  
+  .feature-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+  }
+  
+  .comparison-section {
+    margin-bottom: 2rem;
+  }
+  
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #1e3958;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e9ecef;
+  }
+  
+  .comparison-table {
+    width: 100%;
+  }
+  
+  .comparison-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    text-align: left;
+    padding: 0.75rem;
+  }
+  
+  .comparison-table td {
+    padding: 0.75rem;
+    border-top: 1px solid #e9ecef;
+  }
+  
+  .highlight {
+    background-color: rgba(30, 57, 88, 0.1);
+    font-weight: 600;
+  }
+  
+  .metric-slider {
+    margin: 2rem 0;
+    height: 8px;
+  }
+  
+  .noUi-connect {
+    background: #1e3958;
+  }
+  
+  .noUi-handle {
+    border: 1px solid #1e3958;
+    background: #fff;
+    border-radius: 50%;
+    width: 18px !important;
+    height: 18px !important;
+    top: -5px !important;
+    right: -9px !important;
+  }
+  
+  .noUi-handle:before,
+  .noUi-handle:after {
+    display: none;
+  }
+  
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+  }
+  
+  .value-indicator {
+    position: absolute;
+    top: -25px;
+    transform: translateX(-50%);
+    background: #1e3958;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+  
+  .value-indicator:after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #1e3958;
+  }
+  
+  .action-buttons {
+    margin-top: 2rem;
+    text-align: center;
+  }
+  
+  .action-button {
+    margin: 0 0.5rem;
+  }
+  
+  .feature-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    background-color: #e9ecef;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+  }
+  
+  .feature-badge.common {
+    background-color: #d1e7dd;
+    color: #0f5132;
+  }
+  
+  .feature-badge.unique {
+    background-color: #f8d7da;
+    color: #842029;
+  }
+  
+  .property-score {
+    text-align: center;
+    padding: 1rem;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    margin-top: 1rem;
+  }
+  
+  .score-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1e3958;
+  }
+  
+  .score-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+  }
+  
+  .recommendation {
+    background-color: #d1e7dd;
+    color: #0f5132;
+    text-align: center;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    font-weight: 600;
+  }
+  
+  @media (max-width: 767.98px) {
+    .property-card {
+      margin-bottom: 1.5rem;
+    }
+    
+    .comparison-table {
+      font-size: 0.875rem;
+    }
+    
+    .comparison-section {
+      overflow-x: auto;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Comparison Header -->
+  <div class="comparison-header">
+    <h1 class="mb-3">Property Comparison</h1>
+    <p class="mb-0">Compare properties side by side to make an informed decision.</p>
+  </div>
+  
+  <!-- Property Cards -->
+  <div class="row mb-4">
+    {% for property in selected_properties %}
+      <div class="col-md-6">
+        <div class="property-card card">
+          <img src="{{ property.image_url if property.image_url else 'https://via.placeholder.com/800x600?text=No+Image+Available' }}" class="property-image card-img-top" alt="{{ property.address }}">
+          <div class="card-body">
+            <h5 class="card-title">{{ property.address }}</h5>
+            <p class="card-text">{{ property.city }}, {{ property.state }}</p>
+            <div class="price">${{ property.price_value/100 if property.price_value else 0 | int }}</div>
+            <div class="property-features">
+              <div class="feature-item">
+                <div class="feature-value">{{ property.bedrooms if property.bedrooms else 'N/A' }}</div>
+                <div class="feature-label">Beds</div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-value">{{ property.bathrooms if property.bathrooms else 'N/A' }}</div>
+                <div class="feature-label">Baths</div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-value">{{ property.square_feet if property.square_feet else 'N/A' }}</div>
+                <div class="feature-label">Sq Ft</div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-value">{{ property.year_built if property.year_built else 'N/A' }}</div>
+                <div class="feature-label">Built</div>
+              </div>
+            </div>
+            <a href="/property/{{ property.id }}" class="btn btn-outline-primary w-100">View Property</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  
+  <!-- Metrics Sliders -->
+  <div class="comparison-section">
+    <h2 class="section-title">Key Metrics Comparison</h2>
+    
+    {% if selected_properties|length >= 2 %}
+    <!-- Price per Square Foot Slider -->
+    <div class="mb-4">
+      <label class="form-label">Price per Square Foot</label>
+      <div id="pricePerSqFtSlider" class="metric-slider"></div>
+      <div class="slider-labels">
+        <span>${{ (selected_properties[0].price_value/100 / selected_properties[0].square_feet) | round | int if selected_properties[0].square_feet and selected_properties[0].square_feet > 0 else 'N/A' }}</span>
+        <span>${{ (selected_properties[1].price_value/100 / selected_properties[1].square_feet) | round | int if selected_properties[1].square_feet and selected_properties[1].square_feet > 0 else 'N/A' }}</span>
+      </div>
+    </div>
+    
+    <!-- Age of Property Slider -->
+    <div class="mb-4">
+      <label class="form-label">Age of Property (Years)</label>
+      <div id="ageSlider" class="metric-slider"></div>
+      <div class="slider-labels">
+        <span>{{ 2025 - selected_properties[0].year_built if selected_properties[0].year_built else 'N/A' }}</span>
+        <span>{{ 2025 - selected_properties[1].year_built if selected_properties[1].year_built else 'N/A' }}</span>
+      </div>
+    </div>
+    
+    <!-- Location Score Slider -->
+    <div class="mb-4">
+      <label class="form-label">Location Score</label>
+      <div id="locationScoreSlider" class="metric-slider"></div>
+      <div class="slider-labels">
+        <span>{{ selected_properties[0].location_score if selected_properties[0].location_score else 'N/A' }}</span>
+        <span>{{ selected_properties[1].location_score if selected_properties[1].location_score else 'N/A' }}</span>
+      </div>
+    </div>
+    
+    <!-- Condition Score Slider -->
+    <div class="mb-4">
+      <label class="form-label">Condition Score</label>
+      <div id="conditionScoreSlider" class="metric-slider"></div>
+      <div class="slider-labels">
+        <span>{{ selected_properties[0].condition_score if selected_properties[0].condition_score else 'N/A' }}</span>
+        <span>{{ selected_properties[1].condition_score if selected_properties[1].condition_score else 'N/A' }}</span>
+      </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+      <p>Please select at least two properties to compare metrics.</p>
+    </div>
+    {% endif %}
+  </div>
+  
+  <!-- Detailed Comparison Table -->
+  <div class="comparison-section">
+    <h2 class="section-title">Detailed Comparison</h2>
+    
+    {% if selected_properties|length >= 2 %}
+    <div class="table-responsive">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>{{ selected_properties[0].address }}</th>
+            <th>{{ selected_properties[1].address }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Price</td>
+            <td class="{{ 'highlight' if selected_properties[0].price_value and selected_properties[1].price_value and selected_properties[0].price_value < selected_properties[1].price_value }}">${{ selected_properties[0].price_value/100 if selected_properties[0].price_value else 'N/A' }}</td>
+            <td class="{{ 'highlight' if selected_properties[0].price_value and selected_properties[1].price_value and selected_properties[1].price_value < selected_properties[0].price_value }}">${{ selected_properties[1].price_value/100 if selected_properties[1].price_value else 'N/A' }}</td>
+          </tr>
+          <tr>
+            <td>Price per Sq Ft</td>
+            <td class="{{ 'highlight' if selected_properties[0].price_value and selected_properties[0].square_feet and selected_properties[1].price_value and selected_properties[1].square_feet and (selected_properties[0].price_value / selected_properties[0].square_feet) < (selected_properties[1].price_value / selected_properties[1].square_feet) }}">${{ (selected_properties[0].price_value/100 / selected_properties[0].square_feet) | round(2) if selected_properties[0].square_feet and selected_properties[0].square_feet > 0 and selected_properties[0].price_value else 'N/A' }}</td>
+            <td class="{{ 'highlight' if selected_properties[0].price_value and selected_properties[0].square_feet and selected_properties[1].price_value and selected_properties[1].square_feet and (selected_properties[1].price_value / selected_properties[1].square_feet) < (selected_properties[0].price_value / selected_properties[0].square_feet) }}">${{ (selected_properties[1].price_value/100 / selected_properties[1].square_feet) | round(2) if selected_properties[1].square_feet and selected_properties[1].square_feet > 0 and selected_properties[1].price_value else 'N/A' }}</td>
+          </tr>
+          <tr>
+            <td>Bedrooms</td>
+            <td class="{{ 'highlight' if selected_properties[0].bedrooms and selected_properties[1].bedrooms and selected_properties[0].bedrooms > selected_properties[1].bedrooms }}">{{ selected_properties[0].bedrooms if selected_properties[0].bedrooms else 'N/A' }}</td>
+            <td class="{{ 'highlight' if selected_properties[0].bedrooms and selected_properties[1].bedrooms and selected_properties[1].bedrooms > selected_properties[0].bedrooms }}">{{ selected_properties[1].bedrooms if selected_properties[1].bedrooms else 'N/A' }}</td>
+          </tr>
+          <tr>
+            <td>Bathrooms</td>
+            <td class="{{ 'highlight' if selected_properties[0].bathrooms and selected_properties[1].bathrooms and selected_properties[0].bathrooms > selected_properties[1].bathrooms }}">{{ selected_properties[0].bathrooms if selected_properties[0].bathrooms else 'N/A' }}</td>
+            <td class="{{ 'highlight' if selected_properties[0].bathrooms and selected_properties[1].bathrooms and selected_properties[1].bathrooms > selected_properties[0].bathrooms }}">{{ selected_properties[1].bathrooms if selected_properties[1].bathrooms else 'N/A' }}</td>
+          </tr>
+          <tr>
+            <td>Square Feet</td>
+            <td class="{{ 'highlight' if selected_properties[0].square_feet and selected_properties[1].square_feet and selected_properties[0].square_feet > selected_properties[1].square_feet }}">{{ selected_properties[0].square_feet if selected_properties[0].square_feet else 'N/A' }}</td>
+            <td class="{{ 'highlight' if selected_properties[0].square_feet and selected_properties[1].square_feet and selected_properties[1].square_feet > selected_properties[0].square_feet }}">{{ selected_properties[1].square_feet if selected_properties[1].square_feet else 'N/A' }}</td>
+          </tr>
+          <tr>
+            <td>Year Built</td>
+            <td class="{{ 'highlight' if selected_properties[0].year_built and selected_properties[1].year_built and selected_properties[0].year_built > selected_properties[1].year_built }}">{{ selected_properties[0].year_built if selected_properties[0].year_built else 'N/A' }}</td>
+            <td class="{{ 'highlight' if selected_properties[0].year_built and selected_properties[1].year_built and selected_properties[1].year_built > selected_properties[0].year_built }}">{{ selected_properties[1].year_built if selected_properties[1].year_built else 'N/A' }}</td>
+          </tr>
+          <tr>
+            <td>Lot Size</td>
+            <td class="{{ 'highlight' if selected_properties[0].lot_size and selected_properties[1].lot_size and selected_properties[0].lot_size > selected_properties[1].lot_size }}">{{ selected_properties[0].lot_size if selected_properties[0].lot_size else 'N/A' }}</td>
+            <td class="{{ 'highlight' if selected_properties[0].lot_size and selected_properties[1].lot_size and selected_properties[1].lot_size > selected_properties[0].lot_size }}">{{ selected_properties[1].lot_size if selected_properties[1].lot_size else 'N/A' }}</td>
+          </tr>
+          <tr>
+            <td>Property Type</td>
+            <td>{{ selected_properties[0].property_type if selected_properties[0].property_type else 'N/A' }}</td>
+            <td>{{ selected_properties[1].property_type if selected_properties[1].property_type else 'N/A' }}</td>
+          </tr>
+          <tr>
+            <td>County</td>
+            <td>{{ selected_properties[0].county if selected_properties[0].county else 'N/A' }}</td>
+            <td>{{ selected_properties[1].county if selected_properties[1].county else 'N/A' }}</td>
+          </tr>
+          <tr>
+            <td>State</td>
+            <td>{{ selected_properties[0].state if selected_properties[0].state else 'N/A' }}</td>
+            <td>{{ selected_properties[1].state if selected_properties[1].state else 'N/A' }}</td>
+          </tr>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  {% if selected_properties|length >= 2 %}
+  <!-- Features Comparison -->
+  <div class="comparison-section">
+    <h2 class="section-title">Features Comparison</h2>
+    <div class="row">
+      <div class="col-md-6">
+        <h5 class="mb-3">{{ selected_properties[0].address }}</h5>
+        <div>
+          <p class="alert alert-info">Select properties to see features comparison</p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <h5 class="mb-3">{{ selected_properties[1].address }}</h5>
+        <div>
+          <p class="alert alert-info">Select properties to see features comparison</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Overall Scores -->
+  <div class="comparison-section">
+    <h2 class="section-title">Overall Property Scores</h2>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="property-score">
+          <div class="score-value">--/100</div>
+          <div class="score-label">Overall Score for {{ selected_properties[0].address }}</div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="property-score">
+          <div class="score-value">--/100</div>
+          <div class="score-label">Overall Score for {{ selected_properties[1].address }}</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Recommendation -->
+    <div class="recommendation mt-4">
+      Select properties to see our recommendations based on your criteria.
+    </div>
+  </div>
+  {% else %}
+  <div class="alert alert-info">
+    <p>Please select at least two properties to compare.</p>
+  </div>
+  {% endif %}
+  
+  <!-- Action Buttons -->
+  <div class="action-buttons">
+    <a href="/property_search" class="btn btn-outline-secondary action-button">
+      <i class="bi bi-search"></i> Find More Properties
+    </a>
+    <a href="#" class="btn btn-primary action-button" id="saveComparisonBtn">
+      <i class="bi bi-save"></i> Save Comparison
+    </a>
+    <a href="#" class="btn btn-outline-primary action-button" id="shareComparisonBtn">
+      <i class="bi bi-share"></i> Share Comparison
+    </a>
+    <a href="#" class="btn btn-success action-button" id="scheduleViewingBtn">
+      <i class="bi bi-calendar"></i> Schedule Viewings
+    </a>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Price per Sq Ft Slider
+    const pricePerSqFtSlider = document.getElementById('pricePerSqFtSlider');
+    const property1PricePerSqFt = {{ (properties[0].price / properties[0].square_feet) | round | int }};
+    const property2PricePerSqFt = {{ (properties[1].price / properties[1].square_feet) | round | int }};
+    
+    noUiSlider.create(pricePerSqFtSlider, {
+      start: [property1PricePerSqFt, property2PricePerSqFt],
+      connect: true,
+      range: {
+        'min': Math.min(property1PricePerSqFt, property2PricePerSqFt) - 50,
+        'max': Math.max(property1PricePerSqFt, property2PricePerSqFt) + 50
+      },
+      step: 1,
+      tooltips: true,
+      format: {
+        to: function(value) {
+          return '$' + Math.round(value);
+        },
+        from: function(value) {
+          return Number(value.replace('$', ''));
+        }
+      }
+    });
+    
+    // Initialize Age Slider
+    const ageSlider = document.getElementById('ageSlider');
+    const property1Age = {{ current_year - properties[0].year_built }};
+    const property2Age = {{ current_year - properties[1].year_built }};
+    
+    noUiSlider.create(ageSlider, {
+      start: [property1Age, property2Age],
+      connect: true,
+      range: {
+        'min': Math.min(property1Age, property2Age) - 5,
+        'max': Math.max(property1Age, property2Age) + 5
+      },
+      step: 1,
+      tooltips: true,
+      format: {
+        to: function(value) {
+          return Math.round(value) + ' years';
+        },
+        from: function(value) {
+          return Number(value.replace(' years', ''));
+        }
+      }
+    });
+    
+    // Initialize Location Score Slider
+    const locationScoreSlider = document.getElementById('locationScoreSlider');
+    const property1LocationScore = {{ properties[0].location_score if properties[0].location_score else 0 }};
+    const property2LocationScore = {{ properties[1].location_score if properties[1].location_score else 0 }};
+    
+    noUiSlider.create(locationScoreSlider, {
+      start: [property1LocationScore, property2LocationScore],
+      connect: true,
+      range: {
+        'min': 0,
+        'max': 100
+      },
+      step: 1,
+      tooltips: true,
+      format: {
+        to: function(value) {
+          return Math.round(value) + '/100';
+        },
+        from: function(value) {
+          return Number(value.replace('/100', ''));
+        }
+      }
+    });
+    
+    // Initialize Condition Score Slider
+    const conditionScoreSlider = document.getElementById('conditionScoreSlider');
+    const property1ConditionScore = {{ properties[0].condition_score if properties[0].condition_score else 0 }};
+    const property2ConditionScore = {{ properties[1].condition_score if properties[1].condition_score else 0 }};
+    
+    noUiSlider.create(conditionScoreSlider, {
+      start: [property1ConditionScore, property2ConditionScore],
+      connect: true,
+      range: {
+        'min': 0,
+        'max': 100
+      },
+      step: 1,
+      tooltips: true,
+      format: {
+        to: function(value) {
+          return Math.round(value) + '/100';
+        },
+        from: function(value) {
+          return Number(value.replace('/100', ''));
+        }
+      }
+    });
+    
+    // Disable sliders (read-only)
+    pricePerSqFtSlider.setAttribute('disabled', true);
+    ageSlider.setAttribute('disabled', true);
+    locationScoreSlider.setAttribute('disabled', true);
+    conditionScoreSlider.setAttribute('disabled', true);
+    
+    // Action button handlers
+    document.getElementById('saveComparisonBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      alert('Comparison saved successfully!');
+    });
+    
+    document.getElementById('shareComparisonBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      // Create a temporary input to copy the URL
+      const input = document.createElement('input');
+      input.value = window.location.href;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand('copy');
+      document.body.removeChild(input);
+      alert('Comparison URL copied to clipboard!');
+    });
+    
+    document.getElementById('scheduleViewingBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      alert('Feature coming soon: Schedule viewings for your selected properties');
+    });
+  });
+</script>
+{% endblock %}

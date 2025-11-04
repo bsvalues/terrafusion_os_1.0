@@ -1,0 +1,5 @@
+<DataType Name="DEType">
+  <DisplayName>Data Element</DisplayName>
+  <Description>A dataset visible in ArcCatalog.</Description>
+</DataType>
+

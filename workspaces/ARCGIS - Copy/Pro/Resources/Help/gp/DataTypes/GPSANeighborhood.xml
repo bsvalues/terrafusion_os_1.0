@@ -1,0 +1,5 @@
+<DataType Name="GPSANeighborhood">
+  <DisplayName>Neighborhood</DisplayName>
+  <Description>The shape of the area around each cell used to calculate statistics.</Description>
+</DataType>
+

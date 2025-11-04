@@ -1,0 +1,10 @@
+{
+    "set": [
+        "concealment",
+        "cover",
+        "observer",
+        "profile",
+        "target",
+        "visibility"
+    ]
+}

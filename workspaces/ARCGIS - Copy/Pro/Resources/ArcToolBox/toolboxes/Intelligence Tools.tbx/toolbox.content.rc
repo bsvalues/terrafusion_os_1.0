@@ -1,0 +1,11 @@
+{
+    "map": {
+        "descr": "The AllSource toolbox contains tools that convert and analyze intelligence data sources. Use these tools as part of intelligence workflows to import data from many sources at once, analyze point track data to determine patterns, and assess physical environment data for suitable mobility or landing zones.",
+        "title": "AllSource Tools",
+        "toolset1.name": "Conversion",
+        "toolset2.name": "Movement",
+        "toolset3.name": "Analysis\\Suitability",
+        "toolset4.name": "Analysis",
+        "toolset5.name": "Analysis\\Blind Spot"
+    }
+}

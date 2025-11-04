@@ -1,0 +1,26 @@
+{
+    "map": {
+        "contour_depth_field.descr": "The field that will store the depth value in the depth contours feature.",
+        "contour_depth_field.title": "Depth Field",
+        "depth_direction.descr": "<xdoc><p>Specifies whether the depth direction is positive upward or positive downward. The direction must be the same as that of the input TIN and contour features for the values of the minimum and maximum depth for the generated depth area polygons to be accurate.</p><ul><li><span title=\"POSITIVE_UP\">Positive Up</span>—The input contour, maximum depth, and minimum depth values must be negative with drying heights as positive. This is the default.</li><li><span title=\"POSITIVE_DOWN\">Positive Down</span>—The input contour, maximum depth, and minimum depth values must be positive with drying heights as negative.</li></ul></xdoc>",
+        "depth_direction.domain.POSITIVE_DOWN": "Positive Down",
+        "depth_direction.domain.POSITIVE_UP": "Positive Up",
+        "depth_direction.title": "Depth Direction",
+        "description": "Creates depth area polygon features using a TIN to query depth information to find whether a closed contour is trending deeper or shallower.",
+        "in_contours.descr": "The depth contours features.",
+        "in_contours.title": "Input Contour Features",
+        "in_extent_polygon.descr": "The extent polygons within which the depth area polygons will be generated. If not specified, the TIN domain will be used.",
+        "in_extent_polygon.title": "Extent Polygon Features",
+        "in_tin.descr": "The TIN surface from which the nodes will be queried to attribute the depth polygons. It is recommended that you use the same TIN surface that was used to generate the contours.",
+        "in_tin.title": "Input TIN",
+        "max_depth.descr": "A value used to populate the maximum depth of polygons deeper than the deepest contour value.",
+        "max_depth.title": "Maximum Depth",
+        "min_depth.descr": "A value used to populate the minimum depth of polygons shallower than the shallowest contour value.",
+        "min_depth.title": "Minimum Depth",
+        "summary": "<xdoc><p>Creates depth area polygon features using a TIN to query depth information to find whether a closed contour is trending deeper or shallower.</p><p>Depth areas are geographic features that are used to depict depth ranges between contours in Electronic Navigational Charts (ENC). The use of a TIN removes ambiguity from using the contour lines only and simplifies the process of creating and attributing the depth polygons. This tool is designed to be more generic and can be used for generating depth polygons for S-100-based products.</p></xdoc>",
+        "target_workspace.descr": "The geodatabase where the depth polygons will be written. The workspace is expected to be a nautical workspace with either the S-57 or S-101 schema.",
+        "target_workspace.title": "Target Workspace",
+        "title": "Generate Depth Areas",
+        "updated_depth_areas.title": "Updated Depth Areas"
+    }
+}

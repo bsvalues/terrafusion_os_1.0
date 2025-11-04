@@ -1,0 +1,13 @@
+# Content-type : text/yaml; charset=ASCII
+#
+# key format [<toolbox name>/]<toolname>
+#
+# This is a blacklist of tools which will not have their spatial index
+#      deleted prior to tool execution and then re-created after execution
+#      Currently we are only acting upon data within a Mobile Database (.geodatabase)
+#
+
+#  Data Management Tools:
+- data management tools/addspatialindex
+- data management tools/removespatialindex
+- data management tools/registerwithgeodatabase

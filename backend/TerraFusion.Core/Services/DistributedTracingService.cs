@@ -8,15 +8,18 @@ using System.Text.Json;
 using System.Net.Http;
 using System.Text;
 
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators
+
 namespace TerraFusion.Core.Services
 {
     public interface IDistributedTracingService
     {
-        Task<string> StartTraceAsync(string operationName, Dictionary<string, object> tags = null);
-        Task<string> StartSpanAsync(string traceId, string operationName, string parentSpanId = null, Dictionary<string, object> tags = null);
-        Task FinishSpanAsync(string spanId, Dictionary<string, object> tags = null);
-        Task LogEventAsync(string traceId, string spanId, string eventName, Dictionary<string, object> data = null);
-        Task<TraceMetrics> GetTraceMetricsAsync(string traceId);
+        Task<string> StartTraceAsync(string operationName, Dictionary<string, object>? tags = null);
+        Task<string> StartSpanAsync(string traceId, string operationName, string? parentSpanId = null, Dictionary<string, object>? tags = null);
+        Task FinishSpanAsync(string spanId, Dictionary<string, object>? tags = null);
+        Task LogEventAsync(string traceId, string spanId, string eventName, Dictionary<string, object>? data = null);
+        Task<TraceMetrics?> GetTraceMetricsAsync(string traceId);
         Task<List<TraceSpan>> GetTraceSpansAsync(string traceId);
         Task FlushTracesAsync();
     }
@@ -92,7 +95,7 @@ namespace TerraFusion.Core.Services
             _samplingRate = configuration.GetValue<double>("Tracing:SamplingRate", 0.1);
         }
 
-        public async Task<string> StartTraceAsync(string operationName, Dictionary<string, object> tags = null)
+        public async Task<string> StartTraceAsync(string operationName, Dictionary<string, object>? tags = null)
         {
             var traceId = GenerateTraceId();
             var spanId = GenerateSpanId();
@@ -131,7 +134,7 @@ namespace TerraFusion.Core.Services
             return traceId;
         }
 
-        public async Task<string> StartSpanAsync(string traceId, string operationName, string parentSpanId = null, Dictionary<string, object> tags = null)
+        public async Task<string> StartSpanAsync(string traceId, string operationName, string? parentSpanId = null, Dictionary<string, object>? tags = null)
         {
             var spanId = GenerateSpanId();
 
@@ -171,9 +174,9 @@ namespace TerraFusion.Core.Services
             return spanId;
         }
 
-        public async Task FinishSpanAsync(string spanId, Dictionary<string, object> tags = null)
+        public async Task FinishSpanAsync(string spanId, Dictionary<string, object>? tags = null)
         {
-            TraceSpan span = null;
+            TraceSpan? span = null;
 
             lock (_lock)
             {
@@ -207,7 +210,7 @@ namespace TerraFusion.Core.Services
             }
         }
 
-        public async Task LogEventAsync(string traceId, string spanId, string eventName, Dictionary<string, object> data = null)
+        public async Task LogEventAsync(string traceId, string spanId, string eventName, Dictionary<string, object>? data = null)
         {
             var traceEvent = new TraceEvent
             {
@@ -229,9 +232,9 @@ namespace TerraFusion.Core.Services
                 eventName, spanId, traceId);
         }
 
-        public async Task<TraceMetrics> GetTraceMetricsAsync(string traceId)
+        public async Task<TraceMetrics?> GetTraceMetricsAsync(string traceId)
         {
-            List<TraceSpan> spans;
+            List<TraceSpan>? spans;
             lock (_lock)
             {
                 if (!_traces.TryGetValue(traceId, out spans))
@@ -334,7 +337,7 @@ namespace TerraFusion.Core.Services
         private List<string> CalculateCriticalPath(List<TraceSpan> spans)
         {
             var criticalPath = new List<string>();
-            
+
             // Find the root span
             var rootSpan = spans.FirstOrDefault(s => s.ParentSpanId == null);
             if (rootSpan == null) return criticalPath;
@@ -350,7 +353,7 @@ namespace TerraFusion.Core.Services
             return criticalPath;
         }
 
-        private void TraverseLongestPath(TraceSpan currentSpan, Dictionary<string, TraceSpan> spanDict, 
+        private void TraverseLongestPath(TraceSpan currentSpan, Dictionary<string, TraceSpan> spanDict,
             Dictionary<string, List<TraceSpan>> childrenDict, List<string> path)
         {
             path.Add(currentSpan.OperationName);
@@ -359,8 +362,8 @@ namespace TerraFusion.Core.Services
             {
                 // Find child with longest duration
                 var longestChild = children
-                    .Where(c => c.Duration.HasValue)
-                    .OrderByDescending(c => c.Duration.Value.TotalMilliseconds)
+                    .Where(c => c.Duration.HasValue && c.Duration.Value.TotalMilliseconds > 0)
+                    .OrderByDescending(c => c.Duration!.Value.TotalMilliseconds)
                     .FirstOrDefault();
 
                 if (longestChild != null)

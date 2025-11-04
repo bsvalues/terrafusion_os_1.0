@@ -1,0 +1,5 @@
+<DataType Name="DECadastralFabric">
+  <DisplayName>Parcel Fabric for ArcMap</DisplayName>
+  <Description>A parcel fabric for ArcMap is a dataset for the storage, maintenance, and editing of a continuous surface of connected parcels or parcel network.</Description>
+</DataType>
+

@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Comparative Market Analysis (CMA) | TerraMiner{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="jumbotron">
+        <h1 class="display-4">Comparative Market Analysis</h1>
+        <p class="lead">Generate detailed comparative market analysis reports for any property.</p>
+        <hr class="my-4">
+        <p>
+            Our CMA tool uses real estate data from multiple sources to create comprehensive reports
+            with accurate property valuations, comparable properties, market trends, and AI-powered insights.
+        </p>
+        <div class="mt-4">
+            <a href="{{ url_for('cma_ui.cma_generator') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-chart-line mr-2"></i> Generate CMA Report
+            </a>
+            <a href="{{ url_for('cma_ui.list_reports') }}" class="btn btn-secondary btn-lg ml-2">
+                <i class="fas fa-list mr-2"></i> View Past Reports
+            </a>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <i class="fas fa-search-dollar fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Accurate Valuations</h5>
+                    <p class="card-text">Get precise property valuations based on real market data from Zillow and NARRPR.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <i class="fas fa-home fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Comparable Properties</h5>
+                    <p class="card-text">Find similar properties in the area with detailed comparisons and adjustments.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <i class="fas fa-brain fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">AI-Powered Insights</h5>
+                    <p class="card-text">Get intelligent market analysis and recommendations from our advanced AI models.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">How It Works</h5>
+                    <ol class="pl-3">
+                        <li class="mb-2">Enter the subject property details</li>
+                        <li class="mb-2">Our system searches for comparable properties in the area</li>
+                        <li class="mb-2">We analyze the data and calculate adjusted values</li>
+                        <li class="mb-2">AI models provide market insights and recommendations</li>
+                        <li class="mb-2">A comprehensive report is generated with visualizations</li>
+                    </ol>
+                    <a href="{{ url_for('cma_ui.cma_generator') }}" class="btn btn-outline-primary mt-2">Get Started</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Features</h5>
+                    <ul class="pl-3">
+                        <li class="mb-2">Detailed property valuation with confidence scores</li>
+                        <li class="mb-2">Comprehensive comparable property analysis</li>
+                        <li class="mb-2">Price adjustment calculations for fair comparisons</li>
+                        <li class="mb-2">Local market trend analysis and projections</li>
+                        <li class="mb-2">Pricing strategy recommendations</li>
+                        <li class="mb-2">Property strength and weakness assessment</li>
+                        <li class="mb-2">Marketing and negotiation recommendations</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

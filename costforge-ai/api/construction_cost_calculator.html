@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CostForge AI - Enterprise Construction Cost Estimation</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* TerraFusion Enterprise Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0b1020 0%, #1a2332 50%, #2a3b4d 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .enterprise-header {
+            background: linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
+            padding: 1.5rem 2rem;
+            box-shadow: 0 4px 20px rgba(0, 255, 238, 0.3);
+            border-bottom: 2px solid rgba(0, 255, 238, 0.5);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo-section .tagline {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+        .performance-badge {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            text-align: center;
+        }
+
+        .performance-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .performance-text {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            min-height: calc(100vh - 120px);
+        }
+
+        .cost-calculator-panel, .results-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 238, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .panel-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #00ffee;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #00ffee;
+            margin-bottom: 0.5rem;
+        }
+
+        input, select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 238, 0.3);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #00ffee;
+            box-shadow: 0 0 0 2px rgba(0, 255, 238, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .calculate-button {
+            background: linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 255, 238, 0.3);
+            width: 100%;
+        }
+
+        .calculate-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 255, 238, 0.5);
+        }
+
+        .calculate-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .results-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .cost-summary {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .cost-item {
+            background: rgba(0, 255, 238, 0.1);
+            border: 1px solid rgba(0, 255, 238, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .cost-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 0.5rem;
+        }
+
+        .cost-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00ffaa;
+        }
+
+        .cost-breakdown {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .breakdown-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #00ffee;
+            margin-bottom: 1rem;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .breakdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .recommendations {
+            background: rgba(0, 255, 170, 0.1);
+            border: 1px solid rgba(0, 255, 170, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .recommendations-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #00ffaa;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .recommendation-item {
+            padding: 0.5rem 0;
+            color: rgba(255, 255, 255, 0.9);
+            border-left: 3px solid #00ffaa;
+            padding-left: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #00ffee;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .batch-processing {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 255, 238, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .batch-controls {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            align-items: end;
+        }
+
+        .file-upload {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-upload input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-upload label {
+            background: rgba(0, 153, 255, 0.2);
+            border: 1px solid #0099ff;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .file-upload label:hover {
+            background: rgba(0, 153, 255, 0.3);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #00ffaa;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="enterprise-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <h1><i class="fas fa-building"></i> CostForge AI</h1>
+                <div class="tagline">Enterprise Construction Cost Estimation • Government. Transcended.</div>
+            </div>
+            <div class="performance-badge">
+                <div class="performance-number">379M×</div>
+                <div class="performance-text">Faster than Marshall & Swift</div>
+            </div>
+        </div>
+    </header>
+
+    <div id="app"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const API_BASE_URL = 'http://localhost:8000';
+
+        function CostForgeApp() {
+            const [formData, setFormData] = useState({
+                parcel_id: '',
+                building_type: 'residential',
+                square_footage: '',
+                year_built: '',
+                quality_grade: 'average',
+                region: 'suburban',
+                condition: 'average',
+                stories: '',
+                basement: false,
+                garage: false
+            });
+
+            const [results, setResults] = useState(null);
+            const [loading, setLoading] = useState(false);
+            const [apiStatus, setApiStatus] = useState('checking');
+            const [batchProcessing, setBatchProcessing] = useState(false);
+            const [batchResults, setBatchResults] = useState(null);
+
+            useEffect(() => {
+                checkApiHealth();
+            }, []);
+
+            const checkApiHealth = async () => {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/health`);
+                    if (response.ok) {
+                        setApiStatus('ready');
+                    } else {
+                        setApiStatus('error');
+                    }
+                } catch (error) {
+                    setApiStatus('error');
+                }
+            };
+
+            const handleInputChange = (field, value) => {
+                setFormData(prev => ({
+                    ...prev,
+                    [field]: value
+                }));
+            };
+
+            const calculateCost = async () => {
+                if (!formData.parcel_id || !formData.square_footage || !formData.year_built) {
+                    alert('Please fill in all required fields');
+                    return;
+                }
+
+                setLoading(true);
+                setResults(null);
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/construction-costs`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API Error: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    setResults(result);
+                } catch (error) {
+                    console.error('Error calculating cost:', error);
+                    alert(`Error calculating cost: ${error.message}`);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const processBatchFile = async (file) => {
+                setBatchProcessing(true);
+                setBatchResults(null);
+
+                try {
+                    // Parse CSV file (simplified for demo)
+                    const text = await file.text();
+                    const lines = text.split('\n');
+                    const headers = lines[0].split(',');
+
+                    const properties = [];
+                    for (let i = 1; i < Math.min(lines.length, 6); i++) { // Limit to 5 for demo
+                        const values = lines[i].split(',');
+                        if (values.length >= headers.length) {
+                            const property = {};
+                            headers.forEach((header, index) => {
+                                property[header.trim()] = values[index].trim();
+                            });
+                            properties.push(property);
+                        }
+                    }
+
+                    const response = await fetch(`${API_BASE_URL}/api/batch-assessment`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ properties })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Batch API Error: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    setBatchResults(result);
+                } catch (error) {
+                    console.error('Error processing batch:', error);
+                    alert(`Error processing batch: ${error.message}`);
+                } finally {
+                    setBatchProcessing(false);
+                }
+            };
+
+            const formatCurrency = (amount) => {
+                return new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                }).format(amount);
+            };
+
+            return (
+                <div className="main-container">
+                    {/* Cost Calculator Panel */}
+                    <div className="cost-calculator-panel">
+                        <h2 className="panel-title">
+                            <i className="fas fa-calculator"></i>
+                            Construction Cost Calculator
+                        </h2>
+
+                        <div className="status-indicator">
+                            <i className={`fas ${apiStatus === 'ready' ? 'fa-check-circle' : apiStatus === 'error' ? 'fa-exclamation-triangle' : 'fa-spinner fa-spin'}`}></i>
+                            API Status: {apiStatus === 'ready' ? 'Ready' : apiStatus === 'error' ? 'Error' : 'Checking...'}
+                        </div>
+
+                        <div className="form-grid">
+                            <div className="form-group">
+                                <label>Parcel ID *</label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g., BENTON-001"
+                                    value={formData.parcel_id}
+                                    onChange={(e) => handleInputChange('parcel_id', e.target.value)}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Building Type</label>
+                                <select
+                                    value={formData.building_type}
+                                    onChange={(e) => handleInputChange('building_type', e.target.value)}
+                                >
+                                    <option value="residential">Residential</option>
+                                    <option value="commercial">Commercial</option>
+                                    <option value="industrial">Industrial</option>
+                                    <option value="government">Government</option>
+                                </select>
+                            </div>
+
+                            <div className="form-group">
+                                <label>Square Footage *</label>
+                                <input
+                                    type="number"
+                                    placeholder="e.g., 2500"
+                                    value={formData.square_footage}
+                                    onChange={(e) => handleInputChange('square_footage', e.target.value)}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Year Built *</label>
+                                <input
+                                    type="number"
+                                    placeholder="e.g., 1995"
+                                    value={formData.year_built}
+                                    onChange={(e) => handleInputChange('year_built', e.target.value)}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>Quality Grade</label>
+                                <select
+                                    value={formData.quality_grade}
+                                    onChange={(e) => handleInputChange('quality_grade', e.target.value)}
+                                >
+                                    <option value="excellent">Excellent</option>
+                                    <option value="good">Good</option>
+                                    <option value="average">Average</option>
+                                    <option value="fair">Fair</option>
+                                    <option value="poor">Poor</option>
+                                </select>
+                            </div>
+
+                            <div className="form-group">
+                                <label>Region</label>
+                                <select
+                                    value={formData.region}
+                                    onChange={(e) => handleInputChange('region', e.target.value)}
+                                >
+                                    <option value="urban">Urban</option>
+                                    <option value="suburban">Suburban</option>
+                                    <option value="rural">Rural</option>
+                                </select>
+                            </div>
+
+                            <div className="form-group">
+                                <label>Condition</label>
+                                <select
+                                    value={formData.condition}
+                                    onChange={(e) => handleInputChange('condition', e.target.value)}
+                                >
+                                    <option value="new">New</option>
+                                    <option value="good">Good</option>
+                                    <option value="average">Average</option>
+                                    <option value="fair">Fair</option>
+                                    <option value="poor">Poor</option>
+                                </select>
+                            </div>
+
+                            <div className="form-group">
+                                <label>Stories</label>
+                                <input
+                                    type="number"
+                                    placeholder="e.g., 2"
+                                    value={formData.stories}
+                                    onChange={(e) => handleInputChange('stories', e.target.value)}
+                                />
+                            </div>
+
+                            <div className="form-group full-width">
+                                <label style={{display: 'flex', alignItems: 'center', gap: '1rem'}}>
+                                    <span>Additional Features:</span>
+                                    <label style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.basement}
+                                            onChange={(e) => handleInputChange('basement', e.target.checked)}
+                                        />
+                                        Basement
+                                    </label>
+                                    <label style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.garage}
+                                            onChange={(e) => handleInputChange('garage', e.target.checked)}
+                                        />
+                                        Garage
+                                    </label>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button
+                            className="calculate-button"
+                            onClick={calculateCost}
+                            disabled={loading || apiStatus !== 'ready'}
+                        >
+                            {loading ? (
+                                <>
+                                    <span className="loading-spinner"></span>
+                                    Calculating...
+                                </>
+                            ) : (
+                                <>
+                                    <i className="fas fa-calculator"></i>
+                                    Calculate Construction Cost
+                                </>
+                            )}
+                        </button>
+                    </div>
+
+                    {/* Results Panel */}
+                    <div className="results-panel">
+                        <h2 className="panel-title">
+                            <i className="fas fa-chart-line"></i>
+                            Cost Analysis Results
+                        </h2>
+
+                        <div className={`results-section ${results ? 'visible' : ''}`}>
+                            {results ? (
+                                <>
+                                    <div className="cost-summary">
+                                        <div className="cost-item">
+                                            <div className="cost-label">Replacement Cost</div>
+                                            <div className="cost-value">{formatCurrency(results.replacement_cost)}</div>
+                                        </div>
+                                        <div className="cost-item">
+                                            <div className="cost-label">Depreciated Value</div>
+                                            <div className="cost-value">{formatCurrency(results.depreciated_value)}</div>
+                                        </div>
+                                        <div className="cost-item">
+                                            <div className="cost-label">Cost per Sq Ft</div>
+                                            <div className="cost-value">${results.cost_per_sqft.toFixed(2)}</div>
+                                        </div>
+                                        <div className="cost-item">
+                                            <div className="cost-label">Confidence Score</div>
+                                            <div className="cost-value">{results.confidence_score.toFixed(1)}%</div>
+                                        </div>
+                                    </div>
+
+                                    <div className="cost-breakdown">
+                                        <div className="breakdown-title">Cost Breakdown</div>
+                                        {Object.entries(results.cost_breakdown).map(([component, cost]) => (
+                                            <div key={component} className="breakdown-item">
+                                                <span style={{textTransform: 'capitalize'}}>{component}</span>
+                                                <span>{formatCurrency(cost)}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="recommendations">
+                                        <div className="recommendations-title">
+                                            <i className="fas fa-lightbulb"></i>
+                                            AI Recommendations
+                                        </div>
+                                        {results.recommendations.map((rec, index) => (
+                                            <div key={index} className="recommendation-item">
+                                                {rec}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </>
+                            ) : (
+                                <div style={{textAlign: 'center', color: 'rgba(255, 255, 255, 0.6)', padding: '3rem'}}>
+                                    <i className="fas fa-chart-bar" style={{fontSize: '3rem', marginBottom: '1rem', opacity: 0.3}}></i>
+                                    <div>Enter property details and click "Calculate" to see cost analysis</div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Batch Processing Panel */}
+                    <div className="batch-processing">
+                        <h2 className="panel-title">
+                            <i className="fas fa-layer-group"></i>
+                            County-Wide Batch Processing
+                        </h2>
+
+                        <div className="batch-controls">
+                            <div className="file-upload">
+                                <input
+                                    type="file"
+                                    id="batch-file"
+                                    accept=".csv"
+                                    onChange={(e) => {
+                                        if (e.target.files[0]) {
+                                            processBatchFile(e.target.files[0]);
+                                        }
+                                    }}
+                                />
+                                <label htmlFor="batch-file">
+                                    <i className="fas fa-upload"></i> Upload CSV File
+                                </label>
+                            </div>
+
+                            <div className="status-indicator">
+                                {batchProcessing && (
+                                    <>
+                                        <span className="loading-spinner"></span>
+                                        Processing...
+                                    </>
+                                )}
+                                {batchResults && (
+                                    <>
+                                        <i className="fas fa-check-circle"></i>
+                                        Complete
+                                    </>
+                                )}
+                            </div>
+                        </div>
+
+                        {batchResults && (
+                            <div className="cost-summary">
+                                <div className="cost-item">
+                                    <div className="cost-label">Properties Processed</div>
+                                    <div className="cost-value">{batchResults.completed}/{batchResults.total_properties}</div>
+                                </div>
+                                <div className="cost-item">
+                                    <div className="cost-label">Processing Time</div>
+                                    <div className="cost-value">{batchResults.processing_time_seconds.toFixed(1)}s</div>
+                                </div>
+                                <div className="cost-item">
+                                    <div className="cost-label">Total Estimated Value</div>
+                                    <div className="cost-value">{formatCurrency(batchResults.summary_stats.total_estimated_value || 0)}</div>
+                                </div>
+                                <div className="cost-item">
+                                    <div className="cost-label">Average Value</div>
+                                    <div className="cost-value">{formatCurrency(batchResults.summary_stats.average_value || 0)}</div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<CostForgeApp />, document.getElementById('app'));
+    </script>
+</body>
+</html>

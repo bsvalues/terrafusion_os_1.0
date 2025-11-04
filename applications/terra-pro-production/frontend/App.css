@@ -1,0 +1,498 @@
+/* TerraFusion Core AI Valuator - App.css */
+
+:root {
+  --primary-color: #2a6bb8;
+  --primary-dark: #1d4d8a;
+  --primary-light: #4e8ad4;
+  --secondary-color: #4caf50;
+  --success-color: #28a745;
+  --warning-color: #ffc107;
+  --danger-color: #dc3545;
+  --gray-light: #f8f9fa;
+  --gray-medium: #e9ecef;
+  --gray-dark: #343a40;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --radius: 8px;
+}
+
+/* Global Styles */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: var(--gray-dark);
+  background-color: #f5f7fa;
+  margin: 0;
+  padding: 0;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header */
+header {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 2rem 0;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 600;
+}
+
+header p {
+  margin: 0.5rem 0 0;
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+/* Main Content */
+main {
+  flex: 1;
+  padding: 2rem 0;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: -15px;
+}
+
+.col-md-6 {
+  flex: 0 0 100%;
+  max-width: 100%;
+  padding: 15px;
+}
+
+@media (min-width: 768px) {
+  .col-md-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+/* Cards */
+.card {
+  background-color: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  padding: 1.25rem;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--primary-color);
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+/* Forms */
+.form-section {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--gray-medium);
+}
+
+.form-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.form-section h3 {
+  color: var(--primary-color);
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: -10px;
+}
+
+.form-row .form-group {
+  padding: 0 10px;
+  flex: 1;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  transition: border-color 0.15s ease-in-out;
+}
+
+.form-control:focus {
+  border-color: var(--primary-color);
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(42, 107, 184, 0.25);
+}
+
+select.form-control {
+  height: calc(2.25rem + 2px);
+  cursor: pointer;
+}
+
+input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
+/* Feature Grid */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+@media (min-width: 576px) {
+  .feature-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  user-select: none;
+  border: 1px solid transparent;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: 0.25rem;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+  cursor: pointer;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+.btn-outline-secondary {
+  color: #6c757d;
+  background-color: transparent;
+  border-color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+  color: #fff;
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+.btn-lg {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.25rem;
+  border-radius: 0.3rem;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  border-radius: 0.2rem;
+}
+
+.btn-block {
+  display: block;
+  width: 100%;
+}
+
+/* Loading Spinner */
+.spinner-border {
+  display: inline-block;
+  width: 3rem;
+  height: 3rem;
+  vertical-align: text-bottom;
+  border: 0.25rem solid var(--primary-color);
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spinner-border 0.75s linear infinite;
+}
+
+@keyframes spinner-border {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  margin-top: 1rem;
+  color: var(--primary-color);
+  font-size: 1.1rem;
+}
+
+/* Valuation Results */
+.valuation-result {
+  height: 100%;
+}
+
+.valuation-summary {
+  text-align: center;
+  padding: 1rem 0 2rem;
+  border-bottom: 1px solid var(--gray-medium);
+  margin-bottom: 1.5rem;
+}
+
+.estimated-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin: 0.5rem 0;
+}
+
+.value-range {
+  font-size: 1.1rem;
+  color: #6c757d;
+  margin-bottom: 0.75rem;
+}
+
+.confidence-level {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-weight: 500;
+}
+
+.confidence-level.high {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.confidence-level.medium {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.confidence-level.low {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.section {
+  margin-bottom: 1.5rem;
+}
+
+.section h3 {
+  color: var(--primary-color);
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.section p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+/* Adjustments */
+.adjustments {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.adjustment-item {
+  background-color: #f8f9fa;
+  border-radius: var(--radius);
+  padding: 1rem;
+  border-left: 4px solid var(--primary-color);
+}
+
+.adjustment-factor {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.adjustment-description {
+  margin-bottom: 0.5rem;
+}
+
+.adjustment-amount {
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.adjustment-reasoning {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+/* Lists */
+.features-list, .improvements-list {
+  margin: 0.5rem 0 1rem;
+  padding-left: 1.5rem;
+}
+
+.features-list li, .improvements-list li {
+  margin-bottom: 0.25rem;
+}
+
+/* Alerts */
+.alert {
+  position: relative;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+}
+
+.alert-danger {
+  color: #721c24;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+}
+
+/* Footer */
+footer {
+  background-color: var(--gray-dark);
+  color: white;
+  text-align: center;
+  padding: 1.5rem 0;
+  margin-top: 2rem;
+}
+
+footer p {
+  margin: 0;
+}
+
+/* Material UI Enhancements */
+.MuiCard-root {
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.MuiCard-root:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.MuiButton-containedPrimary {
+  background-color: var(--primary-color) !important;
+}
+
+.MuiButton-containedPrimary:hover {
+  background-color: var(--primary-dark) !important;
+}
+
+.MuiLinearProgress-barColorPrimary {
+  background-color: var(--primary-color) !important;
+}
+
+.MuiLinearProgress-barColorSuccess {
+  background-color: var(--success-color) !important;
+}
+
+.MuiLinearProgress-barColorWarning {
+  background-color: var(--warning-color) !important;
+}
+
+.MuiLinearProgress-barColorError {
+  background-color: var(--danger-color) !important;
+}
+
+/* Accordion animations */
+.MuiAccordion-root {
+  transition: all 0.3s ease-in-out;
+  overflow: hidden;
+}
+
+.MuiAccordionSummary-root {
+  transition: background-color 0.2s ease;
+}
+
+.MuiAccordionSummary-root:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+/* Toast notification enhancements */
+.MuiAlert-filledSuccess {
+  background-color: var(--success-color) !important;
+}
+
+.MuiAlert-filledError {
+  background-color: var(--danger-color) !important;
+}
+
+.MuiAlert-filledWarning {
+  background-color: var(--warning-color) !important;
+}
+
+.MuiAlert-filledInfo {
+  background-color: var(--primary-color) !important;
+}
+
+/* Form field animations */
+.MuiTextField-root .MuiInputBase-root {
+  transition: transform 0.2s ease;
+}
+
+.MuiTextField-root .MuiInputBase-root:focus-within {
+  transform: translateY(-2px);
+}
+
+/* Visual feedback on form submission */
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(42, 107, 184, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(42, 107, 184, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(42, 107, 184, 0); }
+}
+
+.pulse-animation {
+  animation: pulse 1.5s infinite;
+}

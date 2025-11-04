@@ -1,0 +1,911 @@
+{% extends "unified_base.html" %}
+
+{% from "components/ui_components.html" import card, icon_button, tabs %}
+{% from "components/form_components.html" import form_container, form_section, form_row, form_actions, input_field, textarea_field, select_field, checkbox_radio_group, toggle_switch, input_group, tag_input, password_field, datetime_picker, form_errors %}
+
+{% block title %}Settings - TerraMiner{% endblock %}
+
+{% block page_title %}Settings{% endblock %}
+
+{% block extra_css %}
+<style>
+    .nav-tabs .nav-link.active {
+        font-weight: 500;
+    }
+    
+    .settings-card {
+        height: 100%;
+    }
+    
+    .settings-card .card-title {
+        display: flex;
+        align-items: center;
+    }
+    
+    .settings-card .card-title i {
+        font-size: 1.25rem;
+        margin-right: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% set active_tab = request.args.get('tab', 'general') %}
+
+<div class="settings-tabs mb-4">
+    <ul class="nav nav-tabs" id="settingsTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link {{ 'active' if active_tab == 'general' else '' }}" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button" role="tab" aria-controls="general" aria-selected="{{ 'true' if active_tab == 'general' else 'false' }}">
+                <i class="bi bi-gear me-1"></i>
+                General
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link {{ 'active' if active_tab == 'account' else '' }}" id="account-tab" data-bs-toggle="tab" data-bs-target="#account" type="button" role="tab" aria-controls="account" aria-selected="{{ 'true' if active_tab == 'account' else 'false' }}">
+                <i class="bi bi-person me-1"></i>
+                Account
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link {{ 'active' if active_tab == 'api' else '' }}" id="api-tab" data-bs-toggle="tab" data-bs-target="#api" type="button" role="tab" aria-controls="api" aria-selected="{{ 'true' if active_tab == 'api' else 'false' }}">
+                <i class="bi bi-key me-1"></i>
+                API Keys
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link {{ 'active' if active_tab == 'notifications' else '' }}" id="notifications-tab" data-bs-toggle="tab" data-bs-target="#notifications" type="button" role="tab" aria-controls="notifications" aria-selected="{{ 'true' if active_tab == 'notifications' else 'false' }}">
+                <i class="bi bi-bell me-1"></i>
+                Notifications
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link {{ 'active' if active_tab == 'display' else '' }}" id="display-tab" data-bs-toggle="tab" data-bs-target="#display" type="button" role="tab" aria-controls="display" aria-selected="{{ 'true' if active_tab == 'display' else 'false' }}">
+                <i class="bi bi-palette me-1"></i>
+                Display
+            </button>
+        </li>
+    </ul>
+</div>
+
+<div class="tab-content" id="settingsTabsContent">
+    <!-- General Settings Tab -->
+    <div class="tab-pane fade {{ 'show active' if active_tab == 'general' else '' }}" id="general" role="tabpanel" aria-labelledby="general-tab">
+        {% call card() %}
+            {% call form_container(action=url_for('settings'), method="post", id="generalSettingsForm") %}
+                <div class="row">
+                    <div class="col-md-8">
+                        {% call form_section(title="Application Settings", description="Configure general application settings") %}
+                            {{ input_field(
+                                name="application_name",
+                                label="Application Name",
+                                value=settings.application_name|default("TerraMiner"),
+                                placeholder="Name displayed in the application",
+                                help_text="This name will be displayed in the application header and page titles."
+                            ) }}
+                            
+                            {{ textarea_field(
+                                name="application_description",
+                                label="Application Description",
+                                value=settings.application_description|default("Real Estate Data Intelligence Platform"),
+                                rows=3,
+                                help_text="Briefly describe what this application does."
+                            ) }}
+                            
+                            {{ select_field(
+                                name="default_location",
+                                label="Default Location",
+                                options=[
+                                    {"value": "sf", "text": "San Francisco, CA"},
+                                    {"value": "nyc", "text": "New York, NY"},
+                                    {"value": "austin", "text": "Austin, TX"},
+                                    {"value": "seattle", "text": "Seattle, WA"},
+                                    {"value": "miami", "text": "Miami, FL"}
+                                ],
+                                value=settings.default_location|default("sf"),
+                                help_text="Default location for property searches and market data."
+                            ) }}
+                            
+                            {% call form_row(columns=2) %}
+                                {{ input_field(
+                                    name="records_per_page",
+                                    label="Records Per Page",
+                                    type="number",
+                                    value=settings.records_per_page|default(25),
+                                    min=10,
+                                    max=100,
+                                    step=5,
+                                    help_text="Number of records to display per page in tables."
+                                ) }}
+                                
+                                {{ select_field(
+                                    name="date_format",
+                                    label="Date Format",
+                                    options=[
+                                        {"value": "MM/DD/YYYY", "text": "MM/DD/YYYY"},
+                                        {"value": "DD/MM/YYYY", "text": "DD/MM/YYYY"},
+                                        {"value": "YYYY-MM-DD", "text": "YYYY-MM-DD"}
+                                    ],
+                                    value=settings.date_format|default("MM/DD/YYYY"),
+                                    help_text="Format for displaying dates throughout the application."
+                                ) }}
+                            {% endcall %}
+                        {% endcall %}
+                        
+                        {% call form_section(title="Data Settings", description="Configure data handling and export settings") %}
+                            {% call form_row(columns=2) %}
+                                {{ select_field(
+                                    name="default_export_format",
+                                    label="Default Export Format",
+                                    options=[
+                                        {"value": "csv", "text": "CSV"},
+                                        {"value": "excel", "text": "Excel"},
+                                        {"value": "json", "text": "JSON"}
+                                    ],
+                                    value=settings.default_export_format|default("csv"),
+                                    help_text="Default format for exporting data."
+                                ) }}
+                                
+                                {{ select_field(
+                                    name="data_refresh_interval",
+                                    label="Data Refresh Interval",
+                                    options=[
+                                        {"value": "30", "text": "30 seconds"},
+                                        {"value": "60", "text": "1 minute"},
+                                        {"value": "300", "text": "5 minutes"},
+                                        {"value": "600", "text": "10 minutes"},
+                                        {"value": "1800", "text": "30 minutes"},
+                                        {"value": "3600", "text": "1 hour"}
+                                    ],
+                                    value=settings.data_refresh_interval|default("300"),
+                                    help_text="How often to refresh data in dashboards."
+                                ) }}
+                            {% endcall %}
+                            
+                            {{ toggle_switch(
+                                name="enable_auto_refresh",
+                                label="Enable Auto-Refresh",
+                                checked=settings.enable_auto_refresh|default(True),
+                                help_text="Automatically refresh data in dashboards at the specified interval."
+                            ) }}
+                            
+                            {{ toggle_switch(
+                                name="save_export_history",
+                                label="Save Export History",
+                                checked=settings.save_export_history|default(True),
+                                help_text="Keep a record of exported data files for future reference."
+                            ) }}
+                        {% endcall %}
+                        
+                        {{ form_actions(
+                            submit_text="Save General Settings",
+                            cancel_url=url_for('monitoring_dashboard'),
+                            cancel_text="Cancel",
+                            reset=True
+                        ) }}
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card bg-dark border-secondary mb-4">
+                            <div class="card-header border-secondary">
+                                <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Settings Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <p>These settings control the general behavior of the TerraMiner application. Changes will be applied immediately after saving.</p>
+                                <p>Some settings may require a page refresh to take effect.</p>
+                                
+                                <div class="alert alert-primary mt-3">
+                                    <i class="bi bi-lightbulb me-2"></i>
+                                    <strong>Tip:</strong> Use the tabs above to navigate through different setting categories.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endcall %}
+        {% endcall %}
+    </div>
+    
+    <!-- Account Settings Tab -->
+    <div class="tab-pane fade {{ 'show active' if active_tab == 'account' else '' }}" id="account" role="tabpanel" aria-labelledby="account-tab">
+        {% call card() %}
+            {% call form_container(action=url_for('settings'), method="post", id="accountSettingsForm") %}
+                <div class="row">
+                    <div class="col-md-8">
+                        {% call form_section(title="User Information", description="Update your account details") %}
+                            <div class="mb-4 d-flex gap-3 align-items-center">
+                                <div class="user-avatar rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; font-size: 2rem;">
+                                    <i class="bi bi-person"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">{{ user.full_name|default('User Name') }}</h5>
+                                    <p class="text-muted mb-1">{{ user.email|default('user@example.com') }}</p>
+                                    <button type="button" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-upload me-1"></i>
+                                        Upload Photo
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            {% call form_row(columns=2) %}
+                                {{ input_field(
+                                    name="first_name",
+                                    label="First Name",
+                                    value=user.first_name|default(""),
+                                    required=True
+                                ) }}
+                                
+                                {{ input_field(
+                                    name="last_name",
+                                    label="Last Name",
+                                    value=user.last_name|default(""),
+                                    required=True
+                                ) }}
+                            {% endcall %}
+                            
+                            {{ input_field(
+                                name="email",
+                                label="Email Address",
+                                type="email",
+                                value=user.email|default(""),
+                                required=True,
+                                help_text="This email will be used for account notifications and communications."
+                            ) }}
+                            
+                            {{ input_field(
+                                name="phone",
+                                label="Phone Number",
+                                type="tel",
+                                value=user.phone|default(""),
+                                placeholder="(123) 456-7890",
+                                help_text="Optional contact number for account recovery."
+                            ) }}
+                            
+                            {{ select_field(
+                                name="timezone",
+                                label="Timezone",
+                                options=[
+                                    {"value": "America/Los_Angeles", "text": "Pacific Time (PT)"},
+                                    {"value": "America/Denver", "text": "Mountain Time (MT)"},
+                                    {"value": "America/Chicago", "text": "Central Time (CT)"},
+                                    {"value": "America/New_York", "text": "Eastern Time (ET)"},
+                                    {"value": "UTC", "text": "UTC"}
+                                ],
+                                value=user.timezone|default("America/Los_Angeles"),
+                                help_text="Used for displaying dates and scheduling reports."
+                            ) }}
+                        {% endcall %}
+                        
+                        {% call form_section(title="Change Password", description="Update your account password", collapsible=True, collapsed=True) %}
+                            {{ password_field(
+                                name="current_password",
+                                label="Current Password",
+                                required=True
+                            ) }}
+                            
+                            {{ password_field(
+                                name="new_password",
+                                label="New Password",
+                                required=True,
+                                strength_meter=True,
+                                help_text="Password must be at least 8 characters and include uppercase, lowercase, number, and special character."
+                            ) }}
+                            
+                            {{ password_field(
+                                name="confirm_password",
+                                label="Confirm New Password",
+                                required=True
+                            ) }}
+                        {% endcall %}
+                        
+                        {{ form_actions(
+                            submit_text="Save Account Settings",
+                            cancel_url=url_for('monitoring_dashboard'),
+                            cancel_text="Cancel"
+                        ) }}
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card bg-dark border-secondary mb-4">
+                            <div class="card-header border-secondary">
+                                <h5 class="mb-0"><i class="bi bi-shield-lock me-2"></i>Account Security</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span>Two-Factor Authentication</span>
+                                        <span class="badge text-bg-danger">Not Enabled</span>
+                                    </div>
+                                    <p class="text-muted small">Add an extra layer of security to your account by enabling two-factor authentication.</p>
+                                    <button type="button" class="btn btn-sm btn-outline-primary">Enable 2FA</button>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span>Last Login</span>
+                                        <span>Apr 30, 2025, 3:15 AM</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span>Login IP</span>
+                                        <span>192.168.1.1</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span>Login Device</span>
+                                        <span>Chrome on macOS</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer border-secondary text-center">
+                                <a href="#" class="text-muted small">View Security Activity Log</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endcall %}
+        {% endcall %}
+    </div>
+    
+    <!-- API Keys Tab -->
+    <div class="tab-pane fade {{ 'show active' if active_tab == 'api' else '' }}" id="api" role="tabpanel" aria-labelledby="api-tab">
+        {% call card() %}
+            <div class="row">
+                <div class="col-lg-8">
+                    <h5 class="mb-3">API Keys</h5>
+                    <p class="text-muted mb-4">Manage your API keys for integrating with external services.</p>
+                    
+                    <div class="table-responsive mb-4">
+                        <table class="table table-sm table-dark">
+                            <thead>
+                                <tr>
+                                    <th>Service</th>
+                                    <th>Status</th>
+                                    <th>Last Updated</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for key in api_keys %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <span class="me-2">{{ key.service }}</span>
+                                                {% if key.required %}
+                                                    <span class="badge text-bg-primary">Required</span>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% if key.is_set %}
+                                                <span class="badge text-bg-success">Active</span>
+                                            {% else %}
+                                                <span class="badge text-bg-danger">Not Set</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ key.updated_at }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-outline-primary edit-api-key" data-service="{{ key.service }}">
+                                                {% if key.is_set %}
+                                                    <i class="bi bi-pencil"></i>
+                                                {% else %}
+                                                    <i class="bi bi-plus-lg"></i>
+                                                {% endif %}
+                                            </button>
+                                            {% if key.is_set %}
+                                                <button type="button" class="btn btn-sm btn-outline-danger delete-api-key" data-service="{{ key.service }}">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4">
+                                            <i class="bi bi-key text-muted d-block mb-2" style="font-size: 2rem;"></i>
+                                            <p class="mb-0 text-muted">No API keys configured.</p>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <button type="button" class="btn btn-primary mb-4" id="addApiKeyBtn">
+                        <i class="bi bi-plus-lg me-1"></i>
+                        Add New API Key
+                    </button>
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        <strong>Note:</strong> API keys are stored securely and encrypted in the database. They are never displayed in full after being saved.
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="card bg-dark border-secondary">
+                        <div class="card-header border-secondary">
+                            <h5 class="mb-0"><i class="bi bi-key me-2"></i>API Access</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>You can use the TerraMiner API to access your data programmatically.</p>
+                            
+                            {% call form_section(title="Your API Token", description="Use this token to authenticate API requests") %}
+                                <div class="input-group mb-3">
+                                    <input type="text" class="form-control" value="eyJhbGciOiJ•••••••••••••••••••••••" readonly>
+                                    <button class="btn btn-outline-secondary copy-btn" type="button" data-bs-toggle="tooltip" data-bs-title="Copy to clipboard">
+                                        <i class="bi bi-clipboard"></i>
+                                    </button>
+                                </div>
+                                
+                                <div class="d-grid">
+                                    <button type="button" class="btn btn-outline-primary">
+                                        <i class="bi bi-arrow-repeat me-1"></i>
+                                        Regenerate Token
+                                    </button>
+                                </div>
+                            {% endcall %}
+                            
+                            <div class="mt-3">
+                                <a href="#" class="btn btn-outline-secondary w-100">
+                                    <i class="bi bi-book me-1"></i>
+                                    API Documentation
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- API Key Modal (hidden) -->
+            <div class="modal fade" id="apiKeyModal" tabindex="-1" aria-labelledby="apiKeyModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content bg-dark text-light border-secondary">
+                        <div class="modal-header border-secondary">
+                            <h5 class="modal-title" id="apiKeyModalLabel">Add API Key</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            {% call form_container(id="apiKeyForm") %}
+                                {{ select_field(
+                                    name="api_service",
+                                    label="Service",
+                                    options=[
+                                        {"value": "zillow", "text": "Zillow API"},
+                                        {"value": "realtor", "text": "Realtor.com API"},
+                                        {"value": "google_maps", "text": "Google Maps API"},
+                                        {"value": "openai", "text": "OpenAI API"},
+                                        {"value": "twilio", "text": "Twilio API"}
+                                    ],
+                                    required=True
+                                ) }}
+                                
+                                {{ input_field(
+                                    name="api_key",
+                                    label="API Key",
+                                    required=True,
+                                    placeholder="Enter your API key"
+                                ) }}
+                                
+                                {{ input_field(
+                                    name="api_secret",
+                                    label="API Secret",
+                                    placeholder="Enter API secret (if required)",
+                                    help_text="Some APIs require both a key and a secret."
+                                ) }}
+                                
+                                {{ toggle_switch(
+                                    name="api_active",
+                                    label="Active",
+                                    checked=True,
+                                    help_text="Inactive API keys will not be used for requests."
+                                ) }}
+                            {% endcall %}
+                        </div>
+                        <div class="modal-footer border-secondary">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary" id="saveApiKeyBtn">Save API Key</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endcall %}
+    </div>
+    
+    <!-- Notifications Tab -->
+    <div class="tab-pane fade {{ 'show active' if active_tab == 'notifications' else '' }}" id="notifications" role="tabpanel" aria-labelledby="notifications-tab">
+        {% call card() %}
+            {% call form_container(action=url_for('settings'), method="post", id="notificationSettingsForm") %}
+                <div class="row">
+                    <div class="col-md-8">
+                        {% call form_section(title="Notification Preferences", description="Configure how and when you receive notifications") %}
+                            {{ checkbox_radio_group(
+                                name="notification_channels",
+                                label="Notification Channels",
+                                options=[
+                                    {"value": "email", "text": "Email"},
+                                    {"value": "sms", "text": "SMS"},
+                                    {"value": "app", "text": "In-App"},
+                                    {"value": "slack", "text": "Slack"}
+                                ],
+                                type="checkbox",
+                                value=settings.notification_channels|default(["email", "app"]),
+                                help_text="Select where you want to receive notifications."
+                            ) }}
+                            
+                            <div class="mb-4">
+                                <label class="form-label">Notification Types</label>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-dark">
+                                        <thead>
+                                            <tr>
+                                                <th>Notification</th>
+                                                <th class="text-center">Email</th>
+                                                <th class="text-center">SMS</th>
+                                                <th class="text-center">In-App</th>
+                                                <th class="text-center">Slack</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for notification in notification_types %}
+                                                <tr>
+                                                    <td>{{ notification.name }}</td>
+                                                    <td class="text-center">
+                                                        <div class="form-check d-flex justify-content-center">
+                                                            <input class="form-check-input" type="checkbox" id="{{ notification.id }}_email" name="{{ notification.id }}_channels[]" value="email" {{ 'checked' if 'email' in notification.channels }}>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <div class="form-check d-flex justify-content-center">
+                                                            <input class="form-check-input" type="checkbox" id="{{ notification.id }}_sms" name="{{ notification.id }}_channels[]" value="sms" {{ 'checked' if 'sms' in notification.channels }}>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <div class="form-check d-flex justify-content-center">
+                                                            <input class="form-check-input" type="checkbox" id="{{ notification.id }}_app" name="{{ notification.id }}_channels[]" value="app" {{ 'checked' if 'app' in notification.channels }}>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <div class="form-check d-flex justify-content-center">
+                                                            <input class="form-check-input" type="checkbox" id="{{ notification.id }}_slack" name="{{ notification.id }}_channels[]" value="slack" {{ 'checked' if 'slack' in notification.channels }}>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            {{ select_field(
+                                name="notification_frequency",
+                                label="Notification Digest Frequency",
+                                options=[
+                                    {"value": "realtime", "text": "Real-time (Immediate)"},
+                                    {"value": "hourly", "text": "Hourly Digest"},
+                                    {"value": "daily", "text": "Daily Digest"},
+                                    {"value": "weekly", "text": "Weekly Digest"}
+                                ],
+                                value=settings.notification_frequency|default("realtime"),
+                                help_text="How often to receive batched notifications."
+                            ) }}
+                        {% endcall %}
+                        
+                        {% call form_section(title="SMS Settings", description="Configure SMS notification settings", collapsible=True, collapsed=True) %}
+                            {{ input_field(
+                                name="sms_phone",
+                                label="SMS Phone Number",
+                                value=settings.sms_phone|default(""),
+                                placeholder="(123) 456-7890",
+                                help_text="Phone number to receive SMS notifications."
+                            ) }}
+                            
+                            {{ toggle_switch(
+                                name="sms_alerts_only",
+                                label="Critical Alerts Only",
+                                checked=settings.sms_alerts_only|default(True),
+                                help_text="Only send SMS notifications for critical alerts."
+                            ) }}
+                        {% endcall %}
+                        
+                        {% call form_section(title="Slack Settings", description="Configure Slack notification settings", collapsible=True, collapsed=True) %}
+                            {{ input_field(
+                                name="slack_webhook",
+                                label="Slack Webhook URL",
+                                value=settings.slack_webhook|default(""),
+                                placeholder="https://hooks.slack.com/services/...",
+                                help_text="Webhook URL for sending notifications to Slack."
+                            ) }}
+                            
+                            {{ input_field(
+                                name="slack_channel",
+                                label="Slack Channel",
+                                value=settings.slack_channel|default("#notifications"),
+                                placeholder="#channel-name",
+                                help_text="Channel where notifications will be sent."
+                            ) }}
+                        {% endcall %}
+                        
+                        {{ form_actions(
+                            submit_text="Save Notification Settings",
+                            cancel_url=url_for('monitoring_dashboard'),
+                            cancel_text="Cancel"
+                        ) }}
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="alert alert-primary mb-4">
+                            <i class="bi bi-info-circle-fill me-2"></i>
+                            <span>Manage your notification preferences to stay informed about important events and updates.</span>
+                        </div>
+                        
+                        <div class="card bg-dark border-secondary mb-4">
+                            <div class="card-header border-secondary">
+                                <h5 class="mb-0"><i class="bi bi-bell me-2"></i>Recent Notifications</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="list-group list-group-flush bg-dark">
+                                    {% for i in range(3) %}
+                                        <div class="list-group-item bg-dark border-secondary p-3">
+                                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                                <span class="fw-medium">System Alert</span>
+                                                <span class="text-muted small">{{ (3 - i) }} hour{{ 's' if (3 - i) != 1 }} ago</span>
+                                            </div>
+                                            <p class="mb-0 small text-muted">Database performance has improved after optimization.</p>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="card-footer border-secondary text-center">
+                                <a href="#" class="text-muted small">View All Notifications</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endcall %}
+        {% endcall %}
+    </div>
+    
+    <!-- Display Settings Tab -->
+    <div class="tab-pane fade {{ 'show active' if active_tab == 'display' else '' }}" id="display" role="tabpanel" aria-labelledby="display-tab">
+        {% call card() %}
+            {% call form_container(action=url_for('settings'), method="post", id="displaySettingsForm") %}
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        {% call card(title="Theme Settings", card_class="settings-card") %}
+                            {{ select_field(
+                                name="theme",
+                                label="Theme",
+                                options=[
+                                    {"value": "dark", "text": "Dark (Default)"},
+                                    {"value": "light", "text": "Light"},
+                                    {"value": "system", "text": "Match System"}
+                                ],
+                                value=settings.theme|default("dark"),
+                                help_text="Choose the color scheme for the application."
+                            ) }}
+                            
+                            {{ color_picker(
+                                name="accent_color",
+                                label="Accent Color",
+                                value=settings.accent_color|default("#00bfb3"),
+                                help_text="Primary accent color used throughout the application."
+                            ) }}
+                            
+                            {{ toggle_switch(
+                                name="enable_animations",
+                                label="Enable Animations",
+                                checked=settings.enable_animations|default(True),
+                                help_text="Toggle UI animations and transitions."
+                            ) }}
+                        {% endcall %}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        {% call card(title="Chart Settings", card_class="settings-card") %}
+                            {{ select_field(
+                                name="chart_theme",
+                                label="Chart Theme",
+                                options=[
+                                    {"value": "default", "text": "Default"},
+                                    {"value": "monochrome", "text": "Monochrome"},
+                                    {"value": "vibrant", "text": "Vibrant"}
+                                ],
+                                value=settings.chart_theme|default("default"),
+                                help_text="Select the color scheme for charts and visualizations."
+                            ) }}
+                            
+                            {{ toggle_switch(
+                                name="enable_chart_animations",
+                                label="Enable Chart Animations",
+                                checked=settings.enable_chart_animations|default(True),
+                                help_text="Toggle animations for charts and graphs."
+                            ) }}
+                            
+                            {{ toggle_switch(
+                                name="show_chart_legends",
+                                label="Show Chart Legends",
+                                checked=settings.show_chart_legends|default(True),
+                                help_text="Display legends on charts and graphs."
+                            ) }}
+                        {% endcall %}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        {% call card(title="Dashboard Settings", card_class="settings-card") %}
+                            {{ select_field(
+                                name="dashboard_layout",
+                                label="Default Dashboard Layout",
+                                options=[
+                                    {"value": "grid", "text": "Grid"},
+                                    {"value": "list", "text": "List"},
+                                    {"value": "compact", "text": "Compact"}
+                                ],
+                                value=settings.dashboard_layout|default("grid"),
+                                help_text="Choose how widgets are arranged on dashboards."
+                            ) }}
+                            
+                            {{ checkbox_radio_group(
+                                name="default_widgets",
+                                label="Default Dashboard Widgets",
+                                options=[
+                                    {"value": "system", "text": "System Metrics"},
+                                    {"value": "api", "text": "API Performance"},
+                                    {"value": "database", "text": "Database Stats"},
+                                    {"value": "recent", "text": "Recent Activity"}
+                                ],
+                                type="checkbox",
+                                value=settings.default_widgets|default(["system", "api", "database", "recent"]),
+                                help_text="Select which widgets to show by default."
+                            ) }}
+                        {% endcall %}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        {% call card(title="Accessibility Settings", card_class="settings-card") %}
+                            {{ select_field(
+                                name="font_size",
+                                label="Font Size",
+                                options=[
+                                    {"value": "small", "text": "Small"},
+                                    {"value": "medium", "text": "Medium (Default)"},
+                                    {"value": "large", "text": "Large"}
+                                ],
+                                value=settings.font_size|default("medium"),
+                                help_text="Adjust the text size throughout the application."
+                            ) }}
+                            
+                            {{ toggle_switch(
+                                name="high_contrast",
+                                label="High Contrast Mode",
+                                checked=settings.high_contrast|default(False),
+                                help_text="Increase contrast for better readability."
+                            ) }}
+                            
+                            {{ toggle_switch(
+                                name="reduce_motion",
+                                label="Reduce Motion",
+                                checked=settings.reduce_motion|default(False),
+                                help_text="Minimize animations and motion effects."
+                            ) }}
+                        {% endcall %}
+                    </div>
+                </div>
+                
+                {{ form_actions(
+                    submit_text="Save Display Settings",
+                    cancel_url=url_for('monitoring_dashboard'),
+                    cancel_text="Cancel",
+                    reset=True,
+                    class="mt-4"
+                ) }}
+            {% endcall %}
+        {% endcall %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/form_utilities.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add API Key button
+    document.getElementById('addApiKeyBtn')?.addEventListener('click', function() {
+        const modal = new bootstrap.Modal(document.getElementById('apiKeyModal'));
+        document.getElementById('apiKeyModalLabel').textContent = 'Add API Key';
+        
+        // Reset form
+        const form = document.getElementById('apiKeyForm');
+        if (form) form.reset();
+        
+        modal.show();
+    });
+    
+    // Edit API Key buttons
+    document.querySelectorAll('.edit-api-key').forEach(button => {
+        button.addEventListener('click', function() {
+            const service = this.getAttribute('data-service');
+            const modal = new bootstrap.Modal(document.getElementById('apiKeyModal'));
+            
+            document.getElementById('apiKeyModalLabel').textContent = 'Edit API Key';
+            
+            // Populate form (in a real app, this would fetch the data)
+            const form = document.getElementById('apiKeyForm');
+            if (form) {
+                const serviceSelect = form.querySelector('select[name="api_service"]');
+                if (serviceSelect) {
+                    serviceSelect.value = service;
+                    serviceSelect.disabled = true;
+                }
+                
+                // For demo only - in a real app, you'd populate with actual data
+                form.querySelector('input[name="api_key"]').value = '••••••••••••••••';
+                form.querySelector('input[name="api_secret"]').value = '••••••••••••••••';
+            }
+            
+            modal.show();
+        });
+    });
+    
+    // Delete API Key buttons
+    document.querySelectorAll('.delete-api-key').forEach(button => {
+        button.addEventListener('click', function() {
+            const service = this.getAttribute('data-service');
+            
+            if (confirm(`Are you sure you want to delete the API key for ${service}?`)) {
+                // In a real app, this would delete the API key
+                showToast(`API key for ${service} has been deleted.`, 'success');
+            }
+        });
+    });
+    
+    // Save API Key button
+    document.getElementById('saveApiKeyBtn')?.addEventListener('click', function() {
+        const form = document.getElementById('apiKeyForm');
+        const modal = bootstrap.Modal.getInstance(document.getElementById('apiKeyModal'));
+        
+        // In a real app, this would save the API key
+        const service = form.querySelector('select[name="api_service"]').value;
+        
+        showToast(`API key for ${service} has been saved.`, 'success');
+        modal.hide();
+    });
+    
+    // Initialize tooltips
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+    
+    // Copy button
+    document.querySelector('.copy-btn')?.addEventListener('click', function() {
+        const input = this.previousElementSibling;
+        
+        navigator.clipboard.writeText(input.value).then(() => {
+            const tooltip = bootstrap.Tooltip.getInstance(this);
+            
+            // Change tooltip text temporarily
+            this.setAttribute('data-bs-original-title', 'Copied!');
+            tooltip.show();
+            
+            // Restore original tooltip text
+            setTimeout(() => {
+                this.setAttribute('data-bs-original-title', 'Copy to clipboard');
+            }, 1000);
+        });
+    });
+    
+    // Handle tab persistence
+    const settingsTabs = document.getElementById('settingsTabs');
+    if (settingsTabs) {
+        // Set URL when tab changes
+        settingsTabs.addEventListener('shown.bs.tab', function(e) {
+            const tabId = e.target.getAttribute('id');
+            const tab = tabId.replace('-tab', '');
+            
+            // Update URL without refreshing page
+            const url = new URL(window.location);
+            url.searchParams.set('tab', tab);
+            window.history.pushState({}, '', url);
+        });
+    }
+});
+</script>
+{% endblock %}

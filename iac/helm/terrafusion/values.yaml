@@ -1,0 +1,70 @@
+image:
+  repository: ghcr.io/bsvalues/terrafusion-gateway
+  tag: 'latest'
+  pullPolicy: IfNotPresent
+replicaCount: 2
+resources:
+  requests: { cpu: '500m', memory: '512Mi' }
+  limits: { cpu: '1', memory: '1Gi' }
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 70
+service:
+  type: ClusterIP
+  port: 5000
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: tf.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+metrics:
+  enabled: true
+  path: /metrics
+  port: 9090
+env:
+  - name: DOTNET_ReadyToRun
+    value: '1'
+  - name: DOTNET_TieredPGO
+    value: '1'
+  - name: FFI_BRIDGE_ENABLED
+    value: 'true'
+
+# -------------------------------
+# Patroni subcharts configuration
+# -------------------------------
+pgOltp:
+  enabled: true
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+  postgresql:
+    parameters:
+      max_connections: '300'
+      shared_buffers: '1GB'
+      jit: 'off' # OLTP: JIT off
+  persistence:
+    size: 20Gi
+
+pgAnalytics:
+  enabled: false # Enable in stage/prod
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+  postgresql:
+    parameters:
+      max_connections: '400'
+      shared_buffers: '2GB'
+      jit: 'on' # Analytics: JIT on
+      jit_above_cost: '100000'
+      jit_inline_above_cost: '500000'
+      jit_optimize_above_cost: '500000'
+  persistence:
+    size: 200Gi

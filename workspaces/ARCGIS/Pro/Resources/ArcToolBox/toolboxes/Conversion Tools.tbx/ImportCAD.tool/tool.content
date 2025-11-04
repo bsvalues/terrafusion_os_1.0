@@ -1,0 +1,57 @@
+{
+    "type": "FunctionTool",
+    "guid": "{9D630A4D-74D1-416F-8C01-4AA7DDCFF0FA}/ImportCAD",
+    "displayname": "$rc:title",
+    "helpcontent": "2040002",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "Input_Files": {
+            "displayname": "$rc:input_files.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "DECadDrawingDataset"
+                }
+            }
+        },
+        "out_personal_gdb": {
+            "direction": "out",
+            "displayname": "$rc:out_personal_gdb.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            }
+        },
+        "spatial_reference": {
+            "type": "optional",
+            "displayname": "$rc:spatial_reference.title",
+            "datatype": {
+                "type": "GPSpatialReference"
+            },
+            "defaultenvironmentname": "outputCoordinateSystem"
+        },
+        "Explode_Complex": {
+            "type": "optional",
+            "displayname": "$rc:explode_complex.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "Explode_Complex"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "Do_Not_Explode_Complex"
+                    }
+                ]
+            },
+            "value": "false"
+        }
+    }
+}

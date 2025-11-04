@@ -1,0 +1,62 @@
+{
+    "type": "FunctionTool",
+    "guid": "{297c7cb3-f3fb-47c0-94ec-39c46f20f0ca}",
+    "displayname": "$rc:title",
+    "helpcontent": "11000003",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "6"
+    ],
+    "params": {
+        "in_ga_model_source": {
+            "displayname": "$rc:in_ga_model_source.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPGALayer"
+                    },
+                    {
+                        "type": "DEFile"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "xml",
+                            "lyr"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:in_ga_model_source.descr"
+        },
+        "model_param_xpath": {
+            "displayname": "$rc:model_param_xpath.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:model_param_xpath.descr"
+        },
+        "out_param_value": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_param_value.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": " "
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

@@ -1,0 +1,10 @@
+{
+    "set": [
+        "configuration",
+        "configurations",
+        "export",
+        "trace",
+        "trace configuration",
+        "trace network"
+    ]
+}

@@ -1,0 +1,226 @@
+{
+    "type": "FunctionTool",
+    "guid": "{5bc9e805-f81d-47ac-91ea-8ffb52586c70}",
+    "displayname": "$rc:title",
+    "helpcontent": "3260001",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "param_nocount:in_layer"
+    ],
+    "params": {
+        "in_layer": {
+            "display_order": "1",
+            "displayname": "$rc:in_layer.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPLayer"
+                }
+            },
+            "description": "$rc:in_layer.descr"
+        },
+        "output_folder": {
+            "direction": "out",
+            "display_order": "2",
+            "displayname": "$rc:output_folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:output_folder.descr"
+        },
+        "convert_data": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:convert_data.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CONVERT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "PRESERVE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:convert_data.descr"
+        },
+        "convert_arcsde_data": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:convert_arcsde_data.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CONVERT_ARCSDE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "PRESERVE_ARCSDE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:convert_arcsde_data.descr"
+        },
+        "extent": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:extent.title",
+            "datatype": {
+                "type": "GPExtent"
+            },
+            "defaultenvironmentname": "extent",
+            "description": "$rc:extent.descr"
+        },
+        "apply_extent_to_arcsde": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:apply_extent_to_arcsde.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ARCSDE_ONLY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "ALL"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:apply_extent_to_arcsde.descr"
+        },
+        "schema_only": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:schema_only.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SCHEMA_ONLY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "ALL"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:schema_only.descr"
+        },
+        "select_related_rows": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:select_related_rows.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "KEEP_ONLY_RELATED_ROWS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "KEEP_ALL_RELATED_ROWS"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:select_related_rows.descr"
+        },
+        "preserve_sqlite": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:preserve_sqlite.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "PRESERVE_SQLITE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "CONVERT_SQLITE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:preserve_sqlite.descr"
+        },
+        "exclude_network_dataset": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:exclude_network_dataset.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "EXCLUDE_NETWORK_DATASET"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "INCLUDE_NETWORK_DATASET"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:exclude_network_dataset.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "parallelProcessingFactor",
+        "workspace"
+    ]
+}

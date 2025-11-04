@@ -1,0 +1,13 @@
+{
+    "map": {
+        "access_right_type.domain.PRIVATE": "PRIVATE",
+        "access_right_type.domain.PROTECTED": "PROTECTED",
+        "access_right_type.domain.PUBLIC": "PUBLIC",
+        "access_right_type.title": "Network Diagram Access Rights",
+        "description": "Store a temporary diagram and alter its location and its access rights",
+        "in_network_diagram_layer.title": "Input Network Diagram Layer",
+        "out_name.title": "Network Diagram Name",
+        "tags.title": "Tags (optional)",
+        "title": "Store Diagram"
+    }
+}

@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../Projects/CIAPS"
+		},
+		{
+			"path": "."
+		},
+		{
+			"path": "../DatabaseProjectTAAppSvr"
+		}
+	],
+	"settings": {}
+}

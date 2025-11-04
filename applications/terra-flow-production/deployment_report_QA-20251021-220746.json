@@ -1,0 +1,40 @@
+{
+  "deployment_id": "QA-20251021-220746",
+  "timestamp": "2025-10-21T22:07:46.517084",
+  "duration_seconds": 130.372849,
+  "success": true,
+  "environment": {
+    "python_version": "3.12.10",
+    "platform": "win32",
+    "memory_gb": 31.05258560180664,
+    "cpu_count": 32
+  },
+  "configuration": {
+    "target_environment": "production",
+    "performance_requirements": {
+      "ui_latency_p95": 180,
+      "workflow_build_time": 2000,
+      "throughput_target": 500,
+      "memory_efficiency": 85
+    },
+    "security_level": "FISMA-HIGH",
+    "jupyter_config": {
+      "port": 8888,
+      "host": "localhost",
+      "notebook_dir": "C:\\Users\\bsval\\OneDrive\\Desktop\\from D\\TerraFlow_PRODUCTION",
+      "allow_root": false,
+      "token_required": true
+    }
+  },
+  "notebook": {
+    "path": "C:\\Users\\bsval\\OneDrive\\Desktop\\from D\\TerraFlow_PRODUCTION\\TerraFusion_Quantum_Analyst_Mode_v2.1.0.ipynb",
+    "exists": true,
+    "size_kb": 165.4677734375
+  },
+  "services": {
+    "jupyter": {
+      "port": 8888,
+      "url": "http://localhost:8888"
+    }
+  }
+}

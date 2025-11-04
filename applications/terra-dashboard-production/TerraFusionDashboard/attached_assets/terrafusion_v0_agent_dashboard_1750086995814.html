@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion AI Agent Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0f1c 0%, #1a2332 50%, #2a3441 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .tf-header {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 210, 255, 0.2);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .tf-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .tf-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 20px rgba(0, 210, 255, 0.3);
+        }
+
+        .tf-brand {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .tf-tagline {
+            color: #00d2ff;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-left: 1rem;
+        }
+
+        .tf-status {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+
+        .tf-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .dashboard-title {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d2ff, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .dashboard-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 2rem;
+        }
+
+        .system-metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(0, 210, 255, 0.3);
+            box-shadow: 0 12px 40px rgba(0, 210, 255, 0.15);
+        }
+
+        .metric-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #00d2ff;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-trend {
+            font-size: 0.8rem;
+            color: #22c55e;
+            font-weight: 500;
+        }
+
+        .agent-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .agent-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .agent-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(0, 210, 255, 0.3);
+            box-shadow: 0 12px 40px rgba(0, 210, 255, 0.15);
+        }
+
+        .agent-card.active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 210, 255, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .agent-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .agent-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .agent-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .agent-details h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 0.3rem;
+        }
+
+        .agent-role {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .agent-status {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .agent-status.active {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.4);
+        }
+
+        .agent-status.idle {
+            background: rgba(156, 163, 175, 0.2);
+            color: #9ca3af;
+            border: 1px solid rgba(156, 163, 175, 0.4);
+        }
+
+        .agent-status.processing {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.4);
+        }
+
+        .agent-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .agent-metric {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .agent-metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00d2ff;
+            margin-bottom: 0.3rem;
+        }
+
+        .agent-metric-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .agent-description {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .agent-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .agent-btn {
+            flex: 1;
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            border: none;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .agent-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 210, 255, 0.4);
+        }
+
+        .agent-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .agent-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .control-center {
+            background: rgba(0, 210, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .control-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .control-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 1rem;
+        }
+
+        .control-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+        }
+
+        .control-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 2rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            text-decoration: none;
+        }
+
+        .control-btn:hover {
+            background: rgba(0, 210, 255, 0.1);
+            border-color: rgba(0, 210, 255, 0.3);
+            transform: translateY(-4px);
+        }
+
+        .control-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .control-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .control-desc {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .activity-feed {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .feed-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+
+        .feed-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .feed-filter {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .activity-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .activity-item.success {
+            border-left-color: #22c55e;
+        }
+
+        .activity-item.info {
+            border-left-color: #3b82f6;
+        }
+
+        .activity-item.warning {
+            border-left-color: #f59e0b;
+        }
+
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-message {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 0.3rem;
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        @media (max-width: 1200px) {
+            .agent-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .system-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .control-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .agent-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .system-metrics {
+                grid-template-columns: 1fr;
+            }
+            
+            .control-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- TerraFusion Header -->
+    <header class="tf-header">
+        <div class="tf-logo">
+            <div class="tf-icon">TF</div>
+            <div class="tf-brand">TerraFusion</div>
+            <div class="tf-tagline">AI That Understands Land</div>
+        </div>
+        <div class="tf-status">
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span>15 Agents Active</span>
+            </div>
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span>System Optimal</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="tf-container">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">AI Agent Command Center</h1>
+            <p class="dashboard-subtitle">Orchestrating intelligent property assessment workflows across Benton County</p>
+        </div>
+
+        <!-- System Metrics -->
+        <div class="system-metrics">
+            <div class="metric-card">
+                <div class="metric-icon" style="background: linear-gradient(135deg, #22c55e, #16a34a);">🤖</div>
+                <div class="metric-value">15</div>
+                <div class="metric-label">Active Agents</div>
+                <div class="metric-trend">+3 from yesterday</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">⚡</div>
+                <div class="metric-value">2,847</div>
+                <div class="metric-label">Tasks Completed</div>
+                <div class="metric-trend">+12% efficiency</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">📊</div>
+                <div class="metric-value">97.8%</div>
+                <div class="metric-label">Accuracy Rate</div>
+                <div class="metric-trend">IAAO Compliant</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">🏡</div>
+                <div class="metric-value">47,831</div>
+                <div class="metric-label">Parcels Processed</div>
+                <div class="metric-trend">Benton County</div>
+            </div>
+        </div>
+
+        <!-- Agent Grid -->
+        <div class="agent-grid">
+            <!-- NarratorAI -->
+            <div class="agent-card active">
+                <div class="agent-header">
+                    <div class="agent-info">
+                        <div class="agent-avatar" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">📝</div>
+                        <div class="agent-details">
+                            <h3>NarratorAI</h3>
+                            <div class="agent-role">Assessment Storyteller</div>
+                        </div>
+                    </div>
+                    <div class="agent-status active">Active</div>
+                </div>
+                <div class="agent-metrics">
+                    <div class="agent-metric">
+                        <div class="agent-metric-value">1,247</div>
+                        <div class="agent-metric-label">Reports Generated</div>
+                    </div>
+                    <div class="agent-metric">
+                        <div class="agent-metric-value">98.2%</div>
+                        <div class="agent-metric-label">Accuracy</div>
+                    </div>
+                </div>
+                <div class="agent-description">
+                    Generates human-readable assessment narratives and property valuation explanations for taxpayers and appeals.
+                </div>
+                <div class="agent-actions">
+                    <button class="agent-btn" onclick="launchAgent('narrator')">Launch</button>
+                    <button class="agent-btn secondary" onclick="viewLogs('narrator')">View Logs</button>
+                </div>
+            </div>
+
+            <!-- ExemptionSeer -->
+            <div class="agent-card active">
+                <div class="agent-header">
+                    <div class="agent-info">
+                        <div class="agent-avatar" style="background: linear-gradient(135deg, #10b981, #059669);">🔍</div>
+                        <div class="agent-details">
+                            <h3>ExemptionSeer</h3>
+                            <div class="agent-role">Exemption Specialist</div>
+                        </div>
+                    </div>
+                    <div class="agent-status processing">Processing</div>
+                </div>
+                <div class="agent-metrics">
+                    <div class="agent-metric">
+                        <div class="agent-metric-value">487</div>
+                        <div class="agent-metric-label">Exemptions Analyzed</div>
+                    </div>
+                    <div class="agent-metric">
+                        <div class="agent-metric-value">99.1%</div>
+                        <div class="agent-metric-label">Accuracy</div>
+                    </div>
+                </div>
+                <div class="agent-description">
+                    Analyzes property eligibility for tax exemptions including senior, veteran, disability, and agricultural programs.
+                </div>
+                <div class="agent-actions">
+                    <button class="agent-btn" onclick="launchAgent('exemption')">Launch</button>
+                    <button class="agent-btn secondary" onclick="viewLogs('exemption')">View Logs</button>
+                </div>
+            </div>
+
+            <!-- SalesValidator -->
+            <div class="agent-card active">
+                <div class="agent-header">
+                    <div class="agent-info">
+                        <div class="agent-avatar" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">📊</div>
+                        <div class="agent-details">
+                            <h3>SalesValidator</h3>
+                            <div class="agent-role">Market Analysis Expert</div>
+                        </div>
+                    </div>
+                    <div class="agent-status active">Active</div>
+                </div>
+                <div class="agent-metrics">
+                    <div class="agent-metric">
+                        <div class="agent-metric-value">2,156</div>
+                        <div class="agent-metric-label">Sales Validated</div>
+                    </div>
+                    <div class="agent-metric">
+                        <div class="agent-metric-value">96.7%</div>
+                        <div class="agent-metric-label">Accuracy</div>
+                    </div>
+                </div>
+                <div class="agent-description">
+                    Validates property sales data against market conditions and identifies comparable transactions for assessment.
+                </div>
+                <div class="agent-actions">
+                    <button class="agent-btn" onclick="launchAgent('sales')">Launch</button>
+                    <button class="agent-btn secondary" onclick="viewLogs('sales')">View Logs</button>
+                </div>
+            </div>
+
+            <!-- LandValuation -->
+            <div class="agent-card">
+                <div class="agent-header">
+                    <div class="agent-info">
+                        <div class="agent-avatar" style="background: linear-gradient(135deg, #22c55e, #16a34a);">🌱</div>
+                        <div class="agent-details">
+                            <h3>LandValuation</h3>
+                            <div class="agent-role">Land Assessment Specialist</div>
+                        </div>
+                    </div>
+                    <div class="agent-status idle">Standby</div>
+                </div>
+                <div class="agent-metrics">
+                    <div class="agent-metric">
+                        <div class="agent-metric-value">15,743</div>
+                        <div class="agent-metric-label">Parcels Valued</div>
+                    </div>
+                    <div class="agent-metric">
+                        <div class="agent-metric-value">97.5%</div>
+                        <div class="agent-metric-label">Accuracy</div>
+                    </div>
+                </div>
+                <div class="agent-description">
+                    Calculates land values using market comparison, zoning analysis, and topographic considerations.
+                </div>
+                <div class="agent-actions">
+                    <button class="agent-btn" onclick="launchAgent('land')">Launch</button>
+                    <button class="agent-btn secondary" onclick="viewLogs('land')">View Logs</button>
+                </div>
+            </div>
+
+            <!-- StatisticalAgent -->
+            <div class="agent-card">
+                <div class="agent-header">
+                    <div class="agent-info">
+                        <div class="agent-avatar" style="background: linear-gradient(135deg, #f59e0b, #d97706);">📈</div>
+                        <div class="agent-details">
+                            <h3>StatisticalAgent</h3>
+                            <div class="agent-role">IAAO Compliance Monitor</div>
+                        </div>
+                    </div>
+                    <div class="agent-status active">Active</div>
+                </div>
+                <div class="agent-metrics">
+                    <div class="agent-metric">
+                        <div class="agent-metric-value">8.2%</div>
+                        <div class="agent-metric-label">Current COD</div>
+                    </div>
+                    <div class="agent-metric">
+                        <div class="agent-metric-value">1.02</div>
+                        <div class="agent-metric-label">Assessment Ratio</div>
+                    </div>
+                </div>
+                <div class="agent-description">
+                    Monitors assessment ratio studies and ensures IAAO compliance across all property classes and neighborhoods.
+                </div>
+                <div class="agent-actions">
+                    <button class="agent-btn" onclick="launchAgent('statistical')">Launch</button>
+                    <button class="agent-btn secondary" onclick="viewLogs('statistical')">View Logs</button>
+                </div>
+            </div>
+
+            <!-- NeighborhoodAgent -->
+            <div class="agent-card">
+                <div class="agent-header">
+                    <div class="agent-info">
+                        <div class="agent-avatar" style="background: linear-gradient(135deg, #ec4899, #db2777);">🏘️</div>
+                        <div class="agent-details">
+                            <h3>NeighborhoodAgent</h3>
+                            <div class="agent-role">Area Analysis Expert</div>
+                        </div>
+                    </div>
+                    <div class="agent-status processing">Processing</div>
+                </div>
+                <div class="agent-metrics">
+                    <div class="agent-metric">
+                        <div class="agent-metric-value">147</div>
+                        <div class="agent-metric-label">Areas Mapped</div>
+                    </div>
+                    <div class="agent-metric">
+                        <div class="agent-metric-value">94.8%</div>
+                        <div class="agent-metric-label">Boundary Accuracy</div>
+                    </div>
+                </div>
+                <div class="agent-description">
+                    Defines and validates neighborhood boundaries using clustering algorithms and market pattern analysis.
+                </div>
+                <div class="agent-actions">
+                    <button class="agent-btn" onclick="launchAgent('neighborhood')">Launch</button>
+                    <button class="agent-btn secondary" onclick="viewLogs('neighborhood')">View Logs</button>
+                

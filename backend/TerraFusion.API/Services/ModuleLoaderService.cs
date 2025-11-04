@@ -14,12 +14,13 @@ public interface IModuleLoaderService
     System.Threading.Tasks.Task RefreshModulesAsync();
 }
 
-public class ModuleLoaderService : IModuleLoaderService, IHostedService
+public class ModuleLoaderService : BackgroundService, IModuleLoaderService
 {
     private readonly ILogger<ModuleLoaderService> _logger;
     private readonly IServiceProvider _serviceProvider;
     private readonly Dictionary<string, ModuleManifest> _moduleCache = new();
     private readonly string _modulesPath;
+    private const int RefreshIntervalMinutes = 5; // Refresh module cache every 5 minutes
 
     public ModuleLoaderService(
         ILogger<ModuleLoaderService> logger,
@@ -27,7 +28,7 @@ public class ModuleLoaderService : IModuleLoaderService, IHostedService
     {
         _logger = logger;
         _serviceProvider = serviceProvider;
-        
+
         // Path to the modules directory - fix the path resolution
         var currentDir = Directory.GetCurrentDirectory();
         _modulesPath = Path.Combine(currentDir, "modules");
@@ -43,24 +44,49 @@ public class ModuleLoaderService : IModuleLoaderService, IHostedService
         _modulesPath = Path.GetFullPath(_modulesPath);
     }
 
-    public async System.Threading.Tasks.Task StartAsync(CancellationToken cancellationToken)
+    protected override async System.Threading.Tasks.Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("Starting Module Loader Service...");
-        
+        _logger.LogInformation("🚀 Module Loader Service: Starting background module monitoring...");
+
         if (!Directory.Exists(_modulesPath))
         {
             _logger.LogError("Modules directory not found: {Path}", _modulesPath);
+            // Keep service running even if modules directory doesn't exist yet
+            await System.Threading.Tasks.Task.Delay(Timeout.Infinite, stoppingToken);
             return;
         }
 
+        // Initial module load
         await RefreshModulesAsync();
-        _logger.LogInformation("Module Loader Service started. Loaded {Count} modules", _moduleCache.Count);
-    }
+        _logger.LogInformation("✅ Module Loader Service: Initial load complete. Loaded {Count} modules", _moduleCache.Count);
 
-    public System.Threading.Tasks.Task StopAsync(CancellationToken cancellationToken)
-    {
-        _logger.LogInformation("Module Loader Service stopped");
-        return System.Threading.Tasks.Task.CompletedTask;
+        // Background monitoring loop - refresh module cache periodically
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            try
+            {
+                await System.Threading.Tasks.Task.Delay(TimeSpan.FromMinutes(RefreshIntervalMinutes), stoppingToken);
+
+                if (!stoppingToken.IsCancellationRequested)
+                {
+                    _logger.LogDebug("🔄 Module Loader Service: Refreshing module cache...");
+                    await RefreshModulesAsync();
+                    _logger.LogDebug("✅ Module Loader Service: Cache refreshed. {Count} modules loaded", _moduleCache.Count);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogInformation("⚠️ Module Loader Service: Background monitoring cancelled");
+                break;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "❌ Module Loader Service: Error during background refresh");
+                // Continue monitoring despite errors
+            }
+        }
+
+        _logger.LogInformation("🛑 Module Loader Service: Background monitoring stopped");
     }
 
     public async System.Threading.Tasks.Task<IEnumerable<Module>> LoadActiveModulesAsync()

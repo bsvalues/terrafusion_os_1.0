@@ -1,0 +1,19 @@
+{
+    "map": {
+        "description": "Sorts the code or description of a coded value domain in either ascending or descending order.",
+        "domain_name.descr": "The name of the coded value domain to be sorted.",
+        "domain_name.title": "Domain Name",
+        "in_workspace.descr": "The geodatabase containing the domain to be sorted.",
+        "in_workspace.title": "Input Workspace",
+        "out_workspace.title": "Updated Input Workspace",
+        "sort_by.descr": "<xdoc><p>Specifies whether the code or description will be used to sort the domain.</p><ul><li><span title=\"CODE\">Code</span>—Records are sorted based on the code value for the domain.</li><li><span title=\"DESCRIPTION\">Description</span>—Records are sorted based on the description value for the domain.</li></ul></xdoc>",
+        "sort_by.domain.CODE": "Code",
+        "sort_by.domain.DESCRIPTION": "Description",
+        "sort_by.title": "Sort By",
+        "sort_order.descr": "<xdoc><p>Specifies the direction the records will be sorted.</p><ul><li><span title=\"ASCENDING\">Ascending</span>—Records are sorted from low value to high value.</li><li><span title=\"DESCENDING\">Descending</span>—Records are sorted from high value to low value.</li></ul></xdoc>",
+        "sort_order.domain.ASCENDING": "Ascending",
+        "sort_order.domain.DESCENDING": "Descending",
+        "sort_order.title": "Sort Order",
+        "title": "Sort Coded Value Domain"
+    }
+}

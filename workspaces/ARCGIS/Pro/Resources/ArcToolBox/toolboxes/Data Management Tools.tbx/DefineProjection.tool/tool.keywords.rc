@@ -1,0 +1,25 @@
+{
+    "set": [
+        "area",
+        "conformal",
+        "coordinate",
+        "datum",
+        "distance",
+        "equal",
+        "equidistant",
+        "gcs",
+        "geographic",
+        "latitude",
+        "longitude",
+        "pcs",
+        "planar",
+        "projected",
+        "reference",
+        "spatial",
+        "system",
+        "undefined",
+        "unknown",
+        "utm",
+        "wgs"
+    ]
+}

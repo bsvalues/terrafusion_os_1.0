@@ -1,0 +1,21 @@
+{
+    "map": {
+        "description": "Establishes or changes user access privileges on the input enterprise database datasets, stand-alone feature classes, or tables.",
+        "edit.descr": "<xdoc><p>Specifies the user&apos;s edit privileges.</p><ul><li><span title=\"AS_IS\">Do not change edit privileges</span>— No changes will be made to the user&apos;s existing edit privileges. If the user has edit privileges, they will continue to have edit privileges. If the user doesn&apos;t have edit privileges, they will continue to not have edit privileges.</li><li><span title=\"GRANT\">Grant edit privileges</span>—The user will be allowed to edit the input datasets.</li><li><span title=\"REVOKE\">Revoke edit privileges</span>—The user&apos;s edit privileges will be removed. The user can still view the input dataset.</li></ul></xdoc>",
+        "edit.domain.AS_IS": "Do not change edit privileges",
+        "edit.domain.GRANT": "Grant edit privileges",
+        "edit.domain.REVOKE": "Revoke edit privileges",
+        "edit.title": "Edit (Update/Insert/Delete)",
+        "in_dataset.descr": "The datasets, feature classes, or tables whose access privileges will be changed.",
+        "in_dataset.title": "Input Dataset",
+        "out_dataset.title": "Updated Dataset",
+        "title": "Change Privileges",
+        "user.descr": "The database username whose privileges will be modified.",
+        "user.title": "User",
+        "view.descr": "<xdoc><p>Specifies the user&apos;s view privileges.</p><ul><li><span title=\"AS_IS\">Do not change to view privileges</span>—No changes will be made to the user&apos;s existing view privileges. If the user has view privileges, they will continue to have view privileges. If the user doesn&apos;t have view privileges, they will continue to not have view privileges.</li><li><span title=\"GRANT\">Grant view privileges</span>—The user will be allowed to view the datasets.</li><li><span title=\"REVOKE\">Revoke view privileges</span>—The user&apos;s view privileges will be removed.</li></ul></xdoc>",
+        "view.domain.AS_IS": "Do not change to view privileges",
+        "view.domain.GRANT": "Grant view privileges",
+        "view.domain.REVOKE": "Revoke view privileges",
+        "view.title": "View (Select)"
+    }
+}

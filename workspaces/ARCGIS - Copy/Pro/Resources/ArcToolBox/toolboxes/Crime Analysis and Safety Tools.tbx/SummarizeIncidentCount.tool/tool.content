@@ -1,0 +1,121 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\SummarizeIncidentCount",
+    "displayname": "$rc:title",
+    "helpcontent": "75000007",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polyline",
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "in_sum_features": {
+            "displayname": "$rc:in_sum_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_sum_features.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "search_radius": {
+            "type": "optional",
+            "displayname": "$rc:search_radius.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPUnitDomain",
+                "items": [
+                    "Meters",
+                    "Millimeters",
+                    "Centimeters",
+                    "Inches",
+                    "InchesInt",
+                    "Points",
+                    "Feet",
+                    "FeetInt",
+                    "Yards",
+                    "YardsInt"
+                ]
+            },
+            "description": "$rc:search_radius.descr"
+        },
+        "group_field": {
+            "type": "optional",
+            "displayname": "$rc:group_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text",
+                    "Long",
+                    "Short",
+                    "BigInteger"
+                ]
+            },
+            "depends": [
+                "in_sum_features"
+            ],
+            "description": "$rc:group_field.descr"
+        }
+    },
+    "environments": [
+        "MDomain",
+        "MResolution",
+        "MTolerance",
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "ZDomain",
+        "ZResolution",
+        "ZTolerance",
+        "autoCommit",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "maintainAttachments",
+        "outputCoordinateSystem",
+        "outputMFlag",
+        "outputZFlag",
+        "qualifiedFieldNames",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

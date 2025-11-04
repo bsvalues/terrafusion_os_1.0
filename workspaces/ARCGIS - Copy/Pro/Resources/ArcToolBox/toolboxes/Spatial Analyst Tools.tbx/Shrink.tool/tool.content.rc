@@ -1,0 +1,18 @@
+{
+    "map": {
+        "description": "Shrinks the selected zones by a specified number of cells by replacing them with the value of the cell that is most frequent in its neighborhood.",
+        "in_raster.descr": "<xdoc><p>The input raster for which the identified zones are to be shrunk.</p><p>It must be of integer type.</p></xdoc>",
+        "in_raster.title": "Input raster",
+        "number_cells.descr": "<xdoc><p>The number of cells by which to shrink each specified zone.</p><p>The value must be an integer greater than 0.</p></xdoc>",
+        "number_cells.title": "Number of cells",
+        "out_raster.descr": "<xdoc><p>The output generalized raster.</p><p>The specified zones of the input raster will be shrunk by the specified number of cells.</p><p>The output is always of integer type.</p></xdoc>",
+        "out_raster.title": "Output raster",
+        "shrink_method.descr": "<xdoc><p>The method to use to shrink the selected zones.</p><ul><li><span title=\"MORPHOLOGICAL\">Morphological</span>—Uses a mathematical morphology method to shrink the zones. This is the default.</li><li><span title=\"DISTANCE\">Distance</span>—Uses a distance-based method to shrink the zones.</li></ul><p>The <span class=\"esri_uicontrol\">Distance</span> option supports parallelization, and can be controlled with the <span class=\"esri_uicontrol\">Parallel Processing Factor</span> environment setting.</p></xdoc>",
+        "shrink_method.domain.DISTANCE": "Distance",
+        "shrink_method.domain.MORPHOLOGICAL": "Morphological",
+        "shrink_method.title": "Shrink method",
+        "title": "Shrink",
+        "zone_values.descr": "<xdoc><p>The list of zone values to shrink.</p><p>The zone values must be integers. They can be in any order.</p></xdoc>",
+        "zone_values.title": "Zone values"
+    }
+}

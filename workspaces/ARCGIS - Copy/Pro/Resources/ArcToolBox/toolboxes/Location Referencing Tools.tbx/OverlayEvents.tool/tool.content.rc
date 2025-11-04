@@ -1,0 +1,16 @@
+{
+    "map": {
+        "description": "Overlays one or more line and point event layers onto a target network and outputs a feature class or table that represents the dynamic segmentation of the inputs.",
+        "event_layers.descr": "The event layers that will be dynamically segmented together onto a target network. The centerline layer can be used as an input to dynamically segment events.",
+        "event_layers.title": "Event Layers",
+        "in_route_features.descr": "The target network onto which the event layers will be dynamically segmented.",
+        "in_route_features.title": "Input Route Features",
+        "include_geometry.descr": "<xdoc><p>Specifies whether the <span class=\"esri_uicontrol\">Output Dataset</span> parameter value will include event geometry.</p><ul><li>Unchecked—The <span class=\"esri_uicontrol\">Output Dataset</span> parameter value will not include event geometry. Event records will be stored as a table. This is the default.</li><li>Checked—The <span class=\"esri_uicontrol\">Output Dataset</span> parameter value will include event geometry. Event records will be stored as a feature class.</li></ul></xdoc>",
+        "include_geometry.title": "Include Geometry",
+        "network_fields.descr": "The fields from the network layer that will be included in the output.",
+        "network_fields.title": "Network Fields",
+        "output_dataset.descr": "The table or feature class containing the output event records that will be created.",
+        "output_dataset.title": "Output Dataset",
+        "title": "Overlay Events"
+    }
+}

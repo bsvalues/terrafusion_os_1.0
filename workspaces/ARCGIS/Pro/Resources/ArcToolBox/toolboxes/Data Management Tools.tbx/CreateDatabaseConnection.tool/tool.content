@@ -1,0 +1,346 @@
+{
+    "type": "FunctionTool",
+    "guid": "{e28ae3b6-4896-4364-b761-dd5d71417173}",
+    "displayname": "$rc:title",
+    "helpcontent": "3180008",
+    "description": "$rc:description",
+    "product": "200",
+    "categories": [
+        "{0a2ad811-7215-4a95-92f3-9c29de502e9b}"
+    ],
+    "attributes": [
+        "no_data_change"
+    ],
+    "params": {
+        "out_folder_path": {
+            "displayname": "$rc:out_folder_path.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:out_folder_path.descr"
+        },
+        "out_name": {
+            "displayname": "$rc:out_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:out_name.descr"
+        },
+        "database_platform": {
+            "displayname": "$rc:database_platform.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "BIGQUERY",
+                        "code": "$rc:database_platform.domain.BIGQUERY"
+                    },
+                    {
+                        "value": "DAMENG",
+                        "code": "$rc:database_platform.domain.DAMENG"
+                    },
+                    {
+                        "value": "DB2",
+                        "code": "$rc:database_platform.domain.DB2"
+                    },
+                    {
+                        "value": "ORACLE",
+                        "code": "$rc:database_platform.domain.ORACLE"
+                    },
+                    {
+                        "value": "POSTGRESQL",
+                        "code": "$rc:database_platform.domain.POSTGRESQL"
+                    },
+                    {
+                        "value": "REDSHIFT",
+                        "code": "$rc:database_platform.domain.REDSHIFT"
+                    },
+                    {
+                        "value": "SAP HANA",
+                        "code": "$rc:database_platform.domain.SAP HANA"
+                    },
+                    {
+                        "value": "SQL_SERVER",
+                        "code": "$rc:database_platform.domain.SQL_SERVER"
+                    },
+                    {
+                        "value": "SNOWFLAKE",
+                        "code": "$rc:database_platform.domain.SNOWFLAKE"
+                    },
+                    {
+                        "value": "TERADATA",
+                        "code": "$rc:database_platform.domain.TERADATA"
+                    }
+                ]
+            },
+            "description": "$rc:database_platform.descr"
+        },
+        "instance": {
+            "type": "optional",
+            "displayname": "$rc:instance.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:instance.descr"
+        },
+        "account_authentication": {
+            "type": "optional",
+            "displayname": "$rc:account_authentication.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "DATABASE_AUTH"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "OPERATING_SYSTEM_AUTH"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:account_authentication.descr"
+        },
+        "username": {
+            "type": "optional",
+            "displayname": "$rc:username.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:username.descr"
+        },
+        "password": {
+            "type": "optional",
+            "displayname": "$rc:password.title",
+            "datatype": {
+                "type": "GPEncryptedString"
+            },
+            "description": "$rc:password.descr"
+        },
+        "save_user_pass": {
+            "type": "optional",
+            "displayname": "$rc:save_user_pass.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SAVE_USERNAME"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_SAVE_USERNAME"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:save_user_pass.descr"
+        },
+        "database": {
+            "type": "optional",
+            "displayname": "$rc:database.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:database.descr"
+        },
+        "schema": {
+            "type": "optional",
+            "displayname": "$rc:schema.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:schema.descr"
+        },
+        "version_type": {
+            "type": "optional",
+            "displayname": "$rc:version_type.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "TRANSACTIONAL",
+                        "code": "$rc:version_type.domain.TRANSACTIONAL"
+                    },
+                    {
+                        "value": "HISTORICAL",
+                        "code": "$rc:version_type.domain.HISTORICAL"
+                    },
+                    {
+                        "value": "POINT_IN_TIME",
+                        "code": "$rc:version_type.domain.POINT_IN_TIME"
+                    },
+                    {
+                        "value": "BRANCH",
+                        "code": "$rc:version_type.domain.BRANCH"
+                    }
+                ]
+            },
+            "value": "TRANSACTIONAL",
+            "description": "$rc:version_type.descr"
+        },
+        "version": {
+            "type": "optional",
+            "displayname": "$rc:version.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:version.descr"
+        },
+        "date": {
+            "type": "optional",
+            "displayname": "$rc:date.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:date.descr"
+        },
+        "out_workspace": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            }
+        },
+        "auth_type": {
+            "type": "optional",
+            "displayname": "$rc:auth_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "AZURE_ACTIVE_DIRECTORY_UNIVERSAL_WITH_MFA",
+                        "code": "$rc:auth_type.domain.AZURE_ACTIVE_DIRECTORY_UNIVERSAL_WITH_MFA"
+                    },
+                    {
+                        "value": "AZURE_ACTIVE_DIRECTORY_PASSWORD",
+                        "code": "$rc:auth_type.domain.AZURE_ACTIVE_DIRECTORY_PASSWORD"
+                    },
+                    {
+                        "value": "AZURE_ACTIVE_DIRECTORY_INTEGRATEDSERVICE_AUTHENTICATION",
+                        "code": "$rc:auth_type.domain.AZURE_ACTIVE_DIRECTORY_INTEGRATEDSERVICE_AUTHENTICATION"
+                    },
+                    {
+                        "value": "SERVICE_AUTHENTICATION",
+                        "code": "$rc:auth_type.domain.SERVICE_AUTHENTICATION"
+                    },
+                    {
+                        "value": "USER_AUTHENTICATION",
+                        "code": "$rc:auth_type.domain.USER_AUTHENTICATION"
+                    },
+                    {
+                        "value": "STANDARD",
+                        "code": "$rc:auth_type.domain.STANDARD"
+                    },
+                    {
+                        "value": "USER",
+                        "code": "$rc:auth_type.domain.USER"
+                    }
+                ]
+            },
+            "description": "$rc:auth_type.descr"
+        },
+        "project_id": {
+            "type": "optional",
+            "displayname": "$rc:project_id.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:project_id.descr"
+        },
+        "default_dataset": {
+            "type": "optional",
+            "displayname": "$rc:default_dataset.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:default_dataset.descr"
+        },
+        "refresh_token": {
+            "type": "optional",
+            "displayname": "$rc:refresh_token.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPEncryptedString"
+            },
+            "description": "$rc:refresh_token.descr"
+        },
+        "key_file": {
+            "type": "optional",
+            "displayname": "$rc:key_file.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "json"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:key_file.descr"
+        },
+        "role": {
+            "type": "optional",
+            "displayname": "$rc:role.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:role.descr"
+        },
+        "warehouse": {
+            "type": "optional",
+            "displayname": "$rc:warehouse.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:warehouse.descr"
+        },
+        "advanced_options": {
+            "type": "optional",
+            "displayname": "$rc:advanced_options.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:advanced_options.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

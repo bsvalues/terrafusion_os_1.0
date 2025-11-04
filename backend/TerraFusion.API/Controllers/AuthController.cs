@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TerraFusion.API.Security;
+using TerraFusion.Abstractions.Interfaces;
 
 namespace TerraFusion.API.Controllers
 {
@@ -14,11 +15,13 @@ namespace TerraFusion.API.Controllers
     {
         private readonly IJwtAuthService _jwtAuthService;
         private readonly ILogger<AuthController> _logger;
+        private readonly IAuditLogger _auditLogger;
 
-        public AuthController(IJwtAuthService jwtAuthService, ILogger<AuthController> logger)
+        public AuthController(IJwtAuthService jwtAuthService, ILogger<AuthController> logger, IAuditLogger auditLogger)
         {
             _jwtAuthService = jwtAuthService;
             _logger = logger;
+            _auditLogger = auditLogger;
         }
 
         [HttpPost("login")]
@@ -56,9 +59,11 @@ namespace TerraFusion.API.Controllers
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
         {
             var principal = _jwtAuthService.ValidateToken(request.Token);
-            
+
             if (principal == null)
             {
+                // Log failed refresh attempt for security monitoring
+                await _auditLogger.LogSecurityEventAsync("REFRESH_TOKEN_FAILED", "Invalid token provided", "ANONYMOUS");
                 return Unauthorized(new { message = "Invalid token" });
             }
 
@@ -69,13 +74,16 @@ namespace TerraFusion.API.Controllers
             var newToken = _jwtAuthService.GenerateToken(userId ?? "", email ?? "", roles);
             var newRefreshToken = GenerateRefreshToken();
 
+            // Log successful token refresh for audit compliance
+            await _auditLogger.LogAuthenticationAsync(userId ?? "UNKNOWN", true, "Token refreshed successfully");
+
             return Ok(new LoginResponse
             {
                 Token = newToken,
                 RefreshToken = newRefreshToken,
                 ExpiresIn = 3600,
-                UserId = userId,
-                Email = email,
+                UserId = userId ?? "",
+                Email = email ?? "",
                 Roles = roles
             });
         }
@@ -86,6 +94,9 @@ namespace TerraFusion.API.Controllers
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+
+            // Log token validation for FISMA audit compliance
+            await _auditLogger.LogAuthenticationAsync(userId ?? "UNKNOWN", true, "Token validation successful");
 
             return Ok(new
             {
@@ -101,6 +112,9 @@ namespace TerraFusion.API.Controllers
         public async Task<IActionResult> Logout()
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            // FISMA compliance: Log logout event with audit trail
+            await _auditLogger.LogUserActionAsync("LOGOUT", userId ?? "UNKNOWN", "User session terminated");
             _logger.LogInformation($"User logged out: {userId}");
 
             return Ok(new { message = "Logged out successfully" });

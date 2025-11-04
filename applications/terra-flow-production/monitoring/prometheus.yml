@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'web'
+    static_configs:
+      - targets: ['web:5000']
+  - job_name: 'db'
+    static_configs:
+      - targets: ['db:5432']
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']

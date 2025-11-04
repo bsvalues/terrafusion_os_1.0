@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.esri.com/schemas/ArcGIS/3.4.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.esri.com/schemas/ArcGIS/3.4.0">
+<xs:include schemaLocation="Carto.xsd"/>
+	<xs:element name="GetLocatorProperties">
+		<xs:complexType/>
+	</xs:element>
+	<xs:element name="GetLocatorPropertiesResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Props" type="PropertySet"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="GetDefaultInputFieldMapping">
+		<xs:complexType/>
+	</xs:element>
+	<xs:element name="GetDefaultInputFieldMappingResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="DefaultMapping" type="PropertySet"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="GetResultFields">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="PropMods" type="PropertySet"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="GetResultFieldsResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="ResultFieldsInfo" type="Fields"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="GetStandardizedIntersectionFields">
+		<xs:complexType/>
+	</xs:element>
+	<xs:element name="GetStandardizedIntersectionFieldsResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="StandardizedFieldsInfo" type="Fields"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="GetStandardizedFields">
+		<xs:complexType/>
+	</xs:element>
+	<xs:element name="GetStandardizedFieldsResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="StandardizedFieldsInfo" type="Fields"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="GetIntersectionCandidateFields">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="PropMods" type="PropertySet"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="GetIntersectionCandidateFieldsResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="CandidateIntersectionFieldsInfo" type="Fields"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="GetCandidateFields">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="PropMods" type="PropertySet"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="GetCandidateFieldsResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="CandidateFieldsInfo" type="Fields"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="GetAddressFields">
+		<xs:complexType/>
+	</xs:element>
+	<xs:element name="GetAddressFieldsResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="FieldsInfo" type="Fields"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="FindAddressCandidates">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Address" type="PropertySet"/>
+				<xs:element name="PropMods" type="PropertySet"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="FindAddressCandidatesResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Results" type="RecordSet"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="StandardizeAddress">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Address" type="PropertySet"/>
+				<xs:element name="PropMods" type="PropertySet"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="StandardizeAddressResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="StandardizedAddress" type="PropertySet"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="GeocodeAddresses">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="AddressTable" type="RecordSet"/>
+				<xs:element name="AddressFieldMapping" type="PropertySet"/>
+				<xs:element name="PropMods" type="PropertySet"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="GeocodeAddressesResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="ResultTable" type="RecordSet"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="GeocodeAddress">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Address" type="PropertySet"/>
+				<xs:element name="PropMods" type="PropertySet"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="GeocodeAddressResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Result" type="PropertySet"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ReverseGeocode">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Location" type="Point"/>
+				<xs:element name="ReturnIntersection" type="xs:boolean"/>
+				<xs:element name="PropMods" type="PropertySet"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ReverseGeocodeResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="ReverseResult" type="PropertySet"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+  <xs:element name="GetSingleLineAddressField">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="GetSingleLineAddressFieldResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="SingleLineAddressField" type="Field"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="FindAddressCandidates2">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Address" type="PropertySet"/>
+        <xs:element name="PropMods" type="PropertySet"/>
+        <xs:element name="strOutFields" type="xs:string"/>
+        <xs:element name="QueryResultOptions" type="QueryResultOptions"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="FindAddressCandidates2Response">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Result" type="QueryResult"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ReverseGeocode2">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Location" type="Point"/>
+        <xs:element name="ReturnIntersection" type="xs:boolean"/>
+        <xs:element name="PropMods" type="PropertySet"/>
+        <xs:element name="QueryResultOptions" type="QueryResultOptions"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ReverseGeocode2Response">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ReverseResult" type="QueryResult"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

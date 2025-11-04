@@ -1,0 +1,15 @@
+{
+    "set": [
+        "angle",
+        "around",
+        "clockwise",
+        "degree",
+        "image",
+        "orient",
+        "pivot",
+        "reorient",
+        "rotation",
+        "spin",
+        "turn"
+    ]
+}

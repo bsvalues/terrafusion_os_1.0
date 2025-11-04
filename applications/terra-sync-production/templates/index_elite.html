@@ -1,0 +1,458 @@
+{% extends "base_elite.html" %}
+
+{% block title %}TerraFusion Elite Platform - Government-Grade Geospatial Intelligence{% endblock %}
+
+{% block head %}
+{{ super() }}
+<style>
+.hero-section {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    color: white;
+    padding: 6rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    opacity: 0.3;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-title {
+    font-size: 4rem;
+    font-weight: 900;
+    margin-bottom: 2rem;
+    background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin-bottom: 3rem;
+    opacity: 0.9;
+}
+
+.cta-button {
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    border: none;
+    border-radius: 16px;
+    padding: 1.5rem 3rem;
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    margin-right: 1rem;
+    margin-bottom: 1rem;
+}
+
+.cta-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.cta-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 40px rgba(30, 64, 175, 0.3);
+    color: white;
+}
+
+.cta-button:hover::before {
+    left: 100%;
+}
+
+.cta-secondary {
+    background: transparent;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.cta-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.6);
+    color: white;
+}
+
+.feature-showcase {
+    padding: 6rem 0;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.showcase-card {
+    background: white;
+    border-radius: 24px;
+    padding: 3rem;
+    text-align: center;
+    border: none;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.showcase-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: var(--gradient, linear-gradient(90deg, #1e40af, #3b82f6));
+}
+
+.showcase-card:hover {
+    transform: translateY(-12px);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+}
+
+.showcase-icon {
+    width: 100px;
+    height: 100px;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    margin: 0 auto 2rem;
+    background: var(--bg-gradient, linear-gradient(135deg, #1e40af 0%, #3b82f6 100%));
+    color: white;
+}
+
+.showcase-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--text-color, #1e40af);
+}
+
+.showcase-description {
+    font-size: 1.1rem;
+    color: #64748b;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.demo-section {
+    padding: 6rem 0;
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #06b6d4 100%);
+    color: white;
+}
+
+.demo-preview {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+}
+
+.stats-section {
+    padding: 4rem 0;
+    background: #0f172a;
+    color: white;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 2rem;
+}
+
+.stat-number {
+    font-size: 3.5rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+}
+
+.stat-label {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #e2e8f0;
+}
+
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .cta-button {
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        display: block;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="hero-title">
+                        TerraFusion Elite Platform
+                    </h1>
+                    <p class="hero-subtitle">
+                        Government-Grade Geospatial Intelligence • Enterprise Property Assessment • AI-Powered Analytics
+                    </p>
+                    <div class="d-flex flex-wrap">
+                        <a href="/dashboard/elite" class="cta-button">
+                            <i class="bi bi-rocket-takeoff me-2"></i>
+                            Launch Elite Dashboard
+                        </a>
+                        <a href="/ai-analysis/elite" class="cta-button cta-secondary">
+                            <i class="bi bi-robot me-2"></i>
+                            AI Analysis Center
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center">
+                    <div class="demo-preview">
+                        <i class="bi bi-shield-check display-1 mb-3"></i>
+                        <h3 class="fw-bold">FISMA-HIGH Certified</h3>
+                        <p class="mb-0">Zero-Trust Architecture • 99.97% Uptime</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Showcase -->
+<section class="feature-showcase">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="display-4 fw-bold mb-4">Elite Capabilities</h2>
+                <p class="lead text-muted">Discover the championship-level features that set TerraFusion apart</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="showcase-card" style="--gradient: linear-gradient(90deg, #dc2626, #ef4444); --bg-gradient: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); --text-color: #dc2626;">
+                    <div class="showcase-icon">
+                        <i class="bi bi-robot"></i>
+                    </div>
+                    <h3 class="showcase-title">Quantum AI Analysis</h3>
+                    <p class="showcase-description">
+                        Deploy advanced machine learning for property exemption fraud detection, risk assessment, and predictive analytics with 97.3% accuracy.
+                    </p>
+                    <a href="/ai-analysis/elite" class="btn btn-outline-danger">
+                        <i class="bi bi-arrow-right me-2"></i>
+                        Explore AI Center
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="showcase-card" style="--gradient: linear-gradient(90deg, #1e40af, #3b82f6); --bg-gradient: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); --text-color: #1e40af;">
+                    <div class="showcase-icon">
+                        <i class="bi bi-globe-americas"></i>
+                    </div>
+                    <h3 class="showcase-title">GIS Command Center</h3>
+                    <p class="showcase-description">
+                        Advanced geospatial operations with multi-format export capabilities, real-time mapping, and spatial intelligence processing.
+                    </p>
+                    <a href="/gis/elite" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-right me-2"></i>
+                        Access GIS Command
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="showcase-card" style="--gradient: linear-gradient(90deg, #059669, #10b981); --bg-gradient: linear-gradient(135deg, #059669 0%, #10b981 100%); --text-color: #059669;">
+                    <div class="showcase-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h3 class="showcase-title">Enterprise Security</h3>
+                    <p class="showcase-description">
+                        FISMA-HIGH certified platform with zero-trust architecture, comprehensive audit trails, and government-grade compliance.
+                    </p>
+                    <a href="/security-dashboard" class="btn btn-outline-success">
+                        <i class="bi bi-arrow-right me-2"></i>
+                        Security Center
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="showcase-card" style="--gradient: linear-gradient(90gb, #d97706, #f59e0b); --bg-gradient: linear-gradient(135deg, #d97706 0%, #f59e0b 100%); --text-color: #d97706;">
+                    <div class="showcase-icon">
+                        <i class="bi bi-arrow-repeat"></i>
+                    </div>
+                    <h3 class="showcase-title">Legacy Integration</h3>
+                    <p class="showcase-description">
+                        Seamless data synchronization from legacy assessment systems including PACS, Patriot, Tyler, and custom databases.
+                    </p>
+                    <a href="/legacy-sync" class="btn btn-outline-warning">
+                        <i class="bi bi-arrow-right me-2"></i>
+                        Integration Hub
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="showcase-card" style="--gradient: linear-gradient(90deg, #7c3aed, #a855f7); --bg-gradient: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%); --text-color: #7c3aed;">
+                    <div class="showcase-icon">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                    <h3 class="showcase-title">Market Intelligence</h3>
+                    <p class="showcase-description">
+                        Real-time property valuation analytics, market trend analysis, and investment-grade reporting capabilities.
+                    </p>
+                    <a href="/market-analysis" class="btn btn-outline-secondary" style="--bs-btn-border-color: #7c3aed; --bs-btn-color: #7c3aed;">
+                        <i class="bi bi-arrow-right me-2"></i>
+                        Market Analytics
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="showcase-card" style="--gradient: linear-gradient(90deg, #0891b2, #06b6d4); --bg-gradient: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%); --text-color: #0891b2;">
+                    <div class="showcase-icon">
+                        <i class="bi bi-lightning-charge"></i>
+                    </div>
+                    <h3 class="showcase-title">High Performance</h3>
+                    <p class="showcase-description">
+                        Championship-level performance with <200ms response times, 99.97% uptime, and infinite scale architecture.
+                    </p>
+                    <a href="/performance-dashboard" class="btn btn-outline-info">
+                        <i class="bi bi-arrow-right me-2"></i>
+                        Performance Metrics
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Demo Section -->
+<section class="demo-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h2 class="display-4 fw-bold mb-4">Experience Elite Technology</h2>
+                <p class="lead mb-4">
+                    Step into the future of government geospatial technology. TerraFusion Elite represents the pinnacle of 
+                    enterprise-grade platform engineering with government-transcended capabilities.
+                </p>
+                <ul class="list-unstyled mb-4">
+                    <li class="mb-3">
+                        <i class="bi bi-check-circle-fill me-3 text-success"></i>
+                        <strong>Real-time Analytics:</strong> Live system monitoring and performance metrics
+                    </li>
+                    <li class="mb-3">
+                        <i class="bi bi-check-circle-fill me-3 text-success"></i>
+                        <strong>AI-Powered Insights:</strong> Machine learning with explainable AI results
+                    </li>
+                    <li class="mb-3">
+                        <i class="bi bi-check-circle-fill me-3 text-success"></i>
+                        <strong>Enterprise Security:</strong> Zero-trust architecture with FISMA-HIGH compliance
+                    </li>
+                    <li class="mb-3">
+                        <i class="bi bi-check-circle-fill me-3 text-success"></i>
+                        <strong>Infinite Scalability:</strong> Cloud-native design with elastic scaling
+                    </li>
+                </ul>
+                <a href="/dashboard/elite" class="cta-button">
+                    <i class="bi bi-play-circle me-2"></i>
+                    Launch Live Demo
+                </a>
+            </div>
+            <div class="col-lg-6">
+                <div class="demo-preview">
+                    <h3 class="fw-bold mb-4">Live System Status</h3>
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <div class="h2 fw-bold text-success">99.97%</div>
+                            <div>System Uptime</div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="h2 fw-bold text-info">89ms</div>
+                            <div>Response Time</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="h2 fw-bold text-warning">50,247</div>
+                            <div>AI Agents</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="h2 fw-bold text-primary">2.4TB</div>
+                            <div>Data Processed</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item">
+                    <div class="stat-number">47,823</div>
+                    <div class="stat-label">Properties Managed</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item">
+                    <div class="stat-number">29</div>
+                    <div class="stat-label">Counties Served</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item">
+                    <div class="stat-number">2,847</div>
+                    <div class="stat-label">Daily Exports</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item">
+                    <div class="stat-number">97.3%</div>
+                    <div class="stat-label">AI Accuracy</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

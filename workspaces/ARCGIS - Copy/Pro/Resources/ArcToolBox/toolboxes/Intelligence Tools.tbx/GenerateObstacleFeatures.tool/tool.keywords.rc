@@ -1,0 +1,10 @@
+{
+    "set": [
+        "flight hazards",
+        "hlz",
+        "helicopter landing zones",
+        "navigation hazards",
+        "obstacles",
+        "obstructions"
+    ]
+}

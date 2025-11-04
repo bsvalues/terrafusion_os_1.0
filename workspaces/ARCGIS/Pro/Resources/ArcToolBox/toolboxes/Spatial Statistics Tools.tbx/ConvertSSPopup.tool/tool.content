@@ -1,0 +1,95 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\ConvertSSPopup",
+    "displayname": "$rc:title",
+    "helpcontent": "9050015",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "img_width": {
+            "type": "optional",
+            "displayname": "$rc:img_width.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "300",
+                "max": "1600"
+            },
+            "description": "$rc:img_width.descr"
+        },
+        "img_height": {
+            "type": "optional",
+            "displayname": "$rc:img_height.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "300",
+                "max": "1000"
+            },
+            "description": "$rc:img_height.descr"
+        },
+        "rotate_x_axis_labels": {
+            "type": "optional",
+            "displayname": "$rc:rotate_x_axis_labels.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ROTATE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_ROTATE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:rotate_x_axis_labels.descr"
+        }
+    },
+    "environments": [
+        "parallelProcessingFactor"
+    ]
+}

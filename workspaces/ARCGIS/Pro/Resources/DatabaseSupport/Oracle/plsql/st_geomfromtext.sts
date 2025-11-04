@@ -1,0 +1,12 @@
+/* $Id: st_geomfromtext.sts,v 1.5.1.0, 2008-08-24 17:26:34Z, Kevin Watt$ 
+$NoKeywords$ */ 
+CREATE OR REPLACE Type st_geomfromtext 
+          OID 'A618FA8DD1D84E13B35784E17153010C' 
+          under st_geometry
+        --C_Type_Release 1001
+(
+  constructor Function st_geomfromtext(geom_str clob) Return self AS result deterministic,
+  constructor Function st_geomfromtext(geom_str clob,srid number) Return self AS result deterministic,
+  static Function get_release Return number
+);
+/

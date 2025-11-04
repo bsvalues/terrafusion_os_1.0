@@ -1,0 +1,11 @@
+{
+    "set": [
+        "airports",
+        "generate",
+        "identification",
+        "intersection",
+        "ois",
+        "obstacles",
+        "surface"
+    ]
+}

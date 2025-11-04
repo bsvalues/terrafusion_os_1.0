@@ -1,0 +1,15 @@
+{
+    "set": [
+        "aggregation",
+        "data cube",
+        "dimension",
+        "group",
+        "image cube",
+        "merge",
+        "mosaic dataset",
+        "multidimension",
+        "multidimensional",
+        "scientific data",
+        "netcdf"
+    ]
+}

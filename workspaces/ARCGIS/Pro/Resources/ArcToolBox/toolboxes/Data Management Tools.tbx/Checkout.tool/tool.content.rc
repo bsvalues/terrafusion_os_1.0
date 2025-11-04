@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Creates a check-out replica from datasets in ArcSDE.",
+        "get_related_data.title": "Check out related data",
+        "in_data.title": "Check-out Data",
+        "in_type.domain.DATA": "DATA",
+        "in_type.domain.SCHEMA_ONLY": "SCHEMA_ONLY",
+        "in_type.title": "Check-out Type",
+        "out_name.title": "Check-out Name",
+        "out_workspace.title": "Check-out to Workspace",
+        "reuse_schema.title": "Re-use schema if this geodatabase was used for a check-out before",
+        "title": "Check Out"
+    }
+}

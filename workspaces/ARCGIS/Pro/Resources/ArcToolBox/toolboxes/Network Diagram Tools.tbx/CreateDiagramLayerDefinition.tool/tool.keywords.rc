@@ -1,0 +1,14 @@
+{
+    "set": [
+        "configuration",
+        "create",
+        "diagram definition",
+        "diagram layer",
+        "diagram layer definition",
+        "diagram template",
+        "layer definition",
+        "network",
+        "network diagram",
+        "template configuration"
+    ]
+}

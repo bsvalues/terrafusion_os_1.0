@@ -1,0 +1,15 @@
+{
+  "name": "TerraFusion Development Excellence",
+  "folders": [
+    {
+      "path": "../.github"
+    },
+    {
+      "path": "../scripts"
+    }
+  ],
+  "settings": {
+    "terrafusion.role": "development_excellence",
+    "terrafusion.ci_cd": "zero_downtime"
+  }
+}

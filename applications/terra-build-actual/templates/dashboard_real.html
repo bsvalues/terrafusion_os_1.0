@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - TerraFusionBuild{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1><i class="fas fa-tachometer-alt me-2"></i>TerraFusionBuild Dashboard</h1>
+        <p class="text-muted">Professional Marshall & Swift Replacement System</p>
+    </div>
+    <div class="col-auto">
+        <a href="{{ url_for('new_property') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Add New Property
+        </a>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stats-card">
+            <div class="stats-number">{{ total_properties }}</div>
+            <div>Total Properties</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card">
+            <div class="stats-number">{{ total_calculations }}</div>
+            <div>Calculations Performed</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card">
+            <div class="stats-number">${{ "{:,.0f}".format(total_value) }}</div>
+            <div>Total Value Calculated</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card">
+            <div class="stats-number">$900</div>
+            <div>Annual Savings vs M&S</div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="tf-card p-3">
+            <h5><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+            <div class="d-grid gap-2">
+                <a href="{{ url_for('new_property') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Add New Property
+                </a>
+                <a href="{{ url_for('calculator') }}" class="btn btn-success">
+                    <i class="fas fa-calculator me-2"></i>Quick Calculator
+                </a>
+                <a href="{{ url_for('list_properties') }}" class="btn btn-info">
+                    <i class="fas fa-search me-2"></i>Search Properties
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="tf-card p-3">
+            <h5><i class="fas fa-chart-line me-2"></i>System Status</h5>
+            <div class="mb-2">
+                <span class="badge bg-success me-2">OPERATIONAL</span>
+                Cost Engine Status
+            </div>
+            <div class="mb-2">
+                <span class="badge bg-success me-2">CONNECTED</span>
+                Database Status
+            </div>
+            <div class="mb-2">
+                <span class="badge bg-success me-2">ACTIVE</span>
+                Marshall & Swift Replacement
+            </div>
+            <div class="mb-2">
+                <span class="badge bg-warning me-2">SAVINGS</span>
+                $75/month vs Marshall & Swift
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Properties -->
+<div class="row">
+    <div class="col">
+        <div class="tf-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-building me-2"></i>Recent Properties</h5>
+                <a href="{{ url_for('list_properties') }}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body">
+                {% if recent_properties %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Property ID</th>
+                                <th>Address</th>
+                                <th>Type</th>
+                                <th>Size (sq ft)</th>
+                                <th>RCN</th>
+                                <th>Cost/SF</th>
+                                <th>Confidence</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for property in recent_properties %}
+                            <tr>
+                                <td>
+                                    <strong>{{ property.property_id or 'N/A' }}</strong>
+                                </td>
+                                <td>
+                                    {{ property.address }}<br>
+                                    <small class="text-muted">{{ property.city }}, {{ property.state }} {{
+                                        property.zip_code }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ property.building_type }}</span>
+                                </td>
+                                <td>{{ "{:,}".format(property.square_footage) }}</td>
+                                <td>
+                                    {% if property.replacement_cost_new %}
+                                    <strong class="text-success">${{ "{:,.0f}".format(property.replacement_cost_new)
+                                        }}</strong>
+                                    {% else %}
+                                    <span class="text-muted">Not calculated</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if property.cost_per_sqft %}
+                                    ${{ "{:.2f}".format(property.cost_per_sqft) }}
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if property.confidence_score %}
+                                    <span class="badge bg-success">{{ "{:.1f}".format(property.confidence_score)
+                                        }}%</span>
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ url_for('view_property', property_id=property.id) }}"
+                                            class="btn btn-outline-primary" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        {% if not property.replacement_cost_new %}
+                                        <a href="{{ url_for('calculate_cost', property_id=property.id) }}"
+                                            class="btn btn-outline-success" title="Calculate Cost">
+                                            <i class="fas fa-calculator"></i>
+                                        </a>
+                                        {% endif %}
+                                        <a href="{{ url_for('generate_report', property_id=property.id) }}"
+                                            class="btn btn-outline-info" title="Generate Report">
+                                            <i class="fas fa-file-pdf"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-building fa-3x text-muted mb-3"></i>
+                    <h5>No Properties Yet</h5>
+                    <p class="text-muted">Add your first property to get started with cost calculations.</p>
+                    <a href="{{ url_for('new_property') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Add First Property
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

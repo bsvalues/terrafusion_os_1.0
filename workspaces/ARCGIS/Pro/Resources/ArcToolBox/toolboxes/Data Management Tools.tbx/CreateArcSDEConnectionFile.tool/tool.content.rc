@@ -1,0 +1,18 @@
+{
+    "map": {
+        "account_authentication.title": "Database authentication",
+        "connection_file_name.title": "Connection File Name",
+        "database.title": "Database",
+        "description": "Create a connection file to an ArcSDE workspace",
+        "out_folder_path.title": "ArcSDE Connection File Location",
+        "out_name.title": "ArcSDE Connection File Name",
+        "password.title": "Password",
+        "save_username_password.title": "Save username and password",
+        "save_version_info.title": "Save the transactional version name with the connection file",
+        "server.title": "Server",
+        "service.title": "Service",
+        "title": "Create ArcSDE Connection File",
+        "username.title": "Username",
+        "version.title": "The following transactional version will be used"
+    }
+}

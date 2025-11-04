@@ -1,0 +1,595 @@
+{% extends "layout.html" %}
+
+{% block title %}
+{{ title }} | TerraFlow
+{% endblock %}
+
+{% block main %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('supabase_config.index') }}">Supabase Configuration</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Test Connection</li>
+                </ol>
+            </nav>
+            
+            <h2><i class="fas fa-vial"></i> Test Supabase Connection</h2>
+            <p class="lead">Verify that your Supabase connection is working properly.</p>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Connection Tests</h5>
+                </div>
+                <div class="card-body">
+                    <p>Select an environment to test:</p>
+                    
+                    <div class="mb-3">
+                        <select class="form-select" id="environment-select">
+                            <option value="">Current Environment</option>
+                            <option value="development">Development</option>
+                            <option value="training">Training</option>
+                            <option value="production">Production</option>
+                        </select>
+                    </div>
+                    
+                    <button id="run-test-btn" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Run Tests
+                    </button>
+                    
+                    <div id="test-results" class="mt-4">
+                        <!-- Test results will be displayed here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Test All Environments</h5>
+                </div>
+                <div class="card-body">
+                    <p>Run tests on all configured environments to ensure they are all working properly.</p>
+                    
+                    <button id="test-all-btn" class="btn btn-info">
+                        <i class="fas fa-play-circle"></i> Test All Environments
+                    </button>
+                    
+                    <div id="all-environments-results" class="mt-4">
+                        <!-- Results for all environments will be displayed here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Connection Pool Status</h5>
+                </div>
+                <div class="card-body">
+                    <p>Check the status of the Supabase connection pool.</p>
+                    
+                    <button id="pool-status-btn" class="btn btn-success">
+                        <i class="fas fa-info-circle"></i> Check Pool Status
+                    </button>
+                    
+                    <div id="pool-status-results" class="mt-4">
+                        <!-- Connection pool status will be displayed here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">Migration Readiness Check</h5>
+                </div>
+                <div class="card-body">
+                    <p>Check if the selected environment is ready for database migration.</p>
+                    
+                    <div class="mb-3">
+                        <select class="form-select" id="migration-environment-select">
+                            <option value="">Current Environment</option>
+                            <option value="development">Development</option>
+                            <option value="training">Training</option>
+                            <option value="production">Production</option>
+                        </select>
+                    </div>
+                    
+                    <button id="migration-test-btn" class="btn btn-warning">
+                        <i class="fas fa-database"></i> Check Migration Readiness
+                    </button>
+                    
+                    <div id="migration-results" class="mt-4">
+                        <!-- Migration readiness results will be displayed here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Test individual environment
+    document.getElementById('run-test-btn').addEventListener('click', function() {
+        const environment = document.getElementById('environment-select').value;
+        const resultsDiv = document.getElementById('test-results');
+        
+        resultsDiv.innerHTML = `
+            <div class="text-center py-3">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Running tests...</p>
+            </div>
+        `;
+        
+        fetch('/supabase/api/test_connection', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                environment: environment
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                let html = '';
+                
+                if (data.success) {
+                    html += `
+                        <div class="alert alert-success">
+                            <h5><i class="fas fa-check-circle"></i> Success</h5>
+                            <p>${data.message}</p>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="alert alert-danger">
+                            <h5><i class="fas fa-times-circle"></i> Error</h5>
+                            <p>${data.message}</p>
+                        </div>
+                    `;
+                }
+                
+                // Add detailed results
+                html += `<h5 class="mt-4">Test Results for ${data.environment}</h5>`;
+                html += `<div class="table-responsive"><table class="table table-bordered">`;
+                html += `<thead><tr><th>Test</th><th>Status</th><th>Message</th></tr></thead><tbody>`;
+                
+                // Environment variables
+                const variables = data.variables || {};
+                html += `
+                    <tr>
+                        <td>Environment Variables</td>
+                        <td>${variables.success ? 
+                            '<span class="badge bg-success">Success</span>' : 
+                            '<span class="badge bg-danger">Failed</span>'}
+                        </td>
+                        <td>${variables.message || 'No details available'}</td>
+                    </tr>
+                `;
+                
+                // Connection
+                const connection = data.connection || {};
+                html += `
+                    <tr>
+                        <td>Database Connection</td>
+                        <td>${connection.success ? 
+                            '<span class="badge bg-success">Success</span>' : 
+                            '<span class="badge bg-danger">Failed</span>'}
+                        </td>
+                        <td>${connection.message || 'No details available'}</td>
+                    </tr>
+                `;
+                
+                // Auth
+                const auth = data.auth || {};
+                html += `
+                    <tr>
+                        <td>Authentication</td>
+                        <td>${auth.success ? 
+                            '<span class="badge bg-success">Success</span>' : 
+                            '<span class="badge bg-danger">Failed</span>'}
+                        </td>
+                        <td>${auth.message || 'No details available'}</td>
+                    </tr>
+                `;
+                
+                // Storage
+                const storage = data.storage || {};
+                html += `
+                    <tr>
+                        <td>Storage</td>
+                        <td>${storage.success ? 
+                            '<span class="badge bg-success">Success</span>' : 
+                            '<span class="badge bg-danger">Failed</span>'}
+                        </td>
+                        <td>${storage.message || 'No details available'}</td>
+                    </tr>
+                `;
+                
+                // PostGIS
+                const postgis = data.postgis || {};
+                html += `
+                    <tr>
+                        <td>PostGIS Extension</td>
+                        <td>${postgis.success ? 
+                            '<span class="badge bg-success">Success</span>' : 
+                            '<span class="badge bg-danger">Failed</span>'}
+                        </td>
+                        <td>${postgis.message || 'No details available'}</td>
+                    </tr>
+                `;
+                
+                html += `</tbody></table></div>`;
+                
+                resultsDiv.innerHTML = html;
+            })
+            .catch(error => {
+                resultsDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <h5><i class="fas fa-exclamation-triangle"></i> Error</h5>
+                        <p>An error occurred while running the tests: ${error.message}</p>
+                    </div>
+                `;
+            });
+    });
+    
+    // Test all environments
+    document.getElementById('test-all-btn').addEventListener('click', function() {
+        const resultsDiv = document.getElementById('all-environments-results');
+        
+        resultsDiv.innerHTML = `
+            <div class="text-center py-3">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Testing all environments...</p>
+            </div>
+        `;
+        
+        fetch('/supabase/api/test_all_environments')
+            .then(response => response.json())
+            .then(data => {
+                let html = '';
+                
+                // Summary
+                const environments = Object.keys(data);
+                const successCount = environments.filter(env => data[env].success).length;
+                
+                if (successCount === environments.length) {
+                    html += `
+                        <div class="alert alert-success">
+                            <h5><i class="fas fa-check-circle"></i> All Environments Ready</h5>
+                            <p>All ${environments.length} environments are configured and working properly.</p>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="alert alert-warning">
+                            <h5><i class="fas fa-exclamation-triangle"></i> Some Environments Have Issues</h5>
+                            <p>${successCount} of ${environments.length} environments are working properly.</p>
+                        </div>
+                    `;
+                }
+                
+                // Environment cards
+                html += `<div class="row mt-4">`;
+                
+                environments.forEach(env => {
+                    const envData = data[env];
+                    
+                    html += `
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 ${envData.success ? 'border-success' : 'border-danger'}">
+                                <div class="card-header ${envData.success ? 'bg-success' : 'bg-danger'} text-white">
+                                    <h5 class="mb-0">${env}</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">${envData.message}</p>
+                                    <ul class="list-group list-group-flush mt-3">
+                    `;
+                    
+                    // Add checks
+                    if (envData.variables) {
+                        html += `
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Environment Variables
+                                ${envData.variables.success ? 
+                                    '<span class="badge bg-success">Pass</span>' : 
+                                    '<span class="badge bg-danger">Fail</span>'}
+                            </li>
+                        `;
+                    }
+                    
+                    if (envData.connection) {
+                        html += `
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Database Connection
+                                ${envData.connection.success ? 
+                                    '<span class="badge bg-success">Pass</span>' : 
+                                    '<span class="badge bg-danger">Fail</span>'}
+                            </li>
+                        `;
+                    }
+                    
+                    if (envData.auth) {
+                        html += `
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Authentication
+                                ${envData.auth.success ? 
+                                    '<span class="badge bg-success">Pass</span>' : 
+                                    '<span class="badge bg-danger">Fail</span>'}
+                            </li>
+                        `;
+                    }
+                    
+                    if (envData.storage) {
+                        html += `
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Storage
+                                ${envData.storage.success ? 
+                                    '<span class="badge bg-success">Pass</span>' : 
+                                    '<span class="badge bg-danger">Fail</span>'}
+                            </li>
+                        `;
+                    }
+                    
+                    if (envData.postgis) {
+                        html += `
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                PostGIS Extension
+                                ${envData.postgis.success ? 
+                                    '<span class="badge bg-success">Pass</span>' : 
+                                    '<span class="badge bg-danger">Fail</span>'}
+                            </li>
+                        `;
+                    }
+                    
+                    html += `
+                                    </ul>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="${env ? '/supabase/environment/' + env : '#'}" class="btn btn-sm btn-primary">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+                
+                resultsDiv.innerHTML = html;
+            })
+            .catch(error => {
+                resultsDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <h5><i class="fas fa-exclamation-triangle"></i> Error</h5>
+                        <p>An error occurred while testing environments: ${error.message}</p>
+                    </div>
+                `;
+            });
+    });
+    
+    // Check connection pool status
+    document.getElementById('pool-status-btn').addEventListener('click', function() {
+        const resultsDiv = document.getElementById('pool-status-results');
+        
+        resultsDiv.innerHTML = `
+            <div class="text-center py-3">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Fetching pool status...</p>
+            </div>
+        `;
+        
+        fetch('/supabase/api/pool_stats')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const stats = data.stats;
+                    
+                    let html = `
+                        <div class="alert alert-info">
+                            <h5><i class="fas fa-info-circle"></i> Connection Pool Status</h5>
+                            <p>The connection pool is configured and operational.</p>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th>Max Connections</th>
+                                        <td>${stats.max_connections}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Active Connections</th>
+                                        <td>${stats.active_connections}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Available Connections</th>
+                                        <td>${stats.available_connections}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Connection Timeout</th>
+                                        <td>${stats.connection_timeout} seconds</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Cleanup Thread</th>
+                                        <td>${stats.cleanup_thread_active ? 
+                                            '<span class="text-success">Active</span>' : 
+                                            '<span class="text-danger">Inactive</span>'}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                    
+                    // Add utilization gauge
+                    const utilization = stats.active_connections / stats.max_connections * 100;
+                    let gaugeColor = 'success';
+                    
+                    if (utilization > 80) {
+                        gaugeColor = 'danger';
+                    } else if (utilization > 50) {
+                        gaugeColor = 'warning';
+                    }
+                    
+                    html += `
+                        <div class="mt-4">
+                            <h5>Connection Pool Utilization</h5>
+                            <div class="progress" style="height: 25px;">
+                                <div class="progress-bar bg-${gaugeColor}" role="progressbar" 
+                                    style="width: ${utilization}%;" 
+                                    aria-valuenow="${stats.active_connections}" 
+                                    aria-valuemin="0" 
+                                    aria-valuemax="${stats.max_connections}">
+                                    ${Math.round(utilization)}% (${stats.active_connections}/${stats.max_connections})
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    resultsDiv.innerHTML = html;
+                } else {
+                    resultsDiv.innerHTML = `
+                        <div class="alert alert-danger">
+                            <h5><i class="fas fa-times-circle"></i> Error</h5>
+                            <p>Failed to fetch connection pool status: ${data.message}</p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                resultsDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <h5><i class="fas fa-exclamation-triangle"></i> Error</h5>
+                        <p>An error occurred while fetching pool status: ${error.message}</p>
+                    </div>
+                `;
+            });
+    });
+    
+    // Check migration readiness
+    document.getElementById('migration-test-btn').addEventListener('click', function() {
+        const environment = document.getElementById('migration-environment-select').value;
+        const resultsDiv = document.getElementById('migration-results');
+        
+        resultsDiv.innerHTML = `
+            <div class="text-center py-3">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Checking migration readiness...</p>
+            </div>
+        `;
+        
+        fetch('/supabase/api/migration_readiness', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                environment: environment
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                let html = '';
+                
+                if (data.success) {
+                    html += `
+                        <div class="alert alert-success">
+                            <h5><i class="fas fa-check-circle"></i> Database Ready for Migration</h5>
+                            <p>${data.message}</p>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="alert alert-danger">
+                            <h5><i class="fas fa-times-circle"></i> Database Not Ready</h5>
+                            <p>${data.message}</p>
+                        </div>
+                    `;
+                }
+                
+                // Add details if available
+                if (data.details) {
+                    html += `
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h5 class="mb-0">Migration Readiness Details</h5>
+                            </div>
+                            <div class="card-body">
+                                <dl class="row">
+                    `;
+                    
+                    if (data.details.write_access !== undefined) {
+                        html += `
+                            <dt class="col-sm-4">Write Access</dt>
+                            <dd class="col-sm-8">
+                                ${data.details.write_access ? 
+                                    '<span class="text-success"><i class="fas fa-check-circle"></i> Available</span>' : 
+                                    '<span class="text-danger"><i class="fas fa-times-circle"></i> Not available</span>'}
+                            </dd>
+                        `;
+                    }
+                    
+                    if (data.details.service_key_available !== undefined) {
+                        html += `
+                            <dt class="col-sm-4">Service Key</dt>
+                            <dd class="col-sm-8">
+                                ${data.details.service_key_available ? 
+                                    '<span class="text-success"><i class="fas fa-check-circle"></i> Available</span>' : 
+                                    '<span class="text-warning"><i class="fas fa-exclamation-circle"></i> Not available (may limit functionality)</span>'}
+                            </dd>
+                        `;
+                    }
+                    
+                    if (data.details.schema_exists !== undefined) {
+                        html += `
+                            <dt class="col-sm-4">Schema Exists</dt>
+                            <dd class="col-sm-8">
+                                ${data.details.schema_exists ? 
+                                    '<span class="text-success"><i class="fas fa-check-circle"></i> Yes</span>' : 
+                                    '<span class="text-info"><i class="fas fa-info-circle"></i> No (will be created)</span>'}
+                            </dd>
+                        `;
+                    }
+                    
+                    if (data.details.error) {
+                        html += `
+                            <dt class="col-sm-4">Error</dt>
+                            <dd class="col-sm-8">
+                                <pre class="text-danger">${data.details.error}</pre>
+                            </dd>
+                        `;
+                    }
+                    
+                    html += `
+                                </dl>
+                            </div>
+                            <div class="card-footer">
+                                <p class="mb-0"><strong>Note:</strong> Migration requires write access to the database and ideally a service role key for full functionality.</p>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                resultsDiv.innerHTML = html;
+            })
+            .catch(error => {
+                resultsDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <h5><i class="fas fa-exclamation-triangle"></i> Error</h5>
+                        <p>An error occurred while checking migration readiness: ${error.message}</p>
+                    </div>
+                `;
+            });
+    });
+});
+</script>
+{% endblock %}

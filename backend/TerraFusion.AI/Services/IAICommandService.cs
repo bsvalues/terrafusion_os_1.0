@@ -4,15 +4,15 @@ namespace TerraFusion.AI.Services;
 
 public interface IAICommandService
 {
-    Task<IEnumerable<AIModelDto>> GetAllModelsAsync();
-    Task<AIModelDto?> GetModelByIdAsync(int id);
-    Task<AIModelDto> DeployModelAsync(int modelId);
-    Task<bool> UndeployModelAsync(int modelId);
-    Task<AIModelHealthDto> GetModelHealthAsync(int modelId);
-    Task<IEnumerable<AIModelHealthDto>> GetAllModelHealthAsync();
-    Task<PredictionResultDto> RunPredictionAsync(int modelId, PredictionInputDto input);
-    Task<BatchPredictionResultDto> RunBatchPredictionAsync(int modelId, IEnumerable<PredictionInputDto> inputs);
-    Task<TerraFusion.AI.DTOs.AICommandStatsDto> GetAICommandStatsAsync();
-    Task<bool> StartModelTrainingAsync(int modelId, TrainingConfigDto config);
-    Task<TerraFusion.AI.DTOs.TrainingStatusDto> GetTrainingStatusAsync(int modelId);
+    System.Threading.Tasks.Task<IEnumerable<AIModelDto>> GetAllModelsAsync();
+    System.Threading.Tasks.Task<AIModelDto?> GetModelByIdAsync(int id);
+    System.Threading.Tasks.Task<AIModelDto> DeployModelAsync(int modelId);
+    System.Threading.Tasks.Task<bool> UndeployModelAsync(int modelId);
+    System.Threading.Tasks.Task<AIModelHealthDto> GetModelHealthAsync(int modelId);
+    System.Threading.Tasks.Task<IEnumerable<AIModelHealthDto>> GetAllModelHealthAsync();
+    System.Threading.Tasks.Task<PredictionResultDto> RunPredictionAsync(int modelId, PredictionInputDto input);
+    System.Threading.Tasks.Task<BatchPredictionResultDto> RunBatchPredictionAsync(int modelId, IEnumerable<PredictionInputDto> inputs);
+    System.Threading.Tasks.Task<TerraFusion.AI.DTOs.AICommandStatsDto> GetAICommandStatsAsync();
+    System.Threading.Tasks.Task<bool> StartModelTrainingAsync(int modelId, TrainingConfigDto config);
+    System.Threading.Tasks.Task<TerraFusion.AI.DTOs.TrainingStatusDto> GetTrainingStatusAsync(int modelId);
 }

@@ -1,0 +1,19 @@
+{
+    "map": {
+        "additional_files.descr": "Additional files that will be included in the package.",
+        "additional_files.title": "Additional Files",
+        "copy_arcsde_locator.descr": "This parameter has no effect in ArcGIS Pro. It remains only to support backward compatibility.",
+        "copy_arcsde_locator.title": "Composite locator only: copy participating locators in enterprise database instead of referencing them",
+        "description": "Packages a locator or composite locator  and creates a single compressed .gcpk file.",
+        "in_locator.descr": "The locator or composite locator that will be packaged.",
+        "in_locator.title": "Input Locator",
+        "output_file.descr": "The name and location of the output locator package (.gcpk).",
+        "output_file.title": "Output File",
+        "summary": "Packages a locator or composite locator and creates a single compressed .gcpk file.",
+        "summary.descr": "The text that will be used as the output package's summary property.",
+        "summary.title": "Summary",
+        "tags.descr": "The tag information that will be added to the properties of the package. Multiple tags can be added or separated by a comma or semicolon.",
+        "tags.title": "Tags",
+        "title": "Package Locator"
+    }
+}

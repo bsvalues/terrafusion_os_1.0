@@ -1,0 +1,27 @@
+{
+    "map": {
+        "area_of_interest.descr": "The feature in the AOI that will be used to identify input features to process. Provide only one feature from the AOI.",
+        "area_of_interest.title": "Area of Interest",
+        "contour_code_field.descr": "<xdoc><p>The field in the database that contains the domain value for index contour, intermediate contour, depression contour, and depression intermediate contour. It is a string value of the field, such as <span class=\"esri_fieldname\">HQC</span>.</p></xdoc>",
+        "contour_code_field.title": "Contour Code Field",
+        "depression_code_value.descr": "The depression code values. A depression refers to an elevation completely surrounded by higher-elevation contour lines.",
+        "depression_code_value.title": "Depression Code  Value",
+        "description": "Generalizes spot heights for a given area of interest (AOI) in accordance with product specifications.",
+        "elevation_field.descr": "<xdoc><p>The elevation field in the <span class=\"esri_uicontrol\">Input Features</span> parameter value that will be used for the spot height.</p></xdoc>",
+        "elevation_field.title": "Elevation Field",
+        "high_low_spots.descr": "The field that will be used to identify the highest and lowest spots.",
+        "high_low_spots.title": "High Low Spots Field",
+        "in_features.descr": "A point feature layer or feature class representing the spot heights for a given AOI.",
+        "in_features.title": "Input Features",
+        "input_contours.descr": "The input contours that will be used to identify whether point features are in depressions or tops.",
+        "input_contours.title": "Input Contours",
+        "invisibility_field.descr": "The field where the visibility attribute will be written.",
+        "invisibility_field.title": "Invisibility Field",
+        "max_spots.descr": "The maximum number of spot heights that will be processed.",
+        "max_spots.title": "Maximum Number  Of Spots",
+        "search_distance.descr": "The minimum distance between spot heights. For example, if the search distance is 3,000 meters, there will be at least 3,000 meters between a chosen spot height and the next chosen spot height. The default value is 1,300 meters, as this is the optimal value for 50K sheets.",
+        "search_distance.title": "Search Distance",
+        "title": "Thin Spot Heights",
+        "updated_features.title": "Updated Features"
+    }
+}

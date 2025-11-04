@@ -1,0 +1,751 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="h3 mb-4">{{ title }}</h1>
+            <p class="text-muted">Run data quality checks and view detailed results</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-light">
+                    <ul class="nav nav-tabs card-header-tabs" id="checkTypeTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="completeness-tab" data-bs-toggle="tab" data-bs-target="#completenessCheck" type="button" role="tab" aria-controls="completenessCheck" aria-selected="true">Completeness</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="format-tab" data-bs-toggle="tab" data-bs-target="#formatCheck" type="button" role="tab" aria-controls="formatCheck" aria-selected="false">Format</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="range-tab" data-bs-toggle="tab" data-bs-target="#rangeCheck" type="button" role="tab" aria-controls="rangeCheck" aria-selected="false">Range</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="consistency-tab" data-bs-toggle="tab" data-bs-target="#consistencyCheck" type="button" role="tab" aria-controls="consistencyCheck" aria-selected="false">Consistency</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="outlier-tab" data-bs-toggle="tab" data-bs-target="#outlierCheck" type="button" role="tab" aria-controls="outlierCheck" aria-selected="false">Outliers</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="valuation-tab" data-bs-toggle="tab" data-bs-target="#valuationCheck" type="button" role="tab" aria-controls="valuationCheck" aria-selected="false">Valuation</button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="checkTypeTabContent">
+                        <!-- Completeness Check Tab -->
+                        <div class="tab-pane fade show active" id="completenessCheck" role="tabpanel" aria-labelledby="completeness-tab">
+                            <form id="completenessCheckForm">
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="completenessDataSource" class="form-label">Data Source</label>
+                                            <select class="form-select" id="completenessDataSource" required>
+                                                <option value="">Select data source</option>
+                                                <option value="property_database">Property Database</option>
+                                                <option value="gis_database">GIS Database</option>
+                                                <option value="cama_system">CAMA System</option>
+                                                <option value="all">All Sources</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="completenessTable" class="form-label">Table/Collection</label>
+                                            <select class="form-select" id="completenessTable">
+                                                <option value="">Select table</option>
+                                                <!-- Options will be populated dynamically based on data source -->
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="completenessFields" class="form-label">Required Fields</label>
+                                            <input type="text" class="form-control" id="completenessFields" placeholder="Comma separated field names">
+                                            <div class="form-text">Leave empty to check all fields</div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="completenessThreshold" class="form-label">Threshold</label>
+                                            <input type="number" class="form-control" id="completenessThreshold" min="0" max="1" step="0.01" value="0.95">
+                                            <div class="form-text">Minimum acceptable completeness ratio</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-primary">Run Completeness Check</button>
+                                </div>
+                            </form>
+                            
+                            <div id="completenessResultsContainer" class="mt-4 d-none">
+                                <h5 class="border-bottom pb-2">Completeness Check Results</h5>
+                                <div class="row mt-3">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card bg-light">
+                                            <div class="card-body text-center">
+                                                <h6 class="card-title text-muted">Overall Completeness</h6>
+                                                <div class="display-4 mb-3" id="completenessScore">--</div>
+                                                <div class="progress mb-3" style="height: 20px;">
+                                                    <div class="progress-bar bg-success" id="completenessProgressBar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8 mb-3">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h6 class="card-title border-bottom pb-2">Field Completeness</h6>
+                                                <div class="table-responsive">
+                                                    <table class="table table-sm table-hover" id="completenessFieldsTable">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Field</th>
+                                                                <th>Completeness</th>
+                                                                <th>Status</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <!-- Will be populated by JavaScript -->
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <div class="card border-left-info">
+                                            <div class="card-body">
+                                                <h6 class="card-title">Recommendations</h6>
+                                                <div id="completenessRecommendations">
+                                                    <!-- Will be populated by JavaScript -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Format Check Tab -->
+                        <div class="tab-pane fade" id="formatCheck" role="tabpanel" aria-labelledby="format-tab">
+                            <form id="formatCheckForm">
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="formatDataSource" class="form-label">Data Source</label>
+                                            <select class="form-select" id="formatDataSource" required>
+                                                <option value="">Select data source</option>
+                                                <option value="property_database">Property Database</option>
+                                                <option value="gis_database">GIS Database</option>
+                                                <option value="cama_system">CAMA System</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="formatTable" class="form-label">Table/Collection</label>
+                                            <select class="form-select" id="formatTable">
+                                                <option value="">Select table</option>
+                                                <!-- Options will be populated dynamically based on data source -->
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="formatField" class="form-label">Field to Check</label>
+                                            <select class="form-select" id="formatField">
+                                                <option value="">Select field</option>
+                                                <!-- Options will be populated dynamically based on table -->
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="formatPattern" class="form-label">Pattern (Regex)</label>
+                                            <input type="text" class="form-control" id="formatPattern" placeholder="e.g., ^\d{2}-\d{4}-\d{3}$">
+                                            <div class="form-text">Regular expression pattern for validation</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-primary">Run Format Check</button>
+                                </div>
+                            </form>
+                            
+                            <div id="formatResultsContainer" class="mt-4 d-none">
+                                <h5 class="border-bottom pb-2">Format Check Results</h5>
+                                <!-- Format check results will be displayed here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Range Check Tab -->
+                        <div class="tab-pane fade" id="rangeCheck" role="tabpanel" aria-labelledby="range-tab">
+                            <form id="rangeCheckForm">
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="rangeDataSource" class="form-label">Data Source</label>
+                                            <select class="form-select" id="rangeDataSource" required>
+                                                <option value="">Select data source</option>
+                                                <option value="property_database">Property Database</option>
+                                                <option value="gis_database">GIS Database</option>
+                                                <option value="cama_system">CAMA System</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="rangeTable" class="form-label">Table/Collection</label>
+                                            <select class="form-select" id="rangeTable">
+                                                <option value="">Select table</option>
+                                                <!-- Options will be populated dynamically based on data source -->
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="rangeField" class="form-label">Numeric Field</label>
+                                            <select class="form-select" id="rangeField">
+                                                <option value="">Select field</option>
+                                                <!-- Options will be populated dynamically based on table -->
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="rangeMin" class="form-label">Minimum Value</label>
+                                            <input type="number" class="form-control" id="rangeMin" step="any">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="rangeMax" class="form-label">Maximum Value</label>
+                                            <input type="number" class="form-control" id="rangeMax" step="any">
+                                        </div>
+                                        <div class="mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="detectOutliers" value="1">
+                                                <label class="form-check-label" for="detectOutliers">
+                                                    Auto-detect outliers using statistical methods
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-primary">Run Range Check</button>
+                                </div>
+                            </form>
+                            
+                            <div id="rangeResultsContainer" class="mt-4 d-none">
+                                <h5 class="border-bottom pb-2">Range Check Results</h5>
+                                <!-- Range check results will be displayed here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Consistency Check Tab -->
+                        <div class="tab-pane fade" id="consistencyCheck" role="tabpanel" aria-labelledby="consistency-tab">
+                            <form id="consistencyCheckForm">
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="consistencyPrimarySource" class="form-label">Primary Data Source</label>
+                                            <select class="form-select" id="consistencyPrimarySource" required>
+                                                <option value="">Select primary data source</option>
+                                                <option value="property_database">Property Database</option>
+                                                <option value="gis_database">GIS Database</option>
+                                                <option value="cama_system">CAMA System</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="consistencyPrimaryTable" class="form-label">Primary Table</label>
+                                            <select class="form-select" id="consistencyPrimaryTable">
+                                                <option value="">Select table</option>
+                                                <!-- Options will be populated dynamically based on data source -->
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="consistencyPrimaryField" class="form-label">Primary Field</label>
+                                            <select class="form-select" id="consistencyPrimaryField">
+                                                <option value="">Select field</option>
+                                                <!-- Options will be populated dynamically based on table -->
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="consistencySecondarySource" class="form-label">Secondary Data Source</label>
+                                            <select class="form-select" id="consistencySecondarySource" required>
+                                                <option value="">Select secondary data source</option>
+                                                <option value="property_database">Property Database</option>
+                                                <option value="gis_database">GIS Database</option>
+                                                <option value="cama_system">CAMA System</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="consistencySecondaryTable" class="form-label">Secondary Table</label>
+                                            <select class="form-select" id="consistencySecondaryTable">
+                                                <option value="">Select table</option>
+                                                <!-- Options will be populated dynamically based on data source -->
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="consistencySecondaryField" class="form-label">Secondary Field</label>
+                                            <select class="form-select" id="consistencySecondaryField">
+                                                <option value="">Select field</option>
+                                                <!-- Options will be populated dynamically based on table -->
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="consistencyJoinField" class="form-label">Join Field</label>
+                                            <select class="form-select" id="consistencyJoinField">
+                                                <option value="">Select join field</option>
+                                                <option value="parcel_id">Parcel ID</option>
+                                                <option value="property_id">Property ID</option>
+                                                <option value="account_number">Account Number</option>
+                                            </select>
+                                            <div class="form-text">Field used to join the two data sources</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="consistencyMatchType" class="form-label">Match Type</label>
+                                            <select class="form-select" id="consistencyMatchType">
+                                                <option value="exact">Exact Match</option>
+                                                <option value="fuzzy">Fuzzy Match</option>
+                                                <option value="numeric">Numeric Comparison</option>
+                                                <option value="date">Date Comparison</option>
+                                            </select>
+                                            <div class="form-text">How to compare values between the two fields</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-primary">Run Consistency Check</button>
+                                </div>
+                            </form>
+                            
+                            <div id="consistencyResultsContainer" class="mt-4 d-none">
+                                <h5 class="border-bottom pb-2">Consistency Check Results</h5>
+                                <!-- Consistency check results will be displayed here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Outlier Check Tab -->
+                        <div class="tab-pane fade" id="outlierCheck" role="tabpanel" aria-labelledby="outlier-tab">
+                            <form id="outlierCheckForm">
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="outlierDataSource" class="form-label">Data Source</label>
+                                            <select class="form-select" id="outlierDataSource" required>
+                                                <option value="">Select data source</option>
+                                                <option value="property_database">Property Database</option>
+                                                <option value="gis_database">GIS Database</option>
+                                                <option value="cama_system">CAMA System</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="outlierTable" class="form-label">Table/Collection</label>
+                                            <select class="form-select" id="outlierTable">
+                                                <option value="">Select table</option>
+                                                <!-- Options will be populated dynamically based on data source -->
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="outlierField" class="form-label">Numeric Field</label>
+                                            <select class="form-select" id="outlierField">
+                                                <option value="">Select field</option>
+                                                <!-- Options will be populated dynamically based on table -->
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="outlierMethod" class="form-label">Detection Method</label>
+                                            <select class="form-select" id="outlierMethod">
+                                                <option value="zscore">Z-Score (Standard Deviations)</option>
+                                                <option value="iqr">IQR (Interquartile Range)</option>
+                                                <option value="isolation_forest">Isolation Forest</option>
+                                                <option value="dbscan">DBSCAN Clustering</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="outlierThreshold" class="form-label">Threshold</label>
+                                            <input type="number" class="form-control" id="outlierThreshold" min="0" step="0.1" value="3.0">
+                                            <div class="form-text">Z-Score threshold (standard deviations) or IQR multiplier</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-primary">Run Outlier Detection</button>
+                                </div>
+                            </form>
+                            
+                            <div id="outlierResultsContainer" class="mt-4 d-none">
+                                <h5 class="border-bottom pb-2">Outlier Detection Results</h5>
+                                <!-- Outlier detection results will be displayed here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Valuation Check Tab -->
+                        <div class="tab-pane fade" id="valuationCheck" role="tabpanel" aria-labelledby="valuation-tab">
+                            <form id="valuationCheckForm">
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="valuationDataSource" class="form-label">Data Source</label>
+                                            <select class="form-select" id="valuationDataSource" required>
+                                                <option value="">Select data source</option>
+                                                <option value="property_database">Property Database</option>
+                                                <option value="cama_system">CAMA System</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="valuationType" class="form-label">Valuation Type</label>
+                                            <select class="form-select" id="valuationType">
+                                                <option value="market_value">Market Value</option>
+                                                <option value="assessed_value">Assessed Value</option>
+                                                <option value="taxable_value">Taxable Value</option>
+                                                <option value="improvement_value">Improvement Value</option>
+                                                <option value="land_value">Land Value</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="valuationArea" class="form-label">Geographic Area</label>
+                                            <select class="form-select" id="valuationArea">
+                                                <option value="all">All Areas</option>
+                                                <option value="county">County-wide</option>
+                                                <option value="tax_district">By Tax District</option>
+                                                <option value="neighborhood">By Neighborhood</option>
+                                                <option value="custom">Custom (Draw on Map)</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="propertyType" class="form-label">Property Type</label>
+                                            <select class="form-select" id="propertyType">
+                                                <option value="all">All Property Types</option>
+                                                <option value="residential">Residential</option>
+                                                <option value="commercial">Commercial</option>
+                                                <option value="industrial">Industrial</option>
+                                                <option value="agricultural">Agricultural</option>
+                                                <option value="vacant">Vacant Land</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Validation Methods</label>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="checkComparable" checked>
+                                                <label class="form-check-label" for="checkComparable">
+                                                    Sales Comparison Analysis
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="checkConsistency" checked>
+                                                <label class="form-check-label" for="checkConsistency">
+                                                    Internal Consistency
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="checkTrends" checked>
+                                                <label class="form-check-label" for="checkTrends">
+                                                    Trend Analysis
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="checkCompliance">
+                                                <label class="form-check-label" for="checkCompliance">
+                                                    Tax Law Compliance
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="checkOutliers" checked>
+                                                <label class="form-check-label" for="checkOutliers">
+                                                    Outlier Detection
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="checkRatioStudy">
+                                                <label class="form-check-label" for="checkRatioStudy">
+                                                    Ratio Study
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-primary">Run Valuation Validation</button>
+                                </div>
+                            </form>
+                            
+                            <div id="valuationResultsContainer" class="mt-4 d-none">
+                                <h5 class="border-bottom pb-2">Valuation Validation Results</h5>
+                                <!-- Valuation validation results will be displayed here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Activate tab based on URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const checkType = urlParams.get('type');
+        
+        if (checkType) {
+            const tabMap = {
+                'completeness': '#completeness-tab',
+                'format': '#format-tab',
+                'range': '#range-tab',
+                'consistency': '#consistency-tab',
+                'outliers': '#outlier-tab',
+                'accuracy': '#format-tab',
+                'valuation': '#valuation-tab'
+            };
+            
+            const tabSelector = tabMap[checkType];
+            if (tabSelector) {
+                const tab = document.querySelector(tabSelector);
+                if (tab) {
+                    const tabTrigger = new bootstrap.Tab(tab);
+                    tabTrigger.show();
+                }
+            }
+        }
+        
+        // Function to populate select options based on data source
+        function populateOptions(sourceSelect, tableSelect, fieldSelect = null) {
+            // This would normally call an API to get tables for the selected data source
+            $(sourceSelect).on('change', function() {
+                const source = $(this).val();
+                $(tableSelect).empty().append('<option value="">Select table</option>');
+                
+                if (fieldSelect) {
+                    $(fieldSelect).empty().append('<option value="">Select field</option>');
+                }
+                
+                if (!source) return;
+                
+                // Example table options (would come from API)
+                const tables = {
+                    'property_database': [
+                        { value: 'property', label: 'Property' },
+                        { value: 'parcel', label: 'Parcel' },
+                        { value: 'owner', label: 'Owner' },
+                        { value: 'building', label: 'Building' }
+                    ],
+                    'gis_database': [
+                        { value: 'parcels', label: 'Parcels' },
+                        { value: 'zoning', label: 'Zoning' },
+                        { value: 'boundaries', label: 'Boundaries' },
+                        { value: 'floodplains', label: 'Floodplains' }
+                    ],
+                    'cama_system': [
+                        { value: 'real_property', label: 'Real Property' },
+                        { value: 'improvements', label: 'Improvements' },
+                        { value: 'valuations', label: 'Valuations' },
+                        { value: 'sales', label: 'Sales' }
+                    ]
+                };
+                
+                // Add table options
+                if (tables[source]) {
+                    tables[source].forEach(function(table) {
+                        $(tableSelect).append(`<option value="${table.value}">${table.label}</option>`);
+                    });
+                }
+            });
+            
+            // If field select is provided, populate fields based on table selection
+            if (fieldSelect) {
+                $(tableSelect).on('change', function() {
+                    const source = $(sourceSelect).val();
+                    const table = $(this).val();
+                    $(fieldSelect).empty().append('<option value="">Select field</option>');
+                    
+                    if (!source || !table) return;
+                    
+                    // Example field options (would come from API)
+                    const fields = {
+                        'property': [
+                            { value: 'property_id', label: 'Property ID' },
+                            { value: 'address', label: 'Address' },
+                            { value: 'property_type', label: 'Property Type' },
+                            { value: 'assessed_value', label: 'Assessed Value' },
+                            { value: 'market_value', label: 'Market Value' },
+                            { value: 'land_area', label: 'Land Area' }
+                        ],
+                        'parcels': [
+                            { value: 'parcel_id', label: 'Parcel ID' },
+                            { value: 'geometry', label: 'Geometry' },
+                            { value: 'area', label: 'Area' },
+                            { value: 'perimeter', label: 'Perimeter' }
+                        ],
+                        'real_property': [
+                            { value: 'account_number', label: 'Account Number' },
+                            { value: 'land_value', label: 'Land Value' },
+                            { value: 'improvement_value', label: 'Improvement Value' },
+                            { value: 'total_value', label: 'Total Value' },
+                            { value: 'exemption_amount', label: 'Exemption Amount' }
+                        ]
+                    };
+                    
+                    // Add field options for the selected table
+                    // In a real implementation, this would query based on the source and table
+                    let fieldsToUse = fields[table] || [];
+                    
+                    // If specific table not found, use a default or the first table's fields
+                    if (fieldsToUse.length === 0) {
+                        const firstTableInSource = Object.keys(fields)[0];
+                        fieldsToUse = fields[firstTableInSource] || [];
+                    }
+                    
+                    // Add field options
+                    fieldsToUse.forEach(function(field) {
+                        $(fieldSelect).append(`<option value="${field.value}">${field.label}</option>`);
+                    });
+                });
+            }
+        }
+        
+        // Set up option population for each form
+        populateOptions('#completenessDataSource', '#completenessTable');
+        populateOptions('#formatDataSource', '#formatTable', '#formatField');
+        populateOptions('#rangeDataSource', '#rangeTable', '#rangeField');
+        populateOptions('#outlierDataSource', '#outlierTable', '#outlierField');
+        populateOptions('#consistencyPrimarySource', '#consistencyPrimaryTable', '#consistencyPrimaryField');
+        populateOptions('#consistencySecondarySource', '#consistencySecondaryTable', '#consistencySecondaryField');
+        
+        // Form submission handlers
+        $('#completenessCheckForm').on('submit', function(e) {
+            e.preventDefault();
+            
+            // Show loading indicator
+            $('#completenessResultsContainer').addClass('d-none');
+            
+            // Collect form data
+            const data = {
+                data_source: $('#completenessDataSource').val(),
+                table: $('#completenessTable').val(),
+                fields: $('#completenessFields').val() ? $('#completenessFields').val().split(',').map(f => f.trim()) : [],
+                threshold: parseFloat($('#completenessThreshold').val())
+            };
+            
+            // This would normally send an AJAX request to the server
+            // For demonstration, we'll simulate a response after a delay
+            setTimeout(function() {
+                // Simulate response data (would come from server)
+                const response = {
+                    success: true,
+                    data_source: data.data_source,
+                    table: data.table,
+                    overall_completeness: 0.942,
+                    fields: [
+                        { field: 'property_id', completeness: 1.0, status: 'pass' },
+                        { field: 'address', completeness: 0.98, status: 'pass' },
+                        { field: 'owner_name', completeness: 0.95, status: 'pass' },
+                        { field: 'zoning', completeness: 0.87, status: 'fail' },
+                        { field: 'building_sq_ft', completeness: 0.91, status: 'fail' },
+                        { field: 'year_built', completeness: 0.93, status: 'fail' }
+                    ],
+                    recommendations: [
+                        'Focus on improving completeness of "zoning" field which is below threshold.',
+                        'Consider running data enrichment for "building_sq_ft" values which are missing for 9% of records.',
+                        'Review data collection process for "year_built" to improve completeness.'
+                    ]
+                };
+                
+                // Display results
+                $('#completenessScore').text((response.overall_completeness * 100).toFixed(1) + '%');
+                $('#completenessProgressBar').css('width', (response.overall_completeness * 100) + '%').text((response.overall_completeness * 100).toFixed(1) + '%');
+                
+                // Set progress bar color based on threshold
+                if (response.overall_completeness >= data.threshold) {
+                    $('#completenessProgressBar').removeClass('bg-warning bg-danger').addClass('bg-success');
+                } else if (response.overall_completeness >= data.threshold * 0.9) {
+                    $('#completenessProgressBar').removeClass('bg-success bg-danger').addClass('bg-warning');
+                } else {
+                    $('#completenessProgressBar').removeClass('bg-success bg-warning').addClass('bg-danger');
+                }
+                
+                // Populate field completeness table
+                const tbody = $('#completenessFieldsTable tbody');
+                tbody.empty();
+                
+                response.fields.forEach(function(field) {
+                    const statusBadge = field.status === 'pass' 
+                        ? '<span class="badge bg-success">Pass</span>' 
+                        : '<span class="badge bg-danger">Fail</span>';
+                    
+                    const row = `
+                        <tr>
+                            <td>${field.field}</td>
+                            <td>
+                                <div class="progress" style="height: 10px;">
+                                    <div class="progress-bar ${field.status === 'pass' ? 'bg-success' : 'bg-danger'}" 
+                                        role="progressbar" 
+                                        style="width: ${(field.completeness * 100)}%;" 
+                                        aria-valuenow="${(field.completeness * 100)}" 
+                                        aria-valuemin="0" 
+                                        aria-valuemax="100">
+                                    </div>
+                                </div>
+                                <small>${(field.completeness * 100).toFixed(1)}%</small>
+                            </td>
+                            <td>${statusBadge}</td>
+                        </tr>
+                    `;
+                    
+                    tbody.append(row);
+                });
+                
+                // Display recommendations
+                const recommendationsContainer = $('#completenessRecommendations');
+                recommendationsContainer.empty();
+                
+                if (response.recommendations && response.recommendations.length) {
+                    const list = $('<ul class="mb-0"></ul>');
+                    response.recommendations.forEach(function(recommendation) {
+                        list.append(`<li>${recommendation}</li>`);
+                    });
+                    recommendationsContainer.append(list);
+                } else {
+                    recommendationsContainer.append('<p class="mb-0">No recommendations available.</p>');
+                }
+                
+                // Show results container
+                $('#completenessResultsContainer').removeClass('d-none');
+            }, 1500);
+            
+            return false;
+        });
+        
+        // Add similar handlers for other form submissions
+        // For brevity, we've only implemented the completeness check in detail
+        
+        $('#formatCheckForm, #rangeCheckForm, #consistencyCheckForm, #outlierCheckForm, #valuationCheckForm').on('submit', function(e) {
+            e.preventDefault();
+            alert('This check would be processed on the server. Implementation details omitted for brevity.');
+            return false;
+        });
+    });
+</script>
+{% endblock %}

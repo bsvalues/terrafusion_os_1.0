@@ -1,0 +1,10 @@
+{
+    "map": {
+        "description": "Creates a file containing the schema of an existing network dataset. This template file can then be used to create a new network dataset with the same schema.",
+        "network_dataset.descr": "The network dataset whose schema will be written to the output template file.",
+        "network_dataset.title": "Network Dataset",
+        "output_network_dataset_template.descr": "The output file (.xml) that will contain the schema of the input network dataset.",
+        "output_network_dataset_template.title": "Output Network Dataset Template",
+        "title": "Create Template From Network Dataset"
+    }
+}

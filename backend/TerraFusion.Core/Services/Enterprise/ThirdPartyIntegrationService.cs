@@ -121,16 +121,16 @@ public class ThirdPartyIntegrationService : IThirdPartyIntegrationService
         }
     }
 
-    public async Task<List<WebhookRegistration>> GetActiveWebhooksAsync()
+    public Task<List<WebhookRegistration>> GetActiveWebhooksAsync()
     {
         try
         {
-            return _webhooks.Values.Where(w => w.IsActive).ToList();
+            return Task.FromResult(_webhooks.Values.Where(w => w.IsActive).ToList());
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to get active webhooks");
-            return new List<WebhookRegistration>();
+            return Task.FromResult(new List<WebhookRegistration>());
         }
     }
 
@@ -238,16 +238,16 @@ public class ThirdPartyIntegrationService : IThirdPartyIntegrationService
         }
     }
 
-    public async Task<List<Integration>> GetAvailableIntegrationsAsync()
+    public Task<List<Integration>> GetAvailableIntegrationsAsync()
     {
         try
         {
-            return _integrations.Values.ToList();
+            return Task.FromResult(_integrations.Values.ToList());
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to get available integrations");
-            return new List<Integration>();
+            return Task.FromResult(new List<Integration>());
         }
     }
 

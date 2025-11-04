@@ -1,0 +1,10 @@
+{
+    "set": [
+        "configuration",
+        "delete",
+        "remove",
+        "trace",
+        "trace configuration",
+        "trace network"
+    ]
+}

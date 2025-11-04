@@ -1,0 +1,133 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "79030001",
+    "description": "$rc:description",
+    "product": "300",
+    "extensions": [
+        "86"
+    ],
+    "attributes": [
+        "GPU",
+        "mCPU"
+    ],
+    "params": {
+        "in_data": {
+            "displayname": "$rc:in_data.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:in_data.descr"
+        },
+        "out_model": {
+            "direction": "out",
+            "displayname": "$rc:out_model.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "description": "$rc:out_model.descr"
+        },
+        "pretrained_model": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:pretrained_model.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "dlpk_remote",
+                    "emd",
+                    "dlpk"
+                ]
+            },
+            "description": "$rc:pretrained_model.descr"
+        },
+        "total_time_limit": {
+            "type": "optional",
+            "displayname": "$rc:total_time_limit.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "2",
+            "description": "$rc:total_time_limit.descr"
+        },
+        "autodl_mode": {
+            "type": "optional",
+            "displayname": "$rc:autodl_mode.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "BASIC",
+                        "code": "$rc:autodl_mode.domain.BASIC"
+                    },
+                    {
+                        "value": "ADVANCED",
+                        "code": "$rc:autodl_mode.domain.ADVANCED"
+                    }
+                ]
+            },
+            "value": "BASIC",
+            "description": "$rc:autodl_mode.descr"
+        },
+        "networks": {
+            "type": "optional",
+            "displayname": "$rc:networks.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "depends": [
+                "in_data"
+            ],
+            "description": "$rc:networks.descr"
+        },
+        "save_evaluated_models": {
+            "type": "optional",
+            "displayname": "$rc:save_evaluated_models.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SAVE_ALL_MODELS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "SAVE_BEST_MODEL"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:save_evaluated_models.descr"
+        },
+        "output_model_file": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_model_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "depends": [
+                "out_model"
+            ]
+        }
+    },
+    "environments": [
+        "gpuID"
+    ]
+}

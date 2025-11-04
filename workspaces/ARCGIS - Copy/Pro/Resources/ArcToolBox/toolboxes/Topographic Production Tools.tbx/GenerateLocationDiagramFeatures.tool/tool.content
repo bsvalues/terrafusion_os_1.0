@@ -1,0 +1,215 @@
+{
+    "type": "FunctionTool",
+    "guid": "{26B17338-CB00-45A9-AB9C-858C2E0122C9}/GenerateLocationDiagramFeatures",
+    "displayname": "$rc:title",
+    "helpcontent": "76020002",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "46",
+        "49"
+    ],
+    "params": {
+        "in_feature_dataset": {
+            "displayname": "$rc:in_feature_dataset.title",
+            "datatype": {
+                "type": "DEFeatureDataset"
+            },
+            "description": "$rc:in_feature_dataset.descr"
+        },
+        "area_of_interest": {
+            "displayname": "$rc:area_of_interest.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPLayerDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:area_of_interest.descr"
+        },
+        "sheet_id_field": {
+            "displayname": "$rc:sheet_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text"
+                ]
+            },
+            "depends": [
+                "area_of_interest"
+            ],
+            "description": "$rc:sheet_id_field.descr"
+        },
+        "wac_features": {
+            "displayname": "$rc:wac_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:wac_features.descr"
+        },
+        "onc_features": {
+            "displayname": "$rc:onc_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:onc_features.descr"
+        },
+        "land_features": {
+            "displayname": "$rc:land_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:land_features.descr"
+        },
+        "modified_feature_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:modified_feature_dataset.title",
+            "datatype": {
+                "type": "DEFeatureDataset"
+            }
+        },
+        "specification": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:specification.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "JOG",
+                        "code": "$rc:specification.domain.JOG"
+                    },
+                    {
+                        "value": "ONC",
+                        "code": "$rc:specification.domain.ONC"
+                    },
+                    {
+                        "value": "TPC",
+                        "code": "$rc:specification.domain.TPC"
+                    }
+                ]
+            },
+            "value": "JOG",
+            "description": "$rc:specification.descr"
+        },
+        "tpc_features": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:tpc_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:tpc_features.descr"
+        },
+        "smooth_tolerance": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:smooth_tolerance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "0.002 DecimalDegrees",
+            "description": "$rc:smooth_tolerance.descr"
+        },
+        "hydro_line_features": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:hydro_line_features.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:hydro_line_features.descr"
+        },
+        "hydro_area_features": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:hydro_area_features.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:hydro_area_features.descr"
+        },
+        "hydroline_minlength": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:hydroline_minlength.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "description": "$rc:hydroline_minlength.descr"
+        },
+        "hydroline_minspacing": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:hydroline_minspacing.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "description": "$rc:hydroline_minspacing.descr"
+        },
+        "hydroarea_minlength": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:hydroarea_minlength.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "description": "$rc:hydroarea_minlength.descr"
+        },
+        "hydroarea_minwidth": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:hydroarea_minwidth.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "description": "$rc:hydroarea_minwidth.descr"
+        },
+        "min_island_area": {
+            "type": "optional",
+            "displayname": "$rc:min_island_area.title",
+            "datatype": {
+                "type": "GPArealUnit"
+            },
+            "value": "0 SquareMeters",
+            "description": "$rc:min_island_area.descr"
+        }
+    },
+    "environments": [
+        "scratchWorkspace"
+    ]
+}

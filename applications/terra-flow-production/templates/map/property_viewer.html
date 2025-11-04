@@ -1,0 +1,523 @@
+{% extends "layout.html" %}
+
+{% block title %}TerraFlow | Property Viewer{% endblock %}
+
+{% block additionalcss %}
+<style>
+    #property-map {
+        height: 600px;
+        width: 100%;
+        border-radius: var(--tf-radius-lg);
+        box-shadow: var(--tf-shadow-md);
+    }
+    
+    .property-sidebar {
+        height: 600px;
+        overflow-y: auto;
+        padding-right: 1rem;
+    }
+    
+    .tab-content {
+        padding: 1.5rem;
+        background-color: var(--tf-white);
+        border: 1px solid var(--tf-gray-200);
+        border-top: none;
+        border-bottom-left-radius: var(--tf-radius);
+        border-bottom-right-radius: var(--tf-radius);
+    }
+    
+    .nav-tabs .nav-link.active {
+        background-color: var(--tf-white);
+        border-bottom-color: var(--tf-white);
+    }
+    
+    .property-sidebar .card-header {
+        background-color: var(--tf-map-green-50);
+        font-weight: 700;
+    }
+    
+    .property-value {
+        font-weight: 600;
+    }
+    
+    .data-source-badge {
+        background-color: var(--tf-gray-200);
+        color: var(--tf-gray-700);
+        font-size: 0.75rem;
+        padding: 0.125rem 0.5rem;
+        border-radius: var(--tf-radius-full);
+        display: inline-block;
+    }
+    
+    .property-detail-row {
+        border-bottom: 1px solid var(--tf-gray-200);
+        padding: 0.5rem 0;
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .property-detail-row:last-child {
+        border-bottom: none;
+    }
+    
+    .property-detail-label {
+        font-weight: 500;
+        color: var(--tf-gray-700);
+    }
+    
+    .property-detail-value {
+        font-weight: 600;
+        color: var(--tf-gray-900);
+    }
+    
+    .tools-card {
+        background-color: var(--tf-map-green-100);
+    }
+    
+    .tool-button {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 0.75rem;
+        border-radius: var(--tf-radius);
+        background-color: var(--tf-white);
+        box-shadow: var(--tf-shadow-sm);
+        transition: all 0.2s;
+        margin-bottom: 1rem;
+        text-decoration: none;
+        color: var(--tf-gray-800);
+    }
+    
+    .tool-button:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--tf-shadow-md);
+        color: var(--tf-map-green);
+    }
+    
+    .tool-button i {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--tf-map-green);
+    }
+    
+    .property-history-card {
+        margin-bottom: 1rem;
+    }
+    
+    .history-timeline {
+        position: relative;
+        padding-left: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .history-timeline::before {
+        content: '';
+        position: absolute;
+        left: 0.5rem;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background-color: var(--tf-gray-300);
+    }
+    
+    .timeline-item {
+        position: relative;
+        padding-bottom: 1.5rem;
+    }
+    
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -1.5rem;
+        top: 0.3rem;
+        width: 1rem;
+        height: 1rem;
+        border-radius: 50%;
+        background-color: var(--tf-map-green);
+    }
+    
+    .timeline-date {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--tf-map-green);
+    }
+    
+    .timeline-content {
+        margin-top: 0.25rem;
+    }
+    
+    .timeline-caption {
+        color: var(--tf-gray-600);
+        font-size: 0.875rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Import module components -->
+{% from 'components/module_lockup.html' import module_lockup, module_header %}
+
+<div class="container">
+    {{ module_header('Map', 'Property Viewer', 'View and analyze property data with geospatial context') }}
+    
+    <!-- Main Content Area -->
+    <div class="row">
+        <!-- Property Map -->
+        <div class="col-lg-8">
+            <div id="property-map"></div>
+            
+            <!-- Property Tools and Actions -->
+            <div class="card mt-4 tools-card">
+                <div class="card-body">
+                    <h5 class="card-title">Property Tools</h5>
+                    <div class="row">
+                        <div class="col-md-3 col-6">
+                            <a href="#" class="tool-button" id="btn-measure">
+                                <i class="fas fa-ruler"></i>
+                                <span>Measure</span>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <a href="#" class="tool-button" id="btn-streetview">
+                                <i class="fas fa-street-view"></i>
+                                <span>Street View</span>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <a href="#" class="tool-button" id="btn-download">
+                                <i class="fas fa-download"></i>
+                                <span>Export</span>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <a href="#" class="tool-button" id="btn-print">
+                                <i class="fas fa-print"></i>
+                                <span>Print</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Property Sidebar -->
+        <div class="col-lg-4">
+            <div class="property-sidebar">
+                <!-- Property Summary Card -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Property Summary</span>
+                        <span class="data-source-badge">PACS</span>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="mb-3" id="property-address">123 Main Street, Richland, WA 99352</h4>
+                        <div class="property-detail-row">
+                            <span class="property-detail-label">Property ID:</span>
+                            <span class="property-detail-value" id="property-id">12345678</span>
+                        </div>
+                        <div class="property-detail-row">
+                            <span class="property-detail-label">Owner:</span>
+                            <span class="property-detail-value" id="property-owner">John & Jane Smith</span>
+                        </div>
+                        <div class="property-detail-row">
+                            <span class="property-detail-label">Appraised Value:</span>
+                            <span class="property-detail-value" id="property-value">$285,000</span>
+                        </div>
+                        <div class="property-detail-row">
+                            <span class="property-detail-label">Land Value:</span>
+                            <span class="property-detail-value" id="land-value">$75,000</span>
+                        </div>
+                        <div class="property-detail-row">
+                            <span class="property-detail-label">Acres:</span>
+                            <span class="property-detail-value" id="property-acres">0.25</span>
+                        </div>
+                        <div class="property-detail-row">
+                            <span class="property-detail-label">Year Built:</span>
+                            <span class="property-detail-value" id="year-built">1998</span>
+                        </div>
+                        <div class="property-detail-row">
+                            <span class="property-detail-label">Property Class:</span>
+                            <span class="property-detail-value" id="property-class">Residential</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Property Detail Tabs -->
+                <ul class="nav nav-tabs" id="propertyTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab" aria-controls="details" aria-selected="true">Details</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">History</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tax-tab" data-bs-toggle="tab" data-bs-target="#tax" type="button" role="tab" aria-controls="tax" aria-selected="false">Tax</button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="propertyTabsContent">
+                    <!-- Details Tab -->
+                    <div class="tab-pane fade show active" id="details" role="tabpanel" aria-labelledby="details-tab">
+                        <div class="property-detail-row">
+                            <span class="property-detail-label">Living Area:</span>
+                            <span class="property-detail-value" id="living-area">2,150 sq ft</span>
+                        </div>
+                        <div class="property-detail-row">
+                            <span class="property-detail-label">Land Area:</span>
+                            <span class="property-detail-value" id="land-area">10,890 sq ft</span>
+                        </div>
+                        <div class="property-detail-row">
+                            <span class="property-detail-label">Bedrooms:</span>
+                            <span class="property-detail-value" id="bedrooms">4</span>
+                        </div>
+                        <div class="property-detail-row">
+                            <span class="property-detail-label">Bathrooms:</span>
+                            <span class="property-detail-value" id="bathrooms">2.5</span>
+                        </div>
+                        <div class="property-detail-row">
+                            <span class="property-detail-label">Zoning:</span>
+                            <span class="property-detail-value" id="zoning">R-1</span>
+                        </div>
+                        <div class="property-detail-row">
+                            <span class="property-detail-label">School District:</span>
+                            <span class="property-detail-value" id="school-district">Richland School District</span>
+                        </div>
+                        <div class="property-detail-row">
+                            <span class="property-detail-label">Neighborhood:</span>
+                            <span class="property-detail-value" id="neighborhood">Meadow Springs</span>
+                        </div>
+                        <div class="property-detail-row">
+                            <span class="property-detail-label">Subdivision:</span>
+                            <span class="property-detail-value" id="subdivision">Oak Hills</span>
+                        </div>
+                    </div>
+                    
+                    <!-- History Tab -->
+                    <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+                        <div class="history-timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-date">Jan 15, 2023</div>
+                                <div class="timeline-content">
+                                    <div class="fw-bold">Property Sale</div>
+                                    <div class="timeline-caption">Sale price: $285,000</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-date">Nov 30, 2022</div>
+                                <div class="timeline-content">
+                                    <div class="fw-bold">Property Reassessment</div>
+                                    <div class="timeline-caption">Value changed from $265,000 to $280,000</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-date">Aug 12, 2020</div>
+                                <div class="timeline-content">
+                                    <div class="fw-bold">Renovation Permit</div>
+                                    <div class="timeline-caption">Kitchen remodel, bathroom addition</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-date">May 4, 2015</div>
+                                <div class="timeline-content">
+                                    <div class="fw-bold">Property Sale</div>
+                                    <div class="timeline-caption">Sale price: $210,000</div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-date">Aug 15, 1998</div>
+                                <div class="timeline-content">
+                                    <div class="fw-bold">Construction Complete</div>
+                                    <div class="timeline-caption">New construction</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tax Tab -->
+                    <div class="tab-pane fade" id="tax" role="tabpanel" aria-labelledby="tax-tab">
+                        <div class="property-detail-row">
+                            <span class="property-detail-label">Tax Year:</span>
+                            <span class="property-detail-value">2025</span>
+                        </div>
+                        <div class="property-detail-row">
+                            <span class="property-detail-label">Total Tax:</span>
+                            <span class="property-detail-value">$3,420.56</span>
+                        </div>
+                        <div class="property-detail-row">
+                            <span class="property-detail-label">Tax Status:</span>
+                            <span class="property-detail-value">Paid</span>
+                        </div>
+                        <div class="property-detail-row">
+                            <span class="property-detail-label">Payment Date:</span>
+                            <span class="property-detail-value">Apr 15, 2025</span>
+                        </div>
+                        <div class="property-detail-row">
+                            <span class="property-detail-label">Taxable Value:</span>
+                            <span class="property-detail-value">$280,000</span>
+                        </div>
+                        <div class="property-detail-row">
+                            <span class="property-detail-label">Exemptions:</span>
+                            <span class="property-detail-value">None</span>
+                        </div>
+                        
+                        <h6 class="mt-4 mb-2">Tax Rate Breakdown</h6>
+                        <div class="property-detail-row">
+                            <span class="property-detail-label">County:</span>
+                            <span class="property-detail-value">$1,456.00</span>
+                        </div>
+                        <div class="property-detail-row">
+                            <span class="property-detail-label">School District:</span>
+                            <span class="property-detail-value">$1,092.00</span>
+                        </div>
+                        <div class="property-detail-row">
+                            <span class="property-detail-label">City:</span>
+                            <span class="property-detail-value">$728.00</span>
+                        </div>
+                        <div class="property-detail-row">
+                            <span class="property-detail-label">Special Districts:</span>
+                            <span class="property-detail-value">$144.56</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Leaflet JavaScript -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-measure/dist/leaflet-measure.js"></script>
+
+<!-- TerraFlow Map Utils -->
+<script src="{{ url_for('static', filename='js/map-utils.js') }}"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize the property map
+        const propertyMap = initPropertyMap('property-map', {
+            center: [-119.2874, 46.2646], // Benton County, WA coordinates
+            zoom: 15
+        });
+        
+        // Sample property data (this would be loaded from backend)
+        const propertyGeoJson = {
+            type: 'FeatureCollection',
+            features: [
+                {
+                    type: 'Feature',
+                    properties: {
+                        property_id: '12345678',
+                        address: '123 Main Street, Richland, WA 99352',
+                        owner_name: 'John & Jane Smith',
+                        appraised_value: 285000,
+                        acres: 0.25,
+                        year_built: 1998,
+                        property_class: 'Residential',
+                        living_area: 2150,
+                        bedrooms: 4,
+                        bathrooms: 2.5
+                    },
+                    geometry: {
+                        type: 'Polygon',
+                        coordinates: [[
+                            [-119.2874, 46.2646],
+                            [-119.2864, 46.2646],
+                            [-119.2864, 46.2656],
+                            [-119.2874, 46.2656],
+                            [-119.2874, 46.2646]
+                        ]]
+                    }
+                }
+            ]
+        };
+        
+        // Load property data on the map
+        loadPropertiesOnMap(propertyMap, propertyGeoJson, {
+            fitBounds: true,
+            onSelect: function(property) {
+                // Update the property details in the sidebar
+                updatePropertyDetails(property);
+            }
+        });
+        
+        // Bind tool buttons to actions
+        document.getElementById('btn-measure').addEventListener('click', function(e) {
+            e.preventDefault();
+            toggleMeasureTool(propertyMap);
+        });
+        
+        document.getElementById('btn-streetview').addEventListener('click', function(e) {
+            e.preventDefault();
+            openStreetView(propertyGeoJson.features[0].geometry.coordinates[0][0]);
+        });
+        
+        document.getElementById('btn-download').addEventListener('click', function(e) {
+            e.preventDefault();
+            downloadPropertyData(propertyGeoJson.features[0].properties.property_id);
+        });
+        
+        document.getElementById('btn-print').addEventListener('click', function(e) {
+            e.preventDefault();
+            printPropertyMap();
+        });
+        
+        // Initialize with the first property's details
+        updatePropertyDetails(propertyGeoJson.features[0].properties);
+    });
+    
+    // Update the property details in the sidebar
+    function updatePropertyDetails(property) {
+        document.getElementById('property-address').textContent = property.address || 'N/A';
+        document.getElementById('property-id').textContent = property.property_id || 'N/A';
+        document.getElementById('property-owner').textContent = property.owner_name || 'N/A';
+        document.getElementById('property-value').textContent = property.appraised_value ? 
+            '$' + property.appraised_value.toLocaleString() : 'N/A';
+        document.getElementById('land-value').textContent = property.land_value ? 
+            '$' + property.land_value.toLocaleString() : '$75,000';
+        document.getElementById('property-acres').textContent = property.acres ? 
+            property.acres.toFixed(2) : 'N/A';
+        document.getElementById('year-built').textContent = property.year_built || 'N/A';
+        document.getElementById('property-class').textContent = property.property_class || 'N/A';
+        
+        // Update details tab
+        document.getElementById('living-area').textContent = property.living_area ? 
+            property.living_area.toLocaleString() + ' sq ft' : 'N/A';
+        document.getElementById('land-area').textContent = property.land_sqft ? 
+            property.land_sqft.toLocaleString() + ' sq ft' : '10,890 sq ft';
+        document.getElementById('bedrooms').textContent = property.bedrooms || 'N/A';
+        document.getElementById('bathrooms').textContent = property.bathrooms || 'N/A';
+        document.getElementById('zoning').textContent = property.zoning || 'R-1';
+        document.getElementById('school-district').textContent = property.school_district || 'Richland School District';
+        document.getElementById('neighborhood').textContent = property.neighborhood || 'Meadow Springs';
+        document.getElementById('subdivision').textContent = property.subdivision || 'Oak Hills';
+    }
+    
+    // Toggle measurement tool
+    function toggleMeasureTool(map) {
+        // This would toggle the measurement tool functionality
+        alert('Measurement tool activated');
+    }
+    
+    // Open Google Street View at location
+    function openStreetView(coordinates) {
+        const lat = coordinates[1];
+        const lng = coordinates[0];
+        const url = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}`;
+        window.open(url, '_blank');
+    }
+    
+    // Download property data
+    function downloadPropertyData(propertyId) {
+        // This would trigger a download of property data
+        alert(`Downloading property data for ID: ${propertyId}`);
+    }
+    
+    // Print property map
+    function printPropertyMap() {
+        // This would generate a printable view
+        window.print();
+    }
+</script>
+{% endblock %}

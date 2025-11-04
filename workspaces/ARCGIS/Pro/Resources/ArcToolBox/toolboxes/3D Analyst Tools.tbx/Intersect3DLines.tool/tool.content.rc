@@ -1,0 +1,20 @@
+{
+    "map": {
+        "description": "Computes the intersecting and overlapping segments of lines in 3D space.",
+        "in_lines.descr": "The line features that will be evaluated for intersections. The input can consist of either one or two line feature layers or classes. If one input is specified, each feature will be compared with all other features in that feature class. No feature will be compared to itself.",
+        "in_lines.title": "Input Features",
+        "join_attributes.descr": "<xdoc><p>Specifies the attributes from the input features that will be transferred to the output feature class.</p><ul><li><span title=\"ALL\">All attributes</span>—All the attributes from the input features will be transferred to the output feature class. This is the default.</li><li><span title=\"NO_FID\">All attributes except feature IDs</span>—All the attributes except the FID attribute from the input features will be transferred to the output feature class.</li><li><span title=\"ONLY_FID\">Only feature IDs</span>—Only the FID attribute from the input features will be transferred to the output feature class.</li></ul></xdoc>",
+        "join_attributes.domain.ALL": "All attributes",
+        "join_attributes.domain.NO_FID": "All attributes except feature IDs",
+        "join_attributes.domain.ONLY_FID": "Only feature IDs",
+        "join_attributes.title": "Attributes To Join",
+        "max_z_diff.descr": "The maximum vertical distance between line segments that intersect.",
+        "max_z_diff.title": "Maximum Z Difference",
+        "out_intersection_count.title": "Output Intersection Count",
+        "out_line_fc.descr": "The output lines representing the overlapping sections that exist between the input lines.",
+        "out_line_fc.title": "Output Line Feature Class",
+        "out_point_fc.descr": "The output points representing the locations where the input lines intersect, including locations where overlapping line segments begin and end.",
+        "out_point_fc.title": "Output Point Feature Class",
+        "title": "Intersect 3D Lines"
+    }
+}

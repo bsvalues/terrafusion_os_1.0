@@ -4,6 +4,6 @@ namespace TerraFusion.AI.Services
 {
     public interface IAIAnalyticsService
     {
-        Task<AIAnalyticsDataDto> GetAnalyticsDataAsync();
+        System.Threading.Tasks.Task<AIAnalyticsDataDto> GetAnalyticsDataAsync();
     }
 }

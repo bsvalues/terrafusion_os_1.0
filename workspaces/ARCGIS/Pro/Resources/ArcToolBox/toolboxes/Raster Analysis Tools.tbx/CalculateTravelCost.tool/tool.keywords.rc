@@ -1,0 +1,20 @@
+{
+    "set": [
+        "accumulative",
+        "allocation",
+        "cost allocation",
+        "cost distance",
+        "cost weighted",
+        "costallocation",
+        "costdistance",
+        "distance",
+        "friction",
+        "path allocation",
+        "path distance",
+        "path distance allocation",
+        "pathdistance",
+        "pathdistanceallocation",
+        "spread",
+        "travel cost"
+    ]
+}

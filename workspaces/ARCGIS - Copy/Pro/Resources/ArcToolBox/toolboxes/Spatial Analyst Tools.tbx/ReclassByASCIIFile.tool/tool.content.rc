@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Reclassifies (or changes) the values of the input cells of a raster using an ASCII remap file.",
+        "in_raster.descr": "The input raster to be reclassified.",
+        "in_raster.title": "Input raster",
+        "in_remap_file.descr": "<xdoc><p>ASCII remap file defining the single values or ranges to be reclassified and the values they will become.</p><p>Allowed extensions for the ASCII remap files are .rmp, .txt, and .asc.</p></xdoc>",
+        "in_remap_file.title": "Input ASCII remap file",
+        "missing_values.descr": "<xdoc><p>Denotes whether missing values in the reclass file retain their value or get mapped to NoData.</p><ul><li>Unchecked—Signifies that if any cell location on the input raster contains a value that is not present or reclassed in the remap file, the value should remain intact and be written for that location to the output raster. This is the default.</li><li>Checked—Signifies that if any cell location on the input raster contains a value that is not present or reclassed in the remap file, the value will be reclassed to NoData for that location on the output raster.</li></ul></xdoc>",
+        "missing_values.title": "Change missing values to NoData",
+        "out_raster.descr": "<xdoc><p>The output reclassified raster.</p><p>The output will always be of integer type.</p></xdoc>",
+        "out_raster.title": "Output raster",
+        "title": "Reclass by ASCII File"
+    }
+}

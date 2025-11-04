@@ -1,0 +1,33 @@
+{
+    "set": [
+        "back",
+        "backup",
+        "cad",
+        "class",
+        "conversion",
+        "convert",
+        "coverage",
+        "dgn",
+        "duplicate",
+        "dwg",
+        "dxf",
+        "export",
+        "file",
+        "gdb",
+        "geodatabase",
+        "geometry",
+        "import",
+        "layer",
+        "new",
+        "paste",
+        "personal",
+        "reproduce",
+        "sdc",
+        "sde",
+        "shapefile",
+        "shp",
+        "up",
+        "vector",
+        "vpf"
+    ]
+}

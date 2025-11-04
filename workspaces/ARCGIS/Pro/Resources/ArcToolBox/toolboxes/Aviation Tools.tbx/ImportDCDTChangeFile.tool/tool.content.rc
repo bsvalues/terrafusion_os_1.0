@@ -1,0 +1,13 @@
+{
+    "map": {
+        "current_cycle_date.descr": "The date of the current charting cycle.",
+        "current_cycle_date.title": "Current Cycle Date",
+        "description": "Imports an NGA Digital Chart Data Transaction (DCDT) change file into an aviation geodatabase.",
+        "in_change_file.descr": "The NGA DCDT change file is a Microsoft Access .mdb or .accdb file with changes to be loaded for the current chart cycle.",
+        "in_change_file.title": "Input DCDT Change File",
+        "target_gdb.descr": "The Aviation charting schema workspace where the changes will be loaded.",
+        "target_gdb.title": "Target Geodatabase",
+        "title": "Import DCDT Change File",
+        "updated_gdb.title": "Output Geodatabase"
+    }
+}

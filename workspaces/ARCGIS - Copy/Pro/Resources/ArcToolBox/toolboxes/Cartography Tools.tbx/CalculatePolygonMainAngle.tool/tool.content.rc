@@ -1,0 +1,17 @@
+{
+    "map": {
+        "angle_field.descr": "The field that will be updated with the polygon main angle values.",
+        "angle_field.title": "Angle Field",
+        "description": "Calculates the dominant angles of  input polygon features and assigns the values to a field to use to orient symbology such as markers or hatch lines within the polygons.",
+        "in_features.descr": "The input polygon features.",
+        "in_features.title": "Input Features",
+        "out_features.title": "Updated Input Features",
+        "rotation_method.descr": "<xdoc><p>Specifies the method and origin point of rotation that will be used..</p><ul><li><span title=\"GEOGRAPHIC\">Geographic</span>—The angle will be calculated clockwise with 0 at the top (north).</li><li><span title=\"ARITHMETIC\">Arithmetic</span>—The angle will be calculated counterclockwise with 0 at the right (east).</li><li><span title=\"GRAPHIC\">Graphic</span>—The angle will be calculated counterclockwise with 0 at the top (north). This is the default.</li></ul></xdoc>",
+        "rotation_method.domain.ARITHMETIC": "Arithmetic",
+        "rotation_method.domain.GEOGRAPHIC": "Geographic",
+        "rotation_method.domain.GRAPHIC": "Graphic",
+        "rotation_method.title": "Rotation Method",
+        "summary": "Calculates the dominant angles of input polygon features and assigns the values to a field to use to orient symbology such as markers or hatch lines within the polygons.",
+        "title": "Calculate Polygon Main Angle"
+    }
+}

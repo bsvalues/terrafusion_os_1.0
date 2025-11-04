@@ -1,0 +1,15 @@
+{
+    "set": [
+        "amd",
+        "cache",
+        "collection",
+        "create",
+        "display",
+        "generate preview",
+        "image service",
+        "make",
+        "mosaic dataset",
+        "pyramid",
+        "surface"
+    ]
+}

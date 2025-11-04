@@ -1,0 +1,296 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "69000022",
+    "description": "$rc:description",
+    "product": "300",
+    "attributes": [
+        "spark"
+    ],
+    "params": {
+        "prediction_type": {
+            "displayname": "$rc:prediction_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "TRAIN",
+                        "code": "$rc:prediction_type.domain.TRAIN"
+                    },
+                    {
+                        "value": "TRAIN_AND_PREDICT",
+                        "code": "$rc:prediction_type.domain.TRAIN_AND_PREDICT"
+                    }
+                ]
+            },
+            "value": "TRAIN",
+            "description": "$rc:prediction_type.descr"
+        },
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "output_trained_features": {
+            "direction": "out",
+            "displayname": "$rc:output_trained_features.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFeatureClass"
+                    },
+                    {
+                        "type": "DETable"
+                    }
+                ]
+            },
+            "description": "$rc:output_trained_features.descr"
+        },
+        "variable_predict": {
+            "displayname": "$rc:variable_predict.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "BigInteger",
+                    "Float",
+                    "Double",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:variable_predict.descr"
+        },
+        "treat_variable_as_categorical": {
+            "type": "optional",
+            "displayname": "$rc:treat_variable_as_categorical.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CATEGORICAL"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NUMERIC"
+                    }
+                ]
+            },
+            "description": "$rc:treat_variable_as_categorical.descr"
+        },
+        "explanatory_variables": {
+            "type": "optional",
+            "displayname": "$rc:explanatory_variables.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:explanatory_variables.dt.title1"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "displayname": "$rc:explanatory_variables.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Short",
+                            "Long",
+                            "BigInteger",
+                            "Float",
+                            "Double",
+                            "Text"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "type": "GPBoolean",
+                                "value": "true",
+                                "code": "CATEGORICAL_YES"
+                            },
+                            {
+                                "type": "GPBoolean",
+                                "value": "false",
+                                "code": "CATEGORICAL_NO"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:explanatory_variables.descr"
+        },
+        "features_to_predict": {
+            "type": "optional",
+            "displayname": "$rc:features_to_predict.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:features_to_predict.descr"
+        },
+        "variable_of_importance": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:variable_of_importance.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:variable_of_importance.descr"
+        },
+        "output_predicted": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:output_predicted.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFeatureClass"
+                    },
+                    {
+                        "type": "DETable"
+                    }
+                ]
+            },
+            "description": "$rc:output_predicted.descr"
+        },
+        "explanatory_variable_matching": {
+            "type": "optional",
+            "displayname": "$rc:explanatory_variable_matching.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:explanatory_variable_matching.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:explanatory_variable_matching.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "depends": [
+                "features_to_predict"
+            ],
+            "description": "$rc:explanatory_variable_matching.descr"
+        },
+        "number_of_trees": {
+            "type": "optional",
+            "displayname": "$rc:number_of_trees.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "100",
+            "description": "$rc:number_of_trees.descr"
+        },
+        "minimum_leaf_size": {
+            "type": "optional",
+            "displayname": "$rc:minimum_leaf_size.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:minimum_leaf_size.descr"
+        },
+        "maximum_tree_depth": {
+            "type": "optional",
+            "displayname": "$rc:maximum_tree_depth.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:maximum_tree_depth.descr"
+        },
+        "sample_size": {
+            "type": "optional",
+            "displayname": "$rc:sample_size.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "1",
+                "max": "100"
+            },
+            "value": "100",
+            "description": "$rc:sample_size.descr"
+        },
+        "random_variables": {
+            "type": "optional",
+            "displayname": "$rc:random_variables.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:random_variables.descr"
+        },
+        "percentage_for_validation": {
+            "type": "optional",
+            "displayname": "$rc:percentage_for_validation.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "10",
+                "max": "50"
+            },
+            "value": "10",
+            "description": "$rc:percentage_for_validation.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "outputCoordinateSystem",
+        "workspace"
+    ]
+}

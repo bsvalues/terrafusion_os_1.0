@@ -1,0 +1,5 @@
+<DataType Name="DEArcInfoTable">
+  <DisplayName>INFO Table</DisplayName>
+  <Description>A table in an INFO database.</Description>
+</DataType>
+

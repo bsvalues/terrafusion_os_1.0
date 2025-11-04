@@ -1,0 +1,79 @@
+{
+    "type": "FunctionTool",
+    "guid": "{2b967c53-d20a-409f-8f53-58202b4b7917}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190537",
+    "description": "$rc:description",
+    "product": "200",
+    "params": {
+        "in_mosaic_dataset": {
+            "displayname": "$rc:in_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEMosaicDataset"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_mosaic_dataset.descr"
+        },
+        "in_control_points": {
+            "displayname": "$rc:in_control_points.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:in_control_points.descr"
+        },
+        "out_coverage_table": {
+            "direction": "out",
+            "displayname": "$rc:out_coverage_table.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_coverage_table.descr"
+        },
+        "out_overlap_table": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_overlap_table.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_overlap_table.descr"
+        },
+        "in_mask_dataset": {
+            "type": "optional",
+            "displayname": "$rc:in_mask_dataset.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:in_mask_dataset.descr"
+        },
+        "minimum_area": {
+            "type": "optional",
+            "displayname": "$rc:minimum_area.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0.2",
+            "description": "$rc:minimum_area.descr"
+        },
+        "maximum_level": {
+            "type": "optional",
+            "displayname": "$rc:maximum_level.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "2",
+            "description": "$rc:maximum_level.descr"
+        }
+    },
+    "environments": [
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

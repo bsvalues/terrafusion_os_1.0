@@ -1,0 +1,300 @@
+<RasterFunctionTemplate xsi:type='typens:RasterFunctionTemplate'
+                        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+                        xmlns:xs='http://www.w3.org/2001/XMLSchema'
+                        xmlns:typens='http://www.esri.com/schemas/ArcGIS/3.3.0'>
+  <Name>SICD_IQ_Complex</Name>
+  <Description>Combine the Inphase and Quadrature bands to form a Complex Image</Description>
+  <Function xsi:type='typens:ComplexFunction'
+            id='ID1'>
+    <Name>Complex</Name>
+    <Description>Converts between complex and real values.</Description>
+    <PixelType>UNKNOWN</PixelType>
+  </Function>
+  <Arguments xsi:type='typens:ComplexFunctionArguments'
+             id='ID2'>
+    <Names xsi:type='typens:ArrayOfString'
+           id='ID3'>
+      <String>Raster</String>
+      <String>ImaginaryRaster</String>
+      <String>ValueType</String>
+      <String>MatchVariable</String>
+      <String>UnionDimension</String>
+    </Names>
+    <Values xsi:type='typens:ArrayOfAnyType'
+            id='ID4'>
+      <AnyType xsi:type='typens:RasterFunctionTemplate'
+               id='ID5'>
+        <Name>Raster Function Template</Name>
+        <Description>A raster function template.</Description>
+        <Function xsi:type='typens:ExtractBandFunction'
+                  id='ID6'>
+          <Name>Extract Bands</Name>
+          <Description>Specifies which bands to work with when using multiband datasets.</Description>
+          <PixelType>UNKNOWN</PixelType>
+        </Function>
+        <Arguments xsi:type='typens:ExtractBandFunctionArguments'
+                   id='ID7'>
+          <Names xsi:type='typens:ArrayOfString'
+                 id='ID8'>
+            <String>UnionDimension</String>
+            <String>Method</String>
+            <String>BandNames</String>
+            <String>BandWavelengths</String>
+            <String>BandIds</String>
+            <String>MissingBandAction</String>
+            <String>MatchVariable</String>
+            <String>Raster</String>
+          </Names>
+          <Values xsi:type='typens:ArrayOfAnyType'
+                  id='ID9'>
+            <AnyType xsi:type='typens:RasterFunctionVariable'
+                     id='ID10'>
+              <Name>UnionDimension</Name>
+              <Description/>
+              <Value xsi:type='xs:int'>0</Value>
+              <IsDataset>false</IsDataset>
+                        </AnyType>
+                        <AnyType xsi:type='typens:RasterFunctionVariable' id='ID11'>
+                            <Name>Method</Name>
+                            <Description/>
+                            <Value xsi:type='xs:int'>2</Value>
+                            <IsDataset>false</IsDataset>
+                        </AnyType>
+                        <AnyType xsi:type='typens:RasterFunctionVariable' id='ID12'>
+                            <Name>BandNames</Name>
+                            <Description/>
+                            <Value/>
+                            <IsDataset>false</IsDataset>
+                        </AnyType>
+                        <AnyType xsi:type='typens:RasterFunctionVariable' id='ID13'>
+                            <Name>BandWavelengths</Name>
+                            <Description></Description>
+                            <Value/>
+                            <IsDataset>false</IsDataset>
+                        </AnyType>
+                        <AnyType xsi:type='typens:RasterFunctionVariable' id='ID14'>
+                            <Name>BandIds</Name>
+                            <Description></Description>
+                            <Value xsi:type='typens:ArrayOfInt' id='ID15'>
+                                <Int>0</Int>
+                            </Value>
+                            <IsDataset>false</IsDataset>
+                        </AnyType>
+                        <AnyType xsi:type='typens:RasterFunctionVariable' id='ID16'>
+                            <Name>MissingBandAction</Name>
+                            <Description/>
+                            <Value xsi:type='xs:int'>1</Value>
+                            <IsDataset>false</IsDataset>
+                        </AnyType>
+                        <AnyType xsi:type='typens:RasterFunctionVariable' id='ID17'>
+                            <Name>MatchVariable</Name>
+                            <Description/>
+                            <Value xsi:type='xs:int'>1</Value>
+                            <IsDataset>false</IsDataset>
+                        </AnyType>
+                        <AnyType xsi:type='typens:RasterFunctionTemplate' id='ID18'>
+                            <Name>Raster Function Template</Name>
+                            <Description>A raster function template.</Description>
+                            <Function xsi:type='typens:RasterInfoFunction' id='ID19'>
+                                <Name>RasterInfo</Name>
+                                <Description>Modifies properties of the raster, such as bit depth, NoData value, cell size, and so on.</Description>
+                                <PixelType>UNKNOWN</PixelType>
+                            </Function>
+                            <Arguments xsi:type='typens:RasterInfoFunctionArguments'
+                                       id='ID20'>
+                                <Names xsi:type='typens:ArrayOfString'
+                                       id='ID21'>
+                                    <String>Raster</String>
+                                    <String>RasterInfo</String>
+                                    <String>Statistics</String>
+                                    <String>MatchVariable</String>
+                                    <String>UnionDimension</String>
+                                    <String>_CachedProperties</String>
+                                </Names>
+                                <Values xsi:type='typens:ArrayOfAnyType'
+                                        id='ID22'>
+                                    <AnyType xsi:type='typens:RasterFunctionVariable'
+                                             id='ID23'>
+                                        <Name>Raster</Name>
+                                        <Description/>
+                                        <Value/>
+                                        <IsDataset>true</IsDataset>
+                                    </AnyType>
+                                    <AnyType xsi:type='typens:RasterFunctionVariable' id='ID24'>
+                                        <Name>RasterInfo</Name>
+                                        <Description/>
+                                        <Value></Value>
+                                        <IsDataset>false</IsDataset>
+                                    </AnyType>
+                                    <AnyType xsi:type='typens:RasterFunctionVariable' id='ID25'>
+                                        <Name>Statistics</Name>
+                                        <Description/>
+                                        <Value></Value>
+                                        <IsDataset>true</IsDataset>
+                                    </AnyType>
+                                    <AnyType xsi:type='typens:RasterFunctionVariable' id='ID26'>
+                                        <Name>MatchVariable</Name>
+                                        <Description/>
+                                        <Value xsi:type='xs:int'>1</Value>
+                                        <IsDataset>false</IsDataset>
+                                    </AnyType>
+                                    <AnyType xsi:type='typens:RasterFunctionVariable' id='ID27'>
+                                        <Name>UnionDimension</Name>
+                                        <Description></Description>
+                                        <Value xsi:type='xs:int'>0</Value>
+                                        <IsDataset>false</IsDataset>
+                                    </AnyType>
+                                </Values>
+                            </Arguments>
+                            <Help></Help>
+                            <Type>0</Type>
+                            <Thumbnail/>
+                            <Definition/>
+                            <Group/>
+                            <Tag/>
+                            <ThumbnailEx/>
+                        </AnyType>
+                    </Values>
+                </Arguments>
+                <Help/>
+                <Type>0</Type>
+                <Thumbnail/>
+                <Definition/>
+                <Group/>
+                <Tag/>
+                <ThumbnailEx/>
+            </AnyType>
+            <AnyType xsi:type='typens:RasterFunctionTemplate' id='ID48'>
+                <Name>Raster Function Template</Name>
+                <Description>A raster function template.</Description>
+                <Function xsi:type='typens:ExtractBandFunction' id='ID49'>
+                    <Name>Extract Bands</Name>
+                    <Description>Specifies which bands to work with when using multiband datasets.</Description>
+                    <PixelType>UNKNOWN</PixelType>
+                </Function>
+                <Arguments xsi:type='typens:ExtractBandFunctionArguments' id='ID50'>
+                    <Names xsi:type='typens:ArrayOfString' id='ID51'>
+                        <String>UnionDimension</String>
+                        <String>Method</String>
+                        <String>BandNames</String>
+                        <String>BandWavelengths</String>
+                        <String>BandIds</String>
+                        <String>MissingBandAction</String>
+                        <String>MatchVariable</String>
+                        <String>Raster</String>
+                    </Names>
+                    <Values xsi:type='typens:ArrayOfAnyType' id='ID52'>
+                        <AnyType xsi:type='typens:RasterFunctionVariable' id='ID53'>
+                            <Name>UnionDimension</Name>
+                            <Description></Description>
+                            <Value xsi:type='xs:int'>0</Value>
+                            <IsDataset>false</IsDataset>
+                        </AnyType>
+                        <AnyType xsi:type='typens:RasterFunctionVariable' id='ID54'>
+                            <Name>Method</Name>
+                            <Description/>
+                            <Value xsi:type='xs:int'>2</Value>
+                            <IsDataset>false</IsDataset>
+                        </AnyType>
+                        <AnyType xsi:type='typens:RasterFunctionVariable' id='ID55'>
+                            <Name>BandNames</Name>
+                            <Description/>
+                            <Value/>
+                            <IsDataset>false</IsDataset>
+                        </AnyType>
+                        <AnyType xsi:type='typens:RasterFunctionVariable' id='ID56'>
+                            <Name>BandWavelengths</Name>
+                            <Description/>
+                            <Value/>
+                            <IsDataset>false</IsDataset>
+                        </AnyType>
+                        <AnyType xsi:type='typens:RasterFunctionVariable' id='ID57'>
+                            <Name>BandIds</Name>
+                            <Description/>
+                            <Value xsi:type='typens:ArrayOfInt' id='ID58'>
+                                <Int>1</Int>
+                            </Value>
+                            <IsDataset>false</IsDataset>
+                        </AnyType>
+                        <AnyType xsi:type='typens:RasterFunctionVariable' id='ID59'>
+                            <Name>MissingBandAction</Name>
+                            <Description/>
+                            <Value xsi:type='xs:int'>1</Value>
+                            <IsDataset>false</IsDataset>
+                        </AnyType>
+                        <AnyType xsi:type='typens:RasterFunctionVariable' id='ID60'>
+                            <Name>MatchVariable</Name>
+                            <Description></Description>
+                            <Value xsi:type='xs:int'>1</Value>
+                            <IsDataset>false</IsDataset>
+                        </AnyType>
+                        <AnyType xsi:type='typens:RasterFunctionTemplate' href='ID18' />
+                    </Values>
+                </Arguments>
+                <Help/>
+                <Type>0</Type>
+                <Thumbnail/>
+                <Definition/>
+                <Group></Group>
+                <Tag/>
+                <ThumbnailEx/>
+            </AnyType>
+            <AnyType xsi:type='typens:RasterFunctionVariable'
+                     id='ID61'>
+              <Name>ValueType</Name>
+              <Description/>
+              <Value xsi:type='xs:string'>Complex</Value>
+              <IsDataset>false</IsDataset>
+            </AnyType>
+            <AnyType xsi:type='typens:RasterFunctionVariable'
+                     id='ID62'>
+              <Name>MatchVariable</Name>
+              <Description/>
+              <Value xsi:type='xs:int'>1</Value>
+              <IsDataset>false</IsDataset>
+            </AnyType>
+            <AnyType xsi:type='typens:RasterFunctionVariable'
+                     id='ID63'>
+              <Name>UnionDimension</Name>
+              <Description/>
+              <Value xsi:type='xs:int'>0</Value>
+              <IsDataset>false</IsDataset>
+            </AnyType>
+    </Values>
+  </Arguments>
+  <Help/>
+  <Type>1</Type>
+  <Thumbnail xsi:type='xs:string'/>
+  <Definition/>
+  <Group/>
+  <Tag/>
+  <ThumbnailEx/>
+  <Properties xsi:type='typens:PropertySet'
+              id='ID64'>
+    <PropertyArray xsi:type='typens:ArrayOfPropertySetProperty'
+                   id='ID65'>
+      <PropertySetProperty xsi:type='typens:PropertySetProperty'
+                           id='ID66'>
+        <Key>MatchVariable</Key>
+        <Value xsi:type='typens:RasterFunctionVariable'
+               id='ID67'>
+          <Name>MatchVariable</Name>
+          <Description/>
+          <Value xsi:type='xs:int'>1</Value>
+          <IsDataset>false</IsDataset>
+        </Value>
+      </PropertySetProperty>
+      <PropertySetProperty xsi:type='typens:PropertySetProperty'
+                           id='ID68'>
+        <Key>UnionDimension</Key>
+        <Value xsi:type='typens:RasterFunctionVariable'
+               id='ID69'>
+          <Name>UnionDimension</Name>
+          <Description/>
+          <Value xsi:type='xs:int'>0</Value>
+          <IsDataset>false</IsDataset>
+        </Value>
+      </PropertySetProperty>
+    </PropertyArray>
+  </Properties>
+</RasterFunctionTemplate>

@@ -1,0 +1,22 @@
+{
+    "map": {
+        "area.descr": "A numeric value representing the study area size. The default value is the area of the minimum enclosing rectangle that would encompass all features (or all selected features). Units should match those for the Output Coordinate System.",
+        "area.title": "Area",
+        "description": "Calculates a nearest neighbor index based on the average distance from each feature to its nearest neighboring feature.",
+        "distance_method.descr": "<xdoc><p>Specifies how distances are calculated from each feature to neighboring features.</p><ul><li><span title=\"EUCLIDEAN_DISTANCE\">Euclidean</span>—The straight-line distance between two points (as the crow flies)</li><li><span title=\"MANHATTAN_DISTANCE\">Manhattan</span>—The distance between two points measured along axes at right angles (city block); calculated by summing the (absolute) difference between the x- and y-coordinates</li></ul></xdoc>",
+        "distance_method.domain.EUCLIDEAN_DISTANCE": "Euclidean",
+        "distance_method.domain.MANHATTAN_DISTANCE": "Manhattan",
+        "distance_method.title": "Distance Method",
+        "generate_report.descr": "<xdoc><p>Specifies whether the tool will create a graphical summary of results.</p><ul><li>Checked—A graphical summary will be created as an HTML file.</li><li>Unchecked—No graphical summary will be created. This is the default.</li></ul></xdoc>",
+        "generate_report.title": "Generate Report",
+        "input_feature_class.descr": "The feature class, typically a point feature class, for which the average nearest neighbor distance will be calculated.",
+        "input_feature_class.title": "Input Feature Class",
+        "nnexpected.title": "Expected Mean Distance",
+        "nnobserved.title": "Observed Mean Distance",
+        "nnratio.title": "Nearest Neighbor Index",
+        "nnzscore.title": "z-score",
+        "pvalue.title": "p-value",
+        "report_file.title": "Report File",
+        "title": "Average Nearest Neighbor"
+    }
+}

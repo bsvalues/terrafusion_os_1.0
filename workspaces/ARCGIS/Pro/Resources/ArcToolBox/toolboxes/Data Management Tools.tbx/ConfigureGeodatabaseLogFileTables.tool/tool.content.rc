@@ -1,0 +1,17 @@
+{
+    "map": {
+        "description": "Alters the type of log file tables used by an earlier release enterprise geodatabase to maintain lists of records cached by ArcGIS.",
+        "input_database.descr": "A database connection (.sde file) to the enterprise geodatabase where the log file table configuration will be changed. The connection must be made as the geodatabase administrator.",
+        "input_database.title": "Input Database Connection",
+        "log_file_pool_size.descr": "The number of tables included in the pool that the geodatabase will use if a pool of session-based log file tables owned by the geodatabase administrator is used.",
+        "log_file_pool_size.title": "Number of pooled session-based log file tables to be owned by the administrator",
+        "log_file_type.descr": "<xdoc><p>Specifies the type of log file tables the geodatabase will use.</p><ul><li><span title=\"SESSION_LOG_FILE\">Session log file</span>—Session-based log file tables for selection sets will be used. Session-based log file tables are dedicated to a single session and may contain multiple selection sets.</li><li><span title=\"SHARED_LOG_FILE\">Shared log file</span>—Shared log file tables for selection sets will be used. Shared log file tables are shared by all sessions that connect as the same user.</li></ul></xdoc>",
+        "log_file_type.domain.SESSION_LOG_FILE": "Session log file",
+        "log_file_type.domain.SHARED_LOG_FILE": "Shared log file",
+        "log_file_type.title": "Log File Type",
+        "out_workspace.title": "Updated Input Workspace",
+        "title": "Configure Geodatabase Log File Tables",
+        "use_tempdb.descr": "This parameter is no longer applicable in any supported ArcGIS release.",
+        "use_tempdb.title": "Create session-based log file tables in the TempDB database (Microsoft SQL Server only)"
+    }
+}

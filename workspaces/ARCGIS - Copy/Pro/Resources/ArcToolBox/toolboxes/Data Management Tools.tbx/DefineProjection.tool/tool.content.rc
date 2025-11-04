@@ -1,0 +1,11 @@
+{
+    "map": {
+        "coor_system.descr": "The coordinate system that will be applied to the input.",
+        "coor_system.title": "Coordinate System",
+        "description": "Overwrites the coordinate system information (map projection and datum) stored with a dataset. This tool is intended for datasets that have an unknown or incorrect coordinate system defined.",
+        "in_dataset.descr": "The dataset or feature class whose projection will be defined.",
+        "in_dataset.title": "Input Dataset or Feature Class",
+        "out_dataset.title": "Update Input Dataset or Feature Class",
+        "title": "Define Projection"
+    }
+}

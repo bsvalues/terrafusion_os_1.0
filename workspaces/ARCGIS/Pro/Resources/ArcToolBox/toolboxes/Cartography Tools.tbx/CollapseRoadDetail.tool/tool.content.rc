@@ -1,0 +1,15 @@
+{
+    "map": {
+        "collapse_distance.descr": "The diameter of, or distance across, the road detail that will be considered for collapse.",
+        "collapse_distance.title": "Collapse Distance",
+        "description": "Collapses small, open  configurations of road segments that interrupt the general trend of a road network, such as traffic circles, and replaces them with a simplified depiction.",
+        "in_features.descr": "The input features containing small enclosed road details, such as traffic circles, to be collapsed.",
+        "in_features.title": "Input Features",
+        "locking_field.descr": "The field that contains locking information for the features. The data type must be short or long integer. A value of 1 indicates that a feature will not be collapsed.",
+        "locking_field.title": "Locking Field",
+        "output_feature_class.descr": "The output feature class containing the collapsed features—features that were modified to accommodate the collapse—and all unaffected features.",
+        "output_feature_class.title": "Output Feature Class",
+        "summary": "<xdoc><p>Collapses small, open configurations of road segments that interrupt the general trend of a road network, such as traffic circles, and replaces them with a simplified depiction.</p><p>Configurations are collapsed regardless of road class if the diameter across the open area is less than or equal to the <span class=\"esri_uicontrol\">Collapse Distance</span> parameter value. All roads from the input collection that are not collapsed will be copied to the output feature class.</p><note type=\"tip\"/><p group=\"note\">This tool is generally used to simplify a relatively large-scale road collection at a smaller scale when it is appropriate to depict traffic circles or other small interruptions to the network as a simple intersection. At medium scales, it may be preferable to retain these configurations as separate features and possibly exaggerate them. In that case, consider using the Resolve Road Conflicts tool instead to ensure that symbolized lines are displayed without symbol conflicts. If both Resolve Road Conflicts and Collapse Road Detail tools will be run on the same collection of roads, it is recommended that you run Collapse Road Detail first.</p></xdoc>",
+        "title": "Collapse Road Detail"
+    }
+}

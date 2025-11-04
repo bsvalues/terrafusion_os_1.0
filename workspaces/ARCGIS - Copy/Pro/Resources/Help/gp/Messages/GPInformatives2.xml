@@ -1,0 +1,60 @@
+<!-- This file is used for tool banner messages.-->
+<!-- For messages that are added to a tool's message stack, use GPInformatives.xml. -->
+<Messages STARTID="230001">
+
+<Message><ID>230001</ID><Description>%s</Description></Message>
+<Message><ID>230002</ID><Description>Input Coordinate System: %s</Description></Message>
+<Message><ID>230003</ID><Description>If negative or zero values exist, a shift is added.</Description></Message>
+<Message><ID>230004</ID><Description>If negative values exist, a shift is added.</Description></Message>
+<Message><ID>230005</ID><Description>Input does not have a selection. All records will be deleted.</Description></Message>
+<Message><ID>230006</ID><Description>All Output Statistics will be included in the Output Tables if the parameter is not provided.</Description></Message>
+<Message><ID>230007</ID><Description>The time span of the output cube will be from %s to %s.</Description></Message>
+<Message><ID>230008</ID><Description>%s</Description></Message>
+<Message><ID>230009</ID><Description>The input has a selection.</Description></Message>
+<Message><ID>230010</ID><Description>Solving network analysis layers created with this network data source consumes ArcGIS credits. Credits are not consumed by running this tool but are incurred later, at solve time. This network data source also imposes analysis limits, such as on the number of inputs that can be used.</Description></Message>
+<Message><ID>230011</ID><Description>Units: %s</Description></Message>
+<Message><ID>230012</ID><Description>Model type: %1,  Variable to predict: %2 </Description></Message>
+<Message>
+  <ID>230013</ID>
+  <Description>Expected threshold values will be in the range of the input variables.</Description>
+  <Tool>MVI</Tool>
+</Message>
+<Message>
+  <ID>230014</ID>
+  <Description>Expected threshold values will be in the range of standard deviations from the mean.</Description>
+  <Tool>MVI</Tool>
+</Message>
+<Message>
+  <ID>230015</ID>
+  <Description>Expected threshold values will be between 0 and 1.</Description>
+  <Tool>MVI</Tool>
+</Message>
+<Message>
+  <ID>230016</ID>
+  <Description>At least %1 fields are required.</Description>
+  <Tool></Tool>
+</Message>
+<Message>
+  <ID>230017</ID>
+  <Description>EMPTY</Description>
+  <Tool></Tool>
+</Message>
+<Message>
+  <ID>230018</ID>
+  <Description>The join table has a definition query which will be applied to the input after performing the join.</Description>
+  <Tool></Tool>
+</Message>
+<Message><ID>230019</ID><Description>This layer's network data source imposes analysis limits, such as on the number of inputs that can be used.</Description></Message>
+<Message><ID>230020</ID><Description>This network data source imposes analysis limits, such as on the number of inputs that can be used.</Description></Message>
+<Message><ID>230021</ID><Description>The estimated %s pixel spacing is %s meters.</Description></Message>
+<Message><ID>230022</ID><Description>The default maximum tree depth value is data-driven for Forest-based, and 6 for Gradient Boosted.</Description></Message>
+
+<Message><ID>230023</ID><Description>May require Enable Undo toggle on.</Description></Message>
+
+<Message><ID>230024</ID><Description>The estimated perpendicular baseline is %s meters and the estimated temporal baseline is %s days.</Description></Message>
+<Message><ID>230025</ID><Description>Analysis: %1 (%2)</Description></Message>
+<Message><ID>230026</ID><Description>Analysis Variable fields are from the Analysis Input Features found at: %1</Description></Message>
+<Message><ID>230027</ID><Description>The estimated %s window size is %s meters.</Description></Message>
+
+<!-- CLAIM new message ID at http://gp/gp-messages/ -->
+</Messages>

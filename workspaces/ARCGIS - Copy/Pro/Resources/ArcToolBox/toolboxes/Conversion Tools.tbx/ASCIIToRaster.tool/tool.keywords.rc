@@ -1,0 +1,10 @@
+{
+    "set": [
+        "change",
+        "convert",
+        "export",
+        "import",
+        "text",
+        "txt"
+    ]
+}

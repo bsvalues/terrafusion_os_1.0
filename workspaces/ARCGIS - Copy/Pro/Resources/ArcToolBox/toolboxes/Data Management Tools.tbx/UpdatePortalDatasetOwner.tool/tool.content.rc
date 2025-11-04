@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Updates the portal owner of a dataset to another user.",
+        "in_dataset.descr": "The input dataset for which the portal owner will be updated.",
+        "in_dataset.title": "Input Dataset",
+        "summary": "<xdoc><p>Updates the portal owner of a dataset to another user.</p><p>Certain datasets in an enterprise geodatabase store the active portal user account as the owner of the dataset, in addition to the data owner. The owner is determined based on the active portal user when the dataset is created. This ownership is stored in the metadata of the dataset and is used to control access for administrative tasks on the dataset.</p><p>If the existing portal dataset owner leaves the organization, the portal owner must be changed to another user. This user should possess the same user type and privilege as the original owner.</p><p>The following are examples of a portal dataset owner:<ul><li>Utility Network—Portal utility network owner</li><li>Trace Network—Portal trace network owner</li></ul></p></xdoc>",
+        "target_owner.descr": "The name of the portal user who will be the new portal owner of the dataset.",
+        "target_owner.title": "Target Owner",
+        "title": "Update Portal Dataset Owner",
+        "updated_dataset.title": "Updated Dataset"
+    }
+}

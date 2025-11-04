@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Deletes a field group from a table or feature class.",
+        "name.descr": "The name of the field group that will be deleted.",
+        "name.title": "Field Group Name",
+        "out_table.title": "Updated Table",
+        "target_table.descr": "The input geodatabase feature class or table that will have the field group deleted.",
+        "target_table.title": "Target Table",
+        "title": "Delete Field Group"
+    }
+}

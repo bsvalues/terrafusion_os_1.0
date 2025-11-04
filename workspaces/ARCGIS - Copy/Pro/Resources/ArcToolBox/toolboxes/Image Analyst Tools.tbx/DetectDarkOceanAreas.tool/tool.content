@@ -1,0 +1,148 @@
+{
+    "type": "FunctionTool",
+    "guid": "{9f1d66ac-29a3-4821-85ce-81e62ad88883}",
+    "displayname": "$rc:title",
+    "helpcontent": "66160011",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "86"
+    ],
+    "params": {
+        "in_radar_data": {
+            "display_order": "0",
+            "displayname": "$rc:in_radar_data.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_radar_data.descr"
+        },
+        "out_raster": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_raster.descr"
+        },
+        "min_area": {
+            "type": "optional",
+            "displayname": "$rc:min_area.title",
+            "datatype": {
+                "type": "GPArealUnit"
+            },
+            "value": "10000 SquareMeters",
+            "description": "$rc:min_area.descr"
+        },
+        "mask_features": {
+            "type": "optional",
+            "displayname": "$rc:mask_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:mask_features.descr"
+        },
+        "feature_type": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:feature_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "LAND",
+                        "code": "$rc:feature_type.domain.LAND"
+                    },
+                    {
+                        "value": "WATER",
+                        "code": "$rc:feature_type.domain.WATER"
+                    }
+                ]
+            },
+            "description": "$rc:feature_type.descr"
+        },
+        "in_dem_raster": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:in_dem_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_dem_raster.descr"
+        },
+        "geoid": {
+            "type": "optional",
+            "displayname": "$rc:geoid.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "GEOID"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NONE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:geoid.descr"
+        },
+        "mask_tolerance": {
+            "type": "optional",
+            "displayname": "$rc:mask_tolerance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "value": "100 Meters",
+            "description": "$rc:mask_tolerance.descr"
+        }
+    },
+    "environments": [
+        "compression",
+        "nodata",
+        "parallelProcessingFactor",
+        "pyramid",
+        "rasterStatistics",
+        "resamplingMethod",
+        "scratchWorkspace",
+        "tileSize",
+        "workspace"
+    ]
+}

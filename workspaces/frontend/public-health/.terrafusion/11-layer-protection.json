@@ -1,0 +1,96 @@
+{
+  "workspace_protection_system": {
+    "workspace_name": "public-health",
+    "domain": "health_services",
+    "risk_level": "critical",
+    "customization_timestamp": "2025-10-16T10:16:02.420083",
+    "eleven_layer_protection": {
+      "L1_role_scope_confirmation": {
+        "workspace_role": "public-health specialized AI agent",
+        "scope_definition": "Optimize and protect health_services operations",
+        "success_criteria": "Maintain critical-level security for health_services",
+        "data_types_handled": [
+          "health_records",
+          "PHI",
+          "medical_data",
+          "public_health_metrics"
+        ],
+        "protection_priorities": [
+          "HIPAA_compliance",
+          "health_privacy",
+          "medical_accuracy"
+        ]
+      },
+      "L2_input_sanitation_threat_modeling": {
+        "threat_model": "health_services_specific_threats",
+        "input_validation": "public-health_input_sanitization",
+        "injection_prevention": "health_services_injection_protection",
+        "risk_level_controls": "critical"
+      },
+      "L3_data_classification": {
+        "data_types": [
+          "health_records",
+          "PHI",
+          "medical_data",
+          "public_health_metrics"
+        ],
+        "classification_level": "critical",
+        "privacy_requirements": "health_services_privacy_rules",
+        "retention_policies": "public-health_data_retention",
+        "access_controls": "health_services_access_matrix"
+      },
+      "L4_secrets_hygiene": {
+        "vault_integration": "public-health_secret_vault",
+        "key_rotation": "health_services_key_management",
+        "credential_management": "public-health_credential_store",
+        "environment_separation": "critical_env_isolation"
+      },
+      "L5_environment_guardrails": {
+        "environment_controls": "public-health_env_controls",
+        "blast_radius_limits": "health_services_isolation",
+        "feature_flags": "public-health_feature_management",
+        "deployment_gates": "critical_deployment_controls"
+      },
+      "L6_policy_compliance": {
+        "domain_regulations": "health_services_compliance_framework",
+        "government_standards": [
+          "HIPAA_compliance",
+          "health_privacy",
+          "medical_accuracy"
+        ],
+        "audit_requirements": "public-health_audit_trail",
+        "compliance_monitoring": "health_services_compliance_checks"
+      },
+      "L7_dependency_license_review": {
+        "sbom_generation": "public-health_software_bill_of_materials",
+        "vulnerability_scanning": "health_services_vuln_checks",
+        "license_compliance": "public-health_license_validation",
+        "dependency_monitoring": "critical_dependency_tracking"
+      },
+      "L8_reproducibility": {
+        "version_pinning": "public-health_version_control",
+        "build_determinism": "health_services_build_reproducibility",
+        "configuration_management": "public-health_config_management",
+        "deployment_consistency": "critical_deployment_standards"
+      },
+      "L9_observability_hooks": {
+        "metrics_collection": "public-health_domain_metrics",
+        "logging_framework": "health_services_specialized_logging",
+        "tracing_system": "public-health_distributed_tracing",
+        "alerting_rules": "health_services_alert_configuration"
+      },
+      "L10_human_in_loop_gates": {
+        "approval_workflows": "public-health_approval_matrix",
+        "review_requirements": "health_services_review_gates",
+        "escalation_procedures": "critical_escalation_rules",
+        "manual_override_controls": "public-health_override_procedures"
+      },
+      "L11_red_team_self_check": {
+        "adversarial_testing": "public-health_penetration_testing",
+        "failure_mode_analysis": "health_services_failure_scenarios",
+        "rollback_procedures": "public-health_disaster_recovery",
+        "security_validation": "critical_security_assessment"
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+    "map": {
+        "description": "Enables a geodatabase to store editing templates.",
+        "in_workspace.descr": "The workspace containing the editing templates that will be enabled.",
+        "in_workspace.title": "Input Workspace",
+        "out_workspace.title": "Output Workspace",
+        "title": "Enable Editing Templates"
+    }
+}

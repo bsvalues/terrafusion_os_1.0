@@ -1,0 +1,19 @@
+{
+    "map": {
+        "description": "3D Analyst Map to KML geoprocessing function",
+        "dpi_of_client.title": "DPI of output image",
+        "extent_to_export.title": "Extent to Export",
+        "ignore_zvalue.title": "Clamped features to ground",
+        "image_size.title": "Size of returned image (pixels)",
+        "in_map.title": "Input Map",
+        "is_composite.title": "Return single composite image",
+        "is_vector_to_raster.title": "Convert Vector to Raster",
+        "layout.title": "Layout",
+        "map_output_scale.title": "Map Output Scale",
+        "out_kmz_file.title": "Output File",
+        "params.category1": "Data Content Properties",
+        "params.category2": "Extent Properties",
+        "params.category3": "Output Image Properties",
+        "title": "Map To KML"
+    }
+}

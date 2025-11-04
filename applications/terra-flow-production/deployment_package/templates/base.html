@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="description" content="GeoAssessmentPro - Benton County Assessor's Office GIS Data Management Platform">
+    <meta name="theme-color" content="#0d6efd">
+    <title>{% block title %}GeoAssessmentPro{% endblock %} - Benton County</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+    <!-- Mobile Responsive CSS -->
+    <link href="{{ url_for('static', filename='css/mobile.css') }}" rel="stylesheet">
+    
+    <!-- Add to home screen for iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/icons/icon-192x192.png') }}">
+    
+    <!-- Add to home screen for Android -->
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    
+    {% block styles %}{% endblock %}
+</head>
+<body class="{% if request.MOBILE %}mobile-device{% endif %} {% if field_mode %}field-assessment-mode{% endif %}"
+      data-bs-spy="scroll" data-bs-target="#navbar-main" data-bs-offset="100">
+    <!-- Navigation -->
+    {% if current_user.is_authenticated %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
+                <i class="bi bi-geo-alt-fill me-2"></i>
+                <span>GeoAssessmentPro</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}"><i class="bi bi-house-door"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('map_viewer') }}"><i class="bi bi-map"></i> Map Viewer</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('file_manager') }}"><i class="bi bi-file-earmark"></i> Files</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="dataDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-database"></i> Data
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="dataDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('power_query') }}"><i class="bi bi-lightning-charge"></i> Power Query</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('search_page') }}"><i class="bi bi-search"></i> Search</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('legacy_conversion.legacy_home') }}"><i class="bi bi-arrow-repeat"></i> Legacy Conversion</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('data_quality_dashboard') }}"><i class="bi bi-check-circle"></i> Data Quality</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="testingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-clipboard-check"></i> Testing
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="testingDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('testing_dashboard') }}"><i class="bi bi-speedometer2"></i> Testing Dashboard</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('test_scenario', scenario_type='assessor') }}"><i class="bi bi-person-badge"></i> County Assessor</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('test_scenario', scenario_type='appraiser') }}"><i class="bi bi-house"></i> Field Appraiser</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('test_scenario', scenario_type='analyst') }}"><i class="bi bi-bar-chart"></i> Data Analyst</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('test_scenario', scenario_type='gis') }}"><i class="bi bi-map"></i> GIS Specialist</a></li>
+                        </ul>
+                    </li>
+                    {% if has_role('admin') %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-gear"></i> Admin
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('auth.user_list') }}"><i class="bi bi-people"></i> User Management</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('mcp_dashboard') }}"><i class="bi bi-cpu"></i> System Control</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('api_tester') }}"><i class="bi bi-box-arrow-up-right"></i> API Tester</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="avatar-circle-sm me-2">
+                                <span class="avatar-initials-sm">{{ current_user.full_name[0]|upper if current_user.full_name else current_user.email[0]|upper }}</span>
+                            </div>
+                            <span>{{ current_user.full_name if current_user.full_name else current_user.email }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('auth.profile') }}"><i class="bi bi-person-circle"></i> Profile</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('knowledge_dashboard') }}"><i class="bi bi-book"></i> Knowledge Base</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+    
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Feedback Button -->
+    {% if current_user.is_authenticated %}
+    <div class="feedback-button-container">
+        <button type="button" class="btn btn-primary feedback-button" data-bs-toggle="modal" data-bs-target="#feedbackModal">
+            <i class="bi bi-chat-dots"></i> Feedback
+        </button>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="feedbackModalLabel">Share Your Feedback</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="feedbackForm" action="{{ url_for('submit_feedback') }}" method="post">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="feedbackType" class="form-label">Feedback Type</label>
+                            <select class="form-select" id="feedbackType" name="feedback_type" required>
+                                <option value="">Select a type...</option>
+                                <option value="bug">Bug Report</option>
+                                <option value="feature">Feature Request</option>
+                                <option value="usability">Usability Issue</option>
+                                <option value="general">General Feedback</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="currentPage" class="form-label">Current Page</label>
+                            <input type="text" class="form-control" id="currentPage" name="current_page" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="feedbackDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="feedbackDescription" name="description" rows="4" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="impactLevel" class="form-label">Impact Level</label>
+                            <div class="range-container">
+                                <input type="range" class="form-range" min="1" max="5" id="impactLevel" name="impact_level">
+                                <div class="range-labels">
+                                    <span>Low</span>
+                                    <span>Medium</span>
+                                    <span>High</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="screenshotPermission" name="screenshot_permission">
+                            <label class="form-check-label" for="screenshotPermission">
+                                Include screenshot of current page
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Submit Feedback</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Footer -->
+    {% if current_user.is_authenticated %}
+    <footer class="footer mt-auto py-3 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="text-muted mb-0">&copy; 2025 Benton County Assessor's Office</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="text-muted mb-0">GeoAssessmentPro v1.0</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    {% endif %}
+    
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery (for DataTable support) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

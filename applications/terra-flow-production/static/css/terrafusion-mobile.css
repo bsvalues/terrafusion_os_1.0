@@ -1,0 +1,1049 @@
+/**
+ * TerraFlow Mobile Styles
+ * Consolidated mobile stylesheet for TerraFusion Platform
+ */
+
+/* Global Mobile Adjustments
+-------------------------------------------------- */
+@media (max-width: 767.98px) {
+  /* Typography adjustments */
+  body {
+    font-size: 16px;
+  }
+  
+  h1 {
+    font-size: 1.75rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+  
+  h3 {
+    font-size: 1.25rem;
+  }
+  
+  /* Container padding */
+  .container {
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+  }
+  
+  /* Card adjustments */
+  .card,
+  .tf-card {
+    margin-bottom: var(--space-md);
+  }
+  
+  .card-header,
+  .tf-card-header {
+    padding: var(--space-md);
+  }
+  
+  .card-body,
+  .tf-card-body {
+    padding: var(--space-md);
+  }
+  
+  .card-footer,
+  .tf-card-footer {
+    padding: var(--space-md);
+  }
+  
+  /* Table adjustments */
+  .table-responsive {
+    border: 0;
+    margin-bottom: 0;
+  }
+  
+  /* Form adjustments */
+  .form-group,
+  .mb-3 {
+    margin-bottom: var(--space-sm);
+  }
+  
+  /* Button adjustments */
+  .btn {
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+  }
+}
+
+/* Navigation
+-------------------------------------------------- */
+@media (max-width: 767.98px) {
+  /* Navbar adjustments */
+  .navbar {
+    padding: var(--space-xs) 0;
+  }
+  
+  .navbar-brand {
+    font-size: 1.25rem;
+  }
+  
+  .navbar-toggler {
+    padding: 0.25rem 0.5rem;
+    font-size: 1rem;
+  }
+  
+  /* Adjust dropdown menus */
+  .dropdown-menu {
+    position: static !important;
+    float: none;
+    width: 100%;
+    border: none;
+    box-shadow: none;
+    margin-top: 0;
+    border-radius: 0;
+  }
+  
+  .dropdown-item {
+    padding: var(--space-sm) var(--space-md);
+  }
+  
+  /* Fix navbar nav collapsing behavior */
+  .navbar-collapse {
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+  }
+  
+  /* Improve tap targets */
+  .nav-item {
+    padding: 0.25rem 0;
+  }
+  
+  .nav-link {
+    padding: 0.5rem 1rem;
+  }
+}
+
+/* Maps
+-------------------------------------------------- */
+@media (max-width: 767.98px) {
+  /* Map container height */
+  .map-container,
+  #map {
+    height: calc(100vh - 56px - 50px); /* Account for header and controls */
+  }
+  
+  /* Map controls */
+  .map-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: var(--space-xs) var(--space-sm);
+    z-index: 1000;
+    display: flex;
+    justify-content: space-around;
+    border-top: 1px solid var(--neutral-200);
+  }
+  
+  .map-control-button {
+    font-size: 0.875rem;
+    padding: 0.375rem 0.5rem;
+  }
+  
+  /* Property info popup */
+  .property-popup {
+    max-width: 100%;
+    width: 100%;
+    bottom: 50px;
+    left: 0 !important;
+    right: 0 !important;
+    transform: none !important;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Layer control */
+  .leaflet-control-layers {
+    display: none;
+  }
+  
+  .mobile-layer-toggle {
+    display: block;
+  }
+  
+  /* Map attribution */
+  .leaflet-control-attribution {
+    font-size: 9px;
+    padding: 2px 4px;
+  }
+}
+
+/* Property Cards & Lists
+-------------------------------------------------- */
+@media (max-width: 767.98px) {
+  /* Property list */
+  .property-list {
+    margin-bottom: var(--space-md);
+  }
+  
+  /* Property grid adjustments */
+  .property-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+  
+  /* Property card stack */
+  .property-stack {
+    margin-bottom: var(--space-md);
+  }
+  
+  /* Property card */
+  .property-card,
+  .tf-property-card {
+    margin-bottom: var(--space-md);
+  }
+  
+  /* Property detail sections */
+  .property-detail-section {
+    padding: var(--space-md);
+    margin-bottom: var(--space-md);
+  }
+  
+  /* Property info rows */
+  .property-info-row {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+  
+  .property-info-item {
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid var(--neutral-200);
+  }
+  
+  .property-info-item:last-child {
+    border-bottom: none;
+  }
+  
+  /* Property actions */
+  .property-actions {
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+  
+  .property-action-button {
+    flex: 1 0 calc(50% - var(--space-xs));
+    text-align: center;
+  }
+}
+
+/* Data Quality Dashboard
+-------------------------------------------------- */
+@media (max-width: 767.98px) {
+  /* Dashboard cards */
+  .dashboard-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+  
+  /* Stat cards */
+  .stat-card {
+    margin-bottom: var(--space-md);
+  }
+  
+  /* Charts */
+  .chart-container {
+    height: 250px;
+  }
+  
+  /* Data tables */
+  .data-table-wrapper {
+    overflow-x: auto;
+    margin: 0 -1rem;
+    padding: 0 1rem;
+    /* Enable momentum scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .data-table-wrapper table {
+    min-width: 650px;
+  }
+  
+  /* Anomaly list */
+  .anomaly-list-item {
+    padding: var(--space-sm);
+  }
+  
+  /* Alert badges */
+  .alert-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(50%, -50%);
+  }
+}
+
+/* Filter Panel & Controls
+-------------------------------------------------- */
+@media (max-width: 767.98px) {
+  /* Filter panel */
+  .filter-panel,
+  .tf-filter-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1020;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    max-height: 80vh;
+    overflow-y: auto;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+    background-color: white;
+    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .filter-panel.open,
+  .tf-filter-panel.open {
+    transform: translateY(0);
+  }
+  
+  /* Filter panel handle */
+  .filter-handle,
+  .tf-filter-handle {
+    width: 40px;
+    height: 4px;
+    background-color: var(--neutral-300);
+    border-radius: 2px;
+    margin: 10px auto;
+  }
+  
+  /* Filter toggle button */
+  .filter-toggle-button {
+    position: fixed;
+    bottom: var(--space-md);
+    right: var(--space-md);
+    z-index: 1010;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-lg);
+    background-color: var(--primary-600);
+    color: white;
+    border: none;
+    font-size: 1.25rem;
+  }
+}
+
+/* Forms & Input Controls
+-------------------------------------------------- */
+@media (max-width: 767.98px) {
+  /* Form layout */
+  .form-row {
+    flex-direction: column;
+    margin-right: 0;
+    margin-left: 0;
+  }
+  
+  .form-row > [class*="col-"] {
+    padding-right: 0;
+    padding-left: 0;
+  }
+  
+  /* Input groups */
+  .input-group {
+    margin-bottom: var(--space-sm);
+  }
+  
+  /* Date pickers */
+  .date-picker,
+  .flatpickr-calendar {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  /* Select2 */
+  .select2-container {
+    width: 100% !important;
+  }
+  
+  /* Range sliders */
+  .range-slider {
+    padding: 0 var(--space-xs);
+  }
+}
+
+/* Utilities & Helpers
+-------------------------------------------------- */
+@media (max-width: The file static/css/terrafusion-mobile.css has been edited. Here's the result of running `cat -n` on a snippet of static/css/terrafusion-mobile.css:
+     1	/**
+     2	 * TerraFlow Mobile Styles
+     3	 * Consolidated mobile stylesheet for TerraFusion Platform
+     4	 */
+     5	
+     6	/* Global Mobile Adjustments
+     7	-------------------------------------------------- */
+     8	@media (max-width: 767.98px) {
+     9	  /* Typography adjustments */
+    10	  body {
+    11	    font-size: 16px;
+    12	  }
+    13	  
+    14	  h1 {
+    15	    font-size: 1.75rem;
+    16	  }
+    17	  
+    18	  h2 {
+    19	    font-size: 1.5rem;
+    20	  }
+    21	  
+    22	  h3 {
+    23	    font-size: 1.25rem;
+    24	  }
+    25	  
+    26	  /* Container padding */
+    27	  .container {
+    28	    padding-left: var(--space-md);
+    29	    padding-right: var(--space-md);
+    30	  }
+    31	  
+    32	  /* Card adjustments */
+    33	  .card,
+    34	  .tf-card {
+    35	    margin-bottom: var(--space-md);
+    36	  }
+    37	  
+    38	  .card-header,
+    39	  .tf-card-header {
+    40	    padding: var(--space-md);
+    41	  }
+    42	  
+    43	  .card-body,
+    44	  .tf-card-body {
+    45	    padding: var(--space-md);
+    46	  }
+    47	  
+    48	  .card-footer,
+    49	  .tf-card-footer {
+    50	    padding: var(--space-md);
+    51	  }
+    52	  
+    53	  /* Table adjustments */
+    54	  .table-responsive {
+    55	    border: 0;
+    56	    margin-bottom: 0;
+    57	  }
+    58	  
+    59	  /* Form adjustments */
+    60	  .form-group,
+    61	  .mb-3 {
+    62	    margin-bottom: var(--space-sm);
+    63	  }
+    64	  
+    65	  /* Button adjustments */
+    66	  .btn {
+    67	    padding-left: var(--space-md);
+    68	    padding-right: var(--space-md);
+    69	  }
+    70	}
+    71	
+    72	/* Navigation
+    73	-------------------------------------------------- */
+    74	@media (max-width: 767.98px) {
+    75	  /* Navbar adjustments */
+    76	  .navbar {
+    77	    padding: var(--space-xs) 0;
+    78	  }
+    79	  
+    80	  .navbar-brand {
+    81	    font-size: 1.25rem;
+    82	  }
+    83	  
+    84	  .navbar-toggler {
+    85	    padding: 0.25rem 0.5rem;
+    86	    font-size: 1rem;
+    87	  }
+    88	  
+    89	  /* Adjust dropdown menus */
+    90	  .dropdown-menu {
+    91	    position: static !important;
+    92	    float: none;
+    93	    width: 100%;
+    94	    border: none;
+    95	    box-shadow: none;
+    96	    margin-top: 0;
+    97	    border-radius: 0;
+    98	  }
+    99	  
+   100	  .dropdown-item {
+   101	    padding: var(--space-sm) var(--space-md);
+   102	  }
+   103	  
+   104	  /* Fix navbar nav collapsing behavior */
+   105	  .navbar-collapse {
+   106	    max-height: calc(100vh - 56px);
+   107	    overflow-y: auto;
+   108	  }
+   109	  
+   110	  /* Improve tap targets */
+   111	  .nav-item {
+   112	    padding: 0.25rem 0;
+   113	  }
+   114	  
+   115	  .nav-link {
+   116	    padding: 0.5rem 1rem;
+   117	  }
+   118	}
+   119	
+   120	/* Maps
+   121	-------------------------------------------------- */
+   122	@media (max-width: 767.98px) {
+   123	  /* Map container height */
+   124	  .map-container,
+   125	  #map {
+   126	    height: calc(100vh - 56px - 50px); /* Account for header and controls */
+   127	  }
+   128	  
+   129	  /* Map controls */
+   130	  .map-controls {
+   131	    position: absolute;
+   132	    bottom: 0;
+   133	    left: 0;
+   134	    right: 0;
+   135	    background-color: rgba(255, 255, 255, 0.9);
+   136	    padding: var(--space-xs) var(--space-sm);
+   137	    z-index: 1000;
+   138	    display: flex;
+   139	    justify-content: space-around;
+   140	    border-top: 1px solid var(--neutral-200);
+   141	  }
+   142	  
+   143	  .map-control-button {
+   144	    font-size: 0.875rem;
+   145	    padding: 0.375rem 0.5rem;
+   146	  }
+   147	  
+   148	  /* Property info popup */
+   149	  .property-popup {
+   150	    max-width: 100%;
+   151	    width: 100%;
+   152	    bottom: 50px;
+   153	    left: 0 !important;
+   154	    right: 0 !important;
+   155	    transform: none !important;
+   156	    border-radius: var(--radius-md) var(--radius-md) 0 0;
+   157	    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+   158	  }
+   159	  
+   160	  /* Layer control */
+   161	  .leaflet-control-layers {
+   162	    display: none;
+   163	  }
+   164	  
+   165	  .mobile-layer-toggle {
+   166	    display: block;
+   167	  }
+   168	  
+   169	  /* Map attribution */
+   170	  .leaflet-control-attribution {
+   171	    font-size: 9px;
+   172	    padding: 2px 4px;
+   173	  }
+   174	}
+   175	
+   176	/* Property Cards & Lists
+   177	-------------------------------------------------- */
+   178	@media (max-width: 767.98px) {
+   179	  /* Property list */
+   180	  .property-list {
+   181	    margin-bottom: var(--space-md);
+   182	  }
+   183	  
+   184	  /* Property grid adjustments */
+   185	  .property-grid {
+   186	    grid-template-columns: 1fr;
+   187	    gap: var(--space-md);
+   188	  }
+   189	  
+   190	  /* Property card stack */
+   191	  .property-stack {
+   192	    margin-bottom: var(--space-md);
+   193	  }
+   194	  
+   195	  /* Property card */
+   196	  .property-card,
+   197	  .tf-property-card {
+   198	    margin-bottom: var(--space-md);
+   199	  }
+   200	  
+   201	  /* Property detail sections */
+   202	  .property-detail-section {
+   203	    padding: var(--space-md);
+   204	    margin-bottom: var(--space-md);
+   205	  }
+   206	  
+   207	  /* Property info rows */
+   208	  .property-info-row {
+   209	    flex-direction: column;
+   210	    gap: var(--space-sm);
+   211	  }
+   212	  
+   213	  .property-info-item {
+   214	    padding-bottom: var(--space-sm);
+   215	    border-bottom: 1px solid var(--neutral-200);
+   216	  }
+   217	  
+   218	  .property-info-item:last-child {
+   219	    border-bottom: none;
+   220	  }
+   221	  
+   222	  /* Property actions */
+   223	  .property-actions {
+   224	    flex-wrap: wrap;
+   225	    gap: var(--space-xs);
+   226	  }
+   227	  
+   228	  .property-action-button {
+   229	    flex: 1 0 calc(50% - var(--space-xs));
+   230	    text-align: center;
+   231	  }
+   232	}
+   233	
+   234	/* Data Quality Dashboard
+   235	-------------------------------------------------- */
+   236	@media (max-width: 767.98px) {
+   237	  /* Dashboard cards */
+   238	  .dashboard-cards {
+   239	    display: grid;
+   240	    grid-template-columns: 1fr;
+   241	    gap: var(--space-md);
+   242	  }
+   243	  
+   244	  /* Stat cards */
+   245	  .stat-card {
+   246	    margin-bottom: var(--space-md);
+   247	  }
+   248	  
+   249	  /* Charts */
+   250	  .chart-container {
+   251	    height: 250px;
+   252	  }
+   253	  
+   254	  /* Data tables */
+   255	  .data-table-wrapper {
+   256	    overflow-x: auto;
+   257	    margin: 0 -1rem;
+   258	    padding: 0 1rem;
+   259	    /* Enable momentum scrolling on iOS */
+   260	    -webkit-overflow-scrolling: touch;
+   261	  }
+   262	  
+   263	  .data-table-wrapper table {
+   264	    min-width: 650px;
+   265	  }
+   266	  
+   267	  /* Anomaly list */
+   268	  .anomaly-list-item {
+   269	    padding: var(--space-sm);
+   270	  }
+   271	  
+   272	  /* Alert badges */
+   273	  .alert-badge {
+   274	    position: absolute;
+   275	    top: 0;
+   276	    right: 0;
+   277	    transform: translate(50%, -50%);
+   278	  }
+   279	}
+   280	
+   281	/* Filter Panel & Controls
+   282	-------------------------------------------------- */
+   283	@media (max-width: 767.98px) {
+   284	  /* Filter panel */
+   285	  .filter-panel,
+   286	  .tf-filter-panel {
+   287	    position: fixed;
+   288	    bottom: 0;
+   289	    left: 0;
+   290	    width: 100%;
+   291	    z-index: 1020;
+   292	    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+   293	    max-height: 80vh;
+   294	    overflow-y: auto;
+   295	    transform: translateY(100%);
+   296	    transition: transform 0.3s ease;
+   297	    background-color: white;
+   298	    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.1);
+   299	  }
+   300	  
+   301	  .filter-panel.open,
+   302	  .tf-filter-panel.open {
+   303	    transform: translateY(0);
+   304	  }
+   305	  
+   306	  /* Filter panel handle */
+   307	  .filter-handle,
+   308	  .tf-filter-handle {
+   309	    width: 40px;
+   310	    height: 4px;
+   311	    background-color: var(--neutral-300);
+   312	    border-radius: 2px;
+   313	    margin: 10px auto;
+   314	  }
+   315	  
+   316	  /* Filter toggle button */
+   317	  .filter-toggle-button {
+   318	    position: fixed;
+   319	    bottom: var(--space-md);
+   320	    right: var(--space-md);
+   321	    z-index: 1010;
+   322	    width: 56px;
+   323	    height: 56px;
+   324	    border-radius: 50%;
+   325	    display: flex;
+   326	    align-items: center;
+   327	    justify-content: center;
+   328	    box-shadow: var(--shadow-lg);
+   329	    background-color: var(--primary-600);
+   330	    color: white;
+   331	    border: none;
+   332	    font-size: 1.25rem;
+   333	  }
+   334	}
+   335	
+   336	/* Forms & Input Controls
+   337	-------------------------------------------------- */
+   338	@media (max-width: 767.98px) {
+   339	  /* Form layout */
+   340	  .form-row {
+   341	    flex-direction: column;
+   342	    margin-right: 0;
+   343	    margin-left: 0;
+   344	  }
+   345	  
+   346	  .form-row > [class*="col-"] {
+   347	    padding-right: 0;
+   348	    padding-left: 0;
+   349	  }
+   350	  
+   351	  /* Input groups */
+   352	  .input-group {
+   353	    margin-bottom: var(--space-sm);
+   354	  }
+   355	  
+   356	  /* Date pickers */
+   357	  .date-picker,
+   358	  .flatpickr-calendar {
+   359	    width: 100%;
+   360	    max-width: 100%;
+   361	  }
+   362	  
+   363	  /* Select2 */
+   364	  .select2-container {
+   365	    width: 100% !important;
+   366	  }
+   367	  
+   368	  /* Range sliders */
+   369	  .range-slider {
+   370	    padding: 0 var(--space-xs);
+   371	  }
+   372	}
+   373	
+   374	/* Utilities & Helpers
+   375	-------------------------------------------------- */
+   376	@media (max-width: 767.98px) {
+   377	  /* Spacing utilities */
+   378	  .mobile-mb-0 {
+   379	    margin-bottom: 0 !important;
+   380	  }
+   381	  
+   382	  .mobile-mt-0 {
+   383	    margin-top: 0 !important;
+   384	  }
+   385	  
+   386	  .mobile-mb-1 {
+   387	    margin-bottom: var(--space-xs) !important;
+   388	  }
+   389	  
+   390	  .mobile-mb-2 {
+   391	    margin-bottom: var(--space-sm) !important;
+   392	  }
+   393	  
+   394	  .mobile-mb-3 {
+   395	    margin-bottom: var(--space-md) !important;
+   396	  }
+   397	  
+   398	  /* Responsive display utilities */
+   399	  .mobile-hide {
+   400	    display: none !important;
+   401	  }
+   402	  
+   403	  .mobile-show {
+   404	    display: block !important;
+   405	  }
+   406	  
+   407	  .mobile-stack {
+   408	    flex-direction: column !important;
+   409	  }
+   410	  
+   411	  /* Fixed mobile header */
+   412	  .mobile-fixed-header {
+   413	    position: sticky;
+   414	    top: 0;
+   415	    z-index: 1020;
+   416	    background-color: white;
+   417	    border-bottom: 1px solid var(--neutral-200);
+   418	  }
+   419	  
+   420	  /* Scrollable containers */
+   421	  .mobile-scrollable {
+   422	    overflow-x: auto;
+   423	    -webkit-overflow-scrolling: touch;
+   424	    display: flex;
+   425	    flex-wrap: nowrap;
+   426	    padding-bottom: var(--space-sm);
+   427	    margin-bottom: var(--space-sm);
+   428	    scroll-snap-type: x mandatory;
+   429	    -ms-overflow-style: none;  /* Hide scrollbar in IE and Edge */
+   430	    scrollbar-width: none;  /* Hide scrollbar in Firefox */
+   431	  }
+   432	  
+   433	  .mobile-scrollable::-webkit-scrollbar {
+   434	    display: none; /* Hide scrollbar in Chrome/Safari */
+   435	  }
+   436	  
+   437	  .mobile-scrollable > * {
+   438	    flex: 0 0 auto;
+   439	    scroll-snap-align: start;
+   440	    margin-right: var(--space-sm);
+   441	  }
+   442	  
+   443	  .mobile-scrollable > *:last-child {
+   444	    margin-right: 0;
+   445	  }
+   446	  
+   447	  /* Full width on mobile */
+   448	  .mobile-full-width {
+   449	    width: 100vw !important;
+   450	    margin-left: calc(-50vw + 50%) !important;
+   451	    margin-right: calc(-50vw + 50%) !important;
+   452	    max-width: none !important;
+   453	  }
+   454	}
+   455	
+   456	/* Accessibility Enhancements
+   457	-------------------------------------------------- */
+   458	@media (max-width: 767.98px) {
+   459	  /* Improve tap targets */
+   460	  button,
+   461	  .btn,
+   462	  a {
+   463	    min-height: 44px;
+   464	    min-width: 44px;
+   465	  }
+   466	  
+   467	  /* Skip to content */
+   468	  .skip-to-content:focus {
+   469	    padding: var(--space-sm) var(--space-md);
+   470	    font-size: 1rem;
+   471	  }
+   472	  
+   473	  /* Accessibility panel */
+   474	  .a11y-panel {
+   475	    right: var(--space-md);
+   476	    bottom: var(--space-md);
+   477	  }
+   478	  
+   479	  .a11y-panel-toggle {
+   480	    width: 48px;
+   481	    height: 48px;
+   482	  }
+   483	  
+   484	  .a11y-panel-content {
+   485	    width: calc(100vw - var(--space-lg) * 2);
+   486	    max-width: 300px;
+   487	  }
+   488	}
+   489	
+   490	/* Mobile Gestures & Interactions
+   491	-------------------------------------------------- */
+   492	@media (max-width: 767.98px) {
+   493	  /* Pull to refresh indicator */
+   494	  .pull-to-refresh {
+   495	    position: absolute;
+   496	    top: -60px;
+   497	    left: 0;
+   498	    right: 0;
+   499	    height: 60px;
+   500	    display: flex;
+   501	    align-items: center;
+   502	    justify-content: center;
+   503	    transition: transform 0.2s ease;
+   504	  }
+   505	  
+   506	  .pull-indicator {
+   507	    display: flex;
+   508	    align-items: center;
+   509	  }
+   510	  
+   511	  .pull-spinner {
+   512	    width: 20px;
+   513	    height: 20px;
+   514	    border: 2px solid var(--neutral-300);
+   515	    border-top-color: var(--primary-600);
+   516	    border-radius: 50%;
+   517	    margin-right: var(--space-xs);
+   518	    animation: pull-spin 0.8s linear infinite;
+   519	  }
+   520	  
+   521	  @keyframes pull-spin {
+   522	    to { transform: rotate(360deg); }
+   523	  }
+   524	  
+   525	  /* Swipe actions */
+   526	  .swipe-action-container {
+   527	    position: relative;
+   528	    overflow: hidden;
+   529	  }
+   530	  
+   531	  .swipe-item {
+   532	    transition: transform 0.2s ease;
+   533	  }
+   534	  
+   535	  .swipe-actions {
+   536	    position: absolute;
+   537	    top: 0;
+   538	    right: 0;
+   539	    height: 100%;
+   540	    display: flex;
+   541	    align-items: stretch;
+   542	  }
+   543	  
+   544	  .swipe-action {
+   545	    display: flex;
+   546	    align-items: center;
+   547	    justify-content: center;
+   548	    padding: 0 var(--space-md);
+   549	    color: white;
+   550	    font-weight: 500;
+   551	  }
+   552	  
+   553	  .swipe-action-delete {
+   554	    background-color: var(--danger-500);
+   555	  }
+   556	  
+   557	  .swipe-action-edit {
+   558	    background-color: var(--primary-600);
+   559	  }
+   560	  
+   561	  /* Notification center */
+   562	  .notification-panel {
+   563	    position: fixed;
+   564	    top: 0;
+   565	    bottom: 0;
+   566	    right: 0;
+   567	    width: 100%;
+   568	    background-color: white;
+   569	    z-index: 1050;
+   570	    transform: translateX(100%);
+   571	    transition: transform 0.3s ease;
+   572	    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+   573	  }
+   574	  
+   575	  .notification-panel.open {
+   576	    transform: translateX(0);
+   577	  }
+   578	  
+   579	  .notification-header {
+   580	    padding: var(--space-md);
+   581	    border-bottom: 1px solid var(--neutral-200);
+   582	    display: flex;
+   583	    align-items: center;
+   584	    justify-content: space-between;
+   585	  }
+   586	  
+   587	  .notification-list {
+   588	    overflow-y: auto;
+   589	    height: calc(100% - 60px);
+   590	    padding: var(--space-sm);
+   591	  }
+   592	  
+   593	  .notification-item {
+   594	    padding: var(--space-sm);
+   595	    border-bottom: 1px solid var(--neutral-100);
+   596	  }
+   597	}
+   598	
+   599	/* Device-Specific Adjustments
+   600	-------------------------------------------------- */
+   601	/* iPhone X, 11, 12 and newer with notch */
+   602	@supports (padding: max(0px)) {
+   603	  .navbar {
+   604	    padding-left: max(var(--space-md), env(safe-area-inset-left));
+   605	    padding-right: max(var(--space-md), env(safe-area-inset-right));
+   606	  }
+   607	  
+   608	  .fixed-bottom {
+   609	    padding-bottom: max(var(--space-sm), env(safe-area-inset-bottom));
+   610	  }
+   611	  
+   612	  .filter-panel,
+   613	  .tf-filter-panel {
+   614	    padding-bottom: max(var(--space-md), env(safe-area-inset-bottom));
+   615	  }
+   616	  
+   617	  .property-popup {
+   618	    padding-bottom: max(0px, env(safe-area-inset-bottom));
+   619	  }
+   620	}
+   621	
+   622	/* Dark Mode Support
+   623	-------------------------------------------------- */
+   624	@media (prefers-color-scheme: dark) {
+   625	  .mobile-device[data-theme="auto"] {
+   626	    --neutral-900: #f8f9fa;
+   627	    --neutral-800: #e9ecef;
+   628	    --neutral-700: #dee2e6;
+   629	    --neutral-600: #ced4da;
+   630	    --neutral-500: #adb5bd;
+   631	    --neutral-400: #6c757d;
+   632	    --neutral-300: #495057;
+   633	    --neutral-200: #343a40;
+   634	    --neutral-100: #212529;
+   635	    
+   636	    background-color: var(--neutral-100);
+   637	    color: var(--neutral-800);
+   638	  }
+   639	  
+   640	  .mobile-device[data-theme="auto"] .card,
+   641	  .mobile-device[data-theme="auto"] .tf-card {
+   642	    background-color: var(--neutral-200);
+   643	    border-color: var(--neutral-300);
+   644	  }
+   645	  
+   646	  .mobile-device[data-theme="auto"] .card-header,
+   647	  .mobile-device[data-theme="auto"] .tf-card-header {
+   648	    background-color: var(--neutral-200);
+   649	    border-color: var(--neutral-300);
+   650	  }
+   651	  
+   652	  .mobile-device[data-theme="auto"] .card-footer,
+   653	  .mobile-device[data-theme="auto"] .tf-card-footer {
+   654	    background-color: var(--neutral-200);
+   655	    border-color: var(--neutral-300);
+   656	  }
+   657	  
+   658	  .mobile-device[data-theme="auto"] .form-control {
+   659	    background-color: var(--neutral-200);
+   660	    border-color: var(--neutral-300);
+   661	    color: var(--neutral-800);
+   662	  }
+   663	  
+   664	  .mobile-device[data-theme="auto"] .table {
+   665	    color: var(--neutral-700);
+   666	  }
+   667	  
+   668	  .mobile-device[data-theme="auto"] .table-bordered,
+   669	  .mobile-device[data-theme="auto"] .table-bordered th,
+   670	  .mobile-device[data-theme="auto"] .table-bordered td {
+   671	    border-color: var(--neutral-300);
+   672	  }
+   673	}

@@ -1,0 +1,15 @@
+{
+    "set": [
+        "attribute",
+        "clear",
+        "column",
+        "drop",
+        "erase",
+        "feature",
+        "fields",
+        "item",
+        "multiple",
+        "remove",
+        "table"
+    ]
+}

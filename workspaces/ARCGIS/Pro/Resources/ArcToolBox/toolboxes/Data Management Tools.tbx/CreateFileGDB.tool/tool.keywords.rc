@@ -1,0 +1,25 @@
+{
+    "set": [
+        "9.2",
+        "9.3",
+        "create",
+        "cross",
+        "current",
+        "database",
+        "empty",
+        "fgdb",
+        "gdb",
+        "geodatabase",
+        "location",
+        "make",
+        "new",
+        "platform",
+        "previous",
+        "rdbms",
+        "relational",
+        "release",
+        "storage",
+        "store",
+        "workspace"
+    ]
+}

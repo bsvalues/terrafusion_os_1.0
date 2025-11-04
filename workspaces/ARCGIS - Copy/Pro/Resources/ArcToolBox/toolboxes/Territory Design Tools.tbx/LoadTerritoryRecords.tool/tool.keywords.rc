@@ -1,0 +1,13 @@
+{
+    "set": [
+        "alignment",
+        "append",
+        "barriers",
+        "constraints",
+        "field",
+        "hierarchy",
+        "level",
+        "parent territory",
+        "records"
+    ]
+}

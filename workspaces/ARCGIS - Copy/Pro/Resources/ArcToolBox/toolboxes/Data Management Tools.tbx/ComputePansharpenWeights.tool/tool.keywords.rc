@@ -1,0 +1,14 @@
+{
+    "set": [
+        "band",
+        "bands",
+        "brovey",
+        "esri",
+        "gram-schmidt",
+        "ihs",
+        "panchromatic",
+        "pansharpen",
+        "simple mean",
+        "weights"
+    ]
+}

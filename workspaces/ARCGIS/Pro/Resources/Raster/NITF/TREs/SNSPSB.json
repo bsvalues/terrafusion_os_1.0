@@ -1,0 +1,709 @@
+{
+	"TRE": "SNSPSB",
+	"Source": [
+		"STDI-0002-1 v2021.1, Appendix P: GEOSDE"
+	],
+	"Name": "Sensor Parameters Data Version B",
+	"Description": "The Sensor Parameters Data Extension Version B (SNSPSB) TRE contains the image auxillary data which are relevant to the capture of images by a sensor and its associated platform (aircraft, satellite, etc.).",
+	"Size": 161,
+	"Fields": {
+		"NUM_SNS" : {
+			"Name": "Number of Sets of Sensor Parameters",
+			"Description": "The image contained in the current Image Segment may be derived from one or many original scenes (source images) from different sensors. Each original scene is described using a set of sensor parameters. This field shall contain the number of sensor parameter sets to follow, that is, the number of original scenes used to produce the image.",
+			"Size": 2,
+			"Format": "BCS-N",
+			"Type": "R",
+			"Units": [],
+			"Values": [{
+				"Type": "Range",
+				"Min": 1,
+				"Max": 99
+			}]
+		},
+		"NUM_BP<NUM_SNS>" : {
+			"Name": "Number of Bounding Polygons for the nth Sensor Parameter Set (Original Scene)",
+			"Description": "This field shall contain the number of bounding polygons defining the part of the image concerned by the nth original scene. If the set of sensor parameters applies to the entire Image Segment (necessary when GEOPS extension is not present), then this field contains \"00\".",
+			"Size": 2,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 1,
+					"Max": 99
+				},
+				{
+					"Type": "Value",
+					"Values": ["0"]
+				}
+			]
+		},
+		"NUM_PTS<NUM_BP<NUM_SNS>>" : {
+			"Name": "Number of Points in the pth Bounding Polygon for the nth Sensor Parameter Set (Original Scene)",
+			"Description": "This field is required when the value of NUM_BPn is greater than \"00\" and shall be omitted otherwise. When present, this field shall contain the number of points (coordinate pairs) that are used to define the pth bounding polygon of the nth original scene. Coordinate values shall refer to the coordinate system and units are defined in GEOPS (and possibly in PRJPS). Whenever possible, the first and last points should be the same in order to close the polygon (e.g., a rectangular region would report five points), although this is not a strict requirement.",
+			"Size": 3,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 4,
+					"Max": 999
+				}
+			]
+		},
+		"LON<NUM_PTS<NUM_BP<NUM_SNS>>>" : {
+			"Name": "Longitude / Easting",
+			"Description": "This field is required when the value of NUM_BPn is greater than \"00\" and shall be omitted otherwise. When present, this field shall contain the Easting (when the value of GEOPS.UNI is M) or the longitude (otherwise) of the mth point of the pth bounding polygon.",
+			"Size": 15,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["degrees", "meters"],
+			"Values": [
+				{
+					"Type": "Double"
+				}
+			]
+		},
+		"LAT<NUM_PTS<NUM_BP<NUM_SNS>>>" : {
+			"Name": "Latitude / Northing",
+			"Description": "This field is required when the value of NUM_BPn is greater than \"00\" and shall be omitted otherwise. When present, this field shall contain the Northing (when the value of GEOPS.UNI is M) or the latitude (otherwise) of the mth point of the pth bounding polygon.",
+			"Size": 15,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["degrees", "meters"],
+			"Values": [
+				{
+					"Type": "Double"
+				}
+			]
+		},
+		"NUM_BND<NUM_SNS>" : {
+			"Name": "Number of Bands in the nth Original Scene",
+			"Description": "This field shall contain the number of bands of the nth original scene. NOTE: The band description of the original scene may differ from the band description of the transmitted image especially in case of radiometric treatment (e.g., infra-red band changed into red band, RGB image changed into color-coded image, ...). When there is a one-to-one correspondence between the original scene and the image, the band description order in the SNSPS extension shall be consistent with the band description order in the Image Subheader.",
+			"Size": 2,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 1,
+					"Max": 99
+				}
+			]
+		},
+		"BID<NUM_BND<NUM_SNS>>" : {
+			"Name": "Original Scene Band Identification",
+			"Description": "This field shall contain an identification of the pth band of the nth original field.",
+			"Size": 5,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"WS1<NUM_BND<NUM_SNS>>" : {
+			"Name": "Signal Lower Limit",
+			"Description": "This field shall contain the lower limit (wavelength, amplitude, or phase) of the signal for the pth band of the nth original scene. This value can be determined by the half maximum value. The unit of measure is nanometers for wavelength. The value range 00000 to 99999 applies for any of wavelengths, amplitudes, or phases.",
+			"Size": 5,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["nanometers", "degrees"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 99999
+				}
+			]
+		},
+		"WS2<NUM_BND<NUM_SNS>>" : {
+			"Name": "Signal Upper Limit",
+			"Description": "This field shall contain the upper limit (wavelength, amplitude, or phase) of the signal for the pth band of the nth original scene. This value can be determined by the half maximum value. The unit of measure is nanometers for wavelength. The value range 00000 to 99999 applies for any of wavelengths, amplitudes, or phases.",
+			"Size": 5,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["nanometers", "degrees"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 99999
+				}
+			]
+		},
+		"UNIRES<NUM_SNS>" : {
+			"Name": "Resolutions and Ground Sample Distances Units of Measure",
+			"Description": "This field shall contain the unit of measure of the REXn, REYn, GSXn, and GSYn fields. The values for this field can be seen in Table P-22, and they are originally from DIGEST Ed. 2.1 Part 3-7.",
+			"Size": 3,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"REX<NUM_SNS>" : {
+			"Name": "Resolution in Columns",
+			"Description": "This field shall contain the resolution in columns of the nth original scene at capture stage.",
+			"Size": 6,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["<UNIRES<NUM_SNS>>"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 999999
+				}
+			]
+		},
+		"REY<NUM_SNS>" : {
+			"Name": "Resolution in Rows",
+			"Description": "This field shall contain the resolution in rows of the nth original scene at capture stage.",
+			"Size": 6,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["<UNIRES<NUM_SNS>>"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 999999
+				}
+			]
+		},
+		"GSX<NUM_SNS>" : {
+			"Name": "Ground Sample Distance (GSD) in Columns",
+			"Description": "This field shall contain the ground pixel spacing in columns of the nth original scene at capture stage measured at the pixel ground sample location (GSL). The REXn and GSXn fields may have different values, but the default value of the GSXn field is the value of the REXn field.",
+			"Size": 6,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["<UNIRES<NUM_SNS>>"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 999999
+				}
+			]
+		},
+		"GSY<NUM_SNS>" : {
+			"Name": "Ground Sample Distance (GSD) in Rows",
+			"Description": "This field shall contain the ground pixel spacing in rows of the nth original scene at capture stage measured at the pixel ground sample location (GSL). The REYn and GSYn fields may have different values, but the default value of the GSYn field is the value of the REYn field.",
+			"Size": 6,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["<UNIRES<NUM_SNS>>"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 999999
+				}
+			]
+		},
+		"GSL<NUM_SNS>" : {
+			"Name": "Location of Ground Sample Pixel for GSXn and GSYn",
+			"Description": "This field can contain an approximate location (e.g., UPPER LEFT, LOWER RIGHT, CENTER, . . .) of the nth original scene pixel where the ground sample distances and resolutions have been measured. The default value is all BCS spaces (0x20). The values of this field are free text.",
+			"Size": 12,
+			"Format": "BCS-A",
+			"Type": "<C>",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"PLTFM<NUM_SNS>" : {
+			"Name": "Vector or Mission Name",
+			"Description": "This field shall contain the name of the vector or mission used to produce the nth original scene (e.g., SPOT3). The values of this field are free text.",
+			"Size": 8,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"INS<NUM_SNS>" : {
+			"Name": "Sensor or Instrument Name",
+			"Description": "This field shall contain the name of the sensor or instrument used to produce the nth original scene (e.g., HRV1). The values of this field are free text.",
+			"Size": 8,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"MOD<NUM_SNS>" : {
+			"Name": "Spectral Mode",
+			"Description": "This field shall contain the identification of the sensor processing mode used to capture the nth original scene (e.g., PAN). The values of this field are free text.",
+			"Size": 4,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"PRL<NUM_SNS>" : {
+			"Name": "Processing Level",
+			"Description": "This field shall contain the identification of the processing level applied to the nth original scene in order to produce the transmitted image (e.g., 1A). The values of this field are free text.",
+			"Size": 5,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"SID<NUM_SNS>" : {
+			"Name": "Source Image ID",
+			"Description": "This field can contain an identification of the nth original scene. The values of this field are free text. The default value is all BCS spaces (0x20).",
+			"Size": 10,
+			"Format": "BCS-A",
+			"Type": "<C>",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"ACT<NUM_SNS>" : {
+			"Name": "Acquisition Date & Time",
+			"Description": "This field shall contain the acquisition date and time of the nth original scene. This information is generally computed at scene center.",
+			"Size": 18,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "DateTime"
+				}
+			]
+		},
+		"UNINOA<NUM_SNS>" : {
+			"Name": "Unit of the Scene Orientation Angle",
+			"Description": "This field shall contain the unit of measure of the NOAn field, or all BCS spaces (0x20) if this information is unknown or not applicable. The default units are decimal degrees (\"DEC\"). The default value is all BCS spaces (0x20). Other values for this field can be seen in Table P-22, originally from DIGEST Ed. 2.1 Part 3-7.",
+			"Size": 3,
+			"Format": "BCS-A",
+			"Type": "<C>",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"NOA<NUM_SNS>" : {
+			"Name": "Scene Orientation Angle",
+			"Description": "This field is omitted when UNINOAn contains all BCS spaces (0x20). Otherwise, this field shall contain the complement of the angle between the lines of the nth original scene and the meridian of the absolute coordinate system. This angle is usually measured at scene center.",
+			"Size": 7,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["<UNINOA<NUM_SNS>>"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 9999999
+				}
+			]
+		},
+		"UNIANG<NUM_SNS>" : {
+			"Name": "Unit of Incidence Angle",
+			"Description": "This field shall contain the unit of measure of the incidence angle of the nth original scene, or all BCS spaces (0x20) if this angle is unknown or not applicable. The default units are decimal degrees (\"DEC\"). The default value is all BCS spaces (0x20). Other values for this field can be seen in Table P-22, originally from DIGEST Ed. 2.1 Part 3-7.",
+			"Size": 3,
+			"Format": "BCS-A",
+			"Type": "<C>",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"ANG<NUM_SNS>" : {
+			"Name": "Incidence Angle at Original Scene Center",
+			"Description": "This field is omitted when UNIANGn contains all BCS spaces (0x20). Otherwise, this field shall contain the incidence angle of the nth original scene. This information is generally computed at scene center.",
+			"Size": 7,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["<UNIANG<NUM_SNS>>"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 9999999
+				}
+			]
+		},
+		"UNIALT<NUM_SNS>" : {
+			"Name": "Unit of Altitude",
+			"Description": "This field shall contain the unit of measure of the altitude of the sensor when capturing the nth original scene, or all BCS spaces (0x20) if this altitude is unknown or not applicable. The default units are meters (\"M\"). The default value is BCS spaces (0x20). Other values for this field can be seen in Table P-22, originally from DIGEST Ed. 2.1 Part 3-7.",
+			"Size": 3,
+			"Format": "BCS-A",
+			"Type": "<C>",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"ALT<NUM_SNS>" : {
+			"Name": "Altitude of Sensor",
+			"Description": "This field is omitted when UNIALTn contains all BCS spaces (0x20). Otherwise, this field shall contain the altitude of the sensor when capturing the nth original scene.",
+			"Size": 9,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["<UNIALT<NUM_SNS>>"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 999999999
+				}
+			]
+		},
+		"LONSCC<NUM_SNS>" : {
+			"Name": "WGS84 Longitude of Original Scene Center",
+			"Description": "This field shall contain the longitude of the nth original scene center. The coordinate system is geographic and refers to the WGS84 datum. The units for longitude are seconds of arc (\"SEC\"). The general form of this field is +/-SSSSSS.SS, where values from -648000.00 to +648000.00 are if angles are limited to +/-180 degrees of longitude and values from -999999.99 to +999999.99 are if angles are allowed to exceed +/-180 degrees of longitude.",
+			"Size": 10,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["arcseconds"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -999999.99,
+					"Max": 999999.99
+				}
+			]
+		},
+		"LATSCC<NUM_SNS>" : {
+			"Name": "WGS84 Latitude of Original Scene Center",
+			"Description": "This field shall contain the latitude of the nth original scene center. The coordinate system is geographic and refers to the WGS84 datum. The units for longitude are seconds of arc (\"SEC\"). The general form of this field is +/-SSSSSS.SS, where values from -324000.00 to +324000.00 are if angles are limited to +/-90 degrees of latitude and values from -999999.99 to +999999.99 are if angles are allowed to exceed +/-90 degrees of latitude.",
+			"Size": 10,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["arcseconds"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -999999.99,
+					"Max": 999999.99
+				}
+			]
+		},
+		"UNISAE<NUM_SNS>" : {
+			"Name": "Unit of Solar Angles",
+			"Description": "This field shall contain the unit of measure for the solar angles of the nth original scene, or all BCS spaces (0x20) if these angles are unknown or not applicable. The default unit of measure is decimal degrees (\"DEC\"). The default value is all BCS spaces (0x20). Other values for this field can been seen in Table P-22, originally from DIGEST Ed. 2.1 Part 3-7.",
+			"Size": 3,
+			"Format": "BCS-A",
+			"Type": "<C>",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"SAZ<NUM_SNS>" : {
+			"Name": "Solar Azimuth",
+			"Description": "This field is omitted when UNISAEn contains all BCS spaces (0x20). Otherwise, this field shall contain the solar azimuth of the nth original scene. This information is generally computed at the scene center.",
+			"Size": 7,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["<UNISAE<NUM_SNS>>"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 9999999
+				}
+			]
+		},
+		"SEL<NUM_SNS>" : {
+			"Name": "Solar Elevation",
+			"Description": "This field is omitted when UNISAEn contains all BCS spaces (0x20). Otherwise, this field shall contain the solar elevation angle of the nth original scene. This information is generally computed at the scene center.",
+			"Size": 7,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["<UNISAE<NUM_SNS>>"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 9999999
+				}
+			]
+		},
+		"UNIRPY<NUM_SNS>" : {
+			"Name": "Unit of Attitude Angles",
+			"Description": "This field shall contain the unit of measures for the attitude angles of the nth original scene, or all BCS spaces (0x20) if these angles are unknown or not applicable. The default units are decimal degrees (\"DEC\"). The default value is all BCS spaces (0x20).",
+			"Size": 3,
+			"Format": "BCS-A",
+			"Type": "<C>",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"ROL<NUM_SNS>" : {
+			"Name": "Roll of the Sensor",
+			"Description": "This field is omitted when UNIRPYn contains all BCS spaces (0x20). Otherwise, this field shall contain the roll of the sensor when capturing the nth original scene. This information is generally computed at scene center.",
+			"Size": 7,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["<UNIRPY<NUM_SNS>>"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 9999999
+				}
+			]
+		},
+		"PIT<NUM_SNS>" : {
+			"Name": "Pitch of the Sensor",
+			"Description": "This field is omitted when UNIRPYn contains all BCS spaces (0x20). Otherwise, this field shall contain the pitch of the sensor when capturing the nth original scene. This information is generally computed at scene center.",
+			"Size": 7,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["<UNIRPY<NUM_SNS>>"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 9999999
+				}
+			]
+		},
+		"YAW<NUM_SNS>" : {
+			"Name": "Yaw of the Sensor",
+			"Description": "This field is omitted when UNIRPYn contains all BCS spaces (0x20). Otherwise, this field shall contain the yaw of the sensor when capturing the nth original scene. This information is generally computed at scene center.",
+			"Size": 7,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["<UNIRPY<NUM_SNS>>"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 9999999
+				}
+			]
+		},
+		"UNIPXT<NUM_SNS>" : {
+			"Name": "Unit of Pixel Time",
+			"Description": "This field shall contain the unit of measure for the PXTn field, or all BCS spaces (0x20) if the pixel time is unknown or not applicable. The default units are seconds (\"S\"). The default value is all BCS spaces. Other values for this field can be seen in Table P-22, originally from DIGEST Ed. 2.1 Part 3-7.",
+			"Size": 3,
+			"Format": "BCS-A",
+			"Type": "<C>",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"PXT<NUM_SNS>" : {
+			"Name": "Pixel Time",
+			"Description": "This field is omitted when UNIPXTn contains all BCS spaces (0x20). Otherwise this field shall contain the start time of acquisition of the nth original scene.",
+			"Size": 14,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["<UNIPXT<NUM_SNS>>"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 99999999999999
+				}
+			]
+		},
+		"UNISPE<NUM_SNS>" : {
+			"Name": "Unit of Attitude Speed",
+			"Description": "This field shall contain the unit of measure for the attitude speeds of the nth original scene, or all BCS spaces (0x20) if these speeds are unknown or not applicable. The default units are seconds of arc per second (\"SEC/S\"). Angle units and time units are separated by a BCS solidus (0x2F). The default value is all BCS spaces. Other values for this field can be seen in Table P-22, originally from DIGEST Ed. 2.1 Part 3-7.",
+			"Size": 7,
+			"Format": "BCS-A",
+			"Type": "<C>",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"ROS<NUM_SNS>" : {
+			"Name": "Roll Speed",
+			"Description": "This field is omitted when UNISPEn contains all BCS spaces (0x20). Otherwise, this field shall contain the rotation speed around the roll axis of the sensor while capture the nth original scene. This information is generally computed at the scene center.",
+			"Size": 22,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["<UNISPE<NUM_SNS>>"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 9999999999999999999999
+				}
+			]
+		},
+		"PIS<NUM_SNS>" : {
+			"Name": "Pitch Speed",
+			"Description": "This field is omitted when UNISPEn contains all BCS spaces (0x20). Otherwise, this field shall contain the rotation speed around the pitch axis of the sensor while capturing the nth original scene. This information is generally computed at scene center.",
+			"Size": 22,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["<UNISPE<NUM_SNS>>"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 9999999999999999999999
+				}
+			]
+		},
+		"YAS<NUM_SNS>" : {
+			"Name": "Yaw Speed",
+			"Description": "This field is omitted when UNISPEn contains all BCS spaces (0x20). Otherwise, this field shall contain the rotation speed around the yaw axis of the sensor while capturing the nth original scene. This information is generally computed at scene center.",
+			"Size": 22,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["<UNISPE<NUM_SNS>>"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 9999999999999999999999
+				}
+			]
+		},
+		"NUM_AUX<NUM_SNS>" : {
+			"Name": "Number of Auxiliary Parameters",
+			"Description": "This field shall contain the number of auxiliary (additional) parameters of the nth original scene. The definition of an additional parameter is necessarily given by the APIn, APFn, UNIAPXn fields and by one of the APNn, APRn, and APAn fields, depending of the format specified by the parameter value of the APFn field. The default value is 000.",
+			"Size": 3,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 1,
+					"Max": 999
+				},
+				{
+					"Type": "Value",
+					"Values": ["000"]
+				}
+			]
+		},
+		"API<NUM_AUX<NUM_SNS>>" : {
+			"Name": "Auxiliary Parameter ID",
+			"Description": "This field is required when the value of NUM_AUX is greater than \"000\" and shall be omitted otherwise. This field shall contain an identification of the pth auxiliary parameter of the nth original scene. The first character of this field can't be a BCS spaces (0x20) as a significant ID is expected. The value of this field is unique ID strings.",
+			"Size": 20,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"APF<NUM_AUX<NUM_SNS>>" : {
+			"Name": "Auxiliary Parameter Value Format",
+			"Description": "This field is required when the value of NUM_AUX is greater than \"000\" and shall be omitted otherwise. This field shall specify the format of the auxiliary parameter value. The APNnp, APRnp, and APAnp fields are required when the APFnp value is respectively I, R, and A. I=Integer Values, R=Real Values, and A=String Values.",
+			"Size": 1,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Value",
+					"Values": ["I", "R", "A"]
+				}
+			]
+		},
+		"UNIAPX<NUM_AUX<NUM_SNS>>" : {
+			"Name": "Unit of Auxiliary Parameter",
+			"Description": "This field is required when the value of NUM_AUX is greater than \"000\" and shall be omitted otherwise. This field shall specify the unit of measure for the pth auxiliary parameter, or all BCS spaces (0x20) if not applicable (e.g., the auxiliary parameter is not numerical). When a compound unit of measure is formed by multiplication or division of two units of measure, they are separated by a full stop (0x2E) or respectively a solidus (0x2F). The default value is all BCS spaces (0x20). Other values for this field can be seen in Table P-22, originally from DIGEST Ed. 2.1 Part 3-7.",
+			"Size": 7,
+			"Format": "BCS-A",
+			"Type": "<C>",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"APN<NUM_AUX<NUM_SNS>>" : {
+			"Name": "Auxiliary Parameter Integer Value",
+			"Description": "This field appears if and only if the NUM_AUX value is greater than \"000\" and the APFnp value is \"I\". In this case, this field contains an integer value corresponding to the pth auxiliary parameter.",
+			"Size": 10,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["<UNIAPX<NUM_AUX<NUM_SNS>>>"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 9999999999
+				}
+			]
+		},
+		"APR<NUM_AUX<NUM_SNS>>" : {
+			"Name": "Auxiliary Parameter Real Value",
+			"Description": "This field appears if and only if the NUM_AUXn value is greater than \"000\" and the APFnp value is \"R\". In this case, this field contains a real value corresponding to the pth auxiliary parameter.",
+			"Size": 20,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": ["<UNIAPX<NUM_AUX<NUM_SNS>>>"],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 99999999999999999999
+				}
+			]
+		},
+		"APA<NUM_AUX<NUM_SNS>>" : {
+			"Name": "Auxiliary Parameter Characters String Value",
+			"Description": "This field appears if and only if NUM_AUXn value is greater than \"000\" and the APFnp value is \"A\". In this case, this field contains a string value corresponding to the pth auxiliary parameter.",
+			"Size": 20,
+			"Format": "ECS-A",
+			"Type": "C",
+			"Units": ["<UNIAPX<NUM_AUX<NUM_SNS>>>"],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		}
+	}
+}

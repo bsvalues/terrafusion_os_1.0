@@ -1,0 +1,10 @@
+{
+    "set": [
+        "number",
+        "record",
+        "row",
+        "sum",
+        "tbl",
+        "total"
+    ]
+}

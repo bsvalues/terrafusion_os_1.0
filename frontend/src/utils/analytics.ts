@@ -26,7 +26,7 @@ export class AnalyticsService {
   trackEvent(event: AnalyticsEvent): void {
     const eventWithTimestamp = {
       ...event,
-      timestamp: event.timestamp || Date.now()
+      timestamp: event.timestamp || Date.now(),
     };
     this.events.push(eventWithTimestamp);
     if (process.env.NODE_ENV === 'development') {
@@ -38,7 +38,7 @@ export class AnalyticsService {
   trackPerformance(metrics: PerformanceMetrics): void {
     this.trackEvent({
       name: 'performance_metrics',
-      properties: metrics
+      properties: metrics,
     });
   }
 

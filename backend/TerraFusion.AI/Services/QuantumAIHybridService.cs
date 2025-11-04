@@ -7,6 +7,7 @@ using System.Threading;
 using System.Linq;
 using TerraFusion.AI.Interfaces;
 using System.Numerics;
+using InterfacesOptimizationResult = TerraFusion.AI.Interfaces.OptimizationResult;
 
 namespace TerraFusion.AI.Services
 {
@@ -56,13 +57,16 @@ namespace TerraFusion.AI.Services
             _currentMetrics = new QuantumMetrics();
             _quantumConfig = LoadQuantumConfiguration();
 
+            // Initialize quantum simulator
+            _quantumSimulator = new QuantumSimulator(_quantumConfig.MaxQubits);
+
             _logger.LogInformation("⚛️ Quantum-AI Hybrid Service initialized");
         }
 
         /// <summary>
         /// Initialize quantum computing systems
         /// </summary>
-        public async Task<bool> InitializeQuantumSystems()
+        public async System.Threading.Tasks.Task<bool> InitializeQuantumSystems()
         {
             _logger.LogInformation("⚛️ Initializing Quantum Computing Systems...");
 
@@ -107,7 +111,7 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Process quantum optimization requests
         /// </summary>
-        public async Task<QuantumAIResponse> ProcessQuantumOptimization(QuantumOptimizationRequest request)
+        public async System.Threading.Tasks.Task<QuantumAIResponse> ProcessQuantumOptimization(QuantumOptimizationRequest request)
         {
             _logger.LogInformation($"⚛️ Processing Quantum Optimization: {request.Type}");
 
@@ -145,7 +149,8 @@ namespace TerraFusion.AI.Services
                 var classicalTime = await EstimateClassicalProcessingTime(request);
                 var quantumAdvantage = classicalTime.TotalMilliseconds / processingTime.TotalMilliseconds;
 
-                response.Result = result;
+                // Note: Interfaces.OptimizationResult is a placeholder; actual result details in Services version
+                response.Result = new InterfacesOptimizationResult();
                 response.QuantumAdvantage = quantumAdvantage;
                 response.ProcessingTime = processingTime;
                 response.Confidence = await CalculateResultConfidence(result, backend);
@@ -167,7 +172,7 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Get current quantum advantage ratio
         /// </summary>
-        public async Task<double> GetQuantumAdvantage()
+        public async System.Threading.Tasks.Task<double> GetQuantumAdvantage()
         {
             try
             {
@@ -188,7 +193,7 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Get quantum system coherence
         /// </summary>
-        public async Task<double> GetQuantumCoherence()
+        public async System.Threading.Tasks.Task<double> GetQuantumCoherence()
         {
             try
             {
@@ -212,7 +217,7 @@ namespace TerraFusion.AI.Services
         /// <summary>
         /// Get quantum operations throughput
         /// </summary>
-        public async Task<double> GetQuantumThroughput()
+        public async System.Threading.Tasks.Task<double> GetQuantumThroughput()
         {
             try
             {
@@ -234,7 +239,7 @@ namespace TerraFusion.AI.Services
         }
 
         // Private implementation methods
-        private async Task InitializeQuantumBackends()
+        private async System.Threading.Tasks.Task InitializeQuantumBackends()
         {
             _logger.LogInformation("Initializing quantum backends...");
 
@@ -283,17 +288,16 @@ namespace TerraFusion.AI.Services
             }
         }
 
-        private async Task InitializeQuantumSimulator()
+        private async System.Threading.Tasks.Task InitializeQuantumSimulator()
         {
             _logger.LogInformation("Initializing quantum simulator...");
 
-            _quantumSimulator = new QuantumSimulator(_quantumConfig.MaxQubits);
             await _quantumSimulator.Initialize();
 
             _logger.LogInformation($"✅ Quantum simulator initialized with {_quantumConfig.MaxQubits} qubits");
         }
 
-        private async Task InitializeQuantumAlgorithms()
+        private async System.Threading.Tasks.Task InitializeQuantumAlgorithms()
         {
             _logger.LogInformation("Initializing quantum algorithms...");
 
@@ -305,7 +309,7 @@ namespace TerraFusion.AI.Services
             _logger.LogInformation("✅ Quantum algorithms initialized");
         }
 
-        private async Task<double> ValidateQuantumAdvantage()
+        private async System.Threading.Tasks.Task<double> ValidateQuantumAdvantage()
         {
             _logger.LogInformation("Validating quantum advantage...");
 
@@ -337,7 +341,7 @@ namespace TerraFusion.AI.Services
             }
         }
 
-        private async Task<bool> InitializeFallbackSystems()
+        private async System.Threading.Tasks.Task<bool> InitializeFallbackSystems()
         {
             _logger.LogInformation("Initializing fallback classical systems...");
 
@@ -348,7 +352,7 @@ namespace TerraFusion.AI.Services
         }
 
         // Quantum optimization implementations
-        private async Task<OptimizationResult> ProcessPropertyPortfolioOptimization(
+        private async System.Threading.Tasks.Task<OptimizationResult> ProcessPropertyPortfolioOptimization(
             QuantumOptimizationRequest request, IQuantumBackend backend)
         {
             // Convert property portfolio optimization to QUBO (Quadratic Unconstrained Binary Optimization)
@@ -361,7 +365,7 @@ namespace TerraFusion.AI.Services
             return ConvertFromQuantumResult(quantumResult, OptimizationType.PropertyPortfolioOptimization);
         }
 
-        private async Task<OptimizationResult> ProcessRouteOptimization(
+        private async System.Threading.Tasks.Task<OptimizationResult> ProcessRouteOptimization(
             QuantumOptimizationRequest request, IQuantumBackend backend)
         {
             // Use Quantum Approximate Optimization Algorithm (QAOA) for routing
@@ -371,7 +375,7 @@ namespace TerraFusion.AI.Services
             return ConvertFromQuantumResult(result, OptimizationType.RouteOptimization);
         }
 
-        private async Task<OptimizationResult> ProcessResourceAllocation(
+        private async System.Threading.Tasks.Task<OptimizationResult> ProcessResourceAllocation(
             QuantumOptimizationRequest request, IQuantumBackend backend)
         {
             // Use Variational Quantum Eigensolver (VQE) for resource allocation
@@ -381,7 +385,7 @@ namespace TerraFusion.AI.Services
             return ConvertFromQuantumResult(result, OptimizationType.ResourceAllocation);
         }
 
-        private async Task<OptimizationResult> ProcessRiskMinimization(
+        private async System.Threading.Tasks.Task<OptimizationResult> ProcessRiskMinimization(
             QuantumOptimizationRequest request, IQuantumBackend backend)
         {
             // Use Quantum Risk Analysis Algorithm
@@ -391,7 +395,7 @@ namespace TerraFusion.AI.Services
             return ConvertFromQuantumResult(result, OptimizationType.RiskMinimization);
         }
 
-        private async Task<OptimizationResult> ProcessRevenueMaximization(
+        private async System.Threading.Tasks.Task<OptimizationResult> ProcessRevenueMaximization(
             QuantumOptimizationRequest request, IQuantumBackend backend)
         {
             // Use Quantum Revenue Optimization Algorithm
@@ -402,7 +406,7 @@ namespace TerraFusion.AI.Services
         }
 
         // Background monitoring loops
-        private async Task QuantumMetricsLoop()
+        private async System.Threading.Tasks.Task QuantumMetricsLoop()
         {
             _logger.LogInformation("⚛️ Quantum Metrics Loop Started");
 
@@ -428,7 +432,7 @@ namespace TerraFusion.AI.Services
             }
         }
 
-        private async Task QuantumErrorCorrectionLoop()
+        private async System.Threading.Tasks.Task QuantumErrorCorrectionLoop()
         {
             _logger.LogInformation("🛡️ Quantum Error Correction Loop Started");
 
@@ -451,7 +455,7 @@ namespace TerraFusion.AI.Services
             }
         }
 
-        private async Task QuantumOptimizationLoop()
+        private async System.Threading.Tasks.Task QuantumOptimizationLoop()
         {
             _logger.LogInformation("🎯 Quantum Optimization Loop Started");
 
@@ -484,26 +488,26 @@ namespace TerraFusion.AI.Services
             return new QuantumConfiguration
             {
                 IBMQuantumEnabled = _configuration.GetValue<bool>("Quantum:IBM:Enabled", false),
-                IBMQuantumToken = _configuration.GetValue<string>("Quantum:IBM:Token", ""),
+                IBMQuantumToken = _configuration.GetValue<string?>("Quantum:IBM:Token", "") ?? "",
                 GoogleQuantumEnabled = _configuration.GetValue<bool>("Quantum:Google:Enabled", false),
-                GoogleQuantumCredentials = _configuration.GetValue<string>("Quantum:Google:Credentials", ""),
+                GoogleQuantumCredentials = _configuration.GetValue<string?>("Quantum:Google:Credentials", "") ?? "",
                 IonQEnabled = _configuration.GetValue<bool>("Quantum:IonQ:Enabled", false),
-                IonQApiKey = _configuration.GetValue<string>("Quantum:IonQ:ApiKey", ""),
+                IonQApiKey = _configuration.GetValue<string?>("Quantum:IonQ:ApiKey", "") ?? "",
                 RigettiEnabled = _configuration.GetValue<bool>("Quantum:Rigetti:Enabled", false),
-                RigettiCredentials = _configuration.GetValue<string>("Quantum:Rigetti:Credentials", ""),
+                RigettiCredentials = _configuration.GetValue<string?>("Quantum:Rigetti:Credentials", "") ?? "",
                 MaxQubits = _configuration.GetValue<int>("Quantum:MaxQubits", 128),
                 ErrorCorrectionEnabled = _configuration.GetValue<bool>("Quantum:ErrorCorrection", true)
             };
         }
 
-        private async Task<IQuantumBackend> SelectOptimalBackend(QuantumOptimizationRequest request)
+        private async System.Threading.Tasks.Task<IQuantumBackend> SelectOptimalBackend(QuantumOptimizationRequest request)
         {
             // Select backend based on problem characteristics and current load
             var availableBackends = _quantumBackends.Values.Where(b => b.IsAvailable()).ToList();
 
             if (!availableBackends.Any())
             {
-                return _quantumSimulator; // Fallback to simulator
+                return (IQuantumBackend)_quantumSimulator; // Fallback to simulator
             }
 
             // Score backends based on suitability for the optimization type
@@ -520,19 +524,19 @@ namespace TerraFusion.AI.Services
 
         // Placeholder implementations for complex quantum operations
         private OptimizationProblem CreateBenchmarkOptimizationProblem() => new OptimizationProblem();
-        private async Task<QuantumResult> SolveWithQuantum(OptimizationProblem problem) { await System.Threading.Tasks.Task.Delay(1); return new QuantumResult(); }
-        private async Task<ClassicalResult> SolveWithClassical(OptimizationProblem problem) { await System.Threading.Tasks.Task.Delay(1); return new ClassicalResult(); }
+        private async System.Threading.Tasks.Task<QuantumResult> SolveWithQuantum(OptimizationProblem problem) { await System.Threading.Tasks.Task.Delay(1); return new QuantumResult(); }
+        private async System.Threading.Tasks.Task<ClassicalResult> SolveWithClassical(OptimizationProblem problem) { await System.Threading.Tasks.Task.Delay(1); return new ClassicalResult(); }
         private QuadraticUnconstrainedBinaryOptimization ConvertToQUBO(QuantumOptimizationRequest request) => new QuadraticUnconstrainedBinaryOptimization();
         private OptimizationResult ConvertFromQuantumResult(object result, OptimizationType type) => new OptimizationResult();
-        private async Task<TimeSpan> EstimateClassicalProcessingTime(QuantumOptimizationRequest request) { await System.Threading.Tasks.Task.Delay(1); return TimeSpan.FromMilliseconds(1000); }
-        private async Task<double> CalculateResultConfidence(OptimizationResult result, IQuantumBackend backend) { await System.Threading.Tasks.Task.Delay(1); return 0.95; }
-        private async Task<List<QuantumOptimizationResult>> GetRecentOptimizations(TimeSpan timeSpan) { await System.Threading.Tasks.Task.Delay(1); return new List<QuantumOptimizationResult>(); }
-        private async Task<QuantumAIResponse> FallbackToClassicalOptimization(QuantumOptimizationRequest request) { await System.Threading.Tasks.Task.Delay(1); return new QuantumAIResponse(); }
-        private async Task<QuantumMetrics> CollectQuantumMetrics() { await System.Threading.Tasks.Task.Delay(1); return new QuantumMetrics(); }
+        private async System.Threading.Tasks.Task<TimeSpan> EstimateClassicalProcessingTime(QuantumOptimizationRequest request) { await System.Threading.Tasks.Task.Delay(1); return TimeSpan.FromMilliseconds(1000); }
+        private async System.Threading.Tasks.Task<double> CalculateResultConfidence(OptimizationResult result, IQuantumBackend backend) { await System.Threading.Tasks.Task.Delay(1); return 0.95; }
+        private async System.Threading.Tasks.Task<List<QuantumOptimizationResult>> GetRecentOptimizations(TimeSpan timeSpan) { await System.Threading.Tasks.Task.Delay(1); return new List<QuantumOptimizationResult>(); }
+        private async System.Threading.Tasks.Task<QuantumAIResponse> FallbackToClassicalOptimization(QuantumOptimizationRequest request) { await System.Threading.Tasks.Task.Delay(1); return new QuantumAIResponse(); }
+        private async System.Threading.Tasks.Task<QuantumMetrics> CollectQuantumMetrics() { await System.Threading.Tasks.Task.Delay(1); return new QuantumMetrics(); }
         private void LogQuantumHealth(QuantumMetrics metrics) { }
-        private async Task OptimizeQuantumParameters() => await System.Threading.Tasks.Task.Delay(1);
-        private async Task BalanceQuantumLoad() => await System.Threading.Tasks.Task.Delay(1);
-        private async Task<double> CalculateBackendScore(IQuantumBackend backend, QuantumOptimizationRequest request) { await System.Threading.Tasks.Task.Delay(1); return 1.0; }
+        private async System.Threading.Tasks.Task OptimizeQuantumParameters() => await System.Threading.Tasks.Task.Delay(1);
+        private async System.Threading.Tasks.Task BalanceQuantumLoad() => await System.Threading.Tasks.Task.Delay(1);
+        private async System.Threading.Tasks.Task<double> CalculateBackendScore(IQuantumBackend backend, QuantumOptimizationRequest request) { await System.Threading.Tasks.Task.Delay(1); return 1.0; }
 
         public void Dispose()
         {
@@ -545,13 +549,13 @@ namespace TerraFusion.AI.Services
     public class QuantumConfiguration
     {
         public bool IBMQuantumEnabled { get; set; }
-        public string IBMQuantumToken { get; set; }
+        public string IBMQuantumToken { get; set; } = string.Empty;
         public bool GoogleQuantumEnabled { get; set; }
-        public string GoogleQuantumCredentials { get; set; }
+        public string GoogleQuantumCredentials { get; set; } = string.Empty;
         public bool IonQEnabled { get; set; }
-        public string IonQApiKey { get; set; }
+        public string IonQApiKey { get; set; } = string.Empty;
         public bool RigettiEnabled { get; set; }
-        public string RigettiCredentials { get; set; }
+        public string RigettiCredentials { get; set; } = string.Empty;
         public int MaxQubits { get; set; }
         public bool ErrorCorrectionEnabled { get; set; }
     }
@@ -569,85 +573,85 @@ namespace TerraFusion.AI.Services
 
     public interface IQuantumBackend
     {
-        Task<bool> Initialize();
+        System.Threading.Tasks.Task<bool> Initialize();
         bool IsAvailable();
-        Task<double> MeasureCoherence();
-        Task<double> MeasureThroughput();
-        Task<object> RunQuantumAnnealing(QuadraticUnconstrainedBinaryOptimization qubo, int maxIterations);
+        System.Threading.Tasks.Task<double> MeasureCoherence();
+        System.Threading.Tasks.Task<double> MeasureThroughput();
+        System.Threading.Tasks.Task<object> RunQuantumAnnealing(QuadraticUnconstrainedBinaryOptimization qubo, int maxIterations);
     }
 
     public interface IQuantumSimulator
     {
-        Task Initialize();
+        System.Threading.Tasks.Task Initialize();
     }
 
     // Placeholder quantum backend implementations
     public class IBMQuantumBackend : IQuantumBackend
     {
         public IBMQuantumBackend(string token) { }
-        public async Task<bool> Initialize() { await System.Threading.Tasks.Task.Delay(1); return true; }
+        public async System.Threading.Tasks.Task<bool> Initialize() { await System.Threading.Tasks.Task.Delay(1); return true; }
         public bool IsAvailable() => true;
-        public async Task<double> MeasureCoherence() { await System.Threading.Tasks.Task.Delay(1); return 0.95; }
-        public async Task<double> MeasureThroughput() { await System.Threading.Tasks.Task.Delay(1); return 1000; }
-        public async Task<object> RunQuantumAnnealing(QuadraticUnconstrainedBinaryOptimization qubo, int maxIterations) { await System.Threading.Tasks.Task.Delay(1); return new object(); }
+        public async System.Threading.Tasks.Task<double> MeasureCoherence() { await System.Threading.Tasks.Task.Delay(1); return 0.95; }
+        public async System.Threading.Tasks.Task<double> MeasureThroughput() { await System.Threading.Tasks.Task.Delay(1); return 1000; }
+        public async System.Threading.Tasks.Task<object> RunQuantumAnnealing(QuadraticUnconstrainedBinaryOptimization qubo, int maxIterations) { await System.Threading.Tasks.Task.Delay(1); return new object(); }
     }
 
     public class GoogleQuantumBackend : IQuantumBackend
     {
         public GoogleQuantumBackend(string credentials) { }
-        public async Task<bool> Initialize() { await System.Threading.Tasks.Task.Delay(1); return true; }
+        public async System.Threading.Tasks.Task<bool> Initialize() { await System.Threading.Tasks.Task.Delay(1); return true; }
         public bool IsAvailable() => true;
-        public async Task<double> MeasureCoherence() { await System.Threading.Tasks.Task.Delay(1); return 0.92; }
-        public async Task<double> MeasureThroughput() { await System.Threading.Tasks.Task.Delay(1); return 800; }
-        public async Task<object> RunQuantumAnnealing(QuadraticUnconstrainedBinaryOptimization qubo, int maxIterations) { await System.Threading.Tasks.Task.Delay(1); return new object(); }
+        public async System.Threading.Tasks.Task<double> MeasureCoherence() { await System.Threading.Tasks.Task.Delay(1); return 0.92; }
+        public async System.Threading.Tasks.Task<double> MeasureThroughput() { await System.Threading.Tasks.Task.Delay(1); return 800; }
+        public async System.Threading.Tasks.Task<object> RunQuantumAnnealing(QuadraticUnconstrainedBinaryOptimization qubo, int maxIterations) { await System.Threading.Tasks.Task.Delay(1); return new object(); }
     }
 
     public class IonQBackend : IQuantumBackend
     {
         public IonQBackend(string apiKey) { }
-        public async Task<bool> Initialize() { await System.Threading.Tasks.Task.Delay(1); return true; }
+        public async System.Threading.Tasks.Task<bool> Initialize() { await System.Threading.Tasks.Task.Delay(1); return true; }
         public bool IsAvailable() => true;
-        public async Task<double> MeasureCoherence() { await System.Threading.Tasks.Task.Delay(1); return 0.98; }
-        public async Task<double> MeasureThroughput() { await System.Threading.Tasks.Task.Delay(1); return 500; }
-        public async Task<object> RunQuantumAnnealing(QuadraticUnconstrainedBinaryOptimization qubo, int maxIterations) { await System.Threading.Tasks.Task.Delay(1); return new object(); }
+        public async System.Threading.Tasks.Task<double> MeasureCoherence() { await System.Threading.Tasks.Task.Delay(1); return 0.98; }
+        public async System.Threading.Tasks.Task<double> MeasureThroughput() { await System.Threading.Tasks.Task.Delay(1); return 500; }
+        public async System.Threading.Tasks.Task<object> RunQuantumAnnealing(QuadraticUnconstrainedBinaryOptimization qubo, int maxIterations) { await System.Threading.Tasks.Task.Delay(1); return new object(); }
     }
 
     public class RigettiBackend : IQuantumBackend
     {
         public RigettiBackend(string credentials) { }
-        public async Task<bool> Initialize() { await System.Threading.Tasks.Task.Delay(1); return true; }
+        public async System.Threading.Tasks.Task<bool> Initialize() { await System.Threading.Tasks.Task.Delay(1); return true; }
         public bool IsAvailable() => true;
-        public async Task<double> MeasureCoherence() { await System.Threading.Tasks.Task.Delay(1); return 0.88; }
-        public async Task<double> MeasureThroughput() { await System.Threading.Tasks.Task.Delay(1); return 600; }
-        public async Task<object> RunQuantumAnnealing(QuadraticUnconstrainedBinaryOptimization qubo, int maxIterations) { await System.Threading.Tasks.Task.Delay(1); return new object(); }
+        public async System.Threading.Tasks.Task<double> MeasureCoherence() { await System.Threading.Tasks.Task.Delay(1); return 0.88; }
+        public async System.Threading.Tasks.Task<double> MeasureThroughput() { await System.Threading.Tasks.Task.Delay(1); return 600; }
+        public async System.Threading.Tasks.Task<object> RunQuantumAnnealing(QuadraticUnconstrainedBinaryOptimization qubo, int maxIterations) { await System.Threading.Tasks.Task.Delay(1); return new object(); }
     }
 
     public class QuantumSimulator : IQuantumBackend, IQuantumSimulator
     {
         public QuantumSimulator(int maxQubits) { }
-        public async Task<bool> Initialize() { await System.Threading.Tasks.Task.Delay(1); return true; }
+        public async System.Threading.Tasks.Task<bool> Initialize() { await System.Threading.Tasks.Task.Delay(1); return true; }
         public bool IsAvailable() => true;
-        public async Task<double> MeasureCoherence() { await System.Threading.Tasks.Task.Delay(1); return 1.0; }
-        public async Task<double> MeasureThroughput() { await System.Threading.Tasks.Task.Delay(1); return 10000; }
-        public async Task<object> RunQuantumAnnealing(QuadraticUnconstrainedBinaryOptimization qubo, int maxIterations) { await System.Threading.Tasks.Task.Delay(1); return new object(); }
-        async Task IQuantumSimulator.Initialize() => await Initialize();
+        public async System.Threading.Tasks.Task<double> MeasureCoherence() { await System.Threading.Tasks.Task.Delay(1); return 1.0; }
+        public async System.Threading.Tasks.Task<double> MeasureThroughput() { await System.Threading.Tasks.Task.Delay(1); return 10000; }
+        public async System.Threading.Tasks.Task<object> RunQuantumAnnealing(QuadraticUnconstrainedBinaryOptimization qubo, int maxIterations) { await System.Threading.Tasks.Task.Delay(1); return new object(); }
+        async System.Threading.Tasks.Task IQuantumSimulator.Initialize() => await Initialize();
     }
 
     // Additional supporting classes
-    public class QuantumOptimizationEngine { public QuantumOptimizationEngine(ILogger logger) { } public async Task Initialize() => await System.Threading.Tasks.Task.Delay(1); }
-    public class QuantumMLAccelerator { public QuantumMLAccelerator(ILogger logger) { } public async Task Initialize() => await System.Threading.Tasks.Task.Delay(1); }
-    public class QuantumCryptographyService { public QuantumCryptographyService(ILogger logger) { } public async Task Initialize() => await System.Threading.Tasks.Task.Delay(1); }
+    public class QuantumOptimizationEngine { public QuantumOptimizationEngine(ILogger logger) { } public async System.Threading.Tasks.Task Initialize() => await System.Threading.Tasks.Task.Delay(1); }
+    public class QuantumMLAccelerator { public QuantumMLAccelerator(ILogger logger) { } public async System.Threading.Tasks.Task Initialize() => await System.Threading.Tasks.Task.Delay(1); }
+    public class QuantumCryptographyService { public QuantumCryptographyService(ILogger logger) { } public async System.Threading.Tasks.Task Initialize() => await System.Threading.Tasks.Task.Delay(1); }
     public class QuantumErrorCorrection
     {
         public QuantumErrorCorrection(ILogger logger) { }
-        public async Task Initialize() => await System.Threading.Tasks.Task.Delay(1);
-        public async Task PerformErrorCorrection(Dictionary<string, IQuantumBackend> backends) => await System.Threading.Tasks.Task.Delay(1);
+        public async System.Threading.Tasks.Task Initialize() => await System.Threading.Tasks.Task.Delay(1);
+        public async System.Threading.Tasks.Task PerformErrorCorrection(Dictionary<string, IQuantumBackend> backends) => await System.Threading.Tasks.Task.Delay(1);
     }
 
-    public class QuantumApproximateOptimizationAlgorithm { public async Task<object> Optimize(QuantumOptimizationRequest request, IQuantumBackend backend) { await System.Threading.Tasks.Task.Delay(1); return new object(); } }
-    public class VariationalQuantumEigensolver { public async Task<object> FindOptimalAllocation(QuantumOptimizationRequest request, IQuantumBackend backend) { await System.Threading.Tasks.Task.Delay(1); return new object(); } }
-    public class QuantumRiskAnalysisAlgorithm { public async Task<object> MinimizeRisk(QuantumOptimizationRequest request, IQuantumBackend backend) { await System.Threading.Tasks.Task.Delay(1); return new object(); } }
-    public class QuantumRevenueOptimizationAlgorithm { public async Task<object> MaximizeRevenue(QuantumOptimizationRequest request, IQuantumBackend backend) { await System.Threading.Tasks.Task.Delay(1); return new object(); } }
+    public class QuantumApproximateOptimizationAlgorithm { public async System.Threading.Tasks.Task<object> Optimize(QuantumOptimizationRequest request, IQuantumBackend backend) { await System.Threading.Tasks.Task.Delay(1); return new object(); } }
+    public class VariationalQuantumEigensolver { public async System.Threading.Tasks.Task<object> FindOptimalAllocation(QuantumOptimizationRequest request, IQuantumBackend backend) { await System.Threading.Tasks.Task.Delay(1); return new object(); } }
+    public class QuantumRiskAnalysisAlgorithm { public async System.Threading.Tasks.Task<object> MinimizeRisk(QuantumOptimizationRequest request, IQuantumBackend backend) { await System.Threading.Tasks.Task.Delay(1); return new object(); } }
+    public class QuantumRevenueOptimizationAlgorithm { public async System.Threading.Tasks.Task<object> MaximizeRevenue(QuantumOptimizationRequest request, IQuantumBackend backend) { await System.Threading.Tasks.Task.Delay(1); return new object(); } }
 
     public class OptimizationProblem { }
     public class QuantumResult { }

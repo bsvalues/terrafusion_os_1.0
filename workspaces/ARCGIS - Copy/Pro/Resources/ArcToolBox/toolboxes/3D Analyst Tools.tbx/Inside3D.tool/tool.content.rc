@@ -1,0 +1,14 @@
+{
+    "map": {
+        "complex_output.descr": "<xdoc><p>Specifies if the output table will identify the relationship between the <span class=\"esri_uicontrol\">Input Features</span> and the <span class=\"esri_uicontrol\">Input Multipatch Features</span> through the creation of a <span class=\"esri_fieldname\">Contain_ID</span> field that identifies the multipatch feature that contains the input feature.</p><ul><li>Checked—The multipatch feature that contains an input feature will be identified.</li><li>Unchecked—The multipatch feature that contains an input feature will not be identified. This is the default.</li></ul></xdoc>",
+        "complex_output.title": "Complex Output Table",
+        "description": "Determines if 3D features from an input feature class are contained inside a closed multipatch, and writes an output table recording the features that are partially or fully inside the multipatch.",
+        "in_container_feature_class.descr": "The closed multipatch features that will be used as the containers for the input features.",
+        "in_container_feature_class.title": "Input Multipatch Features",
+        "in_target_feature_class.descr": "The input multipatch or 3D point, line, or polygon feature class.",
+        "in_target_feature_class.title": "Input Features",
+        "out_table.descr": "<xdoc><p>The output table providing a list of 3D <span class=\"esri_uicontrol\">Input Features</span> that are inside or partially inside the <span class=\"esri_uicontrol\">Input Multipatch Features</span> which are closed. The output table contains an <span class=\"esri_fieldname\">OBJECTID</span> (object ID), <span class=\"esri_fieldname\">Target_ID</span>, and <span class=\"esri_fieldname\">Status</span> field. The <span class=\"esri_fieldname\">Status</span> field will state if the input feature (<span class=\"esri_fieldname\">Target_ID</span>) is inside or partially inside a multipatch.</p></xdoc>",
+        "out_table.title": "Output Table",
+        "title": "Inside 3D"
+    }
+}

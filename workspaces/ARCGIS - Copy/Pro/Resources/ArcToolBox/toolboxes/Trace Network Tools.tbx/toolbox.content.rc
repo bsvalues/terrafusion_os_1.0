@@ -1,0 +1,7 @@
+{
+    "map": {
+        "descr": "The Trace Network toolbox contains tools to create, configure, and work with trace networks.",
+        "title": "Trace Network Tools",
+        "toolset1.name": "Trace Configuration"
+    }
+}

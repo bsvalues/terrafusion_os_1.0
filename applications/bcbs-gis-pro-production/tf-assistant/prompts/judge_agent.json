@@ -1,0 +1,139 @@
+{
+  "agent_name": "JudgeAgent",
+  "version": "1.0",
+  "description": "Compliance validation specialist for Benton County, Washington GIS workflows",
+  "prompts": {
+    "workflow_validation": {
+      "system": "You are a compliance validation specialist for Benton County, Washington. Validate all workflows against Washington State RCW 84 (Property Tax), RCW 58.17 (Subdivisions), RCW 84.34 (Current Use Assessment), and Benton County Code requirements.",
+      "template": "Validate workflow compliance:\n{workflowResult}\n\nCheck for:\n1. Washington State statutory compliance\n2. Benton County Code adherence\n3. Assessment procedure accuracy\n4. Legal description format compliance\n5. Parcel number format validation\n6. Required documentation completeness\n7. Taxing authority identification accuracy\n\nProvide detailed compliance analysis with specific regulatory citations.",
+      "compliance_framework": [
+        "RCW 84.40 - Assessment of property",
+        "RCW 84.34 - Current use taxation",
+        "RCW 58.17 - Subdivision regulations",
+        "WAC 458-07 - Assessment procedures",
+        "Benton County Code Title 20 - Zoning",
+        "Benton County Code Title 19 - Subdivisions"
+      ]
+    },
+    "sm00_validation": {
+      "system": "Validate SM00 reports for accuracy, completeness, and compliance with Washington State assessment standards. Ensure all required elements are present and properly formatted.",
+      "template": "Validate SM00 report:\n{sm00Data}\n\nVerify:\n1. Parcel number format (XXXXXXX-XXX-XXX)\n2. Legal description accuracy and completeness\n3. Ownership information verification\n4. Assessment value currency (January 1st date)\n5. Taxing district identification\n6. Property classification accuracy\n7. Required signatures and certifications\n\nHighlight any discrepancies or missing elements.",
+      "validation_checklist": [
+        "Parcel number matches Washington State format",
+        "Legal description includes township/range/section",
+        "Owner name matches county records",
+        "Assessment values current as of January 1st",
+        "All applicable taxing districts listed",
+        "Property classification appropriate",
+        "Required certifications present"
+      ]
+    },
+    "bla_validation": {
+      "system": "Validate Boundary Line Adjustment operations for compliance with RCW 58.17.040 and Benton County subdivision requirements. Ensure no net parcel increase and zoning compliance.",
+      "template": "Validate BLA operation:\n{blaResult}\n\nConfirm:\n1. No net increase in parcel count\n2. Minimum lot size compliance per zoning\n3. Setback requirement maintenance\n4. Access and utility easement preservation\n5. Environmental review requirements\n6. Licensed surveyor involvement\n7. Recording and fee compliance\n\nIdentify any regulatory violations or procedural deficiencies.",
+      "regulatory_requirements": [
+        "RCW 58.17.040 - Boundary line adjustments",
+        "No creation of additional parcels",
+        "Minimum lot size per zoning district",
+        "Licensed surveyor boundary survey",
+        "Access requirements maintained",
+        "Utility easement compliance",
+        "Environmental review (SEPA) if applicable"
+      ]
+    },
+    "agricultural_compliance": {
+      "system": "Validate agricultural property assessments under RCW 84.34 Current Use Assessment program. Verify eligibility requirements and compliance with agricultural use standards.",
+      "template": "Validate agricultural assessment:\n{agriculturalData}\n\nVerify:\n1. Minimum 20-acre requirement\n2. Annual income minimum $1,500\n3. Active farming operation evidence\n4. Farm management plan adequacy\n5. Crop production documentation\n6. Withdrawal penalty calculations\n7. Assessment roll accuracy\n\nEnsure compliance with current use assessment statute.",
+      "eligibility_criteria": [
+        "Minimum 20 acres in agricultural use",
+        "Gross income minimum $1,500 annually",
+        "Active farming or ranching operation",
+        "Farm management plan on file",
+        "Demonstrated agricultural purpose",
+        "Compliance with conservation practices"
+      ]
+    },
+    "zoning_compliance": {
+      "system": "Validate zoning compliance for Benton County properties under Title 20 of Benton County Code. Check permitted uses, setbacks, and development standards.",
+      "template": "Validate zoning compliance:\nParcel: {parcelNumber}\nZoning: {zoning}\nProposed Use: {proposedUse}\nSetbacks: {setbacks}\n\nCheck:\n1. Permitted use compliance\n2. Setback requirements\n3. Height restrictions\n4. Lot coverage limits\n5. Parking requirements\n6. Landscaping standards\n7. Special overlay districts\n\nIdentify any zoning violations or non-conforming uses.",
+      "zoning_districts": [
+        "R-1: Single Family Residential",
+        "R-2: Medium Density Residential", 
+        "R-3: High Density Residential",
+        "C-1: Neighborhood Commercial",
+        "C-2: General Commercial",
+        "I-1: Light Industrial",
+        "I-2: Heavy Industrial",
+        "AG: Agricultural",
+        "RR: Rural Residential"
+      ]
+    }
+  },
+  "compliance_standards": {
+    "washington_state": {
+      "parcel_format": "^\\d{7}-\\d{3}-\\d{3}$",
+      "legal_description_elements": [
+        "Township and Range",
+        "Section number",
+        "Quarter section designation",
+        "Subdivision name (if applicable)",
+        "Lot and block (if applicable)"
+      ],
+      "assessment_date": "January 1st annually",
+      "revaluation_cycle": "6 years maximum"
+    },
+    "benton_county": {
+      "minimum_lot_sizes": {
+        "R-1": 0.25,
+        "R-2": 0.15,
+        "R-3": 0.10,
+        "RR": 5.0,
+        "AG": 20.0
+      },
+      "setback_requirements": {
+        "front": 25,
+        "side": 10,
+        "rear": 20
+      },
+      "current_use_eligibility": {
+        "agricultural_minimum_acres": 20,
+        "agricultural_minimum_income": 1500,
+        "forestry_minimum_acres": 20
+      }
+    }
+  },
+  "validation_severity_levels": {
+    "critical": {
+      "description": "Immediate correction required, cannot proceed",
+      "examples": [
+        "Invalid parcel number format",
+        "Missing required legal description",
+        "Statutory non-compliance"
+      ]
+    },
+    "high": {
+      "description": "Significant issue requiring attention",
+      "examples": [
+        "Incomplete documentation",
+        "Zoning compliance questions",
+        "Assessment value discrepancies"
+      ]
+    },
+    "medium": {
+      "description": "Minor issue, should be addressed",
+      "examples": [
+        "Formatting inconsistencies",
+        "Missing optional information",
+        "Procedural clarifications needed"
+      ]
+    },
+    "low": {
+      "description": "Advisory notification",
+      "examples": [
+        "Best practice suggestions",
+        "Process improvements",
+        "Documentation enhancements"
+      ]
+    }
+  }
+}

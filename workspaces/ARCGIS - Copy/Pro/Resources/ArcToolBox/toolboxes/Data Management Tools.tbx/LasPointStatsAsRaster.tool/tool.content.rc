@@ -1,0 +1,24 @@
+{
+    "map": {
+        "description": "Creates a raster whose cell values reflect statistical information about LAS points.",
+        "in_las_dataset.descr": "The LAS dataset that will be processed.",
+        "in_las_dataset.title": "Input LAS Dataset",
+        "method.descr": "<xdoc><p>Specifies the type of statistics that will be collected about the LAS points in each cell of the output raster.</p><ul><li><span title=\"PULSE_COUNT\">Pulse Count</span>—The number of last return points will be collected.</li><li><span title=\"POINT_COUNT\">Point Count</span>—The number of points from all returns will be collected.</li><li><span title=\"PREDOMINANT_LAST_RETURN\">Most Frequent Last Return</span>—The most frequent last return value will be collected.</li><li><span title=\"PREDOMINANT_CLASS\">Most Frequent Class Code</span>—The most frequent class code will be collected.</li><li><span title=\"INTENSITY_RANGE\">Range of Intensity Values</span>—The range of intensity values will be collected.</li><li><span title=\"Z_RANGE\">Range of Elevation Values</span>—The range of elevation values will be collected.</li></ul></xdoc>",
+        "method.domain.INTENSITY_RANGE": "Range of Intensity Values",
+        "method.domain.POINT_COUNT": "Point Count",
+        "method.domain.PREDOMINANT_CLASS": "Most Frequent Class Code",
+        "method.domain.PREDOMINANT_LAST_RETURN": "Most Frequent Last Return",
+        "method.domain.PULSE_COUNT": "Pulse Count",
+        "method.domain.Z_RANGE": "Range of Elevation Values",
+        "method.title": "Method",
+        "out_raster.descr": "<xdoc><p>The location and name of the output raster. When storing a raster dataset in a geodatabase or in a folder such as an Esri Grid, do not add a file extension to the name of the raster dataset. A file extension can be provided to define the raster&apos;s format when storing it in a folder, such as .tif to generate a GeoTIFF or .img to generate an ERDAS IMAGINE format file.</p><p>If the raster is stored as a .tif file or in a geodatabase, the raster compression type and quality can be specified using geoprocessing environment settings.</p></xdoc>",
+        "out_raster.title": "Output Raster",
+        "sampling_type.descr": "<xdoc><p>Specifies how the <span class=\"esri_uicontrol\">Sampling Value</span> parameter will be interpreted to define the output raster&apos;s cell size.</p><ul><li><span title=\"OBSERVATIONS\">Observations</span>—The <span class=\"esri_uicontrol\">Sampling Value</span> will define the number of columns or rows in the output raster based on whichever is longest. The cell size will be derived by dividing the longest side of the output&apos;s extent with the input in the <span class=\"esri_uicontrol\">Sampling Value</span> parameter. If an observation value of 3000 is used on a dataset whose longest side is 23.67 kilometers, the output raster&apos;s resolution will be 7.89 meters. This method offers a helpful way of creating an output with a predictable size that can be generated rapidly.</li><li><span title=\"CELLSIZE\">Cell Size</span>—The cell size will be directly defined by the <span class=\"esri_uicontrol\">Sampling Value</span> parameter. This is the default.</li></ul></xdoc>",
+        "sampling_type.domain.CELLSIZE": "Cell Size",
+        "sampling_type.domain.OBSERVATIONS": "Observations",
+        "sampling_type.title": "Sampling Type",
+        "sampling_value.descr": "<xdoc><p>The value used in conjunction with the <span class=\"esri_uicontrol\">Sampling Type</span> parameter to define the output raster&apos;s cell size.</p></xdoc>",
+        "sampling_value.title": "Sampling Value",
+        "title": "LAS Point Statistics As Raster"
+    }
+}

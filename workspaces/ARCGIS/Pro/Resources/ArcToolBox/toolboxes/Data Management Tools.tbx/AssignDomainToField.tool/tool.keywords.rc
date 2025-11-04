@@ -1,0 +1,16 @@
+{
+    "set": [
+        "attribute",
+        "constrain",
+        "designate",
+        "domains",
+        "field",
+        "integrity",
+        "limit",
+        "match",
+        "restrict",
+        "set",
+        "specify",
+        "subtype"
+    ]
+}

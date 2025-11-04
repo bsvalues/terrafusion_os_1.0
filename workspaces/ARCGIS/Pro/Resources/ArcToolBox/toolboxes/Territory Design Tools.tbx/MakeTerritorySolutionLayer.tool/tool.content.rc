@@ -1,0 +1,10 @@
+{
+    "map": {
+        "description": "Creates a group layer that represents a territory solution from an existing territory solution dataset.",
+        "in_territory_dataset.descr": "The input territory solution.",
+        "in_territory_dataset.title": "Input Territory Solution Dataset",
+        "out_territory_solution.descr": "The output territory solution group layer.",
+        "out_territory_solution.title": "Output Territory Solution Layer",
+        "title": "Make Territory Solution Layer"
+    }
+}

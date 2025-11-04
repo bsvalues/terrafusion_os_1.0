@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Stages a service definition. A staged service definition file (.sd) contains all the necessary information to share a web layer, locator, web tool, or service.",
+        "in_service_definition_draft.descr": "The input draft service definition. Service definition drafts can be created using the arcpy.sharing module or the CreateGeocodeSDDraft or CreateGPSDDraft ArcPy functions.",
+        "in_service_definition_draft.title": "Service Definition Draft",
+        "out_service_definition.descr": "The resulting service definition. The default is to write the service definition to the same directory as the draft service definition.",
+        "out_service_definition.title": "Service Definition",
+        "staging_version.descr": "<xdoc><p>The version of the published service definition.</p><p>When sharing a feature, a tile, or an imagery layer to ArcGIS Enterprise, use 5 for the value. When sharing a map image layer or web tool to ArcGIS Enterprise, and any layer type to ArcGIS Online, use 102 for the value. This is the default.</p><p>When sharing a web tool or geoprocessing service to ArcGIS Enterprise or ArcGIS Server using the GeoprocessingSharingDraft or CreateGPSDDraft function, use the value corresponding to the version number from the following list:</p><ul><li>11.4—340</li><li>11.3—330</li><li>11.2—320</li><li>11.1—310</li><li>11.0—300</li><li>10.9.1—209</li><li>10.9—208</li><li>10.8.1—206</li><li>10.8—205</li><li>10.7.1—204</li><li>10.7—203</li><li>10.6.1—202</li><li>10.6—201</li></ul></xdoc>",
+        "staging_version.title": "Staging Version",
+        "title": "Stage Service"
+    }
+}

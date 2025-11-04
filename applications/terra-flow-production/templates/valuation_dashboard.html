@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">{{ title }}</h1>
+    <p class="lead">{{ description }}</p>
+
+    <div class="row mt-5">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Current Use Valuation</h5>
+                    <p class="card-text">Calculate property valuations for land in current use programs under RCW 84.34, including agricultural land, timber land, and open space.</p>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="{{ url_for('valuation.current_use_calculator') }}" class="btn btn-primary">Open Calculator</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Historic Property Valuation</h5>
+                    <p class="card-text">Calculate special valuations for historic properties under RCW 84.26, considering rehabilitation costs and historic designation.</p>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="{{ url_for('valuation.historic_property_calculator') }}" class="btn btn-primary">Open Calculator</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Senior/Disabled Exemption</h5>
+                    <p class="card-text">Calculate property tax exemptions for senior citizens and disabled persons under RCW 84.36.381.</p>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="{{ url_for('valuation.senior_exemption_calculator') }}" class="btn btn-primary">Open Calculator</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Washington State Property Tax Law References</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6>Current Use (RCW 84.34)</h6>
+                            <ul>
+                                <li>Agricultural Land</li>
+                                <li>Open Space</li>
+                                <li>Timber Land</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>Historic Property (RCW 84.26)</h6>
+                            <ul>
+                                <li>Special Valuation</li>
+                                <li>Rehabilitation Requirements</li>
+                                <li>Local Review Board</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>Senior/Disabled Exemption (RCW 84.36.381)</h6>
+                            <ul>
+                                <li>Income Thresholds</li>
+                                <li>Age Requirements</li>
+                                <li>Disability Qualification</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

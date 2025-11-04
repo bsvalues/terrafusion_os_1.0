@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Registers an enterprise geodatabase dataset as versioned.",
+        "edit_to_base.descr": "<xdoc><p>Specifies whether edits made to the default version will be moved to the base tables. This parameter is not applicable for branch versioning</p><ul><li>Checked—The dataset will be versioned with the option of moving edits to base.</li><li>Unchecked—The dataset will be versioned without the option of moving edits to base. This is the default.</li></ul></xdoc>",
+        "edit_to_base.title": "Register the selected objects with the option to move edits to base",
+        "in_dataset.descr": "The dataset to be registered as versioned.",
+        "in_dataset.title": "Input Dataset",
+        "out_dataset.title": "Updated Input Dataset",
+        "summary": "<xdoc><p>Registers an enterprise geodatabase dataset as versioned.</p><p>Learn more about how to register data as branch versioned and traditional versioned.</p></xdoc>",
+        "title": "Register As Versioned"
+    }
+}

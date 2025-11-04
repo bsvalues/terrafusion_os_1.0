@@ -1,0 +1,5 @@
+<DataType Name="GPTableView">
+  <DisplayName>Table View</DisplayName>
+  <Description>A representation of tabular data for viewing and editing purposes, stored in memory or on disk.</Description>
+</DataType>
+

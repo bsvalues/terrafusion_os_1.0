@@ -1,0 +1,39 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "alert_rules.yml"
+  - "business_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  - job_name: 'terrafusion-app'
+    static_configs:
+      - targets: ['terrafusion-app-service:80']
+    metrics_path: '/api/metrics'
+    scrape_interval: 30s
+
+  - job_name: 'kubernetes-pods'
+    kubernetes_sd_configs:
+      - role: pod
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+        action: keep
+        regex: true
+
+  - job_name: 'quantum-processors'
+    static_configs:
+      - targets: ['quantum-service:8080']
+    metrics_path: '/quantum/metrics'
+    scrape_interval: 5s
+
+  - job_name: 'business-metrics'
+    static_configs:
+      - targets: ['business-metrics-service:9090']
+    scrape_interval: 60s

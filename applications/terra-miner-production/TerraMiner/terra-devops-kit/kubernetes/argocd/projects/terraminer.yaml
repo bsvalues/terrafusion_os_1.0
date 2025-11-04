@@ -1,0 +1,48 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: terraminer
+  namespace: argocd
+spec:
+  description: TerraMiner Data Intelligence Platform
+  
+  # Project sources
+  sourceRepos:
+  - 'https://github.com/terraminer/infrastructure'
+  - 'https://github.com/terraminer/applications'
+  
+  # Destination clusters and namespaces
+  destinations:
+  - namespace: terraminer-api
+    server: https://kubernetes.default.svc
+  - namespace: terraminer-data
+    server: https://kubernetes.default.svc
+  - namespace: terraminer-ml
+    server: https://kubernetes.default.svc
+  - namespace: monitoring
+    server: https://kubernetes.default.svc
+  
+  # Cluster resource whitelist
+  clusterResourceWhitelist:
+  - group: '*'
+    kind: Namespace
+  
+  # Namespace resource whitelist
+  namespaceResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  
+  # RBAC configuration
+  roles:
+  - name: project-admin
+    description: Project admin role
+    policies:
+    - p, proj:terraminer:project-admin, applications, *, terraminer/*, allow
+    groups:
+    - terraminer-admins
+  - name: project-readonly
+    description: Read-only role for developers
+    policies:
+    - p, proj:terraminer:project-readonly, applications, get, terraminer/*, allow
+    groups:
+    - terraminer-developers

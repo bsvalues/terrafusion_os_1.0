@@ -1,0 +1,31 @@
+{
+    "map": {
+        "date_format.descr": "The format of the date values in the scene layers date fields. This parameter is hidden if no date fields are encountered.",
+        "date_format.domain.DDMMYYYY": "DDMMYYYY",
+        "date_format.domain.DDMMYYYY hh:mm:ss": "DDMMYYYY hh:mm:ss",
+        "date_format.domain.MMDDYYYY": "MMDDYYYY",
+        "date_format.domain.MMDDYYYY hh:mm:ss": "MMDDYYYY hh:mm:ss",
+        "date_format.domain.YYYYDDMM": "YYYYDDMM",
+        "date_format.domain.YYYYDDMM hh:mm:ss": "YYYYDDMM hh:mm:ss",
+        "date_format.domain.YYYYMMDD": "YYYYMMDD",
+        "date_format.domain.YYYYMMDD hh:mm:ss": "YYYYMMDD hh:mm:ss",
+        "date_format.title": "Date Format",
+        "description": "Upgrades a scene layer package to the current I3S version in SLPK format or output to i3sREST  format for use in ArcGIS Enterprise.",
+        "in_dataset.descr": "The input scene layer package.",
+        "in_dataset.title": "Input Dataset",
+        "out_folder_path.descr": "The location where the output scene layer package will be created or the cloud connection file (.acs) to output to i3sREST format.",
+        "out_folder_path.title": "Output Folder",
+        "out_log.descr": "The output log file that will summarize the results of the evaluation.",
+        "out_log.title": "Output Log File",
+        "out_name.descr": "The name of the output scene layer.",
+        "out_name.title": "Output Name",
+        "summary": "Upgrades a scene layer package to the current I3S version in SLPK format or output to i3sREST format for use in ArcGIS Enterprise.",
+        "texture_optimization.descr": "<xdoc><p>Specifies the textures that will be optimized according to the target platform where the scene layer package is used.<note type=\"caution\"/><p group=\"note\">Optimizations that include KTX2 may take significant time to process. For fastest results, use the <span class=\"esri_uicontrol\">Desktop</span> or <span class=\"esri_uicontrol\">None</span> options.</p></p><ul><li><span title=\"ALL\">All</span>—All texture formats, including JPEG, DXT, and KTX2, will be optimized for use in desktop, web, and mobile platforms.</li><li><span title=\"DESKTOP\">Desktop</span>—Windows, Linux, and Mac supported textures, including JPEG and DXT, will be optimized for use in ArcGIS Pro clients on Windows and ArcGIS Maps SDKs desktop clients on Windows, Linux, and Mac. This is the default.</li><li><span title=\"MOBILE\">Mobile</span>—Android and iOS supported textures, including JPEG and KTX2, will be optimized for use in ArcGIS Maps SDKs mobile applications.</li><li><span title=\"NONE\">None</span>—JPEG textures will be optimized for use in desktop and web platforms.</li></ul></xdoc>",
+        "texture_optimization.domain.ALL": "All",
+        "texture_optimization.domain.DESKTOP": "Desktop",
+        "texture_optimization.domain.MOBILE": "Mobile",
+        "texture_optimization.domain.NONE": "None",
+        "texture_optimization.title": "Texture Optimization",
+        "title": "Upgrade Scene Layer"
+    }
+}

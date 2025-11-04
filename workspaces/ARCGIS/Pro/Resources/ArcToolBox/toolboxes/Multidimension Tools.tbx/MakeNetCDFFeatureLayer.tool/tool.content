@@ -1,0 +1,127 @@
+{
+    "type": "FunctionTool",
+    "guid": "{c2630c12-ce2b-4989-b110-54f523295d0e}",
+    "displayname": "$rc:title",
+    "helpcontent": "17000002",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_netCDF_file": {
+            "displayname": "$rc:in_netcdf_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "nc",
+                    "nc4"
+                ]
+            },
+            "description": "$rc:in_netcdf_file.descr"
+        },
+        "variable": {
+            "displayname": "$rc:variable.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "description": "$rc:variable.descr"
+        },
+        "x_variable": {
+            "displayname": "$rc:x_variable.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:x_variable.descr"
+        },
+        "y_variable": {
+            "displayname": "$rc:y_variable.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:y_variable.descr"
+        },
+        "out_feature_layer": {
+            "direction": "out",
+            "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}",
+            "displayname": "$rc:out_feature_layer.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:out_feature_layer.descr"
+        },
+        "row_dimension": {
+            "type": "optional",
+            "displayname": "$rc:row_dimension.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "description": "$rc:row_dimension.descr"
+        },
+        "z_variable": {
+            "type": "optional",
+            "displayname": "$rc:z_variable.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:z_variable.descr"
+        },
+        "m_variable": {
+            "type": "optional",
+            "displayname": "$rc:m_variable.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:m_variable.descr"
+        },
+        "dimension_values": {
+            "type": "optional",
+            "displayname": "$rc:dimension_values.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:dimension_values.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:dimension_values.dt.title2"
+                    }
+                ]
+            },
+            "description": "$rc:dimension_values.descr"
+        },
+        "value_selection_method": {
+            "type": "optional",
+            "displayname": "$rc:value_selection_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "BY_INDEX",
+                        "code": "$rc:value_selection_method.domain.BY_INDEX"
+                    },
+                    {
+                        "value": "BY_VALUE",
+                        "code": "$rc:value_selection_method.domain.BY_VALUE"
+                    }
+                ]
+            },
+            "value": "BY_VALUE",
+            "description": "$rc:value_selection_method.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

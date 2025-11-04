@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Posting is the process of applying the current edit session to the reconciled target version during version geodatabase editing. Before a version can be posted, it must be reconciled with a target version and all conflicts must be resolved.",
+        "in_workspace.descr": "The ArcSDE geodatabase containing the edit version to be posted.",
+        "in_workspace.title": "Input Workspace",
+        "out_workspace.title": "Output Workspace",
+        "summary": "<xdoc><p>Posting is the process of applying the current edit session to the reconciled target version during version geodatabase editing. Before a version can be posted, it must be reconciled with a target version and all conflicts must be resolved.</p><note type=\"legacy\"/><p group=\"note\">This is a deprecated tool. The Reconcile Versions tool should be used to post versions following a reconcile.</p></xdoc>",
+        "title": "Post Version",
+        "version_name.descr": "Name of the edit version to be posted to the target version.",
+        "version_name.title": "Version Name"
+    }
+}

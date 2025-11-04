@@ -1,0 +1,168 @@
+{
+    "type": "FunctionTool",
+    "guid": "{c0254adc-6965-4e86-9650-03c852e15bfc}",
+    "displayname": "$rc:title",
+    "helpcontent": "13010010",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "attributes": [
+        "param_nocount:in_network_analysis_layer"
+    ],
+    "params": {
+        "in_network_analysis_layer": {
+            "displayname": "$rc:in_network_analysis_layer.title",
+            "datatype": {
+                "type": "GPNALayer"
+            },
+            "description": "$rc:in_network_analysis_layer.descr"
+        },
+        "sub_layer": {
+            "displayname": "$rc:sub_layer.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:sub_layer.descr"
+        },
+        "field_name": {
+            "displayname": "$rc:field_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:field_name.descr"
+        },
+        "field_type": {
+            "displayname": "$rc:field_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "TEXT",
+                        "code": "$rc:field_type.domain.TEXT"
+                    },
+                    {
+                        "value": "FLOAT",
+                        "code": "$rc:field_type.domain.FLOAT"
+                    },
+                    {
+                        "value": "DOUBLE",
+                        "code": "$rc:field_type.domain.DOUBLE"
+                    },
+                    {
+                        "value": "SHORT",
+                        "code": "$rc:field_type.domain.SHORT"
+                    },
+                    {
+                        "value": "LONG",
+                        "code": "$rc:field_type.domain.LONG"
+                    },
+                    {
+                        "value": "BIGINTEGER",
+                        "code": "$rc:field_type.domain.BIGINTEGER"
+                    },
+                    {
+                        "value": "DATE",
+                        "code": "$rc:field_type.domain.DATE"
+                    },
+                    {
+                        "value": "TIMEONLY",
+                        "code": "$rc:field_type.domain.TIMEONLY"
+                    },
+                    {
+                        "value": "DATEONLY",
+                        "code": "$rc:field_type.domain.DATEONLY"
+                    },
+                    {
+                        "value": "TIMESTAMPOFFSET",
+                        "code": "$rc:field_type.domain.TIMESTAMPOFFSET"
+                    },
+                    {
+                        "value": "BLOB",
+                        "code": "$rc:field_type.domain.BLOB"
+                    },
+                    {
+                        "value": "GUID",
+                        "code": "$rc:field_type.domain.GUID"
+                    }
+                ]
+            },
+            "value": "LONG",
+            "description": "$rc:field_type.descr"
+        },
+        "field_precision": {
+            "type": "optional",
+            "displayname": "$rc:field_precision.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:field_precision.descr"
+        },
+        "field_scale": {
+            "type": "optional",
+            "displayname": "$rc:field_scale.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:field_scale.descr"
+        },
+        "field_length": {
+            "type": "optional",
+            "displayname": "$rc:field_length.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:field_length.descr"
+        },
+        "field_alias": {
+            "type": "optional",
+            "displayname": "$rc:field_alias.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:field_alias.descr"
+        },
+        "field_is_nullable": {
+            "type": "optional",
+            "displayname": "$rc:field_is_nullable.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "NULLABLE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NON_NULLABLE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:field_is_nullable.descr"
+        },
+        "output_layer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_layer.title",
+            "datatype": {
+                "type": "GPNALayer"
+            }
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

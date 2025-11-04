@@ -1,0 +1,232 @@
+{
+    "type": "FunctionTool",
+    "guid": "{f8a77be5-9557-4ab6-ac76-604eeeb872e5}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190206",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "input_rasters": {
+            "displayname": "$rc:input_rasters.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "DEMosaicDataset"
+                        },
+                        {
+                            "type": "DERasterDataset"
+                        },
+                        {
+                            "type": "GPRasterLayer"
+                        }
+                    ]
+                }
+            },
+            "description": "$rc:input_rasters.descr"
+        },
+        "output_location": {
+            "displayname": "$rc:output_location.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEWorkspace"
+                    }
+                ]
+            },
+            "description": "$rc:output_location.descr"
+        },
+        "raster_dataset_name_with_extension": {
+            "displayname": "$rc:raster_dataset_name_with_extension.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:raster_dataset_name_with_extension.descr"
+        },
+        "coordinate_system_for_the_raster": {
+            "type": "optional",
+            "displayname": "$rc:coordinate_system_for_the_raster.title",
+            "datatype": {
+                "type": "GPCoordinateSystem"
+            },
+            "depends": [
+                "output_location"
+            ],
+            "defaultenvironmentname": "outputCoordinateSystem",
+            "description": "$rc:coordinate_system_for_the_raster.descr"
+        },
+        "pixel_type": {
+            "type": "optional",
+            "displayname": "$rc:pixel_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "1_BIT",
+                        "code": "$rc:pixel_type.domain.1_BIT"
+                    },
+                    {
+                        "value": "2_BIT",
+                        "code": "$rc:pixel_type.domain.2_BIT"
+                    },
+                    {
+                        "value": "4_BIT",
+                        "code": "$rc:pixel_type.domain.4_BIT"
+                    },
+                    {
+                        "value": "8_BIT_UNSIGNED",
+                        "code": "$rc:pixel_type.domain.8_BIT_UNSIGNED"
+                    },
+                    {
+                        "value": "8_BIT_SIGNED",
+                        "code": "$rc:pixel_type.domain.8_BIT_SIGNED"
+                    },
+                    {
+                        "value": "16_BIT_UNSIGNED",
+                        "code": "$rc:pixel_type.domain.16_BIT_UNSIGNED"
+                    },
+                    {
+                        "value": "16_BIT_SIGNED",
+                        "code": "$rc:pixel_type.domain.16_BIT_SIGNED"
+                    },
+                    {
+                        "value": "32_BIT_UNSIGNED",
+                        "code": "$rc:pixel_type.domain.32_BIT_UNSIGNED"
+                    },
+                    {
+                        "value": "32_BIT_SIGNED",
+                        "code": "$rc:pixel_type.domain.32_BIT_SIGNED"
+                    },
+                    {
+                        "value": "32_BIT_FLOAT",
+                        "code": "$rc:pixel_type.domain.32_BIT_FLOAT"
+                    },
+                    {
+                        "value": "64_BIT",
+                        "code": "$rc:pixel_type.domain.64_BIT"
+                    }
+                ]
+            },
+            "value": "8_BIT_UNSIGNED",
+            "description": "$rc:pixel_type.descr"
+        },
+        "cellsize": {
+            "type": "optional",
+            "displayname": "$rc:cellsize.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:cellsize.descr"
+        },
+        "number_of_bands": {
+            "displayname": "$rc:number_of_bands.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:number_of_bands.descr"
+        },
+        "mosaic_method": {
+            "type": "optional",
+            "displayname": "$rc:mosaic_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "FIRST",
+                        "code": "$rc:mosaic_method.domain.FIRST"
+                    },
+                    {
+                        "value": "LAST",
+                        "code": "$rc:mosaic_method.domain.LAST"
+                    },
+                    {
+                        "value": "BLEND",
+                        "code": "$rc:mosaic_method.domain.BLEND"
+                    },
+                    {
+                        "value": "MEAN",
+                        "code": "$rc:mosaic_method.domain.MEAN"
+                    },
+                    {
+                        "value": "MINIMUM",
+                        "code": "$rc:mosaic_method.domain.MINIMUM"
+                    },
+                    {
+                        "value": "MAXIMUM",
+                        "code": "$rc:mosaic_method.domain.MAXIMUM"
+                    },
+                    {
+                        "value": "SUM",
+                        "code": "$rc:mosaic_method.domain.SUM"
+                    }
+                ]
+            },
+            "value": "LAST",
+            "description": "$rc:mosaic_method.descr"
+        },
+        "mosaic_colormap_mode": {
+            "type": "optional",
+            "displayname": "$rc:mosaic_colormap_mode.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "REJECT",
+                        "code": "$rc:mosaic_colormap_mode.domain.REJECT"
+                    },
+                    {
+                        "value": "FIRST",
+                        "code": "$rc:mosaic_colormap_mode.domain.FIRST"
+                    },
+                    {
+                        "value": "LAST",
+                        "code": "$rc:mosaic_colormap_mode.domain.LAST"
+                    },
+                    {
+                        "value": "MATCH",
+                        "code": "$rc:mosaic_colormap_mode.domain.MATCH"
+                    }
+                ]
+            },
+            "value": "FIRST",
+            "description": "$rc:mosaic_colormap_mode.descr"
+        },
+        "output_raster_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_raster_dataset.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            }
+        }
+    },
+    "environments": [
+        "compression",
+        "configKeyword",
+        "extent",
+        "nodata",
+        "parallelProcessingFactor",
+        "pyramid",
+        "rasterStatistics",
+        "resamplingMethod",
+        "tileSize"
+    ]
+}

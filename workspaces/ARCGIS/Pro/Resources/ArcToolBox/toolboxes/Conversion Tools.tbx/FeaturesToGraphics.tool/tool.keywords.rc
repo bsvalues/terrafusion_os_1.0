@@ -1,0 +1,14 @@
+{
+    "set": [
+        "annotation",
+        "change",
+        "convert",
+        "element",
+        "export",
+        "features",
+        "graphics",
+        "import",
+        "layer",
+        "text"
+    ]
+}

@@ -1,0 +1,164 @@
+{
+    "type": "FunctionTool",
+    "guid": "{9d8b59a7-fcc8-49b0-ab64-c7c00c85d0f1}",
+    "displayname": "$rc:title",
+    "helpcontent": "32000002",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "input_value": {
+            "type": "optional",
+            "displayname": "$rc:input_value.title",
+            "datatype": {
+                "type": "GPType"
+            },
+            "description": "$rc:input_value.descr"
+        },
+        "value_test": {
+            "type": "optional",
+            "displayname": "$rc:value_test.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "IS_EQUAL_TO_ANY",
+                        "code": "$rc:value_test.domain.IS_EQUAL_TO_ANY"
+                    },
+                    {
+                        "value": "IS_NOT_EQUAL_TO_ANY",
+                        "code": "$rc:value_test.domain.IS_NOT_EQUAL_TO_ANY"
+                    },
+                    {
+                        "value": "IS_NOT_EQUAL_TO_ALL",
+                        "code": "$rc:value_test.domain.IS_NOT_EQUAL_TO_ALL"
+                    },
+                    {
+                        "value": "IS_BETWEEN_ANY",
+                        "code": "$rc:value_test.domain.IS_BETWEEN_ANY"
+                    },
+                    {
+                        "value": "IS_NOT_BETWEEN_ANY",
+                        "code": "$rc:value_test.domain.IS_NOT_BETWEEN_ANY"
+                    },
+                    {
+                        "value": "IS_LESS_THAN",
+                        "code": "$rc:value_test.domain.IS_LESS_THAN"
+                    },
+                    {
+                        "value": "IS_GREATER_THAN",
+                        "code": "$rc:value_test.domain.IS_GREATER_THAN"
+                    },
+                    {
+                        "value": "IS_LESS_THAN_OR_EQUAL",
+                        "code": "$rc:value_test.domain.IS_LESS_THAN_OR_EQUAL"
+                    },
+                    {
+                        "value": "IS_GREATER_THAN_OR_EQUAL",
+                        "code": "$rc:value_test.domain.IS_GREATER_THAN_OR_EQUAL"
+                    },
+                    {
+                        "value": "IS_EMPTY",
+                        "code": "$rc:value_test.domain.IS_EMPTY"
+                    }
+                ]
+            },
+            "value": "IS_EQUAL_TO_ANY",
+            "description": "$rc:value_test.descr"
+        },
+        "comparison_type": {
+            "type": "optional",
+            "displayname": "$rc:comparison_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "STRING_CASE_INSENSITIVE",
+                        "code": "$rc:comparison_type.domain.STRING_CASE_INSENSITIVE"
+                    },
+                    {
+                        "value": "STRING_CASE_SENSITIVE",
+                        "code": "$rc:comparison_type.domain.STRING_CASE_SENSITIVE"
+                    },
+                    {
+                        "value": "LONG",
+                        "code": "$rc:comparison_type.domain.LONG"
+                    },
+                    {
+                        "value": "DOUBLE",
+                        "code": "$rc:comparison_type.domain.DOUBLE"
+                    },
+                    {
+                        "value": "AUTO",
+                        "code": "$rc:comparison_type.domain.AUTO"
+                    }
+                ]
+            },
+            "value": "STRING_CASE_INSENSITIVE",
+            "description": "$rc:comparison_type.descr"
+        },
+        "values": {
+            "type": "optional",
+            "displayname": "$rc:values.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPType"
+                }
+            },
+            "description": "$rc:values.descr"
+        },
+        "range_values": {
+            "type": "optional",
+            "displayname": "$rc:range_values.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPType",
+                        "displayname": "$rc:range_values.dt.title1"
+                    },
+                    {
+                        "type": "GPType",
+                        "displayname": "$rc:range_values.dt.title2"
+                    }
+                ]
+            },
+            "description": "$rc:range_values.descr"
+        },
+        "comparison_value": {
+            "type": "optional",
+            "displayname": "$rc:comparison_value.title",
+            "datatype": {
+                "type": "GPType"
+            },
+            "description": "$rc:comparison_value.descr"
+        },
+        "true": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:true.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "value": "false"
+        },
+        "false": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:false.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "value": "false"
+        }
+    }
+}

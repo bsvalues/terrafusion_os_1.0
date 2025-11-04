@@ -1,0 +1,19 @@
+{
+    "map": {
+        "description": "Creates a raster of flow direction from each cell to its downslope neighbor, or neighbors, using the D8, Multiple Flow Direction (MFD), or D-Infinity (DINF) method.",
+        "flow_direction_type.descr": "<xdoc><p>Specifies the type of flow method that will be used when computing flow directions.</p><ul><li><span title=\"D8\">D8</span>—Flow direction will be determined by the D8 method. This method assigns flow direction to the steepest downslope neighbor. This is the default.</li><li><span title=\"MFD\">MFD</span>—Flow direction will be based on the MFD flow method. Flow direction will be partitioned across downslope neighbors according to an adaptive partition exponent.</li><li><span title=\"DINF\">DINF</span>—Flow direction will be based on the DINF flow method. This method assigns flow direction to the steepest slope of a triangular facet.</li></ul></xdoc>",
+        "flow_direction_type.domain.D8": "D8",
+        "flow_direction_type.domain.DINF": "DINF",
+        "flow_direction_type.domain.MFD": "MFD",
+        "flow_direction_type.title": "Flow direction type",
+        "force_flow.descr": "<xdoc><p>Specifies whether edge cells will always flow outward or follow normal flow rules.</p><ul><li>Unchecked—If the maximum drop on the inside of an edge cell is greater than zero, the flow direction will be determined as usual; otherwise, the flow direction will be toward the edge. Cells that should flow from the edge of the surface raster inward will do so. This is the default.</li><li>Checked—All cells at the edge of the surface raster will flow outward from the surface raster.</li></ul></xdoc>",
+        "force_flow.title": "Force all edge cells to flow outward",
+        "in_surface_raster.descr": "The input raster representing a continuous surface.",
+        "in_surface_raster.title": "Input surface raster",
+        "out_drop_raster.descr": "<xdoc><p>An optional output drop raster.</p><p>The drop raster returns the ratio of the maximum change in elevation from each cell along the direction of flow to the path length between centers of cells, expressed in percentages.</p><p>This output is of floating-point type.</p></xdoc>",
+        "out_drop_raster.title": "Output drop raster",
+        "out_flow_direction_raster.descr": "<xdoc><p>The output raster that shows the flow direction from each cell to its downslope neighbors or neighbors using the D8, MFD, or DINF method.</p><p>This output is of integer type.</p></xdoc>",
+        "out_flow_direction_raster.title": "Output flow direction raster",
+        "title": "Flow Direction"
+    }
+}

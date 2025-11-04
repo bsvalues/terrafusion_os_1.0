@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h5>Assessment Data Integration Hub</h5>
+                    <p class="text-sm">Centralized data integration for Benton County Assessor's Office</p>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">Data Sources</h6>
+                                    <h1 class="text-primary">{{ data_sources|length }}</h1>
+                                    <p class="card-text">Configured data sources</p>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="{{ url_for('integration.list_sources') }}" class="btn btn-sm btn-primary">Manage Sources</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">Property Data</h6>
+                                    <p class="card-text">Synchronize and manage property data</p>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="{{ url_for('integration.sync_property') }}" class="btn btn-sm btn-primary">Synchronize</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">Sales Data</h6>
+                                    <p class="card-text">Synchronize and manage sales data</p>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="{{ url_for('integration.sync_sales') }}" class="btn btn-sm btn-primary">Synchronize</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">Valuation Data</h6>
+                                    <p class="card-text">Synchronize and manage valuation data</p>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="{{ url_for('integration.sync_valuation') }}" class="btn btn-sm btn-primary">Synchronize</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">Export Data</h6>
+                                    <p class="card-text">Export data to various formats</p>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="{{ url_for('integration.export') }}" class="btn btn-sm btn-primary">Export</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">View Exports</h6>
+                                    <p class="card-text">View and download previous exports</p>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="{{ url_for('integration.exports') }}" class="btn btn-sm btn-primary">View Exports</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">Custom Query</h6>
+                                    <p class="card-text">Execute custom queries against data sources</p>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="{{ url_for('integration.query') }}" class="btn btn-sm btn-primary">Query</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6>Data Source Status</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table align-items-center mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Type</th>
+                                                    <th>Status</th>
+                                                    <th>Last Sync</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for source_id, config in data_sources.items() %}
+                                                <tr>
+                                                    <td>{{ source_id }}</td>
+                                                    <td>{{ config.source_type }}</td>
+                                                    <td>
+                                                        {% if config.status == 'connected' %}
+                                                        <span class="badge badge-sm bg-success">Connected</span>
+                                                        {% elif config.status == 'error' %}
+                                                        <span class="badge badge-sm bg-danger">Error</span>
+                                                        {% else %}
+                                                        <span class="badge badge-sm bg-secondary">{{ config.status|title }}</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {% if config.last_sync %}
+                                                        {{ config.last_sync.strftime('%Y-%m-%d %H:%M:%S') }}
+                                                        {% else %}
+                                                        Never
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        <a href="{{ url_for('integration.view_source', source_id=source_id) }}" class="btn btn-sm btn-info">View</a>
+                                                    </td>
+                                                </tr>
+                                                {% else %}
+                                                <tr>
+                                                    <td colspan="5" class="text-center">No data sources configured</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // No additional scripts needed for dashboard
+</script>
+{% endblock %}

@@ -1,0 +1,1954 @@
+{
+  "TRE": "CSSFAB_DES",
+  "Source": ["STDI-0002-1 v2021.1, Appendix AH: GLAS-GFM"],
+  "Name": "Common Sensor Sensor Field Alignment DES",
+  "Description": "The Common Sensor Sensor Field Alignment (CSSFAB) DES provides information about the detectors, sensor type, and sensor field alignment including the focal length and principal point offset components. For GLAS, CSSFAB uses field alignment pairs to define the virtual focal plane locations of the endpoints of segments of the linear array. For GFM, CSSFAB uses either field alignment blocks to define the virtual focal plane locations of the corner points of square areas of the 2D frame array or interior orientation parameters in a Concatenated Approach (Section M.5.6.6). The CSSFAB DES is an integral part of the GLAS and GFM models and provides the band wavelength metadata for the stored image(s) to estimate the effect of wavelength on geopositioning and mensuration. The band wavelength metadata are included in the CSSFAB DES so that the GLAS/GFM SDEs contain all the necessary information without the need to leverage other SDEs, which may not be present, or the ISH, which may not contain the band wavelength. These metadata are applied in the GLAS and GFM projection models. For single band imagery, the application of the CSSFAB DES is straightforward. However, for multi-band imagery, it is more complicated and involves one of the following two cases: (1) band-to-band registered, i.e., co-registered, multi-band image segment; and (2) non-co-registered multi-band image segment. Section M.7.5 provides implementation guidance for an image segment without band-to-band registration. The CSSFAB DES contains two valid versions for use. Version 1 (DESVER = 01) is the original version where the only valid TELESCOPE_OPTICS_FLAG value is 0. Version 2 (DESVER = 02) allows for the TELESCOPE_OPTICS_FLAG values 0, 1, and 2 as valid options. While both versions are acceptable, version 2 is preferred, and data providers may simply set the TELESCOPE_OPTICS_FLAG to zero (0) when it is not applicable.",
+  "Size": 46,
+  "Fields": {
+    "DE" : {
+      "Name": "File Part Type",
+      "Description": "This field shall contain the characters DE.",
+      "Size": 2,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [        
+        {
+          "Type": "Value",
+          "Values": ["DE"]
+        }
+      ]
+    },
+    "DESID": {
+      "Name": "Unique DES Type Identifier",
+      "Description": "This field shall contain a valid identifier properly registered witht the GWG NTB.",
+      "Size": 25,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["CSSFAB"]
+        }
+      ]
+    },
+    "DESCLAS": {
+      "Name": "DES Security Metadata",
+      "Description": "This field shall contain security classification metadata for the DES.",
+      "Size": 167,
+      "Format": "ECS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["T", "S", "C", "R", "U"]
+        }
+      ]
+    },
+    "DESSHL": {
+      "Name": "User-Defined Subheader Length",
+      "Description": "This field contains the number of bytes in the user-defined subheader.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["bytes"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 46,
+          "Max": 9999
+        }
+      ]
+    },
+    "UUID": {
+      "Name": "Assigned UUID for the DES",
+      "Description": "This UUID refers to the entire DES, i.e., both the subheader and the data portions of the DES.",
+      "Size": 36,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": ["bytes"],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "NUMAIS": {
+      "Name": "Number of Associated Image Segments",
+      "Description": "This field provides the number of image segments associated with this DES. If NUMAIS = ALL, the DES is associated with all image segments in the NITF dataset, and field AISDLVLn is omitted. Otherwise, NUMAIS is between 1 and 998 (999 is covered by ALL) and is no more than the number of image segments in the dataset.",
+      "Size": 3,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 998
+        },
+        {
+          "Type": "Value",
+          "Values": ["ALL"]
+        }
+      ]
+    },
+    "AISDLVL<NUMAIS>": {
+      "Name": "nth Associated Image Segment Display Level",
+      "Description": "This field provides the image display level (IDLVL) of each image segment associated with this DES. AISDLVLn shall correspond to IDLVL values of image segments in the same dataset. If NUMAIS=ALL, this field is omitted.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 999
+        }
+      ]
+    },
+    "NUM_ASSOC_ELEM": {
+      "Name": "Number of Associated Elements",
+      "Description": "This field contains the number of elements associated with this DES. For Level 1 and 2 conformance, this list shall include the IMAGE_UUID from the CSEXRB TRE for all images associated with this DES, as well as the UUIDs of any other elements that are authoritatively associated with this DES.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 276
+        }
+      ]
+    },
+    "ASSOC_ELEM_UUID<NUM_ASSOC_ELEM>": {
+      "Name": "UUID of the nth Associated Element",
+      "Description": "This field contains the UUID of the nth element associated with this DES. The type of associated element is unrestricted.",
+      "Size": 36,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "RESERVEDSUBH_LEN": {
+      "Name": "Length of Reserved Subheader Field",
+      "Description": "This field value shall be 0000.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["bytes"],
+      "Values": [
+        {
+          "Type": "Integer"
+        }
+      ]
+    },
+    "RESERVEDSUBH": {
+      "Name": "Reserved Subheader Field",
+      "Description": "This field value shall be reserved for future use.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Integer"
+        }
+      ]
+    },
+    "SENSOR_TYPE": {
+      "Name": "Sensor Type",
+      "Description": "This field identifies the type of sensor, with S for a scanner or F for a framing camera.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["S", "F"]
+        }
+      ]
+    },
+    "BAND_TYPE": {
+      "Name": "Spectral Band Category",
+      "Description": "This field identifies the category of spectral band for which data are supplied. For multiple co-registered bands, the reference (base) band is provided. For multiple bands that are not co-registered, each band shall be provided in a separate image segment with its own instance of the CSSFAB DES.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["M", "R", "G", "B", "N"]
+        }
+      ]
+    },
+    "BAND_WAVELENGTH": {
+      "Name": "Reference Wavelength",
+      "Description": "This field contains a weighted average reference wavelength for the data in this instance of the CSSFAB DES.",
+      "Size": 11,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["micrometers"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0.00000000,
+          "Max": 99.99999999
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "N_BANDS": {
+      "Name": "Number of Bands from the Associated Image Segments",
+      "Description": "This field provides the number of spectral bands from the associated image segment(s) associated with this DES. If this DES is associated with all the bands in the associated image segment(s), N_BANDS = 0, and fields BAND_INDEXi, IREPBANDi, and ISUBCATi shall be omitted.",
+      "Size": 5,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 99999
+        }
+      ]
+    },
+    "BAND_INDEX<N_BANDS>": {
+      "Name": "Band Order Index of the ith Spectral Band of the Associated Image Segment(s)",
+      "Description": "This field provides the index of the ith spectral band in the associated mage segment(s). Indexing is 1-based and is unique only within the context of a given image segment. For ex., if a 3- band image plane is spread over two image segments, band index = 00001 refers to the first band of both image segments, not the first band of the first image segment. Index values are set at initial dataset production. If bands are chipped or re-ordered, BAND_INDEXi values may no longer be valid, and the data consumer relies on the IREPBANDi and ISUBCATi fields when matching this instance of CSSFAB DES with a band from an associated image segment(s).",
+      "Size": 5,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 99999
+        }
+      ]
+    },
+    "IREPBAND<N_BANDS>": {
+      "Name": "Band-Specific Representation and Sub-Category of the ith Band of the Associated Image Segment(s)",
+      "Description": "This field provides the IREPBANDn and ISUBCATn fields of the band from the associated ISH. If the corresponding IREPBANDn or ISUBCATn field is BCS spaces (0x20), then IREPBANDi or ISUBCATi is BCS spaces. Because ISUBCATi is in micrometers, ISUBCATi = ISUBCATn/1000. Note: IREPBANDn and ISUBCATn, even in combination, are not required to be unique and should not be the primary mechanism to identify a specific spectral band. However, they provide supplemental information to assist a data consumer to correctly identify the associated band when the file has been updated or chipped without correctly updating the CSSFAB DES.",
+      "Size": 2,
+      "Format": "BCS-A",
+      "Type": "<C>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "ISUBCAT<N_BANDS>": {
+      "Name": "Band-Specific Representation and Sub-Category of the ith Band of the Associated Image Segment(s)",
+      "Description": "This field provides the IREPBANDn and ISUBCATn fields of the band from the associated ISH. If the corresponding IREPBANDn or ISUBCATn field is BCS spaces (0x20), then IREPBANDi or ISUBCATi is BCS spaces. Because ISUBCATi is in micrometers, ISUBCATi = ISUBCATn/1000. Note: IREPBANDn and ISUBCATn, even in combination, are not required to be unique and should not be the primary mechanism to identify a specific spectral band. However, they provide supplemental information to assist a data consumer to correctly identify the associated band when the file has been updated or chipped without correctly updating the CSSFAB DES.",
+      "Size": 6,
+      "Format": "BCS-A",
+      "Type": "<C>",
+      "Units": ["micrometers"],
+      "Values": [
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "NUM_FL_PTS": {
+      "Name": "Number of Focal Length Points",
+      "Description": "This field indicates the number of focal length points for the DES.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 999
+        }
+      ]
+    },
+    "FL_INTERP": {
+      "Name": "Focal Length Interpolation Type",
+      "Description": "This field identifies the recommended interpolation to be used with focal length point data.",
+      "Size": 1,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["0", "1"]          
+        }
+      ]
+    },
+    "FOC_LENGTH_DATE": {
+      "Name": "Focal Length Date",
+      "Description": "This field records the date of the first focal length point formatted as CCYYMMDD.",
+      "Size": 8,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Date"          
+        }
+      ]
+    },
+    "FOC_LENGTH_TIME<NUM_FL_PTS>": {
+      "Name": "nth Focal Length Time",
+      "Description": "This field contains the time associated with the nth focal length, in seconds from midnight at the start of the day specified in the FOC_LENGTH_DATE field.",
+      "Size": 15,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["seconds"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0.000000000,
+          "Max": 99999.999999999          
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "FOC_LENGTH<NUM_FL_PTS>": {
+      "Name": "nth Focal Length",
+      "Description": "This field contains the nth focal length, i.e., the effective distance between the primary mirror and focal plane.",
+      "Size": 11,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0.00000000,
+          "Max": 99.99999999         
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "PPOFF_X": {
+      "Name": "X Component of the Primary Mirror Vertex Offset",
+      "Description": "This field contains the X component of the offset from vehicle center of mass to primary mirror vertex, in meters.",
+      "Size": 10,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -99.999999,
+          "Max": 99.999999         
+        }        
+      ]
+    },
+    "PPOFF_Y": {
+      "Name": "Y Component of the Primary Mirror Vertex Offset",
+      "Description": "This field contains the Y component of the offset from vehicle center of mass to primary mirror vertex, in meters.",
+      "Size": 10,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -99.999999,
+          "Max": 99.999999         
+        }        
+      ]
+    },
+    "PPOFF_Z": {
+      "Name": "Z Component of the Primary Mirror Vertex Offset",
+      "Description": "This field contains the Z component of the offset from vehicle center of mass to primary mirror vertex, in meters.",
+      "Size": 10,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -99.999999,
+          "Max": 99.999999         
+        }        
+      ]
+    },
+    "ANGOFF_X": {
+      "Name": "X Component of the Angular Sensor Frame Offset",
+      "Description": "This field contains the X component of the angular offset from attitude reference frame to sensor frame. Order of rotation is assumed to be z, y, and x for positive counterclockwise rotations in going from attitude reference frame CSATTB DES quaternion representations to the sensor frame. If angular offsets are zero, the data in the accompanying CSATTB DES is sensor frame attitude.",
+      "Size": 10,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["radians"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -3.1415927,
+          "Max": 3.1415927         
+        }        
+      ]
+    },
+    "ANGOFF_Y": {
+      "Name": "Y Component of the Angular Sensor Frame Offset",
+      "Description": "This field contains the Y component of the angular offset from attitude reference frame to sensor frame. Order of rotation is assumed to be z, y, and x for positive counterclockwise rotations in going from attitude reference frame CSATTB DES quaternion representations to the sensor frame. If angular offsets are zero, the data in the accompanying CSATTB DES is sensor frame attitude.",
+      "Size": 10,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["radians"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -3.1415927,
+          "Max": 3.1415927         
+        }        
+      ]
+    },
+    "ANGOFF_Z": {
+      "Name": "Z Component of the Angular Sensor Frame Offset",
+      "Description": "This field contains the Z component of the angular offset from attitude reference frame to sensor frame. Order of rotation is assumed to be z, y, and x for positive counterclockwise rotations in going from attitude reference frame CSATTB DES quaternion representations to the sensor frame. If angular offsets are zero, the data in the accompanying CSATTB DES is sensor frame attitude.",
+      "Size": 10,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["radians"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -3.1415927,
+          "Max": 3.1415927         
+        }        
+      ]
+    },
+    "SMPL_NUM_FIRST": {
+      "Name": "Sample Number of the First Field Alignment of the First Pair",
+      "Description": "This field identifies the sample position of the first field alignment pair.",
+      "Size": 12,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["columns"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -99999.99999,
+          "Max": 99999.99999         
+        }        
+      ]
+    },
+    "DELTA_SMPL_PAIRS": {
+      "Name": "Delta Samples to the Corresponding Sample of Successive Pairs",
+      "Description": "This field provides the increment of the sample number to each successive field alignment pair, which is a fixed value representing the grid spacing in the sample (cross-scan) dimension.",
+      "Size": 11,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["columns"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0.00000,
+          "Max": 99999.99999         
+        }        
+      ]
+    },
+    "NUM_FA_PAIRS": {
+      "Name": "Number of Field Alignment Pairs",
+      "Description": "This field contains the number of field alignment pairs in this instance of the CSSFAB DES.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 999         
+        }        
+      ]
+    },
+    "START_FALIGN_X<NUM_FA_PAIRS>": {
+      "Name": "X Position of the Start of the nth Field Alignment Pair",
+      "Description": "This field contains the X coordinate of the position, in meters, of the first sample of the nth field alignment pair.",
+      "Size": 11,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -99.9999999,
+          "Max": 99.9999999        
+        }        
+      ]
+    },
+    "START_FALIGN_Y<NUM_FA_PAIRS>": {
+      "Name": "Y Position of the Start of the nth Field Alignment Pair",
+      "Description": "This field contains the Y coordinate of the position, in meters, of the first sample of the nth field alignment pair.",
+      "Size": 11,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -99.9999999,
+          "Max": 99.9999999        
+        }        
+      ]
+    },
+    "END_FALIGN_X<NUM_FA_PAIRS>": {
+      "Name": "X Position of the End of the nth Field Alignment Pair",
+      "Description": "This field contains the X coordinate of the position, in meters, of the last sample of the nth field alignment pair.",
+      "Size": 11,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -99.9999999,
+          "Max": 99.9999999        
+        }        
+      ]
+    },
+    "END_FALIGN_Y<NUM_FA_PAIRS>": {
+      "Name": "Y Position of the End of the nth Field Alignment Pair",
+      "Description": "This field contains the Y coordinate of the position, in meters, of the last sample of the nth field alignment pair.",
+      "Size": 11,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -99.9999999,
+          "Max": 99.9999999        
+        }        
+      ]
+    },
+    "NUM_SETS_FA_DATA": {
+      "Name": "Number of Sets of Field Angle Data",
+      "Description": "This field contains the number of field angle (FA) sets for the frame image.",
+      "Size": 1,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 9        
+        }        
+      ]
+    },
+    "FIELD_ANGLE_TYPE": {
+      "Name": "Field Angle Type",
+      "Description": "This field identifies the field angle type, with 0 for a direct field alignment grid and 1 for calibration parameters. A value of 0 is not allowed when the CSWRPB TRE is in the dataset.",
+      "Size": 1,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["0", "1"]        
+        }        
+      ]
+    },
+    "FA_INTERP": {
+      "Name": "Field Angle Interpolation Type",
+      "Description": "This field identifies the interpolation to use when interpolating between sets of field angle data.",
+      "Size": 1,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["0", "1"]        
+        }        
+      ]
+    },
+    "FL_CAL<NUM_SETS_FA_DATA>": {
+      "Name": "Focal Length Associated with the nth Set of Field Angle Data",
+      "Description": "This field identifies the interpolation to use when interpolating between sets of field angle data.",
+      "Size": 11,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0.00000000,
+          "Max": 99.99999999       
+        }        
+      ]
+    },
+    "NUM_FIR_LINE<NUM_SETS_FA_DATA>": {
+      "Name": "First Line Number of the First Block of Field Alignment Data",
+      "Description": "This field identifies the first line number of the first block of field alignment data.",
+      "Size": 12,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["rows"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -99999.99999,
+          "Max": 99999.99999       
+        }        
+      ]
+    },
+    "DELTA_LINE<NUM_SETS_FA_DATA>": {
+      "Name": "Delta Lines to the Corresponding Line of Successive Blocks",
+      "Description": "This field contains the difference in lines between successive blocks of field alignment data for the nth field angle set. This value represents the number of unique lines per block; a fixed value representing the grid spacing in the line dimension.",
+      "Size": 11,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["rows"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0.00000,
+          "Max": 99999.99999       
+        }        
+      ]
+    },
+    "NUM_FA_BLOCKS_LINE<NUM_SETS_FA_DATA>": {
+      "Name": "Number of Field Alignment Blocks in the Line Dimension",
+      "Description": "This field contains the number of field alignment blocks occuring in the line dimension for the nth field angle set.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 999       
+        }        
+      ]
+    },
+    "NUM_FIR_SAMP<NUM_SETS_FA_DATA>": {
+      "Name": "First Sample Number of the First Block of Field Alignment Data",
+      "Description": "This field contains the first sample number of the first bloc of field alignment data in the nth field angle set.",
+      "Size": 12,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["columns"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -99999.99999,
+          "Max": 99999.99999       
+        }        
+      ]
+    },
+    "DELTA_SAMP<NUM_SETS_FA_DATA>": {
+      "Name": "Delta Samples to the Corresponding Sample of Successive Blocks",
+      "Description": "This field contains the difference in samples between successive blocks of field alignment data for the nth field angle set. This value represents the number of unique samples per block; a fixed value representing the grid spacing in the sample dimension.",
+      "Size": 11,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["columns"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0.00000,
+          "Max": 99999.99999       
+        }        
+      ]
+    },
+    "NUM_FA_BLOCKS_SAMP<NUM_SETS_FA_DATA>": {
+      "Name": "Number of Field Alignment Blocks in the Sample Dimension",
+      "Description": "This field contains the number of field alignment blocks occuring in the sample dimension for the nth angle field set.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 999       
+        }        
+      ]
+    },
+    "FA_X1<NUM_FA_BLOCKS_LINE<NUM_FA_BLOCKS_SAMP<NUM_SETS_FA_DATA>>>": {
+      "Name": "X Coordinate of the First of Four Field Alignment Coordinates for Block j,k of the nth Frame Field Angle Set",
+      "Description": "This field contains the X coordinate, in meters, of the first (upper/top left) coordinate point for block j,k of the nth frame camera field angle set.",
+      "Size": 11,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -99.9999999,
+          "Max": 99.9999999       
+        }        
+      ]
+    },
+    "FA_Y1<NUM_FA_BLOCKS_LINE<NUM_FA_BLOCKS_SAMP<NUM_SETS_FA_DATA>>>": {
+      "Name": "Y Coordinate of the First of Four Field Alignment Coordinates for Block j,k of the nth Frame Field Angle Set",
+      "Description": "This field contains the Y coordinate, in meters, of the first (upper/top left) coordinate point for block j,k of the nth frame camera field angle set.",
+      "Size": 11,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -99.9999999,
+          "Max": 99.9999999       
+        }        
+      ]
+    },
+    "FA_X2<NUM_FA_BLOCKS_LINE<NUM_FA_BLOCKS_SAMP<NUM_SETS_FA_DATA>>>": {
+      "Name": "X Coordinate of the Second of Four Field Alignment Coordinates for Block j,k of the nth Frame Field Angle Set",
+      "Description": "This field contains the X coordinate, in meters, of the second (upper/top right) coordinate point for block j,k of the nth frame camera field angle set.",
+      "Size": 11,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -99.9999999,
+          "Max": 99.9999999       
+        }        
+      ]
+    },
+    "FA_Y2<NUM_FA_BLOCKS_LINE<NUM_FA_BLOCKS_SAMP<NUM_SETS_FA_DATA>>>": {
+      "Name": "Y Coordinate of the Second of Four Field Alignment Coordinates for Block j,k of the nth Frame Field Angle Set",
+      "Description": "This field contains the Y coordinate, in meters, of the second (upper/top right) coordinate point for block j,k of the nth frame camera field angle set.",
+      "Size": 11,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -99.9999999,
+          "Max": 99.9999999       
+        }        
+      ]
+    },
+    "FA_X3<NUM_FA_BLOCKS_LINE<NUM_FA_BLOCKS_SAMP<NUM_SETS_FA_DATA>>>": {
+      "Name": "X Coordinate of the Third of Four Field Alignment Coordinates for Block j,k of the nth Frame Field Angle Set",
+      "Description": "This field contains the X coordinate, in meters, of the third (lower/bottom right) coordinate point for block j,k of the nth frame camera field angle set.",
+      "Size": 11,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -99.9999999,
+          "Max": 99.9999999       
+        }        
+      ]
+    },
+    "FA_Y3<NUM_FA_BLOCKS_LINE<NUM_FA_BLOCKS_SAMP<NUM_SETS_FA_DATA>>>": {
+      "Name": "Y Coordinate of the Third of Four Field Alignment Coordinates for Block j,k of the nth Frame Field Angle Set",
+      "Description": "This field contains the Y coordinate, in meters, of the third (lower/bottom right) coordinate point for block j,k of the nth frame camera field angle set.",
+      "Size": 11,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -99.9999999,
+          "Max": 99.9999999       
+        }        
+      ]
+    },
+    "FA_X4<NUM_FA_BLOCKS_LINE<NUM_FA_BLOCKS_SAMP<NUM_SETS_FA_DATA>>>": {
+      "Name": "X Coordinate of the Fourth of Four Field Alignment Coordinates for Block j,k of the nth Frame Field Angle Set",
+      "Description": "This field contains the X coordinate, in meters, of the fourth (lower/bottom left) coordinate point for block j,k of the nth frame camera field angle set.",
+      "Size": 11,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -99.9999999,
+          "Max": 99.9999999       
+        }        
+      ]
+    },
+    "FA_Y4<NUM_FA_BLOCKS_LINE<NUM_FA_BLOCKS_SAMP<NUM_SETS_FA_DATA>>>": {
+      "Name": "Y Coordinate of the Fourth of Four Field Alignment Coordinates for Block j,k of the nth Frame Field Angle Set",
+      "Description": "This field contains the Y coordinate, in meters, of the fourth (lower/bottom left) coordinate point for block j,k of the nth frame camera field angle set.",
+      "Size": 11,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -99.9999999,
+          "Max": 99.9999999       
+        }        
+      ]
+    },
+    "NUM_FP_ARRAYS_LINE": {
+      "Name": "Number of Focal Plane Arrays in the Line Dimension",
+      "Description": "This field provides the number of focal plane arrays in the line dimension; the value is 001 if CSWRPB is associated with this DES.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 999      
+        }        
+      ]
+    },
+    "NUM_FP_ARRAYS_SAMP": {
+      "Name": "Number of Focal Plane Arrays in the Sample Dimension",
+      "Description": "This field provides the number of focal plane arrays in the sample dimension; the value is 001 if CSWRPB is associated with this DES.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 999      
+        }        
+      ]
+    },
+    "LS_FID_TRANS_T0<NUM_FP_ARRAYS_LINE<NUM_FP_ARRAYS_SAMP>>": {
+      "Name": "Image to Fiducial Transform Parameter t0",
+      "Description": "This field indicates the image to fiducial transform parameter t0.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99      
+        }        
+      ]
+    },
+    "LS_FID_TRANS_T1<NUM_FP_ARRAYS_LINE<NUM_FP_ARRAYS_SAMP>>": {
+      "Name": "Image to Fiducial Transform Parameter t1",
+      "Description": "This field indicates the image to fiducial transform parameter t1.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters/pixels"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99      
+        }        
+      ]
+    },
+    "LS_FID_TRANS_T2<NUM_FP_ARRAYS_LINE<NUM_FP_ARRAYS_SAMP>>": {
+      "Name": "Image to Fiducial Transform Parameter t2",
+      "Description": "This field indicates the image to fiducial transform parameter t2.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters/pixels"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99      
+        }        
+      ]
+    },
+    "LS_FID_TRANS_T3<NUM_FP_ARRAYS_LINE<NUM_FP_ARRAYS_SAMP>>": {
+      "Name": "Image to Fiducial Transform Parameter t3",
+      "Description": "This field indicates the image to fiducial transform parameter t3.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["1/pixels"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99      
+        }        
+      ]
+    },
+    "LS_FID_TRANS_T4<NUM_FP_ARRAYS_LINE<NUM_FP_ARRAYS_SAMP>>": {
+      "Name": "Image to Fiducial Transform Parameter t4",
+      "Description": "This field indicates the image to fiducial transform parameter t4.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["1/pixels"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99      
+        }        
+      ]
+    },
+    "LS_FID_TRANS_T5<NUM_FP_ARRAYS_LINE<NUM_FP_ARRAYS_SAMP>>": {
+      "Name": "Image to Fiducial Transform Parameter t5",
+      "Description": "This field indicates the image to fiducial transform parameter t5.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99      
+        }        
+      ]
+    },
+    "LS_FID_TRANS_T6<NUM_FP_ARRAYS_LINE<NUM_FP_ARRAYS_SAMP>>": {
+      "Name": "Image to Fiducial Transform Parameter t6",
+      "Description": "This field indicates the image to fiducial transform parameter t6.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters/pixels"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99      
+        }        
+      ]
+    },
+    "LS_FID_TRANS_T7<NUM_FP_ARRAYS_LINE<NUM_FP_ARRAYS_SAMP>>": {
+      "Name": "Image to Fiducial Transform Parameter t7",
+      "Description": "This field indicates the image to fiducial transform parameter t7.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters/pixels"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99      
+        }        
+      ]
+    },
+    "FL_CAL_IOP<NUM_SETS_FA_DATA>": {
+      "Name": "Focal Length Associated with the nth Set of Frame Camera Field Angle Data",
+      "Description": "This field contains the focal length, in meters, associated with the nth frame camera feild angle set.",
+      "Size": 11,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0.00000000,
+          "Max": 99.99999999      
+        }        
+      ]
+    },
+    "PPO_X0<NUM_SETS_FA_DATA>": {
+      "Name": "Principal Point Offset X0",
+      "Description": "This field contains the X component of the principal point offset, in units of millimeters associated with the nth frame camera field angle set.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99      
+        }        
+      ]
+    },
+    "PPO_Y0<NUM_SETS_FA_DATA>": {
+      "Name": "Principal Point Offset Y0",
+      "Description": "This field contains the Y component of the principal point offset, in units of millimeters associated with the nth frame camera field angle set.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99      
+        }        
+      ]
+    },
+    "RLD_K0<NUM_SETS_FA_DATA>": {
+      "Name": "Radial Lens Distortion, K0",
+      "Description": "This field contains the radial lens distortion parameter, K0, (which is a dimensionless value) associated with the nth frame camera field angle set.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99      
+        }        
+      ]
+    },
+    "RLD_K1<NUM_SETS_FA_DATA>": {
+      "Name": "Radial Lens Distortion, K1",
+      "Description": "This field contains the radial lens distortion parameter, K1, which has units of inverse square millimeters, associated with the nth frame camera field angle set.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["1/millimeters^2"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99      
+        }        
+      ]
+    },
+    "RLD_K2<NUM_SETS_FA_DATA>": {
+      "Name": "Radial Lens Distortion, K2",
+      "Description": "This field contains the radial lens distortion parameter, K2, which has units of inverse millimeters to the fourth power, associated with the nth frame camera field angle set.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["1/millimeters^4"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99      
+        }        
+      ]
+    },
+    "RLD_K3<NUM_SETS_FA_DATA>": {
+      "Name": "Radial Lens Distortion, K3",
+      "Description": "This field contains the radial lens distortion parameter, K3, which has units of inverse millimeters to the sixth power, associated with the nth frame camera field angle set.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["1/millimeters^6"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99      
+        }        
+      ]
+    },
+    "DCD_P1<NUM_SETS_FA_DATA>": {
+      "Name": "Decentering Distortion Parameter P1",
+      "Description": "This field contains the decentering distortion parameter P1.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["1/millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99      
+        }        
+      ]
+    },
+    "DCD_P2<NUM_SETS_FA_DATA>": {
+      "Name": "Decentering Distortion Parameter P2",
+      "Description": "This field contains the decentering distortion parameter P2.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["1/millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99      
+        }        
+      ]
+    },
+    "DCD_P3<NUM_SETS_FA_DATA>": {
+      "Name": "Decentering Distortion Parameter P3",
+      "Description": "This field contains the decentering distortion parameter P3.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["1/millimeters^2"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99      
+        }        
+      ]
+    },
+    "AD_A1<NUM_SETS_FA_DATA>": {
+      "Name": "Affine Distortion Parameter A1",
+      "Description": "This field contains the affine distortion parameter A1, associated with the nth frame camera field angle set, which is a dimensionless quantity.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99      
+        }        
+      ]
+    },
+    "AD_A2<NUM_SETS_FA_DATA>": {
+      "Name": "Affine Distortion Parameter A2",
+      "Description": "This field contains the affine distortion parameter A2, associated with the nth frame camera field angle set, which is a dimensionless quantity.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99      
+        }        
+      ]
+    },
+    "RADIUS_OF_VALIDITY<NUM_SETS_FA_DATA>": {
+      "Name": "Radius from the Principal Point to the Outermost Region where Radial Distortion Coefficients are Valid",
+      "Description": "This field contains the radius of validity associated with the nth frame camera field angle set measured from the principal point to the outermost/furthest region where the radial distortion coefficients are still valid.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0.00000000000000e00,
+          "Max": 9.99999999999999e99     
+        }        
+      ]
+    },
+    "TELESCOPE_OPTICS_FLAG": {
+      "Name": "Flag Variable Indicating if Additional IO Parameter Set Present Due to Telescope Optics Corrections",
+      "Description": "This field indicates if an IO parameter set of telescope optics corrections is present. Values are 0: Telescope optics corrections not included (DESVER = 01 and 02) 1: Frame-based telescope optics corrections included (DESVER=02) 2: Time-based telescope optics corrections included (DESVER = 02).",
+      "Size": 1,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["0", "1", "2"]             
+        }        
+      ]
+    },
+    "NUM_TELE_SETS_FA_DATA": {
+      "Name": "Number of Sets of Telescope Optics Field Angle Data",
+      "Description": "This field reports the number of sets of telescope optics related field angle data.",
+      "Size": 1,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Values",
+          "Values": ["0", "1"]             
+        }        
+      ]
+    },
+    "N_FRAMES": {
+      "Name": "Total Number of Frames in the Sequence",
+      "Description": "This field contains the total number of frames in the sequence. This value shall be identically equal to the NUMBER_FRAMES field value in the accompanying CSEXRB TRE.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "UnsignedInteger"                      
+        }        
+      ]
+    },
+    "TELE_TRANS_T0<N_FRAMES>": {
+      "Name": "Frame to Telescope-Optics Transform Parameter t0",
+      "Description": "This field contains the frame coordinates to telescope-optics coordinates transformation parameter t0.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99                      
+        }        
+      ]
+    },
+    "TELE_TRANS_T1<N_FRAMES>": {
+      "Name": "Frame to Telescope-Optics Transform Parameter t1",
+      "Description": "This field contains the frame coordinates to telescope-optics coordinates transformation parameter t1.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99                      
+        }        
+      ]
+    },
+    "TELE_TRANS_T2<N_FRAMES>": {
+      "Name": "Frame to Telescope-Optics Transform Parameter t2",
+      "Description": "This field contains the frame coordinates to telescope-optics coordinates transformation parameter t2.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99                      
+        }        
+      ]
+    },
+    "TELE_TRANS_T3<N_FRAMES>": {
+      "Name": "Frame to Telescope-Optics Transform Parameter t3",
+      "Description": "This field contains the frame coordinates to telescope-optics coordinates transformation parameter t3.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["1/millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99                      
+        }        
+      ]
+    },
+    "TELE_TRANS_T4<N_FRAMES>": {
+      "Name": "Frame to Telescope-Optics Transform Parameter t4",
+      "Description": "This field contains the frame coordinates to telescope-optics coordinates transformation parameter t4.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["1/millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99                      
+        }        
+      ]
+    },
+    "TELE_TRANS_T5<N_FRAMES>": {
+      "Name": "Frame to Telescope-Optics Transform Parameter t5",
+      "Description": "This field contains the frame coordinates to telescope-optics coordinates transformation parameter t5.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99                      
+        }        
+      ]
+    },
+    "TELE_TRANS_T6<N_FRAMES>": {
+      "Name": "Frame to Telescope-Optics Transform Parameter t6",
+      "Description": "This field contains the frame coordinates to telescope-optics coordinates transformation parameter t6.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99                      
+        }        
+      ]
+    },
+    "TELE_TRANS_T7<N_FRAMES>": {
+      "Name": "Frame to Telescope-Optics Transform Parameter t7",
+      "Description": "This field contains the frame coordinates to telescope-optics coordinates transformation parameter t7.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99                      
+        }        
+      ]
+    },
+    "FL_CAL_IOP_TELE<NUM_TELE_SETS_FA_DATA>": {
+      "Name": "Focal Length Associated with the nth Set of Telescope-Optics Field Angle Data",
+      "Description": "This field contains the focal length, in meters, associated with the nth telescope-optics field angle dataset.",
+      "Size": 11,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0.00000000,
+          "Max": 99.99999999                      
+        }        
+      ]
+    },
+    "PPO_X0_TELE<NUM_TELE_SETS_FA_DATA>": {
+      "Name": "Telescope-Optics Principal Point Offset X0",
+      "Description": "This field contains the X component of the telescope-optics principal point offset associated with the nth telescope optics field angle dataset.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99                      
+        }        
+      ]
+    },
+    "PPO_Y0_TELE<NUM_TELE_SETS_FA_DATA>": {
+      "Name": "Telescope-Optics Principal Point Offset Y0",
+      "Description": "This field contains the Y component of the telescope-optics principal point offset associated with the nth telescope optics field angle dataset.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99                      
+        }        
+      ]
+    },
+    "RLD_K0_TELE<NUM_TELE_SETS_FA_DATA>": {
+      "Name": "Telescope-Optics Radial Lens Distortion, K0",
+      "Description": "This field contains the telescope-optics radial lens distortion parameter, K0, a dimensionless value, associated with the nth telescope-optics field angle dataset.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99                      
+        }        
+      ]
+    },
+    "RLD_K1_TELE<NUM_TELE_SETS_FA_DATA>": {
+      "Name": "Telescope-Optics Radial Lens Distortion, K1",
+      "Description": "This field contains the telescope-optics radial lens distortion parameter, K1, which has units of inverse square millimeters, associated with the nth telescope-optics field angle dataset.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["1/millimeters^2"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99                      
+        }        
+      ]
+    },
+    "RLD_K2_TELE<NUM_TELE_SETS_FA_DATA>": {
+      "Name": "Telescope-Optics Radial Lens Distortion, K2",
+      "Description": "This field contains the telescope-optics radial lens distortion parameter, K2, which has units of inverse millimeters to the fourth power, associated with the n th telescope-optics field angle dataset.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["1/millimeters^4"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99                      
+        }        
+      ]
+    },
+    "RLD_K3_TELE<NUM_TELE_SETS_FA_DATA>": {
+      "Name": "Telescope-Optics Radial Lens Distortion, K3",
+      "Description": "This field contains the telescope-optics radial lens distortion parameter, K3, which has units of inverse millimeters to the sixth power, associated with the n th telescope-optics field angle dataset.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["1/millimeters^6"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99                      
+        }        
+      ]
+    },
+    "DCD_P1_TELE<NUM_TELE_SETS_FA_DATA>": {
+      "Name": "Telescope-Optics Decentering Distortion Parameter P1",
+      "Description": "This field contains the telescope-optics decentering distortion parameter, P1, associated with the nth telescope-optics field angle dataset.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["1/millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99                      
+        }        
+      ]
+    },
+    "DCD_P2_TELE<NUM_TELE_SETS_FA_DATA>": {
+      "Name": "Telescope-Optics Decentering Distortion Parameter P2",
+      "Description": "This field contains the telescope-optics decentering distortion parameter, P2, associated with the nth telescope-optics field angle dataset.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["1/millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99                      
+        }        
+      ]
+    },
+    "DCD_P3_TELE<NUM_TELE_SETS_FA_DATA>": {
+      "Name": "Telescope-Optics Decentering Distortion Parameter P3",
+      "Description": "This field contains the telescope-optics decentering distortion parameter, P3, associated with the nth telescope-optics field angle dataset.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["1/millimeters^2"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99                      
+        }        
+      ]
+    },
+    "AD_A1_TELE<NUM_TELE_SETS_FA_DATA>": {
+      "Name": "Telescope-Optics Affine Distortion Parameter A1",
+      "Description": "This field contains the telescope-optics affine distortion parameter, A1, associated with the nth telescope-optics field angle dataset, which is a dimensionless quantity.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99                      
+        }        
+      ]
+    },
+    "AD_A2_TELE<NUM_TELE_SETS_FA_DATA>": {
+      "Name": "Telescope-Optics Affine Distortion Parameter A2",
+      "Description": "This field contains the telescope-optics affine distortion parameter, A2, associated with the nth telescope-optics field angle dataset, which is a dimensionless quantity.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99                      
+        }        
+      ]
+    },
+    "RADIUS_OF_VALIDITY_TELE<NUM_TELE_SETS_FA_DATA>": {
+      "Name": "Radius from the Principal Point to the Outermost Region where Radial Distortion Coefficients are Valid for Telescope-Optics",
+      "Description": "This field contains the radius of validity associated with the nth telescope-optics field angle dataset measured from the principal point to the outermost/furthest region where the radial distortion coefficients are still valid for the telescope-optics.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0.00000000000000e00,
+          "Max": 9.99999999999999e99
+                      
+        }        
+      ]
+    },
+    "NUM_TELE_SETS_FA_DATA": {
+      "Name": "Number of Sets of Telescope Optics Field Angle Data",
+      "Description": "This field contains the number of sets of telescope optics related field angle data.",
+      "Size": 1,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["0", "1"]
+                      
+        }        
+      ]
+    },
+    "N_FRAME_TIMES": {
+      "Name": "Total Number of Frame Times in the Sequence",
+      "Description": "This field contains the total number of frame times in the sequence.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "UnsignedInteger"                      
+        }        
+      ]
+    },
+    "N_VARYING_IO": {
+      "Name": "Total Number of Time Varying IO Parameters",
+      "Description": "This field contains the total number of time-varying IO parameters.",
+      "Size": 2,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 11
+        }        
+      ]
+    },
+    "TIME_VARYING_IO_PARM_ID<N_VARYING_IO>": {
+      "Name": "Time Varying IO Paramter Identities",
+      "Description": "This field contains a number from 1 to 11 corresponding to the ordered set X0, Y0, K0, K1, K2, K3, P1, P2, P3, A1, A2.",
+      "Size": 2,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 11
+        }        
+      ]
+    },
+    "TELE_DATE": {
+      "Name": "Telescope Date of Applicability",
+      "Description": "This field contains the date associated with the first set of telescope parameters.",
+      "Size": 8,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Date"
+        }        
+      ]
+    },
+    "TELE_TIME": {
+      "Name": "Telescope Time of Applicability",
+      "Description": "This field contains the number of seconds from midnight, at the start of day specified by the field TELE_DATE, associated with this set of telescope parameters.",
+      "Size": 15,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["seconds"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0.000000000,
+          "Max": 99999.999999999
+        }        
+      ]
+    },
+    "TELE_TRANS_T0<N_FRAME_TIMES>": {
+      "Name": "Frame to Telescope-Optics Transform Parameter t0",
+      "Description": "This field contains the frame coordinates to telescope-optics coordinates transformation parameter t0.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99
+        }        
+      ]
+    },
+    "TELE_TRANS_T1<N_FRAME_TIMES>": {
+      "Name": "Frame to Telescope-Optics Transform Parameter t1",
+      "Description": "This field contains the frame coordinates to telescope-optics coordinates transformation parameter t1.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99
+        }        
+      ]
+    },
+    "TELE_TRANS_T2<N_FRAME_TIMES>": {
+      "Name": "Frame to Telescope-Optics Transform Parameter t2",
+      "Description": "This field contains the frame coordinates to telescope-optics coordinates transformation parameter t2.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99
+        }        
+      ]
+    },
+    "TELE_TRANS_T3<N_FRAME_TIMES>": {
+      "Name": "Frame to Telescope-Optics Transform Parameter t3",
+      "Description": "This field contains the frame coordinates to telescope-optics coordinates transformation parameter t3.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["1/millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99
+        }        
+      ]
+    },
+    "TELE_TRANS_T4<N_FRAME_TIMES>": {
+      "Name": "Frame to Telescope-Optics Transform Parameter t4",
+      "Description": "This field contains the frame coordinates to telescope-optics coordinates transformation parameter t4.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["1/millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99
+        }        
+      ]
+    },
+    "TELE_TRANS_T5<N_FRAME_TIMES>": {
+      "Name": "Frame to Telescope-Optics Transform Parameter t5",
+      "Description": "This field contains the frame coordinates to telescope-optics coordinates transformation parameter t5.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99
+        }        
+      ]
+    },
+    "TELE_TRANS_T6<N_FRAME_TIMES>": {
+      "Name": "Frame to Telescope-Optics Transform Parameter t6",
+      "Description": "This field contains the frame coordinates to telescope-optics coordinates transformation parameter t6.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99
+        }        
+      ]
+    },
+    "TELE_TRANS_T7<N_FRAME_TIMES>": {
+      "Name": "Frame to Telescope-Optics Transform Parameter t7",
+      "Description": "This field contains the frame coordinates to telescope-optics coordinates transformation parameter t7.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99
+        }        
+      ]
+    },
+    "TIME_VARYING_IO_M<N_VARYING_IO<N_FRAME_TIMES>>": {
+      "Name": "Focal Length Associated with the nth Set of Telescope-Optics Field Angle Data",
+      "Description": "This field contains the focal length, in meters, associated with the nth telescope-optics field angle dataset.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99
+        }        
+      ]
+    },
+    "FL_CAL_IOP_TELE<NUM_TELE_SETS_FA_DATA>": {
+      "Name": "Focal Length Associated with the nth Set of Telescope-Optics Field Angle Data",
+      "Description": "This field contains the focal length, in meters, associated with the nth telescope-optics field angle dataset.",
+      "Size": 11,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0.00000000,
+          "Max": 99.99999999
+        }        
+      ]
+    },
+    "PPO_X0_TELE<NUM_TELE_SETS_FA_DATA>": {
+      "Name": "Telescope-Optics Principal Point Offset X0",
+      "Description": "This field contains the x component of the telescope-optics principal point offset associated with the nth telescope-optics field angle dataset.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99
+        }        
+      ]
+    },
+    "PPO_Y0_TELE<NUM_TELE_SETS_FA_DATA>": {
+      "Name": "Telescope-Optics Principal Point Offset Y0",
+      "Description": "This field contains the y component of the telescope-optics principal point offset associated with the nth telescope-optics field angle dataset.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99
+        }        
+      ]
+    },
+    "RLD_K0_TELE<NUM_TELE_SETS_FA_DATA>": {
+      "Name": "Telescope-Optics Radial Lens Distortion K0",
+      "Description": "This field contains the telescope-optics radial lens distortion parameter, K0, a dimensionless value, associated with the nth telescope-optics field angle dataset.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99
+        }        
+      ]
+    },
+    "RLD_K1_TELE<NUM_TELE_SETS_FA_DATA>": {
+      "Name": "Telescope-Optics Radial Lens Distortion K1",
+      "Description": "This field contains the telescope-optics radial lens distortion parameter, K1, which has units of inverse square millimeters, associated with the nth telescope-optics field angle dataset.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["1/millimeters^2"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99
+        }        
+      ]
+    },
+    "RLD_K2_TELE<NUM_TELE_SETS_FA_DATA>": {
+      "Name": "Telescope-Optics Radial Lens Distortion K2",
+      "Description": "This field contains the telescope-optics radial lens distortion parameter, K2, which has units of inverse millimeters to the fourth power, associated with the nth telescope-optics field angle dataset.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["1/millimeters^4"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99
+        }        
+      ]
+    },
+    "RLD_K3_TELE<NUM_TELE_SETS_FA_DATA>": {
+      "Name": "Telescope-Optics Radial Lens Distortion K3",
+      "Description": "This field contains the telescope-optics radial lens distortion parameter, K3, which has units of inverse millimeters to the sixth power, associated with the nth telescope-optics field angle dataset.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["1/millimeters^6"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99
+        }        
+      ]
+    },
+    "DCD_P1_TELE<NUM_TELE_SETS_FA_DATA>": {
+      "Name": "Telescope-Optics Decentering Distortion Parameter P1",
+      "Description": "This field contains the telescope-optics decentering distortion parameter, P1, associated with the nth telescope-optics field angle dataset.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["1/millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99
+        }        
+      ]
+    },
+    "DCD_P2_TELE<NUM_TELE_SETS_FA_DATA>": {
+      "Name": "Telescope-Optics Decentering Distortion Parameter P2",
+      "Description": "This field contains the telescope-optics decentering distortion parameter, P2, associated with the nth telescope-optics field angle dataset.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["1/millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99
+        }        
+      ]
+    },
+    "DCD_P3_TELE<NUM_TELE_SETS_FA_DATA>": {
+      "Name": "Telescope-Optics Decentering Distortion Parameter P3",
+      "Description": "This field contains the telescope-optics decentering distortion parameter, P3, associated with the nth telescope-optics field angle dataset.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["1/millimeters^2"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99
+        }        
+      ]
+    },
+    "AD_A1_TELE<NUM_TELE_SETS_FA_DATA>": {
+      "Name": "Telescope-Optics Affine Distortion Parameter A1",
+      "Description": "This field contains the telescope-optics affine distortion parameter, A1, associated with the nth telescope-optics field angle dataset, which are dimensionless quantities.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99
+        }        
+      ]
+    },
+    "AD_A2_TELE<NUM_TELE_SETS_FA_DATA>": {
+      "Name": "Telescope-Optics Affine Distortion Parameter A2",
+      "Description": "This field contains the telescope-optics affine distortion parameter, A2, associated with the nth telescope-optics field angle dataset, which are dimensionless quantities.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9.99999999999999e99,
+          "Max": 9.99999999999999e99
+        }        
+      ]
+    },
+    "RADIUS_OF_VALIDITY_TELE<NUM_TELE_SETS_FA_DATA>": {
+      "Name": "Radius from the Principal Point to the Outermost Region where Radial Distortion Coefficients are Valid for Telescope-Optics",
+      "Description": "This field contains the radius of validity associated with the nth telescope-optics field angle dataset measured from the principal point to the outermost/furthest region where the radial distortion coefficients are still valid for the telescope-optics.",
+      "Size": 21,
+      "Format": "BCS-A",
+      "Type": "C",
+      "Units": ["millimeters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0.00000000000000e00,
+          "Max": 9.99999999999999e99
+        }        
+      ]
+    },
+    "RESERVED_LEN": {
+      "Name": "Length of the Reserved Field",
+      "Description": "This field shall be set to 000000000.",
+      "Size": 9,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["bytes"],
+      "Values": [
+        {
+          "Type": "Integer"
+        }        
+      ]
+    },
+    "RESERVED": {
+      "Name": "Reserved Field",
+      "Description": "This field shall be reserved for future use.",
+      "Size": 9,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }        
+      ]
+    }    
+  }
+}

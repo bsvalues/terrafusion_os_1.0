@@ -12,7 +12,7 @@ namespace TerraFusion.AI.Services
         private readonly List<string> _capabilities = new()
         {
             "Market Analysis",
-            "Risk Assessment", 
+            "Risk Assessment",
             "Quantum Valuation",
             "Predictive Analytics",
             "Cost Optimization"
@@ -23,7 +23,7 @@ namespace TerraFusion.AI.Services
             _logger = logger;
         }
 
-        public async Task<MarketTrendResult> AnalyzeMarketTrendsAsync(string region)
+        public async System.Threading.Tasks.Task<MarketTrendResult> AnalyzeMarketTrendsAsync(string region)
         {
             await Task.Delay(100);
 
@@ -36,7 +36,7 @@ namespace TerraFusion.AI.Services
                 MarketFactors = new List<string>
                 {
                     "Population growth trends",
-                    "Employment market strength", 
+                    "Employment market strength",
                     "Infrastructure investments",
                     "Interest rate environment",
                     "Government policy impacts"
@@ -44,7 +44,7 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        public async Task<RiskAssessmentResult> AssessInvestmentRiskAsync(RiskAssessmentRequest request)
+        public async System.Threading.Tasks.Task<RiskAssessmentResult> AssessInvestmentRiskAsync(RiskAssessmentRequest request)
         {
             await Task.Delay(150);
 
@@ -60,7 +60,7 @@ namespace TerraFusion.AI.Services
                 new RiskFactorResult
                 {
                     Factor = "Regulatory Risk",
-                    Impact = "Medium", 
+                    Impact = "Medium",
                     Probability = 0.35m,
                     Severity = 0.60m
                 },
@@ -91,7 +91,7 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        public async Task<object> CompareInvestmentScenariosAsync(List<object> scenarios)
+        public async System.Threading.Tasks.Task<object> CompareInvestmentScenariosAsync(List<object> scenarios)
         {
             await Task.Delay(300);
 
@@ -110,7 +110,7 @@ namespace TerraFusion.AI.Services
                     },
                     WorstScenario = new
                     {
-                        Id = "scenario_1", 
+                        Id = "scenario_1",
                         TotalCost = 425000m,
                         ROI = 0.15m,
                         Timeline = "12 months",
@@ -128,7 +128,7 @@ namespace TerraFusion.AI.Services
                     KeyDifferentiators = new[]
                     {
                         "Material selection strategy",
-                        "Construction timeline optimization", 
+                        "Construction timeline optimization",
                         "Contractor selection criteria"
                     }
                 },
@@ -141,7 +141,7 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        public async Task<AIEngineStatusDto> GetEngineStatusAsync()
+        public async System.Threading.Tasks.Task<AIEngineStatusDto> GetEngineStatusAsync()
         {
             await Task.Delay(50);
             _logger.LogInformation("Getting AI engine status");
@@ -166,7 +166,7 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        public async Task<AIModelTrainingResultDto> TrainModelAsync(AIModelTrainingRequestDto request)
+        public async System.Threading.Tasks.Task<AIModelTrainingResultDto> TrainModelAsync(AIModelTrainingRequestDto request)
         {
             _logger.LogInformation("Starting model training: {ModelName}", request.ModelName);
             await Task.Delay(Random.Shared.Next(500, 2000));
@@ -191,7 +191,7 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        public async Task<PredictionResultDto> RunInferenceAsync(AIInferenceRequestDto request)
+        public async System.Threading.Tasks.Task<PredictionResultDto> RunInferenceAsync(AIInferenceRequestDto request)
         {
             _logger.LogInformation("Running inference for model: {ModelId}", request.ModelId);
             await Task.Delay(Random.Shared.Next(100, 500));
@@ -212,13 +212,13 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        public async Task<IEnumerable<AIModelDto>> GetAvailableModelsAsync()
+        public async System.Threading.Tasks.Task<IEnumerable<AIModelDto>> GetAvailableModelsAsync()
         {
             await Task.Delay(100);
-            
+
             var models = new List<AIModelDto>();
             var modelTypes = new[] { "PropertyValuation", "MarketAnalysis", "RiskAssessment", "CostPrediction" };
-            
+
             for (int i = 0; i < 20; i++)
             {
                 models.Add(new AIModelDto
@@ -234,14 +234,14 @@ namespace TerraFusion.AI.Services
                     Description = $"AI model for {modelTypes[i % modelTypes.Length].ToLower()} tasks"
                 });
             }
-            
+
             return models;
         }
 
-        public async Task<AIModelDto> GetModelAsync(Guid modelId)
+        public async System.Threading.Tasks.Task<AIModelDto> GetModelAsync(Guid modelId)
         {
             await Task.Delay(50);
-            
+
             return new AIModelDto
             {
                 Id = Math.Abs(modelId.GetHashCode()),
@@ -256,24 +256,24 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        public async Task<bool> DeployModelAsync(Guid modelId)
+        public async System.Threading.Tasks.Task<bool> DeployModelAsync(Guid modelId)
         {
             _logger.LogInformation("Deploying model: {ModelId}", modelId);
             await Task.Delay(Random.Shared.Next(1000, 3000));
             return Random.Shared.NextDouble() > 0.05; // 95% success rate
         }
 
-        public async Task<bool> UndeployModelAsync(Guid modelId)
+        public async System.Threading.Tasks.Task<bool> UndeployModelAsync(Guid modelId)
         {
             _logger.LogInformation("Undeploying model: {ModelId}", modelId);
             await Task.Delay(Random.Shared.Next(500, 1500));
             return Random.Shared.NextDouble() > 0.02; // 98% success rate
         }
 
-        public async Task<AIEngineMetricsDto> GetEngineMetricsAsync()
+        public async System.Threading.Tasks.Task<AIEngineMetricsDto> GetEngineMetricsAsync()
         {
             await Task.Delay(100);
-            
+
             return new AIEngineMetricsDto
             {
                 TotalInferences = Random.Shared.Next(50000, 100000),
@@ -288,20 +288,20 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        public async Task<bool> OptimizeModelAsync(Guid modelId, AIModelOptimizationDto options)
+        public async System.Threading.Tasks.Task<bool> OptimizeModelAsync(Guid modelId, AIModelOptimizationDto options)
         {
             _logger.LogInformation("Optimizing model {ModelId} with type: {OptimizationType}", modelId, options.OptimizationType);
             await Task.Delay(Random.Shared.Next(2000, 5000));
             return Random.Shared.NextDouble() > 0.1; // 90% success rate
         }
 
-        public async Task<AIModelValidationResultDto> ValidateModelAsync(Guid modelId, AIModelValidationRequestDto request)
+        public async System.Threading.Tasks.Task<AIModelValidationResultDto> ValidateModelAsync(Guid modelId, AIModelValidationRequestDto request)
         {
             _logger.LogInformation("Validating model: {ModelId}", modelId);
             await Task.Delay(Random.Shared.Next(1000, 3000));
-            
+
             var isValid = Random.Shared.NextDouble() > 0.15; // 85% pass rate
-            
+
             return new AIModelValidationResultDto
             {
                 ValidationJobId = Guid.NewGuid(),
@@ -370,7 +370,7 @@ namespace TerraFusion.AI.Services
         {
             var metrics = new List<AIModelPerformanceDto>();
             var modelNames = new[] { "PropertyValuation-v3", "MarketAnalysis-v2", "RiskAssessment-v4" };
-            
+
             foreach (var name in modelNames)
             {
                 metrics.Add(new AIModelPerformanceDto
@@ -384,12 +384,12 @@ namespace TerraFusion.AI.Services
                     LastUsed = DateTime.UtcNow.AddMinutes(-Random.Shared.Next(1, 60))
                 });
             }
-            
+
             return metrics;
         }
 
         // Missing interface implementation
-        public async Task<TerraFusion.AI.DTOs.MarketTrendAnalysis> AnalyzeMarketTrendsAsync(MarketTrendRequest request)
+        public async System.Threading.Tasks.Task<TerraFusion.AI.DTOs.MarketTrendAnalysis> AnalyzeMarketTrendsAsync(MarketTrendRequest request)
         {
             _logger.LogInformation($"Analyzing market trends for region: {request.Region}");
             await Task.Delay(150); // Simulate analysis
@@ -397,12 +397,11 @@ namespace TerraFusion.AI.Services
             return new TerraFusion.AI.DTOs.MarketTrendAnalysis
             {
                 Region = request.Region,
-                TimeRange = request.TimeRange,
-                TrendDirection = TrendDirection.Upward,
+                TrendDirection = TerraFusion.AI.DTOs.TrendDirection.Upward,
                 ConfidenceScore = 0.87,
                 PriceGrowthRate = 0.045,
                 VolatilityIndex = 0.23,
-                MarketHealth = MarketHealthStatus.Strong,
+                MarketHealth = TerraFusion.AI.DTOs.MarketHealthStatus.Strong,
                 KeyInsights = new List<string>
                 {
                     "Strong buyer demand in the region",
@@ -414,30 +413,30 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        public async Task<object> ProcessRequestAsync(object request)
+        public async System.Threading.Tasks.Task<object> ProcessRequestAsync(object request)
         {
             _logger.LogInformation("🤖 Processing AI request");
             await Task.Delay(100);
             return new { Result = "Request processed", Success = true };
         }
 
-        public async Task<bool> IsAvailableAsync()
+        public async System.Threading.Tasks.Task<bool> IsAvailableAsync()
         {
             await Task.Delay(10);
             return true;
         }
 
-        public async Task InitializeAsync()
+        public async System.Threading.Tasks.Task InitializeAsync()
         {
             _logger.LogInformation("🤖 AI Engine initialized and ready");
             await Task.Delay(10);
         }
 
-        public async Task<object> AnalyzeMarketTrendsAsync(object parameters)
+        public async System.Threading.Tasks.Task<object> AnalyzeMarketTrendsAsync(object parameters)
         {
             _logger.LogInformation("📈 Analyzing market trends");
             await Task.Delay(50);
-            return new MarketTrendsResult
+            return new TerraFusion.AI.DTOs.MarketTrendsResult
             {
                 Region = "Benton County",
                 Confidence = 0.87,
@@ -445,7 +444,7 @@ namespace TerraFusion.AI.Services
                 MarketFactors = new List<string>
                 {
                     "Housing inventory increasing",
-                    "Interest rates stabilizing", 
+                    "Interest rates stabilizing",
                     "Population growth steady"
                 }
             };

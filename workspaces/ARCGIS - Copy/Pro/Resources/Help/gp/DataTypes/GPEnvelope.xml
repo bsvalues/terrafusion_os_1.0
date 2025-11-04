@@ -1,0 +1,5 @@
+<DataType Name="GPEnvelope">
+  <DisplayName>Envelope</DisplayName>
+  <Description>The coordinate pairs that define the minimum bounding rectangle in which the data source falls.</Description>
+</DataType>
+

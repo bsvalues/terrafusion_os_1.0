@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+     This configuration identifies which roles are paired together and which of the two is the
+     parent which will appear in the output cell. The child is just the inverse association and
+     isn't encoded in the cell from that record to the "parent" record.
+-->
+<AssociationsFilter>
+    <RolePair parent="positions" child="identifies"/>
+    <RolePair parent="supports" child="supportedBy"/>
+    <RolePair parent="identifies" child="updates"/>
+    <RolePair parent="consistsOf" child="componentOf"/>
+    <RolePair parent="hasAuxiliary" child="auxiliaryTo"/>
+    <RolePair parent="defines" child="definedFor"/>
+    <RolePair parent="providesInformation" child="informationProvidedFor"/>
+</AssociationsFilter>

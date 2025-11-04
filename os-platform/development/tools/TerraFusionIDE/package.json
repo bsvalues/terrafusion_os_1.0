@@ -1,6 +1,7 @@
 {
   "name": "terrafusion-ide-ultimate-power",
   "version": "2.0.0",
+  "type": "module",
   "description": "🚀 Terrafusion IDE ULTIMATE POWER - Your Complete Government Technology Development Universe",
   "main": "src/main.tsx",
   "scripts": {
@@ -40,6 +41,7 @@
     "@types/leaflet": "^1.9.8",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
+    "@types/three": "^0.180.0",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.21",
     "electron": "^27.0.0",

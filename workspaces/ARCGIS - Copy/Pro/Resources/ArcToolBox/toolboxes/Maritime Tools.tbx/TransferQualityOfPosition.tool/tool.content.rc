@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Transfers the Quality of Position (QUAPOS) attribution from S-57 edge primitives (captured in PLTS_SpatialAttributeL) to the feature to aid in symbolization dependent on this attribute.",
+        "in_geodatabase.descr": "The input geodatabase that contains the chart data in the maritime chart schema.",
+        "in_geodatabase.title": "Input Geodatabase",
+        "out_geodatabase.title": "Output Geodatabase",
+        "summary": "<xdoc><p>Transfers the Quality of Position (QUAPOS) attribution from S-57 edge primitives (captured in PLTS_SpatialAttributeL) to the feature to aid in symbolization dependent on this attribute.</p><p>Features in CoastlineL, NaturalFeaturesL, and DepthsL are divided where the primitive attribution changes, and the QUAPOS values are copied to the affected features.</p></xdoc>",
+        "title": "Transfer Quality Of Position",
+        "unverified_features_only.descr": "<xdoc><p>Specifies whether only features marked as unverified will be processed.<ul><li>Checked—Only features marked as unverified will be processed.</li><li>Unchecked—All features will be processed. This is the default.</li></ul></p></xdoc>",
+        "unverified_features_only.title": "Unverified Features Only"
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "set": [
+        "input database connection",
+        "upgrade workflow",
+        "user store",
+        "workflow manager"
+    ]
+}

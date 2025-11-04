@@ -1,0 +1,5 @@
+<DataType Name="DERelationshipClass">
+  <DisplayName>Relationship Class</DisplayName>
+  <Description>The details about the relationship between objects in the geodatabase.</Description>
+</DataType>
+

@@ -1,0 +1,12 @@
+{
+    "set": [
+        "allocation",
+        "analysis",
+        "layer",
+        "location-allocation",
+        "location-allocation layer",
+        "network",
+        "network analyst",
+        "network analyst layer"
+    ]
+}

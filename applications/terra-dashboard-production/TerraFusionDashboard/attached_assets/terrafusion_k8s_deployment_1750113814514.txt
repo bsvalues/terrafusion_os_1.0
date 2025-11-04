@@ -1,0 +1,149 @@
+# Terrafusion Platform - Divine Kubernetes Deployment
+# Production-ready with auto-scaling and resilience
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrafusion
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terrafusion-api
+  namespace: terrafusion
+  labels:
+    app: terrafusion-api
+    version: v1.0.0
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: terrafusion-api
+  template:
+    metadata:
+      labels:
+        app: terrafusion-api
+        version: v1.0.0
+    spec:
+      containers:
+      - name: terrafusion-api
+        image: terrafusion/platform:1.0.0
+        ports:
+        - containerPort: 8000
+          name: http
+        - containerPort: 8001
+          name: metrics
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: terrafusion-secrets
+              key: database-url
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: terrafusion-secrets
+              key: redis-url
+        - name: JWT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: terrafusion-secrets
+              key: jwt-secret
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 8000
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        volumeMounts:
+        - name: ssl-certs
+          mountPath: /app/ssl
+          readOnly: true
+      volumes:
+      - name: ssl-certs
+        secret:
+          secretName: terrafusion-ssl-certs
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: terrafusion-api-service
+  namespace: terrafusion
+spec:
+  selector:
+    app: terrafusion-api
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8000
+  - name: metrics
+    port: 8001
+    targetPort: 8001
+  type: ClusterIP
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: terrafusion-api-hpa
+  namespace: terrafusion
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: terrafusion-api
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: terrafusion-ingress
+  namespace: terrafusion
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rate-limit: "1000"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - api.terrafusion.gov
+    secretName: terrafusion-tls
+  rules:
+  - host: api.terrafusion.gov
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: terrafusion-api-service
+            port:
+              number: 80

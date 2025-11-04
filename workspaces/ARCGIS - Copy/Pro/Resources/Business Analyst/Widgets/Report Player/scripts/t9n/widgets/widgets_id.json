@@ -1,0 +1,78 @@
+{
+  "calcite": {
+    "reset": "Atur Ulang",
+    "action": {
+      "sort": "Urutkan"
+    },
+    "buttons": {
+      "save": "Simpan",
+      "edit": "Edit",
+      "done": "Selesai",
+      "apply": "Terapkan",
+      "cancel": "Batalkan",
+      "close": "Tutup"
+    },
+    "ColorPicker": {
+      "selectColor": "Pilih warna",
+      "noColorSpecified": "Tidak ada warna yang ditentukan",
+      "transparent": "Transparan",
+      "colorTooltip": "<p>Hex: ${hex}</p><p>RGB: ${r}, ${g}, ${b}</p>",
+      "recent": "Terbaru",
+      "standard": "Standard",
+      "savedColors": "Warna tersimpan",
+      "advanced": "Advanced"
+    },
+    "DatePickerLink": {
+      "enterDate": "Masukkan tanggal"
+    },
+    "PaginationContinuous": {
+      "next": "Selanjutnya",
+      "previous": "Sebelumnya"
+    }
+  },
+  "ImageNavigator": {
+    "paginationLabel": "${n} dari ${m}",
+    "noImage": "Tidak ada foto yang disimpan baru-baru ini dengan situs ini",
+    "previewNotAvailable": "Pratinjau tidak tersedia"
+  },
+  "PageNavigator": {
+    "currentPageOutOfN": "Halaman ${current} dari ${total}"
+  },
+  "PanoramicViewer": {
+    "image-viewer-close": "Tutup",
+    "image-viewer-fullscreen": "Layar penuh",
+    "image-viewer-minimize": "Perkecil",
+    "image-viewer-title": "Penampil Foto",
+    "image-viewer-show-caption": "Tampilkan Keterangan",
+    "image-viewer-hide-caption": "Sembunyikan"
+  },
+  "TextBox": {
+    "error_numberExpected": "Angka diharapkan",
+    "error_range": "Nilai yang diharapkan dari ${0} hingga ${1}"
+  },
+  "charts": {
+    "histogram": {
+      "minValue": "Min:<br>${0}",
+      "maxValue": "Maks:<br>${0}",
+      "thisAreaValue": "Area ini: ${0}",
+      "medianValue": "Median:<br>${0}",
+      "q1Value": "Q1:<br>${0}",
+      "q3Value": "Q3:<br>${0}",
+      "percentile": "Persentil ${percent}:<br>${0}",
+      "percentileBottom": "Bawah ${percent}%:<br>${0}",
+      "percentileTop": "Atas ${percent}%:<br>${0}",
+      "percentile_singleLine": "Persentil ${percent}: ${0}",
+      "percentileBottom_singleLine": "Bawah ${percent}%: ${0}",
+      "percentileTop_singleLine": "Atas ${percent}%: ${0}",
+      "sd_singleLine": "${sd} SD: ${0}",
+      "tooltip": {
+        "range_single": "<b>${level}</b> dengan nilai dalam <b>${value}</b> : <b>1</b>",
+        "range_single_precise": "<b>${areaName}</b> memiliki nilai <b>${value}</b>.",
+        "range_multi": "<b>${level}</b> dengan nilai dalam <b>${value}</b> : <b>${count}</b>",
+        "thisArea": "<b>Area ini</b> memiliki nilai <b>${value}</b>.",
+        "percentileLower": "<b>${percent}%</b> dari <b>${level}</b> memiliki nilai di atas <b>${value}</b>.",
+        "percentileUpper": "<b>${percent}%</b> dari <b>${level}</b> memiliki nilai di bawah <b>${value}</b>."
+      }
+    }
+  }
+}

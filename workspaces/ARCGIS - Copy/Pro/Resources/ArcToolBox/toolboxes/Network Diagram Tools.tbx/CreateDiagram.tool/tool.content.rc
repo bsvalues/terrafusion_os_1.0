@@ -1,0 +1,15 @@
+{
+    "map": {
+        "description": "Creates a temporary network diagram from network elements currently selected in the active map or from layers created from a Python script.",
+        "features.descr": "<xdoc><p>One or more feature layers that will be used as input for diagram generation.</p><p>When feature layers are specified and network elements are selected in the active map, the selected elements set is ignored and all the features in the specified layers are used as input for diagram creation.</p><p>When no feature layers are specified, the process searches for the network elements selected in the active map and creates the diagram from those elements.</p></xdoc>",
+        "features.title": "Features",
+        "in_utility_network.descr": "The utility network or trace network from which the diagram will be created.",
+        "in_utility_network.title": "Input Network",
+        "out_name.title": "Network Diagram Name",
+        "out_utility_network.title": "Output Network",
+        "summary": "<xdoc><p>Creates a temporary network diagram from network elements currently selected in the active map or from layers created from a Python script.</p><p>When layers are specified and elements are selected in the active map, the selected elements set is ignored and the specified input layers are the only layers used as input for the diagram creation.</p><p>When no layers are specified, the tool searches for the network elements selected in the active map and creates the diagram from those elements.</p><note type=\"caution\"/><p group=\"note\">Edits must be saved so that the output diagram is in sync with the last save of the network topology in the database. Otherwise, the unsaved edits will not be reflected in the new diagram.</p></xdoc>",
+        "template_name.descr": "The name of the template that will be used to create the diagram.",
+        "template_name.title": "Input Template Name",
+        "title": "Create Diagram"
+    }
+}

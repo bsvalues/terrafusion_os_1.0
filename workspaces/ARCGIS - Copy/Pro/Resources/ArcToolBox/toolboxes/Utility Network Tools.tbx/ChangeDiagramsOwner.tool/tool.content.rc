@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Change the diagrams owner",
+        "diagram_names.title": "Diagram Names",
+        "in_diagrams.title": "Input Network or Network Diagram Layer",
+        "out_diagrams.title": "Output Network or Network Diagram Layer",
+        "source_owner.title": "Source Owner",
+        "target_owner.title": "Target Owner",
+        "title": "Change Diagrams Owner"
+    }
+}

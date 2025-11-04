@@ -1,0 +1,126 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1><i class="fas fa-search me-2"></i> GIS Data Search</h1>
+            <p class="lead">Ask questions about Benton County GIS data using natural language</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8 mx-auto search-container">
+            <!-- Search Form -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form id="search-form" class="search-form">
+                        <div class="input-group mb-3">
+                            <input type="text" id="search-query" class="form-control form-control-lg" 
+                                   placeholder="Ask a question about Benton County GIS data..." 
+                                   aria-label="Search query" required>
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-search me-1"></i> Search
+                            </button>
+                            <button class="btn btn-outline-secondary" type="button" id="clear-search">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="form-text mb-2">
+                            Try asking about parcels, land use, zoning, property data, or other GIS information
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Powered by RAG &amp; LLMs</small>
+                            
+                            <div class="btn-group btn-group-sm" role="group" aria-label="Search Type">
+                                <input type="radio" class="btn-check" name="search-type" id="search-type-all" value="all" autocomplete="off" checked>
+                                <label class="btn btn-outline-secondary" for="search-type-all">All Sources</label>
+                                
+                                <input type="radio" class="btn-check" name="search-type" id="search-type-files" value="files" autocomplete="off">
+                                <label class="btn btn-outline-secondary" for="search-type-files">Files Only</label>
+                                
+                                <input type="radio" class="btn-check" name="search-type" id="search-type-metadata" value="metadata" autocomplete="off">
+                                <label class="btn btn-outline-secondary" for="search-type-metadata">Metadata</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Loading spinner -->
+            <div id="search-spinner" class="text-center my-5 d-none">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2 text-muted">Searching GIS data...</p>
+            </div>
+            
+            <!-- Search Results -->
+            <div id="search-results">
+                <!-- Results will be inserted here -->
+            </div>
+            
+            <!-- Recent Searches -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-history me-2"></i> Recent Searches
+                    </h5>
+                </div>
+                <div class="card-body" id="recent-queries">
+                    <p class="text-muted">No recent searches</p>
+                </div>
+            </div>
+            
+            <!-- Example Queries -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-lightbulb me-2"></i> Example Queries
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2">
+                        <button class="btn btn-sm btn-outline-primary example-query">
+                            What parcels are in the flood zone?
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary example-query">
+                            Show me zoning regulations for commercial areas
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary example-query">
+                            How many agricultural parcels are larger than 10 acres?
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary example-query">
+                            What GIS files contain property assessment data?
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary example-query">
+                            Explain the metadata in the latest parcel file
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/search.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Example query buttons
+        const exampleButtons = document.querySelectorAll('.example-query');
+        const searchInput = document.getElementById('search-query');
+        const searchForm = document.getElementById('search-form');
+        
+        exampleButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                searchInput.value = button.textContent.trim();
+                searchForm.dispatchEvent(new Event('submit'));
+            });
+        });
+    });
+</script>
+{% endblock %}

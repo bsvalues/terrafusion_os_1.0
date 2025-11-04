@@ -1,0 +1,72 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\CreateSpaceTimeCubeMDRasterLayer",
+    "displayname": "$rc:title",
+    "helpcontent": "50000006",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_md_raster": {
+            "display_order": "0",
+            "displayname": "$rc:in_md_raster.title",
+            "datatype": {
+                "type": "GPRasterLayer"
+            },
+            "description": "$rc:in_md_raster.descr"
+        },
+        "output_cube": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:output_cube.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "nc"
+                ]
+            },
+            "description": "$rc:output_cube.descr"
+        },
+        "fill_empty_bins": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:fill_empty_bins.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ZEROS",
+                        "code": "$rc:fill_empty_bins.domain.ZEROS"
+                    },
+                    {
+                        "value": "SPATIAL_NEIGHBORS",
+                        "code": "$rc:fill_empty_bins.domain.SPATIAL_NEIGHBORS"
+                    },
+                    {
+                        "value": "SPACE_TIME_NEIGHBORS",
+                        "code": "$rc:fill_empty_bins.domain.SPACE_TIME_NEIGHBORS"
+                    },
+                    {
+                        "value": "TEMPORAL_TREND",
+                        "code": "$rc:fill_empty_bins.domain.TEMPORAL_TREND"
+                    }
+                ]
+            },
+            "value": "ZEROS",
+            "description": "$rc:fill_empty_bins.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor"
+    ]
+}

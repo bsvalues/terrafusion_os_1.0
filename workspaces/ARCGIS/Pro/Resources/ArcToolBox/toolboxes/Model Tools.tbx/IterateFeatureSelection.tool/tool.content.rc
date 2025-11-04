@@ -1,0 +1,16 @@
+{
+    "map": {
+        "description": "Iterates over features in a feature class.",
+        "fields.descr": "The input field or fields used to group the features for selection. Any number of input fields can be defined, resulting in a selection based on a unique combination of the fields. If a field is not specified, the Object ID is used to iterate over features.",
+        "fields.dt.title1": "Field",
+        "fields.dt.title2": "Null Value",
+        "fields.title": "Group By Fields",
+        "in_features.descr": "The input feature class or layer containing features to iterate.",
+        "in_features.title": "In Features",
+        "selection.title": "Selected Features",
+        "skip_nulls.descr": "<xdoc><p>Specifies whether null values in the grouping field or fields are skipped during selection.</p><ul><li>Checked—Skip through all the null values in the grouping fields during selection.</li><li>Unchecked—Set as default. Include all the null values in the grouping fields during selection. This is the default.</li></ul></xdoc>",
+        "skip_nulls.title": "Skip Null Values",
+        "title": "Iterate Feature Selection",
+        "value.title": "Value"
+    }
+}

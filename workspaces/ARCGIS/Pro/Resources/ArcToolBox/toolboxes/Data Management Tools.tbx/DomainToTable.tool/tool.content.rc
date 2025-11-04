@@ -1,0 +1,18 @@
+{
+    "map": {
+        "code_field.descr": "The name of the field in the created table that will store code values.",
+        "code_field.title": "Code Field",
+        "configuration_keyword.descr": "For geodatabase tables, the custom storage keywords for creating the table.",
+        "configuration_keyword.title": "Configuration Keyword",
+        "description": "Creates a table from an attribute domain.",
+        "description_field.descr": "The name of the field in the created table that will store code value descriptions.",
+        "description_field.title": "Field Description",
+        "domain_name.descr": "The name of the existing attribute domain.",
+        "domain_name.title": "Domain Name",
+        "in_workspace.descr": "The workspace containing the attribute domain to be converted to a table.",
+        "in_workspace.title": "Input Workspace",
+        "out_table.descr": "The table to be created.",
+        "out_table.title": "Output Table",
+        "title": "Domain To Table"
+    }
+}

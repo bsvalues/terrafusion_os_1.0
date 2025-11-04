@@ -1,0 +1,167 @@
+{
+    "type": "FunctionTool",
+    "guid": "{34628510-9a07-453f-a762-c164ffa091a7}",
+    "displayname": "$rc:title",
+    "helpcontent": "2080002",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_map": {
+            "displayname": "$rc:in_map.title",
+            "datatype": {
+                "type": "GPMap"
+            },
+            "description": "$rc:in_map.descr"
+        },
+        "out_kmz_file": {
+            "direction": "out",
+            "displayname": "$rc:out_kmz_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "kmz"
+                ]
+            },
+            "description": "$rc:out_kmz_file.descr"
+        },
+        "map_output_scale": {
+            "type": "optional",
+            "displayname": "$rc:map_output_scale.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "category": "$rc:params.category1",
+            "description": "$rc:map_output_scale.descr"
+        },
+        "is_composite": {
+            "type": "optional",
+            "displayname": "$rc:is_composite.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "COMPOSITE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_COMPOSITE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:is_composite.descr"
+        },
+        "is_vector_to_raster": {
+            "type": "optional",
+            "displayname": "$rc:is_vector_to_raster.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "VECTOR_TO_IMAGE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "VECTOR_TO_VECTOR"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:is_vector_to_raster.descr"
+        },
+        "extent_to_export": {
+            "type": "optional",
+            "control_guid": "{15F0D1C1-F783-49BC-8D16-619B8E92F668}",
+            "displayname": "$rc:extent_to_export.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPExtent"
+            },
+            "defaultenvironmentname": "extent",
+            "description": "$rc:extent_to_export.descr"
+        },
+        "image_size": {
+            "type": "optional",
+            "displayname": "$rc:image_size.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "1024",
+            "description": "$rc:image_size.descr"
+        },
+        "dpi_of_client": {
+            "type": "optional",
+            "displayname": "$rc:dpi_of_client.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "96",
+            "description": "$rc:dpi_of_client.descr"
+        },
+        "ignore_zvalue": {
+            "type": "optional",
+            "displayname": "$rc:ignore_zvalue.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CLAMPED_TO_GROUND"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "ABSOLUTE"
+                    }
+                ]
+            },
+            "value": "true",
+            "category": "$rc:params.category1",
+            "description": "$rc:ignore_zvalue.descr"
+        },
+        "layout": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:layout.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "category": "$rc:params.category3",
+            "description": "$rc:layout.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "geographicTransformations",
+        "maintainAttachments",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

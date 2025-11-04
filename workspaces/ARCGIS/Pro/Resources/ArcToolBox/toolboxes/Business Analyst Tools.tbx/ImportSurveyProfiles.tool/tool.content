@@ -1,0 +1,50 @@
+{
+    "type": "FunctionTool",
+    "guid": "{33724566-2738-4FE2-903A-A8C439127E50}/ImportSurveyProfiles",
+    "displayname": "$rc:title",
+    "helpcontent": "62070006",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "33",
+        "35"
+    ],
+    "params": {
+        "profiles": {
+            "control_guid": "{E86B195F-2955-4E4E-B7EF-F049C5DE27C2}",
+            "displayname": "$rc:profiles.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:profiles.descr"
+        },
+        "out_folder": {
+            "displayname": "$rc:out_folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:out_folder.descr"
+        },
+        "out_profiles": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_profiles.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "DEFile"
+                }
+            }
+        }
+    },
+    "environments": [
+        "baDataSource",
+        "workspace"
+    ]
+}

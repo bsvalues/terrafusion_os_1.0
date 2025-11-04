@@ -1,0 +1,10 @@
+{
+    "set": [
+        "classification",
+        "erroneous scan",
+        "lidar",
+        "noise",
+        "outlier",
+        "point cloud"
+    ]
+}

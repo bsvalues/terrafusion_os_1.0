@@ -1,0 +1,17 @@
+{
+    "map": {
+        "add_attributes.descr": "<xdoc><p>Determines if the raster attributes are written to the output point feature dataset.</p><ul><li>Unchecked—Only the value of the input raster is added to the point attributes. This is the default.</li><li>Checked—All the fields from the input raster (except <span class=\"esri_fieldname\">Count</span>) will be added to the point attributes.</li></ul></xdoc>",
+        "add_attributes.title": "Append all the input raster attributes to the output point features",
+        "description": "Extracts the cell values of a raster based on a set of point features and records the values in the attribute table of an output feature class.",
+        "in_point_features.descr": "The input point features defining the locations from which you want to extract the raster cell values.",
+        "in_point_features.title": "Input point features",
+        "in_raster.descr": "<xdoc><p>The raster dataset whose values will be extracted.</p><p>It can be an integer or floating-point type raster.</p></xdoc>",
+        "in_raster.title": "Input raster",
+        "interpolate_values.descr": "<xdoc><p>Specifies whether interpolation will be used.</p><ul><li>Unchecked—No interpolation will be applied; the value of the cell center will be used. This is the default.</li><li>Checked—The value of the cell will be calculated from the adjacent cells with valid values using bilinear interpolation. NoData values will be ignored in the interpolation unless all adjacent cells are NoData.</li></ul></xdoc>",
+        "interpolate_values.title": "Interpolate values at the point locations",
+        "out_point_features.descr": "The output point feature dataset containing the extracted raster values.",
+        "out_point_features.title": "Output point features",
+        "summary": "<xdoc><p>Extracts the cell values of a raster based on a set of point features and records the values in the attribute table of an output feature class.</p><p>The Extract Multi Values to Point tool provides enhanced functionality or performance.</p></xdoc>",
+        "title": "Extract Values to Points"
+    }
+}

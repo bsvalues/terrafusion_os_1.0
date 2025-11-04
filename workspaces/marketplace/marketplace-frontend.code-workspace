@@ -1,0 +1,107 @@
+{
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "node",
+        "cwd": "../../marketplace/marketplace-frontend/frontend",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "name": "Start Marketplace Frontend Frontend"
+      },
+      {
+        "type": "debugpy",
+        "cwd": "../../marketplace/marketplace-frontend/backend",
+        "program": "../../marketplace/marketplace-frontend/backend/main.py",
+        "name": "Start Marketplace Frontend Backend"
+      },
+      {
+        "type": "node",
+        "cwd": "../../marketplace/marketplace-frontend/mcp-server",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "name": "Start Marketplace Frontend MCP Server"
+      }
+    ]
+  },
+  "tasks": {
+    "tasks": [
+      {
+        "cwd": "../../marketplace/marketplace-frontend",
+        "args": [
+          "run",
+          "build"
+        ],
+        "command": "npm",
+        "label": "Build Marketplace Frontend"
+      },
+      {
+        "cwd": "../../marketplace/marketplace-frontend",
+        "args": [
+          "run",
+          "test"
+        ],
+        "command": "npm",
+        "label": "Test Marketplace Frontend"
+      }
+    ],
+    "version": "2.0.0"
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "ms-python.black-formatter"
+    ]
+  },
+  "folders": [
+    {
+      "name": "💼 Marketplace Frontend",
+      "path": "../../marketplace/marketplace-frontend"
+    },
+    {
+      "name": "📦 Platform SDK (read-only)",
+      "path": "../../platform/sdk"
+    },
+    {
+      "name": "🎨 Design System (read-only)",
+      "path": "../../platform/design-system"
+    },
+    {
+      "name": "🧪 Tests",
+      "path": "../../tests/marketplace/marketplace-frontend"
+    },
+    {
+      "name": "📚 Marketplace Frontend Docs",
+      "path": "../../docs/marketplace/marketplace-frontend.md"
+    }
+  ],
+  "settings": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit",
+      "source.fixAll": "explicit"
+    },
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#f59e0b",
+      "titleBar.activeForeground": "#ffffff"
+    },
+    "files.exclude": {
+      "../../os-platform": true,
+      "**/node_modules": true,
+      "../../terrafusion-cos": true,
+      "../../marketplace/*": true,
+      "!../../marketplace/marketplace-frontend": true,
+      "../../backend": true,
+      "**/dist": true,
+      "../../frontend": true
+    },
+    "editor.formatOnSave": true
+  }
+}
+

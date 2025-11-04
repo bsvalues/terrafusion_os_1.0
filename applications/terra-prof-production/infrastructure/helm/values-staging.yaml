@@ -1,0 +1,118 @@
+# Staging environment values for TerraFusionPro Helm chart
+
+global:
+  environment: staging
+  # Tag will be overridden during deployment
+  imageTag: main
+  
+# Moderate resource allocation for staging
+apiGateway:
+  replicas: 2
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+
+webClient:
+  replicas: 2
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+
+propertyService:
+  replicas: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+
+userService:
+  replicas: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+
+formService:
+  replicas: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+
+analysisService:
+  replicas: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+
+reportService:
+  replicas: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+
+# Staging database configuration
+database:
+  persistence:
+    size: 10Gi
+
+# Staging ingress configuration
+ingress:
+  hosts:
+    - host: staging.app.terrafusionpro.com
+      paths:
+        - path: /
+          pathType: Prefix
+          service: web-client
+          port: 80
+    - host: staging.api.terrafusionpro.com
+      paths:
+        - path: /
+          pathType: Prefix
+          service: api-gateway
+          port: 80
+  tls:
+    - secretName: terrafusionpro-tls-staging
+      hosts:
+        - staging.app.terrafusionpro.com
+        - staging.api.terrafusionpro.com
+
+# Enable monitoring in staging
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+
+# Basic logging for staging
+logging:
+  elasticsearch:
+    enabled: true
+  kibana:
+    enabled: true
+  filebeat:
+    enabled: true

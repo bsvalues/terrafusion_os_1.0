@@ -1,0 +1,21 @@
+{
+    "set": [
+        "bdc",
+        "connect",
+        "delete",
+        "geoanalytics",
+        "mfc",
+        "orc",
+        "simplify",
+        "big data",
+        "big data connection",
+        "combine",
+        "delimited files",
+        "feature class",
+        "file geodatabase",
+        "merge",
+        "mosiac",
+        "parquet",
+        "schemas"
+    ]
+}

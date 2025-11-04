@@ -1,0 +1,25 @@
+{
+    "map": {
+        "are_leaves_expanded.title": "Expand leaves",
+        "are_leaves_moved.title": "Move leaves",
+        "description": "Apply the linear dispatch layout to a diagram",
+        "expand_shift_absolute.title": "Maximum Expand Shift",
+        "expand_shift_proportional.title": "Maximum Expand Shift",
+        "in_network_diagram_layer.title": "Input Network Diagram Layer",
+        "is_path_preserved.title": "Preserve path",
+        "is_unit_absolute.title": "Spacing values interpreted as absolute units in the diagram coordinate system",
+        "iterations_number.title": "Number of Iterations",
+        "junction_placement_type.domain.EQUAL_DISTANCE": "EQUAL_DISTANCE",
+        "junction_placement_type.domain.ITERATIVE_DISTANCE": "ITERATIVE_DISTANCE",
+        "junction_placement_type.domain.USER_DEFINE_DISTANCE": "USER_DEFINE_DISTANCE",
+        "junction_placement_type.title": "Junctions Placement",
+        "maximum_shift_absolute.title": "Maximum Shift",
+        "maximum_shift_proportional.title": "Maximum Shift",
+        "minimum_shift_absolute.title": "Minimum Shift",
+        "minimum_shift_proportional.title": "Minimum Shift",
+        "out_network_diagram_layer.title": "Output Network Diagram",
+        "params.category1": "Advanced Options",
+        "run_async.title": "Run in asynchronous mode on the server",
+        "title": "Apply Linear Dispatch Layout"
+    }
+}

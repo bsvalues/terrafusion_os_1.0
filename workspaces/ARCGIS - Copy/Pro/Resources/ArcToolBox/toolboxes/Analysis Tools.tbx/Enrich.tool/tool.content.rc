@@ -1,0 +1,19 @@
+{
+    "map": {
+        "buffer_type.descr": "<xdoc><p>Input point features must have an associated boundary polygon to enrich. When connected to ArcGIS Online, travel mode options are dynamically populated. Input line features can only use <span class=\"esri_uicontrol\">Straight Line</span> distance. The default value is <span class=\"esri_uicontrol\">Straight Line</span>.</p></xdoc>",
+        "buffer_type.title": "Define areas to enrich",
+        "description": "Enriches data by adding demographic and landscape facts about the people and places that surround or are inside data locations.  The output is a duplicate of your input with additional attribute fields.  This tool requires an ArcGIS Online organizational account or a locally installed Business Analyst dataset.",
+        "distance.descr": "Determines the distance or size of an area to enrich (for example, a 1-mile buffer or 5-minute walk time). Units correspond to the buffer type. The default value is 1.",
+        "distance.title": "Distance or time",
+        "in_features.descr": "The features to be enriched.",
+        "in_features.title": "Input Features",
+        "out_feature_class.descr": "A new layer containing both the input attributes and user-selected attributes. User-selected attributes are summarized from underlying demographic boundaries. Only the area inside the input boundary is considered.",
+        "out_feature_class.title": "Output feature class",
+        "summary": "<xdoc><p>Enriches data by adding demographic and landscape facts about the people and places that surround or are inside data locations. The output is a duplicate of your input with additional attribute fields. This tool requires an ArcGIS Online organizational account or a locally installed Business Analyst dataset.</p><p>The demographic and landscape information available with this tool can come from ArcGIS Online or locally installed Business Analyst data. The Enrich tool will consume credits if ArcGIS Online is set as the Business Analyst data source.</p><note type=\"note\"/><p group=\"note\">The Enrich tool uses detailed aggregation and apportionment settings to summarize data. For more information, see Data apportionment.</p></xdoc>",
+        "title": "Enrich",
+        "unit.descr": "<xdoc><p>The units associated with the distance or time parameter.</p><ul><li><span title=\"Miles\">Miles</span>—Miles</li><li><span title=\"Yards\">Yards</span>—Yards</li><li><span title=\"Feet\">Feet</span>—Feet</li><li><span title=\"Kilometers\">Kilometers</span>—Kilometers</li><li><span title=\"Meters\">Meters</span>—Meters</li><li><span title=\"Hours\">Hours</span>—Hours</li><li><span title=\"Minutes\">Minutes</span>—Minutes</li><li><span title=\"Seconds\">Seconds</span>—Seconds</li></ul></xdoc>",
+        "unit.title": "Unit",
+        "variables.descr": "The variables to be summarized and added to the output feature class.",
+        "variables.title": "Variables"
+    }
+}

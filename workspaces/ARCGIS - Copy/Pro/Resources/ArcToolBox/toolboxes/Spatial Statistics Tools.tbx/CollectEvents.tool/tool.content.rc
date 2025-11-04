@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Converts event data, such as crime or disease incidents, to weighted point data.",
+        "input_incident_features.descr": "The features representing event or incident data.",
+        "input_incident_features.title": "Input Incident Features",
+        "output_weighted_point_feature_class.descr": "The output feature class that will contain the weighted point data.",
+        "output_weighted_point_feature_class.title": "Output Weighted Point Feature Class",
+        "results_field.title": "Results Field",
+        "title": "Collect Events",
+        "z_max_value.title": "Z Max Value"
+    }
+}

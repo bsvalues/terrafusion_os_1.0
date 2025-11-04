@@ -1,0 +1,883 @@
+{% extends 'layout.html' %}
+
+{% block title %}TerraFusion | Anomaly Map Visualization{% endblock %}
+
+{% block additionalcss %}
+<style>
+    #anomalyMapContainer {
+        height: 600px;
+        width: 100%;
+        position: relative;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .anomaly-controls {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 1000;
+        background-color: white;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    }
+    
+    .anomaly-legend {
+        position: absolute;
+        bottom: 20px;
+        right: 10px;
+        z-index: 1000;
+        background-color: white;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        font-size: 0.85rem;
+    }
+    
+    .anomaly-legend-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+    
+    .legend-color {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        margin-right: 8px;
+    }
+    
+    .anomaly-count-badge {
+        position: absolute;
+        top: 20px;
+        left: 60px;
+        z-index: 1000;
+        background-color: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    
+    .anomaly-marker {
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+    
+    .anomaly-marker-data {
+        background-color: #dc3545;
+    }
+    
+    .anomaly-marker-spatial {
+        background-color: #fd7e14;
+    }
+    
+    .anomaly-marker-valuation {
+        background-color: #6f42c1;
+    }
+    
+    .anomaly-marker-temporal {
+        background-color: #0dcaf0;
+    }
+    
+    .anomaly-heatmap-toggle,
+    .anomaly-cluster-toggle,
+    .anomaly-filter {
+        margin-bottom: 10px;
+    }
+    
+    #anomalyDetails {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    
+    .anomaly-detail-card {
+        border-left: 4px solid #dc3545;
+        margin-bottom: 15px;
+    }
+    
+    .anomaly-detail-card.spatial {
+        border-left-color: #fd7e14;
+    }
+    
+    .anomaly-detail-card.valuation {
+        border-left-color: #6f42c1;
+    }
+    
+    .anomaly-detail-card.temporal {
+        border-left-color: #0dcaf0;
+    }
+    
+    .anomaly-detail-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .anomaly-detail-type {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 4px;
+        color: white;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .anomaly-detail-type.data {
+        background-color: #dc3545;
+    }
+    
+    .anomaly-detail-type.spatial {
+        background-color: #fd7e14;
+    }
+    
+    .anomaly-detail-type.valuation {
+        background-color: #6f42c1;
+    }
+    
+    .anomaly-detail-type.temporal {
+        background-color: #0dcaf0;
+    }
+    
+    .anomaly-score {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-color: #dc3545;
+        color: white;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+    
+    .anomaly-score.medium {
+        background-color: #fd7e14;
+    }
+    
+    .anomaly-score.low {
+        background-color: #ffc107;
+    }
+    
+    .anomaly-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .trend-chart {
+        height: 100px;
+        margin-top: 10px;
+    }
+    
+    .tooltip-inner {
+        max-width: 300px !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h3 mb-0" style="color: black; font-weight: 800;">Geospatial Anomaly Map</h1>
+                <div>
+                    <button class="btn btn-primary" id="refreshAnomalyMap">
+                        <i class="fas fa-sync-alt me-2"></i> Refresh Data
+                    </button>
+                    <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#anomalySettingsModal">
+                        <i class="fas fa-cog me-2"></i> Settings
+                    </button>
+                </div>
+            </div>
+            <p class="text-muted">Real-time visualization of detected data anomalies across the property assessment database.</p>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <!-- Anomaly Map Container -->
+                    <div id="anomalyMapContainer">
+                        <!-- Anomaly Count Badge -->
+                        <div class="anomaly-count-badge">
+                            <i class="fas fa-exclamation-triangle me-2 text-danger"></i>
+                            <span id="anomalyCount">0</span> Anomalies Detected
+                        </div>
+                        
+                        <!-- Anomaly Controls -->
+                        <div class="anomaly-controls">
+                            <div class="anomaly-heatmap-toggle mb-2">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="heatmapToggle">
+                                    <label class="form-check-label" for="heatmapToggle">Show Heatmap</label>
+                                </div>
+                            </div>
+                            
+                            <div class="anomaly-cluster-toggle mb-2">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="clusterToggle" checked>
+                                    <label class="form-check-label" for="clusterToggle">Cluster Anomalies</label>
+                                </div>
+                            </div>
+                            
+                            <div class="anomaly-filter">
+                                <select class="form-select form-select-sm" id="anomalyTypeFilter">
+                                    <option value="all">All Anomaly Types</option>
+                                    <option value="data">Data Anomalies</option>
+                                    <option value="spatial">Spatial Anomalies</option>
+                                    <option value="valuation">Valuation Anomalies</option>
+                                    <option value="temporal">Temporal Anomalies</option>
+                                </select>
+                            </div>
+                            
+                            <div class="anomaly-filter">
+                                <select class="form-select form-select-sm" id="anomalySeverityFilter">
+                                    <option value="all">All Severity Levels</option>
+                                    <option value="high">High Severity</option>
+                                    <option value="medium">Medium Severity</option>
+                                    <option value="low">Low Severity</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Anomaly Legend -->
+                        <div class="anomaly-legend">
+                            <div class="fw-bold mb-2">Anomaly Types</div>
+                            <div class="anomaly-legend-item">
+                                <div class="legend-color" style="background-color: #dc3545;"></div>
+                                <span>Data Anomaly</span>
+                            </div>
+                            <div class="anomaly-legend-item">
+                                <div class="legend-color" style="background-color: #fd7e14;"></div>
+                                <span>Spatial Anomaly</span>
+                            </div>
+                            <div class="anomaly-legend-item">
+                                <div class="legend-color" style="background-color: #6f42c1;"></div>
+                                <span>Valuation Anomaly</span>
+                            </div>
+                            <div class="anomaly-legend-item">
+                                <div class="legend-color" style="background-color: #0dcaf0;"></div>
+                                <span>Temporal Anomaly</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Anomaly Details</h5>
+                </div>
+                <div class="card-body p-3">
+                    <div id="anomalyDetails">
+                        <!-- Anomaly details will be populated here -->
+                        <div class="text-center py-5 text-muted">
+                            <i class="fas fa-map-marker-alt fa-3x mb-3"></i>
+                            <p>Select an anomaly on the map to view details</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Anomaly Statistics & Trends</h5>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-timerange="day">Day</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary active" data-timerange="week">Week</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-timerange="month">Month</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="text-center mb-3">
+                                <h6 class="text-muted">Total Anomalies</h6>
+                                <h2 class="mb-0" id="totalAnomaliesCount">245</h2>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center mb-3">
+                                <h6 class="text-muted">High Severity</h6>
+                                <h2 class="mb-0 text-danger" id="highSeverityCount">32</h2>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center mb-3">
+                                <h6 class="text-muted">Medium Severity</h6>
+                                <h2 class="mb-0 text-warning" id="mediumSeverityCount">89</h2>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center mb-3">
+                                <h6 class="text-muted">Low Severity</h6>
+                                <h2 class="mb-0 text-success" id="lowSeverityCount">124</h2>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <canvas id="anomalyTrendChart" height="100"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Anomaly Settings Modal -->
+<div class="modal fade" id="anomalySettingsModal" tabindex="-1" aria-labelledby="anomalySettingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="anomalySettingsModalLabel">Anomaly Map Settings</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Detection Sensitivity</label>
+                        <select class="form-select" id="sensitivitySetting">
+                            <option value="low">Low (Fewer Anomalies)</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High (More Anomalies)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Refresh Interval</label>
+                        <select class="form-select" id="refreshIntervalSetting">
+                            <option value="0">Manual Refresh Only</option>
+                            <option value="30">Every 30 seconds</option>
+                            <option value="60" selected>Every minute</option>
+                            <option value="300">Every 5 minutes</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Anomaly Types to Display</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="dataAnomalySetting" checked>
+                            <label class="form-check-label" for="dataAnomalySetting">
+                                Data Anomalies
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="spatialAnomalySetting" checked>
+                            <label class="form-check-label" for="spatialAnomalySetting">
+                                Spatial Anomalies
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="valuationAnomalySetting" checked>
+                            <label class="form-check-label" for="valuationAnomalySetting">
+                                Valuation Anomalies
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="temporalAnomalySetting" checked>
+                            <label class="form-check-label" for="temporalAnomalySetting">
+                                Temporal Anomalies
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Minimum Anomaly Severity</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="severitySetting" id="severityHigh" value="high">
+                            <label class="form-check-label" for="severityHigh">
+                                High Only
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="severitySetting" id="severityMedium" value="medium" checked>
+                            <label class="form-check-label" for="severityMedium">
+                                Medium and Higher
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="severitySetting" id="severityLow" value="low">
+                            <label class="form-check-label" for="severityLow">
+                                All Severities
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveSettingsBtn">Save Settings</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize the map
+        var anomalyMap = L.map('anomalyMapContainer').setView([46.2502, -119.2534], 10); // Centered on Benton County
+        
+        // Add base layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(anomalyMap);
+        
+        // Sample anomaly data - would be fetched from API in production
+        const anomalyData = [
+            {
+                id: 1001,
+                lat: 46.2585,
+                lng: -119.2534,
+                type: 'data',
+                severity: 'high',
+                score: 0.92,
+                propertyId: 'P1234',
+                address: '123 Main St, Kennewick',
+                description: 'Property value 85% above neighborhood average',
+                detectedAt: '2025-04-24T08:35:00Z',
+                history: [0.1, 0.2, 0.3, 0.4, 0.5, 0.7, 0.92]
+            },
+            {
+                id: 1002,
+                lat: 46.2602,
+                lng: -119.2755,
+                type: 'spatial',
+                severity: 'medium',
+                score: 0.68,
+                propertyId: 'P2345',
+                address: '456 Oak Ave, Richland',
+                description: 'Property boundaries inconsistent with aerial imagery',
+                detectedAt: '2025-04-23T14:22:00Z',
+                history: [0.2, 0.3, 0.3, 0.4, 0.5, 0.6, 0.68]
+            },
+            {
+                id: 1003,
+                lat: 46.2390,
+                lng: -119.2380,
+                type: 'valuation',
+                severity: 'high',
+                score: 0.88,
+                propertyId: 'P3456',
+                address: '789 Elm St, Richland',
+                description: 'Unusual 40% value decrease over 30 days',
+                detectedAt: '2025-04-25T09:10:00Z',
+                history: [0.3, 0.5, 0.7, 0.75, 0.8, 0.85, 0.88]
+            },
+            {
+                id: 1004,
+                lat: 46.2210,
+                lng: -119.1587,
+                type: 'temporal',
+                severity: 'low',
+                score: 0.45,
+                propertyId: 'P4567',
+                address: '101 Pine St, Kennewick',
+                description: 'Assessment history shows skipped evaluation period',
+                detectedAt: '2025-04-22T11:45:00Z',
+                history: [0.1, 0.2, 0.3, 0.3, 0.4, 0.4, 0.45]
+            },
+            {
+                id: 1005,
+                lat: 46.2702,
+                lng: -119.2855,
+                type: 'data',
+                severity: 'medium',
+                score: 0.72,
+                propertyId: 'P5678',
+                address: '202 Cedar Ln, Richland',
+                description: 'Square footage value 30% inconsistent with GIS data',
+                detectedAt: '2025-04-24T16:05:00Z',
+                history: [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.72]
+            },
+            {
+                id: 1006,
+                lat: 46.2490,
+                lng: -119.3080,
+                type: 'valuation',
+                severity: 'high',
+                score: 0.95,
+                propertyId: 'P6789',
+                address: '303 Maple Dr, Richland',
+                description: 'Tax assessment 125% above similar local properties',
+                detectedAt: '2025-04-25T08:30:00Z',
+                history: [0.5, 0.6, 0.7, 0.8, 0.85, 0.9, 0.95]
+            },
+            {
+                id: 1007,
+                lat: 46.2290,
+                lng: -119.2180,
+                type: 'spatial',
+                severity: 'low',
+                score: 0.35,
+                propertyId: 'P7890',
+                address: '404 Birch Way, Kennewick',
+                description: 'Minor parcel boundary overlap with adjacent property',
+                detectedAt: '2025-04-23T09:50:00Z',
+                history: [0.1, 0.2, 0.2, 0.25, 0.3, 0.35, 0.35]
+            },
+            {
+                id: 1008,
+                lat: 46.2390,
+                lng: -119.1780,
+                type: 'temporal',
+                severity: 'medium',
+                score: 0.65,
+                propertyId: 'P8901',
+                address: '505 Spruce Ave, Kennewick',
+                description: 'Multiple rapid ownership changes in 30-day period',
+                detectedAt: '2025-04-24T14:15:00Z',
+                history: [0.2, 0.3, 0.35, 0.4, 0.5, 0.6, 0.65]
+            }
+        ];
+        
+        // Update anomaly count badge
+        document.getElementById('anomalyCount').textContent = anomalyData.length;
+        document.getElementById('totalAnomaliesCount').textContent = anomalyData.length + 237; // Total including history
+        document.getElementById('highSeverityCount').textContent = anomalyData.filter(a => a.severity === 'high').length + 29;
+        document.getElementById('mediumSeverityCount').textContent = anomalyData.filter(a => a.severity === 'medium').length + 86;
+        document.getElementById('lowSeverityCount').textContent = anomalyData.filter(a => a.severity === 'low').length + 122;
+        
+        // Initialize marker layer groups
+        var markers = L.layerGroup().addTo(anomalyMap);
+        var heatmapLayer = null;
+        
+        // Function to create markers with appropriate styling
+        function createMarkers(data) {
+            // Clear existing markers
+            markers.clearLayers();
+            
+            // Add new markers
+            data.forEach(function(anomaly) {
+                // Create marker with appropriate icon based on anomaly type
+                var markerIcon = L.divIcon({
+                    className: `anomaly-marker anomaly-marker-${anomaly.type}`,
+                    html: `<i class="fas fa-exclamation"></i>`,
+                    iconSize: [24, 24],
+                    iconAnchor: [12, 12]
+                });
+                
+                var marker = L.marker([anomaly.lat, anomaly.lng], {icon: markerIcon})
+                    .bindTooltip(`
+                        <div>
+                            <strong>${anomaly.address}</strong><br>
+                            <span class="badge ${getSeverityClass(anomaly.severity)}">${anomaly.severity.toUpperCase()}</span>
+                            <span class="anomaly-detail-type ${anomaly.type}">${formatAnomalyType(anomaly.type)}</span><br>
+                            ${anomaly.description}
+                        </div>
+                    `, {className: 'anomaly-tooltip'})
+                    .addTo(markers);
+                
+                // Add click handler to show details
+                marker.on('click', function() {
+                    showAnomalyDetails(anomaly);
+                });
+            });
+        }
+        
+        // Initialize markers with all data
+        createMarkers(anomalyData);
+        
+        // Function to show anomaly details in the sidebar
+        function showAnomalyDetails(anomaly) {
+            const detailsContainer = document.getElementById('anomalyDetails');
+            const detectedDate = new Date(anomaly.detectedAt);
+            
+            const detailsHTML = `
+                <div class="anomaly-detail-card ${anomaly.type} p-3">
+                    <div class="anomaly-detail-header mb-2">
+                        <div>
+                            <span class="anomaly-detail-type ${anomaly.type}">${formatAnomalyType(anomaly.type)}</span>
+                            <span class="badge ${getSeverityClass(anomaly.severity)}">${anomaly.severity.toUpperCase()}</span>
+                        </div>
+                        <div class="anomaly-score ${anomaly.severity}">${(anomaly.score * 100).toFixed(0)}</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="fw-bold">${anomaly.address}</div>
+                        <div class="text-muted small">Property ID: ${anomaly.propertyId}</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="fw-bold">Description</div>
+                        <p>${anomaly.description}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="fw-bold">Detected</div>
+                        <div>${detectedDate.toLocaleString()}</div>
+                    </div>
+                    
+                    <div>
+                        <div class="fw-bold">Anomaly Score Trend</div>
+                        <div class="trend-chart">
+                            <canvas id="anomalyTrendChart-${anomaly.id}"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="anomaly-actions mt-3">
+                        <button class="btn btn-sm btn-primary">Investigate</button>
+                        <button class="btn btn-sm btn-outline-secondary">Mark as Reviewed</button>
+                        <button class="btn btn-sm btn-outline-danger">Dismiss</button>
+                    </div>
+                </div>
+            `;
+            
+            detailsContainer.innerHTML = detailsHTML;
+            
+            // Create trend chart
+            const ctx = document.getElementById(`anomalyTrendChart-${anomaly.id}`).getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['7 days ago', '6 days ago', '5 days ago', '4 days ago', '3 days ago', 'Yesterday', 'Today'],
+                    datasets: [{
+                        label: 'Anomaly Score',
+                        data: anomaly.history,
+                        backgroundColor: getColorForAnomalyType(anomaly.type),
+                        borderColor: getColorForAnomalyType(anomaly.type),
+                        tension: 0.3,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 1,
+                            ticks: {
+                                callback: function(value) {
+                                    return (value * 100).toFixed(0) + '%';
+                                }
+                            }
+                        },
+                        x: {
+                            display: false
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Helper functions
+        function formatAnomalyType(type) {
+            const typeMap = {
+                'data': 'Data',
+                'spatial': 'Spatial',
+                'valuation': 'Valuation',
+                'temporal': 'Temporal'
+            };
+            
+            return typeMap[type] || type;
+        }
+        
+        function getSeverityClass(severity) {
+            const severityMap = {
+                'high': 'bg-danger',
+                'medium': 'bg-warning',
+                'low': 'bg-success'
+            };
+            
+            return severityMap[severity] || 'bg-secondary';
+        }
+        
+        function getColorForAnomalyType(type) {
+            const colorMap = {
+                'data': '#dc3545',
+                'spatial': '#fd7e14',
+                'valuation': '#6f42c1',
+                'temporal': '#0dcaf0'
+            };
+            
+            return colorMap[type] || '#666666';
+        }
+        
+        // Filter controls
+        document.getElementById('anomalyTypeFilter').addEventListener('change', function() {
+            const selectedType = this.value;
+            let filteredData = anomalyData;
+            
+            if (selectedType !== 'all') {
+                filteredData = anomalyData.filter(a => a.type === selectedType);
+            }
+            
+            // Apply any existing severity filter
+            const severityFilter = document.getElementById('anomalySeverityFilter').value;
+            if (severityFilter !== 'all') {
+                filteredData = filteredData.filter(a => a.severity === severityFilter);
+            }
+            
+            createMarkers(filteredData);
+            document.getElementById('anomalyCount').textContent = filteredData.length;
+        });
+        
+        document.getElementById('anomalySeverityFilter').addEventListener('change', function() {
+            const selectedSeverity = this.value;
+            let filteredData = anomalyData;
+            
+            if (selectedSeverity !== 'all') {
+                filteredData = anomalyData.filter(a => a.severity === selectedSeverity);
+            }
+            
+            // Apply any existing type filter
+            const typeFilter = document.getElementById('anomalyTypeFilter').value;
+            if (typeFilter !== 'all') {
+                filteredData = filteredData.filter(a => a.type === typeFilter);
+            }
+            
+            createMarkers(filteredData);
+            document.getElementById('anomalyCount').textContent = filteredData.length;
+        });
+        
+        // Heatmap toggle
+        document.getElementById('heatmapToggle').addEventListener('change', function() {
+            if (this.checked) {
+                // Create heatmap
+                if (!heatmapLayer) {
+                    const heatmapData = anomalyData.map(a => {
+                        // Weight by severity
+                        const intensity = a.severity === 'high' ? 0.8 : (a.severity === 'medium' ? 0.5 : 0.3);
+                        return [a.lat, a.lng, intensity];
+                    });
+                    
+                    heatmapLayer = L.heatLayer(heatmapData, {
+                        radius: 25,
+                        blur: 15,
+                        maxZoom: 17
+                    }).addTo(anomalyMap);
+                } else {
+                    anomalyMap.addLayer(heatmapLayer);
+                }
+            } else if (heatmapLayer) {
+                anomalyMap.removeLayer(heatmapLayer);
+            }
+        });
+        
+        // Settings save handler
+        document.getElementById('saveSettingsBtn').addEventListener('click', function() {
+            alert('Settings saved successfully!');
+            $('#anomalySettingsModal').modal('hide');
+        });
+        
+        // Create overall trend chart
+        const trendCtx = document.getElementById('anomalyTrendChart').getContext('2d');
+        const trendChart = new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['Apr 18', 'Apr 19', 'Apr 20', 'Apr 21', 'Apr 22', 'Apr 23', 'Apr 24', 'Apr 25'],
+                datasets: [
+                    {
+                        label: 'High Severity',
+                        data: [25, 27, 30, 28, 31, 30, 32, 32],
+                        borderColor: '#dc3545',
+                        backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Medium Severity',
+                        data: [80, 78, 82, 85, 87, 90, 88, 89],
+                        borderColor: '#fd7e14',
+                        backgroundColor: 'rgba(253, 126, 20, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Low Severity',
+                        data: [118, 120, 125, 121, 120, 122, 125, 124],
+                        borderColor: '#198754',
+                        backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        stacked: true
+                    }
+                }
+            }
+        });
+        
+        // Refresh button handler
+        document.getElementById('refreshAnomalyMap').addEventListener('click', function() {
+            // In production, this would fetch fresh data from the API
+            createMarkers(anomalyData);
+            
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-sync-alt fa-spin me-2"></i> Refreshing...';
+            
+            setTimeout(() => {
+                this.disabled = false;
+                this.innerHTML = '<i class="fas fa-sync-alt me-2"></i> Refresh Data';
+                
+                // Show a success toast
+                const toastHTML = `
+                    <div class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <i class="fas fa-check-circle me-2"></i> Anomaly data refreshed successfully!
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `;
+                
+                const toastContainer = document.createElement('div');
+                toastContainer.className = 'position-fixed bottom-0 end-0 p-3';
+                toastContainer.style.zIndex = '1050';
+                toastContainer.innerHTML = toastHTML;
+                document.body.appendChild(toastContainer);
+                
+                const toast = new bootstrap.Toast(toastContainer.querySelector('.toast'));
+                toast.show();
+                
+                setTimeout(() => {
+                    document.body.removeChild(toastContainer);
+                }, 3000);
+            }, 1500);
+        });
+    });
+</script>
+{% endblock %}

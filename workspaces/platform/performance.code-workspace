@@ -1,0 +1,82 @@
+{
+  "folders": [
+    {
+      "name": "🏗️ PERFORMANCE Domain",
+      "path": "../../os-platform/performance"
+    },
+    {
+      "name": "📦 Platform SDK",
+      "path": "../../SDK"
+    },
+    {
+      "name": "🧪 Tests",
+      "path": "../../tests"
+    },
+    {
+      "name": "📚 Architecture Docs",
+      "path": "../../docs/architecture"
+    },
+    {
+      "name": "⚙️ Config (shared)",
+      "path": "../../config"
+    }
+  ],
+  "settings": {
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#7c3aed",
+      "titleBar.activeForeground": "#ffffff"
+    },
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "../../marketplace": true,
+      "../../frontend": true,
+      "../../terrafusion-cos": true,
+      "../../backend": true
+    },
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit",
+      "source.fixAll": "explicit"
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-vscode.vscode-typescript-next",
+      "rust-lang.rust-analyzer",
+      "ms-python.vscode-pylance"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Start PERFORMANCE Service",
+        "type": "debugpy",
+        "request": "launch",
+        "program": "../../os-platform/performance/main.py",
+        "console": "integratedTerminal"
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build PERFORMANCE",
+        "type": "shell",
+        "command": "make",
+        "args": ["build-performance"],
+        "group": "build"
+      },
+      {
+        "label": "Test PERFORMANCE",
+        "type": "shell", 
+        "command": "make",
+        "args": ["test-performance"],
+        "group": "test"
+      }
+    ]
+  }
+}

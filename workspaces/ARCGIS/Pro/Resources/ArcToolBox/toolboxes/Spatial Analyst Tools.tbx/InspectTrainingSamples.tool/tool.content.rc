@@ -1,0 +1,18 @@
+{
+    "map": {
+        "description": "Estimates the accuracy of individual training samples. The cross validation accuracy is computed using the previously generated classification training result in an .ecd file and the training samples. Outputs include a raster dataset containing the misclassified class values and a training sample dataset with the accuracy score for each training sample.",
+        "in_additional_raster.descr": "Ancillary raster datasets, such as a multispectral image or a DEM, will be incorporated to generate attributes and other required information for the classifier. This raster is necessary when calculating attributes such as mean or standard deviation. This parameter is optional.",
+        "in_additional_raster.title": "Additional Input Raster",
+        "in_classifier_definition.descr": "The .ecd output classifier file from any of the train classifier tools. The .ecd file is a JSON file that contains attribute information, statistics, or other information needed for the classifier.",
+        "in_classifier_definition.title": "Input Classifier Definition File",
+        "in_raster.descr": "The input raster to be classified.",
+        "in_raster.title": "Input Raster",
+        "in_training_features.descr": "<xdoc><p>A training sample feature class created in the <span class=\"esri_uicontrol\">Training Samples Manager</span> pane.</p></xdoc>",
+        "in_training_features.title": "Input Training Sample File",
+        "out_misclassified_raster.descr": "The output misclassified raster having NoData outside training samples. In training samples, correctly classified pixels are represented as NoData, and misclassified pixels are represented by their class value. The results is an index map of misclassified class values.",
+        "out_misclassified_raster.title": "Output Misclassified Raster",
+        "out_training_feature_class.descr": "The output individual training samples saved as a feature class. The associated attribute table contains an addition field listing the accuracy score.",
+        "out_training_feature_class.title": "Output Training Sample Feature Class with Score",
+        "title": "Inspect Training Samples"
+    }
+}

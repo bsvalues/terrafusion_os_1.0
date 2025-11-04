@@ -1,0 +1,258 @@
+/* ═══════════════════════════════════════════════════════════════
+   TERRASPHERE ANIMATIONS - QUANTUM GOVERNANCE PLATFORM
+   Advanced CSS animations for the TerraFusion logo
+   ═══════════════════════════════════════════════════════════════ */
+
+.terra-sphere-container {
+  position: relative;
+  display: inline-block;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.terra-sphere-svg {
+  display: block;
+  filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.3));
+}
+
+/* Sphere rotation animation */
+.terra-sphere-main {
+  transform-origin: center center;
+  animation: terra-sphere-rotate 8s linear infinite;
+}
+
+/* Orbital ring animations */
+.terra-sphere-orbital {
+  animation: terra-orbital-rotate 12s linear infinite;
+}
+
+.terra-sphere-orbital-2 {
+  animation: terra-orbital-rotate 12s linear infinite reverse;
+}
+
+/* Particle floating animation */
+.terra-sphere-particles circle {
+  animation: terra-float 4s ease-in-out infinite;
+}
+
+.terra-sphere-particles circle:nth-child(2) {
+  animation-delay: -1s;
+}
+
+.terra-sphere-particles circle:nth-child(3) {
+  animation-delay: -2s;
+}
+
+.terra-sphere-particles circle:nth-child(4) {
+  animation-delay: -3s;
+}
+
+/* Inner ring pulse */
+.terra-sphere-inner-ring-1 {
+  animation: terra-ring-pulse 3s ease-in-out infinite;
+}
+
+.terra-sphere-inner-ring-2 {
+  animation: terra-ring-pulse 3s ease-in-out infinite;
+  animation-delay: -1.5s;
+}
+
+/* Outer ring glow */
+.terra-sphere-outer-ring {
+  animation: terra-outer-glow 4s ease-in-out infinite;
+}
+
+/* Core pulse */
+.terra-sphere-core {
+  animation: terra-core-pulse 2s ease-in-out infinite;
+}
+
+/* Quantum shimmer overlay */
+.terra-sphere-shimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 30%, rgba(0, 255, 255, 0.3) 50%, transparent 70%);
+  border-radius: 50%;
+  animation: terra-shimmer-sweep 3s linear infinite;
+  pointer-events: none;
+}
+
+/* Variant-specific styles */
+.terra-sphere-glow .terra-sphere-svg {
+  filter: drop-shadow(0 0 30px rgba(0, 255, 255, 0.5));
+}
+
+.terra-sphere-pulse .terra-sphere-main {
+  animation:
+    terra-sphere-rotate 8s linear infinite,
+    terra-main-pulse 2s ease-in-out infinite;
+}
+
+.terra-sphere-quantum .terra-sphere-svg {
+  filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.4)) drop-shadow(0 0 40px rgba(0, 128, 255, 0.3))
+    drop-shadow(0 0 60px rgba(136, 68, 255, 0.2));
+}
+
+.terra-sphere-static .terra-sphere-main,
+.terra-sphere-static .terra-sphere-orbital,
+.terra-sphere-static .terra-sphere-orbital-2 {
+  animation: none;
+}
+
+/* Size classes to avoid inline styles */
+.terra-sphere-sm {
+  width: 32px;
+  height: 32px;
+}
+
+.terra-sphere-md {
+  width: 48px;
+  height: 48px;
+}
+
+.terra-sphere-lg {
+  width: 64px;
+  height: 64px;
+}
+
+.terra-sphere-xl {
+  width: 96px;
+  height: 96px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   KEYFRAME ANIMATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes terra-sphere-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes terra-orbital-rotate {
+  0% {
+    transform: rotate(45deg) rotateX(0deg);
+  }
+  100% {
+    transform: rotate(45deg) rotateX(360deg);
+  }
+}
+
+@keyframes terra-float {
+  0%,
+  100% {
+    transform: translateY(0px);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-2px);
+    opacity: 0.4;
+  }
+}
+
+@keyframes terra-ring-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+    stroke-width: 1;
+  }
+  50% {
+    opacity: 0.8;
+    stroke-width: 1.5;
+  }
+}
+
+@keyframes terra-outer-glow {
+  0%,
+  100% {
+    opacity: 0.6;
+    stroke-width: 1;
+  }
+  50% {
+    opacity: 0.9;
+    stroke-width: 2;
+  }
+}
+
+@keyframes terra-core-pulse {
+  0%,
+  100% {
+    r: 12;
+    opacity: 1;
+  }
+  50% {
+    r: 14;
+    opacity: 0.8;
+  }
+}
+
+@keyframes terra-main-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+@keyframes terra-shimmer-sweep {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE ADJUSTMENTS
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 412px) {
+  .terra-sphere-container {
+    transform: scale(0.9);
+  }
+
+  .terra-sphere-particles {
+    opacity: 0.7;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .terra-sphere-main,
+  .terra-sphere-orbital,
+  .terra-sphere-orbital-2,
+  .terra-sphere-particles circle,
+  .terra-sphere-inner-ring-1,
+  .terra-sphere-inner-ring-2,
+  .terra-sphere-outer-ring,
+  .terra-sphere-core,
+  .terra-sphere-shimmer {
+    animation: none;
+  }
+
+  .terra-sphere-svg {
+    filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.5));
+  }
+}
+
+/* High performance mode for mobile */
+@media (max-width: 768px) {
+  .terra-sphere-particles {
+    display: none;
+  }
+
+  .terra-sphere-orbital {
+    opacity: 0.5;
+  }
+}

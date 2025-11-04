@@ -1,0 +1,94 @@
+{
+  "workspace_protection_system": {
+    "workspace_name": "auth",
+    "domain": "authentication_authorization",
+    "risk_level": "critical",
+    "customization_timestamp": "2025-10-16T10:16:02.536337",
+    "eleven_layer_protection": {
+      "L1_role_scope_confirmation": {
+        "workspace_role": "auth specialized AI agent",
+        "scope_definition": "Optimize and protect authentication_authorization operations",
+        "success_criteria": "Maintain critical-level security for authentication_authorization",
+        "data_types_handled": [
+          "user_credentials",
+          "auth_tokens",
+          "permission_data"
+        ],
+        "protection_priorities": [
+          "credential_security",
+          "auth_integrity",
+          "access_control"
+        ]
+      },
+      "L2_input_sanitation_threat_modeling": {
+        "threat_model": "authentication_authorization_specific_threats",
+        "input_validation": "auth_input_sanitization",
+        "injection_prevention": "authentication_authorization_injection_protection",
+        "risk_level_controls": "critical"
+      },
+      "L3_data_classification": {
+        "data_types": [
+          "user_credentials",
+          "auth_tokens",
+          "permission_data"
+        ],
+        "classification_level": "critical",
+        "privacy_requirements": "authentication_authorization_privacy_rules",
+        "retention_policies": "auth_data_retention",
+        "access_controls": "authentication_authorization_access_matrix"
+      },
+      "L4_secrets_hygiene": {
+        "vault_integration": "auth_secret_vault",
+        "key_rotation": "authentication_authorization_key_management",
+        "credential_management": "auth_credential_store",
+        "environment_separation": "critical_env_isolation"
+      },
+      "L5_environment_guardrails": {
+        "environment_controls": "auth_env_controls",
+        "blast_radius_limits": "authentication_authorization_isolation",
+        "feature_flags": "auth_feature_management",
+        "deployment_gates": "critical_deployment_controls"
+      },
+      "L6_policy_compliance": {
+        "domain_regulations": "authentication_authorization_compliance_framework",
+        "government_standards": [
+          "credential_security",
+          "auth_integrity",
+          "access_control"
+        ],
+        "audit_requirements": "auth_audit_trail",
+        "compliance_monitoring": "authentication_authorization_compliance_checks"
+      },
+      "L7_dependency_license_review": {
+        "sbom_generation": "auth_software_bill_of_materials",
+        "vulnerability_scanning": "authentication_authorization_vuln_checks",
+        "license_compliance": "auth_license_validation",
+        "dependency_monitoring": "critical_dependency_tracking"
+      },
+      "L8_reproducibility": {
+        "version_pinning": "auth_version_control",
+        "build_determinism": "authentication_authorization_build_reproducibility",
+        "configuration_management": "auth_config_management",
+        "deployment_consistency": "critical_deployment_standards"
+      },
+      "L9_observability_hooks": {
+        "metrics_collection": "auth_domain_metrics",
+        "logging_framework": "authentication_authorization_specialized_logging",
+        "tracing_system": "auth_distributed_tracing",
+        "alerting_rules": "authentication_authorization_alert_configuration"
+      },
+      "L10_human_in_loop_gates": {
+        "approval_workflows": "auth_approval_matrix",
+        "review_requirements": "authentication_authorization_review_gates",
+        "escalation_procedures": "critical_escalation_rules",
+        "manual_override_controls": "auth_override_procedures"
+      },
+      "L11_red_team_self_check": {
+        "adversarial_testing": "auth_penetration_testing",
+        "failure_mode_analysis": "authentication_authorization_failure_scenarios",
+        "rollback_procedures": "auth_disaster_recovery",
+        "security_validation": "critical_security_assessment"
+      }
+    }
+  }
+}

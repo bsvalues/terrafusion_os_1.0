@@ -1,0 +1,13 @@
+{
+    "map": {
+        "description": "Applies values from a metadata record in the FeatureLevelMetadata table to selected features that have matching attribute fields.",
+        "in_features.descr": "<xdoc><p>The inputs to which the <span class=\"esri_uicontrol\">Metadata Favorite</span> parameter value will be applied.</p></xdoc>",
+        "in_features.title": "Input Features",
+        "in_metadata_table.descr": "The path to the metadata table containing the records that will be used to populate attributes.",
+        "in_metadata_table.title": "Input Metadata Table",
+        "metadata_favorite.descr": "The record that will be used to populate attributes. The available options depend on the records available in the metadata table.",
+        "metadata_favorite.title": "Metadata Favorite",
+        "title": "Apply Feature Level Metadata",
+        "updated_features.title": "Updated Features"
+    }
+}

@@ -1,0 +1,158 @@
+{
+    "type": "FunctionTool",
+    "guid": "{3653a2cb-0647-4ca1-9db9-7021cd882965}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190304",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_raster": {
+            "displayname": "$rc:in_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "DEMosaicDataset"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_raster.descr"
+        },
+        "out_raster_dataset": {
+            "direction": "out",
+            "displayname": "$rc:out_raster_dataset.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_raster_dataset.descr"
+        },
+        "Ortho_type": {
+            "displayname": "$rc:ortho_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "CONSTANT_ELEVATION",
+                        "code": "$rc:ortho_type.domain.CONSTANT_ELEVATION"
+                    },
+                    {
+                        "value": "DEM",
+                        "code": "$rc:ortho_type.domain.DEM"
+                    }
+                ]
+            },
+            "description": "$rc:ortho_type.descr"
+        },
+        "constant_elevation": {
+            "enabled": "false",
+            "displayname": "$rc:constant_elevation.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:constant_elevation.descr"
+        },
+        "in_DEM_raster": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:in_dem_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "DEMosaicDataset"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "DEImageServer"
+                    }
+                ]
+            },
+            "description": "$rc:in_dem_raster.descr"
+        },
+        "ZFactor": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:zfactor.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "1",
+            "description": "$rc:zfactor.descr"
+        },
+        "ZOffset": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:zoffset.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:zoffset.descr"
+        },
+        "Geoid": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:geoid.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "GEOID"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NONE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:geoid.descr"
+        }
+    },
+    "environments": [
+        "cellSize",
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "nodata",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "pyramid",
+        "rasterStatistics",
+        "resamplingMethod",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

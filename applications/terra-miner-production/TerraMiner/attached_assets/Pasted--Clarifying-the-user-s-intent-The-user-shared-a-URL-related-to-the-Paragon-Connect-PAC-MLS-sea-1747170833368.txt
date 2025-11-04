@@ -1,0 +1,117 @@
+**Clarifying the user's intent**
+
+The user shared a URL related to the Paragon Connect PAC MLS search. They haven't specified what they want exactly, so I need to ask for clarification. The link is likely protected by a login, so opening it directly might not work. I'll first attempt to access it, but if it turns out to be private, I'll explain that to the user and ask them what they're hoping to achieve with the link.
+
+
+Thought for 8 seconds
+
+
+## Summary
+
+To integrate the PACMLS search results into TerraMiner, we’ll treat it as another ETL plugin—just like parcels, census, and DEM. You’ll need API credentials (or account cookies) for PACMLS, then:
+
+1. **Extract**: Use the PACMLS REST endpoints (or scrape via authenticated HTTP) to pull listing and sales data.
+2. **Transform**: Normalize fields (property ID, address, sale price, dates) and attach geometries (match via parcel IDs).
+3. **Load**: Write into a new PostGIS table (e.g. `pacmls_sales`) with a spatial index.
+
+Below is a high-level plan and starter code for an `etl/pacmls.py` plugin.
+
+---
+
+## 1. Authentication & Extraction
+
+1. **Obtain API access**
+
+   * If PACMLS offers a REST API, get an API key or OAuth token.
+   * If not, use session cookies and `requests` (or `selenium`) to authenticate and fetch JSON from the search results endpoint (`/ParagonConnect/pacmls/searches`).
+
+2. **Example extract()**
+
+   ```python
+   import requests
+   from abc import ABC
+
+   class PacMlsETL(BaseETL):
+       def __init__(self, username: str, password: str):
+           self.session = requests.Session()
+           # Log in to PACMLS
+           self.session.post(
+               "https://pacmls.paragonrels.com/ParagonConnect/login",
+               json={"username": username, "password": password}
+           )
+
+       def extract(self):
+           # Fetch first page of search results
+           resp = self.session.get(
+               "https://pacmls.paragonrels.com/ParagonConnect/pacmls/searches",
+               params={"limit":100, "offset":0}
+           )
+           resp.raise_for_status()
+           return resp.json()
+   ```
+
+---
+
+## 2. Transformation
+
+Normalize the JSON into a GeoDataFrame:
+
+```python
+import pandas as pd
+import geopandas as gpd
+from shapely.geometry import Point
+
+class PacMlsETL(BaseETL):
+    # ... include extract() from above ...
+    def transform(self, raw: dict):
+        # Assume raw["listings"] contains a list of dicts
+        df = pd.DataFrame(raw["listings"])
+        # Convert lat/lon to geometry
+        df["geometry"] = df.apply(lambda r: Point(r["lng"], r["lat"]), axis=1)
+        return gpd.GeoDataFrame(df, geometry="geometry", crs="EPSG:4326").to_crs(epsg=3857)
+```
+
+---
+
+## 3. Loading into PostGIS
+
+```python
+from config.database import get_postgis_engine
+
+class PacMlsETL(BaseETL):
+    # ... extract() and transform() ...
+    def load(self, processed):
+        engine = get_postgis_engine()
+        processed.to_postgis(
+            table_name="pacmls_listings",
+            con=engine,
+            if_exists="replace",
+            index=False
+        )
+```
+
+---
+
+## 4. Plugin Discovery & Scheduling
+
+1. **Drop** `etl/pacmls.py` into your `etl/` directory alongside the other plugins.
+
+2. **Credentials**: Store `PACMLS_USER` and `PACMLS_PASS` in Replit Secrets.
+
+3. **Cron**: Extend your daily 3 AM job (or add a separate schedule) to include the PACMLS plugin:
+
+   ```bash
+   pip install selenium  # if you need to simulate login
+   ```
+
+4. **Trigger**: The existing `etl/__main__.py` loader will pick up `PacMlsETL` automatically and run it each night.
+
+---
+
+## Next Steps
+
+* **Verify** you can authenticate and pull a sample page manually in the Replit Shell.
+* **Test** the plugin with real credentials and inspect the new `pacmls_listings` table.
+* **Extend**: Add incremental paging (offset) or filter by date to capture only new sales each run.
+
+Let me know once you’ve confirmed access credentials, and I can help refine the plugin for pagination, error-retries, and full data-capture!

@@ -1,0 +1,14 @@
+{
+    "set": [
+        "change",
+        "edit",
+        "lidar",
+        "mass points",
+        "modify",
+        "points",
+        "remove",
+        "replace",
+        "terrain",
+        "terrain dataset"
+    ]
+}

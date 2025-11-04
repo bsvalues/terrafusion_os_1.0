@@ -1,0 +1,13 @@
+{
+    "map": {
+        "cluster_tolerance.descr": "<xdoc><p>The distance that determines the range in which feature vertices are made coincident. To minimize undesired movement of vertices, the x,y tolerance should be small. If no value is provided, the x,y tolerance from the first dataset in the list of inputs will be used.</p><note type=\"caution\"/><p group=\"note\">Changing this parameter&apos;s value may cause failure or unexpected results. It is recommended that you do not modify this parameter. It has been removed from view on the tool dialog box. By default, the input feature class&apos;s spatial reference x,y tolerance property is used.</p></xdoc>",
+        "cluster_tolerance.title": "XY Tolerance",
+        "description": "Analyzes the coordinate locations of feature vertices among features in one or more feature classes. Those that fall within a specified distance of one another are assumed to represent the same location and are assigned a common coordinate value (in other words, they are colocated). The tool also adds vertices where feature vertices are within the x,y tolerance of an edge and where line segments intersect.",
+        "in_features.descr": "The feature classes that will be integrated. When the distance between features is small in comparison to the tolerance, the vertices or points will be clustered (moved to be coincident).",
+        "in_features.dt.title1": "Features",
+        "in_features.title": "Input Features",
+        "out_features.title": "Updated Input Features",
+        "summary": "<xdoc><p>Analyzes the coordinate locations of feature vertices among features in one or more feature classes. Those that fall within a specified distance of one another are assumed to represent the same location and are assigned a common coordinate value (in other words, they are colocated). The tool also adds vertices where feature vertices are within the x,y tolerance of an edge and where line segments intersect.</p><p>Pairwise Integrate performs the following processing tasks:</p><p><ul><li>Vertices within the x,y tolerance of one another will be assigned the same coordinate location.</li><li>When a vertex of one feature is within the x,y tolerance of an edge of any other feature, a new vertex will be inserted on the edge.</li><li>When line segments intersect, a vertex will be inserted at the point of intersection for each feature involved in the intersection.</li></ul></p><p>An alternate tool is available for vector data integration. See the Integrate tool documentation for details.</p></xdoc>",
+        "title": "Pairwise Integrate"
+    }
+}

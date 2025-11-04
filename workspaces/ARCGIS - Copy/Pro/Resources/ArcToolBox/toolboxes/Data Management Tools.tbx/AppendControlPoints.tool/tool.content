@@ -1,0 +1,227 @@
+{
+    "type": "FunctionTool",
+    "guid": "{66b296fa-4f26-4705-8bae-42a972025082}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190538",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "in_master_control_points": {
+            "displayname": "$rc:in_master_control_points.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFeatureClass"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_master_control_points.descr"
+        },
+        "in_input_control_points": {
+            "displayname": "$rc:in_input_control_points.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFeatureClass"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    },
+                    {
+                        "type": "DEFile"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "description": "$rc:in_input_control_points.descr"
+        },
+        "in_z_field": {
+            "type": "optional",
+            "displayname": "$rc:in_z_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double"
+                ]
+            },
+            "depends": [
+                "in_input_control_points"
+            ],
+            "description": "$rc:in_z_field.descr"
+        },
+        "in_tag_field": {
+            "type": "optional",
+            "displayname": "$rc:in_tag_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_input_control_points"
+            ],
+            "description": "$rc:in_tag_field.descr"
+        },
+        "in_dem": {
+            "type": "optional",
+            "displayname": "$rc:in_dem.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "DEMosaicDataset"
+                    }
+                ]
+            },
+            "description": "$rc:in_dem.descr"
+        },
+        "out_master_control_points": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_master_control_points.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFeatureClass"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    }
+                ]
+            },
+            "depends": [
+                "in_master_control_points"
+            ]
+        },
+        "in_xy_accuracy": {
+            "type": "optional",
+            "displayname": "$rc:in_xy_accuracy.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "1.0000000000000001e-09",
+                "max": "1.7976931348623157e+308"
+            },
+            "description": "$rc:in_xy_accuracy.descr"
+        },
+        "in_z_accuracy": {
+            "type": "optional",
+            "displayname": "$rc:in_z_accuracy.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "1.0000000000000001e-09",
+                "max": "1.7976931348623157e+308"
+            },
+            "description": "$rc:in_z_accuracy.descr"
+        },
+        "Geoid": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:geoid.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "GEOID"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NONE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:geoid.descr"
+        },
+        "area_of_interest": {
+            "type": "optional",
+            "displayname": "$rc:area_of_interest.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPEnvelope"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    },
+                    {
+                        "type": "DEFeatureClass"
+                    }
+                ]
+            },
+            "description": "$rc:area_of_interest.descr"
+        },
+        "append_option": {
+            "type": "optional",
+            "displayname": "$rc:append_option.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ALL",
+                        "code": "$rc:append_option.domain.ALL"
+                    },
+                    {
+                        "value": "GCP",
+                        "code": "$rc:append_option.domain.GCP"
+                    },
+                    {
+                        "value": "GCPSET",
+                        "code": "$rc:append_option.domain.GCPSET"
+                    }
+                ]
+            },
+            "value": "ALL",
+            "description": "$rc:append_option.descr"
+        }
+    }
+}

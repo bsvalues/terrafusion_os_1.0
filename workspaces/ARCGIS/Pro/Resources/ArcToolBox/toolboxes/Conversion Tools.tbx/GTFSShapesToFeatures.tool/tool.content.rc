@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Converts a GTFS shapes.txt file from a GTFS public transit dataset to a polyline feature class showing the physical paths taken by vehicles in the public transit system.",
+        "in_gtfs_shapes_file.descr": "A valid shapes.txt file from a GTFS dataset.",
+        "in_gtfs_shapes_file.title": "Input GTFS Shapes File",
+        "out_feature_class.descr": "The output feature class.",
+        "out_feature_class.title": "Output Feature Class",
+        "summary": "<xdoc><p>Converts a GTFS shapes.txt file from a GTFS public transit dataset to a polyline feature class showing the physical paths taken by vehicles in the public transit system.</p><p>If possible, attributes from the routes.txt file are included for each shape in the output, and output lines are symbolized according to the color specified in the <span class=\"esri_fieldname\">route_color</span> field.</p><p>The shapes.txt file contains sequences of latitude and longitude points. This tool generates shape polylines by connecting these sequences of points with straight lines.</p><note type=\"note\"/><p group=\"note\">The GTFS Shapes To Features tool and the Generate Shapes Features From GTFS tool are used for different purposes. Use GTFS Shapes To Features if your GTFS dataset includes an existing shapes.txt file and you want to convert these shapes to a feature class to display in the map. Use Generate Shapes Features From GTFS if your GTFS dataset does not include an existing shapes.txt file and you want to estimate the shapes based on the other information contained in the GTFS dataset and create a shapes.txt file.</p></xdoc>",
+        "title": "GTFS Shapes To Features"
+    }
+}

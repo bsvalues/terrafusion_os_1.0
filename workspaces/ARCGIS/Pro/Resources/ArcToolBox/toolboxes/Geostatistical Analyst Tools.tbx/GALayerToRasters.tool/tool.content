@@ -1,0 +1,333 @@
+{
+    "type": "FunctionTool",
+    "guid": "{f47e7b02-4ec6-4b33-b654-0afff6c69e98}",
+    "displayname": "$rc:title",
+    "helpcontent": "11000028",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "6"
+    ],
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_geostat_layer": {
+            "display_order": "0",
+            "displayname": "$rc:in_geostat_layer.title",
+            "datatype": {
+                "type": "GPGALayer"
+            },
+            "description": "$rc:in_geostat_layer.descr"
+        },
+        "out_raster": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_raster.descr"
+        },
+        "output_type": {
+            "type": "optional",
+            "display_order": "0",
+            "displayname": "$rc:output_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PREDICTION",
+                        "code": "$rc:output_type.domain.PREDICTION"
+                    },
+                    {
+                        "value": "PREDICTION_STANDARD_ERROR",
+                        "code": "$rc:output_type.domain.PREDICTION_STANDARD_ERROR"
+                    },
+                    {
+                        "value": "PROBABILITY",
+                        "code": "$rc:output_type.domain.PROBABILITY"
+                    },
+                    {
+                        "value": "QUANTILE",
+                        "code": "$rc:output_type.domain.QUANTILE"
+                    },
+                    {
+                        "value": "CONDITION_NUMBER",
+                        "code": "$rc:output_type.domain.CONDITION_NUMBER"
+                    },
+                    {
+                        "value": "STANDARD_ERROR_INDICATORS",
+                        "code": "$rc:output_type.domain.STANDARD_ERROR_INDICATORS"
+                    }
+                ]
+            },
+            "value": "PREDICTION",
+            "description": "$rc:output_type.descr"
+        },
+        "quantile_probability_value": {
+            "type": "optional",
+            "display_order": "0",
+            "displayname": "$rc:quantile_probability_value.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "-1.7976931348623157e+308",
+                "max": "1.7976931348623157e+308"
+            },
+            "description": "$rc:quantile_probability_value.descr"
+        },
+        "cell_size": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:cell_size.title",
+            "datatype": {
+                "type": "analysis_cell_size"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "false",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "analysis_cell_size",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:cell_size.descr"
+        },
+        "points_per_block_horz": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:points_per_block_horz.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "1",
+                "max": "256"
+            },
+            "value": "1",
+            "description": "$rc:points_per_block_horz.descr"
+        },
+        "points_per_block_vert": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:points_per_block_vert.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "1",
+                "max": "256"
+            },
+            "value": "1",
+            "description": "$rc:points_per_block_vert.descr"
+        },
+        "additional_rasters": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:additional_rasters.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:additional_rasters.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:additional_rasters.dt.title2"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:additional_rasters.dt.title3"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "xmlserialize",
+                        "xml": "<GPSANameDomain xsi:type='typens:GPSANameDomain' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/3.4.0'><AlphaNumericOnly>true</AlphaNumericOnly><MaxLength>128</MaxLength></GPSANameDomain>"
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "PREDICTION",
+                                "code": "$rc:additional_rasters.domain.item2.PREDICTION"
+                            },
+                            {
+                                "value": "PREDICTION_STANDARD_ERROR",
+                                "code": "$rc:additional_rasters.domain.item2.PREDICTION_STANDARD_ERROR"
+                            },
+                            {
+                                "value": "PROBABILITY",
+                                "code": "$rc:additional_rasters.domain.item2.PROBABILITY"
+                            },
+                            {
+                                "value": "QUANTILE",
+                                "code": "$rc:additional_rasters.domain.item2.QUANTILE"
+                            },
+                            {
+                                "value": "CONDITION_NUMBER",
+                                "code": "$rc:additional_rasters.domain.item2.CONDITION_NUMBER"
+                            },
+                            {
+                                "value": "STANDARD_ERROR_INDICATORS",
+                                "code": "$rc:additional_rasters.domain.item2.STANDARD_ERROR_INDICATORS"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPRangeDomain",
+                        "min": "-1.7976931348623157e+308",
+                        "max": "1.7976931348623157e+308"
+                    }
+                ]
+            },
+            "description": "$rc:additional_rasters.descr"
+        },
+        "out_additional_rasters": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "8",
+            "displayname": "$rc:out_additional_rasters.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPRasterLayer"
+                }
+            }
+        },
+        "out_elevation": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:out_elevation.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "InchesInt",
+                        "code": "InchesInt"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "FeetInt",
+                        "code": "FeetInt"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "YardsInt",
+                        "code": "YardsInt"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "MilesInt",
+                        "code": "MilesInt"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "NauticalMilesInt",
+                        "code": "NauticalMilesInt"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Inches",
+                        "code": "Inches"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Feet",
+                        "code": "Feet"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Yards",
+                        "code": "Yards"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Miles",
+                        "code": "Miles"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "NauticalMiles",
+                        "code": "NauticalMiles"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Millimeters",
+                        "code": "Millimeters"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Centimeters",
+                        "code": "Centimeters"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Decimeters",
+                        "code": "Decimeters"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Meters",
+                        "code": "Meters"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "value": "Kilometers",
+                        "code": "Kilometers"
+                    }
+                ]
+            },
+            "description": "$rc:out_elevation.descr"
+        }
+    },
+    "environments": [
+        "cellSize",
+        "extent",
+        "geographicTransformations",
+        "mask",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "scratchWorkspace",
+        "snapRaster",
+        "workspace"
+    ]
+}

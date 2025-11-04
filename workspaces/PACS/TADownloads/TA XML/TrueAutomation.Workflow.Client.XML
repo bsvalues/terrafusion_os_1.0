@@ -1,0 +1,245 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.Workflow.Client</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.Workflow.Client.Logic.Presenters.MainTaskBar.MainTaskBarPresenter">
+            <summary>
+            Presenter for the Main Task Bar
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.Client.Logic.Presenters.MainTaskBar.MainTaskBarPresenter.SetSubscriptions(System.Object,System.EventArgs)">
+            <summary>
+            Sets up which events on the message bus this presenter is looking for
+            </summary>
+            <param name="sender">not used</param>
+            <param name="e">not used</param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.Client.Logic.Presenters.MainTaskBar.MainTaskBarPresenter.ReleaseView">
+            <summary>
+            Override for MVP framework
+            Special handling for releasing the view
+            </summary>
+            <remarks>Nothing to do for this view/presenter</remarks>
+        </member>
+        <member name="T:TrueAutomation.Workflow.Client.Logic.Views.Interfaces.MainTaskBar.IMainTaskBar">
+            <summary>
+            Provides an Interface for the PACS Main Task Bar
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowClient.MainForm">
+            <summary>
+            Main application class
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.MainForm.mainTitleBar">
+            <summary>
+            Title text
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.MainForm.#ctor">
+            <summary>
+            Constructor, initialize controls,
+            set defaults, Application menus etc.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.MainForm.MainForm_Load(System.Object,System.EventArgs)">
+            <summary>
+            Main Form load, shows a login dialog, 
+            and if login is succesful, launches the Application's 
+            Main View - Login hookup not fully implemented
+            yet
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="F:TrueAutomation.WorkflowClient.MainForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.MainForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.MainForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.Client.MainTaskBar">
+            <summary>
+            Main Task Bar of the Workflow Client UI
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.Client.MainTaskBar.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.Client.MainTaskBar.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowClient.Program.Main">
+            <summary>
+            The main entry point for the application.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.Client.WorkflowClientApplicationMenuStrategy">
+            <summary>
+            Application Menu Strategy for the Workflow Client App
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.Client.WorkflowClientApplicationMenuStrategy.GetItems">
+            <summary>
+            Gets the menu items for the Workflow Client App
+            </summary>
+            <returns>
+            List of menu items
+            </returns>
+        </member>
+        <member name="T:TrueAutomation.Workflow.Client.WorkflowMetaComponentVerbService">
+            <summary>
+            Faked-out class to handle verbs for now
+            Used to get the menus up and going
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Workflow.Client.WorkflowMetaComponentVerbService.verbMap">
+            <summary>
+            Map of verb ids to related actions
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Workflow.Client.WorkflowMetaComponentVerbService.parent">
+            <summary>
+            parent form - used to get modality correct
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.Client.WorkflowMetaComponentVerbService.#ctor(TAUserInterface.MdiParentBase)">
+            <summary>
+            Default Constructor
+            </summary>
+            <remarks>
+            Add items to the map here
+            </remarks>
+        </member>
+        <member name="M:TrueAutomation.Workflow.Client.WorkflowMetaComponentVerbService.DoVerb(TAUserInterfaceService.IVerb)">
+            <summary>
+            Executes action associated with given verb
+            </summary>
+            <param name="verb">Verb to act on</param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.Client.WorkflowMetaComponentVerbService.DoVerb(TAUserInterfaceService.IVerb,System.Object)">
+            <summary>
+            ignore - not used
+            </summary>
+            <param name="verb"></param>
+            <param name="param"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.Client.WorkflowMetaComponentVerbService.SupportsVerb(TAUserInterfaceService.IVerb)">
+            <summary>
+            ignore - not used
+            </summary>
+            <param name="verb"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.Client.WorkflowMetaComponentVerbService.QueryCheckedState(TAUserInterfaceService.IVerb)">
+            <summary>
+            ignore - not used
+            </summary>
+            <param name="verb"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.Client.WorkflowMetaComponentVerbService.EnableVerb(TAUserInterfaceService.IVerb)">
+            <summary>
+            ignore - not used
+            </summary>
+            <param name="verb"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.Client.WorkflowMetaComponentVerbService.DisplayVerb(TAUserInterfaceService.IVerb)">
+            <summary>
+            ignore - not used
+            </summary>
+            <param name="verb"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.Client.WorkflowMetaComponentVerbService.SupportsVerb(System.String)">
+            <summary>
+            ignore - not used
+            </summary>
+            <param name="verb"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.Client.WorkflowMetaComponentVerbService.DoVerb(System.String)">
+            <summary>
+            ignore - not used
+            </summary>
+            <param name="verb"></param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.Client.WorkflowMetaComponentVerbService.AddTask">
+            <summary>
+            Calls service to show Add Task Dialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.Client.WorkflowMetaComponentVerbService.ManageTaskCategoryAndType">
+            <summary>
+            Calls the service to launch
+            the Manage Task Categories and Task Types Dialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.Client.WorkflowMetaComponentVerbService.ManageCodeFiles">
+            <summary>
+            Calls the service to launch
+            the Code File Maintenance Dialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.Client.WorkflowMetaComponentVerbService.ShowUICustomizationDialog">
+            <summary>
+            Calls service to launch UI Customization Management Dialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.Client.WorkflowMetaComponentVerbService.ShowDataRecordDefinitions">
+            <summary>
+            Calls service to launch the Data Record Defintions Dialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.Client.WorkflowMetaComponentVerbService.ShowTaskQueueManagement">
+            <summary>
+            Calls service to launch the Task Queue Management Dialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.Client.WorkflowMetaComponentVerbService.ShowAbout">
+            <summary>
+            Calls service to launch the About Dialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.Client.WorkflowMetaComponentVerbService.ShowCustomOrderedListDialog">
+            <summary>
+            Calls service to launch Custom Ordered List Dialog
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.Workflow.Client.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.Client.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.Client.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+    </members>
+</doc>

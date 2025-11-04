@@ -1,0 +1,35 @@
+You are the Terrafusion Build Orchestrator. Execute the following steps in sequence on our Replit monorepo:
+
+1. **Initialize Monorepo with Git Subtrees**  
+   - Create a new empty repo `TerraFusionMono` and add each existing bsvalues repo as a subtree under `apps/<repo-name>` or `packages/<repo-name>`.  
+   - Use `git subtree add --prefix apps/<name> <remote-url> main --squash` to preserve history and simplify  [oai_citation:5‡Jamie Tanna | Software Engineer](https://www.jvt.me/posts/2018/06/01/git-subtree-monorepo/?utm_source=chatgpt.com).  
+
+2. **Adopt Turborepo Incrementally**  
+   - Add `turbo.json`, `pnpm-workspace.yaml`, and update root `package.json` to define workspaces: `apps/*`, `packages/*`.  
+   - Configure `turbo.json` with tasks: `lint`, `test`, `build`, `deploy`. Enable caching and parallel run  [oai_citation:6‡Turborepo](https://turbo.build/docs/crafting-your-repository/structuring-a-repository?utm_source=chatgpt.com).  
+
+3. **Harmonize CI/CD with Reusable Workflows**  
+   - In `.github/workflows/ci-common.yml`, define reusable jobs for lint, test, build, release with `on: workflow_call` and inputs for `package` and `env`.  
+   - In each app’s workflow (e.g. `.github/workflows/apps-<name>.yml`), call `ci-common.yml` using `uses: ./.github/workflows/ci-common.yml@main` with appropriate `with` and `secrets`  [oai_citation:7‡GitHub Docs](https://docs.github.com/en/actions/sharing-automations/reusing-workflows?utm_source=chatgpt.com).  
+
+4. **Consolidate Documentation with Docusaurus Multi-Instance**  
+   - Create `docs/` for core docs, `docs-ui/` for UI, `docs-api/` for APIs under a single Docusaurus site.  
+   - In `docusaurus.config.js`, register three plugin instances of `@docusaurus/plugin-content-docs` with unique `id`, `path`, and `routeBasePath`  [oai_citation:8‡Docusaurus](https://docusaurus.io/docs/docs-multi-instance?utm_source=chatgpt.com).  
+
+5. **Automate Multi-Package Releases**  
+   - Install `semantic-release-monorepo` or `@anolilab/multi-semantic-release` in root.  
+   - Add `.releaserc.json` extending `semantic-release-monorepo`, configure `branches`, `tagFormat`, and `workspaces`.  
+   - Update each package’s `package.json` scripts: `"release": "semantic-release"`  [oai_citation:9‡GitHub](https://github.com/pmowrer/semantic-release-monorepo?utm_source=chatgpt.com).  
+
+6. **Validate End-to-End**  
+   - Run `turbo run lint test build` to ensure all workspaces pass.  
+   - Trigger CI workflows to confirm reusable jobs execute correctly.  
+   - Build docs site and verify multi-instance docs render under `/docs`, `/ui`, `/api`.  
+   - Simulate a package change and run `npm run release` to ensure only affected packages are published.  
+
+7. **Finalize and Document**  
+   - Commit all changes in feature branch `monorepo/bootstrap`.  
+   - Open a PR titled “chore: monorepo bootstrap with Turborepo, CI reuse, multi-docs, and semantic-release”.  
+   - Update root `README.md` with monorepo setup, workspace definitions, CI calling conventions, and release guidelines.  
+
+Use TypeScript/ESLint in `apps/*` and Python/Flake8 in any Python packages. Ensure all pipelines run with service containers pg + redis as needed, and pass existing CI lint checks. Prioritize minimal manual editing; rely on subtree merges and Turborepo’s conventions. Keep thorough logging in GitHub Actions and enforce semantic versioning across the monorepo.  

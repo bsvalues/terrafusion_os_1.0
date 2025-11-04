@@ -1,0 +1,39 @@
+{
+    "type": "FunctionTool",
+    "guid": "{bff15392-d601-4c15-b9bf-ac90277013f6}",
+    "displayname": "$rc:title",
+    "helpcontent": "3160005",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "block_add_to_map",
+        "input_data_change"
+    ],
+    "params": {
+        "in_topology": {
+            "displayname": "$rc:in_topology.title",
+            "datatype": {
+                "type": "GPTopologyLayer"
+            },
+            "description": "$rc:in_topology.descr"
+        },
+        "in_rule": {
+            "displayname": "$rc:in_rule.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:in_rule.descr"
+        },
+        "out_topology": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_topology.title",
+            "datatype": {
+                "type": "GPTopologyLayer"
+            },
+            "depends": [
+                "in_topology"
+            ]
+        }
+    }
+}

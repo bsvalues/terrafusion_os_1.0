@@ -1,0 +1,118 @@
+{
+  "TRE": "PIAEQA",
+  "Source": [
+    "STDI-0002-1 v2021.1, Appendix C: PIAE"
+  ],
+  "Name": "Profile for Imagery Access Equipment Extension Version A",
+  "Description": "The Profile for Imagery Access Equipment Extension Version A (PIAEQA) TRE was created to provide space in the NITF file for data contained in the archive that is specifically related to equipment that is contained in an image. This extension shall be present for each instance of equipment identified in an image. There may be up to 250 occurrences of this extension for each data type in an NITF file.",
+  "Size": 130,
+  "Fields": {
+    "EQPCODE": {
+      "Name": "Equipment Code",
+      "Description": "This field defines a unique designated equipment code identifying a category of equipment. For allowed values for this field, refer to NGIC Foreign Equipment Guide.",
+      "Size": 7,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "EQPNOMEN": {
+      "Name": "Equipment Nomenclature",
+      "Description": "This field describes the nomenclature used to identify a piece of equipment. For allowed values for this field, refer to NGIC Foreign Equipment Guide.",
+      "Size": 45,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "EQPMAN": {
+      "Name": "Equipment Manufacturer",
+      "Description": "This field identifies the manufacturer of a piece of equipment.",
+      "Size": 64,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "OBTYPE": {
+      "Name": "Order of Battle Type",
+      "Description": "This field identifies the type of order of battle according to MIIDS/IDB. For allowed values for this field, refer to MIIDS/IDB.",
+      "Size": 1,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "ORDBAT": {
+      "Name": "Type Order of Battle",
+      "Description": "This field identifies the type of order of battle according to EARS 1.1. For allowed values for this field, refer to EARS 1.1.",
+      "Size": 3,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "CTRYPROD": {
+      "Name": "Country Produced",
+      "Description": "This field identifies the country that produced the object. For allowed values for this field, refer to FIPS 10-4.",
+      "Size": 2,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "CountryCode",
+          "Spec": "FIPS-2"
+        }
+      ]
+    },
+    "CTRYDSN": {
+      "Name": "Country Code Designed",
+      "Description": "This field identifies the country that designed the original object. For allowed values for this field, refer to FIPS 10-4.",
+      "Size": 2,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "CountryCode",
+          "Spec": "FIPS-2"
+        }
+      ]
+    },
+    "OBJVIEW": {
+      "Name": "Object View",
+      "Description": "This field describes the view of the object.",
+      "Size": 6,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["Right", "Left", "Top", "Bottom", "Front", "Rear"]
+        }
+      ]
+    }
+  }
+}

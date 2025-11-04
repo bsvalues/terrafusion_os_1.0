@@ -1,0 +1,10 @@
+{
+    "set": [
+        "generate mapping table",
+        "data loading",
+        "mapping table",
+        "schema",
+        "source",
+        "target"
+    ]
+}

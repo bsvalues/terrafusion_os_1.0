@@ -1,0 +1,5 @@
+<DataType Name="GPSAWeightedOverlayTable">
+  <DisplayName>Weighted Overlay Table</DisplayName>
+  <Description>A table with data to combine multiple rasters by applying a common measurement scale of values to each raster, weighing each according to its importance.</Description>
+</DataType>
+

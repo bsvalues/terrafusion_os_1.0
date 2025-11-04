@@ -1,0 +1,225 @@
+{% extends 'layout.html' %}
+
+{% block title %}TerraFusion | Advanced GIS Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h1 class="mb-3" style="color: black; font-weight: 800; font-size: 2.5rem;">Welcome to TerraFusion</h1>
+                    <p class="lead" style="color: black; font-weight: 600; font-size: 1.25rem;">The comprehensive GIS and property assessment platform with advanced data management capabilities.</p>
+                    <hr class="my-4">
+                    <p style="color: black; font-weight: 500; font-size: 1.1rem;">Access the complete suite of TerraFusion modules to manage, analyze, and visualize your geospatial data with advanced AI-powered anomaly detection and data quality monitoring.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        {% from 'components/module_card.html' import module_card %}
+        
+        <div class="col-md-4 mb-4">
+            {{ module_card(
+                module_name="Flow", 
+                title="Data Integration & ETL", 
+                description="Seamlessly integrate, transform, and manage data with our powerful ETL pipeline and synchronization service.", 
+                icon_class="fa-wave-square",
+                link="/sync/",
+                btn_text="Open Flow"
+            ) }}
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            {{ module_card(
+                module_name="Map", 
+                title="Geospatial Visualization", 
+                description="Interactive maps and geospatial visualization tools for property data analysis and assessment.", 
+                icon_class="fa-map",
+                link=url_for('map_viewer'),
+                btn_text="Open Map"
+            ) }}
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            {{ module_card(
+                module_name="Insight", 
+                title="Analytics & Intelligence", 
+                description="Advanced analytics and AI-powered insights for property assessment and valuation.", 
+                icon_class="fa-brain",
+                link="/data-quality/dashboard",
+                btn_text="Open Insight"
+            ) }}
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            {{ module_card(
+                module_name="Sketch", 
+                title="Data Modeling & Design", 
+                description="Create and modify data models, schemas, and database designs for efficient data management.", 
+                icon_class="fa-pencil-ruler",
+                link=url_for('power_query'),
+                btn_text="Open Sketch"
+            ) }}
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            {{ module_card(
+                module_name="Levy", 
+                title="Tax & Revenue Management", 
+                description="Comprehensive tools for tax calculation, billing, and revenue management for property assessments.", 
+                icon_class="fa-calculator",
+                link="/verification/dashboard",
+                btn_text="Open Levy"
+            ) }}
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="module-card h-100" style="border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <div class="card-header" style="background-color: #333; color: white; padding: 20px;">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-code-branch me-2" style="color: white; font-size: 20px;"></i>
+                        <div>
+                            <h4 class="card-title" style="color: white; font-weight: 700; margin-bottom: 0;">System Management</h4>
+                            <p style="color: white; opacity: 0.95; font-weight: 500;">Administrative Tools</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body" style="padding: 20px;">
+                    <p style="color: black; font-weight: 500; font-size: 1rem;">System configuration, user management, and administrative controls for the TerraFusion platform.</p>
+                    <div class="mt-4 text-center">
+                        <a href="{{ url_for('mcp_dashboard') }}" class="btn" style="background-color: #333; color: white; font-weight: 600; padding: 10px 20px; border-radius: 4px; text-decoration: none; display: inline-block;">
+                            <i class="fas fa-cogs me-2"></i>
+                            System Console
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-light shadow-sm">
+                <div class="card-body p-4">
+                    <h2 style="color: black; font-weight: 700; font-size: 1.75rem;">Recent Activity</h2>
+                    <div class="table-responsive mt-3">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th style="color: black; font-weight: 700;">Activity</th>
+                                    <th style="color: black; font-weight: 700;">Module</th>
+                                    <th style="color: black; font-weight: 700;">Date</th>
+                                    <th style="color: black; font-weight: 700;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="color: black; font-weight: 500;">Data Quality Check</td>
+                                    <td>
+                                        <span class="badge" style="background-color: var(--tf-insight-violet); color: white; font-weight: 600; padding: 5px 10px;">
+                                            Insight
+                                        </span>
+                                    </td>
+                                    <td style="color: black; font-weight: 500;">{{ now.strftime('%b %d, %Y %H:%M') }}</td>
+                                    <td>
+                                        <span class="badge bg-success" style="font-weight: 600;">Completed</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="color: black; font-weight: 500;">Map Data Update</td>
+                                    <td>
+                                        <span class="badge" style="background-color: var(--tf-map-green); color: white; font-weight: 600; padding: 5px 10px;">
+                                            Map
+                                        </span>
+                                    </td>
+                                    <td style="color: black; font-weight: 500;">{{ (now - datetime.timedelta(hours=2)).strftime('%b %d, %Y %H:%M') }}</td>
+                                    <td>
+                                        <span class="badge bg-success" style="font-weight: 600;">Completed</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="color: black; font-weight: 500;">Data Synchronization</td>
+                                    <td>
+                                        <span class="badge" style="background-color: var(--tf-flow-aqua); color: white; font-weight: 600; padding: 5px 10px;">
+                                            Flow
+                                        </span>
+                                    </td>
+                                    <td style="color: black; font-weight: 500;">{{ (now - datetime.timedelta(hours=3)).strftime('%b %d, %Y %H:%M') }}</td>
+                                    <td>
+                                        <span class="badge bg-success" style="font-weight: 600;">Completed</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h3 style="color: black; font-weight: 700; font-size: 1.5rem;">System Status</h3>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div style="width: 15px; height: 15px; border-radius: 50%; background-color: #4CAF50;" class="me-2"></div>
+                        <span style="color: black; font-weight: 600;">Database: Connected</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <div style="width: 15px; height: 15px; border-radius: 50%; background-color: #4CAF50;" class="me-2"></div>
+                        <span style="color: black; font-weight: 600;">Storage Service: Online</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <div style="width: 15px; height: 15px; border-radius: 50%; background-color: #4CAF50;" class="me-2"></div>
+                        <span style="color: black; font-weight: 600;">Authentication: Active</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div style="width: 15px; height: 15px; border-radius: 50%; background-color: #4CAF50;" class="me-2"></div>
+                        <span style="color: black; font-weight: 600;">API Services: Running</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h3 style="color: black; font-weight: 700; font-size: 1.5rem;">Quick Links</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <a href="{{ url_for('file_manager') }}" class="d-block p-3 text-center text-decoration-none" style="border: 1px solid #e0e0e0; border-radius: 8px;">
+                                <i class="fas fa-file fa-2x mb-2" style="color: var(--tf-flow-aqua);"></i>
+                                <div style="color: black; font-weight: 600;">File Manager</div>
+                            </a>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <a href="{{ url_for('map_viewer') }}" class="d-block p-3 text-center text-decoration-none" style="border: 1px solid #e0e0e0; border-radius: 8px;">
+                                <i class="fas fa-map fa-2x mb-2" style="color: var(--tf-map-green);"></i>
+                                <div style="color: black; font-weight: 600;">Map Viewer</div>
+                            </a>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <a href="{{ url_for('search_page') }}" class="d-block p-3 text-center text-decoration-none" style="border: 1px solid #e0e0e0; border-radius: 8px;">
+                                <i class="fas fa-search fa-2x mb-2" style="color: var(--tf-insight-violet);"></i>
+                                <div style="color: black; font-weight: 600;">Search</div>
+                            </a>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <a href="{{ url_for('api_tester') }}" class="d-block p-3 text-center text-decoration-none" style="border: 1px solid #e0e0e0; border-radius: 8px;">
+                                <i class="fas fa-code fa-2x mb-2" style="color: var(--tf-sketch-orange);"></i>
+                                <div style="color: black; font-weight: 600;">API Tester</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

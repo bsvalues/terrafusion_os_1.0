@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SharedStateSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <SavedLocations>
+    <SavedLocationModel>
+      <Name>my sub divsion</Name>
+      <Discription>my sub divsion</Discription>
+      <SpatialReferenceWKID>102100</SpatialReferenceWKID>
+      <XMin>-10732428.312289072</XMin>
+      <YMin>3887403.3981508096</YMin>
+      <XMax>-10727131.882723967</XMax>
+      <YMax>3889245.611858123</YMax>
+    </SavedLocationModel>
+    <SavedLocationModel>
+      <Name>hood 1</Name>
+      <Discription>hood 1</Discription>
+      <SpatialReferenceWKID>102100</SpatialReferenceWKID>
+      <XMin>-10731580.871576982</XMin>
+      <YMin>3888260.9451555209</YMin>
+      <XMax>-10728678.860285364</XMax>
+      <YMax>3889182.0520091774</YMax>
+    </SavedLocationModel>
+    <SavedLocationModel>
+      <Name>Year built hood</Name>
+      <Discription>Year built hood</Discription>
+      <SpatialReferenceWKID>3857</SpatialReferenceWKID>
+      <XMin>-10737120.598997863</XMin>
+      <YMin>3888668.509002252</YMin>
+      <XMax>-10732572.595814893</XMax>
+      <YMax>3889815.5009937962</YMax>
+    </SavedLocationModel>
+    <SavedLocationModel>
+      <Name>Year built hood 2</Name>
+      <Discription>Year built hood 2</Discription>
+      <SpatialReferenceWKID>3857</SpatialReferenceWKID>
+      <XMin>-10734211.474257603</XMin>
+      <YMin>3886804.4867678564</YMin>
+      <XMax>-10725115.467891641</XMax>
+      <YMax>3889872.3956623394</YMax>
+    </SavedLocationModel>
+    <SavedLocationModel>
+      <Name>hood 2 yb</Name>
+      <Discription>hood 2 yb</Discription>
+      <SpatialReferenceWKID>3857</SpatialReferenceWKID>
+      <XMin>-10734073.0915814</XMin>
+      <YMin>3885884.3305779384</YMin>
+      <XMax>-10721482.654437231</XMax>
+      <YMax>3890130.8441077187</YMax>
+    </SavedLocationModel>
+    <SavedLocationModel>
+      <Name>lukes house</Name>
+      <Discription>lukes house</Discription>
+      <SpatialReferenceWKID>3857</SpatialReferenceWKID>
+      <XMin>-10718142.109793805</XMin>
+      <YMin>3878704.9444261924</YMin>
+      <XMax>-10710544.958665717</XMax>
+      <YMax>3880449.3475512546</YMax>
+    </SavedLocationModel>
+    <SavedLocationModel>
+      <Name>new subs</Name>
+      <Discription>new subs</Discription>
+      <SpatialReferenceWKID>3857</SpatialReferenceWKID>
+      <XMin>-10731081.068227492</XMin>
+      <YMin>3889059.4682752318</YMin>
+      <XMax>-10729685.298743593</XMax>
+      <YMax>3890139.4536823393</YMax>
+    </SavedLocationModel>
+    <SavedLocationModel>
+      <Name>city view</Name>
+      <Discription>city view</Discription>
+      <SpatialReferenceWKID>3857</SpatialReferenceWKID>
+      <XMin>-10728381.617103227</XMin>
+      <YMin>3875536.6991203958</YMin>
+      <XMax>-10726577.360757597</XMax>
+      <YMax>3876109.2309433753</YMax>
+    </SavedLocationModel>
+    <SavedLocationModel>
+      <Name>permits</Name>
+      <Discription>permits</Discription>
+      <SpatialReferenceWKID>3857</SpatialReferenceWKID>
+      <XMin>-10725145.881960221</XMin>
+      <YMin>3879459.2373834313</YMin>
+      <XMax>-10719061.715975309</XMax>
+      <YMax>3884088.3371588276</YMax>
+    </SavedLocationModel>
+    <SavedLocationModel>
+      <Name>mobile homes</Name>
+      <Discription>mobile homes</Discription>
+      <SpatialReferenceWKID>3857</SpatialReferenceWKID>
+      <XMin>-10728983.320160596</XMin>
+      <YMin>3882594.0892482908</YMin>
+      <XMax>-10725605.317252791</XMax>
+      <YMax>3884802.5574212833</YMax>
+    </SavedLocationModel>
+    <SavedLocationModel>
+      <Name>Commercial Properties</Name>
+      <Discription>Commercial Properties</Discription>
+      <SpatialReferenceWKID>3857</SpatialReferenceWKID>
+      <XMin>-10738725.944775187</XMin>
+      <YMin>3882813.8569813273</YMin>
+      <XMax>-10735182.498742506</XMax>
+      <YMax>3885022.3251543227</YMax>
+    </SavedLocationModel>
+    <SavedLocationModel>
+      <Name>playground</Name>
+      <Discription>playground</Discription>
+      <SpatialReferenceWKID>3857</SpatialReferenceWKID>
+      <XMin>-10737123.021102119</XMin>
+      <YMin>3887290.6384035004</YMin>
+      <XMax>-10735726.871447053</XMax>
+      <YMax>3888831.1923483121</YMax>
+    </SavedLocationModel>
+    <SavedLocationModel>
+      <Name>Google street view</Name>
+      <Discription>Google street view</Discription>
+      <SpatialReferenceWKID>3857</SpatialReferenceWKID>
+      <XMin>-10728374.500443906</XMin>
+      <YMin>3887879.0766803371</YMin>
+      <XMax>-10728228.491092125</XMax>
+      <YMax>3888086.6624448495</YMax>
+    </SavedLocationModel>
+    <SavedLocationModel>
+      <Name>new development</Name>
+      <Discription>new development</Discription>
+      <SpatialReferenceWKID>3857</SpatialReferenceWKID>
+      <XMin>-10730123.681273649</XMin>
+      <YMin>3888224.9166373555</YMin>
+      <XMax>-10729012.804349972</XMax>
+      <YMax>3889582.19584521</YMax>
+    </SavedLocationModel>
+  </SavedLocations>
+  <BaseLayerName>Imagery</BaseLayerName>
+  <MapUserSettings>
+    <MapUserSettingModel>
+      <Name>DockableEsriMap_30060365</Name>
+      <LayoutName>Default Layout</LayoutName>
+      <ZoomToSelected>false</ZoomToSelected>
+      <ZoomToHighlighted>false</ZoomToHighlighted>
+      <ShowScaleBar>false</ShowScaleBar>
+      <ShowLegend>true</ShowLegend>
+      <ShowLayers>true</ShowLayers>
+      <ShowLegal>false</ShowLegal>
+      <ShowTitle>false</ShowTitle>
+      <AppendSearch>false</AppendSearch>
+    </MapUserSettingModel>
+    <MapUserSettingModel>
+      <Name>DockableEsriMap_30060365</Name>
+      <LayoutName>Res</LayoutName>
+      <ZoomToSelected>false</ZoomToSelected>
+      <ZoomToHighlighted>false</ZoomToHighlighted>
+      <ShowScaleBar>false</ShowScaleBar>
+      <ShowLegend>true</ShowLegend>
+      <ShowLayers>true</ShowLayers>
+      <ShowLegal>false</ShowLegal>
+      <ShowTitle>false</ShowTitle>
+      <AppendSearch>false</AppendSearch>
+    </MapUserSettingModel>
+    <MapUserSettingModel>
+      <Name>DockableEsriMap_30060365</Name>
+      <LayoutName>Comercial</LayoutName>
+      <ZoomToSelected>false</ZoomToSelected>
+      <ZoomToHighlighted>false</ZoomToHighlighted>
+      <ShowScaleBar>false</ShowScaleBar>
+      <ShowLegend>true</ShowLegend>
+      <ShowLayers>true</ShowLayers>
+      <ShowLegal>false</ShowLegal>
+      <ShowTitle>false</ShowTitle>
+      <AppendSearch>false</AppendSearch>
+    </MapUserSettingModel>
+    <MapUserSettingModel>
+      <Name>DockableEsriMap_138844</Name>
+      <LayoutName>Default Layout</LayoutName>
+      <ZoomToSelected>false</ZoomToSelected>
+      <ZoomToHighlighted>false</ZoomToHighlighted>
+      <ShowScaleBar>false</ShowScaleBar>
+      <ShowLegend>true</ShowLegend>
+      <ShowLayers>true</ShowLayers>
+      <ShowLegal>false</ShowLegal>
+      <ShowTitle>false</ShowTitle>
+      <AppendSearch>false</AppendSearch>
+    </MapUserSettingModel>
+    <MapUserSettingModel>
+      <Name>DockableEsriMap_12865660</Name>
+      <LayoutName>Default Layout</LayoutName>
+      <ZoomToSelected>false</ZoomToSelected>
+      <ZoomToHighlighted>false</ZoomToHighlighted>
+      <ShowScaleBar>false</ShowScaleBar>
+      <ShowLegend>true</ShowLegend>
+      <ShowLayers>true</ShowLayers>
+      <ShowLegal>false</ShowLegal>
+      <ShowTitle>false</ShowTitle>
+      <AppendSearch>false</AppendSearch>
+    </MapUserSettingModel>
+    <MapUserSettingModel>
+      <Name>DockableEsriMap_19280308</Name>
+      <LayoutName>Default Layout</LayoutName>
+      <ZoomToSelected>false</ZoomToSelected>
+      <ZoomToHighlighted>false</ZoomToHighlighted>
+      <ShowScaleBar>false</ShowScaleBar>
+      <ShowLegend>true</ShowLegend>
+      <ShowLayers>true</ShowLayers>
+      <ShowLegal>false</ShowLegal>
+      <ShowTitle>false</ShowTitle>
+      <AppendSearch>false</AppendSearch>
+    </MapUserSettingModel>
+    <MapUserSettingModel>
+      <Name>DockableEsriMap_47497869</Name>
+      <LayoutName>Default Layout</LayoutName>
+      <ZoomToSelected>false</ZoomToSelected>
+      <ZoomToHighlighted>false</ZoomToHighlighted>
+      <ShowScaleBar>false</ShowScaleBar>
+      <ShowLegend>true</ShowLegend>
+      <ShowLayers>true</ShowLayers>
+      <ShowLegal>false</ShowLegal>
+      <ShowTitle>false</ShowTitle>
+      <AppendSearch>false</AppendSearch>
+    </MapUserSettingModel>
+    <MapUserSettingModel>
+      <Name>DockableEsriMap_9070525</Name>
+      <LayoutName>Default Layout</LayoutName>
+      <ZoomToSelected>false</ZoomToSelected>
+      <ZoomToHighlighted>false</ZoomToHighlighted>
+      <ShowScaleBar>false</ShowScaleBar>
+      <ShowLegend>true</ShowLegend>
+      <ShowLayers>true</ShowLayers>
+      <ShowLegal>false</ShowLegal>
+      <ShowTitle>false</ShowTitle>
+      <AppendSearch>false</AppendSearch>
+    </MapUserSettingModel>
+    <MapUserSettingModel>
+      <Name>DockableEsriMap_25551373</Name>
+      <LayoutName>Default Layout</LayoutName>
+      <ZoomToSelected>false</ZoomToSelected>
+      <ZoomToHighlighted>false</ZoomToHighlighted>
+      <ShowScaleBar>false</ShowScaleBar>
+      <ShowLegend>true</ShowLegend>
+      <ShowLayers>true</ShowLayers>
+      <ShowLegal>false</ShowLegal>
+      <ShowTitle>false</ShowTitle>
+      <AppendSearch>false</AppendSearch>
+    </MapUserSettingModel>
+    <MapUserSettingModel>
+      <Name>DockableEsriMap_46510765</Name>
+      <LayoutName>Default Layout</LayoutName>
+      <ZoomToSelected>false</ZoomToSelected>
+      <ZoomToHighlighted>false</ZoomToHighlighted>
+      <ShowScaleBar>false</ShowScaleBar>
+      <ShowLegend>true</ShowLegend>
+      <ShowLayers>true</ShowLayers>
+      <ShowLegal>false</ShowLegal>
+      <ShowTitle>false</ShowTitle>
+      <AppendSearch>false</AppendSearch>
+    </MapUserSettingModel>
+    <MapUserSettingModel>
+      <Name>DockableEsriMap_12950219</Name>
+      <LayoutName>Default Layout</LayoutName>
+      <ZoomToSelected>false</ZoomToSelected>
+      <ZoomToHighlighted>false</ZoomToHighlighted>
+      <ShowScaleBar>false</ShowScaleBar>
+      <ShowLegend>true</ShowLegend>
+      <ShowLayers>true</ShowLayers>
+      <ShowLegal>false</ShowLegal>
+      <ShowTitle>false</ShowTitle>
+      <AppendSearch>false</AppendSearch>
+    </MapUserSettingModel>
+    <MapUserSettingModel>
+      <Name>DockableEsriMap_30791836</Name>
+      <LayoutName>Default Layout</LayoutName>
+      <ZoomToSelected>false</ZoomToSelected>
+      <ZoomToHighlighted>false</ZoomToHighlighted>
+      <ShowScaleBar>false</ShowScaleBar>
+      <ShowLegend>true</ShowLegend>
+      <ShowLayers>true</ShowLayers>
+      <ShowLegal>false</ShowLegal>
+      <ShowTitle>false</ShowTitle>
+      <AppendSearch>false</AppendSearch>
+    </MapUserSettingModel>
+    <MapUserSettingModel>
+      <Name>DockableEsriMap_30791836</Name>
+      <LayoutName>my desktop</LayoutName>
+      <ZoomToSelected>false</ZoomToSelected>
+      <ZoomToHighlighted>false</ZoomToHighlighted>
+      <ShowScaleBar>false</ShowScaleBar>
+      <ShowLegend>true</ShowLegend>
+      <ShowLayers>true</ShowLayers>
+      <ShowLegal>false</ShowLegal>
+      <ShowTitle>false</ShowTitle>
+      <AppendSearch>false</AppendSearch>
+    </MapUserSettingModel>
+    <MapUserSettingModel>
+      <Name>DockableEsriMap_30791836</Name>
+      <LayoutName>Data view</LayoutName>
+      <ZoomToSelected>true</ZoomToSelected>
+      <ZoomToHighlighted>true</ZoomToHighlighted>
+      <ShowScaleBar>false</ShowScaleBar>
+      <ShowLegend>true</ShowLegend>
+      <ShowLayers>true</ShowLayers>
+      <ShowLegal>false</ShowLegal>
+      <ShowTitle>false</ShowTitle>
+      <AppendSearch>false</AppendSearch>
+    </MapUserSettingModel>
+    <MapUserSettingModel>
+      <Name>DockableEsriMap_30791836</Name>
+      <LayoutName>my desktop d</LayoutName>
+      <ZoomToSelected>false</ZoomToSelected>
+      <ZoomToHighlighted>false</ZoomToHighlighted>
+      <ShowScaleBar>false</ShowScaleBar>
+      <ShowLegend>true</ShowLegend>
+      <ShowLayers>true</ShowLayers>
+      <ShowLegal>false</ShowLegal>
+      <ShowTitle>false</ShowTitle>
+      <AppendSearch>false</AppendSearch>
+    </MapUserSettingModel>
+    <MapUserSettingModel>
+      <Name>DockableEsriMap_30791836</Name>
+      <LayoutName>Desktop with google</LayoutName>
+      <ZoomToSelected>false</ZoomToSelected>
+      <ZoomToHighlighted>false</ZoomToHighlighted>
+      <ShowScaleBar>false</ShowScaleBar>
+      <ShowLegend>true</ShowLegend>
+      <ShowLayers>true</ShowLayers>
+      <ShowLegal>false</ShowLegal>
+      <ShowTitle>false</ShowTitle>
+      <AppendSearch>false</AppendSearch>
+    </MapUserSettingModel>
+    <MapUserSettingModel>
+      <Name>DockableEsriMap_30791836</Name>
+      <LayoutName>Desktop review screen</LayoutName>
+      <ZoomToSelected>false</ZoomToSelected>
+      <ZoomToHighlighted>false</ZoomToHighlighted>
+      <ShowScaleBar>false</ShowScaleBar>
+      <ShowLegend>true</ShowLegend>
+      <ShowLayers>true</ShowLayers>
+      <ShowLegal>false</ShowLegal>
+      <ShowTitle>false</ShowTitle>
+      <AppendSearch>false</AppendSearch>
+    </MapUserSettingModel>
+    <MapUserSettingModel>
+      <Name>DockableEsriMap_30791836</Name>
+      <LayoutName>Desktop review</LayoutName>
+      <ZoomToSelected>false</ZoomToSelected>
+      <ZoomToHighlighted>false</ZoomToHighlighted>
+      <ShowScaleBar>false</ShowScaleBar>
+      <ShowLegend>true</ShowLegend>
+      <ShowLayers>true</ShowLayers>
+      <ShowLegal>false</ShowLegal>
+      <ShowTitle>false</ShowTitle>
+      <AppendSearch>false</AppendSearch>
+    </MapUserSettingModel>
+    <MapUserSettingModel>
+      <Name>DockableEsriMap_30791836</Name>
+      <LayoutName>App to App1</LayoutName>
+      <ZoomToSelected>true</ZoomToSelected>
+      <ZoomToHighlighted>true</ZoomToHighlighted>
+      <ShowScaleBar>false</ShowScaleBar>
+      <ShowLegend>true</ShowLegend>
+      <ShowLayers>true</ShowLayers>
+      <ShowLegal>false</ShowLegal>
+      <ShowTitle>false</ShowTitle>
+      <LayerStates>
+        <LayerItemStateModel>
+          <Id>Selection</Id>
+          <IsEnabled>true</IsEnabled>
+          <IsExpanded>false</IsExpanded>
+        </LayerItemStateModel>
+        <LayerItemStateModel>
+          <Id>Parcels</Id>
+          <IsEnabled>true</IsEnabled>
+          <IsExpanded>false</IsExpanded>
+        </LayerItemStateModel>
+        <LayerItemStateModel>
+          <Id>Imagery</Id>
+          <IsEnabled>true</IsEnabled>
+          <IsExpanded>false</IsExpanded>
+          <ChildLayers>
+            <LayerItemStateModel>
+              <Id>World Imagery</Id>
+              <IsEnabled>true</IsEnabled>
+              <IsExpanded>false</IsExpanded>
+            </LayerItemStateModel>
+            <LayerItemStateModel>
+              <Id>Low Resolution 15m Imagery</Id>
+              <IsEnabled>true</IsEnabled>
+              <IsExpanded>false</IsExpanded>
+            </LayerItemStateModel>
+            <LayerItemStateModel>
+              <Id>High Resolution 60cm Imagery</Id>
+              <IsEnabled>true</IsEnabled>
+              <IsExpanded>false</IsExpanded>
+            </LayerItemStateModel>
+            <LayerItemStateModel>
+              <Id>High Resolution 30cm Imagery</Id>
+              <IsEnabled>true</IsEnabled>
+              <IsExpanded>false</IsExpanded>
+            </LayerItemStateModel>
+            <LayerItemStateModel>
+              <Id>Citations</Id>
+              <IsEnabled>true</IsEnabled>
+              <IsExpanded>false</IsExpanded>
+            </LayerItemStateModel>
+            <LayerItemStateModel>
+              <Id>1.9cm Resolution Metadata</Id>
+              <IsEnabled>true</IsEnabled>
+              <IsExpanded>false</IsExpanded>
+            </LayerItemStateModel>
+            <LayerItemStateModel>
+              <Id>3.7cm Resolution Metadata</Id>
+              <IsEnabled>true</IsEnabled>
+              <IsExpanded>false</IsExpanded>
+            </LayerItemStateModel>
+            <LayerItemStateModel>
+              <Id>7.5cm Resolution Metadata</Id>
+              <IsEnabled>true</IsEnabled>
+              <IsExpanded>false</IsExpanded>
+            </LayerItemStateModel>
+            <LayerItemStateModel>
+              <Id>15cm Resolution Metadata</Id>
+              <IsEnabled>true</IsEnabled>
+              <IsExpanded>false</IsExpanded>
+            </LayerItemStateModel>
+            <LayerItemStateModel>
+              <Id>30cm Resolution Metadata</Id>
+              <IsEnabled>true</IsEnabled>
+              <IsExpanded>false</IsExpanded>
+            </LayerItemStateModel>
+            <LayerItemStateModel>
+              <Id>60cm Resolution Metadata</Id>
+              <IsEnabled>true</IsEnabled>
+              <IsExpanded>false</IsExpanded>
+            </LayerItemStateModel>
+            <LayerItemStateModel>
+              <Id>1.2m Resolution Metadata</Id>
+              <IsEnabled>true</IsEnabled>
+              <IsExpanded>false</IsExpanded>
+            </LayerItemStateModel>
+            <LayerItemStateModel>
+              <Id>2.4m Resolution Metadata</Id>
+              <IsEnabled>true</IsEnabled>
+              <IsExpanded>false</IsExpanded>
+            </LayerItemStateModel>
+            <LayerItemStateModel>
+              <Id>4.8m Resolution Metadata</Id>
+              <IsEnabled>true</IsEnabled>
+              <IsExpanded>false</IsExpanded>
+            </LayerItemStateModel>
+            <LayerItemStateModel>
+              <Id>9.6m Resolution Metadata</Id>
+              <IsEnabled>true</IsEnabled>
+              <IsExpanded>false</IsExpanded>
+            </LayerItemStateModel>
+            <LayerItemStateModel>
+              <Id>19m Resolution Metadata</Id>
+              <IsEnabled>true</IsEnabled>
+              <IsExpanded>false</IsExpanded>
+            </LayerItemStateModel>
+            <LayerItemStateModel>
+              <Id>38m Resolution Metadata</Id>
+              <IsEnabled>true</IsEnabled>
+              <IsExpanded>false</IsExpanded>
+            </LayerItemStateModel>
+            <LayerItemStateModel>
+              <Id>75m Resolution Metadata</Id>
+              <IsEnabled>true</IsEnabled>
+              <IsExpanded>false</IsExpanded>
+            </LayerItemStateModel>
+            <LayerItemStateModel>
+              <Id>150m Resolution Metadata</Id>
+              <IsEnabled>true</IsEnabled>
+              <IsExpanded>false</IsExpanded>
+            </LayerItemStateModel>
+          </ChildLayers>
+        </LayerItemStateModel>
+      </LayerStates>
+      <AppendSearch>false</AppendSearch>
+    </MapUserSettingModel>
+  </MapUserSettings>
+</SharedStateSettings>

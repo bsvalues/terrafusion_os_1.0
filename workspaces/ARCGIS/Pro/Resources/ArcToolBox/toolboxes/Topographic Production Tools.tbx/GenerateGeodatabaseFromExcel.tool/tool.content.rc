@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Creates a geodatabase from the contents of a Microsoft Excel file (.xls or .xlsx).",
+        "in_excel_file.descr": "The Excel file that will be used to generate the geodatabase.",
+        "in_excel_file.title": "Input Excel File",
+        "out_geodatabase.descr": "The geodatabase that will be generated from the Excel file.",
+        "out_geodatabase.title": "Output Geodatabase",
+        "summary": "<xdoc><p>Creates a geodatabase from the contents of a Microsoft Excel file (.xls or .xlsx).</p><p>This tool can only be run with a properly formatted Excel file.</p></xdoc>",
+        "title": "Generate Geodatabase From Excel",
+        "updated_geodatabase.title": "Updated Geodatabase"
+    }
+}

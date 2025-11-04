@@ -1,0 +1,321 @@
+{
+  "folders": [
+    {
+      "path": "../marketplace/autonomous-research-engine/core-engine",
+      "name": "🧠 Research Core Engine"
+    },
+    {
+      "path": "../marketplace/autonomous-research-engine/data-mining",
+      "name": "⛏️ Data Mining"
+    },
+    {
+      "path": "../marketplace/autonomous-research-engine/ai-analysis",
+      "name": "🤖 AI Analysis"
+    },
+    {
+      "path": "../marketplace/autonomous-research-engine/knowledge-graph",
+      "name": "🕸️ Knowledge Graph"
+    },
+    {
+      "path": "../marketplace/autonomous-research-engine/report-generation",
+      "name": "📄 Report Generation"
+    },
+    {
+      "path": "../marketplace/autonomous-research-engine/research-apis",
+      "name": "🔗 Research APIs"
+    },
+    {
+      "path": "../marketplace/autonomous-research-engine/testing",
+      "name": "🧪 Research Tests"
+    },
+    {
+      "path": "../SDK",
+      "name": "📦 Platform SDK (read-only)"
+    },
+    {
+      "path": "../backend",
+      "name": "🔧 Shared Backend (read-only)"
+    },
+    {
+      "path": "../docs/autonomous-research",
+      "name": "📚 Research Docs"
+    },
+    {
+      "path": "../config",
+      "name": "⚙️ Config (shared)"
+    },
+    {
+      "path": "../docs/autonomous_research_engine",
+      "name": "📚 Autonomous-Research-Engine Docs"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/out": true,
+      "**/.pytest_cache": true,
+      "**/__pycache__": true,
+      "../marketplace/*/": true,
+      "!../marketplace/autonomous-research-engine": false,
+      "../frontend": true,
+      "../backend": true,
+      "../os-platform": true,
+      "../terrafusion-cos": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/out": true,
+      "../frontend": true,
+      "../backend": true,
+      "../os-platform": true
+    },
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "python.defaultInterpreter": "./marketplace/autonomous-research-engine/.venv/bin/python",
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "eslint.workingDirectories": [
+      "./marketplace/autonomous-research-engine/research-apis"
+    ],
+    "terrafusion.sync": {
+      "autoSync": true,
+      "syncInterval": 25,
+      "conflictResolution": "prompt",
+      "sharedState": {
+        "backend": "read-only",
+        "sdk": "read-only",
+        "config": "shared-write"
+      },
+      "researchIntegration": true
+    },
+    "terrafusion.research": {
+      "enableNLP": true,
+      "knowledgeGraphs": true,
+      "aiAnalysis": true,
+      "dataMining": true,
+      "reportGeneration": true,
+      "autonomousMode": true,
+      "researchAPIs": true
+    },
+    "terrafusion.ai": {
+      "llmProvider": "azure-openai",
+      "embeddingModel": "text-embedding-ada-002",
+      "researchModel": "gpt-4-32k",
+      "knowledgeGraphEngine": "neo4j",
+      "vectorDatabase": "pinecone"
+    },
+    "terrafusion.compliance": {
+      "fismaMode": "MODERATE",
+      "nist80053": true,
+      "researchEthics": true,
+      "dataPrivacy": true,
+      "auditTrail": "comprehensive"
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-python.debugpy",
+      "ms-python.pylint",
+      "ms-python.flake8",
+      "ms-toolsai.jupyter",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-vscode.vscode-typescript-next",
+      "streetsidesoftware.code-spell-checker",
+      "ms-azuretools.vscode-docker",
+      "redhat.vscode-yaml"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Start Research Engine",
+        "type": "debugpy",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/autonomous-research-engine/core-engine",
+        "program": "research_engine.py",
+        "console": "integratedTerminal",
+        "env": {
+          "TERRAFUSION_SERVICE": "autonomous-research",
+          "RESEARCH_MODE": "development",
+          "AI_MODELS_ENABLED": "true"
+        }
+      },
+      {
+        "name": "Debug Data Mining",
+        "type": "debugpy",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/autonomous-research-engine/data-mining",
+        "program": "data_miner.py",
+        "console": "integratedTerminal",
+        "env": {
+          "MINING_DEBUG": "true",
+          "DATA_SOURCES": "academic,government,web"
+        }
+      },
+      {
+        "name": "Debug Knowledge Graph",
+        "type": "debugpy",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/autonomous-research-engine/knowledge-graph",
+        "program": "graph_builder.py",
+        "console": "integratedTerminal",
+        "env": {
+          "NEO4J_URI": "bolt://localhost:7687",
+          "GRAPH_DEBUG": "true"
+        }
+      },
+      {
+        "name": "Start Research APIs",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/autonomous-research-engine/research-apis",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "console": "integratedTerminal",
+        "env": {
+          "API_DEBUG": "true",
+          "RESEARCH_ENGINE_URL": "http://localhost:8080"
+        }
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build Research Engine",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "setup.py",
+          "build"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/autonomous-research-engine"
+        },
+        "problemMatcher": [],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Test Research Engine",
+        "type": "shell",
+        "command": "pytest",
+        "args": [
+          "tests/",
+          "-v"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/autonomous-research-engine"
+        },
+        "problemMatcher": [],
+        "group": {
+          "kind": "test",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Start Neo4j Database",
+        "type": "shell",
+        "command": "docker-compose",
+        "args": [
+          "up",
+          "-d",
+          "neo4j"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/autonomous-research-engine"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Train AI Models",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "train_models.py"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/autonomous-research-engine/ai-analysis"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Run Research Query",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "run_research.py",
+          "--query",
+          "${input:researchQuery}"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/autonomous-research-engine/core-engine"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Generate Research Report",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "generate_report.py"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/autonomous-research-engine/report-generation"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Mine Data Sources",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "mine_sources.py",
+          "--sources",
+          "academic,government"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/autonomous-research-engine/data-mining"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Research Ethics Validation",
+        "type": "shell",
+        "command": "./SDK/tools/ethics-validation.sh",
+        "args": [
+          "--service=autonomous-research",
+          "--research-compliance"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      }
+    ]
+  },
+  "inputs": [
+    {
+      "id": "researchQuery",
+      "description": "Enter research query:",
+      "default": "government efficiency optimization",
+      "type": "promptString"
+    }
+  ]
+}

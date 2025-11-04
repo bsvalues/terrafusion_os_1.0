@@ -1,0 +1,112 @@
+/**
+ * Geographic Mapping Agent Handler
+ * 
+ * This module registers and handles requests for the geographic mapping agent
+ */
+
+import ... from "@/agents/geo-mapping-agent";
+import ... from "@/event-bus";
+import ... from "@/types";
+
+/**
+ * Initialize the Geographic Mapping Agent and register its handlers
+ * @returns Agent object for registration
+ */
+export function initGeoMappingAgent() {
+  console.log('Initializing Geographic Mapping Agent');
+  
+  // Create agent object for registration
+  const agentStatus: AgentStatus = 'active';
+  const agent: Agent = {
+    id: 'geo-mapping-agent',
+    name: 'Geographic Mapping Agent',
+    status: agentStatus,
+    capabilities: ['geography:map:property', 'geography:analyze:region'],
+    metadata: {
+      description: 'Maps and analyzes geographic data for properties and regions'
+    },
+    lastUpdated: Date.now()
+  };
+  
+  // Register handler for property geography mapping
+  eventBus.subscribe('geography:map:property', async (event: MCPEvent) => {
+    const { propertyData, sessionId, requestId } = event.payload || {};
+    
+    if (!propertyData) {
+      eventBus.publish('geography:map:failed', {
+        error: 'No property data provided',
+        requestId,
+        sessionId
+      });
+      return;
+    }
+    
+    try {
+      console.log(`Processing geographic mapping request for property ${propertyData.prop_id || 'unknown'}`);
+      const result = await geoMappingAgent.mapPropertyToGeography(propertyData);
+      
+      eventBus.publish('geography:map:completed', {
+        result,
+        requestId,
+        sessionId
+      });
+    } catch (error) {
+      console.error('Error in geography mapping handler:', error);
+      eventBus.publish('geography:map:failed', {
+        error: error.message || 'Unknown error in geographic mapping',
+        requestId,
+        sessionId
+      });
+    }
+  });
+  
+  // Register handler for neighborhood creation
+  eventBus.subscribe('geography:neighborhood:create', async (event: MCPEvent) => {
+    const { hood_cd, municipalityId, name, requestId, sessionId } = event.payload || {};
+    
+    if (!hood_cd || !municipalityId) {
+      eventBus.publish('geography:neighborhood:failed', {
+        error: 'Required parameters missing',
+        requestId,
+        sessionId
+      });
+      return;
+    }
+    
+    try {
+      const result = await geoMappingAgent.createNeighborhoodMapping(
+        hood_cd, 
+        municipalityId,
+        name
+      );
+      
+      eventBus.publish('geography:neighborhood:completed', {
+        result,
+        requestId,
+        sessionId
+      });
+    } catch (error) {
+      console.error('Error in neighborhood creation handler:', error);
+      eventBus.publish('geography:neighborhood:failed', {
+        error: error.message || 'Unknown error creating neighborhood',
+        requestId,
+        sessionId
+      });
+    }
+  });
+
+  // Let the system know the agent is ready
+  eventBus.publish('agent:initialized', {
+    agentId: 'geo-mapping-agent',
+    agentName: 'Geographic Mapping Agent',
+    capabilities: [
+      'geography:map:property',
+      'geography:neighborhood:create'
+    ]
+  });
+  
+  console.log('Geographic Mapping Agent initialized successfully');
+  
+  // Return the agent for registration
+  return agent;
+}

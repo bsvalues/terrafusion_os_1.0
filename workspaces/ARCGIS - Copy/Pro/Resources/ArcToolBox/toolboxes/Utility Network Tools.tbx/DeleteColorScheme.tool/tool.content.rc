@@ -1,0 +1,10 @@
+{
+    "map": {
+        "color_scheme_name.title": "Color Scheme Name",
+        "description": "Delete color scheme",
+        "domain_network.title": "Domain Network",
+        "in_utility_network.title": "Input Utility Network",
+        "out_utility_network.title": "Output Utility Network",
+        "title": "Delete Color Scheme"
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "set": [
+        "area of interest",
+        "convert",
+        "delaunay",
+        "domain",
+        "edit",
+        "extent",
+        "footprint",
+        "interpolation zone",
+        "tin",
+        "triangulated irregular network"
+    ]
+}

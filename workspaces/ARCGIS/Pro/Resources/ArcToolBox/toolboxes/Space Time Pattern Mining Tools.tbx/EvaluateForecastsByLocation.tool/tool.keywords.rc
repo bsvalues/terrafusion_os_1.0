@@ -1,0 +1,17 @@
+{
+    "set": [
+        "compare",
+        "cube",
+        "estimate",
+        "hybrid",
+        "merge",
+        "netcdf",
+        "predict",
+        "space time cube",
+        "spatial",
+        "spatial statistics",
+        "statistics",
+        "stats",
+        "space-time"
+    ]
+}

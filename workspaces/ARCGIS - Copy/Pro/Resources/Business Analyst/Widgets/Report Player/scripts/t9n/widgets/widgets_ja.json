@@ -1,0 +1,78 @@
+{
+  "calcite": {
+    "reset": "リセット",
+    "action": {
+      "sort": "並べ替え"
+    },
+    "buttons": {
+      "save": "保存",
+      "edit": "編集",
+      "done": "完了",
+      "apply": "適用",
+      "cancel": "キャンセル",
+      "close": "閉じる"
+    },
+    "ColorPicker": {
+      "selectColor": "色の選択",
+      "noColorSpecified": "色が指定されていません",
+      "transparent": "透過",
+      "colorTooltip": "<p>Hex: ${hex}</p><p>RGB: ${r}、${g}、${b}</p>",
+      "recent": "最近",
+      "standard": "標準",
+      "savedColors": "保存した色",
+      "advanced": "高度"
+    },
+    "DatePickerLink": {
+      "enterDate": "日付を入力"
+    },
+    "PaginationContinuous": {
+      "next": "次へ",
+      "previous": "前へ"
+    }
+  },
+  "ImageNavigator": {
+    "paginationLabel": "${m} の ${n}",
+    "noImage": "このサイトでは写真は現在保存されていません",
+    "previewNotAvailable": "プレビューは利用できません"
+  },
+  "PageNavigator": {
+    "currentPageOutOfN": "ページ ${current}/${total}"
+  },
+  "PanoramicViewer": {
+    "image-viewer-close": "閉じる",
+    "image-viewer-fullscreen": "全画面",
+    "image-viewer-minimize": "最小化",
+    "image-viewer-title": "写真ビューアー",
+    "image-viewer-show-caption": "キャプションの表示",
+    "image-viewer-hide-caption": "非表示"
+  },
+  "TextBox": {
+    "error_numberExpected": "数値が必要です",
+    "error_range": "${0} ～ ${1} の範囲の値が必要です"
+  },
+  "charts": {
+    "histogram": {
+      "minValue": "最小:<br>${0}",
+      "maxValue": "最大:<br>${0}",
+      "thisAreaValue": "このエリア: ${0}",
+      "medianValue": "中央値:<br>${0}",
+      "q1Value": "第 1 四分位数:<br>${0}",
+      "q3Value": "第 3 四分位数:<br>${0}",
+      "percentile": "パーセンタイル${percent}:<br>${0}",
+      "percentileBottom": "下位 ${percent}%:<br>${0}",
+      "percentileTop": "上位 ${percent}%:<br>${0}",
+      "percentile_singleLine": "パーセンタイル ${percent}: ${0}",
+      "percentileBottom_singleLine": "下位 ${percent}%: ${0}",
+      "percentileTop_singleLine": "上位 ${percent}%: ${0}",
+      "sd_singleLine": "${sd} SD: ${0}",
+      "tooltip": {
+        "range_single": "<b>${value}</b> 内の値 <b>${level}</b> : <b>1</b>",
+        "range_single_precise": "<b>${areaName}</b> は <b>${value}</b> の値を含んでいます。",
+        "range_multi": "<b>${value}</b> 内の値 <b>${level}</b> : <b>${count}</b>",
+        "thisArea": "<b>このエリア</b> に <b>${value}</b> の値があります。",
+        "percentileLower": "<b>${level}</b> の <b>${percent}%</b> に <b>${value}</b> を超える値があります。",
+        "percentileUpper": "<b>${level}</b> の <b>${percent}%</b> に <b>${value}</b> 未満の値があります。"
+      }
+    }
+  }
+}

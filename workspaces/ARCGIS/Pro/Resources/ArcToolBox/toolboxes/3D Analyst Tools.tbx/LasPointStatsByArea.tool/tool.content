@@ -1,0 +1,94 @@
+{
+    "type": "FunctionTool",
+    "guid": "{23569aa2-c30c-463a-98af-7ceaf9589d2b}",
+    "displayname": "$rc:title",
+    "helpcontent": "5170004",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9"
+    ],
+    "params": {
+        "in_las_dataset": {
+            "display_order": "0",
+            "displayname": "$rc:in_las_dataset.title",
+            "datatype": {
+                "type": "GPLasDatasetLayer"
+            },
+            "description": "$rc:in_las_dataset.descr"
+        },
+        "in_features": {
+            "display_order": "1",
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "out_property": {
+            "type": "optional",
+            "display_order": "2",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:out_property.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "Z_MIN",
+                        "code": "$rc:out_property.domain.Z_MIN"
+                    },
+                    {
+                        "value": "Z_MAX",
+                        "code": "$rc:out_property.domain.Z_MAX"
+                    },
+                    {
+                        "value": "Z_MEAN",
+                        "code": "$rc:out_property.domain.Z_MEAN"
+                    },
+                    {
+                        "value": "POINT_COUNT",
+                        "code": "$rc:out_property.domain.POINT_COUNT"
+                    },
+                    {
+                        "value": "STANDARD_DEVIATION",
+                        "code": "$rc:out_property.domain.STANDARD_DEVIATION"
+                    }
+                ]
+            },
+            "description": "$rc:out_property.descr"
+        },
+        "output_polygons": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_polygons.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "clonedependency": "true"
+            }
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

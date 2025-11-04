@@ -1,0 +1,15 @@
+{
+    "map": {
+        "container_source.title": "Container Source",
+        "containers_visibility.title": "Keep containers visible",
+        "description": "Add an expand container by attribute rule to a diagram template",
+        "description.title": "Description",
+        "in_utility_network.title": "Input Network",
+        "is_active.title": "Active",
+        "out_template_name.title": "Output Diagram Template",
+        "out_utility_network.title": "Output Network",
+        "template_name.title": "Input Diagram Template",
+        "title": "Add Expand Container By Attribute Rule",
+        "where_clause.title": "Expression"
+    }
+}

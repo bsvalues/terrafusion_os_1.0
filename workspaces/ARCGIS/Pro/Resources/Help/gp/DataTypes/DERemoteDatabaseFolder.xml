@@ -1,0 +1,5 @@
+<DataType Name="DERemoteDatabaseFolder">
+  <DisplayName>Database Connections</DisplayName>
+  <Description>The database connection folder in ArcCatalog.</Description>
+</DataType>
+

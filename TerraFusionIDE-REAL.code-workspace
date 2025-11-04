@@ -1,0 +1,101 @@
+{
+  "folders": [
+    {
+      "name": "🚀 TerraFusion IDE (Complete)",
+      "path": "./os-platform/development/tools/TerraFusionIDE",
+    },
+    {
+      "name": "📦 Platform SDK",
+      "path": "./SDK",
+    },
+    {
+      "name": "🔧 Configuration",
+      "path": "./config",
+    },
+    {
+      "name": "📚 Documentation",
+      "path": "./docs",
+    },
+    {
+      "path": "workspaces/marketplace/TerraFusionIDE/TERRAFUSION BRAND CODEX - The Divine Design System",
+    },
+    {
+      "path": "workspaces/marketplace/TerraFusionIDE",
+    },
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/build": true,
+      "**/.git": true,
+      "**/backend": true,
+      "**/frontend": true,
+      "**/marketplace": true,
+      "**/packages": true,
+      "**/TerraFusion_Command_Portal_Starter": true,
+      "!./os-platform/development/tools/TerraFusionIDE": true,
+    },
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit",
+      "source.fixAll": "explicit",
+    },
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "🚀 Launch TerraFusion IDE",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/os-platform/development/tools/TerraFusionIDE",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": ["run", "dev"],
+      },
+    ],
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "🔨 Build TerraFusion IDE",
+        "type": "shell",
+        "command": "npm",
+        "args": ["run", "build"],
+        "options": {
+          "cwd": "${workspaceFolder}/os-platform/development/tools/TerraFusionIDE",
+        },
+        "group": "build",
+      },
+      {
+        "label": "🚀 Start TerraFusion IDE",
+        "type": "shell",
+        "command": "npm",
+        "args": ["run", "dev"],
+        "options": {
+          "cwd": "${workspaceFolder}/os-platform/development/tools/TerraFusionIDE",
+        },
+        "group": "build",
+      },
+      {
+        "label": "🧪 Test TerraFusion IDE",
+        "type": "shell",
+        "command": "npm",
+        "args": ["run", "test"],
+        "options": {
+          "cwd": "${workspaceFolder}/os-platform/development/tools/TerraFusionIDE",
+        },
+        "group": "test",
+      },
+    ],
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "bradlc.vscode-tailwindcss",
+      "ms-vscode.vscode-typescript-next",
+    ],
+  },
+}

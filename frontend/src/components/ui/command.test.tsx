@@ -21,7 +21,7 @@ describe('Command', () => {
     it('renders command component', () => {
       render(
         <Command>
-          <CommandInput placeholder="Type a command..." />
+          <CommandInput placeholder='Type a command...' />
           <CommandList>
             <CommandItem>Item 1</CommandItem>
           </CommandList>
@@ -43,7 +43,7 @@ describe('Command', () => {
     });
 
     it('accepts custom className', () => {
-      const { container } = render(<Command className="custom-command" />);
+      const { container } = render(<Command className='custom-command' />);
 
       expect(container.firstChild).toHaveClass('custom-command');
     });
@@ -66,7 +66,7 @@ describe('Command', () => {
     it('renders input field', () => {
       render(
         <Command>
-          <CommandInput placeholder="Search..." />
+          <CommandInput placeholder='Search...' />
         </Command>
       );
 
@@ -79,7 +79,7 @@ describe('Command', () => {
       const user = userEvent.setup();
       render(
         <Command>
-          <CommandInput placeholder="Search..." />
+          <CommandInput placeholder='Search...' />
         </Command>
       );
 
@@ -92,7 +92,7 @@ describe('Command', () => {
     it('renders with search icon', () => {
       const { container } = render(
         <Command>
-          <CommandInput placeholder="Search..." />
+          <CommandInput placeholder='Search...' />
         </Command>
       );
 
@@ -103,7 +103,7 @@ describe('Command', () => {
     it('applies default input styles', () => {
       render(
         <Command>
-          <CommandInput placeholder="Search..." />
+          <CommandInput placeholder='Search...' />
         </Command>
       );
 
@@ -118,7 +118,7 @@ describe('Command', () => {
     it('accepts custom className', () => {
       render(
         <Command>
-          <CommandInput placeholder="Search..." className="custom-input" />
+          <CommandInput placeholder='Search...' className='custom-input' />
         </Command>
       );
 
@@ -129,7 +129,7 @@ describe('Command', () => {
     it('supports disabled state', () => {
       render(
         <Command>
-          <CommandInput placeholder="Search..." disabled />
+          <CommandInput placeholder='Search...' disabled />
         </Command>
       );
 
@@ -171,7 +171,7 @@ describe('Command', () => {
     it('accepts custom className', () => {
       const { container } = render(
         <Command>
-          <CommandList className="custom-list">
+          <CommandList className='custom-list'>
             <CommandItem>Item</CommandItem>
           </CommandList>
         </Command>
@@ -251,7 +251,7 @@ describe('Command', () => {
       render(
         <Command>
           <CommandList>
-            <CommandGroup heading="Suggestions">
+            <CommandGroup heading='Suggestions'>
               <CommandItem>Item 1</CommandItem>
               <CommandItem>Item 2</CommandItem>
             </CommandGroup>
@@ -268,10 +268,10 @@ describe('Command', () => {
       render(
         <Command>
           <CommandList>
-            <CommandGroup heading="Group 1">
+            <CommandGroup heading='Group 1'>
               <CommandItem>Item A</CommandItem>
             </CommandGroup>
-            <CommandGroup heading="Group 2">
+            <CommandGroup heading='Group 2'>
               <CommandItem>Item B</CommandItem>
             </CommandGroup>
           </CommandList>
@@ -286,7 +286,7 @@ describe('Command', () => {
       const { container } = render(
         <Command>
           <CommandList>
-            <CommandGroup heading="Test">
+            <CommandGroup heading='Test'>
               <CommandItem>Item</CommandItem>
             </CommandGroup>
           </CommandList>
@@ -303,7 +303,7 @@ describe('Command', () => {
       const { container } = render(
         <Command>
           <CommandList>
-            <CommandGroup heading="Test" className="custom-group">
+            <CommandGroup heading='Test' className='custom-group'>
               <CommandItem>Item</CommandItem>
             </CommandGroup>
           </CommandList>
@@ -349,7 +349,7 @@ describe('Command', () => {
       render(
         <Command>
           <CommandList>
-            <CommandItem className="custom-item">Item</CommandItem>
+            <CommandItem className='custom-item'>Item</CommandItem>
           </CommandList>
         </Command>
       );
@@ -445,7 +445,7 @@ describe('Command', () => {
           <CommandList>
             <CommandItem>
               Action
-              <CommandShortcut className="custom-shortcut">⌘S</CommandShortcut>
+              <CommandShortcut className='custom-shortcut'>⌘S</CommandShortcut>
             </CommandItem>
           </CommandList>
         </Command>
@@ -491,7 +491,7 @@ describe('Command', () => {
       const { container } = render(
         <Command>
           <CommandList>
-            <CommandSeparator className="custom-separator" />
+            <CommandSeparator className='custom-separator' />
           </CommandList>
         </Command>
       );
@@ -505,7 +505,7 @@ describe('Command', () => {
     it('renders command dialog when open', () => {
       render(
         <CommandDialog open={true}>
-          <CommandInput placeholder="Type a command..." />
+          <CommandInput placeholder='Type a command...' />
           <CommandList>
             <CommandItem>Item 1</CommandItem>
           </CommandList>
@@ -518,7 +518,7 @@ describe('Command', () => {
     it('does not render when closed', () => {
       render(
         <CommandDialog open={false}>
-          <CommandInput placeholder="Type a command..." />
+          <CommandInput placeholder='Type a command...' />
         </CommandDialog>
       );
 
@@ -528,7 +528,7 @@ describe('Command', () => {
     it('can be toggled open and closed', () => {
       const { rerender } = render(
         <CommandDialog open={false}>
-          <CommandInput placeholder="Search..." />
+          <CommandInput placeholder='Search...' />
         </CommandDialog>
       );
 
@@ -536,7 +536,7 @@ describe('Command', () => {
 
       rerender(
         <CommandDialog open={true}>
-          <CommandInput placeholder="Search..." />
+          <CommandInput placeholder='Search...' />
         </CommandDialog>
       );
 
@@ -549,11 +549,11 @@ describe('Command', () => {
       const user = userEvent.setup();
       render(
         <Command>
-          <CommandInput placeholder="Search..." />
+          <CommandInput placeholder='Search...' />
           <CommandList>
-            <CommandItem value="apple">Apple</CommandItem>
-            <CommandItem value="banana">Banana</CommandItem>
-            <CommandItem value="cherry">Cherry</CommandItem>
+            <CommandItem value='apple'>Apple</CommandItem>
+            <CommandItem value='banana'>Banana</CommandItem>
+            <CommandItem value='cherry'>Cherry</CommandItem>
           </CommandList>
         </Command>
       );
@@ -569,7 +569,7 @@ describe('Command', () => {
       const user = userEvent.setup();
       render(
         <Command>
-          <CommandInput placeholder="Search..." />
+          <CommandInput placeholder='Search...' />
           <CommandList>
             <CommandEmpty>No results found</CommandEmpty>
             <CommandItem>Item 1</CommandItem>
@@ -592,7 +592,7 @@ describe('Command', () => {
       const user = userEvent.setup();
       render(
         <Command>
-          <CommandInput placeholder="Search..." />
+          <CommandInput placeholder='Search...' />
           <CommandList>
             <CommandItem>First</CommandItem>
             <CommandItem>Second</CommandItem>
@@ -614,7 +614,7 @@ describe('Command', () => {
       const onSelect = jest.fn();
       render(
         <Command>
-          <CommandInput placeholder="Search..." />
+          <CommandInput placeholder='Search...' />
           <CommandList>
             <CommandItem onSelect={onSelect}>Item</CommandItem>
           </CommandList>
@@ -634,7 +634,7 @@ describe('Command', () => {
       const user = userEvent.setup();
       render(
         <Command>
-          <CommandInput placeholder="Search..." />
+          <CommandInput placeholder='Search...' />
           <CommandList>
             <CommandItem>Item</CommandItem>
           </CommandList>
@@ -656,7 +656,7 @@ describe('Command', () => {
     it('has no accessibility violations - basic command', async () => {
       const { container } = render(
         <Command>
-          <CommandInput placeholder="Search..." />
+          <CommandInput placeholder='Search...' />
           <CommandList>
             <CommandItem>Item 1</CommandItem>
             <CommandItem>Item 2</CommandItem>
@@ -671,9 +671,9 @@ describe('Command', () => {
     it('has no accessibility violations - with groups', async () => {
       const { container } = render(
         <Command>
-          <CommandInput placeholder="Search..." />
+          <CommandInput placeholder='Search...' />
           <CommandList>
-            <CommandGroup heading="Group 1">
+            <CommandGroup heading='Group 1'>
               <CommandItem>Item A</CommandItem>
             </CommandGroup>
           </CommandList>
@@ -687,7 +687,7 @@ describe('Command', () => {
     it('input has proper label', () => {
       render(
         <Command>
-          <CommandInput placeholder="Search commands..." />
+          <CommandInput placeholder='Search commands...' />
         </Command>
       );
 
@@ -713,9 +713,9 @@ describe('Command', () => {
     it('renders command palette', () => {
       render(
         <Command>
-          <CommandInput placeholder="Type a command or search..." />
+          <CommandInput placeholder='Type a command or search...' />
           <CommandList>
-            <CommandGroup heading="Suggestions">
+            <CommandGroup heading='Suggestions'>
               <CommandItem>
                 📁 Open File
                 <CommandShortcut>⌘O</CommandShortcut>
@@ -726,7 +726,7 @@ describe('Command', () => {
               </CommandItem>
             </CommandGroup>
             <CommandSeparator />
-            <CommandGroup heading="Settings">
+            <CommandGroup heading='Settings'>
               <CommandItem>⚙️ Preferences</CommandItem>
             </CommandGroup>
           </CommandList>
@@ -742,14 +742,14 @@ describe('Command', () => {
     it('renders search with categories', () => {
       render(
         <Command>
-          <CommandInput placeholder="Search..." />
+          <CommandInput placeholder='Search...' />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
-            <CommandGroup heading="Files">
+            <CommandGroup heading='Files'>
               <CommandItem>Document.pdf</CommandItem>
               <CommandItem>Image.png</CommandItem>
             </CommandGroup>
-            <CommandGroup heading="Folders">
+            <CommandGroup heading='Folders'>
               <CommandItem>Projects</CommandItem>
               <CommandItem>Downloads</CommandItem>
             </CommandGroup>
@@ -765,7 +765,7 @@ describe('Command', () => {
     it('renders quick actions menu', () => {
       render(
         <Command>
-          <CommandInput placeholder="Quick actions..." />
+          <CommandInput placeholder='Quick actions...' />
           <CommandList>
             <CommandItem>🆕 New document</CommandItem>
             <CommandItem>📂 Open recent</CommandItem>
@@ -785,7 +785,7 @@ describe('Command', () => {
     it('handles empty command list', () => {
       render(
         <Command>
-          <CommandInput placeholder="Search..." />
+          <CommandInput placeholder='Search...' />
           <CommandList>
             <CommandEmpty>No items available</CommandEmpty>
           </CommandList>
@@ -829,7 +829,7 @@ describe('Command', () => {
       const user = userEvent.setup();
       render(
         <Command>
-          <CommandInput placeholder="Search..." />
+          <CommandInput placeholder='Search...' />
           <CommandList>
             <CommandItem>Test item</CommandItem>
           </CommandList>

@@ -1,0 +1,9 @@
+{
+    "map": {
+        "description": "Append Elements to a Network Diagram",
+        "in_network_diagram_layer.title": "Input Network Diagram Layer",
+        "map.title": "Input Map",
+        "out_network_diagram_layer.title": "Output Network Diagram",
+        "title": "Append to Diagram"
+    }
+}

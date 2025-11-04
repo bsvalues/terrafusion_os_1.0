@@ -1,0 +1,9 @@
+{
+    "set": [
+        "fields",
+        "categorical",
+        "convert",
+        "one-cold",
+        "one-hot"
+    ]
+}

@@ -1,0 +1,79 @@
+{
+  "workspace": "terra-justice",
+  "disasterRecovery": {
+    "backup": {
+      "strategy": {
+        "type": "incremental",
+        "frequency": "hourly",
+        "retention_days": 365,
+        "compression": "gzip",
+        "encryption": "AES-256"
+      },
+      "targets": [
+        {
+          "type": "local",
+          "path": "/var/backups/terra-justice",
+          "enabled": true,
+          "retention_days": 30
+        },
+        {
+          "type": "cloud",
+          "provider": "AWS",
+          "bucket": "terrafusion-backups-terra-justice",
+          "region": "us-east-1",
+          "enabled": true,
+          "retention_days": 365
+        },
+        {
+          "type": "cloud",
+          "provider": "Azure",
+          "container": "terrafusion-backups-terra-justice",
+          "region": "eastus",
+          "enabled": true,
+          "retention_days": 365
+        }
+      ],
+      "scheduling": {
+        "hourly": true,
+        "daily": true,
+        "weekly": true,
+        "monthly": true,
+        "before_deployment": true
+      },
+      "verification": {
+        "enabled": true,
+        "frequency_days": 7,
+        "restore_test": true
+      }
+    },
+    "replication": {
+      "strategy": "active-active",
+      "rpo_hours": 0.25,
+      "data_centers": 3,
+      "regions": [
+        "us-east-1",
+        "us-west-2",
+        "eu-west-1"
+      ],
+      "consistency": "strong",
+      "conflict_resolution": "latest-write-wins"
+    },
+    "failover": {
+      "strategy": "automatic",
+      "rto_minutes": 5,
+      "automatic_triggers": [
+        "primary_unavailable",
+        "data_corruption_detected",
+        "performance_degradation_critical"
+      ],
+      "health_check_interval_seconds": 30,
+      "failover_timeout_seconds": 300
+    },
+    "recovery": {
+      "recovery_level": "CRITICAL",
+      "point_in_time_recovery": true,
+      "rto_target_minutes": 5,
+      "rpo_target_hours": 0.25
+    }
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "name": "consciousness-server",
+  "version": "1.0.0",
+  "description": "TerraFusion AI Consciousness Server - Swarm Coordination Engine",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc && tsc-alias",
+    "start": "node dist/index.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "check": "tsc --noEmit",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "format": "prettier --write src/**/*.ts",
+    "swarm:status": "tsx src/scripts/swarm-status.ts",
+    "consciousness:monitor": "tsx src/scripts/consciousness-monitor.ts",
+    "agents:validate": "tsx src/scripts/agent-validator.ts",
+    "quantum:optimize": "tsx src/scripts/quantum-optimize.ts"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2",
+    "axios": "^1.5.0",
+    "lodash": "^4.17.21",
+    "uuid": "^9.0.0",
+    "winston": "^3.10.0",
+    "helmet": "^7.0.0",
+    "cors": "^2.8.5",
+    "compression": "^1.7.4",
+    "rate-limiter-flexible": "^3.0.0",
+    "node-cron": "^3.0.2",
+    "ws": "^8.14.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/node": "^20.5.9",
+    "@types/lodash": "^4.14.196",
+    "@types/uuid": "^9.0.3",
+    "@types/cors": "^2.8.13",
+    "@types/compression": "^1.7.2",
+    "@types/ws": "^8.5.5",
+    "@types/jest": "^29.5.5",
+    "jest": "^29.6.4",
+    "ts-jest": "^29.1.1",
+    "tsx": "^3.12.7",
+    "typescript": "^5.2.2",
+    "tsc-alias": "^1.8.7",
+    "eslint": "^8.48.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.0",
+    "@typescript-eslint/parser": "^6.7.0",
+    "prettier": "^3.0.3"
+  },
+  "keywords": [
+    "ai-consciousness",
+    "swarm-intelligence",
+    "government-os",
+    "terrafusion",
+    "quantum-optimization"
+  ],
+  "author": "TerraFusion Consciousness Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

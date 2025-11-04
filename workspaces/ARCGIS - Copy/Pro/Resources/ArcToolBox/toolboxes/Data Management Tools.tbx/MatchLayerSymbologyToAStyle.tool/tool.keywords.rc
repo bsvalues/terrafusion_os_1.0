@@ -1,0 +1,14 @@
+{
+    "set": [
+        "apply",
+        "class",
+        "color",
+        "lyrx",
+        "name",
+        "stylx",
+        "symbol",
+        "symbols",
+        "unique",
+        "values"
+    ]
+}

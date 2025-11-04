@@ -1,0 +1,17 @@
+{
+    "map": {
+        "data_type.descr": "<xdoc><p>Data type of the output raster dataset.</p><ul><li><span title=\"INTEGER\">Integer</span>—An integer raster dataset will be created.</li><li><span title=\"FLOAT\">Float</span>—A floating-point raster dataset will be created. This is the default.</li></ul></xdoc>",
+        "data_type.domain.FLOAT": "Float",
+        "data_type.domain.INTEGER": "Integer",
+        "data_type.title": "Output data type",
+        "description": "Converts a digital elevation model (DEM) in a United States Geological Survey (USGS) format to a raster dataset.",
+        "in_dem_file.descr": "The input USGS DEM file. The DEM must be standard USGS 7.5 minute, 1 degree, or any other file in the USGS DEM format. The DEM may be in either fixed or variable record-length format.",
+        "in_dem_file.title": "Input USGS DEM file",
+        "out_raster.descr": "<xdoc><p>The output raster dataset to be created.</p><p>If the output raster will not be saved to a geodatabase, specify .tif for TIFF file format, .CRF for CRF file format, .img for ERDAS IMAGINE file format, or no extension for Esri Grid raster format.</p></xdoc>",
+        "out_raster.title": "Output raster",
+        "summary": "<xdoc><p>Converts a digital elevation model (DEM) in a United States Geological Survey (USGS) format to a raster dataset.</p><note type=\"legacy\"/><p group=\"note\">This is a deprecated tool. The Copy Raster tool can now be used to convert a DEM file representing raster data to a raster dataset.</p></xdoc>",
+        "title": "DEM to Raster",
+        "z_factor.descr": "<xdoc><p>The number of ground x,y units in one surface z unit.</p><p>The z-factor adjusts the units of measure for the z units when they are different from the x,y units of the input surface. The z-values of the input surface are multiplied by the z-factor when calculating the final output surface.</p><p>If the x,y units and z units are in the same units of measure, the z-factor is 1. This is the default.</p><p>If the x,y units and z units are in different units of measure, the z-factor must be set to the appropriate factor, or the results will be incorrect. For example, if your z units are feet and your x,y units are meters, you would use a z-factor of 0.3048 to convert your z units from feet to meters (1 foot = 0.3048 meter).</p></xdoc>",
+        "z_factor.title": "Z factor"
+    }
+}

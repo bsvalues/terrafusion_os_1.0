@@ -1,0 +1,13 @@
+{
+    "map": {
+        "description": "Exports hydrographic data from maritime geodatabases to Vector Product Format (VPF).",
+        "in_source_gdb.descr": "The source geodatabases that will be exported.",
+        "in_source_gdb.title": "Source Geodatabase(s)",
+        "ntm_date.descr": "The Notice to Mariners date of the source geodatabases.",
+        "ntm_date.title": "Notice to Mariners Date",
+        "out_location.descr": "The location where the export package will be written.",
+        "out_location.title": "Output Location",
+        "out_vpf_folder.title": "Output VPF Library",
+        "title": "Export Geodatabase To VPF"
+    }
+}

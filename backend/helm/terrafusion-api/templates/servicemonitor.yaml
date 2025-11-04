@@ -1,0 +1,47 @@
+{{/*
+============================================================================
+TerraFusion API - ServiceMonitor Template
+Government. Transcended. - Prometheus Operator ServiceMonitor
+============================================================================
+*/}}
+
+{{- if .Values.monitoring.prometheus.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "terrafusion-api.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "terrafusion-api.labels" . | nindent 4 }}
+    terrafusion.io/component: api
+    terrafusion.io/tier: core
+    prometheus: terrafusion
+  annotations:
+    description: "TerraFusion API Metrics Collection"
+    compliance: "FISMA-High"
+spec:
+  selector:
+    matchLabels:
+      {{- include "terrafusion-api.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: http
+      path: {{ .Values.monitoring.prometheus.path }}
+      interval: 15s
+      scrapeTimeout: 10s
+      scheme: http
+      relabelings:
+        # Add county label from X-County-ID header
+        - sourceLabels: [__meta_kubernetes_pod_label_county]
+          targetLabel: county
+        # Add environment label
+        - sourceLabels: [__meta_kubernetes_namespace]
+          targetLabel: environment
+        # Add pod name
+        - sourceLabels: [__meta_kubernetes_pod_name]
+          targetLabel: pod
+      metricRelabelings:
+        # Drop high-cardinality metrics
+        - sourceLabels: [__name__]
+          regex: 'go_gc_.*|process_.*'
+          action: drop
+{{- end }}

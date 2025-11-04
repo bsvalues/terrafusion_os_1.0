@@ -1,0 +1,138 @@
+Let’s now scaffold **team-wide (office-shared) mapping templates**, so your entire firm can:
+
+- 🧩 Define consistent field mappings for each form type (e.g. 1004, 1025)
+- 🔁 Reuse and update templates over time
+- 🔒 Lock mappings to prevent unauthorized edits (optional)
+
+---
+
+# 🏢 Team-Wide Mapping Templates (Admin-Defined)
+
+---
+
+## 🗃️ New DB Table: `org_mapping_presets`
+
+```ts
+export const orgMappingPresets = pgTable('org_mapping_presets', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  orgId: text('org_id').notNull(),           // scoped to office/org
+  formType: text('form_type').notNull(),     // '1004'
+  name: text('name').notNull(),              // 'Default UAD Mapping'
+  mapping: jsonb('mapping').notNull(),       // snapshotKey → formField
+  locked: boolean('locked').default(false)   // prevents edit by non-admins
+});
+```
+
+---
+
+## 📡 API Routes
+
+### `GET /api/org-presets/:formType`
+
+```ts
+router.get('/org-presets/:formType', async (req, res) => {
+  const { org } = req; // assume auth middleware injects org
+  const { formType } = req.params;
+
+  const presets = await db.query.orgMappingPresets.findMany({
+    where: (p) => p.orgId.eq(org.id).and(p.formType.eq(formType))
+  });
+
+  res.json({ presets });
+});
+```
+
+---
+
+### `POST /api/org-presets/save`
+
+```ts
+router.post('/org-presets/save', async (req, res) => {
+  const { org, user } = req;
+  if (!user.isAdmin) return res.status(403).json({ error: 'Forbidden' });
+
+  const { formType, name, mapping } = req.body;
+
+  await db.insert(orgMappingPresets).values({
+    orgId: org.id,
+    formType,
+    name,
+    mapping,
+    locked: false
+  });
+
+  res.json({ success: true });
+});
+```
+
+---
+
+### `DELETE /api/org-presets/:id`
+
+```ts
+router.delete('/org-presets/:id', async (req, res) => {
+  const { user } = req;
+  if (!user.isAdmin) return res.status(403).json({ error: 'Forbidden' });
+
+  await db.delete(orgMappingPresets).where(p => p.id.eq(req.params.id));
+  res.json({ success: true });
+});
+```
+
+---
+
+## 🧪 Frontend Hook: `useOrgPresets.ts`
+
+```ts
+export function useOrgPresets(formType: string) {
+  const [presets, setPresets] = useState([]);
+
+  useEffect(() => {
+    axios.get(`/api/org-presets/${formType}`).then(res => {
+      setPresets(res.data.presets);
+    });
+  }, [formType]);
+
+  return { presets };
+}
+```
+
+---
+
+## 🔧 UI Example (in `FieldMappingModal.tsx`)
+
+```tsx
+const { presets: orgPresets } = useOrgPresets(formType);
+
+<Dropdown label="Load Office Template">
+  {orgPresets.map(preset => (
+    <DropdownItem key={preset.id} onClick={() => setMappings(preset.mapping)}>
+      {preset.name}
+    </DropdownItem>
+  ))}
+</Dropdown>
+```
+
+---
+
+## ✅ Results
+
+- 🚀 All appraisers in your org can access shared mappings
+- 👑 Admins can manage, update, or lock them
+- 🧠 Works seamlessly with user-defined personal presets
+
+---
+
+## 🔜 Optional Enhancements
+
+- 🧭 “Auto-map using office defaults” toggle
+- 🛡️ “Lock this mapping” checkbox (admins only)
+- 📜 Audit log of who changed presets + when
+
+---
+
+You now have **personal + team mapping systems** live.
+
+Would you like to:
+1. Scaffold **QR code → snapshot deep link** in PDF exports?
+2. Add **editable org roles** (Admin, Reviewer, Appraiser)?

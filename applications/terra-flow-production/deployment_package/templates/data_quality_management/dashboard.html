@@ -1,0 +1,580 @@
+{% extends "base.html" %}
+
+{% block title %}Data Quality Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-gradient-primary text-white">
+                    <div class="row">
+                        <div class="col-6">
+                            <h5 class="mb-0 text-white">Data Quality Dashboard</h5>
+                            <p class="text-sm mb-0">Monitor and manage data quality across the platform</p>
+                        </div>
+                        <div class="col-6 text-end">
+                            <button class="btn btn-sm btn-light" id="check-all-alerts">
+                                Run All Checks
+                            </button>
+                            <a href="{{ url_for('data_quality_management.alerts_page') }}" class="btn btn-sm btn-light">
+                                Manage Alerts
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+                            <div class="card">
+                                <div class="card-body p-3">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <div class="numbers">
+                                                <p class="text-sm mb-0 text-uppercase font-weight-bold">Quality Score</p>
+                                                <h5 class="font-weight-bolder" id="quality-score">
+                                                    {{ quality_data.overall_score }}%
+                                                </h5>
+                                                <p class="mb-0 text-sm">
+                                                    <span class="text-success text-sm font-weight-bolder">+3%</span>
+                                                    since last month
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <div class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
+                                                <i class="ni ni-chart-bar-32 text-lg opacity-10" aria-hidden="true"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+                            <div class="card">
+                                <div class="card-body p-3">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <div class="numbers">
+                                                <p class="text-sm mb-0 text-uppercase font-weight-bold">Active Alerts</p>
+                                                <h5 class="font-weight-bolder" id="active-alerts">
+                                                    {{ active_alerts }}
+                                                </h5>
+                                                <p class="mb-0 text-sm">
+                                                    <span class="{% if active_alerts > 2 %}text-danger{% else %}text-success{% endif %} text-sm font-weight-bolder">
+                                                    {% if active_alerts > 2 %}+{{ active_alerts - 2 }}{% else %}-{{ 2 - active_alerts }}{% endif %}
+                                                    </span>
+                                                    since last week
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <div class="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
+                                                <i class="ni ni-bell-55 text-lg opacity-10" aria-hidden="true"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+                            <div class="card">
+                                <div class="card-body p-3">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <div class="numbers">
+                                                <p class="text-sm mb-0 text-uppercase font-weight-bold">Completeness</p>
+                                                <h5 class="font-weight-bolder" id="completeness-score">
+                                                    {{ quality_data.completeness_score }}%
+                                                </h5>
+                                                <p class="mb-0 text-sm">
+                                                    <span class="text-success text-sm font-weight-bolder">+5%</span>
+                                                    since last quarter
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <div class="icon icon-shape bg-gradient-success shadow-success text-center rounded-circle">
+                                                <i class="ni ni-check-bold text-lg opacity-10" aria-hidden="true"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-6 col-sm-6 mb-4">
+                            <div class="card">
+                                <div class="card-body p-3">
+                                    <div class="row">
+                                        <div class="col-8">
+                                            <div class="numbers">
+                                                <p class="text-sm mb-0 text-uppercase font-weight-bold">Format Compliance</p>
+                                                <h5 class="font-weight-bolder" id="format-compliance">
+                                                    {{ quality_data.format_compliance }}%
+                                                </h5>
+                                                <p class="mb-0 text-sm">
+                                                    <span class="text-success text-sm font-weight-bolder">+1%</span>
+                                                    since last month
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <div class="icon icon-shape bg-gradient-info shadow-info text-center rounded-circle">
+                                                <i class="ni ni-ruler-pencil text-lg opacity-10" aria-hidden="true"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-lg-7 mb-4">
+                            <div class="card">
+                                <div class="card-header pb-0 p-3">
+                                    <div class="d-flex justify-content-between">
+                                        <h6 class="mb-0">Data Quality Trends</h6>
+                                        <button type="button" class="btn btn-sm btn-outline-primary" id="refresh-trends">
+                                            <i class="ni ni-refresh-02"></i> Refresh
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body p-3">
+                                    <div class="chart">
+                                        <canvas id="quality-trends-chart" class="chart-canvas" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-5 mb-4">
+                            <div class="card">
+                                <div class="card-header pb-0 p-3">
+                                    <h6 class="mb-0">Recent Alerts</h6>
+                                </div>
+                                <div class="card-body p-3">
+                                    <div class="table-responsive">
+                                        <table class="table align-items-center mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Alert Name</th>
+                                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Status</th>
+                                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Severity</th>
+                                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Last Check</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="recent-alerts-table">
+                                                {% if recent_alerts %}
+                                                    {% for alert in recent_alerts %}
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex px-2 py-1">
+                                                                <div class="d-flex flex-column justify-content-center">
+                                                                    <h6 class="mb-0 text-sm">{{ alert.name }}</h6>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <span class="badge badge-sm bg-gradient-{% if alert.status == 'triggered' %}danger{% elif alert.status == 'passed' %}success{% else %}secondary{% endif %}">
+                                                                {{ alert.status|capitalize }}
+                                                            </span>
+                                                        </td>
+                                                        <td class="align-middle text-center text-sm">
+                                                            <span class="badge badge-sm bg-gradient-{% if alert.severity == 'high' %}danger{% elif alert.severity == 'medium' %}warning{% else %}info{% endif %}">
+                                                                {{ alert.severity|capitalize }}
+                                                            </span>
+                                                        </td>
+                                                        <td class="align-middle text-center">
+                                                            <span class="text-secondary text-xs font-weight-bold">{{ alert.last_checked }}</span>
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <tr>
+                                                        <td colspan="4" class="text-center">
+                                                            No recent alerts found
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header pb-0 p-3">
+                                    <h6 class="mb-0">Data Quality by Category</h6>
+                                </div>
+                                <div class="card-body p-3">
+                                    <div class="row">
+                                        <div class="col-lg-6 col-md-12">
+                                            <div class="chart">
+                                                <canvas id="quality-by-category-chart" class="chart-canvas" height="300"></canvas>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 col-md-12">
+                                            <div class="table-responsive">
+                                                <table class="table align-items-center mb-0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Category</th>
+                                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Score</th>
+                                                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Trend</th>
+                                                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Issues</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <div class="d-flex px-2 py-1">
+                                                                    <div class="d-flex flex-column justify-content-center">
+                                                                        <h6 class="mb-0 text-sm">Completeness</h6>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <p class="text-sm font-weight-bold mb-0">{{ quality_data.completeness_score }}%</p>
+                                                            </td>
+                                                            <td class="align-middle text-center text-sm">
+                                                                <span class="text-success me-2"><i class="fa fa-arrow-up"></i> 5%</span>
+                                                            </td>
+                                                            <td class="align-middle text-center">
+                                                                <span class="text-secondary text-sm font-weight-bold">3</span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <div class="d-flex px-2 py-1">
+                                                                    <div class="d-flex flex-column justify-content-center">
+                                                                        <h6 class="mb-0 text-sm">Format Compliance</h6>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <p class="text-sm font-weight-bold mb-0">{{ quality_data.format_compliance }}%</p>
+                                                            </td>
+                                                            <td class="align-middle text-center text-sm">
+                                                                <span class="text-success me-2"><i class="fa fa-arrow-up"></i> 1%</span>
+                                                            </td>
+                                                            <td class="align-middle text-center">
+                                                                <span class="text-secondary text-sm font-weight-bold">1</span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <div class="d-flex px-2 py-1">
+                                                                    <div class="d-flex flex-column justify-content-center">
+                                                                        <h6 class="mb-0 text-sm">Consistency</h6>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <p class="text-sm font-weight-bold mb-0">{{ quality_data.consistency_score }}%</p>
+                                                            </td>
+                                                            <td class="align-middle text-center text-sm">
+                                                                <span class="text-success me-2"><i class="fa fa-arrow-up"></i> 3%</span>
+                                                            </td>
+                                                            <td class="align-middle text-center">
+                                                                <span class="text-secondary text-sm font-weight-bold">8</span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>
+                                                                <div class="d-flex px-2 py-1">
+                                                                    <div class="d-flex flex-column justify-content-center">
+                                                                        <h6 class="mb-0 text-sm">Accuracy</h6>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <p class="text-sm font-weight-bold mb-0">90%</p>
+                                                            </td>
+                                                            <td class="align-middle text-center text-sm">
+                                                                <span class="text-success me-2"><i class="fa fa-arrow-up"></i> 2%</span>
+                                                            </td>
+                                                            <td class="align-middle text-center">
+                                                                <span class="text-secondary text-sm font-weight-bold">12</span>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Initialize charts when the DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        let qualityTrendsChart;
+        let qualityByCategoryChart;
+        
+        // Load dashboard metrics from API
+        function loadDashboardMetrics() {
+            fetch('/data-quality/api/dashboard-metrics')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update metric cards
+                        document.getElementById('quality-score').textContent = data.quality_data.overall_score + '%';
+                        document.getElementById('active-alerts').textContent = data.active_alerts;
+                        document.getElementById('completeness-score').textContent = data.quality_data.completeness_score + '%';
+                        document.getElementById('format-compliance').textContent = data.quality_data.format_compliance + '%';
+                        
+                        // Update quality trends chart
+                        if (qualityTrendsChart) {
+                            updateQualityTrendsChart(qualityTrendsChart, data.trend_data);
+                        } else {
+                            initializeQualityTrendsChart(data.trend_data);
+                        }
+                        
+                        // Update recent alerts table
+                        updateRecentAlertsTable(data.recent_alerts);
+                    } else {
+                        console.error('Error loading dashboard metrics:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching dashboard metrics:', error);
+                });
+        }
+        
+        // Initialize Quality Trends Chart
+        function initializeQualityTrendsChart(trendData) {
+            var trendsCtx = document.getElementById('quality-trends-chart').getContext('2d');
+            qualityTrendsChart = new Chart(trendsCtx, {
+                type: 'line',
+                data: {
+                    labels: trendData.dates.slice(-14), // Show last 14 days
+                    datasets: [{
+                        label: 'Overall Quality',
+                        data: trendData.overall_scores.slice(-14),
+                        borderColor: '#5e72e4',
+                        tension: 0.4,
+                        pointRadius: 2,
+                        borderWidth: 3,
+                        fill: false
+                    }, {
+                        label: 'Completeness',
+                        data: trendData.completeness_scores.slice(-14),
+                        borderColor: '#2dce89',
+                        tension: 0.4,
+                        pointRadius: 2,
+                        borderWidth: 3,
+                        fill: false
+                    }, {
+                        label: 'Format Compliance',
+                        data: trendData.format_scores.slice(-14),
+                        borderColor: '#11cdef',
+                        tension: 0.4,
+                        pointRadius: 2,
+                        borderWidth: 3,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            min: 75,
+                            max: 100,
+                            ticks: {
+                                stepSize: 5
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Update Quality Trends Chart with new data
+        function updateQualityTrendsChart(chart, trendData) {
+            chart.data.labels = trendData.dates.slice(-14);
+            chart.data.datasets[0].data = trendData.overall_scores.slice(-14);
+            chart.data.datasets[1].data = trendData.completeness_scores.slice(-14);
+            chart.data.datasets[2].data = trendData.format_scores.slice(-14);
+            chart.update();
+        }
+        
+        // Update Recent Alerts Table
+        function updateRecentAlertsTable(alerts) {
+            const tableBody = document.getElementById('recent-alerts-table');
+            if (!tableBody) return;
+            
+            // Clear existing rows
+            tableBody.innerHTML = '';
+            
+            if (alerts && alerts.length > 0) {
+                // Add new rows
+                alerts.forEach(alert => {
+                    const row = document.createElement('tr');
+                    
+                    // Status class based on alert status
+                    const statusClass = alert.status === 'triggered' ? 'danger' : 
+                                         alert.status === 'passed' ? 'success' : 'secondary';
+                                         
+                    // Severity class based on alert severity
+                    const severityClass = alert.severity === 'high' ? 'danger' : 
+                                           alert.severity === 'medium' ? 'warning' : 'info';
+                    
+                    row.innerHTML = `
+                        <td>
+                            <div class="d-flex px-2 py-1">
+                                <div class="d-flex flex-column justify-content-center">
+                                    <h6 class="mb-0 text-sm">${alert.name}</h6>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge badge-sm bg-gradient-${statusClass}">${alert.status.charAt(0).toUpperCase() + alert.status.slice(1)}</span>
+                        </td>
+                        <td class="align-middle text-center text-sm">
+                            <span class="badge badge-sm bg-gradient-${severityClass}">${alert.severity.charAt(0).toUpperCase() + alert.severity.slice(1)}</span>
+                        </td>
+                        <td class="align-middle text-center">
+                            <span class="text-secondary text-xs font-weight-bold">${alert.last_checked}</span>
+                        </td>
+                    `;
+                    
+                    tableBody.appendChild(row);
+                });
+            } else {
+                // Show "No alerts" message
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="4" class="text-center">
+                        No recent alerts found
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            }
+        }
+        
+        // Initialize Quality by Category Chart
+        var categoryCtx = document.getElementById('quality-by-category-chart').getContext('2d');
+        qualityByCategoryChart = new Chart(categoryCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Completeness', 'Format Compliance', 'Consistency', 'Accuracy', 'Timeliness'],
+                datasets: [{
+                    label: 'Current',
+                    data: [{{ quality_data.completeness_score }}, {{ quality_data.format_compliance }}, {{ quality_data.consistency_score }}, 90, 85],
+                    borderColor: '#5e72e4',
+                    backgroundColor: 'rgba(94, 114, 228, 0.2)',
+                    pointBackgroundColor: '#5e72e4',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#5e72e4'
+                }, {
+                    label: 'Target',
+                    data: [100, 100, 95, 95, 90],
+                    borderColor: 'rgba(45, 206, 137, 0.5)',
+                    backgroundColor: 'rgba(45, 206, 137, 0.0)',
+                    pointBackgroundColor: 'rgba(45, 206, 137, 0.5)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(45, 206, 137, 1)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                elements: {
+                    line: {
+                        borderWidth: 3
+                    }
+                }
+            }
+        });
+
+        // Event handler for "Run All Checks" button
+        document.getElementById('check-all-alerts').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Show loading spinner
+            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Running...';
+            this.disabled = true;
+            
+            // Make AJAX request to run all checks
+            fetch('/data-quality/api/alerts/check-all', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Reset button state
+                this.innerHTML = 'Run All Checks';
+                this.disabled = false;
+                
+                // Handle response
+                if (data.success) {
+                    // Show success message
+                    alert('All quality checks completed successfully!');
+                    
+                    // Reload dashboard metrics
+                    loadDashboardMetrics();
+                } else {
+                    // Show error message
+                    alert('Error running quality checks: ' + data.error);
+                }
+            })
+            .catch(error => {
+                // Reset button state
+                this.innerHTML = 'Run All Checks';
+                this.disabled = false;
+                
+                // Show error message
+                console.error('Error:', error);
+                alert('An error occurred while running quality checks');
+            });
+        });
+        
+        // Event handler for "Refresh" button
+        document.getElementById('refresh-trends').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Show loading spinner
+            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Refreshing...';
+            this.disabled = true;
+            
+            // Reload dashboard metrics
+            loadDashboardMetrics().then(() => {
+                // Reset button state
+                this.innerHTML = '<i class="ni ni-refresh-02"></i> Refresh';
+                this.disabled = false;
+            }).catch(() => {
+                // Reset button state
+                this.innerHTML = '<i class="ni ni-refresh-02"></i> Refresh';
+                this.disabled = false;
+            });
+        });
+        
+        // Load initial dashboard metrics
+        loadDashboardMetrics();
+    });
+</script>
+{% endblock %}

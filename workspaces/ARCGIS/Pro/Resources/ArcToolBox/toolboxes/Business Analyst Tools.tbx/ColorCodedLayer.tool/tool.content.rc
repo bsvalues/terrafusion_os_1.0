@@ -1,0 +1,31 @@
+{
+    "map": {
+        "area_of_interest.descr": "The feature layer that will be used to determine the geographic extent of the analysis.",
+        "area_of_interest.title": "Area of Interest",
+        "boundary_mode.descr": "<xdoc><p>Specifies the types of boundaries that will be used to create levels in the color-coded group layer.</p><ul><li><span title=\"STANDARD_GEOGRAPHIES\">Standard Geographies</span>—Boundaries will be levels of standard geographies. This is the default.</li><li><span title=\"H3_HEXAGONS\">H3 Hexagons</span>—Boundaries will be levels of H3 hexagons.</li></ul></xdoc>",
+        "boundary_mode.domain.H3_HEXAGONS": "H3 Hexagons",
+        "boundary_mode.domain.STANDARD_GEOGRAPHIES": "Standard Geographies",
+        "boundary_mode.title": "Boundary Mode",
+        "classification_method.descr": "<xdoc><p>Specifies the method that will be used to calculate the class breaks.</p><ul><li><span title=\"NATURAL_BREAKS\">Natural Breaks (Jenks)</span>—Natural breaks classes are based on natural groupings inherent in the data. Class breaks that best group similar values and maximize the differences between classes will be identified. This is the default.</li><li><span title=\"QUANTILE\">Quantile</span>—Each class will contain an equal number of features. A quantile classification is well suited to linearly distributed data.</li><li><span title=\"EQUAL_INTERVAL\">Equal Interval</span>—The range of attribute values will be divided into equal-sized subranges. This allows you to specify the number of intervals and will automatically determine the class breaks based on the value range.</li><li><span title=\"GEOMETRIC_INTERVAL\">Geometric Interval</span>—Class breaks will be created based on class intervals that have a geometric series. The geometric coefficient in this classifier can change once (to its inverse) to optimize the class ranges.</li><li><span title=\"AUTO\">Auto</span>—Classification methods will be automatically defined using the variable metadata. This presents the recommended thematic map style based on the data type.</li></ul></xdoc>",
+        "classification_method.domain.AUTO": "Auto",
+        "classification_method.domain.EQUAL_INTERVAL": "Equal Interval",
+        "classification_method.domain.GEOMETRIC_INTERVAL": "Geometric Interval",
+        "classification_method.domain.NATURAL_BREAKS": "Natural Breaks (Jenks)",
+        "classification_method.domain.QUANTILE": "Quantile",
+        "classification_method.title": "Classification Method",
+        "classification_variable.descr": "A variable that will display as a color-coded map.",
+        "classification_variable.title": "Classification Variable",
+        "description": "Creates multilevel, scale-dependent choropleth layers from a variable describing a business, demographic, consumer, or landscape characteristic.",
+        "number_of_classes.descr": "The number of data classification breaks that will appear on the map. The default value is 5.",
+        "number_of_classes.title": "Number of Classes",
+        "out_dataset .title": "Updated Feature Dataset",
+        "out_dataset_name.descr": "The name of the feature dataset in the output geodatabase in which the color-coded layer feature classes will be created.",
+        "out_dataset_name.title": "Feature Dataset Name",
+        "out_dataset_path.descr": "The geodatabase in which the output feature dataset will be created.",
+        "out_dataset_path.title": "Output Geodatabase",
+        "out_layer.title": "Output Layer",
+        "out_layer_name.descr": "The name of the color-coded layer that will be added to the map.",
+        "out_layer_name.title": "Output Layer Name",
+        "title": "Color Coded Layer"
+    }
+}

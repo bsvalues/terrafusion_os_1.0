@@ -1,0 +1,262 @@
+{% extends 'mobile_layout.html' %}
+
+{% block title %}TerraFlow | Properties{% endblock %}
+
+{% block content %}
+<div class="mobile-container">
+    <div class="mobile-section-title">Properties</div>
+
+    <!-- Filter Card -->
+    <div class="mobile-card p-3 mb-3">
+        <form id="filterForm" action="/mobile/properties" method="get">
+            <div class="mb-3">
+                <label for="propertyType" class="mobile-form-label">Property Type</label>
+                <select class="form-select" id="propertyType" name="type">
+                    <option value="">All Types</option>
+                    {% for property_type in property_types %}
+                    <option value="{{ property_type }}" {% if current_type == property_type %}selected{% endif %}>{{ property_type }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="row g-2 mb-3">
+                <div class="col-6">
+                    <label for="minValue" class="mobile-form-label">Min Value</label>
+                    <input type="number" class="form-control" id="minValue" name="min_value" placeholder="Min Value">
+                </div>
+                <div class="col-6">
+                    <label for="maxValue" class="mobile-form-label">Max Value</label>
+                    <input type="number" class="form-control" id="maxValue" name="max_value" placeholder="Max Value">
+                </div>
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Apply Filters</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Properties List -->
+    <div id="propertiesList">
+        {% if properties %}
+            {% for property in properties %}
+            <div class="mobile-card mobile-property-card mb-3">
+                <div class="property-image" style="background-image: url('/static/images/property_placeholders/{{ property.property_type|lower }}.jpg');"></div>
+                <div class="p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <h5 class="mb-0">{{ property.address }}</h5>
+                            <div class="text-muted small">{{ property.parcel_id }}</div>
+                        </div>
+                        <div>
+                            <span class="badge bg-primary">{{ property.property_type }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="property-details mb-3">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="text-muted small">Owner</div>
+                                <div>{{ property.owner_name }}</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-muted small">Assessed Value</div>
+                                <div class="property-value">
+                                {% set latest_assessment = property.assessments|sort(attribute='assessment_date', reverse=true)|first %}
+                                {% if latest_assessment %}
+                                    ${{ "{:,.2f}".format(latest_assessment.assessed_value) }}
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="/mobile/property/{{ property.id }}" class="btn btn-outline-primary">View Details</a>
+                        {% set anomaly_count = property.anomalies|length if property.anomalies else 0 %}
+                        {% if anomaly_count > 0 %}
+                        <a href="/mobile/property/{{ property.id }}#anomalies" class="btn btn-outline-danger">
+                            {{ anomaly_count }} {% if anomaly_count == 1 %}Anomaly{% else %}Anomalies{% endif %}
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="mobile-card p-4 text-center">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h5>No properties found</h5>
+                <p class="text-muted">Try changing your filters or adding new properties.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block action_button %}
+<a href="#" class="action-button" onclick="showBottomSheet()">
+    <i class="fas fa-filter"></i>
+</a>
+{% endblock %}
+
+{% block sheet_title %}Advanced Filters{% endblock %}
+
+{% block sheet_content %}
+<form id="advancedFilterForm">
+    <div class="mb-3">
+        <label class="mobile-form-label">Property Type</label>
+        <select class="form-select" id="advPropertyType">
+            <option value="">All Types</option>
+            {% for property_type in property_types %}
+            <option value="{{ property_type }}" {% if current_type == property_type %}selected{% endif %}>{{ property_type }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <div class="mb-3">
+        <label class="mobile-form-label">Value Range</label>
+        <div class="row g-2">
+            <div class="col-6">
+                <input type="number" class="form-control" id="advMinValue" placeholder="Min Value">
+            </div>
+            <div class="col-6">
+                <input type="number" class="form-control" id="advMaxValue" placeholder="Max Value">
+            </div>
+        </div>
+    </div>
+    
+    <div class="mb-3">
+        <label class="mobile-form-label">Year Built</label>
+        <div class="row g-2">
+            <div class="col-6">
+                <input type="number" class="form-control" id="advMinYear" placeholder="Min Year">
+            </div>
+            <div class="col-6">
+                <input type="number" class="form-control" id="advMaxYear" placeholder="Max Year">
+            </div>
+        </div>
+    </div>
+    
+    <div class="mb-3">
+        <label class="mobile-form-label">Area</label>
+        <select class="form-select" id="advArea">
+            <option value="">All Areas</option>
+            <option value="kennewick">Kennewick</option>
+            <option value="richland">Richland</option>
+            <option value="pasco">Pasco</option>
+            <option value="west_richland">West Richland</option>
+            <option value="prosser">Prosser</option>
+            <option value="benton_city">Benton City</option>
+        </select>
+    </div>
+    
+    <div class="mb-3">
+        <label class="mobile-form-label">Sort By</label>
+        <select class="form-select" id="advSortBy">
+            <option value="value_desc">Value (High to Low)</option>
+            <option value="value_asc">Value (Low to High)</option>
+            <option value="date_desc">Assessment Date (Newest)</option>
+            <option value="date_asc">Assessment Date (Oldest)</option>
+            <option value="alpha_asc">Address (A-Z)</option>
+            <option value="alpha_desc">Address (Z-A)</option>
+        </select>
+    </div>
+    
+    <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="advAnomaliesOnly">
+        <label class="form-check-label" for="advAnomaliesOnly">
+            Only show properties with anomalies
+        </label>
+    </div>
+    
+    <div class="d-grid gap-2">
+        <button class="btn btn-primary" id="applyAdvancedFilters" type="button">Apply Filters</button>
+        <button class="btn btn-outline-secondary" id="resetAdvancedFilters" type="button">Reset Filters</button>
+    </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Map advanced filter values to the main form when applied
+        document.getElementById('applyAdvancedFilters').addEventListener('click', function() {
+            // Get values from advanced filters
+            const propertyType = document.getElementById('advPropertyType').value;
+            const minValue = document.getElementById('advMinValue').value;
+            const maxValue = document.getElementById('advMaxValue').value;
+            const minYear = document.getElementById('advMinYear').value;
+            const maxYear = document.getElementById('advMaxYear').value;
+            const area = document.getElementById('advArea').value;
+            const sortBy = document.getElementById('advSortBy').value;
+            const anomaliesOnly = document.getElementById('advAnomaliesOnly').checked;
+            
+            // Build query string
+            let queryParams = new URLSearchParams();
+            
+            if (propertyType) queryParams.append('type', propertyType);
+            if (minValue) queryParams.append('min_value', minValue);
+            if (maxValue) queryParams.append('max_value', maxValue);
+            if (minYear) queryParams.append('min_year', minYear);
+            if (maxYear) queryParams.append('max_year', maxYear);
+            if (area) queryParams.append('area', area);
+            if (sortBy) queryParams.append('sort', sortBy);
+            if (anomaliesOnly) queryParams.append('anomalies', 'true');
+            
+            // Redirect with query params
+            window.location.href = '/mobile/properties?' + queryParams.toString();
+            
+            // Close bottom sheet
+            hideBottomSheet();
+        });
+        
+        // Reset advanced filters
+        document.getElementById('resetAdvancedFilters').addEventListener('click', function() {
+            document.getElementById('advPropertyType').value = '';
+            document.getElementById('advMinValue').value = '';
+            document.getElementById('advMaxValue').value = '';
+            document.getElementById('advMinYear').value = '';
+            document.getElementById('advMaxYear').value = '';
+            document.getElementById('advArea').value = '';
+            document.getElementById('advSortBy').value = 'value_desc';
+            document.getElementById('advAnomaliesOnly').checked = false;
+        });
+        
+        // Set values from URL params to advanced filters (for persistence)
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        if (urlParams.has('type')) {
+            document.getElementById('advPropertyType').value = urlParams.get('type');
+        }
+        
+        if (urlParams.has('min_value')) {
+            document.getElementById('advMinValue').value = urlParams.get('min_value');
+        }
+        
+        if (urlParams.has('max_value')) {
+            document.getElementById('advMaxValue').value = urlParams.get('max_value');
+        }
+        
+        if (urlParams.has('min_year')) {
+            document.getElementById('advMinYear').value = urlParams.get('min_year');
+        }
+        
+        if (urlParams.has('max_year')) {
+            document.getElementById('advMaxYear').value = urlParams.get('max_year');
+        }
+        
+        if (urlParams.has('area')) {
+            document.getElementById('advArea').value = urlParams.get('area');
+        }
+        
+        if (urlParams.has('sort')) {
+            document.getElementById('advSortBy').value = urlParams.get('sort');
+        }
+        
+        if (urlParams.has('anomalies')) {
+            document.getElementById('advAnomaliesOnly').checked = urlParams.get('anomalies') === 'true';
+        }
+    });
+</script>
+{% endblock %}

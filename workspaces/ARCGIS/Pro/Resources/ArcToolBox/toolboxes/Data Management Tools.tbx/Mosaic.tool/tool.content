@@ -1,0 +1,232 @@
+{
+    "type": "FunctionTool",
+    "guid": "{44c8b0d4-34e1-45bd-b2c2-e10098c62b98}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190205",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "inputs": {
+            "displayname": "$rc:inputs.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "DEMosaicDataset"
+                        },
+                        {
+                            "type": "DERasterDataset"
+                        },
+                        {
+                            "type": "GPRasterLayer"
+                        }
+                    ]
+                }
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "nc",
+                            "nc4",
+                            "h5"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:inputs.descr"
+        },
+        "target": {
+            "displayname": "$rc:target.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:target.descr"
+        },
+        "mosaic_type": {
+            "type": "optional",
+            "displayname": "$rc:mosaic_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "FIRST",
+                        "code": "$rc:mosaic_type.domain.FIRST"
+                    },
+                    {
+                        "value": "LAST",
+                        "code": "$rc:mosaic_type.domain.LAST"
+                    },
+                    {
+                        "value": "BLEND",
+                        "code": "$rc:mosaic_type.domain.BLEND"
+                    },
+                    {
+                        "value": "MEAN",
+                        "code": "$rc:mosaic_type.domain.MEAN"
+                    },
+                    {
+                        "value": "MINIMUM",
+                        "code": "$rc:mosaic_type.domain.MINIMUM"
+                    },
+                    {
+                        "value": "MAXIMUM",
+                        "code": "$rc:mosaic_type.domain.MAXIMUM"
+                    },
+                    {
+                        "value": "SUM",
+                        "code": "$rc:mosaic_type.domain.SUM"
+                    }
+                ]
+            },
+            "value": "LAST",
+            "description": "$rc:mosaic_type.descr"
+        },
+        "colormap": {
+            "type": "optional",
+            "displayname": "$rc:colormap.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "REJECT",
+                        "code": "$rc:colormap.domain.REJECT"
+                    },
+                    {
+                        "value": "FIRST",
+                        "code": "$rc:colormap.domain.FIRST"
+                    },
+                    {
+                        "value": "LAST",
+                        "code": "$rc:colormap.domain.LAST"
+                    },
+                    {
+                        "value": "MATCH",
+                        "code": "$rc:colormap.domain.MATCH"
+                    }
+                ]
+            },
+            "value": "FIRST",
+            "description": "$rc:colormap.descr"
+        },
+        "background_value": {
+            "type": "optional",
+            "displayname": "$rc:background_value.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:background_value.descr"
+        },
+        "nodata_value": {
+            "type": "optional",
+            "displayname": "$rc:nodata_value.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:nodata_value.descr"
+        },
+        "onebit_to_eightbit": {
+            "type": "optional",
+            "displayname": "$rc:onebit_to_eightbit.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "OneBitTo8Bit"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NONE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:onebit_to_eightbit.descr"
+        },
+        "mosaicking_tolerance": {
+            "type": "optional",
+            "displayname": "$rc:mosaicking_tolerance.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:mosaicking_tolerance.descr"
+        },
+        "output": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "depends": [
+                "target"
+            ]
+        },
+        "MatchingMethod": {
+            "type": "optional",
+            "displayname": "$rc:matchingmethod.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NONE",
+                        "code": "$rc:matchingmethod.domain.NONE"
+                    },
+                    {
+                        "value": "STATISTIC_MATCHING",
+                        "code": "$rc:matchingmethod.domain.STATISTIC_MATCHING"
+                    },
+                    {
+                        "value": "HISTOGRAM_MATCHING",
+                        "code": "$rc:matchingmethod.domain.HISTOGRAM_MATCHING"
+                    },
+                    {
+                        "value": "LINEARCORRELATION_MATCHING",
+                        "code": "$rc:matchingmethod.domain.LINEARCORRELATION_MATCHING"
+                    }
+                ]
+            },
+            "value": "NONE",
+            "description": "$rc:matchingmethod.descr"
+        }
+    },
+    "environments": [
+        "parallelProcessingFactor",
+        "resamplingMethod"
+    ]
+}

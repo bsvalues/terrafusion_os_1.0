@@ -1,0 +1,291 @@
+{
+  "folders": [
+    {
+      "path": "../marketplace/TerraFusion-PublicRecords/records-api",
+      "name": "📋 Records API"
+    },
+    {
+      "path": "../marketplace/TerraFusion-PublicRecords/search-engine",
+      "name": "🔍 Records Search Engine"
+    },
+    {
+      "path": "../marketplace/TerraFusion-PublicRecords/digitization",
+      "name": "📄 Document Digitization"
+    },
+    {
+      "path": "../marketplace/TerraFusion-PublicRecords/access-control",
+      "name": "🔐 Access Control"
+    },
+    {
+      "path": "../marketplace/TerraFusion-PublicRecords/archival-system",
+      "name": "🗄️ Archival System"
+    },
+    {
+      "path": "../marketplace/TerraFusion-PublicRecords/audit-trails",
+      "name": "📊 Audit Trails"
+    },
+    {
+      "path": "../marketplace/TerraFusion-PublicRecords/testing",
+      "name": "🧪 Records Tests"
+    },
+    {
+      "path": "../SDK",
+      "name": "📦 Platform SDK (read-only)"
+    },
+    {
+      "path": "../backend",
+      "name": "🔧 Shared Backend (read-only)"
+    },
+    {
+      "path": "../docs/public-records",
+      "name": "📚 Records Docs"
+    },
+    {
+      "path": "../config",
+      "name": "⚙️ Config (shared)"
+    },
+    {
+      "path": "../docs/terrafusion_publicrecords",
+      "name": "📚 Terrafusion-Publicrecords Docs"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/out": true,
+      "**/.pytest_cache": true,
+      "../marketplace/*/": true,
+      "!../marketplace/TerraFusion-PublicRecords": false,
+      "../frontend": true,
+      "../backend": true,
+      "../os-platform": true,
+      "../terrafusion-cos": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/out": true,
+      "../frontend": true,
+      "../backend": true,
+      "../os-platform": true
+    },
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "python.defaultInterpreter": "./marketplace/TerraFusion-PublicRecords/.venv/bin/python",
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "eslint.workingDirectories": [
+      "./marketplace/TerraFusion-PublicRecords/records-api"
+    ],
+    "terrafusion.sync": {
+      "autoSync": true,
+      "syncInterval": 15,
+      "conflictResolution": "prompt",
+      "sharedState": {
+        "backend": "read-only",
+        "sdk": "read-only",
+        "config": "shared-write"
+      },
+      "recordsIntegration": true
+    },
+    "terrafusion.records": {
+      "enableElasticSearch": true,
+      "documentOCR": true,
+      "accessControl": true,
+      "auditLogging": true,
+      "retentionPolicies": true,
+      "archivalMode": "automated"
+    },
+    "terrafusion.compliance": {
+      "fismaMode": "HIGH",
+      "nist80053": true,
+      "publicRecordsLaw": true,
+      "privacyProtection": true,
+      "retentionCompliance": true,
+      "auditTrail": "comprehensive"
+    },
+    "terrafusion.security": {
+      "recordsEncryption": "AES-256",
+      "accessLogging": "detailed",
+      "piiProtection": true,
+      "redactionSupport": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-python.pylint",
+      "ms-python.flake8",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-vscode.vscode-typescript-next",
+      "ms-vscode-remote.remote-containers",
+      "streetsidesoftware.code-spell-checker",
+      "ms-toolsai.jupyter",
+      "ms-azuretools.vscode-docker"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Start Records API",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/TerraFusion-PublicRecords/records-api",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "console": "integratedTerminal",
+        "env": {
+          "TERRAFUSION_SERVICE": "public-records",
+          "RECORDS_MODE": "development",
+          "ELASTICSEARCH_ENABLED": "true"
+        }
+      },
+      {
+        "name": "Debug Search Engine",
+        "type": "python",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/TerraFusion-PublicRecords/search-engine",
+        "program": "search_engine.py",
+        "console": "integratedTerminal",
+        "env": {
+          "SEARCH_DEBUG": "true",
+          "ELASTICSEARCH_URL": "http://localhost:9200"
+        }
+      },
+      {
+        "name": "Debug Document Digitization",
+        "type": "python",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/TerraFusion-PublicRecords/digitization",
+        "program": "ocr_processor.py",
+        "console": "integratedTerminal",
+        "env": {
+          "OCR_DEBUG": "true",
+          "TESSARACT_CMD": "/usr/bin/tesseract"
+        }
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build Public Records System",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "build:records"
+        ],
+        "problemMatcher": [
+          "$tsc"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Test Public Records System",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "test:records"
+        ],
+        "problemMatcher": [],
+        "group": {
+          "kind": "test",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Start ElasticSearch",
+        "type": "shell",
+        "command": "docker-compose",
+        "args": [
+          "up",
+          "-d",
+          "elasticsearch"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/TerraFusion-PublicRecords"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Index Sample Documents",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "scripts/index_documents.py"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/TerraFusion-PublicRecords"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Test OCR Processing",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "test_ocr.py"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/TerraFusion-PublicRecords/digitization"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Run Access Control Tests",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "test:access-control"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/TerraFusion-PublicRecords/access-control"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Generate Audit Report",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "generate_audit_report.py"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/TerraFusion-PublicRecords/audit-trails"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Records Compliance Scan",
+        "type": "shell",
+        "command": "./SDK/tools/compliance-scan.sh",
+        "args": [
+          "--service=public-records",
+          "--records-law-validation"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      }
+    ]
+  }
+}

@@ -1,0 +1,1098 @@
+<?xml version="1.0"?>
+<DENetworkDataset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:typens="http://www.esri.com/schemas/ArcGIS/2.1.0" xsi:type="typens:DENetworkDataset">
+  <CatalogPath>/FD=PrelimNetwork/ND=PrelimNetwork_ND</CatalogPath>
+  <Name>PrelimNetwork_ND</Name>
+  <ChildrenExpanded>false</ChildrenExpanded>
+  <DatasetType>esriDTNetworkDataset</DatasetType>
+  <DSID>16</DSID>
+  <Versioned>false</Versioned>
+  <CanVersion>false</CanVersion>
+  <ConfigurationKeyword/>
+  <Extent xsi:type="typens:EnvelopeN">
+    <XMin>-12973102.2249</XMin>
+    <YMin>4005199.7054999992</YMin>
+    <XMax>-12972849.4048</XMax>
+    <YMax>4005548.5254999995</YMax>
+    <SpatialReference xsi:type="typens:ProjectedCoordinateSystem">
+      <WKT>PROJCS["WGS_1984_Web_Mercator_Auxiliary_Sphere",GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Mercator_Auxiliary_Sphere"],PARAMETER["False_Easting",0.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",0.0],PARAMETER["Standard_Parallel_1",0.0],PARAMETER["Auxiliary_Sphere_Type",0.0],UNIT["Meter",1.0]],VERTCS["WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PARAMETER["Vertical_Shift",0.0],PARAMETER["Direction",1.0],UNIT["Meter",1.0]]</WKT>
+      <XOrigin>-20037700</XOrigin>
+      <YOrigin>-30241100</YOrigin>
+      <XYScale>10000</XYScale>
+      <ZOrigin>-100000</ZOrigin>
+      <ZScale>10000</ZScale>
+      <MOrigin>-100000</MOrigin>
+      <MScale>10000</MScale>
+      <XYTolerance>0.001</XYTolerance>
+      <ZTolerance>0.001</ZTolerance>
+      <MTolerance>0.001</MTolerance>
+      <HighPrecision>true</HighPrecision>
+      <WKID>102100</WKID>
+      <LatestWKID>3857</LatestWKID>
+      <VCSWKID>115700</VCSWKID>
+      <LatestVCSWKID>115700</LatestVCSWKID>
+    </SpatialReference>
+  </Extent>
+  <SpatialReference xsi:type="typens:ProjectedCoordinateSystem">
+    <WKT>PROJCS["WGS_1984_Web_Mercator_Auxiliary_Sphere",GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Mercator_Auxiliary_Sphere"],PARAMETER["False_Easting",0.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",0.0],PARAMETER["Standard_Parallel_1",0.0],PARAMETER["Auxiliary_Sphere_Type",0.0],UNIT["Meter",1.0]],VERTCS["WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PARAMETER["Vertical_Shift",0.0],PARAMETER["Direction",1.0],UNIT["Meter",1.0]]</WKT>
+    <XOrigin>-20037700</XOrigin>
+    <YOrigin>-30241100</YOrigin>
+    <XYScale>10000</XYScale>
+    <ZOrigin>-100000</ZOrigin>
+    <ZScale>10000</ZScale>
+    <MOrigin>-100000</MOrigin>
+    <MScale>10000</MScale>
+    <XYTolerance>0.001</XYTolerance>
+    <ZTolerance>0.001</ZTolerance>
+    <MTolerance>0.001</MTolerance>
+    <HighPrecision>true</HighPrecision>
+    <WKID>102100</WKID>
+    <LatestWKID>3857</LatestWKID>
+    <VCSWKID>115700</VCSWKID>
+    <LatestVCSWKID>115700</LatestVCSWKID>
+  </SpatialReference>
+  <LogicalNetworkName>PrelimNetwork_ND</LogicalNetworkName>
+  <NetworkType>1</NetworkType>
+  <Buildable>true</Buildable>
+  <SupportsTurns>true</SupportsTurns>
+  <Properties xsi:type="typens:PropertySet">
+    <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+      <PropertySetProperty xsi:type="typens:PropertySetProperty">
+        <Key>NetworkTravelModes</Key>
+        <Value xsi:type="typens:PropertySet">
+          <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+            <PropertySetProperty xsi:type="typens:PropertySetProperty">
+              <Key>TravelModeCount</Key>
+              <Value xsi:type="xs:int">1</Value>
+            </PropertySetProperty>
+            <PropertySetProperty xsi:type="typens:PropertySetProperty">
+              <Key>TravelMode0</Key>
+              <Value xsi:type="xs:string">{"name":"Thinning","type":"AUTOMOBILE","description":"","impedanceAttributeName":"WalkTime","timeAttributeName":"WalkTime","distanceAttributeName":"Length","restrictionAttributeNames":["Hallways: Avoid Walls","Hallways: Prefer Middle Med","Hallways: Prefer Center High"],"attributeParameterValues":[{"attributeName":"Hallways: Avoid Walls","parameterName":"Restriction Usage","value":2},{"attributeName":"Hallways: Prefer Middle Med","parameterName":"Restriction Usage","value":0.5},{"attributeName":"Hallways: Prefer Center High","parameterName":"Restriction Usage","value":0.20000000000000001}],"useHierarchy":false,"uturnAtJunctions":"esriNFSBAllowBacktrack","simplificationTolerance":null,"simplificationToleranceUnits":"esriUnknownUnits"}</Value>
+            </PropertySetProperty>
+            <PropertySetProperty xsi:type="typens:PropertySetProperty">
+              <Key>DefaultTravelModeName</Key>
+              <Value xsi:type="xs:string">Thinning</Value>
+            </PropertySetProperty>
+          </PropertyArray>
+        </Value>
+      </PropertySetProperty>
+    </PropertyArray>
+  </Properties>
+  <UserData xsi:nil="true"/>
+  <EdgeFeatureSources xsi:type="typens:ArrayOfEdgeFeatureSource">
+    <EdgeFeatureSource xsi:type="typens:EdgeFeatureSource">
+      <ID>1</ID>
+      <ClassID>14</ClassID>
+      <Name>PrelimTransitions</Name>
+      <ElementType>esriNETEdge</ElementType>
+      <Properties xsi:nil="true"/>
+      <FromElevationFieldName/>
+      <ToElevationFieldName/>
+      <Connectivity xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">1</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>UsesSubtypes</Key>
+            <Value xsi:type="xs:short">0</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>ClassConnectivity</Key>
+            <Value xsi:type="xs:short">0</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>SubtypeConnCount</Key>
+            <Value xsi:type="xs:int">0</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>DefaultGroup</Key>
+            <Value xsi:type="xs:int">1</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>GroupCount</Key>
+            <Value xsi:type="xs:int">0</Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </Connectivity>
+    </EdgeFeatureSource>
+    <EdgeFeatureSource xsi:type="typens:EdgeFeatureSource">
+      <ID>2</ID>
+      <ClassID>13</ClassID>
+      <Name>PrelimPathways</Name>
+      <ElementType>esriNETEdge</ElementType>
+      <Properties xsi:nil="true"/>
+      <FromElevationFieldName/>
+      <ToElevationFieldName/>
+      <Connectivity xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">1</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>UsesSubtypes</Key>
+            <Value xsi:type="xs:short">0</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>ClassConnectivity</Key>
+            <Value xsi:type="xs:short">0</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>SubtypeConnCount</Key>
+            <Value xsi:type="xs:int">0</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>DefaultGroup</Key>
+            <Value xsi:type="xs:int">1</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>GroupCount</Key>
+            <Value xsi:type="xs:int">0</Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </Connectivity>
+    </EdgeFeatureSource>
+  </EdgeFeatureSources>
+  <JunctionFeatureSources xsi:type="typens:ArrayOfJunctionFeatureSource"/>
+  <SystemJunctionSources xsi:type="typens:ArrayOfSystemJunctionSource">
+    <SystemJunctionSource xsi:type="typens:SystemJunctionSource">
+      <ID>3</ID>
+      <ClassID>15</ClassID>
+      <Name>PrelimNetwork_ND_Junctions</Name>
+      <ElementType>esriNETJunction</ElementType>
+      <Properties xsi:nil="true"/>
+      <ElevationFieldName/>
+    </SystemJunctionSource>
+  </SystemJunctionSources>
+  <TurnFeatureSources xsi:type="typens:ArrayOfTurnFeatureSource"/>
+  <EvaluatedNetworkAttributes xsi:type="typens:ArrayOfEvaluatedNetworkAttribute">
+    <EvaluatedNetworkAttribute xsi:type="typens:EvaluatedNetworkAttribute">
+      <ID>1</ID>
+      <Name>Length</Name>
+      <Units>Meters</Units>
+      <DataType>esriNADTDouble</DataType>
+      <UsageType>esriNAUTCost</UsageType>
+      <UserData xsi:nil="true"/>
+      <UseByDefault>false</UseByDefault>
+      <AttributeParameters xsi:type="typens:ArrayOfNetworkAttributeParameter"/>
+      <TimeAware>false</TimeAware>
+    </EvaluatedNetworkAttribute>
+    <EvaluatedNetworkAttribute xsi:type="typens:EvaluatedNetworkAttribute">
+      <ID>2</ID>
+      <Name>WalkTime</Name>
+      <Units>Minutes</Units>
+      <DataType>esriNADTDouble</DataType>
+      <UsageType>esriNAUTCost</UsageType>
+      <UserData xsi:nil="true"/>
+      <UseByDefault>true</UseByDefault>
+      <AttributeParameters xsi:type="typens:ArrayOfNetworkAttributeParameter"/>
+      <TimeAware>false</TimeAware>
+    </EvaluatedNetworkAttribute>
+    <EvaluatedNetworkAttribute xsi:type="typens:EvaluatedNetworkAttribute">
+      <ID>3</ID>
+      <Name>Hallways: Avoid Walls</Name>
+      <Units>Unknown</Units>
+      <DataType>esriNADTBoolean</DataType>
+      <UsageType>esriNAUTRestriction</UsageType>
+      <UserData xsi:nil="true"/>
+      <UseByDefault>true</UseByDefault>
+      <AttributeParameters xsi:type="typens:ArrayOfNetworkAttributeParameter">
+        <NetworkAttributeParameter xsi:type="typens:NetworkAttributeParameter">
+          <Name>Restriction Usage</Name>
+          <VarType>5</VarType>
+          <Value xsi:type="xs:double">2</Value>
+          <DefaultValue xsi:type="xs:double">2</DefaultValue>
+          <ParameterUsageType>esriNAPUTRestriction</ParameterUsageType>
+        </NetworkAttributeParameter>
+      </AttributeParameters>
+      <TimeAware>false</TimeAware>
+    </EvaluatedNetworkAttribute>
+    <EvaluatedNetworkAttribute xsi:type="typens:EvaluatedNetworkAttribute">
+      <ID>4</ID>
+      <Name>Hallways: Prefer Middle Med</Name>
+      <Units>Unknown</Units>
+      <DataType>esriNADTBoolean</DataType>
+      <UsageType>esriNAUTRestriction</UsageType>
+      <UserData xsi:nil="true"/>
+      <UseByDefault>true</UseByDefault>
+      <AttributeParameters xsi:type="typens:ArrayOfNetworkAttributeParameter">
+        <NetworkAttributeParameter xsi:type="typens:NetworkAttributeParameter">
+          <Name>Restriction Usage</Name>
+          <VarType>5</VarType>
+          <Value xsi:type="xs:double">0.5</Value>
+          <DefaultValue xsi:type="xs:double">0.5</DefaultValue>
+          <ParameterUsageType>esriNAPUTRestriction</ParameterUsageType>
+        </NetworkAttributeParameter>
+      </AttributeParameters>
+      <TimeAware>false</TimeAware>
+    </EvaluatedNetworkAttribute>
+    <EvaluatedNetworkAttribute xsi:type="typens:EvaluatedNetworkAttribute">
+      <ID>5</ID>
+      <Name>Hallways: Prefer Center High</Name>
+      <Units>Unknown</Units>
+      <DataType>esriNADTBoolean</DataType>
+      <UsageType>esriNAUTRestriction</UsageType>
+      <UserData xsi:nil="true"/>
+      <UseByDefault>true</UseByDefault>
+      <AttributeParameters xsi:type="typens:ArrayOfNetworkAttributeParameter">
+        <NetworkAttributeParameter xsi:type="typens:NetworkAttributeParameter">
+          <Name>Restriction Usage</Name>
+          <VarType>5</VarType>
+          <Value xsi:type="xs:double">0.20000000000000001</Value>
+          <DefaultValue xsi:type="xs:double">0.20000000000000001</DefaultValue>
+          <ParameterUsageType>esriNAPUTRestriction</ParameterUsageType>
+        </NetworkAttributeParameter>
+      </AttributeParameters>
+      <TimeAware>false</TimeAware>
+    </EvaluatedNetworkAttribute>
+  </EvaluatedNetworkAttributes>
+  <NetworkAssignments xsi:type="typens:ArrayOfNetworkAssignment">
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>true</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>Length</NetworkAttributeName>
+      <NetworkElementType>esriNETJunction</NetworkElementType>
+      <NetworkEvaluatorCLSID>{318C4B91-F5D2-467A-996C-0AB51B0D8FF2}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDNone</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">1</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>ConstantValue</Key>
+            <Value xsi:type="xs:double">0</Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>true</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>Length</NetworkAttributeName>
+      <NetworkElementType>esriNETEdge</NetworkElementType>
+      <NetworkEvaluatorCLSID>{318C4B91-F5D2-467A-996C-0AB51B0D8FF2}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDNone</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">1</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>ConstantValue</Key>
+            <Value xsi:type="xs:double">0</Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>true</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>Length</NetworkAttributeName>
+      <NetworkElementType>esriNETTurn</NetworkElementType>
+      <NetworkEvaluatorCLSID>{318C4B91-F5D2-467A-996C-0AB51B0D8FF2}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDNone</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">1</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>ConstantValue</Key>
+            <Value xsi:type="xs:double">0</Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>false</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>Length</NetworkAttributeName>
+      <NetworkSourceName>PrelimTransitions</NetworkSourceName>
+      <NetworkEvaluatorCLSID>{68055FC4-37D5-4BD0-81A5-CD177A29759C}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDAlongDigitized</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">1</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Expression</Key>
+            <Value xsi:type="xs:string">[LENGTH_3D]</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>PreLogic</Key>
+            <Value xsi:type="xs:string"/>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>false</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>Length</NetworkAttributeName>
+      <NetworkSourceName>PrelimTransitions</NetworkSourceName>
+      <NetworkEvaluatorCLSID>{68055FC4-37D5-4BD0-81A5-CD177A29759C}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDAgainstDigitized</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">1</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Expression</Key>
+            <Value xsi:type="xs:string">[LENGTH_3D]</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>PreLogic</Key>
+            <Value xsi:type="xs:string"/>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>false</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>Length</NetworkAttributeName>
+      <NetworkSourceName>PrelimPathways</NetworkSourceName>
+      <NetworkEvaluatorCLSID>{68055FC4-37D5-4BD0-81A5-CD177A29759C}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDAlongDigitized</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">1</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Expression</Key>
+            <Value xsi:type="xs:string">[LENGTH_3D]</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>PreLogic</Key>
+            <Value xsi:type="xs:string"/>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>false</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>Length</NetworkAttributeName>
+      <NetworkSourceName>PrelimPathways</NetworkSourceName>
+      <NetworkEvaluatorCLSID>{68055FC4-37D5-4BD0-81A5-CD177A29759C}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDAgainstDigitized</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">1</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Expression</Key>
+            <Value xsi:type="xs:string">[LENGTH_3D]</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>PreLogic</Key>
+            <Value xsi:type="xs:string"/>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>true</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>WalkTime</NetworkAttributeName>
+      <NetworkElementType>esriNETJunction</NetworkElementType>
+      <NetworkEvaluatorCLSID>{318C4B91-F5D2-467A-996C-0AB51B0D8FF2}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDNone</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">1</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>ConstantValue</Key>
+            <Value xsi:type="xs:double">0</Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>true</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>WalkTime</NetworkAttributeName>
+      <NetworkElementType>esriNETEdge</NetworkElementType>
+      <NetworkEvaluatorCLSID>{318C4B91-F5D2-467A-996C-0AB51B0D8FF2}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDNone</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">1</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>ConstantValue</Key>
+            <Value xsi:type="xs:double">0</Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>true</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>WalkTime</NetworkAttributeName>
+      <NetworkElementType>esriNETTurn</NetworkElementType>
+      <NetworkEvaluatorCLSID>{CE072DE5-8C43-4D4F-945B-5FCEB34A7281}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDNone</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">1</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>MaxStraightTurnDeflectionAngle</Key>
+            <Value xsi:type="xs:int">30</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>MaxReverseTurnDeflectionAngle</Key>
+            <Value xsi:type="xs:int">80</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>UseCustomRoadCategoryRanges</Key>
+            <Value xsi:type="xs:boolean">false</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>CustomPrimaryRoadCategoryMaxValue</Key>
+            <Value xsi:type="xs:int">1</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>CustomSecondaryRoadCategoryMaxValue</Key>
+            <Value xsi:type="xs:int">2</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>DefaultSeconds</Key>
+            <Value xsi:type="xs:double">0</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>NetworkGlobalTurnDelayCategories</Key>
+            <Value xsi:type="typens:ArrayOfNetworkGlobalTurnDelayCategory">
+              <NetworkGlobalTurnDelayCategory xsi:type="typens:NetworkGlobalTurnDelayCategory">
+                <AngleCategory>esriNTACStraight</AngleCategory>
+                <FromRoadCategory>esriNRCLocal</FromRoadCategory>
+                <ToRoadCategory>esriNRCLocal</ToRoadCategory>
+                <CrossRoadCategory>esriNRCNone</CrossRoadCategory>
+                <Seconds>0</Seconds>
+              </NetworkGlobalTurnDelayCategory>
+              <NetworkGlobalTurnDelayCategory xsi:type="typens:NetworkGlobalTurnDelayCategory">
+                <AngleCategory>esriNTACStraight</AngleCategory>
+                <FromRoadCategory>esriNRCLocal</FromRoadCategory>
+                <ToRoadCategory>esriNRCLocal</ToRoadCategory>
+                <CrossRoadCategory>esriNRCLocal</CrossRoadCategory>
+                <Seconds>0</Seconds>
+              </NetworkGlobalTurnDelayCategory>
+              <NetworkGlobalTurnDelayCategory xsi:type="typens:NetworkGlobalTurnDelayCategory">
+                <AngleCategory>esriNTACStraight</AngleCategory>
+                <FromRoadCategory>esriNRCLocal</FromRoadCategory>
+                <ToRoadCategory>esriNRCLocal</ToRoadCategory>
+                <CrossRoadCategory>esriNRCMajor</CrossRoadCategory>
+                <Seconds>15</Seconds>
+              </NetworkGlobalTurnDelayCategory>
+              <NetworkGlobalTurnDelayCategory xsi:type="typens:NetworkGlobalTurnDelayCategory">
+                <AngleCategory>esriNTACStraight</AngleCategory>
+                <FromRoadCategory>esriNRCLocal</FromRoadCategory>
+                <ToRoadCategory>esriNRCSecondary</ToRoadCategory>
+                <CrossRoadCategory>esriNRCAny</CrossRoadCategory>
+                <Seconds>3</Seconds>
+              </NetworkGlobalTurnDelayCategory>
+              <NetworkGlobalTurnDelayCategory xsi:type="typens:NetworkGlobalTurnDelayCategory">
+                <AngleCategory>esriNTACStraight</AngleCategory>
+                <FromRoadCategory>esriNRCSecondary</FromRoadCategory>
+                <ToRoadCategory>esriNRCLocal</ToRoadCategory>
+                <CrossRoadCategory>esriNRCAny</CrossRoadCategory>
+                <Seconds>3</Seconds>
+              </NetworkGlobalTurnDelayCategory>
+              <NetworkGlobalTurnDelayCategory xsi:type="typens:NetworkGlobalTurnDelayCategory">
+                <AngleCategory>esriNTACStraight</AngleCategory>
+                <FromRoadCategory>esriNRCSecondary</FromRoadCategory>
+                <ToRoadCategory>esriNRCSecondary</ToRoadCategory>
+                <CrossRoadCategory>esriNRCNone</CrossRoadCategory>
+                <Seconds>0</Seconds>
+              </NetworkGlobalTurnDelayCategory>
+              <NetworkGlobalTurnDelayCategory xsi:type="typens:NetworkGlobalTurnDelayCategory">
+                <AngleCategory>esriNTACStraight</AngleCategory>
+                <FromRoadCategory>esriNRCSecondary</FromRoadCategory>
+                <ToRoadCategory>esriNRCSecondary</ToRoadCategory>
+                <CrossRoadCategory>esriNRCLocal</CrossRoadCategory>
+                <Seconds>0.5</Seconds>
+              </NetworkGlobalTurnDelayCategory>
+              <NetworkGlobalTurnDelayCategory xsi:type="typens:NetworkGlobalTurnDelayCategory">
+                <AngleCategory>esriNTACStraight</AngleCategory>
+                <FromRoadCategory>esriNRCSecondary</FromRoadCategory>
+                <ToRoadCategory>esriNRCSecondary</ToRoadCategory>
+                <CrossRoadCategory>esriNRCMajor</CrossRoadCategory>
+                <Seconds>5</Seconds>
+              </NetworkGlobalTurnDelayCategory>
+              <NetworkGlobalTurnDelayCategory xsi:type="typens:NetworkGlobalTurnDelayCategory">
+                <AngleCategory>esriNTACReverse</AngleCategory>
+                <FromRoadCategory>esriNRCLocal</FromRoadCategory>
+                <ToRoadCategory>esriNRCLocal</ToRoadCategory>
+                <CrossRoadCategory>esriNRCAny</CrossRoadCategory>
+                <Seconds>5</Seconds>
+              </NetworkGlobalTurnDelayCategory>
+              <NetworkGlobalTurnDelayCategory xsi:type="typens:NetworkGlobalTurnDelayCategory">
+                <AngleCategory>esriNTACReverse</AngleCategory>
+                <FromRoadCategory>esriNRCLocal</FromRoadCategory>
+                <ToRoadCategory>esriNRCSecondary</ToRoadCategory>
+                <CrossRoadCategory>esriNRCAny</CrossRoadCategory>
+                <Seconds>15</Seconds>
+              </NetworkGlobalTurnDelayCategory>
+              <NetworkGlobalTurnDelayCategory xsi:type="typens:NetworkGlobalTurnDelayCategory">
+                <AngleCategory>esriNTACReverse</AngleCategory>
+                <FromRoadCategory>esriNRCSecondary</FromRoadCategory>
+                <ToRoadCategory>esriNRCLocal</ToRoadCategory>
+                <CrossRoadCategory>esriNRCAny</CrossRoadCategory>
+                <Seconds>5</Seconds>
+              </NetworkGlobalTurnDelayCategory>
+              <NetworkGlobalTurnDelayCategory xsi:type="typens:NetworkGlobalTurnDelayCategory">
+                <AngleCategory>esriNTACReverse</AngleCategory>
+                <FromRoadCategory>esriNRCSecondary</FromRoadCategory>
+                <ToRoadCategory>esriNRCSecondary</ToRoadCategory>
+                <CrossRoadCategory>esriNRCAny</CrossRoadCategory>
+                <Seconds>5</Seconds>
+              </NetworkGlobalTurnDelayCategory>
+              <NetworkGlobalTurnDelayCategory xsi:type="typens:NetworkGlobalTurnDelayCategory">
+                <AngleCategory>esriNTACRight</AngleCategory>
+                <FromRoadCategory>esriNRCLocal</FromRoadCategory>
+                <ToRoadCategory>esriNRCLocal</ToRoadCategory>
+                <CrossRoadCategory>esriNRCAny</CrossRoadCategory>
+                <Seconds>0.40000000000000002</Seconds>
+              </NetworkGlobalTurnDelayCategory>
+              <NetworkGlobalTurnDelayCategory xsi:type="typens:NetworkGlobalTurnDelayCategory">
+                <AngleCategory>esriNTACRight</AngleCategory>
+                <FromRoadCategory>esriNRCLocal</FromRoadCategory>
+                <ToRoadCategory>esriNRCSecondary</ToRoadCategory>
+                <CrossRoadCategory>esriNRCAny</CrossRoadCategory>
+                <Seconds>3</Seconds>
+              </NetworkGlobalTurnDelayCategory>
+              <NetworkGlobalTurnDelayCategory xsi:type="typens:NetworkGlobalTurnDelayCategory">
+                <AngleCategory>esriNTACRight</AngleCategory>
+                <FromRoadCategory>esriNRCSecondary</FromRoadCategory>
+                <ToRoadCategory>esriNRCLocal</ToRoadCategory>
+                <CrossRoadCategory>esriNRCAny</CrossRoadCategory>
+                <Seconds>2</Seconds>
+              </NetworkGlobalTurnDelayCategory>
+              <NetworkGlobalTurnDelayCategory xsi:type="typens:NetworkGlobalTurnDelayCategory">
+                <AngleCategory>esriNTACRight</AngleCategory>
+                <FromRoadCategory>esriNRCSecondary</FromRoadCategory>
+                <ToRoadCategory>esriNRCSecondary</ToRoadCategory>
+                <CrossRoadCategory>esriNRCAny</CrossRoadCategory>
+                <Seconds>3</Seconds>
+              </NetworkGlobalTurnDelayCategory>
+              <NetworkGlobalTurnDelayCategory xsi:type="typens:NetworkGlobalTurnDelayCategory">
+                <AngleCategory>esriNTACLeft</AngleCategory>
+                <FromRoadCategory>esriNRCLocal</FromRoadCategory>
+                <ToRoadCategory>esriNRCLocal</ToRoadCategory>
+                <CrossRoadCategory>esriNRCAny</CrossRoadCategory>
+                <Seconds>0.40000000000000002</Seconds>
+              </NetworkGlobalTurnDelayCategory>
+              <NetworkGlobalTurnDelayCategory xsi:type="typens:NetworkGlobalTurnDelayCategory">
+                <AngleCategory>esriNTACLeft</AngleCategory>
+                <FromRoadCategory>esriNRCLocal</FromRoadCategory>
+                <ToRoadCategory>esriNRCSecondary</ToRoadCategory>
+                <CrossRoadCategory>esriNRCAny</CrossRoadCategory>
+                <Seconds>10</Seconds>
+              </NetworkGlobalTurnDelayCategory>
+              <NetworkGlobalTurnDelayCategory xsi:type="typens:NetworkGlobalTurnDelayCategory">
+                <AngleCategory>esriNTACLeft</AngleCategory>
+                <FromRoadCategory>esriNRCSecondary</FromRoadCategory>
+                <ToRoadCategory>esriNRCLocal</ToRoadCategory>
+                <CrossRoadCategory>esriNRCAny</CrossRoadCategory>
+                <Seconds>5</Seconds>
+              </NetworkGlobalTurnDelayCategory>
+              <NetworkGlobalTurnDelayCategory xsi:type="typens:NetworkGlobalTurnDelayCategory">
+                <AngleCategory>esriNTACLeft</AngleCategory>
+                <FromRoadCategory>esriNRCSecondary</FromRoadCategory>
+                <ToRoadCategory>esriNRCSecondary</ToRoadCategory>
+                <CrossRoadCategory>esriNRCAny</CrossRoadCategory>
+                <Seconds>8</Seconds>
+              </NetworkGlobalTurnDelayCategory>
+            </Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>false</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>WalkTime</NetworkAttributeName>
+      <NetworkSourceName>PrelimTransitions</NetworkSourceName>
+      <NetworkEvaluatorCLSID>{68055FC4-37D5-4BD0-81A5-CD177A29759C}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDAlongDigitized</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">2</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Expression</Key>
+            <Value xsi:type="xs:string">!LENGTH_3D!*60./5000.</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>PreLogic</Key>
+            <Value xsi:type="xs:string"/>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Language</Key>
+            <Value xsi:type="xs:string">Python</Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>false</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>WalkTime</NetworkAttributeName>
+      <NetworkSourceName>PrelimTransitions</NetworkSourceName>
+      <NetworkEvaluatorCLSID>{68055FC4-37D5-4BD0-81A5-CD177A29759C}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDAgainstDigitized</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">2</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Expression</Key>
+            <Value xsi:type="xs:string">!LENGTH_3D!*60./5000.</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>PreLogic</Key>
+            <Value xsi:type="xs:string"/>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Language</Key>
+            <Value xsi:type="xs:string">Python</Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>false</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>WalkTime</NetworkAttributeName>
+      <NetworkSourceName>PrelimPathways</NetworkSourceName>
+      <NetworkEvaluatorCLSID>{68055FC4-37D5-4BD0-81A5-CD177A29759C}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDAlongDigitized</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">2</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Expression</Key>
+            <Value xsi:type="xs:string">!LENGTH_3D!*60./5000.</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>PreLogic</Key>
+            <Value xsi:type="xs:string"/>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Language</Key>
+            <Value xsi:type="xs:string">Python</Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>false</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>WalkTime</NetworkAttributeName>
+      <NetworkSourceName>PrelimPathways</NetworkSourceName>
+      <NetworkEvaluatorCLSID>{68055FC4-37D5-4BD0-81A5-CD177A29759C}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDAgainstDigitized</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">2</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Expression</Key>
+            <Value xsi:type="xs:string">!LENGTH_3D!*60./5000.</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>PreLogic</Key>
+            <Value xsi:type="xs:string"/>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Language</Key>
+            <Value xsi:type="xs:string">Python</Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>true</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>Hallways: Avoid Walls</NetworkAttributeName>
+      <NetworkElementType>esriNETJunction</NetworkElementType>
+      <NetworkEvaluatorCLSID>{318C4B91-F5D2-467A-996C-0AB51B0D8FF2}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDNone</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">1</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>ConstantValue</Key>
+            <Value xsi:type="xs:boolean">false</Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>true</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>Hallways: Avoid Walls</NetworkAttributeName>
+      <NetworkElementType>esriNETEdge</NetworkElementType>
+      <NetworkEvaluatorCLSID>{318C4B91-F5D2-467A-996C-0AB51B0D8FF2}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDNone</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">1</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>ConstantValue</Key>
+            <Value xsi:type="xs:boolean">false</Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>true</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>Hallways: Avoid Walls</NetworkAttributeName>
+      <NetworkElementType>esriNETTurn</NetworkElementType>
+      <NetworkEvaluatorCLSID>{318C4B91-F5D2-467A-996C-0AB51B0D8FF2}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDNone</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">1</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>ConstantValue</Key>
+            <Value xsi:type="xs:boolean">false</Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>false</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>Hallways: Avoid Walls</NetworkAttributeName>
+      <NetworkSourceName>PrelimPathways</NetworkSourceName>
+      <NetworkEvaluatorCLSID>{68055FC4-37D5-4BD0-81A5-CD177A29759C}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDAlongDigitized</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">2</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Expression</Key>
+            <Value xsi:type="xs:string">!PATH_EDGE_DISTANCE! &lt; 0.4572</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>PreLogic</Key>
+            <Value xsi:type="xs:string"/>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Language</Key>
+            <Value xsi:type="xs:string">Python</Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>false</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>Hallways: Avoid Walls</NetworkAttributeName>
+      <NetworkSourceName>PrelimPathways</NetworkSourceName>
+      <NetworkEvaluatorCLSID>{68055FC4-37D5-4BD0-81A5-CD177A29759C}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDAgainstDigitized</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">2</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Expression</Key>
+            <Value xsi:type="xs:string">!PATH_EDGE_DISTANCE! &lt; 0.4572</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>PreLogic</Key>
+            <Value xsi:type="xs:string"/>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Language</Key>
+            <Value xsi:type="xs:string">Python</Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>true</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>Hallways: Prefer Middle Med</NetworkAttributeName>
+      <NetworkElementType>esriNETJunction</NetworkElementType>
+      <NetworkEvaluatorCLSID>{318C4B91-F5D2-467A-996C-0AB51B0D8FF2}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDNone</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">1</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>ConstantValue</Key>
+            <Value xsi:type="xs:boolean">false</Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>true</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>Hallways: Prefer Middle Med</NetworkAttributeName>
+      <NetworkElementType>esriNETEdge</NetworkElementType>
+      <NetworkEvaluatorCLSID>{318C4B91-F5D2-467A-996C-0AB51B0D8FF2}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDNone</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">1</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>ConstantValue</Key>
+            <Value xsi:type="xs:boolean">false</Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>true</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>Hallways: Prefer Middle Med</NetworkAttributeName>
+      <NetworkElementType>esriNETTurn</NetworkElementType>
+      <NetworkEvaluatorCLSID>{318C4B91-F5D2-467A-996C-0AB51B0D8FF2}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDNone</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">1</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>ConstantValue</Key>
+            <Value xsi:type="xs:boolean">false</Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>false</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>Hallways: Prefer Middle Med</NetworkAttributeName>
+      <NetworkSourceName>PrelimPathways</NetworkSourceName>
+      <NetworkEvaluatorCLSID>{68055FC4-37D5-4BD0-81A5-CD177A29759C}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDAlongDigitized</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">2</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Expression</Key>
+            <Value xsi:type="xs:string">0.4572 &lt;= !PATH_EDGE_DISTANCE! &lt; 0.9144</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>PreLogic</Key>
+            <Value xsi:type="xs:string"/>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Language</Key>
+            <Value xsi:type="xs:string">Python</Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>false</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>Hallways: Prefer Middle Med</NetworkAttributeName>
+      <NetworkSourceName>PrelimPathways</NetworkSourceName>
+      <NetworkEvaluatorCLSID>{68055FC4-37D5-4BD0-81A5-CD177A29759C}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDAgainstDigitized</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">2</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Expression</Key>
+            <Value xsi:type="xs:string">0.4572 &lt;= !PATH_EDGE_DISTANCE! &lt; 0.9144</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>PreLogic</Key>
+            <Value xsi:type="xs:string"/>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Language</Key>
+            <Value xsi:type="xs:string">Python</Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>true</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>Hallways: Prefer Center High</NetworkAttributeName>
+      <NetworkElementType>esriNETJunction</NetworkElementType>
+      <NetworkEvaluatorCLSID>{318C4B91-F5D2-467A-996C-0AB51B0D8FF2}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDNone</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">1</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>ConstantValue</Key>
+            <Value xsi:type="xs:boolean">false</Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>true</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>Hallways: Prefer Center High</NetworkAttributeName>
+      <NetworkElementType>esriNETEdge</NetworkElementType>
+      <NetworkEvaluatorCLSID>{318C4B91-F5D2-467A-996C-0AB51B0D8FF2}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDNone</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">1</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>ConstantValue</Key>
+            <Value xsi:type="xs:boolean">false</Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>true</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>Hallways: Prefer Center High</NetworkAttributeName>
+      <NetworkElementType>esriNETTurn</NetworkElementType>
+      <NetworkEvaluatorCLSID>{318C4B91-F5D2-467A-996C-0AB51B0D8FF2}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDNone</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">1</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>ConstantValue</Key>
+            <Value xsi:type="xs:boolean">false</Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>false</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>Hallways: Prefer Center High</NetworkAttributeName>
+      <NetworkSourceName>PrelimPathways</NetworkSourceName>
+      <NetworkEvaluatorCLSID>{68055FC4-37D5-4BD0-81A5-CD177A29759C}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDAlongDigitized</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">2</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Expression</Key>
+            <Value xsi:type="xs:string">!PATH_EDGE_DISTANCE! &gt;= 0.9144</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>PreLogic</Key>
+            <Value xsi:type="xs:string"/>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Language</Key>
+            <Value xsi:type="xs:string">Python</Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+    <NetworkAssignment xsi:type="typens:NetworkAssignment">
+      <IsDefault>false</IsDefault>
+      <ID>-1</ID>
+      <NetworkAttributeName>Hallways: Prefer Center High</NetworkAttributeName>
+      <NetworkSourceName>PrelimPathways</NetworkSourceName>
+      <NetworkEvaluatorCLSID>{68055FC4-37D5-4BD0-81A5-CD177A29759C}</NetworkEvaluatorCLSID>
+      <NetworkEdgeDirection>esriNEDAgainstDigitized</NetworkEdgeDirection>
+      <NetworkEvaluatorData xsi:type="typens:PropertySet">
+        <PropertyArray xsi:type="typens:ArrayOfPropertySetProperty">
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Version</Key>
+            <Value xsi:type="xs:short">2</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Expression</Key>
+            <Value xsi:type="xs:string">!PATH_EDGE_DISTANCE! &gt;= 0.9144</Value>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>PreLogic</Key>
+            <Value xsi:type="xs:string"/>
+          </PropertySetProperty>
+          <PropertySetProperty xsi:type="typens:PropertySetProperty">
+            <Key>Language</Key>
+            <Value xsi:type="xs:string">Python</Value>
+          </PropertySetProperty>
+        </PropertyArray>
+      </NetworkEvaluatorData>
+    </NetworkAssignment>
+  </NetworkAssignments>
+  <HierarchyMaxValues xsi:type="typens:ArrayOfInt"/>
+  <NetworkElevationModel>2</NetworkElevationModel>
+  <LogicalNetworkID>1</LogicalNetworkID>
+  <SchemaGeneration>4</SchemaGeneration>
+  <BuildTime>1519844255</BuildTime>
+</DENetworkDataset>

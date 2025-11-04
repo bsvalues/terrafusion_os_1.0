@@ -1,0 +1,1310 @@
+{
+    "type": "FunctionTool",
+    "guid": "{913318f3-ba3b-4fa8-9a2f-52d921065ef7}",
+    "displayname": "$rc:title",
+    "helpcontent": "32000004",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "input_map": {
+            "displayname": "$rc:input_map.title",
+            "datatype": {
+                "type": "GPMap"
+            },
+            "description": "$rc:input_map.descr"
+        },
+        "wildcard": {
+            "type": "optional",
+            "displayname": "$rc:wildcard.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:wildcard.descr"
+        },
+        "layer_type": {
+            "type": "optional",
+            "displayname": "$rc:layer_type.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "AnnotationLayer",
+                        "code": "$rc:layer_type.domain.AnnotationLayer"
+                    },
+                    {
+                        "value": "BuildingLayer",
+                        "code": "$rc:layer_type.domain.BuildingLayer"
+                    },
+                    {
+                        "value": "BuildingSceneLayer",
+                        "code": "$rc:layer_type.domain.BuildingSceneLayer"
+                    },
+                    {
+                        "value": "DimensionLayer",
+                        "code": "$rc:layer_type.domain.DimensionLayer"
+                    },
+                    {
+                        "value": "FeatureLayer",
+                        "code": "$rc:layer_type.domain.FeatureLayer"
+                    },
+                    {
+                        "value": "GALayer",
+                        "code": "$rc:layer_type.domain.GALayer"
+                    },
+                    {
+                        "value": "GroupLayer",
+                        "code": "$rc:layer_type.domain.GroupLayer"
+                    },
+                    {
+                        "value": "SubtypeGroupLayer",
+                        "code": "$rc:layer_type.domain.SubtypeGroupLayer"
+                    },
+                    {
+                        "value": "SubtypeGroupTable",
+                        "code": "$rc:layer_type.domain.SubtypeGroupTable"
+                    },
+                    {
+                        "value": "KMLLayer",
+                        "code": "$rc:layer_type.domain.KMLLayer"
+                    },
+                    {
+                        "value": "LASDatasetLayer",
+                        "code": "$rc:layer_type.domain.LASDatasetLayer"
+                    },
+                    {
+                        "value": "MosaicLayer",
+                        "code": "$rc:layer_type.domain.MosaicLayer"
+                    },
+                    {
+                        "value": "TrajectoryLayer",
+                        "code": "$rc:layer_type.domain.TrajectoryLayer"
+                    },
+                    {
+                        "value": "NALayer",
+                        "code": "$rc:layer_type.domain.NALayer"
+                    },
+                    {
+                        "value": "NetworkDatasetLayer",
+                        "code": "$rc:layer_type.domain.NetworkDatasetLayer"
+                    },
+                    {
+                        "value": "ParcelLayer",
+                        "code": "$rc:layer_type.domain.ParcelLayer"
+                    },
+                    {
+                        "value": "RasterLayer",
+                        "code": "$rc:layer_type.domain.RasterLayer"
+                    },
+                    {
+                        "value": "SceneServiceLayer",
+                        "code": "$rc:layer_type.domain.SceneServiceLayer"
+                    },
+                    {
+                        "value": "3DTilesLayer",
+                        "code": "$rc:layer_type.domain.3DTilesLayer"
+                    },
+                    {
+                        "value": "TerrainLayer",
+                        "code": "$rc:layer_type.domain.TerrainLayer"
+                    },
+                    {
+                        "value": "TinLayer",
+                        "code": "$rc:layer_type.domain.TinLayer"
+                    },
+                    {
+                        "value": "TopologyLayer",
+                        "code": "$rc:layer_type.domain.TopologyLayer"
+                    },
+                    {
+                        "value": "TraceNetworkLayer",
+                        "code": "$rc:layer_type.domain.TraceNetworkLayer"
+                    },
+                    {
+                        "value": "UtilityNetworkLayer",
+                        "code": "$rc:layer_type.domain.UtilityNetworkLayer"
+                    },
+                    {
+                        "value": "VoxelLayer",
+                        "code": "$rc:layer_type.domain.VoxelLayer"
+                    },
+                    {
+                        "value": "TableView",
+                        "code": "$rc:layer_type.domain.TableView"
+                    },
+                    {
+                        "value": "3DObjectFeatureLayer",
+                        "code": "$rc:layer_type.domain.3DObjectFeatureLayer"
+                    },
+                    {
+                        "value": "OrientedImageryLayer",
+                        "code": "$rc:layer_type.domain.OrientedImageryLayer"
+                    }
+                ]
+            },
+            "description": "$rc:layer_type.descr"
+        },
+        "workspace_type": {
+            "type": "optional",
+            "displayname": "$rc:workspace_type.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "BIG_DATA_CONNECTION",
+                        "code": "$rc:workspace_type.domain.BIG_DATA_CONNECTION"
+                    },
+                    {
+                        "value": "BIM_FILE",
+                        "code": "$rc:workspace_type.domain.BIM_FILE"
+                    },
+                    {
+                        "value": "CAD",
+                        "code": "$rc:workspace_type.domain.CAD"
+                    },
+                    {
+                        "value": "DELIMITED_TEXT_FILE",
+                        "code": "$rc:workspace_type.domain.DELIMITED_TEXT_FILE"
+                    },
+                    {
+                        "value": "ENTERPRISE_GEODATABASE",
+                        "code": "$rc:workspace_type.domain.ENTERPRISE_GEODATABASE"
+                    },
+                    {
+                        "value": "FEATURE_SERVICE",
+                        "code": "$rc:workspace_type.domain.FEATURE_SERVICE"
+                    },
+                    {
+                        "value": "FILE_GEODATABASE",
+                        "code": "$rc:workspace_type.domain.FILE_GEODATABASE"
+                    },
+                    {
+                        "value": "IN_MEMORY_DATABASE",
+                        "code": "$rc:workspace_type.domain.IN_MEMORY_DATABASE"
+                    },
+                    {
+                        "value": "MICROSOFT_EXCEL",
+                        "code": "$rc:workspace_type.domain.MICROSOFT_EXCEL"
+                    },
+                    {
+                        "value": "NETCDF",
+                        "code": "$rc:workspace_type.domain.NETCDF"
+                    },
+                    {
+                        "value": "OLEDB",
+                        "code": "$rc:workspace_type.domain.OLEDB"
+                    },
+                    {
+                        "value": "RASTER",
+                        "code": "$rc:workspace_type.domain.RASTER"
+                    },
+                    {
+                        "value": "SHAPEFILE",
+                        "code": "$rc:workspace_type.domain.SHAPEFILE"
+                    },
+                    {
+                        "value": "SQLITE",
+                        "code": "$rc:workspace_type.domain.SQLITE"
+                    },
+                    {
+                        "value": "SQL_QUERY_LAYER",
+                        "code": "$rc:workspace_type.domain.SQL_QUERY_LAYER"
+                    },
+                    {
+                        "value": "STREAM_SERVICE",
+                        "code": "$rc:workspace_type.domain.STREAM_SERVICE"
+                    },
+                    {
+                        "value": "WEB_FEATURE_SERVICE",
+                        "code": "$rc:workspace_type.domain.WEB_FEATURE_SERVICE"
+                    }
+                ]
+            },
+            "description": "$rc:workspace_type.descr"
+        },
+        "feature_type": {
+            "type": "optional",
+            "displayname": "$rc:feature_type.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ANNOTATION",
+                        "code": "$rc:feature_type.domain.ANNOTATION"
+                    },
+                    {
+                        "value": "DIMENSION",
+                        "code": "$rc:feature_type.domain.DIMENSION"
+                    },
+                    {
+                        "value": "SIMPLE_EDGE",
+                        "code": "$rc:feature_type.domain.SIMPLE_EDGE"
+                    },
+                    {
+                        "value": "COMPLEX_EDGE",
+                        "code": "$rc:feature_type.domain.COMPLEX_EDGE"
+                    },
+                    {
+                        "value": "SIMPLE_JUNCTION",
+                        "code": "$rc:feature_type.domain.SIMPLE_JUNCTION"
+                    },
+                    {
+                        "value": "COMPLEX_JUNCTION",
+                        "code": "$rc:feature_type.domain.COMPLEX_JUNCTION"
+                    },
+                    {
+                        "value": "LINE",
+                        "code": "$rc:feature_type.domain.LINE"
+                    },
+                    {
+                        "value": "POINT",
+                        "code": "$rc:feature_type.domain.POINT"
+                    },
+                    {
+                        "value": "POLYGON",
+                        "code": "$rc:feature_type.domain.POLYGON"
+                    },
+                    {
+                        "value": "MULTIPATCH",
+                        "code": "$rc:feature_type.domain.MULTIPATCH"
+                    }
+                ]
+            },
+            "description": "$rc:feature_type.descr"
+        },
+        "raster_format_type": {
+            "type": "optional",
+            "displayname": "$rc:raster_format_type.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ADRG Image",
+                        "code": "$rc:raster_format_type.domain.ADRG Image"
+                    },
+                    {
+                        "value": "ADRG Overview",
+                        "code": "$rc:raster_format_type.domain.ADRG Overview"
+                    },
+                    {
+                        "value": "ADRG Legend",
+                        "code": "$rc:raster_format_type.domain.ADRG Legend"
+                    },
+                    {
+                        "value": "RPF TOC",
+                        "code": "$rc:raster_format_type.domain.RPF TOC"
+                    },
+                    {
+                        "value": "Arc/Info & Space Imaging BIL",
+                        "code": "$rc:raster_format_type.domain.Arc¦Info & Space Imaging BIL"
+                    },
+                    {
+                        "value": "Arc/Info & Space Imaging BIP",
+                        "code": "$rc:raster_format_type.domain.Arc¦Info & Space Imaging BIP"
+                    },
+                    {
+                        "value": "Arc/Info & Space Imaging BSQ",
+                        "code": "$rc:raster_format_type.domain.Arc¦Info & Space Imaging BSQ"
+                    },
+                    {
+                        "value": "BMP",
+                        "code": "$rc:raster_format_type.domain.BMP"
+                    },
+                    {
+                        "value": "DTED Level 0",
+                        "code": "$rc:raster_format_type.domain.DTED Level 0"
+                    },
+                    {
+                        "value": "DTED Level 1",
+                        "code": "$rc:raster_format_type.domain.DTED Level 1"
+                    },
+                    {
+                        "value": "DTED Level 2",
+                        "code": "$rc:raster_format_type.domain.DTED Level 2"
+                    },
+                    {
+                        "value": "ERDAS 7.5 LAN",
+                        "code": "$rc:raster_format_type.domain.ERDAS 7.5 LAN"
+                    },
+                    {
+                        "value": "ERDAS 7.5 GIS",
+                        "code": "$rc:raster_format_type.domain.ERDAS 7.5 GIS"
+                    },
+                    {
+                        "value": "GIF",
+                        "code": "$rc:raster_format_type.domain.GIF"
+                    },
+                    {
+                        "value": "IMAGINE Image",
+                        "code": "$rc:raster_format_type.domain.IMAGINE Image"
+                    },
+                    {
+                        "value": "JPEG",
+                        "code": "$rc:raster_format_type.domain.JPEG"
+                    },
+                    {
+                        "value": "JP2",
+                        "code": "$rc:raster_format_type.domain.JP2"
+                    },
+                    {
+                        "value": "MrSID",
+                        "code": "$rc:raster_format_type.domain.MrSID"
+                    },
+                    {
+                        "value": "OSDDEF",
+                        "code": "$rc:raster_format_type.domain.OSDDEF"
+                    },
+                    {
+                        "value": "PNG",
+                        "code": "$rc:raster_format_type.domain.PNG"
+                    },
+                    {
+                        "value": "RAW",
+                        "code": "$rc:raster_format_type.domain.RAW"
+                    },
+                    {
+                        "value": "TIFF",
+                        "code": "$rc:raster_format_type.domain.TIFF"
+                    },
+                    {
+                        "value": "DPM",
+                        "code": "$rc:raster_format_type.domain.DPM"
+                    },
+                    {
+                        "value": "GRID",
+                        "code": "$rc:raster_format_type.domain.GRID"
+                    },
+                    {
+                        "value": "GRID Stack 7.x",
+                        "code": "$rc:raster_format_type.domain.GRID Stack 7.x"
+                    },
+                    {
+                        "value": "GRID Stack",
+                        "code": "$rc:raster_format_type.domain.GRID Stack"
+                    },
+                    {
+                        "value": "USGS ASCII DEM",
+                        "code": "$rc:raster_format_type.domain.USGS ASCII DEM"
+                    },
+                    {
+                        "value": "X11 Pixmap",
+                        "code": "$rc:raster_format_type.domain.X11 Pixmap"
+                    },
+                    {
+                        "value": "PCRaster",
+                        "code": "$rc:raster_format_type.domain.PCRaster"
+                    },
+                    {
+                        "value": "Memory Raster",
+                        "code": "$rc:raster_format_type.domain.Memory Raster"
+                    },
+                    {
+                        "value": "PCI Geomatics Database File",
+                        "code": "$rc:raster_format_type.domain.PCI Geomatics Database File"
+                    },
+                    {
+                        "value": "JPC",
+                        "code": "$rc:raster_format_type.domain.JPC"
+                    },
+                    {
+                        "value": "J2K",
+                        "code": "$rc:raster_format_type.domain.J2K"
+                    },
+                    {
+                        "value": "J2C",
+                        "code": "$rc:raster_format_type.domain.J2C"
+                    },
+                    {
+                        "value": "AirSAR",
+                        "code": "$rc:raster_format_type.domain.AirSAR"
+                    },
+                    {
+                        "value": "Digital Ortho Quad2",
+                        "code": "$rc:raster_format_type.domain.Digital Ortho Quad2"
+                    },
+                    {
+                        "value": "NASA ELAS",
+                        "code": "$rc:raster_format_type.domain.NASA ELAS"
+                    },
+                    {
+                        "value": "FIT",
+                        "code": "$rc:raster_format_type.domain.FIT"
+                    },
+                    {
+                        "value": "NOAA vertical datum shift",
+                        "code": "$rc:raster_format_type.domain.NOAA vertical datum shift"
+                    },
+                    {
+                        "value": "Grid eXchange File",
+                        "code": "$rc:raster_format_type.domain.Grid eXchange File"
+                    },
+                    {
+                        "value": "HF2 heightfield raster",
+                        "code": "$rc:raster_format_type.domain.HF2 heightfield raster"
+                    },
+                    {
+                        "value": "ILWIS Raster Map",
+                        "code": "$rc:raster_format_type.domain.ILWIS Raster Map"
+                    },
+                    {
+                        "value": "Envisat Image",
+                        "code": "$rc:raster_format_type.domain.Envisat Image"
+                    },
+                    {
+                        "value": "L1B",
+                        "code": "$rc:raster_format_type.domain.L1B"
+                    },
+                    {
+                        "value": "PCI Labelled",
+                        "code": "$rc:raster_format_type.domain.PCI Labelled"
+                    },
+                    {
+                        "value": "Netpbm",
+                        "code": "$rc:raster_format_type.domain.Netpbm"
+                    },
+                    {
+                        "value": "SAGA",
+                        "code": "$rc:raster_format_type.domain.SAGA"
+                    },
+                    {
+                        "value": "SAR_CEOS",
+                        "code": "$rc:raster_format_type.domain.SAR_CEOS"
+                    },
+                    {
+                        "value": "JPX",
+                        "code": "$rc:raster_format_type.domain.JPX"
+                    },
+                    {
+                        "value": "HDF",
+                        "code": "$rc:raster_format_type.domain.HDF"
+                    },
+                    {
+                        "value": "HDF5",
+                        "code": "$rc:raster_format_type.domain.HDF5"
+                    },
+                    {
+                        "value": "BSB",
+                        "code": "$rc:raster_format_type.domain.BSB"
+                    },
+                    {
+                        "value": "IDRISI Raster",
+                        "code": "$rc:raster_format_type.domain.IDRISI Raster"
+                    },
+                    {
+                        "value": "USGS SDTS DEM",
+                        "code": "$rc:raster_format_type.domain.USGS SDTS DEM"
+                    },
+                    {
+                        "value": "VRT",
+                        "code": "$rc:raster_format_type.domain.VRT"
+                    },
+                    {
+                        "value": "Arc/Info ASCII GRID",
+                        "code": "$rc:raster_format_type.domain.Arc¦Info ASCII GRID"
+                    },
+                    {
+                        "value": "ENVI Raster (.img)",
+                        "code": "$rc:raster_format_type.domain.ENVI Raster (.img)"
+                    },
+                    {
+                        "value": "ENVI Raster (.raw)",
+                        "code": "$rc:raster_format_type.domain.ENVI Raster (.raw)"
+                    },
+                    {
+                        "value": "ENVI Raster (.dat)",
+                        "code": "$rc:raster_format_type.domain.ENVI Raster (.dat)"
+                    },
+                    {
+                        "value": "ERS",
+                        "code": "$rc:raster_format_type.domain.ERS"
+                    },
+                    {
+                        "value": "SRTM HGT",
+                        "code": "$rc:raster_format_type.domain.SRTM HGT"
+                    },
+                    {
+                        "value": "GSat",
+                        "code": "$rc:raster_format_type.domain.GSat"
+                    },
+                    {
+                        "value": "NASA PDS",
+                        "code": "$rc:raster_format_type.domain.NASA PDS"
+                    },
+                    {
+                        "value": "Golden Software Grid",
+                        "code": "$rc:raster_format_type.domain.Golden Software Grid"
+                    },
+                    {
+                        "value": "Terragen Heightfield",
+                        "code": "$rc:raster_format_type.domain.Terragen Heightfield"
+                    },
+                    {
+                        "value": "VTP Binary Terrain",
+                        "code": "$rc:raster_format_type.domain.VTP Binary Terrain"
+                    },
+                    {
+                        "value": "Binary FLT",
+                        "code": "$rc:raster_format_type.domain.Binary FLT"
+                    },
+                    {
+                        "value": "BLX",
+                        "code": "$rc:raster_format_type.domain.BLX"
+                    },
+                    {
+                        "value": "GRIB",
+                        "code": "$rc:raster_format_type.domain.GRIB"
+                    },
+                    {
+                        "value": "ISIS",
+                        "code": "$rc:raster_format_type.domain.ISIS"
+                    },
+                    {
+                        "value": "NDF",
+                        "code": "$rc:raster_format_type.domain.NDF"
+                    },
+                    {
+                        "value": "FAST",
+                        "code": "$rc:raster_format_type.domain.FAST"
+                    },
+                    {
+                        "value": "JAXA",
+                        "code": "$rc:raster_format_type.domain.JAXA"
+                    },
+                    {
+                        "value": "DIMAP",
+                        "code": "$rc:raster_format_type.domain.DIMAP"
+                    },
+                    {
+                        "value": "RadarSat2",
+                        "code": "$rc:raster_format_type.domain.RadarSat2"
+                    },
+                    {
+                        "value": "TerraSAR-X",
+                        "code": "$rc:raster_format_type.domain.TerraSAR-X"
+                    },
+                    {
+                        "value": "TerraSAR-X COSAR",
+                        "code": "$rc:raster_format_type.domain.TerraSAR-X COSAR"
+                    },
+                    {
+                        "value": "AFR",
+                        "code": "$rc:raster_format_type.domain.AFR"
+                    },
+                    {
+                        "value": "Pictometry Oblique Image",
+                        "code": "$rc:raster_format_type.domain.Pictometry Oblique Image"
+                    },
+                    {
+                        "value": "ASRP/USRP",
+                        "code": "$rc:raster_format_type.domain.ASRP¦USRP"
+                    },
+                    {
+                        "value": "Tiled QB Image",
+                        "code": "$rc:raster_format_type.domain.Tiled QB Image"
+                    },
+                    {
+                        "value": "BAG",
+                        "code": "$rc:raster_format_type.domain.BAG"
+                    },
+                    {
+                        "value": "RRDS",
+                        "code": "$rc:raster_format_type.domain.RRDS"
+                    },
+                    {
+                        "value": "NITF 2.0",
+                        "code": "$rc:raster_format_type.domain.NITF 2.0"
+                    },
+                    {
+                        "value": "NITF 2.1",
+                        "code": "$rc:raster_format_type.domain.NITF 2.1"
+                    },
+                    {
+                        "value": "NSIF 1.01",
+                        "code": "$rc:raster_format_type.domain.NSIF 1.01"
+                    },
+                    {
+                        "value": "XYZ",
+                        "code": "$rc:raster_format_type.domain.XYZ"
+                    },
+                    {
+                        "value": "CACHE",
+                        "code": "$rc:raster_format_type.domain.CACHE"
+                    },
+                    {
+                        "value": "MRF",
+                        "code": "$rc:raster_format_type.domain.MRF"
+                    },
+                    {
+                        "value": "ADS",
+                        "code": "$rc:raster_format_type.domain.ADS"
+                    },
+                    {
+                        "value": "WUE",
+                        "code": "$rc:raster_format_type.domain.WUE"
+                    },
+                    {
+                        "value": "WEBP",
+                        "code": "$rc:raster_format_type.domain.WEBP"
+                    },
+                    {
+                        "value": "ZARR",
+                        "code": "$rc:raster_format_type.domain.ZARR"
+                    },
+                    {
+                        "value": "JPEG-XL",
+                        "code": "$rc:raster_format_type.domain.JPEG-XL"
+                    },
+                    {
+                        "value": "KEA",
+                        "code": "$rc:raster_format_type.domain.KEA"
+                    },
+                    {
+                        "value": "IIQ",
+                        "code": "$rc:raster_format_type.domain.IIQ"
+                    },
+                    {
+                        "value": "Northwood/VerticalMapper Classified Grid",
+                        "code": "$rc:raster_format_type.domain.Northwood¦VerticalMapper Classified Grid"
+                    },
+                    {
+                        "value": "Northwood/VerticalMapper Numeric Grid",
+                        "code": "$rc:raster_format_type.domain.Northwood¦VerticalMapper Numeric Grid"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Combat Charts (1:10,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Combat Charts (1:10,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Combat Charts (1:25,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Combat Charts (1:25,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Combat Charts (1:50,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Combat Charts (1:50,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Combat Charts (1:100,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Combat Charts (1:100,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Combat Charts (1:12,500)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Combat Charts (1:12,500)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Combat Charts",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Combat Charts"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Series 200 Air Target Chart",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Series 200 Air Target Chart"
+                    },
+                    {
+                        "value": "CADRG/ECRG: City Graphics (1:10,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: City Graphics (1:10,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: City Graphics (1:10,560)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: City Graphics (1:10,560)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: City Graphics (1:11,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: City Graphics (1:11,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: City Graphics (1:11,800)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: City Graphics (1:11,800)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: City Graphics (1:12,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: City Graphics (1:12,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: City Graphics (1:12,500)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: City Graphics (1:12,500)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: City Graphics (1:12,800)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: City Graphics (1:12,800)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: City Graphics (1:14,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: City Graphics (1:14,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: City Graphics (1:14,700)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: City Graphics (1:14,700)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: City Graphics (1:15,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: City Graphics (1:15,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: City Graphics (1:15,500)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: City Graphics (1:15,500)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: City Graphics (1:16,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: City Graphics (1:16,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: City Graphics (1:16,666)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: City Graphics (1:16,666)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: City Graphics (1:17,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: City Graphics (1:17,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: City Graphics (1:17,500)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: City Graphics (1:17,500)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: City Graphics",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: City Graphics"
+                    },
+                    {
+                        "value": "CADRG/ECRG: City Graphics (1:18,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: City Graphics (1:18,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: City Graphics (1:20,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: City Graphics (1:20,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: City Graphics (1:21,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: City Graphics (1:21,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: City Graphics (1:21,120)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: City Graphics (1:21,120)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: City Graphics (1:22,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: City Graphics (1:22,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Coastal Charts",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Coastal Charts"
+                    },
+                    {
+                        "value": "CADRG/ECRG: City Graphics (1:23,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: City Graphics (1:23,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: City Graphics (1:25,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: City Graphics (1:25,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: City Graphics (1:26,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: City Graphics (1:26,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: City Graphics (1:35,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: City Graphics (1:35,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: City Graphics (1:36,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: City Graphics (1:36,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Elevation Data from DTED (100m)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Elevation Data from DTED (100m)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Elevation Data from DTED (30m)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Elevation Data from DTED (30m)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: North Atlantic Route Chart",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: North Atlantic Route Chart"
+                    },
+                    {
+                        "value": "CADRG/ECRG: VFR Sectional",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: VFR Sectional"
+                    },
+                    {
+                        "value": "CADRG/ECRG: VFR Sectional Insets",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: VFR Sectional Insets"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Transit Flying Chart - 1",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Transit Flying Chart - 1"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Transit Flying Chart - 2",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Transit Flying Chart - 2"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Transit Flying Chart - 3",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Transit Flying Chart - 3"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Transit Flying Chart - 4",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Transit Flying Chart - 4"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Transit Flying Chart - 5",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Transit Flying Chart - 5"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Global Navigation Chart",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Global Navigation Chart"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Harbor and Approach Charts",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Harbor and Approach Charts"
+                    },
+                    {
+                        "value": "CIB: 10 meter resolution imagery",
+                        "code": "$rc:raster_format_type.domain.CIB: 10 meter resolution imagery"
+                    },
+                    {
+                        "value": "CIB: 5 meter resolution imagery",
+                        "code": "$rc:raster_format_type.domain.CIB: 5 meter resolution imagery"
+                    },
+                    {
+                        "value": "CIB: 2 meter resolution imagery",
+                        "code": "$rc:raster_format_type.domain.CIB: 2 meter resolution imagery"
+                    },
+                    {
+                        "value": "CIB: 1 meter resolution imagery",
+                        "code": "$rc:raster_format_type.domain.CIB: 1 meter resolution imagery"
+                    },
+                    {
+                        "value": "CIB: .5 (half) meter resolution imagery",
+                        "code": "$rc:raster_format_type.domain.CIB: .5 (half) meter resolution imagery"
+                    },
+                    {
+                        "value": "CIB: greater than 10 meter resolution imagery",
+                        "code": "$rc:raster_format_type.domain.CIB: greater than 10 meter resolution imagery"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Joint Operations Graphic - Air",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Joint Operations Graphic - Air"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Joint Operations Graphic",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Joint Operations Graphic"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Jet Navigation Chart",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Jet Navigation Chart"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Operational Planning Graphic",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Operational Planning Graphic"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Joint Operations Graphic - Radar",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Joint Operations Graphic - Radar"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Image City Maps (1:8,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Image City Maps (1:8,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Image City Maps (1:10,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Image City Maps (1:10,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Image City Maps (1:10,560)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Image City Maps (1:10,560)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Image City Maps (1:12,500)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Image City Maps (1:12,500)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Image City Maps (1:12,800)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Image City Maps (1:12,800)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Image City Maps (1:15,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Image City Maps (1:15,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Image City Maps (1:16,666)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Image City Maps (1:16,666)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Image City Maps (1:21,120)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Image City Maps (1:21,120)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Image City Maps (1:25,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Image City Maps (1:25,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Image City Maps (1:26,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Image City Maps (1:26,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Image City Maps (1:36,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Image City Maps (1:36,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Low Flying Chart - 1",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Low Flying Chart - 1"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Low Flying Chart - 2",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Low Flying Chart - 2"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Low Flying Chart - 3",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Low Flying Chart - 3"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Low Flying Chart - 4",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Low Flying Chart - 4"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Low Flying Chart - 5",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Low Flying Chart - 5"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Low Flying Chart (Day)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Low Flying Chart (Day)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Low Flying Chart (Night)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Low Flying Chart (Night)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Military Installation Maps - 1",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Military Installation Maps - 1"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Military Installation Maps - 2",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Military Installation Maps - 2"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Military Installation Maps (1:25,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Military Installation Maps (1:25,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Military Installation Maps (1:50,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Military Installation Maps (1:50,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Military Installation Maps (1:100,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Military Installation Maps (1:100,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Miscellaneous Maps & Charts",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Miscellaneous Maps & Charts"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Naval Range Operating Area Chart",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Naval Range Operating Area Chart"
+                    },
+                    {
+                        "value": "CADRG/ECRG: VFR Helicopter Route Chart",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: VFR Helicopter Route Chart"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Operational Navigation Chart",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Operational Navigation Chart"
+                    },
+                    {
+                        "value": "CADRG/ECRG: High Flying Chart",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: High Flying Chart"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Special Military Map - Overlay",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Special Military Map - Overlay"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Special Military Purpose",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Special Military Purpose"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Range Charts",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Range Charts"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Russian General Staff Maps",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Russian General Staff Maps"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Riverine Map (1:50,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Riverine Map (1:50,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Riverine Map (1:100,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Riverine Map (1:100,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Base 100K TLM with overlay",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Base 100K TLM with overlay"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Base 50K TLM with overlay",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Base 50K TLM with overlay"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Base 24K TLM with overlay",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Base 24K TLM with overlay"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Base 200K TLM with overlay",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Base 200K TLM with overlay"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Base 250K TLM with overlay",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Base 250K TLM with overlay"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Base 25K TLM with overlay",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Base 25K TLM with overlay"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Base 10K TLM with overlay",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Base 10K TLM with overlay"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Topographic Line Map (1:100,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Topographic Line Map (1:100,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Transit Flying Chart (Day)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Transit Flying Chart (Day)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Topographic Line Map (1:50,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Topographic Line Map (1:50,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Transit Flying Chart (Night)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Transit Flying Chart (Night)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Tactical Pilotage Chart",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Tactical Pilotage Chart"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Topographic Line Map (1:24,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Topographic Line Map (1:24,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Topographic Line Map (1:200,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Topographic Line Map (1:200,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Topographic Line Map (1:250,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Topographic Line Map (1:250,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Topographic Line Map (1:25,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Topographic Line Map (1:25,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Topographic Line Map (1:10,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Topographic Line Map (1:10,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Topographic Line Map (other 1:100,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Topographic Line Map (other 1:100,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Topographic Line Map (other 1:50,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Topographic Line Map (other 1:50,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Topographic Line Map (other 1:200,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Topographic Line Map (other 1:200,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Topographic Line Map (other 1:250,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Topographic Line Map (other 1:250,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Topographic Line Map (other 1:25,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Topographic Line Map (other 1:25,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Topographic Line Map (other 1:10,000)",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Topographic Line Map (other 1:10,000)"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Topographic Line Map",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Topographic Line Map"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Helicopter Route Chart Inset",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Helicopter Route Chart Inset"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Helicopter Route Chart",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Helicopter Route Chart"
+                    },
+                    {
+                        "value": "CADRG/ECRG: Visual Navigation Charts",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: Visual Navigation Charts"
+                    },
+                    {
+                        "value": "CADRG/ECRG: VFR Terminal Area Chart",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: VFR Terminal Area Chart"
+                    },
+                    {
+                        "value": "CADRG/ECRG: IFR Enroute Low",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: IFR Enroute Low"
+                    },
+                    {
+                        "value": "CADRG/ECRG: IFR Enroute High",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: IFR Enroute High"
+                    },
+                    {
+                        "value": "CADRG/ECRG: IFR Enroute Area",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: IFR Enroute Area"
+                    },
+                    {
+                        "value": "CADRG/ECRG: IFR Enroute High/Low",
+                        "code": "$rc:raster_format_type.domain.CADRG¦ECRG: IFR Enroute High¦Low"
+                    },
+                    {
+                        "value": "HRE: High Resolution Elevation",
+                        "code": "$rc:raster_format_type.domain.HRE: High Resolution Elevation"
+                    }
+                ]
+            },
+            "description": "$rc:raster_format_type.descr"
+        },
+        "layer_visibility": {
+            "type": "optional",
+            "displayname": "$rc:layer_visibility.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ALL",
+                        "code": "$rc:layer_visibility.domain.ALL"
+                    },
+                    {
+                        "value": "VISIBLE",
+                        "code": "$rc:layer_visibility.domain.VISIBLE"
+                    },
+                    {
+                        "value": "NOT_VISIBLE",
+                        "code": "$rc:layer_visibility.domain.NOT_VISIBLE"
+                    }
+                ]
+            },
+            "value": "ALL",
+            "description": "$rc:layer_visibility.descr"
+        },
+        "layer_state": {
+            "type": "optional",
+            "displayname": "$rc:layer_state.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ALL",
+                        "code": "$rc:layer_state.domain.ALL"
+                    },
+                    {
+                        "value": "VALID",
+                        "code": "$rc:layer_state.domain.VALID"
+                    },
+                    {
+                        "value": "INVALID",
+                        "code": "$rc:layer_state.domain.INVALID"
+                    }
+                ]
+            },
+            "value": "ALL",
+            "description": "$rc:layer_state.descr"
+        },
+        "recursive": {
+            "type": "optional",
+            "displayname": "$rc:recursive.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "RECURSIVE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NOT_RECURSIVE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:recursive.descr"
+        },
+        "output_layer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_layer.title",
+            "datatype": {
+                "type": "GPType"
+            }
+        },
+        "output_name": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_name.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "output_layer_type": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_layer_type.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "output_workspace_type": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_workspace_type.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        }
+    }
+}

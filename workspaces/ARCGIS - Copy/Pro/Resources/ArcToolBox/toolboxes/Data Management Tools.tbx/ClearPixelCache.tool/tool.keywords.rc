@@ -1,0 +1,8 @@
+{
+    "set": [
+        "add rasters to mosaic dataset",
+        "clear cache",
+        "mosaic dataset",
+        "pixel cache"
+    ]
+}

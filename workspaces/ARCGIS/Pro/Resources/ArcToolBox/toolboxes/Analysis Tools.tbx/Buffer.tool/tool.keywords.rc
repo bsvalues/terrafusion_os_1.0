@@ -1,0 +1,31 @@
+{
+    "set": [
+        "adjacent",
+        "area",
+        "around",
+        "bound",
+        "circle",
+        "close",
+        "cushion",
+        "distance",
+        "donut",
+        "doughnut",
+        "euclidean",
+        "expand",
+        "extend",
+        "fall inside",
+        "far",
+        "geodesic",
+        "near",
+        "nearby",
+        "neighbor",
+        "offset",
+        "outside",
+        "outward",
+        "region",
+        "ring",
+        "surround",
+        "within",
+        "zone"
+    ]
+}

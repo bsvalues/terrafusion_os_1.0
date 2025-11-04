@@ -1,0 +1,13 @@
+{
+  "name": "terrafusion-commercial.md",
+  "version": "1.0.0",
+  "description": "TerraFusion commercial.md component",
+  "main": "index.js",
+  "scripts": {
+    "dev": "echo 'Add your dev command here'",
+    "build": "echo 'Add your build command here'",
+    "test": "echo 'Add your test command here'"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

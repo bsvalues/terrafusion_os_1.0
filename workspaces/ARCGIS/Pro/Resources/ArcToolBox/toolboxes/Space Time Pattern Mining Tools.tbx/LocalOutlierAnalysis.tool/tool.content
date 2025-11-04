@@ -1,0 +1,233 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\LocalOutlierAnalysis",
+    "displayname": "$rc:title",
+    "helpcontent": "50000003",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_cube": {
+            "display_order": "0",
+            "displayname": "$rc:in_cube.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "nc"
+                ]
+            },
+            "description": "$rc:in_cube.descr"
+        },
+        "analysis_variable": {
+            "display_order": "1",
+            "displayname": "$rc:analysis_variable.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:analysis_variable.descr"
+        },
+        "output_features": {
+            "direction": "out",
+            "display_order": "2",
+            "displayname": "$rc:output_features.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "depends": [
+                "in_cube"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "featuretype.rule": "AsSpecified",
+                "featuretype": "Simple",
+                "geometrytype.rule": "AsSpecified",
+                "geometrytype": "Polygon",
+                "fields.rule": "None",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:output_features.descr"
+        },
+        "neighborhood_distance": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:neighborhood_distance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPUnitDomain",
+                "items": [
+                    "Feet",
+                    "Meters",
+                    "Kilometers",
+                    "Miles",
+                    "FeetInt",
+                    "MilesInt"
+                ]
+            },
+            "description": "$rc:neighborhood_distance.descr"
+        },
+        "neighborhood_time_step": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:neighborhood_time_step.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "1",
+                "max": "10"
+            },
+            "value": "1",
+            "description": "$rc:neighborhood_time_step.descr"
+        },
+        "number_of_permutations": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:number_of_permutations.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPLong",
+                        "value": "0",
+                        "code": "0"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "99",
+                        "code": "99"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "199",
+                        "code": "199"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "499",
+                        "code": "499"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "999",
+                        "code": "999"
+                    },
+                    {
+                        "type": "GPLong",
+                        "value": "9999",
+                        "code": "9999"
+                    }
+                ]
+            },
+            "value": "499",
+            "description": "$rc:number_of_permutations.descr"
+        },
+        "polygon_mask": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:polygon_mask.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:polygon_mask.descr"
+        },
+        "conceptualization_of_spatial_relationships": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:conceptualization_of_spatial_relationships.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "FIXED_DISTANCE",
+                        "code": "$rc:conceptualization_of_spatial_relationships.domain.FIXED_DISTANCE"
+                    },
+                    {
+                        "value": "K_NEAREST_NEIGHBORS",
+                        "code": "$rc:conceptualization_of_spatial_relationships.domain.K_NEAREST_NEIGHBORS"
+                    },
+                    {
+                        "value": "CONTIGUITY_EDGES_ONLY",
+                        "code": "$rc:conceptualization_of_spatial_relationships.domain.CONTIGUITY_EDGES_ONLY"
+                    },
+                    {
+                        "value": "CONTIGUITY_EDGES_CORNERS",
+                        "code": "$rc:conceptualization_of_spatial_relationships.domain.CONTIGUITY_EDGES_CORNERS"
+                    }
+                ]
+            },
+            "value": "FIXED_DISTANCE",
+            "description": "$rc:conceptualization_of_spatial_relationships.descr"
+        },
+        "number_of_neighbors": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:number_of_neighbors.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "1000"
+            },
+            "description": "$rc:number_of_neighbors.descr"
+        },
+        "define_global_window": {
+            "type": "optional",
+            "displayname": "$rc:define_global_window.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ENTIRE_CUBE",
+                        "code": "$rc:define_global_window.domain.ENTIRE_CUBE"
+                    },
+                    {
+                        "value": "NEIGHBORHOOD_TIME_STEP",
+                        "code": "$rc:define_global_window.domain.NEIGHBORHOOD_TIME_STEP"
+                    },
+                    {
+                        "value": "INDIVIDUAL_TIME_STEP",
+                        "code": "$rc:define_global_window.domain.INDIVIDUAL_TIME_STEP"
+                    }
+                ]
+            },
+            "value": "ENTIRE_CUBE",
+            "description": "$rc:define_global_window.descr"
+        }
+    },
+    "environments": [
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "randomGenerator",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

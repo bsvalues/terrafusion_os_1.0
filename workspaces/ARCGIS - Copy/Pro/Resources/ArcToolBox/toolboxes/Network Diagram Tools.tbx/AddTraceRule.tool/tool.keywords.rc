@@ -1,0 +1,12 @@
+{
+    "set": [
+        "configuration",
+        "diagram from trace",
+        "diagram rule",
+        "diagram template",
+        "network",
+        "network diagram",
+        "template configuration",
+        "trace"
+    ]
+}

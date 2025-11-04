@@ -1,0 +1,19 @@
+{
+    "set": [
+        "data management",
+        "defense",
+        "defense mapping",
+        "generalisation",
+        "generalization",
+        "hydro",
+        "hydrology",
+        "production",
+        "production mapping",
+        "thin",
+        "thin hydro",
+        "thin hydrology",
+        "topo",
+        "topographic",
+        "topographic production"
+    ]
+}

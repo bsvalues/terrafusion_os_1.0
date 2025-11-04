@@ -1,0 +1,605 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "66120005",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "58",
+        "86"
+    ],
+    "attributes": [
+        "GPU",
+        "mCPU"
+    ],
+    "params": {
+        "in_folder": {
+            "display_order": "0",
+            "displayname": "$rc:in_folder.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "DEFolder"
+                }
+            },
+            "description": "$rc:in_folder.descr"
+        },
+        "out_folder": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "schema": {
+                "type": "GPContainerSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_folder.descr"
+        },
+        "max_epochs": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:max_epochs.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "20",
+            "description": "$rc:max_epochs.descr"
+        },
+        "model_type": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:model_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "BDCN_EDGEDETECTOR",
+                        "code": "$rc:model_type.domain.BDCN_EDGEDETECTOR"
+                    },
+                    {
+                        "value": "CHANGEDETECTOR",
+                        "code": "$rc:model_type.domain.CHANGEDETECTOR"
+                    },
+                    {
+                        "value": "CONNECTNET",
+                        "code": "$rc:model_type.domain.CONNECTNET"
+                    },
+                    {
+                        "value": "CYCLEGAN",
+                        "code": "$rc:model_type.domain.CYCLEGAN"
+                    },
+                    {
+                        "value": "DEEPLAB",
+                        "code": "$rc:model_type.domain.DEEPLAB"
+                    },
+                    {
+                        "value": "DEEPSORT",
+                        "code": "$rc:model_type.domain.DEEPSORT"
+                    },
+                    {
+                        "value": "DETREG",
+                        "code": "$rc:model_type.domain.DETREG"
+                    },
+                    {
+                        "value": "FASTERRCNN",
+                        "code": "$rc:model_type.domain.FASTERRCNN"
+                    },
+                    {
+                        "value": "FEATURE_CLASSIFIER",
+                        "code": "$rc:model_type.domain.FEATURE_CLASSIFIER"
+                    },
+                    {
+                        "value": "HED_EDGEDETECTOR",
+                        "code": "$rc:model_type.domain.HED_EDGEDETECTOR"
+                    },
+                    {
+                        "value": "IMAGECAPTIONER",
+                        "code": "$rc:model_type.domain.IMAGECAPTIONER"
+                    },
+                    {
+                        "value": "MASKRCNN",
+                        "code": "$rc:model_type.domain.MASKRCNN"
+                    },
+                    {
+                        "value": "MAXDEEPLAB",
+                        "code": "$rc:model_type.domain.MAXDEEPLAB"
+                    },
+                    {
+                        "value": "MMDETECTION",
+                        "code": "$rc:model_type.domain.MMDETECTION"
+                    },
+                    {
+                        "value": "MMSEGMENTATION",
+                        "code": "$rc:model_type.domain.MMSEGMENTATION"
+                    },
+                    {
+                        "value": "MULTITASK_ROADEXTRACTOR",
+                        "code": "$rc:model_type.domain.MULTITASK_ROADEXTRACTOR"
+                    },
+                    {
+                        "value": "PIX2PIX",
+                        "code": "$rc:model_type.domain.PIX2PIX"
+                    },
+                    {
+                        "value": "PIX2PIXHD",
+                        "code": "$rc:model_type.domain.PIX2PIXHD"
+                    },
+                    {
+                        "value": "PSETAE",
+                        "code": "$rc:model_type.domain.PSETAE"
+                    },
+                    {
+                        "value": "PSPNET",
+                        "code": "$rc:model_type.domain.PSPNET"
+                    },
+                    {
+                        "value": "RETINANET",
+                        "code": "$rc:model_type.domain.RETINANET"
+                    },
+                    {
+                        "value": "SIAMMASK",
+                        "code": "$rc:model_type.domain.SIAMMASK"
+                    },
+                    {
+                        "value": "SSD",
+                        "code": "$rc:model_type.domain.SSD"
+                    },
+                    {
+                        "value": "SUPERRESOLUTION",
+                        "code": "$rc:model_type.domain.SUPERRESOLUTION"
+                    },
+                    {
+                        "value": "UNET",
+                        "code": "$rc:model_type.domain.UNET"
+                    },
+                    {
+                        "value": "YOLOV3",
+                        "code": "$rc:model_type.domain.YOLOV3"
+                    },
+                    {
+                        "value": "SAMLORA",
+                        "code": "$rc:model_type.domain.SAMLORA"
+                    },
+                    {
+                        "value": "CLIMAX",
+                        "code": "$rc:model_type.domain.CLIMAX"
+                    }
+                ]
+            },
+            "description": "$rc:model_type.descr"
+        },
+        "batch_size": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:batch_size.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "64",
+            "description": "$rc:batch_size.descr"
+        },
+        "arguments": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:arguments.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:arguments.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:arguments.dt.title2"
+                    }
+                ]
+            },
+            "description": "$rc:arguments.descr"
+        },
+        "learning_rate": {
+            "type": "optional",
+            "display_order": "12",
+            "displayname": "$rc:learning_rate.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:learning_rate.descr"
+        },
+        "backbone_model": {
+            "type": "optional",
+            "display_order": "13",
+            "displayname": "$rc:backbone_model.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "RESNET18",
+                        "code": "$rc:backbone_model.domain.RESNET18"
+                    },
+                    {
+                        "value": "RESNET34",
+                        "code": "$rc:backbone_model.domain.RESNET34"
+                    },
+                    {
+                        "value": "RESNET50",
+                        "code": "$rc:backbone_model.domain.RESNET50"
+                    },
+                    {
+                        "value": "RESNET101",
+                        "code": "$rc:backbone_model.domain.RESNET101"
+                    },
+                    {
+                        "value": "RESNET152",
+                        "code": "$rc:backbone_model.domain.RESNET152"
+                    },
+                    {
+                        "value": "RESNEXT50",
+                        "code": "$rc:backbone_model.domain.RESNEXT50"
+                    },
+                    {
+                        "value": "WIDE_RESNET50",
+                        "code": "$rc:backbone_model.domain.WIDE_RESNET50"
+                    },
+                    {
+                        "value": "DENSENET121",
+                        "code": "$rc:backbone_model.domain.DENSENET121"
+                    },
+                    {
+                        "value": "DENSENET169",
+                        "code": "$rc:backbone_model.domain.DENSENET169"
+                    },
+                    {
+                        "value": "DENSENET161",
+                        "code": "$rc:backbone_model.domain.DENSENET161"
+                    },
+                    {
+                        "value": "DENSENET201",
+                        "code": "$rc:backbone_model.domain.DENSENET201"
+                    },
+                    {
+                        "value": "VGG11",
+                        "code": "$rc:backbone_model.domain.VGG11"
+                    },
+                    {
+                        "value": "VGG11_BN",
+                        "code": "$rc:backbone_model.domain.VGG11_BN"
+                    },
+                    {
+                        "value": "VGG13",
+                        "code": "$rc:backbone_model.domain.VGG13"
+                    },
+                    {
+                        "value": "VGG13_BN",
+                        "code": "$rc:backbone_model.domain.VGG13_BN"
+                    },
+                    {
+                        "value": "VGG16",
+                        "code": "$rc:backbone_model.domain.VGG16"
+                    },
+                    {
+                        "value": "VGG16_BN",
+                        "code": "$rc:backbone_model.domain.VGG16_BN"
+                    },
+                    {
+                        "value": "VGG19",
+                        "code": "$rc:backbone_model.domain.VGG19"
+                    },
+                    {
+                        "value": "VGG19_BN",
+                        "code": "$rc:backbone_model.domain.VGG19_BN"
+                    },
+                    {
+                        "value": "MOBILENET_V2",
+                        "code": "$rc:backbone_model.domain.MOBILENET_V2"
+                    },
+                    {
+                        "value": "DARKNET53",
+                        "code": "$rc:backbone_model.domain.DARKNET53"
+                    },
+                    {
+                        "value": "REID_V1",
+                        "code": "$rc:backbone_model.domain.REID_V1"
+                    },
+                    {
+                        "value": "REID_V2",
+                        "code": "$rc:backbone_model.domain.REID_V2"
+                    },
+                    {
+                        "value": "SR3",
+                        "code": "$rc:backbone_model.domain.SR3"
+                    },
+                    {
+                        "value": "SR3_UVIT",
+                        "code": "$rc:backbone_model.domain.SR3_UVIT"
+                    },
+                    {
+                        "value": "VIT_H",
+                        "code": "$rc:backbone_model.domain.VIT_H"
+                    },
+                    {
+                        "value": "VIT_L",
+                        "code": "$rc:backbone_model.domain.VIT_L"
+                    },
+                    {
+                        "value": "VIT_B",
+                        "code": "$rc:backbone_model.domain.VIT_B"
+                    },
+                    {
+                        "value": "5.625deg",
+                        "code": "$rc:backbone_model.domain.5.625deg"
+                    },
+                    {
+                        "value": "1.40625deg",
+                        "code": "$rc:backbone_model.domain.1.40625deg"
+                    }
+                ]
+            },
+            "description": "$rc:backbone_model.descr"
+        },
+        "pretrained_model": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:pretrained_model.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "dlpk_remote",
+                    "emd",
+                    "dlpk"
+                ]
+            },
+            "description": "$rc:pretrained_model.descr"
+        },
+        "validation_percentage": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:validation_percentage.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "10",
+            "description": "$rc:validation_percentage.descr"
+        },
+        "stop_training": {
+            "type": "optional",
+            "display_order": "16",
+            "displayname": "$rc:stop_training.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "STOP_TRAINING"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "CONTINUE_TRAINING"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:stop_training.descr"
+        },
+        "out_model_file": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_model_file.title",
+            "datatype": {
+                "type": "DEFile"
+            }
+        },
+        "freeze": {
+            "type": "optional",
+            "display_order": "17",
+            "displayname": "$rc:freeze.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FREEZE_MODEL"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "UNFREEZE_MODEL"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:freeze.descr"
+        },
+        "augmentation": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:augmentation.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DEFAULT",
+                        "code": "$rc:augmentation.domain.DEFAULT"
+                    },
+                    {
+                        "value": "NONE",
+                        "code": "$rc:augmentation.domain.NONE"
+                    },
+                    {
+                        "value": "CUSTOM",
+                        "code": "$rc:augmentation.domain.CUSTOM"
+                    },
+                    {
+                        "value": "FILE",
+                        "code": "$rc:augmentation.domain.FILE"
+                    }
+                ]
+            },
+            "value": "DEFAULT",
+            "description": "$rc:augmentation.descr"
+        },
+        "augmentation_parameters": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:augmentation_parameters.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:augmentation_parameters.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:augmentation_parameters.dt.title2"
+                    }
+                ]
+            },
+            "description": "$rc:augmentation_parameters.descr"
+        },
+        "chip_size": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:chip_size.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:chip_size.descr"
+        },
+        "resize_to": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "11",
+            "displayname": "$rc:resize_to.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:resize_to.descr"
+        },
+        "weight_init_scheme": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "15",
+            "displayname": "$rc:weight_init_scheme.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "RANDOM",
+                        "code": "$rc:weight_init_scheme.domain.RANDOM"
+                    },
+                    {
+                        "value": "RED_BAND",
+                        "code": "$rc:weight_init_scheme.domain.RED_BAND"
+                    },
+                    {
+                        "value": "ALL_RANDOM",
+                        "code": "$rc:weight_init_scheme.domain.ALL_RANDOM"
+                    }
+                ]
+            },
+            "description": "$rc:weight_init_scheme.descr"
+        },
+        "monitor": {
+            "type": "optional",
+            "display_order": "14",
+            "displayname": "$rc:monitor.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "VALID_LOSS",
+                        "code": "$rc:monitor.domain.VALID_LOSS"
+                    },
+                    {
+                        "value": "AVERAGE_PRECISION",
+                        "code": "$rc:monitor.domain.AVERAGE_PRECISION"
+                    },
+                    {
+                        "value": "ACCURACY",
+                        "code": "$rc:monitor.domain.ACCURACY"
+                    },
+                    {
+                        "value": "F1_SCORE",
+                        "code": "$rc:monitor.domain.F1_SCORE"
+                    },
+                    {
+                        "value": "MIOU",
+                        "code": "$rc:monitor.domain.MIOU"
+                    },
+                    {
+                        "value": "DICE",
+                        "code": "$rc:monitor.domain.DICE"
+                    },
+                    {
+                        "value": "PRECISION",
+                        "code": "$rc:monitor.domain.PRECISION"
+                    },
+                    {
+                        "value": "RECALL",
+                        "code": "$rc:monitor.domain.RECALL"
+                    },
+                    {
+                        "value": "CORPUS_BLEU",
+                        "code": "$rc:monitor.domain.CORPUS_BLEU"
+                    },
+                    {
+                        "value": "MULTI_LABEL_FBETA",
+                        "code": "$rc:monitor.domain.MULTI_LABEL_FBETA"
+                    }
+                ]
+            },
+            "value": "VALID_LOSS",
+            "description": "$rc:monitor.descr"
+        }
+    },
+    "environments": [
+        "gpuID",
+        "processorType",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

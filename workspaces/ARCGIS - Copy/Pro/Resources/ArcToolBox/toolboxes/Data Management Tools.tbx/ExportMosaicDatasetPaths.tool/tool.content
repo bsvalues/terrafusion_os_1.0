@@ -1,0 +1,98 @@
+{
+    "type": "FunctionTool",
+    "guid": "{59fd56bd-8eb0-4689-99c5-6f80532fdfdd}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190527",
+    "description": "$rc:description",
+    "product": "200",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_mosaic_dataset": {
+            "display_order": "0",
+            "displayname": "$rc:in_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPMosaicLayer"
+            },
+            "description": "$rc:in_mosaic_dataset.descr"
+        },
+        "out_table": {
+            "direction": "out",
+            "display_order": "2",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "description": "$rc:out_table.descr"
+        },
+        "where_clause": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:where_clause.title",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "in_mosaic_dataset"
+            ],
+            "description": "$rc:where_clause.descr"
+        },
+        "export_mode": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:export_mode.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ALL",
+                        "code": "$rc:export_mode.domain.ALL"
+                    },
+                    {
+                        "value": "BROKEN",
+                        "code": "$rc:export_mode.domain.BROKEN"
+                    }
+                ]
+            },
+            "value": "ALL",
+            "description": "$rc:export_mode.descr"
+        },
+        "types_of_paths": {
+            "type": "optional",
+            "display_order": "4",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:types_of_paths.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "RASTER",
+                        "code": "$rc:types_of_paths.domain.RASTER"
+                    },
+                    {
+                        "value": "ITEM_CACHE",
+                        "code": "$rc:types_of_paths.domain.ITEM_CACHE"
+                    }
+                ]
+            },
+            "description": "$rc:types_of_paths.descr"
+        }
+    },
+    "environments": [
+        "configKeyword",
+        "extent",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

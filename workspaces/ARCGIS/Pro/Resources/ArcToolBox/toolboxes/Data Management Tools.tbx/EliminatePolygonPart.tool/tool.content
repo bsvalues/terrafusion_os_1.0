@@ -1,0 +1,143 @@
+{
+    "type": "FunctionTool",
+    "guid": "{47e10ccd-ac23-4969-a712-c6d933eef2d4}",
+    "displayname": "$rc:title",
+    "helpcontent": "3080011",
+    "description": "$rc:description",
+    "product": "300",
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple",
+                    "SimpleJunction",
+                    "SimpleEdge",
+                    "ComplexEdge",
+                    "RasterCatalogItem"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "condition": {
+            "type": "optional",
+            "displayname": "$rc:condition.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "AREA",
+                        "code": "$rc:condition.domain.AREA"
+                    },
+                    {
+                        "value": "PERCENT",
+                        "code": "$rc:condition.domain.PERCENT"
+                    },
+                    {
+                        "value": "AREA_AND_PERCENT",
+                        "code": "$rc:condition.domain.AREA_AND_PERCENT"
+                    },
+                    {
+                        "value": "AREA_OR_PERCENT",
+                        "code": "$rc:condition.domain.AREA_OR_PERCENT"
+                    }
+                ]
+            },
+            "value": "AREA",
+            "description": "$rc:condition.descr"
+        },
+        "part_area": {
+            "type": "optional",
+            "displayname": "$rc:part_area.title",
+            "datatype": {
+                "type": "GPArealUnit"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "value": "0 Unknown",
+            "description": "$rc:part_area.descr"
+        },
+        "part_area_percent": {
+            "type": "optional",
+            "displayname": "$rc:part_area_percent.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                },
+                "high": {
+                    "allow": "false",
+                    "val": "100"
+                }
+            },
+            "value": "0",
+            "description": "$rc:part_area_percent.descr"
+        },
+        "part_option": {
+            "type": "optional",
+            "displayname": "$rc:part_option.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CONTAINED_ONLY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "ANY"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:part_option.descr"
+        }
+    },
+    "environments": [
+        "MDomain",
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "ZDomain",
+        "ZResolution",
+        "ZTolerance",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "outputMFlag",
+        "outputZFlag",
+        "outputZValue",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

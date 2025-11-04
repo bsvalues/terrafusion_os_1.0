@@ -1,0 +1,27 @@
+{
+    "set": [
+        "anomaly",
+        "cluster",
+        "clustering",
+        "covariance",
+        "deviate",
+        "disperse",
+        "distribution",
+        "extreme",
+        "geographic",
+        "like",
+        "local",
+        "p",
+        "p-value",
+        "point pattern analysis",
+        "random",
+        "similar",
+        "space",
+        "space-time",
+        "temporal",
+        "time",
+        "value",
+        "z",
+        "z-score"
+    ]
+}

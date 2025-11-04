@@ -1,0 +1,38 @@
+{
+    "type": "FunctionTool",
+    "guid": "{001E794B-DCBD-466B-B65E-80AEA24A5719}/QuickExport",
+    "displayname": "$rc:title",
+    "helpcontent": "18000001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "45"
+    ],
+    "attributes": [
+        "param_nocount:Input"
+    ],
+    "params": {
+        "Input": {
+            "displayname": "$rc:input.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            },
+            "description": "$rc:input.descr"
+        },
+        "Output": {
+            "direction": "out",
+            "displayname": "$rc:output.title",
+            "datatype": {
+                "type": "FMEDestDatasetType"
+            },
+            "description": "$rc:output.descr"
+        }
+    },
+    "environments": [
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

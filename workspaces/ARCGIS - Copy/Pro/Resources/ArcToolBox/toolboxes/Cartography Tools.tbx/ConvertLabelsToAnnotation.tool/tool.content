@@ -1,0 +1,312 @@
+{
+    "type": "FunctionTool",
+    "guid": "{981d5310-049b-4319-b1a4-c8ee9348d815}",
+    "displayname": "$rc:title",
+    "helpcontent": "10080005",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "input_map": {
+            "display_order": "0",
+            "displayname": "$rc:input_map.title",
+            "datatype": {
+                "type": "GPMap"
+            },
+            "description": "$rc:input_map.descr"
+        },
+        "conversion_scale": {
+            "display_order": "1",
+            "control_guid": "{B23D9E8D-E360-4670-919E-A7F8FFF0DC19}",
+            "displayname": "$rc:conversion_scale.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:conversion_scale.descr"
+        },
+        "output_geodatabase": {
+            "display_order": "4",
+            "displayname": "$rc:output_geodatabase.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEWorkspace"
+                    },
+                    {
+                        "type": "DEFeatureDataset"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPWorkspaceDomain",
+                "workspacetype": [
+                    "Local Database",
+                    "Remote Database"
+                ]
+            },
+            "defaultenvironmentname": "workspace",
+            "description": "$rc:output_geodatabase.descr"
+        },
+        "anno_suffix": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:anno_suffix.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "Anno",
+            "description": "$rc:anno_suffix.descr"
+        },
+        "extent": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:extent.title",
+            "datatype": {
+                "type": "GPExtent"
+            },
+            "defaultenvironmentname": "extent",
+            "description": "$rc:extent.descr"
+        },
+        "generate_unplaced": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:generate_unplaced.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "GENERATE_UNPLACED"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "ONLY_PLACED"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:generate_unplaced.descr"
+        },
+        "require_symbol_id": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:require_symbol_id.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "REQUIRE_ID"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_REQUIRE_ID"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:require_symbol_id.descr"
+        },
+        "feature_linked": {
+            "type": "optional",
+            "display_order": "11",
+            "displayname": "$rc:feature_linked.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FEATURE_LINKED"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "STANDARD"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:feature_linked.descr"
+        },
+        "auto_create": {
+            "type": "optional",
+            "display_order": "12",
+            "displayname": "$rc:auto_create.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "AUTO_CREATE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_AUTO_CREATE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:auto_create.descr"
+        },
+        "update_on_shape_change": {
+            "type": "optional",
+            "display_order": "13",
+            "displayname": "$rc:update_on_shape_change.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SHAPE_UPDATE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_SHAPE_UPDATE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:update_on_shape_change.descr"
+        },
+        "output_group_layer": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "14",
+            "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}",
+            "displayname": "$rc:output_group_layer.title",
+            "datatype": {
+                "type": "GPGroupLayer"
+            },
+            "value": "GroupAnno",
+            "description": "$rc:output_group_layer.descr"
+        },
+        "updated_geodatabase": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "15",
+            "displayname": "$rc:updated_geodatabase.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "depends": [
+                "output_geodatabase"
+            ]
+        },
+        "which_layers": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:which_layers.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ALL_LAYERS",
+                        "code": "$rc:which_layers.domain.ALL_LAYERS"
+                    },
+                    {
+                        "value": "SINGLE_LAYER",
+                        "code": "$rc:which_layers.domain.SINGLE_LAYER"
+                    }
+                ]
+            },
+            "value": "ALL_LAYERS",
+            "description": "$rc:which_layers.descr"
+        },
+        "single_layer": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:single_layer.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:single_layer.descr"
+        },
+        "multiple_feature_classes": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:multiple_feature_classes.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SINGLE_FEATURE_CLASS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "FEATURE_CLASS_PER_FEATURE_LAYER"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:multiple_feature_classes.descr"
+        },
+        "merge_label_classes": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:merge_label_classes.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "MERGE_LABEL_CLASS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_MERGE_LABEL_CLASS"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:merge_label_classes.descr"
+        }
+    },
+    "environments": [
+        "annotationTextStringFieldLength",
+        "configKeyword"
+    ]
+}

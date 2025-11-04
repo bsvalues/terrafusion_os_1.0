@@ -1,0 +1,12 @@
+{
+    "set": [
+        "airborne lidar",
+        "classification",
+        "flight lines",
+        "lidar",
+        "overlap",
+        "point cloud",
+        "point density",
+        "point spacing"
+    ]
+}

@@ -1,0 +1,35 @@
+{
+    "version": "1.0",
+    "alias": "edit",
+    "displayname": "$rc:title",
+    "description": "$rc:descr",
+    "helpcontext": "24000000",
+    "toolsets": {
+        "<root>": {
+            "tools": [
+                "Densify",
+                "ErasePoint",
+                "ExtendLine",
+                "FlipLine",
+                "Generalize",
+                "SimplifyByStraightLinesAndCircularArcs",
+                "Snap",
+                "TrimLine",
+                "UpdateCOGO"
+            ]
+        },
+        "$rc:toolset1.name": {
+            "tools": [
+                "AlignFeatures",
+                "CalculateTransformationErrors",
+                "EdgematchFeatures",
+                "GenerateEdgematchLinks",
+                "GenerateRubbersheetLinks",
+                "RubbersheetFeatures",
+                "SplitLineByMatch",
+                "TransferAttributes",
+                "TransformFeatures"
+            ]
+        }
+    }
+}

@@ -1,0 +1,46 @@
+# Velero backup schedules for TerraFusion OS
+# Prerequisites:
+# - Velero installed with a working BackupStorageLocation named "default"
+# - Credentials configured (e.g., Azure/AWS/GCS) and tested in staging
+# - Volume snapshotter configured if using CSI snapshots
+
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: terrafusion-daily
+  namespace: velero
+  labels:
+    app.kubernetes.io/name: terrafusion-velero
+    app.kubernetes.io/part-of: terrafusion-os
+spec:
+  # Daily full backup at 01:00 UTC
+  schedule: "0 1 * * *"
+  template:
+    includedNamespaces:
+      - terrafusion
+      - monitoring
+      - ingress-nginx
+    snapshotVolumes: true
+    storageLocation: default
+    ttl: 720h   # 30 days retention
+    # Enable filesystem backup where snapshots are not supported
+    defaultVolumesToFsBackup: true
+---
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: terrafusion-hourly-critical
+  namespace: velero
+  labels:
+    app.kubernetes.io/name: terrafusion-velero
+    app.kubernetes.io/part-of: terrafusion-os
+spec:
+  # Hourly backup for the core app namespace to support RPO 1h
+  schedule: "0 * * * *"
+  template:
+    includedNamespaces:
+      - terrafusion
+    snapshotVolumes: true
+    storageLocation: default
+    ttl: 168h  # 7 days retention for hourly
+    defaultVolumesToFsBackup: true

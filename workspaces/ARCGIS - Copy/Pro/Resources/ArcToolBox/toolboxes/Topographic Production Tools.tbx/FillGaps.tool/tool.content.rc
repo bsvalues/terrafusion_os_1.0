@@ -1,0 +1,20 @@
+{
+    "map": {
+        "description": "Fills gaps between polygon features that participate in a topology where the coincident boundaries are evident.",
+        "fill_option.descr": "<xdoc><p>Specifies how enclosed and unenclosed gaps are filled.</p><ul><li><span title=\"FILL_BY_LENGTH\">Fill By Length</span>—Gaps are filled by adding a gap&apos;s geometry to the polygon with the longest shared edge. This is the default.</li><li><span title=\"FILL_BY_ORDER\">Fill By Order</span>—Gaps are filled sequentially according to the order of the input polygon features list.</li></ul></xdoc>",
+        "fill_option.domain.FILL_BY_LENGTH": "Fill By Length",
+        "fill_option.domain.FILL_BY_ORDER": "Fill By Order",
+        "fill_option.title": "Fill Option",
+        "fill_unenclosed_gaps.descr": "<xdoc><p>Specifies whether the tool fills unenclosed gaps.</p><ul><li>Unchecked—Only enclosed gaps are filled. Unenclosed gaps are skipped. This is the default.</li><li>Checked—Both enclosed and unenclosed gaps are filled.</li></ul></xdoc>",
+        "fill_unenclosed_gaps.title": "Fill Unenclosed Gaps",
+        "input_features.descr": "A list of input polygon feature classes or layers to be analyzed for gaps.",
+        "input_features.title": "Input Features",
+        "max_gap_area.descr": "The maximum area that can be considered a gap. Areas larger than this threshold are not filled.",
+        "max_gap_area.title": "Maximum Gap Area",
+        "max_gap_distance.descr": "<xdoc><p>The maximum distance between features in which a gap can be filled. This parameter is used only when the <span class=\"esri_uicontrol\">Fill Unenclosed Gaps</span> parameter is checked.</p></xdoc>",
+        "max_gap_distance.title": "Maximum Gap Distance",
+        "summary": "<xdoc><p>Fills gaps between polygon features that participate in a topology where the coincident boundaries are evident.</p><p>Many types of polygon features should have coincident boundaries with other features. Coincident boundaries can be important for features in a single polygon feature class, such as parcels, or between features in different feature classes, such as lakes and surrounding vegetation. A gap between the features exists when there is space between the boundaries of two or more features.</p></xdoc>",
+        "title": "Fill Gaps",
+        "updated_features.title": "Updated Features"
+    }
+}

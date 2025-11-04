@@ -1,0 +1,23 @@
+{
+  "health_checks": {
+    "enabled": true,
+    "interval_seconds": 30,
+    "timeout_seconds": 10
+  },
+  "metrics": {
+    "enabled": true,
+    "collection_interval": 60,
+    "retention_days": 30
+  },
+  "alerting": {
+    "enabled": true,
+    "email_notifications": true,
+    "webhook_notifications": true
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "json",
+    "retention_days": 90,
+    "max_file_size": "100MB"
+  }
+}

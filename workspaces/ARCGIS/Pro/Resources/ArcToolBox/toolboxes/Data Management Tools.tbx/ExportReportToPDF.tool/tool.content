@@ -1,0 +1,313 @@
+{
+    "type": "FunctionTool",
+    "guid": "{46391ebc-be0a-45de-a87f-b860d3dfc47b}",
+    "displayname": "$rc:title",
+    "helpcontent": "3070014",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_report": {
+            "displayname": "$rc:in_report.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPReport"
+                    },
+                    {
+                        "type": "DEFile"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "rptx"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:in_report.descr"
+        },
+        "out_pdf_file": {
+            "direction": "out",
+            "displayname": "$rc:out_pdf_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "pdf"
+                ]
+            },
+            "addtomap": "false",
+            "description": "$rc:out_pdf_file.descr"
+        },
+        "expression": {
+            "type": "optional",
+            "displayname": "$rc:expression.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "in_report"
+            ],
+            "description": "$rc:expression.descr"
+        },
+        "resolution": {
+            "type": "optional",
+            "displayname": "$rc:resolution.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "1",
+                "max": "2147483647"
+            },
+            "value": "96",
+            "description": "$rc:resolution.descr"
+        },
+        "image_quality": {
+            "type": "optional",
+            "displayname": "$rc:image_quality.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "BEST",
+                        "code": "$rc:image_quality.domain.BEST"
+                    },
+                    {
+                        "value": "BETTER",
+                        "code": "$rc:image_quality.domain.BETTER"
+                    },
+                    {
+                        "value": "NORMAL",
+                        "code": "$rc:image_quality.domain.NORMAL"
+                    },
+                    {
+                        "value": "FASTER",
+                        "code": "$rc:image_quality.domain.FASTER"
+                    },
+                    {
+                        "value": "FASTEST",
+                        "code": "$rc:image_quality.domain.FASTEST"
+                    }
+                ]
+            },
+            "value": "BEST",
+            "description": "$rc:image_quality.descr"
+        },
+        "embed_font": {
+            "type": "optional",
+            "displayname": "$rc:embed_font.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "EMBED_FONTS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_EMBED_FONTS"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:embed_font.descr"
+        },
+        "compress_vector_graphics": {
+            "type": "optional",
+            "displayname": "$rc:compress_vector_graphics.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "COMPRESS_GRAPHICS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_COMPRESS_GRAPHICS"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:compress_vector_graphics.descr"
+        },
+        "image_compression": {
+            "type": "optional",
+            "displayname": "$rc:image_compression.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NONE",
+                        "code": "$rc:image_compression.domain.NONE"
+                    },
+                    {
+                        "value": "RLE",
+                        "code": "$rc:image_compression.domain.RLE"
+                    },
+                    {
+                        "value": "DEFLATE",
+                        "code": "$rc:image_compression.domain.DEFLATE"
+                    },
+                    {
+                        "value": "LZW",
+                        "code": "$rc:image_compression.domain.LZW"
+                    },
+                    {
+                        "value": "JPEG",
+                        "code": "$rc:image_compression.domain.JPEG"
+                    },
+                    {
+                        "value": "ADAPTIVE",
+                        "code": "$rc:image_compression.domain.ADAPTIVE"
+                    }
+                ]
+            },
+            "value": "ADAPTIVE",
+            "description": "$rc:image_compression.descr"
+        },
+        "password_protect": {
+            "type": "optional",
+            "displayname": "$rc:password_protect.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "PASSWORD_PROTECT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_PASSWORD_PROTECT"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:password_protect.descr"
+        },
+        "pdf_password": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:pdf_password.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPEncryptedString"
+            },
+            "description": "$rc:pdf_password.descr"
+        },
+        "page_range_type": {
+            "type": "optional",
+            "displayname": "$rc:page_range_type.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ALL",
+                        "code": "$rc:page_range_type.domain.ALL"
+                    },
+                    {
+                        "value": "LAST",
+                        "code": "$rc:page_range_type.domain.LAST"
+                    },
+                    {
+                        "value": "ODD",
+                        "code": "$rc:page_range_type.domain.ODD"
+                    },
+                    {
+                        "value": "EVEN",
+                        "code": "$rc:page_range_type.domain.EVEN"
+                    },
+                    {
+                        "value": "CUSTOM",
+                        "code": "$rc:page_range_type.domain.CUSTOM"
+                    }
+                ]
+            },
+            "value": "ALL",
+            "description": "$rc:page_range_type.descr"
+        },
+        "custom_page_range": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:custom_page_range.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:custom_page_range.descr"
+        },
+        "initial_page_number": {
+            "type": "optional",
+            "displayname": "$rc:initial_page_number.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "1",
+                "max": "2147483647"
+            },
+            "description": "$rc:initial_page_number.descr"
+        },
+        "final_page_number": {
+            "type": "optional",
+            "displayname": "$rc:final_page_number.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "1",
+                "max": "2147483647"
+            },
+            "description": "$rc:final_page_number.descr"
+        }
+    }
+}

@@ -1,0 +1,377 @@
+{
+    "type": "FunctionTool",
+    "guid": "{33724566-2738-4FE2-903A-A8C439127E50}/SummaryReports",
+    "displayname": "$rc:title",
+    "helpcontent": "62020001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "33",
+        "35"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "report_templates": {
+            "control_guid": "{FFB0DD79-BCC6-44AD-AF91-FE0BC4BE6C9C}",
+            "displayname": "$rc:report_templates.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:report_templates.descr"
+        },
+        "reports_folder": {
+            "displayname": "$rc:reports_folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:reports_folder.descr"
+        },
+        "summarization_options": {
+            "type": "optional",
+            "displayname": "$rc:summarization_options.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "INDIVIDUAL_FEATURES",
+                        "code": "$rc:summarization_options.domain.INDIVIDUAL_FEATURES"
+                    },
+                    {
+                        "value": "WHOLE_LAYER",
+                        "code": "$rc:summarization_options.domain.WHOLE_LAYER"
+                    },
+                    {
+                        "value": "BOTH_FEATURES_AND_LAYER",
+                        "code": "$rc:summarization_options.domain.BOTH_FEATURES_AND_LAYER"
+                    }
+                ]
+            },
+            "value": "INDIVIDUAL_FEATURES",
+            "description": "$rc:summarization_options.descr"
+        },
+        "single_report": {
+            "type": "optional",
+            "displayname": "$rc:single_report.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CREATE_SINGLE_REPORT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "CREATE_REPORT_PER_TEMPLATE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:single_report.descr"
+        },
+        "formats": {
+            "type": "optional",
+            "displayname": "$rc:formats.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "value": "PDF",
+            "description": "$rc:formats.descr"
+        },
+        "store_id_field": {
+            "type": "optional",
+            "displayname": "$rc:store_id_field.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "key.field": [
+                    "EMPTY"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:store_id_field.descr"
+        },
+        "store_name_field": {
+            "type": "optional",
+            "displayname": "$rc:store_name_field.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "key.field": [
+                    "EMPTY"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:store_name_field.descr"
+        },
+        "store_address_field": {
+            "type": "optional",
+            "displayname": "$rc:store_address_field.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "key.field": [
+                    "EMPTY"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:store_address_field.descr"
+        },
+        "store_latitude_field": {
+            "type": "optional",
+            "displayname": "$rc:store_latitude_field.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "key.field": [
+                    "EMPTY"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:store_latitude_field.descr"
+        },
+        "store_longitude_field": {
+            "type": "optional",
+            "displayname": "$rc:store_longitude_field.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "key.field": [
+                    "EMPTY"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:store_longitude_field.descr"
+        },
+        "ring_id_field": {
+            "type": "optional",
+            "displayname": "$rc:ring_id_field.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "key.field": [
+                    "EMPTY"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:ring_id_field.descr"
+        },
+        "area_description_field": {
+            "type": "optional",
+            "displayname": "$rc:area_description_field.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "key.field": [
+                    "EMPTY"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:area_description_field.descr"
+        },
+        "title": {
+            "type": "optional",
+            "displayname": "$rc:title.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:title.descr"
+        },
+        "subtitle": {
+            "type": "optional",
+            "displayname": "$rc:subtitle.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "Prepared By Business Analyst for ArcGIS Pro",
+            "description": "$rc:subtitle.descr"
+        },
+        "output_files": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_files.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "DEFile"
+                }
+            }
+        },
+        "report_per_feature": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:report_per_feature.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CREATE_REPORT_PER_FEATURE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "CREATE_SINGLE_REPORT"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:report_per_feature.descr"
+        },
+        "add_infographic_header": {
+            "type": "optional",
+            "displayname": "$rc:add_infographic_header.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ENABLE_INFOGRAPHIC_HEADER"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DISABLE_INFOGRAPHIC_HEADER"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:add_infographic_header.descr"
+        },
+        "add_infographic_footer": {
+            "type": "optional",
+            "displayname": "$rc:add_infographic_footer.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ENABLE_INFOGRAPHIC_FOOTER"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DISABLE_INFOGRAPHIC_FOOTER"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:add_infographic_footer.descr"
+        },
+        "add_infographic_data_source": {
+            "type": "optional",
+            "displayname": "$rc:add_infographic_data_source.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ENABLE_INFOGRAPHIC_DATA_SOURCE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DISABLE_INFOGRAPHIC_DATA_SOURCE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:add_infographic_data_source.descr"
+        }
+    },
+    "environments": [
+        "baDataSource",
+        "geographicTransformations",
+        "workspace"
+    ]
+}

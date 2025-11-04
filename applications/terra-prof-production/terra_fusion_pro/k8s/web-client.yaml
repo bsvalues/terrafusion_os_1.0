@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-client
+  labels:
+    app: web-client
+    part-of: terrafusionpro
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web-client
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: web-client
+    spec:
+      containers:
+      - name: web-client
+        image: ${DOCKER_REGISTRY}/terrafusionpro/web-client:${VERSION}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: "512Mi"
+          requests:
+            cpu: "0.2"
+            memory: "256Mi"
+        env:
+        - name: ENVIRONMENT
+          value: "production"
+        - name: PORT
+          value: "5000"
+        - name: HOST
+          value: "0.0.0.0"
+        - name: API_URL
+          value: "https://api.terrafusionpro.com"
+        - name: REPL_ID
+          valueFrom:
+            secretKeyRef:
+              name: terrafusionpro-replit-auth
+              key: client-id
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-client
+  labels:
+    app: web-client
+    part-of: terrafusionpro
+spec:
+  selector:
+    app: web-client
+  ports:
+  - port: 80
+    targetPort: 5000
+    name: http
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web-client-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+  - hosts:
+    - app.terrafusionpro.com
+    secretName: terrafusionpro-web-tls
+  rules:
+  - host: app.terrafusionpro.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-client
+            port:
+              number: 80

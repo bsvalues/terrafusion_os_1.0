@@ -1,0 +1,2012 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.DocumentManagement.UI</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentListGrid">
+            <summary>
+            UI Class for the Document list grid paragraph
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.BaseDocumentListGrid">
+            <summary>
+            Fakery to keep VS happy w/ MVP
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentListGrid.selecteddocumnetIds">
+            <summary>
+            Multiple Documents selected for
+            updates
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentListGrid.#ctor(System.Guid)">
+            <summary>
+            default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentListGrid.gridView1_FocusedRowChanged(System.Object,DevExpress.XtraGrid.Views.Base.FocusedRowChangedEventArgs)">
+            <summary>
+            Handles the row change event in the
+            documents list grid - the preview pane
+            data needs to be updated
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentListGrid.ClearTable">
+            <summary>
+            Method to clear the table
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentListGrid.gridView1_CustomColumnSort(System.Object,DevExpress.XtraGrid.Views.Base.CustomColumnSortEventArgs)">
+            <summary>
+            Custom sort method for the columns
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentListGrid.ReloadGrid(System.Collections.Generic.List{TrueAutomation.DocumentManagement.DTOs.DocumentListItemDTO})">
+            <summary>
+            Method to reload the grid with the data available.
+            </summary>
+            <param name="items">the list of items to load into the grid</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentListGrid.toolStripDocumentDetailsLabel_Click(System.Object,System.EventArgs)">
+            <summary>
+            Handles launching the Document View
+            for the selected Document in the Documents list grid
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentListGrid.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentListGrid.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentListGrid.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.DocumentManagement.UI.DocumentListGrid.DoubleClickTextEvent">
+            <summary>
+            Event for Doubleclick on Text
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.DocumentManagement.UI.DocumentListGrid.DoubleClickImageEvent">
+            <summary>
+            Event for Doubleclick on Image
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.DocumentManagement.UI.DocumentListGrid.ClickEvent">
+            <summary>
+            Event for Doubleclick on Image
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.DocumentManagement.UI.DocumentListGrid.ListChanged">
+            <summary>
+            Event handler for whenver an item is added or removed from the list.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentListGrid.LoadStartedTime">
+            <summary>
+            Load Start Time 
+            <remarks>used for debugging statistics</remarks>
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentListGrid.LoadEndedTime">
+            <summary>
+            Load End Time
+            <remarks>used for debugging statistics</remarks>
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentListGrid.DocumentListItems">
+            <summary>
+            Property to manage the list of documents in the view
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentListGrid.SelectedId">
+            <summary>
+            Property to contain the identity of the selected Document
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentListGrid.TaskAttachments">
+            <summary>
+            list of attachements
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentListGrid.UserId">
+             <summary>
+            Userid of the individual trying to access this document
+             </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentListGrid.DocumentListDoubleClick">
+            <summary>
+            Delegate for Doubleclick 
+            </summary>
+            /// <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentListView.DocumentListGridParagraph">
+            <summary>
+            Paragraph for DocumentListGrid
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentListView.BaseDocumentListGridParagraph">
+            <summary>
+            Base MVP class
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentListView.DocumentListGridParagraph.#ctor(System.Guid,System.Collections.Generic.List{System.Guid})">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentListView.DocumentListGridParagraph.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentListView.DocumentListGridParagraph.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentListView.DocumentListGridParagraph.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentManagementDialogService">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentManagementDialogService.AddDocument(System.String,System.String,System.Byte[])">
+            <summary>
+            Adds the document to the Document Repository
+            </summary>
+            <param name="filePath">The file path.</param>
+            <param name="fileName"></param>
+            <param name="thumbnail">The thumbnail.</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentManagementDialogService.AddDocumentFile(TrueAutomation.DocumentManagement.DTOs.DocumentDTO,System.String,System.String,System.Byte[])">
+            <summary>
+            Adds the document to the Document Repository
+            </summary>
+            <param name="documentDTO">Document DTO</param>
+            <param name="filePath">The file path.</param>
+            <param name="fileName"></param>
+            <param name="thumbnail">The thumbnail.</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentManagementDialogService.CreateDocumentDTO(TrueAutomation.DocumentManagement.DTOs.DocumentDTO,System.String,System.String,System.Byte[],System.Collections.Generic.List{TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO})">
+            <summary>
+            Helper method to create a Document domain object 
+            from a Document DTO and its file contents.
+            </summary>
+            <param name="documentDTO">A DTO of the Document</param>
+            <param name="filePath">The file path.</param>
+            <param name="fileName"></param>
+            <param name="thumbnailContent">Thumbnail Content of the Document</param>
+            <param name="annotationDTOs">Annotations for the Document</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentManagementDialogService.ShowDocumentView(System.Windows.Forms.Form,System.Guid,System.Boolean)">
+            <summary>
+             Launches the DocumentView Dialog for edit
+            </summary>
+            <param name="parent">Parent form for modality</param>
+            <param name="documentId">Id of the current document</param>
+            <param name="showMaximized">Dialog display mode - True means Maximized</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentManagementDialogService.GetMostRecentDocumentContents(System.Guid)">
+            <summary>
+             Get the contents of a document.        
+            </summary>
+            <param name="documentId">Id of the current document</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentManagementDialogService.ShowDocumentView(System.Windows.Forms.Form,System.Guid,System.Boolean,TrueAutomation.AccessControl.DTOs.ACLType,System.String,System.String)">
+            <summary>
+             Launches the DocumentView Dialog with specific permissions for a new document
+            </summary>
+            <param name="parent">Parent form for modality</param>
+            <param name="documentId">Id of the current document</param>
+            <param name="showMaximized">Dialog display mode - True means Maximized</param>
+            <param name="permission">Default Permission to apply</param>
+            <param name="fileName">Name of the file to be opened, if new</param>
+            <param name="filePath">Path of the file to be opened, if new</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentManagementDialogService.SetCurrentLoggedInUserByExternalId(System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <param name="system"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentManagementDialogService.SetCurrentLoggedInUserGroupByExternalId(System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <param name="system"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentManagementDialogService.DeleteDocumentById(System.Guid,System.String,System.Guid)">
+            <summary>
+            Method to Delete a whole document
+            </summary>
+            <param name="documentId">Document Guid</param>
+            <param name="system"></param>
+            <param name="userId">Guid of User deleting the document</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentManagementDialogService.DeleteDocumentVersion(System.Guid,System.Int32,System.Guid)">
+            <summary>
+            Method to delete a specific version of the document.
+            </summary>
+            <param name="documentId">Document Guid</param>
+            <param name="versionNumber">Version number to delete</param>
+            <param name="userId">Guid of User deleting the document</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentManagementDialogService.isReadAllowed(System.Guid)">
+            <summary>
+            Checks to see if the user can read a document
+            </summary>
+            <param name="documentId"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentManagementDialogService.isWriteAllowed(System.Guid)">
+            <summary>
+            Checks to see if the user can write the document (update or delete)
+            </summary>
+            <param name="documentId"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentManagementDialogService.SaveFileChunks(System.Collections.Generic.List{System.Byte[]},System.Guid,System.Int32,System.Boolean,System.Guid)">
+            <summary>
+            Save the chunks of file one by one
+            </summary>
+            <param name="fileChunks"></param>
+            <param name="documentId"></param>
+            <param name="latestVersionNumber"></param>
+            <param name="isRedactedFileSave"></param>
+            <param name="userId"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentManagementDialogService.GetChunkSize">
+            <summary>
+            Gets Chunk Size
+            </summary>
+            <returns>chunk size</returns>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentManagementDialogService.CurrentLoggedInUserName">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentManagementDialogService.CurrentLoggedInUserGroupName">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentManagementDialogService.CurrentLoggedInUserGroupExternalId">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentManagementDialogService.CurrentLoggedInUserExternalId">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentViewer.ActionEventArgs">
+            <summary>
+            Arguments for the Action event used in the viewer and pages control
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ActionEventArgs.#ctor(System.String,System.Object)">
+            <summary>
+            Constructor with Action and Data
+            </summary>
+            <param name="action">Action</param>
+            <param name="data">Data</param>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ActionEventArgs.Action">
+            <summary>
+            Action performed in the viewer
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ActionEventArgs.Data">
+            <summary>
+            Data from the viewer
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentViewer.Converters">
+            <summary>
+            Helper class to Convert some System.Drawing objects to their corresponding LeadTools specific objects and vice-versa.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.Converters.ToGdiPlusColor(Leadtools.RasterColor)">
+            <summary>
+            Converts RasterColor to System.Drawing.Color
+            </summary>
+            <param name="color">Raster Color object</param>
+            <returns>System.Drawing.Color object</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.Converters.FromGdiPlusColor(System.Drawing.Color)">
+            <summary>
+            Converts System.Drawing.Color to RasterColor
+            </summary>
+            <param name="color">System.Drawing.Color object</param>
+            <returns>Raster Color object</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.Converters.ConvertRect(System.Drawing.Rectangle)">
+            <summary>
+            Converts System.Drawing.Rectangle to LeadRect object
+            </summary>
+            <param name="rc">System.Drawing.Rectangle object</param>
+            <returns>LeadRect object</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.Converters.ConvertRect(Leadtools.LeadRect)">
+            <summary>
+            Converts LeadRect to System.Drawing.Rectangle
+            </summary>
+            <param name="rc">LeadRect object</param>
+            <returns>System.Drawing.Rectangle object</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.Converters.ConvertPoint(System.Drawing.Point)">
+            <summary>
+            Converts System.Drawing.Point to LeadPoint object
+            </summary>
+            <param name="p">System.Drawing.Point object</param>
+            <returns>LeadPoint object</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.Converters.ConvertPoint(Leadtools.LeadPoint)">
+            <summary>
+            Converts  LeadPoint to System.Drawing.Point object
+            </summary>
+            <param name="p">LeadPoint object</param>
+            <returns>System.Drawing.Point object</returns>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentViewer.WaitCursor">
+            <summary>
+            Handles cursors for the document viewer
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.WaitCursor.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.WaitCursor.Dispose">
+            <summary>
+            Dispose method
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.WaitCursor.Finalize">
+            <summary>
+            Desctructor
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentViewer.DocumentHolderControl">
+            <summary>
+            User control to hold the ViewerForm for Document Viewer
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.DocumentHolderControl.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.DocumentHolderControl.MaximizeViewerForm">
+            <summary>
+            Set the Viewer form in the maximized mode
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.DocumentHolderControl.RestoreViewerForm">
+            <summary>
+            Set the Viewer form to the Restore mode
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.DocumentHolderControl.ShowDocumentViewerWithFileContent(System.String,System.Byte[],System.Collections.Generic.List{TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO},System.Nullable{TrueAutomation.AccessControl.DTOs.ACLType})">
+            <summary>
+            Shows the Document viewer with the byte array file content set for document display
+            </summary>
+            <param name="fileName">Document name</param>
+            <param name="fileContents">Document content</param>
+            <param name="annotations">Document Annotation content</param>
+            <param name="permission">User Permission</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.DocumentHolderControl.ShowDocumentViewerWithFilePath(System.String,System.String)">
+            <summary>
+            Set the File Path for document retrieval and displays it in the Document viewer
+            </summary>
+            <param name="filePath">Document file path</param>
+            <param name="fileName">Document file name</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.DocumentHolderControl.GetThumbnailImage">
+            <summary>
+            Gets the Thumbnail image of the document as a byte array for save
+            </summary>
+            <returns>A byte array of the thumbnail</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.DocumentHolderControl.GetDocumentViewerFileChangesInChunks(System.Boolean)">
+            <summary>
+            Method gets the modified document contents as a byte array for save
+            </summary>
+            <returns>A byte array of the document</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.DocumentHolderControl.GetDocumentViewerFileChanges(System.Boolean)">
+            <summary>
+            Method gets the modified document contents as a byte array for save
+            </summary>
+            <returns>A byte array of the document</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.DocumentHolderControl.GetAnnotationsContent">
+            <summary>
+            Method gets the Document Annotations as a byte array for save
+            </summary>
+            <returns>A byte array of the document</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.DocumentHolderControl.GetWorkingVersion">
+            <summary>
+            Method gets the Document Version being modified
+            </summary>
+            <returns>Document Version</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.DocumentHolderControl.DeleteTemporaryFiles">
+            <summary>
+            Method to delete all the temporary files created in user directory
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentViewer.DocumentHolderControl.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.DocumentHolderControl.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.DocumentHolderControl.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.DocumentManagement.UI.DocumentViewer.DocumentHolderControl.Data_Changed">
+            <summary>
+            Event fired when any document data has changed
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentViewer.PagesControl">
+            <summary>
+            This control contains an instance of RasterImageList plus
+            a tool strip control for common operations
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.PagesControl.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.PagesControl.SetAutomationManager(Leadtools.Annotations.AnnAutomationManager)">
+            <summary>
+            Called by the main form to tie the automation manager to the object in the viewer control
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.PagesControl.UpdateUIState">
+            <summary>
+            Called by the main form to update the UI state
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.PagesControl.LoadAnnotations(System.Collections.Generic.List{TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO})">
+            <summary>
+            Load annotations
+            </summary>
+            <param name="annotations"></param>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentViewer.PagesControl.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.PagesControl.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.PagesControl.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.PagesControl.PdfBookmarksList">
+            <summary>
+            The image list control is needed by the main form
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.DocumentManagement.UI.DocumentViewer.PagesControl.Action">
+            <summary>
+            Any action that happens in this control that must be handled by the owner
+            For example, any of the tool strip buttons clicked
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.PagesControl.BookmarkPosition">
+            <summary>
+            Bookmark position
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.PagesControl.CurrentPage">
+            <summary>
+            Current Page
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.PagesControl.PageCount">
+            <summary>
+            page count
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.PagesControl.Annotations">
+            <summary>
+            bookmark annotations
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl">
+            <summary>
+            This control contains an instance of RasterImageViewer plus
+            a tool strip control for common operations
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentViewer.BaseViewerControl">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.OnLoad(System.EventArgs)">
+            <summary>
+            On load event handler for the control
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.InitializeControl">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.SetDocument(System.Byte[],System.Collections.Generic.List{TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO},System.String)">
+            <summary>
+            Called by the main form to set a new document into the viewer
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.SetDocument(System.String,System.String)">
+            <summary>
+            Called by the main form to set a new document into the viewer
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.ClearDocument">
+            <summary>
+            Clears a document from the viewer
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.SetLicenseFile">
+            <summary>
+            Method to unlock the Leadtools features with a valid license.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.LoadDocument(System.Int32)">
+            <summary>
+            Loads the document in the viewer at the required page
+            </summary>
+            <param name="pageNumber"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.GetAnnotationsForSave">
+            <summary>
+            Reads the Annotation objects into a memory stream and returns the buffer array
+            </summary>
+            <returns>Byte array of the Image</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.GetDocumentChangesInChunksForSave">
+            <summary>
+            Reads the Raster Image in the viewer into a memory stream and returns the buffer array
+            </summary>
+            <returns>Byte array of the Image</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.GetDocumentChangesForSave">
+            <summary>
+            Reads the Raster Image in the viewer into a memory stream and returns the buffer array
+            </summary>
+            <returns>Byte array of the Image</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.GetRedactedDocumentChangesInChunksForSave">
+            <summary>
+            Reads to redacted file to be saved to be avilable to view for the user with Read_Redacted permission
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.GetRedactedDocumentChangesForSave">
+            <summary>
+            Reads to redacted file to be saved to be avilable to view for the user with Read_Redacted permission
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.GetThumbnailImage">
+            <summary>
+            Creates a thumbnail for the image and returns its byte array
+            </summary>
+            <returns>Thumbnail byte array</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.RotateImage(System.String)">
+            <summary>
+            Rotate image by 90 or 180 or 270 degrees
+            </summary>
+            <param name="sender">Sender of the event - From the menu item / Tool strip button</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.RotateImage(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="degrees"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.FitPage(System.Boolean)">
+            <summary>
+            Called by the main form to change the page viewing mode (from the main menu)
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.ZoomViewer(System.Boolean)">
+            <summary>
+            Zoom the viewer in our out
+            </summary>
+            <param name="zoomOut"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.SetCurrentPageNumber(System.Int32)">
+            <summary>
+            Called by the main form when the page number changes
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.SetAnnotationsManager">
+            <summary>
+            Method gets the Viewer control's AnnotationManager, sets the click
+            events for each annotation object and adds them to Annotations menu.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.GetBookmarkAnnotations">
+            <summary>
+             Bookmark annotations
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.InitializePrinterSettings">
+            <summary>
+            Method initializes Printer settings and print event handlers
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.UpdateUIState">
+            <summary>
+            Update the UI controls states
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.UpdateView">
+            <summary>
+            Updates the control's view
+            does not allow name to be edited
+            if this is an Edit/Update
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.DeleteTempFiles">
+            <summary>
+            Delete the temporray files created
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.DisposeAnnotations">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.WriteToFile(System.Byte[],System.String)">
+            <summary>
+            Writes byte content sto a file
+            </summary>
+            <param name="fileContents">The  bytes that need to be written</param>
+            <param name="filePath">The file that needs to be written to</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.LoadFirstPageInViewer">
+            <summary>
+            Load the pages in the viewer
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.SetAllTempDocPaths">
+            <summary>
+            Store all temp document path names where the temp documents will be created
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.Chunk(System.String,System.String)">
+            <summary>
+            Save the data by chunking into smaller pieces in the temporary file
+            </summary>
+            <param name="FileName"></param>
+            <param name="documentFilePath"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.CreateAnnotationContainer">
+            <summary>
+            create initial blank annotations and assign it to the annotationmanager
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.SetTotalPageCount(System.String)">
+            <summary>
+            Set the total number of pages in the document
+            </summary>
+            <param name="filePath"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.LoadAnnotationForPage">
+            <summary>
+            Load the annotations in the viewer for the current page
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.InsertPageToTempPDF(Leadtools.RasterImage,Leadtools.RasterImage,System.Int32)">
+            <summary>
+            Insert redacted page to temporary PDF document at the required index (page number)
+            </summary>
+            <param name="sourceFile"></param>
+            <param name="redactionSource"></param>
+            <param name="index"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.DeletePageFromTempPDF(Leadtools.RasterImage,System.Int32)">
+            <summary>
+            Delete pages from temporary PDF document at the index where there is a redaction
+            </summary>
+            <param name="sourceFile"></param>
+            <param name="index"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.ShowVersionContentInViewer">
+            <summary>
+            Method invokes the Document Viewer control to display the version content
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.TryGotoPage(System.Int32)">
+            <summary>
+            Go to the desired page
+            </summary>
+            <param name="pageNumber"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.DoAction(System.String,System.Object)">
+            <summary>
+             Raise the action event so the main form can handle it
+            </summary>
+            <param name="action"></param>
+            <param name="data"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.SetViewerZoomPercentage(System.Double)">
+            <summary>
+            Normalize the percentage based on min/max value allowed
+            </summary>
+            <param name="percentage"></param>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.IsMultiPageDocument">
+            <summary>
+            Determinse whether the uploaded page is a multipage document or not
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.currentPage">
+            <summary>
+            The currentpage. Default value would be 1
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.currentVersion">
+            <summary>
+            The current version referenc being displayed to the user.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.RedactedFilesList">
+            <summary>
+            A dictionary the maintains the list of the page number as key and the location of the redacted file for pdf documents
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.tempDocumentFolderPath">
+            <summary>
+             The location where temporary files will be created  
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.fileName">
+            <summary>
+            The fileName that is being worked upon
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.documentFilePath">
+            <summary>
+            The original document file path
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.totalPageCount">
+            <summary>
+            The total number of pages in the document
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.AddItemsToStrip">
+            <summary>
+            Add ToolStrip items to MainMenu. This is required here so that the menu itms can be toggled
+            when the visibility changes.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.RemoveItemsFromStrip">
+            <summary>
+            Remove ToolStrip items from MainMenu. This is required here so that the menu itms can be toggled
+            when the visibility changes.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.ViewerControl_Disposed(System.Object,System.EventArgs)">
+            <summary>
+            Delete temporary images when the viewer has been deleted
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl._previousPageToolStripButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Event handler to handle case when user clicks on the go to Previous page button
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl._nextPageToolStripButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Event handler to handle case when user clicks on the go to Next page button
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl._pageToolStripTextBox_KeyPress(System.Object,System.Windows.Forms.KeyPressEventArgs)">
+            <summary>
+            Handles the event when a page number is entered in the Current page textbox.
+            When the user presses enter after entering  avalid page number the viewer displays that page of the document
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl._fileExportStripButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            This method will provide the user with option to 
+            download the file from the document repository and save it
+            locally, without annotations.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.AddContentTab(System.Windows.Forms.TabPage)">
+            <summary>
+            Adds the specified tab page to the document TabControl.
+            </summary>
+            <param name="page"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.ShowDocumentTabPage(System.Int32)">
+            <summary>
+            Shows the Document Tab with the image displayed on new version selection
+            </summary>
+            <param name="tabNumber">Tab Page Number to display</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.AddCommand(System.String,System.Action)">
+            <summary>
+            Adds a right-aligned ToolStripButton to the Annotation Specific ToolStrip
+            </summary>
+            <param name="name"></param>
+            <param name="invocationTarget"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.AddCommand(System.Windows.Forms.ToolStripItem)">
+            <summary>
+            Adds a right-aligned ToolStripItem to the Annotation Specific ToolStrip
+            </summary>
+            <param name="item"></param>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.HasAnnotationsChanged">
+            <summary>
+            Flag to determine if the annotations of a document file has changed
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.IsDirty">
+            <summary>
+            Flag to determine if the document or its annotations have changed
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.IsNewFile">
+            <summary>
+            Flag to determine if the document file is an existing one opened from the database or a newly browsed file
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.FirstPageNumber">
+            <summary>
+            The first page of the document that should be loaded in the viewer
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.LastPageNumber">
+            <summary>
+            The last page of the document that should be loaded in the viewer. In case of pdf files it is the first page.
+            For all other document types all page so of the doc are loaded
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.FileName">
+            <summary>
+            The actual fileName of the original document
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.DocumentFilePath">
+            <summary>
+            The full path of the document that needs to be worked upon
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.OriginalFilePath">
+            <summary>
+            The full path of the original document 
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.TotalPageCount">
+            <summary>
+            The total number of pages in the document
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.CurrentPage">
+            <summary>
+            The current page of the document that the viewer is displaying
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.ChunkSize">
+            <summary>
+            The byte size that needs to be chunked for large files
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.RasterCodecsInstance">
+            <summary>
+            Called by the main form to get/set the title (the name of the document)
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.Image">
+            <summary>
+            Called by the main form to get/set the title (the name of the document)
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.IsDocumentOwner">
+            <summary>
+            Boolean to indicate if User has Document Owner Permissions
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.CanWriteFile">
+            <summary>
+            Boolean to indicate if User has Write file Permissions
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.CanReadWithAnnotations">
+            <summary>
+            Boolean to indicate if User has Permissions to read the document with Annotations
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.CanReadWithoutAnnotations">
+            <summary>
+            Boolean to indicate if User has Permissions to read the document without Annotations
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.CanReadRedacted">
+            <summary>
+            Boolean to indicate if User has Permissions to read only the redacted version of the document
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.ImageToRun">
+            <summary>
+            Floater Image from the viewer
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.CurrentSizeMode">
+            <summary>
+            Called by the main form to get the current size mode value
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.Action">
+            <summary>
+            This event is fired by the control when an action occurs that must be handled by
+            the owner (the main form)
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.InteractiveMode">
+            <summary>
+            Current interactive mode (what happens when the user uses the mouse on the viewer)
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.AutomationManager">
+            <summary>
+            Called by the main form to get the automation manager object
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.CurrentVersion">
+            <summary>
+            The current version referenc being displayed to the user.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.CurrentAutomation">
+            <summary>
+            Called by the main form to get the automation object
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.RasterImage">
+            <summary>
+            Called by the main form to get the image in the viewer
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.RasterImageViewer">
+            <summary>
+            Called by the main form to get the viewer
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.HighQualityPaintScaling">
+            <summary>
+            Called by the main form to get/set the paint scaling
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.PdfDocument">
+            <summary>
+            A PDFFIle object to handle redactions in PDF documents
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.TempDocumentPath">
+            <summary>
+            The full temporary file location
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.AnnotationsPath">
+            <summary>
+            The full temporary annotations file location
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.RasterDocumentPath">
+            <summary>
+            The full temporary raster file location
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.SaveDocumentAndRemainOnScreen">
+            <summary>
+            An event handler to save the document and remain on the screen without closing. 
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.Record">
+            <summary>
+            Data for this control
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.Permission">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.DocumentFileContent">
+            <summary>
+            File Content for display
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.Annotations">
+            <summary>
+            Annotations for display
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.Data_Changed">
+            <summary>
+            For changes to Code file record properties
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.SupportsMenu">
+            <summary>
+            Enables/Disables the Content Menu for the viewer.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.SupportsStandardTools">
+            <summary>
+            Enables/Disables the Standard ToolsStrip (Save, Print, etc...)
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.SupportsAnnotationTools">
+            <summary>
+            Enables/Disables the Annotation Specific ToolStrip.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControl.SupportsDocumentTools">
+            <summary>
+            Enables/Disables the Document Specific ToolStrip.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerForm">
+            <summary>
+            ViewerForm class holds the Document ViewerControl and the Pages Control
+            and handles their Printing, Annotations and Document loading functions.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerForm.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerForm.WndProc(System.Windows.Forms.Message@)">
+            <summary>
+            Disable form move by intercepting the WM_MOVING notification message that windows sends.
+            </summary>
+            <param name="message">Windows notification message</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerForm.ViewDocumentFromByteContent(System.String,System.Byte[],System.Collections.Generic.List{TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO},System.Nullable{TrueAutomation.AccessControl.DTOs.ACLType})">
+            <summary>
+            This method loads the incoming byte[] content in the viewer, updates the
+            Raster Images List in the Pages Control and sets the AnnotationManager.
+            </summary>
+            <param name="fileName">File name</param>
+            <param name="fileContents">File contents</param>
+            <param name="annotations">Annotations content</param>
+            <param name="permission">User Permission</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerForm.ViewDocumentFromFilePath(System.String,System.String)">
+            <summary>
+            This method loads the file's content in the viewer using the incoming FilePath, 
+            updates the Raster Images List in the Pages Control and sets the AnnotationManager.
+            </summary>
+            <param name="filePath">Document File Path</param>
+            <param name="fileName">Document File Name</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerForm.OnFormClosed(System.Windows.Forms.FormClosedEventArgs)">
+            <summary>
+            Form closed event handler
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerForm.Annotations">
+            <summary>
+            File content of the document to be displayed
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerForm.FileContents">
+            <summary>
+            File content of the document to be displayed
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerForm.DocumentFilePath">
+            <summary>
+            File path of the document to be displayed
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerForm.DocumentFileName">
+            <summary>
+            File Name of the document to be displayed
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerForm.Viewer">
+            <summary>
+            The document viewer control
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentViewer.AnnTextDesigner">
+            <summary>
+            Derived Class from AnnTextEditDesigner to enable the user to hit 
+            'Enter' button from within the control to type in multi-line content
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.AnnTextDesigner.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControlInteractiveMode">
+            <summary>
+            The current interactive mode (using the mouse on) of the viewer control
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControlInteractiveMode.SelectMode">
+            <summary>
+            None (annotations mode)
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControlInteractiveMode.PanMode">
+            <summary>
+            Pan mode
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentViewer.ViewerControlInteractiveMode.ZoomToSelectionMode">
+            <summary>
+            Zoom to selection mode
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog">
+            <summary>
+            Main View for the 
+            Document  Add/Edit feature
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentView.BaseDocumentDetailsDialog">
+            <summary>
+            Base MVP class
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.title">
+            <summary>
+            Title for this view
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.userId">
+            <summary>
+            The party Id of the user
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.errorString">
+            <summary>
+            Error string if any, 
+            returned from a Save operation
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.validationErrors">
+            <summary>
+            Holds validation errors
+            if any
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.documentId">
+            <summary>
+            Id of the document
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.record">
+            <summary>
+            Data record used
+            in this control
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.okBtnClicked">
+            <summary>
+            used to record the ok button click
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.#ctor(System.Guid,System.String,System.Guid,System.Boolean,System.Collections.Generic.List{TrueAutomation.AccessControl.DTOs.UserDTO},System.Collections.Generic.List{TrueAutomation.AccessControl.DTOs.GroupDTO},System.String,System.String)">
+            <summary>
+            Constructor that takes the Document ID
+            that is shown in this View
+            </summary>
+            <param name="id"></param>
+            <param name="userName"></param>
+            <param name="UserId"></param>
+            <param name="dialogMode">Dialog display mode - True means Maximized</param>
+            <param name="users">Users available for document management</param>
+            <param name="groups">Groups available for document management</param>
+            <param name="fileName">Name of the file to be opened, if new</param>
+            <param name="filePath">Path of the file to be opened, if new</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.GetModifiedDocument">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.SaveAndRemainOnScreen">
+            <summary>
+            Save the document on 'Save' tool strip button click and
+            continue to remain on the screen without closing.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.OnApplyClick(System.Object,System.EventArgs)">
+            <summary>
+            
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.OnValidationReasonListSet">
+            <summary>
+            Handles Validation Errors
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.Form_FormClosing(System.Object,System.Windows.Forms.FormClosingEventArgs)">
+            <summary>
+            If there are any unsaved changes in this View
+            prompt the user to save
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.OnOkClick(System.Object,System.EventArgs)">
+            <summary>
+            Handles the Ok button click
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.extButtonCancel_Click(System.Object,System.EventArgs)">
+            <summary>
+            Handles Cancel button
+            click
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.btnPermissions_Click(System.Object,System.EventArgs)">
+            <summary>
+            Handles Permissions button
+            click
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.OnLoad(System.EventArgs)">
+            <summary>
+            event that is called
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.ShowErrorIfNeeded">
+            <summary>
+            Displays errors if any
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.ShowValidationErrorsIfNeeded">
+            <summary>
+            Displays all Validation errors
+            if any
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.UpdateTitle">
+            <summary>
+            Update the View's
+            title
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.OnSaveChanges">
+            <summary>
+            Internal implementation function to invoke any registered
+            change saving handler delegates. Note that this
+            should normally include the delegate supplied by our
+            associated presenter instance.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.PermissionsButtonClicked">
+            <summary>
+            Event Handler for handling changes when the permissions button is clicked
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.SaveChanges">
+            <summary>
+            An event handler for the save-changes event. 
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.Groups">
+            <summary>
+            List of all available groups
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.Users">
+            <summary>
+            List of all available users
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.Permission">
+            <summary>
+            User Permission on this document
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.ShowMaximized">
+            <summary>
+            Dialog display mode
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.ErrorString">
+            <summary>
+            Error string returned
+            from a failed Save operation
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.ValidationErrors">
+            <summary>
+            For all validation erros
+            found during a Save
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.Title">
+            <summary>
+            Title of this view
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.DocumentId">
+            <summary>
+            Document Id of this Document 
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.Record">
+            <summary>
+            Data record used in this view
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.SecurityRecord">
+            <summary>
+            Security record used in this view
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.IsOkEnabled">
+            <summary>
+            indicates Document Load Status
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.IsPromptToBeDisplayed">
+            <summary>
+            Flag to indicate if the user should be prompte dto save the document changes
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.ShouldTempFilesDeleted">
+            <summary>
+            Flag to determine the deletion of the temp files
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.UpdatedFileContent">
+            <summary>
+            Byte array of the modified file
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.UserName">
+            <summary>
+            logged in username
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.FileName">
+            <summary>
+            Name of the file to be opened, if new
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.FilePath">
+            <summary>
+            Path of the file to be opened, if new
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.UserId">
+            <summary>
+            The Guid Identifier of the user accessing the view.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.OkBtnClicked">
+            <summary>
+            Flag to indicate if the OK button has been clicked
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.ShouldRemainOnScreen">
+            <summary>
+            Flag to indicate if the user should remain on the screen without exiting
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.SavedRecord">
+            <summary>
+            Sets off the document saving event and launches the splash screen
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentDetailsDialog.SaveSuccessful">
+            <summary>
+            Flag denoting if the save was successfull
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentParagraph">
+            <summary>
+            Paragraph for Document Information
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentView.BaseDocumentParagraph">
+            <summary>
+            base mvp class
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentParagraph.record">
+            <summary>
+            Data for this control
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentParagraph.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentParagraph.ReloadGrid(System.Collections.Generic.List{TrueAutomation.DocumentManagement.DTOs.FileDetailsListItemDTO})">
+            <summary>
+            Method to reload the grid with the data available.
+            </summary>
+            <param name="items">the list of items to load into the grid</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentParagraph.UpdateView">
+            <summary>
+            Updates the control's view
+            does not allow name to be edited
+            if this is an Edit/Update
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentParagraph.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentParagraph.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentParagraph.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentParagraph.Record">
+            <summary>
+            Data for this control
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentSaveSplashScreen">
+            <summary>
+            The SplashScreen available while saving the document. 
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentView.BaseDocumentSaveSplashScreen">
+            <summary>
+            Fakery to keep VS happy w/ MVP stuff
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentSaveSplashScreen.#ctor">
+            <summary>
+            Standard Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentSaveSplashScreen.#ctor(TrueAutomation.DocumentManagement.DTOs.DocumentRecordDTO,TrueAutomation.DocumentManagement.DTOs.DocumentRecordDTO,System.String,System.Guid,System.Int32)">
+            <summary>
+            Constructor with all field values required to fire off search
+            </summary>
+            <param name="record"></param>
+            <param name="saveRecord"></param>
+            <param name="userName"></param>
+            <param name="userId"></param>
+            <param name="currentVersion"></param>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentSaveSplashScreen.DialogState">
+            <summary>
+            Dialog State for this dialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentSaveSplashScreen.DocumentSaveSplashScreen_Load(System.Object,System.EventArgs)">
+            <summary>
+            handle the dialog load event 
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentSaveSplashScreen.CloseSplashScreen(System.Boolean)">
+            <summary>
+            Closes the splash screen and handles stuff required to be done before closing
+            </summary>
+            <param name="useUserInteraction"></param>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentSaveSplashScreen.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentSaveSplashScreen.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentSaveSplashScreen.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentSaveSplashScreen.TimeOut">
+            <summary>
+            The maximum time available to save the document
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentSaveSplashScreen.UserId">
+            <summary>
+            The User to whom the document corresponds to
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentSaveSplashScreen.Record">
+            <summary>
+            The original Document Record
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentSaveSplashScreen.SaveRecord">
+            <summary>
+            The Document record to be saved
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentSaveSplashScreen.UserName">
+            <summary>
+            The UserName corresponding to the User
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentSaveSplashScreen.SaveSuccessful">
+            <summary>
+            Field denoting if the save was successful
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentSaveSplashScreen.ValidationErrors">
+            <summary>
+            Any validation errors while saving the doc
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentSaveSplashScreen.DocumentId">
+            <summary>
+            The Id of the document being saved
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentSaveSplashScreen.NotificationMessage">
+            <summary>
+            The Notification message that will be displayed 
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentSaveSplashScreen.CurrentVersion">
+            <summary>
+            Current Version that is being worked on
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentVersionParagraph">
+            <summary>
+            Paragraph for Document Version Information
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentView.BaseDocumentVersionParagraph">
+            <summary>
+            Base MVP class
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentVersionParagraph.record">
+            <summary>
+            Data for this control
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentVersionParagraph.selectedVersion">
+            <summary>
+            Indicates the selected row (document version) in the control 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentVersionParagraph.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentVersionParagraph.gridView1_FocusedRowChanged(System.Object,DevExpress.XtraGrid.Views.Base.FocusedRowChangedEventArgs)">
+            <summary>
+            Handles the row change event in the Document Version 
+            grid - the preview pane content needs to be updated.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentVersionParagraph.ReloadGrid(System.Collections.Generic.List{TrueAutomation.DocumentManagement.DTOs.VersionDetailsListItemDTO})">
+            <summary>
+            Method to reload the grid with the data available.
+            </summary>
+            <param name="items">the list of items to load into the grid</param>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentVersionParagraph.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentVersionParagraph.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentVersionParagraph.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentVersionParagraph.RowSelection_Changed">
+            <summary>
+            Fires when the selected row has changed
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentVersionParagraph.Record">
+            <summary>
+            Data for this control
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentVersionParagraph.SelectedVersion">
+            <summary>
+            Indicates the selected row (document version) in the control 
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentVersionParagraph.CurrentVersion">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentPanel">
+            <summary>
+            Panel to display the File and Version 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentPanel.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentPanel.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentPanel.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.DocumentPanel.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentView.FileVersionParagraph">
+            <summary>
+            Paragraph for 
+            document  details
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentView.BaseFileVersionParagraph">
+            <summary>
+            base mvp class
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentView.FileVersionParagraph.record">
+            <summary>
+            Data for this control
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.FileVersionParagraph.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.FileVersionParagraph.DeleteTemporaryFiles">
+            <summary>
+            Method to delete all the temporary files created in user directory
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.FileVersionParagraph.UpdateView">
+            <summary>
+            Updates the control's view
+            does not allow name to be edited
+            if this is an Edit/Update
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.FileVersionParagraph.SetBrowseAndLoadButtons">
+            <summary>
+            Enable 'Browse' and 'Load Image' buttons only if the
+            user has 'Document Owner' or 'Write File' permissions.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.FileVersionParagraph.ShowViewerMaximized(System.Boolean)">
+            <summary>
+            Displays the Document Holder Panel size and fill the parent dialog.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.FileVersionParagraph.btnMaximize_Click(System.Object,System.EventArgs)">
+            <summary>
+            Handles the 'Maximize View' Button click event to maximize 
+            the Document Holder Panel size and fill the parent dialog.
+            </summary>
+            <param name="sender">Sender object</param>
+            <param name="e">EventArgs</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.FileVersionParagraph.extTextName_Keyup(System.Object,System.Windows.Forms.KeyEventArgs)">
+            <summary>
+            Handles Key changes
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.FileVersionParagraph.OnDataChanged(System.Object,System.EventArgs)">
+            <summary>
+            Used to fire off on any data change in this control
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.FileVersionParagraph.btnLoadImage_clicked(System.Object,System.EventArgs)">
+            <summary>
+            Handles LoadImage Button
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.FileVersionParagraph.ShowVersionContentInViewer">
+            <summary>
+            Method invokes the Document Viewer control to display the version content
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentView.FileVersionParagraph.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.FileVersionParagraph.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentView.FileVersionParagraph.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.FileVersionParagraph.DocumentName">
+            <summary>
+            The name of the document that is being opened in the viewer  
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.FileVersionParagraph.Record">
+            <summary>
+            Data for this control
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.FileVersionParagraph.IsNewFile">
+            <summary>
+            flag to determine if it is a newly browsed file or available from the db
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.FileVersionParagraph.Permission">
+            <summary>
+            User Permissions on this document
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.FileVersionParagraph.ShowMaximized">
+            <summary>
+            Dialog display mode
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.FileVersionParagraph.DocumentPath">
+            <summary>
+            File path to the document
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.FileVersionParagraph.DocumentFileContent">
+            <summary>
+            File Content for display
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.DocumentView.FileVersionParagraph.Annotations">
+            <summary>
+            Annotations for display
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.DocumentManagement.UI.DocumentView.FileVersionParagraph.Data_Changed">
+            <summary>
+            For changes to Code file record properties
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.DocumentViewer.InsertBookmarkForm">
+            <summary>
+            To add a bookmark
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.InsertBookmarkForm.#ctor(System.Windows.Forms.TreeNode,System.Int32,System.Int32)">
+            <summary>
+            insert bookmark
+            </summary>
+            <param name="treeNode"></param>
+            <param name="pagesCount"></param>
+            <param name="selectedPageIndex"></param>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.DocumentViewer.InsertBookmarkForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.InsertBookmarkForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.DocumentViewer.InsertBookmarkForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.DocumentManagement.UI.DocumentViewer.InsertBookmarkForm.Action">
+            <summary>
+            This action will be fired when the user changes the PageNumber selection from the combo box
+            which causes the MainForm to handle this event and activate the corresponding page.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+    </members>
+</doc>

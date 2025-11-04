@@ -4,6 +4,6 @@ namespace TerraFusion.AI.Services
 {
     public interface ISecurityService
     {
-        Task<SecurityDataDto> GetSecurityDataAsync();
+        System.Threading.Tasks.Task<SecurityDataDto> GetSecurityDataAsync();
     }
 }

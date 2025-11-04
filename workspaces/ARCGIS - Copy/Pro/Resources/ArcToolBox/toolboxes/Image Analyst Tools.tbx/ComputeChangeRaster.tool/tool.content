@@ -1,0 +1,246 @@
+{
+    "type": "FunctionTool",
+    "guid": "{d4fbabb0-b0b3-4720-b87a-03f0d3aaeb1d}",
+    "displayname": "$rc:title",
+    "helpcontent": "66150001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "58",
+        "86"
+    ],
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "from_raster": {
+            "display_order": "0",
+            "displayname": "$rc:from_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "DEMosaicDataset"
+                    },
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "description": "$rc:from_raster.descr"
+        },
+        "to_raster": {
+            "display_order": "1",
+            "displayname": "$rc:to_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "DEMosaicDataset"
+                    },
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "description": "$rc:to_raster.descr"
+        },
+        "out_raster_dataset": {
+            "direction": "out",
+            "display_order": "2",
+            "displayname": "$rc:out_raster_dataset.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_raster_dataset.descr"
+        },
+        "compute_change_method": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:compute_change_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DIFFERENCE",
+                        "code": "$rc:compute_change_method.domain.DIFFERENCE"
+                    },
+                    {
+                        "value": "RELATIVE_DIFFERENCE",
+                        "code": "$rc:compute_change_method.domain.RELATIVE_DIFFERENCE"
+                    },
+                    {
+                        "value": "CATEGORICAL_DIFFERENCE",
+                        "code": "$rc:compute_change_method.domain.CATEGORICAL_DIFFERENCE"
+                    },
+                    {
+                        "value": "SPECTRAL_EUCLIDEAN_DISTANCE",
+                        "code": "$rc:compute_change_method.domain.SPECTRAL_EUCLIDEAN_DISTANCE"
+                    },
+                    {
+                        "value": "SPECTRAL_ANGLE_DIFFERENCE",
+                        "code": "$rc:compute_change_method.domain.SPECTRAL_ANGLE_DIFFERENCE"
+                    },
+                    {
+                        "value": "BAND_WITH_MOST_CHANGE",
+                        "code": "$rc:compute_change_method.domain.BAND_WITH_MOST_CHANGE"
+                    }
+                ]
+            },
+            "value": "DIFFERENCE",
+            "description": "$rc:compute_change_method.descr"
+        },
+        "from_classes": {
+            "type": "optional",
+            "display_order": "4",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:from_classes.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:from_classes.descr"
+        },
+        "to_classes": {
+            "type": "optional",
+            "display_order": "5",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:to_classes.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:to_classes.descr"
+        },
+        "filter_method": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:filter_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ALL",
+                        "code": "$rc:filter_method.domain.ALL"
+                    },
+                    {
+                        "value": "CHANGED_PIXELS_ONLY",
+                        "code": "$rc:filter_method.domain.CHANGED_PIXELS_ONLY"
+                    },
+                    {
+                        "value": "UNCHANGED_PIXELS_ONLY",
+                        "code": "$rc:filter_method.domain.UNCHANGED_PIXELS_ONLY"
+                    }
+                ]
+            },
+            "value": "CHANGED_PIXELS_ONLY",
+            "description": "$rc:filter_method.descr"
+        },
+        "define_transition_colors": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:define_transition_colors.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "AVERAGE",
+                        "code": "$rc:define_transition_colors.domain.AVERAGE"
+                    },
+                    {
+                        "value": "FROM_COLOR",
+                        "code": "$rc:define_transition_colors.domain.FROM_COLOR"
+                    },
+                    {
+                        "value": "TO_COLOR",
+                        "code": "$rc:define_transition_colors.domain.TO_COLOR"
+                    }
+                ]
+            },
+            "value": "AVERAGE",
+            "description": "$rc:define_transition_colors.descr"
+        },
+        "from_classname_field": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:from_classname_field.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "Field"
+            },
+            "description": "$rc:from_classname_field.descr"
+        },
+        "to_classname_field": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:to_classname_field.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "Field"
+            },
+            "description": "$rc:to_classname_field.descr"
+        }
+    },
+    "environments": [
+        "cellAlignment",
+        "cellSize",
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "nodata",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "pyramid",
+        "rasterStatistics",
+        "resamplingMethod",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

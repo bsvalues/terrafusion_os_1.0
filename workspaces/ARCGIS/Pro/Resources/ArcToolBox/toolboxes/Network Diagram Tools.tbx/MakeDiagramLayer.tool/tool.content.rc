@@ -1,0 +1,15 @@
+{
+    "map": {
+        "description": "Creates a network diagram layer from a  network diagram.",
+        "in_utility_network.descr": "The utility network or trace network the diagram is related to.",
+        "in_utility_network.title": "Input Network",
+        "network_diagram_name.descr": "The network diagram name.",
+        "network_diagram_name.title": "Network Diagram Name",
+        "out_layer.descr": "The name of the diagram layer that will be created.",
+        "out_layer.title": "Output Layer",
+        "sublayers_option.descr": "<xdoc><p>Specifies the type of output layer that will be created.<ul><li>Unchecked—The output will be a diagram layer without a sublayer. Diagram layers without a sublayer can be used as input to geoprocessing tools such as the Store Diagram, Update Diagram, and Apply Smart Tree Layout tools. This is the default.</li><li>Checked—The output will be a group layer with sublayers. The feature sublayers can be exported to geodatabase feature classes using the Feature Class To Geodatabase tool.</li></ul></p></xdoc>",
+        "sublayers_option.title": "Make a group layer containing the feature layers",
+        "summary": "Creates a network diagram layer from a network diagram.",
+        "title": "Make Diagram Layer"
+    }
+}

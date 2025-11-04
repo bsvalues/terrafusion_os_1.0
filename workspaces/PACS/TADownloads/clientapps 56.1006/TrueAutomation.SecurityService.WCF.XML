@@ -1,0 +1,1017 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.SecurityService.WCF</name>
+    </assembly>
+    <members>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.CheckServiceAvailable">
+            <summary>
+            Check if the service is available
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.CreateUserSignOn(TrueAutomation.SecurityService.DTOs.UserSignOnDTO)">
+            <summary>
+            Creates auser record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to create.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.UpdateUserSignOn(TrueAutomation.SecurityService.DTOs.UserSignOnDTO)">
+            <summary>
+            Updates an existing user record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to update.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.DeleteUserSignOnById(System.Guid)">
+            <summary>
+            Deletes an existing user record from the id.
+            </summary>
+            <param name="dto">The id containing the
+            parameters for the user to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.DeleteUserSignOn(TrueAutomation.SecurityService.DTOs.UserSignOnDTO)">
+            <summary>
+            Deletes an existing user record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.GetUserSignOns">
+            <summary>
+            Returns a list of all users in the database.
+            </summary>
+            <returns>A list containing a data transfer object for each
+            user in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.GetUserSignOn(System.Guid)">
+            <summary>
+            Returns the user with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified user,
+            or null if no such user was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.GetUserSignOnByTargetAppId(System.String,System.String)">
+            <summary>
+            Returns the user with the specified ID value
+            for the input TargetAppUserId
+            </summary>
+            <param name="targetAppId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.CreateActiveDirectoryUserSignOn(TrueAutomation.SecurityService.DTOs.ActiveDirectoryUserSignOnDTO)">
+            <summary>
+            Creates a ActiveDirectory user record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to create.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.UpdateActiveDirectoryUserSignOn(TrueAutomation.SecurityService.DTOs.ActiveDirectoryUserSignOnDTO)">
+            <summary>
+            Updates an existing user record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to update.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.DeleteActiveDirectoryUserSignOnById(System.Guid)">
+            <summary>
+            Deletes an existing user record from the id.
+            </summary>
+            <param name="dto">The id containing the
+            parameters for the user to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.DeleteActiveDirectoryUserSignOn(TrueAutomation.SecurityService.DTOs.ActiveDirectoryUserSignOnDTO)">
+            <summary>
+            Deletes an existing user record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.GetActiveDirectoryUserSignOns">
+            <summary>
+            Returns a list of all users in the database.
+            </summary>
+            <returns>A list containing a data transfer object for each
+            user in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.GetActiveDirectoryUserSignOn(System.Guid)">
+            <summary>
+            Returns the user with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified user,
+            or null if no such user was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.CreateCertificateUserSignOn(TrueAutomation.SecurityService.DTOs.CertificateUserSignOnDTO)">
+            <summary>
+            Creates a certificate user record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to create.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.UpdateCertificateUserSignOn(TrueAutomation.SecurityService.DTOs.CertificateUserSignOnDTO)">
+            <summary>
+            Updates an existing user record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to update.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.DeleteCertificateUserSignOnById(System.Guid)">
+            <summary>
+            Deletes an existing user record from the id.
+            </summary>
+            <param name="dto">The id containing the
+            parameters for the user to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.DeleteCertificateUserSignOn(TrueAutomation.SecurityService.DTOs.CertificateUserSignOnDTO)">
+            <summary>
+            Deletes an existing user record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.GetCertificateUserSignOns">
+            <summary>
+            Returns a list of all users in the database.
+            </summary>
+            <returns>A list containing a data transfer object for each
+            user in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.GetCertificateUserSignOn(System.Guid)">
+            <summary>
+            Returns the user with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified user,
+            or null if no such user was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.CreatePasswordUserSignOn(TrueAutomation.SecurityService.DTOs.PasswordUserSignOnDTO)">
+            <summary>
+            Creates auser record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to create.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.UpdatePasswordUserSignOn(TrueAutomation.SecurityService.DTOs.PasswordUserSignOnDTO)">
+            <summary>
+            Updates an existing user record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to update.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.DeletePasswordUserSignOnById(System.Guid)">
+            <summary>
+            Deletes an existing user record from the id.
+            </summary>
+            <param name="dto">The id containing the
+            parameters for the user to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.DeletePasswordUserSignOn(TrueAutomation.SecurityService.DTOs.PasswordUserSignOnDTO)">
+            <summary>
+            Deletes an existing user record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.GetPasswordUserSignOns">
+            <summary>
+            Returns a list of all users in the database.
+            </summary>
+            <returns>A list containing a data transfer object for each
+            user in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.GetPasswordUserSignOn(System.Guid)">
+            <summary>
+            Returns the user with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified user,
+            or null if no such user was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.PasswordUserExistsbyUsernameAndPassword(System.String,System.String)">
+            <summary>
+            Returns whether or not a user exists with a given username and password
+            </summary>
+            <param name="username"></param>
+            <param name="password"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.GetUserSignOnByTargetAppUserName(System.String,System.String)">
+            <summary>
+            Returns the user with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified user,
+            or null if no such user was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.CreateGroup(TrueAutomation.SecurityService.DTOs.GroupDTO)">
+            <summary>
+            Creates agroup record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the group to create.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.UpdateGroup(TrueAutomation.SecurityService.DTOs.GroupDTO)">
+            <summary>
+            Updates an existing group record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the group to update.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.DeleteGroupById(System.Guid)">
+            <summary>
+            Deletes an existing group record from the id.
+            </summary>
+            <param name="dto">The id containing the
+            parameters for the group to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.DeleteGroup(TrueAutomation.SecurityService.DTOs.GroupDTO)">
+            <summary>
+            Deletes an existing group record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the group to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.AddUserToGroup(TrueAutomation.SecurityService.DTOs.GroupDTO,TrueAutomation.SecurityService.DTOs.UserDTO)">
+            <summary>
+            Adds a user to a group
+            </summary>
+            <param name="groupDTO">The data transfer object containing the
+            parameters for the group to add the user to.</param>
+            <param name="userDTO">The data transfer object containing the
+            party to be added to the group.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.GetGroups">
+            <summary>
+            Returns a list of all groups in the database.
+            </summary>
+            <returns>A list containing a data transfer object for each
+            group in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.GetGroup(System.Guid)">
+            <summary>
+            Returns the group with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified group,
+            or null if no such group was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.GetGroupByTargetAppId(System.String,System.String)">
+            <summary>
+            Returns the Group with the specified TargetAppID value.
+            </summary>
+            <returns>A data transfer object for the specified group/role,
+            or null if no such group/role was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.CreateUser(TrueAutomation.SecurityService.DTOs.UserDTO)">
+            <summary>
+            Creates auser record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to create.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.UpdateUser(TrueAutomation.SecurityService.DTOs.UserDTO)">
+            <summary>
+            Updates an existing user record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to update.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.DeleteUserById(System.Guid)">
+            <summary>
+            Deletes an existing user record from the id.
+            </summary>
+            <param name="dto">The id containing the
+            parameters for the user to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.DeleteUser(TrueAutomation.SecurityService.DTOs.UserDTO)">
+            <summary>
+            Deletes an existing user record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.GetUsers">
+            <summary>
+            Returns a list of all users in the database.
+            </summary>
+            <returns>A list containing a data transfer object for each
+            user in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.GetUser(System.Guid)">
+            <summary>
+            Returns the user with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified user,
+            or null if no such user was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.ISecurityService.UserExistsbyUsernameAndPassword(System.String,System.String)">
+            <summary>
+            Returns whether or not a user exists with a given username and password
+            </summary>
+            <param name="username"></param>
+            <param name="password"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.SecurityService.WCF.NamespaceDoc">
+            <summary>
+            These are the namespace comments for <c>TrueAutomation.SecurityService.WCF</c>.
+            
+            This class contains the service methods to send/retrieve data from the Security Service
+            using these Data Transfer Objects
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.CreateActiveDirectoryUserSignOn(TrueAutomation.SecurityService.DTOs.ActiveDirectoryUserSignOnDTO)">
+            <summary>
+            Creates a ActiveDirectoryUserSignOn record from the suppleid DTO
+            </summary>
+            <param name="dto"></param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.UpdateActiveDirectoryUserSignOn(TrueAutomation.SecurityService.DTOs.ActiveDirectoryUserSignOnDTO)">
+            <summary>
+            Updates an existing user record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to update.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.DeleteActiveDirectoryUserSignOnById(System.Guid)">
+            <summary>
+            Deletes an existing user record from the id.
+            </summary>
+            <param name="dto">The id containing the
+            parameters for the user to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.DeleteActiveDirectoryUserSignOn(TrueAutomation.SecurityService.DTOs.ActiveDirectoryUserSignOnDTO)">
+            <summary>
+            Deletes an existing user record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetActiveDirectoryUserSignOns">
+            <summary>
+            Returns a list of all users in the database.
+            </summary>
+            <returns>A list containing a data transfer object for each
+            user in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetActiveDirectoryUserSignOn(System.Guid)">
+            <summary>
+            Returns the user with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified user,
+            or null if no such user was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetActiveDirectoryUserSignOnById(System.Guid)">
+            <summary>
+            Helper Method to return a domain object of a user by it's id
+            </summary>
+            <param name="id">guid value of the id of the user</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetActiveDirectoryUserSignOnByActiveDirectoryUserSignOnnameAndActiveDirectory(System.String,System.String)">
+            <summary>
+            Helper Method to return a domain object of a user by it's id
+            </summary>
+            <param name="id">guid value of the id of the user</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetAllActiveDirectoryUserSignOns">
+            <summary>
+            Helper method to get a list of all ActiveDirectoryUserSignOns values
+            </summary>	
+            <returns>returns a list of all ActiveDirectoryUserSignOns</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.CreateActiveDirectoryUserSignOnFromDTO(TrueAutomation.SecurityService.DTOs.ActiveDirectoryUserSignOnDTO)">
+            <summary>
+            Helper method to create a user domain object from a user DTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the user</param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.UpdateActiveDirectoryUserSignOnFromDTO(TrueAutomation.SecurityService.DTOs.ActiveDirectoryUserSignOnDTO)">
+            <summary>
+            Helper method to update a user domain object from a user DTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the ActiveDirectoryUserSignOn</param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.DeleteActiveDirectoryUserSignOnFromDTO(TrueAutomation.SecurityService.DTOs.ActiveDirectoryUserSignOnDTO)">
+            <summary>
+            Helper method to delete a user based on it's dto
+            </summary>
+            <param name="dto">A DTO of the user</param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.CreateCertificateUserSignOn(TrueAutomation.SecurityService.DTOs.CertificateUserSignOnDTO)">
+            <summary>
+            Creates a CertificateUserSignOn record from the suppleid DTO
+            </summary>
+            <param name="dto"></param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.UpdateCertificateUserSignOn(TrueAutomation.SecurityService.DTOs.CertificateUserSignOnDTO)">
+            <summary>
+            Updates an existing user record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to update.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.DeleteCertificateUserSignOnById(System.Guid)">
+            <summary>
+            Deletes an existing user record from the id.
+            </summary>
+            <param name="dto">The id containing the
+            parameters for the user to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.DeleteCertificateUserSignOn(TrueAutomation.SecurityService.DTOs.CertificateUserSignOnDTO)">
+            <summary>
+            Deletes an existing user record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetCertificateUserSignOns">
+            <summary>
+            Returns a list of all users in the database.
+            </summary>
+            <returns>A list containing a data transfer object for each
+            user in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetCertificateUserSignOn(System.Guid)">
+            <summary>
+            Returns the user with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified user,
+            or null if no such user was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetCertificateUserSignOnById(System.Guid)">
+            <summary>
+            Helper Method to return a domain object of a user by it's id
+            </summary>
+            <param name="id">guid value of the id of the user</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetCertificateUserSignOnByCertificateUserSignOnnameAndCertificate(System.String,System.String)">
+            <summary>
+            Helper Method to return a domain object of a user by it's id
+            </summary>
+            <param name="id">guid value of the id of the user</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetAllCertificateUserSignOns">
+            <summary>
+            Helper method to get a list of all CertificateUserSignOns values
+            </summary>	
+            <returns>returns a list of all CertificateUserSignOns</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.CreateCertificateUserSignOnFromDTO(TrueAutomation.SecurityService.DTOs.CertificateUserSignOnDTO)">
+            <summary>
+            Helper method to create a user domain object from a user DTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the user</param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.UpdateCertificateUserSignOnFromDTO(TrueAutomation.SecurityService.DTOs.CertificateUserSignOnDTO)">
+            <summary>
+            Helper method to update a user domain object from a user DTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the CertificateUserSignOn</param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.DeleteCertificateUserSignOnFromDTO(TrueAutomation.SecurityService.DTOs.CertificateUserSignOnDTO)">
+            <summary>
+            Helper method to delete a user based on it's dto
+            </summary>
+            <param name="dto">A DTO of the user</param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.CheckServiceAvailable">
+            <summary>
+            Implements the CheckServiceAvailable method. Ensures the service is available
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.CreateUserSignOn(TrueAutomation.SecurityService.DTOs.UserSignOnDTO)">
+            <summary>
+            Creates a UserSignOn record from the suppleid DTO
+            </summary>
+            <param name="dto"></param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.UpdateUserSignOn(TrueAutomation.SecurityService.DTOs.UserSignOnDTO)">
+            <summary>
+            Updates an existing user record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to update.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.DeleteUserSignOnById(System.Guid)">
+            <summary>
+            Deletes an existing user record from the id.
+            </summary>
+            <param name="dto">The id containing the
+            parameters for the user to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.DeleteUserSignOn(TrueAutomation.SecurityService.DTOs.UserSignOnDTO)">
+            <summary>
+            Deletes an existing user record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetUserSignOns">
+            <summary>
+            Returns a list of all users in the database.
+            </summary>
+            <returns>A list containing a data transfer object for each
+            user in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetUserSignOn(System.Guid)">
+            <summary>
+            Returns the user with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified user,
+            or null if no such user was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetUserSignOnByTargetAppId(System.String,System.String)">
+            <summary>
+            Returns the user with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified user,
+            or null if no such user was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetUserSignOnById(System.Guid)">
+            <summary>
+            Helper Method to return a domain object of a user by it's id
+            </summary>
+            <param name="id">guid value of the id of the user</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetAllUserSignOns">
+            <summary>
+            Helper method to get a list of all UserSignOns values
+            </summary>	
+            <returns>returns a list of all UserSignOns</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.CreateUserSignOnFromDTO(TrueAutomation.SecurityService.DTOs.UserSignOnDTO)">
+            <summary>
+            Helper method to create a user domain object from a user DTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the user</param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.UpdateUserSignOnFromDTO(TrueAutomation.SecurityService.DTOs.UserSignOnDTO)">
+            <summary>
+            Helper method to update a user domain object from a user DTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the UserSignOn</param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.DeleteUserSignOnFromDTO(TrueAutomation.SecurityService.DTOs.UserSignOnDTO)">
+            <summary>
+            Helper method to delete a user based on it's dto
+            </summary>
+            <param name="dto">A DTO of the user</param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.CreatePasswordUserSignOn(TrueAutomation.SecurityService.DTOs.PasswordUserSignOnDTO)">
+            <summary>
+            Creates a PasswordUserSignOn record from the suppleid DTO
+            </summary>
+            <param name="dto"></param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.UpdatePasswordUserSignOn(TrueAutomation.SecurityService.DTOs.PasswordUserSignOnDTO)">
+            <summary>
+            Updates an existing user record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to update.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.PasswordUserExistsbyUsernameAndPassword(System.String,System.String)">
+            <summary>
+            Returns whether or not a user exists with a given username and password
+            </summary>
+            <param name="username"></param>
+            <param name="password"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.DeletePasswordUserSignOnById(System.Guid)">
+            <summary>
+            Deletes an existing user record from the id.
+            </summary>
+            <param name="dto">The id containing the
+            parameters for the user to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.DeletePasswordUserSignOn(TrueAutomation.SecurityService.DTOs.PasswordUserSignOnDTO)">
+            <summary>
+            Deletes an existing user record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetUserSignOnByTargetAppUserName(System.String,System.String)">
+            <summary>
+            Returns the user with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified user,
+            or null if no such user was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetPasswordUserSignOns">
+            <summary>
+            Returns a list of all users in the database.
+            </summary>
+            <returns>A list containing a data transfer object for each
+            user in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetPasswordUserSignOn(System.Guid)">
+            <summary>
+            Returns the user with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified user,
+            or null if no such user was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetPasswordUserByUsernameAndPassword(System.String,System.String)">
+            <summary>
+            Helper Method to return a domain object of a password user by it's id
+            </summary>
+            <param name="id">guid value of the id of the user</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetPasswordUserSignOnById(System.Guid)">
+            <summary>
+            Helper Method to return a domain object of a user by it's id
+            </summary>
+            <param name="id">guid value of the id of the user</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetPasswordUserSignOnByPasswordUserSignOnnameAndPassword(System.String,System.String)">
+            <summary>
+            Helper Method to return a domain object of a user by it's id
+            </summary>
+            <param name="id">guid value of the id of the user</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetAllPasswordUserSignOns">
+            <summary>
+            Helper method to get a list of all PasswordUserSignOns values
+            </summary>	
+            <returns>returns a list of all PasswordUserSignOns</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.CreatePasswordUserSignOnFromDTO(TrueAutomation.SecurityService.DTOs.PasswordUserSignOnDTO)">
+            <summary>
+            Helper method to create a user domain object from a user DTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the user</param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.UpdatePasswordUserSignOnFromDTO(TrueAutomation.SecurityService.DTOs.PasswordUserSignOnDTO)">
+            <summary>
+            Helper method to update a user domain object from a user DTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the PasswordUserSignOn</param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.DeletePasswordUserSignOnFromDTO(TrueAutomation.SecurityService.DTOs.PasswordUserSignOnDTO)">
+            <summary>
+            Helper method to delete a user based on it's dto
+            </summary>
+            <param name="dto">A DTO of the user</param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.CreateGroup(TrueAutomation.SecurityService.DTOs.GroupDTO)">
+            <summary>
+            Creates a group record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the group to create.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.AddUserToGroup(TrueAutomation.SecurityService.DTOs.GroupDTO,TrueAutomation.SecurityService.DTOs.UserDTO)">
+            <summary>
+            Adds a user to a group
+            </summary>
+            <param name="groupDTO">The data transfer object containing the
+            parameters for the group to add the user to.</param>
+            <param name="userDTO">The data transfer object containing the
+            party to be added to the group.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.UpdateGroup(TrueAutomation.SecurityService.DTOs.GroupDTO)">
+            <summary>
+            Updates an existing group record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the group to update.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.DeleteGroupById(System.Guid)">
+            <summary>
+            Deletes an existing group record from the id.
+            </summary>
+            <param name="dto">The id containing the
+            parameters for the group to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.DeleteGroup(TrueAutomation.SecurityService.DTOs.GroupDTO)">
+            <summary>
+            Deletes an existing group record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the group to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetGroups">
+            <summary>
+            Returns a list of all groups in the database.
+            </summary>
+            <returns>A list containing a data transfer object for each
+            group in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetGroup(System.Guid)">
+            <summary>
+            Returns the group with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified group,
+            or null if no such group was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetGroupByTargetAppId(System.String,System.String)">
+            <summary>
+            Returns the Group with the specified TargetAppID value.
+            </summary>
+            <returns>A data transfer object for the specified group/role,
+            or null if no such group/role was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetGroupById(System.Guid)">
+            <summary>
+            Helper Method to return a domain object of a group by it's id
+            </summary>
+            <param name="id">guid value of the id of the group</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.AddUserToGroupByDTO(TrueAutomation.SecurityService.DTOs.GroupDTO,TrueAutomation.SecurityService.DTOs.UserDTO)">
+            <summary>
+            Adds the user to the group.
+            </summary>
+            <param name="groupDTO"></param>
+            <param name="userDTO"></param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetAllGroups">
+            <summary>
+            Helper method to get a list of all Groups values
+            </summary>	
+            <returns>returns a list of all Groups</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.CreateGroupFromDTO(TrueAutomation.SecurityService.DTOs.GroupDTO)">
+            <summary>
+            Helper method to create a group domain object from a group DTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the group</param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.UpdateGroupFromDTO(TrueAutomation.SecurityService.DTOs.GroupDTO)">
+            <summary>
+            Helper method to update a group domain object from a group DTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the Group</param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.DeleteGroupFromDTO(TrueAutomation.SecurityService.DTOs.GroupDTO)">
+            <summary>
+            Helper method to delete a group based on it's dto
+            </summary>
+            <param name="dto">A DTO of the group</param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.Notify(TrueAutomation.WorkflowService.Messages.IWorkflowMessage)">
+            <summary>
+            Publish the particular message to the bus for consumption by the subscribers
+            </summary>
+            <param name="msg"></param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.CreateUser(TrueAutomation.SecurityService.DTOs.UserDTO)">
+            <summary>
+            Creates a user record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to create.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.UpdateUser(TrueAutomation.SecurityService.DTOs.UserDTO)">
+            <summary>
+            Updates an existing user record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to update.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.DeleteUserById(System.Guid)">
+            <summary>
+            Deletes an existing user record from the id.
+            </summary>
+            <param name="dto">The id containing the
+            parameters for the user to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.DeleteUser(TrueAutomation.SecurityService.DTOs.UserDTO)">
+            <summary>
+            Deletes an existing user record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the user to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetUsers">
+            <summary>
+            Returns a list of all users in the database.
+            </summary>
+            <returns>A list containing a data transfer object for each
+            user in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetUser(System.Guid)">
+            <summary>
+            Returns the user with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified user,
+            or null if no such user was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.UserExistsbyUsernameAndPassword(System.String,System.String)">
+            <summary>
+            Returns whether or not a user exists with a given username and password
+            </summary>
+            <param name="username"></param>
+            <param name="password"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetUserByExternalUserId(System.String,System.String)">
+            <summary>
+            Returns the user with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified user,
+            or null if no such user was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetUserByExternalUserName(System.String,System.String)">
+            <summary>
+            Returns the user with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified user,
+            or null if no such user was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetUserById(System.Guid)">
+            <summary>
+            Helper Method to return a domain object of a user by it's id
+            </summary>
+            <param name="id">guid value of the id of the user</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetUserByUsernameAndPassword(System.String,System.String)">
+            <summary>
+            Helper Method to return a domain object of a user by it's id
+            </summary>
+            <param name="id">guid value of the id of the user</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.GetAllUsers">
+            <summary>
+            Helper method to get a list of all Users values
+            </summary>	
+            <returns>returns a list of all Users</returns>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.CreateUserFromDTO(TrueAutomation.SecurityService.DTOs.UserDTO)">
+            <summary>
+            Helper method to create a user domain object from a user DTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the user</param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.UpdateUserFromDTO(TrueAutomation.SecurityService.DTOs.UserDTO)">
+            <summary>
+            Helper method to update a user domain object from a user DTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the User</param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.SecurityService.DeleteUserFromDTO(TrueAutomation.SecurityService.DTOs.UserDTO)">
+            <summary>
+            Helper method to delete a user based on it's dto
+            </summary>
+            <param name="dto">A DTO of the user</param>
+        </member>
+        <member name="M:TrueAutomation.SecurityService.WCF.Windsor.Installer.Install(Castle.Windsor.IWindsorContainer,Castle.MicroKernel.SubSystems.Configuration.IConfigurationStore)">
+            <summary>
+            Registers all our service-related types with the
+            supplied Windsor IoC container.
+            </summary>
+            <param name="container">The container into which to register
+            the service types.</param>
+            <param name="store">Configuration store parameter -- unused in
+            this implementation.</param>
+        </member>
+    </members>
+</doc>

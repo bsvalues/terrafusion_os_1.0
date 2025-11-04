@@ -1,0 +1,10 @@
+{
+    "set": [
+        "add",
+        "administration",
+        "network",
+        "rule",
+        "rules",
+        "utility network"
+    ]
+}

@@ -1,0 +1,8 @@
+{
+    "set": [
+        "base e",
+        "exponential",
+        "power",
+        "raise"
+    ]
+}

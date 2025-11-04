@@ -1,0 +1,249 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\SubsetSpaceTimeCube",
+    "displayname": "$rc:title",
+    "helpcontent": "50040002",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_cube": {
+            "display_order": "0",
+            "displayname": "$rc:in_cube.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "nc"
+                ]
+            },
+            "description": "$rc:in_cube.descr"
+        },
+        "out_cube": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_cube.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "nc"
+                ]
+            },
+            "description": "$rc:out_cube.descr"
+        },
+        "spatial_subset_method": {
+            "display_order": "2",
+            "displayname": "$rc:spatial_subset_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "FEATURES",
+                        "code": "$rc:spatial_subset_method.domain.FEATURES"
+                    },
+                    {
+                        "value": "EXTENT",
+                        "code": "$rc:spatial_subset_method.domain.EXTENT"
+                    },
+                    {
+                        "value": "SPACE_TIME_CUBE",
+                        "code": "$rc:spatial_subset_method.domain.SPACE_TIME_CUBE"
+                    },
+                    {
+                        "value": "NONE",
+                        "code": "$rc:spatial_subset_method.domain.NONE"
+                    }
+                ]
+            },
+            "description": "$rc:spatial_subset_method.descr"
+        },
+        "temporal_subset_method": {
+            "display_order": "7",
+            "displayname": "$rc:temporal_subset_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "USER_DEFINED",
+                        "code": "$rc:temporal_subset_method.domain.USER_DEFINED"
+                    },
+                    {
+                        "value": "NUMBER_OF_TIME_STEPS",
+                        "code": "$rc:temporal_subset_method.domain.NUMBER_OF_TIME_STEPS"
+                    },
+                    {
+                        "value": "SPACE_TIME_CUBE",
+                        "code": "$rc:temporal_subset_method.domain.SPACE_TIME_CUBE"
+                    },
+                    {
+                        "value": "NONE",
+                        "code": "$rc:temporal_subset_method.domain.NONE"
+                    }
+                ]
+            },
+            "description": "$rc:temporal_subset_method.descr"
+        },
+        "in_subset_features": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:in_subset_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:in_subset_features.descr"
+        },
+        "spatial_relationship": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:spatial_relationship.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "INTERSECT",
+                        "code": "$rc:spatial_relationship.domain.INTERSECT"
+                    },
+                    {
+                        "value": "CONTAINS",
+                        "code": "$rc:spatial_relationship.domain.CONTAINS"
+                    },
+                    {
+                        "value": "WITHIN",
+                        "code": "$rc:spatial_relationship.domain.WITHIN"
+                    },
+                    {
+                        "value": "HAVE_THEIR_CENTER_IN",
+                        "code": "$rc:spatial_relationship.domain.HAVE_THEIR_CENTER_IN"
+                    }
+                ]
+            },
+            "value": "INTERSECT",
+            "description": "$rc:spatial_relationship.descr"
+        },
+        "spatial_extent": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "5",
+            "control_guid": "{15F0D1C1-F783-49BC-8D16-619B8E92F668}",
+            "displayname": "$rc:spatial_extent.title",
+            "datatype": {
+                "type": "GPExtent"
+            },
+            "description": "$rc:spatial_extent.descr"
+        },
+        "in_spatial_cube": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:in_spatial_cube.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "nc"
+                ]
+            },
+            "description": "$rc:in_spatial_cube.descr"
+        },
+        "time_span_subset": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "8",
+            "control_guid": "{1A1CA7EC-A47A-4187-A15C-6EDBA4FE0CF7}",
+            "displayname": "$rc:time_span_subset.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPDate",
+                        "displayname": "$rc:time_span_subset.dt.title1"
+                    },
+                    {
+                        "type": "GPDate",
+                        "displayname": "$rc:time_span_subset.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "description": "$rc:time_span_subset.descr"
+        },
+        "remove_time_steps": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "9",
+            "control_guid": "{1A1CA7EC-A47A-4187-A15C-6EDBA4FE0CF7}",
+            "displayname": "$rc:remove_time_steps.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPLong",
+                        "displayname": "$rc:remove_time_steps.dt.title1"
+                    },
+                    {
+                        "type": "GPLong",
+                        "displayname": "$rc:remove_time_steps.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "description": "$rc:remove_time_steps.descr"
+        },
+        "in_temporal_cube": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:in_temporal_cube.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "nc"
+                ]
+            },
+            "description": "$rc:in_temporal_cube.descr"
+        }
+    },
+    "environments": [
+        "outputCoordinateSystem"
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "map": {
+        "area_of_interest.title": "Area of Interest",
+        "cook_results.title": "Cook results",
+        "description": "Manage Scene Cache Worker",
+        "layer.title": "Layer",
+        "out_service_url.title": "Output Service URL",
+        "service_url.title": "Input Service URL",
+        "title": "Manage Scene Cache Worker",
+        "update_extent.title": "Update Extent",
+        "update_mode.domain.PARTIAL_UPDATE_ATTRIBUTES": "PARTIAL_UPDATE_ATTRIBUTES",
+        "update_mode.domain.PARTIAL_UPDATE_NODES": "PARTIAL_UPDATE_NODES",
+        "update_mode.domain.RECREATE_ALL_NODES": "RECREATE_ALL_NODES",
+        "update_mode.domain.RECREATE_EMPTY_NODES": "RECREATE_EMPTY_NODES",
+        "update_mode.title": "Update Mode"
+    }
+}

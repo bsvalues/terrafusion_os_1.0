@@ -1,0 +1,12 @@
+{
+    "set": [
+        "aggregate",
+        "bin",
+        "binning",
+        "count",
+        "simplify",
+        "summarize",
+        "summary",
+        "visualize"
+    ]
+}

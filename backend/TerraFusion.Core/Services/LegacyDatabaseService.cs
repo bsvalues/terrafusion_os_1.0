@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators
+
 namespace TerraFusion.Core.Services;
 
 /// <summary>
@@ -80,7 +82,7 @@ public class LegacyDatabaseService
     /// Import property data from legacy database
     /// </summary>
     public async Task<LegacyImportResult> ImportPropertyData(string countyName, 
-        LegacyImportOptions options = null)
+        LegacyImportOptions? options = null)
     {
         options ??= new LegacyImportOptions();
         
@@ -99,7 +101,7 @@ public class LegacyDatabaseService
             CountyName = countyName,
             AdapterType = adapterType,
             StartTime = DateTime.UtcNow,
-            Error = null
+            Error = null!
         };
 
         try

@@ -1,0 +1,14 @@
+{
+    "set": [
+        "compact",
+        "disk space",
+        "file geodatabase",
+        "geodatabase",
+        "large",
+        "read only",
+        "shrink",
+        "size",
+        "small",
+        "zip"
+    ]
+}

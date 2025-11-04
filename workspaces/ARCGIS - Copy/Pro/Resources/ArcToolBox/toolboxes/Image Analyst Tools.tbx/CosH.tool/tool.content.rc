@@ -1,0 +1,10 @@
+{
+    "map": {
+        "description": "Calculates the hyperbolic cosine of cells in a raster.",
+        "in_raster_or_constant.descr": "<xdoc><p>The input for which to calculate the hyperbolic cosine values.</p><p>To use a number as an input for this parameter, the cell size and extent must first be set in the environment.</p></xdoc>",
+        "in_raster_or_constant.title": "Input raster or constant value",
+        "out_raster.descr": "<xdoc><p>The output raster.</p><p>The values are the hyperbolic cosine of the input values.</p></xdoc>",
+        "out_raster.title": "Output raster",
+        "title": "CosH"
+    }
+}

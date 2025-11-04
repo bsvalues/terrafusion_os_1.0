@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Unregisters a replica from an enterprise geodatabase.",
+        "in_geodatabase.descr": "The enterprise geodatabase that contains the replica to unregister.",
+        "in_geodatabase.title": "Input Geodatabase",
+        "in_replica.descr": "The name or ID of the replica that will be unregistered. If providing the replica name, it must be fully qualified, for example, myuser.myreplica.",
+        "in_replica.title": "Replica ID or Name",
+        "title": "Unregister Replica",
+        "updated_geodatabase.title": "Updated Geodatabase"
+    }
+}

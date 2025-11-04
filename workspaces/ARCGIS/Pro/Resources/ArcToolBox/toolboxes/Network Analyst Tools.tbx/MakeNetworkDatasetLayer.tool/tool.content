@@ -1,0 +1,48 @@
+{
+    "type": "FunctionTool",
+    "guid": "{c782e258-48bc-4482-8066-602cd06f8fbc}",
+    "displayname": "$rc:title",
+    "helpcontent": "13010022",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "params": {
+        "in_network_dataset": {
+            "displayname": "$rc:in_network_dataset.title",
+            "datatype": {
+                "type": "GPNetworkDatasetLayer"
+            },
+            "description": "$rc:in_network_dataset.descr"
+        },
+        "output_layer": {
+            "direction": "out",
+            "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}",
+            "displayname": "$rc:output_layer.title",
+            "datatype": {
+                "type": "GPNetworkDatasetLayer"
+            },
+            "description": "$rc:output_layer.descr"
+        },
+        "draw_elements": {
+            "enabled": "false",
+            "type": "optional",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:draw_elements.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:draw_elements.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

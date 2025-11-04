@@ -1,0 +1,21 @@
+{
+    "set": [
+        "combine",
+        "common",
+        "cover",
+        "inside",
+        "inside both",
+        "intersect",
+        "join",
+        "on top of",
+        "outside",
+        "overlap",
+        "overlay",
+        "shared",
+        "spatial relationship",
+        "superimpose",
+        "topological set",
+        "topology",
+        "within both"
+    ]
+}

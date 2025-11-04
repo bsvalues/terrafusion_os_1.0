@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Disables archiving on a geodatabase feature class, table, or feature dataset.",
+        "in_dataset.descr": "The geodatabase feature class, table, or feature dataset for which archiving will be disabled.",
+        "in_dataset.title": "Input Dataset",
+        "out_dataset.title": "Updated Input Dataset",
+        "preserve_history.descr": "<xdoc><p>Specifies whether records that are not from the current moment will be preserved. If the table or feature class is versioned, the history table will become available. For nonversioned data, a table or feature class will be created with an appended _h that contains the history information.<ul><li>Checked—Records that are not from the current moment will be preserved. This is the default.</li><li>Unchecked—Records that are not from the current moment will not be preserved; they will be deleted.</li></ul></p></xdoc>",
+        "preserve_history.title": "Preserve History Table",
+        "title": "Disable Archiving"
+    }
+}

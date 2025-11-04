@@ -1,0 +1,19 @@
+{
+    "map": {
+        "antialiasing.title": "Antialiasing (Smoothes edges of labels and lines for improved display quality)",
+        "constraining_extent.title": "Update Extent",
+        "data_frame.title": "Data Frame",
+        "description": "Updates a pre-rendered tiled cache for Map Server.",
+        "layer.title": "Input Layers",
+        "levels.title": "Scales",
+        "object_name.title": "Map Server",
+        "out_object_name.title": "Output Map Server",
+        "out_server_name.title": "Output Host",
+        "server_name.title": "Host",
+        "thread_count.title": "Number of caching service instances",
+        "title": "Update Map Server Cache",
+        "update_mode.domain.Recreate All Tiles": "Recreate All Tiles",
+        "update_mode.domain.Recreate Empty Tiles": "Recreate Empty Tiles",
+        "update_mode.title": "Update Mode"
+    }
+}

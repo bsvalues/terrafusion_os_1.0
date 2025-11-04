@@ -1,77 +1,115 @@
-# Pull Request: TerraFusion OS 1.0
+<!-- Pull Request Template for TerraFusion OS -->
 
-## 📋 Summary
-Brief description of changes made in this PR.
+## Summary
+- Briefly describe the change and which subsystem it touches (frontend / backend / AI / plugin).
 
-## 🗺️ Atlas Registration
+## Checklist (required)
+- [ ] Description and scope included
+- [ ] Tests added/updated (unit/integration). Commands to run: `npm test` (frontend) / `dotnet test` (backend)
+- [ ] EF Migration included if entities changed (include migration name)
+- [ ] Audit fields preserved (CreatedAt/UpdatedAt/CreatedBy/UpdatedBy)
+- [ ] Health check added/verified for new service (`IHealthCheck`)
+- [ ] Security/Compliance note: confirm no production county data modified; list any secret or env var changes
+- [ ] Docs updated if public/API surface changed
+- [ ] Reviewer guidance: list focused review areas (e.g., "check audit interceptor", "verify SignalR hub registration")
 
-> ⚠️ **REQUIRED:** All new components must be registered in TerraFusion Atlas.
+## Local verification steps
+1. Build and run the subsystem locally (example):
+   - Frontend: `npm run dev` and validate UI flows
+   - Backend: `dotnet run --project backend/TerraFusion.API`
+2. Run tests: `npm test` / `dotnet test`
+3. If DB changed: `dotnet ef database update` (development only)
 
-**Atlas Status:**
-- [ ] New component registered in Atlas
-- [ ] Existing Atlas entry updated
-- [ ] No Atlas changes needed (bug fix/refactor only)
+## Notes for AI-swarm / production-risk changes
+- If PR touches AI swarm coordination, mark with `AI-SWARM` label and include a short safety plan for rollout and tests.
+# TerraFusion Government Service Pull Request
 
-**Atlas Details:**
-- **Registry:** <!-- services, engines, frontends, agents, modules, datasets, pipelines, etc. -->
-- **Atlas ID:** `______________`
-- **Owner Team:** `______________`
-- **Tags:** `______________`
+## 🏛️ Government Compliance Checklist
 
-**Verification:**
-```bash
-# Verify your registration
-cd terrafusion-atlas
-python3 scripts/atlas_validate.py
-python3 scripts/atlas_summary.py
-```
+### Security & Compliance
+- [ ] Code follows government security standards
+- [ ] No sensitive data exposed in code
+- [ ] All dependencies scanned for vulnerabilities
+- [ ] FISMA compliance requirements met
+- [ ] Security review completed
 
-## 🎯 Type of Change
-- [ ] 🐛 Bug fix (non-breaking change which fixes an issue)
-- [ ] ✨ New feature (non-breaking change which adds functionality)
-- [ ] 💥 Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] 📚 Documentation update
-- [ ] 🔧 Configuration/Infrastructure change
-- [ ] ⚡ Performance improvement
-- [ ] 🔒 Security enhancement
-- [ ] 🗺️ Atlas maintenance
+### Accessibility (WCAG 2.2 AA / Section 508)
+- [ ] Screen reader compatibility tested
+- [ ] Keyboard navigation functional
+- [ ] Color contrast ratios validated (4.5:1 minimum)
+- [ ] Alternative text for images provided
+- [ ] Form labels properly associated
+- [ ] Focus indicators visible
 
-## 🧪 Testing
-- [ ] Unit tests pass
-- [ ] Integration tests pass
-- [ ] E2E tests pass
-- [ ] Performance benchmarks meet requirements
-- [ ] Security scan completed
-- [ ] Manual testing completed
+### Performance & Quality
+- [ ] Performance benchmarks met (100ms response time)
+- [ ] Load testing completed (1000+ concurrent users)
+- [ ] Code coverage >= 80%
+- [ ] ESLint and Prettier rules followed
+- [ ] TypeScript compilation successful
 
-## 🏛️ Government Compliance
-- [ ] FISMA compliance verified
-- [ ] NIST standards met
-- [ ] Data privacy requirements satisfied
-- [ ] Audit trail maintained
-- [ ] Access controls validated
+### Testing Requirements
+- [ ] Unit tests written and passing
+- [ ] Integration tests completed
+- [ ] Accessibility tests passing
+- [ ] Performance tests validated
+- [ ] Security tests executed
 
-## 🚀 Performance Impact
-- [ ] No performance degradation
-- [ ] Performance improved
-- [ ] Quantum acceleration validated (if applicable)
-- [ ] AI swarm efficiency maintained
-- [ ] Load testing completed
+### Documentation
+- [ ] Code documented with JSDoc/comments
+- [ ] README updated if needed
+- [ ] Government compliance documentation updated
+- [ ] API documentation updated
 
-## 📝 Checklist
-- [ ] Code follows project style guidelines
-- [ ] Self-review completed
-- [ ] Comments added for complex logic
-- [ ] Documentation updated
-- [ ] No console.log or debug statements
-- [ ] Environment variables documented
-- [ ] Database migrations included (if applicable)
+## 📋 Change Description
 
-## 🔗 Related Issues
-Closes #(issue number)
+### What changed?
+<!-- Describe the changes in this PR -->
 
-## 📸 Screenshots (if applicable)
-Add screenshots for UI changes.
+### Why was this change necessary?
+<!-- Explain the business/technical justification -->
 
-## 🔍 Additional Notes
-Any additional information reviewers should know.
+### Government Impact Assessment
+<!-- Describe impact on citizen services -->
+
+### Testing Performed
+<!-- Detail all testing completed -->
+
+## 🔒 Security Review
+
+### Security Considerations
+<!-- List any security implications -->
+
+### Data Privacy Impact
+<!-- Describe any data privacy considerations -->
+
+### Audit Trail
+<!-- Reference any audit requirements -->
+
+## 🎯 Deployment Checklist
+
+- [ ] Staging deployment successful
+- [ ] Government approval obtained
+- [ ] Audit trail documentation complete
+- [ ] Rollback plan prepared
+- [ ] Monitoring alerts configured
+
+## 📊 Performance Impact
+
+### Before/After Metrics
+<!-- Include performance benchmarks -->
+
+### Resource Usage
+<!-- Describe CPU/memory/storage impact -->
+
+## 👥 Review Requirements
+
+This PR requires approval from:
+- [ ] Technical Lead
+- [ ] Security Team
+- [ ] Compliance Officer
+- [ ] Government Liaison (for citizen-facing changes)
+
+---
+
+**Government Service Standards**: This change meets all federal accessibility, security, and performance requirements for citizen services.

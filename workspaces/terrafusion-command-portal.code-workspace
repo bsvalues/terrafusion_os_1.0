@@ -1,0 +1,107 @@
+{
+  "folders": [
+    {
+      "uri": "vscode-remote://dev-container+7b22686f737450617468223a22633a5c5c55736572735c5c627376616c5c5c7465727261667573696f6e5f6f735f312e305c5c5465727261467573696f6e5f436f6d6d616e645f506f7274616c5f537461727465725c5c7465727261667573696f6e2d636f6d6d616e642d706f7274616c222c226c6f63616c446f636b6572223a66616c73652c2273657474696e6773223a7b22636f6e74657874223a226465736b746f702d6c696e7578227d2c22636f6e66696746696c65223a7b22246d6964223a312c22667350617468223a22633a5c5c55736572735c5c627376616c5c5c7465727261667573696f6e5f6f735f312e305c5c5465727261467573696f6e5f436f6d6d616e645f506f7274616c5f537461727465725c5c7465727261667573696f6e2d636f6d6d616e642d706f7274616c5c5c2e646576636f6e7461696e65725c5c646576636f6e7461696e65722e6a736f6e222c225f736570223a312c2265787465726e616c223a2266696c653a2f2f2f632533412f55736572732f627376616c2f7465727261667573696f6e5f6f735f312e302f5465727261467573696f6e5f436f6d6d616e645f506f7274616c5f537461727465722f7465727261667573696f6e2d636f6d6d616e642d706f7274616c2f2e646576636f6e7461696e65722f646576636f6e7461696e65722e6a736f6e222c2270617468223a222f633a2f55736572732f627376616c2f7465727261667573696f6e5f6f735f312e302f5465727261467573696f6e5f436f6d6d616e645f506f7274616c5f537461727465722f7465727261667573696f6e2d636f6d6d616e642d706f7274616c2f2e646576636f6e7461696e65722f646576636f6e7461696e65722e6a736f6e222c22736368656d65223a2266696c65227d7d/workspaces/terrafusion_os_1.0/TerraFusion_Command_Portal_Starter/terrafusion-command-portal"
+    },
+    {
+      "path": "../SDK",
+      "name": "📦 Platform SDK (read-only)"
+    },
+    {
+      "path": "../config",
+      "name": "⚙️ Config (shared)"
+    },
+    {
+      "path": "../backend",
+      "name": "🔧 Shared Backend (read-only)"
+    },
+    {
+      "path": "../docs/terrafusion_command_portal",
+      "name": "📚 Terrafusion-Command-Portal Docs"
+    }
+  ],
+  "settings": {
+    "terrafusion.sync": {
+      "autoSync": true,
+      "syncInterval": 15,
+      "conflictResolution": "terrafusion-priority",
+      "sharedState": {
+        "backend": "read-only",
+        "sdk": "read-only",
+        "config": "shared-write"
+      }
+    },
+    "terrafusion.compliance": {
+      "fismaMode": "MODERATE",
+      "nist80053": true,
+      "auditTrail": "comprehensive"
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-python.debugpy",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-vscode.vscode-typescript-next",
+      "streetsidesoftware.code-spell-checker",
+      "usernamehw.errorlens"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Start Terrafusion-Command-Portal",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "console": "integratedTerminal",
+        "env": {
+          "TERRAFUSION_SERVICE": "terrafusion-command-portal",
+          "NODE_ENV": "development"
+        }
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build Terrafusion-Command-Portal",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "build"
+        ],
+        "problemMatcher": [
+          "$tsc"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Test Terrafusion-Command-Portal",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "test"
+        ],
+        "problemMatcher": [],
+        "group": {
+          "kind": "test",
+          "isDefault": true
+        }
+      }
+    ]
+  }
+}

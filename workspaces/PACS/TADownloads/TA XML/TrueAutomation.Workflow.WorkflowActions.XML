@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.Workflow.WorkflowActions</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.Workflow.WorkflowActions.DataRecordDefinition">
+            <summary>
+            Static Methods used to execute calls against the task Service API regarding TaskCategories.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActions.DataRecordDefinition.GetDataRecordDefinitions">
+            <summary>
+            Method to load the data record definitions from the Task Service
+            </summary>
+            <returns>A List of DataRecordDefinitionDTOs</returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActions.DataRecordDefinition.GetDataRecordDefinition(System.Int32)">
+            <summary>
+            Returns the data record definition with the specified ID value.
+            </summary>
+            <param name="drdId"> Data Record Definition Id </param>
+            <returns>A data transfer object for the specified data record definition,
+            or null if no such task data record definition was found.</returns>
+        </member>
+        <member name="T:TrueAutomation.Workflow.WorkflowActions.Workflow">
+            <summary>
+            Static Methods to interact with the Workflow Service as well as Workflow messaging.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActions.Workflow.GetEnabledWorkflows">
+            <summary>
+            Method to call the workflow service and return a list of all workflows that have the enabled flag set to true.
+            </summary>
+            <returns>A List of zero or more available workflows</returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActions.Workflow.GetWorkflow(TrueAutomation.WorkflowService.DTOs.WorkflowSearchDTO)">
+            <summary>
+            Method to obtain the DTO reference to a workflow by calling the workflow service.
+            </summary>
+            <param name="workflowDTO"></param>
+            <returns>a DTO object of the workflow or null if nothing is returned.</returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActions.Workflow.ExecuteWorkflow(TrueAutomation.WorkflowService.DTOs.WorkflowSearchDTO,System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Method to pass a message to the workflow messaging system to start a workflow.
+            </summary>
+            <param name="workflow">A DTO Object containing at a minimum the Id of the workflow to start.</param>
+            <returns>true if the message was successfully sent.</returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActions.Workflow.CheckWorkflowRunningInstance(TrueAutomation.WorkflowService.DTOs.WorkflowSearchDTO)">
+            <summary>
+            Method to check if any instance of the WF is running.
+            </summary>
+            <param name="workflow">A DTO Object containing at a minimum the Id of the workflow to start.</param>
+            <returns>true if an instance is running.</returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.WorkflowActions.Workflow.GetWorkflowInstance(TrueAutomation.WorkflowService.DTOs.WorkflowSearchDTO)">
+            <summary>
+            Method to obtain the DTO reference to a workflow and its associated instances by calling the workflow service.
+            </summary>
+            <param name="workflowDTO"></param>
+            <returns>a DTO object of the workflow or null if nothing is returned.</returns>
+        </member>
+    </members>
+</doc>

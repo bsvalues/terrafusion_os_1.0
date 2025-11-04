@@ -1,0 +1,13 @@
+{
+    "map": {
+        "description": "Compresses all the contents in a geodatabase, all the contents in a feature dataset, or an individual stand-alone feature class or table.",
+        "in_data.descr": "The geodatabase, feature dataset, feature class, or table to compress.",
+        "in_data.title": "Input file geodatabase data",
+        "lossless.descr": "<xdoc><p>Indicates whether lossless compression will be used.</p><ul><li>Unchecked—Lossless compression will not be used.</li><li>Checked—Lossless compression will be used. This is the default.<p>Note: For pre-10.0 file geodatabases, lossless compression is not supported. This option cannot be changed and is unchecked and disabled.</p></li></ul></xdoc>",
+        "lossless.domain.Lossless compression": "Lossless compression",
+        "lossless.domain.Non-lossless compression": "Non-lossless compression",
+        "lossless.title": "Lossless compression",
+        "out_data.title": "Compressed Input Data",
+        "title": "Compress File Geodatabase Data"
+    }
+}

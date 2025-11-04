@@ -1,13 +1,13 @@
 /**
  * Stack Component - TerraFusion Design System
  * Week 2, Day 1 - Layout Components Phase
- * 
+ *
  * Purpose: Flexbox wrapper for stacking elements with consistent spacing
  * - Vertical and horizontal stacking
  * - Flexible spacing options
  * - Alignment and justification
  * - Responsive direction
- * 
+ *
  * @example
  * // Vertical stack with medium spacing
  * <Stack direction="vertical" spacing="md">
@@ -15,7 +15,7 @@
  *   <Card>Item 2</Card>
  *   <Card>Item 3</Card>
  * </Stack>
- * 
+ *
  * @example
  * // Horizontal stack with responsive direction
  * <Stack direction={{ base: 'vertical', md: 'horizontal' }} spacing="lg">
@@ -29,7 +29,15 @@ import { cn } from '@/lib/utils';
 
 export interface StackProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Direction of the stack */
-  direction?: 'vertical' | 'horizontal' | { base?: 'vertical' | 'horizontal'; sm?: 'vertical' | 'horizontal'; md?: 'vertical' | 'horizontal'; lg?: 'vertical' | 'horizontal' };
+  direction?:
+    | 'vertical'
+    | 'horizontal'
+    | {
+        base?: 'vertical' | 'horizontal';
+        sm?: 'vertical' | 'horizontal';
+        md?: 'vertical' | 'horizontal';
+        lg?: 'vertical' | 'horizontal';
+      };
   /** Spacing between items */
   spacing?: 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
   /** Alignment of items along cross-axis */
@@ -114,7 +122,7 @@ export function Stack({
 }: StackProps) {
   // Build direction classes
   let directionClass = '';
-  
+
   if (typeof direction === 'string') {
     directionClass = directionClasses[direction];
   } else {

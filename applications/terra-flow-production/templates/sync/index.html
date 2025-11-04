@@ -1,0 +1,240 @@
+{% extends 'layout.html' %}
+
+{% block title %}Sync Service Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Data Sync Service Dashboard</h1>
+    
+    <div class="row">
+        <!-- Status Card -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Sync Status</h5>
+                </div>
+                <div class="card-body">
+                    {% if global_settings %}
+                    <div class="mb-3">
+                        <strong>Status:</strong> 
+                        <span class="badge {% if global_settings.cama_cloud_state == 'active' %}bg-success{% else %}bg-warning{% endif %}">
+                            {{ global_settings.cama_cloud_state | capitalize }}
+                        </span>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Last Sync:</strong> 
+                        {{ global_settings.last_sync_time.strftime('%Y-%m-%d %H:%M:%S') if global_settings.last_sync_time else 'Never' }}
+                    </div>
+                    <div class="mb-3">
+                        <strong>Last Down Sync:</strong>
+                        {{ global_settings.last_down_sync_time.strftime('%Y-%m-%d %H:%M:%S') if global_settings.last_down_sync_time else 'Never' }}
+                    </div>
+                    <div class="mb-3">
+                        <strong>Tables Configured:</strong> 
+                        {{ global_settings.total_tables }}
+                    </div>
+                    <div class="mb-3">
+                        <strong>Tables Processed:</strong> 
+                        {{ global_settings.current_table }}/{{ global_settings.total_tables }}
+                    </div>
+                    {% else %}
+                    <p class="text-center">No global settings found. Please initialize the sync service.</p>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <a href="{{ url_for('sync.run_incremental_sync') }}" class="btn btn-primary w-100">
+                                <i class="fas fa-sync"></i> Run Incremental Sync
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <a href="{{ url_for('sync.run_full_sync') }}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-sync-alt"></i> Run Full Sync
+                            </a>
+                        </div>
+                        <div class="col-12">
+                            <a href="{{ url_for('sync.property_export') }}" class="btn btn-success w-100">
+                                <i class="fas fa-database"></i> PropertyAccess Export
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Jobs Card -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Recent Sync Jobs</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_jobs %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Job ID</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Start Time</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for job in recent_jobs %}
+                                <tr>
+                                    <td>{{ job.job_id[:8] }}...</td>
+                                    <td>{{ job.job_type | capitalize }}</td>
+                                    <td>
+                                        <span class="badge {% if job.status == 'completed' %}bg-success{% elif job.status == 'failed' %}bg-danger{% elif job.status == 'running' %}bg-primary{% else %}bg-secondary{% endif %}">
+                                            {{ job.status | capitalize }}
+                                        </span>
+                                    </td>
+                                    <td>{{ job.start_time.strftime('%Y-%m-%d %H:%M:%S') if job.start_time else 'Pending' }}</td>
+                                    <td>
+                                        <a href="{{ url_for('sync.job_details', job_id=job.job_id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-info-circle"></i> Details
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-center">No sync jobs have been run yet.</p>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('sync.jobs') }}" class="btn btn-outline-primary">View All Jobs</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tables Card -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">Table Configurations</h5>
+        </div>
+        <div class="card-body">
+            {% if tables %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Table Name</th>
+                            <th>Order</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Progress</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for table in tables %}
+                        <tr>
+                            <td>{{ table.name }}</td>
+                            <td>{{ table.order }}</td>
+                            <td>
+                                {% if table.is_lookup %}
+                                <span class="badge bg-info">Lookup</span>
+                                {% elif table.is_controller %}
+                                <span class="badge bg-primary">Controller</span>
+                                {% elif table.is_flat %}
+                                <span class="badge bg-success">Flat</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Standard</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if table.current_page >= table.total_pages and table.total_pages > 0 %}
+                                <span class="badge bg-success">Completed</span>
+                                {% elif table.current_page > 0 %}
+                                <span class="badge bg-warning">In Progress</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Not Started</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if table.total_pages > 0 %}
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" 
+                                         style="width: {{ (table.current_page / table.total_pages * 100) | int }}%"
+                                         aria-valuenow="{{ (table.current_page / table.total_pages * 100) | int }}" 
+                                         aria-valuemin="0" aria-valuemax="100">
+                                        {{ table.current_page }}/{{ table.total_pages }}
+                                    </div>
+                                </div>
+                                {% else %}
+                                <span class="text-muted">No pages</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('sync.table_details', table_name=table.name) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-info-circle"></i> Details
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-center">No tables configured. Please set up table configurations.</p>
+            {% endif %}
+        </div>
+        <div class="card-footer">
+            <a href="{{ url_for('sync.table_configurations') }}" class="btn btn-outline-primary">Manage Tables</a>
+        </div>
+    </div>
+    
+    <!-- Advanced Features Card -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">Advanced Features</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-shield-alt fa-3x mb-3 text-primary"></i>
+                            <h5>Data Sanitization</h5>
+                            <p>Configure rules for sanitizing sensitive data during the synchronization process.</p>
+                            <a href="{{ url_for('sync.data_sanitization') }}" class="btn btn-outline-primary">
+                                <i class="fas fa-cogs me-1"></i> Configure Data Sanitization
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-bell fa-3x mb-3 text-primary"></i>
+                            <h5>Notification System</h5>
+                            <p>Set up email and Slack notifications for sync job events and system alerts.</p>
+                            <a href="{{ url_for('sync.notification_config') }}" class="btn btn-outline-primary">
+                                <i class="fas fa-envelope me-1"></i> Configure Notifications
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Auto-refresh status every 30 seconds if there's an active job
+    {% if recent_jobs and recent_jobs[0].status == 'running' %}
+    setTimeout(function() {
+        location.reload();
+    }, 30000);
+    {% endif %}
+</script>
+{% endblock %}

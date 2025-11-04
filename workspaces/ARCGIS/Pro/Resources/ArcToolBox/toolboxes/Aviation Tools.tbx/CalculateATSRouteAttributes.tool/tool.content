@@ -1,0 +1,162 @@
+{
+    "type": "FunctionTool",
+    "guid": "{F6243FE3-8552-4511-BBCE-F882B7099A58}/CalculateATSRouteAttributes",
+    "displayname": "$rc:title",
+    "helpcontent": "64060001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "53",
+        "70"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "atsroute_attributes": {
+            "displayname": "$rc:atsroute_attributes.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:atsroute_attributes.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:atsroute_attributes.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "LENGTH",
+                                "code": "$rc:atsroute_attributes.domain.item1.LENGTH"
+                            },
+                            {
+                                "value": "TRUE_TRACK",
+                                "code": "$rc:atsroute_attributes.domain.item1.TRUE_TRACK"
+                            },
+                            {
+                                "value": "REVERSE_TRUE_TRACK",
+                                "code": "$rc:atsroute_attributes.domain.item1.REVERSE_TRUE_TRACK"
+                            },
+                            {
+                                "value": "MAG_TRACK",
+                                "code": "$rc:atsroute_attributes.domain.item1.MAG_TRACK"
+                            },
+                            {
+                                "value": "REVERSE_MAG_TRACK",
+                                "code": "$rc:atsroute_attributes.domain.item1.REVERSE_MAG_TRACK"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "description": "$rc:atsroute_attributes.descr"
+        },
+        "magnetic_variation_date": {
+            "type": "optional",
+            "displayname": "$rc:magnetic_variation_date.title",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:magnetic_variation_date.descr"
+        },
+        "updated_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "in_features"
+            ]
+        },
+        "in_designatedpoint_features": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:in_designatedpoint_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_designatedpoint_features.descr"
+        },
+        "in_navaidcomponent_features": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:in_navaidcomponent_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_navaidcomponent_features.descr"
+        },
+        "in_desigpointnavaid_assoc_table": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:in_desigpointnavaid_assoc_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_desigpointnavaid_assoc_table.descr"
+        },
+        "in_navaid_assoc_table": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:in_navaid_assoc_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_navaid_assoc_table.descr"
+        },
+        "in_enroute_table": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:in_enroute_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_enroute_table.descr"
+        }
+    }
+}

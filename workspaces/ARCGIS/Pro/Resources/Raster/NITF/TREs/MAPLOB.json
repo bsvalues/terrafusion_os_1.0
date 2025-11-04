@@ -1,0 +1,83 @@
+{
+  "TRE": "MAPLOB",
+  "Source": ["STDI-0002-1 v2021.1, Appendix P: GEOSDE"],
+  "Name": "Local Cartographic (X/Y) Coordinate System",
+  "Description": "The MAPLO extension provides the description of the link between the local coordinate system (rows and columns) and the absolute cartographic coordinate system (Easting and Northing) defined by GEOPS and PRJPS. The user-defined fields of the MAPLO extension are detailed in Table P-6. A single MAPLO is placed in the Image Subheader.",
+  "Size": 43,
+  "Fields": {
+    "UNILOA" : {
+      "Name": "Length Units",
+      "Description": "This field shall contain the unit of measure (UoM) used for Easting (LOD) and Northing (LAD) intervals. The default value is M.",
+      "Size": 3,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["micrometers", "millimeters", "centimeters", "decimeters", "meters", "kilometers", "inches", "feet", "yards", "statute miles", "nautical miles"]        
+        }        
+      ]
+    },
+    "LOD": {
+      "Name": "Easting Interval",
+      "Description": "This field shall contain the data density in E/W direction that is the line width of an image pixel.",
+      "Size": 5,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 99999
+        }
+      ]
+    },
+    "LAD": {
+      "Name": "Northing Interval",
+      "Description": "This field shall contain the data density in N/S direction that is the line width of an image pixel.",
+      "Size": 5,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 99999
+        }
+      ]
+    },
+    "LSO": {
+      "Name": "Easting of Reference Origin",
+      "Description": "This field shall contain the Easting of the origin pixel (row number 0, column number 0) in the absolute coordinate system.",
+      "Size": 15,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -999999999999.9,
+          "Max": 999999999999.9
+        }
+      ]
+    },
+    "PSO": {
+      "Name": "Northing of Reference Origin",
+      "Description": "This field shall contain the Northing of the origin pixel (row number 0, column number 0) in the absolute coordinate system.",
+      "Size": 15,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -999999999999.9,
+          "Max": 999999999999.9
+        }
+      ]
+    }    
+  }
+}

@@ -21,25 +21,14 @@ function CamaCorePlugin({ context }: { context: any }) {
 
   return (
     <div className={styles.root}>
-
-
       <div className={styles.title}>CAMA Core Plugin</div>
-      <div
-
->Module: {context.moduleName}</div>
-
+      <div>Module: {context.moduleName}</div>
 
       <div>County: {context.countyConfig?.countyId ?? 'unknown'}</div>
-      <div
-
->Session: {context.sessionId ?? 'none'}</div>
+      <div>Session: {context.sessionId ?? 'none'}</div>
       <div className={styles.meta}>
-
-
         <button onClick={handlePing}>Test os.invoke()</button>
-        <button
-
-onClick={handleEmit}>Test os.emit()</button>
+        <button onClick={handleEmit}>Test os.emit()</button>
         {pingResult && <div>Result: {pingResult}</div>}
       </div>
     </div>

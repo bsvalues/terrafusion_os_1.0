@@ -1,0 +1,7 @@
+<TypeMapping>
+  <Type>
+    <Name>ScaleBar</Name>
+    <Namespace>http://www.esri.com/schemas/ArcGIS/3.4.0</Namespace>
+    <CLSID>{7A3F91DB-B9E3-11d1-8756-0000F8751720}</CLSID>
+  </Type>
+</TypeMapping>

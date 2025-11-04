@@ -1,0 +1,85 @@
+{
+    "type": "FunctionTool",
+    "guid": "{2fe59fda-4197-4c42-9e1b-6df96c30c102}",
+    "displayname": "$rc:title",
+    "helpcontent": "71000003",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "block_add_to_map"
+    ],
+    "params": {
+        "in_diagrams": {
+            "displayname": "$rc:in_diagrams.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    },
+                    {
+                        "type": "DETraceNetwork"
+                    },
+                    {
+                        "type": "GPUtilityNetworkLayer"
+                    },
+                    {
+                        "type": "GPTraceNetworkLayer"
+                    },
+                    {
+                        "type": "GPDiagramLayer"
+                    }
+                ]
+            }
+        },
+        "target_owner": {
+            "displayname": "$rc:target_owner.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "source_owner": {
+            "type": "optional",
+            "displayname": "$rc:source_owner.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "diagram_names": {
+            "type": "optional",
+            "displayname": "$rc:diagram_names.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            }
+        },
+        "out_diagrams": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_diagrams.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    },
+                    {
+                        "type": "DETraceNetwork"
+                    },
+                    {
+                        "type": "GPUtilityNetworkLayer"
+                    },
+                    {
+                        "type": "GPTraceNetworkLayer"
+                    },
+                    {
+                        "type": "GPDiagramLayer"
+                    }
+                ]
+            },
+            "addtomap": "false"
+        }
+    }
+}

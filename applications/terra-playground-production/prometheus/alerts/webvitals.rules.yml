@@ -1,0 +1,57 @@
+groups:
+  - name: webvitals.rules
+    rules:
+
+      - alert: WEBVITALS_LCP_95P_BREACH
+        expr: histogram_quantile(0.95, sum(rate(web_vitals_lcp_bucket[5m])) by (le)) > 2.5
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: "95th-percentile LCP breach"
+          description: "LCP(95p) is {{ $value }}s over the last 5m."
+
+      - alert: WEBVITALS_TTFB_95P_BREACH
+        expr: histogram_quantile(0.95, sum(rate(web_vitals_ttfb_bucket[5m])) by (le)) > 1.0
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: "95th-percentile TTFB breach"
+          description: "TTFB(95p) is {{ $value }}s over the last 5m."
+
+      - alert: WEBVITALS_CLS_95P_BREACH
+        expr: histogram_quantile(0.95, sum(rate(web_vitals_cls_bucket[5m])) by (le)) > 0.1
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: "95th-percentile CLS breach"
+          description: "CLS(95p) is {{ $value }} over the last 5m."
+
+      - alert: WEBVITALS_FCP_95P_BREACH
+        expr: histogram_quantile(0.95, sum(rate(web_vitals_fcp_bucket[5m])) by (le)) > 1.8
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: "95th-percentile FCP breach"
+          description: "FCP(95p) is {{ $value }}s over the last 5m."
+
+      - alert: WEBVITALS_FID_95P_BREACH
+        expr: histogram_quantile(0.95, sum(rate(web_vitals_fid_bucket[5m])) by (le)) > 0.1
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: "95th-percentile FID breach"
+          description: "FID(95p) is {{ $value }}s over the last 5m."
+          
+      - alert: WEBVITALS_INP_95P_BREACH
+        expr: histogram_quantile(0.95, sum(rate(web_vitals_inp_bucket[5m])) by (le)) > 0.2
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: "95th-percentile INP breach"
+          description: "INP(95p) is {{ $value }}s over the last 5m."

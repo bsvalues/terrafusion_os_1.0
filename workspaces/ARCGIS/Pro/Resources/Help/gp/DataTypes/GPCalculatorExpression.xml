@@ -1,0 +1,5 @@
+<DataType Name="GPCalculatorExpression">
+  <DisplayName>Calculator Expression</DisplayName>
+  <Description>A calculator expression.</Description>
+</DataType>
+

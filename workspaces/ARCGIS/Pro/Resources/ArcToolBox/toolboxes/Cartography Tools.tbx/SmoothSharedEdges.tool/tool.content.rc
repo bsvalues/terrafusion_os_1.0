@@ -1,0 +1,20 @@
+{
+    "map": {
+        "algorithm.descr": "<xdoc><p>Specifies the smoothing algorithm.</p><ul><li><span title=\"PAEK\">Polynomial Approximation with Exponential Kernel (PAEK)</span>— Calculates a smoothed polygon that will not pass through the input polygon vertices. It is the acronym for Polynomial Approximation with Exponential Kernel. This is the default.</li><li><span title=\"BEZIER_INTERPOLATION\">Bezier interpolation</span>—Fits Bezier curves between vertices. The resulting polygons pass through the vertices of the input polygons. This algorithm does not require a tolerance. Bezier curves will be approximated in the output.</li></ul></xdoc>",
+        "algorithm.domain.BEZIER_INTERPOLATION": "Bezier interpolation",
+        "algorithm.domain.PAEK": "Polynomial Approximation with Exponential Kernel (PAEK)",
+        "algorithm.title": "Smoothing Algorithm",
+        "description": "Smooths the edges of the input features while maintaining the topological relationship with edges shared with other features.",
+        "in_barriers.descr": "Point, line, or polygon features that act as barriers for smoothing. The smoothed features will not touch or cross barrier features.",
+        "in_barriers.title": "Input Barrier Layers",
+        "in_features.descr": "The lines or polygons to be smoothed.",
+        "in_features.title": "Input Features",
+        "out_feature_class.title": "Output Feature Class",
+        "out_shared_edge_feature_class.title": "Output Feature Class",
+        "shared_edge_features.descr": "Line or polygon features that will be smoothed along edges shared with input features. Other edges are not smoothed.",
+        "shared_edge_features.title": "Shared Edge Features",
+        "title": "Smooth Shared Edges",
+        "tolerance.descr": "Determines the degree of smoothing. A unit can be specified; if no unit is specified, the unit of the input will be used. This is only used for the PAEK algorithm. The parameter will not appear on the tool dialog box when Bezier interpolation is selected and, in scripting, a value of 0 must be used.",
+        "tolerance.title": "Smoothing Tolerance"
+    }
+}

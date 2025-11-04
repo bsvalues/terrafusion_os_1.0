@@ -1,0 +1,444 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light theme variables */
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 210 100% 45%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 210 100% 45%;
+    --radius: 0.75rem;
+    
+    /* TerraFusion brand colors - updated for 2025 design trends */
+    --color-primary-blue: 210 100% 45%;
+    --color-primary-blue-dark: 210 100% 35%;
+    --color-primary-blue-light: 210 100% 55%;
+    
+    --color-secondary-teal: 188 100% 42%;
+    --color-secondary-teal-dark: 188 100% 32%;
+    --color-secondary-teal-light: 188 100% 52%;
+    
+    --color-accent-purple: 265 100% 60%;
+    --color-accent-purple-dark: 265 100% 40%;
+    --color-accent-purple-light: 265 100% 75%;
+    
+    --color-accent-pink: 330 86% 62%;
+    --color-accent-pink-dark: 330 86% 42%;
+    --color-accent-pink-light: 330 86% 75%;
+    
+    /* Chart colors - updated for better contrast */
+    --chart-1: 210 100% 45%;
+    --chart-2: 265 100% 60%;
+    --chart-3: 330 86% 62%;
+    --chart-4: 188 100% 42%;
+    --chart-5: 30 100% 50%;
+  }
+
+  .dark {
+    /* Dark theme variables - enhanced for 2025 dark mode aesthetics */
+    --background: 222 47% 4%;
+    --foreground: 213 31% 95%;
+    --card: 222 47% 7%;
+    --card-foreground: 213 31% 95%;
+    --popover: 222 47% 5%;
+    --popover-foreground: 213 31% 95%;
+    --primary: 210 90% 55%;
+    --primary-foreground: 222 47% 4%;
+    --secondary: 222 47% 15%;
+    --secondary-foreground: 213 31% 95%;
+    --muted: 223 47% 13%;
+    --muted-foreground: 215.4 16.3% 75%;
+    --accent: 223 47% 13%;
+    --accent-foreground: 213 31% 95%;
+    --destructive: 0 63% 50%;
+    --destructive-foreground: 213 31% 95%;
+    --border: 222 47% 16%;
+    --input: 222 47% 16%;
+    --ring: 210 90% 55%;
+    
+    /* Sidebar colors - refined for modern UI */
+    --sidebar-background: 222 47% 3%;
+    --sidebar-foreground: 213 31% 95%;
+    --sidebar-primary: 210 90% 55%;
+    --sidebar-primary-foreground: 222 47% 4%;
+    --sidebar-accent: 222 47% 18%;
+    --sidebar-accent-foreground: 213 31% 95%;
+    --sidebar-border: 222 47% 13%;
+    --sidebar-ring: 210 90% 55%;
+  }
+}
+
+/* TerraFusion Components - 2025 Edition */
+
+/* Card styling - Minimalistic and UX-Focused */
+.tf-card {
+  @apply bg-card rounded-xl border border-border/30 shadow-sm dark:shadow-none dark:bg-opacity-70 backdrop-blur-sm;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tf-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(to bottom right, rgba(59, 130, 246, 0.03), rgba(0, 0, 0, 0));
+  opacity: 0.5;
+  z-index: 0;
+}
+
+.tf-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.tf-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 
+              0 8px 10px -6px rgba(0, 0, 0, 0.05);
+}
+
+.tf-card-gradient {
+  @apply relative rounded-xl overflow-hidden;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(16, 42, 91, 0.25) 100%);
+  transition: transform 0.3s ease;
+}
+
+.tf-card-gradient:hover {
+  transform: scale(1.01);
+}
+
+.tf-card-glass {
+  @apply bg-white/10 dark:bg-black/20 backdrop-blur-xl rounded-xl border border-white/20 shadow-lg;
+  position: relative;
+  overflow: hidden;
+}
+
+.tf-card-glass::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
+
+/* Button styling - Advanced Interactivity */
+.tf-button-primary {
+  @apply rounded-lg px-4 py-2 bg-primary text-primary-foreground transition-all duration-200 font-medium;
+  background-image: linear-gradient(to right, hsl(210, 100%, 45%), hsl(220, 100%, 40%));
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.2);
+}
+
+.tf-button-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: 0.5s;
+  z-index: -1;
+}
+
+.tf-button-primary:hover {
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.tf-button-primary:hover::before {
+  left: 100%;
+}
+
+.tf-button-primary:active {
+  transform: scale(0.97);
+}
+
+.tf-button-secondary {
+  @apply rounded-lg px-4 py-2 bg-secondary text-secondary-foreground border border-border/50 
+    transition-all duration-200 shadow-sm hover:shadow font-medium;
+}
+
+.tf-button-secondary:hover {
+  transform: translateY(-1px);
+}
+
+.tf-button-secondary:active {
+  transform: translateY(0);
+}
+
+.tf-button-outline {
+  @apply rounded-lg px-4 py-2 bg-transparent border border-primary text-primary
+    hover:bg-primary/10 transition-all duration-200 font-medium;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.tf-button-outline:hover {
+  box-shadow: 0 2px 10px rgba(59, 130, 246, 0.1);
+}
+
+.tf-button-outline:active {
+  transform: scale(0.98);
+}
+
+/* Typography - Modern Typefaces */
+.tf-heading {
+  @apply font-semibold tracking-tight text-foreground;
+  line-height: 1.2;
+}
+
+.tf-heading-display {
+  @apply font-bold tracking-tight text-foreground;
+  line-height: 1.1;
+}
+
+.tf-heading-large {
+  @apply font-bold text-3xl md:text-4xl lg:text-5xl tracking-tight text-foreground;
+  line-height: 1.1;
+}
+
+.tf-font-body {
+  @apply text-foreground/80 leading-relaxed;
+}
+
+/* Data visualization */
+.tf-chart-container {
+  @apply rounded-xl p-5 bg-card border border-border/30 relative overflow-hidden;
+  transition: transform 0.2s ease;
+}
+
+.tf-chart-container:hover {
+  transform: translateY(-2px);
+}
+
+.tf-chart-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(to bottom right, rgba(59, 130, 246, 0.03), rgba(0, 0, 0, 0));
+  z-index: 0;
+}
+
+.tf-chart-container > * {
+  position: relative;
+  z-index: 1;
+}
+
+.tf-stat-card {
+  @apply flex flex-col p-5 gap-2;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.tf-stat-value {
+  @apply text-2xl font-bold text-primary;
+  position: relative;
+}
+
+.tf-stat-value::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  height: 2px;
+  width: 30px;
+  background: linear-gradient(to right, hsl(var(--primary)), transparent);
+  border-radius: 2px;
+}
+
+.tf-stat-label {
+  @apply text-sm text-muted-foreground;
+}
+
+/* Navigation - Dynamic UI */
+.tf-nav-item {
+  @apply flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-150
+    hover:bg-primary/10 dark:hover:bg-primary/20;
+}
+
+.tf-nav-item.active {
+  @apply bg-primary/15 dark:bg-primary/25 text-primary;
+  position: relative;
+}
+
+.tf-nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: hsl(var(--primary));
+  border-radius: 0 3px 3px 0;
+}
+
+/* 3D Terrain effect for map containers - Immersive Experience */
+.terrain-3d-effect {
+  position: relative;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 
+              0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.terrain-3d-effect:hover {
+  transform: scale(1.01) rotateX(2deg);
+}
+
+.terrain-3d-effect::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 10;
+  background: 
+    linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%, rgba(0,0,0,0.2) 100%);
+  mix-blend-mode: overlay;
+  border-radius: inherit;
+}
+
+.terrain-3d-effect .ol-layer canvas {
+  transform: scale(1.005);
+  transition: transform 0.3s ease-out;
+  will-change: transform;
+  filter: saturate(1.2) contrast(1.1);
+}
+
+/* AI element styling - Sci-Fi Inspired */
+.tf-ai-icon {
+  @apply rounded-full p-2 text-primary;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(147, 51, 234, 0.3));
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.tf-ai-icon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.6), transparent 50%);
+  pointer-events: none;
+}
+
+.tf-ai-card {
+  @apply tf-card-glass border-primary/20;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(147, 51, 234, 0.08) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.tf-ai-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 10% 90%, rgba(59, 130, 246, 0.1), transparent 30%),
+    radial-gradient(circle at 90% 10%, rgba(147, 51, 234, 0.1), transparent 30%);
+  pointer-events: none;
+}
+
+/* 3D elevation chart - Noise and Texture */
+.tf-elevation-chart {
+  @apply relative h-40 rounded-xl overflow-hidden;
+  background: linear-gradient(180deg, 
+    rgba(59, 130, 246, 0.8) 0%, 
+    rgba(14, 165, 233, 0.7) 30%,
+    rgba(147, 51, 234, 0.6) 70%, 
+    rgba(236, 72, 153, 0.5) 100%
+  );
+}
+
+.tf-elevation-chart::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(ellipse at center, rgba(0,0,0,0) 0%, rgba(0,0,0,0.3) 100%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.15;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* Glowing effects - Dynamic Elements */
+.tf-glow-effect {
+  position: relative;
+  overflow: visible;
+}
+
+.tf-glow-effect::after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  z-index: -1;
+  background: radial-gradient(circle at center, rgba(59, 130, 246, 0.4) 0%, transparent 70%);
+  filter: blur(10px);
+  opacity: 0.6;
+  border-radius: inherit;
+  transition: opacity 0.3s ease;
+}
+
+.tf-glow-effect:hover::after {
+  opacity: 0.8;
+}
+
+/* Kinetic Typography Support */
+.tf-text-kinetic {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+}
+
+.tf-text-kinetic-slide-up {
+  animation: slideTextUp 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+}
+
+@keyframes slideTextUp {
+  0% { transform: translateY(100%); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.tf-text-kinetic-fade {
+  animation: textFade 0.8s ease;
+}
+
+@keyframes textFade {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}

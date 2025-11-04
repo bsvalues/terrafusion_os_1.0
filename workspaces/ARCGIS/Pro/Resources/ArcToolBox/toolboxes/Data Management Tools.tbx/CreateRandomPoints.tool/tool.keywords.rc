@@ -1,0 +1,12 @@
+{
+    "set": [
+        "bounding",
+        "box",
+        "constrain",
+        "dispersed",
+        "distribution",
+        "extent",
+        "generate",
+        "sample"
+    ]
+}

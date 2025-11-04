@@ -1,0 +1,19 @@
+{
+  "name": "@terrafusionpro/property-service",
+  "version": "1.0.0",
+  "description": "TerraFusionPro Property Service",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [
+    "property",
+    "service",
+    "real-estate",
+    "appraisal"
+  ],
+  "author": "TerraFusionPro Team",
+  "license": "UNLICENSED"
+}

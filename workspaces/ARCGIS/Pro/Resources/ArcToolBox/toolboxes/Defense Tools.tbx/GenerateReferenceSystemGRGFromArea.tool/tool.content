@@ -1,0 +1,132 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\GenerateReferenceSystemGRGFromArea",
+    "displayname": "$rc:title",
+    "helpcontent": "74030003",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "output_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:output_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "symbologylayer": "MT_GRG.lyrx",
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:output_feature_class.descr"
+        },
+        "grid_reference_system": {
+            "displayname": "$rc:grid_reference_system.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MGRS",
+                        "code": "$rc:grid_reference_system.domain.MGRS"
+                    },
+                    {
+                        "value": "USNG",
+                        "code": "$rc:grid_reference_system.domain.USNG"
+                    }
+                ]
+            },
+            "value": "MGRS",
+            "description": "$rc:grid_reference_system.descr"
+        },
+        "grid_square_size": {
+            "displayname": "$rc:grid_square_size.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "GRID_ZONE_DESIGNATOR",
+                        "code": "$rc:grid_square_size.domain.GRID_ZONE_DESIGNATOR"
+                    },
+                    {
+                        "value": "100000M_GRID",
+                        "code": "$rc:grid_square_size.domain.100000M_GRID"
+                    },
+                    {
+                        "value": "10000M_GRID",
+                        "code": "$rc:grid_square_size.domain.10000M_GRID"
+                    },
+                    {
+                        "value": "1000M_GRID",
+                        "code": "$rc:grid_square_size.domain.1000M_GRID"
+                    },
+                    {
+                        "value": "100M_GRID",
+                        "code": "$rc:grid_square_size.domain.100M_GRID"
+                    },
+                    {
+                        "value": "50M_GRID",
+                        "code": "$rc:grid_square_size.domain.50M_GRID"
+                    },
+                    {
+                        "value": "25M_GRID",
+                        "code": "$rc:grid_square_size.domain.25M_GRID"
+                    },
+                    {
+                        "value": "10M_GRID",
+                        "code": "$rc:grid_square_size.domain.10M_GRID"
+                    }
+                ]
+            },
+            "value": "GRID_ZONE_DESIGNATOR",
+            "description": "$rc:grid_square_size.descr"
+        },
+        "large_grid_handling": {
+            "type": "optional",
+            "displayname": "$rc:large_grid_handling.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NO_LARGE_GRIDS",
+                        "code": "$rc:large_grid_handling.domain.NO_LARGE_GRIDS"
+                    },
+                    {
+                        "value": "ALLOW_LARGE_GRIDS",
+                        "code": "$rc:large_grid_handling.domain.ALLOW_LARGE_GRIDS"
+                    }
+                ]
+            },
+            "value": "NO_LARGE_GRIDS",
+            "description": "$rc:large_grid_handling.descr"
+        }
+    },
+    "environments": [
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

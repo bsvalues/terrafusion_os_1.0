@@ -1,0 +1,124 @@
+Below is a consolidated, step-by-step plan for using the Replit AI Agent to bootstrap and drive the end-to-end consolidation of all your existing repos into the new Terrafusion monorepo, harmonize CI/CD, unify docs, and stabilize the plugin marketplace. The plan is divided into phases, each with explicit Replit AI Agent prompts you can copy-paste to keep the agent focused and autonomous.
+
+Summary
+
+This plan guides the Replit AI Agent through six key phases: (1) initializing the TurboRepo monorepo scaffold, (2) importing each existing repo via git subtree to preserve history, (3) establishing reusable GitHub Actions workflows to DRY out CI/CD, (4) consolidating all product docs into a single Docusaurus site with multi-instance support, (5) automating releases across packages with semantic-release-monorepo, and (6) stabilizing the plugin-marketplace interface. Each phase provides exactly the prompts to feed to the Replit AI Agent, ensuring it performs tasks autonomously and commits changes that pass CI.
+
+⸻
+
+Phase 1: Monorepo Bootstrap with TurboRepo
+
+Objective: Create a unified monorepo using TurboRepo’s incremental adoption, preserving existing folders and allowing gradual migration.
+Key Prompt for Replit AI Agent:
+
+# Phase 1: Initialize Terrafusion TurboRepo Monorepo
+# 1. Run `npx create-turbo@latest` to bootstrap a monorepo in the current workspace.
+# 2. Configure `turbo.json` for incremental adoption:
+#    - Set “pipeline” with tasks: build, lint, test.
+#    - Add `workspace:*` package globs for all apps and packages.
+# 3. Create folder structure: apps/{core,web-shell,worker-node,worker-python}, packages/{ui,crdt}.
+# 4. Commit with message: "chore: bootstrap TurboRepo monorepo scaffold"
+
+This uses TurboRepo’s zero-config incremental adoption to host multiple apps and packages in one repo  .
+
+⸻
+
+Phase 2: Import Existing Repositories via Git Subtree
+
+Objective: Pull each codebase (e.g., bsvalues/PropertyTaxAI, BCBSLevy, GeospatialAnalyzerBS, etc.) into its own folder while retaining full Git history.
+For each repo, feed the agent:
+
+# Phase 2: Import <REPO_NAME> via git subtree
+# 1. Add remote: `git remote add <ALIAS> <REPO_URL>`
+# 2. Fetch: `git fetch <ALIAS>`
+# 3. Subtree add: 
+#    `git subtree add --prefix=apps/<ALIAS> <ALIAS> main --squash`
+# 4. Commit with message: "chore: import <REPO_NAME> as subtree"
+
+Using git subtree add preserves history and avoids submodule complexity  .
+
+⸻
+
+Phase 3: Harmonize CI/CD with Reusable Workflows
+
+Objective: Consolidate individual GitHub Actions into centrally maintained, DRY reusable workflows.
+Agent Prompt:
+
+# Phase 3: Create and adopt reusable GitHub Actions workflows
+# 1. Create .github/workflows/build-test-deploy.yml with on: workflow_call, jobs: build, test, deploy.
+# 2. Move common logic (checkout, setup-node, install, lint, test) into .github/workflows/_ci-core.yml as reusable workflow.
+# 3. In each app’s workflow, call the reusable workflow:
+#    uses: ./.github/workflows/_ci-core.yml@main
+#    with: node-version: '18.x'
+#    secrets: inherit
+# 4. Commit: "ci: adopt reusable workflows for build/test/deploy"
+
+This leverages GitHub’s reusable workflows to avoid duplication across multiple apps  .
+
+⸻
+
+Phase 4: Unify Documentation with Docusaurus Multi-Instance
+
+Objective: Merge all doc sites (TerraFusionMono, GeospatialAnalyzerBS docs, TerraFlow docs, etc.) into one Docusaurus v3 site using multi-instance docs plugin.
+Agent Prompt:
+
+# Phase 4: Consolidate docs into Docusaurus multi-instance
+# 1. Install Docusaurus: `npx create-docusaurus@latest docs classic`
+# 2. In docusaurus.config.js, add multiple plugin instances:
+#    - '@docusaurus/plugin-content-docs' {id: 'core', path: 'docs/core', routeBasePath: 'core'}
+#    - '@docusaurus/plugin-content-docs' {id: 'gis', path: 'docs/gis', routeBasePath: 'gis'}
+#    - ...for each product
+# 3. Configure sidebars in sidebars.js per instance.
+# 4. Commit: "docs: unify all product docs under docusaurus multi-instance"
+
+This uses the Multi-Instance plugin to host distinct doc sets with independent versioning  .
+
+⸻
+
+Phase 5: Automate Releases with semantic-release-monorepo
+
+Objective: Enable automatic, independent package releases based on commit scopes across the monorepo.
+Agent Prompt:
+
+# Phase 5: Configure semantic-release-monorepo
+# 1. Install devDeps: `yarn add -D semantic-release semantic-release-monorepo`
+# 2. In each package’s .releaserc.json, extend:
+#    {"extends":"semantic-release-monorepo"}
+# 3. Add `release` script in package.json: "semantic-release -e semantic-release-monorepo"
+# 4. Commit: "ci: add semantic-release-monorepo for automated package releases"
+
+This ensures each package in the monorepo only publishes when its code changes  .
+
+⸻
+
+Phase 6: Stabilize Plugin Marketplace Interface
+
+Objective: Harmonize the plugin-marketplace UI, implement feature flag toggles, and add signature verification on plugin manifests.
+Agent Prompt:
+
+# Phase 6: Harden plugin marketplace UI
+# 1. Refactor marketplace React app under apps/web-shell/src/plugins
+# 2. Implement manifest signature check using Cosign in PluginLoader service.
+# 3. Add Stripe webhook handler to toggle premium flags on plugin manifests.
+# 4. Commit: "feat(marketplace): secure plugin manifest and integrate Stripe feature flags"
+
+This locks down plugin loading and billing integration to enterprise standards.
+
+⸻
+
+Putting It All Together
+
+Daily Stand-Up Approval
+
+# Stand-Up: Approve prompts 1–6 for Replit AI Agent 
+
+Execution
+
+# Paste each phase prompt into the Replit AI Agent sequentially
+# Monitor commits, verify CI green, and ensure preliminary manual QA
+
+Validation
+	•	Run end-to-end tests (existing scripts or new ones in scripts/test-terrafield.sh).
+	•	Confirm docs site builds, CI workflows trigger correctly, and semantic releases produce tagged releases.
+
+By feeding these concise, phase-focused prompts to the Replit AI Agent, you’ll drive an autonomous, traceable migration to the unified Terrafusion monorepo, complete with modern CI/CD, consolidated docs, and enterprise-grade release processes.

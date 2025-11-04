@@ -1,0 +1,177 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\CompareAreas",
+    "displayname": "$rc:title",
+    "helpcontent": "73060002",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "spark"
+    ],
+    "params": {
+        "in_point_features": {
+            "displayname": "$rc:in_point_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_point_features.descr"
+        },
+        "in_area_features": {
+            "displayname": "$rc:in_area_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_area_features.descr"
+        },
+        "out_featureclass": {
+            "direction": "out",
+            "displayname": "$rc:out_featureclass.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_featureclass.descr"
+        },
+        "point_id_field": {
+            "displayname": "$rc:point_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_point_features"
+            ],
+            "description": "$rc:point_id_field.descr"
+        },
+        "area_id_field": {
+            "displayname": "$rc:area_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_area_features"
+            ],
+            "description": "$rc:area_id_field.descr"
+        },
+        "relationship": {
+            "displayname": "$rc:relationship.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "LOCATION_ONLY",
+                        "code": "$rc:relationship.domain.LOCATION_ONLY"
+                    },
+                    {
+                        "value": "LOCATION_TIME",
+                        "code": "$rc:relationship.domain.LOCATION_TIME"
+                    }
+                ]
+            },
+            "value": "LOCATION_ONLY",
+            "description": "$rc:relationship.descr"
+        },
+        "time_difference": {
+            "type": "optional",
+            "displayname": "$rc:time_difference.title",
+            "datatype": {
+                "type": "GPTimeUnit"
+            },
+            "description": "$rc:time_difference.descr"
+        },
+        "time_relationship": {
+            "type": "optional",
+            "displayname": "$rc:time_relationship.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NEAR",
+                        "code": "$rc:time_relationship.domain.NEAR"
+                    },
+                    {
+                        "value": "NEAR_BEFORE",
+                        "code": "$rc:time_relationship.domain.NEAR_BEFORE"
+                    },
+                    {
+                        "value": "NEAR_AFTER",
+                        "code": "$rc:time_relationship.domain.NEAR_AFTER"
+                    }
+                ]
+            },
+            "description": "$rc:time_relationship.descr"
+        },
+        "include_time_statistics": {
+            "type": "optional",
+            "displayname": "$rc:include_time_statistics.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "TIME_STATISTICS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_TIME_STATISTICS"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:include_time_statistics.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "workspace"
+    ]
+}

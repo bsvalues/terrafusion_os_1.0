@@ -1,0 +1,129 @@
+{% extends "layout.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0">Scraper Settings</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('settings') }}">
+                    <div class="mb-4">
+                        <h5><i data-feather="user" class="me-2"></i> Credentials</h5>
+                        <div class="mb-3">
+                            <label for="username" class="form-label">NARRPR Username/Email</label>
+                            <input type="email" class="form-control" id="username" name="username" value="{{ config.narrpr.username }}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">NARRPR Password</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="password" name="password" value="{{ config.narrpr.password }}">
+                                <button class="btn btn-outline-secondary password-toggle" type="button" data-password-field="#password">
+                                    <i data-feather="eye"></i>
+                                </button>
+                            </div>
+                            <div class="form-text text-muted">Password is stored securely in the configuration file.</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5><i data-feather="settings" class="me-2"></i> Scraper Configuration</h5>
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="headless" name="headless" {% if config.narrpr.headless %}checked{% endif %}>
+                                <label class="form-check-label" for="headless">Run in headless mode (without visible browser)</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="timeout" class="form-label">Timeout (seconds)</label>
+                                <input type="number" class="form-control" id="timeout" name="timeout" value="{{ config.narrpr.timeout }}" min="5" max="120">
+                                <div class="form-text text-muted">Maximum time to wait for elements to load.</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="wait_time" class="form-label">Wait Time (seconds)</label>
+                                <input type="number" class="form-control" id="wait_time" name="wait_time" value="{{ config.scraping.wait_time }}" min="1" max="30">
+                                <div class="form-text text-muted">Time to wait between actions.</div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="retry_attempts" class="form-label">Retry Attempts</label>
+                            <input type="number" class="form-control" id="retry_attempts" name="retry_attempts" value="{{ config.scraping.retry_attempts }}" min="1" max="10">
+                            <div class="form-text text-muted">Number of retry attempts when operations fail.</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5><i data-feather="clock" class="me-2"></i> Schedule</h5>
+                        <div class="alert alert-info">
+                            <i data-feather="info" class="me-2"></i> Scheduling functionality will be available in a future update.
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i data-feather="save" class="me-2"></i> Save Settings
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Database Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Host</label>
+                    <input type="text" class="form-control" value="{{ config.database.host }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Database</label>
+                    <input type="text" class="form-control" value="{{ config.database.database }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">User</label>
+                    <input type="text" class="form-control" value="{{ config.database.user }}" readonly>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Output Configuration</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">CSV Directory</label>
+                    <input type="text" class="form-control" value="{{ config.output.csv_directory }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Reports Directory</label>
+                    <input type="text" class="form-control" value="{{ config.output.report_directory }}" readonly>
+                </div>
+                <button class="btn btn-outline-secondary btn-sm mt-2">
+                    <i data-feather="folder" class="me-2"></i> Open Output Directory
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Feather icons
+        feather.replace();
+    });
+</script>
+{% endblock %}

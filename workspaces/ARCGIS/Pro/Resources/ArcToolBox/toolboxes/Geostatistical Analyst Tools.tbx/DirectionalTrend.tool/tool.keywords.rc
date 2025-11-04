@@ -1,0 +1,10 @@
+{
+    "set": [
+        "esda",
+        "chart",
+        "exploratory",
+        "plot",
+        "scatter",
+        "scatterplot"
+    ]
+}

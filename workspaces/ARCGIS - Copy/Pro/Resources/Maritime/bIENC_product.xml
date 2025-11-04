@@ -1,0 +1,686 @@
+<?xml version="1.0" encoding="utf-8"?>
+<NAUTICAL_PRODUCT name="bIENC" version="2.9" productedition="2.4">
+	<FEATUREDATASET name="Nautical" />
+	<GENERATE_NO_COVERAGE value = "F"/>
+	<ATTRIBUTE_GROUPS default_group_id="misc" s57_group_id="s57Attr">
+		<GROUP id = "featID" name = "Feature Identity"/>
+		<GROUP id = "s57Attr" name = "S-57 Attributes"/>
+		<GROUP id = "featExtr" name = "Feature Extraction"/>
+		<GROUP id = "editorTrack" name = "Editor Tracking"/>
+		<GROUP id = "misc" name = "Miscellaneous"/>
+	</ATTRIBUTE_GROUPS>
+	<COMMONFIELDS>
+		<COMMONFIELD name="UID" field="NOID" group_id="featID"/>
+		<COMMONFIELD name="VERIFIED" field="NIS_VERIFIED" group_id="editorTrack"/>
+		<COMMONFIELD name="VERIFIER" field="NIS_VERIFIER" group_id="editorTrack"/>
+		<COMMONFIELD name="VERIFIED_DATE" field="NIS_VERIFY_DATE" group_id="editorTrack"/>
+		<COMMONFIELD name="LNAM" field="LNAM" group_id="featID"/>
+		<COMMONFIELD name="DSNM" field="DSNM" group_id="featID"/>
+		<COMMONFIELD name="LAST_MOD" field="NIS_LAST_MOD" group_id="editorTrack" />
+		<COMMONFIELD name="EDITOR" field="NIS_EDITOR" group_id="editorTrack" />
+		<COMMONFIELD name="DEPTH" field="DEPTH" group_id="s57Attr"/>
+		<COMMONFIELD name="SUBTYPE" field="FCSubtype"  group_id="featID"/>
+		<COMMONFIELD name="SCALEBAND" field="PLTS_COMP_SCALE"  group_id="featExtr"/>
+		<COMMONFIELD name="CONFLATE" field="IS_CONFLATE" group_id="featExtr"/>
+		<COMMONFIELD name="NISPRODUCTS" field="NIS_PRODUCTS" group_id="featExtr"/>
+		<COMMONFIELD name="OBJECTID" field="OBJECTID" group_id="featID"/>
+		<COMMONFIELD name="GlobalID" field="GlobalID" group_id="featID"/>
+		<COMMONFIELD name="DELETE_COMMENT" field="DELETE_COMMENT" group_id ="editorTrack"/>
+		<COMMONFIELD name="EDITOR_COMMENT" field="NIS_EDITOR_COMMENT" group_id ="editorTrack"/>
+		<COMMONFIELD name="P_HORDAT" field="P_HORDAT" group_id="s57Attr"/>
+		<COMMONFIELD name="P_POSACC" field="P_POSACC" group_id="s57Attr"/>
+		<COMMONFIELD name="P_QUAPOS" field="P_QUAPOS" group_id="s57Attr"/>
+	</COMMONFIELDS>
+	<SUPPORTTABLES>
+		<SUPPORTTABLE name="PLTS_SpatialAttributeL" type="saf" />
+		<SUPPORTTABLE name="PLTS_FREL" type="frel" />
+		<SUPPORTTABLE name="PLTS_COLLECTIONS" type="collections" />
+		<SUPPORTTABLE name="PLTS_MASTER_SLAVES" type="MasterSlave" />
+		<SUPPORTTABLE name="PLTS_NAUTICAL_DELETES_P" type="NauticalDeletesP" />
+		<SUPPORTTABLE name="PLTS_NAUTICAL_DELETES_L" type="NauticalDeletesL" />
+		<SUPPORTTABLE name="PLTS_NAUTICAL_DELETES_A" type="NauticalDeletesA" />
+		<SUPPORTTABLE name="ClosingLinesL" type="Closinglines" />
+	</SUPPORTTABLES>
+	<PRODUCTMAP>
+		<OBJECTMAP>
+			<S57OBJECT name="DEPARE" code="42" type="A" grup="1" classification="0" objectclass="GR"/>
+			<GDBOBJECT name="DepthsA" type="A" subtype="DEPARE_DepthArea" />
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="DRVAL1" code="87" set="A" qc="1" attribute="0" mandatory="true"/>
+				<GDBATTRIBUTE name="DRVAL1" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="DRVAL2" code="88" set="A" qc="1" attribute="0" mandatory="true"/>
+				<GDBATTRIBUTE name="DRVAL2" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="QUASOU" code="125" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="QUASOU" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="INFORM" code="102" set="B" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="INFORM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NINFOM" code="300" set="B" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NINFOM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NTXTDS" code="304" set="B" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NTXTDS" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SCAMIN" code="133" set="B" qc="1" attribute="0"/>
+				<GDBATTRIBUTE name="SCAMIN_STEP" ignoreOnImport="true" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="TXTDSC" code="158" set="B" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="TXTDSC" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORDAT" code="147" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORDAT" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORIND" code="148" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORIND" />
+			</ATTRIBUTEMAP>
+		</OBJECTMAP>
+		<OBJECTMAP>
+			<S57OBJECT name="DEPCNT" code="43" type="L" grup="2" classification="0" objectclass="GR"/>
+			<GDBOBJECT name="DepthsL" type="L" subtype="DEPCNT_DepthContour" />
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="VALDCO" code="174" set="A" qc="1" attribute="0" mandatory="true"/>
+				<GDBATTRIBUTE name="VALDCO" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="INFORM" code="102" set="B" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="INFORM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NINFOM" code="300" set="B" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NINFOM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NTXTDS" code="304" set="B" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NTXTDS" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SCAMIN" code="133" set="B" qc="1" attribute="0"/>
+				<GDBATTRIBUTE name="SCAMIN_STEP" ignoreOnImport="true" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="TXTDSC" code="158" set="B" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="TXTDSC" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORDAT" code="147" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORDAT" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORIND" code="148" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORIND" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="P_QUAPOS" code="3040" set="C" qc="2" attribute="0"/>
+				<GDBATTRIBUTE name="P_QUAPOS" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="P_HORDAT" code="3041" set="C" qc="2" attribute="0"/>
+				<GDBATTRIBUTE name="P_HORDAT" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="P_POSACC" code="3042" set="C" qc="2" attribute="0"/>
+				<GDBATTRIBUTE name="P_POSACC" />
+			</ATTRIBUTEMAP>
+		</OBJECTMAP>
+		<OBJECTMAP>
+			<S57OBJECT name="DRGARE" code="46" type="A" grup="1" classification="0" objectclass="GR"/>
+			<GDBOBJECT name="DepthsA" type="A" subtype="DRGARE_DredgedArea" />
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="DRVAL1" code="87" set="A" qc="0" attribute="0" mandatory="true"/>
+				<GDBATTRIBUTE name="DRVAL1" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="DRVAL2" code="88" set="A" qc="1" attribute="0"/>
+				<GDBATTRIBUTE name="DRVAL2" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NOBJNM" code="301" set="A" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NOBJNM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="OBJNAM" code="116" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="OBJNAM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="QUASOU" code="125" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="QUASOU" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SOUACC" code="144" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SOUACC" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="TECSOU" code="156" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="TECSOU" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="INFORM" code="102" set="B" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="INFORM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NINFOM" code="300" set="B" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NINFOM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NTXTDS" code="304" set="B" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NTXTDS" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SCAMIN" code="133" set="B" qc="1" attribute="0"/>
+				<GDBATTRIBUTE name="SCAMIN_STEP" ignoreOnImport="true" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="TXTDSC" code="158" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="TXTDSC" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORDAT" code="147" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORDAT" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORIND" code="148" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORIND" />
+			</ATTRIBUTEMAP>
+		</OBJECTMAP>
+		<OBJECTMAP>
+			<S57OBJECT name="SOUNDG" code="129" type="P" grup="2" classification="0" objectclass="GR"/>
+			<GDBOBJECT name="SoundingsP" type="P" subtype="SOUNDG_Soundings" special_case="sounding"/>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="EXPSOU" code="93" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="EXPSOU" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NOBJNM" code="301" set="A" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NOBJNM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="OBJNAM" code="116" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="OBJNAM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="QUASOU" code="125" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="QUASOU" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SOUACC" code="144" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SOUACC" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="TECSOU" code="156" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="TECSOU" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="INFORM" code="102" set="B" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="INFORM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NINFOM" code="300" set="B" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NINFOM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NTXTDS" code="304" set="B" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NTXTDS" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SCAMIN" code="133" set="B" qc="1" attribute="0"/>
+				<GDBATTRIBUTE name="SCAMIN_STEP" ignoreOnImport="true" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="TXTDSC" code="158" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="TXTDSC" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORDAT" code="147" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORDAT" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORIND" code="148" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORIND" />
+			</ATTRIBUTEMAP>
+		</OBJECTMAP>
+		<OBJECTMAP>
+			<S57OBJECT name="UNSARE" code="154" type="A" grup="1" classification="0" objectclass="GR"/>
+			<GDBOBJECT name="DepthsA" type="A" subtype="UNSARE_UnsurveyedArea"/>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="INFORM" code="102" set="B" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="INFORM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NINFOM" code="300" set="B" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NINFOM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NTXTDS" code="304" set="B" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NTXTDS" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SCAMIN" code="133" set="B" qc="1" attribute="0"/>
+				<GDBATTRIBUTE name="SCAMIN_STEP" ignoreOnImport="true" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="TXTDSC" code="158" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="TXTDSC" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORDAT" code="147" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORDAT" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORIND" code="148" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORIND" />
+			</ATTRIBUTEMAP>
+		</OBJECTMAP>
+		<OBJECTMAP>
+			<S57OBJECT name="M_CSCL" code="301" type="A" grup="2" classification="0" objectclass="MR"/>
+			<GDBOBJECT name="MetaDataA" type="A" subtype="M_CSCL_CompilationScaleOfData" />
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="CSCALE" code="80" set="A" qc="1" attribute="0" mandatory="true"/>
+				<GDBATTRIBUTE name="CSCALE" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="INFORM" code="102" set="B" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="INFORM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NINFOM" code="300" set="B" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NINFOM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NTXTDS" code="304" set="B" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NTXTDS" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="TXTDSC" code="158" set="B" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="TXTDSC" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORDAT" code="147" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORDAT" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORIND" code="148" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORIND" />
+			</ATTRIBUTEMAP>
+		</OBJECTMAP>
+		<OBJECTMAP>
+			<S57OBJECT name="M_COVR" code="302" type="A" grup="2" classification="0" objectclass="MR"/>
+			<GDBOBJECT name="ProductCoverage" type="A" subtype="" />
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="CATCOV" code="18" set="A" qc="1" attribute="0" mandatory="true" unknown_allowed="false"/>
+				<GDBATTRIBUTE name="CATCOV" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="INFORM" code="102" set="B" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="INFORM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NINFOM" code="300" set="B" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NINFOM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORDAT" code="147" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORDAT" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORIND" code="148" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORIND" />
+			</ATTRIBUTEMAP>
+		</OBJECTMAP>
+		<OBJECTMAP>
+			<S57OBJECT name="M_NPUB" code="305" type="A" grup="2" classification="0" objectclass="MR"/>
+			<GDBOBJECT name="MetaDataA" type="A" subtype="M_NPUB_NauticalPublicationInformation" />
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="INFORM" code="102" set="B" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="INFORM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NINFOM" code="300" set="B" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NINFOM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NTXTDS" code="304" set="B" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NTXTDS" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="PICREP" code="120" set="B" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="PICREP" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="PUBREF" code="124" set="B" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="PUBREF" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="TXTDSC" code="158" set="B" qc="1" attribute="0"/>
+				<GDBATTRIBUTE name="TXTDSC" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORDAT" code="147" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORDAT" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORIND" code="148" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORIND" />
+			</ATTRIBUTEMAP>
+		</OBJECTMAP>
+		<OBJECTMAP>
+			<S57OBJECT name="M_QUAL" code="308" type="A" grup="2" classification="0" objectclass="MR"/>
+			<GDBOBJECT name="MetaDataA" type="A" subtype="M_QUAL_QualityOfData" />
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="CATZOC" code="72" set="A" qc="0" attribute="0" mandatory="true" unknown_allowed="false"/>
+				<GDBATTRIBUTE name="CATZOC" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="DRVAL1" code="87" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="DRVAL1" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="DRVAL2" code="88" set="A" qc="1" attribute="0"/>
+				<GDBATTRIBUTE name="DRVAL2" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="POSACC" code="401" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="POSACC" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SOUACC" code="144" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SOUACC" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SUREND" code="151" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SUREND" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SURSTA" code="152" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SURSTA" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="TECSOU" code="156" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="TECSOU" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="INFORM" code="102" set="B" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="INFORM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NINFOM" code="300" set="B" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NINFOM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NTXTDS" code="304" set="B" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NTXTDS" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="TXTDSC" code="158" set="B" qc="1" attribute="0"/>
+				<GDBATTRIBUTE name="TXTDSC" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORDAT" code="147" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORDAT" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORIND" code="148" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORIND" />
+			</ATTRIBUTEMAP>
+		</OBJECTMAP>
+		<OBJECTMAP>
+			<S57OBJECT name="M_SDAT" code="309" type="A" grup="2" classification="0" objectclass="MR"/>
+			<GDBOBJECT name="MetaDataA" type="A" subtype="M_SDAT_SoundingDatum" />
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="VERDAT" code="185" set="A" qc="1" attribute="0" mandatory="true" unknown_allowed="false"/>
+				<GDBATTRIBUTE name="VERDAT" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="INFORM" code="102" set="B" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="INFORM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NINFOM" code="300" set="B" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NINFOM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NTXTDS" code="304" set="B" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NTXTDS" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="TXTDSC" code="158" set="B" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="TXTDSC" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORDAT" code="147" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORDAT" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORIND" code="148" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORIND" />
+			</ATTRIBUTEMAP>
+		</OBJECTMAP>
+		<OBJECTMAP>
+			<S57OBJECT name="M_SREL" code="310" type="A" grup="2" classification="0" objectclass="MR"/>
+			<GDBOBJECT name="MetaDataA" type="A" subtype="M_SREL_SurveyReliability" />
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="QUAPOS" code="402" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="QUAPOS" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="QUASOU" code="125" set="A" qc="1" attribute="0"/>
+				<GDBATTRIBUTE name="QUASOU" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SDISMN" code="146" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SDISMN" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SDISMX" code="145" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SDISMX" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SURATH" code="150" set="A" qc="1" attribute="0"/>
+				<GDBATTRIBUTE name="SURATH" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SUREND" code="151" set="A" qc="1" attribute="0"/>
+				<GDBATTRIBUTE name="SUREND" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SURSTA" code="152" set="A" qc="1" attribute="0"/>
+				<GDBATTRIBUTE name="SURSTA" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SURTYP" code="153" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SURTYP" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="TECSOU" code="156" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="TECSOU" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="INFORM" code="102" set="B" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="INFORM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NINFOM" code="300" set="B" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NINFOM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NTXTDS" code="304" set="B" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NTXTDS" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="TXTDSC" code="158" set="B" qc="1" attribute="0"/>
+				<GDBATTRIBUTE name="TXTDSC" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORDAT" code="147" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORDAT" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORIND" code="148" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORIND" />
+			</ATTRIBUTEMAP>
+		</OBJECTMAP>
+		<OBJECTMAP>
+			<S57OBJECT name="M_SREL" code="310" type="L" grup="2" classification="0" objectclass="MR"/>
+			<GDBOBJECT name="MetaDataL" type="L" subtype="M_SREL_SurveyReliability" />
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="QUAPOS" code="402" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="QUAPOS" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="QUASOU" code="125" set="A" qc="1" attribute="0"/>
+				<GDBATTRIBUTE name="QUASOU" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SDISMN" code="146" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SDISMN" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SDISMX" code="145" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SDISMX" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SURATH" code="150" set="A" qc="1" attribute="0"/>
+				<GDBATTRIBUTE name="SURATH" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SUREND" code="151" set="A" qc="1" attribute="0"/>
+				<GDBATTRIBUTE name="SUREND" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SURSTA" code="152" set="A" qc="1" attribute="0"/>
+				<GDBATTRIBUTE name="SURSTA" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SURTYP" code="153" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SURTYP" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="TECSOU" code="156" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="TECSOU" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="INFORM" code="102" set="B" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="INFORM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NINFOM" code="300" set="B" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NINFOM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NTXTDS" code="304" set="B" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NTXTDS" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="TXTDSC" code="158" set="B" qc="1" attribute="0"/>
+				<GDBATTRIBUTE name="TXTDSC" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORDAT" code="147" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORDAT" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORIND" code="148" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORIND" />
+			</ATTRIBUTEMAP>
+		</OBJECTMAP>
+		<OBJECTMAP>
+			<S57OBJECT name="depare" code="17003" type="A" grup="1" classification="0" objectclass="GR"/>
+			<GDBOBJECT name="DepthsA" type="A" subtype="IDEPARE_IDepthArea" />
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="DRVAL1" code="87" set="A" qc="1" attribute="0" mandatory="true"/>
+				<GDBATTRIBUTE name="DRVAL1" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="DRVAL2" code="88" set="A" qc="1" attribute="0" mandatory="true"/>
+				<GDBATTRIBUTE name="DRVAL2" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="eleva1" code="17061" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="ieleva1" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="eleva2" code="17062" set="A" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="ieleva2" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="QUASOU" code="125" set="B" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="QUASOU" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="hunits" code="17103" set="B" qc="0" attribute="0" mandatory="true"/>
+				<GDBATTRIBUTE name="IHUNITS" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="wtwdis" code="17064" set="B" qc="1" attribute="0" mandatory="true"/>
+				<GDBATTRIBUTE name="IWTWDIS" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORDAT" code="147" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORDAT" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORIND" code="148" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORIND" />
+			</ATTRIBUTEMAP>
+		</OBJECTMAP>
+		<OBJECTMAP>
+			<S57OBJECT name="m_sdat" code="17022" type="A" grup="2" classification="0" objectclass="MR"/>
+			<GDBOBJECT name="MetaDataA" type="A" subtype="IM_SDAT_ISoundingDatum"/>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="verdat" code="17005" set="A" qc="1" attribute="0" mandatory="true" unknown_allowed="false"/>
+				<GDBATTRIBUTE name="IVERDAT" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORDAT" code="147" set="B" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORDAT" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORIND" code="148" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORIND" />
+			</ATTRIBUTEMAP>
+		</OBJECTMAP>
+		<OBJECTMAP>
+			<S57OBJECT name="M_ACCY" code="300" type="A" grup="2" classification="0" objectclass="MR"/>
+			<GDBOBJECT name="MetaDataA" type="A" subtype="M_ACCY_AccuracyOfData" />
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="POSACC" code="401" set="A" qc="1" attribute="0"/>
+				<GDBATTRIBUTE name="POSACC" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="INFORM" code="102" set="B" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="INFORM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NINFOM" code="300" set="B" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NINFOM" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="NTXTDS" code="304" set="B" qc="0" attribute="1"/>
+				<GDBATTRIBUTE name="NTXTDS" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="TXTDSC" code="158" set="B" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="TXTDSC" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORDAT" code="147" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORDAT" />
+			</ATTRIBUTEMAP>
+			<ATTRIBUTEMAP>
+				<S57ATTRIBUTE name="SORIND" code="148" set="C" qc="0" attribute="0"/>
+				<GDBATTRIBUTE name="SORIND" />
+			</ATTRIBUTEMAP>
+		</OBJECTMAP>
+	</PRODUCTMAP>
+</NAUTICAL_PRODUCT>

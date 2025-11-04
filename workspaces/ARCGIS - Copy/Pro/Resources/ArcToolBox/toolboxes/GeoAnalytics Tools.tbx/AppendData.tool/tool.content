@@ -1,0 +1,149 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "51020004",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "spark"
+    ],
+    "params": {
+        "input_layer": {
+            "displayname": "$rc:input_layer.title",
+            "datatype": {
+                "type": "GPRecordSet"
+            },
+            "description": "$rc:input_layer.descr"
+        },
+        "append_layer": {
+            "displayname": "$rc:append_layer.title",
+            "datatype": {
+                "type": "GPRecordSet"
+            },
+            "domain": {
+                "type": "GPTablesDomain",
+                "portaltype": [
+                    "DataStoreCatalogLayer"
+                ]
+            },
+            "description": "$rc:append_layer.descr"
+        },
+        "append_method": {
+            "displayname": "$rc:append_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MATCHING_ONLY",
+                        "code": "$rc:append_method.domain.MATCHING_ONLY"
+                    },
+                    {
+                        "value": "FIELD_MAPPING",
+                        "code": "$rc:append_method.domain.FIELD_MAPPING"
+                    }
+                ]
+            },
+            "value": "MATCHING_ONLY",
+            "description": "$rc:append_method.descr"
+        },
+        "append_fields": {
+            "type": "optional",
+            "displayname": "$rc:append_fields.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:append_fields.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:append_fields.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "value",
+                                "code": "$rc:append_fields.domain.item1.value"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "value",
+                                "code": "$rc:append_fields.domain.item2.value"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:append_fields.descr"
+        },
+        "append_expressions": {
+            "type": "optional",
+            "control_guid": "{F604736F-06D8-47CD-AC15-7055F7FCDAC1}",
+            "displayname": "$rc:append_expressions.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:append_expressions.dt.title1"
+                    },
+                    {
+                        "type": "GPCalculatorExpression",
+                        "displayname": "$rc:append_expressions.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "value",
+                                "code": "$rc:append_expressions.domain.item1.value"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "depends": [
+                "append_layer"
+            ],
+            "description": "$rc:append_expressions.descr"
+        },
+        "append_result": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:append_result.title",
+            "datatype": {
+                "type": "GPRecordSet"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    },
+    "environments": [
+        "extent",
+        "workspace"
+    ]
+}

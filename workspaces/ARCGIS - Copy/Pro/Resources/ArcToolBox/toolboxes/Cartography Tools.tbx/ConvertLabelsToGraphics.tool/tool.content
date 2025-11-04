@@ -1,0 +1,138 @@
+{
+    "type": "FunctionTool",
+    "guid": "{3c12a1b1-aa0b-49aa-ac71-a532fec22c5c}",
+    "displayname": "$rc:title",
+    "helpcontent": "10000006",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "input_map": {
+            "displayname": "$rc:input_map.title",
+            "datatype": {
+                "type": "GPMap"
+            },
+            "description": "$rc:input_map.descr"
+        },
+        "conversion_scale": {
+            "control_guid": "{B23D9E8D-E360-4670-919E-A7F8FFF0DC19}",
+            "displayname": "$rc:conversion_scale.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:conversion_scale.descr"
+        },
+        "which_layers": {
+            "type": "optional",
+            "displayname": "$rc:which_layers.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ALL_LAYERS",
+                        "code": "$rc:which_layers.domain.ALL_LAYERS"
+                    },
+                    {
+                        "value": "SINGLE_LAYER",
+                        "code": "$rc:which_layers.domain.SINGLE_LAYER"
+                    }
+                ]
+            },
+            "value": "ALL_LAYERS",
+            "description": "$rc:which_layers.descr"
+        },
+        "single_layer": {
+            "type": "optional",
+            "displayname": "$rc:single_layer.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:single_layer.descr"
+        },
+        "graphics_suffix": {
+            "type": "optional",
+            "displayname": "$rc:graphics_suffix.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "Graphics",
+            "description": "$rc:graphics_suffix.descr"
+        },
+        "extent": {
+            "type": "optional",
+            "displayname": "$rc:extent.title",
+            "datatype": {
+                "type": "GPExtent"
+            },
+            "defaultenvironmentname": "extent",
+            "description": "$rc:extent.descr"
+        },
+        "multiple_graphics_layers": {
+            "type": "optional",
+            "displayname": "$rc:multiple_graphics_layers.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SINGLE_GRAPHICS_LAYER"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "GRAPHICS_LAYER_PER_FEATURE_LAYER"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:multiple_graphics_layers.descr"
+        },
+        "generate_unplaced": {
+            "type": "optional",
+            "displayname": "$rc:generate_unplaced.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "GENERATE_UNPLACED"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "ONLY_PLACED"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:generate_unplaced.descr"
+        },
+        "output_group_layer": {
+            "type": "optional",
+            "direction": "out",
+            "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}",
+            "displayname": "$rc:output_group_layer.title",
+            "datatype": {
+                "type": "GPGroupLayer"
+            },
+            "value": "GroupGraphics",
+            "description": "$rc:output_group_layer.descr"
+        }
+    }
+}

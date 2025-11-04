@@ -1,0 +1,144 @@
+{
+  "folders": [
+    {
+      "name": "🏛️ CostForge AI - Root",
+      "path": ".",
+    },
+    {
+      "name": "⚛️ Client (React)",
+      "path": "./client",
+    },
+    {
+      "name": "🔧 Server (Express + MCP)",
+      "path": "./server",
+    },
+    {
+      "name": "📊 Database & Migrations",
+      "path": "./migrations",
+    },
+    {
+      "name": "📋 Documentation",
+      "path": "./docs",
+    },
+    {
+      "name": "🐳 DevOps & Docker",
+      "path": "./docker",
+    },
+  ],
+  "settings": {
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit",
+    },
+    "typescript.preferences.importModuleSpecifier": "relative",
+    "emmet.includeLanguages": {
+      "typescript": "html",
+      "typescriptreact": "html",
+    },
+    "files.associations": {
+      "*.tsx": "typescriptreact",
+      "*.ts": "typescript",
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/.git": true,
+      "**/coverage": true,
+    },
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/.git": false,
+    },
+  },
+  "extensions": {
+    "recommendations": [
+      "bradlc.vscode-tailwindcss",
+      "esbenp.prettier-vscode",
+      "dbaeumer.vscode-eslint",
+      "ms-vscode.vscode-typescript-next",
+      "formulahendry.auto-rename-tag",
+      "christian-kohler.path-intellisense",
+      "ms-vscode.vscode-json",
+    ],
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "🚀 Start CostForge AI Development",
+        "type": "shell",
+        "command": "npm run dev",
+        "group": {
+          "kind": "build",
+          "isDefault": true,
+        },
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared",
+          "showReuseMessage": true,
+          "clear": false,
+        },
+        "problemMatcher": ["$tsc", "$eslint-stylish"],
+        "runOptions": {
+          "runOn": "folderOpen",
+        },
+      },
+      {
+        "label": "🔧 Build Client",
+        "type": "shell",
+        "command": "npm run build:client",
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared",
+        },
+      },
+      {
+        "label": "🏗️ Build Server",
+        "type": "shell",
+        "command": "npm run build:server",
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared",
+        },
+      },
+      {
+        "label": "📊 Database Push",
+        "type": "shell",
+        "command": "npm run db:push",
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared",
+        },
+      },
+    ],
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "🏛️ Debug CostForge AI Server",
+        "type": "node",
+        "request": "launch",
+        "program": "${workspaceFolder}/server/index.ts",
+        "runtimeArgs": ["--loader", "tsx/esm"],
+        "env": {
+          "NODE_ENV": "development",
+        },
+        "console": "integratedTerminal",
+        "skipFiles": ["<node_internals>/**"],
+      },
+    ],
+  },
+}

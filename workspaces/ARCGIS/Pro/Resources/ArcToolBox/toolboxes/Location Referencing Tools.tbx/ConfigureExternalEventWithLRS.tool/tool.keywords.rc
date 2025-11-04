@@ -1,0 +1,13 @@
+{
+    "set": [
+        "configure event",
+        "delete event",
+        "delete lrs",
+        "delete route",
+        "external event",
+        "lrs event",
+        "register event",
+        "remove event",
+        "remove route"
+    ]
+}

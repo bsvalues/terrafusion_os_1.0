@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Import Results{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h1 class="mb-4">Import Results</h1>
+  
+  {% if results %}
+    <div class="card mb-4">
+      <div class="card-header {% if results.status == 'success' %}bg-success text-white{% else %}bg-danger text-white{% endif %}">
+        <h5 class="mb-0">
+          Status: {{ results.status|title }}
+        </h5>
+      </div>
+      <div class="card-body">
+        <p class="card-text">{{ results.message }}</p>
+      </div>
+    </div>
+    
+    <div class="row">
+      <!-- Extract -->
+      <div class="col-md-6 mb-4">
+        <div class="card h-100">
+          <div class="card-header {% if results.extract.success %}bg-success text-white{% else %}bg-danger text-white{% endif %}">
+            <h5 class="mb-0">Extract Phase</h5>
+          </div>
+          <div class="card-body">
+            <p class="fw-bold">Status: {% if results.extract.success %}Success{% else %}Failed{% endif %}</p>
+            <p>{{ results.extract.message }}</p>
+            <p>Records extracted: {{ results.extract.records }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Transform -->
+      <div class="col-md-6 mb-4">
+        <div class="card h-100">
+          <div class="card-header {% if results.transform.success %}bg-success text-white{% else %}bg-danger text-white{% endif %}">
+            <h5 class="mb-0">Transform Phase</h5>
+          </div>
+          <div class="card-body">
+            <p class="fw-bold">Status: {% if results.transform.success %}Success{% else %}Failed{% endif %}</p>
+            <p>{{ results.transform.message }}</p>
+            <p>Records transformed: {{ results.transform.records }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row">
+      <!-- Validate -->
+      <div class="col-md-6 mb-4">
+        <div class="card h-100">
+          <div class="card-header {% if results.validate.success %}bg-success text-white{% else %}bg-warning text-dark{% endif %}">
+            <h5 class="mb-0">Validate Phase</h5>
+          </div>
+          <div class="card-body">
+            <p class="fw-bold">Status: {% if results.validate.success %}Success{% else %}Warning{% endif %}</p>
+            <p>{{ results.validate.message }}</p>
+            <p>Valid records: {{ results.validate.valid_records }}</p>
+            <p>Invalid records: {{ results.validate.invalid_records }}</p>
+            
+            {% if results.validate.field_errors %}
+              <h6 class="mt-3">Field Errors:</h6>
+              <ul class="list-group">
+                {% for field, errors in results.validate.field_errors.items() %}
+                  <li class="list-group-item">
+                    <strong>{{ field }}:</strong>
+                    <ul>
+                      {% for error in errors %}
+                        <li>{{ error }}</li>
+                      {% endfor %}
+                    </ul>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      
+      <!-- Load -->
+      <div class="col-md-6 mb-4">
+        <div class="card h-100">
+          <div class="card-header {% if results.load.success %}bg-success text-white{% else %}bg-danger text-white{% endif %}">
+            <h5 class="mb-0">Load Phase</h5>
+          </div>
+          <div class="card-body">
+            <p class="fw-bold">Status: {% if results.load.success %}Success{% else %}Failed{% endif %}</p>
+            <p>{{ results.load.message }}</p>
+            <p>Records loaded: {{ results.load.records }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="alert alert-warning">
+      <p>No import results found. Please try importing data again.</p>
+    </div>
+  {% endif %}
+  
+  <div class="mt-4">
+    <a href="{{ url_for('etl.import_data') }}" class="btn btn-primary">Import More Data</a>
+    <a href="{{ url_for('etl.etl_dashboard') }}" class="btn btn-secondary ms-2">Back to ETL Dashboard</a>
+  </div>
+</div>
+{% endblock %}

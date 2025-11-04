@@ -1,0 +1,9 @@
+{
+    "map": {
+        "description": "Evaluates multipatch features to determine whether each feature completely encloses a volume of space.",
+        "in_feature_class.descr": "The multipatch features to be tested.",
+        "in_feature_class.title": "Input Multipatch Features",
+        "output_feature_class.title": "Updated Input Multipatch Features",
+        "title": "Is Closed 3D"
+    }
+}

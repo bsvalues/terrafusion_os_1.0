@@ -1,0 +1,13 @@
+{
+    "set": [
+        "arcgis server license",
+        "ecp",
+        "expired",
+        "geodatabase administration",
+        "keycodes",
+        "license",
+        "prvc",
+        "sdesetup",
+        "update key"
+    ]
+}

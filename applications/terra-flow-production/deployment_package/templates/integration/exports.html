@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5>Data Exports</h5>
+                        <p class="text-sm">View and download previously exported data files</p>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('integration.export') }}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-file-export me-1"></i> Create New Export
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="table-responsive p-0">
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">File</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Data Type</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Format</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Size</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Created</th>
+                                    <th class="text-secondary opacity-7"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for export in exports %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+                                            <div>
+                                                {% if export.format == 'csv' %}
+                                                <i class="fas fa-file-csv text-primary me-3"></i>
+                                                {% elif export.format == 'xlsx' or export.format == 'xls' %}
+                                                <i class="fas fa-file-excel text-success me-3"></i>
+                                                {% elif export.format == 'json' or export.format == 'geojson' %}
+                                                <i class="fas fa-file-code text-warning me-3"></i>
+                                                {% elif export.format == 'db' or export.format == 'sqlite' %}
+                                                <i class="fas fa-database text-info me-3"></i>
+                                                {% else %}
+                                                <i class="fas fa-file text-secondary me-3"></i>
+                                                {% endif %}
+                                            </div>
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{{ export.filename }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs font-weight-bold mb-0">{{ export.data_type|title }}</p>
+                                    </td>
+                                    <td class="align-middle text-center text-sm">
+                                        <span class="badge badge-sm bg-gradient-success">{{ export.format|upper }}</span>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <span class="text-secondary text-xs font-weight-bold">{{ (export.size / 1024)|round(2) }} KB</span>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <span class="text-secondary text-xs font-weight-bold">{{ export.created.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                                    </td>
+                                    <td class="align-middle">
+                                        <a href="{{ url_for('integration.download_export', export_path=export.path) }}" class="btn btn-link text-secondary mb-0" data-bs-toggle="tooltip" data-bs-title="Download">
+                                            <i class="fas fa-download text-xs"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <p class="text-secondary mb-0">No exports available</p>
+                                        <a href="{{ url_for('integration.export') }}" class="btn btn-primary btn-sm mt-2">
+                                            <i class="fas fa-file-export me-1"></i> Create New Export
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header pb-0">
+                    <h5>Export Formats</h5>
+                    <p class="text-sm">Information about available export formats</p>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Format</th>
+                                    <th>Description</th>
+                                    <th>Best For</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><i class="fas fa-file-csv text-primary me-2"></i> CSV</td>
+                                    <td>Comma-separated values in a plain text file</td>
+                                    <td>General purpose, Excel import, data analysis</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fas fa-file-excel text-success me-2"></i> Excel</td>
+                                    <td>Microsoft Excel spreadsheet format</td>
+                                    <td>Reports, analysis, data with formatting</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fas fa-file-code text-warning me-2"></i> JSON</td>
+                                    <td>JavaScript Object Notation format</td>
+                                    <td>API integration, web applications</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fas fa-file-code text-warning me-2"></i> GeoJSON</td>
+                                    <td>Geographic JSON format with spatial features</td>
+                                    <td>GIS systems, map-based applications</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fas fa-database text-info me-2"></i> SQLite</td>
+                                    <td>Self-contained, serverless SQL database file</td>
+                                    <td>Portable databases, complex data structures</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="alert alert-info mt-3" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Note:</strong> All exports include metadata and follow Washington State standards where applicable.
+                        Exports are retained for 30 days before automatic deletion.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
+{% endblock %}

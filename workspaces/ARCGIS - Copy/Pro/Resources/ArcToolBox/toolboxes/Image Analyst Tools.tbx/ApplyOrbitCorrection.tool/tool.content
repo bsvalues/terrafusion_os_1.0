@@ -1,0 +1,73 @@
+{
+    "type": "FunctionTool",
+    "guid": "{31878a52-2ec3-4422-aba5-1668825e3ff9}",
+    "displayname": "$rc:title",
+    "helpcontent": "66160001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "86"
+    ],
+    "params": {
+        "in_radar_data": {
+            "display_order": "0",
+            "displayname": "$rc:in_radar_data.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_radar_data.descr"
+        },
+        "in_orbit_file": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:in_orbit_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "eof"
+                ]
+            },
+            "description": "$rc:in_orbit_file.descr"
+        },
+        "out_radar_data": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "3",
+            "displayname": "$rc:out_radar_data.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "depends": [
+                "in_radar_data"
+            ]
+        },
+        "folder": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:folder.descr"
+        }
+    }
+}

@@ -1,0 +1,32 @@
+{
+    "type": "FunctionTool",
+    "guid": "{bab12840-eee7-403f-8f8d-f1185d92402a}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190407",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_raster_dataset": {
+            "displayname": "$rc:in_raster_dataset.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:in_raster_dataset.descr"
+        },
+        "out_raster_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_raster_dataset.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "depends": [
+                "in_raster_dataset"
+            ]
+        }
+    },
+    "environments": [
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

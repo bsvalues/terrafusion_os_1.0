@@ -1,0 +1,46 @@
+{
+    "type": "ServerTool",
+    "server": "OfflinePackaging",
+    "uri": "https://packaging.arcgis.com/arcgis/services",
+    "user": "UseSSOIdentityIfPortalOwned",
+    "toolname": "SetupMapArea",
+    "displayname": "$rc:title",
+    "product": "100",
+    "params": {
+        "mapAreaItemId": {
+            "displayname": "$rc:mapareaitemid.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "mapLayersToIgnore": {
+            "type": "optional",
+            "displayname": "$rc:maplayerstoignore.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "tileServices": {
+            "type": "optional",
+            "displayname": "$rc:tileservices.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "featureServices": {
+            "type": "optional",
+            "displayname": "$rc:featureservices.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "packages": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:packages.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        }
+    }
+}

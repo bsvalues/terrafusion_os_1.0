@@ -1,0 +1,1272 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.WorkflowService.Messages</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.WorkflowService.Messages.AcceptSupplementGroupMessage">
+            <summary>
+            Implements a message for notifications about Payment Import
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.IWorkflowMessage">
+            <summary>
+            Declares an interface for messages targeted at the workflow engine.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.IWorkflowMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.IWorkflowMessage.Payload">
+            <summary>
+            The payload or the parameters required to execute the associated workflow
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.ISupplementGroupMessage">
+            <summary>
+            The ISupplementGroupMessage interface
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.ISupplementGroupMessage.SuppGroupId">
+            <summary>
+            SupplementGroupId  that the message is associated to
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.AcceptSupplementGroupMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.AcceptSupplementGroupMessage.Payload">
+            <summary>
+            Payload
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.AcceptSupplementGroupMessage.SuppGroupId">
+            <summary>
+            Supplement Group Id for this message.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.CategoryUpdatedMessage">
+            <summary>
+            Implements a message for notifications about updates to a
+            workflow-related task categories.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.IClientMessage">
+            <summary>
+            Interface to ensure that a message is intended to be sent to a client.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.IClientMessage.SequenceNumber">
+            <summary>
+            Number to track the order that messages are processed
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CategoryUpdatedMessage.BookmarkName">
+            <summary>
+            Returns the an empty string.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CategoryUpdatedMessage.Payload">
+            <summary>
+            The payload or the parameters required to execute the associated workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CategoryUpdatedMessage.TaskCategoryId">
+            <summary>
+            The id value of the user for which this update message
+            is being sent.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CategoryUpdatedMessage.TaskCategory">
+            <summary>
+            The details of the category being updated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CategoryUpdatedMessage.Deleted">
+            <summary>
+            The flag to state whether or not the category is deleted.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CategoryUpdatedMessage.SequenceNumber">
+            <summary>
+            Number to track the order that messages are processed
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.AbortWorkflowMessage">
+            <summary>
+            Implements a message for notifications that a specified workflow
+            instance should be aborted.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.AbortWorkflowMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.AbortWorkflowMessage.Payload">
+            <summary>
+            The payload or the parameters required to execute the associated workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.AbortWorkflowMessage.InstanceId">
+            <summary>
+            The id of the instance to abort.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.CreateNewYearLayerMessage">
+            <summary>
+            Implements a message for notifications about New Year Layer creation
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CreateNewYearLayerMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CreateNewYearLayerMessage.Payload">
+            <summary>
+            Payload
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CreateNewYearLayerMessage.NewYear">
+            <summary>
+            New Year for which New Year layer was created
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.CurrentUseFeeTypePaidMessage">
+            <summary>
+            Implements a message for notifications when a Current
+            Use related Fee Type gets paid on a Property. This message 
+            will be fired from PACS only after New Year Layer Creation.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CurrentUseFeeTypePaidMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CurrentUseFeeTypePaidMessage.Payload">
+            <summary>
+            The payload or the parameters required to execute the associated workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CurrentUseFeeTypePaidMessage.PropertyList">
+            <summary>
+            The Property / Properties on which the Current Use Fee Type was paid
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.CurrentUsePropertyGroupCodeAddedMessage">
+            <summary>
+            Implements a message for notifications about a Current
+            Use related Property Group Code being added on a Property.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CurrentUsePropertyGroupCodeAddedMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CurrentUsePropertyGroupCodeAddedMessage.Payload">
+            <summary>
+            The payload or the parameters required to execute the associated workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CurrentUsePropertyGroupCodeAddedMessage.PropertyId">
+            <summary>
+            The Property on which the Current Use Property Code was added
+            </summary>		
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CurrentUsePropertyGroupCodeAddedMessage.PropertyGroupCode">
+            <summary>
+            The Property Group Code added
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.EventCreatedMessage">
+            <summary>
+            Implements a message for notifications about Property Event
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.EventCreatedMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.EventCreatedMessage.Payload">
+            <summary>
+            Payload
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.EventCreatedMessage.EventId">
+            <summary>
+            Event Id for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.EventCreatedMessage.PropertyId">
+            <summary>
+            Property Id for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.EventCreatedMessage.EventType">
+            <summary>
+            Event Type  for this message.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.CustomDataEntryRoutingMessage">
+            <summary>
+            Implements a message for notifications about updates to a
+            workflow-related task.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.ITaskCompletedMessage">
+            <summary>
+            The ITaskCompletedMessage interface
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.ITaskCompletedMessage.Id">
+            <summary>
+            The Identifier of the element that sends the message
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.ITaskCompletedMessage.TaskId">
+            <summary>
+            The TaskId that the message is associated to
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CustomDataEntryRoutingMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CustomDataEntryRoutingMessage.Payload">
+            <summary>
+            The payload or the parameters required to execute the associated workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CustomDataEntryRoutingMessage.Id">
+            <summary>
+            An identifier for the task completed messsages for queuing
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CustomDataEntryRoutingMessage.TaskId">
+            <summary>
+            The taskid against which this needs to be queued
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.LevyCertificationActivatedBillsMessage">
+            <summary>
+            Implements a message for notifications about Levy Certification Activated Bills 
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.LevyCertificationActivatedBillsMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.LevyCertificationActivatedBillsMessage.Payload">
+            <summary>
+            Payload
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.LevyCertificationActivatedBillsMessage.LevyCertRunId">
+            <summary>
+            LevyCertRunId
+            </summary>
+            <remarks>
+            runId for the Levy Certification
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.LevyCertificationActivatedBillsMessage.BatchID">
+            <summary>
+            BatchID
+            </summary>		
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.LevyCertificationActivatedBillsMessage.Year">
+            <summary>
+            Year
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.LevyStatementCreatedMessage">
+            <summary>
+            Implements a message for notifications when a Levy Tax Year Statement is created
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.LevyStatementCreatedMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.LevyStatementCreatedMessage.Payload">
+            <summary>
+            Payload
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.LevyStatementCreatedMessage.RunId">
+            <summary>
+            RunId
+            </summary>
+            <remarks>
+            runId for the Levy statement created
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.LevyStatementCreatedMessage.GroupId">
+            <summary>
+            GroupId
+            </summary>		
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.LevyStatementCreatedMessage.Year">
+            <summary>
+            Year
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.NewLitigationMessage">
+            <summary>
+            Implements a message for notifications about New Litigation created
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.NewLitigationMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.NewLitigationMessage.Payload">
+            <summary>
+            Payload
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.NewLitigationMessage.LitigationId">
+            <summary>
+            LitigationId
+            </summary>
+            <remarks>
+            LitigationId of the new Litigation
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.NewLitigationMessage.Id">
+            <summary>
+            An identifier for the task completed messsages for queuing
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.NewLitigationMessage.TaskId">
+            <summary>
+            The taskid against which this needs to be queued
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.CurrentUsePropertyInNewREETMessage">
+            <summary>
+            Implements a message for notifications about new REET with Current Use Properties
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CurrentUsePropertyInNewREETMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CurrentUsePropertyInNewREETMessage.Payload">
+            <summary>
+            The payload or the parameters required to execute the associated workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CurrentUsePropertyInNewREETMessage.ReetId">
+            <summary>
+            Reet Id Associated with this Message
+            </summary>		
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CurrentUsePropertyInNewREETMessage.PropertyList">
+            <summary>
+            The Properties in REET with Current Use
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.NewPropertyExemptionMessage">
+            <summary>
+            Implements a message for notifications about a new Exemption added on a Property
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.NewPropertyExemptionMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.NewPropertyExemptionMessage.Payload">
+            <summary>
+            The payload or the parameters required to execute the associated workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.NewPropertyExemptionMessage.PropertyId">
+            <summary>
+            Property Id Associated with this Message
+            </summary>		
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.NewPropertyExemptionMessage.ExemptionYears">
+            <summary>
+            The Years for which the Exemption has been added on the Property
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.NewPropertyExemptionMessage.SupplementNumber">
+            <summary>
+            The Supplement Number for the current PACS Year
+            </summary>		
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.REETImportMessage">
+            <summary>
+            Implements a message for notifications about REET Import
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.REETImportMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.REETImportMessage.Payload">
+            <summary>
+            The payload or the parameters required to execute the associated workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.REETImportMessage.ReetId">
+            <summary>
+            Reet Id Associated with this Message
+            </summary>		
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.ModifiedBillReportApprovedMessage">
+            <summary>
+            Implements a message for notifications about Supplement Group Bills Create
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.ModifiedBillReportApprovedMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.ModifiedBillReportApprovedMessage.Payload">
+            <summary>
+            Payload
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.ModifiedBillReportApprovedMessage.SuppGroupId">
+            <summary>
+            Supplement Group Id for this message.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.SeniorExemptionEventAddedMessage">
+            <summary>
+            Implements a message for notifications about a new Senior Exemption Event added on a Property
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.SeniorExemptionEventAddedMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.SeniorExemptionEventAddedMessage.Payload">
+            <summary>
+            The payload or the parameters required to execute the associated workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.SeniorExemptionEventAddedMessage.PropertyId">
+            <summary>
+            Property Id to which the Event was added
+            </summary>		
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.SeniorExemptionEventAddedMessage.EventDate">
+            <summary>
+            The Date on which Event was added on the Property
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.SupplementGroupBillsActivatedMessage">
+            <summary>
+            Implements a message for notifications about Supplement Group Bills Activation
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.SupplementGroupBillsActivatedMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.SupplementGroupBillsActivatedMessage.Payload">
+            <summary>
+            Payload
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.SupplementGroupBillsActivatedMessage.SuppGroupId">
+            <summary>
+            Supplement Group Id for this message.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.EventUpdatedMessage">
+            <summary>
+            Implements a message for notifications about updates to an Event
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.EventUpdatedMessage.BookmarkName">
+            <summary>
+            Returns the an empty string.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.EventUpdatedMessage.Payload">
+            <summary>
+            The payload or the parameters required to execute the associated workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.EventUpdatedMessage.EventId">
+            <summary>
+            The Id of the Event affected
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.EventUpdatedMessage.Event">
+            <summary>
+            The Details of the Event being updated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.EventUpdatedMessage.Deleted">
+            <summary>
+            The flag to state whether or not the Event is deleted.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.EventUpdatedMessage.SequenceNumber">
+            <summary>
+            Number to track the order that messages are processed
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.GroupUpdatedMessage">
+            <summary>
+            Implements a message for notifications about updates to a Group/PACS Role.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.GroupUpdatedMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.GroupUpdatedMessage.Payload">
+            <summary>
+            The payload or the parameters required to execute the associated workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.GroupUpdatedMessage.SequenceNumber">
+            <summary>
+            Number to track the order that messages are processed
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.GroupUpdatedMessage.GroupId">
+            <summary>
+            The id value of the task for which this update message
+            is being sent.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.GroupUpdatedMessage.Group">
+            <summary>
+            The Details of the task being updated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.GroupUpdatedMessage.Deleted">
+            <summary>
+            The flag to state whether or not the Group is deleted.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.LaunchActivityMessage">
+            <summary>
+            Implements a message for notifications that a specified activity on the designer
+            should be instantiated and run.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.LaunchActivityMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.LaunchActivityMessage.Payload">
+            <summary>
+            The payload or the parameters required to execute the activity. Usually will be null in this case
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.LaunchActivityMessage.WorkflowActivityText">
+            <summary>
+            The xaml text that needs to be executed
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.PostPaymentMessage">
+            <summary>
+            Implements a message for notifications about Payment Import
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.PostPaymentMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.PostPaymentMessage.Payload">
+            <summary>
+            Payload
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.PostPaymentMessage.runId">
+            <summary>
+            runId
+            </summary>
+            <remarks>
+            runId for the PaymentImport
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.PostPaymentMessage.PaymentType">
+            <summary>
+            PaymentType
+            </summary>
+            <remarks>
+            From PACS DB - AmountPaid
+            </remarks>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.PaymentImportMessage">
+            <summary>
+            Implements a message for notifications about Payment Import
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.PaymentImportMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.PaymentImportMessage.Payload">
+            <summary>
+            Payload
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.PaymentImportMessage.runId">
+            <summary>
+            runId
+            </summary>
+            <remarks>
+            runId for the PaymentImport
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.PaymentImportMessage.AcceptCount">
+            <summary>
+            AcceptCount
+            </summary>		
+            <remarks>
+            From PACS DB - AcceptCount
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.PaymentImportMessage.RecordCount">
+            <summary>
+            RecordCount
+            </summary>		
+            <remarks>
+            From PACS DB - RecordCount
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.PaymentImportMessage.PaymentSourceId">
+            <summary>
+            PaymentSourceId
+            </summary>
+            <remarks>
+            From PACS DB - PaymentSourceId
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.PaymentImportMessage.AmountPaid">
+            <summary>
+            AmountPaid
+            </summary>
+            <remarks>
+            From PACS DB - AmountPaid
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.PaymentImportMessage.FileType">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.CustomRoutingMessage">
+            <summary>
+            Implements a message for notifications about updates to a
+            workflow-related task.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CustomRoutingMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CustomRoutingMessage.Payload">
+            <summary>
+            The payload or the parameters required to execute the associated workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CustomRoutingMessage.Id">
+            <summary>
+            An identifier for the task completed messsages for queuing
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.CustomRoutingMessage.TaskId">
+            <summary>
+            The taskid against which this needs to be queued
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.REETExportMessage">
+            <summary>
+            Implements a message for notifications about REET Export
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.REETExportMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.REETExportMessage.Payload">
+            <summary>
+            The payload or the parameters required to execute the associated workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.REETExportMessage.FullFileName">
+            <summary>
+            FullFileName of the Exported REET record
+            </summary>		
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.REETExportMessage.AsOfDate">
+            <summary>
+            AsOfDate of the Exported REET record
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.REETExportMessage.ExportErrorMessage">
+            <summary>
+            ErrorMessage received when the REET export fails
+            </summary>		
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.REETExportMessage.IsSuccess">
+            <summary>
+            Boolean to indicate if the REET export is a success
+            </summary>		
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.SupplementGroupBillsCreatedMessage">
+            <summary>
+            Implements a message for notifications about Supplement Group Bills Create
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.SupplementGroupBillsCreatedMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.SupplementGroupBillsCreatedMessage.Payload">
+            <summary>
+            Payload
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.SupplementGroupBillsCreatedMessage.SuppGroupId">
+            <summary>
+            Supplement Group Id for this message.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.SupplementGroupLockedMessage">
+            <summary>
+            Implements a message for notifications about Supplement Group Locked
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.SupplementGroupLockedMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.SupplementGroupLockedMessage.Payload">
+            <summary>
+            Payload
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.SupplementGroupLockedMessage.SuppGroupId">
+            <summary>
+            Supplement Group Id for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.SupplementGroupLockedMessage.NewSuppGroupId">
+            <summary>
+            old Supplement Group Id for this message.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.SupplementGroupUndoCreateBillsMessage">
+            <summary>
+            Implements a message for notifications about Supplement Group Undo CreateBills
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.SupplementGroupUndoCreateBillsMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.SupplementGroupUndoCreateBillsMessage.Payload">
+            <summary>
+            Payload
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.SupplementGroupUndoCreateBillsMessage.SuppGroupId">
+            <summary>
+            Supplement Group Id for this message.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.TaskClosedMessage">
+            <summary>
+            Implements a message for notifications when a workflow-related task is Closed.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.TaskClosedMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.TaskClosedMessage.Payload">
+            <summary>
+            The payload or the parameters required to execute the associated workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.TaskClosedMessage.SequenceNumber">
+            <summary>
+            Number to track the order that messages are processed
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.TaskClosedMessage.TaskId">
+            <summary>
+            The id value of the task for which this Closed message is being sent.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.UICustomizationUpdatedMessage">
+            <summary>
+            Implements a message for notifications about updates to a UICustomization
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.UICustomizationUpdatedMessage.BookmarkName">
+            <summary>
+            Returns the an empty string.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.UICustomizationUpdatedMessage.Payload">
+            <summary>
+            The payload or the parameters required to execute the associated workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.UICustomizationUpdatedMessage.UICustomizationId">
+            <summary>
+            The Id of the UICustomization affected
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.UICustomizationUpdatedMessage.UICustomization">
+            <summary>
+            The Details of the UICustomization being updated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.UICustomizationUpdatedMessage.Deleted">
+            <summary>
+            The flag to state whether or not the UICustomization is deleted.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.UICustomizationUpdatedMessage.SequenceNumber">
+            <summary>
+            Number to track the order that messages are processed
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.UndoAcceptSupplementGroupMessage">
+            <summary>
+            Implements a message for notifications about Undo Accept Supplement Group
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.UndoAcceptSupplementGroupMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.UndoAcceptSupplementGroupMessage.Payload">
+            <summary>
+            Payload
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.UndoAcceptSupplementGroupMessage.SuppGroupId">
+            <summary>
+            Supplement Group Id for this message.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.WorkflowInstanceUpdatedMessage">
+            <summary>
+            Implements a message for notifications about updates to a
+            workflow instance.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.WorkflowInstanceUpdatedMessage.BookmarkName">
+            <summary>
+            Returns the an empty string.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.WorkflowInstanceUpdatedMessage.Payload">
+            <summary>
+            The payload or the parameters required to execute the associated workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.WorkflowInstanceUpdatedMessage.WorkflowInstanceId">
+            <summary>
+            The Id of the Workflow instance affected
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.WorkflowInstanceUpdatedMessage.WorkflowInstance">
+            <summary>
+            The Details of the instance being updated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.WorkflowInstanceUpdatedMessage.Deleted">
+            <summary>
+            The flag to state whether or not the user is deleted.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.WorkflowInstanceUpdatedMessage.SequenceNumber">
+            <summary>
+            Number to track the order that messages are processed
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.WorkflowMessageAttribute">
+            <summary>
+            Decorator to indicate a class is a Workflow message
+            that is available for Event Management
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Messages.WorkflowMessageAttribute.#ctor(System.String)">
+            <summary>
+            Default constructor
+            </summary>
+            <param name="name">Name of the workflow message</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Messages.WorkflowMessageAttribute.#ctor(System.String,System.String)">
+            <summary>
+            Constructor to initialize the name and description of a workflow message
+            </summary>
+            <param name="name">Workflow Message Name</param>
+            <param name="description">Workflow Message Description</param>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.WorkflowMessageAttribute.Name">
+            <summary>
+            Name of the Workflow message
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.WorkflowMessageAttribute.Description">
+            <summary>
+            Description of the Workflow message
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.WorkflowPayLoad">
+            <summary>
+            This class handles(serializes/deserializes) the workflow payload or parameters that is required by a workflow.
+            Add KnownType attributes for all types that are not primitive types in the parameters dictionary.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Messages.WorkflowPayLoad.#ctor(System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Constructor for WorkflowPayload. Accepts the dictionary of parameters and its values
+            </summary>
+            <param name="parameters"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowService.Messages.WorkflowPayLoad.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.WorkflowPayLoad.PayLoad">
+            <summary>
+            This is the payload or the parameters required by the workflow to execute. 
+            If the object is not of primitive type we would need to add the knowntype attribute for that type to this class
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.WorkflowUpdatedMessage">
+            <summary>
+            Implements a message for notifications about updates to a
+            workflow.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.WorkflowUpdatedMessage.BookmarkName">
+            <summary>
+            Returns the an empty string.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.WorkflowUpdatedMessage.Payload">
+            <summary>
+            The payload or the parameters required to execute the associated workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.WorkflowUpdatedMessage.WorkflowId">
+            <summary>
+            The Id of the Workflow affected
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.WorkflowUpdatedMessage.Workflow">
+            <summary>
+            The Details of the user being updated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.WorkflowUpdatedMessage.Deleted">
+            <summary>
+            The flag to state whether or not the user is deleted.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.WorkflowUpdatedMessage.SequenceNumber">
+            <summary>
+            Number to track the order that messages are processed
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.StatusUpdatedMessage">
+            <summary>
+            Implements a message for notifications about updates to a
+            workflow-related statuses.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.StatusUpdatedMessage.BookmarkName">
+            <summary>
+            Returns the an empty string.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.StatusUpdatedMessage.Payload">
+            <summary>
+            The payload or the parameters required to execute the associated workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.StatusUpdatedMessage.StatusId">
+            <summary>
+            The id value of the status for which this update message
+            is being sent.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.StatusUpdatedMessage.Status">
+            <summary>
+            The details of the status being updated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.StatusUpdatedMessage.Deleted">
+            <summary>
+            The flag to state whether or not the status is deleted.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.StatusUpdatedMessage.SequenceNumber">
+            <summary>
+            Number to track the order that messages are processed
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.PriorityUpdatedMessage">
+            <summary>
+            Implements a message for notifications about updates to a
+            workflow-related priorities.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.PriorityUpdatedMessage.BookmarkName">
+            <summary>
+            Returns the an empty string.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.PriorityUpdatedMessage.Payload">
+            <summary>
+            The payload or the parameters required to execute the associated workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.PriorityUpdatedMessage.PriorityId">
+            <summary>
+            The id value of the user for which this update message
+            is being sent.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.PriorityUpdatedMessage.Priority">
+            <summary>
+            The details of the priority being updated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.PriorityUpdatedMessage.Deleted">
+            <summary>
+            a flag of whether or not the priority was deleted.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.PriorityUpdatedMessage.SequenceNumber">
+            <summary>
+            Number to track the order that messages are processed
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.UpdatedSearchMessage">
+            <summary>
+            Implements a message for notifications about updates to a
+            workflow-related searches.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.UpdatedSearchMessage.BookmarkName">
+            <summary>
+            Returns the an empty string.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.UpdatedSearchMessage.Payload">
+            <summary>
+            The payload or the parameters required to execute the associated workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.UpdatedSearchMessage.SearchId">
+            <summary>
+            The id value of the Search for which this update message
+            is being sent.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.UpdatedSearchMessage.Search">
+            <summary>
+            The Details of the search being updated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.UpdatedSearchMessage.Deleted">
+            <summary>
+            The flag to state whether or not the search is deleted.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.UpdatedSearchMessage.SequenceNumber">
+            <summary>
+            Number to track the order that messages are processed
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.UserUpdatedMessage">
+            <summary>
+            Implements a message for notifications about updates to a
+            workflow-related users.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.UserUpdatedMessage.BookmarkName">
+            <summary>
+            Returns the an empty string.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.UserUpdatedMessage.Payload">
+            <summary>
+            The payload or the parameters required to execute the associated workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.UserUpdatedMessage.UserId">
+            <summary>
+            The id value of the user for which this update message
+            is being sent.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.UserUpdatedMessage.User">
+            <summary>
+            The Details of the user being updated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.UserUpdatedMessage.Deleted">
+            <summary>
+            The flag to state whether or not the user is deleted.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.UserUpdatedMessage.SequenceNumber">
+            <summary>
+            Number to track the order that messages are processed
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.LaunchWorkflowMessage">
+            <summary>
+            Implements a message for notifications that a specified workflow
+            should be instantiated and run.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.LaunchWorkflowMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.LaunchWorkflowMessage.Payload">
+            <summary>
+            The payload or the parameters required to execute the associated workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.LaunchWorkflowMessage.Name">
+            <summary>
+            The name of the workflow to create.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.LaunchWorkflowMessage.Version">
+            <summary>
+            The version of the named workflow to create. If no version is
+            specified, i.e. the version property is 0, then the newest available
+            version of the workflow should be instantiated by default.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.LaunchWorkflowMessage.ParametersPayload">
+            <summary>
+            The workflow parameters. An xml string containing the name, type and value of the parameters
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.QueueUpdatedMessage">
+            <summary>
+            Implements a message for notifications about updates to a
+            workflow-related task.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.QueueUpdatedMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.QueueUpdatedMessage.Payload">
+            <summary>
+            The payload or the parameters required to execute the associated workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.QueueUpdatedMessage.SequenceNumber">
+            <summary>
+            Number to track the order that messages are processed
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.QueueUpdatedMessage.QueueId">
+            <summary>
+            The id value of the Queue for which this update message
+            is being sent.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.QueueUpdatedMessage.Queue">
+            <summary>
+            The Details of the queue being updated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.QueueUpdatedMessage.Deleted">
+            <summary>
+            The flag to state whether or not the queue is deleted.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowService.Messages.TaskUpdatedMessage">
+            <summary>
+            Implements a message for notifications about updates to a
+            workflow-related task.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.TaskUpdatedMessage.BookmarkName">
+            <summary>
+            Returns the name of the workflow bookmark for this message.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.TaskUpdatedMessage.Payload">
+            <summary>
+            The payload or the parameters required to execute the associated workflow
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.TaskUpdatedMessage.SequenceNumber">
+            <summary>
+            Number to track the order that messages are processed
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.TaskUpdatedMessage.TaskId">
+            <summary>
+            The id value of the task for which this update message
+            is being sent.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.TaskUpdatedMessage.Task">
+            <summary>
+            The Details of the task being updated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.TaskUpdatedMessage.IsNewToUser">
+            <summary>
+            Flag to determine if the task being updated should be notified to the user.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowService.Messages.TaskUpdatedMessage.Deleted">
+            <summary>
+            The flag to state whether or not the task is deleted.
+            </summary>
+        </member>
+    </members>
+</doc>

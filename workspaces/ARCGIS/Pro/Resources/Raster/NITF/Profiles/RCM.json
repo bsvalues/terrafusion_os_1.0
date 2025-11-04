@@ -1,0 +1,170 @@
+{
+  "@Variables": {
+    "CollectorName": "$/Images/0/ISORCE$",
+    "CollectType": "$/DESs/XML_DATA_CONTENT/XML/product/imageGenerationParameters/generalProcessingInformation/productType$",
+    "CollectMode": "$/Images/%i/TREs/EXPLTB/POLAR$"
+  },
+  "Products": [
+    {
+      "Title": "Commercial/Properties.json#TitleFormat",
+      "Priority": 100,
+      "Name": "Radarsat Constellation Mission",
+      "Type": "RCM NITF 2.1 IPDF",
+      "Match": [
+        {
+          "Key": "@{CollectType}",
+          "Operator": "Equals",
+          "Value": "GRD"
+        },
+        {
+          "Key": "@{CollectorName}",
+          "Operator": "StartsWith",
+          "Value": "RCM"
+        }
+      ],
+      "LayerDefinitions": [
+        {
+          "Match": [
+            {
+              "Key": "$/Images/%i/ICAT$",
+              "Operator": "Equals",
+              "Value": "SAR"
+            }
+          ],
+          "@Variables": {
+          },
+          "Type": "Image",
+          "Key": "SAR_@{CollectorName}_GRD_@{CollectMode}_Image_$%i+1$",
+          "Title": "($/Images/%i/ICAT$) $/Images/%i/IID1$ / $/Images/%i/IID2$",
+          "DisplayLevel": "$/Images/%i/IDLVL?parse=double$",
+          "CIM": {
+            "type": "CIMNitfImageSubLayer",
+            "name": "($/Images/%i/ICAT$) $/Images/%i/IID1$ / $/Images/%i/IID2$",
+            "description": "$uri.path$/$uri.profile$##$uri.object$",
+            "visibility": true,
+            "dataConnection": {
+              "type": "CIMStandardDataConnection",
+              "workspaceConnectionString": "DATABASE=$uri.parent_path$",
+              "workspaceFactory": "Custom",
+              "customWorkspaceFactoryCLSID": "{AE8E160A-E739-4999-8275-93532DEBAA50}",
+              "dataset": "$uri.file_name$/$uri.profile$##$uri.object$",
+              "datasetType": "esriDTAny"
+            },
+            "colorizer": {
+              "type": "CIMRasterStretchColorizer",
+              "resamplingType": "BilinearInterpolation",
+              "noDataColor": {
+                "type": "CIMRGBColor",
+                "values": [0, 0, 0, 0 ]
+              },
+              "backgroundColor": {
+                "type": "CIMRGBColor",
+                "values": [0, 0, 0, 0 ]
+              },
+              "backgroundValue": 0,
+              "displayBackgroundValue": true,
+              "stretchType": "StandardDeviations",
+              "standardDeviationParam": 1,
+              "gammaValue": 1,
+              "statsType": "AreaOfView"
+            },
+            "autoComputeStatsHistogram": true
+          },
+          "Source": {
+            "Template": "RasterInfo-Geometric",
+            "Arguments": {
+              "Raster:Raster": "$uri.path$##IM_$%i$"
+            }
+          },
+          "Bands": [],
+          "Properties": {
+            "ref": "Commercial/Properties.json#Properties",
+            "Band-BandName": {
+              "Aliases": [],
+              "SourcePaths": [
+                {
+                  "Path": "$/Images/%i/TREs/EXPLTB/POLAR$$%b$",
+                  "Map": [
+                    [ "HH0",  "HH" ],
+                    [ "HV0",  "HV" ],
+                    [ "VH0",  "VH" ],
+                    [ "VV0",  "VV" ],
+                    [ "HD0",  "HH" ],
+                    [ "HD1",  "HV" ],
+                    [ "VD0",  "VH" ],
+                    [ "VD1",  "VV" ],
+                    [ "AP0",  "HH" ],
+                    [ "AP1",  "VV" ],
+                    [ "CP0",  "CH" ],
+                    [ "CP1",  "CV" ],
+                    [ "QP0",  "HH" ],
+                    [ "QP1",  "HV" ],
+                    [ "QP2",  "VH" ],
+                    [ "QP3",  "VV" ]
+                  ]
+                }
+              ]
+            },
+            "SensorName": "@{CollectorName}",
+            "ProductName": "@{CollectType}",
+            "Mission": "@{CollectorName}",
+            "SensorMode": "$/DESs/XML_DATA_CONTENT/XML/product/sourceAttributes/beamMode$"
+          },
+          "Properties-" : {
+            "SAR_Product_MissionId" : "@{CollectorName}",
+            "SAR_Product_Mode" : "$/DESs/XML_DATA_CONTENT/XML/product/sourceAttributes/beamMode$",
+            "SAR_Product_ProductType" : "$/DESs/XML_DATA_CONTENT/XML/product/imageGenerationParameters/generalProcessingInformation/productType$",
+            "SAR_Product_StartTime" : "$/DESs/XML_DATA_CONTENT/XML/product/sourceAttributes/rawDataStartTime?parse=FDT$",
+            "SAR_Product_StopTime" : "",
+            "SAR_Product_Polarization" : "$/DESs/XML_DATA_CONTENT/XML/product/imageGenerationParameters/generalProcessingInformation/polarizationsInProduct$",
+            "SAR_Product_Rows" : "$Images/%i/NROWS$",
+            "SAR_Product_Cols" : "$Images/%i/NCOLS$",
+            "SAR_Product_SlantRange" : "",
+            "SAR_Product_GroundRange" : "",
+            "SAR_Product_SquintAngle" : "$Images/%i/TREs/EXPLTB/SQUINT_ANGLE$",
+            "SAR_Product_GrazeAng" : "$Images/%i/TREs/EXPLTB/GRAZE_ANG$",
+            "SAR_Product_IncidenceAng" : "",
+            "SAR_Product_TwistAng" : "",
+            "SAR_Product_SlopeAng" : "$Images/%i/TREs/EXPLTB/GRAZE_ANG$",
+            "SAR_Product_AzimAng" : "",
+            "SAR_Product_LayoverAng" : "$Images/%i/TREs/BLOCKA/LAYOVER_ANGLE$",
+            "SAR_Product_CalibrationFactor" : "",
+            "SAR_Product_IncidenceAnglePolyOrder" : "",
+            "SAR_Product_RangePixelSpacing" : "",
+            "SAR_Product_IncidenceAngleCoefficients" : "",
+            "SAR_Product_ThermalNoiseCorrectionPerformed" : "",
+            "SAR_Product_OrbitStateVectors" : "",
+            "SAR_Product_AcquisitionType" : "",
+            "SAR_Product_BeamModeMnemonic" : ""
+          }
+        }
+      ],
+      "MosaicDefinitions": [
+        {
+          "ItemURI": { 
+            "Path": "$uri.path$/$uri.profile$##Primary",
+            "Key": "",
+            "Tag": "SAR",
+            "Group": "SAR-$/Images/0/IDATIM$",
+            "DisplayName": "$uri.stem$:$%i$",
+            "ProductName": "@{CollectType}",
+            "SourceTimeStamp": "$uri.modifiedDateTime$",
+            "AuxiliaryPaths": [],
+            "Properties": {
+              "ImageRepresentation": "MONO",
+              "ImageCategory": "SAR",
+              "SensorName": "@{CollectorName}"
+            }
+          },
+          "Footprint": "",
+          "ProcessingTemplate": "Default",
+          "Variables": {
+          },
+          "Properties": {}
+        }      
+      ]
+    }
+  ],
+  "IDs": {
+  }
+}

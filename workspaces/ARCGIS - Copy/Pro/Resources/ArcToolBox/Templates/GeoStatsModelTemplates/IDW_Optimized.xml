@@ -1,0 +1,17 @@
+﻿<?xml version="1.0"?>
+<model name="IDW">
+  <dataset Label="Dataset" ParamName="dataset1" dataset-type="DSA-XX">
+    <field />
+    <field optional="true" />
+  </dataset>
+  <value name="Power" auto="true">2</value>
+  <model name="NeighbourSearch">
+    <enum name="Type">Standard</enum>
+    <value name="NeighboursMax" auto="false">15</value>
+    <value name="NeighboursMin" auto="false">10</value>
+    <enum name="SectorType">One</enum>
+    <value name="MajorSemiaxis" auto="true">483373.7252918135</value>
+    <value name="MinorSemiaxis" auto="true">483373.7252918135</value>
+    <value name="Angle">0</value>
+  </model>
+</model>

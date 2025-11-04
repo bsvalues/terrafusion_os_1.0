@@ -1,0 +1,9 @@
+{
+    "set": [
+        "gps",
+        "gpx",
+        "point sequence",
+        "track sequence",
+        "track"
+    ]
+}

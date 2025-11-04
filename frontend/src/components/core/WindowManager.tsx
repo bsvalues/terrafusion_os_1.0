@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Box,
+import {
+  Box,
   Paper,
   AppBar,
   Toolbar,
@@ -11,14 +12,17 @@ import { Box,
   Fab,
   Tooltip,
   Chip,
-  Stack } from '@mui/material';
-import { Minimize as MinimizeIcon,
+  Stack,
+} from '@mui/material';
+import {
+  Minimize as MinimizeIcon,
   Maximize as MaximizeIcon,
   Close as CloseIcon,
   Fullscreen as FullscreenIcon,
   FullscreenExit as FullscreenExitIcon,
   Apps as AppsIcon,
-  DragIndicator as DragIcon } from '@mui/icons-material';
+  DragIndicator as DragIcon,
+} from '@mui/icons-material';
 import { Rnd } from 'react-rnd';
 
 // Type assertion for JSX compatibility
@@ -54,36 +58,22 @@ const MIN_WINDOW_SIZE = { width: 320, height: 240 };
 // Sample components for demonstration
 const SampleModuleComponent: React.FC<{ title: string }> = ({ title }) => (
   <Box sx={{ p: 3, height: '100%', overflow: 'auto' }}>
-
-
     <Typography variant='h5' gutterBottom>
       {title}
     </Typography>
-    <Typography
-
-paragraph>
+    <Typography paragraph>
       This is a sample module component demonstrating the window management system. The Terrafusion
       OS supports multiple windowed applications with full drag, resize, minimize, maximize, and
       fullscreen capabilities.
     </Typography>
 
-
     <Typography paragraph>Key features:</Typography>
-    <ul
-
->
-
-
+    <ul>
       <li>Quantum-optimized performance (379M× faster)</li>
-                            <li
-
->Government-grade security compliance</li>
-
+      <li>Government-grade security compliance</li>
 
       <li>Real-time AI agent coordination</li>
-                            <li
-
->Advanced property assessment algorithms</li>
+      <li>Advanced property assessment algorithms</li>
       <li>Blockchain-verified audit trails</li>
     </ul>
   </Box>
@@ -271,24 +261,17 @@ export const WindowManager: React.FC = () => {
             >
               <AppBar position='static' color='default' elevation={1}>
                 <Toolbar sx={{ minHeight: '48px !important' }}>
-
-
                   <Typography variant='h6' sx={{ flexGrow: 1, fontSize: '1rem' }}>
                     {window.icon} {window.title}
                   </Typography>
                   <IconButton
-
-size='small'
+                    size='small'
                     onClick={() => fullscreenWindow(window.id)}
                     sx={{ mr: 1 }}
                   >
-
-
                     <FullscreenExitIcon fontSize='small' />
                   </IconButton>
-                  <IconButton
-
-size='small' onClick={() => closeWindow(window.id)}>
+                  <IconButton size='small' onClick={() => closeWindow(window.id)}>
                     <CloseIcon fontSize='small' />
                   </IconButton>
                 </Toolbar>
@@ -357,43 +340,31 @@ size='small' onClick={() => closeWindow(window.id)}>
                 >
                   <DragIcon fontSize='small' sx={{ mr: 1, color: 'text.secondary' }} />
 
-
                   <Typography variant='subtitle2' sx={{ flexGrow: 1 }}>
                     {window.icon} {window.title}
                   </Typography>
                   <IconButton
-
-size='small'
+                    size='small'
                     onClick={() => minimizeWindow(window.id)}
                     sx={{ mr: 0.5 }}
                   >
-
-
                     <MinimizeIcon fontSize='small' />
                   </IconButton>
                   <IconButton
-
-size='small'
+                    size='small'
                     onClick={() => maximizeWindow(window.id)}
                     sx={{ mr: 0.5 }}
                   >
-
-
                     <MaximizeIcon fontSize='small' />
                   </IconButton>
                   <IconButton
-
-size='small'
+                    size='small'
                     onClick={() => fullscreenWindow(window.id)}
                     sx={{ mr: 0.5 }}
                   >
-
-
                     <FullscreenIcon fontSize='small' />
                   </IconButton>
-                  <IconButton
-
-size='small' onClick={() => closeWindow(window.id)}>
+                  <IconButton size='small' onClick={() => closeWindow(window.id)}>
                     <CloseIcon fontSize='small' />
                   </IconButton>
                 </Toolbar>

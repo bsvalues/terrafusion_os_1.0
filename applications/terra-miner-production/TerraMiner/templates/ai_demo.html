@@ -1,0 +1,967 @@
+{% extends "layout.html" %}
+
+{% block title %}AI Capabilities Demo{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1>NARRPR AI Capabilities Demo</h1>
+        <div>
+            <a href="{{ url_for('property_search') }}" class="btn btn-outline-success me-2">
+                <i class="bi bi-house-fill me-2"></i>Benton County Search
+            </a>
+            <a href="{{ url_for('ai_feedback_analytics') }}" class="btn btn-outline-primary">
+                <i class="bi bi-bar-chart-fill me-2"></i>Feedback Analytics
+            </a>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">AI Status</h5>
+                </div>
+                <div class="card-body">
+                    <div id="aiStatus" class="mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <span>Checking AI services status...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Text Summarization -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Text Summarization</h5>
+                </div>
+                <div class="card-body">
+                    <form id="summarizeForm">
+                        <div class="mb-3">
+                            <label for="propertyDescription" class="form-label">Property Description</label>
+                            <textarea class="form-control" id="propertyDescription" rows="5" placeholder="Enter property description to summarize..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="summaryLength" class="form-label">Maximum Length</label>
+                            <input type="number" class="form-control" id="summaryLength" value="200">
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="summarizeBtn">
+                            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                            Summarize
+                        </button>
+                    </form>
+                    <div class="mt-4">
+                        <h6>Summary Result:</h6>
+                        <div class="border rounded p-3 bg-light" id="summaryResult">
+                            <em>Summary will appear here...</em>
+                        </div>
+                        <div class="feedback-container mt-2 d-none" id="summaryFeedback">
+                            <div class="d-flex align-items-center">
+                                <div class="me-2">Rate this summary:</div>
+                                <div class="rating">
+                                    <i class="bi bi-star feedback-star" data-rating="1"></i>
+                                    <i class="bi bi-star feedback-star" data-rating="2"></i>
+                                    <i class="bi bi-star feedback-star" data-rating="3"></i>
+                                    <i class="bi bi-star feedback-star" data-rating="4"></i>
+                                    <i class="bi bi-star feedback-star" data-rating="5"></i>
+                                </div>
+                                <div class="ms-3 text-muted small feedback-status"></div>
+                            </div>
+                            <div class="mt-2 d-none feedback-comment-container">
+                                <textarea class="form-control feedback-comment" rows="2" placeholder="Additional comments (optional)"></textarea>
+                                <div class="d-flex justify-content-end mt-1">
+                                    <button type="button" class="btn btn-sm btn-primary submit-feedback" data-agent="summarizer">Submit Feedback</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Natural Language Search -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Natural Language Search</h5>
+                </div>
+                <div class="card-body">
+                    <form id="searchForm">
+                        <div class="mb-3">
+                            <label for="searchQuery" class="form-label">Search Query</label>
+                            <input type="text" class="form-control" id="searchQuery" placeholder="Example: 'Find houses in Phoenix under $500,000'">
+                        </div>
+                        <div class="mb-3">
+                            <label for="searchLimit" class="form-label">Result Limit</label>
+                            <input type="number" class="form-control" id="searchLimit" value="5">
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="searchBtn">
+                            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                            Search
+                        </button>
+                    </form>
+                    <div class="mt-4">
+                        <h6>Search Results:</h6>
+                        <div class="border rounded p-3 bg-light" id="searchResult">
+                            <em>Search results will appear here...</em>
+                        </div>
+                        <div class="feedback-container mt-2 d-none" id="searchFeedback">
+                            <div class="d-flex align-items-center">
+                                <div class="me-2">Rate this search:</div>
+                                <div class="rating">
+                                    <i class="bi bi-star feedback-star" data-rating="1"></i>
+                                    <i class="bi bi-star feedback-star" data-rating="2"></i>
+                                    <i class="bi bi-star feedback-star" data-rating="3"></i>
+                                    <i class="bi bi-star feedback-star" data-rating="4"></i>
+                                    <i class="bi bi-star feedback-star" data-rating="5"></i>
+                                </div>
+                                <div class="ms-3 text-muted small feedback-status"></div>
+                            </div>
+                            <div class="mt-2 d-none feedback-comment-container">
+                                <textarea class="form-control feedback-comment" rows="2" placeholder="Additional comments (optional)"></textarea>
+                                <div class="d-flex justify-content-end mt-1">
+                                    <button type="button" class="btn btn-sm btn-primary submit-feedback" data-agent="nl_search">Submit Feedback</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Market Analysis -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Market Analysis</h5>
+                </div>
+                <div class="card-body">
+                    <form id="marketAnalysisForm">
+                        <div class="mb-3">
+                            <label for="marketLocation" class="form-label">Location</label>
+                            <input type="text" class="form-control" id="marketLocation" placeholder="Example: 'Phoenix, AZ'">
+                        </div>
+                        <div class="mb-3">
+                            <label for="daysBack" class="form-label">Days Back</label>
+                            <input type="number" class="form-control" id="daysBack" value="90">
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="analyzeMarketBtn">
+                            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                            Analyze Market
+                        </button>
+                    </form>
+                    <div class="mt-4">
+                        <h6>Market Analysis:</h6>
+                        <div class="border rounded p-3 bg-light" id="marketResult">
+                            <em>Market analysis will appear here...</em>
+                        </div>
+                        <div class="feedback-container mt-2 d-none" id="marketFeedback">
+                            <div class="d-flex align-items-center">
+                                <div class="me-2">Rate this analysis:</div>
+                                <div class="rating">
+                                    <i class="bi bi-star feedback-star" data-rating="1"></i>
+                                    <i class="bi bi-star feedback-star" data-rating="2"></i>
+                                    <i class="bi bi-star feedback-star" data-rating="3"></i>
+                                    <i class="bi bi-star feedback-star" data-rating="4"></i>
+                                    <i class="bi bi-star feedback-star" data-rating="5"></i>
+                                </div>
+                                <div class="ms-3 text-muted small feedback-status"></div>
+                            </div>
+                            <div class="mt-2 d-none feedback-comment-container">
+                                <textarea class="form-control feedback-comment" rows="2" placeholder="Additional comments (optional)"></textarea>
+                                <div class="d-flex justify-content-end mt-1">
+                                    <button type="button" class="btn btn-sm btn-primary submit-feedback" data-agent="market_analyzer">Submit Feedback</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Property Recommendations -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Property Recommendations</h5>
+                </div>
+                <div class="card-body">
+                    <form id="recommendationForm">
+                        <div class="mb-3">
+                            <label for="preferenceQuery" class="form-label">Preferences Query</label>
+                            <input type="text" class="form-control" id="preferenceQuery" placeholder="Example: 'I'm looking for a 3-bedroom house in a family-friendly neighborhood'">
+                        </div>
+                        <div class="mb-3">
+                            <label for="recommendationLimit" class="form-label">Result Limit</label>
+                            <input type="number" class="form-control" id="recommendationLimit" value="3">
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="recommendBtn">
+                            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                            Get Recommendations
+                        </button>
+                    </form>
+                    <div class="mt-4">
+                        <h6>Recommendations:</h6>
+                        <div class="border rounded p-3 bg-light" id="recommendationResult">
+                            <em>Recommendations will appear here...</em>
+                        </div>
+                        <div class="feedback-container mt-2 d-none" id="recommendationFeedback">
+                            <div class="d-flex align-items-center">
+                                <div class="me-2">Rate these recommendations:</div>
+                                <div class="rating">
+                                    <i class="bi bi-star feedback-star" data-rating="1"></i>
+                                    <i class="bi bi-star feedback-star" data-rating="2"></i>
+                                    <i class="bi bi-star feedback-star" data-rating="3"></i>
+                                    <i class="bi bi-star feedback-star" data-rating="4"></i>
+                                    <i class="bi bi-star feedback-star" data-rating="5"></i>
+                                </div>
+                                <div class="ms-3 text-muted small feedback-status"></div>
+                            </div>
+                            <div class="mt-2 d-none feedback-comment-container">
+                                <textarea class="form-control feedback-comment" rows="2" placeholder="Additional comments (optional)"></textarea>
+                                <div class="d-flex justify-content-end mt-1">
+                                    <button type="button" class="btn btn-sm btn-primary submit-feedback" data-agent="recommender">Submit Feedback</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check AI status on page load
+        checkAIStatus();
+        
+        // Form submissions
+        document.getElementById('summarizeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            summarizeText();
+        });
+        
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            searchProperties();
+        });
+        
+        document.getElementById('marketAnalysisForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            analyzeMarket();
+        });
+        
+        document.getElementById('recommendationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            getRecommendations();
+        });
+    });
+    
+    // Check AI Status
+    function checkAIStatus() {
+        fetch('/api/ai-status')
+            .then(response => response.json())
+            .then(data => {
+                const statusElement = document.getElementById('aiStatus');
+                let statusHTML = '<div class="alert ';
+                
+                if (data.ai_enabled) {
+                    statusHTML += 'alert-success"><i class="bi bi-check-circle-fill me-2"></i>AI services are online and available.';
+                } else {
+                    statusHTML += 'alert-warning"><i class="bi bi-exclamation-triangle-fill me-2"></i>AI services are currently unavailable.';
+                }
+                
+                statusHTML += '</div><div class="mt-3"><h6>Available Services:</h6>';
+                statusHTML += '<ul class="list-group">';
+                
+                if (data.available_agents) {
+                    data.available_agents.forEach(agent => {
+                        statusHTML += `<li class="list-group-item"><i class="bi bi-robot me-2"></i>${formatAgentName(agent)}</li>`;
+                    });
+                }
+                
+                statusHTML += '</ul></div>';
+                statusHTML += '<div class="mt-3"><h6>API Key Status:</h6>';
+                statusHTML += '<ul class="list-group">';
+                statusHTML += `<li class="list-group-item ${data.openai_configured ? 'list-group-item-success' : 'list-group-item-danger'}">
+                    <i class="bi ${data.openai_configured ? 'bi-key-fill' : 'bi-x-circle-fill'} me-2"></i>
+                    OpenAI API Key: ${data.openai_configured ? 'Configured' : 'Not Configured'}
+                </li>`;
+                statusHTML += `<li class="list-group-item ${data.anthropic_configured ? 'list-group-item-success' : 'list-group-item-danger'}">
+                    <i class="bi ${data.anthropic_configured ? 'bi-key-fill' : 'bi-x-circle-fill'} me-2"></i>
+                    Anthropic API Key: ${data.anthropic_configured ? 'Configured' : 'Not Configured'}
+                </li>`;
+                statusHTML += '</ul></div>';
+                
+                statusElement.innerHTML = statusHTML;
+            })
+            .catch(error => {
+                document.getElementById('aiStatus').innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-octagon-fill me-2"></i>
+                        Error checking AI status: ${error.message}
+                    </div>
+                `;
+            });
+    }
+    
+    // Text Summarization
+    function summarizeText() {
+        const description = document.getElementById('propertyDescription').value;
+        const maxLength = document.getElementById('summaryLength').value;
+        
+        if (!description) {
+            alert('Please enter a property description to summarize.');
+            return;
+        }
+        
+        const summarizeBtn = document.getElementById('summarizeBtn');
+        const spinner = summarizeBtn.querySelector('.spinner-border');
+        
+        // Show loading state
+        summarizeBtn.disabled = true;
+        spinner.classList.remove('d-none');
+        
+        fetch('/api/ai/summarize', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                text: description,
+                max_length: parseInt(maxLength)
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                document.getElementById('summaryResult').innerHTML = `
+                    <p>${data.summary}</p>
+                    <div class="text-muted small mt-2">
+                        Reduced from ${data.original_length} to ${data.summary_length} characters (${Math.round(data.summary_length / data.original_length * 100)}% of original)
+                    </div>
+                `;
+            } else {
+                document.getElementById('summaryResult').innerHTML = `
+                    <div class="alert alert-danger">
+                        Error: ${data.message || 'Unknown error'}
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            document.getElementById('summaryResult').innerHTML = `
+                <div class="alert alert-danger">
+                    Error: ${error.message}
+                </div>
+            `;
+        })
+        .finally(() => {
+            // Reset loading state
+            summarizeBtn.disabled = false;
+            spinner.classList.add('d-none');
+        });
+    }
+    
+    // Natural Language Search
+    function searchProperties() {
+        const query = document.getElementById('searchQuery').value;
+        const limit = document.getElementById('searchLimit').value;
+        
+        if (!query) {
+            alert('Please enter a search query.');
+            return;
+        }
+        
+        const searchBtn = document.getElementById('searchBtn');
+        const spinner = searchBtn.querySelector('.spinner-border');
+        
+        // Show loading state
+        searchBtn.disabled = true;
+        spinner.classList.remove('d-none');
+        
+        fetch('/api/ai/search', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                query: query,
+                limit: parseInt(limit)
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const results = data.results;
+                let resultsHTML = '';
+                
+                if (results.status === 'success') {
+                    resultsHTML = `
+                        <div class="mb-3">${results.explanation || ''}</div>
+                        <div class="small text-muted mb-3">Found ${results.result_count} results</div>
+                    `;
+                    
+                    if (results.results && results.results.length > 0) {
+                        results.results.forEach(property => {
+                            resultsHTML += `
+                                <div class="card mb-2">
+                                    <div class="card-body">
+                                        <h6>${property.address || 'Unknown Address'}</h6>
+                                        <div class="text-primary">$${formatPrice(property.price)}</div>
+                                        <div class="small">${property.bedrooms || 'N/A'} beds • ${property.bathrooms || 'N/A'} baths • ${property.square_feet || 'N/A'} sqft</div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        resultsHTML += `<div class="alert alert-info">No properties matching your search criteria were found.</div>`;
+                    }
+                } else {
+                    resultsHTML = `
+                        <div class="alert alert-warning">
+                            ${results.message || 'No results found for your query.'}
+                        </div>
+                    `;
+                }
+                
+                document.getElementById('searchResult').innerHTML = resultsHTML;
+            } else {
+                document.getElementById('searchResult').innerHTML = `
+                    <div class="alert alert-danger">
+                        Error: ${data.message || 'Unknown error'}
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            document.getElementById('searchResult').innerHTML = `
+                <div class="alert alert-danger">
+                    Error: ${error.message}
+                </div>
+            `;
+        })
+        .finally(() => {
+            // Reset loading state
+            searchBtn.disabled = false;
+            spinner.classList.add('d-none');
+        });
+    }
+    
+    // Market Analysis
+    function analyzeMarket() {
+        const location = document.getElementById('marketLocation').value;
+        const daysBack = document.getElementById('daysBack').value;
+        
+        const analyzeBtn = document.getElementById('analyzeMarketBtn');
+        const spinner = analyzeBtn.querySelector('.spinner-border');
+        
+        // Show loading state
+        analyzeBtn.disabled = true;
+        spinner.classList.remove('d-none');
+        
+        fetch('/api/ai/analyze/market', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                location: location,
+                days_back: parseInt(daysBack)
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const analysis = data.analysis;
+                
+                if (analysis.status === 'success') {
+                    document.getElementById('marketResult').innerHTML = `
+                        <div class="mb-3">
+                            <h6>Location: ${analysis.location || 'All Areas'}</h6>
+                            <span class="badge bg-secondary">${analysis.data_points} properties analyzed</span>
+                        </div>
+                        <div class="analysis-text mb-3">
+                            ${analysis.analysis || 'No analysis available.'}
+                        </div>
+                    `;
+                    
+                    // Add stats if available
+                    if (analysis.stats && analysis.stats.price_stats) {
+                        const stats = analysis.stats.price_stats;
+                        document.getElementById('marketResult').innerHTML += `
+                            <div class="mt-3">
+                                <h6>Price Statistics:</h6>
+                                <div class="row">
+                                    <div class="col-6 col-md-3">
+                                        <div class="card text-center mb-2">
+                                            <div class="card-body p-2">
+                                                <div class="fw-bold">Min</div>
+                                                <div>$${formatPrice(stats.min)}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <div class="card text-center mb-2">
+                                            <div class="card-body p-2">
+                                                <div class="fw-bold">Max</div>
+                                                <div>$${formatPrice(stats.max)}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <div class="card text-center mb-2">
+                                            <div class="card-body p-2">
+                                                <div class="fw-bold">Mean</div>
+                                                <div>$${formatPrice(stats.mean)}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 col-md-3">
+                                        <div class="card text-center mb-2">
+                                            <div class="card-body p-2">
+                                                <div class="fw-bold">Median</div>
+                                                <div>$${formatPrice(stats.median)}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                } else {
+                    document.getElementById('marketResult').innerHTML = `
+                        <div class="alert alert-warning">
+                            ${analysis.message || 'No analysis could be generated.'}
+                        </div>
+                    `;
+                }
+            } else {
+                document.getElementById('marketResult').innerHTML = `
+                    <div class="alert alert-danger">
+                        Error: ${data.message || 'Unknown error'}
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            document.getElementById('marketResult').innerHTML = `
+                <div class="alert alert-danger">
+                    Error: ${error.message}
+                </div>
+            `;
+        })
+        .finally(() => {
+            // Reset loading state
+            analyzeBtn.disabled = false;
+            spinner.classList.add('d-none');
+        });
+    }
+    
+    // Property Recommendations
+    function getRecommendations() {
+        const query = document.getElementById('preferenceQuery').value;
+        const limit = document.getElementById('recommendationLimit').value;
+        
+        if (!query) {
+            alert('Please enter your preferences.');
+            return;
+        }
+        
+        const recommendBtn = document.getElementById('recommendBtn');
+        const spinner = recommendBtn.querySelector('.spinner-border');
+        
+        // Show loading state
+        recommendBtn.disabled = true;
+        spinner.classList.remove('d-none');
+        
+        fetch('/api/ai/recommend', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                preferences: {
+                    query: query
+                },
+                limit: parseInt(limit)
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const recommendations = data.recommendations;
+                
+                if (recommendations.status === 'success') {
+                    let recHTML = '';
+                    
+                    if (recommendations.explanation) {
+                        recHTML += `<div class="mb-3">${recommendations.explanation}</div>`;
+                    }
+                    
+                    if (recommendations.recommendations && recommendations.recommendations.length > 0) {
+                        recommendations.recommendations.forEach((rec, index) => {
+                            recHTML += `
+                                <div class="card mb-3">
+                                    <div class="card-header bg-primary bg-opacity-10">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="fw-bold">Recommendation #${index + 1}</span>
+                                            <span class="badge bg-primary">Match Score: ${rec.match_score}%</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <h6>${rec.property?.address || 'Property Address'}</h6>
+                                        <div class="text-primary">$${formatPrice(rec.property?.price)}</div>
+                                        <div class="small">${rec.property?.bedrooms || 'N/A'} beds • ${rec.property?.bathrooms || 'N/A'} baths • ${rec.property?.square_feet || 'N/A'} sqft</div>
+                                        
+                                        <div class="mt-3">
+                                            <h6 class="small fw-bold">Why this property matches:</h6>
+                                            <ul class="small">
+                                                ${rec.match_reasons ? rec.match_reasons.map(reason => `<li>${reason}</li>`).join('') : ''}
+                                            </ul>
+                                        </div>
+                                        
+                                        ${rec.drawbacks && rec.drawbacks.length > 0 ? `
+                                            <div class="mt-2">
+                                                <h6 class="small fw-bold">Potential drawbacks:</h6>
+                                                <ul class="small text-muted">
+                                                    ${rec.drawbacks.map(drawback => `<li>${drawback}</li>`).join('')}
+                                                </ul>
+                                            </div>
+                                        ` : ''}
+                                        
+                                        ${rec.comment ? `<div class="mt-2 fst-italic small">${rec.comment}</div>` : ''}
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        recHTML = `<div class="alert alert-info">No recommendations could be generated based on your preferences.</div>`;
+                    }
+                    
+                    document.getElementById('recommendationResult').innerHTML = recHTML;
+                } else {
+                    document.getElementById('recommendationResult').innerHTML = `
+                        <div class="alert alert-warning">
+                            ${recommendations.message || 'No recommendations could be generated.'}
+                        </div>
+                    `;
+                }
+            } else {
+                document.getElementById('recommendationResult').innerHTML = `
+                    <div class="alert alert-danger">
+                        Error: ${data.message || 'Unknown error'}
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            document.getElementById('recommendationResult').innerHTML = `
+                <div class="alert alert-danger">
+                    Error: ${error.message}
+                </div>
+            `;
+        })
+        .finally(() => {
+            // Reset loading state
+            recommendBtn.disabled = false;
+            spinner.classList.add('d-none');
+        });
+    }
+    
+    // Helper Functions
+    function formatAgentName(agentKey) {
+        const nameMap = {
+            'text_summarizer': 'Text Summarization Agent',
+            'market_analyzer': 'Market Analysis Agent',
+            'recommendation_agent': 'Property Recommendation Agent',
+            'natural_language_search': 'Natural Language Search Agent'
+        };
+        
+        return nameMap[agentKey] || agentKey;
+    }
+    
+    function formatPrice(price) {
+        if (!price) return 'N/A';
+        return new Intl.NumberFormat('en-US').format(price);
+    }
+    
+    // Feedback system
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize feedback UI handlers
+        initializeRatingStars();
+        initializeFeedbackSubmit();
+        
+        // Show feedback UI after successful API calls
+        initializeFeedbackContainers();
+    });
+    
+    function initializeRatingStars() {
+        // Handle star rating clicks
+        document.querySelectorAll('.feedback-star').forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = parseInt(this.getAttribute('data-rating'));
+                const starsContainer = this.parentElement;
+                const feedbackContainer = starsContainer.closest('.feedback-container');
+                const commentContainer = feedbackContainer.querySelector('.feedback-comment-container');
+                
+                // Update UI
+                updateStarRatings(starsContainer, rating);
+                
+                // Show comment container
+                commentContainer.classList.remove('d-none');
+                
+                // Store rating value
+                feedbackContainer.setAttribute('data-rating', rating);
+            });
+            
+            // Hover effects
+            star.addEventListener('mouseenter', function() {
+                const rating = parseInt(this.getAttribute('data-rating'));
+                const starsContainer = this.parentElement;
+                
+                // Preview rating on hover
+                previewStarRating(starsContainer, rating);
+            });
+            
+            star.addEventListener('mouseleave', function() {
+                const starsContainer = this.parentElement;
+                const feedbackContainer = starsContainer.closest('.feedback-container');
+                const currentRating = parseInt(feedbackContainer.getAttribute('data-rating') || 0);
+                
+                // Restore current rating when mouse leaves
+                updateStarRatings(starsContainer, currentRating);
+            });
+        });
+    }
+    
+    function previewStarRating(starsContainer, rating) {
+        const stars = starsContainer.querySelectorAll('.feedback-star');
+        
+        stars.forEach((star, index) => {
+            if (index < rating) {
+                star.classList.remove('bi-star');
+                star.classList.add('bi-star-fill', 'text-warning');
+            } else {
+                star.classList.remove('bi-star-fill', 'text-warning');
+                star.classList.add('bi-star');
+            }
+        });
+    }
+    
+    function updateStarRatings(starsContainer, rating) {
+        const stars = starsContainer.querySelectorAll('.feedback-star');
+        
+        stars.forEach((star, index) => {
+            if (index < rating) {
+                star.classList.remove('bi-star');
+                star.classList.add('bi-star-fill', 'text-warning');
+            } else {
+                star.classList.remove('bi-star-fill', 'text-warning');
+                star.classList.add('bi-star');
+            }
+        });
+    }
+    
+    function initializeFeedbackSubmit() {
+        // Handle feedback submission
+        document.querySelectorAll('.submit-feedback').forEach(button => {
+            button.addEventListener('click', function() {
+                const agentType = this.getAttribute('data-agent');
+                const feedbackContainer = this.closest('.feedback-container');
+                const rating = parseInt(feedbackContainer.getAttribute('data-rating') || 0);
+                const comments = feedbackContainer.querySelector('.feedback-comment').value;
+                const statusElement = feedbackContainer.querySelector('.feedback-status');
+                
+                // Validate rating
+                if (!rating || rating < 1) {
+                    statusElement.textContent = 'Please select a rating';
+                    statusElement.classList.add('text-danger');
+                    return;
+                }
+                
+                // Get query and response data
+                const queryData = getQueryDataForAgent(agentType);
+                const responseData = getResponseDataForAgent(agentType);
+                
+                // Submit feedback
+                submitFeedback(agentType, rating, comments, queryData, responseData, statusElement, feedbackContainer);
+            });
+        });
+    }
+    
+    function submitFeedback(agentType, rating, comments, queryData, responseData, statusElement, feedbackContainer) {
+        // Update UI during submission
+        const submitButton = feedbackContainer.querySelector('.submit-feedback');
+        submitButton.disabled = true;
+        statusElement.textContent = 'Submitting...';
+        statusElement.classList.remove('text-danger', 'text-success');
+        
+        // Create sessionId if not exists
+        if (!window.sessionId) {
+            window.sessionId = generateSessionId();
+        }
+        
+        // Prepare data
+        const feedbackData = {
+            agent_type: agentType,
+            rating: rating,
+            comments: comments,
+            query_data: JSON.stringify(queryData),
+            response_data: JSON.stringify(responseData),
+            session_id: window.sessionId
+        };
+        
+        // Send to server
+        fetch('/api/ai/feedback', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(feedbackData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                statusElement.textContent = 'Thank you for your feedback!';
+                statusElement.classList.add('text-success');
+                
+                // Disable further feedback
+                feedbackContainer.querySelectorAll('.feedback-star').forEach(star => {
+                    star.style.pointerEvents = 'none';
+                });
+                feedbackContainer.querySelector('.feedback-comment').disabled = true;
+                submitButton.disabled = true;
+            } else {
+                statusElement.textContent = 'Error: ' + (data.message || 'Unknown error');
+                statusElement.classList.add('text-danger');
+                submitButton.disabled = false;
+            }
+        })
+        .catch(error => {
+            statusElement.textContent = 'Error: ' + error.message;
+            statusElement.classList.add('text-danger');
+            submitButton.disabled = false;
+        });
+    }
+    
+    function getQueryDataForAgent(agentType) {
+        let queryData = {};
+        
+        switch (agentType) {
+            case 'summarizer':
+                queryData = {
+                    text: document.getElementById('propertyDescription').value,
+                    max_length: parseInt(document.getElementById('summaryLength').value)
+                };
+                break;
+            case 'nl_search':
+                queryData = {
+                    query: document.getElementById('searchQuery').value,
+                    limit: parseInt(document.getElementById('searchLimit').value)
+                };
+                break;
+            case 'market_analyzer':
+                queryData = {
+                    location: document.getElementById('marketLocation').value,
+                    days_back: parseInt(document.getElementById('daysBack').value)
+                };
+                break;
+            case 'recommender':
+                queryData = {
+                    query: document.getElementById('preferenceQuery').value,
+                    limit: parseInt(document.getElementById('recommendationLimit').value)
+                };
+                break;
+        }
+        
+        return queryData;
+    }
+    
+    function getResponseDataForAgent(agentType) {
+        let resultElement;
+        
+        switch (agentType) {
+            case 'summarizer':
+                resultElement = document.getElementById('summaryResult');
+                break;
+            case 'nl_search':
+                resultElement = document.getElementById('searchResult');
+                break;
+            case 'market_analyzer':
+                resultElement = document.getElementById('marketResult');
+                break;
+            case 'recommender':
+                resultElement = document.getElementById('recommendationResult');
+                break;
+        }
+        
+        return { html_content: resultElement.innerHTML };
+    }
+    
+    function generateSessionId() {
+        return 'session_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    }
+    
+    function initializeFeedbackContainers() {
+        // Show feedback containers after successful API calls
+        
+        // For summarizer
+        const summaryResultObserver = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList' && !mutation.target.textContent.includes('will appear here...') && !mutation.target.textContent.includes('Error:')) {
+                    document.getElementById('summaryFeedback').classList.remove('d-none');
+                }
+            });
+        });
+        
+        summaryResultObserver.observe(document.getElementById('summaryResult'), { childList: true, subtree: true });
+        
+        // For search
+        const searchResultObserver = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList' && !mutation.target.textContent.includes('will appear here...') && !mutation.target.textContent.includes('Error:')) {
+                    document.getElementById('searchFeedback').classList.remove('d-none');
+                }
+            });
+        });
+        
+        searchResultObserver.observe(document.getElementById('searchResult'), { childList: true, subtree: true });
+        
+        // For market analysis
+        const marketResultObserver = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList' && !mutation.target.textContent.includes('will appear here...') && !mutation.target.textContent.includes('Error:')) {
+                    document.getElementById('marketFeedback').classList.remove('d-none');
+                }
+            });
+        });
+        
+        marketResultObserver.observe(document.getElementById('marketResult'), { childList: true, subtree: true });
+        
+        // For recommendations
+        const recommendationResultObserver = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList' && !mutation.target.textContent.includes('will appear here...') && !mutation.target.textContent.includes('Error:')) {
+                    document.getElementById('recommendationFeedback').classList.remove('d-none');
+                }
+            });
+        });
+        
+        recommendationResultObserver.observe(document.getElementById('recommendationResult'), { childList: true, subtree: true });
+    }
+</script>
+{% endblock %}

@@ -1,15 +1,6 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  SpeedDial,
-  SpeedDialAction
-} from '@mui/material';
-import { Add,
-  Business,
-  Search,
-  Analytics,
-  Security,
-  CloudDownload } from '@mui/icons-material';
+import { Box, SpeedDial, SpeedDialAction } from '@mui/material';
+import { Add, Business, Search, Analytics, Security, CloudDownload } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 
 const StyledSpeedDial = styled(SpeedDial)(() => ({
@@ -55,7 +46,7 @@ const FloatingActionMenu: React.FC<FloatingActionMenuProps> = ({
   onSearch,
   onAnalytics,
   onSecurity,
-  onExport
+  onExport,
 }) => {
   const [open, setOpen] = useState(false);
 
@@ -64,55 +55,55 @@ const FloatingActionMenu: React.FC<FloatingActionMenuProps> = ({
       icon: <Business />,
       name: 'New Property Assessment',
       onClick: onNewAssessment,
-      color: '#0891b2'
+      color: '#0891b2',
     },
     {
       icon: <Search />,
       name: 'Search Properties',
       onClick: onSearch,
-      color: '#00d2ff'
+      color: '#00d2ff',
     },
     {
       icon: <Analytics />,
       name: 'View Analytics',
       onClick: onAnalytics,
-      color: '#667eea'
+      color: '#667eea',
     },
     {
       icon: <Security />,
       name: 'Security Dashboard',
       onClick: onSecurity,
-      color: '#00ffaa'
+      color: '#00ffaa',
     },
     {
       icon: <CloudDownload />,
       name: 'Export Data',
       onClick: onExport,
-      color: '#ffa500'
-    }
+      color: '#ffa500',
+    },
   ];
 
   return (
     <StyledSpeedDial
-      ariaLabel="Quick Actions"
-      icon={<Add className="tf-rotate-glow" />}
+      ariaLabel='Quick Actions'
+      icon={<Add className='tf-rotate-glow' />}
       open={open}
       onOpen={() => setOpen(true)}
       onClose={() => setOpen(false)}
-      direction="up"
+      direction='up'
     >
       {actions.map((action) => (
         <SpeedDialAction
           key={action.name}
           icon={
-            <Box 
-              className="tf-scale-in"
-              sx={{ 
+            <Box
+              className='tf-scale-in'
+              sx={{
                 color: action.color,
                 transition: 'all 0.3s ease',
                 '&:hover': {
                   filter: `drop-shadow(0 0 10px ${action.color})`,
-                }
+                },
               }}
             >
               {action.icon}
@@ -130,7 +121,7 @@ const FloatingActionMenu: React.FC<FloatingActionMenuProps> = ({
               backdropFilter: 'blur(10px)',
               border: '1px solid rgba(0, 210, 255, 0.2)',
               borderRadius: '8px',
-            }
+            },
           }}
         />
       ))}

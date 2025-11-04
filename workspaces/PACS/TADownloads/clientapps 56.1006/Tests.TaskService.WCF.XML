@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Tests.TaskService.WCF</name>
+    </assembly>
+    <members>
+        <member name="T:Tests.TaskService.WCF.TaskServiceTests">
+            <summary>
+            Implements unit tests for the task category repository.
+            </summary>
+        </member>
+    </members>
+</doc>

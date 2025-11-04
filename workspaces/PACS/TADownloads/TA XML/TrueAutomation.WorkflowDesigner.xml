@@ -1,0 +1,193 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.WorkflowDesigner</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.MainForm">
+            <summary>
+            The Main MDI container that would contain all the workflow UI
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.MainForm.container">
+            <summary>
+            The main Castle Windsor IoC container for the application.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.MainForm.#ctor">
+            <summary>
+            Main Display form for the workflow designer
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.MainForm.InitializeServiceLocator">
+            <summary>
+            Initializes our global service locator.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.MainForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.MainForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.MainForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesignStudio.MainForm.WindsorContainer">
+            <summary>
+            Returns the main Windsor IoC container for the application.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.Program.Main">
+            <summary>
+            The main entry point for the application.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.Program.CurrentDomain_AssemblyResolve(System.Object,System.ResolveEventArgs)">
+            <summary>
+            This has been added for the custom activities load.
+            This was done because we wanted to parcel all the custom activities in the Activity folder
+            However the System.Activities.Presentation loads the activities from the client assembly location.
+            This event handlers ensures that if an activity haa been loaded in the appdomain, it should be used.
+            </summary>
+            <param name="sender"></param>
+            <param name="args"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.WorkflowDesignStudioApplicationMenuStrategy">
+            <summary>
+            Application Menu Strategy for the Workflow Design Studio App
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.WorkflowDesignStudioApplicationMenuStrategy.GetItems">
+            <summary>
+            Gets the menu items for the Workflow Client App
+            </summary>
+            <returns>
+            List of menu items
+            </returns>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesignStudio.WorkflowDesignStudioMetaComponentVerbService">
+            <summary>
+            Faked-out class to handle verbs for now
+            Used to get the menus up and going
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.WorkflowDesignStudioMetaComponentVerbService.verbMap">
+            <summary>
+            Map of verb ids to related actions
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.WorkflowDesignStudio.WorkflowDesignStudioMetaComponentVerbService.parent">
+            <summary>
+            parent form - used to get modality correct
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.WorkflowDesignStudioMetaComponentVerbService.#ctor(TAUserInterface.MdiParentBase)">
+            <summary>
+            Default Constructor
+            </summary>
+            <remarks>
+            Add items to the map here
+            </remarks>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.WorkflowDesignStudioMetaComponentVerbService.DoVerb(TAUserInterfaceService.IVerb)">
+            <summary>
+            Executes action associated with given verb
+            </summary>
+            <param name="verb">Verb to act on</param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.WorkflowDesignStudioMetaComponentVerbService.DoVerb(TAUserInterfaceService.IVerb,System.Object)">
+            <summary>
+            ignore - not used
+            </summary>
+            <param name="verb"></param>
+            <param name="param"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.WorkflowDesignStudioMetaComponentVerbService.SupportsVerb(TAUserInterfaceService.IVerb)">
+            <summary>
+            ignore - not used
+            </summary>
+            <param name="verb"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.WorkflowDesignStudioMetaComponentVerbService.QueryCheckedState(TAUserInterfaceService.IVerb)">
+            <summary>
+            ignore - not used
+            </summary>
+            <param name="verb"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.WorkflowDesignStudioMetaComponentVerbService.EnableVerb(TAUserInterfaceService.IVerb)">
+            <summary>
+            ignore - not used
+            </summary>
+            <param name="verb"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.WorkflowDesignStudioMetaComponentVerbService.DisplayVerb(TAUserInterfaceService.IVerb)">
+            <summary>
+            ignore - not used
+            </summary>
+            <param name="verb"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.WorkflowDesignStudioMetaComponentVerbService.SupportsVerb(System.String)">
+            <summary>
+            ignore - not used
+            </summary>
+            <param name="verb"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.WorkflowDesignStudioMetaComponentVerbService.DoVerb(System.String)">
+            <summary>
+            ignore - not used
+            </summary>
+            <param name="verb"></param>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.WorkflowDesignStudioMetaComponentVerbService.CreateWorkflow">
+            <summary>
+            Calls service to show an empty workflow design surface
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.WorkflowDesignStudioMetaComponentVerbService.ViewWorkflowList">
+            <summary>
+            calls service to show the workflow list view
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.WorkflowDesignStudioMetaComponentVerbService.ShowAboutDialog">
+            <summary>
+            Launch the About Dialog
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.WorkflowDesignStudioMetaComponentVerbService.ShowEventManagementDialog">
+            <summary>
+            Launch the About Dialog
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.WorkflowDesigner.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesigner.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.WorkflowDesigner.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+    </members>
+</doc>

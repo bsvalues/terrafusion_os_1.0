@@ -1,0 +1,41 @@
+CREATE TABLE [dbo].[mort_fix] (
+    [acct_id]                   INT            NOT NULL,
+    [first_name]                VARCHAR (30)   NULL,
+    [last_name]                 VARCHAR (30)   NULL,
+    [file_as_name]              VARCHAR (70)   NULL,
+    [dl_num]                    VARCHAR (10)   NULL,
+    [dl_state]                  CHAR (2)       NULL,
+    [dl_expir_dt]               DATETIME       NULL,
+    [merged_acct_id]            CHAR (5)       NULL,
+    [acct_create_dt]            DATETIME       NULL,
+    [opening_balance]           MONEY          NULL,
+    [comment]                   VARCHAR (2048) NULL,
+    [misc_code]                 VARCHAR (50)   NULL,
+    [ref_id1]                   VARCHAR (50)   NULL,
+    [source]                    VARCHAR (30)   NULL,
+    [ref_acct_id]               INT            NULL,
+    [confidential_flag]         CHAR (1)       NULL,
+    [confidential_file_as_name] VARCHAR (70)   NULL,
+    [confidential_first_name]   VARCHAR (30)   NULL,
+    [confidential_last_name]    VARCHAR (30)   NULL,
+    [dist_m_n_o]                INT            NULL,
+    [dist_i_n_s]                INT            NULL,
+    [dist_pi]                   INT            NULL,
+    [dist_atty_fees]            INT            NULL,
+    [dist_overages]             INT            NULL,
+    [dist_tax_cert_fees]        INT            NULL,
+    [dist_misc_fees]            INT            NULL,
+    [dist_vit]                  INT            NULL,
+    [email_addr]                VARCHAR (50)   NULL,
+    [web_addr]                  VARCHAR (50)   NULL,
+    [ftp_addr]                  VARCHAR (50)   NULL,
+    [update_dt]                 DATETIME       NULL,
+    [web_suppression]           CHAR (1)       NULL,
+    [appr_company_id]           INT            NULL,
+    [ID]                        INT            IDENTITY (1, 1) NOT NULL,
+    [new_id]                    INT            NOT NULL
+);
+
+
+GO
+

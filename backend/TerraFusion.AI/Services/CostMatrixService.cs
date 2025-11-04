@@ -29,7 +29,7 @@ public class CostMatrixService : ICostMatrixService
         _ = System.Threading.Tasks.Task.Run(async () => await RefreshCostMatricesAsync());
     }
 
-    public async Task<List<CostMatrix>> GetCostMatricesAsync(string? county = null, string? region = null)
+    public async System.Threading.Tasks.Task<List<CostMatrix>> GetCostMatricesAsync(string? county = null, string? region = null)
     {
         await EnsureCostMatricesLoadedAsync();
         
@@ -48,7 +48,7 @@ public class CostMatrixService : ICostMatrixService
         return matrices.ToList();
     }
 
-    public async Task<CostMatrix?> GetCostMatrixAsync(string county, string region, string buildingType)
+    public async System.Threading.Tasks.Task<CostMatrix?> GetCostMatrixAsync(string county, string region, string buildingType)
     {
         await EnsureCostMatricesLoadedAsync();
         
@@ -58,7 +58,7 @@ public class CostMatrixService : ICostMatrixService
             m.BuildingType.Equals(buildingType, StringComparison.OrdinalIgnoreCase));
     }
 
-    public async Task<decimal> CalculateCostAsync(string county, string region, string buildingType, decimal squareFootage, AdjustmentFactors? adjustments = null)
+    public async System.Threading.Tasks.Task<decimal> CalculateCostAsync(string county, string region, string buildingType, decimal squareFootage, AdjustmentFactors? adjustments = null)
     {
         var matrix = await GetCostMatrixAsync(county, region, buildingType);
         if (matrix == null)
@@ -92,7 +92,7 @@ public class CostMatrixService : ICostMatrixService
         return Math.Round(baseCost, 2);
     }
 
-    public async Task<List<CostMatrix>> LoadCostMatricesFromFileAsync(string filePath)
+    public async System.Threading.Tasks.Task<List<CostMatrix>> LoadCostMatricesFromFileAsync(string filePath)
     {
         try
         {

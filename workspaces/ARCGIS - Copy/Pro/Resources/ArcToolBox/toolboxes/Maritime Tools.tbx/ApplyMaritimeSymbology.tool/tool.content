@@ -1,0 +1,73 @@
+{
+    "type": "FunctionTool",
+    "guid": "{C5CD7E91-50D4-44D2-B98B-151009423D52}/ApplyMaritimeSymbology",
+    "displayname": "$rc:title",
+    "helpcontent": "63040001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "50"
+    ],
+    "attributes": [
+        "block_add_to_map",
+        "edit_session",
+        "input_data_change"
+    ],
+    "params": {
+        "target_features": {
+            "display_order": "0",
+            "displayname": "$rc:target_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "DEFeatureClass"
+                        },
+                        {
+                            "type": "GPFeatureLayer"
+                        }
+                    ]
+                }
+            },
+            "description": "$rc:target_features.descr"
+        },
+        "cxml_file": {
+            "display_order": "1",
+            "displayname": "$rc:cxml_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "CXML"
+                ]
+            },
+            "description": "$rc:cxml_file.descr"
+        },
+        "updated_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "DEFeatureClass"
+                        },
+                        {
+                            "type": "GPFeatureLayer"
+                        }
+                    ]
+                }
+            },
+            "depends": [
+                "target_features"
+            ]
+        }
+    }
+}

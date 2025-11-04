@@ -1,0 +1,22 @@
+{
+    "map": {
+        "accuracy.descr": "A general statement of accuracy in meters.",
+        "accuracy.title": "Accuracy",
+        "custom_vt.descr": "<xdoc><p>The vertical transformation method that will be used.</p><p>From the drop-down list, choose the transformation method that will be used to transform the data from the input vertical coordinate system to the output vertical coordinate system. Once chosen, its parameters will appear in the table for editing.</p><p>A list of the methods and parameters is available in the.</p><p>If using a method that requires a file, see the Usage Notes for where to put the file or files.</p></xdoc>",
+        "custom_vt.title": "Vertical Transformation Method",
+        "description": "Creates a transformation definition for converting data between two vertical coordinate systems or datums. The output of this tool can be used as a transformation object for any tool with a parameter that requires a vertical transformation.",
+        "extent.descr": "<xdoc><p>The area where the transformation is applicable.</p><p>Use WGS84 (WKID: 4326) or another GNSS-based geographic coordinate system such as NAD 1983 or GDA2020 for the extent coordinate system. If a projected coordinate system or a layer that has a projected coordinate system is provided, the values will be converted to latitude and longitude.</p><ul><li>Current Display Extent—The extent will be based on the active map or scene.</li><li>Draw Extent—The extent will be based on a rectangle drawn on the map or scene.</li><li>Extent of a Layer—The extent will be based on an active map layer. Choose an available layer or use the <span class=\"esri_uicontrol\">Extent of data in all layers</span> option. Each map layer has the following options:<p><ul><li>All Features—The extent of all features.</li><li>Selected Features —The extent of the selected features.</li><li>Visible Features—The extent of visible features.</li></ul></p></li><li>Browse—The extent will be based on a dataset.</li><li>Clipboard—The extent can be copied to and from the clipboard.<ul><li>Copy Extent—Copies the extent and coordinate system to the clipboard.</li><li>Paste Extent—Pastes the extent and coordinate system from the clipboard. If the clipboard does not include a coordinate system, the extent will use the map’s coordinate system.</li></ul></li><li>Reset Extent—The extent will be reset to the default value.</li></ul><p>When coordinates are manually provided, the coordinates must be numeric values and in the active map&apos;s coordinate system. The map may use different display units than the provided coordinates. Use a negative value sign for south and west coordinates.</p></xdoc>",
+        "extent.title": "Extent",
+        "interpolation_gcs.descr": "<xdoc><p>The interpolation geographic coordinate system.</p><p>This parameter is only active if a vertical transformation method requires it.</p><p>The geographic coordinate system is used when interpolating the offset values from a file, or latitude and longitude coordinates are required by the method. The methods that do not require an interpolation geographic coordinate system are Null, Unit Change, Height Depth Reversal, and Vertical Offset.</p><p>Provide a WKID or use the <span class=\"esri_uicontrol\">Select Coordinate System</span> button  to select a coordinate system.</p></xdoc>",
+        "interpolation_gcs.title": "Interpolation Geographic Coordinate System",
+        "out_transformation.dt.title1": "Vertical Transformation Name",
+        "out_transformation.title": "Output Transformation",
+        "source_vt_coor_system.descr": "<xdoc><p>The starting vertical coordinate system.</p><p>Provide a well known ID (WKID) or use the <span class=\"esri_uicontrol\">Select Coordinate System</span> button  to select a coordinate system.</p></xdoc>",
+        "source_vt_coor_system.title": "Source Vertical Coordinate System",
+        "target_vt_coor_system.descr": "<xdoc><p>The final vertical coordinate system.</p><p>Provide a WKID or use the <span class=\"esri_uicontrol\">Select Coordinate System</span> button  to select a coordinate system.</p></xdoc>",
+        "target_vt_coor_system.title": "Target Vertical Coordinate System",
+        "title": "Create Custom Vertical Transformation",
+        "vt_name.descr": "The name of the custom transformation definition.",
+        "vt_name.title": "Vertical Transformation Name"
+    }
+}

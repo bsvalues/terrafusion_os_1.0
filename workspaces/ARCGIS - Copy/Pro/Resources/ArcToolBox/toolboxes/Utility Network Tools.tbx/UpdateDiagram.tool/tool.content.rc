@@ -1,0 +1,13 @@
+{
+    "map": {
+        "autolayout_option.title": "Re-apply automatic layouts on the updated diagrams",
+        "description": "Update Network Diagram",
+        "diagram_names.title": "Diagram Names",
+        "in_diagrams.title": "Input Network or Network Diagram Layer",
+        "out_diagrams.title": "Output Network or Network Diagram Layer",
+        "params.category1": "Advanced Options",
+        "template_names.title": "Template Names",
+        "title": "Update Diagram",
+        "update_option.title": "Update inconsistent diagrams only"
+    }
+}

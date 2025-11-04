@@ -1,0 +1,1131 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { Search, MapPin, Calculator, FileText, TrendingUp, CheckCircle, AlertCircle, Clock, Bot, Play, Pause, Settings, Activity, Map, Layers, Maximize2, DollarSign, Calendar } from 'lucide-react';
+
+// ============================================================================
+// TYPES & INTERFACES
+// ============================================================================
+
+interface Property {
+  id: string;
+  parcel_id: string;
+  address: string;
+  assessed_value: number;
+  land_value: number;
+  improvement_value: number;
+  square_feet?: number;
+  year_built?: number;
+  property_type: string;
+  coordinates?: { latitude: number; longitude: number };
+  last_assessment_date: string;
+  county_name?: string;
+  neighborhood_name?: string;
+}
+
+interface Agent {
+  id: string;
+  name: string;
+  description: string;
+  status: 'active' | 'idle' | 'processing';
+  activeTasks: number;
+  completedTasks: number;
+  successRate: number;
+  avgResponseTime: number;
+}
+
+interface SystemStats {
+  activeAgents: number;
+  tasksCompleted: number;
+  accuracyRate: number;
+  parcelsProcessed: number;
+  systemUptime: number;
+  avgResponseTime: number;
+}
+
+interface Activity {
+  id: string;
+  type: string;
+  message: string;
+  timestamp: string;
+  agent: string;
+  status: string;
+}
+
+// ============================================================================
+// UTILITY FUNCTIONS
+// ============================================================================
+
+const formatCurrency = (amount: number): string => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0
+  }).format(amount);
+};
+
+const formatDate = (dateString: string): string => {
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+};
+
+// ============================================================================
+// MOCK API CLIENT
+// ============================================================================
+
+class TerraFusionAPI {
+  static async searchProperties(query: string): Promise<Property[]> {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        const mockProperties = [
+          {
+            id: '550e8400-e29b-41d4-a716-446655440003',
+            parcel_id: '1102234412',
+            address: '123 Main Street, Richland, WA 99354',
+            assessed_value: 485200,
+            land_value: 82400,
+            improvement_value: 402800,
+            square_feet: 2340,
+            year_built: 1995,
+            property_type: 'Residential',
+            coordinates: { latitude: 46.2382, longitude: -119.2751 },
+            last_assessment_date: '2024-12-15T00:00:00Z'
+          },
+          {
+            id: '550e8400-e29b-41d4-a716-446655440004',
+            parcel_id: '1102234413',
+            address: '124 Main Street, Richland, WA 99354',
+            assessed_value: 495000,
+            land_value: 85000,
+            improvement_value: 410000,
+            square_feet: 2450,
+            year_built: 1998,
+            property_type: 'Residential',
+            coordinates: { latitude: 46.2383, longitude: -119.2752 },
+            last_assessment_date: '2024-11-20T00:00:00Z'
+          },
+          {
+            id: '550e8400-e29b-41d4-a716-446655440005',
+            parcel_id: '1102234414',
+            address: '125 Main Street, Richland, WA 99354',
+            assessed_value: 520000,
+            land_value: 88000,
+            improvement_value: 432000,
+            square_feet: 2680,
+            year_built: 2002,
+            property_type: 'Residential',
+            coordinates: { latitude: 46.2384, longitude: -119.2753 },
+            last_assessment_date: '2024-10-10T00:00:00Z'
+          }
+        ];
+
+        const filtered = mockProperties.filter(p => 
+          p.address.toLowerCase().includes(query.toLowerCase()) ||
+          p.parcel_id.includes(query)
+        );
+        
+        resolve(filtered);
+      }, 500);
+    });
+  }
+
+  static async submitAgentTask(propertyId: string, taskType: string): Promise<{task_id: string}> {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve({
+          task_id: 'task-' + Math.random().toString(36).substr(2, 9)
+        });
+      }, 300);
+    });
+  }
+}
+
+// ============================================================================
+// PROPERTY SEARCH COMPONENT
+// ============================================================================
+
+const PropertySearch = ({ onPropertySelect }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+
+  const handleSearch = useCallback(async (query: string) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      setShowResults(false);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const results = await TerraFusionAPI.searchProperties(query);
+      setSearchResults(results);
+      setShowResults(true);
+    } catch (error) {
+      console.error('Search failed:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      handleSearch(searchQuery);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, handleSearch]);
+
+  const selectProperty = (property: Property) => {
+    setShowResults(false);
+    onPropertySelect?.(property);
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-lg p-6 relative">
+      <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+        <Search className="w-5 h-5 text-blue-600" />
+        Property Search
+      </h2>
+      
+      <div className="relative">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by address, parcel ID, or owner..."
+            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+          />
+        </div>
+
+        {/* Search Results Dropdown */}
+        {showResults && (
+          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+            {loading ? (
+              <div className="p-4 text-center text-gray-500">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
+                <p className="mt-2">Searching properties...</p>
+              </div>
+            ) : searchResults.length > 0 ? (
+              <div className="divide-y divide-gray-100">
+                {searchResults.map((property) => (
+                  <button
+                    key={property.id}
+                    onClick={() => selectProperty(property)}
+                    className="w-full text-left p-4 hover:bg-blue-50 transition-colors"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <MapPin className="w-4 h-4 text-gray-400" />
+                          <span className="font-medium text-sm">{action.label}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
+// RECENT ACTIVITY COMPONENT
+// ============================================================================
+
+const RecentActivity = ({ activities }) => {
+  const getActivityIcon = (type: string) => {
+    switch (type) {
+      case 'assessment_completed':
+        return <CheckCircle className="w-4 h-4 text-green-500" />;
+      case 'exemption_analyzed':
+        return <FileText className="w-4 h-4 text-blue-500" />;
+      case 'market_analysis':
+        return <TrendingUp className="w-4 h-4 text-purple-500" />;
+      default:
+        return <Activity className="w-4 h-4 text-gray-500" />;
+    }
+  };
+
+  const getTimeAgo = (timestamp: string) => {
+    const now = new Date();
+    const time = new Date(timestamp);
+    const diffMs = now.getTime() - time.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffMins < 1440) return `${Math.floor(diffMins / 60)}h ago`;
+    return `${Math.floor(diffMins / 1440)}d ago`;
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-lg p-6">
+      <h3 className="text-lg font-semibold text-gray-800 mb-4">Recent Activity</h3>
+      <div className="space-y-4">
+        {activities.map((activity) => (
+          <div key={activity.id} className="flex items-start gap-3">
+            <div className="mt-1">
+              {getActivityIcon(activity.type)}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm text-gray-800">{activity.message}</p>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-xs text-gray-500">{activity.agent}</span>
+                <span className="text-xs text-gray-400">•</span>
+                <span className="text-xs text-gray-500">{getTimeAgo(activity.timestamp)}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+        
+        {activities.length === 0 && (
+          <div className="text-center py-8 text-gray-500">
+            <Activity className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+            <p>No recent activity</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
+// MAIN DASHBOARD COMPONENT
+// ============================================================================
+
+const TerraFusionDashboard = () => {
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+  
+  // Mock system stats
+  const systemStats: SystemStats = {
+    activeAgents: 15,
+    tasksCompleted: 2847,
+    accuracyRate: 97.8,
+    parcelsProcessed: 47831,
+    systemUptime: 99.9,
+    avgResponseTime: 234
+  };
+
+  // Mock recent activities
+  const recentActivities: Activity[] = [
+    {
+      id: '1',
+      type: 'assessment_completed',
+      message: 'Property assessment completed for 123 Main St',
+      timestamp: new Date().toISOString(),
+      agent: 'NarratorAI',
+      status: 'success'
+    },
+    {
+      id: '2',
+      type: 'exemption_analyzed',
+      message: 'Senior exemption eligibility confirmed',
+      timestamp: new Date(Date.now() - 300000).toISOString(),
+      agent: 'ExemptionSeer',
+      status: 'success'
+    },
+    {
+      id: '3',
+      type: 'market_analysis',
+      message: 'Market trends updated for Downtown Richland',
+      timestamp: new Date(Date.now() - 600000).toISOString(),
+      agent: 'SalesValidator',
+      status: 'success'
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      {/* Dashboard Header */}
+      <header className="bg-white shadow-sm border-b sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg">TF</span>
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Assessment Dashboard</h1>
+                <p className="text-sm text-gray-600">Benton County, Washington</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-sm text-green-600 font-medium">System Operational</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Dashboard Grid */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          {/* Left Column - Search & Actions */}
+          <div className="lg:col-span-4 space-y-6">
+            <PropertySearch onPropertySelect={setSelectedProperty} />
+            <QuickActions />
+            <RecentActivity activities={recentActivities} />
+          </div>
+
+          {/* Center Column - Map */}
+          <div className="lg:col-span-5">
+            <PropertyMap selectedProperty={selectedProperty} />
+          </div>
+
+          {/* Right Column - Agents & Metrics */}
+          <div className="lg:col-span-3 space-y-6">
+            <SystemMetrics stats={systemStats} />
+            <AgentControlPanel />
+          </div>
+        </div>
+      </main>
+
+      {/* Property Detail Modal */}
+      {selectedProperty && (
+        <PropertyDetailModal 
+          property={selectedProperty} 
+          onClose={() => setSelectedProperty(null)} 
+        />
+      )}
+    </div>
+  );
+};
+
+// ============================================================================
+// PROPERTY DETAIL MODAL
+// ============================================================================
+
+const PropertyDetailModal = ({ property, onClose }) => {
+  const [activeTab, setActiveTab] = useState('overview');
+  const [agentTasks, setAgentTasks] = useState<any[]>([]);
+
+  const tabs = [
+    { id: 'overview', label: 'Overview', icon: <FileText className="w-4 h-4" /> },
+    { id: 'assessment', label: 'Assessment', icon: <Calculator className="w-4 h-4" /> },
+    { id: 'agents', label: 'AI Analysis', icon: <Bot className="w-4 h-4" /> },
+    { id: 'history', label: 'History', icon: <Clock className="w-4 h-4" /> }
+  ];
+
+  const runAgentAnalysis = async (agentType: string) => {
+    try {
+      const result = await TerraFusionAPI.submitAgentTask(property.id, agentType);
+      setAgentTasks(prev => [...prev, {
+        id: result.task_id,
+        type: agentType,
+        status: 'processing',
+        timestamp: new Date().toISOString()
+      }]);
+    } catch (error) {
+      console.error('Failed to submit agent task:', error);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+        {/* Modal Header */}
+        <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">{property.address}</h2>
+            <p className="text-sm text-gray-600">Parcel ID: {property.parcel_id}</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Tabs */}
+        <div className="border-b border-gray-200">
+          <nav className="flex space-x-8 px-6">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  activeTab === tab.id
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        {/* Tab Content */}
+        <div className="p-6 overflow-y-auto max-h-[60vh]">
+          {activeTab === 'overview' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="text-lg font-semibold mb-3">Property Details</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Type:</span>
+                    <span className="font-medium">{property.property_type}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Square Feet:</span>
+                    <span className="font-medium">{property.square_feet?.toLocaleString() || 'N/A'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Year Built:</span>
+                    <span className="font-medium">{property.year_built || 'N/A'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Last Assessment:</span>
+                    <span className="font-medium">{formatDate(property.last_assessment_date)}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <h3 className="text-lg font-semibold mb-3">Valuation</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Total Assessed Value:</span>
+                    <span className="font-bold text-lg text-blue-600">{formatCurrency(property.assessed_value)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Land Value:</span>
+                    <span className="font-medium">{formatCurrency(property.land_value)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Improvement Value:</span>
+                    <span className="font-medium">{formatCurrency(property.improvement_value)}</span>
+                  </div>
+                  {property.square_feet && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Price per Sq Ft:</span>
+                      <span className="font-medium">${(property.assessed_value / property.square_feet).toFixed(2)}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'agents' && (
+            <div>
+              <h3 className="text-lg font-semibold mb-4">AI Agent Analysis</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <button
+                  onClick={() => runAgentAnalysis('PropertyValuation')}
+                  className="p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors text-left"
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <FileText className="w-4 h-4 text-purple-600" />
+                    </div>
+                    <span className="font-medium">Property Valuation</span>
+                  </div>
+                  <p className="text-sm text-gray-600">Generate comprehensive assessment narrative</p>
+                </button>
+
+                <button
+                  onClick={() => runAgentAnalysis('ExemptionAnalysis')}
+                  className="p-4 border border-gray-200 rounded-lg hover:border-green-300 hover:bg-green-50 transition-colors text-left"
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                    </div>
+                    <span className="font-medium">Exemption Analysis</span>
+                  </div>
+                  <p className="text-sm text-gray-600">Check eligibility for tax exemptions</p>
+                </button>
+
+                <button
+                  onClick={() => runAgentAnalysis('SalesValidation')}
+                  className="p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors text-left"
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <TrendingUp className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <span className="font-medium">Market Analysis</span>
+                  </div>
+                  <p className="text-sm text-gray-600">Validate against comparable sales</p>
+                </button>
+
+                <button
+                  onClick={() => runAgentAnalysis('CostEstimation')}
+                  className="p-4 border border-gray-200 rounded-lg hover:border-orange-300 hover:bg-orange-50 transition-colors text-left"
+                >
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                      <Calculator className="w-4 h-4 text-orange-600" />
+                    </div>
+                    <span className="font-medium">Cost Analysis</span>
+                  </div>
+                  <p className="text-sm text-gray-600">Calculate replacement cost new</p>
+                </button>
+              </div>
+
+              {/* Active Agent Tasks */}
+              {agentTasks.length > 0 && (
+                <div>
+                  <h4 className="font-medium mb-3">Active Analysis Tasks</h4>
+                  <div className="space-y-2">
+                    {agentTasks.map((task) => (
+                      <div key={task.id} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                          <span className="font-medium">{task.type}</span>
+                        </div>
+                        <span className="text-sm text-blue-600">Processing...</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'assessment' && (
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Assessment Details</h3>
+              <div className="bg-gray-50 rounded-lg p-4">
+                <p className="text-gray-600 text-center">
+                  Detailed assessment information would be loaded here from the backend API.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'history' && (
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Assessment History</h3>
+              <div className="bg-gray-50 rounded-lg p-4">
+                <p className="text-gray-600 text-center">
+                  Historical assessment data would be displayed here.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Modal Footer */}
+        <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+          >
+            Close
+          </button>
+          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            Generate Report
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
+// EXPORT MAIN COMPONENT
+// ============================================================================
+
+export default TerraFusionDashboard;font-medium text-gray-900">{property.address}</span>
+                        </div>
+                        <div className="text-sm text-gray-600 space-y-1">
+                          <div>Parcel: {property.parcel_id}</div>
+                          <div className="flex items-center gap-4">
+                            <span className="flex items-center gap-1">
+                              <DollarSign className="w-3 h-3" />
+                              {formatCurrency(property.assessed_value)}
+                            </span>
+                            {property.square_feet && (
+                              <span>{property.square_feet.toLocaleString()} sq ft</span>
+                            )}
+                            {property.year_built && (
+                              <span>Built {property.year_built}</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-xs text-gray-500 flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
+                        {formatDate(property.last_assessment_date)}
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="p-4 text-center text-gray-500">
+                No properties found for "{searchQuery}"
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Search Filters */}
+      <div className="mt-4 flex flex-wrap gap-2">
+        <FilterChip label="Residential" active />
+        <FilterChip label="Commercial" />
+        <FilterChip label="Recent Sales" />
+        <FilterChip label="Pending Assessment" />
+      </div>
+    </div>
+  );
+};
+
+const FilterChip = ({ label, active = false }) => {
+  return (
+    <button
+      className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+        active
+          ? 'bg-blue-100 border-blue-300 text-blue-700'
+          : 'bg-gray-100 border-gray-300 text-gray-600 hover:bg-gray-200'
+      }`}
+    >
+      {label}
+    </button>
+  );
+};
+
+// ============================================================================
+// INTERACTIVE MAP COMPONENT
+// ============================================================================
+
+const PropertyMap = ({ selectedProperty }) => {
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const [activeLayer, setActiveLayer] = useState('satellite');
+
+  useEffect(() => {
+    const timer = setTimeout(() => setMapLoaded(true), 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const layers = [
+    { id: 'satellite', name: 'Satellite', icon: '🛰️' },
+    { id: 'parcels', name: 'Parcels', icon: '🏘️' },
+    { id: 'zoning', name: 'Zoning', icon: '📋' },
+    { id: 'flood', name: 'Flood Zones', icon: '🌊' }
+  ];
+
+  return (
+    <div className="bg-white rounded-lg shadow-lg overflow-hidden h-[600px] relative">
+      {/* Map Header */}
+      <div className="absolute top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b z-10">
+        <div className="flex justify-between items-center p-4">
+          <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+            <Map className="w-5 h-5 text-blue-600" />
+            Property Map
+          </h3>
+          <div className="flex items-center gap-2">
+            <button className="p-2 text-gray-600 hover:text-blue-600 transition-colors">
+              <Maximize2 className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Layer Controls */}
+      <div className="absolute top-20 left-4 z-10 bg-white rounded-lg shadow-lg p-2">
+        <div className="text-xs font-medium text-gray-600 mb-2 px-2">Layers</div>
+        <div className="space-y-1">
+          {layers.map((layer) => (
+            <button
+              key={layer.id}
+              onClick={() => setActiveLayer(layer.id)}
+              className={`flex items-center gap-2 w-full px-3 py-2 text-sm rounded-md transition-colors ${
+                activeLayer === layer.id
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              <span>{layer.icon}</span>
+              {layer.name}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Map Container */}
+      <div className="w-full h-full pt-16 bg-gradient-to-br from-green-100 to-blue-100 relative">
+        {!mapLoaded ? (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+              <p className="text-gray-600">Loading map...</p>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Mock Map Content */}
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-blue-50">
+              {/* Property Markers */}
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                <div className="relative">
+                  <MapPin className="w-8 h-8 text-red-500 drop-shadow-lg" />
+                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-white px-2 py-1 rounded shadow-lg text-xs whitespace-nowrap">
+                    {selectedProperty?.address || '123 Main Street'}
+                  </div>
+                </div>
+              </div>
+              
+              {/* Additional property markers */}
+              <div className="absolute top-1/3 left-2/3">
+                <MapPin className="w-6 h-6 text-blue-500 drop-shadow-lg" />
+              </div>
+              <div className="absolute bottom-1/3 right-1/3">
+                <MapPin className="w-6 h-6 text-green-500 drop-shadow-lg" />
+              </div>
+
+              {/* Map Info */}
+              <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 text-sm">
+                <div className="font-medium text-gray-800">Benton County, WA</div>
+                <div className="text-gray-600">47,831 parcels • 672 sq mi</div>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Property Info Panel */}
+      {selectedProperty && (
+        <div className="absolute bottom-4 right-4 bg-white rounded-lg shadow-lg p-4 max-w-sm">
+          <div className="text-sm">
+            <div className="font-medium text-gray-800 mb-2">Selected Property</div>
+            <div className="space-y-1 text-gray-600">
+              <div>{selectedProperty.address}</div>
+              <div>Parcel: {selectedProperty.parcel_id}</div>
+              <div>Assessed: {formatCurrency(selectedProperty.assessed_value)}</div>
+              <div>Type: {selectedProperty.property_type}</div>
+            </div>
+            <button className="mt-3 w-full bg-blue-600 text-white py-2 px-3 rounded-md text-sm hover:bg-blue-700 transition-colors">
+              View Property Details
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ============================================================================
+// AGENT CONTROL PANEL
+// ============================================================================
+
+const AgentControlPanel = () => {
+  const [agents, setAgents] = useState<Agent[]>([]);
+  const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
+
+  useEffect(() => {
+    setAgents([
+      {
+        id: 'narrator-ai',
+        name: 'NarratorAI',
+        description: 'Assessment storyteller and explanation generator',
+        status: 'active',
+        activeTasks: 3,
+        completedTasks: 1247,
+        successRate: 98.2,
+        avgResponseTime: 1340
+      },
+      {
+        id: 'exemption-seer',
+        name: 'ExemptionSeer',
+        description: 'Tax exemption eligibility specialist',
+        status: 'processing',
+        activeTasks: 1,
+        completedTasks: 487,
+        successRate: 99.1,
+        avgResponseTime: 890
+      },
+      {
+        id: 'sales-validator',
+        name: 'SalesValidator',
+        description: 'Market analysis and sales validation expert',
+        status: 'active',
+        activeTasks: 2,
+        completedTasks: 2156,
+        successRate: 96.7,
+        avgResponseTime: 2100
+      },
+      {
+        id: 'cost-analyzer',
+        name: 'CostAnalyzer',
+        description: 'Replacement cost and depreciation analysis',
+        status: 'idle',
+        activeTasks: 0,
+        completedTasks: 1543,
+        successRate: 94.8,
+        avgResponseTime: 1890
+      }
+    ]);
+  }, []);
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'active':
+        return <Activity className="w-4 h-4 text-green-500" />;
+      case 'processing':
+        return <Clock className="w-4 h-4 text-blue-500 animate-spin" />;
+      case 'idle':
+        return <Pause className="w-4 h-4 text-gray-400" />;
+      default:
+        return <AlertCircle className="w-4 h-4 text-red-500" />;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'processing':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'idle':
+        return 'bg-gray-100 text-gray-600 border-gray-200';
+      default:
+        return 'bg-red-100 text-red-800 border-red-200';
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-lg p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+          <Bot className="w-6 h-6 text-blue-600" />
+          AI Agents
+        </h3>
+        <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+          {agents.filter(a => a.status === 'active').length} Active
+        </span>
+      </div>
+
+      {/* Agent Grid */}
+      <div className="space-y-4">
+        {agents.map((agent) => (
+          <div
+            key={agent.id}
+            className={`border-2 rounded-lg p-4 transition-all cursor-pointer ${
+              selectedAgent === agent.id 
+                ? 'border-blue-300 bg-blue-50' 
+                : 'border-gray-200 hover:border-gray-300'
+            }`}
+            onClick={() => setSelectedAgent(selectedAgent === agent.id ? null : agent.id)}
+          >
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  {getStatusIcon(agent.status)}
+                  <h4 className="font-semibold text-gray-800">{agent.name}</h4>
+                  <span className={`px-2 py-1 text-xs rounded-full border ${getStatusColor(agent.status)}`}>
+                    {agent.status}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-600 mb-3">{agent.description}</p>
+                
+                {/* Agent Metrics */}
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <div className="text-gray-500">Active Tasks</div>
+                    <div className="font-semibold text-blue-600">{agent.activeTasks}</div>
+                  </div>
+                  <div>
+                    <div className="text-gray-500">Success Rate</div>
+                    <div className="font-semibold text-green-600">{agent.successRate}%</div>
+                  </div>
+                  <div>
+                    <div className="text-gray-500">Completed</div>
+                    <div className="font-semibold">{agent.completedTasks.toLocaleString()}</div>
+                  </div>
+                  <div>
+                    <div className="text-gray-500">Avg Response</div>
+                    <div className="font-semibold">{agent.avgResponseTime}ms</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex flex-col gap-2 ml-4">
+                <button className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors">
+                  <Play className="w-4 h-4" />
+                </button>
+                <button className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                  <Settings className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Expanded Agent Details */}
+            {selectedAgent === agent.id && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h5 className="font-medium text-gray-800 mb-2">Recent Activity</h5>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="w-3 h-3 text-green-500" />
+                        <span>Property assessment completed</span>
+                        <span className="text-gray-500">2m ago</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="w-3 h-3 text-green-500" />
+                        <span>Exemption analysis finished</span>
+                        <span className="text-gray-500">5m ago</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <h5 className="font-medium text-gray-800 mb-2">Performance</h5>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Tasks Today</span>
+                        <span className="font-semibold">24</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span>Avg Confidence</span>
+                        <span className="font-semibold">96.8%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="mt-4 flex gap-2">
+                  <button className="flex-1 bg-blue-600 text-white py-2 px-3 rounded-md text-sm hover:bg-blue-700 transition-colors">
+                    Launch Agent
+                  </button>
+                  <button className="flex-1 border border-gray-300 text-gray-700 py-2 px-3 rounded-md text-sm hover:bg-gray-50 transition-colors">
+                    View Logs
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Quick Launch */}
+      <div className="mt-6 pt-6 border-t border-gray-200">
+        <h4 className="font-medium text-gray-800 mb-3">Quick Actions</h4>
+        <div className="grid grid-cols-2 gap-3">
+          <button className="bg-purple-100 text-purple-700 py-2 px-3 rounded-md text-sm hover:bg-purple-200 transition-colors">
+            Batch Assessment
+          </button>
+          <button className="bg-green-100 text-green-700 py-2 px-3 rounded-md text-sm hover:bg-green-200 transition-colors">
+            Exemption Scan
+          </button>
+          <button className="bg-blue-100 text-blue-700 py-2 px-3 rounded-md text-sm hover:bg-blue-200 transition-colors">
+            Market Analysis
+          </button>
+          <button className="bg-orange-100 text-orange-700 py-2 px-3 rounded-md text-sm hover:bg-orange-200 transition-colors">
+            Compliance Check
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
+// SYSTEM METRICS COMPONENT
+// ============================================================================
+
+const SystemMetrics = ({ stats }) => {
+  const metrics = [
+    {
+      label: 'Active Agents',
+      value: stats.activeAgents,
+      change: '+3 from yesterday',
+      icon: '🤖',
+      color: 'text-blue-600'
+    },
+    {
+      label: 'Tasks Completed',
+      value: stats.tasksCompleted.toLocaleString(),
+      change: '+12% efficiency',
+      icon: '⚡',
+      color: 'text-green-600'
+    },
+    {
+      label: 'Accuracy Rate',
+      value: `${stats.accuracyRate}%`,
+      change: 'IAAO Compliant',
+      icon: '🎯',
+      color: 'text-purple-600'
+    },
+    {
+      label: 'Parcels Processed',
+      value: stats.parcelsProcessed.toLocaleString(),
+      change: 'Benton County',
+      icon: '🏘️',
+      color: 'text-orange-600'
+    }
+  ];
+
+  return (
+    <div className="bg-white rounded-lg shadow-lg p-6">
+      <h3 className="text-lg font-semibold text-gray-800 mb-4">System Overview</h3>
+      
+      <div className="grid grid-cols-1 gap-4">
+        {metrics.map((metric, index) => (
+          <div key={index} className="p-4 rounded-lg bg-gray-50 border border-gray-100">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-2xl">{metric.icon}</span>
+              <div className={`text-2xl font-bold ${metric.color}`}>
+                {metric.value}
+              </div>
+            </div>
+            <div className="text-sm font-medium text-gray-800 mb-1">
+              {metric.label}
+            </div>
+            <div className="text-xs text-gray-500">
+              {metric.change}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* System Health */}
+      <div className="mt-6 pt-4 border-t border-gray-200">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium text-gray-700">System Health</span>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span className="text-sm text-green-600 font-medium">Optimal</span>
+          </div>
+        </div>
+        <div className="mt-2 text-xs text-gray-500">
+          Uptime: {stats.systemUptime}% • Response: {stats.avgResponseTime}ms
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
+// QUICK ACTIONS COMPONENT
+// ============================================================================
+
+const QuickActions: React.FC = () => {
+  const actions = [
+    { icon: <Calculator className="w-5 h-5" />, label: 'New Assessment', color: 'bg-blue-100 text-blue-700 hover:bg-blue-200' },
+    { icon: <FileText className="w-5 h-5" />, label: 'Generate Report', color: 'bg-green-100 text-green-700 hover:bg-green-200' },
+    { icon: <TrendingUp className="w-5 h-5" />, label: 'Market Analysis', color: 'bg-purple-100 text-purple-700 hover:bg-purple-200' },
+    { icon: <CheckCircle className="w-5 h-5" />, label: 'Batch Review', color: 'bg-orange-100 text-orange-700 hover:bg-orange-200' },
+  ];
+
+  return (
+    <div className="bg-white rounded-lg shadow-lg p-6">
+      <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
+      <div className="grid grid-cols-2 gap-3">
+        {actions.map((action, index) => (
+          <button
+            key={index}
+            className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${action.color}`}
+          >
+            {action.icon}
+            <span className="

@@ -1,0 +1,9 @@
+{
+    "set": [
+        "erf",
+        "confounder",
+        "confounding",
+        "exposure",
+        "treatment"
+    ]
+}

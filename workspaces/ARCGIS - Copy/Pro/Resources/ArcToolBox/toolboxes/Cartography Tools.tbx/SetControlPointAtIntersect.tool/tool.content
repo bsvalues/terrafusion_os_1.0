@@ -1,0 +1,50 @@
+{
+    "type": "FunctionTool",
+    "guid": "{492ad9e5-df72-4c80-81d0-ce93d96c67c3}",
+    "displayname": "$rc:title",
+    "helpcontent": "10040011",
+    "description": "$rc:description",
+    "product": "300",
+    "attributes": [
+        "edit_session",
+        "input_data_change"
+    ],
+    "params": {
+        "in_line_or_polygon_features": {
+            "displayname": "$rc:in_line_or_polygon_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline",
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:in_line_or_polygon_features.descr"
+        },
+        "in_features": {
+            "type": "optional",
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "out_representations": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_representations.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "in_line_or_polygon_features"
+            ]
+        }
+    },
+    "environments": [
+        "cartographicPartitions"
+    ]
+}

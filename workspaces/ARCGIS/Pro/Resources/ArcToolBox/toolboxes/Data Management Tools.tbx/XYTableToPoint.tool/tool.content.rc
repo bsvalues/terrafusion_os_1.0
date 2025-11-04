@@ -1,0 +1,18 @@
+{
+    "map": {
+        "coordinate_system.descr": "The coordinate system of the x- and y-coordinates. This will be the coordinate system of the output feature class.",
+        "coordinate_system.title": "Coordinate System",
+        "description": "Creates a point feature class based on x-, y-, and z-coordinates from a table.",
+        "in_table.descr": "The table containing the x- and y-coordinates that define the locations of the point features that will be created.",
+        "in_table.title": "Input Table",
+        "out_feature_class.descr": "The feature class containing the output point features.",
+        "out_feature_class.title": "Output Feature Class",
+        "title": "XY Table To Point",
+        "x_field.descr": "The field in the input table that contains the x-coordinates (longitude).",
+        "x_field.title": "X Field",
+        "y_field.descr": "The field in the input table that contains the y-coordinates (latitude).",
+        "y_field.title": "Y Field",
+        "z_field.descr": "The field in the input table that contains the z-coordinates.",
+        "z_field.title": "Z Field"
+    }
+}

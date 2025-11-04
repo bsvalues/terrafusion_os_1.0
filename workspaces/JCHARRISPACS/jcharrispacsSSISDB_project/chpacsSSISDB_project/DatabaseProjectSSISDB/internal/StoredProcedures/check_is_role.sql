@@ -1,0 +1,31 @@
+
+CREATE PROCEDURE [internal].[check_is_role]
+    @principal_id INTEGER,
+    @is_role BIT OUTPUT
+AS
+BEGIN
+    DECLARE @principal_type CHAR(1)
+        
+    SELECT @principal_type = [type] 
+    FROM [sys].[database_principals] 
+    WHERE [principal_id] = @principal_id
+
+    IF @principal_type IS NULL
+        RETURN 1
+    
+    IF @principal_type = 'R'
+        SET @is_role = 1
+    ELSE
+        SET @is_role = 0
+  
+    RETURN 0
+END
+
+GO
+
+ADD SIGNATURE TO OBJECT::[internal].[check_is_role]
+    BY CERTIFICATE [MS_SQLISSigningCertificate] WITH SIGNATURE = 0x4B17280EE479DB7649307789253CDAF6F3AABA21E5F2C807A69FA8D6047E5B8DB3144E90ECE0DB9EA42756077931D14CB02EA0F4466C9609D9F722AC629E44792AD5153FB0717C35284FFB71A8DBD3239EB0C97038F17193D173A6795632EFB94D20AB7A1C0BC80146824A6703AB995ABCB48D05AD9E0191F85328CF62341C41;
+
+
+GO
+

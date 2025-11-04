@@ -1,0 +1,12 @@
+{
+    "set": [
+        "constant",
+        "construct",
+        "create",
+        "generate",
+        "make",
+        "raster",
+        "scalar",
+        "single value"
+    ]
+}

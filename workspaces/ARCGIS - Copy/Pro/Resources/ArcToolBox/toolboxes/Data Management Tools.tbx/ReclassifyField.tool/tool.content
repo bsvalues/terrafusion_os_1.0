@@ -1,0 +1,228 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "3060019",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "input_data_change",
+        "mCPU"
+    ],
+    "params": {
+        "in_table": {
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "field": {
+            "displayname": "$rc:field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "BigInteger"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:field.descr"
+        },
+        "method": {
+            "type": "optional",
+            "displayname": "$rc:method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DEFINED_INTERVAL",
+                        "code": "$rc:method.domain.DEFINED_INTERVAL"
+                    },
+                    {
+                        "value": "EQUAL_INTERVAL",
+                        "code": "$rc:method.domain.EQUAL_INTERVAL"
+                    },
+                    {
+                        "value": "GEOMETRIC_INTERVAL",
+                        "code": "$rc:method.domain.GEOMETRIC_INTERVAL"
+                    },
+                    {
+                        "value": "MANUAL",
+                        "code": "$rc:method.domain.MANUAL"
+                    },
+                    {
+                        "value": "NATURAL_BREAKS",
+                        "code": "$rc:method.domain.NATURAL_BREAKS"
+                    },
+                    {
+                        "value": "QUANTILE",
+                        "code": "$rc:method.domain.QUANTILE"
+                    },
+                    {
+                        "value": "STANDARD_DEVIATION",
+                        "code": "$rc:method.domain.STANDARD_DEVIATION"
+                    },
+                    {
+                        "value": "UNIQUE_VALUES",
+                        "code": "$rc:method.domain.UNIQUE_VALUES"
+                    }
+                ]
+            },
+            "value": "EQUAL_INTERVAL",
+            "description": "$rc:method.descr"
+        },
+        "classes": {
+            "type": "optional",
+            "displayname": "$rc:classes.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "1",
+                "max": "256"
+            },
+            "description": "$rc:classes.descr"
+        },
+        "interval": {
+            "type": "optional",
+            "displayname": "$rc:interval.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:interval.descr"
+        },
+        "standard_deviations": {
+            "type": "optional",
+            "displayname": "$rc:standard_deviations.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ONE",
+                        "code": "$rc:standard_deviations.domain.ONE"
+                    },
+                    {
+                        "value": "HALF",
+                        "code": "$rc:standard_deviations.domain.HALF"
+                    },
+                    {
+                        "value": "THIRD",
+                        "code": "$rc:standard_deviations.domain.THIRD"
+                    },
+                    {
+                        "value": "QUARTER",
+                        "code": "$rc:standard_deviations.domain.QUARTER"
+                    }
+                ]
+            },
+            "value": "ONE",
+            "description": "$rc:standard_deviations.descr"
+        },
+        "reclass_table": {
+            "type": "optional",
+            "displayname": "$rc:reclass_table.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:reclass_table.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:reclass_table.dt.title2"
+                    }
+                ]
+            },
+            "description": "$rc:reclass_table.descr"
+        },
+        "reverse_values": {
+            "type": "optional",
+            "displayname": "$rc:reverse_values.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "DESC"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "ASC"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:reverse_values.descr"
+        },
+        "output_field_name": {
+            "type": "optional",
+            "displayname": "$rc:output_field_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:output_field_name.descr"
+        },
+        "updated_table": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_table.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    },
+    "environments": [
+        "extent"
+    ]
+}

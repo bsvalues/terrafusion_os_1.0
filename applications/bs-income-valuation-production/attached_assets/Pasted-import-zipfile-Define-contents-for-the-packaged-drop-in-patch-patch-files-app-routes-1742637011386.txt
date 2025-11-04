@@ -1,0 +1,147 @@
+import zipfile
+
+# Define contents for the packaged drop-in patch
+patch_files = {
+    "app/routes/docs/dev.tsx": '''
+import { json, redirect } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
+import fs from "fs/promises";
+import path from "path";
+import Markdown from "react-markdown";
+
+export const loader = async () => {
+  if (process.env.NODE_ENV !== "development") {
+    throw redirect("/");
+  }
+  const filePath = path.resolve("./README.md");
+  const content = await fs.readFile(filePath, "utf-8");
+  return json({ content });
+};
+
+export default function DevDocs() {
+  const { content } = useLoaderData<typeof loader>();
+  return (
+    <div className="p-6 max-w-4xl mx-auto">
+      <h1 className="text-3xl font-bold mb-4">📘 IncomeValuationTracker Dev Guide</h1>
+      <Markdown className="prose lg:prose-xl">{content}</Markdown>
+    </div>
+  );
+}
+''',
+
+    "app/components/AIDevBadge.tsx": '''
+import { Link } from "@remix-run/react";
+
+export function AIDevBadge() {
+  if (process.env.NODE_ENV !== "development") return null;
+  return (
+    <Link
+      to="/docs/dev"
+      className="fixed bottom-4 right-4 px-4 py-2 bg-yellow-400 text-black font-semibold rounded-full shadow-lg hover:bg-yellow-300 transition"
+    >
+      ⚙️ AI Dev Guide
+    </Link>
+  );
+}
+''',
+
+    "README.md": '''
+# 📊 IncomeValuationTracker — Remix God-Tier Dev Environment
+
+**Build a Full-Stack AI LLM-powered income valuation tracking app with:**
+
+---
+
+### 🧠 Dynamic Roadmap & Task Tracking
+- Kanban board integration (Trello or custom)
+- Auto-updating task statuses via commits/AI actions
+- Modules: Income Data, Valuation Models, User Roles, Reporting
+
+---
+
+### 🗂 Modular Remix Folder Structure
+- `/app/routes/`: e.g. `/income-data`, `/valuation`, `/reports`
+- `/components/`: UI like `IncomeTable`, `ValuationChart`
+- `/lib/`: Valuation logic, models, utilities
+- `/agents/`: AI like `ValuationAgent`, `DataCleaner`
+- `/services/`: API handlers, integrations
+- `/ai-playground/`: Prompt tests & exploration
+- `/tests/`: Full Vitest suite
+
+---
+
+### ⚙️ Dev Runtime
+- Hot reloading with `npm run dev` or Replit “Run”
+- Works in VSCode or Replit Dev Env
+- Nix ready
+
+---
+
+### 🧪 AI-Driven Debugging
+- `AnomalyDetector` agent flags valuation inconsistencies
+- GPT-powered unit tests for scenarios
+- Live tracing & feedback from AI agents
+
+---
+
+### 📚 Documentation
+- `/docs/dev`: Live markdown rendered
+- Swagger auto-docs from services
+- Prompt recipes for testing agents
+
+---
+
+### 🧩 AI Modular Plugins
+- Drop-in strategy pattern agents
+- Expand valuation types without breaking core logic
+
+---
+
+### 🧠 Playground & Self-Learning
+- Prompt test UI
+- Export results to JSON or PDF
+- Auto-learn from edge cases in dev mode
+
+---
+
+### 📦 Deployment
+- Works with Nix, Docker
+- Replit-native with `.replit` and `replit.nix`
+- Deployable to AWS/GCP
+
+---
+
+### ✅ One-liner Prompt
+> “Assist in enhancing IncomeValuationTracker, a Remix-based app for income valuation. Build AI agents to process, clean, and value data. Modular structure, hot reload, and Remix-native.”
+
+---
+
+''',
+
+    "patch_log.md": '''
+# IncomeValuationTracker Patch Log
+
+## ✅ Added
+- `/app/routes/docs/dev.tsx`: Dynamic route to show God-tier dev guide
+- `/app/components/AIDevBadge.tsx`: Floating badge link to dev docs
+- `README.md`: AI-ready Remix dev documentation
+
+## 🔧 To Update
+- In `app/root.tsx`:
+  - Add: `import { AIDevBadge } from "~/components/AIDevBadge";`
+  - Insert: `<AIDevBadge />` before `</body>`
+  - Add nav link to `/docs/dev` visible only in dev mode
+
+## 📌 Access Dev Guide
+Visit `/docs/dev` in development mode. AI Agents are guided from there.
+'''
+}
+
+zip_path = "/mnt/data/IncomeValuationTracker_DevTools_Patch.zip"
+
+# Create the zip
+with zipfile.ZipFile(zip_path, 'w') as zipf:
+    for filepath, content in patch_files.items():
+        zipf.writestr(filepath, content)
+
+zip_path

@@ -1,0 +1,94 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  web-e2e-tests:
+    name: Web Offline E2E Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'pnpm'
+          
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: false
+          
+      - name: Install dependencies
+        run: pnpm install
+        
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+        
+      - name: Build project
+        run: pnpm build
+        
+      - name: Run web E2E tests
+        run: pnpm exec playwright test --config=playwright.config.ts
+        
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+          
+  mobile-e2e-tests:
+    name: Mobile Offline E2E Tests
+    runs-on: macos-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'pnpm'
+          
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: false
+          
+      - name: Install dependencies
+        run: pnpm install
+        
+      - name: Install Detox dependencies
+        run: brew tap wix/brew && brew install applesimutils
+        
+      - name: Install iOS dependencies
+        working-directory: ./apps/terrafield-mobile
+        run: cd ios && pod install
+        
+      - name: Build iOS app for testing
+        working-directory: ./apps/terrafield-mobile
+        run: pnpm detox build --configuration ios.sim.debug
+        
+      - name: Run mobile E2E tests
+        working-directory: ./apps/terrafield-mobile
+        run: pnpm detox test --configuration ios.sim.debug --cleanup
+        
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: detox-artifacts
+          path: apps/terrafield-mobile/artifacts
+          retention-days: 30

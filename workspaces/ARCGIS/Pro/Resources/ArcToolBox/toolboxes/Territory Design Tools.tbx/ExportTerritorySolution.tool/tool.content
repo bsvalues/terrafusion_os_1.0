@@ -1,0 +1,75 @@
+{
+    "type": "FunctionTool",
+    "guid": "{afa2d593-dfa8-4bdb-ad7f-b6485026022a}",
+    "displayname": "$rc:title",
+    "helpcontent": "67020007",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "33"
+    ],
+    "params": {
+        "in_territory_solution": {
+            "displayname": "$rc:in_territory_solution.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPGroupLayer"
+                    },
+                    {
+                        "type": "DEFeatureDataset"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "description": "$rc:in_territory_solution.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "depends": [
+                "in_territory_solution"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "featuretype.rule": "AsSpecified",
+                "featuretype": "Simple",
+                "geometrytype.rule": "AsSpecified",
+                "geometrytype": "Null",
+                "extenttype.rule": "FirstDependency",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "output_geometry_type": {
+            "type": "optional",
+            "displayname": "$rc:output_geometry_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "TERRITORY_BOUNDARIES",
+                        "code": "$rc:output_geometry_type.domain.TERRITORY_BOUNDARIES"
+                    },
+                    {
+                        "value": "TERRITORY_CENTERS",
+                        "code": "$rc:output_geometry_type.domain.TERRITORY_CENTERS"
+                    }
+                ]
+            },
+            "description": "$rc:output_geometry_type.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

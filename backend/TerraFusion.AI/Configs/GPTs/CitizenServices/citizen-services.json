@@ -1,0 +1,51 @@
+{
+  "name": "citizen-services",
+  "displayName": "Citizen Services Assistant",
+  "description": "24/7 public-facing assistant for citizen inquiries, department contacts, forms, and common government services",
+  "iconUrl": "https://cdn.terrafusion.gov/gpts/citizen-services.png",
+  "category": "Citizen Services",
+  "isSystemGPT": true,
+  "isPublic": true,
+  "modelProvider": "OpenAI",
+  "modelName": "gpt-3.5-turbo",
+  "systemPromptFile": "CitizenServices/citizen-services.txt",
+  "temperature": 0.6,
+  "maxTokens": 1500,
+  "topP": 0.9,
+  "frequencyPenalty": 0.4,
+  "presencePenalty": 0.4,
+  "enableRAG": true,
+  "ragDatasetId": 3,
+  "ragTopK": 5,
+  "ragScoreThreshold": 0.7,
+  "enableFunctions": true,
+  "functionsJsonFile": "CitizenServices/citizen-services-functions.json",
+  "requiredRole": null,
+  "allowedCounties": null,
+  "price": 0.0,
+  "isFeatured": true,
+  "status": "Active",
+  "version": "1.0.0",
+  "tags": ["citizen", "public", "services", "faq", "24-7"],
+  "usageGuidelines": "Public-facing GPT for citizen inquiries. Rate-limited to prevent abuse. No confidential information. Provides general information, department contacts, and form links.",
+  "limitations": "Cannot access confidential records. Cannot process applications or transactions. Cannot provide legal advice. Strictly informational only. Rate limited to 100 requests per IP per day.",
+  "examplePrompts": [
+    "How do I pay my property taxes?",
+    "What are the hours for the County Clerk?",
+    "Where can I find the building permit application?",
+    "How do I register to vote?"
+  ],
+  "rateLimits": {
+    "requestsPerMinute": 5,
+    "requestsPerHour": 50,
+    "requestsPerDay": 100,
+    "byIpAddress": true
+  },
+  "publicAccessConfig": {
+    "requireAuthentication": false,
+    "captchaRequired": true,
+    "contentFiltering": true,
+    "profanityFilter": true,
+    "spamDetection": true
+  }
+}

@@ -440,7 +440,7 @@ Provide insights on:
         }
     }
 
-    private async Task<string> GenerateExecutiveSummaryAsync(CMARequest request, MarketPositionAnalysis position, PricingRecommendation pricing)
+    private Task<string> GenerateExecutiveSummaryAsync(CMARequest request, MarketPositionAnalysis position, PricingRecommendation pricing)
     {
         try
         {
@@ -467,12 +467,12 @@ RECOMMENDATIONS:
 4. Address any property-specific concerns highlighted in the analysis
 ";
 
-            return summary;
+            return Task.FromResult(summary);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to generate executive summary");
-            return "Executive summary unavailable";
+            return Task.FromResult("Executive summary unavailable");
         }
     }
 

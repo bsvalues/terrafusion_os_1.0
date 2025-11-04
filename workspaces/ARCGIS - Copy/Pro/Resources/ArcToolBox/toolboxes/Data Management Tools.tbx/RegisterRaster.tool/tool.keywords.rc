@@ -1,0 +1,18 @@
+{
+    "set": [
+        "adjust",
+        "align",
+        "auto register",
+        "control point",
+        "correction",
+        "gcp",
+        "georeference",
+        "link",
+        "manipulate",
+        "orient",
+        "polynomial",
+        "reorient",
+        "spline",
+        "transform"
+    ]
+}

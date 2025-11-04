@@ -50,7 +50,18 @@ namespace TerraFusion.Core.DTOs
         public DateTime? TargetCompletionDate { get; set; }
     }
 
-    public class ComplianceMetrics
+
+    public class ComplianceTrendPoint
+    {
+        public DateTime Date { get; set; }
+        public double CompliancePercentage { get; set; }
+    }
+
+    /// <summary>
+    /// FISMA-specific compliance metrics
+    /// For comprehensive compliance metrics, use TerraFusion.Abstractions.DTOs.ComplianceMetrics
+    /// </summary>
+    public class FISMAComplianceMetrics
     {
         public double OverallCompliance { get; set; }
         public double AccessControlCompliance { get; set; }
@@ -63,12 +74,6 @@ namespace TerraFusion.Core.DTOs
         public double SystemCommunicationsCompliance { get; set; }
         public List<ComplianceTrendPoint> TrendData { get; set; } = new();
         public DateTime LastUpdated { get; set; }
-    }
-
-    public class ComplianceTrendPoint
-    {
-        public DateTime Date { get; set; }
-        public double CompliancePercentage { get; set; }
     }
 
     public class ControlImplementationRequest

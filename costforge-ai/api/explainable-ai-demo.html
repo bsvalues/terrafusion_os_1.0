@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explainable AI Demonstration - TerraFusion Mass Appraiser Tools</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0b1020 0%, #1a2040 50%, #0b1020 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .demo-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .demo-header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: rgba(0, 255, 238, 0.1);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(0, 255, 238, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+        }
+
+        .demo-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .demo-subtitle {
+            font-size: 1.3rem;
+            color: #00ffee;
+            margin-bottom: 10px;
+        }
+
+        .demo-description {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .analysis-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(0, 255, 238, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .analysis-section:hover {
+            border-color: rgba(0, 255, 238, 0.5);
+            transform: translateY(-5px);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #00ffee;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-icon {
+            font-size: 2.2rem;
+        }
+
+        .driver-card {
+            background: rgba(0, 255, 170, 0.1);
+            border: 1px solid rgba(0, 255, 170, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .driver-card:hover {
+            background: rgba(0, 255, 170, 0.15);
+            border-color: rgba(0, 255, 170, 0.5);
+        }
+
+        .driver-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .driver-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #00ffaa;
+        }
+
+        .impact-score {
+            background: linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .driver-explanation {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+        }
+
+        .evidence-section {
+            margin-top: 15px;
+        }
+
+        .evidence-title {
+            font-weight: 600;
+            color: #00ffee;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .evidence-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .evidence-item {
+            background: rgba(0, 153, 255, 0.1);
+            border-left: 4px solid #0099ff;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 0 10px 10px 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .confidence-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            height: 20px;
+            margin-top: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
+            border-radius: 10px;
+            transition: width 0.8s ease;
+            position: relative;
+        }
+
+        .confidence-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+        }
+
+        .data-sources {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(0, 99, 255, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 99, 255, 0.3);
+        }
+
+        .sources-title {
+            font-weight: 600;
+            color: #0099ff;
+            margin-bottom: 8px;
+        }
+
+        .source-tag {
+            display: inline-block;
+            background: rgba(0, 99, 255, 0.2);
+            color: #0099ff;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            margin: 2px 5px 2px 0;
+            border: 1px solid rgba(0, 99, 255, 0.4);
+        }
+
+        .comparable-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 238, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .comparable-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 255, 238, 0.5);
+        }
+
+        .comparable-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .comparable-address {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #00ffee;
+        }
+
+        .similarity-score {
+            background: linear-gradient(135deg, #00ffaa 0%, #00ffee 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .comparable-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail-item {
+            background: rgba(0, 255, 238, 0.1);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 255, 238, 0.2);
+        }
+
+        .detail-label {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: #00ffee;
+            font-size: 1.1rem;
+        }
+
+        .ai-reasoning {
+            background: rgba(0, 255, 170, 0.1);
+            border: 1px solid rgba(0, 255, 170, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .reasoning-title {
+            font-weight: 600;
+            color: #00ffaa;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .reasoning-text {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        .adjustments-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .adjustments-title {
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .adjustment-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .adjustment-item:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            color: #00ffaa;
+            font-size: 1.1rem;
+        }
+
+        .adjustment-name {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .adjustment-value {
+            font-weight: 600;
+            color: #00ffee;
+        }
+
+        .load-demo-btn {
+            background: linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            margin: 20px auto;
+            display: block;
+        }
+
+        .load-demo-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 153, 255, 0.4);
+        }
+
+        .empowerment-message {
+            background: rgba(0, 255, 170, 0.1);
+            border: 2px solid rgba(0, 255, 170, 0.4);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .empowerment-title {
+            font-size: 1.6rem;
+            color: #00ffaa;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .empowerment-text {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .comparable-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .comparable-details {
+                grid-template-columns: 1fr;
+            }
+
+            .demo-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1 class="demo-title">Explainable AI Demonstration</h1>
+            <p class="demo-subtitle">TerraFusion Mass Appraiser Analytical Tools</p>
+            <p class="demo-description">
+                See exactly how the AI thinks, reasons, and reaches conclusions.
+                Every insight is explained, every data source is documented, every assumption is stated.
+                <strong>Government. Transcended.</strong>
+            </p>
+        </div>
+
+        <button class="load-demo-btn" onclick="loadDemoData()">
+            🚀 Load Live Analytical Demonstration
+        </button>
+
+        <div class="analysis-grid" id="analysisGrid" style="display: none;">
+            <!-- Market Driver Analysis Section -->
+            <div class="analysis-section">
+                <h2 class="section-title">
+                    <span class="section-icon">🔍</span>
+                    Market Driver Analysis - AI Explanation
+                </h2>
+                <div id="marketDrivers"></div>
+            </div>
+
+            <!-- Explainable Comparables Section -->
+            <div class="analysis-section">
+                <h2 class="section-title">
+                    <span class="section-icon">🏠</span>
+                    Explainable Comparable Selection - AI Reasoning
+                </h2>
+                <div id="comparableProperties"></div>
+            </div>
+        </div>
+
+        <div class="empowerment-message" id="empowermentMessage" style="display: none;">
+            <h3 class="empowerment-title">🏛️ Analytical Superpowers Activated</h3>
+            <p class="empowerment-text">
+                You now have complete transparency into AI decision-making. Every factor is explained,
+                every source is documented, every adjustment is justified. The AI is your analytical tool -
+                you maintain full professional authority and judgment in all assessment decisions.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        async function loadDemoData() {
+            const button = document.querySelector('.load-demo-btn');
+            button.textContent = '⚡ Loading AI Analysis...';
+            button.disabled = true;
+
+            try {
+                // Load market drivers
+                const driversResponse = await fetch('http://localhost:8001/api/market-drivers/demo-property?radius=2.0');
+                const driversData = await driversResponse.json();
+                displayMarketDrivers(driversData.market_drivers);
+
+                // Load comparable properties
+                const comparablesResponse = await fetch('http://localhost:8001/api/comparables/demo-property?radius=2.0');
+                const comparablesData = await comparablesResponse.json();
+                displayComparableProperties(comparablesData.comparable_properties);
+
+                // Show the analysis grid
+                document.getElementById('analysisGrid').style.display = 'grid';
+                document.getElementById('empowermentMessage').style.display = 'block';
+
+                // Update button
+                button.textContent = '✅ Analysis Complete - AI Transparency Achieved';
+                button.style.background = 'linear-gradient(135deg, #00ffaa 0%, #00ffee 100%)';
+
+            } catch (error) {
+                console.error('Error loading demo data:', error);
+                button.textContent = '❌ Error Loading Data - Check Connection';
+                button.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%)';
+                button.disabled = false;
+            }
+        }
+
+        function displayMarketDrivers(drivers) {
+            const container = document.getElementById('marketDrivers');
+            container.innerHTML = '';
+
+            drivers.forEach((driver, index) => {
+                const driverCard = document.createElement('div');
+                driverCard.className = 'driver-card';
+
+                const impactPercentage = Math.round(driver.impact_score * 100);
+                const confidencePercentage = Math.round(driver.confidence_level * 100);
+
+                driverCard.innerHTML = `
+                    <div class="driver-header">
+                        <h3 class="driver-name">${driver.driver_name}</h3>
+                        <div class="impact-score">${impactPercentage}% Market Impact</div>
+                    </div>
+                    <p class="driver-explanation">${driver.explanation}</p>
+
+                    <div class="evidence-section">
+                        <h4 class="evidence-title">🔍 Supporting Evidence</h4>
+                        <ul class="evidence-list">
+                            ${driver.supporting_evidence.map(evidence =>
+                                `<li class="evidence-item">📊 ${evidence}</li>`
+                            ).join('')}
+                        </ul>
+                    </div>
+
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" style="width: ${confidencePercentage}%">
+                            <div class="confidence-text">AI Confidence: ${confidencePercentage}%</div>
+                        </div>
+                    </div>
+
+                    <div class="data-sources">
+                        <div class="sources-title">📚 Data Sources</div>
+                        ${driver.data_sources.map(source =>
+                            `<span class="source-tag">${source}</span>`
+                        ).join('')}
+                    </div>
+                `;
+
+                container.appendChild(driverCard);
+
+                // Animate confidence bar
+                setTimeout(() => {
+                    const fillElement = driverCard.querySelector('.confidence-fill');
+                    fillElement.style.width = `${confidencePercentage}%`;
+                }, 500 + (index * 200));
+            });
+        }
+
+        function displayComparableProperties(comparables) {
+            const container = document.getElementById('comparableProperties');
+            container.innerHTML = '';
+
+            comparables.forEach((comp, index) => {
+                const compCard = document.createElement('div');
+                compCard.className = 'comparable-card';
+
+                const similarityPercentage = Math.round(comp.similarity_score * 100);
+                const qualityPercentage = Math.round(comp.data_quality_score * 100);
+
+                compCard.innerHTML = `
+                    <div class="comparable-header">
+                        <h3 class="comparable-address">${comp.address}</h3>
+                        <div class="similarity-score">${similarityPercentage}% Similar</div>
+                    </div>
+
+                    <div class="comparable-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Sale Price</div>
+                            <div class="detail-value">$${comp.sale_price.toLocaleString()}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Sale Date</div>
+                            <div class="detail-value">${comp.sale_date}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Data Quality</div>
+                            <div class="detail-value">${qualityPercentage}%</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Property ID</div>
+                            <div class="detail-value">${comp.property_id}</div>
+                        </div>
+                    </div>
+
+                    <div class="ai-reasoning">
+                        <h4 class="reasoning-title">🤖 AI Selection Reasoning</h4>
+                        <p class="reasoning-text">${comp.ai_reasoning}</p>
+                    </div>
+
+                    <div class="adjustments-section">
+                        <h4 class="adjustments-title">⚖️ Value Adjustments</h4>
+                        ${Object.entries(comp.adjustment_factors).map(([key, value]) => {
+                            if (key === 'final_adjusted_value') {
+                                return `<div class="adjustment-item">
+                                    <span class="adjustment-name">Final Adjusted Value</span>
+                                    <span class="adjustment-value">$${value.toLocaleString()}</span>
+                                </div>`;
+                            } else {
+                                const adjustmentName = key.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                                const sign = value >= 0 ? '+' : '';
+                                return `<div class="adjustment-item">
+                                    <span class="adjustment-name">${adjustmentName}</span>
+                                    <span class="adjustment-value">${sign}$${value.toLocaleString()}</span>
+                                </div>`;
+                            }
+                        }).join('')}
+                    </div>
+                `;
+
+                container.appendChild(compCard);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -59,7 +59,7 @@ public class HealthCheckService : IHealthCheckService
             var allHealthy = results.All(r => r.Status == HealthStatus.Healthy);
             var anyDegraded = results.Any(r => r.Status == HealthStatus.Degraded);
 
-            var status = allHealthy ? HealthStatus.Healthy : 
+            var status = allHealthy ? HealthStatus.Healthy :
                         anyDegraded ? HealthStatus.Degraded : HealthStatus.Unhealthy;
 
             var data = results.SelectMany(r => r.Data).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
@@ -322,7 +322,7 @@ public class HealthCheckService : IHealthCheckService
     public async Task<HealthCheckResult> CheckExternalServicesHealthAsync()
     {
         var data = new Dictionary<string, object>();
-        var services = new Dictionary<string, string>
+        var services = new Dictionary<string, string?>
         {
             ["government_api"] = _configuration["ExternalServices:GovernmentAPI"],
             ["county_records"] = _configuration["ExternalServices:CountyRecords"],
@@ -409,7 +409,7 @@ public class HealthCheckService : IHealthCheckService
         report.ExternalServicesHealth = results[4];
 
         // Determine overall health
-        var allChecks = new[] { report.DatabaseHealth, report.CacheHealth, report.AIAgentsHealth, 
+        var allChecks = new[] { report.DatabaseHealth, report.CacheHealth, report.AIAgentsHealth,
                                report.PerformanceHealth, report.ExternalServicesHealth };
 
         if (allChecks.Any(c => c.Status == HealthStatus.Unhealthy))
@@ -447,20 +447,20 @@ public class HealthCheckService : IHealthCheckService
             await using var connCmd = new NpgsqlCommand(
                 "SELECT count(*) FROM pg_stat_activity WHERE state = 'active'", connection);
             var activeConnections = await connCmd.ExecuteScalarAsync();
-            data["active_connections"] = activeConnections;
+            data["active_connections"] = activeConnections ?? 0;
 
             // Check slow queries (if any)
             await using var slowCmd = new NpgsqlCommand(
-                "SELECT count(*) FROM pg_stat_activity WHERE state = 'active' AND query_start < now() - interval '30 seconds'", 
+                "SELECT count(*) FROM pg_stat_activity WHERE state = 'active' AND query_start < now() - interval '30 seconds'",
                 connection);
             var slowQueries = await slowCmd.ExecuteScalarAsync();
-            data["slow_queries"] = slowQueries;
+            data["slow_queries"] = slowQueries ?? 0;
 
             // Check database size
             await using var sizeCmd = new NpgsqlCommand(
                 "SELECT pg_size_pretty(pg_database_size(current_database()))", connection);
             var dbSize = await sizeCmd.ExecuteScalarAsync();
-            data["database_size"] = dbSize;
+            data["database_size"] = dbSize ?? "unknown";
         }
         catch (Exception ex)
         {
@@ -498,7 +498,7 @@ public class HealthCheckService : IHealthCheckService
     private async Task<SystemMetrics> GetSystemMetricsAsync()
     {
         await Task.Delay(10);
-        
+
         var process = Process.GetCurrentProcess();
         return new SystemMetrics
         {

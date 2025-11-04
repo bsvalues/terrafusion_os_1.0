@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}Supabase Environment Manager{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Supabase Environment Manager</h1>
+            <p class="lead">Manage and view Supabase environment connections for the GeoAssessmentPro application.</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card h-100 {% if environments.development %}border-success{% else %}border-danger{% endif %}">
+                <div class="card-header {% if environments.development %}bg-success text-white{% else %}bg-danger text-white{% endif %}">
+                    <h5 class="mb-0">Development Environment</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Status:</strong> 
+                        {% if environments.development %}
+                            <span class="badge bg-success">Configured</span>
+                        {% else %}
+                            <span class="badge bg-danger">Not Configured</span>
+                        {% endif %}
+                    </p>
+                    <p><strong>URL:</strong> 
+                        {% if environment_details.development.url %}
+                            <code>{{ environment_details.development.url|truncate(30) }}</code>
+                        {% else %}
+                            <em>Not set</em>
+                        {% endif %}
+                    </p>
+                    <p><strong>API Key:</strong> 
+                        {% if environment_details.development.key %}
+                            <code>{{ environment_details.development.key|truncate(8) }}...</code>
+                        {% else %}
+                            <em>Not set</em>
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('setup_environment', environment='development') }}" class="btn btn-primary btn-sm">Configure</a>
+                    {% if environments.development %}
+                        <a href="{{ url_for('test_environment', environment='development') }}" class="btn btn-outline-secondary btn-sm">Test Connection</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 {% if environments.training %}border-success{% else %}border-danger{% endif %}">
+                <div class="card-header {% if environments.training %}bg-success text-white{% else %}bg-danger text-white{% endif %}">
+                    <h5 class="mb-0">Training Environment</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Status:</strong> 
+                        {% if environments.training %}
+                            <span class="badge bg-success">Configured</span>
+                        {% else %}
+                            <span class="badge bg-danger">Not Configured</span>
+                        {% endif %}
+                    </p>
+                    <p><strong>URL:</strong> 
+                        {% if environment_details.training.url %}
+                            <code>{{ environment_details.training.url|truncate(30) }}</code>
+                        {% else %}
+                            <em>Not set</em>
+                        {% endif %}
+                    </p>
+                    <p><strong>API Key:</strong> 
+                        {% if environment_details.training.key %}
+                            <code>{{ environment_details.training.key|truncate(8) }}...</code>
+                        {% else %}
+                            <em>Not set</em>
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('setup_environment', environment='training') }}" class="btn btn-primary btn-sm">Configure</a>
+                    {% if environments.training %}
+                        <a href="{{ url_for('test_environment', environment='training') }}" class="btn btn-outline-secondary btn-sm">Test Connection</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 {% if environments.production %}border-success{% else %}border-danger{% endif %}">
+                <div class="card-header {% if environments.production %}bg-success text-white{% else %}bg-danger text-white{% endif %}">
+                    <h5 class="mb-0">Production Environment</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Status:</strong> 
+                        {% if environments.production %}
+                            <span class="badge bg-success">Configured</span>
+                        {% else %}
+                            <span class="badge bg-danger">Not Configured</span>
+                        {% endif %}
+                    </p>
+                    <p><strong>URL:</strong> 
+                        {% if environment_details.production.url %}
+                            <code>{{ environment_details.production.url|truncate(30) }}</code>
+                        {% else %}
+                            <em>Not set</em>
+                        {% endif %}
+                    </p>
+                    <p><strong>API Key:</strong> 
+                        {% if environment_details.production.key %}
+                            <code>{{ environment_details.production.key|truncate(8) }}...</code>
+                        {% else %}
+                            <em>Not set</em>
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('setup_environment', environment='production') }}" class="btn btn-primary btn-sm">Configure</a>
+                    {% if environments.production %}
+                        <a href="{{ url_for('test_environment', environment='production') }}" class="btn btn-outline-secondary btn-sm">Test Connection</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Current Active Environment</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Current Environment:</strong> <code>{{ current_environment }}</code></p>
+                    <p>
+                        <a href="{{ url_for('set_current_environment', environment='development') }}" class="btn btn-outline-primary btn-sm {% if current_environment == 'development' %}active{% endif %}">Use Development</a>
+                        <a href="{{ url_for('set_current_environment', environment='training') }}" class="btn btn-outline-primary btn-sm {% if current_environment == 'training' %}active{% endif %}">Use Training</a>
+                        <a href="{{ url_for('set_current_environment', environment='production') }}" class="btn btn-outline-primary btn-sm {% if current_environment == 'production' %}active{% endif %}">Use Production</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Environment Setup Wizard</h5>
+                </div>
+                <div class="card-body">
+                    <p>Use the environment setup wizard to configure all Supabase environments at once.</p>
+                    <a href="{{ url_for('setup_wizard') }}" class="btn btn-primary">Launch Setup Wizard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -4,6 +4,9 @@ using System.Text.Json;
 using TerraFusion.Core.Services.Monitoring;
 using TerraFusion.Core.Extensions;
 
+
+#pragma warning disable CS1998
+
 namespace TerraFusion.Core.Services.AI;
 
 /// <summary>
@@ -293,13 +296,13 @@ public class AIServiceInfrastructure : IAIServiceInfrastructure
             {
                 messages = new[]
                 {
-                    new { role = "user", content = request.Input.ToString() }
+                    new { role = "user", content = request.Input?.ToString() ?? string.Empty }
                 },
-                temperature = request.Parameters.GetValueOrDefault("temperature", 0.7),
-                max_tokens = request.Parameters.GetValueOrDefault("max_tokens", 150),
-                top_p = request.Parameters.GetValueOrDefault("top_p", 1.0),
-                frequency_penalty = request.Parameters.GetValueOrDefault("frequency_penalty", 0.0),
-                presence_penalty = request.Parameters.GetValueOrDefault("presence_penalty", 0.0)
+                temperature = request.Parameters?.GetValueOrDefault("temperature", 0.7) ?? 0.7,
+                max_tokens = request.Parameters?.GetValueOrDefault("max_tokens", 150) ?? 150,
+                top_p = request.Parameters?.GetValueOrDefault("top_p", 1.0) ?? 1.0,
+                frequency_penalty = request.Parameters?.GetValueOrDefault("frequency_penalty", 0.0) ?? 0.0,
+                presence_penalty = request.Parameters?.GetValueOrDefault("presence_penalty", 0.0) ?? 0.0
             };
 
             var jsonContent = JsonSerializer.Serialize(requestBody);
@@ -319,7 +322,7 @@ public class AIServiceInfrastructure : IAIServiceInfrastructure
                 return new AIResponse<T>
                 {
                     Success = true,
-                    Data = (T)(object)generatedText,
+                    Data = (T)(object)(generatedText ?? string.Empty),
                     RequestId = requestId,
                     ModelId = request.ModelId,
                     TokensUsed = result.GetProperty("usage").GetProperty("total_tokens").GetInt32()
@@ -347,7 +350,7 @@ public class AIServiceInfrastructure : IAIServiceInfrastructure
             // Simulate embedding generation (in real implementation, call Azure OpenAI embeddings API)
             await Task.Delay(100); // Simulate API call
 
-            var embedding = GenerateSimulatedEmbedding(request.Input.ToString());
+            var embedding = GenerateSimulatedEmbedding(request.Input?.ToString() ?? string.Empty);
             
             return new AIResponse<T>
             {

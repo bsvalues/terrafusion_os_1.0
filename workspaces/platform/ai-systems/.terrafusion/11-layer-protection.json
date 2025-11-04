@@ -1,0 +1,94 @@
+{
+  "workspace_protection_system": {
+    "workspace_name": "ai-systems",
+    "domain": "ai_infrastructure",
+    "risk_level": "critical",
+    "customization_timestamp": "2025-10-16T10:16:02.533820",
+    "eleven_layer_protection": {
+      "L1_role_scope_confirmation": {
+        "workspace_role": "ai-systems specialized AI agent",
+        "scope_definition": "Optimize and protect ai_infrastructure operations",
+        "success_criteria": "Maintain critical-level security for ai_infrastructure",
+        "data_types_handled": [
+          "ai_models",
+          "training_data",
+          "ml_pipelines"
+        ],
+        "protection_priorities": [
+          "model_security",
+          "training_integrity",
+          "ai_governance"
+        ]
+      },
+      "L2_input_sanitation_threat_modeling": {
+        "threat_model": "ai_infrastructure_specific_threats",
+        "input_validation": "ai-systems_input_sanitization",
+        "injection_prevention": "ai_infrastructure_injection_protection",
+        "risk_level_controls": "critical"
+      },
+      "L3_data_classification": {
+        "data_types": [
+          "ai_models",
+          "training_data",
+          "ml_pipelines"
+        ],
+        "classification_level": "critical",
+        "privacy_requirements": "ai_infrastructure_privacy_rules",
+        "retention_policies": "ai-systems_data_retention",
+        "access_controls": "ai_infrastructure_access_matrix"
+      },
+      "L4_secrets_hygiene": {
+        "vault_integration": "ai-systems_secret_vault",
+        "key_rotation": "ai_infrastructure_key_management",
+        "credential_management": "ai-systems_credential_store",
+        "environment_separation": "critical_env_isolation"
+      },
+      "L5_environment_guardrails": {
+        "environment_controls": "ai-systems_env_controls",
+        "blast_radius_limits": "ai_infrastructure_isolation",
+        "feature_flags": "ai-systems_feature_management",
+        "deployment_gates": "critical_deployment_controls"
+      },
+      "L6_policy_compliance": {
+        "domain_regulations": "ai_infrastructure_compliance_framework",
+        "government_standards": [
+          "model_security",
+          "training_integrity",
+          "ai_governance"
+        ],
+        "audit_requirements": "ai-systems_audit_trail",
+        "compliance_monitoring": "ai_infrastructure_compliance_checks"
+      },
+      "L7_dependency_license_review": {
+        "sbom_generation": "ai-systems_software_bill_of_materials",
+        "vulnerability_scanning": "ai_infrastructure_vuln_checks",
+        "license_compliance": "ai-systems_license_validation",
+        "dependency_monitoring": "critical_dependency_tracking"
+      },
+      "L8_reproducibility": {
+        "version_pinning": "ai-systems_version_control",
+        "build_determinism": "ai_infrastructure_build_reproducibility",
+        "configuration_management": "ai-systems_config_management",
+        "deployment_consistency": "critical_deployment_standards"
+      },
+      "L9_observability_hooks": {
+        "metrics_collection": "ai-systems_domain_metrics",
+        "logging_framework": "ai_infrastructure_specialized_logging",
+        "tracing_system": "ai-systems_distributed_tracing",
+        "alerting_rules": "ai_infrastructure_alert_configuration"
+      },
+      "L10_human_in_loop_gates": {
+        "approval_workflows": "ai-systems_approval_matrix",
+        "review_requirements": "ai_infrastructure_review_gates",
+        "escalation_procedures": "critical_escalation_rules",
+        "manual_override_controls": "ai-systems_override_procedures"
+      },
+      "L11_red_team_self_check": {
+        "adversarial_testing": "ai-systems_penetration_testing",
+        "failure_mode_analysis": "ai_infrastructure_failure_scenarios",
+        "rollback_procedures": "ai-systems_disaster_recovery",
+        "security_validation": "critical_security_assessment"
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+    "map": {
+        "description": "Permanently deletes a rule from a utility network.",
+        "in_utility_network.descr": "The utility network for which the rule will be removed.",
+        "in_utility_network.title": "Input Utility Network",
+        "out_utility_network.title": "Updated Utility Network",
+        "rule_desc.descr": "<xdoc><p>Specifies the rule that will be removed, including the rule ID and the description of the rule.<note type=\"note\"/><p group=\"note\">To find the rule ID, browse the <span class=\"esri_uicontrol\">Rules</span> section on the <span class=\"esri_uicontrol\">Network Properties</span> tab on the <span class=\"esri_uicontrol\">Layer Properties</span> dialog box. For more information, see View network rules.</p></p></xdoc>",
+        "rule_desc.title": "Rules",
+        "rule_type.descr": "<xdoc><p>Specifies the type of rule that will be deleted.</p><ul><li><span title=\"ALL\">All</span>—All rules will be deleted.</li><li><span title=\"JUNCTION_JUNCTION_CONNECTIVITY\">Junction-junction connectivity</span>—A junction-junction connectivity association rule will be deleted.</li><li><span title=\"CONTAINMENT\">Containment</span>—A containment association rule will be deleted.</li><li><span title=\"STRUCTURAL_ATTACHMENT\">Structural attachment</span>—A structural attachment association rule will be deleted.</li><li><span title=\"JUNCTION_EDGE_CONNECTIVITY\">Junction-edge connectivity</span>—A junction-edge connectivity rule will be deleted.</li><li><span title=\"EDGE_JUNCTION_EDGE_CONNECTIVITY\">Edge-junction-edge connectivity</span>—An edge-junction-edge connectivity rule will be deleted.</li></ul></xdoc>",
+        "rule_type.domain.ALL": "All",
+        "rule_type.domain.CONTAINMENT": "Containment",
+        "rule_type.domain.EDGE_JUNCTION_EDGE_CONNECTIVITY": "Edge-junction-edge connectivity",
+        "rule_type.domain.JUNCTION_EDGE_CONNECTIVITY": "Junction-edge connectivity",
+        "rule_type.domain.JUNCTION_JUNCTION_CONNECTIVITY": "Junction-junction connectivity",
+        "rule_type.domain.STRUCTURAL_ATTACHMENT": "Structural attachment",
+        "rule_type.title": "Rule Type",
+        "summary": "<xdoc><p>Permanently deletes a rule from a utility network.</p><p>Caution should be taken when deleting rules that support existing features or objects in a utility network. Existing network features that rely on deleted rules are marked with errors when the network topology is re-enabled to indicate there is no network rule to support the relationship.</p></xdoc>",
+        "title": "Delete Rule"
+    }
+}

@@ -1,0 +1,93 @@
+{
+    "type": "FunctionTool",
+    "guid": "{7ce2fb18-d1da-4989-9835-61e35975b6b6}",
+    "displayname": "$rc:title",
+    "helpcontent": "3220009",
+    "description": "$rc:description",
+    "product": "200",
+    "params": {
+        "in_geodatabase": {
+            "displayname": "$rc:in_geodatabase.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEWorkspace"
+                    },
+                    {
+                        "type": "DEGeoDataServer"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPBrowseFiltersDomain",
+                        "filters": [
+                            "esri_browseDialogFilters_geodatabases_file",
+                            "esri_browseDialogFilters_geodatabases_egdb_file"
+                        ]
+                    },
+                    {
+                        "type": "GPBrowseFiltersDomain",
+                        "filters": [
+                            "esri_browseDialogFilters_services_geodata"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:in_geodatabase.descr"
+        },
+        "output_delta_file": {
+            "direction": "out",
+            "displayname": "$rc:output_delta_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "xml",
+                    "gdb"
+                ]
+            },
+            "description": "$rc:output_delta_file.descr"
+        },
+        "in_replica": {
+            "displayname": "$rc:in_replica.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "in_geodatabase"
+            ],
+            "description": "$rc:in_replica.descr"
+        },
+        "in_export_option": {
+            "displayname": "$rc:in_export_option.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ALL_UNACKNOWLEDGED",
+                        "code": "$rc:in_export_option.domain.ALL_UNACKNOWLEDGED"
+                    },
+                    {
+                        "value": "MOST_RECENT",
+                        "code": "$rc:in_export_option.domain.MOST_RECENT"
+                    }
+                ]
+            },
+            "value": "ALL_UNACKNOWLEDGED",
+            "description": "$rc:in_export_option.descr"
+        }
+    },
+    "environments": [
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

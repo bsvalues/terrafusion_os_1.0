@@ -1,0 +1,217 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "69000021",
+    "description": "$rc:description",
+    "product": "300",
+    "attributes": [
+        "spark"
+    ],
+    "params": {
+        "input_features": {
+            "display_order": "0",
+            "displayname": "$rc:input_features.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:input_features.descr"
+        },
+        "dependent_variable": {
+            "display_order": "1",
+            "displayname": "$rc:dependent_variable.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "BigInteger",
+                    "Float",
+                    "Double",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "input_features"
+            ],
+            "description": "$rc:dependent_variable.descr"
+        },
+        "model_type": {
+            "display_order": "2",
+            "displayname": "$rc:model_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "BINARY",
+                        "code": "$rc:model_type.domain.BINARY"
+                    },
+                    {
+                        "value": "CONTINUOUS",
+                        "code": "$rc:model_type.domain.CONTINUOUS"
+                    },
+                    {
+                        "value": "COUNT",
+                        "code": "$rc:model_type.domain.COUNT"
+                    }
+                ]
+            },
+            "value": "CONTINUOUS",
+            "description": "$rc:model_type.descr"
+        },
+        "explanatory_variables": {
+            "display_order": "3",
+            "displayname": "$rc:explanatory_variables.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "BigInteger",
+                    "Float",
+                    "Double"
+                ]
+            },
+            "depends": [
+                "input_features"
+            ],
+            "description": "$rc:explanatory_variables.descr"
+        },
+        "output_features": {
+            "direction": "out",
+            "display_order": "4",
+            "displayname": "$rc:output_features.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DETable"
+                    },
+                    {
+                        "type": "DEFeatureClass"
+                    }
+                ]
+            },
+            "description": "$rc:output_features.descr"
+        },
+        "input_features_to_predict": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:input_features_to_predict.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:input_features_to_predict.descr"
+        },
+        "explanatory_variables_to_match": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:explanatory_variables_to_match.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:explanatory_variables_to_match.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:explanatory_variables_to_match.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Short",
+                            "Long",
+                            "BigInteger",
+                            "Float",
+                            "Double"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "depends": [
+                "input_features_to_predict"
+            ],
+            "description": "$rc:explanatory_variables_to_match.descr"
+        },
+        "dependent_variable_mapping": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:dependent_variable_mapping.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:dependent_variable_mapping.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:dependent_variable_mapping.dt.title2"
+                    }
+                ]
+            },
+            "description": "$rc:dependent_variable_mapping.descr"
+        },
+        "output_predicted_features": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "9",
+            "displayname": "$rc:output_predicted_features.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DETable"
+                    },
+                    {
+                        "type": "DEFeatureClass"
+                    }
+                ]
+            },
+            "description": "$rc:output_predicted_features.descr"
+        },
+        "coefficient_table": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "5",
+            "displayname": "$rc:coefficient_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:coefficient_table.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "outputCoordinateSystem",
+        "workspace"
+    ]
+}

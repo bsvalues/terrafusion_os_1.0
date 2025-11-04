@@ -8,7 +8,9 @@ MIT-Grade CSS Engineering & Performance Optimization
 
 /* Modern CSS Reset with Performance Optimization */
 @layer reset {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -30,18 +32,31 @@ MIT-Grade CSS Engineering & Performance Optimization
     -moz-osx-font-smoothing: grayscale;
   }
 
-  img, picture, video, canvas, svg {
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
     display: block;
     max-width: 100%;
     height: auto;
   }
 
-  input, button, textarea, select {
+  input,
+  button,
+  textarea,
+  select {
     font: inherit;
     color: inherit;
   }
 
-  p, h1, h2, h3, h4, h5, h6 {
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     overflow-wrap: break-word;
     text-wrap: balance;
   }
@@ -56,12 +71,12 @@ MIT-Grade CSS Engineering & Performance Optimization
     --tf-primary-200: color(display-p3 0.7 0.85 1);
     --tf-primary-300: color(display-p3 0.5 0.75 1);
     --tf-primary-400: color(display-p3 0.3 0.65 1);
-    --tf-primary-500: color(display-p3 0.0 0.6 1);
-    --tf-primary-600: color(display-p3 0.0 0.5 0.9);
-    --tf-primary-700: color(display-p3 0.0 0.4 0.8);
-    --tf-primary-800: color(display-p3 0.0 0.3 0.7);
-    --tf-primary-900: color(display-p3 0.0 0.2 0.6);
-    --tf-primary-950: color(display-p3 0.0 0.1 0.5);
+    --tf-primary-500: color(display-p3 0 0.6 1);
+    --tf-primary-600: color(display-p3 0 0.5 0.9);
+    --tf-primary-700: color(display-p3 0 0.4 0.8);
+    --tf-primary-800: color(display-p3 0 0.3 0.7);
+    --tf-primary-900: color(display-p3 0 0.2 0.6);
+    --tf-primary-950: color(display-p3 0 0.1 0.5);
 
     /* Semantic Color Tokens */
     --color-primary: var(--tf-primary-500);
@@ -69,17 +84,17 @@ MIT-Grade CSS Engineering & Performance Optimization
     --color-surface: color(display-p3 0.04 0.06 0.12);
     --color-on-surface: color(display-p3 0.95 0.95 0.95);
     --color-surface-container: color(display-p3 0.06 0.08 0.16);
-    
+
     /* Advanced Spacing System - Modular Scale */
     --space-3xs: 0.25rem; /* 4px */
-    --space-2xs: 0.5rem;  /* 8px */
-    --space-xs: 0.75rem;  /* 12px */
-    --space-sm: 1rem;     /* 16px */
-    --space-md: 1.5rem;   /* 24px */
-    --space-lg: 2rem;     /* 32px */
-    --space-xl: 3rem;     /* 48px */
-    --space-2xl: 4rem;    /* 64px */
-    --space-3xl: 6rem;    /* 96px */
+    --space-2xs: 0.5rem; /* 8px */
+    --space-xs: 0.75rem; /* 12px */
+    --space-sm: 1rem; /* 16px */
+    --space-md: 1.5rem; /* 24px */
+    --space-lg: 2rem; /* 32px */
+    --space-xl: 3rem; /* 48px */
+    --space-2xl: 4rem; /* 64px */
+    --space-3xl: 6rem; /* 96px */
 
     /* Fluid Typography System - Advanced Clamp */
     --text-xs: clamp(0.75rem, 0.25vw + 0.7rem, 0.8rem);
@@ -93,21 +108,11 @@ MIT-Grade CSS Engineering & Performance Optimization
     --text-5xl: clamp(3rem, 8vw + 1.5rem, 5.5rem);
 
     /* Advanced Shadow System - Layered Elevation */
-    --shadow-sm: 
-      0 0.5px 1px hsl(0deg 0% 0% / 0.12),
-      0 0.5px 0.5px hsl(0deg 0% 0% / 0.24);
-    --shadow-md: 
-      0 2px 4px hsl(0deg 0% 0% / 0.12),
-      0 1px 2px hsl(0deg 0% 0% / 0.24);
-    --shadow-lg: 
-      0 4px 8px hsl(0deg 0% 0% / 0.12),
-      0 2px 4px hsl(0deg 0% 0% / 0.24);
-    --shadow-xl: 
-      0 8px 16px hsl(0deg 0% 0% / 0.12),
-      0 4px 8px hsl(0deg 0% 0% / 0.24);
-    --shadow-2xl: 
-      0 16px 32px hsl(0deg 0% 0% / 0.12),
-      0 8px 16px hsl(0deg 0% 0% / 0.24);
+    --shadow-sm: 0 0.5px 1px hsl(0deg 0% 0% / 0.12), 0 0.5px 0.5px hsl(0deg 0% 0% / 0.24);
+    --shadow-md: 0 2px 4px hsl(0deg 0% 0% / 0.12), 0 1px 2px hsl(0deg 0% 0% / 0.24);
+    --shadow-lg: 0 4px 8px hsl(0deg 0% 0% / 0.12), 0 2px 4px hsl(0deg 0% 0% / 0.24);
+    --shadow-xl: 0 8px 16px hsl(0deg 0% 0% / 0.12), 0 4px 8px hsl(0deg 0% 0% / 0.24);
+    --shadow-2xl: 0 16px 32px hsl(0deg 0% 0% / 0.12), 0 8px 16px hsl(0deg 0% 0% / 0.24);
 
     /* Advanced Border Radius - Squircle Approximation */
     --radius-xs: 0.25rem;
@@ -117,25 +122,23 @@ MIT-Grade CSS Engineering & Performance Optimization
     --radius-xl: 1.5rem;
     --radius-2xl: 2rem;
     --radius-full: 9999px;
-    --radius-squircle: 
-      min(1rem, 50% - 2px) / 
-      min(1rem, 50% - 2px);
+    --radius-squircle: min(1rem, 50% - 2px) / min(1rem, 50% - 2px);
 
     /* Advanced Animation System */
     --ease-linear: linear;
-    --ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
-    --ease-in: cubic-bezier(0.4, 0.0, 1, 1);
-    --ease-in-out: cubic-bezier(0.4, 0.0, 0.2, 1);
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
     --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
     --ease-elastic: cubic-bezier(0.68, -0.6, 0.32, 1.6);
 
     /* Container Query Breakpoints */
-    --breakpoint-sm: 24rem;   /* 384px */
-    --breakpoint-md: 28rem;   /* 448px */
-    --breakpoint-lg: 32rem;   /* 512px */
-    --breakpoint-xl: 36rem;   /* 576px */
-    --breakpoint-2xl: 42rem;  /* 672px */
-    --breakpoint-3xl: 48rem;  /* 768px */
+    --breakpoint-sm: 24rem; /* 384px */
+    --breakpoint-md: 28rem; /* 448px */
+    --breakpoint-lg: 32rem; /* 512px */
+    --breakpoint-xl: 36rem; /* 576px */
+    --breakpoint-2xl: 42rem; /* 672px */
+    --breakpoint-3xl: 48rem; /* 768px */
   }
 
   /* Dark Mode Support with System Preference */
@@ -150,8 +153,8 @@ MIT-Grade CSS Engineering & Performance Optimization
   /* High Contrast Mode Support */
   @media (prefers-contrast: high) {
     :root {
-      --color-primary: color(display-p3 0.0 0.7 1);
-      --color-on-primary: color(display-p3 0.0 0.0 0.0);
+      --color-primary: color(display-p3 0 0.7 1);
+      --color-on-primary: color(display-p3 0 0 0);
     }
   }
 
@@ -164,8 +167,10 @@ MIT-Grade CSS Engineering & Performance Optimization
       --ease-bounce: ease;
       --ease-elastic: ease;
     }
-    
-    *, *::before, *::after {
+
+    *,
+    *::before,
+    *::after {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
@@ -185,17 +190,17 @@ MIT-Grade CSS Engineering & Performance Optimization
     box-shadow: var(--shadow-lg);
     backdrop-filter: blur(16px);
     border: 1px solid color(from var(--color-primary) srgb r g b / 0.1);
-    transition: 
+    transition:
       transform 200ms var(--ease-out),
       box-shadow 200ms var(--ease-out),
       border-color 200ms var(--ease-out);
-    
+
     /* Container Query Responsive Padding */
     @container (min-width: 24rem) {
       padding: var(--space-lg);
       border-radius: var(--radius-2xl);
     }
-    
+
     @container (min-width: 32rem) {
       padding: var(--space-xl);
     }
@@ -213,7 +218,7 @@ MIT-Grade CSS Engineering & Performance Optimization
     --_color: var(--color-on-primary);
     --_border: transparent;
     --_shadow: var(--shadow-md);
-    
+
     appearance: none;
     border: 1px solid var(--_border);
     border-radius: var(--radius-full);
@@ -223,7 +228,7 @@ MIT-Grade CSS Engineering & Performance Optimization
     font-weight: 600;
     padding: var(--space-sm) var(--space-lg);
     cursor: pointer;
-    transition: 
+    transition:
       transform 150ms var(--ease-out),
       box-shadow 150ms var(--ease-out),
       background 150ms var(--ease-out);
@@ -236,31 +241,31 @@ MIT-Grade CSS Engineering & Performance Optimization
     white-space: nowrap;
     user-select: none;
     touch-action: manipulation;
-    
+
     /* Focus Ring */
     &:focus-visible {
       outline: 2px solid var(--color-primary);
       outline-offset: 2px;
     }
-    
+
     /* Hover State */
     &:hover {
       transform: translateY(-1px);
       box-shadow: var(--shadow-xl);
       background: color(from var(--_bg) srgb r g b / 0.9);
     }
-    
+
     /* Active State */
     &:active {
       transform: translateY(0);
       transition-duration: 75ms;
     }
-    
+
     /* Loading State */
     &[data-loading] {
       pointer-events: none;
       opacity: 0.7;
-      
+
       &::after {
         content: '';
         position: absolute;
@@ -275,23 +280,23 @@ MIT-Grade CSS Engineering & Performance Optimization
   }
 
   /* Button Variants */
-  .tf-button[data-variant="secondary"] {
+  .tf-button[data-variant='secondary'] {
     --_bg: transparent;
     --_color: var(--color-primary);
     --_border: var(--color-primary);
     --_shadow: none;
-    
+
     &:hover {
       --_bg: color(from var(--color-primary) srgb r g b / 0.1);
     }
   }
 
-  .tf-button[data-variant="ghost"] {
+  .tf-button[data-variant='ghost'] {
     --_bg: transparent;
     --_color: var(--color-on-surface);
     --_border: transparent;
     --_shadow: none;
-    
+
     &:hover {
       --_bg: color(from var(--color-on-surface) srgb r g b / 0.05);
     }
@@ -303,24 +308,46 @@ MIT-Grade CSS Engineering & Performance Optimization
     line-height: 1.2;
     text-wrap: balance;
     color: var(--color-on-surface);
-    
-    &[data-size="xs"] { font-size: var(--text-lg); }
-    &[data-size="sm"] { font-size: var(--text-xl); }
-    &[data-size="md"] { font-size: var(--text-2xl); }
-    &[data-size="lg"] { font-size: var(--text-3xl); }
-    &[data-size="xl"] { font-size: var(--text-4xl); }
-    &[data-size="2xl"] { font-size: var(--text-5xl); }
+
+    &[data-size='xs'] {
+      font-size: var(--text-lg);
+    }
+    &[data-size='sm'] {
+      font-size: var(--text-xl);
+    }
+    &[data-size='md'] {
+      font-size: var(--text-2xl);
+    }
+    &[data-size='lg'] {
+      font-size: var(--text-3xl);
+    }
+    &[data-size='xl'] {
+      font-size: var(--text-4xl);
+    }
+    &[data-size='2xl'] {
+      font-size: var(--text-5xl);
+    }
   }
 
   .tf-text {
     color: var(--color-on-surface);
     text-wrap: pretty;
-    
-    &[data-size="xs"] { font-size: var(--text-xs); }
-    &[data-size="sm"] { font-size: var(--text-sm); }
-    &[data-size="md"] { font-size: var(--text-base); }
-    &[data-size="lg"] { font-size: var(--text-lg); }
-    &[data-size="xl"] { font-size: var(--text-xl); }
+
+    &[data-size='xs'] {
+      font-size: var(--text-xs);
+    }
+    &[data-size='sm'] {
+      font-size: var(--text-sm);
+    }
+    &[data-size='md'] {
+      font-size: var(--text-base);
+    }
+    &[data-size='lg'] {
+      font-size: var(--text-lg);
+    }
+    &[data-size='xl'] {
+      font-size: var(--text-xl);
+    }
   }
 
   /* Advanced Layout Components */
@@ -330,11 +357,11 @@ MIT-Grade CSS Engineering & Performance Optimization
     margin-inline: auto;
     padding-inline: var(--space-md);
     max-width: 80rem;
-    
+
     @container (min-width: 36rem) {
       padding-inline: var(--space-lg);
     }
-    
+
     @container (min-width: 48rem) {
       padding-inline: var(--space-xl);
     }
@@ -343,12 +370,22 @@ MIT-Grade CSS Engineering & Performance Optimization
   .tf-stack {
     display: flex;
     flex-direction: column;
-    
-    &[data-gap="xs"] { gap: var(--space-xs); }
-    &[data-gap="sm"] { gap: var(--space-sm); }
-    &[data-gap="md"] { gap: var(--space-md); }
-    &[data-gap="lg"] { gap: var(--space-lg); }
-    &[data-gap="xl"] { gap: var(--space-xl); }
+
+    &[data-gap='xs'] {
+      gap: var(--space-xs);
+    }
+    &[data-gap='sm'] {
+      gap: var(--space-sm);
+    }
+    &[data-gap='md'] {
+      gap: var(--space-md);
+    }
+    &[data-gap='lg'] {
+      gap: var(--space-lg);
+    }
+    &[data-gap='xl'] {
+      gap: var(--space-xl);
+    }
   }
 
   .tf-cluster {
@@ -356,95 +393,215 @@ MIT-Grade CSS Engineering & Performance Optimization
     flex-wrap: wrap;
     align-items: center;
     justify-content: flex-start;
-    
-    &[data-gap="xs"] { gap: var(--space-xs); }
-    &[data-gap="sm"] { gap: var(--space-sm); }
-    &[data-gap="md"] { gap: var(--space-md); }
-    &[data-gap="lg"] { gap: var(--space-lg); }
-    &[data-gap="xl"] { gap: var(--space-xl); }
-    
-    &[data-justify="center"] { justify-content: center; }
-    &[data-justify="end"] { justify-content: flex-end; }
-    &[data-justify="between"] { justify-content: space-between; }
+
+    &[data-gap='xs'] {
+      gap: var(--space-xs);
+    }
+    &[data-gap='sm'] {
+      gap: var(--space-sm);
+    }
+    &[data-gap='md'] {
+      gap: var(--space-md);
+    }
+    &[data-gap='lg'] {
+      gap: var(--space-lg);
+    }
+    &[data-gap='xl'] {
+      gap: var(--space-xl);
+    }
+
+    &[data-justify='center'] {
+      justify-content: center;
+    }
+    &[data-justify='end'] {
+      justify-content: flex-end;
+    }
+    &[data-justify='between'] {
+      justify-content: space-between;
+    }
   }
 }
 
 /* ===== ADVANCED UTILITIES ===== */
 @layer utilities {
   /* Logical Properties Support */
-  .ml-auto { margin-inline-start: auto; }
-  .mr-auto { margin-inline-end: auto; }
-  .mx-auto { margin-inline: auto; }
-  .my-auto { margin-block: auto; }
-  
-  .pl-sm { padding-inline-start: var(--space-sm); }
-  .pr-sm { padding-inline-end: var(--space-sm); }
-  .px-sm { padding-inline: var(--space-sm); }
-  .py-sm { padding-block: var(--space-sm); }
-  
-  .pl-md { padding-inline-start: var(--space-md); }
-  .pr-md { padding-inline-end: var(--space-md); }
-  .px-md { padding-inline: var(--space-md); }
-  .py-md { padding-block: var(--space-md); }
-  
-  .pl-lg { padding-inline-start: var(--space-lg); }
-  .pr-lg { padding-inline-end: var(--space-lg); }
-  .px-lg { padding-inline: var(--space-lg); }
-  .py-lg { padding-block: var(--space-lg); }
+  .ml-auto {
+    margin-inline-start: auto;
+  }
+  .mr-auto {
+    margin-inline-end: auto;
+  }
+  .mx-auto {
+    margin-inline: auto;
+  }
+  .my-auto {
+    margin-block: auto;
+  }
+
+  .pl-sm {
+    padding-inline-start: var(--space-sm);
+  }
+  .pr-sm {
+    padding-inline-end: var(--space-sm);
+  }
+  .px-sm {
+    padding-inline: var(--space-sm);
+  }
+  .py-sm {
+    padding-block: var(--space-sm);
+  }
+
+  .pl-md {
+    padding-inline-start: var(--space-md);
+  }
+  .pr-md {
+    padding-inline-end: var(--space-md);
+  }
+  .px-md {
+    padding-inline: var(--space-md);
+  }
+  .py-md {
+    padding-block: var(--space-md);
+  }
+
+  .pl-lg {
+    padding-inline-start: var(--space-lg);
+  }
+  .pr-lg {
+    padding-inline-end: var(--space-lg);
+  }
+  .px-lg {
+    padding-inline: var(--space-lg);
+  }
+  .py-lg {
+    padding-block: var(--space-lg);
+  }
 
   /* Advanced Display Utilities */
-  .flex { display: flex; }
-  .inline-flex { display: inline-flex; }
-  .grid { display: grid; }
-  .inline-grid { display: inline-grid; }
-  
+  .flex {
+    display: flex;
+  }
+  .inline-flex {
+    display: inline-flex;
+  }
+  .grid {
+    display: grid;
+  }
+  .inline-grid {
+    display: inline-grid;
+  }
+
   /* Advanced Position Utilities */
-  .relative { position: relative; }
-  .absolute { position: absolute; }
-  .fixed { position: fixed; }
-  .sticky { position: sticky; }
-  
+  .relative {
+    position: relative;
+  }
+  .absolute {
+    position: absolute;
+  }
+  .fixed {
+    position: fixed;
+  }
+  .sticky {
+    position: sticky;
+  }
+
   /* Modern Alignment */
-  .items-start { align-items: flex-start; }
-  .items-center { align-items: center; }
-  .items-end { align-items: flex-end; }
-  .items-stretch { align-items: stretch; }
-  
-  .justify-start { justify-content: flex-start; }
-  .justify-center { justify-content: center; }
-  .justify-end { justify-content: flex-end; }
-  .justify-between { justify-content: space-between; }
-  .justify-around { justify-content: space-around; }
-  .justify-evenly { justify-content: space-evenly; }
+  .items-start {
+    align-items: flex-start;
+  }
+  .items-center {
+    align-items: center;
+  }
+  .items-end {
+    align-items: flex-end;
+  }
+  .items-stretch {
+    align-items: stretch;
+  }
+
+  .justify-start {
+    justify-content: flex-start;
+  }
+  .justify-center {
+    justify-content: center;
+  }
+  .justify-end {
+    justify-content: flex-end;
+  }
+  .justify-between {
+    justify-content: space-between;
+  }
+  .justify-around {
+    justify-content: space-around;
+  }
+  .justify-evenly {
+    justify-content: space-evenly;
+  }
 
   /* Advanced Visual Utilities */
-  .backdrop-blur-sm { backdrop-filter: blur(4px); }
-  .backdrop-blur { backdrop-filter: blur(8px); }
-  .backdrop-blur-lg { backdrop-filter: blur(16px); }
-  .backdrop-blur-xl { backdrop-filter: blur(24px); }
-  
-  .rounded-sm { border-radius: var(--radius-sm); }
-  .rounded { border-radius: var(--radius-md); }
-  .rounded-lg { border-radius: var(--radius-lg); }
-  .rounded-xl { border-radius: var(--radius-xl); }
-  .rounded-2xl { border-radius: var(--radius-2xl); }
-  .rounded-full { border-radius: var(--radius-full); }
-  
-  .shadow-sm { box-shadow: var(--shadow-sm); }
-  .shadow { box-shadow: var(--shadow-md); }
-  .shadow-lg { box-shadow: var(--shadow-lg); }
-  .shadow-xl { box-shadow: var(--shadow-xl); }
-  .shadow-2xl { box-shadow: var(--shadow-2xl); }
+  .backdrop-blur-sm {
+    backdrop-filter: blur(4px);
+  }
+  .backdrop-blur {
+    backdrop-filter: blur(8px);
+  }
+  .backdrop-blur-lg {
+    backdrop-filter: blur(16px);
+  }
+  .backdrop-blur-xl {
+    backdrop-filter: blur(24px);
+  }
+
+  .rounded-sm {
+    border-radius: var(--radius-sm);
+  }
+  .rounded {
+    border-radius: var(--radius-md);
+  }
+  .rounded-lg {
+    border-radius: var(--radius-lg);
+  }
+  .rounded-xl {
+    border-radius: var(--radius-xl);
+  }
+  .rounded-2xl {
+    border-radius: var(--radius-2xl);
+  }
+  .rounded-full {
+    border-radius: var(--radius-full);
+  }
+
+  .shadow-sm {
+    box-shadow: var(--shadow-sm);
+  }
+  .shadow {
+    box-shadow: var(--shadow-md);
+  }
+  .shadow-lg {
+    box-shadow: var(--shadow-lg);
+  }
+  .shadow-xl {
+    box-shadow: var(--shadow-xl);
+  }
+  .shadow-2xl {
+    box-shadow: var(--shadow-2xl);
+  }
 }
 
 /* ===== ADVANCED ANIMATIONS ===== */
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slide-in-up {
@@ -485,15 +642,15 @@ MIT-Grade CSS Engineering & Performance Optimization
   .animate-fade-in {
     animation: fade-in 300ms var(--ease-out);
   }
-  
+
   .animate-slide-in-up {
     animation: slide-in-up 300ms var(--ease-out);
   }
-  
+
   .animate-slide-in-down {
     animation: slide-in-down 300ms var(--ease-out);
   }
-  
+
   .animate-scale-in {
     animation: scale-in 200ms var(--ease-out);
   }
@@ -505,7 +662,7 @@ MIT-Grade CSS Engineering & Performance Optimization
     border-width: 2px;
     border-color: var(--color-primary);
   }
-  
+
   .tf-button {
     border-width: 2px;
   }
@@ -517,7 +674,7 @@ MIT-Grade CSS Engineering & Performance Optimization
     box-shadow: none;
     border: 1px solid #000;
   }
-  
+
   .tf-button {
     box-shadow: none;
     border: 1px solid #000;

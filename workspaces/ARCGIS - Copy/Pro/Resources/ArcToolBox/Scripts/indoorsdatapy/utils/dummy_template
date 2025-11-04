@@ -1,0 +1,25 @@
+import argparse
+from logging import getLogger
+
+from indoorsdatapy.common.cli import custom_parser, output_file, settings
+from indoorsdatapy.common.logging_setup import cli_logger
+from indoorsdatapy.common.utils import get_settings
+
+logger = getLogger(__name__)
+
+DEFAULT_SETTINGS = {'dummy':1}
+
+def main():
+    args = [(output_file, {'required': False}),
+            settings]
+    parser = custom_parser(
+        args, description="{}- Description ".format(__name__))
+    parsed = parser.parse_args()
+    cli_logger(parsed.verbose, parsed.quiet)
+    if not parsed.output_file:
+        raise argparse.ArgumentError(None,'output_file is missing')
+
+    setting = get_settings(parsed.settings, DEFAULT_SETTINGS)
+
+if __name__ == '__main__':
+    main()

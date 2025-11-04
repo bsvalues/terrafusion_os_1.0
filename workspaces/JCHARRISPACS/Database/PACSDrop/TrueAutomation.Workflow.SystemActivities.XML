@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.Workflow.SystemActivities</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.Workflow.SystemActivities.CustomOrderedListCodeActivity">
+            <summary>
+            This class contains the workflow Activity information which is populated through use of the proper designer.
+            This Activity is for the system workflow activity to priorize the task based on the custom ordered list selected by the user.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.SystemActivities.CustomOrderedListCodeActivity.SelectedCustomOrderedListId">
+            <summary>
+            The ID of the Custom Ordered List selected by user
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.SystemActivities.CustomOrderedListCodeActivity.CustomOrderedList">
+            <summary>
+            The Argument representing the name of the Custom Ordered List
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.SystemActivities.CustomOrderedListCodeActivity.FrequencyExpression">
+            <summary>
+            The frequency at which the task is updated with the next item in the customlist
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.SystemActivities.CustomOrderedListCodeActivity.TaskIdExpression">
+            <summary>
+            The Task Id that needs to be updated
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.SystemActivities.CustomOrderedListCodeActivity.SpanExpression">
+            <summary>
+            The Task Id that needs to be updated
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.SystemActivities.CustomOrderedListCodeActivity.CustomOrderListItems">
+            <summary>
+            The Custom Ordered list items
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.SystemActivities.CustomOrderedListCodeActivity.#ctor">
+            <summary>
+            Default Constructior, sets the name of the workflow activity in the designer.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.SystemActivities.CustomOrderedListCodeActivity.Execute(System.Activities.CodeActivityContext)">
+            <summary>
+            Executes the activity in context by updating the task with the items in the custom ordered list selected.
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.SystemActivities.CustomOrderedListCodeActivity.ValidateInput(System.Int32,System.TimeSpan)">
+            <summary>
+            Validate inputs made by user
+            </summary>
+            <param name="taskId"></param>
+            <param name="frequency"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.SystemActivities.CustomOrderedListCodeActivity.RouteTaskProperty(System.Int32,System.TimeSpan,System.Int32)">
+            <summary>
+            Updates the task with the items in the custom ordered list selected after a given time period.
+            </summary>
+            <param name="taskId"></param>
+            <param name="frequency"></param>
+            <param name="span"></param>
+        </member>
+        <member name="T:TrueAutomation.Workflow.SystemActivities.CustomOrderedListActivityDesigner">
+            <summary>
+            CustomOrderedListActivityDesigner
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.SystemActivities.CustomOrderedListActivityDesigner.#ctor">
+            <summary>
+            Generic constructor
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Workflow.SystemActivities.CustomOrderedListActivityDesigner.customOrderedLists">
+            <summary>
+            The lists of custom ordered items
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Workflow.SystemActivities.CustomOrderedListActivityDesigner.selectedCustomOrderedListId">
+            <summary>
+            Field to hold the selected custom ordered list dropdown row
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Workflow.SystemActivities.CustomOrderedListActivityDesigner.CustomOrderedList">
+            <summary>
+            The list of users to bind the Task User  lists to.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.SystemActivities.CustomOrderedListActivityDesigner.GetSelectedCustomOrderedListIdFromModel">
+            <summary>
+            Method to extract the selected custom ordered list.
+            </summary>
+            <returns>Selected dropdown row</returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.SystemActivities.CustomOrderedListActivityDesigner.GetModelItemProperty(System.String)">
+            <summary>
+            Helper method to get objects out of the model.
+            </summary>
+            <param name="propertyName">Property Name</param>
+            <returns>Object</returns>
+        </member>
+        <member name="M:TrueAutomation.Workflow.SystemActivities.CustomOrderedListActivityDesigner.LoadCustomOrderedLists">
+            <summary>
+            Method to populate the List of Custom Ordered Lists from the Task Service using the methods provided by the TaskActions Project.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Workflow.SystemActivities.CustomOrderedListActivityDesigner.CustomOrderedList_SelectionChanged(System.Object,System.Windows.Controls.SelectionChangedEventArgs)">
+            <summary>
+            Event handler for CustomOrderedList Selection Changed
+            </summary>
+            <param name="sender">Sender</param>
+            <param name="e">Event Args</param>
+        </member>
+        <member name="M:TrueAutomation.Workflow.SystemActivities.CustomOrderedListActivityDesigner.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+    </members>
+</doc>

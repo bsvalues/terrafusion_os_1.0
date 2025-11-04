@@ -1,0 +1,27 @@
+{
+    "set": [
+        "address",
+        "address attribute",
+        "address locator",
+        "address locator style",
+        "address matching",
+        "build",
+        "cascade geocoding",
+        "composite",
+        "composite address locator",
+        "create",
+        "fall back geocoding",
+        "field map",
+        "geocode",
+        "geocoding",
+        "loc",
+        "locator",
+        "matching",
+        "multiple",
+        "multiple address locators",
+        "participating address locator",
+        "point address",
+        "selection criteria",
+        "street"
+    ]
+}

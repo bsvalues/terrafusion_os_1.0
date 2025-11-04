@@ -1,0 +1,96 @@
+{
+  "workspace_protection_system": {
+    "workspace_name": "legal-judicial",
+    "domain": "legal_proceedings",
+    "risk_level": "critical",
+    "customization_timestamp": "2025-10-16T10:16:02.416292",
+    "eleven_layer_protection": {
+      "L1_role_scope_confirmation": {
+        "workspace_role": "legal-judicial specialized AI agent",
+        "scope_definition": "Optimize and protect legal_proceedings operations",
+        "success_criteria": "Maintain critical-level security for legal_proceedings",
+        "data_types_handled": [
+          "case_records",
+          "legal_documents",
+          "court_data",
+          "evidence"
+        ],
+        "protection_priorities": [
+          "legal_privilege",
+          "evidence_chain",
+          "judicial_integrity"
+        ]
+      },
+      "L2_input_sanitation_threat_modeling": {
+        "threat_model": "legal_proceedings_specific_threats",
+        "input_validation": "legal-judicial_input_sanitization",
+        "injection_prevention": "legal_proceedings_injection_protection",
+        "risk_level_controls": "critical"
+      },
+      "L3_data_classification": {
+        "data_types": [
+          "case_records",
+          "legal_documents",
+          "court_data",
+          "evidence"
+        ],
+        "classification_level": "critical",
+        "privacy_requirements": "legal_proceedings_privacy_rules",
+        "retention_policies": "legal-judicial_data_retention",
+        "access_controls": "legal_proceedings_access_matrix"
+      },
+      "L4_secrets_hygiene": {
+        "vault_integration": "legal-judicial_secret_vault",
+        "key_rotation": "legal_proceedings_key_management",
+        "credential_management": "legal-judicial_credential_store",
+        "environment_separation": "critical_env_isolation"
+      },
+      "L5_environment_guardrails": {
+        "environment_controls": "legal-judicial_env_controls",
+        "blast_radius_limits": "legal_proceedings_isolation",
+        "feature_flags": "legal-judicial_feature_management",
+        "deployment_gates": "critical_deployment_controls"
+      },
+      "L6_policy_compliance": {
+        "domain_regulations": "legal_proceedings_compliance_framework",
+        "government_standards": [
+          "legal_privilege",
+          "evidence_chain",
+          "judicial_integrity"
+        ],
+        "audit_requirements": "legal-judicial_audit_trail",
+        "compliance_monitoring": "legal_proceedings_compliance_checks"
+      },
+      "L7_dependency_license_review": {
+        "sbom_generation": "legal-judicial_software_bill_of_materials",
+        "vulnerability_scanning": "legal_proceedings_vuln_checks",
+        "license_compliance": "legal-judicial_license_validation",
+        "dependency_monitoring": "critical_dependency_tracking"
+      },
+      "L8_reproducibility": {
+        "version_pinning": "legal-judicial_version_control",
+        "build_determinism": "legal_proceedings_build_reproducibility",
+        "configuration_management": "legal-judicial_config_management",
+        "deployment_consistency": "critical_deployment_standards"
+      },
+      "L9_observability_hooks": {
+        "metrics_collection": "legal-judicial_domain_metrics",
+        "logging_framework": "legal_proceedings_specialized_logging",
+        "tracing_system": "legal-judicial_distributed_tracing",
+        "alerting_rules": "legal_proceedings_alert_configuration"
+      },
+      "L10_human_in_loop_gates": {
+        "approval_workflows": "legal-judicial_approval_matrix",
+        "review_requirements": "legal_proceedings_review_gates",
+        "escalation_procedures": "critical_escalation_rules",
+        "manual_override_controls": "legal-judicial_override_procedures"
+      },
+      "L11_red_team_self_check": {
+        "adversarial_testing": "legal-judicial_penetration_testing",
+        "failure_mode_analysis": "legal_proceedings_failure_scenarios",
+        "rollback_procedures": "legal-judicial_disaster_recovery",
+        "security_validation": "critical_security_assessment"
+      }
+    }
+  }
+}

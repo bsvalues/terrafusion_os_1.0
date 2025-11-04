@@ -1,8 +1,8 @@
 /**
  * TerraFusion Design System - Shadow Tokens
- * 
+ *
  * Shadow system for depth and elevation.
- * 
+ *
  * @module design-system/tokens/shadows
  */
 
@@ -12,7 +12,7 @@
 
 export const boxShadow = {
   none: 'none',
-  
+
   // Standard shadows (dark theme optimized)
   xs: '0 1px 2px 0 rgba(0, 0, 0, 0.5)',
   sm: '0 1px 3px 0 rgba(0, 0, 0, 0.6), 0 1px 2px -1px rgba(0, 0, 0, 0.6)',
@@ -20,7 +20,7 @@ export const boxShadow = {
   lg: '0 10px 15px -3px rgba(0, 0, 0, 0.8), 0 4px 6px -4px rgba(0, 0, 0, 0.8)',
   xl: '0 20px 25px -5px rgba(0, 0, 0, 0.9), 0 8px 10px -6px rgba(0, 0, 0, 0.9)',
   '2xl': '0 25px 50px -12px rgba(0, 0, 0, 0.95)',
-  
+
   // Elevation shadows
   elevation: {
     1: '0 1px 3px rgba(0, 0, 0, 0.6)',
@@ -29,7 +29,7 @@ export const boxShadow = {
     4: '0 8px 24px rgba(0, 0, 0, 0.8)',
     5: '0 16px 48px rgba(0, 0, 0, 0.85)',
   },
-  
+
   // Colored shadows (brand)
   colored: {
     primary: '0 10px 30px -5px rgba(0, 153, 255, 0.4)',
@@ -39,7 +39,7 @@ export const boxShadow = {
     error: '0 10px 30px -5px rgba(255, 0, 0, 0.4)',
     warning: '0 10px 30px -5px rgba(255, 185, 0, 0.4)',
   },
-  
+
   // Glow effects
   glow: {
     sm: '0 0 10px rgba(0, 153, 255, 0.3)',
@@ -47,7 +47,7 @@ export const boxShadow = {
     lg: '0 0 40px rgba(0, 153, 255, 0.5)',
     xl: '0 0 60px rgba(0, 153, 255, 0.6)',
   },
-  
+
   // Inner shadows
   inner: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.6)',
   innerLg: 'inset 0 4px 8px 0 rgba(0, 0, 0, 0.7)',

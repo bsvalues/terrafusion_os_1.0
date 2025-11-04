@@ -1,0 +1,11 @@
+{
+    "set": [
+        "export",
+        "geopackage",
+        "import",
+        "load",
+        "ogc",
+        "raster",
+        "tiled raster"
+    ]
+}

@@ -1,0 +1,58 @@
+Below is a recommendation on which next steps to tackle first—balanced for maximum impact—and a detailed breakdown of each area, drawing on best practices and high-quality guidance from the field.
+
+In short, start by building the React conflict-resolution UI components, then layer in mobile (React Native + Realm) support, which together unlock your offline-first promise in the hands of users. Once the UI and mobile integration are in place, validate at scale with performance testing, document end-to-end workflows, and finally polish the web experience via a production-grade service worker sync.
+
+1. React Components for Conflict Resolution UI
+
+To make your CRDT-based merge capabilities real for users, you need well-designed React components that clearly surface and resolve conflicts.
+	•	Conflict List & Diff View: Show side-by-side or inline diffs of local vs. remote edits, letting users choose or merge  ￼.
+	•	Actionable Merge Controls: Provide “Keep Local”, “Accept Remote”, and “Custom Merge” buttons—patterns proven in PouchDB/CouchDB tooling for offline-first apps  ￼.
+	•	Awareness Indicators: Display who made which edit and when (a Yjs “awareness” feature best practice) to build trust in merges  ￼.
+
+Why first? Without UI, all your offline sync work remains invisible—users must see and act on conflicts before they trust the platform.
+
+2. Mobile Integration (React Native + Realm)
+
+With UI components in place, bring it to the field via React Native and Realm for on-device CRDT storage:
+	•	Realm Persistence: Persist Yjs document updates into Realm’s zero-copy, transactional store to survive app restarts and offline sessions  ￼.
+	•	Expo + NetInfo: Detect connectivity changes (via @react-native-community/netinfo) to trigger sync queues or show offline banners  ￼.
+	•	Native Service Worker Equivalents: Use background tasks (e.g., Expo Task Manager) to schedule uploads when connectivity returns, mimicking web background sync  ￼.
+
+Why now? Getting a seamless offline mobile experience in your users’ hands cements Terrafusion’s field-centric value.
+
+3. Performance Testing with Large Datasets
+
+Before you ship, ensure your sync and UI scales:
+	•	Synthetic Workloads: Use tools like k6 or Artillery to replay thousands of Yjs updates and map edits, measuring UI latency and merge speed.
+	•	Profiling React Renders: Leverage React’s DevTools Profiler to catch expensive renders in your conflict and map components.
+	•	DB Benchmarking: Test Realm read/write throughput under CRDT load; optimize schema or shard by parcel group if needed.
+
+Why here? Finding performance bottlenecks early prevents a poor user experience that undermines your hard-won offline features.
+
+4. Comprehensive Documentation
+
+Great docs amplify adoption—developers and end-users alike need clear guides for offline flows:
+	•	API & SDK Reference: Document your /mobile-sync endpoints, CRDT helpers, and conflict UI components using Swagger or Docusaurus  ￼.
+	•	Guided Tutorials: Provide step-by-step “QuickStart” walkthroughs for setting up offline sync in both web and mobile, with code snippets and screenshots  ￼.
+	•	Visual Aids: Include flowcharts for data sync lifecycle and diagrams of CRDT conflict resolution, per best practices  ￼.
+	•	User Guides: Write clear end-user docs on how to resolve conflicts in the UI, when data is syncing, and how to interpret status indicators  ￼.
+
+Why now? As you build, layer docs in parallel so launch isn’t delayed by an empty “Coming Soon” docs site.
+
+5. Service Worker for Web Background Sync
+
+Finally, round out the web PWA experience with a robust service worker:
+	•	Background Sync API: Register sync events (sync.register('sync-parcel-updates')) to retry CRDT pushes when the browser goes back online  ￼.
+	•	Cache Strategies: Use stale-while-revalidate for map tiles and offline assets, ensuring fast loads and up-to-date data  ￼.
+	•	Push Notifications: Optionally notify users when background sync succeeds or fails, improving transparency.
+
+Why last? The service worker ties together web offline flows but depends on solid UI, sync routines, and documentation to be effective.
+
+⸻
+
+Next Step Recommendation:
+	1.	Today–Tomorrow: Scaffold the React conflict-resolution components and wire them to your CRDT layer.
+	2.	Next 3 Days: Integrate those components into your Expo mobile scaffold, persisting Yjs via Realm and testing offline/online flips.
+	3.	Remainder of Week: Run initial performance benchmarks, build out parallel documentation drafts, and register your first service worker sync event.
+
+By following this sequence—UI → Mobile → Performance → Docs → PWA—you’ll unlock Terrafusion’s offline promise in a cohesive, user-centric manner and be perfectly positioned for a polished beta rollout.

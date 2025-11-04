@@ -1,0 +1,31 @@
+{
+    "map": {
+        "description": "Computes a forecasted multidimensional raster using the output trend raster from the Generate Trend Raster tool.",
+        "dimension_def.descr": "<xdoc><p>Specifies the method used to provide prediction dimension values.</p><ul><li><span title=\"BY_VALUE\">By value</span>—The prediction will be calculated for a single dimension value or a list of dimension values defined by the <span class=\"esri_uicontrol\">Values</span> parameter (dimension_values in Python). This is the default.<p>For example, you want to predict yearly precipitation for the years 2050, 2100, and 2150.</p></li><li><span title=\"BY_INTERVAL\">By interval</span>—The prediction will be calculated for an interval of the dimension defined by a start and an end value.<p>For example, you want to predict yearly precipitation for every year between 2050 and 2150.</p></li></ul></xdoc>",
+        "dimension_def.domain.BY_INTERVAL": "By interval",
+        "dimension_def.domain.BY_VALUE": "By value",
+        "dimension_def.title": "Dimension Definition",
+        "dimension_values.descr": "<xdoc><p>The dimension value or values to be used in the prediction.</p><p>The format of the time, depth, and height values must match the format of the dimension values used to generate the trend raster. If the trend raster was generated for the StdTime dimension, the format would be YYYY-MM-DDTHH:MM:SS, for example 2050-01-01T00:00:00. Multiple values are separated with a semicolon.</p><p>This parameter is required when the <span class=\"esri_uicontrol\">Dimension Definition</span> parameter is set to <span class=\"esri_uicontrol\">By value</span>.</p></xdoc>",
+        "dimension_values.title": "Values",
+        "end.descr": "The end date, height, or depth of the dimension interval to be used in the prediction.",
+        "end.title": "End",
+        "in_multidimensional_raster.descr": "The input multidimensional trend raster from the Generate Trend Raster tool.",
+        "in_multidimensional_raster.title": "Input Trend Raster",
+        "interval_unit.descr": "<xdoc><p>Specifies the unit that will be used for the interval value. This parameter only applies when the dimension of analysis is a time dimension.</p><ul><li><span title=\"HOURS\">Hours</span>—The prediction will be calculated for each hour in the range of time described by the <span class=\"esri_uicontrol\">Start</span>, <span class=\"esri_uicontrol\">End</span>, and <span class=\"esri_uicontrol\">Value Interval</span> parameters.</li><li><span title=\"DAYS\">Days</span>—The prediction will be calculated for each day in the range of time described by the <span class=\"esri_uicontrol\">Start</span>, <span class=\"esri_uicontrol\">End</span>, and <span class=\"esri_uicontrol\">Value Interval</span> parameters.</li><li><span title=\"WEEKS\">Weeks</span>—The prediction will be calculated for each week in the range of time described by the <span class=\"esri_uicontrol\">Start</span>, <span class=\"esri_uicontrol\">End</span>, and <span class=\"esri_uicontrol\">Value Interval</span> parameters.</li><li><span title=\"MONTHS\">Months</span>—The prediction will be calculated for each month in the range of time described by the <span class=\"esri_uicontrol\">Start</span>, <span class=\"esri_uicontrol\">End</span>, and <span class=\"esri_uicontrol\">Value Interval</span> parameters.</li><li><span title=\"YEARS\">Years</span>—The prediction will be calculated for each year in the range of time described by the <span class=\"esri_uicontrol\">Start</span>, <span class=\"esri_uicontrol\">End</span>, and <span class=\"esri_uicontrol\">Value Interval</span> parameters.</li></ul></xdoc>",
+        "interval_unit.domain.DAYS": "Days",
+        "interval_unit.domain.HOURS": "Hours",
+        "interval_unit.domain.MONTHS": "Months",
+        "interval_unit.domain.WEEKS": "Weeks",
+        "interval_unit.domain.YEARS": "Years",
+        "interval_unit.title": "Unit",
+        "interval_value.descr": "<xdoc><p>The number of steps between two dimension values to be included in the prediction. The default value is 1.</p><p>For example, to predict temperature values every five years, use a value of 5.</p></xdoc>",
+        "interval_value.title": "Value Interval",
+        "out_multidimensional_raster.descr": "The output Cloud Raster Format (CRF) multidimensional raster dataset.",
+        "out_multidimensional_raster.title": "Output Multidimensional Raster",
+        "start.descr": "The start date, height, or depth of the dimension interval to be used in the prediction.",
+        "start.title": "Start",
+        "title": "Predict Using Trend Raster",
+        "variables.descr": "The variable or variables that will be predicted in the analysis. If no variables are specified, all variables will be used.",
+        "variables.title": "Variables [Dimension Info] (Description)"
+    }
+}

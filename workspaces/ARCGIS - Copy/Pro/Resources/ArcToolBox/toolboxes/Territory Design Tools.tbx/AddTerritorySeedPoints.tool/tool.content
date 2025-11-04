@@ -1,0 +1,150 @@
+{
+    "type": "FunctionTool",
+    "guid": "{42c0264b-9fc8-4b78-be2d-e2884bdd4e39}",
+    "displayname": "$rc:title",
+    "helpcontent": "67010008",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "33"
+    ],
+    "params": {
+        "in_territory_solution": {
+            "displayname": "$rc:in_territory_solution.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPGroupLayer"
+                    },
+                    {
+                        "type": "DEFeatureDataset"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "description": "$rc:in_territory_solution.descr"
+        },
+        "level": {
+            "displayname": "$rc:level.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "depends": [
+                "in_territory_solution"
+            ],
+            "description": "$rc:level.descr"
+        },
+        "in_seed_points": {
+            "displayname": "$rc:in_seed_points.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:in_seed_points.descr"
+        },
+        "field_map": {
+            "type": "optional",
+            "displayname": "$rc:field_map.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:field_map.dt.title1"
+                    },
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:field_map.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "NAME",
+                                "code": "$rc:field_map.domain.item1.NAME"
+                            },
+                            {
+                                "value": "ID",
+                                "code": "$rc:field_map.domain.item1.ID"
+                            },
+                            {
+                                "value": "TYPE",
+                                "code": "$rc:field_map.domain.item1.TYPE"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Short",
+                            "Long",
+                            "Float",
+                            "Double",
+                            "Text",
+                            "Date",
+                            "OID"
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "in_seed_points"
+            ],
+            "description": "$rc:field_map.descr"
+        },
+        "append_data": {
+            "type": "optional",
+            "displayname": "$rc:append_data.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "APPEND"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "REPLACE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:append_data.descr"
+        },
+        "out_territory_solution": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_territory_solution.title",
+            "datatype": {
+                "type": "GPGroupLayer"
+            },
+            "depends": [
+                "in_territory_solution"
+            ]
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "map": {
+        "description": "Creates a file geodatabase in a folder.",
+        "out_file_gdb.title": "Output File Geodatabase",
+        "out_folder_path.descr": "The folder where the file geodatabase will be created.",
+        "out_folder_path.title": "File Geodatabase Location",
+        "out_name.descr": "The name of the file geodatabase to be created.",
+        "out_name.title": "File GDB Name",
+        "out_version.descr": "<xdoc><p>Specifies the ArcGIS version for the new geodatabase.</p><ul><li><span title=\"CURRENT\">Current</span>—A geodatabase compatible with the currently installed version of ArcGIS will be created. This is the default.</li><li><span title=\"10.0\">10.0</span>—A geodatabase compatible with ArcGIS version 10 will be created.</li><li><span title=\"9.3\">9.3</span>—A geodatabase compatible with ArcGIS version 9.3 will be created.</li><li><span title=\"9.2\">9.2</span>—A geodatabase compatible with ArcGIS version 9.2 will be created.</li></ul></xdoc>",
+        "out_version.domain.10.0": "10.0",
+        "out_version.domain.9.2": "9.2",
+        "out_version.domain.9.3": "9.3",
+        "out_version.domain.CURRENT": "Current",
+        "out_version.title": "File Geodatabase Version",
+        "title": "Create File Geodatabase"
+    }
+}

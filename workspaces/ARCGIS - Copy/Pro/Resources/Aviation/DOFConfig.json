@@ -1,0 +1,605 @@
+{
+  "specification": {
+    "line_length": "128",
+    "coordinate_system": "4326",
+    "mode": "update",
+    "obstacles": {
+	    "tables": ["ais_obstacle", "etod_vertical_structure", "18b_obstacle", "18c_objectpoint"],
+      "columns": {
+        "oas_code": {
+          "start": "1",
+          "end": "2"
+        },
+        "obstacle_number": {
+          "start": "4",
+          "end": "9"
+        },
+        "verification_status": {
+          "start": "11",
+          "end": "11"
+        },
+        "country_identifier": {
+          "start": "13",
+          "end": "14"
+        },
+        "state_identifier": {
+          "start": "16",
+          "end": "17"
+        },
+        "city_name": {
+          "start": "19",
+          "end": "34"
+        },
+        "latitude_degrees": {
+          "start": "36",
+          "end": "37"
+        },
+        "latitude_minutes": {
+          "start": "39",
+          "end": "40"
+        },
+        "latitude_seconds": {
+          "start": "42",
+          "end": "46"
+        },
+        "latitude_hemisphere": {
+          "start": "47",
+          "end": "47"
+        },
+        "longitude_degrees": {
+          "start": "49",
+          "end": "51"
+        },
+        "longitude_minutes": {
+          "start": "53",
+          "end": "54"
+        },
+        "longitude_seconds": {
+          "start": "56",
+          "end": "60"
+        },
+        "longitude_hemisphere": {
+          "start": "61",
+          "end": "61"
+        },
+        "obstacle_type": {
+          "start": "63",
+          "end": "80"
+        },
+        "quantity": {
+          "start": "82",
+          "end": "82"
+        },
+        "agl_ht": {
+          "start": "84",
+          "end": "88"
+        },
+        "amsl_ht": {
+          "start": "90",
+          "end": "94"
+        },
+        "lighting": {
+          "start": "96",
+          "end": "96"
+        },
+        "horizontal_accuracy": {
+          "start": "98",
+          "end": "98"
+        },
+        "vertical_accuracy": {
+          "start": "100",
+          "end": "100"
+        },
+        "mark_indicator": {
+          "start": "102",
+          "end": "102"
+        },
+        "faastudy_number": {
+          "start": "104",
+          "end": "117"
+        },
+        "action": {
+          "start": "119",
+          "end": "119"
+        },
+        "julian_date": {
+          "start": "121",
+          "end": "127"
+        }
+      }
+    }
+  },
+  "ais_obstacle": {
+    "fields": {
+      "gfid": {
+        "field_name": "gfid"
+      },
+      "id": {
+        "field_name": "clientkey_id"
+      },
+      "latitude": {
+        "field_name": "lat_txt"
+      },
+      "longitude": {
+        "field_name": "long_txt"
+      },
+      "type": {
+        "field_name": "descrtype_txt"
+      },
+      "quantity": {
+        "field_name": "quantity_val"
+      },
+      "group": {
+        "field_name": "group_code"
+      },
+      "height": {
+        "field_name": "height_val"
+      },
+      "elevation": {
+        "field_name": "elev_val"
+      },
+      "lighting_description": {
+        "domain": {
+          "R": "Red",
+          "D": "Medium intensity White Strobe & Red",
+          "H": "High Intensity White Strobe & Red",
+          "M": "Medium Intensity White Strobe",
+          "S": "High Intensity White Strobe",
+          "F": "Flood",
+          "C": "Dual Medium Catenary",
+          "W": "Synchronized Red Lighting",
+          "L": "Lighted (Type Unknown)",
+          "N": "None",
+          "U": "Unknown"
+        },
+        "field_name": "lightingdescr_txt"
+      },
+      "lighting_code": {
+        "domain": {
+          "R": "0",
+          "D": "0",
+          "H": "1",
+          "M": "0",
+          "S": "1",
+          "F": "0",
+          "C": "0",
+          "W": "0",
+          "L": "0",
+          "N": "0",
+          "U": "0"
+        },
+        "field_name": "lighted_code"
+      },
+      "action": {
+        "field_name": "action_code"
+      },
+      "status": {
+        "field_name": "status_code"
+      },
+      "horizontal_accuracy": {
+        "domain": {
+          "1": "20",
+          "2": "50",
+          "3": "100",
+          "4": "250",
+          "5": "500",
+          "6": "1000",
+          "7": "0.5",
+          "8": "1",
+          "9": "-9999"
+        },
+        "field_name": "geoaccuracy_val"
+      },
+      "horizontal_accuracy_uom": {
+        "domain": {
+          "1": "FT",
+          "2": "FT",
+          "3": "FT",
+          "4": "FT",
+          "5": "FT",
+          "6": "FT",
+          "7": "NM",
+          "8": "NM",
+          "9": "Unknown"
+        },
+        "field_name": "geoaccuracy_uom"
+      },
+      "vertical_accuracy": {
+        "domain": {
+          "A": "3",
+          "B": "10",
+          "C": "20",
+          "D": "50",
+          "E": "125",
+          "F": "250",
+          "G": "500",
+          "H": "1000",
+          "I": "-9999"
+        },
+        "field_name": "elevaccuracy_val"
+      },
+      "marking_description": {
+        "domain": {
+          "P": "Orange or Orange and White Paint",
+          "W": "White Paint Only",
+          "M": "Marked",
+          "F": "Flag Marker",
+          "S": "Spherical Marker",
+          "N": "None",
+          "U": "Unknown"
+        },
+        "field_name": "markingdescr_txt"
+      },
+      "faa_study": {
+        "field_name": "ident_txt"
+      },
+      "checksum": {
+        "field_name": "crc_txt"
+      },
+      "dof": {
+        "field_name": "source_txt"
+      },
+      "date_time": {
+        "field_name": "lastmod_date"
+      },
+      "effective_date": {
+        "field_name": "effective_date"
+      },
+      "remarks": {
+        "field_name": "remarks_txt"
+      }
+    },
+    "table_name": "obstacle"
+  },
+  "etod_vertical_structure": {
+    "fields": {
+      "gfid": {
+        "field_name": "gfid"
+      },
+      "id": {
+        "field_name": "clientkey_id"
+      },
+      "latitude": {
+        "field_name": ""
+      },
+      "longitude": {
+        "field_name": ""
+      },
+      "type": {
+        "field_name": "description_txt"
+      },
+      "quantity": {
+        "field_name": ""
+      },
+      "group": {
+        "field_name": ""
+      },
+      "height": {
+        "field_name": "height_val"
+      },
+      "elevation": {
+        "field_name": "elev_val"
+      },
+      "lighting_description": {
+        "field_name": ""
+      },
+      "lighting_code": {
+        "field_name": ""
+      },
+      "action": {
+        "field_name": ""
+      },
+      "status": {
+        "field_name": ""
+      },
+      "horizontal_accuracy": {
+        "domain": {
+          "1": "20",
+          "2": "50",
+          "3": "100",
+          "4": "250",
+          "5": "500",
+          "6": "1000",
+          "7": "0.5",
+          "8": "1",
+          "9": "-9999"
+        },
+        "field_name": "horizacc_val"
+      },
+      "horizontal_accuracy_uom": {
+        "domain": {
+          "1": "FT",
+          "2": "FT",
+          "3": "FT",
+          "4": "FT",
+          "5": "FT",
+          "6": "FT",
+          "7": "NM",
+          "8": "NM",
+          "9": "Unknown"
+        },
+        "field_name": "horizacc_uom"
+      },
+      "vertical_accuracy": {
+        "domain": {
+          "A": "3",
+          "B": "10",
+          "C": "20",
+          "D": "50",
+          "E": "125",
+          "F": "250",
+          "G": "500",
+          "H": "1000",
+          "I": "-9999"
+        },
+        "field_name": "vertacc_val"
+      },
+      "marking_description": {
+        "field_name": ""
+      },
+      "faa_study": {
+        "field_name": "idarpt"
+      },
+      "checksum": {
+        "field_name": ""
+      },
+      "dof": {
+        "field_name": "source"
+      },
+      "date_time": {
+        "field_name": "lastmod_date"
+      },
+      "effective_date": {
+        "field_name": "effectiveend_date"
+      },
+      "remarks": {
+        "field_name": "remarks_txt"
+      }
+    },
+    "table_name": "etod\\verticalstructurepoint"
+  },
+  "18b_obstacle": {
+    "fields": {
+      "gfid": {
+        "field_name": ""
+      },
+      "id": {
+        "field_name": "obsnumber"
+      },
+      "latitude": {
+        "field_name": ""
+      },
+      "longitude": {
+        "field_name": ""
+      },
+      "type": {
+        "field_name": "obstaclety"
+      },
+      "quantity": {
+        "field_name": ""
+      },
+      "group": {
+        "field_name": "groupcode"
+      },
+      "height": {
+        "field_name": "height"
+      },
+      "elevation": {
+        "field_name": "elev"
+      },
+      "lighting_description": {
+        "field_name": ""
+      },
+      "lighting_code": {
+        "domain": {
+          "R": "N",
+          "D": "N",
+          "H": "Y",
+          "M": "N",
+          "S": "Y",
+          "F": "N",
+          "C": "N",
+          "W": "N",
+          "L": "N",
+          "N": "N",
+          "U": "N"
+        },
+        "field_name": "lightcode"
+      },
+      "action": {
+        "field_name": ""
+      },
+      "status": {
+        "field_name": ""
+      },
+      "horizontal_accuracy": {
+        "domain": {
+          "1": "20",
+          "2": "50",
+          "3": "100",
+          "4": "250",
+          "5": "500",
+          "6": "1000",
+          "7": "0.5",
+          "8": "1",
+          "9": "-9999"
+        },
+        "field_name": "horizacc_val"
+      },
+      "horizontal_accuracy_uom": {
+        "domain": {
+          "1": "FT",
+          "2": "FT",
+          "3": "FT",
+          "4": "FT",
+          "5": "FT",
+          "6": "FT",
+          "7": "NM",
+          "8": "NM",
+          "9": "Unknown"
+        },
+        "field_name": "horizacc_uom"
+      },
+      "vertical_accuracy": {
+        "domain": {
+          "A": "3",
+          "B": "10",
+          "C": "20",
+          "D": "50",
+          "E": "125",
+          "F": "250",
+          "G": "500",
+          "H": "1000",
+          "I": "-9999"
+        },
+        "field_name": "vertacc_val"
+      },
+      "marking_description": {
+        "field_name": ""
+      },
+      "faa_study": {
+        "field_name": "idarpt"
+      },
+      "checksum": {
+        "field_name": ""
+      },
+      "dof": {
+        "field_name": "source"
+      },
+      "date_time": {
+        "field_name": ""
+      },
+      "effective_date": {
+        "field_name": "revdate"
+      },
+      "remarks": {
+        "field_name": "descrip"
+      }
+    },
+    "table_name": "airspace\\obstacle"
+  },
+  "18c_objectpoint": {
+    "fields": {
+      "gfid": {
+        "field_name": ""
+      },
+      "id": {
+        "field_name": ""
+      },
+      "latitude": {
+        "field_name": ""
+      },
+      "longitude": {
+        "field_name": ""
+      },
+      "type": {
+        "field_name": "usernotetext"
+      },
+      "quantity": {
+        "field_name": ""
+      },
+      "group": {
+        "domain": {
+          "1": "YES",
+          "0": "NO"
+        },
+        "field_name": "objectgroupcode"
+      },
+      "height": {
+        "field_name": "abovegroundlevel"
+      },
+      "elevation": {
+        "field_name": "elev_val"
+      },
+      "lighting_description": {
+        "field_name": ""
+      },
+      "lighting_code": {
+        "domain": {
+          "R": "0",
+          "D": "0",
+          "H": "1",
+          "M": "0",
+          "S": "1",
+          "F": "0",
+          "C": "0",
+          "W": "0",
+          "L": "0",
+          "N": "0",
+          "U": "0"
+        },
+        "field_name": "objectlightedindicator"
+      },
+      "action": {
+        "field_name": ""
+      },
+      "status": {
+        "field_name": ""
+      },
+      "horizontal_accuracy": {
+        "domain": {
+          "1": "20",
+          "2": "50",
+          "3": "100",
+          "4": "250",
+          "5": "500",
+          "6": "1000",
+          "7": "0.5",
+          "8": "1",
+          "9": "-9999"
+        },
+        "field_name": "horizacc_val"
+      },
+      "horizontal_accuracy_uom": {
+        "domain": {
+          "1": "FT",
+          "2": "FT",
+          "3": "FT",
+          "4": "FT",
+          "5": "FT",
+          "6": "FT",
+          "7": "NM",
+          "8": "NM",
+          "9": "Unknown"
+        },
+        "field_name": "horizacc_uom"
+      },
+      "vertical_accuracy": {
+        "domain": {
+          "A": "3",
+          "B": "10",
+          "C": "20",
+          "D": "50",
+          "E": "125",
+          "F": "250",
+          "G": "500",
+          "H": "1000",
+          "I": "-9999"
+        },
+        "field_name": "vertacc_val"
+      },
+      "marking_description": {
+        "field_name": ""
+      },
+      "faa_study": {
+        "field_name": "objectaeronauticalstudynumber"
+      },
+      "checksum": {
+        "field_name": ""
+      },
+      "dof": {
+        "field_name": ""
+      },
+      "date_time": {
+        "field_name": ""
+      },
+      "effective_date": {
+        "field_name": "effectivestartdate"
+      },
+      "remarks": {
+        "field_name": ""
+      }
+    },
+    "table_name": "airspace\\objectpoint"
+  }
+}

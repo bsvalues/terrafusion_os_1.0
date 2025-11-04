@@ -1,0 +1,24 @@
+{
+    "map": {
+        "checker_keywords.descr": "<xdoc><p>Choose which parts of the mosaic dataset you want to analyze for known issues.</p><ul><li><span title=\"FOOTPRINT\">Footprint geometry</span>— Analyze the footprint geometry of each selected mosaic dataset item. This is checked on by default.</li><li><span title=\"FUNCTION\">Function chains</span>— Analyze the function chains for each selected mosaic dataset item.</li><li><span title=\"RASTER\">Raster</span>— Analyze the original raster datasets. This is checked on by default.</li><li><span title=\"PATHS\">Broken paths</span>— Check for broken paths. This is checked on by default.</li><li><span title=\"SOURCE_VALIDITY\">Source validity</span>— Analyze potential problems with the source data associated with each mosaic dataset item in the selected mosaic dataset. This is a good way to detect issues that may arise during synchronization workflows.</li><li><span title=\"STALE\">Stale overviews</span>— Overviews are stale when the underlying source data has changed. Once the mosaic dataset is analyzed, you can select which items are stale by right-clicking on the error and clicking <span class=\"esri_uicontrol\">Select Associated Items</span> on the context menu.</li><li><span title=\"PYRAMIDS\">Pyramids</span>— Analyze the raster pyramids associated with each mosaic dataset item in the selected mosaic dataset. Test for disconnected auxiliary files, which can occur when they are stored in a raster proxy location.</li><li><span title=\"STATISTICS\">Statistics</span>— Test for disconnected auxiliary statistics files if they are stored in the raster proxy location. Analyze the covariance matrix associated with the raster, when the Gram-Schmidt pan-sharpening method is enabled. Analyze the radiometric pixel depth of a mosaic dataset item against the pixel depth of the mosaic dataset.</li><li><span title=\"PERFORMANCE\">Performance</span>— Factors that increase performance include compression during transmission and caching items with many raster functions.</li><li><span title=\"INFORMATION\">Information</span>— Generate general information about the mosaic dataset.</li></ul></xdoc>",
+        "checker_keywords.domain.FOOTPRINT": "Footprint geometry",
+        "checker_keywords.domain.FUNCTION": "Function chains",
+        "checker_keywords.domain.INFORMATION": "Information",
+        "checker_keywords.domain.PATHS": "Broken paths",
+        "checker_keywords.domain.PERFORMANCE": "Performance",
+        "checker_keywords.domain.PYRAMIDS": "Pyramids",
+        "checker_keywords.domain.RASTER": "Raster",
+        "checker_keywords.domain.SOURCE_VALIDITY": "Source validity",
+        "checker_keywords.domain.STALE": "Stale overviews",
+        "checker_keywords.domain.STATISTICS": "Statistics",
+        "checker_keywords.title": "Checks Performed",
+        "description": "Performs checks on a mosaic dataset for errors and possible improvements.",
+        "in_mosaic_dataset.descr": "The mosaic dataset you want to analyze.",
+        "in_mosaic_dataset.title": "Mosaic Dataset",
+        "out_mosaic_dataset.title": "Mosaic Dataset",
+        "params.category1": "Advanced Options",
+        "title": "Analyze Mosaic Dataset",
+        "where_clause.descr": "An SQL statement that confines your analysis to specific raster datasets within this mosaic dataset.",
+        "where_clause.title": "Query Definition"
+    }
+}

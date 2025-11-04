@@ -1,0 +1,13 @@
+{
+    "set": [
+        "densification",
+        "densify",
+        "ellipse",
+        "geodesic",
+        "great elliptic",
+        "loxodrome",
+        "normal section",
+        "project",
+        "projection"
+    ]
+}

@@ -1,0 +1,29 @@
+{
+    "map": {
+        "core_target.descr": "A group of segments that make up a large percentage of your customer base and have an above average index, indicating likelihood to be a customer.",
+        "core_target.title": "Core Target",
+        "description": "Displays the top characteristics, in each of the selected survey categories, of your Core and Developmental target groups, as well as your overall customer profile.",
+        "developmental_target.descr": "A group of segments that make up a significant percentage of your customers and of the market area but do not have an above average index.",
+        "developmental_target.title": "Developmental Target",
+        "output_report.title": "Output Report",
+        "params.category1": "Report Options",
+        "report_folder.descr": "The output location where the report will be saved.",
+        "report_folder.title": "Output Report Folder",
+        "report_format.descr": "The report output format. The default value is PDF. Additional available formats are XLSX, HTML, CSV, and PAGX.",
+        "report_format.title": "Report Output Formats",
+        "report_title.descr": "The title of the report.",
+        "report_title.title": "Report Title",
+        "report_type.descr": "<xdoc><p>Specifies the survey categories to be added to the report.</p><ul><li><span title=\"UNDERSTANDING_YOUR_TARGET\">Understanding Your Target</span>—Media-related characteristics—for example, reading, watching, and listening related.</li><li><span title=\"DEVELOPING_MARKET_STRATEGIES\">Developing Market Strategies</span>—Leisure-related characteristics—for example, leisure, sports, and travel.</li><li><span title=\"CUSTOM\">Custom</span>— User-defined characteristics. This is the default.</li></ul></xdoc>",
+        "report_type.domain.CUSTOM": "Custom",
+        "report_type.domain.DEVELOPING_MARKET_STRATEGIES": "Developing Market Strategies",
+        "report_type.domain.UNDERSTANDING_YOUR_TARGET": "Understanding Your Target",
+        "report_type.title": "Report Type",
+        "survey_categories.descr": "A category that contains the characteristics from the consumer survey.",
+        "survey_categories.title": "Survey Categories",
+        "target_group.descr": "A collection of segments grouped into targets. Targets represent segments that are selected based on similar characteristics—for example, segments that have high index and percent composition.",
+        "target_group.title": "Target Group",
+        "target_profile.descr": "A segmentation profile representing the segments to be analyzed. The target profile usually represents your customer segmentation profile.",
+        "target_profile.title": "Target Profile",
+        "title": "Generate Survey Report For Targets"
+    }
+}

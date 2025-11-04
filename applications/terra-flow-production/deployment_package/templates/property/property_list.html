@@ -1,0 +1,733 @@
+{% extends "layout.html" %}
+
+{% block title %}Property Management - GeoAssessmentPro{% endblock %}
+
+{% block additionalcss %}
+<style>
+    .property-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .property-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .property-card-header {
+        padding: 15px;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        background-color: #f8f9fa;
+    }
+    
+    .property-card-image {
+        height: 180px;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-color: #e9ecef;
+    }
+    
+    .property-card-image i {
+        font-size: 4rem;
+        color: rgba(0,0,0,0.2);
+    }
+    
+    .property-value {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #198754;
+    }
+    
+    .property-meta {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+    
+    .filter-panel {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .filter-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+    
+    .pagination-container {
+        margin-top: 20px;
+    }
+    
+    .map-container {
+        height: 300px;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+    
+    .property-count {
+        font-weight: 600;
+        margin-left: 10px;
+    }
+    
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+    
+    .loading-spinner {
+        width: 60px;
+        height: 60px;
+    }
+    
+    /* Property Card Badge Styles */
+    .property-status {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 2;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2">
+            <i class="fas fa-building me-2"></i> Property Management
+        </h1>
+        
+        {% if has_permission('property.create') %}
+        <a href="{{ url_for('property.property_create') }}" class="btn btn-primary">
+            <i class="fas fa-plus-circle me-1"></i> Add New Property
+        </a>
+        {% endif %}
+    </div>
+    
+    <!-- Filters and Search -->
+    <div class="filter-panel mb-4">
+        <form id="filter-form" class="row g-3">
+            <div class="col-md-4">
+                <label for="parcel-id" class="form-label">Parcel ID</label>
+                <input type="text" class="form-control" id="parcel-id" name="parcel_id">
+            </div>
+            
+            <div class="col-md-8">
+                <label for="address" class="form-label">Address</label>
+                <input type="text" class="form-control" id="address" name="address_like">
+            </div>
+            
+            <div class="col-md-3">
+                <label for="city" class="form-label">City</label>
+                <input type="text" class="form-control" id="city" name="city">
+            </div>
+            
+            <div class="col-md-2">
+                <label for="state" class="form-label">State</label>
+                <input type="text" class="form-control" id="state" name="state">
+            </div>
+            
+            <div class="col-md-2">
+                <label for="zip" class="form-label">ZIP Code</label>
+                <input type="text" class="form-control" id="zip" name="zip_code">
+            </div>
+            
+            <div class="col-md-3">
+                <label for="property-class" class="form-label">Property Class</label>
+                <select class="form-select" id="property-class" name="property_class">
+                    <option value="">All Classes</option>
+                    <option value="residential">Residential</option>
+                    <option value="commercial">Commercial</option>
+                    <option value="industrial">Industrial</option>
+                    <option value="agricultural">Agricultural</option>
+                    <option value="vacant">Vacant Land</option>
+                    <option value="mixed">Mixed Use</option>
+                </select>
+            </div>
+            
+            <div class="col-md-2">
+                <label for="status" class="form-label">Status</label>
+                <select class="form-select" id="status" name="status">
+                    <option value="">All</option>
+                    <option value="active" selected>Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="pending">Pending</option>
+                    <option value="exempt">Exempt</option>
+                </select>
+            </div>
+            
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="form-label">Value Range</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="min-value" name="total_value_gte" placeholder="Min">
+                            <span class="input-group-text">to</span>
+                            <input type="number" class="form-control" id="max-value" name="total_value_lte" placeholder="Max">
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <label class="form-label">Year Built</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="min-year" name="year_built_gte" placeholder="From">
+                            <span class="input-group-text">to</span>
+                            <input type="number" class="form-control" id="max-year" name="year_built_lte" placeholder="To">
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 d-flex align-items-end">
+                        <div class="d-grid w-100">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search me-1"></i> Search
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Main Content: Map and Properties List -->
+    <div class="row">
+        <!-- Map View (Future Enhancement) -->
+        <div class="col-lg-4 d-none d-lg-block">
+            <div class="map-container bg-light d-flex justify-content-center align-items-center">
+                <div class="text-center">
+                    <i class="fas fa-map-marked-alt fa-4x text-secondary mb-3"></i>
+                    <h4 class="h5 text-muted">Map View</h4>
+                    <p class="text-muted small">Property locations will be displayed here</p>
+                </div>
+            </div>
+            
+            <!-- Quick Stats -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h2 class="h6 mb-0">
+                        <i class="fas fa-chart-pie me-2"></i> Property Statistics
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <span class="d-block text-muted small">Total Properties</span>
+                            <span class="h4" id="total-properties">0</span>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <span class="d-block text-muted small">Average Value</span>
+                            <span class="h4" id="avg-value">$0</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="d-block text-muted small">Residential</span>
+                            <span class="h5" id="residential-count">0</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="d-block text-muted small">Commercial</span>
+                            <span class="h5" id="commercial-count">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Properties List -->
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h4 mb-0">Properties <span class="badge bg-secondary property-count" id="property-count">0</span></h2>
+                
+                <div class="d-flex gap-2">
+                    <div class="btn-group" role="group" aria-label="View mode">
+                        <button type="button" class="btn btn-outline-secondary active" id="grid-view-btn">
+                            <i class="fas fa-th-large"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" id="list-view-btn">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                    
+                    <select class="form-select form-select-sm" id="sort-select" style="width: auto;">
+                        <option value="created_at_desc">Newest First</option>
+                        <option value="created_at_asc">Oldest First</option>
+                        <option value="total_value_desc">Highest Value</option>
+                        <option value="total_value_asc">Lowest Value</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Loading Placeholder -->
+            <div id="loading-placeholder" class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-3">Loading properties...</p>
+            </div>
+            
+            <!-- Properties Grid -->
+            <div class="row row-cols-1 row-cols-md-2 g-4" id="properties-grid"></div>
+            
+            <!-- Empty State -->
+            <div id="empty-state" class="text-center py-5 border rounded bg-light d-none">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h3 class="h4">No Properties Found</h3>
+                <p class="text-muted">Try adjusting your search criteria</p>
+                {% if has_permission('property.create') %}
+                <a href="{{ url_for('property.property_create') }}" class="btn btn-primary mt-2">
+                    <i class="fas fa-plus-circle me-1"></i> Add New Property
+                </a>
+                {% endif %}
+            </div>
+            
+            <!-- Pagination -->
+            <nav aria-label="Properties pagination" class="mt-4">
+                <ul class="pagination justify-content-center" id="pagination"></ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- Property Card Template -->
+<template id="property-card-template">
+    <div class="col">
+        <div class="card property-card">
+            <div class="property-status">
+                <span class="badge bg-success status-badge">Active</span>
+            </div>
+            
+            <div class="property-card-image d-flex justify-content-center align-items-center">
+                <i class="fas fa-building"></i>
+            </div>
+            
+            <div class="property-card-header">
+                <h3 class="h5 mb-1 property-parcel-id">Parcel ID: 12345</h3>
+                <p class="mb-0 property-address">123 Main Street, Anytown</p>
+            </div>
+            
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-7">
+                        <span class="d-block text-muted small">Total Value</span>
+                        <span class="property-value">$250,000</span>
+                    </div>
+                    <div class="col-5 text-end">
+                        <span class="d-block text-muted small">Class</span>
+                        <span class="property-class badge bg-info">Residential</span>
+                    </div>
+                </div>
+                
+                <div class="row property-meta mb-3">
+                    <div class="col-6">
+                        <i class="fas fa-ruler-combined me-1"></i> <span class="property-area">1,500</span> sq ft
+                    </div>
+                    <div class="col-6 text-end">
+                        <i class="fas fa-calendar-alt me-1"></i> Built <span class="property-year">2005</span>
+                    </div>
+                </div>
+                
+                <div class="d-grid">
+                    <a href="#" class="btn btn-outline-primary property-link">
+                        <i class="fas fa-info-circle me-1"></i> View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay d-none" id="loading-overlay">
+    <div class="spinner-border text-primary loading-spinner" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Elements
+        const propertiesGrid = document.getElementById('properties-grid');
+        const propertyCount = document.getElementById('property-count');
+        const totalProperties = document.getElementById('total-properties');
+        const avgValue = document.getElementById('avg-value');
+        const residentialCount = document.getElementById('residential-count');
+        const commercialCount = document.getElementById('commercial-count');
+        const pagination = document.getElementById('pagination');
+        const loadingPlaceholder = document.getElementById('loading-placeholder');
+        const emptyState = document.getElementById('empty-state');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const filterForm = document.getElementById('filter-form');
+        const sortSelect = document.getElementById('sort-select');
+        const gridViewBtn = document.getElementById('grid-view-btn');
+        const listViewBtn = document.getElementById('list-view-btn');
+        
+        // Variables
+        let currentPage = 1;
+        let totalPages = 1;
+        let propertiesPerPage = 6;
+        let currentFilters = {};
+        let isGridView = true;
+        
+        // Initial load
+        loadProperties();
+        
+        // Event listeners
+        filterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            currentPage = 1;
+            
+            // Show loading overlay
+            loadingOverlay.classList.remove('d-none');
+            
+            // Get form data
+            const formData = new FormData(filterForm);
+            currentFilters = {};
+            
+            // Convert form data to object
+            for (const [key, value] of formData.entries()) {
+                if (value) {
+                    currentFilters[key] = value;
+                }
+            }
+            
+            // Load properties with filters
+            loadProperties();
+        });
+        
+        sortSelect.addEventListener('change', function() {
+            loadProperties();
+        });
+        
+        gridViewBtn.addEventListener('click', function() {
+            if (!isGridView) {
+                isGridView = true;
+                gridViewBtn.classList.add('active');
+                listViewBtn.classList.remove('active');
+                propertiesGrid.classList.remove('row-cols-1');
+                propertiesGrid.classList.add('row-cols-md-2');
+                renderProperties();
+            }
+        });
+        
+        listViewBtn.addEventListener('click', function() {
+            if (isGridView) {
+                isGridView = false;
+                listViewBtn.classList.add('active');
+                gridViewBtn.classList.remove('active');
+                propertiesGrid.classList.remove('row-cols-md-2');
+                propertiesGrid.classList.add('row-cols-1');
+                renderProperties();
+            }
+        });
+        
+        function loadProperties() {
+            // Show loading placeholder
+            loadingPlaceholder.classList.remove('d-none');
+            propertiesGrid.classList.add('d-none');
+            emptyState.classList.add('d-none');
+            
+            // Build URL
+            let url = `{{ url_for('property.property_api_list') }}?page=${currentPage}&per_page=${propertiesPerPage}`;
+            
+            // Add filters
+            for (const [key, value] of Object.entries(currentFilters)) {
+                url += `&${key}=${encodeURIComponent(value)}`;
+            }
+            
+            // Add sorting
+            const [sortField, sortDirection] = sortSelect.value.split('_');
+            if (sortField && sortDirection) {
+                url += `&sort_by=${sortField}&sort_direction=${sortDirection}`;
+            }
+            
+            // Fetch properties
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Store properties
+                        const properties = data.data;
+                        
+                        // Update pagination
+                        currentPage = data.page;
+                        totalPages = Math.ceil(data.total / data.per_page);
+                        
+                        // Calculate stats
+                        updateStats(properties, data.total);
+                        
+                        // Render properties
+                        renderProperties(properties);
+                        
+                        // Render pagination
+                        renderPagination();
+                        
+                        // Show properties or empty state
+                        if (properties.length > 0) {
+                            propertiesGrid.classList.remove('d-none');
+                            emptyState.classList.add('d-none');
+                        } else {
+                            propertiesGrid.classList.add('d-none');
+                            emptyState.classList.remove('d-none');
+                        }
+                    } else {
+                        console.error('Error loading properties:', data.error);
+                        emptyState.classList.remove('d-none');
+                    }
+                    
+                    // Hide loading elements
+                    loadingPlaceholder.classList.add('d-none');
+                    loadingOverlay.classList.add('d-none');
+                })
+                .catch(error => {
+                    console.error('Error fetching properties:', error);
+                    loadingPlaceholder.classList.add('d-none');
+                    loadingOverlay.classList.add('d-none');
+                    emptyState.classList.remove('d-none');
+                });
+        }
+        
+        function renderProperties(properties = []) {
+            // Clear grid
+            propertiesGrid.innerHTML = '';
+            
+            // Get template
+            const template = document.getElementById('property-card-template');
+            
+            // Create property cards
+            properties.forEach(property => {
+                const clone = document.importNode(template.content, true);
+                
+                // Set property data
+                clone.querySelector('.property-parcel-id').textContent = `Parcel ID: ${property.parcel_id || 'N/A'}`;
+                
+                // Format address
+                let address = property.address || '';
+                if (property.city) address += `, ${property.city}`;
+                if (property.state) address += `, ${property.state}`;
+                if (property.zip_code) address += ` ${property.zip_code}`;
+                clone.querySelector('.property-address').textContent = address;
+                
+                // Status badge
+                const statusBadge = clone.querySelector('.status-badge');
+                statusBadge.textContent = property.status ? property.status.charAt(0).toUpperCase() + property.status.slice(1) : 'Active';
+                
+                // Set class based on status
+                if (property.status === 'inactive') {
+                    statusBadge.classList.remove('bg-success');
+                    statusBadge.classList.add('bg-secondary');
+                } else if (property.status === 'pending') {
+                    statusBadge.classList.remove('bg-success');
+                    statusBadge.classList.add('bg-warning');
+                    statusBadge.classList.add('text-dark');
+                } else if (property.status === 'exempt') {
+                    statusBadge.classList.remove('bg-success');
+                    statusBadge.classList.add('bg-info');
+                }
+                
+                // Property value
+                clone.querySelector('.property-value').textContent = formatCurrency(property.total_value);
+                
+                // Property class
+                const propertyClass = clone.querySelector('.property-class');
+                propertyClass.textContent = property.property_class ? property.property_class.charAt(0).toUpperCase() + property.property_class.slice(1) : 'N/A';
+                
+                // Set class style based on property class
+                if (property.property_class === 'residential') {
+                    propertyClass.classList.remove('bg-info');
+                    propertyClass.classList.add('bg-primary');
+                } else if (property.property_class === 'commercial') {
+                    propertyClass.classList.remove('bg-info');
+                    propertyClass.classList.add('bg-success');
+                } else if (property.property_class === 'industrial') {
+                    propertyClass.classList.remove('bg-info');
+                    propertyClass.classList.add('bg-danger');
+                } else if (property.property_class === 'agricultural') {
+                    propertyClass.classList.remove('bg-info');
+                    propertyClass.classList.add('bg-success');
+                } else if (property.property_class === 'vacant') {
+                    propertyClass.classList.remove('bg-info');
+                    propertyClass.classList.add('bg-secondary');
+                }
+                
+                // Area and year
+                clone.querySelector('.property-area').textContent = formatNumber(property.living_area || 0);
+                clone.querySelector('.property-year').textContent = property.year_built || 'N/A';
+                
+                // Property link
+                clone.querySelector('.property-link').href = `{{ url_for('property.property_detail', property_id='PLACEHOLDER') }}`.replace('PLACEHOLDER', property.id);
+                
+                // Adjust layout for list view
+                if (!isGridView) {
+                    const card = clone.querySelector('.property-card');
+                    card.classList.add('flex-row');
+                    
+                    const image = card.querySelector('.property-card-image');
+                    image.style.width = '25%';
+                    image.style.height = 'auto';
+                    image.style.minHeight = '100%';
+                }
+                
+                // Add to grid
+                propertiesGrid.appendChild(clone);
+            });
+        }
+        
+        function renderPagination() {
+            // Clear pagination
+            pagination.innerHTML = '';
+            
+            // Don't show pagination if only one page
+            if (totalPages <= 1) {
+                return;
+            }
+            
+            // Previous button
+            const prevLi = document.createElement('li');
+            prevLi.classList.add('page-item');
+            if (currentPage === 1) {
+                prevLi.classList.add('disabled');
+            }
+            
+            const prevLink = document.createElement('a');
+            prevLink.classList.add('page-link');
+            prevLink.href = '#';
+            prevLink.setAttribute('aria-label', 'Previous');
+            prevLink.innerHTML = '<span aria-hidden="true">&laquo;</span>';
+            
+            prevLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (currentPage > 1) {
+                    currentPage--;
+                    loadProperties();
+                }
+            });
+            
+            prevLi.appendChild(prevLink);
+            pagination.appendChild(prevLi);
+            
+            // Page numbers
+            const maxPages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxPages / 2));
+            let endPage = Math.min(totalPages, startPage + maxPages - 1);
+            
+            if (endPage - startPage + 1 < maxPages) {
+                startPage = Math.max(1, endPage - maxPages + 1);
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const pageLi = document.createElement('li');
+                pageLi.classList.add('page-item');
+                if (i === currentPage) {
+                    pageLi.classList.add('active');
+                }
+                
+                const pageLink = document.createElement('a');
+                pageLink.classList.add('page-link');
+                pageLink.href = '#';
+                pageLink.textContent = i;
+                
+                pageLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    currentPage = i;
+                    loadProperties();
+                });
+                
+                pageLi.appendChild(pageLink);
+                pagination.appendChild(pageLi);
+            }
+            
+            // Next button
+            const nextLi = document.createElement('li');
+            nextLi.classList.add('page-item');
+            if (currentPage === totalPages) {
+                nextLi.classList.add('disabled');
+            }
+            
+            const nextLink = document.createElement('a');
+            nextLink.classList.add('page-link');
+            nextLink.href = '#';
+            nextLink.setAttribute('aria-label', 'Next');
+            nextLink.innerHTML = '<span aria-hidden="true">&raquo;</span>';
+            
+            nextLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    loadProperties();
+                }
+            });
+            
+            nextLi.appendChild(nextLink);
+            pagination.appendChild(nextLi);
+        }
+        
+        function updateStats(properties, total) {
+            // Update property count
+            propertyCount.textContent = total;
+            totalProperties.textContent = total;
+            
+            // Calculate average value
+            let totalValue = 0;
+            let residential = 0;
+            let commercial = 0;
+            
+            properties.forEach(property => {
+                if (property.total_value) {
+                    totalValue += parseFloat(property.total_value);
+                }
+                
+                if (property.property_class === 'residential') {
+                    residential++;
+                } else if (property.property_class === 'commercial') {
+                    commercial++;
+                }
+            });
+            
+            // Update stats
+            if (properties.length > 0) {
+                avgValue.textContent = formatCurrency(totalValue / properties.length);
+            }
+            
+            // These are just for the visible properties, not the total
+            residentialCount.textContent = residential;
+            commercialCount.textContent = commercial;
+        }
+        
+        // Helper functions
+        function formatCurrency(value) {
+            if (value === null || value === undefined) {
+                return '$0';
+            }
+            
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(value);
+        }
+        
+        function formatNumber(value) {
+            if (value === null || value === undefined) {
+                return '0';
+            }
+            
+            return new Intl.NumberFormat('en-US').format(value);
+        }
+    });
+</script>
+{% endblock %}

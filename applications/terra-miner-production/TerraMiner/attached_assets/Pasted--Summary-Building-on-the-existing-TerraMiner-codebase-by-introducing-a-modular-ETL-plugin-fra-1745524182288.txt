@@ -1,0 +1,176 @@
+## Summary
+
+Building on the existing TerraMiner codebase by introducing a **modular ETL-plugin framework** lets you add new data sources rapidly, test each in isolation, and deploy incrementally with minimal risk. You’ll create a simple `BaseETL` interface, convert each current ingestion script into a plugin, and wire up a dynamic loader using Python’s `importlib` and `pkgutil`. Each plugin lives in its own file under `etl/`, adheres to `extract()`, `transform()`, and `load()` methods, and is discovered automatically at runtime. Combined with your existing PostGIS setup and Replit AI Agent orchestration, this delivers a scalable, maintainable, and extensible TerraMiner.  
+
+---
+
+## 1. Define the ETL Plugin Interface
+
+### 1.1 Create `BaseETL` abstract class  
+In `etl/base.py`, define the contract every plugin must follow:  
+```python
+# etl/base.py
+from abc import ABC, abstractmethod
+
+class BaseETL(ABC):
+    @abstractmethod
+    def extract(self):
+        """Fetch raw data from source"""
+        pass
+
+    @abstractmethod
+    def transform(self, raw):
+        """Convert raw data into loadable format"""
+        pass
+
+    @abstractmethod
+    def load(self, processed):
+        """Insert processed data into PostGIS"""
+        pass
+
+    def run(self):
+        raw = self.extract()
+        processed = self.transform(raw)
+        self.load(processed)
+```
+This adheres to a standard ETL pattern and Liskov Substitution Principle—each plugin can be swapped without altering system behavior citeturn0search13.  
+
+---
+
+## 2. Implement Individual ETL Plugins
+
+### 2.1 Parcel plugin (`etl/parcels.py`)  
+```python
+# etl/parcels.py
+import requests, geopandas as gpd
+from sqlalchemy import create_engine
+from .base import BaseETL
+from config.database import get_postgis_engine
+
+class ParcelsETL(BaseETL):
+    def extract(self):
+        url = "https://api.koordinates.com/…/download.geojson"
+        return gpd.read_file(url)
+
+    def transform(self, raw):
+        raw = raw.to_crs(epsg=3857)
+        return raw[['parcel_id','geometry']]
+
+    def load(self, processed):
+        engine = get_postgis_engine()
+        processed.to_postgis('parcels', engine, if_exists='replace', index=False)
+```
+Using GeoPandas + SQLAlchemy ensures robust geospatial ingestion .  
+
+### 2.2 Census plugin (`etl/census.py`)  
+```python
+# etl/census.py
+import requests, pandas as pd
+import geopandas as gpd
+from sqlalchemy import create_engine
+from .base import BaseETL
+from config.database import get_postgis_engine
+
+class CensusETL(BaseETL):
+    def extract(self):
+        vars = ['B01003_001E','B19013_001E']
+        resp = requests.get(
+            "https://api.census.gov/data/2023/acs/acs5",
+            params={"get":",".join(vars),"for":"tract:*","in":"state:53 county:005"}
+        ).json()
+        df = pd.DataFrame(resp[1:], columns=resp[0])
+        return df
+
+    def transform(self, raw):
+        raw[['B01003_001E','B19013_001E']] = raw[['B01003_001E','B19013_001E']].astype(int)
+        # attach geometry via TIGERweb (omitted for brevity)
+        return gpd.GeoDataFrame(raw, geometry='geom')
+
+    def load(self, processed):
+        engine = get_postgis_engine()
+        processed.to_postgis('census_tracts', engine, if_exists='replace', index=False)
+```
+This pattern matches best practices for API-to-PostGIS pipelines .  
+
+### 2.3 DEM plugin (`etl/dem.py`)  
+```python
+# etl/dem.py
+import subprocess
+from osgeo import gdal
+from .base import BaseETL
+from config.database import get_postgis_engine
+
+class DemETL(BaseETL):
+    def extract(self):
+        # USGS TNMAccess CLI download
+        subprocess.run(["tnm_access","-o","dem.tif","--bbox",…])
+        return "dem.tif"
+
+    def transform(self, raw):
+        ds = gdal.Translate('dem_3857.tif', raw, outputSRS='EPSG:3857')
+        return 'dem_3857.tif'
+
+    def load(self, processed):
+        engine = get_postgis_engine()
+        gdalwarp = f"raster2pgsql -s 3857 -I -C {processed} -F dem | psql"
+        subprocess.run(gdalwarp, shell=True)
+```
+Loading rasters via `raster2pgsql` is standard for PostGIS raster ingestion .  
+
+---
+
+## 3. Dynamic Plugin Discovery
+
+In `etl/__main__.py`, auto-discover and run all plugins:  
+```python
+# etl/__main__.py
+import pkgutil, importlib
+from .base import BaseETL
+
+def load_plugins():
+    plugins = []
+    for _, module_name, _ in pkgutil.iter_modules(__path__):
+        mod = importlib.import_module(f"etl.{module_name}")
+        for obj in mod.__dict__.values():
+            if isinstance(obj, type) and issubclass(obj, BaseETL) and obj is not BaseETL:
+                plugins.append(obj())
+    return plugins
+
+if __name__ == "__main__":
+    for plugin in load_plugins():
+        plugin.run()
+```
+This uses naming conventions and `pkgutil.iter_modules()` for discovery citeturn0search0.  
+
+---
+
+## 4. Orchestration & Scheduling
+
+Leverage Replit Cron or Airflow to schedule ETL runs:  
+```text
+“Create an Airflow DAG that:
+ - Imports etl/__main__.py
+ - Runs daily at 3 AM for parcels
+ - Runs monthly at 2 AM on day 1 for census
+ - Runs quarterly at 4 AM on the 1st for dem
+ - Sends email on failure”
+```
+Airflow’s DAG patterns align with Orchestrated ETL best practices citeturn0search9.  
+
+---
+
+## 5. Testing & CI
+
+1. **Unit tests**: For each plugin, mock API responses and validate `extract()`, `transform()`, `load()` behavior.  
+2. **CI pipeline**: On Git push, run `pytest etl/ tests/` plus flake8 lint.  
+3. **Sample data validation**: Compare row counts against source portals (e.g., Koordinates UI) .  
+
+---
+
+## 6. Next Steps
+
+1. **Refactor existing scripts** into this plugin layout.  
+2. **Add new plugins** (FEMA flood zones, OSM POIs) by dropping files into `etl/`.  
+3. **Enhance plugin base** with retry logic and metrics emission.  
+
+By following this modular, plugin-driven pattern, TerraMiner can grow organically—each data source is an isolated, testable component, enabling rapid, low-risk expansion.

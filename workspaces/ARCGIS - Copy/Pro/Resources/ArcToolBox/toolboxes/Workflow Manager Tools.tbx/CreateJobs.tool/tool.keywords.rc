@@ -1,0 +1,12 @@
+{
+    "set": [
+        "aoi extent",
+        "assigned user",
+        "create jobs",
+        "input database path",
+        "merge",
+        "number of jobs",
+        "priority",
+        "workflow manager"
+    ]
+}

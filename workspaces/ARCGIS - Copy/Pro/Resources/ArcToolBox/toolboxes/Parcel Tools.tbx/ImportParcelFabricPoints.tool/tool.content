@@ -1,0 +1,202 @@
+{
+    "type": "FunctionTool",
+    "guid": "{D503DFB4-76F6-4A44-9EC3-C911FB5B11FA}/ImportParcelFabricPoints",
+    "displayname": "$rc:title",
+    "helpcontent": "34000009",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "edit_session"
+    ],
+    "params": {
+        "source_points": {
+            "display_order": "0",
+            "displayname": "$rc:source_points.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:source_points.descr"
+        },
+        "target_parcel_fabric": {
+            "display_order": "1",
+            "displayname": "$rc:target_parcel_fabric.title",
+            "datatype": {
+                "type": "GPParcelLayer"
+            },
+            "description": "$rc:target_parcel_fabric.descr"
+        },
+        "match_point_method": {
+            "display_order": "3",
+            "displayname": "$rc:match_point_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PROXIMITY",
+                        "code": "$rc:match_point_method.domain.PROXIMITY"
+                    },
+                    {
+                        "value": "NAME_AND_PROXIMITY",
+                        "code": "$rc:match_point_method.domain.NAME_AND_PROXIMITY"
+                    },
+                    {
+                        "value": "GLOBALID_AND_PROXIMITY",
+                        "code": "$rc:match_point_method.domain.GLOBALID_AND_PROXIMITY"
+                    }
+                ]
+            },
+            "value": "PROXIMITY",
+            "description": "$rc:match_point_method.descr"
+        },
+        "search_distance": {
+            "display_order": "5",
+            "displayname": "$rc:search_distance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "0.1 Meters",
+            "description": "$rc:search_distance.descr"
+        },
+        "update_type": {
+            "display_order": "9",
+            "displayname": "$rc:update_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ALL",
+                        "code": "$rc:update_type.domain.ALL"
+                    },
+                    {
+                        "value": "GEOMETRY_XYZ",
+                        "code": "$rc:update_type.domain.GEOMETRY_XYZ"
+                    },
+                    {
+                        "value": "RETIRE_AND_REPLACE",
+                        "code": "$rc:update_type.domain.RETIRE_AND_REPLACE"
+                    }
+                ]
+            },
+            "value": "ALL",
+            "description": "$rc:update_type.descr"
+        },
+        "updated_parcel_fabric": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "10",
+            "displayname": "$rc:updated_parcel_fabric.title",
+            "datatype": {
+                "type": "GPParcelLayer"
+            },
+            "depends": [
+                "target_parcel_fabric"
+            ]
+        },
+        "record_name": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:record_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:record_name.descr"
+        },
+        "match_field": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:match_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text",
+                    "GlobalID",
+                    "GUID"
+                ]
+            },
+            "depends": [
+                "source_points"
+            ],
+            "description": "$rc:match_field.descr"
+        },
+        "conflicts_table": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "11",
+            "displayname": "$rc:conflicts_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "description": "$rc:conflicts_table.descr"
+        },
+        "update_create_option": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:update_create_option.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "UPDATE_AND_CREATE",
+                        "code": "$rc:update_create_option.domain.UPDATE_AND_CREATE"
+                    },
+                    {
+                        "value": "CREATE_ONLY",
+                        "code": "$rc:update_create_option.domain.CREATE_ONLY"
+                    },
+                    {
+                        "value": "UPDATE_ONLY",
+                        "code": "$rc:update_create_option.domain.UPDATE_ONLY"
+                    }
+                ]
+            },
+            "value": "UPDATE_AND_CREATE",
+            "description": "$rc:update_create_option.descr"
+        },
+        "target_points": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:target_points.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:target_points.descr"
+        },
+        "where_clause": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:where_clause.title",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "target_points"
+            ],
+            "description": "$rc:where_clause.descr"
+        }
+    }
+}

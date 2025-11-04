@@ -1,0 +1,70 @@
+{
+  "excellent": {
+    "condition": "excellent",
+    "base_score": 4.5,
+    "final_score": 5.0,
+    "features": [
+      "Roof Condition",
+      "Gutters",
+      "Exterior Paint",
+      "Foundation",
+      "Landscaping",
+      "Overall Cleanliness"
+    ],
+    "values": [0.83, 0.68, 0.6, 0.39, 0.3, 0.17],
+    "image_path": "/home/runner/workspace/data/sample_images/excellent_condition.png"
+  },
+  "good": {
+    "condition": "good",
+    "base_score": 3.5,
+    "final_score": 5.0,
+    "features": [
+      "Exterior Paint",
+      "Landscaping",
+      "Gutters",
+      "Windows",
+      "Driveway",
+      "Roof Condition"
+    ],
+    "values": [0.88, 0.51, -0.46, 0.42, 0.37, 0.31],
+    "image_path": "/home/runner/workspace/data/sample_images/good_condition.png"
+  },
+  "average": {
+    "condition": "average",
+    "base_score": 2.5,
+    "final_score": 1.1,
+    "features": [
+      "Exterior Paint",
+      "Windows",
+      "Driveway",
+      "Overall Cleanliness",
+      "Foundation",
+      "Landscaping"
+    ],
+    "values": [-0.71, -0.51, 0.26, -0.23, -0.13, -0.09],
+    "image_path": "/home/runner/workspace/data/sample_images/average_condition.png"
+  },
+  "fair": {
+    "condition": "fair",
+    "base_score": 1.8,
+    "final_score": 1.0,
+    "features": ["Exterior Doors", "Foundation", "Gutters", "Landscaping", "Driveway", "Windows"],
+    "values": [-0.8, -0.65, -0.62, 0.43, -0.3, -0.27],
+    "image_path": "/home/runner/workspace/data/sample_images/fair_condition.png"
+  },
+  "poor": {
+    "condition": "poor",
+    "base_score": 1.0,
+    "final_score": 1.0,
+    "features": [
+      "Overall Cleanliness",
+      "Windows",
+      "Exterior Doors",
+      "Siding",
+      "Foundation",
+      "Gutters"
+    ],
+    "values": [-0.74, -0.58, -0.48, -0.46, -0.35, -0.26],
+    "image_path": "/home/runner/workspace/data/sample_images/poor_condition.png"
+  }
+}

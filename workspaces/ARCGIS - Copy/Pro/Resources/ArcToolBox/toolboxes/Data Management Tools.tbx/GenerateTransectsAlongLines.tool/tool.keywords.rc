@@ -1,0 +1,10 @@
+{
+    "set": [
+        "coast",
+        "perpendicular",
+        "regular",
+        "repeat",
+        "sample",
+        "interval"
+    ]
+}

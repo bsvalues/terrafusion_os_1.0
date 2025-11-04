@@ -1,0 +1,297 @@
+{% macro ai_sidebar() %}
+<div id="ai-suggestions-sidebar" class="fixed right-0 top-1/3 transform -translate-y-1/3 z-40 transition-all duration-300 ease-in-out translate-x-full">
+    <!-- Toggle button (visible when sidebar is collapsed) -->
+    <button id="ai-sidebar-toggle" class="absolute left-0 top-12 -translate-x-full bg-primary-600 hover:bg-primary-700 text-white p-2 rounded-l-md shadow-lg dark:bg-primary-700 dark:hover:bg-primary-800">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+        <span class="sr-only">AI Insights</span>
+    </button>
+    
+    <!-- Sidebar content -->
+    <div id="ai-sidebar-content" class="bg-white dark:bg-secondary-800 rounded-l-lg shadow-xl border-l border-t border-b border-secondary-200 dark:border-secondary-700 w-72 max-h-screen overflow-hidden flex flex-col">
+        <!-- Header -->
+        <div class="bg-primary-600 text-white p-3 flex items-center justify-between dark:bg-primary-700">
+            <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                <h3 class="font-medium">AI Insights</h3>
+            </div>
+            <button id="ai-sidebar-close" class="text-white hover:text-secondary-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                <span class="sr-only">Close sidebar</span>
+            </button>
+        </div>
+        
+        <!-- Loading state -->
+        <div id="ai-suggestions-loading" class="p-4 hidden">
+            <div class="flex items-center justify-center space-x-2 text-primary-600 dark:text-primary-400">
+                <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Generating insights...</span>
+            </div>
+        </div>
+        
+        <!-- Error state -->
+        <div id="ai-suggestions-error" class="p-4 hidden">
+            <div class="bg-danger-50 text-danger-700 p-3 rounded-md dark:bg-danger-900 dark:text-danger-300">
+                <p id="ai-error-message">Unable to generate insights at this time.</p>
+                <button id="ai-retry-button" class="mt-2 text-sm underline">Retry</button>
+            </div>
+        </div>
+        
+        <!-- Suggestions container -->
+        <div id="ai-suggestions-container" class="flex-1 overflow-y-auto p-2 space-y-2">
+            <!-- Suggestions will be inserted here -->
+        </div>
+        
+        <!-- Footer -->
+        <div class="bg-secondary-50 p-3 text-xs text-secondary-500 border-t border-secondary-200 dark:bg-secondary-700 dark:border-secondary-600 dark:text-secondary-400">
+            <p>AI-generated insights based on current context</p>
+        </div>
+    </div>
+</div>
+
+<!-- Suggestion template (hidden, used by JavaScript) -->
+<template id="ai-suggestion-template">
+    <div class="bg-secondary-50 p-3 rounded-md border border-secondary-200 hover:bg-secondary-100 transition-colors dark:bg-secondary-700 dark:border-secondary-600 dark:hover:bg-secondary-600">
+        <h4 class="font-medium text-primary-700 text-sm mb-1 dark:text-primary-400">Suggestion Title</h4>
+        <p class="text-secondary-700 text-sm dark:text-secondary-300">Suggestion description with insight.</p>
+    </div>
+</template>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.getElementById('ai-suggestions-sidebar');
+    const sidebarContent = document.getElementById('ai-sidebar-content');
+    const toggleButton = document.getElementById('ai-sidebar-toggle');
+    const closeButton = document.getElementById('ai-sidebar-close');
+    const suggestionsContainer = document.getElementById('ai-suggestions-container');
+    const loadingState = document.getElementById('ai-suggestions-loading');
+    const errorState = document.getElementById('ai-suggestions-error');
+    const errorMessage = document.getElementById('ai-error-message');
+    const retryButton = document.getElementById('ai-retry-button');
+    const suggestionTemplate = document.getElementById('ai-suggestion-template');
+    
+    // Default state is closed
+    let isOpen = false;
+    
+    // Store the current page context type
+    let currentContextType = 'default';
+    
+    // Initialize the sidebar state from localStorage
+    function initializeSidebar() {
+        // Check if the sidebar state is saved in localStorage
+        const savedState = localStorage.getItem('ai_sidebar_open');
+        if (savedState === 'true') {
+            openSidebar();
+        } else {
+            closeSidebar();
+        }
+        
+        // Determine the current page context
+        detectPageContext();
+        
+        // Load suggestions if the sidebar is open
+        if (isOpen) {
+            loadSuggestions(currentContextType);
+        }
+    }
+    
+    // Detect the current page context
+    function detectPageContext() {
+        // Default context type
+        currentContextType = 'default';
+        
+        // Check URL patterns to determine context
+        const path = window.location.pathname;
+        
+        if (path.includes('/monitoring/dashboard')) {
+            currentContextType = 'dashboard';
+        } else if (path.includes('/property/') && path.includes('details')) {
+            currentContextType = 'property_detail';
+        } else if (path.includes('/monitoring/price-trends')) {
+            currentContextType = 'market_trends';
+        } else if (path.includes('/agent/performance')) {
+            currentContextType = 'agent_performance';
+        }
+        
+        // You could also check for data attributes on body or main elements
+        // for more specific context information
+    }
+    
+    // Open the sidebar
+    function openSidebar() {
+        sidebar.classList.remove('translate-x-full');
+        isOpen = true;
+        localStorage.setItem('ai_sidebar_open', 'true');
+        
+        // Load suggestions
+        loadSuggestions(currentContextType);
+    }
+    
+    // Close the sidebar
+    function closeSidebar() {
+        sidebar.classList.add('translate-x-full');
+        isOpen = false;
+        localStorage.setItem('ai_sidebar_open', 'false');
+    }
+    
+    // Toggle the sidebar
+    function toggleSidebar() {
+        if (isOpen) {
+            closeSidebar();
+        } else {
+            openSidebar();
+        }
+    }
+    
+    // Load suggestions from the API
+    function loadSuggestions(contextType, contextData = null) {
+        // Show loading state
+        suggestionsContainer.classList.add('hidden');
+        errorState.classList.add('hidden');
+        loadingState.classList.remove('hidden');
+        
+        // Gather context data if not provided
+        if (!contextData) {
+            contextData = gatherContextData();
+        }
+        
+        // Call the API
+        fetch('/api/ai/suggestions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                context_type: currentContextType,
+                context_data: contextData
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to load suggestions');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Hide loading state
+            loadingState.classList.add('hidden');
+            
+            // Clear existing suggestions
+            suggestionsContainer.innerHTML = '';
+            
+            // Check if we have suggestions
+            if (data.suggestions && data.suggestions.length > 0) {
+                // Display each suggestion
+                data.suggestions.forEach(suggestion => {
+                    const suggestionElement = createSuggestionElement(suggestion);
+                    suggestionsContainer.appendChild(suggestionElement);
+                });
+                
+                // Show the suggestions container
+                suggestionsContainer.classList.remove('hidden');
+            } else {
+                // Show error state if no suggestions
+                errorMessage.textContent = 'No insights available for this context.';
+                errorState.classList.remove('hidden');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading suggestions:', error);
+            
+            // Hide loading state
+            loadingState.classList.add('hidden');
+            
+            // Show error state
+            errorMessage.textContent = 'Unable to generate insights at this time.';
+            errorState.classList.remove('hidden');
+        });
+    }
+    
+    // Gather context data from the current page
+    function gatherContextData() {
+        const contextData = {};
+        
+        // Get page title
+        contextData.pageTitle = document.title;
+        
+        // Get URL path
+        contextData.urlPath = window.location.pathname;
+        
+        // Depending on the context type, gather specific data
+        if (currentContextType === 'dashboard') {
+            // Get dashboard metrics
+            const metricElements = document.querySelectorAll('.stat-card');
+            const metrics = {};
+            
+            metricElements.forEach((element, index) => {
+                const titleElement = element.querySelector('.stat-title');
+                const valueElement = element.querySelector('.stat-value');
+                
+                if (titleElement && valueElement) {
+                    const title = titleElement.textContent.trim();
+                    const value = valueElement.textContent.trim();
+                    metrics[title] = value;
+                }
+            });
+            
+            contextData.metrics = metrics;
+        } else if (currentContextType === 'property_detail') {
+            // Get property details
+            const property = {};
+            
+            // Try to extract property data (depends on your DOM structure)
+            const addressElement = document.querySelector('.property-address');
+            if (addressElement) {
+                property.address = addressElement.textContent.trim();
+            }
+            
+            const priceElement = document.querySelector('.property-price');
+            if (priceElement) {
+                property.price = priceElement.textContent.trim();
+            }
+            
+            // More property details could be extracted here
+            
+            contextData.property = property;
+        }
+        
+        return contextData;
+    }
+    
+    // Create a suggestion element from a suggestion object
+    function createSuggestionElement(suggestion) {
+        // Clone the template
+        const element = suggestionTemplate.content.cloneNode(true);
+        
+        // Update the title and description
+        const title = element.querySelector('h4');
+        if (title) {
+            title.textContent = suggestion.title;
+        }
+        
+        const description = element.querySelector('p');
+        if (description) {
+            description.textContent = suggestion.description;
+        }
+        
+        return element;
+    }
+    
+    // Event listeners
+    toggleButton.addEventListener('click', toggleSidebar);
+    closeButton.addEventListener('click', closeSidebar);
+    retryButton.addEventListener('click', () => loadSuggestions(currentContextType));
+    
+    // Initialize the sidebar
+    initializeSidebar();
+});
+</script>
+{% endmacro %}

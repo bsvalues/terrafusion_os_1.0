@@ -1,0 +1,26 @@
+{
+    "set": [
+        "arc",
+        "area",
+        "border",
+        "boundary",
+        "change",
+        "common",
+        "conversion",
+        "convert",
+        "geometry",
+        "left",
+        "neighbor",
+        "orientation",
+        "outline",
+        "polygon boundary",
+        "polyline",
+        "region",
+        "right",
+        "share",
+        "topology",
+        "transform",
+        "vector",
+        "zone"
+    ]
+}

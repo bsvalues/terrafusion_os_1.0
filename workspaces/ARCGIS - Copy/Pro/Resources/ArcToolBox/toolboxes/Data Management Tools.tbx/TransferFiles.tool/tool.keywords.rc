@@ -1,0 +1,8 @@
+{
+    "set": [
+        "cloud storage workspace",
+        "data store relative path",
+        "hosted image project",
+        "published service"
+    ]
+}

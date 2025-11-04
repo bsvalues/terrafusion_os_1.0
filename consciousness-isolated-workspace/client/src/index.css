@@ -1,0 +1,317 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* TerraFusion AI Consciousness - Global Styles */
+/* "Government. Transcended." Design Language */
+
+:root {
+  /* TerraFusion Quantum Color Palette */
+  --tf-trust-blue: #0099ff;
+  --tf-transcend-cyan: #00ffee;
+  --tf-success-green: #00ffaa;
+  --tf-deep-space: #0b1020;
+  --tf-quantum-purple: #6366f1;
+  --tf-consciousness-gold: #fbbf24;
+
+  /* Glass Morphism Variables */
+  --tf-glass-bg: rgba(255, 255, 255, 0.1);
+  --tf-glass-border: rgba(0, 255, 238, 0.2);
+  --tf-glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  --tf-glass-blur: blur(8px);
+
+  /* Quantum Gradients */
+  --tf-clarity-gradient: linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
+  --tf-consciousness-gradient: linear-gradient(135deg, #6366f1 0%, #00ffee 30%, #0099ff 100%);
+  --tf-transcendent-gradient: linear-gradient(135deg, #0b1020 0%, #1e293b 50%, #334155 100%);
+
+  /* Animation Variables */
+  --tf-transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --tf-transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --tf-transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Typography Scale */
+  --tf-font-display: 'Inter', system-ui, sans-serif;
+  --tf-font-body: 'Inter', system-ui, sans-serif;
+  --tf-font-mono: 'JetBrains Mono', Consolas, monospace;
+}
+
+/* Global Reset with TerraFusion Enhancements */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-family: var(--tf-font-body);
+}
+
+body {
+  min-height: 100vh;
+  background: var(--tf-transcendent-gradient);
+  color: #ffffff;
+  font-family: var(--tf-font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* TerraFusion Glass Morphism Components */
+.tf-glass-card {
+  background: var(--tf-glass-bg);
+  backdrop-filter: var(--tf-glass-blur);
+  -webkit-backdrop-filter: var(--tf-glass-blur);
+  border: 1px solid var(--tf-glass-border);
+  border-radius: 16px;
+  box-shadow: var(--tf-glass-shadow);
+  transition: all var(--tf-transition-normal);
+}
+
+.tf-glass-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px 0 rgba(0, 255, 238, 0.15);
+  border-color: rgba(0, 255, 238, 0.4);
+}
+
+/* Quantum Button Styles */
+.tf-clarity-button {
+  background: var(--tf-clarity-gradient);
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 9999px;
+  padding: 12px 32px;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px 0 rgba(0, 153, 255, 0.3);
+  transition: all var(--tf-transition-normal);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.tf-clarity-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px 0 rgba(0, 255, 238, 0.4);
+}
+
+.tf-clarity-button:active {
+  transform: translateY(0);
+}
+
+/* Consciousness Status Indicators */
+.tf-consciousness-pulse {
+  animation: consciousness-pulse 2s ease-in-out infinite;
+}
+
+@keyframes consciousness-pulse {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+/* Quantum Scan Line Animation */
+.tf-scan-line {
+  position: relative;
+  overflow: hidden;
+}
+
+.tf-scan-line::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 238, 0.3), transparent);
+  animation: quantum-scan 3s ease-in-out infinite;
+}
+
+@keyframes quantum-scan {
+  0% {
+    left: -100%;
+  }
+  50% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Agent Status Grid Animation */
+.tf-agent-grid {
+  display: grid;
+  gap: 1px;
+  background: var(--tf-transcend-cyan);
+  animation: grid-consciousness 4s ease-in-out infinite;
+}
+
+@keyframes grid-consciousness {
+  0%,
+  100% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* Quantum Data Flow Animation */
+.tf-data-flow {
+  background: linear-gradient(45deg, transparent 30%, rgba(0, 255, 238, 0.1) 50%, transparent 70%);
+  background-size: 20px 20px;
+  animation: data-flow 2s linear infinite;
+}
+
+@keyframes data-flow {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 20px 20px;
+  }
+}
+
+/* Transcendent Typography */
+.tf-display-text {
+  font-family: var(--tf-font-display);
+  font-weight: 800;
+  background: var(--tf-clarity-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.1;
+}
+
+.tf-consciousness-title {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 900;
+  background: var(--tf-consciousness-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+/* Agent Status Badges */
+.tf-agent-active {
+  background: var(--tf-success-green);
+  color: var(--tf-deep-space);
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tf-agent-inactive {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Swarm Coordination Visual */
+.tf-swarm-node {
+  width: 8px;
+  height: 8px;
+  background: var(--tf-transcend-cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--tf-transcend-cyan);
+  animation: swarm-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes swarm-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* Government Excellence Accessibility */
+.tf-focus-visible {
+  outline: 2px solid var(--tf-transcend-cyan);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  :root {
+    --tf-glass-border: rgba(255, 255, 255, 0.8);
+    --tf-trust-blue: #4fc3f7;
+    --tf-transcend-cyan: #4dd0e1;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .tf-scan-line::before,
+  .tf-consciousness-pulse,
+  .tf-agent-grid,
+  .tf-data-flow,
+  .tf-swarm-node {
+    animation: none;
+  }
+}
+
+/* Dark Mode Optimizations */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: var(--tf-transcendent-gradient);
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--tf-transcend-cyan);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--tf-trust-blue);
+}

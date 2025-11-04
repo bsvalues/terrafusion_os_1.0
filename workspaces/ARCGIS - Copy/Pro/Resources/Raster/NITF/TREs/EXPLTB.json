@@ -1,0 +1,239 @@
+{
+  "TRE": "EXPLTB",
+  "Source": [ "STDI-0002-1 v2021.1, Appendix E: ASDE" ],
+  "Name": "Exploitation Related Information Extension Format",
+  "Description": "The Exploitation Related Information extension is optional. EXPLT provides metadata that allows a user program to determine if the image is suitable for the exploitation problem currently being performed. It contains some of the fields, which would make up a NGA standard directory entry. A single EXPLT is placed in the image subheader with the corresponding AIMID and ACFT extensions.",
+  "Size": 101,
+  "Fields": {
+    "ANGLE_TO_NORTH" : {
+      "Name": "Angle to True North",
+      "Description": "This field indicates the angle, measured clockwise, from the first row vector (pointing from the first column to the last) to a vector pointing to True North.",
+      "Size": 7,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["degrees"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0.001,
+          "Max": 359.999
+        }        
+      ]
+    },
+    "ANGLE_TO_NORTH_ACCY" : {
+      "Name": "Angle to North Accuracy",
+      "Description": "This field indicates the accuracy of the angle to True North with a 90 percent probable error value.",
+      "Size": 6,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["degrees"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0.001,
+          "Max": 44.999
+        },
+        {
+          "Type": "Value",
+          "Values": ["000000", "00.000"]
+        }        
+      ]
+    },
+    "SQUINT_ANGLE" : {
+      "Name": "Squint Angle",
+      "Description": "This field indicates the angle measured in degrees from crosstrack (broadside) to the great circle joining the ground point directly below the Aircraft Reference Point (ARP) to the Output Reference Point (ORP). Forward looking squint angles range from positive 00.000 (broadside) to positive 85.000 degrees; aft looking squint angles range from negative 00.000 to negative 60.000 degrees.",
+      "Size": 7,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["degrees"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -60.000,
+          "Max": 85.000
+        }        
+      ]
+    },
+    "SQUINT_ANGLE_ACCY" : {
+      "Name": "Accuracy of the Squint Angle",
+      "Description": "This field indicates the accuracy of the squint angle with a 90 percent probable error value.",
+      "Size": 6,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["degrees"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0.001,
+          "Max": 44.999
+        },
+        {
+          "Type": "Value",
+          "Values": ["000000", "00.000"] 
+        }        
+      ]
+    },
+    "MODE" : {
+      "Name": "Mode of Collection and Processing",
+      "Description": "This field represents both the collection mode and the processing mode. Subtle differences existing among legacy systems are accommodated by unique mode designations. See Field Registry, EXPLTB IMODE, as defined in the main body of STDI-0002 Volume 1, paragraph 3.2 for values added through registration.",
+      "Size": 3,
+      "Format": "BCS-AN",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type":"AlphaNumeric"
+        }        
+      ]
+    },
+    "GRAZE_ANG" : {
+      "Name": "Grazing Angle",
+      "Description": "This field indicates the angle, measured in degrees at the target, between the focus plane and line of sight to the radar.",
+      "Size": 5,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["degrees"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 90.00
+        }        
+      ]
+    },
+    "GRAZE_ANG_ACCY" : {
+      "Name": "Accuracy of the Grazing Angle",
+      "Description": "This field indicates the accuracy of the grazing angle with 90 percent probable error value.",
+      "Size": 5,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["degrees"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 90.00
+        },
+        {
+          "Type": "Value",
+          "Values": ["00000", "00.00"]
+        }        
+      ]
+    },
+    "SLOPE_ANG" : {
+      "Name": "Angle of the Slope",
+      "Description": "This field indicates the angle between the SAR plane and the focus plane.",
+      "Size": 5,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["degrees"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 90.00
+        }        
+      ]
+    },
+    "POLAR" : {
+      "Name": "Polarization value",
+      "Description": "This field indicates nominal transmit polarization, and nominal receive polarization. Each can be Horizontal (H) or Vertical (V).",
+      "Size": 2,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["HH", "HV", "VH", "VV"]
+        }        
+      ]
+    },
+    "NSAMP" : {
+      "Name": "Pixels Per Line",
+      "Description": "This field indicates the number of pixels per Line (includes fill).",
+      "Size": 5,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 99999
+        }        
+      ]
+    },
+    "SEQ_NUM" : {
+      "Name": "Sequence Number",
+      "Description": "This field indicates the Sequence within a Coupled Imagery Set.",
+      "Size": 1,
+      "Format": "BCS-N",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 6
+        }        
+      ]
+    },
+    "PRIME_ID": {
+      "Name": "Target Designator of Primary Target",
+      "Description": "This field indicates the target designator of the Primary Target.",
+      "Size": 12,
+      "Format": "BCS-AN",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "PRIME_BE" : {
+      "Name": "BE Number of Primary Target",
+      "Description": "This field indicates the Basic Encyclopedia ID or OSUFFIX (target designator) of the primary target.",
+      "Size": 15,
+      "Format": "BCS-AN",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "N_SEC" : {
+      "Name": "Number of Secondary Targets",
+      "Description": "This field indicates the number of secondary targets in an image. The default is 0.",
+      "Size": 2,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 99
+        }        
+      ]
+    },
+    "IPR" : {
+      "Name": "Commanded Impulse Response",
+      "Description": "This field indicates the commanded impulse response.",
+      "Size": 2,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["feet"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 99
+        }        
+      ]
+    }                
+  }
+}

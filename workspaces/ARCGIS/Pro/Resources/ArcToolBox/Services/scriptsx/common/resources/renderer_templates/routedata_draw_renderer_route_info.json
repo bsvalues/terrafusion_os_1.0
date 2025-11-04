@@ -1,0 +1,13 @@
+{
+    "transparency": 0,
+    "fixedSymbols": true,
+    "renderer": {
+        "type": "simple",
+        "symbol": {
+            "color": [20, 89, 127, 255],
+            "width": 8,
+            "type": "esriSLS",
+            "style": "esriSLSSolid"
+        }
+    }
+}

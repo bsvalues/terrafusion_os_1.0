@@ -11,30 +11,28 @@ public class TerraFusionDbContextFactory : IDesignTimeDbContextFactory<TerraFusi
 {
     public TerraFusionDbContext CreateDbContext(string[] args)
     {
-        // Build configuration
+        // Build configuration from TerraFusion.API appsettings (where Production config lives)
+        var apiPath = Path.Combine(Directory.GetCurrentDirectory(), "../TerraFusion.API");
         var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: true)
-            .AddJsonFile("appsettings.Development.json", optional: true)
+            .SetBasePath(apiPath)
+            .AddJsonFile("appsettings.json", optional: false)
+            .AddJsonFile("appsettings.Production.json", optional: true)
             .AddEnvironmentVariables()
             .Build();
 
         // Create DbContext options
         var optionsBuilder = new DbContextOptionsBuilder<TerraFusionDbContext>();
-        
-        // Use SQLite for migrations (fallback default)
-        var connectionString = configuration.GetConnectionString("DefaultConnection") ?? "Data Source=terrafusion.db";
-        
-        if (connectionString.Contains("Host="))
+
+        // PRODUCTION POSTGRESQL: Force PostgreSQL for migrations (no SQLite fallback)
+        // This ensures EF Core migrations create tables in the actual terrafusion_production database
+        var connectionString = configuration.GetConnectionString("DefaultConnection")
+            ?? "Host=localhost;Database=terrafusion_production;Username=terrafusion;Password=terrafusion_production_secure_2025";
+
+        optionsBuilder.UseNpgsql(connectionString, npgsqlOptions =>
         {
-            // PostgreSQL for production
-            optionsBuilder.UseNpgsql(connectionString);
-        }
-        else
-        {
-            // SQLite for development
-            optionsBuilder.UseSqlite(connectionString);
-        }
+            npgsqlOptions.MigrationsAssembly("TerraFusion.Data");
+            npgsqlOptions.EnableRetryOnFailure(maxRetryCount: 3);
+        });
 
         return new TerraFusionDbContext(optionsBuilder.Options, configuration);
     }

@@ -1,0 +1,9 @@
+{
+    "set": [
+        "add",
+        "administration",
+        "category",
+        "network",
+        "utility network"
+    ]
+}

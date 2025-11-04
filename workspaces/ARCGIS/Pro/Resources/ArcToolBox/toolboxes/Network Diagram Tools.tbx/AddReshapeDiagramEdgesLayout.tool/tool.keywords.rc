@@ -1,0 +1,16 @@
+{
+    "set": [
+        "configuration",
+        "diagram layout",
+        "diagram template",
+        "mark crossing edges",
+        "network",
+        "network diagram",
+        "reduce vertices by angle",
+        "remove vertices",
+        "reshape diagram edges",
+        "separate overlapping edges",
+        "square edges",
+        "template configuration"
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "map": {
+        "description": "Determines the contributing area above a set of cells in a raster.",
+        "inpourpointrasterorfeatures.descr": "The input pour point locations.",
+        "inpourpointrasterorfeatures.title": "Input Pour Point Raster or Features",
+        "inputflowdirectionraster.descr": "The input raster that shows the direction of flow out of each cell.",
+        "inputflowdirectionraster.title": "Input Flow Direction Raster",
+        "outputname.descr": "<xdoc><p>The name of the output watershed raster service.</p><p>The default name is based on the tool name and the input layer name. If the layer name already exists, you will be prompted to provide another name.</p></xdoc>",
+        "outputname.title": "Output Name",
+        "outputraster.title": "Output Raster",
+        "pourpointfield.descr": "Field used to assign values to the pour point locations.",
+        "pourpointfield.title": "Pour Point Field",
+        "title": "Watershed"
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Converts the point data in a .gpx file to features.",
+        "input_gpx_file.descr": "The input .gpx file to be converted.",
+        "input_gpx_file.title": "Input GPX File",
+        "output_feature_class.descr": "The output point feature class.",
+        "output_feature_class.title": "Output Feature class",
+        "output_type.descr": "<xdoc><p>Specifies the geometry type of the output feature class.</p><ul><li><span title=\"POINTS\">Points</span>—An output point feature class will be created. All GPX points will be included in the output. This is the default.</li><li><span title=\"TRACKS_AS_LINES\">Tracks as polylines</span>—An output polyline feature class will be created. Only GPX track points will be included in the output.</li></ul></xdoc>",
+        "output_type.domain.POINTS": "Points",
+        "output_type.domain.TRACKS_AS_LINES": "Tracks as polylines",
+        "output_type.title": "Output Type",
+        "title": "GPX To Features"
+    }
+}

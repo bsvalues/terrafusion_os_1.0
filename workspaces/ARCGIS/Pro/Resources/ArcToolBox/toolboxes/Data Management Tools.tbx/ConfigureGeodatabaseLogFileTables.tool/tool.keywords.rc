@@ -1,0 +1,11 @@
+{
+    "set": [
+        "geodatabase",
+        "geodatabase administration",
+        "log file",
+        "logfile",
+        "sdeconfig",
+        "session log file",
+        "shared log file"
+    ]
+}

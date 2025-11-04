@@ -1,0 +1,9 @@
+{
+    "set": [
+        "change",
+        "convert",
+        "export",
+        "import",
+        "rasterize"
+    ]
+}

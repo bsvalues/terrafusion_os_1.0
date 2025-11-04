@@ -1,0 +1,10 @@
+{
+    "map": {
+        "description": "Selects the related points and lines of the input parcel polygons.",
+        "in_parcel_polygon_features.descr": "The input parcel polygon layer.",
+        "in_parcel_polygon_features.title": "Input Parcel Features",
+        "out_lines_feature_layer.title": "Output Lines Feature Class",
+        "out_points_feature_layer.title": "Output Points Feature Class",
+        "title": "Select Parcel Features"
+    }
+}

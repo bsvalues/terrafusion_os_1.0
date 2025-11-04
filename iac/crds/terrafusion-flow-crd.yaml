@@ -1,0 +1,38 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: flows.ai.terrafusion.gov
+spec:
+  group: ai.terrafusion.gov
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                trigger:
+                  type: object
+                nodes:
+                  type: array
+                  items:
+                    type: object
+                edges:
+                  type: array
+                  items:
+                    type: object
+                policies:
+                  type: array
+                  items:
+                    type: object
+                slo:
+                  type: object
+  scope: Namespaced
+  names:
+    plural: flows
+    singular: flow
+    kind: Flow

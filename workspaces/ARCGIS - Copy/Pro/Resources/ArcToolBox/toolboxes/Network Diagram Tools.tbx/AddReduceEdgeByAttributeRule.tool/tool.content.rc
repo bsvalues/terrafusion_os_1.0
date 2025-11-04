@@ -1,0 +1,23 @@
+{
+    "map": {
+        "description": "Adds a diagram rule to automatically reduce diagram edges during diagram building  based on an existing template.\nThis rule can be set up to reduce diagram edges by attributes.",
+        "description.descr": "The description of the rule.",
+        "description.title": "Description",
+        "in_utility_network.descr": "The utility network or trace network containing the diagram template that will be modified.",
+        "in_utility_network.title": "Input Network",
+        "is_active.descr": "<xdoc><p>Specifies whether the rule will be active when generating and updating diagrams based on the specified template.<ul><li>Checked—The added rule will become active during the generation and update of any diagrams based on the input template. This is the default.</li><li>Unchecked—The added rule will not become active during the generation or update of any diagrams based on the input template.</li></ul></p></xdoc>",
+        "is_active.title": "Active",
+        "network_source.descr": "The network edge source class or object table to reduce. All diagram edges related to network lines or edge objects that belong to this source class or object table are candidates for the reduction.",
+        "network_source.title": "Edge Source to Reduce",
+        "out_template_name.title": "Output Diagram Template",
+        "out_utility_network.title": "Output Network",
+        "reconnected_edges_option.descr": "<xdoc><p>Specifies whether the rule will aggregate the edges that are reconnected to the reduction junctions.<ul><li>Unchecked—Any edge connecting a point along the edge that is reduced is reconnected to the reduction junction.</li><li>Checked—Any edge connecting a point along the edge that is reduced is replaced by a reduction edge. This reduction edge is reconnected to the reduction junction. This is the default.</li></ul></p></xdoc>",
+        "reconnected_edges_option.title": "Aggregate reconnected edges",
+        "summary": "<xdoc><p>Adds a diagram rule to automatically reduce diagram edges during diagram building based on an existing template. This rule can be set up to reduce diagram edges by attributes.</p><note type=\"caution\"/><p group=\"note\">This tool is a configuration and administration tool.</p><note type=\"note\"/><p group=\"note\">This tool impacts the consistency of any existing diagrams based on the input diagram template. All of the existing diagrams become inconsistent and open with a consistency warning icon until they are updated.</p></xdoc>",
+        "template_name.descr": "The name of the diagram template that will be modified.",
+        "template_name.title": "Input Diagram Template",
+        "title": "Add Reduce Edge By Attribute Rule",
+        "where_clause.descr": "An SQL expression used to select the subset of network edges among the edges that are candidates for the reduction based on the input template. For more information on SQL syntax, see the SQL reference for query expressions used in ArcGIS help topic.",
+        "where_clause.title": "Expression"
+    }
+}

@@ -1,0 +1,373 @@
+{
+    "type": "FunctionTool",
+    "guid": "{5957c7f4-6cca-4c04-9f86-eb3d27285b89}",
+    "displayname": "$rc:title",
+    "helpcontent": "11000033",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "6"
+    ],
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_features": {
+            "display_order": "0",
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "value_field": {
+            "display_order": "1",
+            "displayname": "$rc:value_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "BigInteger",
+                    "Float",
+                    "Double"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:value_field.descr"
+        },
+        "out_cv_table": {
+            "direction": "out",
+            "displayname": "$rc:out_cv_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "description": "$rc:out_cv_table.descr"
+        },
+        "out_geostat_layer": {
+            "type": "optional",
+            "direction": "out",
+            "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}",
+            "displayname": "$rc:out_geostat_layer.title",
+            "datatype": {
+                "type": "GPGALayer"
+            },
+            "description": "$rc:out_geostat_layer.descr"
+        },
+        "interp_methods": {
+            "type": "optional",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:interp_methods.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SIMPLE_KRIGING",
+                        "code": "$rc:interp_methods.domain.SIMPLE_KRIGING"
+                    },
+                    {
+                        "value": "ORDINARY_KRIGING",
+                        "code": "$rc:interp_methods.domain.ORDINARY_KRIGING"
+                    },
+                    {
+                        "value": "UNIVERSAL_KRIGING",
+                        "code": "$rc:interp_methods.domain.UNIVERSAL_KRIGING"
+                    },
+                    {
+                        "value": "EBK",
+                        "code": "$rc:interp_methods.domain.EBK"
+                    },
+                    {
+                        "value": "KERNEL_INTERPOLATION",
+                        "code": "$rc:interp_methods.domain.KERNEL_INTERPOLATION"
+                    },
+                    {
+                        "value": "IDW",
+                        "code": "$rc:interp_methods.domain.IDW"
+                    },
+                    {
+                        "value": "RBF",
+                        "code": "$rc:interp_methods.domain.RBF"
+                    },
+                    {
+                        "value": "GPI",
+                        "code": "$rc:interp_methods.domain.GPI"
+                    }
+                ]
+            },
+            "value": "SIMPLE_KRIGING;ORDINARY_KRIGING;UNIVERSAL_KRIGING;EBK;KERNEL_INTERPOLATION",
+            "description": "$rc:interp_methods.descr"
+        },
+        "comparison_method": {
+            "type": "optional",
+            "displayname": "$rc:comparison_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SINGLE",
+                        "code": "$rc:comparison_method.domain.SINGLE"
+                    },
+                    {
+                        "value": "SORTING",
+                        "code": "$rc:comparison_method.domain.SORTING"
+                    },
+                    {
+                        "value": "AVERAGE_RANK",
+                        "code": "$rc:comparison_method.domain.AVERAGE_RANK"
+                    }
+                ]
+            },
+            "value": "SINGLE",
+            "description": "$rc:comparison_method.descr"
+        },
+        "criterion": {
+            "type": "optional",
+            "displayname": "$rc:criterion.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ACCURACY",
+                        "code": "$rc:criterion.domain.ACCURACY"
+                    },
+                    {
+                        "value": "BIAS",
+                        "code": "$rc:criterion.domain.BIAS"
+                    },
+                    {
+                        "value": "WORST_CASE",
+                        "code": "$rc:criterion.domain.WORST_CASE"
+                    },
+                    {
+                        "value": "STANDARD_ERROR",
+                        "code": "$rc:criterion.domain.STANDARD_ERROR"
+                    },
+                    {
+                        "value": "PRECISION",
+                        "code": "$rc:criterion.domain.PRECISION"
+                    }
+                ]
+            },
+            "value": "ACCURACY",
+            "description": "$rc:criterion.descr"
+        },
+        "criteria_hierarchy": {
+            "type": "optional",
+            "displayname": "$rc:criteria_hierarchy.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:criteria_hierarchy.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:criteria_hierarchy.dt.title2"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:criteria_hierarchy.dt.title3"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "ACCURACY",
+                                "code": "$rc:criteria_hierarchy.domain.item1.ACCURACY"
+                            },
+                            {
+                                "value": "BIAS",
+                                "code": "$rc:criteria_hierarchy.domain.item1.BIAS"
+                            },
+                            {
+                                "value": "WORST_CASE",
+                                "code": "$rc:criteria_hierarchy.domain.item1.WORST_CASE"
+                            },
+                            {
+                                "value": "STANDARD_ERROR",
+                                "code": "$rc:criteria_hierarchy.domain.item1.STANDARD_ERROR"
+                            },
+                            {
+                                "value": "PRECISION",
+                                "code": "$rc:criteria_hierarchy.domain.item1.PRECISION"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "PERCENT",
+                                "code": "$rc:criteria_hierarchy.domain.item2.PERCENT"
+                            },
+                            {
+                                "value": "ABSOLUTE",
+                                "code": "$rc:criteria_hierarchy.domain.item2.ABSOLUTE"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPRangeDomain",
+                        "min": "0",
+                        "max": "1.7976931348623157e+308"
+                    }
+                ]
+            },
+            "value": "ACCURACY PERCENT #",
+            "description": "$rc:criteria_hierarchy.descr"
+        },
+        "weighted_criteria": {
+            "type": "optional",
+            "displayname": "$rc:weighted_criteria.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:weighted_criteria.dt.title1"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:weighted_criteria.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "ACCURACY",
+                                "code": "$rc:weighted_criteria.domain.item1.ACCURACY"
+                            },
+                            {
+                                "value": "BIAS",
+                                "code": "$rc:weighted_criteria.domain.item1.BIAS"
+                            },
+                            {
+                                "value": "WORST_CASE",
+                                "code": "$rc:weighted_criteria.domain.item1.WORST_CASE"
+                            },
+                            {
+                                "value": "STANDARD_ERROR",
+                                "code": "$rc:weighted_criteria.domain.item1.STANDARD_ERROR"
+                            },
+                            {
+                                "value": "PRECISION",
+                                "code": "$rc:weighted_criteria.domain.item1.PRECISION"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPNumericDomain",
+                        "allowempty": "true"
+                    }
+                ]
+            },
+            "value": "ACCURACY 1",
+            "description": "$rc:weighted_criteria.descr"
+        },
+        "exclusion_criteria": {
+            "type": "optional",
+            "displayname": "$rc:exclusion_criteria.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:exclusion_criteria.dt.title1"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:exclusion_criteria.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "MAX_RMSE",
+                                "code": "$rc:exclusion_criteria.domain.item1.MAX_RMSE"
+                            },
+                            {
+                                "value": "MAX_WORST_CASE",
+                                "code": "$rc:exclusion_criteria.domain.item1.MAX_WORST_CASE"
+                            },
+                            {
+                                "value": "MAX_STD_RMSE",
+                                "code": "$rc:exclusion_criteria.domain.item1.MAX_STD_RMSE"
+                            },
+                            {
+                                "value": "MIN_STD_RMSE",
+                                "code": "$rc:exclusion_criteria.domain.item1.MIN_STD_RMSE"
+                            },
+                            {
+                                "value": "MAX_MEAN_ERROR",
+                                "code": "$rc:exclusion_criteria.domain.item1.MAX_MEAN_ERROR"
+                            },
+                            {
+                                "value": "MIN_MEAN_ERROR",
+                                "code": "$rc:exclusion_criteria.domain.item1.MIN_MEAN_ERROR"
+                            },
+                            {
+                                "value": "MAX_ASE",
+                                "code": "$rc:exclusion_criteria.domain.item1.MAX_ASE"
+                            },
+                            {
+                                "value": "MIN_PERC_ERROR",
+                                "code": "$rc:exclusion_criteria.domain.item1.MIN_PERC_ERROR"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPRangeDomain",
+                        "min": "-1.7976931348623157e+308",
+                        "max": "1.7976931348623157e+308"
+                    }
+                ]
+            },
+            "description": "$rc:exclusion_criteria.descr"
+        }
+    },
+    "environments": [
+        "coincidentPoints",
+        "parallelProcessingFactor"
+    ]
+}

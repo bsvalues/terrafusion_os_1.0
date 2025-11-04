@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TerraFusion | Advanced GIS Platform{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS for map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    
+    <!-- Leaflet measurement plugin CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-measure/dist/leaflet-measure.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    
+    <!-- TerraFusion Brand CSS - HIGH CONTRAST VERSION -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/terrafusion-contrast.css') }}">
+    
+    <!-- Additional CSS -->
+    {% block additionalcss %}{% endblock %}
+</head>
+<body>
+    <!-- Import module_lockup macro -->
+    {% from 'components/module_lockup.html' import module_lockup %}
+    
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: white !important; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}" style="color: black; font-weight: 800;">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-wave-square me-2" style="color: var(--tf-flow-aqua); font-size: 20px;"></i>
+                    {{ module_lockup('Flow') }}
+                </div>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" style="background-color: var(--tf-flow-aqua);">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                {% if session.user %}
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('index') %}active{% endif %}" href="{{ url_for('index') }}" style="color: black; font-weight: 600;">
+                            <i class="fas fa-home me-1" style="color: var(--tf-flow-aqua);"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('file_manager') %}active{% endif %}" href="{{ url_for('file_manager') }}" style="color: black; font-weight: 600;">
+                            <i class="fas fa-file me-1" style="color: var(--tf-flow-aqua);"></i> File Manager
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('map_viewer') %}active{% endif %}" href="{{ url_for('map_viewer') }}" style="color: black; font-weight: 600;">
+                            <i class="fas fa-map me-1" style="color: var(--tf-map-green);"></i> Map Viewer
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('search_page') %}active{% endif %}" href="{{ url_for('search_page') }}" style="color: black; font-weight: 600;">
+                            <i class="fas fa-search me-1" style="color: var(--tf-insight-violet);"></i> Search
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('mcp_dashboard') %}active{% endif %}" href="{{ url_for('mcp_dashboard') }}" style="color: black; font-weight: 600;">
+                            <i class="fas fa-microchip me-1" style="color: var(--tf-insight-violet);"></i> MCP Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('power_query') %}active{% endif %}" href="{{ url_for('power_query') }}" style="color: black; font-weight: 600;">
+                            <i class="fas fa-database me-1" style="color: var(--tf-sketch-orange);"></i> Power Query
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {% if '/sync' in request.path or '/verification' in request.path or '/data-quality' in request.path or '/visualizations/anomaly-map' in request.path %}active{% endif %}" href="#" id="syncDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: black; font-weight: 600;">
+                            <i class="fas fa-sync me-1" style="color: var(--tf-flow-aqua);"></i> Services
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="syncDropdown">
+                            <li><a class="dropdown-item" href="/sync/" style="color: black; font-weight: 600;">
+                                <i class="fas fa-sync me-1" style="color: var(--tf-flow-aqua);"></i> Sync Service
+                            </a></li>
+                            <li><a class="dropdown-item" href="/verification/dashboard" style="color: black; font-weight: 600;">
+                                <i class="fas fa-check-circle me-1" style="color: var(--tf-flow-aqua);"></i> Verification
+                            </a></li>
+                            <li><a class="dropdown-item" href="/data-quality/dashboard" style="color: black; font-weight: 600;">
+                                <i class="fas fa-shield-alt me-1" style="color: var(--tf-insight-violet);"></i> Data Quality
+                            </a></li>
+                            <li><a class="dropdown-item" href="/visualizations/anomaly-map" style="color: black; font-weight: 600;">
+                                <i class="fas fa-map-marked-alt me-1" style="color: var(--tf-map-green);"></i> Anomaly Map
+                            </a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('api_tester') %}active{% endif %}" href="{{ url_for('api_tester') }}" style="color: black; font-weight: 600;">
+                            <i class="fas fa-code me-1" style="color: var(--tf-sketch-orange);"></i> API Tester
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: black; font-weight: 600;">
+                            <i class="fas fa-user-circle me-1" style="color: var(--tf-flow-aqua);"></i>
+                            {{ session.user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('user_profile') }}" style="color: black; font-weight: 600;">
+                                <i class="fas fa-id-card me-1"></i> User Profile
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('logout') }}" style="color: black; font-weight: 600;">
+                                <i class="fas fa-sign-out-alt me-1"></i> Logout
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mt-3">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main content -->
+    <main class="main-content py-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" style="background-color: white; border-top: 1px solid var(--tf-gray-200); padding: 15px 0;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="fas fa-wave-square me-2" style="color: var(--tf-flow-aqua); font-size: 20px;"></i>
+                        {{ module_lockup('Flow') }}
+                    </div>
+                    <p class="small mb-0" style="color: black; font-weight: 600;">Data Integration & ETL Pipeline</p>
+                </div>
+                <div class="col-md-4 text-md-center">
+                    <p class="mb-0" style="color: black; font-weight: 700;">
+                        <strong>TerraFusion</strong> Platform
+                    </p>
+                    <p class="small mb-0" style="color: black; font-weight: 600;">&copy; {{ now.year }} TerraFusion Technologies</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <p class="mb-0">
+                        <a href="{{ url_for('index') }}" class="text-decoration-none" style="color: var(--tf-flow-aqua); font-weight: 700;">Home</a> |
+                        <a href="/sync/" class="text-decoration-none" style="color: var(--tf-flow-aqua); font-weight: 700;">Sync</a> |
+                        <a href="/data-quality/dashboard" class="text-decoration-none" style="color: var(--tf-flow-aqua); font-weight: 700;">Quality</a>
+                    </p>
+                    <p class="small mb-0" style="color: black; font-weight: 600;">Version 2.1.0</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Leaflet JS for maps -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Leaflet plugins -->
+    <script src="https://unpkg.com/leaflet-measure/dist/leaflet-measure.js"></script>
+    
+    <!-- Custom scripts for each page -->
+    {% block scripts %}{% endblock %}
+</body>
+</html>

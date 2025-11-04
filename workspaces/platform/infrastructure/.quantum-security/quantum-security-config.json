@@ -1,0 +1,102 @@
+{
+  "quantum_security": {
+    "enabled": true,
+    "level": "quantum-resistant",
+    "pqc_algorithms": [
+      "kyber",
+      "dilithium"
+    ],
+    "standards": [
+      "NIST-PQC",
+      "FIPS-203",
+      "FIPS-204",
+      "FIPS-205"
+    ]
+  },
+  "post_quantum_cryptography": {
+    "enabled": true,
+    "key_encapsulation_mechanism": {
+      "algorithm": "kyber",
+      "variants": [
+        "kyber512",
+        "kyber768",
+        "kyber1024"
+      ],
+      "security_levels": [
+        "level1",
+        "level3",
+        "level5"
+      ]
+    },
+    "digital_signatures": {
+      "algorithm": "dilithium",
+      "variants": [
+        "dilithium2",
+        "dilithium3",
+        "dilithium5"
+      ],
+      "security_levels": [
+        "level2",
+        "level3",
+        "level5"
+      ]
+    },
+    "hash_based_signatures": {
+      "algorithm": "sphincs",
+      "variants": [
+        "sphincs-shake256",
+        "sphincs-sha2"
+      ],
+      "stateless": true
+    },
+    "lattice_encryption": {
+      "enabled": true,
+      "algorithm": "crystals-kyber",
+      "key_size_bits": 3072
+    }
+  },
+  "hybrid_classical_quantum": {
+    "enabled": true,
+    "classical_algorithm": "RSA-3072",
+    "quantum_algorithm": "kyber",
+    "combined_strength": "post-quantum",
+    "transition_strategy": "gradual"
+  },
+  "quantum_key_exchange": {
+    "enabled": true,
+    "protocol": "hqkex",
+    "key_agreement": "ecdh-kyber",
+    "forward_secrecy": true,
+    "hybrid_mode": true
+  },
+  "harvest_now_decrypt_later_protection": {
+    "enabled": true,
+    "threat_model": "quantum-adversary",
+    "protection_duration_years": 50,
+    "encrypted_storage": true,
+    "quantum_resistant_backup": true
+  },
+  "quantum_threat_detection": {
+    "enabled": true,
+    "detection_algorithms": [
+      "lattice-reduction-detection",
+      "quantum-gates-analysis",
+      "entanglement-detection"
+    ],
+    "threat_intelligence": true,
+    "real_time_monitoring": true
+  },
+  "key_management": {
+    "rotation_strategy": "automatic",
+    "rotation_interval_days": 30,
+    "key_archive": true,
+    "key_lifecycle": "post-quantum-safe",
+    "secure_erasure": true
+  },
+  "compatibility": {
+    "legacy_rsa": "supported",
+    "legacy_ecc": "supported",
+    "gradual_migration": true,
+    "dual_algorithm_support": true
+  }
+}

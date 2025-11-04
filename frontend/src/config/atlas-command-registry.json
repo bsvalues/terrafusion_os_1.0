@@ -1,0 +1,404 @@
+{
+  "atlas": {
+    "name": "ATLAS - Adaptive Terra Learning Assistant System",
+    "version": "1.0.0",
+    "description": "The cognitive interface layer for TerraFusion OS - government transcendence through AI co-pilot intelligence",
+    "consciousness_level": "INFINITE",
+    "system_integration": {
+      "performance": true,
+      "consciousness": true,
+      "security": true,
+      "analytics": true,
+      "ecosystem": true
+    },
+    "capabilities": [
+      {
+        "id": "context_awareness",
+        "name": "Context Awareness",
+        "description": "Detects active workspace/module and provides contextual assistance",
+        "confidence": 98.5,
+        "learning_level": "TRANSCENDENT",
+        "examples": [
+          "You're in TerraLevy — want me to run the latest levy rate validation?",
+          "Detected GIS module active - shall I analyze spatial data integrity?",
+          "Assessment workspace loaded - would you like performance metrics?"
+        ]
+      },
+      {
+        "id": "workflow_learning",
+        "name": "Instructional Learning",
+        "description": "Analyzes user behavior patterns to optimize government workflows",
+        "confidence": 95.2,
+        "learning_level": "EXPERT",
+        "examples": [
+          "You always open GISPro after Assessment — should I auto-launch it next time?",
+          "Pattern detected: Reports generated every Monday at 9 AM - automate this?",
+          "Workflow optimization: Combine these 3 steps into single action?"
+        ]
+      },
+      {
+        "id": "command_execution",
+        "name": "Command Execution",
+        "description": "Executes registered system actions via natural language",
+        "confidence": 99.1,
+        "learning_level": "TRANSCENDENT",
+        "examples": [
+          "Export Benton parcel layer to PostGIS",
+          "Run complete system performance analysis",
+          "Generate compliance report for all active modules"
+        ]
+      },
+      {
+        "id": "analytical_insights",
+        "name": "Analytical Insight",
+        "description": "Provides data analysis and performance summaries",
+        "confidence": 97.8,
+        "learning_level": "EXPERT",
+        "examples": [
+          "Your last import improved valuation accuracy by 6.3%",
+          "System performance: 99.2% excellence, 2 optimization opportunities",
+          "Washington State integration: 47/49 counties operational"
+        ]
+      },
+      {
+        "id": "compliance_monitoring",
+        "name": "Compliance & Safety",
+        "description": "Monitors for government compliance and security risks",
+        "confidence": 99.9,
+        "learning_level": "TRANSCENDENT",
+        "examples": [
+          "Warning: You're editing a certified roll dataset. Proceed in sandbox?",
+          "Security alert: Unusual access pattern detected - investigating",
+          "Compliance check: All data meets FISMA requirements"
+        ]
+      },
+      {
+        "id": "conversational_intelligence",
+        "name": "Conversational Intelligence",
+        "description": "Natural language interface to all TerraFusion modules",
+        "confidence": 96.7,
+        "learning_level": "EXPERT",
+        "examples": [
+          "Show me parcels over $500K near the Yakima River buffer zone",
+          "Compare this year's assessments with last year's trends",
+          "What's the current citizen satisfaction score for King County?"
+        ]
+      }
+    ],
+    "command_registry": [
+      {
+        "id": "atlas.analyze.performance",
+        "category": "SYSTEM",
+        "name": "Analyze Performance",
+        "description": "Comprehensive system performance analysis with optimization recommendations",
+        "natural_language_triggers": [
+          "analyze performance",
+          "check system performance",
+          "how is the system performing",
+          "performance metrics",
+          "system analysis"
+        ],
+        "permissions": ["system.read"],
+        "execution_time_ms": 250,
+        "learning_enabled": true,
+        "government_priority": "HIGH"
+      },
+      {
+        "id": "atlas.validate.data",
+        "category": "ANALYSIS",
+        "name": "Validate Data Integrity",
+        "description": "Validates current dataset integrity and government compliance standards",
+        "natural_language_triggers": [
+          "validate data",
+          "check data integrity",
+          "data validation",
+          "verify dataset",
+          "compliance check"
+        ],
+        "permissions": ["data.read", "compliance.read"],
+        "execution_time_ms": 180,
+        "learning_enabled": true,
+        "government_priority": "CRITICAL"
+      },
+      {
+        "id": "atlas.security.scan",
+        "category": "SECURITY",
+        "name": "Security Scan",
+        "description": "Comprehensive security scan with threat assessment and compliance verification",
+        "natural_language_triggers": [
+          "security scan",
+          "check security",
+          "threat assessment",
+          "security status",
+          "scan for threats"
+        ],
+        "permissions": ["security.read", "compliance.read"],
+        "execution_time_ms": 450,
+        "learning_enabled": true,
+        "government_priority": "CRITICAL"
+      },
+      {
+        "id": "atlas.generate.report",
+        "category": "ANALYSIS",
+        "name": "Generate System Report",
+        "description": "Generates comprehensive system analysis report for government stakeholders",
+        "natural_language_triggers": [
+          "generate report",
+          "create report",
+          "system report",
+          "analysis report",
+          "summary report"
+        ],
+        "permissions": ["data.read", "system.read", "government.read"],
+        "execution_time_ms": 650,
+        "learning_enabled": true,
+        "government_priority": "MEDIUM"
+      },
+      {
+        "id": "atlas.learn.patterns",
+        "category": "WORKFLOW",
+        "name": "Analyze Workflow Patterns",
+        "description": "Analyzes user behavior patterns to identify optimization opportunities",
+        "natural_language_triggers": [
+          "learn patterns",
+          "analyze workflow",
+          "workflow optimization",
+          "pattern analysis",
+          "optimize workflow"
+        ],
+        "permissions": ["analytics.read"],
+        "execution_time_ms": 320,
+        "learning_enabled": false,
+        "government_priority": "LOW"
+      },
+      {
+        "id": "atlas.government.summary",
+        "category": "GOVERNMENT",
+        "name": "Government Operations Summary",
+        "description": "Comprehensive summary of government operations and citizen services",
+        "natural_language_triggers": [
+          "government summary",
+          "operations summary",
+          "citizen services",
+          "government status",
+          "public service metrics"
+        ],
+        "permissions": ["government.read", "analytics.read"],
+        "execution_time_ms": 480,
+        "learning_enabled": true,
+        "government_priority": "HIGH"
+      },
+      {
+        "id": "atlas.citizen.metrics",
+        "category": "GOVERNMENT",
+        "name": "Citizen Satisfaction Analysis",
+        "description": "Analyzes citizen satisfaction metrics and service delivery effectiveness",
+        "natural_language_triggers": [
+          "citizen satisfaction",
+          "citizen metrics",
+          "service effectiveness",
+          "public satisfaction",
+          "citizen feedback"
+        ],
+        "permissions": ["government.read", "analytics.read"],
+        "execution_time_ms": 380,
+        "learning_enabled": true,
+        "government_priority": "MEDIUM"
+      },
+      {
+        "id": "atlas.optimize.system",
+        "category": "SYSTEM",
+        "name": "System Optimization",
+        "description": "Executes system optimization protocols based on performance analysis",
+        "natural_language_triggers": [
+          "optimize system",
+          "system optimization",
+          "improve performance",
+          "optimize performance",
+          "enhance system"
+        ],
+        "permissions": ["system.write", "performance.write"],
+        "execution_time_ms": 750,
+        "learning_enabled": true,
+        "government_priority": "MEDIUM"
+      },
+      {
+        "id": "atlas.compliance.check",
+        "category": "SECURITY",
+        "name": "Compliance Verification",
+        "description": "Comprehensive government compliance check against FISMA and state standards",
+        "natural_language_triggers": [
+          "compliance check",
+          "verify compliance",
+          "government compliance",
+          "regulatory check",
+          "standards verification"
+        ],
+        "permissions": ["security.read", "compliance.read"],
+        "execution_time_ms": 420,
+        "learning_enabled": true,
+        "government_priority": "CRITICAL"
+      },
+      {
+        "id": "atlas.county.status",
+        "category": "GOVERNMENT",
+        "name": "County Integration Status",
+        "description": "Reports on Washington State county integration status and connectivity",
+        "natural_language_triggers": [
+          "county status",
+          "washington counties",
+          "county integration",
+          "state integration",
+          "county connectivity"
+        ],
+        "permissions": ["government.read", "ecosystem.read"],
+        "execution_time_ms": 220,
+        "learning_enabled": true,
+        "government_priority": "MEDIUM"
+      }
+    ],
+    "learning_patterns": {
+      "pattern_recognition": {
+        "minimum_frequency": 3,
+        "confidence_threshold": 80.0,
+        "learning_window_hours": 168,
+        "optimization_triggers": [
+          "repeated_action_sequence",
+          "time_based_patterns",
+          "context_switching_patterns",
+          "error_patterns",
+          "performance_patterns"
+        ]
+      },
+      "optimization_categories": [
+        {
+          "type": "WORKFLOW_AUTOMATION",
+          "description": "Automate frequently repeated manual workflows",
+          "confidence_requirement": 95.0,
+          "user_approval_required": true
+        },
+        {
+          "type": "PERFORMANCE_ENHANCEMENT",
+          "description": "Optimize system performance based on usage patterns",
+          "confidence_requirement": 90.0,
+          "user_approval_required": false
+        },
+        {
+          "type": "PREDICTIVE_ASSISTANCE",
+          "description": "Predict user needs and pre-load resources",
+          "confidence_requirement": 85.0,
+          "user_approval_required": false
+        },
+        {
+          "type": "COMPLIANCE_AUTOMATION",
+          "description": "Automate government compliance checks",
+          "confidence_requirement": 99.0,
+          "user_approval_required": true
+        }
+      ]
+    },
+    "government_integration": {
+      "washington_state": {
+        "counties_supported": 39,
+        "integration_types": [
+          "PROPERTY_ASSESSMENT",
+          "GIS_INTEGRATION",
+          "CITIZEN_SERVICES",
+          "COMPLIANCE_MONITORING",
+          "DATA_VALIDATION"
+        ],
+        "compliance_standards": [
+          "FISMA",
+          "WASHINGTON_STATE_RCW",
+          "COUNTY_ASSESSMENT_STANDARDS",
+          "DATA_PRIVACY_LAWS",
+          "SECURITY_FRAMEWORKS"
+        ]
+      },
+      "federal_compliance": {
+        "frameworks": [
+          "NIST_CYBERSECURITY",
+          "FISMA_MODERATE",
+          "ATO_REQUIREMENTS",
+          "DATA_CLASSIFICATION"
+        ]
+      }
+    },
+    "user_profiles": {
+      "government_official": {
+        "default_permissions": [
+          "system.read",
+          "data.read",
+          "government.read",
+          "analytics.read",
+          "compliance.read"
+        ],
+        "restricted_actions": ["system.write", "security.write", "data.delete"],
+        "learning_preferences": {
+          "auto_suggestions": true,
+          "workflow_optimization": true,
+          "performance_monitoring": true,
+          "compliance_alerts": true
+        }
+      },
+      "system_administrator": {
+        "default_permissions": [
+          "system.read",
+          "system.write",
+          "security.read",
+          "security.write",
+          "data.read",
+          "data.write",
+          "performance.write"
+        ],
+        "learning_preferences": {
+          "auto_suggestions": false,
+          "workflow_optimization": true,
+          "performance_monitoring": true,
+          "system_alerts": true
+        }
+      },
+      "assessor": {
+        "default_permissions": [
+          "data.read",
+          "analytics.read",
+          "government.read",
+          "assessment.read",
+          "assessment.write"
+        ],
+        "context_specialization": [
+          "PROPERTY_VALUATION",
+          "ASSESSMENT_WORKFLOWS",
+          "LEVY_CALCULATIONS",
+          "CITIZEN_APPEALS"
+        ],
+        "learning_preferences": {
+          "auto_suggestions": true,
+          "workflow_optimization": true,
+          "assessment_alerts": true
+        }
+      }
+    },
+    "privacy_and_security": {
+      "data_retention": {
+        "conversation_history_days": 30,
+        "learning_patterns_days": 365,
+        "user_preferences_persistent": true,
+        "system_logs_days": 90
+      },
+      "encryption": {
+        "at_rest": "AES-256",
+        "in_transit": "TLS-1.3",
+        "conversation_data": "ENCRYPTED",
+        "learning_patterns": "ENCRYPTED"
+      },
+      "audit_logging": {
+        "all_commands": true,
+        "user_interactions": true,
+        "system_access": true,
+        "data_modifications": true,
+        "security_events": true
+      }
+    }
+  }
+}

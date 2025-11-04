@@ -1,0 +1,19 @@
+{
+    "map": {
+        "description": "Adds file attachments to the records of a geodatabase feature class or table. The attachments are stored in the geodatabase in a separate attachment table that maintains linkage to the target dataset. Attachments are added to the target dataset using a match table that indicates for each input record (or an attribute group of records) the path to a file to add as an attachment to that record.",
+        "in_dataset.descr": "<xdoc><p>The geodatabase table or feature class where attachments will be added. Attachments are not added directly to this table, but to a related attachment table that maintains linkage to the input dataset.</p><p>The dataset must be stored in a version 10.0 or later geodatabase, and the table must have attachments enabled.</p></xdoc>",
+        "in_dataset.title": "Input Dataset",
+        "in_join_field.descr": "<xdoc><p>A field from the <span class=\"esri_uicontrol\">Input Dataset</span> parameter value that has matching values in the <span class=\"esri_uicontrol\">Match Join Field</span> parameter value. Records with matching values will have attachments added. This field can be an Object ID field or any other identifying attribute.</p></xdoc>",
+        "in_join_field.title": "Input Join Field",
+        "in_match_join_field.descr": "<xdoc><p>A field from the <span class=\"esri_uicontrol\">Match Table</span> parameter value that indicates which records in the <span class=\"esri_uicontrol\">Input Dataset</span> parameter value will have specified attachments added.</p></xdoc>",
+        "in_match_join_field.title": "Match Join Field",
+        "in_match_path_field.descr": "<xdoc><p>A field from the <span class=\"esri_uicontrol\">Match Table</span> parameter value that contains paths to the attachments to add to the records of the <span class=\"esri_uicontrol\">Input Dataset</span> parameter value.</p><p>A field from the in_match_table parameter value that contains paths to the attachments to add to the records of the in_dataset parameter value.</p></xdoc>",
+        "in_match_path_field.title": "Match Path Field",
+        "in_match_table.descr": "A table that identifies which input records will have attachments added and the paths to those attachments.",
+        "in_match_table.title": "Match Table",
+        "in_working_folder.descr": "<xdoc><p>A folder or workspace where attachment files are centralized. By specifying a working folder, the paths in the <span class=\"esri_uicontrol\">Match Path Field</span> parameter value can be the short names of files relative to the working folder.</p><p>For example, if loading attachments with paths such as C:\\MyPictures\\image1.jpg and C:\\MyPictures\\image2.jpg, use a parameter value of C:\\MyPictures. Then the paths in the <span class=\"esri_uicontrol\">Match Path Field</span> parameter value can be the short names such as image1.jpg and image2.jpg instead of the full paths.</p></xdoc>",
+        "in_working_folder.title": "Working Folder",
+        "out_dataset.title": "Updated Input Dataset",
+        "title": "Add Attachments"
+    }
+}

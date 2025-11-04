@@ -1,0 +1,329 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "51040001",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "spark"
+    ],
+    "params": {
+        "input_layer": {
+            "displayname": "$rc:input_layer.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "featuretype": [
+                    "Simple"
+                ],
+                "portaltype": [
+                    "DataStoreCatalogLayer"
+                ]
+            },
+            "description": "$rc:input_layer.descr"
+        },
+        "output_name": {
+            "displayname": "$rc:output_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:output_name.descr"
+        },
+        "method": {
+            "displayname": "$rc:method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PLANAR",
+                        "code": "$rc:method.domain.PLANAR"
+                    },
+                    {
+                        "value": "GEODESIC",
+                        "code": "$rc:method.domain.GEODESIC"
+                    }
+                ]
+            },
+            "value": "GEODESIC",
+            "description": "$rc:method.descr"
+        },
+        "buffer_type": {
+            "displayname": "$rc:buffer_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DISTANCE",
+                        "code": "$rc:buffer_type.domain.DISTANCE"
+                    },
+                    {
+                        "value": "FIELD",
+                        "code": "$rc:buffer_type.domain.FIELD"
+                    },
+                    {
+                        "value": "EXPRESSION",
+                        "code": "$rc:buffer_type.domain.EXPRESSION"
+                    }
+                ]
+            },
+            "value": "DISTANCE",
+            "description": "$rc:buffer_type.descr"
+        },
+        "buffer_field": {
+            "type": "optional",
+            "displayname": "$rc:buffer_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "input_layer"
+            ],
+            "description": "$rc:buffer_field.descr"
+        },
+        "buffer_distance": {
+            "type": "optional",
+            "displayname": "$rc:buffer_distance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPUnitDomain",
+                "items": [
+                    "Feet",
+                    "Yards",
+                    "Miles",
+                    "NauticalMiles",
+                    "Meters",
+                    "Kilometers",
+                    "FeetInt",
+                    "YardsInt",
+                    "MilesInt",
+                    "NauticalMilesInt"
+                ]
+            },
+            "description": "$rc:buffer_distance.descr"
+        },
+        "buffer_expression": {
+            "type": "optional",
+            "displayname": "$rc:buffer_expression.title",
+            "datatype": {
+                "type": "GPCalculatorExpression"
+            },
+            "depends": [
+                "input_layer"
+            ],
+            "description": "$rc:buffer_expression.descr"
+        },
+        "dissolve_option": {
+            "type": "optional",
+            "displayname": "$rc:dissolve_option.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NONE",
+                        "code": "$rc:dissolve_option.domain.NONE"
+                    },
+                    {
+                        "value": "ALL",
+                        "code": "$rc:dissolve_option.domain.ALL"
+                    },
+                    {
+                        "value": "LIST",
+                        "code": "$rc:dissolve_option.domain.LIST"
+                    }
+                ]
+            },
+            "value": "NONE",
+            "description": "$rc:dissolve_option.descr"
+        },
+        "dissolve_fields": {
+            "type": "optional",
+            "displayname": "$rc:dissolve_fields.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Date"
+                ]
+            },
+            "depends": [
+                "input_layer"
+            ],
+            "description": "$rc:dissolve_fields.descr"
+        },
+        "summary_fields": {
+            "type": "optional",
+            "displayname": "$rc:summary_fields.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:summary_fields.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:summary_fields.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Short",
+                            "Long",
+                            "Float",
+                            "Double",
+                            "Text",
+                            "Date"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "COUNT",
+                                "code": "$rc:summary_fields.domain.item2.COUNT"
+                            },
+                            {
+                                "value": "SUM",
+                                "code": "$rc:summary_fields.domain.item2.SUM"
+                            },
+                            {
+                                "value": "MEAN",
+                                "code": "$rc:summary_fields.domain.item2.MEAN"
+                            },
+                            {
+                                "value": "MIN",
+                                "code": "$rc:summary_fields.domain.item2.MIN"
+                            },
+                            {
+                                "value": "MAX",
+                                "code": "$rc:summary_fields.domain.item2.MAX"
+                            },
+                            {
+                                "value": "STDDEV",
+                                "code": "$rc:summary_fields.domain.item2.STDDEV"
+                            },
+                            {
+                                "value": "VAR",
+                                "code": "$rc:summary_fields.domain.item2.VAR"
+                            },
+                            {
+                                "value": "RANGE",
+                                "code": "$rc:summary_fields.domain.item2.RANGE"
+                            },
+                            {
+                                "value": "ANY",
+                                "code": "$rc:summary_fields.domain.item2.ANY"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "input_layer"
+            ],
+            "description": "$rc:summary_fields.descr"
+        },
+        "multipart": {
+            "type": "optional",
+            "displayname": "$rc:multipart.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "MULTI_PART"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "SINGLE_PART"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:multipart.descr"
+        },
+        "output": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "data_store": {
+            "type": "optional",
+            "displayname": "$rc:data_store.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SPATIOTEMPORAL_DATA_STORE",
+                        "code": "$rc:data_store.domain.SPATIOTEMPORAL_DATA_STORE"
+                    },
+                    {
+                        "value": "RELATIONAL_DATA_STORE",
+                        "code": "$rc:data_store.domain.RELATIONAL_DATA_STORE"
+                    }
+                ]
+            },
+            "value": "SPATIOTEMPORAL_DATA_STORE",
+            "description": "$rc:data_store.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "outputCoordinateSystem",
+        "workspace"
+    ]
+}

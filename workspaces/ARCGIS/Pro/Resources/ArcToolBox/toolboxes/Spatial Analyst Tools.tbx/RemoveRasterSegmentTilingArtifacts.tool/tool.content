@@ -1,0 +1,90 @@
+{
+    "type": "FunctionTool",
+    "guid": "{9ad68eb7-7b11-4fc9-a4f9-463acfd70c31}",
+    "displayname": "$rc:title",
+    "helpcontent": "8200012",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10",
+        "86"
+    ],
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_segmented_raster": {
+            "display_order": "0",
+            "displayname": "$rc:in_segmented_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "DEMosaicDataset"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "description": "$rc:in_segmented_raster.descr"
+        },
+        "out_raster_dataset": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_raster_dataset.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_raster_dataset.descr"
+        },
+        "tileSizeX": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:tilesizex.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "512",
+            "description": "$rc:tilesizex.descr"
+        },
+        "tileSizeY": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:tilesizey.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "512",
+            "description": "$rc:tilesizey.descr"
+        }
+    },
+    "environments": [
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "nodata",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "pyramid",
+        "rasterStatistics",
+        "resamplingMethod",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

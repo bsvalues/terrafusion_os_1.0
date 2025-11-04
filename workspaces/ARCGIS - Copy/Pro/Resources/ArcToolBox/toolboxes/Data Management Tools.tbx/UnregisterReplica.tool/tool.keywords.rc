@@ -1,0 +1,9 @@
+{
+    "set": [
+        "delete replica",
+        "gdb",
+        "sde",
+        "unregister",
+        "distributed geodatabase"
+    ]
+}

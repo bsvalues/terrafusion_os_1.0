@@ -1,0 +1,359 @@
+{
+    "type": "FunctionTool",
+    "guid": "{aec4eca0-847a-47bd-92f8-32db7767ed7a}",
+    "displayname": "$rc:title",
+    "helpcontent": "5090007",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9"
+    ],
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "in_las_dataset": {
+            "display_order": "0",
+            "displayname": "$rc:in_las_dataset.title",
+            "datatype": {
+                "type": "GPLasDatasetLayer"
+            },
+            "description": "$rc:in_las_dataset.descr"
+        },
+        "feature_class": {
+            "display_order": "1",
+            "displayname": "$rc:feature_class.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPFeatureLayer",
+                        "displayname": "$rc:feature_class.dt.title1"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:feature_class.dt.title2"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:feature_class.dt.title3"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:feature_class.dt.title4"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:feature_class.dt.title5"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:feature_class.dt.title6"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:feature_class.dt.title7"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Point",
+                            "Polyline",
+                            "Polygon"
+                        ]
+                    },
+                    {
+                        "type": "GPNumericDomain",
+                        "allowempty": "false",
+                        "low": {
+                            "inclusive": "true",
+                            "val": "-1.7976931348623157e+308"
+                        },
+                        "high": {
+                            "allow": "true",
+                            "val": "1.7976931348623157e+308"
+                        }
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "NO_CHANGE",
+                                "code": "$rc:feature_class.domain.item3.NO_CHANGE"
+                            },
+                            {
+                                "value": "0",
+                                "code": "$rc:feature_class.domain.item3.0"
+                            },
+                            {
+                                "value": "1",
+                                "code": "$rc:feature_class.domain.item3.1"
+                            },
+                            {
+                                "value": "2",
+                                "code": "$rc:feature_class.domain.item3.2"
+                            },
+                            {
+                                "value": "3",
+                                "code": "$rc:feature_class.domain.item3.3"
+                            },
+                            {
+                                "value": "4",
+                                "code": "$rc:feature_class.domain.item3.4"
+                            },
+                            {
+                                "value": "5",
+                                "code": "$rc:feature_class.domain.item3.5"
+                            },
+                            {
+                                "value": "6",
+                                "code": "$rc:feature_class.domain.item3.6"
+                            },
+                            {
+                                "value": "7",
+                                "code": "$rc:feature_class.domain.item3.7"
+                            },
+                            {
+                                "value": "8",
+                                "code": "$rc:feature_class.domain.item3.8"
+                            },
+                            {
+                                "value": "9",
+                                "code": "$rc:feature_class.domain.item3.9"
+                            },
+                            {
+                                "value": "10",
+                                "code": "$rc:feature_class.domain.item3.10"
+                            },
+                            {
+                                "value": "11",
+                                "code": "$rc:feature_class.domain.item3.11"
+                            },
+                            {
+                                "value": "12",
+                                "code": "$rc:feature_class.domain.item3.12"
+                            },
+                            {
+                                "value": "13",
+                                "code": "$rc:feature_class.domain.item3.13"
+                            },
+                            {
+                                "value": "14",
+                                "code": "$rc:feature_class.domain.item3.14"
+                            },
+                            {
+                                "value": "15",
+                                "code": "$rc:feature_class.domain.item3.15"
+                            },
+                            {
+                                "value": "16",
+                                "code": "$rc:feature_class.domain.item3.16"
+                            },
+                            {
+                                "value": "17",
+                                "code": "$rc:feature_class.domain.item3.17"
+                            },
+                            {
+                                "value": "18",
+                                "code": "$rc:feature_class.domain.item3.18"
+                            },
+                            {
+                                "value": "19",
+                                "code": "$rc:feature_class.domain.item3.19"
+                            },
+                            {
+                                "value": "20",
+                                "code": "$rc:feature_class.domain.item3.20"
+                            },
+                            {
+                                "value": "21",
+                                "code": "$rc:feature_class.domain.item3.21"
+                            },
+                            {
+                                "value": "22",
+                                "code": "$rc:feature_class.domain.item3.22"
+                            },
+                            {
+                                "value": "23",
+                                "code": "$rc:feature_class.domain.item3.23"
+                            },
+                            {
+                                "value": "24",
+                                "code": "$rc:feature_class.domain.item3.24"
+                            },
+                            {
+                                "value": "25",
+                                "code": "$rc:feature_class.domain.item3.25"
+                            },
+                            {
+                                "value": "26",
+                                "code": "$rc:feature_class.domain.item3.26"
+                            },
+                            {
+                                "value": "27",
+                                "code": "$rc:feature_class.domain.item3.27"
+                            },
+                            {
+                                "value": "28",
+                                "code": "$rc:feature_class.domain.item3.28"
+                            },
+                            {
+                                "value": "29",
+                                "code": "$rc:feature_class.domain.item3.29"
+                            },
+                            {
+                                "value": "30",
+                                "code": "$rc:feature_class.domain.item3.30"
+                            },
+                            {
+                                "value": "31",
+                                "code": "$rc:feature_class.domain.item3.31"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "NO_CHANGE",
+                                "code": "$rc:feature_class.domain.item4.NO_CHANGE"
+                            },
+                            {
+                                "value": "SET",
+                                "code": "$rc:feature_class.domain.item4.SET"
+                            },
+                            {
+                                "value": "CLEAR",
+                                "code": "$rc:feature_class.domain.item4.CLEAR"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "NO_CHANGE",
+                                "code": "$rc:feature_class.domain.item5.NO_CHANGE"
+                            },
+                            {
+                                "value": "SET",
+                                "code": "$rc:feature_class.domain.item5.SET"
+                            },
+                            {
+                                "value": "CLEAR",
+                                "code": "$rc:feature_class.domain.item5.CLEAR"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "NO_CHANGE",
+                                "code": "$rc:feature_class.domain.item6.NO_CHANGE"
+                            },
+                            {
+                                "value": "SET",
+                                "code": "$rc:feature_class.domain.item6.SET"
+                            },
+                            {
+                                "value": "CLEAR",
+                                "code": "$rc:feature_class.domain.item6.CLEAR"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "NO_CHANGE",
+                                "code": "$rc:feature_class.domain.item7.NO_CHANGE"
+                            },
+                            {
+                                "value": "SET",
+                                "code": "$rc:feature_class.domain.item7.SET"
+                            },
+                            {
+                                "value": "CLEAR",
+                                "code": "$rc:feature_class.domain.item7.CLEAR"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:feature_class.descr"
+        },
+        "compute_stats": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:compute_stats.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "COMPUTE_STATS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_COMPUTE_STATS"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:compute_stats.descr"
+        },
+        "derived_las_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "4",
+            "displayname": "$rc:derived_las_dataset.title",
+            "datatype": {
+                "type": "GPLasDatasetLayer"
+            },
+            "depends": [
+                "in_las_dataset"
+            ]
+        },
+        "update_pyramid": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:update_pyramid.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "UPDATE_PYRAMID"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_UPDATE_PYRAMID"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:update_pyramid.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "geographicTransformations",
+        "workspace"
+    ]
+}

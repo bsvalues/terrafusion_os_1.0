@@ -1,0 +1,1003 @@
+{% extends "new_unified_base.html" %}
+
+{% block title %}AI Advanced Analytics{% endblock %}
+
+{% block styles %}
+<style>
+    .dashboard-stat {
+        transition: transform 0.2s;
+    }
+    .dashboard-stat:hover {
+        transform: translateY(-4px);
+    }
+    .chart-container {
+        height: 300px;
+        position: relative;
+    }
+    .mini-chart {
+        height: 120px;
+    }
+    .trend-up {
+        color: #10b981;
+    }
+    .trend-down {
+        color: #ef4444;
+    }
+    .metric-highlight {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    .insights-card {
+        border-left: 4px solid transparent;
+    }
+    .insights-card.positive {
+        border-left-color: #10b981;
+    }
+    .insights-card.negative {
+        border-left-color: #ef4444;
+    }
+    .insights-card.neutral {
+        border-left-color: #6b7280;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold mb-2">AI Advanced Analytics</h1>
+        <p class="text-gray-600 dark:text-gray-300">Detailed analytics on AI system performance and usage patterns.</p>
+    </div>
+
+    <!-- Time Period Selector -->
+    <div class="flex justify-end mb-6">
+        <div class="inline-flex rounded-md shadow">
+            <select id="time-period" class="form-select rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm">
+                <option value="7d">Last 7 Days</option>
+                <option value="30d" selected>Last 30 Days</option>
+                <option value="90d">Last 90 Days</option>
+                <option value="1y">Last Year</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Key Metrics Summary -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <!-- Total AI Operations -->
+        <div class="dashboard-stat bg-white dark:bg-gray-800 rounded-lg shadow p-4 hover:shadow-lg transition-shadow duration-300">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Total AI Operations</p>
+                    <h3 class="text-2xl font-bold">105,782</h3>
+                </div>
+                <div class="flex items-center text-sm trend-up">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    12.4%
+                </div>
+            </div>
+            <div class="mt-3">
+                <div class="mini-chart">
+                    <canvas id="operations-trend-chart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Average Response Time -->
+        <div class="dashboard-stat bg-white dark:bg-gray-800 rounded-lg shadow p-4 hover:shadow-lg transition-shadow duration-300">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Avg. Response Time</p>
+                    <h3 class="text-2xl font-bold">1.28s</h3>
+                </div>
+                <div class="flex items-center text-sm trend-down">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    0.3s
+                </div>
+            </div>
+            <div class="mt-3">
+                <div class="mini-chart">
+                    <canvas id="response-time-chart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Overall Accuracy -->
+        <div class="dashboard-stat bg-white dark:bg-gray-800 rounded-lg shadow p-4 hover:shadow-lg transition-shadow duration-300">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Overall Accuracy</p>
+                    <h3 class="text-2xl font-bold">94.2%</h3>
+                </div>
+                <div class="flex items-center text-sm trend-up">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    1.7%
+                </div>
+            </div>
+            <div class="mt-3">
+                <div class="mini-chart">
+                    <canvas id="accuracy-trend-chart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Cost Efficiency -->
+        <div class="dashboard-stat bg-white dark:bg-gray-800 rounded-lg shadow p-4 hover:shadow-lg transition-shadow duration-300">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Cost Per Operation</p>
+                    <h3 class="text-2xl font-bold">$0.027</h3>
+                </div>
+                <div class="flex items-center text-sm trend-down">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    0.8%
+                </div>
+            </div>
+            <div class="mt-3">
+                <div class="mini-chart">
+                    <canvas id="cost-trend-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- AI Model Performance -->
+    <div class="card mb-8">
+        <div class="card-header">
+            <h2 class="text-xl font-semibold">AI Model Performance</h2>
+            <div class="text-sm text-gray-500 dark:text-gray-400">
+                Comparing performance across different models and versions
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="chart-container mb-6">
+                <canvas id="model-performance-chart"></canvas>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead class="bg-gray-50 dark:bg-gray-800">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Model</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Accuracy</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Response Time</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Token Efficiency</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Cost</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-gray-100">GPT-4</div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-gray-100">98.3%</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-gray-100">2.1s</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-gray-100">78%</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-gray-100">$0.06 / op</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                                    Active
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-gray-100">GPT-3.5 Turbo</div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-gray-100">92.6%</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-gray-100">0.9s</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-gray-100">83%</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-gray-100">$0.012 / op</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                                    Active
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-gray-100">Claude 3 Opus</div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-gray-100">97.8%</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-gray-100">1.8s</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-gray-100">81%</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-gray-100">$0.055 / op</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                                    Active
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-gray-100">Claude 3 Sonnet</div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-gray-100">94.5%</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-gray-100">1.2s</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-gray-100">85%</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-gray-100">$0.03 / op</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                                    Active
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-gray-100">Fine-tuned Property Valuation</div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-gray-100">96.2%</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-gray-100">0.7s</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-gray-100">91%</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 dark:text-gray-100">$0.015 / op</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                                    Active
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Usage by Feature -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <!-- Usage Distribution -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="text-xl font-semibold">Usage by Feature</h2>
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    Distribution of AI operations across features
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="feature-usage-chart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- User Segments -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="text-xl font-semibold">Usage by User Segment</h2>
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    Distribution across different user types
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="user-segments-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Daily Usage Patterns -->
+    <div class="card mb-8">
+        <div class="card-header">
+            <h2 class="text-xl font-semibold">Usage Patterns</h2>
+            <div class="text-sm text-gray-500 dark:text-gray-400">
+                Daily and hourly AI usage patterns
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <h3 class="text-lg font-medium mb-3">Daily Activity</h3>
+                    <div class="chart-container">
+                        <canvas id="daily-usage-chart"></canvas>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-medium mb-3">Hourly Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="hourly-usage-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
+                <h3 class="text-lg font-medium text-blue-800 dark:text-blue-300 mb-2">Usage Insights</h3>
+                <ul class="space-y-2">
+                    <li class="flex items-start">
+                        <svg class="h-5 w-5 text-blue-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Peak usage occurs between 10am-2pm and 7pm-9pm on weekdays.</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="h-5 w-5 text-blue-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Weekend usage is 37% lower than weekday usage.</span>
+                    </li>
+                    <li class="flex items-start">
+                        <svg class="h-5 w-5 text-blue-500 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>The Property Valuation feature shows consistent usage across all hours, while Market Analysis is more common during business hours.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- AI Insight Trends -->
+    <div class="card mb-8">
+        <div class="card-header">
+            <h2 class="text-xl font-semibold">AI-Generated Insights</h2>
+            <div class="text-sm text-gray-500 dark:text-gray-400">
+                System-detected patterns and anomalies
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="space-y-4">
+                <div class="insights-card positive bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 h-10 w-10 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600 dark:text-green-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-medium">Improved Property Valuation Accuracy</h3>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm mt-1">The fine-tuned property valuation model is outperforming the general models by 3.6% in terms of accuracy, while using 22% fewer tokens and responding 42% faster.</p>
+                            <div class="flex justify-between mt-2 text-sm">
+                                <span class="text-gray-500 dark:text-gray-400">Confidence: High</span>
+                                <span class="text-gray-500 dark:text-gray-400">Detected: 3 days ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="insights-card negative bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 h-10 w-10 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600 dark:text-red-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-medium">Increased Error Rate for Rural Properties</h3>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm mt-1">All models show reduced accuracy (by 8-12%) when analyzing rural properties with large land areas. This pattern has been consistent over the past 30 days.</p>
+                            <div class="flex justify-between mt-2 text-sm">
+                                <span class="text-gray-500 dark:text-gray-400">Confidence: Medium</span>
+                                <span class="text-gray-500 dark:text-gray-400">Detected: 1 week ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="insights-card neutral bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 h-10 w-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600 dark:text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-medium">Model Usage Shift</h3>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm mt-1">We're seeing a gradual shift from GPT-3.5 to Claude models for market analysis tasks. User satisfaction is 6% higher with Claude results, but costs are also increasing by approximately 14%.</p>
+                            <div class="flex justify-between mt-2 text-sm">
+                                <span class="text-gray-500 dark:text-gray-400">Confidence: High</span>
+                                <span class="text-gray-500 dark:text-gray-400">Detected: 2 weeks ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="insights-card positive bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 h-10 w-10 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600 dark:text-green-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-medium">Prompt Optimization Impact</h3>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm mt-1">The recent prompt optimizations have reduced token usage by 23% while maintaining the same level of accuracy. This has resulted in estimated monthly savings of $840.</p>
+                            <div class="flex justify-between mt-2 text-sm">
+                                <span class="text-gray-500 dark:text-gray-400">Confidence: Very High</span>
+                                <span class="text-gray-500 dark:text-gray-400">Detected: 5 days ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Optimization Opportunities -->
+    <div class="card mb-8">
+        <div class="card-header">
+            <h2 class="text-xl font-semibold">Optimization Opportunities</h2>
+            <div class="text-sm text-gray-500 dark:text-gray-400">
+                AI-recommended system improvements
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <div class="flex items-center mb-3">
+                        <div class="h-10 w-10 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600 dark:text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium">Fine-tune for Rural Data</h3>
+                    </div>
+                    <p class="text-gray-700 dark:text-gray-300 mb-4 text-sm">
+                        Create a specialized model fine-tuned on rural property data to address the accuracy gap in rural property analysis.
+                    </p>
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full">
+                            Estimated impact: High
+                        </span>
+                        <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline">Details</a>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <div class="flex items-center mb-3">
+                        <div class="h-10 w-10 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600 dark:text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium">Smart Model Selection</h3>
+                    </div>
+                    <p class="text-gray-700 dark:text-gray-300 mb-4 text-sm">
+                        Implement dynamic model selection based on query complexity and user type to optimize for both cost and accuracy.
+                    </p>
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full">
+                            Estimated impact: Medium
+                        </span>
+                        <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline">Details</a>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                    <div class="flex items-center mb-3">
+                        <div class="h-10 w-10 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600 dark:text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium">Caching Strategy</h3>
+                    </div>
+                    <p class="text-gray-700 dark:text-gray-300 mb-4 text-sm">
+                        Implement semantic caching for common queries to reduce API calls by an estimated 35% during peak hours.
+                    </p>
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full">
+                            Estimated impact: High
+                        </span>
+                        <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline">Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Navigation Links -->
+    <div class="flex justify-between">
+        <a href="{{ url_for('ai_continuous_learning') }}" class="btn-outline flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+            </svg>
+            Continuous Learning
+        </a>
+        <a href="{{ url_for('ai_integration_automation') }}" class="btn-outline flex items-center">
+            Integration Settings
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        try {
+            // Create all charts when the DOM is loaded
+            createMiniCharts();
+            createModelPerformanceChart();
+            createFeatureUsageChart();
+            createUserSegmentsChart();
+            createUsagePatternCharts();
+            
+            // Handle time period changes
+            const timePeriodElement = document.getElementById('time-period');
+            if (timePeriodElement) {
+                timePeriodElement.addEventListener('change', function() {
+                    // In production, this would reload data for the selected time period
+                    console.log('Time period changed to: ' + this.value);
+                    
+                    try {
+                        // Simulate data reload by recreating charts with slight variations
+                        createMiniCharts(this.value);
+                        createModelPerformanceChart(this.value);
+                        createFeatureUsageChart(this.value);
+                        createUserSegmentsChart(this.value);
+                        createUsagePatternCharts(this.value);
+                    } catch (err) {
+                        console.error('Error updating charts:', err);
+                    }
+                });
+            }
+        } catch (err) {
+            console.error('Error initializing charts:', err);
+        }
+    });
+    
+    function createMiniCharts(period) {
+        // Operations trend mini chart
+        const operationsCtx = document.getElementById('operations-trend-chart').getContext('2d');
+        new Chart(operationsCtx, {
+            type: 'line',
+            data: {
+                labels: ['', '', '', '', '', '', ''],
+                datasets: [{
+                    data: [3200, 3600, 3400, 3800, 4200, 4600, 5100],
+                    borderColor: 'rgba(59, 130, 246, 0.8)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: false
+                    }
+                },
+                scales: {
+                    x: {
+                        display: false
+                    },
+                    y: {
+                        display: false
+                    }
+                },
+                elements: {
+                    point: {
+                        radius: 0
+                    }
+                }
+            }
+        });
+        
+        // Response time mini chart
+        const responseTimeCtx = document.getElementById('response-time-chart').getContext('2d');
+        new Chart(responseTimeCtx, {
+            type: 'line',
+            data: {
+                labels: ['', '', '', '', '', '', ''],
+                datasets: [{
+                    data: [1.8, 1.7, 1.6, 1.5, 1.4, 1.3, 1.28],
+                    borderColor: 'rgba(16, 185, 129, 0.8)',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: false
+                    }
+                },
+                scales: {
+                    x: {
+                        display: false
+                    },
+                    y: {
+                        display: false
+                    }
+                },
+                elements: {
+                    point: {
+                        radius: 0
+                    }
+                }
+            }
+        });
+        
+        // Accuracy trend mini chart
+        const accuracyCtx = document.getElementById('accuracy-trend-chart').getContext('2d');
+        new Chart(accuracyCtx, {
+            type: 'line',
+            data: {
+                labels: ['', '', '', '', '', '', ''],
+                datasets: [{
+                    data: [91.3, 91.8, 92.5, 93.1, 93.4, 93.8, 94.2],
+                    borderColor: 'rgba(139, 92, 246, 0.8)',
+                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: false
+                    }
+                },
+                scales: {
+                    x: {
+                        display: false
+                    },
+                    y: {
+                        display: false
+                    }
+                },
+                elements: {
+                    point: {
+                        radius: 0
+                    }
+                }
+            }
+        });
+        
+        // Cost trend mini chart
+        const costCtx = document.getElementById('cost-trend-chart').getContext('2d');
+        new Chart(costCtx, {
+            type: 'line',
+            data: {
+                labels: ['', '', '', '', '', '', ''],
+                datasets: [{
+                    data: [0.035, 0.033, 0.031, 0.030, 0.029, 0.028, 0.027],
+                    borderColor: 'rgba(245, 158, 11, 0.8)',
+                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: false
+                    }
+                },
+                scales: {
+                    x: {
+                        display: false
+                    },
+                    y: {
+                        display: false
+                    }
+                },
+                elements: {
+                    point: {
+                        radius: 0
+                    }
+                }
+            }
+        });
+    }
+    
+    function createModelPerformanceChart(period) {
+        const ctx = document.getElementById('model-performance-chart').getContext('2d');
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['Accuracy', 'Response Time', 'Token Efficiency', 'Cost Efficiency', 'Consistency'],
+                datasets: [
+                    {
+                        label: 'GPT-4',
+                        data: [98, 70, 78, 60, 95],
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        borderColor: 'rgba(59, 130, 246, 0.8)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(59, 130, 246, 0.8)'
+                    },
+                    {
+                        label: 'GPT-3.5 Turbo',
+                        data: [92, 90, 83, 95, 87],
+                        backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                        borderColor: 'rgba(16, 185, 129, 0.8)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(16, 185, 129, 0.8)'
+                    },
+                    {
+                        label: 'Claude 3 Opus',
+                        data: [97, 75, 81, 62, 93],
+                        backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                        borderColor: 'rgba(139, 92, 246, 0.8)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(139, 92, 246, 0.8)'
+                    },
+                    {
+                        label: 'Fine-tuned Model',
+                        data: [96, 92, 91, 90, 95],
+                        backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                        borderColor: 'rgba(245, 158, 11, 0.8)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(245, 158, 11, 0.8)'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                elements: {
+                    line: {
+                        tension: 0.1
+                    }
+                },
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: true
+                        },
+                        suggestedMin: 50,
+                        suggestedMax: 100
+                    }
+                }
+            }
+        });
+    }
+    
+    function createFeatureUsageChart(period) {
+        const ctx = document.getElementById('feature-usage-chart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Property Valuation', 'Market Analysis', 'Comparables Finder', 'Natural Language Search', 'Investment Detector'],
+                datasets: [{
+                    data: [35, 25, 20, 12, 8],
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.7)',
+                        'rgba(16, 185, 129, 0.7)',
+                        'rgba(139, 92, 246, 0.7)',
+                        'rgba(245, 158, 11, 0.7)',
+                        'rgba(239, 68, 68, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(59, 130, 246, 1)',
+                        'rgba(16, 185, 129, 1)',
+                        'rgba(139, 92, 246, 1)',
+                        'rgba(245, 158, 11, 1)',
+                        'rgba(239, 68, 68, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                label += context.parsed + '%';
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    function createUserSegmentsChart(period) {
+        const ctx = document.getElementById('user-segments-chart').getContext('2d');
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Real Estate Agents', 'Investors', 'Property Managers', 'Home Buyers', 'Administrators'],
+                datasets: [{
+                    data: [45, 22, 15, 12, 6],
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.7)',
+                        'rgba(245, 158, 11, 0.7)',
+                        'rgba(16, 185, 129, 0.7)',
+                        'rgba(139, 92, 246, 0.7)',
+                        'rgba(239, 68, 68, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(59, 130, 246, 1)',
+                        'rgba(245, 158, 11, 1)',
+                        'rgba(16, 185, 129, 1)',
+                        'rgba(139, 92, 246, 1)',
+                        'rgba(239, 68, 68, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                label += context.parsed + '%';
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    function createUsagePatternCharts(period) {
+        // Daily usage chart
+        const dailyCtx = document.getElementById('daily-usage-chart').getContext('2d');
+        new Chart(dailyCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                datasets: [{
+                    label: 'API Calls',
+                    data: [4200, 4500, 4800, 5100, 4900, 3200, 2900],
+                    backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of API Calls'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Hourly usage chart
+        const hourlyCtx = document.getElementById('hourly-usage-chart').getContext('2d');
+        new Chart(hourlyCtx, {
+            type: 'line',
+            data: {
+                labels: ['12am', '2am', '4am', '6am', '8am', '10am', '12pm', '2pm', '4pm', '6pm', '8pm', '10pm'],
+                datasets: [{
+                    label: 'Weekday Avg',
+                    data: [50, 30, 20, 40, 150, 320, 480, 520, 420, 350, 290, 180],
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                },
+                {
+                    label: 'Weekend Avg',
+                    data: [40, 25, 15, 30, 80, 150, 220, 280, 310, 240, 190, 120],
+                    borderColor: 'rgba(139, 92, 246, 1)',
+                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'API Calls per Hour'
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}

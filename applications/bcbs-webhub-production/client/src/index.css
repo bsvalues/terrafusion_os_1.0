@@ -1,0 +1,712 @@
+/* Import the Benton County styles */
+@import './benton-county-styles.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* GIS Dashboard Styles - Enhanced for Geospatial Applications */
+.parcel {
+  position: absolute;
+  border-radius: 1px;
+  border: 2px solid transparent;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  transform-origin: center;
+}
+
+.parcel:hover {
+  opacity: 0.9;
+  z-index: 10;
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--primary);
+}
+
+.parcel.selected {
+  opacity: 1;
+  z-index: 20;
+  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--primary);
+  border-color: var(--primary);
+}
+
+.parcel.residential {
+  background-color: rgba(251, 191, 36, 0.2);
+  border-color: rgba(251, 191, 36, 0.6);
+}
+
+.parcel.commercial {
+  background-color: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.6);
+}
+
+.parcel.agricultural {
+  background-color: rgba(34, 197, 94, 0.2);
+  border-color: rgba(34, 197, 94, 0.6);
+}
+
+.parcel.industrial {
+  background-color: rgba(168, 85, 247, 0.2);
+  border-color: rgba(168, 85, 247, 0.6);
+}
+
+.property-card {
+  @apply relative overflow-hidden rounded-md border border-border bg-card transition-all duration-300;
+}
+
+.property-map-preview {
+  @apply relative h-36 w-full bg-muted bg-cover bg-center;
+}
+
+.coordinate-display {
+  @apply text-xs px-2 py-1 bg-background/80 backdrop-blur-sm rounded-sm;
+}
+
+/* Map animation for the dashboard */
+@keyframes mapPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(var(--primary-rgb), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--primary-rgb), 0);
+  }
+}
+
+.map-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: 
+    radial-gradient(circle at 30% 20%, rgba(var(--primary-rgb), 0.03), transparent 25%),
+    radial-gradient(circle at 80% 60%, rgba(var(--primary-rgb), 0.05), transparent 30%);
+}
+
+.ease-out-expo {
+  transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+@layer base {
+  :root {
+    /* Enhanced shadow system for depth */
+    --shadow-color: 210 40% 12%;
+    --shadow-elevation-low:
+      0px 0.2px 0.3px hsl(var(--shadow-color) / 0.08),
+      0px 0.4px 0.6px -0.8px hsl(var(--shadow-color) / 0.08),
+      0px 1px 1.8px -1.7px hsl(var(--shadow-color) / 0.08);
+    --shadow-elevation-medium:
+      0px 0.2px 0.3px hsl(var(--shadow-color) / 0.09),
+      0px 0.9px 1.8px -0.6px hsl(var(--shadow-color) / 0.09),
+      0px 2.3px 4.6px -1.3px hsl(var(--shadow-color) / 0.09),
+      0px 5.6px 11.2px -1.9px hsl(var(--shadow-color) / 0.09);
+    --shadow-elevation-high:
+      0px 0.2px 0.3px hsl(var(--shadow-color) / 0.08),
+      0px 1.5px 3px -0.3px hsl(var(--shadow-color) / 0.08),
+      0px 3.1px 6.2px -0.6px hsl(var(--shadow-color) / 0.08),
+      0px 5.2px 10.5px -0.9px hsl(var(--shadow-color) / 0.08),
+      0px 8.6px 17.2px -1.2px hsl(var(--shadow-color) / 0.08),
+      0px 13.8px 27.6px -1.5px hsl(var(--shadow-color) / 0.08),
+      0px 21px 42px -1.8px hsl(var(--shadow-color) / 0.08);
+      
+    /* Smooth scroll behavior for landing page */
+    scroll-behavior: smooth;
+    
+    /* Topographic-inspired patterns - mimics contour lines */
+    --topo-bg: repeating-linear-gradient(
+      -45deg,
+      rgba(130, 180, 230, 0.03) 0px,
+      rgba(130, 180, 230, 0.03) 1px,
+      transparent 1px,
+      transparent 8px
+    );
+    
+    /* Grid-like pattern for spreadsheet feel - scaled for precision */
+    --grid-color: rgba(0, 0, 0, 0.04);
+    --grid-size: 20px;
+    --grid-pattern: 
+      linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+    
+    /* Map-inspired color palette - extending the county's existing colors */
+    --map-water: #B8D6F5;
+    --map-land: #F5F5F0;
+    --map-urban: #E6E6E6;
+    --map-park: #D9E7CA;
+    --map-highlight: rgba(255, 240, 175, 0.5);
+    
+    /* Precision analytics colors derived from GIS systems */
+    --chart-accent-1: #3B78E7; /* Primary blue - water, hydrology */
+    --chart-accent-2: #29A369; /* Land use, vegetation */
+    --chart-accent-3: #F2B705; /* Highlighted properties */
+    --chart-accent-4: #D64242; /* Priority items, alerts */
+    --chart-accent-5: #8966B9; /* Special designations */
+    --chart-accent-6: #63A8D9; /* Secondary water/resources */
+    --chart-accent-7: #96BF7A; /* Agricultural land */
+    
+    /* Animation speeds - smooth and precise */
+    --transition-fast: 150ms;
+    --transition-medium: 250ms;
+    --transition-slow: 350ms;
+    
+    /* Custom easing functions for map-like movements */
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in-out-quad: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading tracking-tight;
+  }
+  
+  h1 {
+    @apply text-3xl font-bold;
+  }
+  
+  h2 {
+    @apply text-2xl font-semibold;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    @apply w-1.5 h-1.5;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted/30 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary/50 rounded-full hover:bg-primary/70 transition-colors;
+  }
+}
+
+@layer components {
+  /* Card styling with more depth */
+  .dashboard-card {
+    @apply bg-card rounded-lg border border-border/40 p-5 h-full relative 
+           before:absolute before:inset-0 before:rounded-lg before:shadow-[var(--shadow-elevation-low)]
+           hover:before:shadow-[var(--shadow-elevation-medium)] before:transition-all;
+  }
+  
+  /* Data visualization elements */
+  .data-value {
+    @apply text-2xl font-bold;
+  }
+  
+  .data-label {
+    @apply text-sm text-muted-foreground;
+  }
+  
+  /* Audit status badges with cleaner lines */
+  .status-badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium border;
+  }
+  
+  .status-badge.pending {
+    @apply bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950 dark:text-yellow-300 dark:border-yellow-800;
+  }
+  
+  .status-badge.approved {
+    @apply bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-300 dark:border-green-800;
+  }
+  
+  .status-badge.rejected {
+    @apply bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800;
+  }
+  
+  .status-badge.needs-info {
+    @apply bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800;
+  }
+  
+  /* Priority indicators with better contrast */
+  .priority-indicator {
+    @apply inline-block w-3 h-3 rounded-full mr-2 border-2;
+  }
+  
+  .priority-indicator.urgent {
+    @apply bg-red-500 border-red-300 dark:border-red-700;
+  }
+  
+  .priority-indicator.high {
+    @apply bg-orange-500 border-orange-300 dark:border-orange-700;
+  }
+  
+  .priority-indicator.normal {
+    @apply bg-blue-500 border-blue-300 dark:border-blue-700;
+  }
+  
+  .priority-indicator.low {
+    @apply bg-green-500 border-green-300 dark:border-green-700;
+  }
+  
+  /* Console-like terminal sections */
+  .console-section {
+    @apply font-mono text-sm bg-slate-950 text-slate-50 p-4 rounded-md overflow-auto border border-slate-800;
+  }
+  
+  /* Interactive elements with subtle transitions */
+  .hover-lift {
+    @apply transition-all duration-200 hover:-translate-y-1 hover:shadow-[var(--shadow-elevation-medium)];
+  }
+  
+  /* Improved glassmorphism for modal overlays */
+  .glass-panel {
+    @apply bg-background/70 backdrop-blur-sm border border-border/50 shadow-[var(--shadow-elevation-medium)]
+           dark:bg-background/60 dark:backdrop-blur-md;
+  }
+  
+  /* Button enhancements */
+  .btn-depth {
+    @apply relative active:top-[1px] shadow-[0_1px_2px_rgba(0,0,0,0.05)] 
+           hover:shadow-[0_3px_6px_rgba(0,0,0,0.1)] transition-all duration-200;
+  }
+  
+  /* Table enhancements */
+  .table-modern {
+    @apply w-full border-separate border-spacing-0;
+  }
+  
+  .table-modern th {
+    @apply bg-muted/50 text-muted-foreground font-medium text-sm px-4 py-3 first:rounded-tl-md last:rounded-tr-md;
+  }
+  
+  .table-modern td {
+    @apply px-4 py-3 border-t border-border/60;
+  }
+  
+  .table-modern tr:hover td {
+    @apply bg-muted/30;
+  }
+  
+  /* Form field enhancement */
+  .form-field-group {
+    @apply space-y-1.5;
+  }
+  
+  .form-label {
+    @apply text-sm font-medium text-foreground/80;
+  }
+  
+  .form-description {
+    @apply text-xs text-muted-foreground mt-1;
+  }
+}
+
+/* County Audit Hub brand styles */
+.countyaudit-brand {
+  @apply font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/70;
+}
+
+/* Landing page styles */
+.landing-page-hero {
+  @apply relative overflow-hidden;
+  background: radial-gradient(circle at 80% 30%, hsl(var(--primary) / 0.08), transparent 50%);
+}
+
+.landing-page-section {
+  @apply py-20;
+}
+
+.landing-page-feature-card {
+  @apply p-6 rounded-lg border border-border bg-card transition-colors hover:bg-card/80;
+  transition: transform 0.3s var(--ease-out-expo), box-shadow 0.3s var(--ease-out-expo);
+}
+
+.landing-page-feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-elevation-medium);
+}
+
+.landing-page-workflow-step {
+  @apply flex gap-4 items-start;
+  transition: transform 0.2s var(--ease-out-expo);
+}
+
+.landing-page-workflow-step:hover {
+  transform: translateX(5px);
+}
+
+.landing-page-mockup {
+  @apply relative overflow-hidden shadow-lg rounded-lg;
+  box-shadow: 
+    0 5px 15px rgba(0, 0, 0, 0.1),
+    0 15px 35px rgba(0, 0, 0, 0.05);
+  transform: perspective(1000px) rotateY(-5deg) rotateX(5deg);
+  transition: transform 0.5s var(--ease-out-expo);
+}
+
+.landing-page-mockup:hover {
+  transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+}
+
+/* Depth effects for cards and containers */
+.card-depth {
+  @apply relative overflow-hidden;
+  box-shadow: 
+    0 1px 1px rgba(0,0,0,0.01), 
+    0 2px 2px rgba(0,0,0,0.01), 
+    0 4px 4px rgba(0,0,0,0.01), 
+    0 8px 8px rgba(0,0,0,0.01);
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.card-depth:hover {
+  box-shadow: 
+    0 1px 1px rgba(0,0,0,0.02), 
+    0 2px 2px rgba(0,0,0,0.02), 
+    0 4px 4px rgba(0,0,0,0.02), 
+    0 8px 8px rgba(0,0,0,0.02),
+    0 16px 16px rgba(0,0,0,0.02);
+}
+
+/* Subtle border effects */
+.border-subtle {
+  @apply border border-border/40;
+}
+
+/* Clean lines for containers */
+.clean-panel {
+  @apply rounded-lg bg-card border-subtle p-5 card-depth;
+}
+
+/* Spreadsheet-inspired components */
+.grid-table {
+  @apply w-full border-collapse;
+}
+
+.grid-table th {
+  @apply bg-muted/40 text-muted-foreground font-medium text-xs uppercase tracking-wider px-3 py-2 
+         border border-border/50 sticky top-0 z-10;
+}
+
+.grid-table td {
+  @apply px-3 py-2 border border-border/40 text-sm;
+}
+
+.grid-table tr:nth-child(even) {
+  @apply bg-muted/10;
+}
+
+.grid-table tr:hover {
+  @apply bg-muted/30;
+}
+
+/* Cell styling for editable fields */
+.editable-cell {
+  @apply relative cursor-text;
+}
+
+.editable-cell:hover::before {
+  content: '';
+  @apply absolute inset-0 border-2 border-primary/40 pointer-events-none;
+}
+
+/* Analytics dashboard components */
+.stat-card {
+  @apply flex flex-col p-4 bg-card border-subtle rounded-md;
+}
+
+.stat-title {
+  @apply text-sm font-medium text-muted-foreground mb-1;
+}
+
+.stat-value {
+  @apply text-2xl font-bold;
+}
+
+.stat-description {
+  @apply text-xs text-muted-foreground mt-1;
+}
+
+.stat-trend {
+  @apply flex items-center text-xs mt-2;
+}
+
+.stat-trend.positive {
+  @apply text-green-600;
+}
+
+.stat-trend.negative {
+  @apply text-red-600;
+}
+
+/* Audit-specific components */
+.audit-grid {
+  @apply grid gap-4;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.audit-card {
+  @apply clean-panel flex flex-col h-full;
+}
+
+.audit-card-header {
+  @apply flex justify-between items-start border-b border-border/40 pb-3 mb-3;
+}
+
+.audit-card-body {
+  @apply flex-grow space-y-3;
+}
+
+.audit-card-footer {
+  @apply flex justify-between items-center pt-3 mt-3 border-t border-border/40;
+}
+
+/* Filter and search components */
+.filter-bar {
+  @apply flex flex-wrap gap-2 p-3 bg-muted/20 rounded-md border-subtle mb-4;
+}
+
+.filter-chip {
+  @apply inline-flex items-center rounded-full px-2.5 py-1 text-xs bg-background border-subtle;
+}
+
+.filter-chip .close {
+  @apply ml-1.5 h-3.5 w-3.5 text-muted-foreground hover:text-foreground;
+}
+
+/* Soft UI elements for controls */
+.soft-control {
+  @apply bg-background/80 hover:bg-background border-subtle rounded-md px-3 py-1.5 
+         shadow-sm transition-colors text-sm;
+}
+
+.soft-control.active {
+  @apply bg-primary/10 border-primary/30 text-primary;
+}
+
+/* Audit status timeline */
+.status-timeline {
+  @apply flex items-center space-x-1 py-2;
+}
+
+.status-step {
+  @apply flex flex-col items-center;
+}
+
+.status-dot {
+  @apply h-3 w-3 rounded-full border-2 border-muted z-10;
+}
+
+.status-dot.completed {
+  @apply bg-primary border-primary;
+}
+
+.status-dot.current {
+  @apply bg-background border-primary;
+}
+
+.status-line {
+  @apply h-0.5 w-10 bg-muted;
+}
+
+.status-line.completed {
+  @apply bg-primary;
+}
+
+/* GIS-specific components */
+
+/* Map container with proper aspect ratio */
+.map-container {
+  @apply relative w-full rounded-lg overflow-hidden border-subtle bg-[var(--map-land)];
+  background-image: var(--topo-bg);
+  aspect-ratio: 4/3;
+}
+
+/* Map overlays and controls */
+.map-overlay {
+  @apply absolute p-2 rounded bg-background/80 backdrop-blur-sm shadow-md z-10 text-sm;
+}
+
+.map-overlay.top-left {
+  @apply top-3 left-3;
+}
+
+.map-overlay.top-right {
+  @apply top-3 right-3;
+}
+
+.map-overlay.bottom-left {
+  @apply bottom-3 left-3;
+}
+
+.map-overlay.bottom-right {
+  @apply bottom-3 right-3;
+}
+
+/* Parcel/Property visualization */
+.parcel {
+  @apply border-2 absolute rounded-sm transform-gpu transition-all duration-300;
+  background-image: linear-gradient(45deg, transparent 25%, var(--map-highlight) 25%, var(--map-highlight) 50%, transparent 50%, transparent 75%, var(--map-highlight) 75%);
+  background-size: 8px 8px;
+}
+
+.parcel.selected {
+  @apply outline outline-2 outline-primary shadow-lg;
+  z-index: 5;
+  transform: translateY(-2px) scale(1.02);
+}
+
+.parcel.residential {
+  @apply border-amber-600/60 bg-amber-50/30;
+}
+
+.parcel.commercial {
+  @apply border-blue-600/60 bg-blue-50/30;
+}
+
+.parcel.agricultural {
+  @apply border-green-600/60 bg-green-50/30;
+}
+
+.parcel.industrial {
+  @apply border-purple-600/60 bg-purple-50/30;
+}
+
+/* Legend elements */
+.map-legend {
+  @apply flex flex-col gap-1 p-2 text-xs;
+}
+
+.legend-item {
+  @apply flex items-center gap-2;
+}
+
+.legend-color {
+  @apply w-4 h-4 rounded border border-border/60;
+}
+
+/* Coordinate display */
+.coordinate-display {
+  @apply font-mono text-xs bg-background/70 px-2 py-1 rounded-sm backdrop-blur-sm;
+}
+
+/* Layer controls */
+.layer-toggle {
+  @apply flex items-center gap-2 text-xs py-1;
+}
+
+/* Data table with geospatial focus */
+.geo-table {
+  @apply table-modern;
+}
+
+.geo-table th[data-type="spatial"] {
+  @apply bg-blue-50 text-blue-800 dark:bg-blue-950 dark:text-blue-200;
+}
+
+.geo-table td[data-type="spatial"] {
+  @apply font-mono text-xs;
+}
+
+/* Precision measurement tools */
+.measurement-tool {
+  @apply flex items-center gap-2 bg-background/90 backdrop-blur-sm p-2 rounded-full shadow-md;
+}
+
+.measurement-value {
+  @apply font-mono text-xs font-semibold;
+}
+
+/* Mini-map / context map */
+.mini-map {
+  @apply h-24 w-24 rounded border-subtle bg-[var(--map-land)] overflow-hidden relative;
+  background-image: var(--topo-bg);
+}
+
+.mini-map-viewport {
+  @apply absolute border-2 border-primary/70 bg-primary/10;
+}
+
+/* Immersive property card with map context */
+.property-card {
+  @apply clean-panel overflow-hidden;
+}
+
+.property-map-preview {
+  @apply h-32 bg-[var(--map-land)] relative -mx-5 -mt-5 mb-4;
+  background-image: var(--topo-bg);
+}
+
+.property-badge {
+  @apply absolute bottom-2 left-2 text-xs px-2 py-0.5 rounded-sm font-medium bg-background/80 backdrop-blur-sm;
+}
+
+.property-details {
+  @apply grid grid-cols-2 gap-2 text-sm;
+}
+
+.property-detail-label {
+  @apply text-xs text-muted-foreground;
+}
+
+.property-detail-value {
+  @apply font-medium;
+}
+
+/* Dashboard with geospatial context */
+.geo-dashboard {
+  @apply grid grid-cols-1 md:grid-cols-3 gap-4 mb-6;
+}
+
+.geo-dashboard-map {
+  @apply md:col-span-2 clean-panel;
+}
+
+.geo-dashboard-stats {
+  @apply flex flex-col gap-4;
+}
+
+/* Modern, clean tab navigation for sections */
+.modern-tabs {
+  @apply flex gap-1 mb-6 border-b border-border overflow-auto pb-px;
+}
+
+.modern-tab {
+  @apply px-4 py-2 font-medium text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap;
+}
+
+.modern-tab.active {
+  @apply text-foreground border-b-2 border-primary;
+}
+
+/* Printing and export layout styles */
+.print-layout {
+  @apply max-w-3xl mx-auto p-8 bg-white text-black;
+}
+
+.print-header {
+  @apply border-b-2 border-slate-800 pb-4 mb-6 flex justify-between items-center;
+}
+
+.print-map {
+  @apply border border-black h-56 bg-[var(--map-land)] mb-6;
+  background-image: var(--topo-bg);
+}
+
+.print-grid {
+  @apply border border-collapse mb-6;
+}
+
+.print-grid th,
+.print-grid td {
+  @apply border border-slate-300 p-2 text-sm;
+}
+
+.print-grid th {
+  @apply bg-slate-100 font-medium;
+}
+
+.print-footer {
+  @apply text-xs text-slate-500 text-center border-t border-slate-200 pt-4 mt-8;
+}

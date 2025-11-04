@@ -1,0 +1,15 @@
+{
+    "set": [
+        "cluster",
+        "clustering",
+        "getis",
+        "gi*",
+        "ord",
+        "association",
+        "categorical",
+        "category",
+        "fuzzy",
+        "kappa",
+        "similarity"
+    ]
+}

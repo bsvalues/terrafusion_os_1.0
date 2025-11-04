@@ -1,0 +1,17 @@
+{
+    "set": [
+        "closest facility",
+        "copy",
+        "duplicate",
+        "layer",
+        "location-allocation",
+        "na layer",
+        "network analysis layer",
+        "network analyst layer",
+        "od cost matrix",
+        "route",
+        "service area",
+        "vrp",
+        "vehicle routing problem"
+    ]
+}

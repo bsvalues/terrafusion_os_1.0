@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Messages STARTID="200001">
+
+<!-- Defense range is 200001 to 300000-->
+<!-- Conversion--><!-- 200001 to 200250-->
+<Message><ID>200001</ID><Description>Adding field:</Description></Message>
+<Message><ID>200002</ID><Description>Adding unique row IDs...</Description></Message>
+<Message><ID>200003</ID><Description>Converting and appending {0} with fields {1} ...</Description></Message>
+<Message><ID>200004</ID><Description>Defaulting to {0}</Description></Message>
+<Message><ID>200005</ID><Description>Formatting start point...</Description></Message>
+<Message><ID>200006</ID><Description>Formatting end point...</Description></Message>
+<Message><ID>200007</ID><Description>Connecting start point to end point as {0}...</Description></Message>
+<Message><ID>200008</ID><Description>Joining fields from input table to output line features...</Description></Message>
+<Message><ID>200009</ID><Description>Creating lines as {0}...</Description></Message>
+<Message><ID>200010</ID><Description>Output Row: %1 missing feature geometry (check input data). Skipping.</Description></Message> <!-- WARNING -->
+
+<!-- Distance and Direction --><!--200251 to 200500-->
+<Message><ID>200251</ID><Description>%1 %2</Description></Message> <!-- ERROR -->
+<Message><ID>200252</ID><Description>Making rings {0}, {1} for {2} centers...</Description></Message>
+<Message><ID>200253</ID><Description>Making radials {0}, {1} for {2}</Description></Message>
+<Message><ID>200254</ID><Description>Using default spatial reference: %1</Description></Message> <!-- WARNING -->
+<Message><ID>200255</ID><Description>Number of radials must be positive.</Description></Message> <!-- ERROR -->
+<Message><ID>200256</ID><Description>Invalid parameters supplied to tool.</Description></Message> <!-- ERROR-->
+<Message><ID>200257</ID><Description>At least one input center point is required.</Description></Message> <!-- ERROR-->
+<Message><ID>200258</ID><Description>Range parameters are not valid.</Description></Message> <!-- ERROR-->
+<Message><ID>200259</ID><Description>Distance between rings must be > 0.</Description></Message> <!-- ERROR-->
+
+<!-- Gridded Reference Graphic --><!-- 200501 to 200750 -->
+<Message><ID>200501</ID><Description>Extent Area: {0}</Description></Message>
+<Message><ID>200502</ID><Description>Grid Size: {0}</Description></Message>
+<Message><ID>200503</ID><Description>Creating Grid zones/latitude bands...</Description></Message>
+<Message><ID>200504</ID><Description>Creating 100k grid squares...</Description></Message>
+<Message><ID>200505</ID><Description>Creating sub 100K grid squares...</Description></Message>
+<Message><ID>200506</ID><Description>The GRG extent is within a polar region. Cells that fall within the polar region will not be created.</Description></Message> <!-- WARNING -->
+<Message><ID>200507</ID><Description>Area %1 exceeds large grid value for %2. Proceeding with grid construction.</Description></Message><!-- WARNING -->
+<Message><ID>200508</ID><Description>Area %1 exceeds large grid value for %2. Use a smaller Input Area or choose a larger Grid Size.</Description></Message> <!-- ERROR -->
+<Message><ID>200509</ID><Description>Rotating temporary dataset.</Description></Message>
+<Message><ID>200510</ID><Description>Merging temporary, rotated dataset with output.</Description></Message>
+<Message><ID>200511</ID><Description>Getting Minimum Bounding Geometry that fits the Area of Interest.</Description></Message>
+<Message><ID>200512</ID><Description>Orientation Angle: {0}.</Description></Message>
+<Message><ID>200513</ID><Description>Creating Grid {0} x {1}.</Description></Message>
+<Message><ID>200514</ID><Description>{0}</Description></Message>
+<Message><ID>200515</ID><Description>Creating Fishnet Grid...</Description></Message>
+<Message><ID>200516</ID><Description>Adding field for labeling the grid.</Description></Message>
+<Message><ID>200517</ID><Description>Projected starting point to Web Mercator.</Description></Message>
+<Message><ID>200518</ID><Description>Sorting the grid for labeling.</Description></Message>
+<Message><ID>200519</ID><Description>Numbering the grids.</Description></Message>
+<Message><ID>200520</ID><Description>Rotating the grid.</Description></Message>
+<Message><ID>200521</ID><Description>More than one feature detected for the start location, last feature entered will be used.</Description></Message> <!-- WARNING -->
+
+<!-- Visibility --><!-- 200751 to 201000 -->
+<Message><ID>200751</ID><Description>Adding field {0} with alias {1}.</Description></Message>
+<Message><ID>200752</ID><Description>Calculating default for {0}</Description></Message>
+<Message><ID>200753</ID><Description>_getRasterMinMax min={0}, max={1}</Description></Message>
+<Message><ID>200754</ID><Description>Clipping {0} to area {1}...</Description></Message>
+<Message><ID>200755</ID><Description>Adding surface info for {0}</Description></Message>
+<Message><ID>200756</ID><Description>Input Points Within Surface: {0}</Description></Message>
+<Message><ID>200757</ID><Description>Found {0} unique sight line IDs ...</Description></Message>
+<Message><ID>200758</ID><Description>Building graphs for lines ...</Description></Message>
+<Message><ID>200759</ID><Description>Building graph from observer {0} to target {1}...</Description></Message>
+<Message><ID>200760</ID><Description>Enabling attachments ...</Description></Message>
+<Message><ID>200761</ID><Description>Building match table ...</Description></Message>
+<Message><ID>200762</ID><Description>Attaching profile graphs to sightlines ...</Description></Message>
+<Message><ID>200763</ID><Description>No input area selected - using entire surface</Description></Message>
+<Message><ID>200764</ID><Description>Using {0} for analysis.</Description></Message>
+<Message><ID>200765</ID><Description>High/Low switch set to {0}. Finding cells with cell value: {1}.</Description></Message>
+<Message><ID>200766</ID><Description>Adding Observer fields...</Description></Message>
+<Message><ID>200767</ID><Description>Calculating Observer values...</Description></Message>
+<Message><ID>200768</ID><Description>Adding Target fields...</Description></Message>
+<Message><ID>200769</ID><Description>Calculating Target values...</Description></Message>
+<Message><ID>200770</ID><Description>Updating Observer values...</Description></Message>
+<Message><ID>200771</ID><Description>Inverting clipped surface...</Description></Message>
+<Message><ID>200772</ID><Description>Finding sinks or inverted sinks...</Description></Message>
+<Message><ID>200773</ID><Description>{0} sinks found.</Description></Message>
+<Message><ID>200774</ID><Description>Converting sink values to polygon features...</Description></Message>
+<Message><ID>200775</ID><Description>Extracting elevation values from {0}...</Description></Message>
+
+<!-- new group of 25 for cms -->
+<Message><ID>200776</ID><Description>The input area does not contain {0} unique peaks, returning top {1} peaks...</Description></Message>
+<Message><ID>200777</ID><Description>Found {0} peaks with elevation set to {1}.</Description></Message>
+<Message><ID>200778</ID><Description>Checking that observer points fall within the extent of the input surface.</Description></Message>
+<Message><ID>200779</ID><Description>Checking that target points fall within the extent of the input surface.</Description></Message>
+<Message><ID>200780</ID><Description>OFFSET field not in Observers. Using Observer Height Above Surface value of {0}.</Description></Message>
+<Message><ID>200781</ID><Description>OFFSET field not in Targets. Using Target Height Above Surface value of {0}.</Description></Message>
+<Message><ID>200782</ID><Description>Projecting Observers and Targets to Input Surface spatial reference {0}.</Description></Message>
+<Message><ID>200783</ID><Description>Building 3D observer points...</Description></Message>
+<Message><ID>200784</ID><Description>Building 3D target points...</Description></Message>
+<Message><ID>200785</ID><Description>Constructing Sight Lines between observers and targets...</Description></Message>
+<Message><ID>200786</ID><Description>Building Line Of Sight...</Description></Message>
+<Message><ID>200787</ID><Description>Joining attribute results...</Description></Message>
+<Message><ID>200788</ID><Description>Attributing output Observer features...</Description></Message>
+<Message><ID>200789</ID><Description>Calculating frequency on Target features...</Description></Message>
+<Message><ID>200790</ID><Description>Building profile graph...</Description></Message>
+<Message><ID>200791</ID><Description>RADIUS2 field not in Input Observer Features. Using Radius Of Observer {0}.</Description></Message>
+<Message><ID>200792</ID><Description>RADIUS2 field in Input Observer Features. Using maximum radius of {0}.</Description></Message>
+<Message><ID>200793</ID><Description>OFFSETA field not in Input Observer Features. Using Observer Height Above Surface {0}.</Description></Message>
+<Message><ID>200794</ID><Description>Checking that observer points fall within the extent of the input surface.</Description></Message>
+<Message><ID>200795</ID><Description>Getting centroid of input observer points...</Description></Message>
+<Message><ID>200796</ID><Description>Using localized World Azimuthal Equidistant for analysis...</Description></Message>
+<Message><ID>200797</ID><Description>Buffering observers to {0}.</Description></Message>
+<Message><ID>200798</ID><Description>Projecting observers to match surface...</Description></Message>
+<Message><ID>200799</ID><Description>Projecting buffer to match surface...</Description></Message>
+<Message><ID>200800</ID><Description>Clipping image to observer buffers...</Description></Message>
+
+<!-- new group of 25 for cms -->
+<Message><ID>200801</ID><Description>Building viewshed of observers to surface...</Description></Message>
+<Message><ID>200802</ID><Description>Converting viewshed to polygon features...</Description></Message>
+<Message><ID>200803</ID><Description>Clipping polygons to max buffer...</Description></Message>
+<Message><ID>200804</ID><Description>Projecting to output spatial reference...</Description></Message>
+<Message><ID>200805</ID><Description>Buffering observers...</Description></Message>
+<Message><ID>200806</ID><Description>Clipping image to observer buffer...</Description></Message>
+<Message><ID>200807</ID><Description>Creating features from raster...</Description></Message>
+<Message><ID>200808</ID><Description>Calculating viewshed...</Description></Message>
+<Message><ID>200809</ID><Description>Finishing output features...</Description></Message>
+<Message><ID>200810</ID><Description>Using Central Meridian: {0}, and Latitude of Origin: {1}.</Description></Message>
+<Message><ID>200811</ID><Description>Building minimum bounding rectangle of sight lines for analysis mask...</Description></Message>
+<Message><ID>200812</ID><Description>Checking if input surface contains input points. Surface and input points spatial references do not match: %1 is not equal to %2.</Description></Message> <!-- WARNING -->
+<Message><ID>200813</ID><Description>Point: (%1, %2) is *NOT* in the extent of the analysis area.</Description></Message><!-- WARNING -->
+<Message><ID>200814</ID><Description>Field %1 is already in %2. Skipping this field name.</Description></Message><!-- WARNING -->
+<Message><ID>200815</ID><Description>Cannot calculate default for %1. Field does not exist in %2.</Description></Message><!-- WARNING -->
+<Message><ID>200816</ID><Description>Please provide a valid input area.</Description></Message><!-- ERROR -->
+<Message><ID>200817</ID><Description>Please provide at least one input area feature.</Description></Message><!-- ERROR -->
+<Message><ID>200818</ID><Description>Please provide a valid observer.</Description></Message><!-- ERROR -->
+<Message><ID>200819</ID><Description>Please provide at least one observer.</Description></Message><!-- ERROR -->
+<Message><ID>200820</ID><Description>Please provide a valid target feature.</Description></Message><!-- ERROR -->
+<Message><ID>200821</ID><Description>Please provide at least one target feature.</Description></Message><!-- ERROR -->
+<Message><ID>200822</ID><Description>Not all input observer points fall within the extent of the input surface.</Description></Message><!-- ERROR -->
+<Message><ID>200823</ID><Description>Not all input target points fall within the extent of the input surface.</Description></Message><!-- ERROR -->
+<Message><ID>200824</ID><Description>3D license is not available.</Description></Message><!-- ERROR -->
+<Message><ID>200825</ID><Description>Dataset does not exist: %1.</Description></Message><!-- ERROR -->
+
+<!-- new group of 25 for cms -->
+<Message><ID>200826</ID><Description>Not a valid ASCII letter, or could not convert letter(s) to value: %1</Description></Message> <!-- ERROR -->
+<Message><ID>200827</ID><Description>No features in input feature set: %1.</Description></Message><!-- ERROR -->
+<Message><ID>200828</ID><Description>Input elevation raster must be in a projected coordinate system. Existing elevation raster is in %1.</Description></Message><!-- ERROR -->
+<Message><ID>200829</ID><Description>Input Observer(s) does not fall within the extent of the input surface: %1.</Description></Message><!-- ERROR -->
+<Message><ID>200830</ID><Description>Dataset does not exist: %1</Description></Message><!-- ERROR -->
+<Message><ID>200831</ID><Description>Field: %1 already exists, clearing values.</Description></Message>
+<Message><ID>200832</ID><Description>Could not use Center Feature: %1. There is more than one feature, feature is outside extent, or other issue.</Description></Message>
+<Message><ID>200833</ID><Description>No Center Point supplied. Computing and using features Mean Center.</Description></Message>
+<Message><ID>200834</ID><Description>Numbering Sector, Name : %1, StartNumber/Sort Method: %2</Description></Message>
+<!-- not currently in use <Message><ID>200835..200850</ID></Description></Message> -->
+
+<!-- Utilities and toolbox --><!--  201001 to 201250-->
+<Message><ID>201001</ID><Description>Removing intermediate datasets...</Description></Message>
+<Message><ID>201002</ID><Description>Removing: {0}</Description></Message>
+<Message><ID>201003</ID><Description>Number of input features less than expected: %1</Description></Message>
+<Message><ID>201004</ID><Description>Output feature class does not exist or contains zero features: %1</Description></Message>
+<Message><ID>201005</ID><Description>Value larger than expected: %1</Description></Message>
+
+</Messages>

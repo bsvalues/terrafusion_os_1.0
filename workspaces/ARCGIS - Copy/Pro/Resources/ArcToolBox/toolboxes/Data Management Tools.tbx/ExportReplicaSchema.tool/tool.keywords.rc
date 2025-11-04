@@ -1,0 +1,31 @@
+{
+    "set": [
+        "1 way",
+        "2 way",
+        "centralize",
+        "change",
+        "check",
+        "child",
+        "contractor",
+        "database",
+        "definition",
+        "difference",
+        "gdb",
+        "in",
+        "mobile",
+        "one",
+        "out",
+        "parent",
+        "production",
+        "publication",
+        "replica",
+        "replicate",
+        "replication",
+        "sde",
+        "synchronize",
+        "two",
+        "way",
+        "xml",
+        "distributed geodatabase"
+    ]
+}

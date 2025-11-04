@@ -1,0 +1,257 @@
+{
+    "type": "FunctionTool",
+    "guid": "{ddda50fc-7866-4834-8b31-739f8d9715f0}",
+    "displayname": "$rc:title",
+    "helpcontent": "71010044",
+    "description": "$rc:description",
+    "product": "200",
+    "params": {
+        "in_utility_network": {
+            "displayname": "$rc:in_utility_network.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    }
+                ]
+            },
+            "description": "$rc:in_utility_network.descr"
+        },
+        "template_name": {
+            "displayname": "$rc:template_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:template_name.descr"
+        },
+        "is_active": {
+            "displayname": "$rc:is_active.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ACTIVE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "INACTIVE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:is_active.descr"
+        },
+        "inverse_category_selection": {
+            "displayname": "$rc:inverse_category_selection.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "EXCLUDE_CATEGORIES",
+                        "code": "$rc:inverse_category_selection.domain.EXCLUDE_CATEGORIES"
+                    },
+                    {
+                        "value": "INCLUDE_CATEGORIES",
+                        "code": "$rc:inverse_category_selection.domain.INCLUDE_CATEGORIES"
+                    }
+                ]
+            },
+            "value": "INCLUDE_CATEGORIES",
+            "description": "$rc:inverse_category_selection.descr"
+        },
+        "category": {
+            "displayname": "$rc:category.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "GPString"
+                        }
+                    ]
+                }
+            },
+            "depends": [
+                "in_utility_network"
+            ],
+            "description": "$rc:category.descr"
+        },
+        "connectivity_options": {
+            "type": "optional",
+            "displayname": "$rc:connectivity_options.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MAX_2_CONNECTED_JUNCTIONS",
+                        "code": "$rc:connectivity_options.domain.MAX_2_CONNECTED_JUNCTIONS"
+                    },
+                    {
+                        "value": "MIN_3_CONNECTED_JUNCTIONS",
+                        "code": "$rc:connectivity_options.domain.MIN_3_CONNECTED_JUNCTIONS"
+                    }
+                ]
+            },
+            "value": "MAX_2_CONNECTED_JUNCTIONS",
+            "description": "$rc:connectivity_options.descr"
+        },
+        "unconnected_junctions": {
+            "type": "optional",
+            "displayname": "$rc:unconnected_junctions.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "REDUCE_UNCONNECTED_JCT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "KEEP_UNCONNECTED_JCT"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:unconnected_junctions.descr"
+        },
+        "one_connected_junction": {
+            "type": "optional",
+            "displayname": "$rc:one_connected_junction.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "REDUCE_JCT_TO_1JCT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "KEEP_JCT_TO_1JCT"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:one_connected_junction.descr"
+        },
+        "two_connected_junctions": {
+            "type": "optional",
+            "displayname": "$rc:two_connected_junctions.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "REDUCE_JCT_TO_2JCTS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "KEEP_JCT_TO_2JCTS"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:two_connected_junctions.descr"
+        },
+        "edges_attributes": {
+            "type": "optional",
+            "displayname": "$rc:edges_attributes.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "description": "$rc:edges_attributes.descr"
+        },
+        "description": {
+            "type": "optional",
+            "control_guid": "{E5456E51-0C41-4797-9EE4-5269820C6F0E}",
+            "displayname": "$rc:description.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:description.descr"
+        },
+        "out_utility_network": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_utility_network.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    }
+                ]
+            },
+            "addtomap": "false"
+        },
+        "out_template_name": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_template_name.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "use_digitized_direction": {
+            "type": "optional",
+            "displayname": "$rc:use_digitized_direction.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "USE_DIGITIZED_DIRECTION"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "IGNORE_DIGITIZED_DIRECTION"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:use_digitized_direction.descr"
+        }
+    }
+}

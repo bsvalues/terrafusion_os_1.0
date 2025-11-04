@@ -1,0 +1,158 @@
+Perfect. Let’s **scaffold the Snapshot Viewer module** first—it’s the linchpin for visualizing historical comps data across sources (MLS, prior reports, public records), and essential for appraiser trust.
+
+---
+
+# 🧪 Module: `Snapshot Viewer`
+
+## 🔍 Purpose
+A panel/modal that shows **all known data versions** for a given property, grouped by source and timestamp. User can:
+- View historical sales/rentals/listings
+- Compare snapshots side-by-side
+- Push selected data to the form
+
+---
+
+## 📁 File Structure
+
+```bash
+client/
+  components/
+    comps/
+      SnapshotViewer.tsx        # Main component
+      SnapshotTile.tsx          # Individual version card
+      SnapshotDiff.tsx          # Optional diff view
+
+  hooks/
+    useSnapshotHistory.ts       # Fetch history via /api/comps/history/:id
+```
+
+---
+
+## 🧠 TypeScript Types (`shared/types/comps.ts`)
+
+```ts
+export interface ComparableSnapshot {
+  id: string;
+  propertyId: string;
+  source: "MLS" | "PublicRecord" | "PriorReport" | "Manual";
+  createdAt: string;
+  fields: {
+    gla: number;
+    salePrice: number;
+    saleDate: string;
+    beds: number;
+    baths: number;
+    yearBuilt?: number;
+    remarks?: string;
+    financing?: string;
+  };
+}
+```
+
+---
+
+## ⚙️ API Hook – `useSnapshotHistory.ts`
+
+```ts
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { ComparableSnapshot } from '@/shared/types/comps';
+
+export function useSnapshotHistory(addressId: string) {
+  const [snapshots, setSnapshots] = useState<ComparableSnapshot[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!addressId) return;
+    setLoading(true);
+    axios.get(`/api/comps/history/${addressId}`).then(({ data }) => {
+      setSnapshots(data.snapshots);
+      setLoading(false);
+    });
+  }, [addressId]);
+
+  return { snapshots, loading };
+}
+```
+
+---
+
+## 🧱 UI – `SnapshotViewer.tsx`
+
+```tsx
+import React from 'react';
+import { useSnapshotHistory } from '@/hooks/useSnapshotHistory';
+import { SnapshotTile } from './SnapshotTile';
+
+export function SnapshotViewer({ addressId }: { addressId: string }) {
+  const { snapshots, loading } = useSnapshotHistory(addressId);
+
+  if (loading) return <div>Loading history...</div>;
+  if (!snapshots.length) return <div>No snapshots available.</div>;
+
+  const grouped = snapshots.reduce((acc, snap) => {
+    (acc[snap.source] ||= []).push(snap);
+    return acc;
+  }, {} as Record<string, typeof snapshots>);
+
+  return (
+    <div className="grid gap-4 p-4">
+      {Object.entries(grouped).map(([source, snaps]) => (
+        <div key={source}>
+          <h3 className="text-sm font-bold mb-2">{source}</h3>
+          <div className="flex gap-2 overflow-x-auto">
+            {snaps.map(snap => <SnapshotTile key={snap.id} snapshot={snap} />)}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+---
+
+## 🧩 UI – `SnapshotTile.tsx`
+
+```tsx
+import React from 'react';
+import { ComparableSnapshot } from '@/shared/types/comps';
+
+export function SnapshotTile({ snapshot }: { snapshot: ComparableSnapshot }) {
+  const { fields, createdAt, source } = snapshot;
+  return (
+    <div className="border rounded p-3 min-w-[220px] shadow-sm bg-white">
+      <div className="text-xs text-gray-500">{source} • {new Date(createdAt).toLocaleDateString()}</div>
+      <div className="mt-1 text-sm font-semibold">${fields.salePrice?.toLocaleString()}</div>
+      <div className="text-sm">GLA: {fields.gla} sf</div>
+      <div className="text-sm">Beds: {fields.beds}, Baths: {fields.baths}</div>
+      <button
+        className="mt-2 text-xs bg-blue-600 text-white px-2 py-1 rounded"
+        onClick={() => console.log("Push to form", snapshot)}
+      >
+        Push to Form
+      </button>
+    </div>
+  );
+}
+```
+
+---
+
+## ✅ What You Get from This Scaffold
+
+- Real-time historical view of all known comps data per address
+- Sorted/grouped by source (MLS, Report, etc.)
+- Easy “push-to-form” hook point
+- Tailwind styled, mobile-aware
+
+---
+
+## 🔜 Next Step Candidates
+
+Would you like me to:
+1. Scaffold the “Push to Form” mutation (`/api/forms/push`)?
+2. Add diff logic (`SnapshotDiff.tsx`) to highlight changes between versions?
+3. Convert this into a right-hand drawer or modal for CompsGrid integration?
+
+You’ve got a full visual + data layer now—just say where to slot it in.

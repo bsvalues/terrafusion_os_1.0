@@ -1,0 +1,31 @@
+{
+    "map": {
+        "atsroute_attributes.descr": "<xdoc><p>Specifies the ATS route attributes that will be calculated.</p><ul><li>Length—The length of the route segment in nautical miles will be calculated.</li><li>True Track—The true north azimuth of the route segment&apos;s track from its start point will be calculated.</li><li>Reverse True Track—The true north azimuth of the route segment&apos;s reverse track from its end point will be calculated.</li><li>Magnetic Track—The magnetic north azimuth of the route segment&apos;s track from its start point will be calculated.</li><li>Reverse Magnetic Track—The magnetic north azimuth of the route segment&apos;s reverse track from its end point will be calculated.</li><li>FAA True Track—The true north azimuth of the route segment&apos;s track from its start point will be calculated using FAA specific rules.</li><li> FAA Reverse True Track—The true north azimuth of the route segment&apos;s reverse track from its end point will be calculated using FAA specific rules.</li><li> FAA Magnetic Track—The magnetic north azimuth of the route segment&apos;s track from its start point will be calculated using FAA specific rules.</li><li>FAA Reverse Magnetic Track—The magnetic north azimuth of the route segment&apos;s reverse track from its end point will be calculated using FAA specific rules.</li><li>FAA True Track2—The true north azimuth of the route collection from its start point will be calculated using FAA specific rules.</li><li>FAA Reverse True Track2—The true north azimuth of the route collection from its end point will be calculated using FAA specific rules.</li><li>FAA Magnetic Track2—The magnetic north azimuth of the route collection from its start point will be calculated using FAA specific rules.</li><li>FAA Reverse Magnetic Track2—The magnetic north azimuth of the route collection from its end point will be calculated using FAA specific rules.</li><li>FAA Altitude Change Status—A numeric indicator showing how a route&apos;s segment altitude changes from the previous segment in a route collection.</li></ul></xdoc>",
+        "atsroute_attributes.domain.item1.LENGTH": "Length",
+        "atsroute_attributes.domain.item1.MAG_TRACK": "Magnetic Track",
+        "atsroute_attributes.domain.item1.REVERSE_MAG_TRACK": "Reverse Magnetic Track",
+        "atsroute_attributes.domain.item1.REVERSE_TRUE_TRACK": "Reverse True Track",
+        "atsroute_attributes.domain.item1.TRUE_TRACK": "True Track",
+        "atsroute_attributes.dt.title1": "Attribute",
+        "atsroute_attributes.dt.title2": "Field",
+        "atsroute_attributes.title": "ATS Route Attributes",
+        "description": "Calculates segment distance and bearing attributes on Air Traffic Service (ATS) route features. The tool can also calculate the FAA specific route attributes on a route segment and route collection.",
+        "in_designatedpoint_features.descr": "<xdoc><p>The designated point coordinates that will be used to calculate the bearing of a route collection. This parameter is only used when an FAA bearing attribute is specified for the <span class=\"esri_uicontrol\">ATS Route Attributes</span> parameter value.</p></xdoc>",
+        "in_designatedpoint_features.title": "Input DesignatedPoint Feature Layer",
+        "in_desigpointnavaid_assoc_table.descr": "<xdoc><p>An association table that will be used to determine whether a designated point is collocated with a Navaid component. This parameter is only used when an FAA bearing attribute is specified for the <span class=\"esri_uicontrol\">ATS Route Attributes</span> parameter value.</p></xdoc>",
+        "in_desigpointnavaid_assoc_table.title": "Input Designated Point Navaid Association Table",
+        "in_enroute_table.descr": "<xdoc><p>A table that contains the total mileage of a route collection. It also contains dogleg points along a route collection and is needed to calculate a route collection&apos;s bearing values. This parameter is only used when an FAA bearing attribute is specified for the <span class=\"esri_uicontrol\">ATS Route Attributes</span> parameter value.</p></xdoc>",
+        "in_enroute_table.title": "Input EnrouteInformation Table",
+        "in_features.descr": "The polyline features for which ATS route attributes will be calculated.",
+        "in_features.title": "Input ATS Route Feature Layer",
+        "in_navaid_assoc_table.descr": "<xdoc><p>An association table that will be used to associate a designated point to a Navaid component. This parameter is only used when an FAA bearing attribute is specified for the <span class=\"esri_uicontrol\">ATS Route Attributes</span> parameter value.</p></xdoc>",
+        "in_navaid_assoc_table.title": "Input Navaid Association Table",
+        "in_navaidcomponent_features.descr": "<xdoc><p>The magnetic variation value SlavedVariation_Val will be used as the magnetic variation value in a bearing calculation if the start or end of a route collection is collated with a Navaid component. This parameter is only used when an FAA bearing attribute is specified for the <span class=\"esri_uicontrol\">ATS Route Attributes</span> parameter value.</p></xdoc>",
+        "in_navaidcomponent_features.title": "Input NavaidComponent Feature Layer",
+        "magnetic_variation_date.descr": "The date for which the magnetic field values will be calculated.",
+        "magnetic_variation_date.title": "Magnetic Variation Date",
+        "summary": "<xdoc><p>Calculates segment distance and bearing attributes on Air Traffic Service (ATS) route features. The tool can also calculate the FAA specific route attributes on a route segment and route collection.</p><p>This tool calculates the magnetic track and reverse magnetic track based on the magnetic variation at the endpoints of routes.</p></xdoc>",
+        "title": "Calculate ATS Route Attributes",
+        "updated_features.title": "Updated Features"
+    }
+}

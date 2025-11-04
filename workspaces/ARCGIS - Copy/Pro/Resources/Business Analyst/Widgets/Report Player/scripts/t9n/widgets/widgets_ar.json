@@ -1,0 +1,78 @@
+{
+  "calcite": {
+    "reset": "إعادة تعيين",
+    "action": {
+      "sort": "فرز"
+    },
+    "buttons": {
+      "save": "حفظ",
+      "edit": "تحرير",
+      "done": "تم",
+      "apply": "تطبيق",
+      "cancel": "إلغاء الأمر",
+      "close": "إغلاق"
+    },
+    "ColorPicker": {
+      "selectColor": "تحديد لون",
+      "noColorSpecified": "لم يتم تحديد لون",
+      "transparent": "شفاف",
+      "colorTooltip": "<p>Hex: ${hex}</p><p>RGB: ${r}، ${g}، ${b}</p>",
+      "recent": "حديث",
+      "standard": "قياسي",
+      "savedColors": "الألوان المحفوظة",
+      "advanced": "متقدم"
+    },
+    "DatePickerLink": {
+      "enterDate": "إدخال التاريخ"
+    },
+    "PaginationContinuous": {
+      "next": "التالي",
+      "previous": "السابق"
+    }
+  },
+  "ImageNavigator": {
+    "paginationLabel": "${n} من ${m}",
+    "noImage": "لا توجد صور محفوظة حاليًا في هذا الموقع",
+    "previewNotAvailable": "المعاينة غير متاحة"
+  },
+  "PageNavigator": {
+    "currentPageOutOfN": "صفحة ${current} من ${total}"
+  },
+  "PanoramicViewer": {
+    "image-viewer-close": "إغلاق",
+    "image-viewer-fullscreen": "ملء الشاشة",
+    "image-viewer-minimize": "تصغير",
+    "image-viewer-title": "عارض الصور",
+    "image-viewer-show-caption": "إظهار التسمية التوضيحية",
+    "image-viewer-hide-caption": "إخفاء"
+  },
+  "TextBox": {
+    "error_numberExpected": "تم توقع رقم",
+    "error_range": "القيمة المتوقعة من ${0} إلى ${1}"
+  },
+  "charts": {
+    "histogram": {
+      "minValue": "الحد الأدنى:<br>${0}",
+      "maxValue": "الحد الأقصى:<br>${0}",
+      "thisAreaValue": "هذه المنطقة: ${0}",
+      "medianValue": "المتوسط:<br>${0}",
+      "q1Value": "الربع الأول:<br>${0}",
+      "q3Value": "الربع الثالث:<br>${0}",
+      "percentile": "القيمة المئوية ${percent}:<br>${0}",
+      "percentileBottom": "الأسفل ${percent}%:<br>${0}",
+      "percentileTop": "الأعلى ${percent}%:<br>${0}",
+      "percentile_singleLine": "القيمة المئوية ${percent}: ${0}",
+      "percentileBottom_singleLine": "الأسفل ${percent}%: ${0}",
+      "percentileTop_singleLine": "الأعلى ${percent}%: ${0}",
+      "sd_singleLine": "${sd} SD: ${0}",
+      "tooltip": {
+        "range_single": "<b>${level}</b>بقيمة ضمن <b>${value}</b> : <b>1</b>",
+        "range_single_precise": "<b>${areaName}</b> لديه قيمة <b>${value}</b>.",
+        "range_multi": "<b>${level}</b> بقيمة ضمن <b>${value}</b> : <b>${count}</b>",
+        "thisArea": "<b>هذه المنطقة</b> تمتلك قيمة <b>${value}</b>.",
+        "percentileLower": "<b>${percent}%</b> من <b>${level}</b> لديها قيمة أعلى من <b>${value}</b>.",
+        "percentileUpper": "<b>${percent}%</b> من <b>${level}</b> لديها قيمة أقل من <b>${value}</b>."
+      }
+    }
+  }
+}

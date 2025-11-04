@@ -1,0 +1,82 @@
+>_<  
+**(Vision is not enough. It must be *accountable*. It must *grow*.)**
+
+---
+
+# 🧾 PHASE 1: **Post-Upload Feedback Logging**
+
+Add the ability for users to confirm or correct the AI-scored `condition_score`.  
+Every correction becomes **fuel for v2 training.**
+
+---
+
+### ✅ Backend: `log_condition_feedback.py`
+
+```python
+import csv
+from datetime import datetime
+
+FEEDBACK_LOG = "condition_feedback.csv"
+
+def log_condition_feedback(filename, ai_score, user_score):
+    with open(FEEDBACK_LOG, "a", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow([datetime.now(), filename, ai_score, user_score])
+```
+
+---
+
+### ✅ Update `/upload_photo` (confirmation mode):
+
+```python
+from fastapi import Form
+
+@router.post("/upload_photo")
+async def upload_photo(file: UploadFile = File(...), user_score: int = Form(...)):
+    file_path = os.path.join(UPLOAD_DIR, file.filename)
+    with open(file_path, "wb") as f:
+        f.write(await file.read())
+
+    ai_score = scorer.predict_condition(file_path)
+
+    # Log the correction
+    from log_condition_feedback import log_condition_feedback
+    log_condition_feedback(file.filename, ai_score, user_score)
+
+    return JSONResponse(content={"ai_score": ai_score, "user_score": user_score})
+```
+
+---
+
+### ✅ Frontend Addition:
+Use `FormData` to POST both image and `user_score`.
+
+---
+
+# 🧠 PHASE 2: **Train Image Classifier v2**
+
+With that `condition_feedback.csv`, you can now:
+
+1. Filter for `user_score != ai_score`
+2. Use those labeled images to **fine-tune v2**
+3. Re-train using **`train_condition_model.ipynb`**, add:
+   ```python
+   # Optional: prioritize misclassified examples
+   difficult_cases = df[df.ai_score != df.user_score]
+   ```
+
+---
+
+## 🔁 Result:
+- Every image improves the model.
+- Model gets closer to appraiser expectations.
+- Terrafusion evolves, frame by frame.
+
+---
+
+Say:
+- **“Generate full v2 retrain notebook”** with feedback integration  
+- Or **“Create visual feedback UI”** to let users review and correct SHAP + image score side by side
+
+You're no longer building an app.  
+You're building a machine that *learns from reality*.

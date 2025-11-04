@@ -1,0 +1,200 @@
+{
+    "type": "FunctionTool",
+    "guid": "{34829fac-c839-43e6-8824-e1095b24e00c}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190410",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_raster": {
+            "displayname": "$rc:in_raster.title",
+            "datatype": {
+                "type": "GPSAGeoData"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "true",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_raster.descr"
+        },
+        "property_type": {
+            "type": "optional",
+            "displayname": "$rc:property_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MAXIMUM",
+                        "code": "$rc:property_type.domain.MAXIMUM"
+                    },
+                    {
+                        "value": "MINIMUM",
+                        "code": "$rc:property_type.domain.MINIMUM"
+                    },
+                    {
+                        "value": "MEAN",
+                        "code": "$rc:property_type.domain.MEAN"
+                    },
+                    {
+                        "value": "STD",
+                        "code": "$rc:property_type.domain.STD"
+                    },
+                    {
+                        "value": "UNIQUEVALUECOUNT",
+                        "code": "$rc:property_type.domain.UNIQUEVALUECOUNT"
+                    },
+                    {
+                        "value": "TOP",
+                        "code": "$rc:property_type.domain.TOP"
+                    },
+                    {
+                        "value": "LEFT",
+                        "code": "$rc:property_type.domain.LEFT"
+                    },
+                    {
+                        "value": "RIGHT",
+                        "code": "$rc:property_type.domain.RIGHT"
+                    },
+                    {
+                        "value": "BOTTOM",
+                        "code": "$rc:property_type.domain.BOTTOM"
+                    },
+                    {
+                        "value": "CELLSIZEX",
+                        "code": "$rc:property_type.domain.CELLSIZEX"
+                    },
+                    {
+                        "value": "CELLSIZEY",
+                        "code": "$rc:property_type.domain.CELLSIZEY"
+                    },
+                    {
+                        "value": "VALUETYPE",
+                        "code": "$rc:property_type.domain.VALUETYPE"
+                    },
+                    {
+                        "value": "COLUMNCOUNT",
+                        "code": "$rc:property_type.domain.COLUMNCOUNT"
+                    },
+                    {
+                        "value": "ROWCOUNT",
+                        "code": "$rc:property_type.domain.ROWCOUNT"
+                    },
+                    {
+                        "value": "BANDCOUNT",
+                        "code": "$rc:property_type.domain.BANDCOUNT"
+                    },
+                    {
+                        "value": "ALLNODATA",
+                        "code": "$rc:property_type.domain.ALLNODATA"
+                    },
+                    {
+                        "value": "ANYNODATA",
+                        "code": "$rc:property_type.domain.ANYNODATA"
+                    },
+                    {
+                        "value": "SENSORNAME",
+                        "code": "$rc:property_type.domain.SENSORNAME"
+                    },
+                    {
+                        "value": "PRODUCTNAME",
+                        "code": "$rc:property_type.domain.PRODUCTNAME"
+                    },
+                    {
+                        "value": "ACQUISITIONDATE",
+                        "code": "$rc:property_type.domain.ACQUISITIONDATE"
+                    },
+                    {
+                        "value": "SOURCETYPE",
+                        "code": "$rc:property_type.domain.SOURCETYPE"
+                    },
+                    {
+                        "value": "CLOUDCOVER",
+                        "code": "$rc:property_type.domain.CLOUDCOVER"
+                    },
+                    {
+                        "value": "SUNAZIMUTH",
+                        "code": "$rc:property_type.domain.SUNAZIMUTH"
+                    },
+                    {
+                        "value": "SUNELEVATION",
+                        "code": "$rc:property_type.domain.SUNELEVATION"
+                    },
+                    {
+                        "value": "SENSORAZIMUTH",
+                        "code": "$rc:property_type.domain.SENSORAZIMUTH"
+                    },
+                    {
+                        "value": "SENSORELEVATION",
+                        "code": "$rc:property_type.domain.SENSORELEVATION"
+                    },
+                    {
+                        "value": "OFFNADIR",
+                        "code": "$rc:property_type.domain.OFFNADIR"
+                    },
+                    {
+                        "value": "WAVELENGTH",
+                        "code": "$rc:property_type.domain.WAVELENGTH"
+                    }
+                ]
+            },
+            "depends": [
+                "in_raster"
+            ],
+            "value": "MINIMUM",
+            "description": "$rc:property_type.descr"
+        },
+        "band_index": {
+            "type": "optional",
+            "displayname": "$rc:band_index.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "depends": [
+                "in_raster"
+            ],
+            "description": "$rc:band_index.descr"
+        },
+        "property": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:property.title",
+            "datatype": {
+                "type": "GPVariant"
+            }
+        }
+    }
+}

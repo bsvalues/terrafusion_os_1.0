@@ -1,0 +1,20 @@
+{
+    "set": [
+        "area",
+        "ascii",
+        "change",
+        "close",
+        "conversion",
+        "convert",
+        "create areas",
+        "csv",
+        "geometry",
+        "line",
+        "overlay",
+        "polygon feature class from lines",
+        "region",
+        "transform",
+        "vector",
+        "zone"
+    ]
+}

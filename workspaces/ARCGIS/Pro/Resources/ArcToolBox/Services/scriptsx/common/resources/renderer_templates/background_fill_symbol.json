@@ -1,0 +1,21 @@
+{
+    "type": "esriSFS",
+    "style": "esriSFSSolid",
+    "color": [
+        255,
+        255,
+        255,
+        0
+    ],
+    "outline": {
+        "type": "esriSLS",
+        "style": "esriSLSSolid",
+        "color": [
+            68,
+            68,
+            68,
+            255
+        ],
+        "width": 1.5
+    }
+}

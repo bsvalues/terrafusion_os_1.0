@@ -1,0 +1,13 @@
+{
+    "set": [
+        "connected",
+        "downstream",
+        "loops",
+        "network",
+        "subnetwork",
+        "trace",
+        "traverse",
+        "upstream",
+        "utility network"
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "map": {
+        "aoi_features.descr": "The AOI boundary within which features will be processed.",
+        "aoi_features.title": "Area of Interest Features",
+        "apply_scaling.descr": "<xdoc><p>Specifies whether scaling will be applied to annotation features based on linked cartographic feature reference scale and annotation reference scale.</p><ul><li>Unchecked—No annotation scaling will be applied. This is the default.</li><li>Checked—Annotation scaling will be applied.</li></ul></xdoc>",
+        "apply_scaling.title": "Apply scaling",
+        "description": "Batch updates Aviation-specific annotation layers to streamline chart production and finishing.",
+        "in_anno_layers.descr": "<xdoc><p>The feature-linked annotation layers and the specified sublayers that will be updated.</p><ul><li>Annotation Layers—The input feature-linked annotation layers.</li><li>Sublayers—The sublayers that determine which annotation features will be processed.</li></ul></xdoc>",
+        "in_anno_layers.dt.title1": "Annotation Layers",
+        "in_anno_layers.dt.title2": "Sublayers",
+        "in_anno_layers.title": "Annotation Layers",
+        "in_map.descr": "<xdoc><p>The input map for this tool, which will update the domains for the <span class=\"esri_uicontrol\">Annotation Layers</span> parameter value.</p></xdoc>",
+        "in_map.title": "Map",
+        "out_anno_layers.title": "Output Annotation Layers",
+        "summary": "<xdoc><p>Batch updates Aviation-specific annotation layers to streamline chart production and finishing.</p><p>This tool reapplies the label expressions for each annotation class in the input annotation layers. This will propagate any changes made to the label expressions to each annotation feature without having to regenerate all new annotation features. This is useful to implement any specification changes to chart annotation, as well as while developing and testing new annotation label expressions. You can also use this tool to apply scaling to annotation features to output them in a uniform size on charts of varying scales.</p><p>A geodatabase annotation feature class is stored with a defined, single reference scale. Annotation contains a <span class=\"esri_fieldname\">FontSize</span> field defining its size. Aviation annotation may also have its <span class=\"esri_fieldname\">TextString</span> field populated with text formatting tags containing font size values, which override the annotation&apos;s <span class=\"esri_fieldname\">FontSize</span> field value. These font size values reflect the font size of the annotation only when rendered in a map viewed at the reference scale of the annotation feature class. However, the annotation feature class may need to appear in a uniform font size in page units on charts produced at varying reference scales.<note type=\"note\"/><p group=\"note\">When the output chart scale does not match the reference scale of the annotation feature class, the annotation will render at an unintended size. In this case, the font sizes of the individual annotation features must be scaled to compensate for the difference.</p></p></xdoc>",
+        "title": "Update Aviation Annotation"
+    }
+}

@@ -1,0 +1,340 @@
+{% extends "base.html" %}
+
+{% block title %}CMA Report: {{ report.subject_address }} | TerraMiner{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-transparent p-0 mb-0">
+                <li class="breadcrumb-item"><a href="{{ url_for('cma_ui.cma_home') }}">CMA Home</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('cma_ui.list_reports') }}">Reports</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Report Details</li>
+            </ol>
+        </nav>
+        <div class="btn-group">
+            <a href="{{ url_for('cma_ui.cma_generator') }}" class="btn btn-outline-primary">
+                <i class="fas fa-plus mr-2"></i> New Report
+            </a>
+            <button type="button" class="btn btn-outline-secondary" onclick="window.print()">
+                <i class="fas fa-print mr-2"></i> Print
+            </button>
+            <button type="button" class="btn btn-outline-danger" onclick="confirmDelete({{ report.id }}, '{{ report.subject_address }}')">
+                <i class="fas fa-trash mr-2"></i> Delete
+            </button>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Comparative Market Analysis Report</h2>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h4>Subject Property</h4>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ report.subject_address }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">{{ report.subject_city }}, {{ report.subject_state }} {{ report.subject_zip }}</h6>
+                            <div class="row mt-3">
+                                <div class="col-6 col-md-3">
+                                    <div class="text-muted small">Property Type</div>
+                                    <div>{{ report.subject_property_type }}</div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="text-muted small">Bedrooms</div>
+                                    <div>{{ report.subject_beds }}</div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="text-muted small">Bathrooms</div>
+                                    <div>{{ report.subject_baths }}</div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="text-muted small">Square Ft</div>
+                                    <div>{{ report.subject_sqft|format_number }}</div>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-6 col-md-3">
+                                    <div class="text-muted small">Year Built</div>
+                                    <div>{{ report.subject_year_built }}</div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="text-muted small">Lot Size</div>
+                                    <div>{{ report.subject_lot_size|format_number }} sqft</div>
+                                </div>
+                                {% if report.subject_price %}
+                                <div class="col-6 col-md-3">
+                                    <div class="text-muted small">List Price</div>
+                                    <div>${{ report.subject_price|format_number }}</div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h4>Property Valuation</h4>
+                    <div class="card">
+                        <div class="card-body">
+                            {% if report.valuation and report.valuation.estimated_value %}
+                                <div class="text-center">
+                                    <h2 class="text-primary mb-0">${{ report.valuation.estimated_value|format_number }}</h2>
+                                    <div class="text-muted mb-3">Estimated Market Value</div>
+                                    
+                                    {% if report.valuation.value_range %}
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span>${{ report.valuation.value_range.low|format_number }}</span>
+                                            <span class="text-muted small">Value Range</span>
+                                            <span>${{ report.valuation.value_range.high|format_number }}</span>
+                                        </div>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar bg-primary" role="progressbar" style="width: 100%"></div>
+                                        </div>
+                                    {% endif %}
+                                    
+                                    {% if report.valuation.confidence %}
+                                        <div class="mt-3">
+                                            <span class="badge badge-primary">{{ report.valuation.confidence }}% Confidence</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                {% if report.valuation.price_per_sqft %}
+                                    <div class="mt-4">
+                                        <div class="row">
+                                            <div class="col-6 text-center">
+                                                <div class="text-muted small">Price Per SqFt</div>
+                                                <div>${{ report.valuation.price_per_sqft }}</div>
+                                            </div>
+                                            <div class="col-6 text-center">
+                                                <div class="text-muted small">Neighborhood Avg</div>
+                                                <div>${{ report.valuation.neighborhood_avg_price_per_sqft }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="fas fa-calculator fa-3x text-muted mb-3"></i>
+                                    <h5>No valuation available</h5>
+                                    <p class="text-muted">Insufficient data to generate a valuation</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparable Properties Section -->
+            <h4 class="mb-3">Comparable Properties</h4>
+            
+            {% if report.comparables and report.comparables|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Property</th>
+                                <th>Price</th>
+                                <th>Beds</th>
+                                <th>Baths</th>
+                                <th>Sqft</th>
+                                <th>Year</th>
+                                <th>Price/Sqft</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="table-primary">
+                                <td><strong>{{ report.subject_address }}</strong><br><small>{{ report.subject_city }}</small></td>
+                                <td>
+                                    {% if report.valuation and report.valuation.estimated_value %}
+                                        <strong>${{ report.valuation.estimated_value|format_number }}</strong>
+                                    {% elif report.subject_price %}
+                                        <strong>${{ report.subject_price|format_number }}</strong>
+                                    {% else %}
+                                        <span class="text-muted">N/A</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ report.subject_beds }}</td>
+                                <td>{{ report.subject_baths }}</td>
+                                <td>{{ report.subject_sqft|format_number }}</td>
+                                <td>{{ report.subject_year_built }}</td>
+                                <td>
+                                    {% if report.valuation and report.valuation.price_per_sqft %}
+                                        ${{ report.valuation.price_per_sqft }}
+                                    {% else %}
+                                        <span class="text-muted">N/A</span>
+                                    {% endif %}
+                                </td>
+                                <td><span class="badge badge-secondary">Subject</span></td>
+                            </tr>
+                            
+                            {% for comp in report.comparables %}
+                                <tr>
+                                    <td>{{ comp.address }}<br><small>{{ comp.city }}</small></td>
+                                    <td>${{ comp.price|format_number }}</td>
+                                    <td>{{ comp.beds }}</td>
+                                    <td>{{ comp.baths }}</td>
+                                    <td>{{ comp.sqft|format_number }}</td>
+                                    <td>{{ comp.year_built }}</td>
+                                    <td>${{ (comp.price / comp.sqft)|round|int }}</td>
+                                    <td>
+                                        {% if comp.status == 'active' %}
+                                            <span class="badge badge-success">Active</span>
+                                        {% elif comp.status == 'pending' %}
+                                            <span class="badge badge-warning">Pending</span>
+                                        {% elif comp.status == 'sold' %}
+                                            <span class="badge badge-dark">Sold</span>
+                                        {% else %}
+                                            <span class="badge badge-secondary">{{ comp.status|title }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="card">
+                    <div class="card-body text-center p-4">
+                        <i class="fas fa-home fa-3x text-muted mb-3"></i>
+                        <h5>No comparable properties found</h5>
+                        <p class="text-muted">No comparable properties were found in this area.</p>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if report.market_trends %}
+                <!-- Market Trends Section -->
+                <h4 class="mt-5 mb-3">Market Trends</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">Price Trends</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="priceTrendsChart" style="height: 250px;">
+                                    <!-- Chart will be rendered here -->
+                                    <div class="text-center text-muted p-4">
+                                        <i class="fas fa-chart-line fa-2x mb-3"></i>
+                                        <p>Price trends chart would appear here.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">Market Statistics</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="text-muted small">Median Price</div>
+                                        <div>${{ report.market_trends.median_price|format_number }}</div>
+                                        <div class="text-muted small mt-3">YoY Price Change</div>
+                                        <div class="{% if report.market_trends.yoy_price_change > 0 %}text-success{% elif report.market_trends.yoy_price_change < 0 %}text-danger{% endif %}">
+                                            {{ report.market_trends.yoy_price_change }}%
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="text-muted small">Avg Days on Market</div>
+                                        <div>{{ report.market_trends.avg_days_on_market }} days</div>
+                                        <div class="text-muted small mt-3">Inventory</div>
+                                        <div>{{ report.market_trends.inventory }} homes</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if report.ai_insights %}
+                <!-- AI Insights Section -->
+                <h4 class="mt-4 mb-3">AI Insights</h4>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                            {% if report.ai_insights.key_highlights %}
+                                <div class="col-md-6">
+                                    <h5><i class="fas fa-lightbulb text-warning mr-2"></i> Key Highlights</h5>
+                                    <ul class="list-group list-group-flush">
+                                        {% for highlight in report.ai_insights.key_highlights %}
+                                            <li class="list-group-item">{{ highlight }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                            
+                            {% if report.ai_insights.recommendations %}
+                                <div class="col-md-6">
+                                    <h5><i class="fas fa-clipboard-check text-success mr-2"></i> Recommendations</h5>
+                                    <ul class="list-group list-group-flush">
+                                        {% for recommendation in report.ai_insights.recommendations %}
+                                            <li class="list-group-item">{{ recommendation }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        {% if report.ai_insights.analysis %}
+                            <div class="mt-4">
+                                <h5><i class="fas fa-chart-pie text-primary mr-2"></i> Analysis</h5>
+                                <div class="p-3 bg-light rounded">
+                                    {{ report.ai_insights.analysis|safe }}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="text-muted small mt-4">
+                <div>Report generated on {{ report.created_at|format_datetime if report.created_at else 'Unknown date' }}</div>
+                <div>Report ID: {{ report.id }}</div>
+                <div class="mt-2">
+                    <em>This comparative market analysis report is based on available public data and should be used for informational purposes only. 
+                    It is not an appraisal or guarantee of value. Actual property value may vary based on numerous factors not accounted for in this analysis.</em>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmModalLabel">Confirm Delete</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete the CMA report for <span id="deletePropertyName" class="font-weight-bold">{{ report.subject_address }}</span>?
+                <p class="text-danger mt-2 mb-0">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <form id="deleteReportForm" method="post" action="{{ url_for('cma_ui.delete_report', report_id=report.id) }}">
+                    <button type="submit" class="btn btn-danger">Delete Report</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmDelete(reportId, propertyAddress) {
+        document.getElementById('deletePropertyName').textContent = propertyAddress;
+        $('#deleteConfirmModal').modal('show');
+    }
+</script>
+{% endblock %}

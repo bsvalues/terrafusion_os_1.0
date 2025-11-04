@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.ServiceBus.DTOs</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.ServiceBus.DTOs.RegisteredClientDTO">
+            <summary>
+            DTO Containing information about a registered client.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.ServiceBus.DTOs.RegisteredClientDTO.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.ServiceBus.DTOs.RegisteredClientDTO.#ctor(System.Int32,System.String)">
+            <summary>
+            Class constructor -- creates a valid instance of the registered client
+            </summary>
+            <param name="id">the id of the client</param>
+            <param name="endpoint">The Endpoint being registered</param>
+        </member>
+        <member name="P:TrueAutomation.ServiceBus.DTOs.RegisteredClientDTO.Id">
+            <summary>
+            The unique identifier of the object
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.ServiceBus.DTOs.RegisteredClientDTO.EndPoint">
+            <summary>
+            The client's service bus endpoint
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.ServiceBus.DTOs.RegisteredClientDTO.DateConnected">
+            <summary>
+            The timestamp the Client First Connected
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.ServiceBus.DTOs.RegisteredClientDTO.LastUpdated">
+            <summary>
+            The timestamp of when the client last confirmed they were alive.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.ServiceBus.DTOs.RegisteredClientDTO.isActive">
+            <summary>
+            Flag to determine if the client is still active or not.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.ServiceBus.DTOs.RegisteredClientDTO.InstanceSubscriptionKey">
+            <summary>
+            The current key of the connection
+            </summary>
+        </member>
+    </members>
+</doc>

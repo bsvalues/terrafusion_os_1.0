@@ -1,0 +1,316 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.AccessControl.Domain</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.AccessControl.Domain.ACL">
+            <summary>
+            Represents an ACL for a Security Descriptor
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.ACL.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.ACL.#ctor(TrueAutomation.AccessControl.Domain.Permission)">
+            <summary>
+            Class constructor -- initializes an instance of the class
+            with valid data.
+            </summary>
+            <param name="permission"></param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.ACL.#ctor(TrueAutomation.AccessControl.DTOs.ACLDTO)">
+            <summary>
+            Constructor to build an ACL from its DTO
+            </summary>
+            <param name="acl">ACL DTO</param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.ACL.ToDTO">
+            <summary>
+            Converts the ACL Entry to a DTO
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.ACL.AddACLEntry(TrueAutomation.AccessControl.Domain.ACLEntry)">
+            <summary>
+            Add an ACLEntry to the ACL
+            </summary>
+            <param name="entry"></param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.ACL.RemoveACLEntry(TrueAutomation.AccessControl.Domain.ACLEntry)">
+            <summary>
+            Remove an entry from the list of entries
+            </summary>
+            <param name="entry">ACLEntry</param>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.Domain.ACL.Entries">
+            <summary>
+            The List of Parties and their respective Allow/Deny rights
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.Domain.ACL.Permission">
+            <summary>
+            The Access Type of the ACL
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.AccessControl.Domain.ACLEntry">
+            <summary>
+            Represents an ACL Entry for an ACL
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.ACLEntry.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.ACLEntry.#ctor(TrueAutomation.AccessControl.DTOs.ACLEntryDTO)">
+            <summary>
+            Constructor to create an ACLEntry object from its DTO
+            </summary>
+            <param name="aclEntry">ACLEntryDTO</param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.ACLEntry.#ctor(System.Guid,System.Boolean,TrueAutomation.AccessControl.Domain.ACL,System.Guid)">
+            <summary>
+            Class constructor -- initializes an instance of the class
+            with valid data.
+            </summary>
+            <param name="partyId"></param>
+            <param name="allow"></param>
+            <param name="acl"></param>
+            <param name="securityDescriptorId"></param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.ACLEntry.ToDTO">
+            <summary>
+            Converts the ACL Entry to a DTO
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.Domain.ACLEntry.PartyId">
+            <summary>
+            The Party Id attached to the ACL Entry
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.Domain.ACLEntry.Allow">
+            <summary>
+            Whether or not the Party in question has allow permissions on the ACL (alternative is deny)
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.Domain.ACLEntry.IsUser">
+            <summary>
+            Whether or not the Party in question has allow permissions on the ACL (alternative is deny)
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.Domain.ACLEntry.Acl">
+            <summary>
+            The ACL attached to the ACL Entry
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.Domain.ACLEntry.SecurityDescriptorId">
+            <summary>
+            The SecurityDescriptor attached to the ACL Entry
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.AccessControl.Domain.ApplicationPermission">
+            <summary>
+            Represents a ApplicationPermission for the purposes of security 
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="T:TrueAutomation.AccessControl.Domain.Permission">
+            <summary>
+            Represents a Permission Access Type for an ACL (such as read, write, owner).
+            The ACLType is marked as string instead of Enum as Fluent tries to map it to an integer value in the database instead of string.
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.Permission.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.Permission.#ctor(TrueAutomation.AccessControl.DTOs.ACLType,System.String)">
+            <summary>
+            Class constructor -- initializes an instance of the class
+            with valid data.
+            </summary>
+            <param name="code">The code of the access type</param>
+            <param name="description">The description of the access type</param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.Permission.#ctor(TrueAutomation.AccessControl.DTOs.PermissionDTO)">
+            <summary>
+            Constructor to build a Permission object from its DTO
+            </summary>
+            <param name="permission">Permission DTO</param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.Permission.AddACL(TrueAutomation.AccessControl.Domain.ACL)">
+            <summary>
+            Add an ACL to the Security Descriptor
+            </summary>
+            <param name="acl">ACL</param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.Permission.RemoveACL(TrueAutomation.AccessControl.Domain.ACL)">
+            <summary>
+            Remove an ACL from the Security Descriptor
+            </summary>
+            <param name="acl">ACL</param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.Permission.ToDTO">
+            <summary>
+            Converts the Access Type to a DTO
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.Domain.Permission.ACLs">
+            <summary>
+            The List of ACLs in the Access Type
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.Domain.Permission.Code">
+            <summary>
+            The type of permission being used
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.Domain.Permission.Description">
+            <summary>
+            The description of the access type
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.Domain.Permission.SecurityDescriptorEntry">
+            <summary>
+            Back Reference to the Security Descriptor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.ApplicationPermission.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.ApplicationPermission.#ctor(System.String,System.String)">
+            <summary>
+            Class constructor -- initializes an instance of the class
+            with valid data.
+            </summary>
+            <param name="targetApp"></param>
+            <param name="description"></param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.ApplicationPermission.ToDTO">
+            <summary>
+            Converts the ApplicationPermission to a DTO
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.Domain.ApplicationPermission.TargetApp">
+            <summary>
+            The Target app
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.AccessControl.Domain.SecurityDescriptor">
+            <summary>
+            Represents a SecurityDescriptor
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.SecurityDescriptor.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.SecurityDescriptor.#ctor(System.String)">
+            <summary>
+            Class constructor -- initializes an instance of the class
+            with valid data.
+            </summary>
+            <param name="name"></param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.SecurityDescriptor.ToDTO">
+            <summary>
+            Converts the SecurityDescriptor to a DTO
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.SecurityDescriptor.AddSecurityDescriptorEntry(TrueAutomation.AccessControl.Domain.SecurityDescriptorEntry)">
+            <summary>
+            Method to Add a Security Descriptor Entry to a Security descriptor
+            </summary>
+            <param name="entry">SecurityDescriptorEntry</param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.SecurityDescriptor.RemoveSecurityDescriptorEntry(TrueAutomation.AccessControl.Domain.SecurityDescriptorEntry)">
+            <summary>
+            Method to remove a Security Descriptor Entry from a Security descriptor
+            </summary>
+            <param name="entry">SecurityDescriptorEntry</param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.SecurityDescriptor.UpdateFromDTO(TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO)">
+            <summary>
+            Method to Update a Security Descriptor with the DTO
+            </summary>
+            <param name="dto">SecurityDescriptorDTO</param>
+            <returns>Updated SecurityDescriptor</returns>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.Domain.SecurityDescriptor.SecurityDescriptorEntries">
+            <summary>
+            The List of SecurityDescriptorEntries in the Security Descriptor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.Domain.SecurityDescriptor.Name">
+            <summary>
+            The name of the Security Descriptor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.Domain.SecurityDescriptor.UsersCount">
+            <summary>
+            The count of users with security
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.Domain.SecurityDescriptor.GroupsCount">
+            <summary>
+            The count of groups with security
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.AccessControl.Domain.SecurityDescriptorEntry">
+            <summary>
+            Represents a SecurityDescriptorEntry for the purposes of security 
+            </summary>
+            <remarks></remarks>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.SecurityDescriptorEntry.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.SecurityDescriptorEntry.#ctor(TrueAutomation.AccessControl.Domain.SecurityDescriptor)">
+            <summary>
+            Class constructor -- initializes an instance of the class
+            with valid data.
+            </summary>
+            <param name="securityDescriptor">SecurityDescriptor</param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.SecurityDescriptorEntry.#ctor(TrueAutomation.AccessControl.DTOs.SecurityDescriptorEntryDTO)">
+            <summary>
+            Constructor to create a SecurityDescriptorEntry object from its DTO
+            </summary>
+            <param name="securityDescriptorDTO">SecurityDescriptorEntryDTO</param>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.SecurityDescriptorEntry.ToDTO">
+            <summary>
+            Converts the SecurityDescriptorEntry to a DTO
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.AccessControl.Domain.SecurityDescriptorEntry.UpdateFromDTO(TrueAutomation.AccessControl.DTOs.SecurityDescriptorEntryDTO)">
+            <summary>
+            Method to Update a Security Descriptor Entry with the DTO
+            </summary>
+            <param name="dto">SecurityDescriptorEntryDTO</param>
+            <returns>Updated SecurityDescriptorEntry</returns>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.Domain.SecurityDescriptorEntry.SecurityDescriptor">
+            <summary>
+            The User attached to the this UserSignOn
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.AccessControl.Domain.SecurityDescriptorEntry.Permission">
+            <summary>
+            Permission associated with this Security descriptor entry
+            </summary>
+        </member>
+    </members>
+</doc>

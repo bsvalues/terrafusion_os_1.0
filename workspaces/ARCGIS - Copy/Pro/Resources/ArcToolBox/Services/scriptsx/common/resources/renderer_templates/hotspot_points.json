@@ -1,0 +1,195 @@
+{
+    "renderer": {
+        "type": "uniqueValue",
+        "field1": "Gi_Bin",
+        "uniqueValueInfos": [
+            {
+                "symbol": {
+                    "type": "esriSMS",
+                    "style": "esriSMSCircle",
+                    "color": [
+                        69,
+                        117,
+                        181,
+                        255
+                    ],
+                    "size": 6,
+                    "angle": 0,
+                    "xoffset": 0,
+                    "yoffset": 0,
+                    "outline": {
+                        "color": [
+                            56,
+                            96,
+                            148,
+                            255
+                        ],
+                        "width": 0.5
+                    }
+                },
+                "value": -3,
+                "label": "Cold Spot with 99% Confidence",
+                "description": ""
+            },
+            {
+                "symbol": {
+                    "type": "esriSMS",
+                    "style": "esriSMSCircle",
+                    "color": [
+                        132,
+                        158,
+                        186,
+                        255
+                    ],
+                    "size": 6,
+                    "angle": 0,
+                    "xoffset": 0,
+                    "yoffset": 0,
+                    "outline": {
+                        "color": [
+                            112,
+                            134,
+                            158,
+                            255
+                        ],
+                        "width": 0.5
+                    }
+                },
+                "value": -2,
+                "label": "Cold Spot with 95% Confidence",
+                "description": ""
+            },
+            {
+                "symbol": {
+                    "type": "esriSMS",
+                    "style": "esriSMSCircle",
+                    "color": [
+                        192,
+                        204,
+                        190,
+                        255
+                    ],
+                    "size": 6,
+                    "angle": 0,
+                    "xoffset": 0,
+                    "yoffset": 0,
+                    "outline": {
+                        "color": [
+                            154,
+                            163,
+                            152,
+                            255
+                        ],
+                        "width": 0.5
+                    }
+                },
+                "value": -1,
+                "label": "Cold Spot with 90% Confidence",
+                "description": ""
+            },
+            {
+                "symbol": {
+                    "type": "esriSMS",
+                    "style": "esriSMSCircle",
+                    "color": [
+                        156,
+                        156,
+                        156,
+                        255
+                    ],
+                    "size": 3,
+                    "angle": 0,
+                    "xoffset": 0,
+                    "yoffset": 0
+                },
+                "value": 0,
+                "label": "Not Significant",
+                "description": ""
+            },
+            {
+                "symbol": {
+                    "type": "esriSMS",
+                    "style": "esriSMSCircle",
+                    "color": [
+                        250,
+                        185,
+                        132,
+                        255
+                    ],
+                    "size": 6,
+                    "angle": 0,
+                    "xoffset": 0,
+                    "yoffset": 0,
+                    "outline": {
+                        "color": [
+                            212,
+                            157,
+                            112,
+                            255
+                        ],
+                        "width": 0.5
+                    }
+                },
+                "value": 1,
+                "label": "Hot Spot with 90% Confidence",
+                "description": ""
+            },
+            {
+                "symbol": {
+                    "type": "esriSMS",
+                    "style": "esriSMSCircle",
+                    "color": [
+                        237,
+                        117,
+                        81,
+                        255
+                    ],
+                    "size": 6,
+                    "angle": 0,
+                    "xoffset": 0,
+                    "yoffset": 0,
+                    "outline": {
+                        "color": [
+                            207,
+                            102,
+                            70,
+                            255
+                        ],
+                        "width": 0.5
+                    }
+                },
+                "value": 2,
+                "label": "Hot Spot with 95% Confidence",
+                "description": ""
+            },
+            {
+                "symbol": {
+                    "type": "esriSMS",
+                    "style": "esriSMSCircle",
+                    "color": [
+                        214,
+                        41,
+                        39,
+                        255
+                    ],
+                    "size": 6,
+                    "angle": 0,
+                    "xoffset": 0,
+                    "yoffset": 0,
+                    "outline": {
+                        "color": [
+                            176,
+                            39,
+                            32,
+                            255
+                        ],
+                        "width": 0.5
+                    }
+                },
+                "value": 3,
+                "label": "Hot Spot with 99% Confidence",
+                "description": ""
+            }
+        ]
+    }
+}

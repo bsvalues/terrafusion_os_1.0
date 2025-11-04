@@ -1,0 +1,13 @@
+{
+    "set": [
+        "assign class codes",
+        "classification",
+        "las classification",
+        "ndvi",
+        "point cloud",
+        "lidar classification",
+        "near-infrared imagery",
+        "vegetation",
+        "water"
+    ]
+}

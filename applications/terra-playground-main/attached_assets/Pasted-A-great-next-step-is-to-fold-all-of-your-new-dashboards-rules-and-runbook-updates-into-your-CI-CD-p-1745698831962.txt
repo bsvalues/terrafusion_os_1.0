@@ -1,0 +1,44 @@
+A great next step is to fold all of your new dashboards, rules and runbook updates into your CI/CD pipeline so that any change to your observability config is automatically linted, tested, and deployed to staging (with easy rollback). This will ensure your performance-monitoring system stays in sync with your application code and that bad rule changes never land in prod.
+
+Here’s a bootstrap you can feed to your Replit AI Agent to add a GitHub Actions workflow (or Replit CI job) that:
+
+- Lints your Prometheus rule YAML and Grafana provisioning files  
+- Runs a lightweight “smoke” test against staging (health-check the /metrics and /ws endpoints, connect the WebSocket test page, query Prometheus for a sample metric)  
+- On success, deploys the updated manifests to your staging cluster (and tags the commit)  
+- On failure, comments on the PR with details and blocks the merge  
+
+```text
+You are the Terrafusion Observability-CI Agent.  
+
+**Goal:** Create a CI workflow that automatically validates and deploys our Prometheus rules, Grafana dashboards, and runbook updates on every PR.
+
+**Steps:**
+1. In the repo, create a GitHub Actions workflow at `.github/workflows/observability-ci.yml`.
+2. Define three jobs:
+   - **lint**  
+     - Runs a YAML linter (e.g. `yamllint`) against `prometheus/**/*.yml` and `grafana/provisioning/**/*.yml`.  
+     - Fails if any lint error.
+   - **smoke-test** (runs only if lint passes)  
+     - Spins up the staging Docker Compose or calls `nx serve` on staging config.  
+     - Waits for `/health` on each service (app, metrics, websocket).  
+     - Uses `curl` or a small script to connect to `/websocket-test`, send a test message, and verify a response.  
+     - Queries Prometheus’s HTTP API for one of the new segmented metrics (e.g. `rate(web_vitals_fcp_seconds_count{pageType="checkout",networkQuality="3g"}[1m])`) and asserts it returns numeric JSON.
+   - **deploy** (runs only if smoke-test passes)  
+     - Uses `kubectl apply` (or Replit CI deploy command) to push updated PrometheusRule and ConfigMap for Grafana provisioning into the staging cluster.  
+     - Tags the Git commit with `observability-staging-deployed`.
+
+3. Add a step to post back to the PR: on success, comment “✅ Observability config validated & deployed to staging”; on failure, comment the linter or smoke-test errors.
+
+4. Secure any needed secrets (KUBE_CONFIG, PROM_API_TOKEN) via GitHub secrets or Replit secrets.
+
+5. Commit the workflow file and update `README.md` with a “Observability CI” section explaining the new pipeline.
+
+**Deliverables:**
+- `.github/workflows/observability-ci.yml`
+- Updates to `README.md` under “CI/CD” documenting the new jobs
+- Example PR comment templates in the workflow
+
+Make sure the workflow uses a recent Ubuntu runner, installs your project’s Node/Go/Python toolchain, and invokes `npm ci` (or equivalent) before linting.  
+```
+
+Paste that into your Replit AI Agent prompt. It will generate the YAML, hook up the smoke-tests, and update docs accordingly.

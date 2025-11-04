@@ -1,0 +1,13 @@
+{
+    "set": [
+        "ascii",
+        "common scale",
+        "group",
+        "reclass",
+        "reclassification",
+        "reclassify",
+        "remap",
+        "replace",
+        "replace values"
+    ]
+}

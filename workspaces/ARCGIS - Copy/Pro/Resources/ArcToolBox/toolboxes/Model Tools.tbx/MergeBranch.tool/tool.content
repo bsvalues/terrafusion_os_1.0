@@ -1,0 +1,33 @@
+{
+    "type": "FunctionTool",
+    "guid": "{2057b23b-6707-4ea8-bdd2-d31b7e68c70c}",
+    "displayname": "$rc:title",
+    "helpcontent": "3070007",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "multiref",
+        "no_data_change"
+    ],
+    "params": {
+        "in_values": {
+            "type": "optional",
+            "displayname": "$rc:in_values.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPType"
+                }
+            },
+            "description": "$rc:in_values.descr"
+        },
+        "out_value": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_value.title",
+            "datatype": {
+                "type": "GPType"
+            }
+        }
+    }
+}

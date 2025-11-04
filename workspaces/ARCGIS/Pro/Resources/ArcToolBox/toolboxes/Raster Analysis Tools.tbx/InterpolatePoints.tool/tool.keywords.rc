@@ -1,0 +1,11 @@
+{
+    "set": [
+        "ebk",
+        "empirical bayesian kriging",
+        "generate surface",
+        "geostat",
+        "interpolate",
+        "kriging",
+        "pattern"
+    ]
+}

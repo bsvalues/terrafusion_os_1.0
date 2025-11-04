@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Creates a copy of a triangulated irregular network (TIN) dataset.",
+        "in_tin.descr": "The TIN that will be copied.",
+        "in_tin.title": "Input TIN",
+        "out_tin.descr": "The TIN dataset that will be generated.",
+        "out_tin.title": "Output TIN",
+        "title": "Copy TIN",
+        "version.descr": "<xdoc><p>The version of the output TIN.</p><ul><li><span title=\"CURRENT\">Current</span>—The current TIN version, which supports constrained Delaunay triangulation, enhanced spatial reference information, and storage of node source and edge tag values. The resulting TIN will not be backward compatible with versions of ArcGIS prior to 10.0. This is the default.</li><li><span title=\"PRE_10.0\">Pre 10.0</span>—The TIN will be backward compatible with versions of ArcGIS prior to 10.0, which only supports conforming Delaunay triangulation.</li></ul></xdoc>",
+        "version.domain.CURRENT": "Current",
+        "version.domain.PRE_10.0": "Pre 10.0",
+        "version.title": "Version"
+    }
+}

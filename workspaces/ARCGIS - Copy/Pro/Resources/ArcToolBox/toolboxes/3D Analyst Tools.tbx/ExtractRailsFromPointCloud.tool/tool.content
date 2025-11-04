@@ -1,0 +1,264 @@
+{
+    "type": "FunctionTool",
+    "guid": "{dd385e58-c311-4d7f-a285-99dbe7d4f42a}",
+    "displayname": "$rc:title",
+    "helpcontent": "5030008",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9"
+    ],
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_point_cloud": {
+            "display_order": "0",
+            "displayname": "$rc:in_point_cloud.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPLasDatasetLayer"
+                    },
+                    {
+                        "type": "GPSceneServiceLayer"
+                    },
+                    {
+                        "type": "DEFile"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "GPSceneServiceLayerDomain",
+                        "servicelayertype": [
+                            "ServiceLayerTypePointCloud"
+                        ]
+                    },
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "las",
+                            "lasd",
+                            "zlas",
+                            "slpk"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:in_point_cloud.descr"
+        },
+        "class_codes": {
+            "display_order": "1",
+            "displayname": "$rc:class_codes.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPLong"
+                }
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "255"
+            },
+            "description": "$rc:class_codes.descr"
+        },
+        "out_3d_lines": {
+            "direction": "out",
+            "display_order": "5",
+            "displayname": "$rc:out_3d_lines.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_3d_lines.descr"
+        },
+        "rail_standard": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:rail_standard.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "US_115_RE",
+                        "code": "$rc:rail_standard.domain.US_115_RE"
+                    },
+                    {
+                        "value": "US_132_RE",
+                        "code": "$rc:rail_standard.domain.US_132_RE"
+                    },
+                    {
+                        "value": "US_141_RE",
+                        "code": "$rc:rail_standard.domain.US_141_RE"
+                    },
+                    {
+                        "value": "EU_UIC_54",
+                        "code": "$rc:rail_standard.domain.EU_UIC_54"
+                    },
+                    {
+                        "value": "EU_UIC_60",
+                        "code": "$rc:rail_standard.domain.EU_UIC_60"
+                    },
+                    {
+                        "value": "CUSTOM",
+                        "code": "$rc:rail_standard.domain.CUSTOM"
+                    }
+                ]
+            },
+            "value": "US_115_RE",
+            "description": "$rc:rail_standard.descr"
+        },
+        "out_3d_centerlines": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "6",
+            "displayname": "$rc:out_3d_centerlines.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_3d_centerlines.descr"
+        },
+        "track_gauge": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:track_gauge.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "1435 Millimeters",
+            "description": "$rc:track_gauge.descr"
+        },
+        "rail_thickness": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:rail_thickness.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "66.675 Millimeters",
+            "description": "$rc:rail_thickness.descr"
+        },
+        "horizontal_smoothing_kernel_distance": {
+            "type": "optional",
+            "display_order": "12",
+            "displayname": "$rc:horizontal_smoothing_kernel_distance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "0.8 Meters",
+            "category": "$rc:params.category1",
+            "description": "$rc:horizontal_smoothing_kernel_distance.descr"
+        },
+        "vertical_smoothing_kernel_distance": {
+            "type": "optional",
+            "display_order": "13",
+            "displayname": "$rc:vertical_smoothing_kernel_distance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "10 Meters",
+            "category": "$rc:params.category1",
+            "description": "$rc:vertical_smoothing_kernel_distance.descr"
+        },
+        "horizontal_rail_tolerance": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:horizontal_rail_tolerance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "10 Centimeters",
+            "category": "$rc:params.category2",
+            "description": "$rc:horizontal_rail_tolerance.descr"
+        },
+        "vertical_rail_tolerance": {
+            "type": "optional",
+            "display_order": "11",
+            "displayname": "$rc:vertical_rail_tolerance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "3 Centimeters",
+            "category": "$rc:params.category2",
+            "description": "$rc:vertical_rail_tolerance.descr"
+        },
+        "centerline_alignment_tolerance": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:centerline_alignment_tolerance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "50 Millimeters",
+            "category": "$rc:params.category2",
+            "description": "$rc:centerline_alignment_tolerance.descr"
+        },
+        "rail_crown_detection_radius": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:rail_crown_detection_radius.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "20 Meters",
+            "category": "$rc:params.category2",
+            "description": "$rc:rail_crown_detection_radius.descr"
+        },
+        "horizontal_simplification_tolerance": {
+            "type": "optional",
+            "display_order": "14",
+            "displayname": "$rc:horizontal_simplification_tolerance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "2 Millimeters",
+            "category": "$rc:params.category1",
+            "description": "$rc:horizontal_simplification_tolerance.descr"
+        },
+        "vertical_simplification_tolerance": {
+            "type": "optional",
+            "display_order": "15",
+            "displayname": "$rc:vertical_simplification_tolerance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "2 Millimeters",
+            "category": "$rc:params.category1",
+            "description": "$rc:vertical_simplification_tolerance.descr"
+        },
+        "min_line_length": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:min_line_length.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "1 Meters",
+            "description": "$rc:min_line_length.descr"
+        }
+    },
+    "environments": [
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "ZDomain",
+        "ZResolution",
+        "ZTolerance",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "gpuID",
+        "outputCoordinateSystem",
+        "processorType"
+    ]
+}

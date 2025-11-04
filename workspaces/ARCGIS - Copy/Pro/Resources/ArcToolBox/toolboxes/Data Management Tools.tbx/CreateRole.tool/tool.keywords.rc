@@ -1,0 +1,11 @@
+{
+    "set": [
+        "enterprise",
+        "geodatabase administration",
+        "group roles",
+        "oracle",
+        "postgresql",
+        "privilege",
+        "sql server"
+    ]
+}

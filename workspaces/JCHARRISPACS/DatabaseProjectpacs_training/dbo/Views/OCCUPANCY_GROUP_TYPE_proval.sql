@@ -1,0 +1,10 @@
+create view OCCUPANCY_GROUP_TYPE_proval as
+SELECT TOP 1000 [ID]
+      ,[VALUATION_METHOD_ID]
+      ,[CODE]
+      ,[GROUP_TYPE_SHORT_NAME]
+      ,[GROUP_TYPE_FULL_NAME]
+  FROM [mvp_cost_3Q2016].[mvp].[OCCUPANCY_GROUP_TYPE]
+
+GO
+

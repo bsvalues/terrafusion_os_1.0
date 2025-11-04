@@ -1,0 +1,45 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "3400003",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_workbook": {
+            "displayname": "$rc:in_workbook.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "xlsx"
+                ]
+            },
+            "description": "$rc:in_workbook.descr"
+        },
+        "out_folder": {
+            "displayname": "$rc:out_folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:out_folder.descr"
+        },
+        "out_datasets": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_datasets.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "GPTableView"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

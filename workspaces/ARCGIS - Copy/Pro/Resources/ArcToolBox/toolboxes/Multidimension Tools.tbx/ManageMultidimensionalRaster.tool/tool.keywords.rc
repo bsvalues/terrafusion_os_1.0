@@ -1,0 +1,16 @@
+{
+    "set": [
+        "add dimension",
+        "append variables",
+        "climate",
+        "climatology",
+        "data management",
+        "delete dimension",
+        "delete variable",
+        "dimension",
+        "meteorology",
+        "oceanography",
+        "scientific",
+        "weather"
+    ]
+}

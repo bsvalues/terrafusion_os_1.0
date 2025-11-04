@@ -1,0 +1,15 @@
+{
+    "map": {
+        "bilinear_interpolate_values.descr": "<xdoc><p>Specifies whether interpolation will be used.</p><ul><li>Unchecked—No interpolation will be applied; the value of the cell center will be used. This is the default.</li><li>Checked—The value of the cell will be calculated from the adjacent cells with valid values using bilinear interpolation. NoData values will be ignored in the interpolation unless all adjacent cells are NoData.</li></ul></xdoc>",
+        "bilinear_interpolate_values.title": "Bilinear interpolation of values at point locations",
+        "description": "Extracts cell values at locations specified in a point feature class from one or more rasters and records the values to the attribute table of the point feature class.",
+        "in_point_features.descr": "The input point features to which raster values will be added.",
+        "in_point_features.title": "Input point features",
+        "in_rasters.descr": "<xdoc><p>The input raster (or rasters) values that will be extracted based on the input point feature location.</p><p>Optionally, you can supply the name for the field to store the raster value. By default, a unique field name will be created based on the input raster dataset name.</p></xdoc>",
+        "in_rasters.dt.title1": "Raster",
+        "in_rasters.dt.title2": "Output field name",
+        "in_rasters.title": "Input rasters",
+        "out_point_features.title": "Updated point features",
+        "title": "Extract Multi Values to Points"
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "set": [
+        "add",
+        "alter",
+        "change",
+        "field",
+        "fields",
+        "rename"
+    ]
+}

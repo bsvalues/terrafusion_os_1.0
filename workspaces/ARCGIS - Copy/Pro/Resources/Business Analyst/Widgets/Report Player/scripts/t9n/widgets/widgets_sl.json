@@ -1,0 +1,78 @@
+{
+  "calcite": {
+    "reset": "Ponastavite",
+    "action": {
+      "sort": "Razvrsti"
+    },
+    "buttons": {
+      "save": "Shrani",
+      "edit": "Uredi",
+      "done": "Končano",
+      "apply": "Uporabi",
+      "cancel": "Prekliči",
+      "close": "Zapri"
+    },
+    "ColorPicker": {
+      "selectColor": "Izberi barvo",
+      "noColorSpecified": "Nobena barva ni določena",
+      "transparent": "Prosojno",
+      "colorTooltip": "<p>Hex: ${hex}</p><p>RGB: ${r}, ${g}, ${b}</p>",
+      "recent": "Nedavno",
+      "standard": "Standardno",
+      "savedColors": "Shranjene barve",
+      "advanced": "Napredno"
+    },
+    "DatePickerLink": {
+      "enterDate": "Vnesi datum"
+    },
+    "PaginationContinuous": {
+      "next": "Naprej",
+      "previous": "Nazaj"
+    }
+  },
+  "ImageNavigator": {
+    "paginationLabel": "${n} od ${m}",
+    "noImage": "Na tem mestu trenutno ni shranjenih fotografij",
+    "previewNotAvailable": "Predogled ni na voljo"
+  },
+  "PageNavigator": {
+    "currentPageOutOfN": "Stran ${current} od ${total}"
+  },
+  "PanoramicViewer": {
+    "image-viewer-close": "Zapri",
+    "image-viewer-fullscreen": "Celotni zaslon",
+    "image-viewer-minimize": "Minimiziraj",
+    "image-viewer-title": "Ogledovalec fotografij",
+    "image-viewer-show-caption": "Prikaži napis",
+    "image-viewer-hide-caption": "Skrij"
+  },
+  "TextBox": {
+    "error_numberExpected": "Pričakovana je številka",
+    "error_range": "Pričakovana vrednost je od ${0} do ${1}"
+  },
+  "charts": {
+    "histogram": {
+      "minValue": "Min.:<br>${0}",
+      "maxValue": "Maks.:<br>${0}",
+      "thisAreaValue": "Ta površina: ${0}",
+      "medianValue": "Mediana:<br>${0}",
+      "q1Value": "1. četrtletje:<br>${0}",
+      "q3Value": "3. četrtletje:<br>${0}",
+      "percentile": "Percentil ${percent}:<br>${0}",
+      "percentileBottom": "Spodaj ${percent}%:<br>${0}",
+      "percentileTop": "Zgoraj ${percent}%:<br>${0}",
+      "percentile_singleLine": "Percentil ${percent}: ${0}",
+      "percentileBottom_singleLine": "Spodaj ${percent}%: ${0}",
+      "percentileTop_singleLine": "Zgoraj ${percent}%: ${0}",
+      "sd_singleLine": "${sd} SD: ${0}",
+      "tooltip": {
+        "range_single": "<b>${level}</b> z vrednostjo znotraj <b>${value}</b> : <b>1</b>",
+        "range_single_precise": "<b>${areaName}</b> ima vrednost <b>${value}</b>.",
+        "range_multi": "<b>${level}</b> z vrednostjo znotraj <b>${value}</b> : <b>${count}</b>",
+        "thisArea": "<b>Ta površina</b> ima vrednost <b>${value}</b>.",
+        "percentileLower": "<b>${percent}%</b> od <b>${level}</b> ima vrednost nad <b>${value}</b>.",
+        "percentileUpper": "<b>${percent}%</b> od <b>${level}</b> ima vrednost pod <b>${value}</b>."
+      }
+    }
+  }
+}

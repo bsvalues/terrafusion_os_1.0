@@ -1,0 +1,23 @@
+{
+    "map": {
+        "descr": "The ArcGIS Image Analyst extension provides tools with which to analyze imagery data.",
+        "title": "Image Analyst Tools",
+        "toolset1.name": "Math",
+        "toolset10.name": "Synthetic Aperture Radar\\SAR Analysis",
+        "toolset11.name": "Math\\Conditional",
+        "toolset12.name": "Utilities",
+        "toolset13.name": "Motion Imagery",
+        "toolset14.name": "Interpolation",
+        "toolset15.name": "Map Algebra",
+        "toolset16.name": "Extraction",
+        "toolset17.name": "Overlay",
+        "toolset2.name": "Math\\Trigonometric",
+        "toolset3.name": "Multidimensional Analysis",
+        "toolset4.name": "Change Detection",
+        "toolset5.name": "Synthetic Aperture Radar",
+        "toolset6.name": "Math\\Logical",
+        "toolset7.name": "Statistical",
+        "toolset8.name": "Deep Learning",
+        "toolset9.name": "Classification and Pattern Recognition"
+    }
+}

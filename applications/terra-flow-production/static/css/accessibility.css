@@ -1,0 +1,182 @@
+/* 
+ * Accessibility Styles for GeoAssessmentPro
+ * Enhanced accessibility features and utilities
+ */
+
+/* Skip link for keyboard users */
+#skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--primary-700);
+  color: white;
+  padding: 8px 16px;
+  z-index: 10000;
+  transition: top 0.3s ease;
+  border-radius: 0 0 var(--radius-md) 0;
+  box-shadow: var(--shadow-md);
+  text-decoration: none;
+}
+
+#skip-to-content:focus {
+  top: 0;
+  outline: none;
+}
+
+/* Keyboard focus indicators */
+.keyboard-user *:focus {
+  outline: 2px solid var(--primary-500) !important;
+  outline-offset: 2px !important;
+}
+
+/* Accessibility panel */
+.a11y-panel {
+  position: fixed;
+  right: 20px;
+  bottom: 100px;
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.a11y-panel-toggle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: var(--primary-600);
+  color: white;
+  border: none;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.a11y-panel-toggle:hover, 
+.a11y-panel-toggle:focus {
+  background-color: var(--primary-700);
+  transform: scale(1.05);
+}
+
+.a11y-panel-content {
+  background-color: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 16px;
+  margin-bottom: 10px;
+  width: 240px;
+  max-width: 90vw;
+  opacity: 0;
+  transform: scale(0.9) translateY(10px);
+  transition: all 0.2s ease-out;
+  pointer-events: none;
+  position: absolute;
+  bottom: 54px;
+  right: 0;
+}
+
+.a11y-panel.active .a11y-panel-content {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  pointer-events: auto;
+}
+
+.a11y-panel h3 {
+  font-size: 16px;
+  margin-top: 0;
+  margin-bottom: 12px;
+  color: var(--neutral-800);
+  font-weight: 600;
+}
+
+.a11y-options {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.a11y-option {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.a11y-option:hover, 
+.a11y-option:focus {
+  background-color: var(--primary-100);
+}
+
+.a11y-option i {
+  margin-right: 10px;
+  width: 20px;
+  text-align: center;
+}
+
+.a11y-option.active {
+  background-color: var(--primary-200);
+  color: var(--primary-700);
+  font-weight: 500;
+}
+
+/* Large text mode */
+.large-text-mode {
+  font-size: 120% !important;
+}
+
+.large-text-mode h1, 
+.large-text-mode h2, 
+.large-text-mode h3, 
+.large-text-mode h4, 
+.large-text-mode h5, 
+.large-text-mode h6 {
+  font-size: 120% !important;
+}
+
+.large-text-mode .btn, 
+.large-text-mode .form-control, 
+.large-text-mode .nav-link, 
+.large-text-mode .dropdown-item {
+  font-size: 120% !important;
+  line-height: 1.5 !important;
+}
+
+/* Reduced motion mode */
+.reduced-motion-mode * {
+  animation-duration: 0.001s !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001s !important;
+  scroll-behavior: auto !important;
+}
+
+/* Mobile adjustments for accessibility panel */
+@media (max-width: 767.98px) {
+  .a11y-panel {
+    bottom: 80px;
+    right: 16px;
+  }
+  
+  .a11y-panel-content {
+    width: 230px;
+    padding: 12px;
+  }
+  
+  /* Ensure large text mode increases sizes appropriately on mobile */
+  .large-text-mode.mobile-device {
+    font-size: 130% !important;
+  }
+}
+
+/* High contrast mode - already defined in visual-system.css */

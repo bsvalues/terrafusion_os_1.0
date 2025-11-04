@@ -1,0 +1,27 @@
+{
+    "map": {
+        "capability.domain.ALLOW_TO_COLLAPSE_CONTAINER": "ALLOW_TO_COLLAPSE_CONTAINER",
+        "capability.domain.ALLOW_TO_REDUCE_JUNCTION": "ALLOW_TO_REDUCE_JUNCTION",
+        "capability.domain.IGNORED_STARTING_POINT_FOR_DOWNSTREAM_TRACE": "IGNORED_STARTING_POINT_FOR_DOWNSTREAM_TRACE",
+        "capability.domain.IGNORED_STARTING_POINT_FOR_UPSTREAM_TRACE": "IGNORED_STARTING_POINT_FOR_UPSTREAM_TRACE",
+        "capability.domain.PREVENT_TO_COLLAPSE_CONTAINER": "PREVENT_TO_COLLAPSE_CONTAINER",
+        "capability.domain.PREVENT_TO_REDUCE_JUNCTION": "PREVENT_TO_REDUCE_JUNCTION",
+        "capability.domain.SAVE_EMPTY_CONTAINER_AS_POLYGON_IF_UNCONNECTED": "SAVE_EMPTY_CONTAINER_AS_POLYGON_IF_UNCONNECTED",
+        "capability.title": "Capability",
+        "description": "Add a diagram feature capability by attribute rule to a diagram template",
+        "description.title": "Description",
+        "in_utility_network.title": "Input Network",
+        "is_active.title": "Active",
+        "network_source.title": "Network Source",
+        "out_template_name.title": "Output Diagram Template",
+        "out_utility_network.title": "Output Network",
+        "params.category1": "Apply To Junctions",
+        "template_name.title": "Input Diagram Template",
+        "title": "Add Diagram Feature Capability By Attribute Rule",
+        "valence_0.title": "Unconnected",
+        "valence_1.title": "Connected to a single junction",
+        "valence_2.title": "Connected to two different junctions",
+        "valence_3_plus.title": "Connected to three or more different junctions",
+        "where_clause.title": "Expression"
+    }
+}

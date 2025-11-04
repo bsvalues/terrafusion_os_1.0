@@ -1,0 +1,139 @@
+{
+    "type": "FunctionTool",
+    "guid": "{c65064b4-bc28-4a06-bf65-8985988cb8db}",
+    "displayname": "$rc:title",
+    "helpcontent": "82000011",
+    "description": "$rc:description",
+    "product": "200",
+    "params": {
+        "in_mosaic_dataset": {
+            "display_order": "0",
+            "displayname": "$rc:in_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEMosaicDataset"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_mosaic_dataset.descr"
+        },
+        "control_point_table": {
+            "display_order": "1",
+            "displayname": "$rc:control_point_table.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFeatureClass"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    }
+                ]
+            },
+            "description": "$rc:control_point_table.descr"
+        },
+        "solution_point_table": {
+            "display_order": "2",
+            "displayname": "$rc:solution_point_table.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFeatureClass"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    }
+                ]
+            },
+            "description": "$rc:solution_point_table.descr"
+        },
+        "where_clause": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:where_clause.title",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "in_mosaic_dataset"
+            ],
+            "description": "$rc:where_clause.descr"
+        },
+        "skip_existing": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:skip_existing.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SKIP_EXISTING"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_SKIP_EXISTING"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:skip_existing.descr"
+        },
+        "adjust_footprints": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:adjust_footprints.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ADJUST_FOOTPRINTS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_ADJUST_FOOTPRINTS"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:adjust_footprints.descr"
+        },
+        "out_mosaic_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEMosaicDataset"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "depends": [
+                "in_mosaic_dataset"
+            ]
+        }
+    }
+}

@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h5>Synchronize Property Data</h5>
+                    <p class="text-sm">Sync property data between data sources or to the internal database</p>
+                </div>
+                <div class="card-body">
+                    <div id="alertContainer"></div>
+                    
+                    <form id="syncForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="source_id" class="form-control-label">Source</label>
+                                    <select class="form-control" id="source_id" name="source_id" required>
+                                        <option value="">Select a source...</option>
+                                        {% for source_id, config in data_sources.items() %}
+                                        <option value="{{ source_id }}" {% if request.args.get('source_id') == source_id %}selected{% endif %}>
+                                            {{ source_id }} ({{ config.source_type }})
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="form-text text-muted">
+                                        Data source to sync from
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="target_id" class="form-control-label">Target</label>
+                                    <select class="form-control" id="target_id" name="target_id">
+                                        <option value="">Internal Database (Default)</option>
+                                        {% for source_id, config in data_sources.items() %}
+                                        <option value="{{ source_id }}">
+                                            {{ source_id }} ({{ config.source_type }})
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <small class="form-text text-muted">
+                                        Data source to sync to (leave blank for internal database)
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group d-flex justify-content-between mt-4">
+                            <a href="{{ url_for('integration.index') }}" class="btn btn-secondary">Back to Dashboard</a>
+                            <button type="submit" class="btn btn-primary" id="syncButton">
+                                <i class="fas fa-sync-alt me-2"></i> Synchronize Data
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card mb-4" id="resultsCard" style="display: none;">
+                <div class="card-header pb-0">
+                    <h5>Synchronization Results</h5>
+                </div>
+                <div class="card-body">
+                    <div id="resultsContainer">
+                        <div class="text-center p-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Synchronizing data...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header pb-0">
+                    <h5>About Property Data Synchronization</h5>
+                </div>
+                <div class="card-body">
+                    <p>Property data synchronization creates or updates property records with the following information:</p>
+                    <ul>
+                        <li><strong>Parcel Information</strong> - Parcel IDs, property type, address</li>
+                        <li><strong>Owner Information</strong> - Current property owner</li>
+                        <li><strong>Valuation Information</strong> - Assessed, land, and improvement values</li>
+                        <li><strong>Property Characteristics</strong> - Year built, square footage, bedrooms, bathrooms</li>
+                        <li><strong>Sales Information</strong> - Most recent sale date and price</li>
+                        <li><strong>Location Information</strong> - Latitude/longitude coordinates</li>
+                    </ul>
+                    <p>Property data is a core data set for assessment operations and integrates with many other systems and workflows.</p>
+                    
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Data Quality:</strong> The synchronization process includes data validation and sanitization to ensure data quality and consistency.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        $('#syncForm').submit(function(e) {
+            e.preventDefault();
+            
+            const sourceId = $('#source_id').val();
+            const targetId = $('#target_id').val();
+            
+            if (!sourceId) {
+                showAlert('danger', 'Please select a source data source');
+                return;
+            }
+            
+            // Disable form and show results card
+            $('#syncButton').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i> Synchronizing...');
+            $('#resultsCard').show();
+            $('#resultsContainer').html(`
+                <div class="text-center p-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Synchronizing property data...</p>
+                </div>
+            `);
+            
+            // Submit sync request
+            $.ajax({
+                url: '{{ url_for("integration.sync_property") }}',
+                type: 'POST',
+                data: {
+                    source_id: sourceId,
+                    target_id: targetId
+                },
+                success: function(response) {
+                    $('#syncButton').prop('disabled', false).html('<i class="fas fa-sync-alt me-2"></i> Synchronize Data');
+                    
+                    if (response.status === 'success') {
+                        showAlert('success', 'Synchronization completed successfully');
+                        showResults(response);
+                    } else {
+                        showAlert('danger', 'Synchronization failed: ' + response.message);
+                        $('#resultsContainer').html(`
+                            <div class="alert alert-danger">
+                                <h6 class="alert-heading"><i class="fas fa-times-circle me-2"></i> Synchronization Failed</h6>
+                                <p>${response.message}</p>
+                            </div>
+                        `);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    $('#syncButton').prop('disabled', false).html('<i class="fas fa-sync-alt me-2"></i> Synchronize Data');
+                    showAlert('danger', 'An error occurred: ' + error);
+                    $('#resultsContainer').html(`
+                        <div class="alert alert-danger">
+                            <h6 class="alert-heading"><i class="fas fa-times-circle me-2"></i> Error</h6>
+                            <p>An error occurred during synchronization: ${error}</p>
+                        </div>
+                    `);
+                }
+            });
+        });
+        
+        function showAlert(type, message) {
+            $('#alertContainer').html(`
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `);
+        }
+        
+        function showResults(data) {
+            const sourceId = $('#source_id').val();
+            const targetId = $('#target_id').val() || 'Internal Database';
+            
+            let resultHtml = `
+                <div class="alert alert-success mb-4">
+                    <h6 class="alert-heading"><i class="fas fa-check-circle me-2"></i> Synchronization Successful</h6>
+                    <p>Property data synchronized successfully from <strong>${sourceId}</strong> to <strong>${targetId}</strong>.</p>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th>Source:</th>
+                                <td>${data.source}</td>
+                            </tr>
+                            <tr>
+                                <th>Target:</th>
+                                <td>${data.target}</td>
+                            </tr>
+                            <tr>
+                                <th>Records Processed:</th>
+                                <td>${data.records}</td>
+                            </tr>
+                            <tr>
+                                <th>Timestamp:</th>
+                                <td>${data.timestamp}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            // Add details if available
+            if (data.details) {
+                resultHtml += `
+                    <h6 class="mt-4">Details</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <tbody>
+                                <tr>
+                                    <th>New Records:</th>
+                                    <td>${data.details.new_records || 0}</td>
+                                </tr>
+                                <tr>
+                                    <th>Updated Records:</th>
+                                    <td>${data.details.updated_records || 0}</td>
+                                </tr>
+                                <tr>
+                                    <th>Total Records:</th>
+                                    <td>${data.details.total_records || 0}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+            
+            $('#resultsContainer').html(resultHtml);
+        }
+    });
+</script>
+{% endblock %}

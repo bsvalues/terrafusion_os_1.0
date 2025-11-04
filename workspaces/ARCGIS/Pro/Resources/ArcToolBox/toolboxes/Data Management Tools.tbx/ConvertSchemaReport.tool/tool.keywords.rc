@@ -1,0 +1,8 @@
+{
+    "set": [
+        "convert",
+        "report",
+        "schema",
+        "workspace"
+    ]
+}

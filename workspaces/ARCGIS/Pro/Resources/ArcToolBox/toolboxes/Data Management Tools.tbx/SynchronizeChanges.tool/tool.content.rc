@@ -1,0 +1,30 @@
+{
+    "map": {
+        "conflict_definition.descr": "<xdoc><p>Specifies how conflicts will be defined.</p><ul><li><span title=\"BY_OBJECT\">Conflicts defined by row</span>—Changes to the same row or feature in the parent and child versions will conflict during reconcile. This is the default.</li><li><span title=\"BY_ATTRIBUTE\">Conflicts defined by column</span>— Only changes to the same attribute (column) of the same row or feature in the parent and child versions will be flagged as a conflict during reconcile. Changes to different attributes will not be considered a conflict during reconcile.</li></ul></xdoc>",
+        "conflict_definition.domain.BY_ATTRIBUTE": "Conflicts defined by column",
+        "conflict_definition.domain.BY_OBJECT": "Conflicts defined by row",
+        "conflict_definition.title": "Conflict Definition",
+        "conflict_policy.descr": "<xdoc><p>Specifies how conflicts will be resolved when they are encountered.</p><ul><li><span title=\"MANUAL\">Manually resolve conflicts</span>—Conflicts will be resolved manually in the versioning reconcile environment.</li><li><span title=\"IN_FAVOR_OF_GDB1\">Resolve in favor of geodatabase 1</span>—Conflicts will be resolved in favor of geodatabase 1. This is the default.</li><li><span title=\"IN_FAVOR_OF_GDB2\">Resolve in favor of geodatabase 2</span>—Conflicts will be resolved in favor of geodatabase 2.</li></ul></xdoc>",
+        "conflict_policy.domain.IN_FAVOR_OF_GDB1": "Resolve in favor of geodatabase 1",
+        "conflict_policy.domain.IN_FAVOR_OF_GDB2": "Resolve in favor of geodatabase 2",
+        "conflict_policy.domain.MANUAL": "Manually resolve conflicts",
+        "conflict_policy.title": "Conflict Resolution Policy",
+        "description": "Synchronizes updates between two replica geodatabases in a specified direction.",
+        "geodatabase_1.descr": "The geodatabase hosting the replica to synchronize. The geodatabase can be local or remote.",
+        "geodatabase_1.title": "Geodatabase 1",
+        "geodatabase_2.descr": "The geodatabase hosting the relative replica. The geodatabase can be local or remote.",
+        "geodatabase_2.title": "Geodatabase 2",
+        "in_direction.descr": "<xdoc><p>Specifies the direction in which the changes will be synchronized: from geodatabase 1 to geodatabase 2, from geodatabase 2 to geodatabase 1, or in both directions. For check-out/check-in replicas or one-way replicas, there is only one appropriate direction. If the replica is two-way, all of the choices are available.</p><ul><li><span title=\"BOTH_DIRECTIONS\">Both directions</span>—Changes will be synchronized in both directions. This is the default.</li><li><span title=\"FROM_GEODATABASE2_TO_1\">From geodatabase 2 to geodatabase 1</span>—Changes will be synchronized from geodatabase 2 to geodatabase 1.</li><li><span title=\"FROM_GEODATABASE1_TO_2\">From geodatabase 1 to geodatabase 2</span>—Changes will be synchronized from geodatabase 1 to geodatabase 2.</li></ul></xdoc>",
+        "in_direction.domain.BOTH_DIRECTIONS": "Both directions",
+        "in_direction.domain.FROM_GEODATABASE1_TO_2": "From geodatabase 1 to geodatabase 2",
+        "in_direction.domain.FROM_GEODATABASE2_TO_1": "From geodatabase 2 to geodatabase 1",
+        "in_direction.title": "Direction",
+        "in_replica.descr": "A valid replica with a parent contained in one input geodatabase and a child in the other input geodatabase.",
+        "in_replica.title": "Replica",
+        "out_geodatabase_1.title": "Output Geodatabase 1",
+        "out_geodatabase_2.title": "Output Geodatabase 2",
+        "reconcile.descr": "<xdoc><p>Specifies whether to automatically reconcile once data changes are sent to the parent replica if there are no conflicts present. This option is only available for check-out/check-in replicas.</p><ul><li>Unchecked—Do not reconcile with the parent version. This is the default.</li><li>Checked—Reconcile with the parent version.</li></ul></xdoc>",
+        "reconcile.title": "Reconcile with the Parent Version (Checkout only)",
+        "title": "Synchronize Changes"
+    }
+}

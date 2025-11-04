@@ -1,0 +1,6 @@
+{% macro module_lockup(module_name) %}
+{% set module_class = "module-" + module_name.lower() %}
+<div class="module-lockup {{ module_class }}">
+  <span class="prefix" style="color: black; font-weight: 700; font-size: 1.1rem;">Terra</span><span class="name" style="font-weight: 800; font-size: 1.1rem;">{{ module_name }}</span>
+</div>
+{% endmacro %}

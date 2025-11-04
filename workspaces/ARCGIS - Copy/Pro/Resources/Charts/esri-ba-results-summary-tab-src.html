@@ -1,0 +1,169 @@
+<!doctype html><html><head><title></title><meta charset="utf-8"/><meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no"/><meta name="color-scheme" content="dark light"><link rel="shortcut icon" href="#"><link rel="stylesheet" href="styles/wijmo-chart.min.css"/><style title="InlineCustomStyleSheet">html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            overflow: hidden;
+            font-family: 'Segoe UI';
+            font-style: normal;
+            font-size: 10pt;
+            display: block;
+        }
+
+        .wj-flexchart {
+            font-family: Calibri;
+            padding: 0px;
+            margin: 0px;
+            border: none;
+        }
+
+        /* 
+        commenting out because i think it's not used and causing problems when 
+        style is placed in-line to create chart graphics 
+        */
+        /*.wj-flexchart .wj-label {
+            font-size: 90%;
+        }
+        */
+
+        .wj-flexchart .wj-state-selected, .wj-flexchart .wj-state-selected > * {
+            stroke:cyan;
+            stroke-width: 3px;
+            stroke-dasharray: 0;
+            stroke-linecap: square;
+        }
+
+        .wj-tooltip {
+            font-family: 'Segoe UI';
+            border-radius: 3px;
+            border: 1px solid;
+            font-size: 9pt;
+            box-shadow: none;
+        }
+
+        .wj-legend:not(.esri-default-pointer) g:hover {
+            cursor: pointer;
+        }
+
+        .wj-legend:not(.esri-default-pointer) g:hover > .wj-label {
+            fill: #0079C1;
+            cursor: pointer;
+        }
+
+        .partial-selected {
+            stroke: cyan;
+            stroke-width: 3px;
+            stroke-dasharray: 0;
+            stroke-linecap: square;
+            fill: cyan;
+            fill-opacity: 0.5;
+        }
+
+        .wj-flexchart text {
+            cursor: default;
+        }
+
+        .rsquare-text::selection {
+            background:transparent;
+        }
+
+        .wj-flexchart.esri-pan-state {
+            cursor: pointer;
+        }
+
+        .wj-flexchart.esri-zoom-state {
+            cursor: zoom-in;
+        }
+
+        .wj-flexchart.wj-panable.esri-panning {
+            cursor: grabbing;
+        }
+
+        .wj-flexchart.esri-zoom-state.esri-pan-state {
+            cursor: pointer;
+        }
+
+        .wj-flexchart.esri-zoom-state.wj-panable.esri-panning {
+            cursor: grabbing;
+        }
+
+        .statistics-table {
+            padding: 0; 
+            margin: 5px 0 5px 0;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        /* Add shading for every other table row */
+        .statistics-table tr:nth-of-type(odd) {
+            background-color: #eaeaea;
+        }
+        
+        .statistics-table td:first-child {
+            font-weight: bold;
+            padding-right: 10px;
+            width: 0;
+            white-space: nowrap;
+        }
+
+        .statistics-table td:nth-child(2) {
+            text-align: right;
+            padding-right: 0;
+        }
+
+        .statistics-table td:nth-child(3) {
+            text-align: left;
+            padding-left: 0;
+            width: 0;
+            white-space: nowrap;
+        }
+
+        #cards-container {
+            overflow-x: auto;
+            padding: 0; 
+        }
+
+        #cards-container table {
+            border-style: hidden;
+            border: 1px solid;
+            border-radius: 5px;
+            display: block;
+        }
+
+        #cards-list {
+            white-space:nowrap;
+            padding: 6px;
+            margin: 0px;
+        }
+
+        #cards-list li {
+            text-align: left;
+            display: inline-block;
+            background:transparent;
+            margin:4px;
+        }
+
+        #card th, td {
+            text-align: left;
+            min-width: 179px;
+            margin-right:24px;
+        }
+
+        #card-image {
+            margin-left:24px;
+            margin-top:24px;
+            margin-bottom:8px;
+        }
+
+        #card-title {
+            margin-top:0px;
+            margin-left:24px;
+            margin-right:24px;
+            margin-bottom:8px;
+        }
+
+        #card-subtitle
+        {
+            margin-top:0px;
+            margin-left:24px;
+            margin-right:24px;
+        }</style><script src="scripts/jquery-3.1.0.slim.min.js" charset="utf-8"></script><script src="scripts/wijmo.min.js" charset="utf-8"></script><script src="scripts/wijmo.chart.min.js" charset="utf-8"></script><script src="scripts/wijmo.chart.analytics.min.js" charset="utf-8"></script><script src="scripts/wijmo.chart.hierarchical.min.js" charset="utf-8"></script><script src="scripts/wijmo.chart.annotation.min.js" charset="utf-8"></script><script src="scripts/wijmo.chart.interaction.min.js" charset="utf-8"></script><script defer="defer" src="scripts/main.js"></script></head><body ondragover="window.event.returnValue=false;" unselectable="on" onload="initializeWijmo()"><template id="card-template"><div style="padding:0px;"><table id="card"><tr valign="top" style="height:237px"><td><img id="card-image"/><h2 id="card-title"></h2><p id="card-subtitle"></p></td></tr></table></div></template><template id="card-chart-template"><div style="padding:0px"><table id="card"><tr valign="top"><td><img id="card-image"/><h2 id="card-title"></h2><p id="card-subtitle"></p></td><td id="chart-column" style="width:400px;height:237px;padding-right:24px"></td></tr></table></div></template><div id="cards-container" style="width: 100%; height: 100%; border: 0px; box-sizing: border-box; text-align: center;"><div><ul id="cards-list" style="height: 237px; text-align: left"></ul></div><div id="blank-chart" style="position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%);"><p id="blank-chart-message" style="font-family: Segoe UI; font-style: italic; color: #4C4C4C; font-size: 10pt;"></p></div></div></body></html>

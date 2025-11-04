@@ -1,0 +1,68 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\ConvertFeatureToRaster",
+    "displayname": "$rc:title",
+    "helpcontent": "54070002",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "inputFeatures": {
+            "displayname": "$rc:inputfeatures.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "description": "$rc:inputfeatures.descr"
+        },
+        "valueField": {
+            "displayname": "$rc:valuefield.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "depends": [
+                "inputFeatures"
+            ],
+            "description": "$rc:valuefield.descr"
+        },
+        "outputName": {
+            "displayname": "$rc:outputname.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:outputname.descr"
+        },
+        "outputCellSize": {
+            "type": "optional",
+            "displayname": "$rc:outputcellsize.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPUnitDomain",
+                "items": [
+                    "Meters",
+                    "Kilometers",
+                    "Feet",
+                    "Miles",
+                    "FeetInt",
+                    "MilesInt"
+                ]
+            },
+            "description": "$rc:outputcellsize.descr"
+        },
+        "outputRaster": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:outputraster.title",
+            "datatype": {
+                "type": "GPRasterLayer"
+            }
+        }
+    },
+    "environments": [
+        "cellSize",
+        "extent",
+        "outputCoordinateSystem",
+        "pyramid",
+        "snapRaster"
+    ]
+}

@@ -1,0 +1,25 @@
+{
+    "set": [
+        "base",
+        "difference",
+        "different",
+        "edge",
+        "find",
+        "geometry",
+        "hull",
+        "identical",
+        "irregular",
+        "network",
+        "node",
+        "properties",
+        "reference",
+        "search",
+        "similar",
+        "spatial",
+        "tag",
+        "test",
+        "triangle",
+        "triangular",
+        "data comparison"
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "set": [
+        "backward",
+        "flip",
+        "grid",
+        "image",
+        "img",
+        "left",
+        "orient",
+        "pixel",
+        "reorient",
+        "right",
+        "surface",
+        "tif",
+        "vertical axis"
+    ]
+}

@@ -1,0 +1,19 @@
+{
+    "set": [
+        "adjacent",
+        "append",
+        "assemble",
+        "color match",
+        "combine",
+        "composite",
+        "fit",
+        "grid",
+        "linear correlation",
+        "match",
+        "merge",
+        "puzzle",
+        "seam",
+        "stitch",
+        "together"
+    ]
+}

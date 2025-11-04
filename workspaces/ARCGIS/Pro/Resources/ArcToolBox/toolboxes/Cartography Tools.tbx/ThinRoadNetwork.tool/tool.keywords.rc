@@ -1,0 +1,28 @@
+{
+    "set": [
+        "classification",
+        "contextual",
+        "density",
+        "generalisation",
+        "generalise",
+        "generalization",
+        "generalize",
+        "hide",
+        "hierarchy",
+        "invisible",
+        "mask",
+        "multi-scale",
+        "multiscale",
+        "partition",
+        "partitioning",
+        "remove",
+        "scale change",
+        "simplification",
+        "simplify",
+        "small scale",
+        "street",
+        "transportation",
+        "typification",
+        "typify"
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Determines the contributing area above a set of cells in a raster.",
+        "in_flow_direction_raster.descr": "<xdoc><p>The input raster that shows the direction of flow out of each cell.</p><p>The flow direction raster can be created using the Flow Direction tool, run using the default flow direction type <span class=\"esri_uicontrol\">D8</span>.</p></xdoc>",
+        "in_flow_direction_raster.title": "Input D8 flow direction raster",
+        "in_pour_point_data.descr": "<xdoc><p>The input pour point locations.</p><p>For a raster, this represents cells above which the contributing area, or catchment, will be determined. All cells that are not NoData will be used as source cells.</p><p>For a point feature dataset, this represents locations above which the contributing area, or catchment, will be determined.</p></xdoc>",
+        "in_pour_point_data.title": "Input raster or feature pour point data",
+        "out_raster.descr": "<xdoc><p>The output raster that shows the contributing area.</p><p>This output is of integer type.</p></xdoc>",
+        "out_raster.title": "Output raster",
+        "pour_point_field.descr": "<xdoc><p>The field used to assign values to the pour point locations.</p><p>If the pour point dataset is a raster, use <span class=\"esri_fieldname\">Value</span>.</p><p>If the pour point dataset is a feature, use a numeric field. If the field contains floating-point values, they will be truncated into integers.</p></xdoc>",
+        "pour_point_field.title": "Pour point field",
+        "title": "Watershed"
+    }
+}

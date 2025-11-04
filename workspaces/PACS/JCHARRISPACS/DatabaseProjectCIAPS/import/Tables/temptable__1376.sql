@@ -1,0 +1,14 @@
+CREATE TABLE [import].[temptable__1376] (
+    [Permit Number]  NVARCHAR (MAX) NULL,
+    [Permit Type]    NVARCHAR (MAX) NULL,
+    [Applicant Name] NVARCHAR (MAX) NULL,
+    [Site Address]   NVARCHAR (MAX) NULL,
+    [Description]    NVARCHAR (MAX) NULL,
+    [Valuation]      NVARCHAR (MAX) NULL,
+    [Parcel Number]  NVARCHAR (MAX) NULL,
+    [Issued Date]    NVARCHAR (MAX) NULL
+);
+
+
+GO
+

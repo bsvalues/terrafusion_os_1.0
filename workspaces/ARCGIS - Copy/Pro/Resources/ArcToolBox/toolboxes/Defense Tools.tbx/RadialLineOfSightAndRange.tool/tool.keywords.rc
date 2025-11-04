@@ -1,0 +1,13 @@
+{
+    "set": [
+        "angle",
+        "concealment",
+        "cover",
+        "fov",
+        "fan",
+        "observer",
+        "range",
+        "viewshed",
+        "visibility"
+    ]
+}

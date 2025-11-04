@@ -1,0 +1,113 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\AddDateAttributes",
+    "displayname": "$rc:title",
+    "helpcontent": "75000002",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "in_table": {
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "date_field": {
+            "displayname": "$rc:date_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Date",
+                    "DateOnly",
+                    "TimeOnly",
+                    "TimestampOffset"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:date_field.descr"
+        },
+        "date_attributes": {
+            "type": "optional",
+            "displayname": "$rc:date_attributes.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:date_attributes.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:date_attributes.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "DAY_FULL_NAME",
+                                "code": "$rc:date_attributes.domain.item1.DAY_FULL_NAME"
+                            },
+                            {
+                                "value": "DAY_OF_WEEK",
+                                "code": "$rc:date_attributes.domain.item1.DAY_OF_WEEK"
+                            },
+                            {
+                                "value": "HOUR",
+                                "code": "$rc:date_attributes.domain.item1.HOUR"
+                            },
+                            {
+                                "value": "MONTH",
+                                "code": "$rc:date_attributes.domain.item1.MONTH"
+                            },
+                            {
+                                "value": "DAY_OF_MONTH",
+                                "code": "$rc:date_attributes.domain.item1.DAY_OF_MONTH"
+                            },
+                            {
+                                "value": "YEAR",
+                                "code": "$rc:date_attributes.domain.item1.YEAR"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "description": "$rc:date_attributes.descr"
+        },
+        "out_table": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "depends": [
+                "in_table"
+            ],
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    },
+    "environments": [
+        "extent",
+        "workspace"
+    ]
+}

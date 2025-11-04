@@ -7,6 +7,568 @@
     <title>TerraFusion IDE ULTIMATE POWER 🚀</title>
     <meta name="description" content="The most powerful IDE for government technology development - TerraFusion OS" />
     <style>
+      /* TerraFusion Brand System v4.1 - MACHINE PRECISION STYLES */
+      .tf-main-container {
+        min-height: 100vh;
+        background-color: #0A0E1A;
+        color: #00FFFF;
+        font-family: system-ui, -apple-system, sans-serif;
+      }
+      
+      .tf-header {
+        border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+        background-color: #0A0E1A;
+      }
+      
+      .tf-header-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem;
+      }
+      
+      .tf-header-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      
+      .tf-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #00FFFF;
+        margin: 0;
+      }
+      
+      .tf-subtitle {
+        font-size: 0.875rem;
+        color: rgba(0, 255, 255, 0.8);
+      }
+      
+      .tf-header-right {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      
+      .tf-button {
+        background-color: rgba(0, 255, 255, 0.1);
+        border: 1px solid rgba(0, 255, 255, 0.2);
+        color: #00FFFF;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      
+      .tf-status {
+        color: #00FFFF;
+      }
+      
+      .tf-content-wrapper {
+        display: flex;
+        height: calc(100vh - 80px);
+      }
+      
+      .tf-sidebar {
+        width: 16rem;
+        border-right: 1px solid rgba(0, 255, 255, 0.2);
+        background-color: #0A0E1A;
+      }
+      
+      .tf-sidebar-nav {
+        padding: 1rem;
+      }
+      
+      .tf-nav-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 4px;
+        margin: 0.25rem 0;
+      }
+      
+      .tf-nav-active {
+        background-color: rgba(0, 255, 255, 0.1);
+      }
+      
+      .tf-nav-text {
+        font-size: 0.875rem;
+        color: #00FFFF;
+      }
+      
+      /* TerraFusion Dashboard Styles */
+      .tf-main-content {
+        padding: 1.5rem;
+        flex: 1;
+      }
+      
+      .tf-dashboard {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+      
+      .tf-section-title {
+        font-size: 1.5rem;
+        font-weight: 300;
+        color: #00FFFF;
+        margin-bottom: 1.5rem;
+        text-align: center;
+      }
+      
+      .tf-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+      
+      .tf-stat-card {
+        padding: 1rem;
+        background-color: rgba(0, 255, 255, 0.1);
+        border: 1px solid rgba(0, 255, 255, 0.2);
+        border-radius: 8px;
+        text-align: center;
+      }
+      
+      .tf-stat-label {
+        font-size: 0.875rem;
+        color: rgba(0, 255, 255, 0.8);
+        margin-bottom: 0.5rem;
+      }
+      
+      .tf-stat-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #00FFFF;
+        margin-bottom: 0.25rem;
+      }
+      
+      .tf-stat-desc {
+        font-size: 0.75rem;
+        color: rgba(0, 255, 255, 0.6);
+      }
+      
+      .tf-agent-card {
+        background-color: rgba(0, 255, 255, 0.08);
+        border: 1px solid rgba(0, 255, 255, 0.2);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+      }
+      
+      .tf-agent-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+      
+      .tf-agent-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: conic-gradient(from 0deg, #00FFFF 0deg, transparent 90deg, #00FFFF 180deg, transparent 270deg, #00FFFF 360deg);
+        margin-right: 1rem;
+        position: relative;
+      }
+      
+      .tf-agent-avatar::after {
+        content: '';
+        position: absolute;
+        top: 10%;
+        left: 10%;
+        width: 80%;
+        height: 80%;
+        border-radius: 50%;
+        background-color: #0A0E1A;
+      }
+      
+      .tf-agent-title {
+        font-size: 1.125rem;
+        font-weight: 500;
+        color: #00FFFF;
+        margin: 0;
+      }
+      
+      .tf-agent-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+      }
+      
+      .tf-agent-stat-label {
+        font-size: 0.875rem;
+        color: rgba(0, 255, 255, 0.8);
+        margin-bottom: 0.25rem;
+      }
+      
+      .tf-agent-stat-value {
+        font-size: 1.5rem;
+        font-weight: 300;
+        color: #00FFFF;
+      }
+      
+      .tf-agent-capabilities {
+        margin-top: 1rem;
+      }
+      
+      .tf-agent-cap-label {
+        font-size: 0.875rem;
+        color: rgba(0, 255, 255, 0.8);
+        margin-bottom: 0.5rem;
+      }
+      
+      .tf-agent-cap-item {
+        font-size: 0.875rem;
+        color: #FFFFFF;
+        margin-bottom: 0.25rem;
+      }
+      
+      /* TerraSphere Styles */
+      .tf-terrasphere {
+        background: linear-gradient(135deg, #0A0E1A 0%, #1A2332 100%);
+        border: 1px solid #00FFFF;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        animation: terraGlow 3s ease-in-out infinite;
+      }
+      
+      .tf-terrasphere-title {
+        color: #00FFFF;
+        margin-bottom: 1rem;
+        font-size: 1.125rem;
+        text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+        text-align: center;
+      }
+      
+      .tf-terrasphere-container {
+        width: 100%;
+        height: 300px;
+        background: radial-gradient(circle at center, #001122 0%, #000611 100%);
+        border: 1px solid rgba(0, 255, 255, 0.2);
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .tf-sphere {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: conic-gradient(from 0deg, rgba(0, 255, 255, 0.13) 0%, rgba(0, 255, 255, 0.4) 25%, rgba(0, 255, 255, 0.13) 50%, rgba(0, 255, 255, 0.53) 75%, rgba(0, 255, 255, 0.13) 100%);
+        border: 2px solid #00FFFF;
+        position: relative;
+        animation: terraRotate 4s linear infinite, terraPulse 2s ease-in-out infinite;
+      }
+      
+      .tf-sphere-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #00FFFF;
+        font-size: 0.875rem;
+        text-align: center;
+        text-shadow: 0 0 8px rgba(0, 255, 255, 0.8);
+        font-weight: bold;
+      }
+      
+      .tf-orbital-ring {
+        position: absolute;
+        border-radius: 50%;
+        border: 1px solid rgba(0, 255, 255, 0.2);
+        animation: terraRotate 4s linear infinite;
+      }
+      
+      .tf-ring-1 {
+        top: -10px;
+        left: -10px;
+        width: 220px;
+        height: 220px;
+        border-color: rgba(0, 255, 255, 0.3);
+      }
+      
+      .tf-ring-2 {
+        top: -20px;
+        left: -20px;
+        width: 240px;
+        height: 240px;
+        border-color: rgba(0, 255, 255, 0.2);
+      }
+      
+      /* Footer Styles */
+      .tf-footer {
+        border-top: 1px solid rgba(0, 255, 255, 0.2);
+        padding: 0.75rem;
+        background-color: #0A0E1A;
+      }
+      
+      .tf-footer-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.875rem;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+      
+      .tf-footer-left,
+      .tf-footer-right {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+      }
+      
+      .tf-footer-left span,
+      .tf-footer-right span {
+        color: #00FFFF;
+      }
+      
+      /* Animations */
+      @keyframes terraRotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      
+      @keyframes terraPulse {
+        0%, 100% { opacity: 0.8; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.05); }
+      }
+      
+      @keyframes terraGlow {
+        0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.3); }
+        50% { box-shadow: 0 0 30px rgba(0, 255, 255, 0.6); }
+      }
+      
+      .tf-quick-actions {
+        padding: 1rem;
+        margin-top: 1.5rem;
+        border-top: 1px solid rgba(0, 255, 255, 0.2);
+      }
+      
+      .tf-quick-title {
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 0.75rem;
+        color: #00FFFF;
+      }
+      
+      .tf-action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      
+      .tf-action-button {
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        background-color: rgba(0, 255, 255, 0.1);
+        border: 1px solid rgba(0, 255, 255, 0.2);
+        color: #00FFFF;
+        cursor: pointer;
+      }
+      
+      .tf-main {
+        flex: 1;
+        overflow: hidden;
+      }
+      
+      .tf-main-inner {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      .tf-main-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+      }
+      
+      .tf-section-title {
+        font-size: 1.5rem;
+        font-weight: 300;
+        color: #00FFFF;
+        margin: 0;
+      }
+      
+      .tf-dashboard-grid {
+        padding: 1.5rem;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      
+      .tf-stat-card {
+        padding: 1rem;
+        border-radius: 4px;
+        background-color: rgba(0, 255, 255, 0.1);
+        border: 1px solid rgba(0, 255, 255, 0.2);
+      }
+      
+      .tf-stat-label {
+        font-size: 0.875rem;
+        color: rgba(0, 255, 255, 0.8);
+      }
+      
+      .tf-stat-value {
+        font-size: 1.5rem;
+        font-weight: 300;
+        color: #00FFFF;
+      }
+      
+      .tf-stat-desc {
+        font-size: 0.75rem;
+        color: rgba(0, 255, 255, 0.6);
+      }
+      
+      .tf-agent-section {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.5rem;
+      }
+      
+      .tf-agent-card {
+        padding: 1.5rem;
+        border-radius: 8px;
+        background-color: rgba(0, 255, 255, 0.08);
+        border: 1px solid rgba(0, 255, 255, 0.2);
+      }
+      
+      .tf-agent-content {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+      }
+      
+      .tf-agent-main {
+        flex: 1;
+      }
+      
+      .tf-agent-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+      
+      .tf-terrasphere {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: conic-gradient(from 0deg, #00FFFF 0deg, transparent 90deg, #00FFFF 180deg, transparent 270deg, #00FFFF 360deg);
+        margin-right: 1rem;
+        position: relative;
+      }
+      
+      .tf-terrasphere::before {
+        content: '';
+        position: absolute;
+        top: 10%;
+        left: 10%;
+        width: 80%;
+        height: 80%;
+        border-radius: 50%;
+        background-color: #0A0E1A;
+      }
+      
+      .tf-agent-name {
+        font-size: 1.125rem;
+        font-weight: 500;
+        color: #00FFFF;
+        margin: 0;
+      }
+      
+      .tf-agent-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+      }
+      
+      .tf-stat-item {
+        display: block;
+      }
+      
+      .tf-capabilities {
+        margin-bottom: 1rem;
+      }
+      
+      .tf-cap-label {
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+        color: rgba(0, 255, 255, 0.8);
+      }
+      
+      .tf-cap-list {
+        display: block;
+      }
+      
+      .tf-cap-item {
+        font-size: 0.875rem;
+        color: #FFFFFF;
+        margin-bottom: 0.25rem;
+      }
+      
+      .tf-agent-side {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .tf-risk-level {
+        font-size: 0.875rem;
+        color: #00FFFF;
+      }
+      
+      .tf-agent-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.875rem;
+        color: rgba(0, 255, 255, 0.6);
+        margin-top: 1rem;
+      }
+      
+      .tf-footer {
+        border-top: 1px solid rgba(0, 255, 255, 0.2);
+        padding: 0.75rem;
+        background-color: #0A0E1A;
+      }
+      
+      .tf-footer-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.875rem;
+      }
+      
+      .tf-footer-left {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+      }
+      
+      .tf-footer-right {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+      }
+      
+      .tf-footer-left span,
+      .tf-footer-right span {
+        color: #00FFFF;
+      }
+      
       body {
         margin: 0;
         padding: 0;
@@ -76,6 +638,6 @@
         <div class="loading-subtitle">Initializing AI Swarm & Government Compliance Framework...</div>
       </div>
     </div>
-    <script type="module" src="/src/main-ultimate.tsx"></script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

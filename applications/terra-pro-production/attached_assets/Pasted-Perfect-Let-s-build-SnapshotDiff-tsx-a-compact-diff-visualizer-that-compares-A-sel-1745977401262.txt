@@ -1,0 +1,108 @@
+Perfect. Let’s build `SnapshotDiff.tsx` — a **compact diff visualizer** that compares:
+
+> 🔹 A selected **ComparableSnapshot**  
+> 🔸 Against either:
+>   - The **current CRDT form state** (most common use)
+>   - Or another snapshot (optional, for audit)
+
+---
+
+# 🧱 `SnapshotDiff.tsx` – Snapshot vs. Form Diff Viewer
+
+## 📁 File: `components/comps/SnapshotDiff.tsx`
+
+```tsx
+import React from 'react';
+import { ComparableSnapshot } from '@/shared/types/comps';
+
+type SnapshotDiffProps = {
+  snapshot: ComparableSnapshot;
+  formValues: Record<string, any>; // current CRDT form values (flat field:value)
+  fieldMapping: Record<string, string>; // maps snapshot keys → form field IDs
+};
+
+export function SnapshotDiff({ snapshot, formValues, fieldMapping }: SnapshotDiffProps) {
+  const entries = Object.entries(fieldMapping); // [ [snapshotKey, formFieldId], ... ]
+
+  return (
+    <div className="mt-3 border-t pt-2 space-y-2">
+      {entries.map(([snapKey, formField]) => {
+        const snapshotVal = snapshot.fields[snapKey];
+        const currentVal = formValues[formField];
+
+        const isDifferent = snapshotVal != currentVal;
+        return (
+          <div key={snapKey} className="text-sm flex justify-between">
+            <span className="text-gray-500 w-1/2">{snapKey}</span>
+            <span className={isDifferent ? "text-red-600 font-semibold" : "text-gray-700"}>
+              {String(currentVal || '')}
+            </span>
+            <span className={isDifferent ? "text-green-600 font-semibold" : "text-gray-700"}>
+              ← {String(snapshotVal || '')}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+```
+
+---
+
+## 🧪 Usage Example in `SnapshotTile.tsx`
+
+```tsx
+import { SnapshotDiff } from './SnapshotDiff';
+import { useCRDTForm } from '@/hooks/useCRDTForm';
+
+const { formData } = useCRDTForm(); // your current Yjs doc flattened
+
+const fieldMapping = {
+  salePrice: 'G1',
+  gla: 'G2',
+  beds: 'G3',
+  baths: 'G4',
+};
+
+<SnapshotDiff
+  snapshot={snapshot}
+  formValues={formData}
+  fieldMapping={fieldMapping}
+/>
+```
+
+---
+
+## ✅ What You Get
+
+- 📉 Clear visual on **what will change** if pushed
+- 🔴 Red: Current form value
+- 🟢 Green: New value from snapshot
+- 🚫 No highlight = values already match
+
+---
+
+## 🔜 Optional Enhancements
+
+- ⚙️ Toggle diff mode (vs. current form OR another snapshot)
+- 🧾 Download diff as audit record
+- 🧠 Auto-highlight “high-risk” overrides (e.g., changing sale price by >20%)
+
+---
+
+With this in place, you now have a complete workflow:
+
+1. **Search comps**
+2. **View historical versions**
+3. **Visually compare**
+4. **Map → Push**
+
+🚀 You're ready for the most intuitive, bulletproof comp ingestion pipeline in the industry.
+
+Want to:
+- Auto-populate default mappings per form type?
+- Add snapshot push undo via CRDT history?
+- Or hook this system into a PDF export module?
+
+You pick the next phase.

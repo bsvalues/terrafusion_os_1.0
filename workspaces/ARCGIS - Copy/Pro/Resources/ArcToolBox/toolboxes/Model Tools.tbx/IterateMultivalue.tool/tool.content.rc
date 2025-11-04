@@ -1,0 +1,9 @@
+{
+    "map": {
+        "description": "Iterates over a list of values.",
+        "in_values.descr": "Input values to iterate through.",
+        "in_values.title": "Input Values",
+        "title": "Iterate Multivalue",
+        "value.title": "Value"
+    }
+}

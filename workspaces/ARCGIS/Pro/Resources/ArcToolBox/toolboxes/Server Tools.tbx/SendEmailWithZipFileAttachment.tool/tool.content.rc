@@ -1,0 +1,26 @@
+{
+    "map": {
+        "description": "Emails a file to an email address using an SMTP email server.",
+        "from.descr": "The email address of the sender.",
+        "from.title": "From",
+        "max_file_size__mb_.descr": "<xdoc><p>The maximum allowable size of an attachment.</p><p>If you don&apos;t know what to use for Max File Size, check the attachment size limit of your SMTP mail server and the recipient email provider.</p></xdoc>",
+        "max_file_size__mb_.title": "Max File Size (MB)",
+        "password.descr": "The user password used to connect to the SMTP email server (if necessary).",
+        "password.title": "Password",
+        "sent.title": "Send Email Succeeded",
+        "smtp_email_server.descr": "The SMTP email server that will deliver the email.",
+        "smtp_email_server.title": "SMTP Email Server",
+        "subject.descr": "The text in the subject line of the email.",
+        "subject.title": "Subject",
+        "summary": "<xdoc><p>Emails a file to an email address using an SMTP email server.</p><note type=\"caution\"/><p group=\"note\">This tool is primarily intended for use as a part of a Clip and Email/Data Extraction geoprocessing service. To this end, this script tool is contained in the Extract Data and Email Task model tool and is primarily intended for use by that model.</p></xdoc>",
+        "text.descr": "The body text of the email.",
+        "text.title": "Text",
+        "title": "Send Email With Zip File Attachment",
+        "to.descr": "The email address of the recipient.",
+        "to.title": "To",
+        "user.descr": "The user which will log in to the SMTP email server.",
+        "user.title": "User",
+        "zip_file.descr": "The file to be attached to the email.",
+        "zip_file.title": "Zip File"
+    }
+}

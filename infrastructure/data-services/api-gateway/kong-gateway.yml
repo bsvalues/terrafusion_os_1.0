@@ -1,0 +1,523 @@
+# TerraFusion OS - Enterprise API Gateway
+# DATA SERVICES LAYER - PHASE 3 IMPLEMENTATION
+# Government-Grade API Management & Traffic Control
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrafusion-gateway
+  labels:
+    security.level: high
+    compliance: fisma-high
+    tier: data-services
+
+---
+# Kong API Gateway Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kong-gateway
+  namespace: terrafusion-gateway
+  labels:
+    app: kong-gateway
+    tier: api-gateway
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kong-gateway
+  template:
+    metadata:
+      labels:
+        app: kong-gateway
+        tier: api-gateway
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8100"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: kong-gateway
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+      containers:
+      - name: kong
+        image: kong/kong-gateway:3.4.2-alpine
+        env:
+        - name: KONG_DATABASE
+          value: "postgres"
+        - name: KONG_PG_HOST
+          value: "postgres.terrafusion-system.svc.cluster.local"
+        - name: KONG_PG_PORT
+          value: "5432"
+        - name: KONG_PG_DATABASE
+          value: "kong_production"
+        - name: KONG_PG_USER
+          valueFrom:
+            secretKeyRef:
+              name: kong-db-credentials
+              key: username
+        - name: KONG_PG_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: kong-db-credentials
+              key: password
+        - name: KONG_PROXY_ACCESS_LOG
+          value: "/dev/stdout"
+        - name: KONG_ADMIN_ACCESS_LOG
+          value: "/dev/stdout"
+        - name: KONG_PROXY_ERROR_LOG
+          value: "/dev/stderr"
+        - name: KONG_ADMIN_ERROR_LOG
+          value: "/dev/stderr"
+        - name: KONG_ADMIN_LISTEN
+          value: "0.0.0.0:8001"
+        - name: KONG_PROXY_LISTEN
+          value: "0.0.0.0:8000, 0.0.0.0:8443 ssl"
+        - name: KONG_ADMIN_GUI_LISTEN
+          value: "0.0.0.0:8002"
+        - name: KONG_PLUGINS
+          value: "bundled,prometheus,rate-limiting,oauth2,jwt,correlation-id,request-id,ip-restriction,acl,basic-auth,key-auth,ldap-auth,openid-connect"
+        - name: KONG_LOG_LEVEL
+          value: "info"
+        - name: KONG_STATUS_LISTEN
+          value: "0.0.0.0:8100"
+        - name: KONG_NGINX_WORKER_PROCESSES
+          value: "4"
+        # Government Security Requirements
+        - name: KONG_SSL_PROTOCOLS
+          value: "TLSv1.2 TLSv1.3"
+        - name: KONG_SSL_CIPHERS
+          value: "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384"
+        - name: KONG_HEADERS
+          value: "Server, X-Powered-By"
+        ports:
+        - containerPort: 8000
+          name: proxy
+          protocol: TCP
+        - containerPort: 8443
+          name: proxy-ssl
+          protocol: TCP
+        - containerPort: 8001
+          name: admin-api
+          protocol: TCP
+        - containerPort: 8002
+          name: admin-gui
+          protocol: TCP
+        - containerPort: 8100
+          name: status
+          protocol: TCP
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false  # Kong needs some write access
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
+        livenessProbe:
+          httpGet:
+            path: "/status"
+            port: 8100
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: "/status"
+            port: 8100
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        volumeMounts:
+        - name: kong-config
+          mountPath: /etc/kong
+          readOnly: true
+      volumes:
+      - name: kong-config
+        configMap:
+          name: kong-config
+
+---
+# Kong Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kong-config
+  namespace: terrafusion-gateway
+data:
+  kong.conf: |
+    # TerraFusion Government API Gateway Configuration
+    
+    # Database Configuration
+    database = postgres
+    pg_max_concurrent_queries = 0
+    pg_semaphore_timeout = 60000
+    
+    # Performance Tuning
+    nginx_worker_processes = 4
+    nginx_worker_connections = 4096
+    mem_cache_size = 128m
+    
+    # Security Configuration
+    ssl_protocols = TLSv1.2 TLSv1.3
+    ssl_prefer_server_ciphers = on
+    ssl_session_cache = shared:SSL:10m
+    ssl_session_timeout = 10m
+    
+    # Government Compliance
+    headers = off
+    server_tokens = off
+    latency_tokens = off
+    
+    # Logging
+    proxy_access_log = /dev/stdout
+    proxy_error_log = /dev/stderr
+    admin_access_log = /dev/stdout
+    admin_error_log = /dev/stderr
+    log_level = info
+    
+    # Rate Limiting
+    nginx_http_client_max_body_size = 10m
+    nginx_http_client_body_buffer_size = 8k
+    
+    # Real IP Configuration for Government Networks
+    real_ip_header = X-Forwarded-For
+    real_ip_recursive = on
+    trusted_ips = 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+
+---
+# Kong Gateway Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: kong-gateway
+  namespace: terrafusion-gateway
+  labels:
+    app: kong-gateway
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "tcp"
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8000
+    protocol: TCP
+    name: proxy
+  - port: 443
+    targetPort: 8443
+    protocol: TCP
+    name: proxy-ssl
+  - port: 8001
+    targetPort: 8001
+    protocol: TCP
+    name: admin-api
+  - port: 8002
+    targetPort: 8002
+    protocol: TCP
+    name: admin-gui
+  selector:
+    app: kong-gateway
+
+---
+# Government Rate Limiting Policy
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: government-rate-limits
+  namespace: terrafusion-gateway
+data:
+  rate-limits.yaml: |
+    # TerraFusion Government API Rate Limiting Policies
+    
+    # Citizen Portal - Public Access
+    citizen_portal:
+      requests_per_minute: 60
+      requests_per_hour: 1000
+      requests_per_day: 10000
+      burst_size: 10
+      
+    # Government Internal APIs - High Priority
+    government_internal:
+      requests_per_minute: 500
+      requests_per_hour: 10000
+      requests_per_day: 100000
+      burst_size: 50
+      
+    # AI Agent Communication - Ultra High Priority
+    ai_agent_mesh:
+      requests_per_minute: 5000
+      requests_per_hour: 100000
+      requests_per_day: 1000000
+      burst_size: 100
+      
+    # Property Assessment APIs - Critical Government Operations
+    property_assessment:
+      requests_per_minute: 200
+      requests_per_hour: 5000
+      requests_per_day: 50000
+      burst_size: 20
+      
+    # External Integrations - Controlled Access
+    external_systems:
+      requests_per_minute: 30
+      requests_per_hour: 500
+      requests_per_day: 5000
+      burst_size: 5
+
+---
+# TerraFusion API Routes Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-routes-config
+  namespace: terrafusion-gateway
+data:
+  routes.yaml: |
+    # TerraFusion Government API Routes
+    
+    routes:
+      # Core API Services
+      - name: terrafusion-api
+        service: terrafusion-api.terrafusion-system.svc.cluster.local:5000
+        paths: ["/api/v1"]
+        methods: ["GET", "POST", "PUT", "DELETE", "PATCH"]
+        strip_path: false
+        preserve_host: true
+        plugins:
+          - name: rate-limiting
+            config:
+              minute: 500
+              hour: 10000
+              day: 100000
+          - name: prometheus
+            config:
+              per_consumer: true
+          - name: correlation-id
+          - name: request-id
+          
+      # Property Services
+      - name: property-service
+        service: property-service.terrafusion-system.svc.cluster.local:5001
+        paths: ["/api/v1/properties"]
+        methods: ["GET", "POST", "PUT", "DELETE"]
+        plugins:
+          - name: rate-limiting
+            config:
+              minute: 200
+              hour: 5000
+              day: 50000
+          - name: jwt
+            config:
+              key_claim_name: "iss"
+              secret_is_base64: false
+          - name: acl
+            config:
+              whitelist: ["government", "assessor", "admin"]
+              
+      # Citizen Services
+      - name: citizen-service
+        service: citizen-service.terrafusion-system.svc.cluster.local:5002
+        paths: ["/api/v1/citizen"]
+        methods: ["GET", "POST", "PUT"]
+        plugins:
+          - name: rate-limiting
+            config:
+              minute: 60
+              hour: 1000
+              day: 10000
+          - name: oauth2
+            config:
+              enable_authorization_code: true
+              token_expiration: 3600
+              provision_key: "terrafusion_citizen_key"
+              
+      # AI Agent Mesh - Internal Communication
+      - name: ai-agent-mesh
+        service: ai-swarm.terrafusion-system.svc.cluster.local:8080
+        paths: ["/api/v1/agents"]
+        methods: ["GET", "POST", "PUT", "DELETE"]
+        plugins:
+          - name: rate-limiting
+            config:
+              minute: 5000
+              hour: 100000
+              day: 1000000
+          - name: ip-restriction
+            config:
+              whitelist: ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
+          - name: key-auth
+            config:
+              key_names: ["X-AI-Agent-Key"]
+              
+      # Analytics & Reporting
+      - name: analytics-service
+        service: analytics-service.terrafusion-system.svc.cluster.local:5009
+        paths: ["/api/v1/analytics"]
+        methods: ["GET", "POST"]
+        plugins:
+          - name: rate-limiting
+            config:
+              minute: 100
+              hour: 2000
+              day: 20000
+          - name: basic-auth
+            config:
+              hide_credentials: true
+          - name: acl
+            config:
+              whitelist: ["analytics", "admin", "government"]
+
+---
+# ServiceAccount for Kong Gateway
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kong-gateway
+  namespace: terrafusion-gateway
+
+---
+# RBAC for Kong Gateway
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: terrafusion-gateway
+  name: kong-gateway-role
+rules:
+- apiGroups: [""]
+  resources: ["secrets", "configmaps", "services", "endpoints"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["extensions", "networking.k8s.io"]
+  resources: ["ingresses"]
+  verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: kong-gateway-binding
+  namespace: terrafusion-gateway
+subjects:
+- kind: ServiceAccount
+  name: kong-gateway
+  namespace: terrafusion-gateway
+roleRef:
+  kind: Role
+  name: kong-gateway-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# Kong Admin API Service (Internal Only)
+apiVersion: v1
+kind: Service
+metadata:
+  name: kong-admin
+  namespace: terrafusion-gateway
+  labels:
+    app: kong-gateway
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8001
+    targetPort: 8001
+    protocol: TCP
+    name: admin-api
+  - port: 8002
+    targetPort: 8002
+    protocol: TCP
+    name: admin-gui
+  selector:
+    app: kong-gateway
+
+---
+# Network Policy for API Gateway
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: kong-gateway-network-policy
+  namespace: terrafusion-gateway
+spec:
+  podSelector:
+    matchLabels:
+      app: kong-gateway
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow from ingress controller
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 8000
+    - protocol: TCP
+      port: 8443
+  # Allow admin access from authorized pods only
+  - from:
+    - podSelector:
+        matchLabels:
+          role: admin
+    ports:
+    - protocol: TCP
+      port: 8001
+    - protocol: TCP
+      port: 8002
+  egress:
+  # Allow to all backend services
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: terrafusion-system
+    ports:
+    - protocol: TCP
+      port: 5000
+    - protocol: TCP
+      port: 5001
+    - protocol: TCP
+      port: 5002
+    - protocol: TCP
+      port: 8080
+  # Allow to database
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgres
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow DNS
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 53
+    - protocol: UDP
+      port: 53
+
+---
+# Kong Gateway Monitoring
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: kong-gateway-metrics
+  namespace: terrafusion-gateway
+spec:
+  selector:
+    matchLabels:
+      app: kong-gateway
+  endpoints:
+  - port: status
+    interval: 30s
+    path: /metrics

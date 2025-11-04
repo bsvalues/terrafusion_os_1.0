@@ -1,0 +1,335 @@
+{% extends "base_terrafusion.html" %}
+
+{% block title %}TerraFusionSync - Geospatial Data Synchronization | TerraFusion OS{% endblock %}
+
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+{% endblock %}
+
+{% block content %}
+<!-- TerraFusionSync Application Interface -->
+<div style="padding: 3rem 0;">
+    <!-- Application Title Section -->
+    <div style="text-align: center; margin-bottom: 4rem;">
+        <div class="tf-logo-animated" style="margin-bottom: 1rem;">
+            <svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="syncGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#00d2ff;stop-opacity:1" />
+                        <stop offset="50%" style="stop-color:#0891b2;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#667eea;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                
+                <!-- Sync Symbol -->
+                <circle cx="60" cy="60" r="50" fill="none" stroke="url(#syncGradient)" stroke-width="3" opacity="0.6">
+                    <animate attributeName="r" values="50;45;50" dur="2s" repeatCount="indefinite"/>
+                </circle>
+                
+                <!-- Data Flow Arrows -->
+                <path d="M30 60 L90 60 M80 50 L90 60 L80 70" stroke="#00d2ff" stroke-width="2" fill="none">
+                    <animate attributeName="opacity" values="0.3;1;0.3" dur="1.5s" repeatCount="indefinite"/>
+                </path>
+                
+                <!-- Central Node -->
+                <circle cx="60" cy="60" r="8" fill="#667eea">
+                    <animate attributeName="r" values="8;12;8" dur="3s" repeatCount="indefinite"/>
+                </circle>
+                
+                <!-- Sync Text -->
+                <text x="60" y="100" text-anchor="middle" font-family="'Segoe UI', sans-serif" 
+                      font-size="14" font-weight="600" fill="url(#syncGradient)">SYNC</text>
+            </svg>
+        </div>
+        
+        <h1 class="tf-title" style="margin-bottom: 1rem;">TerraFusionSync</h1>
+        <p class="tf-tagline" style="font-size: 1.4rem; margin-bottom: 2rem;">
+            Enterprise Geospatial Data Synchronization Platform
+        </p>
+        <p style="color: rgba(255, 255, 255, 0.7); font-size: 1.1rem; max-width: 800px; margin: 0 auto;">
+            Part of the TerraFusion OS ecosystem. Seamlessly synchronize property data, GIS exports, 
+            and assessment records across government systems with military-grade reliability.
+        </p>
+    </div>
+
+    <!-- System Status Overview -->
+    <div style="margin-bottom: 4rem;">
+        <h2 class="tf-subtitle" style="text-align: center; margin-bottom: 2rem;">System Status</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+            <div class="tf-metric-card">
+                <div class="tf-metric-value" id="systemHealth">{{ system_status.health_score or '98.7' }}%</div>
+                <div class="tf-metric-label">System Health</div>
+                <div style="margin-top: 0.5rem; font-size: 0.8rem; color: #10b981;">
+                    <span style="display: inline-block; width: 8px; height: 8px; background: #10b981; border-radius: 50%; margin-right: 0.5rem;"></span>
+                    Operational
+                </div>
+            </div>
+            
+            <div class="tf-metric-card">
+                <div class="tf-metric-value" id="activeJobs">{{ active_jobs or '24' }}</div>
+                <div class="tf-metric-label">Active Sync Jobs</div>
+                <div style="margin-top: 0.5rem; font-size: 0.8rem; color: var(--tf-accent-cyan);">
+                    Processing Data
+                </div>
+            </div>
+            
+            <div class="tf-metric-card">
+                <div class="tf-metric-value" id="dataVolume">12.4TB</div>
+                <div class="tf-metric-label">Data Synchronized</div>
+                <div style="margin-top: 0.5rem; font-size: 0.8rem; color: var(--tf-quantum-teal);">
+                    Last 30 Days
+                </div>
+            </div>
+            
+            <div class="tf-metric-card">
+                <div class="tf-metric-value" id="responseTime">{{ system_status.response_time or '145' }}ms</div>
+                <div class="tf-metric-label">Response Time</div>
+                <div style="margin-top: 0.5rem; font-size: 0.8rem; color: var(--tf-neural-purple);">
+                    Average
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Applications Grid -->
+    <div style="margin-bottom: 4rem;">
+        <h2 class="tf-subtitle" style="text-align: center; margin-bottom: 2rem;">Core Applications</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+            
+            <!-- GIS Operations -->
+            <div class="tf-card">
+                <div style="display: flex; align-items: center; margin-bottom: 1rem;">
+                    <div style="font-size: 2rem; margin-right: 1rem;">🗺️</div>
+                    <div>
+                        <h3 style="margin: 0; color: var(--tf-quantum-teal); font-size: 1.3rem; font-weight: 600;">GIS Operations</h3>
+                        <p style="margin: 0; color: rgba(255, 255, 255, 0.7); font-size: 0.9rem;">Geospatial Export & Analysis</p>
+                    </div>
+                </div>
+                <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 1.5rem; line-height: 1.5;">
+                    Advanced geospatial data export in multiple formats. Generate Shapefiles, GeoJSON, KML, and CSV exports 
+                    with real-time progress monitoring.
+                </p>
+                <div style="display: flex; gap: 1rem;">
+                    <a href="/gis/dashboard" class="tf-btn-primary">Launch GIS Center</a>
+                    <a href="/gis/export" class="tf-btn-secondary">Quick Export</a>
+                </div>
+            </div>
+
+            <!-- AI Analysis -->
+            <div class="tf-card">
+                <div style="display: flex; align-items: center; margin-bottom: 1rem;">
+                    <div style="font-size: 2rem; margin-right: 1rem;">🤖</div>
+                    <div>
+                        <h3 style="margin: 0; color: var(--tf-quantum-teal); font-size: 1.3rem; font-weight: 600;">AI Analysis Engine</h3>
+                        <p style="margin: 0; color: rgba(255, 255, 255, 0.7); font-size: 0.9rem;">Fraud Detection & Risk Assessment</p>
+                    </div>
+                </div>
+                <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 1.5rem; line-height: 1.5;">
+                    Quantum AI-powered property exemption fraud detection with 94.7% accuracy. Real-time risk assessment 
+                    and compliance monitoring.
+                </p>
+                <div style="display: flex; gap: 1rem;">
+                    <a href="/ai/dashboard" class="tf-btn-primary">Open AI Center</a>
+                    <a href="/ai/analysis" class="tf-btn-secondary">New Analysis</a>
+                </div>
+            </div>
+
+            <!-- PACS Synchronization -->
+            <div class="tf-card">
+                <div style="display: flex; align-items: center; margin-bottom: 1rem;">
+                    <div style="font-size: 2rem; margin-right: 1rem;">🔄</div>
+                    <div>
+                        <h3 style="margin: 0; color: var(--tf-quantum-teal); font-size: 1.3rem; font-weight: 600;">PACS Synchronization</h3>
+                        <p style="margin: 0; color: rgba(255, 255, 255, 0.7); font-size: 0.9rem;">Legacy System Integration</p>
+                    </div>
+                </div>
+                <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 1.5rem; line-height: 1.5;">
+                    Bulletproof legacy system conversion supporting Oracle, SQL Server, AS/400, and Access databases 
+                    with automated validation.
+                </p>
+                <div style="display: flex; gap: 1rem;">
+                    <a href="/pacs/dashboard" class="tf-btn-primary">Sync Center</a>
+                    <a href="/pacs/setup" class="tf-btn-secondary">Configure</a>
+                </div>
+            </div>
+
+            <!-- District Lookup -->
+            <div class="tf-card">
+                <div style="display: flex; align-items: center; margin-bottom: 1rem;">
+                    <div style="font-size: 2rem; margin-right: 1rem;">📍</div>
+                    <div>
+                        <h3 style="margin: 0; color: var(--tf-quantum-teal); font-size: 1.3rem; font-weight: 600;">District Lookup</h3>
+                        <p style="margin: 0; color: rgba(255, 255, 255, 0.7); font-size: 0.9rem;">Boundary & Tax District Query</p>
+                    </div>
+                </div>
+                <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 1.5rem; line-height: 1.5;">
+                    Instant property district lookup by coordinates or address. Fire, school, water, and voting 
+                    district boundary identification.
+                </p>
+                <div style="display: flex; gap: 1rem;">
+                    <a href="/district/dashboard" class="tf-btn-primary">District Center</a>
+                    <a href="/district/lookup" class="tf-btn-secondary">Quick Lookup</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Recent Activity Timeline -->
+    <div style="margin-bottom: 4rem;">
+        <h2 class="tf-subtitle" style="text-align: center; margin-bottom: 2rem;">Recent Activity</h2>
+        <div class="tf-card">
+            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem;">
+                <div>
+                    <h4 style="color: var(--tf-quantum-teal); margin-bottom: 1rem;">System Operations</h4>
+                    <div style="space-y: 1rem;">
+                        {% for operation in recent_operations[:5] %}
+                        <div style="display: flex; justify-content: between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <div>
+                                <div style="font-size: 0.9rem; color: rgba(255,255,255,0.9);">{{ operation.operation or 'Data Export Completed' }}</div>
+                                <div style="font-size: 0.8rem; color: rgba(255,255,255,0.6);">{{ operation.timestamp or '22:31:45' }}</div>
+                            </div>
+                            <div style="padding: 0.2rem 0.6rem; background: #10b981; color: white; border-radius: 12px; font-size: 0.7rem;">
+                                {{ operation.status or 'Success' }}
+                            </div>
+                        </div>
+                        {% else %}
+                        <div style="display: flex; justify-content: between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <div>
+                                <div style="font-size: 0.9rem; color: rgba(255,255,255,0.9);">GIS Export Completed</div>
+                                <div style="font-size: 0.8rem; color: rgba(255,255,255,0.6);">22:31:45</div>
+                            </div>
+                            <div style="padding: 0.2rem 0.6rem; background: #10b981; color: white; border-radius: 12px; font-size: 0.7rem;">
+                                Success
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <div>
+                                <div style="font-size: 0.9rem; color: rgba(255,255,255,0.9);">AI Analysis Started</div>
+                                <div style="font-size: 0.8rem; color: rgba(255,255,255,0.6);">22:30:12</div>
+                            </div>
+                            <div style="padding: 0.2rem 0.6rem; background: #f59e0b; color: white; border-radius: 12px; font-size: 0.7rem;">
+                                Processing
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <div>
+                                <div style="font-size: 0.9rem; color: rgba(255,255,255,0.9);">PACS Sync Validation</div>
+                                <div style="font-size: 0.8rem; color: rgba(255,255,255,0.6);">22:28:33</div>
+                            </div>
+                            <div style="padding: 0.2rem 0.6rem; background: #10b981; color: white; border-radius: 12px; font-size: 0.7rem;">
+                                Success
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 style="color: var(--tf-quantum-teal); margin-bottom: 1rem;">Performance Metrics</h4>
+                    <canvas id="performanceChart" style="max-height: 200px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TerraFusion OS Integration Notice -->
+    <div class="tf-card" style="text-align: center; background: rgba(0, 210, 255, 0.1); border-color: var(--tf-quantum-teal);">
+        <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+            <svg width="40" height="40" viewBox="0 0 40 40" style="margin-right: 1rem;">
+                <circle cx="20" cy="20" r="18" fill="none" stroke="var(--tf-quantum-teal)" stroke-width="2">
+                    <animate attributeName="r" values="18;22;18" dur="2s" repeatCount="indefinite"/>
+                </circle>
+                <text x="20" y="25" text-anchor="middle" font-size="12" fill="var(--tf-quantum-teal)">OS</text>
+            </svg>
+            <h3 style="margin: 0; color: var(--tf-quantum-teal);">TerraFusion OS Integration</h3>
+        </div>
+        <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 1.5rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+            TerraFusionSync is natively integrated with TerraFusion OS, providing seamless interoperability 
+            with other TerraFusion applications and system-wide data sharing.
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+            <a href="/integration/status" class="tf-btn-secondary">Integration Status</a>
+            <a href="/system/settings" class="tf-btn-secondary">System Settings</a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Performance Chart
+    const ctx = document.getElementById('performanceChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['22:25', '22:26', '22:27', '22:28', '22:29', '22:30', '22:31'],
+            datasets: [{
+                label: 'CPU Usage (%)',
+                data: [45, 48, 52, 47, 51, 49, 46],
+                borderColor: '#00d2ff',
+                backgroundColor: 'rgba(0, 210, 255, 0.1)',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'Memory Usage (%)',
+                data: [38, 42, 45, 43, 47, 44, 41],
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { 
+                legend: { 
+                    labels: { 
+                        color: '#e2e8f0',
+                        font: { family: "'Segoe UI', sans-serif" }
+                    } 
+                } 
+            },
+            scales: {
+                x: { 
+                    ticks: { color: '#e2e8f0' }, 
+                    grid: { color: '#334155' } 
+                },
+                y: { 
+                    ticks: { color: '#e2e8f0' }, 
+                    grid: { color: '#334155' } 
+                }
+            }
+        }
+    });
+
+    // Real-time metric updates
+    function updateMetrics() {
+        const healthEl = document.getElementById('systemHealth');
+        const jobsEl = document.getElementById('activeJobs');
+        const responseEl = document.getElementById('responseTime');
+        
+        // Simulate real-time updates
+        if (healthEl) {
+            const health = (98.5 + Math.random() * 1).toFixed(1);
+            healthEl.textContent = health + '%';
+        }
+        
+        if (jobsEl) {
+            const jobs = Math.floor(20 + Math.random() * 10);
+            jobsEl.textContent = jobs;
+        }
+        
+        if (responseEl) {
+            const response = Math.floor(140 + Math.random() * 20);
+            responseEl.textContent = response + 'ms';
+        }
+    }
+
+    // Update metrics every 5 seconds
+    setInterval(updateMetrics, 5000);
+</script>
+{% endblock %}

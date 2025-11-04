@@ -1,0 +1,387 @@
+{% extends "new_unified_base.html" %}
+
+{% block title %}Property Locations Map{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+<style>
+    #map-container {
+        height: 600px;
+        width: 100%;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .filters {
+        background-color: #f9fafb;
+        border-radius: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .cluster-marker {
+        background-color: rgba(38, 132, 255, 0.6);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        border: 2px solid rgba(38, 132, 255, 0.8);
+    }
+    .dark .filters {
+        background-color: #1f2937;
+    }
+    .property-popup {
+        max-width: 250px;
+    }
+    .property-popup img {
+        width: 100%;
+        height: auto;
+        border-radius: 4px;
+        margin-bottom: 8px;
+    }
+    .property-popup h4 {
+        margin: 0 0 5px 0;
+        font-weight: bold;
+    }
+    .property-popup p {
+        margin: 0 0 5px 0;
+        font-size: 0.875rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold mb-2">Property Locations Map</h1>
+        <p class="text-gray-600 dark:text-gray-300">Interactive visualization of {{ location_count|default('0') }} property locations in the database.</p>
+    </div>
+
+    <!-- Map Filters -->
+    <div class="filters p-4 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+                <label for="state-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">State</label>
+                <select id="state-filter" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                    <option value="">All States</option>
+                    {% for state in states|default([]) %}
+                    <option value="{{ state }}">{{ state }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="city-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">City</label>
+                <select id="city-filter" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                    <option value="">All Cities</option>
+                    {% for city in cities|default([]) %}
+                    <option value="{{ city }}">{{ city }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="price-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Price Range</label>
+                <select id="price-filter" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                    <option value="">Any Price</option>
+                    <option value="0-200000">Under $200k</option>
+                    <option value="200000-500000">$200k - $500k</option>
+                    <option value="500000-1000000">$500k - $1M</option>
+                    <option value="1000000-">$1M+</option>
+                </select>
+            </div>
+            <div>
+                <label for="property-type-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Property Type</label>
+                <select id="property-type-filter" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                    <option value="">All Types</option>
+                    <option value="Single Family">Single Family</option>
+                    <option value="Condo">Condo/Townhome</option>
+                    <option value="Multi-Family">Multi-Family</option>
+                    <option value="Vacant Land">Vacant Land</option>
+                    <option value="Commercial">Commercial</option>
+                </select>
+            </div>
+        </div>
+        <div class="mt-4 flex justify-end">
+            <button id="apply-filters" class="btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
+                </svg>
+                Apply Filters
+            </button>
+        </div>
+    </div>
+
+    <!-- Map Container -->
+    <div class="card mb-6">
+        <div class="card-header">
+            <h2 class="text-lg font-semibold">Interactive Property Map</h2>
+            <div class="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+                <span id="visible-locations">0</span> properties visible
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div id="map-container"></div>
+        </div>
+    </div>
+
+    <!-- Map Statistics -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="card hover:shadow-lg transition-shadow duration-300">
+            <div class="card-header bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
+                <h3 class="text-lg font-semibold">Property Distribution</h3>
+            </div>
+            <div class="card-body">
+                <div class="flex items-center justify-center h-40">
+                    <canvas id="property-distribution-chart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card hover:shadow-lg transition-shadow duration-300">
+            <div class="card-header bg-gradient-to-r from-green-500 to-teal-600 text-white">
+                <h3 class="text-lg font-semibold">Average Property Values</h3>
+            </div>
+            <div class="card-body">
+                <div class="flex items-center justify-center h-40">
+                    <canvas id="property-values-chart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card hover:shadow-lg transition-shadow duration-300">
+            <div class="card-header bg-gradient-to-r from-purple-500 to-pink-600 text-white">
+                <h3 class="text-lg font-semibold">Location Activity</h3>
+            </div>
+            <div class="card-body">
+                <div class="flex items-center justify-center h-40">
+                    <canvas id="location-activity-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Links -->
+    <div class="flex justify-between">
+        <a href="{{ url_for('monitoring_dashboard') }}" class="btn-outline flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+            </svg>
+            Dashboard
+        </a>
+        <a href="{{ url_for('monitoring_price_trends') }}" class="btn-outline flex items-center">
+            Price Trends
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize the map
+        var map = L.map('map-container').setView([39.8283, -98.5795], 4); // Center on US
+        
+        // Add the OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+        
+        // Sample data for demonstration - in production, this would come from the API
+        const sampleLocations = [
+            { id: 1, lat: 47.6062, lng: -122.3321, type: "Single Family", price: 750000, address: "123 Main St, Seattle, WA", bedrooms: 3, bathrooms: 2, sqft: 1800, image: "https://placehold.co/400x300/png" },
+            { id: 2, lat: 37.7749, lng: -122.4194, type: "Condo", price: 1200000, address: "456 Market St, San Francisco, CA", bedrooms: 2, bathrooms: 2, sqft: 1200, image: "https://placehold.co/400x300/png" },
+            { id: 3, lat: 34.0522, lng: -118.2437, type: "Multi-Family", price: 1500000, address: "789 Hollywood Blvd, Los Angeles, CA", bedrooms: 5, bathrooms: 3, sqft: 3000, image: "https://placehold.co/400x300/png" },
+            { id: 4, lat: 40.7128, lng: -74.0060, type: "Single Family", price: 2000000, address: "321 Park Ave, New York, NY", bedrooms: 4, bathrooms: 3.5, sqft: 2200, image: "https://placehold.co/400x300/png" },
+            { id: 5, lat: 41.8781, lng: -87.6298, type: "Condo", price: 450000, address: "555 Michigan Ave, Chicago, IL", bedrooms: 1, bathrooms: 1, sqft: 900, image: "https://placehold.co/400x300/png" },
+            { id: 6, lat: 29.7604, lng: -95.3698, type: "Single Family", price: 320000, address: "888 Texas St, Houston, TX", bedrooms: 3, bathrooms: 2, sqft: 1600, image: "https://placehold.co/400x300/png" },
+            { id: 7, lat: 33.4484, lng: -112.0740, type: "Single Family", price: 380000, address: "777 Desert Rd, Phoenix, AZ", bedrooms: 3, bathrooms: 2, sqft: 1700, image: "https://placehold.co/400x300/png" },
+            { id: 8, lat: 39.9526, lng: -75.1652, type: "Multi-Family", price: 650000, address: "444 Liberty St, Philadelphia, PA", bedrooms: 4, bathrooms: 2, sqft: 2500, image: "https://placehold.co/400x300/png" }
+        ];
+        
+        // Function to add markers to the map
+        function addMarkers(locations) {
+            // Clear existing markers
+            map.eachLayer(function(layer) {
+                if (layer instanceof L.Marker) {
+                    map.removeLayer(layer);
+                }
+            });
+            
+            // Add new markers
+            locations.forEach(function(loc) {
+                const marker = L.marker([loc.lat, loc.lng]).addTo(map);
+                
+                // Create popup content
+                const popupContent = `
+                    <div class="property-popup">
+                        <img src="${loc.image}" alt="Property Image">
+                        <h4>${formatCurrency(loc.price)}</h4>
+                        <p>${loc.bedrooms} bd | ${loc.bathrooms} ba | ${loc.sqft.toLocaleString()} sqft</p>
+                        <p>${loc.address}</p>
+                        <p class="text-sm text-gray-600">${loc.type}</p>
+                        <a href="/property/${loc.id}" class="text-blue-600 text-sm font-medium hover:underline">View Details</a>
+                    </div>
+                `;
+                
+                marker.bindPopup(popupContent);
+            });
+            
+            // Update the visible locations count
+            document.getElementById('visible-locations').textContent = locations.length;
+        }
+        
+        // Initialize with sample data
+        addMarkers(sampleLocations);
+        
+        // Handle filter button click
+        document.getElementById('apply-filters').addEventListener('click', function() {
+            const stateFilter = document.getElementById('state-filter').value;
+            const cityFilter = document.getElementById('city-filter').value;
+            const priceFilter = document.getElementById('price-filter').value;
+            const typeFilter = document.getElementById('property-type-filter').value;
+            
+            // In production, this would make an API call with the filters
+            // For demo, we'll just filter the sample data
+            let filteredLocations = sampleLocations;
+            
+            if (typeFilter) {
+                filteredLocations = filteredLocations.filter(loc => loc.type === typeFilter);
+            }
+            
+            if (priceFilter) {
+                const [minPrice, maxPrice] = priceFilter.split('-').map(p => parseInt(p) || Infinity);
+                filteredLocations = filteredLocations.filter(loc => 
+                    loc.price >= minPrice && (maxPrice === Infinity || loc.price <= maxPrice)
+                );
+            }
+            
+            // Apply the filtered data to the map
+            addMarkers(filteredLocations);
+        });
+        
+        // Helper function to format currency
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                maximumFractionDigits: 0
+            }).format(value);
+        }
+        
+        // Initialize charts
+        initCharts();
+        
+        function initCharts() {
+            // Property Distribution Chart
+            const distributionCtx = document.getElementById('property-distribution-chart').getContext('2d');
+            new Chart(distributionCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Single Family', 'Condo', 'Multi-Family', 'Vacant Land', 'Commercial'],
+                    datasets: [{
+                        data: [60, 25, 10, 3, 2],
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(153, 102, 255, 0.7)',
+                            'rgba(255, 159, 64, 0.7)',
+                            'rgba(255, 99, 132, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)',
+                            'rgba(255, 99, 132, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                boxWidth: 12,
+                                font: {
+                                    size: 10
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Property Values Chart
+            const valuesCtx = document.getElementById('property-values-chart').getContext('2d');
+            new Chart(valuesCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Seattle', 'San Francisco', 'Los Angeles', 'New York', 'Chicago'],
+                    datasets: [{
+                        label: 'Avg. Price (thousands)',
+                        data: [750, 1200, 900, 1500, 450],
+                        backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value + 'k';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Location Activity Chart
+            const activityCtx = document.getElementById('location-activity-chart').getContext('2d');
+            new Chart(activityCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'New Properties',
+                        data: [12, 19, 15, 28, 22, 30],
+                        fill: false,
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        // In a production environment, we would fetch real data from the API
+        // with an endpoint like '/api/location-data' that accepts filter parameters
+    });
+</script>
+{% endblock %}

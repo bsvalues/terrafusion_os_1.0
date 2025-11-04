@@ -1,0 +1,139 @@
+{
+    "TRE": "CCINFA",
+  "Source": [ "STDI-0002-1 v2021.1, Appendix AG: CCINFA" ],
+    "Name": "Country Code Information",
+    "Description": "The CCINFA tag allows the data provider to specify one or more translations for a single a priori or ad hoc code. In addition, for each translation, CCINFA allows for the data provider to include the full XML metadata specifying the names of the geopolitical or geographic entity, as specified by the GENC standard, in either plain XML form or in Gzipped form.",
+    "Size": 5,
+    "Fields": {
+      "NUMCODE" : {
+        "Name": "Number of Defined Codes",
+        "Description": "This field represents the number of code translations defined in this instance of the CCINFA TRE. This does not represent the number of legacy codes that are translated, but the number of translations itself. For example, if this instance of the CCINFA TRE includes translations of the AS legacy code for both the GENC authority and the ISO1 authority, and a single translation of the ad hoc code S1, then NUMCODE would have the value of 3. The number of instances of the block of fields from CODEn to DETAILn is equal to the value of NUMCODE.",
+        "Size": 3,
+        "Format": "BCS-N",
+        "Type": "R",
+        "Units": [],
+        "Values": [
+          {
+            "Type": "Range",
+            "Min": 1,
+            "Max": 999      
+          }
+        ]
+      },
+      "CODE_LEN" : {
+        "Name": "Length of the CODEn Field",
+        "Description": "This field represents the length of the CODEn field.",
+        "Size": 1,
+        "Format": "BCS-N",
+        "Type": "R",
+        "Units": [],
+        "Values": [
+          {
+            "Type": "Range",
+            "Min": 1,
+            "Max": 9      
+          }
+        ]
+      },
+      "CODE" : {
+        "Name": "Country Code",
+        "Description": "This field represents the a priori or ad hoc code for which a translation is provided. Codes shall not be padded with BCS spaces.",
+        "Size": 9,
+        "Format": "BCS-A",
+        "Type": "R",
+        "Units": [],
+        "Values": [
+          {
+            "Type": "Value",
+            "Values": ["*"]     
+          }
+        ]
+      },
+      "EQTYPE" : {
+        "Name": "Type of Equivalence",
+        "Description": "This field represents a flag indicating the type of equivalence represented by the translation of CODEn to ESURNn.",
+        "Size": 1,
+        "Format": "BCS-A",
+        "Type": "<R>",
+        "Units": [],
+        "Values": [
+          {
+            "Type": "Value",
+            "Values": [" ", "C", "*"]     
+          }
+        ]
+      },
+      "ESURN_LEN" : {
+        "Name": "Length of the ESURNn Field",
+        "Description": "This field represents the length of the ESURNn field. While version 3.0.1 of the GENC standard specifies that the maximum length of a short URN-based individual item identifier is 24 characters, the length of the ESURNn field is permitted to grow to up to 99 characters, to allow for future concept-types, authorities and baselines that might cause the maximum length of a short URN-based individual item identifier to grow beyond 24 characters.",
+        "Size": 2,
+        "Format": "BCS-N",
+        "Type": "R",
+        "Units": [],
+        "Values": [
+          {
+            "Type": "Range",
+            "Min": 9,
+            "Max": 99      
+          }
+        ]
+      },
+      "ESURN" : {
+        "Name": "Equivalent Short URN-based Individual Item Identifier",
+        "Description": "This field represents the equivalent fully specified country code, formatted as a short URN-based individual item identifier, that is equivalent to the a priori or ad hoc code specified in CODEn. The length of this field is specified by ESURN_LENn. This field is formatted per the definition of a short URN-based individual item identifier as specified by the Section 5.4.4.4 of the GENC standard. The value may use any concept type and codespace either defined directly by the GENC standard or registered with an authoritative registrar. Padding on the left or right of the identifier is not permitted.",
+        "Size": 99,
+        "Format": "BCS-A",
+        "Type": "R",
+        "Units": [],
+        "Values": [
+          {
+            "Type": "Value",
+            "Values": ["*"]      
+          }
+        ]
+      },
+      "DETAIL_LEN" : {
+        "Name": "Length of the DETAILn Field",
+        "Description": "This field represents the length of the DETAILn field, after compressing or encoding the contents.",
+        "Size": 5,
+        "Format": "BCS-N",
+        "Type": "R",
+        "Units": [],
+        "Values": [
+          {
+            "Type": "Range",
+            "Min": 0,
+            "Max": 99999      
+          }
+        ]
+      },
+      "DETAIL_CMPR" : {
+        "Name": "Code Detail Compression",
+        "Description": "This field represents the compression applied to the XML country name metadata before inserting into the DETAILn field. The DETAIL_CMPRn field is provided only if DETAIL_LENn is greater than zero.",
+        "Size": 1,
+        "Format": "BCS-A",
+        "Type": "<C>",
+        "Units": [],
+        "Values": [
+          {
+            "Type": "Value",
+            "Values": [" ", "G", "*"] 
+          }
+        ]
+      },
+      "DETAIL" : {
+        "Name": "Code Detail",
+        "Description": "This field represents the code detail. Data is formatted per the XML schema specified by the GENC standard as specified for the concept-type and codespace specified by the equivalent short URN-based individual item identifier contained in the ESURNn field. If DETAIL_CMPRn indicates that this data is compressed or otherwise encoded, then the DETAILn field contains a data stream which when uncompressed or decoded yields compliant XML as would be contained in the TRE if the data were not compressed. The DETAILn field is provided only if DETAIL_LENn is greater than zero.",
+        "Size": 1,
+        "Format": "BCS-AN",
+        "Type": "C",
+        "Units": [],
+        "Values": [
+          {
+            "Type": "Value",
+            "Values": ["*"] 
+          }
+        ]
+      }
+    }
+  }

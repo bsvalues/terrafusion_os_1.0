@@ -1,0 +1,23 @@
+{
+    "set": [
+        "change",
+        "convert",
+        "export",
+        "feature",
+        "format",
+        "garmin",
+        "gps",
+        "gpx",
+        "handheld",
+        "import",
+        "rte",
+        "satellite",
+        "topografix",
+        "track",
+        "trackpoint",
+        "turn",
+        "waypoint",
+        "wpt",
+        "xml"
+    ]
+}

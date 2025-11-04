@@ -1,0 +1,29 @@
+{
+    "set": [
+        "aggregate",
+        "attribute",
+        "border",
+        "boundary",
+        "combine",
+        "common",
+        "complex",
+        "connect",
+        "contiguous",
+        "detail",
+        "division",
+        "field",
+        "join",
+        "less",
+        "merge",
+        "multipart",
+        "reduce",
+        "remove",
+        "same",
+        "scale",
+        "shared",
+        "singlepart",
+        "union",
+        "unsplit",
+        "value"
+    ]
+}

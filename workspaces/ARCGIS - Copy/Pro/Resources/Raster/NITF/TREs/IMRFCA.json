@@ -1,0 +1,1208 @@
+{
+  "TRE": "IMRFCA",
+  "Source": ["MIL-PRF-89034, DPPDB: Table 69"],
+  "Name": "Segment Image Rational Function Coefficients",
+  "Description": "This support data extension component contains the image segment rational function coefficients, and shall follow immediately after the subheader file.",
+  "Size": 99999,
+  "Fields": {
+    "XINC1" : {
+      "Name": "X Image Numerator Coefficient 1",
+      "Description": "This field contains the X image numerator coefficient 1.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XINC2" : {
+      "Name": "X Image Numerator Coefficient 2",
+      "Description": "This field contains the X image numerator coefficient 2.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XINC3" : {
+      "Name": "X Image Numerator Coefficient 3",
+      "Description": "This field contains the X image numerator coefficient 3.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XINC4" : {
+      "Name": "X Image Numerator Coefficient 4",
+      "Description": "This field contains the X image numerator coefficient 4.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XINC5" : {
+      "Name": "X Image Numerator Coefficient 5",
+      "Description": "This field contains the X image numerator coefficient 5.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XINC6" : {
+      "Name": "X Image Numerator Coefficient 6",
+      "Description": "This field contains the X image numerator coefficient 6.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XINC7" : {
+      "Name": "X Image Numerator Coefficient 7",
+      "Description": "This field contains the X image numerator coefficient 7.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XINC8" : {
+      "Name": "X Image Numerator Coefficient 8",
+      "Description": "This field contains the X image numerator coefficient 8.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XINC9" : {
+      "Name": "X Image Numerator Coefficient 9",
+      "Description": "This field contains the X image numerator coefficient 9.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XINC10" : {
+      "Name": "X Image Numerator Coefficient 10",
+      "Description": "This field contains the X image numerator coefficient 10.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XINC11" : {
+      "Name": "X Image Numerator Coefficient 11",
+      "Description": "This field contains the X image numerator coefficient 11.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XINC12" : {
+      "Name": "X Image Numerator Coefficient 12",
+      "Description": "This field contains the X image numerator coefficient 12.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XINC13" : {
+      "Name": "X Image Numerator Coefficient 13",
+      "Description": "This field contains the X image numerator coefficient 13.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XINC14" : {
+      "Name": "X Image Numerator Coefficient 14",
+      "Description": "This field contains the X image numerator coefficient 15.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XINC15" : {
+      "Name": "X Image Numerator Coefficient 15",
+      "Description": "This field contains the X image numerator coefficient 15.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XINC16" : {
+      "Name": "X Image Numerator Coefficient 16",
+      "Description": "This field contains the X image numerator coefficient 16.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XINC17" : {
+      "Name": "X Image Numerator Coefficient 17",
+      "Description": "This field contains the X image numerator coefficient 17.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XINC18" : {
+      "Name": "X Image Numerator Coefficient 18",
+      "Description": "This field contains the X image numerator coefficient 18.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XINC19" : {
+      "Name": "X Image Numerator Coefficient 19",
+      "Description": "This field contains the X image numerator coefficient 19.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XINC20" : {
+      "Name": "X Image Numerator Coefficient 20",
+      "Description": "This field contains the X image numerator coefficient 20.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XIDC1" : {
+      "Name": "X Image Denominator 1",
+      "Description": "This field contains the X image denominator coefficient 1.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XIDC2" : {
+      "Name": "X Image Denominator 2",
+      "Description": "This field contains the X image denominator coefficient 2.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XIDC3" : {
+      "Name": "X Image Denominator 3",
+      "Description": "This field contains the X image denominator coefficient 3.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XIDC4" : {
+      "Name": "X Image Denominator 4",
+      "Description": "This field contains the X image denominator coefficient 4.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XIDC5" : {
+      "Name": "X Image Denominator 5",
+      "Description": "This field contains the X image denominator coefficient 5.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XIDC6" : {
+      "Name": "X Image Denominator 6",
+      "Description": "This field contains the X image denominator coefficient 6.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XIDC7" : {
+      "Name": "X Image Denominator 7",
+      "Description": "This field contains the X image denominator coefficient 7.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XIDC8" : {
+      "Name": "X Image Denominator 8",
+      "Description": "This field contains the X image denominator coefficient 8.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XIDC9" : {
+      "Name": "X Image Denominator 9",
+      "Description": "This field contains the X image denominator coefficient 9.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XIDC10" : {
+      "Name": "X Image Denominator 10",
+      "Description": "This field contains the X image denominator coefficient 10.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XIDC11" : {
+      "Name": "X Image Denominator 11",
+      "Description": "This field contains the X image denominator coefficient 11.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XIDC12" : {
+      "Name": "X Image Denominator 12",
+      "Description": "This field contains the X image denominator coefficient 12.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XIDC13" : {
+      "Name": "X Image Denominator 13",
+      "Description": "This field contains the X image denominator coefficient 13.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XIDC14" : {
+      "Name": "X Image Denominator 14",
+      "Description": "This field contains the X image denominator coefficient 14.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XIDC15" : {
+      "Name": "X Image Denominator 15",
+      "Description": "This field contains the X image denominator coefficient 15.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },"XIDC16" : {
+      "Name": "X Image Denominator 16",
+      "Description": "This field contains the X image denominator coefficient 16.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XIDC17" : {
+      "Name": "X Image Denominator 17",
+      "Description": "This field contains the X image denominator coefficient 17.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XIDC18" : {
+      "Name": "X Image Denominator 18",
+      "Description": "This field contains the X image denominator coefficient 18.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XIDC19" : {
+      "Name": "X Image Denominator 19",
+      "Description": "This field contains the X image denominator coefficient 19.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "XIDC20" : {
+      "Name": "X Image Denominator 20",
+      "Description": "This field contains the X image denominator coefficient 20.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YINC1" : {
+      "Name": "Y Image Numerator Coefficient 1",
+      "Description": "This field contains the Y image numerator coefficient 1.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YINC2" : {
+      "Name": "Y Image Numerator Coefficient 2",
+      "Description": "This field contains the Y image numerator coefficient 2.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YINC3" : {
+      "Name": "Y Image Numerator Coefficient 3",
+      "Description": "This field contains the Y image numerator coefficient 3.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YINC4" : {
+      "Name": "Y Image Numerator Coefficient 4",
+      "Description": "This field contains the Y image numerator coefficient 4.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YINC5" : {
+      "Name": "Y Image Numerator Coefficient 5",
+      "Description": "This field contains the Y image numerator coefficient 5.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YINC6" : {
+      "Name": "Y Image Numerator Coefficient 6",
+      "Description": "This field contains the Y image numerator coefficient 6.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YINC7" : {
+      "Name": "Y Image Numerator Coefficient 7",
+      "Description": "This field contains the Y image numerator coefficient 7.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YINC8" : {
+      "Name": "Y Image Numerator Coefficient 8",
+      "Description": "This field contains the Y image numerator coefficient 8.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YINC9" : {
+      "Name": "Y Image Numerator Coefficient 9",
+      "Description": "This field contains the Y image numerator coefficient 9.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YINC10" : {
+      "Name": "Y Image Numerator Coefficient 10",
+      "Description": "This field contains the Y image numerator coefficient 10.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YINC11" : {
+      "Name": "Y Image Numerator Coefficient 11",
+      "Description": "This field contains the Y image numerator coefficient 11.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YINC12" : {
+      "Name": "Y Image Numerator Coefficient 12",
+      "Description": "This field contains the Y image numerator coefficient 12.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YINC13" : {
+      "Name": "Y Image Numerator Coefficient 13",
+      "Description": "This field contains the Y image numerator coefficient 13.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YINC14" : {
+      "Name": "Y Image Numerator Coefficient 14",
+      "Description": "This field contains the Y image numerator coefficient 14.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YINC15" : {
+      "Name": "Y Image Numerator Coefficient 15",
+      "Description": "This field contains the Y image numerator coefficient 15.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YINC16" : {
+      "Name": "Y Image Numerator Coefficient 16",
+      "Description": "This field contains the Y image numerator coefficient 16.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YINC17" : {
+      "Name": "Y Image Numerator Coefficient 17",
+      "Description": "This field contains the Y image numerator coefficient 17.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YINC18" : {
+      "Name": "Y Image Numerator Coefficient 18",
+      "Description": "This field contains the Y image numerator coefficient 18.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YINC19" : {
+      "Name": "Y Image Numerator Coefficient 19",
+      "Description": "This field contains the Y image numerator coefficient 19.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YINC20" : {
+      "Name": "Y Image Numerator Coefficient 20",
+      "Description": "This field contains the Y image numerator coefficient 20.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YIDC1" : {
+      "Name": "Y Image Denominator Coefficient 1",
+      "Description": "This field contains the Y image denominator coefficient 1.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YIDC2" : {
+      "Name": "Y Image Denominator Coefficient 2",
+      "Description": "This field contains the Y image denominator coefficient 2.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YIDC3" : {
+      "Name": "Y Image Denominator Coefficient 3",
+      "Description": "This field contains the Y image denominator coefficient 3.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YIDC4" : {
+      "Name": "Y Image Denominator Coefficient 4",
+      "Description": "This field contains the Y image denominator coefficient 4.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YIDC5" : {
+      "Name": "Y Image Denominator Coefficient 5",
+      "Description": "This field contains the Y image denominator coefficient 5.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YIDC6" : {
+      "Name": "Y Image Denominator Coefficient 6",
+      "Description": "This field contains the Y image denominator coefficient 6.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YIDC7" : {
+      "Name": "Y Image Denominator Coefficient 7",
+      "Description": "This field contains the Y image denominator coefficient 7.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YIDC8" : {
+      "Name": "Y Image Denominator Coefficient 8",
+      "Description": "This field contains the Y image denominator coefficient 8.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YIDC9" : {
+      "Name": "Y Image Denominator Coefficient 9",
+      "Description": "This field contains the Y image denominator coefficient 9.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YIDC10" : {
+      "Name": "Y Image Denominator Coefficient 10",
+      "Description": "This field contains the Y image denominator coefficient 10.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YIDC11" : {
+      "Name": "Y Image Denominator Coefficient 11",
+      "Description": "This field contains the Y image denominator coefficient 11.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YIDC12" : {
+      "Name": "Y Image Denominator Coefficient 12",
+      "Description": "This field contains the Y image denominator coefficient 12.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YIDC13" : {
+      "Name": "Y Image Denominator Coefficient 13",
+      "Description": "This field contains the Y image denominator coefficient 13.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YIDC14" : {
+      "Name": "Y Image Denominator Coefficient 14",
+      "Description": "This field contains the Y image denominator coefficient 14.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YIDC15" : {
+      "Name": "Y Image Denominator Coefficient 15",
+      "Description": "This field contains the Y image denominator coefficient 15.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YIDC16" : {
+      "Name": "Y Image Denominator Coefficient 16",
+      "Description": "This field contains the Y image denominator coefficient 16.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YIDC17" : {
+      "Name": "Y Image Denominator Coefficient 17",
+      "Description": "This field contains the Y image denominator coefficient 17.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YIDC18" : {
+      "Name": "Y Image Denominator Coefficient 18",
+      "Description": "This field contains the Y image denominator coefficient 18.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YIDC19" : {
+      "Name": "Y Image Denominator Coefficient 19",
+      "Description": "This field contains the Y image denominator coefficient 19.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    },
+    "YIDC20" : {
+      "Name": "Y Image Denominator Coefficient 20",
+      "Description": "This field contains the Y image denominator coefficient 20.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -10,
+          "Max": 10
+        }        
+      ]
+    }    
+  }
+}

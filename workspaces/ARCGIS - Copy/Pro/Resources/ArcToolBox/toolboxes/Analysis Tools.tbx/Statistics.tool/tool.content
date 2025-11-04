@@ -1,0 +1,197 @@
+{
+    "type": "FunctionTool",
+    "guid": "{c93078b4-f4c4-48db-982c-ad03b8ae0704}",
+    "displayname": "$rc:title",
+    "helpcontent": "1040003",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_table": {
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "out_table": {
+            "direction": "out",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "description": "$rc:out_table.descr"
+        },
+        "statistics_fields": {
+            "displayname": "$rc:statistics_fields.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:statistics_fields.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:statistics_fields.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Short",
+                            "Long",
+                            "Float",
+                            "Double",
+                            "Text",
+                            "OID",
+                            "Date",
+                            "BigInteger",
+                            "DateOnly",
+                            "TimestampOffset"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "SUM",
+                                "code": "$rc:statistics_fields.domain.item2.SUM"
+                            },
+                            {
+                                "value": "MEAN",
+                                "code": "$rc:statistics_fields.domain.item2.MEAN"
+                            },
+                            {
+                                "value": "MIN",
+                                "code": "$rc:statistics_fields.domain.item2.MIN"
+                            },
+                            {
+                                "value": "MAX",
+                                "code": "$rc:statistics_fields.domain.item2.MAX"
+                            },
+                            {
+                                "value": "RANGE",
+                                "code": "$rc:statistics_fields.domain.item2.RANGE"
+                            },
+                            {
+                                "value": "STD",
+                                "code": "$rc:statistics_fields.domain.item2.STD"
+                            },
+                            {
+                                "value": "COUNT",
+                                "code": "$rc:statistics_fields.domain.item2.COUNT"
+                            },
+                            {
+                                "value": "FIRST",
+                                "code": "$rc:statistics_fields.domain.item2.FIRST"
+                            },
+                            {
+                                "value": "LAST",
+                                "code": "$rc:statistics_fields.domain.item2.LAST"
+                            },
+                            {
+                                "value": "MEDIAN",
+                                "code": "$rc:statistics_fields.domain.item2.MEDIAN"
+                            },
+                            {
+                                "value": "VARIANCE",
+                                "code": "$rc:statistics_fields.domain.item2.VARIANCE"
+                            },
+                            {
+                                "value": "UNIQUE",
+                                "code": "$rc:statistics_fields.domain.item2.UNIQUE"
+                            },
+                            {
+                                "value": "CONCATENATE",
+                                "code": "$rc:statistics_fields.domain.item2.CONCATENATE"
+                            },
+                            {
+                                "value": "MODE",
+                                "code": "$rc:statistics_fields.domain.item2.MODE"
+                            },
+                            {
+                                "value": "DBMS_SUM",
+                                "code": "$rc:statistics_fields.domain.item2.DBMS_SUM"
+                            },
+                            {
+                                "value": "DBMS_MEAN",
+                                "code": "$rc:statistics_fields.domain.item2.DBMS_MEAN"
+                            },
+                            {
+                                "value": "DBMS_MIN",
+                                "code": "$rc:statistics_fields.domain.item2.DBMS_MIN"
+                            },
+                            {
+                                "value": "DBMS_MAX",
+                                "code": "$rc:statistics_fields.domain.item2.DBMS_MAX"
+                            },
+                            {
+                                "value": "DBMS_STD",
+                                "code": "$rc:statistics_fields.domain.item2.DBMS_STD"
+                            },
+                            {
+                                "value": "DBMS_COUNT",
+                                "code": "$rc:statistics_fields.domain.item2.DBMS_COUNT"
+                            },
+                            {
+                                "value": "DBMS_MEDIAN",
+                                "code": "$rc:statistics_fields.domain.item2.DBMS_MEDIAN"
+                            },
+                            {
+                                "value": "DBMS_VARIANCE",
+                                "code": "$rc:statistics_fields.domain.item2.DBMS_VARIANCE"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:statistics_fields.descr"
+        },
+        "case_field": {
+            "type": "optional",
+            "displayname": "$rc:case_field.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:case_field.descr"
+        },
+        "concatenation_separator": {
+            "type": "optional",
+            "displayname": "$rc:concatenation_separator.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:concatenation_separator.descr"
+        }
+    },
+    "environments": [
+        "configKeyword",
+        "scratchWorkspace",
+        "timeZone",
+        "workspace"
+    ]
+}

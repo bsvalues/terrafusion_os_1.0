@@ -1,0 +1,19 @@
+{
+    "set": [
+        "animation",
+        "ascending",
+        "attribute",
+        "auto",
+        "column",
+        "compute",
+        "field",
+        "fields",
+        "figure",
+        "interval",
+        "period",
+        "populate",
+        "start",
+        "temporal",
+        "time"
+    ]
+}

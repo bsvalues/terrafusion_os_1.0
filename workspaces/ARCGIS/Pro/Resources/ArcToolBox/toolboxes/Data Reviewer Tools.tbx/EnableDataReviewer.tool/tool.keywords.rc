@@ -1,0 +1,10 @@
+{
+    "set": [
+        "administer",
+        "analysis",
+        "geodatabase",
+        "results",
+        "schema",
+        "workspace"
+    ]
+}

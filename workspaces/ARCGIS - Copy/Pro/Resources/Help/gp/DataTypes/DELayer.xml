@@ -1,0 +1,5 @@
+<DataType Name="DELayer">
+  <DisplayName>Layer File</DisplayName>
+  <Description>A layer file stores a layer definition, including symbology and rendering properties.</Description>
+</DataType>
+

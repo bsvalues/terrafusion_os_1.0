@@ -1,0 +1,351 @@
+# TerraFusion Elite Monitoring Configuration
+# Championship-level observability for property assessment excellence
+# Real-time monitoring with 99.999% availability tracking
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  scrape_timeout: 10s
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# Load rules once and periodically evaluate them
+rule_files:
+  - "alert_rules.yml"
+  - "recording_rules.yml"
+
+# Scrape configurations
+scrape_configs:
+  # TerraFusion API Championship Metrics
+  - job_name: 'terrafusion-api-championship'
+    scrape_interval: 5s
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['terrafusion-api:8080']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'api-championship'
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: '(http_requests_total|http_request_duration_seconds|terrafusion_property_assessments_total|terrafusion_accuracy_score|terrafusion_iaao_compliance_score)'
+        action: keep
+
+  # TerraFusion Consciousness Elite Orchestration Metrics
+  - job_name: 'terrafusion-consciousness-elite'
+    scrape_interval: 5s
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['terrafusion-consciousness:3004']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'consciousness-elite'
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: '(terrafusion_agents_active|terrafusion_swarm_harmony_score|terrafusion_coordination_latency_ms|terrafusion_quantum_optimization_factor)'
+        action: keep
+
+  # AI Coordination Elite Metrics
+  - job_name: 'terrafusion-ai-elite'
+    scrape_interval: 10s
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['terrafusion-ai:8080']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'ai-coordination-elite'
+
+  # ML Model Server Championship Metrics
+  - job_name: 'ml-model-server-championship'
+    scrape_interval: 10s
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['ml-model-server:8501', 'ml-model-server:8502', 'ml-model-server:8503']
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: '(.+):(\d+)'
+        target_label: instance
+        replacement: 'ml-server-${2}'
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: '(tensorflow_serving_.*|pytorch_serving_.*|sklearn_serving_.*|model_accuracy_score|inference_latency_ms)'
+        action: keep
+
+  # PostgreSQL Elite Database Metrics
+  - job_name: 'postgres-elite'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'postgres-elite'
+
+  # Redis Elite Cache Metrics
+  - job_name: 'redis-elite'
+    scrape_interval: 30s
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'redis-elite'
+
+  # Kubernetes Cluster Metrics
+  - job_name: 'kubernetes-nodes'
+    scrape_interval: 30s
+    kubernetes_sd_configs:
+      - role: node
+    relabel_configs:
+      - action: labelmap
+        regex: __meta_kubernetes_node_label_(.+)
+      - target_label: __address__
+        replacement: kubernetes.default.svc:443
+      - source_labels: [__meta_kubernetes_node_name]
+        regex: (.+)
+        target_label: __metrics_path__
+        replacement: /api/v1/nodes/${1}/proxy/metrics
+
+  - job_name: 'kubernetes-pods'
+    scrape_interval: 15s
+    kubernetes_sd_configs:
+      - role: pod
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+        action: keep
+        regex: true
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+        action: replace
+        target_label: __metrics_path__
+        regex: (.+)
+      - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+        action: replace
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        replacement: $1:$2
+        target_label: __address__
+      - action: labelmap
+        regex: __meta_kubernetes_pod_label_(.+)
+      - source_labels: [__meta_kubernetes_namespace]
+        action: replace
+        target_label: kubernetes_namespace
+      - source_labels: [__meta_kubernetes_pod_name]
+        action: replace
+        target_label: kubernetes_pod_name
+
+  # NGINX Ingress Controller Metrics
+  - job_name: 'nginx-ingress'
+    scrape_interval: 30s
+    kubernetes_sd_configs:
+      - role: pod
+        namespaces:
+          names:
+            - ingress-nginx
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name]
+        action: keep
+        regex: ingress-nginx
+
+  # Certificate Manager Metrics
+  - job_name: 'cert-manager'
+    scrape_interval: 60s
+    kubernetes_sd_configs:
+      - role: pod
+        namespaces:
+          names:
+            - cert-manager
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_label_app]
+        action: keep
+        regex: cert-manager
+
+  # External Monitoring Targets
+  - job_name: 'blackbox-probes'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+        - https://api.terrafusion.ai/health
+        - https://consciousness.terrafusion.ai/health
+        - https://assessor.terrafusion.ai/health
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
+# Recording rules for championship performance analysis
+recording_rules:
+  # API Performance Recording Rules
+  - name: api_performance_championship
+    interval: 30s
+    rules:
+      - record: terrafusion:api:request_rate_5m
+        expr: rate(http_requests_total{job="terrafusion-api-championship"}[5m])
+
+      - record: terrafusion:api:response_time_p95_5m
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="terrafusion-api-championship"}[5m]))
+
+      - record: terrafusion:api:response_time_p99_5m
+        expr: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{job="terrafusion-api-championship"}[5m]))
+
+      - record: terrafusion:api:error_rate_5m
+        expr: rate(http_requests_total{job="terrafusion-api-championship",status=~"5.."}[5m]) / rate(http_requests_total{job="terrafusion-api-championship"}[5m])
+
+  # Property Assessment Championship Metrics
+  - name: property_assessment_championship
+    interval: 60s
+    rules:
+      - record: terrafusion:assessments:accuracy_score_avg_1h
+        expr: avg_over_time(terrafusion_accuracy_score[1h])
+
+      - record: terrafusion:assessments:iaao_compliance_avg_1h
+        expr: avg_over_time(terrafusion_iaao_compliance_score[1h])
+
+      - record: terrafusion:assessments:rate_1h
+        expr: rate(terrafusion_property_assessments_total[1h])
+
+  # AI Swarm Elite Performance Rules
+  - name: ai_swarm_elite_performance
+    interval: 30s
+    rules:
+      - record: terrafusion:swarm:harmony_score_avg_5m
+        expr: avg_over_time(terrafusion_swarm_harmony_score[5m])
+
+      - record: terrafusion:swarm:active_agents_avg_5m
+        expr: avg_over_time(terrafusion_agents_active[5m])
+
+      - record: terrafusion:swarm:coordination_latency_p95_5m
+        expr: histogram_quantile(0.95, rate(terrafusion_coordination_latency_ms_bucket[5m]))
+
+  # ML Model Championship Performance Rules
+  - name: ml_model_championship_performance
+    interval: 60s
+    rules:
+      - record: terrafusion:ml:accuracy_avg_1h
+        expr: avg_over_time(model_accuracy_score[1h])
+
+      - record: terrafusion:ml:inference_latency_p95_1h
+        expr: histogram_quantile(0.95, rate(inference_latency_ms_bucket[1h]))
+
+# Alert Rules for Championship Performance Monitoring
+alert_rules:
+  # Critical Championship Performance Alerts
+  - name: championship_performance_alerts
+    rules:
+      - alert: APIResponseTimeHigh
+        expr: terrafusion:api:response_time_p95_5m > 0.010  # 10ms threshold
+        for: 2m
+        labels:
+          severity: critical
+          service: api
+          performance_tier: championship
+        annotations:
+          summary: "API response time exceeds championship standards"
+          description: "API P95 response time is {{ $value }}ms, exceeding 10ms championship threshold"
+
+      - alert: PropertyAssessmentAccuracyLow
+        expr: terrafusion:assessments:accuracy_score_avg_1h < 0.999  # 99.9% accuracy threshold
+        for: 5m
+        labels:
+          severity: critical
+          service: property_assessment
+          compliance: iaao
+        annotations:
+          summary: "Property assessment accuracy below championship standards"
+          description: "Property assessment accuracy is {{ $value | humanizePercentage }}, below 99.9% championship requirement"
+
+      - alert: SwarmHarmonyLow
+        expr: terrafusion:swarm:harmony_score_avg_5m < 0.98  # 98% harmony threshold
+        for: 3m
+        labels:
+          severity: warning
+          service: consciousness
+          performance_tier: elite
+        annotations:
+          summary: "AI swarm harmony below elite standards"
+          description: "Swarm harmony score is {{ $value | humanizePercentage }}, below 98% elite threshold"
+
+      - alert: MLModelAccuracyDegraded
+        expr: terrafusion:ml:accuracy_avg_1h < 0.995  # 99.5% accuracy threshold
+        for: 10m
+        labels:
+          severity: warning
+          service: ml_models
+          performance_tier: championship
+        annotations:
+          summary: "ML model accuracy degraded below championship standards"
+          description: "ML model accuracy is {{ $value | humanizePercentage }}, below 99.5% championship threshold"
+
+  # Infrastructure Health Alerts
+  - name: infrastructure_health_alerts
+    rules:
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          component: infrastructure
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is above 90% on instance {{ $labels.instance }}"
+
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+        for: 5m
+        labels:
+          severity: warning
+          component: infrastructure
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is above 85% on instance {{ $labels.instance }}"
+
+      - alert: DiskSpaceLow
+        expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) * 100 < 10
+        for: 5m
+        labels:
+          severity: critical
+          component: infrastructure
+        annotations:
+          summary: "Low disk space detected"
+          description: "Disk space is below 10% on instance {{ $labels.instance }}"
+
+  # Service Availability Alerts
+  - name: service_availability_alerts
+    rules:
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: service_availability
+        annotations:
+          summary: "Service is down"
+          description: "Service {{ $labels.job }} on instance {{ $labels.instance }} is down"
+
+      - alert: HighErrorRate
+        expr: terrafusion:api:error_rate_5m > 0.01  # 1% error rate threshold
+        for: 3m
+        labels:
+          severity: critical
+          service: api
+          performance_tier: championship
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }}, above 1% championship threshold"
+
+# External Labels for Multi-Cluster Monitoring
+external_labels:
+  cluster: 'terrafusion-elite-production'
+  environment: 'production'
+  performance_tier: 'championship'
+  compliance_level: 'fisma_high'

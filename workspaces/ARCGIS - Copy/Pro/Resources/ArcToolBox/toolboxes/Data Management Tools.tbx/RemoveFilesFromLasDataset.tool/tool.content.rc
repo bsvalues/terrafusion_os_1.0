@@ -1,0 +1,15 @@
+{
+    "map": {
+        "delete_pyramid.descr": "<xdoc><p>Specifies whether the LAS dataset&apos;s display pyramid will be deleted.</p><ul><li>Checked—The LAS dataset&apos;s display pyramid will be deleted.</li><li>Unchecked—The LAS dataset&apos;s display pyramid will not be deleted. This is the default.</li></ul></xdoc>",
+        "delete_pyramid.title": "Delete Pyramid",
+        "derived_las_dataset.title": "Updated LAS Dataset",
+        "description": "Removes one or more LAS files and surface constraint features from a LAS dataset.",
+        "in_files.descr": "The name of the LAS files or folders containing LAS files whose reference will be removed from the LAS dataset.",
+        "in_files.title": "LAS Files or Folders",
+        "in_las_dataset.descr": "The LAS dataset that will be processed.",
+        "in_las_dataset.title": "Input LAS Dataset",
+        "in_surface_constraints.descr": "The name of the surface constraint features that will be removed from the LAS dataset.",
+        "in_surface_constraints.title": "Surface Constraints",
+        "title": "Remove Files From LAS Dataset"
+    }
+}

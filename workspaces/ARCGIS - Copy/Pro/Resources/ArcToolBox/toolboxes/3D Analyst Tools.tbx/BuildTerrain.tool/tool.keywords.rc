@@ -1,0 +1,19 @@
+{
+    "set": [
+        "build",
+        "construct",
+        "create",
+        "display",
+        "edit",
+        "generate",
+        "lidar",
+        "mass points",
+        "multipoints",
+        "multiresolution surface",
+        "re-build terrain",
+        "surface",
+        "terrain",
+        "terrain dataset",
+        "terrains"
+    ]
+}

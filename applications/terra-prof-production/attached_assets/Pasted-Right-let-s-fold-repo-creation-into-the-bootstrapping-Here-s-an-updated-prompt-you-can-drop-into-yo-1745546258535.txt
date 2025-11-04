@@ -1,0 +1,77 @@
+Right—let’s fold repo creation into the bootstrapping. Here’s an updated prompt you can drop into your Replit AI Agent shell that will:
+
+1. Authenticate with GitHub (via GH CLI)  
+2. Create the TerraFusionPro repo if it doesn’t exist  
+3. Clone it, scaffold the monorepo, install, commit, and verify  
+
+---
+
+```
+You are an expert DevOps engineer and full-stack architect. In this workspace, bootstrap TerraFusionPro end-to-end:
+
+1. **Authenticate with GitHub**  
+   - If not already logged in, run:
+     ```
+     gh auth login --with-token < $GITHUB_TOKEN
+     ```
+     (assume $GITHUB_TOKEN is set in Secrets.)
+
+2. **Create GitHub repo**  
+   - Run:
+     ```
+     gh repo create yourusername/TerraFusionPro \
+       --private \
+       --description "Next-generation real estate appraisal platform replacing legacy systems" \
+       --confirm
+     ```
+
+3. **Clone & init**  
+   - Clone the new repo locally:  
+     ```
+     git clone https://github.com/yourusername/TerraFusionPro.git .
+     ```
+   - If no Git repo exists, run `git init`.
+
+4. **Directory structure**  
+   ```
+   mkdir -p \
+     packages/{api,field-app,web-client,shared,agents} \
+     services/{property-service,analysis-service,user-service,form-service,report-service} \
+     infrastructure/{kubernetes,terraform,docker,ci-cd} \
+     docs/{architecture,api,development,user-guides} \
+     scripts tests assets/{images,styles} .github/{workflows,ISSUE_TEMPLATE}
+   ```
+
+5. **Key files**  
+   - Drop in from our spec:
+     - `README.md`
+     - `package.json`
+     - `lerna.json`
+     - `.gitignore`
+     - `.github/workflows/ci.yml`
+
+6. **Install & configure**  
+   ```
+   npm install --save-dev lerna typescript eslint prettier husky lint-staged
+   npx lerna init
+   ```
+
+7. **Commit & push**  
+   ```
+   git add .
+   git commit -m "feat: initial monorepo scaffold for TerraFusionPro"
+   git push -u origin main
+   ```
+
+8. **Verify**  
+   - Run `npm run dev`—no errors.  
+   - List directories to confirm.
+
+9. **Report back**  
+   - Print a brief summary of created files/directories.  
+   - Propose the next module to implement (e.g. shared types & CRDT).
+
+Proceed step-by-step, echoing each command and only moving on once it succeeds. At the end, provide a concise “all set” summary and next recommended task.
+```
+
+Paste that into Replit AI Agent and it will both **create** the GitHub repo and fully scaffold your monorepo.

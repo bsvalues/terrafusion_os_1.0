@@ -1,0 +1,287 @@
+{
+    "type": "FunctionTool",
+    "guid": "{153a026f-23e6-4e75-b3c3-7647aa52e955}",
+    "displayname": "$rc:title",
+    "helpcontent": "3210003",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_base_raster": {
+            "display_order": "0",
+            "displayname": "$rc:in_base_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_base_raster.descr"
+        },
+        "in_test_raster": {
+            "display_order": "1",
+            "displayname": "$rc:in_test_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_test_raster.descr"
+        },
+        "compare_type": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:compare_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "RASTER_DATASET",
+                        "code": "$rc:compare_type.domain.RASTER_DATASET"
+                    },
+                    {
+                        "value": "GDB_RASTER_DATASET",
+                        "code": "$rc:compare_type.domain.GDB_RASTER_DATASET"
+                    },
+                    {
+                        "value": "MOSAIC_DATASET",
+                        "code": "$rc:compare_type.domain.MOSAIC_DATASET"
+                    }
+                ]
+            },
+            "value": "RASTER_DATASET",
+            "description": "$rc:compare_type.descr"
+        },
+        "ignore_option": {
+            "type": "optional",
+            "display_order": "3",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:ignore_option.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:ignore_option.descr"
+        },
+        "continue_compare": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:continue_compare.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CONTINUE_COMPARE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_CONTINUE_COMPARE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:continue_compare.descr"
+        },
+        "out_compare_file": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "8",
+            "displayname": "$rc:out_compare_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "txt",
+                    "csv"
+                ]
+            },
+            "description": "$rc:out_compare_file.descr"
+        },
+        "parameter_tolerances": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:parameter_tolerances.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:parameter_tolerances.dt.title1"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:parameter_tolerances.dt.title2"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:parameter_tolerances.dt.title3"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "All",
+                                "code": "$rc:parameter_tolerances.domain.item1.All"
+                            },
+                            {
+                                "value": "Extent",
+                                "code": "$rc:parameter_tolerances.domain.item1.Extent"
+                            },
+                            {
+                                "value": "Pixel_Value",
+                                "code": "$rc:parameter_tolerances.domain.item1.Pixel_Value"
+                            },
+                            {
+                                "value": "Statistics_Minimum",
+                                "code": "$rc:parameter_tolerances.domain.item1.Statistics_Minimum"
+                            },
+                            {
+                                "value": "Statistics_Maximum",
+                                "code": "$rc:parameter_tolerances.domain.item1.Statistics_Maximum"
+                            },
+                            {
+                                "value": "Statistics_Mean",
+                                "code": "$rc:parameter_tolerances.domain.item1.Statistics_Mean"
+                            },
+                            {
+                                "value": "Statistics_Standard_Deviation",
+                                "code": "$rc:parameter_tolerances.domain.item1.Statistics_Standard_Deviation"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPNumericDomain",
+                        "allowempty": "false"
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "Fraction",
+                                "code": "$rc:parameter_tolerances.domain.item3.Fraction"
+                            },
+                            {
+                                "value": "Value",
+                                "code": "$rc:parameter_tolerances.domain.item3.Value"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:parameter_tolerances.descr"
+        },
+        "attribute_tolerances": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:attribute_tolerances.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:attribute_tolerances.dt.title1"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:attribute_tolerances.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Short",
+                            "Long",
+                            "Float",
+                            "Double",
+                            "BigInteger"
+                        ]
+                    },
+                    {
+                        "type": "GPNumericDomain",
+                        "allowempty": "false"
+                    }
+                ]
+            },
+            "depends": [
+                "in_base_raster"
+            ],
+            "description": "$rc:attribute_tolerances.descr"
+        },
+        "omit_field": {
+            "type": "optional",
+            "display_order": "6",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:omit_field.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "description": "$rc:omit_field.descr"
+        },
+        "compare_status": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:compare_status.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "NO_DIFFERENCES_FOUND"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DIFFERENCES_FOUND"
+                    }
+                ]
+            },
+            "value": "true"
+        }
+    },
+    "environments": [
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

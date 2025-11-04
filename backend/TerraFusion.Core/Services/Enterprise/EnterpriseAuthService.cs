@@ -17,7 +17,7 @@ namespace TerraFusion.Core.Services.Enterprise;
 public interface IEnterpriseAuthService
 {
     Task<AuthenticationResult> AuthenticateUserAsync(string token);
-    Task<UserProfile> GetUserProfileAsync(string userId);
+    Task<UserProfile?> GetUserProfileAsync(string userId);
     Task<List<string>> GetUserRolesAsync(string userId);
     Task<bool> ValidatePermissionAsync(string userId, string resource, string action);
     Task<List<GroupMembership>> GetUserGroupsAsync(string userId);
@@ -58,9 +58,9 @@ public class EnterpriseAuthService : IEnterpriseAuthService
             var tokenHandler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
             var jsonToken = tokenHandler.ReadJwtToken(token);
 
-            var userId = jsonToken.Claims.FirstOrDefault(c => c.Type == "oid")?.Value 
+            var userId = jsonToken.Claims.FirstOrDefault(c => c.Type == "oid")?.Value
                         ?? jsonToken.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
-            
+
             if (string.IsNullOrEmpty(userId))
             {
                 _logger.LogWarning("Unable to extract user ID from token");
@@ -91,7 +91,7 @@ public class EnterpriseAuthService : IEnterpriseAuthService
             };
 
             await LogAuthenticationEventAsync(userId, "Login", true, "Successful Azure AD authentication");
-            _structuredLogger.LogSecurityEvent("UserAuthentication", "User successfully authenticated", userId, new { 
+            _structuredLogger.LogSecurityEvent("UserAuthentication", "User successfully authenticated", userId, new {
                 Method = "AzureAD",
                 Roles = roles,
                 Groups = groups.Select(g => g.DisplayName)
@@ -103,7 +103,7 @@ public class EnterpriseAuthService : IEnterpriseAuthService
         {
             _logger.LogError(ex, "Authentication failed");
             await LogAuthenticationEventAsync("unknown", "Login", false, ex.Message);
-            _structuredLogger.LogSecurityEvent("AuthenticationFailure", "Authentication attempt failed", context: new { 
+            _structuredLogger.LogSecurityEvent("AuthenticationFailure", "Authentication attempt failed", context: new {
                 Error = ex.Message,
                 Method = "AzureAD"
             });
@@ -112,25 +112,25 @@ public class EnterpriseAuthService : IEnterpriseAuthService
         }
     }
 
-    public async Task<UserProfile> GetUserProfileAsync(string userId)
+    public async Task<UserProfile?> GetUserProfileAsync(string userId)
     {
         try
         {
             var user = await _graphServiceClient.Users[userId].GetAsync();
-            
+
             if (user == null)
                 return null;
 
             return new UserProfile
             {
-                Id = user.Id,
-                DisplayName = user.DisplayName,
-                Email = user.Mail ?? user.UserPrincipalName,
-                FirstName = user.GivenName,
-                LastName = user.Surname,
-                JobTitle = user.JobTitle,
-                Department = user.Department,
-                Office = user.OfficeLocation,
+                Id = user.Id ?? "unknown",
+                DisplayName = user.DisplayName ?? "Unknown User",
+                Email = user.Mail ?? user.UserPrincipalName ?? "unknown",
+                FirstName = user.GivenName ?? "",
+                LastName = user.Surname ?? "",
+                JobTitle = user.JobTitle ?? "",
+                Department = user.Department ?? "",
+                Office = user.OfficeLocation ?? "",
                 Manager = await GetManagerAsync(userId),
                 PhotoUrl = await GetUserPhotoUrlAsync(userId),
                 LastSignIn = user.SignInActivity?.LastSignInDateTime,
@@ -152,10 +152,10 @@ public class EnterpriseAuthService : IEnterpriseAuthService
 
             // Get directory roles
             var directoryRoles = await _graphServiceClient.Users[userId].MemberOf.GetAsync();
-            
+
             foreach (var role in directoryRoles?.Value ?? new List<Microsoft.Graph.Models.DirectoryObject>())
             {
-                if (role is Microsoft.Graph.Models.DirectoryRole dirRole)
+                if (role is Microsoft.Graph.Models.DirectoryRole dirRole && !string.IsNullOrEmpty(dirRole.DisplayName))
                 {
                     roles.Add(dirRole.DisplayName);
                 }
@@ -192,7 +192,7 @@ public class EnterpriseAuthService : IEnterpriseAuthService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Permission validation failed for user {UserId}, resource {Resource}, action {Action}", 
+            _logger.LogError(ex, "Permission validation failed for user {UserId}, resource {Resource}, action {Action}",
                 userId, resource, action);
             return false;
         }
@@ -211,11 +211,11 @@ public class EnterpriseAuthService : IEnterpriseAuthService
                 {
                     groups.Add(new GroupMembership
                     {
-                        Id = group.Id,
-                        DisplayName = group.DisplayName,
-                        Description = group.Description,
+                        Id = group.Id ?? "unknown",
+                        DisplayName = group.DisplayName ?? "Unknown Group",
+                        Description = group.Description ?? "",
                         GroupType = group.GroupTypes?.Contains("Unified") == true ? "Microsoft365" : "Security",
-                        Mail = group.Mail
+                        Mail = group.Mail ?? ""
                     });
                 }
             }
@@ -265,10 +265,10 @@ public class EnterpriseAuthService : IEnterpriseAuthService
         {
             // Validate API key against configured keys or database
             var validApiKeys = _configuration.GetSection("Authentication:ApiKeys").Get<string[]>() ?? Array.Empty<string>();
-            
+
             var isValid = validApiKeys.Contains(apiKey);
-            
-            await LogAuthenticationEventAsync("api-key", "ApiKeyValidation", isValid, 
+
+            await LogAuthenticationEventAsync("api-key", "ApiKeyValidation", isValid,
                 isValid ? "Valid API key" : "Invalid API key");
 
             return isValid;

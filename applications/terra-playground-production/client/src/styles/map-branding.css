@@ -1,0 +1,114 @@
+/**
+ * TerraFusion Map Branding CSS
+ * 
+ * Custom styling for the QGIS-powered map component
+ */
+
+/* Map container styling */
+.tf-map-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Overlay elements */
+.tf-map-overlay {
+  position: absolute;
+  z-index: 10;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* QGIS badge positioning */
+.tf-map-overlay.top-left {
+  top: 10px;
+  left: 10px;
+}
+
+/* QGIS badge styling */
+.tf-qgis-badge {
+  display: flex;
+  align-items: center;
+  color: #2d3748;
+  border-left: 3px solid #4CAF50;
+}
+
+/* Map attribution */
+.tf-map-attribution {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  font-size: 10px;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 2px 4px;
+  border-radius: 2px;
+  z-index: 10;
+}
+
+/* Zoom controls styling */
+.tf-zoom-control {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 4px;
+}
+
+/* Zoom buttons */
+.tf-zoom-button {
+  height: 28px;
+  width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  color: #4a5568;
+  transition: all 0.2s ease;
+}
+
+.tf-zoom-button:hover {
+  background-color: #f7fafc;
+  color: #2d3748;
+}
+
+/* Divider between zoom controls */
+.tf-zoom-divider {
+  height: 1px;
+  background-color: #e2e8f0;
+  margin: 4px 0;
+}
+
+/* Layer panel styling */
+.tf-layer-group-header {
+  font-size: 13px;
+  font-weight: 500;
+  color: #2d3748;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* OpenLayers controls styling overrides */
+.ol-control button {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #4a5568;
+}
+
+.ol-control button:hover {
+  background-color: #f7fafc;
+  color: #2d3748;
+}
+
+.ol-scale-line {
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 2px;
+}
+
+.ol-attribution {
+  display: none; /* Hide default attribution, we're using our custom one */
+}

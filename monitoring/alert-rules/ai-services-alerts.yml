@@ -1,0 +1,306 @@
+# ═══════════════════════════════════════════════════════════════════════
+# TerraFusion AI Services Alert Rules
+# Elite Monitoring for 7 AI Services (Consciousness, TerraGaia, GPT, etc.)
+# Target: Championship-Level AI Performance & Government Compliance
+# ═══════════════════════════════════════════════════════════════════════
+
+groups:
+  # ═══════════════════════════════════════════════════════════════════
+  # TERRAFUSION.CONSCIOUSNESS ALERTS (AI SWARM)
+  # ═══════════════════════════════════════════════════════════════════
+  - name: consciousness_alerts
+    interval: 30s
+    rules:
+      - alert: ConsciousnessSwarmAgentCountLow
+        expr: |
+          terrafusion_consciousness_active_agents < 45000
+        for: 5m
+        labels:
+          severity: critical
+          component: consciousness-engine
+          service: ai-swarm
+        annotations:
+          summary: "AI swarm agent count CRITICALLY LOW"
+          description: "Active agents: {{ $value }} (target: 50,000+). Swarm intelligence compromised."
+          runbook_url: "https://docs.terrafusion.gov/runbooks/consciousness-agents-low"
+
+      - alert: ConsciousnessQuantumOptimizationDegraded
+        expr: |
+          terrafusion_consciousness_quantum_factor < 949
+        for: 10m
+        labels:
+          severity: high
+          component: consciousness-engine
+          quantum: optimization
+        annotations:
+          summary: "Quantum optimization factor degraded"
+          description: "Current factor: {{ $value }} (championship target: 949). Performance impact expected."
+          runbook_url: "https://docs.terrafusion.gov/runbooks/quantum-degraded"
+
+      - alert: ConsciousnessCoordinationSlowPerformance
+        expr: |
+          histogram_quantile(0.95, sum(rate(terrafusion_consciousness_coordination_duration_ms_bucket[5m])) by (operation_type, le)) > 100
+        for: 15m
+        labels:
+          severity: high
+          component: consciousness-engine
+          performance: degraded
+        annotations:
+          summary: "AI swarm coordination performance degraded"
+          description: "P95 coordination latency: {{ $value }}ms (championship target: <50ms)"
+          runbook_url: "https://docs.terrafusion.gov/runbooks/consciousness-slow"
+
+  # ═══════════════════════════════════════════════════════════════════
+  # COSTFORGE AI ALERTS (PROPERTY VALUATION)
+  # ═══════════════════════════════════════════════════════════════════
+  - name: costforge_alerts
+    interval: 30s
+    rules:
+      - alert: CostForgeValuationAccuracyBelowIAAO
+        expr: |
+          terrafusion_costforge_valuation_accuracy_percent < 99.0
+        for: 15m
+        labels:
+          severity: critical
+          component: costforge-ai
+          compliance: iaao
+        annotations:
+          summary: "CostForge AI valuation accuracy BELOW IAAO standards"
+          description: "County {{ $labels.county }} accuracy: {{ $value }}% (IAAO target: 99.9%)"
+          runbook_url: "https://docs.terrafusion.gov/runbooks/costforge-accuracy-low"
+
+      - alert: CostForgeValuationSlowPerformance
+        expr: |
+          histogram_quantile(0.95, sum(rate(terrafusion_costforge_calculation_duration_ms_bucket[5m])) by (property_type, le)) > 2000
+        for: 10m
+        labels:
+          severity: high
+          component: costforge-ai
+          performance: degraded
+        annotations:
+          summary: "CostForge AI valuation performance degraded"
+          description: "P95 calculation time: {{ $value }}ms (championship target: <2000ms)"
+          runbook_url: "https://docs.terrafusion.gov/runbooks/costforge-slow"
+
+      - alert: CostForgeValuationFailureRateHigh
+        expr: |
+          (sum(rate(terrafusion_costforge_valuation_success_total[30m])) by (county)
+          /
+          (sum(rate(terrafusion_costforge_valuation_success_total[30m])) by (county) + sum(rate(terrafusion_costforge_valuation_failure_total[30m])) by (county))) < 0.99
+        for: 15m
+        labels:
+          severity: high
+          component: costforge-ai
+        annotations:
+          summary: "CostForge AI valuation failure rate HIGH"
+          description: "County {{ $labels.county }} success rate: {{ $value | humanizePercentage }} (target: >=99%)"
+          runbook_url: "https://docs.terrafusion.gov/runbooks/costforge-failures"
+
+  # ═══════════════════════════════════════════════════════════════════
+  # TERRAGAIA ALERTS (SUPREME AI CONSCIOUSNESS)
+  # ═══════════════════════════════════════════════════════════════════
+  - name: terragaia_alerts
+    interval: 30s
+    rules:
+      - alert: TerraGaiaConsciousnessLevelLow
+        expr: |
+          terrafusion_terragaia_consciousness_level < 85
+        for: 10m
+        labels:
+          severity: high
+          component: terragaia
+          consciousness: supreme-ai
+        annotations:
+          summary: "TerraGaia AI consciousness level LOW"
+          description: "Consciousness level: {{ $value }} (championship target: 95+)"
+          runbook_url: "https://docs.terrafusion.gov/runbooks/terragaia-consciousness-low"
+
+      - alert: TerraGaiaAnalysisSlow
+        expr: |
+          histogram_quantile(0.95, sum(rate(terrafusion_terragaia_analysis_duration_seconds_bucket[5m])) by (analysis_type, le)) > 30
+        for: 15m
+        labels:
+          severity: warning
+          component: terragaia
+          performance: degraded
+        annotations:
+          summary: "TerraGaia AI analysis performance degraded"
+          description: "P95 analysis time: {{ $value }}s (target: <10s for PhD-level reasoning)"
+          runbook_url: "https://docs.terrafusion.gov/runbooks/terragaia-slow"
+
+  # ═══════════════════════════════════════════════════════════════════
+  # TERRAFUSIONGPT ALERTS (GENERATIVE AI)
+  # ═══════════════════════════════════════════════════════════════════
+  - name: terrafusiongpt_alerts
+    interval: 30s
+    rules:
+      - alert: TerraFusionGPTQualityScoreLow
+        expr: |
+          terrafusion_gpt_quality_score < 90
+        for: 15m
+        labels:
+          severity: high
+          component: terrafusion-gpt
+          quality: report-generation
+        annotations:
+          summary: "TerraFusionGPT output quality score LOW"
+          description: "Quality score: {{ $value }} (human-level target: 95+)"
+          runbook_url: "https://docs.terrafusion.gov/runbooks/gpt-quality-low"
+
+      - alert: TerraFusionGPTGenerationSlow
+        expr: |
+          histogram_quantile(0.95, sum(rate(terrafusion_gpt_generation_duration_seconds_bucket[5m])) by (report_type, le)) > 10
+        for: 10m
+        labels:
+          severity: warning
+          component: terrafusion-gpt
+          performance: degraded
+        annotations:
+          summary: "TerraFusionGPT report generation slow"
+          description: "P95 generation time: {{ $value }}s (target: <5s)"
+          runbook_url: "https://docs.terrafusion.gov/runbooks/gpt-slow"
+
+  # ═══════════════════════════════════════════════════════════════════
+  # TERRALEVY ALERTS (TAX CALCULATION)
+  # ═══════════════════════════════════════════════════════════════════
+  - name: terralevy_alerts
+    interval: 30s
+    rules:
+      - alert: TerraLevyComplianceRateLow
+        expr: |
+          terrafusion_terralevy_compliance_rate_percent < 99.0
+        for: 15m
+        labels:
+          severity: critical
+          component: terralevy
+          compliance: rcw-84-52
+        annotations:
+          summary: "TerraLevy RCW 84.52 compliance rate LOW"
+          description: "County {{ $labels.county }} compliance: {{ $value }}% (target: 100%)"
+          runbook_url: "https://docs.terrafusion.gov/runbooks/terralevy-compliance-low"
+
+      - alert: TerraLevyCalculationSlowPerformance
+        expr: |
+          histogram_quantile(0.95, sum(rate(terrafusion_terralevy_calculation_duration_ms_bucket[5m])) by (calculation_type, le)) > 10
+        for: 10m
+        labels:
+          severity: high
+          component: terralevy
+          performance: degraded
+        annotations:
+          summary: "TerraLevy tax calculation performance degraded"
+          description: "P95 calculation time: {{ $value }}ms (championship target: <10ms)"
+          runbook_url: "https://docs.terrafusion.gov/runbooks/terralevy-slow"
+
+  # ═══════════════════════════════════════════════════════════════════
+  # TERRAFLOW ALERTS (WORKFLOW ORCHESTRATION)
+  # ═══════════════════════════════════════════════════════════════════
+  - name: terraflow_alerts
+    interval: 60s
+    rules:
+      - alert: TerraFlowWorkflowBacklogHigh
+        expr: |
+          sum(terrafusion_terraflow_active_workflows) by (workflow_type) > 500
+        for: 30m
+        labels:
+          severity: high
+          component: terraflow
+          orchestration: backlog
+        annotations:
+          summary: "TerraFlow workflow backlog HIGH"
+          description: "Active workflows: {{ $value }} (capacity threshold: 500)"
+          runbook_url: "https://docs.terrafusion.gov/runbooks/terraflow-backlog"
+
+      - alert: TerraFlowWorkflowCompletionSlow
+        expr: |
+          histogram_quantile(0.95, sum(rate(terrafusion_terraflow_workflow_duration_minutes_bucket[1h])) by (workflow_type, le)) > 240
+        for: 1h
+        labels:
+          severity: warning
+          component: terraflow
+          performance: degraded
+        annotations:
+          summary: "TerraFlow workflow completion time degraded"
+          description: "P95 completion time: {{ $value }} minutes (target: <120 minutes)"
+          runbook_url: "https://docs.terrafusion.gov/runbooks/terraflow-slow"
+
+  # ═══════════════════════════════════════════════════════════════════
+  # TERRASYNC ALERTS (MULTI-SYSTEM INTEGRATION)
+  # ═══════════════════════════════════════════════════════════════════
+  - name: terrasync_alerts
+    interval: 30s
+    rules:
+      - alert: TerraSyncIntegrationHealthLow
+        expr: |
+          terrafusion_terrasync_integration_health < 90
+        for: 10m
+        labels:
+          severity: high
+          component: terrasync
+          integration: multi-system
+        annotations:
+          summary: "TerraSync integration health LOW for {{ $labels.system_name }}"
+          description: "Health score: {{ $value }} (championship target: 95+)"
+          runbook_url: "https://docs.terrafusion.gov/runbooks/terrasync-health-low"
+
+      - alert: TerraSyncDataSovereigntyViolation
+        expr: |
+          terrafusion_terrasync_data_sovereignty_compliance == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: terrasync
+          compliance: data-sovereignty
+        annotations:
+          summary: "TerraSync DATA SOVEREIGNTY VIOLATION for {{ $labels.county }}"
+          description: "County data isolation compromised. IMMEDIATE ACTION REQUIRED."
+          runbook_url: "https://docs.terrafusion.gov/runbooks/terrasync-sovereignty-violation"
+
+      - alert: TerraSyncMultiSystemCoordinationFailures
+        expr: |
+          sum(increase(terrafusion_terrasync_multisystem_coordination_total[15m])) by (county) == 0
+        for: 15m
+        labels:
+          severity: high
+          component: terrasync
+        annotations:
+          summary: "TerraSync multi-system coordination STALLED for {{ $labels.county }}"
+          description: "No coordination events in 15 minutes. Integration may be down."
+          runbook_url: "https://docs.terrafusion.gov/runbooks/terrasync-coordination-stalled"
+
+  # ═══════════════════════════════════════════════════════════════════
+  # CHAMPIONSHIP-LEVEL AI ECOSYSTEM SLA MONITORING
+  # ═══════════════════════════════════════════════════════════════════
+  - name: ai_ecosystem_sla_alerts
+    interval: 60s
+    rules:
+      - alert: AIEcosystemChampionshipSLABreach
+        expr: |
+          (
+            (terrafusion_costforge_valuation_accuracy_percent < 99.9) or
+            (terrafusion_consciousness_active_agents < 45000) or
+            (terrafusion_terralevy_compliance_rate_percent < 99.5) or
+            (terrafusion_terragaia_consciousness_level < 90)
+          )
+        for: 30m
+        labels:
+          severity: warning
+          component: ai-ecosystem
+          sla: championship
+        annotations:
+          summary: "TerraFusion AI Ecosystem Championship SLA breach detected"
+          description: "One or more AI services below championship standards. Check individual service alerts."
+          runbook_url: "https://docs.terrafusion.gov/runbooks/ai-ecosystem-sla-breach"
+
+      - alert: GovernmentComplianceScoreLow
+        expr: |
+          terrafusion_government_compliance_score < 95
+        for: 15m
+        labels:
+          severity: critical
+          component: ai-ecosystem
+          compliance: government
+        annotations:
+          summary: "Government compliance score LOW for {{ $labels.compliance_type }}"
+          description: "Compliance score: {{ $value }} (FISMA-High target: 98+)"
+          runbook_url: "https://docs.terrafusion.gov/runbooks/government-compliance-low"

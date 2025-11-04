@@ -1,0 +1,22 @@
+{
+    "map": {
+        "description": "Computes the fiducial coordinates in image and film space for each image in a mosaic dataset.",
+        "fiducial_templates.descr": "The fiducial template table that contains required fields for storing fiducial pictures and other properties.",
+        "fiducial_templates.title": "Fiducial Templates",
+        "film_coordinate_system.descr": "<xdoc><p>A keyword that defines the film coordinate system of the scanned aerial photograph. It is used in computing fiducial information and affine transformation construction.</p><ul><li><span title=\"NO_CHANGE\">No change</span>—Maintain the coordinate system of the mosaic dataset. Do not change the film coordinate system of the scanned aerial photograph. Maintain the coordinate system of the mosaic dataset.</li><li><span title=\"X_RIGHT_Y_UP\">X right, Y up</span>—The origin of the scanned photo&apos;s coordinate system is the center, and positive X points right and positive Y points up.</li><li><span title=\"X_UP_Y_LEFT\">X up, Y left</span>—The origin of the scanned photo&apos;s coordinate system is the center, and positive X points up and positive Y points left.</li><li><span title=\"X_LEFT_Y_DOWN\">X left, Y down</span>—The origin of the scanned photo&apos;s coordinate system is the center, and positive X points left and positive Y points down.</li><li><span title=\"X_DOWN_Y_RIGHT\">X down, Y right</span>—The origin of the scanned photo&apos;s coordinate system is the center, and positive X points down and positive Y points right.</li></ul></xdoc>",
+        "film_coordinate_system.domain.NO_CHANGE": "No change",
+        "film_coordinate_system.domain.X_DOWN_Y_RIGHT": "X down, Y right",
+        "film_coordinate_system.domain.X_LEFT_Y_DOWN": "X left, Y down",
+        "film_coordinate_system.domain.X_RIGHT_Y_UP": "X right, Y up",
+        "film_coordinate_system.domain.X_UP_Y_LEFT": "X up, Y left",
+        "film_coordinate_system.title": "Film Coordinate System",
+        "in_mosaic_dataset.descr": "The mosaic dataset created from scanned aerial photos using scanned raster type or frame camera raster type.",
+        "in_mosaic_dataset.title": "Mosaic Dataset",
+        "out_fiducial_table.descr": "The output table that stores all the fiducial coordinate information in image and film space.",
+        "out_fiducial_table.title": "Output Fiducial Table",
+        "summary": "<xdoc><p>Computes the fiducial coordinates in image and film space for each image in a mosaic dataset.</p><p>Fiducials are marks, normally four or eight, in aerial photos used as reference. They are an important factor for determining the image transformation from image to film known as interior orientation. This tool is used to automatically find the image coordinates of the fiducials for each images in a mosaic dataset based on a user-provided fiducial template file. A fiducial template file is a table that has required fields for storing either fiducial pictures or paths to the pictures. For more information about fiducials, see Refine Interior Orientation Using Fiducials.</p></xdoc>",
+        "title": "Compute Fiducials",
+        "where_clause.descr": "A query definition string that defines a subset of rasters for computing fiducials.",
+        "where_clause.title": "Query Definition"
+    }
+}

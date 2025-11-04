@@ -1,0 +1,16 @@
+{
+    "set": [
+        "data management",
+        "defense",
+        "defense mapping",
+        "extract",
+        "extract data",
+        "geodatabase",
+        "geodatabase management",
+        "production",
+        "production mapping",
+        "topo",
+        "topographic",
+        "topographic production"
+    ]
+}

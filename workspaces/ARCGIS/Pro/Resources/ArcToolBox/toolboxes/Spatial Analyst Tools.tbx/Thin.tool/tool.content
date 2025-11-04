@@ -1,0 +1,159 @@
+{
+    "type": "FunctionTool",
+    "guid": "{a448e08c-80c7-4815-8aa1-faa82b157b33}",
+    "displayname": "$rc:title",
+    "helpcontent": "8050008",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10"
+    ],
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "params": {
+        "in_raster": {
+            "displayname": "$rc:in_raster.title",
+            "datatype": {
+                "type": "GPSAGeoData"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "true",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_raster.descr"
+        },
+        "out_raster": {
+            "direction": "out",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_raster.descr"
+        },
+        "background_value": {
+            "type": "optional",
+            "displayname": "$rc:background_value.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ZERO",
+                        "code": "$rc:background_value.domain.ZERO"
+                    },
+                    {
+                        "value": "NODATA",
+                        "code": "$rc:background_value.domain.NODATA"
+                    }
+                ]
+            },
+            "value": "ZERO",
+            "description": "$rc:background_value.descr"
+        },
+        "filter": {
+            "type": "optional",
+            "displayname": "$rc:filter.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_FILTER"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FILTER"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:filter.descr"
+        },
+        "corners": {
+            "type": "optional",
+            "displayname": "$rc:corners.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ROUND",
+                        "code": "$rc:corners.domain.ROUND"
+                    },
+                    {
+                        "value": "SHARP",
+                        "code": "$rc:corners.domain.SHARP"
+                    }
+                ]
+            },
+            "value": "ROUND",
+            "description": "$rc:corners.descr"
+        },
+        "maximum_thickness": {
+            "type": "optional",
+            "displayname": "$rc:maximum_thickness.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                }
+            },
+            "depends": [
+                "in_raster"
+            ],
+            "description": "$rc:maximum_thickness.descr"
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "cellSize",
+        "cellSizeProjectionMethod",
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "mask",
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

@@ -1,0 +1,16 @@
+{
+    "map": {
+        "description": "Sets the flow direction of line features in a version 1 trace network.",
+        "flow_direction.descr": "<xdoc><p>Specifies the flow direction of the edges.</p><ul><li><span title=\"WITH_DIGITIZED_DIRECTION\">With digitized direction</span>—Flow direction will be along the digitized direction of the edges.</li><li><span title=\"AGAINST_DIGITIZED_DIRECTION\">Against digitized direction</span>—Flow direction will be against the digitized direction of the edges.</li><li><span title=\"INDETERMINATE\">Indeterminate direction</span>—Flow direction will be indeterminate.</li></ul></xdoc>",
+        "flow_direction.domain.AGAINST_DIGITIZED_DIRECTION": "Against digitized direction",
+        "flow_direction.domain.INDETERMINATE": "Indeterminate direction",
+        "flow_direction.domain.WITH_DIGITIZED_DIRECTION": "With digitized direction",
+        "flow_direction.title": "Flow Direction",
+        "in_edges.descr": "The polyline features that participate in the input trace network.",
+        "in_edges.title": "Feature Layers",
+        "input_trace_network.descr": "The trace network that contains the line feature class on which the flow direction will be set.",
+        "input_trace_network.title": "Input Trace Network",
+        "title": "Set Flow Direction",
+        "updated_trace_network.title": "Updated Trace Network"
+    }
+}

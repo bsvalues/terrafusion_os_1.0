@@ -1,0 +1,11 @@
+{
+    "set": [
+        "calibration",
+        "delete event",
+        "delete lrs",
+        "delete route",
+        "network",
+        "remove event",
+        "remove route"
+    ]
+}

@@ -1,0 +1,10 @@
+{
+    "map": {
+        "descr": "The GeoAI toolbox contains tools for using and training AI models that work with geospatial and tabular data. These tools use modern machine learning and deep learning techniques and integrate them with GIS.",
+        "title": "GeoAI Tools",
+        "toolset1.name": "Text Analysis",
+        "toolset2.name": "Imagery AI",
+        "toolset3.name": "Time Series AI",
+        "toolset4.name": "Feature and Tabular Analysis"
+    }
+}

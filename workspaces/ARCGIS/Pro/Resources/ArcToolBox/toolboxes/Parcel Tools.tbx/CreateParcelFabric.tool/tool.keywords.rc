@@ -1,0 +1,13 @@
+{
+    "set": [
+        "administer",
+        "administrator",
+        "legal record",
+        "ownership",
+        "parcel fabric",
+        "parcel topology",
+        "parcel type",
+        "parcels",
+        "records"
+    ]
+}

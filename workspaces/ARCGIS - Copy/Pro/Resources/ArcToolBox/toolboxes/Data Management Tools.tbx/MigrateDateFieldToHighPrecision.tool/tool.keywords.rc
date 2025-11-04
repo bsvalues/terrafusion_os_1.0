@@ -1,0 +1,10 @@
+{
+    "set": [
+        "date",
+        "field",
+        "fields",
+        "high",
+        "migrate",
+        "precision"
+    ]
+}

@@ -1,0 +1,7 @@
+{
+    "map": {
+        "input_feature_class.title": "Input Feature Class",
+        "output_feature_class.title": "Output Feature Class",
+        "title": "Calculate Areas"
+    }
+}

@@ -1,0 +1,42 @@
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Install dependencies
+COPY package*.json ./
+RUN npm ci --only=production && npm cache clean --force
+
+# Build the application
+COPY . .
+RUN npm run build
+
+FROM node:18-alpine AS runtime
+
+# Security: Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S terrafusion -u 1001
+
+# Install security updates and required tools
+RUN apk update && apk upgrade && apk add --no-cache dumb-init
+
+WORKDIR /app
+
+# Copy built application and dependencies
+COPY --from=builder --chown=terrafusion:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=terrafusion:nodejs /app/dist ./dist
+COPY --from=builder --chown=terrafusion:nodejs /app/package*.json ./
+COPY --from=builder --chown=terrafusion:nodejs /app/server ./server
+COPY --from=builder --chown=terrafusion:nodejs /app/shared ./shared
+
+# Switch to non-root user
+USER terrafusion
+
+# Health check endpoint
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+    CMD node -e "require('http').get('http://localhost:5000/api/system/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+
+EXPOSE 5000
+
+# Use dumb-init for proper signal handling
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["npm", "run", "start"]

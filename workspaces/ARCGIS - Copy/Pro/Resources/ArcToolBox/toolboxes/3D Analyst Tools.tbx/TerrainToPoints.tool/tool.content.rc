@@ -1,0 +1,18 @@
+{
+    "map": {
+        "description": "Converts a terrain dataset into a new point or multipoint feature class.",
+        "in_terrain.descr": "The terrain dataset that will be processed.",
+        "in_terrain.title": "Input Terrain",
+        "out_feature_class.descr": "The feature class that will be produced.",
+        "out_feature_class.title": "Output Feature Class",
+        "out_geometry_type.descr": "<xdoc><p>The geometry of the output feature class.</p><ul><li><span title=\"MULTIPOINT\">Multipoint</span>—The output point features will be written to a multipoint feature class. This is the default.</li><li><span title=\"POINT\">Point</span>—The output point features will be written to a point feature class.</li></ul></xdoc>",
+        "out_geometry_type.domain.MULTIPOINT": "Multipoint",
+        "out_geometry_type.domain.POINT": "Point",
+        "out_geometry_type.title": "Output Feature Class Type",
+        "pyramid_level_resolution.descr": "The z-tolerance or window-size resolution of the terrain pyramid level that will be used. The default is 0, or full resolution.",
+        "pyramid_level_resolution.title": "Pyramid Level Resolution",
+        "source_embedded_feature_class.descr": "The name of the terrain dataset's embedded points to be exported. If an embedded feature is specified, only the points from the feature will be written to the output. Otherwise, all points from all data sources in the terrain will be exported.",
+        "source_embedded_feature_class.title": "Input Embedded Feature Class",
+        "title": "Terrain To Points"
+    }
+}

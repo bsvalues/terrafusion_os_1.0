@@ -1,0 +1,24 @@
+{
+    "map": {
+        "description": "Applies an SQL query to a database, and the results are represented in either a layer or table view. The query can be used to join several tables or return a subset of fields or rows from the original data in the database.",
+        "in_field.descr": "<xdoc><p>The fields that will be included in the layer or table view. If an alias is set for a field, this is the name that appears. If no fields are specified, all fields from all tables are included. If a <span class=\"esri_fieldname\">Shape</span> field is added to the field list, the result is a layer; otherwise it is a table view.</p></xdoc>",
+        "in_field.dt.title1": "Field",
+        "in_field.dt.title2": "Field Alias",
+        "in_field.title": "Fields",
+        "in_key_field.descr": "<xdoc><p>A field or combination of fields that will be used to uniquely identify a row in the query. This parameter is used only when the <span class=\"esri_uicontrol\">Key Field Options</span> parameter is set to <span class=\"esri_uicontrol\">Use key fields</span>.</p></xdoc>",
+        "in_key_field.title": "Key Fields",
+        "in_key_field_option.descr": "<xdoc><p>Specifies how an Object ID field will be generated (if at all) for the query. Layers and table views in ArcGIS require an Object ID field. An Object ID field is an integer field that uniquely identifies rows in the data being used.</p><ul><li><span title=\"USE_KEY_FIELDS\">Use key fields</span>—Specified fields in the <span class=\"esri_uicontrol\">Key Fields</span> parameter will be used to uniquely identify a row in the output table. This can be a single field or multiple fields, which, when combined, uniquely identify a row in the output table. If no fields are specified in the key fields list, the <span class=\"esri_uicontrol\">Generate a key field</span> option will be applied. This is the default.</li><li><span title=\"ADD_VIRTUAL_KEY_FIELD\">Generate a key field</span>—If no key fields have been specified, an Object ID field that uniquely identifies each row in the output table will be generated.</li><li><span title=\"NO_KEY_FIELD\">No key field</span>—<p>No Object ID field will be generated. Selections will not be supported for the table view. <note type=\"note\"/><p group=\"note\">If there is an existing Object ID field, it will be used even if this option is chosen.</p></p></li></ul></xdoc>",
+        "in_key_field_option.domain.ADD_VIRTUAL_KEY_FIELD": "Generate a key field",
+        "in_key_field_option.domain.NO_KEY_FIELD": "No key field",
+        "in_key_field_option.domain.USE_KEY_FIELDS": "Use key fields",
+        "in_key_field_option.title": "Key Field Options",
+        "in_table.descr": "<xdoc><p>The name of the table or tables to be used in the query. If several tables are listed, the <span class=\"esri_uicontrol\">Expression</span> parameter can be used to define how they will be joined.</p><p>The input table can be from a geodatabase or a database connection.</p></xdoc>",
+        "in_table.title": "Input Tables",
+        "out_table.descr": "The name of the layer or table view that will be created.",
+        "out_table.title": "Table Name",
+        "summary": "<xdoc><p>Applies an SQL query to a database, and the results are represented in either a layer or table view. The query can be used to join several tables or return a subset of fields or rows from the original data in the database.</p><p>This tool accepts data from a geodatabase or an OLE DB connection.</p></xdoc>",
+        "title": "Make Query Table",
+        "where_clause.descr": "An SQL expression used to select a subset of records.",
+        "where_clause.title": "Expression"
+    }
+}

@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en" class="tf-app">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion Playground | Enterprise Application Launcher</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- TerraFusion Unified Brand System - EXCELLENCE IMPLEMENTATION -->
+    <link href="shared_assets/terrafusion-unified-brand.css" rel="stylesheet">
+    <link href="shared_assets/terrafusion-brand-system.css" rel="stylesheet">
+    
+    <!-- Application Specific Styles -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="tf-app">
+    <!-- TerraFusion Unified Navigation -->
+    <nav class="navbar navbar-expand-lg tf-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-rocket me-2"></i>
+                <strong class="tf-text-gradient">TerraFusion</strong>
+                <small class="ms-2 opacity-75">Playground</small>
+            </a>
+            
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-cog me-1"></i>Platform
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="http://localhost:5001">
+                            <i class="fas fa-wave-square me-2"></i>TerraFlow
+                        </a></li>
+                        <li><a class="dropdown-item" href="http://localhost:5002">
+                            <i class="fas fa-sync-alt me-2"></i>TerraSync
+                        </a></li>
+                        <li><a class="dropdown-item" href="http://localhost:5003">
+                            <i class="fas fa-robot me-2"></i>TerraAgent
+                        </a></li>
+                        <li><a class="dropdown-item" href="http://localhost:5000">
+                            <i class="fas fa-building me-2"></i>TerraFusion Build
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="tf-container tf-section">
+        <!-- Header Section -->
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h1 class="tf-title">
+                    <i class="fas fa-rocket me-3 text-info"></i>
+                    TerraFusion <span class="tf-text-gradient">Playground</span>
+                </h1>
+                <p class="lead tf-subtitle">Enterprise Application Launcher & Development Environment</p>
+                <div class="tf-status-indicator online">
+                    <i class="fas fa-circle me-2"></i>Development Environment Active
+                </div>
+            </div>
+        </div>
+
+        <!-- Application Launch Grid -->
+        <div class="row g-4">
+            <!-- TerraAgent -->
+            <div class="col-lg-4 col-md-6">
+                <div class="tf-card tf-card-hover">
+                    <div class="tf-card-header">
+                        <h3><i class="fas fa-robot me-2 text-info"></i>TerraAgent</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">AI-powered assistant for property assessment and CAMA data analysis</p>
+                        <div class="mb-3">
+                            <strong>Status:</strong> 
+                            <span id="terraAgentStatus" class="tf-status-badge">Not Launched</span>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="tf-btn-primary" onclick="launchApp('TerraAgent', 5003)">
+                                <i class="fas fa-play me-2"></i>Launch TerraAgent
+                            </button>
+                            <a href="http://localhost:5003" class="tf-btn-secondary" target="_blank">
+                                <i class="fas fa-external-link-alt me-2"></i>Open Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TerraFlow -->
+            <div class="col-lg-4 col-md-6">
+                <div class="tf-card tf-card-hover">
+                    <div class="tf-card-header">
+                        <h3><i class="fas fa-wave-square me-2 text-success"></i>TerraFlow</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Workflow management engine for data processing and automation</p>
+                        <div class="mb-3">
+                            <strong>Status:</strong> 
+                            <span id="terraFlowStatus" class="tf-status-badge">Not Launched</span>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="tf-btn-primary" onclick="launchApp('TerraFlow', 5001)">
+                                <i class="fas fa-play me-2"></i>Launch TerraFlow
+                            </button>
+                            <a href="http://localhost:5001" class="tf-btn-secondary" target="_blank">
+                                <i class="fas fa-external-link-alt me-2"></i>Open Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TerraSync -->
+            <div class="col-lg-4 col-md-6">
+                <div class="tf-card tf-card-hover">
+                    <div class="tf-card-header">
+                        <h3><i class="fas fa-sync-alt me-2 text-warning"></i>TerraSync</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Data synchronization hub for enterprise geospatial systems</p>
+                        <div class="mb-3">
+                            <strong>Status:</strong> 
+                            <span id="terraSyncStatus" class="tf-status-badge">Not Launched</span>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="tf-btn-primary" onclick="launchApp('TerraSync', 5002)">
+                                <i class="fas fa-play me-2"></i>Launch TerraSync
+                            </button>
+                            <a href="http://localhost:5002" class="tf-btn-secondary" target="_blank">
+                                <i class="fas fa-external-link-alt me-2"></i>Open Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TerraFusion Build -->
+            <div class="col-lg-4 col-md-6">
+                <div class="tf-card tf-card-hover">
+                    <div class="tf-card-header">
+                        <h3><i class="fas fa-building me-2 text-primary"></i>TerraFusion Build</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Property assessment platform with AI valuation engine</p>
+                        <div class="mb-3">
+                            <strong>Status:</strong> 
+                            <span id="terraFusionStatus" class="tf-status-badge">Not Launched</span>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="tf-btn-primary" onclick="launchApp('TerraFusion', 5000)">
+                                <i class="fas fa-play me-2"></i>Launch TerraFusion
+                            </button>
+                            <a href="http://localhost:5000" class="tf-btn-secondary" target="_blank">
+                                <i class="fas fa-external-link-alt me-2"></i>Open Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TerraMiner -->
+            <div class="col-lg-4 col-md-6">
+                <div class="tf-card tf-card-hover">
+                    <div class="tf-card-header">
+                        <h3><i class="fas fa-chart-line me-2 text-purple"></i>TerraMiner</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Advanced data mining and analytics for property insights</p>
+                        <div class="mb-3">
+                            <strong>Status:</strong> 
+                            <span id="terraMinerStatus" class="tf-status-badge">Not Launched</span>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="tf-btn-primary" onclick="launchApp('TerraMiner', 5006)">
+                                <i class="fas fa-play me-2"></i>Launch TerraMiner
+                            </button>
+                            <a href="http://localhost:5006" class="tf-btn-secondary" target="_blank">
+                                <i class="fas fa-external-link-alt me-2"></i>Open Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TerraLevy -->
+            <div class="col-lg-4 col-md-6">
+                <div class="tf-card tf-card-hover">
+                    <div class="tf-card-header">
+                        <h3><i class="fas fa-calculator me-2 text-danger"></i>TerraLevy</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Tax levy management system with advanced calculations</p>
+                        <div class="mb-3">
+                            <strong>Status:</strong> 
+                            <span id="terraLevyStatus" class="tf-status-badge">Not Launched</span>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="tf-btn-primary" onclick="launchApp('TerraLevy', 5007)">
+                                <i class="fas fa-play me-2"></i>Launch TerraLevy
+                            </button>
+                            <a href="http://localhost:5007" class="tf-btn-secondary" target="_blank">
+                                <i class="fas fa-external-link-alt me-2"></i>Open Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEW ENTERPRISE APPLICATIONS ROW -->
+            <div class="col-12 mt-4">
+                <h2 class="tf-title text-center">
+                    <i class="fas fa-rocket me-2 text-warning"></i>
+                    <span class="tf-text-gradient">Expanded Enterprise Suite</span>
+                </h2>
+                <p class="text-center text-muted mb-4">Recently integrated enterprise-grade applications</p>
+            </div>
+
+            <!-- BCBSWebhub -->
+            <div class="col-lg-4 col-md-6">
+                <div class="tf-card tf-card-hover">
+                    <div class="tf-card-header">
+                        <h3><i class="fas fa-globe me-2 text-info"></i>BCBS WebHub</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Full-stack web platform with authentication and database management</p>
+                        <div class="mb-3">
+                            <strong>Status:</strong> 
+                            <span id="bcbsWebhubStatus" class="tf-status-badge">Not Launched</span>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="tf-btn-primary" onclick="launchApp('BCBSWebhub', 5008)">
+                                <i class="fas fa-play me-2"></i>Launch WebHub
+                            </button>
+                            <a href="http://localhost:5008" class="tf-btn-secondary" target="_blank">
+                                <i class="fas fa-external-link-alt me-2"></i>Open Platform
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TerraFusion Prime View -->
+            <div class="col-lg-4 col-md-6">
+                <div class="tf-card tf-card-hover">
+                    <div class="tf-card-header">
+                        <h3><i class="fas fa-eye me-2 text-success"></i>Prime View</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Advanced visualization platform with modern React components</p>
+                        <div class="mb-3">
+                            <strong>Status:</strong> 
+                            <span id="terraFusionPrimeViewStatus" class="tf-status-badge">Not Launched</span>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="tf-btn-primary" onclick="launchApp('TerraFusionPrimeView', 5009)">
+                                <i class="fas fa-play me-2"></i>Launch Prime View
+                            </button>
+                            <a href="http://localhost:5009" class="tf-btn-secondary" target="_blank">
+                                <i class="fas fa-external-link-alt me-2"></i>Open Viewer
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TerraFusion V0 Demo -->
+            <div class="col-lg-4 col-md-6">
+                <div class="tf-card tf-card-hover">
+                    <div class="tf-card-header">
+                        <h3><i class="fas fa-atom me-2 text-warning"></i>Quantum Demo</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Revolutionary quantum-powered demo with blockchain and IoT integration</p>
+                        <div class="mb-3">
+                            <strong>Status:</strong> 
+                            <span id="terraFusionV0DemoStatus" class="tf-status-badge">Not Launched</span>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="tf-btn-primary" onclick="launchApp('TerraFusionV0Demo', 5010)">
+                                <i class="fas fa-play me-2"></i>Launch Quantum Demo
+                            </button>
+                            <a href="http://localhost:5010" class="tf-btn-secondary" target="_blank">
+                                <i class="fas fa-external-link-alt me-2"></i>Open Demo
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TerraFusion Professional -->
+            <div class="col-lg-4 col-md-6">
+                <div class="tf-card tf-card-hover">
+                    <div class="tf-card-header">
+                        <h3><i class="fas fa-crown me-2 text-gold"></i>Professional</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Enterprise professional platform with advanced capabilities</p>
+                        <div class="mb-3">
+                            <strong>Status:</strong> 
+                            <span id="terraFusionProfStatus" class="tf-status-badge">Not Launched</span>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="tf-btn-primary" onclick="launchApp('TerraFusionProf', 5011)">
+                                <i class="fas fa-play me-2"></i>Launch Professional
+                            </button>
+                            <a href="http://localhost:5011" class="tf-btn-secondary" target="_blank">
+                                <i class="fas fa-external-link-alt me-2"></i>Open Platform
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MCP Protocol Servers -->
+            <div class="col-lg-4 col-md-6">
+                <div class="tf-card tf-card-hover">
+                    <div class="tf-card-header">
+                        <h3><i class="fas fa-server me-2 text-primary"></i>MCP Servers</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Model Context Protocol servers for AI agent communication</p>
+                        <div class="mb-3">
+                            <strong>Status:</strong> 
+                            <span id="mcpServersStatus" class="tf-status-badge">Not Launched</span>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="tf-btn-primary" onclick="launchApp('MCPServers', 5012)">
+                                <i class="fas fa-play me-2"></i>Launch MCP
+                            </button>
+                            <a href="http://localhost:5012" class="tf-btn-secondary" target="_blank">
+                                <i class="fas fa-external-link-alt me-2"></i>Open Servers
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI System Prompts -->
+            <div class="col-lg-4 col-md-6">
+                <div class="tf-card tf-card-hover">
+                    <div class="tf-card-header">
+                        <h3><i class="fas fa-brain me-2 text-purple"></i>AI Prompts</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Advanced AI system prompts and models collection</p>
+                        <div class="mb-3">
+                            <strong>Status:</strong> 
+                            <span id="systemPromptsAIStatus" class="tf-status-badge">Not Launched</span>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button class="tf-btn-primary" onclick="launchApp('SystemPromptsAI', 5013)">
+                                <i class="fas fa-play me-2"></i>Launch AI Tools
+                            </button>
+                            <a href="http://localhost:5013" class="tf-btn-secondary" target="_blank">
+                                <i class="fas fa-external-link-alt me-2"></i>Open Tools
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Status Panel -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="tf-card">
+                    <div class="tf-card-header">
+                        <h4><i class="fas fa-server me-2"></i>System Status</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="tf-status-online mb-2">●</div>
+                                    <strong>Platform Online</strong>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="tf-status-online mb-2">●</div>
+                                    <strong>Database Connected</strong>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="tf-status-online mb-2">●</div>
+                                    <strong>AI Services Active</strong>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="tf-status-online mb-2">●</div>
+                                    <strong>Monitoring Active</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- TerraFusion Unified Footer -->
+    <footer class="tf-footer mt-5">
+        <div class="tf-container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-rocket text-info me-2"></i>
+                        <strong class="tf-text-gradient">TerraFusion Playground</strong>
+                        <span class="ms-2 opacity-75">| Intelligence That Counties Envy</span>
+                    </div>
+                    <p class="small mt-2 mb-0 opacity-75">
+                        Enterprise Application Launcher &copy; 2025 | 
+                        <span class="tf-status-online">Development Environment Active</span>
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="d-flex justify-content-md-end gap-3">
+                        <button class="btn btn-sm btn-outline-light" onclick="launchAllApps()">
+                            <i class="fas fa-rocket me-1"></i>Launch All
+                        </button>
+                        <button class="btn btn-sm btn-outline-light" onclick="checkAllStatus()">
+                            <i class="fas fa-sync-alt me-1"></i>Refresh Status
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Enhanced Application Script -->
+    <script src="script.js"></script>
+    
+    <!-- TerraFusion Excellence Implementation -->
+    <script>
+        // God-tier brand consistency implementation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Apply TF branding to any missed components
+            document.querySelectorAll('.card:not(.tf-card)').forEach(card => {
+                card.classList.add('tf-card');
+            });
+            
+            document.querySelectorAll('.btn-primary:not(.tf-btn-primary)').forEach(btn => {
+                btn.classList.add('tf-btn-primary');
+            });
+            
+            // Initialize status checking
+            checkAllStatus();
+            
+            // Set up periodic status updates
+            setInterval(checkAllStatus, 30000); // Check every 30 seconds
+            
+            console.log('🚀 TerraFusion Playground - EXCELLENCE BRANDING ACTIVATED');
+        });
+        
+        // Launch all applications function
+        function launchAllApps() {
+            const apps = [
+                { name: 'TerraAgent', port: 5003 },
+                { name: 'TerraFlow', port: 5001 },
+                { name: 'TerraSync', port: 5002 },
+                { name: 'TerraFusion', port: 5000 },
+                { name: 'TerraMiner', port: 5006 },
+                { name: 'TerraLevy', port: 5007 },
+                { name: 'BCBSWebhub', port: 5008 },
+                { name: 'TerraFusionPrimeView', port: 5009 },
+                { name: 'TerraFusionV0Demo', port: 5010 },
+                { name: 'TerraFusionProf', port: 5011 },
+                { name: 'MCPServers', port: 5012 },
+                { name: 'SystemPromptsAI', port: 5013 }
+            ];
+            
+            apps.forEach(app => {
+                setTimeout(() => launchApp(app.name, app.port), Math.random() * 2000);
+            });
+        }
+        
+        // Check all application status
+        async function checkAllStatus() {
+            const apps = [
+                { name: 'TerraAgent', port: 5003, id: 'terraAgentStatus' },
+                { name: 'TerraFlow', port: 5001, id: 'terraFlowStatus' },
+                { name: 'TerraSync', port: 5002, id: 'terraSyncStatus' },
+                { name: 'TerraFusion', port: 5000, id: 'terraFusionStatus' },
+                { name: 'TerraMiner', port: 5006, id: 'terraMinerStatus' },
+                { name: 'TerraLevy', port: 5007, id: 'terraLevyStatus' },
+                { name: 'BCBSWebhub', port: 5008, id: 'bcbsWebhubStatus' },
+                { name: 'TerraFusionPrimeView', port: 5009, id: 'terraFusionPrimeViewStatus' },
+                { name: 'TerraFusionV0Demo', port: 5010, id: 'terraFusionV0DemoStatus' },
+                { name: 'TerraFusionProf', port: 5011, id: 'terraFusionProfStatus' },
+                { name: 'MCPServers', port: 5012, id: 'mcpServersStatus' },
+                { name: 'SystemPromptsAI', port: 5013, id: 'systemPromptsAIStatus' }
+            ];
+            
+            for (const app of apps) {
+                try {
+                    const response = await fetch(`http://localhost:${app.port}/health`, { 
+                        method: 'GET',
+                        timeout: 3000 
+                    });
+                    
+                    const statusElement = document.getElementById(app.id);
+                    if (response.ok) {
+                        statusElement.textContent = 'Online';
+                        statusElement.className = 'tf-status-badge tf-status-online';
+                    } else {
+                        statusElement.textContent = 'Error';
+                        statusElement.className = 'tf-status-badge tf-status-error';
+                    }
+                } catch (error) {
+                    const statusElement = document.getElementById(app.id);
+                    statusElement.textContent = 'Offline';
+                    statusElement.className = 'tf-status-badge tf-status-offline';
+                }
+            }
+        }
+    </script>
+</body>
+</html> 

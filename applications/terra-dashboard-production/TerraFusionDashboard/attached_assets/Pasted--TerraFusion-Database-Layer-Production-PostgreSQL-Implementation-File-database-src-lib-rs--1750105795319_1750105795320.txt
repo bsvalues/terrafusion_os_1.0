@@ -1,0 +1,705 @@
+// Terrafusion Database Layer - Production PostgreSQL Implementation
+// File: database/src/lib.rs
+
+use std::time::Duration;
+use anyhow::{Result, Context};
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
+use sqlx::{PgPool, Row, FromRow, Type, Postgres, Transaction};
+use uuid::Uuid;
+use tracing::{info, error, instrument};
+
+// ============================================================================
+// DATABASE MODELS
+// ============================================================================
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct Property {
+    pub id: Uuid,
+    pub parcel_id: String,
+    pub address: String,
+    pub legal_description: Option<String>,
+    pub assessed_value: i64,  // Store as cents to avoid floating point issues
+    pub market_value: Option<i64>,
+    pub land_value: i64,
+    pub improvement_value: i64,
+    pub square_feet: Option<i32>,
+    pub lot_size_acres: Option<f64>,
+    pub year_built: Option<i32>,
+    pub property_type: PropertyType,
+    pub zoning: Option<String>,
+    pub neighborhood_id: Option<Uuid>,
+    pub coordinates: Option<sqlx::types::Json<Coordinates>>,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+    pub last_assessment_date: DateTime<Utc>,
+    pub next_assessment_due: DateTime<Utc>,
+    pub county_id: Uuid,
+    pub active: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+#[sqlx(type_name = "property_type")]
+pub enum PropertyType {
+    Residential,
+    Commercial,
+    Industrial,
+    Agricultural,
+    Exempt,
+    Utility,
+    PublicUse,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Coordinates {
+    pub latitude: f64,
+    pub longitude: f64,
+    pub elevation: Option<f64>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct PropertyOwner {
+    pub id: Uuid,
+    pub property_id: Uuid,
+    pub owner_name: String,
+    pub owner_type: OwnerType,
+    pub mailing_address: String,
+    pub mailing_city: String,
+    pub mailing_state: String,
+    pub mailing_zip: String,
+    pub percentage_owned: i16, // 0-100
+    pub primary_owner: bool,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+#[sqlx(type_name = "owner_type")]
+pub enum OwnerType {
+    Individual,
+    Corporation,
+    Partnership,
+    LLC,
+    Trust,
+    Government,
+    Nonprofit,
+    Other,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct AssessmentHistory {
+    pub id: Uuid,
+    pub property_id: Uuid,
+    pub assessment_date: DateTime<Utc>,
+    pub assessed_value: i64,
+    pub land_value: i64,
+    pub improvement_value: i64,
+    pub assessor_id: Uuid,
+    pub assessment_method: String,
+    pub ai_confidence_score: Option<f32>,
+    pub notes: Option<String>,
+    pub appeal_status: Option<AppealStatus>,
+    pub created_at: DateTime<Utc>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+#[sqlx(type_name = "appeal_status")]
+pub enum AppealStatus {
+    None,
+    Filed,
+    UnderReview,
+    Approved,
+    Denied,
+    Withdrawn,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct AgentExecution {
+    pub id: Uuid,
+    pub property_id: Uuid,
+    pub agent_id: String,
+    pub task_type: String,
+    pub parameters: sqlx::types::Json<serde_json::Value>,
+    pub result: Option<sqlx::types::Json<serde_json::Value>>,
+    pub status: ExecutionStatus,
+    pub started_at: DateTime<Utc>,
+    pub completed_at: Option<DateTime<Utc>>,
+    pub duration_ms: Option<i32>,
+    pub error_message: Option<String>,
+    pub confidence_score: Option<f32>,
+    pub created_by: Uuid,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+#[sqlx(type_name = "execution_status")]
+pub enum ExecutionStatus {
+    Pending,
+    Running,
+    Completed,
+    Failed,
+    Cancelled,
+    Timeout,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct County {
+    pub id: Uuid,
+    pub name: String,
+    pub state: String,
+    pub fips_code: String,
+    pub timezone: String,
+    pub assessment_cycle: String, // Annual, Biennial, etc.
+    pub contact_info: sqlx::types::Json<serde_json::Value>,
+    pub configuration: sqlx::types::Json<serde_json::Value>,
+    pub active: bool,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct AuditLog {
+    pub id: Uuid,
+    pub table_name: String,
+    pub record_id: Uuid,
+    pub action: AuditAction,
+    pub old_values: Option<sqlx::types::Json<serde_json::Value>>,
+    pub new_values: Option<sqlx::types::Json<serde_json::Value>>,
+    pub changed_by: Uuid,
+    pub changed_at: DateTime<Utc>,
+    pub ip_address: Option<String>,
+    pub user_agent: Option<String>,
+    pub reason: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Type)]
+#[sqlx(type_name = "audit_action")]
+pub enum AuditAction {
+    Insert,
+    Update,
+    Delete,
+    View,
+}
+
+// ============================================================================
+// DATABASE CONNECTION & POOL
+// ============================================================================
+
+pub struct Database {
+    pool: PgPool,
+}
+
+impl Database {
+    pub async fn new(database_url: &str) -> Result<Self> {
+        let pool = sqlx::postgres::PgPoolOptions::new()
+            .max_connections(20)
+            .min_connections(5)
+            .acquire_timeout(Duration::from_secs(10))
+            .idle_timeout(Some(Duration::from_secs(600)))
+            .max_lifetime(Some(Duration::from_secs(1800)))
+            .connect(database_url)
+            .await
+            .context("Failed to connect to PostgreSQL")?;
+
+        // Test connection
+        sqlx::query("SELECT 1").execute(&pool).await
+            .context("Failed to execute test query")?;
+
+        info!("Connected to PostgreSQL database");
+
+        Ok(Self { pool })
+    }
+
+    pub fn pool(&self) -> &PgPool {
+        &self.pool
+    }
+
+    pub async fn migrate(&self) -> Result<()> {
+        info!("Running database migrations");
+        sqlx::migrate!("./migrations").run(&self.pool).await
+            .context("Failed to run migrations")?;
+        info!("Database migrations completed successfully");
+        Ok(())
+    }
+
+    pub async fn health_check(&self) -> Result<()> {
+        sqlx::query("SELECT 1").execute(&self.pool).await
+            .context("Database health check failed")?;
+        Ok(())
+    }
+}
+
+// ============================================================================
+// PROPERTY REPOSITORY
+// ============================================================================
+
+pub struct PropertyRepository {
+    pool: PgPool,
+}
+
+impl PropertyRepository {
+    pub fn new(pool: PgPool) -> Self {
+        Self { pool }
+    }
+
+    #[instrument(skip(self))]
+    pub async fn create_property(&self, property: &Property) -> Result<Property> {
+        let mut tx = self.pool.begin().await?;
+        
+        let created_property = sqlx::query_as!(
+            Property,
+            r#"
+            INSERT INTO properties (
+                id, parcel_id, address, legal_description, assessed_value,
+                market_value, land_value, improvement_value, square_feet,
+                lot_size_acres, year_built, property_type, zoning,
+                neighborhood_id, coordinates, last_assessment_date,
+                next_assessment_due, county_id, active
+            ) VALUES (
+                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
+                $11, $12, $13, $14, $15, $16, $17, $18, $19
+            )
+            RETURNING id, parcel_id, address, legal_description, assessed_value,
+                     market_value, land_value, improvement_value, square_feet,
+                     lot_size_acres, year_built, 
+                     property_type as "property_type: PropertyType",
+                     zoning, neighborhood_id, 
+                     coordinates as "coordinates: sqlx::types::Json<Coordinates>",
+                     created_at, updated_at, last_assessment_date,
+                     next_assessment_due, county_id, active
+            "#,
+            property.id,
+            property.parcel_id,
+            property.address,
+            property.legal_description,
+            property.assessed_value,
+            property.market_value,
+            property.land_value,
+            property.improvement_value,
+            property.square_feet,
+            property.lot_size_acres,
+            property.year_built,
+            property.property_type as PropertyType,
+            property.zoning,
+            property.neighborhood_id,
+            property.coordinates as Option<sqlx::types::Json<Coordinates>>,
+            property.last_assessment_date,
+            property.next_assessment_due,
+            property.county_id,
+            property.active
+        )
+        .fetch_one(&mut *tx)
+        .await?;
+
+        // Log audit entry
+        self.create_audit_log(&mut tx, "properties", property.id, AuditAction::Insert, 
+                             None, Some(serde_json::to_value(&property)?), property.county_id).await?;
+
+        tx.commit().await?;
+        Ok(created_property)
+    }
+
+    #[instrument(skip(self))]
+    pub async fn get_property_by_id(&self, id: Uuid) -> Result<Option<Property>> {
+        let property = sqlx::query_as!(
+            Property,
+            r#"
+            SELECT id, parcel_id, address, legal_description, assessed_value,
+                   market_value, land_value, improvement_value, square_feet,
+                   lot_size_acres, year_built,
+                   property_type as "property_type: PropertyType",
+                   zoning, neighborhood_id,
+                   coordinates as "coordinates: sqlx::types::Json<Coordinates>",
+                   created_at, updated_at, last_assessment_date,
+                   next_assessment_due, county_id, active
+            FROM properties 
+            WHERE id = $1 AND active = true
+            "#,
+            id
+        )
+        .fetch_optional(&self.pool)
+        .await?;
+
+        Ok(property)
+    }
+
+    #[instrument(skip(self))]
+    pub async fn get_properties_by_county(&self, county_id: Uuid, limit: i32, offset: i32) -> Result<Vec<Property>> {
+        let properties = sqlx::query_as!(
+            Property,
+            r#"
+            SELECT id, parcel_id, address, legal_description, assessed_value,
+                   market_value, land_value, improvement_value, square_feet,
+                   lot_size_acres, year_built,
+                   property_type as "property_type: PropertyType",
+                   zoning, neighborhood_id,
+                   coordinates as "coordinates: sqlx::types::Json<Coordinates>",
+                   created_at, updated_at, last_assessment_date,
+                   next_assessment_due, county_id, active
+            FROM properties 
+            WHERE county_id = $1 AND active = true
+            ORDER BY created_at DESC
+            LIMIT $2 OFFSET $3
+            "#,
+            county_id,
+            limit,
+            offset
+        )
+        .fetch_all(&self.pool)
+        .await?;
+
+        Ok(properties)
+    }
+
+    #[instrument(skip(self))]
+    pub async fn search_properties(&self, query: &str, county_id: Uuid) -> Result<Vec<Property>> {
+        let search_query = format!("%{}%", query);
+        
+        let properties = sqlx::query_as!(
+            Property,
+            r#"
+            SELECT id, parcel_id, address, legal_description, assessed_value,
+                   market_value, land_value, improvement_value, square_feet,
+                   lot_size_acres, year_built,
+                   property_type as "property_type: PropertyType",
+                   zoning, neighborhood_id,
+                   coordinates as "coordinates: sqlx::types::Json<Coordinates>",
+                   created_at, updated_at, last_assessment_date,
+                   next_assessment_due, county_id, active
+            FROM properties 
+            WHERE county_id = $1 AND active = true
+            AND (
+                address ILIKE $2 OR 
+                parcel_id ILIKE $2 OR
+                legal_description ILIKE $2
+            )
+            ORDER BY 
+                CASE WHEN parcel_id ILIKE $2 THEN 1
+                     WHEN address ILIKE $2 THEN 2
+                     ELSE 3 END,
+                address
+            LIMIT 50
+            "#,
+            county_id,
+            search_query
+        )
+        .fetch_all(&self.pool)
+        .await?;
+
+        Ok(properties)
+    }
+
+    #[instrument(skip(self))]
+    pub async fn update_property_assessment(
+        &self, 
+        property_id: Uuid, 
+        assessed_value: i64,
+        land_value: i64,
+        improvement_value: i64,
+        assessor_id: Uuid
+    ) -> Result<()> {
+        let mut tx = self.pool.begin().await?;
+
+        // Get current property for audit log
+        let current_property = self.get_property_by_id(property_id).await?
+            .context("Property not found")?;
+
+        // Update property
+        sqlx::query!(
+            r#"
+            UPDATE properties 
+            SET assessed_value = $1,
+                land_value = $2,
+                improvement_value = $3,
+                last_assessment_date = $4,
+                updated_at = $4
+            WHERE id = $5
+            "#,
+            assessed_value,
+            land_value,
+            improvement_value,
+            Utc::now(),
+            property_id
+        )
+        .execute(&mut *tx)
+        .await?;
+
+        // Create assessment history record
+        sqlx::query!(
+            r#"
+            INSERT INTO assessment_history (
+                id, property_id, assessment_date, assessed_value,
+                land_value, improvement_value, assessor_id,
+                assessment_method
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            "#,
+            Uuid::new_v4(),
+            property_id,
+            Utc::now(),
+            assessed_value,
+            land_value,
+            improvement_value,
+            assessor_id,
+            "AI_ASSISTED"
+        )
+        .execute(&mut *tx)
+        .await?;
+
+        // Create audit log
+        let new_values = serde_json::json!({
+            "assessed_value": assessed_value,
+            "land_value": land_value,
+            "improvement_value": improvement_value,
+            "assessor_id": assessor_id
+        });
+
+        self.create_audit_log(&mut tx, "properties", property_id, AuditAction::Update,
+                             Some(serde_json::to_value(&current_property)?), 
+                             Some(new_values), assessor_id).await?;
+
+        tx.commit().await?;
+        Ok(())
+    }
+
+    async fn create_audit_log(
+        &self,
+        tx: &mut Transaction<'_, Postgres>,
+        table_name: &str,
+        record_id: Uuid,
+        action: AuditAction,
+        old_values: Option<serde_json::Value>,
+        new_values: Option<serde_json::Value>,
+        user_id: Uuid
+    ) -> Result<()> {
+        sqlx::query!(
+            r#"
+            INSERT INTO audit_logs (
+                id, table_name, record_id, action, old_values,
+                new_values, changed_by, changed_at
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            "#,
+            Uuid::new_v4(),
+            table_name,
+            record_id,
+            action as AuditAction,
+            old_values.map(sqlx::types::Json),
+            new_values.map(sqlx::types::Json),
+            user_id,
+            Utc::now()
+        )
+        .execute(&mut **tx)
+        .await?;
+
+        Ok(())
+    }
+}
+
+// ============================================================================
+// AGENT EXECUTION REPOSITORY
+// ============================================================================
+
+pub struct AgentExecutionRepository {
+    pool: PgPool,
+}
+
+impl AgentExecutionRepository {
+    pub fn new(pool: PgPool) -> Self {
+        Self { pool }
+    }
+
+    #[instrument(skip(self))]
+    pub async fn create_execution(&self, execution: &AgentExecution) -> Result<AgentExecution> {
+        let created_execution = sqlx::query_as!(
+            AgentExecution,
+            r#"
+            INSERT INTO agent_executions (
+                id, property_id, agent_id, task_type, parameters,
+                status, started_at, created_by
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            RETURNING id, property_id, agent_id, task_type,
+                     parameters as "parameters: sqlx::types::Json<serde_json::Value>",
+                     result as "result: Option<sqlx::types::Json<serde_json::Value>>",
+                     status as "status: ExecutionStatus",
+                     started_at, completed_at, duration_ms, error_message,
+                     confidence_score, created_by
+            "#,
+            execution.id,
+            execution.property_id,
+            execution.agent_id,
+            execution.task_type,
+            &execution.parameters,
+            execution.status as ExecutionStatus,
+            execution.started_at,
+            execution.created_by
+        )
+        .fetch_one(&self.pool)
+        .await?;
+
+        Ok(created_execution)
+    }
+
+    #[instrument(skip(self))]
+    pub async fn complete_execution(
+        &self,
+        execution_id: Uuid,
+        result: serde_json::Value,
+        confidence_score: Option<f32>
+    ) -> Result<()> {
+        let started_at = sqlx::query!(
+            "SELECT started_at FROM agent_executions WHERE id = $1",
+            execution_id
+        )
+        .fetch_one(&self.pool)
+        .await?
+        .started_at;
+
+        let duration_ms = Utc::now()
+            .signed_duration_since(started_at)
+            .num_milliseconds() as i32;
+
+        sqlx::query!(
+            r#"
+            UPDATE agent_executions 
+            SET result = $1,
+                status = $2,
+                completed_at = $3,
+                duration_ms = $4,
+                confidence_score = $5
+            WHERE id = $6
+            "#,
+            sqlx::types::Json(result),
+            ExecutionStatus::Completed as ExecutionStatus,
+            Utc::now(),
+            duration_ms,
+            confidence_score,
+            execution_id
+        )
+        .execute(&self.pool)
+        .await?;
+
+        Ok(())
+    }
+
+    #[instrument(skip(self))]
+    pub async fn fail_execution(&self, execution_id: Uuid, error_message: String) -> Result<()> {
+        sqlx::query!(
+            r#"
+            UPDATE agent_executions 
+            SET status = $1,
+                completed_at = $2,
+                error_message = $3
+            WHERE id = $4
+            "#,
+            ExecutionStatus::Failed as ExecutionStatus,
+            Utc::now(),
+            error_message,
+            execution_id
+        )
+        .execute(&self.pool)
+        .await?;
+
+        Ok(())
+    }
+
+    #[instrument(skip(self))]
+    pub async fn get_execution_history(&self, property_id: Uuid) -> Result<Vec<AgentExecution>> {
+        let executions = sqlx::query_as!(
+            AgentExecution,
+            r#"
+            SELECT id, property_id, agent_id, task_type,
+                   parameters as "parameters: sqlx::types::Json<serde_json::Value>",
+                   result as "result: Option<sqlx::types::Json<serde_json::Value>>",
+                   status as "status: ExecutionStatus",
+                   started_at, completed_at, duration_ms, error_message,
+                   confidence_score, created_by
+            FROM agent_executions
+            WHERE property_id = $1
+            ORDER BY started_at DESC
+            LIMIT 100
+            "#,
+            property_id
+        )
+        .fetch_all(&self.pool)
+        .await?;
+
+        Ok(executions)
+    }
+}
+
+// ============================================================================
+// PERFORMANCE ANALYTICS
+// ============================================================================
+
+pub struct PerformanceAnalytics {
+    pool: PgPool,
+}
+
+impl PerformanceAnalytics {
+    pub fn new(pool: PgPool) -> Self {
+        Self { pool }
+    }
+
+    pub async fn get_agent_performance_stats(&self, agent_id: &str) -> Result<AgentPerformanceStats> {
+        let stats = sqlx::query!(
+            r#"
+            SELECT 
+                COUNT(*) as total_executions,
+                COUNT(CASE WHEN status = 'Completed' THEN 1 END) as successful_executions,
+                AVG(CASE WHEN status = 'Completed' THEN duration_ms END) as avg_duration_ms,
+                AVG(CASE WHEN status = 'Completed' THEN confidence_score END) as avg_confidence_score,
+                MAX(started_at) as last_execution
+            FROM agent_executions
+            WHERE agent_id = $1
+            AND started_at > NOW() - INTERVAL '30 days'
+            "#,
+            agent_id
+        )
+        .fetch_one(&self.pool)
+        .await?;
+
+        Ok(AgentPerformanceStats {
+            agent_id: agent_id.to_string(),
+            total_executions: stats.total_executions.unwrap_or(0) as u32,
+            successful_executions: stats.successful_executions.unwrap_or(0) as u32,
+            success_rate: if stats.total_executions.unwrap_or(0) > 0 {
+                stats.successful_executions.unwrap_or(0) as f32 / stats.total_executions.unwrap_or(1) as f32
+            } else {
+                0.0
+            },
+            avg_duration_ms: stats.avg_duration_ms.map(|d| d as u32),
+            avg_confidence_score: stats.avg_confidence_score.map(|c| c as f32),
+            last_execution: stats.last_execution,
+        })
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct AgentPerformanceStats {
+    pub agent_id: String,
+    pub total_executions: u32,
+    pub successful_executions: u32,
+    pub success_rate: f32,
+    pub avg_duration_ms: Option<u32>,
+    pub avg_confidence_score: Option<f32>,
+    pub last_execution: Option<DateTime<Utc>>,
+}
+
+// ============================================================================
+// CARGO.TOML DEPENDENCIES
+// ============================================================================
+
+/*
+[package]
+name = "terrafusion-database"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "chrono", "uuid", "json"] }
+tokio = { version = "1.0", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+uuid = { version = "1.0", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+anyhow = "1.0"
+tracing = "0.1"
+*/

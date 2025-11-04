@@ -1,0 +1,17 @@
+{
+    "map": {
+        "adjustment_style.descr": "<xdoc><p>Defines the type of adjustment that will be used when displacing input features.</p><ul><li><span title=\"AUTO\">Automatic</span>—The tool will decide for each input feature whether a SOLID or an ELASTIC adjustment is most appropriate. In general, features with orthogonal shapes will have SOLID adjustment applied, while organically shaped features will have ELASTIC adjustment applied. This is the default.</li><li><span title=\"SOLID\">Solid</span>—The feature will be translated. All vertices will move the same distance and direction. Topological errors may be introduced. This option is most useful when input features have regular geometric shapes.</li><li><span title=\"ELASTIC\">Elastic</span>—The vertices of the feature may be moved independently to best fit the feature to the road network. The shape of the feature may be modified slightly. Topological errors are less likely to be introduced. This option only applies to line and polygon input features. This option is most useful for organically shaped input features.</li></ul></xdoc>",
+        "adjustment_style.domain.AUTO": "Automatic",
+        "adjustment_style.domain.ELASTIC": "Elastic",
+        "adjustment_style.domain.SOLID": "Solid",
+        "adjustment_style.title": "Adjustment Style",
+        "description": "Propagates the displacement resulting from road adjustment in the Resolve Road Conflicts  and Merge Divided Roads tools to adjacent features to reestablish spatial relationships.",
+        "displacement_features.descr": "The displacement polygon features created by the Resolve Road Conflicts or the Merge Divided Roads tools that contain the degree and direction of road displacement that took place. These polygons dictate the amount of displacement that will be propagated to the input features.",
+        "displacement_features.title": "Displacement Features",
+        "in_features.descr": "The input feature layer containing features that may be in conflict. May be point, line, or polygon.",
+        "in_features.title": "Input Features",
+        "out_features.title": "Output Features",
+        "summary": "<xdoc><p>Propagates the displacement resulting from road adjustment in the Resolve Road Conflicts and Merge Divided Roads tools to adjacent features to reestablish spatial relationships.</p><p>An optional output of both the Resolve Road Conflicts and Merge Divided Roads tools is a displacement feature class. Displacement features store the amount and direction of change from the initial state of the data before these tools are run. Displacement information can then be applied to nearby features from different themes to ensure that spatial relationships are retained using this tool. For example, if roadways are separated by the Resolve Road Conflicts tool, it is often necessary to shift adjacent buildings along the roads accordingly.</p><p><note type=\"caution\"/>This tool does not produce output layers but instead alters the geometry of the source feature classes of the input layers. It is strongly suggested that you make a copy of your input features before running this tool.</p><p><note type=\"caution\"/><p group=\"note\">This tool will act cumulatively if run on the same dataset multiple times. In some cases, features may be moved farther and farther away from their original location, which may lead to unexpected and unwanted results.</p></p></xdoc>",
+        "title": "Propagate Displacement"
+    }
+}

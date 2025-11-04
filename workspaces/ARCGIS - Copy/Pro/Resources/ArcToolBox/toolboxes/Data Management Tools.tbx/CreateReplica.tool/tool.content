@@ -1,0 +1,430 @@
+{
+    "type": "FunctionTool",
+    "guid": "{cd6f7457-d7e9-43db-844e-18767f3b0415}",
+    "displayname": "$rc:title",
+    "helpcontent": "3220003",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "param_nocount:in_data"
+    ],
+    "params": {
+        "in_data": {
+            "display_order": "0",
+            "displayname": "$rc:in_data.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "GPTableView"
+                        },
+                        {
+                            "type": "DEDatasetType"
+                        }
+                    ]
+                }
+            },
+            "description": "$rc:in_data.descr"
+        },
+        "in_type": {
+            "display_order": "1",
+            "displayname": "$rc:in_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "TWO_WAY_REPLICA",
+                        "code": "$rc:in_type.domain.TWO_WAY_REPLICA"
+                    },
+                    {
+                        "value": "ONE_WAY_REPLICA",
+                        "code": "$rc:in_type.domain.ONE_WAY_REPLICA"
+                    },
+                    {
+                        "value": "CHECK_OUT",
+                        "code": "$rc:in_type.domain.CHECK_OUT"
+                    },
+                    {
+                        "value": "ONE_WAY_CHILD_TO_PARENT_REPLICA",
+                        "code": "$rc:in_type.domain.ONE_WAY_CHILD_TO_PARENT_REPLICA"
+                    }
+                ]
+            },
+            "value": "TWO_WAY_REPLICA",
+            "description": "$rc:in_type.descr"
+        },
+        "out_geodatabase": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:out_geodatabase.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEWorkspace"
+                    },
+                    {
+                        "type": "DEGeoDataServer"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPBrowseFiltersDomain",
+                        "filters": [
+                            "esri_browseDialogFilters_geodatabases_file",
+                            "esri_browseDialogFilters_geodatabases_egdb_file"
+                        ]
+                    },
+                    {
+                        "type": "GPBrowseFiltersDomain",
+                        "filters": [
+                            "esri_browseDialogFilters_services_geodata"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:out_geodatabase.descr"
+        },
+        "out_name": {
+            "display_order": "7",
+            "displayname": "$rc:out_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:out_name.descr"
+        },
+        "access_type": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:access_type.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "FULL",
+                        "code": "$rc:access_type.domain.FULL"
+                    },
+                    {
+                        "value": "SIMPLE",
+                        "code": "$rc:access_type.domain.SIMPLE"
+                    }
+                ]
+            },
+            "value": "FULL",
+            "description": "$rc:access_type.descr"
+        },
+        "initial_data_sender": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:initial_data_sender.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "CHILD_DATA_SENDER",
+                        "code": "$rc:initial_data_sender.domain.CHILD_DATA_SENDER"
+                    },
+                    {
+                        "value": "PARENT_DATA_SENDER",
+                        "code": "$rc:initial_data_sender.domain.PARENT_DATA_SENDER"
+                    }
+                ]
+            },
+            "value": "CHILD_DATA_SENDER",
+            "description": "$rc:initial_data_sender.descr"
+        },
+        "expand_feature_classes_and_tables": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:expand_feature_classes_and_tables.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "USE_DEFAULTS",
+                        "code": "$rc:expand_feature_classes_and_tables.domain.USE_DEFAULTS"
+                    },
+                    {
+                        "value": "ADD_WITH_SCHEMA_ONLY",
+                        "code": "$rc:expand_feature_classes_and_tables.domain.ADD_WITH_SCHEMA_ONLY"
+                    },
+                    {
+                        "value": "ALL_ROWS",
+                        "code": "$rc:expand_feature_classes_and_tables.domain.ALL_ROWS"
+                    },
+                    {
+                        "value": "DO_NOT_ADD",
+                        "code": "$rc:expand_feature_classes_and_tables.domain.DO_NOT_ADD"
+                    }
+                ]
+            },
+            "value": "USE_DEFAULTS",
+            "description": "$rc:expand_feature_classes_and_tables.descr"
+        },
+        "reuse_schema": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "11",
+            "displayname": "$rc:reuse_schema.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "REUSE",
+                        "code": "$rc:reuse_schema.domain.REUSE"
+                    },
+                    {
+                        "value": "DO_NOT_REUSE",
+                        "code": "$rc:reuse_schema.domain.DO_NOT_REUSE"
+                    }
+                ]
+            },
+            "value": "DO_NOT_REUSE",
+            "description": "$rc:reuse_schema.descr"
+        },
+        "get_related_data": {
+            "type": "optional",
+            "display_order": "12",
+            "displayname": "$rc:get_related_data.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "GET_RELATED",
+                        "code": "$rc:get_related_data.domain.GET_RELATED"
+                    },
+                    {
+                        "value": "DO_NOT_GET_RELATED",
+                        "code": "$rc:get_related_data.domain.DO_NOT_GET_RELATED"
+                    }
+                ]
+            },
+            "value": "GET_RELATED",
+            "description": "$rc:get_related_data.descr"
+        },
+        "geometry_features": {
+            "type": "optional",
+            "display_order": "13",
+            "displayname": "$rc:geometry_features.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon",
+                    "Polyline",
+                    "Point",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:geometry_features.descr"
+        },
+        "archiving": {
+            "type": "optional",
+            "display_order": "14",
+            "displayname": "$rc:archiving.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ARCHIVING"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_USE_ARCHIVING"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:archiving.descr"
+        },
+        "out_child_geodatabase": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "15",
+            "displayname": "$rc:out_child_geodatabase.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEWorkspace"
+                    },
+                    {
+                        "type": "DEGeoDataServer"
+                    }
+                ]
+            },
+            "depends": [
+                "out_geodatabase"
+            ]
+        },
+        "output_replica_name": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "16",
+            "displayname": "$rc:output_replica_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "out_name"
+            ]
+        },
+        "register_existing_data": {
+            "type": "optional",
+            "display_order": "17",
+            "displayname": "$rc:register_existing_data.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "REGISTER_EXISTING_DATA"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_USE_REGISTER_EXISTING_DATA"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:register_existing_data.descr"
+        },
+        "out_type": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:out_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "GEODATABASE",
+                        "code": "$rc:out_type.domain.GEODATABASE"
+                    },
+                    {
+                        "value": "XML_FILE",
+                        "code": "$rc:out_type.domain.XML_FILE"
+                    },
+                    {
+                        "value": "NEW_FILE_GEODATABASE",
+                        "code": "$rc:out_type.domain.NEW_FILE_GEODATABASE"
+                    }
+                ]
+            },
+            "value": "GEODATABASE",
+            "description": "$rc:out_type.descr"
+        },
+        "out_xml": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "4",
+            "displayname": "$rc:out_xml.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "xml"
+                ]
+            },
+            "description": "$rc:out_xml.descr"
+        },
+        "all_records_for_tables": {
+            "type": "optional",
+            "display_order": "18",
+            "displayname": "$rc:all_records_for_tables.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ALL_RECORDS_FOR_TABLES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "SCHEMA_ONLY_FOR_TABLES"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:all_records_for_tables.descr"
+        },
+        "out_filegdb_folder_path": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:out_filegdb_folder_path.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:out_filegdb_folder_path.descr"
+        },
+        "out_filegdb_name": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:out_filegdb_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:out_filegdb_name.descr"
+        }
+    },
+    "environments": [
+        "configKeyword",
+        "extent",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

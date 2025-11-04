@@ -1,0 +1,39 @@
+{
+    "type": "FunctionTool",
+    "guid": "{07ed38d6-2925-4bb7-aa8b-bc968c566d8c}",
+    "displayname": "$rc:title",
+    "helpcontent": "10040014",
+    "description": "$rc:description",
+    "product": "300",
+    "attributes": [
+        "edit_session",
+        "input_data_change"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon",
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "updated_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_features.title",
+            "datatype": {
+                "type": "GPLayer"
+            },
+            "depends": [
+                "in_features"
+            ]
+        }
+    }
+}

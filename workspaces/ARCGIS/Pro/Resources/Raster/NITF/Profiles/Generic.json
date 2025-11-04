@@ -1,0 +1,224 @@
+{
+  "@Variables": {
+    "Mission": "Generic",
+    "SensorName": "Generic",
+    "MissionMatch": "#/MissionMatch",
+    "4BandRedIndex": 2,
+    "4BandGreenIndex": 1,
+    "4BandBlueIndex": 0,
+    "8BandRedIndex": 4,
+    "8BandGreenIndex": 2,
+    "8BandBlueIndex": 1
+  },
+  "Products": [
+    {
+      "Name": "Generic",
+      "Title": "Commercial/Properties.json#TitleFormat",
+      "Type": "Generic",
+      "Priority": 1,
+      "Match": [],
+      "LayerDefinitions": [
+        "Commercial/LayerDefinitions.json#NCDRDPrimaryImage-Cloud",
+        "Commercial/LayerDefinitions.json#NCDRDPrimaryImage-Generic",
+        "Commercial/LayerDefinitions.json#NCDRDCatalogImage-Generic",
+        "Commercial/LayerDefinitions.json#NCDRDFeatureLayer-Clouds",
+        "Commercial/LayerDefinitions.json#NCDRDFeatureLayer-Image",
+        "Commercial/LayerDefinitions.json#NCDRDFeatureLayer-Generic",
+        "Commercial/LayerDefinitions.json#NCDRDFeatureLayer-Clouds",
+        "Commercial/LayerDefinitions.json#NCDRDFeatureLayer-Image",
+        "Commercial/LayerDefinitions.json#NCDRDFeatureLayer-Generic",
+        "Commercial/TableDefinitions.json#Table-CSEPHA",
+        "Commercial/TableDefinitions.json#Table-HISTOA",
+        "Commercial/TableDefinitions.json#Table-SECTGA-From-FileHeader",
+        "Commercial/TableDefinitions.json#Table-SECTGA-From-Image"
+      ],
+      "MosaicDefinitions": [
+        {
+          "ref": "Commercial/MosaicDefinitions.json#MosaicDefinition-Default-Base",
+          "ItemURI": {
+            "Tag": "Pan",
+            "ProductName": "#/ProductName-Generic"
+          },
+          "Match": [
+            "MatchRules.json#MatchRule-ImageHasICATIsVIS"
+          ]
+        },
+        {
+          "ref": "Commercial/MosaicDefinitions.json#MosaicDefinition-Default-Base",
+          "ItemURI": {
+            "Tag": "Pan",
+            "ProductName": "#/ProductName-Generic"
+          },
+          "Match": [
+            "MatchRules.json#MatchRule-ImageHasICATIsPAN"
+          ]
+        },
+        {
+          "ref": "Commercial/MosaicDefinitions.json#MosaicDefinition-Default-Base",
+          "ItemURI": {
+            "Tag": "MS",
+            "ProductName": "#/ProductName-Generic"
+          },
+          "Match": [
+            "MatchRules.json#MatchRule-ImageHasICATIsMS"
+          ]
+        },
+        {
+          "ref": "Commercial/MosaicDefinitions.json#MosaicDefinition-Default-Base",
+          "ItemURI": {
+            "Tag": "Pansharpened",
+            "ProductName": "#/ProductName-Generic"
+          },
+          "Match": [
+            "MatchRules.json#MatchRule-ImageHasICATIsRGB"
+          ]
+        },
+        {
+          "ref": "Commercial/MosaicDefinitions.json#MosaicDefinition-Default-Base",
+          "ItemURI": {
+            "Tag": "CAVIS",
+            "ProductName": "#/ProductName-Generic"
+          },
+          "Match": [
+            "MatchRules.json#MatchRule-ImageHasICATIsCAVIS"
+          ]
+        },
+        {
+          "ref": "Commercial/MosaicDefinitions.json#MosaicDefinition-Default-Base",
+          "ItemURI": {
+            "Tag": "SWIR",
+            "ProductName": "#/ProductName-Generic"
+          },
+          "Match": [
+            "MatchRules.json#MatchRule-ImageHasICATIsSWIR"
+          ]
+        },
+        {
+          "ref": "Commercial/MosaicDefinitions.json#MosaicDefinition-Default-Base",
+          "ItemURI": {
+            "ProductName": "#/ProductName-Generic"
+          },
+          "Match": [
+            "MatchRules.json#MatchRule-ICATIsNOT"
+          ]
+        },
+        
+        {
+          "@Variables": {
+            "LayerObjectType": "$%i+1$"
+          },
+          "ref": "Commercial/MosaicDefinitions.json#MosaicDefinition-Catalog-Base",
+          "ItemURI": {
+            "Tag": "Pan",
+            "ProductName": "#/ProductName-Generic"
+          },
+          "Match": [
+            "MatchRules.json#MatchRule-ImageHasICATIsVIS"
+          ]
+        },
+        {
+          "@Variables": {
+            "LayerObjectType": "$%i+1$"
+          },
+          "ref": "Commercial/MosaicDefinitions.json#MosaicDefinition-Catalog-Base",
+          "ItemURI": {
+            "Tag": "Pan",
+            "ProductName": "#/ProductName-Generic"
+          },
+          "Match": [
+            "MatchRules.json#MatchRule-ImageHasICATIsPAN"
+          ]
+        },
+        {
+          "@Variables": {
+            "LayerObjectType": "$%i+1$"
+          },
+          "ref": "Commercial/MosaicDefinitions.json#MosaicDefinition-Catalog-Base",
+          "ItemURI": {
+            "Tag": "MS",
+            "ProductName": "#/ProductName-Generic"
+          },
+          "Match": [
+            "MatchRules.json#MatchRule-ImageHasICATIsMS"
+          ]
+        },
+        {
+          "@Variables": {
+            "LayerObjectType": "$%i+1$"
+          },
+          "ref": "Commercial/MosaicDefinitions.json#MosaicDefinition-Catalog-Base",
+          "ItemURI": {
+            "Tag": "Pansharpened",
+            "ProductName": "#/ProductName-Generic"
+          },
+          "Match": [
+            "MatchRules.json#MatchRule-ImageHasICATIsRGB"
+          ]
+        },
+        {
+          "@Variables": {
+            "LayerObjectType": "$%i+1$"
+          },
+          "ref": "Commercial/MosaicDefinitions.json#MosaicDefinition-Catalog-Base",
+          "ItemURI": {
+            "Tag": "CAVIS",
+            "ProductName": "#/ProductName-Generic"
+          },
+          "Match": [
+            "MatchRules.json#MatchRule-ImageHasICATIsCAVIS"
+          ]
+        },
+        {
+          "@Variables": {
+            "LayerObjectType": "$%i+1$"
+          },
+          "ref": "Commercial/MosaicDefinitions.json#MosaicDefinition-Catalog-Base",
+          "ItemURI": {
+            "Tag": "SWIR",
+            "ProductName": "#/ProductName-Generic"
+          },
+          "Match": [
+            "MatchRules.json#MatchRule-ImageHasICATIsSWIR"
+          ]
+        },
+        {
+          "@Variables": {
+            "LayerObjectType": "$%i+1$"
+          },
+          "ref": "Commercial/MosaicDefinitions.json#MosaicDefinition-Catalog-Base",
+          "ItemURI": {
+            "ProductName": "#/ProductName-Generic"
+          },
+          "Match": [
+            "MatchRules.json#MatchRule-ICATIsNOT"
+          ]
+        }
+      ],
+      "Properties": "Commercial/Products.json#Properties-Base"
+    }
+  ],
+  "IDs": {
+    "SensorNamePaths": "Commercial/Properties.json#Mission-Match-Paths",
+    "MissionPaths": "Commercial/Properties.json#Mission-Match-Paths",
+    "MissionMatch": [ ],
+    "Bands-Panchromatic-Basic": [],
+    "Bands-Multispectral4Bands-Basic": [],
+    "Bands-Panchromatic-Geo": [],
+    "Bands-Multispectral4Bands-Geo": [],
+    "Bands-Multispectral3Bands-Psh": [],
+    "Bands-Multispectral4Bands-Psh": [],
+    "Bands-Clouds": [
+      {
+        "BandName": "Clouds"
+      }
+    ],
+    "Bands-Multispectral8Bands-Basic": [],
+    "Bands-SWIR8": [],
+    "Bands-CAVIS6": [],
+    "ProductName-Generic": "Generic",
+    "LayerDefinition-Panchromatic-Basic-Generic": {
+      "ref": "Commercial/LayerDefinitions.json#NCDRDPrimaryImage-Panchromatic-Basic",
+      "Key": "Layer_Image_@{ImageType}_@{iseg}"
+    }
+  }
+}

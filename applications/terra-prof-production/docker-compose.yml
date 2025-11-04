@@ -1,0 +1,137 @@
+version: '3.8'
+
+services:
+  # Database service
+  postgres:
+    image: postgres:14-alpine
+    container_name: terrafusionpro-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: terrafusionpro
+      POSTGRES_PASSWORD: terrafusionpro
+      POSTGRES_DB: terrafusionpro
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - terrafusionpro-network
+
+  # API Gateway
+  api-gateway:
+    build:
+      context: .
+      dockerfile: ./packages/api/Dockerfile
+    container_name: terrafusionpro-api-gateway
+    ports:
+      - "5002:5002"
+    environment:
+      - NODE_ENV=development
+      - API_GATEWAY_PORT=5002
+      - JWT_SECRET=terrafusionpro-dev-secret
+    depends_on:
+      - user-service
+      - property-service
+      - form-service
+      - analysis-service
+      - report-service
+    networks:
+      - terrafusionpro-network
+
+  # Web Client
+  web-client:
+    build:
+      context: .
+      dockerfile: ./packages/web-client/Dockerfile
+    container_name: terrafusionpro-web-client
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=development
+      - API_URL=http://api-gateway:5002
+    depends_on:
+      - api-gateway
+    networks:
+      - terrafusionpro-network
+
+  # User Service
+  user-service:
+    build:
+      context: .
+      dockerfile: ./services/user-service/Dockerfile
+    container_name: terrafusionpro-user-service
+    environment:
+      - NODE_ENV=development
+      - SERVICE_PORT=5000
+      - DATABASE_URL=postgres://terrafusionpro:terrafusionpro@postgres:5432/terrafusionpro
+      - JWT_SECRET=terrafusionpro-dev-secret
+    depends_on:
+      - postgres
+    networks:
+      - terrafusionpro-network
+
+  # Property Service
+  property-service:
+    build:
+      context: .
+      dockerfile: ./services/property-service/Dockerfile
+    container_name: terrafusionpro-property-service
+    environment:
+      - NODE_ENV=development
+      - SERVICE_PORT=5001
+      - DATABASE_URL=postgres://terrafusionpro:terrafusionpro@postgres:5432/terrafusionpro
+    depends_on:
+      - postgres
+    networks:
+      - terrafusionpro-network
+
+  # Form Service
+  form-service:
+    build:
+      context: .
+      dockerfile: ./services/form-service/Dockerfile
+    container_name: terrafusionpro-form-service
+    environment:
+      - NODE_ENV=development
+      - SERVICE_PORT=5005
+      - DATABASE_URL=postgres://terrafusionpro:terrafusionpro@postgres:5432/terrafusionpro
+    depends_on:
+      - postgres
+    networks:
+      - terrafusionpro-network
+
+  # Analysis Service
+  analysis-service:
+    build:
+      context: .
+      dockerfile: ./services/analysis-service/Dockerfile
+    container_name: terrafusionpro-analysis-service
+    environment:
+      - NODE_ENV=development
+      - SERVICE_PORT=5003
+      - DATABASE_URL=postgres://terrafusionpro:terrafusionpro@postgres:5432/terrafusionpro
+    depends_on:
+      - postgres
+    networks:
+      - terrafusionpro-network
+
+  # Report Service
+  report-service:
+    build:
+      context: .
+      dockerfile: ./services/report-service/Dockerfile
+    container_name: terrafusionpro-report-service
+    environment:
+      - NODE_ENV=development
+      - SERVICE_PORT=5004
+      - DATABASE_URL=postgres://terrafusionpro:terrafusionpro@postgres:5432/terrafusionpro
+    depends_on:
+      - postgres
+    networks:
+      - terrafusionpro-network
+
+networks:
+  terrafusionpro-network:
+    driver: bridge
+
+volumes:
+  postgres-data:

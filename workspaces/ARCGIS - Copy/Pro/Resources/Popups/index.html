@@ -1,0 +1,307 @@
+﻿<!-- saved from url=(0014)about:internet -->
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" --FLOW_DIRECTION-->
+<head>
+  <meta charset="utf-8" />
+  <title>Popup</title>
+  <link rel="Stylesheet" type="text/css" href="--RESOURCE_PATH--/Popups/esri/css/--POPUP-STYLESHEET--" />
+  <base href="--HOME_FOLDER_PATH--" target="_blank"/>
+</head>
+<body onload="OnBodyLoaded();" onresize="OnBodyResized();" style="visibility:hidden;">
+  <table id="popupContent" class="esriPopup">
+  </table>
+  <script type="text/javascript">
+    var g_resStrings = null;//<!--POPUP_RESOURCE_STRINGS-->;
+    var g_popupElements = null;//<!--POPUP_ELEMENTS-->;
+    var g_popupElementHelper = null;
+    var g_popupTheme = 0;//<!--POPUP_THEME-->;
+    var g_resourceFolder = '';//<!--RESOURCE_FOLDER-->;
+    var g_isDummyScrollChange = false;
+    var g_scrollTop = -1;
+    var g_scrollLeft = -1;
+    var g_isScrollLocked = false;
+    var g_utils = null;
+    var g_settings = null;
+    var g_lang_id = '<!--lang_id-->';
+    var g_UIlang_id = '<!--UIlang_id-->';
+
+    ////////////////////////////////////////////////////////////////////////////
+    // .Net Callback methods
+    function OnAttachmentLoaded(attachmentId, filePath, nonImageIconPath) {
+      if (!IsNullOrUndefined(g_popupElementHelper)) {
+        g_popupElementHelper.OnAttachmentLoaded(attachmentId, filePath, nonImageIconPath);
+      }
+    }
+
+    function OnMediaRefreshed(mediaId, mediaItem) {
+      if (!IsNullOrUndefined(g_popupElementHelper)) {
+        g_popupElementHelper.OnMediaRefreshed(mediaId, mediaItem);
+      }
+    }
+    ////////////////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////////////////////
+    // JS Utility Methods
+    function IsNullOrUndefined(myObject) {
+      return ((typeof myObject == undefined) || (myObject == null));
+    }
+
+    function IsNullOrEmpty(text) {
+      return IsNullOrUndefined(text) || (text.length == 0);
+    }
+
+    function TraceLine(message) {
+      try {
+        console.log("++++>Popup: " + message);
+        if (!IsNullOrUndefined(window.chrome)
+          && !IsNullOrUndefined(window.chrome.webview)) {
+          var obj = new Object();
+          obj.method = "TraceIt";
+          obj.param1 = message.toString();
+          window.chrome.webview.postMessage(JSON.stringify(obj));
+        }
+        //InfoBrowser.traceIt("++++>Popup: " + message);
+      }
+      catch (err) {
+        console.log("++++>Popup.TraceLine(): Exception: " + err);
+        alert("++++>Popup.TraceLine(): Exception: " + err);
+      }
+    }
+
+    function IsNullOrUndefinedTrace(myObject, message) {
+      if (IsNullOrUndefined(myObject)) {
+        TraceLine(message);
+        return true;
+      }
+      return false;
+    }
+
+    function FireOnPageLoaded() {
+      var obj = new Object();
+      obj.method = "OnPageLoaded";
+      window.chrome.webview.postMessage(JSON.stringify(obj));
+    }
+
+    // Legacy object
+    class InfoBrowser {
+      static getResourceFolder() {
+        return g_resourceFolder;
+      }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    function OnBodyLoaded() {
+      FireOnPageLoaded();
+
+      //Notify the hosting control of scroll change
+      document.addEventListener('scroll', function (e) {
+        var scrollLeft = window.scrollX / (document.body.scrollWidth - window.innerWidth);
+        var scrollTop = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+        if (g_isDummyScrollChange) {
+          g_scrollLeft = window.scrollX;
+          g_scrollTop = window.scrollY;
+          g_isDummyScrollChange = false;
+          return;
+        }
+        if (g_isScrollLocked) {
+          if (g_scrollLeft >= 0 && g_scrollTop >= 0) {
+            if (window.scrollX == g_scrollLeft && window.scrollY == g_scrollTop) {
+              return;
+            }
+            window.scrollTo(g_scrollLeft, g_scrollTop);
+          }
+          return;
+        }
+
+        var obj = new Object();
+        obj.method = "OnScrollChanged";
+        obj.param1 = scrollLeft;
+        obj.param2 = scrollTop;
+        g_scrollLeft = window.scrollX;
+        g_scrollTop = window.scrollY;
+        window.chrome.webview.postMessage(JSON.stringify(obj));
+      });
+
+      window.addEventListener("keydown", event => {
+        if (event.keyCode === 33 || event.keyCode === 34
+          || event.keyCode === 37 || event.keyCode === 38
+          || event.keyCode === 39 || event.keyCode === 40) {
+          g_isScrollLocked = false;
+          return;
+        }
+      });
+
+      //Handle zooming manually to fix the trackpad issue associated with webview2
+      //Two-finger zooming with trackpad is inteprated as mouse wheeling with ctrl down
+      window.addEventListener('wheel', function (e) {
+        g_isScrollLocked = false;
+        if (!e.ctrlKey)
+          return;
+        e.preventDefault();
+        var obj = new Object();
+        obj.method = "OnWheel";
+        obj.param1 = e.wheelDelta;
+        obj.param2 = e.ctrlKey;
+        window.chrome.webview.postMessage(JSON.stringify(obj));
+      }, { passive: false });
+
+      //Supress the native html context menu
+      document.addEventListener('contextmenu', e => {
+        e.preventDefault();
+        var sel = window.getSelection().toString();
+        var obj = new Object();
+        obj.method = "ShowContextMenu";
+        obj.param1 = e.pageX;
+        obj.param2 = e.pageY;
+        obj.param3 = (sel != null && sel.length > 0); //has selection
+        window.chrome.webview.postMessage(JSON.stringify(obj));
+      });
+
+      //Handle messges sent from the hosting control
+      window.chrome.webview.addEventListener('message', function (e) {
+        var message = JSON.parse(e.data);
+        if (message == null || message.method == null)
+          return;
+
+        var methodName = message.method;
+        if (methodName == "OnPageExtentChanged") {
+          FireOnPageExtentChanged();
+        }
+        else if (methodName == "ScrollTo") {
+          var scrollLeft = parseInt((document.body.scrollWidth - window.innerWidth) * message.param1);
+          var scrollTop = parseInt((document.body.scrollHeight - window.innerHeight) * message.param2);
+          if (window.scrollX == scrollLeft && window.scrollY == scrollTop)
+            return;
+          g_isDummyScrollChange = true;
+          window.scrollTo(parseInt(scrollLeft), parseInt(scrollTop));
+        }
+        else if (methodName == "OnReload") {
+          g_popupElementHelper._resizeTablesToFill();
+          document.body.style.visibility = "visible"; //Do not show the html conten until all tables are stretched to fill.
+        }
+        else if (methodName == "LockScroll") {
+          g_isScrollLocked = true;
+        }
+        else if (methodName == "SanitizeLinks") {
+          var safeLinks = message.param1;
+          var safeLinksLookup = new Map();
+          if (!IsNullOrUndefined(safeLinks)) {
+            for (var n = 0; n < safeLinks.length; n++) {
+              var safeLink = safeLinks[n].toString();
+              if (!IsNullOrUndefined(safeLink)) {
+                safeLinksLookup.set(safeLink, n);
+              }
+            }
+          }
+
+          var allLinks = [];
+          var numLinks = document.links.length;
+          for (var n = 0; n < numLinks; n++) {
+            allLinks.push(document.links[n]);
+          }
+          for (var n = 0; n < numLinks; n++) {
+            var link = allLinks[n];
+            if (IsNullOrUndefined(link.href))
+              continue;
+
+            var linkHREF = link.href.toString();
+            if (IsNullOrUndefined(linkHREF) || linkHREF.length < 1)
+              continue;
+
+            var firstChild = link.firstChild;
+            if (IsNullOrUndefined(firstChild))
+              continue;
+
+            //We want to keep image element clickable.
+            if (!IsNullOrUndefined(firstChild.className) && firstChild.className == 'esriPopupMediaImage')
+              continue;
+
+            var isSafeLink = safeLinksLookup.has(linkHREF);
+            if (isSafeLink)
+              continue;
+
+            link.parentNode.replaceChild(firstChild, link);
+          }
+        }
+        else if (methodName == "RequestSanitizeLinks") {
+          var allLinks = document.links;
+          var allLinksMessage = new Object();
+          allLinksMessage.method = 'SanitizeLinks';
+          allLinksMessage.param1 = [];
+          for (var i = 0; i < allLinks.length; i++) {
+            allLinksMessage.param1.push(allLinks[i].href.toString());
+          }
+
+          for (var i = 0; i < allLinks.length; i++) {
+            allLinks[i].addEventListener("click", function (e) {
+              e.preventDefault();
+              var href = e.currentTarget.getAttribute("href");
+              if (href == null || href == "" || href == e.currentTarget.baseURI) {
+                return;
+              }
+              if (!IsNullOrUndefined(e.currentTarget.isClickHandled) && e.currentTarget.isClickHandled == true) {
+                return;
+              }
+
+              var obj = new Object();
+              obj.method = "OpenLink";
+              obj.param1 = href;
+              window.chrome.webview.postMessage(JSON.stringify(obj));
+            }, false);
+          }
+
+          window.chrome.webview.postMessage(JSON.stringify(allLinksMessage));
+        }
+      });
+    }
+
+    function FireOnPageExtentChanged() {
+      var popupContent = document.getElementById("popupContent");
+      if (!g_popupElementHelper.IsInitialized()) {
+        return;
+      }
+
+      var obj = new Object();
+      obj.method = "OnPageExtentChanged";
+      obj.param1 = document.body.scrollWidth;
+      obj.param2 = window.innerWidth;
+      obj.param3 = document.body.scrollHeight;
+      obj.param4 = window.innerHeight;
+      window.chrome.webview.postMessage(JSON.stringify(obj));
+      g_popupElementHelper._resizeTablesToFill();
+      document.body.style.visibility = "visible";//Do not show the html conten until all tables are stretched to fill.
+    }
+
+    function OnBodyResized() {
+      if (!IsNullOrUndefined(g_popupElementHelper) && g_popupElementHelper.IsInitialized()) {
+        FireOnPageExtentChanged();
+        return;
+      }
+
+      var scope = this;
+      var timeStep = 50;
+      var finished = false;
+      //Emulate asyn/await
+      //Set a timeout every 50ms to check if g_popupElementHelper is defined and initialized
+      for (var n = 0; n < 20; n++) {
+        if (finished)
+          break;
+        setTimeout(function () {
+          if (!finished && !IsNullOrUndefined(g_popupElementHelper) && g_popupElementHelper.IsInitialized()) {
+            finished = true;
+            scope.FireOnPageExtentChanged();
+            document.body.style.visibility = "visible";
+          }
+        }, timeStep * (n + 1));
+      }
+    }
+  </script>
+  <script type="text/javascript" src="--RESOURCE_PATH--/Popups/dojo/dojo.js"></script>
+  <script type="text/javascript" src="--RESOURCE_PATH--/Popups/esri/run.js"></script>
+  <script type="text/javascript" src="--RESOURCE_PATH--/Charts/scripts/wijmo.min.js"></script>
+  <script type="text/javascript" src="--RESOURCE_PATH--/Charts/scripts/wijmo.chart.min.js"></script>
+  <script type="text/javascript" src="--RESOURCE_PATH--/Charts/scripts/wijmo.chart.analytics.min.js"></script>
+  <script type="text/javascript" src="--RESOURCE_PATH--/Charts/scripts/wijmo.chart.annotation.min.js"></script>
+  <script type="text/javascript" src="--RESOURCE_PATH--/Charts/scripts/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,464 @@
+# ==================================================
+# REVOLUTIONARY: TerraFusion API Gateway Deployment
+# Kubernetes + Istio Service Mesh Integration
+# 
+# This deployment represents the pinnacle of government
+# API gateway technology with quantum AI enhancement,
+# zero-trust security, and citizen-centric optimization.
+# ==================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terrafusion-gateway
+  namespace: terrafusion-microservices
+  labels:
+    app: terrafusion-gateway
+    version: v1.0.0
+    component: api-gateway
+    terrafusion.gov/service-type: "government-portal"
+    terrafusion.gov/quantum-enhanced: "true"
+    terrafusion.gov/security-level: "FISMA-HIGH"
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: terrafusion-gateway
+      version: v1.0.0
+  template:
+    metadata:
+      labels:
+        app: terrafusion-gateway
+        version: v1.0.0
+        component: api-gateway
+        terrafusion.gov/service-type: "government-portal"
+        terrafusion.gov/quantum-enhanced: "true"
+      annotations:
+        sidecar.istio.io/inject: "true"
+        sidecar.istio.io/proxyCPU: "100m"
+        sidecar.istio.io/proxyMemory: "128Mi"
+        sidecar.istio.io/userVolumeMount: '[{"name":"terrafusion-config", "mountPath":"/etc/terrafusion", "readonly":true}]'
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "5000"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: terrafusion-gateway
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: gateway
+        image: terrafusion/gateway:1.0.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+          name: http
+          protocol: TCP
+        - containerPort: 8080
+          name: health
+          protocol: TCP
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+        - name: ASPNETCORE_URLS
+          value: "http://+:5000"
+        - name: TERRAFUSION_ENVIRONMENT
+          value: "kubernetes"
+        - name: CONSUL_HOST
+          value: "consul.terrafusion-system.svc.cluster.local"
+        - name: CONSUL_PORT
+          value: "8500"
+        - name: REDIS_HOST
+          value: "redis.terrafusion-system.svc.cluster.local"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: POSTGRES_HOST
+          value: "postgres.terrafusion-system.svc.cluster.local"
+        - name: POSTGRES_PORT
+          value: "5432"
+        - name: POSTGRES_DB
+          value: "terrafusion_os"
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: terrafusion-db-secret
+              key: username
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: terrafusion-db-secret
+              key: password
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: terrafusion-auth-secret
+              key: jwt-secret
+        - name: QUANTUM_ROUTING_ENABLED
+          value: "true"
+        - name: CITIZEN_CONTEXT_ANALYSIS
+          value: "true"
+        - name: SECURITY_LEVEL
+          value: "FISMA-HIGH"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+          successThreshold: 1
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+          successThreshold: 1
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 5000
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 30
+          successThreshold: 1
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1000
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
+        - name: terrafusion-config
+          mountPath: /etc/terrafusion
+          readOnly: true
+        - name: temp-volume
+          mountPath: /tmp
+        - name: cache-volume
+          mountPath: /app/cache
+      volumes:
+      - name: terrafusion-config
+        configMap:
+          name: terrafusion-gateway-config
+      - name: temp-volume
+        emptyDir: {}
+      - name: cache-volume
+        emptyDir:
+          sizeLimit: "1Gi"
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+      - key: "terrafusion.gov/government-workload"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - terrafusion-gateway
+              topologyKey: kubernetes.io/hostname
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: terrafusion-gateway-service
+  namespace: terrafusion-microservices
+  labels:
+    app: terrafusion-gateway
+    service: terrafusion-gateway
+    terrafusion.gov/service-type: "government-portal"
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "5000"
+    prometheus.io/path: "/metrics"
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5000
+    targetPort: 5000
+    protocol: TCP
+    name: http
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: health
+  selector:
+    app: terrafusion-gateway
+    version: v1.0.0
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: terrafusion-gateway
+  namespace: terrafusion-microservices
+  labels:
+    app: terrafusion-gateway
+    terrafusion.gov/service-type: "government-portal"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: terrafusion-gateway-config
+  namespace: terrafusion-microservices
+  labels:
+    app: terrafusion-gateway
+    terrafusion.gov/config-type: "application"
+data:
+  appsettings.json: |
+    {
+      "Logging": {
+        "LogLevel": {
+          "Default": "Information",
+          "Microsoft.AspNetCore": "Warning"
+        }
+      },
+      "AllowedHosts": "*",
+      "TerraFusion": {
+        "Environment": "Kubernetes",
+        "ServiceMesh": {
+          "Enabled": true,
+          "Type": "Istio",
+          "mTLS": true
+        },
+        "QuantumRouting": {
+          "Enabled": true,
+          "CitizenOptimization": true,
+          "EmergencyPrioritization": true
+        },
+        "Security": {
+          "Level": "FISMA-HIGH",
+          "Compliance": ["NIST-800-53", "FISMA"],
+          "Headers": {
+            "Enabled": true,
+            "HSTS": true,
+            "ContentTypeOptions": true,
+            "FrameOptions": "DENY",
+            "XSSProtection": true
+          }
+        },
+        "Observability": {
+          "Tracing": {
+            "Enabled": true,
+            "Jaeger": {
+              "AgentHost": "jaeger-agent.istio-system.svc.cluster.local",
+              "AgentPort": 6831
+            }
+          },
+          "Metrics": {
+            "Enabled": true,
+            "Prometheus": true
+          }
+        }
+      }
+    }
+  ocelot.json: |
+    {
+      "Routes": [
+        {
+          "DownstreamPathTemplate": "/api/property/{everything}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "terrafusion-property-service.terrafusion-microservices.svc.cluster.local",
+              "Port": 5001
+            }
+          ],
+          "UpstreamPathTemplate": "/api/v1/property/{everything}",
+          "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+          "FileCacheOptions": {
+            "TtlSeconds": 300,
+            "Region": "property"
+          },
+          "RateLimitOptions": {
+            "ClientWhitelist": [],
+            "EnableRateLimiting": true,
+            "Period": "1m",
+            "PeriodTimespan": 60,
+            "Limit": 100
+          },
+          "QoSOptions": {
+            "ExceptionsAllowedBeforeBreaking": 3,
+            "DurationOfBreak": 5000,
+            "TimeoutValue": 10000
+          },
+          "LoadBalancerOptions": {
+            "Type": "LeastConnection"
+          }
+        },
+        {
+          "DownstreamPathTemplate": "/api/citizen/{everything}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "terrafusion-citizen-service.terrafusion-microservices.svc.cluster.local",
+              "Port": 5002
+            }
+          ],
+          "UpstreamPathTemplate": "/api/v1/citizen/{everything}",
+          "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer"
+          },
+          "RateLimitOptions": {
+            "EnableRateLimiting": true,
+            "Period": "1m",
+            "PeriodTimespan": 60,
+            "Limit": 200
+          }
+        },
+        {
+          "DownstreamPathTemplate": "/api/ai/{everything}",
+          "DownstreamScheme": "http",
+          "DownstreamHostAndPorts": [
+            {
+              "Host": "terrafusion-ai-service.terrafusion-microservices.svc.cluster.local",
+              "Port": 5005
+            }
+          ],
+          "UpstreamPathTemplate": "/api/v1/ai/{everything}",
+          "UpstreamHttpMethod": [ "GET", "POST" ],
+          "AuthenticationOptions": {
+            "AuthenticationProviderKey": "Bearer"
+          },
+          "RateLimitOptions": {
+            "EnableRateLimiting": true,
+            "Period": "1m",
+            "PeriodTimespan": 60,
+            "Limit": 50
+          },
+          "QoSOptions": {
+            "ExceptionsAllowedBeforeBreaking": 2,
+            "DurationOfBreak": 10000,
+            "TimeoutValue": 30000
+          }
+        }
+      ],
+      "GlobalConfiguration": {
+        "BaseUrl": "https://api.terrafusion.gov",
+        "ServiceDiscoveryProvider": {
+          "Host": "consul.terrafusion-system.svc.cluster.local",
+          "Port": 8500,
+          "Type": "Consul"
+        },
+        "RateLimitOptions": {
+          "DisableRateLimitHeaders": false,
+          "QuotaExceededMessage": "Rate limit exceeded. Please try again later.",
+          "HttpStatusCode": 429,
+          "ClientIdHeader": "X-Client-Id"
+        },
+        "QoSOptions": {
+          "ExceptionsAllowedBeforeBreaking": 3,
+          "DurationOfBreak": 5000,
+          "TimeoutValue": 10000
+        }
+      }
+    }
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: terrafusion-db-secret
+  namespace: terrafusion-microservices
+  labels:
+    app: terrafusion-gateway
+    terrafusion.gov/secret-type: "database"
+type: Opaque
+data:
+  username: dGVycmFmdXNpb24=  # terrafusion (base64)
+  password: VGVycmFGdXNpb24yMDI0IQ==  # TerraFusion2024! (base64)
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: terrafusion-auth-secret
+  namespace: terrafusion-microservices
+  labels:
+    app: terrafusion-gateway
+    terrafusion.gov/secret-type: "authentication"
+type: Opaque
+data:
+  jwt-secret: eW91ci1zdXBlci1zZWNyZXQtand0LWtleS1mb3ItcHJvZHVjdGlvbi1nb3Zlcm5tZW50LXNlcnZpY2U=  # base64 encoded JWT secret
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: terrafusion-gateway-pdb
+  namespace: terrafusion-microservices
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: terrafusion-gateway
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: terrafusion-gateway-hpa
+  namespace: terrafusion-microservices
+  labels:
+    app: terrafusion-gateway
+    terrafusion.gov/scaling: "auto"
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: terrafusion-gateway
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60

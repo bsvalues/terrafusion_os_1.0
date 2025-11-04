@@ -1,0 +1,156 @@
+{
+    "type": "FunctionTool",
+    "guid": "{6feda51b-0c0e-4fc7-bb87-b302101b725f}",
+    "displayname": "$rc:title",
+    "helpcontent": "8160006",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10"
+    ],
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "params": {
+        "in_raster": {
+            "displayname": "$rc:in_raster.title",
+            "datatype": {
+                "type": "GPSAGeoData"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "true",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_raster.descr"
+        },
+        "out_raster": {
+            "direction": "out",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_raster.descr"
+        },
+        "transformation_function": {
+            "type": "optional",
+            "displayname": "$rc:transformation_function.title",
+            "datatype": {
+                "type": "GPSATransformationFunction",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:transformation_function.dt.title1"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:transformation_function.dt.title2"
+                    },
+                    {
+                        "type": "GPVariant",
+                        "displayname": "$rc:transformation_function.dt.title3"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:transformation_function.dt.title4"
+                    },
+                    {
+                        "type": "GPVariant",
+                        "displayname": "$rc:transformation_function.dt.title5"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:transformation_function.dt.title6"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:transformation_function.dt.title7"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:transformation_function.dt.title8"
+                    }
+                ]
+            },
+            "depends": [
+                "in_raster",
+                "from_scale",
+                "to_scale"
+            ],
+            "value": "MSSMALL # # # # # #",
+            "description": "$rc:transformation_function.descr"
+        },
+        "from_scale": {
+            "type": "optional",
+            "displayname": "$rc:from_scale.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "false",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                }
+            },
+            "value": "1",
+            "description": "$rc:from_scale.descr"
+        },
+        "to_scale": {
+            "type": "optional",
+            "displayname": "$rc:to_scale.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "false",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                }
+            },
+            "value": "10",
+            "description": "$rc:to_scale.descr"
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "cellSize",
+        "cellSizeProjectionMethod",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "mask",
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

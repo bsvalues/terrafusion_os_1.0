@@ -19,12 +19,14 @@ describe('ScrollArea', () => {
 
     it('applies custom className', () => {
       const { container } = render(
-        <ScrollArea className="custom-class">
+        <ScrollArea className='custom-class'>
           <div>Content</div>
         </ScrollArea>
       );
 
-      const scrollArea = container.querySelector('[data-radix-scroll-area-viewport]')?.parentElement;
+      const scrollArea = container.querySelector(
+        '[data-radix-scroll-area-viewport]'
+      )?.parentElement;
       expect(scrollArea).toHaveClass('custom-class');
     });
 
@@ -65,10 +67,10 @@ describe('ScrollArea', () => {
   describe('Scroll Behavior', () => {
     it('allows vertical scrolling', async () => {
       const { container } = render(
-        <ScrollArea className="h-32">
+        <ScrollArea className='h-32'>
           <div style={{ height: '500px' }}>
-            <div data-testid="top">Top</div>
-            <div data-testid="bottom" style={{ marginTop: '450px' }}>
+            <div data-testid='top'>Top</div>
+            <div data-testid='bottom' style={{ marginTop: '450px' }}>
               Bottom
             </div>
           </div>
@@ -97,16 +99,18 @@ describe('ScrollArea', () => {
     it('shows scrollbar on hover when content overflows', async () => {
       const user = userEvent.setup();
       const { container } = render(
-        <ScrollArea className="h-32">
+        <ScrollArea className='h-32'>
           <div style={{ height: '500px' }}>Tall content</div>
         </ScrollArea>
       );
 
-      const scrollArea = container.querySelector('[data-radix-scroll-area-viewport]')?.parentElement;
-      
+      const scrollArea = container.querySelector(
+        '[data-radix-scroll-area-viewport]'
+      )?.parentElement;
+
       if (scrollArea) {
         await user.hover(scrollArea);
-        
+
         await waitFor(() => {
           const scrollbar = container.querySelector('[data-radix-scroll-area-scrollbar]');
           expect(scrollbar).toBeInTheDocument();
@@ -116,7 +120,7 @@ describe('ScrollArea', () => {
 
     it('does not show scrollbar when content fits', () => {
       const { container } = render(
-        <ScrollArea className="h-96">
+        <ScrollArea className='h-96'>
           <div style={{ height: '100px' }}>Short content</div>
         </ScrollArea>
       );
@@ -140,7 +144,7 @@ describe('ScrollArea', () => {
 
     it('supports horizontal orientation', () => {
       const { container } = render(
-        <ScrollArea orientation="horizontal">
+        <ScrollArea orientation='horizontal'>
           <div>Content</div>
         </ScrollArea>
       );
@@ -151,10 +155,10 @@ describe('ScrollArea', () => {
 
     it('allows horizontal scrolling when orientation is horizontal', async () => {
       const { container } = render(
-        <ScrollArea orientation="horizontal" className="w-64">
+        <ScrollArea orientation='horizontal' className='w-64'>
           <div style={{ width: '1000px' }}>
-            <span data-testid="left">Left</span>
-            <span data-testid="right" style={{ marginLeft: '950px' }}>
+            <span data-testid='left'>Left</span>
+            <span data-testid='right' style={{ marginLeft: '950px' }}>
               Right
             </span>
           </div>
@@ -174,7 +178,7 @@ describe('ScrollArea', () => {
 
     it('supports both vertical and horizontal scrolling', () => {
       const { container } = render(
-        <ScrollArea className="h-32 w-64">
+        <ScrollArea className='h-32 w-64'>
           <div style={{ height: '500px', width: '1000px' }}>
             Content that overflows both dimensions
           </div>
@@ -191,7 +195,7 @@ describe('ScrollArea', () => {
     it('scrolls down with ArrowDown key', async () => {
       const user = userEvent.setup();
       const { container } = render(
-        <ScrollArea className="h-32">
+        <ScrollArea className='h-32'>
           <div style={{ height: '500px' }}>Tall content</div>
         </ScrollArea>
       );
@@ -210,7 +214,7 @@ describe('ScrollArea', () => {
     it('scrolls up with ArrowUp key', async () => {
       const user = userEvent.setup();
       const { container } = render(
-        <ScrollArea className="h-32">
+        <ScrollArea className='h-32'>
           <div style={{ height: '500px' }}>Tall content</div>
         </ScrollArea>
       );
@@ -229,7 +233,7 @@ describe('ScrollArea', () => {
     it('scrolls right with ArrowRight key in horizontal mode', async () => {
       const user = userEvent.setup();
       const { container } = render(
-        <ScrollArea orientation="horizontal" className="w-64">
+        <ScrollArea orientation='horizontal' className='w-64'>
           <div style={{ width: '1000px' }}>Wide content</div>
         </ScrollArea>
       );
@@ -248,7 +252,7 @@ describe('ScrollArea', () => {
     it('scrolls to bottom with End key', async () => {
       const user = userEvent.setup();
       const { container } = render(
-        <ScrollArea className="h-32">
+        <ScrollArea className='h-32'>
           <div style={{ height: '500px' }}>Tall content</div>
         </ScrollArea>
       );
@@ -267,7 +271,7 @@ describe('ScrollArea', () => {
     it('scrolls to top with Home key', async () => {
       const user = userEvent.setup();
       const { container } = render(
-        <ScrollArea className="h-32">
+        <ScrollArea className='h-32'>
           <div style={{ height: '500px' }}>Tall content</div>
         </ScrollArea>
       );
@@ -286,7 +290,7 @@ describe('ScrollArea', () => {
     it('scrolls down by page with PageDown key', async () => {
       const user = userEvent.setup();
       const { container } = render(
-        <ScrollArea className="h-32">
+        <ScrollArea className='h-32'>
           <div style={{ height: '500px' }}>Tall content</div>
         </ScrollArea>
       );
@@ -305,7 +309,7 @@ describe('ScrollArea', () => {
     it('scrolls up by page with PageUp key', async () => {
       const user = userEvent.setup();
       const { container } = render(
-        <ScrollArea className="h-32">
+        <ScrollArea className='h-32'>
           <div style={{ height: '500px' }}>Tall content</div>
         </ScrollArea>
       );
@@ -343,7 +347,7 @@ describe('ScrollArea', () => {
 
       const viewport = container.querySelector('[data-radix-scroll-area-viewport]') as HTMLElement;
       viewport.focus();
-      
+
       expect(document.activeElement).toBe(viewport);
     });
 
@@ -358,7 +362,7 @@ describe('ScrollArea', () => {
 
       const buttons = screen.getAllByRole('button');
       expect(buttons).toHaveLength(3);
-      
+
       buttons.forEach((button) => {
         expect(button).toBeInTheDocument();
       });
@@ -377,7 +381,7 @@ describe('ScrollArea', () => {
 
     it('has no accessibility violations (vertical)', async () => {
       const { container } = render(
-        <ScrollArea className="h-32">
+        <ScrollArea className='h-32'>
           <div style={{ height: '500px' }}>
             {Array.from({ length: 20 }).map((_, i) => (
               <div key={i}>Item {i + 1}</div>
@@ -392,7 +396,7 @@ describe('ScrollArea', () => {
 
     it('has no accessibility violations (horizontal)', async () => {
       const { container } = render(
-        <ScrollArea orientation="horizontal" className="w-64">
+        <ScrollArea orientation='horizontal' className='w-64'>
           <div style={{ width: '1000px' }}>
             <span>Wide content that requires horizontal scrolling</span>
           </div>
@@ -405,7 +409,7 @@ describe('ScrollArea', () => {
 
     it('has no accessibility violations (both directions)', async () => {
       const { container } = render(
-        <ScrollArea className="h-32 w-64">
+        <ScrollArea className='h-32 w-64'>
           <div style={{ height: '500px', width: '1000px' }}>
             Content that overflows both dimensions
           </div>
@@ -418,7 +422,7 @@ describe('ScrollArea', () => {
 
     it('has no accessibility violations (with interactive content)', async () => {
       const { container } = render(
-        <ScrollArea className="h-32">
+        <ScrollArea className='h-32'>
           <div style={{ height: '500px' }}>
             {Array.from({ length: 10 }).map((_, i) => (
               <button key={i}>Button {i + 1}</button>

@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block title %}Alert History{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+  <div class="card border-0 shadow-sm">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="card-title">Alert History</h2>
+        <div>
+          <a href="{{ url_for('monitoring_dashboard') }}" class="btn btn-outline-primary me-2">
+            <i class="bi bi-arrow-left"></i> Dashboard
+          </a>
+          <a href="{{ url_for('monitoring_alerts_active') }}" class="btn btn-primary">
+            Active Alerts <span class="badge bg-light text-dark ms-1">{{ alerts|selectattr('status', 'eq', 'active')|list|length }}</span>
+          </a>
+        </div>
+      </div>
+      
+      <!-- Filter Form -->
+      <form method="get" action="{{ url_for('monitoring_alerts_history') }}" class="mb-4">
+        <div class="row g-3 align-items-end">
+          <div class="col-md-2">
+            <label for="days" class="form-label">Time Period</label>
+            <select class="form-select" id="days" name="days">
+              <option value="1" {% if current_days == 1 %}selected{% endif %}>Last 24 Hours</option>
+              <option value="7" {% if current_days == 7 %}selected{% endif %}>Last 7 Days</option>
+              <option value="30" {% if current_days == 30 %}selected{% endif %}>Last 30 Days</option>
+              <option value="90" {% if current_days == 90 %}selected{% endif %}>Last 90 Days</option>
+              <option value="0" {% if current_days == 0 %}selected{% endif %}>All Time</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label for="severity" class="form-label">Severity</label>
+            <select class="form-select" id="severity" name="severity">
+              <option value="">All Severities</option>
+              {% for severity_option in severities %}
+              <option value="{{ severity_option }}" {% if current_severity == severity_option %}selected{% endif %}>
+                {{ severity_option|capitalize }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label for="component" class="form-label">Component</label>
+            <select class="form-select" id="component" name="component">
+              <option value="">All Components</option>
+              {% for component_option in components %}
+              <option value="{{ component_option }}" {% if current_component == component_option %}selected{% endif %}>
+                {{ component_option|capitalize }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label for="status" class="form-label">Status</label>
+            <select class="form-select" id="status" name="status">
+              <option value="">All Statuses</option>
+              {% for status_option in statuses %}
+              <option value="{{ status_option }}" {% if current_status == status_option %}selected{% endif %}>
+                {{ status_option|capitalize }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-4">
+            <div class="d-flex">
+              <button type="submit" class="btn btn-primary me-2">Apply Filters</button>
+              <a href="{{ url_for('monitoring_alerts_history') }}" class="btn btn-outline-secondary">Clear Filters</a>
+            </div>
+          </div>
+        </div>
+      </form>
+      
+      <!-- Alert Summary -->
+      <div class="alert-summary mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+          <h5>
+            {{ alerts|length }} alert{{ 's' if alerts|length != 1 else '' }} found
+            {% if current_days %}in the last {{ current_days }} day{{ 's' if current_days != 1 else '' }}{% endif %}
+            {% if current_severity %}with severity {{ current_severity|capitalize }}{% endif %}
+            {% if current_component %}in component {{ current_component|capitalize }}{% endif %}
+            {% if current_status %}with status {{ current_status|capitalize }}{% endif %}
+          </h5>
+          <div class="badge-group">
+            {% set critical_count = alerts|selectattr('severity', 'eq', 'critical')|list|length %}
+            {% set error_count = alerts|selectattr('severity', 'eq', 'error')|list|length %}
+            {% set warning_count = alerts|selectattr('severity', 'eq', 'warning')|list|length %}
+            {% set info_count = alerts|selectattr('severity', 'eq', 'info')|list|length %}
+            
+            {% if critical_count > 0 %}
+            <span class="badge bg-danger me-2">{{ critical_count }} Critical</span>
+            {% endif %}
+            
+            {% if error_count > 0 %}
+            <span class="badge bg-danger me-2">{{ error_count }} Error</span>
+            {% endif %}
+            
+            {% if warning_count > 0 %}
+            <span class="badge bg-warning me-2">{{ warning_count }} Warning</span>
+            {% endif %}
+            
+            {% if info_count > 0 %}
+            <span class="badge bg-info me-2">{{ info_count }} Info</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      
+      {% if alerts %}
+      <!-- Alert Table -->
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Severity</th>
+              <th>Type</th>
+              <th>Component</th>
+              <th>Message</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Resolved</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for alert in alerts %}
+            <tr class="{% if alert.status == 'active' %}table-danger{% elif alert.status == 'acknowledged' %}table-warning{% endif %}">
+              <td>
+                {% if alert.severity == 'critical' %}
+                <span class="badge bg-danger">Critical</span>
+                {% elif alert.severity == 'error' %}
+                <span class="badge bg-danger">Error</span>
+                {% elif alert.severity == 'warning' %}
+                <span class="badge bg-warning">Warning</span>
+                {% else %}
+                <span class="badge bg-info">Info</span>
+                {% endif %}
+              </td>
+              <td>{{ alert.alert_type }}</td>
+              <td>{{ alert.component }}</td>
+              <td>
+                {{ alert.message }}
+                {% if alert.details %}
+                <button type="button" class="btn btn-sm btn-link" data-bs-toggle="modal" data-bs-target="#alertModal{{ alert.id }}">
+                  Details
+                </button>
+                {% endif %}
+              </td>
+              <td>
+                {% if alert.status == 'active' %}
+                <span class="badge bg-danger">Active</span>
+                {% elif alert.status == 'acknowledged' %}
+                <span class="badge bg-warning">Acknowledged</span>
+                {% else %}
+                <span class="badge bg-success">Resolved</span>
+                {% endif %}
+              </td>
+              <td>{{ alert.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+              <td>
+                {% if alert.resolved_at %}
+                {{ alert.resolved_at.strftime('%Y-%m-%d %H:%M:%S') }}
+                {% else %}
+                -
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Alert Details Modals -->
+      {% for alert in alerts %}
+      {% if alert.details %}
+      <div class="modal fade" id="alertModal{{ alert.id }}" tabindex="-1" aria-labelledby="alertModalLabel{{ alert.id }}" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="alertModalLabel{{ alert.id }}">
+                {% if alert.severity == 'critical' %}
+                <span class="badge bg-danger me-2">Critical</span>
+                {% elif alert.severity == 'error' %}
+                <span class="badge bg-danger me-2">Error</span>
+                {% elif alert.severity == 'warning' %}
+                <span class="badge bg-warning me-2">Warning</span>
+                {% else %}
+                <span class="badge bg-info me-2">Info</span>
+                {% endif %}
+                {{ alert.message }}
+              </h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="alert-info mb-3">
+                <div class="row">
+                  <div class="col-md-6">
+                    <p><strong>Type:</strong> {{ alert.alert_type }}</p>
+                    <p><strong>Component:</strong> {{ alert.component }}</p>
+                    <p><strong>Created:</strong> {{ alert.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                  </div>
+                  <div class="col-md-6">
+                    <p><strong>Status:</strong> {{ alert.status|capitalize }}</p>
+                    {% if alert.acknowledged_at %}
+                    <p><strong>Acknowledged:</strong> {{ alert.acknowledged_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                    {% endif %}
+                    {% if alert.resolved_at %}
+                    <p><strong>Resolved:</strong> {{ alert.resolved_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header">
+                  <h6 class="mb-0">Details</h6>
+                </div>
+                <div class="card-body">
+                  <pre class="alert-details mb-0">{{ alert.details }}</pre>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+      
+      {% else %}
+      <!-- No Alerts -->
+      <div class="alert alert-info">
+        <h5 class="alert-heading">No alerts found</h5>
+        <p>There are no alerts matching your filter criteria.</p>
+      </div>
+      {% endif %}
+      
+    </div>
+  </div>
+</div>
+{% endblock %}

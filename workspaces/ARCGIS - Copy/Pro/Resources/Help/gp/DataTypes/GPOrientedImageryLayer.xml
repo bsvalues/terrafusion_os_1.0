@@ -1,0 +1,5 @@
+<DataType Name="GPOrientedImageryLayer">
+  <DisplayName>Oriented Imagery Layer</DisplayName>
+  <Description>Oriented Imagery Layer.</Description>
+</DataType>
+

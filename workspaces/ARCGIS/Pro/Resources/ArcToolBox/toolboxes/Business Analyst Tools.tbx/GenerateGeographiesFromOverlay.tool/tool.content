@@ -1,0 +1,136 @@
+{
+    "type": "FunctionTool",
+    "guid": "{33724566-2738-4FE2-903A-A8C439127E50}/GenerateGeographiesFromOverlay",
+    "displayname": "$rc:title",
+    "helpcontent": "62030003",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "33",
+        "35"
+    ],
+    "params": {
+        "geography_level": {
+            "displayname": "$rc:geography_level.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:geography_level.descr"
+        },
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "id_field": {
+            "displayname": "$rc:id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text",
+                    "Short",
+                    "BigInteger",
+                    "Long",
+                    "GUID",
+                    "GlobalID",
+                    "OID"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:id_field.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "featuretype.rule": "AsSpecified",
+                "featuretype": "Simple",
+                "geometrytype.rule": "AsSpecified",
+                "geometrytype": "Polygon",
+                "extenttype.rule": "Union",
+                "fields.rule": "None",
+                "clonedependency": "true",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "overlap_type": {
+            "type": "optional",
+            "displayname": "$rc:overlap_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "INTERSECT",
+                        "code": "$rc:overlap_type.domain.INTERSECT"
+                    },
+                    {
+                        "value": "CENTROID_WITHIN",
+                        "code": "$rc:overlap_type.domain.CENTROID_WITHIN"
+                    },
+                    {
+                        "value": "COMPLETELY_WITHIN",
+                        "code": "$rc:overlap_type.domain.COMPLETELY_WITHIN"
+                    }
+                ]
+            },
+            "value": "INTERSECT",
+            "description": "$rc:overlap_type.descr"
+        },
+        "ratios": {
+            "type": "optional",
+            "displayname": "$rc:ratios.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NO_RATIOS",
+                        "code": "$rc:ratios.domain.NO_RATIOS"
+                    },
+                    {
+                        "value": "AREA_ONLY",
+                        "code": "$rc:ratios.domain.AREA_ONLY"
+                    },
+                    {
+                        "value": "ALL_RATIOS",
+                        "code": "$rc:ratios.domain.ALL_RATIOS"
+                    }
+                ]
+            },
+            "value": "NO_RATIOS",
+            "description": "$rc:ratios.descr"
+        }
+    },
+    "environments": [
+        "baDataSource",
+        "geographicTransformations",
+        "workspace"
+    ]
+}

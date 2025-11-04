@@ -1,0 +1,26 @@
+{
+    "set": [
+        "anomaly",
+        "anselin local moran's i",
+        "cluster",
+        "covariance",
+        "deviate",
+        "disperse",
+        "distribution",
+        "extreme",
+        "geographic",
+        "high-high",
+        "like",
+        "local",
+        "low-low",
+        "p",
+        "p-value",
+        "pseudo",
+        "pseudo p-value",
+        "random",
+        "similar",
+        "space-time cube",
+        "outlier",
+        "space-time"
+    ]
+}

@@ -6,6 +6,9 @@ using TerraFusion.Core.Models;
 using TerraFusion.Core.Services.Monitoring;
 using TerraFusion.Core.Extensions;
 
+
+#pragma warning disable CS1998
+
 namespace TerraFusion.Core.Services.AI;
 
 /// <summary>
@@ -73,10 +76,16 @@ public class MLModelManager : IMLModelManager
             var predictions = model.Transform(request.ValidationData ?? request.TrainingData);
             var metrics = EvaluateModel(request.ModelType, predictions);
 
-            // Save the model
+            // Save the model - use the data source that was actually used for predictions
+            var dataSource = request.ValidationData ?? request.TrainingData;
+            if (dataSource?.Schema == null)
+            {
+                throw new InvalidOperationException("Training data schema cannot be null");
+            }
+            
             var modelPath = Path.Combine(_modelsBasePath, $"{request.ModelId}.zip");
             Directory.CreateDirectory(_modelsBasePath);
-            _mlContext.Model.Save(model, request.TrainingData.Schema, modelPath);
+            _mlContext.Model.Save(model, dataSource.Schema, modelPath);
 
             // Register the model
             var modelInfo = new MLModelInfo

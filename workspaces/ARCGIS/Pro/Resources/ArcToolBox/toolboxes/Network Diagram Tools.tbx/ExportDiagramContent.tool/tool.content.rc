@@ -1,0 +1,23 @@
+{
+    "map": {
+        "description": "Exports diagram content in a simple format (JSON) that reflects basic connectivity. Additional optional information such as diagram properties, diagram feature geometry, network element attributes, and aggregated elements can also be exported.",
+        "in_utility_network.descr": "The utility network or trace network layer, utility network or trace network data element, or network diagram layer related to the network diagram to export.",
+        "in_utility_network.title": "Input Network or Network Diagram Layer",
+        "include_aggregations.descr": "<xdoc><p>Specifies whether each diagram feature will be exported with a list of network elements it aggregates.<ul><li>Checked—Each diagram feature will be exported with a list of network elements it aggregates with their asset group and asset type values.</li><li>Unchecked—The diagram feature aggregations will not be exported. This is the default.</li></ul></p></xdoc>",
+        "include_aggregations.title": "Include aggregations",
+        "include_attributes.descr": "<xdoc><p>Specifies whether the attributes of the associated network elements will be exported.<ul><li>Checked—The associated network element attributes will be exported.</li><li>Unchecked—The associated network element attributes will not be exported. This is the default.</li></ul></p></xdoc>",
+        "include_attributes.title": "Include attributes",
+        "include_diagram_properties.descr": "<xdoc><p>Specifies whether the diagram properties will be exported.<ul><li>Checked—The diagram properties (statistics, creation and update dates, and so on) will be exported.</li><li>Unchecked—The diagram properties will not be exported. This is the default.</li></ul></p></xdoc>",
+        "include_diagram_properties.title": "Include diagram properties",
+        "include_geometries.descr": "<xdoc><p>Specifies whether the geometry of the diagram features will be exported.<ul><li>Checked—Each diagram feature will be exported with its geometry.</li><li>Unchecked—Each diagram feature will be exported without its geometry. This is the default.</li></ul></p></xdoc>",
+        "include_geometries.title": "Include geometries",
+        "network_diagram_name.descr": "The name of the network diagram to export.",
+        "network_diagram_name.title": "Network Diagram Name",
+        "out_file.descr": "The output .json file that will be created with the exported diagram content.",
+        "out_file.title": "Output File",
+        "summary": "<xdoc><p>Exports diagram content in a simple format (JSON) that reflects basic connectivity. Additional optional information such as diagram properties, diagram feature geometry, network element attributes, and aggregated elements can also be exported.</p><note type=\"note\"/><p group=\"note\">The input network or diagram layer can be from a utility network or trace network in a file or mobile geodatabase, a utility network service, a trace network service, or a database connection to a utility network or trace network in an enterprise geodatabase.</p></xdoc>",
+        "title": "Export Diagram Content",
+        "use_domains.descr": "<xdoc><p>Specifies how coded domain and subtype values will be exported. This parameter is activated when the <span class=\"esri_uicontrol\">Include attributes</span> or <span class=\"esri_uicontrol\">Include aggregations</span> parameter is checked.</p><ul><li>Checked—Coded domain and subtype values will be exported using their string descriptions rather than raw values.</li><li>Unchecked—Coded domain and subtype values will be exported as raw values. This is the default.</li></ul></xdoc>",
+        "use_domains.title": "Use domain and subtype descriptions"
+    }
+}

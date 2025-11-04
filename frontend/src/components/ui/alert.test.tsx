@@ -21,7 +21,7 @@ describe('Alert', () => {
 
     it('renders with destructive variant', () => {
       render(
-        <Alert variant="destructive">
+        <Alert variant='destructive'>
           <AlertTitle>Error</AlertTitle>
           <AlertDescription>Something went wrong</AlertDescription>
         </Alert>
@@ -55,7 +55,7 @@ describe('Alert', () => {
 
     it('applies custom className', () => {
       render(
-        <Alert className="custom-alert-class">
+        <Alert className='custom-alert-class'>
           <AlertDescription>Content</AlertDescription>
         </Alert>
       );
@@ -81,8 +81,8 @@ describe('Alert', () => {
     it('renders with icon', () => {
       render(
         <Alert>
-          <svg data-testid="alert-icon" width="16" height="16" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="10" />
+          <svg data-testid='alert-icon' width='16' height='16' viewBox='0 0 24 24'>
+            <circle cx='12' cy='12' r='10' />
           </svg>
           <AlertTitle>With Icon</AlertTitle>
           <AlertDescription>This alert has an icon</AlertDescription>
@@ -96,8 +96,8 @@ describe('Alert', () => {
     it('renders icon before content', () => {
       const { container } = render(
         <Alert>
-          <svg data-testid="alert-icon" width="16" height="16">
-            <circle cx="12" cy="12" r="10" />
+          <svg data-testid='alert-icon' width='16' height='16'>
+            <circle cx='12' cy='12' r='10' />
           </svg>
           <AlertTitle>Title</AlertTitle>
           <AlertDescription>Description</AlertDescription>
@@ -116,11 +116,11 @@ describe('Alert', () => {
     it('renders multiple icons if provided', () => {
       render(
         <Alert>
-          <svg data-testid="icon-1" width="16" height="16">
-            <circle cx="12" cy="12" r="10" />
+          <svg data-testid='icon-1' width='16' height='16'>
+            <circle cx='12' cy='12' r='10' />
           </svg>
-          <svg data-testid="icon-2" width="16" height="16">
-            <rect width="20" height="20" />
+          <svg data-testid='icon-2' width='16' height='16'>
+            <rect width='20' height='20' />
           </svg>
           <AlertDescription>Multiple icons</AlertDescription>
         </Alert>
@@ -160,7 +160,7 @@ describe('Alert', () => {
           <AlertDescription>
             <p>Paragraph 1</p>
             <p>Paragraph 2</p>
-            <a href="#">Link</a>
+            <a href='#'>Link</a>
           </AlertDescription>
         </Alert>
       );
@@ -173,7 +173,7 @@ describe('Alert', () => {
     it('applies custom className to AlertTitle', () => {
       render(
         <Alert>
-          <AlertTitle className="custom-title">Title</AlertTitle>
+          <AlertTitle className='custom-title'>Title</AlertTitle>
         </Alert>
       );
 
@@ -184,9 +184,7 @@ describe('Alert', () => {
     it('applies custom className to AlertDescription', () => {
       render(
         <Alert>
-          <AlertDescription className="custom-description">
-            Description
-          </AlertDescription>
+          <AlertDescription className='custom-description'>Description</AlertDescription>
         </Alert>
       );
 
@@ -239,7 +237,7 @@ describe('Alert', () => {
   describe('Variant Styling', () => {
     it('applies default variant styles', () => {
       render(
-        <Alert variant="default">
+        <Alert variant='default'>
           <AlertDescription>Default alert</AlertDescription>
         </Alert>
       );
@@ -253,7 +251,7 @@ describe('Alert', () => {
 
     it('applies destructive variant styles', () => {
       render(
-        <Alert variant="destructive">
+        <Alert variant='destructive'>
           <AlertDescription>Destructive alert</AlertDescription>
         </Alert>
       );
@@ -321,7 +319,7 @@ describe('Alert', () => {
 
     it('supports aria-label', () => {
       render(
-        <Alert aria-label="Custom alert label">
+        <Alert aria-label='Custom alert label'>
           <AlertDescription>Content</AlertDescription>
         </Alert>
       );
@@ -332,8 +330,8 @@ describe('Alert', () => {
 
     it('supports aria-labelledby', () => {
       render(
-        <Alert aria-labelledby="alert-title">
-          <AlertTitle id="alert-title">Alert Title</AlertTitle>
+        <Alert aria-labelledby='alert-title'>
+          <AlertTitle id='alert-title'>Alert Title</AlertTitle>
           <AlertDescription>Alert description</AlertDescription>
         </Alert>
       );
@@ -344,9 +342,9 @@ describe('Alert', () => {
 
     it('supports aria-describedby', () => {
       render(
-        <Alert aria-describedby="alert-desc">
+        <Alert aria-describedby='alert-desc'>
           <AlertTitle>Title</AlertTitle>
-          <AlertDescription id="alert-desc">Description</AlertDescription>
+          <AlertDescription id='alert-desc'>Description</AlertDescription>
         </Alert>
       );
 
@@ -368,7 +366,7 @@ describe('Alert', () => {
 
     it('has no accessibility violations (destructive variant)', async () => {
       const { container } = render(
-        <Alert variant="destructive">
+        <Alert variant='destructive'>
           <AlertTitle>Error</AlertTitle>
           <AlertDescription>Something went wrong</AlertDescription>
         </Alert>
@@ -381,8 +379,8 @@ describe('Alert', () => {
     it('has no accessibility violations (with icon)', async () => {
       const { container } = render(
         <Alert>
-          <svg aria-hidden="true" width="16" height="16">
-            <circle cx="12" cy="12" r="10" />
+          <svg aria-hidden='true' width='16' height='16'>
+            <circle cx='12' cy='12' r='10' />
           </svg>
           <AlertTitle>Alert with Icon</AlertTitle>
           <AlertDescription>This alert includes an icon</AlertDescription>
@@ -397,10 +395,8 @@ describe('Alert', () => {
       const { container } = render(
         <Alert>
           <AlertTitle>Update Required</AlertTitle>
-          <AlertDescription>
-            A new version is available. Click to update.
-          </AlertDescription>
-          <button type="button">Update Now</button>
+          <AlertDescription>A new version is available. Click to update.</AlertDescription>
+          <button type='button'>Update Now</button>
         </Alert>
       );
 
@@ -441,7 +437,7 @@ describe('Alert', () => {
 
     it('renders with data attributes', () => {
       render(
-        <Alert data-testid="custom-alert" data-state="open">
+        <Alert data-testid='custom-alert' data-state='open'>
           <AlertDescription>Content</AlertDescription>
         </Alert>
       );

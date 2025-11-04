@@ -1,0 +1,19 @@
+{
+    "map": {
+        "description": "Creates parcel records for the input parcel fabric features  using a record name field or an expression.",
+        "in_parcel_features.descr": "The input parcel features (parcel polygons, parcel lines, or connection lines) that will be used to create parcel records. The input parcel features can be from a parcel fabric in a file, enterprise, or mobile geodatabase.",
+        "in_parcel_features.title": "Parcel Features",
+        "out_record_feature_class.title": "Output Records Feature Class",
+        "record_expression.descr": "An Arcade expression that uses fields, string operators, and mathematical operators to represent the record names. For example, the expression Left($feature.Name,4) extracts the first four characters from the parcel name field in the parcel fabric polygon feature class to create the record names.",
+        "record_expression.title": "Record Expression",
+        "record_field.descr": "The attribute field that contains the record names. The attribute field must be a text field and must contain parcel record names. Parcel records will be created for features using the provided record names.",
+        "record_field.title": "Record Field",
+        "record_name_method.descr": "<xdoc><p>Specifies the method that will be used to create parcel records.</p><ul><li><span title=\"FIELD\">Field</span>—Parcel records will be created using record names from a text field on the input parcel features. This is the default.</li><li><span title=\"EXPRESSION\">Expression</span>—Parcel records will be created using an Arcade expression.</li></ul></xdoc>",
+        "record_name_method.domain.EXPRESSION": "Expression",
+        "record_name_method.domain.FIELD": "Field",
+        "record_name_method.title": "Record Name Method",
+        "summary": "<xdoc><p>Creates parcel records for the input parcel fabric features using a record name field or an expression.</p><p>Parcel records are created and added to the parcel fabric Records feature class. The parcel record polygons will match the cumulative geometry of all parcel polygons associated with them.</p><p>The Records feature class stores information about the legal parcel record such as the record date and record type. In the parcel fabric, parcel features are associated with the record that created and retired them (made historic).</p></xdoc>",
+        "title": "Create Parcel Records",
+        "updated_parcel_fabric.title": "Updated Parcel Fabric"
+    }
+}

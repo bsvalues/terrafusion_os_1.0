@@ -1,0 +1,290 @@
+{
+    "type": "FunctionTool",
+    "guid": "{F6243FE3-8552-4511-BBCE-F882B7099A58}/AnalyzeRunwayObstacles",
+    "displayname": "$rc:title",
+    "helpcontent": "64010001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "53",
+        "70"
+    ],
+    "params": {
+        "input_ois_features": {
+            "display_order": "0",
+            "displayname": "$rc:input_ois_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "MultiPatch"
+                ]
+            },
+            "description": "$rc:input_ois_features.descr"
+        },
+        "input_obstacle_features": {
+            "display_order": "1",
+            "displayname": "$rc:input_obstacle_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:input_obstacle_features.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "display_order": "2",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "height_field": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:height_field.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "FEATURE_GEOMETRY",
+                        "code": "$rc:height_field.domain.FEATURE_GEOMETRY"
+                    }
+                ]
+            },
+            "depends": [
+                "input_obstacle_features"
+            ],
+            "value": "FEATURE_GEOMETRY",
+            "description": "$rc:height_field.descr"
+        },
+        "unit_field": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:unit_field.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "KILOMETERS",
+                        "code": "$rc:unit_field.domain.KILOMETERS"
+                    },
+                    {
+                        "value": "METERS",
+                        "code": "$rc:unit_field.domain.METERS"
+                    },
+                    {
+                        "value": "DECIMETERS",
+                        "code": "$rc:unit_field.domain.DECIMETERS"
+                    },
+                    {
+                        "value": "CENTIMETERS",
+                        "code": "$rc:unit_field.domain.CENTIMETERS"
+                    },
+                    {
+                        "value": "MILLIMETERS",
+                        "code": "$rc:unit_field.domain.MILLIMETERS"
+                    },
+                    {
+                        "value": "NAUTICAL_MILES",
+                        "code": "$rc:unit_field.domain.NAUTICAL_MILES"
+                    },
+                    {
+                        "value": "MILES",
+                        "code": "$rc:unit_field.domain.MILES"
+                    },
+                    {
+                        "value": "YARDS",
+                        "code": "$rc:unit_field.domain.YARDS"
+                    },
+                    {
+                        "value": "FEET",
+                        "code": "$rc:unit_field.domain.FEET"
+                    },
+                    {
+                        "value": "INCHES",
+                        "code": "$rc:unit_field.domain.INCHES"
+                    },
+                    {
+                        "value": "DECIMAL_DEGREES",
+                        "code": "$rc:unit_field.domain.DECIMAL_DEGREES"
+                    },
+                    {
+                        "value": "POINTS",
+                        "code": "$rc:unit_field.domain.POINTS"
+                    },
+                    {
+                        "value": "UNKNOWN",
+                        "code": "$rc:unit_field.domain.UNKNOWN"
+                    }
+                ]
+            },
+            "value": "METERS",
+            "description": "$rc:unit_field.descr"
+        },
+        "height_option": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:height_option.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ABSOLUTE_HEIGHT",
+                        "code": "$rc:height_option.domain.ABSOLUTE_HEIGHT"
+                    },
+                    {
+                        "value": "RELATIVE_HEIGHT",
+                        "code": "$rc:height_option.domain.RELATIVE_HEIGHT"
+                    }
+                ]
+            },
+            "value": "ABSOLUTE_HEIGHT",
+            "description": "$rc:height_option.descr"
+        },
+        "elevation_option": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:elevation_option.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ELEVATION_FIELD",
+                        "code": "$rc:elevation_option.domain.ELEVATION_FIELD"
+                    },
+                    {
+                        "value": "ELEVATION_DEM",
+                        "code": "$rc:elevation_option.domain.ELEVATION_DEM"
+                    }
+                ]
+            },
+            "value": "ELEVATION_FIELD",
+            "description": "$rc:elevation_option.descr"
+        },
+        "elevation_field": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:elevation_field.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "depends": [
+                "input_obstacle_features"
+            ],
+            "description": "$rc:elevation_field.descr"
+        },
+        "elevation_field_unit": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:elevation_field_unit.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "KILOMETERS",
+                        "code": "$rc:elevation_field_unit.domain.KILOMETERS"
+                    },
+                    {
+                        "value": "METERS",
+                        "code": "$rc:elevation_field_unit.domain.METERS"
+                    },
+                    {
+                        "value": "DECIMETERS",
+                        "code": "$rc:elevation_field_unit.domain.DECIMETERS"
+                    },
+                    {
+                        "value": "CENTIMETERS",
+                        "code": "$rc:elevation_field_unit.domain.CENTIMETERS"
+                    },
+                    {
+                        "value": "MILLIMETERS",
+                        "code": "$rc:elevation_field_unit.domain.MILLIMETERS"
+                    },
+                    {
+                        "value": "NAUTICAL_MILES",
+                        "code": "$rc:elevation_field_unit.domain.NAUTICAL_MILES"
+                    },
+                    {
+                        "value": "MILES",
+                        "code": "$rc:elevation_field_unit.domain.MILES"
+                    },
+                    {
+                        "value": "YARDS",
+                        "code": "$rc:elevation_field_unit.domain.YARDS"
+                    },
+                    {
+                        "value": "FEET",
+                        "code": "$rc:elevation_field_unit.domain.FEET"
+                    },
+                    {
+                        "value": "INCHES",
+                        "code": "$rc:elevation_field_unit.domain.INCHES"
+                    },
+                    {
+                        "value": "DECIMAL_DEGREES",
+                        "code": "$rc:elevation_field_unit.domain.DECIMAL_DEGREES"
+                    },
+                    {
+                        "value": "POINTS",
+                        "code": "$rc:elevation_field_unit.domain.POINTS"
+                    },
+                    {
+                        "value": "UNKNOWN",
+                        "code": "$rc:elevation_field_unit.domain.UNKNOWN"
+                    }
+                ]
+            },
+            "value": "METERS",
+            "description": "$rc:elevation_field_unit.descr"
+        },
+        "in_dems": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:in_dems.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPRasterLayer"
+                }
+            },
+            "description": "$rc:in_dems.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

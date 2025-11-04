@@ -31,7 +31,7 @@ export class ErrorBoundary extends Component<Props, State> {
       hasError: false,
       error: null,
       errorInfo: null,
-      errorId: ''
+      errorId: '',
     };
   }
   static getDerivedStateFromError(error: Error): Partial<State> {
@@ -39,7 +39,7 @@ export class ErrorBoundary extends Component<Props, State> {
     return {
       hasError: true,
       error,
-      errorId: `error-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      errorId: `error-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     };
   }
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
@@ -48,7 +48,7 @@ export class ErrorBoundary extends Component<Props, State> {
     console.error('📍 Error Info:', errorInfo);
     this.setState({
       error,
-      errorInfo
+      errorInfo,
     });
 
     // Call custom error handler if provided
@@ -60,13 +60,8 @@ export class ErrorBoundary extends Component<Props, State> {
     this.reportError(error, errorInfo);
   }
   componentDidUpdate(prevProps: Props) {
-    const {
-      resetKeys,
-      resetOnPropsChange
-    } = this.props;
-    const {
-      hasError
-    } = this.state;
+    const { resetKeys, resetOnPropsChange } = this.props;
+    const { hasError } = this.state;
 
     // Reset error boundary when resetKeys change
     if (hasError && resetKeys && prevProps.resetKeys) {
@@ -98,16 +93,16 @@ export class ErrorBoundary extends Component<Props, State> {
         url: window.location.href,
         userId: this.getUserId(),
         sessionId: this.getSessionId(),
-        errorId: this.state.errorId
+        errorId: this.state.errorId,
       };
 
       // Send to API endpoint for logging
       fetch('/api/errors', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(errorReport)
+        body: JSON.stringify(errorReport),
       }).catch(() => {
         // Silently fail if error reporting fails
         console.warn('Failed to report error to server');
@@ -142,7 +137,7 @@ export class ErrorBoundary extends Component<Props, State> {
       hasError: false,
       error: null,
       errorInfo: null,
-      errorId: ''
+      errorId: '',
     });
   };
   private handleRetry = () => {
@@ -155,11 +150,7 @@ export class ErrorBoundary extends Component<Props, State> {
     window.location.href = '/';
   };
   private copyErrorToClipboard = async () => {
-    const {
-      error,
-      errorInfo,
-      errorId
-    } = this.state;
+    const { error, errorInfo, errorId } = this.state;
     const errorText = `
 Error ID: ${errorId}
 Timestamp: ${new Date().toISOString()}
@@ -187,18 +178,13 @@ Component Stack: ${errorInfo?.componentStack}
       if (this.props.fallback) {
         return this.props.fallback;
       }
-      const {
-        error,
-        errorInfo,
-        errorId
-      } = this.state;
+      const { error, errorInfo, errorId } = this.state;
       const isDevelopment = import.meta.env.DEV;
-      return <div className='min-h-screen bg-gray-50 flex items-center justify-center p-4'>
+      return (
+        <div className='min-h-screen bg-gray-50 flex items-center justify-center p-4'>
           <Card className='w-full max-w-2xl'>
             <CardHeader className='text-center'>
               <div className='mx-auto mb-4 w-16 h-16 bg-red-100 rounded-full flex items-center justify-center'>
-
-
                 <Warning className='w-8 h-8 text-red-600' />
               </div>
               <CardTitle className='text-2xl font-bold text-gray-900'>
@@ -213,7 +199,6 @@ Component Stack: ${errorInfo?.componentStack}
               <Alert>
                 <Warning className='h-4 w-4' />
 
-
                 <AlertTitle>Error Information</AlertTitle>
                 <AlertDescription>
                   <div className='mt-2 space-y-2'>
@@ -223,60 +208,69 @@ Component Stack: ${errorInfo?.componentStack}
                     <p>
                       <strong>Time:</strong> {new Date().toLocaleString()}
                     </p>
-                    {error?.message && <p>
+                    {error?.message && (
+                      <p>
                         <strong>Message:</strong> {error.message}
-                      </p>}
+                      </p>
+                    )}
                   </div>
                 </AlertDescription>
               </Alert>
 
               <div className='flex flex-wrap gap-3 justify-center'>
                 <Button onClick={this.handleRetry} className='flex items-center gap-2'>
-
-
                   <Refresh className='w-4 h-4' />
                   Try Again
                 </Button>
 
-                <Button variant='outline' onClick={this.handleReload} className='flex items-center gap-2'>
-
-
+                <Button
+                  variant='outline'
+                  onClick={this.handleReload}
+                  className='flex items-center gap-2'
+                >
                   <Refresh className='w-4 h-4' />
                   Reload Page
                 </Button>
 
-                <Button variant='outline' onClick={this.handleGoHome} className='flex items-center gap-2'>
+                <Button
+                  variant='outline'
+                  onClick={this.handleGoHome}
+                  className='flex items-center gap-2'
+                >
                   <Home className='w-4 h-4' />
                   Go Home
                 </Button>
 
-                {isDevelopment && <Button variant='outline' onClick={this.copyErrorToClipboard} className='flex items-center gap-2'>
+                {isDevelopment && (
+                  <Button
+                    variant='outline'
+                    onClick={this.copyErrorToClipboard}
+                    className='flex items-center gap-2'
+                  >
                     <BugReport className='w-4 h-4' />
                     Copy Error Details
-                  </Button>}
+                  </Button>
+                )}
               </div>
 
-              {isDevelopment && this.props.showErrorDetails && <details className='mt-6'>
-
-
+              {isDevelopment && this.props.showErrorDetails && (
+                <details className='mt-6'>
                   <summary className='cursor-pointer font-medium text-gray-700 hover:text-gray-900'>
                     🔍 Technical Details (Development Only)
                   </summary>
                   <div className='mt-4 p-4 bg-gray-100 rounded-lg overflow-auto'>
-
-
                     <h4 className='font-semibold mb-2'>Error Stack:</h4>
                     <pre className='text-sm text-red-600 whitespace-pre-wrap mb-4'>
                       {error?.stack}
                     </pre>
-
 
                     <h4 className='font-semibold mb-2'>Component Stack:</h4>
                     <pre className='text-sm text-blue-600 whitespace-pre-wrap'>
                       {errorInfo?.componentStack}
                     </pre>
                   </div>
-                </details>}
+                </details>
+              )}
 
               <div className='text-center text-sm text-gray-500'>
                 <p>
@@ -286,7 +280,8 @@ Component Stack: ${errorInfo?.componentStack}
               </div>
             </CardContent>
           </Card>
-        </div>;
+        </div>
+      );
     }
     return this.props.children;
   }
@@ -304,15 +299,20 @@ export const useErrorHandler = () => {
     // such as sending to analytics, showing toast notifications, etc.
   }, []);
   return {
-    handleError
+    handleError,
   };
 };
 
 // Higher-order component for wrapping any component with error boundary
-export const withErrorBoundary = <P extends object,>(Component: React.ComponentType<P>, errorBoundaryProps?: Omit<Props, 'children'>) => {
-  const WrappedComponent = (props: P) => <ErrorBoundary {...errorBoundaryProps}>
+export const withErrorBoundary = <P extends object>(
+  Component: React.ComponentType<P>,
+  errorBoundaryProps?: Omit<Props, 'children'>
+) => {
+  const WrappedComponent = (props: P) => (
+    <ErrorBoundary {...errorBoundaryProps}>
       <Component {...props} />
-    </ErrorBoundary>;
+    </ErrorBoundary>
+  );
   WrappedComponent.displayName = `withErrorBoundary(${Component.displayName || Component.name})`;
   return WrappedComponent;
 };
@@ -325,7 +325,7 @@ export class AsyncErrorBoundary extends Component<Props, State> {
       hasError: false,
       error: null,
       errorInfo: null,
-      errorId: ''
+      errorId: '',
     };
   }
   componentDidMount() {
@@ -339,7 +339,7 @@ export class AsyncErrorBoundary extends Component<Props, State> {
       hasError: false,
       error: null,
       errorInfo: null,
-      errorId: ''
+      errorId: '',
     });
   };
   handleUnhandledRejection = (event: PromiseRejectionEvent) => {
@@ -348,13 +348,13 @@ export class AsyncErrorBoundary extends Component<Props, State> {
     // Create a synthetic error for promise rejections
     const error = new Error(`Unhandled Promise Rejection: ${event.reason}`);
     const errorInfo: ErrorInfo = {
-      componentStack: 'Promise rejection (no component stack available)'
+      componentStack: 'Promise rejection (no component stack available)',
     };
     this.setState({
       hasError: true,
       error,
       errorInfo,
-      errorId: `async-error-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      errorId: `async-error-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     });
 
     // Prevent the default browser behavior
@@ -365,22 +365,25 @@ export class AsyncErrorBoundary extends Component<Props, State> {
       if (this.props.fallback) {
         return this.props.fallback;
       }
-      return <div className="error-boundary-fallback p-8 text-center">
-
-
+      return (
+        <div className='error-boundary-fallback p-8 text-center'>
           <h2>Something went wrong</h2>
           <p>An error occurred while rendering this component.</p>
-          <button onClick={this.resetErrorBoundary} style={{
-          padding: '0.5rem 1rem',
-          backgroundColor: '#007bff',
-          color: 'white',
-          border: 'none',
-          borderRadius: '4px',
-          cursor: 'pointer'
-        }}>
+          <button
+            onClick={this.resetErrorBoundary}
+            style={{
+              padding: '0.5rem 1rem',
+              backgroundColor: '#007bff',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+            }}
+          >
             Try Again
           </button>
-        </div>;
+        </div>
+      );
     }
     return this.props.children;
   }

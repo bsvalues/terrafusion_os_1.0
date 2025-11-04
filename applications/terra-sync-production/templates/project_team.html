@@ -1,0 +1,327 @@
+{% extends "base_clean.html" %}
+
+{% block title %}Project Team - TerraFusion{% endblock %}
+
+{% block content %}
+    <style>
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .team-card {
+            transition: transform 0.2s;
+        }
+        .team-card:hover {
+            transform: translateY(-2px);
+        }
+        .workload-bar {
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .workload-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <div class="text-center text-white mb-4">
+                        <h4><i class="fas fa-satellite-dish"></i> TerraFusion</h4>
+                        <p class="small">Project Team</p>
+                    </div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/project-dashboard">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/project-tasks">
+                                <i class="fas fa-tasks"></i> Tasks
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white active" href="/project-team">
+                                <i class="fas fa-users"></i> Team
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/project-timeline">
+                                <i class="fas fa-calendar-alt"></i> Timeline
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/project-reports">
+                                <i class="fas fa-chart-bar"></i> Reports
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Project Team</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMemberModal">
+                            <i class="fas fa-user-plus"></i> Add Member
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Team Overview -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-users fa-2x text-primary mb-2"></i>
+                                <h4>{{ team_members|length }}</h4>
+                                <p class="mb-0">Team Members</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-tasks fa-2x text-success mb-2"></i>
+                                <h4>{{ team_members|sum(attribute='task_count') }}</h4>
+                                <p class="mb-0">Active Tasks</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-chart-line fa-2x text-info mb-2"></i>
+                                <h4>85%</h4>
+                                <p class="mb-0">Team Efficiency</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                                <h4>8</h4>
+                                <p class="mb-0">Days Left in Sprint</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Members -->
+                <div class="row">
+                    {% if team_members %}
+                    {% for member in team_members %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card team-card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-user-circle me-2"></i>{{ member.name }}
+                                </h6>
+                                <span class="badge bg-primary">{{ member.task_count }} tasks</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <small>Workload</small>
+                                        <small>{{ (member.task_count * 20)|min(100) }}%</small>
+                                    </div>
+                                    <div class="workload-bar">
+                                        <div class="workload-fill bg-{% if member.task_count <= 2 %}success{% elif member.task_count <= 4 %}warning{% else %}danger{% endif %}" 
+                                             style="width: {{ (member.task_count * 20)|min(100) }}%"></div>
+                                    </div>
+                                </div>
+                                
+                                {% if member.tasks %}
+                                <h6>Current Tasks:</h6>
+                                <div class="list-group list-group-flush">
+                                    {% for task in member.tasks[:3] %}
+                                    <div class="list-group-item px-0 py-2">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="flex-grow-1">
+                                                <small class="fw-bold">{{ task.title }}</small>
+                                            </div>
+                                            <span class="badge bg-{% if task.status == 'done' %}success{% elif task.status == 'in_progress' %}info{% elif task.status == 'blocked' %}danger{% else %}secondary{% endif %} ms-2">
+                                                {{ task.status.replace('_', ' ').title() }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                    {% if member.tasks|length > 3 %}
+                                    <div class="list-group-item px-0 py-2">
+                                        <small class="text-muted">... and {{ member.tasks|length - 3 }} more</small>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% else %}
+                                <div class="text-center text-muted py-3">
+                                    <i class="fas fa-coffee fa-2x mb-2"></i>
+                                    <p class="mb-0">No active tasks</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="card-footer">
+                                <div class="btn-group w-100">
+                                    <button class="btn btn-outline-primary btn-sm" onclick="assignTask('{{ member.name }}')">
+                                        <i class="fas fa-plus"></i> Assign Task
+                                    </button>
+                                    <button class="btn btn-outline-info btn-sm" onclick="viewMember('{{ member.name }}')">
+                                        <i class="fas fa-eye"></i> View Details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body text-center py-5">
+                                <i class="fas fa-users fa-4x text-muted mb-4"></i>
+                                <h4>No Team Members</h4>
+                                <p class="text-muted mb-4">Add team members to start managing project assignments and workload.</p>
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMemberModal">
+                                    <i class="fas fa-user-plus"></i> Add First Member
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Team Roles -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-sitemap"></i> Team Roles & Responsibilities</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <h6><i class="fas fa-user-tie text-primary"></i> Project Manager</h6>
+                                        <ul class="list-unstyled ms-3">
+                                            <li>• Overall project coordination</li>
+                                            <li>• Timeline management</li>
+                                            <li>• Stakeholder communication</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h6><i class="fas fa-server text-success"></i> DevOps Engineer</h6>
+                                        <ul class="list-unstyled ms-3">
+                                            <li>• Deployment automation</li>
+                                            <li>• Infrastructure management</li>
+                                            <li>• Security implementation</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h6><i class="fas fa-code text-info"></i> Backend Developer</h6>
+                                        <ul class="list-unstyled ms-3">
+                                            <li>• API development</li>
+                                            <li>• Database management</li>
+                                            <li>• Service integration</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-4">
+                                        <h6><i class="fas fa-palette text-warning"></i> Frontend Developer</h6>
+                                        <ul class="list-unstyled ms-3">
+                                            <li>• User interface design</li>
+                                            <li>• User experience optimization</li>
+                                            <li>• Dashboard development</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h6><i class="fas fa-brain text-danger"></i> AI Specialist</h6>
+                                        <ul class="list-unstyled ms-3">
+                                            <li>• AI model integration</li>
+                                            <li>• ExemptionSeer development</li>
+                                            <li>• Data analysis algorithms</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h6><i class="fas fa-map text-secondary"></i> GIS Analyst</h6>
+                                        <ul class="list-unstyled ms-3">
+                                            <li>• Geospatial data management</li>
+                                            <li>• District boundary analysis</li>
+                                            <li>• Mapping functionality</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Add Member Modal -->
+    <div class="modal fade" id="addMemberModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Team Member</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="addMemberForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Role</label>
+                            <select class="form-select" name="role" required>
+                                <option value="">Select Role</option>
+                                <option value="Project Manager">Project Manager</option>
+                                <option value="DevOps Engineer">DevOps Engineer</option>
+                                <option value="Backend Developer">Backend Developer</option>
+                                <option value="Frontend Developer">Frontend Developer</option>
+                                <option value="AI Specialist">AI Specialist</option>
+                                <option value="GIS Analyst">GIS Analyst</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Member</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function assignTask(memberName) {
+            window.location.href = `/project-tasks?assign=${encodeURIComponent(memberName)}`;
+        }
+
+        function viewMember(memberName) {
+            alert(`Viewing details for ${memberName}`);
+        }
+
+        document.getElementById('addMemberForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const memberData = Object.fromEntries(formData);
+            
+            // For now, just refresh the page - in production this would call an API
+            alert(`Added team member: ${memberData.name} (${memberData.role})`);
+            location.reload();
+        });
+    </script>
+{% endblock %}

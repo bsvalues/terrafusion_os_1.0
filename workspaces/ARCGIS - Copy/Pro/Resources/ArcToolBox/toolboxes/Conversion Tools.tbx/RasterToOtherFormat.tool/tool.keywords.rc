@@ -1,0 +1,33 @@
+{
+    "set": [
+        "batch",
+        "bil",
+        "bip",
+        "bitmap",
+        "bmp",
+        "bsq",
+        "change",
+        "convert",
+        "dataset",
+        "envi dat",
+        "esri",
+        "export",
+        "format",
+        "gif",
+        "grid",
+        "image",
+        "imagine",
+        "img",
+        "import",
+        "jp2",
+        "jpeg",
+        "jpg",
+        "make",
+        "many",
+        "pixel",
+        "png",
+        "tif",
+        "tiff",
+        "turn"
+    ]
+}

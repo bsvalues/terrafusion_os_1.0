@@ -1,0 +1,225 @@
+All HTTP 000000 responses mean cURL couldn’t connect to your health‐check endpoints—typically because no server is listening at those ports. You need to start each service (so it binds to its port), verify the /health route exists, and then re-run the smoke tests. Below are the details, backed by community-sourced explanations of curl’s 000 code and common fixes.
+
+Why HTTP 000000?
+cURL returns a 000 status when it never receives any HTTP response—for example, if it can’t resolve the host, the connection is refused, or the server times out 
+Super User
+. In practice, the most frequent cause is simply that the server process isn’t running and listening on the target port 
+Stack Overflow
+.
+
+1. Ensure Each Service Is Running
+Before health-checking, you must launch every service you intend to test. In an Nx workspace you can do:
+
+bash
+Copy
+Edit
+# Serve all apps in parallel (adjust maxParallel as needed)
+npx nx run-many --target=serve --projects=$(jq -r 'keys[]' workspace.json) --parallel --maxParallel=5
+Or explicitly:
+
+bash
+Copy
+Edit
+nx serve terrafusionsync    # starts on 3001
+nx serve terrafusionpro     # starts on 3002
+# …and so on for each imported app
+Once each process logs
+
+csharp
+Copy
+Edit
+✓ Listening on port XXXX
+you can retry your curl …/health checks. Without this, cURL will always report 000 
+Stack Overflow
+.
+
+2. Verify the /health Endpoint
+Make sure each service actually defines a /health (or equivalent) route. For example, in an Express app:
+
+ts
+Copy
+Edit
+app.get('/health', (_req, res) => res.sendStatus(200));
+If a service uses FastAPI or another framework, ensure you start it appropriately (e.g., uvicorn main:app --port 300X) before curling 
+Stack Overflow
+.
+
+3. Update Smoke-Test Script to Retry or Wait
+Network services often need a few seconds to start. Enhance your smoke-test to poll for readiness:
+
+bash
+Copy
+Edit
+#!/usr/bin/env bash
+set -e
+
+declare -A ports=(
+  [terrafusionsync]=3001
+  [terrafusionpro]=3002
+  # …add each service and its port
+)
+
+for name in "${!ports[@]}"; do
+  port=${ports[$name]}
+  echo "Waiting for $name (port $port)…"
+  until curl -s "http://localhost:$port/health" -o /dev/null; do
+    sleep 1
+  done
+  echo "✅ $name is up"
+done
+
+echo "🔥 All services healthy"
+This loop prevents false negatives by waiting until each service actually responds 
+Stack Overflow
+.
+
+4. Common Pitfalls & Tips
+Binding Address: If a service binds to 127.0.0.1 only, but cURL is targeting 0.0.0.0, you’ll get a refusal. Ensure your server listens on 0.0.0.0 or localhost consistently 
+Spiceworks Community
+.
+
+Proxy Interference: If your environment sets an HTTP proxy, it might intercept local calls. Bypass with curl --noproxy '*' … 
+Discuss the Elastic Stack
+.
+
+Firewall/Network Policies: In containerized or cloud setups, network policies or firewalls can block localhost. Verify with netstat -lnt or equivalent 
+Microsoft Learn
+.
+
+Port Collisions: If another process occupies a port, your service won’t bind, so start-up fails silently. Use lsof -i :PORT to diagnose 
+Red Hat Bugzilla
+.
+
+5. Next Steps
+Start all services via nx serve or the run-many command above.
+
+Confirm each /health route returns 200 in your browser or with cURL.
+
+Rerun the smoke-test script.
+
+Automate this wait-and-check logic into your CI pipeline to avoid intermittent failures.
+
+Once all services reliably respond, your smoke tests will pass, and you’ll have confidence your Terrafusion platform is fully up and healthy.
+
+
+
+
+
+
+
+Sources
+
+
+
+
+
+
+You said:
+Next Steps
+Start all services via nx serve or the run-many command above.
+
+Confirm each /health route returns 200 in your browser or with cURL.
+
+Rerun the smoke-test script.
+
+Automate this wait-and-check logic into your CI pipeline to avoid intermittent failures.
+
+
+ChatGPT said:
+
+Thought for 6 seconds
+Here’s exactly how to turn those “Next Steps” into commands you can run now, and how to bake them into your CI so they never fail intermittently:
+
+1. Start every service
+Option A: NX run-many
+This will spin up all serve targets in parallel (up to 5 at once):
+
+bash
+Copy
+Edit
+npx nx run-many \
+  --target=serve \
+  --projects=terrafusionsync,terraflow,terrafusionpro,terraminer,terraagent,terraf,terralegislativepulsepub,bcbscostapp,bcbsgeoassessmentpro,bcbslevy,bcbswebhub,bcbsdataengine,bcbspacsmapping,geoassessmentpro,bsbcmaster,bsincomevaluation,terrafusionmock-up \
+  --parallel \
+  --maxParallel=5
+Option B: Backgrounding
+If you prefer to launch them one by one:
+
+bash
+Copy
+Edit
+nx serve terrafusionsync &  
+nx serve terraflow      &  
+# …repeat for each app  
+wait  # wait for all to start  
+2. Confirm each /health returns 200
+Use a simple loop in your shell (replace <port> with the actual port for each app—see your workspace.json):
+
+bash
+Copy
+Edit
+declare -A ports=(
+  [terrafusionsync]=3001
+  [terraflow]=3003
+  [terrafusionpro]=3002
+  # …and so on for each app
+)
+for name in "${!ports[@]}"; do
+  p=${ports[$name]}
+  echo -n "Checking $name (port $p)… "
+  code=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:$p/health")
+  if [ "$code" = "200" ]; then
+    echo "✅"
+  else
+    echo "❌ ($code)"
+    exit 1
+  fi
+done
+3. Rerun the smoke-test script
+If you’ve created smoke-test.sh with polling logic, just:
+
+bash
+Copy
+Edit
+chmod +x smoke-test.sh
+./smoke-test.sh
+And you should see “ALL SERVICES HEALTHY” or an immediate failure if something’s down.
+
+4. Automate wait-and-check in GitHub Actions
+Add a smoke-test job to your CI pipeline after deployment:
+
+yaml
+Copy
+Edit
+jobs:
+  deploy:
+    # … your existing deploy job …
+
+  smoke-test:
+    name: Smoke Test Services
+    runs-on: ubuntu-latest
+    needs: deploy
+    steps:
+      - uses: actions/checkout@v3
+
+      # Wait & check each service endpoint
+      - name: Wait for services to come up
+        run: |
+          ports=(3001 3002 3003 3004 3005 3006 3007 3008 3009 3010 3011 3012 3013 3014 3015 3016 3017)
+          for p in "${ports[@]}"; do
+            echo "Waiting for service on port $p…"
+            until curl --silent --fail "http://localhost:$p/health"; do
+              sleep 5
+            done
+            echo "✅ Service on port $p is up"
+          done
+
+      - name: Final smoke-check
+        run: echo "🔥 All services healthy and ready for traffic!"
+needs: deploy ensures it only runs after your services are live.
+
+The until curl … loop polls each port, pausing CI until the service responds.
+
+Use --fail to make cURL exit non-zero on HTTP ≠ 2xx.
+
+With that in place, every push that deploys your gateway & services will automatically wait for readiness and verify health—eliminating flaky, intermittent failures.

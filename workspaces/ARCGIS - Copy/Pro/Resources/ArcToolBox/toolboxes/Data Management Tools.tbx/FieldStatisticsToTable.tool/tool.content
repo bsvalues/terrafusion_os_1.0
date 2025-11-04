@@ -1,0 +1,294 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "3060027",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_table": {
+            "display_order": "0",
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "in_fields": {
+            "display_order": "1",
+            "displayname": "$rc:in_fields.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Long",
+                    "Date",
+                    "TimeOnly",
+                    "DateOnly",
+                    "BigInteger",
+                    "TimestampOffset"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:in_fields.descr"
+        },
+        "out_location": {
+            "display_order": "3",
+            "displayname": "$rc:out_location.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "defaultenvironmentname": "workspace",
+            "description": "$rc:out_location.descr"
+        },
+        "out_tables": {
+            "display_order": "4",
+            "displayname": "$rc:out_tables.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:out_tables.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:out_tables.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "NUMERIC",
+                                "code": "$rc:out_tables.domain.item1.NUMERIC"
+                            },
+                            {
+                                "value": "TEXT",
+                                "code": "$rc:out_tables.domain.item1.TEXT"
+                            },
+                            {
+                                "value": "DATE",
+                                "code": "$rc:out_tables.domain.item1.DATE"
+                            },
+                            {
+                                "value": "ALL",
+                                "code": "$rc:out_tables.domain.item1.ALL"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "description": "$rc:out_tables.descr"
+        },
+        "group_by_field": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:group_by_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Text",
+                    "Long",
+                    "Date",
+                    "TimeOnly",
+                    "DateOnly",
+                    "BigInteger"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:group_by_field.descr"
+        },
+        "out_statistics": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:out_statistics.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:out_statistics.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:out_statistics.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "FIELDNAME",
+                                "code": "$rc:out_statistics.domain.item1.FIELDNAME"
+                            },
+                            {
+                                "value": "ALIAS",
+                                "code": "$rc:out_statistics.domain.item1.ALIAS"
+                            },
+                            {
+                                "value": "FIELDTYPE",
+                                "code": "$rc:out_statistics.domain.item1.FIELDTYPE"
+                            },
+                            {
+                                "value": "MINIMUM",
+                                "code": "$rc:out_statistics.domain.item1.MINIMUM"
+                            },
+                            {
+                                "value": "MAXIMUM",
+                                "code": "$rc:out_statistics.domain.item1.MAXIMUM"
+                            },
+                            {
+                                "value": "MEAN",
+                                "code": "$rc:out_statistics.domain.item1.MEAN"
+                            },
+                            {
+                                "value": "MEDIAN",
+                                "code": "$rc:out_statistics.domain.item1.MEDIAN"
+                            },
+                            {
+                                "value": "STANDARDDEVIATION",
+                                "code": "$rc:out_statistics.domain.item1.STANDARDDEVIATION"
+                            },
+                            {
+                                "value": "COUNT",
+                                "code": "$rc:out_statistics.domain.item1.COUNT"
+                            },
+                            {
+                                "value": "NULLS",
+                                "code": "$rc:out_statistics.domain.item1.NULLS"
+                            },
+                            {
+                                "value": "NUMBEROFUNIQUEVALUES",
+                                "code": "$rc:out_statistics.domain.item1.NUMBEROFUNIQUEVALUES"
+                            },
+                            {
+                                "value": "MODE",
+                                "code": "$rc:out_statistics.domain.item1.MODE"
+                            },
+                            {
+                                "value": "LEASTCOMMON",
+                                "code": "$rc:out_statistics.domain.item1.LEASTCOMMON"
+                            },
+                            {
+                                "value": "OUTLIERS",
+                                "code": "$rc:out_statistics.domain.item1.OUTLIERS"
+                            },
+                            {
+                                "value": "SUM",
+                                "code": "$rc:out_statistics.domain.item1.SUM"
+                            },
+                            {
+                                "value": "RANGE",
+                                "code": "$rc:out_statistics.domain.item1.RANGE"
+                            },
+                            {
+                                "value": "INTERQUARTILERANGE",
+                                "code": "$rc:out_statistics.domain.item1.INTERQUARTILERANGE"
+                            },
+                            {
+                                "value": "FIRSTQUARTILE",
+                                "code": "$rc:out_statistics.domain.item1.FIRSTQUARTILE"
+                            },
+                            {
+                                "value": "THIRDQUARTILE",
+                                "code": "$rc:out_statistics.domain.item1.THIRDQUARTILE"
+                            },
+                            {
+                                "value": "COEFFICIENTOFVARIATION",
+                                "code": "$rc:out_statistics.domain.item1.COEFFICIENTOFVARIATION"
+                            },
+                            {
+                                "value": "SKEWNESS",
+                                "code": "$rc:out_statistics.domain.item1.SKEWNESS"
+                            },
+                            {
+                                "value": "KURTOSIS",
+                                "code": "$rc:out_statistics.domain.item1.KURTOSIS"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "description": "$rc:out_statistics.descr"
+        },
+        "out_numeric": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_numeric.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "out_text": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_text.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "out_date": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_date.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "out_all": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_all.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    }
+}

@@ -1,0 +1,376 @@
+{% extends "base_clean.html" %}
+
+{% block title %}Project Timeline - TerraFusion{% endblock %}
+
+{% block content %}
+    <style>
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .timeline-item {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 20px;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 8px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #6c757d;
+        }
+        .timeline-item.priority-high::before { background: #dc3545; }
+        .timeline-item.priority-medium::before { background: #ffc107; }
+        .timeline-item.priority-low::before { background: #28a745; }
+        .timeline-item.status-done::before { background: #28a745; }
+        .timeline-item.status-in_progress::before { background: #17a2b8; }
+        .timeline-item.status-blocked::before { background: #dc3545; }
+        .timeline-line {
+            position: absolute;
+            left: 15px;
+            top: 20px;
+            bottom: -20px;
+            width: 2px;
+            background: #dee2e6;
+        }
+        .timeline-item:last-child .timeline-line { display: none; }
+        .gantt-bar {
+            height: 20px;
+            border-radius: 10px;
+            position: relative;
+            margin: 2px 0;
+        }
+        .gantt-bar.priority-high { background: linear-gradient(90deg, #dc3545, #f8d7da); }
+        .gantt-bar.priority-medium { background: linear-gradient(90deg, #ffc107, #fff3cd); }
+        .gantt-bar.priority-low { background: linear-gradient(90deg, #28a745, #d4edda); }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <div class="text-center text-white mb-4">
+                        <h4><i class="fas fa-satellite-dish"></i> TerraFusion</h4>
+                        <p class="small">Project Timeline</p>
+                    </div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/project-dashboard">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/project-tasks">
+                                <i class="fas fa-tasks"></i> Tasks
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/project-team">
+                                <i class="fas fa-users"></i> Team
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white active" href="/project-timeline">
+                                <i class="fas fa-calendar-alt"></i> Timeline
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/project-reports">
+                                <i class="fas fa-chart-bar"></i> Reports
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Project Timeline</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-outline-secondary active" onclick="showView('timeline')">
+                                <i class="fas fa-list"></i> Timeline View
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="showView('gantt')">
+                                <i class="fas fa-chart-gantt"></i> Gantt View
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline Stats -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-calendar-check fa-2x text-success mb-2"></i>
+                                <h4>{{ timeline_items|length }}</h4>
+                                <p class="mb-0">Scheduled Tasks</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                                <h4>8</h4>
+                                <p class="mb-0">Days Remaining</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-exclamation-triangle fa-2x text-danger mb-2"></i>
+                                <h4>{{ timeline_items|selectattr('priority', 'equalto', 'high')|list|length }}</h4>
+                                <p class="mb-0">High Priority</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <i class="fas fa-percentage fa-2x text-info mb-2"></i>
+                                <h4>65%</h4>
+                                <p class="mb-0">Sprint Progress</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline View -->
+                <div id="timelineView" class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-timeline"></i> Project Timeline</h5>
+                            </div>
+                            <div class="card-body">
+                                {% if timeline_items %}
+                                <div class="timeline">
+                                    {% for item in timeline_items %}
+                                    <div class="timeline-item priority-{{ item.priority }} status-{{ item.status }}">
+                                        <div class="timeline-line"></div>
+                                        <div class="card">
+                                            <div class="card-body py-3">
+                                                <div class="row align-items-center">
+                                                    <div class="col-md-6">
+                                                        <h6 class="mb-1">{{ item.title }}</h6>
+                                                        <small class="text-muted">
+                                                            <i class="fas fa-user"></i> {{ item.assignee or 'Unassigned' }}
+                                                        </small>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <span class="badge bg-{{ 'danger' if item.priority == 'high' else 'warning' if item.priority == 'medium' else 'success' }}">
+                                                            {{ item.priority.title() }}
+                                                        </span>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <span class="badge bg-{{ 'success' if item.status == 'done' else 'info' if item.status == 'in_progress' else 'danger' if item.status == 'blocked' else 'secondary' }}">
+                                                            {{ item.status.replace('_', ' ').title() }}
+                                                        </span>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <small class="text-muted">
+                                                            <i class="fas fa-calendar"></i> {{ item.end_date[:10] }}
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% else %}
+                                <div class="text-center py-5">
+                                    <i class="fas fa-calendar-times fa-4x text-muted mb-3"></i>
+                                    <h4>No Scheduled Tasks</h4>
+                                    <p class="text-muted">Tasks with due dates will appear in the timeline view.</p>
+                                    <a href="/project-tasks" class="btn btn-primary">
+                                        <i class="fas fa-plus"></i> Add Tasks with Due Dates
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gantt View -->
+                <div id="ganttView" class="row" style="display: none;">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-chart-gantt"></i> Gantt Chart View</h5>
+                            </div>
+                            <div class="card-body">
+                                {% if timeline_items %}
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 200px;">Task</th>
+                                                <th style="width: 100px;">Duration</th>
+                                                <th>Timeline</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for item in timeline_items %}
+                                            <tr>
+                                                <td>
+                                                    <strong>{{ item.title }}</strong>
+                                                    <br><small class="text-muted">{{ item.assignee or 'Unassigned' }}</small>
+                                                </td>
+                                                <td>
+                                                    <small>{{ ((item.end_date | regex_replace('T.*$', '')) | strptime('%Y-%m-%d') - (item.start_date | regex_replace('T.*$', '')) | strptime('%Y-%m-%d')).days if item.start_date else 7 }} days</small>
+                                                </td>
+                                                <td>
+                                                    <div class="gantt-bar priority-{{ item.priority }}" style="width: {{ ((loop.index * 60) % 100) + 20 }}%;">
+                                                        <span class="position-absolute top-50 start-50 translate-middle">
+                                                            <small class="text-white">{{ item.end_date[:10] }}</small>
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% else %}
+                                <div class="text-center py-5">
+                                    <i class="fas fa-chart-gantt fa-4x text-muted mb-3"></i>
+                                    <h4>No Timeline Data</h4>
+                                    <p class="text-muted">Create tasks with start and end dates to see the Gantt chart.</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Current Sprint -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-rocket"></i> Current Sprint - December 2025</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <h6>Sprint Goals</h6>
+                                        <ul>
+                                            <li>Complete enterprise codebase cleanup and organization</li>
+                                            <li>Implement project management dashboard functionality</li>
+                                            <li>Deploy DevOps automation and monitoring systems</li>
+                                            <li>Finalize security framework implementation</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h6>Sprint Progress</h6>
+                                        <div class="progress mb-2" style="height: 25px;">
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 65%">
+                                                65%
+                                            </div>
+                                        </div>
+                                        <div class="row text-center">
+                                            <div class="col-6">
+                                                <small class="text-muted">Start Date</small>
+                                                <br><strong>Dec 1, 2025</strong>
+                                            </div>
+                                            <div class="col-6">
+                                                <small class="text-muted">End Date</small>
+                                                <br><strong>Dec 15, 2025</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Milestones -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-flag-checkered"></i> Project Milestones</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="list-group">
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                                    <strong>Platform Foundation</strong>
+                                                    <br><small class="text-muted">Core services and architecture</small>
+                                                </div>
+                                                <span class="badge bg-success">Completed</span>
+                                            </div>
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <i class="fas fa-clock text-warning me-2"></i>
+                                                    <strong>Enterprise Features</strong>
+                                                    <br><small class="text-muted">Project management & DevOps</small>
+                                                </div>
+                                                <span class="badge bg-warning">In Progress</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="list-group">
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <i class="fas fa-hourglass-start text-info me-2"></i>
+                                                    <strong>Security & Deployment</strong>
+                                                    <br><small class="text-muted">SSL, monitoring, production setup</small>
+                                                </div>
+                                                <span class="badge bg-info">Upcoming</span>
+                                            </div>
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <i class="fas fa-rocket text-secondary me-2"></i>
+                                                    <strong>Production Launch</strong>
+                                                    <br><small class="text-muted">Go-live and user training</small>
+                                                </div>
+                                                <span class="badge bg-secondary">Planned</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function showView(viewType) {
+            const timelineView = document.getElementById('timelineView');
+            const ganttView = document.getElementById('ganttView');
+            const buttons = document.querySelectorAll('.btn-group .btn');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            if (viewType === 'timeline') {
+                timelineView.style.display = 'block';
+                ganttView.style.display = 'none';
+                buttons[0].classList.add('active');
+            } else {
+                timelineView.style.display = 'none';
+                ganttView.style.display = 'block';
+                buttons[1].classList.add('active');
+            }
+        }
+    </script>
+{% endblock %}

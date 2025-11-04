@@ -1,0 +1,20 @@
+{
+    "set": [
+        "arithmetic statistics",
+        "average",
+        "circular statistics",
+        "frequent",
+        "join",
+        "largest",
+        "multidimensional statistics",
+        "raster statistics",
+        "smallest",
+        "summarize raster within",
+        "summary statistics",
+        "total",
+        "unique",
+        "zonal statistics",
+        "zonal statistics as table",
+        "zone"
+    ]
+}

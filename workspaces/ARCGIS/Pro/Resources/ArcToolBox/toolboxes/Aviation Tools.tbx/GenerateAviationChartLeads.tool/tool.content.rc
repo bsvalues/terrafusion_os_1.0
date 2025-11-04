@@ -1,0 +1,16 @@
+{
+    "map": {
+        "description": "Creates text graphics at intersection points between a map frame boundary and line features.",
+        "in_layout.descr": "The target layout that contains the map frame for which chart leads will be generated.",
+        "in_layout.title": "Layout",
+        "in_mapframe.descr": "The map frame for which chart leads will be generated.",
+        "in_mapframe.title": "Map Frame",
+        "in_preferences_table.descr": "The table of preferences that controls how the chart leads will be calculated and placed.",
+        "in_preferences_table.title": "Preferences Table",
+        "preference.descr": "<xdoc><p>The list of preferences determined from the <span class=\"esri_uicontrol\">Preferences Table</span> parameter.</p></xdoc>",
+        "preference.title": "Preference",
+        "summary": "<xdoc><p>Creates text graphics at intersection points between a map frame boundary and line features.</p><p>Chart leads are text elements that are placed where a line feature intersects the edge of the map frame of an aeronautical chart (usually an Enroute chart). Chart leads indicate the next significant point for line features continuing past the map frame by displaying the name of the next designated point or Navigational aid (Navaid) along a particular route. The text to be displayed is based on the line features attributes. To symbolize and place the chart leads, the tool uses preferences. The preferences are configured using a specific interface and should be established before running the tool.</p></xdoc>",
+        "title": "Generate Aviation Chart Leads",
+        "updated_layout.title": "Updated Layout"
+    }
+}

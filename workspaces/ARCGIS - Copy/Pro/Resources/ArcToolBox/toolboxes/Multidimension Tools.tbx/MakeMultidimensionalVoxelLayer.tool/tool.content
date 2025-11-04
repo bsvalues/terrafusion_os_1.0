@@ -1,0 +1,163 @@
+{
+    "type": "FunctionTool",
+    "guid": "{2efe0c37-d1d0-4d1e-a46d-f314c42270a3}",
+    "displayname": "$rc:title",
+    "helpcontent": "17000020",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_dataset": {
+            "displayname": "$rc:in_dataset.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "nc"
+                ]
+            },
+            "description": "$rc:in_dataset.descr"
+        },
+        "out_layer": {
+            "direction": "out",
+            "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}",
+            "displayname": "$rc:out_layer.title",
+            "datatype": {
+                "type": "GPVoxelLayer"
+            },
+            "description": "$rc:out_layer.descr"
+        },
+        "variables": {
+            "type": "optional",
+            "displayname": "$rc:variables.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPBoolean",
+                        "displayname": "$rc:variables.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:variables.dt.title2",
+                        "readonly": "true"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:variables.dt.title3"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "DISCRETE",
+                                "code": "$rc:variables.domain.item3.DISCRETE"
+                            },
+                            {
+                                "value": "CONTINUOUS",
+                                "code": "$rc:variables.domain.item3.CONTINUOUS"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:variables.descr"
+        },
+        "voxel_position": {
+            "type": "optional",
+            "displayname": "$rc:voxel_position.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "CENTER",
+                        "code": "$rc:voxel_position.domain.CENTER"
+                    },
+                    {
+                        "value": "ORIGIN",
+                        "code": "$rc:voxel_position.domain.ORIGIN"
+                    }
+                ]
+            },
+            "value": "CENTER",
+            "description": "$rc:voxel_position.descr"
+        },
+        "exaggeration_mode": {
+            "type": "optional",
+            "displayname": "$rc:exaggeration_mode.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "Z-COORDINATES",
+                        "code": "$rc:exaggeration_mode.domain.Z-COORDINATES"
+                    },
+                    {
+                        "value": "FROM_VOXEL_DATASET_ORIGIN",
+                        "code": "$rc:exaggeration_mode.domain.FROM_VOXEL_DATASET_ORIGIN"
+                    }
+                ]
+            },
+            "value": "FROM_VOXEL_DATASET_ORIGIN",
+            "description": "$rc:exaggeration_mode.descr"
+        },
+        "exaggeration": {
+            "type": "optional",
+            "displayname": "$rc:exaggeration.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:exaggeration.descr"
+        },
+        "offset": {
+            "type": "optional",
+            "displayname": "$rc:offset.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:offset.descr"
+        },
+        "optimize_performance": {
+            "type": "optional",
+            "displayname": "$rc:optimize_performance.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "OPTIMIZED"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NOT_OPTIMIZED"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:optimize_performance.descr"
+        }
+    }
+}

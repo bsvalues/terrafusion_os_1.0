@@ -1,0 +1,23 @@
+{
+  "security_level": "FISMA-High",
+  "compliance_standards": [
+    "NIST 800-53",
+    "FedRAMP High",
+    "SOC 2 Type II"
+  ],
+  "ai_agent_allocation": 464,
+  "systems_enabled": [
+    "terra-pilt-production",
+    "terra-permit-production",
+    "terra-assessor-production",
+    "terra-dashboard-production",
+    "bcbs-webhub-production"
+  ],
+  "api_endpoint": "https://api.terrafusion.wa.gov/stevens",
+  "priority": "MEDIUM",
+  "deployment_date": "2025-11-04",
+  "tier": "Rural",
+  "database_connection": "postgresql://localhost:5432/terrafusion_stevens",
+  "population": 46445,
+  "county_name": "Stevens"
+}

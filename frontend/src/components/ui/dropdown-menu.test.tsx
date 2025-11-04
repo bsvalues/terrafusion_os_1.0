@@ -65,7 +65,7 @@ describe('DropdownMenu Component', () => {
 
     it('renders menu items with icons', async () => {
       const user = userEvent.setup();
-      const IconComponent = () => <svg data-testid="icon" />;
+      const IconComponent = () => <svg data-testid='icon' />;
 
       render(
         <DropdownMenu>
@@ -115,7 +115,7 @@ describe('DropdownMenu Component', () => {
           <DropdownMenuTrigger>Open Menu</DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem>Item 1</DropdownMenuItem>
-            <DropdownMenuSeparator data-testid="separator" />
+            <DropdownMenuSeparator data-testid='separator' />
             <DropdownMenuItem>Item 2</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -233,9 +233,9 @@ describe('DropdownMenu Component', () => {
         <DropdownMenu>
           <DropdownMenuTrigger>Open Menu</DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem data-testid="item-1">Item 1</DropdownMenuItem>
-            <DropdownMenuItem data-testid="item-2">Item 2</DropdownMenuItem>
-            <DropdownMenuItem data-testid="item-3">Item 3</DropdownMenuItem>
+            <DropdownMenuItem data-testid='item-1'>Item 1</DropdownMenuItem>
+            <DropdownMenuItem data-testid='item-2'>Item 2</DropdownMenuItem>
+            <DropdownMenuItem data-testid='item-3'>Item 3</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -332,7 +332,7 @@ describe('DropdownMenu Component', () => {
 
       render(
         <DropdownMenu>
-          <DropdownMenuTrigger data-testid="trigger">Open Menu</DropdownMenuTrigger>
+          <DropdownMenuTrigger data-testid='trigger'>Open Menu</DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem>Item 1</DropdownMenuItem>
           </DropdownMenuContent>
@@ -514,9 +514,9 @@ describe('DropdownMenu Component', () => {
           <DropdownMenuTrigger>Open Menu</DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem>Item 1</DropdownMenuItem>
-            <DropdownMenuSeparator data-testid="sep-1" />
+            <DropdownMenuSeparator data-testid='sep-1' />
             <DropdownMenuItem>Item 2</DropdownMenuItem>
-            <DropdownMenuSeparator data-testid="sep-2" />
+            <DropdownMenuSeparator data-testid='sep-2' />
             <DropdownMenuItem>Item 3</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -566,12 +566,8 @@ describe('DropdownMenu Component', () => {
         <DropdownMenu>
           <DropdownMenuTrigger>Open Menu</DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuCheckboxItem checked={true}>
-              Checked Item
-            </DropdownMenuCheckboxItem>
-            <DropdownMenuCheckboxItem checked={false}>
-              Unchecked Item
-            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem checked={true}>Checked Item</DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem checked={false}>Unchecked Item</DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -594,10 +590,7 @@ describe('DropdownMenu Component', () => {
           <DropdownMenu>
             <DropdownMenuTrigger>Open Menu</DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuCheckboxItem
-                checked={checked}
-                onCheckedChange={setChecked}
-              >
+              <DropdownMenuCheckboxItem checked={checked} onCheckedChange={setChecked}>
                 Toggle Me
               </DropdownMenuCheckboxItem>
             </DropdownMenuContent>
@@ -627,13 +620,9 @@ describe('DropdownMenu Component', () => {
         <DropdownMenu>
           <DropdownMenuTrigger>Open Menu</DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuRadioGroup value="option1">
-              <DropdownMenuRadioItem value="option1">
-                Option 1
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="option2">
-                Option 2
-              </DropdownMenuRadioItem>
+            <DropdownMenuRadioGroup value='option1'>
+              <DropdownMenuRadioItem value='option1'>Option 1</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value='option2'>Option 2</DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -658,12 +647,8 @@ describe('DropdownMenu Component', () => {
             <DropdownMenuTrigger>Open Menu</DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuRadioGroup value={value} onValueChange={setValue}>
-                <DropdownMenuRadioItem value="option1">
-                  Option 1
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="option2">
-                  Option 2
-                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value='option1'>Option 1</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value='option2'>Option 2</DropdownMenuRadioItem>
               </DropdownMenuRadioGroup>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -770,9 +755,7 @@ describe('DropdownMenu Component', () => {
         <DropdownMenu>
           <DropdownMenuTrigger>Open Menu</DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuCheckboxItem checked={false}>
-              Checkbox Item
-            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem checked={false}>Checkbox Item</DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -818,7 +801,7 @@ describe('DropdownMenu Component', () => {
 
       render(
         <DropdownMenu>
-          <DropdownMenuTrigger data-testid="trigger">Open Menu</DropdownMenuTrigger>
+          <DropdownMenuTrigger data-testid='trigger'>Open Menu</DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem>Item 1</DropdownMenuItem>
           </DropdownMenuContent>

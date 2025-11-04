@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MatixState xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DefaultLayout>App to App1</DefaultLayout>
+  <SavedLayouts>
+    <SavedLayoutModel>
+      <Name>my desktop</Name>
+      <Discription>my desktop</Discription>
+      <Layout>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;xamDockManager version="15.1.20151.2055"&gt;
+  &lt;contentPanes&gt;
+    &lt;contentPane name="DockableEsriMap_30791836" location="Document" lastDockableState="Floating" lastFloatingSize="1906,885" lastFloatingWindowRect="-201,604,1922,924" lastFloatingLocation="-201,604" lastActivatedTime="2020-11-03T21:29:01.7936585Z" /&gt;
+    &lt;contentPane name="GoogleStreetView_5883351" location="Document" lastDockableState="Floating" lastFloatingSize="623,885" lastFloatingWindowRect="1419,619,639,924" lastFloatingLocation="1419,619" lastActivatedTime="2020-11-03T21:28:35.7828511Z" /&gt;
+    &lt;contentPane name="PictometryOnlineModuleView_18542462" location="Document" lastActivatedTime="2020-11-03T21:28:16.5174801Z" /&gt;
+    &lt;contentPane name="AssociatedDataView_11455439" location="Document" lastActivatedTime="2020-11-03T21:26:49.8380644Z" /&gt;
+  &lt;/contentPanes&gt;
+  &lt;panes&gt;
+    &lt;splitPane name="Zb2dbdb71e2ac4f49835d0dfcb510f504" splitterOrientation="Vertical" location="Floating" floatingLocation="-201,604" floatingSize="1906,885"&gt;
+      &lt;contentPane name="DockableEsriMap_30791836" /&gt;
+    &lt;/splitPane&gt;
+    &lt;splitPane name="Z346f53ed14d142128bf57a08a02ab418" splitterOrientation="Vertical" location="Floating" floatingLocation="1419,619" floatingSize="623,885"&gt;
+      &lt;contentPane name="GoogleStreetView_5883351" /&gt;
+    &lt;/splitPane&gt;
+  &lt;/panes&gt;
+  &lt;documents splitterOrientation="Vertical"&gt;
+    &lt;splitPane name="Zd0568a42a2374c6fb1107605e37359cd" splitterOrientation="Vertical"&gt;
+      &lt;tabGroup name="Z886645fd5e2c4ff5819def6c98711c7e" selectedIndex="0"&gt;
+        &lt;contentPane name="DockableEsriMap_30791836" /&gt;
+      &lt;/tabGroup&gt;
+    &lt;/splitPane&gt;
+    &lt;splitPane name="Zaaf341ba73c746448159f9fbf82c2c07" splitterOrientation="Vertical"&gt;
+      &lt;tabGroup name="Zce0ab4489410487db494a34800cfbd68" selectedIndex="0"&gt;
+        &lt;contentPane name="AssociatedDataView_11455439" /&gt;
+      &lt;/tabGroup&gt;
+    &lt;/splitPane&gt;
+    &lt;splitPane splitterOrientation="Vertical"&gt;
+      &lt;splitPane name="Z0f40b72e4b9b4247bf110e37b89927f8" splitterOrientation="Horizontal" relativeSize="100,100"&gt;
+        &lt;tabGroup selectedIndex="0"&gt;
+          &lt;contentPane name="PictometryOnlineModuleView_18542462" /&gt;
+        &lt;/tabGroup&gt;
+        &lt;tabGroup name="Z4d7e5e33307e424bb65367ac0cd961b5" selectedIndex="0"&gt;
+          &lt;contentPane name="GoogleStreetView_5883351" /&gt;
+        &lt;/tabGroup&gt;
+      &lt;/splitPane&gt;
+    &lt;/splitPane&gt;
+  &lt;/documents&gt;
+&lt;/xamDockManager&gt;</Layout>
+    </SavedLayoutModel>
+    <SavedLayoutModel>
+      <Name>my desktop d</Name>
+      <Discription>my desktop d</Discription>
+      <Layout>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;xamDockManager version="15.1.20151.2055"&gt;
+  &lt;contentPanes&gt;
+    &lt;contentPane name="DockableEsriMap_30791836" location="Document" lastDockableState="Floating" lastFloatingSize="1906,885" lastFloatingWindowRect="-201,604,1922,924" lastFloatingLocation="-201,604" lastActivatedTime="2020-11-04T15:16:38.6774355Z" /&gt;
+    &lt;contentPane name="GoogleStreetView_5883351" location="Document" lastDockableState="Floating" lastFloatingSize="623,885" lastFloatingWindowRect="1419,619,639,924" lastFloatingLocation="1419,619" lastActivatedTime="2020-11-03T21:28:35.7828511Z" /&gt;
+    &lt;contentPane name="AssociatedDataView_11455439" location="Document" lastActivatedTime="2020-11-03T21:26:49.8380644Z" /&gt;
+  &lt;/contentPanes&gt;
+  &lt;panes&gt;
+    &lt;splitPane name="Zb2dbdb71e2ac4f49835d0dfcb510f504" splitterOrientation="Vertical" location="Floating" floatingLocation="-201,604" floatingSize="1906,885"&gt;
+      &lt;contentPane name="DockableEsriMap_30791836" /&gt;
+    &lt;/splitPane&gt;
+    &lt;splitPane name="Z346f53ed14d142128bf57a08a02ab418" splitterOrientation="Vertical" location="Floating" floatingLocation="1419,619" floatingSize="623,885"&gt;
+      &lt;contentPane name="GoogleStreetView_5883351" /&gt;
+    &lt;/splitPane&gt;
+  &lt;/panes&gt;
+  &lt;documents splitterOrientation="Vertical"&gt;
+    &lt;splitPane name="Zd0568a42a2374c6fb1107605e37359cd" splitterOrientation="Vertical"&gt;
+      &lt;tabGroup name="Z886645fd5e2c4ff5819def6c98711c7e" selectedIndex="0"&gt;
+        &lt;contentPane name="DockableEsriMap_30791836" /&gt;
+      &lt;/tabGroup&gt;
+    &lt;/splitPane&gt;
+    &lt;splitPane name="Zaaf341ba73c746448159f9fbf82c2c07" splitterOrientation="Vertical"&gt;
+      &lt;tabGroup name="Zce0ab4489410487db494a34800cfbd68" selectedIndex="0"&gt;
+        &lt;contentPane name="AssociatedDataView_11455439" /&gt;
+      &lt;/tabGroup&gt;
+    &lt;/splitPane&gt;
+    &lt;splitPane name="Zbddae1286d634820b0406c9e9eaff8d2" splitterOrientation="Vertical"&gt;
+      &lt;splitPane name="Z0f40b72e4b9b4247bf110e37b89927f8" splitterOrientation="Horizontal"&gt;
+        &lt;tabGroup name="Z4d7e5e33307e424bb65367ac0cd961b5" selectedIndex="0"&gt;
+          &lt;contentPane name="GoogleStreetView_5883351" /&gt;
+        &lt;/tabGroup&gt;
+      &lt;/splitPane&gt;
+    &lt;/splitPane&gt;
+  &lt;/documents&gt;
+&lt;/xamDockManager&gt;</Layout>
+    </SavedLayoutModel>
+    <SavedLayoutModel>
+      <Name>Desktop with google</Name>
+      <Discription>Desktop with google</Discription>
+      <Layout>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;xamDockManager version="15.1.20151.2055"&gt;
+  &lt;contentPanes&gt;
+    &lt;contentPane name="DockableEsriMap_30791836" location="Document" lastDockableState="Floating" lastFloatingSize="1906,885" lastFloatingWindowRect="-201,604,1922,924" lastFloatingLocation="-201,604" lastActivatedTime="2020-11-04T15:34:29.0137456Z" /&gt;
+    &lt;contentPane name="GoogleStreetView_26158957" location="Document" lastDockableState="Floating" lastFloatingSize="623,915" lastFloatingWindowRect="2717,645,639,954" lastFloatingLocation="2717,645" lastActivatedTime="2020-11-04T15:34:25.7267519Z" /&gt;
+    &lt;contentPane name="GoogleMapView_33446292" location="Document" lastActivatedTime="2020-11-04T15:33:51.148708Z" /&gt;
+    &lt;contentPane name="AssociatedDataView_11455439" location="Document" lastActivatedTime="2020-11-03T21:26:49.8380644Z" /&gt;
+  &lt;/contentPanes&gt;
+  &lt;panes&gt;
+    &lt;splitPane name="Zb2dbdb71e2ac4f49835d0dfcb510f504" splitterOrientation="Vertical" location="Floating" floatingLocation="-201,604" floatingSize="1906,885"&gt;
+      &lt;contentPane name="DockableEsriMap_30791836" /&gt;
+    &lt;/splitPane&gt;
+    &lt;splitPane name="Z0cf3098e90fe4202b6f2b38f248da023" splitterOrientation="Vertical" location="Floating" floatingLocation="2717,645" floatingSize="623,915"&gt;
+      &lt;contentPane name="GoogleStreetView_26158957" /&gt;
+    &lt;/splitPane&gt;
+  &lt;/panes&gt;
+  &lt;documents splitterOrientation="Vertical"&gt;
+    &lt;splitPane name="Zd0568a42a2374c6fb1107605e37359cd" splitterOrientation="Vertical"&gt;
+      &lt;tabGroup name="Z886645fd5e2c4ff5819def6c98711c7e" selectedIndex="0"&gt;
+        &lt;contentPane name="DockableEsriMap_30791836" /&gt;
+      &lt;/tabGroup&gt;
+    &lt;/splitPane&gt;
+    &lt;splitPane name="Za0d8c3a10a444a31a7a93784d23912c9" splitterOrientation="Vertical"&gt;
+      &lt;splitPane name="Z501fc31fc8534e719616c26d867b6840" splitterOrientation="Horizontal" relativeSize="100,100"&gt;
+        &lt;tabGroup name="Zc8f5a1269b234d2f8ca1a96240238851" selectedIndex="0"&gt;
+          &lt;contentPane name="AssociatedDataView_11455439" /&gt;
+        &lt;/tabGroup&gt;
+        &lt;tabGroup name="Z1e48c4561a8d466b89da5e8015828099" selectedIndex="0"&gt;
+          &lt;contentPane name="GoogleStreetView_26158957" /&gt;
+        &lt;/tabGroup&gt;
+      &lt;/splitPane&gt;
+    &lt;/splitPane&gt;
+    &lt;splitPane splitterOrientation="Vertical"&gt;
+      &lt;tabGroup selectedIndex="0"&gt;
+        &lt;contentPane name="GoogleMapView_33446292" /&gt;
+      &lt;/tabGroup&gt;
+    &lt;/splitPane&gt;
+  &lt;/documents&gt;
+&lt;/xamDockManager&gt;</Layout>
+    </SavedLayoutModel>
+    <SavedLayoutModel>
+      <Name>Desktop review screen</Name>
+      <Discription>Desktop review screen</Discription>
+      <Layout>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;xamDockManager version="15.1.20151.2055"&gt;
+  &lt;contentPanes&gt;
+    &lt;contentPane name="PictometryOnlineModuleView_61863730" location="Document" lastDockableState="Floating" lastFloatingSize="725,885" lastFloatingWindowRect="1005,609,741,924" lastFloatingLocation="1005,609" lastActivatedTime="2020-11-04T19:08:55.3346926Z" /&gt;
+    &lt;contentPane name="DockableEsriMap_30791836" location="Document" lastDockableState="Floating" lastFloatingSize="1906,885" lastFloatingWindowRect="-201,604,1922,924" lastFloatingLocation="-201,604" lastActivatedTime="2020-11-04T19:08:48.5609178Z" /&gt;
+    &lt;contentPane name="GoogleStreetView_52041570" location="Document" lastActivatedTime="2020-11-04T16:58:14.2233636Z" /&gt;
+    &lt;contentPane name="AssociatedDataView_11455439" location="DockedRight" lastFloatingSize="772,915" lastFloatingWindowRect="2541,619,788,954" lastFloatingLocation="2541,619" lastActivatedTime="2020-11-04T16:47:06.4725071Z" /&gt;
+  &lt;/contentPanes&gt;
+  &lt;panes&gt;
+    &lt;splitPane name="Zb2dbdb71e2ac4f49835d0dfcb510f504" splitterOrientation="Vertical" location="Floating" floatingLocation="-201,604" floatingSize="1906,885"&gt;
+      &lt;contentPane name="DockableEsriMap_30791836" /&gt;
+    &lt;/splitPane&gt;
+    &lt;splitPane name="Z597bb941d3a4410ab657319d3cf5fca7" splitterOrientation="Vertical" location="Floating" floatingLocation="2541,619" floatingSize="772,915"&gt;
+      &lt;contentPane name="AssociatedDataView_11455439" /&gt;
+    &lt;/splitPane&gt;
+    &lt;splitPane name="Z51df93b16e954f7d89ff0f98ffcdeeff" splitterOrientation="Vertical" location="DockedRight" extent="301"&gt;
+      &lt;contentPane name="AssociatedDataView_11455439" /&gt;
+    &lt;/splitPane&gt;
+    &lt;splitPane name="Z5eb46f6062714618b7a5b0739c6931d2" splitterOrientation="Vertical" location="Floating" floatingLocation="1005,609" floatingSize="725,885"&gt;
+      &lt;contentPane name="PictometryOnlineModuleView_61863730" /&gt;
+    &lt;/splitPane&gt;
+  &lt;/panes&gt;
+  &lt;documents splitterOrientation="Vertical"&gt;
+    &lt;splitPane name="Zd0568a42a2374c6fb1107605e37359cd" splitterOrientation="Vertical" relativeSize="117.954070981211,100"&gt;
+      &lt;tabGroup name="Z886645fd5e2c4ff5819def6c98711c7e" selectedIndex="0"&gt;
+        &lt;contentPane name="DockableEsriMap_30791836" /&gt;
+      &lt;/tabGroup&gt;
+    &lt;/splitPane&gt;
+    &lt;splitPane splitterOrientation="Vertical"&gt;
+      &lt;splitPane name="Z228b055da1b748f58533dddd2be6c1a2" splitterOrientation="Horizontal" relativeSize="100,100"&gt;
+        &lt;tabGroup selectedIndex="0"&gt;
+          &lt;contentPane name="GoogleStreetView_52041570" /&gt;
+        &lt;/tabGroup&gt;
+        &lt;tabGroup name="Zba56b87e872147afa6758337a6dbcfb1" selectedIndex="0"&gt;
+          &lt;contentPane name="PictometryOnlineModuleView_61863730" /&gt;
+        &lt;/tabGroup&gt;
+      &lt;/splitPane&gt;
+    &lt;/splitPane&gt;
+  &lt;/documents&gt;
+&lt;/xamDockManager&gt;</Layout>
+    </SavedLayoutModel>
+    <SavedLayoutModel>
+      <Name>Default Layout</Name>
+      <Discription />
+      <Layout>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;xamDockManager version="15.1.20151.2055"&gt;
+  &lt;contentPanes&gt;
+    &lt;contentPane name="DockableEsriMap_30791836" location="Document" lastDockableState="Floating" lastFloatingSize="1906,885" lastFloatingWindowRect="1861,576,1922,924" lastFloatingLocation="1861,576" lastActivatedTime="2020-11-09T16:20:50.9345558Z" /&gt;
+    &lt;contentPane name="PictometryOnlineModuleView_66918496" location="Document" lastDockableState="Floating" lastFloatingSize="1056,915" lastFloatingWindowRect="2755,867,1072,954" lastFloatingLocation="2755,867" lastActivatedTime="2020-11-09T16:17:44.5255351Z" /&gt;
+  &lt;/contentPanes&gt;
+  &lt;panes&gt;
+    &lt;splitPane name="Z0700f4ab85dc4c629784ef9cafa893a4" splitterOrientation="Vertical" location="Floating" floatingLocation="2755,867" floatingSize="1056,915"&gt;
+      &lt;contentPane name="PictometryOnlineModuleView_66918496" /&gt;
+    &lt;/splitPane&gt;
+    &lt;splitPane name="Zdac555eae912410b95b72ff1254df6d0" splitterOrientation="Vertical" location="Floating" floatingLocation="1861,576" floatingSize="1906,885"&gt;
+      &lt;contentPane name="DockableEsriMap_30791836" /&gt;
+    &lt;/splitPane&gt;
+  &lt;/panes&gt;
+  &lt;documents splitterOrientation="Vertical"&gt;
+    &lt;splitPane name="Z397e90f4a2124303bff619b191e3b321" splitterOrientation="Vertical" relativeSize="77.0153329178307,100"&gt;
+      &lt;tabGroup name="Z08361167b8374e3ca0ea5537996c35bb" selectedIndex="0"&gt;
+        &lt;contentPane name="DockableEsriMap_30791836" /&gt;
+      &lt;/tabGroup&gt;
+    &lt;/splitPane&gt;
+    &lt;splitPane name="Zd0568a42a2374c6fb1107605e37359cd" splitterOrientation="Vertical" relativeSize="102.003456226219,100"&gt;
+      &lt;splitPane name="Z267822764b3c4740a26474800349a3db" splitterOrientation="Horizontal"&gt;
+        &lt;tabGroup name="Z04ca1bead9804558b7dd5789afd5a0e0" selectedIndex="0"&gt;
+          &lt;contentPane name="PictometryOnlineModuleView_66918496" /&gt;
+        &lt;/tabGroup&gt;
+      &lt;/splitPane&gt;
+    &lt;/splitPane&gt;
+  &lt;/documents&gt;
+&lt;/xamDockManager&gt;</Layout>
+    </SavedLayoutModel>
+    <SavedLayoutModel>
+      <Name>Desktop review</Name>
+      <Discription>Desktop review</Discription>
+      <Layout>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;xamDockManager version="15.1.20151.2055"&gt;
+  &lt;contentPanes&gt;
+    &lt;contentPane name="DockableEsriMap_30791836" location="Document" lastDockableState="Floating" lastFloatingSize="1906,885" lastFloatingWindowRect="-201,604,1922,924" lastFloatingLocation="-201,604" lastActivatedTime="2020-11-12T20:20:20.2747321Z" /&gt;
+    &lt;contentPane name="GoogleStreetView_5883351" location="Document" lastDockableState="Floating" lastFloatingSize="623,885" lastFloatingWindowRect="1419,619,639,924" lastFloatingLocation="1419,619" lastActivatedTime="2020-11-03T21:28:35.7828511Z" /&gt;
+    &lt;contentPane name="PictometryOnlineModuleView_18542462" location="Document" lastActivatedTime="2020-11-03T21:28:16.5174801Z" /&gt;
+    &lt;contentPane name="AssociatedDataView_11455439" location="Document" lastActivatedTime="2020-11-03T21:26:49.8380644Z" /&gt;
+  &lt;/contentPanes&gt;
+  &lt;panes&gt;
+    &lt;splitPane name="Zb2dbdb71e2ac4f49835d0dfcb510f504" splitterOrientation="Vertical" location="Floating" floatingLocation="-201,604" floatingSize="1906,885"&gt;
+      &lt;contentPane name="DockableEsriMap_30791836" /&gt;
+    &lt;/splitPane&gt;
+    &lt;splitPane name="Z346f53ed14d142128bf57a08a02ab418" splitterOrientation="Vertical" location="Floating" floatingLocation="1419,619" floatingSize="623,885"&gt;
+      &lt;contentPane name="GoogleStreetView_5883351" /&gt;
+    &lt;/splitPane&gt;
+  &lt;/panes&gt;
+  &lt;documents splitterOrientation="Vertical"&gt;
+    &lt;splitPane name="Zd0568a42a2374c6fb1107605e37359cd" splitterOrientation="Vertical"&gt;
+      &lt;tabGroup name="Z886645fd5e2c4ff5819def6c98711c7e" selectedIndex="0"&gt;
+        &lt;contentPane name="DockableEsriMap_30791836" /&gt;
+      &lt;/tabGroup&gt;
+    &lt;/splitPane&gt;
+    &lt;splitPane name="Zaaf341ba73c746448159f9fbf82c2c07" splitterOrientation="Vertical"&gt;
+      &lt;tabGroup name="Zce0ab4489410487db494a34800cfbd68" selectedIndex="0"&gt;
+        &lt;contentPane name="AssociatedDataView_11455439" /&gt;
+      &lt;/tabGroup&gt;
+    &lt;/splitPane&gt;
+    &lt;splitPane name="Zb6a1b6871c824609ba54bd8ca87fbf1b" splitterOrientation="Vertical"&gt;
+      &lt;splitPane name="Z0f40b72e4b9b4247bf110e37b89927f8" splitterOrientation="Horizontal"&gt;
+        &lt;tabGroup name="Z0c28ed02c44c488580a2fc9529d9a237" selectedIndex="0"&gt;
+          &lt;contentPane name="PictometryOnlineModuleView_18542462" /&gt;
+        &lt;/tabGroup&gt;
+        &lt;tabGroup name="Z4d7e5e33307e424bb65367ac0cd961b5" selectedIndex="0"&gt;
+          &lt;contentPane name="GoogleStreetView_5883351" /&gt;
+        &lt;/tabGroup&gt;
+      &lt;/splitPane&gt;
+    &lt;/splitPane&gt;
+  &lt;/documents&gt;
+&lt;/xamDockManager&gt;</Layout>
+    </SavedLayoutModel>
+    <SavedLayoutModel>
+      <Name>Data view</Name>
+      <Discription>Data view</Discription>
+      <Layout>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;xamDockManager version="15.1.20151.2055"&gt;
+  &lt;contentPanes&gt;
+    &lt;contentPane name="DockableEsriMap_30791836" location="Document" lastDockableState="Floating" lastFloatingSize="1906,885" lastFloatingWindowRect="-201,604,1922,924" lastFloatingLocation="-201,604" lastActivatedTime="2023-11-16T15:29:58.8068906Z" /&gt;
+    &lt;contentPane name="AssociatedDataView_11455439" location="Document" lastActivatedTime="2023-11-16T15:29:23.3877222Z" /&gt;
+  &lt;/contentPanes&gt;
+  &lt;panes&gt;
+    &lt;splitPane name="Zb2dbdb71e2ac4f49835d0dfcb510f504" splitterOrientation="Vertical" location="Floating" floatingLocation="-201,604" floatingSize="1906,885"&gt;
+      &lt;contentPane name="DockableEsriMap_30791836" /&gt;
+    &lt;/splitPane&gt;
+  &lt;/panes&gt;
+  &lt;documents splitterOrientation="Vertical"&gt;
+    &lt;splitPane name="Zd0568a42a2374c6fb1107605e37359cd" splitterOrientation="Vertical" relativeSize="77.1398747390397,100"&gt;
+      &lt;tabGroup name="Z886645fd5e2c4ff5819def6c98711c7e" selectedIndex="0"&gt;
+        &lt;contentPane name="DockableEsriMap_30791836" /&gt;
+      &lt;/tabGroup&gt;
+    &lt;/splitPane&gt;
+    &lt;splitPane name="Zff214ba978e64e6bbf7280d574bfe243" splitterOrientation="Vertical" relativeSize="122.86012526096,100"&gt;
+      &lt;tabGroup name="Z37c573be5ee84ff38766dc9f7bed5e7b" selectedIndex="0"&gt;
+        &lt;contentPane name="AssociatedDataView_11455439" /&gt;
+      &lt;/tabGroup&gt;
+    &lt;/splitPane&gt;
+  &lt;/documents&gt;
+&lt;/xamDockManager&gt;</Layout>
+    </SavedLayoutModel>
+    <SavedLayoutModel>
+      <Name>App to App1</Name>
+      <Discription>App to App1</Discription>
+      <Layout>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;xamDockManager version="15.1.20151.2055"&gt;
+  &lt;contentPanes&gt;
+    &lt;contentPane name="AppToAppView_6479109" location="Document" lastActivatedTime="2023-11-16T17:35:41.8357233Z" /&gt;
+    &lt;contentPane name="DockableEsriMap_30791836" location="Document" lastDockableState="Floating" lastFloatingSize="1906,885" lastFloatingWindowRect="-201,604,1922,924" lastFloatingLocation="-201,604" lastActivatedTime="2023-11-16T17:34:44.1955559Z" /&gt;
+    &lt;contentPane name="AssociatedDataView_11455439" location="Document" lastActivatedTime="2023-11-16T15:29:23.3877222Z" /&gt;
+  &lt;/contentPanes&gt;
+  &lt;panes&gt;
+    &lt;splitPane name="Zb2dbdb71e2ac4f49835d0dfcb510f504" splitterOrientation="Vertical" location="Floating" floatingLocation="-201,604" floatingSize="1906,885"&gt;
+      &lt;contentPane name="DockableEsriMap_30791836" /&gt;
+    &lt;/splitPane&gt;
+  &lt;/panes&gt;
+  &lt;documents splitterOrientation="Vertical"&gt;
+    &lt;splitPane name="Zd0568a42a2374c6fb1107605e37359cd" splitterOrientation="Vertical" relativeSize="77.1398747390397,100"&gt;
+      &lt;tabGroup name="Z886645fd5e2c4ff5819def6c98711c7e" selectedIndex="0"&gt;
+        &lt;contentPane name="DockableEsriMap_30791836" /&gt;
+      &lt;/tabGroup&gt;
+    &lt;/splitPane&gt;
+    &lt;splitPane name="Zff214ba978e64e6bbf7280d574bfe243" splitterOrientation="Vertical" relativeSize="122.86012526096,100"&gt;
+      &lt;tabGroup name="Z37c573be5ee84ff38766dc9f7bed5e7b" selectedIndex="0"&gt;
+        &lt;contentPane name="AssociatedDataView_11455439" /&gt;
+      &lt;/tabGroup&gt;
+    &lt;/splitPane&gt;
+    &lt;splitPane splitterOrientation="Vertical"&gt;
+      &lt;tabGroup selectedIndex="0"&gt;
+        &lt;contentPane name="AppToAppView_6479109" /&gt;
+      &lt;/tabGroup&gt;
+    &lt;/splitPane&gt;
+  &lt;/documents&gt;
+&lt;/xamDockManager&gt;</Layout>
+    </SavedLayoutModel>
+  </SavedLayouts>
+</MatixState>

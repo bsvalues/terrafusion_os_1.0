@@ -1,0 +1,799 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Terrafusion Platform API",
+    "description": "Enterprise geospatial data synchronization platform for county government operations",
+    "version": "2.0.0",
+    "contact": {
+      "name": "Terrafusion Support",
+      "email": "support@terrafusion.gov"
+    },
+    "license": {
+      "name": "Government Open Source",
+      "url": "https://opensource.gov"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.terrafusion.gov/v1",
+      "description": "Production server"
+    },
+    {
+      "url": "http://localhost:5000/api/v1",
+      "description": "Development server"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "System health check",
+        "description": "Returns the current health status of the Terrafusion platform",
+        "operationId": "getHealthStatus",
+        "tags": ["System"],
+        "responses": {
+          "200": {
+            "description": "System is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/gis-export/jobs": {
+      "get": {
+        "summary": "List GIS export jobs",
+        "description": "Retrieve a list of GIS export jobs with optional filtering",
+        "operationId": "listExportJobs",
+        "tags": ["GIS Export"],
+        "parameters": [
+          {
+            "name": "county_id",
+            "in": "query",
+            "description": "Filter by county identifier",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Filter by job status",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["pending", "processing", "completed", "failed", "cancelled"]
+            }
+          },
+          {
+            "name": "username",
+            "in": "query",
+            "description": "Filter by username",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of results to return",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000,
+              "default": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of export jobs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExportJob"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create GIS export job",
+        "description": "Create a new GIS export job for processing",
+        "operationId": "createExportJob",
+        "tags": ["GIS Export"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateExportJobRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Export job created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportJob"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/gis-export/jobs/{jobId}": {
+      "get": {
+        "summary": "Get export job status",
+        "description": "Retrieve the status and details of a specific export job",
+        "operationId": "getExportJob",
+        "tags": ["GIS Export"],
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "description": "Export job identifier",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Export job details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportJob"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/gis-export/jobs/{jobId}/cancel": {
+      "post": {
+        "summary": "Cancel export job",
+        "description": "Cancel a pending or processing export job",
+        "operationId": "cancelExportJob",
+        "tags": ["GIS Export"],
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "description": "Export job identifier",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Job cancelled successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportJob"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/gis-export/download/{jobId}": {
+      "get": {
+        "summary": "Download export file",
+        "description": "Download the completed export file",
+        "operationId": "downloadExportFile",
+        "tags": ["GIS Export"],
+        "parameters": [
+          {
+            "name": "jobId",
+            "in": "path",
+            "required": true,
+            "description": "Export job identifier",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Export file download",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/district-lookup/coordinates": {
+      "get": {
+        "summary": "Lookup districts by coordinates",
+        "description": "Find administrative districts based on latitude and longitude coordinates",
+        "operationId": "lookupDistrictsByCoordinates",
+        "tags": ["District Lookup"],
+        "parameters": [
+          {
+            "name": "lat",
+            "in": "query",
+            "required": true,
+            "description": "Latitude coordinate",
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "minimum": -90,
+              "maximum": 90
+            }
+          },
+          {
+            "name": "lon",
+            "in": "query",
+            "required": true,
+            "description": "Longitude coordinate",
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "minimum": -180,
+              "maximum": 180
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "District lookup results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DistrictLookupResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      }
+    },
+    "/district-lookup/address": {
+      "get": {
+        "summary": "Lookup districts by address",
+        "description": "Find administrative districts based on street address",
+        "operationId": "lookupDistrictsByAddress",
+        "tags": ["District Lookup"],
+        "parameters": [
+          {
+            "name": "address",
+            "in": "query",
+            "required": true,
+            "description": "Street address to lookup",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "District lookup results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DistrictLookupResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        }
+      }
+    },
+    "/ai/analyze/gis-export": {
+      "post": {
+        "summary": "AI analysis of GIS export",
+        "description": "Generate AI-powered insights and analysis for a GIS export job",
+        "operationId": "analyzeGisExport",
+        "tags": ["AI Analysis"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AIAnalysisRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "AI analysis results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AIAnalysisResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/ai/analyze/exemption": {
+      "post": {
+        "summary": "AI analysis of property exemption",
+        "description": "Analyze property exemption applications for fraud detection and compliance",
+        "operationId": "analyzeExemption",
+        "tags": ["AI Analysis"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExemptionAnalysisRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Exemption analysis results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExemptionAnalysisResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HealthStatus": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["healthy", "degraded", "unhealthy"]
+          },
+          "service": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ExportJob": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "description": "Unique job identifier"
+          },
+          "county_id": {
+            "type": "string",
+            "description": "County identifier"
+          },
+          "username": {
+            "type": "string",
+            "description": "User who created the job"
+          },
+          "export_format": {
+            "type": "string",
+            "enum": ["shapefile", "geojson", "kml", "geopackage", "csv"]
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "processing", "completed", "failed", "cancelled"]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "completed_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "file_path": {
+            "type": "string",
+            "nullable": true
+          },
+          "download_url": {
+            "type": "string",
+            "nullable": true
+          },
+          "error_message": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CreateExportJobRequest": {
+        "type": "object",
+        "required": ["county_id", "username", "export_format", "area_of_interest", "layers"],
+        "properties": {
+          "county_id": {
+            "type": "string",
+            "description": "County identifier"
+          },
+          "username": {
+            "type": "string",
+            "description": "Username of the requester"
+          },
+          "export_format": {
+            "type": "string",
+            "enum": ["shapefile", "geojson", "kml", "geopackage", "csv"]
+          },
+          "area_of_interest": {
+            "type": "object",
+            "description": "GeoJSON geometry defining the area of interest"
+          },
+          "layers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of data layers to include"
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Additional export parameters"
+          }
+        }
+      },
+      "DistrictLookupResult": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "object",
+            "properties": {
+              "address": {
+                "type": "string",
+                "nullable": true
+              },
+              "coordinates": {
+                "type": "object",
+                "properties": {
+                  "latitude": {
+                    "type": "number"
+                  },
+                  "longitude": {
+                    "type": "number"
+                  }
+                },
+                "nullable": true
+              }
+            }
+          },
+          "results": {
+            "type": "object",
+            "properties": {
+              "voting_precincts": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/DistrictInfo"
+                }
+              },
+              "fire_districts": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/DistrictInfo"
+                }
+              },
+              "school_districts": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/DistrictInfo"
+                }
+              }
+            }
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      },
+      "DistrictInfo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "boundaries": {
+            "type": "object",
+            "description": "GeoJSON geometry"
+          }
+        }
+      },
+      "AIAnalysisRequest": {
+        "type": "object",
+        "required": ["job_id"],
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "description": "GIS export job ID to analyze"
+          }
+        }
+      },
+      "AIAnalysisResponse": {
+        "type": "object",
+        "properties": {
+          "analysis_id": {
+            "type": "string"
+          },
+          "narrative": {
+            "type": "string",
+            "description": "Human-readable analysis summary"
+          },
+          "insights": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "recommendations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "confidence_score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "processing_time_ms": {
+            "type": "integer"
+          }
+        }
+      },
+      "ExemptionAnalysisRequest": {
+        "type": "object",
+        "required": ["parcel_id", "exemption_type", "exemption_code", "exemption_amount", "property_description", "owner_name", "assessment_year", "exemption_reason"],
+        "properties": {
+          "parcel_id": {
+            "type": "string"
+          },
+          "exemption_type": {
+            "type": "string"
+          },
+          "exemption_code": {
+            "type": "string"
+          },
+          "exemption_amount": {
+            "type": "number"
+          },
+          "property_description": {
+            "type": "string"
+          },
+          "owner_name": {
+            "type": "string"
+          },
+          "assessment_year": {
+            "type": "integer"
+          },
+          "exemption_reason": {
+            "type": "string"
+          }
+        }
+      },
+      "ExemptionAnalysisResponse": {
+        "type": "object",
+        "properties": {
+          "analysis_id": {
+            "type": "string"
+          },
+          "risk_score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "fraud_indicators": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "recommendations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "compliance_status": {
+            "type": "string",
+            "enum": ["compliant", "review_required", "non_compliant"]
+          },
+          "narrative_summary": {
+            "type": "string"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Bad request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Unauthorized",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Resource not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "System",
+      "description": "System health and status endpoints"
+    },
+    {
+      "name": "GIS Export",
+      "description": "Geographic data export operations"
+    },
+    {
+      "name": "District Lookup",
+      "description": "Administrative district boundary lookup"
+    },
+    {
+      "name": "AI Analysis",
+      "description": "AI-powered data analysis and insights"
+    }
+  ]
+}

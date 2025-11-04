@@ -1,0 +1,19 @@
+{
+  "name": "terrafusion-performance-tools",
+  "version": "1.0.0",
+  "description": "Performance testing tools for Terrafusion",
+  "main": "performance_audit.js",
+  "scripts": {
+    "audit": "node performance_audit.js",
+    "analyze-js": "webpack-bundle-analyzer ../static/js/stats.json",
+    "analyze-css": "cssstats ../static/css/terrafusion.css --json > ../performance_reports/css-stats.json"
+  },
+  "dependencies": {
+    "lighthouse": "^9.6.8",
+    "puppeteer": "^19.7.2"
+  },
+  "devDependencies": {
+    "cssstats": "^4.0.0",
+    "webpack-bundle-analyzer": "^4.7.0"
+  }
+}

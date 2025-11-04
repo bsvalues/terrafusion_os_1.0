@@ -1,0 +1,6 @@
+CREATE USER [CO\ArcGis] FOR LOGIN [CO\ArcGis]
+    WITH DEFAULT_SCHEMA = [CO\ArcGis];
+
+
+GO
+

@@ -1,0 +1,1435 @@
+{
+	"arpt": {
+		"clientkey_id": {
+			"fields": [
+				"wac_innr"
+			]
+		},
+		"geometry": {
+			"type": "point",
+			"source": "single",
+			"point": {
+				"lat": "wgs_dlat",
+				"long": "wgs_dlong"
+			}
+		},
+		"combine_keys": [
+			{
+				"name": "icao_txt",
+				"fields": [
+					"icao_rgn",
+					"icao_code"
+				],
+				"separator": ""
+			},
+			{
+				"name": "dcdt_unmapped",
+				"fields": [
+					"symbol",
+					"sector"
+				],
+				"separator": "::"
+			}
+		],
+		"default_values": [
+			{
+				"field": "prim_opr_agcy",
+				"value": "PA"
+			}
+		],
+		"additional_tables": [
+			"adhpsurfacearea",
+			"serviceatadhp",
+			"service",
+			"freq1",
+			"freq2",
+			"freq3",
+			"freq4",
+			"freq5",
+			"characterstic",
+			"surfacelighting"
+		]
+	},
+	"adhpsurfacearea": {
+		"clientkey_id": {
+			"fields": [
+				"wac_innr"
+			],
+			"constant": "sfc"
+		},
+		"combine_keys": [
+			{
+				"name": "designator_txt",
+				"fields": [
+					"lo_ident",
+					"hi_ident"
+				],
+				"separator": "/"
+			},
+			{
+				"name": "surfacecharacteristic_id",
+				"fields": [
+					"wac_innr"
+				],
+				"constant": "chr"
+			}
+		],
+		"default_values": [
+			{
+				"field": "subtype_code",
+				"value": "0"
+			}
+		]
+	},
+	"surfacelighting": {
+		"clientkey_id": {
+			"fields": [
+				"wac_innr"
+			],
+			"constant": "lgt"
+		},
+		"combine_keys": [
+			{
+				"name": "lightactivation",
+				"fields": [
+					"lo_prior_request",
+					"hi_prior_request",
+					"lo_pilot_ctl",
+					"hi_pilot_ctl",
+					"lgts"
+				],
+				"separator": ""
+			},
+			{
+				"name": "lighted_id",
+				"fields": [
+					"wac_innr"
+				],
+				"constant": "sfc"
+			}
+		],
+		"default_values": [
+			{
+				"field": "subtype_code",
+				"value": "0"
+			}
+		]
+	},
+	"characterstic": {
+		"clientkey_id": {
+			"fields": [
+				"wac_innr"
+			],
+			"constant": "chr"
+		}
+	},
+	"serviceatadhp": {
+		"clientkey_id": {
+			"fields": [
+				"wac_innr"
+			],
+			"keyfields": [
+				"com_type"
+			],
+			"constant": "serv_adhp"
+		},
+		"combine_keys": [
+			{
+				"name": "service_id",
+				"fields": [
+					"wac_innr"
+				],
+				"constant": "serv"
+			},
+			{
+				"name": "adhp_id",
+				"fields": [
+					"wac_innr"
+				]
+			}
+		]
+	},
+	"service": {
+		"clientkey_id": {
+			"fields": [
+				"wac_innr"
+			],
+			"keyfields": [
+				"com_type"
+			],
+			"constant": "serv"
+		},
+		"geometry": {
+			"type": "point",
+			"source": "single",
+			"point": {
+				"lat": "wgs_dlat",
+				"long": "wgs_dlong"
+			}
+		}
+	},
+	"freq1": {
+		"clientkey_id": {
+			"fields": [
+				"wac_innr"
+			],
+			"keyfields": [
+				"freq1"
+			],
+			"constant": "freq1"
+		},
+		"combine_keys": [
+			{
+				"name": "service_id",
+				"fields": [
+					"wac_innr"
+				],
+				"constant": "serv"
+			}
+		],
+		"convert_keys": [
+			{
+				"field": "freq1",
+				"converter": "frequency"
+			}
+		]
+	},
+	"freq2": {
+		"clientkey_id": {
+			"fields": [
+				"wac_innr"
+			],
+			"keyfields": [
+				"freq2"
+			],
+			"constant": "freq2"
+		},
+		"combine_keys": [
+			{
+				"name": "service_id",
+				"fields": [
+					"wac_innr"
+				],
+				"constant": "serv"
+			}
+		],
+		"convert_keys": [
+			{
+				"field": "freq2",
+				"converter": "frequency"
+			}
+		]
+	},
+	"freq3": {
+		"clientkey_id": {
+			"fields": [
+				"wac_innr"
+			],
+			"keyfields": [
+				"freq3"
+			],
+			"constant": "freq3"
+		},
+		"combine_keys": [
+			{
+				"name": "service_id",
+				"fields": [
+					"wac_innr"
+				],
+				"constant": "serv"
+			}
+		],
+		"convert_keys": [
+			{
+				"field": "freq3",
+				"converter": "frequency"
+			}
+		]
+	},
+	"freq4": {
+		"clientkey_id": {
+			"fields": [
+				"wac_innr"
+			],
+			"keyfields": [
+				"freq4"
+			],
+			"constant": "freq4"
+		},
+		"combine_keys": [
+			{
+				"name": "service_id",
+				"fields": [
+					"wac_innr"
+				],
+				"constant": "serv"
+			}
+		],
+		"convert_keys": [
+			{
+				"field": "freq4",
+				"converter": "frequency"
+			}
+		]
+	},
+	"freq5": {
+		"clientkey_id": {
+			"fields": [
+				"wac_innr"
+			],
+			"keyfields": [
+				"freq5"
+			],
+			"constant": "freq5"
+		},
+		"combine_keys": [
+			{
+				"name": "service_id",
+				"fields": [
+					"wac_innr"
+				],
+				"constant": "serv"
+			}
+		],
+		"convert_keys": [
+			{
+				"field": "freq5",
+				"converter": "frequency"
+			}
+		]
+	},
+	"ats": {
+		"clientkey_id": {
+			"fields": [
+				"ats_ident",
+				"ats_type",
+				"wpt1_ident",
+				"wpt1_country",
+				"wpt2_ident",
+				"wpt2_country"
+			]
+		},
+		"geometry": {
+			"type": "line",
+			"source": "single",
+			"from": {
+				"lat": "wpt1_wgs_dlat",
+				"long": "wpt1_wgs_dlong"
+			},
+			"to": {
+				"lat": "wpt2_wgs_dlat",
+				"long": "wpt2_wgs_dlong"
+			}
+		},
+		"combine_keys": [
+			{
+				"name": "wpt1_key",
+				"fields": [
+					"wpt1_ident",
+					"wpt1_country"
+				],
+				"separator": ""
+			},
+			{
+				"name": "wpt2_key",
+				"fields": [
+					"wpt2_ident",
+					"wpt2_country"
+				],
+				"separator": ""
+			},
+			{
+				"name": "dcdt_unmapped",
+				"fields": [
+					"east_min_flt_alt",
+					"west_min_flt_alt",
+					"der_min_alt_east",
+					"der_min_alt_west",
+					"east_inbnd_crs",
+					"west_inbnd_crs",
+					"east_outbnd_crs",
+					"west_outbnd_crs",
+					"course_grid_true",
+					"cruise_level"
+				],
+				"separator": "::"
+			}
+		],
+		"convert_keys": [
+			{
+				"field": "max_auth_alt",
+				"converter": "altitude"
+			},
+			{
+				"field": "mca1_alt",
+				"converter": "altitude"
+			},
+			{
+				"field": "mca2_alt",
+				"converter": "altitude"
+			},
+			{
+				"field": "mra1_alt",
+				"converter": "altitude"
+			},
+			{
+				"field": "mra2_alt",
+				"converter": "altitude"
+			}
+		],
+		"default_values": [
+			{
+				"field": "max_auth_alt_txt",
+				"value": "FT"
+			},
+			{
+				"field": "mca1_alt_txt",
+				"value": "FT"
+			},
+			{
+				"field": "mca2_alt_txt",
+				"value": "FT"
+			},
+			{
+				"field": "mra1_alt_txt",
+				"value": "FT"
+			},
+			{
+				"field": "mra2_alt_txt",
+				"value": "FT"
+			}
+		]
+	},
+	"wpt": {
+		"clientkey_id": {
+			"fields": [
+				"wpt_ident",
+				"wpt_country"
+			]
+		},
+		"geometry": {
+			"type": "point",
+			"source": "single",
+			"point": {
+				"lat": "wgs_dlat",
+				"long": "wgs_dlong"
+			}
+		},
+		"combine_keys": [
+			{
+				"name": "dcdt_unmapped",
+				"fields": [
+					"wpt_type",
+					"usage_code",
+					"rnav_usage",
+					"place_name",
+					"drv_ident"
+				],
+				"separator": "::"
+			}
+		],
+		"additional_tables": [
+			"desigpt_navassoc",
+			"desigpt_navassoc2"
+		]
+	},
+	"desigpt_navassoc": {
+		"clientkey_id": {
+			"fields": [
+				"wpt_ident",
+				"wpt_country"
+			],
+			"keyfields": [
+				"nav_ident",
+				"nav_country",
+				"nav_key_cd",
+				"nav_type"
+			],
+			"constant": "dp_ns1"
+		},
+		"combine_keys": [
+			{
+				"name": "designatedpoint_id",
+				"fields": [
+					"wpt_ident",
+					"wpt_country"
+				]
+			},
+			{
+				"name": "navaidsystem_id",
+				"fields": [
+					"nav_ident",
+					"nav_country",
+					"nav_key_cd",
+					"nav_type"
+				]
+			}
+		]
+	},
+	"desigpt_navassoc2": {
+		"clientkey_id": {
+			"fields": [
+				"wpt_ident",
+				"wpt_country"
+			],
+			"keyfields": [
+				"sec_nav_ident",
+				"sec_nav_country",
+				"sec_nav_key_cd",
+				"sec_nav_type"
+			],
+			"constant": "dp_ns2"
+		},
+		"combine_keys": [
+			{
+				"name": "designatedpoint_id",
+				"fields": [
+					"wpt_ident",
+					"wpt_country"
+				]
+			},
+			{
+				"name": "navaidsystem_id",
+				"fields": [
+					"sec_nav_ident",
+					"sec_nav_country",
+					"sec_nav_key_cd",
+					"sec_nav_type"
+				]
+			}
+		]
+	},
+	"bdry": {
+		"clientkey_id": {
+			"fields": [
+				"icao_rgn",
+				"bdry_ident"
+			],
+			"constant":"bdry"
+		},
+		"geometry": {
+			"type": "polygon",
+			"source": "multiple",
+			"radius": "radius1",
+			"shape": "shape",
+			"from": {
+				"lat": "wgs_dlat1",
+				"long": "wgs_dlong1"
+			},
+			"to": {
+				"lat": "wgs_dlat2",
+				"long": "wgs_dlong2"
+			},
+			"center": {
+				"lat": "wgs_dlat0",
+				"long": "wgs_dlong0"
+			}
+		},
+		"sort": [
+			"icao_rgn",
+			"bdry_ident",
+			"bdry_seg"
+		],
+		"combine_keys": [
+			{
+				"name": "type_code",
+				"fields": [
+					"bdry_type",
+					"sector",
+					"cta",
+					"uta",
+					"subgroup"
+				],
+				"separator": "|"
+			},
+			{
+				"name": "comname_txt",
+				"fields": [
+					"com_name",
+					"com_freq1",
+					"com_freq2"
+				],
+				"separator": "::"
+			},
+			{
+				"name": "chartstructures_txt",
+				"fields": [
+					"highchart",
+					"lowchart",
+					"tchart",
+					"termchart",
+					"bothchart",
+					"aacdtdchart"
+				],
+				"separator": "|"
+			},
+			{
+				"name": "icao_txt",
+				"fields": [
+					"icao_code",
+					"icao_rgn"
+				]
+			}
+		],
+		"convert_keys": [
+			{
+				"field": "com_freq1",
+				"converter": "frequency"
+			},
+			{
+				"field": "com_freq2",
+				"converter": "frequency"
+			},
+			{
+				"field": "up_eff_alt",
+				"converter": "altitude"
+			},
+			{
+				"field": "lo_eff_alt",
+				"converter": "altitude"
+			}
+		],
+		"default_values": [
+			{
+				"field": "lo_eff_alt_txt",
+				"value": "FT"
+			},
+			{
+				"field": "up_eff_alt_txt",
+				"value": "FT"
+			}
+		]
+	},
+	"suas": {
+		"clientkey_id": {
+			"fields": [
+				"suas_ident",
+				"suas_sctr"
+			],
+			"constant":"suas"
+		},
+		"geometry": {
+			"type": "polygon",
+			"source": "multiple",
+			"radius": "radius1",
+			"shape": "shape",
+			"from": {
+				"lat": "wgs_dlat1",
+				"long": "wgs_dlong1"
+			},
+			"to": {
+				"lat": "wgs_dlat2",
+				"long": "wgs_dlong2"
+			},
+			"center": {
+				"lat": "wgs_dlat0",
+				"long": "wgs_dlong0"
+			}
+		},
+		"sort": [
+			"suas_ident",
+			"suas_sctr",
+			"seg_nr"
+		],
+		"combine_keys": [
+			{
+				"name": "comname_txt",
+				"fields": [
+					"com_name",
+					"com_freq1",
+					"com_freq2"
+				],
+				"separator": "::"
+			},
+			{
+				"name": "chartstructures_txt",
+				"fields": [
+					"highchart",
+					"lowchart",
+					"tchart",
+					"termchart",
+					"bothchart",
+					"aacdtdchart"
+				],
+				"separator": "|"
+			}
+		],
+		"convert_keys": [
+			{
+				"field": "up_eff_alt",
+				"converter": "altitude"
+			},
+			{
+				"field": "lo_eff_alt",
+				"converter": "altitude"
+			}
+		],
+		"default_values": [
+			{
+				"field": "lo_eff_alt_txt",
+				"value": "FT"
+			},
+			{
+				"field": "up_eff_alt_txt",
+				"value": "FT"
+			}
+		],
+		"additional_tables": [
+			"airspaceauth",
+			"orgauth_airspace"
+		]
+	},
+	"airspaceauth": {
+		"clientkey_id": {
+			"fields": [
+				"ctl_agency"
+			],
+			"keyfields": [
+				"ctl_agency"
+			],
+			"constant": "airspaceauth"
+		},
+		"combine_keys": [
+			{
+				"name": "airspace_id",
+				"fields": [
+					"suas_ident",
+					"suas_sctr"
+				]
+			},
+			{
+				"name": "orgauth_id",
+				"fields": [
+					"ctl_agency"
+				]
+			}
+		]
+	},
+	"orgauth_airspace": {
+		"clientkey_id": {
+			"fields": [
+				"ctl_agency"
+			],
+			"keyfields": [
+				"ctl_agency"
+			]
+		}
+	},
+	"nav": {
+		"clientkey_id": {
+			"fields": [
+				"nav_ident",
+				"ctry",
+				"nav_key_cd",
+				"nav_type"
+			]
+		},
+		"geometry": {
+			"type": "point",
+			"source": "single",
+			"point": {
+				"lat": "wgs_dlat",
+				"long": "wgs_dlong"
+			}
+		},
+		"combine_keys": [
+			{
+				"name": "channel_txt",
+				"fields": [
+					"chan",
+					"tacan_dme_mode"
+				]
+			}
+		],
+		"convert_keys": [
+			{
+				"field": "freq",
+				"converter": "frequency"
+			},
+			{
+				"field": "paired_freq",
+				"converter": "frequency"
+			},
+			{
+				"field": "freq_prot",
+				"converter": "split",
+				"separator": "/"
+			}
+		],
+		"additional_tables": [
+			"assoc_vor",
+			"assoc_dme",
+			"assoc_ndb",
+			"assoc_tacan",
+			"comp_vor",
+			"comp_dme",
+			"comp_ndb",
+			"comp_tacan"
+		]
+	},
+	"assoc_vor": {
+		"clientkey_id": {
+			"fields": [
+				"nav_ident",
+				"ctry",
+				"nav_key_cd",
+				"nav_type"
+			],
+			"keyfields": [
+				"nav_type"
+			],
+			"keyvalues": [
+				"1",
+				"2",
+				"4"
+			],
+			"constant": "assoc_vor"
+		},
+		"combine_keys": [
+			{
+				"name": "navaidsystem_id",
+				"fields": [
+					"nav_ident",
+					"ctry",
+					"nav_key_cd",
+					"nav_type"
+				]
+			},
+			{
+				"name": "navaidcomponent_id",
+				"fields": [
+					"nav_ident",
+					"ctry",
+					"nav_key_cd",
+					"nav_type"
+				],
+				"constant": "comp_vor"
+			}
+		]
+	},
+	"assoc_dme": {
+		"clientkey_id": {
+			"fields": [
+				"nav_ident",
+				"ctry",
+				"nav_key_cd",
+				"nav_type"
+			],
+			"keyfields": [
+				"nav_type"
+			],
+			"keyvalues": [
+				"4",
+				"7",
+				"9"
+			],
+			"constant": "assoc_dme"
+		},
+		"combine_keys": [
+			{
+				"name": "navaidsystem_id",
+				"fields": [
+					"nav_ident",
+					"ctry",
+					"nav_key_cd",
+					"nav_type"
+				]
+			},
+			{
+				"name": "navaidcomponent_id",
+				"fields": [
+					"nav_ident",
+					"ctry",
+					"nav_key_cd",
+					"nav_type"
+				],
+				"constant": "comp_dme"
+			}
+		]
+	},
+	"assoc_ndb": {
+		"clientkey_id": {
+			"fields": [
+				"nav_ident",
+				"ctry",
+				"nav_key_cd",
+				"nav_type"
+			],
+			"keyfields": [
+				"nav_type"
+			],
+			"keyvalues": [
+				"5",
+				"7"
+			],
+			"constant": "assoc_ndb"
+		},
+		"combine_keys": [
+			{
+				"name": "navaidsystem_id",
+				"fields": [
+					"nav_ident",
+					"ctry",
+					"nav_key_cd",
+					"nav_type"
+				]
+			},
+			{
+				"name": "navaidcomponent_id",
+				"fields": [
+					"nav_ident",
+					"ctry",
+					"nav_key_cd",
+					"nav_type"
+				],
+				"constant": "comp_ndb"
+			}
+		]
+	},
+	"assoc_tacan": {
+		"clientkey_id": {
+			"fields": [
+				"nav_ident",
+				"ctry",
+				"nav_key_cd",
+				"nav_type"
+			],
+			"keyfields": [
+				"nav_type"
+			],
+			"keyvalues": [
+				"2",
+				"3"
+			],
+			"constant": "assoc_tacan"
+		},
+		"combine_keys": [
+			{
+				"name": "navaidsystem_id",
+				"fields": [
+					"nav_ident",
+					"ctry",
+					"nav_key_cd",
+					"nav_type"
+				]
+			},
+			{
+				"name": "navaidcomponent_id",
+				"fields": [
+					"nav_ident",
+					"ctry",
+					"nav_key_cd",
+					"nav_type"
+				],
+				"constant": "comp_tacan"
+			}
+		]
+	},
+	"comp_vor": {
+		"clientkey_id": {
+			"fields": [
+				"nav_ident",
+				"ctry",
+				"nav_key_cd",
+				"nav_type"
+			],
+			"keyfields": [
+				"nav_type"
+			],
+			"keyvalues": [
+				"1",
+				"2",
+				"4"
+			],
+			"constant": "comp_vor"
+		},
+		"geometry": {
+			"type": "point",
+			"source": "single",
+			"point": {
+				"lat": "wgs_dlat",
+				"long": "wgs_dlong"
+			}
+		},
+		"convert_keys": [
+			{
+				"field": "freq",
+				"converter": "frequency"
+			},
+			{
+				"field": "paired_freq",
+				"converter": "frequency"
+			},
+			{
+				"field": "freq_prot",
+				"converter": "split",
+				"separator": "/"
+			}
+		],
+		"default_values": [
+			{
+				"field": "protectiondisthorz_uom",
+				"value": "NM"
+			},
+			{
+				"field": "protectiondistvert_uom",
+				"value": "FT"
+			}
+		]
+	},
+	"comp_dme": {
+		"clientkey_id": {
+			"fields": [
+				"nav_ident",
+				"ctry",
+				"nav_key_cd",
+				"nav_type"
+			],
+			"keyfields": [
+				"nav_type"
+			],
+			"keyvalues": [
+				"4",
+				"7",
+				"9"
+			],
+			"constant": "comp_dme"
+		},
+		"geometry": {
+			"type": "point",
+			"source": "single",
+			"point": {
+				"lat": "wgs_dlat",
+				"long": "wgs_dlong"
+			}
+		},
+		"combine_keys": [
+			{
+				"name": "channel_txt",
+				"fields": [
+					"chan",
+					"tacan_dme_mode"
+				]
+			}
+		],
+		"convert_keys": [
+			{
+				"field": "freq_prot",
+				"converter": "split",
+				"separator": "/"
+			}
+		],
+		"default_values": [
+			{
+				"field": "protectiondisthorz_uom",
+				"value": "NM"
+			},
+			{
+				"field": "protectiondistvert_uom",
+				"value": "FT"
+			}
+		]
+	},
+	"comp_ndb": {
+		"clientkey_id": {
+			"fields": [
+				"nav_ident",
+				"ctry",
+				"nav_key_cd",
+				"nav_type"
+			],
+			"keyfields": [
+				"nav_type"
+			],
+			"keyvalues": [
+				"5",
+				"7"
+			],
+			"constant": "comp_ndb"
+		},
+		"geometry": {
+			"type": "point",
+			"source": "single",
+			"point": {
+				"lat": "wgs_dlat",
+				"long": "wgs_dlong"
+			}
+		},
+		"convert_keys": [
+			{
+				"field": "freq",
+				"converter": "frequency"
+			},
+			{
+				"field": "paired_freq",
+				"converter": "frequency"
+			},
+			{
+				"field": "freq_prot",
+				"converter": "split",
+				"separator": "/"
+			}
+		],
+		"default_values": [
+			{
+				"field": "protectiondisthorz_uom",
+				"value": "NM"
+			},
+			{
+				"field": "protectiondistvert_uom",
+				"value": "FT"
+			}
+		]
+	},
+	"comp_tacan": {
+		"clientkey_id": {
+			"fields": [
+				"nav_ident",
+				"ctry",
+				"nav_key_cd",
+				"nav_type"
+			],
+			"keyfields": [
+				"nav_type"
+			],
+			"keyvalues": [
+				"2",
+				"3"
+			],
+			"constant": "comp_tacan"
+		},
+		"geometry": {
+			"type": "point",
+			"source": "single",
+			"point": {
+				"lat": "wgs_dlat",
+				"long": "wgs_dlong"
+			}
+		},
+		"convert_keys": [
+			{
+				"field": "freq",
+				"converter": "frequency"
+			},
+			{
+				"field": "paired_freq",
+				"converter": "frequency"
+			},
+			{
+				"field": "freq_prot",
+				"converter": "split",
+				"separator": "/"
+			}
+		],
+		"default_values": [
+			{
+				"field": "protectiondisthorz_uom",
+				"value": "NM"
+			},
+			{
+				"field": "protectiondistvert_uom",
+				"value": "FT"
+			}
+		]
+	},
+	"chart": {
+		"clientkey_id": {
+			"fields": [
+				"rec_id",
+				"chart_ident",
+				"series"
+			]
+		},
+		"geometry": {
+			"type": "point",
+			"source": "single",
+			"point": {
+				"lat": "lat",
+				"long": "lon"
+			}
+		},
+		"combine_keys": [
+			{
+				"name": "source_txt",
+				"fields": [
+					"source_ref",
+					"src_investigation",
+					"state_dept",
+					"faa",
+					"nga",
+					"host_ctry",
+					"notam",
+					"smr"
+				],
+				"separator": "::"
+			},
+			{
+				"name": "mapid",
+				"fields": [
+					"series",
+					"chart_ident"
+				],
+				"separator": "::"
+			},
+			{
+				"name": "style_txt",
+				"fields": [
+					"box_type",
+					"boxed",
+					"color",
+					"screen"
+				],
+				"separator": "::"
+			}
+		]
+	},
+	"holding": {
+		"clientkey_id": {
+			"fields": [
+				"wpt_ident",
+				"wpt_country",
+				"dup"
+			]
+		},
+		"geometry": {
+			"type": "point",
+			"source": "single",
+			"point": {
+				"lat": "wgs_dlat",
+				"long": "wgs_dlong"
+			}
+		},
+		"combine_keys": [
+			{
+				"name": "designatedpoint_id",
+				"fields": [
+					"wpt_ident",
+					"wpt_country"
+				]
+			}
+		],
+		"transform_keys": [
+			{
+				"field": "mag_crs",
+				"operator": "*",
+				"value": "0.1"
+			}
+		]
+	},
+	"mtr": {
+		"clientkey_id": {
+			"fields": [
+				"mtr_route_type",
+				"mtr_ident",
+				"point_id",
+				"country"
+			]
+		},
+		"geometry": {
+			"type": "point",
+			"source": "single",
+			"point": {
+				"lat": "wgs_lat",
+				"long": "wgs_long"
+			}
+		},
+		"convert_keys": [
+			{
+				"field": "enroute_alt_1",
+				"converter": "altitude"
+			},
+			{
+				"field": "enroute_alt_2",
+				"converter": "altitude"
+			}
+		],
+		"additional_tables": [
+			"mtrsegment"
+		]
+	},
+	"mtrsegment": {
+		"clientkey_id": {
+			"fields": [
+				"mtr_route_type",
+				"mtr_ident",
+				"point_id",
+				"country",
+				"next_pt"
+			],
+			"keyfields": [
+				"next_pt"
+			]
+		},
+		"convert_keys": [
+			{
+				"field": "enroute_alt_1",
+				"converter": "altitude"
+			},
+			{
+				"field": "enroute_alt_2",
+				"converter": "altitude"
+			}
+		],
+		"combine_keys": [
+			{
+				"name": "startpoint_id",
+				"fields": [
+					"mtr_route_type",
+					"mtr_ident",
+					"point_id",
+					"country"
+				]
+			},
+			{
+				"name": "endpoint_id",
+				"fields": [
+					"mtr_route_type",
+					"mtr_ident",
+					"next_pt",
+					"country"
+				]
+			}
+		]
+	},
+	"refueling": {
+		"clientkey_id": {
+			"fields": [
+				"country",
+				"air_ref_ident",
+				"direc"
+			]
+		},
+		"geometry": {
+			"type": "line",
+			"source": "multiple",
+			"point": {
+				"lat": "wgs_lat",
+				"long": "wgs_long"
+			}
+		},
+		"sort": [
+			"country",
+			"air_ref_ident",
+			"direc",
+			"point_seq"
+		],
+		"additional_tables": [
+			"refuelingpoint"
+		]
+	},
+	"refuelingpoint": {
+		"clientkey_id": {
+			"fields": [
+				"country",
+				"air_ref_ident",
+				"direc",
+				"point_seq"
+			]
+		},
+		"geometry": {
+			"type": "point",
+			"source": "single",
+			"point": {
+				"lat": "wgs_lat",
+				"long": "wgs_long"
+			}
+		}
+	},
+	"ortca": {
+		"clientkey_id": {
+			"fields": [
+				"wac",
+				"wac_cell"
+			]
+		},
+		"geometry": {
+			"type": "point",
+			"source": "single",
+			"point": {
+				"lat": "sw_lat",
+				"long": "sw_lon"
+			}
+		},
+		"default_values": [
+			{
+				"field": "interval_val",
+				"value": "OR1x1"
+			}
+		]
+	},
+	"avoidance": {
+		"clientkey_id": {
+			"fields": [
+				"country",
+				"province",
+				"seq_num"
+			]
+		},
+		"geometry": {
+			"type": "point",
+			"source": "single",
+			"point": {
+				"lat": "latstring",
+				"long": "lonstring"
+			}
+		},
+		"combine_keys": [
+			{
+				"name": "address_id",
+				"fields": [
+					"country",
+					"province"
+				]
+			}
+		],
+		"additional_tables": [
+			"address_avoidance"
+		]
+	},
+	"address_avoidance": {
+		"clientkey_id": {
+			"fields": [
+				"country",
+				"province"
+			]
+		}
+	},
+	"wpt_mca": {
+		"clientkey_id": {
+			"fields": [
+				"wpt_ident",
+				"wpt_country",
+				"ats_ident"
+			]
+		},
+		"combine_keys": [
+			{
+				"name": "note_txt",
+				"fields": [
+					"ats_ident",
+					"direction",
+					"mca",
+					"mod_date"
+				],
+				"separator": "::"
+			},
+			{
+				"name": "reference_id",
+				"fields": [
+					"wpt_ident",
+					"wpt_country"
+				]
+			}
+		],
+		"default_values": [
+			{
+				"field": "referenceclass_txt",
+				"value": "designatedpoint"
+			},
+			{
+				"field": "note_type",
+				"value": "27"
+			}
+		]
+	}
+}

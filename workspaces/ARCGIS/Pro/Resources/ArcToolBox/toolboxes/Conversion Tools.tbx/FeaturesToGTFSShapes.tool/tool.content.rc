@@ -1,0 +1,24 @@
+{
+    "map": {
+        "description": "Creates a  shapes.txt file for a GTFS public transit dataset based on route line representations created by the Generate Shapes Features From GTFS tool.",
+        "distance_units.descr": "<xdoc><p>Specifies the distance units to use when populating the <span class=\"esri_fieldname\">shape_dist_traveled</span> field in the output GTFS files.</p><ul><li><span title=\"MILES\">Miles</span>—The unit is miles. This is the default.</li><li><span title=\"METERS\">Meters</span>—The unit is meters</li><li><span title=\"KILOMETERS\">Kilometers</span>—The unit is kilometers</li></ul></xdoc>",
+        "distance_units.domain.KILOMETERS": "Kilometers",
+        "distance_units.domain.METERS": "Meters",
+        "distance_units.domain.MILES": "Miles",
+        "distance_units.title": "Distance Units",
+        "in_gtfs_stop_times.descr": "The original stop_times.txt file from the GTFS dataset that was used when running the Generate Shapes Features From GTFS tool.",
+        "in_gtfs_stop_times.title": "Input GTFS Stop Times",
+        "in_gtfs_trips.descr": "<xdoc><p>The updated GTFS trips.txt file created by running the Generate Shapes Features From GTFS tool. This file must have the <span class=\"esri_fieldname\">shape_id</span> column with values corresponding to those in the <span class=\"esri_fieldname\">shape_id</span> fields in the other tool inputs.</p></xdoc>",
+        "in_gtfs_trips.title": "Input Updated GTFS Trips",
+        "in_shape_lines.descr": "<xdoc><p>A line feature class representing the GTFS shapes created by running the Generate Shapes Features From GTFS tool. The feature class must contain a <span class=\"esri_fieldname\">shape_id</span> field with values corresponding to the <span class=\"esri_fieldname\">shape_id</span> field values in the other tool inputs.</p></xdoc>",
+        "in_shape_lines.title": "Input Shape Lines",
+        "in_shape_stops.descr": "<xdoc><p>A point feature class representing the GTFS stops associated with each shape created by running the Generate Shapes Features From GTFS tool. If a transit stop is used by multiple shapes, the stop should be duplicated in this feature class for each shape that uses it.</p><p>The feature class must contain a <span class=\"esri_fieldname\">shape_id</span> field with values corresponding to the <span class=\"esri_fieldname\">shape_id</span> field values in the other tool inputs. It must also contain a <span class=\"esri_fieldname\">stop_id</span> field with values corresponding to those in the <span class=\"esri_fieldname\">shape_id</span> column of the input GTFS stop_times.txt file.</p></xdoc>",
+        "in_shape_stops.title": "Input Shape Stops",
+        "out_gtfs_shapes.descr": "The output GTFS shapes.txt file.",
+        "out_gtfs_shapes.title": "Output GTFS Shapes",
+        "out_gtfs_stop_times.descr": "<xdoc><p>The output GTFS stop_times.txt file This file will contain the <span class=\"esri_fieldname\">shape_dist_traveled</span> field with values derived from the new shapes.</p></xdoc>",
+        "out_gtfs_stop_times.title": "Output GTFS Stop Times",
+        "summary": "<xdoc><p>Creates a shapes.txt file for a GTFS public transit dataset based on route line representations created by the Generate Shapes Features From GTFS tool.</p><p>The optional GTFS shapes.txt file contains a representation of the geographic paths taken by transit vehicles in a transit system. A good shapes.txt file is important for GTFS-based routing apps to display transit routes correctly on the map. Although many transit agencies generate their shapes.txt files using GPS trackers on their vehicles, other transit agencies lacking this hardware may have trouble creating this file.</p><p>This tool, together with the Generate Shapes Features From GTFS tool, allows you to create a shapes.txt file based on the stop, route, and schedule information from an existing GTFS dataset. After running the Generate Shapes Features From GTFS tool to estimate the paths traveled by vehicles in the transit system and fine-tuning the results based on local knowledge, you can run this tool to convert those line features into a new shapes.txt file. The tool also creates a new GTFS stop_times.txt file with the <span class=\"esri_fieldname\">shape_dist_traveled</span> field populated with values corresponding to the new shapes.</p></xdoc>",
+        "title": "Features To GTFS Shapes"
+    }
+}

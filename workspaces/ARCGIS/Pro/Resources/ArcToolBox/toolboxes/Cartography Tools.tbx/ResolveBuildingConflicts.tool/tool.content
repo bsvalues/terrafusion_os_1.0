@@ -1,0 +1,140 @@
+{
+    "type": "FunctionTool",
+    "guid": "{6de28671-a897-4677-84ec-584ada14cbe3}",
+    "displayname": "$rc:title",
+    "helpcontent": "10020003",
+    "description": "$rc:description",
+    "product": "300",
+    "attributes": [
+        "edit_session",
+        "input_data_change"
+    ],
+    "params": {
+        "in_buildings": {
+            "display_order": "0",
+            "displayname": "$rc:in_buildings.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPLayer"
+                }
+            },
+            "domain": {
+                "type": "GPLayerDomain",
+                "geometrytype": [
+                    "Polygon",
+                    "Point"
+                ]
+            },
+            "description": "$rc:in_buildings.descr"
+        },
+        "invisibility_field": {
+            "display_order": "2",
+            "displayname": "$rc:invisibility_field.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:invisibility_field.descr"
+        },
+        "in_barriers": {
+            "display_order": "3",
+            "displayname": "$rc:in_barriers.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPLayer",
+                        "displayname": "$rc:in_barriers.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:in_barriers.dt.title2"
+                    },
+                    {
+                        "type": "GPLinearUnit",
+                        "displayname": "$rc:in_barriers.dt.title3"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPLayerDomain",
+                        "geometrytype": [
+                            "Polyline",
+                            "Polygon"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "FALSE",
+                                "code": "$rc:in_barriers.domain.item2.FALSE"
+                            },
+                            {
+                                "value": "TRUE",
+                                "code": "$rc:in_barriers.domain.item2.TRUE"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:in_barriers.descr"
+        },
+        "building_gap": {
+            "display_order": "4",
+            "displayname": "$rc:building_gap.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_buildings"
+            ],
+            "description": "$rc:building_gap.descr"
+        },
+        "minimum_size": {
+            "display_order": "5",
+            "displayname": "$rc:minimum_size.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_buildings"
+            ],
+            "description": "$rc:minimum_size.descr"
+        },
+        "hierarchy_field": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:hierarchy_field.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:hierarchy_field.descr"
+        },
+        "out_layers": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_layers.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPLayer"
+                }
+            },
+            "depends": [
+                "in_buildings"
+            ]
+        }
+    },
+    "environments": [
+        "cartographicCoordinateSystem",
+        "cartographicPartitions",
+        "referenceScale"
+    ]
+}

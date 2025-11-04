@@ -1,0 +1,78 @@
+{
+  "calcite": {
+    "reset": "재설정",
+    "action": {
+      "sort": "정렬"
+    },
+    "buttons": {
+      "save": "저장",
+      "edit": "편집",
+      "done": "완료",
+      "apply": "적용",
+      "cancel": "취소",
+      "close": "닫기"
+    },
+    "ColorPicker": {
+      "selectColor": "색상 선택",
+      "noColorSpecified": "지정된 색상 없음",
+      "transparent": "투명",
+      "colorTooltip": "<p>Hex: ${hex}</p><p>RGB: ${r}, ${g}, ${b}</p>",
+      "recent": "최근",
+      "standard": "Standard",
+      "savedColors": "저장된 색상",
+      "advanced": "고급"
+    },
+    "DatePickerLink": {
+      "enterDate": "날짜 입력"
+    },
+    "PaginationContinuous": {
+      "next": "다음",
+      "previous": "이전"
+    }
+  },
+  "ImageNavigator": {
+    "paginationLabel": "${n}개 중 ${m}개",
+    "noImage": "이 사이트에는 현재 저장되어 있는 사진이 없음",
+    "previewNotAvailable": "미리보기를 사용할 수 없음"
+  },
+  "PageNavigator": {
+    "currentPageOutOfN": "${current}/${total}페이지"
+  },
+  "PanoramicViewer": {
+    "image-viewer-close": "닫기",
+    "image-viewer-fullscreen": "전체 화면",
+    "image-viewer-minimize": "최소화",
+    "image-viewer-title": "사진 뷰어",
+    "image-viewer-show-caption": "캡션 표시",
+    "image-viewer-hide-caption": "숨기기"
+  },
+  "TextBox": {
+    "error_numberExpected": "숫자여야 함",
+    "error_range": "올바른 값은 ${0}과(와) ${1} 사이임"
+  },
+  "charts": {
+    "histogram": {
+      "minValue": "최소값:<br>${0}",
+      "maxValue": "최대값:<br>${0}",
+      "thisAreaValue": "이 면적: ${0}",
+      "medianValue": "중앙값:<br>${0}",
+      "q1Value": "Q1:<br>${0}",
+      "q3Value": "Q3:<br>${0}",
+      "percentile": "백분위수 ${percent}:<br>${0}",
+      "percentileBottom": "하단 ${percent}%:<br>${0}",
+      "percentileTop": "상단 ${percent}%:<br>${0}",
+      "percentile_singleLine": "백분위수 ${percent}: ${0}",
+      "percentileBottom_singleLine": "하단 ${percent}%: ${0}",
+      "percentileTop_singleLine": "상단 ${percent}%: ${0}",
+      "sd_singleLine": "${sd} SD: ${0}",
+      "tooltip": {
+        "range_single": "<b>${value}</b> 내의 값이 있는 <b>${level}</b> : <b>1</b>",
+        "range_single_precise": "<b>${areaName}</b>에 <b>${value}</b> 값이 있습니다.",
+        "range_multi": "<b>${value}</b> 내의 값이 있는 <b>${level}</b> : <b>${count}</b>",
+        "thisArea": "<b>이 면적</b>의 값이 <b>${value}</b>입니다.",
+        "percentileLower": "<b>${level}</b>의 <b>${percent}%</b>에 <b>${value}</b>을(를) 초과하는 값이 있습니다.",
+        "percentileUpper": "<b>${level}</b>의 <b>${percent}%</b>에 <b>${value}</b> 미만의 값이 있습니다."
+      }
+    }
+  }
+}

@@ -1,0 +1,5 @@
+<DataType Name="DEPrjFile">
+  <DisplayName>Projection File</DisplayName>
+  <Description>A file storing coordinate system information for spatial data.</Description>
+</DataType>
+

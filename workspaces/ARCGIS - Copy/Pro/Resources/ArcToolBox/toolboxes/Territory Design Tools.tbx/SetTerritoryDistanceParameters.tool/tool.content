@@ -1,0 +1,299 @@
+{
+    "type": "FunctionTool",
+    "guid": "{10033213-e6e0-438a-ad73-199b93fe8b69}",
+    "displayname": "$rc:title",
+    "helpcontent": "67010006",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "33"
+    ],
+    "params": {
+        "in_territory_solution": {
+            "displayname": "$rc:in_territory_solution.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPGroupLayer"
+                    },
+                    {
+                        "type": "DEFeatureDataset"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "description": "$rc:in_territory_solution.descr"
+        },
+        "level": {
+            "displayname": "$rc:level.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "depends": [
+                "in_territory_solution"
+            ],
+            "description": "$rc:level.descr"
+        },
+        "distance_type": {
+            "type": "optional",
+            "displayname": "$rc:distance_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "STRAIGHT_LINE",
+                        "code": "$rc:distance_type.domain.STRAIGHT_LINE"
+                    }
+                ]
+            },
+            "description": "$rc:distance_type.descr"
+        },
+        "units": {
+            "type": "optional",
+            "displayname": "$rc:units.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "METERS",
+                        "code": "$rc:units.domain.METERS"
+                    },
+                    {
+                        "value": "MILES",
+                        "code": "$rc:units.domain.MILES"
+                    },
+                    {
+                        "value": "NAUTICAL_MILES",
+                        "code": "$rc:units.domain.NAUTICAL_MILES"
+                    },
+                    {
+                        "value": "KILOMETERS",
+                        "code": "$rc:units.domain.KILOMETERS"
+                    },
+                    {
+                        "value": "YARDS",
+                        "code": "$rc:units.domain.YARDS"
+                    },
+                    {
+                        "value": "FEET",
+                        "code": "$rc:units.domain.FEET"
+                    },
+                    {
+                        "value": "INCHES",
+                        "code": "$rc:units.domain.INCHES"
+                    },
+                    {
+                        "value": "DECIMETERS",
+                        "code": "$rc:units.domain.DECIMETERS"
+                    },
+                    {
+                        "value": "CENTIMETERS",
+                        "code": "$rc:units.domain.CENTIMETERS"
+                    },
+                    {
+                        "value": "MILLIMETERS",
+                        "code": "$rc:units.domain.MILLIMETERS"
+                    },
+                    {
+                        "value": "DECIMAL_DEGREES",
+                        "code": "$rc:units.domain.DECIMAL_DEGREES"
+                    },
+                    {
+                        "value": "MINUTES",
+                        "code": "$rc:units.domain.MINUTES"
+                    },
+                    {
+                        "value": "HOURS",
+                        "code": "$rc:units.domain.HOURS"
+                    },
+                    {
+                        "value": "DAYS",
+                        "code": "$rc:units.domain.DAYS"
+                    },
+                    {
+                        "value": "SECONDS",
+                        "code": "$rc:units.domain.SECONDS"
+                    }
+                ]
+            },
+            "depends": [
+                "distance_type"
+            ],
+            "description": "$rc:units.descr"
+        },
+        "max_radius": {
+            "type": "optional",
+            "displayname": "$rc:max_radius.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "description": "$rc:max_radius.descr"
+        },
+        "buffer_distance": {
+            "type": "optional",
+            "displayname": "$rc:buffer_distance.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "description": "$rc:buffer_distance.descr"
+        },
+        "min_distance": {
+            "type": "optional",
+            "displayname": "$rc:min_distance.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "description": "$rc:min_distance.descr"
+        },
+        "out_territory_solution": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_territory_solution.title",
+            "datatype": {
+                "type": "GPGroupLayer"
+            },
+            "depends": [
+                "in_territory_solution"
+            ]
+        },
+        "network_datasource": {
+            "type": "optional",
+            "displayname": "$rc:network_datasource.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPNetworkDatasetLayer"
+                    }
+                ]
+            },
+            "description": "$rc:network_datasource.descr"
+        },
+        "build_index": {
+            "type": "optional",
+            "displayname": "$rc:build_index.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "BUILD_INDEX"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_BUILD_INDEX"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:build_index.descr"
+        },
+        "travel_direction": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:travel_direction.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "TOWARD_STORES",
+                        "code": "$rc:travel_direction.domain.TOWARD_STORES"
+                    },
+                    {
+                        "value": "AWAY_FROM_STORES",
+                        "code": "$rc:travel_direction.domain.AWAY_FROM_STORES"
+                    }
+                ]
+            },
+            "description": "$rc:travel_direction.descr"
+        },
+        "time_of_day": {
+            "type": "optional",
+            "displayname": "$rc:time_of_day.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:time_of_day.descr"
+        },
+        "time_zone": {
+            "type": "optional",
+            "displayname": "$rc:time_zone.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "TIME_ZONE_AT_LOCATION",
+                        "code": "$rc:time_zone.domain.TIME_ZONE_AT_LOCATION"
+                    },
+                    {
+                        "value": "UTC",
+                        "code": "$rc:time_zone.domain.UTC"
+                    }
+                ]
+            },
+            "description": "$rc:time_zone.descr"
+        },
+        "search_tolerance": {
+            "type": "optional",
+            "displayname": "$rc:search_tolerance.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                }
+            },
+            "description": "$rc:search_tolerance.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

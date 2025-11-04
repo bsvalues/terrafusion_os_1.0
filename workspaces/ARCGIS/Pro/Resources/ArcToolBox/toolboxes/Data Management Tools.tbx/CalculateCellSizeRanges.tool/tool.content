@@ -1,0 +1,162 @@
+{
+    "type": "FunctionTool",
+    "guid": "{df74199c-8f53-4b52-aa04-706f2a4447e0}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190504",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "mCPU",
+        "no_data_change"
+    ],
+    "params": {
+        "in_mosaic_dataset": {
+            "display_order": "0",
+            "displayname": "$rc:in_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_mosaic_dataset.descr"
+        },
+        "where_clause": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:where_clause.title",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "in_mosaic_dataset"
+            ],
+            "description": "$rc:where_clause.descr"
+        },
+        "do_compute_min": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:do_compute_min.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "MIN_CELL_SIZES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_MIN_CELL_SIZES"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:do_compute_min.descr"
+        },
+        "do_compute_max": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:do_compute_max.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "MAX_CELL_SIZES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_MAX_CELL_SIZES"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:do_compute_max.descr"
+        },
+        "max_range_factor": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:max_range_factor.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "depends": [
+                "do_compute_max"
+            ],
+            "value": "10",
+            "description": "$rc:max_range_factor.descr"
+        },
+        "cell_size_tolerance_factor": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:cell_size_tolerance_factor.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0.8",
+            "description": "$rc:cell_size_tolerance_factor.descr"
+        },
+        "update_missing_only": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:update_missing_only.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "UPDATE_MISSING_ONLY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "UPDATE_ALL"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:update_missing_only.descr"
+        },
+        "out_mosaic_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "7",
+            "displayname": "$rc:out_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "depends": [
+                "in_mosaic_dataset"
+            ]
+        }
+    },
+    "environments": [
+        "parallelProcessingFactor"
+    ]
+}

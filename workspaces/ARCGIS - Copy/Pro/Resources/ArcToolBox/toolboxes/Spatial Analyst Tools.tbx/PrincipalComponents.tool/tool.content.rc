@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Performs Principal Component Analysis (PCA) on a set of raster bands and generates a single multiband raster as output.",
+        "in_raster_bands.descr": "<xdoc><p>The input raster bands.</p><p>They can be integer or floating point type.</p></xdoc>",
+        "in_raster_bands.title": "Input raster bands",
+        "number_components.descr": "<xdoc><p>Number of principal components.</p><p>The number must be greater than zero and less than or equal to the total number of input raster bands.</p><p>The default is the total number of rasters in the input.</p></xdoc>",
+        "number_components.title": "Number of Principal components",
+        "out_data_file.descr": "<xdoc><p>Output ASCII data file storing principal component parameters.</p><p>The output data file records the correlation and covariance matrices, the eigenvalues and eigenvectors, the percent variance each eigenvalue captures, and the accumulative variance described by the eigenvalues.</p><p>The extension for the output file can be .txt or .asc.</p></xdoc>",
+        "out_data_file.title": "Output data file",
+        "out_multiband_raster.descr": "<xdoc><p>The output multiband raster dataset.</p><p>If all of the input bands are integer type, the output raster bands will be integer. If any of the input bands are floating point, the output will be floating point.</p><p>If the output is an Esri Grid raster, the name must have less than 10 characters.</p></xdoc>",
+        "out_multiband_raster.title": "Output multiband raster",
+        "title": "Principal Components"
+    }
+}

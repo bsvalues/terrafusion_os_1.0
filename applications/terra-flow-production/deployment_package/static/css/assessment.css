@@ -1,0 +1,727 @@
+/* 
+ * Assessment CSS
+ * Custom styles for the GeoAssessmentPro assessment interface
+ */
+
+/* Property Marker Styles */
+.custom-marker {
+    border-radius: 50%;
+    transition: transform 0.2s;
+}
+
+.custom-marker:hover {
+    transform: scale(1.2);
+    z-index: 1000 !important;
+}
+
+.property-marker-container {
+    background: none !important;
+    border: none !important;
+}
+
+.property-marker {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid #333;
+    box-shadow: 0 0 3px rgba(0,0,0,0.3);
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.3);
+    }
+    70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 5px rgba(0, 0, 0, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+    }
+}
+
+.property-marker:hover {
+    transform: scale(1.4);
+    box-shadow: 0 0 8px rgba(0,0,0,0.5);
+    z-index: 1000 !important;
+    animation: none;
+}
+
+.property-marker.active {
+    animation: bounce 0.5s ease-in-out;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.8), 0 0 20px rgba(0, 0, 0, 0.4);
+    border: 2px solid white;
+    transform: scale(1.5);
+    z-index: 1000;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-8px);
+    }
+    60% {
+        transform: translateY(-4px);
+    }
+}
+
+@keyframes ripple-effect {
+    0% {
+        width: 0;
+        height: 0;
+        opacity: 0.8;
+    }
+    100% {
+        width: 50px;
+        height: 50px;
+        opacity: 0;
+    }
+}
+
+.marker-residential {
+    background-color: #4285F4; /* Blue */
+}
+
+.marker-commercial {
+    background-color: #EA4335; /* Red */
+}
+
+.marker-industrial {
+    background-color: #FBBC05; /* Yellow */
+}
+
+.marker-agricultural {
+    background-color: #34A853; /* Green */
+}
+
+.marker-public {
+    background-color: #8F44AD; /* Purple */
+}
+
+.marker-vacant {
+    background-color: #95A5A6; /* Gray */
+}
+
+/* Value range color indicators */
+.value-low {
+    background-color: #1a9641;
+    border: 1px solid #333;
+}
+
+.value-medium-low {
+    background-color: #a6d96a;
+    border: 1px solid #333;
+}
+
+.value-medium {
+    background-color: #ffffbf;
+    border: 1px solid #333;
+}
+
+.value-medium-high {
+    background-color: #fdae61;
+    border: 1px solid #333;
+}
+
+.value-high {
+    background-color: #d7191c;
+    border: 1px solid #333;
+}
+
+/* Custom popup styles */
+.leaflet-popup-content-wrapper {
+    padding: 0;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    transform-origin: bottom center;
+    animation: popup-appear 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popup-appear {
+    0% {
+        transform: translateY(20px) scale(0.8);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.property-popup {
+    padding: 15px;
+}
+
+.property-popup h5 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #1a5276;
+    font-weight: 600;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+    animation: slide-in-right 0.4s ease-out 0.1s both;
+}
+
+@keyframes slide-in-right {
+    0% {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.property-popup-address {
+    animation: slide-in-left 0.4s ease-out 0.2s both;
+}
+
+@keyframes slide-in-left {
+    0% {
+        transform: translateX(20px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.property-popup p {
+    margin-bottom: 5px;
+    font-size: 0.95rem;
+    animation: fade-in 0.5s ease-out 0.3s both;
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.property-popup .btn {
+    margin-top: 10px;
+    animation: button-appear 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.4s both;
+    transform-origin: center;
+}
+
+@keyframes button-appear {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    70% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.property-popup .badge {
+    animation: badge-pulse 2s infinite;
+}
+
+@keyframes badge-pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Statistics card styles */
+.stat-card {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    margin-bottom: 15px;
+    overflow: hidden;
+    animation: card-appear 0.8s ease-out backwards;
+}
+
+@keyframes card-appear {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stat-card:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.stat-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.stat-card:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.stat-card:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.stat-card:hover .stat-icon {
+    transform: scale(1.1) rotate(10deg);
+    color: #2980b9;
+}
+
+.stat-card:hover::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+    transform: translateX(-100%);
+    animation: card-shine 1s ease-out;
+    pointer-events: none;
+}
+
+@keyframes card-shine {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.stat-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    color: #3498db;
+    transition: all 0.3s ease;
+}
+
+.stat-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+    transition: color 0.3s ease;
+}
+
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    position: relative;
+    display: inline-block;
+    animation: count-up 2s ease-out backwards;
+}
+
+@keyframes count-up {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stat-trend {
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.trend-up {
+    color: #2ecc71;
+    background-color: rgba(46, 204, 113, 0.1);
+}
+
+.trend-up i {
+    animation: trend-up-bounce 2s infinite;
+}
+
+@keyframes trend-up-bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-3px);
+    }
+}
+
+.trend-down {
+    color: #e74c3c;
+    background-color: rgba(231, 76, 60, 0.1);
+}
+
+.trend-down i {
+    animation: trend-down-bounce 2s infinite;
+}
+
+@keyframes trend-down-bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(3px);
+    }
+}
+
+/* Filter panel styles */
+.filter-card {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.filter-card .card-header {
+    background-color: #2c3e50;
+    color: white;
+    font-weight: 600;
+}
+
+/* Tools panel styles */
+.tools-card {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.tools-card .card-header {
+    background-color: #34495e;
+    color: white;
+    font-weight: 600;
+}
+
+/* Property details animation and styling */
+#property-details.animating * {
+    animation: fade-in-up 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation-fill-mode: both;
+}
+
+#property-details.animating .property-detail-header {
+    animation-delay: 0.1s;
+}
+
+#property-details.animating tr:nth-child(1) {
+    animation-delay: 0.15s;
+}
+
+#property-details.animating tr:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+#property-details.animating tr:nth-child(3) {
+    animation-delay: 0.25s;
+}
+
+#property-details.animating tr:nth-child(4) {
+    animation-delay: 0.3s;
+}
+
+#property-details.animating tr:nth-child(5) {
+    animation-delay: 0.35s;
+}
+
+#property-details.animating tr:nth-child(6) {
+    animation-delay: 0.4s;
+}
+
+#property-details.animating tr:nth-child(7) {
+    animation-delay: 0.45s;
+}
+
+#property-details.animating .btn-primary {
+    animation-delay: 0.5s;
+}
+
+#property-details.animating .btn-outline-secondary {
+    animation-delay: 0.55s;
+}
+
+@keyframes fade-in-up {
+    0% {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.property-badge {
+    display: inline-block;
+    animation: badge-pulse 2s infinite;
+}
+
+/* Property details modal styles */
+.modal-property-details .modal-header {
+    background-color: #3498db;
+    color: white;
+}
+
+.property-detail-section {
+    margin-bottom: 20px;
+}
+
+.property-detail-section h5 {
+    border-bottom: 2px solid #eee;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    color: #2c3e50;
+}
+
+.property-feature-tag {
+    display: inline-block;
+    background-color: #ecf0f1;
+    padding: 5px 10px;
+    border-radius: 20px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+    color: #34495e;
+}
+
+.property-feature-tag i {
+    margin-right: 5px;
+}
+
+/* Valuation chart styles */
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+/* Comparable properties table styles */
+.comparable-table {
+    font-size: 0.9rem;
+}
+
+.comparable-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.comparable-table .highlight {
+    background-color: #e8f4fc;
+}
+
+/* Assessment badge styles */
+.assessment-badge {
+    display: inline-block;
+    padding: 0.25em 0.6em;
+    font-size: 0.75em;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 10px;
+    margin-left: 5px;
+}
+
+.assessment-badge-low {
+    background-color: #dff0d8;
+    color: #3c763d;
+}
+
+.assessment-badge-medium {
+    background-color: #fcf8e3;
+    color: #8a6d3b;
+}
+
+.assessment-badge-high {
+    background-color: #f2dede;
+    color: #a94442;
+}
+
+/* Benton County branding colors */
+.benton-primary {
+    color: #003366;
+}
+
+.benton-secondary {
+    color: #669933;
+}
+
+.benton-accent {
+    color: #cc9900;
+}
+
+.bg-benton-primary {
+    background-color: #003366;
+    color: white;
+}
+
+.bg-benton-secondary {
+    background-color: #669933;
+    color: white;
+}
+
+.bg-benton-accent {
+    background-color: #cc9900;
+    color: white;
+}
+
+/* Button animations and effects */
+.btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    border-radius: 100%;
+    transform: scale(1, 1) translate(-50%, -50%);
+    transform-origin: 50% 50%;
+}
+
+.btn:focus:not(:active)::after {
+    animation: btn-ripple 0.6s ease-out;
+}
+
+@keyframes btn-ripple {
+    0% {
+        transform: scale(0, 0) translate(-50%, -50%);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(20, 20) translate(-50%, -50%);
+        opacity: 0;
+    }
+}
+
+/* Controls hover effects */
+.filter-control .form-control,
+.filter-control .form-select {
+    transition: all 0.3s ease;
+    border: 1px solid #ced4da;
+}
+
+.filter-control .form-control:focus,
+.filter-control .form-select:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+    transform: translateY(-2px);
+}
+
+.filter-control .form-label {
+    transition: all 0.3s ease;
+}
+
+.filter-control .form-control:focus + .form-label,
+.filter-control .form-select:focus + .form-label {
+    color: #3498db;
+    font-weight: 500;
+}
+
+/* Report generation styles */
+.report-section {
+    margin-bottom: 20px;
+    animation: fade-in 0.5s ease-out;
+}
+
+.report-section-title {
+    font-weight: 600;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    animation: slide-in-right 0.5s ease-out;
+}
+
+/* Media queries for responsive design */
+@media (max-width: 768px) {
+    .map-container {
+        height: 500px;
+    }
+    
+    .coordinates-display {
+        font-size: 10px;
+        padding: 3px 6px;
+    }
+    
+    .map-tools .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+    }
+    
+    .legend {
+        font-size: 0.75rem;
+    }
+    
+    .legend-color {
+        width: 15px;
+        height: 15px;
+    }
+}
+
+/* Print styles for maps and reports */
+@media print {
+    .filter-card, .tools-card, .map-tools, .coordinates-display {
+        display: none !important;
+    }
+    
+    .map-container {
+        height: 500px !important;
+        page-break-after: always;
+    }
+    
+    .property-detail-section {
+        page-break-inside: avoid;
+    }
+    
+    .modal {
+        position: static;
+        display: block;
+    }
+    
+    .modal-backdrop {
+        display: none;
+    }
+}

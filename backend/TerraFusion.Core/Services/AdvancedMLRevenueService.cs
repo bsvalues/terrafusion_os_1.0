@@ -3,6 +3,9 @@ using Microsoft.Extensions.Configuration;
 using TerraFusion.Core.DTOs;
 using System.Collections.Concurrent;
 
+
+#pragma warning disable CS1998
+
 namespace TerraFusion.Core.Services
 {
     public interface IAdvancedMLRevenueService

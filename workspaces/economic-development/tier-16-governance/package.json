@@ -1,0 +1,20 @@
+{
+  "name": "tier-16-governance-economic-development",
+  "version": "1.0.0",
+  "description": "Tier 16: Advanced Governance & Compliance Automation",
+  "scripts": {
+    "governance:check": "python governance-policy-engine.py",
+    "compliance:monitor": "python compliance-automation-engine.py",
+    "compliance:gdpr": "python compliance-automation-engine.py --framework GDPR",
+    "compliance:hipaa": "python compliance-automation-engine.py --framework HIPAA",
+    "compliance:fisma": "python compliance-automation-engine.py --framework FISMA",
+    "compliance:soc2": "python compliance-automation-engine.py --framework SOC2",
+    "audit:verify": "python audit-framework.py --verify",
+    "audit:report": "python audit-framework.py --report",
+    "policy:resolve": "python policy-conflict-resolver.py",
+    "policy:detect-conflicts": "python policy-conflict-resolver.py --detect",
+    "governance:report": "python governance-policy-engine.py --report",
+    "compliance:report": "python compliance-automation-engine.py --report",
+    "audit:logs": "python audit-framework.py --logs"
+  }
+}

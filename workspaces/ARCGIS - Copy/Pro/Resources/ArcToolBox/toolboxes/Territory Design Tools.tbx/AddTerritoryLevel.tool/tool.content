@@ -1,0 +1,89 @@
+{
+    "type": "FunctionTool",
+    "guid": "{135a82d8-9d11-4308-8156-c7962d922601}",
+    "displayname": "$rc:title",
+    "helpcontent": "67020002",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "33"
+    ],
+    "params": {
+        "in_territory_solution": {
+            "displayname": "$rc:in_territory_solution.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPGroupLayer"
+                    },
+                    {
+                        "type": "DEFeatureDataset"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "description": "$rc:in_territory_solution.descr"
+        },
+        "level_name": {
+            "displayname": "$rc:level_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:level_name.descr"
+        },
+        "default_territory_name": {
+            "type": "optional",
+            "displayname": "$rc:default_territory_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:default_territory_name.descr"
+        },
+        "out_territory_solution": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_territory_solution.title",
+            "datatype": {
+                "type": "GPGroupLayer"
+            },
+            "depends": [
+                "in_territory_solution"
+            ]
+        },
+        "primary_feature_class": {
+            "type": "optional",
+            "displayname": "$rc:primary_feature_class.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "TERRITORY_BOUNDARIES",
+                        "code": "$rc:primary_feature_class.domain.TERRITORY_BOUNDARIES"
+                    },
+                    {
+                        "value": "TERRITORY_CENTERS",
+                        "code": "$rc:primary_feature_class.domain.TERRITORY_CENTERS"
+                    },
+                    {
+                        "value": "BASE_BOUNDARIES",
+                        "code": "$rc:primary_feature_class.domain.BASE_BOUNDARIES"
+                    },
+                    {
+                        "value": "BASE_CENTERS",
+                        "code": "$rc:primary_feature_class.domain.BASE_CENTERS"
+                    }
+                ]
+            },
+            "description": "$rc:primary_feature_class.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

@@ -1,0 +1,12 @@
+{
+    "set": [
+        "accumulative",
+        "distance",
+        "least",
+        "line",
+        "optimal",
+        "path",
+        "shortest",
+        "travel cost"
+    ]
+}

@@ -1,0 +1,699 @@
+<?xml version="1.0"?>
+<!-- edited with XMLSPY v2004 rel. 3 U (http://www.xmlspy.com) by Gary Carter (a la mode, inc.) -->
+<Form FormCode="1004UAD" SecCode="1" ValidationScript="1004UAD_UADScript.cs">
+	<Fields>
+		<!--  Subject  -->
+		<Field FieldName="SUBPROPADDRESS" FormatType="ADDRESS"/>
+		<Field FieldName="SUBCITY" FormatType="ADDRESS"/>
+		<Field FieldName="SUBSTATE" FormatType="ADDRESS"/>
+		<Field FieldName="SUBZIP" FormatType="ADDRESS"/>
+		<Field FieldName="SUBCOUNTY" FormatType="ADDRESS"/>
+		<Field FieldName="SUBASSESSPARCEL" FormatType="UAD_GENERIC">
+			<CustomFormat Text="Enter any available assessor's parcel number(s) or 'None' if not available."/>
+		</Field>
+		<Field FieldName="SUBTAXYEAR" FormatType="DATE_YYYY"/>
+		<Field FieldName="SUBRETAX" FormatType="CURRENCY_WHOLE"/>
+		<Field FieldName="SUBSPECASSESS" FormatType="CURRENCY_WHOLE_ZERO"/>
+		<Field FieldName="SUBOCCUP_OWNER" FormatType="REQUIRED_CHECKGROUP"/>
+		<Field FieldName="SUBOCCUP_TENANT" FormatType="REQUIRED_CHECKGROUP"/>
+		<Field FieldName="SUBOCCUP_VACANT" FormatType="REQUIRED_CHECKGROUP"/>
+		<Field FieldName="SUBHOA" FormatType="CURRENCY_WHOLE_ZERO"/>
+		<Field FieldName="PUR_PURCHASE" FormatType="REQUIRED_CHECKGROUP"/>
+		<Field FieldName="PUR_REFINANCE" FormatType="REQUIRED_CHECKGROUP"/>
+		<Field FieldName="PUR_OTHER" FormatType="REQUIRED_CHECKGROUP"/>
+		<Field FieldName="SUBOFFERSTXT" FormatType="NO_SEMICOLON"/>
+		<Field FieldName="SUBLISTDPRI12_YES" FormatType="POPUP"/>
+		<Field FieldName="SUBLISTDPRI12_NO" FormatType="POPUP"/>
+		<Field FieldName="SUBLISTDPRI12_TXT" FormatType="POPUP"/>
+		<!-- Contract -->
+		<Field FieldName="SUBPMTCTRREV_YES" FormatType="POPUP"/>
+		<Field FieldName="SUBPMTCTRREV_NO" FormatType="POPUP"/>
+		<Field FieldName="SUBPMTCTRREV_TXT1" FormatType="POPUP"/>
+		<Field FieldName="CONTRANALTXT" FormatType="NO_SEMICOLON"/>
+		<Field FieldName="DP_CONTRANAL" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="REO Sale" AltFieldName="DH_CONTRANAL" AltFieldText="REO sale"/>
+				<PickList Text="Short Sale" AltFieldName="DH_CONTRANAL" AltFieldText="Short sale"/>
+				<PickList Text="Court Ordered Sale" AltFieldName="DH_CONTRANAL" AltFieldText="Court ordered sale"/>
+				<PickList Text="Estate Sale" AltFieldName="DH_CONTRANAL" AltFieldText="Estate sale"/>
+				<PickList Text="Relocation Sale" AltFieldName="DH_CONTRANAL" AltFieldText="Relocation sale"/>
+				<PickList Text="Non-Arms Length Sale" AltFieldName="DH_CONTRANAL" AltFieldText="Non-arms length sale"/>
+				<PickList Text="Arms Length Sale" AltFieldName="DH_CONTRANAL" AltFieldText="Arms length sale"/>
+			</PickLists>
+		</Field>		
+		<Field FieldName="SUBSALEPRICE" FormatType="CURRENCY_WHOLE"/>
+		<Field FieldName="SUBDATEOFSALE" FormatType="DATE_MDY4"/>
+		<Field FieldName="SUBLOANCONC_YES" FormatType="POPUP"/>
+		<Field FieldName="SUBLOANCONC_NO" FormatType="POPUP"/>
+		<Field FieldName="SUBLOANCONC_TXT" FormatType="POPUP"/>
+		<Field FieldName="SUBLOANCONC" FormatType="CURRENCY_WHOLE"/>
+		<Field FieldName="SALECONCESSTXT" FormatType="NO_SEMICOLON"/>
+		<!-- Site -->
+		<Field FieldName="SITSITEAREA" FormatType="UAD_GENERIC"/>
+		<Field FieldName="SITVIEW" FormatType="POPUP"/>
+		<Field FieldName="DP_SITVW1" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Neutral" AltFieldName="DH_SITVW1" AltFieldText="N"/>
+				<PickList Text="Beneficial" AltFieldName="DH_SITVW1" AltFieldText="B"/>
+				<PickList Text="Adverse" AltFieldName="DH_SITVW1" AltFieldText="A"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="DP_SITVW2" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Water" AltFieldName="DH_SITVW2" AltFieldText="Wtr"/>
+				<PickList Text="Pastoral" AltFieldName="DH_SITVW2" AltFieldText="Pstrl"/>
+				<PickList Text="Woods/Forest" AltFieldName="DH_SITVW2" AltFieldText="Woods"/>
+				<PickList Text="Golf Course" AltFieldName="DH_SITVW2" AltFieldText="Glfvw"/>
+				<PickList Text="City/Skyline" AltFieldName="DH_SITVW2" AltFieldText="CtySky"/>
+				<PickList Text="Mountain" AltFieldName="DH_SITVW2" AltFieldText="Mtn"/>
+				<PickList Text="Residential" AltFieldName="DH_SITVW2" AltFieldText="Res"/>
+				<PickList Text="Urban/City Street" AltFieldName="DH_SITVW2" AltFieldText="CtyStr"/>
+				<PickList Text="Industrial" AltFieldName="DH_SITVW2" AltFieldText="Ind"/>
+				<PickList Text="Power Lines" AltFieldName="DH_SITVW2" AltFieldText="PwrLn"/>
+				<PickList Text="Limited Sight" AltFieldName="DH_SITVW2" AltFieldText="LtdSght"/>
+				<PickList Text="Other (describe)" AltFieldName="DH_SITVW2" AltFieldText="OTH"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="DP_SITVW3" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Water" AltFieldName="DH_SITVW3" AltFieldText="Wtr"/>
+				<PickList Text="Pastoral" AltFieldName="DH_SITVW3" AltFieldText="Pstrl"/>
+				<PickList Text="Woods/Forest" AltFieldName="DH_SITVW3" AltFieldText="Woods"/>
+				<PickList Text="Golf Course" AltFieldName="DH_SITVW3" AltFieldText="Glfvw"/>
+				<PickList Text="City/Skyline" AltFieldName="DH_SITVW3" AltFieldText="CtySky"/>
+				<PickList Text="Mountain" AltFieldName="DH_SITVW3" AltFieldText="Mtn"/>
+				<PickList Text="Residential" AltFieldName="DH_SITVW3" AltFieldText="Res"/>
+				<PickList Text="Urban/City Street" AltFieldName="DH_SITVW3" AltFieldText="CtyStr"/>
+				<PickList Text="Industrial" AltFieldName="DH_SITVW3" AltFieldText="Ind"/>
+				<PickList Text="Power Lines" AltFieldName="DH_SITVW3" AltFieldText="PwrLn"/>
+				<PickList Text="Limited Sight" AltFieldName="DH_SITVW3" AltFieldText="LtdSght"/>
+				<PickList Text="Other (describe)" AltFieldName="DH_SITVW3" AltFieldText="OTH"/>
+			</PickLists>
+		</Field>		
+		<!-- Improvements -->
+		<Field FieldName="GDSNUMSTORIES" FormatType="NUMERIC_2DEC_MAX"/>
+		<Field FieldName="PJIYRBUILT" FormatType="AGE_YEAR"/>
+		<Field FieldName="BSMAREASF" FormatType="NUMERIC_5DIGITS_MAX"/>
+		<Field FieldName="BSMPCTFINISHED" FormatType="NUMERIC_3DIGITS_MAX"/>
+		<Field FieldName="IMPUPDDESC1" FormatType="NO_SEMICOLON"/>
+		<Field FieldName="CMTCONDITION_1" FormatType="POPUP"/>
+		<Field FieldName="DP_OVRLCOND" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Overall C1" AltFieldName="DH_OVRLCOND" AltFieldText="C1"/>
+				<PickList Text="Overall C2" AltFieldName="DH_OVRLCOND" AltFieldText="C2"/>
+				<PickList Text="Overall C3" AltFieldName="DH_OVRLCOND" AltFieldText="C3"/>
+				<PickList Text="Overall C4" AltFieldName="DH_OVRLCOND" AltFieldText="C4"/>
+				<PickList Text="Overall C5" AltFieldName="DH_OVRLCOND" AltFieldText="C5"/>
+				<PickList Text="Overall C6" AltFieldName="DH_OVRLCOND" AltFieldText="C6"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="DP_KITTYP" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Not Updated" AltFieldName="DH_KITTYP" AltFieldText="not updated"/>
+				<PickList Text="Updated" AltFieldName="DH_KITTYP" AltFieldText="updated"/>
+				<PickList Text="Remodeled" AltFieldName="DH_KITTYP" AltFieldText="remodeled"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="DP_KITAGE" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="&lt;1 year ago" AltFieldName="DH_KITAGE" AltFieldText="less than one year ago"/>
+				<PickList Text="1-5 years ago" AltFieldName="DH_KITAGE" AltFieldText="one to five years ago"/>
+				<PickList Text="6-10 years ago" AltFieldName="DH_KITAGE" AltFieldText="six to ten years ago"/>
+				<PickList Text="11-15 years ago" AltFieldName="DH_KITAGE" AltFieldText="eleven to fifteen years ago"/>
+				<PickList Text="Unknown" AltFieldName="DH_KITAGE" AltFieldText="timeframe unknown"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="DP_BATHTYP" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Not Updated" AltFieldName="DH_BATHTYP" AltFieldText="not updated"/>
+				<PickList Text="Updated" AltFieldName="DH_BATHTYP" AltFieldText="updated"/>
+				<PickList Text="Remodeled" AltFieldName="DH_BATHTYP" AltFieldText="remodeled"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="DP_BATHAGE" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="&lt;1 year ago" AltFieldName="DH_BATHAGE" AltFieldText="less than one year ago"/>
+				<PickList Text="1-5 years ago" AltFieldName="DH_BATHAGE" AltFieldText="one to five years ago"/>
+				<PickList Text="6-10 years ago" AltFieldName="DH_BATHAGE" AltFieldText="six to ten years ago"/>
+				<PickList Text="11-15 years ago" AltFieldName="DH_BATHAGE" AltFieldText="eleven to fifteen years ago"/>
+				<PickList Text="Unknown" AltFieldName="DH_BATHAGE" AltFieldText="timeframe unknown"/>
+			</PickLists>
+		</Field>		
+		<!-- SalesGrid -->
+		<!-- SalesGrid Popups -->
+		<Field FieldName="GSU_LC_LOCAT1" FormatType="POPUP"/>
+		<Field FieldName="GSU_BM_BSM1" FormatType="POPUP"/>
+		<Field FieldName="GSU_BM_BSM2" FormatType="POPUP"/>
+		<Field FieldName="GC1_AD_ADDR2" FormatType="POPUP"/>
+		<Field FieldName="GC1_SC_SOURCE1" FormatType="POPUP"/>
+		<Field FieldName="GC1_FN_CONC2" FormatType="POPUP"/>
+		<Field FieldName="GC1_DT_SALTIM1" FormatType="POPUP"/>
+		<Field FieldName="GC1_LC_LOCAT1" FormatType="POPUP"/>
+		<Field FieldName="GC1_ST_SITEVW" FormatType="POPUP"/>
+		<Field FieldName="GC1_BM_BSM1" FormatType="POPUP"/>
+		<Field FieldName="GC1_BM_BSM2" FormatType="POPUP"/>
+		<Field FieldName="GC2_AD_ADDR2" FormatType="POPUP"/>
+		<Field FieldName="GC2_SC_SOURCE1" FormatType="POPUP"/>
+		<Field FieldName="GC2_FN_CONC2" FormatType="POPUP"/>
+		<Field FieldName="GC2_DT_SALTIM1" FormatType="POPUP"/>
+		<Field FieldName="GC2_LC_LOCAT1" FormatType="POPUP"/>
+		<Field FieldName="GC2_ST_SITEVW" FormatType="POPUP"/>
+		<Field FieldName="GC2_BM_BSM1" FormatType="POPUP"/>
+		<Field FieldName="GC2_BM_BSM2" FormatType="POPUP"/>
+		<Field FieldName="GC3_AD_ADDR2" FormatType="POPUP"/>
+		<Field FieldName="GC3_SC_SOURCE1" FormatType="POPUP"/>
+		<Field FieldName="GC3_FN_CONC2" FormatType="POPUP"/>
+		<Field FieldName="GC3_DT_SALTIM1" FormatType="POPUP"/>
+		<Field FieldName="GC3_LC_LOCAT1" FormatType="POPUP"/>
+		<Field FieldName="GC3_ST_SITEVW" FormatType="POPUP"/>
+		<Field FieldName="GC3_BM_BSM1" FormatType="POPUP"/>
+		<Field FieldName="GC3_BM_BSM2" FormatType="POPUP"/>
+		<!-- SalesGrid Picklists -->
+		<Field FieldName="GC1_FN_CONC1" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="REO Sale" AltFieldName="GC1_FN_CONC1" AltFieldText="REO"/>
+				<PickList Text="Short Sale" AltFieldName="GC1_FN_CONC1" AltFieldText="Short"/>
+				<PickList Text="Court Ordered Sale" AltFieldName="GC1_FN_CONC1" AltFieldText="CrtOrd"/>
+				<PickList Text="Estate Sale" AltFieldName="GC1_FN_CONC1" AltFieldText="Estate"/>
+				<PickList Text="Relocation Sale" AltFieldName="GC1_FN_CONC1" AltFieldText="Relo"/>
+				<PickList Text="Non-Arms Length Sale" AltFieldName="GC1_FN_CONC1" AltFieldText="NonArm"/>
+				<PickList Text="Arms Length Sale" AltFieldName="GC1_FN_CONC1" AltFieldText="ArmLth"/>
+				<PickList Text="Listing" AltFieldName="GC1_FN_CONC1" AltFieldText="Listing"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC1_DP_FINTYP1" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="FHA" AltFieldName="GC1_DH_FINTYP1" AltFieldText="FHA"/>
+				<PickList Text="VA" AltFieldName="GC1_DH_FINTYP1" AltFieldText="VA"/>
+				<PickList Text="Conventional" AltFieldName="GC1_DH_FINTYP1" AltFieldText="Conv"/>
+				<PickList Text="Seller" AltFieldName="GC1_DH_FINTYP1" AltFieldText="Seller"/>
+				<PickList Text="Cash" AltFieldName="GC1_DH_FINTYP1" AltFieldText="Cash"/>
+				<PickList Text="USDA - Rural housing" AltFieldName="GC1_DH_FINTYP1" AltFieldText="RH"/>
+				<PickList Text="Other - Enter 'Other Description" AltFieldName="GC1_DH_FINTYP1" AltFieldText="OTH"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC2_FN_CONC1" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="REO Sale" AltFieldName="GC2_FN_CONC1" AltFieldText="REO"/>
+				<PickList Text="Short Sale" AltFieldName="GC2_FN_CONC1" AltFieldText="Short"/>
+				<PickList Text="Court Ordered Sale" AltFieldName="GC2_FN_CONC1" AltFieldText="CrtOrd"/>
+				<PickList Text="Estate Sale" AltFieldName="GC2_FN_CONC1" AltFieldText="Estate"/>
+				<PickList Text="Relocation Sale" AltFieldName="GC2_FN_CONC1" AltFieldText="Relo"/>
+				<PickList Text="Non-Arms Length Sale" AltFieldName="GC2_FN_CONC1" AltFieldText="NonArm"/>
+				<PickList Text="Arms Length Sale" AltFieldName="GC2_FN_CONC1" AltFieldText="ArmLth"/>
+				<PickList Text="Listing" AltFieldName="GC2_FN_CONC1" AltFieldText="Listing"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC2_DP_FINTYP1" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="FHA" AltFieldName="GC2_DH_FINTYP1" AltFieldText="FHA"/>
+				<PickList Text="VA" AltFieldName="GC2_DH_FINTYP1" AltFieldText="VA"/>
+				<PickList Text="Conventional" AltFieldName="GC2_DH_FINTYP1" AltFieldText="Conv"/>
+				<PickList Text="Seller" AltFieldName="GC2_DH_FINTYP1" AltFieldText="Seller"/>
+				<PickList Text="Cash" AltFieldName="GC2_DH_FINTYP1" AltFieldText="Cash"/>
+				<PickList Text="USDA - Rural housing" AltFieldName="GC2_DH_FINTYP1" AltFieldText="RH"/>
+				<PickList Text="Other - Enter 'Other Description" AltFieldName="GC2_DH_FINTYP1" AltFieldText="OTH"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC3_FN_CONC1" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="REO Sale" AltFieldName="GC3_FN_CONC1" AltFieldText="REO"/>
+				<PickList Text="Short Sale" AltFieldName="GC3_FN_CONC1" AltFieldText="Short"/>
+				<PickList Text="Court Ordered Sale" AltFieldName="GC3_FN_CONC1" AltFieldText="CrtOrd"/>
+				<PickList Text="Estate Sale" AltFieldName="GC3_FN_CONC1" AltFieldText="Estate"/>
+				<PickList Text="Relocation Sale" AltFieldName="GC3_FN_CONC1" AltFieldText="Relo"/>
+				<PickList Text="Non-Arms Length Sale" AltFieldName="GC3_FN_CONC1" AltFieldText="NonArm"/>
+				<PickList Text="Arms Length Sale" AltFieldName="GC3_FN_CONC1" AltFieldText="ArmLth"/>
+				<PickList Text="Listing" AltFieldName="GC3_FN_CONC1" AltFieldText="Listing"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC3_DP_FINTYP1" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="FHA" AltFieldName="GC3_DH_FINTYP1" AltFieldText="FHA"/>
+				<PickList Text="VA" AltFieldName="GC3_DH_FINTYP1" AltFieldText="VA"/>
+				<PickList Text="Conventional" AltFieldName="GC3_DH_FINTYP1" AltFieldText="Conv"/>
+				<PickList Text="Seller" AltFieldName="GC3_DH_FINTYP1" AltFieldText="Seller"/>
+				<PickList Text="Cash" AltFieldName="GC3_DH_FINTYP1" AltFieldText="Cash"/>
+				<PickList Text="USDA - Rural housing" AltFieldName="GC3_DH_FINTYP1" AltFieldText="RH"/>
+				<PickList Text="Other - Enter 'Other Description" AltFieldName="GC3_DH_FINTYP1" AltFieldText="OTH"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC1_DP_CMPTYPE" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Active" AltFieldName="GC1_DH_CMPTYPE" AltFieldText="a"/>
+				<PickList Text="Contract" AltFieldName="GC1_DH_CMPTYPE" AltFieldText="c"/>
+				<PickList Text="Expired" AltFieldName="GC1_DH_CMPTYPE" AltFieldText="e"/>
+				<PickList Text="Withdrawn" AltFieldName="GC1_DH_CMPTYPE" AltFieldText="w"/>
+				<PickList Text="Settled Sale" AltFieldName="GC1_DH_CMPTYPE" AltFieldText="s"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC2_DP_CMPTYPE" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Active" AltFieldName="GC2_DH_CMPTYPE" AltFieldText="a"/>
+				<PickList Text="Contract" AltFieldName="GC2_DH_CMPTYPE" AltFieldText="c"/>
+				<PickList Text="Expired" AltFieldName="GC2_DH_CMPTYPE" AltFieldText="e"/>
+				<PickList Text="Withdrawn" AltFieldName="GC2_DH_CMPTYPE" AltFieldText="w"/>
+				<PickList Text="Settled Sale" AltFieldName="GC2_DH_CMPTYPE" AltFieldText="s"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC3_DP_CMPTYPE" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Active" AltFieldName="GC3_DH_CMPTYPE" AltFieldText="a"/>
+				<PickList Text="Contract" AltFieldName="GC3_DH_CMPTYPE" AltFieldText="c"/>
+				<PickList Text="Expired" AltFieldName="GC3_DH_CMPTYPE" AltFieldText="e"/>
+				<PickList Text="Withdrawn" AltFieldName="GC3_DH_CMPTYPE" AltFieldText="w"/>
+				<PickList Text="Settled Sale" AltFieldName="GC3_DH_CMPTYPE" AltFieldText="s"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GSU_DP_LOCAT" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Neutral" AltFieldName="GSU_DH_LOCAT" AltFieldText="N"/>
+				<PickList Text="Beneficial" AltFieldName="GSU_DH_LOCAT" AltFieldText="B"/>
+				<PickList Text="Adverse" AltFieldName="GSU_DH_LOCAT" AltFieldText="A"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GSU_DP_LOC1" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Residential" AltFieldName="GSU_DH_LOC1" AltFieldText="Res"/>
+				<PickList Text="Industrial" AltFieldName="GSU_DH_LOC1" AltFieldText="Ind"/>
+				<PickList Text="Commercial" AltFieldName="GSU_DH_LOC1" AltFieldText="Comm"/>
+				<PickList Text="Busy Road" AltFieldName="GSU_DH_LOC1" AltFieldText="BsyRd"/>
+				<PickList Text="Water Front" AltFieldName="GSU_DH_LOC1" AltFieldText="WtrFr"/>
+				<PickList Text="Golf Course" AltFieldName="GSU_DH_LOC1" AltFieldText="GlfCse"/>
+				<PickList Text="Adjacent to Park" AltFieldName="GSU_DH_LOC1" AltFieldText="AdjPrk"/>
+				<PickList Text="Adjacent to Power Lines" AltFieldName="GSU_DH_LOC1" AltFieldText="AdjPwr"/>
+				<PickList Text="Landfill" AltFieldName="GSU_DH_LOC1" AltFieldText="Lndfl"/>
+				<PickList Text="Public Transportation" AltFieldName="GSU_DH_LOC1" AltFieldText="PubTrn"/>
+				<PickList Text="Other (describe)" AltFieldName="GSU_DH_LOC1" AltFieldText="OTH"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GSU_DP_LOC2" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Residential" AltFieldName="GSU_DH_LOC2" AltFieldText="Res"/>
+				<PickList Text="Industrial" AltFieldName="GSU_DH_LOC2" AltFieldText="Ind"/>
+				<PickList Text="Commercial" AltFieldName="GSU_DH_LOC2" AltFieldText="Comm"/>
+				<PickList Text="Busy Road" AltFieldName="GSU_DH_LOC2" AltFieldText="BsyRd"/>
+				<PickList Text="Water Front" AltFieldName="GSU_DH_LOC2" AltFieldText="WtrFr"/>
+				<PickList Text="Golf Course" AltFieldName="GSU_DH_LOC2" AltFieldText="GlfCse"/>
+				<PickList Text="Adjacent to Park" AltFieldName="GSU_DH_LOC2" AltFieldText="AdjPrk"/>
+				<PickList Text="Adjacent to Power Lines" AltFieldName="GSU_DH_LOC2" AltFieldText="AdjPwr"/>
+				<PickList Text="Landfill" AltFieldName="GSU_DH_LOC2" AltFieldText="Lndfl"/>
+				<PickList Text="Public Transportation" AltFieldName="GSU_DH_LOC2" AltFieldText="PubTrn"/>
+				<PickList Text="Other (describe)" AltFieldName="GSU_DH_LOC2" AltFieldText="OTH"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC1_DP_LOCAT" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Neutral" AltFieldName="GC1_DH_LOCAT" AltFieldText="N"/>
+				<PickList Text="Beneficial" AltFieldName="GC1_DH_LOCAT" AltFieldText="B"/>
+				<PickList Text="Adverse" AltFieldName="GC1_DH_LOCAT" AltFieldText="A"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC1_DP_LOC1" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Residential" AltFieldName="GC1_DH_LOC1" AltFieldText="Res"/>
+				<PickList Text="Industrial" AltFieldName="GC1_DH_LOC1" AltFieldText="Ind"/>
+				<PickList Text="Commercial" AltFieldName="GC1_DH_LOC1" AltFieldText="Comm"/>
+				<PickList Text="Busy Road" AltFieldName="GC1_DH_LOC1" AltFieldText="BsyRd"/>
+				<PickList Text="Water Front" AltFieldName="GC1_DH_LOC1" AltFieldText="WtrFr"/>
+				<PickList Text="Golf Course" AltFieldName="GC1_DH_LOC1" AltFieldText="GlfCse"/>
+				<PickList Text="Adjacent to Park" AltFieldName="GC1_DH_LOC1" AltFieldText="AdjPrk"/>
+				<PickList Text="Adjacent to Power Lines" AltFieldName="GC1_DH_LOC1" AltFieldText="AdjPwr"/>
+				<PickList Text="Landfill" AltFieldName="GC1_DH_LOC1" AltFieldText="Lndfl"/>
+				<PickList Text="Public Transportation" AltFieldName="GC1_DH_LOC1" AltFieldText="PubTrn"/>
+				<PickList Text="Other (describe)" AltFieldName="GC1_DH_LOC1" AltFieldText="OTH"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC1_DP_LOC2" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Residential" AltFieldName="GC1_DH_LOC2" AltFieldText="Res"/>
+				<PickList Text="Industrial" AltFieldName="GC1_DH_LOC2" AltFieldText="Ind"/>
+				<PickList Text="Commercial" AltFieldName="GC1_DH_LOC2" AltFieldText="Comm"/>
+				<PickList Text="Busy Road" AltFieldName="GC1_DH_LOC2" AltFieldText="BsyRd"/>
+				<PickList Text="Water Front" AltFieldName="GC1_DH_LOC2" AltFieldText="WtrFr"/>
+				<PickList Text="Golf Course" AltFieldName="GC1_DH_LOC2" AltFieldText="GlfCse"/>
+				<PickList Text="Adjacent to Park" AltFieldName="GC1_DH_LOC2" AltFieldText="AdjPrk"/>
+				<PickList Text="Adjacent to Power Lines" AltFieldName="GC1_DH_LOC2" AltFieldText="AdjPwr"/>
+				<PickList Text="Landfill" AltFieldName="GC1_DH_LOC2" AltFieldText="Lndfl"/>
+				<PickList Text="Public Transportation" AltFieldName="GC1_DH_LOC2" AltFieldText="PubTrn"/>
+				<PickList Text="Other (describe)" AltFieldName="GC1_DH_LOC2" AltFieldText="OTH"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC2_DP_LOCAT" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Neutral" AltFieldName="GC2_DH_LOCAT" AltFieldText="N"/>
+				<PickList Text="Beneficial" AltFieldName="GC2_DH_LOCAT" AltFieldText="B"/>
+				<PickList Text="Adverse" AltFieldName="GC2_DH_LOCAT" AltFieldText="A"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC2_DP_LOC1" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Residential" AltFieldName="GC2_DH_LOC1" AltFieldText="Res"/>
+				<PickList Text="Industrial" AltFieldName="GC2_DH_LOC1" AltFieldText="Ind"/>
+				<PickList Text="Commercial" AltFieldName="GC2_DH_LOC1" AltFieldText="Comm"/>
+				<PickList Text="Busy Road" AltFieldName="GC2_DH_LOC1" AltFieldText="BsyRd"/>
+				<PickList Text="Water Front" AltFieldName="GC2_DH_LOC1" AltFieldText="WtrFr"/>
+				<PickList Text="Golf Course" AltFieldName="GC2_DH_LOC1" AltFieldText="GlfCse"/>
+				<PickList Text="Adjacent to Park" AltFieldName="GC2_DH_LOC1" AltFieldText="AdjPrk"/>
+				<PickList Text="Adjacent to Power Lines" AltFieldName="GC2_DH_LOC1" AltFieldText="AdjPwr"/>
+				<PickList Text="Landfill" AltFieldName="GC2_DH_LOC1" AltFieldText="Lndfl"/>
+				<PickList Text="Public Transportation" AltFieldName="GC2_DH_LOC1" AltFieldText="PubTrn"/>
+				<PickList Text="Other (describe)" AltFieldName="GC2_DH_LOC1" AltFieldText="OTH"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC2_DP_LOC2" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Residential" AltFieldName="GC2_DH_LOC2" AltFieldText="Res"/>
+				<PickList Text="Industrial" AltFieldName="GC2_DH_LOC2" AltFieldText="Ind"/>
+				<PickList Text="Commercial" AltFieldName="GC2_DH_LOC2" AltFieldText="Comm"/>
+				<PickList Text="Busy Road" AltFieldName="GC2_DH_LOC2" AltFieldText="BsyRd"/>
+				<PickList Text="Water Front" AltFieldName="GC2_DH_LOC2" AltFieldText="WtrFr"/>
+				<PickList Text="Golf Course" AltFieldName="GC2_DH_LOC2" AltFieldText="GlfCse"/>
+				<PickList Text="Adjacent to Park" AltFieldName="GC2_DH_LOC2" AltFieldText="AdjPrk"/>
+				<PickList Text="Adjacent to Power Lines" AltFieldName="GC2_DH_LOC2" AltFieldText="AdjPwr"/>
+				<PickList Text="Landfill" AltFieldName="GC2_DH_LOC2" AltFieldText="Lndfl"/>
+				<PickList Text="Public Transportation" AltFieldName="GC2_DH_LOC2" AltFieldText="PubTrn"/>
+				<PickList Text="Other (describe)" AltFieldName="GC2_DH_LOC2" AltFieldText="OTH"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC3_DP_LOCAT" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Neutral" AltFieldName="GC3_DH_LOCAT" AltFieldText="N"/>
+				<PickList Text="Beneficial" AltFieldName="GC3_DH_LOCAT" AltFieldText="B"/>
+				<PickList Text="Adverse" AltFieldName="GC3_DH_LOCAT" AltFieldText="A"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC3_DP_LOC1" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Residential" AltFieldName="GC3_DH_LOC1" AltFieldText="Res"/>
+				<PickList Text="Industrial" AltFieldName="GC3_DH_LOC1" AltFieldText="Ind"/>
+				<PickList Text="Commercial" AltFieldName="GC3_DH_LOC1" AltFieldText="Comm"/>
+				<PickList Text="Busy Road" AltFieldName="GC3_DH_LOC1" AltFieldText="BsyRd"/>
+				<PickList Text="Water Front" AltFieldName="GC3_DH_LOC1" AltFieldText="WtrFr"/>
+				<PickList Text="Golf Course" AltFieldName="GC3_DH_LOC1" AltFieldText="GlfCse"/>
+				<PickList Text="Adjacent to Park" AltFieldName="GC3_DH_LOC1" AltFieldText="AdjPrk"/>
+				<PickList Text="Adjacent to Power Lines" AltFieldName="GC3_DH_LOC1" AltFieldText="AdjPwr"/>
+				<PickList Text="Landfill" AltFieldName="GC3_DH_LOC1" AltFieldText="Lndfl"/>
+				<PickList Text="Public Transportation" AltFieldName="GC3_DH_LOC1" AltFieldText="PubTrn"/>
+				<PickList Text="Other (describe)" AltFieldName="GC3_DH_LOC1" AltFieldText="OTH"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC3_DP_LOC2" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Residential" AltFieldName="GC3_DH_LOC2" AltFieldText="Res"/>
+				<PickList Text="Industrial" AltFieldName="GC3_DH_LOC2" AltFieldText="Ind"/>
+				<PickList Text="Commercial" AltFieldName="GC3_DH_LOC2" AltFieldText="Comm"/>
+				<PickList Text="Busy Road" AltFieldName="GC3_DH_LOC2" AltFieldText="BsyRd"/>
+				<PickList Text="Water Front" AltFieldName="GC3_DH_LOC2" AltFieldText="WtrFr"/>
+				<PickList Text="Golf Course" AltFieldName="GC3_DH_LOC2" AltFieldText="GlfCse"/>
+				<PickList Text="Adjacent to Park" AltFieldName="GC3_DH_LOC2" AltFieldText="AdjPrk"/>
+				<PickList Text="Adjacent to Power Lines" AltFieldName="GC3_DH_LOC2" AltFieldText="AdjPwr"/>
+				<PickList Text="Landfill" AltFieldName="GC3_DH_LOC2" AltFieldText="Lndfl"/>
+				<PickList Text="Public Transportation" AltFieldName="GC3_DH_LOC2" AltFieldText="PubTrn"/>
+				<PickList Text="Other (describe)" AltFieldName="GC3_DH_LOC2" AltFieldText="OTH"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC1_DP_SITVW1" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Neutral" AltFieldName="GC1_DH_SITVW1" AltFieldText="N"/>
+				<PickList Text="Beneficial" AltFieldName="GC1_DH_SITVW1" AltFieldText="B"/>
+				<PickList Text="Adverse" AltFieldName="GC1_DH_SITVW1" AltFieldText="A"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC1_DP_SITVW2" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Water" AltFieldName="GC1_DH_SITVW2" AltFieldText="Wtr"/>
+				<PickList Text="Pastoral" AltFieldName="GC1_DH_SITVW2" AltFieldText="Pstrl"/>
+				<PickList Text="Woods/Forest" AltFieldName="GC1_DH_SITVW2" AltFieldText="Woods"/>
+				<PickList Text="Golf Course" AltFieldName="GC1_DH_SITVW2" AltFieldText="Glfvw"/>
+				<PickList Text="City/Skyline" AltFieldName="GC1_DH_SITVW2" AltFieldText="CtySky"/>
+				<PickList Text="Mountain" AltFieldName="GC1_DH_SITVW2" AltFieldText="Mtn"/>
+				<PickList Text="Residential" AltFieldName="GC1_DH_SITVW2" AltFieldText="Res"/>
+				<PickList Text="Urban/City Street" AltFieldName="GC1_DH_SITVW2" AltFieldText="CtyStr"/>
+				<PickList Text="Industrial" AltFieldName="GC1_DH_SITVW2" AltFieldText="Ind"/>
+				<PickList Text="Power Lines" AltFieldName="GC1_DH_SITVW2" AltFieldText="PwrLn"/>
+				<PickList Text="Limited Sight" AltFieldName="GC1_DH_SITVW2" AltFieldText="LtdSght"/>
+				<PickList Text="Other (describe)" AltFieldName="GC1_DH_SITVW2" AltFieldText="OTH"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC1_DP_SITVW3" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Water" AltFieldName="GC1_DH_SITVW3" AltFieldText="Wtr"/>
+				<PickList Text="Pastoral" AltFieldName="GC1_DH_SITVW3" AltFieldText="Pstrl"/>
+				<PickList Text="Woods/Forest" AltFieldName="GC1_DH_SITVW3" AltFieldText="Woods"/>
+				<PickList Text="Golf Course" AltFieldName="GC1_DH_SITVW3" AltFieldText="Glfvw"/>
+				<PickList Text="City/Skyline" AltFieldName="GC1_DH_SITVW3" AltFieldText="CtySky"/>
+				<PickList Text="Mountain" AltFieldName="GC1_DH_SITVW3" AltFieldText="Mtn"/>
+				<PickList Text="Residential" AltFieldName="GC1_DH_SITVW3" AltFieldText="Res"/>
+				<PickList Text="Urban/City Street" AltFieldName="GC1_DH_SITVW3" AltFieldText="CtyStr"/>
+				<PickList Text="Industrial" AltFieldName="GC1_DH_SITVW3" AltFieldText="Ind"/>
+				<PickList Text="Power Lines" AltFieldName="GC1_DH_SITVW3" AltFieldText="PwrLn"/>
+				<PickList Text="Limited Sight" AltFieldName="GC1_DH_SITVW3" AltFieldText="LtdSght"/>
+				<PickList Text="Other (describe)" AltFieldName="GC1_DH_SITVW3" AltFieldText="OTH"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC2_DP_SITVW1" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Neutral" AltFieldName="GC2_DH_SITVW1" AltFieldText="N"/>
+				<PickList Text="Beneficial" AltFieldName="GC2_DH_SITVW1" AltFieldText="B"/>
+				<PickList Text="Adverse" AltFieldName="GC2_DH_SITVW1" AltFieldText="A"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC2_DP_SITVW2" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Water" AltFieldName="GC2_DH_SITVW2" AltFieldText="Wtr"/>
+				<PickList Text="Pastoral" AltFieldName="GC2_DH_SITVW2" AltFieldText="Pstrl"/>
+				<PickList Text="Woods/Forest" AltFieldName="GC2_DH_SITVW2" AltFieldText="Woods"/>
+				<PickList Text="Golf Course" AltFieldName="GC2_DH_SITVW2" AltFieldText="Glfvw"/>
+				<PickList Text="City/Skyline" AltFieldName="GC2_DH_SITVW2" AltFieldText="CtySky"/>
+				<PickList Text="Mountain" AltFieldName="GC2_DH_SITVW2" AltFieldText="Mtn"/>
+				<PickList Text="Residential" AltFieldName="GC2_DH_SITVW2" AltFieldText="Res"/>
+				<PickList Text="Urban/City Street" AltFieldName="GC2_DH_SITVW2" AltFieldText="CtyStr"/>
+				<PickList Text="Industrial" AltFieldName="GC2_DH_SITVW2" AltFieldText="Ind"/>
+				<PickList Text="Power Lines" AltFieldName="GC2_DH_SITVW2" AltFieldText="PwrLn"/>
+				<PickList Text="Limited Sight" AltFieldName="GC2_DH_SITVW2" AltFieldText="LtdSght"/>
+				<PickList Text="Other (describe)" AltFieldName="GC2_DH_SITVW2" AltFieldText="OTH"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC2_DP_SITVW3" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Water" AltFieldName="GC2_DH_SITVW3" AltFieldText="Wtr"/>
+				<PickList Text="Pastoral" AltFieldName="GC2_DH_SITVW3" AltFieldText="Pstrl"/>
+				<PickList Text="Woods/Forest" AltFieldName="GC2_DH_SITVW3" AltFieldText="Woods"/>
+				<PickList Text="Golf Course" AltFieldName="GC2_DH_SITVW3" AltFieldText="Glfvw"/>
+				<PickList Text="City/Skyline" AltFieldName="GC2_DH_SITVW3" AltFieldText="CtySky"/>
+				<PickList Text="Mountain" AltFieldName="GC2_DH_SITVW3" AltFieldText="Mtn"/>
+				<PickList Text="Residential" AltFieldName="GC2_DH_SITVW3" AltFieldText="Res"/>
+				<PickList Text="Urban/City Street" AltFieldName="GC2_DH_SITVW3" AltFieldText="CtyStr"/>
+				<PickList Text="Industrial" AltFieldName="GC2_DH_SITVW3" AltFieldText="Ind"/>
+				<PickList Text="Power Lines" AltFieldName="GC2_DH_SITVW3" AltFieldText="PwrLn"/>
+				<PickList Text="Limited Sight" AltFieldName="GC2_DH_SITVW3" AltFieldText="LtdSght"/>
+				<PickList Text="Other (describe)" AltFieldName="GC2_DH_SITVW3" AltFieldText="OTH"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC3_DP_SITVW1" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Neutral" AltFieldName="GC3_DH_SITVW1" AltFieldText="N"/>
+				<PickList Text="Beneficial" AltFieldName="GC3_DH_SITVW1" AltFieldText="B"/>
+				<PickList Text="Adverse" AltFieldName="GC3_DH_SITVW1" AltFieldText="A"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC3_DP_SITVW2" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Water" AltFieldName="GC3_DH_SITVW2" AltFieldText="Wtr"/>
+				<PickList Text="Pastoral" AltFieldName="GC3_DH_SITVW2" AltFieldText="Pstrl"/>
+				<PickList Text="Woods/Forest" AltFieldName="GC3_DH_SITVW2" AltFieldText="Woods"/>
+				<PickList Text="Golf Course" AltFieldName="GC3_DH_SITVW2" AltFieldText="Glfvw"/>
+				<PickList Text="City/Skyline" AltFieldName="GC3_DH_SITVW2" AltFieldText="CtySky"/>
+				<PickList Text="Mountain" AltFieldName="GC3_DH_SITVW2" AltFieldText="Mtn"/>
+				<PickList Text="Residential" AltFieldName="GC3_DH_SITVW2" AltFieldText="Res"/>
+				<PickList Text="Urban/City Street" AltFieldName="GC3_DH_SITVW2" AltFieldText="CtyStr"/>
+				<PickList Text="Industrial" AltFieldName="GC3_DH_SITVW2" AltFieldText="Ind"/>
+				<PickList Text="Power Lines" AltFieldName="GC3_DH_SITVW2" AltFieldText="PwrLn"/>
+				<PickList Text="Limited Sight" AltFieldName="GC3_DH_SITVW2" AltFieldText="LtdSght"/>
+				<PickList Text="Other (describe)" AltFieldName="GC3_DH_SITVW2" AltFieldText="OTH"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC3_DP_SITVW3" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Water" AltFieldName="GC3_DH_SITVW3" AltFieldText="Wtr"/>
+				<PickList Text="Pastoral" AltFieldName="GC3_DH_SITVW3" AltFieldText="Pstrl"/>
+				<PickList Text="Woods/Forest" AltFieldName="GC3_DH_SITVW3" AltFieldText="Woods"/>
+				<PickList Text="Golf Course" AltFieldName="GC3_DH_SITVW3" AltFieldText="Glfvw"/>
+				<PickList Text="City/Skyline" AltFieldName="GC3_DH_SITVW3" AltFieldText="CtySky"/>
+				<PickList Text="Mountain" AltFieldName="GC3_DH_SITVW3" AltFieldText="Mtn"/>
+				<PickList Text="Residential" AltFieldName="GC3_DH_SITVW3" AltFieldText="Res"/>
+				<PickList Text="Urban/City Street" AltFieldName="GC3_DH_SITVW3" AltFieldText="CtyStr"/>
+				<PickList Text="Industrial" AltFieldName="GC3_DH_SITVW3" AltFieldText="Ind"/>
+				<PickList Text="Power Lines" AltFieldName="GC3_DH_SITVW3" AltFieldText="PwrLn"/>
+				<PickList Text="Limited Sight" AltFieldName="GC3_DH_SITVW3" AltFieldText="LtdSght"/>
+				<PickList Text="Other (describe)" AltFieldName="GC3_DH_SITVW3" AltFieldText="OTH"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GSU_DA_CONSTQL" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Q1" AltFieldName="GSU_DA_CONSTQL" AltFieldText="Q1"/>
+				<PickList Text="Q2" AltFieldName="GSU_DA_CONSTQL" AltFieldText="Q2"/>
+				<PickList Text="Q3" AltFieldName="GSU_DA_CONSTQL" AltFieldText="Q3"/>
+				<PickList Text="Q4" AltFieldName="GSU_DA_CONSTQL" AltFieldText="Q4"/>
+				<PickList Text="Q5" AltFieldName="GSU_DA_CONSTQL" AltFieldText="Q5"/>
+				<PickList Text="Q6" AltFieldName="GSU_DA_CONSTQL" AltFieldText="Q6"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC1_DA_CONSTQL" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Q1" AltFieldName="GC1_DA_CONSTQL" AltFieldText="Q1"/>
+				<PickList Text="Q2" AltFieldName="GC1_DA_CONSTQL" AltFieldText="Q2"/>
+				<PickList Text="Q3" AltFieldName="GC1_DA_CONSTQL" AltFieldText="Q3"/>
+				<PickList Text="Q4" AltFieldName="GC1_DA_CONSTQL" AltFieldText="Q4"/>
+				<PickList Text="Q5" AltFieldName="GC1_DA_CONSTQL" AltFieldText="Q5"/>
+				<PickList Text="Q6" AltFieldName="GC1_DA_CONSTQL" AltFieldText="Q6"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC2_DA_CONSTQL" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Q1" AltFieldName="GC2_DA_CONSTQL" AltFieldText="Q1"/>
+				<PickList Text="Q2" AltFieldName="GC2_DA_CONSTQL" AltFieldText="Q2"/>
+				<PickList Text="Q3" AltFieldName="GC2_DA_CONSTQL" AltFieldText="Q3"/>
+				<PickList Text="Q4" AltFieldName="GC2_DA_CONSTQL" AltFieldText="Q4"/>
+				<PickList Text="Q5" AltFieldName="GC2_DA_CONSTQL" AltFieldText="Q5"/>
+				<PickList Text="Q6" AltFieldName="GC2_DA_CONSTQL" AltFieldText="Q6"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC3_DA_CONSTQL" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Q1" AltFieldName="GC3_DA_CONSTQL" AltFieldText="Q1"/>
+				<PickList Text="Q2" AltFieldName="GC3_DA_CONSTQL" AltFieldText="Q2"/>
+				<PickList Text="Q3" AltFieldName="GC3_DA_CONSTQL" AltFieldText="Q3"/>
+				<PickList Text="Q4" AltFieldName="GC3_DA_CONSTQL" AltFieldText="Q4"/>
+				<PickList Text="Q5" AltFieldName="GC3_DA_CONSTQL" AltFieldText="Q5"/>
+				<PickList Text="Q6" AltFieldName="GC3_DA_CONSTQL" AltFieldText="Q6"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC1_AG_COND1" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="C1" AltFieldName="GC1_AG_COND1" AltFieldText="C1"/>
+				<PickList Text="C2" AltFieldName="GC1_AG_COND1" AltFieldText="C2"/>
+				<PickList Text="C3" AltFieldName="GC1_AG_COND1" AltFieldText="C3"/>
+				<PickList Text="C4" AltFieldName="GC1_AG_COND1" AltFieldText="C4"/>
+				<PickList Text="C5" AltFieldName="GC1_AG_COND1" AltFieldText="C5"/>
+				<PickList Text="C6" AltFieldName="GC1_AG_COND1" AltFieldText="C6"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC2_AG_COND1" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="C1" AltFieldName="GC2_AG_COND1" AltFieldText="C1"/>
+				<PickList Text="C2" AltFieldName="GC2_AG_COND1" AltFieldText="C2"/>
+				<PickList Text="C3" AltFieldName="GC2_AG_COND1" AltFieldText="C3"/>
+				<PickList Text="C4" AltFieldName="GC2_AG_COND1" AltFieldText="C4"/>
+				<PickList Text="C5" AltFieldName="GC2_AG_COND1" AltFieldText="C5"/>
+				<PickList Text="C6" AltFieldName="GC2_AG_COND1" AltFieldText="C6"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC3_AG_COND1" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="C1" AltFieldName="GC3_AG_COND1" AltFieldText="C1"/>
+				<PickList Text="C2" AltFieldName="GC3_AG_COND1" AltFieldText="C2"/>
+				<PickList Text="C3" AltFieldName="GC3_AG_COND1" AltFieldText="C3"/>
+				<PickList Text="C4" AltFieldName="GC3_AG_COND1" AltFieldText="C4"/>
+				<PickList Text="C5" AltFieldName="GC3_AG_COND1" AltFieldText="C5"/>
+				<PickList Text="C6" AltFieldName="GC3_AG_COND1" AltFieldText="C6"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GSU_DP_BSMEXIT" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Walk-out" AltFieldName="GSU_DH_BSMEXIT" AltFieldText="wo"/>
+				<PickList Text="Walk-up" AltFieldName="GSU_DH_BSMEXIT" AltFieldText="wu"/>
+				<PickList Text="Interior-only" AltFieldName="GSU_DH_BSMEXIT" AltFieldText="io"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC1_DP_BSMEXIT" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Walk-out" AltFieldName="GC1_DH_BSMEXIT" AltFieldText="wo"/>
+				<PickList Text="Walk-up" AltFieldName="GC1_DH_BSMEXIT" AltFieldText="wu"/>
+				<PickList Text="Interior-only" AltFieldName="GC1_DH_BSMEXIT" AltFieldText="io"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC2_DP_BSMEXIT" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Walk-out" AltFieldName="GC2_DH_BSMEXIT" AltFieldText="wo"/>
+				<PickList Text="Walk-up" AltFieldName="GC2_DH_BSMEXIT" AltFieldText="wu"/>
+				<PickList Text="Interior-only" AltFieldName="GC2_DH_BSMEXIT" AltFieldText="io"/>
+			</PickLists>
+		</Field>
+		<Field FieldName="GC3_DP_BSMEXIT" FormatType="PICKLIST">
+			<PickLists>
+				<PickList Text="Walk-out" AltFieldName="GC3_DH_BSMEXIT" AltFieldText="wo"/>
+				<PickList Text="Walk-up" AltFieldName="GC3_DH_BSMEXIT" AltFieldText="wu"/>
+				<PickList Text="Interior-only" AltFieldName="GC3_DH_BSMEXIT" AltFieldText="io"/>
+			</PickLists>
+		</Field>
+		<!-- SalesGrid End-->
+	</Fields>
+	<CheckBoxGroups>
+		<CheckBoxGroup Name="Occupant" Fields="SUBOCCUP_OWNER,SUBOCCUP_TENANT,SUBOCCUP_VACANT"/>
+		<CheckBoxGroup Name="HOAFeeTerm" Fields="HOAPERYEAR,HOAPERMONTH"/>
+		<CheckBoxGroup Name="RightsAppraised" Fields="SUBPRA_FEESIMPLE,SUBPRA_LEASEHOLD,SUBPRA_OTHER"/>
+		<CheckBoxGroup Name="AssignmentType" Fields="PUR_PURCHASE,PUR_REFINANCE,PUR_OTHER"/>
+		<CheckBoxGroup Name="PrevOrCurrOffered" Fields="SUBLISTDPRI12_YES,SUBLISTDPRI12_NO"/>
+		<CheckBoxGroup Name="CurrentlyOffered" Fields="SUBOFFRD_YES,SUBOFFRD_NO"/>
+		<CheckBoxGroup Name="ContractAnalyzed" Fields="SUBPMTCTRREV_YES,SUBPMTCTRREV_NO"/>
+		<CheckBoxGroup Name="ContractAnalyzedPop" Fields="EX_CONTRANAL_YES,EX_CONTRANAL_NO"/>
+		<CheckBoxGroup Name="SellerIsOwner" Fields="SELLERISOWNER_YES,SELLERISOWNER_NO"/>
+		<CheckBoxGroup Name="FinancialAssistance" Fields="SUBLOANCONC_YES,SUBLOANCONC_NO"/>
+		<CheckBoxGroup Name="FinancialAssistancePop" Fields="EX_FINASSIST_YES,EX_FINASSIST_NO"/>
+		<CheckBoxGroup Name="NBHLocation" Fields="NBHLOC_URBAN,NBHLOC_SUBURBAN,NBHLOC_RURAL"/>
+		<CheckBoxGroup Name="NBHBuiltUp" Fields="NBHBLTUP_OVER75,NBHBLTUP_25TO75,NBHBLTUP_UNDER25"/>
+		<CheckBoxGroup Name="NBHGrowth" Fields="NBHGRWRT_RAPID,NBHGRWRT_STABLE,NBHGRWRT_SLOW"/>
+		<CheckBoxGroup Name="NBHPropertyValues" Fields="NBHPROPVAL_INCR,NBHPROPVAL_STAB,NBHPROPVAL_DECL"/>
+		<CheckBoxGroup Name="NBHDemandSupply" Fields="NBHDEMSUP_SHRTG,NBHDEMSUP_INBAL,NBHDEMSUP_OVRSUP"/>
+		<CheckBoxGroup Name="NBHMarketingTime" Fields="NBHMKTTIME_UND3,NBHMKTTIME_3TO6,NBHMKTTIME_OVR6"/>
+		<CheckBoxGroup Name="ZoningCompliance" Fields="SITZON_LEGAL,SITZON_LEGALNON,SITZON_NOZONING,SITZON_ILLEGAL"/>
+		<CheckBoxGroup Name="HBUIsPresentUse" Fields="SITHBUSE_PRESENT,SITHBUSE_OTHER"/>
+		<CheckBoxGroup Name="NumberOfUnits" Fields="UNIT_SINGLE,UNIT_ACC_INLAW"/>
+		<CheckBoxGroup Name="CompletionStatus" Fields="GDSEXISTING,GDSPROPOSED,GDSUNDERCONSTR"/>
+		<CheckBoxGroup Name="BuildingType" Fields="GDSTYPE_DETACH,GDSTYPE_ATTACH,GDSTYPE_SEMIDET"/>
+		<CheckBoxGroup Name="PhysicalDeficiencies" Fields="PHYSICALDEF_YES,PHYSICALDEF_NO"/>
+		<CheckBoxGroup Name="ConformsToNBH" Fields="SUBCONFORMNBH_YES,SUBCONFORMNBH_NO"/>
+		<CheckBoxGroup Name="Comp1ContractDateKnown" Fields="GC1_EX_CONTKWN,GC1_EX_CONTUNK"/>
+		<CheckBoxGroup Name="Comp2ContractDateKnown" Fields="GC2_EX_CONTKWN,GC2_EX_CONTUNK"/>
+		<CheckBoxGroup Name="Comp3ContractDateKnown" Fields="GC3_EX_CONTKWN,GC3_EX_CONTUNK"/>
+		<CheckBoxGroup Name="SubCompHistoryResearch" Fields="HISTRESRCH_YES,HISTRESRCH_NO"/>
+		<CheckBoxGroup Name="SubjectPriorSales" Fields="SUBSALE3YR_YES,SUBSALE3YR_NO"/>
+		<CheckBoxGroup Name="CompsPriorSales" Fields="CMPSALE1YR_YES,CMPSALE1YR_NO"/>
+		<CheckBoxGroup Name="CostApproachReproReplace" Fields="CST_REPRODUCTION,CST_REPLACEMENT"/>
+		<CheckBoxGroup Name="DeveloperControlsHOA" Fields="PUDHOA_YES,PUDHOA_NO"/>
+		<CheckBoxGroup Name="PUDConversion" Fields="PUDEXTBLDG_YES,PUDEXTBLDG_NO"/>
+		<CheckBoxGroup Name="PUDMultiDwelling" Fields="PUDMUTIDWLNG_YES,PUDMUTIDWLNG_NO"/>
+		<CheckBoxGroup Name="PUDCommonElemComplete" Fields="PUDCOMELEMNT_YES,PUDCOMELEMNT_NO"/>
+		<CheckBoxGroup Name="PUDCommonElemLeased" Fields="PUDELEMNTLEASTYES,PUDELEMNTLEASTNO"/>
+		<CheckBoxGroup Name="SuperSubjInspect" Fields="RECSUPINSP_DIDNOT,RECSUPINS_EXT,RECSUPINS_EXTINT"/>
+	</CheckBoxGroups>
+	<FormatTypes>
+		<FormatType ID="CURRENCY" AllowFormat="true" AcceptQuickText="true" ReadOnly="false" Number="true" Comas="true" Text="Currency"/>
+		<FormatType ID="CURRENCY_WHOLE" Number="true" Commas="true" RoundWhole="true" Text="Currency, whole dollars"/>
+		<FormatType ID="CURRENCY_WHOLE_ZERO" Number="true" Commas="true" RoundWhole="true" Text="Currency, whole dollars, enter 0 for none."/>
+		<FormatType ID="DATE_MDY4" Text="Date: mm/dd/yyyy"/>
+		<FormatType ID="DATE_YYYY" Text="4 digit year, yyyy"/>
+		<FormatType ID="NUMERIC" Number="true" Commas="true" Text="Numeric"/>
+		<FormatType ID="NUMERIC_0DEC" Number="true" Commas="true" RoundWhole="true" Text="Numeric, no decimals"/>
+		<FormatType ID="NUMERIC_2DEC" Number="true" Commas="true" RoundNumber="2" Text="Numeric, 2 decimal places"/>
+		<FormatType ID="NUMERIC_2DIGITS" Number="true" Commas="true" RoundWhole="true" Text="Numeric, 2 digits"/>
+		<FormatType ID="NUMERIC_3DIGITS" Number="true" Commas="true" RoundWhole="true" Text="Numeric, 3 digits"/>
+		<FormatType ID="NUMERIC_3DIGITS_EST" Number="true" Commas="true" RoundWhole="true" Text="Numeric, 3 digits only (with leading ~ if estimated)"/>
+		<FormatType ID="NUMERIC_3DIGITS_MAX" Number="true" Commas="true" RoundWhole="true" Text="Numeric, up to 3 digits"/>
+		<FormatType ID="NUMERIC_5DIGITS_MAX" Number="true" Commas="true" RoundWhole="true" Text="Numeric, up to 5 digits"/>
+		<FormatType ID="NUMERIC_2DEC_MAX" Number="true" Commas="true" RoundNumber="2" Text="Numeric, up to 2 decimals"/>
+		<FormatType ID="AGE_YEAR" Text="Year, 4 digits (with leading ~ if estimated)"/>
+		<FormatType ID="BATH" Number="true" Text="Full Bath.Half Bath"/>
+		<FormatType ID="PICKLIST" Text="Please select from the provided list."/>
+		<FormatType ID="POPUP"  AllowQuickLists="false"  Text="Enter data in popup."/>
+		<FormatType ID="UAD_GENERIC" Text="See guidance manual."/>
+		<FormatType ID="ADDRESS" Text="Address conforming to the USPS address standards."/>
+		<FormatType ID="NO_SEMICOLON" Text="No semi-colons allowed."/>
+		<FormatType ID="REQUIRED" Text="Required for transmittal."/>
+		<FormatType ID="REQUIRED_CHECKGROUP" Text="One checkbox must be selected."/>
+		<FormatType ID="POPUPDEST" AllowQuickLists="false" Text="Enter data in popup."/>
+		<FormatType ID="CUSTOM"/>
+	</FormatTypes>
+</Form>

@@ -1,0 +1,32 @@
+# TerraFusion code-enforcement Government Code Ownership
+# THE TERRAFUSION WAY - Government approval processes
+
+# Global ownership
+* @government-leads @platform-team @security-team
+
+# Platform specific
+src/ @platform-team @architecture-team
+config/ @devops-team @security-team
+scripts/ @devops-team @platform-team
+
+# Government compliance
+compliance/ @compliance-team @legal-team @security-team
+security/ @security-team @cybersecurity-team
+
+# Testing
+tests/ @qa-team @security-team
+*.test.* @qa-team
+*.spec.* @qa-team
+
+# Infrastructure
+.github/ @devops-team @security-team
+docker* @devops-team @security-team
+k8s/ @devops-team @platform-team
+
+# Documentation
+README.md @documentation-team
+docs/ @documentation-team
+
+# Government sensitive
+*.gov @government-leads @security-team @legal-team
+*.classified @government-leads @security-team @legal-team

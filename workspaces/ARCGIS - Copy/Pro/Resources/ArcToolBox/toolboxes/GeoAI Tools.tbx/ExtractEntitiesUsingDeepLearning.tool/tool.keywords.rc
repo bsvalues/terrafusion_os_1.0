@@ -1,0 +1,18 @@
+{
+    "set": [
+        "classify text",
+        "extract entities",
+        "extract information",
+        "extract locations",
+        "ner",
+        "nlp",
+        "named entity recognition",
+        "natural language processing",
+        "reports",
+        "sequence to sequence",
+        "text",
+        "text transformation",
+        "text translation",
+        "unstructured text"
+    ]
+}

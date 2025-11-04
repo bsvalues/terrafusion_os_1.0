@@ -1,0 +1,63 @@
+{
+    "type": "FunctionTool",
+    "guid": "{4bcd3192-db27-4740-b21b-9a1cc1a1ed37}",
+    "displayname": "$rc:title",
+    "helpcontent": "72000003",
+    "description": "$rc:description",
+    "product": "200",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_trace_network": {
+            "displayname": "$rc:in_trace_network.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DETraceNetwork"
+                    },
+                    {
+                        "type": "GPTraceNetworkLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_trace_network.descr"
+        },
+        "network_attribute": {
+            "displayname": "$rc:network_attribute.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:network_attribute.descr"
+        },
+        "featureclass": {
+            "displayname": "$rc:featureclass.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "in_trace_network"
+            ],
+            "description": "$rc:featureclass.descr"
+        },
+        "field": {
+            "displayname": "$rc:field.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "featureclass"
+            ],
+            "description": "$rc:field.descr"
+        },
+        "out_trace_network": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_trace_network.title",
+            "datatype": {
+                "type": "DETraceNetwork"
+            }
+        }
+    }
+}

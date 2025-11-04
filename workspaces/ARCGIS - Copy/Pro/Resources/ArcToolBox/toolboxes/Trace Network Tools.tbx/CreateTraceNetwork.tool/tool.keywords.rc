@@ -1,0 +1,9 @@
+{
+    "set": [
+        "create",
+        "network",
+        "new",
+        "trace",
+        "trace network"
+    ]
+}

@@ -1,0 +1,24 @@
+{
+    "map": {
+        "aggregate_field.descr": "The field that contains attributes for aggregation. Features must share the same attribute value to be considered for aggregation. For example, use a building classification field as the aggregate field to prevent commercial buildings from aggregating with residential buildings.",
+        "aggregate_field.title": "Aggregate Field",
+        "aggregation_distance.descr": "The distance to be satisfied between polygon boundaries for aggregation to occur. A distance must be specified, and it must be greater than zero. You can choose a preferred unit; the default is the feature unit.",
+        "aggregation_distance.title": "Aggregation Distance",
+        "barrier_features.descr": "The layers containing the line or polygon features that are aggregation barriers for input features. Features will not be aggregated across barrier features. Barrier features that are in geometric conflict with input features will be ignored.",
+        "barrier_features.title": "Barrier Features",
+        "description": "Combines polygons that are within a specified distance of each other into new polygons.",
+        "in_features.descr": "The polygon features to be aggregated. If this is a layer referencing a representation and shape overrides are present on the input features, the overridden shapes, not the feature shapes, will be considered in aggregation processing.",
+        "in_features.title": "Input Features",
+        "minimum_area.descr": "The minimum area for an aggregated polygon to be retained. The default value is zero, that is, to keep all polygons. You can specify a preferred unit; the default is the feature unit.",
+        "minimum_area.title": "Minimum Area",
+        "minimum_hole_size.descr": "The minimum size of a polygon hole to be retained. The default value is zero, that is, to keep all polygon holes. You can specify a preferred unit; the default is the feature unit.",
+        "minimum_hole_size.title": "Minimum Hole Size",
+        "orthogonality_option.descr": "<xdoc><p>Specifies the characteristic of the output features when constructing the aggregated boundaries.</p><ul><li>Unchecked--Organically shaped output features will be created. This is suitable for natural features, such as vegetation or soil polygons. This is the default.</li><li>Checked--Orthogonally shaped output features will be created. This is suitable for preserving the geometric characteristic of anthropogenic input features, such as building footprints.</li></ul></xdoc>",
+        "orthogonality_option.title": "Preserve orthogonal shape",
+        "out_feature_class.descr": "The output feature class to be created.",
+        "out_feature_class.title": "Output Feature Class",
+        "out_table.descr": "<xdoc><p>A one-to-many relationship table that links the aggregated polygons to their source polygon features. This table contains two fields, <span class=\"esri_fieldname\">OUTPUT_FID</span> and <span class=\"esri_fieldname\">INPUT_FID</span>, that store the aggregated feature IDs and their source feature IDs, respectively. Use this table to derive necessary attributes for the output features from their source features. The default name for this table is the name of the output feature class, appended with _tbl. The default path is the same as the output feature class. If the output features location is specified in a feature dataset, this table will be created one level higher, at the geodatabase level. No table is created when this parameter is left blank.</p></xdoc>",
+        "out_table.title": "Output Table",
+        "title": "Aggregate Polygons"
+    }
+}

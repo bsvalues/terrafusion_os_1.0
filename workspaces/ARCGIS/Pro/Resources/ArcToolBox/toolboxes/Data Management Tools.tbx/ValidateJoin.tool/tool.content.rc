@@ -1,0 +1,19 @@
+{
+    "map": {
+        "description": "Validates a  join between two layers or tables to determine if the layers or tables have valid field names and Object ID fields, if the join produces matching records, if the join is a one-to-one or one-to-many join, and other properties of the join.",
+        "in_field.descr": "The field in the input layer or table view on which the join will be based.",
+        "in_field.title": "Input Join Field",
+        "in_layer_or_view.descr": "The layer or table view with the join to the join table that will be validated.",
+        "in_layer_or_view.title": "Input Layer or Table View",
+        "join_field.descr": "The field in the join table that contains the values on which the join will be based.",
+        "join_field.title": "Join Table Field",
+        "join_table.descr": "The table or table view with the join to the input layer or table view that will be validated.",
+        "join_table.title": "Join Table",
+        "match_count.title": "Match Count",
+        "output_msg.descr": "The output table containing the validation messages in a tabular form.",
+        "output_msg.title": "Output Table",
+        "row_count.title": "Row Count",
+        "summary": "<xdoc><p>Validates a join between two layers or tables to determine if the layers or tables have valid field names and Object ID fields, if the join produces matching records, if the join is a one-to-one or one-to-many join, and other properties of the join.</p><p>This tool does not produce a join; it analyzes a potential join with the current data. Since all joins can potentially become one-to-many, the layer properties will always show cardinality one-to-many. A join can change from one-to-one to one-to-many if the data changes. The join being validated by this tool can be created using the Add Join or Join Field tool. This tool will report the join validation results as messages and optionally as an output table.</p></xdoc>",
+        "title": "Validate Join"
+    }
+}

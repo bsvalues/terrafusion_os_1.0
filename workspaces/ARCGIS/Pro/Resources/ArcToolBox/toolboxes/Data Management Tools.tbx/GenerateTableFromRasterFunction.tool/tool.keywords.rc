@@ -1,0 +1,11 @@
+{
+    "set": [
+        ".xml file",
+        "json file template",
+        "json function definition string",
+        "raster function",
+        "convert raster function",
+        "feature class",
+        "table"
+    ]
+}

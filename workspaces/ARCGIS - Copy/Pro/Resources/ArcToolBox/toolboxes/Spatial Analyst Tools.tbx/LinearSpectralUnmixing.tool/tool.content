@@ -1,0 +1,140 @@
+{
+    "type": "FunctionTool",
+    "guid": "{7ee164bb-9b9b-42d9-8e07-3377e9987e84}",
+    "displayname": "$rc:title",
+    "helpcontent": "8200018",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10",
+        "58",
+        "86"
+    ],
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_raster": {
+            "displayname": "$rc:in_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "DEMosaicDataset"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "DEFile"
+                    },
+                    {
+                        "type": "DEImageServer"
+                    }
+                ]
+            },
+            "description": "$rc:in_raster.descr"
+        },
+        "out_raster": {
+            "direction": "out",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    }
+                ]
+            },
+            "description": "$rc:out_raster.descr"
+        },
+        "in_spectral_profile_file": {
+            "displayname": "$rc:in_spectral_profile_file.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPFeatureLayer"
+                    },
+                    {
+                        "type": "DEFile"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Polygon"
+                        ]
+                    },
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "txt",
+                            "ecd",
+                            "eed"
+                        ]
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "description": "$rc:in_spectral_profile_file.descr"
+        },
+        "value_option": {
+            "type": "optional",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:value_option.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SUM_TO_ONE",
+                        "code": "$rc:value_option.domain.SUM_TO_ONE"
+                    },
+                    {
+                        "value": "NON_NEGATIVE",
+                        "code": "$rc:value_option.domain.NON_NEGATIVE"
+                    }
+                ]
+            },
+            "defaultenvironmentname": "configKeyword",
+            "description": "$rc:value_option.descr"
+        }
+    },
+    "environments": [
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "nodata",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "pyramid",
+        "rasterStatistics",
+        "resamplingMethod",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

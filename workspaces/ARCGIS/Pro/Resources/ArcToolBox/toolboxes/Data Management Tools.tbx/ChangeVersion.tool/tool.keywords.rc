@@ -1,0 +1,10 @@
+{
+    "set": [
+        "change",
+        "geodatabase",
+        "name",
+        "switch",
+        "workspace",
+        "version"
+    ]
+}

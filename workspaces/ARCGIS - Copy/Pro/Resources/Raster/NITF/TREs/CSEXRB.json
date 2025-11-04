@@ -1,0 +1,820 @@
+{
+	"TRE": "CSEXRB",
+	"Source": [
+		"STDI-0002-1 v2021.1, Appendix AH: GLAS/GFM",
+		"STDI-0002-2 v2021.1, Appendix M: GLAS/GFM 1.0"
+	],
+	"Name": "The Exploitation Reference Data TRE (CSEXRB)",
+	"Description": "The Exploitation Reference Data TRE (CSEXRB) provides exploitation support data, the acquisition, environment, performance, multi-mate/stereo, and the processing history parameters.",
+	"Size": 5,
+	"Fields": {
+		"IMAGE_UUID": {
+			"Name": "UUID Assigned to the Current Image Plane",
+			"Description": "This field contains the UUID assigned to the current image plane; the current image plane may consist of multiple image segments based on NITF file size restrictions.  In the multi-segment case, each instance of CSEXRB contained in an image segment which is part of the multi-segment image plane shall report the same UUID value in this field.",
+			"Size": 36,
+			"Format": "BCS-A",
+			"Type": "R",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"NUM_ASSOC_DES": {
+			"Name": "Number of GLAS/GFM DESs Associated with this image",
+			"Description": "This field shall contain the number of GLAS/GFM DESs associated with the current image.",
+			"Size": 3,
+			"Format": "BCS-N",
+			"Type": "R",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 999
+				}
+			]
+		},
+		"ASSOC_DES_UUID<NUM_ASSOC_DES>": {
+			"Name": "Te UUID of the ith GLAS or GFM DES Associated with this Image",
+			"Description": "This field contains a UUID identifying the ith GLAS/GFM DES associated with the current image.",
+			"Size": 36,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"PLATFORM_ID": {
+			"Name": "Platform Identifier",
+			"Description": "This field shall contain the platform identifier of the system that collected the current image.",
+			"Size": 6,
+			"Format": "BCS-A",
+			"Type": "R",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"PAYLOAD_ID": {
+			"Name": "Platform Identifier",
+			"Description": "This field contains the payload identifieer of the system that collected the current image.",
+			"Size": 6,
+			"Format": "BCS-A",
+			"Type": "R",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"SENSOR_ID": {
+			"Name": "Sensor Identifier",
+			"Description": "This field contains the sensor identifier of the system that collected the current image.",
+			"Size": 6,
+			"Format": "BCS-A",
+			"Type": "R",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"SENSOR_TYPE": {
+			"Name": "Sensor Type",
+			"Description": "This field contains a code identifying the type of sensor that collected the image.",
+			"Size": 1,
+			"Format": "BCS-A",
+			"Type": "<R>",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Value",
+					"Values": {
+						"S": "Line Scanner",
+						"F": "Frame",
+						" ": " "
+					}
+				}
+			]
+		},
+		"GROUND_REF_POINT_X": {
+			"Name": "The X coordinate of the ground reference point",
+			"Description": "The X coordinate of the ground reference points, which are in ECF coordinates.",
+			"Size": 12,
+			"Format": "BCS-A",
+			"Type": "<R>",
+			"Units": [ "meters" ],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -99999999.99,
+					"Max": 99999999.99
+				},
+				{
+					"Type": "Value",
+					"Values": [ " " ]
+				}
+			]
+		},
+		"GROUND_REF_POINT_Y": {
+			"Name": "The Y coordinate of the ground reference point",
+			"Description": "The Y coordinate of the ground reference points, which are in ECF coordinates.",
+			"Size": 12,
+			"Format": "BCS-A",
+			"Type": "<R>",
+			"Units": [ "meters" ],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -99999999.99,
+					"Max": 99999999.99
+				},
+				{
+					"Type": "Value",
+					"Values": [ " " ]
+				}
+			]
+		},
+		"GROUND_REF_POINT_Z": {
+			"Name": "The Z coordinate of the ground reference point",
+			"Description": "The Z coordinate of the ground reference points, which are in ECF coordinates.",
+			"Size": 12,
+			"Format": "BCS-A",
+			"Type": "<R>",
+			"Units": [ "meters" ],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -99999999.99,
+					"Max": 99999999.99
+				},
+				{
+					"Type": "Value",
+					"Values": [ " " ]
+				}
+			]
+		},
+		"DAY_FIRST_LINE_IMAGE": {
+			"Name": "Day of First Line of Synthetic Array Image",
+			"Description": "This field contains the date, in UTC, associated with the collection of the first line of the synthetic array image.",
+			"Size": 8,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "DateTime"
+				}
+			]
+		},
+		"TIME_FIRST_LINE_IMAGE": {
+			"Name": "Image Duration Time",
+			"Description": "This field contains the number of seconds from midnight to the start of collection of the first line of the image and applies to the entire image even if the pixels span multiple image segments.",
+			"Size": 15,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [ "seconds" ],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0.000000000,
+					"Max": 86399.999999999
+				}
+			]
+		},
+		"TIME_IMAGE_DURATION": {
+			"Name": "Image Duration Time",
+			"Description": "This field contains the signed time difference between the start collection times for the top and bottom lines of the image, i.e., time of bottom line minus time of top line. If the value is negative, then the image lines were chronologically collected from bottom to top, and this field represents the signed time difference between the chronological end of the top and bottom line collection. This field applies to the entire image even if the pixels span multiple image segments.",
+			"Size": 16,
+			"Format": "BCS-A",
+			"Type": "C",
+			"Units": [ "seconds" ],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -86399.999999999,
+					"Max": 86399.999999999
+				}
+			]
+		},
+		"TIME_STAMP_LOC": {
+			"Name": "Location of Frame Time Stamps",
+			"Description": "This field identifies the TRE containing the frame time stamps.",
+			"Size": 1,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Value",
+					"Values": {
+						"0": "CSEXRB TRE",
+						"1": "MTIMSA TRE"
+					}
+				}
+			]
+		},
+		"REFERENCE_FRAME_NUM": {
+			"Name": "Reference Frame Number",
+			"Description": "This field contains the absolute frame number of the first frame of this temporal block as determined by the collection system.",
+			"Size": 9,
+			"Format": "BCS-A",
+			"Type": "<C>",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 1,
+					"Max": 999999999
+				},
+				{
+					"Type": "Value",
+					"Values": [ " " ]
+				}
+			]
+		},
+		"BASE_TIMESTAMP": {
+			"Name": "Base Time Stamp",
+			"Description": "This field contains the sensor identifier of the system that collected the current image.",
+			"Size": 24,
+			"Format": "BCS-N",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "DateTime"
+				}
+			]
+		},
+		"DT_MULTIPLIER": {
+			"Name": "Delta Time Duration",
+			"Description": "This field contains the number of nanoseconds equal to one 'time unit', or the minimum 'delta time' that can be expressed between frames.",
+			"Size": 8,
+			"Format": "UINT",
+			"Type": "C",
+			"Units": [ "nanoseconds" ],
+			"Values": [
+				{
+					"Type": "UnsignedInteger"
+				}
+			]
+		},
+		"DT_SIZE": {
+			"Name": "Byte Size of the Delta Time Values",
+			"Description": "This field reports the size in bytes of the DTn values.",
+			"Size": 1,
+			"Format": "UINT",
+			"Type": "C",
+			"Units": [ "bytes" ],
+			"Values": [
+				{
+					"Type": "UnsignedInteger"
+				}
+			]
+		},
+		"NUMBER_FRAMES": {
+			"Name": "Number of Frames in the Current Temporal Block",
+			"Description": "This field reports the number of frames in this image segment for this camera and temporal block, i.e., the number of frames in the current frame sequence.",
+			"Size": 4,
+			"Format": "UINT",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "UnsignedInteger"
+				}
+			]
+		},
+        "NUMBER_DT": {
+			"Name": "Number of Delta Time Values",
+			"Description": "This field represents the number of delta time unit (DTn) values contained in this NITF image segment.",
+			"Size": 4,
+			"Format": "UINT",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "UnsignedInteger"
+				}
+			]
+		},
+		"DT<NUMBER_FRAMES>": {
+			"Name": "nth Delta Time Value",
+			"Description": "This field records the nth delta time value.",
+			"Size": 0,
+			"Format": "UINT",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "UnsignedInteger"
+				}
+			]
+		},
+		"MAX_GSD": {
+			"Name": "Maximum Mean Ground Sample Distance",
+			"Description": "This field contains the predicted maximum mean GSD for the Primary Target (point targets) or center of image (area targets).",
+			"Size": 12,
+			"Format": "BCS-A",
+			"Type": "<R>",
+			"Units": [ "inches" ],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0.0,
+					"Max": 9999999999.9
+				},
+				{
+					"Type": "Value",
+					"Values": [ " " ]
+				}
+			]
+		},
+		"ALONG_SCAN_GSD": {
+			"Name": "Measured Along-Scan GSD",
+			"Description": "This field contains the measured along-scan GSD for the Primary Target (point targets) or center of image (area targets).",
+			"Size": 12,
+			"Format": "BCS-A",
+			"Type": "<R>",
+			"Units": [ "inches" ],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0.0,
+					"Max": 9999999999.9
+				},
+				{
+					"Type": "Value",
+					"Values": [ " " ]
+				}
+			]
+		},
+		"CROSS_SCAN_GSD": {
+			"Name": "Measured Cross-Scan GSD",
+			"Description": "This field contains the measured cross-scan GSD for the Primary Target (point targets) or center of image (area targets).",
+			"Size": 12,
+			"Format": "BCS-A",
+			"Type": "<R>",
+			"Units": [ "inches" ],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0.0,
+					"Max": 9999999999.9
+				},
+				{
+					"Type": "Value",
+					"Values": [ " " ]
+				}
+			]
+		},
+		"GEO_MEAN_GSD": {
+			"Name": "Measured Geometric Mean GSD",
+			"Description": "This field contains the measured geometric mean GSD for the Primary Target for the Primary Target (point targets) or center of image (area targets).",
+			"Size": 12,
+			"Format": "BCS-A",
+			"Type": "<R>",
+			"Units": [ "inches" ],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0.0,
+					"Max": 9999999999.9
+				},
+				{
+					"Type": "Value",
+					"Values": [ " " ]
+				}
+			]
+		},
+		"A_S_VERT_GSD": {
+			"Name": "Measured Along-Scan Vertical GSD",
+			"Description": "This field contains the measured along-scan vertical GSD for the Primary Target (point targets) or center of image (area targets).",
+			"Size": 12,
+			"Format": "BCS-A",
+			"Type": "<R>",
+			"Units": [ "inches" ],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0.0,
+					"Max": 9999999999.9
+				},
+				{
+					"Type": "Value",
+					"Values": [ " " ]
+				}
+			]
+		},
+		"C_S_VERT_GSD": {
+			"Name": "Measured Cross-Scan Vertical GSD",
+			"Description": "This field contains the measured cross-scan vertical GSD for the Primary Target (point targets) or center of image (area targets).",
+			"Size": 12,
+			"Format": "BCS-A",
+			"Type": "<R>",
+			"Units": [ "inches" ],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0.0,
+					"Max": 9999999999.9
+				},
+				{
+					"Type": "Value",
+					"Values": [ " " ]
+				}
+			]
+		},
+		"GEO_MEAN_VERT_GSD": {
+			"Name": "Measured Geometric Mean Vertical GSD",
+			"Description": "This field contains the measured geometric mean vertical GSD for the Primary Target (point targets) or center of image (area targets).",
+			"Size": 12,
+			"Format": "BCS-A",
+			"Type": "<R>",
+			"Units": [ "inches" ],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0.0,
+					"Max": 9999999999.9
+				},
+				{
+					"Type": "Value",
+					"Values": [ " " ]
+				}
+			]
+		},
+		"GSD_BETA_ANGLE": {
+			"Name": "Angle Between Along-Scan and Cross-Scan Directions",
+			"Description": "This field provides the angle on the Earth-tangent plane between the along-scan and cross-scan directions at the Primary Target (point targets) or center of image (area targets).",
+			"Size": 5,
+			"Format": "BCS-A",
+			"Type": "<R>",
+			"Units": [ "degrees" ],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0.0,
+					"Max": 180.0
+				},
+				{
+					"Type": "Value",
+					"Values": [ " " ]
+				}
+			]
+		},
+		"DYNAMIC_RANGE": {
+			"Name": "Dynamic Range of Pixels in Image Across All Bands",
+			"Description": "This field reports the dynamic range of the pixels, 'digital numbers', in the image across all the bands collected by the sensor.",
+			"Size": 5,
+			"Format": "BCS-A",
+			"Type": "<R>",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 99999
+				},
+				{
+					"Type": "Value",
+					"Values": [ " " ]
+				}
+			]
+		},
+		"NUM_LINES": {
+			"Name": "Number of Lines in the Entire Image",
+			"Description": "This field reports the number of lines in the entire image before image segmentation, if necessary.",
+			"Size": 7,
+			"Format": "BCS-N",
+			"Type": "R",
+			"Units": [ "lines" ],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 9999999
+				}
+			]
+		},
+		"NUM_SAMPLES": {
+			"Name": "Number of Samples Per Line in the Entire Image",
+			"Description": "This field reports the number of samples in the entire image before image segmentation, if necessary.",
+			"Size": 5,
+			"Format": "BCS-N",
+			"Type": "R",
+			"Units": [ "samples" ],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 99999
+				}
+			]
+		},
+		"ANGLE_TO_NORTH": {
+			"Name": "Angle to True North",
+			"Description": "This field contains the angle of the image segment with respect to True North, measured clockwise from the first row vector, i.e., a vector pointing from row, column 0,0 to 0, 'NCOLS minus 1' in the NITF CCS, to True North.",
+			"Size": 7,
+			"Format": "BCS-A",
+			"Type": "<R>",
+			"Units": [ "degrees" ],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0.0,
+					"Max": 359.999
+				},
+				{
+					"Type": "Value",
+					"Values": [ " " ]
+				}
+			]
+		},
+		"OBLIQUITY_ANGLE": {
+			"Name": "Obliquity Angle",
+			"Description": "This field contains the angle between the satellite vehicle (SV) nadir pointing vector and SV-to-target line-of-sight vector at TIME_FIRST_LINE_IMAGE.",
+			"Size": 6,
+			"Format": "BCS-A",
+			"Type": "<R>",
+			"Units": [ "degrees" ],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0.0,
+					"Max": 90.0
+				},
+				{
+					"Type": "Value",
+					"Values": [ " " ]
+				}
+			]
+		},
+		"AZ_OF_OBLIQUITY": {
+			"Name": "Azimuth of Obliquity",
+			"Description": "This field contains the azimuthal angle of the SV-to-target line-of-sight vector projected in the target local horizontal plane, measured clockwise from True North computed at TIME_FIRST_LINE_IMAGE. The velocity control point of the focal plane is projected to the target local horizontal plane.",
+			"Size": 7,
+			"Format": "BCS-A",
+			"Type": "<R>",
+			"Units": [ "degrees" ],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0.0,
+					"Max": 359.999
+				},
+				{
+					"Type": "Value",
+					"Values": [ " " ]
+				}
+			]
+		},
+		"ATM_REFR_FLAG": {
+			"Name": "Atmospheric Refraction Flag",
+			"Description": "This field indicates whether a correction should be applied to the line-of-sight calculation to account for atmospheric refraction effects.",
+			"Size": 1,
+			"Format": "BCS-N",
+			"Type": "R",
+			"Units": [],
+			"Values": [
+				{
+				"Type": "Value",
+				"Values": {
+						"0": "Do not apply correction",
+						"1": "Apply correction"
+					}
+				}
+			]
+		},
+		"VEL_ABER_FLAG": {
+			"Name": "Velocity Aberration Flag",
+			"Description": "This field indicates whether a correction should be applied to the line-of-sight calculation to account for velocity aberration effects.",
+			"Size": 1,
+			"Format": "BCS-N",
+			"Type": "R",
+			"Units": [],
+			"Values": [
+				{
+				"Type": "Value",
+				"Values": {
+						"0": "Do not apply correction",
+						"1": "Apply correction"
+					}
+				}
+			]
+		},
+		"GRD_COVER": {
+			"Name": "Ground Cover Flag",
+			"Description": "This field indicates whether the scene contains snow, or that the information is not available.",
+			"Size": 1,
+			"Format": "BCS-N",
+			"Type": "R",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Value",
+					"Values": {
+						"0": "No Snow",
+						"1": "Snow",
+						"9": "Not Available"
+					}
+				}
+			]
+		},
+		"SNOW_DEPTH_CATEGORY": {
+			"Name": "Snow Depth Category",
+			"Description": "This field provides the weighted average of the snow depths for all of the grids that overlap the tasked image area.",
+			"Size": 1,
+			"Format": "BCS-N",
+			"Type": "R",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Value",
+					"Values": {
+						"0": "0 inches",
+						"1": "1 to 8 inches of ice / snow",
+						"2": "9 to 17 inches",
+						"3": "greater than 17 inches",
+						"9": "Not Available"
+					}
+				}
+			]
+		},
+		"SUN_AZIMUTH": {
+			"Name": "Sun Azimuth Angle",
+			"Description": "This field contains the sun azimuth angle at the predicted image collection start time, measured clockwise from True North in a plane tangent to the Earth's surface at the target location (as viewed from above the Earth's surface), of the line-of-sight vector from the target to the center of the Sun.",
+			"Size": 7,
+			"Format": "BCS-A",
+			"Type": "<R>",
+			"Units": [ "degrees" ],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0.0,
+					"Max": 359.999
+				},
+				{
+					"Type": "Value",
+					"Values": [ " " ]
+				}
+			]
+		},
+		"SUN_ELEVATION": {
+			"Name": "Sun Elevation Angle",
+			"Description": "This field contains the sun elevation angle in degrees from the local target plane to the sun, calculated at the predicted image collection start time where the local target plane is defined as a plane tangent to the Earth's surface at the target location.",
+			"Size": 7,
+			"Format": "BCS-N",
+			"Type": "R",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": -90.000,
+					"Max": 90.000
+				},
+				{
+					"Type": "Value",
+					"Values": [ " " ]
+				}
+			]
+		},
+		"PREDICTED_NIIRS": {
+			"Name": "NIIRS for the Mono Collection at Principal Target",
+			"Description": "This field contains the predicted NIIRS associated with the image. If the sensor is tasked by GSD, if NIIRS is not predicted.",
+			"Size": 3,
+			"Format": "BCS-A",
+			"Type": "<R>",
+			"Units": [ "NIIRS" ],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0,
+					"Max": 9
+				}
+			]
+		},
+		"CIRCL_ERR": {
+			"Name": "Circular Error",
+			"Description": "This field contains the calculated mono CE90 value of the geolocation in the horizontal ground plane of the image based on the LE90 value. This value is specifically tied to the image product represented by this instance of the CSEXRB TRE.",
+			"Size": 5,
+			"Format": "BCS-A",
+			"Type": "<R>",
+			"Units": [ "feet" ],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0.000,
+					"Max": 999.000
+				},
+				{
+					"Type": "Value",
+					"Values": [ " " ]
+				}
+			]
+		},
+		"LINEAR_ERR": {
+			"Name": "LINEAR Error",
+			"Description": "This field contains the assumed mono LE90 value in feet perpendicular to the horizontal ground plane of the image. This value is specifically tied to the image product represented by this instance of the CSEXRB TRE.",
+			"Size": 5,
+			"Format": "BCS-A",
+			"Type": "<R>",
+			"Units": [ "feet" ],
+			"Values": [
+				{
+					"Type": "Range",
+					"Min": 0.000,
+					"Max": 999.000
+				},
+				{
+					"Type": "Value",
+					"Values": [ " " ]
+				}
+			]
+		},
+        "CLOUD_COVER": {
+			"Name": "Cloud Cover",
+			"Description": "This field reports the percentage of the image plance obscured by cloud.  A value of 999 indicates cloud cover is unknown.",
+			"Size": 3,
+			"Format": "BCS-A",
+			"Type": "<R>",
+			"Units": [ "feet" ],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		},
+		"ROLLING_SHUTTER_FLAG": {
+			"Name": "Rolling Shutter Flag",
+			"Description": "This field indicates the type of integration across the image frame, with '0' indicating the same integration time is used across the image frame, and '1' indicating that the integration time changes across the image frame.",
+			"Size": 1,
+			"Format": "BCS-A",
+			"Type": "<C>",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Value",
+					"Values": {
+						"0": "same integration time across the frame",
+						"1": "changing time during integration across the frame",
+						"": " "
+					}
+				}
+			]
+		},
+		"UE_TIME_FLAG": {
+			"Name": "Time Unmodeled Error Flag",
+			"Description": "This field identifies whether time un-modeled error parameters are included.",
+			"Size": 1,
+			"Format": "BCS-N",
+			"Type": "R",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "Value",
+					"Values": {
+						"0": "no",
+						"1": "yes",
+						"": " "
+					}
+				}
+			]
+		},
+		"RESERVED_LEN": {
+			"Name": "Length of Reserved Field",
+			"Description": "This length of the reserved field should be '00000'.",
+			"Size": 5,
+			"Format": "BCS-N",
+			"Type": "R",
+			"Units": [ "bytes" ],
+			"Values": [
+				{
+					"Type": "Integer"
+				}
+			]
+		},
+		"RESERVED": {
+			"Name": "Reserved Field",
+			"Description": "This field is reserved for future use.",
+			"Size": 0,
+			"Format": "BINARY",
+			"Type": "C",
+			"Units": [],
+			"Values": [
+				{
+					"Type": "AlphaNumeric"
+				}
+			]
+		}
+	}
+}	 

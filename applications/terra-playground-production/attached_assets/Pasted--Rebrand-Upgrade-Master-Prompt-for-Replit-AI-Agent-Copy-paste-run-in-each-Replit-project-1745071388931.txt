@@ -1,0 +1,127 @@
+🧑‍💻 “Rebrand‑Upgrade” Master Prompt for Replit AI Agent
+
+Copy → paste → run in each Replit project (or tweak targets array for multi‑repo batch).
+The script is self‑contained—no extra confirmations—so it plows straight through the re‑branding steps.
+
+# === Replit AI Agent: Terrafusion Rebrand v1.0 Roll‑Out ===
+# Objective ───────────────────────────────────────────────
+# 1. Install & wire @terrafusion/tokens
+# 2. Replace old logos / favicons with new brand assets
+# 3. Codemod hard‑coded colors → CSS custom‑properties
+# 4. Add Storybook + Chromatic visual‑diff checks
+# 5. Push branch + open PR against main
+#
+# NOTE: All commands assume a Node/React+Tailwind codebase.
+#       Adapt the "steps" dictionary for legacy stacks.
+
+steps:
+
+# 0. Prep
+- name: Ensure clean working tree
+  run: |
+    git fetch origin
+    git checkout -b chore/brand-upgrade || git checkout chore/brand-upgrade
+    git reset --hard origin/$(git rev-parse --abbrev-ref HEAD | sed 's/^chore\/.*$/main/')
+    rm -rf node_modules && npm ci
+
+# 1. Tokens package
+- name: Install tokens & patch Tailwind config
+  run: |
+    npm i @terrafusion/tokens@latest -D
+    npx ts-node ./scripts/patchTailwind.ts tokens/terrafusion.json
+
+# 2. Replace static assets
+- name: Download brand asset pack & unpack
+  run: |
+    curl -L https://cdn.terrafusion.ai/brand/v1/TerraFusion_brand_assets_v1.zip -o /tmp/brand.zip
+    unzip -o /tmp/brand.zip -d public/assets
+
+# 3. Codemod hex colors
+- name: Run color‑codemod
+  run: |
+    npx jscodeshift -t ./scripts/hexToToken.js "src/**/*.{js,jsx,ts,tsx,css,scss}"
+
+# 4. Storybook & Chromatic
+- name: Add Storybook heroes + seals
+  run: |
+    cp -R public/assets/storybook ./storybook
+    yarn chromatic --project-token=$CHROMATIC_PROJECT_TOKEN --exit-zero-on-changes
+
+# 5. CI Gates
+- name: Append ZAP & Trivy jobs to workflow if missing
+  run: |
+    npx yaml-inc ./ci-templates/zap.yml >> .github/workflows/ci.yml
+    npx yaml-inc ./ci-templates/trivy.yml >> .github/workflows/ci.yml
+
+# 6. Commit & push
+- name: Commit changes
+  run: |
+    git add .
+    git commit -m "chore(brand): Terrafusion v1.0 tokens, assets, CI gates"
+    git push -u origin HEAD
+
+# 7. Open PR
+- name: Create PR via GitHub CLI
+  run: |
+    gh pr create --base main \
+      --title "Terrafusion brand upgrade v1.0" \
+      --body "Applies @terrafusion/tokens, new assets, Chromatic, ZAP & Trivy checks."
+
+# Done.
+success_message: |
+  ✅  Brand upgrade branch pushed and PR opened!
+  • Chromatic snapshots running
+  • ZAP & Trivy scans queued
+  Merge when checks are ✅
+
+
+
+⸻
+
+What the Embedded Helpers Do
+
+Script	Function
+patchTailwind.ts	Imports terrafusion.json, inserts theme.extend keys into tailwind.config.js.
+hexToToken.js	Parses files for legacy hex values (#1565C0, etc.) and rewrites to var(--color-primary-blue).
+ci-templates/zap.yml / trivy.yml	Drop‑in job snippets; they run only if your workflow doesn’t already have them.
+
+(Feel free to ask for the helper‑script bodies—Replit AI Agent can scaffold them if missing.)
+
+⸻
+
+Batch‑Mode Across Multiple Repos
+
+If you keep each module in its own Replit workspace and host mirrors on GitHub:
+	1.	Create a workspace called brand‑upgrade-orchestrator.
+	2.	Add a repos.json file:
+
+["GeoAssessmentPro", "PropertyTaxAI", "BCBSCostApp", "LevyMaster"]
+
+
+	3.	Drop this bash in .replit “Run”:
+
+for repo in $(jq -r '.[]' repos.json); do
+  gh repo clone bsvalues/$repo
+  cd $repo
+  replit run --path ./  # runs the master prompt above
+  cd ..
+done
+
+
+	4.	Hit Run once; the orchestrator walks every repo, opens PRs, and logs URLs.
+
+⸻
+
+Roll‑Back Safety
+	•	Branch‑only changes—main stays untouched until PR merge.
+	•	Chromatic & ZAP green‑lights gate merges; a failed scan blocks re‑branding until fixed.
+	•	To revert: git push origin :chore/brand-upgrade and delete the PR.
+
+⸻
+
+Next Step for You
+	1.	Copy the “Rebrand‑Upgrade Master Prompt” into the Replit AI Agent prompt box of a target project.
+	2.	Verify the generated PR looks good in GitHub.
+	3.	Merge → watch new tokens/aesthetics appear in the deployed preview.
+
+You’re fully empowered to brand‑upgrade every module with a one‑click Agent run.  Ping me if you want the helper scripts spelled out or tweaks to the codemod logic.

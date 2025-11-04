@@ -1,0 +1,156 @@
+Great—let’s roll out both the dashboard provisioning and alert rules. Below are the two key pieces you’ll want to add to your repo:
+
+---
+
+### 1. Prometheus Alert Rules  
+Create a file at `prometheus/alerts/webvitals.rules.yml`:
+
+```yaml
+groups:
+  - name: webvitals.rules
+    rules:
+
+      - alert: WEBVITALS_LCP_95P_BREACH
+        expr: histogram_quantile(0.95, sum(rate(webvitals_lcp_bucket[5m])) by (le)) > 2.5
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: "95th-percentile LCP breach"
+          description: "LCP(95p) is {{ $value }}s over the last 5m."
+
+      - alert: WEBVITALS_TTFB_95P_BREACH
+        expr: histogram_quantile(0.95, sum(rate(webvitals_ttfb_bucket[5m])) by (le)) > 1.0
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: "95th-percentile TTFB breach"
+          description: "TTFB(95p) is {{ $value }}s over the last 5m."
+
+      - alert: WEBVITALS_CLS_95P_BREACH
+        expr: histogram_quantile(0.95, sum(rate(webvitals_cls_bucket[5m])) by (le)) > 0.1
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: "95th-percentile CLS breach"
+          description: "CLS(95p) is {{ $value }} over the last 5m."
+
+      # …and similarly for FCP, FID/INP …
+```
+
+Then include it in your `prometheus.yml` under `rule_files:`:
+
+```yaml
+rule_files:
+  - 'alerts/*.rules.yml'
+```
+
+---
+
+### 2. Grafana Dashboard Provisioning  
+Add a JSON dashboard template at `grafana/dashboards/webvitals.json`:
+
+```json
+{
+  "id": null,
+  "title": "Web Vitals Overview",
+  "tags": ["web-vitals"],
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "LCP 50th & 95th Percentiles",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.5, sum(rate(webvitals_lcp_bucket[5m])) by (le))",
+          "legendFormat": "50p"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(webvitals_lcp_bucket[5m])) by (le))",
+          "legendFormat": "95p"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 2.5, "color": "red" }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "TTFB 95th Percentile",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(webvitals_ttfb_bucket[5m])) by (le))",
+          "legendFormat": "95p"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 1.0, "color": "red" }
+            ]
+          }
+        }
+      }
+    }
+    /* Add more panels for CLS, FCP, INP, etc., following the same pattern */
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "route",
+        "label": "Route",
+        "type": "query",
+        "query": "label_values(webvitals_lcp_bucket, route)",
+        "multi": true,
+        "includeAll": true
+      },
+      {
+        "name": "device",
+        "label": "Device",
+        "type": "query",
+        "query": "label_values(webvitals_lcp_bucket, device)",
+        "multi": true,
+        "includeAll": true
+      }
+    ]
+  }
+}
+```
+
+Then add a Grafana provisioning file at `grafana/provisioning/dashboards/webvitals.yml`:
+
+```yaml
+apiVersion: 1
+providers:
+  - name: "Web Vitals"
+    folder: ""
+    type: "file"
+    options:
+      path: /var/lib/grafana/dashboards/webvitals
+```
+
+Make sure your Grafana container or Helm chart is pointed at that provisioning path so this dashboard auto-loads on startup.
+
+---
+
+#### Next Steps
+
+1. **Commit** both `webvitals.rules.yml` and the `dashboard` JSON/YAML files.  
+2. **Deploy** your updated Prometheus (with the new rule file) and Grafana (auto-provisioning enabled).  
+3. **Test**:  
+   - Manually push an artificially high LCP sample and confirm Alertmanager fires to Slack.  
+   - Open the Grafana UI, select “Web Vitals” and verify panels render with real-user data.  
+
+Let me know once you’ve had a chance to provision these, or if you’d like me to help validate the alerts end-to-end.

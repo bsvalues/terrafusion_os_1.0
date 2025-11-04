@@ -1,0 +1,8 @@
+{
+    "set": [
+        "classification",
+        "las classification",
+        "lidar classification",
+        "point cloud"
+    ]
+}

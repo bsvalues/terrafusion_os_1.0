@@ -1,0 +1,349 @@
+{% extends "base.html" %}
+
+{% block title %}User Profile{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <!-- Profile Sidebar -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="position-relative">
+                        {% if user.avatar_path %}
+                            <img src="{{ url_for('static', filename=user.avatar_path) }}" alt="{{ user.full_name }}" class="rounded-circle mb-3" style="width: 100px; height: 100px; object-fit: cover;">
+                        {% else %}
+                            <div class="avatar-circle mb-3">
+                                <span class="avatar-initials">{{ user.full_name[0]|upper if user.full_name else user.email[0]|upper }}</span>
+                            </div>
+                        {% endif %}
+                        <div class="position-absolute bottom-0 end-0">
+                            <button type="button" class="btn btn-sm btn-primary rounded-circle" data-bs-toggle="modal" data-bs-target="#uploadAvatarModal">
+                                <i class="bi bi-camera"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <h4>{{ user.full_name }}</h4>
+                    <p class="text-muted">{{ user.email }}</p>
+                    
+                    <div class="mb-3">
+                        {% for role in user.roles %}
+                            <span class="badge bg-primary">{{ role }}</span>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                            <i class="bi bi-key"></i> Change Password
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Account Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label text-muted">Department</label>
+                        <p class="mb-0">{{ user.department }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-muted">Member Since</label>
+                        <p class="mb-0">{{ user.created_at|format_date if user.created_at else 'Unknown' }}</p>
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label text-muted">Last Login</label>
+                        <p class="mb-0">{{ user.last_login|format_date if user.last_login else 'Never' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Main Content -->
+        <div class="col-md-8">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <!-- User Details Form -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Profile Information</h5>
+                    <button class="btn btn-sm btn-primary" id="editProfileBtn">
+                        <i class="bi bi-pencil"></i> Edit
+                    </button>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('auth.update_profile') }}" method="POST" id="profileForm">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="fullName" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="fullName" name="full_name" value="{{ user.full_name }}" disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" disabled>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="department" class="form-label">Department</label>
+                                <select class="form-select" id="department" name="department" disabled>
+                                    <option value="" {% if not user.department %}selected{% endif %}>Select Department</option>
+                                    <option value="GIS" {% if user.department == 'GIS' %}selected{% endif %}>GIS</option>
+                                    <option value="Assessment" {% if user.department == 'Assessment' %}selected{% endif %}>Assessment</option>
+                                    <option value="Records" {% if user.department == 'Records' %}selected{% endif %}>Records</option>
+                                    <option value="Administration" {% if user.department == 'Administration' %}selected{% endif %}>Administration</option>
+                                    <option value="IT" {% if user.department == 'IT' %}selected{% endif %}>IT</option>
+                                    <option value="Field Operations" {% if user.department == 'Field Operations' %}selected{% endif %}>Field Operations</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" value="{{ user.phone }}" disabled>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="bio" class="form-label">Bio</label>
+                            <textarea class="form-control" id="bio" name="bio" rows="3" disabled>{{ user.bio }}</textarea>
+                            <div class="form-text">A brief description about yourself</div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="button" class="btn btn-secondary" id="cancelBtn" style="display: none;">Cancel</button>
+                            <button type="submit" class="btn btn-primary" id="saveProfileBtn" style="display: none;">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- User Permissions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Permissions</h5>
+                </div>
+                <div class="card-body">
+                    {% if user_permissions %}
+                        <div class="row">
+                            {% for permission in user_permissions %}
+                                <div class="col-md-6 mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                        <span>{{ permission }}</span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No specific permissions assigned.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Recent Activity -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    {% if user_activity %}
+                        <div class="timeline">
+                            {% for activity in user_activity %}
+                                <div class="timeline-item">
+                                    <div class="timeline-point"></div>
+                                    <div class="timeline-content">
+                                        <div class="d-flex justify-content-between">
+                                            <p class="mb-1">{{ activity.description }}</p>
+                                            <span class="text-muted small">{{ activity.timestamp|format_date }}</span>
+                                        </div>
+                                        {% if activity.details %}
+                                            <p class="text-muted small mb-0">{{ activity.details }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No recent activity to display.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Avatar Modal -->
+<div class="modal fade" id="uploadAvatarModal" tabindex="-1" aria-labelledby="uploadAvatarModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadAvatarModalLabel">Upload Custom Avatar</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('auth.upload_avatar') }}" method="POST" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="avatarFile" class="form-label">Select Image</label>
+                        <input class="form-control" type="file" id="avatarFile" name="avatar" accept="image/*" required>
+                        <div class="form-text">Recommended size: 400x400 pixels</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Avatar Preview</label>
+                        <div class="text-center">
+                            <img id="avatarPreview" src="" alt="Avatar Preview" class="rounded-circle d-none" style="max-width: 150px; max-height: 150px; object-fit: cover;">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Upload Avatar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Change Password Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="changePasswordForm" action="{{ url_for('auth.change_password') }}" method="POST">
+                    <div class="mb-3">
+                        <label for="currentPassword" class="form-label">Current Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="currentPassword" name="current_password" required>
+                            <button class="btn btn-outline-secondary toggle-password" type="button">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="newPassword" class="form-label">New Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="newPassword" name="new_password" required>
+                            <button class="btn btn-outline-secondary toggle-password" type="button">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                        <div class="form-text">Minimum 8 characters, include numbers and special characters</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="confirmPassword" name="confirm_password" required>
+                            <button class="btn btn-outline-secondary toggle-password" type="button">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="changePasswordForm" class="btn btn-primary">Change Password</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Edit profile functionality
+        const editProfileBtn = document.getElementById('editProfileBtn');
+        const saveProfileBtn = document.getElementById('saveProfileBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const profileInputs = document.querySelectorAll('#profileForm input, #profileForm select, #profileForm textarea');
+        
+        editProfileBtn.addEventListener('click', function() {
+            // Enable all form inputs
+            profileInputs.forEach(input => {
+                input.disabled = false;
+            });
+            
+            // Show save and cancel buttons, hide edit button
+            saveProfileBtn.style.display = 'block';
+            cancelBtn.style.display = 'block';
+            editProfileBtn.style.display = 'none';
+        });
+        
+        cancelBtn.addEventListener('click', function() {
+            // Disable all form inputs and reset form
+            profileInputs.forEach(input => {
+                input.disabled = true;
+            });
+            document.getElementById('profileForm').reset();
+            
+            // Hide save and cancel buttons, show edit button
+            saveProfileBtn.style.display = 'none';
+            cancelBtn.style.display = 'none';
+            editProfileBtn.style.display = 'block';
+        });
+        
+
+        
+        // Avatar preview functionality
+        const avatarFileInput = document.getElementById('avatarFile');
+        const avatarPreview = document.getElementById('avatarPreview');
+        
+        if (avatarFileInput) {
+            avatarFileInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        avatarPreview.src = e.target.result;
+                        avatarPreview.classList.remove('d-none');
+                    };
+                    
+                    reader.readAsDataURL(this.files[0]);
+                } else {
+                    avatarPreview.src = '';
+                    avatarPreview.classList.add('d-none');
+                }
+            });
+        }
+        
+        // Change password validation
+        const changePasswordForm = document.getElementById('changePasswordForm');
+        const newPassword = document.getElementById('newPassword');
+        const confirmPassword = document.getElementById('confirmPassword');
+        
+        changePasswordForm.addEventListener('submit', function(e) {
+            if (newPassword.value !== confirmPassword.value) {
+                e.preventDefault();
+                alert('New passwords do not match!');
+                return false;
+            }
+            
+            if (newPassword.value.length < 8) {
+                e.preventDefault();
+                alert('Password must be at least 8 characters long!');
+                return false;
+            }
+            
+            return true;
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Uses the interpolation model in a geostatistical layer to predict a value at a single location.",
+        "in_geostat_layer.descr": "The geostatistical layer to be analyzed.",
+        "in_geostat_layer.title": "Input geostatistical layer",
+        "out_z_value.title": "Output Z-value",
+        "point_coord.descr": "The x,y coordinate of the point for which the Z-value will be calculated.",
+        "point_coord.title": "Input point",
+        "title": "Calculate Z-value"
+    }
+}

@@ -1,0 +1,107 @@
+{
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "node",
+        "cwd": "../../marketplace/TerraFusion-PublicRecords/frontend",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "name": "Start Terrafusion Publicrecords Frontend"
+      },
+      {
+        "type": "debugpy",
+        "cwd": "../../marketplace/TerraFusion-PublicRecords/backend",
+        "program": "../../marketplace/TerraFusion-PublicRecords/backend/main.py",
+        "name": "Start Terrafusion Publicrecords Backend"
+      },
+      {
+        "type": "node",
+        "cwd": "../../marketplace/TerraFusion-PublicRecords/mcp-server",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "name": "Start Terrafusion Publicrecords MCP Server"
+      }
+    ]
+  },
+  "tasks": {
+    "tasks": [
+      {
+        "cwd": "../../marketplace/TerraFusion-PublicRecords",
+        "args": [
+          "run",
+          "build"
+        ],
+        "command": "npm",
+        "label": "Build Terrafusion Publicrecords"
+      },
+      {
+        "cwd": "../../marketplace/TerraFusion-PublicRecords",
+        "args": [
+          "run",
+          "test"
+        ],
+        "command": "npm",
+        "label": "Test Terrafusion Publicrecords"
+      }
+    ],
+    "version": "2.0.0"
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "ms-python.black-formatter"
+    ]
+  },
+  "folders": [
+    {
+      "name": "💼 Terrafusion Publicrecords",
+      "path": "../../marketplace/TerraFusion-PublicRecords"
+    },
+    {
+      "name": "📦 Platform SDK (read-only)",
+      "path": "../../platform/sdk"
+    },
+    {
+      "name": "🎨 Design System (read-only)",
+      "path": "../../platform/design-system"
+    },
+    {
+      "name": "🧪 Tests",
+      "path": "../../tests/marketplace/TerraFusion-PublicRecords"
+    },
+    {
+      "name": "📚 Terrafusion Publicrecords Docs",
+      "path": "../../docs/marketplace/TerraFusion-PublicRecords.md"
+    }
+  ],
+  "settings": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit",
+      "source.fixAll": "explicit"
+    },
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#f59e0b",
+      "titleBar.activeForeground": "#ffffff"
+    },
+    "files.exclude": {
+      "../../os-platform": true,
+      "**/node_modules": true,
+      "../../terrafusion-cos": true,
+      "../../marketplace/*": true,
+      "../../backend": true,
+      "**/dist": true,
+      "../../frontend": true,
+      "!../../marketplace/TerraFusion-PublicRecords": true
+    },
+    "editor.formatOnSave": true
+  }
+}
+

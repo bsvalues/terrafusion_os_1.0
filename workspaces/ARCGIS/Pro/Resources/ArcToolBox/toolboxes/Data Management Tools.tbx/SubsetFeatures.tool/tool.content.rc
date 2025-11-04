@@ -1,0 +1,16 @@
+{
+    "map": {
+        "description": "Divides the records of a feature class or table into two subsets: one subset to be used as training data, and one subset to be used as test features to compare and validate the output surface.",
+        "in_features.descr": "The features or table from which subsets will be created.",
+        "in_features.title": "Input Features",
+        "out_test_feature_class.descr": "The subset of test features that will be created.",
+        "out_test_feature_class.title": "Output Test Feature Class",
+        "out_training_feature_class.descr": "The subset of training features that will be created.",
+        "out_training_feature_class.title": "Output Training Feature Class",
+        "size_of_training_dataset.descr": "The size of the output training feature class, entered either as a percentage of the input features or as an absolute number of features.",
+        "size_of_training_dataset.title": "Size of Training  Feature Subset",
+        "subset_size_units.descr": "<xdoc><p>Specifies whether the subset size value will be used as a percentage of the input features or as an absolute number of features.</p><ul><li><span title=\"PERCENTAGE_OF_INPUT\">Percentage of input</span>— The subset size will be used as a percentage of the input features that will be in the training dataset.</li><li><span title=\"ABSOLUTE_VALUE\">Absolute value</span>— The subset size will be used as the number of features that will be in the training dataset.</li></ul></xdoc>",
+        "subset_size_units.title": "Subset Size Units",
+        "title": "Subset Features"
+    }
+}

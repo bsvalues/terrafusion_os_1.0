@@ -1,0 +1,28 @@
+{
+    "set": [
+        "collapse",
+        "combine",
+        "contextual",
+        "displace",
+        "displacement",
+        "divided highway",
+        "divided road",
+        "generalisation",
+        "generalise",
+        "generalization",
+        "generalize",
+        "lane",
+        "multi-scale",
+        "multiscale",
+        "partition",
+        "partitioning",
+        "scale change",
+        "simplification",
+        "simplify",
+        "small scale",
+        "snap",
+        "street",
+        "typification",
+        "typify"
+    ]
+}

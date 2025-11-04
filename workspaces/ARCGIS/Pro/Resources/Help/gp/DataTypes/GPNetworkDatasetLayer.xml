@@ -1,0 +1,5 @@
+<DataType Name="GPNetworkDatasetLayer">
+  <DisplayName>Network Dataset Layer</DisplayName>
+  <Description>A reference to a network dataset, including symbology and rendering properties.</Description>
+</DataType>
+

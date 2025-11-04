@@ -1,0 +1,28 @@
+{
+    "map": {
+        "attribute_source.descr": "<xdoc><p>Specifies how the specified attributes will be transferred.</p><ul><li><span title=\"NONE\">None</span>—No attributes will be transferred. This is the default.</li><li><span title=\"BOTH_ENDS\">Both start and end points</span>—The attributes from the start and end points of the line will be transferred.</li><li><span title=\"START\">Start point</span>—The attributes from the start point of the line will be transferred.</li><li><span title=\"END\">End point</span>—The attributes from the end point of the line will be transferred.</li></ul></xdoc>",
+        "attribute_source.domain.BOTH_ENDS": "Both start and end points",
+        "attribute_source.domain.END": "End point",
+        "attribute_source.domain.NONE": "None",
+        "attribute_source.domain.START": "Start point",
+        "attribute_source.title": "Attribute Source",
+        "close_line.descr": "<xdoc><p>Specifies whether the output line features will be closed.</p><ul><li>Checked—For a continuous line, an extra segment connecting the last point with the first point will be included to form a closed line. For two-point lines, an extra line feature connecting the last point with the first point will be included to form a closed shape.</li><li>Unchecked—No extra segment or line will be created to ensure a closed line or closed shape. This is the default.</li></ul></xdoc>",
+        "close_line.title": "Close Line",
+        "description": "Creates line features from points.",
+        "input_features.descr": "The point features that will be used to construct lines.",
+        "input_features.title": "Input Features",
+        "line_construction_method.descr": "<xdoc><p>Specifies the method that will be used to construct the line features.</p><ul><li><span title=\"CONTINUOUS\">Construct continuous line</span>—Line features will be created by connecting points continuously. This is the default.</li><li><span title=\"TWO_POINT\">Construct two-point line</span>—Line features will be created by connecting two consecutive points.</li></ul></xdoc>",
+        "line_construction_method.domain.CONTINUOUS": "Construct continuous line",
+        "line_construction_method.domain.TWO_POINT": "Construct two-point line",
+        "line_construction_method.title": "Line Construction Method",
+        "line_field.descr": "<xdoc><p>The field that will be used to identify unique attribute values so line features can be constructed using points of the same values.</p><p>If no field is specified, lines will be constructed without using unique attribute values. This is the default.</p></xdoc>",
+        "line_field.title": "Line Field",
+        "output_feature_class.descr": "The line feature class that will be created from the input points.",
+        "output_feature_class.title": "Output Feature Class",
+        "sort_field.descr": "<xdoc><p>The field that will be used to sort the order of the points.</p><p>If no field is specified, points used to create output line features will be sorted in the order they are found. This is the default.</p></xdoc>",
+        "sort_field.title": "Sort Field",
+        "title": "Points To Line",
+        "transfer_fields.descr": "<xdoc><p>The fields containing values that will be transferred from the source points to the output lines. If no fields are selected, no attributes will be transferred.</p><p>If the <span class=\"esri_uicontrol\">Attribute Source</span> parameter value is specified as <span class=\"esri_uicontrol\">None</span>, this parameter will be inactive.</p></xdoc>",
+        "transfer_fields.title": "Transfer Fields"
+    }
+}

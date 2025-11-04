@@ -1,0 +1,83 @@
+{
+    "type": "FunctionTool",
+    "guid": "{45767636-afbf-41f4-ae6a-c5ff04940369}",
+    "displayname": "$rc:title",
+    "helpcontent": "6000005",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_street_features": {
+            "displayname": "$rc:in_street_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_street_features.descr"
+        },
+        "zone_features": {
+            "displayname": "$rc:zone_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:zone_features.descr"
+        },
+        "zone_fields": {
+            "displayname": "$rc:zone_fields.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Date",
+                    "OID",
+                    "GUID"
+                ]
+            },
+            "depends": [
+                "zone_features"
+            ],
+            "description": "$rc:zone_fields.descr"
+        },
+        "out_streets": {
+            "direction": "out",
+            "displayname": "$rc:out_streets.title",
+            "datatype": {
+                "type": "DEDatasetType"
+            },
+            "description": "$rc:out_streets.descr"
+        },
+        "tolerance": {
+            "type": "optional",
+            "displayname": "$rc:tolerance.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "10",
+            "description": "$rc:tolerance.descr"
+        }
+    },
+    "environments": [
+        "parallelProcessingFactor",
+        "workspace"
+    ]
+}

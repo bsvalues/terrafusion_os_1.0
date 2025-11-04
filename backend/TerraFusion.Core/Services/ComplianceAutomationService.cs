@@ -15,7 +15,7 @@ namespace TerraFusion.Core.Services
         Task<List<AuditTrail>> GetAuditTrailAsync(DateTime? startDate = null, DateTime? endDate = null, string? userId = null);
         Task<ComplianceReport> GenerateComplianceReportAsync(ComplianceFramework framework, DateTime startDate, DateTime endDate);
         Task<ComplianceStatus> ValidateComplianceAsync(ComplianceFramework framework);
-        Task<List<ComplianceViolation>> GetComplianceViolationsAsync(ComplianceFramework framework = ComplianceFramework.All);
+        Task<List<TerraFusion.Abstractions.DTOs.ComplianceViolation>> GetComplianceViolationsAsync(ComplianceFramework framework = ComplianceFramework.All);
         Task<bool> RemediateViolationAsync(string violationId, string remediationAction, string userId);
         Task<ComplianceDashboardData> GetComplianceDashboardDataAsync();
         Task<bool> ScheduleComplianceReportAsync(ComplianceReportSchedule schedule);
@@ -28,7 +28,7 @@ namespace TerraFusion.Core.Services
         private readonly ILogger<ComplianceAutomationService> _logger;
         private readonly IConfiguration _configuration;
         private readonly IRedisCacheService _cacheService;
-        
+
         private readonly Dictionary<ComplianceFramework, List<ComplianceControl>> _frameworkControls;
 
         public ComplianceAutomationService(
@@ -42,7 +42,7 @@ namespace TerraFusion.Core.Services
             _frameworkControls = InitializeFrameworkControls();
         }
 
-        public async Task<AuditTrail> CreateAuditTrailAsync(string action, string userId, object data, string entityType = null)
+        public async Task<AuditTrail> CreateAuditTrailAsync(string action, string userId, object data, string? entityType = null)
         {
             try
             {
@@ -54,12 +54,12 @@ namespace TerraFusion.Core.Services
                     UserId = userId,
                     EntityType = entityType,
                     Data = JsonSerializer.Serialize(data),
-                    ApplicableFrameworks = DetermineApplicableFrameworks(action, entityType)
+                    ApplicableFrameworks = DetermineApplicableFrameworks(action, entityType ?? "unknown")
                 };
 
                 // Store in cache for quick access
                 await _cacheService.SetAsync($"audit:{auditTrail.Id}", auditTrail, TimeSpan.FromDays(7));
-                
+
                 // Add to audit trail list
                 await _cacheService.AddToListAsync("audit:trail", auditTrail);
 
@@ -73,28 +73,28 @@ namespace TerraFusion.Core.Services
             }
         }
 
-        public async Task<List<AuditTrail>> GetAuditTrailAsync(DateTime? startDate = null, DateTime? endDate = null, string userId = null)
+        public async Task<List<AuditTrail>> GetAuditTrailAsync(DateTime? startDate = null, DateTime? endDate = null, string? userId = null)
         {
             try
             {
                 var cacheKey = $"audit:query:{startDate}:{endDate}:{userId}";
                 var cachedResult = await _cacheService.GetAsync<List<AuditTrail>>(cacheKey);
-                
+
                 if (cachedResult != null)
                 {
                     return cachedResult;
                 }
 
                 var allTrails = await _cacheService.GetListAsync<AuditTrail>("audit:trail");
-                
-                var filteredTrails = allTrails.Where(t => 
+
+                var filteredTrails = allTrails.Where(t =>
                     (startDate == null || t.Timestamp >= startDate) &&
                     (endDate == null || t.Timestamp <= endDate) &&
                     (userId == null || t.UserId == userId)
                 ).OrderByDescending(t => t.Timestamp).ToList();
 
                 await _cacheService.SetAsync(cacheKey, filteredTrails, TimeSpan.FromMinutes(15));
-                
+
                 return filteredTrails;
             }
             catch (Exception ex)
@@ -110,7 +110,7 @@ namespace TerraFusion.Core.Services
             {
                 var cacheKey = $"compliance:report:{framework}:{startDate:yyyyMMdd}:{endDate:yyyyMMdd}";
                 var cachedReport = await _cacheService.GetAsync<ComplianceReport>(cacheKey);
-                
+
                 if (cachedReport != null)
                 {
                     return cachedReport;
@@ -119,7 +119,7 @@ namespace TerraFusion.Core.Services
                 var controls = await GetComplianceControlsAsync(framework);
                 var violations = await GetComplianceViolationsAsync(framework);
                 var auditTrails = await GetAuditTrailAsync(startDate, endDate);
-                
+
                 var metrics = CalculateComplianceMetrics(auditTrails, violations);
                 var recommendations = GenerateRecommendations(controls, violations);
 
@@ -138,10 +138,10 @@ namespace TerraFusion.Core.Services
                 };
 
                 await _cacheService.SetAsync(cacheKey, report, TimeSpan.FromHours(4));
-                
-                _logger.LogInformation("Compliance report generated for {Framework}: {Score}% compliance", 
+
+                _logger.LogInformation("Compliance report generated for {Framework}: {Score}% compliance",
                     framework, report.OverallStatus.ComplianceScore);
-                
+
                 return report;
             }
             catch (Exception ex)
@@ -157,12 +157,12 @@ namespace TerraFusion.Core.Services
             {
                 var controls = await GetComplianceControlsAsync(framework);
                 var violations = await GetComplianceViolationsAsync(framework);
-                
-                var implementedControls = controls.Count(c => c.Status == ComplianceControlStatus.Implemented || 
+
+                var implementedControls = controls.Count(c => c.Status == ComplianceControlStatus.Implemented ||
                                                              c.Status == ComplianceControlStatus.Monitored);
-                
+
                 var complianceScore = controls.Count > 0 ? (double)implementedControls / controls.Count * 100 : 0;
-                
+
                 var status = new ComplianceStatus
                 {
                     Framework = framework,
@@ -183,28 +183,28 @@ namespace TerraFusion.Core.Services
             }
         }
 
-        public async Task<List<ComplianceViolation>> GetComplianceViolationsAsync(ComplianceFramework framework = ComplianceFramework.All)
+        public async Task<List<TerraFusion.Abstractions.DTOs.ComplianceViolation>> GetComplianceViolationsAsync(ComplianceFramework framework = ComplianceFramework.All)
         {
             try
             {
                 var cacheKey = $"compliance:violations:{framework}";
-                var cachedViolations = await _cacheService.GetAsync<List<ComplianceViolation>>(cacheKey);
-                
+                var cachedViolations = await _cacheService.GetAsync<List<TerraFusion.Abstractions.DTOs.ComplianceViolation>>(cacheKey);
+
                 if (cachedViolations != null)
                 {
                     return cachedViolations;
                 }
 
                 // In a real implementation, this would query a database
-                var violations = new List<ComplianceViolation>();
-                
+                var violations = new List<TerraFusion.Abstractions.DTOs.ComplianceViolation>();
+
                 await _cacheService.SetAsync(cacheKey, violations, TimeSpan.FromMinutes(30));
                 return violations;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving compliance violations");
-                return new List<ComplianceViolation>();
+                return new List<TerraFusion.Abstractions.DTOs.ComplianceViolation>();
             }
         }
 
@@ -214,7 +214,7 @@ namespace TerraFusion.Core.Services
             {
                 // Create audit trail for remediation
                 await CreateAuditTrailAsync("VIOLATION_REMEDIATED", userId, new { violationId, remediationAction });
-                
+
                 _logger.LogInformation("Violation {ViolationId} remediated by {UserId}", violationId, userId);
                 return true;
             }
@@ -231,7 +231,7 @@ namespace TerraFusion.Core.Services
             {
                 var cacheKey = "compliance:dashboard";
                 var cachedData = await _cacheService.GetAsync<ComplianceDashboardData>(cacheKey);
-                
+
                 if (cachedData != null)
                 {
                     return cachedData;
@@ -239,7 +239,7 @@ namespace TerraFusion.Core.Services
 
                 var frameworks = new[] { ComplianceFramework.FISMA, ComplianceFramework.NIST, ComplianceFramework.SOC2 };
                 var frameworkStatus = new Dictionary<ComplianceFramework, ComplianceStatus>();
-                
+
                 foreach (var framework in frameworks)
                 {
                     frameworkStatus[framework] = await ValidateComplianceAsync(framework);
@@ -249,7 +249,7 @@ namespace TerraFusion.Core.Services
                 {
                     FrameworkStatus = frameworkStatus,
                     RecentViolations = await GetComplianceViolationsAsync(),
-                    OverallMetrics = new ComplianceMetrics(),
+                    OverallMetrics = new TerraFusion.Abstractions.DTOs.ComplianceMetrics(),
                     TopRecommendations = new List<ComplianceRecommendation>(),
                     TrendData = new Dictionary<string, object>()
                 };
@@ -285,14 +285,14 @@ namespace TerraFusion.Core.Services
             {
                 var cacheKey = $"compliance:controls:{framework}";
                 var cachedControls = await _cacheService.GetAsync<List<ComplianceControl>>(cacheKey);
-                
+
                 if (cachedControls != null)
                 {
                     return cachedControls;
                 }
 
                 var controls = _frameworkControls.ContainsKey(framework) ? _frameworkControls[framework] : new List<ComplianceControl>();
-                
+
                 await _cacheService.SetAsync(cacheKey, controls, TimeSpan.FromHours(1));
                 return controls;
             }
@@ -303,40 +303,40 @@ namespace TerraFusion.Core.Services
             }
         }
 
-        public async Task<bool> UpdateComplianceControlAsync(string controlId, ComplianceControlStatus status, string evidence)
+        public Task<bool> UpdateComplianceControlAsync(string controlId, ComplianceControlStatus status, string evidence)
         {
             try
             {
                 // Update control status and evidence
                 _logger.LogInformation("Compliance control {ControlId} updated to {Status}", controlId, status);
-                return true;
+                return Task.FromResult(true);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error updating compliance control {ControlId}", controlId);
-                return false;
+                return Task.FromResult(false);
             }
         }
 
         private List<ComplianceFramework> DetermineApplicableFrameworks(string action, string entityType)
         {
             var frameworks = new List<ComplianceFramework>();
-            
+
             // All government operations are subject to FISMA
             frameworks.Add(ComplianceFramework.FISMA);
-            
+
             // Add NIST for security-related actions
             if (action.Contains("SECURITY") || action.Contains("AUTH") || action.Contains("ACCESS"))
             {
                 frameworks.Add(ComplianceFramework.NIST);
             }
-            
+
             return frameworks;
         }
 
-        private ComplianceMetrics CalculateComplianceMetrics(List<AuditTrail> auditTrails, List<ComplianceViolation> violations)
+        private TerraFusion.Abstractions.DTOs.ComplianceMetrics CalculateComplianceMetrics(List<AuditTrail> auditTrails, List<TerraFusion.Abstractions.DTOs.ComplianceViolation> violations)
         {
-            return new ComplianceMetrics
+            return new TerraFusion.Abstractions.DTOs.ComplianceMetrics
             {
                 TotalAuditEvents = auditTrails.Count,
                 SecurityIncidents = auditTrails.Count(a => a.Action.Contains("SECURITY")),
@@ -348,13 +348,13 @@ namespace TerraFusion.Core.Services
             };
         }
 
-        private List<ComplianceRecommendation> GenerateRecommendations(List<ComplianceControl> controls, List<ComplianceViolation> violations)
+        private List<ComplianceRecommendation> GenerateRecommendations(List<ComplianceControl> controls, List<TerraFusion.Abstractions.DTOs.ComplianceViolation> violations)
         {
             var recommendations = new List<ComplianceRecommendation>();
-            
+
             // Generate recommendations based on control status and violations
             var nonImplementedControls = controls.Where(c => c.Status == ComplianceControlStatus.NotImplemented).ToList();
-            
+
             if (nonImplementedControls.Any())
             {
                 recommendations.Add(new ComplianceRecommendation
@@ -368,7 +368,7 @@ namespace TerraFusion.Core.Services
                     CreatedAt = DateTime.UtcNow
                 });
             }
-            
+
             return recommendations;
         }
 
@@ -378,13 +378,13 @@ namespace TerraFusion.Core.Services
             {
                 [ComplianceFramework.FISMA] = new List<ComplianceControl>
                 {
-                    new ComplianceControl { 
-                        Id = "AC-1", 
-                        Name = "Access Control Policy", 
-                        Description = "Access Control Policy", 
-                        Framework = ComplianceFramework.FISMA, 
-                        Status = ComplianceControlStatus.Implemented, 
-                        Evidence = "Policy documented", 
+                    new ComplianceControl {
+                        Id = "AC-1",
+                        Name = "Access Control Policy",
+                        Description = "Access Control Policy",
+                        Framework = ComplianceFramework.FISMA,
+                        Status = ComplianceControlStatus.Implemented,
+                        Evidence = "Policy documented",
                         ResponsibleParty = "IT Security",
                         ControlId = "AC-1",
                         ControlName = "Access Control Policy",
@@ -392,13 +392,13 @@ namespace TerraFusion.Core.Services
                         RemediationAction = "Maintain policy",
                         RemediatedBy = ""
                     },
-                    new ComplianceControl { 
-                        Id = "AU-1", 
-                        Name = "Audit and Accountability Policy", 
-                        Description = "Audit and Accountability Policy", 
-                        Framework = ComplianceFramework.FISMA, 
-                        Status = ComplianceControlStatus.Implemented, 
-                        Evidence = "Policy documented", 
+                    new ComplianceControl {
+                        Id = "AU-1",
+                        Name = "Audit and Accountability Policy",
+                        Description = "Audit and Accountability Policy",
+                        Framework = ComplianceFramework.FISMA,
+                        Status = ComplianceControlStatus.Implemented,
+                        Evidence = "Policy documented",
                         ResponsibleParty = "Compliance Team",
                         ControlId = "AU-1",
                         ControlName = "Audit and Accountability Policy",
@@ -406,13 +406,13 @@ namespace TerraFusion.Core.Services
                         RemediationAction = "Maintain policy",
                         RemediatedBy = ""
                     },
-                    new ComplianceControl { 
-                        Id = "SC-1", 
-                        Name = "System and Communications Protection Policy", 
-                        Description = "System and Communications Protection Policy", 
-                        Framework = ComplianceFramework.FISMA, 
-                        Status = ComplianceControlStatus.Implemented, 
-                        Evidence = "Policy documented", 
+                    new ComplianceControl {
+                        Id = "SC-1",
+                        Name = "System and Communications Protection Policy",
+                        Description = "System and Communications Protection Policy",
+                        Framework = ComplianceFramework.FISMA,
+                        Status = ComplianceControlStatus.Implemented,
+                        Evidence = "Policy documented",
                         ResponsibleParty = "IT Security",
                         ControlId = "SC-1",
                         ControlName = "System and Communications Protection Policy",
@@ -423,13 +423,13 @@ namespace TerraFusion.Core.Services
                 },
                 [ComplianceFramework.NIST] = new List<ComplianceControl>
                 {
-                    new ComplianceControl { 
-                        Id = "ID.AM-1", 
-                        Name = "Physical devices and systems are inventoried", 
-                        Description = "Asset management", 
-                        Framework = ComplianceFramework.NIST, 
-                        Status = ComplianceControlStatus.Implemented, 
-                        Evidence = "Asset inventory maintained", 
+                    new ComplianceControl {
+                        Id = "ID.AM-1",
+                        Name = "Physical devices and systems are inventoried",
+                        Description = "Asset management",
+                        Framework = ComplianceFramework.NIST,
+                        Status = ComplianceControlStatus.Implemented,
+                        Evidence = "Asset inventory maintained",
                         ResponsibleParty = "IT Operations",
                         ControlId = "ID.AM-1",
                         ControlName = "Physical devices and systems are inventoried",
@@ -437,13 +437,13 @@ namespace TerraFusion.Core.Services
                         RemediationAction = "Maintain inventory",
                         RemediatedBy = ""
                     },
-                    new ComplianceControl { 
-                        Id = "PR.AC-1", 
-                        Name = "Identities and credentials are issued", 
-                        Description = "Identity management", 
-                        Framework = ComplianceFramework.NIST, 
-                        Status = ComplianceControlStatus.Implemented, 
-                        Evidence = "Identity system in place", 
+                    new ComplianceControl {
+                        Id = "PR.AC-1",
+                        Name = "Identities and credentials are issued",
+                        Description = "Identity management",
+                        Framework = ComplianceFramework.NIST,
+                        Status = ComplianceControlStatus.Implemented,
+                        Evidence = "Identity system in place",
                         ResponsibleParty = "IT Security",
                         ControlId = "PR.AC-1",
                         ControlName = "Identities and credentials are issued",

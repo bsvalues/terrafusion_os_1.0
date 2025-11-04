@@ -1,0 +1,18 @@
+{
+    "set": [
+        "create",
+        "database",
+        "empty",
+        "fc",
+        "feature",
+        "feature class",
+        "geodatabase",
+        "line",
+        "make",
+        "multipatch",
+        "new",
+        "point",
+        "polygon",
+        "polyline"
+    ]
+}

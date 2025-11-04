@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple WebSocket Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .status-connected {
+            color: green;
+            font-weight: bold;
+        }
+        .status-disconnected {
+            color: red;
+            font-weight: bold;
+        }
+        .status-connecting {
+            color: orange;
+            font-weight: bold;
+        }
+        .panel {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .log {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 10px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            margin: 10px 0;
+        }
+        button {
+            padding: 8px 12px;
+            margin-right: 5px;
+            cursor: pointer;
+        }
+        input[type="text"] {
+            padding: 8px;
+            width: 70%;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Simple WebSocket Test</h1>
+        
+        <div class="panel">
+            <h2>Connection</h2>
+            <div>
+                <label for="ws-url">WebSocket URL:</label>
+                <input type="text" id="ws-url" value="">
+                <button id="connect-btn">Connect</button>
+                <button id="disconnect-btn" disabled>Disconnect</button>
+            </div>
+            <div id="status">Status: <span class="status-disconnected">Disconnected</span></div>
+            <div class="log" id="connection-log"></div>
+        </div>
+        
+        <div class="panel">
+            <h2>Send Message</h2>
+            <div>
+                <select id="message-type">
+                    <option value="ping">Ping</option>
+                    <option value="message">Text Message</option>
+                    <option value="echo">Echo Request</option>
+                </select>
+                <input type="text" id="message-text" placeholder="Message content...">
+                <button id="send-btn" disabled>Send</button>
+            </div>
+            <div class="log" id="message-log"></div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const wsUrlInput = document.getElementById('ws-url');
+        const connectBtn = document.getElementById('connect-btn');
+        const disconnectBtn = document.getElementById('disconnect-btn');
+        const statusSpan = document.querySelector('#status span');
+        const sendBtn = document.getElementById('send-btn');
+        const messageTypeSelect = document.getElementById('message-type');
+        const messageTextInput = document.getElementById('message-text');
+        const connectionLogDiv = document.getElementById('connection-log');
+        const messageLogDiv = document.getElementById('message-log');
+        
+        // Variables
+        let socket = null;
+        
+        // Initialize
+        function init() {
+            // Set default WebSocket URL
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const host = window.location.host;
+            wsUrlInput.value = `${protocol}//${host}/ws`;
+            
+            // Add event listeners
+            connectBtn.addEventListener('click', connectWebSocket);
+            disconnectBtn.addEventListener('click', disconnectWebSocket);
+            sendBtn.addEventListener('click', sendMessage);
+            
+            // Set default message text based on selected type
+            messageTypeSelect.addEventListener('change', updateDefaultMessageText);
+            updateDefaultMessageText();
+            
+            // Log initialization
+            logConnection('WebSocket test initialized');
+        }
+        
+        function updateDefaultMessageText() {
+            const messageType = messageTypeSelect.value;
+            switch(messageType) {
+                case 'ping':
+                    messageTextInput.value = 'Ping request';
+                    break;
+                case 'message':
+                    messageTextInput.value = 'Hello, WebSocket server!';
+                    break;
+                case 'echo':
+                    messageTextInput.value = 'Echo this message';
+                    break;
+            }
+        }
+        
+        function updateConnectionStatus(status) {
+            switch(status) {
+                case 'connected':
+                    statusSpan.textContent = 'Connected';
+                    statusSpan.className = 'status-connected';
+                    connectBtn.disabled = true;
+                    disconnectBtn.disabled = false;
+                    sendBtn.disabled = false;
+                    break;
+                case 'disconnected':
+                    statusSpan.textContent = 'Disconnected';
+                    statusSpan.className = 'status-disconnected';
+                    connectBtn.disabled = false;
+                    disconnectBtn.disabled = true;
+                    sendBtn.disabled = true;
+                    break;
+                case 'connecting':
+                    statusSpan.textContent = 'Connecting...';
+                    statusSpan.className = 'status-connecting';
+                    connectBtn.disabled = true;
+                    disconnectBtn.disabled = false;
+                    sendBtn.disabled = true;
+                    break;
+            }
+        }
+        
+        function logConnection(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.textContent = `${timestamp} - ${message}`;
+            connectionLogDiv.appendChild(logEntry);
+            connectionLogDiv.scrollTop = connectionLogDiv.scrollHeight;
+            console.log(`[WebSocket Connection] ${message}`);
+        }
+        
+        function logMessage(direction, message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.textContent = `${timestamp} - ${direction}: ${typeof message === 'object' ? JSON.stringify(message) : message}`;
+            messageLogDiv.appendChild(logEntry);
+            messageLogDiv.scrollTop = messageLogDiv.scrollHeight;
+            console.log(`[WebSocket ${direction}] ${typeof message === 'object' ? JSON.stringify(message) : message}`);
+        }
+        
+        function connectWebSocket() {
+            try {
+                const url = wsUrlInput.value;
+                if (!url) {
+                    logConnection('Error: WebSocket URL is required');
+                    return;
+                }
+                
+                logConnection(`Connecting to ${url}...`);
+                updateConnectionStatus('connecting');
+                
+                socket = new WebSocket(url);
+                
+                socket.onopen = () => {
+                    logConnection(`Connected to ${url}`);
+                    updateConnectionStatus('connected');
+                };
+                
+                socket.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        logMessage('Received', data);
+                    } catch (e) {
+                        logMessage('Received', event.data);
+                    }
+                };
+                
+                socket.onclose = (event) => {
+                    const reason = event.reason || 'No reason provided';
+                    logConnection(`Connection closed: Code ${event.code}, Reason: ${reason}`);
+                    updateConnectionStatus('disconnected');
+                    socket = null;
+                };
+                
+                socket.onerror = (error) => {
+                    logConnection('WebSocket error occurred');
+                    // Detailed error info not available due to browser security restrictions
+                };
+                
+            } catch (error) {
+                logConnection(`Error creating WebSocket: ${error.message}`);
+                updateConnectionStatus('disconnected');
+            }
+        }
+        
+        function disconnectWebSocket() {
+            if (!socket) {
+                return;
+            }
+            
+            logConnection('Disconnecting...');
+            
+            try {
+                socket.close(1000, 'User initiated disconnect');
+            } catch (error) {
+                logConnection(`Error closing WebSocket: ${error.message}`);
+            }
+            
+            updateConnectionStatus('disconnected');
+        }
+        
+        function sendMessage() {
+            if (!socket || socket.readyState !== WebSocket.OPEN) {
+                logConnection('Cannot send message: WebSocket is not connected');
+                return;
+            }
+            
+            const messageType = messageTypeSelect.value;
+            const messageText = messageTextInput.value;
+            
+            let message;
+            switch(messageType) {
+                case 'ping':
+                    message = {
+                        type: 'ping',
+                        timestamp: Date.now(),
+                        message: messageText
+                    };
+                    break;
+                case 'message':
+                    message = {
+                        type: 'message',
+                        content: messageText,
+                        timestamp: Date.now()
+                    };
+                    break;
+                case 'echo':
+                    message = {
+                        type: 'echo',
+                        message: messageText,
+                        timestamp: Date.now()
+                    };
+                    break;
+            }
+            
+            try {
+                const messageString = JSON.stringify(message);
+                socket.send(messageString);
+                logMessage('Sent', message);
+            } catch (error) {
+                logConnection(`Error sending message: ${error.message}`);
+            }
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

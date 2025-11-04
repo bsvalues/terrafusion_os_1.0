@@ -1,0 +1,21 @@
+{
+  "data_type": "property",
+  "name": "large_test",
+  "mapping": {
+    "property_id": "PropertyID",
+    "parcel_number": "ParcelNumber",
+    "property_type": "PropertyType",
+    "address": "StreetAddress",
+    "city": "City",
+    "state": "State",
+    "zip": "ZipCode",
+    "land_value": "LandValue",
+    "improvement_value": "ImprovementValue",
+    "total_value": "TotalValue",
+    "year_built": "YearBuilt",
+    "bedrooms": "Bedrooms",
+    "bathrooms": "Bathrooms",
+    "square_footage": "SquareFeet"
+  },
+  "created": "2025-04-15T14:43:46.501512"
+}

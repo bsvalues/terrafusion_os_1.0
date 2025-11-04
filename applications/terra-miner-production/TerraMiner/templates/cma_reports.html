@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}CMA Reports | TerraMiner{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>CMA Reports</h1>
+        <a href="{{ url_for('cma_ui.cma_generator') }}" class="btn btn-primary">
+            <i class="fas fa-plus mr-2"></i> New Report
+        </a>
+    </div>
+
+    {% if reports and reports|length > 0 %}
+        <div class="card">
+            <div class="card-header bg-light">
+                <div class="row font-weight-bold">
+                    <div class="col-md-4">Property</div>
+                    <div class="col-md-3">Location</div>
+                    <div class="col-md-2">Valuation</div>
+                    <div class="col-md-2">Date Created</div>
+                    <div class="col-md-1">Actions</div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for report in reports %}
+                        <div class="list-group-item">
+                            <div class="row align-items-center">
+                                <div class="col-md-4">
+                                    <div class="font-weight-bold">{{ report.subject_address }}</div>
+                                    <div class="text-muted small">{{ report.subject_beds }} bed, {{ report.subject_baths }} bath, {{ report.subject_sqft }} sqft</div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div>{{ report.subject_city }}, {{ report.subject_state }} {{ report.subject_zip }}</div>
+                                    <div class="small text-muted">{{ report.subject_property_type }}</div>
+                                </div>
+                                <div class="col-md-2">
+                                    {% if report.valuation and report.valuation.estimated_value %}
+                                        <div class="font-weight-bold">${{ report.valuation.estimated_value|format_number }}</div>
+                                        <div class="small text-muted">
+                                            {% if report.valuation.confidence %}
+                                                {{ report.valuation.confidence }}% confidence
+                                            {% endif %}
+                                        </div>
+                                    {% else %}
+                                        <div class="text-muted">No valuation</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-2">
+                                    {{ report.created_at|format_date if report.created_at else 'Unknown' }}
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ url_for('cma_ui.view_report', report_id=report.id) }}" class="btn btn-outline-primary" title="View Report">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-outline-danger" title="Delete Report" 
+                                                onclick="confirmDelete({{ report.id }}, '{{ report.subject_address }}')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="card">
+            <div class="card-body text-center p-5">
+                <i class="fas fa-chart-line fa-4x text-muted mb-3"></i>
+                <h3>No CMA Reports Yet</h3>
+                <p class="text-muted mb-4">Generate your first CMA report to get started.</p>
+                <a href="{{ url_for('cma_ui.cma_generator') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus mr-2"></i> Create Your First Report
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmModalLabel">Confirm Delete</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete the CMA report for <span id="deletePropertyName" class="font-weight-bold"></span>?
+                <p class="text-danger mt-2 mb-0">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <form id="deleteReportForm" method="post" action="">
+                    <button type="submit" class="btn btn-danger">Delete Report</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmDelete(reportId, propertyAddress) {
+        document.getElementById('deletePropertyName').textContent = propertyAddress;
+        document.getElementById('deleteReportForm').action = "{{ url_for('cma_ui.delete_report', report_id=0) }}".replace('0', reportId);
+        $('#deleteConfirmModal').modal('show');
+    }
+</script>
+{% endblock %}

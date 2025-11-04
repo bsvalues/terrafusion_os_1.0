@@ -1,0 +1,14 @@
+{
+    "set": [
+        "connection",
+        "copy",
+        "create",
+        "memory",
+        "query",
+        "raster",
+        "service",
+        "surface",
+        "temporary",
+        "url"
+    ]
+}

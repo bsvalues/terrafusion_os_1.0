@@ -1,0 +1,37 @@
+{
+  "@Variables": {
+    "Mission": "WV01",
+    "SensorName": "WorldView-1",
+    "MissionMatch": "#/MissionMatch",
+    "4BandRedIndex": 0,
+    "4BandGreenIndex": 0,
+    "4BandBlueIndex": 0,
+    "8BandRedIndex": 0,
+    "8BandGreenIndex": 0,
+    "8BandBlueIndex": 0
+  },
+  "Products": "Commercial/Products.json#NCDRDProducts-Max1Bands",
+  "IDs": {
+    "SensorNamePaths": [],
+    "MissionPaths": [],
+    "MissionMatch": [ "WV01", "WV1", "WORLDVIEW1", "WORLDVIEW-1" ],
+    "Bands-Panchromatic-Basic": [
+      "#Band-Pan"
+    ],
+    "Bands-Panchromatic-Geo": [
+      "#Band-Pan"
+    ],
+    "Bands-Multispectral4Bands-Basic": [],
+    "Bands-Multispectral8Bands-Basic": [],
+    "Bands-Multispectral3Bands-Psh": [],
+    "Bands-Multispectral4Bands-Psh": [],
+    "Bands-SWIR8": [],
+    "Bands-CAVIS6": [],
+    "Band-Pan": {
+      "BandName": "Panchromatic",
+      "SolarIrradiance": 1487.92,
+      "WavelengthMin": 400.0,
+      "WavelengthMax": 900.0
+    }
+  }
+}

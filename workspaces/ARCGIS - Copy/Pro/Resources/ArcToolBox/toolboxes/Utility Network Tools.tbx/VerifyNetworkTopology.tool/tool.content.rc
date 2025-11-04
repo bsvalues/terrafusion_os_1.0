@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Verifies the network topology system tables and logs inconsistencies to an output log file.",
+        "in_utility_network.descr": "The utility network that will be verified for consistency.",
+        "in_utility_network.title": "Input Utility Network",
+        "out_log_file.descr": "The output log file containing the discovered issues.",
+        "out_log_file.title": "Output Log File",
+        "summary": "<xdoc><p>Verifies the network topology system tables and logs inconsistencies to an output log file.</p><p>The Verify Network Topology tool is used to check the consistency of a network topology and create an output log file containing the issues discovered. This tool can be used in conjunction with the Repair Network Topology tool.</p></xdoc>",
+        "title": "Verify Network Topology"
+    }
+}

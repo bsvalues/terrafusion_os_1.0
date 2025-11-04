@@ -1,0 +1,220 @@
+{
+    "type": "FunctionTool",
+    "guid": "{03bf0ac2-abff-41a4-a89a-408587407928}",
+    "displayname": "$rc:title",
+    "helpcontent": "3220010",
+    "description": "$rc:description",
+    "product": "200",
+    "params": {
+        "geodatabase_1": {
+            "displayname": "$rc:geodatabase_1.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEWorkspace"
+                    },
+                    {
+                        "type": "DEGeoDataServer"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPBrowseFiltersDomain",
+                        "filters": [
+                            "esri_browseDialogFilters_geodatabases_file",
+                            "esri_browseDialogFilters_geodatabases_egdb_file"
+                        ]
+                    },
+                    {
+                        "type": "GPBrowseFiltersDomain",
+                        "filters": [
+                            "esri_browseDialogFilters_services_geodata"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:geodatabase_1.descr"
+        },
+        "in_replica": {
+            "displayname": "$rc:in_replica.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:in_replica.descr"
+        },
+        "geodatabase_2": {
+            "displayname": "$rc:geodatabase_2.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEWorkspace"
+                    },
+                    {
+                        "type": "DEGeoDataServer"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPBrowseFiltersDomain",
+                        "filters": [
+                            "esri_browseDialogFilters_geodatabases_file",
+                            "esri_browseDialogFilters_geodatabases_egdb_file"
+                        ]
+                    },
+                    {
+                        "type": "GPBrowseFiltersDomain",
+                        "filters": [
+                            "esri_browseDialogFilters_services_geodata"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:geodatabase_2.descr"
+        },
+        "in_direction": {
+            "displayname": "$rc:in_direction.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "BOTH_DIRECTIONS",
+                        "code": "$rc:in_direction.domain.BOTH_DIRECTIONS"
+                    },
+                    {
+                        "value": "FROM_GEODATABASE2_TO_1",
+                        "code": "$rc:in_direction.domain.FROM_GEODATABASE2_TO_1"
+                    },
+                    {
+                        "value": "FROM_GEODATABASE1_TO_2",
+                        "code": "$rc:in_direction.domain.FROM_GEODATABASE1_TO_2"
+                    }
+                ]
+            },
+            "description": "$rc:in_direction.descr"
+        },
+        "conflict_policy": {
+            "displayname": "$rc:conflict_policy.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "IN_FAVOR_OF_GDB1",
+                        "code": "$rc:conflict_policy.domain.IN_FAVOR_OF_GDB1"
+                    },
+                    {
+                        "value": "IN_FAVOR_OF_GDB2",
+                        "code": "$rc:conflict_policy.domain.IN_FAVOR_OF_GDB2"
+                    },
+                    {
+                        "value": "MANUAL",
+                        "code": "$rc:conflict_policy.domain.MANUAL"
+                    }
+                ]
+            },
+            "value": "IN_FAVOR_OF_GDB1",
+            "description": "$rc:conflict_policy.descr"
+        },
+        "conflict_definition": {
+            "displayname": "$rc:conflict_definition.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "BY_OBJECT",
+                        "code": "$rc:conflict_definition.domain.BY_OBJECT"
+                    },
+                    {
+                        "value": "BY_ATTRIBUTE",
+                        "code": "$rc:conflict_definition.domain.BY_ATTRIBUTE"
+                    }
+                ]
+            },
+            "value": "BY_OBJECT",
+            "description": "$rc:conflict_definition.descr"
+        },
+        "reconcile": {
+            "displayname": "$rc:reconcile.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "RECONCILE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_RECONCILE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:reconcile.descr"
+        },
+        "out_geodatabase_1": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_geodatabase_1.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEWorkspace"
+                    },
+                    {
+                        "type": "DEGeoDataServer"
+                    }
+                ]
+            },
+            "depends": [
+                "geodatabase_1"
+            ]
+        },
+        "out_geodatabase_2": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_geodatabase_2.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEWorkspace"
+                    },
+                    {
+                        "type": "DEGeoDataServer"
+                    }
+                ]
+            },
+            "depends": [
+                "geodatabase_2"
+            ]
+        }
+    },
+    "environments": [
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

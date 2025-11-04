@@ -1,0 +1,478 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\SelectLayerByDateAndTime",
+    "displayname": "$rc:title",
+    "helpcontent": "75000006",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "no_data_change",
+        "param_nocount:in_layer_or_view"
+    ],
+    "params": {
+        "in_layer_or_view": {
+            "displayname": "$rc:in_layer_or_view.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "description": "$rc:in_layer_or_view.descr"
+        },
+        "selection_type": {
+            "displayname": "$rc:selection_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NEW_SELECTION",
+                        "code": "$rc:selection_type.domain.NEW_SELECTION"
+                    },
+                    {
+                        "value": "ADD_TO_SELECTION",
+                        "code": "$rc:selection_type.domain.ADD_TO_SELECTION"
+                    },
+                    {
+                        "value": "REMOVE_FROM_SELECTION",
+                        "code": "$rc:selection_type.domain.REMOVE_FROM_SELECTION"
+                    },
+                    {
+                        "value": "SUBSET_SELECTION",
+                        "code": "$rc:selection_type.domain.SUBSET_SELECTION"
+                    }
+                ]
+            },
+            "value": "NEW_SELECTION",
+            "description": "$rc:selection_type.descr"
+        },
+        "time_type": {
+            "displayname": "$rc:time_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SINGLE_TIME_FIELD",
+                        "code": "$rc:time_type.domain.SINGLE_TIME_FIELD"
+                    },
+                    {
+                        "value": "TIME_RANGE_FIELDS",
+                        "code": "$rc:time_type.domain.TIME_RANGE_FIELDS"
+                    }
+                ]
+            },
+            "value": "SINGLE_TIME_FIELD",
+            "description": "$rc:time_type.descr"
+        },
+        "date_field": {
+            "type": "optional",
+            "displayname": "$rc:date_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Date",
+                    "DateOnly",
+                    "TimeOnly",
+                    "TimestampOffset"
+                ]
+            },
+            "depends": [
+                "in_layer_or_view"
+            ],
+            "description": "$rc:date_field.descr"
+        },
+        "start_date_field": {
+            "type": "optional",
+            "displayname": "$rc:start_date_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Date",
+                    "DateOnly",
+                    "TimeOnly",
+                    "TimestampOffset"
+                ]
+            },
+            "depends": [
+                "in_layer_or_view"
+            ],
+            "description": "$rc:start_date_field.descr"
+        },
+        "end_date_field": {
+            "type": "optional",
+            "displayname": "$rc:end_date_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Date",
+                    "DateOnly",
+                    "TimeOnly",
+                    "TimestampOffset"
+                ]
+            },
+            "depends": [
+                "in_layer_or_view"
+            ],
+            "description": "$rc:end_date_field.descr"
+        },
+        "selection_options": {
+            "type": "optional",
+            "control_guid": "{172840BF-D385-4F83-80E8-2AC3B79EB0E0}",
+            "displayname": "$rc:selection_options.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DATE",
+                        "code": "$rc:selection_options.domain.DATE"
+                    },
+                    {
+                        "value": "TIME",
+                        "code": "$rc:selection_options.domain.TIME"
+                    },
+                    {
+                        "value": "DAY_OF_WEEK",
+                        "code": "$rc:selection_options.domain.DAY_OF_WEEK"
+                    },
+                    {
+                        "value": "MONTH",
+                        "code": "$rc:selection_options.domain.MONTH"
+                    },
+                    {
+                        "value": "YEAR",
+                        "code": "$rc:selection_options.domain.YEAR"
+                    }
+                ]
+            },
+            "description": "$rc:selection_options.descr"
+        },
+        "date_selection_type": {
+            "type": "optional",
+            "displayname": "$rc:date_selection_type.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DATE_RANGE",
+                        "code": "$rc:date_selection_type.domain.DATE_RANGE"
+                    },
+                    {
+                        "value": "SINGLE_DATE",
+                        "code": "$rc:date_selection_type.domain.SINGLE_DATE"
+                    },
+                    {
+                        "value": "RECENCY",
+                        "code": "$rc:date_selection_type.domain.RECENCY"
+                    },
+                    {
+                        "value": "COMPARATIVE",
+                        "code": "$rc:date_selection_type.domain.COMPARATIVE"
+                    }
+                ]
+            },
+            "description": "$rc:date_selection_type.descr"
+        },
+        "single_date": {
+            "type": "optional",
+            "displayname": "$rc:single_date.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:single_date.descr"
+        },
+        "start_date": {
+            "type": "optional",
+            "displayname": "$rc:start_date.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:start_date.descr"
+        },
+        "end_date": {
+            "type": "optional",
+            "displayname": "$rc:end_date.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:end_date.descr"
+        },
+        "use_system_time": {
+            "type": "optional",
+            "displayname": "$rc:use_system_time.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SYSTEM_TIME"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_SYSTEM_TIME"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:use_system_time.descr"
+        },
+        "time_slice": {
+            "type": "optional",
+            "displayname": "$rc:time_slice.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPTimeUnit"
+            },
+            "domain": {
+                "type": "GPUnitDomain",
+                "items": [
+                    "Minutes",
+                    "Hours",
+                    "Days",
+                    "Weeks",
+                    "Months",
+                    "Years"
+                ]
+            },
+            "description": "$rc:time_slice.descr"
+        },
+        "start_time": {
+            "type": "optional",
+            "displayname": "$rc:start_time.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:start_time.descr"
+        },
+        "end_time": {
+            "type": "optional",
+            "displayname": "$rc:end_time.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:end_time.descr"
+        },
+        "days_of_week": {
+            "type": "optional",
+            "control_guid": "{172840BF-D385-4F83-80E8-2AC3B79EB0E0}",
+            "displayname": "$rc:days_of_week.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MONDAY",
+                        "code": "$rc:days_of_week.domain.MONDAY"
+                    },
+                    {
+                        "value": "TUESDAY",
+                        "code": "$rc:days_of_week.domain.TUESDAY"
+                    },
+                    {
+                        "value": "WEDNESDAY",
+                        "code": "$rc:days_of_week.domain.WEDNESDAY"
+                    },
+                    {
+                        "value": "THURSDAY",
+                        "code": "$rc:days_of_week.domain.THURSDAY"
+                    },
+                    {
+                        "value": "FRIDAY",
+                        "code": "$rc:days_of_week.domain.FRIDAY"
+                    },
+                    {
+                        "value": "SATURDAY",
+                        "code": "$rc:days_of_week.domain.SATURDAY"
+                    },
+                    {
+                        "value": "SUNDAY",
+                        "code": "$rc:days_of_week.domain.SUNDAY"
+                    }
+                ]
+            },
+            "description": "$rc:days_of_week.descr"
+        },
+        "months": {
+            "type": "optional",
+            "control_guid": "{172840BF-D385-4F83-80E8-2AC3B79EB0E0}",
+            "displayname": "$rc:months.title",
+            "category": "$rc:params.category4",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "JANUARY",
+                        "code": "$rc:months.domain.JANUARY"
+                    },
+                    {
+                        "value": "FEBRUARY",
+                        "code": "$rc:months.domain.FEBRUARY"
+                    },
+                    {
+                        "value": "MARCH",
+                        "code": "$rc:months.domain.MARCH"
+                    },
+                    {
+                        "value": "APRIL",
+                        "code": "$rc:months.domain.APRIL"
+                    },
+                    {
+                        "value": "MAY",
+                        "code": "$rc:months.domain.MAY"
+                    },
+                    {
+                        "value": "JUNE",
+                        "code": "$rc:months.domain.JUNE"
+                    },
+                    {
+                        "value": "JULY",
+                        "code": "$rc:months.domain.JULY"
+                    },
+                    {
+                        "value": "AUGUST",
+                        "code": "$rc:months.domain.AUGUST"
+                    },
+                    {
+                        "value": "SEPTEMBER",
+                        "code": "$rc:months.domain.SEPTEMBER"
+                    },
+                    {
+                        "value": "OCTOBER",
+                        "code": "$rc:months.domain.OCTOBER"
+                    },
+                    {
+                        "value": "NOVEMBER",
+                        "code": "$rc:months.domain.NOVEMBER"
+                    },
+                    {
+                        "value": "DECEMBER",
+                        "code": "$rc:months.domain.DECEMBER"
+                    }
+                ]
+            },
+            "description": "$rc:months.descr"
+        },
+        "years": {
+            "type": "optional",
+            "displayname": "$rc:years.title",
+            "category": "$rc:params.category5",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPLong"
+                }
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "1",
+                "max": "9999"
+            },
+            "description": "$rc:years.descr"
+        },
+        "out_layer_or_view": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_layer_or_view.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "depends": [
+                "in_layer_or_view"
+            ],
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "count": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:count.title",
+            "datatype": {
+                "type": "GPLong"
+            }
+        }
+    }
+}

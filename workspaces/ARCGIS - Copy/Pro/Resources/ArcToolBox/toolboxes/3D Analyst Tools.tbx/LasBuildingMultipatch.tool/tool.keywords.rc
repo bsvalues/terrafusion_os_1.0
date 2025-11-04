@@ -1,0 +1,10 @@
+{
+    "set": [
+        "buildings",
+        "dem",
+        "feature extraction",
+        "las",
+        "lidar",
+        "roof top"
+    ]
+}

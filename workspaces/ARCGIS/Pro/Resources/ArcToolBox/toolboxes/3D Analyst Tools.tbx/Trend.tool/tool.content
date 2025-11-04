@@ -1,0 +1,184 @@
+{
+    "type": "FunctionTool",
+    "guid": "{89a64468-9917-4e73-ae04-02e401a1c9a8}",
+    "displayname": "$rc:title",
+    "helpcontent": "5130008",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9",
+        "10"
+    ],
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "params": {
+        "in_point_features": {
+            "displayname": "$rc:in_point_features.title",
+            "datatype": {
+                "type": "GPSAGeoData"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "false",
+                "singleband": "false",
+                "datatype": [
+                    "DEFeatureClass",
+                    "GPFeatureLayer",
+                    "GPTableView",
+                    "DETextFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Geometry"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_point_features.descr"
+        },
+        "z_field": {
+            "displayname": "$rc:z_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Geometry"
+                ]
+            },
+            "depends": [
+                "in_point_features"
+            ],
+            "description": "$rc:z_field.descr"
+        },
+        "out_raster": {
+            "direction": "out",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_raster.descr"
+        },
+        "cell_size": {
+            "type": "optional",
+            "displayname": "$rc:cell_size.title",
+            "datatype": {
+                "type": "analysis_cell_size"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "false",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "analysis_cell_size",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:cell_size.descr"
+        },
+        "order": {
+            "type": "optional",
+            "displayname": "$rc:order.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                },
+                "high": {
+                    "allow": "true",
+                    "val": "12"
+                }
+            },
+            "value": "1",
+            "description": "$rc:order.descr"
+        },
+        "regression_type": {
+            "type": "optional",
+            "displayname": "$rc:regression_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "LINEAR",
+                        "code": "$rc:regression_type.domain.LINEAR"
+                    },
+                    {
+                        "value": "LOGISTIC",
+                        "code": "$rc:regression_type.domain.LOGISTIC"
+                    }
+                ]
+            },
+            "value": "LINEAR",
+            "description": "$rc:regression_type.descr"
+        },
+        "out_rms_file": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_rms_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "TXT"
+                ]
+            },
+            "description": "$rc:out_rms_file.descr"
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "cellSize",
+        "cellSizeProjectionMethod",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "mask",
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

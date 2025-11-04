@@ -1,0 +1,240 @@
+{
+    "type": "FunctionTool",
+    "guid": "{161fef96-365b-443d-a817-aca0cbdb32e2}",
+    "displayname": "$rc:title",
+    "helpcontent": "5020004",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon",
+                    "MultiPatch",
+                    "Point"
+                ],
+                "featuretype": [
+                    "Simple",
+                    "SimpleJunction",
+                    "SimpleEdge",
+                    "ComplexEdge",
+                    "RasterCatalogItem"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "in_rule_package": {
+            "displayname": "$rc:in_rule_package.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "rpk"
+                ]
+            },
+            "description": "$rc:in_rule_package.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "featuretype.rule": "AsSpecified",
+                "featuretype": "Simple",
+                "geometrytype.rule": "AsSpecified",
+                "geometrytype": "MultiPatch",
+                "extenttype.rule": "FirstDependency",
+                "fields.rule": "FirstDependency",
+                "fields": [
+                    {
+                        "name": "OriginalOID",
+                        "type": "esriFieldTypeInteger",
+                        "isNullable": "true",
+                        "length": "0",
+                        "precision": "0",
+                        "scale": "0"
+                    }
+                ]
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "in_existing_fields": {
+            "type": "optional",
+            "displayname": "$rc:in_existing_fields.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "INCLUDE_EXISTING_FIELDS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DROP_EXISTING_FIELDS"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:in_existing_fields.descr"
+        },
+        "in_include_reports": {
+            "type": "optional",
+            "displayname": "$rc:in_include_reports.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "INCLUDE_REPORTS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "EXCLUDE_REPORTS"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:in_include_reports.descr"
+        },
+        "in_leaf_shapes": {
+            "type": "optional",
+            "displayname": "$rc:in_leaf_shapes.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FEATURE_PER_LEAF_SHAPE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "FEATURE_PER_SHAPE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:in_leaf_shapes.descr"
+        },
+        "out_points": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_points.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "featuretype.rule": "AsSpecified",
+                "featuretype": "Simple",
+                "geometrytype.rule": "AsSpecified",
+                "geometrytype": "Point",
+                "extenttype.rule": "FirstDependency",
+                "fields.rule": "None",
+                "fields": [
+                    {
+                        "name": "OriginalOID",
+                        "type": "esriFieldTypeInteger",
+                        "isNullable": "true",
+                        "length": "0",
+                        "precision": "0",
+                        "scale": "0"
+                    }
+                ]
+            },
+            "value": "output_feature_class_Point"
+        },
+        "out_lines": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_lines.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "featuretype.rule": "AsSpecified",
+                "featuretype": "Simple",
+                "geometrytype.rule": "AsSpecified",
+                "geometrytype": "Polyline",
+                "extenttype.rule": "FirstDependency",
+                "fields.rule": "None",
+                "fields": [
+                    {
+                        "name": "OriginalOID",
+                        "type": "esriFieldTypeInteger",
+                        "isNullable": "true",
+                        "length": "0",
+                        "precision": "0",
+                        "scale": "0"
+                    }
+                ]
+            },
+            "value": "output_feature_class_Line"
+        },
+        "out_multipoints": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_multipoints.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "featuretype.rule": "AsSpecified",
+                "featuretype": "Simple",
+                "geometrytype.rule": "AsSpecified",
+                "geometrytype": "Multipoint",
+                "extenttype.rule": "FirstDependency",
+                "fields.rule": "None",
+                "fields": [
+                    {
+                        "name": "OriginalOID",
+                        "type": "esriFieldTypeInteger",
+                        "isNullable": "true",
+                        "length": "0",
+                        "precision": "0",
+                        "scale": "0"
+                    }
+                ]
+            },
+            "value": "output_feature_class_MPoint"
+        }
+    }
+}

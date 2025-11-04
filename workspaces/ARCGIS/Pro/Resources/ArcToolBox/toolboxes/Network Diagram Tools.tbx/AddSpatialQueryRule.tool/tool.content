@@ -1,0 +1,183 @@
+{
+    "type": "FunctionTool",
+    "guid": "{e08874af-236f-43d6-9692-5bab8d0973ac}",
+    "displayname": "$rc:title",
+    "helpcontent": "71010027",
+    "description": "$rc:description",
+    "product": "200",
+    "params": {
+        "in_utility_network": {
+            "displayname": "$rc:in_utility_network.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    },
+                    {
+                        "type": "DETraceNetwork"
+                    }
+                ]
+            },
+            "description": "$rc:in_utility_network.descr"
+        },
+        "template_name": {
+            "displayname": "$rc:template_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:template_name.descr"
+        },
+        "is_active": {
+            "displayname": "$rc:is_active.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ACTIVE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "INACTIVE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:is_active.descr"
+        },
+        "added_features": {
+            "displayname": "$rc:added_features.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "depends": [
+                "in_utility_network"
+            ],
+            "description": "$rc:added_features.descr"
+        },
+        "overlap_type": {
+            "displayname": "$rc:overlap_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "INTERSECT",
+                        "code": "$rc:overlap_type.domain.INTERSECT"
+                    },
+                    {
+                        "value": "WITHIN_A_DISTANCE",
+                        "code": "$rc:overlap_type.domain.WITHIN_A_DISTANCE"
+                    },
+                    {
+                        "value": "CONTAINS",
+                        "code": "$rc:overlap_type.domain.CONTAINS"
+                    },
+                    {
+                        "value": "WITHIN",
+                        "code": "$rc:overlap_type.domain.WITHIN"
+                    },
+                    {
+                        "value": "BOUNDARY_TOUCHES",
+                        "code": "$rc:overlap_type.domain.BOUNDARY_TOUCHES"
+                    },
+                    {
+                        "value": "SHARE_A_LINE_SEGMENT_WITH",
+                        "code": "$rc:overlap_type.domain.SHARE_A_LINE_SEGMENT_WITH"
+                    },
+                    {
+                        "value": "CROSSED_BY_THE_OUTLINE_OF",
+                        "code": "$rc:overlap_type.domain.CROSSED_BY_THE_OUTLINE_OF"
+                    }
+                ]
+            },
+            "value": "INTERSECT",
+            "description": "$rc:overlap_type.descr"
+        },
+        "existing_features": {
+            "displayname": "$rc:existing_features.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "depends": [
+                "in_utility_network"
+            ],
+            "description": "$rc:existing_features.descr"
+        },
+        "search_distance": {
+            "type": "optional",
+            "displayname": "$rc:search_distance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_utility_network"
+            ],
+            "description": "$rc:search_distance.descr"
+        },
+        "added_where_clause": {
+            "type": "optional",
+            "displayname": "$rc:added_where_clause.title",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "added_features"
+            ],
+            "description": "$rc:added_where_clause.descr"
+        },
+        "existing_where_clause": {
+            "type": "optional",
+            "displayname": "$rc:existing_where_clause.title",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "existing_features"
+            ],
+            "description": "$rc:existing_where_clause.descr"
+        },
+        "description": {
+            "type": "optional",
+            "control_guid": "{E5456E51-0C41-4797-9EE4-5269820C6F0E}",
+            "displayname": "$rc:description.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:description.descr"
+        },
+        "out_utility_network": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_utility_network.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    },
+                    {
+                        "type": "DETraceNetwork"
+                    }
+                ]
+            },
+            "addtomap": "false"
+        },
+        "out_template_name": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_template_name.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        }
+    }
+}

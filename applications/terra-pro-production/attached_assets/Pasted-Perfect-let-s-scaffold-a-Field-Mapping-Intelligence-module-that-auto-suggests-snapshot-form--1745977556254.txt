@@ -1,0 +1,109 @@
+Perfect — let’s scaffold a **Field Mapping Intelligence module** that auto-suggests snapshot → form mappings based on the form type, snapshot keys, and historical use.
+
+---
+
+# 🧠 Module: `useFieldMappingSuggest.ts`
+
+## 📌 Purpose  
+Automatically suggest field mappings when:
+- A snapshot is selected
+- A form type (e.g. “1004”) is active
+- The appraiser has mapped these fields before
+
+---
+
+## 📁 File: `hooks/useFieldMappingSuggest.ts`
+
+```ts
+import { useEffect, useState } from 'react';
+import { ComparableSnapshot } from '@/shared/types/comps';
+
+type FieldMapping = Record<string, string>; // snapshotKey → formFieldId
+
+const DEFAULT_MAPPINGS: Record<string, FieldMapping> = {
+  '1004': {
+    salePrice: 'G1',
+    gla: 'G2',
+    beds: 'G3',
+    baths: 'G4',
+    yearBuilt: 'G5'
+  },
+  '1025': {
+    salePrice: 'R1',
+    gla: 'R2',
+    beds: 'R3',
+    baths: 'R4'
+  }
+};
+
+export function useFieldMappingSuggest(
+  snapshot: ComparableSnapshot,
+  formType: string,
+  userOverrides?: FieldMapping
+): FieldMapping {
+  const [mapping, setMapping] = useState<FieldMapping>({});
+
+  useEffect(() => {
+    const defaultMap = DEFAULT_MAPPINGS[formType] || {};
+    const autoMap: FieldMapping = {};
+
+    for (const snapKey of Object.keys(snapshot.fields)) {
+      autoMap[snapKey] =
+        userOverrides?.[snapKey] ||
+        defaultMap[snapKey] ||
+        guessFieldIdFromKey(snapKey); // fallback AI guess
+    }
+
+    setMapping(autoMap);
+  }, [snapshot, formType, userOverrides]);
+
+  return mapping;
+}
+
+// 🔍 Naive field guessing fallback (enhance with real AI later)
+function guessFieldIdFromKey(key: string): string {
+  if (key.toLowerCase().includes('sale')) return 'G1';
+  if (key.toLowerCase().includes('gla')) return 'G2';
+  if (key.toLowerCase().includes('bed')) return 'G3';
+  if (key.toLowerCase().includes('bath')) return 'G4';
+  return '';
+}
+```
+
+---
+
+## 🧪 Usage Example
+
+Inside `SnapshotTile.tsx` or `FieldMappingModal.tsx`:
+
+```tsx
+const autoMapping = useFieldMappingSuggest(snapshot, formType, userPreset);
+
+<FieldMappingModal
+  snapshot={snapshot}
+  isOpen={isOpen}
+  onClose={() => setIsOpen(false)}
+  formFields={['G1', 'G2', 'G3', 'G4', 'G5']}
+  onConfirm={handlePush}
+  defaultMapping={autoMapping}
+/>
+```
+
+---
+
+## 🔮 Future Expansion
+
+✅ Save last-used mapping per user  
+✅ Let user select preset (e.g. “My 1004 Setup”)  
+✅ Import mapping from previous report  
+✅ AI auto-map (via GPT or cosine match on label names)
+
+---
+
+## 🏁 Next Step Candidates
+
+1. Build a **“Mapping Preset Manager”** UI (save/load/rename/delete).
+2. Hook mapping memory into localStorage or cloud DB.
+3. Auto-run push if all fields are auto-mapped confidently.
+
+Should I wire up a Preset Manager or bake in mapping persistence next?

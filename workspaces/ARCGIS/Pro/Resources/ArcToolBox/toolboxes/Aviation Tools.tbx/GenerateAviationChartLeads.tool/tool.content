@@ -1,0 +1,66 @@
+{
+    "type": "FunctionTool",
+    "guid": "{F6243FE3-8552-4511-BBCE-F882B7099A58}/GenerateAviationChartLeads",
+    "displayname": "$rc:title",
+    "helpcontent": "64060002",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "53",
+        "70"
+    ],
+    "params": {
+        "in_layout": {
+            "displayname": "$rc:in_layout.title",
+            "datatype": {
+                "type": "GPLayout"
+            },
+            "description": "$rc:in_layout.descr"
+        },
+        "in_mapframe": {
+            "displayname": "$rc:in_mapframe.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "depends": [
+                "in_layout"
+            ],
+            "description": "$rc:in_mapframe.descr"
+        },
+        "in_preferences_table": {
+            "displayname": "$rc:in_preferences_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_preferences_table.descr"
+        },
+        "preference": {
+            "enabled": "false",
+            "displayname": "$rc:preference.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "depends": [
+                "in_preferences_table"
+            ],
+            "description": "$rc:preference.descr"
+        },
+        "updated_layout": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_layout.title",
+            "datatype": {
+                "type": "GPLayout"
+            },
+            "depends": [
+                "in_layout"
+            ]
+        }
+    }
+}

@@ -1,0 +1,55 @@
+{
+  "preset": "ts-jest",
+  "testEnvironment": "node",
+  "roots": ["<rootDir>/src", "<rootDir>/tests"],
+  "testMatch": [
+    "**/__tests__/**/*.+(ts|tsx|js)",
+    "**/*.(test|spec).+(ts|tsx|js)"
+  ],
+  "transform": {
+    "^.+\\.(ts|tsx)$": "ts-jest"
+  },
+  "collectCoverageFrom": [
+    "**/*.{ts,tsx}",
+    "!**/*.d.ts",
+    "!**/node_modules/**",
+    "!**/dist/**",
+    "!**/coverage/**"
+  ],
+  "coverageDirectory": "coverage",
+  "coverageReporters": ["text", "lcov", "html"],
+  "coverageThreshold": {
+    "global": {
+      "branches": 80,
+      "functions": 80,
+      "lines": 80,
+      "statements": 80
+    }
+  },
+  "setupFilesAfterEnv": ["<rootDir>/tests/setup.ts"],
+  "testTimeout": 30000,
+  "verbose": true,
+  "bail": false,
+  "maxWorkers": "50%",
+  "clearMocks": true,
+  "restoreMocks": true,
+  "resetMocks": true,
+  "moduleNameMapping": {
+    "^@/(.*)$": "<rootDir>/src/$1",
+    "^@/types/(.*)$": "<rootDir>/src/types/$1",
+    "^@/utils/(.*)$": "<rootDir>/src/utils/$1",
+    "^@/agents/(.*)$": "<rootDir>/src/agents/$1",
+    "^@/orchestrator/(.*)$": "<rootDir>/src/orchestrator/$1",
+    "^@/scanner/(.*)$": "<rootDir>/src/scanner/$1"
+  },
+  "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"],
+  "extensionsToTreatAsEsm": [".ts"],
+  "globals": {
+    "ts-jest": {
+      "useESM": true,
+      "tsconfig": {
+        "module": "esnext"
+      }
+    }
+  }
+}

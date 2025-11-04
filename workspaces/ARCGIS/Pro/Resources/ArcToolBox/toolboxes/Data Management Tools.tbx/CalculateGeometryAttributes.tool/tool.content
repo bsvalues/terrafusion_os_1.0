@@ -1,0 +1,460 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "3050016",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "edit_session",
+        "input_data_change"
+    ],
+    "params": {
+        "in_features": {
+            "display_order": "0",
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon",
+                    "Multipoint",
+                    "Point",
+                    "Polyline",
+                    "MultiPatch"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "geometry_property": {
+            "display_order": "1",
+            "displayname": "$rc:geometry_property.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:geometry_property.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:geometry_property.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Short",
+                            "Long",
+                            "BigInteger",
+                            "Float",
+                            "Double",
+                            "Text"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "POINT_X",
+                                "code": "$rc:geometry_property.domain.item2.POINT_X"
+                            },
+                            {
+                                "value": "POINT_Y",
+                                "code": "$rc:geometry_property.domain.item2.POINT_Y"
+                            },
+                            {
+                                "value": "POINT_Z",
+                                "code": "$rc:geometry_property.domain.item2.POINT_Z"
+                            },
+                            {
+                                "value": "POINT_M",
+                                "code": "$rc:geometry_property.domain.item2.POINT_M"
+                            },
+                            {
+                                "value": "PART_COUNT",
+                                "code": "$rc:geometry_property.domain.item2.PART_COUNT"
+                            },
+                            {
+                                "value": "CURVE_COUNT",
+                                "code": "$rc:geometry_property.domain.item2.CURVE_COUNT"
+                            },
+                            {
+                                "value": "CENTROID_X",
+                                "code": "$rc:geometry_property.domain.item2.CENTROID_X"
+                            },
+                            {
+                                "value": "CENTROID_Y",
+                                "code": "$rc:geometry_property.domain.item2.CENTROID_Y"
+                            },
+                            {
+                                "value": "CENTROID_Z",
+                                "code": "$rc:geometry_property.domain.item2.CENTROID_Z"
+                            },
+                            {
+                                "value": "CENTROID_M",
+                                "code": "$rc:geometry_property.domain.item2.CENTROID_M"
+                            },
+                            {
+                                "value": "INSIDE_X",
+                                "code": "$rc:geometry_property.domain.item2.INSIDE_X"
+                            },
+                            {
+                                "value": "INSIDE_Y",
+                                "code": "$rc:geometry_property.domain.item2.INSIDE_Y"
+                            },
+                            {
+                                "value": "INSIDE_Z",
+                                "code": "$rc:geometry_property.domain.item2.INSIDE_Z"
+                            },
+                            {
+                                "value": "INSIDE_M",
+                                "code": "$rc:geometry_property.domain.item2.INSIDE_M"
+                            },
+                            {
+                                "value": "EXTENT_MIN_X",
+                                "code": "$rc:geometry_property.domain.item2.EXTENT_MIN_X"
+                            },
+                            {
+                                "value": "EXTENT_MIN_Y",
+                                "code": "$rc:geometry_property.domain.item2.EXTENT_MIN_Y"
+                            },
+                            {
+                                "value": "EXTENT_MIN_Z",
+                                "code": "$rc:geometry_property.domain.item2.EXTENT_MIN_Z"
+                            },
+                            {
+                                "value": "EXTENT_MAX_X",
+                                "code": "$rc:geometry_property.domain.item2.EXTENT_MAX_X"
+                            },
+                            {
+                                "value": "EXTENT_MAX_Y",
+                                "code": "$rc:geometry_property.domain.item2.EXTENT_MAX_Y"
+                            },
+                            {
+                                "value": "EXTENT_MAX_Z",
+                                "code": "$rc:geometry_property.domain.item2.EXTENT_MAX_Z"
+                            },
+                            {
+                                "value": "LINE_START_X",
+                                "code": "$rc:geometry_property.domain.item2.LINE_START_X"
+                            },
+                            {
+                                "value": "LINE_START_Y",
+                                "code": "$rc:geometry_property.domain.item2.LINE_START_Y"
+                            },
+                            {
+                                "value": "LINE_START_Z",
+                                "code": "$rc:geometry_property.domain.item2.LINE_START_Z"
+                            },
+                            {
+                                "value": "LINE_START_M",
+                                "code": "$rc:geometry_property.domain.item2.LINE_START_M"
+                            },
+                            {
+                                "value": "LINE_END_X",
+                                "code": "$rc:geometry_property.domain.item2.LINE_END_X"
+                            },
+                            {
+                                "value": "LINE_END_Y",
+                                "code": "$rc:geometry_property.domain.item2.LINE_END_Y"
+                            },
+                            {
+                                "value": "LINE_END_Z",
+                                "code": "$rc:geometry_property.domain.item2.LINE_END_Z"
+                            },
+                            {
+                                "value": "LINE_END_M",
+                                "code": "$rc:geometry_property.domain.item2.LINE_END_M"
+                            },
+                            {
+                                "value": "LINE_BEARING",
+                                "code": "$rc:geometry_property.domain.item2.LINE_BEARING"
+                            },
+                            {
+                                "value": "LENGTH",
+                                "code": "$rc:geometry_property.domain.item2.LENGTH"
+                            },
+                            {
+                                "value": "LENGTH_3D",
+                                "code": "$rc:geometry_property.domain.item2.LENGTH_3D"
+                            },
+                            {
+                                "value": "LENGTH_GEODESIC",
+                                "code": "$rc:geometry_property.domain.item2.LENGTH_GEODESIC"
+                            },
+                            {
+                                "value": "POINT_COUNT",
+                                "code": "$rc:geometry_property.domain.item2.POINT_COUNT"
+                            },
+                            {
+                                "value": "PERIMETER_LENGTH",
+                                "code": "$rc:geometry_property.domain.item2.PERIMETER_LENGTH"
+                            },
+                            {
+                                "value": "PERIMETER_LENGTH_GEODESIC",
+                                "code": "$rc:geometry_property.domain.item2.PERIMETER_LENGTH_GEODESIC"
+                            },
+                            {
+                                "value": "AREA",
+                                "code": "$rc:geometry_property.domain.item2.AREA"
+                            },
+                            {
+                                "value": "AREA_GEODESIC",
+                                "code": "$rc:geometry_property.domain.item2.AREA_GEODESIC"
+                            },
+                            {
+                                "value": "HOLE_COUNT",
+                                "code": "$rc:geometry_property.domain.item2.HOLE_COUNT"
+                            },
+                            {
+                                "value": "POINT_COORD_NOTATION",
+                                "code": "$rc:geometry_property.domain.item2.POINT_COORD_NOTATION"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:geometry_property.descr"
+        },
+        "length_unit": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:length_unit.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "KILOMETERS",
+                        "code": "$rc:length_unit.domain.KILOMETERS"
+                    },
+                    {
+                        "value": "METERS",
+                        "code": "$rc:length_unit.domain.METERS"
+                    },
+                    {
+                        "value": "NAUTICAL_MILES_INT",
+                        "code": "$rc:length_unit.domain.NAUTICAL_MILES_INT"
+                    },
+                    {
+                        "value": "MILES_INT",
+                        "code": "$rc:length_unit.domain.MILES_INT"
+                    },
+                    {
+                        "value": "YARDS_INT",
+                        "code": "$rc:length_unit.domain.YARDS_INT"
+                    },
+                    {
+                        "value": "FEET_INT",
+                        "code": "$rc:length_unit.domain.FEET_INT"
+                    },
+                    {
+                        "value": "NAUTICAL_MILES",
+                        "code": "$rc:length_unit.domain.NAUTICAL_MILES"
+                    },
+                    {
+                        "value": "MILES_US",
+                        "code": "$rc:length_unit.domain.MILES_US"
+                    },
+                    {
+                        "value": "YARDS",
+                        "code": "$rc:length_unit.domain.YARDS"
+                    },
+                    {
+                        "value": "FEET_US",
+                        "code": "$rc:length_unit.domain.FEET_US"
+                    }
+                ]
+            },
+            "description": "$rc:length_unit.descr"
+        },
+        "area_unit": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:area_unit.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SQUARE_KILOMETERS",
+                        "code": "$rc:area_unit.domain.SQUARE_KILOMETERS"
+                    },
+                    {
+                        "value": "HECTARES",
+                        "code": "$rc:area_unit.domain.HECTARES"
+                    },
+                    {
+                        "value": "SQUARE_METERS",
+                        "code": "$rc:area_unit.domain.SQUARE_METERS"
+                    },
+                    {
+                        "value": "SQUARE_MILES_INT",
+                        "code": "$rc:area_unit.domain.SQUARE_MILES_INT"
+                    },
+                    {
+                        "value": "SQUARE_NAUTICAL_MILES",
+                        "code": "$rc:area_unit.domain.SQUARE_NAUTICAL_MILES"
+                    },
+                    {
+                        "value": "ACRES",
+                        "code": "$rc:area_unit.domain.ACRES"
+                    },
+                    {
+                        "value": "SQUARE_YARDS",
+                        "code": "$rc:area_unit.domain.SQUARE_YARDS"
+                    },
+                    {
+                        "value": "SQUARE_FEET_INT",
+                        "code": "$rc:area_unit.domain.SQUARE_FEET_INT"
+                    },
+                    {
+                        "value": "SQUARE_MILES_US",
+                        "code": "$rc:area_unit.domain.SQUARE_MILES_US"
+                    },
+                    {
+                        "value": "SQUARE_NAUTICAL_MILES_US",
+                        "code": "$rc:area_unit.domain.SQUARE_NAUTICAL_MILES_US"
+                    },
+                    {
+                        "value": "ACRES_US",
+                        "code": "$rc:area_unit.domain.ACRES_US"
+                    },
+                    {
+                        "value": "SQUARE_YARDS_US",
+                        "code": "$rc:area_unit.domain.SQUARE_YARDS_US"
+                    },
+                    {
+                        "value": "SQUARE_FEET_US",
+                        "code": "$rc:area_unit.domain.SQUARE_FEET_US"
+                    }
+                ]
+            },
+            "description": "$rc:area_unit.descr"
+        },
+        "coordinate_system": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:coordinate_system.title",
+            "datatype": {
+                "type": "GPCoordinateSystem"
+            },
+            "defaultenvironmentname": "outputCoordinateSystem",
+            "description": "$rc:coordinate_system.descr"
+        },
+        "updated_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "coordinate_format": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:coordinate_format.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SAME_AS_INPUT",
+                        "code": "$rc:coordinate_format.domain.SAME_AS_INPUT"
+                    },
+                    {
+                        "value": "DD",
+                        "code": "$rc:coordinate_format.domain.DD"
+                    },
+                    {
+                        "value": "DMS_DIR_LAST",
+                        "code": "$rc:coordinate_format.domain.DMS_DIR_LAST"
+                    },
+                    {
+                        "value": "DMS_DIR_FIRST",
+                        "code": "$rc:coordinate_format.domain.DMS_DIR_FIRST"
+                    },
+                    {
+                        "value": "DMS_POS_NEG",
+                        "code": "$rc:coordinate_format.domain.DMS_POS_NEG"
+                    },
+                    {
+                        "value": "DMS_PACKED",
+                        "code": "$rc:coordinate_format.domain.DMS_PACKED"
+                    },
+                    {
+                        "value": "DDM_DIR_LAST",
+                        "code": "$rc:coordinate_format.domain.DDM_DIR_LAST"
+                    },
+                    {
+                        "value": "DDM_DIR_FIRST",
+                        "code": "$rc:coordinate_format.domain.DDM_DIR_FIRST"
+                    },
+                    {
+                        "value": "DDM_POS_NEG",
+                        "code": "$rc:coordinate_format.domain.DDM_POS_NEG"
+                    },
+                    {
+                        "value": "GARS",
+                        "code": "$rc:coordinate_format.domain.GARS"
+                    },
+                    {
+                        "value": "GEOREF",
+                        "code": "$rc:coordinate_format.domain.GEOREF"
+                    },
+                    {
+                        "value": "MGRS",
+                        "code": "$rc:coordinate_format.domain.MGRS"
+                    },
+                    {
+                        "value": "USNG",
+                        "code": "$rc:coordinate_format.domain.USNG"
+                    },
+                    {
+                        "value": "UTM",
+                        "code": "$rc:coordinate_format.domain.UTM"
+                    },
+                    {
+                        "value": "UTMNS",
+                        "code": "$rc:coordinate_format.domain.UTMNS"
+                    }
+                ]
+            },
+            "value": "SAME_AS_INPUT",
+            "description": "$rc:coordinate_format.descr"
+        }
+    },
+    "environments": [
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "workspace"
+    ]
+}

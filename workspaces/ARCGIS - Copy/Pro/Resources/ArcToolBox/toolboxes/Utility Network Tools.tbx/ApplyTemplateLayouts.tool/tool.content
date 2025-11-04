@@ -1,0 +1,28 @@
+{
+    "type": "FunctionTool",
+    "guid": "{528b0252-919e-4009-a452-164dc94479ed}",
+    "displayname": "$rc:title",
+    "helpcontent": "71020015",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "block_add_to_map"
+    ],
+    "params": {
+        "in_network_diagram_layer": {
+            "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}",
+            "displayname": "$rc:in_network_diagram_layer.title",
+            "datatype": {
+                "type": "GPDiagramLayer"
+            }
+        },
+        "out_network_diagram_layer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_network_diagram_layer.title",
+            "datatype": {
+                "type": "GPDiagramLayer"
+            }
+        }
+    }
+}

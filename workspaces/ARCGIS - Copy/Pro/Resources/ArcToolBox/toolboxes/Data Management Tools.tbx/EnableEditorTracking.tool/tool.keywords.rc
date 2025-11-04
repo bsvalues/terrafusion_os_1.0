@@ -1,0 +1,14 @@
+{
+    "set": [
+        "creator",
+        "date",
+        "editor",
+        "fields",
+        "history",
+        "log",
+        "record",
+        "stamp",
+        "time",
+        "track"
+    ]
+}

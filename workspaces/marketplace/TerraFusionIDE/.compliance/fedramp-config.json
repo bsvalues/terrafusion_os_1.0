@@ -1,0 +1,60 @@
+{
+  "fedramp_compliance": {
+    "authorization_level": "Low",
+    "security_controls": {
+      "access_control": {
+        "ac_2": "Account Management",
+        "ac_3": "Access Enforcement",
+        "ac_6": "Least Privilege",
+        "ac_7": "Unsuccessful Logon Attempts",
+        "ac_11": "Session Lock",
+        "ac_12": "Session Termination"
+      },
+      "audit_accountability": {
+        "au_2": "Audit Events",
+        "au_3": "Content of Audit Records",
+        "au_4": "Audit Storage Capacity",
+        "au_5": "Response to Audit Processing Failures",
+        "au_6": "Audit Review Analysis and Reporting",
+        "au_12": "Audit Generation"
+      },
+      "configuration_management": {
+        "cm_2": "Baseline Configuration",
+        "cm_6": "Configuration Settings",
+        "cm_7": "Least Functionality",
+        "cm_8": "Information System Component Inventory"
+      },
+      "identification_authentication": {
+        "ia_2": "Identification and Authentication",
+        "ia_4": "Identifier Management",
+        "ia_5": "Authenticator Management",
+        "ia_6": "Authenticator Feedback"
+      },
+      "system_communications": {
+        "sc_7": "Boundary Protection",
+        "sc_8": "Transmission Confidentiality",
+        "sc_13": "Cryptographic Protection",
+        "sc_15": "Collaborative Computing Devices"
+      }
+    },
+    "automated_testing": {
+      "security_scanning": true,
+      "vulnerability_assessment": true,
+      "penetration_testing": false,
+      "compliance_monitoring": true
+    },
+    "documentation": {
+      "system_security_plan": true,
+      "control_implementation": true,
+      "risk_assessment": true,
+      "contingency_plan": true,
+      "incident_response": true
+    },
+    "continuous_monitoring": {
+      "security_controls": true,
+      "vulnerability_scanning": "weekly",
+      "configuration_monitoring": "real-time",
+      "log_analysis": "continuous"
+    }
+  }
+}

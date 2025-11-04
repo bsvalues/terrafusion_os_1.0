@@ -1,0 +1,5 @@
+<DataType Name="DETextFile">
+  <DisplayName>Text File</DisplayName>
+  <Description>Data stored in ASCII format.</Description>
+</DataType>
+

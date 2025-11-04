@@ -1,0 +1,204 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.Services.Host</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.Services.Host.LaunchScheduledEventWorkflows">
+            <summary>
+            Retrieves the list of events that are scheduled to be executed
+            and publishes messages for the corresponding workflows to be launched.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Services.Host.LaunchScheduledEventWorkflows.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Services.Host.LaunchScheduledEventWorkflows.eventTimer">
+            <summary>
+            A timer to check if any events need to be scheduled after every interval of 1 sec
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Services.Host.LaunchScheduledEventWorkflows.StartScheduler">
+            <summary>
+            Starts the timer to schedule events every 1 minute
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Services.Host.LaunchScheduledEventWorkflows.eventTimer_Elapsed(System.Object,System.Timers.ElapsedEventArgs)">
+            <summary>
+            The timer event handler where the scheduled event workflows are launched
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.Services.Host.LaunchScheduledEventWorkflows.GetAllEvents">
+             <summary>
+            Get a list of all the events from the database
+             </summary>
+        </member>
+        <member name="M:TrueAutomation.Services.Host.LaunchScheduledEventWorkflows.UpdateRunScheduledEvent(TrueAutomation.WorkflowService.DTOs.ScheduledEventDTO)">
+            <summary>
+            Sets up the next interval when the event needs to be scheduled
+            </summary>
+            <param name="schedEvent"></param>
+        </member>
+        <member name="M:TrueAutomation.Services.Host.LaunchScheduledEventWorkflows.GetWorkflowMessageToLaunch(TrueAutomation.WorkflowService.DTOs.EventDTO)">
+            <summary>
+            Retrieves the workflow to be executed from the scheduled event
+            </summary>
+            <param name="scheduledEvent"></param>
+            <returns>the LaunchWorkflowMessage which contains the workflow name and version</returns>
+        </member>
+        <member name="M:TrueAutomation.Services.Host.LaunchScheduledEventWorkflows.Notify(TrueAutomation.WorkflowService.Messages.IWorkflowMessage)">
+            <summary>
+            Publishes a LaunchWorkflowMessage to be consumed by a consumer for execution of launching the workflow
+            </summary>
+            <param name="msg"></param>
+        </member>
+        <member name="T:TrueAutomation.Services.Host.WindsorRepositoriesInstaller">
+            <summary>
+            Implements an installer for the Castle Windsor IoC container.
+            This class registers all the task services listed in the
+            serviceHosting section of the app.config file with the
+            supplied <see cref="T:Castle.Windsor.IWindsorContainer"/>
+            instance.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Services.Host.WindsorRepositoriesInstaller.Install(Castle.Windsor.IWindsorContainer,Castle.MicroKernel.SubSystems.Configuration.IConfigurationStore)">
+            <summary>
+            Registers all the custom repository types and their corresponding
+            service descriptors as configured in the "repositoryConfiguration"
+            section of the app.config file with the supplied Windsor container.
+            </summary>
+            <param name="container">The container into which to register
+            the configured repository components.</param>
+            <param name="store">Configuration store parameter -- unused in
+            this implementation.</param>
+        </member>
+        <member name="F:TrueAutomation.Services.Host.Program.sessionStorage">
+            <summary>
+            Implements an NHibernate session storage manager that's
+            compatible with WCF-style per-operation context semantics.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Services.Host.Program.container">
+            <summary>
+            The main Castle Windsor IoC container for the application.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Services.Host.Program.serviceHostContainer">
+            <summary>
+            A container for managing our set of hosted services.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.Services.Host.Program.logger">
+            <summary>
+            The logger instance associated with this service host.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Services.Host.Program.Main(System.String[])">
+            <summary>
+            The main entry point for the application.
+            </summary>
+            <param name="args">An array of command-line arguments
+            passed into the application.</param>
+        </member>
+        <member name="M:TrueAutomation.Services.Host.Program.#ctor">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Services.Host.Program.Logger">
+            <summary>
+            The logger associated with this service host instance.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.Services.Host.Program.WindsorContainer">
+            <summary>
+            Returns the main Windsor IoC container for the application.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Services.Host.Program.RunConsole">
+            <summary>
+            Runs the application in console mode, for debugging.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Services.Host.Program.RunEventScheduler">
+            <summary>
+            Starts executing workflows scheduled in a new thread
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Services.Host.Program.Run">
+            <summary>
+            Runs the application in service mode.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Services.Host.Program.Initialize">
+            <summary>
+            Performs general application initialization.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Services.Host.Program.Shutdown">
+            <summary>
+            Utility method for terminating all NHibernate sessions and
+            resetting the global NHibernate session manager to its
+            original default state.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Services.Host.Program.InitializeServiceLocator">
+            <summary>
+            Initializes our global service locator.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Services.Host.Program.InitializeLogger">
+            <summary>
+            Implementation method to initialize the logger for this class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Services.Host.Program.InitializeDatabases">
+            <summary>
+            Initializes any NHibernate databases specified in the
+            application configuration file.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Services.Host.Program.GetAutoPersistenceModel(System.String[])">
+            <summary>
+            Uses reflection to locate the first
+            <see cref="T:TrueAutomation.Core.Persistence.NHibernate.IAutoPersistenceModelGenerator"/>
+            instance in the specified list of mapping assembly names.
+            </summary>
+            <param name="assemblies">An array containing the mapping assembly
+            names in which to look for a persistence model generator.</param>
+            <returns>The first auto-persistence model generator found in the
+            specified list of assembly names, or null if none was found.
+            </returns>
+        </member>
+        <member name="M:TrueAutomation.Services.Host.Program.ServicePostInitialization">
+            <summary>
+            Methods to run against the services after they have been initialized will be executed here.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Services.Host.Program.SyncWorkflowWithPACSUserData">
+            <summary>
+            Method to update user and group counts on the Task Service after it is loaded.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Services.Host.Program.ScanAssembliesForWorkflowMessageTypes">
+            <summary>
+            Scan the loaded assemblies for all Workflow Message Types and store 
+            them in the database to get them populated in the UI later on.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Services.Host.Program.StartServices">
+            <summary>
+            Start the workflow services
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.Services.Host.Program.StopServices">
+            <summary>
+            Stop the workflow services
+            </summary>
+        </member>
+    </members>
+</doc>

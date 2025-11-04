@@ -1,0 +1,71 @@
+{
+    "type": "FunctionTool",
+    "guid": "{5c950e08-42e7-41e7-b256-529ea6135111}",
+    "displayname": "$rc:title",
+    "helpcontent": "8200015",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10"
+    ],
+    "params": {
+        "in_deep_learning_model": {
+            "display_order": "0",
+            "displayname": "$rc:in_deep_learning_model.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "model"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:in_deep_learning_model.descr"
+        },
+        "in_classification_info_json": {
+            "display_order": "1",
+            "displayname": "$rc:in_classification_info_json.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "json"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:in_classification_info_json.descr"
+        },
+        "out_classifier_definition": {
+            "direction": "out",
+            "display_order": "2",
+            "displayname": "$rc:out_classifier_definition.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "ecd"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:out_classifier_definition.descr"
+        }
+    }
+}

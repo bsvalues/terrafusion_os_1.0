@@ -1,0 +1,60 @@
+{
+    "type": "FunctionTool",
+    "guid": "{7476820b-816b-4e3d-a0a4-e67c5b500b47}",
+    "displayname": "$rc:title",
+    "helpcontent": "5200002",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9"
+    ],
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "params": {
+        "in_tin": {
+            "displayname": "$rc:in_tin.title",
+            "datatype": {
+                "type": "GPTinLayer"
+            },
+            "description": "$rc:in_tin.descr"
+        },
+        "out_tin": {
+            "direction": "out",
+            "displayname": "$rc:out_tin.title",
+            "datatype": {
+                "type": "DETin"
+            },
+            "description": "$rc:out_tin.descr"
+        },
+        "version": {
+            "type": "optional",
+            "displayname": "$rc:version.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PRE_10.0",
+                        "code": "$rc:version.domain.PRE_10.0"
+                    },
+                    {
+                        "value": "CURRENT",
+                        "code": "$rc:version.domain.CURRENT"
+                    }
+                ]
+            },
+            "value": "CURRENT",
+            "description": "$rc:version.descr"
+        }
+    },
+    "environments": [
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "tinSaveVersion",
+        "workspace"
+    ]
+}

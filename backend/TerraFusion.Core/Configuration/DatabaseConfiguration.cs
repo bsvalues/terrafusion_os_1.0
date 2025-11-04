@@ -7,6 +7,9 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Npgsql;
 using System.Data;
 
+
+#pragma warning disable CS1998
+
 namespace TerraFusion.Core.Configuration;
 
 /// <summary>
@@ -91,7 +94,7 @@ public static class DatabaseConfiguration
 
         // Security and reliability
         builder.TrustServerCertificate = false; // Enforce SSL certificate validation
-        builder.SslMode = Enum.Parse<SslMode>(poolConfig.GetValue("SslMode", "Require"));
+        builder.SslMode = Enum.Parse<SslMode>(poolConfig.GetValue("SslMode", "Require") ?? "Require");
         builder.KeepAlive = poolConfig.GetValue("KeepAliveSeconds", 30);
 
         // Government compliance

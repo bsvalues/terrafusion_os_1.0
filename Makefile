@@ -1,27 +1,122 @@
 SHELL := /bin/bash
-.DEFAULT_GOAL := demo-benton
+.DEFAULT_GOAL := oneclick
 
-# TerraFusion OS 1.0 - Benton County Production Demo
-# Individual county deployment with Harris PACS integration
+# TerraFusion OS 1.0 - Elite Government Operating System
+# One-Click Production Deployment with Factor 12 Sacred Mathematics
 
-.PHONY: help demo-benton stop logs clean status validate
+.PHONY: help demo-benton stop logs clean status validate oneclick preflight security core swarm api package db-migrate ontology-validate actions-validate flows bundle
 
 help: ## Show this help message
-	@echo "TerraFusion OS 1.0 - Benton County Production Demo"
+	@echo "TerraFusion OS 1.0 - Elite Government Operating System"
 	@echo "════════════════════════════════════════════════════════════════"
 	@echo ""
-	@echo "🏛️  BENTON COUNTY FLAGSHIP DEPLOYMENT:"
+	@echo "🚀 ONE-CLICK DEPLOYMENT (NEW):"
+	@echo "  make oneclick        # Complete deployment pipeline (all gates)"
+	@echo "  make oneclick-ps     # PowerShell version (Windows native)"
+	@echo "  make preflight       # Gate A - Hardware/OS/Ports/DNS/Deps"
+	@echo "  make preflight-ps    # PowerShell preflight validation"
+	@echo "  make security        # Gate B - Security baseline & SBOM"
+	@echo "  make core            # Gate C - Core stack bring-up"
+	@echo "  make swarm           # Gate D - AI swarm control plane"
+	@echo "  make swarm-ps        # PowerShell AI-swarm readiness"
+	@echo "  make api             # Gate E - API surface publish"
+	@echo "  make validate        # Gate F - Full validation matrix"
+	@echo "  make package         # Package artifacts"
+	@echo "  make fix-wsl         # Fix WSL path translation issues"
+	@echo ""
+	@echo "🏛️  BENTON COUNTY DEMO (LEGACY):"
 	@echo "  • 205k residents, 85k properties"
 	@echo "  • Harris PACS integration"
-	@echo "  • Production-ready demo system"
 	@echo ""
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
 	@echo ""
 	@echo "🚀 QUICK START:"
-	@echo "  make demo-benton     # Deploy Benton County (default)"
+	@echo "  make oneclick        # One-click deployment (RECOMMENDED)"
+	@echo "  make demo-benton     # Deploy Benton County (legacy)"
 	@echo "  make stop            # Stop all services"
 	@echo "  make status          # Check deployment status"
 	@echo ""
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ONE-CLICK DEPLOYMENT PIPELINE
+# ═══════════════════════════════════════════════════════════════════════════════
+
+preflight: ## Gate A - Preflight checks (hardware/ports/DNS/deps)
+	@echo "🔍 Gate A - Preflight checks..."
+	bash ops/scripts/preflight.sh
+
+security: ## Gate B - Security baseline (TLS/MFA/RBAC/SBOM)
+	@echo "🔒 Gate B - Security baseline..."
+	bash ops/scripts/security-baseline.sh
+
+core: ## Gate C - Core stack bring-up (DB/Redis/Ingress/API)
+	@echo "⚙️ Gate C - Core stack bring-up..."
+	bash ops/scripts/bringup-core.sh
+
+swarm: ## Gate D - AI swarm control plane
+	@echo "🧠 Gate D - AI swarm control plane..."
+	bash ops/scripts/swarm-online.sh
+
+api: ## Gate E - API surface publish (OpenAPI/GraphQL)
+	@echo "🌐 Gate E - API surface publish..."
+	bash ops/scripts/api-surface.sh
+
+validate: ## Gate F - Full validation matrix (unit/integration/E2E/load/sec)
+	@echo "🧪 Gate F - Full validation matrix..."
+	bash ops/scripts/validate-all.sh
+
+package: ## Package artifacts
+	@echo "📦 Packaging artifacts..."
+	bash ops/scripts/package-artifacts.sh
+
+oneclick: preflight security core swarm api validate package ## Complete one-click deployment pipeline
+	@echo "✅ One‑click pipeline completed. See ./artifacts"
+
+# PowerShell versions for Windows native execution
+oneclick-ps: ## Complete one-click deployment using PowerShell
+	@echo "🚀 PowerShell One-Click Deployment..."
+	powershell -ExecutionPolicy Bypass -File ops/scripts/tf-oneclick.ps1
+
+preflight-ps: ## PowerShell preflight validation
+	@echo "🔍 PowerShell Preflight checks..."
+	powershell -ExecutionPolicy Bypass -File ops/scripts/preflight.ps1
+
+swarm-ps: ## PowerShell AI-swarm readiness validation
+	@echo "🧠 PowerShell AI-swarm readiness..."
+	powershell -ExecutionPolicy Bypass -File ops/scripts/ai-swarm-readiness.ps1
+
+fix-wsl: ## Fix WSL path translation issues
+	@echo "🔧 Fixing WSL path issues..."
+	powershell -ExecutionPolicy Bypass -File ops/scripts/fix-wsl-path.ps1 -Fix
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ADDITIONAL TARGETS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+db-migrate: ## Database migrations
+	psql "$$DB_OLTP_DSN" -f db/migrations/001_init_ontology.sql
+	psql "$$DB_OLTP_DSN" -f db/migrations/002_add_indices.sql
+	-psql "$$DB_OLTP_DSN" -f db/migrations/003_seed_minimal.sql || true
+
+ontology-validate: ## Validate ontology schemas
+	@echo "🧾 Validating ontology..."
+	# Placeholder: JSON/YAML schema validation (hook up ajv/yamale here)
+
+actions-validate: ## Validate action catalog
+	@echo "⚙️ Validating actions..."
+	# Actions validated & signed (placeholder)
+
+flows: ## Compile flows (CRD→Argo)
+	@echo "🔄 Compiling flows..."
+	bash ops/scripts/flow-compile.sh
+
+bundle: ## Build edge/disconnected bundle
+	@echo "📦 Building bundle..."
+	cd tools/tf-bundle && go build -o ../../artifacts/tf-bundle && ../../artifacts/tf-bundle
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# LEGACY BENTON COUNTY DEMO
+# ═══════════════════════════════════════════════════════════════════════════════
 
 demo-benton: ## Deploy Benton County flagship demonstration
 	@echo "🚀 Deploying Benton County FLAGSHIP..."

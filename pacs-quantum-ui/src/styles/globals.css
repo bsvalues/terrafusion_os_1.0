@@ -1,0 +1,180 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
+
+    --muted: 223 47% 11%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+
+    --popover: 224 71% 4%;
+    --popover-foreground: 215 20.2% 65.1%;
+
+    --card: 224 71% 4%;
+    --card-foreground: 213 31% 91%;
+
+    --border: 216 34% 17%;
+    --input: 216 34% 17%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 1.2%;
+
+    --secondary: 222.2 47.4% 11.2%;
+    --secondary-foreground: 210 40% 98%;
+
+    --accent: 216 34% 17%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+
+    --ring: 216 34% 17%;
+
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-neural-900 text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-neural-800/30 backdrop-blur-xl border border-white/10;
+  }
+
+  .glass-strong {
+    @apply bg-neural-800/50 backdrop-blur-2xl border border-white/20;
+  }
+
+  .neural-glow {
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.3),
+                0 0 40px rgba(0, 229, 255, 0.2),
+                0 0 60px rgba(0, 229, 255, 0.1);
+  }
+
+  .quantum-gradient {
+    background: linear-gradient(135deg, #00E5FF 0%, #00B8D4 50%, #0091EA 100%);
+    background-size: 200% 200%;
+    animation: neural-flow 3s ease infinite;
+  }
+
+  .data-grid {
+    background-image:
+      linear-gradient(rgba(0, 229, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 229, 255, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Physics-based animation easing */
+.physics-spring {
+  transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Neural network connection lines */
+.neural-connection {
+  stroke: url(#neural-gradient);
+  stroke-width: 2;
+  stroke-dasharray: 5, 5;
+  animation: data-stream 2s linear infinite;
+}
+
+/* Quantum particle effects */
+@keyframes quantum-particle {
+  0% {
+    transform: translateY(100vh) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100vh) scale(1);
+    opacity: 0;
+  }
+}
+
+.quantum-particle {
+  animation: quantum-particle 8s linear infinite;
+}
+
+/* Advanced data visualization styles */
+.heatmap-cell {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.heatmap-cell:hover {
+  transform: scale(1.1);
+  z-index: 10;
+}
+
+/* MIT PhD-Level Statistical Charts */
+.statistical-axis {
+  stroke: rgba(255, 255, 255, 0.2);
+  stroke-width: 1;
+}
+
+.statistical-grid {
+  stroke: rgba(255, 255, 255, 0.05);
+  stroke-width: 0.5;
+}
+
+.confidence-interval {
+  fill: rgba(0, 229, 255, 0.1);
+  stroke: rgba(0, 229, 255, 0.3);
+  stroke-width: 1;
+}
+
+/* Swarm visualization */
+.agent-node {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.agent-node:hover {
+  transform: scale(1.2);
+  filter: brightness(1.5);
+}
+
+/* Performance metrics */
+.metric-card {
+  @apply glass rounded-lg p-4 hover:bg-neural-700/40 transition-all duration-300;
+}
+
+.metric-value {
+  @apply text-3xl font-bold bg-clip-text text-transparent quantum-gradient;
+}
+
+/* Quantum computing visualization */
+.qubit-state {
+  stroke: #00E5FF;
+  stroke-width: 2;
+  fill: none;
+  filter: drop-shadow(0 0 5px #00E5FF);
+}
+
+.bloch-sphere {
+  filter: drop-shadow(0 0 20px rgba(0, 229, 255, 0.5));
+}

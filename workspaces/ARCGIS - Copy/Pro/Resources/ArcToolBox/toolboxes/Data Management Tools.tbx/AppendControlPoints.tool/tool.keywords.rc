@@ -1,0 +1,8 @@
+{
+    "set": [
+        "block adjust",
+        "bundle adjust",
+        "bundle adjustment",
+        "triangulation"
+    ]
+}

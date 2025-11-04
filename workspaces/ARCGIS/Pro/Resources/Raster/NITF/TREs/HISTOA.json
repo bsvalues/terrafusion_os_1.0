@@ -1,0 +1,825 @@
+{
+	"TRE": "HISTOA",
+  "Source": [
+    "STDI-0002-1 v2021.1, Appendix L: HISTOA"
+  ],
+	"Name": "Softcopy History version A (HISTOA)",
+	"Description": "The purpose of the HISTOA TRE, is to provide a history of the softcopy processing functions that have been applied to NITF image pixels.",
+	"Size": 5,
+  "Fields": {
+    "ASYM_FLAG<NEVENTS>": {
+      "Name": "Asymmetric Correction",
+      "Description": "This field indicates if asymmetric correction has been applied to the image. This processing step only applies to certain types of imagery.",
+      "Size": 1,
+      "Format": "BCS-AN",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": {
+            "0": "Asymmetric correction has not been applied.",
+            "1": "Asymmetric correction has been applied.",
+            " ": "Asymmetric correction not required."
+          }
+        }
+      ]
+    },
+    "DEVLUT_FLAG<NEVENTS>": {
+      "Name": "Device LUT",
+      "Description": "This field shall indicate if device compensation LUT has been applied to the image.",
+      "Format": "BCS-AN",
+      "Size": 1,
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": {
+            "0": "A device LUT has not been applied to the image.",
+            "1": "A device LUT has been applied to the image."
+          }
+        }
+      ]
+    },
+    "DISP_FLAG<NEVENTS>": {
+      "Name": "Display-Ready Flag",
+      "Description": "This field indicates if the image is 'Display-Ready' or not.",      
+      "Size": 1,
+      "Format": "BCS-AN",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 9
+        },
+        {
+          "Type": "Value",
+          "Values": {
+            "0": "The image is not Display-Ready and must be converted to a displayable format, using the pre-defined mappings for Linlog or PEDF formats.",
+            "1": "The image is Display-Ready and needs only basic tonal processing and device compensation for correct display.",
+            "2": "The image is Display-Ready based upon DMID from ESD. Tonal processing and device compensation MUST NOT be subsequently applied. This value is to make provision for additional correction actions to a 'Display-Ready' image in support of AGI products.",
+            "3": "The image is Display-Ready based upon DMID from ESD. Tonal processing and device compensation MAY be subsequently applied. To make provisions for additional correction actions to a 'Display Ready' image in support of AGI products.",
+            "4": "RESERVED",
+            "5": "RESERVED",
+            "6": "RESERVED",
+            "7": "RESERVED",
+            "8": "RESERVED",
+            "9": "RESERVED",
+            " ": "The image is inherently displayable"
+          }
+        }
+      ]
+    },
+    "DRA_FLAG<NEVENTS>": {
+      "Name": "Dynamic Range Adjustment (DRA)",
+      "Description": "This field indicates if a Dynamic Range Adjustment (DRA) has been applied to the image.",
+      "Size": 1,
+      "Format": "BCS-AN",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": {
+            "0": "DRA has not been applied to the image.",
+            "1": "A spatially invariant DRA has been applied to the image.",
+            "2": "A spatially variant DRA has been applied to the image."
+          }
+        }
+      ]
+    },
+    "DRA_MULT<NEVENTS>": {
+      "Name": "DRA Multiplier",
+      "Description": "This field shall contain the multiplier value of the DRA.",
+      "Size": 7,
+      "Format": "BCS-AN",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0.0000,
+          "Max": 99.9999
+        }
+      ]
+    },
+    "DRA_SUB<NEVENTS>": {
+      "Name": "DRA Subtractor",
+      "Description": "This field shall contain the subtractor value of the DRA.",
+      "Size": 5,
+      "Format": "BCS-AN",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -9999,
+          "Max": 9999
+        }
+      ]
+    },
+    "IBPP<NEVENTS>": {
+      "Name": "Input Bit Depth (actual)",
+      "Description": "This field shall contain the number of significant bits for each pixel before the processing functions denoted in the processing event have been performed and before compression.",
+      "Size": 2,
+      "Format": "BCS-AN",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": "1",
+          "Max": "64"
+        }
+      ]
+    },
+    "INBWC<NEVENTS>": {
+      "Name": "Input Bandwidth Compression",
+      "Description": "This field shall indicate the type of bandwidth compression or expansion that has been applied to the image prior to any enhancements denoted in the processing event.",
+      "Size": 10,
+      "Format": "BCS-AN",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": {
+            "DP43": "DPCM (Differential Pulse Coded Modulation - 4.3 bpp",
+            "DC13": "DCT (Discrete Cosine Transform - 1.3 bpp",
+            "DC23": "DCT (Discrete Cosine Transform - 2.3 bpp",
+            "NJNL": "NITFIRD JPEG - Lossless",
+            "NJQ0": "NITFIRD JPEG - Quality Level 0",
+            "NJQ1": "NITFIRD JPEG - Quality Level 1",
+            "NJQ2": "NITFIRD JPEG - Quality Level 2",
+            "C11D": "NITF Bi-level 1D",
+            "C12S": "NITF Bi-level 2DS",
+            "C12H": "NITF Bi-level 2DH",
+            "M11D": "NITF Bi-level 1D",
+            "M12S": "NITF Bi-level with masked blocks - 2DS",
+            "M12H": "NITF Bi-level with masked blocks - 2DH",
+            "C207": "NITF ARIDPCM - 0.75 bpp",
+            "C214": "NITF ARIDPCM - 1.40 bpp",
+            "C223": "NITF ARIDPCM - 2.30 bpp",
+            "C245": "NITF ARIDPCM - 4.50 bpp",
+            "C3Q0": "NITF Lossy JPEG - Q0 Custom Tables",
+            "C3Q1": "NITF Lossy JPEG - Q1 Default Tables",
+            "C3Q2": "NITF Lossy JPEG - Q2 Default Tables",
+            "C3Q3": "NITF Lossy JPEG - Q3 Default Tables",
+            "C3Q4": "NITF Lossy JPEG - Q4 Default Tables",
+            "C3Q5": "NITF Lossy JPEG - Q5 Default Tables",
+            "M3Q0": "NITF Lossy JPEG - with masked blocks - Q0 Custom",
+            "M3Q1": "NITF Lossy JPEG - with masked blocks - Q1 Default",
+            "M3Q2": "NITF Lossy JPEG - with masked blocks - Q2 Default",
+            "M3Q3": "NITF Lossy JPEG - with masked blocks - Q3 Default",
+            "M3Q4": "NITF Lossy JPEG - with masked blocks - Q4 Default",
+            "M3Q5": "NITF Lossy JPEG - with masked blocks - Q5 Default",
+            "C4LO": "NITF Vector Quantization - Lossy",
+            "M4LO": "NITF Vector Quantization with masked blocks",
+            "C5NL": "NITF Lossless JPEG",
+            "M5NL": "NITF Lossless JPEG with masked blocks",
+            "NC00": "NITF uncompressed",
+            "NM00": "NITF with masked blocks uncompressed",
+            "I1Q1": "NITF Downsample JPEG - Q1",
+            "I1Q2": "NITF Downsample JPEG - Q2",
+            "I1Q3": "NITF Downsample JPEG - Q3",
+            "I1Q4": "NITF Downsample JPEG - Q4",
+            "I1Q5": "NITF Downsample JPEG - Q5",
+            "WVLO": "Wavelet Lossy",
+            "WVNL": "Wavelet Lossless",
+            "JP20": "JPEG 2000",
+            "J2NL": "JPEG 2000 Numerically Lossless",
+            "J2VL": "JPEG 2000 Visually Lossless",
+            "J2LO": "JPEG 2000 Lossy",
+            "NONE": "No Compression",
+            "UNKC": "Unknown Compression",
+            "OTLO": "Unknown lossy compression - requires mandatory IPCOM entro to explain technique or source",
+            "OTNL": "Unknown lossless compression - requires mandatory IPCOM entry to exploain technique or source"
+          }
+        }
+      ]
+    },
+    "IPCOM<NIPCOM<NEVENTS>>": {
+      "Name": "Image Processing Comment n",
+      "Description": "This field shall contain the nth line of comment text, based on the value of the NIPCOM field.",
+      "Size": 80,
+      "Format": "BCS-AN",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 9
+
+        }
+      ]
+    },
+    "IPCOM1<NEVENTS>": {
+      "Name": "Image Processing Comment 1",
+      "Description": "This field shall contain the first line of comment text.",
+      "Size": 80,
+      "Format": "BCS-AN",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "IPVTYPE<NEVENTS>": {
+      "Name": "Input Bit Depth (actual)",
+      "Description": "This field shall contain an indicator of the type of computer representation used for the value of each pixel before the processing functions denoted in the processing events have been performed and before compression.",
+      "Size": 3,
+      "Format": "BCS-AN",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": {
+            "INT": "Integeer",
+            "SI": "Two's complement signed integer",
+            "R": "Real",
+            "C": "Complex",
+            "B": "Bi-level",
+            "U": "User defined"
+          }
+        }
+      ]
+    },
+    "LUTID": {
+      "Name": "Data Mapping ID from the ESD",
+      "Description": "This field shall contain the DMID (Data Mapping ID).",
+      "Size": 2,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 64
+        }
+      ]
+    },
+    "MAG_FLAG<NEVENTS>": {
+      "Name": "Symmetrical Magnification",
+      "Description": "This field shall indicate if the image has been symmetrically (same amount in each direction) magnified during this processing step..",
+      "Size": 1,
+      "Format": "BCS-AN",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": {
+            "0": "Image was not magnified.",
+            "1": "Image has been magnified."
+          }
+        }
+      ]
+    },
+    "MAG_LEVEL<NEVENTS>": {
+      "Name": "Level of Relative Magnification",
+      "Description": "This field shall contain the level of symmetrical magnification that has been applied to the image relative to the input image at this processing step.",
+      "Size": 7,
+      "Format": "BCS-AN",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0.0000,
+          "Max": 99.9999
+        }
+      ]
+    },
+    "NEVENTS": {
+      "Name": "Number of Processing Events",
+      "Description": "This field shall contain the number of processing events associated with the image.",
+      "Size": 1,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 99
+        }
+      ]
+    },
+    "NIPCOM<NEVENTS>": {
+      "Name": "Number of Image Processing Comments",
+      "Description": "This field contains the valid number of image processing comment line for this processing event.",
+      "Size": 1,
+      "Format": "BCS-AN",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 9
+        }
+      ]
+    },
+    "OBPP<NEVENTS>": {
+      "Name": "Output Bit Depth (actual)",
+      "Description": "This field shall contain the number of significant bits for each pixel after the processing functions denoted in the processing event have been performed, but prior to any output compression.",
+      "Size": 2,
+      "Format": "BCS-AN",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 64
+        }
+      ]
+    },
+    "OPVTYPE<NEVENTS>": {
+      "Name": "Output Pixel Value Type",
+      "Description": "This field shall contain an indicator of the type of computer representation used for the value of each pixel after the processing functions denoted in the processing event have been performed, but prior to any output compression.",
+      "Size": 3,
+      "Format": "BCS-AN",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": {
+            "INT": "Integeer",
+            "SI": "Two's complement signed integer",
+            "R": "Real",
+            "C": "Complex",
+            "B": "Bi-level",
+            "U": "User defined"
+          }
+        }
+      ]
+    },
+    "OUTBWC<NEVENTS>": {
+      "Name": "Output Bandwidth Compression",
+      "Description": "This field shall indicate the type of bandwidth compression or expansion that has been applied to the image after any enhancements denoted in the processing event.",
+      "Size": 10,
+      "Format": "BCS-AN",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": {
+            "DP43": "DPCM (Differential Pulse Coded Modulation - 4.3 bpp",
+            "DC13": "DCT (Discrete Cosine Transform - 1.3 bpp",
+            "DC23": "DCT (Discrete Cosine Transform - 2.3 bpp",
+            "NJNL": "NITFIRD JPEG - Lossless",
+            "NJQ0": "NITFIRD JPEG - Quality Level 0",
+            "NJQ1": "NITFIRD JPEG - Quality Level 1",
+            "NJQ2": "NITFIRD JPEG - Quality Level 2",
+            "C11D": "NITF Bi-level 1D",
+            "C12S": "NITF Bi-level 2DS",
+            "C12H": "NITF Bi-level 2DH",
+            "M11D": "NITF Bi-level 1D",
+            "M12S": "NITF Bi-level with masked blocks - 2DS",
+            "M12H": "NITF Bi-level with masked blocks - 2DH",
+            "C207": "NITF ARIDPCM - 0.75 bpp",
+            "C214": "NITF ARIDPCM - 1.40 bpp",
+            "C223": "NITF ARIDPCM - 2.30 bpp",
+            "C245": "NITF ARIDPCM - 4.50 bpp",
+            "C3Q0": "NITF Lossy JPEG - Q0 Custom Tables",
+            "C3Q1": "NITF Lossy JPEG - Q1 Default Tables",
+            "C3Q2": "NITF Lossy JPEG - Q2 Default Tables",
+            "C3Q3": "NITF Lossy JPEG - Q3 Default Tables",
+            "C3Q4": "NITF Lossy JPEG - Q4 Default Tables",
+            "C3Q5": "NITF Lossy JPEG - Q5 Default Tables",
+            "M3Q0": "NITF Lossy JPEG - with masked blocks - Q0 Custom",
+            "M3Q1": "NITF Lossy JPEG - with masked blocks - Q1 Default",
+            "M3Q2": "NITF Lossy JPEG - with masked blocks - Q2 Default",
+            "M3Q3": "NITF Lossy JPEG - with masked blocks - Q3 Default",
+            "M3Q4": "NITF Lossy JPEG - with masked blocks - Q4 Default",
+            "M3Q5": "NITF Lossy JPEG - with masked blocks - Q5 Default",
+            "C4LO": "NITF Vector Quantization - Lossy",
+            "M4LO": "NITF Vector Quantization with masked blocks",
+            "C5NL": "NITF Lossless JPEG",
+            "M5NL": "NITF Lossless JPEG with masked blocks",
+            "NC00": "NITF uncompressed",
+            "NM00": "NITF with masked blocks uncompressed",
+            "I1Q1": "NITF Downsample JPEG - Q1",
+            "I1Q2": "NITF Downsample JPEG - Q2",
+            "I1Q3": "NITF Downsample JPEG - Q3",
+            "I1Q4": "NITF Downsample JPEG - Q4",
+            "I1Q5": "NITF Downsample JPEG - Q5",
+            "WVLO": "Wavelet Lossy",
+            "WVNL": "Wavelet Lossless",
+            "JP20": "JPEG 2000",
+            "J2NL": "JPEG 2000 Numerically Lossless",
+            "J2VL": "JPEG 2000 Visually Lossless",
+            "J2LO": "JPEG 2000 Lossy",
+            "NONE": "No Compression",
+            "UNKC": "Unknown Compression",
+            "OTLO": "Unknown lossy compression - requires mandatory IPCOM entro to explain technique or source",
+            "OTNL": "Unknown lossless compression - requires mandatory IPCOM entry to exploain technique or source"
+          }
+        }
+      ]
+    },
+    "PAS<NEVENTS>": {
+      "Name": "Softcopy Processing Application",
+      "Description": "This field describes the processing application software (PAS) used to perform the processing steps referenced in the event.",
+      "Size": 10,
+      "Format": "BCS-AN",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "PC": {
+      "Name": "Prior Compression",
+      "Description": "This field shall contain an alphanumeric string that indicates if bandwidth compression/expansion was applied to the image prior to NITF image creation.",
+      "Size": 12,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": {
+            "DP43": "DPCM (Differential Pulse Coded Modulation) - 4.3 bpp",
+            "DC13": "DCT (Discrete Cosine Transform) - 1.3 bpp",
+            "DC23": "DCT (Discrete Cosine Transform) - 2.3 bpp",
+            "NJNL": "NITFIRD JPEG - Lossless",
+            "NJQ0": "NITFIRD JPEG - Quality Level 0",
+            "NJQ1": "NITFIRD JPEG - Quality Level 1",
+            "NJQ2": "NITFIRD JPEG - Quality Level 2",
+            "C11D": "NITF Bi-level - 1D",
+            "C12S": "NITF Bi-level - 2DS",
+            "C12H": "NITF Bi-level - 2DH",
+            "M11D": "NITF Bi-level - 1D",
+            "M12S": "NITF Bi-level with masked blocks - 2DS",
+            "M12H": "NITF Bi-level with masked blocks - 2DH",
+            "C207": "NITF ARIDPCM - 0.75 bpp",
+            "C214": "NITF ARIDPCM - 1.40 bpp",
+            "C223": "NITF ARIDPCM - 2.30 bpp",
+            "C245": "NITF ARIDPCM - 4.50 bpp",
+            "C3Q0": "NITF Lossy JPEG – Q0 Custom Tables",
+            "C3Q1": "NITF Lossy JPEG – Q1 Custom Tables",
+            "C3Q2": "NITF Lossy JPEG – Q2 Custom Tables",
+            "C3Q3": "NITF Lossy JPEG – Q3 Custom Tables",
+            "C3Q4": "NITF Lossy JPEG – Q4 Custom Tables",
+            "C3Q5": "NITF Lossy JPEG – Q5 Custom Tables",
+            "M3Q0": "NITF Lossy JPEG with masked blocks – Q0 Custom",
+            "M3Q1": "NITF Lossy JPEG with masked blocks – Q1 Custom",
+            "M3Q2": "NITF Lossy JPEG with masked blocks – Q2 Custom",
+            "M3Q3": "NITF Lossy JPEG with masked blocks – Q3 Custom",
+            "M3Q4": "NITF Lossy JPEG with masked blocks – Q4 Custom",
+            "M3Q5": "NITF Lossy JPEG with masked blocks – Q5 Custom",
+            "C4LO": "NITF Vector Quantization - Lossy",
+            "M4LO": "NITF Vector Quantization with masked blocks",
+            "C5NL": "NITF Lossless JPEG",
+            "M5NL": "NITF Lossless JPEG with masked blocks",
+            "NC00": "NITF uncompressed",
+            "NM00": "NITF with masked blocks uncompressed",
+            "I1Q1": "NITF Downsample JPEG – Q1",
+            "I1Q2": "NITF Downsample JPEG – Q2",
+            "I1Q3": "NITF Downsample JPEG – Q3",
+            "I1Q4": "NITF Downsample JPEG – Q4",
+            "I1Q5": "NITF Downsample JPEG – Q5",
+            "WVLO": "Wavelet Lossy",
+            "WVNL": "Wavelet Lossless",
+            "JP20": "JPEG 2000",
+            "J2NL": "JPEG 2000 Numerically Lossless",
+            "J2VL": "JPEG 2000 Visually Lossless",
+            "J2LO": "JPEG 2000 Lossy",
+            "NONE": "No Compression",
+            "UNKC": "Unknown Compression"
+          }
+        }
+      ]
+    },
+    "PDATE<NEVENTS>": {
+      "Name": "Processing Date / Time",
+      "Description": "This field shall contain the date and time (UTC) on which this processing event occurred. The valid form of the field is CCYYMMDDhhmmss, where CC is the first two digits of the year (00 to 99), YY is the last two digits of the year (00 to 99), MM is the month (01 to 12), DD is the day of the month (01 to 31), hh is the hour (00 to 23), mm is the minute (00 to 59), and ss is the second (00 to 59). UTC (Zulu) is assumed to be the time zone designator to express the time of day. This field can be used in conjunction with the FDT field in the NITF file header to determine if the History Tag has been updated each time the image is processed and saved. If the PDATE field and the FDT field are identical, the History Tag has been updated. If these fields are not identical, then the History Tag:PDATE field has not been properly updated and the Eventnn field data may not be accurate or timely.",
+      "Size": 14,
+      "Format": "BCS-AN",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "PE": {
+      "Name": "Prior Enhancements",
+      "Description": "This field shall contain an alphanumeric string that indicates if any enhancements were applied to the image prior to NITF image creation.",
+      "Size": 4,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": {
+            "EH08": "Enhanced 8 bpp from IDEX",
+            "EH11": "Enhanced 11 bpp from IDEX",
+            "UE08": "8 bpp data with DRA but no enhancements from IDEX",
+            "UE11": "Unenhanced 22 bpp from IDEX",
+            "DGHC": "Digitized Hardcopy",
+            "UNKP": "Uknown Processing",
+            "NONE": "No prior processing",
+            "GEOR": "Georeferenced (also known as Georectified). Image processing performed to provide geometric corrections and mapping it to a geographic coordinate system or to a cartographic projection. The resulting image is a rectified grid wherein the external coordinate reference system is related to the real world by a datum.",
+            "ORTH": "Orthorectified. Image processing performed to provide geometric corrections and mapping to a geographic coordinate reference system or to a cartographic projection. The georeferenced/georectified grid is created using ground control points and elevation data where constant scale is maintained throughout the grid. The resulting image is a georeferenced/georectified grid where displacement from terrain relief is removed."
+          }
+        }
+      ]
+    },
+    "PROJ_FLAG<NEVENTS>": {
+      "Name": "Image Projection",
+      "Description": "This field shall indicate if the image has been projected from the collection geometry into another geometry more suitable for display.",
+      "Size": 1,
+      "Format": "BCS-AN",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": {
+            "0": "No geometric transformation has been applied.",
+            "1": "The image has been projected into another geometry."
+          }
+        }
+      ]
+    },
+    "PSITE<NEVENTS>": {
+      "Name": "Processing Site",
+      "Description": "This field contains the name of the site or segment that performed the processing event.",
+      "Size": 10,
+      "Format": "BCS-AN",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "REMAP_FLAG": {
+      "Name": "System Specific Remap",
+      "Description": "This field indicates whether or not a system specific remap has been applied to the image. A value of 0 means that no systems specific remap has been applied. A value of 1 means that system specific remap has been applied to the image.",
+      "Size": 1,
+      "Format": "BCS-AN",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 9
+        },
+        {
+          "Type": "Value",
+          "Values": {
+            "0": "A system specific remap has not been applied.",
+            "1": "A system specific remap has been applied.",
+            "2": "RESERVED",
+            "3": "RESERVED",
+            "4": "RESERVED",
+            "5": "RESERVED",
+            "6": "RESERVED",
+            "7": "RESERVED",
+            "8": "RESERVED",
+            "9": "RESERVED",
+            "": " "
+          }
+        }
+      ]
+    },
+    "ROT_ANGLE<NEVENTS>": {
+      "Name": "Angle of Rotation",
+      "Description": "This field shall contain the angle in degrees that the image has been rotated, where a positive angle denotes clockwise rotation.",
+      "Size": 8,
+      "Format": "BCS-AN",
+      "Type": "C",
+      "Units": [ "degrees" ],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0.0000,
+          "Max": 359.9999
+        }
+      ]
+    },
+    "ROT_FLAG<NEVENTS>": {
+      "Name": "Image Rotation",
+      "Description": "This field shall indicate if the image has been rotated.",
+      "Size": 1,
+      "Format": "BCS-AN",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": {
+            "0": "Unrotated",
+            "1": "Rotated"
+          }
+        }
+      ]
+    },
+    "SHARP_FLAG<NEVENTS>": {
+      "Name": "Sharpening Applied",
+      "Description": "This field shall indicate if the image has been passed through a sharpening operation.",
+      "Size": 1,
+      "Format": "BCS-AN",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": {
+            "0": "No sharpening has been applied.",
+            "1": "Sharpending has been applied."
+          }
+        }
+      ]
+    },
+    "SHARPFAM<NEVENTS>": {
+      "Name": "Sharpening Family Number",
+      "Description": "This field shall contain the number of the sharpening family, if a sharpening operation was applied to the image.",
+      "Size": 2,
+      "Format": "BCS-AN",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 99
+        },
+        {
+          "Type": "Value",
+          "Values": {
+            "-1": "The sharpening kernel is not a part of the existing group of families and members, see comment section for more information."
+          }
+        }
+      ]
+    },
+    "SHARPMEM<NEVENTS>": {
+      "Name": "Sharpening Member Number",
+      "Description": "This field shall contain the number of the sharpening member, if a sharpening operation was applied to the image.",
+      "Size": 2,
+      "Format": "BCS-AN",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 99
+        },
+        {
+          "Type": "Value",
+          "Values": {
+            "-1": "The sharpening kernel is not a part of the existing group of families and members, see comment section for more information."
+          }
+        }
+      ]
+    },
+    "SYSTYPE": {
+      "Name": "System Type",
+      "Description": "This field shall contain the name of the sensor from which the original image was collected. For national imagery, the valid field codes are contained in the NITF Implementation Requirements Document (S2035). For NCDRD platforms, this field value is derived from the CSDIDA TRE fields: Platform Code, Vehicle ID and Sensor ID. The codes in the SYSTYPE field shall be left justified and the remainder of the field filled with spaces to 20 characters. The NTB has requested that this tag be able to support other types of airborne and commercial imagery currently supported by NITF.",
+      "Size": 20,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": {
+            "ALIRT": "Airborne LADAR Imaging Research Testbed",
+            "ASARS-2": "ASARS System",
+            "BUCKEY": "The LiDAR sensor operating system on the BuckEye imaging system",
+            "GHR": "Global Hawk Radar",
+            "GORGON STARE": "Gorgon Stare persistent surveillance collection platform",
+            "HALOE": "High Altitude LiDAR Operations and Evaluation",
+            "JAUDIT": "Jungle Airborne Under Dense-vegetation Imaging Technology",
+            "MULTIPLE_EO": "Used for a product created from multiple EO sources",
+            "MULTIPLE_MS": "Used for a product created from multiple MS sources",
+            "MULTIPLE_SAR": "Used for a product created from multiple SAR sources",
+            "OPEN_SKIES": "Indicates the sensor which took the image was part of the Open Skies Treaty",
+            "OVnnAA": "For GeoEye PAN products `nn` can be 01-99",
+            "OVnnGA": "For GeoEye MSI products - 'nn' can be 01-99",
+            "QBnnAA": "Quickbird. Unique to DigitalGlobe.  'nn' can be 00-99",
+            "QBnnGA": "Quickbird. Unique to DigitalGlobe.  'nn' can be 00-99",
+            "SYERS-EO": "SYERS Electro-Optical System",
+            "SYERS-MSI": "SYERS Multispectral System",
+            "SYERS-IR": "SYERS Infrared System",
+            "WVnnAA": "WorldView.  Unique to DigitalGlobe.  'nn' can be 00-99",
+            "WVnnGA": "WorldView.  Unique to DigitalGlobe.  'nn' can be 00-99",
+            "DSR": "Dark Star Radar",
+            "TSAR": "TeSAR",
+            "TBD": "Other"
+          }
+        }
+      ]
+    },
+    "TTC_FAM<NEVENTS>": {
+      "Name": "TTC Family Number",
+      "Description": "This field shall contain the number of the TTC family, if a TTC was applied to the image.",
+      "Size": 2,
+      "Format": "BCS-AN",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 99
+        },
+        {
+          "Type": "Value",
+          "Values": {
+            "-1": "The TTC is not part of an existing group of TTC families and members, see comment section for more information."
+          }
+        }
+      ]
+    },
+    "TTC_FLAG<NEVENTS>": {
+      "Name": "Tonal Transfer Curve (TTC)",
+      "Description": "This field shall indicate if a TTC (Tonal Transfer Curve) has been applied to the image.",
+      "Size": 1,
+      "Format": "BCS-AN",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": {
+            "0": "A TTC has not been applied to the image.",
+            "1": "A TTC has been applied to the image."
+          }
+        }
+      ]
+    },
+    "TTCMEM<NEVENTS>": {
+      "Name": "TTC Member Number",
+      "Description": "This field shall contain the number of the TTC member, if a TTC was applied to the image.",
+      "Size": 2,
+      "Format": "BCS-AN",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 99
+        },
+        {
+          "Type": "Value",
+          "Values": {
+            "-1": "The TTC is not part of an existing group of TTC families and members, see comment section for more information."
+          }
+        }
+      ]
+    },
+    "ZOOMCOL<NEVENTS>": {
+      "Name": "Mag in Element (column) Direction",
+      "Description": "This field contains the level of magnification that was applied to the image in the element (column) direction, if asymmetric correction was applied. The level of magnification is relative to the input image at this processing step.",
+      "Size": 7,
+      "Format": "BCS-AN",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0.0000,
+          "Max": 99.9999
+        }
+      ]
+    },
+    "ZOOMROW<NEVENTS>": {
+      "Name": "Mag in Line (row) Direction",
+      "Description": "This field shall contain the level of magnification that was applied to the image in the line (row) direction, if asymmetric correction was applied. The level of magnification is relative to the input image at this processing step.",
+      "Size": 7,
+      "Format": "BCS-AN",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0.0000,
+          "Max": 99.9999
+        }
+      ]
+    }
+  }
+}

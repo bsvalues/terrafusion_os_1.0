@@ -1,0 +1,5 @@
+<DataType Name="DEGeoDatasetType">
+  <DisplayName>Geodataset</DisplayName>
+  <Description>A collection of data with a common theme in a geodatabase.</Description>
+</DataType>
+

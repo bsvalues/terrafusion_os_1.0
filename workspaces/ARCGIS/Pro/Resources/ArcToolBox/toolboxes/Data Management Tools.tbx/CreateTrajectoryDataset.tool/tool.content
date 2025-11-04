@@ -1,0 +1,60 @@
+{
+    "type": "FunctionTool",
+    "guid": "{e4566063-4ed2-4dc2-b28f-f45af42fae11}",
+    "displayname": "$rc:title",
+    "helpcontent": "3180017",
+    "description": "$rc:description",
+    "product": "200",
+    "params": {
+        "in_workspace": {
+            "display_order": "0",
+            "displayname": "$rc:in_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "domain": {
+                "type": "GPWorkspaceDomain",
+                "workspacetype": [
+                    "Local Database",
+                    "Remote Database"
+                ]
+            },
+            "description": "$rc:in_workspace.descr"
+        },
+        "in_dataset_name": {
+            "display_order": "1",
+            "displayname": "$rc:in_dataset_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "in_workspace"
+            ],
+            "description": "$rc:in_dataset_name.descr"
+        },
+        "coordinate_system": {
+            "display_order": "2",
+            "displayname": "$rc:coordinate_system.title",
+            "datatype": {
+                "type": "GPCoordinateSystem"
+            },
+            "defaultenvironmentname": "outputCoordinateSystem",
+            "value": "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]",
+            "description": "$rc:coordinate_system.descr"
+        },
+        "out_trajectory_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_trajectory_dataset.title",
+            "datatype": {
+                "type": "DEMosaicDataset"
+            },
+            "depends": [
+                "in_dataset_name"
+            ]
+        }
+    },
+    "environments": [
+        "configKeyword"
+    ]
+}

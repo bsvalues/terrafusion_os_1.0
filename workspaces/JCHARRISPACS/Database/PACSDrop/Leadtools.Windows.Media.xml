@@ -1,0 +1,1587 @@
+<?xml version="1.0"?>
+<doc processed="true">
+  <assembly>
+    <name>Leadtools.Windows.Media</name>
+  </assembly>
+  <members>
+    <member name="T:Leadtools.Windows.Media.ConvertToSourceOptions">
+      <summary>Options for converting a LEADTOOLS <see cref="T:Leadtools.RasterImage" /> object to Windows Presentation Foundation (WPF) or Silverlight <see cref="T:System.Windows.Media.ImageSource" />. <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics~Leadtools.Topics.LEADTOOLSDocumentation.html"><img src="dotnet.png" alt=".NET support" border="0" /></a><a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics~Leadtools.Topics.LEADTOOLSDocumentation.html"><img src="silverlight.png" alt="Silverlight support" border="0" /></a></summary>
+      <remarks>
+        <para>This enumeration is used as the options for converting LEADTOOLS <see cref="T:Leadtools.RasterImage" /> objects to 
+            to Windows Presentation Foundation (WPF) or Silverlight <see cref="T:System.Windows.Media.ImageSource" /> through the <see cref="M:Leadtools.Windows.Media.RasterImageConverter.ConvertToSource(Leadtools.RasterImage,Leadtools.Windows.Media.ConvertToSourceOptions)">RasterImageConverter.ConvertToSource</see> method.</para>
+        <para>For more information refer to <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics.Windows.Media~WM.Topics.RasterImageAndWpfSilverlight.html">RasterImage and WPF/Silverlight</a>.</para>
+      </remarks>
+      <example>For an example, refer to <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics.Windows.Media~WM.Topics.RasterImageAndWpfSilverlight.html">RasterImage and WPF/Silverlight Support</a>.</example>
+    </member>
+    <member name="F:Leadtools.Windows.Media.ConvertToSourceOptions.None">
+      <summary>
+            Default
+            </summary>
+    </member>
+    <member name="F:Leadtools.Windows.Media.ConvertToSourceOptions.KeepAlphaValues">
+      <summary>
+        <para>If the source <see cref="T:Leadtools.RasterImage" /> is 32 or 64-bits/pixel, then use the alpha values from this alpha if the result of the conversion is also
+            a 32 or 64-bits/pixel <see cref="T:System.Windows.Media.ImageSource" />.</para>
+        <para>If this flagged is not specified, the result <see cref="T:System.Windows.Media.ImageSource" /> will always have an alpha
+            value of all 1's (255 for 32-bit images or 65535 for 64-bit images) regardless of the alpha values in the
+            source <see cref="T:Leadtools.RasterImage" />. This can be useful when converting some 32-bit images that may have 0 for the alpha (such as BMP files) which
+            translates into an <see cref="T:System.Windows.Media.ImageSource" /> that is completely transparent.</para>
+        <para>If this flag is specified, then the source image alpha values will be used as is.</para>
+      </summary>
+    </member>
+    <member name="F:Leadtools.Windows.Media.ConvertToSourceOptions.KeepViewPerspective">
+      <summary>
+        <para>Keep the original <see cref="T:Leadtools.RasterImage" /> view perspective. The <see cref="T:Leadtools.RasterImage" /> objects supports having an image data orientation other than
+            the normal top-left through the <see cref="P:Leadtools.RasterImage.ViewPerspective">RasterImage.ViewPerspective</see> property.</para>
+        <para>If the source <see cref="T:Leadtools.RasterImage" /> has a view-perspective other than <see cref="T:Leadtools.RasterViewPerspective">RasterViewPerspective.TopLeft</see> and
+            this flag is specified, then the result <see cref="T:System.Windows.Media.ImageSource" /> might be flipped, reversed or rotated. For example, if the source view-perspective is <see cref="T:Leadtools.RasterViewPerspective">RasterViewPerspective.BottomLeft</see>
+            and this flag is specified in the conversion options, then the result <see cref="T:System.Windows.Media.ImageSource" /> will be flipped.</para>
+        <para>If this flag is not specified, then the conversion might flip, reverse or rotate the image data as needed to provide correct (top-left)
+            <see cref="T:System.Windows.Media.ImageSource" />.</para>
+      </summary>
+    </member>
+    <member name="F:Leadtools.Windows.Media.ConvertToSourceOptions.IgnoreLowHighBitsOnGrayImages">
+      <summary>
+        <para>Do not use the gray scale bit window values when converting 12 or 16-bit grayscale <see cref="T:Leadtools.RasterImage" /> objects. The <see cref="T:Leadtools.RasterImage" />
+            object contains the <see cref="P:Leadtools.RasterImage.LowBit">RasterImage.LowBit</see> and <see cref="P:Leadtools.RasterImage.HighBit">RasterImage.HighBit</see> values
+            that can be set to provide a Window into the image data. This is mostly used by medical applications during a window-leveling operations.</para>
+        <para>If this flag is specified, the <see cref="P:Leadtools.RasterImage.LowBit">RasterImage.LowBit</see> and <see cref="P:Leadtools.RasterImage.HighBit">RasterImage.HighBit</see> values
+            are ignored and all of the image data is used when converting the <see cref="T:Leadtools.RasterImage" /> to <see cref="T:System.Windows.Media.ImageSource" />.</para>
+        <para>If this flag is not specified, then only the image data between <see cref="P:Leadtools.RasterImage.LowBit">RasterImage.LowBit</see> and
+            <see cref="P:Leadtools.RasterImage.HighBit">RasterImage.HighBit</see> is used.</para>
+      </summary>
+    </member>
+    <member name="F:Leadtools.Windows.Media.ConvertToSourceOptions.UseSetSource">
+      <summary>
+        <para>
+          <strong>Note:</strong> This option is only used by the LEADTOOLS for Silverlight toolkit. The WPF version of this flag is ignored and have no
+            effect on the conversion operation.</para>
+        <para>Use this option to use Silverlight native loading capabilities when converting a <see cref="T:Leadtools.RasterImage" /> into a <see cref="T:System.Windows.Media.ImageSource" />. When
+            this option is specified, one of the following will happen:</para>
+        <para>
+          <list type="bullet">
+            <item>
+              <description>
+                <para>If source <see cref="T:Leadtools.RasterImage" /> has a bits/pixel value of 1, 2, 3, 4, 5, 6, 7 or 8, the data will be converted
+            to a PNG stream first then a call is made to <strong>BitmapSource.SetSource</strong> to construct the result
+            image.</para>
+              </description>
+            </item>
+            <item>
+              <description>
+                <para>If source bits/pixel value is 12 or 16, then the data will be converted to a JPEG stream first
+            and then a call is made to <strong>BitmapSource.SetSource</strong> to construct the result
+            image.</para>
+              </description>
+            </item>
+            <item>
+              <description>
+                <para>For any other bits/pixel value (24, 32, 48 or 64), direct conversion is used
+            and the result is the same as if the <strong>UseSetSource</strong> flag is not specified.</para>
+              </description>
+            </item>
+          </list>
+        </para>
+        <para>If this flag is not specified, then <strong>BitmapSource.SetSource</strong> is not used and the 
+            toolkit will directly convert the <see cref="T:Leadtools.RasterImage" /> to a compatible <see cref="T:System.Windows.Media.ImageSource" />.</para>
+        <para>Specifiying this flag in the LEADTOOLS for Silverlight toolkit may increase the performance of the
+            <see cref="M:Leadtools.Windows.Media.RasterImageConverter.ConvertToSource(Leadtools.RasterImage,Leadtools.Windows.Media.ConvertToSourceOptions)">RasterImageConverter.ConvertToSource</see> method especially when converting 1 bits/pixel <see cref="T:Leadtools.RasterImage" /> objects.</para>
+      </summary>
+    </member>
+    <member name="F:Leadtools.Windows.Media.ConvertToSourceOptions.AutoDetectAlpha">
+      <summary>
+        <para>
+            Indicates LEADTOOLS should automatically detect if the image data contains meaningful alpha 
+            channel values, and if so, fill the resulting <see cref="T:System.Windows.Media.ImageSource">ImageSource</see> object
+            with premultiplied alpha image data.
+            </para>
+        <para>
+          <strong>Note:</strong>This flag is supported only in LEADTOOLS Silverlight versions.
+            </para>
+      </summary>
+      <seealso cref="T:Leadtools.RasterMemoryFlags">RasterMemoryFlags.WriteableBitmap</seealso>
+      <seealso cref="M:Leadtools.Windows.Media.RasterImageConverter.ConvertToSource(Leadtools.RasterImage,Leadtools.Windows.Media.ConvertToSourceOptions)">RasterImageConverter.ConvertToSource</seealso>
+      <seealso cref="T:Leadtools.Windows.Media.ConvertFromSourceOptions">ConvertFromSourceOptions.AutoDetectAlpha</seealso>
+      <seealso cref="T:Leadtools.Windows.Media.ConvertFromSourceOptions">ConvertFromSourceOptions.WriteableBitmap</seealso>
+      <seealso cref="T:Leadtools.ImageProcessing.DetectAlphaCommand">DetectAlphaCommand</seealso>
+      <seealso cref="P:Leadtools.Codecs.CodecsLoadOptions.UseWriteableBitmap">CodecsLoadOptions.UseWriteableBitmap</seealso>
+      <seealso cref="P:Leadtools.Codecs.CodecsLoadOptions.AutoDetectAlpha">CodecsLoadOptions.AutoDetectAlpha</seealso>
+      <seealso cref="P:Leadtools.RasterImage.PremultiplyAlpha">RasterImage.PremultiplyAlpha</seealso>
+    </member>
+    <member name="T:Leadtools.Windows.Media.ImageIncompatibleReason">
+      <summary>Indicates the reason that the LEADTOOLS <see cref="T:Leadtools.RasterImage" /> object is not compatible with WPF/Silverlight. <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics~Leadtools.Topics.LEADTOOLSDocumentation.html"><img src="dotnet.png" alt=".NET support" border="0" /></a><a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics~Leadtools.Topics.LEADTOOLSDocumentation.html"><img src="silverlight.png" alt="Silverlight support" border="0" /></a></summary>
+      <remarks>
+        <para>For more information refer to <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics.Windows.Media~WM.Topics.RasterImageAndWpfSilverlight.html">RasterImage and WPF/Silverlight</a>.</para>
+      </remarks>
+      <example>For an example, refer to <see cref="M:Leadtools.Windows.Media.RasterImageConverter.TestCompatible(Leadtools.RasterImage,Leadtools.Windows.Media.ConvertToSourceOptions)">RasterImageConverter.TestCompatible</see>.</example>
+    </member>
+    <member name="F:Leadtools.Windows.Media.ImageIncompatibleReason.Compatible">
+      <summary>
+            Image is compatible
+            </summary>
+    </member>
+    <member name="F:Leadtools.Windows.Media.ImageIncompatibleReason.BitsPerPixel">
+      <summary>
+            Unsupported Bits/Pixel
+            </summary>
+    </member>
+    <member name="F:Leadtools.Windows.Media.ImageIncompatibleReason.Order">
+      <summary>
+            Unsupported color byte order
+            </summary>
+    </member>
+    <member name="F:Leadtools.Windows.Media.ImageIncompatibleReason.Palette">
+      <summary>
+            Unsupported palette
+            </summary>
+    </member>
+    <member name="F:Leadtools.Windows.Media.ImageIncompatibleReason.Data">
+      <summary>
+            Unsupported raw data
+            </summary>
+    </member>
+    <member name="F:Leadtools.Windows.Media.ImageIncompatibleReason.ViewPerspective">
+      <summary>
+            Unsupported view perspective
+            </summary>
+    </member>
+    <member name="F:Leadtools.Windows.Media.ImageIncompatibleReason.Other">
+      <summary>
+            Unspecified reason
+            </summary>
+    </member>
+    <member name="T:Leadtools.Windows.Media.RasterColorConverter">
+      <summary>Converts between LEADTOOLS <see cref="T:Leadtools.RasterColor" /> and Windows Presentation Foundation (WPF) or Silverlight <see cref="T:System.Windows.Media.Color" /> objects. <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics~Leadtools.Topics.LEADTOOLSDocumentation.html"><img src="dotnet.png" alt=".NET support" border="0" /></a><a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics~Leadtools.Topics.LEADTOOLSDocumentation.html"><img src="silverlight.png" alt="Silverlight support" border="0" /></a></summary>
+      <remarks>
+        <para>This class lets you easily convert between a LEADTOOLS <see cref="T:Leadtools.RasterColor" /> object and WPF/Silverlight <see cref="T:System.Windows.Media.Color" /> object.</para>
+        <para>The LEADTOOLS <see cref="T:Leadtools.RasterColor" /> class provides a platform independent representation of an ARGB color that can be used in any platform
+            supported by LEADTOOLS such as GDI, GDI+, WPF and Silverlight. Use this class To convert a LEADTOOLS <see cref="T:Leadtools.RasterColor" /> object to/from a
+            WPF/Silverlight <see cref="T:System.Windows.Media.Color" /> object.</para>
+      </remarks>
+      <example>
+        <code lang="VB">      Public Sub RasterColorConverterExample()
+         ' Create a WPF color
+         Dim wpfColor As System.Windows.Media.Color = System.Windows.Media.Colors.Bisque
+         ' Convert it to a LEADTOOLS RasterColor
+         Dim leadColor As RasterColor = RasterColorConverter.FromColor(wpfColor)
+         ' Show both colors
+         Console.WriteLine("wpfColor = {0} - leadColor = {1}", wpfColor, leadColor)
+
+         ' Make sure both colors are the same
+         Debug.Assert( _
+            wpfColor.A = leadColor.A AndAlso _
+            wpfColor.R = leadColor.R AndAlso _
+            wpfColor.G = leadColor.G AndAlso _
+            wpfColor.B = leadColor.B)
+
+         ' Create the LEAD color
+         leadColor = New RasterColor(128, 24, 35, 67)
+         ' Convert it to a WPF color
+         wpfColor = RasterColorConverter.ToColor(leadColor)
+         ' Show both colors
+         Console.WriteLine("wpfColor = {0} - leadColor = {1}", wpfColor, leadColor)
+
+         ' Make sure both colors are the same
+         Debug.Assert( _
+            wpfColor.A = leadColor.A AndAlso _
+            wpfColor.R = leadColor.R AndAlso _
+            wpfColor.G = leadColor.G AndAlso _
+            wpfColor.B = leadColor.B)
+      End Sub</code>
+        <code lang="CS">      public void RasterColorConverterExample()
+      {
+         // Create a WPF color
+         System.Windows.Media.Color wpfColor = System.Windows.Media.Colors.Bisque;
+         // Convert it to a LEADTOOLS RasterColor
+         Leadtools.RasterColor leadColor = RasterColorConverter.FromColor(wpfColor);
+         // Show both colors
+         Console.WriteLine("wpfColor = {0} - leadColor = {1}", wpfColor, leadColor);
+
+         // Make sure both colors are the same
+         Debug.Assert(
+            wpfColor.A == leadColor.A &amp;&amp;
+            wpfColor.R == leadColor.R &amp;&amp;
+            wpfColor.G == leadColor.G &amp;&amp;
+            wpfColor.B == leadColor.B);
+
+         // Create the LEAD color
+         leadColor = new RasterColor(128, 24, 35, 67);
+         // Convert it to a WPF color
+         wpfColor = RasterColorConverter.ToColor(leadColor);
+         // Show both colors
+         Console.WriteLine("wpfColor = {0} - leadColor = {1}", wpfColor, leadColor);
+
+         // Make sure both colors are the same
+         Debug.Assert(
+            wpfColor.A == leadColor.A &amp;&amp;
+            wpfColor.R == leadColor.R &amp;&amp;
+            wpfColor.G == leadColor.G &amp;&amp;
+            wpfColor.B == leadColor.B);
+      }</code>
+        <code lang="SilverlightCSharp">      public void RasterColorConverterExample()
+      {
+         // Create a WPF color
+         System.Windows.Media.Color wpfColor = System.Windows.Media.Colors.DarkGray;
+         // Convert it to a LEADTOOLS RasterColor
+         Leadtools.RasterColor leadColor = RasterColorConverter.FromColor(wpfColor);
+         // Show both colors
+         Console.WriteLine("wpfColor = {0} - leadColor = {1}", wpfColor, leadColor);
+
+         // Make sure both colors are the same
+         Debug.Assert(
+            wpfColor.A == leadColor.A &amp;&amp;
+            wpfColor.R == leadColor.R &amp;&amp;
+            wpfColor.G == leadColor.G &amp;&amp;
+            wpfColor.B == leadColor.B);
+
+         // Create the LEAD color
+         leadColor = new RasterColor(128, 24, 35, 67);
+         // Convert it to a WPF color
+         wpfColor = RasterColorConverter.ToColor(leadColor);
+         // Show both colors
+         Console.WriteLine("wpfColor = {0} - leadColor = {1}", wpfColor, leadColor);
+
+         // Make sure both colors are the same
+         Debug.Assert(
+            wpfColor.A == leadColor.A &amp;&amp;
+            wpfColor.R == leadColor.R &amp;&amp;
+            wpfColor.G == leadColor.G &amp;&amp;
+            wpfColor.B == leadColor.B);
+      }</code>
+        <code lang="SilverlightVB">      &lt;TestMethod&gt; _
+      Public Sub RasterColorConverterExample()
+         ' Create a WPF color
+         Dim wpfColor As System.Windows.Media.Color = System.Windows.Media.Colors.DarkGray
+         ' Convert it to a LEADTOOLS RasterColor
+         Dim leadColor As RasterColor = RasterColorConverter.FromColor(wpfColor)
+         ' Show both colors
+         Console.WriteLine("wpfColor = {0} - leadColor = {1}", wpfColor, leadColor)
+         ' Make sure both colors are the same
+         Debug.Assert(wpfColor.A = leadColor.A AndAlso wpfColor.R = leadColor.R AndAlso wpfColor.G = leadColor.G AndAlso wpfColor.B = leadColor.B)
+
+         ' Create the LEAD color
+         leadColor = New RasterColor(128, 24, 35, 67)
+         ' Convert it to a WPF color
+         wpfColor = RasterColorConverter.ToColor(leadColor)
+         ' Show both colors
+         Console.WriteLine("wpfColor = {0} - leadColor = {1}", wpfColor, leadColor)
+
+         ' Make sure both colors are the same
+         Debug.Assert(wpfColor.A = leadColor.A AndAlso wpfColor.R = leadColor.R AndAlso wpfColor.G = leadColor.G AndAlso wpfColor.B = leadColor.B)
+      End Sub</code>
+      </example>
+    </member>
+    <member name="M:Leadtools.Windows.Media.RasterColorConverter.FromColor(System.Windows.Media.Color)">
+      <summary>Converts a Windows Presentation Foundation (WPF) or Silverlight <see cref="T:System.Windows.Media.Color" /> object to a LEADTOOLS <see cref="T:Leadtools.RasterColor" /> object. <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics~Leadtools.Topics.LEADTOOLSDocumentation.html"><img src="dotnet.png" alt=".NET support" border="0" /></a><a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics~Leadtools.Topics.LEADTOOLSDocumentation.html"><img src="silverlight.png" alt="Silverlight support" border="0" /></a></summary>
+      <param name="color">The source WPF/Silverlight color.</param>
+      <returns>The corresponding LEADTOOLS <see cref="T:Leadtools.RasterColor" /> object.</returns>
+      <remarks>
+        <para>The LEADTOOLS <see cref="T:Leadtools.RasterColor" /> class provides a platform independent representation of an ARGB color that can be used in any platform
+            supported by LEADTOOLS such as GDI, GDI+, WPF and Silverlight. Use this method to convert a WPF/Silverlight <see cref="T:System.Windows.Media.Color" /> object to
+            a LEADTOOLS <see cref="T:Leadtools.RasterColor" /> object.</para>
+      </remarks>
+      <example>For an example, refer to <see cref="T:Leadtools.Windows.Media.RasterColorConverter" />.</example>
+    </member>
+    <member name="M:Leadtools.Windows.Media.RasterColorConverter.ToColor(Leadtools.RasterColor)">
+      <summary>Converts a LEADTOOLS <see cref="T:Leadtools.RasterColor" /> object to a a Windows Presentation Foundation (WPF) or Silverlight <see cref="T:System.Windows.Media.Color" /> object. <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics~Leadtools.Topics.LEADTOOLSDocumentation.html"><img src="dotnet.png" alt=".NET support" border="0" /></a><a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics~Leadtools.Topics.LEADTOOLSDocumentation.html"><img src="silverlight.png" alt="Silverlight support" border="0" /></a></summary>
+      <param name="color">The source LEADTOOLS <see cref="T:Leadtools.RasterColor" /> color.</param>
+      <returns>The WPF/Silverlight <see cref="T:System.Windows.Media.Color" /> object.</returns>
+      <remarks>
+        <para>The LEADTOOLS <see cref="T:Leadtools.RasterColor" /> class provides a platform independent representation of an ARGB color that can be used in any platform
+            supported by LEADTOOLS such as GDI, GDI+, WPF and Silverlight. Use this method to convert a LEADTOOLS <see cref="T:Leadtools.RasterColor" /> object to a
+            WPF/Silverlight <see cref="T:System.Windows.Media.Color" /> object.</para>
+      </remarks>
+      <example>For an example, refer to <see cref="T:Leadtools.Windows.Media.RasterColorConverter" />.</example>
+    </member>
+    <member name="T:Leadtools.Windows.Media.ConvertFromSourceOptions">
+      <summary>Options for converting a Windows Presentation Foundation (WPF) or Silverlight <see cref="T:System.Windows.Media.ImageSource" /> to a LEADTOOLS <see cref="T:Leadtools.RasterImage" /> object. <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics~Leadtools.Topics.LEADTOOLSDocumentation.html"><img src="dotnet.png" alt=".NET support" border="0" /></a><a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics~Leadtools.Topics.LEADTOOLSDocumentation.html"><img src="silverlight.png" alt="Silverlight support" border="0" /></a></summary>
+      <remarks>
+        <para>This enumeration is used as the options for converting Windows Presentation Foundation (WPF) or Silverlight <see cref="T:System.Windows.Media.ImageSource" /> objects to
+            LEADTOOLS <see cref="T:Leadtools.RasterImage" /> through the <see cref="M:Leadtools.Windows.Media.RasterImageConverter.ConvertFromSource(System.Windows.Media.ImageSource,Leadtools.Windows.Media.ConvertFromSourceOptions)">RasterImageConverter.ConvertFromSource</see> method.</para>
+        <para>For more information refer to <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics.Windows.Media~WM.Topics.RasterImageAndWpfSilverlight.html">RasterImage and WPF/Silverlight</a>.</para>
+      </remarks>
+      <example>For an example, refer to <see cref="T:Leadtools.Windows.Media.RasterImageConverter" />.</example>
+    </member>
+    <member name="F:Leadtools.Windows.Media.ConvertFromSourceOptions.None">
+      <summary>
+            Default
+            </summary>
+    </member>
+    <member name="F:Leadtools.Windows.Media.ConvertFromSourceOptions.UseWritableBitmap">
+      <summary>
+        <para>
+            Use <see cref="T:Leadtools.RasterMemoryFlags">WriteableBitmap</see> for image data storage.
+            </para>
+        <para>
+          <strong>Note:</strong> This flag is supported only in LEADTOOLS Silverlight versions.
+            </para>
+      </summary>
+      <seealso cref="T:Leadtools.RasterMemoryFlags">RasterMemoryFlags.WriteableBitmap</seealso>
+      <seealso cref="M:Leadtools.Windows.Media.RasterImageConverter.ConvertToSource(Leadtools.RasterImage,Leadtools.Windows.Media.ConvertToSourceOptions)">RasterImageConverter.ConvertToSource</seealso>
+      <seealso cref="T:Leadtools.Windows.Media.ConvertToSourceOptions">ConvertToSourceOptions.AutoDetectAlpha</seealso>
+      <seealso cref="T:Leadtools.ImageProcessing.DetectAlphaCommand">DetectAlphaCommand</seealso>
+      <seealso cref="P:Leadtools.Codecs.CodecsLoadOptions.UseWriteableBitmap">CodecsLoadOptions.UseWriteableBitmap</seealso>
+      <seealso cref="P:Leadtools.Codecs.CodecsLoadOptions.AutoDetectAlpha">CodecsLoadOptions.AutoDetectAlpha</seealso>
+      <seealso cref="P:Leadtools.RasterImage.PremultiplyAlpha">RasterImage.PremultiplyAlpha</seealso>
+    </member>
+    <member name="F:Leadtools.Windows.Media.ConvertFromSourceOptions.AutoDetectAlpha">
+      <summary>
+        <para>
+            Indicates LEADTOOLS should automatically detect if the image data contains meaningful alpha 
+            channel values, and if so, set the 
+            <see cref="P:Leadtools.RasterImage.PremultiplyAlpha">RasterImage.PremultiplyAlpha</see> property accordingly.
+            </para>
+        <para>
+          <strong>Note:</strong> This flag is supported only in LEADTOOLS Silverlight versions.
+            </para>
+      </summary>
+      <seealso cref="T:Leadtools.RasterMemoryFlags">RasterMemoryFlags.WriteableBitmap</seealso>
+      <seealso cref="M:Leadtools.Windows.Media.RasterImageConverter.ConvertToSource(Leadtools.RasterImage,Leadtools.Windows.Media.ConvertToSourceOptions)">RasterImageConverter.ConvertToSource</seealso>
+      <seealso cref="T:Leadtools.Windows.Media.ConvertToSourceOptions">ConvertToSourceOptions.AutoDetectAlpha</seealso>
+      <seealso cref="T:Leadtools.Windows.Media.ConvertFromSourceOptions">ConvertFromSourceOptions.UseWritableBitmap</seealso>
+      <seealso cref="T:Leadtools.ImageProcessing.DetectAlphaCommand">DetectAlphaCommand</seealso>
+      <seealso cref="P:Leadtools.Codecs.CodecsLoadOptions.UseWriteableBitmap">CodecsLoadOptions.UseWriteableBitmap</seealso>
+      <seealso cref="P:Leadtools.Codecs.CodecsLoadOptions.AutoDetectAlpha">CodecsLoadOptions.AutoDetectAlpha</seealso>
+      <seealso cref="P:Leadtools.RasterImage.PremultiplyAlpha">RasterImage.PremultiplyAlpha</seealso>
+    </member>
+    <member name="F:Leadtools.Windows.Media.ConvertFromSourceOptions.FastConvertTo1Bit">
+      <summary>
+        <para>
+            Fast conversion to 1-bit black on white. Use this flag to convert any <see cref="T:System.Windows.Media.ImageSource" /> to a 1-bit per pixel <see cref="T:Leadtools.RasterImage" /> object with
+            black on white palette. Useful for quickly converting <see cref="T:System.Windows.Media.ImageSource" /> to <see cref="T:Leadtools.RasterImage" />; suitable for barcode or OCR recognition.
+            </para>
+        <para>
+          <strong>Note:</strong> This flag is supported only in LEADTOOLS Silverlight versions.
+            </para>
+      </summary>
+    </member>
+    <member name="T:Leadtools.Windows.Media.RasterRegionConverter">
+      <summary>Converts between a LEADTOOLS <see cref="T:Leadtools.RasterRegion" /> and Windows Presentation Foundation (WPF) or Silverlight <see cref="T:System.Windows.Media.Geometry" /> objects. <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics~Leadtools.Topics.LEADTOOLSDocumentation.html"><img src="dotnet.png" alt=".NET support" border="0" /></a><a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics~Leadtools.Topics.LEADTOOLSDocumentation.html"><img src="silverlight.png" alt="Silverlight support" border="0" /></a></summary>
+      <remarks>
+        <para>This class lets you easily convert between a LEADTOOLS <see cref="T:Leadtools.RasterRegion" /> object and a WPF/Silverlight <see cref="T:System.Windows.Media.Geometry" /> object.</para>
+        <para>The LEADTOOLS <see cref="T:Leadtools.RasterRegion" /> class provides a platform independent representation of an area of interest in a <see cref="T:Leadtools.RasterImage" /> that can be
+            used in any platform supported by LEADTOOLS such as GDI, GDI+, WPF and Silverlight. Use this class To convert a LEADTOOLS
+            <see cref="T:Leadtools.RasterRegion" /> object to/from a WPF/Silverlight <see cref="T:System.Windows.Media.Geometry" /> object.</para>
+        <para>For more information refer to <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics.Windows.Media~WM.Topics.RasterImageAndWpfSilverlight.html">RasterImage and WPF/Silverlight</a>.</para>
+      </remarks>
+      <example>
+        <code lang="VB">      Public Sub RasterRegionConverterExample()
+         ' Load an image 
+         Dim srcFileName As String = Path.Combine(LEAD_VARS.ImagesDir, "Image1.cmp")
+         Dim dstFileName1 As String = Path.Combine(LEAD_VARS.ImagesDir, "Image1_Ellipse.jpg")
+         Dim dstFileName2 As String = Path.Combine(LEAD_VARS.ImagesDir, "Image1_EllipseTranslated.jpg")
+
+         Dim codecs As New RasterCodecs()
+
+         Dim image As RasterImage = codecs.Load(srcFileName)
+
+         ' We will add an ellipse region to the image
+
+         ' Using WPF, create an elliptical geometry
+         ' Create the ellipse geometry to add to the Path
+         Dim ellipseGeometry As New EllipseGeometry()
+         ellipseGeometry.Center = New Point(250, 250)
+         ellipseGeometry.RadiusX = 200
+         ellipseGeometry.RadiusY = 150
+
+         Dim geometry As Geometry = ellipseGeometry
+
+         ' Create a RasterRegion from this region
+         Using region As RasterRegion = RasterRegionConverter.ConvertFromGeometry(geometry)
+            ' Add this region to the image
+            image.SetRegion(Nothing, region, RasterRegionCombineMode.Set)
+         End Using
+
+         ' Fill the image with a color
+         Dim cmd As New FillCommand(RasterColor.FromKnownColor(RasterKnownColor.Red))
+         cmd.Run(image)
+
+         ' Save it
+         codecs.Save(image, dstFileName1, RasterImageFormat.Jpeg, 24)
+
+         ' Now get the WPF geometry from the image
+         Using region As RasterRegion = image.GetRegion(Nothing)
+            geometry = RasterRegionConverter.ConvertToGeometry(region, Nothing)
+         End Using
+
+         ' Move the geometry 100 pixels to the right and bottom
+         geometry.Transform = New TranslateTransform(100, 100)
+
+         ' Re-set it into the image, fill again and save
+         ' Create a RasterRegion from this region
+         Using region As RasterRegion = RasterRegionConverter.ConvertFromGeometry(geometry)
+            ' Add this region to the image
+            image.SetRegion(Nothing, region, RasterRegionCombineMode.Set)
+         End Using
+
+         ' Fill the image with a color
+         cmd = New FillCommand(RasterColor.FromKnownColor(RasterKnownColor.Yellow))
+         cmd.Run(image)
+
+         ' Save it
+         codecs.Save(image, dstFileName2, RasterImageFormat.Jpeg, 24)
+
+         image.Dispose()
+
+         codecs.Dispose()
+      End Sub
+
+   Public NotInheritable Class LEAD_VARS
+      Public Const ImagesDir As String = "C:\Users\Public\Documents\LEADTOOLS Images"
+   End Class</code>
+        <code lang="CS">      public void RasterRegionConverterExample()
+      {
+         // Load an image 
+         string srcFileName = Path.Combine(LEAD_VARS.ImagesDir, "Image1.cmp");
+         string dstFileName1 = Path.Combine(LEAD_VARS.ImagesDir, "Image1_Ellipse.jpg");
+         string dstFileName2 = Path.Combine(LEAD_VARS.ImagesDir,"Image1_EllipseTranslated.jpg");
+
+         RasterCodecs codecs = new RasterCodecs();
+
+         RasterImage image = codecs.Load(srcFileName);
+
+         // We will add an ellipse region to the image
+
+         // Using WPF, create an elliptical geometry
+         // Create the ellipse geometry to add to the Path
+         EllipseGeometry ellipseGeometry = new EllipseGeometry();
+         ellipseGeometry.Center = new Point(250, 250);
+         ellipseGeometry.RadiusX = 200;
+         ellipseGeometry.RadiusY = 150;
+
+         Geometry geometry = ellipseGeometry;
+
+         // Create a RasterRegion from this region
+         using(RasterRegion region = RasterRegionConverter.ConvertFromGeometry(geometry))
+         {
+            // Add this region to the image
+            image.SetRegion(null, region, RasterRegionCombineMode.Set);
+         }
+
+         // Fill the image with a color
+         FillCommand cmd = new FillCommand(RasterColor.FromKnownColor(RasterKnownColor.Red));
+         cmd.Run(image);
+
+         // Save it
+         codecs.Save(image, dstFileName1, RasterImageFormat.Jpeg, 24);
+
+         // Now get the WPF geometry from the image
+         using(RasterRegion region = image.GetRegion(null))
+         {
+            geometry = RasterRegionConverter.ConvertToGeometry(region, null);
+         }
+
+         // Move the geometry 100 pixels to the right and bottom
+         geometry.Transform = new TranslateTransform(100, 100);
+
+         // Re-set it into the image, fill again and save
+         // Create a RasterRegion from this region
+         using(RasterRegion region = RasterRegionConverter.ConvertFromGeometry(geometry))
+         {
+            // Add this region to the image
+            image.SetRegion(null, region, RasterRegionCombineMode.Set);
+         }
+
+         // Fill the image with a color
+         cmd = new FillCommand(RasterColor.FromKnownColor(RasterKnownColor.Yellow));
+         cmd.Run(image);
+
+         // Save it
+         codecs.Save(image, dstFileName2, RasterImageFormat.Jpeg, 24);
+
+         image.Dispose();
+
+         codecs.Dispose();
+      }
+
+   static class LEAD_VARS
+   {
+      public const string ImagesDir = @"C:\Users\Public\Documents\LEADTOOLS Images";
+   }</code>
+        <code lang="SilverlightCSharp">      public void RasterRegionConverterExample()
+      {
+         // Load an image 
+         string srcFileName = LeadtoolsExamples.Common.ImagesPath.Path + "Image1.cmp";
+
+         RasterCodecs codecs = new RasterCodecs();
+
+         RasterImage image = codecs.Load(srcFileName);
+
+         // We will add a region to the image
+         RasterRegion region = new RasterRegion(new LeadRect(250, 250, 200, 150));
+         image.SetRegion(null, region, RasterRegionCombineMode.Set);
+
+         // Now get the WPF geometry from the image
+         Geometry geometry;
+         using(RasterRegion rgn = image.GetRegion(null))
+         {
+            geometry = RasterRegionConverter.ConvertToGeometry(region, null);
+
+            // Create a Path to be drawn to the screen.
+            System.Windows.Shapes.Path myPath = new System.Windows.Shapes.Path();
+            SolidColorBrush mySolidColorBrush = new SolidColorBrush();
+            mySolidColorBrush.Color = Color.FromArgb(255, 204, 204, 255);
+            myPath.Fill = mySolidColorBrush;
+            myPath.Data = geometry;
+
+            // Add path shape to the UI.
+            StackPanel mainPanel = new StackPanel();
+            mainPanel.Children.Add(myPath);
+         }
+
+         image.Dispose();
+      }</code>
+        <code lang="SilverlightVB">      &lt;TestMethod&gt; _
+      Public Sub RasterRegionConverterExample()
+         ' Load an image 
+         Dim srcFileName As String = LeadtoolsExamples.Common.ImagesPath.Path &amp; "Image1.cmp"
+         Dim codecs As RasterCodecs = New RasterCodecs()
+
+         Dim image As RasterImage = codecs.Load(srcFileName)
+
+         ' We will add a region to the image
+         Dim region As RasterRegion = New RasterRegion(New LeadRect(250, 250, 200, 150))
+         image.SetRegion(Nothing, region, RasterRegionCombineMode.Set)
+
+         ' Now get the WPF geometry from the image
+         Dim geometry As Geometry
+         Using rgn As RasterRegion = image.GetRegion(Nothing)
+            geometry = RasterRegionConverter.ConvertToGeometry(region, Nothing)
+
+            ' Create a Path to be drawn to the screen.
+            Dim myPath As System.Windows.Shapes.Path = New System.Windows.Shapes.Path()
+            Dim mySolidColorBrush As SolidColorBrush = New SolidColorBrush()
+            mySolidColorBrush.Color = Color.FromArgb(255, 204, 204, 255)
+            myPath.Fill = mySolidColorBrush
+            myPath.Data = geometry
+
+            ' Add path shape to the UI.
+            Dim mainPanel As StackPanel = New StackPanel()
+            mainPanel.Children.Add(myPath)
+         End Using
+
+         image.Dispose()
+      End Sub</code>
+      </example>
+    </member>
+    <member name="M:Leadtools.Windows.Media.RasterRegionConverter.ConvertToGeometry(Leadtools.RasterRegion,Leadtools.RasterRegionXForm)">
+      <summary>Converts a LEADTOOLS <see cref="T:Leadtools.RasterRegion" /> to a WPF/Silverlight <see cref="T:System.Windows.Media.Geometry" /> object. <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics~Leadtools.Topics.LEADTOOLSDocumentation.html"><img src="dotnet.png" alt=".NET support" border="0" /></a><a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics~Leadtools.Topics.LEADTOOLSDocumentation.html"><img src="silverlight.png" alt="Silverlight support" border="0" /></a></summary>
+      <param name="region">The source LEADTOOLS region. This parameter cannot be null (Nothing in Visual Basic).</param>
+      <param name="xform">
+        <see cref="T:Leadtools.RasterRegionXForm" /> object that LEADTOOLS uses to translate between display coordinates and image coordinates.</param>
+      <returns>The <see cref="T:System.Windows.Media.Geometry">Geometry</see> object this method creates.</returns>
+      <remarks>
+        <para>The LEADTOOLS <see cref="T:Leadtools.RasterRegion" /> class provides a platform independent representation of an area of interest in a <see cref="T:Leadtools.RasterImage" /> that can be
+            used in any platform supported by LEADTOOLS such as GDI, GDI+, WPF and Silverlight. Use this class To convert a LEADTOOLS
+            <see cref="T:Leadtools.RasterRegion" /> object to/from a WPF/Silverlight <see cref="T:System.Windows.Media.Geometry" /> object.</para>
+        <para>For more information refer to <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics.Windows.Media~WM.Topics.RasterImageAndWpfSilverlight.html">RasterImage and WPF/Silverlight</a>.</para>
+      </remarks>
+      <example>For an example, refer to <see cref="T:Leadtools.Windows.Media.RasterRegionConverter" />.</example>
+    </member>
+    <member name="M:Leadtools.Windows.Media.RasterRegionConverter.ConvertFromGeometry(System.Windows.Media.Geometry)">
+      <summary>Converts a WPF/Silverlight <see cref="T:System.Windows.Media.Geometry" /> object to a LEADTOOLS <see cref="T:Leadtools.RasterRegion" />. <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics~Leadtools.Topics.LEADTOOLSDocumentation.html"><img src="dotnet.png" alt=".NET support" border="0" /></a></summary>
+      <param name="geometry">The WPF/Silverlight source geometry. This parameter cannot be null (Nothing in Visual Basic).</param>
+      <returns>The LEADTOOLS <see cref="T:Leadtools.RasterRegion" /> object this method creates. You must dispose this object after using it.</returns>
+      <remarks>
+        <para>The LEADTOOLS <see cref="T:Leadtools.RasterRegion" /> class provides a platform independent representation of an area of interest in a <see cref="T:Leadtools.RasterImage" /> that can be
+            used in any platform supported by LEADTOOLS such as GDI, GDI+, WPF and Silverlight. Use this class To convert a LEADTOOLS
+            <see cref="T:Leadtools.RasterRegion" /> object to/from a WPF/Silverlight <see cref="T:System.Windows.Media.Geometry" /> object.</para>
+        <para>For more information refer to <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics.Windows.Media~WM.Topics.RasterImageAndWpfSilverlight.html">RasterImage and WPF/Silverlight</a>.</para>
+      </remarks>
+      <example>For an example, refer to <see cref="T:Leadtools.Windows.Media.RasterRegionConverter" />.</example>
+    </member>
+    <member name="M:Leadtools.Windows.Media.RasterRegionConverter.AddGeometryToRegion(Leadtools.RasterImage,Leadtools.RasterRegionXForm,System.Windows.Media.Geometry,Leadtools.RasterRegionCombineMode)">
+      <summary>Creates or updates a LEADTOOLS image region by adding the specified WPF/Silverlight geometry. <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics~Leadtools.Topics.LEADTOOLSDocumentation.html"><img src="dotnet.png" alt=".NET support" border="0" /></a></summary>
+      <param name="image">The source image.</param>
+      <param name="xform">
+        <see cref="T:Leadtools.RasterRegionXForm" /> object that LEADTOOLS uses to translate
+            between display coordinates and image coordinates. If you specify null (Nothing in Visual Basic) in this parameter,
+            the scalar fields default to 1, the offsets default to 0, and the view perspective defaults
+            to the image view perspective.</param>
+      <param name="geometry">The WPF/Silverlight geometry to add.</param>
+      <param name="combineMode">The action to take regarding the existing image region, if one is defined.</param>
+      <remarks>
+        <para>To update an existing region, you specify how the new region is to be combined with the existing one using the
+            <paramref name="combineMode" /> parameter.  For more information, refer to <see cref="T:Leadtools.RasterRegionCombineMode" />.</para>
+        <para>For more information, refer to <see cref="T:Leadtools.Topics.CreatingaRegion">Creating a Region</see>.</para>
+        <para>For more information, refer to <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics.Leadtools~L.Topics.SavingARegion.html">Saving A Region</a>.</para>
+        <para>For more information, refer to <see cref="T:Leadtools.Topics.WorkingWithTheExistingRegion">Working with the Existing Region</see>.</para>
+        <para>For more information refer to <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics.Windows.Media~WM.Topics.RasterImageAndWpfSilverlight.html">RasterImage and WPF/Silverlight</a>.</para>
+      </remarks>
+      <example>
+        <code lang="VB">      Public Sub AddGeometryToRegionExample()
+         ' Load an image 
+         Dim srcFileName As String = Path.Combine(LEAD_VARS.ImagesDir, "Image1.cmp")
+         Dim dstFileName As String = Path.Combine(LEAD_VARS.ImagesDir, "Image1_AddGeometryToRegion.jpg")
+
+         Dim codecs As New RasterCodecs()
+
+         Dim image As RasterImage = codecs.Load(srcFileName)
+
+         ' We will add an ellipse region to the image
+
+         ' Using WPF, create an elliptical geometry
+         ' Create the ellipse geometry to add to the Path
+         Dim ellipseGeometry As New EllipseGeometry()
+         ellipseGeometry.Center = New Point(250, 250)
+         ellipseGeometry.RadiusX = 200
+         ellipseGeometry.RadiusY = 150
+
+         Dim geometry As Geometry = ellipseGeometry
+
+         ' Add this geometry to the image
+         RasterRegionConverter.AddGeometryToRegion(image, Nothing, geometry, RasterRegionCombineMode.Set)
+
+         ' Fill the image with a color
+         Dim cmd As New FillCommand(RasterColor.FromKnownColor(RasterKnownColor.Red))
+         cmd.Run(image)
+
+         ' Save it
+         codecs.Save(image, dstFileName, RasterImageFormat.Jpeg, 24)
+
+         image.Dispose()
+
+         codecs.Dispose()
+      End Sub
+
+   Public NotInheritable Class LEAD_VARS
+      Public Const ImagesDir As String = "C:\Users\Public\Documents\LEADTOOLS Images"
+   End Class</code>
+        <code lang="CS">      public void AddGeometryToRegionExample()
+      {
+         // Load an image 
+         string srcFileName = Path.Combine(LEAD_VARS.ImagesDir, "Image1.cmp");
+         string dstFileName = Path.Combine(LEAD_VARS.ImagesDir, "Image1_AddGeometryToRegion.jpg");
+
+         RasterCodecs codecs = new RasterCodecs();
+
+         RasterImage image = codecs.Load(srcFileName);
+
+         // We will add an ellipse region to the image
+
+         // Using WPF, create an elliptical geometry
+         // Create the ellipse geometry to add to the Path
+         EllipseGeometry ellipseGeometry = new EllipseGeometry();
+         ellipseGeometry.Center = new Point(250, 250);
+         ellipseGeometry.RadiusX = 200;
+         ellipseGeometry.RadiusY = 150;
+
+         Geometry geometry = ellipseGeometry;
+
+         // Add this geometry to the image
+         RasterRegionConverter.AddGeometryToRegion(image, null, geometry, RasterRegionCombineMode.Set);
+
+         // Fill the image with a color
+         FillCommand cmd = new FillCommand(RasterColor.FromKnownColor(RasterKnownColor.Red));
+         cmd.Run(image);
+
+         // Save it
+         codecs.Save(image, dstFileName, RasterImageFormat.Jpeg, 24);
+
+         image.Dispose();
+
+         codecs.Dispose();
+      }
+
+   static class LEAD_VARS
+   {
+      public const string ImagesDir = @"C:\Users\Public\Documents\LEADTOOLS Images";
+   }</code>
+      </example>
+    </member>
+    <member name="T:Leadtools.Windows.Media.RasterImageConverter">
+      <summary>Converts a LEADTOOLS <see cref="T:Leadtools.RasterImage" /> to and from Windows Presentation Foundation (WPF) and Silverlight image objects. <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics~Leadtools.Topics.LEADTOOLSDocumentation.html"><img src="dotnet.png" alt=".NET support" border="0" /></a><a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics~Leadtools.Topics.LEADTOOLSDocumentation.html"><img src="silverlight.png" alt="Silverlight support" border="0" /></a></summary>
+      <remarks>
+        <para>The LEADTOOLS <see cref="T:Leadtools.RasterImage">RasterImage</see> class provides platform independent representation of an image. It serves as a working area
+            for image manipulation and conversion. LEADTOOLS functions use this class for accessing the image in memory and for maintaining the characteristics of the
+            image. This class contains the functionality needed to convert a LEADTOOLS <see cref="T:Leadtools.RasterImage" /> to and from a Windows Presentation Foundation (WPF) or
+            Silverlight image objects.</para>
+        <para>The <see cref="T:Leadtools.Windows.Media.RasterImageConverter" /> class contains the following functionality:</para>
+        <list type="table">
+          <listheader>
+            <term>Method</term>
+            <description>Description</description>
+          </listheader>
+          <item>
+            <term>
+              <see cref="M:Leadtools.Windows.Media.RasterImageConverter.ConvertToSource(Leadtools.RasterImage,Leadtools.Windows.Media.ConvertToSourceOptions)">ConvertToSource</see>
+            </term>
+            <description>
+              <para>Converts a LEADTOOLS <see cref="T:Leadtools.RasterImage" /> to WPF/Silverlight <see cref="T:System.Windows.Media.ImageSource">System.Windows.Media.ImageSource</see></para>
+            </description>
+          </item>
+          <item>
+            <term>
+              <see cref="M:Leadtools.Windows.Media.RasterImageConverter.ConvertFromSource(System.Windows.Media.ImageSource,Leadtools.Windows.Media.ConvertFromSourceOptions)">ConvertFromSource</see>
+            </term>
+            <description>
+              <para>Converts a WPF/Silverlight <see cref="T:System.Windows.Media.ImageSource">System.Windows.Media.ImageSource</see> to LEADTOOLS <see cref="T:Leadtools.RasterImage" /></para>
+            </description>
+          </item>
+          <item>
+            <term>
+              <see cref="M:Leadtools.Windows.Media.RasterImageConverter.TestCompatible(Leadtools.RasterImage,Leadtools.Windows.Media.ConvertToSourceOptions)">TestCompatible</see>
+            </term>
+            <description>
+              <para>Utility methods for testing whether a LEADTOOLS <see cref="T:Leadtools.RasterImage" /> is WPF/Silverlight compatible</para>
+            </description>
+          </item>
+        </list>
+        <para>For more information refer to <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics.Windows.Media~WM.Topics.RasterImageAndWpfSilverlight.html">RasterImage and WPF/Silverlight</a>.</para>
+      </remarks>
+      <example>
+        <code lang="VB">      Public Sub RasterImageConverterExample()
+         Dim srcFileName As String = Path.Combine(LEAD_VARS.ImagesDir, "Image1.cmp")
+         Dim destFileName1 As String = Path.Combine(LEAD_VARS.ImagesDir, "Image1.jpg")
+         Dim destFileName2 As String = Path.Combine(LEAD_VARS.ImagesDir, "Image1_WPfFlipped.jpg")
+
+         ' Use LEADTOOLS to convert the source image to a format that can be loaded with WPF
+         Using codecs As New RasterCodecs()
+            codecs.Convert(srcFileName, destFileName1, RasterImageFormat.Jpeg, 0, 0, 0, Nothing)
+         End Using
+
+         ' Load the source image using WPF
+         Dim bitmap As New BitmapImage()
+         bitmap.BeginInit()
+         bitmap.UriSource = New Uri(destFileName1, UriKind.Absolute)
+         bitmap.EndInit()
+
+         Console.WriteLine("Source WPF image is loaded, pixel format is {0}", bitmap.Format)
+
+         ' Convert the image to LEADTOOLS RasterImage object
+         Dim source As BitmapSource
+         Using raster As RasterImage = RasterImageConverter.ConvertFromSource(bitmap, ConvertFromSourceOptions.None)
+            Console.WriteLine("Converted to RasterImage, bits/pixel is {0} and order is {1}", raster.BitsPerPixel, raster.Order)
+
+            ' Perform image processing on the raster image using LEADTOOLS
+            Dim cmd As New FlipCommand(False)
+            cmd.Run(raster)
+
+            ' Convert the image back to WPF using default options
+            source = DirectCast(RasterImageConverter.ConvertToSource(raster, ConvertToSourceOptions.None), BitmapSource)
+         End Using
+
+         Console.WriteLine("Converted back WPF, pixel format is {0}", source.Format)
+
+         ' Save the image using WPF
+         Using fs As FileStream = File.Create(destFileName2)
+            Dim encoder As New JpegBitmapEncoder()
+            encoder.QualityLevel = 30
+            encoder.Frames.Add(BitmapFrame.Create(source))
+            encoder.Save(fs)
+         End Using
+      End Sub
+
+   Public NotInheritable Class LEAD_VARS
+      Public Const ImagesDir As String = "C:\Users\Public\Documents\LEADTOOLS Images"
+   End Class</code>
+        <code lang="CS">      public void RasterImageConverterExample()
+      {
+         string srcFileName = Path.Combine(LEAD_VARS.ImagesDir, "Image1.cmp");
+         string destFileName1 = Path.Combine(LEAD_VARS.ImagesDir,"Image1.jpg");
+         string destFileName2 = Path.Combine(LEAD_VARS.ImagesDir, "Image1_WPfFlipped.jpg");
+
+         // Use LEADTOOLS to convert the source image to a format that can be loaded with WPF
+         using(RasterCodecs codecs = new RasterCodecs())
+         {
+            codecs.Convert(srcFileName, destFileName1, RasterImageFormat.Jpeg, 0, 0, 0, null);
+         }
+
+         // Load the source image using WPF
+         BitmapImage bitmap = new BitmapImage();
+         bitmap.BeginInit();
+         bitmap.UriSource = new Uri(destFileName1, UriKind.Absolute);
+         bitmap.EndInit();
+
+         Console.WriteLine("Source WPF image is loaded, pixel format is {0}", bitmap.Format);
+
+         // Convert the image to LEADTOOLS RasterImage object
+         BitmapSource source;
+         using(RasterImage raster = RasterImageConverter.ConvertFromSource(bitmap, ConvertFromSourceOptions.None))
+         {
+            Console.WriteLine("Converted to RasterImage, bits/pixel is {0} and order is {1}", raster.BitsPerPixel, raster.Order);
+
+            // Perform image processing on the raster image using LEADTOOLS
+            FlipCommand cmd = new FlipCommand(false);
+            cmd.Run(raster);
+
+            // Convert the image back to WPF using default options
+            source = RasterImageConverter.ConvertToSource(raster, ConvertToSourceOptions.None) as BitmapSource;
+         }
+
+         Console.WriteLine("Converted back WPF, pixel format is {0}", source.Format);
+
+         // Save the image using WPF
+         using(FileStream fs = File.Create(destFileName2))
+         {
+            JpegBitmapEncoder encoder = new JpegBitmapEncoder();
+            encoder.QualityLevel = 30;
+            encoder.Frames.Add(BitmapFrame.Create(source));
+            encoder.Save(fs);
+         }
+      }
+
+   static class LEAD_VARS
+   {
+      public const string ImagesDir = @"C:\Users\Public\Documents\LEADTOOLS Images";
+   }</code>
+        <code lang="SilverlightCSharp">      public void RasterImageConverterExample()
+      {
+         string srcFileName = LeadtoolsExamples.Common.ImagesPath.Path + "Image1.cmp";
+         string destFileName1 = LeadtoolsExamples.Common.ImagesPath.Path + "Image1.jpg";
+
+         // Use LEADTOOLS to convert the source image to a format that can be loaded with WPF
+         RasterCodecs codecs = new RasterCodecs();
+         codecs.Convert(srcFileName, destFileName1, RasterImageFormat.Jpeg, 0, 0, 0, null);
+      }</code>
+        <code lang="SilverlightVB">      &lt;TestMethod&gt; _
+      Public Sub RasterImageConverterExample()
+         Dim srcFileName As String = LeadtoolsExamples.Common.ImagesPath.Path &amp; "Image1.cmp"
+         Dim destFileName1 As String = LeadtoolsExamples.Common.ImagesPath.Path &amp; "Image1.jpg"
+         ' Use LEADTOOLS to convert the source image to a format that can be loaded with WPF
+         Dim codecs As RasterCodecs = New RasterCodecs()
+         codecs.Convert(srcFileName, destFileName1, RasterImageFormat.Jpeg, 0, 0, 0, Nothing)
+      End Sub</code>
+      </example>
+    </member>
+    <member name="M:Leadtools.Windows.Media.RasterImageConverter.TestCompatible(Leadtools.RasterImage,Leadtools.Windows.Media.ConvertToSourceOptions)">
+      <summary>Tests a <see cref="T:Leadtools.RasterImage" /> to see if it is compatible with the WPF/Silverlight <see cref="T:System.Windows.Media.ImageSource" />. <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics~Leadtools.Topics.LEADTOOLSDocumentation.html"><img src="dotnet.png" alt=".NET support" border="0" /></a><a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics~Leadtools.Topics.LEADTOOLSDocumentation.html"><img src="silverlight.png" alt="Silverlight support" border="0" /></a></summary>
+      <param name="image">The source image.</param>
+      <param name="options">The options to use when testing.</param>
+      <returns>Value indicating the compatibility.</returns>
+      <remarks>
+        <para>For more information on WPF and Silverlight compatibility, refer to <see cref="M:Leadtools.Windows.Media.RasterImageConverter.ConvertToSource(Leadtools.RasterImage,Leadtools.Windows.Media.ConvertToSourceOptions)" />.</para>
+        <para>For more information refer to <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics.Windows.Media~WM.Topics.RasterImageAndWpfSilverlight.html">RasterImage and WPF/Silverlight</a>.</para>
+      </remarks>
+      <example>
+        <code lang="VB">      Public Sub TestCompatibleExample()
+         Dim srcFileName As String = Path.Combine(LEAD_VARS.ImagesDir, "Image1.cmp")
+
+
+         Using codecs As New RasterCodecs()
+            ' Load the image as 32-bit at BGR color order
+            Using image As RasterImage = codecs.Load(srcFileName, 32, CodecsLoadByteOrder.Bgr, 1, 1)
+               ' This should report that the image is compatible
+               Dim reason As ImageIncompatibleReason = RasterImageConverter.TestCompatible(image, ConvertToSourceOptions.None)
+               Console.WriteLine("Bits/Pixel: {0}, Order: {1}, ViewPerspective: {2}, Test compatible: {3}", image.BitsPerPixel, image.Order, image.ViewPerspective, reason)
+            End Using
+
+            ' Load the image as 12-bit grayscale image, this is incomaptible with WPF/Silverlight
+            Using image As RasterImage = codecs.Load(srcFileName, 12, CodecsLoadByteOrder.Gray, 1, 1)
+               ' This should report that the image is compatible
+               Dim reason As ImageIncompatibleReason = RasterImageConverter.TestCompatible(image, ConvertToSourceOptions.None)
+               Console.WriteLine("Bits/Pixel: {0}, Order: {1}, ViewPerspective: {2}, Test compatible: {3}", image.BitsPerPixel, image.Order, image.ViewPerspective, reason)
+            End Using
+         End Using
+
+      End Sub
+
+   Public NotInheritable Class LEAD_VARS
+      Public Const ImagesDir As String = "C:\Users\Public\Documents\LEADTOOLS Images"
+   End Class</code>
+        <code lang="CS">      public void TestCompatibleExample()
+      {
+         string srcFileName = Path.Combine(LEAD_VARS.ImagesDir, "Image1.cmp");
+
+
+         using(RasterCodecs codecs = new RasterCodecs())
+         {
+            // Load the image as 32-bit at BGR color order
+            using(RasterImage image = codecs.Load(srcFileName, 32, CodecsLoadByteOrder.Bgr, 1, 1))
+            {
+               // This should report that the image is compatible
+               ImageIncompatibleReason reason = RasterImageConverter.TestCompatible(image, ConvertToSourceOptions.None);
+               Console.WriteLine("Bits/Pixel: {0}, Order: {1}, ViewPerspective: {2}, Test compatible: {3}", image.BitsPerPixel, image.Order, image.ViewPerspective, reason);
+            }
+
+            // Load the image as 12-bit grayscale image, this is incomaptible with WPF/Silverlight
+            using(RasterImage image = codecs.Load(srcFileName, 12, CodecsLoadByteOrder.Gray, 1, 1))
+            {
+               // This should report that the image is compatible
+               ImageIncompatibleReason reason = RasterImageConverter.TestCompatible(image, ConvertToSourceOptions.None);
+               Console.WriteLine("Bits/Pixel: {0}, Order: {1}, ViewPerspective: {2}, Test compatible: {3}", image.BitsPerPixel, image.Order, image.ViewPerspective, reason);
+            }
+         }
+
+      }
+
+   static class LEAD_VARS
+   {
+      public const string ImagesDir = @"C:\Users\Public\Documents\LEADTOOLS Images";
+   }</code>
+        <code lang="SilverlightCSharp">      public void TestCompatibleExample()
+      {
+         string srcFileName = LeadtoolsExamples.Common.ImagesPath.Path + "Image1.cmp";
+
+         RasterCodecs codecs = new RasterCodecs();
+         // Load the image as 32-bit at BGR color order
+         using(RasterImage image = codecs.Load(srcFileName, 32, CodecsLoadByteOrder.Bgr, 1, 1))
+         {
+            // This should report that the image is compatible
+            ImageIncompatibleReason reason = RasterImageConverter.TestCompatible(image, ConvertToSourceOptions.None);
+            Console.WriteLine("Bits/Pixel: {0}, Order: {1}, ViewPerspective: {2}, Test compatible: {3}", image.BitsPerPixel, image.Order, image.ViewPerspective, reason);
+         }
+
+         // Load the image as 12-bit grayscale image, this is incomaptible with WPF/Silverlight
+         using(RasterImage image = codecs.Load(srcFileName, 12, CodecsLoadByteOrder.Gray, 1, 1))
+         {
+            // This should report that the image is compatible
+            ImageIncompatibleReason reason = RasterImageConverter.TestCompatible(image, ConvertToSourceOptions.None);
+            Console.WriteLine("Bits/Pixel: {0}, Order: {1}, ViewPerspective: {2}, Test compatible: {3}", image.BitsPerPixel, image.Order, image.ViewPerspective, reason);
+         }
+      }</code>
+        <code lang="SilverlightVB">      &lt;TestMethod&gt; _
+      Public Sub TestCompatibleExample()
+         Dim srcFileName As String = LeadtoolsExamples.Common.ImagesPath.Path &amp; "Image1.cmp"
+         Dim codecs As RasterCodecs = New RasterCodecs()
+         ' Load the image as 32-bit at BGR color order
+         Using image As RasterImage = codecs.Load(srcFileName, 32, CodecsLoadByteOrder.Bgr, 1, 1)
+            ' This should report that the image is compatible
+            Dim reason As ImageIncompatibleReason = RasterImageConverter.TestCompatible(image, ConvertToSourceOptions.None)
+            Console.WriteLine("Bits/Pixel: {0}, Order: {1}, ViewPerspective: {2}, Test compatible: {3}", image.BitsPerPixel, image.Order, _
+                              image.ViewPerspective, reason)
+         End Using
+
+         ' Load the image as 12-bit grayscale image, this is incomaptible with WPF/Silverlight
+         Using image As RasterImage = codecs.Load(srcFileName, 12, CodecsLoadByteOrder.Gray, 1, 1)
+            ' This should report that the image is compatible
+            Dim reason As ImageIncompatibleReason = RasterImageConverter.TestCompatible(image, ConvertToSourceOptions.None)
+            Console.WriteLine("Bits/Pixel: {0}, Order: {1}, ViewPerspective: {2}, Test compatible: {3}", image.BitsPerPixel, image.Order, _
+                              image.ViewPerspective, reason)
+         End Using
+      End Sub</code>
+      </example>
+    </member>
+    <member name="M:Leadtools.Windows.Media.RasterImageConverter.ConvertToSource(Leadtools.RasterImage,Leadtools.Windows.Media.ConvertToSourceOptions)">
+      <summary>Converts a LEADTOOLS for .NET <see cref="T:Leadtools.RasterImage" /> object to WPF/Silverlight <see cref="T:System.Windows.Media.ImageSource" />. <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics~Leadtools.Topics.LEADTOOLSDocumentation.html"><img src="dotnet.png" alt=".NET support" border="0" /></a><a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics~Leadtools.Topics.LEADTOOLSDocumentation.html"><img src="silverlight.png" alt="Silverlight support" border="0" /></a></summary>
+      <param name="image">The <see cref="T:Leadtools.RasterImage" /> object containing the image data to convert.</param>
+      <param name="options">
+             Options to control the conversion operation.  The following values can be ORed together:
+             <list type="table"><listheader><term>Value</term><description>Meaning</description></listheader><item><term><see cref="T:Leadtools.Windows.Media.ConvertToSourceOptions">ConvertToSourceOptions.None</see></term><description>No options</description></item><item><term><see cref="T:Leadtools.Windows.Media.ConvertToSourceOptions">ConvertToSourceOptions.KeepAlphaValues</see></term><description><para>If the source <see cref="T:Leadtools.RasterImage" /> is 32 or 64-bits/pixel, then use the alpha values from this alpha if the result of the conversion is also
+             a 32 or 64-bits/pixel <see cref="T:System.Windows.Media.ImageSource" />.</para><para>If this flagged is not specified, the result <see cref="T:System.Windows.Media.ImageSource" /> will always have an alpha
+             value of all 1's (255 for 32-bit images or 65535 for 64-bit images) regardless of the alpha values in the
+             source <see cref="T:Leadtools.RasterImage" />. This can be useful when converting some 32-bit images that may have 0 for the alpha (such as BMP files) which
+             translates into an <see cref="T:System.Windows.Media.ImageSource" /> that is completely transparent.</para><para>If this flag is specified, then the source image alpha values will be used as is.</para></description></item><item><term><see cref="T:Leadtools.Windows.Media.ConvertToSourceOptions">ConvertToSourceOptions.KeepViewPerspective</see></term><description><para>Keep the original <see cref="T:Leadtools.RasterImage" /> view perspective. The <see cref="T:Leadtools.RasterImage" /> objects supports having an image data orientation other than
+             the normal top-left through the <see cref="P:Leadtools.RasterImage.ViewPerspective">RasterImage.ViewPerspective</see> property.</para><para>If the source <see cref="T:Leadtools.RasterImage" /> has a view-perspective other than <see cref="T:Leadtools.RasterViewPerspective">RasterViewPerspective.TopLeft</see> and
+             this flag is specified, then the result <see cref="T:System.Windows.Media.ImageSource" /> might be flipped, reversed or rotated. For example, if the source view-perspective is <see cref="T:Leadtools.RasterViewPerspective">RasterViewPerspective.BottomLeft</see>
+             and this flag is specified in the conversion options, then the result <see cref="T:System.Windows.Media.ImageSource" /> will be flipped.</para><para>If this flag is not specified, then the conversion might flip, reverse or rotate the image data as needed to provide correct (top-left)
+             <see cref="T:System.Windows.Media.ImageSource" />.</para></description></item><item><term><see cref="T:Leadtools.Windows.Media.ConvertToSourceOptions">ConvertToSourceOptions.IgnoreLowHighBitsOnGrayImages</see></term><description><para>Do not use the gray scale bit window values when converting 12 or 16-bit grayscale <see cref="T:Leadtools.RasterImage" /> objects. The <see cref="T:Leadtools.RasterImage" />
+             object contains the <see cref="P:Leadtools.RasterImage.LowBit">RasterImage.LowBit</see> and <see cref="P:Leadtools.RasterImage.HighBit">RasterImage.HighBit</see> values
+             that can be set to provide a Window into the image data. This is mostly used by medical applications during a window-leveling operations.</para><para>If this flag is specified, the <see cref="P:Leadtools.RasterImage.LowBit">RasterImage.LowBit</see> and <see cref="P:Leadtools.RasterImage.HighBit">RasterImage.HighBit</see> values
+             are ignored and all of the image data is used when converting the <see cref="T:Leadtools.RasterImage" /> to <see cref="T:System.Windows.Media.ImageSource" />.</para><para>If this flag is not specified, then only the image data between <see cref="P:Leadtools.RasterImage.LowBit">RasterImage.LowBit</see> and
+             <see cref="P:Leadtools.RasterImage.HighBit">RasterImage.HighBit</see> is used.</para></description></item><item><term><see cref="T:Leadtools.Windows.Media.ConvertToSourceOptions">ConvertToSourceOptions.UseSetSource</see></term><description><para><strong>Note:</strong> This option is only used by the LEADTOOLS for Silverlight toolkit. The WPF version of this flag is ignored and have no
+             effect on the conversion operation.</para><para>Use this option to use Silverlight native loading capabilities when converting a <see cref="T:Leadtools.RasterImage" /> into a <see cref="T:System.Windows.Media.ImageSource" />. When
+             this option is specified, one of the following will happen:</para><para><list type="bullet"><item><description><para>If source <see cref="T:Leadtools.RasterImage" /> has a bits/pixel value of 1, 2, 3, 4, 5, 6, 7 or 8, the data will be converted
+             to a PNG stream first then a call is made to <strong>BitmapSource.SetSource</strong> to construct the result
+             image.</para></description></item><item><description><para>If source bits/pixel value is 12 or 16, then the data will be converted to a JPEG stream first
+             and then a call is made to <strong>BitmapSource.SetSource</strong> to construct the result
+             image.</para></description></item><item><description><para>For any other bits/pixel value (24, 32, 48 or 64), direct conversion is used
+             and the result is the same as if the <strong>UseSetSource</strong> flag is not specified.</para></description></item></list></para><para>If this flag is not specified, then <strong>BitmapSource.SetSource</strong> is not used and the 
+             toolkit will directly convert the <see cref="T:Leadtools.RasterImage" /> to a compatible <see cref="T:System.Windows.Media.ImageSource" />.</para><para>Specifiying this flag in the LEADTOOLS for Silverlight toolkit may increase the performance of the
+             <see cref="M:Leadtools.Windows.Media.RasterImageConverter.ConvertToSource(Leadtools.RasterImage,Leadtools.Windows.Media.ConvertToSourceOptions)">RasterImageConverter.ConvertToSource</see> method especially when converting 1 bits/pixel <see cref="T:Leadtools.RasterImage" /> objects.</para></description></item></list></param>
+      <returns>An <see cref="T:System.Windows.Media.ImageSource" /> object representing the converted image.</returns>
+      <remarks>
+        <h3>Microsoft Windows Presentation Foundation (WPF)</h3>
+        <para>LEADTOOLS for .NET and Windows Presentation Foundation (WPF) support different pixel formats. These pixel formats may not be identical in some
+             cases. The conversion process takes care of converting scanlines to a suitable format that best matches the source data.
+             </para>
+        <para>
+             The <see cref="M:Leadtools.Windows.Media.RasterImageConverter.ConvertToSource(Leadtools.RasterImage,Leadtools.Windows.Media.ConvertToSourceOptions)" /> method supports converting from any <see cref="T:Leadtools.RasterImage" /> regardless of the combination of the bits/pixel,
+             compression, color order, grayscale properties of the source image. The <see cref="M:Leadtools.Windows.Media.RasterImageConverter.ConvertToSource(Leadtools.RasterImage,Leadtools.Windows.Media.ConvertToSourceOptions)" /> method will always returns a valid WPF
+             <see cref="T:System.Windows.Media.ImageSource" /> by allocating temporary memory for the data and performing the necessary conversion on it.
+             </para>
+        <para>
+             In some cases, the <see cref="T:Leadtools.RasterImage" /> data is compatible with WPF and no conversion takes place. Converting a compatible
+             <see cref="T:Leadtools.RasterImage" /> to WPF <see cref="T:System.Windows.Media.ImageSource" /> is faster and takes less resources than converting a non-compatible image. Please
+             note that currently WPF does not allow direct access to the raw data pointers where the image data is stored. Therefore, there is always at
+             least one copy operation regardless if the source data can be used directly by a WPF image (For example, through the use of the
+             <see cref="M:System.Windows.Media.Imaging.BitmapSource.Create(System.Int32,System.Int32,System.Double,System.Double,System.Windows.Media.PixelFormat,System.Windows.Media.Imaging.BitmapPalette,System.Array,System.Int32)">System.Windows.Media.Imaging.BitmapSource.Create</see> method).
+             </para>
+        <para>
+             For a <see cref="T:Leadtools.RasterImage" /> to be compatible with WPF, it must have the following properties:
+            
+               <list type="bullet"><item><description><para>
+             The <see cref="T:Leadtools.RasterImage" /> must have conventional memory, not disk and nor tiled memory. (
+             <see cref="P:Leadtools.RasterImage.IsConventionalMemory">RasterImage.IsConventionalMemory</see> must be <strong>true</strong> and
+             <see cref="P:Leadtools.RasterImage.IsDiskMemory">RasterImage.IsDiskMemory</see>, <see cref="P:Leadtools.RasterImage.IsTiled">RasterImage.IsTiled</see>,
+             <see cref="P:Leadtools.RasterImage.IsGlobalMemory">RasterImage.IsGlobalMemory</see> and <see cref="P:Leadtools.RasterImage.IsMirrored">RasterImage.IsMirrored</see>
+             must all be <strong>false</strong>)
+                  </para></description></item><item><description><para>
+             The <see cref="T:Leadtools.RasterImage" /> data must not be compressed (<see cref="P:Leadtools.RasterImage.IsCompressed">RasterImage.IsCompressed</see> and
+             <see cref="P:Leadtools.RasterImage.IsSuperCompressed">RasterImage.IsSuperCompressed</see> must both be <strong>false</strong>)
+                  </para></description></item><item><description><para>
+             The <see cref="T:Leadtools.RasterImage" /> data must not be signed (<see cref="P:Leadtools.RasterImage.Signed">RasterImage.Signed</see> must be <strong>false</strong>)
+                  </para></description></item><item><description><para>
+             The <see cref="T:Leadtools.RasterImage" /> must have compatible <see cref="P:Leadtools.RasterImage.BitsPerPixel">bits/pixel</see> and
+             <see cref="P:Leadtools.RasterImage.Order">color order</see> values according the table below.
+                  </para></description></item></list></para>
+        <para>
+             The following table lists the source <see cref="T:Leadtools.RasterImage" /> bits/pixel and source data properties and whether each
+             combination is compatible with WPF.
+             </para>
+        <table>
+          <tr>
+            <th>Source Bits/Pixel</th>
+            <th>More Source Data</th>
+            <th>Compatible</th>
+            <th>Result PixelFormat</th>
+          </tr>
+          <tr>
+            <td>
+              <para>1</para>
+            </td>
+            <td>
+              <para>Black on white palette</para>
+            </td>
+            <td>
+              <para>Yes</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:System.Windows.Media.PixelFormats.BlackWhite" />
+              </para>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <para>1</para>
+            </td>
+            <td>
+              <para>Any other palette</para>
+            </td>
+            <td>
+              <para>Yes</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:System.Windows.Media.PixelFormats.Indexed1" />
+              </para>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <para>2</para>
+            </td>
+            <td>
+              <para>-</para>
+            </td>
+            <td>
+              <para>Yes</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:System.Windows.Media.PixelFormats.Indexed2" />
+              </para>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <para>3</para>
+            </td>
+            <td>
+              <para>-</para>
+            </td>
+            <td>
+              <para>No</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:System.Windows.Media.PixelFormats.Indexed4" />
+              </para>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <para>4</para>
+            </td>
+            <td>
+              <para>-</para>
+            </td>
+            <td>
+              <para>Yes</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:System.Windows.Media.PixelFormats.Indexed4" />
+              </para>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <para>5</para>
+            </td>
+            <td>
+              <para>-</para>
+            </td>
+            <td>
+              <para>No</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:System.Windows.Media.PixelFormats.Indexed8" />
+              </para>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <para>6</para>
+            </td>
+            <td>
+              <para>-</para>
+            </td>
+            <td>
+              <para>No</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:System.Windows.Media.PixelFormats.Indexed8" />
+              </para>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <para>7</para>
+            </td>
+            <td>
+              <para>
+              </para>
+            </td>
+            <td>
+              <para>No</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:System.Windows.Media.PixelFormats.Indexed8" />
+              </para>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <para>8</para>
+            </td>
+            <td>
+              <para>Grayscale palette</para>
+            </td>
+            <td>
+              <para>Yes</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:System.Windows.Media.PixelFormats.Gray8" />
+              </para>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <para>8</para>
+            </td>
+            <td>
+              <para>Color palette</para>
+            </td>
+            <td>
+              <para>Yes</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:System.Windows.Media.PixelFormats.Gray8" />
+              </para>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <para>12</para>
+            </td>
+            <td>
+              <para>-</para>
+            </td>
+            <td>
+              <para>No</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:System.Windows.Media.PixelFormats.Gray16" />
+              </para>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <para>16</para>
+            </td>
+            <td>
+              <para>Compatible grayscale data (Refer to notes on grayscale images below)</para>
+            </td>
+            <td>
+              <para>Yes</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:System.Windows.Media.PixelFormats.Gray16" />
+              </para>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <para>16</para>
+            </td>
+            <td>
+              <para>Incompatible grayscale data</para>
+            </td>
+            <td>
+              <para>No</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:System.Windows.Media.PixelFormats.Bgra32" />
+              </para>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <para>16</para>
+            </td>
+            <td>
+              <para>Color data</para>
+            </td>
+            <td>
+              <para>Yes</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:System.Windows.Media.PixelFormats.Bgr555" />
+              </para>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <para>24</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:Leadtools.RasterImage.Order">BGR</see> color order</para>
+            </td>
+            <td>
+              <para>Yes</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:System.Windows.Media.PixelFormats.Bgr24" />
+              </para>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <para>24</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:Leadtools.RasterImage.Order">RGB</see> color order</para>
+            </td>
+            <td>
+              <para>Yes</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:System.Windows.Media.PixelFormats.Rgb24" />
+              </para>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <para>32</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:Leadtools.RasterImage.Order">BGR</see> color order (Refer to notes on alpha channel below)</para>
+            </td>
+            <td>
+              <para>Yes</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:System.Windows.Media.PixelFormats.Bgra32" />
+              </para>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <para>32</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:Leadtools.RasterImage.Order">RGB</see> color order</para>
+            </td>
+            <td>
+              <para>No</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:System.Windows.Media.PixelFormats.Bgra32" />
+              </para>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <para>48</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:Leadtools.RasterImage.Order">BGR</see> color order</para>
+            </td>
+            <td>
+              <para>No</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:System.Windows.Media.PixelFormats.Rgb48" />
+              </para>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <para>48</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:Leadtools.RasterImage.Order">RGB</see> color order</para>
+            </td>
+            <td>
+              <para>Yes</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:System.Windows.Media.PixelFormats.Rgb48" />
+              </para>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <para>64</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:Leadtools.RasterImage.Order">BGR</see> color order</para>
+            </td>
+            <td>
+              <para>No</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:System.Windows.Media.PixelFormats.Rgba64" />
+              </para>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <para>64</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:Leadtools.RasterImage.Order">RGB</see> color order (Refer to notes on alpha channel below)</para>
+            </td>
+            <td>
+              <para>Yes</para>
+            </td>
+            <td>
+              <para>
+                <see cref="P:System.Windows.Media.PixelFormats.Rgba64" />
+              </para>
+            </td>
+          </tr>
+        </table>
+        <h3>Notes on gray scale images</h3>
+        <para>
+             Both LEADTOOLS and Windows Presentation Foundation support 16 bit grayscale image data. However LEADTOOLS supports extra features such as
+             low/high bit values and color lookup tables. For a LEADTOOLS 16-bit grayscale <see cref="T:Leadtools.RasterImage" /> to be compatible with a WPF image
+             with <see cref="P:System.Windows.Media.PixelFormats.Gray16" />, the following conditions must be met:
+             <list type="bullet"><item><description><para>
+             The value of <see cref="P:Leadtools.RasterImage.UseLookupTable">RasterImage.UseLookupTable</see> must be <strong>false</strong></para></description></item><item><description><para>
+             The low/high bit values must not be used. Either, the values of <see cref="P:Leadtools.RasterImage.LowBit">RasterImage.LowBit</see> and
+             <see cref="P:Leadtools.RasterImage.HighBit">RasterImage.HighBit</see> are set to the default values or the
+             <see cref="T:Leadtools.Windows.Media.ConvertToSourceOptions">ConvertToSourceOptions.IgnoreLowHighBitsOnGrayImages</see> flag must be passed to the
+             <see cref="M:Leadtools.Windows.Media.RasterImageConverter.ConvertToSource(Leadtools.RasterImage,Leadtools.Windows.Media.ConvertToSourceOptions)" /> method
+               </para></description></item></list></para>
+        <h3>Notes on alpha channel</h3>
+        <para>
+             When converting images that support an alpha channel (32 or 64 bits/pixel images), the <see cref="M:Leadtools.Windows.Media.RasterImageConverter.ConvertToSource(Leadtools.RasterImage,Leadtools.Windows.Media.ConvertToSourceOptions)" /> method supports masking out the
+             alpha channel bits to all 1's through or using the source image alpha channel bits through the use of the
+             <see cref="T:Leadtools.Windows.Media.ConvertToSourceOptions">ConvertToSourceOptions.KeepAlphaValues</see> flag. Masking out the alpha channel bits
+             requires the source data image to be processed and as a result, the image will not be compatible with WPF.
+             </para>
+        <h3>Microsoft Silverlight</h3>
+        <para>The Microsoft Silverlight platform supports creating images as 32-bits per pixel only. So only a <see cref="T:Leadtools.RasterImage" /> with the following
+             properties is considered Silverlight-compatible:</para>
+        <para>
+          <see cref="P:Leadtools.RasterImage.IsConventionalMemory">RasterImage.IsConventionalMemory</see> is <strong>true</strong>,
+             <see cref="P:Leadtools.RasterImage.BitsPerPixel">RasterImage.BitsPerPixel</see> is 32 and <see cref="P:Leadtools.RasterImage.Order">RasterImage.Order</see> is
+             <see cref="T:Leadtools.RasterByteOrder">RasterByteOrder.Bgr</see>.</para>
+        <para>Any <see cref="T:Leadtools.RasterImage" /> with any other combination with image color and data format will be converted in scanline by scanline
+             bases.</para>
+        <para>You can also use the <see cref="T:Leadtools.Windows.Media.ConvertToSourceOptions">ConvertToSourceOptions.UseSetSource</see> options to speed up the conversion
+             process for incompatible image data as described above.</para>
+        <para>For more information refer to <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics.Windows.Media~WM.Topics.RasterImageAndWpfSilverlight.html">RasterImage and WPF/Silverlight</a>.</para>
+      </remarks>
+      <example>
+        <code lang="VB">      Private Sub ConvertToSourceExample(ByVal imageControl As System.Windows.Controls.Image)
+         Dim srcFileName As String = Path.Combine(LEAD_VARS.ImagesDir, "Image1.cmp")
+
+         Using codecs As New RasterCodecs()
+            ' Load the image
+            Using rasterImage As RasterImage = codecs.Load(srcFileName, 0, CodecsLoadByteOrder.Bgr, 1, 1)
+               ' Convert it to WPF/Silverlight ImageSource
+               Dim source As System.Windows.Media.ImageSource = RasterImageConverter.ConvertToSource(rasterImage, ConvertToSourceOptions.None)
+
+               ' Set it in the Image control
+               imageControl.Source = source
+            End Using
+         End Using
+
+      End Sub
+
+   Public NotInheritable Class LEAD_VARS
+      Public Const ImagesDir As String = "C:\Users\Public\Documents\LEADTOOLS Images"
+   End Class</code>
+        <code lang="CS">      private void ConvertToSourceExample(System.Windows.Controls.Image imageControl)
+      {
+         string srcFileName =Path.Combine(LEAD_VARS.ImagesDir, "Image1.cmp");
+
+         using(RasterCodecs codecs = new RasterCodecs())
+         {
+            // Load the image
+            using(RasterImage rasterImage = codecs.Load(srcFileName, 0, CodecsLoadByteOrder.Bgr, 1, 1))
+            {
+               // Convert it to WPF/Silverlight ImageSource
+               System.Windows.Media.ImageSource source = RasterImageConverter.ConvertToSource(rasterImage, ConvertToSourceOptions.None);
+
+               // Set it in the Image control
+               imageControl.Source = source;
+            }
+         }
+
+      }
+
+   static class LEAD_VARS
+   {
+      public const string ImagesDir = @"C:\Users\Public\Documents\LEADTOOLS Images";
+   }</code>
+        <code lang="SilverlightCSharp">      private void ConvertToSourceExample(System.Windows.Controls.Image imageControl)
+      {
+         string srcFileName = LeadtoolsExamples.Common.ImagesPath.Path + "Image1.cmp";
+         RasterCodecs codecs = new RasterCodecs();
+         // Load the image
+         using(RasterImage rasterImage = codecs.Load(srcFileName, 0, CodecsLoadByteOrder.Bgr, 1, 1))
+         {
+            // Convert it to WPF/Silverlight ImageSource
+            System.Windows.Media.ImageSource source = RasterImageConverter.ConvertToSource(rasterImage, ConvertToSourceOptions.None);
+
+            // Set it in the Image control
+            imageControl.Source = source;
+         }
+      }</code>
+        <code lang="SilverlightVB">      Private Sub ConvertToSourceExample(ByVal imageControl As System.Windows.Controls.Image)
+         Dim srcFileName As String = LeadtoolsExamples.Common.ImagesPath.Path &amp; "Image1.cmp"
+         Dim codecs As RasterCodecs = New RasterCodecs()
+         ' Load the image
+         Using rasterImage As RasterImage = codecs.Load(srcFileName, 0, CodecsLoadByteOrder.Bgr, 1, 1)
+            ' Convert it to WPF/Silverlight ImageSource
+            Dim source As System.Windows.Media.ImageSource = RasterImageConverter.ConvertToSource(rasterImage, ConvertToSourceOptions.None)
+
+            ' Set it in the Image control
+            imageControl.Source = source
+         End Using
+      End Sub</code>
+      </example>
+    </member>
+    <member name="M:Leadtools.Windows.Media.RasterImageConverter.ConvertFromSource(System.Windows.Media.ImageSource,Leadtools.Windows.Media.ConvertFromSourceOptions)">
+      <summary>Converts a WPF/Silverlight <see cref="T:System.Windows.Media.ImageSource" /> object to LEADTOOLS <see cref="T:Leadtools.RasterImage" />. <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics~Leadtools.Topics.LEADTOOLSDocumentation.html"><img src="dotnet.png" alt=".NET support" border="0" /></a><a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics~Leadtools.Topics.LEADTOOLSDocumentation.html"><img src="silverlight.png" alt="Silverlight support" border="0" /></a></summary>
+      <param name="image">The <see cref="T:System.Windows.Media.ImageSource" /> object containing the image data to convert.</param>
+      <param name="options">
+            Options to control the conversion operation.  Currently there are no extra options and the value of this parameter must be set to
+            <see cref="T:Leadtools.Windows.Media.ConvertFromSourceOptions">ConvertFromSourceOptions.None</see></param>
+      <returns>A <see cref="T:Leadtools.RasterImage" /> object representing the converted image.</returns>
+      <remarks>
+        <h3>Microsoft Windows Presentation Foundations (WPF)</h3>
+        <para>LEADTOOLS and WPF support different pixel formats. These pixel formats may not be identical in some cases. The
+            conversion process takes care of converting scanlines to a suitable format that best matches the source data. The following table shows the result bits/pixel
+            byte order achieved when passing images with different pixel format values:
+            <list type="table"><listheader><term>Source PixelFormat</term><description>Result Bits/Pixel and byte order</description></listheader><item><term><see cref="P:System.Windows.Media.PixelFormats.Bgr101010" /></term><description>24 bits/pixel and <see cref="T:Leadtools.RasterByteOrder">RasterByteOrder.Bgr</see></description></item><item><term><see cref="P:System.Windows.Media.PixelFormats.Bgr24" /></term><description>24 bits/pixel and <see cref="T:Leadtools.RasterByteOrder">RasterByteOrder.Bgr</see></description></item><item><term><see cref="P:System.Windows.Media.PixelFormats.Bgr32" /></term><description>32 bits/pixel and <see cref="T:Leadtools.RasterByteOrder">RasterByteOrder.Bgr</see></description></item><item><term><see cref="P:System.Windows.Media.PixelFormats.Bgr555" /></term><description>16 bits/pixel and <see cref="T:Leadtools.RasterByteOrder">RasterByteOrder.Bgr</see></description></item><item><term><see cref="P:System.Windows.Media.PixelFormats.Bgr565" /></term><description>24 bits/pixel and <see cref="T:Leadtools.RasterByteOrder">RasterByteOrder.Bgr</see></description></item><item><term><see cref="P:System.Windows.Media.PixelFormats.BlackWhite" /></term><description>1 bits/pixel and <see cref="T:Leadtools.RasterByteOrder">RasterByteOrder.Rgb</see> with a black on white palette</description></item><item><term><see cref="P:System.Windows.Media.PixelFormats.Cmyk32" /></term><description>24 bits/pixel and <see cref="T:Leadtools.RasterByteOrder">RasterByteOrder.Bgr</see></description></item><item><term><see cref="P:System.Windows.Media.PixelFormats.Gray16" /></term><description>16 bits/pixel and <see cref="T:Leadtools.RasterByteOrder">RasterByteOrder.Gray</see></description></item><item><term><see cref="P:System.Windows.Media.PixelFormats.Gray2" /></term><description>2 bits/pixel and <see cref="T:Leadtools.RasterByteOrder">RasterByteOrder.Rgb</see> with a palette containing 2 shades of gray</description></item><item><term><see cref="P:System.Windows.Media.PixelFormats.Gray32Float" /></term><description>24 bits/pixel and <see cref="T:Leadtools.RasterByteOrder">RasterByteOrder.Bgr</see></description></item><item><term><see cref="P:System.Windows.Media.PixelFormats.Gray4" /></term><description>4 bits/pixel and <see cref="T:Leadtools.RasterByteOrder">RasterByteOrder.Rgb</see> with a palette containing 16 shades of gray</description></item><item><term><see cref="P:System.Windows.Media.PixelFormats.Gray8" /></term><description>8 bits/pixel and <see cref="T:Leadtools.RasterByteOrder">RasterByteOrder.Rgb</see> with a palette containing 256 shades of gray</description></item><item><term><see cref="P:System.Windows.Media.PixelFormats.Indexed1" /></term><description>1 bits/pixel and <see cref="T:Leadtools.RasterByteOrder">RasterByteOrder.Rgb</see> with corresponding palette</description></item><item><term><see cref="P:System.Windows.Media.PixelFormats.Indexed2" /></term><description>2 bits/pixel and <see cref="T:Leadtools.RasterByteOrder">RasterByteOrder.Rgb</see> with corresponding palette</description></item><item><term><see cref="P:System.Windows.Media.PixelFormats.Indexed4" /></term><description>4 bits/pixel and <see cref="T:Leadtools.RasterByteOrder">RasterByteOrder.Rgb</see> with corresponding palette</description></item><item><term><see cref="P:System.Windows.Media.PixelFormats.Indexed8" /></term><description>8 bits/pixel and <see cref="T:Leadtools.RasterByteOrder">RasterByteOrder.Rgb</see> with corresponding palette</description></item><item><term><see cref="P:System.Windows.Media.PixelFormats.Pbgra32" /></term><description>32 bits/pixel and <see cref="T:Leadtools.RasterByteOrder">RasterByteOrder.Bgr</see></description></item><item><term><see cref="P:System.Windows.Media.PixelFormats.Prgba128Float" /></term><description>24 bits/pixel and <see cref="T:Leadtools.RasterByteOrder">RasterByteOrder.Bgr</see></description></item><item><term><see cref="P:System.Windows.Media.PixelFormats.Rgb24" /></term><description>24 bits/pixel and <see cref="T:Leadtools.RasterByteOrder">RasterByteOrder.Rgb</see></description></item><item><term><see cref="P:System.Windows.Media.PixelFormats.Rgb48" /></term><description>48 bits/pixel and <see cref="T:Leadtools.RasterByteOrder">RasterByteOrder.Rgb</see></description></item><item><term><see cref="P:System.Windows.Media.PixelFormats.Rgb128Float" /></term><description>24 bits/pixel and <see cref="T:Leadtools.RasterByteOrder">RasterByteOrder.Rgb</see></description></item><item><term><see cref="P:System.Windows.Media.PixelFormats.Rgba64" /></term><description>64 bits/pixel and <see cref="T:Leadtools.RasterByteOrder">RasterByteOrder.Rgb</see></description></item></list></para>
+        <h3>Microsoft Silverlight</h3>
+        <para>Microsoft Silverlight currently offers support for 32-bits/pixels only. So the result from this method will always
+            be a <see cref="T:Leadtools.RasterImage" /> object with <see cref="P:Leadtools.RasterImage.BitsPerPixel">RasterImage.BitsPerPixel</see> equals to 32.</para>
+        <para>Use the <see cref="M:Leadtools.Windows.Media.RasterImageConverter.ConvertToSource(Leadtools.RasterImage,Leadtools.Windows.Media.ConvertToSourceOptions)" /> method to convert LEADTOOLS <see cref="T:Leadtools.RasterImage" /> to a WPF/Silverlight <see cref="T:System.Windows.Media.ImageSource" /> object.</para>
+        <para>The conversion works by copying the image data over to the new destination.  Currently, there is no support for sharing memory between a
+            <see cref="T:Leadtools.RasterImage" /> and an <see cref="T:System.Windows.Media.ImageSource" />.</para>
+        <para>For more information refer to <a href="ms-help://Leadtools.DotNet175/Leadtools.Topics/Leadtools.Topics.Windows.Media~WM.Topics.RasterImageAndWpfSilverlight.html">RasterImage and WPF/Silverlight</a>.</para>
+      </remarks>
+      <example>
+        <code lang="VB">      Private Sub ConvertFromSourceExample(ByVal imageControl As System.Windows.Controls.Image)
+         ' Get the WPF/Silverlight source image in the Image control
+         Dim source As ImageSource = imageControl.Source
+         ' Convert it to a LEADTOOLS RasterImage
+         Using rasterImage As RasterImage = RasterImageConverter.ConvertFromSource(source, ConvertFromSourceOptions.None)
+            ' Now, use LEADTOOLS to Invert the image
+            Dim cmd As New InvertCommand()
+            cmd.Run(rasterImage)
+
+            ' Convert the back to WPF/Silverlight
+            source = RasterImageConverter.ConvertToSource(rasterImage, ConvertToSourceOptions.None)
+
+            ' Set it back into the Image control
+            imageControl.Source = source
+         End Using
+      End Sub</code>
+        <code lang="CS">      private void ConvertFromSourceExample(System.Windows.Controls.Image imageControl)
+      {
+         // Get the WPF/Silverlight source image in the Image control
+         ImageSource source = imageControl.Source;
+         // Convert it to a LEADTOOLS RasterImage
+         using(RasterImage rasterImage = RasterImageConverter.ConvertFromSource(source, ConvertFromSourceOptions.None))
+         {
+            // Now, use LEADTOOLS to Invert the image
+            Leadtools.ImageProcessing.Color.InvertCommand cmd = new Leadtools.ImageProcessing.Color.InvertCommand();
+            cmd.Run(rasterImage);
+
+            // Convert the back to WPF/Silverlight
+            source = RasterImageConverter.ConvertToSource(rasterImage, ConvertToSourceOptions.None);
+
+            // Set it back into the Image control
+            imageControl.Source = source;
+         }
+      }</code>
+        <code lang="SilverlightCSharp">      private void ConvertFromSourceExample(System.Windows.Controls.Image imageControl)
+      {
+         // Get the WPF/Silverlight source image in the Image control
+         ImageSource source = imageControl.Source;
+         // Convert it to a LEADTOOLS RasterImage
+         using(RasterImage rasterImage = RasterImageConverter.ConvertFromSource(source, ConvertFromSourceOptions.None))
+         {
+            // Now, use LEADTOOLS to Invert the image
+            Leadtools.ImageProcessing.Color.InvertCommand cmd = new Leadtools.ImageProcessing.Color.InvertCommand();
+            cmd.Run(rasterImage);
+
+            // Convert the back to WPF/Silverlight
+            source = RasterImageConverter.ConvertToSource(rasterImage, ConvertToSourceOptions.None);
+
+            // Set it back into the Image control
+            imageControl.Source = source;
+         }
+      }</code>
+        <code lang="SilverlightVB">      Private Sub ConvertFromSourceExample(ByVal imageControl As System.Windows.Controls.Image)
+         ' Get the WPF/Silverlight source image in the Image control
+         Dim source As ImageSource = imageControl.Source
+         ' Convert it to a LEADTOOLS RasterImage
+         Using rasterImage As RasterImage = RasterImageConverter.ConvertFromSource(source, ConvertFromSourceOptions.None)
+            ' Now, use LEADTOOLS to Invert the image
+            Dim cmd As InvertCommand = New InvertCommand()
+            cmd.Run(rasterImage)
+
+            ' Convert the back to WPF/Silverlight
+            source = RasterImageConverter.ConvertToSource(rasterImage, ConvertToSourceOptions.None)
+
+            ' Set it back into the Image control
+            imageControl.Source = source
+         End Using
+      End Sub</code>
+      </example>
+    </member>
+  </members>
+</doc>

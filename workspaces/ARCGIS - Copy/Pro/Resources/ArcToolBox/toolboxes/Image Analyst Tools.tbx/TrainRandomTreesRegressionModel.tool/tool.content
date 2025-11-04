@@ -1,0 +1,263 @@
+{
+    "type": "FunctionTool",
+    "guid": "{017e9eab-1f3b-4c9c-a910-56efd249eca4}",
+    "displayname": "$rc:title",
+    "helpcontent": "66090005",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "58",
+        "86"
+    ],
+    "params": {
+        "in_rasters": {
+            "display_order": "0",
+            "displayname": "$rc:in_rasters.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "DEMosaicDataset"
+                        },
+                        {
+                            "type": "GPMosaicLayer"
+                        },
+                        {
+                            "type": "DERasterDataset"
+                        },
+                        {
+                            "type": "GPRasterLayer"
+                        },
+                        {
+                            "type": "DEImageServer"
+                        },
+                        {
+                            "type": "GPString"
+                        }
+                    ]
+                }
+            },
+            "description": "$rc:in_rasters.descr"
+        },
+        "in_target_data": {
+            "display_order": "1",
+            "displayname": "$rc:in_target_data.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFeatureClass"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    },
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "DEImageServer"
+                    }
+                ]
+            },
+            "description": "$rc:in_target_data.descr"
+        },
+        "out_regression_definition": {
+            "direction": "out",
+            "display_order": "5",
+            "displayname": "$rc:out_regression_definition.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "ecd"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:out_regression_definition.descr"
+        },
+        "target_value_field": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:target_value_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double"
+                ]
+            },
+            "depends": [
+                "in_target_data"
+            ],
+            "description": "$rc:target_value_field.descr"
+        },
+        "target_dimension_field": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:target_dimension_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "depends": [
+                "in_target_data"
+            ],
+            "description": "$rc:target_dimension_field.descr"
+        },
+        "raster_dimension": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:raster_dimension.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "in_rasters"
+            ],
+            "description": "$rc:raster_dimension.descr"
+        },
+        "out_importance_table": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "6",
+            "displayname": "$rc:out_importance_table.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "DETable"
+            },
+            "description": "$rc:out_importance_table.descr"
+        },
+        "max_num_trees": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:max_num_trees.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "50",
+            "description": "$rc:max_num_trees.descr"
+        },
+        "max_tree_depth": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:max_tree_depth.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "30",
+            "description": "$rc:max_tree_depth.descr"
+        },
+        "max_samples": {
+            "type": "optional",
+            "display_order": "11",
+            "displayname": "$rc:max_samples.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "100000",
+            "description": "$rc:max_samples.descr"
+        },
+        "average_points_per_cell": {
+            "type": "optional",
+            "display_order": "13",
+            "displayname": "$rc:average_points_per_cell.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "AVERAGE_POINTS_PER_CELL"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "KEEP_ALL_POINTS"
+                    }
+                ]
+            },
+            "depends": [
+                "in_target_data"
+            ],
+            "value": "false",
+            "description": "$rc:average_points_per_cell.descr"
+        },
+        "percent_testing": {
+            "type": "optional",
+            "display_order": "12",
+            "displayname": "$rc:percent_testing.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "10",
+            "description": "$rc:percent_testing.descr"
+        },
+        "out_scatterplots": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "7",
+            "displayname": "$rc:out_scatterplots.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "pdf",
+                            "html"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:out_scatterplots.descr"
+        },
+        "out_sample_features": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "8",
+            "displayname": "$rc:out_sample_features.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_sample_features.descr"
+        }
+    },
+    "environments": [
+        "cellSize",
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

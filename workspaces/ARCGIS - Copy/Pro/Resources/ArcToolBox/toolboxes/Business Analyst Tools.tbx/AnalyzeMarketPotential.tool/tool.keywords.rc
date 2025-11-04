@@ -1,0 +1,14 @@
+{
+    "set": [
+        "base",
+        "customer",
+        "geography",
+        "polygon",
+        "profile",
+        "profiles",
+        "report",
+        "segmentation",
+        "tapestry",
+        "target"
+    ]
+}

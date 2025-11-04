@@ -1,0 +1,79 @@
+{
+    "type": "FunctionTool",
+    "guid": "{edcbcf1f-0f9d-4f97-91cb-9c640d3b0af1}",
+    "displayname": "$rc:title",
+    "helpcontent": "61010022",
+    "description": "$rc:description",
+    "product": "200",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "block_add_to_map"
+    ],
+    "params": {
+        "in_utility_network": {
+            "displayname": "$rc:in_utility_network.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    },
+                    {
+                        "type": "GPUtilityNetworkLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_utility_network.descr"
+        },
+        "network_attribute": {
+            "displayname": "$rc:network_attribute.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:network_attribute.descr"
+        },
+        "domain_network": {
+            "displayname": "$rc:domain_network.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "in_utility_network"
+            ],
+            "description": "$rc:domain_network.descr"
+        },
+        "featureclass": {
+            "displayname": "$rc:featureclass.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "domain_network"
+            ],
+            "description": "$rc:featureclass.descr"
+        },
+        "field": {
+            "displayname": "$rc:field.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "featureclass"
+            ],
+            "description": "$rc:field.descr"
+        },
+        "out_utility_network": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_utility_network.title",
+            "datatype": {
+                "type": "DEUtilityNetwork"
+            }
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

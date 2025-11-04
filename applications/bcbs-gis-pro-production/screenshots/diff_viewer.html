@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusionSync Diff Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: rgba(0,0,0,0.5);
+            margin: 0;
+            padding: 0;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .modal {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+            width: 800px;
+            max-width: 90%;
+            padding: 25px;
+        }
+        h2 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+        }
+        .increase {
+            color: green;
+        }
+        .decrease {
+            color: red;
+        }
+        .button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            float: right;
+        }
+        .metadata {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .metadata span {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="modal">
+        <h2>Property Data Changes</h2>
+        
+        <div class="metadata">
+            <p><span>Property ID:</span> PROP_12345</p>
+            <p><span>Filename:</span> property_update_05072025.xml</p>
+            <p><span>Upload ID:</span> 7fe9a2c3-5d1b-4e47-8a5e-3d916b512db9</p>
+            <p><span>SHA-256:</span> a3d5f7e9c2b1d8e4a6f9c2b3d8e5a7f9...</p>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Current Value</th>
+                    <th>Proposed Value</th>
+                    <th>Change</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>land_value</td>
+                    <td>$150,000</td>
+                    <td>$165,000</td>
+                    <td class="increase">+$15,000</td>
+                </tr>
+                <tr>
+                    <td>building_value</td>
+                    <td>$320,000</td>
+                    <td>$335,000</td>
+                    <td class="increase">+$15,000</td>
+                </tr>
+                <tr>
+                    <td>tax_due</td>
+                    <td>$4,750</td>
+                    <td>$5,000</td>
+                    <td class="increase">+$250</td>
+                </tr>
+                <tr>
+                    <td>last_assessment_date</td>
+                    <td>2024-08-15</td>
+                    <td>2025-05-07</td>
+                    <td>Updated</td>
+                </tr>
+                <tr>
+                    <td>zone_classification</td>
+                    <td>R2</td>
+                    <td>R2</td>
+                    <td>No change</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <button class="button">Close</button>
+    </div>
+</body>
+</html>

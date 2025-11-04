@@ -1,0 +1,12 @@
+{
+    "map": {
+        "database_path.descr": "The Workflow Manager (Classic) database connection file that contains the job information. If no connection file is specified, the current default Workflow Manager (Classic) database will be used.",
+        "database_path.title": "Input Database Path",
+        "description": "Creates dependencies between a job and other existing Task Group jobs based on the criteria defined in the extended properties.",
+        "job_id.descr": "The job ID of the Workflow Manager (Classic) job that will have dependencies set.",
+        "job_id.title": "Job ID",
+        "out_job_ids.title": "Output Job IDs",
+        "summary": "<xdoc><p>Creates dependencies between a job and other existing Task Group jobs based on the criteria defined in the extended properties.</p><note type=\"tip\"/><p group=\"note\">It is recommended that current Workflow Manager (Classic) users begin new projects using the services-driven version of ArcGIS Workflow Manager for ArcGIS Pro.</p></xdoc>",
+        "title": "Set Task Group Dependencies"
+    }
+}

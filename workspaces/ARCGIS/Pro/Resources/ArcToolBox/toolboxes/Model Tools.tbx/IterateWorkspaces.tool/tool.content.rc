@@ -1,0 +1,20 @@
+{
+    "map": {
+        "description": "Iterates over workspaces in a folder.",
+        "in_folder.descr": "The folder which stores the workspace to iterate.",
+        "in_folder.title": "Folder",
+        "name.title": "Name",
+        "recursive.descr": "<xdoc><p>Specifies if subfolders in the main folder will be iterated through recursively.</p><ul><li>Checked—Will iterate through all subfolders.</li><li>Unchecked—Will not iterate through all subfolders. This is the default.</li></ul></xdoc>",
+        "recursive.title": "Recursive",
+        "title": "Iterate Workspaces",
+        "wildcard.descr": "A combination of * and characters that help to limit the results. The asterisk is the same as specifying ALL. If no wildcard is specified, all inputs will be returned. You can use this parameter to restrict iteration over input names starting with a certain character or word (for example, A* or Ari* or Land* and so on).",
+        "wildcard.title": "Wildcard",
+        "workspace.title": "Workspace",
+        "workspace_type.descr": "<xdoc><p>Specifies the workspace type to find.</p><ul><li><span title=\"FILEGDB\">File geodatabase</span>—Only file geodatabases will be the output.</li><li><span title=\"FOLDER\">Folder</span>—Only folders will be the output.</li><li><span title=\"SDE\">Enterprise geodatabase</span>—Only enterprise geodatabases will be the output.</li><li><span title=\"BIM\">BIM</span>—Only BIM workspaces will be the output.</li></ul></xdoc>",
+        "workspace_type.domain.BIM": "BIM",
+        "workspace_type.domain.FILEGDB": "File geodatabase",
+        "workspace_type.domain.FOLDER": "Folder",
+        "workspace_type.domain.SDE": "Enterprise geodatabase",
+        "workspace_type.title": "Workspace Type"
+    }
+}

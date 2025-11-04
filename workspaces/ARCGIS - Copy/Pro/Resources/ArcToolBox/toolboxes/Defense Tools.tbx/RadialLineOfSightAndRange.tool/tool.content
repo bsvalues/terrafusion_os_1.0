@@ -1,0 +1,162 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\RadialLineOfSightAndRange",
+    "displayname": "$rc:title",
+    "helpcontent": "74040005",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_observer_features": {
+            "display_order": "0",
+            "displayname": "$rc:in_observer_features.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_observer_features.descr"
+        },
+        "in_surface": {
+            "display_order": "1",
+            "displayname": "$rc:in_surface.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "DEMosaicDataset"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "description": "$rc:in_surface.descr"
+        },
+        "out_viewshed_feature_class": {
+            "direction": "out",
+            "display_order": "2",
+            "displayname": "$rc:out_viewshed_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "symbologylayer": "MT_Radial_Line_Of_Sight_Output.lyrx",
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_viewshed_feature_class.descr"
+        },
+        "out_fov_feature_class": {
+            "direction": "out",
+            "display_order": "3",
+            "displayname": "$rc:out_fov_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "symbologylayer": "MT_RLOSSectorOutline.lyr",
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_fov_feature_class.descr"
+        },
+        "out_range_radius_feature_class": {
+            "direction": "out",
+            "display_order": "4",
+            "displayname": "$rc:out_range_radius_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "symbologylayer": "MT_RLOSRadiusOutline.lyr",
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_range_radius_feature_class.descr"
+        },
+        "observer_height_offset": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:observer_height_offset.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "2",
+            "description": "$rc:observer_height_offset.descr"
+        },
+        "inner_radius": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:inner_radius.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "1000",
+            "description": "$rc:inner_radius.descr"
+        },
+        "outer_radius": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:outer_radius.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "3000",
+            "description": "$rc:outer_radius.descr"
+        },
+        "horizontal_start_angle": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:horizontal_start_angle.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:horizontal_start_angle.descr"
+        },
+        "horizontal_end_angle": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:horizontal_end_angle.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "360",
+            "description": "$rc:horizontal_end_angle.descr"
+        }
+    },
+    "environments": [
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "set": [
+        "animation",
+        "attribute",
+        "column",
+        "date",
+        "fields",
+        "row",
+        "shift",
+        "switch",
+        "table",
+        "temporal"
+    ]
+}

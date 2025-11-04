@@ -1,0 +1,107 @@
+{
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "node",
+        "cwd": "../../marketplace/autonomous-research-engine/frontend",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "name": "Start Autonomous Research Engine Frontend"
+      },
+      {
+        "type": "debugpy",
+        "cwd": "../../marketplace/autonomous-research-engine/backend",
+        "program": "../../marketplace/autonomous-research-engine/backend/main.py",
+        "name": "Start Autonomous Research Engine Backend"
+      },
+      {
+        "type": "node",
+        "cwd": "../../marketplace/autonomous-research-engine/mcp-server",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "name": "Start Autonomous Research Engine MCP Server"
+      }
+    ]
+  },
+  "tasks": {
+    "tasks": [
+      {
+        "cwd": "../../marketplace/autonomous-research-engine",
+        "args": [
+          "run",
+          "build"
+        ],
+        "command": "npm",
+        "label": "Build Autonomous Research Engine"
+      },
+      {
+        "cwd": "../../marketplace/autonomous-research-engine",
+        "args": [
+          "run",
+          "test"
+        ],
+        "command": "npm",
+        "label": "Test Autonomous Research Engine"
+      }
+    ],
+    "version": "2.0.0"
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "ms-python.black-formatter"
+    ]
+  },
+  "folders": [
+    {
+      "name": "💼 Autonomous Research Engine",
+      "path": "../../marketplace/autonomous-research-engine"
+    },
+    {
+      "name": "📦 Platform SDK (read-only)",
+      "path": "../../platform/sdk"
+    },
+    {
+      "name": "🎨 Design System (read-only)",
+      "path": "../../platform/design-system"
+    },
+    {
+      "name": "🧪 Tests",
+      "path": "../../tests/marketplace/autonomous-research-engine"
+    },
+    {
+      "name": "📚 Autonomous Research Engine Docs",
+      "path": "../../docs/marketplace/autonomous-research-engine.md"
+    }
+  ],
+  "settings": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit",
+      "source.fixAll": "explicit"
+    },
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#f59e0b",
+      "titleBar.activeForeground": "#ffffff"
+    },
+    "files.exclude": {
+      "../../os-platform": true,
+      "**/node_modules": true,
+      "../../terrafusion-cos": true,
+      "../../marketplace/*": true,
+      "../../backend": true,
+      "**/dist": true,
+      "../../frontend": true,
+      "!../../marketplace/autonomous-research-engine": true
+    },
+    "editor.formatOnSave": true
+  }
+}
+

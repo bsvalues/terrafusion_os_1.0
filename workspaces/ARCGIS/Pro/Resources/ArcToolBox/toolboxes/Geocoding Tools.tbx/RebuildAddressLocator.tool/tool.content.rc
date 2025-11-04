@@ -1,0 +1,10 @@
+{
+    "map": {
+        "description": "Rebuilds an address locator to update the locator with the current reference data. Because a locator contains a snapshot of the reference data when it was created, it will not geocode addresses with the updated data  when the geometry and attributes of the reference data are changed.  To geocode addresses with the current version of the reference data, the  locator must be rebuilt to update the changes in the locator.",
+        "in_address_locator.descr": "The address locator that will be rebuilt.",
+        "in_address_locator.title": "Input Address Locator",
+        "out_address_locator.title": "Rebuilt Address Locator",
+        "summary": "Rebuilds an address locator to update the locator with the current reference data. Because a locator contains a snapshot of the reference data when it was created, it will not geocode addresses with the updated data when the geometry and attributes of the reference data are changed. To geocode addresses with the current version of the reference data, the locator must be rebuilt to update the changes in the locator.",
+        "title": "Rebuild Address Locator"
+    }
+}

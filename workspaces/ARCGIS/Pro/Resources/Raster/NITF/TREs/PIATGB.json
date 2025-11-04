@@ -1,0 +1,144 @@
+{
+  "TRE": "PIATGB",
+  "Source": [
+    "STDI-0002-1 v2021.1, Appendix C: PIAE"
+  ],
+  "Name": "Profile for Imagery Access Target Version B",
+  "Description": "The Profile for Imagery Access Target Version B (PIATGB) TRE is designed to accommodate more than just the essential target data. It contains descriptive data about the targets. This extension shall be present once for each target identified in the image, and there may be up to 250 of these extensions for each data type in an NITF file.",
+  "Size": 117,
+  "Fields": {
+    "TGTUTM": {
+      "Name": "Target UTM",
+      "Description": "This field identifies the Universal Transverse Mercator (UTM) grid coordinates that equate to the geographic coordinates of the target element. The value of this field shall be of the form XXXNNnnnnnnnnnn.",
+      "Size": 15,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "PIATGAID": {
+      "Name": "Target Identification",
+      "Description": "This field identifies the point or area target (DSA, LOC, or BAS). The value of this field shall either be a 6-character Area Target ID, a 10-character BE, or a 15-character BE + suffix.",
+      "Size": 15,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "PIACTRY": {
+      "Name": "Country Code",
+      "Description": "This field identifies the country in which the geographic coordinates of the target element reside. For the value of this field, refer to FIPS 10-4.",
+      "Size": 2,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "CountryCode",
+          "Spec": "FIPS-2"
+        }
+      ]
+    },
+    "PIACAT": {
+      "Name": "Category Code",
+      "Description": "This field classifies a target element by its product or the type of activity in which it can engage. For the value of this field, refer to DIAM 65-3-1.",
+      "Size": 5,
+      "Format": "BCS-N",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "TGTGEO": {
+      "Name": "Target Geographic Coordinates",
+      "Description": "This field specifies a point target's geographic location in latitude or longitude. The format for the value of this field shall be ddmmssXdddmmssY.",
+      "Size": 15,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "DATUM": {
+      "Name": "Target Coordinate Datum",
+      "Description": "This field identifies the datum of the map used to derive the target coordinates (UTM or GEO). The value of this field is in accordance with Appendix B, Attachment 10, XI-DBDD-08 93 Aug 93.",
+      "Size": 3,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "TGTNAME": {
+      "Name": "Target Name",
+      "Description": "This field identifies the official name of the target element based on the MIIDS/IDB name.",
+      "Size": 38,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "PERCOVER": {
+      "Name": "Percentage of Coverage",
+      "Description": "This field defines the percentage of the target covered by the image.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 100
+        }
+      ]
+    },
+    "TGTLAT": {
+      "Name": "Target Latitude",
+      "Description": "This field specifies a point target's geographic location in latitude (in decimal degrees). The format for the value of this field shall be +/-dd.dddddd where '+' is northern hemisphere and '-' is southern hemisphere. NOTE: Provide the value only to the decimal places (precision) warranted by the sources and methods used to determine the location. The remaining places will be blank.",
+      "Size": 10,
+      "Format": "BCS-N",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "TGTLON": {
+      "Name": "Target Longitude",
+      "Description": "This field specifies a point target's geographic location in longitude (in decimal degrees). The format for the value of this field shall be +/-dd.dddddd where '+' is eastern hemisphere and '-' is western hemisphere. NOTE: Provide the value only to the decimal places (precision) warranted by the sources and methods used to determine the location. The remaining places will be blank.",
+      "Size": 10,
+      "Format": "BCS-N",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Double"
+        }
+      ]
+    }
+  }
+}

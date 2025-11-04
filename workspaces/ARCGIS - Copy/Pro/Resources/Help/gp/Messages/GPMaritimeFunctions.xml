@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<Messages STARTID="150001">
+<Message><ID>150001</ID><Description>Failed to import the feature catalogue to the target workspace.</Description></Message>
+<Message><ID>150002</ID><Description>Failed to import the S-100 cell to the target workspace.</Description></Message>
+<Message><ID>150003</ID><Description>Failed to export the S-101 cell.</Description></Message>
+<Message><ID>150004</ID><Description>Product name already exists in target workspace.</Description></Message>
+<Message><ID>150005</ID><Description>The specified update cell name doesn't match the base cell or an update is missing from the sequence.</Description></Message>
+<Message><ID>150006</ID><Description>Failed to convert S-57 to S-100 cell.</Description></Message>
+<Message><ID>150007</ID><Description>Invalid S-100 feature catalogue specified.</Description></Message>
+<Message><ID>150008</ID><Description>Invalid feature class! Input feature class must have a numeric depth field or be Z-enabled.</Description></Message>
+<Message><ID>150009</ID><Description>Start depth must be shallower than end depth.</Description></Message>
+<Message><ID>150010</ID><Description>Start depth must be deeper than end depth.</Description></Message>
+<Message><ID>150011</ID><Description>Invalid Nautical workspace %s</Description></Message>
+<Message><ID>150012</ID><Description>Invalid CNM date. Must be 2-digit month of year/4-digit year (MM/YYYY)</Description></Message>
+<Message><ID>150013</ID><Description>Invalid NTM date. Must be 2-digit week of year/2-digit year (WW/YY)</Description></Message>
+<Message><ID>150014</ID><Description>Invalid source geodatabase name. Use one of the three formats for the name of the geodatabase: [Scale Category Designator][Region##][Designator], Browse[Region##], or TOD[#][Region##][Designator].</Description></Message>
+</Messages>

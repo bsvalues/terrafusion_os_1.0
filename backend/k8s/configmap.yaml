@@ -1,0 +1,266 @@
+# ============================================================================
+# TerraFusion OS - Kubernetes ConfigMap Configuration
+# Government. Transcended. - Application Configuration Management
+# ============================================================================
+# Purpose: Store non-sensitive configuration for TerraFusion microservices
+# Features: Environment-specific settings, feature flags, service discovery
+# Usage: Mount as environment variables or volumes in pods
+# Security: Contains only non-sensitive data (sensitive data in Secrets)
+# ============================================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: terrafusion-config
+  namespace: terrafusion
+  labels:
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/component: config
+    app.kubernetes.io/version: "1.0.0"
+data:
+  # ============================================================================
+  # Common Configuration
+  # ============================================================================
+  ASPNETCORE_ENVIRONMENT: "Production"
+  TZ: "America/Los_Angeles"
+  DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: "false"
+  DOTNET_USE_POLLING_FILE_WATCHER: "true"
+  
+  # ============================================================================
+  # Logging Configuration
+  # ============================================================================
+  Logging__LogLevel__Default: "Warning"
+  Logging__LogLevel__Microsoft: "Error"
+  Logging__LogLevel__System: "Error"
+  Logging__LogLevel__Microsoft.AspNetCore: "Warning"
+  
+  # ============================================================================
+  # Service Discovery - Internal Service URLs
+  # ============================================================================
+  Services__API__Url: "http://terrafusion-api:5000"
+  Services__Consciousness__Url: "http://terrafusion-consciousness:3004"
+  Services__Gateway__Url: "http://terrafusion-gateway:3002"
+  Services__Operations__Url: "http://terrafusion-operations:5002"
+  Services__PostgreSQL__Host: "terrafusion-postgres"
+  Services__PostgreSQL__Port: "5432"
+  Services__PostgreSQL__Database: "terrafusion"
+  Services__Redis__Host: "terrafusion-redis"
+  Services__Redis__Port: "6379"
+  
+  # ============================================================================
+  # AI Configuration - Non-Sensitive Settings
+  # ============================================================================
+  AI__SwarmSize: "50000"
+  AI__QuantumOptimizationFactor: "949"
+  AI__ConsciousnessLevel: "TRANSCENDENT"
+  AI__AccuracyTarget: "0.999"
+  AI__ParallelAgents: "1000"
+  AI__MaxConcurrentTasks: "10000"
+  AI__EnableQuantumOptimization: "true"
+  AI__EnableAutonomousHealing: "true"
+  
+  # ============================================================================
+  # Gateway Configuration
+  # ============================================================================
+  Gateway__RateLimiting__Enabled: "true"
+  Gateway__RateLimiting__PermitLimit: "1000"
+  Gateway__RateLimiting__Window: "60"
+  Gateway__Cors__AllowedOrigins: "https://terrafusion.gov,https://app.terrafusion.gov"
+  Gateway__Cors__AllowedMethods: "GET,POST,PUT,DELETE,OPTIONS"
+  Gateway__Cors__AllowedHeaders: "Authorization,Content-Type,X-County-Id"
+  
+  # ============================================================================
+  # Cache Configuration
+  # ============================================================================
+  Cache__DefaultExpirationMinutes: "60"
+  Cache__SlidingExpirationMinutes: "30"
+  Cache__EnableDistributedCache: "true"
+  
+  # ============================================================================
+  # Performance Configuration
+  # ============================================================================
+  Performance__EnableResponseCompression: "true"
+  Performance__EnableResponseCaching: "true"
+  Performance__MaxConcurrentRequests: "1000"
+  Performance__RequestTimeoutSeconds: "30"
+  
+  # ============================================================================
+  # Health Check Configuration
+  # ============================================================================
+  HealthChecks__Enabled: "true"
+  HealthChecks__IntervalSeconds: "30"
+  HealthChecks__TimeoutSeconds: "10"
+  
+  # ============================================================================
+  # Metrics Configuration
+  # ============================================================================
+  Metrics__Enabled: "true"
+  Metrics__PrometheusPort: "8080"
+  Metrics__EnableDetailedMetrics: "true"
+  
+  # ============================================================================
+  # Government Compliance Configuration
+  # ============================================================================
+  Compliance__EnableAuditLogging: "true"
+  Compliance__EnableCountyIsolation: "true"
+  Compliance__EnableFISMAControls: "true"
+  Compliance__EnableIAAOValidation: "true"
+  Compliance__AuditRetentionDays: "2555"
+  
+  # ============================================================================
+  # Feature Flags
+  # ============================================================================
+  Features__EnableAIAssistant: "true"
+  Features__EnableWorkflowAutomation: "true"
+  Features__EnableBulkOperations: "true"
+  Features__EnableRealTimeSync: "true"
+  Features__EnablePredictiveAnalytics: "true"
+
+---
+# ============================================================================
+# TerraFusion OS - Kubernetes Secrets Configuration (TEMPLATE)
+# Government. Transcended. - Sensitive Configuration Management
+# ============================================================================
+# WARNING: This is a TEMPLATE with placeholder values
+# DO NOT use in production without replacing with actual secrets
+# Use kubectl create secret or external secret management (Azure Key Vault, AWS Secrets Manager)
+# ============================================================================
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: terrafusion-secrets
+  namespace: terrafusion
+  labels:
+    app.kubernetes.io/name: terrafusion-os
+    app.kubernetes.io/component: secret
+    app.kubernetes.io/version: "1.0.0"
+type: Opaque
+stringData:
+  # ============================================================================
+  # Database Connection String (REPLACE IN PRODUCTION)
+  # ============================================================================
+  DB_CONNECTION_STRING: "Host=terrafusion-postgres;Port=5432;Database=terrafusion;Username=postgres;Password=REPLACE_WITH_ACTUAL_PASSWORD"
+  
+  # PostgreSQL Credentials
+  POSTGRES_USER: "postgres"
+  POSTGRES_PASSWORD: "REPLACE_WITH_ACTUAL_PASSWORD"
+  POSTGRES_DB: "terrafusion"
+  
+  # ============================================================================
+  # JWT Authentication Secrets (REPLACE IN PRODUCTION)
+  # ============================================================================
+  JWT__Secret: "REPLACE_WITH_STRONG_SECRET_KEY_AT_LEAST_32_CHARACTERS"
+  JWT__Issuer: "TerraFusion"
+  JWT__Audience: "TerraFusionAPI"
+  JWT__ExpirationMinutes: "60"
+  JWT__RefreshTokenExpirationDays: "7"
+  
+  # ============================================================================
+  # Redis Configuration
+  # ============================================================================
+  Redis__Configuration: "terrafusion-redis:6379"
+  Redis__Password: "REPLACE_WITH_REDIS_PASSWORD_IF_ENABLED"
+  
+  # ============================================================================
+  # External API Keys (REPLACE IN PRODUCTION)
+  # ============================================================================
+  ExternalAPIs__HarrisPACS__ApiKey: "REPLACE_WITH_HARRIS_PACS_API_KEY"
+  ExternalAPIs__Tyler__ApiKey: "REPLACE_WITH_TYLER_API_KEY"
+  ExternalAPIs__Aumentum__ApiKey: "REPLACE_WITH_AUMENTUM_API_KEY"
+  
+  # ============================================================================
+  # Encryption Keys (REPLACE IN PRODUCTION)
+  # ============================================================================
+  Encryption__DataProtectionKey: "REPLACE_WITH_DATA_PROTECTION_KEY"
+  Encryption__FieldEncryptionKey: "REPLACE_WITH_FIELD_ENCRYPTION_KEY"
+  
+  # ============================================================================
+  # SMTP Configuration for Email Notifications (REPLACE IN PRODUCTION)
+  # ============================================================================
+  Smtp__Host: "smtp.office365.com"
+  Smtp__Port: "587"
+  Smtp__Username: "notifications@terrafusion.gov"
+  Smtp__Password: "REPLACE_WITH_SMTP_PASSWORD"
+  Smtp__FromEmail: "notifications@terrafusion.gov"
+  Smtp__FromName: "TerraFusion OS"
+
+---
+# ============================================================================
+# Production Secret Creation Commands (DO NOT COMMIT ACTUAL VALUES)
+# ============================================================================
+# Create secret from literal values:
+#   kubectl create secret generic terrafusion-secrets \
+#     --from-literal=DB_CONNECTION_STRING="Host=postgres;..." \
+#     --from-literal=JWT__Secret="your-secret-key" \
+#     --from-literal=POSTGRES_PASSWORD="your-postgres-password" \
+#     --namespace=terrafusion
+#
+# Create secret from file:
+#   kubectl create secret generic terrafusion-secrets \
+#     --from-env-file=.env.production \
+#     --namespace=terrafusion
+#
+# View secret (base64 encoded):
+#   kubectl get secret terrafusion-secrets -n terrafusion -o yaml
+#
+# Decode secret value:
+#   kubectl get secret terrafusion-secrets -n terrafusion -o jsonpath='{.data.JWT__Secret}' | base64 --decode
+#
+# Update secret:
+#   kubectl delete secret terrafusion-secrets -n terrafusion
+#   kubectl create secret generic terrafusion-secrets --from-literal=... -n terrafusion
+#
+# Use Azure Key Vault for Secrets (Recommended for Production):
+#   1. Install Azure Key Vault Provider for Secrets Store CSI Driver
+#   2. Create SecretProviderClass referencing Azure Key Vault
+#   3. Mount secrets as volumes in pods
+#
+# Example Azure Key Vault SecretProviderClass:
+# apiVersion: secrets-store.csi.x-k8s.io/v1
+# kind: SecretProviderClass
+# metadata:
+#   name: terrafusion-keyvault
+#   namespace: terrafusion
+# spec:
+#   provider: azure
+#   parameters:
+#     usePodIdentity: "false"
+#     useVMManagedIdentity: "true"
+#     userAssignedIdentityID: "YOUR_MANAGED_IDENTITY_CLIENT_ID"
+#     keyvaultName: "terrafusion-keyvault"
+#     cloudName: ""
+#     objects: |
+#       array:
+#         - |
+#           objectName: db-connection-string
+#           objectType: secret
+#           objectVersion: ""
+#         - |
+#           objectName: jwt-secret
+#           objectType: secret
+#           objectVersion: ""
+#     tenantId: "YOUR_TENANT_ID"
+# ============================================================================
+
+# ============================================================================
+# Apply Instructions
+# ============================================================================
+# Apply ConfigMap:
+#   kubectl apply -f configmap.yaml
+#
+# View ConfigMap:
+#   kubectl get configmap terrafusion-config -n terrafusion
+#   kubectl describe configmap terrafusion-config -n terrafusion
+#
+# Apply Secrets (ONLY IN NON-PRODUCTION):
+#   kubectl apply -f configmap.yaml
+#
+# View Secrets:
+#   kubectl get secret terrafusion-secrets -n terrafusion
+#   kubectl describe secret terrafusion-secrets -n terrafusion
+#
+# Verify ConfigMap/Secret in Pod:
+#   kubectl exec -it <pod-name> -n terrafusion -- env | grep AI__
+#   kubectl exec -it <pod-name> -n terrafusion -- env | grep JWT__
+# ============================================================================

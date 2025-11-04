@@ -1,0 +1,99 @@
+{
+    "type": "FunctionTool",
+    "guid": "{a0c96f80-39da-4aaf-95ea-59be57ed4908}",
+    "displayname": "$rc:title",
+    "helpcontent": "2040007",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_rows": {
+            "displayname": "$rc:in_rows.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_rows.descr"
+        },
+        "out_path": {
+            "displayname": "$rc:out_path.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEWorkspace"
+                    }
+                ]
+            },
+            "defaultenvironmentname": "workspace",
+            "description": "$rc:out_path.descr"
+        },
+        "out_name": {
+            "displayname": "$rc:out_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:out_name.descr"
+        },
+        "where_clause": {
+            "type": "optional",
+            "displayname": "$rc:where_clause.title",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "in_rows"
+            ],
+            "description": "$rc:where_clause.descr"
+        },
+        "field_mapping": {
+            "type": "optional",
+            "displayname": "$rc:field_mapping.title",
+            "datatype": {
+                "type": "GPFieldMapping"
+            },
+            "depends": [
+                "in_rows"
+            ],
+            "category": "$rc:params.category1",
+            "description": "$rc:field_mapping.descr"
+        },
+        "config_keyword": {
+            "type": "optional",
+            "displayname": "$rc:config_keyword.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPString"
+            },
+            "defaultenvironmentname": "configKeyword",
+            "description": "$rc:config_keyword.descr"
+        },
+        "out_table": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "DETable"
+            }
+        }
+    },
+    "environments": [
+        "configKeyword",
+        "extent",
+        "maintainAttachments",
+        "preserveGlobalIds",
+        "qualifiedFieldNames",
+        "scratchWorkspace",
+        "transferDomains",
+        "workspace"
+    ]
+}

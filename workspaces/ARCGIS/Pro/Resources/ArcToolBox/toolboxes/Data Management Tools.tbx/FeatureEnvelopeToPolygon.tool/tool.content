@@ -1,0 +1,74 @@
+{
+    "type": "FunctionTool",
+    "guid": "{3d0995e9-298a-4ec9-86a0-3fc557c15fa9}",
+    "displayname": "$rc:title",
+    "helpcontent": "3050002",
+    "description": "$rc:description",
+    "product": "300",
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Multipoint",
+                    "Polyline",
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "single_envelope": {
+            "type": "optional",
+            "displayname": "$rc:single_envelope.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "MULTIPART"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "SINGLEPART"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:single_envelope.descr"
+        }
+    },
+    "environments": [
+        "MDomain",
+        "MResolution",
+        "MTolerance",
+        "XYResolution",
+        "XYTolerance",
+        "ZDomain",
+        "ZResolution",
+        "ZTolerance",
+        "extent",
+        "outputCoordinateSystem",
+        "outputMFlag",
+        "outputZFlag",
+        "outputZValue",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

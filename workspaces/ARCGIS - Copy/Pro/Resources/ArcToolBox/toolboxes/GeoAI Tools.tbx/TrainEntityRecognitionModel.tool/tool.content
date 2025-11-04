@@ -1,0 +1,221 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "79010003",
+    "description": "$rc:description",
+    "product": "300",
+    "attributes": [
+        "GPU",
+        "mCPU"
+    ],
+    "params": {
+        "in_folder": {
+            "displayname": "$rc:in_folder.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFolder"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    },
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "DEFeatureClass"
+                    }
+                ]
+            },
+            "description": "$rc:in_folder.descr"
+        },
+        "out_model": {
+            "direction": "out",
+            "display_order": "3",
+            "displayname": "$rc:out_model.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "schema": {
+                "type": "GPContainerSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_model.descr"
+        },
+        "pretrained_model_file": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:pretrained_model_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "emd",
+                    "dlpk"
+                ]
+            },
+            "description": "$rc:pretrained_model_file.descr"
+        },
+        "address_entity": {
+            "type": "optional",
+            "displayname": "$rc:address_entity.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:address_entity.descr"
+        },
+        "max_epochs": {
+            "type": "optional",
+            "displayname": "$rc:max_epochs.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "5",
+            "description": "$rc:max_epochs.descr"
+        },
+        "model_backbone": {
+            "type": "optional",
+            "displayname": "$rc:model_backbone.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "roberta-base",
+            "description": "$rc:model_backbone.descr"
+        },
+        "batch_size": {
+            "type": "optional",
+            "displayname": "$rc:batch_size.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "2",
+            "description": "$rc:batch_size.descr"
+        },
+        "model_arguments": {
+            "type": "optional",
+            "displayname": "$rc:model_arguments.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:model_arguments.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:model_arguments.dt.title2"
+                    }
+                ]
+            },
+            "value": "sequence_length 512",
+            "description": "$rc:model_arguments.descr"
+        },
+        "learning_rate": {
+            "type": "optional",
+            "displayname": "$rc:learning_rate.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:learning_rate.descr"
+        },
+        "validation_percentage": {
+            "type": "optional",
+            "displayname": "$rc:validation_percentage.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "10",
+            "description": "$rc:validation_percentage.descr"
+        },
+        "stop_training": {
+            "type": "optional",
+            "displayname": "$rc:stop_training.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "STOP_TRAINING"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "CONTINUE_TRAINING"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:stop_training.descr"
+        },
+        "make_trainable": {
+            "type": "optional",
+            "displayname": "$rc:make_trainable.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "TRAIN_MODEL_BACKBONE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "FREEZE_MODEL_BACKBONE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:make_trainable.descr"
+        },
+        "text_field": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:text_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_folder"
+            ],
+            "description": "$rc:text_field.descr"
+        },
+        "prompt": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:prompt.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:prompt.descr"
+        }
+    },
+    "environments": [
+        "gpuID",
+        "processorType"
+    ]
+}

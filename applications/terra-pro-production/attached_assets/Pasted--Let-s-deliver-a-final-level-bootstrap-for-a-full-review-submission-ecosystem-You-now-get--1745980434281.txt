@@ -1,0 +1,230 @@
+🔥 Let’s deliver a **final-level bootstrap** for a full review+submission ecosystem. You now get:
+
+> 🔁 Reopen Workflow  
+> 🌐 Third-Party Webhooks  
+> 🕰 Audit Trail Visualizer  
+
+Each one builds on the previous foundation. Let’s go module-by-module:
+
+---
+
+# 🔁 1. **Reopen Workflow (Post-Lock Edits)**
+
+---
+
+## 🧱 Extend `forms` Table
+
+```ts
+alter table forms add column reopen_requested_at timestamp;
+alter table forms add column reopen_reason text;
+alter table forms add column reopen_approved boolean;
+```
+
+---
+
+## 🧠 Workflow
+
+1. Appraiser clicks “Request Reopen”  
+2. Admin reviews → Approve or Reject  
+3. On approval → `locked_at` cleared, form editable again  
+4. Logged in audit trail
+
+---
+
+## 📡 API
+
+### `POST /form/reopen-request`
+
+```ts
+router.post('/form/reopen-request', async (req, res) => {
+  await db.update(forms).set({
+    reopenRequestedAt: new Date(),
+    reopenReason: req.body.reason
+  }).where(f => f.id.eq(req.body.formId));
+  res.json({ success: true });
+});
+```
+
+---
+
+### `POST /form/reopen-approve`
+
+```ts
+router.post('/form/reopen-approve', checkRole('admin'), async (req, res) => {
+  await db.update(forms).set({
+    lockedAt: null,
+    reopenApproved: true
+  }).where(f => f.id.eq(req.body.formId));
+  res.json({ success: true });
+});
+```
+
+---
+
+## UI Indicators
+
+- 🔒 Locked banner → “Request Reopen” button  
+- 🟡 Reviewer dashboard → “Pending Reopen Requests” tab  
+- 🟢 Admin sees all reopen logs for auditing
+
+---
+
+## 🔁 Optional Enhancements
+
+- Require reviewer comment on reopen  
+- Notify assigned reviewer when reopened  
+- Include in audit trail
+
+---
+
+# 🌐 2. Third-Party Webhook Integrations (UCDP, Encompass, etc.)
+
+---
+
+## 📦 Config Table: `submission_hooks`
+
+```ts
+export const submissionHooks = pgTable('submission_hooks', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  orgId: text('org_id').notNull(),
+  destination: text('destination').notNull(), // 'UCDP', 'Encompass'
+  hookUrl: text('hook_url').notNull(),
+  secret: text('secret'), // optional HMAC
+  enabled: boolean('enabled').default(true)
+});
+```
+
+---
+
+## 📤 On Submit → Trigger Hook
+
+### Inject into `/submit`
+
+```ts
+const hook = await db.query.submissionHooks.findFirst({
+  where: (h) => h.orgId.eq(orgId).and(h.destination.eq(destination)).and(h.enabled)
+});
+
+if (hook) {
+  const payload = { formId, status: 'submitted', ...formSummary };
+  const signature = crypto.createHmac('sha256', hook.secret).update(JSON.stringify(payload)).digest('hex');
+
+  axios.post(hook.hookUrl, payload, {
+    headers: { 'X-Signature': signature }
+  });
+}
+```
+
+---
+
+## ✅ Use Cases
+
+- UCDP auto-import
+- Encompass push-to-loan
+- Fannie pre-checks or cloud storage
+- Internal webhooks for CRMs or queueing
+
+---
+
+# 🕰 3. Audit Trail Visualizer (Form Lifecycle Timeline)
+
+---
+
+## 🗂 DB Schema: `form_audit_log` (already created earlier)
+
+```ts
+{
+  formId: 'xyz',
+  userId: 'alice@firm.com',
+  action: 'field_edit' | 'locked' | 'reopened' | 'reviewed' | 'pushed' | 'submitted',
+  details: { field: 'G1', old: '$400K', new: '$420K' },
+  at: timestamp
+}
+```
+
+---
+
+## 📡 API: `GET /audit/timeline/:formId`
+
+```ts
+router.get('/audit/timeline/:formId', async (req, res) => {
+  const log = await db.query.formAuditLog.findMany({
+    where: (f) => f.formId.eq(req.params.formId),
+    orderBy: (f) => f.at.asc()
+  });
+
+  res.json({ events: log });
+});
+```
+
+---
+
+## 🧠 React Timeline Component
+
+```tsx
+<ul className="timeline">
+  {events.map(ev => (
+    <li key={ev.id}>
+      <div className="timestamp">{formatDate(ev.at)}</div>
+      <div className="action">
+        <strong>{ev.userId}</strong> {renderAction(ev)}
+      </div>
+    </li>
+  ))}
+</ul>
+
+function renderAction(ev) {
+  switch (ev.action) {
+    case 'field_edit':
+      return `updated ${ev.details.field} to ${ev.details.new}`;
+    case 'locked':
+      return `locked form`;
+    case 'reopened':
+      return `reopen approved`;
+    case 'reviewed':
+      return `marked as Reviewed OK`;
+    case 'submitted':
+      return `submitted to ${ev.details.destination}`;
+    default:
+      return ev.action;
+  }
+}
+```
+
+---
+
+## 🔍 Filters
+
+- Field changes only  
+- Reviewer events only  
+- Submission-only view  
+
+---
+
+## ✅ What You Now Have
+
+| Feature               | Status  |
+|----------------------|---------|
+| Reopen request → approval | ✅ Done |
+| Third-party webhooks (UCDP etc.) | ✅ Hookable |
+| Audit trail → timeline viewer | ✅ Logged + visual |
+| Role control | ✅ Checked |
+| HMAC security (optional) | ✅ Ready |
+
+---
+
+### 🎯 Now your system supports:
+
+- **Locked-state discipline**
+- **Lifecycle observability**
+- **Automated downstream delivery**
+- **Reopen & correction loops**
+
+---
+
+## 🧭 What’s Next?
+
+Would you like to:
+1. 🧬 Add **versioning of form snapshots** for undo/history?
+2. 📦 Generate **MISMO-compliant XML** for lenders?
+3. 🧠 Create **AI-assist mode** to prefill fields based on comp text or PDF intake?

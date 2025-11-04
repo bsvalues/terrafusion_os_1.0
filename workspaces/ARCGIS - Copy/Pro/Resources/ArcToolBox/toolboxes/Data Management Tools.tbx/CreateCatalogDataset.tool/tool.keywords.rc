@@ -1,0 +1,15 @@
+{
+    "set": [
+        "add",
+        "make",
+        "build",
+        "catalog",
+        "catalog dataset",
+        "catalog layer",
+        "collection",
+        "data reference",
+        "dataset",
+        "layer",
+        "raster catalog"
+    ]
+}

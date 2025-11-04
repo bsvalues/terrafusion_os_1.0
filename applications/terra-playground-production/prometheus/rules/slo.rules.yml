@@ -1,0 +1,392 @@
+groups:
+  - name: slo_recording_rules
+    rules:
+      #
+      # Dashboard Page SLO Recording Rules
+      #
+      
+      # Dashboard-LCP-4G SLO
+      - record: slo:dashboard_lcp_4g_sli:ratio
+        expr: |
+          1 - (
+            sum(rate(web_vitals_lcp_bucket{le="2000", page_type="dashboard", network="4g"}[5m]))
+            /
+            sum(rate(web_vitals_lcp_count{page_type="dashboard", network="4g"}[5m]))
+          )
+      - record: slo:dashboard_lcp_4g:error_budget_remaining
+        expr: |
+          1 - (
+            sum(increase(web_vitals_lcp_bucket{le="2000", page_type="dashboard", network="4g"}[30d]))
+            /
+            sum(increase(web_vitals_lcp_count{page_type="dashboard", network="4g"}[30d]))
+          ) / 0.01
+      - record: slo:dashboard_lcp_4g:burnrate1h
+        expr: |
+          1 - (
+            sum(increase(web_vitals_lcp_bucket{le="2000", page_type="dashboard", network="4g"}[1h]))
+            /
+            sum(increase(web_vitals_lcp_count{page_type="dashboard", network="4g"}[1h]))
+          ) / 0.01
+
+      # Dashboard-LCP-3G SLO
+      - record: slo:dashboard_lcp_3g_sli:ratio
+        expr: |
+          1 - (
+            sum(rate(web_vitals_lcp_bucket{le="3000", page_type="dashboard", network="3g"}[5m]))
+            /
+            sum(rate(web_vitals_lcp_count{page_type="dashboard", network="3g"}[5m]))
+          )
+      - record: slo:dashboard_lcp_3g:error_budget_remaining
+        expr: |
+          1 - (
+            sum(increase(web_vitals_lcp_bucket{le="3000", page_type="dashboard", network="3g"}[30d]))
+            /
+            sum(increase(web_vitals_lcp_count{page_type="dashboard", network="3g"}[30d]))
+          ) / 0.01
+      - record: slo:dashboard_lcp_3g:burnrate1h
+        expr: |
+          1 - (
+            sum(increase(web_vitals_lcp_bucket{le="3000", page_type="dashboard", network="3g"}[1h]))
+            /
+            sum(increase(web_vitals_lcp_count{page_type="dashboard", network="3g"}[1h]))
+          ) / 0.01
+
+      # Dashboard-LCP-2G SLO
+      - record: slo:dashboard_lcp_2g_sli:ratio
+        expr: |
+          1 - (
+            sum(rate(web_vitals_lcp_bucket{le="4500", page_type="dashboard", network=~"2g|slow-2g"}[5m]))
+            /
+            sum(rate(web_vitals_lcp_count{page_type="dashboard", network=~"2g|slow-2g"}[5m]))
+          )
+      - record: slo:dashboard_lcp_2g:error_budget_remaining
+        expr: |
+          1 - (
+            sum(increase(web_vitals_lcp_bucket{le="4500", page_type="dashboard", network=~"2g|slow-2g"}[30d]))
+            /
+            sum(increase(web_vitals_lcp_count{page_type="dashboard", network=~"2g|slow-2g"}[30d]))
+          ) / 0.01
+      - record: slo:dashboard_lcp_2g:burnrate1h
+        expr: |
+          1 - (
+            sum(increase(web_vitals_lcp_bucket{le="4500", page_type="dashboard", network=~"2g|slow-2g"}[1h]))
+            /
+            sum(increase(web_vitals_lcp_count{page_type="dashboard", network=~"2g|slow-2g"}[1h]))
+          ) / 0.01
+
+      # Dashboard-CLS SLO
+      - record: slo:dashboard_cls_sli:ratio
+        expr: |
+          1 - (
+            sum(rate(web_vitals_cls_bucket{le="0.1", page_type="dashboard"}[5m]))
+            /
+            sum(rate(web_vitals_cls_count{page_type="dashboard"}[5m]))
+          )
+      - record: slo:dashboard_cls:error_budget_remaining
+        expr: |
+          1 - (
+            sum(increase(web_vitals_cls_bucket{le="0.1", page_type="dashboard"}[30d]))
+            /
+            sum(increase(web_vitals_cls_count{page_type="dashboard"}[30d]))
+          ) / 0.005
+      - record: slo:dashboard_cls:burnrate1h
+        expr: |
+          1 - (
+            sum(increase(web_vitals_cls_bucket{le="0.1", page_type="dashboard"}[1h]))
+            /
+            sum(increase(web_vitals_cls_count{page_type="dashboard"}[1h]))
+          ) / 0.005
+
+      # Dashboard-INP-4G SLO
+      - record: slo:dashboard_inp_4g_sli:ratio
+        expr: |
+          1 - (
+            sum(rate(web_vitals_inp_bucket{le="200", page_type="dashboard", network="4g"}[5m]))
+            /
+            sum(rate(web_vitals_inp_count{page_type="dashboard", network="4g"}[5m]))
+          )
+      - record: slo:dashboard_inp_4g:error_budget_remaining
+        expr: |
+          1 - (
+            sum(increase(web_vitals_inp_bucket{le="200", page_type="dashboard", network="4g"}[30d]))
+            /
+            sum(increase(web_vitals_inp_count{page_type="dashboard", network="4g"}[30d]))
+          ) / 0.01
+      - record: slo:dashboard_inp_4g:burnrate1h
+        expr: |
+          1 - (
+            sum(increase(web_vitals_inp_bucket{le="200", page_type="dashboard", network="4g"}[1h]))
+            /
+            sum(increase(web_vitals_inp_count{page_type="dashboard", network="4g"}[1h]))
+          ) / 0.01
+
+      #
+      # Map View Page SLO Recording Rules
+      #
+      
+      # MapView-LCP-4G SLO
+      - record: slo:mapview_lcp_4g_sli:ratio
+        expr: |
+          1 - (
+            sum(rate(web_vitals_lcp_bucket{le="2500", page_type="map-view", network="4g"}[5m]))
+            /
+            sum(rate(web_vitals_lcp_count{page_type="map-view", network="4g"}[5m]))
+          )
+      - record: slo:mapview_lcp_4g:error_budget_remaining
+        expr: |
+          1 - (
+            sum(increase(web_vitals_lcp_bucket{le="2500", page_type="map-view", network="4g"}[30d]))
+            /
+            sum(increase(web_vitals_lcp_count{page_type="map-view", network="4g"}[30d]))
+          ) / 0.01
+      - record: slo:mapview_lcp_4g:burnrate1h
+        expr: |
+          1 - (
+            sum(increase(web_vitals_lcp_bucket{le="2500", page_type="map-view", network="4g"}[1h]))
+            /
+            sum(increase(web_vitals_lcp_count{page_type="map-view", network="4g"}[1h]))
+          ) / 0.01
+
+      # MapView-LCP-3G SLO
+      - record: slo:mapview_lcp_3g_sli:ratio
+        expr: |
+          1 - (
+            sum(rate(web_vitals_lcp_bucket{le="3500", page_type="map-view", network="3g"}[5m]))
+            /
+            sum(rate(web_vitals_lcp_count{page_type="map-view", network="3g"}[5m]))
+          )
+      - record: slo:mapview_lcp_3g:error_budget_remaining
+        expr: |
+          1 - (
+            sum(increase(web_vitals_lcp_bucket{le="3500", page_type="map-view", network="3g"}[30d]))
+            /
+            sum(increase(web_vitals_lcp_count{page_type="map-view", network="3g"}[30d]))
+          ) / 0.01
+      - record: slo:mapview_lcp_3g:burnrate1h
+        expr: |
+          1 - (
+            sum(increase(web_vitals_lcp_bucket{le="3500", page_type="map-view", network="3g"}[1h]))
+            /
+            sum(increase(web_vitals_lcp_count{page_type="map-view", network="3g"}[1h]))
+          ) / 0.01
+
+      #
+      # Property Detail Page SLO Recording Rules
+      #
+      
+      # PropertyDetails-LCP-4G SLO
+      - record: slo:propertydetails_lcp_4g_sli:ratio
+        expr: |
+          1 - (
+            sum(rate(web_vitals_lcp_bucket{le="2000", page_type="property-details", network="4g"}[5m]))
+            /
+            sum(rate(web_vitals_lcp_count{page_type="property-details", network="4g"}[5m]))
+          )
+      - record: slo:propertydetails_lcp_4g:error_budget_remaining
+        expr: |
+          1 - (
+            sum(increase(web_vitals_lcp_bucket{le="2000", page_type="property-details", network="4g"}[30d]))
+            /
+            sum(increase(web_vitals_lcp_count{page_type="property-details", network="4g"}[30d]))
+          ) / 0.005
+      - record: slo:propertydetails_lcp_4g:burnrate1h
+        expr: |
+          1 - (
+            sum(increase(web_vitals_lcp_bucket{le="2000", page_type="property-details", network="4g"}[1h]))
+            /
+            sum(increase(web_vitals_lcp_count{page_type="property-details", network="4g"}[1h]))
+          ) / 0.005
+
+      # PropertyDetails-TTFB-4G SLO
+      - record: slo:propertydetails_ttfb_4g_sli:ratio
+        expr: |
+          1 - (
+            sum(rate(web_vitals_ttfb_bucket{le="600", page_type="property-details", network="4g"}[5m]))
+            /
+            sum(rate(web_vitals_ttfb_count{page_type="property-details", network="4g"}[5m]))
+          )
+      - record: slo:propertydetails_ttfb_4g:error_budget_remaining
+        expr: |
+          1 - (
+            sum(increase(web_vitals_ttfb_bucket{le="600", page_type="property-details", network="4g"}[30d]))
+            /
+            sum(increase(web_vitals_ttfb_count{page_type="property-details", network="4g"}[30d]))
+          ) / 0.01
+      - record: slo:propertydetails_ttfb_4g:burnrate1h
+        expr: |
+          1 - (
+            sum(increase(web_vitals_ttfb_bucket{le="600", page_type="property-details", network="4g"}[1h]))
+            /
+            sum(increase(web_vitals_ttfb_count{page_type="property-details", network="4g"}[1h]))
+          ) / 0.01
+
+      #
+      # Search Page SLO Recording Rules
+      #
+      
+      # Search-LCP-4G SLO
+      - record: slo:search_lcp_4g_sli:ratio
+        expr: |
+          1 - (
+            sum(rate(web_vitals_lcp_bucket{le="1800", page_type="search", network="4g"}[5m]))
+            /
+            sum(rate(web_vitals_lcp_count{page_type="search", network="4g"}[5m]))
+          )
+      - record: slo:search_lcp_4g:error_budget_remaining
+        expr: |
+          1 - (
+            sum(increase(web_vitals_lcp_bucket{le="1800", page_type="search", network="4g"}[30d]))
+            /
+            sum(increase(web_vitals_lcp_count{page_type="search", network="4g"}[30d]))
+          ) / 0.005
+      - record: slo:search_lcp_4g:burnrate1h
+        expr: |
+          1 - (
+            sum(increase(web_vitals_lcp_bucket{le="1800", page_type="search", network="4g"}[1h]))
+            /
+            sum(increase(web_vitals_lcp_count{page_type="search", network="4g"}[1h]))
+          ) / 0.005
+
+      # Search-INP-4G SLO
+      - record: slo:search_inp_4g_sli:ratio
+        expr: |
+          1 - (
+            sum(rate(web_vitals_inp_bucket{le="150", page_type="search", network="4g"}[5m]))
+            /
+            sum(rate(web_vitals_inp_count{page_type="search", network="4g"}[5m]))
+          )
+      - record: slo:search_inp_4g:error_budget_remaining
+        expr: |
+          1 - (
+            sum(increase(web_vitals_inp_bucket{le="150", page_type="search", network="4g"}[30d]))
+            /
+            sum(increase(web_vitals_inp_count{page_type="search", network="4g"}[30d]))
+          ) / 0.005
+      - record: slo:search_inp_4g:burnrate1h
+        expr: |
+          1 - (
+            sum(increase(web_vitals_inp_bucket{le="150", page_type="search", network="4g"}[1h]))
+            /
+            sum(increase(web_vitals_inp_count{page_type="search", network="4g"}[1h]))
+          ) / 0.005
+
+  - name: slo_alert_rules
+    rules:
+      # Dashboard SLO Alerts
+      - alert: SLO_DashboardLCP4G_ErrorBudgetBurn
+        expr: |
+          sum(increase(web_vitals_lcp_count{page_type="dashboard", network="4g"}[24h]))
+          * slo:dashboard_lcp_4g_sli:ratio > 0.05 * 0.01 * sum(increase(web_vitals_lcp_count{page_type="dashboard", network="4g"}[24h]))
+        for: 5m
+        labels:
+          severity: warning
+          slo: dashboard_lcp_4g
+          page_type: dashboard
+          network: 4g
+        annotations:
+          summary: "Dashboard LCP 4G SLO error budget burning too fast"
+          description: "Dashboard LCP 4G error budget is burning at >5% per day. Current burn rate: {{ $value | humanizePercentage }} of daily budget."
+
+      - alert: SLO_DashboardLCP3G_ErrorBudgetBurn
+        expr: |
+          sum(increase(web_vitals_lcp_count{page_type="dashboard", network="3g"}[24h]))
+          * slo:dashboard_lcp_3g_sli:ratio > 0.05 * 0.01 * sum(increase(web_vitals_lcp_count{page_type="dashboard", network="3g"}[24h]))
+        for: 5m
+        labels:
+          severity: warning
+          slo: dashboard_lcp_3g
+          page_type: dashboard
+          network: 3g
+        annotations:
+          summary: "Dashboard LCP 3G SLO error budget burning too fast"
+          description: "Dashboard LCP 3G error budget is burning at >5% per day. Current burn rate: {{ $value | humanizePercentage }} of daily budget."
+
+      - alert: SLO_DashboardLCP2G_ErrorBudgetBurn
+        expr: |
+          sum(increase(web_vitals_lcp_count{page_type="dashboard", network=~"2g|slow-2g"}[24h]))
+          * slo:dashboard_lcp_2g_sli:ratio > 0.05 * 0.01 * sum(increase(web_vitals_lcp_count{page_type="dashboard", network=~"2g|slow-2g"}[24h]))
+        for: 5m
+        labels:
+          severity: warning
+          slo: dashboard_lcp_2g
+          page_type: dashboard
+          network: 2g
+        annotations:
+          summary: "Dashboard LCP 2G SLO error budget burning too fast"
+          description: "Dashboard LCP 2G error budget is burning at >5% per day. Current burn rate: {{ $value | humanizePercentage }} of daily budget."
+
+      # High Burn Rate Alerts (6h window)
+      - alert: SLO_DashboardLCP4G_HighErrorBudgetBurn
+        expr: |
+          sum(increase(web_vitals_lcp_count{page_type="dashboard", network="4g"}[6h]))
+          * slo:dashboard_lcp_4g_sli:ratio > 0.1 * 0.01 * sum(increase(web_vitals_lcp_count{page_type="dashboard", network="4g"}[6h]))
+        for: 5m
+        labels:
+          severity: warning
+          slo: dashboard_lcp_4g
+          page_type: dashboard
+          network: 4g
+        annotations:
+          summary: "Dashboard LCP 4G SLO error budget burning FAST"
+          description: "Dashboard LCP 4G error budget is burning at >10% per 6 hours. Current burn rate: {{ $value | humanizePercentage }} of 6-hour budget."
+
+      # Map View SLO Alerts
+      - alert: SLO_MapViewLCP4G_ErrorBudgetBurn
+        expr: |
+          sum(increase(web_vitals_lcp_count{page_type="map-view", network="4g"}[24h]))
+          * slo:mapview_lcp_4g_sli:ratio > 0.05 * 0.01 * sum(increase(web_vitals_lcp_count{page_type="map-view", network="4g"}[24h]))
+        for: 5m
+        labels:
+          severity: warning
+          slo: mapview_lcp_4g
+          page_type: map-view
+          network: 4g
+        annotations:
+          summary: "Map View LCP 4G SLO error budget burning too fast"
+          description: "Map View LCP 4G error budget is burning at >5% per day. Current burn rate: {{ $value | humanizePercentage }} of daily budget."
+
+      # Property Details SLO Alerts
+      - alert: SLO_PropertyDetailsLCP4G_ErrorBudgetBurn
+        expr: |
+          sum(increase(web_vitals_lcp_count{page_type="property-details", network="4g"}[24h]))
+          * slo:propertydetails_lcp_4g_sli:ratio > 0.05 * 0.005 * sum(increase(web_vitals_lcp_count{page_type="property-details", network="4g"}[24h]))
+        for: 5m
+        labels:
+          severity: warning
+          slo: propertydetails_lcp_4g
+          page_type: property-details
+          network: 4g
+        annotations:
+          summary: "Property Details LCP 4G SLO error budget burning too fast"
+          description: "Property Details LCP 4G error budget is burning at >5% per day. Current burn rate: {{ $value | humanizePercentage }} of daily budget."
+
+      # Search SLO Alerts
+      - alert: SLO_SearchLCP4G_ErrorBudgetBurn
+        expr: |
+          sum(increase(web_vitals_lcp_count{page_type="search", network="4g"}[24h]))
+          * slo:search_lcp_4g_sli:ratio > 0.05 * 0.005 * sum(increase(web_vitals_lcp_count{page_type="search", network="4g"}[24h]))
+        for: 5m
+        labels:
+          severity: warning
+          slo: search_lcp_4g
+          page_type: search
+          network: 4g
+        annotations:
+          summary: "Search LCP 4G SLO error budget burning too fast"
+          description: "Search LCP 4G error budget is burning at >5% per day. Current burn rate: {{ $value | humanizePercentage }} of daily budget."
+
+      # Critical Burn Rate Alerts
+      - alert: SLO_CriticalErrorBudgetBurn
+        expr: |
+          max by (page_type, network) (
+            (increase(web_vitals_lcp_bucket{le=~"1800|2000|2500|3000|3500|4000|4500|5000"}[1h]) 
+            / 
+            increase(web_vitals_lcp_count[1h])) < 0.75
+          )
+        for: 5m
+        labels:
+          severity: critical
+          slo: critical_burn
+        annotations:
+          summary: "CRITICAL SLO burn rate for {{ $labels.page_type }} on {{ $labels.network }}"
+          description: "Critical error budget burn detected for {{ $labels.page_type }} pages on {{ $labels.network }} network. Over 25% of requests are exceeding SLO thresholds!"

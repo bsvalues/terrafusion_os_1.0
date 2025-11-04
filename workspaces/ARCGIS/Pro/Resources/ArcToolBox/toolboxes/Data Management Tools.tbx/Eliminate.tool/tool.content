@@ -1,0 +1,89 @@
+{
+    "type": "FunctionTool",
+    "guid": "{c44aa6e2-5873-4d87-82f1-bba661ee7cdc}",
+    "displayname": "$rc:title",
+    "helpcontent": "3080004",
+    "description": "$rc:description",
+    "product": "300",
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "selection": {
+            "type": "optional",
+            "displayname": "$rc:selection.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "LENGTH"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "AREA"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:selection.descr"
+        },
+        "ex_where_clause": {
+            "type": "optional",
+            "displayname": "$rc:ex_where_clause.title",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:ex_where_clause.descr"
+        },
+        "ex_features": {
+            "type": "optional",
+            "displayname": "$rc:ex_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:ex_features.descr"
+        }
+    },
+    "environments": [
+        "MDomain",
+        "MResolution",
+        "MTolerance",
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "ZDomain",
+        "ZResolution",
+        "ZTolerance",
+        "autoCommit",
+        "configKeyword",
+        "extent",
+        "outputCoordinateSystem",
+        "outputMFlag",
+        "outputZFlag",
+        "outputZValue",
+        "qualifiedFieldNames",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

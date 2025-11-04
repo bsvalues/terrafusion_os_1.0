@@ -1,0 +1,48 @@
+{
+  "workspace": "autonomous-research-engine",
+  "portalIntegration": {
+    "enabled": true,
+    "endpoint": "${COMMAND_PORTAL_URL}",
+    "token": "${PORTAL_TOKEN}",
+    "metricsSync": {
+      "enabled": true,
+      "intervalSeconds": 30,
+      "batchSize": 100,
+      "retryPolicy": {
+        "maxRetries": 3,
+        "backoffMs": 1000
+      }
+    },
+    "alertSync": {
+      "enabled": true,
+      "severityLevels": [
+        "critical",
+        "high",
+        "medium",
+        "low"
+      ],
+      "escalationEnabled": true
+    },
+    "webhooks": {
+      "enabled": true,
+      "port": 3001,
+      "routes": {
+        "alerts": "/webhooks/portal/alerts",
+        "performance": "/webhooks/portal/performance",
+        "sla": "/webhooks/portal/sla",
+        "optimization": "/webhooks/portal/optimization",
+        "security": "/webhooks/portal/security"
+      }
+    },
+    "features": {
+      "realtimeDashboard": true,
+      "alertManagement": true,
+      "slaTracking": true,
+      "optimizationRecommendations": true,
+      "aiInsights": true,
+      "complianceReporting": true,
+      "securityMonitoring": true,
+      "autoScaling": true
+    }
+  }
+}

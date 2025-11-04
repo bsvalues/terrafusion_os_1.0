@@ -1,0 +1,26 @@
+{
+    "map": {
+        "description": "Joins a layer to another layer or table based on a common field. Feature layers, table views, and raster layers with a raster attribute table are supported.",
+        "in_field.descr": "The field in the input layer or table view on which the join will be based.",
+        "in_field.title": "Input Field",
+        "in_layer_or_view.descr": "The layer or table view to which the join table will be joined.",
+        "in_layer_or_view.title": "Input Table",
+        "index_join_fields.descr": "<xdoc><p>Specifies whether table attribute indexes will be added to the input field and join field.</p><ul><li>Checked—Both fields will be indexed. If the table has an existing index, a new index will not be added.</li><li>Unchecked—Indexes will not be added. This is the default.</li></ul></xdoc>",
+        "index_join_fields.title": "Index join fields",
+        "join_field.descr": "The field in the join table that contains the values on which the join will be based.",
+        "join_field.title": "Join Field",
+        "join_operation.descr": "<xdoc><p>Specifies whether the join will be a one-to-many join or a one-to-first join when the data has a one-to-many cardinality.</p><p>If no parameter value is specified, the join operation will be based on the data source.</p><ul><li><span title=\"JOIN_ONE_TO_FIRST\">Join one to first</span>—The join operation will use the first match.</li><li><span title=\"JOIN_ONE_TO_MANY\">Join one to many</span>—The join operation will perform multiple case-sensitive matches.</li></ul></xdoc>",
+        "join_operation.domain.JOIN_ONE_TO_FIRST": "Join one to first",
+        "join_operation.domain.JOIN_ONE_TO_MANY": "Join one to many",
+        "join_operation.title": "Join Operation",
+        "join_table.descr": "The table or table view that will be joined to the input layer or table view.",
+        "join_table.title": "Join Table",
+        "join_type.descr": "<xdoc><p>Specifies whether only records in the input that match a record in the join table will be included in the output or all records in the input layer or table view will be included.</p><ul><li>Checked—All records in the input layer or table view will be included in the output. This is also known as an outer join. This is the default.</li><li>Unchecked—Only those records in the input that match a row in the join table will be included in the output. This is also known as an inner join.</li></ul></xdoc>",
+        "join_type.title": "Keep all input records",
+        "out_layer_or_view.title": "Updated Input Layer or Table View",
+        "rebuild_index.descr": "<xdoc><p>Specifies whether the indexes of the input field and join field will be removed and rebuilt.</p><ul><li>Checked—Existing indexes will be removed and a new index will be added.</li><li>Unchecked—Existing indexes will not be removed or rebuilt. This is the default.</li></ul></xdoc>",
+        "rebuild_index.title": "Rebuild Joined Fields Indexes",
+        "summary": "<xdoc><p>Joins a layer to another layer or table based on a common field. Feature layers, table views, and raster layers with a raster attribute table are supported.</p><p>The records in the <span class=\"esri_uicontrol\">Join Table</span> parameter value will be matched to the records in the <span class=\"esri_uicontrol\">Input Table</span> parameter value. A match is made when the input field and join field values are equal. This join is temporary.</p></xdoc>",
+        "title": "Add Join"
+    }
+}

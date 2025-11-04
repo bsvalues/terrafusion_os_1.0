@@ -4,6 +4,8 @@ using TerraFusion.Core.Entities;
 using TerraFusion.Core.Models;
 using TerraFusion.Core.Interfaces;
 using TerraFusion.Data.Configurations;
+// NOTE: TerraFusion.AI.Entities cannot be referenced here due to circular dependency
+// AI-specific DbSets are added via partial class or extension in TerraFusion.AI project
 
 namespace TerraFusion.Data;
 
@@ -11,7 +13,7 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
 {
     private readonly IConfiguration _configuration;
 
-    public TerraFusionDbContext(DbContextOptions<TerraFusionDbContext> options, IConfiguration configuration) 
+    public TerraFusionDbContext(DbContextOptions<TerraFusionDbContext> options, IConfiguration configuration)
         : base(options)
     {
         _configuration = configuration;
@@ -25,11 +27,22 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     public DbSet<TaxLevy> TaxLevies { get; set; }
     public DbSet<GovernmentUser> GovernmentUsers { get; set; }
     public DbSet<AuditLog> AuditLogs { get; set; }
-    
+
     // AI System Entities
     public DbSet<AIAgent> AIAgents { get; set; }
     public DbSet<AIModel> AIModels { get; set; }
     public DbSet<PerformanceMetric> PerformanceMetrics { get; set; }
+
+    // NOTE: AI GPT & RAG Entities cannot be added here due to circular dependency
+    // TerraFusion.Data → TerraFusion.AI would create circular reference
+    // These entities are managed directly in TerraFusion.AI services via raw DbContext access
+    // public DbSet<GPTConfiguration> GPTConfigurations { get; set; }
+    // public DbSet<GPTConversation> GPTConversations { get; set; }
+    // public DbSet<GPTMessage> GPTMessages { get; set; }
+    // public DbSet<RAGDataset> RAGDatasets { get; set; }
+    // public DbSet<RAGDocument> RAGDocuments { get; set; }
+    // public DbSet<GPTMarketplaceInstall> GPTMarketplaceInstalls { get; set; }
+    // public DbSet<GPTUsageMetric> GPTUsageMetrics { get; set; }
 
     // Module System Entities
     public DbSet<Module> Modules { get; set; }
@@ -41,11 +54,11 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     public DbSet<PluginInstallation> PluginInstallations { get; set; }
     public DbSet<PluginRevenue> PluginRevenue { get; set; }
     public DbSet<PluginAnalytics> PluginAnalytics { get; set; }
-    
+
     // Security Entities
     public DbSet<SecurityEvent> SecurityEvents { get; set; }
     public DbSet<UserSession> UserSessions { get; set; }
-    
+
     // Collaboration Entities
     public DbSet<CollaborationUser> CollaborationUsers { get; set; }
     public DbSet<Team> Teams { get; set; }
@@ -62,12 +75,30 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     public DbSet<Permission> Permissions { get; set; }
     public DbSet<UserPermission> UserPermissions { get; set; }
 
+    // Codex 3-6-9 Framework Entities
+    public DbSet<CodexMetric> CodexMetrics { get; set; }
+    public DbSet<CodexScore> CodexScores { get; set; }
+    public DbSet<CodexUltimatePower> CodexUltimatePowerRecords { get; set; }
+    public DbSet<CodexAlert> CodexAlerts { get; set; }
+    public DbSet<NotificationPreferences> NotificationPreferences { get; set; }
+
+    // Experiments
+    // Persisted here to keep experiments in the canonical data store. Keep model simple to avoid circular deps.
+    public DbSet<TerraFusion.Data.Entities.Experiment> Experiments { get; set; }
+    public DbSet<TerraFusion.Data.Entities.ExperimentRun> ExperimentRuns { get; set; }
+
+    // TerraFlow Quantum Command Center Entities (Phase 1 Week 3)
+    public DbSet<QuantumNotebook> QuantumNotebooks { get; set; }
+    public DbSet<AnalysisResult> AnalysisResults { get; set; }
+    public DbSet<Workflow> Workflows { get; set; }
+    public DbSet<WorkflowExecution> WorkflowExecutions { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
         {
             var connectionString = _configuration.GetConnectionString("DefaultConnection");
-            
+
             if (connectionString?.Contains("Host=") == true)
             {
                 // PostgreSQL for production
@@ -223,6 +254,29 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
         modelBuilder.ApplyConfiguration(new CollaborationUserConfiguration());
         modelBuilder.ApplyConfiguration(new TaskConfiguration());
 
+        // Apply Codex 3-6-9 Framework configurations
+        modelBuilder.ApplyConfiguration(new CodexMetricConfiguration());
+        modelBuilder.ApplyConfiguration(new CodexScoreConfiguration());
+        modelBuilder.ApplyConfiguration(new CodexUltimatePowerConfiguration());
+        modelBuilder.ApplyConfiguration(new CodexAlertConfiguration());
+
+        // Apply TerraFlow Quantum Command Center configurations (Phase 1 Week 3)
+        modelBuilder.ApplyConfiguration(new QuantumNotebookConfiguration());
+        modelBuilder.ApplyConfiguration(new AnalysisResultConfiguration());
+        modelBuilder.ApplyConfiguration(new WorkflowConfiguration());
+        modelBuilder.ApplyConfiguration(new WorkflowExecutionConfiguration());
+
+        // NOTE: TerraFusionGPT Suite configurations temporarily disabled due to circular dependency
+        // These configurations are defined in TerraFusion.Data\Configurations\GPTConfiguration.cs.disabled
+        // Solution: Move GPTConfiguration.cs to TerraFusion.AI\Data\Configurations or use fluent API directly
+        // modelBuilder.ApplyConfiguration(new GPTConfigurationConfiguration());
+        // modelBuilder.ApplyConfiguration(new GPTConversationConfiguration());
+        // modelBuilder.ApplyConfiguration(new GPTMessageConfiguration());
+        // modelBuilder.ApplyConfiguration(new RAGDatasetConfiguration());
+        // modelBuilder.ApplyConfiguration(new RAGDocumentConfiguration());
+        // modelBuilder.ApplyConfiguration(new GPTMarketplaceInstallConfiguration());
+        // modelBuilder.ApplyConfiguration(new GPTUsageMetricConfiguration());
+
         modelBuilder.Entity<CollaborationNotification>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -231,17 +285,53 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
             entity.Property(e => e.SenderId).HasMaxLength(450);
             entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
             entity.Property(e => e.Message).IsRequired().HasMaxLength(1000);
-            
+
             entity.HasOne(e => e.Recipient)
                 .WithMany(u => u.ReceivedNotifications)
                 .HasForeignKey(e => e.RecipientId)
                 .OnDelete(DeleteBehavior.Restrict);
-                
+
             entity.HasOne(e => e.Sender)
                 .WithMany(u => u.SentNotifications)
                 .HasForeignKey(e => e.SenderId)
                 .OnDelete(DeleteBehavior.SetNull);
         });
+
+        // Configure Experiment entity
+        modelBuilder.Entity<TerraFusion.Data.Entities.Experiment>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.DatasetId).HasMaxLength(100);
+            entity.Property(e => e.DatasetVersion).HasMaxLength(50);
+            entity.Property(e => e.ModelId).HasMaxLength(100);
+            entity.Property(e => e.ModelVersion).HasMaxLength(50);
+            entity.Property(e => e.HyperparamsJson).HasColumnType("jsonb");
+            entity.Property(e => e.SwarmConfigJson).HasColumnType("jsonb");
+            entity.Property(e => e.Owner).HasMaxLength(200);
+            entity.Property(e => e.CreatedAt).IsRequired();
+            entity.HasIndex(e => e.CreatedAt);
+        });
+
+        // Configure ExperimentRun entity
+        modelBuilder.Entity<TerraFusion.Data.Entities.ExperimentRun>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.ExperimentId).IsRequired();
+            entity.Property(e => e.Status).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.ExecutionDetailsJson).HasColumnType("jsonb");
+            entity.Property(e => e.CreatedAt).IsRequired();
+            entity.HasIndex(e => e.CreatedAt);
+            entity.HasIndex(e => e.ExperimentId);
+            entity.HasIndex(e => e.Status);
+            entity.HasOne<TerraFusion.Data.Entities.Experiment>()
+                .WithMany()
+                .HasForeignKey(e => e.ExperimentId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Apply all configurations from Configurations folder
+        modelBuilder.ApplyConfiguration(new NotificationPreferencesConfiguration());
 
         // Configure encryption for sensitive fields
         ConfigureEncryption(modelBuilder);
@@ -292,19 +382,19 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     {
         // Add audit logging for all changes
         var auditEntries = CreateAuditEntries();
-        
+
         var result = await base.SaveChangesAsync(cancellationToken);
-        
+
         // Save audit logs after successful save
         await SaveAuditLogs(auditEntries);
-        
+
         return result;
     }
 
     private List<AuditLog> CreateAuditEntries()
     {
         var auditEntries = new List<AuditLog>();
-        
+
         foreach (var entry in ChangeTracker.Entries())
         {
             if (entry.Entity is AuditLog || entry.State == EntityState.Unchanged)
@@ -319,10 +409,10 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
                 UserId = GetCurrentUserId(),
                 Source = "EntityFramework"
             };
-            
+
             auditEntries.Add(auditLog);
         }
-        
+
         return auditEntries;
     }
 
@@ -344,7 +434,7 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
     private object GetChanges(Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry entry)
     {
         var changes = new Dictionary<string, object>();
-        
+
         foreach (var property in entry.Properties)
         {
             if (property.IsModified)
@@ -356,7 +446,7 @@ public class TerraFusionDbContext : DbContext, ITerraFusionDbContext
                 };
             }
         }
-        
+
         return changes;
     }
 }

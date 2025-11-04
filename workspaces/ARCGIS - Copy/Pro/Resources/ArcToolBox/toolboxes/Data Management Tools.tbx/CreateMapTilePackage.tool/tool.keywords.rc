@@ -1,0 +1,11 @@
+{
+    "set": [
+        "add",
+        "cache",
+        "consolidate",
+        "map",
+        "package",
+        "tile",
+        "tpk"
+    ]
+}

@@ -1,0 +1,5 @@
+<DataType Name="GPMosaicLayer">
+  <DisplayName>Mosaic Layer</DisplayName>
+  <Description>A layer that references a mosaic dataset.</Description>
+</DataType>
+

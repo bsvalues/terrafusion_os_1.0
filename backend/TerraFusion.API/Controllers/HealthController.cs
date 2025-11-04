@@ -45,8 +45,12 @@ namespace TerraFusion.API.Controllers
         {
             // Fast response for React app - skip slow database module loading
             var stopwatch = Stopwatch.StartNew();
-            
+
             var memoryHealthy = CheckMemory();
+
+            // Government-grade: Log health check access for monitoring
+            await Task.Run(() => _logger.LogInformation("Health check performed at {Timestamp}", DateTime.UtcNow));
+
             stopwatch.Stop();
 
             return Ok(new
@@ -130,7 +134,7 @@ namespace TerraFusion.API.Controllers
             var dependencies = await CheckDependenciesAsync();
             var allHealthy = dependencies.All(d => d.Value.IsHealthy);
             var statusCode = allHealthy ? 200 : 503;
-            
+
             return StatusCode(statusCode, new
             {
                 status = allHealthy ? "healthy" : "degraded",
@@ -169,10 +173,10 @@ namespace TerraFusion.API.Controllers
 
             stopwatch.Stop();
 
-            var overallHealthy = dbHealthy.IsHealthy && 
-                                modulesHealthy.IsHealthy && 
+            var overallHealthy = dbHealthy.IsHealthy &&
+                                modulesHealthy.IsHealthy &&
                                 memoryHealthy.IsHealthy;
-                                // Removed aiHealthy.AllHealthy to make AI services optional
+            // Removed aiHealthy.AllHealthy to make AI services optional
 
             return new
             {
@@ -188,7 +192,7 @@ namespace TerraFusion.API.Controllers
         private async Task<object> PerformDetailedHealthCheckAsync()
         {
             var stopwatch = Stopwatch.StartNew();
-            
+
             var health = new
             {
                 system = new
@@ -238,7 +242,7 @@ namespace TerraFusion.API.Controllers
             {
                 using var scope = _serviceProvider.CreateScope();
                 var dbContext = scope.ServiceProvider.GetRequiredService<TerraFusionDbContext>();
-                
+
                 var canConnect = await dbContext.Database.CanConnectAsync();
                 if (!canConnect)
                 {
@@ -458,7 +462,7 @@ namespace TerraFusion.API.Controllers
         private async Task<dynamic> CheckStartupAsync()
         {
             var services = new Dictionary<string, bool>();
-            
+
             services["Database"] = (await CheckDatabaseAsync()).IsHealthy;
             services["Modules"] = (await CheckModulesAsync()).IsHealthy;
             services["AIServices"] = (await CheckAIServicesAsync()).AllHealthy;

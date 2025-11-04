@@ -1,0 +1,14 @@
+{
+    "set": [
+        "alternative",
+        "erase",
+        "geodatabase",
+        "multiple",
+        "owner",
+        "remove",
+        "sde",
+        "state",
+        "user",
+        "version"
+    ]
+}

@@ -1,0 +1,346 @@
+{{/*
+============================================================================
+TerraFusion Consciousness Engine - Deployment Template
+Government. Transcended. - 50,000+ AI Agent Swarm Deployment
+============================================================================
+*/}}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "terrafusion-consciousness.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "terrafusion-consciousness.labels" . | nindent 4 }}
+    terrafusion.io/component: consciousness
+    terrafusion.io/tier: ai
+  annotations:
+    description: "TerraFusion Consciousness Engine - 50,000+ AI Agents"
+    compliance: "FISMA-High"
+    ai-agents: "50000"
+    quantum-factor: "949"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0  # Zero-downtime for AI agents
+  selector:
+    matchLabels:
+      {{- include "terrafusion-consciousness.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.service.port }}"
+        prometheus.io/path: "/metrics"
+        {{- if .Values.monitoring.jaeger.enabled }}
+        jaeger.io/inject: "true"
+        {{- end }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+      labels:
+        {{- include "terrafusion-consciousness.selectorLabels" . | nindent 8 }}
+        terrafusion.io/component: consciousness
+        terrafusion.io/tier: ai
+        version: {{ .Values.image.tag | default .Chart.AppVersion }}
+    spec:
+      {{- if .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.global.imagePullSecrets | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "terrafusion-consciousness.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      
+      # Init containers for ML model loading
+      initContainers:
+        - name: ml-model-loader
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "🤖 Loading ML models for 50,000 AI agents..."
+              echo "Quantum optimization factor: {{ .Values.aiAgent.quantumOptimizationFactor }}"
+              
+              # Pre-load ML models into cache
+              dotnet run --project /app/TerraFusion.Consciousness.ModelLoader.dll \
+                --cache-size {{ .Values.mlModels.cache.sizeMB }} \
+                --agent-count {{ .Values.aiAgent.totalAgents }}
+              
+              echo "✅ ML models loaded successfully"
+              echo "Agent distribution per pod: {{ .Values.aiAgent.agentsPerPod }}"
+          envFrom:
+            - secretRef:
+                name: {{ include "terrafusion-consciousness.fullname" . }}-secrets
+            - configMapRef:
+                name: {{ include "terrafusion-consciousness.fullname" . }}-config
+          volumeMounts:
+            - name: ml-model-cache
+              mountPath: /app/ml-cache
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+        
+        # Database migrations for consciousness schema
+        - name: db-migration
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "Running Entity Framework Core migrations for consciousness database..."
+              dotnet ef database update --no-build --verbose --context ConsciousnessDbContext
+              echo "Migrations completed successfully"
+          envFrom:
+            - secretRef:
+                name: {{ include "terrafusion-consciousness.fullname" . }}-secrets
+            - configMapRef:
+                name: {{ include "terrafusion-consciousness.fullname" . }}-config
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+      
+      containers:
+        - name: consciousness
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+            - name: websocket
+              containerPort: 8080
+              protocol: TCP
+          
+          # Environment variables
+          env:
+            {{- toYaml .Values.env | nindent 12 }}
+            
+            # Dynamic environment variables
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            
+            # AI agent configuration
+            - name: AI_AGENT_COUNT
+              value: {{ .Values.aiAgent.totalAgents | quote }}
+            - name: AGENTS_PER_POD
+              value: {{ .Values.aiAgent.agentsPerPod | quote }}
+            - name: QUANTUM_OPTIMIZATION_FACTOR
+              value: {{ .Values.aiAgent.quantumOptimizationFactor | quote }}
+            
+            # Agent types configuration
+            {{- range $type, $count := .Values.aiAgent.agentTypes }}
+            - name: AGENT_TYPE_{{ $type | upper }}_COUNT
+              value: {{ $count | quote }}
+            {{- end }}
+            
+            # Swarm intelligence configuration
+            - name: SWARM_INTELLIGENCE_ENABLED
+              value: {{ .Values.aiAgent.swarmIntelligence.enabled | quote }}
+            - name: COORDINATION_INTERVAL_MS
+              value: {{ .Values.aiAgent.swarmIntelligence.coordinationInterval | quote }}
+            - name: CONSENSUS_THRESHOLD
+              value: {{ .Values.aiAgent.swarmIntelligence.consensusThreshold | quote }}
+            
+            # ML model configuration
+            - name: ML_MODEL_CACHE_SIZE_MB
+              value: {{ .Values.mlModels.cache.sizeMB | quote }}
+            - name: ML_MODEL_CACHE_ENABLED
+              value: {{ .Values.mlModels.cache.enabled | quote }}
+            - name: ML_MODEL_REGISTRY_URL
+              value: {{ .Values.mlModels.registry.url | quote }}
+            - name: AUTOML_ENABLED
+              value: {{ .Values.mlModels.automl.enabled | quote }}
+            
+            # Service URLs
+            - name: API_URL
+              value: {{ .Values.integrations.api.url | quote }}
+            - name: GATEWAY_URL
+              value: {{ .Values.integrations.gateway.url | quote }}
+            - name: OPERATIONS_URL
+              value: {{ .Values.integrations.operations.url | quote }}
+            
+            # Database configuration
+            - name: DATABASE_HOST
+              value: {{ .Values.database.host | quote }}
+            - name: DATABASE_PORT
+              value: {{ .Values.database.port | quote }}
+            - name: DATABASE_NAME
+              value: {{ .Values.database.name | quote }}
+            - name: DATABASE_SSL
+              value: {{ .Values.database.ssl | quote }}
+            - name: DATABASE_POOL_SIZE
+              value: {{ .Values.database.poolSize | quote }}
+            
+            # Redis configuration
+            {{- if .Values.redis.enabled }}
+            - name: REDIS_HOST
+              value: {{ .Values.redis.host | quote }}
+            - name: REDIS_PORT
+              value: {{ .Values.redis.port | quote }}
+            - name: REDIS_DATABASE
+              value: {{ .Values.redis.database | quote }}
+            - name: AGENT_STATE_CACHING_ENABLED
+              value: {{ .Values.redis.agentStateCaching.enabled | quote }}
+            - name: AGENT_STATE_TTL_SECONDS
+              value: {{ .Values.redis.agentStateCaching.ttl | quote }}
+            {{- end }}
+            
+            # Monitoring configuration
+            {{- if .Values.monitoring.jaeger.enabled }}
+            - name: JAEGER_AGENT_HOST
+              value: {{ .Values.monitoring.jaeger.agentHost | quote }}
+            - name: JAEGER_AGENT_PORT
+              value: {{ .Values.monitoring.jaeger.agentPort | quote }}
+            - name: JAEGER_SAMPLING_RATE
+              value: {{ .Values.monitoring.jaeger.samplingRate | quote }}
+            {{- end }}
+            
+            # Compliance configuration
+            - name: FISMA_LEVEL
+              value: {{ .Values.compliance.fisma.level | quote }}
+            - name: AUDIT_LOGGING_ENABLED
+              value: {{ .Values.compliance.fisma.auditLogging | quote }}
+            - name: AI_GOVERNANCE_ENABLED
+              value: {{ .Values.compliance.aiGovernance.enabled | quote }}
+            - name: BIAS_DETECTION_ENABLED
+              value: {{ .Values.compliance.aiGovernance.biasDetection | quote }}
+          
+          # Environment from secrets and configmaps
+          envFrom:
+            - secretRef:
+                name: {{ include "terrafusion-consciousness.fullname" . }}-secrets
+            - configMapRef:
+                name: {{ include "terrafusion-consciousness.fullname" . }}-config
+          
+          # Health checks (AI-aware)
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          
+          startupProbe:
+            {{- toYaml .Values.startupProbe | nindent 12 }}
+          
+          # Resource limits (optimized for 50,000 agents)
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          
+          # Volume mounts
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: app-logs
+              mountPath: /app/logs
+            - name: ml-model-cache
+              mountPath: /app/ml-cache
+            - name: config
+              mountPath: /app/config
+              readOnly: true
+        
+        # Sidecar: Prometheus exporter for custom AI metrics
+        - name: ai-metrics-exporter
+          image: prom/statsd-exporter:v0.24.0
+          args:
+            - --statsd.mapping-config=/etc/statsd-exporter/mapping.yml
+          ports:
+            - name: metrics
+              containerPort: 9102
+              protocol: TCP
+          volumeMounts:
+            - name: statsd-config
+              mountPath: /etc/statsd-exporter
+              readOnly: true
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+        
+        # Sidecar: Log shipping to Loki
+        {{- if .Values.monitoring.loki.enabled }}
+        - name: promtail
+          image: grafana/promtail:2.9.0
+          args:
+            - -config.file=/etc/promtail/promtail.yaml
+          volumeMounts:
+            - name: app-logs
+              mountPath: /app/logs
+              readOnly: true
+            - name: promtail-config
+              mountPath: /etc/promtail
+              readOnly: true
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+        {{- end }}
+      
+      # Volumes
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: app-logs
+          emptyDir: {}
+        - name: config
+          configMap:
+            name: {{ include "terrafusion-consciousness.fullname" . }}-config
+        - name: statsd-config
+          configMap:
+            name: {{ include "terrafusion-consciousness.fullname" . }}-statsd-config
+        {{- if .Values.persistence.enabled }}
+        - name: ml-model-cache
+          persistentVolumeClaim:
+            claimName: {{ include "terrafusion-consciousness.fullname" . }}-ml-cache
+        {{- else }}
+        - name: ml-model-cache
+          emptyDir:
+            sizeLimit: 10Gi
+        {{- end }}
+        {{- if .Values.monitoring.loki.enabled }}
+        - name: promtail-config
+          configMap:
+            name: promtail-config
+        {{- end }}
+      
+      # Affinity rules (GPU nodes + anti-affinity)
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      
+      # Tolerations (GPU nodes)
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      
+      # Node selector (AI-optimized nodes)
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

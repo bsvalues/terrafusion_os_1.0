@@ -1,0 +1,81 @@
+{
+  "@Variables": {
+    "Mission": "OV05",
+    "SensorName": "OrbView-5",
+    "MissionMatch": "#/MissionMatch",
+    "4BandRedIndex": 2,
+    "4BandGreenIndex": 1,
+    "4BandBlueIndex": 0,
+    "8BandRedIndex": 0,
+    "8BandGreenIndex": 0,
+    "8BandBlueIndex": 0
+  },
+  "Products": "Commercial/Products.json#NCDRDProducts-Max4Bands",
+  "IDs": {
+    "SensorNamePaths": [],
+    "MissionPaths": [],
+    "MissionMatch": [ "OV05", "OV5", "ORBVIEW5", "ORBVIEW-5" ],
+    "Bands-Panchromatic-Basic": [
+      "#Band-Pan"
+    ],
+    "Bands-Multispectral4Bands-Basic": [
+      "#Band-Blue",
+      "#Band-Green",
+      "#Band-Red",
+      "#Band-Near"
+    ],
+    "Bands-Panchromatic-Geo": [
+      "#Band-Pan"
+    ],
+    "Bands-Multispectral4Bands-Geo": [
+      "#Band-Blue",
+      "#Band-Green",
+      "#Band-Red",
+      "#Band-Near"
+    ],
+    "Bands-Multispectral3Bands-Psh": [
+      "#Band-Red",
+      "#Band-Green",
+      "#Band-Blue"
+    ],
+    "Bands-Multispectral4Bands-Psh": [
+      "#Band-Red",
+      "#Band-Green",
+      "#Band-Blue",
+      "#Band-Near"
+    ],
+    "Bands-Multispectral8Bands-Basic": [],
+    "Bands-SWIR8": [],
+    "Bands-CAVIS6": [],
+    "Band-Pan": {
+      "BandName": "Panchromatic",
+      "SolarIrradiance": 1617.0,
+      "WavelengthMin": 450.0,
+      "WavelengthMax": 800.0
+    },
+    "Band-Blue": {
+      "BandName": "Blue",
+      "SolarIrradiance": 1960.0,
+      "WavelengthMin": 450.0,
+      "WavelengthMax": 510.0
+    },
+    "Band-Green": {
+      "BandName": "Green",
+      "SolarIrradiance": 1853.0,
+      "WavelengthMin": 510.0,
+      "WavelengthMax": 580.0
+    },
+    "Band-Red": {
+      "BandName": "Red",
+      "SolarIrradiance": 1505.0,
+      "WavelengthMin": 655.0,
+      "WavelengthMax": 690.0
+    },
+    "Band-Near": {
+      "BandName": "NearInfrared",
+      "SolarIrradiance": 1039.0,
+      "WavelengthMin": 780.0,
+      "WavelengthMax": 920.0
+    }
+  }
+}

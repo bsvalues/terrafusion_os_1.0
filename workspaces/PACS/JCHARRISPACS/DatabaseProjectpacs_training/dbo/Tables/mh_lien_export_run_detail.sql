@@ -1,0 +1,43 @@
+CREATE TABLE [dbo].[mh_lien_export_run_detail] (
+    [run_id]              INT            NOT NULL,
+    [detail_id]           INT            IDENTITY (1, 1) NOT NULL,
+    [mbl_hm_hud_num]      VARCHAR (10)   NULL,
+    [mbl_hm_sn]           VARCHAR (26)   NULL,
+    [mbl_hm_model]        VARCHAR (20)   NULL,
+    [owner_id]            INT            NULL,
+    [owner_name1]         VARCHAR (40)   NULL,
+    [owner_name2]         VARCHAR (40)   NULL,
+    [owner_address]       VARCHAR (182)  NULL,
+    [owner_city]          VARCHAR (50)   NULL,
+    [owner_state]         VARCHAR (50)   NULL,
+    [owner_zip]           VARCHAR (10)   NULL,
+    [situs_line1]         VARCHAR (30)   NULL,
+    [situs_line2]         VARCHAR (30)   NULL,
+    [situs_city]          VARCHAR (20)   NULL,
+    [situs_state]         VARCHAR (2)    NULL,
+    [situs_zip]           VARCHAR (10)   NULL,
+    [entity_id]           INT            NULL,
+    [entity_cd]           VARCHAR (5)    NULL,
+    [entity_name]         VARCHAR (70)   NULL,
+    [taxing_unit_num]     VARCHAR (10)   NULL,
+    [collector_name1]     VARCHAR (40)   NULL,
+    [collector_name2]     VARCHAR (40)   NULL,
+    [collector_addr1]     VARCHAR (30)   NULL,
+    [collector_addr2]     VARCHAR (30)   NULL,
+    [collector_city]      VARCHAR (20)   NULL,
+    [collector_state]     VARCHAR (2)    NULL,
+    [collector_zip]       VARCHAR (10)   NULL,
+    [collector_phone_num] VARCHAR (25)   NULL,
+    [prop_id]             INT            NOT NULL,
+    [lien_id]             INT            NOT NULL,
+    [lien_date]           DATETIME       NOT NULL,
+    [tax_yr]              NUMERIC (4)    NOT NULL,
+    [tax_amount]          NUMERIC (8, 2) NOT NULL,
+    [county_code]         VARCHAR (3)    NULL,
+    CONSTRAINT [CPK_mh_lien_export_run_detail] PRIMARY KEY CLUSTERED ([run_id] ASC, [detail_id] ASC) WITH (FILLFACTOR = 100),
+    CONSTRAINT [CFK_mh_lien_export_run_detail_run_id] FOREIGN KEY ([run_id]) REFERENCES [dbo].[mh_lien_export_run] ([run_id])
+);
+
+
+GO
+

@@ -1,0 +1,14 @@
+{
+    "set": [
+        "buffer",
+        "close",
+        "count",
+        "distance",
+        "drive",
+        "near",
+        "overlay",
+        "proximity",
+        "sum",
+        "summary"
+    ]
+}

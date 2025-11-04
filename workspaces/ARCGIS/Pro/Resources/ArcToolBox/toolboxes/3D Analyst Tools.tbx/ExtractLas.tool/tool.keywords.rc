@@ -1,0 +1,10 @@
+{
+    "set": [
+        "clip",
+        "extract",
+        "las",
+        "point cloud",
+        "project",
+        "subset"
+    ]
+}

@@ -1,0 +1,158 @@
+Perfect — let’s scaffold both.
+
+---
+
+# 📄 1️⃣ **Form Change Summary PDF** (Audit Sheet Generator)
+
+---
+
+## 📌 Purpose
+Generate a PDF that shows **what changed, by whom, and when** — useful for:
+
+- 📑 Submission to underwriters/lenders  
+- 📜 Compliance & internal auditing  
+- 🧠 Reviewer context in revision workflows  
+
+---
+
+## 🗂️ Route: `POST /api/export/form-audit`
+
+```ts
+router.post('/export/form-audit', async (req, res) => {
+  const { formId } = req.body;
+
+  const log = await db.query.formAuditLog.findMany({
+    where: (f) => f.formId.eq(formId),
+    orderBy: (f) => f.at.asc(),
+  });
+
+  const html = renderAuditHTML(formId, log);
+  const pdf = await renderHTMLToPDF(html);
+
+  res.set({
+    'Content-Type': 'application/pdf',
+    'Content-Disposition': `inline; filename=audit_${formId}.pdf`,
+  });
+
+  res.send(pdf);
+});
+```
+
+---
+
+## 🖨️ Template Snippet (via `renderAuditHTML.ts`)
+
+```html
+<h1>Audit Log – Form {{formId}}</h1>
+<table>
+  <thead><tr><th>Time</th><th>User</th><th>Field</th><th>New Value</th></tr></thead>
+  <tbody>
+    {{#each log}}
+      <tr>
+        <td>{{format this.at}}</td>
+        <td>{{this.userId}}</td>
+        <td>{{this.field}}</td>
+        <td>{{this.newValue}}</td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
+```
+
+Uses Puppeteer or pdf-lib for final PDF render.
+
+---
+
+## ✅ Result
+> An instantly-downloadable summary of **who changed what** — a legally auditable trail.
+
+---
+
+# 🧑‍🤝‍🧑 2️⃣ Real-Time Collaborator Cursors (Yjs Awareness)
+
+---
+
+## 📌 Goal
+Display who is active in a form, and what field they’re editing — like:
+
+- 🖊 "Jane is editing G1 (sale price)"
+- 👁 Bob is viewing Addenda section
+- 👨‍👩‍👧 Multiple cursors = live collaboration
+
+---
+
+## 📦 Setup: Yjs + Awareness Protocol
+
+Ensure you're syncing via **y-websocket** or **y-webrtc**, and awareness is enabled:
+
+```ts
+import { Awareness } from 'y-protocols/awareness';
+
+const awareness = new Awareness(ydoc);
+awareness.setLocalStateField('user', {
+  name: currentUser.name,
+  color: currentUser.color
+});
+```
+
+---
+
+## 🎯 Update Field Focus
+
+When a user clicks into a field (e.g. `G1`):
+
+```ts
+awareness.setLocalStateField('focus', {
+  fieldId: 'G1',
+  timestamp: Date.now()
+});
+```
+
+---
+
+## 🧩 Display Active Cursors
+
+```tsx
+import { useAwareness } from '@/hooks/useAwareness';
+
+const peers = useAwareness(); // returns [{name, color, focus}, ...]
+
+return (
+  <div className="cursor-overlay">
+    {peers.map(peer => (
+      <div
+        key={peer.name}
+        className="cursor"
+        style={{ borderColor: peer.color }}
+      >
+        {peer.name} editing {peer.focus.fieldId}
+      </div>
+    ))}
+  </div>
+);
+```
+
+Overlay next to each field or in top-right of form.
+
+---
+
+## ✅ Results
+
+- 🧠 Live collaboration clarity
+- 🚫 Avoid stepping on edits
+- 🧾 Match WinTOTAL’s cursor-sharing legacy features
+
+---
+
+## 🧭 You're Now Equipped For:
+
+- ✅ Full role-based org model
+- ✅ Snapshot + form audit trail
+- ✅ Exportable compliance PDFs
+- ✅ Multi-user real-time editing
+
+---
+
+**Next moves?**
+- Build a **form reviewer mode** with annotation/highlight?
+- Start **billing model** scaffolding (usage tiers, seats, limits)?

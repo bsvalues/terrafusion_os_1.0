@@ -1,0 +1,23 @@
+{
+    "map": {
+        "description": "Modifies the padding, null, and length properties for fields that are part of a multifield route ID.",
+        "in_feature_class.descr": "The input multifield route ID network layer that contains fields for padding, null, and length values that need to be modified.",
+        "in_feature_class.title": "LRS Network Feature Class",
+        "out_feature_class.title": "Output Network Feature Class",
+        "route_id_padding.descr": "<xdoc><p>A table of values that specifies the field to be modified and its corresponding padding, null, and length values.</p><ul><li><span title=\"Field\">Field</span>—The field to be modified.</li><li><span title=\"Length\">Length</span>—The length value of the field to be modified. The field length should be between 1 and the length of the database field.</li><li><span title=\"Variable Length\">Variable Length</span>—Specifies if the <span class=\"esri_uicontrol\">Length</span> value is a variable value or a fixed value.</li><li><span title=\"Enable Padding\">Enable Padding</span>—Specifies if the field supports padding.</li><li><span title=\"Padding Character\">Padding Character</span>—The padding character for the field. The default is a space.</li><li><span title=\"Padding Location\">Padding Location</span>—<p>Specifies where the padding should be applied to the field value.<ul><li>Left—Adds the padding characters to the left of the value in the field. This is the default.</li><li>Right—Adds the padding characters to the right of the value in the field.</li><li>Left and Right—Adds the padding characters to the left and right of the value in the field.</li></ul></p></li><li><span title=\"Pad if Null\">Pad if Null</span>—Specifies if the padding characters are added when the field has a null value.</li><li><span title=\"Allow Null Values\">Allow Null Values</span>—Specifies if the field supports null values.</li></ul></xdoc>",
+        "route_id_padding.domain.item6.LEFT": "Left",
+        "route_id_padding.domain.item6.LEFT_AND_RIGHT": "Left and Right",
+        "route_id_padding.domain.item6.RIGHT": "Right",
+        "route_id_padding.dt.title1": "Field",
+        "route_id_padding.dt.title2": "Length",
+        "route_id_padding.dt.title3": "Variable Length",
+        "route_id_padding.dt.title4": "Enable Padding",
+        "route_id_padding.dt.title5": "Padding Character",
+        "route_id_padding.dt.title6": "Padding Location",
+        "route_id_padding.dt.title7": "Pad if Null",
+        "route_id_padding.dt.title8": "Allow Null Values",
+        "route_id_padding.title": "Route ID Padding",
+        "summary": "<xdoc><p>Modifies the padding, null, and length properties for fields that are part of a multifield route ID.</p><p>A route ID is configured with three fields: <span class=\"esri_fieldname\">RouteType</span>, <span class=\"esri_fieldname\">RouteNumber</span>, and <span class=\"esri_fieldname\">RampNumber</span>. Sample padding and null settings for the three fields are shown below.<ul><li>RouteType is a text field with a length of 3. The maximum number of characters that will be entered is three; however, some routes may have one or two characters entered for this field. A hyphen is used as a padding character to the right.</li><li>RouteNumber is a short field type. The field will have values ranging from 0 to 99999; 0 is used as a padding character to the left.</li><li>RampNumber is a text field with a length of 7; however, some routes will not have a value for this field and need to be left blank. An underscore is used as a padding character to the left and right.</li></ul></p></xdoc>",
+        "title": "Modify Route ID Padding"
+    }
+}

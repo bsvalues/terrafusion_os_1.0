@@ -1,0 +1,174 @@
+{
+  "TRE": "CSPROA",
+  "Source": [
+    "STDI-0006 Apr2014, 3.6"
+  ],
+  "Name": "Processing Information TRE",
+  "Description": "The Processing Information TRE (CSPROA) identifies processing options that were applied during image formation.  The CSPROA TRE is a required TRE that resides in image segment subheaders.  If the data for a given sensor (sub-image) spans multiple image segments, the CSPROA TRE shall be identical in each of the image segments and shall represent information for the entire sub-image.",
+  "Size": 120,
+  "Fields": {
+    "RESERVED_0": {
+      "Name": "RESERVED 0",
+      "Description": "This field only contains the value of 'LATESTCAL'.",
+      "Size": 12,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [
+            "LATESTCAL"
+          ]
+        }
+      ]
+    },
+    "RESERVED_1": {
+      "Name": "RESERVED 1",
+      "Description": "This field is only filled with space characters.",
+      "Size": 12,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [
+            " "
+          ]
+        }
+      ]
+    },
+    "RESERVED_2": {
+      "Name": "RESERVED 2",
+      "Description": "This field is only filled with space characters.",
+      "Size": 12,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [
+            " "
+          ]
+        }
+      ]
+    },
+    "RESERVED_3": {
+      "Name": "RESERVED 3",
+      "Description": "This field only contains the value of 'MARKANDFIX'.",
+      "Size": 12,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [
+            "MARKANDFIX"
+          ]
+        }
+      ]
+    },
+    "RESERVED_4": {
+      "Name": "RESERVED 4",
+      "Description": "This field is only filled with space characters.",
+      "Size": 12,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [
+            " "
+          ]
+        }
+      ]
+    },
+    "RESERVED_5": {
+      "Name": "RESERVED 5",
+      "Description": "This field contains the value 'CORR' for MS and all spaces for Pan.",
+      "Size": 12,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [
+            "CORR",
+            " "
+          ]
+        }
+      ]
+    },
+    "RESERVED_6": {
+      "Name": "RESERVED 6",
+      "Description": "This field only contains the value of 'SKIPAGM'.",
+      "Size": 12,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [
+            "SKIPAGM"
+          ]
+        }
+      ]
+    },
+    "RESERVED_7": {
+      "Name": "RESERVED 7",
+      "Description": "This field only contains the value of 'INTERP'.",
+      "Size": 12,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [
+            "INTERP"
+          ]
+        }
+      ]
+    },
+    "RESERVED_8": {
+      "Name": "RESERVED 8",
+      "Description": "This field is only filled with space characters.",
+      "Size": 12,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [
+            " "
+          ]
+        }
+      ]
+    },
+    "BWC": {
+      "Name": "Bandwidth Compression",
+      "Description": "This field contains one of the following three values: VISUAL = JPEG 2000 visually lossless, NUMERICAL = JPEG 2000 numerically lossless, UNCOMPRESSED = no compression.",
+      "Size": 12,
+      "Format": "BCS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [
+            "VISUAL",
+            "NUMERICAL",
+            "UNCOMPRESSED"
+          ]
+        }
+      ]
+    }
+  }
+}

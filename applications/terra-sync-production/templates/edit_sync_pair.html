@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Sync Pair - County Property Assessment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #003366;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .title-area {
+            display: flex;
+            align-items: center;
+        }
+        .logo {
+            height: 40px;
+            margin-right: 15px;
+        }
+        h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .user-info {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        .user-name {
+            margin-right: 15px;
+        }
+        .role-badge {
+            background-color: #005099;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .navbar {
+            background-color: #f0f0f0;
+            padding: 10px 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .navbar a {
+            color: #005099;
+            text-decoration: none;
+            margin-right: 20px;
+            font-weight: bold;
+        }
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+        .main {
+            padding: 20px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        .button {
+            background-color: #005099;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .button:hover {
+            background-color: #003d73;
+        }
+        .button-secondary {
+            background-color: #6c757d;
+        }
+        .button-danger {
+            background-color: #dc3545;
+        }
+        .button-success {
+            background-color: #28a745;
+        }
+        .footer {
+            margin-top: 30px;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+            color: #666;
+            font-size: 12px;
+            text-align: center;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .form-section {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #003366;
+        }
+        .breadcrumb {
+            margin-bottom: 20px;
+            padding: 10px 0;
+        }
+        .breadcrumb a {
+            color: #005099;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .breadcrumb span {
+            margin: 0 5px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title-area">
+            <img src="{{ url_for('static', filename='county_logo.svg') }}" alt="County Logo" class="logo">
+            <h1>County Property Assessment</h1>
+        </div>
+        <div class="user-info">
+            <span class="user-name">Welcome, {{ user.full_name }}</span>
+            <span class="role-badge">{{ user.roles[0] }}</span>
+        </div>
+    </div>
+    
+    <div class="navbar">
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        {% if check_county_permission('view_sync_operations') %}
+        <a href="{{ url_for('sync_dashboard') }}">Sync Operations</a>
+        {% endif %}
+        {% if check_county_permission('view_sync_pairs') %}
+        <a href="{{ url_for('sync_pairs') }}">Sync Pairs</a>
+        {% endif %}
+        {% if check_county_permission('view_reports') %}
+        <a href="{{ url_for('metrics_dashboard') }}">Reports</a>
+        {% endif %}
+        {% if check_county_permission('view_audit_logs') %}
+        <a href="{{ url_for('audit_dashboard') }}">Audit Logs</a>
+        {% endif %}
+        <a href="{{ url_for('county_auth_blueprint.logout') }}">Logout</a>
+    </div>
+    
+    <div class="container">
+        <div class="main">
+            <div class="breadcrumb">
+                <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                <span>›</span>
+                <a href="{{ url_for('sync_pairs') }}">Sync Pairs</a>
+                <span>›</span>
+                <a href="{{ url_for('view_sync_pair', pair_id=pair.id) }}">{{ pair.name }}</a>
+                <span>›</span>
+                Edit
+            </div>
+            
+            <h2>Edit Sync Pair: {{ pair.name }}</h2>
+            
+            <form action="{{ url_for('edit_sync_pair', pair_id=pair.id) }}" method="post">
+                <div class="form-grid">
+                    <div class="form-section">
+                        <div class="card-title">Basic Information</div>
+                        <div class="form-group">
+                            <label for="name">Sync Pair Name:</label>
+                            <input type="text" id="name" name="name" value="{{ pair.name }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description:</label>
+                            <textarea id="description" name="description" rows="3">{{ pair.description }}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="sync_schedule">Sync Schedule:</label>
+                            <select id="sync_schedule" name="sync_schedule">
+                                <option value="manual" {% if pair.sync_schedule == 'manual' %}selected{% endif %}>Manual Only</option>
+                                <option value="hourly" {% if pair.sync_schedule == 'hourly' %}selected{% endif %}>Hourly</option>
+                                <option value="daily" {% if pair.sync_schedule == 'daily' %}selected{% endif %}>Daily</option>
+                                <option value="weekly" {% if pair.sync_schedule == 'weekly' %}selected{% endif %}>Weekly</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="card-title">Source System</div>
+                        <div class="form-group">
+                            <label for="source_type">Source System Type:</label>
+                            <select id="source_type" name="source_type" required>
+                                <option value="county_database" {% if pair.source_type == 'county_database' %}selected{% endif %}>County Database</option>
+                                <option value="property_api" {% if pair.source_type == 'property_api' %}selected{% endif %}>Property API</option>
+                                <option value="assessment_files" {% if pair.source_type == 'assessment_files' %}selected{% endif %}>Assessment Files</option>
+                                <option value="gis_system" {% if pair.source_type == 'gis_system' %}selected{% endif %}>GIS System</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="source_config">Connection Details:</label>
+                            <textarea id="source_config" name="source_config" rows="4">{{ pair.source_config | tojson }}</textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="card-title">Target System</div>
+                        <div class="form-group">
+                            <label for="target_type">Target System Type:</label>
+                            <select id="target_type" name="target_type" required>
+                                <option value="county_database" {% if pair.target_type == 'county_database' %}selected{% endif %}>County Database</option>
+                                <option value="property_api" {% if pair.target_type == 'property_api' %}selected{% endif %}>Property API</option>
+                                <option value="assessment_files" {% if pair.target_type == 'assessment_files' %}selected{% endif %}>Assessment Files</option>
+                                <option value="state_system" {% if pair.target_type == 'state_system' %}selected{% endif %}>State System</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="target_config">Connection Details:</label>
+                            <textarea id="target_config" name="target_config" rows="4">{{ pair.target_config | tojson }}</textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="card-title">Field Mappings</div>
+                        <div class="form-group">
+                            <label for="field_mappings">Field Mappings:</label>
+                            <textarea id="field_mappings" name="field_mappings" rows="6">{{ pair.field_mappings | tojson }}</textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; text-align: center;">
+                    <button type="submit" class="button button-success">Save Changes</button>
+                    <a href="{{ url_for('view_sync_pair', pair_id=pair.id) }}" class="button button-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+        
+        <div class="footer">
+            &copy; {{ current_year }} County Property Assessment Department | TerraFusion SyncService
+            <br>For technical support, contact IT Support at ext. 4357
+        </div>
+    </div>
+</body>
+</html>

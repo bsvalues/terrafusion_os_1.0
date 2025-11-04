@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Validates a territory solution for invalid territories.",
+        "in_territory_solution.descr": "The territory solution that will be validated.",
+        "in_territory_solution.title": "Input Territory Solution",
+        "level.descr": "The level that will be analyzed in the validation.",
+        "level.title": "Level",
+        "out_territory_solution.title": "Updated Territory Solution",
+        "title": "Validate Territories"
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "set": [
+        "aspect",
+        "bearing",
+        "direction",
+        "down slope",
+        "elevation",
+        "flat",
+        "relief",
+        "slope",
+        "terrain dataset",
+        "terrains"
+    ]
+}

@@ -1,0 +1,10 @@
+{
+    "set": [
+        "create data loading workspace",
+        "data loading",
+        "mapping table",
+        "schema",
+        "source",
+        "target"
+    ]
+}

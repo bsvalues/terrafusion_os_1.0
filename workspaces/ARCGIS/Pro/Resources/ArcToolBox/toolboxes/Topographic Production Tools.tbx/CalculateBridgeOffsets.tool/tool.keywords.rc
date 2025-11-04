@@ -1,0 +1,17 @@
+{
+    "set": [
+        "bridge",
+        "bridge offsets",
+        "calculate",
+        "cartographic refinement",
+        "cartography",
+        "defense",
+        "defense mapping",
+        "offsets",
+        "production",
+        "production mapping",
+        "topo",
+        "topographic",
+        "topographic production"
+    ]
+}

@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: terrafusion-repo
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+type: Opaque
+stringData:
+  type: git
+  url: https://github.com/terrafusion/terrafusion-os
+  username: terrafusion-bot
+  password: ${GITHUB_TOKEN}
+  project: terrafusion
+  
+  # SSH key for alternative authentication (optional)
+  # sshPrivateKey: |
+  #   -----BEGIN OPENSSH PRIVATE KEY-----
+  #   ...
+  #   -----END OPENSSH PRIVATE KEY-----
+  
+  # TLS certificate verification
+  insecure: "false"
+  
+  # Enable LFS support
+  enableLfs: "true"
+  
+  # Helm repository configuration
+  enableOCI: "true"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: terrafusion-helm-repo
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+type: Opaque
+stringData:
+  type: helm
+  name: terrafusion-charts
+  url: https://charts.terrafusion.gov
+  username: terrafusion-bot
+  password: ${HELM_REGISTRY_PASSWORD}
+  project: terrafusion
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: terrafusion-oci-repo
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+type: Opaque
+stringData:
+  type: helm
+  name: terrafusion-oci
+  url: oci://ghcr.io/terrafusion/charts
+  username: ${GITHUB_USERNAME}
+  password: ${GITHUB_TOKEN}
+  enableOCI: "true"
+  project: terrafusion
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: terrafusion-repo-config
+  namespace: argocd
+data:
+  # Repository polling interval
+  timeout.reconciliation: "180s"
+  
+  # Retry configuration
+  timeout.hard.reconciliation: "0"
+  
+  # Resource exclusions
+  resource.exclusions: |
+    - apiGroups:
+      - cilium.io
+      kinds:
+      - CiliumIdentity
+      clusters:
+      - "*"

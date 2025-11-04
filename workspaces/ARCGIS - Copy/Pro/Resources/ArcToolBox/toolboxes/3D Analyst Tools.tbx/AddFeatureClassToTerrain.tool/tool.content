@@ -1,0 +1,132 @@
+{
+    "type": "FunctionTool",
+    "guid": "{a150404e-89ae-4da9-8902-2d3a3ae2b916}",
+    "displayname": "$rc:title",
+    "helpcontent": "5180001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9"
+    ],
+    "params": {
+        "in_terrain": {
+            "displayname": "$rc:in_terrain.title",
+            "datatype": {
+                "type": "GPTerrainLayer"
+            },
+            "description": "$rc:in_terrain.descr"
+        },
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPFeatureLayer",
+                        "displayname": "$rc:in_features.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:in_features.dt.title2"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:in_features.dt.title3"
+                    },
+                    {
+                        "type": "GPLong",
+                        "displayname": "$rc:in_features.dt.title4"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:in_features.dt.title5"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:in_features.dt.title6"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "displayname": "$rc:in_features.dt.title7"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "displayname": "$rc:in_features.dt.title8"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:in_features.dt.title9"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:in_features.dt.title10"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "displayname": "$rc:in_features.dt.title11"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Point",
+                            "Polyline",
+                            "Polygon",
+                            "Multipoint"
+                        ]
+                    },
+                    {
+                        "type": "GPCompositeDomain"
+                    },
+                    {
+                        "type": "GPCompositeDomain"
+                    },
+                    {
+                        "type": "GPCompositeDomain"
+                    },
+                    {
+                        "type": "GPCompositeDomain"
+                    },
+                    {
+                        "type": "GPCompositeDomain"
+                    },
+                    {
+                        "type": "GPCompositeDomain"
+                    },
+                    {
+                        "type": "GPCompositeDomain"
+                    },
+                    {
+                        "type": "GPCompositeDomain"
+                    },
+                    {
+                        "type": "GPCompositeDomain"
+                    },
+                    {
+                        "type": "GPCompositeDomain"
+                    }
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "derived_out_terrain": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:derived_out_terrain.title",
+            "datatype": {
+                "type": "GPTerrainLayer"
+            },
+            "depends": [
+                "in_terrain"
+            ]
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "workspace"
+    ]
+}

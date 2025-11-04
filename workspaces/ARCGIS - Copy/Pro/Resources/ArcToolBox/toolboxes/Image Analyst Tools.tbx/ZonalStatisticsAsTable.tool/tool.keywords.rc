@@ -1,0 +1,20 @@
+{
+    "set": [
+        "average",
+        "cube",
+        "largest",
+        "maximum",
+        "median",
+        "minimum",
+        "multidimensional zonal stats",
+        "overlap",
+        "overlapping",
+        "overlapping features",
+        "statistical",
+        "stddev",
+        "stdev",
+        "total",
+        "unique",
+        "zonal stats"
+    ]
+}

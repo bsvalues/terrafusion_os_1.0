@@ -1,0 +1,9 @@
+{
+    "map": {
+        "descr": "The Bathymetry toolbox contains tools that manage bathymetric data.",
+        "title": "Bathymetry Tools",
+        "toolset1.name": "BIS Management",
+        "toolset2.name": "BIS Data",
+        "toolset3.name": "Utilities"
+    }
+}

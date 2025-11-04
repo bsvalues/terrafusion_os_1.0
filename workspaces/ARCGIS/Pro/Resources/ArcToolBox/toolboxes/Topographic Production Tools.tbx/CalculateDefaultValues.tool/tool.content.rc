@@ -1,0 +1,9 @@
+{
+    "map": {
+        "description": "Replaces null values in a feature class or table with the default values from the geodatabase feature class.",
+        "in_datasets.descr": "The feature classes and/or tables whose null values will be replaced with the default values from the data model.",
+        "in_datasets.title": "Input Dataset",
+        "out_dataset.title": "Output Dataset",
+        "title": "Calculate Default Values"
+    }
+}

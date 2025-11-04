@@ -1,0 +1,236 @@
+{
+    "type": "FunctionTool",
+    "guid": "{02eca83c-3ecc-4335-b13a-3bf2531d4f1f}",
+    "displayname": "$rc:title",
+    "helpcontent": "24000002",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "edit_session",
+        "input_data_change"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline",
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "max_offset": {
+            "displayname": "$rc:max_offset.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "description": "$rc:max_offset.descr"
+        },
+        "fitting_type": {
+            "type": "optional",
+            "displayname": "$rc:fitting_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "FIT_TO_VERTICES",
+                        "code": "$rc:fitting_type.domain.FIT_TO_VERTICES"
+                    },
+                    {
+                        "value": "FIT_TO_SEGMENTS",
+                        "code": "$rc:fitting_type.domain.FIT_TO_SEGMENTS"
+                    }
+                ]
+            },
+            "value": "FIT_TO_VERTICES",
+            "description": "$rc:fitting_type.descr"
+        },
+        "circular_arcs": {
+            "type": "optional",
+            "displayname": "$rc:circular_arcs.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CREATE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NOT_CREATE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:circular_arcs.descr"
+        },
+        "max_arc_angle_step": {
+            "type": "optional",
+            "displayname": "$rc:max_arc_angle_step.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "2"
+                },
+                "high": {
+                    "allow": "true",
+                    "val": "95"
+                }
+            },
+            "value": "20",
+            "description": "$rc:max_arc_angle_step.descr"
+        },
+        "min_vertex_count": {
+            "type": "optional",
+            "displayname": "$rc:min_vertex_count.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "false",
+                    "val": "3"
+                }
+            },
+            "value": "4",
+            "description": "$rc:min_vertex_count.descr"
+        },
+        "min_radius": {
+            "type": "optional",
+            "displayname": "$rc:min_radius.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "description": "$rc:min_radius.descr"
+        },
+        "max_radius": {
+            "type": "optional",
+            "displayname": "$rc:max_radius.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "description": "$rc:max_radius.descr"
+        },
+        "min_arc_angle": {
+            "type": "optional",
+            "displayname": "$rc:min_arc_angle.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                },
+                "high": {
+                    "allow": "true",
+                    "val": "360"
+                }
+            },
+            "value": "2",
+            "description": "$rc:min_arc_angle.descr"
+        },
+        "closed_ends": {
+            "type": "optional",
+            "displayname": "$rc:closed_ends.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "PRESERVE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NOT_PRESERVE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:closed_ends.descr"
+        },
+        "out_feature_class": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "clonedependency": "true"
+            }
+        },
+        "anchor_points": {
+            "type": "optional",
+            "displayname": "$rc:anchor_points.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:anchor_points.descr"
+        },
+        "out_feature_layers": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_feature_layers.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            },
+            "depends": [
+                "in_features"
+            ]
+        }
+    },
+    "environments": [
+        "extent",
+        "workspace"
+    ]
+}

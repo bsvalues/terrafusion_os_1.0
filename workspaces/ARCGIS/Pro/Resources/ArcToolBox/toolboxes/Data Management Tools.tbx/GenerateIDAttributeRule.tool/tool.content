@@ -1,0 +1,266 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "3240012",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "block_add_to_map",
+        "param_nocount:in_table"
+    ],
+    "params": {
+        "in_table": {
+            "display_order": "1",
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "out_folder": {
+            "display_order": "2",
+            "displayname": "$rc:out_folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:out_folder.descr"
+        },
+        "field": {
+            "display_order": "4",
+            "displayname": "$rc:field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text",
+                    "Float",
+                    "Double",
+                    "Short",
+                    "Long",
+                    "BigInteger"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:field.descr"
+        },
+        "where_clause": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:where_clause.title",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:where_clause.descr"
+        },
+        "create_seq": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:create_seq.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CREATE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_CREATE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:create_seq.descr"
+        },
+        "definition_method": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:definition_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "BUILDER",
+                        "code": "$rc:definition_method.domain.BUILDER"
+                    },
+                    {
+                        "value": "TABLE",
+                        "code": "$rc:definition_method.domain.TABLE"
+                    },
+                    {
+                        "value": "CODED_VALUES",
+                        "code": "$rc:definition_method.domain.CODED_VALUES"
+                    }
+                ]
+            },
+            "value": "BUILDER",
+            "description": "$rc:definition_method.descr"
+        },
+        "id_builder": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:id_builder.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPSQLExpression",
+                        "displayname": "$rc:id_builder.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:id_builder.dt.title2"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:id_builder.dt.title3"
+                    },
+                    {
+                        "type": "GPLong",
+                        "displayname": "$rc:id_builder.dt.title4"
+                    },
+                    {
+                        "type": "GPLong",
+                        "displayname": "$rc:id_builder.dt.title5"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:id_builder.dt.title6"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:id_builder.dt.title7"
+                    },
+                    {
+                        "type": "GPLong",
+                        "displayname": "$rc:id_builder.dt.title8"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:id_builder.dt.title9"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPRangeDomain",
+                        "min": "1",
+                        "max": "10000000000"
+                    },
+                    {
+                        "type": "GPRangeDomain",
+                        "min": "1",
+                        "max": "10000000000"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPRangeDomain",
+                        "min": "0",
+                        "max": "10"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:id_builder.descr"
+        },
+        "id_table": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:id_table.title",
+            "datatype": {
+                "type": "GPRecordSet"
+            },
+            "value_xml": "<GPRecordSet xsi:type='typens:GPRecordSet' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/3.4.0'><RecordSet xsi:type='typens:RecordSet'><Fields xsi:type='typens:Fields'><FieldArray xsi:type='typens:ArrayOfField'><Field xsi:type='typens:Field'><Name>ObjectID</Name><Type>esriFieldTypeOID</Type><IsNullable>false</IsNullable><Length>4</Length><Precision>0</Precision><Scale>0</Scale><Required>true</Required><Editable>false</Editable><AliasName>ObjectID</AliasName></Field><Field xsi:type='typens:Field'><Name>WhereClause</Name><Type>esriFieldTypeString</Type><IsNullable>true</IsNullable><Length>8000</Length><Precision>0</Precision><Scale>0</Scale><AliasName>Where Clause</AliasName></Field><Field xsi:type='typens:Field'><Name>Description</Name><Type>esriFieldTypeString</Type><IsNullable>true</IsNullable><Length>100</Length><Precision>0</Precision><Scale>0</Scale><AliasName>Description</AliasName></Field><Field xsi:type='typens:Field'><Name>SequenceName</Name><Type>esriFieldTypeString</Type><IsNullable>true</IsNullable><Length>64</Length><Precision>0</Precision><Scale>0</Scale><AliasName>Sequence Name</AliasName></Field><Field xsi:type='typens:Field'><Name>StartingValue</Name><Type>esriFieldTypeInteger</Type><IsNullable>true</IsNullable><Length>4</Length><Precision>0</Precision><Scale>0</Scale><AliasName>Starting Value</AliasName></Field><Field xsi:type='typens:Field'><Name>IncrementValue</Name><Type>esriFieldTypeSmallInteger</Type><IsNullable>true</IsNullable><Length>2</Length><Precision>0</Precision><Scale>0</Scale><AliasName>Increment Value</AliasName></Field><Field xsi:type='typens:Field'><Name>Prefix</Name><Type>esriFieldTypeString</Type><IsNullable>true</IsNullable><Length>20</Length><Precision>0</Precision><Scale>0</Scale><AliasName>Prefix</AliasName></Field><Field xsi:type='typens:Field'><Name>Suffix</Name><Type>esriFieldTypeString</Type><IsNullable>true</IsNullable><Length>20</Length><Precision>0</Precision><Scale>0</Scale><AliasName>Suffix</AliasName></Field><Field xsi:type='typens:Field'><Name>Padding</Name><Type>esriFieldTypeSmallInteger</Type><IsNullable>true</IsNullable><Length>2</Length><Precision>0</Precision><Scale>0</Scale><AliasName>Padding</AliasName></Field><Field xsi:type='typens:Field'><Name>Separator</Name><Type>esriFieldTypeString</Type><IsNullable>true</IsNullable><Length>10</Length><Precision>0</Precision><Scale>0</Scale><AliasName>Separator</AliasName></Field></FieldArray></Fields><Records xsi:type='typens:ArrayOfRecord'></Records></RecordSet><OIDFieldName>ObjectID</OIDFieldName></GPRecordSet>",
+            "description": "$rc:id_table.descr"
+        },
+        "id_coded_value": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:id_coded_value.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text",
+                    "Float",
+                    "Double",
+                    "Short",
+                    "Long",
+                    "BigInteger"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:id_coded_value.descr"
+        },
+        "out_rule_csv": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_rule_csv.title",
+            "datatype": {
+                "type": "DEFile"
+            }
+        },
+        "out_id_file": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "10",
+            "displayname": "$rc:out_id_file.title",
+            "datatype": {
+                "type": "DEFile"
+            }
+        },
+        "out_seq_script": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "11",
+            "displayname": "$rc:out_seq_script.title",
+            "datatype": {
+                "type": "DEFile"
+            }
+        }
+    }
+}

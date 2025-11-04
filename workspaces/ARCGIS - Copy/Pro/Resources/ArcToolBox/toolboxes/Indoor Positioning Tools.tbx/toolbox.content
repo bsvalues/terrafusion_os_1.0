@@ -1,0 +1,29 @@
+{
+    "version": "1.0",
+    "alias": "indoorpositioning",
+    "displayname": "$rc:title",
+    "description": "$rc:descr",
+    "helpcontext": "78000000",
+    "toolsets": {
+        "<root>": {
+            "tools": [
+                "CreateIPSDataModel",
+                "GenerateIndoorPositioningDataset",
+                "ShareIndoorPositioningDataService"
+            ]
+        },
+        "$rc:toolset2.name": {
+            "tools": [
+                "EnableIndoorPositioning",
+                "GenerateIndoorPositioningFile",
+                "GenerateIndoorPositioningFileWithoutSurvey"
+            ]
+        },
+        "$rc:toolset1.name": {
+            "tools": [
+                "ComputePositioningQuality",
+                "CreateIPSQualityDataset"
+            ]
+        }
+    }
+}

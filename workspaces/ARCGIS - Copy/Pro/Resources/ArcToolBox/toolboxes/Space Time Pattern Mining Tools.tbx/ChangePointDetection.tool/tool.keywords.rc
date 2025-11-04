@@ -1,0 +1,11 @@
+{
+    "set": [
+        "pelt",
+        "segment",
+        "segmentation",
+        "likelihood",
+        "space-time",
+        "statistics",
+        "structural"
+    ]
+}

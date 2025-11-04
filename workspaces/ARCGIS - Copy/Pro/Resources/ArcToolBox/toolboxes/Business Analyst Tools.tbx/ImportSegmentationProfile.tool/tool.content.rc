@@ -1,0 +1,18 @@
+{
+    "map": {
+        "count_field.descr": "A numeric field that contains segment count information.",
+        "count_field.title": "Count Field",
+        "description": "Generates a segmentation profile from a table.",
+        "in_table.descr": "The input table with segmentation information.",
+        "in_table.title": "Input Table",
+        "out_profile.descr": "The name of the segmentation file that will be created.",
+        "out_profile.title": "Output Profile",
+        "segment_id_field.descr": "A string field that contains the segmentation code.",
+        "segment_id_field.title": "Segment ID Field",
+        "segmentation_base.descr": "The segmentation base for the profile being created. Available options are provided by the segmentation dataset being used.",
+        "segmentation_base.title": "Segmentation Base",
+        "title": "Import Segmentation Profile",
+        "total_volume_field.descr": "A numeric field that contains volume information.",
+        "total_volume_field.title": "Total Volume Field"
+    }
+}

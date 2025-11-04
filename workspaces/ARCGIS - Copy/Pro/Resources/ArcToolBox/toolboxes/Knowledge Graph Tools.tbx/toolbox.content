@@ -1,0 +1,13 @@
+{
+    "version": "1.0",
+    "alias": "kg",
+    "displayname": "$rc:title",
+    "description": "$rc:descr",
+    "toolsets": {
+        "$rc:toolset1.name": {
+            "tools": [
+                "FilteredFindPaths"
+            ]
+        }
+    }
+}

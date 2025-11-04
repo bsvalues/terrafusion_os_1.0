@@ -1,0 +1,960 @@
+{% extends "layout.html" %}
+
+{% block title %}AI Advanced Analytics{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">AI Advanced Analytics</h1>
+    
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Analysis Parameters</h5>
+                    <form id="analytics-form" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="time-range" class="form-label">Time Range</label>
+                            <select class="form-select" id="time-range" name="time_range">
+                                <option value="7">Last 7 days</option>
+                                <option value="30" selected>Last 30 days</option>
+                                <option value="90">Last 90 days</option>
+                                <option value="180">Last 180 days</option>
+                                <option value="365">Last 365 days</option>
+                                <option value="custom">Custom range</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="agent-type" class="form-label">Agent Type</label>
+                            <select class="form-select" id="agent-type" name="agent_type">
+                                <option value="all" selected>All Agents</option>
+                                <option value="summarizer">Text Summarizer</option>
+                                <option value="market_analyzer">Market Analyzer</option>
+                                <option value="recommender">Recommendation Agent</option>
+                                <option value="nl_search">Natural Language Search</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="analysis-type" class="form-label">Analysis Type</label>
+                            <select class="form-select" id="analysis-type" name="analysis_type">
+                                <option value="performance" selected>Performance Analysis</option>
+                                <option value="trends">Trend Analysis</option>
+                                <option value="comparative">Comparative Analysis</option>
+                                <option value="feedback">Feedback Analysis</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">Analyze</button>
+                        </div>
+                        
+                        <div class="col-md-6 custom-date-range d-none">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="start-date" class="form-label">Start Date</label>
+                                    <input type="date" class="form-control" id="start-date" name="start_date">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="end-date" class="form-label">End Date</label>
+                                    <input type="date" class="form-control" id="end-date" name="end_date">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="analysis-results" class="d-none">
+        <!-- Performance Analysis View -->
+        <div id="performance-view" class="analysis-view">
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Performance Metrics Over Time</h5>
+                            <div id="performance-chart" style="height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Key Statistics</h5>
+                            <div id="performance-stats" class="mt-3">
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            <th>Avg. Rating</th>
+                                            <td id="avg-rating">4.2</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Response Time</th>
+                                            <td id="avg-response-time">1.2s</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Total Requests</th>
+                                            <td id="total-requests">528</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Success Rate</th>
+                                            <td id="success-rate">98.5%</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Improvement</th>
+                                            <td id="improvement">+12.3%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Rating Distribution</h5>
+                            <div id="rating-distribution-chart" style="height: 250px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Performance by Agent Type</h5>
+                            <div id="agent-performance-chart" style="height: 250px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Performance Insights</h5>
+                            <div id="performance-insights" class="mt-3">
+                                <div class="alert alert-info">
+                                    <h6><i class="bi bi-lightbulb"></i> Key Finding</h6>
+                                    <p>The Market Analyzer agent shows a 15% improvement in average rating after the latest prompt optimization cycle.</p>
+                                </div>
+                                <div class="alert alert-success">
+                                    <h6><i class="bi bi-graph-up"></i> Positive Trend</h6>
+                                    <p>Overall response quality has improved steadily over the past 30 days, with a notable increase in 5-star ratings.</p>
+                                </div>
+                                <div class="alert alert-warning">
+                                    <h6><i class="bi bi-exclamation-triangle"></i> Attention Needed</h6>
+                                    <p>The Natural Language Search agent shows varying performance based on query complexity. Consider optimizing for complex queries.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Trend Analysis View -->
+        <div id="trends-view" class="analysis-view d-none">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Long-term Performance Trends</h5>
+                            <div id="trend-chart" style="height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Prompt Evolution Impact</h5>
+                            <div id="prompt-evolution-chart" style="height: 250px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Seasonal Patterns</h5>
+                            <div id="seasonal-patterns-chart" style="height: 250px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Trend Insights</h5>
+                            <div id="trend-insights" class="mt-3">
+                                <div class="alert alert-info">
+                                    <h6><i class="bi bi-calendar-week"></i> Seasonal Pattern</h6>
+                                    <p>Recommendation agent usage and ratings peak consistently at the beginning of each month.</p>
+                                </div>
+                                <div class="alert alert-success">
+                                    <h6><i class="bi bi-arrow-up-right"></i> Growth Trend</h6>
+                                    <p>Text Summarizer usage has grown 35% over the past quarter, with stable rating performance.</p>
+                                </div>
+                                <div class="alert alert-info">
+                                    <h6><i class="bi bi-layers"></i> Optimization Impact</h6>
+                                    <p>Each major prompt update results in an average 8-12% improvement in agent performance.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Comparative Analysis View -->
+        <div id="comparative-view" class="analysis-view d-none">
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Agent Performance Comparison</h5>
+                            <div id="agent-comparison-chart" style="height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Top Performing Scenarios</h5>
+                            <div id="top-scenarios">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Agent</th>
+                                            <th>Scenario</th>
+                                            <th>Rating</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Summarizer</td>
+                                            <td>Article Analysis</td>
+                                            <td>4.9</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Market Analyzer</td>
+                                            <td>Trend Reports</td>
+                                            <td>4.8</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Recommender</td>
+                                            <td>Similar Properties</td>
+                                            <td>4.7</td>
+                                        </tr>
+                                        <tr>
+                                            <td>NL Search</td>
+                                            <td>Location Queries</td>
+                                            <td>4.6</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Feature Importance</h5>
+                            <div id="feature-importance-chart" style="height: 250px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Response Quality vs. Time</h5>
+                            <div id="quality-vs-time-chart" style="height: 250px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Comparative Insights</h5>
+                            <div id="comparative-insights" class="mt-3">
+                                <div class="alert alert-info">
+                                    <h6><i class="bi bi-trophy"></i> Best Performance</h6>
+                                    <p>The Text Summarizer agent performs exceptionally well on journalistic content, with an average rating of 4.9/5.</p>
+                                </div>
+                                <div class="alert alert-info">
+                                    <h6><i class="bi bi-graph-up"></i> Efficiency Leader</h6>
+                                    <p>The Market Analyzer provides the highest quality-to-response-time ratio, delivering valuable insights in less than 2 seconds on average.</p>
+                                </div>
+                                <div class="alert alert-warning">
+                                    <h6><i class="bi bi-exclamation-triangle"></i> Improvement Opportunity</h6>
+                                    <p>The Natural Language Search agent has the most room for improvement in handling ambiguous queries.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Feedback Analysis View -->
+        <div id="feedback-view" class="analysis-view d-none">
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Feedback Sentiment Analysis</h5>
+                            <div id="sentiment-chart" style="height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Common Feedback Themes</h5>
+                            <div id="feedback-themes">
+                                <div class="mb-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Accuracy</span>
+                                        <span>78%</span>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" style="width: 78%" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Usefulness</span>
+                                        <span>65%</span>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Clarity</span>
+                                        <span>82%</span>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" style="width: 82%" aria-valuenow="82" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Completeness</span>
+                                        <span>71%</span>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" style="width: 71%" aria-valuenow="71" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Relevance</span>
+                                        <span>90%</span>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" style="width: 90%" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Word Cloud - Positive Feedback</h5>
+                            <div id="positive-wordcloud" style="height: 250px;" class="d-flex justify-content-center">
+                                <img src="https://via.placeholder.com/500x250?text=Positive+Feedback+Word+Cloud" alt="Positive Feedback Word Cloud" class="img-fluid">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Word Cloud - Improvement Areas</h5>
+                            <div id="negative-wordcloud" style="height: 250px;" class="d-flex justify-content-center">
+                                <img src="https://via.placeholder.com/500x250?text=Improvement+Areas+Word+Cloud" alt="Improvement Areas Word Cloud" class="img-fluid">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Recent Feedback Analysis</h5>
+                            <div id="feedback-table-container" class="table-responsive">
+                                <table class="table table-striped" id="feedback-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Agent</th>
+                                            <th>Rating</th>
+                                            <th>Comment</th>
+                                            <th>Sentiment</th>
+                                            <th>Key Themes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>2025-04-20</td>
+                                            <td>Market Analyzer</td>
+                                            <td>5</td>
+                                            <td>Excellent market analysis with clear trends identified.</td>
+                                            <td><span class="badge bg-success">Positive</span></td>
+                                            <td>Clarity, Usefulness</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2025-04-19</td>
+                                            <td>Summarizer</td>
+                                            <td>4</td>
+                                            <td>Good summary but missed some key points.</td>
+                                            <td><span class="badge bg-info">Neutral</span></td>
+                                            <td>Completeness</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2025-04-18</td>
+                                            <td>NL Search</td>
+                                            <td>3</td>
+                                            <td>Found relevant properties but the search was too broad.</td>
+                                            <td><span class="badge bg-warning">Mixed</span></td>
+                                            <td>Relevance, Accuracy</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2025-04-17</td>
+                                            <td>Recommender</td>
+                                            <td>5</td>
+                                            <td>Perfect recommendations based on my preferences!</td>
+                                            <td><span class="badge bg-success">Positive</span></td>
+                                            <td>Relevance, Usefulness</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2025-04-16</td>
+                                            <td>Market Analyzer</td>
+                                            <td>2</td>
+                                            <td>Data seems outdated and analysis doesn't match current market conditions.</td>
+                                            <td><span class="badge bg-danger">Negative</span></td>
+                                            <td>Accuracy, Usefulness</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize date inputs for custom range
+    const today = new Date();
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+    
+    document.getElementById('start-date').valueAsDate = thirtyDaysAgo;
+    document.getElementById('end-date').valueAsDate = today;
+    
+    // Show/hide custom date range based on selection
+    document.getElementById('time-range').addEventListener('change', function() {
+        if (this.value === 'custom') {
+            document.querySelector('.custom-date-range').classList.remove('d-none');
+        } else {
+            document.querySelector('.custom-date-range').classList.add('d-none');
+        }
+    });
+    
+    // Handle form submission
+    document.getElementById('analytics-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Show loading state
+        showLoading();
+        
+        // Get form values
+        const timeRange = document.getElementById('time-range').value;
+        const agentType = document.getElementById('agent-type').value;
+        const analysisType = document.getElementById('analysis-type').value;
+        
+        // Simulate API call - replace with actual API in production
+        setTimeout(function() {
+            // Show results
+            document.getElementById('analysis-results').classList.remove('d-none');
+            
+            // Show appropriate view based on analysis type
+            document.querySelectorAll('.analysis-view').forEach(view => {
+                view.classList.add('d-none');
+            });
+            
+            const viewId = analysisType + '-view';
+            document.getElementById(viewId).classList.remove('d-none');
+            
+            // Initialize charts based on selected view
+            switch(analysisType) {
+                case 'performance':
+                    initializePerformanceCharts();
+                    break;
+                case 'trends':
+                    initializeTrendCharts();
+                    break;
+                case 'comparative':
+                    initializeComparativeCharts();
+                    break;
+                case 'feedback':
+                    initializeFeedbackCharts();
+                    break;
+            }
+        }, 1000);
+    });
+    
+    // Initialize performance charts - to be replaced with actual data
+    function initializePerformanceCharts() {
+        // Performance metrics chart
+        const performanceCtx = document.getElementById('performance-chart').getContext('2d');
+        new Chart(performanceCtx, {
+            type: 'line',
+            data: {
+                labels: ['Day 1', 'Day 5', 'Day 10', 'Day 15', 'Day 20', 'Day 25', 'Day 30'],
+                datasets: [{
+                    label: 'Average Rating',
+                    data: [3.8, 3.9, 4.0, 4.1, 4.3, 4.2, 4.5],
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 3,
+                        max: 5
+                    }
+                }
+            }
+        });
+        
+        // Rating distribution chart
+        const ratingDistCtx = document.getElementById('rating-distribution-chart').getContext('2d');
+        new Chart(ratingDistCtx, {
+            type: 'bar',
+            data: {
+                labels: ['1 Star', '2 Stars', '3 Stars', '4 Stars', '5 Stars'],
+                datasets: [{
+                    label: 'Number of Ratings',
+                    data: [5, 15, 120, 245, 143],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.5)',
+                        'rgba(255, 159, 64, 0.5)',
+                        'rgba(255, 205, 86, 0.5)',
+                        'rgba(75, 192, 192, 0.5)',
+                        'rgba(54, 162, 235, 0.5)'
+                    ],
+                    borderColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(255, 159, 64)',
+                        'rgb(255, 205, 86)',
+                        'rgb(75, 192, 192)',
+                        'rgb(54, 162, 235)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        
+        // Agent performance chart
+        const agentPerfCtx = document.getElementById('agent-performance-chart').getContext('2d');
+        new Chart(agentPerfCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Accuracy', 'Response Time', 'Relevance', 'Completeness', 'Clarity'],
+                datasets: [
+                    {
+                        label: 'Summarizer',
+                        data: [4.5, 4.8, 4.3, 4.6, 4.7],
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Market Analyzer',
+                        data: [4.7, 4.2, 4.8, 4.3, 4.5],
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Recommender',
+                        data: [4.3, 4.5, 4.9, 4.2, 4.4],
+                        backgroundColor: 'rgba(255, 205, 86, 0.2)',
+                        borderColor: 'rgba(255, 205, 86, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'NL Search',
+                        data: [4.2, 4.7, 4.5, 4.0, 4.3],
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        beginAtZero: false,
+                        min: 3,
+                        max: 5
+                    }
+                }
+            }
+        });
+    }
+    
+    // Initialize trend charts
+    function initializeTrendCharts() {
+        // Long-term performance trend chart
+        const trendCtx = document.getElementById('trend-chart').getContext('2d');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Average Rating',
+                    data: [3.5, 3.6, 3.7, 3.9, 4.0, 4.1, 4.0, 4.2, 4.3, 4.4, 4.5, 4.6],
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 3,
+                        max: 5
+                    }
+                }
+            }
+        });
+        
+        // Prompt evolution impact chart
+        const promptEvolutionCtx = document.getElementById('prompt-evolution-chart').getContext('2d');
+        new Chart(promptEvolutionCtx, {
+            type: 'bar',
+            data: {
+                labels: ['v1', 'v2', 'v3', 'v4', 'v5'],
+                datasets: [{
+                    label: 'Average Rating',
+                    data: [3.5, 3.8, 4.1, 4.3, 4.5],
+                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 3,
+                        max: 5
+                    }
+                }
+            }
+        });
+        
+        // Seasonal patterns chart
+        const seasonalCtx = document.getElementById('seasonal-patterns-chart').getContext('2d');
+        new Chart(seasonalCtx, {
+            type: 'line',
+            data: {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                datasets: [
+                    {
+                        label: 'Quarter 1',
+                        data: [4.2, 4.0, 3.9, 4.1],
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        backgroundColor: 'transparent',
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Quarter 2',
+                        data: [4.3, 4.1, 4.0, 4.2],
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'transparent',
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Quarter 3',
+                        data: [4.4, 4.2, 4.1, 4.3],
+                        borderColor: 'rgba(255, 205, 86, 1)',
+                        backgroundColor: 'transparent',
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Quarter 4',
+                        data: [4.5, 4.3, 4.2, 4.4],
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'transparent',
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 3.8,
+                        max: 4.6
+                    }
+                }
+            }
+        });
+    }
+    
+    // Initialize comparative charts
+    function initializeComparativeCharts() {
+        // Agent comparison chart
+        const comparisonCtx = document.getElementById('agent-comparison-chart').getContext('2d');
+        new Chart(comparisonCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Summarizer', 'Market Analyzer', 'Recommender', 'NL Search'],
+                datasets: [
+                    {
+                        label: 'Accuracy',
+                        data: [4.5, 4.7, 4.3, 4.2],
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)'
+                    },
+                    {
+                        label: 'Response Time',
+                        data: [4.8, 4.2, 4.5, 4.7],
+                        backgroundColor: 'rgba(255, 99, 132, 0.5)'
+                    },
+                    {
+                        label: 'Relevance',
+                        data: [4.3, 4.8, 4.9, 4.5],
+                        backgroundColor: 'rgba(255, 205, 86, 0.5)'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 3,
+                        max: 5
+                    }
+                }
+            }
+        });
+        
+        // Feature importance chart
+        const featureCtx = document.getElementById('feature-importance-chart').getContext('2d');
+        new Chart(featureCtx, {
+            type: 'polarArea',
+            data: {
+                labels: ['Prompt Quality', 'Content Complexity', 'Query Specificity', 'Response Length', 'Data Freshness'],
+                datasets: [{
+                    data: [8.5, 7.2, 6.8, 5.4, 9.1],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.5)',
+                        'rgba(255, 99, 132, 0.5)',
+                        'rgba(255, 205, 86, 0.5)',
+                        'rgba(75, 192, 192, 0.5)',
+                        'rgba(153, 102, 255, 0.5)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+        
+        // Quality vs time chart
+        const qualityTimeCtx = document.getElementById('quality-vs-time-chart').getContext('2d');
+        new Chart(qualityTimeCtx, {
+            type: 'scatter',
+            data: {
+                datasets: [
+                    {
+                        label: 'Summarizer',
+                        data: [
+                            {x: 0.8, y: 4.5},
+                            {x: 0.9, y: 4.6},
+                            {x: 1.0, y: 4.7},
+                            {x: 1.1, y: 4.8},
+                            {x: 1.2, y: 4.9}
+                        ],
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)'
+                    },
+                    {
+                        label: 'Market Analyzer',
+                        data: [
+                            {x: 1.5, y: 4.3},
+                            {x: 1.6, y: 4.4},
+                            {x: 1.7, y: 4.5},
+                            {x: 1.8, y: 4.6},
+                            {x: 1.9, y: 4.7}
+                        ],
+                        backgroundColor: 'rgba(255, 99, 132, 0.5)'
+                    },
+                    {
+                        label: 'Recommender',
+                        data: [
+                            {x: 1.2, y: 4.2},
+                            {x: 1.3, y: 4.3},
+                            {x: 1.4, y: 4.4},
+                            {x: 1.5, y: 4.5},
+                            {x: 1.6, y: 4.6}
+                        ],
+                        backgroundColor: 'rgba(255, 205, 86, 0.5)'
+                    },
+                    {
+                        label: 'NL Search',
+                        data: [
+                            {x: 0.9, y: 4.0},
+                            {x: 1.0, y: 4.1},
+                            {x: 1.1, y: 4.2},
+                            {x: 1.2, y: 4.3},
+                            {x: 1.3, y: 4.4}
+                        ],
+                        backgroundColor: 'rgba(75, 192, 192, 0.5)'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Response Time (seconds)'
+                        }
+                    },
+                    y: {
+                        beginAtZero: false,
+                        min: 3.8,
+                        max: 5,
+                        title: {
+                            display: true,
+                            text: 'Rating'
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    // Initialize feedback charts
+    function initializeFeedbackCharts() {
+        // Sentiment analysis chart
+        const sentimentCtx = document.getElementById('sentiment-chart').getContext('2d');
+        new Chart(sentimentCtx, {
+            type: 'line',
+            data: {
+                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'],
+                datasets: [
+                    {
+                        label: 'Positive',
+                        data: [65, 68, 72, 75, 82],
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Neutral',
+                        data: [25, 22, 20, 18, 13],
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Negative',
+                        data: [10, 10, 8, 7, 5],
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        tension: 0.3,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        stacked: true,
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+    }
+    
+    // Helper to show loading state
+    function showLoading() {
+        // In a real application, you would show a loading indicator here
+    }
+    
+    // For demo purposes, trigger a default analysis on load
+    setTimeout(() => {
+        document.getElementById('analytics-form').dispatchEvent(new Event('submit'));
+    }, 500);
+});
+</script>
+{% endblock %}

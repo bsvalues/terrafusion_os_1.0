@@ -1,0 +1,895 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\MGWR",
+    "displayname": "$rc:title",
+    "helpcontent": "9060014",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_features": {
+            "display_order": "0",
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "dependent_variable": {
+            "display_order": "1",
+            "displayname": "$rc:dependent_variable.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "BigInteger"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:dependent_variable.descr"
+        },
+        "model_type": {
+            "enabled": "false",
+            "display_order": "2",
+            "displayname": "$rc:model_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "CONTINUOUS",
+                        "code": "$rc:model_type.domain.CONTINUOUS"
+                    }
+                ]
+            },
+            "value": "CONTINUOUS",
+            "description": "$rc:model_type.descr"
+        },
+        "explanatory_variables": {
+            "display_order": "3",
+            "control_guid": "{C15EC6FA-35EF-4204-90FB-01E7B4DD6862}",
+            "displayname": "$rc:explanatory_variables.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "BigInteger"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:explanatory_variables.descr"
+        },
+        "output_features": {
+            "direction": "out",
+            "display_order": "5",
+            "displayname": "$rc:output_features.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:output_features.descr"
+        },
+        "neighborhood_type": {
+            "display_order": "6",
+            "displayname": "$rc:neighborhood_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NUMBER_OF_NEIGHBORS",
+                        "code": "$rc:neighborhood_type.domain.NUMBER_OF_NEIGHBORS"
+                    },
+                    {
+                        "value": "DISTANCE_BAND",
+                        "code": "$rc:neighborhood_type.domain.DISTANCE_BAND"
+                    }
+                ]
+            },
+            "description": "$rc:neighborhood_type.descr"
+        },
+        "neighborhood_selection_method": {
+            "display_order": "7",
+            "displayname": "$rc:neighborhood_selection_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "GOLDEN_SEARCH",
+                        "code": "$rc:neighborhood_selection_method.domain.GOLDEN_SEARCH"
+                    },
+                    {
+                        "value": "GRADIENT_SEARCH",
+                        "code": "$rc:neighborhood_selection_method.domain.GRADIENT_SEARCH"
+                    },
+                    {
+                        "value": "MANUAL_INTERVALS",
+                        "code": "$rc:neighborhood_selection_method.domain.MANUAL_INTERVALS"
+                    },
+                    {
+                        "value": "USER_DEFINED",
+                        "code": "$rc:neighborhood_selection_method.domain.USER_DEFINED"
+                    }
+                ]
+            },
+            "description": "$rc:neighborhood_selection_method.descr"
+        },
+        "minimum_number_of_neighbors": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:minimum_number_of_neighbors.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:minimum_number_of_neighbors.descr"
+        },
+        "maximum_number_of_neighbors": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:maximum_number_of_neighbors.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:maximum_number_of_neighbors.descr"
+        },
+        "distance_unit": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:distance_unit.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "FEET",
+                        "code": "$rc:distance_unit.domain.FEET"
+                    },
+                    {
+                        "value": "METERS",
+                        "code": "$rc:distance_unit.domain.METERS"
+                    },
+                    {
+                        "value": "KILOMETERS",
+                        "code": "$rc:distance_unit.domain.KILOMETERS"
+                    },
+                    {
+                        "value": "MILES",
+                        "code": "$rc:distance_unit.domain.MILES"
+                    },
+                    {
+                        "value": "FEETINT",
+                        "code": "$rc:distance_unit.domain.FEETINT"
+                    },
+                    {
+                        "value": "MILESINT",
+                        "code": "$rc:distance_unit.domain.MILESINT"
+                    }
+                ]
+            },
+            "description": "$rc:distance_unit.descr"
+        },
+        "minimum_search_distance": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "11",
+            "displayname": "$rc:minimum_search_distance.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:minimum_search_distance.descr"
+        },
+        "maximum_search_distance": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "12",
+            "displayname": "$rc:maximum_search_distance.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:maximum_search_distance.descr"
+        },
+        "number_of_neighbors_increment": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "13",
+            "displayname": "$rc:number_of_neighbors_increment.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:number_of_neighbors_increment.descr"
+        },
+        "search_distance_increment": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "14",
+            "displayname": "$rc:search_distance_increment.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:search_distance_increment.descr"
+        },
+        "number_of_increments": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "15",
+            "displayname": "$rc:number_of_increments.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "2",
+                "max": "20"
+            },
+            "description": "$rc:number_of_increments.descr"
+        },
+        "number_of_neighbors": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "16",
+            "displayname": "$rc:number_of_neighbors.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:number_of_neighbors.descr"
+        },
+        "distance_band": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "17",
+            "displayname": "$rc:distance_band.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:distance_band.descr"
+        },
+        "number_of_neighbors_golden": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "18",
+            "control_guid": "{1AA9A769-D3F3-4EB0-85CB-CC07C79313C8}",
+            "displayname": "$rc:number_of_neighbors_golden.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:number_of_neighbors_golden.dt.title1"
+                    },
+                    {
+                        "type": "GPLong",
+                        "displayname": "$rc:number_of_neighbors_golden.dt.title2"
+                    },
+                    {
+                        "type": "GPLong",
+                        "displayname": "$rc:number_of_neighbors_golden.dt.title3"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Double",
+                            "Float",
+                            "Short",
+                            "Long",
+                            "BigInteger"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:number_of_neighbors_golden.descr"
+        },
+        "number_of_neighbors_manual": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "19",
+            "control_guid": "{1AA9A769-D3F3-4EB0-85CB-CC07C79313C8}",
+            "displayname": "$rc:number_of_neighbors_manual.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:number_of_neighbors_manual.dt.title1"
+                    },
+                    {
+                        "type": "GPLong",
+                        "displayname": "$rc:number_of_neighbors_manual.dt.title2"
+                    },
+                    {
+                        "type": "GPLong",
+                        "displayname": "$rc:number_of_neighbors_manual.dt.title3"
+                    },
+                    {
+                        "type": "GPLong",
+                        "displayname": "$rc:number_of_neighbors_manual.dt.title4"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Double",
+                            "Float",
+                            "Short",
+                            "Long",
+                            "BigInteger"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:number_of_neighbors_manual.descr"
+        },
+        "number_of_neighbors_defined": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "20",
+            "control_guid": "{1AA9A769-D3F3-4EB0-85CB-CC07C79313C8}",
+            "displayname": "$rc:number_of_neighbors_defined.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:number_of_neighbors_defined.dt.title1"
+                    },
+                    {
+                        "type": "GPLong",
+                        "displayname": "$rc:number_of_neighbors_defined.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Double",
+                            "Float",
+                            "Short",
+                            "Long",
+                            "BigInteger"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:number_of_neighbors_defined.descr"
+        },
+        "distance_golden": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "22",
+            "control_guid": "{1AA9A769-D3F3-4EB0-85CB-CC07C79313C8}",
+            "displayname": "$rc:distance_golden.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:distance_golden.dt.title1"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:distance_golden.dt.title2"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:distance_golden.dt.title3"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Double",
+                            "Float",
+                            "Short",
+                            "Long",
+                            "BigInteger"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:distance_golden.descr"
+        },
+        "distance_manual": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "23",
+            "control_guid": "{1AA9A769-D3F3-4EB0-85CB-CC07C79313C8}",
+            "displayname": "$rc:distance_manual.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:distance_manual.dt.title1"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:distance_manual.dt.title2"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:distance_manual.dt.title3"
+                    },
+                    {
+                        "type": "GPLong",
+                        "displayname": "$rc:distance_manual.dt.title4"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Double",
+                            "Float",
+                            "Short",
+                            "Long",
+                            "BigInteger"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:distance_manual.descr"
+        },
+        "distance_defined": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "24",
+            "control_guid": "{1AA9A769-D3F3-4EB0-85CB-CC07C79313C8}",
+            "displayname": "$rc:distance_defined.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:distance_defined.dt.title1"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:distance_defined.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Double",
+                            "Float",
+                            "Short",
+                            "Long",
+                            "BigInteger"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:distance_defined.descr"
+        },
+        "prediction_locations": {
+            "type": "optional",
+            "display_order": "26",
+            "displayname": "$rc:prediction_locations.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:prediction_locations.descr"
+        },
+        "explanatory_variables_to_match": {
+            "type": "optional",
+            "display_order": "27",
+            "control_guid": "{1AA9A769-D3F3-4EB0-85CB-CC07C79313C8}",
+            "displayname": "$rc:explanatory_variables_to_match.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:explanatory_variables_to_match.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:explanatory_variables_to_match.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Double",
+                            "Float",
+                            "Short",
+                            "Long",
+                            "BigInteger"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "depends": [
+                "prediction_locations"
+            ],
+            "description": "$rc:explanatory_variables_to_match.descr"
+        },
+        "output_predicted_features": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "28",
+            "displayname": "$rc:output_predicted_features.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:output_predicted_features.descr"
+        },
+        "robust_prediction": {
+            "type": "optional",
+            "display_order": "29",
+            "displayname": "$rc:robust_prediction.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ROBUST"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NON_ROBUST"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:robust_prediction.descr"
+        },
+        "local_weighting_scheme": {
+            "type": "optional",
+            "display_order": "30",
+            "displayname": "$rc:local_weighting_scheme.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "GAUSSIAN",
+                        "code": "$rc:local_weighting_scheme.domain.GAUSSIAN"
+                    },
+                    {
+                        "value": "BISQUARE",
+                        "code": "$rc:local_weighting_scheme.domain.BISQUARE"
+                    }
+                ]
+            },
+            "value": "BISQUARE",
+            "description": "$rc:local_weighting_scheme.descr"
+        },
+        "output_table": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "31",
+            "displayname": "$rc:output_table.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:output_table.descr"
+        },
+        "coefficient_raster_workspace": {
+            "type": "optional",
+            "display_order": "32",
+            "displayname": "$rc:coefficient_raster_workspace.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "description": "$rc:coefficient_raster_workspace.descr"
+        },
+        "scale": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:scale.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SCALE_DATA"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_SCALE_DATA"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:scale.descr"
+        },
+        "coefficient_raster_layers": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "33",
+            "displayname": "$rc:coefficient_raster_layers.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPRasterLayer"
+                }
+            }
+        },
+        "output_layer_group": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "34",
+            "displayname": "$rc:output_layer_group.title",
+            "datatype": {
+                "type": "GPGroupLayer"
+            }
+        },
+        "number_of_neighbors_gradient": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "21",
+            "control_guid": "{1AA9A769-D3F3-4EB0-85CB-CC07C79313C8}",
+            "displayname": "$rc:number_of_neighbors_gradient.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:number_of_neighbors_gradient.dt.title1"
+                    },
+                    {
+                        "type": "GPLong",
+                        "displayname": "$rc:number_of_neighbors_gradient.dt.title2"
+                    },
+                    {
+                        "type": "GPLong",
+                        "displayname": "$rc:number_of_neighbors_gradient.dt.title3"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Double",
+                            "Float",
+                            "Short",
+                            "Long",
+                            "BigInteger"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:number_of_neighbors_gradient.descr"
+        },
+        "distance_gradient": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "25",
+            "control_guid": "{1AA9A769-D3F3-4EB0-85CB-CC07C79313C8}",
+            "displayname": "$rc:distance_gradient.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:distance_gradient.dt.title1"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:distance_gradient.dt.title2"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:distance_gradient.dt.title3"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Double",
+                            "Float",
+                            "Short",
+                            "Long",
+                            "BigInteger"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:distance_gradient.descr"
+        }
+    },
+    "environments": [
+        "cellSize",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "snapRaster"
+    ]
+}

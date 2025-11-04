@@ -1,0 +1,19 @@
+{
+    "map": {
+        "description": "Builds a footprint feature class for an oriented imagery dataset.",
+        "footprint_option.descr": "<xdoc><p>Specifies the method that will be used to create the footprint.</p><ul><li><span title=\"PER_IMAGE\">One footprint per image</span>—Polygon features will be created from each feature based on camera parameters. Use this option when there are only a few feature points and they are scattered over a large projected area.</li><li><span title=\"MERGE\">Merge all image footprints</span>—Individual polygons will be computed and merged into a single polygon feature that is a more optimized footprint for the dataset.</li><li><span title=\"BUFFER\">Buffer each camera location</span>—Each feature point will be buffered using the average far distance value of the oriented imagery dataset and merged to a single polygon feature. Use this option for street view imagery.</li><li><span title=\"EXTENT\">Dataset extent as footprint</span>—A footprint will be created based on the extent of the oriented imagery dataset. Use this option when there are many camera points within a small area.</li></ul></xdoc>",
+        "footprint_option.domain.BUFFER": "Buffer each camera location",
+        "footprint_option.domain.EXTENT": "Dataset extent as footprint",
+        "footprint_option.domain.MERGE": "Merge all image footprints",
+        "footprint_option.domain.PER_IMAGE": "One footprint per image",
+        "footprint_option.title": "Footprint Options",
+        "in_oriented_imagery_dataset.descr": "The oriented imagery dataset for which the footprint will be computed.",
+        "in_oriented_imagery_dataset.title": "Oriented Imagery Dataset",
+        "out_dataset_name.descr": "The name of the output footprint feature class.",
+        "out_dataset_name.title": "Footprint Dataset Name",
+        "out_dataset_path.descr": "The enterprise or file geodatabase where the output footprint feature class will be created.",
+        "out_dataset_path.title": "Footprint Dataset Location",
+        "out_feature_class.title": "Output Footprint",
+        "title": "Build Oriented Imagery Footprint"
+    }
+}

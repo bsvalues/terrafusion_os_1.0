@@ -1,0 +1,15 @@
+{
+    "set": [
+        "add",
+        "consolidate",
+        "copy",
+        "package",
+        "send",
+        "tile",
+        "tiles",
+        "upload",
+        "vector",
+        "vtpk",
+        "zip"
+    ]
+}

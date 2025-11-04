@@ -1,0 +1,2662 @@
+<?xml version="1.0"?>
+<doc processed="true">
+  <assembly>
+    <name>Leadtools.Forms</name>
+  </assembly>
+  <members>
+    <member name="T:Leadtools.Forms.LogicalSize">
+      <summary>
+            Stores two floating-point numbers and a unit of measurement that represents the size (Width and Height).
+            </summary>
+      <keywords>Forms|Recognition|Size|Logical Size|Width|Height|Unit of measure</keywords>
+      <noremarks />
+      <noexample />
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalSize.ToLogicalPoint">
+      <summary>
+            Returns a logical point with the Width as its X-component, the Height as its
+            Y-component, and the unit of measurement.
+            </summary>
+      <keywords>Forms|Recognition|Points|Logical Point|Width|Height|Unit of measure</keywords>
+      <returns>
+            A logical point with the Width as its X-component, the Height as its Y-component,
+            and the unit of measurement.
+            </returns>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Forms.LogicalSize.ConvertTo(System.Double,System.Double,Leadtools.Forms.LogicalUnit,System.Double,System.Double)">
+      <summary>
+                Returns a new <see cref="T:Leadtools.Forms.LogicalSize" /> in the specified
+                destination unit of measure that is the equivalent of the current (source)
+                LogicalSize.
+            </summary>
+      <keywords>Forms|Recognition|Size|Logical Size|Width|Height|Unit of measure|Converting</keywords>
+      <returns>
+                A new <see cref="T:Leadtools.Forms.LogicalSize" /> in the specified destination
+                unit of measure that is the equivalent of the current (source) LogicalSize.
+            </returns>
+      <param name="sourceDpiX">
+            Represents the DPI along the x-axis (Width) of the source LogicalSize. 
+            This value is only used if the source unit of measure is 
+            <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see></param>
+      <param name="sourceDpiY">
+            Represents the DPI along the y-axis (Height) of the source LogicalSize. 
+            This value is only used if the source unit of measure is 
+            <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>.
+            </param>
+      <param name="destinationUnit">
+            The unit of measurement of the destination LogicalSize.
+            </param>
+      <param name="destinationDpiX">
+            Represents the DPI along the x-axis (Width) of the destination LogicalSize. 
+            This value is only used if the destination unit of measure is 
+            <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>.
+            </param>
+      <param name="destinationDpiY">
+            Represents the DPI along the y-axis (Height) of the destination LogicalSize. 
+            This value is only used if the destination unit of measure is 
+            <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>.
+            </param>
+      <remarks>
+            The specified <see cref="T:Leadtools.Forms.LogicalUnit" /> is used to do the actual conversion.
+            </remarks>
+      <example>
+        <code lang="VB">      Private Sub LogicalSize_ConvertTo()
+         ' create a new logical size that is 1.5 and 2 inches
+         Dim sz1 As LogicalSize = New LogicalSize(1.5f, 2f, LogicalUnit.Inch)
+         ' show the size
+         Dim s As String = String.Format("{0}", sz1)
+         MessageBox.Show(s)
+
+         ' convert the size to pixels
+         Dim sz2 As LogicalSize = sz1.ConvertTo(150, 150, LogicalUnit.Pixel, 150, 150)
+
+         ' show
+         s = String.Format("{0}", sz2)
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      private void LogicalSize_ConvertTo()
+      {
+         // create a new logical size that is 1.5 and 2 inches
+         LogicalSize sz1 = new LogicalSize(1.5f, 2f, LogicalUnit.Inch);
+         // show the size
+         string s = string.Format("{0}", sz1);
+         MessageBox.Show(s);
+
+         // convert the size to pixels
+         LogicalSize sz2 = sz1.ConvertTo(150, 150, LogicalUnit.Pixel, 150, 150);
+
+         // show
+         s = string.Format("{0}", sz2);
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalSize.ConvertTo-->
+      </example>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalSize.#ctor(System.Double,System.Double,Leadtools.Forms.LogicalUnit)">
+      <summary>
+            Initializes a new <see cref="T:Leadtools.Forms.LogicalSize" /> class object with explicit parameters.
+            </summary>
+      <keywords>Forms|Recognition|Size|Logical Size|Width|Height|Unit of measure</keywords>
+      <param name="width">
+            Specifies the width of the <see cref="T:Leadtools.Forms.LogicalSize" />.
+            </param>
+      <param name="height">
+            Specifies the height of the <see cref="T:Leadtools.Forms.LogicalSize" />.
+            </param>
+      <param name="unit">
+            Specifies the unit of measurement of the <see cref="T:Leadtools.Forms.LogicalSize" />.
+            </param>
+      <noremarks />
+      <example>For an example, refer to <see cref="M:Leadtools.Forms.LogicalSize.Equals(System.Object)" />.</example>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalSize.#ctor(Leadtools.Forms.LogicalPoint)">
+      <summary>
+            Initializes a new <see cref="T:Leadtools.Forms.LogicalSize" /> class object with explicit 
+            <see cref="T:Leadtools.Forms.LogicalPoint" /> parameters.
+            </summary>
+      <keywords>Forms|Recognition|Size|Logical Size|Width|Height|Unit of measure</keywords>
+      <param name="pt">
+        <see cref="T:Leadtools.Forms.LogicalPoint" /> specifies the width, height, and the unit of 
+            measurement of the <see cref="T:Leadtools.Forms.LogicalSize" /> through its X-componenet, 
+            Y-component, and <see cref="T:Leadtools.Forms.LogicalUnit" />, respectively.
+            </param>
+      <remarks>
+            The unit will be set to the Default(Pixel).
+            </remarks>
+      <noexample />
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalSize.#ctor(Leadtools.LeadSize)">
+      <summary>
+            Initializes a new <see cref="T:Leadtools.Forms.LogicalSize" /> class object with explicit 
+            <see cref="T:Leadtools.LeadSize" /> parameters.
+            </summary>
+      <keywords>Forms|Recognition|Size|Logical Size|Width|Height|Unit of measure</keywords>
+      <param name="size">
+            Specifies the <see cref="T:Leadtools.Forms.LogicalSize" /> width and height values 
+            measured in <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>.
+            </param>
+      <remarks>
+            The unit will be set to the Default(Pixel).
+            </remarks>
+      <example>For an example, refer to <see cref="M:Leadtools.Forms.LogicalSize.Equals(System.Object)" />.</example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="F:Leadtools.Forms.LogicalSize.Empty">
+      <summary>
+            Represents a new instance of the <see cref="T:Leadtools.Forms.LogicalSize" /> with uninitialized members.
+            </summary>
+      <value>
+            A new instance of the <see cref="T:Leadtools.Forms.LogicalSize" /> with uninitialized members.
+            </value>
+      <remarks> An uninitialized <see cref="T:Leadtools.Forms.LogicalSize" /> has a width and height value of 0,0 and a unit of measure of pixels.</remarks>
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Forms.LogicalSize.ToSize(System.Double,System.Double)">
+      <summary>
+            Returns the <see cref="T:Leadtools.LeadSize" /> of the <see cref="T:Leadtools.Forms.LogicalSize" />, 
+            converted to its equivalent values measured in <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>.
+            </summary>
+      <keywords>Forms|Recognition|Size|Logical Size|Width|Height|Unit of measure|Converting</keywords>
+      <param name="dpiX">
+            Represents the DPI along the x-axis (Width) of the output <see cref="T:Leadtools.LeadSize" />.
+            </param>
+      <param name="dpiY">
+            Represents the DPI along the y-axis (Height) of the output <see cref="T:Leadtools.LeadSize" />.
+            </param>
+      <noremarks />
+      <example>For an example, refer to <see cref="M:Leadtools.Forms.LogicalSize.Equals(System.Object)" />.</example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalSize.op_Inequality(Leadtools.Forms.LogicalSize,Leadtools.Forms.LogicalSize)">
+      <summary>
+            Specifies whether this <see cref="T:Leadtools.Forms.LogicalSize" /> does not contain the 
+            same width, height, or unit as the specified Object.
+            </summary>
+      <keywords>Forms|Recognition|Size|Logical Size|Width|Height|Unit of measure|Inequality|Operators</keywords>
+      <param name="size1">
+            The first <see cref="T:Leadtools.Forms.LogicalSize" /> to be used in the comparison.
+            </param>
+      <param name="size2">
+            The second <see cref="T:Leadtools.Forms.LogicalSize" /> to be used in the comparison.
+            </param>
+      <returns>true if the two <see cref="T:Leadtools.Forms.LogicalSize" /> do not have the same width, height, and unit of measurement; otherwise, false.</returns>
+      <remarks>
+            If the two sizes have different units, comparison will be done after temporarily converting both to a common unit. 
+            </remarks>
+      <example>
+        <code lang="VB">      Public Sub LogicalSize_OperatorEquals()
+         Dim inches As LogicalSize = New LogicalSize(1.5F, 2f, LogicalUnit.Inch)
+            Dim pixels As LogicalSize = New LogicalSize(inches.ToSize(150, 150))
+         Dim s As String
+
+         ' should say true
+         s = String.Format("Should say True: inches == pixels is {0}", inches = pixels)
+         MessageBox.Show(s)
+
+         ' should say false
+         s = String.Format("Should say False: inches != pixels is {0}", inches &lt;&gt; pixels)
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      public void LogicalSize_OperatorEquals()
+      {
+         LogicalSize inches = new LogicalSize(1.5F, 2f, LogicalUnit.Inch);
+         LogicalSize pixels = new LogicalSize(inches.ToSize(150,150));
+         string s;
+
+         // should say true
+         s = string.Format("Should say True: inches == pixels is {0}", inches == pixels);
+         MessageBox.Show(s);
+
+         // should say false
+         s = string.Format("Should say False: inches != pixels is {0}", inches != pixels);
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalSize.OperatorEquals-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalSize.op_Equality(Leadtools.Forms.LogicalSize,Leadtools.Forms.LogicalSize)">
+      <summary>
+            Specifies whether this <see cref="T:Leadtools.Forms.LogicalSize" /> contains the 
+            same width, height, and unit as the specified Object.
+            </summary>
+      <keywords>Forms|Recognition|Size|Logical Size|Width|Height|Unit of measure|Equality|Operators</keywords>
+      <param name="size1">
+            The first <see cref="T:Leadtools.Forms.LogicalSize" /> to be used in the comparison.
+            </param>
+      <param name="size2">
+            The second <see cref="T:Leadtools.Forms.LogicalSize" /> to be used in the comparison.
+            </param>
+      <returns>true if the two <see cref="T:Leadtools.Forms.LogicalSize" /> have the same width, height, and unit of measurement; otherwise, false.</returns>
+      <remarks>
+            If the two sizes have different units, comparison will be done after temporarily converting both to a common unit. 
+            </remarks>
+      <example>
+        <code lang="VB">      Public Sub LogicalSize_OperatorEquals()
+         Dim inches As LogicalSize = New LogicalSize(1.5F, 2f, LogicalUnit.Inch)
+            Dim pixels As LogicalSize = New LogicalSize(inches.ToSize(150, 150))
+         Dim s As String
+
+         ' should say true
+         s = String.Format("Should say True: inches == pixels is {0}", inches = pixels)
+         MessageBox.Show(s)
+
+         ' should say false
+         s = String.Format("Should say False: inches != pixels is {0}", inches &lt;&gt; pixels)
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      public void LogicalSize_OperatorEquals()
+      {
+         LogicalSize inches = new LogicalSize(1.5F, 2f, LogicalUnit.Inch);
+         LogicalSize pixels = new LogicalSize(inches.ToSize(150,150));
+         string s;
+
+         // should say true
+         s = string.Format("Should say True: inches == pixels is {0}", inches == pixels);
+         MessageBox.Show(s);
+
+         // should say false
+         s = string.Format("Should say False: inches != pixels is {0}", inches != pixels);
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalSize.OperatorEquals-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalSize.op_Explicit(Leadtools.Forms.LogicalSize)~Leadtools.Forms.LogicalPoint">
+      <summary>
+                Returns a <see cref="T:Leadtools.Forms.LogicalPoint" /> containing the following
+                <see cref="T:Leadtools.Forms.LogicalSize" /> properties: width, height, and unit
+                in its x, y, and unit, respectively.
+            </summary>
+      <keywords>Forms|Recognition|Size|Logical Size|Width|Height|Unit of measure|Logical Point</keywords>
+      <param name="size">
+            The <see cref="T:Leadtools.Forms.LogicalSize" /> object to be converted.
+            </param>
+      <noremarks />
+      <example>
+        <code lang="VB">      Public Sub LogicalSize_OperatorLogicalPoint()
+         Dim sz As LogicalSize = New LogicalSize(1.5F, 2F, LogicalUnit.Inch)
+         Dim pt As LogicalPoint = CType(sz, LogicalPoint)
+      End Sub</code>
+        <code lang="CS">      public void LogicalSize_OperatorLogicalPoint()
+      {
+         LogicalSize sz = new LogicalSize(1.5F, 2F, LogicalUnit.Inch);
+         LogicalPoint pt = (LogicalPoint)sz;
+      }</code>
+        <!--LogicalSize.OperatorLogicalPoint-->
+      </example>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalSize.Add(Leadtools.Forms.LogicalSize,Leadtools.Forms.LogicalSize)">
+      <summary>
+            Adds the width and height of one <see cref="T:Leadtools.Forms.LogicalSize" /> structure to another <see cref="T:Leadtools.Forms.LogicalSize" /> structure. 
+            </summary>
+      <keywords>Forms|Recognition|Size|Logical Size|Width|Height|Unit of measure|Addition|Operators</keywords>
+      <param name="size1">
+            The first <see cref="T:Leadtools.Forms.LogicalSize" /> being added.
+            </param>
+      <param name="size2">
+            The second <see cref="T:Leadtools.Forms.LogicalSize" /> being added.
+            </param>
+      <remarks>
+            The addition will be done based on <paramref name="size1" /> unit. 
+            </remarks>
+      <example>
+        <code lang="VB">      '''This example adds two size structures.
+      Public Sub LogicalSize_Add()
+         Dim sz1 As LogicalSize = New LogicalSize(200, 300, LogicalUnit.Pixel)
+         Dim sz2 As LogicalSize = New LogicalSize(1.5F, 2f, LogicalUnit.Inch)
+         Dim s As String = String.Format("sz1 + sz2 = {0}", LogicalSize.Add(sz1, sz2))
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      ///This example adds two size structures.
+      public void LogicalSize_Add()
+      {
+         LogicalSize sz1 = new LogicalSize(200, 300, LogicalUnit.Pixel);
+         LogicalSize sz2 = new LogicalSize(1.5F, 2f, LogicalUnit.Inch);
+         string s = string.Format("sz1 + sz2 = {0}", LogicalSize.Add(sz1, sz2));
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalSize.Add-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalSize.FromSize(Leadtools.LeadSize)">
+      <summary>
+            Creates a new <see cref="T:Leadtools.Forms.LogicalSize" /> class object from explicit <see cref="T:Leadtools.LeadSize" /> parameters.
+            </summary>
+      <keywords>Forms|Recognition|Size|Logical Size|Width|Height|Unit of measure|Converting|LeadSize</keywords>
+      <param name="size">
+            Specifies the <see cref="T:Leadtools.Forms.LogicalSize" /> width and height values measured in <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>.
+            </param>
+      <noremarks />
+      <noexample />
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalSize.op_Subtraction(Leadtools.Forms.LogicalSize,Leadtools.Forms.LogicalSize)">
+      <summary>
+            Subtracts the width and height of the specified <see cref="T:Leadtools.Forms.LogicalSize" /> object from this <see cref="T:Leadtools.Forms.LogicalSize" /> structure.
+            </summary>
+      <keywords>Forms|Recognition|Size|Logical Size|Width|Height|Unit of measure|Subtraction|Operators</keywords>
+      <param name="size1">
+            The first <see cref="T:Leadtools.Forms.LogicalSize" /> on the left side of the subtraction operator.
+            </param>
+      <param name="size2">
+            The second <see cref="T:Leadtools.Forms.LogicalSize" /> on the right side of the subtraction operator.
+            </param>
+      <remarks>
+            The subtraction will be done based on <paramref name="size1" /> unit. 
+            </remarks>
+      <example>
+        <code lang="VB">      '''This example subtracts two size structures.
+      Public Sub LogicalSize_OperatorMinus()
+         Dim sz1 As LogicalSize = New LogicalSize(200, 300, LogicalUnit.Pixel)
+         Dim sz2 As LogicalSize = New LogicalSize(1.5F, 2f, LogicalUnit.Inch)
+         Dim s As String = String.Format("sz1 - sz2 = {0}", sz1 - sz2)
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      ///This example subtracts two size structures.
+      public void LogicalSize_OperatorMinus()
+      {
+         LogicalSize sz1 = new LogicalSize(200, 300, LogicalUnit.Pixel);
+         LogicalSize sz2 = new LogicalSize(1.5F, 2f, LogicalUnit.Inch);
+         string s = string.Format("sz1 - sz2 = {0}", sz1 - sz2);
+         MessageBox.Show(s); 
+      }</code>
+        <!--LogicalSize.OperatorMinus-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalSize.op_Addition(Leadtools.Forms.LogicalSize,Leadtools.Forms.LogicalSize)">
+      <summary>
+            Adds the width and height of the specified <see cref="T:Leadtools.Forms.LogicalSize" /> object to this <see cref="T:Leadtools.Forms.LogicalSize" /> structure. 
+            </summary>
+      <keywords>Forms|Recognition|Size|Logical Size|Width|Height|Unit of measure|Addition|Operators</keywords>
+      <param name="size1">
+            The first <see cref="T:Leadtools.Forms.LogicalSize" /> being added.
+            </param>
+      <param name="size2">
+            The second <see cref="T:Leadtools.Forms.LogicalSize" /> being added.
+            </param>
+      <remarks>
+            The addition will be done based on <paramref name="size1" /> unit. 
+            </remarks>
+      <example>
+        <code lang="VB">      '''This example adds two size structures.
+      Public Sub LogicalSize_OperatorPlus()
+         Dim sz1 As LogicalSize = New LogicalSize(200, 300, LogicalUnit.Pixel)
+         Dim sz2 As LogicalSize = New LogicalSize(1.5F, 2f, LogicalUnit.Inch)
+         Dim s As String = String.Format("sz1 + sz2 = {0}", sz1 + sz2)
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      ///This example adds two size structures.
+      public void LogicalSize_OperatorPlus()
+      {
+         LogicalSize sz1 = new LogicalSize(200, 300, LogicalUnit.Pixel);
+         LogicalSize sz2 = new LogicalSize(1.5F, 2f, LogicalUnit.Inch);
+         string s = string.Format("sz1 + sz2 = {0}", sz1 + sz2);
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalSize.OperatorPlus-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalSize.Subtract(Leadtools.Forms.LogicalSize,Leadtools.Forms.LogicalSize)">
+      <summary>
+            Subtracts the width and height of one <see cref="T:Leadtools.Forms.LogicalSize" /> structure from another <see cref="T:Leadtools.Forms.LogicalSize" /> structure. 
+            </summary>
+      <keywords>Forms|Recognition|Size|Logical Size|Width|Height|Unit of measure|Subtraction|Operators</keywords>
+      <param name="size1">
+            The first <see cref="T:Leadtools.Forms.LogicalSize" /> on the left side of the subtraction operator.
+            </param>
+      <param name="size2">
+            The second <see cref="T:Leadtools.Forms.LogicalSize" /> on the right side of the subtraction operator.
+            </param>
+      <remarks>
+            The subtraction will be done based on <paramref name="size1" /> unit. 
+            </remarks>
+      <example>
+        <code lang="VB">      '''This example subtracts two size structures.
+      Public Sub LogicalSize_Subtract()
+         Dim sz1 As LogicalSize = New LogicalSize(200, 300, LogicalUnit.Pixel)
+         Dim sz2 As LogicalSize = New LogicalSize(1.5F, 2f, LogicalUnit.Inch)
+         Dim s As String = String.Format("sz1 - sz2 = {0}", LogicalSize.Subtract(sz1,sz2))
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      ///This example subtracts two size structures.
+      public void LogicalSize_Subtract()
+      {
+         LogicalSize sz1 = new LogicalSize(200, 300, LogicalUnit.Pixel);
+         LogicalSize sz2 = new LogicalSize(1.5F, 2f, LogicalUnit.Inch);
+         string s = string.Format("sz1 - sz2 = {0}", LogicalSize.Subtract(sz1,sz2));
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalSize.Subtract-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalSize.Equals(System.Object)">
+      <summary>
+            Specifies whether this <see cref="T:Leadtools.Forms.LogicalSize" /> contains the same 
+            width, height and unit as the specified Object.
+            </summary>
+      <keywords>Forms|Recognition|Size|Logical Size|Width|Height|Unit of measure|Equality|Operators</keywords>
+      <param name="obj">
+            The object to be used in the comparison with the current object.
+            </param>
+      <returns>true if the <paramref name="obj" /> has the same width, height, and unit of 
+            measurement of this <see cref="T:Leadtools.Forms.LogicalSize" />; otherwise, false.</returns>
+      <remarks>
+            For more information refer to <see cref="M:System.Object.Equals(System.Object)" />.
+            </remarks>
+      <example>
+        <code lang="VB">      Public Sub LogicalSize_Equals()
+         Dim inches As LogicalSize = New LogicalSize(1.5F, 2f, LogicalUnit.Inch)
+            Dim pixels As LogicalSize = New LogicalSize(inches.ToSize(150, 150))
+         Dim s As String
+
+         ' should say False
+         s = String.Format("Should say False: inches == pixels is {0}", inches = pixels)
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      public void LogicalSize_Equals()
+      {
+         LogicalSize inches = new LogicalSize(1.5F, 2f, LogicalUnit.Inch);
+         LogicalSize pixels = new LogicalSize(inches.ToSize(150, 150));
+         string s;
+
+         // should say False
+         s = string.Format("Should say False: inches == pixels is {0}", inches == pixels);
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalSize.Equals-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalSize.GetHashCode">
+      <summary>
+            Returns a hash code for this <see cref="T:Leadtools.Forms.LogicalSize" /> structure. 
+            For information about this method, see <see cref="M:System.Object.GetHashCode" />.  
+            </summary>
+      <keywords>Forms|Recognition|Hash Codes</keywords>
+      <noremarks />
+      <noexample />
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalSize.ToString">
+      <summary>
+            Converts this <see cref="T:Leadtools.Forms.LogicalSize" /> to a human-readable string.  
+            </summary>
+      <keywords>Forms|Recognition|Strings</keywords>
+      <noremarks />
+      <noexample />
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalSize.Convert(System.Double,System.Double,Leadtools.Forms.LogicalUnit,System.Double,System.Double)">
+      <summary>
+            Converts this <see cref="T:Leadtools.Forms.LogicalSize" /> structure to the specified unit of measure.  
+            </summary>
+      <keywords>Forms|Recognition|Size|Logical Size|Width|Height|Unit of measure|Subtraction|Operators|DPI</keywords>
+      <param name="sourceDpiX">
+            Represents the DPI of the source value along the x-axis (width). 
+            This value is only used if the source unit of measure is <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>. 
+            </param>
+      <param name="sourceDpiY">
+            Represents the DPI of the source value along the y-axis (height). 
+            This value is only used if the source unit of measure is <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>. 
+            </param>
+      <param name="destinationUnit">
+            The unit of measurement of the destination value.
+            </param>
+      <param name="destinationDpiX">
+            Represents the DPI of the destination value along the x-axis (width). This value is only used if the source unit of measure is <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>. 
+            </param>
+      <param name="destinationDpiY">
+            Represents the DPI of the destination value along the x-axis (width). This value is only used if the source unit of measure is <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>. 
+            </param>
+      <remarks>
+            The specified <see cref="T:Leadtools.Forms.LogicalUnit" /> is used to do the actual conversion.
+            </remarks>
+      <example>
+        <code lang="VB">      Private Sub LogicalSize_LogicalSize()
+         ' create a new logical size that is 1.5 and 2 inches
+         Dim sz As LogicalSize = New LogicalSize(1.5f, 2f, LogicalUnit.Inch)
+         ' show the size
+         Dim s As String = String.Format("{0}", sz)
+         MessageBox.Show(s)
+
+         ' convert the size to pixels
+         sz.Convert(150, 150, LogicalUnit.Pixel, 150, 150)
+
+         ' show
+         s = String.Format("{0}", sz)
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      private void LogicalSize_LogicalSize()
+      {
+         // create a new logical size that is 1.5 and 2 inches
+         LogicalSize sz = new LogicalSize(1.5f, 2f, LogicalUnit.Inch);
+         // show the size
+         string s = string.Format("{0}", sz);
+         MessageBox.Show(s);
+
+         // convert the size to pixels
+         sz.Convert(150, 150, LogicalUnit.Pixel, 150, 150);
+
+         // show
+         s = string.Format("{0}", sz);
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalSize.LogicalSize-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="P:Leadtools.Forms.LogicalSize.IsEmpty">
+      <summary>
+            Gets a value indicating whether this <see cref="T:Leadtools.Forms.LogicalSize" /> structure is empty.  
+            </summary>
+      <keywords>Forms|Recognition|Size|Logical Size|Width|Height|Unit of measure|Empty</keywords>
+      <value>true if this <see cref="T:Leadtools.Forms.LogicalSize" /> structure is empty; otherwise, false.</value>
+      <remarks>
+             An empty <see cref="T:Leadtools.Forms.LogicalSize" /> has width and height values of 0,0.
+            </remarks>
+      <noexample />
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="P:Leadtools.Forms.LogicalSize.Height">
+      <summary>
+            Gets or sets a value that represents the height for this <see cref="T:Leadtools.Forms.LogicalSize" />.
+            </summary>
+      <keywords>Forms|Recognition|Size|Logical Size|Height|Unit of measure</keywords>
+      <value>Value that indicates the height of the size.</value>
+      <noremarks />
+      <example>For an example, refer to <see cref="P:Leadtools.Forms.LogicalSize.Width" />.</example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="P:Leadtools.Forms.LogicalSize.Width">
+      <summary>
+            Gets or sets a value that represents the width for this <see cref="T:Leadtools.Forms.LogicalSize" />.  
+            </summary>
+      <keywords>Forms|Recognition|Size|Logical Size|Width|Unit of measure</keywords>
+      <value>Value that indicates the width of the size.</value>
+      <noremarks />
+      <example>
+        <code lang="VB">      Public Sub LogicalSize_ConvertedWidthHeight()
+         ' create a new logical size with dimension of 1.5, 2 in inches
+         Dim sz As LogicalSize = New LogicalSize(1.5f, 2f, LogicalUnit.Inch)
+         Dim s As String
+         ' show the size
+         s = String.Format("Size is {0}", sz)
+         MessageBox.Show(s)
+
+         ' show the width and height components converted to pixels
+            s = String.Format("width and height is {0}, {1} Pixels", LogicalUnitConverter.Convert(sz.Width, _
+                                                                                                  LogicalUnit.Inch, _
+                                                                                                  150, _
+                                                                                                  LogicalUnit.Pixel, _
+                                                                                                  150), _
+                              LogicalUnitConverter.ConvertToPixels(sz.Height, LogicalUnit.Inch, 150))
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      public void LogicalSize_ConvertedWidthHeight()
+      {
+         // create a new logical size with dimension of 1.5, 2 in inches
+         LogicalSize sz = new LogicalSize(1.5f, 2f, LogicalUnit.Inch);
+         string s;
+         // show the size
+         s = string.Format("Size is {0}", sz);
+         MessageBox.Show(s);
+
+         // show the width and height components converted to pixels
+         s = string.Format("width and height is {0}, {1} Pixels", LogicalUnitConverter.Convert(sz.Width, 
+                                                                                                LogicalUnit.Inch, 
+                                                                                                150, 
+                                                                                                LogicalUnit.Pixel, 150), 
+                                                                                                LogicalUnitConverter.ConvertToPixels(sz.Height, 
+                                                                                                LogicalUnit.Inch, 150));
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalSize.ConvertedWidthHeight-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="P:Leadtools.Forms.LogicalSize.Unit">
+      <summary>
+            Gets or sets a value that represents the unit of measure for this <see cref="T:Leadtools.Forms.LogicalSize" />.  
+            </summary>
+      <keywords>Forms|Recognition|Size|Logical Size|Unit of measure</keywords>
+      <value>The unit of measurement.</value>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="T:Leadtools.Forms.LogicalLength">
+      <summary>
+            Stores a floating-point number and a unit of measurement that represents the length.
+            </summary>
+      <keywords>Forms|Recognition|Logical Length|Unit of measure</keywords>
+      <noremarks />
+      <noexample />
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalLength.ToPixels(System.Double)">
+      <summary>
+            Returns the length value in pixels according to the specified DPIs.
+            </summary>
+      <keywords>Forms|Recognition|Length|DPI</keywords>
+      <param name="dpi">
+            Represents the DPI of the image along the length direction.
+            </param>
+      <remarks>
+        <see cref="T:Leadtools.Forms.LogicalLength" /> converts a value measured in any unit that is specified by <paramref name="sourceUnit" /> to pixels.
+            The DPI is needed to define the area that is occuppied by one pixel.
+            </remarks>
+      <example>For an example, refer to <see cref="M:Leadtools.Forms.LogicalLength.Equals(System.Object)" />.</example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalLength.ConvertTo(System.Double,Leadtools.Forms.LogicalUnit,System.Double)">
+      <summary>
+            Returns a new <see cref="T:Leadtools.Forms.LogicalLength" /> of the current (source) LogicalLength, converted to 
+            its equivalent in the specified destination unit of measure.
+            </summary>
+      <keywords>Forms|Recognition|Length|Logical Length|Width|Height|Unit of measure|DPI</keywords>
+      <param name="sourceDpi">
+            Represents the DPI along the length direction of the source LogicalLength. 
+            This value is only used if the source unit of measure is <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>.
+            </param>
+      <param name="destinationUnit">
+            The unit of measurement of the destination LogicalLength.
+            </param>
+      <param name="destinationDpi">
+            Represents the DPI along the length direction of the destination LogicalLength. 
+            This value is only used if the destination unit of measure is <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>.
+            </param>
+      <remarks>
+            The specified <see cref="T:Leadtools.Forms.LogicalUnit" /> is used to do the actual conversion.
+            </remarks>
+      <example>
+        <code lang="VB">      Private Sub LogicalLength_ConvertTo()
+         ' create a new logical length that is 1.5 inches
+         Dim lng1 As LogicalLength = New LogicalLength(1.5f, LogicalUnit.Inch)
+         ' show the length
+         Dim s As String = String.Format("{0}", lng1)
+         MessageBox.Show(s)
+
+         ' convert the length to pixels
+         Dim lng2 As LogicalLength = lng1.ConvertTo(150, LogicalUnit.Pixel, 150)
+
+         ' show
+         s = String.Format("{0}", lng2)
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      private void LogicalLength_ConvertTo()
+      {
+         // create a new logical length that is 1.5 inches
+         LogicalLength lng1 = new LogicalLength(1.5f, LogicalUnit.Inch);
+         // show the length
+         string s = string.Format("{0}", lng1);
+         MessageBox.Show(s);
+
+         // convert the length to pixels
+         LogicalLength lng2 = lng1.ConvertTo(150, LogicalUnit.Pixel, 150);
+
+         // show
+         s = string.Format("{0}", lng2);
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalLength.ConvertTo-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalLength.#ctor(System.Double)">
+      <summary>
+            Initializes a new <see cref="T:Leadtools.Forms.LogicalLength" /> class object with explicit parameters.
+            </summary>
+      <keywords>Forms|Recognition|Length|Logical Length|Unit of measure|Pixels</keywords>
+      <param name="value">
+            Specifies the length of the <see cref="T:Leadtools.Forms.LogicalLength" /> in <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>.
+            </param>
+      <remarks>
+            The unit of measurement will be <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>.
+            </remarks>
+      <example>For an example, refer to <see cref="M:Leadtools.Forms.LogicalLength.Equals(System.Object)" />.</example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalLength.#ctor(System.Double,Leadtools.Forms.LogicalUnit)">
+      <summary>
+            Initializes a new <see cref="T:Leadtools.Forms.LogicalLength" /> class object with explicit parameters.
+            </summary>
+      <keywords>Forms|Recognition|Length|Logical Length|Unit of measure</keywords>
+      <param name="value">
+            Specifies the length of the <see cref="T:Leadtools.Forms.LogicalLength" />.
+            </param>
+      <param name="unit">
+            Specifies the unit of measurement of the <see cref="T:Leadtools.Forms.LogicalLength" />.
+            </param>
+      <noremarks />
+      <example>For an example, refer to <see cref="M:Leadtools.Forms.LogicalLength.Equals(System.Object)" />.</example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="F:Leadtools.Forms.LogicalLength.Empty">
+      <summary>
+            Represents a new instance of the <see cref="T:Leadtools.Forms.LogicalLength" /> with uninitialized members.
+            </summary>
+      <value>
+            A new instance of the <see cref="T:Leadtools.Forms.LogicalLength" /> with uninitialized members.
+            </value>
+      <remarks> An uninitialized <see cref="T:Leadtools.Forms.LogicalLength" />.</remarks>
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Forms.LogicalLength.op_Inequality(Leadtools.Forms.LogicalLength,Leadtools.Forms.LogicalLength)">
+      <summary>
+            Specifies whether this <see cref="T:Leadtools.Forms.LogicalLength" /> does not contain 
+            the same length or unit as the specified Object.
+            </summary>
+      <keywords>Forms|Recognition|Length|Logical Length|Unit of measure|Inequality|Operators</keywords>
+      <param name="left">
+            The <see cref="T:Leadtools.Forms.LogicalLength" /> on the left side of the comparison.
+            </param>
+      <param name="right">
+            The <see cref="T:Leadtools.Forms.LogicalLength" /> on the right side of the comparison.
+            </param>
+      <returns>true if the two <see cref="T:Leadtools.Forms.LogicalLength" /> do not have the 
+            same length and unit of measurement; false, otherwise.</returns>
+      <remarks>
+            If the two lengths have different units, comparison will be done after temporarily converting both to a common unit. 
+            </remarks>
+      <example>
+        <code lang="VB">      Public Sub LogicalLength_OperatorEquals()
+         Dim inches As LogicalLength = New LogicalLength(1.5F, LogicalUnit.Inch)
+         Dim pixels As LogicalLength = New LogicalLength(inches.ToPixels(150))
+         Dim s As String
+
+         ' should say true
+         s = String.Format("Should say True: inches == pixels is {0}", inches = pixels)
+         MessageBox.Show(s)
+
+         ' should say false
+         s = String.Format("Should say False: inches != pixels is {0}", inches &lt;&gt; pixels)
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      public void LogicalLength_OperatorEquals()
+      {
+         LogicalLength inches = new LogicalLength(1.5F, LogicalUnit.Inch);
+         LogicalLength pixels = new LogicalLength(inches.ToPixels(150));
+         string s;
+
+         // should say true
+         s = string.Format("Should say True: inches == pixels is {0}", inches == pixels);
+         MessageBox.Show(s);
+
+         // should say false
+         s = string.Format("Should say False: inches != pixels is {0}", inches != pixels);
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalLength.OperatorEquals-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalLength.op_Equality(Leadtools.Forms.LogicalLength,Leadtools.Forms.LogicalLength)">
+      <summary>
+            Specifies whether this <see cref="T:Leadtools.Forms.LogicalLength" /> contains the same length and unit as the specified Object.
+            </summary>
+      <keywords>Forms|Recognition|Length|Logical Length|Unit of measure|Equality|Operators</keywords>
+      <param name="left">
+            The <see cref="T:Leadtools.Forms.LogicalLength" /> on the left side of the comparison.
+            </param>
+      <param name="right">
+            The <see cref="T:Leadtools.Forms.LogicalLength" /> on the right side of the comparison.
+            </param>
+      <returns>true if the two <see cref="T:Leadtools.Forms.LogicalLength" /> have the 
+            same length and unit of measurement; false, otherwise.</returns>
+      <remarks>
+            If the two lengths have different units, comparison will be done after temporarily converting both to a common unit. 
+            </remarks>
+      <example>
+        <code lang="VB">      Public Sub LogicalLength_OperatorEquals()
+         Dim inches As LogicalLength = New LogicalLength(1.5F, LogicalUnit.Inch)
+         Dim pixels As LogicalLength = New LogicalLength(inches.ToPixels(150))
+         Dim s As String
+
+         ' should say true
+         s = String.Format("Should say True: inches == pixels is {0}", inches = pixels)
+         MessageBox.Show(s)
+
+         ' should say false
+         s = String.Format("Should say False: inches != pixels is {0}", inches &lt;&gt; pixels)
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      public void LogicalLength_OperatorEquals()
+      {
+         LogicalLength inches = new LogicalLength(1.5F, LogicalUnit.Inch);
+         LogicalLength pixels = new LogicalLength(inches.ToPixels(150));
+         string s;
+
+         // should say true
+         s = string.Format("Should say True: inches == pixels is {0}", inches == pixels);
+         MessageBox.Show(s);
+
+         // should say false
+         s = string.Format("Should say False: inches != pixels is {0}", inches != pixels);
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalLength.OperatorEquals-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalLength.Add(Leadtools.Forms.LogicalLength,Leadtools.Forms.LogicalLength)">
+      <summary>
+            Adds the length of one <see cref="T:Leadtools.Forms.LogicalLength" /> structure to another <see cref="T:Leadtools.Forms.LogicalLength" /> structure.
+            </summary>
+      <keywords>Forms|Recognition|Length|Logical Length|Unit of measure|Addition|Operators</keywords>
+      <param name="left">
+            The <see cref="T:Leadtools.Forms.LogicalLength" /> on the left side of the add operator.
+            </param>
+      <param name="right">
+            The <see cref="T:Leadtools.Forms.LogicalLength" /> on the right side of the add operator.
+            </param>
+      <remarks>
+            The addition will be done based on the <paramref name="left" /> unit.
+            </remarks>
+      <example>
+        <code lang="VB">      '''This example adds two length structures.
+      Public Sub LogicalLength_Add()
+         Dim lng1 As LogicalLength = New LogicalLength(200, LogicalUnit.Pixel)
+         Dim lng2 As LogicalLength = New LogicalLength(1.5F, LogicalUnit.Inch)
+         Dim s As String = String.Format("lng1 + lng2 = {0}", LogicalLength.Add(lng1, lng2))
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      ///This example adds two length structures.
+      public void LogicalLength_Add()
+      {
+         LogicalLength lng1 = new LogicalLength(200, LogicalUnit.Pixel);
+         LogicalLength lng2 = new LogicalLength(1.5F, LogicalUnit.Inch);
+         string s = string.Format("lng1 + lng2 = {0}", LogicalLength.Add(lng1, lng2));
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalLength.Add-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalLength.FromPixels(System.Double)">
+      <summary>
+            Returns a <see cref="T:Leadtools.Forms.LogicalLength" /> with the specified length measured in 
+            <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>.
+            </summary>
+      <keywords>Forms|Recognition|Length|Logical Length|Unit of measure|Pixels</keywords>
+      <param name="value">
+            The length value that is measured in <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>.
+            </param>
+      <noremarks />
+      <noexample />
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalLength.op_Subtraction(Leadtools.Forms.LogicalLength,Leadtools.Forms.LogicalLength)">
+      <summary>
+            Subtracts the length of the specified <see cref="T:Leadtools.Forms.LogicalLength" /> object from this <see cref="T:Leadtools.Forms.LogicalLength" /> structure.
+            </summary>
+      <keywords>Forms|Recognition|Length|Logical Length|Unit of measure|Subtraction|Operators</keywords>
+      <param name="left">
+            The <see cref="T:Leadtools.Forms.LogicalLength" /> on the left side of the subtract operator.
+            </param>
+      <param name="right">
+            The <see cref="T:Leadtools.Forms.LogicalLength" /> on the right side of the subtract operator.
+            </param>
+      <remarks>
+            The subtraction will be done based on the <paramref name="left" /> unit.
+            </remarks>
+      <example>
+        <code lang="VB">      '''This example subtracts two length structures.
+      Public Sub LogicalLength_OperatorMinus()
+         Dim lng1 As LogicalLength = New LogicalLength(200, LogicalUnit.Pixel)
+         Dim lng2 As LogicalLength = New LogicalLength(1.5F, LogicalUnit.Inch)
+         Dim s As String = String.Format("lng1 - lng2 = {0}", lng1 - lng2)
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      ///This example subtracts two length structures.
+      public void LogicalLength_OperatorMinus()
+      {
+         LogicalLength lng1 = new LogicalLength(200, LogicalUnit.Pixel);
+         LogicalLength lng2 = new LogicalLength(1.5F, LogicalUnit.Inch);
+         string s = string.Format("lng1 - lng2 = {0}", lng1 - lng2);
+         MessageBox.Show(s); 
+      }</code>
+        <!--LogicalLength.OperatorMinus-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalLength.op_Addition(Leadtools.Forms.LogicalLength,Leadtools.Forms.LogicalLength)">
+      <summary>
+            Adds the length of one <see cref="T:Leadtools.Forms.LogicalLength" /> structure to 
+            another <see cref="T:Leadtools.Forms.LogicalLength" /> structure.
+            </summary>
+      <keywords>Forms|Recognition|Length|Logical Length|Unit of measure|Addition|Operators</keywords>
+      <param name="left">
+            The <see cref="T:Leadtools.Forms.LogicalLength" /> on the left side of the add operator.
+            </param>
+      <param name="right">
+            The <see cref="T:Leadtools.Forms.LogicalLength" /> on the right side of the add operator.
+            </param>
+      <remarks>
+            The addition will be done based on <paramref name="left" /> unit.
+            </remarks>
+      <example>
+        <code lang="VB">      '''This example adds two length structures.
+      Public Sub LogicalLength_OperatorPlus()
+         Dim lng1 As LogicalLength = New LogicalLength(200, LogicalUnit.Pixel)
+         Dim lng2 As LogicalLength = New LogicalLength(1.5F, LogicalUnit.Inch)
+         Dim s As String = String.Format("lng1 + lng2 = {0}", lng1 + lng2)
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      ///This example adds two length structures.
+      public void LogicalLength_OperatorPlus()
+      {
+         LogicalLength lng1 = new LogicalLength(200, LogicalUnit.Pixel);
+         LogicalLength lng2 = new LogicalLength(1.5F, LogicalUnit.Inch);
+         string s = string.Format("lng1 + lng2 = {0}", lng1 + lng2);
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalLength.OperatorPlus-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalLength.Subtract(Leadtools.Forms.LogicalLength,Leadtools.Forms.LogicalLength)">
+      <summary>
+            Subtracts the length of the specified <see cref="T:Leadtools.Forms.LogicalLength" /> object from this 
+            <see cref="T:Leadtools.Forms.LogicalLength" /> structure.
+            </summary>
+      <keywords>Forms|Recognition|Length|Logical Length|Unit of measure|Subtraction|Operators</keywords>
+      <param name="left">
+            The <see cref="T:Leadtools.Forms.LogicalLength" /> on the left side of the subtraction operator.
+            </param>
+      <param name="right">
+            The <see cref="T:Leadtools.Forms.LogicalLength" /> on the right side of the subtraction operator.
+            </param>
+      <remarks>
+            The subtraction will be done based on <paramref name="left" /> unit.
+            </remarks>
+      <example>
+        <code lang="VB">      '''This example subtracts two length structures.
+      Public Sub LogicalLength_Subtract()
+         Dim lng1 As LogicalLength = New LogicalLength(200, LogicalUnit.Pixel)
+         Dim lng2 As LogicalLength = New LogicalLength(1.5F, LogicalUnit.Inch)
+         Dim s As String = String.Format("lng1 - lng2 = {0}", LogicalLength.Subtract(lng1, lng2))
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      ///This example subtracts two length structures.
+      public void LogicalLength_Subtract()
+      {
+         LogicalLength lng1 = new LogicalLength(200, LogicalUnit.Pixel);
+         LogicalLength lng2 = new LogicalLength(1.5F, LogicalUnit.Inch);
+         string s = string.Format("lng1 - lng2 = {0}", LogicalLength.Subtract(lng1, lng2));
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalLength.Subtract-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalLength.Equals(System.Object)">
+      <summary>
+            Specifies whether this <see cref="T:Leadtools.Forms.LogicalLength" /> contains the same 
+            length and unit as the specified Object.
+            </summary>
+      <keywords>Forms|Recognition|Length|Logical Length|Unit of measure|Euality|Operators</keywords>
+      <param name="obj">
+            The object to be used in the comparison with the current object.
+            </param>
+      <returns>true if the <paramref name=" obj" /> has the same length and 
+            unit of measurement of this <see cref="T:Leadtools.Forms.LogicalLength" />; false, otherwise.</returns>
+      <remarks>
+            For more information refer to <see cref="M:System.Object.Equals(System.Object)" />.
+            </remarks>
+      <example>
+        <code lang="VB">      Public Sub LogicalLength_Equals()
+         Dim inches As LogicalLength = New LogicalLength(1.5F, LogicalUnit.Inch)
+         Dim pixels As LogicalLength = New LogicalLength(inches.ToPixels(150))
+         Dim s As String
+
+         ' should say False
+         s = String.Format("Should say False: inches == pixels is {0}", inches = pixels)
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      public void LogicalLength_Equals()
+      {
+         LogicalLength inches = new LogicalLength(1.5F, LogicalUnit.Inch);
+         LogicalLength pixels = new LogicalLength(inches.ToPixels(150));
+         string s;
+
+         // should say False
+         s = string.Format("Should say False: inches == pixels is {0}", inches == pixels);
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalLength.Equals-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalLength.GetHashCode">
+      <summary>
+            Returns a hash code for this <see cref="T:Leadtools.Forms.LogicalLength" /> structure. 
+            For information about this method, see <see cref="M:System.Object.GetHashCode" />.  
+            </summary>
+      <keywords>Forms|Recognition|Hash Codes</keywords>
+      <noremarks />
+      <noexample />
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalLength.ToString">
+      <summary>
+            Converts this <see cref="T:Leadtools.Forms.LogicalLength" /> to a human-readable string.  
+            </summary>
+      <keywords>Forms|Recognition|Strings</keywords>
+      <noremarks />
+      <noexample />
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalLength.Convert(System.Double,Leadtools.Forms.LogicalUnit,System.Double)">
+      <summary>
+            Converts this <see cref="T:Leadtools.Forms.LogicalLength" /> structure to the specified unit of measure.  
+            </summary>
+      <keywords>Forms|Recognition|Length|Logical Length|Unit of measure|DPI</keywords>
+      <param name="sourceDpi">
+            Represents the DPI of the source value along the length direction. This value is only used if the source unit of measure is <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>. 
+            </param>
+      <param name="destinationUnit">
+            The unit of measurement of the destination value.
+            </param>
+      <param name="destinationDpi">
+            Represents the DPI of the destination value along the length direction. 
+            This value is only used if the source unit of measure is <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>. 
+            </param>
+      <remarks>
+            The specified <see cref="T:Leadtools.Forms.LogicalUnit" /> is used to do the actual conversion.
+            </remarks>
+      <example>
+        <code lang="VB">      Private Sub LogicalLength_LogicalLength()
+         ' create a new logical length that is 1.5 inches
+         Dim lng As LogicalLength = New LogicalLength(1.5f, LogicalUnit.Inch)
+         ' show the length
+         Dim s As String = String.Format("{0}", lng)
+         MessageBox.Show(s)
+
+         ' convert the length to pixels
+         lng.Convert(150, LogicalUnit.Pixel, 150)
+
+         ' show
+         s = String.Format("{0}", lng)
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      private void LogicalLength_LogicalLength()
+      {
+         // create a new logical length that is 1.5 inches
+         LogicalLength lng = new LogicalLength(1.5f, LogicalUnit.Inch);
+         // show the length
+         string s = string.Format("{0}", lng);
+         MessageBox.Show(s);
+
+         // convert the length to pixels
+         lng.Convert(150, LogicalUnit.Pixel, 150);
+
+         // show
+         s = string.Format("{0}", lng);
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalLength.LogicalLength-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="P:Leadtools.Forms.LogicalLength.IsEmpty">
+      <summary>
+            Gets a value indicating whether this <see cref="T:Leadtools.Forms.LogicalLength" /> structure is empty.  
+            </summary>
+      <keywords>Forms|Recognition|Length|Logical Length|Unit of measure|Empty</keywords>
+      <value>true if this <see cref="T:Leadtools.Forms.LogicalLength" /> structure is empty; false, otherwise.</value>
+      <remarks>
+             An empty <see cref="T:Leadtools.Forms.LogicalLength" /> has width and height values of 0,0.
+            </remarks>
+      <noexample />
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="P:Leadtools.Forms.LogicalLength.Value">
+      <summary>
+            Gets or sets a value that represents the length for this <see cref="T:Leadtools.Forms.LogicalLength" />.
+            </summary>
+      <keywords>Forms|Recognition|Length|Logical Length|Unit of measure</keywords>
+      <value>Value that indicates the length.</value>
+      <noremarks />
+      <example>
+        <code lang="VB">      Public Sub LogicalLength_ConvertedValue()
+         ' create a new logical length with value of 1.5 in inches
+         Dim lng As LogicalLength = New LogicalLength(1.5f, LogicalUnit.Inch)
+         Dim s As String
+         ' show the length
+         s = String.Format("Length is {0}", lng)
+         MessageBox.Show(s)
+
+         ' show the length value component converted to pixels
+            s = String.Format("length is {0}, {1} Pixels", lng, LogicalUnitConverter.Convert(lng.Value, _
+                                                                                            LogicalUnit.Inch, 150, _
+                                                                                            LogicalUnit.Pixel, _
+                                                                                            150))
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      public void LogicalLength_ConvertedValue()
+      {
+         // create a new logical length with value of 1.5 in inches
+         LogicalLength lng = new LogicalLength(1.5f, LogicalUnit.Inch);
+         string s;
+         // show the length
+         s = string.Format("Length is {0}", lng);
+         MessageBox.Show(s);
+
+         // show the length value component converted to pixels
+         s = string.Format("length is {0}, {1} Pixels", lng, LogicalUnitConverter.Convert(lng.Value, 
+                                                                                           LogicalUnit.Inch, 
+                                                                                           150, 
+                                                                                           LogicalUnit.Pixel, 
+                                                                                           150));
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalLength.ConvertedValue-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="P:Leadtools.Forms.LogicalLength.Unit">
+      <summary>
+            Gets or sets a value that represents the unit of measurement for this <see cref="T:Leadtools.Forms.LogicalLength" />.
+            </summary>
+      <keywords>Forms|Recognition|Logical Length|Unit of measure</keywords>
+      <value>Unit of measurement</value>
+      <noremarks />
+      <noexample />
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="T:Leadtools.Forms.LogicalPoint">
+      <summary>
+            Stores two floating-point numbers and a unit of measurement that represent the coordinates of a point (X and Y).
+            </summary>
+      <keywords>Forms|Recognition|Logical Point|X-coordinate|Y-Coordinate</keywords>
+      <noremarks />
+      <noexample />
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalPoint.ConvertTo(System.Double,System.Double,Leadtools.Forms.LogicalUnit,System.Double,System.Double)">
+      <summary>
+             Returns this <see cref="T:Leadtools.Forms.LogicalPoint" /> structure, converted to its 
+            equivalent in the specified destination unit of measure.
+            </summary>
+      <keywords>Forms|Recognition|Converting|Logical Point|Unit of measure|DPI</keywords>
+      <param name="sourceDpiX">
+            Represents the DPI of the source value along the x-axis. 
+            
+            This value is only used if the source unit of measure is <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>. 
+            </param>
+      <param name="sourceDpiY">
+            Represents the DPI of the source value along the y-axis. 
+            This value is only used if the source unit of measure is <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>. 
+            </param>
+      <param name="destinationUnit">
+            The unit of measurement of the destination value.
+            </param>
+      <param name="destinationDpiX">
+            Represents the DPI of the destination value along the x-axis. 
+            This value is only used if the source unit of measure is <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>. 
+            </param>
+      <param name="destinationDpiY">
+            Represents the DPI of the destination value along the y-axis. This value is only used if the source unit of measure is <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>. 
+            </param>
+      <remarks>
+            The specified <see cref="T:Leadtools.Forms.LogicalUnit" /> is used to do the actual conversion.
+            </remarks>
+      <example>
+        <code lang="VB">      Private Sub LogicalPoint_ConvertTo()
+         ' create a new logical point that is 1.5 and 2 inches
+         Dim pt1 As LogicalPoint = New LogicalPoint(1.5f, 2f, LogicalUnit.Inch)
+         ' show the point
+         Dim s As String = String.Format("{0}", pt1)
+         MessageBox.Show(s)
+
+         ' convert the point to pixels
+         Dim pt2 As LogicalPoint = pt1.ConvertTo(150, 150, LogicalUnit.Pixel, 150, 150)
+
+         ' show
+         s = String.Format("{0}", pt2)
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      private void LogicalPoint_ConvertTo()
+      {
+         // create a new logical point that is 1.5 and 2 inches
+         LogicalPoint pt1 = new LogicalPoint(1.5f, 2f, LogicalUnit.Inch);
+         // show the point
+         string s = string.Format("{0}", pt1);
+         MessageBox.Show(s);
+
+         // convert the point to pixels
+         LogicalPoint pt2 = pt1.ConvertTo(150, 150, LogicalUnit.Pixel, 150, 150);
+
+         // show
+         s = string.Format("{0}", pt2);
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalPoint.ConvertTo-->
+      </example>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalPoint.#ctor(System.Double,System.Double,Leadtools.Forms.LogicalUnit)">
+      <summary>
+            Initializes a new <see cref="T:Leadtools.Forms.LogicalPoint" /> class object with explicit parameters.
+            </summary>
+      <keywords>Forms|Recognition|Logical Point|Unit of measure|X-coordinate|Y-coordinate</keywords>
+      <param name="x">
+            Specifies the X-coordinate of the <see cref="T:Leadtools.Forms.LogicalPoint" />.
+            </param>
+      <param name="y">
+            Specifies the Y-coordinate of the <see cref="T:Leadtools.Forms.LogicalPoint" />.
+            </param>
+      <param name="unit">
+            Specifies the unit of measurement of the <see cref="T:Leadtools.Forms.LogicalPoint" />.
+            </param>
+      <noremarks />
+      <example>For an example, refer to <see cref="M:Leadtools.Forms.LogicalPoint.Equals(System.Object)" />.</example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalPoint.#ctor(Leadtools.LeadPoint)">
+      <summary>
+            Initializes a new <see cref="T:Leadtools.Forms.LogicalPoint" /> class object with explicit parameters.
+            </summary>
+      <keywords>Forms|Recognition|Logical Point|Unit of measure|Logical Unit</keywords>
+      <param name="point">
+            Specifies the <see cref="T:Leadtools.Forms.LogicalPoint" /> coordinates measured in <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>.
+            </param>
+      <noremarks />
+      <example>For an example, refer to <see cref="M:Leadtools.Forms.LogicalPoint.Equals(System.Object)" />.</example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="F:Leadtools.Forms.LogicalPoint.Empty">
+      <summary>
+            Represents a new instance of the <see cref="T:Leadtools.Forms.LogicalPoint" /> with uninitialized members.
+            </summary>
+      <value>
+            A new instance of the <see cref="T:Leadtools.Forms.LogicalPoint" /> with uninitialized members.
+            </value>
+      <remarks> An uninitialized <see cref="T:Leadtools.Forms.LogicalPoint" />.</remarks>
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Forms.LogicalPoint.ToPoint(System.Double,System.Double)">
+      <summary>
+            Returns the <see cref="T:Leadtools.LeadPoint" /> of the 
+            <see cref="T:Leadtools.Forms.LogicalPoint" />, converted to its 
+            equivalent values measured in <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>.
+            </summary>
+      <keywords>Forms|Recognition|Converting|Unit of measure|Pixels|DPI</keywords>
+      <param name="dpiX">
+            Represents the DPI along the x-axis of the output <see cref="T:Leadtools.LeadPoint" />.
+            </param>
+      <param name="dpiY">
+            Represents the DPI along the y-axis of the output <see cref="T:Leadtools.LeadPoint" />.
+            </param>
+      <noremarks />
+      <example>For an example, refer to <see cref="M:Leadtools.Forms.LogicalPoint.Equals(System.Object)" />.</example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalPoint.op_Inequality(Leadtools.Forms.LogicalPoint,Leadtools.Forms.LogicalPoint)">
+      <summary>
+            Specifies whether this <see cref="T:Leadtools.Forms.LogicalPoint" /> does not contain the 
+            same coordinates or unit as the specified Object.
+            </summary>
+      <keywords>Forms|Recognition|Logical Point|Unit of measure|Inequality|Operators</keywords>
+      <param name="left">
+            The first <see cref="T:Leadtools.Forms.LogicalPoint" /> on the left side of the comparison operator.
+            </param>
+      <param name="right">
+            The second <see cref="T:Leadtools.Forms.LogicalPoint" /> on the right side of the comparison operator.
+            </param>
+      <returns>true if the two <see cref="T:Leadtools.Forms.LogicalLength" /> do not have the same 
+            coordinates and unit of measurement; false, otherwise.</returns>
+      <remarks>
+            If the two points have different units, comparison will be done after temporarily converting both to a common unit. 
+            </remarks>
+      <example>
+        <code lang="VB">      Public Sub LogicalPoint_OperatorEquals()
+         Dim inches As LogicalPoint = New LogicalPoint(1.5F, 2.0F, LogicalUnit.Inch)
+         Dim pixels As LogicalPoint = New LogicalPoint(inches.ToPoint(150, 150))
+         Dim s As String
+         ' should say true
+         s = String.Format("Should say True: inches == pixels is {0}", inches = pixels)
+         MessageBox.Show(s)
+
+         ' should say false
+         s = String.Format("Should say False: inches != pixels is {0}", inches &lt;&gt; pixels)
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      public void LogicalPoint_OperatorEquals()
+      {
+         LogicalPoint inches = new LogicalPoint(1.5F, 2f, LogicalUnit.Inch);
+         LogicalPoint pixels = new LogicalPoint(inches.ToPoint(150, 150));
+         string s;
+
+         // should say true
+         s = string.Format("Should say True: inches == pixels is {0}", inches == pixels);
+         MessageBox.Show(s);
+
+         // should say false
+         s = string.Format("Should say False: inches != pixels is {0}", inches != pixels);
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalPoint.OperatorEquals-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalPoint.op_Equality(Leadtools.Forms.LogicalPoint,Leadtools.Forms.LogicalPoint)">
+      <summary>
+            Specifies whether this <see cref="T:Leadtools.Forms.LogicalPoint" /> contains 
+            the same coordinates and unit as the specified Object.
+            </summary>
+      <keywords>Forms|Recognition|Logical Point|Unit of measure|Equality|Operators</keywords>
+      <param name="left">
+            The first <see cref="T:Leadtools.Forms.LogicalPoint" /> on the left side of the comparison operator.
+            </param>
+      <param name="right">
+            The second <see cref="T:Leadtools.Forms.LogicalPoint" /> on the right side of the comparison operator.
+            </param>
+      <returns>true if the two <see cref="T:Leadtools.Forms.LogicalPoint" /> have the same coordinates and unit of measurement; false, otherwise.</returns>
+      <remarks>
+            If the two points have different units, comparison will be done after temporarily converting both to a common unit. 
+            </remarks>
+      <example>
+        <code lang="VB">      Public Sub LogicalPoint_OperatorEquals()
+         Dim inches As LogicalPoint = New LogicalPoint(1.5F, 2.0F, LogicalUnit.Inch)
+         Dim pixels As LogicalPoint = New LogicalPoint(inches.ToPoint(150, 150))
+         Dim s As String
+         ' should say true
+         s = String.Format("Should say True: inches == pixels is {0}", inches = pixels)
+         MessageBox.Show(s)
+
+         ' should say false
+         s = String.Format("Should say False: inches != pixels is {0}", inches &lt;&gt; pixels)
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      public void LogicalPoint_OperatorEquals()
+      {
+         LogicalPoint inches = new LogicalPoint(1.5F, 2f, LogicalUnit.Inch);
+         LogicalPoint pixels = new LogicalPoint(inches.ToPoint(150, 150));
+         string s;
+
+         // should say true
+         s = string.Format("Should say True: inches == pixels is {0}", inches == pixels);
+         MessageBox.Show(s);
+
+         // should say false
+         s = string.Format("Should say False: inches != pixels is {0}", inches != pixels);
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalPoint.OperatorEquals-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalPoint.Add(Leadtools.Forms.LogicalPoint,Leadtools.Forms.LogicalSize)">
+      <summary>
+            Returns a <see cref="T:Leadtools.Forms.LogicalPoint" /> that results 
+            from adding the width and height of <see cref="T:Leadtools.Forms.LogicalSize" /> 
+            structure to the X and Y coordinates of the <see cref="T:Leadtools.Forms.LogicalPoint" /> structure, respectively. 
+            </summary>
+      <keywords>Forms|Recognition|Logical Point|Unit of measure|Addition|Operators</keywords>
+      <param name="point">
+            Specifies the <see cref="T:Leadtools.Forms.LogicalPoint" />.
+            </param>
+      <param name="size">
+            Specifies the <see cref="T:Leadtools.Forms.LogicalSize" />.
+            </param>
+      <remarks>
+            The unit of measurement of the new <see cref="T:Leadtools.Forms.LogicalPoint" /> is the same as the unit of measurement of the passed <see cref="T:Leadtools.Forms.LogicalPoint" />.
+            The X-Coordinate of the new <see cref="T:Leadtools.Forms.LogicalPoint" /> equals the sum of the X-Coordinate of the passed <see cref="T:Leadtools.Forms.LogicalPoint" /> and the Width property of the passed <see cref="T:Leadtools.Forms.LogicalSize" />, i.e. new X = X + Width.
+            The Y-Coordinate of the new <see cref="T:Leadtools.Forms.LogicalPoint" /> equals the sum of the Y-Coordinate of the passed <see cref="T:Leadtools.Forms.LogicalPoint" /> and the Height property of the passed <see cref="T:Leadtools.Forms.LogicalSize" />, i.e. new Y = Y + Height.
+            </remarks>
+      <example>
+        <code lang="VB">      '''This example adds two point structures.
+      Public Sub LogicalPoint_Add()
+         Dim sz As LogicalSize = New LogicalSize(2, 3, LogicalUnit.Centimeter)
+         Dim pt As LogicalPoint = New LogicalPoint(1.5F, 2f, LogicalUnit.Inch)
+         Dim s As String = String.Format("pt + sz = {0}", LogicalPoint.Add(pt, sz))
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      ///This example adds two point structures.
+      public void LogicalPoint_Add()
+      {
+         LogicalSize sz = new LogicalSize(2, 3, LogicalUnit.Centimeter);
+         LogicalPoint pt = new LogicalPoint(1.5F, 2f, LogicalUnit.Inch);
+         string s = string.Format("pt + sz = {0}", LogicalPoint.Add(pt, sz));
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalPoint.Add-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalPoint.FromPoint(Leadtools.LeadPoint)">
+      <summary>
+            Creates a new <see cref="T:Leadtools.Forms.LogicalPoint" /> class object from explicit <see cref="T:Leadtools.LeadPoint" /> parameters.
+            </summary>
+      <keywords>Forms|Recognition|Logical Point|Logical Unit</keywords>
+      <param name="point">
+            Specifies the <see cref="T:Leadtools.Forms.LogicalPoint" /> coordinates measured in <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>.
+            </param>
+      <noremarks />
+      <noexample />
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalPoint.op_Subtraction(Leadtools.Forms.LogicalPoint,Leadtools.Forms.LogicalSize)">
+      <summary>
+            Returns a <see cref="T:Leadtools.Forms.LogicalPoint" /> that results from subtracting the width and height of a <see cref="T:Leadtools.Forms.LogicalSize" /> structure from the X and Y coordinates of the <see cref="T:Leadtools.Forms.LogicalPoint" /> structure, respectively. 
+            </summary>
+      <keywords>Forms|Recognition|Logical Point|Unit of measure|Subtraction|Operators</keywords>
+      <param name="point">
+            Specifies the <see cref="T:Leadtools.Forms.LogicalPoint" />.
+            </param>
+      <param name="size">
+            Specifies the <see cref="T:Leadtools.Forms.LogicalSize" />.
+            </param>
+      <remarks>
+            The unit of measurement of the new <see cref="T:Leadtools.Forms.LogicalPoint" /> is the same as the unit of measurement of the passed <see cref="T:Leadtools.Forms.LogicalPoint" />.
+            The X-Coordinate of the new <see cref="T:Leadtools.Forms.LogicalPoint" /> equals the subtraction of the Width property of the passed <see cref="T:Leadtools.Forms.LogicalSize" /> from the X-Coordinate of the passed <see cref="T:Leadtools.Forms.LogicalPoint" />, i.e. new X = X - Width.
+            The Y-Coordinate of the new <see cref="T:Leadtools.Forms.LogicalPoint" /> equals the subtraction of the Height property of the passed <see cref="T:Leadtools.Forms.LogicalSize" /> from the Y-Coordinate of the passed <see cref="T:Leadtools.Forms.LogicalPoint" />, i.e. new Y = Y - Height.
+            </remarks>
+      <example>
+        <code lang="VB">      '''This example subtracts two point structures.
+      Public Sub LogicalPoint_OperatorMinus()
+         Dim sz As LogicalSize = New LogicalSize(2, 3, LogicalUnit.Centimeter)
+         Dim pt As LogicalPoint = New LogicalPoint(1.5F, 2f, LogicalUnit.Inch)
+         Dim s As String = String.Format("pt - sz = {0}", pt - sz)
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      ///This example subtracts two point structures.
+      public void LogicalPoint_OperatorMinus()
+      {
+         LogicalSize sz = new LogicalSize(2, 3, LogicalUnit.Centimeter);
+         LogicalPoint pt = new LogicalPoint(1.5F, 2f, LogicalUnit.Inch);
+         string s = string.Format("pt - sz = {0}", pt - sz);
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalPoint.OperatorMinus-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalPoint.op_Addition(Leadtools.Forms.LogicalPoint,Leadtools.Forms.LogicalSize)">
+      <summary>
+            Returns a <see cref="T:Leadtools.Forms.LogicalPoint" /> that results from adding the width and height of a <see cref="T:Leadtools.Forms.LogicalSize" /> structure to the X and Y coordinates of the <see cref="T:Leadtools.Forms.LogicalPoint" /> structure, respectively. 
+            </summary>
+      <keywords>Forms|Recognition|Logical Point|Unit of measure|Addition</keywords>
+      <param name="point">
+            Specifies the <see cref="T:Leadtools.Forms.LogicalPoint" />.
+            </param>
+      <param name="size">
+            Specifies the <see cref="T:Leadtools.Forms.LogicalSize" />.
+            </param>
+      <remarks>
+            The unit of measurement of the new <see cref="T:Leadtools.Forms.LogicalPoint" /> is the same as the unit of measurement of the passed <see cref="T:Leadtools.Forms.LogicalPoint" />.
+            The X-Coordinate of the new <see cref="T:Leadtools.Forms.LogicalPoint" /> equals the sum of the X-Coordinate of the passed <see cref="T:Leadtools.Forms.LogicalPoint" /> and the Width property of the passed <see cref="T:Leadtools.Forms.LogicalSize" />, i.e. new X = X + Width.
+            The Y-Coordinate of the new <see cref="T:Leadtools.Forms.LogicalPoint" /> equals the sum of the Y-Coordinate of the passed <see cref="T:Leadtools.Forms.LogicalPoint" /> and the Height property of the passed <see cref="T:Leadtools.Forms.LogicalSize" />, i.e. new Y = Y + Height.
+            </remarks>
+      <example>
+        <code lang="VB">      '''This example adds two point structures.
+      Public Sub LogicalPoint_OperatorPlus()
+         Dim sz As LogicalSize = New LogicalSize(2, 3, LogicalUnit.Centimeter)
+         Dim pt As LogicalPoint = New LogicalPoint(1.5F, 2f, LogicalUnit.Inch)
+         Dim s As String = String.Format("pt + sz = {0}", pt + sz)
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      ///This example adds two point structures.
+      public void LogicalPoint_OperatorPlus()
+      {
+         LogicalSize sz = new LogicalSize(2, 3, LogicalUnit.Centimeter);
+         LogicalPoint pt = new LogicalPoint(1.5F, 2f, LogicalUnit.Inch);
+         string s = string.Format("pt + sz = {0}", pt + sz);
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalPoint.OperatorPlus-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalPoint.Subtract(Leadtools.Forms.LogicalPoint,Leadtools.Forms.LogicalSize)">
+      <summary>
+            Returns a <see cref="T:Leadtools.Forms.LogicalPoint" /> that results from subtracting the width and height of a <see cref="T:Leadtools.Forms.LogicalSize" /> structure from the X and Y coordinates of the <see cref="T:Leadtools.Forms.LogicalPoint" /> structure, respectively. 
+            </summary>
+      <keywords>Forms|Recognition|Logical Point|Unit of measure|Subtraction</keywords>
+      <param name="point">
+            Specifies the <see cref="T:Leadtools.Forms.LogicalPoint" />.
+            </param>
+      <param name="size">
+            Specifies the <see cref="T:Leadtools.Forms.LogicalSize" />.
+            </param>
+      <remarks>
+            The unit of measurement of the new <see cref="T:Leadtools.Forms.LogicalPoint" /> is the same as the unit of measurement of the passed <see cref="T:Leadtools.Forms.LogicalPoint" />.
+            The X-Coordinate of the new <see cref="T:Leadtools.Forms.LogicalPoint" /> equals the subtraction of the Width property of the passed <see cref="T:Leadtools.Forms.LogicalSize" /> from the X-Coordinate of the passed <see cref="T:Leadtools.Forms.LogicalPoint" />, i.e. new X = X - Width.
+            The Y-Coordinate of the new <see cref="T:Leadtools.Forms.LogicalPoint" /> equals the subtraction of the Height property of the passed <see cref="T:Leadtools.Forms.LogicalSize" /> from the Y-Coordinate of the passed <see cref="T:Leadtools.Forms.LogicalPoint" />, i.e. new Y = Y - Height.
+            </remarks>
+      <example>
+        <code lang="VB">      '''This example subtracts two point structures.
+      Public Sub LogicalPoint_Subtract()
+         Dim sz As LogicalSize = New LogicalSize(2, 3, LogicalUnit.Centimeter)
+         Dim pt As LogicalPoint = New LogicalPoint(1.5F, 2f, LogicalUnit.Inch)
+         Dim s As String = String.Format("pt - sz = {0}", LogicalPoint.Subtract(pt, sz))
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      ///This example subtracts two point structures.
+      public void LogicalPoint_Subtract()
+      {
+         LogicalSize sz = new LogicalSize(2, 3, LogicalUnit.Centimeter);
+         LogicalPoint pt = new LogicalPoint(1.5F, 2f, LogicalUnit.Inch); 
+         string s = string.Format("pt - sz = {0}", LogicalPoint.Subtract(pt, sz));
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalPoint.Subtract-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalPoint.Equals(System.Object)">
+      <summary>
+            Specifies whether this <see cref="T:Leadtools.Forms.LogicalSize" /> contains the same coordinates and unit of measurement as the specified Object.
+            </summary>
+      <keywords>Forms|Recognition|Logical Size|Unit of measure|Equality|Operators</keywords>
+      <param name="obj">
+            The object to be used in the comparison with the current object.
+            </param>
+      <returns>true if the two <see cref="T:Leadtools.Forms.LogicalPoint" /> have the same coordinates and unit of measurement; false, otherwise.</returns>
+      <remarks>
+             For more information refer to <see cref="M:System.Object.Equals(System.Object)" />.
+            </remarks>
+      <example>
+        <code lang="VB">      Public Sub LogicalPoint_Equals()
+         Dim inches As LogicalPoint = New LogicalPoint(1.5F, 2f, LogicalUnit.Inch)
+         Dim pixels As LogicalPoint = New LogicalPoint(inches.ToPoint(150, 150))
+         Dim s As String
+         ' should say False
+         s = String.Format("Should say False: inches == pixels is {0}", inches = pixels)
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      public void LogicalPoint_Equals()
+      {
+         LogicalPoint inches = new LogicalPoint(1.5F, 2f, LogicalUnit.Inch);
+         LogicalPoint pixels = new LogicalPoint(inches.ToPoint(150, 150));
+         string s;
+         // should say False
+         s = string.Format("Should say False: inches == pixels is {0}", inches == pixels);
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalPoint.Equals-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalPoint.GetHashCode">
+      <summary>
+            Returns a hash code for this <see cref="T:Leadtools.Forms.LogicalPoint" /> structure. For information about this method, see <see cref="M:System.Object.GetHashCode" />.  
+            </summary>
+      <keywords>Forms|Recognition|Logical Point|Hash Codes</keywords>
+      <noremarks />
+      <noexample />
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalPoint.ToString">
+      <summary>
+            Converts this <see cref="T:Leadtools.Forms.LogicalPoint" /> to a human-readable string.
+            </summary>
+      <keywords>Forms|Recognition|Logical Point|Strings</keywords>
+      <noremarks />
+      <noexample />
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalPoint.Convert(System.Double,System.Double,Leadtools.Forms.LogicalUnit,System.Double,System.Double)">
+      <summary>
+            Converts this <see cref="T:Leadtools.Forms.LogicalPoint" /> structure to the specified unit of measure. 
+            </summary>
+      <keywords>Forms|Recognition|Logical Size|Unit of measure|Equality|Operators</keywords>
+      <param name="sourceDpiX">
+            Represents the DPI of the source value along the x-axis. This value is only used if the source unit of measure is <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>. 
+            </param>
+      <param name="sourceDpiY">
+            Represents the DPI of the source value along the y-axis. This value is only used if the source unit of measure is <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>. 
+            </param>
+      <param name="destinationUnit">
+            The unit of measurement of the destination value.
+            </param>
+      <param name="destinationDpiX">
+            Represents the DPI of the destination value along the x-axis. This value is only used if the source unit of measure is <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>. 
+            </param>
+      <param name="destinationDpiY">
+            Represents the DPI of the destination value along the y-axis. This value is only used if the source unit of measure is <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>. 
+            </param>
+      <remarks>
+            The specified <see cref="T:Leadtools.Forms.LogicalUnit" /> is used to do the actual conversion.
+            </remarks>
+      <example>
+        <code lang="VB">      Private Sub LogicalPoint_LogicalPoint()
+         ' create a new logical point that is 1.5 and 2 inches
+         Dim pt As LogicalPoint = New LogicalPoint(1.5f, 2f, LogicalUnit.Inch)
+         ' show the point
+         Dim s As String = String.Format("{0}", pt)
+         MessageBox.Show(s)
+
+         ' convert the point to pixels
+         pt.Convert(150, 150, LogicalUnit.Pixel, 150, 150)
+
+         ' show
+         s = String.Format("{0}", pt)
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      private void LogicalPoint_LogicalPoint()
+      {
+         // create a new logical point that is 1.5 and 2 inches
+         LogicalPoint pt = new LogicalPoint(1.5f, 2f, LogicalUnit.Inch);
+         // show the point
+         string s = string.Format("{0}", pt);
+         MessageBox.Show(s);
+
+         // convert the point to pixels
+         pt.Convert(150, 150, LogicalUnit.Pixel, 150, 150);
+
+         // show
+         s = string.Format("{0}", pt);
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalPoint.LogicalPoint-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="P:Leadtools.Forms.LogicalPoint.IsEmpty">
+      <summary>
+            Gets a value indicating whether this <see cref="T:Leadtools.Forms.LogicalPoint" /> structure is empty.  
+            </summary>
+      <keywords>Forms|Recognition|Logical Point|Empty</keywords>
+      <value>true if this <see cref="T:Leadtools.Forms.LogicalPoint" /> structure is empty; false, otherwise.</value>
+      <remarks>
+             An empty <see cref="T:Leadtools.Forms.LogicalPoint" /> has coordinates value of 0,0, Pixels.
+            </remarks>
+      <noexample />
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="P:Leadtools.Forms.LogicalPoint.X">
+      <summary>
+            Gets or sets a value that represents the X coordinate for this <see cref="T:Leadtools.Forms.LogicalPoint" />. 
+            </summary>
+      <keywords>Forms|Recognition|Logical Point|X-coordinate</keywords>
+      <value>The x-coordinate of this <see cref="T:Leadtools.Forms.LogicalPoint" />.</value>
+      <noremarks />
+      <example>
+        <code lang="VB">      Public Sub LogicalPoint_ConvertedXY()
+         ' create a new logical point at location 1.5, 2 in inches
+         Dim pt As LogicalPoint = New LogicalPoint(1.5f, 2f, LogicalUnit.Inch)
+         Dim s As String
+         ' show the point
+         s = String.Format("Point is {0}", pt)
+         MessageBox.Show(s)
+
+         ' show the x and y components converted to pixels
+            s = String.Format("x and y is {0}, {1} Pixels", LogicalUnitConverter.Convert(pt.X, LogicalUnit.Inch, _
+                                                                                         150, _
+                                                                                         LogicalUnit.Pixel, 150), _
+                              LogicalUnitConverter.ConvertToPixels(pt.Y, LogicalUnit.Inch, 150))
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      public void LogicalPoint_ConvertedXY()
+      {
+         // create a new logical point at location 1.5, 2 in inches
+         LogicalPoint pt = new LogicalPoint(1.5f, 2f, LogicalUnit.Inch);
+         string s;
+         // show the point
+         s = string.Format("Point is {0}", pt);
+         MessageBox.Show(s);
+
+         // show the x and y components converted to pixels
+         s = string.Format("x and y is {0}, {1} Pixels", LogicalUnitConverter.Convert(pt.X, 
+                                                                                      LogicalUnit.Inch, 
+                                                                                      150, 
+                                                                                      LogicalUnit.Pixel, 
+                                                                                      150), LogicalUnitConverter.ConvertToPixels(pt.Y, LogicalUnit.Inch, 150));
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalPoint.ConvertedXY-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="P:Leadtools.Forms.LogicalPoint.Y">
+      <summary>
+            Gets or sets a value that represents the Y coordinate for this <see cref="T:Leadtools.Forms.LogicalPoint" />.  
+            </summary>
+      <keywords>Forms|Recognition|Logical Point|Y-coordinate</keywords>
+      <value>The y-coordinate of this <see cref="T:Leadtools.Forms.LogicalPoint" />.</value>
+      <noremarks />
+      <example>For an example, refer to <see cref="P:Leadtools.Forms.LogicalPoint.X" />.</example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="P:Leadtools.Forms.LogicalPoint.Unit">
+      <summary>
+            Gets or sets a value that represents the unit of measure for this <see cref="T:Leadtools.Forms.LogicalPoint" />.  
+            </summary>
+      <keywords>Forms|Recognition|Logical Point|Unit of measure</keywords>
+      <value>Unit of measurement</value>
+      <noremarks />
+      <noexample />
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="T:Leadtools.Forms.LogicalRectangle">
+      <summary>
+            Stores four floating-point numbers and a unit of measurement 
+            that represent the coordinates and size of a rectangle (X, Y, Width, and Height).
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle</keywords>
+      <noremarks />
+      <noexample />
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.Contains(System.Double,System.Double)">
+      <summary>
+            Determines whether the specified point is contained within this <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure. 
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Contains|Hit-testing</keywords>
+      <param name="x">
+            The x-coordinate of the point to test. It shold be in the same unit of measurement 
+            </param>
+      <param name="y">
+            The y-coordinate of the point to test. It shold be in the same unit of measurement
+            </param>
+      <returns>true if the specified point is contained within this <see cref="T:Leadtools.Forms.LogicalRectangle" />; false, otherwise.</returns>
+      <remarks>
+            The point is treated as if its in the same unit as the <see cref="T:Leadtools.Forms.LogicalRectangle" />.
+            </remarks>
+      <noexample />
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.Contains(Leadtools.LeadPoint)">
+      <summary>
+            Determines if the specified point is contained within this <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure.
+            </summary>
+      <param name="pt">The <see cref="T:Leadtools.LeadPoint" /> structure to be tested.</param>
+      <returns>This method returns true if the point represented by the <i>pt</i> parameter is contained within this <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure; otherwise false.</returns>
+      <remarks>
+            The point is treated as if its in the same unit as the <see cref="T:Leadtools.Forms.LogicalRectangle" />.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.Contains(Leadtools.Forms.LogicalPoint)">
+      <summary>
+            Determines if the specified point is contained within this <see cref="T:Leadtools.Forms.LogicalPoint" /> structure.
+            </summary>
+      <param name="pt">The <see cref="T:Leadtools.Forms.LogicalPoint" /> structure to be tested.</param>
+      <returns>This method returns true if the point represented by the <i>pt</i> parameter is contained within this <see cref="T:Leadtools.Forms.LogicalPoint" /> structure; otherwise false.</returns>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.Contains(Leadtools.LeadRect)">
+      <summary>
+            Determines if the rectangular region represented by <i>rect</i> is entirely contained within this <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure.
+            </summary>
+      <param name="rect">The <see cref="T:Leadtools.LeadRect" /> structure to be tested.</param>
+      <returns>This method returns true if the rectangular region represented by <i>rect</i> is entirely contained within the rectangular region represented by this <see cref="T:Leadtools.Forms.LogicalRectangle" />; otherwise false.</returns>
+      <remarks>
+            The <paramref name="rect" /> is treated as if its in the same unit as the <see cref="T:Leadtools.Forms.LogicalRectangle" />.
+            </remarks>
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.Contains(Leadtools.Forms.LogicalRectangle)">
+      <summary>
+            Determines if the rectangular region represented by <i>rect</i> is entirely contained within this <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure.
+            </summary>
+      <param name="rect">The <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure to be tested.</param>
+      <returns>This method returns true if the rectangular region represented by <i>rect</i> is entirely contained within the rectangular region represented by this <see cref="T:Leadtools.Forms.LogicalRectangle" />; otherwise false.</returns>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.IntersectsWith(Leadtools.LeadRect)">
+      <summary>
+            Determines whether this rectangle intersects with rect. 
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Intersects</keywords>
+      <param name="rect">
+            The rectangle to test. 
+            </param>
+      <returns>true if the <paramref name="rect" /> intersects with this <see cref="T:Leadtools.Forms.LogicalRectangle" />; false, otherwise.</returns>
+      <noremarks />
+      <noexample />
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.ConvertTo(System.Double,System.Double,Leadtools.Forms.LogicalUnit,System.Double,System.Double)">
+      <summary>
+            Returns this <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure, 
+            converted to its equivalent in the specified destination unit of measure.
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure|Converting|DPI</keywords>
+      <param name="sourceDpiX">
+            Represents the DPI of the source value along the x-axis. 
+            This value is only used if the source unit of measure is <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>. 
+            </param>
+      <param name="sourceDpiY">
+            Represents the DPI of the source value along the y-axis. 
+            This value is only used if the source unit of measure is <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>. 
+            </param>
+      <param name="destinationUnit">
+            The unit of measurement of the destination value.
+            </param>
+      <param name="destinationDpiX">
+            Represents the DPI of the destination value along the x-axis. This value is only used if the source unit of measure is <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>. 
+            </param>
+      <param name="destinationDpiY">
+            Represents the DPI of the destination value along the y-axis. This value is only used if the source unit of measure is <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>. 
+            </param>
+      <noremarks />
+      <example>
+        <code lang="VB">      Private Sub LogicalRectangle_ConvertTo()
+         ' create a new logical rectangle that is 1.5 2, 3, and 4 inches
+         Dim rect1 As LogicalRectangle = New LogicalRectangle(1.5f, 2f, 3f, 4f, LogicalUnit.Inch)
+         ' show the rectangle
+         Dim s As String = String.Format("{0}", rect1)
+         MessageBox.Show(s)
+
+         ' convert the rectangle to pixels
+         Dim rect2 As LogicalRectangle = rect1.ConvertTo(150, 150, LogicalUnit.Pixel, 150, 150)
+
+         ' show
+         s = String.Format("{0}", rect2)
+         MessageBox.Show(s)
+      End Sub</code>
+        <code lang="CS">      private void LogicalRectangle_ConvertTo()
+      {
+         // create a new logical rectangle that is 1.5 2, 3, and 4 inches
+         LogicalRectangle rect1 = new LogicalRectangle(1.5f, 2f, 3f, 4f, LogicalUnit.Inch);
+         // show the rectangle
+         string s = string.Format("{0}", rect1);
+         MessageBox.Show(s);
+
+         // convert the rectangle to pixels
+         LogicalRectangle rect2 = rect1.ConvertTo(150, 150, LogicalUnit.Pixel, 150, 150);
+
+         // show
+         s = string.Format("{0}", rect2);
+         MessageBox.Show(s);
+      }</code>
+        <!--LogicalRectangle.ConvertTo-->
+      </example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.#ctor(System.Double,System.Double,System.Double,System.Double,Leadtools.Forms.LogicalUnit)">
+      <summary>
+            Initializes a new instance of the <see cref="T:Leadtools.Forms.LogicalRectangle" /> class with 
+            the specified location, size, and unit. 
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectamg;|Unit of measure|Equality|Operators</keywords>
+      <param name="x">
+            The x-coordinate of the upper-left corner of the <see cref="T:Leadtools.Forms.LogicalRectangle" />. 
+            </param>
+      <param name="y">
+            The y-coordinate of the upper-left corner of the <see cref="T:Leadtools.Forms.LogicalRectangle" />. 
+            </param>
+      <param name="width">
+            The width of the <see cref="T:Leadtools.Forms.LogicalRectangle" />. 
+            </param>
+      <param name="height">
+            The height of the <see cref="T:Leadtools.Forms.LogicalRectangle" />. 
+            </param>
+      <param name="unit">
+            Specifies the unit of measurement of the <see cref="T:Leadtools.Forms.LogicalRectangle" />.
+            </param>
+      <noremarks />
+      <example>For an example, refer to <see cref="M:Leadtools.Forms.LogicalRectangle.Equals(System.Object)" />.</example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.#ctor(Leadtools.Forms.LogicalPoint,Leadtools.Forms.LogicalSize)">
+      <summary>
+            Initializes a new instance of the <see cref="T:Leadtools.Forms.LogicalRectangle" /> class with the specified location and size.
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure</keywords>
+      <param name="location">
+            The coordinates of the upper-left corner of the rectangle.
+            </param>
+      <param name="size">
+            The width and height of the rectangle.
+            </param>
+      <remarks>
+            The location and size units should be equal. If they are different the size will be converted to location's unit of measurement. The new rectangle will have the same units as location.
+            </remarks>
+      <noexample />
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.#ctor(Leadtools.LeadRect)">
+      <summary>
+            Initializes a new instance of the <see cref="T:Leadtools.Forms.LogicalRectangle" /> class with the specified rect. 
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure</keywords>
+      <param name="rect">
+            The location and size of the rectangle measured in <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>.
+            </param>
+      <remarks>
+            The unit will be set to the Default(Pixel).
+            </remarks>
+      <example>For an example, refer to <see cref="M:Leadtools.Forms.LogicalRectangle.Equals(System.Object)" />.</example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="F:Leadtools.Forms.LogicalRectangle.Empty">
+      <summary>
+            Represents a new instance of the <see cref="T:Leadtools.Forms.LogicalRectangle" /> with uninitialized members.
+            </summary>
+      <value>
+            A new instance of the <see cref="T:Leadtools.Forms.LogicalRectangle" /> with uninitialized members.
+            </value>
+      <remarks> An uninitialized <see cref="T:Leadtools.Forms.LogicalRectangle" />.</remarks>
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.ToRectangle(System.Double,System.Double)">
+      <summary>
+            Returns a <see cref="T:Leadtools.LeadRect" /> that represents this 
+            <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure, converted to its 
+            equivalent in <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>.
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure|Pixels|DPI|Converting</keywords>
+      <param name="dpiX">
+            Represents the DPI along the x-axis.
+            </param>
+      <param name="dpiY">
+            Represents the DPI along the y-axis.
+            </param>
+      <noremarks />
+      <example>For an example, refer to <see cref="M:Leadtools.Forms.LogicalRectangle.Equals(System.Object)" />.</example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.op_Inequality(Leadtools.Forms.LogicalRectangle,Leadtools.Forms.LogicalRectangle)">
+      <summary>
+            Specifies whether this <see cref="T:Leadtools.Forms.LogicalRectangle" /> 
+            does not contain the same location, size, or unit as the specified Object.
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure|Inequality|Operators</keywords>&gt;
+            <param name="left">
+            The first <see cref="T:Leadtools.Forms.LogicalRectangle" /> on the left side of the comparison operator.
+            </param><param name="right">
+            The second <see cref="T:Leadtools.Forms.LogicalRectangle" /> on the right side of the comparison operator.
+            </param><returns>true if the two <see cref="T:Leadtools.Forms.LogicalRectangle" /> do not have the same location, size, and unit of measurement; false, otherwise.</returns><remarks>
+            If the two rectangles have different units, comparison will be done after temporarily converted both to a common unit.
+            </remarks><example><code lang="VB">      Public Sub LogicalRectangle_OperatorEquals()
+         Dim inches As LogicalRectangle = New LogicalRectangle(1.5F, 2f, 3f, 4f, LogicalUnit.Inch)
+         Dim pixels As LogicalRectangle = New LogicalRectangle(inches.ToRectangle(150, 150))
+         Dim s As String
+
+         ' should say true
+         s = String.Format("Should say True: inches == pixels is {0}", inches = pixels)
+         MessageBox.Show(s)
+
+         ' should say false
+         s = String.Format("Should say False: inches != pixels is {0}", inches &lt;&gt; pixels)
+         MessageBox.Show(s)
+      End Sub</code><code lang="CS">      public void LogicalRectangle_OperatorEquals()
+      {
+         LogicalRectangle inches = new LogicalRectangle(1.5F, 2f, 3f, 4f, LogicalUnit.Inch);
+         LogicalRectangle pixels = new LogicalRectangle(inches.ToRectangle(150, 150));
+         string s;
+         // should say true
+         s = string.Format("Should say True: inches == pixels is {0}", inches == pixels);
+         MessageBox.Show(s);
+
+         // should say false
+         s = string.Format("Should say False: inches != pixels is {0}", inches != pixels);
+         MessageBox.Show(s);
+      }</code><!--LogicalRectangle.OperatorEquals--></example><docaddon>yes</docaddon></member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.op_Equality(Leadtools.Forms.LogicalRectangle,Leadtools.Forms.LogicalRectangle)">
+      <summary>
+            Specifies whether this <see cref="T:Leadtools.Forms.LogicalRectangle" /> 
+            contains the same location, size, and unit as the specified Object.
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure|Equality|Operators</keywords>&gt;
+            <param name="left">
+            The first <see cref="T:Leadtools.Forms.LogicalRectangle" /> on the left side of the comparison operator.
+            </param><param name="right">
+            The second <see cref="T:Leadtools.Forms.LogicalRectangle" /> on the right side of the comparison operator.
+            </param><returns>true if the two <see cref="T:Leadtools.Forms.LogicalRectangle" /> have the same location, size, and unit of measurement; false, otherwise.</returns><remarks>
+            If the two rectangles have different units, comparison will be done after temporarily converted both to a common unit.
+            </remarks><example><code lang="VB">      Public Sub LogicalRectangle_OperatorEquals()
+         Dim inches As LogicalRectangle = New LogicalRectangle(1.5F, 2f, 3f, 4f, LogicalUnit.Inch)
+         Dim pixels As LogicalRectangle = New LogicalRectangle(inches.ToRectangle(150, 150))
+         Dim s As String
+
+         ' should say true
+         s = String.Format("Should say True: inches == pixels is {0}", inches = pixels)
+         MessageBox.Show(s)
+
+         ' should say false
+         s = String.Format("Should say False: inches != pixels is {0}", inches &lt;&gt; pixels)
+         MessageBox.Show(s)
+      End Sub</code><code lang="CS">      public void LogicalRectangle_OperatorEquals()
+      {
+         LogicalRectangle inches = new LogicalRectangle(1.5F, 2f, 3f, 4f, LogicalUnit.Inch);
+         LogicalRectangle pixels = new LogicalRectangle(inches.ToRectangle(150, 150));
+         string s;
+         // should say true
+         s = string.Format("Should say True: inches == pixels is {0}", inches == pixels);
+         MessageBox.Show(s);
+
+         // should say false
+         s = string.Format("Should say False: inches != pixels is {0}", inches != pixels);
+         MessageBox.Show(s);
+      }</code><!--LogicalRectangle.OperatorEquals--></example><docaddon>yes</docaddon></member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.FromLTRB(System.Double,System.Double,System.Double,System.Double,Leadtools.Forms.LogicalUnit)">
+      <summary>
+            Returns a <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure with the 
+            specified edge locations and unit of measure.
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure</keywords>&gt;
+            <param name="left">
+            The x-coordinate of the upper-left corner of the <see cref="T:Leadtools.Forms.LogicalRectangle" />. 
+            </param><param name="top">
+            The y-coordinate of the upper-left corner of the <see cref="T:Leadtools.Forms.LogicalRectangle" />. 
+            </param><param name="right">
+            The x-coordinate of the lower-right corner of the <see cref="T:Leadtools.Forms.LogicalRectangle" />. 
+            </param><param name="bottom">
+            The y-coordinate of the lower-right corner of the <see cref="T:Leadtools.Forms.LogicalRectangle" />. 
+            </param><param name="unit">
+            Specifies the unit of measurement of the <see cref="T:Leadtools.Forms.LogicalRectangle" />.
+            </param><noremarks /><noexample /><docaddon>yes</docaddon></member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.FromRectangle(Leadtools.LeadRect)">
+      <summary>
+            Returns a <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure with the 
+            specified <see cref="T:Leadtools.LeadRect" /> in <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>.
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure|Pixels</keywords>&gt;
+            <param name="rect">
+            A <see cref="T:Leadtools.LeadRect" /> that specifies the location and size of the <see cref="T:Leadtools.Forms.LogicalRectangle" /> in <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>.
+            </param><noremarks /><noexample /><docaddon>yes</docaddon></member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.Union(Leadtools.Forms.LogicalRectangle,Leadtools.Forms.LogicalRectangle)">
+      <summary>
+            Gets a Rectangle structure that contains the union of two Rectangle structures. 
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure|Union|Operators</keywords>&gt;
+            <param name="rect1">
+            A rectangle to union. 
+            </param><param name="rect2">
+            A rectangle to union. 
+            </param><remarks>
+            The two rectangles should have the same unit of measurement. If the unit is not the same the union process will be done according to the rect1 unit of measurement.
+            </remarks><noexample /><docaddon>yes</docaddon></member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.Equals(System.Object)">
+      <summary>
+            Determines whether the specified object equals 
+            this <see cref="T:Leadtools.Forms.LogicalRectangle" /> object. 
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure|Inequality|Operators</keywords>&gt;
+            <param name="obj">
+            The <see cref="T:System.Object" /> to test. 
+            </param><returns>true if the two <see cref="T:Leadtools.Forms.LogicalRectangle" /> 
+            have the same location, size, and unit of measurement; false, otherwise.</returns><remarks>
+            For more information refer to <see cref="M:System.Object.Equals(System.Object)" />.
+            </remarks><example><code lang="VB">      Public Sub LogicalRectangle_Equals()
+         Dim inches As LogicalRectangle = New LogicalRectangle(1.5F, 2f, 3f, 4f, LogicalUnit.Inch)
+         Dim pixels As LogicalRectangle = New LogicalRectangle(inches.ToRectangle(150, 150))
+         Dim s As String
+
+         ' should say False
+         s = String.Format("Should say False: inches == pixels is {0}", inches = pixels)
+         MessageBox.Show(s)
+      End Sub</code><code lang="CS">      public void LogicalRectangle_Equals()
+      {
+         LogicalRectangle inches = new LogicalRectangle(1.5F, 2f, 3f, 4f, LogicalUnit.Inch);
+         LogicalRectangle pixels = new LogicalRectangle(inches.ToRectangle(150, 150));
+         string s;
+
+         // should say False
+         s = string.Format("Should say False: inches == pixels is {0}", inches == pixels);
+         MessageBox.Show(s);
+      }</code><!--LogicalRectangle.Equals--></example><docaddon>yes</docaddon></member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.GetHashCode">
+      <summary>
+            Returns the hash code for this <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure. 
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Hash Codes</keywords>&gt;
+            
+            
+            <noremarks /><noexample /><docaddon>yes</docaddon></member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.ToString">
+      <summary>
+            Converts the attributes of this <see cref="T:Leadtools.Forms.LogicalRectangle" /> to a human-readable string. 
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure|String</keywords>&gt;
+            
+            
+            <noremarks /><noexample /><docaddon>yes</docaddon></member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.Convert(System.Double,System.Double,Leadtools.Forms.LogicalUnit,System.Double,System.Double)">
+      <summary>
+            Returns this <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure, 
+            converted to its equivalent in the specified destination unit of measure.
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure|Converting</keywords>&gt;
+            <param name="sourceDpiX">
+            Represents the DPI of the source value along the x-axis. This value is only used if the source unit of measure is <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>. 
+            </param><param name="sourceDpiY">
+            Represents the DPI of the source value along the y-axis. This value is only used if the source unit of measure is <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>. 
+            </param><param name="destinationUnit">
+            The unit of measurement of the destination value.
+            </param><param name="destinationDpiX">
+            Represents the DPI of the destination value along the x-axis. This value is only used if the source unit of measure is <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>. 
+            </param><param name="destinationDpiY">
+            Represents the DPI of the destination value along the y-axis. This value is only used if the source unit of measure is <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>. 
+            </param><remarks>
+            The specified <see cref="T:Leadtools.Forms.LogicalUnit" /> is used to do the actual conversion.
+            </remarks><example><code lang="VB">      Private Sub LogicalRectangle_LogicalRectangle()
+         ' create a new logical rectangle that is 1.5 2. 3, and 4 inches
+         Dim rect As LogicalRectangle = New LogicalRectangle(1.5f, 2f, 3f, 4f, LogicalUnit.Inch)
+         ' show the rectangle
+         Dim s As String = String.Format("{0}", rect)
+         MessageBox.Show(s)
+
+         ' convert the rectangle to pixels
+         rect.Convert(150, 150, LogicalUnit.Pixel, 150, 150)
+
+         ' show
+         s = String.Format("{0}", rect)
+         MessageBox.Show(s)
+      End Sub</code><code lang="CS">      private void LogicalRectangle_LogicalRectangle()
+      {
+         // create a new logical rectangle that is 1.5 2. 3, and 4 inches
+         LogicalRectangle rect = new LogicalRectangle(1.5f, 2f, 3f, 4f, LogicalUnit.Inch);
+         // show the rectangle
+         string s = string.Format("{0}", rect);
+         MessageBox.Show(s);
+
+         // convert the rectangle to pixels
+         rect.Convert(150, 150, LogicalUnit.Pixel, 150, 150);
+
+         // show
+         s = string.Format("{0}", rect);
+         MessageBox.Show(s);
+      }</code><!--LogicalRectangle.LogicalRectangle--></example><docaddon>yes</docaddon></member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.Inflate(System.Double,System.Double)">
+      <summary>
+            Inflates a <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure by the specified amount. 
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure|Inflating</keywords>&gt;
+            <param name="x">
+            The amount to inflate this <see cref="T:Leadtools.Forms.LogicalRectangle" /> horizontally. 
+            </param><param name="y">
+            The amount to inflate this <see cref="T:Leadtools.Forms.LogicalRectangle" /> vertically. 
+            </param><remarks>
+            This method inflates this rectangle, not a copy of it. The inflation along an axis is in two directions (minus direction and plus direction). For example, if a 150 by 150 rectangle is inflated by 50 in the x-axis, the resulting rectangle will be 250 units long (the original 150, the 50 in the minus direction, and the 50 in the plus direction) maintaining the rectangle's geometric center.
+            If either x or y is negative, the Rectangle structure is deflated in the corresponding direction.
+            </remarks><noexample /><docaddon>yes</docaddon></member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.Inflate(Leadtools.Forms.LogicalSize)">
+      <summary>
+            Inflates this <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure by the specified amount.
+            </summary>
+      <param name="size">The amount to inflate this rectangle.</param>
+      <remarks>
+        <p>This method inflates this rectangle, not a copy of it. The inflation along an axis is in two directions (minus direction and plus direction). For example, if a 50 by 50 rectangle is inflated by 50 in the x-axis, the resulting rectangle will be 150 units long (the original 50, plus the 50 in the minus direction, and plus the 50 in the plus direction). The rectangle's geometric center is maintained.</p>
+        <p>If either size.Width or size.Height is negative, the <see cref="T:Leadtools.Forms.LogicalRectangle" /> is deflated in the corresponding direction.</p>
+      </remarks>
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.Inflate(Leadtools.Forms.LogicalRectangle,System.Double,System.Double)">
+      <summary>
+            Creates and returns an inflated copy of the specified <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure. The copy is inflated by the specified amount. The original rectangle remains unmodified.
+            </summary>
+      <param name="rect">The <see cref="T:Leadtools.Forms.LogicalRectangle" /> to be copied.  This rectangle is not modified.</param>
+      <param name="x">The amount to inflate the copy of the rectangle along the x-axis.</param>
+      <param name="y">The amount to inflate the copy of the rectangle along the y-axis.</param>
+      <returns>The inflated <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure.</returns>
+      <remarks>
+        <p>This method inflates this rectangle, not a copy of it. The inflation along an axis is in two directions (minus direction and plus direction). For example, if a 50 by 50 rectangle is inflated by 50 in the x-axis, the resulting rectangle will be 150 units long (the original 50, plus the 50 in the minus direction, and plus the 50 in the plus direction). The rectangle's geometric center is maintained.</p>
+        <p>If either size.Width or size.Height is negative, the <see cref="T:Leadtools.Forms.LogicalRectangle" /> is deflated in the corresponding direction.</p>
+      </remarks>
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.Intersect(Leadtools.LeadRect)">
+      <summary>
+            Determines the <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure 
+            that represents the intersection of two rectangles. 
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure|Intersection</keywords>&gt;
+            <param name="rect">
+            The <see cref="T:Leadtools.Forms.LogicalRectangle" /> with which to intersect. 
+            </param><noremarks /><noexample /><docaddon>yes</docaddon></member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.Intersect(Leadtools.Forms.LogicalRectangle)">
+      <summary>
+            Replaces this <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure with the intersection of itself and the specified <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure.
+            </summary>
+      <param name="rect">The rectangle to intersect.</param>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.Intersect(Leadtools.Forms.LogicalRectangle,Leadtools.Forms.LogicalRectangle)">
+      <summary>
+            Returns an <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure that represents the intersection of two rectangles. If there is no intersection, an empty rectangle is returned.
+            </summary>
+      <param name="rect1">A rectangle to intersect.</param>
+      <param name="rect2">A rectangle to intersect</param>
+      <returns>A third <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure the size of which represents the overlapped area of the two specified rectangles.</returns>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.IntersectsWith(Leadtools.Forms.LogicalRectangle)">
+      <summary>
+            Determines if this rectangle intersects with a test rectangle.
+            </summary>
+      <param name="rect">The rectangle to test.</param>
+      <returns>This method returns true if there is any intersection; false otherwise.</returns>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.Offset(System.Double,System.Double)">
+      <summary>
+            Adjusts the location of this rectangle by the specified amounts.
+            </summary>
+      <param name="x">The amount to offset the location horizontally.</param>
+      <param name="y">The amount to offset the location vertically.</param>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.Offset(Leadtools.Forms.LogicalPoint)">
+      <summary>
+            Adjusts the location of this rectangle by the specified amount.
+            </summary>
+      <param name="pt">The amount to offset the location.</param>
+      <noremarks />
+      <noexample />
+    </member>
+    <member name="M:Leadtools.Forms.LogicalRectangle.Offset(Leadtools.LeadPoint)">
+      <summary>
+            Adjusts the location of this <see cref="T:Leadtools.Forms.LogicalRectangle" /> by the specified amount.  
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure|Offsets</keywords>&gt;
+            <param name="pos">
+            Amount to offset the location. 
+            </param><noremarks /><noexample /><docaddon>yes</docaddon></member>
+    <member name="P:Leadtools.Forms.LogicalRectangle.IsEmpty">
+      <summary>
+            Tests whether all numeric properties of this <see cref="T:Leadtools.Forms.LogicalRectangle" /> have values of zero. 
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure|Empty</keywords>&gt;
+            <value>true if this <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure is empty; false, otherwise.</value><noremarks /><noexample /><docaddon>yes</docaddon></member>
+    <member name="P:Leadtools.Forms.LogicalRectangle.Bottom">
+      <summary>
+            Gets the y-coordinate that is the sum of the <see cref="P:Leadtools.Forms.LogicalRectangle.Y" /> 
+            and <see cref="P:Leadtools.Forms.LogicalRectangle.Height" /> property values of this <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure. 
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure|Bottom</keywords>&gt;
+            <value>The bottom edge of this <see cref="T:Leadtools.Forms.LogicalRectangle" />.</value><noremarks /><noexample /><docaddon>yes</docaddon></member>
+    <member name="P:Leadtools.Forms.LogicalRectangle.Left">
+      <summary>
+            Gets the x-coordinate of the left edge of this <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure. 
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure|Left</keywords>&gt;
+            <value>The left edge of this <see cref="T:Leadtools.Forms.LogicalRectangle" />.</value><noremarks /><noexample /><docaddon>yes</docaddon></member>
+    <member name="P:Leadtools.Forms.LogicalRectangle.Right">
+      <summary>
+            Gets the x-coordinate that is the sum of the <see cref="P:Leadtools.Forms.LogicalRectangle.X" /> and the <see cref="P:Leadtools.Forms.LogicalRectangle.Width" /> property values of this <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure.
+             </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure|Right</keywords>&gt;
+             <value>The right edge of this <see cref="T:Leadtools.Forms.LogicalRectangle" />.</value><noremarks /><noexample /><docaddon>yes</docaddon></member>
+    <member name="P:Leadtools.Forms.LogicalRectangle.Top">
+      <summary>
+            Gets the y-coordinate of the top edge of this <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure. 
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure|Top</keywords>&gt;
+            <value>The top edge of this <see cref="T:Leadtools.Forms.LogicalRectangle" />.</value><noremarks /><noexample /><docaddon>yes</docaddon></member>
+    <member name="P:Leadtools.Forms.LogicalRectangle.Height">
+      <summary>
+            Gets or sets the height of this <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure.
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure|Height</keywords>&gt;
+            <value>Value that indicates the height of the rectangle.</value><noremarks /><noexample /><docaddon>yes</docaddon></member>
+    <member name="P:Leadtools.Forms.LogicalRectangle.Width">
+      <summary>
+            Gets or sets the width of this <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure.
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure|Width</keywords>&gt;
+            <value>Value that indicates the width of the rectangle.</value><noremarks /><noexample /><docaddon>yes</docaddon></member>
+    <member name="P:Leadtools.Forms.LogicalRectangle.X">
+      <summary>
+            Gets or sets the x-coordinate of the upper-left corner of this <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure. 
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure|X-coordinate</keywords>&gt;
+            <value>The x-coordinate of this <see cref="T:Leadtools.Forms.LogicalRectangle" />.</value><noremarks /><noexample /><docaddon>yes</docaddon></member>
+    <member name="P:Leadtools.Forms.LogicalRectangle.Y">
+      <summary>
+            Gets or sets the y-coordinate of the upper-left corner of this <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure. 
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure|Y-coordinate</keywords>&gt;
+            <value>The y-coordinate of this <see cref="T:Leadtools.Forms.LogicalRectangle" />.</value><noremarks /><noexample /><docaddon>yes</docaddon></member>
+    <member name="P:Leadtools.Forms.LogicalRectangle.Location">
+      <summary>
+            Gets or sets the coordinates of the upper-left corner of this <see cref="T:Leadtools.Forms.LogicalRectangle" /> structure. 
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure|Location</keywords>&gt;
+            <value>The upper-left corner coordinates of this <see cref="T:Leadtools.Forms.LogicalRectangle" />.</value><noremarks /><noexample /><docaddon>yes</docaddon></member>
+    <member name="P:Leadtools.Forms.LogicalRectangle.Size">
+      <summary>
+            Gets or sets the size of this <see cref="T:Leadtools.Forms.LogicalRectangle" />. 
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure|Width|Height|Size</keywords>&gt;
+            <value>The width and height of this <see cref="T:Leadtools.Forms.LogicalRectangle" />.</value><noremarks /><noexample /><docaddon>yes</docaddon></member>
+    <member name="P:Leadtools.Forms.LogicalRectangle.Unit">
+      <summary>
+            Gets or sets a value that represents the unit of measure for this <see cref="T:Leadtools.Forms.LogicalRectangle" />.
+            </summary>
+      <keywords>Forms|Recognition|Logical Rectangle|Unit of measure</keywords>&gt;
+            <value>Unit of measurement</value><noremarks /><noexample /><docaddon>yes</docaddon></member>
+    <member name="T:Leadtools.Forms.FormProgressCallback">
+      <summary>
+            Optional delegate method that reports the progress of a specific operation and offers 
+            the client an opportunity to cancel.
+            </summary>
+      <keywords>Forms|Recognition|Delegates|Percent Completion|Progress|Callbacks</keywords>
+      <param name="currentPage">
+             The 1-based index of the current page.
+            </param>
+      <param name="totalPages">
+            The total number of pages.
+            </param>
+      <param name="percentage">
+             A value between 0 and 100 that represents the percent completion of the process.
+            </param>
+      <noremarks />
+      <returns> true to continue the process, false to cancel the process.</returns>
+      <example>
+        <code lang="VB">      Public Function ProgressCallbackExample(ByVal recognitionEngine As FormRecognitionEngine, ByVal master As FormRecognitionAttributes, _
+                                              ByVal form As FormRecognitionAttributes) As FormRecognitionResult
+         Return recognitionEngine.CompareForm(master, form, AddressOf MyFormProgressCallback, AddressOf MyPageProgressCallback)
+      End Function
+      Private Sub MyPageProgressCallback(ByVal data As PageProgressCallbackData)
+         If data.Percentage = 0 Then
+            Console.WriteLine("--------------------------")
+         End If
+
+         Console.WriteLine("Page progress:{0}""""%""""", data.Percentage.ToString("000"))
+      End Sub
+
+      Private Function MyFormProgressCallback(ByVal currentPage As Integer, ByVal totalPages As Integer, ByVal percentage As Integer) As Boolean
+         If percentage = 0 Then
+            Console.WriteLine("--------------------------")
+         End If
+
+         Console.WriteLine("Page:{0}/{1} {2}""""%""""", currentPage.ToString("00"), totalPages.ToString("00"), percentage.ToString("000"))
+
+         Return False
+      End Function</code>
+        <code lang="CS">      // Text writer to save the log to 
+      public FormRecognitionResult ProgressCallbackExample(FormRecognitionEngine recognitionEngine, 
+                                                           FormRecognitionAttributes master, 
+                                                           FormRecognitionAttributes form)
+      {
+         return recognitionEngine.CompareForm(master, form, MyFormProgressCallback, MyPageProgressCallback);
+      }
+      private void MyPageProgressCallback(PageProgressCallbackData data)
+      {
+         if(data.Percentage == 0)
+            Console.WriteLine("--------------------------");
+
+         Console.WriteLine("Page progress:{0}""""%""""", data.Percentage.ToString("000"));
+      }
+
+      private bool MyFormProgressCallback(int currentPage, int totalPages, int percentage)
+      {
+         if(percentage == 0)
+            Console.WriteLine("--------------------------");
+
+         Console.WriteLine("Page:{0}/{1} {2}""""%""""",
+            currentPage.ToString("00"),
+            totalPages.ToString("00"),
+            percentage.ToString("000")); 
+
+         return false;
+      }</code>
+        <!--FormProgressCallback-->
+      </example>
+      <docaddon>
+      </docaddon>
+    </member>
+    <member name="T:Leadtools.Forms.PageProgressCallback">
+      <summary>
+             Monitors the progress of the form's page operations.
+             </summary>
+      <keywords>Forms|Recognition|Delegates|Percent Completion|Progress|Callbacks</keywords>
+      <param name="data">
+              An instance of the <see cref="T:Leadtools.Forms.PageProgressCallbackData" /> interface containing the 
+             progress callback data.
+             </param>
+      <noremarks />
+      <example>For an example, refer to <see cref="T:Leadtools.Forms.FormProgressCallback" />.</example>
+      <docaddon>
+      </docaddon>
+    </member>
+    <member name="T:Leadtools.Forms.LogicalUnit">
+      <summary>
+            Represents the unit of measurement for lengths and positions.
+            </summary>
+      <keywords>Forms|Recognition|Logical Unit|Width|Height|Unit of measure</keywords>
+      <remarks>
+        <see cref="T:Leadtools.Forms.LogicalUnit" /> provides different metric
+            options to the developer to represent the units of measurement that is being used in the forms design.
+            <see cref="T:Leadtools.Forms.LogicalUnit" /> is used in different classes/structures such as; <see cref="T:Leadtools.Forms.LogicalSize" />,
+            <see cref="T:Leadtools.Forms.LogicalPoint" />, <see cref="T:Leadtools.Forms.LogicalRectangle" />, and <see cref="T:Leadtools.Forms.LogicalLength" />.
+            </remarks>
+      <example>For an example, refer to <see cref="M:Leadtools.Forms.LogicalSize.Convert(System.Double,System.Double,Leadtools.Forms.LogicalUnit,System.Double,System.Double)" />.</example>
+      <docaddon>
+      </docaddon>
+    </member>
+    <member name="F:Leadtools.Forms.LogicalUnit.Centimeter">
+      <summary>
+            Specifies the micrometer (1/100 meter) as the unit of measure. 
+            </summary>
+    </member>
+    <member name="F:Leadtools.Forms.LogicalUnit.Display">
+      <summary>
+            Specifies 1/75 inch as the unit of measure. 
+            </summary>
+    </member>
+    <member name="F:Leadtools.Forms.LogicalUnit.Document">
+      <summary>
+            Specifies 1/300 inch as the unit of measure.
+            </summary>
+    </member>
+    <member name="F:Leadtools.Forms.LogicalUnit.Feet">
+      <summary>
+            Specifies feet as the unit of measure. 
+            </summary>
+    </member>
+    <member name="F:Leadtools.Forms.LogicalUnit.Inch">
+      <summary>
+            Specifies the inch as the unit of measure. 
+            </summary>
+    </member>
+    <member name="F:Leadtools.Forms.LogicalUnit.Meter">
+      <summary>
+            Specifies the meter as the unit of measure. 
+            </summary>
+    </member>
+    <member name="F:Leadtools.Forms.LogicalUnit.Micrometer">
+      <summary>
+            Specifies the micrometer (1/1000 millimeter) as the unit of measure. 
+            </summary>
+    </member>
+    <member name="F:Leadtools.Forms.LogicalUnit.Millimeter">
+      <summary>
+            Specifies the millimeter (1/1000 meter) as the unit of measure. 
+            </summary>
+    </member>
+    <member name="F:Leadtools.Forms.LogicalUnit.Pixel">
+      <summary>
+            Specifies a device pixel as the unit of measure.
+            </summary>
+    </member>
+    <member name="F:Leadtools.Forms.LogicalUnit.Point">
+      <summary>
+            Specifies a printer's point (1/72 inch) as the unit of measure.
+            </summary>
+    </member>
+    <member name="F:Leadtools.Forms.LogicalUnit.Twip">
+      <summary>
+            Specifies the twip (TWentIeth of a Point) as the unit of measure.
+            </summary>
+    </member>
+    <member name="F:Leadtools.Forms.LogicalUnit.Yard">
+      <summary>
+            Specifies the yard as the unit of measure.
+            </summary>
+    </member>
+    <member name="T:Leadtools.Forms.LogicalUnitConverter">
+      <summary>
+            Defines many conversion methods that convert a floating-point number in a 
+            specific unit of measurement to its equivalant floating-point value in another 
+            unit of measurement.
+            </summary>
+      <keywords>Forms|Recognition|Unit of measure|Converting</keywords>
+      <remarks>
+        <see cref="T:Leadtools.Forms.LogicalUnitConverter" /> provides different methods 
+            to convert a measurement value from one unit to another unit.
+            </remarks>
+      <example>For an example, refer to <see cref="P:Leadtools.Forms.LogicalSize.Width" />.</example>
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalUnitConverter.Convert(System.Double,Leadtools.Forms.LogicalUnit,System.Double,Leadtools.Forms.LogicalUnit,System.Double)">
+      <summary>
+            Returns the value of the source value, converted to its equivalent 
+            in the specified destination unit of measure.
+            </summary>
+      <keywords>Forms|Recognition|Unit of measure|Converting</keywords>
+      <param name="sourceValue">
+            The value that is going to be converted.
+            </param>
+      <param name="sourceUnit">
+            The unit of measurement for the source value.
+            </param>
+      <param name="sourceDpi">
+            Represents the DPI of the source value. This value is only used if the source unit of measure is <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>.
+            </param>
+      <param name="destinationUnit">
+            The unit of measurement for the destination value.
+            </param>
+      <param name="destinationDpi">
+            Represents the DPI of the destination value. This value is only used if the destination unit of measure is <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>.
+            </param>
+      <remarks>
+        <see cref="M:Leadtools.Forms.LogicalUnitConverter.Convert(System.Double,Leadtools.Forms.LogicalUnit,System.Double,Leadtools.Forms.LogicalUnit,System.Double)" /> converts a value measured in a unit specified by <paramref name="sourceUnit" /> to any unit 
+            that is specified by <paramref name="destinationUnit" />. The DPI is only needed when <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see> is used define the 
+            the area that is occuppied by one pixel.
+            </remarks>
+      <example>For an example, refer to <see cref="P:Leadtools.Forms.LogicalSize.Width" />.</example>
+      <docaddon>
+      </docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalUnitConverter.ConvertFromPixels(System.Double,System.Double,Leadtools.Forms.LogicalUnit)">
+      <summary>
+            Returns the value of the source value that is measured in <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>, converted to its equivalent in the specified destination unit of measure.
+            </summary>
+      <keywords>Forms|Recognition|Unit of measure|Converting|DPI</keywords>
+      <param name="sourceValue">
+            The value that is going to be converted measured in <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>.
+            </param>
+      <param name="sourceDpi">
+            Represents the DPI of the source value.
+            </param>
+      <param name="destinationUnit">
+            The unit of measurement of the destination value.
+            </param>
+      <remarks>
+        <see cref="M:Leadtools.Forms.LogicalUnitConverter.Convert(System.Double,Leadtools.Forms.LogicalUnit,System.Double,Leadtools.Forms.LogicalUnit,System.Double)" /> converts a value measured in pixels to any unit 
+            that is specified by <paramref name="destinationUnit" />. The DPI is needed to define the area that is occuppied by one pixel.
+            </remarks>
+      <noexample />
+      <docaddon>
+      </docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.LogicalUnitConverter.ConvertToPixels(System.Double,Leadtools.Forms.LogicalUnit,System.Double)">
+      <summary>
+            Returns the value of the source value, converted to its equivalent 
+            measurement in <see cref="T:Leadtools.Forms.LogicalUnit">Leadtools.Forms.LogicalUnit.Pixel</see>.
+            </summary>
+      <keywords>Forms|Recognition|Unit of measure|Converting|DPI|Pixels</keywords>
+      <param name="sourceValue">
+            The value that is going to be converted.
+            </param>
+      <param name="sourceUnit">
+            The unit of measurement of the source value.
+            </param>
+      <param name="destinationDpi">
+            Represents the DPI of the destination value.
+            </param>
+      <remarks>
+        <see cref="M:Leadtools.Forms.LogicalUnitConverter.Convert(System.Double,Leadtools.Forms.LogicalUnit,System.Double,Leadtools.Forms.LogicalUnit,System.Double)" /> converts a value measured in any unit that is specified by <paramref name="sourceUnit" /> to pixels.
+            The DPI is needed to define the area that is occuppied by one pixel.
+            </remarks>
+      <example>For an example, refer to <see cref="P:Leadtools.Forms.LogicalSize.Width" />.</example>
+      <docaddon>
+      </docaddon>
+    </member>
+    <member name="T:Leadtools.Forms.PageProgressCallbackData">
+      <summary>
+             Data for the <see cref="T:Leadtools.Forms.PageProgressCallback" /> delegate.
+             </summary>
+      <keywords>Forms|Recognition|Delegates|Percent Completion|Progress|Callbacks</keywords>
+      <remarks>A <see cref="T:Leadtools.Forms.PageProgressCallbackData" /> object is passed to 
+             the <see cref="T:Leadtools.Forms.PageProgressCallback" /> delegate every time the operation or the 
+             percent completion of the operation is changed.
+             The members of <see cref="T:Leadtools.Forms.PageProgressCallbackData" /> display the 
+             percent completion of the Form's page process.
+            </remarks>
+      <example>For an example, refer to <see cref="T:Leadtools.Forms.FormProgressCallback" />.</example>
+      <docaddon>
+      </docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.PageProgressCallbackData.#ctor">
+      <summary>
+            Initializes a new instance of <see cref="T:Leadtools.Forms.PageProgressCallbackData" />.
+            </summary>
+      <keywords>Forms|Recognition|Delegates|Percent Completion|Progress|Callbacks</keywords>
+      <noremarks />
+      <noexample />
+      <docaddon>
+      </docaddon>
+    </member>
+    <member name="P:Leadtools.Forms.PageProgressCallbackData.Percentage">
+      <summary>
+            Gets the progress of the current operation, expressed as a percentage.
+            </summary>
+      <keywords>Forms|Recognition|Delegates|Percent Completion|Progress|Callbacks</keywords>
+      <value>A value between 0 and 100 that represents the percent completion of the process.</value>
+      <noremarks />
+      <noexample />
+      <docaddon>yes</docaddon>
+    </member>
+    <member name="T:Leadtools.Forms.PageAlignment">
+      <summary>
+            Contains the information needed to align a Master Form (Form Template) page with the 
+            filled-in Form page image.
+            </summary>
+      <keywords>Forms|Recognition|Aligning|Master Forms|Templates</keywords>
+      <remarks> Alignment is useful when processing forms to extract correct field data from the Form page. A Form page can be scaled, shifted, or both in relation to its Master Form page. 
+            Alignment matches a <see cref="T:Leadtools.Forms.LogicalRectangle" /> that represents a specific area in the Master Form to its equivalent area in the Form.
+            </remarks>
+      <example>For an example, refer to <see cref="T:Leadtools.Forms.Recognition.FormRecognitionEngine" />.</example>
+      <docaddon>
+      </docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.PageAlignment.#ctor">
+      <summary>
+            Initializes a new instance of <see cref="T:Leadtools.Forms.PageAlignment" />.
+            </summary>
+      <keywords>Forms|Recognition|Aligning|Master Forms|Templates</keywords>
+      <noremarks />
+      <noexample />
+      <docaddon>
+      </docaddon>
+    </member>
+    <member name="M:Leadtools.Forms.PageAlignment.AlignRectangle(Leadtools.Forms.LogicalRectangle)">
+      <summary>
+            Returns a <see cref="T:Leadtools.Forms.LogicalRectangle" /> that is aligned to the form 
+            that has generated this <see cref="T:Leadtools.Forms.PageAlignment" />.
+            </summary>
+      <keywords>Forms|Recognition|Unit of measure|Alignment|Align</keywords>
+      <param name="rectangle">
+            The original <see cref="T:Leadtools.Forms.LogicalRectangle" /> to align. This <see cref="T:Leadtools.Forms.LogicalRectangle" /> should be in Master Form coordinates.
+            </param>
+      <remarks> Alignment is useful when processing forms to extract correct field data from the Form page. A Form page can be scaled, shifted, or both in relation to its Master Form page. 
+            Alignment matches a <see cref="T:Leadtools.Forms.LogicalRectangle" /> that represents a specific area in the Master Form to its equivalent area in the Form.
+            </remarks>
+      <noexample />
+      <docaddon>
+      </docaddon>
+    </member>
+  </members>
+</doc>

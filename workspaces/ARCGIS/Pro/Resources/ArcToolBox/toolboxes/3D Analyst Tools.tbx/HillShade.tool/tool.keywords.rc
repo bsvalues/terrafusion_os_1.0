@@ -1,0 +1,13 @@
+{
+    "set": [
+        "altitude",
+        "angle",
+        "azimuth",
+        "illumination",
+        "relief",
+        "shaded relief",
+        "shadow",
+        "sun",
+        "z-factor"
+    ]
+}

@@ -1,0 +1,5 @@
+GRANT CONNECT TO [Tom_S];
+
+
+GO
+

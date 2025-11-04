@@ -1,0 +1,15 @@
+{
+    "set": [
+        "alternative",
+        "check",
+        "geodatabase",
+        "mark",
+        "multiple",
+        "owner",
+        "sde",
+        "set",
+        "state",
+        "user",
+        "version"
+    ]
+}

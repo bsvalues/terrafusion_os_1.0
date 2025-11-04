@@ -1,0 +1,20 @@
+{
+    "set": [
+        "aic",
+        "coefficients",
+        "correlation",
+        "diagnostics",
+        "explanatory",
+        "linear",
+        "model bias",
+        "model selection",
+        "multicollinearity",
+        "ols",
+        "properly specified model",
+        "r squared",
+        "residual",
+        "significance",
+        "spatial autocorrelation",
+        "stepwise"
+    ]
+}

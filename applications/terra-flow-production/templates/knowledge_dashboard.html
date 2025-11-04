@@ -1,0 +1,501 @@
+{% extends "base.html" %}
+
+{% block title %}Knowledge Dashboard{% endblock %}
+
+{% block styles %}
+<style>
+  .dashboard-card {
+    transition: transform .2s;
+    margin-bottom: 20px;
+  }
+  .dashboard-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  .metric-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+  }
+  .metric-label {
+    font-size: 1rem;
+    color: #6c757d;
+  }
+  .metric-change {
+    font-size: 0.9rem;
+  }
+  .metric-positive {
+    color: #28a745;
+  }
+  .metric-negative {
+    color: #dc3545;
+  }
+  .insights-card {
+    height: 100%;
+  }
+  .chart-container {
+    height: 350px;
+  }
+  .top-tag {
+    padding: 8px 12px;
+    margin: 5px;
+    border-radius: 20px;
+    background-color: #f8f9fa;
+    display: inline-block;
+  }
+  .top-tag-count {
+    font-weight: bold;
+    margin-left: 5px;
+  }
+  .agent-contrib {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+  }
+  .agent-name {
+    font-weight: bold;
+  }
+  .agent-count {
+    float: right;
+    font-weight: bold;
+  }
+  .agent-bar {
+    height: 8px;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    margin-top: 5px;
+    overflow: hidden;
+  }
+  .agent-progress {
+    height: 100%;
+    background-color: #007bff;
+  }
+  .no-data-message {
+    text-align: center;
+    padding: 30px;
+    color: #6c757d;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <h1>Knowledge Dashboard</h1>
+      <p class="lead">Analytics and insights from the knowledge sharing system</p>
+      
+      <!-- Time period selector -->
+      <div class="mb-4">
+        <div class="btn-group" role="group" aria-label="Time period">
+          <button type="button" class="btn btn-outline-primary time-filter active" data-days="7">Last 7 Days</button>
+          <button type="button" class="btn btn-outline-primary time-filter" data-days="30">Last 30 Days</button>
+          <button type="button" class="btn btn-outline-primary time-filter" data-days="90">Last 90 Days</button>
+          <button type="button" class="btn btn-outline-primary time-filter" data-days="365">Last Year</button>
+          <button type="button" class="btn btn-outline-primary time-filter" data-days="0">All Time</button>
+        </div>
+      </div>
+      
+      {% if error %}
+      <div class="alert alert-danger">{{ error }}</div>
+      {% endif %}
+    </div>
+  </div>
+  
+  <!-- Key Metrics -->
+  <div class="row" id="metrics-row">
+    <div class="col-md-3">
+      <div class="card dashboard-card">
+        <div class="card-body text-center">
+          <div class="metric-value" id="total-entries">0</div>
+          <div class="metric-label">Total Entries</div>
+          <div class="metric-change" id="entries-change"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card dashboard-card">
+        <div class="card-body text-center">
+          <div class="metric-value" id="active-agents">0</div>
+          <div class="metric-label">Contributing Agents</div>
+          <div class="metric-change" id="agents-change"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card dashboard-card">
+        <div class="card-body text-center">
+          <div class="metric-value" id="avg-rating">0.0</div>
+          <div class="metric-label">Average Rating</div>
+          <div class="metric-change" id="rating-change"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card dashboard-card">
+        <div class="card-body text-center">
+          <div class="metric-value" id="feedback-count">0</div>
+          <div class="metric-label">Feedback Received</div>
+          <div class="metric-change" id="feedback-change"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Charts Row 1 -->
+  <div class="row mt-4">
+    <div class="col-md-8">
+      <div class="card dashboard-card">
+        <div class="card-header">
+          Knowledge Growth
+        </div>
+        <div class="card-body">
+          <div class="chart-container" id="growth-chart"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card dashboard-card insights-card">
+        <div class="card-header">
+          Entries by Type
+        </div>
+        <div class="card-body">
+          <div class="chart-container" id="types-chart"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Charts Row 2 -->
+  <div class="row mt-4">
+    <div class="col-md-4">
+      <div class="card dashboard-card">
+        <div class="card-header">
+          Top Tags
+        </div>
+        <div class="card-body" id="top-tags">
+          <div class="no-data-message">No tag data available</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card dashboard-card">
+        <div class="card-header">
+          Agent Contributions
+        </div>
+        <div class="card-body" id="agent-contributions">
+          <div class="no-data-message">No agent contribution data available</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card dashboard-card">
+        <div class="card-header">
+          Rating Distribution
+        </div>
+        <div class="card-body">
+          <div class="chart-container" id="rating-chart"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Charts variables
+    let growthChart = null;
+    let typesChart = null;
+    let ratingChart = null;
+    
+    // Current time filter
+    let currentDays = 7;
+    
+    // Load initial data
+    loadDashboardData(currentDays);
+    
+    // Handle time filter clicks
+    document.querySelectorAll('.time-filter').forEach(btn => {
+      btn.addEventListener('click', function() {
+        // Update active button
+        document.querySelectorAll('.time-filter').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Get days value
+        currentDays = parseInt(this.getAttribute('data-days'));
+        
+        // Load new data
+        loadDashboardData(currentDays);
+      });
+    });
+    
+    // Function to load dashboard data
+    function loadDashboardData(days) {
+      fetch(`/knowledge/dashboard-data?days=${days}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            updateMetrics(data.metrics);
+            updateGrowthChart(data.knowledge_growth);
+            updateTypesChart(data.entries_by_type);
+            updateTopTags(data.top_tags);
+            updateAgentContributions(data.agent_contributions);
+            updateRatingChart(data.rating_distribution);
+          } else {
+            console.error('Failed to load dashboard data:', data.error);
+          }
+        })
+        .catch(error => {
+          console.error('Error loading dashboard data:', error);
+        });
+    }
+    
+    // Update key metrics
+    function updateMetrics(metrics) {
+      document.getElementById('total-entries').textContent = metrics.total_entries;
+      document.getElementById('active-agents').textContent = metrics.contributing_agents;
+      document.getElementById('avg-rating').textContent = metrics.average_rating.toFixed(1);
+      document.getElementById('feedback-count').textContent = metrics.feedback_count;
+      
+      // Update changes
+      updateChangeMetric('entries-change', metrics.entries_change_pct);
+      updateChangeMetric('agents-change', metrics.agents_change_pct);
+      updateChangeMetric('rating-change', metrics.rating_change_pct);
+      updateChangeMetric('feedback-change', metrics.feedback_change_pct);
+    }
+    
+    // Update a change metric with appropriate styling
+    function updateChangeMetric(elementId, changePct) {
+      const element = document.getElementById(elementId);
+      if (changePct === null) {
+        element.textContent = '';
+        return;
+      }
+      
+      const isPositive = changePct >= 0;
+      const arrow = isPositive ? '↑' : '↓';
+      const changeClass = isPositive ? 'metric-positive' : 'metric-negative';
+      
+      element.textContent = `${arrow} ${Math.abs(changePct)}%`;
+      element.className = 'metric-change ' + changeClass;
+    }
+    
+    // Update growth chart
+    function updateGrowthChart(growthData) {
+      const ctx = document.getElementById('growth-chart').getContext('2d');
+      
+      // Destroy existing chart if it exists
+      if (growthChart) {
+        growthChart.destroy();
+      }
+      
+      // Prepare data
+      const labels = growthData.map(d => d.date);
+      const cumulative = growthData.map(d => d.cumulative);
+      const daily = growthData.map(d => d.daily);
+      
+      // Create new chart
+      growthChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Cumulative Entries',
+              data: cumulative,
+              borderColor: 'rgba(54, 162, 235, 1)',
+              backgroundColor: 'rgba(54, 162, 235, 0.1)',
+              fill: true,
+              tension: 0.4,
+              yAxisID: 'y'
+            },
+            {
+              label: 'Daily Entries',
+              data: daily,
+              borderColor: 'rgba(255, 99, 132, 1)',
+              backgroundColor: 'rgba(255, 99, 132, 0.5)',
+              type: 'bar',
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              type: 'linear',
+              display: true,
+              position: 'left',
+              title: {
+                display: true,
+                text: 'Cumulative Entries'
+              }
+            },
+            y1: {
+              type: 'linear',
+              display: true,
+              position: 'right',
+              grid: {
+                drawOnChartArea: false
+              },
+              title: {
+                display: true,
+                text: 'Daily Entries'
+              }
+            }
+          }
+        }
+      });
+    }
+    
+    // Update types chart
+    function updateTypesChart(typesData) {
+      const ctx = document.getElementById('types-chart').getContext('2d');
+      
+      // Destroy existing chart if it exists
+      if (typesChart) {
+        typesChart.destroy();
+      }
+      
+      // Color mapping
+      const colorMap = {
+        'insight': 'rgba(23, 162, 184, 0.8)',
+        'warning': 'rgba(255, 193, 7, 0.8)',
+        'error': 'rgba(220, 53, 69, 0.8)',
+        'best_practice': 'rgba(40, 167, 69, 0.8)',
+        'compliance': 'rgba(0, 123, 255, 0.8)',
+        'tip': 'rgba(108, 117, 125, 0.8)'
+      };
+      
+      // Prepare data
+      const types = Object.keys(typesData);
+      const counts = Object.values(typesData);
+      const colors = types.map(type => colorMap[type] || 'rgba(108, 117, 125, 0.8)');
+      
+      // Create new chart
+      typesChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: types,
+          datasets: [{
+            data: counts,
+            backgroundColor: colors,
+            hoverOffset: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }
+      });
+    }
+    
+    // Update top tags
+    function updateTopTags(tagsData) {
+      const container = document.getElementById('top-tags');
+      
+      if (!tagsData || tagsData.length === 0) {
+        container.innerHTML = '<div class="no-data-message">No tag data available</div>';
+        return;
+      }
+      
+      // Clear container
+      container.innerHTML = '';
+      
+      // Add each tag
+      tagsData.forEach(tag => {
+        const tagElement = document.createElement('div');
+        tagElement.className = 'top-tag';
+        tagElement.innerHTML = `
+          ${tag.name}
+          <span class="top-tag-count badge bg-primary">${tag.count}</span>
+        `;
+        container.appendChild(tagElement);
+      });
+    }
+    
+    // Update agent contributions
+    function updateAgentContributions(agentData) {
+      const container = document.getElementById('agent-contributions');
+      
+      if (!agentData || agentData.length === 0) {
+        container.innerHTML = '<div class="no-data-message">No agent contribution data available</div>';
+        return;
+      }
+      
+      // Clear container
+      container.innerHTML = '';
+      
+      // Get max entries for percentage calculation
+      const maxEntries = Math.max(...agentData.map(a => a.count));
+      
+      // Add each agent
+      agentData.forEach(agent => {
+        const percentage = (agent.count / maxEntries) * 100;
+        
+        const agentElement = document.createElement('div');
+        agentElement.className = 'agent-contrib';
+        agentElement.innerHTML = `
+          <div>
+            <span class="agent-name">${agent.agent_id}</span>
+            <span class="agent-count">${agent.count}</span>
+          </div>
+          <div class="agent-bar">
+            <div class="agent-progress" style="width: ${percentage}%"></div>
+          </div>
+        `;
+        container.appendChild(agentElement);
+      });
+    }
+    
+    // Update rating chart
+    function updateRatingChart(ratingData) {
+      const ctx = document.getElementById('rating-chart').getContext('2d');
+      
+      // Destroy existing chart if it exists
+      if (ratingChart) {
+        ratingChart.destroy();
+      }
+      
+      // Prepare data
+      const ratings = Object.keys(ratingData);
+      const counts = Object.values(ratingData);
+      
+      // Create new chart
+      ratingChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ratings,
+          datasets: [{
+            label: 'Number of Ratings',
+            data: counts,
+            backgroundColor: 'rgba(255, 193, 7, 0.8)',
+            borderColor: 'rgba(255, 193, 7, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                precision: 0
+              }
+            }
+          }
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

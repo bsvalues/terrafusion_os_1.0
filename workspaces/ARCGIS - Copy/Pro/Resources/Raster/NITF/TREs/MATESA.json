@@ -1,0 +1,267 @@
+{
+  "TRE": "MATESA",
+  "Source": ["STDI-0002-1 v2021.1, Appendix AK: MATESA"],
+  "Name": "Mates - Imagery and Imagery-Derived Products",
+  "Description": "The MATESA TRE lists all the files known to the DP that are related to the NITF dataset in which the instance of the MATESA TRE occurs, i.e., the current NITF dataset. For example, when a sensor collects data, the data provider uses MATESA to list the current dataset and all companion datasets along with information as to how these datasets are related.",
+  "Size": 158,
+  "Fields": {
+    "CUR_SOURCE" : {
+      "Name": "Current File/Segment Source",
+      "Description": "This field shall indicate the source of the current file or file segment. For images, the source is the sensor name and model. For IDPs, where the sensor name is no longer relevant (such as textual products), the name of the mate producer shall be provided.",
+      "Size": 42,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["ISORCE", "SENSOR_ID", "PLATFORM_CODE", "VEHICLE_ID", "SENSOR", "PLATFORM_ID", "PAYLOAD_ID", "SYSTYP", "SID", "MISSION", "PLATFORM"]
+        }        
+      ]
+    },
+    "CUR_MATE_TYPE": {
+      "Name": "Current File/Segment Mate Type",
+      "Description": "This field indicates the type of mate identifier used to specify the current file or segment.",
+      "Size": 16,
+      "Format": "ECS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["FTITLEIID2", "FILENAME", "DOCID", "URL", "URN", "UUID"]
+        }
+      ]
+    },
+    "CUR_FILE_ID_LEN": {
+      "Name": "Lenth of the CIR_FILE_ID Field",
+      "Description": "This field contains the length in bytes of the CUR_FILE_ID field.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["bytes"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 9999
+        }
+      ]
+    },
+    "CUR_FILE_ID": {
+      "Name": "ID of the Current File/Segment",
+      "Description": "This field records the ID of the current file or segment, i.e., the file/segment to which all files identified in the MATESA TRE are mates.",
+      "Size": 0,
+      "Format": "ECS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 9999
+        }
+      ]
+    },
+    "NUM_GROUPS": {
+      "Name": "Number of Mate Relationship Groups",
+      "Description": "This field indicates the number of mate relationship groups.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 9999
+        }
+      ]
+    },
+    "RELATIONSHIP<NUM_GROUPS>": {
+      "Name": "Mate Relationship",
+      "Description": "This field reports the relationship of the nth group of related files to the current file.",
+      "Size": 24,
+      "Format": "ECS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [
+            "CHANGEDETECTION",
+            "INCOHERENT_CD",
+            "COHERENT_CD",
+            "BAS",
+            "CONCURRENT",
+            "DSA",
+            "LOC",
+            "MULTILOOK",
+            "MULTIPHENOM",
+            "MULTIVIEW",
+            "STEREO",
+            "TRIANGULATION",
+            "DARKCOLLECT",
+            "GEOPOSITION_CALIB",
+            "RADIOMETRIC_CALIB",
+            "EVENTEXERCISE",
+            "MISSIONSORTIE",
+            "PATTERNOFLIFE",
+            "SPECIALTASK",
+            "CHILD",
+            "IDP",
+            "PARENT",
+            "SIBLING",
+            "DEM",
+            "EXPLOITPROD",
+            "FUSION",
+            "MOSAIC",
+            "PIXEL_METRIC",
+            "POINTCLOUD",
+            "RECTIFICATION",
+            "REFERENCE",
+            "SHARPEN",
+            "SPECIFICATION",
+            "PRE_CHANGEDETECTION",
+            "PRE_INCOHERENT_CD",
+            "PRE_COHERENT_CD",
+            "PRE_BAS",
+            "PRE_CONCURRENT",
+            "PRE_DSA",
+            "PRE_LOC",
+            "PRE_MULTILOOK",
+            "PRE_MULTIPHENOM",
+            "PRE_MULTIVIEW",
+            "PRE_STEREO",
+            "PRE_TRIANGULATION",
+            "PRE_DARKCOLLECT",
+            "PRE_GEOPOSITION_CALIB",
+            "PRE_RADIOMETRIC_CALIB",
+            "PRE_EVENTEXERCISE",
+            "PRE_MISSIONSORTIE",
+            "PRE_PATTERNOFLIFE",
+            "PRE_SPECIALTASK",
+            "PRE_CHILD",
+            "PRE_IDP",
+            "PRE_PARENT",
+            "PRE_SIBLING",
+            "PRE_DEM",
+            "PRE_EXPLOITPROD",
+            "PRE_FUSION",
+            "PRE_MOSAIC",
+            "PRE_PIXEL_METRIC",
+            "PRE_POINTCLOUD",
+            "PRE_RECTIFICATION",
+            "PRE_REFERENCE",
+            "PRE_SHARPEN",
+            "PRE_SPECIFICATION",
+            "POST_CHANGEDETECTION",
+            "POST_INCOHERENT_CD",
+            "POST_COHERENT_CD",
+            "POST_BAS",
+            "POST_CONCURRENT",
+            "POST_DSA",
+            "POST_LOC",
+            "POST_MULTILOOK",
+            "POST_MULTIPHENOM",
+            "POST_MULTIVIEW",
+            "POST_STEREO",
+            "POST_TRIANGULATION",
+            "POST_DARKCOLLECT",
+            "POST_GEOPOSITION_CALIB",
+            "POST_RADIOMETRIC_CALIB",
+            "POST_EVENTEXERCISE",
+            "POST_MISSIONSORTIE",
+            "POST_PATTERNOFLIFE",
+            "POST_SPECIALTASK",
+            "POST_CHILD",
+            "POST_IDP",
+            "POST_PARENT",
+            "POST_SIBLING",
+            "POST_DEM",
+            "POST_EXPLOITPROD",
+            "POST_FUSION",
+            "POST_MOSAIC",
+            "POST_PIXEL_METRIC",
+            "POST_POINTCLOUD",
+            "POST_RECTIFICATION",
+            "POST_REFERENCE",
+            "POST_SHARPEN",
+            "POST_SPECIFICATION"
+          ]          
+        }
+      ]
+    },
+    "NUM_MATES<NUM_GROUPS>": {
+      "Name": "Number of Mates in the nth Group",
+      "Description": "This field reports the number of mates in the nth group of related files.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 9999
+        }
+      ]
+    },
+    "SOURCE<NUM_MATES<NUM_GROUPS>>": {
+      "Name": "Mate Source",
+      "Description": "This field indicates the source of the mth mate in the nth group of related files. For images, the source is the sensor name and model. For IDPs, where the sensor name is no longer relevant (such as textual products), the name of the mate producer shall be provided.",
+      "Size": 42,
+      "Format": "ECS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["ISORCE", "SENSOR_ID", "PLATFORM_CODE", "VEHICLE_ID", "SENSOR", "PLATFORM_ID", "PAYLOAD_ID", "SYSTYP", "SID", "MISSION", "PLATFORM"]
+        }
+      ]
+    },
+    "MATE_TYPE<NUM_MATES<NUM_GROUPS>>": {
+      "Name": "Mate Identifier Type",
+      "Description": "This field indicates the type of mate ID used to specify the mth mate of the nth group of related files.",
+      "Size": 16,
+      "Format": "ECS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": ["FTITLEIID2", "FILENAME", "DOCID", "URL", "URN", "UUID"]
+        }
+      ]
+    },
+    "MATE_ID_LEN<NUM_MATES<NUM_GROUPS>>": {
+      "Name": "Length of the mth MATE_IDnm field",
+      "Description": "This field contains the length in bytes of the MATE_IDnm field for the mth mate in the nth group of related files.",
+      "Size": 4,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["bytes"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 9999
+        }
+      ]
+    },
+    "MATE_ID<NUM_MATES<NUM_GROUPS>>": {
+      "Name": "Mate File Identifier",
+      "Description": "This field contains the ID of the mth mate of the nth group of related files.",
+      "Size": 0,
+      "Format": "ECS-A",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    }    
+  }
+}

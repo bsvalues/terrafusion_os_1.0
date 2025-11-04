@@ -1,0 +1,67 @@
+{
+  "name": "production",
+  "description": "Production environment configuration",
+  "application": {
+    "host": "0.0.0.0",
+    "port": 5000,
+    "workers": 4,
+    "debug": false,
+    "log_level": "INFO",
+    "secret_key": "${SESSION_SECRET}"
+  },
+  "database": {
+    "host": "${PGHOST}",
+    "port": "${PGPORT}",
+    "user": "${PGUSER}",
+    "password": "${PGPASSWORD}",
+    "name": "${PGDATABASE}",
+    "pool_size": 20,
+    "max_overflow": 30,
+    "ssl_mode": "require"
+  },
+  "services": {
+    "gis_service": {
+      "url": "${GIS_SERVICE_URL}",
+      "api_key": "${GIS_API_KEY}"
+    },
+    "storage": {
+      "type": "s3",
+      "bucket": "${S3_BUCKET}",
+      "region": "${AWS_REGION}",
+      "access_key": "${AWS_ACCESS_KEY}",
+      "secret_key": "${AWS_SECRET_KEY}",
+      "max_size_mb": 500
+    },
+    "supabase": {
+      "enabled": true,
+      "url": "${SUPABASE_URL}",
+      "key": "${SUPABASE_KEY}",
+      "jwt_secret": "${SUPABASE_JWT}"
+    }
+  },
+  "features": {
+    "mobile_responsive": true,
+    "offline_mode": true,
+    "real_time_alerts": true,
+    "anomaly_detection": true,
+    "audit_logging": true,
+    "data_quality_checks": true
+  },
+  "security": {
+    "allowed_hosts": ["geoassessmentpro.bentoncounty.gov", "bentoncounty.gov"],
+    "cors_origins": ["https://geoassessmentpro.bentoncounty.gov"],
+    "content_security_policy": "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://cdn.jsdelivr.net; img-src 'self' data: https://*.tile.openstreetmap.org; connect-src 'self' https://*.bentoncounty.gov; upgrade-insecure-requests; block-all-mixed-content;"
+  },
+  "caching": {
+    "enabled": true,
+    "type": "redis",
+    "url": "${REDIS_URL}",
+    "timeout": 3600
+  },
+  "monitoring": {
+    "enabled": true,
+    "log_dir": "/var/log/geoassessmentpro",
+    "error_reporting": true,
+    "sentry_dsn": "${SENTRY_DSN}"
+  }
+}

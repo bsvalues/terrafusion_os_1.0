@@ -1,0 +1,110 @@
+{
+    "type": "FunctionTool",
+    "guid": "{fd740495-aa31-485b-be6a-675e57e766ad}",
+    "displayname": "$rc:title",
+    "helpcontent": "3340007",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "block_add_to_map",
+        "input_data_change",
+        "param_nocount:target_table"
+    ],
+    "params": {
+        "target_table": {
+            "display_order": "0",
+            "displayname": "$rc:target_table.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTableView"
+                    }
+                ]
+            },
+            "description": "$rc:target_table.descr"
+        },
+        "name": {
+            "display_order": "1",
+            "displayname": "$rc:name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:name.descr"
+        },
+        "new_name": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:new_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:new_name.descr"
+        },
+        "fields": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:fields.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "description": "$rc:fields.descr"
+        },
+        "out_table": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "depends": [
+                "target_table"
+            ]
+        },
+        "is_restrictive": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:is_restrictive.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "RESTRICT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_RESTRICT"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:is_restrictive.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

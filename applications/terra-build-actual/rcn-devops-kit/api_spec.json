@@ -1,0 +1,406 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "TerraFusionBuild RCN Valuation Engine API",
+    "description": "API for calculating Replacement Cost New (RCN) values for building valuation and assessment purposes.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "TerraFusionBuild Support",
+      "email": "support@terrafusionbuild.com",
+      "url": "https://www.terrafusionbuild.com/support"
+    },
+    "license": {
+      "name": "Proprietary",
+      "url": "https://www.terrafusionbuild.com/license"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000",
+      "description": "Local development server"
+    },
+    {
+      "url": "https://rcn-api.terrafusionbuild.com",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "API Information",
+        "description": "Returns basic information about the API, including version and available endpoints.",
+        "operationId": "getApiInfo",
+        "responses": {
+          "200": {
+            "description": "API information retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "example": "TerraFusionBuild RCN Valuation Engine API"
+                    },
+                    "version": {
+                      "type": "string",
+                      "example": "1.0.0"
+                    },
+                    "documentation": {
+                      "type": "string",
+                      "example": "/docs"
+                    },
+                    "ui": {
+                      "type": "string",
+                      "example": "/ui"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "operational"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rcn/calculate": {
+      "post": {
+        "summary": "Calculate RCN",
+        "description": "Calculates the Replacement Cost New (RCN) value for a building based on the provided specifications.",
+        "operationId": "calculateRcn",
+        "requestBody": {
+          "description": "Building information required for the RCN calculation",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RCNRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "RCN calculation successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RCNResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/examples": {
+      "get": {
+        "summary": "Get Example Buildings",
+        "description": "Returns a list of example building specifications that can be used to test the RCN calculation.",
+        "operationId": "getExamples",
+        "responses": {
+          "200": {
+            "description": "Example buildings retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RCNRequest"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health Check",
+        "description": "Checks the health and operational status of the API.",
+        "operationId": "healthCheck",
+        "responses": {
+          "200": {
+            "description": "API is operational",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    },
+                    "version": {
+                      "type": "string",
+                      "example": "1.0.0"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-05-19T12:30:45.123456"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UseType": {
+        "type": "string",
+        "enum": [
+          "Residential",
+          "Commercial",
+          "Industrial", 
+          "Agricultural"
+        ],
+        "description": "The primary use type of the building"
+      },
+      "ConstructionType": {
+        "type": "string",
+        "enum": [
+          "Wood Frame",
+          "Masonry",
+          "Steel Frame",
+          "Concrete"
+        ],
+        "description": "The primary construction material/method of the building"
+      },
+      "QualityClass": {
+        "type": "string",
+        "enum": [
+          "A+",
+          "A",
+          "B+",
+          "B",
+          "C+", 
+          "C",
+          "D+",
+          "D",
+          "E"
+        ],
+        "description": "The quality class of the building construction and finishes"
+      },
+      "Condition": {
+        "type": "string",
+        "enum": [
+          "Excellent",
+          "Good",
+          "Average",
+          "Fair",
+          "Poor"
+        ],
+        "description": "The current condition of the building"
+      },
+      "RCNRequest": {
+        "type": "object",
+        "required": [
+          "use_type",
+          "construction_type",
+          "sqft",
+          "year_built"
+        ],
+        "properties": {
+          "use_type": {
+            "$ref": "#/components/schemas/UseType"
+          },
+          "construction_type": {
+            "$ref": "#/components/schemas/ConstructionType"
+          },
+          "sqft": {
+            "type": "number",
+            "format": "float",
+            "minimum": 1,
+            "description": "Square footage of the building",
+            "example": 1800
+          },
+          "year_built": {
+            "type": "integer",
+            "minimum": 1800,
+            "maximum": 2025,
+            "description": "Year the building was constructed",
+            "example": 2010
+          },
+          "quality_class": {
+            "$ref": "#/components/schemas/QualityClass",
+            "description": "Quality class of the building construction",
+            "default": "B"
+          },
+          "locality_index": {
+            "type": "number",
+            "format": "float",
+            "minimum": 0.5,
+            "maximum": 2.0,
+            "description": "Location/region cost adjustment factor",
+            "default": 1.0,
+            "example": 1.05
+          },
+          "condition": {
+            "$ref": "#/components/schemas/Condition",
+            "description": "Condition of the building",
+            "default": "Average"
+          },
+          "name": {
+            "type": "string",
+            "description": "Optional name for the building (used in batch calculations)",
+            "example": "Single Family Home"
+          }
+        }
+      },
+      "RCNResponse": {
+        "type": "object",
+        "required": [
+          "base_cost",
+          "quality_factor",
+          "locality_factor",
+          "adjusted_rcn",
+          "depreciation_pct",
+          "depreciated_rcn"
+        ],
+        "properties": {
+          "base_cost": {
+            "type": "number",
+            "format": "float",
+            "description": "Base cost per square foot for the building type",
+            "example": 154.75
+          },
+          "quality_factor": {
+            "type": "number",
+            "format": "float",
+            "description": "Quality class adjustment factor",
+            "example": 1.1
+          },
+          "locality_factor": {
+            "type": "number",
+            "format": "float",
+            "description": "Location/region adjustment factor",
+            "example": 1.05
+          },
+          "adjusted_rcn": {
+            "type": "number",
+            "format": "float",
+            "description": "Adjusted RCN value before depreciation",
+            "example": 324450.0
+          },
+          "depreciation_pct": {
+            "type": "number",
+            "format": "float",
+            "description": "Depreciation percentage applied",
+            "example": 12.5
+          },
+          "depreciated_rcn": {
+            "type": "number",
+            "format": "float",
+            "description": "Final depreciated RCN value",
+            "example": 283893.75
+          },
+          "effective_age": {
+            "type": "integer",
+            "description": "Effective age of the building used for depreciation",
+            "example": 12
+          },
+          "confidence_level": {
+            "type": "string",
+            "enum": ["High", "Medium", "Low"],
+            "description": "Confidence level in the calculation result",
+            "example": "High"
+          },
+          "calculation_notes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Explanatory notes about the calculation",
+            "example": [
+              "Base cost of $175.00 per sqft for Residential/Wood Frame",
+              "Quality adjustment factor of 1.10 applied for B class",
+              "Locality index of 1.05 applied",
+              "Depreciation of 12.5% applied based on 15 years age and Good condition"
+            ]
+          },
+          "calculation_date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of when the calculation was performed",
+            "example": "2025-05-19T12:30:45.123456"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": [
+          "status",
+          "code",
+          "message"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Error status",
+            "example": "error"
+          },
+          "code": {
+            "type": "integer",
+            "description": "HTTP status code",
+            "example": 400
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message",
+            "example": "Request error"
+          },
+          "detail": {
+            "type": "string",
+            "description": "Detailed error information",
+            "example": "Invalid value for field 'sqft': must be greater than 0"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of when the error occurred",
+            "example": "2025-05-19T12:30:45.123456"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,100 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "68000004",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_unit_features": {
+            "displayname": "$rc:in_unit_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_unit_features.descr"
+        },
+        "unit_id_field": {
+            "displayname": "$rc:unit_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_unit_features"
+            ],
+            "description": "$rc:unit_id_field.descr"
+        },
+        "in_occupant_table": {
+            "displayname": "$rc:in_occupant_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_occupant_table.descr"
+        },
+        "occupant_id_field": {
+            "displayname": "$rc:occupant_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_occupant_table"
+            ],
+            "description": "$rc:occupant_id_field.descr"
+        },
+        "out_occupant_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_occupant_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "defaultenvironmentname": "outputCoordinateSystem",
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_occupant_feature_class.descr"
+        },
+        "updated_unit_feature_class": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_unit_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "depends": [
+                "in_unit_features"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    },
+    "environments": [
+        "outputCoordinateSystem",
+        "workspace"
+    ]
+}

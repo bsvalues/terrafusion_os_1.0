@@ -1,0 +1,112 @@
+{
+    "type": "FunctionTool",
+    "guid": "{8afa751f-95ec-4e1a-9df3-3332c6722fbf}",
+    "displayname": "$rc:title",
+    "helpcontent": "10060002",
+    "description": "$rc:description",
+    "product": "300",
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "merge_field": {
+            "displayname": "$rc:merge_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:merge_field.descr"
+        },
+        "merge_distance": {
+            "displayname": "$rc:merge_distance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:merge_distance.descr"
+        },
+        "out_features": {
+            "direction": "out",
+            "displayname": "$rc:out_features.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:out_features.descr"
+        },
+        "out_displacement_features": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_displacement_features.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:out_displacement_features.descr"
+        },
+        "character_field": {
+            "type": "optional",
+            "displayname": "$rc:character_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:character_field.descr"
+        },
+        "out_table": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "description": "$rc:out_table.descr"
+        }
+    },
+    "environments": [
+        "cartographicCoordinateSystem",
+        "cartographicPartitions",
+        "referenceScale",
+        "workspace"
+    ]
+}

@@ -1,0 +1,228 @@
+# TerraFusion OS - Elite Service Mesh Configuration
+# Government. Transcended. - Istio Zero-Trust Excellence
+# AI Agents: 1008 | Service Mesh: Championship Grade
+
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: terrafusion-ai-gateway
+  namespace: terrafusion-ai-agents
+  labels:
+    app: terrafusion-gateway
+    component: service-mesh
+    tier: championship-excellence
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: terrafusion-tls-secret
+    hosts:
+    - "ai-agents.terrafusion.gov"
+    - "quantum.terrafusion.gov"
+
+---
+# Elite Virtual Service for AI Agent Load Balancing
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: ai-agents-virtual-service
+  namespace: terrafusion-ai-agents
+  labels:
+    component: traffic-management
+    tier: load-balancing-excellence
+spec:
+  hosts:
+  - "ai-agents.terrafusion.gov"
+  - "quantum.terrafusion.gov"
+  gateways:
+  - terrafusion-ai-gateway
+  http:
+  - match:
+    - uri:
+        prefix: "/api/v1/quantum"
+    route:
+    - destination:
+        host: terrafusion-ai-agent-service
+        port:
+          number: 8080
+      weight: 100
+    fault:
+      delay:
+        percentage:
+          value: 0.1  # 0.1% artificial delay for resilience testing
+        fixedDelay: 5s
+    retries:
+      attempts: 3
+      perTryTimeout: 10s
+      retryOn: gateway-error,connect-failure,refused-stream
+
+---
+# Championship Destination Rule for AI Agents
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: ai-agents-destination-rule
+  namespace: terrafusion-ai-agents
+  labels:
+    component: traffic-policy
+    tier: championship-reliability
+spec:
+  host: terrafusion-ai-agent-service
+  trafficPolicy:
+    connectionPool:
+      tcp:
+        maxConnections: 100
+      http:
+        http1MaxPendingRequests: 50
+        http2MaxRequests: 100
+        maxRequestsPerConnection: 10
+        maxRetries: 3
+        consecutiveGatewayErrors: 5
+        interval: 30s
+        baseEjectionTime: 30s
+    loadBalancer:
+      simple: LEAST_CONN  # Optimize for AI agent processing
+    tls:
+      mode: ISTIO_MUTUAL  # mTLS for zero-trust
+
+---
+# Elite Security Policy for AI Agent mTLS
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: ai-agents-mtls-policy
+  namespace: terrafusion-ai-agents
+  labels:
+    component: zero-trust-security
+    tier: government-grade-encryption
+spec:
+  selector:
+    matchLabels:
+      app: terrafusion-ai-agent
+  mtls:
+    mode: STRICT  # Enforce mTLS for government security
+
+---
+# Championship Authorization Policy
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: ai-agents-authorization
+  namespace: terrafusion-ai-agents
+  labels:
+    component: access-control
+    tier: government-authorization
+spec:
+  selector:
+    matchLabels:
+      app: terrafusion-ai-agent
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/terrafusion-platform-teams/sa/platform-service-account"]
+    - source:
+        principals: ["cluster.local/ns/terrafusion-monitoring/sa/monitoring-service-account"]
+  - to:
+    - operation:
+        methods: ["GET", "POST"]
+        paths: ["/api/v1/*", "/health", "/metrics"]
+  - when:
+    - key: source.labels[security-level]
+      values: ["government-transcended", "championship-elite"]
+
+---
+# Elite Service Monitor for Prometheus
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ai-agents-service-monitor
+  namespace: terrafusion-ai-agents
+  labels:
+    app: terrafusion-ai-agent
+    component: monitoring
+    tier: championship-observability
+spec:
+  selector:
+    matchLabels:
+      app: terrafusion-ai-agent
+  endpoints:
+  - port: metrics
+    interval: 15s
+    path: /metrics
+    scheme: https
+    tlsConfig:
+      insecureSkipVerify: false
+      serverName: terrafusion-ai-agent-service
+
+---
+# Sacred Mathematics Horizontal Pod Autoscaler
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: ai-agents-hpa
+  namespace: terrafusion-ai-agents
+  labels:
+    component: auto-scaling
+    tier: sacred-mathematics-optimization
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: terrafusion-ai-agent-deployment
+  minReplicas: 100
+  maxReplicas: 1008  # Target: 1008 AI agents
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70  # Scale at 70% CPU for quantum optimization
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80  # Scale at 80% memory for harmony index
+  - type: Pods
+    pods:
+      metric:
+        name: quantum_factor_efficiency
+      target:
+        type: AverageValue
+        averageValue: "949"  # Maintain quantum factor 949
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300  # 5 minutes stability
+      policies:
+      - type: Percent
+        value: 10  # Scale down max 10% at a time
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60  # 1 minute for quick scaling
+      policies:
+      - type: Percent
+        value: 25  # Scale up max 25% at a time for rapid deployment
+        periodSeconds: 30
+
+---
+# Elite Pod Disruption Budget
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: ai-agents-pdb
+  namespace: terrafusion-ai-agents
+  labels:
+    component: availability-management
+    tier: championship-resilience
+spec:
+  minAvailable: 80%  # Maintain 80% availability during disruptions
+  selector:
+    matchLabels:
+      app: terrafusion-ai-agent

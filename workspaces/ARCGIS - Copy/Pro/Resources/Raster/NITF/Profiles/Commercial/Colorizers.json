@@ -1,0 +1,141 @@
+{
+  "IDs": {
+    "SingleBandColorizerWithDRA": {
+      "type": "CIMRasterStretchColorizer",
+      "resamplingType": "BilinearInterpolation",
+      "noDataColor": {
+        "type": "CIMRGBColor",
+        "values": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "backgroundColor": {
+        "type": "CIMRGBColor",
+        "values": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "backgroundValue": 0,
+      "displayBackgroundValue": true,
+      "stretchType": "PercentMinimumMaximum",
+      "statsType": "AreaOfView",
+      "minPercent": 0.25,
+      "maxPercent": 0.25
+    },
+    "ThreeBandsColorizerWithDRA": {
+      "type": "CIMRasterRGBColorizer",
+      "resamplingType": "BilinearInterpolation",
+      "noDataColor": {
+        "type": "CIMRGBColor",
+        "values": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "backgroundColor": {
+        "type": "CIMRGBColor",
+        "values": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "alphaBandIndex": -1,
+      "backgroundValue": 0,
+      "displayBackgroundValue": true,
+      "stretchType": "PercentMinimumMaximum",
+      "stretchStatsType": "AreaOfView",
+      "minPercent": 0.25,
+      "maxPercent": 0.25,
+      "redBandIndex": "@{RedBandIndex}",
+      "greenBandIndex": "@{GreenBandIndex}",
+      "blueBandIndex": "@{BlueBandIndex}"
+    },
+    "CloudShapesFeatureRenderer": {
+      "type": "CIMSimpleRenderer",
+      "patch": "Default",
+      "symbol": {
+        "type": "CIMSymbolReference",
+        "symbol": {
+          "type": "CIMPolygonSymbol",
+          "symbolLayers": [
+            {
+              "type": "CIMGradientFill",
+              "enable": true,
+              "angle": 90,
+              "colorRamp": {
+                "type": "CIMLinearContinuousColorRamp",
+                "colorSpace": {
+                  "type": "CIMICCColorSpace",
+                  "url": "CIELAB"
+                },
+                "fromColor": {
+                  "type": "CIMRGBColor",
+                  "values": [
+                    0,
+                    174,
+                    239,
+                    100
+                  ]
+                },
+                "toColor": {
+                  "type": "CIMRGBColor",
+                  "values": [
+                    255,
+                    255,
+                    255,
+                    100
+                  ]
+                }
+              },
+              "gradientMethod": "Buffered",
+              "gradientSize": 10,
+              "gradientSizeUnits": "Absolute",
+              "gradientType": "Discrete",
+              "interval": 36
+            }
+          ]
+        }
+      }
+    },
+    "ImageShapeFeatureRenderer": {
+      "type": "CIMSimpleRenderer",
+      "patch": "Default",
+      "symbol": {
+        "type": "CIMSymbolReference",
+        "symbol": {
+          "type": "CIMPolygonSymbol",
+          "symbolLayers": [
+            {
+              "type": "CIMSolidStroke",
+              "enable": true,
+              "capStyle": "Round",
+              "joinStyle": "Round",
+              "lineStyle3D": "Strip",
+              "miterLimit": 10,
+              "width": 1,
+              "color": {
+                "type": "CIMRGBColor",
+                "values": [
+                  255,
+                  0,
+                  0,
+                  100
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

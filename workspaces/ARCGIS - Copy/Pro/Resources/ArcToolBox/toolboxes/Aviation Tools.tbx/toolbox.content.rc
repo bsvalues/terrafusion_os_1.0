@@ -1,0 +1,14 @@
+{
+    "map": {
+        "descr": "The ArcGIS Pro Aviation toolbox contains a set of tools that allow you to create, analyze, and manage aviation content.",
+        "title": "Aviation Tools",
+        "toolset1.name": "Charting\\Cartography",
+        "toolset2.name": "Airports\\Analysis",
+        "toolset3.name": "Charting\\Data Management",
+        "toolset4.name": "Airports\\Obstruction Identification Surfaces",
+        "toolset5.name": "Charting\\Data Exchange",
+        "toolset6.name": "Airports\\Data Exchange",
+        "toolset7.name": "Airports\\Heliport Obstruction Identification Surfaces",
+        "toolset8.name": "Charting\\Layout"
+    }
+}

@@ -1,0 +1,661 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.PACSService.WCF</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.PACSService.WCF.IPACSService">
+            <summary>
+            Defines the main interface to the PACS back-end data repository.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.ExecuteTAMTCommand(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},System.Boolean)">
+            <summary>
+            Executes the Middle Tier call using TAMTCommand
+            </summary>
+            <param name="commandName">The TAMTCommand name to execute</param>
+            <param name="parameters">Parameters to execute the Command</param>
+            <returns>Return value object of the TAMTCommand Query Execution</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.ExecuteREETExport(System.String,System.DateTime,System.Boolean)">
+            <summary>
+            Executes REET Export 
+            </summary>
+            <param name="filePath">Location where the exported REET file would be saved</param>
+            <returns>REETExportDTO</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.GetUser_Roles">
+            <summary>
+            Gets all User_Roles
+            </summary>
+            <returns>A list containing a data transfer object for each
+            user_Role in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.GetUser_Role(System.Int32)">
+            <summary>
+            Returns the User_Role with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified User_Role,
+            or null if no such User_Role was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.ExecutePaymentImport(System.String)">
+            <summary>
+            Execute Payment Import
+            </summary>
+            <param name="filePath"></param>
+            <returns>PayImportedPaymentRunDTO</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.SendMessageToBus(System.String,System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Publish Message to the service bus 
+            </summary>
+            <param name="parameters"></param>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.GetPacs_Users">
+            <summary>
+            Gets all pacs users
+            </summary>
+            <returns>A list containing a data transfer object for each
+            pacs_user in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.GetPacs_User(System.Int32)">
+            <summary>
+            Returns the Pacs_User with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified Pacs_User_Id,
+            or null if no such Pacs_User was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.SyncPACSUserData">
+            <summary>
+            Import PACS user data and create/update corresponding Workflow Users and Queues
+            </summary>
+            <returns>true on success else false</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.CheckServiceAvailable">
+            <summary>
+            Check if the service is available
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.SaveQueryMapping(TrueAutomation.PACSService.DTOs.TaskQueryMappingDTO)">
+            <summary>
+            Generic Save Method for Query Mappings.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the query mapping to create/update/delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.CreateTaskQueryMapping(TrueAutomation.PACSService.DTOs.TaskQueryMappingDTO)">
+            <summary>
+            Creates a new task query mapping record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the task query mapping to create.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.UpdateTaskQueryMapping(TrueAutomation.PACSService.DTOs.TaskQueryMappingDTO)">
+            <summary>
+            Updates an existing task query mapping record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the task query mapping to update.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.DeleteTaskQueryMappingById(System.Guid)">
+            <summary>
+            Deletes an existing task query mapping record from the id.
+            </summary>
+            <param name="dto">The id containing the
+            parameters for the task query mapping to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.DeleteTaskQueryMapping(TrueAutomation.PACSService.DTOs.TaskQueryMappingDTO)">
+            <summary>
+            Deletes an existing task query mapping record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the task query mapping to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.GetTaskQueryMappings">
+            <summary>
+            Gets a list of all Task Query Mappings
+            </summary>
+            <returns>List of TaskQuery DTOs</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.GetTaskQueryMapping(System.Guid)">
+            <summary>
+            Returns the TaskQueryMapping with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified TaskQueryMapping,
+            or null if no such TaskQueryMapping was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.ExecuteTaskQueryMapping(System.Guid)">
+            <summary>
+            Execute the query by
+            the Id
+            </summary>
+            <param name="id"></param>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.GetUnmappedQueries">
+            <summary>
+            Gets a list of all Task Queries	that are not currently mapped.
+            </summary>
+            <returns>List of TaskQuery DTOs</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.GetTaskQueries">
+            <summary>
+            Gets a list of all Task Queries
+            </summary>
+            <returns>List of TaskQuery DTOs</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.GetTaskQuery(System.Guid)">
+            <summary>
+            Returns the TaskQuery with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified TaskQuery,
+            or null if no such TaskQuery was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.ExecuteTaskQuery(System.Guid)">
+            <summary>
+            Execute the query by
+            the Id
+            </summary>
+            <param name="id"></param>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.ExecuteSqlQuery(System.String)">
+            <summary>
+            Execute the query based on the SqlQuery that is passed in
+            </summary>
+            <param name="sqlQuery">SQL Query to be executed</param>
+            <returns>A Data Table object with the Query results and column information</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.ExecuteQueryAsSqlQuery(System.String)">
+            <summary>
+            Execute the query as a SQL Query instead of an NHibernate
+            query to retrive the column names also in the result set
+            </summary>
+            <param name="sqlQuery">SQL Query to be executed</param>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.CreateAccount(TrueAutomation.PACSService.DTOs.AccountDTO)">
+            <summary>
+            Creates a new Account record
+            from the input DTO
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the task to create.</param>
+            <returns></returns>
+            NOT EXPOSED FOR NOW
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.GetAccounts">
+            <summary>
+            Gets all properties
+            </summary>
+            <returns>A list containing a data transfer object for each
+            task in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.GetAccountsBy(TrueAutomation.PACSService.DTOs.PACSSearchDTO)">
+            <summary>
+            Returns a list of AccountDTOs matching the search fileAsName
+            </summary>
+            <param name="searchCriteria">PACSSearchDTO</param>
+            <returns>A list containing a data transfer object for each
+            task in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.GetAccountsByFileAsName(System.String,System.String)">
+            <summary>
+            Returns a list of Accounts matching the 
+            input file as name
+            </summary>
+            <param name="fileAsName">The File as Name to match</param>
+            <returns>Matched accounts to this input File As Name</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.GetAccountsByFileAsNameOrFirstName(System.String,System.String)">
+            <summary>
+            Returns a list of Accounts matching the 
+            input file as name or first name
+            </summary>
+            <param name="Name">name to search for</param>
+            <param name="matchCondition">Equal or Like</param>
+            <returns>List of matched Account DTOs</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.GetAccountsByFileAsNameOrLastName(System.String,System.String)">
+            <summary>
+            Returns a list of Accounts matching the 
+            input file as name or last name
+            </summary>
+            <param name="Name">name to search for</param>
+            <param name="matchCondition">Equal or Like</param>
+            <returns>List of matched Account DTOs</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.GetAccount(System.Int32)">
+            <summary>
+            Returns the Account with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified Account,
+            or null if no such Account was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.CreateProperty(TrueAutomation.PACSService.DTOs.PropertyDTO)">
+            <summary>
+            Creates a new Property record
+            from the input DTO
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the property to be created.</param>
+            <returns>PropertyDTO</returns>
+            NOT EXPOSED FOR NOW
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.GetProperties">
+            <summary>
+            Gets all properties
+            </summary>
+            <returns>A list containing a data transfer object for each
+            task in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.GetPropertiesBy(TrueAutomation.PACSService.DTOs.PACSSearchDTO)">
+            <summary>
+            Returns a list of PropertyDTOs matching the search criteria
+            </summary>
+            <param name="searchCriteria">PACSSearchDTO</param>
+            <returns>A list containing a data transfer object for each
+            task in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.IPACSService.GetProperty(System.Int32)">
+            <summary>
+            Returns the Property with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified Property,
+            or null if no such Property was found.</returns>
+        </member>
+        <member name="T:TrueAutomation.PACSService.WCF.PACSService">
+            <summary>
+            Implements the main interface to the PACS back-end data repository.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.ExecuteTAMTCommand(System.String,System.Collections.Generic.Dictionary{System.String,System.Object},System.Boolean)">
+            <summary>
+            Executes the Middle Tier call using TAMTCommand
+            </summary>
+            <param name="commandName">The TAMTCommand name to execute</param>
+            <param name="parameters">Parameters to execute the Command</param>
+            <returns>Return value object of the TAMTCommand Query Execution</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.ExecutePaymentImport(System.String)">
+            <summary>
+            Executes Payment Import 
+            </summary>
+            <param name="filePath">location of the Paymentimport file</param>
+            <returns>PayImportedPaymentRunDTO</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.SendMessageToBus(System.String,System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Publish Message to the service bus 
+            </summary>
+            <param name="parameters"></param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:TrueAutomation.PACSService.WCF.PACSService.Log" -->
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.GetPacs_Users">
+            <summary>
+            Gets all Pacs_Users
+            </summary>
+            <returns>A list containing a data transfer object for each
+            pacs_user in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.GetPacs_User(System.Int32)">
+            <summary>
+            Returns the Pacs_User with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified Pacs_User,
+            or null if no such Pacs_User was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.SyncPACSUserData">
+            <summary>
+            Import PACS user data and create/update corresponding Workflow Users and Queues
+            </summary>
+            <returns>true on success else false</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.GetPacs_UserById(System.Int32)">
+            <summary>
+            Helper Method to return a domain object of a Pacs_User by it's id
+            </summary>
+            <param name="id">string value of the id of the Pacs_User</param>
+            <returns>Pacs_User object for input Id</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:TrueAutomation.PACSService.WCF.PACSService.CreateUpdateSecurityUser(TrueAutomation.PACSService.DTOs.Pacs_UserDTO,TrueAutomation.SecurityService.DTOs.UserDTO@)" -->
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.CreateUpdateUserQueueFromPACSImport(System.String,System.String,TrueAutomation.TaskService.DTOs.UserDTO)">
+            <summary>
+            Saves the Task Queue
+            </summary>
+            <param name="queueName">Queue Name</param>
+            <param name="queueDesc">Queue Description</param>
+            <param name="user">Workflow User to be added to the queue</param>
+            <returns>Boolean - Save Success/Failure</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.ExecuteREETExport(System.String,System.DateTime,System.Boolean)">
+            <summary>
+            Executes REET Export 
+            </summary>
+            <param name="filePath">Location where the exported REET file would be saved</param>
+            <returns>REETExportDTO</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.CheckServiceAvailable">
+            <summary>
+            Implements the CheckServiceAvailable method. Ensures the service is available
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.SaveQueryMapping(TrueAutomation.PACSService.DTOs.TaskQueryMappingDTO)">
+            <summary>
+            Generic Save Method for Query Mappings.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the query mapping to create/update/delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.CreateTaskQueryMapping(TrueAutomation.PACSService.DTOs.TaskQueryMappingDTO)">
+            <summary>
+            Creates a new task query mapping record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the task query mapping to create.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.UpdateTaskQueryMapping(TrueAutomation.PACSService.DTOs.TaskQueryMappingDTO)">
+            <summary>
+            Updates an existing task query mapping record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the task query mapping to update.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.DeleteTaskQueryMappingById(System.Guid)">
+            <summary>
+            Deletes an existing task query mapping record from the id.
+            </summary>
+            <param name="dto">The id containing the
+            parameters for the task query mapping to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.DeleteTaskQueryMapping(TrueAutomation.PACSService.DTOs.TaskQueryMappingDTO)">
+            <summary>
+            Deletes an existing task query mapping record from the supplied DTO.
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the task query mapping to delete.</param>
+            <exception cref="!:System.ServiceMode.FaultException">
+            Thrown if the input argument was null or otherwise invalid.
+            </exception>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.GetTaskQueryMappings">
+            <summary>
+            Gets a list of all Task Query Mappings
+            </summary>
+            <returns>List of TaskQueryMapping DTOs</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.GetTaskQueryMapping(System.Guid)">
+            <summary>
+            Returns the TaskQueryMapping with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified TaskQueryMapping,
+            or null if no such TaskQueryMapping was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.ExecuteTaskQueryMapping(System.Guid)">
+            <summary>
+            Execute the query by
+            the Id
+            </summary>
+            <param name="id"></param>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.GetTaskQueryMappingById(System.Guid)">
+            <summary>
+            Helper Method to return a domain object of a TaskQueryMapping by it's id
+            </summary>
+            <param name="id">string value of the id of the TaskQuery</param>
+            <returns>TaskQuery object for input Id</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.CreateTaskQueryMappingFromDTO(TrueAutomation.PACSService.DTOs.TaskQueryMappingDTO)">
+            <summary>
+             Helper method to create a task query mapping domain object from a task query mapping DTO object and persist it in the db.
+            </summary>
+            <param name="dto"></param>
+            <returns>The Task Query Mapping that has been created</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.UpdateTaskQueryMappingFromDTO(TrueAutomation.PACSService.DTOs.TaskQueryMappingDTO)">
+            <summary>
+            Helper method to update a task query mapping domain object from a task query mapping DTO object and persist it in the db.
+            </summary>
+            <param name="dto">A DTO of the task query mapping</param>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.DeleteTaskQueryMappingFromDTO(TrueAutomation.PACSService.DTOs.TaskQueryMappingDTO)">
+            <summary>
+            Helper method to delete a task query mapping based on it's dto
+            </summary>
+            <param name="dto">A DTO of the task query mapping</param>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.GetUnmappedQueries">
+            <summary>
+            Gets a list of all Task Queries	that are not currently mapped.
+            </summary>
+            <returns>List of TaskQuery DTOs</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.GetTaskQueries">
+            <summary>
+            Gets a list of all Task Queries
+            </summary>
+            <returns>List of TaskQuery DTOs</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.GetTaskQuery(System.Guid)">
+            <summary>
+            Returns the TaskQuery with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified TaskQuery,
+            or null if no such TaskQuery was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.ExecuteTaskSqlQuery(System.Guid)">
+            <summary>
+            Execute the sql query by
+            the Id
+            </summary>
+            <param name="id"></param>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.ExecuteTaskQuery(System.Guid)">
+            <summary>
+            Execute the query by
+            the Id
+            </summary>
+            <param name="id"></param>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.ExecuteSqlQuery(System.String)">
+            <summary>
+            Execute the query based on the SqlQuery that is passed in
+            </summary>
+            <param name="sqlQuery">SQL Query to be executed</param>
+            <returns>A Data Table object with the Query results and column information</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.ExecuteQueryAsSqlQuery(System.String)">
+            <summary>
+            Execute the query as a SQL Query instead of an NHibernate
+            query to retrive the column names also in the result set
+            </summary>
+            <param name="sqlQuery">SQL Query to be executed</param>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.GetTaskQueryById(System.Guid)">
+            <summary>
+            Helper Method to return a domain object of a TaskQuery by it's id
+            </summary>
+            <param name="id">string value of the id of the TaskQuery</param>
+            <returns>TaskQuery object for input Id</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.CreateAccount(TrueAutomation.PACSService.DTOs.AccountDTO)">
+            <summary>
+            Creates a new Account record
+            from the input DTO
+            </summary>
+            <param name="dto">The data transfer object containing the
+            parameters for the account to be created.</param>
+            <returns>AccountDTO</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.GetAccounts">
+            <summary>
+            Gets all Accounts
+            </summary>
+            <returns>A list containing a data transfer object for each
+            task in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.GetAccount(System.Int32)">
+            <summary>
+            Returns the Account with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified Account,
+            or null if no such Account was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.GetAccountsBy(TrueAutomation.PACSService.DTOs.PACSSearchDTO)">
+            <summary>
+            Returns a list of AccountDTOs matching the search fileAsName
+            </summary>
+            <param name="searchCriteria">PACSSearchDTO</param>
+            <returns>A list containing a data transfer object for each
+            task in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.GetAccountsByFileAsName(System.String,System.String)">
+            <summary>
+            Returns a list of Accounts matching the 
+            input file as name
+            </summary>
+            <param name="fileAsName">The File as Name to match</param>
+            <returns>Matched accounts to this input File As Name</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.GetAccountsByFileAsNameOrFirstName(System.String,System.String)">
+            <summary>
+            Returns a list of Accounts matching the 
+            input file as name or first name
+            </summary>
+            <param name="Name">name to search for</param>
+            <param name="matchCondition">Equal or Like</param>
+            <returns>List of matched Account DTOs</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.GetAccountsByFileAsNameOrLastName(System.String,System.String)">
+            <summary>
+            Returns a list of Accounts matching the 
+            input file as name or last name
+            </summary>
+            <param name="Name">name to search for</param>
+            <param name="matchCondition">Equal or Like</param>
+            <returns>List of matched Account DTOs</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.GetAccountById(System.Int32)">
+            <summary>
+            Helper Method to return a domain object of a Account by it's id
+            </summary>
+            <param name="id">string value of the id of the Account</param>
+            <returns>Account object for input Id</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.GetAccountsByInputCriteria(System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Helper method to retun a list of Accounts
+            based on the input criteria
+            </summary>
+            <param name="criteria"></param>
+            <returns>list of Accounts</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.CreateProperty(TrueAutomation.PACSService.DTOs.PropertyDTO)">
+            <summary>
+            Create a property record from the input DTO
+            </summary>
+            <param name="dto"></param>
+            <returns>the newly created PropertyDTO</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.GetProperties">
+            <summary>
+            Gets a list of all properties
+            from the PACS DB
+            </summary>
+            <returns>List of Property DTOs</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.GetPropertiesBy(TrueAutomation.PACSService.DTOs.PACSSearchDTO)">
+            <summary>
+            Returns a list of PropertyDTOs matching the search criteria
+            </summary>
+            <param name="searchCriteria">PACSSearchDTO</param>
+            <returns>A list containing a data transfer object for each
+            task in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.GetProperty(System.Int32)">
+            <summary>
+            Returns the Property with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified Property,
+            or null if no such Property was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.GetPropertyById(System.Int32)">
+            <summary>
+            Helper Method to return a domain object of a Property by it's id
+            </summary>
+            <param name="id">string value of the id of the Property</param>
+            <returns>Property object for input Id</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.GetPropertiesByInputCriteria(System.Collections.Generic.Dictionary{System.String,System.Object})">
+            <summary>
+            Helper method to retun a list of Propertys
+            based on the input criteria
+            </summary>
+            <param name="criteria"></param>
+            <returns>list of Propertys</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.GetUser_Roles">
+            <summary>
+            Gets all User_Roles
+            </summary>
+            <returns>A list containing a data transfer object for each
+            user_Role in the database.</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.GetUser_Role(System.Int32)">
+            <summary>
+            Returns the User_Role with the specified ID value.
+            </summary>
+            <returns>A data transfer object for the specified User_Role,
+            or null if no such User_Role was found.</returns>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.PACSService.GetUser_RoleById(System.Int32)">
+            <summary>
+            Helper Method to return a domain object of a User_Role by it's id
+            </summary>
+            <param name="id">string value of the id of the User_Role</param>
+            <returns>User_Role object for input Id</returns>
+        </member>
+        <member name="T:TrueAutomation.PACSService.WCF.NamespaceDoc">
+            <summary>
+            These are the namespace comments for <c>TrueAutomation.PACSService.WCF</c>.
+            This class contains the code to perform various actions on the PACS Database.  
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.PACSService.WCF.Windsor.Installer.Install(Castle.Windsor.IWindsorContainer,Castle.MicroKernel.SubSystems.Configuration.IConfigurationStore)">
+            <summary>
+            Registers all our service-related types with the
+            supplied Windsor IoC container.
+            </summary>
+            <param name="container">The container into which to register
+            the service types.</param>
+            <param name="store">Configuration store parameter -- unused in
+            this implementation.</param>
+        </member>
+    </members>
+</doc>

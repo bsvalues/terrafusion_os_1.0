@@ -1,0 +1,94 @@
+{
+  "workspace_protection_system": {
+    "workspace_name": "monitoring",
+    "domain": "system_monitoring",
+    "risk_level": "high",
+    "customization_timestamp": "2025-10-16T10:16:02.550754",
+    "eleven_layer_protection": {
+      "L1_role_scope_confirmation": {
+        "workspace_role": "monitoring specialized AI agent",
+        "scope_definition": "Optimize and protect system_monitoring operations",
+        "success_criteria": "Maintain high-level security for system_monitoring",
+        "data_types_handled": [
+          "system_metrics",
+          "performance_data",
+          "alert_data"
+        ],
+        "protection_priorities": [
+          "system_visibility",
+          "performance_tracking",
+          "alert_accuracy"
+        ]
+      },
+      "L2_input_sanitation_threat_modeling": {
+        "threat_model": "system_monitoring_specific_threats",
+        "input_validation": "monitoring_input_sanitization",
+        "injection_prevention": "system_monitoring_injection_protection",
+        "risk_level_controls": "high"
+      },
+      "L3_data_classification": {
+        "data_types": [
+          "system_metrics",
+          "performance_data",
+          "alert_data"
+        ],
+        "classification_level": "high",
+        "privacy_requirements": "system_monitoring_privacy_rules",
+        "retention_policies": "monitoring_data_retention",
+        "access_controls": "system_monitoring_access_matrix"
+      },
+      "L4_secrets_hygiene": {
+        "vault_integration": "monitoring_secret_vault",
+        "key_rotation": "system_monitoring_key_management",
+        "credential_management": "monitoring_credential_store",
+        "environment_separation": "high_env_isolation"
+      },
+      "L5_environment_guardrails": {
+        "environment_controls": "monitoring_env_controls",
+        "blast_radius_limits": "system_monitoring_isolation",
+        "feature_flags": "monitoring_feature_management",
+        "deployment_gates": "high_deployment_controls"
+      },
+      "L6_policy_compliance": {
+        "domain_regulations": "system_monitoring_compliance_framework",
+        "government_standards": [
+          "system_visibility",
+          "performance_tracking",
+          "alert_accuracy"
+        ],
+        "audit_requirements": "monitoring_audit_trail",
+        "compliance_monitoring": "system_monitoring_compliance_checks"
+      },
+      "L7_dependency_license_review": {
+        "sbom_generation": "monitoring_software_bill_of_materials",
+        "vulnerability_scanning": "system_monitoring_vuln_checks",
+        "license_compliance": "monitoring_license_validation",
+        "dependency_monitoring": "high_dependency_tracking"
+      },
+      "L8_reproducibility": {
+        "version_pinning": "monitoring_version_control",
+        "build_determinism": "system_monitoring_build_reproducibility",
+        "configuration_management": "monitoring_config_management",
+        "deployment_consistency": "high_deployment_standards"
+      },
+      "L9_observability_hooks": {
+        "metrics_collection": "monitoring_domain_metrics",
+        "logging_framework": "system_monitoring_specialized_logging",
+        "tracing_system": "monitoring_distributed_tracing",
+        "alerting_rules": "system_monitoring_alert_configuration"
+      },
+      "L10_human_in_loop_gates": {
+        "approval_workflows": "monitoring_approval_matrix",
+        "review_requirements": "system_monitoring_review_gates",
+        "escalation_procedures": "high_escalation_rules",
+        "manual_override_controls": "monitoring_override_procedures"
+      },
+      "L11_red_team_self_check": {
+        "adversarial_testing": "monitoring_penetration_testing",
+        "failure_mode_analysis": "system_monitoring_failure_scenarios",
+        "rollback_procedures": "monitoring_disaster_recovery",
+        "security_validation": "high_security_assessment"
+      }
+    }
+  }
+}

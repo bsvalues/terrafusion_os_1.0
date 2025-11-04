@@ -1,0 +1,1137 @@
+{
+  "success": true,
+  "data": [
+    {
+      "region": "North Benton",
+      "buildingType": "R1",
+      "buildingTypeDescription": "Residential - Single Family",
+      "baseCost": 150.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for R1 in North Benton",
+      "dataPoints": 0,
+      "minCost": 120.0,
+      "maxCost": 180.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "Central Benton",
+      "buildingType": "R1",
+      "buildingTypeDescription": "Residential - Single Family",
+      "baseCost": 150.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for R1 in Central Benton",
+      "dataPoints": 0,
+      "minCost": 120.0,
+      "maxCost": 180.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "South Benton",
+      "buildingType": "R1",
+      "buildingTypeDescription": "Residential - Single Family",
+      "baseCost": 150.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for R1 in South Benton",
+      "dataPoints": 0,
+      "minCost": 120.0,
+      "maxCost": 180.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "West Benton",
+      "buildingType": "R1",
+      "buildingTypeDescription": "Residential - Single Family",
+      "baseCost": 150.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for R1 in West Benton",
+      "dataPoints": 0,
+      "minCost": 120.0,
+      "maxCost": 180.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "East Benton",
+      "buildingType": "R1",
+      "buildingTypeDescription": "Residential - Single Family",
+      "baseCost": 150.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for R1 in East Benton",
+      "dataPoints": 0,
+      "minCost": 120.0,
+      "maxCost": 180.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "North Benton",
+      "buildingType": "R2",
+      "buildingTypeDescription": "Residential - Multi-Family",
+      "baseCost": 150.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for R2 in North Benton",
+      "dataPoints": 0,
+      "minCost": 120.0,
+      "maxCost": 180.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "Central Benton",
+      "buildingType": "R2",
+      "buildingTypeDescription": "Residential - Multi-Family",
+      "baseCost": 150.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for R2 in Central Benton",
+      "dataPoints": 0,
+      "minCost": 120.0,
+      "maxCost": 180.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "South Benton",
+      "buildingType": "R2",
+      "buildingTypeDescription": "Residential - Multi-Family",
+      "baseCost": 150.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for R2 in South Benton",
+      "dataPoints": 0,
+      "minCost": 120.0,
+      "maxCost": 180.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "West Benton",
+      "buildingType": "R2",
+      "buildingTypeDescription": "Residential - Multi-Family",
+      "baseCost": 150.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for R2 in West Benton",
+      "dataPoints": 0,
+      "minCost": 120.0,
+      "maxCost": 180.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "East Benton",
+      "buildingType": "R2",
+      "buildingTypeDescription": "Residential - Multi-Family",
+      "baseCost": 150.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for R2 in East Benton",
+      "dataPoints": 0,
+      "minCost": 120.0,
+      "maxCost": 180.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "North Benton",
+      "buildingType": "R3",
+      "buildingTypeDescription": "Residential - Manufactured Home",
+      "baseCost": 150.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for R3 in North Benton",
+      "dataPoints": 0,
+      "minCost": 120.0,
+      "maxCost": 180.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "Central Benton",
+      "buildingType": "R3",
+      "buildingTypeDescription": "Residential - Manufactured Home",
+      "baseCost": 150.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for R3 in Central Benton",
+      "dataPoints": 0,
+      "minCost": 120.0,
+      "maxCost": 180.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "South Benton",
+      "buildingType": "R3",
+      "buildingTypeDescription": "Residential - Manufactured Home",
+      "baseCost": 150.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for R3 in South Benton",
+      "dataPoints": 0,
+      "minCost": 120.0,
+      "maxCost": 180.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "West Benton",
+      "buildingType": "R3",
+      "buildingTypeDescription": "Residential - Manufactured Home",
+      "baseCost": 150.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for R3 in West Benton",
+      "dataPoints": 0,
+      "minCost": 120.0,
+      "maxCost": 180.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "East Benton",
+      "buildingType": "R3",
+      "buildingTypeDescription": "Residential - Manufactured Home",
+      "baseCost": 150.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for R3 in East Benton",
+      "dataPoints": 0,
+      "minCost": 120.0,
+      "maxCost": 180.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "North Benton",
+      "buildingType": "C1",
+      "buildingTypeDescription": "Commercial - Retail",
+      "baseCost": 200.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for C1 in North Benton",
+      "dataPoints": 0,
+      "minCost": 160.0,
+      "maxCost": 240.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "Central Benton",
+      "buildingType": "C1",
+      "buildingTypeDescription": "Commercial - Retail",
+      "baseCost": 200.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for C1 in Central Benton",
+      "dataPoints": 0,
+      "minCost": 160.0,
+      "maxCost": 240.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "South Benton",
+      "buildingType": "C1",
+      "buildingTypeDescription": "Commercial - Retail",
+      "baseCost": 200.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for C1 in South Benton",
+      "dataPoints": 0,
+      "minCost": 160.0,
+      "maxCost": 240.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "West Benton",
+      "buildingType": "C1",
+      "buildingTypeDescription": "Commercial - Retail",
+      "baseCost": 200.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for C1 in West Benton",
+      "dataPoints": 0,
+      "minCost": 160.0,
+      "maxCost": 240.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "East Benton",
+      "buildingType": "C1",
+      "buildingTypeDescription": "Commercial - Retail",
+      "baseCost": 200.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for C1 in East Benton",
+      "dataPoints": 0,
+      "minCost": 160.0,
+      "maxCost": 240.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "North Benton",
+      "buildingType": "C2",
+      "buildingTypeDescription": "Commercial - Office",
+      "baseCost": 200.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for C2 in North Benton",
+      "dataPoints": 0,
+      "minCost": 160.0,
+      "maxCost": 240.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "Central Benton",
+      "buildingType": "C2",
+      "buildingTypeDescription": "Commercial - Office",
+      "baseCost": 200.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for C2 in Central Benton",
+      "dataPoints": 0,
+      "minCost": 160.0,
+      "maxCost": 240.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "South Benton",
+      "buildingType": "C2",
+      "buildingTypeDescription": "Commercial - Office",
+      "baseCost": 200.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for C2 in South Benton",
+      "dataPoints": 0,
+      "minCost": 160.0,
+      "maxCost": 240.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "West Benton",
+      "buildingType": "C2",
+      "buildingTypeDescription": "Commercial - Office",
+      "baseCost": 200.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for C2 in West Benton",
+      "dataPoints": 0,
+      "minCost": 160.0,
+      "maxCost": 240.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "East Benton",
+      "buildingType": "C2",
+      "buildingTypeDescription": "Commercial - Office",
+      "baseCost": 200.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for C2 in East Benton",
+      "dataPoints": 0,
+      "minCost": 160.0,
+      "maxCost": 240.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "North Benton",
+      "buildingType": "C3",
+      "buildingTypeDescription": "Commercial - Restaurant",
+      "baseCost": 200.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for C3 in North Benton",
+      "dataPoints": 0,
+      "minCost": 160.0,
+      "maxCost": 240.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "Central Benton",
+      "buildingType": "C3",
+      "buildingTypeDescription": "Commercial - Restaurant",
+      "baseCost": 200.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for C3 in Central Benton",
+      "dataPoints": 0,
+      "minCost": 160.0,
+      "maxCost": 240.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "South Benton",
+      "buildingType": "C3",
+      "buildingTypeDescription": "Commercial - Restaurant",
+      "baseCost": 200.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for C3 in South Benton",
+      "dataPoints": 0,
+      "minCost": 160.0,
+      "maxCost": 240.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "West Benton",
+      "buildingType": "C3",
+      "buildingTypeDescription": "Commercial - Restaurant",
+      "baseCost": 200.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for C3 in West Benton",
+      "dataPoints": 0,
+      "minCost": 160.0,
+      "maxCost": 240.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "East Benton",
+      "buildingType": "C3",
+      "buildingTypeDescription": "Commercial - Restaurant",
+      "baseCost": 200.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for C3 in East Benton",
+      "dataPoints": 0,
+      "minCost": 160.0,
+      "maxCost": 240.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "North Benton",
+      "buildingType": "C4",
+      "buildingTypeDescription": "Commercial - Warehouse",
+      "baseCost": 200.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for C4 in North Benton",
+      "dataPoints": 0,
+      "minCost": 160.0,
+      "maxCost": 240.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "Central Benton",
+      "buildingType": "C4",
+      "buildingTypeDescription": "Commercial - Warehouse",
+      "baseCost": 200.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for C4 in Central Benton",
+      "dataPoints": 0,
+      "minCost": 160.0,
+      "maxCost": 240.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "South Benton",
+      "buildingType": "C4",
+      "buildingTypeDescription": "Commercial - Warehouse",
+      "baseCost": 200.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for C4 in South Benton",
+      "dataPoints": 0,
+      "minCost": 160.0,
+      "maxCost": 240.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "West Benton",
+      "buildingType": "C4",
+      "buildingTypeDescription": "Commercial - Warehouse",
+      "baseCost": 200.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for C4 in West Benton",
+      "dataPoints": 0,
+      "minCost": 160.0,
+      "maxCost": 240.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "East Benton",
+      "buildingType": "C4",
+      "buildingTypeDescription": "Commercial - Warehouse",
+      "baseCost": 200.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for C4 in East Benton",
+      "dataPoints": 0,
+      "minCost": 160.0,
+      "maxCost": 240.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "North Benton",
+      "buildingType": "I1",
+      "buildingTypeDescription": "Industrial - Manufacturing",
+      "baseCost": 100.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for I1 in North Benton",
+      "dataPoints": 0,
+      "minCost": 80.0,
+      "maxCost": 120.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "Central Benton",
+      "buildingType": "I1",
+      "buildingTypeDescription": "Industrial - Manufacturing",
+      "baseCost": 100.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for I1 in Central Benton",
+      "dataPoints": 0,
+      "minCost": 80.0,
+      "maxCost": 120.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "South Benton",
+      "buildingType": "I1",
+      "buildingTypeDescription": "Industrial - Manufacturing",
+      "baseCost": 100.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for I1 in South Benton",
+      "dataPoints": 0,
+      "minCost": 80.0,
+      "maxCost": 120.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "West Benton",
+      "buildingType": "I1",
+      "buildingTypeDescription": "Industrial - Manufacturing",
+      "baseCost": 100.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for I1 in West Benton",
+      "dataPoints": 0,
+      "minCost": 80.0,
+      "maxCost": 120.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "East Benton",
+      "buildingType": "I1",
+      "buildingTypeDescription": "Industrial - Manufacturing",
+      "baseCost": 100.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for I1 in East Benton",
+      "dataPoints": 0,
+      "minCost": 80.0,
+      "maxCost": 120.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "North Benton",
+      "buildingType": "I2",
+      "buildingTypeDescription": "Industrial - Processing",
+      "baseCost": 100.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for I2 in North Benton",
+      "dataPoints": 0,
+      "minCost": 80.0,
+      "maxCost": 120.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "Central Benton",
+      "buildingType": "I2",
+      "buildingTypeDescription": "Industrial - Processing",
+      "baseCost": 100.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for I2 in Central Benton",
+      "dataPoints": 0,
+      "minCost": 80.0,
+      "maxCost": 120.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "South Benton",
+      "buildingType": "I2",
+      "buildingTypeDescription": "Industrial - Processing",
+      "baseCost": 100.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for I2 in South Benton",
+      "dataPoints": 0,
+      "minCost": 80.0,
+      "maxCost": 120.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "West Benton",
+      "buildingType": "I2",
+      "buildingTypeDescription": "Industrial - Processing",
+      "baseCost": 100.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for I2 in West Benton",
+      "dataPoints": 0,
+      "minCost": 80.0,
+      "maxCost": 120.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "East Benton",
+      "buildingType": "I2",
+      "buildingTypeDescription": "Industrial - Processing",
+      "baseCost": 100.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for I2 in East Benton",
+      "dataPoints": 0,
+      "minCost": 80.0,
+      "maxCost": 120.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "North Benton",
+      "buildingType": "A1",
+      "buildingTypeDescription": "Agricultural - Farm",
+      "baseCost": 50.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for A1 in North Benton",
+      "dataPoints": 0,
+      "minCost": 40.0,
+      "maxCost": 60.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "Central Benton",
+      "buildingType": "A1",
+      "buildingTypeDescription": "Agricultural - Farm",
+      "baseCost": 50.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for A1 in Central Benton",
+      "dataPoints": 0,
+      "minCost": 40.0,
+      "maxCost": 60.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "South Benton",
+      "buildingType": "A1",
+      "buildingTypeDescription": "Agricultural - Farm",
+      "baseCost": 50.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for A1 in South Benton",
+      "dataPoints": 0,
+      "minCost": 40.0,
+      "maxCost": 60.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "West Benton",
+      "buildingType": "A1",
+      "buildingTypeDescription": "Agricultural - Farm",
+      "baseCost": 50.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for A1 in West Benton",
+      "dataPoints": 0,
+      "minCost": 40.0,
+      "maxCost": 60.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "East Benton",
+      "buildingType": "A1",
+      "buildingTypeDescription": "Agricultural - Farm",
+      "baseCost": 50.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for A1 in East Benton",
+      "dataPoints": 0,
+      "minCost": 40.0,
+      "maxCost": 60.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "North Benton",
+      "buildingType": "A2",
+      "buildingTypeDescription": "Agricultural - Ranch",
+      "baseCost": 50.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for A2 in North Benton",
+      "dataPoints": 0,
+      "minCost": 40.0,
+      "maxCost": 60.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "Central Benton",
+      "buildingType": "A2",
+      "buildingTypeDescription": "Agricultural - Ranch",
+      "baseCost": 50.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for A2 in Central Benton",
+      "dataPoints": 0,
+      "minCost": 40.0,
+      "maxCost": 60.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "South Benton",
+      "buildingType": "A2",
+      "buildingTypeDescription": "Agricultural - Ranch",
+      "baseCost": 50.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for A2 in South Benton",
+      "dataPoints": 0,
+      "minCost": 40.0,
+      "maxCost": 60.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "West Benton",
+      "buildingType": "A2",
+      "buildingTypeDescription": "Agricultural - Ranch",
+      "baseCost": 50.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for A2 in West Benton",
+      "dataPoints": 0,
+      "minCost": 40.0,
+      "maxCost": 60.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "East Benton",
+      "buildingType": "A2",
+      "buildingTypeDescription": "Agricultural - Ranch",
+      "baseCost": 50.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for A2 in East Benton",
+      "dataPoints": 0,
+      "minCost": 40.0,
+      "maxCost": 60.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "North Benton",
+      "buildingType": "S1",
+      "buildingTypeDescription": "Special Purpose - Hospital",
+      "baseCost": 250.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for S1 in North Benton",
+      "dataPoints": 0,
+      "minCost": 200.0,
+      "maxCost": 300.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "Central Benton",
+      "buildingType": "S1",
+      "buildingTypeDescription": "Special Purpose - Hospital",
+      "baseCost": 250.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for S1 in Central Benton",
+      "dataPoints": 0,
+      "minCost": 200.0,
+      "maxCost": 300.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "South Benton",
+      "buildingType": "S1",
+      "buildingTypeDescription": "Special Purpose - Hospital",
+      "baseCost": 250.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for S1 in South Benton",
+      "dataPoints": 0,
+      "minCost": 200.0,
+      "maxCost": 300.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "West Benton",
+      "buildingType": "S1",
+      "buildingTypeDescription": "Special Purpose - Hospital",
+      "baseCost": 250.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for S1 in West Benton",
+      "dataPoints": 0,
+      "minCost": 200.0,
+      "maxCost": 300.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "East Benton",
+      "buildingType": "S1",
+      "buildingTypeDescription": "Special Purpose - Hospital",
+      "baseCost": 250.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for S1 in East Benton",
+      "dataPoints": 0,
+      "minCost": 200.0,
+      "maxCost": 300.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "North Benton",
+      "buildingType": "S2",
+      "buildingTypeDescription": "Special Purpose - School",
+      "baseCost": 250.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for S2 in North Benton",
+      "dataPoints": 0,
+      "minCost": 200.0,
+      "maxCost": 300.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "Central Benton",
+      "buildingType": "S2",
+      "buildingTypeDescription": "Special Purpose - School",
+      "baseCost": 250.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for S2 in Central Benton",
+      "dataPoints": 0,
+      "minCost": 200.0,
+      "maxCost": 300.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "South Benton",
+      "buildingType": "S2",
+      "buildingTypeDescription": "Special Purpose - School",
+      "baseCost": 250.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for S2 in South Benton",
+      "dataPoints": 0,
+      "minCost": 200.0,
+      "maxCost": 300.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "West Benton",
+      "buildingType": "S2",
+      "buildingTypeDescription": "Special Purpose - School",
+      "baseCost": 250.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for S2 in West Benton",
+      "dataPoints": 0,
+      "minCost": 200.0,
+      "maxCost": 300.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    },
+    {
+      "region": "East Benton",
+      "buildingType": "S2",
+      "buildingTypeDescription": "Special Purpose - School",
+      "baseCost": 250.0,
+      "matrixYear": 2025,
+      "sourceMatrixId": 0,
+      "matrixDescription": "Default entry for S2 in East Benton",
+      "dataPoints": 0,
+      "minCost": 200.0,
+      "maxCost": 300.0,
+      "adjustmentFactors": {
+        "complexity": 1.0,
+        "quality": 1.0,
+        "condition": 1.0
+      }
+    }
+  ],
+  "regions": [
+    "North Benton",
+    "Central Benton",
+    "South Benton",
+    "West Benton",
+    "East Benton"
+  ],
+  "buildingTypes": [
+    "R1",
+    "R2",
+    "R3",
+    "C1",
+    "C2",
+    "C3",
+    "C4",
+    "I1",
+    "I2",
+    "A1",
+    "A2",
+    "S1",
+    "S2"
+  ],
+  "matrixYear": 2025,
+  "errors": [
+    "Could not find building type column in matrix sheet"
+  ],
+  "rowCount": 65
+}

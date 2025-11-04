@@ -1,0 +1,5 @@
+<DataType Name="DERasterBand">
+  <DisplayName>Raster Band</DisplayName>
+  <Description>A layer in a raster dataset.</Description>
+</DataType>
+

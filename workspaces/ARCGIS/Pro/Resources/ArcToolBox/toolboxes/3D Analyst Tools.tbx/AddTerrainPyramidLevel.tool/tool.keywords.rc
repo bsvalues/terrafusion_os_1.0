@@ -1,0 +1,18 @@
+{
+    "set": [
+        "add",
+        "edit",
+        "lidar",
+        "mass points",
+        "modify",
+        "multipoints",
+        "multiresolution surface",
+        "pyramid",
+        "pyramid level",
+        "surface",
+        "terrain",
+        "terrain dataset",
+        "terrain pyramids",
+        "terrains"
+    ]
+}

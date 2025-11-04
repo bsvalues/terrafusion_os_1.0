@@ -1,0 +1,11 @@
+{
+    "map": {
+        "descr": "The Defense toolbox provides a collection of geoprocessing tools that enable the automation of analytical processes and workflows for determining location, distance, range, and visibility.",
+        "title": "Defense Tools",
+        "toolset1.name": "Conversion",
+        "toolset2.name": "Visibility",
+        "toolset3.name": "Gridded Reference Graphic",
+        "toolset4.name": "Distance and Direction",
+        "toolset5.name": "Gridded Reference Graphic\\Number and Letter"
+    }
+}

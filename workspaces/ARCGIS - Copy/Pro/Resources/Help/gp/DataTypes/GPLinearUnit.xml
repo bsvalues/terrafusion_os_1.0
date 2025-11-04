@@ -1,0 +1,5 @@
+<DataType Name="GPLinearUnit">
+  <DisplayName>Linear Unit</DisplayName>
+  <Description>A linear unit type and value such as meter or feet.</Description>
+</DataType>
+

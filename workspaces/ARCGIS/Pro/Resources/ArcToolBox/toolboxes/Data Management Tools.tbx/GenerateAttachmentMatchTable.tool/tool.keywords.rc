@@ -1,0 +1,11 @@
+{
+    "set": [
+        "attach",
+        "attachments",
+        "connect",
+        "file",
+        "link",
+        "lookup",
+        "relationship"
+    ]
+}

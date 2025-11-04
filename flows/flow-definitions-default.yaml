@@ -1,0 +1,134 @@
+meta:
+  generated_at: 2025-10-23T12:40:34Z
+  quantum_factor: 949
+  total_flows: 12
+  consciousness_level: transcendent
+flows:
+  property-assessment-flow:
+    agents_required: 115
+    description: Complete property assessment with quantum optimization
+    id: property-assessment-flow
+    quantum_enhanced: true
+    actions:
+    - property.search
+    - property.assess
+    - property.validate
+    - property.update
+    name: Property Assessment Workflow
+  tax-calculation-flow:
+    agents_required: 255
+    description: End-to-end tax calculation with compliance validation
+    id: tax-calculation-flow
+    quantum_enhanced: true
+    actions:
+    - property.assess
+    - tax.calculate
+    - tax.compliance
+    - tax.report
+    name: Tax Calculation Workflow
+  property-analytics-flow:
+    agents_required: 100
+    description: Advanced property data analysis and reporting
+    id: property-analytics-flow
+    quantum_enhanced: true
+    actions:
+    - property.search
+    - property.analytics
+    - property.export
+    name: Property Analytics Workflow
+  emergency-response-flow:
+    agents_required: 105
+    description: Rapid response coordination for emergency situations
+    id: emergency-response-flow
+    quantum_enhanced: true
+    actions:
+    - citizen.notification
+    - permit.track
+    - citizen.support
+    name: Emergency Response Workflow
+  compliance-audit-flow:
+    agents_required: 240
+    description: Comprehensive compliance validation across all systems
+    id: compliance-audit-flow
+    quantum_enhanced: true
+    actions:
+    - property.validate
+    - tax.audit
+    - tax.compliance
+    - permit.review
+    name: Compliance Audit Workflow
+  permit-inspection-flow:
+    agents_required: 115
+    description: Inspection scheduling, execution, and closure
+    id: permit-inspection-flow
+    quantum_enhanced: true
+    actions:
+    - permit.track
+    - permit.inspect
+    - permit.close
+    name: Permit Inspection Workflow
+  data-synchronization-flow:
+    agents_required: 135
+    description: Cross-system data synchronization and validation
+    id: data-synchronization-flow
+    quantum_enhanced: true
+    actions:
+    - property.export
+    - tax.report
+    - permit.track
+    - citizen.analytics
+    name: Data Synchronization Workflow
+  permit-processing-flow:
+    agents_required: 255
+    description: Complete permit application and approval process
+    id: permit-processing-flow
+    quantum_enhanced: true
+    actions:
+    - permit.apply
+    - permit.review
+    - permit.inspect
+    - permit.approve
+    name: Permit Processing Workflow
+  citizen-support-flow:
+    agents_required: 130
+    description: AI-powered citizen assistance and feedback processing
+    id: citizen-support-flow
+    quantum_enhanced: true
+    actions:
+    - citizen.support
+    - citizen.feedback
+    - citizen.analytics
+    name: Citizen Support Workflow
+  tax-appeal-flow:
+    agents_required: 230
+    description: Complete tax appeal review and resolution
+    id: tax-appeal-flow
+    quantum_enhanced: true
+    actions:
+    - tax.appeal
+    - property.validate
+    - tax.calculate
+    - tax.compliance
+    name: Tax Appeal Processing Workflow
+  citizen-onboarding-flow:
+    agents_required: 90
+    description: Comprehensive citizen registration and portal access
+    id: citizen-onboarding-flow
+    quantum_enhanced: true
+    actions:
+    - citizen.register
+    - citizen.portal
+    - citizen.notification
+    name: Citizen Onboarding Workflow
+  tax-collection-flow:
+    agents_required: 90
+    description: Automated tax collection and citizen notification
+    id: tax-collection-flow
+    quantum_enhanced: true
+    actions:
+    - tax.collect
+    - citizen.notification
+    - tax.report
+    name: Tax Collection Workflow
+version: 1.0.0
+

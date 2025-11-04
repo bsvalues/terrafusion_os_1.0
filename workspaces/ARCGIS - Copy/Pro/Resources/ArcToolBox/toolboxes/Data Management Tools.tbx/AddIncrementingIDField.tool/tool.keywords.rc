@@ -1,0 +1,11 @@
+{
+    "set": [
+        "add",
+        "fields",
+        "id",
+        "identity",
+        "increment",
+        "objectid",
+        "unique"
+    ]
+}

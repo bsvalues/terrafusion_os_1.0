@@ -1,0 +1,161 @@
+{% extends "layout.html" %}
+
+{% block title %}Generate Data Quality Report{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Generate Data Quality Report</h1>
+            <p class="lead">Create a new data quality report with the options below.</p>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('data_quality.dashboard') }}">Data Quality</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('quality_report.report_dashboard') }}">Reports</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Generate Report</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Report Options</h5>
+                </div>
+                <div class="card-body">
+                    <form id="reportForm" method="post" action="{{ url_for('quality_report.generate_report') }}" target="_blank">
+                        <div class="mb-3">
+                            <label for="reportFormat" class="form-label">Report Format</label>
+                            <select id="reportFormat" name="format" class="form-select">
+                                <option value="pdf" selected>PDF Document</option>
+                                <option value="excel">Excel Spreadsheet</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Report Scope</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="scope" id="latestReport" value="latest" checked>
+                                <label class="form-check-label" for="latestReport">
+                                    Latest Data Quality Report
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="scope" id="customDate" value="custom">
+                                <label class="form-check-label" for="customDate">
+                                    Custom Date Range
+                                </label>
+                            </div>
+                        </div>
+
+                        <div id="dateRangeFields" class="mb-3 border rounded p-3 bg-light" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="startDate" class="form-label">Start Date</label>
+                                    <input type="date" class="form-control" id="startDate" name="start_date">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="endDate" class="form-label">End Date</label>
+                                    <input type="date" class="form-control" id="endDate" name="end_date">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Report Content</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="includeAnomalies" name="include_anomalies" value="true" checked>
+                                <label class="form-check-label" for="includeAnomalies">
+                                    Include Anomalies
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="includeIssues" name="include_issues" value="true" checked>
+                                <label class="form-check-label" for="includeIssues">
+                                    Include Quality Issues
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="includeRecommendations" name="include_recommendations" value="true" checked>
+                                <label class="form-check-label" for="includeRecommendations">
+                                    Include Recommendations
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('quality_report.report_dashboard') }}" class="btn btn-outline-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Generate Report</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Report Information</h5>
+                </div>
+                <div class="card-body">
+                    <h6>The report will include:</h6>
+                    <ul>
+                        <li>Overall data quality score</li>
+                        <li>Summary of issues by severity</li>
+                        <li>Anomaly detection results</li>
+                        <li>Table-specific metrics</li>
+                        <li>Trend analysis (comparing to previous reports)</li>
+                        <li>Recommendations for improvement</li>
+                    </ul>
+                    <p class="text-muted small">Reports are generated in real-time based on the latest data in the system.</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Tips</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="small">
+                        <li>PDF reports are optimized for printing and sharing.</li>
+                        <li>Excel reports allow for easier data analysis and filtering.</li>
+                        <li>For large date ranges, report generation may take longer.</li>
+                        <li>Generated reports are not automatically saved - download and save your report once generated.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Show/hide date range fields based on scope selection
+        const scopeRadios = document.querySelectorAll('input[name="scope"]');
+        const dateRangeFields = document.getElementById('dateRangeFields');
+        
+        for (const radio of scopeRadios) {
+            radio.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    dateRangeFields.style.display = 'block';
+                } else {
+                    dateRangeFields.style.display = 'none';
+                }
+            });
+        }
+        
+        // Set default dates
+        const today = new Date();
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(today.getDate() - 30);
+        
+        document.getElementById('endDate').valueAsDate = today;
+        document.getElementById('startDate').valueAsDate = thirtyDaysAgo;
+    });
+</script>
+{% endblock %}

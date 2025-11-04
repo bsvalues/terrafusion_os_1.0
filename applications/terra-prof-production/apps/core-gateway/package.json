@@ -1,0 +1,20 @@
+{
+  "name": "core-gateway",
+  "version": "1.0.0",
+  "description": "Terrafusion Core Gateway with Apollo Federation",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@apollo/gateway": "^2.6.1",
+    "apollo-server": "^3.12.1",
+    "graphql": "^16.8.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

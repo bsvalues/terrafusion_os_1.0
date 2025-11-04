@@ -1,0 +1,15 @@
+{
+    "map": {
+        "description": "Applies symbols and Arcade expressions to layers in a map based on the symbols and rules defined in a visual specification database.",
+        "in_map.descr": "The map containing layers to which symbols and Arcade expressions will be applied.",
+        "in_map.title": "Input Map",
+        "in_style_file.descr": "The style file (.stylx) that contains the symbols defined in the visual specification rules.",
+        "in_style_file.title": "Input Style File",
+        "specification.descr": "The specification rules that will be converted to Arcade and applied to the map layers.",
+        "specification.title": "Visual Specification",
+        "title": "Apply Visual Specification To Map",
+        "updated_map.title": "Updated Map",
+        "vs_workspace.descr": "The database containing the visual specification rules.",
+        "vs_workspace.title": "Visual Specification Workspace"
+    }
+}

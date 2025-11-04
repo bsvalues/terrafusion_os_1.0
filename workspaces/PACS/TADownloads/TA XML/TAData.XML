@@ -1,0 +1,1059 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TAData</name>
+    </assembly>
+    <members>
+        <member name="M:TAData.TAMTCommand.ExecuteMultiReader">
+            <summary>
+            Executes a list of queries synchronously. The input parameters specify
+            the list of individual queries to execute, and the input parameters
+            for each query.
+            </summary>
+            <returns>A two dimensional array of query names with their corresponding
+            TAMTResultSet objects. The caller is responsible for turning those
+            result sets into the corresponding data readers.</returns>
+        </member>
+        <member name="T:TAData.FieldData">
+            <summary>
+            Design information about the field/column.
+            At this time, width and precision will always be empty.
+            </summary>
+        </member>
+        <member name="P:TAData.FieldData.Name">
+            <summary>
+            The name of the field/column.
+            </summary>
+        </member>
+        <member name="P:TAData.FieldData.DataType">
+            <summary>
+            The data type of the field/column.
+            </summary>
+        </member>
+        <member name="P:TAData.FieldData.Width">
+            <summary>
+            The width of the field/column.
+            </summary>
+        </member>
+        <member name="P:TAData.FieldData.Precision">
+            <summary>
+            The precision of the field/column.
+            </summary>
+        </member>
+        <member name="P:TAData.IObjectRecords.Item(System.String)">
+            <summary>
+            Primary indexer for data access
+            Format of indexer parameter: table.field
+            Example: "property_val.prop_val_yr"
+            </summary>
+            <param name="tableDotField"></param>
+            <returns></returns>
+        </member>
+        <member name="P:TAData.IObjectRecords.IsDirty">
+            <summary>
+            Determines whether any of the reader objects
+            making up the ObjectRecords is dirty.
+            </summary>
+        </member>
+        <member name="T:TAData.IDataObject">
+            <summary>
+            This interface is inherited by TACommonObjects.DataObjectBase in the PACS Client application
+            and used in TAPanelBase to get the SQL table name that DataObjectBase derived classes have 
+            their data bound to.
+            </summary>
+        </member>
+        <member name="M:TAData.IDataObject.Save">
+            <summary>
+            Saves any modifications since the last save or cancel.
+            </summary>
+        </member>
+        <member name="M:TAData.IDataObject.Cancel">
+            <summary>
+            Cancels any modifications that occurred on the data since the previous save.
+            </summary>
+        </member>
+        <member name="M:TAData.IDataObject.Reset">
+            <summary>
+            Reset the DataObject by nulling the appropriate reader of the associated IObjectRecords
+            </summary>
+        </member>
+        <member name="M:TAData.IDataObject.RevertRow">
+            <summary>
+            Reverts modified rows in the reader to their original values.
+            </summary>
+        </member>
+        <member name="P:TAData.IDataObject.IsDirty">
+            <summary>
+            Determines whether the IDataObject has any modifications.
+            </summary>
+        </member>
+        <member name="P:TAData.IDataObject.HasData">
+            <summary>
+            Indicates whether the associated reader has any rows of information.
+            </summary>
+        </member>
+        <member name="P:TAData.IDataObject.IsNew">
+            <summary>
+            Indicates if the associated TAMTDataReader row is new or not.
+            </summary>
+        </member>
+        <member name="P:TAData.IDataObject.Records">
+            <summary>
+            Returns the associate RecordsObject
+            </summary>
+        </member>
+        <member name="M:TAData.IDataObjectList.Reset">
+            <summary>
+            Reset the DataObject by nulling the appropriate reader of the associated IObjectRecords
+            </summary>
+        </member>
+        <member name="M:TAData.IDataObjectList`1.RemoveAt(System.Int32)">
+            <summary>
+            Removes the System.Collections.IList item at the specified index.
+            Used to get around Error   6:
+            Ambiguity between 'System.Collections.ICollection.RemoveAt' and 
+            'System.Collections.Generic.ICollection&lt;object&gt;.RemoveAt' 
+            </summary>
+            <param name="index"></param>
+        </member>
+        <member name="M:TAData.IDataObjectList`1.Reset">
+            <summary>
+            Reset the DataObject by nulling the appropriate reader of the associated IObjectRecords
+            </summary>
+        </member>
+        <member name="P:TAData.IDataObjectList`1.Count">
+            <summary>
+            Gets the count of the list. Used to get around Error   6:
+            Ambiguity between 'System.Collections.ICollection.Count' and 
+            'System.Collections.Generic.ICollection&lt;object&gt;.Count'  
+            http://stackoverflow.com/questions/1552456/
+            </summary>
+            <returns>Returns the count of the list</returns>
+        </member>
+        <member name="M:TAData.IRecordsDataLoader.LoadRecordData(TAData.IObjectRecords)">
+            <summary>
+            A utility method for optional loading of the data for a specified
+            records object based on the needs of the current object.
+            </summary>
+            <remarks>
+            This method may be used for various optimization purposes, such as
+            (for example) "priming" the records object with the required data
+            on a background thread while an expensive UI screen is being
+            prepared. This method should be implemented such that it does not
+            incur any UI associations, ensuring that it's suitable for use when
+            the associated UI isn't yet ready or available.
+            </remarks>
+            <param name="records">the records object for which to load the
+            data applicable to the current object.</param>
+        </member>
+        <member name="M:TAData.IRecordsInterface.RefreshData">
+            <summary>
+            Refreshes any data associated with the current object by retrieving
+            the corresponding data from the associated IObjectRecords instance,
+            if any.
+            <remarks>
+            This method may ignore fields for which the current object
+            believes (for whatever reason) that its data is already up to date.
+            <see cref="M:TAData.IRecordsInterface.ForceRefreshData"/> for a method to
+            force a refresh of all fields.
+            </remarks>
+            </summary>
+        </member>
+        <member name="M:TAData.IRecordsInterface.RefreshState">
+            <summary>
+            Refreshes the state of the current object, based on data in the
+            associated IObjectRecords instance, if any.
+            </summary>
+        </member>
+        <member name="M:TAData.IRecordsInterface.ForceRefreshData">
+            <summary>
+            Refreshes any data associated with the current object by retrieving
+            the corresponding data from the associated IObjectRecords instance,
+            if any. This method
+            </summary>
+            <remarks>
+            This method refreshes all fields for which the current object
+            whether or not their associated data is already up to date.
+            <see cref="M:TAData.IRecordsInterface.RefreshData"/> for a method that updates
+            only fields that appear to require an update.
+            </remarks>
+        </member>
+        <member name="P:TAData.IRecordsInterface.Records">
+            <summary>
+            The main Records property for the current object.
+            </summary>
+            <value>The data record instance associated with the current object.
+            </value>
+            <remarks>Setting the Records property for an object implementing
+            the IRecordsInterface interface typically acts recursively on any
+            children of the object that also implement IRecordsInterface.
+            </remarks>
+        </member>
+        <member name="T:TAData.TAMTObjectRecords">
+            <summary>
+            This class represents the base class for all records objects
+            implementing the IObjectRecords interface.
+            </summary>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.#ctor">
+            <summary>
+            Constructor -- intializes an instance of the TAMTObjectRecords class
+            and configures any stored procedure variables.
+            </summary>
+            <seealso cref="M:TAData.TAMTObjectRecords.ConfigureStoredProcedureVariables"/>
+        </member>
+        <member name="F:TAData.TAMTObjectRecords.userPropertyChangingHandler">
+            <summary>
+            An event that notifies any interested listeners when a
+            user property is about to change.
+            </summary>
+        </member>
+        <member name="F:TAData.TAMTObjectRecords.userPropertyChangedHandler">
+            <summary>
+            An event that notifies any interested listeners when a
+            user property has been changed.
+            </summary>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.GetAggregatedTypes">
+            <summary>
+            Allows derived classes to specify the records objects that they
+            aggregate and the criteria/constructor params to use when creating
+            them.
+            </summary>
+            <remarks>This method should be overridden as applicable by
+            any derived classes.</remarks>
+            <returns>
+            <para>The derived class should create an array of [x,2] where
+            x = the number of records objects that they aggregate.</para>
+            <para>[n,0] should be set to the type name,
+            eg: string TAPropertyData.PropertyRecords</para>
+            <para>[n,1] should be set to the constructor args,
+            eg: object[] { year, supNum, propID }</para>
+            </returns>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.GetTableReader(System.String)">
+            <summary>
+            Returns a data reader instance for the specified table.
+            </summary>
+            <remarks>This function must be implemented by derived child
+            classes. Child classes should ensure that any necessary object
+            synchronization is performed by their implementation of this
+            method.</remarks>
+            <param name="tableName">The name of the table for which to
+            return the associated data reader.</param>
+            <returns>A TAData.TAMTDataReader instance for the specified table,
+            or null in the case where no data reader was found.</returns>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.ConfigureStoredProcedureVariables">
+            <summary>
+            Class-specific virtual method used to configure any stored procedure
+            variables applicable to the records object.
+            </summary>
+            <remarks>The base class implementation does nothing and should be
+            overridden as applicable in any derived classes.</remarks>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.ExecuteStoredProcedureReader(System.String)">
+            <summary>
+            Returns the data reader associated with a stored procedure.
+            </summary>
+            <remarks>Any parameters for the stored procedure should be provided
+            in advance via the ReaderResultsParameters property before invoking
+            this method. Use the ReaderResultsMethod property similarly to specify
+            the command method.</remarks>
+            <param name="tableName">The name of the stored procedure for which
+            to return the associated data reader.</param>
+            <returns>A TAData.TAMTDataReader instance for the specified
+            stored procedure.</returns>
+            <seealso>TAMTObjectRecords.ReaderResultsMethod</seealso>
+            <seealso>TAMTObjectRecords.ReaderResultsParameters</seealso>
+            <seealso>TAData.TAMTDataReader</seealso>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.PopulateStoredProcedureReaderList">
+            <summary>
+            Populates the records object's list of stored procedure data readers.
+            </summary>
+            <remarks>Use the ReaderListMethod property to specify the command
+            method to use for execution of the associated command.</remarks>
+            <seealso>TAMTObjectRecords.ReaderListMethod</seealso>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.SaveChanges">
+            <summary>
+            Saves any changes associated with this records object and any
+            aggregated object records associated with it.
+            </summary>
+            <seealso>TAMTObjectRecords.SaveAllChanges()</seealso>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.CancelChanges">
+            <summary>
+            Cancels any changes associated with this records object and any
+            aggregated object records associated with it.
+            </summary>
+            <seealso>TAMTObjectRecords.CancelAllChanges()</seealso>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.SaveAllChanges">
+            <summary>
+            Saves the changes associated with this records object.
+            </summary>
+            <remarks>This method must be implemented by any derived classes to
+            implement the saving logic for any associated readers whose results
+            need to be persisted.</remarks>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.CancelAllChanges">
+            <summary>
+            Cancels the changes associated with this records object.
+            </summary>
+            <remarks>This method must be implemented by any derived classes to
+            implement the cancel logic for any associated readers whose results
+            need to be persisted.</remarks>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.SaveReaderChanges(TAData.TAMTDataReader,System.String)">
+            <summary>
+            Utility method provided as a convenience for derived classes to
+            simplify saving the changes associated with a data reader.
+            </summary>
+            <param name="reader">The data reader for which to save the changes.
+            </param>
+            <param name="className">The class name to associate with the
+            middle-tier command that actually saves the changes.</param>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.CancelReaderChanges(TAData.TAMTDataReader)">
+            <summary>
+            Utility method provided as a convenience for derived classes to
+            simplify cancelling the changes associated with a data reader.
+            </summary>
+            <param name="reader">The data reader for which to cancel the changes.
+            </param>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.AddUserProperty(System.String,System.Object)">
+            <summary>
+            Sets the specified user property value for with this records object.
+            </summary>
+            <param name="name">The name of the user property for which to set
+            the corresponding value.</param>
+            <param name="value">The value to associate with the specified user
+            property.</param>
+            <remarks>Calling this method will cause the UserPropertyChanging and
+            UserPropertyChanged events to be fired.</remarks>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.SetUserProperty(System.String,System.Object)">
+            <summary>
+            Sets the specified user property value for with this records object.
+            </summary>
+            <param name="name">The name of the user property for which to set
+            the corresponding value.</param>
+            <param name="value">The value to associate with the specified user
+            property.</param>
+            <remarks>Calling this method will cause the UserPropertyChanging and
+            UserPropertyChanged events to be fired.</remarks>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.GetUserProperty(System.String)">
+            <summary>
+            Returns the value of the specified user property.
+            </summary>
+            <param name="name">The user property for which to return the
+            associated value.</param>
+            <returns>The value associated with the specified user property,
+            or null if no such property exists.</returns>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.GetTableKeyValues(System.String)">
+            <summary>
+            Returns the list of table key values for the specified table name.
+            </summary>
+            <param name="tableName">The name of the table for which to return
+            the list of key values.</param>
+            <returns>The array of key values for the specified table, or null
+            if no reader was found for the specified table.</returns>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.SetTableRowKeyValues(System.String,System.Object[0:,0:])">
+            <summary>
+            This method looks up the data reader for the specified table name
+            and sets its current row location to the row matching the supplied
+            key values.
+            </summary>
+            <param name="tableName">The name of the table for which to set the
+            corresponding data reader's current row index.</param>
+            <param name="lookupKeyValues">A two-dimensional array of key values
+            indicating the row on which to position the specified table reader.
+            The format of the array should match the format returned by the
+            GetKeyValues method.</param>
+            <returns>True if the row was successfully matched and set in the
+            applicable data reader, otherwise false.</returns>
+            <seealso cref="M:TAData.TAMTObjectRecords.GetTableKeyValues(System.String)"/>
+            <seealso cref="M:TAData.TAMTDataReader.GetValues(System.Object[])"/>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.IsReaderSingleRow(System.String)">
+            <summary>
+            Returns whether or not the specified table is a single-row table.
+            </summary>
+            <param name="tableName">The name of the table for which to return
+            whether it's a single-row table or not.</param>
+            <returns>True if the specified table is a single-row table,
+            otherwise false.</returns>
+            <remarks>The base class implementation returns false for all table
+            names; derived classes should override this as applicable to return
+            information specific to the the tables they manage.</remarks>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.Clone">
+            <summary>
+            Clones this instance of the records object.
+            </summary>
+            <returns>A new records object instance based on the current one.
+            </returns>
+            <remarks>Callers should not rely on the Clone() method returning a
+            deep copy of the current object. This function must be implemented
+            as applicable by any derived records classes.</remarks>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.PreProvideAggregatedRecordsObject(System.String,TAData.IObjectRecords)">
+            <summary>
+            Public method for providing pre-instantiated aggregated record
+            objects, rather than relying on the on-demand instantiation of
+            those objects.
+            </summary>
+            <param name="type">A string indicating the type of the aggregated
+            record object being provided.</param>
+            <param name="records">The aggregated records object to associate
+            with the specified record type.</param>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.GetAggregatedRecords(System.String)">
+            <summary>
+            Returns the aggregated record object of the specified type.
+            </summary>
+            <param name="type">The type of aggregated object record to
+            retrieve.</param>
+            <returns>The aggregated record object of the specified type, or null
+            if no such record type is associated with the current record object.
+            </returns>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.GetDecimal(System.String)">
+            <summary>
+            Utility method to return the specified field value as a decimal value.
+            </summary>
+            <param name="tableDotField">An indexer indicating the table and field
+            for which the corresponding data reader should be returned. The format
+            of the indexer parameter is table.field, e.g. "property.prop_id".
+            </param>
+            <returns>The specified table and field value as a decimal value, or
+            a value of 0.0 if the requested value isn't numeric.</returns>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.GetTableColumnType(System.String)">
+            <summary>
+            Returns the type of the specified column in the specified table.
+            </summary>
+            <param name="tableDotField">An indexer indicating the table and field
+            for which the corresponding data reader should be returned. The format
+            of the indexer parameter is table.field, e.g. "property.prop_id".
+            </param>
+            <returns>The type of the specified data field.</returns>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.DetermineDirtyState">
+            <summary>
+            Implementation function used to determine whether the current state
+            of the records object is modified or not.
+            </summary>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.DirtyStateEvent(TAData.TAMTDataReaderState)">
+            <summary>
+            Event handler for data reader modified events. We use this handler
+            to check and/or update the modified status of this records object.
+            </summary>
+            <param name="reader">Unused parameter; nominally it looks like the
+            data reader that triggered the event. (?)</param>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.OnUserPropertyChanging(System.String,System.Object,System.Object)">
+            <summary>
+            Utility function used to fire the UserPropertyChanging event.
+            </summary>
+            <param name="name">The name of the changing user property.</param>
+            <param name="oldValue">The old value of the changing property.</param>
+            <param name="newValue">The new value of the changing property.</param>
+            <seealso cref="E:TAData.TAMTObjectRecords.UserPropertyChanging"/>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.OnUserPropertyChanged(System.String,System.Object,System.Object)">
+            <summary>
+            Utility function used to fire the UserPropertyChanged event.
+            </summary>
+            <param name="name">The name of the changed user property.</param>
+            <param name="oldValue">The old value of the changed property.</param>
+            <param name="newValue">The new value of the changed property.</param>
+            <seealso cref="E:TAData.TAMTObjectRecords.UserPropertyChanging"/>
+        </member>
+        <member name="M:TAData.TAMTObjectRecords.EnsureUserPropertyContainerCreated">
+            <summary>
+            Implementation function used to ensure that the user property lookup
+            table has been created.
+            </summary>
+        </member>
+        <member name="P:TAData.TAMTObjectRecords.Item(System.String)">
+            <summary>
+            The primary indexer for data access, which returns a data reader
+            corresponding to a specified table and field.
+            </summary>
+            <param name="tableDotField">An indexer indicating the table and field
+            for which the corresponding data reader should be returned. The format
+            of the indexer parameter is table.field, e.g. "property.prop_id".
+            </param>
+            <returns>A TAData.TAMTDataReader instance corresponding to the
+            specified table and field, or null if no matching data reader
+            was found.</returns>
+            <seealso cref="T:TAData.TAMTDataReader"/>
+        </member>
+        <member name="P:TAData.TAMTObjectRecords.ObjectType">
+            <summary>
+            Accessor for the ObjectType property.
+            </summary>
+        </member>
+        <member name="P:TAData.TAMTObjectRecords.ReaderListMethod">
+            <summary>
+            Accessor for the ReaderListMethod property. This property is used
+            to specify the middle-tier command method used to retrieve the list
+            of stored procedures associated with this object records instance.
+            </summary>
+            <seealso cref="M:TAData.TAMTObjectRecords.PopulateStoredProcedureReaderList"/>
+        </member>
+        <member name="P:TAData.TAMTObjectRecords.ReaderResultsMethod">
+            <summary>
+            Accessor for the ReaderResultsMethod property. This property is used
+            to specify the middle-tier results method used to retrieve data
+            readers associated with stored procedure-based queries.
+            </summary>
+            <seealso cref="M:TAData.TAMTObjectRecords.ExecuteStoredProcedureReader(System.String)"/>
+        </member>
+        <member name="P:TAData.TAMTObjectRecords.ReaderResultsParameters">
+            <summary>
+            Accessor for the ReaderResultsParameters property. This property us
+            used to specify any parameters to pass to any stored procedure-based
+            queries.
+            </summary>
+            <seealso cref="M:TAData.TAMTObjectRecords.ExecuteStoredProcedureReader(System.String)"/>
+        </member>
+        <member name="E:TAData.TAMTObjectRecords.DirtyChanged">
+            <summary>
+            An event that notifies any interested listeners when the
+            state of the records object has changed from unmodified to
+            modified or vice versa.
+            </summary>
+        </member>
+        <member name="P:TAData.TAMTObjectRecords.IsDirty">
+            <summary>
+            Accessor for the dirty/modified status of the records object.
+            </summary>
+            <value>True to indicate that the records object has been modified,
+            otherwise false to indicate that the records object is unmodified.
+            </value>
+        </member>
+        <member name="P:TAData.TAMTObjectRecords.UserInterfaceService">
+            <summary>
+            Accessor for the user interface service associated with this object.
+            </summary>
+            <value>A user interface service instance appropriate for this object.
+            </value>
+        </member>
+        <member name="P:TAData.TAMTObjectRecords.AggregatedRecords">
+            <summary>
+            Accessor for the set of aggregated record objects associated with
+            this primary records object, returned as an array of IObjectRecords
+            interfaces.
+            </summary>
+        </member>
+        <member name="P:TAData.TAMTObjectRecords.RecordsProvider">
+            <summary>
+            Accessor for the RecordsProvider property. The records provider instance
+            is used by this class to instantiate aggregated record object types as
+            required in response to requests for aggregated record data by the
+            consumer.
+            </summary>
+        </member>
+        <member name="T:TAData.TAMTObjectRecords.UserPropertyEventHandler">
+            <summary>
+            Defines a delegate for handling notifications of changes to user
+            properties associated with a records object.
+            </summary>
+            <param name="reader">The records object representing the source of
+            the notification.</param>
+            <param name="name">The name of the user property being changed.</param>
+            <param name="oldValue">The old value of the changing property.</param>
+            <param name="newValue">The new value of the changing property.</param>
+        </member>
+        <member name="F:TAData.TAMTDataReaderState.curUserSelectIndexChangingHandler">
+            <summary>
+            Fired when the user index is about to change
+            </summary>
+        </member>
+        <member name="F:TAData.TAMTDataReaderState.curUserSelectIndexChangedHandler">
+            <summary>
+            Fired when the user index has changed
+            </summary>
+        </member>
+        <member name="F:TAData.TAMTDataReaderState.dirtyStateChangedHandler">
+            <summary>
+            Fired when the stateof the "dirty" flag changes.
+            </summary>
+        </member>
+        <member name="M:TAData.TAMTDataReaderState.RaiseDirtyStateChangedEvent">
+            <summary>
+            Fire the Dirty State Changed event
+            </summary>
+        </member>
+        <member name="F:TAData.TAMTDataReaderState.tableDotFieldChangedHandler">
+            <summary>
+            Fired when a column value changes
+            </summary>
+        </member>
+        <member name="M:TAData.TAMTDataReaderState.RaiseTableDotFieldChangedEvent(System.String,System.String)">
+            <summary>
+            Fire the Table Dot Field Changed Event
+            </summary>
+            <param name="tableName">The name of the table this reader is associated with.</param>
+            <param name="columnName">The name of the column in which data changed.</param>
+        </member>
+        <member name="F:TAData.TAMTDataReaderState.tableRowDeletedHandler">
+            <summary>
+            Fired when a row is deleted from the reader
+            </summary>
+        </member>
+        <member name="M:TAData.TAMTDataReaderState.RaiseTableRowDeletedEvent(System.String)">
+            <summary>
+            Fire the Table Row Deleted Event
+            </summary>
+            <param name="tableName"></param>
+        </member>
+        <member name="F:TAData.TAMTDataReaderState.dataRowAddedHandler">
+            <summary>
+            Occurs when a row has been added to the reader
+            </summary>
+        </member>
+        <member name="M:TAData.TAMTDataReaderState.RaiseDataRowAddedEvent(System.Int32)">
+            <summary>
+            Raises the Data Row Added Event.
+            </summary>
+            <param name="rowNum"></param>
+        </member>
+        <member name="F:TAData.TAMTDataReaderState.dataRowValueChangedHandler">
+            <summary>
+            Occurs when a value changes in a field in the reader
+            </summary>
+        </member>
+        <member name="M:TAData.TAMTDataReaderState.RaiseDataRowValueChangedEvent(System.String,System.Int32)">
+            <summary>
+            Fires the Data Row Value Changed Event.
+            </summary>
+            <param name="fieldName"></param>
+            <param name="rowNum"></param>
+        </member>
+        <member name="F:TAData.TAMTDataReaderState.dataRowDeletedHandler">
+            <summary>
+            Occurs when a row has been deleted from the reader
+            </summary>
+        </member>
+        <member name="F:TAData.TAMTDataReaderState.dataReaderResetHandler">
+            <summary>
+            Occurs when a reader has been flushed/cancelled
+            </summary>
+        </member>
+        <member name="M:TAData.TAMTDataReaderState.OnDataRowValueChanged(System.String,System.Int32)">
+            <summary>
+            Called when a value is changed in a data reader
+            </summary>
+            <param name="fieldName"></param>
+            <param name="rowNum"></param>
+        </member>
+        <member name="M:TAData.TAMTDataReaderState.AddNew">
+            <summary>
+            Add a new record and set the current row to the newly added row.
+            </summary>
+        </member>
+        <member name="M:TAData.TAMTDataReaderState.AddNew(System.Boolean)">
+            <summary>
+            Add a new record and set the current row to the newly added row.
+            </summary>
+            <param name="supressRowAddedEvent">if set to <c>true</c> will suppress the DataRowAddedEvent event</param>
+        </member>
+        <member name="M:TAData.TAMTDataReaderState.AddNew(System.Boolean,System.Boolean)">
+            <summary>
+            Add a new record and set the current row to the newly added row.
+            </summary>
+            <param name="initialize">if set to <c>true</c> will initialize the reader with defaults.</param>
+            <param name="suppressRowAddedEvent">if set to <c>true</c> will suppress the DataRowAddedEvent event</param>
+        </member>
+        <member name="M:TAData.TAMTDataReaderState.GetTypedOriginalValue``1(System.Int32,``0)">
+            <summary>
+            Get's the typed "original" value for that field in the current row
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="i">Column index for field</param>
+            <param name="defaultValue">Default value if null returned</param>
+            <exception cref="T:System.InvalidCastException">Throws an exception if the casting for T fails</exception>
+            <returns>Original value if the value has been modified, else returs the current value</returns>
+        </member>
+        <member name="M:TAData.TAMTDataReaderState.GetTypedOriginalValue``1(System.Int32)">
+            <summary>
+            Get's the typed "original" value for that field in the current row
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="i">Column index for field</param>
+            <exception cref="T:System.InvalidCastException">Throws an exception if the casting for T fails</exception>
+            <returns>Original value if the value has been modified, else returs the current value</returns>
+        </member>
+        <member name="M:TAData.TAMTDataReaderState.GetTypedOriginalValue``1(System.String)">
+            <summary>
+            Get's the typed "original" value for that field in the current row
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="fieldName">Name of field</param>
+            <exception cref="T:System.InvalidCastException">Throws an exception if the casting for T fails</exception>
+            <returns>Original value if the value has been modified, else returs the current value</returns>
+        </member>
+        <member name="M:TAData.TAMTDataReaderState.GetTypedOriginalValue``1(System.String,``0)">
+            <summary>
+            Get's the typed "original" value for that field in the current row
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="fieldName">Name of field</param>
+            <param name="defaultValue">Default value if null returned</param>
+            <exception cref="T:System.InvalidCastException">Throws an exception if the casting for T fails</exception>
+            <returns>Original value if the value has been modified, else returs the current value</returns>
+        </member>
+        <member name="M:TAData.TAMTDataReaderState.GetOriginalValue(System.Int32)">
+            <summary>
+            Get's the typed "original" value for that field in the current row
+            </summary>
+            <param name="col">Column index</param>
+            <exception cref="T:System.InvalidCastException">Throws an exception if the casting for T fails</exception>
+            <returns>Original value if the value has been modified, else returs the current value</returns>
+        </member>
+        <member name="M:TAData.TAMTDataReaderState.GetOriginalValue(System.Int32,System.Int32)">
+            <summary>
+            Get's the typed "original" value for that field in the current row
+            </summary>
+            <param name="col">Column Index</param>
+            <param name="row">Row Index</param>
+            <exception cref="T:System.InvalidCastException">Throws an exception if the casting for T fails</exception>
+            <returns>Original value if the value has been modified, else returs the current value</returns>
+        </member>
+        <member name="P:TAData.TAMTDataReaderState.IgnoredColumnUpdates">
+            <summary>
+            Allows the user to specify a list of columns which will not cause a change in dirty state 
+            for those columns if data within those columns is changed.  These columns will, in effect, 
+            be ignored when SaveChanges is called.
+            </summary>
+        </member>
+        <member name="T:TAData.TAMTConnection">
+             <summary>
+             Class: TAMTConnection
+            
+             Category: Core Data Access Component
+            
+             Purpose: This class implements the <see cref="T:System.Data.IDbConnection"/> connection interface and
+             provides the communication mechanism to the middle tier TAAppSvr. The 
+             API provided to client is meant to mimick the interface to RDBMS provided
+             to .NET clients.
+            
+             Note: Most transactions should be initiated through the <see cref="T:TAData.TAMTCommand"/> class.
+             </summary>
+        </member>
+        <member name="T:TAData.TAMTConnection.TAMTConnectionInfo">
+             <summary>
+             Class: TAMTConnectionInfo
+            
+             Purpose: Encapsulate the connection information required by the
+             TAMTConnect class.
+             </summary>
+        </member>
+        <member name="M:TAData.TAMTDataReader.CreateEmptyReader(System.String[],System.Object[])">
+            <summary>
+            Creates an empty reader
+            </summary>
+            <param name="columnNames">object array with names of columns</param>
+            <param name="dataTypes">object array with data types</param>
+            <returns></returns>
+        </member>
+        <member name="M:TAData.TAMTDataReader.BeginRelationalAssoc(TAData.TAMTDataReader)">
+            <summary>
+            After successful completion of this call, this reader will be setup such that calls to
+            MoveNextAssoc will position this recordset on rows related to linkToReader 
+            (at its current position)
+            Ex: If this is an imprv_detail reader, linkToReader could be an imprv reader, 
+            or it could be an imprv_det_adj reader, or it could be...
+            Ex: If this is an agent_assoc reader, linkToReader could be an agent account reader, 
+            or it could be an owner account reader, or it could be...
+            </summary>
+            <param name="linkToReader"></param>
+        </member>
+        <member name="M:TAData.TAMTDataReader.MoveNextAssoc">
+            <summary>
+            Moves the recordset position to the next matching row
+            Returns true if the recordset was positioned on the next row
+            Else returns false
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TAData.TAMTDataReader.CreateIndex(System.String[])">
+            <summary>
+            Creates an index on the specified columnNames
+            which will increase performance in MoveNextFilter()
+            when filtering on the same columns in the index created
+            </summary>
+            <param name="columnNames"></param>
+        </member>
+        <member name="M:TAData.TAMTDataReader.BeginFilter(System.String[],System.Object[])">
+            <summary>
+            Sets up this reader such that calls to MoveNextFilter()
+            will position this recordset on matching rows
+            Ex:  If this is an imprv_detail reader, and you want rows within a specific improvement,
+            columnNames would be { "prop_val_yr", "sup_num", "sale_id", "prop_id", "imprv_id" }
+            values would be { int, int, int, int, int }
+            </summary>
+            <param name="columnNames"></param>
+            <param name="values"></param>
+        </member>
+        <member name="M:TAData.TAMTDataReader.MoveNextFilter">
+            <summary>
+            Moves the recordset position to the next matching row
+            Returns true if the recordset was positioned on the next row
+            Else returns false
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TAData.TAMTDataReader.GetForeignKeyRelationship(TAData.TAMTDataReader)">
+            <summary>
+            Allow derived classes to define foreign key relationships,
+            used when linking data readers together
+            </summary>
+            <param name="linkToReader"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TAData.TAMTDataReader.NewReaderDeepCopy">
+            <summary>
+            Creates a new reader using a deep copy of the result set
+            That is, the new reader will have its own copy of the result set
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TAData.TAMTDataReader.NewReader(System.Reflection.Assembly,System.String)">
+            <summary>
+            Create a new reader on this result set, of the given type
+            </summary>
+            <param name="moduleContainingClass"></param>
+            <param name="className"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TAData.TAMTDataReader.NewReader(TAData.TAMTCachableDataReader)">
+            <summary>
+            Create a new reader on this result set, with a reader lock
+            </summary>
+            <param name="readerLock"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TAData.TAMTDataReader.Reset">
+            <summary>
+            Reset the state of the reader. Moves to row -1
+            </summary>
+        </member>
+        <member name="M:TAData.TAMTDataReader.Close">
+            <summary>
+            Close the reader
+            </summary>
+        </member>
+        <member name="M:TAData.TAMTDataReader.NextResult">
+            <summary>
+            Increment to the next record.
+            </summary>
+            <returns>True if end of record set <seealso cref="M:TAData.TAMTDataReaderState.IsEOFRecordSets"/></returns>
+        </member>
+        <member name="M:TAData.TAMTDataReader.Read">
+            <summary>
+            Move to the next record in the current record set
+            </summary>
+            <returns>Returns true, if not errors and not end of record set</returns>
+        </member>
+        <member name="M:TAData.TAMTDataReader.GetName(System.Int32)">
+            <summary>
+            Get the column name of the column at the specified ordinal
+            </summary>
+            <param name="i">column index</param>
+            <returns></returns>
+        </member>
+        <member name="M:TAData.TAMTDataReader.GetDataTypeName(System.Int32)">
+            <summary>
+            Get the column name of the column type, this is the .NET type
+            </summary>
+            <param name="i">column index</param>
+            <returns></returns>
+        </member>
+        <member name="M:TAData.TAMTDataReader.GetFieldType(System.Int32)">
+            <summary>
+            Get the column type
+            </summary>
+            <param name="i">colum index</param>
+            <returns></returns>
+        </member>
+        <member name="M:TAData.TAMTDataReader.GetValue(System.Int32)">
+            <summary>
+            Get the field value at the current record position and the 
+            ordinal specified.
+            </summary>
+            <param name="i"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TAData.TAMTDataReader.SetValue(System.String,System.Object)">
+            <summary>
+            Get the field values at the current record position.
+            </summary>
+            <param name="name"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TAData.TAMTDataReader.GetValues(System.Object[])">
+            <summary>
+            Get the field values at the current record position.
+            </summary>
+            <param name="values"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TAData.TAMTDataReader.GetValueByKeys(System.Object[0:,0:],System.String)">
+            <summary>
+             Get the field value at the row specified by the key parameter
+            values and the column specified by the name parameter
+            </summary>
+            <param name="lookupKeyValues">2-dimensional key value array of the same format</param>
+            <param name="name">column name</param>
+            <returns>Object, or null if nothing found</returns>
+        </member>
+        <member name="M:TAData.TAMTDataReader.SetValueByKeys(System.Object[0:,0:],System.String,System.Object)">
+            <summary>
+            Set the field value at the row specified by the key parameter
+            values and the column specified by the name parameter
+            </summary>
+            <param name="lookupKeyValues">2-dimensional key value array of the same format</param>
+            <param name="name">column name</param>
+            <param name="ob">Value to assign</param>
+        </member>
+        <member name="M:TAData.TAMTDataReader.GetOrdinalCaseInsensitive(System.String)">
+            <summary>
+            Get the field ordinal by column name. Case in-sensitive.
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TAData.TAMTDataReader.IsDBNull(System.Int32)">
+            <summary>
+            Indicator as to whether the field is null at the current record 
+            position and the ordinal specified.
+            </summary>
+            <param name="i"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TAData.TAMTDataReader.IsDBNull(System.String)">
+            <summary>
+            Indicator as to whether the field is null at the current record 
+            position and the column specified.
+            </summary>
+            <param name="columnName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TAData.TAMTDataReader.CreateDataSource">
+            <summary>
+            Create and return a data view of the current record set.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TAData.TAMTDataReader.IsFieldDirty(System.Int32)">
+            <summary>
+            Returns true if the field on the current row has been modified
+            </summary>
+            <param name="col">column index</param>
+            <returns></returns>
+        </member>
+        <member name="M:TAData.TAMTDataReader.IsFieldDirty(System.String)">
+            <summary>
+            Returns true if the field on the current row has been modified
+            </summary>
+            <param name="columnName">Column name</param>
+            <returns></returns>
+        </member>
+        <member name="M:TAData.TAMTDataReader.GetTypedValue``1(System.Int32,``0)">
+            <summary>
+            Returns a value from the current row in the reader
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="i">column index</param>
+            <param name="defaultValue">value if null returned</param>
+            <returns>Value or defaultValue if null returned</returns>
+        </member>
+        <member name="M:TAData.TAMTDataReader.GetTypedValue``1(System.Int32)">
+            <summary>
+            Returns a value from the current row in the reader
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="i">column index</param>
+            <returns>Value</returns>
+        </member>
+        <member name="M:TAData.TAMTDataReader.GetTypedValue``1(System.String)">
+            <summary>
+            Returns a value from the current row in the reader
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="fieldName">Column name</param>
+            <returns>Value</returns>
+        </member>
+        <member name="M:TAData.TAMTDataReader.GetTypedValue``1(System.String,``0)">
+            <summary>
+            Returns a value from the current row in the reader
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="fieldName">Column name</param>
+            <param name="defaultValue">default value if null reutrned</param>
+            <returns>Value or defaultValue if null returned</returns>
+        </member>
+        <member name="P:TAData.TAMTDataReader.Error">
+            <summary>
+            Indicator that an error has occurred
+            </summary>
+        </member>
+        <member name="P:TAData.TAMTDataReader.ErrorMsg">
+            <summary>
+            If an error has ocurred this is the error message
+            </summary>
+        </member>
+        <member name="P:TAData.TAMTDataReader.Row">
+            <summary>
+            Get or set the current row position in the current record set
+            </summary>
+        </member>
+        <member name="P:TAData.TAMTDataReader.IsClosed">
+            <summary>
+            Indicator for a closed record set, our readers are always 
+            open, unless an error has occurred.
+            </summary>
+        </member>
+        <member name="P:TAData.TAMTDataReader.DoAllColumnsHaveAName">
+            <summary>
+            Indicator for all of the columns having valid names
+            </summary>
+        </member>
+        <member name="P:TAData.TAMTDataReader.FieldCount">
+            <summary>
+            Number of columns in the current record set
+            </summary>
+        </member>
+        <member name="P:TAData.TAMTDataReader.FilterValues">
+            <summary>
+            gets/set the filter values on the reader using a Dictionary
+            where the key is the field name and the value is an instance of a
+            ReaderFilterParameters object.
+            </summary>
+        </member>
+        <member name="T:TAData.ReaderFilterParameters">
+            <summary>
+            Used by the TAMTDataReader.FilterValues property to add a 
+            comparion value and operator to the filters used by the MoveNextFilter
+            method of the TAMTDataReader class.
+            </summary>
+        </member>
+        <member name="T:TAData.TAMTException">
+            <summary>
+            Summary description for TAMTException.
+            </summary>
+        </member>
+    </members>
+</doc>

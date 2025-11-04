@@ -1,0 +1,62 @@
+# TerraFusion Grafana Datasource Configuration
+# Government-Grade Data Sources
+
+apiVersion: 1
+
+datasources:
+  # Prometheus - Primary Metrics Source
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    uid: prometheus-uid
+    isDefault: true
+    editable: false
+    jsonData:
+      timeInterval: "5s"
+      queryTimeout: "60s"
+      httpMethod: "POST"
+      customQueryParameters: ""
+      manageAlerts: true
+      alertmanagerUid: "alertmanager-uid"
+    secureJsonData: {}
+
+  # Loki - Log Aggregation
+  - name: Loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    uid: loki-uid
+    editable: false
+    jsonData:
+      timeout: 60
+      maxLines: 1000
+      derivedFields:
+        - datasourceUid: "jaeger-uid"
+          matcherRegex: "trace_id=(\\w+)"
+          name: "TraceID"
+          url: "$${__value.raw}"
+
+  # Jaeger - Distributed Tracing
+  - name: Jaeger
+    type: jaeger
+    access: proxy
+    url: http://jaeger:16686
+    uid: jaeger-uid
+    editable: false
+    jsonData:
+      tracesToMetrics:
+        datasourceUid: "prometheus-uid"
+        queries:
+          - name: "Sample query"
+            query: "http_request_duration_seconds_bucket"
+
+  # AlertManager - Alert Management
+  - name: AlertManager
+    type: alertmanager
+    access: proxy
+    url: http://alertmanager:9093
+    uid: alertmanager-uid
+    editable: false
+    jsonData:
+      implementation: "prometheus"

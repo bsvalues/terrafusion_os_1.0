@@ -1,0 +1,45 @@
+{
+    "type": "FunctionTool",
+    "guid": "{62d1b1eb-f87d-45d5-99b4-21d9bcf6f8cf}",
+    "displayname": "$rc:title",
+    "helpcontent": "61010016",
+    "description": "$rc:description",
+    "product": "200",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "block_add_to_map"
+    ],
+    "params": {
+        "in_utility_network": {
+            "displayname": "$rc:in_utility_network.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    },
+                    {
+                        "type": "GPUtilityNetworkLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_utility_network.descr"
+        },
+        "out_csv_file": {
+            "direction": "out",
+            "displayname": "$rc:out_csv_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "csv"
+                ]
+            },
+            "description": "$rc:out_csv_file.descr"
+        }
+    }
+}

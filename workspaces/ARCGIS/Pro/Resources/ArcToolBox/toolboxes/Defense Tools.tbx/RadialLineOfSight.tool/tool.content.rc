@@ -1,0 +1,18 @@
+{
+    "map": {
+        "description": "Shows  areas visible to one or more observer locations.",
+        "in_observer_features.descr": "The input observer points.",
+        "in_observer_features.title": "Input Observer Features",
+        "in_surface.descr": "The input elevation raster surface.",
+        "in_surface.title": "Input Surface",
+        "observer_height_above_surface.descr": "The height added to the surface elevation of the observer. The default is 2.",
+        "observer_height_above_surface.title": "Observer Height Above Surface (meters)",
+        "out_feature_class.descr": "The output polygon feature class showing visible and nonvisible surface areas.",
+        "out_feature_class.title": "Output Visibility",
+        "params.category1": "Visibility Options",
+        "radius.descr": "The radius of the analysis area from the observer.",
+        "radius.title": "Radius Of Observer (meters)",
+        "summary": "Shows areas visible to one or more observer locations.",
+        "title": "Radial Line Of Sight"
+    }
+}

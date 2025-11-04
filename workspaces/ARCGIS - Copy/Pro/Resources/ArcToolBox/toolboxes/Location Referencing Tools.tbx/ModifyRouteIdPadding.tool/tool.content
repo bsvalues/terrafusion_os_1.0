@@ -1,0 +1,169 @@
+{
+    "type": "FunctionTool",
+    "guid": "{0A4A9218-07A4-497A-8506-CED528063FB9}/ModifyRouteIdPadding",
+    "displayname": "$rc:title",
+    "helpcontent": "23000044",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "78"
+    ],
+    "params": {
+        "in_feature_class": {
+            "displayname": "$rc:in_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_feature_class.descr"
+        },
+        "route_id_padding": {
+            "displayname": "$rc:route_id_padding.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:route_id_padding.dt.title1"
+                    },
+                    {
+                        "type": "GPLong",
+                        "displayname": "$rc:route_id_padding.dt.title2"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "displayname": "$rc:route_id_padding.dt.title3"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "displayname": "$rc:route_id_padding.dt.title4"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:route_id_padding.dt.title5"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:route_id_padding.dt.title6"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "displayname": "$rc:route_id_padding.dt.title7"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "displayname": "$rc:route_id_padding.dt.title8"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "type": "GPBoolean",
+                                "value": "false",
+                                "code": "NO"
+                            },
+                            {
+                                "type": "GPBoolean",
+                                "value": "true",
+                                "code": "YES"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "type": "GPBoolean",
+                                "value": "false",
+                                "code": "NO"
+                            },
+                            {
+                                "type": "GPBoolean",
+                                "value": "true",
+                                "code": "YES"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "LEFT",
+                                "code": "$rc:route_id_padding.domain.item6.LEFT"
+                            },
+                            {
+                                "value": "RIGHT",
+                                "code": "$rc:route_id_padding.domain.item6.RIGHT"
+                            },
+                            {
+                                "value": "LEFT_AND_RIGHT",
+                                "code": "$rc:route_id_padding.domain.item6.LEFT_AND_RIGHT"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "type": "GPBoolean",
+                                "value": "false",
+                                "code": "NO"
+                            },
+                            {
+                                "type": "GPBoolean",
+                                "value": "true",
+                                "code": "YES"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "type": "GPBoolean",
+                                "value": "false",
+                                "code": "NO"
+                            },
+                            {
+                                "type": "GPBoolean",
+                                "value": "true",
+                                "code": "YES"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:route_id_padding.descr"
+        },
+        "out_feature_class": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            }
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

@@ -1,0 +1,16 @@
+{
+    "map": {
+        "class_value_field.descr": "<xdoc><p>The class value field in the input feature class. If not specified, the tool will use the standard class value fields <span class=\"esri_fieldname\">Classvalue</span> and <span class=\"esri_fieldname\">Value</span>. If these fields do not exist, all features will be treated as the same object class.</p></xdoc>",
+        "class_value_field.title": "Class Value Field",
+        "confidence_score_field.descr": "The field in the feature class that contains the confidence scores as output by the object detection method.",
+        "confidence_score_field.title": "Confidence Score Field",
+        "description": "Identifies duplicate features from the output of the Detect Objects Using Deep Learning tool as a postprocessing step and creates a new output with no duplicate features. The Detect Objects Using Deep Learning tool can return more than one bounding box or polygon for the same object, especially as a tiling side effect. If two features overlap more than a given maximum ratio, the feature with the lower confidence value will be removed.",
+        "in_featureclass.descr": "The input feature class or feature layer containing overlapping or duplicate features.",
+        "in_featureclass.title": "Input Feature Class",
+        "max_overlap_ratio.descr": "The maximum overlap ratio for two overlapping features. This is defined as the ratio of intersection area over union area. The default is 0.",
+        "max_overlap_ratio.title": "Max Overlap Ratio",
+        "out_featureclass.descr": "The output feature class with the duplicate features removed.",
+        "out_featureclass.title": "Output Feature Class",
+        "title": "Non Maximum Suppression"
+    }
+}

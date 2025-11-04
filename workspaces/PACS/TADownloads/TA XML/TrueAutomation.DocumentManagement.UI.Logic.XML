@@ -1,0 +1,1209 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.DocumentManagement.UI.Logic</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.DocumentManagement.UI.Logic.Domain.CloseDocumentViewMessage">
+            <summary>
+            Message to close task view
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Domain.CloseDocumentViewMessage.#ctor(TrueAutomation.DocumentManagement.DTOs.DocumentDTO)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="document">DTO of document whose view needs to close</param>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Domain.CloseDocumentViewMessage.document">
+            <summary>
+            DTO of Task whose view needs to close
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.Logic.Domain.UserIdMessage">
+            <summary>
+            Message Class that represents a Document pushed out to various presenters 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Domain.UserIdMessage.#ctor(System.Guid,System.String)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="userid"></param>
+            <param name="target"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Domain.UserIdMessage.#ctor(System.Guid)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="userid"></param>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Domain.UserIdMessage.UserId">
+            <summary>
+            The specific task being pushed out
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Domain.UserIdMessage.Target">
+            <summary>
+            The identifier of the intended target of the message;
+            An empty string indicates a non-targeted broadcast to everyone
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.Logic.Domain.DocumentIsDirtyMessage">
+            <summary>
+            Message that is published when changes have been made on the
+            Task. When the TaskIsDirty flas is set, it forces the app
+            to give an option to the user to save it upon closing.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Domain.DocumentIsDirtyMessage.#ctor(System.Boolean,System.String)">
+            <summary>
+            Standard Constructor
+            </summary>
+            <param name="isDirty"></param>
+            <param name="targetIdentifier"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Domain.DocumentIsDirtyMessage.#ctor(System.Boolean)">
+            <summary>
+            Constructor for non-targeted broadcast with isDirty set
+            </summary>
+            <param name="isDirty">Identifier for intended target</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Domain.DocumentIsDirtyMessage.#ctor">
+            <summary>
+            Convience Constructor for non-targeted broadcast
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Domain.DocumentIsDirtyMessage.TargetIdentifier">
+            <summary>
+            Used to tell publisher who the intended target for the task is.
+            An empty string indicates a non-targeted broadcast to everyone
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Domain.DocumentIsDirtyMessage.Package">
+            <summary>
+            The specific package being pushed out
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.Logic.Domain.DocumentListMessage">
+            <summary>
+            Message class to notify of a changed task list.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Domain.DocumentListMessage.#ctor(System.String)">
+            <summary>
+            Standard constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Domain.DocumentListMessage.SourceIdentifier">
+            <summary>
+            The source of the message
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.Logic.Domain.DocumentMessage">
+            <summary>
+            Message Class that represents a Document pushed out to various presenters 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Domain.DocumentMessage.#ctor(TrueAutomation.DocumentManagement.DTOs.DocumentDTO,System.String)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="document"></param>
+            <param name="target"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Domain.DocumentMessage.#ctor(TrueAutomation.DocumentManagement.DTOs.DocumentDTO)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="document"></param>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Domain.DocumentMessage.document">
+            <summary>
+            The specific task being pushed out
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Domain.DocumentMessage.Target">
+            <summary>
+            The identifier of the intended target of the message;
+            An empty string indicates a non-targeted broadcast to everyone
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.Logic.Domain.DocumentRecordChangedMessage">
+            <summary>
+            Message Class that represents a change to the 
+            CodeFileDetailsRecord
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.Logic.Domain.DocumentRecordChangedMessage.record">
+            <summary>
+            The data that is associated 
+            with this change  message
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Domain.DocumentRecordChangedMessage.#ctor(System.String,TrueAutomation.DocumentManagement.DTOs.DocumentRecordDTO)">
+            <summary>
+            Standard constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Domain.DocumentRecordChangedMessage.SourceIdentifier">
+            <summary>
+            Used to specify the source
+            of this message
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Domain.DocumentRecordChangedMessage.Record">
+            <summary>
+            The data that is associated 
+            with this change  message
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.Logic.Domain.DocumentSelectionMessage">
+            <summary>
+            Message Class that represents a change to the Task Selection
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Domain.DocumentSelectionMessage.#ctor(System.String,System.Guid)">
+            <summary>
+            Standard constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Domain.DocumentSelectionMessage.SourceIdentifier">
+            <summary>
+            The source of the message
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Domain.DocumentSelectionMessage.DocumentId">
+            <summary>
+            The id of the task selected
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.Logic.Domain.PermissionType">
+            <summary>
+            Enum indicating the User Permissions for a document
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.Logic.Domain.PermissionType.DOCUMENT_OWNER">
+            <summary>
+            Owner of the document
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.Logic.Domain.PermissionType.WRITE_FILE">
+            <summary>
+            Write Permission
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.Logic.Domain.PermissionType.READ_WITH_ANNOTATIONS">
+            <summary>
+            Read file with Annotations
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.Logic.Domain.PermissionType.READ_WITHOUT_ANNOTATIONS">
+            <summary>
+            Read file without annotations
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.Logic.Domain.PermissionType.READ_REDACTED">
+            <summary>
+            Read file with RedActions
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.Logic.Domain.VersionSelectionChangedMessage">
+            <summary>
+            Message Class to indicate that a different 
+            version of the document has been selected.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Domain.VersionSelectionChangedMessage.#ctor(System.String,System.String,TrueAutomation.DocumentManagement.DTOs.DocumentVersionDTO,System.Byte[])">
+            <summary>
+            Standard Constructor
+            </summary>
+            <param name="sourceIdentifier"></param>
+            <param name="fileName"></param>
+            <param name="currentVersion"></param>
+            <param name="fileContents"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Domain.VersionSelectionChangedMessage.#ctor(System.String,System.String,TrueAutomation.DocumentManagement.DTOs.DocumentVersionDTO,System.Byte[],System.Collections.Generic.List{TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO})">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Domain.VersionSelectionChangedMessage.#ctor(System.String,System.String,TrueAutomation.DocumentManagement.DTOs.DocumentVersionDTO,System.Byte[],System.Collections.Generic.List{TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO},System.Int32)">
+            <summary>
+            Constructor to save the version number
+            </summary>
+            <param name="sourceIdentifier"></param>
+            <param name="fileName"></param>
+            <param name="currentVersion"></param>
+            <param name="fileContents"></param>
+            <param name="annotations"></param>
+            <param name="versionNumber"></param>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Domain.VersionSelectionChangedMessage.FileName">
+            <summary>
+            The document file name associated with this version
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Domain.VersionSelectionChangedMessage.FileContent">
+            <summary>
+            The document file name associated with this version
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Domain.VersionSelectionChangedMessage.FileContents">
+            <summary>
+            The document file contents in chunks
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Domain.VersionSelectionChangedMessage.Version">
+            <summary>
+            The current version referenc being displayed to the user.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Domain.VersionSelectionChangedMessage.Annotations">
+            <summary>
+            The Annotations associated with this version
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Domain.VersionSelectionChangedMessage.SourceIdentifier">
+            <summary>
+            Used to specify the source
+            of this message
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Domain.VersionSelectionChangedMessage.VersionNumber">
+            <summary>
+            The version number that has been selected
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentListGridPresenter">
+            <summary>
+            Presenter class for the Document list grid
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentListGridPresenter.#ctor(TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentListGrid)">
+            <summary>
+            Standard constructor
+            </summary>
+            <param name="view"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentListGridPresenter.SetupNotifications(System.Object,System.EventArgs)">
+            <summary>
+            Setup subscriptions to get notifications
+            of initial data load
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentListGridPresenter.ReleaseView">
+            <summary>
+            Implemented to satisfy interface requirements -- no special
+            implementation is required here
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentListGridPresenter.Permission">
+            <summary>
+            The permission associated to the user
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.Logic.Presenters.ViewerControlPresenter">
+            <summary>
+            Presenter for the Viewer Control
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.ViewerControlPresenter.#ctor(TrueAutomation.DocumentManagement.UI.Logic.Logic.Views.Interfaces.DocumentViewer.IViewerControl)">
+            <summary>
+            Standard constructor
+            </summary>
+            <param name="view"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.ViewerControlPresenter.View_Data_Changed(System.Object,System.EventArgs)">
+            <summary>
+            To handle data changes
+            in the UI
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.ViewerControlPresenter.SetupNotifications(System.Object,System.EventArgs)">
+            <summary>
+            Setup subscriptions to get notifications
+            of initial data load
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.ViewerControlPresenter.SetPermission(TrueAutomation.MVP.Core.GenericMessage{TrueAutomation.AccessControl.DTOs.ACLType})">
+            <summary>
+            Method that fires when a "GenericMessage" message is put on the Message Bus
+            Will take specified string from the message, and set it as the Permission 
+            property value on the View.
+            </summary>
+            <param name="msg">The "GenericMessage" message that was put on the message bus</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.ViewerControlPresenter.ReleaseView">
+            <summary>
+            Does nothing.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentSaveSplashScreenPresenter">
+            <summary>
+            MVP Presenter for the DocumentSaveSplashScreen
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentSaveSplashScreenPresenter.#ctor(TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentSaveSplashScreen)">
+            <summary>
+            Standard Constructor
+            </summary>
+            <param name="view">View serviced by this presenter</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentSaveSplashScreenPresenter.View_Load(System.Object,System.EventArgs)">
+            <summary>
+            Event handler for when the view is first loaded
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentSaveSplashScreenPresenter.ReleaseView">
+            <summary>
+            Not implemeted
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentVersionParagraphPresenter">
+            <summary>
+            Presenter Class to handle events and changes in the DocumentVersionParagraph
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentVersionParagraphPresenter.#ctor(TrueAutomation.DocumentManagement.UI.Logic.Views.IVersionParagraph)">
+            <summary>
+            Standard constructor
+            </summary>
+            <param name="view"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentVersionParagraphPresenter.View_RowSelection_Changed(System.Object,System.EventArgs)">
+            <summary>
+            To handle data changes
+            in the UI
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentVersionParagraphPresenter.SetupNotifications(System.Object,System.EventArgs)">
+            <summary>
+            Setup subscriptions to get notifications
+            of initial data load
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentVersionParagraphPresenter.ReleaseView">
+            <summary>
+            Implemented to satisfy interface requirements -- no special
+            implementation is required here
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentVersionParagraphPresenter.Permission">
+            <summary>
+            The permission associated to the user
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentViewPresenter">
+            <summary>
+            Presenter for the Document View
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentViewPresenter.#ctor(TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentView)">
+            <summary>
+            Standard Constructor
+            </summary>
+            <param name="view">View serviced by this presenter</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentViewPresenter.SetSubscriptions(System.Object,System.EventArgs)">
+            <summary>
+            Sets up which events on the message bus this presenter is looking for
+            </summary>
+            <param name="sender">not used</param>
+            <param name="e">not used</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentViewPresenter.SetButtonsVisibility(System.Boolean)">
+            <summary>
+            Enable or Disable buttons
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentViewPresenter.View_Load(System.Object,System.EventArgs)">
+            <summary>
+            Event Handler for when the view is loaded
+            Will get the id of the document from the view, set the model accordingly,
+            and push the DTO out to the message bus for the other views/presenters
+            </summary>
+            <param name="sender">not used</param>
+            <param name="e">not used</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentViewPresenter.View_Refresh">
+            <summary>
+            Gets the Title of the Document
+            packages them up, sends them to the view
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentViewPresenter.SetDocumentIsDirty(TrueAutomation.DocumentManagement.UI.Logic.Domain.DocumentIsDirtyMessage)">
+            <summary>
+            Method that fires when a "DocumentIsDirtyMessage" message is put on the Message Bus
+            Will set the DocumentIsDirty on the Model to true.
+            </summary>
+            <param name="msg">The "DocumentIsDirty" message that was put on the message bus</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentViewPresenter.CloseView(TrueAutomation.DocumentManagement.UI.Logic.Domain.CloseDocumentViewMessage)">
+            <summary>
+            Tells the view to close itself
+            </summary>
+            <param name="msg"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentViewPresenter.ReleaseView">
+            <summary>
+            Override for MVP framework
+            Special handling for releasing the view
+            </summary>
+            <remarks>Nothing to do for this view/presenter</remarks>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentViewPresenter.View_SaveChanges(System.Object,System.EventArgs)">
+            <summary>
+            Delegate to handle save events from the associated view.
+            </summary>
+            <param name="sender">The control that sent this notification.
+            </param>
+            <param name="args">Any arguments related to the save operation.
+            </param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentViewPresenter.View_PermissionsButtonClicked(System.Object,System.EventArgs)">
+            <summary>
+            Delegate to handle security permissions.
+            </summary>
+            <param name="sender">The control that sent this notification.
+            </param>
+            <param name="args">Any arguments related to the save operation.
+            </param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.DocumentViewPresenter.SaveSecurityDescriptor(TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO)">
+            <summary>
+            Method to Save a Security Descriptor 
+            </summary>
+            <param name="securityDescriptor"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.Logic.Presenters.FileVersionParagraphPresenter">
+            <summary>
+            Presenter for the Document and Version Info
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.FileVersionParagraphPresenter.#ctor(TrueAutomation.DocumentManagement.UI.Logic.Views.IFileVersionParagraph)">
+            <summary>
+            Standard constructor
+            </summary>
+            <param name="view"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.FileVersionParagraphPresenter.View_Data_Changed(System.Object,System.EventArgs)">
+            <summary>
+            To handle data changes
+            in the UI
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.FileVersionParagraphPresenter.SetupNotifications(System.Object,System.EventArgs)">
+            <summary>
+            Setup subscriptions to get notifications
+            of initial data load
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.FileVersionParagraphPresenter.SetPermission(TrueAutomation.MVP.Core.GenericMessage{System.Nullable{TrueAutomation.AccessControl.DTOs.ACLType}})">
+            <summary>
+            Method that fires when a "GenericMessage" message is put on the Message Bus
+            Will take specified string from the message, and set it as the Permission 
+            property value on the View.
+            </summary>
+            <param name="msg">The "GenericMessage" message that was put on the message bus</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.FileVersionParagraphPresenter.SetDialogDisplayMode(TrueAutomation.MVP.Core.GenericMessage{System.Boolean})">
+            <summary>
+            Method that fires when a "GenericMessage" message is put on the Message Bus
+            Will take specified boolean from the message, and set it as the ShowMaximized 
+            property value on the View.
+            </summary>
+            <param name="msg">The "GenericMessage" message that was put on the message bus</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.FileVersionParagraphPresenter.MapPermissionsToEnum(System.String)">
+            <summary>
+            This method maps the incoming Permission string to its corresponding
+            Enum PermissionType value that is specific to the Document Management system.
+            </summary>
+            <param name="permission">Permission Type string</param>
+            <returns>A PermissionType Enum value</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Presenters.FileVersionParagraphPresenter.ReleaseView">
+            <summary>
+            Implemented to satisfy interface requirements -- no special
+            implementation is required here
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentListGrid">
+            <summary>
+            interface for the Document list grid
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentListGrid.ClearTable">
+            <summary>
+            Method to clear the table
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentListGrid.DocumentListItems">
+            <summary>
+            List of Document list items
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentListGrid.TaskAttachments">
+            <summary>
+            List of Document list items
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentListGrid.LoadStartedTime">
+            <summary>
+            Date and Time that the data began loading
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentListGrid.LoadEndedTime">
+            <summary>
+            Date and Time that the data stopped loading
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentListGrid.SelectedId">
+            The Id of the selected document
+        </member>
+        <member name="E:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentListGrid.ListChanged">
+            <summary>
+            Event handler for whenver an item is added or removed from the list.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentListGrid.UserId">
+            <summary>
+            The User Id accessing the document list grid
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.Logic.Logic.Views.Interfaces.DocumentViewer.IViewerControl">
+            <summary>
+            Viewer Control interface
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Logic.Views.Interfaces.DocumentViewer.IViewerControl.ShowVersionContentInViewer">
+            <summary>
+            Method invokes the Document Viewer control to display the version content
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Logic.Views.Interfaces.DocumentViewer.IViewerControl.AddContentTab(System.Windows.Forms.TabPage)">
+            <summary>
+            Adds the specified tab page to the document TabControl.
+            </summary>
+            <param name="page"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Logic.Views.Interfaces.DocumentViewer.IViewerControl.ShowDocumentTabPage(System.Int32)">
+            <summary>
+            Shows the Document Tab with the image displayed on new version selection
+            </summary>
+            <param name="tabNumber">Tab Page Number to display</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Logic.Views.Interfaces.DocumentViewer.IViewerControl.AddCommand(System.String,System.Action)">
+            <summary>
+            Adds a right-aligned ToolStripButton to the Annotation Specific ToolStrip
+            </summary>
+            <param name="name"></param>
+            <param name="invocationTarget"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Logic.Views.Interfaces.DocumentViewer.IViewerControl.AddCommand(System.Windows.Forms.ToolStripItem)">
+            <summary>
+            Adds a right-aligned ToolStripItem to the Annotation Specific ToolStrip
+            </summary>
+            <param name="item"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Logic.Views.Interfaces.DocumentViewer.IViewerControl.SetDocument(System.Byte[],System.Collections.Generic.List{TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO},System.String)">
+            <summary>
+            Called by the main form to set a new document into the viewer
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Logic.Views.Interfaces.DocumentViewer.IViewerControl.SetDocument(System.String,System.String)">
+            <summary>
+            Called by the main form to set a new document into the viewer
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Logic.Views.Interfaces.DocumentViewer.IViewerControl.Record">
+            <summary>
+            Data for this control
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.DocumentManagement.UI.Logic.Logic.Views.Interfaces.DocumentViewer.IViewerControl.Data_Changed">
+            <summary>
+            Event handler to handle
+            data changes
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Logic.Views.Interfaces.DocumentViewer.IViewerControl.Permission">
+            <summary>
+            User Permission on this document
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Logic.Views.Interfaces.DocumentViewer.IViewerControl.DocumentFileContent">
+            <summary>
+            File Content for display
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Logic.Views.Interfaces.DocumentViewer.IViewerControl.CurrentVersion">
+            <summary>
+            The current version referenc being displayed to the user.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Logic.Views.Interfaces.DocumentViewer.IViewerControl.Annotations">
+            <summary>
+            Annotations for display
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Logic.Views.Interfaces.DocumentViewer.IViewerControl.SupportsMenu">
+            <summary>
+            Enables/Disables the Content Menu for the viewer.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Logic.Views.Interfaces.DocumentViewer.IViewerControl.SupportsStandardTools">
+            <summary>
+            Enables/Disables the Standard ToolsStrip (Save, Print, etc...)
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Logic.Views.Interfaces.DocumentViewer.IViewerControl.SupportsAnnotationTools">
+            <summary>
+            Enables/Disables the Annotation Specific ToolStrip.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Logic.Views.Interfaces.DocumentViewer.IViewerControl.SupportsDocumentTools">
+            <summary>
+            Enables/Disables the Document Specific ToolStrip.
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.DocumentManagement.UI.Logic.Logic.Views.Interfaces.DocumentViewer.IViewerControl.SaveDocumentAndRemainOnScreen">
+            <summary>
+            An event handler to save the document and remain on the screen without closing. 
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentParagraph">
+            <summary>
+            Provides an Interface for the 
+            document paragraph
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentParagraph.Record">
+            <summary>
+            data for this view.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentSaveSplashScreen">
+            <summary>
+            Provides an Interface for the 
+            document splash screen view
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentSaveSplashScreen.CloseSplashScreen(System.Boolean)">
+            <summary>
+            Method to handle activities when the splash screen is closed
+            </summary>
+            <param name="useUserInteraction"></param>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentSaveSplashScreen.TimeOut">
+            <summary>
+            The maximum time available to save the document
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentSaveSplashScreen.NotificationMessage">
+            <summary>
+            The message to be displayed on the splash screen
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentSaveSplashScreen.Record">
+            <summary>
+            The original Document Record
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentSaveSplashScreen.SaveRecord">
+            <summary>
+            Document Record to be saved
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentSaveSplashScreen.UserName">
+            <summary>
+            The user corresponding to the Document Record
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentSaveSplashScreen.ValidationErrors">
+            <summary>
+            Any validation errors when document being aved.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentSaveSplashScreen.SaveSuccessful">
+            <summary>
+            Flag denote if save was successfull
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentSaveSplashScreen.UserId">
+            <summary>
+            The id of the user
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentSaveSplashScreen.DocumentId">
+            <summary>
+            The id of the document being saved
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentSaveSplashScreen.CurrentVersion">
+            <summary>
+            Current Version of the document
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentView">
+            <summary>
+            Provides an Interface for the 
+            document view
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentView.SaveAndRemainOnScreen">
+            <summary>
+            Save the document on 'Save' tool strip button click and
+            continue to remain on the screen without closing.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentView.Record">
+            <summary>
+            Data for the view
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentView.UpdatedFileContent">
+            <summary>
+            Byte array of the modified file
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentView.Title">
+            <summary>
+            Title for the view
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentView.FileName">
+            <summary>
+            Name of the file to be opened, if new
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentView.FilePath">
+            <summary>
+            Path of the file to be opened, if new
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentView.DocumentId">
+             <summary>
+             Id of the
+            document
+             </summary>
+        </member>
+        <member name="E:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentView.SaveChanges">
+            <summary>
+            An event handler for the save-changes event. Our presenter
+            will generally want to register with this in order to handle
+            the logic required to apply any changes.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentView.ErrorString">
+            <summary>
+            Error string if any
+            returned after a Save operation
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentView.ValidationErrors">
+            <summary>
+            Used to show validation errors
+            if any
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentView.PermissionsButtonClicked">
+            <summary>
+            Used for saving secuirty info
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentView.UserName">
+            <summary>
+            logged in username
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentView.UserId">
+            <summary>
+            The Guid Identifier of the user accessing the view.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentView.IsOkEnabled">
+            <summary>
+            indicates Document Load Status
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentView.Permission">
+            <summary>
+            User Permission on this document
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentView.ShowMaximized">
+            <summary>
+            Dialog display mode
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentView.IsPromptToBeDisplayed">
+            <summary>
+            Flag to determine if the save prompt needs to be displayed to the user
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentView.Groups">
+            <summary>
+            List of all available groups
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentView.Users">
+            <summary>
+            List of all available users
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentView.ShouldTempFilesDeleted">
+            <summary>
+            Flag to determine the deletion of the temp files
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentView.OkBtnClicked">
+            <summary>
+            Flags the condition when the Close button is clicked
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentView.ShouldRemainOnScreen">
+            <summary>
+            Flag the condition when user should remain on screen after clicking on the close button
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentView.SavedRecord">
+            <summary>
+            The Document Record dto that needs to be saved
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IDocumentView.SaveSuccessful">
+            <summary>
+            The flag to determine if the save was successful
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.Logic.Views.IFileVersionParagraph">
+            <summary>
+            Provides an Interface for the 
+             file details  and vesrion info of the document
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Views.IFileVersionParagraph.ShowVersionContentInViewer">
+            <summary>
+            Method invokes the Document Viewer control to display the version content
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IFileVersionParagraph.Record">
+            <summary>
+            Data for this control
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IFileVersionParagraph.DocumentFileContent">
+            <summary>
+            File Content for display
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IFileVersionParagraph.Annotations">
+            <summary>
+            Annotations for display
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.DocumentManagement.UI.Logic.Views.IFileVersionParagraph.Data_Changed">
+            <summary>
+            Event handler to handle
+            data changes
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IFileVersionParagraph.Permission">
+            <summary>
+            User Permission on this document
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IFileVersionParagraph.ShowMaximized">
+            <summary>
+            Dialog display mode
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.Logic.Views.IVersionParagraph">
+            <summary>
+            Provides an Interface for the 
+            version paragraph
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IVersionParagraph.Record">
+            <summary>
+            data for this view.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IVersionParagraph.SelectedVersion">
+            <summary>
+            Indicates the selected row (document version) in the control 
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.IVersionParagraph.CurrentVersion">
+            <summary>
+            Get/Set the current version of the document
+            </summary>
+        </member>
+        <member name="E:TrueAutomation.DocumentManagement.UI.Logic.Views.IVersionParagraph.RowSelection_Changed">
+            <summary>
+            Fires when the selected row has changed
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel">
+            <summary>
+            Class that actually creates/modifies
+            data through the DocumentManagement Service
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.userId">
+            <summary>
+            Logged-in userid
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.documentID">
+            <summary>
+            Id of the document
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.documentIsDirty">
+            <summary>
+            Is Dirty flag
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.document">
+            <summary>
+            The DTO object for the Document Id of
+            this Document
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.securityRecord">
+            <summary>
+            Security Record for 
+            this Document
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.currentVersionNumber">
+            <summary>
+            Current version number of the document
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.record">
+            <summary>
+            Data record used
+            in this control
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.errorString">
+            <summary>
+            An error string to display
+            validation or Save operation errors
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.validationErrors">
+            <summary>
+            For validation errors
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.BuildGetFileCriteria(System.Guid,System.Int32,System.Boolean)">
+            <summary>
+            Creates a DocumentDTO with the supplied criteria to pass on to the GetFile service method
+            </summary>
+            <param name="docGuid">Document GUID</param>
+            <param name="workingVersionNumber">Specific version number (or) ZERO for Latest Version</param>
+            <param name="includeFile">Whether the File Contents should be retrieved or just the thumbnails</param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.GetFileContentForDocumentVersion(System.Guid,System.Int32,System.Boolean,System.Nullable{TrueAutomation.AccessControl.DTOs.ACLType})">
+            <summary>
+            Loads the content for the document
+            </summary>
+            <returns>DocumentFileAnnotationDTO object with File and Annotation content</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.LoadDocumentRecordData(System.Guid)">
+            <summary>
+            Returns a document, its versions and thumbnails for the requested document
+            </summary>
+            <param name="documentId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.LoadNewDocument">
+            <summary>
+            Loads the New Document 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.CompareHash(System.Byte[],System.Byte[])">
+            <summary>
+            Compares the HashValue of the file version present in the DB
+            with the computed hash of the incoming file version contents.
+            </summary>
+            <param name="dbHashValue">Hash Value</param>
+            <param name="currentContents">Byte Contents of the file</param>
+            <returns>True if contents are same</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.SaveDocumentChanges(TrueAutomation.DocumentManagement.DTOs.DocumentRecordDTO,TrueAutomation.DocumentManagement.DTOs.DocumentRecordDTO,System.String)">
+            <summary>
+            Saves a new version of the document with the file content changes
+            </summary>
+            <param name="record">the original document</param>
+            <param name="changedRecord">the document record with the changes</param>
+            <param name="userName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.CreateDocumentDTOForNewDocument(TrueAutomation.DocumentManagement.DTOs.DocumentRecordDTO,System.String)">
+            <summary>
+            Helper method to create a Document DTO with the new File contents.
+            </summary>
+            <param name="changedRecord">the document record with the changes</param>
+            <param name="userName">Name of User modifying the document</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.SaveDocumentChangesInChunks(TrueAutomation.DocumentManagement.DTOs.DocumentRecordDTO,TrueAutomation.DocumentManagement.DTOs.DocumentRecordDTO,System.String)">
+            <summary>
+            Saves a new version of the document with the file content changes
+            </summary>
+            <param name="record">the original document</param>
+            <param name="changedRecord">the document record with the changes</param>
+            <param name="userName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.GetLatestVersionDocumentsWithThumbnails(System.Guid,System.Collections.Generic.List{System.Guid})">
+            <summary>
+            Get Document DTOs for specified Ids
+            </summary>
+            <param name="userid"></param>
+            <param name="documentIds"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.UpdateDocument(TrueAutomation.DocumentManagement.DTOs.DocumentDTO)">
+            <summary>
+            Update Document with the SecurityDescriptorId
+            </summary>
+            <param name="dto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.DeleteDocument(TrueAutomation.DocumentManagement.DTOs.DocumentDTO)">
+            <summary>
+            Update Document with the SecurityDescriptorId
+            </summary>
+            <param name="dto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.ValidateData">
+            <summary>
+            Perform validations of the Document object
+            ensure all neccessary data is present
+            </summary>
+            <returns>Dictionary of errors</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.GetAllFileChunks(System.Guid,System.Int32,System.String)">
+            <summary>
+            Get the file contents (as a list of byte arrays(chunks)) for a requested version of the document
+            </summary>
+            <param name="documentid"></param>
+            <param name="versionNumber"></param>
+            <param name="permission"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.SaveSecurityDescriptor(TrueAutomation.AccessControl.DTOs.SecurityDescriptorDTO)">
+            <summary>
+            Saves a security descriptor object to the system.
+            </summary>
+            <param name="securityDescriptor"></param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.SaveFileChunks(System.Collections.Generic.List{System.Byte[]},System.Guid,System.Int32,System.Boolean)">
+            <summary>
+            Save the chunks of file one by one
+            </summary>
+            <param name="fileChunks"></param>
+            <param name="documentId"></param>
+            <param name="latestVersionNumber"></param>
+            <param name="isRedactedFileSave"></param>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.ErrorString">
+            <summary>
+            An error string set during
+            any save or pre-save operations
+            UI may choose to display 
+            this to User
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.UserId">
+            <summary>
+            The UserId trying to access the document.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.SecurityRecord">
+            <summary>
+            Security Record for this Document
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.ValidationErrors">
+            <summary>
+            Validation errors
+            found during a Save operation
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.DocumentIsDirty">
+            <summary>
+            used to verify the record
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.IsSaveSuccessful">
+            <summary>
+            Boolean to indicate if Document Save is successful
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.Record">
+            <summary>
+            Data record used in this view
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.Document">
+            <summary>
+            The document dto used in this view
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.DocumentID">
+            <summary>
+            The ID of the Document
+            NOTE: Setting this will cause the DocumentDTO property to be set appropriately
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.DocumentDTO">
+            <summary>
+            The Data Transfer Object of the Document itself
+            NOTE: Setting this will cause the DocumentID property to be set appropriately
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.DocumentName">
+            <summary>
+            The Name of the Document
+            Pulls from the DocumentDTO, setting this will change it on the DTO
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.DocumentIsReadOnly">
+            <summary>
+            used to verify the permission of this document
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.UI.Logic.Views.Models.DocumentModel.CurrentVersionNumber">
+            <summary>
+            The current version number of the document being viewed
+            </summary>
+        </member>
+    </members>
+</doc>

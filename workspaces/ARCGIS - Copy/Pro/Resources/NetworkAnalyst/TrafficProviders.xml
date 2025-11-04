@@ -1,0 +1,1397 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TrafficTools>
+  <UpdateTrafficData>
+    <providers>
+      <provider name="HERE North America" clsid="{1D73B9B2-EEEE-4a3f-9919-5E90C9CABA39}" updateIntervalInMinutes="5" predictionCutoffInMinutes="720" maxFileAgeInMinutes="720">
+        <regions>
+          <region name="Alabama/Georgia">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA0101/PredictiveFlowA0101.xml.gz" />
+          </region>
+          <region name="Florida">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA0102/PredictiveFlowA0102.xml.gz" />
+          </region>
+          <region name="Eastern PA/Southern NJ/Delaware">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA0103/PredictiveFlowA0103.xml.gz" />
+          </region>
+          <region name="Western PA/New York">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA0104/PredictiveFlowA0104.xml.gz" />
+          </region>
+          <region name="Northern CA/Nevada">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA0105/PredictiveFlowA0105.xml.gz" />
+          </region>
+          <region name="Southern CA &amp; Las Vegas">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA0106/PredictiveFlowA0106.xml.gz" />
+          </region>
+          <region name="Illinois/Indiana/Wisconsin">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA0107/PredictiveFlowA0107.xml.gz" />
+          </region>
+          <region name="Michigan/Ohio">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA0108/PredictiveFlowA0108.xml.gz" />
+          </region>
+          <region name="Virginia/Maryland/North Carolina">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA0110/PredictiveFlowA0110.xml.gz" />
+          </region>
+          <region name="Northern Texas/Oklahoma">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA0111/PredictiveFlowA0111.xml.gz" />
+          </region>
+          <region name="Southern Texas">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA0112/PredictiveFlowA0112.xml.gz" />
+          </region>
+          <region name="AR/LA/MS/TN">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA0113/PredictiveFlowA0113.xml.gz" />
+          </region>
+          <region name="Oregon/Washington">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA0114/PredictiveFlowA0114.xml.gz" />
+          </region>
+          <region name="Arizona/New Mexico/Texas">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA0115/PredictiveFlowA0115.xml.gz" />
+          </region>
+          <region name="Colorado/Utah">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA0116/PredictiveFlowA0116.xml.gz" />
+          </region>
+          <region name="Idaho/Montana/Wyoming">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA0117/PredictiveFlowA0117.xml.gz" />
+          </region>
+          <region name="North Central States">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA0118/PredictiveFlowA0118.xml.gz" />
+          </region>
+          <region name="Kansas/Missouri/Southern Illinois">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA0119/PredictiveFlowA0119.xml.gz" />
+          </region>
+          <region name="New York/Northern NJ/Connecticut">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA0120/PredictiveFlowA0120.xml.gz" />
+          </region>
+          <region name="Kentucky/Tennessee/Indiana">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA0121/PredictiveFlowA0121.xml.gz" />
+          </region>
+          <region name="Ohio/Maryland/West Virginia">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA0122/PredictiveFlowA0122.xml.gz" />
+          </region>
+          <region name="North Carolina/South Carolina">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA0125/PredictiveFlowA0125.xml.gz" />
+          </region>
+          <region name="Hawaii">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA0126/PredictiveFlowA0126.xml.gz" />
+          </region>
+          <region name="New England">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA0129/PredictiveFlowA0129.xml.gz" />
+          </region>
+          <region name="Alaska">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA0133/PredictiveFlowA0133.xml.gz" />
+          </region>
+          <region name="Puerto Rico">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA0832/PredictiveFlowA0832.xml.gz" />
+          </region>
+          <region name="Ontario">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA1C09/PredictiveFlowA1C09.xml.gz" />
+          </region>
+          <region name="British Columbia">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA1C23/PredictiveFlowA1C23.xml.gz" />
+          </region>
+          <region name="Quebec">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA1C24/PredictiveFlowA1C24.xml.gz" />
+          </region>
+          <region name="Alberta">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA1C27/PredictiveFlowA1C27.xml.gz" />
+          </region>
+          <region name="Manitoba">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA1C28/PredictiveFlowA1C28.xml.gz" />
+          </region>
+          <region name="New Brunswick/Nova Scotia/Prince Edward Island">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA1C30/PredictiveFlowA1C30.xml.gz" />
+          </region>
+          <region name="Saskatchewan">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA1C31/PredictiveFlowA1C31.xml.gz" />
+          </region>
+          <region name="Newfoundland and Labrador">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA1C34/PredictiveFlowA1C34.xml.gz" />
+          </region>
+          <region name="Northwest Territories/Nunavut/Yukon">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA1C35/PredictiveFlowA1C35.xml.gz" />
+          </region>
+          <region name="Mexico">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA5F36/PredictiveFlowA5F36.xml.gz" />
+          </region>
+        </regions>
+      </provider>
+      <provider name="HERE Europe" clsid="{1D73B9B2-EEEE-4a3f-9919-5E90C9CABA39}" updateIntervalInMinutes="5" predictionCutoffInMinutes="720" maxFileAgeInMinutes="720">
+        <regions>
+          <region name="Andorra">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE0301/PredictiveFlowE0301.xml.gz" />
+          </region>
+          <region name="Austria">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE0A01/PredictiveFlowE0A01.xml.gz" />
+          </region>
+          <region name="Belgium">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE0601/PredictiveFlowE0601.xml.gz" />
+          </region>
+          <region name="Bulgaria">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE1801/PredictiveFlowE1801.xml.gz" />
+          </region>
+          <region name="Croatia">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE3C33/PredictiveFlowE3C33.xml.gz" />
+          </region>
+          <region name="Cyprus">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE1218/PredictiveFlowE1218.xml.gz" />
+          </region>
+          <region name="Czechia">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE2225/PredictiveFlowE2225.xml.gz" />
+          </region>
+          <region name="Denmark">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE1909/PredictiveFlowE1909.xml.gz" />
+          </region>
+          <region name="Estonia">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE4259/PredictiveFlowE4259.xml.gz" />
+          </region>
+          <region name="Finland">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE1617/PredictiveFlowE1617.xml.gz" />
+          </region>
+          <region name="France">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE1F32/PredictiveFlowE1F32.xml.gz" />
+          </region>
+          <region name="Germany">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE0D01/PredictiveFlowE0D01.xml.gz" />
+          </region>
+          <region name="Greece">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE1118/PredictiveFlowE1118.xml.gz" />
+          </region>
+          <region name="Hungary">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE0B01/PredictiveFlowE0B01.xml.gz" />
+          </region>
+          <region name="Ireland">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE3242/PredictiveFlowE3242.xml.gz" />
+          </region>
+          <region name="Italy">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE0501/PredictiveFlowE0501.xml.gz" />
+          </region>
+          <region name="Latvia">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE3951/PredictiveFlowE3951.xml.gz" />
+          </region>
+          <region name="Lithuania">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE2C43/PredictiveFlowE2C43.xml.gz" />
+          </region>
+          <region name="Luxembourg">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE1701/PredictiveFlowE1701.xml.gz" />
+          </region>
+          <region name="Netherlands">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE3817/PredictiveFlowE3817.xml.gz" />
+          </region>
+          <region name="Norway">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE2F49/PredictiveFlowE2F49.xml.gz" />
+          </region>
+          <region name="Poland">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE2305/PredictiveFlowE2305.xml.gz" />
+          </region>
+          <region name="Portugal">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE4842/PredictiveFlowE4842.xml.gz" />
+          </region>
+          <region name="Romania">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE1E01/PredictiveFlowE1E01.xml.gz" />
+          </region>
+          <region name="Russia, Central Federal District">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE0723/PredictiveFlowE0723.xml.gz" />
+          </region>
+          <region name="Russia, Northwestern Federal District">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE0724/PredictiveFlowE0724.xml.gz" />
+          </region>
+          <region name="Russia, Ural Federal District">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE0725/PredictiveFlowE0725.xml.gz" />
+          </region>
+          <region name="Russia, Volga Federal District">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE0726/PredictiveFlowE0726.xml.gz" />
+          </region>
+          <region name="Russia, Southern Federal District">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE0727/PredictiveFlowE0727.xml.gz" />
+          </region>
+          <region name="Russia, Siberian Federal District">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE0728/PredictiveFlowE0728.xml.gz" />
+          </region>
+          <region name="Serbia">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE2D52/PredictiveFlowE2D52.xml.gz" />
+          </region>
+          <region name="Slovakia">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE2551/PredictiveFlowE2551.xml.gz" />
+          </region>
+          <region name="Slovenia">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE4933/PredictiveFlowE4933.xml.gz" />
+          </region>
+          <region name="Spain">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE2E17/PredictiveFlowE2E17.xml.gz" />
+          </region>
+          <region name="Sweden">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE3E33/PredictiveFlowE3E33.xml.gz" />
+          </region>
+          <region name="Switzerland">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE1409/PredictiveFlowE1409.xml.gz" />
+          </region>
+          <region name="Turkey, West">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE3339/PredictiveFlowE3339.xml.gz" />
+          </region>
+          <region name="Turkey, Central/East">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE3340/PredictiveFlowE3340.xml.gz" />
+          </region>
+          <region name="United Kingdom">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE1C07/PredictiveFlowE1C07.xml.gz" />
+          </region>
+          <region name="Ukraine">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableE4633/PredictiveFlowE4633.xml.gz" />
+          </region>
+        </regions>
+      </provider>
+      <provider name="HERE South America" clsid="{1D73B9B2-EEEE-4a3f-9919-5E90C9CABA39}" updateIntervalInMinutes="5" predictionCutoffInMinutes="720" maxFileAgeInMinutes="720" >
+        <regions>
+          <region name="Argentina">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA2A47/PredictiveFlowA2A47.xml.gz" />
+          </region>
+          <region name="Brazil, South/Southeast">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA2B14/PredictiveFlowA2B14.xml.gz" />
+          </region>
+          <region name="Brazil, North/Northeast/Central-West">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA2B15/PredictiveFlowA2B15.xml.gz" />
+          </region>
+          <region name="Chile">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA3C50/PredictiveFlowA3C50.xml.gz" />
+          </region>
+          <region name="Colombia">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA3208/PredictiveFlowA3208.xml.gz" />
+          </region>
+          <region name="Peru">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableA4739/PredictiveFlowA4739.xml.gz" />
+          </region>
+        </regions>
+      </provider>
+      <provider name="HERE Middle East &amp; Africa" clsid="{1D73B9B2-EEEE-4a3f-9919-5E90C9CABA39}" updateIntervalInMinutes="5" predictionCutoffInMinutes="720" maxFileAgeInMinutes="720" >
+        <regions>
+          <region name="Bahrain">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableF0E58/PredictiveFlowF0E58.xml.gz" />
+          </region>
+          <region name="Kuwait">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableF2130/PredictiveFlowF2130.xml.gz" />
+          </region>
+          <region name="Oman">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableF1626/PredictiveFlowF1626.xml.gz" />
+          </region>
+          <region name="Qatar">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableF2252/PredictiveFlowF2252.xml.gz" />
+          </region>
+          <region name="Saudi Arabia">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableF0926/PredictiveFlowF0926.xml.gz" />
+          </region>
+          <region name="South Africa">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableD0A17/PredictiveFlowD0A17.xml.gz" />
+          </region>
+          <region name="United Arab Emirates">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableF2D19/PredictiveFlowF2D19.xml.gz" />
+          </region>
+        </regions>
+      </provider>
+	  <provider name="HERE Asia Pacific" clsid="{1D73B9B2-EEEE-4a3f-9919-5E90C9CABA39}" updateIntervalInMinutes="5" predictionCutoffInMinutes="720" maxFileAgeInMinutes="720" >
+        <regions>
+          <region name="Australia, Capital Territory">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableF0153/PredictiveFlowF0153.xml.gz" />
+          </region>
+          <region name="Australia, New South Wales">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableF0254/PredictiveFlowF0254.xml.gz" />
+          </region>
+          <region name="Australia, Victoria">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableF0301/PredictiveFlowF0301.xml.gz" />
+          </region>
+          <region name="Australia, Queensland">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableF0456/PredictiveFlowF0456.xml.gz" />
+          </region>
+          <region name="Australia, South Australia">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableF0557/PredictiveFlowF0557.xml.gz" />
+          </region>
+          <region name="Australia, Western Australia">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableF0658/PredictiveFlowF0658.xml.gz" />
+          </region>
+          <region name="Australia, Tasmania">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableF0759/PredictiveFlowF0759.xml.gz" />
+          </region>
+          <region name="Australia, Northern Territory">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableF0860/PredictiveFlowF0860.xml.gz" />
+          </region>
+          <region name="India, Central">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableF2502/PredictiveFlowF2502.xml.gz" />
+          </region>
+          <region name="India, South">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableF2503/PredictiveFlowF2503.xml.gz" />
+          </region>
+          <region name="India, North">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableF2504/PredictiveFlowF2504.xml.gz" />
+          </region>
+          <region name="Indonesia">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableF2C23/PredictiveFlowF2C23.xml.gz" />
+          </region>
+          <region name="Malaysia">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableF0F05/PredictiveFlowF0F05.xml.gz" />
+          </region>
+          <region name="New Zealand">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableF1941/PredictiveFlowF1941.xml.gz" />
+          </region>
+          <region name="Philippines">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableF2834/PredictiveFlowF2834.xml.gz" />
+          </region>
+          <region name="Singapore">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableF2A10/PredictiveFlowF2A10.xml.gz" />
+          </region>
+          <region name="Taiwan">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableF1D13/PredictiveFlowF1D13.xml.gz" />
+          </region>
+          <region name="Thailand">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableF3219/PredictiveFlowF3219.xml.gz" />
+          </region>
+          <region name="Vietnam">
+            <feed url="https://mlrealtime.traffic.data.here.com/ver3.3-predictive/tableF2732/PredictiveFlowF2732.xml.gz" />
+          </region>
+        </regions>
+      </provider>
+      <provider name="TomTom North America" clsid="{AE41A359-7951-42e8-BA38-0D288A3B8D45}" updateIntervalInMinutes="5" predictionCutoffInMinutes="120" maxFileAgeInMinutes="720">
+        <regions>
+          <region name="Canada">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/CAN-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Mexico">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/MEX-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="United States Middle">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/USA_M-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="United States North">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/USA_N-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="United States Southeast">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/USA_SE-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="United States Southwest">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/USA_SW-HDF_DETAILED-TMC/" />
+          </region>
+        </regions>
+      </provider>
+      <provider name="TomTom Europe" clsid="{AE41A359-7951-42e8-BA38-0D288A3B8D45}" updateIntervalInMinutes="5" predictionCutoffInMinutes="120" maxFileAgeInMinutes="720">
+        <regions>
+          <region name="Andorra">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/AND-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Austria">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/AUT-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Belgium">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/BEL-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Bulgaria">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/BGR-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Croatia">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/HRV-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Cyprus">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/CYP-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Czech Republic">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/CZE-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Denmark">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/DNK-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Finland">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/FIN-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="France">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/FRA-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Germany">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/DEU-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Greece">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/GRC-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Hungary">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/HUN-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Ireland">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/IRL-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Italy">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/ITA-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Liechtenstein">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/LIE-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Luxembourg">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/LUX-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Netherlands">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/NLD-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Norway">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/NOR-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Poland">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/POL-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Portugal">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/PRT-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Romania">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/ROU-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Serbia">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/SRB-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Slovakia">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/SVK-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Slovenia">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/SVN-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Spain">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/ESP-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Sweden">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/SWE-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Switzerland">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/CHE-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="United Kingdom">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/GBR-HDF_DETAILED-TMC/" />
+          </region>
+        </regions>
+      </provider>
+      <provider name="TomTom Asia Pacific" clsid="{AE41A359-7951-42e8-BA38-0D288A3B8D45}" updateIntervalInMinutes="5" predictionCutoffInMinutes="120" maxFileAgeInMinutes="720">
+        <regions>
+          <region name="Australia">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/AUS-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Thailand">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/THA-HDF_DETAILED-TMC/" />
+          </region>
+        </regions>
+      </provider>
+      <provider name="TomTom Middle East &amp; Africa" clsid="{AE41A359-7951-42e8-BA38-0D288A3B8D45}" updateIntervalInMinutes="5" predictionCutoffInMinutes="120" maxFileAgeInMinutes="720">
+        <regions>
+          <region name="South Africa">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/ZAF-HDF_DETAILED-TMC/" />
+          </region>
+        </regions>
+      </provider>
+      <provider name="TomTom World" clsid="{AE41A359-7951-42e8-BA38-0D288A3B8D45}" updateIntervalInMinutes="5" predictionCutoffInMinutes="120" maxFileAgeInMinutes="720">
+        <regions>
+          <region name="Andorra">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/AND-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Australia">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/AUS-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Austria">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/AUT-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Belgium">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/BEL-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Bulgaria">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/BGR-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Canada">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/CAN-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Croatia">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/HRV-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Cyprus">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/CYP-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Czech Republic">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/CZE-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Denmark">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/DNK-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Finland">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/FIN-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="France">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/FRA-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Germany">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/DEU-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Greece">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/GRC-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Hungary">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/HUN-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Ireland">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/IRL-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Italy">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/ITA-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Liechtenstein">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/LIE-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Luxembourg">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/LUX-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Mexico">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/MEX-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Netherlands">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/NLD-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Norway">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/NOR-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Poland">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/POL-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Portugal">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/PRT-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Romania">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/ROU-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Serbia">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/SRB-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Slovakia">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/SVK-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Slovenia">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/SVN-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="South Africa">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/ZAF-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Spain">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/ESP-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Sweden">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/SWE-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Switzerland">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/CHE-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="Thailand">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/THA-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="United Kingdom">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/GBR-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="United States Middle">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/USA_M-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="United States North">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/USA_N-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="United States Southeast">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/USA_SE-HDF_DETAILED-TMC/" />
+          </region>
+          <region name="United States Southwest">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdf-detailed/USA_SW-HDF_DETAILED-TMC/" />
+          </region>
+        </regions>
+      </provider>
+    </providers>
+  </UpdateTrafficData>
+  <UpdateTrafficIncidents>
+    <providers>
+      <provider name="HERE North America" clsid="{1D73B9B2-EEEE-4a3f-9919-5E90C9CABA39}" >
+        <regions>
+          <region name="Alabama/Georgia">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA0101/IncidentA0101.xml.gz" />
+          </region>
+          <region name="Florida">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA0102/IncidentA0102.xml.gz" />
+          </region>
+          <region name="Eastern PA/Southern NJ/Delaware">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA0103/IncidentA0103.xml.gz" />
+          </region>
+          <region name="Western PA/New York">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA0104/IncidentA0104.xml.gz" />
+          </region>
+          <region name="Northern CA/Nevada">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA0105/IncidentA0105.xml.gz" />
+          </region>
+          <region name="Southern CA &amp; Las Vegas">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA0106/IncidentA0106.xml.gz" />
+          </region>
+          <region name="Illinois/Indiana/Wisconsin">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA0107/IncidentA0107.xml.gz" />
+          </region>
+          <region name="Michigan/Ohio">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA0108/IncidentA0108.xml.gz" />
+          </region>
+          <region name="Virginia/Maryland/North Carolina">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA0110/IncidentA0110.xml.gz" />
+          </region>
+          <region name="Northern Texas/Oklahoma">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA0111/IncidentA0111.xml.gz" />
+          </region>
+          <region name="Southern Texas">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA0112/IncidentA0112.xml.gz" />
+          </region>
+          <region name="AR/LA/MS/TN">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA0113/IncidentA0113.xml.gz" />
+          </region>
+          <region name="Oregon/Washington">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA0114/IncidentA0114.xml.gz" />
+          </region>
+          <region name="Arizona/New Mexico/Texas">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA0115/IncidentA0115.xml.gz" />
+          </region>
+          <region name="Colorado/Utah">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA0116/IncidentA0116.xml.gz" />
+          </region>
+          <region name="Idaho/Montana/Wyoming">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA0117/IncidentA0117.xml.gz" />
+          </region>
+          <region name="North Central States">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA0118/IncidentA0118.xml.gz" />
+          </region>
+          <region name="Kansas/Missouri/Southern Illinois">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA0119/IncidentA0119.xml.gz" />
+          </region>
+          <region name="New York/Northern NJ/Connecticut">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA0120/IncidentA0120.xml.gz" />
+          </region>
+          <region name="Kentucky/Tennessee/Indiana">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA0121/IncidentA0121.xml.gz" />
+          </region>
+          <region name="Ohio/Maryland/West Virginia">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA0122/IncidentA0122.xml.gz" />
+          </region>
+          <region name="North Carolina/South Carolina">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA0125/IncidentA0125.xml.gz" />
+          </region>
+          <region name="Hawaii">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA0126/IncidentA0126.xml.gz" />
+          </region>
+          <region name="New England">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA0129/IncidentA0129.xml.gz" />
+          </region>
+          <region name="Alaska">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA0133/IncidentA0133.xml.gz" />
+          </region>
+          <region name="Puerto Rico">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA0832/IncidentA0832.xml.gz" />
+          </region>
+          <region name="Ontario">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA1C09/IncidentA1C09.xml.gz" />
+          </region>
+          <region name="British Columbia">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA1C23/IncidentA1C23.xml.gz" />
+          </region>
+          <region name="Quebec">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA1C24/IncidentA1C24.xml.gz" />
+          </region>
+          <region name="Alberta">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA1C27/IncidentA1C27.xml.gz" />
+          </region>
+          <region name="Manitoba">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA1C28/IncidentA1C28.xml.gz" />
+          </region>
+          <region name="New Brunswick/Nova Scotia/Prince Edward Island">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA1C30/IncidentA1C30.xml.gz" />
+          </region>
+          <region name="Mexico">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA5F36/IncidentA5F36.xml.gz" />
+          </region>
+        </regions>
+      </provider>
+      <provider name="HERE Europe" clsid="{1D73B9B2-EEEE-4a3f-9919-5E90C9CABA39}" >
+        <regions>
+          <region name="Austria">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE0A01/IncidentE0A01.xml.gz" />
+          </region>
+          <region name="Belgium">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE0601/IncidentE0601.xml.gz" />
+          </region>
+          <region name="Bulgaria">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE1801/IncidentE1801.xml.gz" />
+          </region>
+          <region name="Croatia">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE3C33/IncidentE3C33.xml.gz" />
+          </region>
+          <region name="Czechia">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE2225/IncidentE2225.xml.gz" />
+          </region>
+          <region name="Denmark">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE1909/IncidentE1909.xml.gz" />
+          </region>
+          <region name="Finland">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE1617/IncidentE1617.xml.gz" />
+          </region>
+          <region name="France">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE1F32/IncidentE1F32.xml.gz" />
+          </region>
+          <region name="Germany">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE0D01/IncidentE0D01.xml.gz" />
+          </region>
+          <region name="Greece">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE1118/IncidentE1118.xml.gz" />
+          </region>
+          <region name="Hungary">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE0B01/IncidentE0B01.xml.gz" />
+          </region>
+          <region name="Ireland">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE3242/IncidentE3242.xml.gz" />
+          </region>
+          <region name="Italy">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE0501/IncidentE0501.xml.gz" />
+          </region>
+          <region name="Lithuania">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE2C43/IncidentE2C43.xml.gz" />
+          </region>
+          <region name="Luxembourg">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE1701/IncidentE1701.xml.gz" />
+          </region>
+          <region name="Netherlands">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE3817/IncidentE3817.xml.gz" />
+          </region>
+          <region name="Norway">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE2F49/IncidentE2F49.xml.gz" />
+          </region>
+          <region name="Poland">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE2305/IncidentE2305.xml.gz" />
+          </region>
+          <region name="Portugal">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE4842/IncidentE4842.xml.gz" />
+          </region>
+          <region name="Romania">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE1E01/IncidentE1E01.xml.gz" />
+          </region>
+          <region name="Russia, Central Federal District">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE0723/IncidentE0723.xml.gz" />
+          </region>
+          <region name="Russia, Northwestern Federal District">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE0724/IncidentE0724.xml.gz" />
+          </region>
+          <region name="Russia, Ural Federal District">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE0725/IncidentE0725.xml.gz" />
+          </region>
+          <region name="Russia, Volga Federal District">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE0726/IncidentE0726.xml.gz" />
+          </region>
+          <region name="Russia, Southern Federal District">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE0727/IncidentE0727.xml.gz" />
+          </region>
+          <region name="Russia, Siberian Federal District">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE0728/IncidentE0728.xml.gz" />
+          </region>
+          <region name="Slovenia">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE4933/IncidentE4933.xml.gz" />
+          </region>
+          <region name="Spain">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE2E17/IncidentE2E17.xml.gz" />
+          </region>
+          <region name="Sweden">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE3E33/IncidentE3E33.xml.gz" />
+          </region>
+          <region name="Switzerland">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE1409/IncidentE1409.xml.gz" />
+          </region>
+          <region name="Turkey, West">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE3339/IncidentE3339.xml.gz" />
+          </region>
+          <region name="Turkey, Central/East">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE3340/IncidentE3340.xml.gz" />
+          </region>
+          <region name="United Kingdom">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE1C07/IncidentE1C07.xml.gz" />
+          </region>
+          <region name="Ukraine">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableE4633/IncidentE4633.xml.gz" />
+          </region>
+        </regions>
+      </provider>
+      <provider name="HERE South America" clsid="{1D73B9B2-EEEE-4a3f-9919-5E90C9CABA39}" >
+        <regions>
+          <region name="Brazil, South/Southeast">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA2B14/IncidentA2B14.xml.gz" />
+          </region>
+          <region name="Brazil, North/Northeast/Central-West">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableA2B15/IncidentA2B15.xml.gz" />
+          </region>
+        </regions>
+      </provider>
+      <provider name="HERE Asia Pacific" clsid="{1D73B9B2-EEEE-4a3f-9919-5E90C9CABA39}" >
+        <regions>
+          <region name="Australia, Capital Territory">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableF0153/IncidentF0153.xml.gz" />
+          </region>
+          <region name="Australia, New South Wales">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableF0254/IncidentF0254.xml.gz" />
+          </region>
+          <region name="Australia, Victoria">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableF0301/IncidentF0301.xml.gz" />
+          </region>
+          <region name="Australia, Queensland">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableF0456/IncidentF0456.xml.gz" />
+          </region>
+          <region name="Australia, South Australia">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableF0557/IncidentF0557.xml.gz" />
+          </region>
+          <region name="Australia, Western Australia">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableF0658/IncidentF0658.xml.gz" />
+          </region>
+          <region name="New Zealand">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableF1941/IncidentF1941.xml.gz" />
+          </region>
+          <region name="Taiwan">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableF1D13/IncidentF1D13.xml.gz" />
+          </region>
+          <region name="Thailand">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableF3219/IncidentF3219.xml.gz" />
+          </region>
+        </regions>
+      </provider>
+      <provider name="HERE Middle East &amp; Africa" clsid="{1D73B9B2-EEEE-4a3f-9919-5E90C9CABA39}" >
+        <regions>
+          <region name="Saudi Arabia">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableF0926/IncidentF0926.xml.gz" />
+          </region>
+          <region name="South Africa">
+            <feed url="https://mlincident.traffic.data.here.com/ver2.4/tableD0A17/IncidentD0A17.xml.gz" />
+          </region>
+        </regions>
+      </provider>
+      <provider name="TomTom North America" clsid="{AE41A359-7951-42e8-BA38-0D288A3B8D45}" >
+        <regions>
+          <region name="Canada">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/CAN-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Mexico">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/MEX-HDT-TMCOPENLR/" />
+          </region>
+          <region name="United States Middle">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/USA_M-HDT-TMCOPENLR/" />
+          </region>
+          <region name="United States North">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/USA_N-HDT-TMCOPENLR/" />
+          </region>
+          <region name="United States Southeast">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/USA_SE-HDT-TMCOPENLR/" />
+          </region>
+          <region name="United States Southwest">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/USA_SW-HDT-TMCOPENLR/" />
+          </region>
+        </regions>
+      </provider>
+      <provider name="TomTom Europe" clsid="{AE41A359-7951-42e8-BA38-0D288A3B8D45}" >
+        <regions>
+          <region name="Andorra" mstimezone="Romance Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/AND-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Austria" mstimezone="W. Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/AUT-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Belarus" mstimezone="Belarus Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/BLR-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Belgium" mstimezone="Romance Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/BEL-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Bosnia and Herzegovina" mstimezone="Central European Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/BIH-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Bulgaria" mstimezone="FLE Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/BGR-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Croatia" mstimezone="Central European Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/HRV-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Cyprus" mstimezone="GTB Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/CYP-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Czech Republic" mstimezone="Central Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/CZE-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Denmark" mstimezone="Romance Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/DNK-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Estonia" mstimezone="FLE Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/EST-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Finland" mstimezone="FLE Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/FIN-HDT-TMCOPENLR/" />
+          </region>
+          <region name="France" mstimezone="Romance Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/FRA-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Germany" mstimezone="W. Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/DEU-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Gibraltar" mstimezone="Romance Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/GIB-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Greece" mstimezone="GTB Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/GRC-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Hungary" mstimezone="Central Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/HUN-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Iceland" mstimezone="Greenwich Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/ISL-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Ireland" mstimezone="GMT Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/IRL-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Italy" mstimezone="W. Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/ITA-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Kazakhstan">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/KAZ-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Latvia" mstimezone="FLE Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/LVA-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Liechtenstein" mstimezone="W. Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/LIE-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Lithuania" mstimezone="FLE Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/LTU-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Luxembourg" mstimezone="Romance Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/LUX-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Malta" mstimezone="W. Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/MLT-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Monaco" mstimezone="Romance Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/MCO-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Netherlands" mstimezone="W. Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/MLT-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Norway" mstimezone="W. Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/NOR-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Poland" mstimezone="Central European Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/POL-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Portugal">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/PRT-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Romania" mstimezone="GTB Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/ROU-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Russia">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/RUS-HDT-TMCOPENLR/" />
+          </region>
+          <region name="San Marino" mstimezone="W. Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/SMR-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Serbia" mstimezone="Central Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/SRB-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Slovakia" mstimezone="Central Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/SVK-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Slovenia" mstimezone="Central Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/SVN-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Spain">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/ESP-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Sweden" mstimezone="W. Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/SWE-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Switzerland" mstimezone="W. Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/CHE-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Türkiye" mstimezone="Turkey Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/TUR-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Ukraine">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/UKR-HDT-TMCOPENLR/" />
+          </region>
+          <region name="United Kingdom" mstimezone="GMT Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/GBR-HDT-TMCOPENLR/" />
+          </region>
+        </regions>
+      </provider>
+      <provider name="TomTom South America" clsid="{AE41A359-7951-42e8-BA38-0D288A3B8D45}" >
+        <regions>
+          <region name="Argentina" mstimezone="Argentina Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/ARG-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Brazil">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/BRA-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Chile">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/CHL-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Colombia" mstimezone="SA Pacific Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/COL-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Guadeloupe" mstimezone="SA Western Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/GLP-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Martinique" mstimezone="SA Western Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/MTQ-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Peru" mstimezone="SA Pacific Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/PER-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Uruguay" mstimezone="Montevideo Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/URY-HDT-TMCOPENLR/" />
+          </region>
+        </regions>
+      </provider>
+      <provider name="TomTom Asia Pacific" clsid="{AE41A359-7951-42e8-BA38-0D288A3B8D45}" >
+        <regions>
+          <region name="Australia">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/AUS-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Brunei Darussalam" mstimezone="Singapore Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/BRN-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Hong Kong" mstimezone="China Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/HKG-HDT-TMCOPENLR/" />
+          </region>
+          <region name="India" mstimezone="India Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/IND-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Indonesia">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/IDN-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Macao" mstimezone="China Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/MAC-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Malaysia" mstimezone="Singapore Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/MYS-HDT-TMCOPENLR/" />
+          </region>
+          <region name="New Zealand">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/NZL-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Philippines" mstimezone="Singapore Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/PHL-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Singapore" mstimezone="Singapore Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/SGP-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Taiwan" mstimezone="Taipei Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/TWN-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Thailand" mstimezone="SE Asia Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/THA-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Vietnam" mstimezone="SE Asia Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/VNM-HDT-TMCOPENLR/" />
+          </region>
+        </regions>
+      </provider>
+      <provider name="TomTom Middle East &amp; Africa" clsid="{AE41A359-7951-42e8-BA38-0D288A3B8D45}" >
+        <regions>
+          <region name="Bahrain" mstimezone="Arab Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/BHR-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Egypt" mstimezone="Egypt Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/EGY-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Israel" mstimezone="Israel Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/ISR-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Kenya" mstimezone="E. Africa Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/KEN-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Kuwait" mstimezone="Arab Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/KWT-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Lesotho" mstimezone="South Africa Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/LSO-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Morocco" mstimezone="Morocco Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/MAR-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Mozambique" mstimezone="South Africa Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/MOZ-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Nigeria" mstimezone="W. Central Africa Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/NGA-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Oman" mstimezone="Arabian Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/OMN-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Qatar" mstimezone="Arab Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/QAT-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Réunion" mstimezone="Arabian Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/REU-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Saudi Arabia" mstimezone="Arab Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/SAU-HDT-TMCOPENLR/" />
+          </region>
+          <region name="South Africa" mstimezone="South Africa Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/ZAF-HDT-TMCOPENLR/" />
+          </region>
+          <region name="United Arab Emirates" mstimezone="Arabian Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/ARE-HDT-TMCOPENLR/" />
+          </region>
+        </regions>
+      </provider>
+      <provider name="TomTom World" clsid="{AE41A359-7951-42e8-BA38-0D288A3B8D45}" >
+        <regions>
+          <region name="Andorra" mstimezone="Romance Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/AND-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Argentina" mstimezone="Argentina Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/ARG-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Australia">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/AUS-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Austria" mstimezone="W. Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/AUT-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Bahrain" mstimezone="Arab Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/BHR-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Belarus" mstimezone="Belarus Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/BLR-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Belgium" mstimezone="Romance Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/BEL-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Bosnia and Herzegovina" mstimezone="Central European Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/BIH-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Brazil">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/BRA-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Brunei Darussalam" mstimezone="Singapore Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/BRN-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Bulgaria" mstimezone="FLE Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/BGR-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Canada">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/CAN-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Chile">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/CHL-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Colombia" mstimezone="SA Pacific Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/COL-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Croatia" mstimezone="Central European Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/HRV-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Cyprus" mstimezone="GTB Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/CYP-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Czech Republic" mstimezone="Central Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/CZE-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Denmark" mstimezone="Romance Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/DNK-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Egypt" mstimezone="Egypt Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/EGY-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Estonia" mstimezone="FLE Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/EST-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Finland" mstimezone="FLE Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/FIN-HDT-TMCOPENLR/" />
+          </region>
+          <region name="France" mstimezone="Romance Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/FRA-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Germany" mstimezone="W. Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/DEU-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Gibraltar" mstimezone="Romance Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/GIB-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Greece" mstimezone="GTB Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/GRC-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Guadeloupe" mstimezone="SA Western Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/GLP-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Hong Kong" mstimezone="China Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/HKG-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Hungary" mstimezone="Central Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/HUN-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Iceland" mstimezone="Greenwich Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/ISL-HDT-TMCOPENLR/" />
+          </region>
+          <region name="India" mstimezone="India Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/IND-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Indonesia">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/IDN-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Ireland" mstimezone="GMT Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/IRL-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Israel" mstimezone="Israel Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/ISR-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Italy" mstimezone="W. Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/ITA-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Kazakhstan">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/KAZ-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Kenya" mstimezone="E. Africa Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/KEN-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Kuwait" mstimezone="Arab Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/KWT-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Latvia" mstimezone="FLE Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/LVA-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Lesotho" mstimezone="South Africa Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/LSO-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Liechtenstein" mstimezone="W. Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/LIE-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Lithuania" mstimezone="FLE Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/LTU-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Luxembourg" mstimezone="Romance Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/LUX-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Macao" mstimezone="China Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/MAC-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Malaysia" mstimezone="Singapore Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/MYS-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Malta" mstimezone="W. Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/MLT-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Martinique" mstimezone="SA Western Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/MTQ-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Mexico">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/MEX-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Monaco" mstimezone="Romance Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/MCO-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Morocco" mstimezone="Morocco Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/MAR-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Mozambique" mstimezone="South Africa Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/MOZ-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Netherlands" mstimezone="W. Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/MLT-HDT-TMCOPENLR/" />
+          </region>
+          <region name="New Zealand">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/NZL-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Nigeria" mstimezone="W. Central Africa Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/NGA-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Norway" mstimezone="W. Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/NOR-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Oman" mstimezone="Arabian Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/OMN-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Peru" mstimezone="SA Pacific Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/PER-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Philippines" mstimezone="Singapore Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/PHL-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Poland" mstimezone="Central European Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/POL-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Portugal">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/PRT-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Qatar" mstimezone="Arab Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/QAT-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Romania" mstimezone="GTB Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/ROU-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Réunion" mstimezone="Arabian Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/REU-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Russia">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/RUS-HDT-TMCOPENLR/" />
+          </region>
+          <region name="San Marino" mstimezone="W. Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/SMR-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Saudi Arabia" mstimezone="Arab Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/SAU-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Serbia" mstimezone="Central Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/SRB-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Singapore" mstimezone="Singapore Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/SGP-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Slovakia" mstimezone="Central Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/SVK-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Slovenia" mstimezone="Central Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/SVN-HDT-TMCOPENLR/" />
+          </region>
+          <region name="South Africa" mstimezone="South Africa Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/ZAF-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Spain">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/ESP-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Sweden" mstimezone="W. Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/SWE-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Switzerland" mstimezone="W. Europe Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/CHE-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Taiwan" mstimezone="Taipei Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/TWN-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Thailand" mstimezone="SE Asia Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/THA-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Türkiye" mstimezone="Turkey Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/TUR-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Ukraine">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/UKR-HDT-TMCOPENLR/" />
+          </region>
+          <region name="United Arab Emirates" mstimezone="Arabian Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/ARE-HDT-TMCOPENLR/" />
+          </region>
+          <region name="United Kingdom" mstimezone="GMT Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/GBR-HDT-TMCOPENLR/" />
+          </region>
+          <region name="United States Middle">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/USA_M-HDT-TMCOPENLR/" />
+          </region>
+          <region name="United States North">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/USA_N-HDT-TMCOPENLR/" />
+          </region>
+          <region name="United States Southeast">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/USA_SE-HDT-TMCOPENLR/" />
+          </region>
+          <region name="United States Southwest">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/USA_SW-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Uruguay" mstimezone="Montevideo Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/URY-HDT-TMCOPENLR/" />
+          </region>
+          <region name="Vietnam" mstimezone="SE Asia Standard Time">
+            <feed url="https://cert-traffic.tomtom.com/tsq/hdt/VNM-HDT-TMCOPENLR/" />
+          </region>
+        </regions>
+      </provider>
+    </providers>
+  </UpdateTrafficIncidents>
+</TrafficTools>

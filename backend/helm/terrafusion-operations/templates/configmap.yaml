@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "terrafusion-operations.fullname" . }}-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "terrafusion-operations.labels" . | nindent 4 }}
+data:
+  SERVICE_NAME: "TerraFusion Operations"
+  SERVICE_VERSION: {{ .Chart.AppVersion | quote }}
+  ENVIRONMENT: {{ .Values.global.environment | quote }}
+  REGION: {{ .Values.global.region | quote }}
+  
+  # County Configuration (39 WA Counties)
+  {{- range $countyKey, $countyConfig := .Values.counties }}
+  {{- if $countyConfig.enabled }}
+  COUNTY_{{ $countyKey | upper }}_ENABLED: "true"
+  COUNTY_{{ $countyKey | upper }}_NAME: {{ $countyConfig.name | quote }}
+  COUNTY_{{ $countyKey | upper }}_POPULATION: {{ $countyConfig.population | quote }}
+  COUNTY_{{ $countyKey | upper }}_PARCELS: {{ $countyConfig.parcels | quote }}
+  COUNTY_{{ $countyKey | upper }}_SYNC_INTERVAL: {{ $countyConfig.syncInterval | quote }}
+  COUNTY_{{ $countyKey | upper }}_PRIORITY: {{ $countyConfig.priority | quote }}
+  {{- if $countyConfig.systems.harrisPACS.enabled }}
+  COUNTY_{{ $countyKey | upper }}_HARRIS_PACS_JURISDICTION: {{ $countyConfig.systems.harrisPACS.jurisdiction | quote }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+---
+{{- if .Values.logging.loki.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "terrafusion-operations.fullname" . }}-promtail
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "terrafusion-operations.labels" . | nindent 4 }}
+data:
+  promtail.yaml: |
+    server:
+      http_listen_port: 9080
+      grpc_listen_port: 0
+    
+    positions:
+      filename: /tmp/positions.yaml
+    
+    clients:
+      - url: {{ .Values.logging.loki.url }}/loki/api/v1/push
+    
+    scrape_configs:
+      - job_name: operations-logs
+        static_configs:
+          - targets:
+              - localhost
+            labels:
+              job: terrafusion-operations
+              environment: {{ .Values.global.environment }}
+              __path__: /app/logs/*.log
+        pipeline_stages:
+          - json:
+              expressions:
+                timestamp: timestamp
+                level: level
+                message: message
+                countyId: countyId
+          - labels:
+              level:
+              countyId:
+          - timestamp:
+              source: timestamp
+              format: RFC3339
+{{- end }}

@@ -1,0 +1,26 @@
+{
+    "map": {
+        "airport_control_point_feature_class.descr": "Supplies x-, y-, and z-geometry for displaced threshold features. If displaced thresholds are included, surfaces will be constructed based on their x-, y-, and z-geometry instead of their corresponding runway feature endpoint.",
+        "airport_control_point_feature_class.title": "Input Airport Control Point Feature",
+        "derived_outfeatureclass.title": "Output OIS Features",
+        "description": "Creates obstruction identification surfaces (OIS) based on the ICAO Annex 4 specification for the Precision Approach Terrain chart.",
+        "height.descr": "The start height of the surface in meters. The default value is 15.24.",
+        "height.title": "Start Height",
+        "in_features.descr": "The input runway dataset. The feature class must be z-enabled and contain polylines.",
+        "in_features.title": "Input Runway Features",
+        "length.descr": "The length of the surface in meters. The default value is 900.",
+        "length.title": "Length",
+        "runway_direction.descr": "<xdoc><p>Specifies at which end of the runway the approach surface will be created.</p><ul><li><span title=\"HIGH_END_TO_LOW_END\">High end to low end</span>—The approach surface will be created at the high end of the runway to the low end. If a displaced threshold point exists at the high end of the runway, that point will be honored when creating the OIS.</li><li><span title=\"LOW_END_TO_HIGH_END\">Low end to high end</span>—The approach surface will be created at the low end of the runway to the high end. If a displaced threshold point exists at the low end of the runway, that point will be honored when creating the OIS.</li></ul></xdoc>",
+        "runway_direction.domain.HIGH_END_TO_LOW_END": "High end to low end",
+        "runway_direction.domain.LOW_END_TO_HIGH_END": "Low end to high end",
+        "runway_direction.title": "Runway Direction",
+        "slope.descr": "The slope of the surface in degrees. The default value is 3.",
+        "slope.title": "Slope",
+        "summary": "<xdoc><p>Creates obstruction identification surfaces (OIS) based on the ICAO Annex 4 specification for the Precision Approach Terrain chart.</p><p>These surfaces are designed to aid in the analysis of the terrain and features within a defined portion of the final approach that is depicted on the Precision Approach Terrain chart type. To generate the surfaces, a runway centerline is needed as a reference for the surfaces. This tool generates the surfaces as polygon or multipatch features.</p><note type=\"legacy\"/><p group=\"note\">This is a deprecated tool. This functionality has been replaced by the ICAO Annex 4 Surfaces tool that creates OIS based on the ICAO Annex 4 specification for the Precision Approach Terrain chart with updated requirements and parameters.</p></xdoc>",
+        "target.descr": "The target feature class that will contain the generated obstruction identification surfaces.",
+        "target.title": "Target OIS Features",
+        "title": "ICAO Annex 4",
+        "width.descr": "The width of the surface in meters. The default value is 120.",
+        "width.title": "Width"
+    }
+}

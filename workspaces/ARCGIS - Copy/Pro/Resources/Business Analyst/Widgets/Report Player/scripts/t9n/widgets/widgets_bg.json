@@ -1,0 +1,78 @@
+{
+  "calcite": {
+    "reset": "Нулиране",
+    "action": {
+      "sort": "Сортиране"
+    },
+    "buttons": {
+      "save": "Запазване",
+      "edit": "Редактиране",
+      "done": "Готово",
+      "apply": "Прилагане",
+      "cancel": "Отказ",
+      "close": "Затваряне"
+    },
+    "ColorPicker": {
+      "selectColor": "Изберете цвят",
+      "noColorSpecified": "Не е посочен цвят",
+      "transparent": "Прозрачно",
+      "colorTooltip": "<p>Hex: ${hex}</p><p>RGB: ${r}, ${g}, ${b}</p>",
+      "recent": "Последно използвани",
+      "standard": "Стандартни",
+      "savedColors": "Запазени цветове",
+      "advanced": "Разширени"
+    },
+    "DatePickerLink": {
+      "enterDate": "Въвеждане на дата"
+    },
+    "PaginationContinuous": {
+      "next": "Напред",
+      "previous": "Предишна"
+    }
+  },
+  "ImageNavigator": {
+    "paginationLabel": "${n} от ${m}",
+    "noImage": "В момента няма запазени снимки с този сайт",
+    "previewNotAvailable": "Няма на разположение предварителен преглед"
+  },
+  "PageNavigator": {
+    "currentPageOutOfN": "Страница ${current} от ${total}"
+  },
+  "PanoramicViewer": {
+    "image-viewer-close": "Затваряне",
+    "image-viewer-fullscreen": "Цял екран",
+    "image-viewer-minimize": "Минимизиране",
+    "image-viewer-title": "Модул за преглеждане на снимки",
+    "image-viewer-show-caption": "Показване на текст за команда",
+    "image-viewer-hide-caption": "Скриване"
+  },
+  "TextBox": {
+    "error_numberExpected": "Очаква се номер",
+    "error_range": "Очаквана стойност от ${0} до ${1}"
+  },
+  "charts": {
+    "histogram": {
+      "minValue": "Мин.:<br>${0}",
+      "maxValue": "Макс.:<br>${0}",
+      "thisAreaValue": "Тази област: ${0}",
+      "medianValue": "Медиана:<br>${0}",
+      "q1Value": "В1:<br>${0}",
+      "q3Value": "В3:<br>${0}",
+      "percentile": "Перцентил ${percent}:<br>${0}",
+      "percentileBottom": "Най-долу ${percent}%:<br>${0}",
+      "percentileTop": "Горе ${percent}%:<br>${0}",
+      "percentile_singleLine": "Перцентил ${percent}: ${0}",
+      "percentileBottom_singleLine": "Най-долу ${percent}%: ${0}",
+      "percentileTop_singleLine": "Горе ${percent}%: ${0}",
+      "sd_singleLine": "${sd} SD: ${0}",
+      "tooltip": {
+        "range_single": "<b>${level}</b> със стойност в рамките на <b>${value}</b> : <b>1</b>",
+        "range_single_precise": "<b>${areaName}</b> има стойност от <b>${value}</b>.",
+        "range_multi": "<b>${level}</b> със стойност в рамките на <b>${value}</b> : <b>${count}</b>",
+        "thisArea": "<b>Тази област</b> има стойност от <b>${value}</b>.",
+        "percentileLower": "<b>${percent}%</b> от <b>${level}</b> има стойност над <b>${value}</b>.",
+        "percentileUpper": "<b>${percent}%</b> от <b>${level}</b> има стойност под <b>${value}</b>."
+      }
+    }
+  }
+}

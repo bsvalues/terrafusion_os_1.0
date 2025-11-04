@@ -1,0 +1,489 @@
+{
+    "type": "FunctionTool",
+    "guid": "{b41020c9-27b9-4743-95ad-14299599ce48}",
+    "displayname": "$rc:title",
+    "helpcontent": "5130006",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9",
+        "10"
+    ],
+    "params": {
+        "in_topo_features": {
+            "display_order": "0",
+            "displayname": "$rc:in_topo_features.title",
+            "datatype": {
+                "type": "GPSATopoFeatures",
+                "datatypes": [
+                    {
+                        "type": "GPFeatureLayer",
+                        "displayname": "$rc:in_topo_features.dt.title1"
+                    },
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:in_topo_features.dt.title2"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:in_topo_features.dt.title3"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain"
+                    },
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Long",
+                            "Short",
+                            "Float",
+                            "Double"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "PointElevation",
+                                "code": "$rc:in_topo_features.domain.item3.PointElevation"
+                            },
+                            {
+                                "value": "Contour",
+                                "code": "$rc:in_topo_features.domain.item3.Contour"
+                            },
+                            {
+                                "value": "Stream",
+                                "code": "$rc:in_topo_features.domain.item3.Stream"
+                            },
+                            {
+                                "value": "Sink",
+                                "code": "$rc:in_topo_features.domain.item3.Sink"
+                            },
+                            {
+                                "value": "Boundary",
+                                "code": "$rc:in_topo_features.domain.item3.Boundary"
+                            },
+                            {
+                                "value": "Lake",
+                                "code": "$rc:in_topo_features.domain.item3.Lake"
+                            },
+                            {
+                                "value": "Cliff",
+                                "code": "$rc:in_topo_features.domain.item3.Cliff"
+                            },
+                            {
+                                "value": "Exclusion",
+                                "code": "$rc:in_topo_features.domain.item3.Exclusion"
+                            },
+                            {
+                                "value": "Coast",
+                                "code": "$rc:in_topo_features.domain.item3.Coast"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:in_topo_features.descr"
+        },
+        "out_surface_raster": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_surface_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_surface_raster.descr"
+        },
+        "cell_size": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:cell_size.title",
+            "datatype": {
+                "type": "analysis_cell_size"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "false",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "analysis_cell_size",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:cell_size.descr"
+        },
+        "extent": {
+            "type": "optional",
+            "display_order": "3",
+            "control_guid": "{15F0D1C1-F783-49BC-8D16-619B8E92F668}",
+            "displayname": "$rc:extent.title",
+            "datatype": {
+                "type": "GPExtent"
+            },
+            "depends": [
+                "in_topo_features"
+            ],
+            "description": "$rc:extent.descr"
+        },
+        "Margin": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:margin.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                }
+            },
+            "value": "20",
+            "description": "$rc:margin.descr"
+        },
+        "minimum_z_value": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:minimum_z_value.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:minimum_z_value.descr"
+        },
+        "maximum_z_value": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:maximum_z_value.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:maximum_z_value.descr"
+        },
+        "enforce": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:enforce.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ENFORCE",
+                        "code": "$rc:enforce.domain.ENFORCE"
+                    },
+                    {
+                        "value": "NO_ENFORCE",
+                        "code": "$rc:enforce.domain.NO_ENFORCE"
+                    },
+                    {
+                        "value": "ENFORCE_WITH_SINK",
+                        "code": "$rc:enforce.domain.ENFORCE_WITH_SINK"
+                    }
+                ]
+            },
+            "value": "ENFORCE",
+            "description": "$rc:enforce.descr"
+        },
+        "data_type": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:data_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "CONTOUR",
+                        "code": "$rc:data_type.domain.CONTOUR"
+                    },
+                    {
+                        "value": "SPOT",
+                        "code": "$rc:data_type.domain.SPOT"
+                    }
+                ]
+            },
+            "value": "CONTOUR",
+            "description": "$rc:data_type.descr"
+        },
+        "maximum_iterations": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:maximum_iterations.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "value": "20",
+            "description": "$rc:maximum_iterations.descr"
+        },
+        "roughness_penalty": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:roughness_penalty.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                },
+                "high": {
+                    "allow": "true",
+                    "val": "1"
+                }
+            },
+            "description": "$rc:roughness_penalty.descr"
+        },
+        "discrete_error_factor": {
+            "type": "optional",
+            "display_order": "12",
+            "displayname": "$rc:discrete_error_factor.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                }
+            },
+            "value": "1",
+            "description": "$rc:discrete_error_factor.descr"
+        },
+        "vertical_standard_error": {
+            "type": "optional",
+            "display_order": "13",
+            "displayname": "$rc:vertical_standard_error.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                }
+            },
+            "value": "0",
+            "description": "$rc:vertical_standard_error.descr"
+        },
+        "tolerance_1": {
+            "type": "optional",
+            "display_order": "14",
+            "displayname": "$rc:tolerance_1.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                }
+            },
+            "depends": [
+                "data_type"
+            ],
+            "description": "$rc:tolerance_1.descr"
+        },
+        "tolerance_2": {
+            "type": "optional",
+            "display_order": "15",
+            "displayname": "$rc:tolerance_2.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                }
+            },
+            "depends": [
+                "data_type",
+                "tolerance_1"
+            ],
+            "description": "$rc:tolerance_2.descr"
+        },
+        "out_stream_features": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "16",
+            "displayname": "$rc:out_stream_features.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "category": "$rc:params.category1",
+            "description": "$rc:out_stream_features.descr"
+        },
+        "out_sink_features": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "17",
+            "displayname": "$rc:out_sink_features.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "category": "$rc:params.category1",
+            "description": "$rc:out_sink_features.descr"
+        },
+        "out_diagnostic_file": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "18",
+            "displayname": "$rc:out_diagnostic_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "TXT",
+                    "ASC"
+                ]
+            },
+            "category": "$rc:params.category1",
+            "description": "$rc:out_diagnostic_file.descr"
+        },
+        "out_parameter_file": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "19",
+            "displayname": "$rc:out_parameter_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "TXT",
+                    "ASC"
+                ]
+            },
+            "category": "$rc:params.category1",
+            "description": "$rc:out_parameter_file.descr"
+        },
+        "profile_penalty": {
+            "type": "optional",
+            "display_order": "11",
+            "displayname": "$rc:profile_penalty.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "high": {
+                    "allow": "true",
+                    "val": "0.90000000000000002"
+                }
+            },
+            "description": "$rc:profile_penalty.descr"
+        },
+        "out_residual_feature": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "20",
+            "displayname": "$rc:out_residual_feature.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "category": "$rc:params.category1",
+            "description": "$rc:out_residual_feature.descr"
+        },
+        "out_stream_cliff_error_feature": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "21",
+            "displayname": "$rc:out_stream_cliff_error_feature.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "category": "$rc:params.category1",
+            "description": "$rc:out_stream_cliff_error_feature.descr"
+        },
+        "out_contour_error_feature": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "22",
+            "displayname": "$rc:out_contour_error_feature.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "category": "$rc:params.category1",
+            "description": "$rc:out_contour_error_feature.descr"
+        }
+    },
+    "environments": [
+        "MDomain",
+        "MResolution",
+        "MTolerance",
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "ZDomain",
+        "ZResolution",
+        "ZTolerance",
+        "autoCommit",
+        "cellSize",
+        "cellSizeProjectionMethod",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "maintainSpatialIndex",
+        "mask",
+        "outputCoordinateSystem",
+        "outputMFlag",
+        "outputZFlag",
+        "outputZValue",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "transferDomains",
+        "workspace"
+    ]
+}

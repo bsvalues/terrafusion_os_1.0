@@ -1,0 +1,229 @@
+// TerraFusion CSS Custom Properties
+// Government. Transcended. - Championship Excellence
+
+:root {
+  /* TerraFusion Brand Colors */
+  --terrafusion-blue: #0099ff;
+  --terrafusion-cyan: #00ffee;
+  --terrafusion-green: #00ffaa;
+  --terrafusion-deep-space: #0b1020;
+  --terrafusion-secondary-space: #1a2332;
+
+  /* Transparency Variants */
+  --terrafusion-blue-10: rgba(0, 153, 255, 0.1);
+  --terrafusion-blue-20: rgba(0, 153, 255, 0.2);
+  --terrafusion-blue-30: rgba(0, 153, 255, 0.3);
+  --terrafusion-cyan-10: rgba(0, 255, 238, 0.1);
+  --terrafusion-cyan-20: rgba(0, 255, 238, 0.2);
+  --terrafusion-cyan-30: rgba(0, 255, 238, 0.3);
+  --terrafusion-green-10: rgba(0, 255, 170, 0.1);
+  --terrafusion-green-20: rgba(0, 255, 170, 0.2);
+  --terrafusion-green-30: rgba(0, 255, 170, 0.3);
+
+  /* Gradients */
+  --terrafusion-clarity-gradient: linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
+  --terrafusion-depth-gradient: linear-gradient(135deg, #0b1020 0%, #1a2332 100%);
+
+  /* Shadows */
+  --terrafusion-quantum-shadow: 0 20px 40px rgba(0, 255, 238, 0.2);
+  --terrafusion-championship-shadow: 0 25px 50px rgba(0, 153, 255, 0.3);
+
+  /* Animation Durations */
+  --terrafusion-fast: 0.15s;
+  --terrafusion-normal: 0.3s;
+  --terrafusion-slow: 0.5s;
+  --terrafusion-quantum: 1s;
+}
+
+/* TerraFusion Quantum Animations */
+@keyframes tf-scan-line {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes tf-quantum-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes tf-consciousness-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes tf-government-authority {
+  0% {
+    box-shadow: 0 0 20px rgba(0, 153, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(0, 255, 238, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(0, 153, 255, 0.3);
+  }
+}
+
+/* TerraFusion Component Base Classes */
+.tf-glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 255, 238, 0.2);
+  border-radius: 1rem;
+  box-shadow: var(--terrafusion-quantum-shadow);
+  transition: all var(--terrafusion-normal) ease-out;
+}
+
+.tf-glass-card:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(0, 255, 238, 0.3);
+  transform: translateY(-4px);
+  box-shadow: var(--terrafusion-championship-shadow);
+}
+
+.tf-clarity-button {
+  background: var(--terrafusion-clarity-gradient);
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: 9999px;
+  padding: 0.75rem 2rem;
+  border: 1px solid rgba(0, 255, 238, 0.3);
+  box-shadow: 0 10px 20px rgba(0, 255, 238, 0.2);
+  transition: all var(--terrafusion-normal) ease-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.tf-clarity-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(0, 255, 238, 0.3);
+  border-color: rgba(0, 255, 238, 0.5);
+}
+
+.tf-clarity-button:active {
+  transform: translateY(0);
+  box-shadow: 0 10px 20px rgba(0, 255, 238, 0.2);
+}
+
+.tf-quantum-grid {
+  background-image:
+    linear-gradient(rgba(0, 255, 238, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 238, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.tf-consciousness-display {
+  background: var(--terrafusion-depth-gradient);
+  border: 2px solid rgba(0, 255, 238, 0.3);
+  border-radius: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.tf-consciousness-display::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 238, 0.1), transparent);
+  transform: translateX(-100%);
+  animation: tf-scan-line 3s ease-in-out infinite;
+}
+
+.tf-government-seal {
+  animation: tf-government-authority 2s ease-in-out infinite;
+}
+
+.tf-quantum-pulse {
+  animation: tf-quantum-pulse 2s ease-in-out infinite;
+}
+
+.tf-scan-line {
+  animation: tf-scan-line 2s ease-in-out infinite;
+}
+
+/* Typography Classes */
+.tf-championship-heading {
+  background: var(--terrafusion-clarity-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 900;
+  font-size: 2.5rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.tf-transcendent-text {
+  color: var(--terrafusion-cyan);
+  font-weight: 600;
+  text-shadow: 0 0 10px rgba(0, 255, 238, 0.3);
+}
+
+.tf-government-authority-text {
+  color: var(--terrafusion-blue);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .tf-championship-heading {
+    font-size: 2rem;
+  }
+
+  .tf-clarity-button {
+    padding: 0.5rem 1.5rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .tf-glass-card {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: var(--terrafusion-cyan);
+  }
+
+  .tf-transcendent-text {
+    text-shadow: none;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .tf-scan-line,
+  .tf-quantum-pulse,
+  .tf-government-seal {
+    animation: none;
+  }
+
+  .tf-glass-card,
+  .tf-clarity-button {
+    transition: none;
+  }
+}

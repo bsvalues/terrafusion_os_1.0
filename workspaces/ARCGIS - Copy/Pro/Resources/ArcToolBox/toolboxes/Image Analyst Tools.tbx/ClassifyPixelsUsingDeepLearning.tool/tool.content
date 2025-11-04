@@ -1,0 +1,232 @@
+{
+    "type": "FunctionTool",
+    "guid": "{8e5f9ad3-cb81-4af2-acca-002ebf7fee1e}",
+    "displayname": "$rc:title",
+    "helpcontent": "66120001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "58",
+        "86"
+    ],
+    "attributes": [
+        "GPU",
+        "mCPU"
+    ],
+    "params": {
+        "in_raster": {
+            "display_order": "0",
+            "displayname": "$rc:in_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "DEMapServer"
+                    },
+                    {
+                        "type": "GPMapServerLayer"
+                    },
+                    {
+                        "type": "GPInternetTiledLayer"
+                    },
+                    {
+                        "type": "DEFolder"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    },
+                    {
+                        "type": "DEFeatureClass"
+                    }
+                ]
+            },
+            "description": "$rc:in_raster.descr"
+        },
+        "out_classified_raster": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_classified_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "DEFeatureClass"
+                    }
+                ]
+            },
+            "description": "$rc:out_classified_raster.descr"
+        },
+        "in_model_definition": {
+            "display_order": "3",
+            "displayname": "$rc:in_model_definition.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFile"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "dlpk_remote",
+                            "emd",
+                            "dlpk"
+                        ]
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "description": "$rc:in_model_definition.descr"
+        },
+        "arguments": {
+            "type": "optional",
+            "display_order": "5",
+            "control_guid": "{F604736F-06D8-47CD-AC15-7055F7FCDAC0}",
+            "displayname": "$rc:arguments.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:arguments.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:arguments.dt.title2"
+                    }
+                ]
+            },
+            "description": "$rc:arguments.descr"
+        },
+        "processing_mode": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:processing_mode.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PROCESS_AS_MOSAICKED_IMAGE",
+                        "code": "$rc:processing_mode.domain.PROCESS_AS_MOSAICKED_IMAGE"
+                    },
+                    {
+                        "value": "PROCESS_ITEMS_SEPARATELY",
+                        "code": "$rc:processing_mode.domain.PROCESS_ITEMS_SEPARATELY"
+                    }
+                ]
+            },
+            "value": "PROCESS_AS_MOSAICKED_IMAGE",
+            "description": "$rc:processing_mode.descr"
+        },
+        "out_classified_folder": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "2",
+            "displayname": "$rc:out_classified_folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:out_classified_folder.descr"
+        },
+        "out_featureclass": {
+            "type": "optional",
+            "direction": "out",
+            "display_order": "6",
+            "displayname": "$rc:out_featureclass.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_featureclass.descr"
+        },
+        "overwrite_attachments": {
+            "type": "optional",
+            "displayname": "$rc:overwrite_attachments.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "OVERWRITE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_OVERWRITE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:overwrite_attachments.descr"
+        },
+        "use_pixelspace": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:use_pixelspace.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "PIXELSPACE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_PIXELSPACE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:use_pixelspace.descr"
+        }
+    },
+    "environments": [
+        "cellSize",
+        "extent",
+        "geographicTransformations",
+        "gpuID",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "processorType",
+        "scratchWorkspace",
+        "snapRaster",
+        "workspace"
+    ]
+}

@@ -1,0 +1,8 @@
+{
+    "set": [
+        "customers",
+        "reports",
+        "stores",
+        "trade area"
+    ]
+}

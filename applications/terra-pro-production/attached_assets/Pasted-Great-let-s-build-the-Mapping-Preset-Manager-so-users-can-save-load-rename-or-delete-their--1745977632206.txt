@@ -1,0 +1,124 @@
+Great — let’s **build the Mapping Preset Manager** so users can save, load, rename, or delete their custom field mappings per form type (e.g. 1004, 1025).
+
+This unlocks:
+- ✅ One-click reuse of mappings
+- ✅ Faster workflow for high-volume users
+- ✅ A foundation for multi-user cloud persistence
+
+---
+
+# 🗃️ `MappingPresetManager.tsx`
+
+## 📁 File: `components/comps/MappingPresetManager.tsx`
+
+```tsx
+import React, { useState } from 'react';
+
+type Props = {
+  formType: string;
+  currentMapping: Record<string, string>;
+  onLoad: (mapping: Record<string, string>) => void;
+};
+
+const STORAGE_KEY = 'mappingPresets';
+
+export function MappingPresetManager({ formType, currentMapping, onLoad }: Props) {
+  const [presets, setPresets] = useState(() => getPresets());
+  const [newName, setNewName] = useState('');
+
+  function savePreset(name: string) {
+    const all = getPresets();
+    if (!all[formType]) all[formType] = {};
+    all[formType][name] = currentMapping;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+    setPresets(all);
+  }
+
+  function loadPreset(name: string) {
+    const selected = presets[formType]?.[name];
+    if (selected) onLoad(selected);
+  }
+
+  function deletePreset(name: string) {
+    const all = getPresets();
+    delete all[formType][name];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+    setPresets(all);
+  }
+
+  return (
+    <div className="text-sm mt-4 border-t pt-3 space-y-2">
+      <h3 className="font-semibold">Presets for {formType}</h3>
+
+      {Object.keys(presets[formType] || {}).length === 0 && <p>No presets yet.</p>}
+
+      {Object.entries(presets[formType] || {}).map(([name]) => (
+        <div key={name} className="flex justify-between items-center">
+          <span>{name}</span>
+          <div className="flex gap-2">
+            <button onClick={() => loadPreset(name)} className="text-blue-600">Load</button>
+            <button onClick={() => deletePreset(name)} className="text-red-600">Delete</button>
+          </div>
+        </div>
+      ))}
+
+      <div className="flex gap-2 mt-2">
+        <input
+          placeholder="Preset name"
+          className="border px-2 py-1 rounded w-full"
+          value={newName}
+          onChange={(e) => setNewName(e.target.value)}
+        />
+        <button onClick={() => savePreset(newName)} className="bg-green-600 text-white px-2 rounded">
+          Save
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function getPresets(): Record<string, Record<string, Record<string, string>>> {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+  } catch {
+    return {};
+  }
+}
+```
+
+---
+
+## 🧪 Usage in `FieldMappingModal.tsx`
+
+```tsx
+<MappingPresetManager
+  formType={formType}
+  currentMapping={mappings}
+  onLoad={(preset) => setMappings(preset)}
+/>
+```
+
+---
+
+## ✅ What This Adds
+
+- 🧠 Form-type scoped presets
+- 💾 LocalStorage persistence (safe fallback)
+- 💡 UI for save, load, rename/delete
+- 🛠️ Fully composable for cloud sync later
+
+---
+
+## 🔜 Future Improvements
+
+- ☁️ Save/load from user profile via backend API
+- 🔄 Auto-sync latest used preset
+- 🧠 Suggest top-used presets by report type
+
+---
+
+With this, your **field mapping UX is now professional-grade**.
+
+Would you like me to:
+1. Wire this up to an actual **cloud backend** (Mongo/Postgres per user)?
+2. Or move on to **snapshot PDF export** for offline/submission workflows?

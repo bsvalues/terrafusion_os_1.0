@@ -1,0 +1,5 @@
+<DataType Name="GPRasterCatalogLayer">
+  <DisplayName>Raster Catalog Layer</DisplayName>
+  <Description>A reference to a raster catalog, including symbology and rendering properties.</Description>
+</DataType>
+

@@ -1,0 +1,19 @@
+{
+    "map": {
+        "angle.descr": "<xdoc><p>Determines whether the horizontal arithmetic angle and vertical angle between the input feature and the nearest feature will be added to the input attribute table.</p><ul><li>Unchecked—The angles will not be added to the input&apos;s attribute table. This is the default.</li><li>Checked—The horizontal arithmetic angle and vertical angle will be added to the <span class=\"esri_fieldname\">NEAR_ANG_H</span> and <span class=\"esri_fieldname\">NEAR_ANG_V</span> fields in the input&apos;s attribute table.</li></ul></xdoc>",
+        "angle.title": "Angle",
+        "delta.descr": "<xdoc><p>Determines whether the distances along the X, Y, and Z axes between the input feature and the nearest feature will be added to the input attribute table.</p><ul><li>Unchecked—No distances will be added to the input attribute table. This is the default.</li><li>Checked—Distances along the X, Y, and Z axes will be calculated in the <span class=\"esri_fieldname\">NEAR_DELTX</span>, <span class=\"esri_fieldname\">NEAR_DELTY</span>, and <span class=\"esri_fieldname\">NEAR_DELTZ</span> fields.</li></ul></xdoc>",
+        "delta.title": "Delta",
+        "description": "Calculates the three-dimensional distance from each input feature to the nearest feature that resides in one or more near feature classes.",
+        "in_features.descr": "The input feature class whose features will be attributed with information about the nearest feature.",
+        "in_features.title": "Input Features",
+        "location.descr": "<xdoc><p>Determines whether the coordinates of the nearest point in the input and near feature will be added to the input&apos;s attribute table.</p><ul><li>Unchecked—The coordinates are not added to the input feature. This is the default.</li><li>Checked—The coordinates are added to the input feature.</li></ul></xdoc>",
+        "location.title": "Location",
+        "near_features.descr": "<xdoc><p>The one or more features whose proximity to the input features will be calculated. If multiple feature classes are specified, an additional field named <span class=\"esri_fieldname\">NEAR_FC</span> will be added to the input feature class to identify which near feature class contained the closest feature.</p></xdoc>",
+        "near_features.title": "Near Features",
+        "out_feature_class.title": "Updated Input Features",
+        "search_radius.descr": "The maximum distance for which the nearest features from a given input will be determined. If no value is specified, the nearest feature at any distance will be determined.",
+        "search_radius.title": "Search Radius",
+        "title": "Near 3D"
+    }
+}

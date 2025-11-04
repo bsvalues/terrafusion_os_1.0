@@ -46,10 +46,10 @@ const paddingClasses = {
 
 /**
  * Container Component
- * 
+ *
  * A responsive container component that constrains content width and provides
  * consistent horizontal padding across breakpoints.
- * 
+ *
  * @example
  * ```tsx
  * <Container>

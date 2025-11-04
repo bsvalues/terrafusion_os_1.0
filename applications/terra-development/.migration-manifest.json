@@ -1,0 +1,14 @@
+{
+  "migration_date": "2025-11-04 02:45:49",
+  "tech_stack": "",
+  "target_path": "C:\\Users\\bsval\\terrafusion_os_1.0\\applications\\terra-development",
+  "priority": "MEDIUM",
+  "target_name": "terra-development",
+  "size_mb": 3138.45,
+  "status": "OPERATIONAL",
+  "file_count": 13967,
+  "agent": "TerraFusion Elite Government OS Engineering Agent",
+  "source_path": "MIGRATED",
+  "last_verified": "2025-11-04 02:45:49",
+  "system_name": "terra-development"
+}

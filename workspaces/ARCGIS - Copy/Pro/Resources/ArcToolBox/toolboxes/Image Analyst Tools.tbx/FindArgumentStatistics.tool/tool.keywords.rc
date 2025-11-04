@@ -1,0 +1,16 @@
+{
+    "set": [
+        "argmax",
+        "argmin",
+        "arguments",
+        "data cube",
+        "dimension",
+        "image cube",
+        "mosaic dataset",
+        "multidimension",
+        "multidimensional",
+        "scientific data",
+        "statistics",
+        "netcdf"
+    ]
+}

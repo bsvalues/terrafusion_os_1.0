@@ -1,0 +1,9 @@
+{
+    "set": [
+        "block",
+        "difference",
+        "model surface",
+        "multipatch",
+        "volume"
+    ]
+}

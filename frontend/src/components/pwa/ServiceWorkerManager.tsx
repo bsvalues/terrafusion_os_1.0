@@ -20,7 +20,7 @@ export const ServiceWorkerManager: React.FC = () => {
     isRegistered: false,
     isUpdateAvailable: false,
     isOffline: !navigator.onLine,
-    registration: null
+    registration: null,
   });
 
   const [notifications, setNotifications] = useState<{
@@ -32,7 +32,7 @@ export const ServiceWorkerManager: React.FC = () => {
   }>({
     show: false,
     message: '',
-    severity: 'info'
+    severity: 'info',
   });
 
   // Register service worker
@@ -44,9 +44,9 @@ export const ServiceWorkerManager: React.FC = () => {
 
     try {
       const registration = await navigator.serviceWorker.register('/sw.js');
-      
-      setSwState(prev => ({ ...prev, isRegistered: true, registration }));
-      
+
+      setSwState((prev) => ({ ...prev, isRegistered: true, registration }));
+
       // Check for updates
       registration.addEventListener('updatefound', () => {
         const installingWorker = registration.installing;
@@ -55,19 +55,11 @@ export const ServiceWorkerManager: React.FC = () => {
             if (installingWorker.state === 'installed') {
               if (navigator.serviceWorker.controller) {
                 // New content available
-                setSwState(prev => ({ ...prev, isUpdateAvailable: true }));
-                showNotification(
-                  'App update available!',
-                  'info',
-                  () => updateApp(),
-                  'Update'
-                );
+                setSwState((prev) => ({ ...prev, isUpdateAvailable: true }));
+                showNotification('App update available!', 'info', () => updateApp(), 'Update');
               } else {
                 // Content cached for offline use
-                showNotification(
-                  'App ready for offline use!',
-                  'success'
-                );
+                showNotification('App ready for offline use!', 'success');
               }
             }
           });
@@ -77,7 +69,7 @@ export const ServiceWorkerManager: React.FC = () => {
       // Service Worker registered successfully
     } catch (error) {
       // Service Worker registration failed
-      setSwState(prev => ({ ...prev, isSupported: false }));
+      setSwState((prev) => ({ ...prev, isSupported: false }));
     }
   }, [swState.isSupported]);
 
@@ -90,30 +82,33 @@ export const ServiceWorkerManager: React.FC = () => {
   }, [swState.registration]);
 
   // Show notification
-  const showNotification = useCallback((
-    message: string, 
-    severity: 'success' | 'info' | 'warning' | 'error',
-    action?: () => void,
-    actionLabel?: string
-  ) => {
-    setNotifications({
-      show: true,
-      message,
-      severity,
-      action,
-      actionLabel
-    });
-  }, []);
+  const showNotification = useCallback(
+    (
+      message: string,
+      severity: 'success' | 'info' | 'warning' | 'error',
+      action?: () => void,
+      actionLabel?: string
+    ) => {
+      setNotifications({
+        show: true,
+        message,
+        severity,
+        action,
+        actionLabel,
+      });
+    },
+    []
+  );
 
   // Handle offline/online status
   useEffect(() => {
     const handleOnline = () => {
-      setSwState(prev => ({ ...prev, isOffline: false }));
+      setSwState((prev) => ({ ...prev, isOffline: false }));
       showNotification('Back online!', 'success');
     };
 
     const handleOffline = () => {
-      setSwState(prev => ({ ...prev, isOffline: true }));
+      setSwState((prev) => ({ ...prev, isOffline: true }));
       showNotification('You are offline. App will continue to work!', 'warning');
     };
 
@@ -135,13 +130,8 @@ export const ServiceWorkerManager: React.FC = () => {
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.data && event.data.type === 'SW_UPDATE') {
-        setSwState(prev => ({ ...prev, isUpdateAvailable: true }));
-        showNotification(
-          'App update ready!',
-          'info',
-          () => updateApp(),
-          'Reload'
-        );
+        setSwState((prev) => ({ ...prev, isUpdateAvailable: true }));
+        showNotification('App update ready!', 'info', () => updateApp(), 'Reload');
       }
     };
 
@@ -161,7 +151,7 @@ export const ServiceWorkerManager: React.FC = () => {
         // Background sync registered for module data
       } catch (error) {
         // Background sync registration failed
-        setSwState(prev => ({ ...prev, isOffline: true }));
+        setSwState((prev) => ({ ...prev, isOffline: true }));
       }
     }
   }, [swState.registration]);
@@ -176,7 +166,7 @@ export const ServiceWorkerManager: React.FC = () => {
         // Module data cached for offline use
       } catch (error) {
         // Failed to cache module data
-        setSwState(prev => ({ ...prev, isOffline: true }));
+        setSwState((prev) => ({ ...prev, isOffline: true }));
       }
     }
   }, []);
@@ -184,17 +174,17 @@ export const ServiceWorkerManager: React.FC = () => {
   // Request persistent storage
   useEffect(() => {
     if (navigator.storage && navigator.storage.persist) {
-      navigator.storage.persist().then(granted => {
+      navigator.storage.persist().then((granted) => {
         if (granted) {
           // Persistent storage granted
-          setSwState(prev => ({ ...prev, isPersistent: true }));
+          setSwState((prev) => ({ ...prev, isPersistent: true }));
         }
       });
     }
   }, []);
 
   const handleCloseNotification = () => {
-    setNotifications(prev => ({ ...prev, show: false }));
+    setNotifications((prev) => ({ ...prev, show: false }));
   };
 
   return (
@@ -206,14 +196,14 @@ export const ServiceWorkerManager: React.FC = () => {
         onClose={handleCloseNotification}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
-        <Alert 
-          onClose={handleCloseNotification} 
+        <Alert
+          onClose={handleCloseNotification}
           severity={notifications.severity}
           action={
             notifications.action && notifications.actionLabel ? (
-              <Button 
-                color="inherit" 
-                size="small" 
+              <Button
+                color='inherit'
+                size='small'
                 onClick={() => {
                   notifications.action!();
                   handleCloseNotification();
@@ -231,28 +221,23 @@ export const ServiceWorkerManager: React.FC = () => {
       {/* PWA Debug Info (Development Only) */}
       {process.env.NODE_ENV === 'development' && (
         <Box
-          position="fixed"
+          position='fixed'
           bottom={16}
           right={16}
-          bgcolor="background.paper"
-          border="1px solid"
-          borderColor="divider"
+          bgcolor='background.paper'
+          border='1px solid'
+          borderColor='divider'
           borderRadius={1}
           p={1}
-          fontSize="12px"
-          fontFamily="monospace"
+          fontSize='12px'
+          fontFamily='monospace'
           zIndex={9999}
         >
-
-
           <div>SW Supported: {swState.isSupported ? '✓' : '✗'}</div>
-          <div
->SW Registered: {swState.isRegistered ? '✓' : '✗'}</div>
-
+          <div>SW Registered: {swState.isRegistered ? '✓' : '✗'}</div>
 
           <div>Update Available: {swState.isUpdateAvailable ? '✓' : '✗'}</div>
-          <div
->Offline: {swState.isOffline ? '✓' : '✗'}</div>
+          <div>Offline: {swState.isOffline ? '✓' : '✗'}</div>
         </Box>
       )}
     </div>
@@ -262,14 +247,14 @@ export const ServiceWorkerManager: React.FC = () => {
 // Hook for using service worker functionality in components
 export const useServiceWorker = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  
+
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
-    
+
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-    
+
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
@@ -280,7 +265,7 @@ export const useServiceWorker = () => {
     if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
       navigator.serviceWorker.controller.postMessage({
         type: 'SYNC_DATA',
-        data
+        data,
       });
     }
   }, []);
@@ -320,7 +305,7 @@ export const useServiceWorker = () => {
     syncInBackground,
     cacheData,
     getCachedData,
-    isOfflineCapable: 'serviceWorker' in navigator && 'caches' in window
+    isOfflineCapable: 'serviceWorker' in navigator && 'caches' in window,
   };
 };
 

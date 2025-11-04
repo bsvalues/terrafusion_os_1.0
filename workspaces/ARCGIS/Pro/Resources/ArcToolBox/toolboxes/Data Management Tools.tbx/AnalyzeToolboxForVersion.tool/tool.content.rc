@@ -1,0 +1,29 @@
+{
+    "map": {
+        "description": "Analyzes the contents of a toolbox and identifies compatibility issues with previous versions of ArcGIS software.",
+        "in_toolbox.descr": "<xdoc><p>The input toolbox (.tbx or .atbx file) that will be analyzed.</p><p>The Python toolbox format (.pyt file) is not supported as an input.</p></xdoc>",
+        "in_toolbox.title": "Input",
+        "report.descr": "The text file that will be created containing the compatibility issues identified by the analyzers.",
+        "report.title": "Output File",
+        "summary": "<xdoc><p>Analyzes the contents of a toolbox and identifies compatibility issues with previous versions of ArcGIS software.</p><p>The tool evaluates a toolbox (for both ModelBuilder and Python-based tools) and determines the ArcGIS Pro geoprocessing tools it contains. It then identifies compatibility issues between the version of the software being used and a specified target version. Compatibility issues are presented as warning messages and can be written to a text file.</p></xdoc>",
+        "title": "Analyze Toolbox For Version",
+        "version.descr": "<xdoc><p>Specifies the software version that will be used for toolbox compatibility analysis.</p><ul><li><span title=\"10.6.0\">ArcGIS Desktop 10.6.0</span>—ArcGIS Desktop 10.6.0 will be used for toolbox compatibility issue analysis.</li><li><span title=\"10.7.0\">ArcGIS Desktop 10.7.0</span>—ArcGIS Desktop 10.7.0 will be used for toolbox compatibility issue analysis.</li><li><span title=\"10.8.0\">ArcGIS Desktop 10.8.0</span>—ArcGIS Desktop 10.8.0 will be used for toolbox compatibility issue analysis.</li><li><span title=\"10.8.2\">ArcGIS Desktop 10.8.2</span>—ArcGIS Desktop 10.8.2 will be used for toolbox compatibility issue analysis.</li><li><span title=\"2.2\">ArcGIS Pro2.2</span>—ArcGIS Pro 2.2 will be used for toolbox compatibility issue analysis.</li><li><span title=\"2.3\">ArcGIS Pro2.3</span>—ArcGIS Pro 2.3 will be used for toolbox compatibility issue analysis.</li><li><span title=\"2.4\">ArcGIS Pro2.4</span>—ArcGIS Pro 2.4 will be used for toolbox compatibility issue analysis.</li><li><span title=\"2.5\">ArcGIS Pro2.5</span>—ArcGIS Pro 2.5 will be used for toolbox compatibility issue analysis.</li><li><span title=\"2.6\">ArcGIS Pro2.6</span>—ArcGIS Pro 2.6 will be used for toolbox compatibility issue analysis.</li><li><span title=\"2.7\">ArcGIS Pro2.7</span>—ArcGIS Pro 2.7 will be used for toolbox compatibility issue analysis.</li><li><span title=\"2.8\">ArcGIS Pro2.8</span>—ArcGIS Pro 2.8 will be used for toolbox compatibility issue analysis.</li><li><span title=\"2.9\">ArcGIS Pro2.9</span>—ArcGIS Pro 2.9 will be used for toolbox compatibility issue analysis.</li><li><span title=\"3.0\">ArcGIS Pro3.0</span>—ArcGIS Pro 3.0 will be used for toolbox compatibility issue analysis.</li><li><span title=\"3.1\">ArcGIS Pro3.1</span>—ArcGIS Pro 3.1 will be used for toolbox compatibility issue analysis.</li><li><span title=\"3.2\">ArcGIS Pro3.2</span>—ArcGIS Pro 3.2 will be used for toolbox compatibility issue analysis.</li><li><span title=\"3.3\">ArcGIS Pro3.3</span>—ArcGIS Pro 3.3 will be used for toolbox compatibility issue analysis.</li></ul></xdoc>",
+        "version.domain.10.6.0": "ArcGIS Desktop 10.6.0",
+        "version.domain.10.7.0": "ArcGIS Desktop 10.7.0",
+        "version.domain.10.8.0": "ArcGIS Desktop 10.8.0",
+        "version.domain.10.8.2": "ArcGIS Desktop 10.8.2",
+        "version.domain.2.2": "ArcGIS Pro 2.2",
+        "version.domain.2.3": "ArcGIS Pro 2.3",
+        "version.domain.2.4": "ArcGIS Pro 2.4",
+        "version.domain.2.5": "ArcGIS Pro 2.5",
+        "version.domain.2.6": "ArcGIS Pro 2.6",
+        "version.domain.2.7": "ArcGIS Pro 2.7",
+        "version.domain.2.8": "ArcGIS Pro 2.8",
+        "version.domain.2.9": "ArcGIS Pro 2.9",
+        "version.domain.3.0": "ArcGIS Pro 3.0",
+        "version.domain.3.1": "ArcGIS Pro 3.1",
+        "version.domain.3.2": "ArcGIS Pro 3.2",
+        "version.domain.3.3": "ArcGIS Pro 3.3",
+        "version.title": "Target Version"
+    }
+}

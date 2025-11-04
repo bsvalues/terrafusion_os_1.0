@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TerraFusion Elite - Government-Grade Geospatial Intelligence Platform">
+    <meta name="keywords" content="GIS, geospatial, property assessment, AI analytics, government, FISMA">
+    <title>{% block title %}TerraFusion Elite Platform{% endblock %}</title>
+    
+    <!-- Enhanced Font and Icon Loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌍%3C/text%3E%3C/svg%3E">
+    
+    <style>
+        :root {
+            /* Elite Government Color Palette */
+            --tf-primary: #1e40af;
+            --tf-primary-rgb: 30, 64, 175;
+            --tf-secondary: #475569;
+            --tf-secondary-rgb: 71, 85, 105;
+            --tf-success: #059669;
+            --tf-success-rgb: 5, 150, 105;
+            --tf-info: #0891b2;
+            --tf-info-rgb: 8, 145, 178;
+            --tf-warning: #d97706;
+            --tf-warning-rgb: 217, 119, 6;
+            --tf-danger: #dc2626;
+            --tf-danger-rgb: 220, 38, 38;
+            --tf-light: #f8fafc;
+            --tf-light-rgb: 248, 250, 252;
+            --tf-dark: #0f172a;
+            --tf-dark-rgb: 15, 23, 42;
+            
+            /* Elite Gradients */
+            --tf-gradient-primary: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #06b6d4 100%);
+            --tf-gradient-secondary: linear-gradient(135deg, #475569 0%, #64748b 100%);
+            --tf-gradient-success: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            --tf-gradient-danger: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            --tf-gradient-dark: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            
+            /* Advanced Shadows */
+            --tf-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+            --tf-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            --tf-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --tf-shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.16);
+            --tf-shadow-xl: 0 24px 56px rgba(0, 0, 0, 0.20);
+            
+            /* Elite Spacing */
+            --tf-border-radius: 12px;
+            --tf-border-radius-lg: 16px;
+            --tf-border-radius-xl: 20px;
+            
+            /* Animation Easing */
+            --tf-ease: cubic-bezier(0.4, 0, 0.2, 1);
+            --tf-ease-in: cubic-bezier(0.4, 0, 1, 1);
+            --tf-ease-out: cubic-bezier(0, 0, 0.2, 1);
+            
+            /* Glass Effect */
+            --tf-glass-bg: rgba(255, 255, 255, 0.8);
+            --tf-glass-border: rgba(255, 255, 255, 0.18);
+        }
+
+        /* Enhanced Typography */
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            font-optical-sizing: auto;
+            font-variation-settings: "slnt" 0;
+            background: linear-gradient(135deg, var(--tf-light) 0%, #e2e8f0 100%);
+            color: var(--tf-dark);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-height: 100vh;
+        }
+
+        /* Enhanced Navigation */
+        .navbar-elite {
+            background: var(--tf-glass-bg) !important;
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--tf-glass-border);
+            box-shadow: var(--tf-shadow-sm);
+            padding: 1rem 0;
+            transition: all 0.3s var(--tf-ease);
+        }
+
+        .navbar-brand-elite {
+            font-weight: 800;
+            font-size: 1.75rem;
+            background: var(--tf-gradient-primary);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none !important;
+            transition: all 0.3s var(--tf-ease);
+        }
+
+        .navbar-brand-elite:hover {
+            transform: scale(1.02);
+        }
+
+        .nav-link-elite {
+            font-weight: 500;
+            color: var(--tf-secondary) !important;
+            transition: all 0.3s var(--tf-ease);
+            border-radius: var(--tf-border-radius);
+            margin: 0 0.25rem;
+            padding: 0.75rem 1rem !important;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link-elite::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--tf-gradient-primary);
+            opacity: 0.1;
+            transition: all 0.3s var(--tf-ease);
+        }
+
+        .nav-link-elite:hover::before,
+        .nav-link-elite.active::before {
+            left: 0;
+        }
+
+        .nav-link-elite:hover,
+        .nav-link-elite.active {
+            color: var(--tf-primary) !important;
+            transform: translateY(-1px);
+        }
+
+        /* Enhanced Cards */
+        .card-elite {
+            background: white;
+            border: none;
+            border-radius: var(--tf-border-radius-lg);
+            box-shadow: var(--tf-shadow);
+            transition: all 0.4s var(--tf-ease);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card-elite::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--tf-gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.3s var(--tf-ease);
+        }
+
+        .card-elite:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--tf-shadow-lg);
+        }
+
+        .card-elite:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card-header-elite {
+            background: transparent;
+            border-bottom: 1px solid rgba(var(--tf-secondary-rgb), 0.1);
+            border-radius: var(--tf-border-radius-lg) var(--tf-border-radius-lg) 0 0 !important;
+            padding: 1.5rem;
+            font-weight: 600;
+        }
+
+        .card-body-elite {
+            padding: 2rem;
+        }
+
+        /* Enhanced Buttons */
+        .btn-elite {
+            background: var(--tf-gradient-primary);
+            border: none;
+            border-radius: var(--tf-border-radius);
+            padding: 0.875rem 2rem;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s var(--tf-ease);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9rem;
+        }
+
+        .btn-elite::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-elite:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--tf-shadow-md);
+            color: white;
+        }
+
+        .btn-elite:hover::before {
+            left: 100%;
+        }
+
+        .btn-outline-elite {
+            border: 2px solid var(--tf-primary);
+            color: var(--tf-primary);
+            background: transparent;
+            border-radius: var(--tf-border-radius);
+            padding: 0.75rem 1.75rem;
+            font-weight: 600;
+            transition: all 0.3s var(--tf-ease);
+        }
+
+        .btn-outline-elite:hover {
+            background: var(--tf-primary);
+            border-color: var(--tf-primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--tf-shadow-md);
+        }
+
+        /* Enhanced Form Elements */
+        .form-control-elite {
+            border-radius: var(--tf-border-radius);
+            border: 2px solid #e2e8f0;
+            padding: 0.875rem 1rem;
+            transition: all 0.3s var(--tf-ease);
+            font-weight: 500;
+        }
+
+        .form-control-elite:focus {
+            border-color: var(--tf-primary);
+            box-shadow: 0 0 0 3px rgba(var(--tf-primary-rgb), 0.1);
+            transform: translateY(-1px);
+        }
+
+        /* Enhanced Alerts */
+        .alert-elite {
+            border-radius: var(--tf-border-radius-lg);
+            border: none;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .alert-elite::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: currentColor;
+        }
+
+        /* Enhanced Tables */
+        .table-elite {
+            border-radius: var(--tf-border-radius-lg);
+            overflow: hidden;
+            box-shadow: var(--tf-shadow);
+            background: white;
+        }
+
+        .table-elite thead th {
+            background: var(--tf-light);
+            border: none;
+            font-weight: 600;
+            color: var(--tf-dark);
+            padding: 1.25rem;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+            letter-spacing: 0.5px;
+        }
+
+        .table-elite tbody td {
+            border: none;
+            padding: 1.25rem;
+            vertical-align: middle;
+            transition: all 0.2s var(--tf-ease);
+        }
+
+        .table-elite tbody tr {
+            transition: all 0.2s var(--tf-ease);
+        }
+
+        .table-elite tbody tr:hover {
+            background-color: rgba(var(--tf-primary-rgb), 0.02);
+            transform: scale(1.001);
+        }
+
+        /* Enhanced Badges */
+        .badge-elite {
+            border-radius: var(--tf-border-radius);
+            padding: 0.5rem 0.875rem;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Enhanced Progress Bars */
+        .progress-elite {
+            height: 8px;
+            border-radius: 10px;
+            background-color: var(--tf-light);
+            overflow: hidden;
+        }
+
+        .progress-bar-elite {
+            border-radius: 10px;
+            background: var(--tf-gradient-primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar-elite::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background-image: linear-gradient(
+                -45deg,
+                rgba(255, 255, 255, .2) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(255, 255, 255, .2) 50%,
+                rgba(255, 255, 255, .2) 75%,
+                transparent 75%,
+                transparent
+            );
+            background-size: 10px 10px;
+            animation: move 1s linear infinite;
+        }
+
+        @keyframes move {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 10px 10px;
+            }
+        }
+
+        /* Glass Effect Utility */
+        .glass-effect {
+            background: var(--tf-glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--tf-glass-border);
+        }
+
+        /* Container Enhancements */
+        .container-fluid-elite {
+            padding: 2rem 1rem;
+            min-height: calc(100vh - 140px);
+        }
+
+        /* Footer Enhancement */
+        .footer-elite {
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            padding: 2rem 0;
+            margin-top: 4rem;
+            box-shadow: var(--tf-shadow-sm);
+        }
+
+        /* Status Indicators */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .status-indicator.online {
+            background: rgba(var(--tf-success-rgb), 0.1);
+            color: var(--tf-success);
+        }
+
+        .status-indicator.warning {
+            background: rgba(var(--tf-warning-rgb), 0.1);
+            color: var(--tf-warning);
+        }
+
+        .status-indicator.error {
+            background: rgba(var(--tf-danger-rgb), 0.1);
+            color: var(--tf-danger);
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .pulse-dot.success {
+            background: var(--tf-success);
+            box-shadow: 0 0 0 0 rgba(var(--tf-success-rgb), 0.7);
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(var(--tf-success-rgb), 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(var(--tf-success-rgb), 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(var(--tf-success-rgb), 0);
+            }
+        }
+
+        /* Loading States */
+        .loading-skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar-brand-elite {
+                font-size: 1.5rem;
+            }
+            
+            .card-body-elite {
+                padding: 1.5rem;
+            }
+            
+            .container-fluid-elite {
+                padding: 1rem 0.5rem;
+            }
+            
+            .btn-elite {
+                padding: 0.75rem 1.5rem;
+                font-size: 0.875rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .navbar-brand-elite {
+                font-size: 1.25rem;
+            }
+            
+            .card-body-elite {
+                padding: 1rem;
+            }
+        }
+
+        /* Dark Mode Support */
+        @media (prefers-color-scheme: dark) {
+            [data-bs-theme="auto"] {
+                --tf-light: #1e293b;
+                --tf-dark: #f8fafc;
+            }
+        }
+
+        /* High Contrast Mode */
+        @media (prefers-contrast: high) {
+            .card-elite {
+                border: 2px solid var(--tf-secondary);
+            }
+            
+            .btn-elite {
+                border: 2px solid transparent;
+            }
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+    
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <!-- Enhanced Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-elite sticky-top">
+        <div class="container">
+            <a class="navbar-brand-elite" href="/">
+                <i class="bi bi-globe-americas me-2"></i>
+                TerraFusion Elite
+            </a>
+            
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarElite" aria-controls="navbarElite" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarElite">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link-elite {{ 'active' if request.endpoint == 'dashboard' }}" href="/dashboard">
+                            <i class="bi bi-speedometer2 me-1"></i>
+                            Command Center
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link-elite dropdown-toggle" href="#" id="analysisDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-robot me-1"></i>
+                            AI Systems
+                        </a>
+                        <ul class="dropdown-menu border-0 shadow-lg">
+                            <li><a class="dropdown-item" href="/ai-analysis-dashboard">
+                                <i class="bi bi-brain me-2 text-danger"></i>Quantum Analytics
+                            </a></li>
+                            <li><a class="dropdown-item" href="/market-analysis-dashboard">
+                                <i class="bi bi-graph-up me-2 text-info"></i>Market Intelligence
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/ai-configuration">
+                                <i class="bi bi-gear me-2 text-secondary"></i>AI Configuration
+                            </a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link-elite dropdown-toggle" href="#" id="gisDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-globe-americas me-1"></i>
+                            GIS Command
+                        </a>
+                        <ul class="dropdown-menu border-0 shadow-lg">
+                            <li><a class="dropdown-item" href="/gis-dashboard">
+                                <i class="bi bi-map me-2 text-primary"></i>Operations Center
+                            </a></li>
+                            <li><a class="dropdown-item" href="/gis-export-dashboard">
+                                <i class="bi bi-download me-2 text-success"></i>Data Export
+                            </a></li>
+                            <li><a class="dropdown-item" href="/district-lookup-dashboard">
+                                <i class="bi bi-search-location me-2 text-warning"></i>District Intel
+                            </a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link-elite {{ 'active' if request.endpoint == 'pacs_sync_dashboard' }}" href="/pacs-sync-dashboard">
+                            <i class="bi bi-arrow-repeat me-1"></i>
+                            Legacy Sync
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link-elite {{ 'active' if request.endpoint == 'project_dashboard' }}" href="/project-dashboard">
+                            <i class="bi bi-kanban me-1"></i>
+                            Projects
+                        </a>
+                    </li>
+                </ul>
+                
+                <!-- System Status Indicator -->
+                <div class="status-indicator online me-3">
+                    <div class="pulse-dot success"></div>
+                    <span>All Systems Operational</span>
+                </div>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link-elite dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-shield-check me-1"></i>
+                            Admin
+                        </a>
+                        <ul class="dropdown-menu border-0 shadow-lg">
+                            <li><a class="dropdown-item" href="/admin-panel">
+                                <i class="bi bi-gear me-2"></i>System Config
+                            </a></li>
+                            <li><a class="dropdown-item" href="/monitoring-dashboard">
+                                <i class="bi bi-activity me-2"></i>Monitoring
+                            </a></li>
+                            <li><a class="dropdown-item" href="/audit-dashboard">
+                                <i class="bi bi-clipboard-check me-2"></i>Audit Trail
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/security-dashboard">
+                                <i class="bi bi-shield-lock me-2 text-danger"></i>Security Center
+                            </a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link-elite" href="/health">
+                            <i class="bi bi-heart-pulse me-1"></i>
+                            Status
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <div class="container-fluid-elite">
+            <!-- Flash Messages with Enhanced Styling -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-elite alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                            <i class="bi bi-{{ 'exclamation-triangle' if category == 'error' else 'info-circle' }} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Enhanced Footer -->
+    <footer class="footer-elite">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-globe-americas fs-4 text-primary me-3"></i>
+                        <div>
+                            <div class="fw-bold">TerraFusion Elite Platform</div>
+                            <div class="text-muted small">Government-Grade Geospatial Intelligence</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="d-flex flex-column">
+                        <div class="text-muted small mb-1">
+                            <i class="bi bi-shield-check me-1 text-success"></i>
+                            FISMA-HIGH Certified • Zero-Trust Architecture
+                        </div>
+                        <div class="text-muted small">
+                            <i class="bi bi-clock me-1"></i>
+                            Uptime: 99.97% • Last Updated: <span id="lastUpdated">{{ moment().format('LLL') }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Enhanced Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Enhanced Interactions -->
+    <script>
+        // Enhanced page load animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate cards on load
+            const cards = document.querySelectorAll('.card-elite');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+            
+            // Update timestamps
+            updateTimestamps();
+            setInterval(updateTimestamps, 60000); // Update every minute
+            
+            // Enhanced tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+            
+            // Enhanced dropdown animations
+            const dropdowns = document.querySelectorAll('.dropdown-menu');
+            dropdowns.forEach(dropdown => {
+                dropdown.addEventListener('show.bs.dropdown', function() {
+                    this.style.opacity = '0';
+                    this.style.transform = 'translateY(-10px)';
+                    setTimeout(() => {
+                        this.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                        this.style.opacity = '1';
+                        this.style.transform = 'translateY(0)';
+                    }, 10);
+                });
+            });
+        });
+        
+        function updateTimestamps() {
+            const lastUpdated = document.getElementById('lastUpdated');
+            if (lastUpdated) {
+                lastUpdated.textContent = new Date().toLocaleString();
+            }
+        }
+        
+        // Enhanced form validation
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                const forms = document.getElementsByClassName('needs-validation');
+                Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+        
+        // Enhanced error handling
+        window.addEventListener('error', function(e) {
+            console.error('JavaScript Error:', e.error);
+            // Could integrate with monitoring service here
+        });
+        
+        // Performance monitoring
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                const perfData = performance.getEntriesByType('navigation')[0];
+                console.log('Page Load Performance:', {
+                    loadTime: perfData.loadEventEnd - perfData.loadEventStart,
+                    domReady: perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart,
+                    responseTime: perfData.responseEnd - perfData.requestStart
+                });
+            }, 0);
+        });
+    </script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

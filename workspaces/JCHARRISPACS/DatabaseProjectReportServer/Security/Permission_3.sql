@@ -1,0 +1,5 @@
+GRANT INSERT TO [RSExecRole];
+
+
+GO
+

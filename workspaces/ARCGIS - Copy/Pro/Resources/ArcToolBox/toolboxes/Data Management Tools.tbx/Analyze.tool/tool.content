@@ -1,0 +1,92 @@
+{
+    "type": "FunctionTool",
+    "guid": "{ea53553d-c6ce-4d59-b21c-bdbcd8c29ff7}",
+    "displayname": "$rc:title",
+    "helpcontent": "3150001",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "param_nocount:in_dataset"
+    ],
+    "params": {
+        "in_dataset": {
+            "displayname": "$rc:in_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPLayer"
+                    },
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "DEDatasetType"
+                    }
+                ]
+            },
+            "description": "$rc:in_dataset.descr"
+        },
+        "components": {
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:components.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "BUSINESS",
+                        "code": "$rc:components.domain.BUSINESS"
+                    },
+                    {
+                        "value": "FEATURE",
+                        "code": "$rc:components.domain.FEATURE"
+                    },
+                    {
+                        "value": "RASTER",
+                        "code": "$rc:components.domain.RASTER"
+                    },
+                    {
+                        "value": "ADDS",
+                        "code": "$rc:components.domain.ADDS"
+                    },
+                    {
+                        "value": "DELETES",
+                        "code": "$rc:components.domain.DELETES"
+                    }
+                ]
+            },
+            "description": "$rc:components.descr"
+        },
+        "out_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPLayer"
+                    },
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "DEDatasetType"
+                    }
+                ]
+            },
+            "depends": [
+                "in_dataset"
+            ]
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

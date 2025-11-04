@@ -1,0 +1,8 @@
+{
+    "set": [
+        "copy",
+        "overviews",
+        "save",
+        "source"
+    ]
+}

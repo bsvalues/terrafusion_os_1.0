@@ -1,0 +1,12 @@
+{
+    "set": [
+        "digital obstacle file",
+        "faa",
+        "flight hazards",
+        "hlz",
+        "helicopter landing zones",
+        "navigation hazards",
+        "obstacles",
+        "obstructions"
+    ]
+}

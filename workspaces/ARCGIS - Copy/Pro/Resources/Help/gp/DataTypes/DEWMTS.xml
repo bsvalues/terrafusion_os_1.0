@@ -1,0 +1,5 @@
+<DataType Name="DEWMTS">
+  <DisplayName>WMTS Layer</DisplayName>
+  <Description>A WMTS Layer.</Description>
+</DataType>
+

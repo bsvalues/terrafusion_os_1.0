@@ -14,7 +14,7 @@ import {
   Chip,
   Paper,
   Stack,
-  CircularProgress
+  CircularProgress,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 // Mock types for universal translation protocol
@@ -25,7 +25,11 @@ interface UniversalTranslationProtocol {
 
 // Implementation of the UniversalTranslationProtocol
 class UniversalTranslator implements UniversalTranslationProtocol {
-  async translate(message: string, fromSpecies: SpeciesType, toSpecies: SpeciesType): Promise<string> {
+  async translate(
+    message: string,
+    fromSpecies: SpeciesType,
+    toSpecies: SpeciesType
+  ): Promise<string> {
     // Mock translation logic
     return `[${fromSpecies.toUpperCase()} → ${toSpecies.toUpperCase()}]: ${message}`;
   }
@@ -92,7 +96,7 @@ const UniversalTranslationInterface: React.FC = () => {
       const result = await response.json();
       setTranslatedMessage(result);
     } catch (error) {
-      console.error("Translation failed:", error);
+      console.error('Translation failed:', error);
       setTranslatedMessage({ error: (error as Error).message });
     } finally {
       setIsLoading(false);
@@ -102,91 +106,71 @@ const UniversalTranslationInterface: React.FC = () => {
   return (
     <StyledCard>
       <CardContent>
-
-
-        <Typography variant="h6" sx={{ color: '#d1c4e9', fontWeight: 600, mb: 3 }}>
+        <Typography variant='h6' sx={{ color: '#d1c4e9', fontWeight: 600, mb: 3 }}>
           Universal Translation Protocol
         </Typography>
-        <Grid
- container spacing={2}>
+        <Grid container spacing={2}>
           <Grid item xs={12}>
-
-
             <TextField
               fullWidth
               multiline
               rows={4}
-              label="Input Message"
+              label='Input Message'
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              variant="outlined"
+              variant='outlined'
               sx={{
                 '& .MuiOutlinedInput-root': {
                   '& fieldset': { borderColor: 'rgba(200, 150, 255, 0.3)' },
                   '&:hover fieldset': { borderColor: '#c5a6ff' },
                 },
                 '& .MuiInputLabel-root': { color: '#d1c4e9' },
-                '& .MuiInputBase-input': { color: 'white' }
+                '& .MuiInputBase-input': { color: 'white' },
               }}
             />
           </Grid>
-          <Grid
- item xs={12} sm={6}>
-            <FormControl fullWidth variant="outlined">
-
-
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth variant='outlined'>
               <InputLabel sx={{ color: '#d1c4e9' }}>Source Species</InputLabel>
               <Select
-
-value={sourceSpecies}
+                value={sourceSpecies}
                 onChange={(e) => setSourceSpecies(e.target.value as SpeciesType)}
-                label="Source Species"
-                 sx={{
+                label='Source Species'
+                sx={{
                   color: 'white',
                   '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(200, 150, 255, 0.3)' },
-                  '& .MuiSvgIcon-root': { color: 'white' }
+                  '& .MuiSvgIcon-root': { color: 'white' },
                 }}
               >
-
-
-                <MenuItem value="silicon">Silicon</MenuItem>
-                <MenuItem
-
-value="carbon">Carbon</MenuItem>
-                <MenuItem value="quantum">Quantum</MenuItem>
+                <MenuItem value='silicon'>Silicon</MenuItem>
+                <MenuItem value='carbon'>Carbon</MenuItem>
+                <MenuItem value='quantum'>Quantum</MenuItem>
               </Select>
             </FormControl>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <FormControl fullWidth variant="outlined">
-
-
+            <FormControl fullWidth variant='outlined'>
               <InputLabel sx={{ color: '#d1c4e9' }}>Target Species</InputLabel>
               <Select
-
-value={targetSpecies}
+                value={targetSpecies}
                 onChange={(e) => setTargetSpecies(e.target.value as SpeciesType)}
-                label="Target Species"
+                label='Target Species'
                 sx={{
                   color: 'white',
                   '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(200, 150, 255, 0.3)' },
-                  '& .MuiSvgIcon-root': { color: 'white' }
+                  '& .MuiSvgIcon-root': { color: 'white' },
                 }}
               >
-
-
-                <MenuItem value="silicon">Silicon</MenuItem>
-                <MenuItem
-
-value="carbon">Carbon</MenuItem>
-                <MenuItem value="quantum">Quantum</MenuItem>
+                <MenuItem value='silicon'>Silicon</MenuItem>
+                <MenuItem value='carbon'>Carbon</MenuItem>
+                <MenuItem value='quantum'>Quantum</MenuItem>
               </Select>
             </FormControl>
           </Grid>
           <Grid item xs={12}>
             <Button
               fullWidth
-              variant="contained"
+              variant='contained'
               onClick={handleTranslate}
               disabled={isLoading}
               sx={{
@@ -194,7 +178,7 @@ value="carbon">Carbon</MenuItem>
                 background: 'linear-gradient(135deg, #764ba2, #667eea)',
                 '&:hover': {
                   boxShadow: '0 8px 25px rgba(102, 126, 234, 0.4)',
-                }
+                },
               }}
             >
               {isLoading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Translate'}
@@ -204,20 +188,36 @@ value="carbon">Carbon</MenuItem>
 
         {translatedMessage && (
           <Paper elevation={3} sx={{ mt: 3, p: 2, background: 'rgba(0,0,0,0.2)' }}>
-            <Typography variant="h6" sx={{ color: '#c5a6ff', mb: 2 }}>Translation Output</Typography>
+            <Typography variant='h6' sx={{ color: '#c5a6ff', mb: 2 }}>
+              Translation Output
+            </Typography>
             {translatedMessage.error ? (
-              <Typography color="error">{translatedMessage.error}</Typography>
+              <Typography color='error'>{translatedMessage.error}</Typography>
             ) : (
               <Stack spacing={1}>
-                <Typography variant="body1" sx={{ color: 'white', background: 'rgba(255,255,255,0.1)', p: 1, borderRadius: 1 }}>
+                <Typography
+                  variant='body1'
+                  sx={{
+                    color: 'white',
+                    background: 'rgba(255,255,255,0.1)',
+                    p: 1,
+                    borderRadius: 1,
+                  }}
+                >
                   <strong>Content:</strong> {translatedMessage.adaptedContent}
                 </Typography>
-                <Chip label={`Quality: ${translatedMessage.qualityScore.toFixed(2)}`} color="success" size="small" />
-                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }}>
-                  <strong>Cultural Adaptation:</strong> {translatedMessage.adaptations.culturalReferences.join(', ') || 'None'}
+                <Chip
+                  label={`Quality: ${translatedMessage.qualityScore.toFixed(2)}`}
+                  color='success'
+                  size='small'
+                />
+                <Typography variant='caption' sx={{ color: 'rgba(255,255,255,0.7)' }}>
+                  <strong>Cultural Adaptation:</strong>{' '}
+                  {translatedMessage.adaptations.culturalReferences.join(', ') || 'None'}
                 </Typography>
-                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }}>
-                  <strong>Cognitive Load:</strong> {translatedMessage.adaptations.cognitiveLoadAdjustment || 'N/A'}
+                <Typography variant='caption' sx={{ color: 'rgba(255,255,255,0.7)' }}>
+                  <strong>Cognitive Load:</strong>{' '}
+                  {translatedMessage.adaptations.cognitiveLoadAdjustment || 'N/A'}
                 </Typography>
               </Stack>
             )}

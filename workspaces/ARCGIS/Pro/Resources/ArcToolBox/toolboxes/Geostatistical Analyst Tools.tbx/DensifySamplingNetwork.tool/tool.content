@@ -1,0 +1,132 @@
+{
+    "type": "FunctionTool",
+    "guid": "{6562ae1f-6458-46cc-aee8-9a50949b5692}",
+    "displayname": "$rc:title",
+    "helpcontent": "11000023",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "6"
+    ],
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_geostat_layer": {
+            "displayname": "$rc:in_geostat_layer.title",
+            "datatype": {
+                "type": "GPGALayer"
+            },
+            "description": "$rc:in_geostat_layer.descr"
+        },
+        "number_output_points": {
+            "displayname": "$rc:number_output_points.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "1",
+                "max": "2147483647"
+            },
+            "description": "$rc:number_output_points.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "selection_criteria": {
+            "type": "optional",
+            "displayname": "$rc:selection_criteria.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "STDERR",
+                        "code": "$rc:selection_criteria.domain.STDERR"
+                    },
+                    {
+                        "value": "STDERR_THRESHOLD",
+                        "code": "$rc:selection_criteria.domain.STDERR_THRESHOLD"
+                    },
+                    {
+                        "value": "QUARTILE_THRESHOLD",
+                        "code": "$rc:selection_criteria.domain.QUARTILE_THRESHOLD"
+                    },
+                    {
+                        "value": "QUARTILE_THRESHOLD_UPPER",
+                        "code": "$rc:selection_criteria.domain.QUARTILE_THRESHOLD_UPPER"
+                    }
+                ]
+            },
+            "value": "STDERR",
+            "description": "$rc:selection_criteria.descr"
+        },
+        "threshold": {
+            "type": "optional",
+            "displayname": "$rc:threshold.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "2.2250738585072014e-308",
+                "max": "1.7976931348623157e+308"
+            },
+            "description": "$rc:threshold.descr"
+        },
+        "in_weight_raster": {
+            "type": "optional",
+            "displayname": "$rc:in_weight_raster.title",
+            "datatype": {
+                "type": "GPRasterLayer"
+            },
+            "description": "$rc:in_weight_raster.descr"
+        },
+        "in_candidate_point_features": {
+            "type": "optional",
+            "displayname": "$rc:in_candidate_point_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:in_candidate_point_features.descr"
+        },
+        "inhibition_distance": {
+            "type": "optional",
+            "displayname": "$rc:inhibition_distance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                }
+            },
+            "description": "$rc:inhibition_distance.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

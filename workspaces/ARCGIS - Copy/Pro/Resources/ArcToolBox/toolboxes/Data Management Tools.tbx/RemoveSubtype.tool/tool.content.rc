@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Removes a subtype from the input table using its code.",
+        "in_table.descr": "The feature class or table containing the subtype definition.",
+        "in_table.title": "Input Table",
+        "out_table.title": "Updated Input Table",
+        "subtype_code.descr": "The subtype code to remove a subtype from the input table or feature class.",
+        "subtype_code.title": "Subtype Code",
+        "title": "Remove Subtype"
+    }
+}

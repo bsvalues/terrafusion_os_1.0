@@ -1,17 +1,19 @@
 import { Meta } from '@storybook/blocks';
 import { tokens } from '../tokens';
 
-<Meta title="Design System/Overview" />
+<Meta title='Design System/Overview' />
 
 # TerraFusion Design System
 
-<div style={{
-  padding: '32px',
-  background: 'linear-gradient(135deg, #0099ff 0%, #00ffee 100%)',
-  borderRadius: '16px',
-  marginBottom: '48px',
-  color: '#000',
-}}>
+<div
+  style={{
+    padding: '32px',
+    background: 'linear-gradient(135deg, #0099ff 0%, #00ffee 100%)',
+    borderRadius: '16px',
+    marginBottom: '48px',
+    color: '#000',
+  }}
+>
   <h2 style={{ fontSize: '32px', fontWeight: '700', marginBottom: '16px', margin: 0 }}>
     World-Class Design Token System
   </h2>
@@ -35,6 +37,7 @@ A design system is a collection of reusable components, tokens, and guidelines t
 ## 📚 Token Categories
 
 ### [Colors](/docs/design-system-tokens-colors--docs)
+
 100+ color tokens including brand colors, semantic colors, state colors, and component-specific colors.
 
 - **Brand Colors**: Primary (#0099ff), Transcend (#00ffee), Accent (#00ffaa)
@@ -55,6 +58,7 @@ const buttonBg = tokens.colors.component.button.primary.background;
 ---
 
 ### [Spacing](/docs/design-system-tokens-spacing--docs)
+
 40+ spacing values based on an 8px grid system with semantic naming.
 
 - **Base Scale**: 0 → 96 (0px → 384px)
@@ -74,6 +78,7 @@ const layoutSpacing = tokens.semantic.spacing.layout.lg; // 48px
 ---
 
 ### [Typography](/docs/design-system-tokens-typography--docs)
+
 Complete typography system with Inter font family and semantic text styles.
 
 - **Font Families**: Inter (sans), Fira Code (mono)
@@ -92,6 +97,7 @@ const codeFont = tokens.typography.fontFamily.mono;
 ---
 
 ### [Motion](/docs/design-system-tokens-motion--docs)
+
 Animation and transition system for smooth, consistent motion design.
 
 - **7 Durations**: instant (0ms) → slowest (700ms)
@@ -111,6 +117,7 @@ const spring = tokens.motion.spring.bouncy;
 ---
 
 ### Shadows
+
 Elevation and depth system with box shadows, glows, and text shadows.
 
 - **6 Box Shadow Elevations**
@@ -128,6 +135,7 @@ const elevation = tokens.shadows.box.elevation[3];
 ---
 
 ### Z-Index
+
 Consistent layering system for modals, tooltips, and overlays.
 
 ```typescript
@@ -139,6 +147,7 @@ const toastZIndex = tokens.zIndex.toast; // 1700
 ---
 
 ### Border Radius
+
 Corner rounding scale for consistent UI elements.
 
 ```typescript
@@ -226,35 +235,35 @@ const space: SpacingScale = 4;
     </div>
   </div>
 
-  <div style={{ 
-    background: 'rgba(0, 255, 238, 0.1)', 
+<div
+  style={{
+    background: 'rgba(0, 255, 238, 0.1)',
     border: '1px solid rgba(0, 255, 238, 0.3)',
     borderRadius: '12px',
     padding: '24px',
     textAlign: 'center',
-  }}>
-    <div style={{ fontSize: '36px', fontWeight: '700', color: '#00ffee', marginBottom: '8px' }}>
-      100%
-    </div>
-    <div style={{ color: '#b3b3b3', fontSize: '14px' }}>
-      Type Coverage
-    </div>
+  }}
+>
+  <div style={{ fontSize: '36px', fontWeight: '700', color: '#00ffee', marginBottom: '8px' }}>
+    100%
   </div>
+  <div style={{ color: '#b3b3b3', fontSize: '14px' }}>Type Coverage</div>
+</div>
 
-  <div style={{ 
-    background: 'rgba(0, 255, 170, 0.1)', 
+<div
+  style={{
+    background: 'rgba(0, 255, 170, 0.1)',
     border: '1px solid rgba(0, 255, 170, 0.3)',
     borderRadius: '12px',
     padding: '24px',
     textAlign: 'center',
-  }}>
-    <div style={{ fontSize: '36px', fontWeight: '700', color: '#00ffaa', marginBottom: '8px' }}>
-      7
-    </div>
-    <div style={{ color: '#b3b3b3', fontSize: '14px' }}>
-      Token Categories
-    </div>
+  }}
+>
+  <div style={{ fontSize: '36px', fontWeight: '700', color: '#00ffaa', marginBottom: '8px' }}>
+    7
   </div>
+  <div style={{ color: '#b3b3b3', fontSize: '14px' }}>Token Categories</div>
+</div>
 
   <div style={{ 
     background: 'rgba(0, 153, 255, 0.1)', 
@@ -316,16 +325,18 @@ frontend/src/design-system/
 
 ---
 
-<div style={{
-  padding: '24px',
-  background: 'rgba(0, 153, 255, 0.05)',
-  border: '1px solid rgba(0, 153, 255, 0.2)',
-  borderRadius: '12px',
-  marginTop: '48px',
-}}>
+<div
+  style={{
+    padding: '24px',
+    background: 'rgba(0, 153, 255, 0.05)',
+    border: '1px solid rgba(0, 153, 255, 0.2)',
+    borderRadius: '12px',
+    marginTop: '48px',
+  }}
+>
   <p style={{ margin: 0, color: '#b3b3b3', fontSize: '14px', lineHeight: '1.6' }}>
-    <strong style={{ color: '#fff' }}>Built The TerraFusion Way:</strong> Excellence, not speed. 
-    MIT/PhD-level engineering with comprehensive documentation, full type safety, and accessibility built-in.
-    No compromises, just world-class design infrastructure.
+    <strong style={{ color: '#fff' }}>Built The TerraFusion Way:</strong> Excellence, not speed.
+    MIT/PhD-level engineering with comprehensive documentation, full type safety, and accessibility
+    built-in. No compromises, just world-class design infrastructure.
   </p>
 </div>

@@ -1,0 +1,20 @@
+{
+    "map": {
+        "background_value.descr": "<xdoc><p>Specifies the value that will identify the background cells. The raster dataset is viewed as a set of foreground cells and background cells. The linear features are formed from the foreground cells.</p><ul><li><span title=\"ZERO\">Zero</span>—The background is composed of cells of zero or less or NoData. All cells with a value greater than zero are considered a foreground value.</li><li><span title=\"NODATA\">NoData</span>—The background is composed of NoData cells. All cells with valid values belong to the foreground.</li></ul></xdoc>",
+        "background_value.domain.NODATA": "NoData",
+        "background_value.domain.ZERO": "Zero",
+        "background_value.title": "Background value",
+        "description": "Converts a raster dataset to polyline features.",
+        "in_raster.descr": "<xdoc><p>The input raster dataset.</p><p>The raster must be integer type.</p></xdoc>",
+        "in_raster.title": "Input raster",
+        "minimum_dangle_length.descr": "Minimum length of dangling polylines that will be retained. The default is zero.",
+        "minimum_dangle_length.title": "Minimum dangle length",
+        "out_polyline_features.descr": "The output feature class that will contain the converted polylines.",
+        "out_polyline_features.title": "Output polyline features",
+        "raster_field.descr": "<xdoc><p>The field used to assign values from the cells in the input raster to the polyline features in the output dataset.</p><p>It can be an integer or a string field.</p></xdoc>",
+        "raster_field.title": "Field",
+        "simplify.descr": "<xdoc><p>Simplifies a line by removing small fluctuations or extraneous bends from it while preserving its essential shape.</p><ul><li>Checked—The polylines will be simplified into simpler shapes such that each contains a minimum number of segments. This is the default.</li><li>Unchecked—The polylines will not be simplified.</li></ul></xdoc>",
+        "simplify.title": "Simplify polylines",
+        "title": "Raster to Polyline"
+    }
+}

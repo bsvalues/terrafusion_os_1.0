@@ -1,0 +1,38 @@
+{
+    "type": "FunctionTool",
+    "guid": "{1920af4d-e820-4f60-a716-8304fdf6df18}",
+    "displayname": "$rc:title",
+    "helpcontent": "3010005",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_data": {
+            "type": "optional",
+            "displayname": "$rc:in_data.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEType"
+                    },
+                    {
+                        "type": "GPLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_data.descr"
+        },
+        "out_results": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_results.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "value": "false"
+        }
+    }
+}

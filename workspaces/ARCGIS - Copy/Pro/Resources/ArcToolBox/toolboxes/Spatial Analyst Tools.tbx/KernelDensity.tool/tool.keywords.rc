@@ -1,0 +1,14 @@
+{
+    "set": [
+        "barriers",
+        "concentration",
+        "density with barrier",
+        "kernel",
+        "magnitude per unit area",
+        "neighborhood",
+        "population",
+        "population density",
+        "spread",
+        "surface"
+    ]
+}

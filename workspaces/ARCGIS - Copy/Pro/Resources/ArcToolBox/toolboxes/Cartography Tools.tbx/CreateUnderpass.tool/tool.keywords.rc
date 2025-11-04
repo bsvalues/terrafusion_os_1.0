@@ -1,0 +1,15 @@
+{
+    "set": [
+        "bridge",
+        "culvert",
+        "mask",
+        "masking",
+        "overpass",
+        "override",
+        "representation",
+        "symbol",
+        "symbology",
+        "tunnel",
+        "viaduct"
+    ]
+}

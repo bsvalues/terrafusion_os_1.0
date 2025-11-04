@@ -1,0 +1,156 @@
+Let’s do it — time to build **Form Reviewer Mode** with live annotations, highlights, and feedback tracking.
+
+This gives you:
+- ✅ Internal or external reviewers can mark issues
+- 🧠 Contextual annotations tied to specific fields or sections
+- 📋 A complete **review + sign-off flow** (WinTOTAL-style, modernized)
+
+---
+
+# 📝 Form Reviewer Mode — Annotate + Highlight
+
+---
+
+## 🧱 Feature Scope
+
+| Feature | Description |
+|--------|-------------|
+| 🎯 Field-targeted highlights | Reviewer clicks G1 → highlight border + issue box |
+| 💬 Annotations | Rich-text or markdown comments |
+| ✅ Status labels | Mark as "Needs Fix", "Reviewed OK", etc. |
+| 📜 Reviewer log | Who said what, when |
+| 🔄 Linked to CRDT Yjs doc | Stored live with the form |
+| 🖨️ Exportable with audit trail | (optional) PDF of reviewer notes |
+
+---
+
+## 🧠 Data Model: Yjs `Map('annotations')`
+
+Each field can have 0..n annotations.
+
+```ts
+annotations.set('G1', [
+  {
+    id: 'a1',
+    author: 'bob@firm.com',
+    comment: 'Check source on this sale price',
+    status: 'Needs Fix',
+    createdAt: Date.now()
+  }
+]);
+```
+
+---
+
+## 🧩 UI Layer: AnnotatedField Wrapper
+
+```tsx
+function AnnotatedField({ fieldId, value, onChange }) {
+  const annotations = useAnnotationStore(fieldId);
+  const isHighlighted = annotations.some(a => a.status === 'Needs Fix');
+
+  return (
+    <div className={`field-wrapper ${isHighlighted ? 'border-red-500' : ''}`}>
+      <TextInput value={value} onChange={onChange} />
+      {annotations.length > 0 && (
+        <AnnotationIcon onClick={() => openAnnotationDrawer(fieldId)} />
+      )}
+    </div>
+  );
+}
+```
+
+---
+
+## 🖋 AnnotationDrawer
+
+```tsx
+function AnnotationDrawer({ fieldId, onClose }) {
+  const { annotations, addAnnotation, updateStatus } = useAnnotationStore(fieldId);
+
+  return (
+    <div className="drawer">
+      <h3>Annotations for {fieldId}</h3>
+      {annotations.map(a => (
+        <div key={a.id}>
+          <p><strong>{a.author}</strong>: {a.comment}</p>
+          <span>Status: {a.status}</span>
+          <select onChange={(e) => updateStatus(a.id, e.target.value)}>
+            <option>Needs Fix</option>
+            <option>Reviewed OK</option>
+            <option>Dismissed</option>
+          </select>
+        </div>
+      ))}
+      <textarea onBlur={(e) => addAnnotation(e.target.value)} placeholder="Add comment..." />
+      <button onClick={onClose}>Close</button>
+    </div>
+  );
+}
+```
+
+---
+
+## 🧩 Hook: `useAnnotationStore.ts`
+
+```ts
+const yAnnotations = ydoc.getMap('annotations');
+
+export function useAnnotationStore(fieldId: string) {
+  const [annotations, set] = useState([]);
+
+  useEffect(() => {
+    const handler = () => {
+      const data = yAnnotations.get(fieldId) || [];
+      set(data);
+    };
+    yAnnotations.observe(handler);
+    handler();
+    return () => yAnnotations.unobserve(handler);
+  }, [fieldId]);
+
+  function addAnnotation(comment: string) {
+    const current = yAnnotations.get(fieldId) || [];
+    const newAnn = {
+      id: crypto.randomUUID(),
+      comment,
+      author: currentUser.email,
+      status: 'Needs Fix',
+      createdAt: Date.now()
+    };
+    yAnnotations.set(fieldId, [...current, newAnn]);
+  }
+
+  function updateStatus(id: string, status: string) {
+    const current = yAnnotations.get(fieldId) || [];
+    const updated = current.map(a => a.id === id ? { ...a, status } : a);
+    yAnnotations.set(fieldId, updated);
+  }
+
+  return { annotations, addAnnotation, updateStatus };
+}
+```
+
+---
+
+## ✅ Reviewer Mode Power
+
+- 🧠 Inline review without disrupting main data  
+- 🖍 Visual indicators + live comments  
+- 🔁 Persisted in CRDT, synced across collaborators  
+- 📜 Can be exported alongside audit log  
+
+---
+
+## 🔜 Optional Enhancements
+
+- 👁 “Show reviewer highlights only” toggle  
+- 🔒 Reviewer-only edit rights (checkRole)
+- 🧾 Export to PDF with comments per field
+- ⏳ Timestamped reviewer “pass/fail” button
+
+---
+
+Would you like to:
+1. Build the **Reviewer PDF Export** (field + annotation)?
+2. Scaffold a **Reviewer Dashboard** (open reports, unreviewed items)?

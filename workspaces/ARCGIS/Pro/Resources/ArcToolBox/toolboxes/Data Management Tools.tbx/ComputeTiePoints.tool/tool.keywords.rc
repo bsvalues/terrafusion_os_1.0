@@ -1,0 +1,10 @@
+{
+    "set": [
+        "block adjust",
+        "bundle adjust",
+        "bundle adjustment",
+        "mosaic dataset",
+        "tie point",
+        "triangulation"
+    ]
+}

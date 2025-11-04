@@ -1,0 +1,13 @@
+{
+    "set": [
+        "center point",
+        "elliptical",
+        "geodesy",
+        "geometry",
+        "major axis",
+        "minor axis",
+        "origin",
+        "true earth",
+        "vector"
+    ]
+}

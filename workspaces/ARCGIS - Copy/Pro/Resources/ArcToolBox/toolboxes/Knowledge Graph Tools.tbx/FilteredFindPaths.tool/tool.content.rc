@@ -1,0 +1,17 @@
+{
+    "map": {
+        "config_string.title": "Config string",
+        "config_type.domain.FILE": "FILE",
+        "config_type.domain.STRING": "STRING",
+        "config_type.title": "Configuration type",
+        "description": "Find paths in a knowledge graph.",
+        "in_config_file.title": "Config file",
+        "in_knowledge_graph_url.title": "Knowledge Graph URL",
+        "out_results_file.title": "Results file",
+        "out_results_string.title": "Results string",
+        "result_type.domain.FILE": "FILE",
+        "result_type.domain.STRING": "STRING",
+        "result_type.title": "Results type",
+        "title": "Filtered Find Paths"
+    }
+}

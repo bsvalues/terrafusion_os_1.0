@@ -1,0 +1,32 @@
+{
+    "map": {
+        "cell_height.descr": "<xdoc><p>The height of each cell. To calculate the cell height using the <span class=\"esri_uicontrol\">Number of Columns</span> parameter value, leave this parameter unspecified or set the value to zero; the height will be calculated when the tool is run.</p></xdoc>",
+        "cell_height.title": "Cell Size Height",
+        "cell_width.descr": "<xdoc><p>The width of each cell. To calculate the cell width using the <span class=\"esri_uicontrol\">Number of Rows</span> parameter value, leave this parameter unspecified or set the value to zero; the width will be calculated when the tool is run.</p></xdoc>",
+        "cell_width.title": "Cell Size Width",
+        "corner_coord.descr": "<xdoc><p>The opposite corner of the fishnet set by the <span class=\"esri_uicontrol\">Fishnet Origin Coordinate</span> parameter. The values for opposite corner are automatically set if the <span class=\"esri_uicontrol\">Template Extent</span> parameter is specified.</p><p>This parameter is inactive if the <span class=\"esri_uicontrol\">Fishnet Origin Coordinate</span>, <span class=\"esri_uicontrol\">Y-Axis Coordinate</span>, <span class=\"esri_uicontrol\">Cell Size Width</span>, <span class=\"esri_uicontrol\">Cell Size Height</span>, <span class=\"esri_uicontrol\">Number of Rows</span> and <span class=\"esri_uicontrol\">Number of Columns</span> parameters are specified.</p></xdoc>",
+        "corner_coord.title": "Opposite corner of Fishnet",
+        "description": "Creates a fishnet of rectangular cells.  The output can be polyline or polygon features.",
+        "geometry_type.descr": "<xdoc><p>Specifies whether the output fishnet cells will be polyline or polygon features.</p><ul><li><span title=\"POLYLINE\">Polyline</span>—Output will be a polyline feature class. Each cell is defined by four line features.</li><li><span title=\"POLYGON\">Polygon</span>—Output will be a polygon feature class. Each cell is defined by one polygon feature.</li></ul></xdoc>",
+        "geometry_type.domain.POLYGON": "Polygon",
+        "geometry_type.domain.POLYLINE": "Polyline",
+        "geometry_type.title": "Geometry Type",
+        "labels.descr": "<xdoc><p>Specifies whether a point feature class will be created containing label points at the center of each fishnet cell.</p><ul><li>Checked—A point feature class will be created. This is the default.</li><li>Unchecked—A point feature class will not be created.</li></ul></xdoc>",
+        "labels.title": "Create Label Points",
+        "number_columns.descr": "<xdoc><p>The number of columns the fishnet will have. To calculate the number of columns using the <span class=\"esri_uicontrol\">Cell Size Height</span> parameter value, leave this parameter unspecified or set the value to zero; the number of columns will be calculated when the tool is run.</p></xdoc>",
+        "number_columns.title": "Number of Columns",
+        "number_rows.descr": "<xdoc><p>The number of rows the fishnet will have. To calculate the number of rows using the <span class=\"esri_uicontrol\">Cell Size Width</span> parameter value, leave this parameter unspecified or set the value to zero; the number of rows will be calculated when the tool is run.</p></xdoc>",
+        "number_rows.title": "Number of Rows",
+        "origin_coord.descr": "The starting pivot point of the fishnet.",
+        "origin_coord.title": "Fishnet Origin Coordinate",
+        "out_feature_class.descr": "The output feature class containing the fishnet of rectangular cells.",
+        "out_feature_class.title": "Output Feature Class",
+        "out_label.title": "Output Label Feature Class (Optional)",
+        "summary": "Creates a fishnet of rectangular cells. The output can be polyline or polygon features.",
+        "template.descr": "<xdoc><p>The extent of the fishnet. The extent can be entered by specifying the coordinates or using a template dataset.</p><ul><li>Current Display Extent—The extent will be based on the active map or scene.</li><li>Draw Extent—The extent will be based on a rectangle drawn on the map or scene.</li><li>Extent of a Layer—The extent will be based on an active map layer. Choose an available layer or use the <span class=\"esri_uicontrol\">Extent of data in all layers</span> option. Each map layer has the following options:<p><ul><li>All Features—The extent of all features.</li><li>Selected Features —The extent of the selected features.</li><li>Visible Features—The extent of visible features.</li></ul></p></li><li>Browse—The extent will be based on a dataset.</li><li>Clipboard—The extent can be copied to and from the clipboard.<ul><li>Copy Extent—Copies the extent and coordinate system to the clipboard.</li><li>Paste Extent—Pastes the extent and coordinate system from the clipboard. If the clipboard does not include a coordinate system, the extent will use the map’s coordinate system.</li></ul></li><li>Reset Extent—The extent will be reset to the default value.</li></ul><p>When coordinates are manually provided, the coordinates must be numeric values and in the active map&apos;s coordinate system. The map may use different display units than the provided coordinates. Use a negative value sign for south and west coordinates.</p></xdoc>",
+        "template.title": "Template Extent",
+        "title": "Create Fishnet",
+        "y_axis_coord.descr": "The y-axis coordinate is used to orient the fishnet. The fishnet is rotated by the same angle as defined by the line connecting the origin and the y-axis coordinate.",
+        "y_axis_coord.title": "Y-Axis Coordinate"
+    }
+}

@@ -1,0 +1,196 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "51020002",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "GeoAnalyticsRuleExpression",
+        "spark"
+    ],
+    "params": {
+        "input_layer": {
+            "displayname": "$rc:input_layer.title",
+            "datatype": {
+                "type": "GPRecordSet"
+            },
+            "domain": {
+                "type": "GPTablesDomain",
+                "portaltype": [
+                    "DataStoreCatalogLayer"
+                ]
+            },
+            "description": "$rc:input_layer.descr"
+        },
+        "output_name": {
+            "displayname": "$rc:output_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:output_name.descr"
+        },
+        "field_name": {
+            "displayname": "$rc:field_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:field_name.descr"
+        },
+        "field_type": {
+            "displayname": "$rc:field_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DATE",
+                        "code": "$rc:field_type.domain.DATE"
+                    },
+                    {
+                        "value": "DOUBLE",
+                        "code": "$rc:field_type.domain.DOUBLE"
+                    },
+                    {
+                        "value": "INTEGER",
+                        "code": "$rc:field_type.domain.INTEGER"
+                    },
+                    {
+                        "value": "STRING",
+                        "code": "$rc:field_type.domain.STRING"
+                    }
+                ]
+            },
+            "description": "$rc:field_type.descr"
+        },
+        "expression": {
+            "displayname": "$rc:expression.title",
+            "datatype": {
+                "type": "GPCalculatorExpression"
+            },
+            "depends": [
+                "input_layer"
+            ],
+            "description": "$rc:expression.descr"
+        },
+        "track_aware": {
+            "type": "optional",
+            "displayname": "$rc:track_aware.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "TRACK_AWARE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NOT_TRACK_AWARE"
+                    }
+                ]
+            },
+            "description": "$rc:track_aware.descr"
+        },
+        "track_fields": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:track_fields.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text",
+                    "Date"
+                ]
+            },
+            "depends": [
+                "input_layer"
+            ],
+            "description": "$rc:track_fields.descr"
+        },
+        "data_store": {
+            "type": "optional",
+            "displayname": "$rc:data_store.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SPATIOTEMPORAL_DATA_STORE",
+                        "code": "$rc:data_store.domain.SPATIOTEMPORAL_DATA_STORE"
+                    },
+                    {
+                        "value": "RELATIONAL_DATA_STORE",
+                        "code": "$rc:data_store.domain.RELATIONAL_DATA_STORE"
+                    }
+                ]
+            },
+            "value": "SPATIOTEMPORAL_DATA_STORE",
+            "description": "$rc:data_store.descr"
+        },
+        "output_table": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_table.title",
+            "datatype": {
+                "type": "GPRecordSet"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "time_boundary_split": {
+            "type": "optional",
+            "displayname": "$rc:time_boundary_split.title",
+            "datatype": {
+                "type": "GPTimeUnit"
+            },
+            "domain": {
+                "type": "GPUnitDomain",
+                "items": [
+                    "Milliseconds",
+                    "Seconds",
+                    "Minutes",
+                    "Hours",
+                    "Days",
+                    "Weeks",
+                    "Months",
+                    "Years"
+                ]
+            },
+            "description": "$rc:time_boundary_split.descr"
+        },
+        "time_boundary_reference": {
+            "type": "optional",
+            "displayname": "$rc:time_boundary_reference.title",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:time_boundary_reference.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "outputCoordinateSystem",
+        "workspace"
+    ]
+}

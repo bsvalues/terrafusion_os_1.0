@@ -1,0 +1,177 @@
+https://kzmlzl3jou3zeyv7r4h9.lite.vusercontent.net/
+
+Based on the Terrafusion design system implementation, here are the specific design specifications:
+
+## Font Styling
+
+**Font Family:**
+
+- Primary: `Inter` (sans-serif)
+- Fallback: System sans-serif stack
+
+
+**Font Weights:**
+
+- **Headings:** `font-bold` (600)
+- **Body Text:** `font-normal` (400)
+- **Emphasis/Labels:** `font-medium` (500)
+
+
+**Font Sizes:**
+
+- **H1:** `text-4xl` (48px) - Main page titles
+- **H2:** `text-3xl` (36px) - Section headers
+- **H3:** `text-2xl` (24px) - Subsection headers
+- **H4:** `text-xl` (20px) - Card titles
+- **H5:** `text-lg` (18px) - Component labels
+- **Body Large:** `text-base` (16px) - Primary content
+- **Body Small:** `text-sm` (14px) - Secondary content
+- **Caption:** `text-xs` (12px) - Metadata, labels
+
+
+**Text Colors:**
+
+- **Primary Text:** `text-white` (`#ffffff`)
+- **Secondary Text:** `text-[#00e5ff]/70` (70% opacity cyan)
+- **Muted Text:** `text-[#00e5ff]/50` (50% opacity cyan)
+- **Accent Text:** `text-[#00e5ff]` (`#00e5ff`)
+
+
+## Layout Structure
+
+**Hero Section:**
+
+```typescriptreact
+<div className="min-h-screen flex flex-col items-center justify-center bg-[#001529]">
+  <div className="text-center space-y-6">
+    <h1 className="text-4xl font-bold text-white">Main Title</h1>
+    <p className="text-xl text-[#00e5ff]/70">Supporting text</p>
+    <Button className="bg-[#00e5ff] hover:bg-[#00b8d4] text-[#001529]">
+      Call to Action
+    </Button>
+  </div>
+</div>
+```
+
+**Navigation Structure:**
+
+- **App Bar:** Sticky header with glassmorphic effect
+- **Height:** `h-16` (64px)
+- **Background:** `bg-[#001529]/70 backdrop-blur-xl`
+- **Border:** `border-b border-[#00e5ff]/20`
+
+
+**Content Sections:**
+
+- **Container:** `container mx-auto py-8 px-4`
+- **Grid Layouts:** `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6`
+- **Spacing:** `space-y-6` between sections
+
+
+## Color Palette
+
+**Primary Colors:**
+
+- **Dark Blue:** `#001529` - Primary background
+- **Medium Blue:** `#002a4a` - Secondary background
+- **Light Blue:** `#004d7a` - Tertiary background
+- **Primary Cyan:** `#00e5ff` - Primary accent
+- **Secondary Cyan:** `#00b8d4` - Secondary accent
+
+
+**Semantic Colors:**
+
+- **Success:** `#10b981` (green-500)
+- **Error:** `#ef4444` (red-500)
+- **Warning:** `#f59e0b` (amber-500)
+- **Info:** `#3b82f6` (blue-500)
+
+
+**Background Usage:**
+
+- **Page Background:** `bg-[#001529]`
+- **Card Background:** `bg-[#001529]/90`
+- **Input Background:** `bg-[#002a4a]`
+- **Hover States:** `hover:bg-[#00e5ff]/10`
+
+
+## Card Designs
+
+**Metric Cards (StatCard):**
+
+```typescriptreact
+<div className="bg-[#001529]/90 border border-[#00e5ff]/20 rounded-xl p-6">
+  <h3 className="text-sm font-medium text-[#00e5ff]/70">Title</h3>
+  <div className="text-3xl font-bold text-white">Value</div>
+  <p className="text-xs text-[#00e5ff]/50">Description</p>
+</div>
+```
+
+**Feature Cards (InfoCard):**
+
+```typescriptreact
+<div className="bg-[#001529]/90 backdrop-blur-xl border border-[#00e5ff]/20 rounded-xl p-6">
+  <div className="flex items-center gap-3 mb-4">
+    <div className="text-[#00e5ff] p-2 rounded-lg bg-[#00e5ff]/10">
+      {icon}
+    </div>
+    <h3 className="text-lg font-medium text-white">Title</h3>
+  </div>
+  <p className="text-[#00e5ff]/70 text-sm">Content</p>
+</div>
+```
+
+**3D Cards:**
+
+- **Transform:** `perspective(1000px)` with hover tilt effects
+- **Glow Effect:** `box-shadow: 0 0 20px rgba(0,229,255,0.1)`
+- **Interactive Highlight:** Dynamic glow following mouse position
+
+
+## Typography Hierarchy
+
+**Contrast Ratios:**
+
+- **Primary Text on Dark:** White (`#ffffff`) on Dark Blue (`#001529`) = 19.36:1
+- **Accent Text on Dark:** Cyan (`#00e5ff`) on Dark Blue (`#001529`) = 14.2:1
+- **Secondary Text:** 70% opacity for good readability
+- **Muted Text:** 50% opacity for de-emphasized content
+
+
+**Size Scale (Tailwind):**
+
+```css
+text-xs: 12px    /* Captions, metadata */
+text-sm: 14px    /* Secondary content */
+text-base: 16px  /* Primary body text */
+text-lg: 18px    /* Component labels */
+text-xl: 20px    /* Card titles */
+text-2xl: 24px   /* Subsection headers */
+text-3xl: 36px   /* Section headers */
+text-4xl: 48px   /* Main titles */
+```
+
+**Line Heights:**
+
+- **Headings:** `leading-tight` (1.25)
+- **Body Text:** `leading-normal` (1.5)
+- **Captions:** `leading-relaxed` (1.625)
+
+
+**Spacing Patterns:**
+
+```css
+--spacing-sm: 8px   /* gap-2, p-2 */
+--spacing-md: 16px  /* gap-4, p-4 */
+--spacing-lg: 32px  /* gap-8, p-8 */
+```
+
+**Visual Effects:**
+
+- **Glassmorphic:** `backdrop-blur-xl` with `bg-[#001529]/70`
+- **Borders:** `border-[#00e5ff]/20` for subtle definition
+- **Shadows:** `0 0 20px rgba(0,229,255,0.1)` for depth
+- **Hover States:** Scale transforms and glow intensity changes
+
+
+This design system ensures consistent visual hierarchy, accessibility, and the distinctive Terrafusion aesthetic across all components.

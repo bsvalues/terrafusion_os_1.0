@@ -1,0 +1,13 @@
+{
+    "set": [
+        "estimate",
+        "interpolate",
+        "interpolation",
+        "interpolator",
+        "predict",
+        "radial basis function",
+        "raster",
+        "rbf",
+        "surface"
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "set": [
+        "adjacent",
+        "average",
+        "closest",
+        "compute",
+        "max",
+        "mean",
+        "min",
+        "near",
+        "proximity",
+        "surround",
+        "threshold"
+    ]
+}

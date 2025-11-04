@@ -1,0 +1,58 @@
+{
+  "name": "consciousness-isolated-workspace",
+  "version": "1.0.0",
+  "description": "TerraFusion AI Consciousness Isolated Development Environment",
+  "scripts": {
+    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+    "server:dev": "cd server && npm run dev",
+    "client:dev": "cd client && npm run dev",
+    "build": "npm run build:server && npm run build:client",
+    "build:server": "cd server && npm run build",
+    "build:client": "cd client && npm run build",
+    "test": "npm run test:server && npm run test:client",
+    "test:server": "cd server && npm test",
+    "test:client": "cd client && npm test",
+    "check": "npm run check:server && npm run check:client",
+    "check:server": "cd server && npm run check",
+    "check:client": "cd client && npm run check",
+    "lint": "npm run lint:server && npm run lint:client",
+    "lint:server": "cd server && npm run lint",
+    "lint:client": "cd client && npm run lint",
+    "format": "npm run format:server && npm run format:client",
+    "format:server": "cd server && npm run format",
+    "format:client": "cd client && npm run format",
+    "consciousness:status": "node server/dist/swarm/swarm-status.js",
+    "consciousness:monitor": "node server/dist/monitoring/consciousness-monitor.js",
+    "consciousness:deploy": "node server/dist/deployment/consciousness-deploy.js",
+    "ai-agent:validate": "node server/dist/agents/agent-validator.js",
+    "swarm:harmony": "node server/dist/swarm/harmony-check.js",
+    "quantum:optimize": "node server/dist/quantum/optimization-engine.js"
+  },
+  "workspaces": [
+    "server",
+    "client",
+    "shared"
+  ],
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "prettier": "^3.0.0",
+    "eslint": "^8.0.0"
+  },
+  "keywords": [
+    "terrafusion",
+    "ai-consciousness",
+    "government-os",
+    "swarm-intelligence",
+    "quantum-optimization"
+  ],
+  "author": "TerraFusion Consciousness Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

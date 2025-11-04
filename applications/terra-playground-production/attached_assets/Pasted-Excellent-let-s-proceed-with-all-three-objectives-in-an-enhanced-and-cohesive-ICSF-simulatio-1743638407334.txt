@@ -1,0 +1,132 @@
+Excellent — let’s **proceed with all three** objectives in an **enhanced and cohesive ICSF simulation suite**:
+
+---
+
+# 🧭 ICSF Simulation Expansion Plan (Benton County)
+
+We’ll:
+
+### ✅ 1. **Enhance the Current Workflow Injection Lab**
+Add:
+- A **mock consumer** that "processes" poisoned messages
+- Basic **input validation logic** with log alerts
+- Optional **test harness** to validate detection
+
+### 🆕 2. **Build a New Simulation**  
+**Scenario**: _Mass Refund Payload Injection via `PayImportedPaymentRunDTO`_  
+Simulates:
+- Injection of overly large refund amounts
+- Missing audit trail
+- Weak interval/ID control
+
+### 🏛️ 3. **Tailor to Benton County Context**
+Use **realistic assessor workflows**, such as:
+- Taxpayer appeal triggers
+- Automated reassessment workflows
+- Refund queue processing
+- Notification payloads
+
+---
+
+## ✅ Step 1: Enhance Current Lab
+
+### ✳️ Add `WorkflowConsumer.cs`
+
+```csharp
+using ICSF_Lab_WorkflowPoison.Models;
+
+namespace ICSF_Lab_WorkflowPoison.Consumers
+{
+    public class LaunchWorkflowConsumer
+    {
+        public void Process(LaunchWorkflowMessage message)
+        {
+            Console.WriteLine("[Consumer] Received workflow request: " + message.WorkflowId);
+
+            if (message.WorkflowId.Contains("'") || message.Parameters.Values.Any(p => p.Contains("<script>")))
+            {
+                Console.WriteLine("[ALERT] Potential injection detected in workflow parameters!");
+            }
+            else
+            {
+                Console.WriteLine("[Consumer] Message appears safe.");
+            }
+        }
+    }
+}
+```
+
+### ✳️ Update `Program.cs`
+
+```csharp
+var consumer = new LaunchWorkflowConsumer();
+consumer.Process(message); // Right after injection
+```
+
+---
+
+## 🆕 Step 2: Create New Lab – **Mass Refund Injection Simulation**
+
+### 💡 `PayImportedPaymentRunDTO.cs`
+```csharp
+public class PayImportedPaymentRunDTO
+{
+    public string RunId { get; set; }
+    public decimal AmountPaid { get; set; }
+    public int AcceptCount { get; set; }
+    public string ClerkId { get; set; }
+    public DateTime ExecutionTimestamp { get; set; }
+}
+```
+
+### 💥 Injector Example:
+```csharp
+new PayImportedPaymentRunDTO
+{
+    RunId = "MASS_REFUND_999",
+    AmountPaid = 9999999999.99M,
+    AcceptCount = 1,
+    ClerkId = "bypass_script",
+    ExecutionTimestamp = DateTime.Now
+};
+```
+
+✅ **Educational Goal**: Simulate tampering with PACS refund DTOs used in mass processing jobs. Test amount limits and clerk validation.
+
+---
+
+## 🏛️ Step 3: Tailor to Benton County Context
+
+Let’s bake in domain-specific DTO simulation:
+
+### 🧾 Example: Appeal Trigger Payload
+
+```csharp
+public class AppealWorkflowTriggerDTO
+{
+    public string ParcelId { get; set; }
+    public string AppellantName { get; set; }
+    public DateTime AppealDate { get; set; }
+    public string Reason { get; set; }
+}
+```
+
+💥 Simulated abuse:
+- Parcel spoofing (`ParcelId = "000000"`)
+- XSS via `AppellantName`
+- Invalid date formats
+
+---
+
+## 🔧 Deliverables I’ll Now Generate for You
+
+1. 🔁 **Enhanced workflow injection lab** (with consumer + alerting)
+2. 🆕 **New refund injection lab** (`PayImportedPaymentRunDTO`)
+3. 🏛️ **Tailored DTOs for real-world assessor triggers**
+4. 📘 **Training README** for all modules
+
+Would you like:
+- A single consolidated `.zip` bundle for all labs?
+- Each lab scaffolded separately for modular rollout?
+
+Let me know and I’ll start generating the full code now.

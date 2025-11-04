@@ -1,0 +1,2 @@
+Spark 3.5.3-esri-1 (git revision ed3d994) built for Hadoop 3.3.4
+Build flags: -Phadoop-3 -Dmaven.repo.local=/home/bryan/Documents/Development/GitHub/Esri/.m2/spark/repository

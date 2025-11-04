@@ -1,0 +1,43 @@
+{
+  "assignments": {
+    "supreme_commander": {
+      "workspace": "workspaces/supreme-commander-dashboard.code-workspace",
+      "permissions": [
+        "read",
+        "write",
+        "admin"
+      ],
+      "scope": "all"
+    },
+    "field_generals": [
+      {
+        "agents": "general-backend-001..200",
+        "workspace": "workspaces/backend.code-workspace",
+        "permissions": [
+          "read",
+          "write"
+        ]
+      },
+      {
+        "agents": "general-marketplace-001..400",
+        "workspace": "workspaces/marketplace.code-workspace",
+        "permissions": [
+          "read",
+          "write"
+        ]
+      }
+    ],
+    "operational_rules": [
+      {
+        "task": "fix-bug-in-terra-bank",
+        "workspace": "workspaces/marketplace/terra-bank.code-workspace",
+        "agents": 37
+      },
+      {
+        "task": "improve-frontend-portal-citizen-services",
+        "workspace": "workspaces/frontend/citizen-services.code-workspace",
+        "agents": 10
+      }
+    ]
+  }
+}

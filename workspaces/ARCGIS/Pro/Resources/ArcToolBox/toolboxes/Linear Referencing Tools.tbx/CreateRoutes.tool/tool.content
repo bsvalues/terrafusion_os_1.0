@@ -1,0 +1,214 @@
+{
+    "type": "FunctionTool",
+    "guid": "{42b6ca12-7fd0-47ad-8813-f2cda7989edc}",
+    "displayname": "$rc:title",
+    "helpcontent": "7000002",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_line_features": {
+            "displayname": "$rc:in_line_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_line_features.descr"
+        },
+        "route_id_field": {
+            "displayname": "$rc:route_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "guid": "{4A4F70B0-913C-4A82-A33F-E190FFA409EA}"
+            },
+            "depends": [
+                "in_line_features"
+            ],
+            "description": "$rc:route_id_field.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "measure_source": {
+            "displayname": "$rc:measure_source.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "LENGTH",
+                        "code": "$rc:measure_source.domain.LENGTH"
+                    },
+                    {
+                        "value": "ONE_FIELD",
+                        "code": "$rc:measure_source.domain.ONE_FIELD"
+                    },
+                    {
+                        "value": "TWO_FIELDS",
+                        "code": "$rc:measure_source.domain.TWO_FIELDS"
+                    }
+                ]
+            },
+            "value": "LENGTH",
+            "description": "$rc:measure_source.descr"
+        },
+        "from_measure_field": {
+            "type": "optional",
+            "displayname": "$rc:from_measure_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "guid": "{C06E2425-30D9-4C9D-8CD3-7FE243B3AFCB}"
+            },
+            "depends": [
+                "in_line_features"
+            ],
+            "description": "$rc:from_measure_field.descr"
+        },
+        "to_measure_field": {
+            "type": "optional",
+            "displayname": "$rc:to_measure_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "guid": "{C06E2425-30D9-4C9D-8CD3-7FE243B3AFCB}"
+            },
+            "depends": [
+                "in_line_features"
+            ],
+            "description": "$rc:to_measure_field.descr"
+        },
+        "coordinate_priority": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:coordinate_priority.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "UPPER_LEFT",
+                        "code": "$rc:coordinate_priority.domain.UPPER_LEFT"
+                    },
+                    {
+                        "value": "LOWER_LEFT",
+                        "code": "$rc:coordinate_priority.domain.LOWER_LEFT"
+                    },
+                    {
+                        "value": "UPPER_RIGHT",
+                        "code": "$rc:coordinate_priority.domain.UPPER_RIGHT"
+                    },
+                    {
+                        "value": "LOWER_RIGHT",
+                        "code": "$rc:coordinate_priority.domain.LOWER_RIGHT"
+                    }
+                ]
+            },
+            "value": "UPPER_LEFT",
+            "description": "$rc:coordinate_priority.descr"
+        },
+        "measure_factor": {
+            "type": "optional",
+            "displayname": "$rc:measure_factor.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "1",
+            "description": "$rc:measure_factor.descr"
+        },
+        "measure_offset": {
+            "type": "optional",
+            "displayname": "$rc:measure_offset.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:measure_offset.descr"
+        },
+        "ignore_gaps": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:ignore_gaps.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "IGNORE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_IGNORE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:ignore_gaps.descr"
+        },
+        "build_index": {
+            "type": "optional",
+            "displayname": "$rc:build_index.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "INDEX"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_INDEX"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:build_index.descr"
+        }
+    },
+    "environments": [
+        "MDomain",
+        "MResolution",
+        "MTolerance",
+        "XYDomain",
+        "ZDomain",
+        "configKeyword",
+        "extent",
+        "outputCoordinateSystem",
+        "outputZFlag",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

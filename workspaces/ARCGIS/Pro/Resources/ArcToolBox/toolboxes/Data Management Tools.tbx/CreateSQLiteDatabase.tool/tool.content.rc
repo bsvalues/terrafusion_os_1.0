@@ -1,0 +1,18 @@
+{
+    "map": {
+        "description": "Creates a GeoPackage or an SQLite database that contains the ST_Geometry or SpatiaLite spatial type.",
+        "out_database_name.descr": "<xdoc><p>The location of the SQLite database or GeoPackage that will be created and the name of the file. The .sqlite extension will be automatically assigned if the <span class=\"esri_uicontrol\">Spatial Type</span> parameter value is <span class=\"esri_uicontrol\">ST_Geometry</span> or <span class=\"esri_uicontrol\">SpatiaLite</span>. If the <span class=\"esri_uicontrol\">Spatial Type</span> parameter value is <span class=\"esri_uicontrol\">GeoPackage</span> or any of the GeoPackage versions, the .gpkg extension will be automatically assigned.</p></xdoc>",
+        "out_database_name.title": "Output Database Name",
+        "spatial_type.descr": "<xdoc><p>Specifies the spatial type that will be installed with the new SQLite database or the GeoPackage version that will be created.</p><ul><li><span title=\"ST_GEOMETRY\">ST_Geometry</span>—The Esri spatial storage type will be installed. This is the default.</li><li><span title=\"SPATIALITE\">SpatiaLite</span>—SpatiaLite spatial storage type will be installed.</li><li><span title=\"GEOPACKAGE\">GeoPackage (creates the latest supported GeoPackage version that is supported by ArcGIS)</span>—The latest version of OGC GeoPackage that is supported by ArcGIS will be created.</li><li><span title=\"GEOPACKAGE_1.0\">GeoPackage 1.0</span>—An OGC GeoPackage 1.0 dataset will be created.</li><li><span title=\"GEOPACKAGE_1.1\">GeoPackage 1.1</span>—An OGC GeoPackage 1.1 dataset will be created.</li><li><span title=\"GEOPACKAGE_1.2\">GeoPackage 1.2.1</span>—An OGC GeoPackage 1.2.1 dataset will be created.</li><li><span title=\"GEOPACKAGE_1.3\">GeoPackage 1.3</span>—An OGC GeoPackage 1.3 dataset will be created.</li><li><span title=\"GEOPACKAGE_1.4\">GeoPackage 1.4</span>—An OGC GeoPackage 1.4 dataset will be created.</li></ul></xdoc>",
+        "spatial_type.domain.GEOPACKAGE": "GeoPackage (creates the latest supported GeoPackage version that is supported by ArcGIS)",
+        "spatial_type.domain.GEOPACKAGE_1.0": "GeoPackage 1.0",
+        "spatial_type.domain.GEOPACKAGE_1.1": "GeoPackage 1.1",
+        "spatial_type.domain.GEOPACKAGE_1.2": "GeoPackage 1.2.1",
+        "spatial_type.domain.GEOPACKAGE_1.3": "GeoPackage 1.3",
+        "spatial_type.domain.GEOPACKAGE_1.4": "GeoPackage 1.4",
+        "spatial_type.domain.SPATIALITE": "SpatiaLite",
+        "spatial_type.domain.ST_GEOMETRY": "ST_Geometry",
+        "spatial_type.title": "Spatial Type",
+        "title": "Create SQLite Database"
+    }
+}

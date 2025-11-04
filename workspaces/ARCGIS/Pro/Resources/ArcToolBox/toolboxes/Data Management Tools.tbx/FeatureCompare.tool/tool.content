@@ -1,0 +1,266 @@
+{
+    "type": "FunctionTool",
+    "guid": "{01587841-82df-4340-8730-72a5ce13e759}",
+    "displayname": "$rc:title",
+    "helpcontent": "3210001",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_base_features": {
+            "displayname": "$rc:in_base_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:in_base_features.descr"
+        },
+        "in_test_features": {
+            "displayname": "$rc:in_test_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:in_test_features.descr"
+        },
+        "sort_field": {
+            "displayname": "$rc:sort_field.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:sort_field.dt.title1"
+                    }
+                ]
+            },
+            "description": "$rc:sort_field.descr"
+        },
+        "compare_type": {
+            "type": "optional",
+            "displayname": "$rc:compare_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ALL",
+                        "code": "$rc:compare_type.domain.ALL"
+                    },
+                    {
+                        "value": "GEOMETRY_ONLY",
+                        "code": "$rc:compare_type.domain.GEOMETRY_ONLY"
+                    },
+                    {
+                        "value": "ATTRIBUTES_ONLY",
+                        "code": "$rc:compare_type.domain.ATTRIBUTES_ONLY"
+                    },
+                    {
+                        "value": "SCHEMA_ONLY",
+                        "code": "$rc:compare_type.domain.SCHEMA_ONLY"
+                    },
+                    {
+                        "value": "SPATIAL_REFERENCE_ONLY",
+                        "code": "$rc:compare_type.domain.SPATIAL_REFERENCE_ONLY"
+                    }
+                ]
+            },
+            "value": "ALL",
+            "description": "$rc:compare_type.descr"
+        },
+        "ignore_options": {
+            "type": "optional",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:ignore_options.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "IGNORE_M",
+                        "code": "$rc:ignore_options.domain.IGNORE_M"
+                    },
+                    {
+                        "value": "IGNORE_Z",
+                        "code": "$rc:ignore_options.domain.IGNORE_Z"
+                    },
+                    {
+                        "value": "IGNORE_POINTID",
+                        "code": "$rc:ignore_options.domain.IGNORE_POINTID"
+                    },
+                    {
+                        "value": "IGNORE_EXTENSION_PROPERTIES",
+                        "code": "$rc:ignore_options.domain.IGNORE_EXTENSION_PROPERTIES"
+                    },
+                    {
+                        "value": "IGNORE_SUBTYPES",
+                        "code": "$rc:ignore_options.domain.IGNORE_SUBTYPES"
+                    },
+                    {
+                        "value": "IGNORE_RELATIONSHIPCLASSES",
+                        "code": "$rc:ignore_options.domain.IGNORE_RELATIONSHIPCLASSES"
+                    },
+                    {
+                        "value": "IGNORE_REPRESENTATIONCLASSES",
+                        "code": "$rc:ignore_options.domain.IGNORE_REPRESENTATIONCLASSES"
+                    },
+                    {
+                        "value": "IGNORE_FIELDALIAS",
+                        "code": "$rc:ignore_options.domain.IGNORE_FIELDALIAS"
+                    }
+                ]
+            },
+            "description": "$rc:ignore_options.descr"
+        },
+        "xy_tolerance": {
+            "type": "optional",
+            "displayname": "$rc:xy_tolerance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_base_features"
+            ],
+            "defaultenvironmentname": "XYTolerance",
+            "description": "$rc:xy_tolerance.descr"
+        },
+        "m_tolerance": {
+            "type": "optional",
+            "displayname": "$rc:m_tolerance.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:m_tolerance.descr"
+        },
+        "z_tolerance": {
+            "type": "optional",
+            "displayname": "$rc:z_tolerance.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:z_tolerance.descr"
+        },
+        "attribute_tolerances": {
+            "type": "optional",
+            "displayname": "$rc:attribute_tolerances.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:attribute_tolerances.dt.title1"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:attribute_tolerances.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Short",
+                            "Long",
+                            "Float",
+                            "Double",
+                            "BigInteger"
+                        ]
+                    },
+                    {
+                        "type": "GPNumericDomain",
+                        "allowempty": "false"
+                    }
+                ]
+            },
+            "depends": [
+                "in_base_features"
+            ],
+            "description": "$rc:attribute_tolerances.descr"
+        },
+        "omit_field": {
+            "type": "optional",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:omit_field.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "description": "$rc:omit_field.descr"
+        },
+        "continue_compare": {
+            "type": "optional",
+            "displayname": "$rc:continue_compare.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CONTINUE_COMPARE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_CONTINUE_COMPARE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:continue_compare.descr"
+        },
+        "out_compare_file": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_compare_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "txt",
+                    "csv"
+                ]
+            },
+            "description": "$rc:out_compare_file.descr"
+        },
+        "compare_status": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:compare_status.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "NO_DIFFERENCES_FOUND"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DIFFERENCES_FOUND"
+                    }
+                ]
+            },
+            "value": "true"
+        }
+    }
+}

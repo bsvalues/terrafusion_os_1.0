@@ -1,0 +1,195 @@
+{
+    "type": "FunctionTool",
+    "guid": "{532efe5c-31af-4a36-afa6-db04d91daa55}",
+    "displayname": "$rc:title",
+    "helpcontent": "81010001",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "param_nocount:template"
+    ],
+    "params": {
+        "out_dataset_path": {
+            "display_order": "0",
+            "displayname": "$rc:out_dataset_path.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEWorkspace"
+                    },
+                    {
+                        "type": "DEFeatureDataset"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPWorkspaceDomain",
+                        "workspacetype": [
+                            "Local Database",
+                            "Remote Database"
+                        ]
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "defaultenvironmentname": "workspace",
+            "description": "$rc:out_dataset_path.descr"
+        },
+        "out_dataset_name": {
+            "display_order": "1",
+            "displayname": "$rc:out_dataset_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:out_dataset_name.descr"
+        },
+        "spatial_reference": {
+            "display_order": "2",
+            "displayname": "$rc:spatial_reference.title",
+            "datatype": {
+                "type": "GPSpatialReference"
+            },
+            "defaultenvironmentname": "outputCoordinateSystem",
+            "description": "$rc:spatial_reference.descr"
+        },
+        "elevation_source": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:elevation_source.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DEM",
+                        "code": "$rc:elevation_source.domain.DEM"
+                    },
+                    {
+                        "value": "CONSTANT_ELEVATION",
+                        "code": "$rc:elevation_source.domain.CONSTANT_ELEVATION"
+                    }
+                ]
+            },
+            "description": "$rc:elevation_source.descr"
+        },
+        "constant_elevation": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:constant_elevation.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:constant_elevation.descr"
+        },
+        "dem": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:dem.title",
+            "datatype": {
+                "type": "DEImageServer"
+            },
+            "description": "$rc:dem.descr"
+        },
+        "lod": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:lod.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:lod.descr"
+        },
+        "raster_function": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:raster_function.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:raster_function.descr"
+        },
+        "template": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:template.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPTableView"
+                }
+            },
+            "description": "$rc:template.descr"
+        },
+        "out_dataset_alias": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:out_dataset_alias.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:out_dataset_alias.descr"
+        },
+        "config_keyword": {
+            "type": "optional",
+            "display_order": "11",
+            "displayname": "$rc:config_keyword.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "defaultenvironmentname": "configKeyword",
+            "description": "$rc:config_keyword.descr"
+        },
+        "out_oriented_imagery_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_oriented_imagery_dataset.title",
+            "datatype": {
+                "type": "GPOrientedImageryLayer"
+            }
+        },
+        "has_z": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:has_z.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ENABLED",
+                        "code": "$rc:has_z.domain.ENABLED"
+                    },
+                    {
+                        "value": "DISABLED",
+                        "code": "$rc:has_z.domain.DISABLED"
+                    }
+                ]
+            },
+            "value": "DISABLED",
+            "description": "$rc:has_z.descr"
+        }
+    },
+    "environments": [
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "configKeyword",
+        "geographicTransformations",
+        "outputCoordinateSystem"
+    ]
+}

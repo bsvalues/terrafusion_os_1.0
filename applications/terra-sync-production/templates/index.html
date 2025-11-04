@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}TerraFusion Enterprise - Home{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12 text-center mb-5">
+            <h1 class="display-4 fw-bold mb-3">TerraFusion Enterprise</h1>
+            <p class="lead text-muted">AI That Understands Land</p>
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-tachometer-alt me-2"></i>Launch Dashboard
+                </a>
+                <a href="{{ url_for('health_check') }}" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-heartbeat me-2"></i>System Health
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-map-marked-alt fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">GIS Export Services</h5>
+                    <p class="card-text">Export geospatial data in multiple formats with real-time processing and validation.</p>
+                    <a href="{{ url_for('gis_dashboard') }}" class="btn btn-primary">Access GIS Tools</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-sync-alt fa-3x text-success"></i>
+                    </div>
+                    <h5 class="card-title">PACS Synchronization</h5>
+                    <p class="card-text">Legacy system integration with bulletproof data conversion and validation.</p>
+                    <a href="{{ url_for('pacs_sync_dashboard') }}" class="btn btn-success">Manage PACS Sync</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-search-location fa-3x text-warning"></i>
+                    </div>
+                    <h5 class="card-title">District Lookup</h5>
+                    <p class="card-text">Real-time boundary detection and district classification for property assessment.</p>
+                    <a href="{{ url_for('district_lookup_dashboard') }}" class="btn btn-warning">District Tools</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-brain text-info me-2"></i>AI Analysis Engine
+                    </h5>
+                    <p class="card-text">Advanced property assessment analysis with machine learning algorithms for risk detection and audit compliance.</p>
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('ai_analysis_dashboard') }}" class="btn btn-info">AI Dashboard</a>
+                        <a href="/api/v1/analytics/performance" class="btn btn-outline-info">Analytics API</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-project-diagram text-purple me-2"></i>Project Management
+                    </h5>
+                    <p class="card-text">Enterprise-grade project tracking with team collaboration, timeline management, and comprehensive reporting.</p>
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('project_dashboard') }}" class="btn btn-dark">Project Hub</a>
+                        <a href="{{ url_for('saga_dashboard') }}" class="btn btn-outline-dark">Workflow Monitor</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5 class="card-title mb-3">System Status</h5>
+                            <p class="card-text">All enterprise systems are operational and ready for production workloads.</p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <span class="status-badge status-healthy">
+                                <i class="fas fa-check-circle me-1"></i>Operational
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/health')
+        .then(response => response.json())
+        .then(data => {
+            const statusBadge = document.querySelector('.status-badge');
+            if (data.status === 'healthy') {
+                statusBadge.className = 'status-badge status-healthy';
+                statusBadge.innerHTML = '<i class="fas fa-check-circle me-1"></i>Operational';
+            } else {
+                statusBadge.className = 'status-badge status-warning';
+                statusBadge.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i>Degraded';
+            }
+        })
+        .catch(error => {
+            console.warn('Health check failed:', error);
+            const statusBadge = document.querySelector('.status-badge');
+            statusBadge.className = 'status-badge status-error';
+            statusBadge.innerHTML = '<i class="fas fa-times-circle me-1"></i>Unavailable';
+        });
+});
+</script>
+{% endblock %}

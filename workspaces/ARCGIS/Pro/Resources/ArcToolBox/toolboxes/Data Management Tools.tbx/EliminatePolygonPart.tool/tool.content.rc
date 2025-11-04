@@ -1,0 +1,22 @@
+{
+    "map": {
+        "condition.descr": "<xdoc><p>Specify how the parts to be eliminated will be determined.</p><ul><li><span title=\"AREA\">Area</span>—Parts with an area less than that specified will be eliminated.</li><li><span title=\"PERCENT\">Percent</span>—Parts with a percent of the total outer area less than that specified will be eliminated.</li><li><span title=\"AREA_AND_PERCENT\">Area and percent</span>—Parts with an area and percent less than that specified will be eliminated. Only if a polygon part meets both the area and percent criteria will it be deleted.</li><li><span title=\"AREA_OR_PERCENT\">Area or percent</span>—Parts with an area or percent less than that specified will be eliminated. If a polygon part meets either the area or percent criteria, it will be deleted.</li></ul></xdoc>",
+        "condition.domain.AREA": "Area",
+        "condition.domain.AREA_AND_PERCENT": "Area and percent",
+        "condition.domain.AREA_OR_PERCENT": "Area or percent",
+        "condition.domain.PERCENT": "Percent",
+        "condition.title": "Condition",
+        "description": "Creates a new output feature class containing the features from the input polygons with some parts or holes of a specified size deleted.",
+        "in_features.descr": "The input feature class or layer whose features will be copied to the output feature class, with some parts or holes eliminated.",
+        "in_features.title": "Input Features",
+        "out_feature_class.descr": "The output polygon feature class containing the remaining parts.",
+        "out_feature_class.title": "Output Feature Class",
+        "part_area.descr": "Eliminate parts smaller than this area.",
+        "part_area.title": "Area",
+        "part_area_percent.descr": "Eliminate parts smaller than this percentage of a feature's total outer area.",
+        "part_area_percent.title": "Percentage",
+        "part_option.descr": "<xdoc><p>Determines what parts can be eliminated.</p><ul><li>Checked - Only parts totally contained by other parts can be eliminated. This is the default.</li><li>Unchecked - Any parts can be eliminated.</li></ul></xdoc>",
+        "part_option.title": "Eliminate contained parts only",
+        "title": "Eliminate Polygon Part"
+    }
+}

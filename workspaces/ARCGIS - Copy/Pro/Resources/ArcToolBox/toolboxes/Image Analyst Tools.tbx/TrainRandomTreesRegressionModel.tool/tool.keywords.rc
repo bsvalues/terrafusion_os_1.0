@@ -1,0 +1,32 @@
+{
+    "set": [
+        "class",
+        "classification",
+        "classifier",
+        "classifier definition file",
+        "esri definition file",
+        "image analysis",
+        "image classification",
+        "image processing",
+        "object",
+        "object based image analysis",
+        "object oriented image analysis",
+        "random forest",
+        "random tree",
+        "random trees",
+        "regression",
+        "regression analysis",
+        "segment",
+        "segmentation",
+        "segmenter",
+        "train",
+        "training",
+        "accuracy assessment",
+        "dependent variable",
+        "ecd",
+        "explanatory variable",
+        "independent variable",
+        "target variable",
+        "training sample"
+    ]
+}

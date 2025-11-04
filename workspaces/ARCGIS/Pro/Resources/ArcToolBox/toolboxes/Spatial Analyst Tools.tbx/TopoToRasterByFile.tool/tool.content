@@ -1,0 +1,107 @@
+{
+    "type": "FunctionTool",
+    "guid": "{bcf364da-27b3-4239-80e0-77400d3ff2ee}",
+    "displayname": "$rc:title",
+    "helpcontent": "8080006",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9",
+        "10"
+    ],
+    "params": {
+        "in_parameter_file": {
+            "displayname": "$rc:in_parameter_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "TXT",
+                    "ASC"
+                ]
+            },
+            "description": "$rc:in_parameter_file.descr"
+        },
+        "out_surface_raster": {
+            "direction": "out",
+            "displayname": "$rc:out_surface_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_surface_raster.descr"
+        },
+        "out_stream_features": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_stream_features.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_stream_features.descr"
+        },
+        "out_sink_features": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_sink_features.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_sink_features.descr"
+        },
+        "out_residual_feature": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_residual_feature.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_residual_feature.descr"
+        },
+        "out_stream_cliff_error_feature": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_stream_cliff_error_feature.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_stream_cliff_error_feature.descr"
+        },
+        "out_contour_error_feature": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_contour_error_feature.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_contour_error_feature.descr"
+        }
+    },
+    "environments": [
+        "MDomain",
+        "MResolution",
+        "MTolerance",
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "ZDomain",
+        "ZResolution",
+        "ZTolerance",
+        "autoCommit",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "maintainSpatialIndex",
+        "mask",
+        "outputCoordinateSystem",
+        "outputMFlag",
+        "outputZFlag",
+        "outputZValue",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "transferDomains",
+        "workspace"
+    ]
+}

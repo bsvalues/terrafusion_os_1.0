@@ -1,0 +1,65 @@
+import math
+import numpy as np
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+
+class PropertyValuationModel:
+    def __init__(self):
+        self.model = None
+        self.column_transformer = None
+        self.property_type_factors = {
+            "single-family": 1.0,
+            "condo": 0.85,
+            "townhouse": 0.9,
+            "multi-family": 1.2,
+            "land": 0.7
+        }
+        self.condition_factors = {
+            "Excellent": 1.15,
+            "Good": 1.0,
+            "Average": 0.9,
+            "Fair": 0.75,
+            "Poor": 0.6
+        }
+        self.feature_values = {
+            "Hardwood Floors": 5000,
+            "Updated Kitchen": 15000,
+            "Fireplace": 3000,
+            "Deck": 5000,
+            "Swimming Pool": 20000,
+            "Garage": 10000,
+            "Central AC": 7000,
+            "New Roof": 8000
+        }
+        try:
+            self._init_ml_model()
+        except Exception as e:
+            print(f"Warning: ML model init failed: {e}")
+
+    def _init_ml_model(self):
+        numeric = ['squareFeet', 'bedrooms', 'bathrooms', 'yearBuilt', 'lotSize']
+        categorical = ['propertyType', 'condition']
+        self.column_transformer = ColumnTransformer([
+            ('num', StandardScaler(), numeric),
+            ('cat', OneHotEncoder(handle_unknown='ignore'), categorical)
+        ])
+        self.model = Pipeline([
+            ('preprocessor', self.column_transformer),
+            ('regressor', RandomForestRegressor(n_estimators=100, random_state=42))
+        ])
+        # Placeholder: trained model should be loaded externally
+
+    def predict_value(self, property_data: dict) -> float:
+        base = 100000  # base heuristic
+        type_factor = self.property_type_factors.get(property_data.get("propertyType"), 1.0)
+        condition_factor = self.condition_factors.get(property_data.get("condition"), 1.0)
+        size_factor = (property_data.get("squareFeet") or 1000) / 1000
+        
+        feature_bonus = sum([
+            self.feature_values.get(f, 0) for f in property_data.get("features", [])
+        ])
+
+        estimated = base * type_factor * condition_factor * size_factor + feature_bonus
+        return round(estimated, 2)

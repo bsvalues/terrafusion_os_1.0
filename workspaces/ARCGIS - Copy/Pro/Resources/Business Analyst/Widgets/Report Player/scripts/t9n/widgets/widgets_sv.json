@@ -1,0 +1,78 @@
+{
+  "calcite": {
+    "reset": "Återställ",
+    "action": {
+      "sort": "Sortera"
+    },
+    "buttons": {
+      "save": "Spara",
+      "edit": "Redigera",
+      "done": "Klar",
+      "apply": "Verkställ",
+      "cancel": "Avbryt",
+      "close": "Stäng"
+    },
+    "ColorPicker": {
+      "selectColor": "Välj färg",
+      "noColorSpecified": "Ingen färg har angetts",
+      "transparent": "Transparent",
+      "colorTooltip": "<p>Hex: ${hex}</p><p>RGB: ${r}, ${g}, ${b}</p>",
+      "recent": "Senaste",
+      "standard": "Standard",
+      "savedColors": "Sparade färger",
+      "advanced": "Avancerad"
+    },
+    "DatePickerLink": {
+      "enterDate": "Ange datum"
+    },
+    "PaginationContinuous": {
+      "next": "Nästa",
+      "previous": "Föregående"
+    }
+  },
+  "ImageNavigator": {
+    "paginationLabel": "${n} av ${m}",
+    "noImage": "Inga foton finns nu sparade till den här webbplatsen",
+    "previewNotAvailable": "Förhandsgranskning är inte tillgänglig"
+  },
+  "PageNavigator": {
+    "currentPageOutOfN": "Sida ${current} av ${total}"
+  },
+  "PanoramicViewer": {
+    "image-viewer-close": "Stäng",
+    "image-viewer-fullscreen": "Helskärm",
+    "image-viewer-minimize": "Minimera",
+    "image-viewer-title": "Fotovisare",
+    "image-viewer-show-caption": "Visa bildtext",
+    "image-viewer-hide-caption": "Dölj"
+  },
+  "TextBox": {
+    "error_numberExpected": "Ett tal förväntas",
+    "error_range": "Förväntat värde från ${0} till ${1}"
+  },
+  "charts": {
+    "histogram": {
+      "minValue": "Min:<br>${0}",
+      "maxValue": "Max:<br>${0}",
+      "thisAreaValue": "Det här området: ${0}",
+      "medianValue": "Median:<br>${0}",
+      "q1Value": "Q1:<br>${0}",
+      "q3Value": "Q3:<br>${0}",
+      "percentile": "Percentil ${percent}:<br>${0}",
+      "percentileBottom": "Längst ned ${percent}%:<br>${0}",
+      "percentileTop": "Längst upp ${percent}%:<br>${0}",
+      "percentile_singleLine": "Percentil ${percent}: ${0}",
+      "percentileBottom_singleLine": "Längst ned ${percent}%: ${0}",
+      "percentileTop_singleLine": "Längst upp ${percent}%: ${0}",
+      "sd_singleLine": "${sd} SD: ${0}",
+      "tooltip": {
+        "range_single": "<b>${level}</b> med värde inom <b>${value}</b> : <b>1</b>",
+        "range_single_precise": "<b>${areaName}</b> har värde på <b>${value}</b>.",
+        "range_multi": "<b>${level}</b> med värde inom <b>${value}</b> : <b>${count}</b>",
+        "thisArea": "<b>Det här området</b> har värde på <b>${value}</b>.",
+        "percentileLower": "<b>${percent}%</b> av <b>${level}</b> har värde över <b>${value}</b>.",
+        "percentileUpper": "<b>${percent}%</b> av <b>${level}</b> har värde under <b>${value}</b>."
+      }
+    }
+  }
+}

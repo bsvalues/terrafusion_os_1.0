@@ -1,0 +1,11 @@
+{
+    "set": [
+        "geodatabase",
+        "geodatabase administration",
+        "oracle",
+        "postgresql",
+        "raster",
+        "sql server",
+        "st_raster"
+    ]
+}

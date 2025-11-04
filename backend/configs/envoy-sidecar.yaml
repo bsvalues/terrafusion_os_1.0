@@ -1,0 +1,432 @@
+admin:
+  address:
+    socket_address:
+      protocol: TCP
+      address: 0.0.0.0
+      port_value: 15090
+
+static_resources:
+  listeners:
+  - name: terrafusion_listener
+    address:
+      socket_address:
+        protocol: TCP
+        address: 0.0.0.0
+        port_value: 15001
+
+    filter_chains:
+    - filters:
+      - name: envoy.filters.network.http_connection_manager
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+
+          # 🛡️ BULLETPROOF REQUEST HANDLING
+          codec_type: AUTO
+          stat_prefix: terrafusion_ingress_http
+          use_remote_address: true
+          xff_num_trusted_hops: 2
+          skip_xff_append: false
+
+          # Request timeout and circuit breaker configuration
+          request_timeout: 30s
+          request_headers_timeout: 10s
+          stream_idle_timeout: 60s
+          drain_timeout: 5s
+
+          # Access logging for government compliance
+          access_log:
+          - name: envoy.access_loggers.stdout
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog
+              log_format:
+                text_format: |
+                  [%START_TIME%] "%REQ(:METHOD)% %REQ(X-ENVOY-ORIGINAL-PATH?:PATH)% %PROTOCOL%"
+                  %RESPONSE_CODE% %RESPONSE_FLAGS% %BYTES_RECEIVED% %BYTES_SENT%
+                  %DURATION% %RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)% "%REQ(X-FORWARDED-FOR)%"
+                  "%REQ(USER-AGENT)%" "%REQ(X-REQUEST-ID)%" "%REQ(:AUTHORITY)%" "%UPSTREAM_HOST%"
+                  "TerraFusion-Bulletproof" "%REQ(TERRAFUSION-CLIENT-ID)%"
+
+          route_config:
+            name: terrafusion_route
+            virtual_hosts:
+            - name: terrafusion_services
+              domains: ["*"]
+
+              # CORS configuration for government web applications
+              cors:
+                allow_origin_string_match:
+                - prefix: "https://terrafusion.gov"
+                - prefix: "https://portal.terrafusion.gov"
+                - prefix: "https://api.terrafusion.gov"
+                allow_methods: "GET, POST, PUT, DELETE, OPTIONS"
+                allow_headers: "Authorization, Content-Type, X-Requested-With, TerraFusion-Client-ID"
+                allow_credentials: true
+                max_age: "86400"
+
+              routes:
+              # TerraFusion API Service with circuit breaker
+              - match:
+                  prefix: "/api/terrafusion/"
+                route:
+                  cluster: terrafusion_api_service
+                  timeout: 30s
+                  retry_policy:
+                    retry_on: "5xx,gateway-error,connect-failure,refused-stream"
+                    num_retries: 3
+                    per_try_timeout: 10s
+                    retry_back_off:
+                      base_interval: 1s
+                      max_interval: 10s
+
+              # Elite Operations Service with enhanced resilience
+              - match:
+                  prefix: "/api/operations/"
+                route:
+                  cluster: elite_operations_service
+                  timeout: 45s
+                  retry_policy:
+                    retry_on: "5xx,gateway-error,connect-failure"
+                    num_retries: 2
+                    per_try_timeout: 15s
+                    retry_back_off:
+                      base_interval: 2s
+                      max_interval: 15s
+
+              # AI Intelligence Service with extended timeouts
+              - match:
+                  prefix: "/api/ai/"
+                route:
+                  cluster: ai_intelligence_service
+                  timeout: 60s
+                  retry_policy:
+                    retry_on: "5xx,gateway-error"
+                    num_retries: 1
+                    per_try_timeout: 30s
+                    retry_back_off:
+                      base_interval: 5s
+                      max_interval: 30s
+
+              # Health check endpoints
+              - match:
+                  path: "/health"
+                route:
+                  cluster: health_check_service
+                  timeout: 10s
+
+              # Metrics and monitoring
+              - match:
+                  prefix: "/stats"
+                route:
+                  cluster: local_service
+                  prefix_rewrite: "/stats"
+
+          # HTTP filters for enhanced security and monitoring
+          http_filters:
+          # Rate limiting filter
+          - name: envoy.filters.http.local_ratelimit
+            typed_config:
+              "@type": type.googleapis.com/udpa.type.v1.TypedStruct
+              type_url: type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
+              value:
+                stat_prefix: terrafusion_rate_limiter
+                token_bucket:
+                  max_tokens: 1000
+                  tokens_per_fill: 1000
+                  fill_interval: 60s
+                filter_enabled:
+                  runtime_key: rate_limit_enabled
+                  default_value:
+                    numerator: 100
+                    denominator: HUNDRED
+                filter_enforced:
+                  runtime_key: rate_limit_enforced
+                  default_value:
+                    numerator: 100
+                    denominator: HUNDRED
+                response_headers_to_add:
+                - append: false
+                  header:
+                    key: x-terrafusion-ratelimit
+                    value: "bulletproof-active"
+
+          # Security headers filter
+          - name: envoy.filters.http.header_to_metadata
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.header_to_metadata.v3.HeaderToMetadata
+              request_rules:
+              - header: "terrafusion-client-id"
+                on_header_present:
+                  metadata_namespace: "terrafusion.request"
+                  key: "client_id"
+                  type: STRING
+              - header: "user-agent"
+                on_header_present:
+                  metadata_namespace: "terrafusion.request"
+                  key: "user_agent"
+                  type: STRING
+
+          # JWT validation filter (government authentication)
+          - name: envoy.filters.http.jwt_authn
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.JwtAuthentication
+              providers:
+                terrafusion_jwt:
+                  issuer: "https://auth.terrafusion.gov"
+                  audiences:
+                  - "terrafusion-api"
+                  - "elite-operations"
+                  - "ai-intelligence"
+                  remote_jwks:
+                    http_uri:
+                      uri: "https://auth.terrafusion.gov/.well-known/jwks.json"
+                      cluster: jwt_cluster
+                      timeout: 5s
+                    cache_duration: 300s
+                  forward: true
+                  from_headers:
+                  - name: Authorization
+                    value_prefix: "Bearer "
+              rules:
+              - match:
+                  prefix: "/api/"
+                requires:
+                  provider_name: "terrafusion_jwt"
+              - match:
+                  path: "/health"
+                # Health checks don't require JWT
+
+          # Router filter (must be last)
+          - name: envoy.filters.http.router
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+
+  # 🛡️ BULLETPROOF SERVICE CLUSTERS
+  clusters:
+  # TerraFusion API Service Cluster
+  - name: terrafusion_api_service
+    connect_timeout: 5s
+    type: LOGICAL_DNS
+    dns_lookup_family: V4_ONLY
+    lb_policy: ROUND_ROBIN
+
+    # Circuit breaker configuration
+    circuit_breakers:
+      thresholds:
+      - priority: DEFAULT
+        max_connections: 100
+        max_pending_requests: 50
+        max_requests: 1000
+        max_retries: 5
+        retry_budget:
+          budget_percent:
+            value: 25.0
+          min_retry_concurrency: 3
+
+    # Health checking
+    health_checks:
+    - timeout: 5s
+      interval: 10s
+      unhealthy_threshold: 3
+      healthy_threshold: 2
+      http_health_check:
+        path: "/health"
+        expected_statuses:
+        - start: 200
+          end: 299
+
+    # Outlier detection for automatic failover
+    outlier_detection:
+      consecutive_5xx: 3
+      consecutive_gateway_failure: 5
+      interval: 30s
+      base_ejection_time: 30s
+      max_ejection_percent: 50
+      min_health_percent: 30
+
+    load_assignment:
+      cluster_name: terrafusion_api_service
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: terrafusion-api
+                port_value: 5001
+
+  # Elite Operations Service Cluster
+  - name: elite_operations_service
+    connect_timeout: 5s
+    type: LOGICAL_DNS
+    dns_lookup_family: V4_ONLY
+    lb_policy: LEAST_REQUEST
+
+    circuit_breakers:
+      thresholds:
+      - priority: DEFAULT
+        max_connections: 50
+        max_pending_requests: 25
+        max_requests: 500
+        max_retries: 3
+
+    health_checks:
+    - timeout: 5s
+      interval: 15s
+      unhealthy_threshold: 2
+      healthy_threshold: 2
+      http_health_check:
+        path: "/health"
+
+    outlier_detection:
+      consecutive_5xx: 2
+      interval: 45s
+      base_ejection_time: 45s
+      max_ejection_percent: 30
+
+    load_assignment:
+      cluster_name: elite_operations_service
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: terrafusion-operations
+                port_value: 5002
+
+  # AI Intelligence Service Cluster
+  - name: ai_intelligence_service
+    connect_timeout: 10s
+    type: LOGICAL_DNS
+    dns_lookup_family: V4_ONLY
+    lb_policy: RANDOM
+
+    circuit_breakers:
+      thresholds:
+      - priority: DEFAULT
+        max_connections: 25
+        max_pending_requests: 10
+        max_requests: 200
+        max_retries: 1
+
+    health_checks:
+    - timeout: 10s
+      interval: 30s
+      unhealthy_threshold: 2
+      healthy_threshold: 3
+      http_health_check:
+        path: "/health"
+
+    outlier_detection:
+      consecutive_5xx: 5
+      interval: 60s
+      base_ejection_time: 60s
+      max_ejection_percent: 20
+
+    load_assignment:
+      cluster_name: ai_intelligence_service
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: terrafusion-ai
+                port_value: 5003
+
+  # Health check service cluster
+  - name: health_check_service
+    connect_timeout: 2s
+    type: LOGICAL_DNS
+    dns_lookup_family: V4_ONLY
+    lb_policy: ROUND_ROBIN
+
+    load_assignment:
+      cluster_name: health_check_service
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: terrafusion-api
+                port_value: 5001
+        - endpoint:
+            address:
+              socket_address:
+                address: terrafusion-operations
+                port_value: 5002
+        - endpoint:
+            address:
+              socket_address:
+                address: terrafusion-ai
+                port_value: 5003
+
+  # JWT validation cluster
+  - name: jwt_cluster
+    connect_timeout: 5s
+    type: LOGICAL_DNS
+    dns_lookup_family: V4_ONLY
+    lb_policy: ROUND_ROBIN
+
+    load_assignment:
+      cluster_name: jwt_cluster
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: auth.terrafusion.gov
+                port_value: 443
+
+    transport_socket:
+      name: envoy.transport_sockets.tls
+      typed_config:
+        "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+        sni: auth.terrafusion.gov
+
+  # Local service for stats
+  - name: local_service
+    connect_timeout: 0.25s
+    type: STATIC
+
+    load_assignment:
+      cluster_name: local_service
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: 127.0.0.1
+                port_value: 15090
+
+# 🛡️ BULLETPROOF RUNTIME CONFIGURATION
+layered_runtime:
+  layers:
+  - name: static_layer_0
+    static_layer:
+      # Circuit breaker settings
+      circuit_breakers:
+        terrafusion_api_service:
+          default:
+            max_connections: 100
+            max_pending_requests: 50
+            max_requests: 1000
+            max_retries: 5
+
+      # Rate limiting settings
+      rate_limit_enabled: true
+      rate_limit_enforced: true
+
+      # Health check settings
+      health_check:
+        timeout: 5s
+        interval: 10s
+        unhealthy_threshold: 3
+        healthy_threshold: 2
+
+      # TLS settings for government compliance
+      tls:
+        min_protocol_version: TLSv1_2
+        max_protocol_version: TLSv1_3
+        cipher_suites:
+        - "ECDHE-RSA-AES256-GCM-SHA384"
+        - "ECDHE-RSA-AES128-GCM-SHA256"
+        - "ECDHE-RSA-AES256-SHA384"
+        - "ECDHE-RSA-AES128-SHA256"

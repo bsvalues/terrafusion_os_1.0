@@ -1,0 +1,13 @@
+{
+    "map": {
+        "description": "Exports one or more FAA Advisory Circular 150/5300-18B compliant shapefiles from a geodatabase that contains the ArcGIS Aviation Airports schema.",
+        "in_features.descr": "A list of feature classes that will be exported to shapefiles. If this parameter is not set, all feature classes in the input workspace will be exported to shapefiles.",
+        "in_features.title": "Input Feature Class",
+        "in_workspace.descr": "The workspace that contains the airport data.",
+        "in_workspace.title": "Input Airport Geodatabase",
+        "output_folder.title": "Output Folder",
+        "target_folder.descr": "The folder where the shapefiles will be written.",
+        "target_folder.title": "Target Folder",
+        "title": "Export FAA 18B Shapefiles"
+    }
+}

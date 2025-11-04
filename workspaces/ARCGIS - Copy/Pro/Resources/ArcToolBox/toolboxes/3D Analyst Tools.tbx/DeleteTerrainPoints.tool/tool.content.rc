@@ -1,0 +1,13 @@
+{
+    "map": {
+        "data_source.descr": "One or more feature classes from which points will be removed.",
+        "data_source.title": "Input Terrain Data Source",
+        "derived_out_terrain.title": "Updated Input Terrain",
+        "description": "Deletes points within a specified area of interest from one or more features that participate in a terrain dataset.",
+        "in_terrain.descr": "The terrain dataset that will be processed.",
+        "in_terrain.title": "Input Terrain",
+        "polygon_features_or_extent.descr": "Specifies the area from which points will be removed. A polygon feature class or an extent can be used.",
+        "polygon_features_or_extent.title": "Area of Interest",
+        "title": "Delete Terrain Points"
+    }
+}

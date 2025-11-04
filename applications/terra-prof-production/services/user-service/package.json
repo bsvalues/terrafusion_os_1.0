@@ -1,0 +1,20 @@
+{
+  "name": "@terrafusionpro/user-service",
+  "version": "1.0.0",
+  "description": "TerraFusionPro User Service",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [
+    "user",
+    "service",
+    "authentication",
+    "real-estate",
+    "appraisal"
+  ],
+  "author": "TerraFusionPro Team",
+  "license": "UNLICENSED"
+}

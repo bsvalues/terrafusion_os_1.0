@@ -1,0 +1,12 @@
+{
+    "map": {
+        "authorization_file.descr": "<xdoc><p>The path and file name of the keycodes file generated when ArcGIS Server enterprise was authorized. If necessary, copy the file from the ArcGIS Server machine to a directory that the tool can access.</p><p>ArcGIS Server creates the keycodes file in the following location: \\\\Program Files\\ESRI\\License&lt;release#&gt;\\sysgen (Microsoft Windows servers) or /arcgis/server/framework/runtime/.wine/drive_c/Program Files/ESRI/License&lt;release#&gt;/sysgen (Linux servers).</p></xdoc>",
+        "authorization_file.title": "Authorization File",
+        "description": "Updates the ArcGIS Server license in an enterprise geodatabase.",
+        "input_database.descr": "<xdoc><p>A database connection (.sde file) to the enterprise geodatabase to authorize with a new ArcGIS Server enterprise authorization file.</p><p>The database connection file must connect to the database as the geodatabase administrator.</p></xdoc>",
+        "input_database.title": "Input Database Connection",
+        "out_workspace.title": "Output Workspace",
+        "summary": "<xdoc><p>Updates the ArcGIS Server license in an enterprise geodatabase.</p><p>If your organization licenses ArcGIS Server for a set time period, the geodatabase administrator can run the Update Enterprise Geodatabase License tool with a new ArcGIS Server authorization file to update license information in the geodatabase before the existing license expires. This allows clients to continue working with the geodatabase without interruptions caused by expired licenses.</p></xdoc>",
+        "title": "Update Enterprise Geodatabase License"
+    }
+}

@@ -1,0 +1,179 @@
+# ═══════════════════════════════════════════════════════════════════════
+# TerraFusion Elite Government OS - Prometheus Configuration
+# Championship-Level Monitoring for 7 AI Services + Legacy Integration
+# Government. Transcended. - 99.999% Observability Target
+# ═══════════════════════════════════════════════════════════════════════
+
+global:
+  scrape_interval: 15s          # Championship-level scraping frequency
+  scrape_timeout: 10s
+  evaluation_interval: 15s      # Alert rule evaluation frequency
+  external_labels:
+    environment: 'production'
+    system: 'terrafusion-os'
+    quantum_factor: '949'
+    government_compliance: 'fisma-high'
+
+# ═══════════════════════════════════════════════════════════════════════
+# SCRAPE CONFIGURATIONS - 7 Elite AI Services
+# ═══════════════════════════════════════════════════════════════════════
+
+scrape_configs:
+  # ───────────────────────────────────────────────────────────────────
+  # TerraFusion API Gateway (Main Metrics Endpoint)
+  # ───────────────────────────────────────────────────────────────────
+  - job_name: 'terrafusion-api-gateway'
+    static_configs:
+      - targets: ['localhost:5000', 'localhost:5001']
+        labels:
+          service: 'api-gateway'
+          component: 'core'
+          compliance: 'fisma-high'
+    metrics_path: '/metrics'
+    scheme: 'http'
+
+  # ───────────────────────────────────────────────────────────────────
+  # TerraFusion.Consciousness (AI Swarm Orchestration - Port 3004)
+  # ───────────────────────────────────────────────────────────────────
+  - job_name: 'terrafusion-consciousness'
+    static_configs:
+      - targets: ['localhost:3004']
+        labels:
+          service: 'consciousness-engine'
+          component: 'ai-swarm'
+          consciousness_level: 'elite'
+          agent_count: '50000'
+    metrics_path: '/metrics'
+    scheme: 'http'
+
+  # ───────────────────────────────────────────────────────────────────
+  # Harris PACS Integration Service (Legacy System Bridge)
+  # ───────────────────────────────────────────────────────────────────
+  - job_name: 'harris-pacs-integration'
+    static_configs:
+      - targets: ['localhost:5000']
+        labels:
+          service: 'harris-pacs-sync'
+          component: 'legacy-integration'
+          pacs_version: 'v12.4.7'
+    metrics_path: '/metrics/harris-pacs'
+    scheme: 'http'
+
+  # ───────────────────────────────────────────────────────────────────
+  # CostForge AI (Property Valuation Engine)
+  # ───────────────────────────────────────────────────────────────────
+  - job_name: 'costforge-ai'
+    static_configs:
+      - targets: ['localhost:5000']
+        labels:
+          service: 'costforge-valuation'
+          component: 'ai-valuation'
+          iaao_target: '99.9'
+    metrics_path: '/metrics/costforge'
+    scheme: 'http'
+
+  # ───────────────────────────────────────────────────────────────────
+  # TerraGaia (Supreme AI Consciousness)
+  # ───────────────────────────────────────────────────────────────────
+  - job_name: 'terragaia-consciousness'
+    static_configs:
+      - targets: ['localhost:5000']
+        labels:
+          service: 'terragaia'
+          component: 'supreme-ai'
+          reasoning_level: 'phd'
+    metrics_path: '/metrics/terragaia'
+    scheme: 'http'
+
+  # ───────────────────────────────────────────────────────────────────
+  # TerraFusionGPT (Generative AI Reports)
+  # ───────────────────────────────────────────────────────────────────
+  - job_name: 'terrafusion-gpt'
+    static_configs:
+      - targets: ['localhost:5000']
+        labels:
+          service: 'terrafusion-gpt'
+          component: 'generative-ai'
+          report_quality: 'iaao-compliant'
+    metrics_path: '/metrics/terrafusion-gpt'
+    scheme: 'http'
+
+  # ───────────────────────────────────────────────────────────────────
+  # TerraLevy (Tax Calculation System)
+  # ───────────────────────────────────────────────────────────────────
+  - job_name: 'terralevy'
+    static_configs:
+      - targets: ['localhost:5000']
+        labels:
+          service: 'terralevy'
+          component: 'tax-calculation'
+          rcw_compliance: '84.52'
+    metrics_path: '/metrics/terralevy'
+    scheme: 'http'
+
+  # ───────────────────────────────────────────────────────────────────
+  # TerraFlow (Workflow Orchestration)
+  # ───────────────────────────────────────────────────────────────────
+  - job_name: 'terraflow'
+    static_configs:
+      - targets: ['localhost:5000']
+        labels:
+          service: 'terraflow'
+          component: 'workflow-engine'
+          orchestration_type: 'government'
+    metrics_path: '/metrics/terraflow'
+    scheme: 'http'
+
+  # ───────────────────────────────────────────────────────────────────
+  # TerraSync (Multi-System Integration Hub)
+  # ───────────────────────────────────────────────────────────────────
+  - job_name: 'terrasync'
+    static_configs:
+      - targets: ['localhost:5000']
+        labels:
+          service: 'terrasync'
+          component: 'integration-hub'
+          systems: 'harris-pacs,tyler,aumentum'
+    metrics_path: '/metrics/terrasync'
+    scheme: 'http'
+
+  # ───────────────────────────────────────────────────────────────────
+  # Redis Cache Monitoring
+  # ───────────────────────────────────────────────────────────────────
+  - job_name: 'redis-cache'
+    static_configs:
+      - targets: ['localhost:6379']
+        labels:
+          service: 'redis'
+          component: 'cache'
+    metrics_path: '/metrics'
+    scheme: 'http'
+
+# ═══════════════════════════════════════════════════════════════════════
+# ALERT RULES - Championship-Level SLA Monitoring
+# ═══════════════════════════════════════════════════════════════════════
+
+rule_files:
+  - 'alert-rules/harris-pacs-alerts.yml'
+  - 'alert-rules/ai-services-alerts.yml'
+  - 'alert-rules/performance-alerts.yml'
+  - 'alert-rules/compliance-alerts.yml'
+
+# ═══════════════════════════════════════════════════════════════════════
+# ALERTMANAGER CONFIGURATION
+# ═══════════════════════════════════════════════════════════════════════
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - 'localhost:9093'
+      timeout: 10s
+
+# ═══════════════════════════════════════════════════════════════════════
+# RECORDING RULES - Performance Aggregations
+# ═══════════════════════════════════════════════════════════════════════
+
+# Recording rules for 24-hour aggregations of critical metrics
+# Used by Grafana dashboards for performance trending
+# Generated dynamically - see recording-rules/ directory

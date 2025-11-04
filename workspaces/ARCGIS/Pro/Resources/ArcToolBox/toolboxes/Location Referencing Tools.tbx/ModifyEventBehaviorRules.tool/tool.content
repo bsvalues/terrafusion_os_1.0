@@ -1,0 +1,253 @@
+{
+    "type": "FunctionTool",
+    "guid": "{0A4A9218-07A4-497A-8506-CED528063FB9}/ModifyEventBehaviorRules",
+    "displayname": "$rc:title",
+    "helpcontent": "23000032",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "78"
+    ],
+    "params": {
+        "in_feature_class": {
+            "displayname": "$rc:in_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_feature_class.descr"
+        },
+        "calibrate_rule": {
+            "type": "optional",
+            "displayname": "$rc:calibrate_rule.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "STAY_PUT",
+                        "code": "$rc:calibrate_rule.domain.STAY_PUT"
+                    },
+                    {
+                        "value": "RETIRE",
+                        "code": "$rc:calibrate_rule.domain.RETIRE"
+                    },
+                    {
+                        "value": "MOVE",
+                        "code": "$rc:calibrate_rule.domain.MOVE"
+                    }
+                ]
+            },
+            "depends": [
+                "in_feature_class"
+            ],
+            "description": "$rc:calibrate_rule.descr"
+        },
+        "retire_rule": {
+            "type": "optional",
+            "displayname": "$rc:retire_rule.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "STAY_PUT",
+                        "code": "$rc:retire_rule.domain.STAY_PUT"
+                    },
+                    {
+                        "value": "RETIRE",
+                        "code": "$rc:retire_rule.domain.RETIRE"
+                    },
+                    {
+                        "value": "MOVE",
+                        "code": "$rc:retire_rule.domain.MOVE"
+                    },
+                    {
+                        "value": "SNAP",
+                        "code": "$rc:retire_rule.domain.SNAP"
+                    }
+                ]
+            },
+            "depends": [
+                "in_feature_class"
+            ],
+            "description": "$rc:retire_rule.descr"
+        },
+        "extend_rule": {
+            "type": "optional",
+            "displayname": "$rc:extend_rule.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "STAY_PUT",
+                        "code": "$rc:extend_rule.domain.STAY_PUT"
+                    },
+                    {
+                        "value": "RETIRE",
+                        "code": "$rc:extend_rule.domain.RETIRE"
+                    },
+                    {
+                        "value": "MOVE",
+                        "code": "$rc:extend_rule.domain.MOVE"
+                    },
+                    {
+                        "value": "COVER",
+                        "code": "$rc:extend_rule.domain.COVER"
+                    }
+                ]
+            },
+            "depends": [
+                "in_feature_class"
+            ],
+            "description": "$rc:extend_rule.descr"
+        },
+        "reassign_rule": {
+            "type": "optional",
+            "displayname": "$rc:reassign_rule.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "STAY_PUT",
+                        "code": "$rc:reassign_rule.domain.STAY_PUT"
+                    },
+                    {
+                        "value": "RETIRE",
+                        "code": "$rc:reassign_rule.domain.RETIRE"
+                    },
+                    {
+                        "value": "MOVE",
+                        "code": "$rc:reassign_rule.domain.MOVE"
+                    },
+                    {
+                        "value": "SNAP",
+                        "code": "$rc:reassign_rule.domain.SNAP"
+                    }
+                ]
+            },
+            "depends": [
+                "in_feature_class"
+            ],
+            "description": "$rc:reassign_rule.descr"
+        },
+        "realign_rule": {
+            "type": "optional",
+            "displayname": "$rc:realign_rule.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "STAY_PUT",
+                        "code": "$rc:realign_rule.domain.STAY_PUT"
+                    },
+                    {
+                        "value": "RETIRE",
+                        "code": "$rc:realign_rule.domain.RETIRE"
+                    },
+                    {
+                        "value": "MOVE",
+                        "code": "$rc:realign_rule.domain.MOVE"
+                    },
+                    {
+                        "value": "SNAP",
+                        "code": "$rc:realign_rule.domain.SNAP"
+                    },
+                    {
+                        "value": "COVER",
+                        "code": "$rc:realign_rule.domain.COVER"
+                    }
+                ]
+            },
+            "depends": [
+                "in_feature_class"
+            ],
+            "description": "$rc:realign_rule.descr"
+        },
+        "out_feature_class": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "in_feature_class"
+            ]
+        },
+        "reverse_rule": {
+            "type": "optional",
+            "displayname": "$rc:reverse_rule.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "STAY_PUT",
+                        "code": "$rc:reverse_rule.domain.STAY_PUT"
+                    },
+                    {
+                        "value": "RETIRE",
+                        "code": "$rc:reverse_rule.domain.RETIRE"
+                    },
+                    {
+                        "value": "MOVE",
+                        "code": "$rc:reverse_rule.domain.MOVE"
+                    }
+                ]
+            },
+            "depends": [
+                "in_feature_class"
+            ],
+            "description": "$rc:reverse_rule.descr"
+        },
+        "carto_realign_rule": {
+            "type": "optional",
+            "displayname": "$rc:carto_realign_rule.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "HONOR_ROUTE_MEASURE",
+                        "code": "$rc:carto_realign_rule.domain.HONOR_ROUTE_MEASURE"
+                    },
+                    {
+                        "value": "HONOR_REFERENT_LOCATION",
+                        "code": "$rc:carto_realign_rule.domain.HONOR_REFERENT_LOCATION"
+                    }
+                ]
+            },
+            "depends": [
+                "in_feature_class"
+            ],
+            "description": "$rc:carto_realign_rule.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

@@ -1,0 +1,19 @@
+{
+    "set": [
+        "attribute",
+        "change",
+        "constrain",
+        "description",
+        "domains",
+        "field",
+        "integrity",
+        "limit",
+        "merge policy",
+        "name",
+        "properties",
+        "redo",
+        "restrict",
+        "split policy",
+        "subtype"
+    ]
+}

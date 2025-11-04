@@ -1,0 +1,9 @@
+apiVersion: v2
+name: terrafusionpro
+description: Helm chart for TerraFusionPro Platform
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+maintainers:
+  - name: TerraFusionPro Team
+    email: devops@terrafusionpro.com

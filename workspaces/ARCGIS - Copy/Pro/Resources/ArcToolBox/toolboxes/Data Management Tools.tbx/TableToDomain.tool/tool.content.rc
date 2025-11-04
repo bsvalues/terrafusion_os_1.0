@@ -1,0 +1,23 @@
+{
+    "map": {
+        "code_field.descr": "The field in the database table from which the domain code values will be derived.",
+        "code_field.title": "Code Field",
+        "description": "Creates or updates a coded value domain with values from a table.",
+        "description_field.descr": "The field in the database table from which the domain description values will be derived.",
+        "description_field.title": "Description Field",
+        "domain_description.descr": "The description of the domain that will be created or updated. Domain descriptions of existing domains are not updated.",
+        "domain_description.title": "Domain Description",
+        "domain_name.descr": "The name of the domain that will be created or updated.",
+        "domain_name.title": "Domain Name",
+        "in_table.descr": "The database table from which the domain values will be derived.",
+        "in_table.title": "Input Table",
+        "in_workspace.descr": "The workspace that contains the domain that will be created or updated.",
+        "in_workspace.title": "Input Workspace",
+        "out_workspace.title": "Updated Input Workspace",
+        "title": "Table To Domain",
+        "update_option.descr": "<xdoc><p>Specifies how the domain will be updated when you&apos;re using an existing domain.</p><ul><li><span title=\"APPEND\">Append the values</span>—The values from the input table will be appended to the existing domain values. This is the default.</li><li><span title=\"REPLACE\">Replace the values</span>—The existing domain values will be replaced with the values from the input table.</li></ul></xdoc>",
+        "update_option.domain.APPEND": "Append the values",
+        "update_option.domain.REPLACE": "Replace the values",
+        "update_option.title": "Update Option"
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "map": {
+        "description": "Imports a network diagram rule and layout definitions file (.ndbd), a network diagram layer definition file (.ndld), or both into an existing template.",
+        "in_utility_network.descr": "The utility network or trace network containing the diagram template that will be modified.",
+        "in_utility_network.title": "Input Network",
+        "ndbd_file.descr": "<xdoc><p>The network diagram rule and layout definitions file (.ndbd) that will be imported.</p><p>This file is the result of using the Export Diagram Template Definitions tool on an existing template.</p><p>At least one of the two input file parameters must be completed; that is, either the network diagram rule and layout definitions file (.ndbd) or the network diagram layer definition file (.ndld) must be completed.</p></xdoc>",
+        "ndbd_file.title": "Rule and Layout Definitions File",
+        "ndld_file.descr": "<xdoc><p>The network diagram layer definition file (.ndld) that will be imported.</p><p>This file is the result of using the Export Diagram Template Definitions or Export Diagram Layer Definition tool on an existing template.</p><p>At least one of the two input file parameters must be completed; that is, either the network diagram rule and layout definitions file (.ndbd) or the network diagram layer definition file (.ndld) must be completed.</p><p>When a diagram layer definition does not exist for the input diagram template and this parameter is not specified or loads an empty .ndld file, a default diagram layer definition is systematically initialized on the template.</p></xdoc>",
+        "ndld_file.title": "Diagram Layer Definition File",
+        "out_template_name.title": "Output Diagram Template",
+        "out_utility_network.title": "Output Network",
+        "summary": "<xdoc><p>Imports a network diagram rule and layout definitions file (.ndbd), a network diagram layer definition file (.ndld), or both into an existing template.</p><note type=\"caution\"/><p group=\"note\">This tool is a configuration and administration tool.</p><note type=\"note\"/><p group=\"note\">Importing a network diagram rule and layout definitions file (.ndbd) causes the <span class=\"esri_fieldname\">Consistency</span> field value in the database to switch to inconsistent for any existing diagram based on the input diagram template. All of these diagrams remain inconsistent and open with a consistency warning icon  until they are updated.</p></xdoc>",
+        "template_name.descr": "The name of the diagram template onto which the definitions will be imported.",
+        "template_name.title": "Input Diagram Template",
+        "title": "Import Diagram Template Definitions"
+    }
+}

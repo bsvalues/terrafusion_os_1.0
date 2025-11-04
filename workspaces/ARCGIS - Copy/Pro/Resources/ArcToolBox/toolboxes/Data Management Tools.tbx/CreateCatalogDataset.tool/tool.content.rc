@@ -1,0 +1,25 @@
+{
+    "map": {
+        "config_keyword.descr": "The configuration keyword determines the storage parameters of the database table. The configuration keyword applies to enterprise data only.",
+        "config_keyword.title": "Configuration Keyword",
+        "description": "Creates a catalog dataset to which collections of layers, rasters, datasets, and other items can be added.",
+        "has_z.descr": "<xdoc><p>Specifies whether the catalog dataset will contain elevation values (z-values).</p><ul><li><span title=\"DISABLED\">Disabled</span>—The output catalog dataset will not contain z-values. This is the default.</li><li><span title=\"ENABLED\">Enabled</span>—The output catalog dataset will contain z-values.</li><li><span title=\"SAME_AS_TEMPLATE\">Same as Template</span>—The output catalog dataset will contain z-values if the dataset specified in the <span class=\"esri_uicontrol\">Template Datasets</span> parameter contains z-values.</li></ul></xdoc>",
+        "has_z.domain.DISABLED": "Disabled",
+        "has_z.domain.ENABLED": "Enabled",
+        "has_z.domain.SAME_AS_TEMPLATE": "Same as Template",
+        "has_z.title": "Has Z",
+        "out_alias.descr": "The alias name of the catalog dataset.",
+        "out_alias.title": "Catalog Dataset Alias",
+        "out_catalog_dataset.title": "Output Catalog Dataset",
+        "out_name.descr": "The name of the catalog dataset that will be created.",
+        "out_name.title": "Catalog Dataset Name",
+        "out_path.descr": "The enterprise, mobile, or file geodatabase in which the output catalog dataset will be created.",
+        "out_path.title": "Catalog Dataset Location",
+        "params.category1": "Geodatabase Settings (optional)",
+        "spatial_reference.descr": "The spatial reference of the catalog dataset.",
+        "spatial_reference.title": "Coordinate System",
+        "template.descr": "The feature class or table that will be used as a template to define the attribute fields of the new catalog dataset.",
+        "template.title": "Template Datasets",
+        "title": "Create Catalog Dataset"
+    }
+}

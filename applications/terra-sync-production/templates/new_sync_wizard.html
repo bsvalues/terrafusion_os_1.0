@@ -1,0 +1,743 @@
+{% extends "base_new.html" %}
+
+{% block title %}New Sync Operation - TerraFusion SyncService{% endblock %}
+
+{% block page_title %}Create Sync Operation{% endblock %}
+
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="/">Home</a></li>
+<li class="breadcrumb-item"><a href="/dashboard/sync">Sync Operations</a></li>
+<li class="breadcrumb-item active" aria-current="page">Create New Sync</li>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .wizard-container {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-sm);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .wizard-panel {
+        display: none;
+    }
+    
+    .wizard-panel.active {
+        display: block;
+    }
+    
+    .source-target-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 2rem 0;
+    }
+    
+    .system-select {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        width: 45%;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .system-select h4 {
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+    }
+    
+    .direction-indicator {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .direction-arrow {
+        font-size: 2rem;
+        color: var(--primary-color);
+    }
+    
+    .field-mapping-table {
+        margin-top: 1.5rem;
+    }
+    
+    .preview-container {
+        background-color: #f8f9fa;
+        border-radius: var(--border-radius);
+        padding: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .preview-header {
+        margin-bottom: 1rem;
+    }
+    
+    .preview-content {
+        max-height: 300px;
+        overflow-y: auto;
+        background-color: white;
+        padding: 1rem;
+        border-radius: 0.25rem;
+        border: 1px solid #dee2e6;
+    }
+    
+    .sync-options {
+        background-color: #f8f9fa;
+        border-radius: var(--border-radius);
+        padding: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .wizard-navigation {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid #dee2e6;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Wizard Steps Indicator -->
+<div class="wizard-steps mb-4">
+    <div class="wizard-step active" id="step1Indicator">
+        <div class="wizard-step-circle">1</div>
+        <div class="wizard-step-title">Select Systems</div>
+    </div>
+    <div class="wizard-step" id="step2Indicator">
+        <div class="wizard-step-circle">2</div>
+        <div class="wizard-step-title">Configure Mapping</div>
+    </div>
+    <div class="wizard-step" id="step3Indicator">
+        <div class="wizard-step-circle">3</div>
+        <div class="wizard-step-title">Review & Launch</div>
+    </div>
+    <div class="wizard-step" id="step4Indicator">
+        <div class="wizard-step-circle">4</div>
+        <div class="wizard-step-title">Monitor</div>
+    </div>
+</div>
+
+<!-- Wizard Container -->
+<div class="wizard-container">
+    <!-- Step 1: Select Data Sources -->
+    <div class="wizard-panel active" id="step1Panel">
+        <h3 class="mb-4">Step 1: Select Data Sources</h3>
+        <p class="lead">Choose the source and target systems for your synchronization operation.</p>
+        
+        <div class="source-target-container">
+            <div class="system-select">
+                <h4><i class="fas fa-database me-2"></i>Source System</h4>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="radio" name="sourceSystem" id="sourcePACS" value="PACS" checked>
+                    <label class="form-check-label" for="sourcePACS">
+                        <span class="badge bg-primary me-2">PACS</span>
+                        Healthcare Imaging System
+                    </label>
+                </div>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="radio" name="sourceSystem" id="sourceGIS" value="GIS">
+                    <label class="form-check-label" for="sourceGIS">
+                        <span class="badge bg-secondary me-2">GIS</span>
+                        Geographic Information System
+                    </label>
+                </div>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="radio" name="sourceSystem" id="sourceCRM" value="CRM">
+                    <label class="form-check-label" for="sourceCRM">
+                        <span class="badge bg-danger me-2">CRM</span>
+                        Customer Relationship Management
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="sourceSystem" id="sourceOther" value="OTHER">
+                    <label class="form-check-label" for="sourceOther">
+                        <span class="badge bg-dark me-2">OTHER</span>
+                        Custom System
+                    </label>
+                </div>
+            </div>
+            
+            <div class="direction-indicator">
+                <div class="direction-arrow">
+                    <i class="fas fa-long-arrow-alt-right"></i>
+                </div>
+                <div class="mt-2">
+                    <select class="form-select" id="syncType">
+                        <option value="full">Full Sync</option>
+                        <option value="incremental">Incremental Sync</option>
+                        <option value="validation">Validation Only</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="system-select">
+                <h4><i class="fas fa-server me-2"></i>Target System</h4>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="radio" name="targetSystem" id="targetCAMA" value="CAMA" checked>
+                    <label class="form-check-label" for="targetCAMA">
+                        <span class="badge bg-info me-2">CAMA</span>
+                        Content Access Management
+                    </label>
+                </div>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="radio" name="targetSystem" id="targetERP" value="ERP">
+                    <label class="form-check-label" for="targetERP">
+                        <span class="badge bg-warning me-2">ERP</span>
+                        Enterprise Resource Planning
+                    </label>
+                </div>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="radio" name="targetSystem" id="targetDW" value="DW">
+                    <label class="form-check-label" for="targetDW">
+                        <span class="badge bg-success me-2">DW</span>
+                        Data Warehouse
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="targetSystem" id="targetOther" value="OTHER">
+                    <label class="form-check-label" for="targetOther">
+                        <span class="badge bg-dark me-2">OTHER</span>
+                        Custom System
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="wizard-navigation">
+            <button class="btn btn-outline-secondary" onclick="window.location.href='/dashboard/sync'">Cancel</button>
+            <button class="btn btn-primary" onclick="goToStep(2)">Next: Configure Mapping</button>
+        </div>
+    </div>
+    
+    <!-- Step 2: Configure Mappings -->
+    <div class="wizard-panel" id="step2Panel">
+        <h3 class="mb-4">Step 2: Configure Field Mappings</h3>
+        <p class="lead">Define how fields should be mapped between source and target systems.</p>
+        
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="m-0">Field Mapping</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover field-mapping-table">
+                                <thead>
+                                    <tr>
+                                        <th>Source Field</th>
+                                        <th>Target Field</th>
+                                        <th>Transformation</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <select class="form-select form-select-sm">
+                                                <option>patient_id</option>
+                                                <option>patientID</option>
+                                                <option>pid</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="form-select form-select-sm">
+                                                <option>patient_identifier</option>
+                                                <option>patient_id</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="form-select form-select-sm">
+                                                <option>None</option>
+                                                <option>Uppercase</option>
+                                                <option>Lowercase</option>
+                                                <option>Custom...</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <select class="form-select form-select-sm">
+                                                <option>last_name</option>
+                                                <option>lastName</option>
+                                                <option>surname</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="form-select form-select-sm">
+                                                <option>last_name</option>
+                                                <option>surname</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="form-select form-select-sm">
+                                                <option>None</option>
+                                                <option>Uppercase</option>
+                                                <option>Lowercase</option>
+                                                <option>Custom...</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <select class="form-select form-select-sm">
+                                                <option>first_name</option>
+                                                <option>firstName</option>
+                                                <option>given_name</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="form-select form-select-sm">
+                                                <option>first_name</option>
+                                                <option>given_name</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="form-select form-select-sm">
+                                                <option>None</option>
+                                                <option>Uppercase</option>
+                                                <option>Lowercase</option>
+                                                <option>Custom...</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary mt-3">
+                            <i class="fas fa-plus"></i> Add Field Mapping
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="m-0">Suggested Mappings</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small">Based on your source and target systems, we suggest these mappings:</p>
+                        <div class="list-group">
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">Patient Data</h6>
+                                    <small>9 fields</small>
+                                </div>
+                                <p class="mb-1 small">Common patient demographic fields</p>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">Medical Records</h6>
+                                    <small>12 fields</small>
+                                </div>
+                                <p class="mb-1 small">Clinical documentation fields</p>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">Image Metadata</h6>
+                                    <small>7 fields</small>
+                                </div>
+                                <p class="mb-1 small">Imaging study metadata fields</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="m-0">Validation Rules</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="validateRequired" checked>
+                            <label class="form-check-label" for="validateRequired">Validate required fields</label>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="validateDataTypes" checked>
+                            <label class="form-check-label" for="validateDataTypes">Validate data types</label>
+                        </div>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="validateRanges">
+                            <label class="form-check-label" for="validateRanges">Validate value ranges</label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="validateRelationships">
+                            <label class="form-check-label" for="validateRelationships">Validate relationships</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="preview-container">
+            <div class="preview-header">
+                <h5>Live Preview</h5>
+                <p class="text-muted small">This shows how your data will look after mapping and transformation.</p>
+            </div>
+            <div class="preview-content">
+                <pre><code>{
+  "patient_identifier": "12345",
+  "last_name": "SMITH",
+  "first_name": "John",
+  "date_of_birth": "1980-05-15",
+  "gender": "Male",
+  "address": {
+    "street": "123 Main St",
+    "city": "Springfield",
+    "state": "IL",
+    "zip": "62701"
+  },
+  "contact": {
+    "phone": "555-123-4567",
+    "email": "jsmith@example.com"
+  }
+}</code></pre>
+            </div>
+        </div>
+        
+        <div class="wizard-navigation">
+            <button class="btn btn-outline-secondary" onclick="goToStep(1)">Back: Select Systems</button>
+            <button class="btn btn-primary" onclick="goToStep(3)">Next: Review & Launch</button>
+        </div>
+    </div>
+    
+    <!-- Step 3: Review & Launch -->
+    <div class="wizard-panel" id="step3Panel">
+        <h3 class="mb-4">Step 3: Review & Launch</h3>
+        <p class="lead">Review your sync configuration and confirm to start the operation.</p>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="m-0">Configuration Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Sync Details</h6>
+                        <div class="mb-3">
+                            <label class="text-muted small">Source System</label>
+                            <div><span class="badge bg-primary">PACS</span> Healthcare Imaging System</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-muted small">Target System</label>
+                            <div><span class="badge bg-info">CAMA</span> Content Access Management</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-muted small">Sync Type</label>
+                            <div>Full Sync</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Mapping Details</h6>
+                        <div class="mb-3">
+                            <label class="text-muted small">Fields Mapped</label>
+                            <div>15 fields</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-muted small">Transformations</label>
+                            <div>3 fields with transformations</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-muted small">Validation Rules</label>
+                            <div>2 validation rules enabled</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="m-0">Execution Plan</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="text-muted small">Estimated Records</label>
+                            <div>~5,000 records</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-muted small">Estimated Duration</label>
+                            <div>~15 minutes</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-muted small">Execution Strategy</label>
+                            <div>Batch processing (500 records per batch)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="m-0">Sync Options</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label">Schedule</label>
+                            <select class="form-select">
+                                <option>Run immediately</option>
+                                <option>Schedule for later</option>
+                                <option>Recurring schedule</option>
+                            </select>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="stopOnError">
+                            <label class="form-check-label" for="stopOnError">Stop on error</label>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                            <input class="form-check-input" type="checkbox" id="notifyOnCompletion" checked>
+                            <label class="form-check-label" for="notifyOnCompletion">Notify on completion</label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="retryFailedRecords" checked>
+                            <label class="form-check-label" for="retryFailedRecords">Retry failed records</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Warning:</strong> This operation will overwrite any existing data in the target system. Make sure you have a backup.
+        </div>
+        
+        <div class="wizard-navigation">
+            <button class="btn btn-outline-secondary" onclick="goToStep(2)">Back: Configure Mapping</button>
+            <button class="btn btn-success" onclick="launchSync()">
+                <i class="fas fa-play me-2"></i> Launch Sync Operation
+            </button>
+        </div>
+    </div>
+    
+    <!-- Step 4: Monitor -->
+    <div class="wizard-panel" id="step4Panel">
+        <h3 class="mb-4">Step 4: Monitor Sync Progress</h3>
+        <p class="lead">Your sync operation is now running. Monitor its progress in real-time.</p>
+        
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="m-0">Operation #1005: PACS to CAMA Full Sync</h5>
+                <span class="badge bg-warning">Running</span>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <label class="form-label">Overall Progress</label>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 45%;" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100">45%</div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-1">
+                        <small class="text-muted">Started: 2 minutes ago</small>
+                        <small class="text-muted">Estimated completion: 13 minutes</small>
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="metric-card">
+                            <span class="metric-label">Total Records</span>
+                            <span class="metric-value">5,000</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card">
+                            <span class="metric-label">Processed</span>
+                            <span class="metric-value">2,250</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card">
+                            <span class="metric-label">Successful</span>
+                            <span class="metric-value">2,235</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="metric-card">
+                            <span class="metric-label">Failed</span>
+                            <span class="metric-value">15</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6 class="m-0">Real-time Log Stream</h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="log-console" style="max-height: 200px;">
+                            <div class="log-entry info">
+                                <span class="log-time">10:15:05</span>
+                                <span class="log-level">INFO</span>
+                                <span class="log-message">Batch #5 started (records 2001-2500)</span>
+                            </div>
+                            <div class="log-entry info">
+                                <span class="log-time">10:14:50</span>
+                                <span class="log-level">INFO</span>
+                                <span class="log-message">Batch #4 completed: 498 successful, 2 failed</span>
+                            </div>
+                            <div class="log-entry warning">
+                                <span class="log-time">10:14:45</span>
+                                <span class="log-level">WARN</span>
+                                <span class="log-message">Record #1894 validation failed: Invalid date format</span>
+                            </div>
+                            <div class="log-entry warning">
+                                <span class="log-time">10:14:40</span>
+                                <span class="log-level">WARN</span>
+                                <span class="log-message">Record #1756 validation failed: Missing required field</span>
+                            </div>
+                            <div class="log-entry info">
+                                <span class="log-time">10:14:30</span>
+                                <span class="log-level">INFO</span>
+                                <span class="log-message">Batch #4 started (records 1501-2000)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>Failed Records</h6>
+                    <div class="alert alert-danger d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>15 records</strong> failed to sync due to validation errors.
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger">View Details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="wizard-navigation">
+            <button class="btn btn-outline-danger me-2">
+                <i class="fas fa-stop me-2"></i> Stop Operation
+            </button>
+            <button class="btn btn-outline-secondary me-2">
+                <i class="fas fa-download me-2"></i> Export Logs
+            </button>
+            <a href="/dashboard/sync" class="btn btn-primary">
+                <i class="fas fa-list me-2"></i> View All Operations
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Navigate between wizard steps
+    function goToStep(stepNumber) {
+        // Hide all panels
+        document.querySelectorAll('.wizard-panel').forEach(panel => {
+            panel.classList.remove('active');
+        });
+        
+        // Show the target panel
+        document.getElementById(`step${stepNumber}Panel`).classList.add('active');
+        
+        // Update step indicators
+        document.querySelectorAll('.wizard-step').forEach((step, index) => {
+            if (index + 1 < stepNumber) {
+                step.classList.add('completed');
+                step.classList.remove('active');
+            } else if (index + 1 === stepNumber) {
+                step.classList.add('active');
+                step.classList.remove('completed');
+            } else {
+                step.classList.remove('active', 'completed');
+            }
+        });
+        
+        // If we're on step 2, update the mapping preview based on selections
+        if (stepNumber === 2) {
+            updateMappingPreview();
+        }
+    }
+    
+    // Update the mapping preview based on the selected systems
+    function updateMappingPreview() {
+        // This would fetch the actual field mapping options from the server
+        // For now, we'll just log that we're updating
+        console.log('Updating mapping preview based on selected systems');
+    }
+    
+    // Launch the sync operation
+    function launchSync() {
+        // In a real app, this would submit the form data and start the sync
+        // For this demo, just move to the monitor step
+        showToast('Success', 'Sync operation started successfully', 'success');
+        goToStep(4);
+        
+        // Start a simulated progress updater
+        simulateProgress();
+    }
+    
+    // Simulate progress updates for the demo
+    function simulateProgress() {
+        let progress = 45; // Starting progress
+        
+        const progressInterval = setInterval(() => {
+            progress += 5;
+            
+            if (progress > 100) {
+                clearInterval(progressInterval);
+                // Operation complete
+                document.querySelector('.progress-bar').style.width = '100%';
+                document.querySelector('.progress-bar').textContent = '100%';
+                document.querySelector('.progress-bar').classList.remove('progress-bar-animated');
+                
+                // Update status badge
+                document.querySelector('.card-header .badge').className = 'badge bg-success';
+                document.querySelector('.card-header .badge').textContent = 'Completed';
+                
+                showToast('Complete', 'Sync operation completed successfully', 'success');
+                return;
+            }
+            
+            // Update progress bar
+            document.querySelector('.progress-bar').style.width = `${progress}%`;
+            document.querySelector('.progress-bar').textContent = `${progress}%`;
+            
+            // Update processed count
+            const processed = Math.floor((5000 * progress) / 100);
+            document.querySelectorAll('.metric-value')[1].textContent = processed.toLocaleString();
+            
+            // Update successful count (slightly less than processed)
+            const successful = processed - Math.floor(processed * 0.007);
+            document.querySelectorAll('.metric-value')[2].textContent = successful.toLocaleString();
+            
+            // Update failed count
+            const failed = processed - successful;
+            document.querySelectorAll('.metric-value')[3].textContent = failed.toLocaleString();
+            
+            // Add a log entry occasionally
+            if (progress % 15 === 0) {
+                const batchNum = Math.floor(progress / 20) + 5;
+                addLogEntry('info', `Batch #${batchNum} completed: 498 successful, 2 failed`);
+            }
+        }, 2000); // Update every 2 seconds
+    }
+</script>
+{% endblock %}

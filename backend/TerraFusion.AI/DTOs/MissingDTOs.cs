@@ -792,7 +792,7 @@ namespace TerraFusion.AI.DTOs
         Strong,
         Excellent
     }
-    
+
     public class EnsembleForecastResult
     {
         public List<decimal> Predictions { get; set; } = new();
@@ -800,7 +800,7 @@ namespace TerraFusion.AI.DTOs
         public double OverallConfidence { get; set; }
         public Dictionary<string, object> Metadata { get; set; } = new();
     }
-    
+
     public class AIAgentStatusDto
     {
         public int TotalAgents { get; set; }
@@ -810,7 +810,7 @@ namespace TerraFusion.AI.DTOs
         public double AverageUtilization { get; set; }
         public List<object> Agents { get; set; } = new();
     }
-    
+
     public class ModelPerformance
     {
         public string ModelId { get; set; } = string.Empty;
@@ -818,6 +818,47 @@ namespace TerraFusion.AI.DTOs
         public double ResponseTime { get; set; }
         public bool IsAvailable { get; set; }
     }
-    
+
+    /// <summary>
+    /// Result type for neural command operations in the AI swarm system
+    /// </summary>
+    public class NeuralCommandResult
+    {
+        public string CommandId { get; set; } = string.Empty;
+        public bool Success { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public TimeSpan ProcessingTime { get; set; }
+        public double ConfidenceLevel { get; set; }
+        public Dictionary<string, object> Results { get; set; } = new();
+        public List<string> Warnings { get; set; } = new();
+        public List<string> Errors { get; set; } = new();
+        public string AgentId { get; set; } = string.Empty;
+        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+        public Dictionary<string, object> Metadata { get; set; } = new();
+    }
+
+    /// <summary>
+    /// Result type for swarm operations across multiple AI agents
+    /// </summary>
+    public class SwarmOperationResult
+    {
+        public string OperationId { get; set; } = string.Empty;
+        public bool Success { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public TimeSpan ProcessingTime { get; set; }
+        public double ConfidenceLevel { get; set; }
+        public int AgentsInvolved { get; set; }
+        public int SuccessfulAgents { get; set; }
+        public int FailedAgents { get; set; }
+        public Dictionary<string, object> AggregatedResults { get; set; } = new();
+        public List<NeuralCommandResult> AgentResults { get; set; } = new();
+        public List<string> Warnings { get; set; } = new();
+        public List<string> Errors { get; set; } = new();
+        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+        public Dictionary<string, object> Metadata { get; set; } = new();
+        public double SwarmConsensus { get; set; }
+        public List<string> EmergentPatterns { get; set; } = new();
+    }
+
     // Note: AdvancedAI DTOs moved to AdvancedAIDtos.cs to avoid duplicates
 }

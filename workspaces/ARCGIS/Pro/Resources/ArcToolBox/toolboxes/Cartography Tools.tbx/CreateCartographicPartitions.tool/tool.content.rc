@@ -1,0 +1,17 @@
+{
+    "map": {
+        "description": "Creates a mesh of polygon features that cover the input feature class in which each output polygon encloses no more than a specified number of  input features or input vertices. as determined by the density and distribution of the input features.",
+        "feature_count.descr": "<xdoc><p>The ideal number of features or vertices (depending on the <span class=\"esri_uicontrol\">Partition Method</span> parameter value) to be enclosed by each polygon in the output feature class. The recommended count for features is 50,000, which is the default value. For vertices, 1 million vertices will consume approximately 0.5 GB of memory depending on the tool using the partitions. The feature count cannot be less than 500.</p></xdoc>",
+        "feature_count.title": "Feature Count",
+        "in_features.descr": "The input feature classes or layers with feature distribution and density, or vertex distribution and density, that determine the size and arrangement of output polygons. The input features are typically destined for subsequent processing with other geoprocessing tools. Typically, the input features, when considered simultaneously, would exceed memory limitations of other tools, so partitions are created to subdivide inputs for processing.",
+        "in_features.title": "Input Features",
+        "out_features.descr": "<xdoc><p>The output polygon feature class of partitions each of which encloses a manageable number of input features or manageable number of input vertices not exceeding the number specified by the <span class=\"esri_uicontrol\">Feature Count</span> parameter.</p></xdoc>",
+        "out_features.title": "Output Features",
+        "partition_method.descr": "<xdoc><p>Specifies whether the <span class=\"esri_uicontrol\">Feature Count</span> parameter references the ideal number of features or the ideal number of vertices in each output polygon.</p><ul><li><span title=\"FEATURES\">Features</span>—Partitioning considers the number and density of individual features. This method is applicable in most cases and is the default.</li><li><span title=\"VERTICES\">Vertices</span>—Partitioning considers the number and density of vertices. This method is used in cases in which the input data contains a relatively small number of very complex features, such as high-resolution country polygons, or when very long features are likely to cross multiple partition boundaries, such as contour lines.</li></ul></xdoc>",
+        "partition_method.domain.FEATURES": "Features",
+        "partition_method.domain.VERTICES": "Vertices",
+        "partition_method.title": "Partition Method",
+        "summary": "<xdoc><p>Creates a mesh of polygon features that cover the input feature class in which each output polygon encloses no more than a specified number of input features or input vertices. as determined by the density and distribution of the input features.</p><p>The resulting partition feature class is ideally suited for the Cartographic Partitions geoprocessing environment setting. The Cartographic Partitions environment setting causes certain geoprocessing tools to load and process input features by partition. These tools operate contextually, meaning that multiple features, possibly from multiple themes, must be loaded simultaneously. Memory limitations are encountered with large datasets. Partitioning allows large datasets to be processed by these tools in portions sequentially.</p></xdoc>",
+        "title": "Create Cartographic Partitions"
+    }
+}

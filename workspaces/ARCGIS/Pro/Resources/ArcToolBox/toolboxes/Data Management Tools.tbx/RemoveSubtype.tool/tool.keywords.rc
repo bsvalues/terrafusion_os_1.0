@@ -1,0 +1,15 @@
+{
+    "set": [
+        "attribute",
+        "category",
+        "clear",
+        "code",
+        "delete",
+        "domain",
+        "feature",
+        "geodatabase",
+        "group",
+        "subtype",
+        "table"
+    ]
+}

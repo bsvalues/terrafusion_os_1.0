@@ -1,0 +1,12 @@
+{
+    "set": [
+        "bus routes",
+        "gtfs",
+        "public transit",
+        "public transport",
+        "public transportation",
+        "shapes.txt",
+        "transit",
+        "transport"
+    ]
+}

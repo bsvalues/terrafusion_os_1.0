@@ -1,0 +1,27 @@
+{
+    "map": {
+        "analysis_variable.descr": "The numeric variable in the netCDF file, changing over time, that will be used to distinguish one cluster from another.",
+        "analysis_variable.title": "Analysis Variable",
+        "characteristic_of_interest.descr": "<xdoc><p>Specifies the characteristic of the time series that will be used to determine which locations should be clustered together.</p><ul><li><span title=\"VALUE\">Value</span>— Locations with similar values across time will be clustered together.</li><li><span title=\"PROFILE\">Profile (Correlation)</span>—Locations with values that tend to increase and decrease proportionally at the same times will be clustered together.</li><li><span title=\"PROFILE_FOURIER\">Profile (Fourier)</span>—Locations with values that have similar smooth, periodic patterns will be clustered together.</li></ul></xdoc>",
+        "characteristic_of_interest.domain.PROFILE": "Profile (Correlation)",
+        "characteristic_of_interest.domain.PROFILE_FOURIER": "Profile (Fourier)",
+        "characteristic_of_interest.domain.VALUE": "Value",
+        "characteristic_of_interest.title": "Characteristic of Interest",
+        "cluster_count.descr": "The number of clusters to create. When left empty, the tool will evaluate the optimal number of clusters using a pseudo-F statistic. The optimal number of clusters will be reported in the messages window.",
+        "cluster_count.title": "Number of Clusters",
+        "description": "Partitions a collection of time series, stored in a space-time cube, based on the similarity of time series characteristics. Time series can be clustered based on three criteria: having similar values across time, tending to increase and decrease at the same time, and having similar repeating patterns. The output of this tool is a 2D map displaying each location in the cube symbolized by cluster membership and messages. The output also includes charts containing information about the representative time series signature for each cluster.",
+        "enable_time_series_popups.descr": "<xdoc><p>Specifies whether time series charts will be created in the pop-ups of each output feature showing the time series of the feature and the average time series of all features in the same cluster as the feature.</p><ul><li>Checked—Time series charts will be created for the output features.</li><li>Unchecked—Time series charts will not be created. This is the default.</li></ul></xdoc>",
+        "enable_time_series_popups.title": "Enable Time Series Pop-ups",
+        "in_cube.descr": "The space-time cube containing the variable to be analyzed. Space-time cubes have a .nc file extension and are created using various tools in the Space Time Pattern Mining toolbox.",
+        "in_cube.title": "Input Space Time Cube",
+        "output_features.descr": "The new output feature class containing all locations in the space-time cube and a field indicating cluster membership. This feature class will be a two-dimensional representation of the clusters in your data.",
+        "output_features.title": "Output Features",
+        "output_table_for_charts.descr": "<xdoc><p>If specified, this table contains the representative time series for each cluster based on both the average for each time series cluster and the medoid time series. Charts created from this table can be accessed in the <span class=\"esri_uicontrol\">Standalone Tables</span> section.</p></xdoc>",
+        "output_table_for_charts.title": "Output Table for Charts",
+        "shape_characteristic_to_ignore.descr": "<xdoc><p>Specifies characteristics that will be ignored when determining the similarity between two time series.</p><ul><li><span title=\"TIME_LAG\">Time lag</span>— The starting time of each period, including time lags, will be ignored. For example, if two time series have similar periodic patterns, but the values of one are three days behind the other, the time series will be considered similar.</li><li><span title=\"RANGE\">Range</span>—The magnitude of the values in each period will be ignored. For example, if two time series begin and end their periods at the same times, they will be considered similar, even if the actual values are very different.</li></ul><p>If both characteristics are ignored, two time series will be considered similar if the durations of the periods are similar, even if they start at different times and have different values within the periods.</p></xdoc>",
+        "shape_characteristic_to_ignore.domain.RANGE": "Range",
+        "shape_characteristic_to_ignore.domain.TIME_LAG": "Time lag",
+        "shape_characteristic_to_ignore.title": "Time Series Characteristics to Ignore",
+        "title": "Time Series Clustering"
+    }
+}

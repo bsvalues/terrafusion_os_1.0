@@ -1,0 +1,17 @@
+{
+    "map": {
+        "depth_direction.descr": "<xdoc><p>Specifies how the depth will be captured in the input TIN.</p><ul><li><span title=\"POSITIVE_UP\">Positive Up</span>—The depth will be captured in the input TIN. This is default.</li><li><span title=\"POSITIVE_DOWN\">Positive Down</span>—The downward depth will be captured in the input TIN.</li></ul></xdoc>",
+        "depth_direction.domain.POSITIVE_DOWN": "Positive Down",
+        "depth_direction.domain.POSITIVE_UP": "Positive Up",
+        "depth_direction.title": "Depth Direction",
+        "description": "Smooths a triangulated irregular network (TIN) dataset in a manner that strictly preserves a shallow bias.",
+        "in_tin.descr": "The input TIN that will be smoothed with a shallow bias.",
+        "in_tin.title": "Input TIN",
+        "out_tin.descr": "The output smoothed TIN.",
+        "out_tin.title": "Output TIN",
+        "smoothing_iterations.descr": "The number of smoothing passes that will be performed over the TIN.",
+        "smoothing_iterations.title": "Smoothing Iterations",
+        "summary": "<xdoc><p>Smooths a triangulated irregular network (TIN) dataset in a manner that strictly preserves a shallow bias.</p><p>The output is used to generate depth contours for navigation, so the output TIN nodes will never report a value deeper than the input.</p></xdoc>",
+        "title": "Smooth Bathymetric TIN"
+    }
+}

@@ -1,0 +1,5 @@
+<DataType Name="DEGeometricNetwork">
+  <DisplayName>Geometric Network</DisplayName>
+  <Description>A linear network represented by topologically connected edge and junction features. Feature connectivity is based on their geometric coincidence.</Description>
+</DataType>
+

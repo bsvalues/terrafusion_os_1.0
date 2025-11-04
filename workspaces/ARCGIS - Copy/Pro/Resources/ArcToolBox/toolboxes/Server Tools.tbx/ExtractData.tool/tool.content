@@ -1,0 +1,75 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "22020001",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "Layers_to_Clip": {
+            "displayname": "$rc:layers_to_clip.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPLayer"
+                }
+            },
+            "description": "$rc:layers_to_clip.descr"
+        },
+        "Area_of_Interest": {
+            "displayname": "$rc:area_of_interest.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:area_of_interest.descr"
+        },
+        "Feature_Format": {
+            "displayname": "$rc:feature_format.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "File Geodatabase - GDB - .gdb",
+            "description": "$rc:feature_format.descr"
+        },
+        "Raster_Format": {
+            "displayname": "$rc:raster_format.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "ESRI GRID - GRID",
+            "description": "$rc:raster_format.descr"
+        },
+        "Spatial_Reference": {
+            "displayname": "$rc:spatial_reference.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "Same As Input",
+            "description": "$rc:spatial_reference.descr"
+        },
+        "Custom_Spatial_Reference_Folder": {
+            "type": "optional",
+            "displayname": "$rc:custom_spatial_reference_folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:custom_spatial_reference_folder.descr"
+        },
+        "Output_Zip_File": {
+            "direction": "out",
+            "displayname": "$rc:output_zip_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "description": "$rc:output_zip_file.descr"
+        }
+    }
+}

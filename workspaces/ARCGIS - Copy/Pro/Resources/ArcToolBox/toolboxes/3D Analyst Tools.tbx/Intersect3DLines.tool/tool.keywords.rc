@@ -1,0 +1,7 @@
+{
+    "set": [
+        "intersect",
+        "overlap",
+        "pairwise"
+    ]
+}

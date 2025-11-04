@@ -1,0 +1,235 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "79020001",
+    "description": "$rc:description",
+    "product": "300",
+    "attributes": [
+        "GPU",
+        "mCPU"
+    ],
+    "params": {
+        "in_model_definition": {
+            "displayname": "$rc:in_model_definition.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "dlpk_remote",
+                    "dlpk"
+                ]
+            },
+            "description": "$rc:in_model_definition.descr"
+        },
+        "prediction_type": {
+            "displayname": "$rc:prediction_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PREDICT_FEATURE",
+                        "code": "$rc:prediction_type.domain.PREDICT_FEATURE"
+                    },
+                    {
+                        "value": "PREDICT_RASTER",
+                        "code": "$rc:prediction_type.domain.PREDICT_RASTER"
+                    }
+                ]
+            },
+            "value": "PREDICT_FEATURE",
+            "description": "$rc:prediction_type.descr"
+        },
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPFeatureLayer"
+                    },
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "DEFeatureClass"
+                    }
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "explanatory_rasters": {
+            "type": "optional",
+            "displayname": "$rc:explanatory_rasters.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPRasterLayer"
+                }
+            },
+            "description": "$rc:explanatory_rasters.descr"
+        },
+        "distance_features": {
+            "type": "optional",
+            "displayname": "$rc:distance_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:distance_features.descr"
+        },
+        "out_prediction_features": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_prediction_features.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFeatureClass"
+                    },
+                    {
+                        "type": "DETable"
+                    }
+                ]
+            },
+            "description": "$rc:out_prediction_features.descr"
+        },
+        "out_prediction_surface": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_prediction_surface.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "schema": {
+                "type": "GPContainerSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_prediction_surface.descr"
+        },
+        "match_explanatory_variables": {
+            "type": "optional",
+            "displayname": "$rc:match_explanatory_variables.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:match_explanatory_variables.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:match_explanatory_variables.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:match_explanatory_variables.descr"
+        },
+        "match_distance_variables": {
+            "type": "optional",
+            "displayname": "$rc:match_distance_variables.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPFeatureLayer",
+                        "displayname": "$rc:match_distance_variables.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:match_distance_variables.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "description": "$rc:match_distance_variables.descr"
+        },
+        "match_explanatory_rasters": {
+            "type": "optional",
+            "displayname": "$rc:match_explanatory_rasters.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPRasterLayer",
+                        "displayname": "$rc:match_explanatory_rasters.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:match_explanatory_rasters.dt.title2"
+                    }
+                ]
+            },
+            "description": "$rc:match_explanatory_rasters.descr"
+        },
+        "get_prediction_explanations": {
+            "type": "optional",
+            "displayname": "$rc:get_prediction_explanations.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "TRUE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "FALSE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:get_prediction_explanations.descr"
+        }
+    },
+    "environments": [
+        "geographicTransformations",
+        "outputCoordinateSystem"
+    ]
+}

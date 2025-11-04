@@ -1,0 +1,24 @@
+{
+    "set": [
+        "change",
+        "convert",
+        "copy",
+        "export",
+        "file",
+        "format",
+        "gdb",
+        "geodatabase",
+        "gml",
+        "http",
+        "import",
+        "make",
+        "ogc",
+        "sde",
+        "service",
+        "shapefile",
+        "shp",
+        "turn",
+        "url",
+        "web"
+    ]
+}

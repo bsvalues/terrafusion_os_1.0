@@ -1,0 +1,17 @@
+{
+    "map": {
+        "cap_type.descr": "<xdoc><p>Specifies how the ends of stroke symbol layers will be drawn. The default cap type of strokes is round; the symbol is terminated with a semicircle of radius equal to stroke width centered at the line endpoint.</p><ul><li><span title=\"BUTT\">Butt cap type</span>—The stroke symbol will end exactly where the line geometry ends. This is the default.</li><li><span title=\"SQUARE\">Square cap type</span>—The stroke symbol will end with closed, square caps that extend past the endpoint of the line by half the symbol width.</li></ul></xdoc>",
+        "cap_type.domain.BUTT": "Butt  cap type",
+        "cap_type.domain.SQUARE": "Square cap type",
+        "cap_type.title": "Cap Type",
+        "dangle_option.descr": "<xdoc><p>Specifies how line caps will be calculated for adjoining line features that share an endpoint but are drawn with different symbology.</p><ul><li><span title=\"CASED_LINE_DANGLE\">Cased line dangle</span>—The cap style will be modified for dangling lines (those not connected at their endpoints to another line), as well as for lines where a cased-line symbol is joined at the endpoint of a single-stroke layer line symbol. This is the default.</li><li><span title=\"TRUE_DANGLE\">True dangle</span>—The cap style will be modified only for endpoints that are not connected to another feature.</li></ul></xdoc>",
+        "dangle_option.domain.CASED_LINE_DANGLE": "Cased line dangle",
+        "dangle_option.domain.TRUE_DANGLE": "True dangle",
+        "dangle_option.title": "Dangle Option",
+        "description": "Modifies the cap type for stroke symbol layers in the line symbols of the input layer.",
+        "in_features.descr": "<xdoc><p>The input feature layer containing line symbols. Stroke symbol layers must have the <span class=\"esri_uicontrol\">Cap Type</span> property connected to a single attribute field with no expression applied. The values in this field are updated by this tool.</p></xdoc>",
+        "in_features.title": "Input Features",
+        "out_representations.title": "Updated Input Features",
+        "title": "Calculate Line Caps"
+    }
+}

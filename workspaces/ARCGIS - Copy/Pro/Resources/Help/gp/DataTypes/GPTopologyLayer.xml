@@ -1,0 +1,5 @@
+<DataType Name="GPTopologyLayer">
+  <DisplayName>Topology Layer</DisplayName>
+  <Description>A reference to a topology, including symbology and rendering properties.</Description>
+</DataType>
+

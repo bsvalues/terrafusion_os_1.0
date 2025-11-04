@@ -1,0 +1,13 @@
+{
+    "set": [
+        "bearing",
+        "distance",
+        "eucdirection",
+        "heading",
+        "proximity",
+        "source",
+        "spread",
+        "straight line",
+        "travel cost"
+    ]
+}

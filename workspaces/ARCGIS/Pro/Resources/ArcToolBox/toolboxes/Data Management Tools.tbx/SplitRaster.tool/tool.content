@@ -1,0 +1,320 @@
+{
+    "type": "FunctionTool",
+    "guid": "{f5f246a3-d242-47ab-937a-7949410435b8}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190307",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_raster": {
+            "displayname": "$rc:in_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEMosaicDataset"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_raster.descr"
+        },
+        "out_folder": {
+            "displayname": "$rc:out_folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:out_folder.descr"
+        },
+        "out_base_name": {
+            "displayname": "$rc:out_base_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:out_base_name.descr"
+        },
+        "split_method": {
+            "displayname": "$rc:split_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SIZE_OF_TILE",
+                        "code": "$rc:split_method.domain.SIZE_OF_TILE"
+                    },
+                    {
+                        "value": "NUMBER_OF_TILES",
+                        "code": "$rc:split_method.domain.NUMBER_OF_TILES"
+                    },
+                    {
+                        "value": "POLYGON_FEATURES",
+                        "code": "$rc:split_method.domain.POLYGON_FEATURES"
+                    }
+                ]
+            },
+            "value": "SIZE_OF_TILE",
+            "description": "$rc:split_method.descr"
+        },
+        "format": {
+            "displayname": "$rc:format.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "TIFF",
+                        "code": "$rc:format.domain.TIFF"
+                    },
+                    {
+                        "value": "BMP",
+                        "code": "$rc:format.domain.BMP"
+                    },
+                    {
+                        "value": "ENVI",
+                        "code": "$rc:format.domain.ENVI"
+                    },
+                    {
+                        "value": "Esri BIL",
+                        "code": "$rc:format.domain.Esri BIL"
+                    },
+                    {
+                        "value": "Esri BIP",
+                        "code": "$rc:format.domain.Esri BIP"
+                    },
+                    {
+                        "value": "Esri BSQ",
+                        "code": "$rc:format.domain.Esri BSQ"
+                    },
+                    {
+                        "value": "GIF",
+                        "code": "$rc:format.domain.GIF"
+                    },
+                    {
+                        "value": "GRID",
+                        "code": "$rc:format.domain.GRID"
+                    },
+                    {
+                        "value": "IMAGINE IMAGE",
+                        "code": "$rc:format.domain.IMAGINE IMAGE"
+                    },
+                    {
+                        "value": "JP2",
+                        "code": "$rc:format.domain.JP2"
+                    },
+                    {
+                        "value": "JPEG",
+                        "code": "$rc:format.domain.JPEG"
+                    },
+                    {
+                        "value": "PNG",
+                        "code": "$rc:format.domain.PNG"
+                    }
+                ]
+            },
+            "value": "TIFF",
+            "description": "$rc:format.descr"
+        },
+        "resampling_type": {
+            "type": "optional",
+            "displayname": "$rc:resampling_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NEAREST",
+                        "code": "$rc:resampling_type.domain.NEAREST"
+                    },
+                    {
+                        "value": "BILINEAR",
+                        "code": "$rc:resampling_type.domain.BILINEAR"
+                    },
+                    {
+                        "value": "CUBIC",
+                        "code": "$rc:resampling_type.domain.CUBIC"
+                    }
+                ]
+            },
+            "value": "NEAREST",
+            "description": "$rc:resampling_type.descr"
+        },
+        "num_rasters": {
+            "type": "optional",
+            "displayname": "$rc:num_rasters.title",
+            "datatype": {
+                "type": "GPPoint"
+            },
+            "value": "1 1",
+            "description": "$rc:num_rasters.descr"
+        },
+        "tile_size": {
+            "type": "optional",
+            "displayname": "$rc:tile_size.title",
+            "datatype": {
+                "type": "GPPoint"
+            },
+            "value": "2048 2048",
+            "description": "$rc:tile_size.descr"
+        },
+        "overlap": {
+            "type": "optional",
+            "displayname": "$rc:overlap.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:overlap.descr"
+        },
+        "units": {
+            "type": "optional",
+            "displayname": "$rc:units.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PIXELS",
+                        "code": "$rc:units.domain.PIXELS"
+                    },
+                    {
+                        "value": "METERS",
+                        "code": "$rc:units.domain.METERS"
+                    },
+                    {
+                        "value": "FEET",
+                        "code": "$rc:units.domain.FEET"
+                    },
+                    {
+                        "value": "DEGREES",
+                        "code": "$rc:units.domain.DEGREES"
+                    },
+                    {
+                        "value": "KILOMETERS",
+                        "code": "$rc:units.domain.KILOMETERS"
+                    },
+                    {
+                        "value": "MILES",
+                        "code": "$rc:units.domain.MILES"
+                    }
+                ]
+            },
+            "value": "PIXELS",
+            "description": "$rc:units.descr"
+        },
+        "cell_size": {
+            "type": "optional",
+            "displayname": "$rc:cell_size.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPPoint"
+            },
+            "description": "$rc:cell_size.descr"
+        },
+        "origin": {
+            "type": "optional",
+            "displayname": "$rc:origin.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPPoint"
+            },
+            "description": "$rc:origin.descr"
+        },
+        "split_polygon_feature_class": {
+            "type": "optional",
+            "displayname": "$rc:split_polygon_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:split_polygon_feature_class.descr"
+        },
+        "clip_type": {
+            "type": "optional",
+            "displayname": "$rc:clip_type.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NONE",
+                        "code": "$rc:clip_type.domain.NONE"
+                    },
+                    {
+                        "value": "EXTENT",
+                        "code": "$rc:clip_type.domain.EXTENT"
+                    },
+                    {
+                        "value": "FEATURE_CLASS",
+                        "code": "$rc:clip_type.domain.FEATURE_CLASS"
+                    }
+                ]
+            },
+            "value": "NONE",
+            "description": "$rc:clip_type.descr"
+        },
+        "template_extent": {
+            "type": "optional",
+            "control_guid": "{15F0D1C1-F783-49BC-8D16-619B8E92F668}",
+            "displayname": "$rc:template_extent.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPExtent"
+            },
+            "description": "$rc:template_extent.descr"
+        },
+        "nodata_value": {
+            "type": "optional",
+            "displayname": "$rc:nodata_value.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:nodata_value.descr"
+        },
+        "derived_out_folder": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:derived_out_folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "depends": [
+                "out_folder"
+            ]
+        }
+    },
+    "environments": [
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "pyramid",
+        "rasterStatistics",
+        "resamplingMethod",
+        "snapRaster",
+        "tileSize"
+    ]
+}

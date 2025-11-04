@@ -1,0 +1,42 @@
+CREATE TABLE [dbo].[supp_roll_info] (
+    [sup_group_id]       INT            NOT NULL,
+    [prop_id]            INT            NOT NULL,
+    [owner_id]           INT            NOT NULL,
+    [sup_num]            INT            NOT NULL,
+    [prev_sup_num]       INT            NOT NULL,
+    [sup_yr]             NUMERIC (4)    NOT NULL,
+    [pct_ownership]      NUMERIC (5, 2) NULL,
+    [prev_pct_ownership] NUMERIC (5, 2) NULL,
+    [sup_action]         CHAR (1)       NULL,
+    [sup_cd]             CHAR (10)      NULL,
+    [sup_reason]         VARCHAR (500)  NULL,
+    [curr_land_hs]       NUMERIC (14)   NULL,
+    [prev_land_hs]       NUMERIC (14)   NULL,
+    [curr_land_nhs]      NUMERIC (14)   NULL,
+    [prev_land_nhs]      NUMERIC (14)   NULL,
+    [curr_imprv_hs]      NUMERIC (14)   NULL,
+    [prev_imprv_hs]      NUMERIC (14)   NULL,
+    [curr_imprv_nhs]     NUMERIC (14)   NULL,
+    [prev_imprv_nhs]     NUMERIC (14)   NULL,
+    [curr_ag_mkt]        NUMERIC (14)   NULL,
+    [prev_ag_mkt]        NUMERIC (14)   NULL,
+    [curr_timb_mkt]      NUMERIC (14)   NULL,
+    [prev_timb_mkt]      NUMERIC (14)   NULL,
+    [curr_ag_use]        NUMERIC (14)   NULL,
+    [prev_ag_use]        NUMERIC (14)   NULL,
+    [curr_timb_use]      NUMERIC (14)   NULL,
+    [prev_timb_use]      NUMERIC (14)   NULL,
+    [curr_appr]          NUMERIC (14)   NULL,
+    [prev_appr]          NUMERIC (14)   NULL,
+    [legal_desc]         VARCHAR (255)  NULL,
+    [legal_acre]         NUMERIC (18)   NULL,
+    [curr_hs_cap]        NUMERIC (14)   NULL,
+    [prev_hs_cap]        NUMERIC (14)   NULL,
+    [curr_assessed]      NUMERIC (14)   NULL,
+    [prev_assessed]      NUMERIC (14)   NULL,
+    CONSTRAINT [CPK_supp_roll_info] PRIMARY KEY CLUSTERED ([sup_group_id] ASC, [prop_id] ASC, [sup_yr] ASC, [sup_num] ASC, [prev_sup_num] ASC, [owner_id] ASC) WITH (FILLFACTOR = 100)
+);
+
+
+GO
+

@@ -1,0 +1,159 @@
+{
+    "type": "FunctionTool",
+    "guid": "{26B17338-CB00-45A9-AB9C-858C2E0122C9}/ThinHydrologyLines",
+    "displayname": "$rc:title",
+    "helpcontent": "43110012",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "46",
+        "49"
+    ],
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "invisibility_field": {
+            "displayname": "$rc:invisibility_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:invisibility_field.descr"
+        },
+        "min_length": {
+            "displayname": "$rc:min_length.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "description": "$rc:min_length.descr"
+        },
+        "min_spacing": {
+            "type": "optional",
+            "displayname": "$rc:min_spacing.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "description": "$rc:min_spacing.descr"
+        },
+        "hierarchy_field": {
+            "type": "optional",
+            "displayname": "$rc:hierarchy_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:hierarchy_field.descr"
+        },
+        "intersecting_features": {
+            "type": "optional",
+            "displayname": "$rc:intersecting_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:intersecting_features.descr"
+        },
+        "unsplit_lines": {
+            "type": "optional",
+            "displayname": "$rc:unsplit_lines.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "UNSPLIT_LINES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_UNSPLIT_LINES"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:unsplit_lines.descr"
+        },
+        "use_angles": {
+            "type": "optional",
+            "displayname": "$rc:use_angles.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "USE_ANGLES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_USE_ANGLES"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:use_angles.descr"
+        },
+        "updated_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "in_features"
+            ]
+        }
+    }
+}

@@ -1,0 +1,7 @@
+replicaCount: 1
+autoscaling:
+  minReplicas: 1
+  maxReplicas: 2
+ingress:
+  hosts:
+    - host: tf-dev.local

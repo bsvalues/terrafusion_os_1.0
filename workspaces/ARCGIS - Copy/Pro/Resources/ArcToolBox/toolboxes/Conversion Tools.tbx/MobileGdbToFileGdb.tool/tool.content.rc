@@ -1,0 +1,10 @@
+{
+    "map": {
+        "description": "Copies the contents of a mobile geodatabase to a new file geodatabase.",
+        "in_mobile_gdb.descr": "The mobile geodatabase with the contents that will be copied to a new file geodatabase.",
+        "in_mobile_gdb.title": "Input Mobile Geodatabase",
+        "out_file_gdb.descr": "The name and location of the output file geodatabase, for example, c:\\temp\\outputGeodatabases\\copiedFGDB.gdb.",
+        "out_file_gdb.title": "Output File Geodatabase",
+        "title": "Mobile Geodatabase To File Geodatabase"
+    }
+}

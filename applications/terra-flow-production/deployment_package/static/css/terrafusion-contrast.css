@@ -1,0 +1,223 @@
+/* TerraFusion High Contrast Mode CSS */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+  /* EXACT Module Color Variables from spec */
+  --tf-flow-aqua: #00BFD6;
+  --tf-flow-gradient: #00E3A1;
+  
+  --tf-map-green: #2E7D32;
+  --tf-map-gradient: #5CD65C;
+  
+  --tf-insight-violet: #7A1FFF;
+  --tf-insight-gradient: #C760FF;
+  
+  --tf-sketch-orange: #FF7A29;
+  --tf-sketch-gradient: #FFB366;
+  
+  --tf-levy-gold: #C49A00;
+  --tf-levy-gradient: #FFDA3B;
+  
+  /* High contrast colors */
+  --black: #000000;
+  --dark-gray: #333333;
+  --medium-gray: #555555;
+  --light-gray: #777777;
+  --white: #FFFFFF;
+  
+  /* Font variables */
+  --font-head: 'Inter', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+/* Base styling */
+body {
+  font-family: var(--font-body);
+  color: var(--black);
+  background-color: var(--white);
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-head);
+  color: var(--black);
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+/* High contrast text */
+.text-contrast {
+  color: var(--black) !important;
+  font-weight: 500;
+}
+
+.bg-white {
+  background-color: var(--white) !important;
+}
+
+/* Module Lockup - EXACT per brand spec */
+.module-lockup {
+  font-family: var(--font-head);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.module-lockup span.prefix { 
+  color: var(--black); 
+  font-weight: 700;
+}
+
+.module-lockup span.name { 
+  text-transform: uppercase; 
+  font-weight: 800;
+}
+
+/* Module-specific styles exactly as in brand guide */
+.module-flow span.name { color: var(--tf-flow-aqua); }
+.module-map span.name { color: var(--tf-map-green); }
+.module-insight span.name { color: var(--tf-insight-violet); }
+.module-sketch span.name { color: var(--tf-sketch-orange); }
+.module-levy span.name { color: var(--tf-levy-gold); }
+
+/* High contrast module cards */
+.module-card {
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  background-color: white;
+  overflow: hidden;
+  height: 100%;
+}
+
+.module-card .card-header {
+  padding: 20px;
+  border-bottom: 1px solid #E0E0E0;
+}
+
+.module-card .card-body {
+  padding: 20px;
+}
+
+.module-card.flow .card-header {
+  background-color: var(--tf-flow-aqua);
+  color: white;
+}
+
+.module-card.map .card-header {
+  background-color: var(--tf-map-green);
+  color: white;
+}
+
+.module-card.insight .card-header {
+  background-color: var(--tf-insight-violet);
+  color: white;
+}
+
+.module-card.sketch .card-header {
+  background-color: var(--tf-sketch-orange);
+  color: white;
+}
+
+.module-card.levy .card-header {
+  background-color: var(--tf-levy-gold);
+  color: white;
+}
+
+/* Button styles with exact brand colors */
+.btn-tf.flow {
+  background-color: var(--tf-flow-aqua);
+}
+
+.btn-tf.map {
+  background-color: var(--tf-map-green);
+}
+
+.btn-tf.insight {
+  background-color: var(--tf-insight-violet);
+}
+
+.btn-tf.sketch {
+  background-color: var(--tf-sketch-orange);
+}
+
+.btn-tf.levy {
+  background-color: var(--tf-levy-gold);
+}
+
+.module-card .card-title {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: white;
+}
+
+.module-card .card-subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.module-card .card-text {
+  color: var(--black);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Navigation with proper contrast */
+.nav-link {
+  color: var(--dark-gray);
+  font-weight: 600;
+}
+
+.nav-link:hover,
+.nav-link:focus {
+  color: var(--black);
+}
+
+.nav-link.active {
+  color: var(--black);
+  font-weight: 700;
+}
+
+/* High-contrast buttons */
+.btn-tf {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-family: var(--font-head);
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  color: white;
+}
+
+.btn-tf.flow { background-color: var(--tf-flow-aqua); }
+.btn-tf.map { background-color: var(--tf-map-green); }
+.btn-tf.insight { background-color: var(--tf-insight-violet); }
+.btn-tf.sketch { background-color: var(--tf-sketch-orange); }
+.btn-tf.levy { background-color: var(--tf-levy-gold); }
+
+.btn-tf:hover {
+  opacity: 0.9;
+  color: white;
+}
+
+/* Footer styling */
+.footer {
+  background-color: #F5F5F5;
+  padding: 1.5rem 0;
+  border-top: 1px solid #E0E0E0;
+}
+
+.footer a {
+  color: var(--tf-flow-aqua);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}

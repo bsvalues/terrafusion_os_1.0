@@ -1,0 +1,57 @@
+Objective:
+Enhance the synchronization process by integrating a comprehensive Data Sanitization Framework and an Enhanced Notification/Alerting System.
+
+Tasks to Implement:
+
+1. Data Sanitization Framework:
+
+Create a DataSanitizer class that implements configurable, rule-based sanitization strategies.
+
+Implement sanitization rules for different field types (e.g., personal data, credentials, address, financial).
+
+Log every sanitization action for auditing purposes (via a sanitization log).
+
+Integrate this sanitizer into the data synchronization pipeline so that before any data is written to non-production (training) databases, sensitive fields are appropriately masked, nullified, or transformed.
+
+2. Enhanced Notification/Alerting System:
+
+Develop a SyncNotificationManager class supporting multiple notification channels (e.g., email, SMS, Slack, system logs) with severity-based routing.
+
+Configure the manager to send notifications upon key sync events, including:
+
+Successful completion of sync jobs.
+
+Failures or errors during sync operations.
+
+Detection of synchronization conflicts (e.g., conflict counts from the SyncConflict table).
+
+Format messages to include key contextual metadata such as job IDs, timestamps, and conflict details.
+
+3. Testing for Conflict Resolution and Notifications:
+
+Expand your automated test suite with unit tests for both the DataSanitizer and the SyncNotificationManager.
+
+Write integration tests to simulate full synchronization scenarios, including:
+
+Generation and detection of conflicts.
+
+Verifying that sensitive data is sanitized before insertion.
+
+Confirming that notifications are triggered correctly and routed based on severity.
+
+Implementation Details:
+
+Use the existing APScheduler-based scheduling mechanism and ensure all jobs continue to run within the proper Flask application context via the with_app_context decorator.
+
+Leverage the current database models (including SyncConflict and the updated FieldConfiguration) to manage conflict detection and resolution as part of the synchronization process.
+
+Ensure that each new module logs detailed events that tie into the centralized logging/monitoring infrastructure.
+
+Testing and Deployment:
+
+Prior to deployment, run a full suite of pre‑deployment tests to ensure connectivity, data integrity, and operational correctness of the new features.
+
+After deployment, run post‑deployment tests and verify via the verification dashboard that notifications are being sent and sensitive data is properly sanitized.
+
+Action:
+Please begin by implementing the Data Sanitization Framework and the Enhanced Notification/Alerting System as described, including integration into the sync process and the necessary automated tests. Report back detailed test results and logs for any issues encountered, so that the system can automatically rollback if critical errors occur.

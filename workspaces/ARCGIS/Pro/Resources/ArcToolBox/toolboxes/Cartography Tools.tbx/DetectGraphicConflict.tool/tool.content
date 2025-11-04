@@ -1,0 +1,55 @@
+{
+    "type": "FunctionTool",
+    "guid": "{b4c53fc0-cb08-4801-86fe-cbbb3949e96c}",
+    "displayname": "$rc:title",
+    "helpcontent": "10020001",
+    "description": "$rc:description",
+    "product": "300",
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPLayer"
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "conflict_features": {
+            "displayname": "$rc:conflict_features.title",
+            "datatype": {
+                "type": "GPLayer"
+            },
+            "description": "$rc:conflict_features.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "conflict_distance": {
+            "type": "optional",
+            "displayname": "$rc:conflict_distance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "0 Points",
+            "description": "$rc:conflict_distance.descr"
+        },
+        "line_connection_allowance": {
+            "type": "optional",
+            "displayname": "$rc:line_connection_allowance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "1 Points",
+            "description": "$rc:line_connection_allowance.descr"
+        }
+    },
+    "environments": [
+        "cartographicCoordinateSystem",
+        "cartographicPartitions",
+        "referenceScale"
+    ]
+}

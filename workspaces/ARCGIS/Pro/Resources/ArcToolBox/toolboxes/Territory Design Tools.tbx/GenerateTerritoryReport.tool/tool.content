@@ -1,0 +1,187 @@
+{
+    "type": "FunctionTool",
+    "guid": "{e9543149-0982-473d-9119-932d9b0fd656}",
+    "displayname": "$rc:title",
+    "helpcontent": "67020010",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "33"
+    ],
+    "params": {
+        "in_territory_solution": {
+            "displayname": "$rc:in_territory_solution.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPGroupLayer"
+                    },
+                    {
+                        "type": "DEFeatureDataset"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "description": "$rc:in_territory_solution.descr"
+        },
+        "level": {
+            "displayname": "$rc:level.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ALL_LEVELS",
+                        "code": "$rc:level.domain.ALL_LEVELS"
+                    }
+                ]
+            },
+            "depends": [
+                "in_territory_solution"
+            ],
+            "description": "$rc:level.descr"
+        },
+        "report_type": {
+            "type": "optional",
+            "displayname": "$rc:report_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "TERRITORY_SUMMARY",
+                        "code": "$rc:report_type.domain.TERRITORY_SUMMARY"
+                    },
+                    {
+                        "value": "COMPARE_TERRITORIES",
+                        "code": "$rc:report_type.domain.COMPARE_TERRITORIES"
+                    },
+                    {
+                        "value": "REALIGNMENT",
+                        "code": "$rc:report_type.domain.REALIGNMENT"
+                    },
+                    {
+                        "value": "REALIGNMENT_DETAILED",
+                        "code": "$rc:report_type.domain.REALIGNMENT_DETAILED"
+                    }
+                ]
+            },
+            "description": "$rc:report_type.descr"
+        },
+        "report_folder": {
+            "type": "optional",
+            "displayname": "$rc:report_folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:report_folder.descr"
+        },
+        "report_title": {
+            "type": "optional",
+            "displayname": "$rc:report_title.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:report_title.descr"
+        },
+        "report_format": {
+            "type": "optional",
+            "displayname": "$rc:report_format.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PDF",
+                        "code": "$rc:report_format.domain.PDF"
+                    },
+                    {
+                        "value": "XLSX",
+                        "code": "$rc:report_format.domain.XLSX"
+                    },
+                    {
+                        "value": "HTML",
+                        "code": "$rc:report_format.domain.HTML"
+                    },
+                    {
+                        "value": "ZIP",
+                        "code": "$rc:report_format.domain.ZIP"
+                    },
+                    {
+                        "value": "CSV",
+                        "code": "$rc:report_format.domain.CSV"
+                    }
+                ]
+            },
+            "description": "$rc:report_format.descr"
+        },
+        "comparison_territory_solution": {
+            "type": "optional",
+            "displayname": "$rc:comparison_territory_solution.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPGroupLayer"
+                    },
+                    {
+                        "type": "DEFeatureDataset"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "description": "$rc:comparison_territory_solution.descr"
+        },
+        "comparison_level": {
+            "type": "optional",
+            "displayname": "$rc:comparison_level.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ALL_LEVELS",
+                        "code": "$rc:comparison_level.domain.ALL_LEVELS"
+                    }
+                ]
+            },
+            "depends": [
+                "comparison_territory_solution"
+            ],
+            "description": "$rc:comparison_level.descr"
+        },
+        "output_report": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_report.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "DEFile"
+                }
+            },
+            "depends": [
+                "report_folder"
+            ]
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

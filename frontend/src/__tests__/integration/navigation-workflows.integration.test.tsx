@@ -36,28 +36,28 @@ import { Button } from '@/components/ui/button';
  */
 const SettingsTabs = () => {
   return (
-    <Tabs defaultValue="account" className="w-full">
+    <Tabs defaultValue='account' className='w-full'>
       <TabsList>
-        <TabsTrigger value="account">Account</TabsTrigger>
-        <TabsTrigger value="security">Security</TabsTrigger>
-        <TabsTrigger value="notifications">Notifications</TabsTrigger>
-        <TabsTrigger value="billing">Billing</TabsTrigger>
+        <TabsTrigger value='account'>Account</TabsTrigger>
+        <TabsTrigger value='security'>Security</TabsTrigger>
+        <TabsTrigger value='notifications'>Notifications</TabsTrigger>
+        <TabsTrigger value='billing'>Billing</TabsTrigger>
       </TabsList>
-      <TabsContent value="account">
+      <TabsContent value='account'>
         <Card>
           <CardHeader>
             <CardTitle>Account Settings</CardTitle>
           </CardHeader>
           <CardContent>
             <p>Manage your account information and preferences.</p>
-            <div className="mt-4">
-              <label htmlFor="username">Username</label>
-              <input id="username" type="text" defaultValue="johndoe" />
+            <div className='mt-4'>
+              <label htmlFor='username'>Username</label>
+              <input id='username' type='text' defaultValue='johndoe' />
             </div>
           </CardContent>
         </Card>
       </TabsContent>
-      <TabsContent value="security">
+      <TabsContent value='security'>
         <Card>
           <CardHeader>
             <CardTitle>Security Settings</CardTitle>
@@ -68,32 +68,34 @@ const SettingsTabs = () => {
           </CardContent>
         </Card>
       </TabsContent>
-      <TabsContent value="notifications">
+      <TabsContent value='notifications'>
         <Card>
           <CardHeader>
             <CardTitle>Notification Preferences</CardTitle>
           </CardHeader>
           <CardContent>
             <p>Configure how you receive notifications.</p>
-            <div className="space-y-2">
+            <div className='space-y-2'>
               <label>
-                <input type="checkbox" defaultChecked /> Email notifications
+                <input type='checkbox' defaultChecked /> Email notifications
               </label>
               <label>
-                <input type="checkbox" /> SMS notifications
+                <input type='checkbox' /> SMS notifications
               </label>
             </div>
           </CardContent>
         </Card>
       </TabsContent>
-      <TabsContent value="billing">
+      <TabsContent value='billing'>
         <Card>
           <CardHeader>
             <CardTitle>Billing Information</CardTitle>
           </CardHeader>
           <CardContent>
             <p>Manage your subscription and payment methods.</p>
-            <p className="mt-2">Current Plan: <strong>Pro</strong></p>
+            <p className='mt-2'>
+              Current Plan: <strong>Pro</strong>
+            </p>
           </CardContent>
         </Card>
       </TabsContent>
@@ -106,47 +108,49 @@ const SettingsTabs = () => {
  */
 const FAQAccordion = () => {
   return (
-    <Accordion type="single" collapsible className="w-full">
-      <AccordionItem value="item-1">
+    <Accordion type='single' collapsible className='w-full'>
+      <AccordionItem value='item-1'>
         <AccordionTrigger>How do I create an account?</AccordionTrigger>
         <AccordionContent>
           <p>
-            To create an account, click the "Sign Up" button in the top right corner.
-            Fill out the registration form with your email and password.
+            To create an account, click the "Sign Up" button in the top right corner. Fill out the
+            registration form with your email and password.
           </p>
-          <Button className="mt-2" size="sm">Sign Up Now</Button>
+          <Button className='mt-2' size='sm'>
+            Sign Up Now
+          </Button>
         </AccordionContent>
       </AccordionItem>
-      <AccordionItem value="item-2">
+      <AccordionItem value='item-2'>
         <AccordionTrigger>What payment methods do you accept?</AccordionTrigger>
         <AccordionContent>
           <p>We accept the following payment methods:</p>
-          <ul className="list-disc ml-5 mt-2">
+          <ul className='list-disc ml-5 mt-2'>
             <li>Credit Cards (Visa, MasterCard, Amex)</li>
             <li>PayPal</li>
             <li>Bank Transfer</li>
           </ul>
         </AccordionContent>
       </AccordionItem>
-      <AccordionItem value="item-3">
+      <AccordionItem value='item-3'>
         <AccordionTrigger>How do I cancel my subscription?</AccordionTrigger>
         <AccordionContent>
           <p>
-            You can cancel your subscription at any time from your account settings.
-            Go to Billing → Subscription → Cancel Plan.
+            You can cancel your subscription at any time from your account settings. Go to Billing →
+            Subscription → Cancel Plan.
           </p>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className='mt-2 text-sm text-gray-500'>
             Note: You will retain access until the end of your billing period.
           </p>
         </AccordionContent>
       </AccordionItem>
-      <AccordionItem value="item-4">
+      <AccordionItem value='item-4'>
         <AccordionTrigger>Is there a free trial available?</AccordionTrigger>
         <AccordionContent>
-          <p>
-            Yes! We offer a 14-day free trial for all new users. No credit card required.
-          </p>
-          <Button className="mt-2" size="sm">Start Free Trial</Button>
+          <p>Yes! We offer a 14-day free trial for all new users. No credit card required.</p>
+          <Button className='mt-2' size='sm'>
+            Start Free Trial
+          </Button>
         </AccordionContent>
       </AccordionItem>
     </Accordion>
@@ -158,18 +162,16 @@ const FAQAccordion = () => {
  */
 const NestedAccordion = () => {
   return (
-    <Accordion type="single" collapsible>
-      <AccordionItem value="category-1">
+    <Accordion type='single' collapsible>
+      <AccordionItem value='category-1'>
         <AccordionTrigger>Product Information</AccordionTrigger>
         <AccordionContent>
-          <Accordion type="single" collapsible>
-            <AccordionItem value="sub-1-1">
+          <Accordion type='single' collapsible>
+            <AccordionItem value='sub-1-1'>
               <AccordionTrigger>Features</AccordionTrigger>
-              <AccordionContent>
-                Comprehensive feature list including A, B, and C.
-              </AccordionContent>
+              <AccordionContent>Comprehensive feature list including A, B, and C.</AccordionContent>
             </AccordionItem>
-            <AccordionItem value="sub-1-2">
+            <AccordionItem value='sub-1-2'>
               <AccordionTrigger>Pricing</AccordionTrigger>
               <AccordionContent>
                 Starting at $9.99/month with annual discounts available.
@@ -178,7 +180,7 @@ const NestedAccordion = () => {
           </Accordion>
         </AccordionContent>
       </AccordionItem>
-      <AccordionItem value="category-2">
+      <AccordionItem value='category-2'>
         <AccordionTrigger>Support</AccordionTrigger>
         <AccordionContent>
           <p>Contact our support team 24/7.</p>
@@ -201,22 +203,24 @@ const StatefulTabNavigation = ({ onTabChange }: { onTabChange: (tab: string) => 
 
   return (
     <div>
-      <p>Current Tab: <span data-testid="current-tab">{activeTab}</span></p>
+      <p>
+        Current Tab: <span data-testid='current-tab'>{activeTab}</span>
+      </p>
       <Tabs value={activeTab} onValueChange={handleTabChange}>
         <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="details">Details</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value='overview'>Overview</TabsTrigger>
+          <TabsTrigger value='details'>Details</TabsTrigger>
+          <TabsTrigger value='analytics'>Analytics</TabsTrigger>
         </TabsList>
-        <TabsContent value="overview">
+        <TabsContent value='overview'>
           <h3>Overview Content</h3>
           <p>This is the overview section.</p>
         </TabsContent>
-        <TabsContent value="details">
+        <TabsContent value='details'>
           <h3>Details Content</h3>
           <p>This is the details section.</p>
         </TabsContent>
-        <TabsContent value="analytics">
+        <TabsContent value='analytics'>
           <h3>Analytics Content</h3>
           <p>This is the analytics section.</p>
         </TabsContent>
@@ -250,7 +254,9 @@ describe('Integration: Tabs Navigation Workflow', () => {
     it('should integrate card component within tab content', () => {
       render(<SettingsTabs />);
 
-      const accountCard = screen.getByRole('heading', { name: /account settings/i }).closest('.card');
+      const accountCard = screen
+        .getByRole('heading', { name: /account settings/i })
+        .closest('.card');
       expect(accountCard).toBeInTheDocument();
     });
   });
@@ -272,7 +278,9 @@ describe('Integration: Tabs Navigation Workflow', () => {
 
       // Switch to notifications
       await user.click(screen.getByRole('tab', { name: /notifications/i }));
-      expect(screen.getByRole('heading', { name: /notification preferences/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { name: /notification preferences/i })
+      ).toBeInTheDocument();
 
       // Switch to billing
       await user.click(screen.getByRole('tab', { name: /billing/i }));
@@ -382,7 +390,10 @@ describe('Integration: Tabs Navigation Workflow', () => {
       await user.click(securityTab);
 
       expect(securityTab).toHaveAttribute('aria-selected', 'true');
-      expect(screen.getByRole('tab', { name: /account/i })).toHaveAttribute('aria-selected', 'false');
+      expect(screen.getByRole('tab', { name: /account/i })).toHaveAttribute(
+        'aria-selected',
+        'false'
+      );
     });
   });
 });
@@ -396,7 +407,9 @@ describe('Integration: Accordion Navigation Workflow', () => {
     it('should render all accordion items', () => {
       render(<FAQAccordion />);
 
-      expect(screen.getByRole('button', { name: /how do i create an account/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /how do i create an account/i })
+      ).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /what payment methods/i })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /how do i cancel/i })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /is there a free trial/i })).toBeInTheDocument();
@@ -568,7 +581,7 @@ describe('Integration: Accordion Navigation Workflow', () => {
       render(<FAQAccordion />);
 
       const trigger = screen.getByRole('button', { name: /how do i create an account/i });
-      
+
       // Collapsed state
       expect(trigger).toHaveAttribute('aria-expanded', 'false');
 
@@ -586,24 +599,24 @@ describe('Integration: Accordion Navigation Workflow', () => {
 describe('Integration: Combined Navigation Patterns', () => {
   const CombinedNavigation = () => (
     <div>
-      <Tabs defaultValue="tab1">
+      <Tabs defaultValue='tab1'>
         <TabsList>
-          <TabsTrigger value="tab1">Tab 1</TabsTrigger>
-          <TabsTrigger value="tab2">Tab 2</TabsTrigger>
+          <TabsTrigger value='tab1'>Tab 1</TabsTrigger>
+          <TabsTrigger value='tab2'>Tab 2</TabsTrigger>
         </TabsList>
-        <TabsContent value="tab1">
-          <Accordion type="single" collapsible>
-            <AccordionItem value="item-1">
+        <TabsContent value='tab1'>
+          <Accordion type='single' collapsible>
+            <AccordionItem value='item-1'>
               <AccordionTrigger>Section 1</AccordionTrigger>
               <AccordionContent>Content for Section 1 in Tab 1</AccordionContent>
             </AccordionItem>
-            <AccordionItem value="item-2">
+            <AccordionItem value='item-2'>
               <AccordionTrigger>Section 2</AccordionTrigger>
               <AccordionContent>Content for Section 2 in Tab 1</AccordionContent>
             </AccordionItem>
           </Accordion>
         </TabsContent>
-        <TabsContent value="tab2">
+        <TabsContent value='tab2'>
           <p>Tab 2 content with regular text</p>
         </TabsContent>
       </Tabs>

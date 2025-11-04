@@ -1,0 +1,14 @@
+/* $Id: st_point.sts,v 1.5.1.0, 2008-03-10 23:16:09Z, Kevin Watt$ 
+$NoKeywords$ */ 
+CREATE OR REPLACE Type &1..st_point 
+        OID 'A618FA8DD1D84E13B35784E171530101'
+        under &1..st_geometry 
+        --C_Type_Release 1001
+(
+  constructor Function st_point(geom_str varchar2,srid number) Return self AS result deterministic,
+  constructor Function st_point(pt_x number,pt_y number,srid number) Return self AS result deterministic,
+  constructor Function st_point(pt_x number,pt_y number,pt_z number,srid number) Return self AS result deterministic,
+  constructor Function st_point(pt_x number,pt_y number,pt_z number,measure number,srid number) Return self AS result deterministic,
+  static Function get_release Return number
+) NOT final;
+/

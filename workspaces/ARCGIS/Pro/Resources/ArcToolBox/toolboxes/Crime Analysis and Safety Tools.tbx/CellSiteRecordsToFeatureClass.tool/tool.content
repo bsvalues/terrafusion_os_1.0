@@ -1,0 +1,341 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\CellSiteRecordsToFeatureClass",
+    "displayname": "$rc:title",
+    "helpcontent": "75010002",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_table": {
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "out_site_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_site_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "symbologylayer": "cellSites.lyrx",
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_site_feature_class.descr"
+        },
+        "out_sector_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_sector_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "symbologylayer": "cellSectors.lyrx",
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_sector_feature_class.descr"
+        },
+        "id_fields": {
+            "displayname": "$rc:id_fields.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:id_fields.dt.title1"
+                    },
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:id_fields.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "UNIQUE_ID",
+                                "code": "$rc:id_fields.domain.item1.UNIQUE_ID"
+                            },
+                            {
+                                "value": "SITE_ID",
+                                "code": "$rc:id_fields.domain.item1.SITE_ID"
+                            },
+                            {
+                                "value": "SECTOR_ID",
+                                "code": "$rc:id_fields.domain.item1.SECTOR_ID"
+                            },
+                            {
+                                "value": "SWITCH_ID",
+                                "code": "$rc:id_fields.domain.item1.SWITCH_ID"
+                            },
+                            {
+                                "value": "LAC_ID",
+                                "code": "$rc:id_fields.domain.item1.LAC_ID"
+                            },
+                            {
+                                "value": "CASCADE_ID",
+                                "code": "$rc:id_fields.domain.item1.CASCADE_ID"
+                            },
+                            {
+                                "value": "CELL_ID",
+                                "code": "$rc:id_fields.domain.item1.CELL_ID"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Short",
+                            "Long",
+                            "Float",
+                            "Double",
+                            "Text",
+                            "BigInteger"
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:id_fields.descr"
+        },
+        "x_field": {
+            "displayname": "$rc:x_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:x_field.descr"
+        },
+        "y_field": {
+            "displayname": "$rc:y_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:y_field.descr"
+        },
+        "in_coordinate_system": {
+            "displayname": "$rc:in_coordinate_system.title",
+            "datatype": {
+                "type": "GPCoordinateSystem"
+            },
+            "value": "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]",
+            "description": "$rc:in_coordinate_system.descr"
+        },
+        "out_coordinate_system": {
+            "displayname": "$rc:out_coordinate_system.title",
+            "datatype": {
+                "type": "GPCoordinateSystem"
+            },
+            "description": "$rc:out_coordinate_system.descr"
+        },
+        "azimuth_field": {
+            "type": "optional",
+            "displayname": "$rc:azimuth_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Text",
+                    "Float",
+                    "Double",
+                    "BigInteger"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:azimuth_field.descr"
+        },
+        "default_azimuth": {
+            "type": "optional",
+            "displayname": "$rc:default_azimuth.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "360"
+            },
+            "value": "0",
+            "description": "$rc:default_azimuth.descr"
+        },
+        "beamwidth_field": {
+            "type": "optional",
+            "displayname": "$rc:beamwidth_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Text",
+                    "Float",
+                    "Double",
+                    "BigInteger"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:beamwidth_field.descr"
+        },
+        "beamwidth_type": {
+            "type": "optional",
+            "displayname": "$rc:beamwidth_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "FULL_BEAMWIDTH",
+                        "code": "$rc:beamwidth_type.domain.FULL_BEAMWIDTH"
+                    },
+                    {
+                        "value": "HALF_BEAMWIDTH",
+                        "code": "$rc:beamwidth_type.domain.HALF_BEAMWIDTH"
+                    }
+                ]
+            },
+            "value": "FULL_BEAMWIDTH",
+            "description": "$rc:beamwidth_type.descr"
+        },
+        "default_beamwidth": {
+            "type": "optional",
+            "displayname": "$rc:default_beamwidth.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "360"
+            },
+            "value": "90",
+            "description": "$rc:default_beamwidth.descr"
+        },
+        "radius_field": {
+            "type": "optional",
+            "displayname": "$rc:radius_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Text",
+                    "Float",
+                    "Double",
+                    "BigInteger"
+                ]
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:radius_field.descr"
+        },
+        "radius_unit": {
+            "type": "optional",
+            "displayname": "$rc:radius_unit.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "KILOMETERS",
+                        "code": "$rc:radius_unit.domain.KILOMETERS"
+                    },
+                    {
+                        "value": "METERS",
+                        "code": "$rc:radius_unit.domain.METERS"
+                    },
+                    {
+                        "value": "MILESINT",
+                        "code": "$rc:radius_unit.domain.MILESINT"
+                    },
+                    {
+                        "value": "YARDSINT",
+                        "code": "$rc:radius_unit.domain.YARDSINT"
+                    },
+                    {
+                        "value": "FEETINT",
+                        "code": "$rc:radius_unit.domain.FEETINT"
+                    },
+                    {
+                        "value": "MILES",
+                        "code": "$rc:radius_unit.domain.MILES"
+                    },
+                    {
+                        "value": "YARDS",
+                        "code": "$rc:radius_unit.domain.YARDS"
+                    },
+                    {
+                        "value": "FEET",
+                        "code": "$rc:radius_unit.domain.FEET"
+                    }
+                ]
+            },
+            "value": "MILES",
+            "description": "$rc:radius_unit.descr"
+        },
+        "default_radius_length": {
+            "type": "optional",
+            "displayname": "$rc:default_radius_length.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "2",
+            "description": "$rc:default_radius_length.descr"
+        }
+    },
+    "environments": [
+        "MDomain",
+        "MResolution",
+        "MTolerance",
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "ZDomain",
+        "ZResolution",
+        "ZTolerance",
+        "autoCommit",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "maintainAttachments",
+        "outputCoordinateSystem",
+        "outputMFlag",
+        "outputZFlag",
+        "outputZValue",
+        "qualifiedFieldNames",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

@@ -1,0 +1,91 @@
+{
+    "type": "FunctionTool",
+    "guid": "{8b0fe023-d5e1-4de1-8c4f-0043c4c7d688}",
+    "displayname": "$rc:title",
+    "helpcontent": "11000013",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "6"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "in_rasters": {
+            "displayname": "$rc:in_rasters.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "GPRasterLayer"
+                        },
+                        {
+                            "type": "GPMosaicLayer"
+                        }
+                    ]
+                }
+            },
+            "description": "$rc:in_rasters.descr"
+        },
+        "out_table": {
+            "direction": "out",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "description": "$rc:out_table.descr"
+        },
+        "out_raster_names_table": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_raster_names_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "description": "$rc:out_raster_names_table.descr"
+        },
+        "add_warning_field": {
+            "type": "optional",
+            "displayname": "$rc:add_warning_field.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ADD_WARNING_FIELD"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_ADD_WARNING_FIELD"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:add_warning_field.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

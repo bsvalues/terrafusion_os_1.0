@@ -1,0 +1,40 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\ConvertSpatialWeightsMatrixtoTable",
+    "displayname": "$rc:title",
+    "helpcontent": "9050009",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "Input_Spatial_Weights_Matrix_File": {
+            "displayname": "$rc:input_spatial_weights_matrix_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "swm",
+                    "gwt"
+                ]
+            },
+            "description": "$rc:input_spatial_weights_matrix_file.descr"
+        },
+        "Output_Table": {
+            "direction": "out",
+            "displayname": "$rc:output_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:output_table.descr"
+        }
+    },
+    "environments": [
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

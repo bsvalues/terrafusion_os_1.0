@@ -1,9 +1,9 @@
 /**
  * Terrafusion CSS Engine - PhD-Level Intelligent CSS Architecture
- * 
+ *
  * Transforms static CSS conditionals into dynamic, AI-responsive design system
  * Integrates with Terrafusion OS for real-time performance adaptation
- * 
+ *
  * @author Terrafusion AI Team
  * @version 1.0.0
  * @license Government Use Only
@@ -55,21 +55,21 @@ export class TerraFusionCSSEngine {
   private performanceObserver: PerformanceObserver;
   private updateQueue: Set<string> = new Set();
   private isUpdating = false;
-  
+
   // CSS Custom Properties Registry
   private cssProperties: Map<string, string> = new Map();
-  
+
   // Conditional CSS Rules Registry
   private conditionalRules: CSSConditional[] = [];
-  
+
   constructor() {
     this.state = {
       performance: this.initializePerformanceMetrics(),
       aiAgents: new Map(),
       userPreferences: new Map(),
-      systemCapabilities: new Map()
+      systemCapabilities: new Map(),
     };
-    
+
     this.cssStyleSheet = this.createStyleSheet();
     this.performanceObserver = this.initializePerformanceObserver();
     this.initializeSignalR();
@@ -86,7 +86,7 @@ export class TerraFusionCSSEngine {
       cpuUsage: 0.3,
       networkLatency: 50,
       renderTime: 16,
-      performanceIndex: 0.8
+      performanceIndex: 0.8,
     };
   }
 
@@ -100,11 +100,11 @@ export class TerraFusionCSSEngine {
     const observer = new PerformanceObserver((list) => {
       this.updatePerformanceMetrics(list.getEntries());
     });
-    
-    observer.observe({ 
-      entryTypes: ['measure', 'navigation', 'paint', 'layout-shift'] 
+
+    observer.observe({
+      entryTypes: ['measure', 'navigation', 'paint', 'layout-shift'],
     });
-    
+
     return observer;
   }
 
@@ -140,21 +140,21 @@ export class TerraFusionCSSEngine {
         name: '--tf-performance-index',
         syntax: '<number>',
         initialValue: '0.8',
-        inherits: true
+        inherits: true,
       });
 
       CSS.registerProperty({
         name: '--tf-fps-current',
         syntax: '<number>',
         initialValue: '60',
-        inherits: true
+        inherits: true,
       });
 
       CSS.registerProperty({
         name: '--tf-memory-usage',
         syntax: '<number>',
         initialValue: '0.5',
-        inherits: true
+        inherits: true,
       });
 
       // AI Agent properties
@@ -162,14 +162,14 @@ export class TerraFusionCSSEngine {
         name: '--tf-quantum-coherence',
         syntax: '<number>',
         initialValue: '1.0',
-        inherits: true
+        inherits: true,
       });
 
       CSS.registerProperty({
         name: '--tf-agent-count-active',
         syntax: '<integer>',
         initialValue: '0',
-        inherits: true
+        inherits: true,
       });
     }
   }
@@ -182,18 +182,18 @@ export class TerraFusionCSSEngine {
       // Performance-based conditionals
       {
         pattern: /var\(--tf-performance-index\)\s*>\s*([\d.]+)\s*\?\s*([^:]+)\s*:\s*([^;]+);/g,
-        property: 'various'
+        property: 'various',
       },
-      // Status-based conditionals  
+      // Status-based conditionals
       {
         pattern: /var\(--node-status\)\s*==\s*"([^"]+)"\s*\?\s*([^:]+)\s*:\s*([^;]+);/g,
-        property: 'various'
+        property: 'various',
       },
       // Memory-based conditionals
       {
         pattern: /var\(--tf-memory-usage\)\s*[<>]=?\s*([\d.]+)\s*\?\s*([^:]+)\s*:\s*([^;]+);/g,
-        property: 'various'
-      }
+        property: 'various',
+      },
     ];
 
     // Extract conditionals from CSS files
@@ -203,28 +203,28 @@ export class TerraFusionCSSEngine {
   private extractConditionalsFromCSS(): void {
     // This will be populated by scanning the CSS files
     // For now, we'll register common patterns
-    
+
     this.conditionalRules.push(
       {
         condition: 'performance.performanceIndex > 0.8',
         trueValue: 'smooth',
         falseValue: 'auto',
         property: 'scroll-behavior',
-        selector: ':root'
+        selector: ':root',
       },
       {
         condition: 'performance.memoryUsage > 0.8',
         trueValue: 'none',
         falseValue: 'auto',
         property: 'pointer-events',
-        selector: '.tf-memory-expensive'
+        selector: '.tf-memory-expensive',
       },
       {
         condition: 'performance.fps >= 55',
         trueValue: 'hsl(120 100% 60%)',
         falseValue: 'hsl(0 100% 60%)',
         property: 'color',
-        selector: '.tf-fps-indicator'
+        selector: '.tf-fps-indicator',
       }
     );
   }
@@ -235,22 +235,22 @@ export class TerraFusionCSSEngine {
     // Calculate FPS
     const now = performance.now();
     this.state.performance.fps = this.calculateFPS(entries);
-    
+
     // Estimate memory usage (simplified)
     if ('memory' in performance) {
       const memory = (performance as any).memory;
       this.state.performance.memoryUsage = memory.usedJSHeapSize / memory.jsHeapSizeLimit;
     }
-    
+
     // Update performance index (composite metric)
     this.state.performance.performanceIndex = this.calculatePerformanceIndex();
-    
+
     this.queueCSSUpdate('performance');
   }
 
   private calculateFPS(entries: PerformanceEntry[]): number {
     // Simplified FPS calculation
-    const paintEntries = entries.filter(entry => entry.entryType === 'paint');
+    const paintEntries = entries.filter((entry) => entry.entryType === 'paint');
     if (paintEntries.length > 0) {
       return Math.min(60, 1000 / paintEntries[paintEntries.length - 1].duration);
     }
@@ -259,13 +259,13 @@ export class TerraFusionCSSEngine {
 
   private calculatePerformanceIndex(): number {
     const { fps, memoryUsage, cpuUsage, networkLatency } = this.state.performance;
-    
+
     // Weighted performance calculation
     const fpsScore = Math.min(fps / 60, 1);
     const memoryScore = 1 - memoryUsage;
     const networkScore = Math.max(0, 1 - networkLatency / 1000);
-    
-    return (fpsScore * 0.4 + memoryScore * 0.3 + networkScore * 0.3);
+
+    return fpsScore * 0.4 + memoryScore * 0.3 + networkScore * 0.3;
   }
 
   private updateAIAgentState(agentId: string, state: AIAgentState): void {
@@ -282,7 +282,7 @@ export class TerraFusionCSSEngine {
 
   private queueCSSUpdate(category: string): void {
     this.updateQueue.add(category);
-    
+
     if (!this.isUpdating) {
       this.isUpdating = true;
       requestAnimationFrame(() => this.processCSSUpdates());
@@ -293,13 +293,12 @@ export class TerraFusionCSSEngine {
     try {
       // Update CSS custom properties
       this.updateCSSCustomProperties();
-      
+
       // Evaluate conditional rules
       this.evaluateConditionalRules();
-      
+
       // Apply optimizations
       this.applyPerformanceOptimizations();
-      
     } catch (error) {
       console.error('❌ CSS update failed:', error);
     } finally {
@@ -310,25 +309,34 @@ export class TerraFusionCSSEngine {
 
   private updateCSSCustomProperties(): void {
     const root = document.documentElement;
-    
+
     // Performance properties
-    root.style.setProperty('--tf-performance-index', this.state.performance.performanceIndex.toString());
+    root.style.setProperty(
+      '--tf-performance-index',
+      this.state.performance.performanceIndex.toString()
+    );
     root.style.setProperty('--tf-fps-current', this.state.performance.fps.toString());
     root.style.setProperty('--tf-memory-usage', this.state.performance.memoryUsage.toString());
     root.style.setProperty('--tf-cpu-usage', this.state.performance.cpuUsage.toString());
-    root.style.setProperty('--tf-network-latency', this.state.performance.networkLatency.toString());
-    
+    root.style.setProperty(
+      '--tf-network-latency',
+      this.state.performance.networkLatency.toString()
+    );
+
     // AI Agent properties
-    const activeAgents = Array.from(this.state.aiAgents.values()).filter(agent => agent.status === 'active');
+    const activeAgents = Array.from(this.state.aiAgents.values()).filter(
+      (agent) => agent.status === 'active'
+    );
     root.style.setProperty('--tf-agent-count-active', activeAgents.length.toString());
-    
+
     // Calculate average coherence
-    const avgCoherence = activeAgents.reduce((sum, agent) => sum + agent.coherence, 0) / activeAgents.length || 1;
+    const avgCoherence =
+      activeAgents.reduce((sum, agent) => sum + agent.coherence, 0) / activeAgents.length || 1;
     root.style.setProperty('--tf-quantum-coherence', avgCoherence.toString());
   }
 
   private evaluateConditionalRules(): void {
-    this.conditionalRules.forEach(rule => {
+    this.conditionalRules.forEach((rule) => {
       const value = this.evaluateCondition(rule.condition) ? rule.trueValue : rule.falseValue;
       this.applyCSSRule(rule.selector, rule.property, value);
     });
@@ -340,15 +348,17 @@ export class TerraFusionCSSEngine {
       const context = {
         performance: this.state.performance,
         aiAgents: this.state.aiAgents,
-        userPreferences: this.state.userPreferences
+        userPreferences: this.state.userPreferences,
       };
-      
+
       // Simple condition evaluation (can be enhanced with a proper parser)
-      return new Function('context', `
+      return new Function(
+        'context',
+        `
         const { performance, aiAgents, userPreferences } = context;
         return ${condition};
-      `)(context);
-      
+      `
+      )(context);
     } catch (error) {
       console.warn('⚠️ Condition evaluation failed:', condition, error);
       return false;
@@ -379,7 +389,7 @@ export class TerraFusionCSSEngine {
 
   private applyPerformanceOptimizations(): void {
     const { performanceIndex, memoryUsage, fps } = this.state.performance;
-    
+
     // Progressive enhancement based on performance
     if (performanceIndex < 0.5) {
       // Low performance mode
@@ -390,7 +400,7 @@ export class TerraFusionCSSEngine {
       document.documentElement.classList.add('tf-high-performance');
       document.documentElement.classList.remove('tf-low-performance');
     }
-    
+
     // Memory management
     if (memoryUsage > 0.8) {
       document.documentElement.classList.add('tf-memory-constrained');
@@ -435,6 +445,6 @@ export const useTerraFusionCSS = () => {
     engine: terraFusionCSS,
     performance: terraFusionCSS.getPerformanceMetrics(),
     aiAgents: terraFusionCSS.getAIAgentStates(),
-    updatePreference: terraFusionCSS.updateUserPreference.bind(terraFusionCSS)
+    updatePreference: terraFusionCSS.updateUserPreference.bind(terraFusionCSS),
   };
 };

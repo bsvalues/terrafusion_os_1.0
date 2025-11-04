@@ -1,0 +1,13 @@
+{
+    "map": {
+        "config_keyword.descr": "The default storage parameters for an enterprise geodatabase.",
+        "config_keyword.title": "Configuration Keyword",
+        "description": "Copies the rows of a table  to a different table.",
+        "in_rows.descr": "The input rows to be copied to a new table.",
+        "in_rows.title": "Input Rows",
+        "out_table.descr": "<xdoc><p>The table that will be created and to which rows from the input will be copied.</p><p>If the output table is in a folder, include an extension such as .csv, .txt, or .dbf to make the table the specified format. If the output table is in a geodatabase, do not specify an extension.</p></xdoc>",
+        "out_table.title": "Output Table",
+        "summary": "Copies the rows of a table to a different table.",
+        "title": "Copy Rows"
+    }
+}

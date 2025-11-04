@@ -1,0 +1,85 @@
+You are the Terrafusion Orchestrator Agent. Your goal is to consolidate multiple repositories into a unified Terrafusion Platform monorepo, harmonize CI/CD, centralize docs, automate releases, stabilize the plugin marketplace, and prepare for a production‐grade marketplace launch. Proceed as follows:
+
+1. Import Legacy Repos via Git Subtree
+   - For each existing repo (e.g., bsvalues/BCBSLevy, bsvalues/PropertyTaxAI):
+     ```
+     git remote add bsvalues-<name> https://github.com/bsvalues/<RepoName>.git
+     git fetch bsvalues-<name>
+     git subtree add --prefix=packages/<name> bsvalues-<name> main --squash
+     ```
+    [oai_citation:9‡Atlassian](https://www.atlassian.com/git/tutorials/git-subtree?utm_source=chatgpt.com)  
+
+2. Initialize Turborepo for Incremental Monorepo
+   - Install Turborepo: `npm install -D turbo`
+   - Create `turbo.json` at root:
+     ```json
+     {
+       "pipeline": {
+         "build": {"dependsOn": ["^build"], "outputs": ["dist/**"]},
+         "lint": {},
+         "test": {}
+       }
+     }
+     ```
+   - Add `pnpm-workspace.yaml` for pnpm workspaces covering `apps/*` and `packages/*`  [oai_citation:10‡Turborepo](https://turbo.build/docs/getting-started/add-to-existing-repository?utm_source=chatgpt.com)  
+
+3. Configure Reusable CI/CD Workflows
+   - In `.github/workflows/ci.yml`, define reusable workflows:
+     ```yaml
+     name: CI
+     on: [push, pull_request]
+     jobs:
+       lint:
+         uses: ./.github/workflows/reusable-lint.yml
+         with:
+           paths: '**/*.{ts,js,py}'
+       test:
+         uses: ./.github/workflows/reusable-test.yml
+       security-scan:
+         uses: ./.github/workflows/reusable-scan.yml
+     ```
+   - Create `reusable-lint.yml`, `reusable-test.yml`, `reusable-scan.yml` under `.github/workflows`  [oai_citation:11‡GitHub Docs](https://docs.github.com/en/actions/sharing-automations/reusing-workflows?utm_source=chatgpt.com)  
+
+4. Consolidate Documentation with Docusaurus
+   - Scaffold multi‐instance docs: `npx create-docusaurus@latest docs classic`
+   - In `docs/docusaurus.config.js`, enable multiple sidebars (e.g., `admin`, `developer`, `user`) and mount at `/admin/*`, `/dev/*`, `/user/*`  [oai_citation:12‡The GitHub Blog](https://github.blog/developer-skills/github/using-reusable-workflows-github-actions/?utm_source=chatgpt.com)  
+
+5. Automate Package Releases with semantic-release
+   - Install: `npm install -D semantic-release @semantic-release/changelog @semantic-release/git`
+   - Add in `package.json`:
+     ```json
+     "release": {
+       "branches": ["main"],
+       "plugins": [
+         "@semantic-release/commit-analyzer",
+         "@semantic-release/release-notes-generator",
+         "@semantic-release/changelog",
+         ["@semantic-release/npm", {"npmPublish": false}],
+         "@semantic-release/git"
+       ]
+     }
+     ```
+   - Create a `release` job in CI to run `npx semantic-release`  [oai_citation:13‡npm](https://www.npmjs.com/package/semantic-release-monorepo/v/6.0.2?utm_source=chatgpt.com)  
+
+6. Stabilize Plugin Marketplace Interface
+   - Define plugin manifest schema in `packages/plugin-loader/src/manifest-schema.ts`
+   - On load, verify Cryptographic signature (`cosign`) and `peerVersion` SemVer  [oai_citation:14‡Documentation](https://docs.stripe.com/connect/design-an-integration?utm_source=chatgpt.com)  
+   - Integrate Stripe Connect for paid plugins:
+     - Use Stripe’s Connect integration guide to onboard sellers and manage payouts  [oai_citation:15‡Documentation](https://docs.stripe.com/connect/design-an-integration?utm_source=chatgpt.com)  
+
+7. Build Developer Portal
+   - Create an Internal Developer Portal (IDP) using Next.js or Docusaurus:
+     - Follow DX best practices: clear IA, persona‐driven journeys, governance roles  [oai_citation:16‡Document360](https://document360.com/blog/api-developer-portal-examples/?utm_source=chatgpt.com)  
+     - Expose self‐service Golden Paths via documented API and CLI commands  [oai_citation:17‡Wikipedia](https://en.wikipedia.org/wiki/Platform_engineering?utm_source=chatgpt.com)  
+
+8. Define Marketplace MVP Launch Plan
+   - Clarify problem and ICP, identify minimal buyer/seller features: search, listings, checkout, reviews  [oai_citation:18‡nauticalcommerce.com](https://www.nauticalcommerce.com/blog/multivendor-marketplace-mvp?utm_source=chatgpt.com)  
+   - Implement subscription and commission models via Stripe Billing  
+   - Outline go-to-market steps: invite pilot counties, seed sellers, marketing landing page  
+
+9. Final Validation & Cut-Over Rehearsal
+   - Run staging load test with synthetic traffic against Benton staging DB  
+   - Monitor Grafana SLO dashboards: target p95 <500 ms, error rate <1%  
+   - Verify DLQ failures ≤1% over 24 h  
+
+Finish by summarizing success or reporting any errors encountered.

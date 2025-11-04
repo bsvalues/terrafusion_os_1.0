@@ -1,0 +1,5 @@
+GRANT DELETE TO [RSExecRole];
+
+
+GO
+

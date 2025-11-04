@@ -1,0 +1,79 @@
+/* $Id: st_pixeldata.sts,v 1.1, 2013-02-04 22:10:13Z, Zhiguang Han$ */
+create or replace type SE_EXTENT oid '7133FA271AE64C72B2D9962AFF82057B' wrapped 
+a000000
+1
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+d
+99 7d
+CNw7NR0WHitK1McR58K3MD3DL24wg5n0dLhc55/wv/DnUoGZzLh0K6W/m8Ayy+4JaVClgdJt
+aWc5SCL5SqiryRvse2feRA71FCLexuPn5CVX9R0BKjuIpmvfpDE=
+
+/
+create or replace type SE_COORD oid '2A0263C5363640A0B7C17108D2548D64' wrapped 
+a000000
+1
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+d
+5a 6d
+6WUaK6DGQeTDMTP21oPWZ3R2flwwg5n0dLhc55/wvzP+KMDMuHQrpb+bwDLL7glpUONpZx1I
+IvlKqKvJG+x7Z94CWm4lZ5Mu9jmmh7XzbA==
+
+/
+create or replace type ST_PIXELDATA oid '91C4F514539B48348518CE0376DCDF89' wrapped 
+a000000
+1
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+abcd
+d
+688 23b
+91sZMQ7ZHAP4CZZ+9vNzGLKgB0UwgzvDNcDWfHSKvmRQf0e4/A1JC4mPb35gp+tQDPm1bZeo
+Gp83FNdGiN2nfs0nYlgHHK9OLXhbfvaVnsOP1HcOHfOjIjnQNpfWCiJpTtXdi9l3aGebBNlT
+hMWVvbLsTGrV3P1F8jGDlnsI3aycitIwdnlJeJnMnUAjZkEiXB7lt7Be+cevtkyceD+gA0E+
+EZ82BXAq/RfHTN8cBTsOrJl0PN6xKDGs4eetyIoYHqJ/5iyjQKuIJoI8MN9Fz8srvYaohRih
+QKE6d/Wz2iozGMMfYhLpRczSn0kIWJGkn5QbiIrI/uWy5xPn7DgcwjHIR9GP9wqiEwoyHRty
+1/p8oxqfoMfDmstPZ9JdITw3GqgcoWNGUtBYUBibna8X5Jzg0TmNibRNPM+Gdw5yJvA9jv/N
+Ra21gP+GXUezA9P3TtaEm1IwgWlIb6PsHl9SrYc5Qrtu7D80mYtKBt+QPavkAGqXVOlqf2S3
+fwa+WeihL5LZX8fsv7iYh4frbPGadnLK5LAWLFBxTR/gcLSe8DNzQ1uk+U8o
+
+/

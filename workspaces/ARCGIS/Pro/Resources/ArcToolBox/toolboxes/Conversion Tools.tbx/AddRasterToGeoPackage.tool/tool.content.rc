@@ -1,0 +1,25 @@
+{
+    "map": {
+        "area_of_interest.descr": "An area of interest used to limit the area of the raster to be loaded, rather than the entire dataset.",
+        "area_of_interest.title": "Area of Interest",
+        "description": "Loads raster datasets into an OGC GeoPackage raster pyramid.",
+        "in_dataset.descr": "The raster dataset to load into the OGC GeoPackage raster pyramid.",
+        "in_dataset.title": "Input Raster",
+        "out_geopackage_raster.title": "Output GeoPackage",
+        "raster_name.descr": "The name of the output GeoPackage raster pyramid.",
+        "raster_name.title": "Raster Name",
+        "target_geopackage.descr": "The GeoPackage into which the raster dataset will be loaded.",
+        "target_geopackage.title": "Target GeoPackage",
+        "tiling_scheme.descr": "<xdoc><p>Specifies the tiling scheme.</p><ul><li><span title=\"TILED\">Tiled</span>—The spatial reference of the input raster will be maintained and tiles will be generated consistent with the GeoPackage standard. This is the default.</li><li><span title=\"ARCGISONLINE_SCHEME\">ArcGIS Online</span>— Raster tiles will be generated in a Web Mercator coordinate reference (the same scheme developed for the Army Geospatial Center).</li><li><span title=\"NSGPROFILE_SCALED_TRANSVERSE_MERCATOR\">NSG Profile Scaled Transverse Mercator</span>—A scaled transverse Mercator will be used.</li><li><span title=\"NSGPROFILE_WGS84_GEOGRAPHIC\">NSG Profile WGS84 Geographic</span>—WGS84 Geographic will be used.</li><li><span title=\"GOOGLE_EARTH_WEB_MERCATOR\">Google Earth Web Mercator</span>—Raster tiles will be created using the parameters in the Web Mercator coordinate reference.</li><li><span title=\"FROM_FILE\">Custom tiling scheme file</span>—A custom tiling scheme from a file with an XML schema definition created using the Generate Tile Cache Tiling Scheme tool will be used.</li></ul></xdoc>",
+        "tiling_scheme.domain.ARCGISONLINE_SCHEME": "ArcGIS Online",
+        "tiling_scheme.domain.FROM_FILE": "Custom tiling scheme file",
+        "tiling_scheme.domain.GOOGLE_EARTH_WEB_MERCATOR": "Google Earth Web Mercator",
+        "tiling_scheme.domain.NSGPROFILE_SCALED_TRANSVERSE_MERCATOR": "NSG Profile Scaled Transverse Mercator",
+        "tiling_scheme.domain.NSGPROFILE_WGS84_GEOGRAPHIC": "NSG Profile WGS84 Geographic",
+        "tiling_scheme.domain.TILED": "Tiled",
+        "tiling_scheme.title": "Tiling Scheme",
+        "tiling_scheme_file.descr": "<xdoc><p>A custom tiling scheme file that is required when <span class=\"esri_uicontrol\">Tiling Scheme</span> is set to <span class=\"esri_uicontrol\">Custom tiling scheme file</span>.</p></xdoc>",
+        "tiling_scheme_file.title": "Tiling Scheme File",
+        "title": "Add Raster to GeoPackage"
+    }
+}

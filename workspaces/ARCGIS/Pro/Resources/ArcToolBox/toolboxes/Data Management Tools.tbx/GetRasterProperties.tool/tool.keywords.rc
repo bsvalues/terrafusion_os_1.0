@@ -1,0 +1,8 @@
+{
+    "set": [
+        "attribute",
+        "properties",
+        "retrieve",
+        "return"
+    ]
+}

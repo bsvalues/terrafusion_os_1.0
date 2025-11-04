@@ -1,0 +1,13 @@
+{
+    "map": {
+        "description": "Creates a table of all the routes and measures at each intersection location.",
+        "in_intersection_feature_class.descr": "The input LRS intersection feature class or layer.",
+        "in_intersection_feature_class.title": "Intersection Feature Class",
+        "out_dataset.descr": "The output table to which the results will be posted.",
+        "out_dataset.title": "Output Dataset",
+        "summary": "<xdoc><p>Creates a table of all the routes and measures at each intersection location.</p><p>Learn more about generating and updating intersections in Pipeline Referencing or generating and updating intersections in Roads and Highways.</p></xdoc>",
+        "title": "Calculate Intersecting Route Measures",
+        "tvd.descr": "Filters routes that have been edited after a certain date so that intersections can be generated according to that filter.",
+        "tvd.title": "Temporal View Date"
+    }
+}

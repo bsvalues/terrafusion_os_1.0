@@ -24,17 +24,30 @@ Government. Transcended. | Turn Complexity into Clarity.
   --tf-clarity: #e0f7ff;
 
   /* Official Brand Gradients */
-  --tf-gradient-hero: linear-gradient(135deg, var(--tf-primary) 0%, var(--tf-transcend) 50%, var(--tf-accent) 100%);
+  --tf-gradient-hero: linear-gradient(
+    135deg,
+    var(--tf-primary) 0%,
+    var(--tf-transcend) 50%,
+    var(--tf-accent) 100%
+  );
   --tf-gradient-dark: linear-gradient(180deg, var(--tf-dark) 0%, #0a0f1c 100%);
-  --tf-gradient-glass: linear-gradient(135deg, rgba(0, 255, 238, 0.1) 0%, rgba(0, 153, 255, 0.05) 100%);
-  --tf-gradient-transcendence: linear-gradient(135deg, var(--tf-transcend) 0%, var(--tf-accent) 100%);
+  --tf-gradient-glass: linear-gradient(
+    135deg,
+    rgba(0, 255, 238, 0.1) 0%,
+    rgba(0, 153, 255, 0.05) 100%
+  );
+  --tf-gradient-transcendence: linear-gradient(
+    135deg,
+    var(--tf-transcend) 0%,
+    var(--tf-accent) 100%
+  );
 
   /* Government-Grade Accessibility */
   --tf-focus-ring: 2px solid var(--tf-primary);
   --tf-focus-offset: 2px;
   --tf-min-touch-target: 44px;
   --tf-contrast-ratio-aa: 4.5;
-  --tf-contrast-ratio-aaa: 7.0;
+  --tf-contrast-ratio-aaa: 7;
 
   /* Official Typography System */
   --tf-font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
@@ -93,7 +106,7 @@ Government. Transcended. | Turn Complexity into Clarity.
 }
 
 .tf-tagline::before {
-  content: "Government. Transcended.";
+  content: 'Government. Transcended.';
 }
 
 /* Official Slogan Components */
@@ -105,7 +118,7 @@ Government. Transcended. | Turn Complexity into Clarity.
 }
 
 .tf-slogan::before {
-  content: "Turn Complexity into Clarity.";
+  content: 'Turn Complexity into Clarity.';
 }
 
 /* Official Motto Display */
@@ -118,7 +131,7 @@ Government. Transcended. | Turn Complexity into Clarity.
 }
 
 .tf-motto::before {
-  content: "We do it right the first time.";
+  content: 'We do it right the first time.';
 }
 
 .tf-motto:hover {
@@ -130,7 +143,8 @@ Government. Transcended. | Turn Complexity into Clarity.
 
 /* Transcendence Pulse Animation */
 @keyframes transcendPulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
     box-shadow: var(--tf-shadow-glow);
   }
@@ -289,40 +303,40 @@ Government. Transcended. | Turn Complexity into Clarity.
 
 /* Loading State Messages */
 .tf-loading-message::before {
-  content: "Preparing transcendence…";
+  content: 'Preparing transcendence…';
 }
 
-.tf-loading-message[data-context="county"]::before {
-  content: "Advancing county intelligence…";
+.tf-loading-message[data-context='county']::before {
+  content: 'Advancing county intelligence…';
 }
 
-.tf-loading-message[data-context="clarity"]::before {
-  content: "Orchestrating clarity…";
+.tf-loading-message[data-context='clarity']::before {
+  content: 'Orchestrating clarity…';
 }
 
-.tf-loading-message[data-context="government"]::before {
-  content: "Elevating government operations…";
+.tf-loading-message[data-context='government']::before {
+  content: 'Elevating government operations…';
 }
 
-.tf-loading-message[data-context="transform"]::before {
-  content: "Transforming complexity…";
+.tf-loading-message[data-context='transform']::before {
+  content: 'Transforming complexity…';
 }
 
 /* Success Messages */
 .tf-success-message::before {
-  content: "Transcendence complete.";
+  content: 'Transcendence complete.';
 }
 
-.tf-success-message[data-context="county"]::before {
-  content: "Your county just got smarter.";
+.tf-success-message[data-context='county']::before {
+  content: 'Your county just got smarter.';
 }
 
-.tf-success-message[data-context="clarity"]::before {
-  content: "Clarity achieved.";
+.tf-success-message[data-context='clarity']::before {
+  content: 'Clarity achieved.';
 }
 
-.tf-success-message[data-context="progress"]::before {
-  content: "Progress feels inevitable.";
+.tf-success-message[data-context='progress']::before {
+  content: 'Progress feels inevitable.';
 }
 
 /* Error Messages - Supportive Tone */
@@ -338,12 +352,12 @@ Government. Transcended. | Turn Complexity into Clarity.
   content: "Let's clear the path—together.";
 }
 
-.tf-error-message[data-context="support"]::before {
-  content: "We anticipate, we adapt, we solve.";
+.tf-error-message[data-context='support']::before {
+  content: 'We anticipate, we adapt, we solve.';
 }
 
-.tf-error-message[data-context="help"]::before {
-  content: "Support is standing by your side.";
+.tf-error-message[data-context='help']::before {
+  content: 'Support is standing by your side.';
 }
 
 /* Empty State Messages */
@@ -354,19 +368,19 @@ Government. Transcended. | Turn Complexity into Clarity.
 }
 
 .tf-empty-state::before {
-  content: "A blank page for transformation.";
+  content: 'A blank page for transformation.';
 }
 
-.tf-empty-state[data-context="future"]::before {
-  content: "The future starts here.";
+.tf-empty-state[data-context='future']::before {
+  content: 'The future starts here.';
 }
 
-.tf-empty-state[data-context="clarity"]::before {
-  content: "Your canvas for clarity.";
+.tf-empty-state[data-context='clarity']::before {
+  content: 'Your canvas for clarity.';
 }
 
-.tf-empty-state[data-context="transcendence"]::before {
-  content: "Ready for transcendence.";
+.tf-empty-state[data-context='transcendence']::before {
+  content: 'Ready for transcendence.';
 }
 
 /* ===== ACCESSIBILITY COMPLIANCE ===== */
@@ -409,7 +423,7 @@ Government. Transcended. | Turn Complexity into Clarity.
     --tf-transcend: #00cccc;
     --tf-accent: #00aa00;
   }
-  
+
   .tf-card {
     border: 2px solid var(--tf-primary);
     background: var(--tf-light);
@@ -426,7 +440,7 @@ Government. Transcended. | Turn Complexity into Clarity.
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  
+
   .tf-transcend-pulse,
   .tf-clarity-fade,
   .tf-intelligence-ripple {
@@ -441,11 +455,11 @@ Government. Transcended. | Turn Complexity into Clarity.
   :root {
     --tf-font-size-base: 18px; /* Larger for mobile accessibility */
   }
-  
+
   .tf-card {
     padding: var(--tf-space-4);
   }
-  
+
   .tf-btn {
     min-height: 48px; /* iOS accessibility requirement */
     padding: var(--tf-space-4) var(--tf-space-6);
@@ -464,7 +478,7 @@ Government. Transcended. | Turn Complexity into Clarity.
   .tf-card:hover {
     transform: translateY(-8px);
   }
-  
+
   .tf-btn:hover {
     transform: translateY(-2px);
   }
@@ -479,13 +493,13 @@ Government. Transcended. | Turn Complexity into Clarity.
     box-shadow: none !important;
     text-shadow: none !important;
   }
-  
+
   .tf-tagline::before,
   .tf-slogan::before,
   .tf-motto::before {
     color: black !important;
   }
-  
+
   .tf-card {
     border: 1px solid #ccc;
     page-break-inside: avoid;

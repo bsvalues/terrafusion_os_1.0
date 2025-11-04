@@ -1,0 +1,40 @@
+CREATE TABLE [dbo].[_michelleo_property_20230425] (
+    [prop_id]             INT            NOT NULL,
+    [prop_type_cd]        CHAR (5)       NOT NULL,
+    [prop_create_dt]      DATETIME       NULL,
+    [ref_id1]             VARCHAR (50)   NULL,
+    [ref_id2]             VARCHAR (50)   NULL,
+    [geo_id]              VARCHAR (50)   NULL,
+    [ams_load_dt]         DATETIME       NULL,
+    [prop_cmnt]           VARCHAR (3000) NULL,
+    [prop_sic_cd]         VARCHAR (10)   NULL,
+    [dba_name]            VARCHAR (50)   NULL,
+    [alt_dba_name]        VARCHAR (50)   NULL,
+    [exmpt_reset]         CHAR (1)       NULL,
+    [gpm_irrig]           INT            NULL,
+    [utilities]           VARCHAR (50)   NULL,
+    [topography]          VARCHAR (50)   NULL,
+    [road_access]         VARCHAR (50)   NULL,
+    [other]               VARCHAR (50)   NULL,
+    [zoning]              VARCHAR (50)   NULL,
+    [remarks]             VARCHAR (3000) NULL,
+    [state_cd]            CHAR (5)       NULL,
+    [mass_created_from]   INT            NULL,
+    [simple_geo_id]       VARCHAR (50)   NULL,
+    [reference_flag]      CHAR (1)       NULL,
+    [penpad_run_id]       INT            NULL,
+    [reference_desc]      VARCHAR (64)   NULL,
+    [col_owner_id]        INT            NULL,
+    [col_agent_id]        INT            NULL,
+    [col_owner_yr]        INT            NULL,
+    [col_owner_override]  BIT            NOT NULL,
+    [col_agent_override]  BIT            NOT NULL,
+    [col_owner_update_dt] DATETIME       NULL,
+    [col_agent_update_dt] DATETIME       NULL,
+    [mass_create_run_id]  INT            NULL,
+    [col_autopay_id]      INT            NULL
+);
+
+
+GO
+

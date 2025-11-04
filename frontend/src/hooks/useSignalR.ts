@@ -36,7 +36,7 @@ export const useSignalR = (hubUrl: string): SignalRConnection => {
           accessTokenFactory: () => {
             // Get auth token from localStorage
             return localStorage.getItem('authToken') || '';
-          }
+          },
         })
         .withAutomaticReconnect()
         .configureLogging(signalR.LogLevel.Information)
@@ -63,13 +63,12 @@ export const useSignalR = (hubUrl: string): SignalRConnection => {
 
       // Start connection
       await connection.start();
-      
+
       connectionRef.current = connection;
       setConnectionState(connection.state);
       setError(null);
-      
+
       console.log('SignalR connected to:', fullHubUrl);
-      
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown connection error';
       console.error('SignalR connection failed:', errorMessage);
@@ -87,7 +86,10 @@ export const useSignalR = (hubUrl: string): SignalRConnection => {
   };
 
   const invoke = async (methodName: string, ...args: any[]): Promise<any> => {
-    if (!connectionRef.current || connectionRef.current.state !== signalR.HubConnectionState.Connected) {
+    if (
+      !connectionRef.current ||
+      connectionRef.current.state !== signalR.HubConnectionState.Connected
+    ) {
       throw new Error('SignalR connection not established');
     }
 
@@ -130,33 +132,33 @@ export const useSignalR = (hubUrl: string): SignalRConnection => {
     disconnect,
     invoke,
     on,
-    off
+    off,
   };
 };
 
 // OS Core Hub specific hook
 export const useOSCoreHub = () => {
   const signalR = useSignalR('/terrafusion/core');
-  
+
   const authenticateOS = async (countryId: string, legacySystem: string, credentials?: any) => {
     return await signalR.invoke('AuthenticateOS', {
       CountyId: countryId,
       LegacySystem: legacySystem,
-      Credentials: credentials
+      Credentials: credentials,
     });
   };
 
   const heartbeat = async (sessionId?: string) => {
     return await signalR.invoke('Heartbeat', {
       SessionId: sessionId,
-      Ts: Date.now()
+      Ts: Date.now(),
     });
   };
 
   const loadModule = async (moduleName: string, source?: string) => {
     return await signalR.invoke('LoadModule', {
       ModuleName: moduleName,
-      Source: source || 'frontend'
+      Source: source || 'frontend',
     });
   };
 
@@ -164,6 +166,6 @@ export const useOSCoreHub = () => {
     ...signalR,
     authenticateOS,
     heartbeat,
-    loadModule
+    loadModule,
   };
 };

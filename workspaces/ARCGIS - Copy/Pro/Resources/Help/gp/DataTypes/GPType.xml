@@ -1,0 +1,5 @@
+<DataType Name="GPType">
+  <DisplayName>Any Value</DisplayName>
+  <Description>A data type that accepts any value.</Description>
+</DataType>
+

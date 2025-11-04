@@ -1,0 +1,17 @@
+name: workspace-health
+on:
+  schedule: [{cron: "0 14 * * 1"}] # every Monday 06:00 PT
+  workflow_dispatch: {}
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate Health Report
+        run: |
+          python3 ops/health/generate_workspace_health.py > ops/health/report.json
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: workspace-health-report
+          path: ops/health/report.json

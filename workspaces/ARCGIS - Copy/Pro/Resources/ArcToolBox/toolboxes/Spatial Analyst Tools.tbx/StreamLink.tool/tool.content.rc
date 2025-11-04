@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Assigns unique values to sections of a raster linear network between intersections.",
+        "in_flow_direction_raster.descr": "<xdoc><p>The input raster that shows the direction of flow out of each cell.</p><p>The flow direction raster can be created using the Flow Direction tool, run using the default flow direction type D8.</p></xdoc>",
+        "in_flow_direction_raster.title": "Input flow direction raster",
+        "in_stream_raster.descr": "An input raster that represents a linear stream network.",
+        "in_stream_raster.title": "Input stream raster",
+        "out_raster.descr": "<xdoc><p>The output stream link raster.</p><p>This output is of integer type.</p></xdoc>",
+        "out_raster.title": "Output raster",
+        "title": "Stream Link"
+    }
+}

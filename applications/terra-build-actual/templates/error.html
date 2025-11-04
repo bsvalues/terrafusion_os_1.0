@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - TerraFusionBuild</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --tf-cosmic-blue: #0891b2;
+            --tf-quantum-teal: #00d2ff;
+            --tf-deep-space: #0a0f1c;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--tf-deep-space), #1a1a2e);
+            color: white;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .tf-card {
+            background: rgba(8, 145, 178, 0.1);
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0, 210, 255, 0.3);
+        }
+
+        .tf-header {
+            background: linear-gradient(135deg, var(--tf-cosmic-blue), var(--tf-quantum-teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        .tf-btn {
+            background: linear-gradient(135deg, var(--tf-cosmic-blue), var(--tf-quantum-teal));
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(0, 210, 255, 0.3);
+        }
+
+        .tf-btn:hover {
+            box-shadow: 0 8px 32px rgba(0, 210, 255, 0.4);
+            transform: translateY(-1px);
+            color: white;
+        }
+
+        .error-icon {
+            font-size: 4rem;
+            color: #ff6b6b;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid d-flex align-items-center justify-content-center min-vh-100">
+        <div class="row justify-content-center w-100">
+            <div class="col-md-6">
+                <div class="tf-card p-5 text-center">
+                    <i class="fas fa-exclamation-triangle error-icon"></i>
+                    <h1 class="tf-header mb-3">System Error</h1>
+                    <p class="lead mb-4">{{ error or 'An unexpected error occurred' }}</p>
+                    <div class="d-flex gap-3 justify-content-center">
+                        <a href="/" class="tf-btn text-decoration-none">
+                            <i class="fas fa-home me-2"></i>Return to Dashboard
+                        </a>
+                        <button class="btn btn-outline-light" onclick="history.back()">
+                            <i class="fas fa-arrow-left me-2"></i>Go Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

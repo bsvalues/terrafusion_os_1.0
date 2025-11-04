@@ -1,0 +1,12 @@
+{
+    "map": {
+        "created_before.descr": "<xdoc><p>The cutoff date for temporary network diagrams to be purged. All temporary network diagrams created before this date will be purged.</p><p>By default, the date in this dialog box is the current date.</p></xdoc>",
+        "created_before.title": "Created Before",
+        "description": "Purges temporary network diagrams related to a given utility network or trace network.",
+        "in_utility_network.descr": "The utility network or trace network data element with the temporary diagrams to be purged.",
+        "in_utility_network.title": "Input Network",
+        "out_utility_network.title": "Output Network",
+        "summary": "<xdoc><p>Purges temporary network diagrams related to a given utility network or trace network.</p><note type=\"caution\"/><p group=\"note\">This tool is an administration tool.</p></xdoc>",
+        "title": "Purge Temporary Diagrams"
+    }
+}

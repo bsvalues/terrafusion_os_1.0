@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  terrafusion-rust:
+    build: .
+    container_name: terrafusion-rust-platform
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      - RUST_LOG=info
+      - RUST_BACKTRACE=1
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./models:/app/models
+      - ./uploads:/app/uploads
+      - ./exports:/app/exports
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: terrafusion-postgres
+    environment:
+      - POSTGRES_DB=terrafusion
+      - POSTGRES_USER=terrafusion
+      - POSTGRES_PASSWORD=terrafusion_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: terrafusion-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:

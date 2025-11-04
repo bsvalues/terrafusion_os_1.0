@@ -1,0 +1,12 @@
+{
+    "set": [
+        "copy",
+        "create",
+        "image",
+        "memory",
+        "service",
+        "temporary",
+        "url",
+        "web coverage service"
+    ]
+}

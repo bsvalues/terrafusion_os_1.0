@@ -1,0 +1,37 @@
+# Default configuration for TerraFusionPro
+
+[server]
+host = "0.0.0.0"
+port = 5000
+
+[database]
+max_connections = 10
+idle_timeout_seconds = 300
+connection_timeout_seconds = 5
+
+[security]
+session_timeout_minutes = 60
+token_expiry_seconds = 3600
+hash_rounds = 12
+
+[logging]
+level = "info"
+json_format = false
+request_logging = true
+
+[auth]
+provider = "replit"
+logout_redirect_url = "/"
+
+[services]
+user_service_url = "http://localhost:5004"
+property_service_url = "http://localhost:5003"
+form_service_url = "http://localhost:5005"
+report_service_url = "http://localhost:5007"
+analysis_service_url = "http://localhost:5006"
+
+[cors]
+allowed_origins = ["*"]
+allowed_methods = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+allowed_headers = ["Content-Type", "Authorization"]
+max_age_seconds = 3600

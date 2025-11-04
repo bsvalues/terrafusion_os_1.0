@@ -1,0 +1,93 @@
+{
+    "type": "ServerTool",
+    "server": "Tools/Elevation",
+    "uri": "https://elevation.arcgis.com/arcgis/rest/services",
+    "user": "UseSSOIdentityIfPortalOwned",
+    "toolname": "SummarizeElevation",
+    "displayname": "$rc:title",
+    "helpcontent": "65010002",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "InputFeatures": {
+            "displayname": "$rc:inputfeatures.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "description": "$rc:inputfeatures.descr"
+        },
+        "FeatureIDField": {
+            "type": "optional",
+            "displayname": "$rc:featureidfield.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:featureidfield.descr"
+        },
+        "DEMResolution": {
+            "type": "optional",
+            "displayname": "$rc:demresolution.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "FINEST",
+                        "code": "$rc:demresolution.domain.FINEST"
+                    },
+                    {
+                        "value": "10m",
+                        "code": "$rc:demresolution.domain.10m"
+                    },
+                    {
+                        "value": "24m",
+                        "code": "$rc:demresolution.domain.24m"
+                    },
+                    {
+                        "value": "30m",
+                        "code": "$rc:demresolution.domain.30m"
+                    },
+                    {
+                        "value": "90m",
+                        "code": "$rc:demresolution.domain.90m"
+                    }
+                ]
+            },
+            "description": "$rc:demresolution.descr"
+        },
+        "IncludeSlopeAspect": {
+            "type": "optional",
+            "displayname": "$rc:includeslopeaspect.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SLOPE_ASPECT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_SLOPE_ASPECT"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:includeslopeaspect.descr"
+        },
+        "OutputSummary": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:outputsummary.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            }
+        }
+    }
+}

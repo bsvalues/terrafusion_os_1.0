@@ -1,0 +1,27 @@
+{
+    "map": {
+        "add_footprint.descr": "<xdoc><p>Specifies whether the footprint layer will be added to the output service.</p><ul><li>Checked—The feature class defined in the <span class=\"esri_uicontrol\">Footprint Item</span> property of the dataset will be added to the service as a sublayer. This is the default</li><li>Unchecked—The footprint layer will not be added to the service.</li></ul></xdoc>",
+        "add_footprint.title": "Add footprint layer to the service",
+        "attach_images.descr": "<xdoc><p>Specifies whether images will be added as attachments to the output service. Images can only be added as attachments when the images are on local disk or network storage.</p><ul><li>Checked—The images referenced in the <span class=\"esri_fieldname\">ImagePath</span> field of the oriented imagery dataset will be added to the service as attachments.</li><li>Unchecked—The images will not be added to the service as attachments. This is the default.</li></ul></xdoc>",
+        "attach_images.title": "Add images as attachments",
+        "description": "Generates a hosted feature service with an oriented imagery layer from an input oriented imagery dataset.",
+        "in_oriented_imagery_dataset.descr": "The input oriented imagery dataset from which the hosted feature service will be created.",
+        "in_oriented_imagery_dataset.title": "Input Oriented Imagery Dataset",
+        "out_service_item.title": "Output Service Item",
+        "params.category1": "Service Item Information",
+        "portal_folder.descr": "The folder in the ArcGIS Online or ArcGIS Enterprise portal where the service will be added.",
+        "portal_folder.title": "Portal Folder",
+        "service_name.descr": "The name of the output feature service that will be created.",
+        "service_name.title": "Output Service Name",
+        "share_with.descr": "<xdoc><p>Specifies the sharing level of the output service item.</p><ul><li><span title=\"PRIVATE\">Private</span>—Only the owner of the item will have access. This is the default.</li><li><span title=\"ORGANIZATION\">Organization</span>—All members of your organization will have access</li><li><span title=\"PUBLIC\">Public</span>—People outside your organization will have access</li></ul></xdoc>",
+        "share_with.domain.ORGANIZATION": "Organization",
+        "share_with.domain.PRIVATE": "Private",
+        "share_with.domain.PUBLIC": "Public",
+        "share_with.title": "Share With",
+        "summary.descr": "A summary of the service item",
+        "summary.title": "Summary",
+        "tags.descr": "The service item tags separated by commas.",
+        "tags.title": "Tags",
+        "title": "Generate Service From Oriented Imagery Dataset"
+    }
+}

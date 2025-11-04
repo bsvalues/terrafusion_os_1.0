@@ -1,0 +1,185 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\IncrementalSpatialAutocorrelation",
+    "displayname": "$rc:title",
+    "helpcontent": "9010005",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "Input_Features": {
+            "displayname": "$rc:input_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Multipoint",
+                    "Polygon",
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:input_features.descr"
+        },
+        "Input_Field": {
+            "displayname": "$rc:input_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "BigInteger"
+                ]
+            },
+            "depends": [
+                "Input_Features"
+            ],
+            "description": "$rc:input_field.descr"
+        },
+        "Number_of_Distance_Bands": {
+            "displayname": "$rc:number_of_distance_bands.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "2",
+                "max": "30"
+            },
+            "value": "10",
+            "description": "$rc:number_of_distance_bands.descr"
+        },
+        "Beginning_Distance": {
+            "type": "optional",
+            "displayname": "$rc:beginning_distance.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "999999999"
+            },
+            "description": "$rc:beginning_distance.descr"
+        },
+        "Distance_Increment": {
+            "type": "optional",
+            "displayname": "$rc:distance_increment.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "1.0000000000000001e-09",
+                "max": "999999999"
+            },
+            "description": "$rc:distance_increment.descr"
+        },
+        "Distance_Method": {
+            "type": "optional",
+            "displayname": "$rc:distance_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "EUCLIDEAN",
+                        "code": "$rc:distance_method.domain.EUCLIDEAN"
+                    },
+                    {
+                        "value": "MANHATTAN",
+                        "code": "$rc:distance_method.domain.MANHATTAN"
+                    }
+                ]
+            },
+            "value": "EUCLIDEAN",
+            "description": "$rc:distance_method.descr"
+        },
+        "Row_Standardization": {
+            "type": "optional",
+            "displayname": "$rc:row_standardization.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ROW_STANDARDIZATION"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_STANDARDIZATION"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:row_standardization.descr"
+        },
+        "Output_Table": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:output_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:output_table.descr"
+        },
+        "Output_Report_File": {
+            "enabled": "false",
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:output_report_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "pdf"
+                ]
+            },
+            "description": "$rc:output_report_file.descr"
+        },
+        "First_Peak": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:first_peak.title",
+            "datatype": {
+                "type": "GPDouble"
+            }
+        },
+        "Max_Peak": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:max_peak.title",
+            "datatype": {
+                "type": "GPDouble"
+            }
+        }
+    },
+    "environments": [
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

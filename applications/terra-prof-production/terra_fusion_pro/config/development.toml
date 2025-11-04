@@ -1,0 +1,20 @@
+# Development environment configuration for TerraFusionPro
+
+[server]
+port = 5000
+
+[database]
+max_connections = 5
+
+[logging]
+level = "debug"
+json_format = false
+request_logging = true
+
+[security]
+# For development, we use a shorter token expiry
+token_expiry_seconds = 86400  # 24 hours
+
+[cors]
+# In development, we allow any origin
+allowed_origins = ["*"]

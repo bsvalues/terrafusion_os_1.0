@@ -1,0 +1,1518 @@
+{% extends 'base.html' %}
+
+{% block title %}Property Assessment Map{% endblock %}
+
+{% block styles %}
+<!-- Include Leaflet CSS and JavaScript -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.css" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/assessment.css') }}" />
+<style>
+    .map-container {
+        height: calc(100vh - 150px);
+        min-height: 500px;
+        position: relative;
+    }
+    #assessment-map {
+        height: 100%;
+        width: 100%;
+        z-index: 1;
+    }
+    .map-overlay {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 999;
+        background: white;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        max-width: 300px;
+    }
+    .filter-panel {
+        margin-bottom: 15px;
+    }
+    .legend {
+        margin-top: 10px;
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 5px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+    .legend-item {
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+    }
+    .legend-color {
+        width: 20px;
+        height: 20px;
+        display: inline-block;
+        margin-right: 5px;
+    }
+    .property-popup {
+        max-width: 300px;
+    }
+    .property-popup img {
+        max-width: 100%;
+        height: auto;
+    }
+    .property-popup h4 {
+        margin-top: 10px;
+        margin-bottom: 5px;
+    }
+    .property-popup p {
+        margin-bottom: 5px;
+    }
+    .property-popup .btn {
+        margin-top: 10px;
+    }
+    #value-range-slider {
+        margin: 10px 0;
+    }
+    .map-tools {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        z-index: 999;
+        background: white;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .layer-control {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        z-index: 999;
+        background: white;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .coordinates-display {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 999;
+        background: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        font-size: 12px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+    <div class="row">
+        <div class="col-12">
+            <h2>Benton County Property Assessment Map</h2>
+            <p class="text-muted">
+                Explore property assessments throughout Benton County. Use the filters and tools to analyze property data.
+                <span class="badge bg-info">{{ property_count }} properties</span>
+            </p>
+        </div>
+    </div>
+    
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Property Filters</h5>
+                </div>
+                <div class="card-body">
+                    <form id="filter-form">
+                        <div class="mb-3">
+                            <label for="property-type" class="form-label">Property Type</label>
+                            <select id="property-type" class="form-select">
+                                <option value="">All Types</option>
+                                <option value="residential">Residential</option>
+                                <option value="commercial">Commercial</option>
+                                <option value="industrial">Industrial</option>
+                                <option value="agricultural">Agricultural</option>
+                                <option value="vacant">Vacant Land</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="assessment-year" class="form-label">Assessment Year</label>
+                            <select id="assessment-year" class="form-select">
+                                <option value="2025">2025</option>
+                                <option value="2024">2024</option>
+                                <option value="2023">2023</option>
+                                <option value="2022">2022</option>
+                                <option value="2021">2021</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="value-range-slider" class="form-label">Assessed Value Range</label>
+                            <div id="value-range-slider"></div>
+                            <div class="d-flex justify-content-between">
+                                <div id="min-value">$0</div>
+                                <div id="max-value">$2,000,000+</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="year-built-min" class="form-label">Year Built (From)</label>
+                            <input type="number" id="year-built-min" class="form-control" placeholder="Min Year" min="1800" max="2025">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="year-built-max" class="form-label">Year Built (To)</label>
+                            <input type="number" id="year-built-max" class="form-control" placeholder="Max Year" min="1800" max="2025">
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="button" id="apply-filters" class="btn btn-primary">Apply Filters</button>
+                            <button type="button" id="reset-filters" class="btn btn-secondary">Reset Filters</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Analysis Tools</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button id="toggle-heatmap" class="btn btn-outline-primary">Show Value Heatmap</button>
+                        <button id="toggle-zoning" class="btn btn-outline-primary">Show Zoning Overlay</button>
+                        <button id="generate-report" class="btn btn-outline-success">Generate Report</button>
+                        <button id="export-data" class="btn btn-outline-secondary">Export Visible Data</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="map-container">
+                <div id="assessment-map"></div>
+                
+                <div class="coordinates-display" id="coordinates">Latitude: 0.0000, Longitude: 0.0000</div>
+                
+                <div class="map-tools">
+                    <div class="btn-group" role="group">
+                        <button id="measure-tool" class="btn btn-sm btn-outline-secondary">Measure</button>
+                        <button id="draw-tool" class="btn btn-sm btn-outline-secondary">Draw</button>
+                        <button id="print-map" class="btn btn-sm btn-outline-secondary">Print</button>
+                    </div>
+                </div>
+                
+                <div class="legend" id="map-legend" style="display:none;">
+                    <h6>Assessed Value</h6>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #1a9641;"></div>
+                        <span>Under $250,000</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #a6d96a;"></div>
+                        <span>$250,000 - $500,000</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #ffffbf;"></div>
+                        <span>$500,000 - $750,000</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #fdae61;"></div>
+                        <span>$750,000 - $1,000,000</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #d7191c;"></div>
+                        <span>Over $1,000,000</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Property Detail Modal -->
+<div class="modal fade" id="property-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="property-modal-title">Property Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div id="property-details">
+                            <div class="placeholder-glow">
+                                <p class="placeholder col-12"></p>
+                                <p class="placeholder col-10"></p>
+                                <p class="placeholder col-8"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div id="detail-map" style="height: 300px;"></div>
+                    </div>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <ul class="nav nav-tabs" id="property-tabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="valuation-tab" data-bs-toggle="tab" data-bs-target="#valuation" type="button" role="tab" aria-controls="valuation" aria-selected="true">Valuation History</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="comparable-tab" data-bs-toggle="tab" data-bs-target="#comparable" type="button" role="tab" aria-controls="comparable" aria-selected="false">Comparable Properties</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="features-tab" data-bs-toggle="tab" data-bs-target="#features" type="button" role="tab" aria-controls="features" aria-selected="false">Features & Attributes</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content mt-3" id="property-tab-content">
+                            <div class="tab-pane fade show active" id="valuation" role="tabpanel" aria-labelledby="valuation-tab">
+                                <canvas id="valuation-chart" height="250"></canvas>
+                            </div>
+                            <div class="tab-pane fade" id="comparable" role="tabpanel" aria-labelledby="comparable-tab">
+                                <div id="comparable-properties">
+                                    <p class="text-muted">Loading comparable properties...</p>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="features" role="tabpanel" aria-labelledby="features-tab">
+                                <div id="property-features">
+                                    <p class="text-muted">Loading property features...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="export-property">Export Property Data</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Report Generation Modal -->
+<div class="modal fade" id="report-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Generate Assessment Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="report-form">
+                    <div class="mb-3">
+                        <label for="report-title" class="form-label">Report Title</label>
+                        <input type="text" class="form-control" id="report-title" placeholder="Benton County Assessment Report">
+                    </div>
+                    <div class="mb-3">
+                        <label for="report-type" class="form-label">Report Type</label>
+                        <select class="form-select" id="report-type">
+                            <option value="summary">Summary Report</option>
+                            <option value="detailed">Detailed Report</option>
+                            <option value="comparative">Comparative Analysis</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="report-format" class="form-label">Format</label>
+                        <select class="form-select" id="report-format">
+                            <option value="pdf">PDF</option>
+                            <option value="excel">Excel</option>
+                            <option value="csv">CSV</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Include Sections</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="include-map" checked>
+                            <label class="form-check-label" for="include-map">Map Overview</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="include-statistics" checked>
+                            <label class="form-check-label" for="include-statistics">Property Statistics</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="include-valuations" checked>
+                            <label class="form-check-label" for="include-valuations">Valuation Data</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="generate-report-btn">Generate Report</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Include Leaflet and related libraries -->
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+<script src="{{ url_for('static', filename='js/assessment_map.js') }}"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize map
+        const map = L.map('assessment-map').setView([46.2324, -119.2292], 12);
+        
+        // Add base layers
+        const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+        });
+        
+        // Create marker cluster group
+        const markers = L.markerClusterGroup();
+        
+        // Add base layer control
+        const baseLayers = {
+            "OpenStreetMap": osm,
+            "Satellite": satellite
+        };
+        
+        // Add overlay layers
+        const overlays = {
+            "Properties": markers
+        };
+        
+        L.control.layers(baseLayers, overlays).addTo(map);
+        
+        // Initialize value range slider
+        const valueSlider = document.getElementById('value-range-slider');
+        
+        noUiSlider.create(valueSlider, {
+            start: [0, 2000000],
+            connect: true,
+            range: {
+                'min': 0,
+                'max': 2000000
+            },
+            step: 10000,
+            format: {
+                to: function (value) {
+                    return parseInt(value);
+                },
+                from: function (value) {
+                    return parseInt(value);
+                }
+            }
+        });
+        
+        valueSlider.noUiSlider.on('update', function (values, handle) {
+            document.getElementById('min-value').textContent = '$' + values[0].toLocaleString();
+            document.getElementById('max-value').textContent = '$' + values[1].toLocaleString();
+        });
+        
+        // Mouse coordinate display
+        map.on('mousemove', function(e) {
+            document.getElementById('coordinates').textContent = 
+                `Latitude: ${e.latlng.lat.toFixed(6)}, Longitude: ${e.latlng.lng.toFixed(6)}`;
+        });
+        
+        // Initialize property markers
+        function loadProperties() {
+            const propertyType = document.getElementById('property-type').value;
+            const minValue = valueSlider.noUiSlider.get()[0];
+            const maxValue = valueSlider.noUiSlider.get()[1];
+            const yearBuiltMin = document.getElementById('year-built-min').value;
+            const yearBuiltMax = document.getElementById('year-built-max').value;
+            
+            // Clear existing markers
+            markers.clearLayers();
+            
+            // Build API URL with filters
+            let apiUrl = '/api/assessment/properties?';
+            
+            if (propertyType) {
+                apiUrl += `property_type=${propertyType}&`;
+            }
+            
+            if (minValue) {
+                apiUrl += `min_value=${minValue}&`;
+            }
+            
+            if (maxValue) {
+                apiUrl += `max_value=${maxValue}&`;
+            }
+            
+            if (yearBuiltMin) {
+                apiUrl += `year_built_min=${yearBuiltMin}&`;
+            }
+            
+            if (yearBuiltMax) {
+                apiUrl += `year_built_max=${yearBuiltMax}&`;
+            }
+            
+            // Fetch property data from API
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Add property markers
+                        data.properties.forEach(property => {
+                            const marker = createPropertyMarker(property);
+                            markers.addLayer(marker);
+                        });
+                        
+                        // Add markers to map
+                        map.addLayer(markers);
+                        
+                        // Update property count in UI
+                        document.querySelector('.badge').textContent = `${data.count} properties`;
+                    } else {
+                        showAlert('Error loading properties: ' + data.message, 'danger');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching properties:', error);
+                    showAlert('Failed to load properties. Please try again.', 'danger');
+                    
+                    // For demo, load sample properties if API fails
+                    loadDemoProperties();
+                });
+        }
+        
+        // Create property marker with popup
+        function createPropertyMarker(property) {
+            // Determine marker color based on property value
+            let markerColor = '#1a9641'; // Default green for low value
+            
+            if (property.assessed_value) {
+                if (property.assessed_value > 1000000) {
+                    markerColor = '#d7191c'; // Red for high value
+                } else if (property.assessed_value > 750000) {
+                    markerColor = '#fdae61'; // Orange
+                } else if (property.assessed_value > 500000) {
+                    markerColor = '#ffffbf'; // Yellow
+                } else if (property.assessed_value > 250000) {
+                    markerColor = '#a6d96a'; // Light green
+                }
+            }
+            
+            // Create custom marker icon
+            const icon = L.divIcon({
+                className: 'custom-marker',
+                html: `<div style="background-color: ${markerColor}; width: 12px; height: 12px; border-radius: 50%; border: 1px solid #333;"></div>`,
+                iconSize: [12, 12],
+                iconAnchor: [6, 6]
+            });
+            
+            // Create marker
+            const marker = L.marker([property.lat, property.lng], { icon: icon });
+            
+            // Create popup content
+            const popupContent = `
+                <div class="property-popup">
+                    <h5>${property.address || 'Unknown Address'}</h5>
+                    <p><strong>Parcel ID:</strong> ${property.parcel_id || 'N/A'}</p>
+                    <p><strong>Assessed Value:</strong> $${property.assessed_value ? property.assessed_value.toLocaleString() : 'N/A'}</p>
+                    <p><strong>Property Type:</strong> ${property.property_type ? property.property_type.charAt(0).toUpperCase() + property.property_type.slice(1) : 'N/A'}</p>
+                    <button class="btn btn-sm btn-primary property-details-btn" data-property-id="${property.id}">View Details</button>
+                </div>
+            `;
+            
+            // Bind popup to marker
+            marker.bindPopup(popupContent);
+            
+            // Add click event to marker
+            marker.on('click', function() {
+                // If the marker has a popup, bind a click event to the details button
+                setTimeout(() => {
+                    const detailsBtn = document.querySelector('.property-details-btn');
+                    if (detailsBtn) {
+                        detailsBtn.addEventListener('click', function() {
+                            const propertyId = this.getAttribute('data-property-id');
+                            showPropertyDetails(propertyId);
+                        });
+                    }
+                }, 100);
+            });
+            
+            return marker;
+        }
+        
+        // Load demo properties as a fallback
+        function loadDemoProperties() {
+            // Check if server provided sample data
+            {% if sample_data and sample_data.demo_mode %}
+            // Use sample data from server
+            const demoProperties = {{ sample_data.sample_properties|tojson }};
+            {% else %}
+            // Create some demo properties
+            const demoProperties = [
+                {
+                    id: '1',
+                    parcel_id: 'R123456789',
+                    address: '123 Main St, Kennewick',
+                    property_type: 'residential',
+                    assessed_value: 350000,
+                    lat: 46.226, lng: -119.210
+                },
+                {
+                    id: '2',
+                    parcel_id: 'R987654321',
+                    address: '456 Oak Ave, Richland',
+                    property_type: 'residential',
+                    assessed_value: 425000,
+                    lat: 46.275, lng: -119.280
+                },
+                {
+                    id: '3',
+                    parcel_id: 'C12345678',
+                    address: '789 Commerce Blvd, Kennewick',
+                    property_type: 'commercial',
+                    assessed_value: 1250000,
+                    lat: 46.215, lng: -119.235
+                },
+                {
+                    id: '4',
+                    parcel_id: 'A987654321',
+                    address: '100 Farm Rd, Prosser',
+                    property_type: 'agricultural',
+                    assessed_value: 780000,
+                    lat: 46.180, lng: -119.310
+                }
+            ];
+            {% endif %}
+            
+            // Add demo properties to map
+            demoProperties.forEach(property => {
+                const marker = createPropertyMarker(property);
+                markers.addLayer(marker);
+            });
+            
+            // Add markers to map
+            map.addLayer(markers);
+            
+            // Update property count
+            document.querySelector('.badge').textContent = `${demoProperties.length} properties`;
+        }
+        
+        // Show property details in modal
+        function showPropertyDetails(propertyId) {
+            // Show modal
+            const propertyModal = new bootstrap.Modal(document.getElementById('property-modal'));
+            propertyModal.show();
+            
+            // Set property details in modal
+            document.getElementById('property-details').innerHTML = `
+                <div class="placeholder-glow">
+                    <p class="placeholder col-12"></p>
+                    <p class="placeholder col-10"></p>
+                    <p class="placeholder col-8"></p>
+                </div>
+            `;
+            
+            // Fetch property details from API
+            fetch(`/api/assessment/properties/${propertyId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const property = data.property;
+                        
+                        // Update modal title
+                        document.getElementById('property-modal-title').textContent = property.address;
+                        
+                        // Update property details
+                        document.getElementById('property-details').innerHTML = `
+                            <h4>${property.address}</h4>
+                            <p><strong>Parcel ID:</strong> ${property.parcel_id || 'N/A'}</p>
+                            <p><strong>Owner:</strong> ${property.owner_name || 'N/A'}</p>
+                            <p><strong>Property Type:</strong> ${property.property_type ? property.property_type.charAt(0).toUpperCase() + property.property_type.slice(1) : 'N/A'}</p>
+                            <p><strong>Assessed Value:</strong> $${property.assessed_value ? property.assessed_value.toLocaleString() : 'N/A'}</p>
+                            <p><strong>Lot Size:</strong> ${formatLotSize(property.lot_size)}</p>
+                            <p><strong>Year Built:</strong> ${property.year_built || 'N/A'}</p>
+                            <p><strong>Last Purchase:</strong> ${property.purchase_date ? new Date(property.purchase_date).toLocaleDateString() : 'N/A'} 
+                                ${property.purchase_price ? '($' + property.purchase_price.toLocaleString() + ')' : ''}</p>
+                        `;
+                        
+                        // Initialize detail map
+                        initDetailMap(property);
+                        
+                        // Load valuation history
+                        loadValuationHistory(propertyId);
+                        
+                        // Load comparable properties
+                        loadComparableProperties(propertyId);
+                        
+                        // Load property features
+                        loadPropertyFeatures(property);
+                    } else {
+                        showAlert('Error loading property details: ' + data.message, 'danger');
+                        
+                        // For demo, load sample property details if API fails
+                        loadDemoPropertyDetails(propertyId);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching property details:', error);
+                    showAlert('Failed to load property details. Please try again.', 'danger');
+                    
+                    // For demo, load sample property details if API fails
+                    loadDemoPropertyDetails(propertyId);
+                });
+        }
+        
+        // Initialize detail map in property modal
+        function initDetailMap(property) {
+            if (!property.location || !property.location.coordinates) {
+                return;
+            }
+            
+            // Create detail map
+            const detailMap = L.map('detail-map').setView([
+                property.location.coordinates[1], 
+                property.location.coordinates[0]
+            ], 16);
+            
+            // Add base layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(detailMap);
+            
+            // Add property marker
+            L.marker([
+                property.location.coordinates[1], 
+                property.location.coordinates[0]
+            ]).addTo(detailMap);
+        }
+        
+        // Load valuation history for property
+        function loadValuationHistory(propertyId) {
+            fetch(`/api/assessment/valuation/${propertyId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        initValuationChart(data.valuation_history);
+                    } else {
+                        document.getElementById('valuation').innerHTML = `
+                            <div class="alert alert-warning">
+                                Error loading valuation history: ${data.message}
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching valuation history:', error);
+                    
+                    // For demo, load sample valuation history if API fails
+                    const demoHistory = generateDemoValuationHistory();
+                    initValuationChart(demoHistory);
+                });
+        }
+        
+        // Initialize valuation history chart
+        function initValuationChart(valuationHistory) {
+            // Get chart canvas
+            const ctx = document.getElementById('valuation-chart').getContext('2d');
+            
+            // Sort history by year
+            valuationHistory.sort((a, b) => a.year - b.year);
+            
+            // Create chart data
+            const chartData = {
+                labels: valuationHistory.map(val => val.year),
+                datasets: [
+                    {
+                        label: 'Total Assessed Value',
+                        data: valuationHistory.map(val => val.assessed_value),
+                        borderColor: 'rgb(65, 105, 225)',
+                        backgroundColor: 'rgba(65, 105, 225, 0.1)',
+                        fill: true
+                    },
+                    {
+                        label: 'Land Value',
+                        data: valuationHistory.map(val => val.land_value),
+                        borderColor: 'rgb(46, 139, 87)',
+                        backgroundColor: 'rgba(46, 139, 87, 0.1)',
+                        fill: true
+                    },
+                    {
+                        label: 'Improvement Value',
+                        data: valuationHistory.map(val => val.improvement_value),
+                        borderColor: 'rgb(220, 20, 60)',
+                        backgroundColor: 'rgba(220, 20, 60, 0.1)',
+                        fill: true
+                    }
+                ]
+            };
+            
+            // Create chart
+            new Chart(ctx, {
+                type: 'line',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': $' + context.raw.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Load comparable properties
+        function loadComparableProperties(propertyId) {
+            fetch(`/api/assessment/comparable-properties/${propertyId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.comparable_properties.length > 0) {
+                        // Create table to display comparable properties
+                        let html = `
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Address</th>
+                                            <th>Value</th>
+                                            <th>Lot Size</th>
+                                            <th>Year Built</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                        `;
+                        
+                        // Add rows for each comparable property
+                        data.comparable_properties.forEach(property => {
+                            html += `
+                                <tr>
+                                    <td><a href="#" class="property-link" data-property-id="${property.id}">${property.address}</a></td>
+                                    <td>$${property.assessed_value ? property.assessed_value.toLocaleString() : 'N/A'}</td>
+                                    <td>${formatLotSize(property.lot_size)}</td>
+                                    <td>${property.year_built || 'N/A'}</td>
+                                </tr>
+                            `;
+                        });
+                        
+                        html += `
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
+                        
+                        // Update UI
+                        document.getElementById('comparable').innerHTML = html;
+                        
+                        // Add click event to property links
+                        document.querySelectorAll('.property-link').forEach(link => {
+                            link.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                const propertyId = this.getAttribute('data-property-id');
+                                showPropertyDetails(propertyId);
+                            });
+                        });
+                    } else {
+                        document.getElementById('comparable').innerHTML = `
+                            <div class="alert alert-info">
+                                No comparable properties found.
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching comparable properties:', error);
+                    document.getElementById('comparable').innerHTML = `
+                        <div class="alert alert-warning">
+                            Error loading comparable properties. Please try again.
+                        </div>
+                    `;
+                });
+        }
+        
+        // Load property features
+        function loadPropertyFeatures(property) {
+            // Create table to display property features and attributes
+            let html = '';
+            
+            if (property.property_type === 'residential') {
+                // Residential specific features
+                html += `
+                    <h5>Building Details</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <tbody>
+                                <tr>
+                                    <th width="40%">Building Area</th>
+                                    <td>${formatArea(property.total_area)}</td>
+                                </tr>
+                                <tr>
+                                    <th>Bedrooms</th>
+                                    <td>${property.bedrooms || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Bathrooms</th>
+                                    <td>${property.bathrooms || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Year Built</th>
+                                    <td>${property.year_built || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Lot Size</th>
+                                    <td>${formatLotSize(property.lot_size)}</td>
+                                </tr>
+                                <tr>
+                                    <th>Zoning</th>
+                                    <td>${property.metadata && property.metadata.zoning ? property.metadata.zoning : 'N/A'}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                
+                // Additional features if available
+                if (property.features && Object.keys(property.features).length > 0) {
+                    html += `
+                        <h5 class="mt-3">Additional Features</h5>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <tbody>
+                    `;
+                    
+                    for (const [key, value] of Object.entries(property.features)) {
+                        if (key !== 'bedrooms' && key !== 'bathrooms') {
+                            html += `
+                                <tr>
+                                    <th width="40%">${key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' ')}</th>
+                                    <td>${value}</td>
+                                </tr>
+                            `;
+                        }
+                    }
+                    
+                    html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                }
+            } else if (property.property_type === 'commercial' || property.property_type === 'industrial') {
+                // Commercial/industrial specific features
+                html += `
+                    <h5>Building Details</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <tbody>
+                                <tr>
+                                    <th width="40%">Building Area</th>
+                                    <td>${formatArea(property.features && property.features.building_area ? property.features.building_area : property.total_area)}</td>
+                                </tr>
+                                <tr>
+                                    <th>Year Built</th>
+                                    <td>${property.year_built || 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Lot Size</th>
+                                    <td>${formatLotSize(property.lot_size)}</td>
+                                </tr>
+                                <tr>
+                                    <th>Zoning</th>
+                                    <td>${property.metadata && property.metadata.zoning ? property.metadata.zoning : 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Property Class</th>
+                                    <td>${property.metadata && property.metadata.property_class ? property.metadata.property_class : 'N/A'}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } else {
+                // General features for other property types
+                html += `
+                    <h5>Property Details</h5>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <tbody>
+                                <tr>
+                                    <th width="40%">Property Type</th>
+                                    <td>${property.property_type ? property.property_type.charAt(0).toUpperCase() + property.property_type.slice(1) : 'N/A'}</td>
+                                </tr>
+                                <tr>
+                                    <th>Lot Size</th>
+                                    <td>${formatLotSize(property.lot_size)}</td>
+                                </tr>
+                                <tr>
+                                    <th>Zoning</th>
+                                    <td>${property.metadata && property.metadata.zoning ? property.metadata.zoning : 'N/A'}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+            
+            // Update UI
+            document.getElementById('property-features').innerHTML = html;
+        }
+        
+        // Format lot size for display
+        function formatLotSize(sizeInSqFt) {
+            if (!sizeInSqFt) return 'N/A';
+            
+            // Convert to acres if large enough
+            if (sizeInSqFt >= 43560) {
+                const acres = (sizeInSqFt / 43560).toFixed(2);
+                return `${acres} acres (${sizeInSqFt.toLocaleString()} sq.ft.)`;
+            } else {
+                return `${sizeInSqFt.toLocaleString()} sq.ft.`;
+            }
+        }
+        
+        // Format area for display
+        function formatArea(areaInSqFt) {
+            if (!areaInSqFt) return 'N/A';
+            return `${areaInSqFt.toLocaleString()} sq.ft.`;
+        }
+        
+        // Generate demo valuation history for testing
+        function generateDemoValuationHistory() {
+            const currentYear = new Date().getFullYear();
+            const history = [];
+            
+            for (let i = 0; i < 5; i++) {
+                const year = currentYear - 4 + i;
+                const baseValue = 350000 * (1 + (i * 0.05));
+                
+                history.push({
+                    year: year,
+                    assessed_value: baseValue,
+                    land_value: baseValue * 0.3,
+                    improvement_value: baseValue * 0.7
+                });
+            }
+            
+            return history;
+        }
+        
+        // Load demo property details for testing
+        function loadDemoPropertyDetails(propertyId) {
+            // Create a demo property
+            const property = {
+                id: propertyId,
+                parcel_id: 'R123456789',
+                address: '123 Main St, Kennewick, WA 99336',
+                property_type: 'residential',
+                assessed_value: 350000,
+                lot_size: 7500,
+                total_area: 2200,
+                year_built: 1998,
+                bedrooms: 3,
+                bathrooms: 2,
+                owner_name: 'John Doe',
+                purchase_date: '2015-06-15',
+                purchase_price: 285000,
+                features: {
+                    bedrooms: 3,
+                    bathrooms: 2,
+                    garage: '2 car attached',
+                    basement: 'Finished',
+                    heating: 'Gas Forced Air',
+                    cooling: 'Central AC',
+                    fireplace: 'Yes',
+                    deck: 'Yes'
+                },
+                metadata: {
+                    zoning: 'R1 - Single Family Residential',
+                    school_district: 'Kennewick School District',
+                    flood_zone: 'No',
+                    sale_history: [
+                        { date: '2015-06-15', price: 285000 },
+                        { date: '2005-03-22', price: 210000 }
+                    ]
+                },
+                location: {
+                    type: 'Point',
+                    coordinates: [-119.210, 46.226]
+                }
+            };
+            
+            // Update modal title
+            document.getElementById('property-modal-title').textContent = property.address;
+            
+            // Update property details
+            document.getElementById('property-details').innerHTML = `
+                <h4>${property.address}</h4>
+                <p><strong>Parcel ID:</strong> ${property.parcel_id || 'N/A'}</p>
+                <p><strong>Owner:</strong> ${property.owner_name || 'N/A'}</p>
+                <p><strong>Property Type:</strong> ${property.property_type ? property.property_type.charAt(0).toUpperCase() + property.property_type.slice(1) : 'N/A'}</p>
+                <p><strong>Assessed Value:</strong> $${property.assessed_value ? property.assessed_value.toLocaleString() : 'N/A'}</p>
+                <p><strong>Lot Size:</strong> ${formatLotSize(property.lot_size)}</p>
+                <p><strong>Year Built:</strong> ${property.year_built || 'N/A'}</p>
+                <p><strong>Last Purchase:</strong> ${property.purchase_date ? new Date(property.purchase_date).toLocaleDateString() : 'N/A'} 
+                    ${property.purchase_price ? '($' + property.purchase_price.toLocaleString() + ')' : ''}</p>
+            `;
+            
+            // Initialize detail map
+            const detailMap = L.map('detail-map').setView([
+                property.location.coordinates[1], 
+                property.location.coordinates[0]
+            ], 16);
+            
+            // Add base layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(detailMap);
+            
+            // Add property marker
+            L.marker([
+                property.location.coordinates[1], 
+                property.location.coordinates[0]
+            ]).addTo(detailMap);
+            
+            // Load demo valuation history
+            const demoHistory = generateDemoValuationHistory();
+            initValuationChart(demoHistory);
+            
+            // Load property features
+            loadPropertyFeatures(property);
+            
+            // Create some demo comparable properties
+            const comparableProperties = [
+                {
+                    id: '2',
+                    address: '125 Main St, Kennewick',
+                    assessed_value: 345000,
+                    lot_size: 7200,
+                    year_built: 1997
+                },
+                {
+                    id: '3',
+                    address: '130 Main St, Kennewick',
+                    assessed_value: 362000,
+                    lot_size: 7800,
+                    year_built: 2000
+                },
+                {
+                    id: '4',
+                    address: '110 Main St, Kennewick',
+                    assessed_value: 338000,
+                    lot_size: 7100,
+                    year_built: 1995
+                }
+            ];
+            
+            // Create table to display comparable properties
+            let html = `
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th>Address</th>
+                                <th>Value</th>
+                                <th>Lot Size</th>
+                                <th>Year Built</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            // Add rows for each comparable property
+            comparableProperties.forEach(property => {
+                html += `
+                    <tr>
+                        <td><a href="#" class="property-link" data-property-id="${property.id}">${property.address}</a></td>
+                        <td>$${property.assessed_value ? property.assessed_value.toLocaleString() : 'N/A'}</td>
+                        <td>${formatLotSize(property.lot_size)}</td>
+                        <td>${property.year_built || 'N/A'}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            // Update UI
+            document.getElementById('comparable').innerHTML = html;
+            
+            // Add click event to property links
+            document.querySelectorAll('.property-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const propertyId = this.getAttribute('data-property-id');
+                    showPropertyDetails(propertyId);
+                });
+            });
+        }
+        
+        // Load zoning overlay on map
+        function loadZoningOverlay() {
+            // Check if zoning layer already exists
+            if (map.hasLayer(zoningLayer)) {
+                // Remove it if it does
+                map.removeLayer(zoningLayer);
+                return false;
+            }
+            
+            // Fetch zoning data from API
+            fetch('/api/assessment/zoning')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Create zoning layer
+                        zoningLayer = L.geoJSON(data.zoning, {
+                            style: function(feature) {
+                                // Style based on zoning type
+                                return getZoningStyle(feature.properties.zoning_type);
+                            },
+                            onEachFeature: function(feature, layer) {
+                                // Add popup for each zoning area
+                                layer.bindPopup(`
+                                    <div class="zoning-popup">
+                                        <h5>${feature.properties.zoning_type}</h5>
+                                        <p>${feature.properties.description || 'No description available'}</p>
+                                    </div>
+                                `);
+                            }
+                        }).addTo(map);
+                        
+                        // Add to overlay layers
+                        overlays["Zoning"] = zoningLayer;
+                        
+                        return true;
+                    } else {
+                        showAlert('Error loading zoning data: ' + data.message, 'danger');
+                        return false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching zoning data:', error);
+                    showAlert('Failed to load zoning data. Please try again.', 'danger');
+                    
+                    // For demo, load sample zoning data if API fails
+                    loadDemoZoning();
+                    return true;
+                });
+            
+            return true;
+        }
+        
+        // Load demo zoning data for testing
+        function loadDemoZoning() {
+            // Create demo zoning GeoJSON
+            const demoZoning = {
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "zoning_type": "R1 - Single Family Residential",
+                            "description": "Low density single family residential zone"
+                        },
+                        "geometry": {
+                            "type": "Polygon",
+                            "coordinates": [[
+                                [-119.22, 46.23],
+                                [-119.21, 46.23],
+                                [-119.21, 46.22],
+                                [-119.22, 46.22],
+                                [-119.22, 46.23]
+                            ]]
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "zoning_type": "C1 - Commercial",
+                            "description": "General commercial zone"
+                        },
+                        "geometry": {
+                            "type": "Polygon",
+                            "coordinates": [[
+                                [-119.24, 46.23],
+                                [-119.23, 46.23],
+                                [-119.23, 46.22],
+                                [-119.24, 46.22],
+                                [-119.24, 46.23]
+                            ]]
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "zoning_type": "I1 - Industrial",
+                            "description": "Light industrial zone"
+                        },
+                        "geometry": {
+                            "type": "Polygon",
+                            "coordinates": [[
+                                [-119.26, 46.23],
+                                [-119.25, 46.23],
+                                [-119.25, 46.22],
+                                [-119.26, 46.22],
+                                [-119.26, 46.23]
+                            ]]
+                        }
+                    },
+                    {
+                        "type": "Feature",
+                        "properties": {
+                            "zoning_type": "A1 - Agricultural",
+                            "description": "Agricultural zone"
+                        },
+                        "geometry": {
+                            "type": "Polygon",
+                            "coordinates": [[
+                                [-119.22, 46.25],
+                                [-119.21, 46.25],
+                                [-119.21, 46.24],
+                                [-119.22, 46.24],
+                                [-119.22, 46.25]
+                            ]]
+                        }
+                    }
+                ]
+            };
+            
+            // Create zoning layer
+            zoningLayer = L.geoJSON(demoZoning, {
+                style: function(feature) {
+                    // Style based on zoning type
+                    return getZoningStyle(feature.properties.zoning_type);
+                },
+                onEachFeature: function(feature, layer) {
+                    // Add popup for each zoning area
+                    layer.bindPopup(`
+                        <div class="zoning-popup">
+                            <h5>${feature.properties.zoning_type}</h5>
+                            <p>${feature.properties.description || 'No description available'}</p>
+                        </div>
+                    `);
+                }
+            }).addTo(map);
+            
+            // Add to overlay layers
+            overlays["Zoning"] = zoningLayer;
+        }
+        
+        // Get style for zoning based on type
+        function getZoningStyle(zoningType) {
+            // Default style
+            let color = '#808080';
+            let fillOpacity = 0.4;
+            
+            // Set color based on zoning type
+            if (zoningType.startsWith('R')) {
+                color = '#FFC0CB'; // Pink for residential
+            } else if (zoningType.startsWith('C')) {
+                color = '#FF0000'; // Red for commercial
+            } else if (zoningType.startsWith('I')) {
+                color = '#800080'; // Purple for industrial
+            } else if (zoningType.startsWith('A')) {
+                color = '#008000'; // Green for agricultural
+            } else if (zoningType.startsWith('MU')) {
+                color = '#FFA500'; // Orange for mixed-use
+            }
+            
+            return {
+                fillColor: color,
+                weight: 2,
+                opacity: 1,
+                color: 'white',
+                fillOpacity: fillOpacity
+            };
+        }
+        
+        // Show alert message
+        function showAlert(message, type) {
+            const alertContainer = document.createElement('div');
+            alertContainer.className = `alert alert-${type} alert-dismissible fade show`;
+            alertContainer.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            // Add alert to page
+            document.querySelector('.map-container').prepend(alertContainer);
+            
+            // Auto dismiss after 5 seconds
+            setTimeout(() => {
+                const alert = bootstrap.Alert.getOrCreateInstance(alertContainer);
+                alert.close();
+            }, 5000);
+        }
+        
+        // Event listeners
+        document.getElementById('apply-filters').addEventListener('click', loadProperties);
+        document.getElementById('reset-filters').addEventListener('click', function() {
+            // Reset form values
+            document.getElementById('filter-form').reset();
+            
+            // Reset value slider
+            valueSlider.noUiSlider.set([0, 2000000]);
+            
+            // Reload properties
+            loadProperties();
+        });
+        
+        // Initialize zoning layer variable
+        let zoningLayer = null;
+        
+        // Toggle zoning overlay
+        document.getElementById('toggle-zoning').addEventListener('click', function() {
+            const active = loadZoningOverlay();
+            
+            // Update button text
+            if (active) {
+                this.textContent = 'Hide Zoning Overlay';
+                this.classList.add('active');
+            } else {
+                this.textContent = 'Show Zoning Overlay';
+                this.classList.remove('active');
+            }
+        });
+        
+        // Initialize heatmap layer variable
+        let heatmapLayer = null;
+        
+        // Toggle heatmap
+        document.getElementById('toggle-heatmap').addEventListener('click', function() {
+            if (!heatmapLayer) {
+                // Load heatmap data
+                fetch('/api/assessment/properties?limit=500')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Create heatmap points
+                            const heatPoints = [];
+                            
+                            data.properties.forEach(property => {
+                                if (property.lat && property.lng && property.assessed_value) {
+                                    // Weight by assessed value
+                                    heatPoints.push([
+                                        property.lat, 
+                                        property.lng, 
+                                        property.assessed_value / 1000000 // Scale down for visibility
+                                    ]);
+                                }
+                            });
+                            
+                            // Add heatmap layer
+                            heatmapLayer = L.heatLayer(heatPoints, {
+                                radius: 25,
+                                blur: 15,
+                                maxZoom: 17,
+                                max: 2.0
+                            }).addTo(map);
+                            
+                            // Update button
+                            this.textContent = 'Hide Value Heatmap';
+                            this.classList.add('active');
+                            
+                            // Show legend
+                            document.getElementById('map-legend').style.display = 'block';
+                        } else {
+                            showAlert('Error loading heatmap data: ' + data.message, 'danger');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching heatmap data:', error);
+                        showAlert('Failed to load heatmap data. Please try again.', 'danger');
+                    });
+            } else {
+                // Remove heatmap layer
+                map.removeLayer(heatmapLayer);
+                heatmapLayer = null;
+                
+                // Update button
+                this.textContent = 'Show Value Heatmap';
+                this.classList.remove('active');
+                
+                // Hide legend
+                document.getElementById('map-legend').style.display = 'none';
+            }
+        });
+        
+        // Generate report button
+        document.getElementById('generate-report').addEventListener('click', function() {
+            const reportModal = new bootstrap.Modal(document.getElementById('report-modal'));
+            reportModal.show();
+        });
+        
+        // Report generation
+        document.getElementById('generate-report-btn').addEventListener('click', function() {
+            const title = document.getElementById('report-title').value;
+            const type = document.getElementById('report-type').value;
+            const format = document.getElementById('report-format').value;
+            
+            // Show loading indicator
+            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...';
+            this.disabled = true;
+            
+            // Simulate report generation (in real app, this would call an API)
+            setTimeout(() => {
+                this.innerHTML = 'Generate Report';
+                this.disabled = false;
+                
+                // Hide modal
+                bootstrap.Modal.getInstance(document.getElementById('report-modal')).hide();
+                
+                // Show success message
+                showAlert(`Report "${title}" has been generated successfully in ${format.toUpperCase()} format.`, 'success');
+            }, 2000);
+        });
+        
+        // Export visible data
+        document.getElementById('export-data').addEventListener('click', function() {
+            // Get current filters
+            const propertyType = document.getElementById('property-type').value;
+            const valueRange = valueSlider.noUiSlider.get();
+            
+            // Simulate export (in real app, this would call an API)
+            showAlert('Exporting data with current filters. Your download will start shortly.', 'info');
+            
+            setTimeout(() => {
+                showAlert('Export completed successfully.', 'success');
+            }, 1500);
+        });
+        
+        // Export property data
+        document.getElementById('export-property').addEventListener('click', function() {
+            // Get property ID from modal
+            const propertyId = document.querySelector('.property-link').getAttribute('data-property-id');
+            
+            // Simulate export (in real app, this would call an API)
+            showAlert('Exporting property data. Your download will start shortly.', 'info');
+            
+            setTimeout(() => {
+                showAlert('Property data exported successfully.', 'success');
+            }, 1500);
+        });
+        
+        // Initial load of properties
+        loadProperties();
+    });
+</script>
+{% endblock %}

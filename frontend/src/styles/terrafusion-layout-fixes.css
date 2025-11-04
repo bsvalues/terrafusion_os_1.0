@@ -1,0 +1,254 @@
+/* TerraFusion Layout Coordination - Elite Government Excellence */
+
+/* ═══════════════════════════════════════════════════════════════
+   QUANTUM OS LAYOUT FOUNDATION
+   ═══════════════════════════════════════════════════════════════ */
+
+.terrafusion-quantum-os {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--terra-midnight);
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+
+  /* Ensure proper stacking context */
+  z-index: 0;
+
+  /* Prevent text selection on OS level */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   VIEW MODE TOGGLE BUTTON ENHANCEMENTS
+   ═══════════════════════════════════════════════════════════════ */
+
+.terrafusion-view-toggle {
+  /* Ensure toggle button stays above all content */
+  z-index: 1100;
+
+  /* Glassmorphic enhancement */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  /* Government-grade accessibility */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.terrafusion-view-toggle:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow:
+    0 10px 25px rgba(0, 255, 255, 0.2),
+    0 0 30px rgba(0, 255, 255, 0.1);
+}
+
+.terrafusion-view-toggle:active {
+  transform: translateY(-1px) scale(1.02);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MAIN CONTENT CONTAINER OPTIMIZATION
+   ═══════════════════════════════════════════════════════════════ */
+
+.terrafusion-main-content {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+
+  /* Smooth view transitions */
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ATLAS INTEGRATION ENHANCEMENTS
+   ═══════════════════════════════════════════════════════════════ */
+
+.atlas-container {
+  /* Ensure ATLAS stays above all content but below modals */
+  z-index: 1200 !important;
+
+  /* Prevent interference with main content */
+  pointer-events: none;
+}
+
+.atlas-container * {
+  pointer-events: auto;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DESKTOP SHELL COORDINATION
+   ═══════════════════════════════════════════════════════════════ */
+
+.tf-quantum-desktop {
+  /* Ensure shell fills the allocated space properly */
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  /* Prevent conflicts with OS-level styling */
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ELITE DASHBOARD COORDINATION
+   ═══════════════════════════════════════════════════════════════ */
+
+.elite-quantum-dashboard {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+
+  /* Smooth scrolling for government excellence */
+  scroll-behavior: smooth;
+
+  /* Custom scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 255, 255, 0.3) transparent;
+}
+
+.elite-quantum-dashboard::-webkit-scrollbar {
+  width: 8px;
+}
+
+.elite-quantum-dashboard::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.elite-quantum-dashboard::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+.elite-quantum-dashboard::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 255, 0.5);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SYSTEM VALIDATOR COORDINATION
+   ═══════════════════════════════════════════════════════════════ */
+
+.elite-system-validator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+  padding: 20px;
+
+  /* Ensure validation content is readable */
+  background: linear-gradient(135deg, rgba(10, 14, 26, 0.95) 0%, rgba(30, 41, 59, 0.9) 100%);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE DESIGN ENHANCEMENTS
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1024px) {
+  .terrafusion-view-toggle {
+    top: 12px;
+    right: 12px;
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+
+  .atlas-container {
+    bottom: 16px;
+    right: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .terrafusion-view-toggle {
+    top: 8px;
+    right: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .atlas-container {
+    bottom: 12px;
+    right: 12px;
+  }
+
+  .atlas-orb {
+    width: 50px !important;
+    height: 50px !important;
+  }
+
+  .atlas-panel {
+    width: calc(100vw - 24px) !important;
+    right: -12px !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PERFORMANCE OPTIMIZATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+.terrafusion-quantum-os * {
+  /* Hardware acceleration for quantum smoothness */
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ACCESSIBILITY ENHANCEMENTS
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  .terrafusion-quantum-os *,
+  .atlas-container *,
+  .terrafusion-view-toggle {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .terrafusion-view-toggle {
+    border-width: 2px;
+    border-color: var(--terra-cyan);
+  }
+
+  .atlas-orb {
+    border-width: 3px;
+    border-color: var(--terra-cyan);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GOVERNMENT EXCELLENCE FOCUS STATES
+   ═══════════════════════════════════════════════════════════════ */
+
+.terrafusion-view-toggle:focus-visible {
+  outline: 2px solid var(--terra-cyan);
+  outline-offset: 4px;
+  box-shadow:
+    0 0 0 4px rgba(0, 255, 255, 0.2),
+    0 10px 25px rgba(0, 255, 255, 0.2);
+}
+
+.atlas-orb:focus-visible {
+  outline: 2px solid var(--terra-cyan);
+  outline-offset: 4px;
+  box-shadow:
+    0 0 0 4px rgba(0, 255, 255, 0.2),
+    0 0 30px rgba(0, 255, 255, 0.3);
+}

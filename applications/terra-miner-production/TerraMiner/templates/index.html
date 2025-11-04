@@ -1,0 +1,144 @@
+{% extends "layout.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-dark text-white">
+            <div class="card-body">
+                <h2 class="card-title">NARRPR Data Scraper</h2>
+                <p class="card-text">Automated tool for extracting property data from NARRPR and integrating with ETL workflows</p>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                    <a href="/run-scraper" class="btn btn-primary">
+                        <i data-feather="play"></i> Run Scraper
+                    </a>
+                    <a href="/reports" class="btn btn-secondary">
+                        <i data-feather="file-text"></i> View Reports
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i data-feather="log-in" class="me-2"></i>
+                    Login Automation
+                </h5>
+                <p class="card-text">Automatically logs into the NARRPR website using secured credentials. Handles session management and cookie persistence.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i data-feather="database" class="me-2"></i>
+                    Data Extraction
+                </h5>
+                <p class="card-text">Navigates through reports and property listings to extract relevant data. Captures property details, pricing, and report information.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i data-feather="refresh-cw" class="me-2"></i>
+                    ETL Integration
+                </h5>
+                <p class="card-text">Seamlessly integrates with existing ETL workflows. Exports data to CSV files and saves to database for further processing.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% if recent_activity %}
+                        {% for activity in recent_activity %}
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ activity.action }}</h6>
+                                    <small>{{ activity.timestamp }}</small>
+                                </div>
+                                <p class="mb-1">{{ activity.details }}</p>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="list-group-item">
+                            <p class="mb-0">No recent activity to display.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Quick Stats</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <i data-feather="file-text" class="me-2"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-0">Total Reports</h6>
+                                <p class="mb-0">{{ stats.total_reports|default('0') }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <i data-feather="home" class="me-2"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-0">Properties</h6>
+                                <p class="mb-0">{{ stats.total_properties|default('0') }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <i data-feather="clock" class="me-2"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-0">Last Run</h6>
+                                <p class="mb-0">{{ stats.last_run|default('Never') }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <i data-feather="check-circle" class="me-2"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-0">Success Rate</h6>
+                                <p class="mb-0">{{ stats.success_rate|default('0') }}%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

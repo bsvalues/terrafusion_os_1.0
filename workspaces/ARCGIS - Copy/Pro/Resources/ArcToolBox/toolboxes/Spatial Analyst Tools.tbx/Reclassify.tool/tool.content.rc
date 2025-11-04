@@ -1,0 +1,16 @@
+{
+    "map": {
+        "description": "Reclassifies (or changes) the values in a raster.",
+        "in_raster.descr": "The input raster to be reclassified.",
+        "in_raster.title": "Input raster",
+        "missing_values.descr": "<xdoc><p>Denotes whether missing values in the reclass table retain their value or get mapped to NoData.</p><ul><li>Unchecked—Signifies that if any cell location on the input raster contains a value that is not present or reclassed in a remap table, the value should remain intact and be written for that location to the output raster. This is the default.</li><li>Checked—Signifies that if any cell location on the input raster contains a value that is not present or reclassed in a remap table, the value will be reclassed to NoData for that location on the output raster.</li></ul></xdoc>",
+        "missing_values.title": "Change missing values to NoData",
+        "out_raster.descr": "<xdoc><p>The output reclassified raster.</p><p>The output will always be of integer type.</p></xdoc>",
+        "out_raster.title": "Output raster",
+        "reclass_field.descr": "Field denoting the values that will be reclassified.",
+        "reclass_field.title": "Reclass field",
+        "remap.descr": "<xdoc><p>A remap table that defines how the values will be reclassified. Working with the table and it options are as follows:</p><ul><li>The values of the input raster can be classified as ranges of values or as individual values. The table will be displayed with <span class=\"esri_uicontrol\">Start</span> and <span class=\"esri_uicontrol\">End</span> values or single unique values, respectively. If the input is a layer in <span class=\"esri_uicontrol\">Contents</span>, it will import the unique values or classified breaks of the symbology.</li><li>Specify the <span class=\"esri_uicontrol\">New</span> value that will be assigned in the output raster. Only integer values are supported.</li><li>Use the <span class=\"esri_uicontrol\">Classify</span> or <span class=\"esri_uicontrol\">Unique</span> options to generate a remap table based on the values of the input raster. The <span class=\"esri_uicontrol\">Classify</span> option opens a dialog and allow you to specify a method from one of the Data classification methods and number of classes. The <span class=\"esri_uicontrol\">Unique</span> option will populate the remap table using the unique values from the input dataset.</li><li>The <span class=\"esri_uicontrol\">Reverse New Values</span> option resorts the new values list (for example, 1,2,3 becomes 3,2,1).</li><li>To modify the table, new entries can be added by typing in the empty cells in the table and pressing the Enter key. This will validate the new entry and create a new, empty row for subsequent input. You can delete rows by selecting one or many rows and pressing the Delete key.</li><li>Use the load and save options to save a remap for later use and apply it to other input data or for quickly repeating an analysis.</li></ul></xdoc>",
+        "remap.title": "Reclassification",
+        "title": "Reclassify"
+    }
+}

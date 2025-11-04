@@ -1,0 +1,11 @@
+{
+    "set": [
+        "error",
+        "lag",
+        "nugget",
+        "range",
+        "semivariogram",
+        "sensitivity",
+        "sill"
+    ]
+}

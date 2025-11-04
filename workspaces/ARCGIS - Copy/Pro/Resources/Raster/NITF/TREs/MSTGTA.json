@@ -1,0 +1,205 @@
+{
+  "TRE": "MSTGTA",
+  "Source": [
+    "STDI-0002-1 v2021.1, Appendix E: ASDE"
+  ],
+  "Name": "Mission Target Information Version A",
+  "Description": "The Mission Target Information Version A (MSTGTA) TRE provides information from the collection plan associated with the image, and should identify specific targets contained within the image (however, due to collection geometry, a referenced target may not actually correspond to the area contained in the image). Use of this TRE is optional.",
+  "Size": 101,
+  "Fields": {
+    "TGT_NUM": {
+      "Name": "Pre-Planned Target Number",
+      "Description": "This field contains a number assigned to each pre-planned target, initialized at 00001. This number is recorded in the mission target support data block and the mission catalog support data block to associate the two groups of information. The same number may be assigned to multiple mission catalogs support blocks. Each mission target block shall have a unique number. 00000 = TRE is empty, where \"empty\" indicates the TRE is a placeholder not containing any actionable data and should be ignored by interpreting applications. See \"FieldRegistry\" MSTGTA TGT_NUM as defined in the main body of STDI-0002 Volume 1, paragraph 3.2 for values added through registration.",
+      "Size": 5,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 99999
+        }
+      ]
+    },
+    "TGT_ID": {
+      "Name": "Designator of Target",
+      "Description": "This field shall contain a designator for the target.",
+      "Size": 12,
+      "Format": "BCS-AN",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "TGT_BE": {
+      "Name": "Basic Encyclopedia ID",
+      "Description": "This field contains the basic encyclopedia ID / OSUFFIX (target designator) of the target.",
+      "Size": 15,
+      "Format": "BCS-AN",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "TGT_PRI": {
+      "Name": "Pre-Planned Target Priority",
+      "Description": "This field contains the pre-planned target priority. A value of 1 = top priority, 2 = second priority, etc.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 999
+        }
+      ]
+    },
+    "TGT_REQ": {
+      "Name": "Target Requester",
+      "Description": "This field shall contain an identification of authority requesting targets image.",
+      "Size": 12,
+      "Format": "BCS-AN",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "TGT_LTIOV": {
+      "Name": "Latest Time Information Value",
+      "Description": "This field shall contain the date and time, referenced in UTC, at which the information contained in the file loses all value and should be discarded. The date and time is in the format CCYYMMDDhhmm in which CCYY is the year, MM is the month (01-12), DD is the day of the month (01-31), hh is the hour (00-23), and mm is the minute (00-59).",
+      "Size": 12,
+      "Format": "BCS-N",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "DateTime"
+        }
+      ]
+    },
+    "TGT_TYPE": {
+      "Name": "Pre-Planned Target Type",
+      "Description": "This field shall contain the pre-planned target type. The value 0 = point, 1 = strip, and 2 = area.",
+      "Size": 1,
+      "Format": "BCS-N",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 9
+        }
+      ]
+    },
+    "TGT_COLL": {
+      "Name": "Pre-Planned Collection Technique",
+      "Description": "This field shall contain the pre-planned collection technique. The value 0 = vertical, 1 = forward oblique, 2 = right oblique, 3 = left oblique, 4 = best possible, and 5 to 9 = reserved.",
+      "Size": 1,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 9
+        }
+      ]
+    },
+    "TGT_CAT": {
+      "Name": "Target Functional Category Code from DIAM-65-3-1",
+      "Description": "This field contains a five character numeric code that classifies the function performed by a facility. The data code is based on an initial breakdown of targets into nine major groups, identified by the first digit: 1 = Raw Materials, 2 = Basic Processing, 3 = Basic Equipment Production, 4 = Basic Services, Research Utilities, 5 = End Products (Civilian), 6 = End Products (Military), 7 = Places, Population, Government, 8 = Air & Missile Facilities, and 9 = Military Troop Facilities. Each successive numeric character, reading from left to right, extends or delineates the definition further.",
+      "Size": 5,
+      "Format": "BCS-N",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 10000,
+          "Max": 99999
+        }
+      ]
+    },
+    "TGT_UTC": {
+      "Name": "Planned Time at Target",
+      "Description": "This field contains the planned time at the target with a format of hhmmssZ: hh = hours, mm = minutes, ss = seconds, Z = UTC time zone.",
+      "Size": 7,
+      "Format": "BCS-N",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Time"
+        }
+      ]
+    },
+    "TGT_ELEV": {
+      "Name": "Target Elevation, MSL",
+      "Description": "This field contains the planned elevation of the point target. For strip and area targets, this corresponds to the average elevation of the target area. This field is measured in feet or meters, as specified by TGT_ELEV_UNIT.",
+      "Size": 6,
+      "Format": "BCS-N",
+      "Type": "<R>",
+      "Units": [
+        "feet",
+        "meters"
+      ],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": -1000,
+          "Max": 30000
+        }
+      ]
+    },
+    "TGT_ELEV_UNIT": {
+      "Name": "Unit of Target Elevation",
+      "Description": "This field shall contain the unit of the target elevation, TGT_ELEV. The value f = feet and m = meters.",
+      "Size": 1,
+      "Format": "BCS-A",
+      "Type": "<R>",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [
+            "f",
+            "m"
+          ]
+        }
+      ]
+    },
+    "TGT_LOC": {
+      "Name": "Target Location",
+      "Description": "This field contains the planned latitude/longitude of the corresponding portion of the target. The location may be expressed in either degrees-minutes-seconds or in decimal degrees. The format ddmmss.ssX represents degrees (00 to 89), minutes (00 to 59), seconds (00 to 59), and hundredths of seconds (00 to 99) of latitude with X = N for north or S for south, and dddmmss.ssY represents degrees (000 to 179), minutes (00 to 59), seconds (00 to 59), and hundredths of seconds (00 to 99) of longitude, with Y = E for east or W for west. The format +/-dd.dddddd indicates degrees of latitude (north is positive) and +/-ddd.dddddd represents degrees of longitude (east is positive).",
+      "Size": 21,
+      "Format": "BCS-AN",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [
+            "ddmmss.ssXdddmmss.ssY"
+          ]
+        },
+        {
+          "Type": "Double"
+        }
+      ]
+    }
+  }
+}

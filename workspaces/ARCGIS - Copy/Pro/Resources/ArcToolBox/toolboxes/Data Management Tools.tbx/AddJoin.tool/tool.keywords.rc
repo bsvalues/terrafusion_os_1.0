@@ -1,0 +1,19 @@
+{
+    "set": [
+        "attribute",
+        "column",
+        "combine",
+        "common",
+        "data",
+        "field",
+        "join",
+        "joins and relates",
+        "match",
+        "move",
+        "relate",
+        "share",
+        "source",
+        "table",
+        "temporary"
+    ]
+}

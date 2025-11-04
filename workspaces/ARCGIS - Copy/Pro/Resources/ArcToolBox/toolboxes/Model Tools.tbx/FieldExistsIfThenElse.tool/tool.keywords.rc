@@ -1,0 +1,6 @@
+{
+    "set": [
+        "fieldexistsifthenelse",
+        "if field exists"
+    ]
+}

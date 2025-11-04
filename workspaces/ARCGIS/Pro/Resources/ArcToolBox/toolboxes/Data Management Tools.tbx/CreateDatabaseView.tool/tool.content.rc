@@ -1,0 +1,13 @@
+{
+    "map": {
+        "description": "Creates a view in a database based on an SQL expression.",
+        "input_database.descr": "The database that contains the tables or feature classes used to construct the view. This database is also where the view will be created.",
+        "input_database.title": "Input Workspace",
+        "out_layer.title": "Output Layer",
+        "title": "Create Database View",
+        "view_definition.descr": "An SQL statement that will be used to construct the view.",
+        "view_definition.title": "View Definition",
+        "view_name.descr": "The name of the view that will be created in the database.",
+        "view_name.title": "Output View Name"
+    }
+}

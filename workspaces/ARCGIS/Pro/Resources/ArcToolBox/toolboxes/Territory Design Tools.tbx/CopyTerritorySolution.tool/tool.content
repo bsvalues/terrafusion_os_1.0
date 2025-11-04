@@ -1,0 +1,65 @@
+{
+    "type": "FunctionTool",
+    "guid": "{d1b6dfd7-7419-4272-b3da-35a8a0478188}",
+    "displayname": "$rc:title",
+    "helpcontent": "67020011",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "33"
+    ],
+    "params": {
+        "in_territory_solution": {
+            "displayname": "$rc:in_territory_solution.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPGroupLayer"
+                    },
+                    {
+                        "type": "DEFeatureDataset"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "description": "$rc:in_territory_solution.descr"
+        },
+        "target_gdb": {
+            "displayname": "$rc:target_gdb.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "domain": {
+                "type": "GPWorkspaceDomain",
+                "workspacetype": [
+                    "Local Database"
+                ]
+            },
+            "description": "$rc:target_gdb.descr"
+        },
+        "territory_solution_name": {
+            "displayname": "$rc:territory_solution_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:territory_solution_name.descr"
+        },
+        "out_territory_solution": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_territory_solution.title",
+            "datatype": {
+                "type": "GPGroupLayer"
+            },
+            "depends": [
+                "layer_name"
+            ]
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

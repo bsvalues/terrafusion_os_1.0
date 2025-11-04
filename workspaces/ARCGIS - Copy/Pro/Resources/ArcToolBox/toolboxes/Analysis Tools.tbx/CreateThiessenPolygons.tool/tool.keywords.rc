@@ -1,0 +1,23 @@
+{
+    "set": [
+        "adjacent",
+        "area",
+        "associate",
+        "boundary",
+        "close",
+        "delaunay",
+        "distance",
+        "divide",
+        "euclidean",
+        "far",
+        "inside",
+        "near",
+        "neighbor",
+        "proximal",
+        "region",
+        "thiessen",
+        "voronoi",
+        "within",
+        "zone"
+    ]
+}

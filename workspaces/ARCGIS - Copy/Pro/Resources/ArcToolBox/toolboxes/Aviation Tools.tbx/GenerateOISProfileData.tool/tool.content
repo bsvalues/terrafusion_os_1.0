@@ -1,0 +1,149 @@
+{
+    "type": "FunctionTool",
+    "guid": "{F6243FE3-8552-4511-BBCE-F882B7099A58}/GenerateOISProfileData",
+    "displayname": "$rc:title",
+    "helpcontent": "49000007",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "53",
+        "70"
+    ],
+    "params": {
+        "in_runway_features": {
+            "display_order": "1",
+            "displayname": "$rc:in_runway_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_runway_features.descr"
+        },
+        "in_dems": {
+            "display_order": "2",
+            "displayname": "$rc:in_dems.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPRasterLayer"
+                }
+            },
+            "description": "$rc:in_dems.descr"
+        },
+        "target_ois_features": {
+            "displayname": "$rc:target_ois_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "MultiPatch"
+                ]
+            },
+            "description": "$rc:target_ois_features.descr"
+        },
+        "in_flightpath_features": {
+            "type": "optional",
+            "displayname": "$rc:in_flightpath_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_flightpath_features.descr"
+        },
+        "sampling_distance": {
+            "type": "optional",
+            "displayname": "$rc:sampling_distance.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "30",
+            "description": "$rc:sampling_distance.descr"
+        },
+        "sample_profile_ois": {
+            "type": "optional",
+            "displayname": "$rc:sample_profile_ois.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "PROFILE_OIS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_PROFILE_OIS"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:sample_profile_ois.descr"
+        },
+        "sample_profile_runways": {
+            "type": "optional",
+            "displayname": "$rc:sample_profile_runways.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "PROFILE_RUNWAY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_PROFILE_RUNWAY"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:sample_profile_runways.descr"
+        },
+        "out_ois_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_ois_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Polygon",
+                            "MultiPatch"
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "out_ois_features"
+            ]
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

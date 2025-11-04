@@ -1,0 +1,13 @@
+{
+    "map": {
+        "are_containers_preserved.title": "Preserve container layout",
+        "cell_height_absolute.title": "Cell Height",
+        "cell_width_absolute.title": "Cell Width",
+        "description": "Apply the grid layout to a diagram",
+        "in_network_diagram_layer.title": "Input Network Diagram Layer",
+        "out_network_diagram_layer.title": "Output Network Diagram",
+        "params.category1": "Advanced Options",
+        "run_async.title": "Run in asynchronous mode on the server",
+        "title": "Apply Grid Layout"
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Repairs inconsistencies in the versioning system tables of a geodatabase that contains traditional versions.",
+        "input_database.descr": "The database connection (.sde file) to the enterprise geodatabase in which versioning system table inconsistencies exist. The connection must be made as the geodatabase administrator.",
+        "input_database.title": "Input Database Connection",
+        "out_log.descr": "The output log file. The log file is an ASCII file containing the results of the repair operation.",
+        "out_log.title": "Repair Version Metadata Log",
+        "out_workspace.title": "Updated Input Workspace",
+        "title": "Repair Version Metadata"
+    }
+}

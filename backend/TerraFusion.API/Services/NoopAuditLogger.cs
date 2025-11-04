@@ -13,15 +13,29 @@ namespace TerraFusion.API.Services
             return Task.CompletedTask;
         }
 
-        public Task LogSecurityEventAsync(string eventType, string details, string userId = null)
+        public Task LogAsync(string type, object data)
         {
-            Console.WriteLine($"[NOOP-SECURITY] Type={eventType} User={userId} Details={details}");
+            try
+            {
+                var serializedData = JsonSerializer.Serialize(data);
+                Console.WriteLine($"[NOOP-AUDIT-DATA] Type={type} Data={serializedData}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[NOOP-AUDIT-ERROR] Type={type} Error={ex.Message}");
+            }
             return Task.CompletedTask;
         }
 
-        public Task LogDataAccessAsync(string resourceType, string resourceId, string action, string userId = null)
+        public Task LogSecurityEventAsync(string eventType, string details, string? userId = null)
         {
-            Console.WriteLine($"[NOOP-DATA] Resource={resourceType}/{resourceId} Action={action} User={userId}");
+            Console.WriteLine($"[NOOP-SECURITY] Type={eventType} User={userId ?? "SYSTEM"} Details={details}");
+            return Task.CompletedTask;
+        }
+
+        public Task LogDataAccessAsync(string resourceType, string resourceId, string action, string? userId = null)
+        {
+            Console.WriteLine($"[NOOP-DATA] Resource={resourceType}/{resourceId} Action={action} User={userId ?? "SYSTEM"}");
             return Task.CompletedTask;
         }
 
@@ -31,27 +45,27 @@ namespace TerraFusion.API.Services
             return Task.CompletedTask;
         }
 
-        public Task LogUserActionAsync(string action, string userId, string details = null)
+        public Task LogUserActionAsync(string action, string userId, string? details = null)
         {
-            Console.WriteLine($"[NOOP-USER] Action={action} User={userId} Details={details}");
+            Console.WriteLine($"[NOOP-USER] Action={action} User={userId} Details={details ?? "N/A"}");
             return Task.CompletedTask;
         }
 
-        public Task LogErrorAsync(string action, Exception exception, string userId = null)
+        public Task LogErrorAsync(string action, Exception exception, string? userId = null)
         {
-            Console.WriteLine($"[NOOP-ERROR] Action={action} User={userId} Error={exception?.Message}");
+            Console.WriteLine($"[NOOP-ERROR] Action={action} User={userId ?? "SYSTEM"} Error={exception?.Message}");
             return Task.CompletedTask;
         }
 
-        public Task LogApiCallAsync(string method, string path, int statusCode, double duration, string userId = null)
+        public Task LogApiCallAsync(string method, string path, int statusCode, double duration, string? userId = null)
         {
-            Console.WriteLine($"[NOOP-API] {method} {path} Status={statusCode} Duration={duration}ms User={userId}");
+            Console.WriteLine($"[NOOP-API] {method} {path} Status={statusCode} Duration={duration}ms User={userId ?? "ANONYMOUS"}");
             return Task.CompletedTask;
         }
 
-        public Task LogAuthenticationAsync(string userId, bool success, string reason = null)
+        public Task LogAuthenticationAsync(string userId, bool success, string? reason = null)
         {
-            Console.WriteLine($"[NOOP-AUTH] User={userId} Success={success} Reason={reason}");
+            Console.WriteLine($"[NOOP-AUTH] User={userId} Success={success} Reason={reason ?? "N/A"}");
             return Task.CompletedTask;
         }
 
@@ -61,9 +75,9 @@ namespace TerraFusion.API.Services
             return Task.CompletedTask;
         }
 
-        public Task LogConfigurationChangeAsync(string setting, string oldValue, string newValue, string userId = null)
+        public Task LogConfigurationChangeAsync(string setting, string oldValue, string newValue, string? userId = null)
         {
-            Console.WriteLine($"[NOOP-CONFIG] Setting={setting} Old={oldValue} New={newValue} User={userId}");
+            Console.WriteLine($"[NOOP-CONFIG] Setting={setting} Old={oldValue} New={newValue} User={userId ?? "SYSTEM"}");
             return Task.CompletedTask;
         }
     }

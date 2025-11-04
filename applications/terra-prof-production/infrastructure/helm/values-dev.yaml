@@ -1,0 +1,117 @@
+# Development environment values for TerraFusionPro Helm chart
+
+global:
+  environment: development
+  # Tag will be overridden during deployment
+  imageTag: develop
+  
+# Reduce resource usage in development
+apiGateway:
+  replicas: 1
+  resources:
+    limits:
+      cpu: 300m
+      memory: 384Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+webClient:
+  replicas: 1
+  resources:
+    limits:
+      cpu: 300m
+      memory: 384Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+propertyService:
+  replicas: 1
+  resources:
+    limits:
+      cpu: 300m
+      memory: 384Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+userService:
+  replicas: 1
+  resources:
+    limits:
+      cpu: 300m
+      memory: 384Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+formService:
+  replicas: 1
+  resources:
+    limits:
+      cpu: 300m
+      memory: 384Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+analysisService:
+  replicas: 1
+  resources:
+    limits:
+      cpu: 300m
+      memory: 384Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+reportService:
+  replicas: 1
+  resources:
+    limits:
+      cpu: 300m
+      memory: 384Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+# Development database with smaller storage
+database:
+  persistence:
+    size: 5Gi
+
+# Development ingress configuration
+ingress:
+  hosts:
+    - host: dev.app.terrafusionpro.com
+      paths:
+        - path: /
+          pathType: Prefix
+          service: web-client
+          port: 80
+    - host: dev.api.terrafusionpro.com
+      paths:
+        - path: /
+          pathType: Prefix
+          service: api-gateway
+          port: 80
+  tls:
+    - secretName: terrafusionpro-tls-dev
+      hosts:
+        - dev.app.terrafusionpro.com
+        - dev.api.terrafusionpro.com
+
+# Disable some production features in development
+metrics:
+  enabled: false
+  serviceMonitor:
+    enabled: false
+
+logging:
+  elasticsearch:
+    enabled: false
+  kibana:
+    enabled: false
+  filebeat:
+    enabled: false

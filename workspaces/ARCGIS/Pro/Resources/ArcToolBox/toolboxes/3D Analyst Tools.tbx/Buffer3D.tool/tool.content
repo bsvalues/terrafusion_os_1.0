@@ -1,0 +1,136 @@
+{
+    "type": "FunctionTool",
+    "guid": "{e93b2523-df09-4c5f-9e54-7976739dbc87}",
+    "displayname": "$rc:title",
+    "helpcontent": "5060001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Point",
+                            "Polyline"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "buffer_distance_or_field": {
+            "control_guid": "{BEDF969C-20D2-4C41-96DA-32408CA72BF6}",
+            "displayname": "$rc:buffer_distance_or_field.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPLinearUnit"
+                    },
+                    {
+                        "type": "Field"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "OID",
+                            "Short",
+                            "Long",
+                            "Float",
+                            "Double",
+                            "Text"
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:buffer_distance_or_field.descr"
+        },
+        "buffer_joint_type": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:buffer_joint_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "STRAIGHT",
+                        "code": "$rc:buffer_joint_type.domain.STRAIGHT"
+                    },
+                    {
+                        "value": "ROUND",
+                        "code": "$rc:buffer_joint_type.domain.ROUND"
+                    }
+                ]
+            },
+            "value": "STRAIGHT",
+            "description": "$rc:buffer_joint_type.descr"
+        },
+        "buffer_quality": {
+            "type": "optional",
+            "control_guid": "{7A47E79C-9734-4167-9698-BFB00F43AE41}",
+            "displayname": "$rc:buffer_quality.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "6",
+                "max": "60"
+            },
+            "value": "20",
+            "description": "$rc:buffer_quality.descr"
+        },
+        "simplification_tolerance": {
+            "type": "optional",
+            "displayname": "$rc:simplification_tolerance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:simplification_tolerance.descr"
+        }
+    },
+    "environments": [
+        "XYDomain",
+        "ZDomain",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "workspace"
+    ]
+}

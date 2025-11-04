@@ -1,0 +1,137 @@
+## Grafana Helm chart values for TerraFusionPro
+
+# Admin credentials
+adminUser: admin
+# adminPassword will be provided by secrets
+
+# Persistence
+persistence:
+  enabled: true
+  size: 10Gi
+
+# Resource configuration
+resources:
+  limits:
+    cpu: 300m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# Datasources
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      url: http://prometheus-server.monitoring.svc.cluster.local
+      access: proxy
+      isDefault: true
+    - name: Loki
+      type: loki
+      url: http://loki-gateway.logging.svc.cluster.local
+      access: proxy
+
+# Dashboard providers
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+    - name: 'default'
+      orgId: 1
+      folder: 'TerraFusionPro'
+      type: file
+      disableDeletion: false
+      editable: true
+      options:
+        path: /var/lib/grafana/dashboards/default
+
+# Predefined dashboards
+dashboards:
+  default:
+    # Kubernetes cluster monitoring
+    k8s-cluster:
+      gnetId: 7249
+      revision: 1
+      datasource: Prometheus
+    # Node monitoring
+    k8s-nodes:
+      gnetId: 11074
+      revision: 1
+      datasource: Prometheus
+    # PostgreSQL monitoring
+    postgresql:
+      gnetId: 9628
+      revision: 1
+      datasource: Prometheus
+    # TerraFusionPro API Gateway
+    api-gateway:
+      url: https://grafana.com/api/dashboards/11159/revisions/1/download
+      datasource: Prometheus
+    # TerraFusionPro Services
+    terrafusionpro-services:
+      url: https://grafana.com/api/dashboards/4701/revisions/1/download
+      datasource: Prometheus
+
+# Plugins
+plugins:
+  - grafana-piechart-panel
+  - grafana-worldmap-panel
+  - grafana-clock-panel
+  - briangann-gauge-panel
+  - natel-plotly-panel
+  - jdbranham-diagram-panel
+
+# SMTP configuration for alerts
+smtp:
+  enabled: true
+  host: smtp.example.com:587
+  user: grafana@terrafusionpro.com
+  # Password will be provided by secrets
+  fromAddress: grafana@terrafusionpro.com
+  fromName: TerraFusionPro Monitoring
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+
+# Ingress configuration
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - monitoring.terrafusionpro.com
+  tls:
+    - secretName: grafana-tls
+      hosts:
+        - monitoring.terrafusionpro.com
+
+# Pod annotations
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "3000"
+
+# Initialize Grafana with specific settings
+# These are one-time settings for Grafana at startup
+envFromSecret: grafana-secrets
+env:
+  GF_SECURITY_ALLOW_EMBEDDING: "true"
+  GF_SECURITY_COOKIE_SECURE: "true"
+  GF_SECURITY_DISABLE_GRAVATAR: "true"
+  GF_USERS_ALLOW_SIGN_UP: "false"
+  GF_USERS_AUTO_ASSIGN_ORG: "true"
+  GF_USERS_AUTO_ASSIGN_ORG_ROLE: "Viewer"
+  GF_AUTH_ANONYMOUS_ENABLED: "false"
+  GF_EXPLORE_ENABLED: "true"
+  GF_ALERTING_ENABLED: "true"
+  GF_UNIFIED_ALERTING_ENABLED: "true"
+  GF_SMTP_ENABLED: "true"
+
+# Create a custom dashboard for TerraFusionPro services
+dashboardsConfigMaps:
+  terrafusionpro: "terrafusionpro-dashboards"

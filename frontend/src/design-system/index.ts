@@ -1,9 +1,9 @@
 /**
  * TerraFusion Design System
- * 
+ *
  * Central export for the entire design system including tokens, components,
  * hooks, and utilities.
- * 
+ *
  * @module design-system
  */
 

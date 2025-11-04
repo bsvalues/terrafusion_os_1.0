@@ -1,0 +1,15 @@
+{
+    "map": {
+        "aspect_field.descr": "The field containing aspect values.",
+        "aspect_field.title": "Aspect Field",
+        "class_breaks_table.descr": "An input table containing the classification breaks that will be used to classify the output feature class.",
+        "class_breaks_table.title": "Class Breaks Table",
+        "description": "Extracts the directional orientation  of input TIN to an output polygon feature class.",
+        "in_tin.descr": "The input TIN.",
+        "in_tin.title": "Input TIN",
+        "out_feature_class.descr": "The output feature class.",
+        "out_feature_class.title": "Output Feature Class",
+        "summary": "<xdoc><p>Extracts the directional orientation of input TIN to an output polygon feature class.</p><note type=\"legacy\"/><p group=\"note\">This is a deprecated tool that has been superseded by the Surface Aspect tool.</p></xdoc>",
+        "title": "TIN Aspect"
+    }
+}

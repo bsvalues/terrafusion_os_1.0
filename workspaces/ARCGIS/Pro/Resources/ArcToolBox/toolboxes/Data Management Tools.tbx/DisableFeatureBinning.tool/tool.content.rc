@@ -1,0 +1,9 @@
+{
+    "map": {
+        "description": "Disables database computed feature binning on a feature class.",
+        "in_features.descr": "The feature class for which database computed feature binning will be disabled.",
+        "in_features.title": "Input Features",
+        "out_features.title": "Updated Features",
+        "title": "Disable Feature Binning"
+    }
+}

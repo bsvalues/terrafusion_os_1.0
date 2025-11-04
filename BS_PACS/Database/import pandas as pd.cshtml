@@ -1,0 +1,17 @@
+import pandas as pd
+
+def process_csv(file_path, required_columns):
+    # Read the CSV file
+    data = pd.read_csv(file_path)
+
+    # Validate required columns
+    missing_columns = [col for col in required_columns if col not in data.columns]
+    if missing_columns:
+        raise ValueError(f"Missing columns: {missing_columns}")
+
+    # Example: Add transformations (convert sq ft to acres)
+    if 'Lot Size' in data.columns:
+        data['Lot Size (ac)'] = data['Lot Size'] / 43560  # Convert sq ft to acres
+
+    return data
+

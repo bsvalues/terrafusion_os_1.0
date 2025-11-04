@@ -1,0 +1,59 @@
+{
+    "type": "FunctionTool",
+    "guid": "{a908085b-9d49-4541-932a-a86b9103e6ca}",
+    "displayname": "$rc:title",
+    "helpcontent": "3010015",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "input_data_change",
+        "param_nocount:in_table"
+    ],
+    "params": {
+        "in_table": {
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "domain": {
+                "type": "GPTablesDomain",
+                "hidejoinedlayers": "true",
+                "showonlystandalonetables": "false"
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "field_name": {
+            "type": "optional",
+            "displayname": "$rc:field_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:field_name.descr"
+        },
+        "out_table": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "depends": [
+                "in_table"
+            ]
+        }
+    }
+}

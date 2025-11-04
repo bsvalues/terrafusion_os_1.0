@@ -1,0 +1,143 @@
+{
+  "type" : "CIMLayerDocument",
+  "version" : "3.2.0",
+  "build" : 48852,
+  "layers" : [
+    "CIMPATH=map/graphics_layer.json"
+  ],
+  "layerDefinitions" : [
+    {
+      "type" : "CIMGraphicsLayer",
+      "name" : "Exposure-Response Function",
+      "uRI" : "CIMPATH=map/graphics_layer.json",
+      "sourceModifiedTime" : {
+        "type" : "TimeInstant"
+      },
+      "metadataURI" : "CIMPATH=Metadata/477b79c7a6cef6869fefab18180f9cfa.xml",
+      "useSourceMetadata" : true,
+      "description" : "Graphics Layer",
+      "layerElevation" : {
+        "type" : "CIMLayerElevationSurface",
+        "elevationSurfaceLayerURI" : "CIMPATH=Map/30bde387a9ae4ec78b237bb412b5a489.json"
+      },
+      "layerType" : "Operational",
+      "showLegends" : true,
+      "visibility" : true,
+      "displayCacheType" : "Permanent",
+      "maxDisplayCacheAge" : 5,
+      "showPopups" : true,
+      "serviceLayerID" : -1,
+      "refreshRate" : -1,
+      "refreshRateUnit" : "esriTimeUnitsSeconds",
+      "blendingMode" : "Alpha",
+      "allowDrapingOnIntegratedMesh" : true,
+      "elementStorageURI" : "CIMPATH=ObjectReferences/7305c33be23f432b9d34a8895ab86486.json",
+      "barrierWeight" : "High",
+      "snappable" : true,
+      "selectable" : true,
+      "sourceURI" : "related_feature_class_path"
+    }
+  ],
+  "binaryReferences" : [
+    {
+      "type" : "CIMBinaryReference",
+      "uRI" : "CIMPATH=Metadata/477b79c7a6cef6869fefab18180f9cfa.xml",
+      "data" : "<?xml version=\"1.0\"?>\r\n<metadata xml:lang=\"en\"><Esri><CreaDate>20230817</CreaDate><CreaTime>20115700</CreaTime><ArcGISFormat>1.0</ArcGISFormat><SyncOnce>TRUE</SyncOnce></Esri><dataIdInfo><idCitation><resTitle>Graphics Layer</resTitle></idCitation><idAbs>Graphics Layer</idAbs><idCredit></idCredit><idPurp></idPurp><resConst><Consts><useLimit></useLimit></Consts></resConst></dataIdInfo></metadata>\r\n"
+    },
+    {
+      "type" : "CIMBinaryReference",
+      "uRI" : "CIMPATH=ObjectReferences/7305c33be23f432b9d34a8895ab86486.json",
+      "object" : {
+        "type" : "CIMElementStorage",
+        "elements" : [
+          {
+            "type" : "CIMGraphicElement",
+            "anchor" : "TopLeftCorner",
+            "name" : "Picture",
+            "visible" : true,
+            "rotationCenter" : {
+              "x" : 65003062047,
+              "y" : 347184757184
+            },
+            "lockedAspectRatio" : true,
+            "graphic" : {
+              "type" : "CIMPictureGraphic",
+              "blendingMode" : "Alpha",
+              "placement" : "TopLeftCorner",
+              "pictureURL" : null,
+              "box" : {
+                "xmin" : -15244425.1210980136,
+                "ymin" : -2280416.052951131,
+                "xmax" : 12464191.8510616943,
+                "ymax" : 13495064.8612998854
+              },
+              "frame" : {
+                "type" : "CIMGraphicFrame",
+                "backgroundSymbol" : {
+                  "type" : "CIMSymbolReference",
+                  "symbol" : {
+                    "type" : "CIMPolygonSymbol",
+                    "angleAlignment" : "Map"
+                  }
+                },
+                "borderSymbol" : {
+                  "type" : "CIMSymbolReference",
+                  "symbol" : {
+                    "type" : "CIMLineSymbol",
+                    "symbolLayers" : [
+                      {
+                        "type" : "CIMSolidStroke",
+                        "enable" : true,
+                        "capStyle" : "Round",
+                        "joinStyle" : "Miter",
+                        "lineStyle3D" : "Strip",
+                        "miterLimit" : 10,
+                        "width" : 1,
+                        "height3D" : 1,
+                        "anchor3D" : "Center",
+                        "color" : {
+                          "type" : "CIMRGBColor",
+                          "values" : [
+                            0,
+                            0,
+                            0,
+                            0
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "shadowSymbol" : {
+                  "type" : "CIMSymbolReference",
+                  "symbol" : {
+                    "type" : "CIMPolygonSymbol",
+                    "angleAlignment" : "Map"
+                  }
+                },
+                "shadowOffsetX" : 10,
+                "shadowOffsetY" : -10
+              }
+            }
+          }
+        ],
+        "spatialReference" : {
+          "wkid" : 102100,
+          "latestWkid" : 3857,
+          "xyTolerance" : 0.001,
+          "zTolerance" : 0.001,
+          "mTolerance" : 0.001,
+          "falseX" : -20037700,
+          "falseY" : -30241100,
+          "xyUnits" : 10000,
+          "falseZ" : -100000,
+          "zUnits" : 10000,
+          "falseM" : -100000,
+          "mUnits" : 10000
+        }
+      }
+    }
+  ],
+  "rGBColorProfile" : "sRGB IEC61966-2.1",
+  "cMYKColorProfile" : "U.S. Web Coated (SWOP) v2"
+}

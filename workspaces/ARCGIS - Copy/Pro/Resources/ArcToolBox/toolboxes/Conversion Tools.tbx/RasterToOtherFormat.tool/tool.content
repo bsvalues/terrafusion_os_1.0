@@ -1,0 +1,133 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "2060012",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "Input_Rasters": {
+            "displayname": "$rc:input_rasters.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "DERasterDataset"
+                        },
+                        {
+                            "type": "GPRasterLayer"
+                        }
+                    ]
+                }
+            },
+            "description": "$rc:input_rasters.descr"
+        },
+        "Output_Workspace": {
+            "displayname": "$rc:output_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "description": "$rc:output_workspace.descr"
+        },
+        "Raster_Format": {
+            "type": "optional",
+            "displayname": "$rc:raster_format.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "BIL",
+                        "code": "$rc:raster_format.domain.BIL"
+                    },
+                    {
+                        "value": "BIP",
+                        "code": "$rc:raster_format.domain.BIP"
+                    },
+                    {
+                        "value": "BMP",
+                        "code": "$rc:raster_format.domain.BMP"
+                    },
+                    {
+                        "value": "BSQ",
+                        "code": "$rc:raster_format.domain.BSQ"
+                    },
+                    {
+                        "value": "CRF",
+                        "code": "$rc:raster_format.domain.CRF"
+                    },
+                    {
+                        "value": "ENVI DAT",
+                        "code": "$rc:raster_format.domain.ENVI DAT"
+                    },
+                    {
+                        "value": "GIF",
+                        "code": "$rc:raster_format.domain.GIF"
+                    },
+                    {
+                        "value": "GRID",
+                        "code": "$rc:raster_format.domain.GRID"
+                    },
+                    {
+                        "value": "IMAGINE Image",
+                        "code": "$rc:raster_format.domain.IMAGINE Image"
+                    },
+                    {
+                        "value": "JP2000",
+                        "code": "$rc:raster_format.domain.JP2000"
+                    },
+                    {
+                        "value": "JPEG",
+                        "code": "$rc:raster_format.domain.JPEG"
+                    },
+                    {
+                        "value": "MRF",
+                        "code": "$rc:raster_format.domain.MRF"
+                    },
+                    {
+                        "value": "PNG",
+                        "code": "$rc:raster_format.domain.PNG"
+                    },
+                    {
+                        "value": "TIFF",
+                        "code": "$rc:raster_format.domain.TIFF"
+                    }
+                ]
+            },
+            "value": "TIFF",
+            "description": "$rc:raster_format.descr"
+        },
+        "Derived_Workspace": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:derived_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "schema": {
+                "type": "GPContainerSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    },
+    "environments": [
+        "XYDomain",
+        "ZDomain",
+        "ZResolution",
+        "compression",
+        "configKeyword",
+        "extent",
+        "nodata",
+        "outputCoordinateSystem",
+        "outputZFlag",
+        "pyramid",
+        "rasterStatistics",
+        "resamplingMethod",
+        "scratchWorkspace",
+        "tileSize",
+        "workspace"
+    ]
+}

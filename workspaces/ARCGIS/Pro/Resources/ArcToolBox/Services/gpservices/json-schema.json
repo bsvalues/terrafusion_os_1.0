@@ -1,0 +1,1711 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "GPBoolean": {
+      "type": "boolean",
+      "title": "GPBoolean"
+    },
+    "GPString": {
+      "description": "Simple string gp parameter type",
+      "type": "string",
+      "title": "GPString"
+    },
+    "GPDouble": {
+      "description": "Simple number (floating point) gp parameter type.\nBoth GPDouble and GPLong are number type, ts types do not support an int",
+      "type": "number",
+      "title": "GPDouble"
+    },
+    "GPLong": {
+      "description": "Simple number (integer) gp parameter type.\nBoth GPDouble and GPLong are number type, ts types do not support an int",
+      "type": "number",
+      "title": "GPLong"
+    },
+    "GPFeatureRecordSetLayer": {
+      "description": "Core geoprocessing data type that is a reference to a layer/item, or a set of features",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/IFeatureSet"
+        },
+        {
+          "$ref": "#/definitions/LayerUrlFilter"
+        },
+        {
+          "$ref": "#/definitions/ItemId"
+        },
+        {
+          "$ref": "#/definitions/FeatureCollection"
+        }
+      ],
+      "title": "GPFeatureRecordSetLayer"
+    },
+    "GPRecordSet": {
+      "description": "Core geoprocessing data type that is a reference to a table/item, or a set of features and fields",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/LayerUrlFilter"
+        },
+        {
+          "$ref": "#/definitions/ItemId"
+        },
+        {
+          "$ref": "#/definitions/RecordSet"
+        }
+      ],
+      "title": "GPRecordSet"
+    },
+    "GPRasterDataLayer": {
+      "description": "Core geoprocessing data type that is a reference to raster data/image service url or itemID",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Url"
+        },
+        {
+          "$ref": "#/definitions/ItemId"
+        },
+        {
+          "$ref": "#/definitions/LayerUrlRuleFilter"
+        }
+      ],
+      "title": "GPRasterDataLayer"
+    },
+    "GPDataFile": {
+      "description": "Core geoprocessing data file input",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Url"
+        },
+        {
+          "$ref": "#/definitions/GPDataFileItem"
+        }
+      ],
+      "title": "GPDataFile"
+    },
+    "GPDataFileItem": {
+      "description": "Item ID for a GPDataFile input.",
+      "type": "object",
+      "properties": {
+        "itemID": {
+          "description": "The item ID for the file in your portal.",
+          "type": "string"
+        }
+      }
+    },
+    "GPDate": {
+      "description": "Core geoprocessing date data type.\nRepresents the number of milliseconds since epoch (January 1, 1970) in UTC",
+      "type": "number",
+      "title": "GPDate"
+    },
+    "GPMultiValue": {
+      "description": "Core geoprocessing date data type.\nRepresents the number of milliseconds since epoch (January 1, 1970) in UTC",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/GPLinearUnit"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "boolean"
+          }
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        {
+          "type": "array",
+          "items": {
+            "description": "Core geoprocessing data type that is a reference to a layer/item, or a set of features",
+            "anyOf": [
+              {
+                "$ref": "#/definitions/IFeatureSet"
+              },
+              {
+                "$ref": "#/definitions/LayerUrlFilter"
+              },
+              {
+                "$ref": "#/definitions/ItemId"
+              },
+              {
+                "$ref": "#/definitions/FeatureCollection"
+              }
+            ]
+          }
+        },
+        {
+          "type": "array",
+          "items": {
+            "description": "Core geoprocessing data type that is a reference to a table/item, or a set of features and fields",
+            "anyOf": [
+              {
+                "$ref": "#/definitions/LayerUrlFilter"
+              },
+              {
+                "$ref": "#/definitions/ItemId"
+              },
+              {
+                "$ref": "#/definitions/RecordSet"
+              }
+            ]
+          }
+        },
+        {
+          "type": "array",
+          "items": {
+            "description": "Core geoprocessing data type that is a reference to raster data/image service url or itemID",
+            "anyOf": [
+              {
+                "$ref": "#/definitions/Url"
+              },
+              {
+                "$ref": "#/definitions/ItemId"
+              },
+              {
+                "$ref": "#/definitions/LayerUrlRuleFilter"
+              }
+            ]
+          }
+        },
+        {
+          "type": "array",
+          "items": {
+            "description": "Core geoprocessing data file input",
+            "anyOf": [
+              {
+                "$ref": "#/definitions/Url"
+              },
+              {
+                "$ref": "#/definitions/ItemId"
+              }
+            ]
+          }
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        }
+      ],
+      "title": "GPMultiValue"
+    },
+    "GPLinearUnit": {
+      "description": "Linear unit schema.",
+      "title": "GPLinearUnit",
+      "type": "object",
+      "properties": {
+        "distance": {
+          "type": "number",
+          "title": "distance"
+        },
+        "units": {
+          "type": "string",
+          "title": "units",
+          "enum": [
+            "esriUnknownUnits",
+            "esriInches",
+            "esriPoints",
+            "esriFeet",
+            "esriYards",
+            "esriMiles",
+            "esriNauticalMiles",
+            "esriMillimeters",
+            "esriCentimeters",
+            "esriMeters",
+            "esriKilometers",
+            "esriDecimalDegrees",
+            "esriDecimeters",
+            "esriIntInches",
+            "esriIntFeet",
+            "esriIntYards",
+            "esriIntMiles",
+            "esriIntNauticalMiles"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "distance",
+        "units"
+      ]
+    },
+    "GPArealUnit": {
+      "description": "The JSON schema for a GPArealUnit as an input.",
+      "type": "object",
+      "required": [
+        "area",
+        "units"
+      ],
+      "properties": {
+        "area": {
+          "description": "The area in a numeric format.",
+          "type": "number"
+        },
+        "units": {
+          "description": "The unit of the area.",
+          "type": "string",
+          "enum": [
+            "esriUnknownAreaUnits",
+            "esriSquareInches",
+            "esriSquareFeet",
+            "esriSquareYards",
+            "esriAcres",
+            "esriSquareMiles",
+            "esriSquareMillimeters",
+            "esriSquareCentimeters",
+            "esriSquareDecimeters",
+            "esriSquareMeters",
+            "esriAres",
+            "esriHectares",
+            "esriSquareKilometers",
+            "esriSquareInchesUS",
+            "esriSquareFeetUS",
+            "esriSquareYardsUS",
+            "esriAcresUS",
+            "esriSquareMilesUS"
+          ]
+        }
+      }
+    },
+    "GPValueTable": {
+      "description": "Schema for GPValueTable. Using object over array whenever possible.",
+      "type": [
+        "object",
+        "array"
+      ],
+      "title": "GPValueTable"
+    },
+    "GPComposite": {
+      "description": "Schema for GPComposite. Declare datatype whenever possible by using the CompositeDataType",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/CompositeDataType"
+        },
+        {
+          "$ref": "#/definitions/GPBoolean"
+        },
+        {
+          "$ref": "#/definitions/GPString"
+        },
+        {
+          "$ref": "#/definitions/GPDouble"
+        },
+        {
+          "$ref": "#/definitions/GPLong"
+        },
+        {
+          "$ref": "#/definitions/GPFeatureRecordSetLayer"
+        },
+        {
+          "$ref": "#/definitions/GPRecordSet"
+        },
+        {
+          "$ref": "#/definitions/GPRasterDataLayer"
+        },
+        {
+          "$ref": "#/definitions/GPDataFile"
+        },
+        {
+          "$ref": "#/definitions/GPLinearUnit"
+        },
+        {
+          "$ref": "#/definitions/GPArealUnit"
+        },
+        {
+          "$ref": "#/definitions/GPSQLExpression"
+        },
+        {
+          "$ref": "#/definitions/GPExtent"
+        },
+        {
+          "$ref": "#/definitions/GPEnvelope"
+        },
+        {
+          "$ref": "#/definitions/GPSpatialReference"
+        },
+        {
+          "$ref": "#/definitions/GPCoordinateSystem"
+        },
+        {
+          "$ref": "#/definitions/GPStringHidden"
+        }
+      ],
+      "title": "GPComposite"
+    },
+    "CompositeDataType": {
+      "description": "Recommended way to declare value for a GPComposite parameter.",
+      "type": "object",
+      "properties": {
+        "dataType": {
+          "description": "Data type you declare.",
+          "type": "string",
+          "enum": [
+            "GPBoolean",
+            "GPString",
+            "GPDouble",
+            "GPLong",
+            "GPFeatureRecordSetLayer",
+            "GPRecordSet",
+            "GPRasterDataLayer",
+            "GPDataFile",
+            "GPLinearUnit",
+            "GPArealUnit",
+            "GPSQLExpression",
+            "GPExtent",
+            "GPEnvelope",
+            "GPSpatialReference",
+            "GPCoordinateSystem",
+            "GPStringHidden"
+          ]
+        },
+        "value": {
+          "description": "The value of the data type you declare.",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/GPBoolean"
+            },
+            {
+              "$ref": "#/definitions/GPString"
+            },
+            {
+              "$ref": "#/definitions/GPDouble"
+            },
+            {
+              "$ref": "#/definitions/GPLong"
+            },
+            {
+              "$ref": "#/definitions/GPFeatureRecordSetLayer"
+            },
+            {
+              "$ref": "#/definitions/GPRecordSet"
+            },
+            {
+              "$ref": "#/definitions/GPRasterDataLayer"
+            },
+            {
+              "$ref": "#/definitions/GPDataFile"
+            },
+            {
+              "$ref": "#/definitions/GPLinearUnit"
+            },
+            {
+              "$ref": "#/definitions/GPArealUnit"
+            },
+            {
+              "$ref": "#/definitions/GPSQLExpression"
+            },
+            {
+              "$ref": "#/definitions/GPExtent"
+            },
+            {
+              "$ref": "#/definitions/GPEnvelope"
+            },
+            {
+              "$ref": "#/definitions/GPSpatialReference"
+            },
+            {
+              "$ref": "#/definitions/GPCoordinateSystem"
+            },
+            {
+              "$ref": "#/definitions/GPStringHidden"
+            }
+          ]
+        }
+      }
+    },
+    "GPSQLExpression": {
+      "description": "Schema for the GP SQL Expression data type.",
+      "type": "string",
+      "title": "GPSQLExpression"
+    },
+    "GPExtent": {
+      "description": "Extent is used to define rectangles and bounding boxes.",
+      "title": "GPExtent",
+      "type": "object",
+      "properties": {
+        "xmin": {
+          "type": "number",
+          "title": "xmin"
+        },
+        "ymin": {
+          "type": "number",
+          "title": "ymin"
+        },
+        "xmax": {
+          "type": "number",
+          "title": "xmax"
+        },
+        "ymax": {
+          "type": "number",
+          "title": "ymax"
+        },
+        "zmin": {
+          "type": "number",
+          "title": "zmin"
+        },
+        "zmax": {
+          "type": "number",
+          "title": "zmax"
+        },
+        "mmin": {
+          "type": "number",
+          "title": "mmin"
+        },
+        "mmax": {
+          "type": "number",
+          "title": "mmax"
+        },
+        "spatialReference": {
+          "$ref": "#/definitions/ISpatialReference",
+          "title": "spatialReference"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "xmax",
+        "xmin",
+        "ymax",
+        "ymin"
+      ]
+    },
+    "GPEnvelope": {
+      "description": "GPEnvelope shares the same schema as GPExtent, and it is used to define rectangles and bounding boxes.",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/GPExtent"
+        }
+      ]
+    },
+    "GPSpatialReference": {
+      "description": "Schema of spatial reference data type. ItemId and Url are used for specifying a projection file with .prj extension.",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/ISpatialReference"
+        },
+        {
+          "$ref": "#/definitions/ProjectionFile"
+        },
+        {
+          "$ref": "#/definitions/SpatialReferenceName"
+        }
+      ]
+    },
+    "ProjectionFile": {
+      "description": "Schema of a projection file for a spatial reference.",
+      "type": "object",
+      "properties": {
+        "projectionFile": {
+          "description": "The URL to a projection file.",
+          "type": "string"
+        },
+        "projectionFileItemID": {
+          "description": "The itemId of the projection file.",
+          "type": "string"
+        }
+      }
+    },
+    "SpatialReferenceName": {
+      "description": "Schema for spatial reference when using a name.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the coordinate system.",
+          "type": "string"
+        },
+        "vcsName": {
+          "description": "The name of the vertical coordinate system.",
+          "type": "string"
+        }
+      }
+    },
+    "GPCoordinateSystem": {
+      "description": "Schema for coordinate system.",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/GPSpatialReference"
+        }
+      ]
+    },
+    "GPStringHidden": {
+      "description": "Schema for a hidden string.",
+      "type": "string"
+    },
+    "LayerUrlFilter": {
+      "description": "Object containing a url to a layer, along with a filter or time property\\\nUsed in GPFeatureRecordSetLayer only",
+      "title": "LayerUrlFilter",
+      "type": "object",
+      "properties": {
+        "filter": {
+          "description": "An attribute expression to filter the layer\ne.g. \"severity=2 and name is null\"",
+          "type": "string",
+          "title": "filter"
+        },
+        "time": {
+          "description": "Time can be filtered as a single instant or by separating the two ends of a time extent with a comma\ne.g. 967855732000 or \"967855732000,null\"",
+          "type": [
+            "string",
+            "number"
+          ],
+          "title": "time"
+        },
+        "serviceToken": {
+          "description": "Token for accessing secured layer",
+          "type": "string",
+          "title": "serviceToken"
+        },
+        "itemId": {
+          "description": "ItemID associated with the layer",
+          "type": "string",
+          "title": "itemId"
+        },
+        "url": {
+          "description": "Can be a url of map service, feature layer, raster layer, table, file location, etc.",
+          "type": "string",
+          "title": "url"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "url"
+      ]
+    },
+    "LayerUrlRuleFilter": {
+      "description": "Object containing a url to a layer, along with a renderingrule and mosaicrule\nUsed in GPRasterDataLayer only",
+      "title": "LayerUrlRuleFilter",
+      "type": "object",
+      "properties": {
+        "renderingRule": {
+          "description": "RenderingRule for rendering imagery layer",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true,
+          "title": "renderingRule"
+        },
+        "mosaicRule": {
+          "description": "mosaicRule for accessing imagery layer",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": true,
+          "title": "mosaicRule"
+        },
+        "url": {
+          "description": "Can be a url of map service, feature layer, raster layer, table, file location, etc.",
+          "type": "string",
+          "title": "url"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "url"
+      ]
+    },
+    "ItemId": {
+      "description": "Object containing an id to an item\\\nUsed in GPRasterDataLayer, GPFeatureRecordSetLayer, GPRecordSet",
+      "title": "ItemId",
+      "type": "object",
+      "properties": {
+        "itemId": {
+          "description": "string id of the item",
+          "type": "string",
+          "title": "itemId"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "itemId"
+      ]
+    },
+    "RecordAttributes": {
+      "description": "Object defining a records attributes.",
+      "title": "RecordAttributes",
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "description": "Object of key/value pairs where the key is a string field name and a corresponding value",
+          "type": "object",
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": [
+                  "string",
+                  "number"
+                ]
+              }
+            ]
+          },
+          "title": "attributes"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "attributes"
+      ]
+    },
+    "RecordField": {
+      "description": "Object defining a fields name, type, and optional alias",
+      "title": "RecordField",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "A string defining the field name.",
+          "type": "string",
+          "title": "name"
+        },
+        "type": {
+          "$ref": "#/definitions/FieldType",
+          "description": "A string defining the field type.",
+          "title": "type"
+        },
+        "alias": {
+          "description": "A string defining the field alias.",
+          "type": "string",
+          "title": "alias"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "type"
+      ]
+    },
+    "RecordSet": {
+      "description": "Object containing features and fields to use in GPRecordSet",
+      "title": "RecordSet",
+      "type": "object",
+      "properties": {
+        "fields": {
+          "description": "Array of IField-like objects. Only name, type, alias? are needed.\nSee https://esri.github.io/arcgis-rest-js/api/types/IField/",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RecordField"
+          },
+          "title": "fields"
+        },
+        "features": {
+          "description": "Array of feature attributes without any geometry or symbol.\nThe keys of the attributes must be in the fields property to be valid.\nSee https://esri.github.io/arcgis-rest-js/api/types/IFeature/#attributes\n- TODO: Constrain this type more to be only valid fields",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RecordAttributes"
+          },
+          "title": "features"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "features",
+        "fields"
+      ]
+    },
+    "FeatureCollection": {
+      "description": "An object defining a layer of features whose geometry and attributes will be stored directly within the web map.\nThis is the REST FeatureCollection type used by GPFeatureRecordSetLayer\nSee https://developers.arcgis.com/rest/services-reference/enterprise/gp-data-types.htm#ESRI_SECTION3_5AEB979537F94AD783ED51F97432BFB7 for more details.",
+      "title": "FeatureCollection",
+      "type": "object",
+      "properties": {
+        "layerDefinition": {
+          "$ref": "#/definitions/ILayerDefinition",
+          "description": "The layerDefinition object defines the attribute schema and drawing information for the layer.",
+          "title": "layerDefinition"
+        },
+        "featureSet": {
+          "$ref": "#/definitions/IFeatureSet",
+          "description": "A featureSet object containing the geometry and attributes of the features in the layer.",
+          "title": "featureSet"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "featureSet"
+      ]
+    },
+    "IFeatureSet": {
+      "description": "`IFeatureSet` can also be imported from the following packages:\n\n```js\nimport { IFeatureSet } from \"@esri/arcgis-rest-feature-layer\";\n```",
+      "title": "IFeatureSet",
+      "type": "object",
+      "properties": {
+        "objectIdFieldName": {
+          "type": "string",
+          "title": "objectIdFieldName"
+        },
+        "globalIdFieldName": {
+          "type": "string",
+          "title": "globalIdFieldName"
+        },
+        "displayFieldName": {
+          "type": "string",
+          "title": "displayFieldName"
+        },
+        "geometryType": {
+          "$ref": "#/definitions/GeometryType",
+          "title": "geometryType"
+        },
+        "spatialReference": {
+          "$ref": "#/definitions/ISpatialReference",
+          "title": "spatialReference"
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/IField"
+          },
+          "title": "fields"
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/IFeature"
+          },
+          "title": "features"
+        },
+        "fieldAliases": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "fieldAliases"
+        },
+        "hasZ": {
+          "type": "boolean",
+          "title": "hasZ"
+        },
+        "hasM": {
+          "type": "boolean",
+          "title": "hasM"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "features"
+      ]
+    },
+    "GeometryType": {
+      "description": "`GeometryType` can also be imported from the following packages:\n\n```js\nimport { GeometryType } from \"@esri/arcgis-rest-feature-layer\";\n```",
+      "title": "GeometryType",
+      "enum": [
+        "esriGeometryEnvelope",
+        "esriGeometryMultipoint",
+        "esriGeometryPoint",
+        "esriGeometryPolygon",
+        "esriGeometryPolyline"
+      ],
+      "type": "string"
+    },
+    "ISpatialReference": {
+      "description": "Spatial reference systems define mathematical transformations and coordinate systems for displaying spatial information in 2D and 3D.\n\n`ISpatialReference` can also be imported from the following packages:\n\n```js\nimport { ISpatialReference } from \"@esri/arcgis-rest-geocoding\";\nimport { ISpatialReference } from \"@esri/arcgis-rest-routing\";\nimport { ISpatialReference } from \"@esri/arcgis-rest-service-admin\";\nimport { ISpatialReference } from \"@esri/arcgis-rest-feature-layer\";\n```",
+      "title": "ISpatialReference",
+      "type": "object",
+      "properties": {
+        "wkid": {
+          "type": "number",
+          "title": "wkid"
+        },
+        "latestWkid": {
+          "type": "number",
+          "title": "latestWkid"
+        },
+        "vcsWkid": {
+          "type": "number",
+          "title": "vcsWkid"
+        },
+        "latestVcsWkid": {
+          "type": "number",
+          "title": "latestVcsWkid"
+        },
+        "wkt": {
+          "type": "string",
+          "title": "wkt"
+        },
+        "latestWkt": {
+          "type": "string",
+          "title": "latestWkt"
+        }
+      },
+      "additionalProperties": false
+    },
+    "IField": {
+      "description": "Contains information about an attribute field.\n\n`IField` can also be imported from the following packages:\n\n```js\nimport { IField } from \"@esri/arcgis-rest-feature-layer\";\n```",
+      "title": "IField",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "A string defining the field name.",
+          "type": "string",
+          "title": "name"
+        },
+        "type": {
+          "$ref": "#/definitions/FieldType",
+          "description": "A string defining the field type.",
+          "title": "type"
+        },
+        "alias": {
+          "description": "A string defining the field alias.",
+          "type": "string",
+          "title": "alias"
+        },
+        "domain": {
+          "description": "The domain objects if applicable.",
+          "type": "object",
+          "properties": {
+            "type": {
+              "$ref": "#/definitions/DomainType",
+              "description": "A string defining the domain type.",
+              "title": "type"
+            },
+            "name": {
+              "description": "A string defining the field name.",
+              "type": "string",
+              "title": "name"
+            },
+            "range": {
+              "description": "A 2 element array defining the range of possible values.",
+              "type": "array",
+              "items": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "minItems": 2,
+              "maxItems": 2,
+              "title": "range"
+            },
+            "codedValues": {
+              "description": "An array of CodedValues for domains of type codedValue.",
+              "type": "array",
+              "items": {
+                "description": "CodedValue type",
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "description": "User-friendly name for what the code means.",
+                    "type": "string",
+                    "title": "name"
+                  },
+                  "code": {
+                    "description": "The value stored in the feature attribute.",
+                    "type": [
+                      "string",
+                      "number"
+                    ],
+                    "title": "code"
+                  }
+                },
+                "additionalProperties": false,
+                "required": [
+                  "code",
+                  "name"
+                ]
+              },
+              "title": "codedValues"
+            },
+            "description": {
+              "description": "Description of the domain",
+              "type": "string",
+              "title": "description"
+            },
+            "mergePolicy": {
+              "description": "Merge policy",
+              "type": "string",
+              "title": "mergePolicy"
+            },
+            "splitPolicy": {
+              "description": "Split Policy",
+              "type": "string",
+              "title": "splitPolicy"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "type"
+          ],
+          "title": "domain"
+        },
+        "editable": {
+          "description": "A Boolean defining whether this field is editable.",
+          "type": "boolean",
+          "title": "editable"
+        },
+        "exactMatch": {
+          "description": "A Boolean defining whether or not the field is an exact match.",
+          "type": "boolean",
+          "title": "exactMatch"
+        },
+        "length": {
+          "description": "A number defining how many characters are allowed in a string. field.",
+          "type": "number",
+          "title": "length"
+        },
+        "nullable": {
+          "description": "A Boolean defining whether this field can have a null value.",
+          "type": "boolean",
+          "title": "nullable"
+        },
+        "defaultValue": {
+          "description": "The value written in for new records by default.",
+          "title": "defaultValue"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "type"
+      ]
+    },
+    "FieldType": {
+      "description": "Field type.",
+      "title": "FieldType",
+      "enum": [
+        "esriFieldTypeBlob",
+        "esriFieldTypeDate",
+        "esriFieldTypeDouble",
+        "esriFieldTypeGUID",
+        "esriFieldTypeGeometry",
+        "esriFieldTypeGlobalID",
+        "esriFieldTypeInteger",
+        "esriFieldTypeOID",
+        "esriFieldTypeRaster",
+        "esriFieldTypeSingle",
+        "esriFieldTypeSmallInteger",
+        "esriFieldTypeString",
+        "esriFieldTypeXML"
+      ],
+      "type": "string"
+    },
+    "DomainType": {
+      "description": "Domain types",
+      "title": "DomainType",
+      "enum": [
+        "codedValue",
+        "inherited",
+        "range"
+      ],
+      "type": "string"
+    },
+    "IFeature": {
+      "description": "a spatial entity and its corresponding properties\n\n`IFeature` can also be imported from the following packages:\n\n```js\nimport { IFeature } from \"@esri/arcgis-rest-feature-layer\";\nimport { IFeature } from \"@esri/arcgis-rest-routing\";\n```",
+      "title": "IFeature",
+      "type": "object",
+      "properties": {
+        "geometry": {
+          "$ref": "#/definitions/IGeometry",
+          "title": "geometry"
+        },
+        "attributes": {
+          "type": "object",
+          "additionalProperties": {},
+          "title": "attributes"
+        },
+        "symbol": {
+          "$ref": "#/definitions/ISymbol",
+          "title": "symbol"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "attributes"
+      ]
+    },
+    "IGeometry": {
+      "description": "a building block for discrete geometries\n\n`IGeometry` can also be imported from the following packages:\n\n```js\nimport { IGeometry } from \"@esri/arcgis-rest-feature-layer\";\n```",
+      "title": "IGeometry",
+      "type": "object",
+      "properties": {
+        "hasZ": {
+          "description": "If the geometr has Z values",
+          "type": "boolean"
+        },
+        "hasM": {
+          "description": "If the geometr has M values",
+          "type": "boolean"
+        },
+        "id": {
+          "description": "The ID of the feature.",
+          "type": "number"
+        },
+        "ids": {
+          "description": "The IDs of a multipoint, polyline or polygon feature.",
+          "type": "number"
+        },
+        "x": {
+          "description": "The x value of a point.",
+          "type": "number"
+        },
+        "y": {
+          "description": "The x value of a point.",
+          "type": "number"
+        },
+        "z": {
+          "description": "The x value of a point.",
+          "type": "number"
+        },
+        "m": {
+          "description": "The x value of a point.",
+          "type": "number"
+        },
+        "points": {
+          "description": "Geomerty for a multipoint.",
+          "type": "array"
+        },
+        "paths": {
+          "description": "The paths of a polyline.",
+          "type": "array"
+        },
+        "curvePaths": {
+          "description": "The paths of a polyline with curves.",
+          "type": "array"
+        },
+        "rings": {
+          "description": "The rings of a polygon.",
+          "type": "array"
+        },
+        "curveRings": {
+          "description": "The rings of a polygon with curves.",
+          "type": "array"
+        },
+        "a": {
+          "description": "An elliptic arc.",
+          "type": "array"
+        },
+        "b": {
+          "description": "A cubic Bezier curve.",
+          "type": "array"
+        },
+        "c": {
+          "description": "An open circular arc.",
+          "type": "array"
+        },
+        "spatialReference": {
+          "$ref": "#/definitions/ISpatialReference",
+          "title": "spatialReference"
+        }
+      }
+    },
+    "ISymbol": {
+      "title": "ISymbol",
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/SymbolType",
+          "title": "type"
+        },
+        "style": {
+          "type": "string",
+          "title": "style"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ]
+    },
+    "SymbolType": {
+      "title": "SymbolType",
+      "enum": [
+        "esriPFS",
+        "esriPMS",
+        "esriSFS",
+        "esriSLS",
+        "esriSMS",
+        "esriTS"
+      ],
+      "type": "string"
+    },
+    "Url": {
+      "description": "Object containing a url to a layer\\\nUsed in GPRasterDataLayer, GPFeatureRecordSetLayer, GPRecordSet, GPDataFile",
+      "title": "Url",
+      "type": "object",
+      "properties": {
+        "url": {
+          "description": "Can be a url of map service, feature layer, raster layer, table, file location, etc.",
+          "type": "string",
+          "title": "url"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "url"
+      ]
+    },
+    "ILayerDefinition": {
+      "description": "`ILayerDefinition` can also be imported from the following packages:\n\n```js\nimport { ILayerDefinition } from \"@esri/arcgis-rest-service-admin\";\nimport { ILayerDefinition } from \"@esri/arcgis-rest-feature-layer\";\n```",
+      "title": "ILayerDefinition",
+      "type": "object",
+      "properties": {
+        "allowGeometryUpdates": {
+          "description": "Boolean value indicating whether the geometry of the features in the layer can be edited.",
+          "type": "boolean",
+          "title": "allowGeometryUpdates"
+        },
+        "capabilities": {
+          "description": "A comma separated list of supported capabilities, e.g. Query,Editing.",
+          "type": "string",
+          "title": "capabilities"
+        },
+        "copyrightText": {
+          "description": "String value for the copyright text information for the layer.",
+          "type": "string",
+          "title": "copyrightText"
+        },
+        "currentVersion": {
+          "description": "Numeric value indicating the server version of the layer.",
+          "type": "number",
+          "title": "currentVersion"
+        },
+        "defaultVisibility": {
+          "description": "Boolean value indicating whether the layer's visibility is turned on.",
+          "type": "boolean",
+          "title": "defaultVisibility"
+        },
+        "definitionEditor": {
+          "$ref": "#/definitions/IDefinitionEditor",
+          "description": "Stores interactive filters.",
+          "title": "definitionEditor"
+        },
+        "definitionExpression": {
+          "description": "SQL-based definition expression string that narrows the data to be displayed in the layer.",
+          "type": "string",
+          "title": "definitionExpression"
+        },
+        "description": {
+          "description": "String value of the layer as defined in the map service.",
+          "type": "string",
+          "title": "description"
+        },
+        "displayField": {
+          "description": "A string value that summarizes the feature.",
+          "type": "string",
+          "title": "displayField"
+        },
+        "drawingInfo": {
+          "description": "Contains drawing, labeling, and transparency information.",
+          "title": "drawingInfo"
+        },
+        "extent": {
+          "$ref": "#/definitions/IExtent",
+          "description": "An object defining the rectangular area.",
+          "title": "extent"
+        },
+        "editingInfo": {
+          "$ref": "#/definitions/IEditingInfo",
+          "description": "An object defining the editing info (last edit date).",
+          "title": "editingInfo"
+        },
+        "featureReduction": {
+          "description": "Feature reductions declutter the screen by hiding features that would otherwise intersect with other features on screen.",
+          "title": "featureReduction"
+        },
+        "fields": {
+          "description": "An array of field objects containing information about the attribute fields for the feature collection or layer.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/IField"
+          },
+          "title": "fields"
+        },
+        "geometryType": {
+          "$ref": "#/definitions/GeometryType",
+          "description": "A string defining the type of geometry. Possible geometry types are: esriGeometryPoint, esriGeometryMultipoint, esriGeometryPolyline, esriGeometryPolygon, and esriGeometryEnvelope.",
+          "title": "geometryType"
+        },
+        "globalIdField": {
+          "description": "The unique identifier for a feature or table row within a geodatabase.",
+          "type": "string",
+          "title": "globalIdField"
+        },
+        "hasAttachments": {
+          "description": "Indicates whether attachments should be loaded for the layer.",
+          "type": "boolean",
+          "title": "hasAttachments"
+        },
+        "hasStaticData": {
+          "description": "Boolean value indicating whether data changes. True if it does not.",
+          "type": "boolean",
+          "title": "hasStaticData"
+        },
+        "htmlPopupType": {
+          "description": "String value indicating the HTML popup type.",
+          "enum": [
+            "esriServerHTMLPopupTypeAsHTMLText",
+            "esriServerHTMLPopupTypeAsURL",
+            "esriServerHTMLPopupTypeNone"
+          ],
+          "type": "string",
+          "title": "htmlPopupType"
+        },
+        "id": {
+          "description": "The identifier assigned to the layer.",
+          "type": "number",
+          "title": "id"
+        },
+        "isDataVersioned": {
+          "description": "Boolean value indicating whether the data is versioned.",
+          "type": "boolean",
+          "title": "isDataVersioned"
+        },
+        "maxRecordCount": {
+          "description": "Numeric value indicating tbe maximum number of records that will be returned at once for a query.",
+          "type": "number",
+          "title": "maxRecordCount"
+        },
+        "maxScale": {
+          "description": "Represents the maximum scale at which the layer definition will be applied. This does not apply to layers of type: ArcGISMapServiceLayer, ImageServiceVectorLayer or ImageServiceLayer.",
+          "type": "number",
+          "title": "maxScale"
+        },
+        "minScale": {
+          "description": "Represents the minimum scale at which the layer definition will be applied. This does not apply to layers of type: ArcGISMapServiceLayer, ImageServiceVectorLayer or ImageServiceLayer.",
+          "type": "number",
+          "title": "minScale"
+        },
+        "name": {
+          "description": "Contains a unique name for the layer that can be displayed in a legend.",
+          "type": "string",
+          "title": "name"
+        },
+        "objectIdField": {
+          "description": "Indicates the name of the object ID field in the dataset.",
+          "type": "string",
+          "title": "objectIdField"
+        },
+        "overrideSymbols": {
+          "description": "Dictates whether a client can support having an end user modify symbols on individual features.",
+          "type": "boolean",
+          "title": "overrideSymbols"
+        },
+        "rangeInfos": {
+          "description": "Indicates range information",
+          "title": "rangeInfos"
+        },
+        "source": {
+          "description": "An object indicating the layerDefinition's layer source.",
+          "title": "source"
+        },
+        "spatialReference": {
+          "$ref": "#/definitions/ISpatialReference",
+          "description": "An object containing the WKID or WKT identifying the spatial reference of the layer's geometry.",
+          "title": "spatialReference"
+        },
+        "supportedQueryFormats": {
+          "description": "String value indicating the output formats that are supported in a query.",
+          "type": "string",
+          "title": "supportedQueryFormats"
+        },
+        "supportsAdvancedQueries": {
+          "description": "Boolean value indicating whether the layer supports orderByFields in a query operation.",
+          "type": "boolean",
+          "title": "supportsAdvancedQueries"
+        },
+        "supportsAttachmentsByUploadId": {
+          "description": "Boolean value indicating whether the layer supports uploading attachments with the Uploads operation. This can then be used in the Add Attachment and Update Attachment operations.",
+          "type": "boolean",
+          "title": "supportsAttachmentsByUploadId"
+        },
+        "supportsCalculate": {
+          "description": "Boolean value indicating whether the layer supports the Calculate REST operation when updating features.",
+          "type": "boolean",
+          "title": "supportsCalculate"
+        },
+        "supportsRollbackOnFailureParameter": {
+          "description": "Boolean value indicating whether the layer supports rolling back edits made on a feature layer if some of the edits fail.",
+          "type": "boolean",
+          "title": "supportsRollbackOnFailureParameter"
+        },
+        "supportsStatistics": {
+          "description": "Boolean value indicating whether feature layer query operations support statistical functions.",
+          "type": "boolean",
+          "title": "supportsStatistics"
+        },
+        "supportsValidateSql": {
+          "description": "Boolean value indicating whether the validateSQL operation is supported across a feature service layer.",
+          "type": "boolean",
+          "title": "supportsValidateSql"
+        },
+        "templates": {
+          "description": "A property of the layer definition when there are no types defined; otherwise, templates are defined as properties of the types.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ITemplate"
+          },
+          "title": "templates"
+        },
+        "timeInfo": {
+          "description": "The time info metadata of the layer. May be set for feature layers inside a feature collection item.",
+          "title": "timeInfo"
+        },
+        "type": {
+          "description": "Indicates whether the layerDefinition applies to a Feature Layer or a Table.",
+          "enum": [
+            "Feature Layer",
+            "Table"
+          ],
+          "type": "string",
+          "title": "type"
+        },
+        "typeIdField": {
+          "description": "Contains the name of the field holding the type ID for the features.",
+          "type": "string",
+          "title": "typeIdField"
+        },
+        "types": {
+          "description": "Contains information about an attribute field.",
+          "title": "types"
+        },
+        "visibilityField": {
+          "description": "String value indicating the attribute field that is used to control the visibility of a feature.\nIf applicable, when rendering a feature the client should use this field to control visibility.\nThe field's values are 0 = do not display, 1 = display.",
+          "type": "string",
+          "title": "visibilityField"
+        },
+        "relationships": {
+          "type": "array",
+          "items": {},
+          "title": "relationships"
+        },
+        "editFieldsInfo": {
+          "type": "object",
+          "properties": {
+            "creationDateField": {
+              "type": "string",
+              "title": "creationDateField"
+            },
+            "creatorField": {
+              "type": "string",
+              "title": "creatorField"
+            },
+            "editDateField": {
+              "type": "string",
+              "title": "editDateField"
+            },
+            "editorField": {
+              "type": "string",
+              "title": "editorField"
+            }
+          },
+          "additionalProperties": false,
+          "title": "editFieldsInfo"
+        },
+        "parentLayerId": {
+          "type": "number",
+          "title": "parentLayerId"
+        },
+        "ownershipBasedAccessControlForFeatures": {
+          "type": "boolean",
+          "title": "ownershipBasedAccessControlForFeatures"
+        },
+        "syncCanReturnChanges": {
+          "type": "boolean",
+          "title": "syncCanReturnChanges"
+        },
+        "archivingInfo": {
+          "type": "object",
+          "properties": {
+            "supportsQueryWithHistoricMoment": {
+              "type": "boolean",
+              "title": "supportsQueryWithHistoricMoment"
+            },
+            "startArchivingMoment": {
+              "type": "number",
+              "title": "startArchivingMoment"
+            }
+          },
+          "additionalProperties": false,
+          "title": "archivingInfo"
+        },
+        "advancedQueryCapabilities": {
+          "type": "object",
+          "properties": {
+            "supportsPagination": {
+              "type": "boolean",
+              "title": "supportsPagination"
+            },
+            "supportsTrueCurve": {
+              "type": "boolean",
+              "title": "supportsTrueCurve"
+            },
+            "supportsQueryWithDistance": {
+              "type": "boolean",
+              "title": "supportsQueryWithDistance"
+            },
+            "supportsReturningQueryExtent": {
+              "type": "boolean",
+              "title": "supportsReturningQueryExtent"
+            },
+            "supportsStatistics": {
+              "type": "boolean",
+              "title": "supportsStatistics"
+            },
+            "supportsOrderBy": {
+              "type": "boolean",
+              "title": "supportsOrderBy"
+            },
+            "supportsDistinct": {
+              "type": "boolean",
+              "title": "supportsDistinct"
+            },
+            "supportsSqlExpression": {
+              "type": "boolean",
+              "title": "supportsSqlExpression"
+            },
+            "supportsPercentileStatistics": {
+              "type": "boolean",
+              "title": "supportsPercentileStatistics"
+            }
+          },
+          "additionalProperties": false,
+          "title": "advancedQueryCapabilities"
+        },
+        "allowTrueCurvesUpdates": {
+          "type": "boolean",
+          "title": "allowTrueCurvesUpdates"
+        },
+        "onlyAllowTrueCurveUpdatesByTrueCurveClients": {
+          "type": "boolean",
+          "title": "onlyAllowTrueCurveUpdatesByTrueCurveClients"
+        },
+        "supportsApplyEditsWithGlobalIds": {
+          "type": "boolean",
+          "title": "supportsApplyEditsWithGlobalIds"
+        },
+        "subtypeField": {
+          "type": "string",
+          "title": "subtypeField"
+        },
+        "indexes": {
+          "type": "array",
+          "items": {},
+          "title": "indexes"
+        },
+        "dateFieldsTimeReference": {
+          "type": "object",
+          "properties": {
+            "timeZone": {
+              "type": "string",
+              "title": "timeZone"
+            },
+            "respectsDaylightSaving": {
+              "type": "boolean",
+              "title": "respectsDaylightSaving"
+            }
+          },
+          "additionalProperties": false,
+          "title": "dateFieldsTimeReference"
+        },
+        "useStandardizedQueries": {
+          "type": "boolean",
+          "title": "useStandardizedQueries"
+        },
+        "hasZ": {
+          "type": "boolean",
+          "title": "hasZ"
+        },
+        "hasM": {
+          "type": "boolean",
+          "title": "hasM"
+        }
+      },
+      "additionalProperties": false
+    },
+    "IDefinitionEditor": {
+      "description": "The definitionEditor stores interactive filters at the same level as layerDefinition.",
+      "title": "IDefinitionEditor",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "An array of input objects.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/IDefinitionInput"
+          },
+          "title": "inputs"
+        },
+        "parameterizedExpression": {
+          "description": "A string value representing the where clause for the interactive filter.",
+          "type": "string",
+          "title": "parameterizedExpression"
+        }
+      },
+      "additionalProperties": false
+    },
+    "IDefinitionInput": {
+      "title": "IDefinitionInput",
+      "type": "object",
+      "properties": {
+        "hint": {
+          "description": "A string value representing a hint for the input.",
+          "type": "string",
+          "title": "hint"
+        },
+        "parameters": {
+          "description": "An array of parameter objects.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/IDefinitionParameter"
+          },
+          "title": "parameters"
+        },
+        "prompt": {
+          "description": "A string value representing the prompt for the input.",
+          "type": "string",
+          "title": "prompt"
+        }
+      },
+      "additionalProperties": false
+    },
+    "IDefinitionParameter": {
+      "title": "IDefinitionParameter",
+      "type": "object",
+      "properties": {
+        "defaultValue": {
+          "description": "The default value that is automatically given if nothing is provided.",
+          "type": [
+            "string",
+            "number"
+          ],
+          "title": "defaultValue"
+        },
+        "fieldName": {
+          "description": "A string value representing the name of the field to query.",
+          "type": "string",
+          "title": "fieldName"
+        },
+        "parameterId": {
+          "description": "Number given to uniquely identify the specified parameter.",
+          "title": "parameterId"
+        },
+        "type": {
+          "description": "The field type for the specified field parameter.",
+          "anyOf": [
+            {
+              "$ref": "/definitions/FieldType"
+            }
+          ]
+        },
+        "utcValue": {
+          "description": "An integer value representing exact UNIX time used when defaultValue is a date string.",
+          "type": "number",
+          "title": "utcValue"
+        }
+      },
+      "additionalProperties": false
+    },
+    "IExtent": {
+      "description": "Extents are used to define rectangles and bounding boxes.\n\n`IExtent` can also be imported from the following packages:\n\n```js\nimport { IExtent } from \"@esri/arcgis-rest-geocoding\";\nimport { IExtent } from \"@esri/arcgis-rest-service-admin\";\nimport { IExtent } from \"@esri/arcgis-rest-feature-layer\";\n```",
+      "title": "IExtent",
+      "type": "object",
+      "properties": {
+        "xmin": {
+          "type": "number",
+          "title": "xmin"
+        },
+        "ymin": {
+          "type": "number",
+          "title": "ymin"
+        },
+        "zmin": {
+          "type": "number",
+          "title": "zmin"
+        },
+        "xmax": {
+          "type": "number",
+          "title": "xmax"
+        },
+        "ymax": {
+          "type": "number",
+          "title": "ymax"
+        },
+        "zmax": {
+          "type": "number",
+          "title": "zmax"
+        },
+        "spatialReference": {
+          "$ref": "#/definitions/ISpatialReference",
+          "title": "spatialReference"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "xmax",
+        "xmin",
+        "ymax",
+        "ymin"
+      ]
+    },
+    "IEditingInfo": {
+      "title": "IEditingInfo",
+      "type": "object",
+      "properties": {
+        "lastEditDate": {
+          "description": "date of last edit to the layer",
+          "type": "number",
+          "title": "lastEditDate"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ITemplate": {
+      "description": "Templates describe features that can be created in a layer. They are generally used with feature collections and editable web-based CSV layers.\nTemplates are not used with ArcGIS feature services as these already have templates defined in the service. They are also defined as properties\nof the layer definition when there are no defined types. Otherwise, templates are defined as properties of the types.",
+      "title": "ITemplate",
+      "type": "object",
+      "properties": {
+        "description": {
+          "description": "A string value containing a detailed description of the template.",
+          "title": "description"
+        },
+        "drawingTool": {
+          "$ref": "#/definitions/FeatureEditTool",
+          "description": "An optional string that can define a client-side drawing tool to be used with this feature. For example, map notes used by the Online Map Viewer use this to represent the viewer's different drawing tools.",
+          "title": "drawingTool"
+        },
+        "name": {
+          "description": "A string containing a user-friendly name for the template.",
+          "type": "string",
+          "title": "name"
+        },
+        "prototype": {
+          "$ref": "#/definitions/IFeature",
+          "description": "A feature object representing a prototypical feature for the template.",
+          "title": "prototype"
+        }
+      },
+      "additionalProperties": false
+    },
+    "FeatureEditTool": {
+      "title": "FeatureEditTool",
+      "enum": [
+        "esriFeatureEditToolAutoCompletePolygon",
+        "esriFeatureEditToolCircle",
+        "esriFeatureEditToolDownArrow",
+        "esriFeatureEditToolEllipse",
+        "esriFeatureEditToolFreehand",
+        "esriFeatureEditToolLeftArrow",
+        "esriFeatureEditToolLine",
+        "esriFeatureEditToolNone",
+        "esriFeatureEditToolPoint",
+        "esriFeatureEditToolPolygon",
+        "esriFeatureEditToolRectangle",
+        "esriFeatureEditToolRightArrow",
+        "esriFeatureEditToolText",
+        "esriFeatureEditToolTriangle",
+        "esriFeatureEditToolUpArrow"
+      ],
+      "type": "string"
+    }
+  }
+}

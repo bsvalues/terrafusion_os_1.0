@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robust WebSocket Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .panel {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 8px;
+            border-radius: 3px;
+        }
+        .connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .connecting {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .log {
+            height: 200px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 10px;
+            font-family: monospace;
+            margin: 10px 0;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            margin: 5px 5px 5px 0;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        button:disabled {
+            background-color: #cccccc;
+        }
+        input[type="text"] {
+            width: 70%;
+            padding: 8px;
+            margin-right: 5px;
+        }
+        h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .controls {
+            margin-bottom: 10px;
+        }
+        .options {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 3px;
+        }
+        .debug-info {
+            font-size: 0.9em;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 3px;
+        }
+        .debug-info pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .fallback-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .tab {
+            padding: 8px 15px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+        }
+        .tab.active {
+            background-color: #fff;
+            border-bottom: 1px solid #fff;
+            margin-bottom: -1px;
+            position: relative;
+        }
+        .tab-content {
+            display: none;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 0 5px 5px 5px;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .config-item {
+            margin-bottom: 10px;
+        }
+        label {
+            display: inline-block;
+            width: 150px;
+            font-weight: bold;
+        }
+        .notification {
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #e9ecef;
+            border-radius: 3px;
+            border-left: 5px solid #6c757d;
+        }
+        .notification.info {
+            background-color: #d1ecf1;
+            border-left-color: #17a2b8;
+        }
+        .notification.warning {
+            background-color: #fff3cd;
+            border-left-color: #ffc107;
+        }
+        .notification.error {
+            background-color: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        .notification.success {
+            background-color: #d4edda;
+            border-left-color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Robust WebSocket Test</h1>
+        
+        <div class="notification info">
+            This tool tests WebSocket connections with multiple configuration options and fallback mechanisms.
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="ws-test">WebSocket Test</div>
+            <div class="tab" data-tab="sse-test">SSE Fallback</div>
+            <div class="tab" data-tab="http-fallback">HTTP Fallback</div>
+            <div class="tab" data-tab="debug">Debug Info</div>
+        </div>
+        
+        <div class="tab-content active" id="ws-test">
+            <div class="panel">
+                <h2>WebSocket Connection</h2>
+                
+                <div class="options">
+                    <div class="config-item">
+                        <label for="endpoint-select">Endpoint:</label>
+                        <select id="endpoint-select">
+                            <option value="/ws">Main WebSocket (/ws)</option>
+                            <option value="/ws-simple">Simple WebSocket (/ws-simple)</option>
+                            <option value="/ws-legacy">Legacy WebSocket (/ws-legacy)</option>
+                            <option value="/socket.io/">Socket.IO (/socket.io/)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="config-item">
+                        <label for="protocol-select">Protocol:</label>
+                        <select id="protocol-select">
+                            <option value="auto">Auto-detect (wss/ws)</option>
+                            <option value="wss">Secure (wss://)</option>
+                            <option value="ws">Standard (ws://)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="config-item">
+                        <label for="reconnect-attempts">Reconnect Attempts:</label>
+                        <input type="number" id="reconnect-attempts" value="5" min="0" max="10">
+                    </div>
+                    
+                    <div class="config-item">
+                        <label for="reconnect-delay">Base Reconnect Delay (ms):</label>
+                        <input type="number" id="reconnect-delay" value="1000" min="100" max="10000">
+                    </div>
+                    
+                    <div class="config-item">
+                        <label for="exponential-backoff">Exponential Backoff:</label>
+                        <input type="checkbox" id="exponential-backoff" checked>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button id="connect-btn">Connect</button>
+                    <button id="disconnect-btn" disabled>Disconnect</button>
+                    <button id="clear-log-btn">Clear Log</button>
+                </div>
+                
+                <div id="status" class="status disconnected">Status: Disconnected</div>
+                
+                <div class="log" id="log"></div>
+                
+                <div class="controls">
+                    <input type="text" id="message" placeholder="Enter message" value='{"type":"ping","timestamp":123456789}'>
+                    <button id="send-btn" disabled>Send</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="sse-test">
+            <div class="panel">
+                <h2>Server-Sent Events (SSE) Fallback</h2>
+                
+                <div class="notification info">
+                    SSE provides one-way communication from server to client when WebSockets aren't available.
+                </div>
+                
+                <div class="controls">
+                    <button id="sse-connect-btn">Connect to SSE</button>
+                    <button id="sse-disconnect-btn" disabled>Disconnect</button>
+                    <button id="sse-clear-log-btn">Clear Log</button>
+                </div>
+                
+                <div id="sse-status" class="status disconnected">Status: Disconnected</div>
+                
+                <div class="log" id="sse-log"></div>
+                
+                <div class="controls">
+                    <input type="text" id="sse-message" placeholder="Message to broadcast via API">
+                    <button id="sse-broadcast-btn" disabled>Broadcast via API</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="http-fallback">
+            <div class="panel">
+                <h2>HTTP Fallback</h2>
+                
+                <div class="notification info">
+                    HTTP fallback allows message sending when both WebSockets and SSE are unavailable.
+                </div>
+                
+                <div class="controls">
+                    <input type="text" id="http-message" placeholder="Enter message" value='{"type":"echo","message":"Hello via HTTP fallback"}'>
+                    <button id="http-send-btn">Send via HTTP</button>
+                    <button id="http-clear-log-btn">Clear Log</button>
+                </div>
+                
+                <div class="log" id="http-log"></div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="debug">
+            <div class="panel">
+                <h2>Debug Information</h2>
+                
+                <div class="controls">
+                    <button id="refresh-debug-btn">Refresh Debug Info</button>
+                </div>
+                
+                <pre id="debug-info"></pre>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // DOM elements - WebSocket Tab
+        const connectBtn = document.getElementById('connect-btn');
+        const disconnectBtn = document.getElementById('disconnect-btn');
+        const clearLogBtn = document.getElementById('clear-log-btn');
+        const statusDiv = document.getElementById('status');
+        const logDiv = document.getElementById('log');
+        const messageInput = document.getElementById('message');
+        const sendBtn = document.getElementById('send-btn');
+        const endpointSelect = document.getElementById('endpoint-select');
+        const protocolSelect = document.getElementById('protocol-select');
+        const reconnectAttemptsInput = document.getElementById('reconnect-attempts');
+        const reconnectDelayInput = document.getElementById('reconnect-delay');
+        const exponentialBackoffCheckbox = document.getElementById('exponential-backoff');
+        
+        // DOM elements - SSE Tab
+        const sseConnectBtn = document.getElementById('sse-connect-btn');
+        const sseDisconnectBtn = document.getElementById('sse-disconnect-btn');
+        const sseClearLogBtn = document.getElementById('sse-clear-log-btn');
+        const sseStatusDiv = document.getElementById('sse-status');
+        const sseLogDiv = document.getElementById('sse-log');
+        const sseMessageInput = document.getElementById('sse-message');
+        const sseBroadcastBtn = document.getElementById('sse-broadcast-btn');
+        
+        // DOM elements - HTTP Fallback Tab
+        const httpMessageInput = document.getElementById('http-message');
+        const httpSendBtn = document.getElementById('http-send-btn');
+        const httpClearLogBtn = document.getElementById('http-clear-log-btn');
+        const httpLogDiv = document.getElementById('http-log');
+        
+        // DOM elements - Debug Tab
+        const debugInfoPre = document.getElementById('debug-info');
+        const refreshDebugBtn = document.getElementById('refresh-debug-btn');
+        
+        // Connection instances
+        let socket = null;
+        let sseSource = null;
+        let reconnectTimer = null;
+        let reconnectAttempt = 0;
+        let clientId = `client_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
+        
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Deactivate all tabs
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Activate selected tab
+                tab.classList.add('active');
+                document.getElementById(tab.getAttribute('data-tab')).classList.add('active');
+                
+                // Update debug info when switching to debug tab
+                if (tab.getAttribute('data-tab') === 'debug') {
+                    updateDebugInfo();
+                }
+            });
+        });
+        
+        // Log functions
+        function logToWebSocket(message) {
+            const timestamp = new Date().toISOString();
+            const entry = document.createElement('div');
+            entry.textContent = `${timestamp}: ${message}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            
+            console.log(`[WebSocket] ${message}`);
+        }
+        
+        function logToSSE(message) {
+            const timestamp = new Date().toISOString();
+            const entry = document.createElement('div');
+            entry.textContent = `${timestamp}: ${message}`;
+            sseLogDiv.appendChild(entry);
+            sseLogDiv.scrollTop = sseLogDiv.scrollHeight;
+            
+            console.log(`[SSE] ${message}`);
+        }
+        
+        function logToHTTP(message) {
+            const timestamp = new Date().toISOString();
+            const entry = document.createElement('div');
+            entry.textContent = `${timestamp}: ${message}`;
+            httpLogDiv.appendChild(entry);
+            httpLogDiv.scrollTop = httpLogDiv.scrollHeight;
+            
+            console.log(`[HTTP Fallback] ${message}`);
+        }
+        
+        // Update WebSocket UI state
+        function updateWebSocketState(state) {
+            statusDiv.className = `status ${state}`;
+            
+            switch(state) {
+                case 'connected':
+                    statusDiv.textContent = 'Status: Connected';
+                    connectBtn.disabled = true;
+                    disconnectBtn.disabled = false;
+                    sendBtn.disabled = false;
+                    break;
+                case 'disconnected':
+                    statusDiv.textContent = 'Status: Disconnected';
+                    connectBtn.disabled = false;
+                    disconnectBtn.disabled = true;
+                    sendBtn.disabled = true;
+                    break;
+                case 'connecting':
+                    statusDiv.textContent = 'Status: Connecting...';
+                    connectBtn.disabled = true;
+                    disconnectBtn.disabled = false;
+                    sendBtn.disabled = true;
+                    break;
+            }
+            
+            updateDebugInfo();
+        }
+        
+        // Update SSE UI state
+        function updateSSEState(state) {
+            sseStatusDiv.className = `status ${state}`;
+            
+            switch(state) {
+                case 'connected':
+                    sseStatusDiv.textContent = 'Status: Connected';
+                    sseConnectBtn.disabled = true;
+                    sseDisconnectBtn.disabled = false;
+                    sseBroadcastBtn.disabled = false;
+                    break;
+                case 'disconnected':
+                    sseStatusDiv.textContent = 'Status: Disconnected';
+                    sseConnectBtn.disabled = false;
+                    sseDisconnectBtn.disabled = true;
+                    sseBroadcastBtn.disabled = true;
+                    break;
+                case 'connecting':
+                    sseStatusDiv.textContent = 'Status: Connecting...';
+                    sseConnectBtn.disabled = true;
+                    sseDisconnectBtn.disabled = false;
+                    sseBroadcastBtn.disabled = true;
+                    break;
+            }
+            
+            updateDebugInfo();
+        }
+        
+        // Update debug info
+        function updateDebugInfo() {
+            const host = window.location.host;
+            const baseUrl = `${window.location.protocol}//${host}`;
+            
+            const info = {
+                date: new Date().toISOString(),
+                page: {
+                    url: window.location.href,
+                    protocol: window.location.protocol,
+                    host: window.location.host,
+                    pathname: window.location.pathname
+                },
+                currentEndpoint: endpointSelect.value,
+                fullWebSocketUrl: getWebSocketUrl(),
+                userAgent: navigator.userAgent,
+                clientInfo: {
+                    onLine: navigator.onLine,
+                    cookiesEnabled: navigator.cookieEnabled,
+                    language: navigator.language,
+                    platform: navigator.platform
+                },
+                webSocketState: socket ? ['CONNECTING', 'OPEN', 'CLOSING', 'CLOSED'][socket.readyState] : 'null',
+                sseState: sseSource ? 'connected' : 'disconnected',
+                clientId: clientId,
+                configuration: {
+                    reconnectAttempts: parseInt(reconnectAttemptsInput.value),
+                    reconnectDelay: parseInt(reconnectDelayInput.value),
+                    exponentialBackoff: exponentialBackoffCheckbox.checked,
+                    endpoint: endpointSelect.value,
+                    protocol: protocolSelect.value
+                },
+                endpoints: {
+                    mainWebSocket: `${baseUrl}/ws`,
+                    simpleWebSocket: `${baseUrl}/ws-simple`,
+                    legacyWebSocket: `${baseUrl}/ws-legacy`,
+                    socketIO: `${baseUrl}/socket.io/`,
+                    sse: `${baseUrl}/api/events?clientId=${clientId}`,
+                    httpFallback: `${baseUrl}/api/ws-fallback/send`
+                }
+            };
+            
+            debugInfoPre.textContent = JSON.stringify(info, null, 2);
+        }
+        
+        // Get WebSocket URL based on current configuration
+        function getWebSocketUrl() {
+            const host = window.location.host;
+            const endpoint = endpointSelect.value;
+            let protocol;
+            
+            switch(protocolSelect.value) {
+                case 'auto':
+                    protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                    break;
+                case 'wss':
+                    protocol = 'wss:';
+                    break;
+                case 'ws':
+                    protocol = 'ws:';
+                    break;
+            }
+            
+            return `${protocol}//${host}${endpoint}`;
+        }
+        
+        // Connect to WebSocket
+        function connectWebSocket() {
+            // Clear any previous reconnect timer
+            if (reconnectTimer) {
+                clearTimeout(reconnectTimer);
+                reconnectTimer = null;
+            }
+            
+            reconnectAttempt = 0;
+            const url = getWebSocketUrl();
+            
+            try {
+                logToWebSocket(`Connecting to ${url}...`);
+                updateWebSocketState('connecting');
+                
+                socket = new WebSocket(url);
+                
+                socket.onopen = () => {
+                    logToWebSocket('Connection established');
+                    updateWebSocketState('connected');
+                    reconnectAttempt = 0;
+                    
+                    // Send initial message with client info
+                    try {
+                        socket.send(JSON.stringify({
+                            type: 'client_info',
+                            clientId: clientId,
+                            userAgent: navigator.userAgent,
+                            timestamp: Date.now()
+                        }));
+                    } catch (error) {
+                        logToWebSocket(`Error sending initial message: ${error.message}`);
+                    }
+                };
+                
+                socket.onmessage = (event) => {
+                    try {
+                        // Try to parse as JSON
+                        const data = JSON.parse(event.data);
+                        logToWebSocket(`Received: ${JSON.stringify(data, null, 2)}`);
+                    } catch (error) {
+                        // Not JSON, log as string
+                        logToWebSocket(`Received: ${event.data}`);
+                    }
+                };
+                
+                socket.onclose = (event) => {
+                    logToWebSocket(`Connection closed. Code: ${event.code}, Reason: ${event.reason || 'No reason provided'}`);
+                    updateWebSocketState('disconnected');
+                    
+                    // Check if we should attempt to reconnect
+                    const maxAttempts = parseInt(reconnectAttemptsInput.value);
+                    if (maxAttempts > 0 && reconnectAttempt < maxAttempts) {
+                        reconnectAttempt++;
+                        
+                        // Calculate delay with optional exponential backoff
+                        let delay = parseInt(reconnectDelayInput.value);
+                        if (exponentialBackoffCheckbox.checked) {
+                            delay = delay * Math.pow(1.5, reconnectAttempt - 1);
+                        }
+                        
+                        logToWebSocket(`Attempting to reconnect in ${delay}ms (attempt ${reconnectAttempt}/${maxAttempts})`);
+                        
+                        reconnectTimer = setTimeout(() => {
+                            if (socket.readyState === WebSocket.CLOSED) {
+                                connectWebSocket();
+                            }
+                        }, delay);
+                    } else if (reconnectAttempt >= maxAttempts) {
+                        logToWebSocket('Maximum reconnection attempts reached');
+                    }
+                    
+                    socket = null;
+                };
+                
+                socket.onerror = (error) => {
+                    logToWebSocket('WebSocket error occurred');
+                    console.error('WebSocket error:', error);
+                };
+            } catch (error) {
+                logToWebSocket(`Error creating WebSocket: ${error.message}`);
+                updateWebSocketState('disconnected');
+            }
+        }
+        
+        // Disconnect from WebSocket
+        function disconnectWebSocket() {
+            if (reconnectTimer) {
+                clearTimeout(reconnectTimer);
+                reconnectTimer = null;
+            }
+            
+            if (socket) {
+                logToWebSocket('Disconnecting...');
+                socket.close(1000, 'User initiated disconnect');
+            }
+        }
+        
+        // Send message to WebSocket
+        function sendWebSocketMessage() {
+            if (!socket || socket.readyState !== WebSocket.OPEN) {
+                logToWebSocket('Cannot send message: not connected');
+                return;
+            }
+            
+            const message = messageInput.value;
+            
+            try {
+                // Try to parse as JSON to validate
+                JSON.parse(message);
+                socket.send(message);
+                logToWebSocket(`Sent: ${message}`);
+            } catch (error) {
+                // Not valid JSON, ask for confirmation
+                if (confirm('Message is not valid JSON. Send as plain text?')) {
+                    socket.send(message);
+                    logToWebSocket(`Sent (as plain text): ${message}`);
+                } else {
+                    logToWebSocket('Message sending cancelled');
+                }
+            }
+        }
+        
+        // Connect to SSE
+        function connectSSE() {
+            try {
+                const url = `/api/events?clientId=${clientId}`;
+                logToSSE(`Connecting to SSE at ${url}...`);
+                updateSSEState('connecting');
+                
+                sseSource = new EventSource(url);
+                
+                sseSource.onopen = () => {
+                    logToSSE('SSE connection established');
+                    updateSSEState('connected');
+                };
+                
+                sseSource.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        logToSSE(`Received: ${JSON.stringify(data, null, 2)}`);
+                    } catch (error) {
+                        logToSSE(`Received: ${event.data}`);
+                    }
+                };
+                
+                sseSource.onerror = (error) => {
+                    logToSSE('SSE connection error');
+                    console.error('SSE error:', error);
+                    updateSSEState('disconnected');
+                    closeSSE();
+                };
+                
+            } catch (error) {
+                logToSSE(`Error creating SSE connection: ${error.message}`);
+                updateSSEState('disconnected');
+            }
+        }
+        
+        // Close SSE connection
+        function closeSSE() {
+            if (sseSource) {
+                logToSSE('Closing SSE connection...');
+                sseSource.close();
+                sseSource = null;
+                updateSSEState('disconnected');
+            }
+        }
+        
+        // Broadcast message via SSE API
+        function broadcastSSEMessage() {
+            const message = sseMessageInput.value;
+            
+            if (!message) {
+                logToSSE('Message cannot be empty');
+                return;
+            }
+            
+            let data;
+            try {
+                // Try to parse as JSON
+                data = JSON.parse(message);
+            } catch (error) {
+                // Not valid JSON, create a simple message object
+                data = {
+                    type: 'message',
+                    text: message,
+                    timestamp: new Date().toISOString()
+                };
+            }
+            
+            // Add client ID if not present
+            if (!data.clientId) {
+                data.clientId = clientId;
+            }
+            
+            fetch('/api/events/broadcast', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                logToSSE(`Broadcast sent: ${JSON.stringify(data)}`);
+            })
+            .catch(error => {
+                logToSSE(`Error broadcasting message: ${error.message}`);
+            });
+        }
+        
+        // Send message via HTTP fallback
+        function sendHTTPMessage() {
+            const message = httpMessageInput.value;
+            
+            if (!message) {
+                logToHTTP('Message cannot be empty');
+                return;
+            }
+            
+            let data;
+            try {
+                // Try to parse as JSON
+                data = JSON.parse(message);
+            } catch (error) {
+                // Not valid JSON, create a simple message object
+                data = {
+                    type: 'message',
+                    text: message,
+                    timestamp: new Date().toISOString()
+                };
+            }
+            
+            // Add client ID if not present
+            if (!data.clientId) {
+                data.clientId = clientId;
+            }
+            
+            fetch('/api/ws-fallback/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                logToHTTP(`Received response: ${JSON.stringify(data, null, 2)}`);
+            })
+            .catch(error => {
+                logToHTTP(`Error sending HTTP message: ${error.message}`);
+            });
+        }
+        
+        // Clear log functions
+        function clearWebSocketLog() {
+            logDiv.innerHTML = '';
+        }
+        
+        function clearSSELog() {
+            sseLogDiv.innerHTML = '';
+        }
+        
+        function clearHTTPLog() {
+            httpLogDiv.innerHTML = '';
+        }
+        
+        // Set up event listeners
+        connectBtn.addEventListener('click', connectWebSocket);
+        disconnectBtn.addEventListener('click', disconnectWebSocket);
+        clearLogBtn.addEventListener('click', clearWebSocketLog);
+        sendBtn.addEventListener('click', sendWebSocketMessage);
+        
+        sseConnectBtn.addEventListener('click', connectSSE);
+        sseDisconnectBtn.addEventListener('click', closeSSE);
+        sseClearLogBtn.addEventListener('click', clearSSELog);
+        sseBroadcastBtn.addEventListener('click', broadcastSSEMessage);
+        
+        httpSendBtn.addEventListener('click', sendHTTPMessage);
+        httpClearLogBtn.addEventListener('click', clearHTTPLog);
+        
+        refreshDebugBtn.addEventListener('click', updateDebugInfo);
+        
+        // Initialize
+        function init() {
+            logToWebSocket('WebSocket test page initialized');
+            logToSSE('SSE test page initialized');
+            logToHTTP('HTTP fallback test page initialized');
+            updateDebugInfo();
+            
+            // Log available endpoints
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const host = window.location.host;
+            logToWebSocket(`Available WebSocket endpoints:`);
+            logToWebSocket(`- Main WebSocket Server: ${protocol}//${host}/ws`);
+            logToWebSocket(`- Simple WebSocket Server: ${protocol}//${host}/ws-simple`);
+            logToWebSocket(`- Legacy WebSocket Server: ${protocol}//${host}/ws-legacy`);
+            logToWebSocket(`- Socket.IO: ${protocol}//${host}/socket.io/`);
+            
+            // Add client ID to message inputs
+            const defaultPingMessage = JSON.stringify({
+                type: 'ping',
+                clientId: clientId,
+                timestamp: Date.now()
+            }, null, 2);
+            
+            messageInput.value = defaultPingMessage;
+        }
+        
+        // Initialize on page load
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

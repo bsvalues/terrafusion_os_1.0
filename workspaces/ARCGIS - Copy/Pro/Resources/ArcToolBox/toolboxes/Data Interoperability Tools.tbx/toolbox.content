@@ -1,0 +1,15 @@
+{
+    "version": "1.0",
+    "alias": "interop",
+    "displayname": "$rc:title",
+    "description": "$rc:descr",
+    "helpcontext": "18000000",
+    "toolsets": {
+        "<root>": {
+            "tools": [
+                "QuickExport",
+                "QuickImport"
+            ]
+        }
+    }
+}

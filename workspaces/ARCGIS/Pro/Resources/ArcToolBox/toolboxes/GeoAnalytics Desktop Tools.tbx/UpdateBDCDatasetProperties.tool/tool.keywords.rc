@@ -1,0 +1,27 @@
+{
+    "set": [
+        "bdc",
+        "change",
+        "connect",
+        "edit",
+        "fields",
+        "geoanalytics",
+        "geometry",
+        "mfc",
+        "modify",
+        "orc",
+        "schema",
+        "source data",
+        "time",
+        "big data",
+        "big data connection",
+        "combine",
+        "delimited files",
+        "feature class",
+        "file geodatabase",
+        "merge",
+        "mosiac",
+        "parquet",
+        "schemas"
+    ]
+}

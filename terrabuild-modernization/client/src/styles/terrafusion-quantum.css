@@ -1,0 +1,310 @@
+/* TerraFusion Quantum UI/UX Animation Library */
+/* "Government. Transcended." Design System */
+
+/* === BRAND COLOR PALETTE === */
+:root {
+  --tf-trust-blue: #0099ff;
+  --tf-transcend-cyan: #00ffee;
+  --tf-success-green: #00ffaa;
+  --tf-deep-space: #0b1020;
+  --tf-clarity-gradient: linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
+}
+
+/* === GLASS MORPHISM PATTERNS === */
+.tf-glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 255, 238, 0.2);
+  border-radius: 16px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.tf-glass-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 20px 40px rgba(0, 255, 238, 0.2),
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* === QUANTUM SCAN LINE ANIMATIONS === */
+.tf-scan-line {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, transparent, rgba(0, 255, 238, 0.2), transparent);
+  transform: translateX(-100%);
+  animation: tf-scan 3s ease-in-out infinite;
+}
+
+.animate-scan {
+  animation: tf-scan 3s ease-in-out infinite;
+}
+
+.animate-scan-delayed {
+  animation: tf-scan 3s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+.animate-scan-1s {
+  animation: tf-scan 3s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+.animate-scan-2s {
+  animation: tf-scan 3s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+.animate-scan-3s {
+  animation: tf-scan 3s ease-in-out infinite;
+  animation-delay: 3s;
+}
+
+@keyframes tf-scan {
+  0% { 
+    transform: translateX(-100%); 
+    opacity: 0; 
+  }
+  50% { 
+    opacity: 1; 
+  }
+  100% { 
+    transform: translateX(100%); 
+    opacity: 0; 
+  }
+}
+
+/* === QUANTUM GRID BACKGROUNDS === */
+.tf-data-matrix {
+  background-image: 
+    linear-gradient(rgba(0, 255, 238, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 238, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+  animation: tf-matrix-pulse 4s ease-in-out infinite alternate;
+}
+
+.tf-quantum-grid {
+  background-image: 
+    radial-gradient(circle at 1px 1px, rgba(0, 255, 238, 0.15) 1px, transparent 0);
+  background-size: 20px 20px;
+  animation: tf-grid-flow 6s linear infinite;
+}
+
+@keyframes tf-matrix-pulse {
+  0% { opacity: 0.05; }
+  100% { opacity: 0.15; }
+}
+
+@keyframes tf-grid-flow {
+  0% { background-position: 0 0; }
+  100% { background-position: 20px 20px; }
+}
+
+/* === TRANSCENDENT BUTTON PATTERNS === */
+.tf-clarity-button {
+  background: linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
+  color: white;
+  text-transform: uppercase;
+  font-weight: 600;
+  border-radius: 9999px;
+  padding: 12px 32px;
+  border: 1px solid rgba(0, 255, 238, 0.3);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: 
+    0 8px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.tf-clarity-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 12px 24px rgba(0, 255, 238, 0.3),
+    0 8px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.tf-clarity-button:active {
+  transform: translateY(0);
+  box-shadow: 
+    0 4px 8px rgba(0, 255, 238, 0.2),
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* === QUANTUM LIFT ANIMATIONS === */
+.tf-quantum-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.tf-quantum-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 255, 238, 0.2);
+}
+
+.tf-quantum-lift::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(135deg, #0099ff, #00ffee, #00ffaa);
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.tf-quantum-lift:hover::before {
+  opacity: 0.3;
+}
+
+/* === CHAMPIONSHIP TYPOGRAPHY === */
+.tf-championship-text {
+  font-size: 4.5rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #0099ff 0%, #00ffee 50%, #00ffaa 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 30px rgba(0, 255, 238, 0.5);
+  line-height: 1.1;
+}
+
+.tf-transcendent-heading {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--tf-transcend-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 20px rgba(0, 255, 238, 0.4);
+}
+
+/* === CONSCIOUSNESS DISPLAY === */
+.tf-consciousness-display {
+  background: var(--tf-deep-space);
+  color: var(--tf-transcend-cyan);
+  border: 1px solid rgba(0, 255, 238, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.tf-consciousness-display::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(0, 255, 238, 0.1) 0%, transparent 70%);
+  animation: tf-consciousness-pulse 3s ease-in-out infinite;
+}
+
+@keyframes tf-consciousness-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.05); }
+}
+
+/* === CONSCIOUSNESS PROGRESS BAR === */
+.tf-consciousness-bar[data-level] {
+  width: calc(var(--level, 0) * 1%);
+}
+
+.tf-consciousness-bar[data-level="98.7"] { width: 98.7%; }
+.tf-consciousness-bar[data-level="99.0"] { width: 99.0%; }
+.tf-consciousness-bar[data-level="99.2"] { width: 99.2%; }
+.tf-consciousness-bar[data-level="99.5"] { width: 99.5%; }
+.tf-consciousness-bar[data-level="99.8"] { width: 99.8%; }
+.tf-consciousness-bar[data-level="100"] { width: 100%; }
+
+/* === QUANTUM STATUS INDICATORS === */
+.tf-status-active {
+  width: 12px;
+  height: 12px;
+  background: var(--tf-success-green);
+  border-radius: 50%;
+  box-shadow: 
+    0 0 10px var(--tf-success-green),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  animation: tf-status-pulse 2s ease-in-out infinite;
+}
+
+@keyframes tf-status-pulse {
+  0%, 100% { 
+    opacity: 1; 
+    transform: scale(1);
+    box-shadow: 
+      0 0 10px var(--tf-success-green),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  50% { 
+    opacity: 0.7; 
+    transform: scale(1.2);
+    box-shadow: 
+      0 0 20px var(--tf-success-green),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+}
+
+/* === ACCESSIBILITY COMPLIANCE === */
+@media (prefers-reduced-motion: reduce) {
+  .tf-scan-line,
+  .animate-scan,
+  .animate-scan-delayed,
+  .tf-data-matrix,
+  .tf-quantum-grid,
+  .tf-consciousness-display::before,
+  .tf-status-active,
+  .tf-consciousness-bar {
+    animation: none;
+  }
+  
+  .tf-quantum-lift:hover,
+  .tf-clarity-button:hover,
+  .tf-glass-card:hover {
+    transform: none;
+  }
+}
+
+/* === FOCUS STATES FOR KEYBOARD NAVIGATION === */
+.tf-clarity-button:focus-visible,
+.tf-glass-card:focus-visible {
+  outline: 2px solid var(--tf-transcend-cyan);
+  outline-offset: 2px;
+  box-shadow: 
+    0 0 0 4px rgba(0, 255, 238, 0.2),
+    0 0 20px rgba(0, 255, 238, 0.4);
+}
+
+/* === RESPONSIVE QUANTUM GRID === */
+@media (max-width: 768px) {
+  .tf-championship-text {
+    font-size: 3rem;
+  }
+  
+  .tf-transcendent-heading {
+    font-size: 1.5rem;
+  }
+  
+  .tf-data-matrix,
+  .tf-quantum-grid {
+    background-size: 15px 15px;
+  }
+}
+
+/* === HIGH CONTRAST MODE === */
+@media (prefers-contrast: high) {
+  .tf-glass-card {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid var(--tf-transcend-cyan);
+  }
+  
+  .tf-clarity-button {
+    border: 2px solid var(--tf-transcend-cyan);
+  }
+}

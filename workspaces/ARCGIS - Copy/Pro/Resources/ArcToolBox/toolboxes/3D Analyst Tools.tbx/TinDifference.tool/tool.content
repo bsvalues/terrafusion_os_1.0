@@ -1,0 +1,41 @@
+{
+    "type": "FunctionTool",
+    "guid": "{063dc538-114e-42ec-af69-1aa9b3af3daf}",
+    "displayname": "$rc:title",
+    "helpcontent": "5990010",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_tin1": {
+            "displayname": "$rc:in_tin1.title",
+            "datatype": {
+                "type": "GPTinLayer"
+            },
+            "description": "$rc:in_tin1.descr"
+        },
+        "in_tin2": {
+            "displayname": "$rc:in_tin2.title",
+            "datatype": {
+                "type": "GPTinLayer"
+            },
+            "description": "$rc:in_tin2.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        }
+    },
+    "environments": [
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "extent",
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

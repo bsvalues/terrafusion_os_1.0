@@ -1,0 +1,22 @@
+{
+    "set": [
+        "update",
+        "catalog",
+        "catalog dataset",
+        "catalog layer",
+        "combine",
+        "data reference",
+        "dataset",
+        "enterprise",
+        "import",
+        "include",
+        "input",
+        "item",
+        "layer",
+        "layer type",
+        "load",
+        "portal",
+        "raster catalog",
+        "workspace"
+    ]
+}

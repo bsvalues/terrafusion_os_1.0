@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  terrafusion-app:
+    build: .
+    container_name: terrafusion-enterprise
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@db:5432/terrafusion
+      - SESSION_SECRET=${SESSION_SECRET}
+      - FLASK_ENV=production
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./logs:/app/logs
+      - ./exports:/app/exports
+      - ./backup:/app/backup
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+
+  db:
+    image: postgres:15-alpine
+    container_name: terrafusion-postgres
+    environment:
+      - POSTGRES_DB=terrafusion
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backup/db:/backup
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: terrafusion-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: terrafusion-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./security/certificates:/etc/nginx/ssl
+      - ./static:/var/www/static
+    depends_on:
+      - terrafusion-app
+    restart: unless-stopped
+    networks:
+      - terrafusion-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  terrafusion-network:
+    driver: bridge

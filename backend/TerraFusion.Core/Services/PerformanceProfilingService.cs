@@ -8,6 +8,9 @@ using System.Text.Json;
 using System.Collections.Concurrent;
 using System.Linq;
 
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators
+
 namespace TerraFusion.Core.Services
 {
     public interface IPerformanceProfilingService
@@ -168,11 +171,11 @@ namespace TerraFusion.Core.Services
             if (!_enableProfiling)
             {
                 await operation();
-                return new ProfileResult { 
-                    OperationName = operationName, 
+                return new ProfileResult {
+                    OperationName = operationName,
                     IsSuccess = true,
-                    ErrorMessage = null,
-                    Exception = null
+                    ErrorMessage = null!,
+                    Exception = null!
                 };
             }
 
@@ -182,8 +185,8 @@ namespace TerraFusion.Core.Services
                 StartTime = DateTime.UtcNow,
                 ThreadId = Environment.CurrentManagedThreadId,
                 Context = context ?? new Dictionary<string, object>(),
-                ErrorMessage = null,
-                Exception = null
+                ErrorMessage = null!,
+                Exception = null!
             };
 
             var stopwatch = Stopwatch.StartNew();
@@ -219,7 +222,7 @@ namespace TerraFusion.Core.Services
             return await ProfileAsync<object>(operationName, async () =>
             {
                 await operation();
-                return null;
+                return null!;
             }, context);
         }
 
@@ -290,7 +293,7 @@ namespace TerraFusion.Core.Services
         public async Task<List<PerformanceMetric>> GetMetricsAsync(string? operationName = null, TimeSpan? timeWindow = null)
         {
             var cutoff = timeWindow.HasValue ? DateTime.UtcNow - timeWindow.Value : DateTime.MinValue;
-            
+
             var filteredMetrics = _metrics
                 .Where(m => m.Timestamp >= cutoff)
                 .Where(m => string.IsNullOrEmpty(operationName) || m.OperationName == operationName)
@@ -328,7 +331,7 @@ namespace TerraFusion.Core.Services
         {
             baseline.LastUpdated = DateTime.UtcNow;
             _baselines[operationName] = baseline;
-            
+
             _logger.LogInformation("Updated performance baseline for operation {OperationName}", operationName);
         }
 
@@ -540,8 +543,8 @@ namespace TerraFusion.Core.Services
                     ThreadId = Environment.CurrentManagedThreadId,
                     Context = context ?? new Dictionary<string, object>(),
                     MemoryBefore = GC.GetTotalMemory(false),
-                    ErrorMessage = null,
-                    Exception = null
+                    ErrorMessage = null!,
+                    Exception = null!
                 };
                 _stopwatch = Stopwatch.StartNew();
             }

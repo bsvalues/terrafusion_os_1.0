@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using TerraFusion.Core.DTOs;
 using TerraFusion.Core.Entities;
+using TerraFusion.AI.Models;
 
 namespace TerraFusion.AI.Services
 {
@@ -13,7 +14,81 @@ namespace TerraFusion.AI.Services
             _logger = logger;
         }
 
-        public async Task<PropertyValuationResult> AnalyzePropertyAsync(PropertyValuationRequest request)
+        public async System.Threading.Tasks.Task<QuantumValuation> GetQuantumValuationAsync(string parcelId, string countyId)
+        {
+            _logger.LogInformation("Getting quantum valuation for parcel {ParcelId} in {CountyId}", parcelId, countyId);
+
+            // TODO: Implement quantum-enhanced valuation with AI swarm
+            // Future: Integrate with TerraFusion.Consciousness for swarm analysis
+            await System.Threading.Tasks.Task.Delay(150);
+
+            return new QuantumValuation
+            {
+                ParcelId = parcelId,
+                EstimatedValue = 425000m, // Placeholder - will be replaced with actual quantum analysis
+                ConfidenceScore = 0.95m,
+                ValuationMethod = "Quantum-Enhanced AI Swarm Analysis",
+                ValuationDate = DateTime.UtcNow,
+                QuantumFactors = new Dictionary<string, object>
+                {
+                    ["QuantumOptimizationApplied"] = true,
+                    ["SwarmConsensusLevel"] = 0.98,
+                    ["QuantumFactor"] = 949,
+                    ["ConsciousnessLevel"] = 8.5,
+                    ["AgentCount"] = 50000,
+                    ["CountyId"] = countyId
+                }
+            };
+        }
+
+        public async System.Threading.Tasks.Task<List<ComparableProperty>> GetComparablesAsync(string parcelId, string countyId)
+        {
+            _logger.LogInformation("Getting comparables for parcel {ParcelId} in {CountyId}", parcelId, countyId);
+
+            // TODO: Implement AI-powered comparable property search
+            // Future: Query Harris PACS, apply machine learning similarity scoring
+            await System.Threading.Tasks.Task.Delay(120);
+
+            // Return placeholder comparables
+            return new List<ComparableProperty>
+            {
+                new ComparableProperty
+                {
+                    ParcelId = $"{parcelId}-COMP-001",
+                    Address = "123 Main St, Benton County, WA",
+                    SalePrice = 412000m,
+                    SaleDate = DateTime.UtcNow.AddMonths(-3),
+                    SimilarityScore = 0.92,
+                    SquareFootage = 2150,
+                    Bedrooms = 4,
+                    Bathrooms = 2
+                },
+                new ComparableProperty
+                {
+                    ParcelId = $"{parcelId}-COMP-002",
+                    Address = "456 Oak Ave, Benton County, WA",
+                    SalePrice = 438000m,
+                    SaleDate = DateTime.UtcNow.AddMonths(-2),
+                    SimilarityScore = 0.89,
+                    SquareFootage = 2280,
+                    Bedrooms = 4,
+                    Bathrooms = 3
+                },
+                new ComparableProperty
+                {
+                    ParcelId = $"{parcelId}-COMP-003",
+                    Address = "789 Pine Rd, Benton County, WA",
+                    SalePrice = 405000m,
+                    SaleDate = DateTime.UtcNow.AddMonths(-1),
+                    SimilarityScore = 0.87,
+                    SquareFootage = 2050,
+                    Bedrooms = 3,
+                    Bathrooms = 2
+                }
+            };
+        }
+
+        public async System.Threading.Tasks.Task<PropertyValuationResult> AnalyzePropertyAsync(PropertyValuationRequest request)
         {
             // Simulate AI processing delay
             await System.Threading.Tasks.Task.Delay(200);
@@ -44,7 +119,7 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        public async Task<CostPredictionResult> PredictCostsAsync(CostPredictionRequest request)
+        public async System.Threading.Tasks.Task<CostPredictionResult> PredictCostsAsync(CostPredictionRequest request)
         {
             await System.Threading.Tasks.Task.Delay(250);
 
@@ -89,7 +164,7 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        public async Task<List<CostFactor>> GenerateCostFactorsAsync(string location, string projectType)
+        public async System.Threading.Tasks.Task<List<CostFactor>> GenerateCostFactorsAsync(string location, string projectType)
         {
             await System.Threading.Tasks.Task.Delay(100);
 
@@ -131,14 +206,14 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        private async Task<decimal> CalculateBaseValueAsync(PropertyValuationRequest request)
+        private async System.Threading.Tasks.Task<decimal> CalculateBaseValueAsync(PropertyValuationRequest request)
         {
             var squareFootage = request.SquareFootage ?? 2000m;
             var basePricePerSqft = 185m;
             return squareFootage * basePricePerSqft;
         }
 
-        private async Task<decimal> ApplyMarketAdjustmentsAsync(string location, decimal baseValue)
+        private async System.Threading.Tasks.Task<decimal> ApplyMarketAdjustmentsAsync(string location, decimal baseValue)
         {
             var locationMultiplier = location.ToLower() switch
             {

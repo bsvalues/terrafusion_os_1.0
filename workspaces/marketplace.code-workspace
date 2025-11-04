@@ -1,0 +1,179 @@
+{
+  "folders": [
+    {
+      "path": "../marketplace/api",
+      "name": "🌐 Marketplace API"
+    },
+    {
+      "path": "../marketplace/marketplace-frontend",
+      "name": "🎨 Marketplace Frontend"
+    },
+    {
+      "path": "../marketplace/plugins",
+      "name": "🔌 Plugin System"
+    },
+    {
+      "path": "../marketplace/store",
+      "name": "🏪 App Store"
+    },
+    {
+      "path": "../marketplace/testing",
+      "name": "🧪 Marketplace Tests"
+    },
+    {
+      "path": "../SDK",
+      "name": "📦 Platform SDK (read-only)"
+    },
+    {
+      "path": "../docs/marketplace",
+      "name": "📚 Marketplace Docs"
+    },
+    {
+      "path": "../config",
+      "name": "⚙️ Config (shared)"
+    },
+    {
+      "path": "../backend",
+      "name": "🔧 Shared Backend (read-only)"
+    },
+    {
+      "path": "../marketplace"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "../marketplace/*/": true,
+      "!../marketplace/api": false,
+      "!../marketplace/marketplace-frontend": false,
+      "!../marketplace/plugins": false,
+      "!../marketplace/store": false,
+      "!../marketplace/testing": false,
+      "../frontend": true,
+      "../backend": true,
+      "../os-platform": true,
+      "../terrafusion-cos": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "../frontend": true,
+      "../backend": true,
+      "../os-platform": true
+    },
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "eslint.workingDirectories": [
+      "./marketplace/api",
+      "./marketplace/marketplace-frontend"
+    ],
+    "terrafusion.sync": {
+      "autoSync": true,
+      "syncInterval": 15,
+      "conflictResolution": "marketplace-priority",
+      "sharedState": {
+        "backend": "read-only",
+        "sdk": "read-only",
+        "config": "shared-write"
+      }
+    },
+    "terrafusion.compliance": {
+      "fismaMode": "MODERATE",
+      "nist80053": true,
+      "auditTrail": "comprehensive"
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-vscode.vscode-typescript-next",
+      "streetsidesoftware.code-spell-checker",
+      "usernamehw.errorlens",
+      "eamodio.gitlens"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Start Marketplace API",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/api",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "console": "integratedTerminal"
+      },
+      {
+        "name": "Start Marketplace Frontend",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/marketplace-frontend",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "console": "integratedTerminal"
+      }
+    ],
+    "compounds": [
+      {
+        "name": "Start Full Marketplace",
+        "configurations": [
+          "Start Marketplace API",
+          "Start Marketplace Frontend"
+        ],
+        "presentation": {
+          "hidden": false,
+          "group": "marketplace",
+          "order": 1
+        }
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build Marketplace",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "build:marketplace"
+        ],
+        "problemMatcher": [
+          "$tsc"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Test Marketplace",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "test:marketplace"
+        ],
+        "problemMatcher": [],
+        "group": {
+          "kind": "test",
+          "isDefault": true
+        }
+      }
+    ]
+  }
+}

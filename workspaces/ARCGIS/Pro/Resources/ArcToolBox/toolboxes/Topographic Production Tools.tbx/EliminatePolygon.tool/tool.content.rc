@@ -1,0 +1,13 @@
+{
+    "map": {
+        "description": "Eliminates a polygon by merging it with the polygon from the surrounding features that it shares the longest boundary with.",
+        "in_features.descr": "The feature layers that contain the polygons to be deleted.",
+        "in_features.title": "Input Features",
+        "min_area.descr": "<xdoc><p>Polygons smaller than the <span class=\"esri_uicontrol\">Minimum Area</span> will be deleted. If the <span class=\"esri_uicontrol\">Minimum Area</span> is left blank, all features or a selection set from the <span class=\"esri_uicontrol\">Input Features</span> will be considered for elimination.</p></xdoc>",
+        "min_area.title": "Minimum Area",
+        "surrounding_features.descr": "<xdoc><p>The polygon features that the <span class=\"esri_uicontrol\">Input Features</span> are compared against. If the feature is smaller than the <span class=\"esri_uicontrol\">Minimum Area</span>, it becomes part of the input features.</p></xdoc>",
+        "surrounding_features.title": "Surrounding Features",
+        "title": "Eliminate Polygon",
+        "updated_features.title": "Updated Features"
+    }
+}

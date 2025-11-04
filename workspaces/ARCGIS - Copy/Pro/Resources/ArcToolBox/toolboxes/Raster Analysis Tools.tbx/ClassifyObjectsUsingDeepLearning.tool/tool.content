@@ -1,0 +1,206 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\ClassifyObjectsUsingDeepLearning",
+    "displayname": "$rc:title",
+    "helpcontent": "54080003",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "inputRaster": {
+            "display_order": "0",
+            "displayname": "$rc:inputraster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "DEMapServer"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    },
+                    {
+                        "type": "GPMapServerLayer"
+                    },
+                    {
+                        "type": "GPInternetTiledLayer"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "description": "$rc:inputraster.descr"
+        },
+        "inputModel": {
+            "display_order": "2",
+            "displayname": "$rc:inputmodel.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "",
+                    "dlpk_remote"
+                ]
+            },
+            "description": "$rc:inputmodel.descr"
+        },
+        "outputName": {
+            "display_order": "3",
+            "displayname": "$rc:outputname.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:outputname.descr"
+        },
+        "inputFeatures": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:inputfeatures.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPFeatureLayer"
+                    },
+                    {
+                        "type": "GPMapServerLayer"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "description": "$rc:inputfeatures.descr"
+        },
+        "modelArguments": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:modelarguments.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:modelarguments.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:modelarguments.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain"
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "description": "$rc:modelarguments.descr"
+        },
+        "classLabelField": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:classlabelfield.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "ClassLabel",
+            "description": "$rc:classlabelfield.descr"
+        },
+        "processingMode": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:processingmode.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PROCESS_AS_MOSAICKED_IMAGE",
+                        "code": "$rc:processingmode.domain.PROCESS_AS_MOSAICKED_IMAGE"
+                    },
+                    {
+                        "value": "PROCESS_ITEMS_SEPARATELY",
+                        "code": "$rc:processingmode.domain.PROCESS_ITEMS_SEPARATELY"
+                    }
+                ]
+            },
+            "value": "PROCESS_AS_MOSAICKED_IMAGE",
+            "description": "$rc:processingmode.descr"
+        },
+        "outObjects": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "7",
+            "displayname": "$rc:outobjects.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    },
+    "environments": [
+        "cellSize",
+        "extent",
+        "parallelProcessingFactor",
+        "processorType"
+    ]
+}

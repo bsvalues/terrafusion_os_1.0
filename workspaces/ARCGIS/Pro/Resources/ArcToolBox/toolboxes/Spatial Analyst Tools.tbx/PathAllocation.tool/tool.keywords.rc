@@ -1,0 +1,11 @@
+{
+    "set": [
+        "accumulative",
+        "allocation",
+        "cost",
+        "distance",
+        "proximity",
+        "surface",
+        "travel cost"
+    ]
+}

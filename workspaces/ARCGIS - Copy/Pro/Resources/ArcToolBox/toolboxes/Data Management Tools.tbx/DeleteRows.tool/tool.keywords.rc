@@ -1,0 +1,8 @@
+{
+    "set": [
+        "erase",
+        "record",
+        "remove",
+        "tbl"
+    ]
+}

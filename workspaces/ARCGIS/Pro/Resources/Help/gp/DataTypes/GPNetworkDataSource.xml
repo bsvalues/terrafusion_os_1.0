@@ -1,0 +1,5 @@
+<DataType Name="GPNetworkDataSource">
+  <DisplayName>Network Data Source</DisplayName>
+  <Description>Network Data Source</Description>
+</DataType>
+

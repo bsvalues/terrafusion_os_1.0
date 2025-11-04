@@ -26,10 +26,8 @@ const MetricCard: React.FC<MetricCardProps> = ({ label, value, unit = '', thresh
 
   return (
     <div className={`${styles.metricCard} ${isWarning ? styles.warning : ''}`}>
-
       <div className={styles.metricLabel}>{label}</div>
-      <div
- className={styles.metricValue}>
+      <div className={styles.metricValue}>
         {value.toLocaleString()}
         {unit && <span className={styles.metricUnit}>{unit}</span>}
       </div>
@@ -48,7 +46,7 @@ const SystemMonitor: React.FC = () => {
   });
 
   const [isConnected, setIsConnected] = useState(false);
-  
+
   // Get real database status
   const { connectionStatus, databaseHealth } = useRealData();
 
@@ -114,33 +112,31 @@ const SystemMonitor: React.FC = () => {
 
       {/* Database Status Section */}
       <div className={styles.databaseStatus}>
-
         <h4>Database Connections</h4>
-        <div
- className={styles.dbStatusGrid}>
-          <div className={`${styles.dbStatusItem} ${connectionStatus?.realPacsConnected ? styles.connected : styles.disconnected}`}>
-
+        <div className={styles.dbStatusGrid}>
+          <div
+            className={`${styles.dbStatusItem} ${connectionStatus?.realPacsConnected ? styles.connected : styles.disconnected}`}
+          >
             <span className={styles.dbIcon}>🗄️</span>
-            <span
- className={styles.dbName}>Harris PACS</span>
+            <span className={styles.dbName}>Harris PACS</span>
             <span className={styles.dbStatus}>
               {connectionStatus?.realPacsConnected ? '✅ Connected' : '❌ Disconnected'}
             </span>
           </div>
-          <div className={`${styles.dbStatusItem} ${connectionStatus?.terrafusionSyncConnected ? styles.connected : styles.disconnected}`}>
-
+          <div
+            className={`${styles.dbStatusItem} ${connectionStatus?.terrafusionSyncConnected ? styles.connected : styles.disconnected}`}
+          >
             <span className={styles.dbIcon}>🔄</span>
-            <span
- className={styles.dbName}>Terrafusion Sync</span>
+            <span className={styles.dbName}>Terrafusion Sync</span>
             <span className={styles.dbStatus}>
               {connectionStatus?.terrafusionSyncConnected ? '✅ Connected' : '❌ Disconnected'}
             </span>
           </div>
-          <div className={`${styles.dbStatusItem} ${connectionStatus?.propertiesDbConnected ? styles.connected : styles.disconnected}`}>
-
+          <div
+            className={`${styles.dbStatusItem} ${connectionStatus?.propertiesDbConnected ? styles.connected : styles.disconnected}`}
+          >
             <span className={styles.dbIcon}>🏠</span>
-            <span
- className={styles.dbName}>Properties DB</span>
+            <span className={styles.dbName}>Properties DB</span>
             <span className={styles.dbStatus}>
               {connectionStatus?.propertiesDbConnected ? '✅ Connected' : '❌ Disconnected'}
             </span>
@@ -149,13 +145,11 @@ const SystemMonitor: React.FC = () => {
       </div>
 
       <div className={styles.footer}>
-
         <div className={styles.footerText}>
-          Benton County • Harris PACS 9.0 • Production Mode • 
-          DB Health: {databaseHealth?.allHealthy ? '✅ Healthy' : '⚠️ Issues'}
+          Benton County • Harris PACS 9.0 • Production Mode • DB Health:{' '}
+          {databaseHealth?.allHealthy ? '✅ Healthy' : '⚠️ Issues'}
         </div>
-        <div
- className={styles.timestamp}>Last Update: {new Date().toLocaleTimeString()}</div>
+        <div className={styles.timestamp}>Last Update: {new Date().toLocaleTimeString()}</div>
       </div>
     </div>
   );

@@ -1,0 +1,16 @@
+{
+    "map": {
+        "description": "Adds a spatial index to a shapefile, file geodatabase, mobile geodatabase, or enterprise geodatabase feature class.   Use this tool to either add a spatial index to a shapefile or feature class that does not already have one or to re-create an existing spatial index.",
+        "in_features.descr": "An enterprise geodatabase feature class, file geodatabase feature class, mobile geodatabase feature class, or shapefile to which a spatial index is to be added or rebuilt.",
+        "in_features.title": "Input Features",
+        "out_feature_class.title": "Updated Input Features",
+        "spatial_grid_1.descr": "This parameter has been deprecated in ArcGIS Pro. Any value you enter will be ignored.",
+        "spatial_grid_1.title": "Spatial Grid 1",
+        "spatial_grid_2.descr": "This parameter has been deprecated in ArcGIS Pro. Any value you enter will be ignored.",
+        "spatial_grid_2.title": "Spatial Grid 2",
+        "spatial_grid_3.descr": "This parameter has been deprecated in ArcGIS Pro. Any value you enter will be ignored.",
+        "spatial_grid_3.title": "Spatial Grid 3",
+        "summary": "Adds a spatial index to a shapefile, file geodatabase, mobile geodatabase, or enterprise geodatabase feature class. Use this tool to either add a spatial index to a shapefile or feature class that does not already have one or to re-create an existing spatial index.",
+        "title": "Add Spatial Index"
+    }
+}

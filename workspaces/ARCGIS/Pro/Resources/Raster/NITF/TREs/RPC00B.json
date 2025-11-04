@@ -1,0 +1,255 @@
+{
+  "TRE": "RPC00B",
+  "Source": [ "STDI-0002-1 v2021.1, Appendix E: ASDE" ],
+  "Name": "Rapid Positioning Capability",
+  "Description": "The RPC00 tag contains rational function polynomial coefficients and normalization parameters that define the physical relationship between image coordinates and ground coordinates.",
+  "Size": 1041,
+  "Fields": {
+      "SUCCESS" : {
+        "Name" : "Success Factor",
+        "Description": "This field indicates whether RPC values were successfully computed.",
+        "Size": 1,
+        "Format": "BCS-N",
+        "Type": "R",
+        "Units": [],
+        "Values": [
+        {
+          "Type": "Value",
+          "Values": ["1"]          
+        }        
+      ]
+    },
+    "ERR_BIAS": {
+      "Name": "Error Bias",
+      "Description": "This is where the 68% non time-varying error estimate assumes correlated images.",
+      "Size": 7,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0.00,
+          "Max": 9999.99
+        }
+      ]
+    },
+    "ERR_RAND": {
+      "Name": "Random Error",
+      "Description": "This is the 68% time-varying error estimate that assumes uncorrelated images.",
+      "Size": 7,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": ["meters"],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0.00,
+          "Max": 9999.99
+        }
+      ]        
+    },
+    "LINE_OFF": {
+     "Name": "Line Offset",
+     "Description": "This is the line offset value in pixels.",
+     "Size": 6,
+     "Format" : "BCS-N",
+     "Type": "R",
+     "Units": ["pixels"],
+     "Values": [
+      {
+        "Type": "Range",
+        "Min": 0,
+        "Max": 999999
+      }
+     ]        
+    },
+    "SAMP_OFF": {
+     "Name": "Sample Offset",
+     "Description": "This is the sample offset value in pixels.",
+     "Size": 5,
+     "Format" : "BCS-N",
+     "Type": "R",
+     "Units": ["pixels"],
+     "Values": [
+      {
+        "Type": "Range",
+        "Min": 0,
+        "Max": 99999
+      }
+     ]        
+    },
+    "LAT_OFF": {
+     "Name": "Geodetic Latitude Offset",
+     "Description": "This is the geodetic latitude offset value in degrees.",
+     "Size": 8,
+     "Format" : "BCS-N",
+     "Type": "R",
+     "Units": ["degrees"],
+     "Values": [
+       {
+         "Type": "Range",
+         "Min": -90.0000,
+         "Max": 90.0000
+       }
+     ]
+    },
+    "LONG_OFF": {
+    "Name": "Geodetic Longitude Offset",
+    "Description": "This is the geodetic longitude offset value in degrees.",
+    "Size": 9,
+    "Format" : "BCS-N",
+    "Type": "R",
+    "Units": ["degrees"],
+    "Values": [
+       {
+         "Type": "Range",
+         "Min": -180.0000,
+         "Max": 180.0000
+       }
+     ]
+    },
+    "HEIGHT_OFF": {
+     "Name": "Geodetic Height Offset",
+     "Description": "This is the geodetic offset value in meters.",
+     "Size": 5,
+     "Format" : "BCS-N",
+     "Type": "R",
+     "Units": ["meters"],
+     "Values": [
+       {
+         "Type": "Range",
+         "Min": -9999,
+         "Max": 9999
+       }
+      ]
+    },
+    "LINE_SCALE": {
+     "Name": "Line Scale",
+     "Description": "This is the line scale value in pixels.",
+     "Size": 6,
+     "Format" : "BCS-N",
+     "Type": "R",
+     "Units": ["pixels"],
+     "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 999999
+        } 
+      ]
+    },
+    "SAMP_SCALE": {
+     "Name": "Sample Scale",
+     "Description": "This is the sample scale value in pixels.",
+     "Size": 5,
+     "Format" : "BCS-N",
+     "Type": "R",
+     "Units": ["pixels"],
+     "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 9999
+        }
+      ]
+    },
+    "LAT_SCALE": {
+     "Name": "Geodetic Latitude Scale",
+     "Description": "This is the geodetic latitude scale in degrees, and cannot be a value of 0.",
+     "Size": 8,
+     "Type": "R",
+     "Format" : "BCS-N",
+     "Units": ["degrees"],
+     "Values": [
+        {
+          "Type": "Range",
+          "Min": -90.0000,
+          "Max": 90.0000
+        }
+      ]
+    },
+    "LONG_SCALE": {
+     "Name": "Geodetic Longitude Scale",
+     "Description": "This is the geodetic longitude scale in degrees, and cannot be a value of 0.",
+     "Size": 9,
+     "Format" : "BCS-N",
+     "Type": "R",
+     "Units": ["degrees"],
+     "Values": [
+       {
+         "Type": "Range",
+         "Min": -180.0000,
+         "Max": 180.0000
+       }
+      ]
+    },  
+    "HEIGHT_SCALE": {
+     "Name": "Geodetic Height Scale",
+     "Description": "This is the geodetic height scale in meters, and cannot be a value of 0.",
+     "Size": 5,
+     "Format" : "BCS-N",
+     "Type": "R",
+     "Units": ["meters"],
+     "Values": [
+      {
+        "Type": "Range",
+        "Min": -9999,
+        "Max": 9999
+      }
+     ]
+    },  
+    "LINE_NUM_COEFF": {
+    "Name": "Line Numerator Coefficients",
+    "Description": "This field represents twenty coefficents for the polynomial in the Numerator of the r sub n equation.",
+    "Size": 12,
+    "Format" : "BCS-N",
+    "Type": "R",
+    "Units" : [],
+    "Values": [
+      {
+        "Type": "Double"
+      }
+    ]
+   },
+   "LINE_DEN_COEFF": {
+    "Name": "Line Denominator Coefficients",
+    "Description": "This field represents twenty coefficents for the polynomial in the Denominator of the r sub n equation.",
+    "Size": 12,
+    "Format" : "BCS-N",
+    "Type": "R",
+    "Units" : [],
+    "Values": [
+     {
+       "Type": "Double"
+     }
+   ]
+   },
+   "SAMP_NUM_COEFF": {
+    "Name": "Sample Numerator Coefficents",
+    "Description": "This field represents twenty coefficents for the polynomial in the Numerator of the c sub n equation.",
+    "Size": 12,
+    "Format" : "BCS-N",
+    "Type": "R",
+    "Units" : [],
+    "Values": [
+      {
+        "Type": "Double"
+      }
+    ]
+   }, 
+   "SAMP_DEN_COEFF": {
+    "Name": "Sample Denominator Coefficents",
+    "Description": "This field represents twenty coefficents for the polynomial in the denominator of the c sub n equation.",
+    "Size": 12,
+    "Format" : "BCS-N",
+    "Type": "R",
+    "Units" : [],
+    "Values": [
+       {
+        "Type": "Double"
+       }
+     ]
+   }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "@terrafusion/geo-api",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "lint": "tsc --noEmit",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@terrafusion/core-models": "workspace:*",
+    "@turf/turf": "^6.5.3",
+    "mapbox-gl": "^3.2.0",
+    "ol": "^9.0.0",
+    "ol-mapbox-style": "^12.2.0"
+  },
+  "devDependencies": {
+    "@types/mapbox-gl": "^3.1.0",
+    "typescript": "^5.6.3"
+  }
+}

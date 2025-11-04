@@ -1,0 +1,296 @@
+name: TerraFusionPro CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: terrafusion_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run linting
+        run: npm run lint
+      
+      - name: Run unit tests
+        run: npm run test
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/terrafusion_test
+
+  build:
+    name: Build and Push Images
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      
+      - name: Login to Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.REGISTRY_URL }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      
+      - name: Extract metadata
+        id: meta
+        run: |
+          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+          echo "::set-output name=branch::$(echo ${GITHUB_REF#refs/heads/})"
+      
+      - name: Build and push API Gateway
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: infrastructure/docker/services/api-gateway/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.REGISTRY_URL }}/terrafusion/api-gateway:${{ steps.meta.outputs.sha_short }}
+            ${{ secrets.REGISTRY_URL }}/terrafusion/api-gateway:${{ steps.meta.outputs.branch }}
+      
+      - name: Build and push Web Client
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: infrastructure/docker/services/web-client/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.REGISTRY_URL }}/terrafusion/web-client:${{ steps.meta.outputs.sha_short }}
+            ${{ secrets.REGISTRY_URL }}/terrafusion/web-client:${{ steps.meta.outputs.branch }}
+      
+      # Repeat for other services (property, user, form, report, analysis)
+      - name: Build and push Property Service
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: infrastructure/docker/services/property-service/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.REGISTRY_URL }}/terrafusion/property-service:${{ steps.meta.outputs.sha_short }}
+            ${{ secrets.REGISTRY_URL }}/terrafusion/property-service:${{ steps.meta.outputs.branch }}
+      
+      - name: Build and push User Service
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: infrastructure/docker/services/user-service/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.REGISTRY_URL }}/terrafusion/user-service:${{ steps.meta.outputs.sha_short }}
+            ${{ secrets.REGISTRY_URL }}/terrafusion/user-service:${{ steps.meta.outputs.branch }}
+      
+      - name: Build and push Form Service
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: infrastructure/docker/services/form-service/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.REGISTRY_URL }}/terrafusion/form-service:${{ steps.meta.outputs.sha_short }}
+            ${{ secrets.REGISTRY_URL }}/terrafusion/form-service:${{ steps.meta.outputs.branch }}
+      
+      - name: Build and push Report Service
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: infrastructure/docker/services/report-service/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.REGISTRY_URL }}/terrafusion/report-service:${{ steps.meta.outputs.sha_short }}
+            ${{ secrets.REGISTRY_URL }}/terrafusion/report-service:${{ steps.meta.outputs.branch }}
+      
+      - name: Build and push Analysis Service
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: infrastructure/docker/services/analysis-service/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.REGISTRY_URL }}/terrafusion/analysis-service:${{ steps.meta.outputs.sha_short }}
+            ${{ secrets.REGISTRY_URL }}/terrafusion/analysis-service:${{ steps.meta.outputs.branch }}
+
+  deploy-dev:
+    name: Deploy to Development
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    environment: development
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Kubectl
+        uses: azure/setup-kubectl@v3
+      
+      - name: Configure Kubernetes Context
+        uses: azure/k8s-set-context@v3
+        with:
+          kubeconfig: ${{ secrets.KUBE_CONFIG_DEV }}
+      
+      - name: Update Kubernetes Manifests
+        run: |
+          export IMAGE_TAG=$(git rev-parse --short HEAD)
+          export REGISTRY_URL=${{ secrets.REGISTRY_URL }}
+          
+          # Use envsubst to replace variables in Kubernetes manifests
+          find infrastructure/kubernetes/overlays/dev -type f -name "*.yaml" -exec bash -c 'envsubst < $1 > $1.tmp && mv $1.tmp $1' _ {} \;
+      
+      - name: Deploy to Development
+        run: |
+          kubectl apply -k infrastructure/kubernetes/overlays/dev/
+      
+      - name: Verify Deployment
+        run: |
+          kubectl rollout status deployment/api-gateway -n terrafusionpro-dev
+          kubectl rollout status deployment/web-client -n terrafusionpro-dev
+          kubectl rollout status deployment/property-service -n terrafusionpro-dev
+          kubectl rollout status deployment/user-service -n terrafusionpro-dev
+          kubectl rollout status deployment/form-service -n terrafusionpro-dev
+          kubectl rollout status deployment/report-service -n terrafusionpro-dev
+          kubectl rollout status deployment/analysis-service -n terrafusionpro-dev
+      
+      - name: Run Database Migrations
+        run: |
+          # Get pod name for running migration
+          POD_NAME=$(kubectl get pod -n terrafusionpro-dev -l app=api-gateway -o jsonpath="{.items[0].metadata.name}")
+          
+          # Copy migration script to pod
+          kubectl cp packages/shared/scripts/db-push.js terrafusionpro-dev/$POD_NAME:/tmp/db-push.js
+          
+          # Run migration
+          kubectl exec -n terrafusionpro-dev $POD_NAME -- node /tmp/db-push.js
+
+  deploy-staging:
+    name: Deploy to Staging
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: staging
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Kubectl
+        uses: azure/setup-kubectl@v3
+      
+      - name: Configure Kubernetes Context
+        uses: azure/k8s-set-context@v3
+        with:
+          kubeconfig: ${{ secrets.KUBE_CONFIG_STAGING }}
+      
+      - name: Update Kubernetes Manifests
+        run: |
+          export IMAGE_TAG=$(git rev-parse --short HEAD)
+          export REGISTRY_URL=${{ secrets.REGISTRY_URL }}
+          
+          # Use envsubst to replace variables in Kubernetes manifests
+          find infrastructure/kubernetes/overlays/staging -type f -name "*.yaml" -exec bash -c 'envsubst < $1 > $1.tmp && mv $1.tmp $1' _ {} \;
+      
+      - name: Deploy to Staging
+        run: |
+          kubectl apply -k infrastructure/kubernetes/overlays/staging/
+      
+      - name: Verify Deployment
+        run: |
+          kubectl rollout status deployment/api-gateway -n terrafusionpro-staging
+          kubectl rollout status deployment/web-client -n terrafusionpro-staging
+          kubectl rollout status deployment/property-service -n terrafusionpro-staging
+          kubectl rollout status deployment/user-service -n terrafusionpro-staging
+          kubectl rollout status deployment/form-service -n terrafusionpro-staging
+          kubectl rollout status deployment/report-service -n terrafusionpro-staging
+          kubectl rollout status deployment/analysis-service -n terrafusionpro-staging
+      
+      - name: Run Database Migrations
+        run: |
+          # Get pod name for running migration
+          POD_NAME=$(kubectl get pod -n terrafusionpro-staging -l app=api-gateway -o jsonpath="{.items[0].metadata.name}")
+          
+          # Copy migration script to pod
+          kubectl cp packages/shared/scripts/db-push.js terrafusionpro-staging/$POD_NAME:/tmp/db-push.js
+          
+          # Run migration
+          kubectl exec -n terrafusionpro-staging $POD_NAME -- node /tmp/db-push.js
+
+  deploy-production:
+    name: Deploy to Production
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Kubectl
+        uses: azure/setup-kubectl@v3
+      
+      - name: Configure Kubernetes Context
+        uses: azure/k8s-set-context@v3
+        with:
+          kubeconfig: ${{ secrets.KUBE_CONFIG_PROD }}
+      
+      - name: Update Kubernetes Manifests
+        run: |
+          export IMAGE_TAG=$(git rev-parse --short HEAD)
+          export REGISTRY_URL=${{ secrets.REGISTRY_URL }}
+          
+          # Use envsubst to replace variables in Kubernetes manifests
+          find infrastructure/kubernetes/overlays/prod -type f -name "*.yaml" -exec bash -c 'envsubst < $1 > $1.tmp && mv $1.tmp $1' _ {} \;
+      
+      - name: Deploy to Production
+        run: |
+          kubectl apply -k infrastructure/kubernetes/overlays/prod/
+      
+      - name: Verify Deployment
+        run: |
+          kubectl rollout status deployment/api-gateway -n terrafusionpro
+          kubectl rollout status deployment/web-client -n terrafusionpro
+          kubectl rollout status deployment/property-service -n terrafusionpro
+          kubectl rollout status deployment/user-service -n terrafusionpro
+          kubectl rollout status deployment/form-service -n terrafusionpro
+          kubectl rollout status deployment/report-service -n terrafusionpro
+          kubectl rollout status deployment/analysis-service -n terrafusionpro
+      
+      - name: Run Database Migrations
+        run: |
+          # Get pod name for running migration
+          POD_NAME=$(kubectl get pod -n terrafusionpro -l app=api-gateway -o jsonpath="{.items[0].metadata.name}")
+          
+          # Copy migration script to pod
+          kubectl cp packages/shared/scripts/db-push.js terrafusionpro/$POD_NAME:/tmp/db-push.js
+          
+          # Run migration
+          kubectl exec -n terrafusionpro $POD_NAME -- node /tmp/db-push.js

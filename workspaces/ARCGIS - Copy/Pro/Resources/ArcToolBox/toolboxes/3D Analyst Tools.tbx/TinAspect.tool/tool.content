@@ -1,0 +1,51 @@
+{
+    "type": "FunctionTool",
+    "guid": "{daffb592-d0a9-11d6-84ef-00b0d0786452}",
+    "displayname": "$rc:title",
+    "helpcontent": "5990008",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_tin": {
+            "displayname": "$rc:in_tin.title",
+            "datatype": {
+                "type": "GPTinLayer"
+            },
+            "description": "$rc:in_tin.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "class_breaks_table": {
+            "type": "optional",
+            "displayname": "$rc:class_breaks_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "description": "$rc:class_breaks_table.descr"
+        },
+        "aspect_field": {
+            "type": "optional",
+            "displayname": "$rc:aspect_field.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "AspectCode",
+            "description": "$rc:aspect_field.descr"
+        }
+    },
+    "environments": [
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "extent",
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

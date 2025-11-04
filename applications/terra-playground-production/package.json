@@ -1,0 +1,157 @@
+{
+  "name": "terrafusion-playground",
+  "version": "1.0.0",
+  "description": "Terrafusion Playground - Enterprise Application Launcher & Development Environment",
+  "main": "start_playground.py",
+  "scripts": {
+    "dev": "python start_playground.py",
+    "start": "python start_playground.py",
+    "playground": "python start_playground.py",
+    "server": "python app_server.py",
+    "build": "next build",
+    "lint": "next lint",
+    "electron-dev": "concurrently \"npm run playground\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron-build": "next build && electron-builder",
+    "make": "electron-builder",
+    "deploy": "node scripts/build.js",
+    "create-installer": "node scripts/installer.js",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build",
+    "ecosystem:status": "python -c \"import requests; print('Terrafusion Ecosystem Status:'); [print(f'Port {p}: {requests.get(f\"http://localhost:{p}/health\").status_code == 200}') for p in [5000,5001,5002,5003,5006,5007]]\"",
+    "ecosystem:launch": "python -c \"import subprocess; [subprocess.Popen(['python', f'../TerraAgent_PRODUCTION/app.py']) for _ in range(1)]\"",
+    "test:playground": "python -m pytest tests/ -v",
+    "clean": "rm -rf dist/ build/ *.egg-info/"
+  },
+  "keywords": [
+    "terrafusion",
+    "enterprise",
+    "launcher",
+    "property-assessment",
+    "gis",
+    "ai",
+    "playground",
+    "development-environment"
+  ],
+  "author": "Terrafusion Platform Engineering Team",
+  "license": "MIT",
+  "homepage": "http://localhost:3000",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bsvalues/TerraFusionPlayground.git"
+  },
+  "build": {
+    "appId": "com.terrafusion.playground",
+    "productName": "Terrafusion Playground",
+    "mac": {
+      "category": "public.app-category.developer-tools"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Development"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Terrafusion Playground"
+    },
+    "files": [
+      "dist/**/*",
+      "node_modules/**/*",
+      "package.json",
+      "*.py",
+      "*.html",
+      "*.css",
+      "*.js",
+      "shared_assets/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets",
+      "output": "dist"
+    }
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.5.0",
+    "archiver": "^7.0.1",
+    "aws-sdk": "^2.1692.0",
+    "electron": "^28.0.0",
+    "extract-zip": "^2.0.1",
+    "next": "^14.2.29",
+    "node-cron": "^4.1.0",
+    "react": "^18",
+    "react-dom": "^18",
+    "systeminformation": "^5.27.1",
+    "winston": "^3.17.0",
+    "winston-elasticsearch": "^0.11.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10.0.1",
+    "chalk": "^5.4.1",
+    "concurrently": "^9.1.2",
+    "electron-builder": "^26.0.12",
+    "electron-log": "^5.4.0",
+    "electron-updater": "^6.6.2",
+    "eslint": "^8",
+    "eslint-config-next": "14.1.0",
+    "node-wmi": "^0.0.5",
+    "ora": "^8.2.0",
+    "postcss": "^8",
+    "tailwindcss": "^3.3.0",
+    "typescript": "^5",
+    "wait-on": "^8.0.3"
+  },
+  "terrafusion": {
+    "ecosystem": {
+      "applications": [
+        {
+          "name": "TerraAgent",
+          "port": 5003,
+          "description": "AI-powered assistant for property assessment"
+        },
+        {
+          "name": "TerraFlow",
+          "port": 5001,
+          "description": "Workflow management engine"
+        },
+        {
+          "name": "TerraSync",
+          "port": 5002,
+          "description": "Data synchronization hub"
+        },
+        {
+          "name": "Terrafusion Build",
+          "port": 5000,
+          "description": "Property assessment platform"
+        },
+        {
+          "name": "TerraMiner",
+          "port": 5006,
+          "description": "Advanced data mining and analytics"
+        },
+        {
+          "name": "TerraLevy",
+          "port": 5007,
+          "description": "Tax levy management system"
+        }
+      ],
+      "playground": {
+        "port": 3000,
+        "backend": "app_server.py",
+        "frontend": "index.html"
+      }
+    }
+  }
+}

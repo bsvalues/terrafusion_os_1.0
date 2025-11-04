@@ -1,0 +1,920 @@
+{% extends "base_clean.html" %}
+
+{% block title %}Enterprise Monitoring Dashboard - TerraFusion Platform{% endblock %}
+
+{% block content %}
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #495057;
+        }
+        .dashboard-header {
+            background-color: #343a40;
+            color: white;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+        .metrics-card {
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+        .metrics-card:hover {
+            transform: translateY(-5px);
+        }
+        .card-header {
+            border-radius: 8px 8px 0 0;
+            font-weight: 600;
+        }
+        .system-metrics {
+            background-color: #e9f7ef;
+        }
+        .api-metrics {
+            background-color: #eaf2f8;
+        }
+        .export-metrics {
+            background-color: #f4ecf7;
+        }
+        .sync-metrics {
+            background-color: #fef5e7;
+        }
+        .dashboard-nav {
+            background-color: #343a40;
+            padding: 0.5rem 0;
+        }
+        .dashboard-nav a {
+            color: #adb5bd;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+        }
+        .dashboard-nav a:hover, .dashboard-nav a.active {
+            color: white;
+            background-color: #495057;
+            border-radius: 4px;
+        }
+        .refresh-btn {
+            margin: 0 1rem;
+        }
+        .chart-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
+        }
+        .metrics-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        .metrics-label {
+            font-size: 1rem;
+            color: #6c757d;
+        }
+        .time-range-selector {
+            margin-bottom: 1.5rem;
+        }
+        .alert-banner {
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="dashboard-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h1>TerraFusion Monitoring Dashboard</h1>
+                    <p class="lead">Real-time performance metrics and system health</p>
+                </div>
+                <div class="col-auto">
+                    <span class="badge bg-success fs-6" id="status-badge">System Healthy</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav class="dashboard-nav mb-4">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <a href="/dashboard" class="me-3">Main Dashboard</a>
+                    <a href="/gis/dashboard" class="me-3">GIS Dashboard</a>
+                    <a href="/sync/dashboard" class="me-3">Sync Dashboard</a>
+                    <a href="/monitoring/dashboard" class="active me-3">Monitoring</a>
+                </div>
+                <div>
+                    <button id="refresh-metrics" class="btn btn-outline-light btn-sm refresh-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                        </svg>
+                        Refresh Metrics
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="time-range-selector">
+                    <div class="btn-group" role="group" aria-label="Time range selector">
+                        <button type="button" class="btn btn-outline-primary active" data-range="1h">1 Hour</button>
+                        <button type="button" class="btn btn-outline-primary" data-range="6h">6 Hours</button>
+                        <button type="button" class="btn btn-outline-primary" data-range="24h">24 Hours</button>
+                        <button type="button" class="btn btn-outline-primary" data-range="7d">7 Days</button>
+                        <button type="button" class="btn btn-outline-primary" data-range="30d">30 Days</button>
+                    </div>
+                    <span class="ms-3 text-muted">Last updated: <span id="last-updated">Now</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Metrics -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2>System Resources</h2>
+            </div>
+            <div class="col-md-6">
+                <div class="card metrics-card system-metrics">
+                    <div class="card-header bg-success text-white">CPU Usage</div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="cpu-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                        <div>
+                            <span class="metrics-value" id="cpu-current">0%</span>
+                            <span class="metrics-label">Current</span>
+                        </div>
+                        <div>
+                            <span class="metrics-value" id="cpu-avg">0%</span>
+                            <span class="metrics-label">Average</span>
+                        </div>
+                        <div>
+                            <span class="metrics-value" id="cpu-max">0%</span>
+                            <span class="metrics-label">Max</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card metrics-card system-metrics">
+                    <div class="card-header bg-info text-white">Memory Usage</div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="memory-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                        <div>
+                            <span class="metrics-value" id="memory-current">0MB</span>
+                            <span class="metrics-label">Current</span>
+                        </div>
+                        <div>
+                            <span class="metrics-value" id="memory-avg">0MB</span>
+                            <span class="metrics-label">Average</span>
+                        </div>
+                        <div>
+                            <span class="metrics-value" id="memory-max">0MB</span>
+                            <span class="metrics-label">Max</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Metrics -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2>API Performance</h2>
+            </div>
+            <div class="col-md-6">
+                <div class="card metrics-card api-metrics">
+                    <div class="card-header bg-primary text-white">Request Volume</div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="requests-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                        <div>
+                            <span class="metrics-value" id="requests-total">0</span>
+                            <span class="metrics-label">Total</span>
+                        </div>
+                        <div>
+                            <span class="metrics-value" id="requests-rate">0/min</span>
+                            <span class="metrics-label">Rate</span>
+                        </div>
+                        <div>
+                            <span class="metrics-value" id="requests-errors">0</span>
+                            <span class="metrics-label">Errors</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card metrics-card api-metrics">
+                    <div class="card-header bg-warning text-dark">Response Times</div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="latency-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                        <div>
+                            <span class="metrics-value" id="latency-p50">0ms</span>
+                            <span class="metrics-label">P50</span>
+                        </div>
+                        <div>
+                            <span class="metrics-value" id="latency-p95">0ms</span>
+                            <span class="metrics-label">P95</span>
+                        </div>
+                        <div>
+                            <span class="metrics-value" id="latency-p99">0ms</span>
+                            <span class="metrics-label">P99</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GIS Export Metrics -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2>GIS Export Statistics</h2>
+            </div>
+            <div class="col-md-6">
+                <div class="card metrics-card export-metrics">
+                    <div class="card-header bg-purple text-white" style="background-color: #6f42c1;">GIS Export Jobs</div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="export-jobs-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                        <div>
+                            <span class="metrics-value" id="exports-total">0</span>
+                            <span class="metrics-label">Total</span>
+                        </div>
+                        <div>
+                            <span class="metrics-value" id="exports-completed">0</span>
+                            <span class="metrics-label">Completed</span>
+                        </div>
+                        <div>
+                            <span class="metrics-value" id="exports-failed">0</span>
+                            <span class="metrics-label">Failed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card metrics-card export-metrics">
+                    <div class="card-header bg-purple text-white" style="background-color: #6f42c1;">Export File Sizes</div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="export-size-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                        <div>
+                            <span class="metrics-value" id="size-avg">0MB</span>
+                            <span class="metrics-label">Average</span>
+                        </div>
+                        <div>
+                            <span class="metrics-value" id="size-max">0MB</span>
+                            <span class="metrics-label">Max</span>
+                        </div>
+                        <div>
+                            <span class="metrics-value" id="size-total">0GB</span>
+                            <span class="metrics-label">Total</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sync Metrics -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2>Sync Service Statistics</h2>
+            </div>
+            <div class="col-md-6">
+                <div class="card metrics-card sync-metrics">
+                    <div class="card-header bg-orange text-white" style="background-color: #fd7e14;">Sync Jobs</div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="sync-jobs-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                        <div>
+                            <span class="metrics-value" id="syncs-total">0</span>
+                            <span class="metrics-label">Total</span>
+                        </div>
+                        <div>
+                            <span class="metrics-value" id="syncs-completed">0</span>
+                            <span class="metrics-label">Completed</span>
+                        </div>
+                        <div>
+                            <span class="metrics-value" id="syncs-failed">0</span>
+                            <span class="metrics-label">Failed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card metrics-card sync-metrics">
+                    <div class="card-header bg-orange text-white" style="background-color: #fd7e14;">Records Processed</div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="records-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                        <div>
+                            <span class="metrics-value" id="records-processed">0</span>
+                            <span class="metrics-label">Total</span>
+                        </div>
+                        <div>
+                            <span class="metrics-value" id="records-per-job">0</span>
+                            <span class="metrics-label">Avg per Job</span>
+                        </div>
+                        <div>
+                            <span class="metrics-value" id="records-errors">0</span>
+                            <span class="metrics-label">Errors</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Database Metrics -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2>Database Performance</h2>
+            </div>
+            <div class="col-md-6">
+                <div class="card metrics-card">
+                    <div class="card-header bg-secondary text-white">Database Operations</div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="db-ops-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                        <div>
+                            <span class="metrics-value" id="db-queries">0</span>
+                            <span class="metrics-label">Queries</span>
+                        </div>
+                        <div>
+                            <span class="metrics-value" id="db-latency">0ms</span>
+                            <span class="metrics-label">Avg Latency</span>
+                        </div>
+                        <div>
+                            <span class="metrics-value" id="db-errors">0</span>
+                            <span class="metrics-label">Errors</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card metrics-card">
+                    <div class="card-header bg-secondary text-white">Operation Types</div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="db-types-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script>
+        // Mock data for dashboard display
+        const mockData = {
+            systemMetrics: {
+                cpu: {
+                    current: 32,
+                    avg: 28,
+                    max: 65,
+                    history: [25, 28, 32, 30, 27, 29, 32, 35, 30, 28, 32, 25]
+                },
+                memory: {
+                    current: 1.8,
+                    avg: 1.5,
+                    max: 2.2,
+                    history: [1.2, 1.4, 1.5, 1.6, 1.7, 1.8, 1.8, 1.7, 1.6, 1.8, 1.9, 1.8]
+                }
+            },
+            apiMetrics: {
+                requests: {
+                    total: 15243,
+                    rate: 42,
+                    errors: 37,
+                    history: [35, 40, 42, 38, 45, 50, 48, 42, 38, 42, 44, 42]
+                },
+                latency: {
+                    p50: 85,
+                    p95: 245,
+                    p99: 385,
+                    history: {
+                        p50: [80, 82, 85, 83, 80, 82, 85, 87, 84, 82, 85, 83],
+                        p95: [220, 235, 245, 240, 230, 245, 250, 245, 235, 240, 245, 240],
+                        p99: [360, 375, 385, 380, 370, 375, 390, 385, 375, 380, 385, 380]
+                    }
+                }
+            },
+            gisExports: {
+                jobs: {
+                    total: 583,
+                    completed: 562,
+                    failed: 21,
+                    history: {
+                        completed: [45, 48, 52, 50, 47, 49, 52, 55, 50, 48, 52, 45],
+                        failed: [2, 1, 2, 1, 3, 2, 1, 2, 3, 1, 2, 1]
+                    }
+                },
+                fileSize: {
+                    avg: 12.4,
+                    max: 85.7,
+                    total: 7.2,
+                    byFormat: {
+                        labels: ['GeoJSON', 'Shapefile', 'KML', 'GeoTIFF', 'CSV'],
+                        sizes: [8.2, 15.3, 5.7, 25.6, 7.8]
+                    }
+                }
+            },
+            syncJobs: {
+                jobs: {
+                    total: 872,
+                    completed: 845,
+                    failed: 27,
+                    history: {
+                        completed: [70, 72, 75, 73, 71, 74, 76, 75, 72, 74, 75, 73],
+                        failed: [3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 1, 2]
+                    }
+                },
+                records: {
+                    processed: 2483721,
+                    perJob: 2939,
+                    errors: 3521,
+                    byType: {
+                        labels: ['Parcels', 'Buildings', 'Owners', 'Zoning', 'Tax'],
+                        values: [1245780, 583921, 324589, 178520, 150911]
+                    }
+                }
+            },
+            dbMetrics: {
+                operations: {
+                    queries: 78392,
+                    latency: 32,
+                    errors: 18,
+                    history: [2800, 3100, 3450, 3200, 2950, 3100, 3400, 3450, 3200, 3150, 3400, 3200]
+                },
+                types: {
+                    labels: ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'JOIN'],
+                    values: [65, 20, 10, 2, 3]
+                }
+            }
+        };
+
+        // Chart configuration and data
+        const timeLabels = ['1h ago', '55m ago', '50m ago', '45m ago', '40m ago', '35m ago', '30m ago', '25m ago', '20m ago', '15m ago', '10m ago', '5m ago'];
+
+        // Update dashboard with mock data for demonstration
+        function updateDashboard() {
+            // System metrics
+            document.getElementById('cpu-current').textContent = `${mockData.systemMetrics.cpu.current}%`;
+            document.getElementById('cpu-avg').textContent = `${mockData.systemMetrics.cpu.avg}%`;
+            document.getElementById('cpu-max').textContent = `${mockData.systemMetrics.cpu.max}%`;
+            
+            document.getElementById('memory-current').textContent = `${mockData.systemMetrics.memory.current}GB`;
+            document.getElementById('memory-avg').textContent = `${mockData.systemMetrics.memory.avg}GB`;
+            document.getElementById('memory-max').textContent = `${mockData.systemMetrics.memory.max}GB`;
+            
+            // API metrics
+            document.getElementById('requests-total').textContent = mockData.apiMetrics.requests.total.toLocaleString();
+            document.getElementById('requests-rate').textContent = `${mockData.apiMetrics.requests.rate}/min`;
+            document.getElementById('requests-errors').textContent = mockData.apiMetrics.requests.errors.toLocaleString();
+            
+            document.getElementById('latency-p50').textContent = `${mockData.apiMetrics.latency.p50}ms`;
+            document.getElementById('latency-p95').textContent = `${mockData.apiMetrics.latency.p95}ms`;
+            document.getElementById('latency-p99').textContent = `${mockData.apiMetrics.latency.p99}ms`;
+            
+            // GIS export metrics
+            document.getElementById('exports-total').textContent = mockData.gisExports.jobs.total.toLocaleString();
+            document.getElementById('exports-completed').textContent = mockData.gisExports.jobs.completed.toLocaleString();
+            document.getElementById('exports-failed').textContent = mockData.gisExports.jobs.failed.toLocaleString();
+            
+            document.getElementById('size-avg').textContent = `${mockData.gisExports.fileSize.avg}MB`;
+            document.getElementById('size-max').textContent = `${mockData.gisExports.fileSize.max}MB`;
+            document.getElementById('size-total').textContent = `${mockData.gisExports.fileSize.total}GB`;
+            
+            // Sync metrics
+            document.getElementById('syncs-total').textContent = mockData.syncJobs.jobs.total.toLocaleString();
+            document.getElementById('syncs-completed').textContent = mockData.syncJobs.jobs.completed.toLocaleString();
+            document.getElementById('syncs-failed').textContent = mockData.syncJobs.jobs.failed.toLocaleString();
+            
+            document.getElementById('records-processed').textContent = mockData.syncJobs.records.processed.toLocaleString();
+            document.getElementById('records-per-job').textContent = mockData.syncJobs.records.perJob.toLocaleString();
+            document.getElementById('records-errors').textContent = mockData.syncJobs.records.errors.toLocaleString();
+            
+            // DB metrics
+            document.getElementById('db-queries').textContent = mockData.dbMetrics.operations.queries.toLocaleString();
+            document.getElementById('db-latency').textContent = `${mockData.dbMetrics.operations.latency}ms`;
+            document.getElementById('db-errors').textContent = mockData.dbMetrics.operations.errors.toLocaleString();
+            
+            // Update last updated time
+            document.getElementById('last-updated').textContent = new Date().toLocaleTimeString();
+        }
+
+        // Initialize charts
+        function initCharts() {
+            // CPU Usage Chart
+            new Chart(document.getElementById('cpu-chart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: timeLabels,
+                    datasets: [{
+                        label: 'CPU Usage (%)',
+                        data: mockData.systemMetrics.cpu.history,
+                        borderColor: '#28a745',
+                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Percentage'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Memory Usage Chart
+            new Chart(document.getElementById('memory-chart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: timeLabels,
+                    datasets: [{
+                        label: 'Memory Usage (GB)',
+                        data: mockData.systemMetrics.memory.history,
+                        borderColor: '#17a2b8',
+                        backgroundColor: 'rgba(23, 162, 184, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'GB'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // API Requests Chart
+            new Chart(document.getElementById('requests-chart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: timeLabels,
+                    datasets: [{
+                        label: 'Requests per 5 min',
+                        data: mockData.apiMetrics.requests.history,
+                        backgroundColor: 'rgba(13, 110, 253, 0.7)',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Requests'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // API Latency Chart
+            new Chart(document.getElementById('latency-chart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: timeLabels,
+                    datasets: [
+                        {
+                            label: 'p50',
+                            data: mockData.apiMetrics.latency.history.p50,
+                            borderColor: '#ffc107',
+                            backgroundColor: 'transparent',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'p95',
+                            data: mockData.apiMetrics.latency.history.p95,
+                            borderColor: '#fd7e14',
+                            backgroundColor: 'transparent',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'p99',
+                            data: mockData.apiMetrics.latency.history.p99,
+                            borderColor: '#dc3545',
+                            backgroundColor: 'transparent',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'ms'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // GIS Export Jobs Chart
+            new Chart(document.getElementById('export-jobs-chart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: timeLabels,
+                    datasets: [
+                        {
+                            label: 'Completed',
+                            data: mockData.gisExports.jobs.history.completed,
+                            backgroundColor: 'rgba(111, 66, 193, 0.7)',
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Failed',
+                            data: mockData.gisExports.jobs.history.failed,
+                            backgroundColor: 'rgba(220, 53, 69, 0.7)',
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: 'Jobs'
+                            }
+                        },
+                        x: {
+                            stacked: true
+                        }
+                    }
+                }
+            });
+
+            // GIS Export File Size Chart
+            new Chart(document.getElementById('export-size-chart').getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: mockData.gisExports.fileSize.byFormat.labels,
+                    datasets: [{
+                        data: mockData.gisExports.fileSize.byFormat.sizes,
+                        backgroundColor: [
+                            'rgba(111, 66, 193, 0.7)',
+                            'rgba(32, 201, 151, 0.7)',
+                            'rgba(13, 110, 253, 0.7)',
+                            'rgba(253, 126, 20, 0.7)',
+                            'rgba(220, 53, 69, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+
+            // Sync Jobs Chart
+            new Chart(document.getElementById('sync-jobs-chart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: timeLabels,
+                    datasets: [
+                        {
+                            label: 'Completed',
+                            data: mockData.syncJobs.jobs.history.completed,
+                            backgroundColor: 'rgba(253, 126, 20, 0.7)',
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Failed',
+                            data: mockData.syncJobs.jobs.history.failed,
+                            backgroundColor: 'rgba(220, 53, 69, 0.7)',
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: 'Jobs'
+                            }
+                        },
+                        x: {
+                            stacked: true
+                        }
+                    }
+                }
+            });
+
+            // Records Processed Chart
+            new Chart(document.getElementById('records-chart').getContext('2d'), {
+                type: 'pie',
+                data: {
+                    labels: mockData.syncJobs.records.byType.labels,
+                    datasets: [{
+                        data: mockData.syncJobs.records.byType.values,
+                        backgroundColor: [
+                            'rgba(253, 126, 20, 0.7)',
+                            'rgba(32, 201, 151, 0.7)',
+                            'rgba(13, 110, 253, 0.7)',
+                            'rgba(111, 66, 193, 0.7)',
+                            'rgba(220, 53, 69, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+
+            // DB Operations Chart
+            new Chart(document.getElementById('db-ops-chart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: timeLabels,
+                    datasets: [{
+                        label: 'Operations per 5 min',
+                        data: mockData.dbMetrics.operations.history,
+                        borderColor: '#6c757d',
+                        backgroundColor: 'rgba(108, 117, 125, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Operations'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // DB Operation Types Chart
+            new Chart(document.getElementById('db-types-chart').getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: mockData.dbMetrics.types.labels,
+                    datasets: [{
+                        data: mockData.dbMetrics.types.values,
+                        backgroundColor: [
+                            'rgba(13, 110, 253, 0.7)',
+                            'rgba(32, 201, 151, 0.7)',
+                            'rgba(253, 126, 20, 0.7)',
+                            'rgba(220, 53, 69, 0.7)',
+                            'rgba(111, 66, 193, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDashboard();
+            initCharts();
+            
+            // Refresh button functionality
+            document.getElementById('refresh-metrics').addEventListener('click', function() {
+                updateDashboard();
+            });
+            
+            // Time range selector functionality
+            document.querySelectorAll('.time-range-selector button').forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelector('.time-range-selector button.active').classList.remove('active');
+                    this.classList.add('active');
+                    // In a real implementation, this would fetch data for the selected time range
+                });
+            });
+        });
+
+        // In a real implementation, we would set up an automatic refresh every X seconds
+        // and fetch real metrics data from the server API endpoints
+    </script>
+{% endblock %}

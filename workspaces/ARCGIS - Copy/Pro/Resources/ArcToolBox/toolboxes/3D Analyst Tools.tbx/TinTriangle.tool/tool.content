@@ -1,0 +1,98 @@
+{
+    "type": "FunctionTool",
+    "guid": "{09997379-cf1c-11d6-84ef-00b0d0786452}",
+    "displayname": "$rc:title",
+    "helpcontent": "5210008",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9"
+    ],
+    "params": {
+        "in_tin": {
+            "displayname": "$rc:in_tin.title",
+            "datatype": {
+                "type": "GPTinLayer"
+            },
+            "description": "$rc:in_tin.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "units": {
+            "type": "optional",
+            "displayname": "$rc:units.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PERCENT",
+                        "code": "$rc:units.domain.PERCENT"
+                    },
+                    {
+                        "value": "DEGREE",
+                        "code": "$rc:units.domain.DEGREE"
+                    }
+                ]
+            },
+            "value": "PERCENT",
+            "description": "$rc:units.descr"
+        },
+        "z_factor": {
+            "type": "optional",
+            "displayname": "$rc:z_factor.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "1",
+            "description": "$rc:z_factor.descr"
+        },
+        "hillshade": {
+            "type": "optional",
+            "displayname": "$rc:hillshade.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "HILLSHADE",
+                        "code": "$rc:hillshade.domain.HILLSHADE"
+                    }
+                ]
+            },
+            "description": "$rc:hillshade.descr"
+        },
+        "tag_field": {
+            "type": "optional",
+            "displayname": "$rc:tag_field.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:tag_field.descr"
+        }
+    },
+    "environments": [
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "ZDomain",
+        "ZResolution",
+        "ZTolerance",
+        "autoCommit",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "workspace"
+    ]
+}

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using TerraFusion.Core.Services.AI;
 using TerraFusion.Core.Services.Monitoring;
 using TerraFusion.Core.Extensions;
+using TerraFusion.Core.DTOs;
 
 namespace TerraFusion.Core.Services.AI;
 
@@ -852,7 +853,7 @@ Provide strategic insights on:
         return new MarketTrendsAnalysisResult
         {
             TrendDirection = marketTrends.OverallTrend.ToString(),
-            KeyTrends = marketTrends.TrendIndicators?.Select(t => t.ToString()).ToList() ?? new(),
+            KeyTrends = marketTrends.TrendIndicators?.Select(t => t.ToString()).Where(s => s != null).Select(s => s!).ToList() ?? new(),
             GrowthRate = (decimal)marketTrends.GrowthRate,
             AnalysisDate = marketTrends.AnalysisDate
         };
@@ -1015,6 +1016,5 @@ public class RiskScores { }
 public class PropertyPortfolioRecommendations { public List<string> PropertyIds { get; set; } = new(); public List<PropertyPortfolioAnalysis> PortfolioAnalysis { get; set; } = new(); public string PortfolioMetrics { get; set; } = string.Empty; public string DiversificationAnalysis { get; set; } = string.Empty; public string RiskAssessment { get; set; } = string.Empty; public List<string> OptimizationRecommendations { get; set; } = new(); public string RebalancingStrategy { get; set; } = string.Empty; public DateTime RecommendationDate { get; set; } }
 public class PropertyPortfolioAnalysis { }
 public class AssessmentComplianceAnalysis { public string PropertyId { get; set; } = string.Empty; public List<ComplianceCheck> ComplianceChecks { get; set; } = new(); public List<string> ComplianceGaps { get; set; } = new(); public List<string> ComplianceRecommendations { get; set; } = new(); public string ComplianceActionPlan { get; set; } = string.Empty; public double OverallComplianceScore { get; set; } public DateTime AnalysisDate { get; set; } }
-public class ComplianceCheck { }
 public class PropertyTaxOptimization { public string PropertyId { get; set; } = string.Empty; public decimal CurrentTaxLiability { get; set; } public List<string> OptimizationOpportunities { get; set; } = new(); public string TaxSavingsCalculation { get; set; } = string.Empty; public List<StrategyRecommendation> StrategyRecommendations { get; set; } = new(); public string ImplementationPlan { get; set; } = string.Empty; public decimal EstimatedAnnualSavings { get; set; } public DateTime OptimizationDate { get; set; } }
 public class InvestmentRecommendations { public string PropertyId { get; set; } = string.Empty; public string InvestmentGoal { get; set; } = string.Empty; public string InvestmentPotential { get; set; } = string.Empty; public List<string> InvestmentStrategies { get; set; } = new(); public string InvestmentProjections { get; set; } = string.Empty; public string InvestmentRisks { get; set; } = string.Empty; public string InvestmentActionPlan { get; set; } = string.Empty; public DateTime RecommendationDate { get; set; } }

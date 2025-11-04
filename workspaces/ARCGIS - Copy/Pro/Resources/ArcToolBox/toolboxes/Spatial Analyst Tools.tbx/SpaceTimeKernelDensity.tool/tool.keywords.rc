@@ -1,0 +1,18 @@
+{
+    "set": [
+        "concentration",
+        "density",
+        "dimension",
+        "elevation",
+        "kernel",
+        "magnitude per unit area",
+        "multidimensional",
+        "neighborhood",
+        "population",
+        "population density",
+        "space",
+        "spread",
+        "surface",
+        "time"
+    ]
+}

@@ -1,0 +1,5 @@
+<DataType Name="GPSAHorizontalFactor">
+  <DisplayName>Horizontal Factor</DisplayName>
+  <Description>The relationship between the horizontal cost factor and the horizontal relative moving angle.</Description>
+</DataType>
+

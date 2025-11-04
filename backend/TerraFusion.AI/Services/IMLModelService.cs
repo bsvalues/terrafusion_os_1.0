@@ -5,9 +5,9 @@ namespace TerraFusion.AI.Services
 {
     public interface IMLModelService
     {
-        Task<ROIPredictionResult> PredictROIAsync(ROIPredictionRequest request);
-        Task<MarketTrendResult> AnalyzeMarketTrendsAsync(MarketTrendRequest request);
-        Task<RiskAssessmentResult> AssessRiskAsync(RiskAssessmentRequest request);
-        Task<ModelStatusResult> GetModelStatusAsync();
+        System.Threading.Tasks.Task<ROIPredictionResult> PredictROIAsync(ROIPredictionRequest request);
+        System.Threading.Tasks.Task<MarketTrendResult> AnalyzeMarketTrendsAsync(MarketTrendRequest request);
+        System.Threading.Tasks.Task<RiskAssessmentResult> AssessRiskAsync(RiskAssessmentRequest request);
+        System.Threading.Tasks.Task<ModelStatusResult> GetModelStatusAsync();
     }
 }

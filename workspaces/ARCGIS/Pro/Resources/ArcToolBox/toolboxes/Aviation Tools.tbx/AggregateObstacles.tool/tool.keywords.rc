@@ -1,0 +1,8 @@
+{
+    "set": [
+        "aggregate",
+        "aviation",
+        "cartography",
+        "obstacles"
+    ]
+}

@@ -1,0 +1,125 @@
+{
+    "type": "FunctionTool",
+    "guid": "{d0dc563a-1d28-4e78-97e5-d4d3869f3a9d}",
+    "displayname": "$rc:title",
+    "helpcontent": "66110001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "86"
+    ],
+    "params": {
+        "in_video_file": {
+            "displayname": "$rc:in_video_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "TS",
+                    "PS",
+                    "MPG",
+                    "MPEG",
+                    "MP2",
+                    "MPEG2",
+                    "MP4",
+                    "MPG4",
+                    "MPEG4",
+                    "VOB",
+                    "M2TS",
+                    "AVI",
+                    "MOV",
+                    "H264",
+                    "H265"
+                ]
+            },
+            "description": "$rc:in_video_file.descr"
+        },
+        "metadata_file": {
+            "displayname": "$rc:metadata_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "CSV",
+                    "GPX"
+                ]
+            },
+            "description": "$rc:metadata_file.descr"
+        },
+        "out_video_file": {
+            "direction": "out",
+            "displayname": "$rc:out_video_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "TS"
+                ]
+            },
+            "description": "$rc:out_video_file.descr"
+        },
+        "metadata_mapping_file": {
+            "type": "optional",
+            "displayname": "$rc:metadata_mapping_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "CSV",
+                    "GPX"
+                ]
+            },
+            "description": "$rc:metadata_mapping_file.descr"
+        },
+        "timeshift_file": {
+            "type": "optional",
+            "displayname": "$rc:timeshift_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "CSV",
+                    "GPX"
+                ]
+            },
+            "description": "$rc:timeshift_file.descr"
+        },
+        "elevation_layer": {
+            "type": "optional",
+            "displayname": "$rc:elevation_layer.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "GPLinearUnit"
+                    }
+                ]
+            },
+            "description": "$rc:elevation_layer.descr"
+        },
+        "input_coordinate_system": {
+            "type": "optional",
+            "displayname": "$rc:input_coordinate_system.title",
+            "datatype": {
+                "type": "GPCoordinateSystem"
+            },
+            "description": "$rc:input_coordinate_system.descr"
+        }
+    }
+}

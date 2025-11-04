@@ -1,0 +1,231 @@
+{
+    "type": "FunctionTool",
+    "guid": "{d7a64b1f-92a6-4dc2-bed3-eedc60767c78}",
+    "displayname": "$rc:title",
+    "helpcontent": "3210002",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_base_table": {
+            "displayname": "$rc:in_base_table.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_base_table.descr"
+        },
+        "in_test_table": {
+            "displayname": "$rc:in_test_table.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_test_table.descr"
+        },
+        "sort_field": {
+            "displayname": "$rc:sort_field.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:sort_field.dt.title1"
+                    }
+                ]
+            },
+            "description": "$rc:sort_field.descr"
+        },
+        "compare_type": {
+            "type": "optional",
+            "displayname": "$rc:compare_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ALL",
+                        "code": "$rc:compare_type.domain.ALL"
+                    },
+                    {
+                        "value": "ATTRIBUTES_ONLY",
+                        "code": "$rc:compare_type.domain.ATTRIBUTES_ONLY"
+                    },
+                    {
+                        "value": "SCHEMA_ONLY",
+                        "code": "$rc:compare_type.domain.SCHEMA_ONLY"
+                    }
+                ]
+            },
+            "value": "ALL",
+            "description": "$rc:compare_type.descr"
+        },
+        "ignore_options": {
+            "type": "optional",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:ignore_options.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "IGNORE_EXTENSION_PROPERTIES",
+                        "code": "$rc:ignore_options.domain.IGNORE_EXTENSION_PROPERTIES"
+                    },
+                    {
+                        "value": "IGNORE_SUBTYPES",
+                        "code": "$rc:ignore_options.domain.IGNORE_SUBTYPES"
+                    },
+                    {
+                        "value": "IGNORE_RELATIONSHIPCLASSES",
+                        "code": "$rc:ignore_options.domain.IGNORE_RELATIONSHIPCLASSES"
+                    },
+                    {
+                        "value": "IGNORE_FIELDALIAS",
+                        "code": "$rc:ignore_options.domain.IGNORE_FIELDALIAS"
+                    }
+                ]
+            },
+            "description": "$rc:ignore_options.descr"
+        },
+        "attribute_tolerances": {
+            "type": "optional",
+            "displayname": "$rc:attribute_tolerances.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:attribute_tolerances.dt.title1"
+                    },
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:attribute_tolerances.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Short",
+                            "Long",
+                            "Float",
+                            "Double",
+                            "BigInteger"
+                        ]
+                    },
+                    {
+                        "type": "GPNumericDomain",
+                        "allowempty": "false"
+                    }
+                ]
+            },
+            "depends": [
+                "in_base_table"
+            ],
+            "description": "$rc:attribute_tolerances.descr"
+        },
+        "omit_field": {
+            "type": "optional",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:omit_field.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "description": "$rc:omit_field.descr"
+        },
+        "continue_compare": {
+            "type": "optional",
+            "displayname": "$rc:continue_compare.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CONTINUE_COMPARE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_CONTINUE_COMPARE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:continue_compare.descr"
+        },
+        "out_compare_file": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_compare_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "txt",
+                    "csv"
+                ]
+            },
+            "description": "$rc:out_compare_file.descr"
+        },
+        "compare_status": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:compare_status.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "NO_DIFFERENCES_FOUND"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DIFFERENCES_FOUND"
+                    }
+                ]
+            },
+            "value": "true"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

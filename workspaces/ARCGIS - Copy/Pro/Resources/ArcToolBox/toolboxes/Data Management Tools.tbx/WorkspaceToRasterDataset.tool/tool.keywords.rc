@@ -1,0 +1,19 @@
+{
+    "set": [
+        "add",
+        "all",
+        "assemble",
+        "batch",
+        "color balance",
+        "color correction",
+        "color match",
+        "combine",
+        "directory",
+        "grid",
+        "linear correlation",
+        "load",
+        "merge",
+        "mosaic",
+        "stitch"
+    ]
+}

@@ -1,0 +1,22 @@
+{
+    "map": {
+        "cell_size_tolerance_factor.descr": "Use this to group images with similar resolutions as having the same nominal resolution. For example 1 m imagery and 0.9 m imagery can be grouped together by setting this factor to 0.1, because they are within 10% of each other.",
+        "cell_size_tolerance_factor.title": "Cell Size Tolerance Factor",
+        "description": "Computes the visibility levels of raster datasets in a mosaic dataset based on the spatial resolution.",
+        "do_compute_max.descr": "<xdoc><p>Compute the maximum pixel size for each selected raster in the mosaic dataset.</p><ul><li>Checked—Compute the maximum pixel size. This is the default.</li><li>Unchecked—Do not compute the maximum pixel size.</li></ul></xdoc>",
+        "do_compute_max.title": "Compute Maximum Cell Sizes",
+        "do_compute_min.descr": "<xdoc><p>Compute the minimum pixel size for each selected raster dataset in the mosaic dataset.</p><ul><li>Checked—Compute the minimum pixel size. This is the default.</li><li>Unchecked—Do not compute the minimum pixel size.</li></ul></xdoc>",
+        "do_compute_min.title": "Compute Minimum Cell Sizes",
+        "in_mosaic_dataset.descr": "The mosaic dataset to calculate the visibility levels for.",
+        "in_mosaic_dataset.title": "Mosaic Dataset",
+        "max_range_factor.descr": "<xdoc><p>Set a multiplication factor to apply to the native resolution. The default is 10, meaning that an image with a resolution of 30 meters will be visible at a scale appropriate for 300 meters. The relationship between cell size and scale is as follows:</p><p>Cell Size = Scale * 0.0254 / 96</p><p>Scale = Cell Size * 96 / 0.0254</p></xdoc>",
+        "max_range_factor.title": "Maximum Cell Size Range Factor",
+        "out_mosaic_dataset.title": "Updated Input Mosaic Dataset",
+        "params.category1": "Advanced Options",
+        "title": "Calculate Cell Size Ranges",
+        "update_missing_only.descr": "<xdoc><p>Calculate only the missing cell size range values.</p><ul><li>Unchecked—Calculate cell size minimum and maximum values for selected rasters within the mosaic dataset. This is the default.</li><li>Checked—Calculate cell size minimum and maximum values only if they do not exist.</li></ul></xdoc>",
+        "update_missing_only.title": "Update Missing Values Only",
+        "where_clause.descr": "An SQL expression to select specific rasters in the mosaic dataset on which to calculate visibility levels. If no query is specified, all the mosaic dataset items will have their cell size ranges calculated.",
+        "where_clause.title": "Query Definition"
+    }
+}

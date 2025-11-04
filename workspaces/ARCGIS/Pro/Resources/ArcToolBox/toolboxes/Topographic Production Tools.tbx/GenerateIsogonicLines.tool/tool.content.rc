@@ -1,0 +1,27 @@
+{
+    "map": {
+        "altitude.descr": "<xdoc><p>The elevation of the <span class=\"esri_uicontrol\">Input Extent Features</span> parameter value including the linear unit. The default is 0 meters.</p></xdoc>",
+        "altitude.title": "Altitude",
+        "annual_drift.descr": "<xdoc><p>Specifies whether annual drift will be calculated. Annual drift is used in maritime workflows.</p><ul><li>Checked—The annual drift will be calculated.</li><li>Unchecked—The annual drift will not be calculated. This is the default.</li></ul></xdoc>",
+        "annual_drift.title": "Include Annual Drift",
+        "annual_drift_field.descr": "<xdoc><p>A field in the <span class=\"esri_uicontrol\">Target Isogonic Features</span> parameter value that will store the calculated annual drift values. The parameter accepts fields that have a Text, Double, or Float data type.</p><p>This parameter is active when the <span class=\"esri_uicontrol\">Include Annual Drift</span> parameter is checked.</p></xdoc>",
+        "annual_drift_field.title": "Annual Drift Field",
+        "base.descr": "The amount that isogonic lines will be generated above and below to cover the input value range.",
+        "base.title": "Base",
+        "date.descr": "The date for which the magnetic field values will be calculated. The default is the system's current date.",
+        "date.title": "Date",
+        "description": "Generates isomagnetic lines based on the World Magnetic Model.",
+        "extent_features.descr": "The area of interest where the lines will be created.",
+        "extent_features.title": "Input Extent Features",
+        "interval.descr": "The interval or distance between lines in degrees. The value can be any positive number. The default is 1.",
+        "interval.title": "Interval",
+        "magnetic_field.descr": "<xdoc><p>The field from the <span class=\"esri_uicontrol\">Target Isogonic Features</span> parameter value that will store magnetic variance values.</p></xdoc>",
+        "magnetic_field.title": "Magnetic Variance Field",
+        "modified_target_isogonic_features.title": "Modified Target Isogonic Features",
+        "subtype.descr": "<xdoc><p>The subtype where isogonic lines will be written if the <span class=\"esri_uicontrol\">Target Isogonic Features</span> parameter value has subtypes.</p></xdoc>",
+        "subtype.title": "Subtype",
+        "target_isogonic_features.descr": "An existing feature class to which the isogonic lines will be appended.",
+        "target_isogonic_features.title": "Target Isogonic Features",
+        "title": "Generate Isogonic Lines"
+    }
+}

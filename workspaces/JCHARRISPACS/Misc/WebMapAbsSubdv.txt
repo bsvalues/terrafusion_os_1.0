@@ -1,0 +1,2043 @@
+1188        |QUAILWOOD NO 1                                              
+1900        |UNION PLACE PROFESSIONAL CENTER                             
+1901        |VISTA PROFESSIONAL CENTER CONDOMINIUM AMENDMENT             
+1902        |7233 W DESCHUTES AVENUE CONDOMINIUM UNITS D & E             
+1924        |THE PARKWAY                                                 
+1949        |602 N COLORADO STREET                                       
+1956        |ONE 39TH CONDO                                              
+2024        |FAT CAT GARAGES                                             
+1           |Alyson Manor                                                
+10          |Desert Pines MH Park                                        
+11          |Desert View MH Park                                         
+12          |Elm Grove RV Park (BC RV Park)                              
+13          |Foothill Estates                                            
+14          |Galliher's MH Park                                          
+15          |Green Acres                                                 
+16          |Greenbrier Village                                          
+17          |Hambrook                                                    
+18          |Hamilton's RV Park                                          
+19          |Highland Trailer Court                                      
+2           |Beach RV Park                                               
+20          |Hillview - Benton City                                      
+21          |Hillview - Prosser                                          
+22          |Homestead MH (Bowles Rd)                                    
+23          |Homestead MH Park (Clearwater)                              
+24          |Hood Ave MH Park                                            
+25          |Horse Heaven MH Park                                        
+26          |Kelley Estates (Meadowlark)                                 
+27          |Kiona Village                                               
+28          |Mac's Trailer Park                                          
+29          |Maxey's MH Park                                             
+3           |Brown's MH Park                                             
+30          |Mecca Trailer Park                                          
+31          |Metz MH Park                                                
+32          |Morton's MH Park                                            
+33          |Nelson's                                                    
+34          |Paul's Trailer Court                                        
+35          |R & H Mobile Home Park                                      
+36          |Raceway RV Park                                             
+37          |Richland MH Park                                            
+38          |Richland West                                               
+39          |Rivercrest Manor                                            
+4           |Chinook MH Park                                             
+40          |Riverside                                                   
+41          |Riverview MH Park                                           
+42          |Royal Crest Mobile Manor                                    
+43          |Saltz Overnighter RV                                        
+44          |Sanders Lower Valley                                        
+45          |Santiago Bridgewater Estates                                
+46          |Santiago Country View Estates                               
+47          |Santiago Estates Cherry Hill                                
+48          |Santiago Sunset Estates                                     
+49          |Shadow Mountain                                             
+5           |Cloverleaf Trailer Park                                     
+50          |Shady Lane                                                  
+51          |Sun Meadows MH Park                                         
+52          |The Hills MH Park                                           
+53          |Trailer City Park                                           
+54          |Twin Bridges                                                
+55          |Village Park                                                
+56          |Vincent Village                                             
+57          |Volland Manor                                               
+58          |Washington Square                                           
+59          |Westward Ho                                                 
+6           |Columbia Drive MH Park                                      
+60          |Whispering Winds                                            
+61          |Willapa Village                                             
+62          |Willow Trailer Court                                        
+63          |Wine Country Villa                                          
+64          |Wine Country Villa 2                                        
+65          |MH in Inventory                                             
+66          |N/A                                                         
+67          |Bren's Landing                                              
+68          |5000                                                        
+7           |Columbia Mobile Village                                     
+8           |Country River Estate                                        
+9           |Desert Gold                                                 
+100         |ALTERD PLATS OF LOTS 2 THRU 11, BLK 3 THE UPLANDS           
+1000        |NOB HILL ADDITION TO KENNEWICK                              
+1001        |NOB HILL HEIGHTS                                            
+1002        |NORTH COURT, FINAL PLAT OF                                  
+1003        |NORTH RIDGE PARK                                            
+1004        |NORTH UMATILLA                                              
+1005        |NORTHEAST QUARTER OF SECTION 1-11-25                        
+1006        |NORTHEAST QUARTER OF SECTION 10 TWP 7 N RGE 25              
+1007        |NORTHEAST QUARTER OF SECTION 19                             
+1008        |NORTHEAST QUARTER OF SECTION 21-11-25                       
+1009        |NORTHEAST QUARTER OF SECTION 21-12-24                       
+101         |ALTERED PLAT BLK 2 LAGUNA VISTA SUBD                        
+1010        |NORTHEAST QUARTER OF SECTION 22-6-26                        
+1011        |NORTHEAST QUARTER OF SECTION 26-6-24                        
+1012        |NORTHEAST QUARTER OF SECTION 27 TWP 6 RGE 26                
+1013        |NORTHEAST QUARTER OF SECTION 27-6-24                        
+1014        |NORTHEAST QUARTER OF SECTION 30                             
+1015        |NORTHEAST QUARTER OF SECTION 31-6-30                        
+1016        |NORTHEAST QUARTER OF SECTION 32-6-24                        
+1017        |NORTHEAST QUARTER OF SECTION 33-8-26                        
+1018        |NORTHEAST QUARTER OF SECTION 4-11-24                        
+1019        |NORTHEAST QUARTER OF SECTION 5, TWP 8 N, RGE 29             
+102         |Altered plat of the Empire Subdivision                      
+1020        |NORTHEAST QUARTER OF SECTION 9-8-28                         
+1021        |NORTHLEE PROPERTIES                                         
+1022        |NORTHRIDGE DEVELOPMENT                                      
+1023        |NORTHRIDGE DEVELOPMENT PHASE TWO                            
+1024        |NORTHUP ADDITION                                            
+1025        |NORTHVIEW HEIGHTS #1                                        
+1026        |NORTHVIEW HEIGHTS #2                                        
+1027        |NORTHVIEW HEIGHTS #3                                        
+1028        |NORTHVIEW HEIGHTS #4                                        
+1029        |NORTHWEST QUARTER OF SEC 33                                 
+103         |AMON'S ADD TO KENNEWICK                                     
+1030        |NORTHWEST QUARTER OF SECTION 22-6-26                        
+1031        |NORTHWEST QUARTER OF SECTION 27-6-26                        
+1032        |NORTHWEST QUARTER OF SECTION 29-9-28                        
+1033        |NORTHWEST QUARTER OF SECTION 32-6-24                        
+1034        |NORTHWEST QUARTER OF SECTION 33-8-26                        
+1035        |NORTHWEST QUARTER OF SECTION 4 TWP 11 RGE 24                
+1036        |NORWOOD HEIGHTS                                             
+1037        |NORWOOD HEIGHTS, REPLAT OF                                  
+1038        |OAK MEADOWS, PLAT OF                                        
+1039        |Oasis Court #2                                              
+104         |AMON'S ADD TO KENNEWICK SUB OF TT 4                         
+1040        |Oasis Court No. 2, Phase No. 2                              
+1041        |OHRT'S ADDITION                                             
+1042        |OLE BRUE'S ADDITION TO KENNEWICK                            
+1043        |OLIVER'S PLAT                                               
+1044        |OLMSTEAD'S ADD TO KENNEWICK REPLT OF (UNRECORDED)           
+1045        |OLMSTED'S ADD TO KENNEWICK                                  
+1046        |OLMSTED'S ADD TO KENNEWICK REPLT OF LTS 1-4 BLK 24          
+1047        |OLNEY'S SUBDIVISION                                         
+1048        |OLSON'S PLAT                                                
+1049        |OLYMPIA GARDENS                                             
+105         |AMON'S ADD TO KENNEWICK TTS 1 THRU 4                        
+1050        |OLYMPIC HEIGHTS ADDITION                                    
+1051        |ON THE GREEN PHASE #1                                       
+1052        |ON THE GREEN PHASE #2                                       
+1053        |Orchard Crest                                               
+1054        |ORCHARD CREST PH 1                                          
+1055        |ORCHARD CREST PH 2                                          
+1056        |Orchard Crest Phase #4                                      
+1057        |Orchard Crest Phase #4 Tract A                              
+1058        |Orchard Crest Phase 4                                       
+1059        |ORCHARD CREST PHASE THREE                                   
+106         |AMON'S ADD TO KENNEWICK TTS 9 THRU 12                       
+1060        |ORCHARD HILLS #1                                            
+1061        |ORCHARD HILLS #2                                            
+1062        |ORCHARD HILLS #4                                            
+1063        |Orchard Park Estates                                        
+1064        |Orchard Park Estates #1                                     
+1065        |Orchard Park North                                          
+1066        |ORCHARD WEST ESTATES                                        
+1067        |OSBORNE'S ADDITION                                          
+1068        |OVERLOOK HEIGHTS                                            
+1069        |OVERLOOK HEIGHTS #2                                         
+107         |AMON'S ADD, ASSESSOR'S PLAT TT 8 OF                         
+1070        |OWENS ADDITION                                              
+1071        |PAINTED HILLS                                               
+1072        |PAINTED HILLS SECOND ADDITION, AMENDED PLAT OF              
+1073        |PALFY ADDITION                                              
+1074        |PALFY ADDITION #2                                           
+1075        |PALISADE, THE                                               
+1076        |Palm Desert                                                 
+1077        |PALMER'S ADDITION                                           
+1078        |PANORAMA ESTATES                                            
+1079        |PANORAMIC HEIGHTS #1                                        
+108         |AMY ADDITION                                                
+1080        |PANORAMIC HEIGHTS #2                                        
+1081        |PANORAMIC HEIGHTS NO 3                                      
+1082        |PARADISE ACRES                                              
+1083        |Paradise Estates                                            
+1084        |Paradise Estates Phase 1                                    
+1085        |Paradise Estates Phase 5                                    
+1086        |PARADISE ESTATES PHASE 6                                    
+1087        |Paradise South                                              
+1088        |PARADISE SOUTH DIV 8-3 PHASE 2                              
+1089        |PARADISE SOUTH DIV 8-D PHASE 2                              
+109         |ANDERSON'S AMENDED PLAT BLKS 1, 2, 3, & 4                   
+1090        |PARADISE SOUTH DIV 8-D, PHASE 2                             
+1091        |Paradise South Division 10-B                                
+1092        |Paradise South Division 8                                   
+1093        |Paradise South Division 8-D Phase 1                         
+1094        |PARADISE SOUTH DIVISION 8-D PHASE NO. 2                     
+1095        |Paradise South Division 9                                   
+1096        |PARDINI'S PLAT                                              
+1097        |PARK HILL #1                                                
+1098        |PARK HILL #2                                                
+1099        |PARK HILL #3                                                
+110         |ANDERSON'S AMENDED PLAT BLKS 5, 6, 7, & 8                   
+1100        |PARK HILLS ADDITION UNIT #1                                 
+1101        |PARK HILLS SECOND ADDITION                                  
+1102        |PARK PLACE                                                  
+1103        |PARK PLACE #2                                               
+1104        |PARK RIDGE                                                  
+1105        |PARK SQUARE #1                                              
+1106        |PARK SQUARE #2                                              
+1107        |PARK SQUARE #3                                              
+1108        |PARK VISTA                                                  
+1109        |PARKER ADDITION                                             
+111         |ANDERSON'S AMENDED PLAT BLKS 9, 10, 11, & 12                
+1110        |PARKER BROTHER'S VALLEY                                     
+1111        |Parkside @ Canyon Lakes                                     
+1112        |PARKSIDE HOMES                                              
+1113        |PARKSIDE, FINAL PLAT OF                                     
+1114        |Parkside-Canyon Lakes                                       
+1115        |PARKVIEW ACRES NO 1                                         
+1116        |PARKVIEW ACRES NO 2                                         
+1117        |PARKVIEW CONDOMINIUM                                        
+1118        |PARKVIEW II, THE                                            
+1119        |PARKWAY PLAZA                                               
+112         |ANGELA TERRACE                                              
+1120        |PATERSON HEIGHTS                                            
+1121        |PATRICIA'S PLAT                                             
+1122        |PATT'S ADDITION                                             
+1123        |PATTERSON'S PLAT                                            
+1124        |PAULLINS ADDITION                                           
+1125        |PAULSEN'S TRACTS                                            
+1126        |PAYTON TRACT, THE                                           
+1127        |Pheasant Run #3                                             
+1128        |Pheasant Run North                                          
+1129        |Pheasant Run North #2                                       
+113         |ANGUS PLAT                                                  
+1130        |Pheasant Run North Div 2 Ph 2                               
+1131        |Pheasant Run North Phase ! & 2                              
+1132        |Pheasant Run North Phase 1 & 2                              
+1133        |Pheasant Run North, Division 2, Phase 1                     
+1134        |Pheasant Run Phase 1                                        
+1135        |Pheasant Run Phase 2                                        
+1136        |Pheasant Run Phase 2 remaining portion of plat              
+1137        |Pheasant Run Phase 4                                        
+1138        |Pheasant Run Phase 5                                        
+1139        |PIERCE'S PLAT                                               
+114         |ANNA LEE HEIGHTS                                            
+1140        |PINECREST PARK #1                                           
+1141        |PINECREST PARK #2                                           
+1142        |PINECREST PARK #3                                           
+1143        |PINEWOOD CONDO PH 2                                         
+1144        |PINEWOOD CONDOS PH 2                                        
+1145        |PINTLER'S REPLAT                                            
+1146        |PINTLER'S SUBDIVISION                                       
+1147        |PLAT ALT OF PTN LOTS 2,3,4&5 BLOCK 2, KID PARCEL ONE        
+1148        |PLAT OF CITY VIEW PHASE 1                                   
+1149        |PLAT OF COLUMBIA POINT                                      
+115         |APPLE TREE VILLAGE                                          
+1150        |PLAT OF THE DWEILLINGS                                      
+1151        |PLAT OF THE DWELLINGS                                       
+1152        |PLAT OF THE REACH                                           
+1153        |PLEASANT HILL                                               
+1154        |PLYMOUTH                                                    
+1155        |PLYMOUTH , FIRST ADDITION TO TOWN OF                        
+1156        |PLYMOUTH SECOND ADDITION                                    
+1157        |PLYMOUTH, REPLAT OF TTS 2, 4, 6, & 8                        
+1158        |POE'S PLAT                                                  
+1159        |POLLOCK ADDITION                                            
+116         |Apple Valley Ranch                                          
+1160        |POLO CLUB II PHASE 1                                        
+1161        |POLO CLUB II PHASE II                                       
+1162        |POPLAR PLACE                                                
+1163        |PRAIRIE KNOLLS                                              
+1164        |PRATT'S REPLAT OF TT 1 OF CHICAGO TEN ACRE TTS              
+1165        |PRENGUBERS & WHITINGS SOUTH END ADDITION                    
+1166        |PRESTWICK AT HORN RAPIDS                                    
+1167        |PRESZLER'S ADDITION, PLAT ALTERATION                        
+1168        |PRIOR LAND CO, PLAT OF PATERSON HEIGHTS                     
+1169        |PROSSER 1ST BLKS 64-70, 85-86, 88-89                        
+117         |APPLETREE ESTATES DIV 2 PH 2                                
+1170        |PROSSER 1ST, 63 80-84 101-105 122-126 144-166 184-186       
+1171        |PROSSER BLKS 1-5, 8-12, 22-24, 42-43                        
+1172        |PROSSER BLKS 20-21, 29-41, 60-62                            
+1173        |PROSSER BLKS 6-7, 25-27, 44-48                              
+1174        |PROSSER GARDEN TTS                                          
+1175        |PROSSER HEIGHTS                                             
+1176        |PROSSER ORCHARD TTS                                         
+1177        |PROSSER-BRYON ORCHARD TRACTS TTS 22-24                      
+1178        |PROSSER-BYRON ORCHARD TRACTS TTS 1-3                        
+1179        |PROSSER-BYRON ORCHARD TRACTS TTS 11-13 & PTN 14-15          
+118         |APPLETREE ESTATES DIV 2 PHASE 2                             
+1180        |PROSSER-BYRON ORCHARD TRACTS TTS 16-17                      
+1181        |PROSSER-BYRON ORCHARD TRACTS TTS 18-21                      
+1182        |PROSSER-BYRON ORCHARD TRACTS TTS 4-10 & PTN 14              
+1183        |PUTNAM TRACTS                                               
+1184        |QUAIL HOLLOW                                                
+1185        |QUAIL RIDGE PH 2                                            
+1186        |QUAIL RUN DIV #2                                            
+1187        |QUAIL RUN DIVISION #1                                       
+1189        |QUAILWOOD NO IV                                             
+119         |APPLEWOOD ESTATE DIV 2 PH 2                                 
+1190        |QUALIWOOD NO 2                                              
+1191        |QUAY POINTE                                                 
+1192        |QUINAULT AVENUE HEIGHTS                                     
+1193        |RAINIER HEIGHTS                                             
+1194        |RAINIER SQUARE                                              
+1195        |RANCHETTE ESTATES #10                                       
+1196        |RANCHETTE ESTATES #5                                        
+1197        |RANCHETTE ESTATES #6                                        
+1198        |RANCHETTE ESTATES #7                                        
+1199        |RANCHETTE ESTATES #8                                        
+120         |Applewood Estates                                           
+1200        |RANCHETTE ESTATES #9                                        
+1201        |RANCHETTE ESTATES UNIT #1                                   
+1202        |RANCHETTE ESTATES UNIT #2                                   
+1203        |RANCHETTE ESTATES UNIT #3                                   
+1204        |RANCHETTE ESTATES UNIT #4                                   
+1205        |RANCHO DEL REY                                              
+1206        |RANCHO DEL REY #2                                           
+1207        |RANCHO DEL REY #4                                           
+1208        |RANCHO DEL REY #4 PHASE TWO                                 
+1209        |RANCHO DEL REY #6                                           
+121         |Applewood Estates 2 Ph 2                                    
+1210        |RANCHO DEL REY #8, PH I                                     
+1211        |RANCHO DEL REY #8, PH II                                    
+1212        |RANCHO DEL REY #8, PH III                                   
+1213        |RANCHO DEL REY NO 5                                         
+1214        |RANCHO DEL REY NO 7                                         
+1215        |RAPIDS CITY                                                 
+1216        |RATCHFORD'S ADDITION                                        
+1217        |RAWHIDE RANCHES                                             
+1218        |Reata Estates                                               
+1219        |Reata Heights                                               
+122         |Applewood Estates Div 2                                     
+1220        |Reata Ridge                                                 
+1221        |RECORD'S ADDITION TO KENNEWICK                              
+1222        |RECORD'S HIGHLAND PARK ADDITION                             
+1223        |RED MOUNTAIN ACRES PH #1                                    
+1224        |RED MOUNTAIN ESTATES                                        
+1225        |RED MOUNTAIN ORCHARD TTS 1-6, 18-22                         
+1226        |RED MOUNTAIN ORCHARD TTS 20-21, 46-49, 37-41                
+1227        |RED MOUNTAIN ORCHARD TTS 22-36, 43-45, 50-52                
+1228        |RED MOUNTAIN ORCHARD TTS 7-17, 23-27                        
+1229        |RED MOUNTAIN RANCHETTES                                     
+123         |APPLEWOOD ESTATES DIV 2 PH 2                                
+1230        |RED MOUNTAIN RANCHETTES #2                                  
+1231        |RED MOUNTAIN TENNIS RANCH                                   
+1232        |RED MOUNTAIN TENNIS RANCH, ALTERED PLAT OF                  
+1233        |RED MOUNTAIN TERRACE #1                                     
+1234        |RED MOUNTAIN TERRACE #2                                     
+1235        |RED MOUNTAIN TERRACE #3                                     
+1236        |RED ROCK VALLEY, REPLAT LT 9, 1 & 2                         
+1237        |Remaining  portion of                                       
+1238        |REYMORE'S ADDITION                                          
+1239        |RICH'S ADDITION                                             
+124         |APPLEWOOD ESTATES DIV 2 PH S                                
+1240        |RICHLAND PLAZA                                              
+1241        |RICHLAND QUAIL RUN                                          
+1242        |RICHLAND RIVER VISTA                                        
+1243        |RICHLAND RIVER VISTA, RPLT LTS 1 & 2 & SHORECREST LT 9      
+1244        |RICHLAND VILLAGE ADDITION                                   
+1245        |RICHLAND VILLAGE GREEN CONDO PHASE ONE                      
+1246        |RICHLAND, CITY OF, CITY RPLT OF BLK 941                     
+1247        |RICHLAND, FIRST ADD TO BLK A                                
+1248        |RICHLAND, FIRST ADD TO BLK B                                
+1249        |RICHLAND, FIRST ADD TO BLK C                                
+125         |APPLEWOOD ESTATES DIV 2 PHASE 2                             
+1250        |RICHLAND, PLAT OF BLKS 100 & ETC                            
+1251        |RICHLAND, PLAT OF BLKS 101 & ETC                            
+1252        |RICHLAND, PLAT OF BLKS 121 & ETC                            
+1253        |RICHLAND, PLAT OF BLKS 124 & ETC                            
+1254        |RICHLAND, PLAT OF BLKS 150 & ETC                            
+1255        |RICHLAND, PLAT OF BLKS 153 & ETC                            
+1256        |RICHLAND, PLAT OF BLKS 155 & ETC                            
+1257        |RICHLAND, PLAT OF BLKS 219 & ETC                            
+1258        |RICHLAND, PLAT OF BLKS 226 & ETC                            
+1259        |RICHLAND, PLAT OF BLKS 256 & ETC                            
+126         |APPLEWOOD ESTATES DIVISION 2 PHASE 2                        
+1260        |RICHLAND, PLAT OF BLKS 272 & ETC                            
+1261        |RICHLAND, PLAT OF BLKS 314 & ETC                            
+1262        |RICHLAND, PLAT OF BLKS 331 & ETC                            
+1263        |RICHLAND, PLAT OF BLKS 335 & ETC                            
+1264        |RICHLAND, PLAT OF BLKS 344 & ETC                            
+1265        |RICHLAND, PLAT OF BLKS 401 & ETC                            
+1266        |RICHLAND, PLAT OF BLKS 402 & ETC                            
+1267        |RICHLAND, PLAT OF BLKS 500 & ETC                            
+1268        |RICHLAND, PLAT OF BLKS 528 & ETC                            
+1269        |RICHLAND, PLAT OF BLKS 557 & ETC                            
+127         |APRIL ADDITION                                              
+1270        |RICHLAND, PLAT OF BLKS 570 & ETC                            
+1271        |RICHLAND, PLAT OF BLKS 612 & ETC                            
+1272        |RICHLAND, PLAT OF BLKS 618 & ETC                            
+1273        |RICHLAND, PLAT OF BLKS 704 & ETC                            
+1274        |RICHLAND, PLAT OF BLKS 733 & ETC                            
+1275        |RICHLAND, PLAT OF BLKS 801 & ETC                            
+1276        |RICHLAND, PLAT OF BLKS 810 & ETC                            
+1277        |RICHLAND, PLAT OF BLKS 821 & ETC                            
+1278        |RICHLAND, PLAT OF BLKS 903 & ETC                            
+1279        |RICHLAND, PLAT OF BLKS 906 & ETC                            
+128         |ARTHUR PLAT                                                 
+1280        |RICHLAND, PLAT OF BLKS 913 & ETC                            
+1281        |RICHLAND, PLAT OF, CITY RPLT, A PTN LT 3 BLK 707            
+1282        |RICHLAND, PLAT OF, RPLT LTS 1-2 BLK 638 & LT 16 BLK 600     
+1283        |RICHLAND, PLAT OF, RPLT OF LT 21 BLK 510                    
+1284        |RIDGE AT REATA WEST, PHASE THREE & FOUR                     
+1285        |Ridge at Reata West, Phase Two                              
+1286        |RIDGE VIEW TERRACE                                          
+1287        |Ridgeline at Canyon Lakes                                   
+1288        |Ridgeline Estates                                           
+1289        |RIDGELINE ESTATES PHASE 2                                   
+129         |ASPEN MEADOWS #3                                            
+1290        |RIDGEVIEW ESTATES                                           
+1291        |RIDGEVIEW ESTATES PHASE 1, ALTERED PLAT                     
+1292        |Ridgeview Estates Phase 2                                   
+1293        |RIDGEVIEW ESTATES PHASE I, ALTERED PLAT                     
+1294        |RIDGEVIEW ESTATES, PHASE 2                                  
+1295        |RIO GRANDE VILLA CONDO                                      
+1296        |RIO VISTA ACRES                                             
+1297        |RIVER EDGE CONDO'S                                          
+1298        |RIVER EDGE CONDOS TRACT G & H                               
+1299        |River Walk Village                                          
+130         |ASSESSOR'S PLAT #10                                         
+1300        |RIVER'S EDGE CONDOS                                         
+1301        |RIVERBEND ACRES                                             
+1302        |RIVERBEND ADDITION                                          
+1303        |RIVERCREST TERRACE #1                                       
+1304        |RIVERCREST TERRACE #10                                      
+1305        |RIVERCREST TERRACE #11                                      
+1306        |RIVERCREST TERRACE #12                                      
+1307        |RIVERCREST TERRACE #2                                       
+1308        |RIVERCREST TERRACE #3                                       
+1309        |RIVERCREST TERRACE #4                                       
+131         |ASSESSOR'S PLAT OF LOT 8 OF SEC 19-9-27                     
+1310        |RIVERCREST TERRACE #5                                       
+1311        |RIVERCREST TERRACE #6                                       
+1312        |RIVERCREST TERRACE #7                                       
+1313        |RIVERCREST TERRACE #8                                       
+1314        |RIVERCREST TERRACE #9                                       
+1315        |RIVERCREST TERRACE NORTH                                    
+1316        |Riverdown Estates                                           
+1317        |RIVERFRONT PLAT                                             
+1318        |Rivers Edge Estates                                         
+1319        |RIVERSTONE PH II                                            
+132         |ATOMIC HEIGHTS                                              
+1320        |RIVERSTONE PHASE 1                                          
+1321        |Riverview                                                   
+1322        |RIVERVIEW ESTATES PH. 2                                     
+1323        |RIVERVIEW HEIGHTS                                           
+1324        |Riverview Pointe                                            
+1325        |Riverwood #1                                                
+1326        |ROGER'S ADDITION                                            
+1327        |ROKKAN'S ADDITION                                           
+1328        |ROLLING HILLS ESTATES                                       
+1329        |ROLLISON'S PLAT                                             
+133         |Badger Den                                                  
+1330        |ROY'S PLAT                                                  
+1331        |Royal Ann Estates                                           
+1332        |Royal Ann Estates #2                                        
+1333        |Royal Ann Estates Phase 1                                   
+1334        |Royal Ann Estates Phase 3B                                  
+1335        |Royal Ann Estates, Phase 1                                  
+1336        |ROZA VIEW                                                   
+1337        |RUDKIN HEIGHTS                                              
+1338        |RUTH ADDITION                                               
+1339        |Sage Crest                                                  
+134         |BADGER HEIGHTS SUBDIVISION                                  
+1340        |SAGE CREST PHASE 3                                          
+1341        |SAGE CREST PHASE 3 - ALTERATION                             
+1342        |Sage Crest`                                                 
+1343        |SAGE SUBDIVISION                                            
+1344        |SAGEWOOD MEADOWS PH IV                                      
+1345        |SAGEWOOD MEADOWS PHASE 1                                    
+1346        |SAGEWOOD MEADOWS PHASE 2                                    
+1347        |SAGEWOOD MEADOWS PHASE 3                                    
+1348        |SAGEWOOD MEADOWS PHASE FIVE                                 
+1349        |SAGEWOOD MEADOWS PHASE SIX                                  
+135         |BADGER MOUNTAIN ESTATES                                     
+1350        |SAMUEL'S ADDITION                                           
+1351        |SAMUELS ADDITION PH 4                                       
+1352        |SAMUELS ADDTION PH 4                                        
+1353        |SANDER'S FIELD                                              
+1354        |Sandpiper                                                   
+1355        |SANDS, THE                                                  
+1356        |Sanlyn Estates                                              
+1357        |SAWGRASS                                                    
+1358        |SCANLAN ADDITION                                            
+1359        |SCHAFHAUSER SUBDIVISON                                      
+136         |Badger Mountain Plateau                                     
+1360        |SCHATZ-PRALL REPLAT                                         
+1361        |SCHILLING'S ADDITION                                        
+1362        |SCHULTZ'S PLAT                                              
+1363        |Scottland Court                                             
+1364        |SCOTTS SUBDIVISION                                          
+1365        |SEC 20 TOWNSHIP 10 RANGE 28                                 
+1366        |SEC 21 TWP 10 RGE 28 NORTHEAST QUARTER                      
+1367        |SEC 21 TWP 10 RGE 28 SOUTHWEST QUARTER                      
+1368        |SEC 28 TWP 10 RGE 28                                        
+1369        |SECTIO 11 TWP 11 N RGE 25:                                  
+137         |Badger Mountain Village                                     
+1370        |SECTION 10 TWP 11 RGE 25                                    
+1371        |SECTION 12 TWP 11 NORTH RANGE 25                            
+1372        |SECTION 13, TWP 11, RANGE 25                                
+1373        |SECTION 14 TWP 11 NORTH RANGE 25                            
+1374        |SECTION 15 -11-25                                           
+1375        |SECTION 16, TWP 11 RGE 25                                   
+1376        |SECTION 17 TWP 11 RGE 25                                    
+1377        |SECTION 18, TWP 11 N RGE 25                                 
+1378        |SECTION 2 TWP 11 N RANGE 25                                 
+1379        |SECTION 20 TWP 11 NORTH RGE 25                              
+138         |Badger Park Estates                                         
+1380        |SECTION 3, TOWNSHIP 11 NORTH RANGE 25:                      
+1381        |SECTION 4, TWP 11, NORTH RANGE 25                           
+1382        |SECTION 5                                                   
+1383        |SECTION 6 TWP 11 RGE 25                                     
+1384        |SECTION 7, TWP 11 RGE 25:                                   
+1385        |SECTION 8 TWP 11 N RGE 25                                   
+1386        |SECTION 9 TWP 11 RANGE 25                                   
+1387        |Sedona                                                      
+1388        |Sedona II                                                   
+1389        |Seg'd from parcel 122892000001009, SM004413.  CMP           
+139         |Badger View Estates                                         
+1390        |SEIDLES ADDITION                                            
+1391        |Sequoia Springs                                             
+1392        |SEVILLE, THE                                                
+1393        |SHADOW RUN                                                  
+1394        |Shadow Run #3                                               
+1395        |SHADOW RUN DIV 4                                            
+1396        |SHADOW RUN DIV 7                                            
+1397        |SHADOW RUN PHASE II                                         
+1398        |SHADY HILL                                                  
+1399        |SHADY HILL TWO                                              
+140         |Badger View Ranchettes                                      
+1400        |SHAFER'S 1ST ADD TO KENNEWICK                               
+1401        |SHARP'S 2ND ADDITION TO KENNEWICK                           
+1402        |SHARP'S ADDITION TO KENNEWICK                               
+1403        |SHARRON HEIGHTS                                             
+1404        |SHARRON HEIGHTS #2                                          
+1405        |SHARRON HEIGHTS #3                                          
+1406        |SHEPARD'S PLAT                                              
+1407        |SHERWOOD SUBDIVISION                                        
+1408        |SHERYL ANN HEIGHTS                                          
+1409        |SHILL SUBDIVISION                                           
+141         |BALDWIN'S PLAT                                              
+1410        |SHORECREST SUBDIVISION                                      
+1411        |SHORECREST SUBDIVISION REPLAT OF LTS 7 & 8                  
+1412        |SHORT PLAT                                                  
+1413        |SHORT PLAT IN HIGHLAND ADDITION TO PROSSER                  
+1414        |SHORT PLAT IN SEC 33 IN THE NORTHWEST QUARTER               
+1415        |SHORT PLAT IN SOUTHWEST QUARTER OF SEC 9-9-26               
+1416        |SHORT PLAT IN THE SOUTHEAST QUARTER OF SECTION 8:           
+1417        |SHORT PLAT IN THE SOUTHWEST QUARTER OF SECTION 20-12-24     
+1418        |SHORT PLAT WITHIN NORTHWEST QUARTER OF SECTION 30           
+1419        |SHORT PLAT WITHIN NORTHWEST QUARTER OF SECTION 34-10-26     
+142         |BALFE ADDITION                                              
+1420        |SHORT PLAT WITHIN SOUTHEAST QUARTER OF SECTION 25-9-28      
+1421        |SHORT PLAT WITHIN SOUTHWEST QUARTER OF SECTION 3            
+1422        |SHORT PLAT'S IN SECTION 25 THE SOUTHWEST QUARTER            
+1423        |SHORT PLAT'S IN SOUTHEAST QUARTER OF SECTION 17             
+1424        |SHORT PLAT'S IN THE NORTHEAST QUARTER OF SEC 28-8-30        
+1425        |SHORT PLATS IN NORTHEAST QUARTER OF SEC 32-10-27            
+1426        |SHORT PLATS IN NORTHEAST QUARTER OF SECTION 32              
+1427        |SHORT PLATS IN NORTHWEST QUARTER OF SECTION 25-9-28         
+1428        |SHORT PLATS IN SEC 16 TWP 9 N RGE 27                        
+1429        |SHORT PLATS IN SEC 17-8-28 IN SOUTHEAST QUARTER             
+143         |BAPTIST PLAT                                                
+1430        |SHORT PLATS IN SEC 20-8-28 IN THE NORTHEAST QUARTER         
+1431        |SHORT PLATS IN SEC 29 9-27 NORTHWEST QUARTER                
+1432        |SHORT PLATS IN SEC 8-9-28 SOUTHWEST QUARTER                 
+1433        |SHORT PLATS IN SOUTHEAST QUARTER OF SECTION 13-9-26         
+1434        |SHORT PLATS IN SOUTHEAST QUARTER OF SECTION 8, TWP 8, 24    
+1435        |SHORT PLATS IN SOUTHWEST QUARTER SECTION 26                 
+1436        |SHORT PLATS IN THE NORTHEAST QUARTER OF SECTION 17          
+1437        |SHORT PLATS IN THE NORTHWEST QUARTER                        
+1438        |SHORT PLATS WITH NORTHEAST QUARTER OF SECTION 26:           
+1439        |SHORT PLATS WITHIN NORTHEAST QUARTER OF SECTION 14-9-28     
+144         |BARBARA JEAN ADDITION                                       
+1440        |SHORT PLATS WITHIN NORTHEAST QUARTER OF SECTION 31-6-26     
+1441        |SHORT PLATS WITHIN NORTHWEST QUARTER OF SEC 10-8-24         
+1442        |SHORT PLATS WITHIN NORTHWEST QUARTER OF SECTION 11-9-24     
+1443        |SHORT PLATS WITHIN NORTHWEST QUARTER OF SECTION 15-8-29     
+1444        |SHORT PLATS WITHIN NORTHWEST QUARTER OF SECTION 23          
+1445        |SHORT PLATS WITHIN NORTHWEST QUARTER OF SECTION 27          
+1446        |SHORT PLATS WITHIN NORTHWEST QUARTER OF SECTION 29-9-28     
+1447        |SHORT PLATS WITHIN NORTHWEST QUARTER OF SECTION 4-9-24      
+1448        |SHORT PLATS WITHIN NORTHWEST QUARTER OF SECTION 5-5-28      
+1449        |SHORT PLATS WITHIN NORTHWEST QUARTER OF SECTION 6-8-29      
+145         |BARHAM'S ADD                                                
+1450        |SHORT PLATS WITHIN SECTION 16, TWP 8, RGE 24 NORTHEAST      
+1451        |SHORT PLATS WITHIN SOUTHEAST QUARTER OF SECTION 16-8-29     
+1452        |SHORT PLATS WITHIN SOUTHEAST QUARTER OF SECTION 35          
+1453        |SHORT PLATS WITHIN SOUTHEAST QUARTER OF SECTION 6-5-28      
+1454        |SHORT PLATS WITHIN SOUTHEAST QUARTER OF SECTION 6-9-26      
+1455        |SHORT PLATS WITHIN SOUTHEAST QUARTER OF SECTION 8-8-29      
+1456        |SHORT PLATS WITHIN SOUTHWEST QUARTER OF SECTION 14          
+1457        |SHORT PLATS WITHIN SOUTHWEST QUARTER OF SECTION 19-8-30     
+1458        |SHORT PLATS WITHIN SOUTHWEST QUARTER OF SECTION 23-10-27    
+1459        |SHORT PLATS WITHIN SOUTHWEST QUARTER OF SECTION 36-9-28     
+146         |BARKER'S FIRST ADDITION                                     
+1460        |SHORT PLATS WITHIN SOUTHWEST QUARTER OF SECTION 4-9-24      
+1461        |SHORT PLATS WITHIN SOUTHWEST QUARTER OF SECTION 5           
+1462        |SHORT PLATS WITHIN THE NORTHEAST QUARTER OF SECTION 10      
+1463        |SHORT PLATS WITHIN THE NORTHEAST QUARTER OF SECTION 11      
+1464        |SHORT PLATS WITHIN THE NORTHEAST QUARTER OF SECTION 23      
+1465        |SHORT PLATS WITHIN THE NORTHWEST QUARTER OF SECTION 2       
+1466        |SHORT PLATS WITHIN THE SOUTHWEST QUARTER OF SECTION 2       
+1467        |SHORT PLATS WITHIN THE SOUTHWEST QUARTER OF SECTION 27      
+1468        |Sienna Sky                                                  
+1469        |Sienna Sky Village                                          
+147         |BARKERS TRACTS                                              
+1470        |Sienna West                                                 
+1471        |Silver Meadows                                              
+1472        |SILVERWOOD PARK                                             
+1473        |SIME'S FIRST ADDITION                                       
+1474        |SINGING WOODS                                               
+1475        |SINGING WOODS II                                            
+1476        |SINGING WOODS NO 3                                          
+1477        |SIRRON TRACT #2                                             
+1478        |SIRRON'S PLAT                                               
+1479        |SISEMORE ADDITION                                           
+148         |BARNES ADDITION                                             
+1480        |SKYLINE ADDITION                                            
+1481        |SKYLINE MEADOW PH 2                                         
+1482        |Skyline Meadows                                             
+1483        |SKYLINE MEADOWS PH 2                                        
+1484        |Skyline Meadows Phase 5                                     
+1485        |SKYLINE MEADOWS PHASE FOUR                                  
+1486        |Skyline Meadows, Phase 5                                    
+1487        |SLAPE'S ADDITION                                            
+1488        |SMART PLAZA, A CONDO                                        
+1489        |SMITH PLAT                                                  
+149         |BAROTT'S SUBDIVISION                                        
+1490        |SMITH PLAT #2                                               
+1491        |SMITH PLAT #3                                               
+1492        |SMITH PLAT #4                                               
+1493        |Sold 5/02 for $90,000                                       
+1494        |SOMERSET                                                    
+1495        |SOUTH BRIDGE ACRES                                          
+1496        |South Dawes Condominiums                                    
+1497        |SOUTH ENTERPRISE ADDITION                                   
+1498        |SOUTH HIGHLAND TERRACE #1                                   
+1499        |SOUTH HIGHLAND TERRACE #2                                   
+150         |BARTLESON COUNTRY ESTATES #1                                
+1500        |SOUTH HIGHLANDS                                             
+1501        |SOUTH HIGHLANDS #2                                          
+1502        |SOUTH HIGHLANDS #3                                          
+1503        |SOUTH HIGHLANDS #4                                          
+1504        |SOUTH HIGHLANDS #5                                          
+1505        |SOUTH HIGHLANDS #6                                          
+1506        |SOUTH HIGHLANDS DIV #7 PH III                               
+1507        |SOUTH HIGHLANDS DIV #7 PH V                                 
+1508        |SOUTH HIGHLANDS DIV 7 PHASE 1                               
+1509        |SOUTH HIGHLANDS DIV 7 PHASE III                             
+151         |BARTLESON COUNTRY ESTATES #2                                
+1510        |SOUTH HIGHLANDS DIV 8-A                                     
+1511        |SOUTH HIGHLANDS DIV#7 PH IV                                 
+1512        |SOUTH HIGHLANDS DIVISION 6 B                                
+1513        |SOUTH HIGHLANDS DIVISION 6 C                                
+1514        |SOUTH HIGHLANDS DIVISION 6 D                                
+1515        |SOUTH HIGHLANDS DIVISION 6 E                                
+1516        |SOUTH HIGHLANDS DIVISION 6 F                                
+1517        |SOUTH LAKE ESTATES, PLAT OF                                 
+1518        |SOUTH OAK INDUSTRIAL PARK                                   
+1519        |SOUTH RIDGE HEIGHTS                                         
+152         |BARTLESON COUNTRY ESTATES #3                                
+1520        |South Union Condominiums                                    
+1521        |SOUTH VIEW ESTATES                                          
+1522        |SOUTHCLIFFE PHASE 1                                         
+1523        |SOUTHEAST QUARTER OF SECTION 10-7-25                        
+1524        |SOUTHEAST QUARTER OF SECTION 18 TWP 10 RGE 28               
+1525        |SOUTHEAST QUARTER OF SECTION 18 TWP 8 RGE 29                
+1526        |SOUTHEAST QUARTER OF SECTION 20 TWP 6 N RGE 30              
+1527        |SOUTHEAST QUARTER OF SECTION 27 TWP 10 RANGE 28             
+1528        |SOUTHEAST QUARTER OF SECTION 30, TWP 6 RGE 30               
+1529        |SOUTHEAST QUARTER OF SECTION 33-9-29                        
+153         |BEACH'S FIRST ADD TO DELL HAVEN                             
+1530        |SOUTHEAST QUARTER OF SECTION 9, TOWNSHIP 8 N RGE 24         
+1531        |Southridge                                                  
+1532        |Southridge Phase 2B                                         
+1533        |Southridge Phase 3                                          
+1534        |SOUTHRIDGE TERRACE PHASE 1                                  
+1535        |SOUTHWEST QUARTER OF SECTION 11 TWP 7 RGE 25                
+1536        |SOUTHWEST QUARTER OF SECTION 19-6-30                        
+1537        |SOUTHWEST QUARTER OF SECTION 21 TWP 12 RNG 24:              
+1538        |SOUTHWEST QUARTER OF SECTION 26-6-24                        
+1539        |SOUTHWEST QUARTER OF SECTION 27-6-24                        
+154         |BEACH'S FIRST ADDITION TO KENNEWICK                         
+1540        |SOUTHWEST QUARTER OF SECTION 30                             
+1541        |SPARKS ADDITION                                             
+1542        |SPAULDING'S ADDITION                                        
+1543        |SPENGLER ACRES                                              
+1544        |STACY'S REPLAT                                              
+1545        |STANTON'S 1ST ADDITION TO KENNEWICK                         
+1546        |STARDUST HEIGHTS #1                                         
+1547        |STATE ADD TO PROSSER TTS 1-16                               
+1548        |STATE ADD TO PROSSER TTS 17-24, 40-51, 63-66                
+1549        |STATE ADD TO PROSSER TTS 25-39, 52-62                       
+155         |BEACH'S SECOND ADDITION TO KENNEWICK                        
+1550        |STATE PLAT OF SEC 16 TWP 8 N RGE 28                         
+1551        |Sterling Estates                                            
+1552        |STERLING ESTATES PH 3                                       
+1553        |Sterling Estates Ph 4                                       
+1554        |STERLING ESTATES PH I                                       
+1555        |Sterling Estates Phase 4                                    
+1556        |STROH'S ADDITION                                            
+1557        |SUMAC ADDITION                                              
+1558        |Summit View                                                 
+1559        |Summit View #2                                              
+156         |BEAUMONT                                                    
+1560        |SUMMIT VIEW NO 1                                            
+1561        |SUMMIT VIEW PHASE 8                                         
+1562        |SUN RIDGE                                                   
+1563        |SUN-ACRES NO 1                                              
+1564        |SUNDANCE ESTATES, FINAL PLAT                                
+1565        |Sundance Ridge                                              
+1566        |SUNDIAL ADDITION                                            
+1567        |SUNDOWN ESTATES                                             
+1568        |SUNGLOW ESTATES, PLAT OF                                    
+1569        |SUNNYSIDE HIGHLANDS                                         
+157         |BEAVER ESTATES                                              
+1570        |SUNNYSLOPE ADDITION                                         
+1571        |SUNRISE ACRES                                               
+1572        |SUNRISE ACRES #2                                            
+1573        |SUNRISE ADDITION                                            
+1574        |SUNRISE COURT                                               
+1575        |SUNRISE TRACTS                                              
+1576        |SUNRISE VILLAS                                              
+1577        |SUNRIVER ESTATES                                            
+1578        |SUNSET ACRES                                                
+1579        |SUNSET HEIGHTS                                              
+158         |BEAVER ESTATES #2                                           
+1580        |Sunset Ridge                                                
+1581        |SUNSET RIDGE III, PHASE 1                                   
+1582        |SUNSET RIDGE III, PHASE 2                                   
+1583        |Sunset Ridge III, Phase 3                                   
+1584        |SUNSET TERRACE                                              
+1585        |Sunset View                                                 
+1586        |SUNSET VIEW SUBDIVISION                                     
+1587        |Swanson Heights                                             
+1588        |SWEET & GRANGE TRACTS                                       
+1589        |SWITZER'S SUBDIVISION                                       
+159         |BECKLEY & BECKLEY                                           
+1590        |SYLVAN'S ADDITION                                           
+1591        |T & T ADDITION                                              
+1592        |Tanglewood Phase 2                                          
+1593        |Tanglewood Phase 3                                          
+1594        |TANGLEWOOD PHASE TWO                                        
+1595        |TEE CEE PLAT                                                
+1596        |Temple Meadows                                              
+1597        |TENTH WEST ESTATES                                          
+1598        |TENTH WEST ESTATES II                                       
+1599        |TERRI-LINN SUBDIVISION                                      
+160         |BELAIRE                                                     
+1600        |The Bluffs                                                  
+1601        |The Boulevard Townhomes                                     
+1602        |The Boulevard Townhomes Phase 1                             
+1603        |THE CANALS                                                  
+1604        |The Crossings at Columbia Point                             
+1605        |The Heights @ Canyon Lakes                                  
+1606        |The Heights at Canyon Lakes                                 
+1607        |THE HEIGHTS AT HIGHLAND RANCH                               
+1608        |The Heights at Meadow Springs                               
+1609        |THE HEIGHTS AT MEADOWS SPRINGS PHASE 4                      
+161         |BELAIRE #2                                                  
+1610        |The Moorings                                                
+1611        |The Moorings at Canyon Lakes                                
+1612        |The Moorings at Columbia Point                              
+1613        |The Moorings at Columbia Point Phase III                    
+1614        |THE ORCHARDS FOUR                                           
+1615        |THE ORCHARDS III                                            
+1616        |THE ORCHARDS ONE                                            
+1617        |THE ORCHARDS TWO                                            
+1618        |The Plateau                                                 
+1619        |THE RIDGE                                                   
+162         |Bellasera                                                   
+1620        |The Ridge at Reata West                                     
+1621        |THE VILLAGE AT CANYON LAKES PHASE 1 (AMENDED)               
+1622        |THE VILLAGE AT CANYON LAKES PHASE 2                         
+1623        |The Villas at Whispering Woods                              
+1624        |THE VINEYARD                                                
+1625        |THOMPKINS ADDITION TO KENNEWICK                             
+1626        |THOMSEN'S ADDITION                                          
+1627        |TIERRA ALTA                                                 
+1628        |TIERRA ALTA NO 2                                            
+1629        |TIGHE ADDITION, CORRECTED PLAT                              
+163         |BELTZ ADDITION                                              
+1630        |TORO TERRACE, PLAT OF                                       
+1631        |TORTHAY COURT                                               
+1632        |TORTHAY REPLAT                                              
+1633        |TOWN & COUNTRY PHASE 1 (ALTERED PLAT OF)                    
+1634        |TOWN & COUNTRY VILLAGE #1                                   
+1635        |TOWN & COUNTRY VILLAGE PHASE 3                              
+1636        |TOWN & COUNTRY VILLAGE PHASE II                             
+1637        |TOWN & COUNTRY VILLAGE PHASE IV                             
+1638        |TOWNHOUSES                                                  
+1639        |TOWNHOUSES EAST                                             
+164         |BENDER'S ADDITION                                           
+1640        |TRADEWINDS                                                  
+1641        |TRAMEL SUBDIVISION                                          
+1642        |TRANS ADDITION, THE                                         
+1643        |TRAVIS ADDITION                                             
+1644        |TREADWAY ESTATES #1                                         
+1645        |Treadway Estates II, corrected plat                         
+1646        |TREADWAY ESTATES II, CORRECTED PLAT OF                      
+1647        |TRI-CITY ESTATES                                            
+1648        |TRI-CITY HEIGHTS #1                                         
+1649        |TRI-CITY HEIGHTS #2                                         
+165         |BENNETT'S HIGHLAND ADDITION                                 
+1650        |TRI-CITY HEIGHTS #3                                         
+1651        |TRI-CITY HEIGHTS #4                                         
+1652        |TRI-CITY HEIGHTS #5                                         
+1653        |Tri-Plex: 208,210 & 212 S. Dawes per Field Book.            
+1654        |TRIANGLE ESTATES                                            
+1655        |TRIPLE G ADDITION                                           
+1656        |Triple Vista Estates #2                                     
+1657        |TRIPPLE VISTA ESTATE #1                                     
+1658        |TUMBLEWEED TERRACE                                          
+1659        |TWIN RIVERS #1                                              
+166         |BENSON, E F ORCHARD TTS - PTN TTS 11-20                     
+1660        |TWIN RIVERS SCHOOL SITE                                     
+1661        |TWO COURTS NORTH                                            
+1662        |UNDERWOOD ESTATES, FINAL PLAT                               
+1663        |UNION SQUARE PLAZA                                          
+1664        |UNION WEST                                                  
+1665        |UNION WEST #2 PH 1& 2 B                                     
+1666        |UNION WEST #2 PH 1B & 2B                                    
+1667        |UNION WEST #2 PH 2A                                         
+1668        |UNION WEST #2 PH 4A                                         
+1669        |UNION WEST NO. 2 PHASE 1-A                                  
+167         |BENSON, E F ORCHARD TTS - TTS 1-10 & PTN TTS 11-13          
+1670        |University Park Condominium Phase 2                         
+1671        |UNK                                                         
+1672        |UNPLATTED                                                   
+1673        |UPLANDS, THE                                                
+1674        |VALLEY MEADOWS                                              
+1675        |VALLEY VIEW ADDITION                                        
+1676        |Valley View Estates #1                                      
+1677        |VALLEY VIEW ESTATES-PHASE ONE, PLAT OF                      
+1678        |VESTA'S SUBDIVISION                                         
+1679        |VIEW MEADOWS                                                
+168         |BENTON CITY TT 8, REPLAT OF                                 
+1680        |View Ridge                                                  
+1681        |VIEW RIDGE #2                                               
+1682        |VIEW RIDGE #3                                               
+1683        |VIEW RIDGE #6                                               
+1684        |VIEW RIDGE #7                                               
+1685        |VIEW RIDGE ADDITION TO RICHLAND                             
+1686        |VIEW RIDGE ESTATES                                          
+1687        |VIEW RIDGE ESTATES #4                                       
+1688        |VIEW RIDGE ESTATES #5                                       
+1689        |VIEW RIDGE SUBDIVISON                                       
+169         |BENTON CITY TTS 1 & 2, REPLAT OF                            
+1690        |VIEWLAND SUBDIVISION                                        
+1691        |VIEWPOINTE                                                  
+1692        |VILLA ROYELLE #1                                            
+1693        |VILLA ROYELLE #2                                            
+1694        |VILLA ROYELLE #2, REPLAT OF LOTS 4-8 BLK 1                  
+1695        |VILLA ROYELLE ESTATES                                       
+1696        |VILLAGE @ C L PH III,PLAT ALT OF LT 10 BLK 2 & LTS 1 & 2    
+1697        |VILLAGE @ CANYON LAKES PH IV                                
+1698        |VILLAGE AT CANYON LAKES PHASE III                           
+1699        |VILLAS AT LINCOLN MEADOWS, THE                              
+170         |BENTON CITY TTS 3-6, 10, 13, & 14, REPLAT OF                
+1700        |VILLAS AT LINCOLN MEADOWS, THE PLAT ALTERATION              
+1701        |Villas Verde                                                
+1702        |VILLAS VERDE PHASE 2                                        
+1703        |VINELAND ADDITION                                           
+1704        |VINEYARD PLAT                                               
+1705        |VINEYARDS, PHASE 1, THE                                     
+1706        |VIONE ADDITION                                              
+1707        |VISTA ACRES                                                 
+1708        |VISTA CENTER                                                
+1709        |VISTA DEL RIO                                               
+171         |BENTON CITY TTS 8 & 9, REPLAT OF                            
+1710        |VISTA HEIGHTS                                               
+1711        |VISTA HOME REPLAT                                           
+1712        |VISTA HOMES #2                                              
+1713        |VISTA HOMES #3                                              
+1714        |VISTA HOMES #5                                              
+1715        |VISTA INDUSTRIAL PARK                                       
+1716        |VISTA MEDICAL & RECREATIONAL PARK                           
+1717        |VISTA PROFESSIONAL CENTER                                   
+1718        |VISTA VERDE                                                 
+1719        |VIVIAN'S ADDITION                                           
+172         |BENTON CITY, BLK B                                          
+1720        |VUE RIVIERE                                                 
+1721        |WALKER ADDITION                                             
+1722        |WALKER'S ADDITION TO KENNEWICK                              
+1723        |WALTON'S 1ST ADDITION                                       
+1724        |WARM WATER IRRIGATED TTS                                    
+1725        |WASHINGTON PARK #1                                          
+1726        |WASHINGTON PARK #2                                          
+1727        |WASHINGTON PARK #3                                          
+1728        |WASHINGTON SQUARE                                           
+1729        |WATKIN'S PLAT                                               
+173         |BENTON CITY, BLK M                                          
+1730        |WATT'S ADDITION                                             
+1731        |WEBBERS ADDITION                                            
+1732        |WEISEL'S ADDITION                                           
+1733        |WEST 10TH ADDITION                                          
+1734        |WEST RICHLAND HEIGHTS                                       
+1735        |West Vineyard 1                                             
+1736        |West Vineyard Phase 1                                       
+1737        |WESTBOURNE RIDGE                                            
+1738        |Westcliffe                                                  
+1739        |Westcliffe #3                                               
+174         |BENTON CITY, BLKS 2-4, 22-24                                
+1740        |Westcliffe #4                                               
+1741        |Westcliffe PH 8                                             
+1742        |Westcliffe Phase 1                                          
+1743        |Westcliffe Phase 2                                          
+1744        |Westcliffe Phase II                                         
+1745        |Westcliffe Phase X                                          
+1746        |Westcliffe Phase XI                                         
+1747        |WESTCLIFFE PHASE XII                                        
+1748        |Westcliffe Phase XIV                                        
+1749        |Westcliffe Phase XV                                         
+175         |BENTON CITY, BLKS E-F, 42-44, 62-64                         
+1750        |Westcliffe, Phase 2                                         
+1751        |WESTERN HILLS ESTATES UNIT #1                               
+1752        |WESTERN HILLS ESTATES UNIT #2                               
+1753        |WESTERN HILLS ESTATES UNIT #3                               
+1754        |WESTERN HOMES ADDITION                                      
+1755        |WESTERN HOMES SECOND ADDITION                               
+1756        |WESTGATE SUBDIVISION                                        
+1757        |WESTHAVEN BLOCK THREE                                       
+1758        |WESTHAVEN BLOCK TWO, THE FINAL PLAT OF                      
+1759        |WESTHAVEN II                                                
+176         |BENTON ENTERPRISES #1                                       
+1760        |WESTVIEW ACRES NO 1                                         
+1761        |WESTVIEW ACRES NO 2                                         
+1762        |WESTVIEW ACRES NO 3                                         
+1763        |WESTVIEW ACRES NO 4                                         
+1764        |WESTVIEW ACRES NO 5                                         
+1765        |WESTVIEW ACRES NO 6                                         
+1766        |WESTVIEW ACRES NO 7                                         
+1767        |WESTVIEW ACRES NO 8                                         
+1768        |WESTWARD-HO SUBDIVISION                                     
+1769        |WESTWOOD ACRES                                              
+177         |BETTI'S BUSINESS ADDITION                                   
+1770        |Westwood Estate, Phase 3                                    
+1771        |Westwood Estates                                            
+1772        |WESTWOOD ESTATES #1                                         
+1773        |WESTWOOD ESTATES PHASE 2                                    
+1774        |Westwood Estates, Phase 3                                   
+1775        |WHEELER TRACT, THE                                          
+1776        |WHISPERING WINDS                                            
+1777        |WHITE BLUFFS PHASE 1                                        
+1778        |White Bluffs Phase 3                                        
+1779        |WHITE BLUFFS, PHASE 2                                       
+178         |BETTI'S PLAT                                                
+1780        |WICKERSHAM'S ADDITION                                       
+1781        |WICKERSHAM'S ADDITION REPLAT OF LTS 4 & 5                   
+1782        |WILDFLOWER AT KENNEWICK PARK                                
+1783        |WILL EVANS TTS                                              
+1784        |Willamette Heights                                          
+1785        |Willamette Heights #6                                       
+1786        |WILLAMETTE HEIGHTS #6 LTS 1 & ETC                           
+1787        |WILLAMETTE HEIGHTS #6 LTS 126 & ETC                         
+1788        |WILLAMETTE HEIGHTS #6 LTS 134 & ETC                         
+1789        |WILLAMETTE HEIGHTS #6 LTS 8 & ETC                           
+179         |BEVERLY HEIGHTS #1                                          
+1790        |WILLAMETTE HEIGHTS #8 LTS 10 & ETC                          
+1791        |WILLAMETTE HEIGHTS #8 LTS 128 & ETC                         
+1792        |WILLAMETTE HEIGHTS #8 LTS 130 & ETC                         
+1793        |WILLAMETTE HEIGHTS #8 LTS 2 & ETC                           
+1794        |Willow Crest Phase #2                                       
+1795        |Willow Pointe                                               
+1796        |WILLOW RIDGE                                                
+1797        |Willowbrook                                                 
+1798        |WILLOWBROOK #1                                              
+1799        |Willowbrook #2 Phase 1                                      
+180         |BEVERLY HEIGHTS #2                                          
+1800        |Willowbrook Heights #5                                      
+1801        |Willowbrook Heights #5`                                     
+1802        |WILLOWBROOK HEIGHTS PH1                                     
+1803        |Willowbrook Heights Phase #4                                
+1804        |WINDSONG                                                    
+1805        |WONDERLAND TRACT                                            
+1806        |WOOD'S PLAT                                                 
+1807        |WOODBURY EXT                                                
+1808        |WOOLERY REPLAT                                              
+1809        |Y I & I CO'S PLAT OF KENNEWICK                              
+181         |BEVERLY HEIGHTS #3                                          
+1810        |Y I & I SUBDIVISION IN 13-9-26                              
+1811        |Y I & I SUBDIVISION IN 7-9-27                               
+1812        |YAKITAT BLKS 2 & ETC                                        
+1813        |YAKITAT BLKS 58 & ETC                                       
+1814        |YAKITAT BLKS 63 & ETC                                       
+1815        |YAKITAT BLKS 9 & ETC                                        
+1816        |ZINTEL CANYON ESTATES                                       
+1817        |BELMONT HEIGHTS PHASES 1-3                                  
+1818
+1818  |BEVERLY MEADOWS PHASE 2                                     
+1819        |CANYON RANCH PHASE 7 & 8                                    
+182         |BEVERLY'S ADDITION                                          
+1820        |CLEARWATER CREEK PHASE 2                                    
+1821        |CLEARWATER CREEK PHASE 3                                    
+1822        |DENALI ESTATES                                              
+1823        |GRAYHAWK PHASE 1                                            
+1824        |HIGHLAND TERRACE                                            
+1825        |HYDE PARK, PHASE 6 & 7                                      
+1826        |KINGVIEW ADDITION NO 7 PHASE 1                              
+1827        |LA BUENA VIDA ESTATES                                       
+1828        |NORTH RIVER ROAD HOMES                                      
+1829        |RANCHO DEL REY NO. 9                                        
+183         |Bierlinke Meadows                                           
+1830        |SOUTH ORCHARD 1                                             
+1831        |STEEPLECHASE                                                
+1832        |SUMMIT VIEW PHASE 9 & 10                                    
+1833        |SUNDANCE MANOR                                              
+1834        |SUNSET HEIGHTS PHASE 1                                      
+1835        |SUNSHINE RIDGE                                              
+1836        |TRIPPLE VISTA ESTATES NO. 2 ALTERATION                      
+1837        |WESTWOOD ESTATES PHASE 4                                    
+1838        |SAGE CREST PHASE 5A                                         
+1839        |SUMMITVIEW PHASE 11                                         
+184         |BINDING SITE PLAN ##2206                                    
+1840        |THE BOULEVARD TOWNHOMES PHASE 2                             
+1841        |WESTWOOD ESTATES PHASE 5                                    
+1842        |OLYMPIA ESTATES PHASE 1 AMENDED                             
+1843        |APPLE VALLEY PHASE 1                                        
+1844
+1844  |APPLE VALLEY PHASE 2                                        
+1845        |CHERRY CREEK ESTATES PHASE 3                                
+1846        |CLEARWATER CREEK PHASE 4                                    
+1847        |GRAYHAWK PHASE 2                                            
+1848        |RANCHO DEL REY NO. 9                                        
+1849        |SOUTH HILL ESTATES PHASE 1                                  
+185         |BINDING SITE PLAN #2232                                     
+1850        |SOUTHCLIFFE PHASE 3                                         
+1851        |SOUTHRIDGE PHASE 4                                          
+1852        |SUNSET HEIGHTS PHASE 2                                      
+1853        |WEST VILLAGE PHASE 1                                        
+1854        |THE VILLAGE AT SOUTHRIDGE PHASE 1                           
+1855        |WHITE BLUFFS PHASE 4                                        
+1856        |WRANGLER ADDITION                                           
+1857        |THE RIDGE AT HANSEN PARK- DIVISION 1, PHASE 1               
+1858        |MEADOWS AT SOUTHRIDGE                                       
+1859        |WEST VILLAGE PHASE 2                                        
+186         |BIXLER TRACTS                                               
+1860        |SANDPIPER II                                                
+1861        |GRAYHAWK PHASE 3                                            
+1862        |IRVING SQUARE PHASE 1                                       
+1863        |APPLE VALLEY PHASE 2                                        
+1864        |WESTCLIFFE PHASE 16                                         
+1865        |SUNRISE RIDGE NO. 1                                         
+1866        |WILLOWBROOK NO. 2 PHASE 4A                                  
+1867        |HORN CREEK - PHASE 3                                        
+1868        |BEIERLE ADDITION PHASE 2                                    
+1869        |RIVER VISTA VINEYARD ESTATES                                
+187         |BLOSSOM HILL                                                
+1870        |HEARTLAND ESTATES                                           
+1871
+1871  |SOPHIE RAE ESTATES                                          
+1872        |OLYMPIA ESTATES PHASE 2                                     
+1873        |WESTCLIFFE HEIGHTS II                                       
+1874        |CLEARWATER CREEEK PHASE 6                                   
+1875        |SOUTHRIDGE ESTATES PHASE 1 AND 2                            
+1876        |SOUTHCLIFFE PHASE IV                                        
+1877        |WHITE BLUFFS - PHASE 5                                      
+1878        |CEDAR VILLAGE PHASE ONE                                     
+1879        |IRVING SQUARE PHASE 2                                       
+188         |BLOSSOM HILL FIRST ADDITION                                 
+1880        |AMENDED CANYON RANCH PHASE 9                                
+1881        |FRIESIAN ESTATES                                            
+1882        |PASHTON PLAZA                                               
+1883        |SUNDANCE ESTATES NORTH                                      
+1884        |LATTIN MEADOWS                                              
+1885        |VALLEY VIEW ESTATES PHASE FIVE                              
+1886        |VALLEY VIEW ESTATES PHASE SIX                               
+1887        |CENTER VILLAGE                                              
+1888        |CLEARWATER CREEK PHASE 5                                    
+1889        |WILD CANYON PHASE 1                                         
+189         |BLUE MOUNTAIN VIEW SUBDIVISION #1                           
+1890        |McCALL ESTATES                                              
+1891        |AMENDED BEIERLE ADDITION PHASE II                           
+1892        |LA BUENA VIDA ESTATES                                       
+1893        |WESTCLIFFE HEIGHTS PHASE 1A                                 
+1894        |this is available to use                                    
+1895        |APPLE VALLEY PHASE 3                                        
+1896        |RIDGE AT HANSEN PARK DIVISION 1 PHASE 2                     
+1897        |RIDGE AT CANDY MOUNTAIN                                     
+1898        |LATTIN MEADOWS PHASE 2                                      
+1899        |HIGHLANDVIEW HEIGHTS                                        
+190         |BLUE RIDGE ADDITION                                         
+1903        |KINGWOOD ESTATES PHASE 1                                    
+1904        |RESERVE AT SUMMERVIEW TERRACE PHASE 1                       
+1905        |WESTCLIFFE HEIGHTS PHASE 1B                                 
+1906        |WILD CANYON PHASE 2                                         
+1907        |LAURIA MEADOWS                                              
+1908        |SEITZ RIVER TRACTS                                          
+1909        |WESTHAVEN TOWNHOMES                                         
+191         |BONNIE BROOK TERRACE                                        
+1910        |VANCOUVER MEADOWS                                           
+1911        |VILLAGE AT SOUTHRIDGE PHASE 2                               
+1912
+1912  |CLEARWATER CREEK PHASE 7                                    
+1913        |SOUTHCLIFFE PHASE II                                        
+1914
+1914  |BELMONT HEIGHTS PHASE 4                                     
+1915        |BELMONT HEIGHTS PHASE 5                                     
+1916        |SUNSET TERRACE AMENDMENT                                    
+1917        |SUNSET HEIGHTS PHASE 3                                      
+1918        |WILLOWBROOK NO. 2 PHASE 4B                                  
+1919        |EAGLE POINT                                                 
+192         |Bordeaux Grove                                              
+1920        |WEST VILLAGE PHASE 3                                        
+1921        |APPLE VALLEY PHASE 4A                                       
+1922        |INSPIRATION ESTATES PHASE VIII                              
+1923        |TOWERS ESTATES                                              
+1925        |SOUTHRIDGE ESTATES PHASE 3                                  
+1926        |CEDAR VILLAGE PHASE TWO                                     
+1927        |WEST VILLAGE PHASE 4                                        
+1928        |JOLIANNA HEIGHTS PHASE 1                                    
+1929        |RED BLEND VILLAS                                            
+193         |Botaka Addition                                             
+1930        |TERRA VISTA HEIGHTS PHASE 1                                 
+1931        |PANORAMA VISTA                                              
+1932        |WESTCLIFFE HEIGHTS PHASE 2A                                 
+1933        |WHITE BLUFFS PHASE 6                                        
+1934        |BRIDLEWOOD                                                  
+1935        |CLEARWATER CREEK PHASE 8                                    
+1936        |RIDGEVIEW                                                   
+1937        |SOUTHRIDGE PHASE 5                                          
+1938        |QUAIL RIDGE PHASE 1 & 2                                     
+1939        |CLEARWATER CREEK PHASE 12                                   
+194         |Boulevard Townhomes Phase 1                                 
+1940        |COTTONWOOD CREEK PHASE 3                                    
+1941        |KINGVIEW ADDITION NO 6                                      
+1942        |LATTIN MEADOWS PHASE 3                                      
+1943        |TERRA VISTA HEIGHTS PHASE 2                                 
+1944        |MIDTOWN VILLAGE                                             
+1945        |DOVE RIDGE                                                  
+1946        |CLEARWATER CREEK PHASE 9 AND 10                             
+1947        |JOLIANNA HEIGHTS PHASE 2                                    
+1948        |THE HEIGHTS AT RED MOUNTAIN RANCH PHASE 1                   
+195         |BOWEN'S REPLAT                                              
+1950        |WESTERN RIDGE PHASE 1                                       
+1951        |APPLE VALLEY PHASE 4B                                       
+1952        |GOOSE RIDGE ESTATES PHASE 1                                 
+1953        |STEEPLECHASE PHASE 1                                        
+1954        |SAGEWOOD                                                    
+1955        |SOUTHRIDGE PHASE 7-8                                        
+1957        |COB HILL                                                    
+1958        |MUSTAFA ADDITION                                            
+1959        |BELMONT HEIGHTS - PHASES 6 & 7                              
+196         |BRANTINGHAM GREENS                                          
+1960        |KINGVIEW ADDITION NO 7 PHASES 2-7                           
+1961        |THE RESERVE AT SUMMERVIEW TERRACE PHASE 2                   
+1962        |STEEPLECHASE PHASE 2                                        
+1963        |WESTERN RIDGE PHASE 2                                       
+1964        |SOUTHRIDGE PHASE 6                                          
+1965        |SOUTHRIDGE PHASE 9                                          
+1966        |WEST VILLAGE PHASE 5                                        
+1967        |COUNTRY ACRES                                               
+1968        |GRACE ESTATES                                               
+1969        |CLEARWATER CREEK PHASE 11                                   
+197         |Brantingham Heights                                         
+1970        |APPLE VALLEY PHASE 5A                                       
+1971        |THE HEIGHTS AT RED MOUNTAIN RANCH PHASE 2                   
+1972        |SUNRISE RIDGE NUMBER 2                                      
+1973        |BLACKTOP ESTATES                                            
+1974        |GOOSE RIDGE ESTATES PHASE 2                                 
+1975        |Briarwood, Div 3                                            
+1976        |Valley View Estates, Ph 2, 3, & 4                           
+1977        |RED BLEND TOWNHOMES                                         
+1978        |MOUNTAIN VIEW MEADOWS PHASE 2                               
+1979        |QUAIL RIDGE PHASES 3-6                                      
+198         |Brantingham Heights Phase 3                                 
+1980        |SOUTHCLIFFE PHASE 5                                         
+1981        |THE VILLAGE AT SOUTHRIDGE PHASE 3                           
+1982        |WESTCLIFFE HEIGHTS PHASE 3                                  
+1983        |SOUTHCLIFFE PHASE 10                                        
+1984        |WEST VINEYARD PHASE 2                                       
+1985        |SOUTHRIDGE ESTATES PHASE 4                                  
+1986
+1986  |FINAL PLAT OF ZINTEL CREEK ESTATES                          
+1987        |PLAT OF WEST VILLAGE PHASE 6                                
+1988        |FINAL PLAT OF ORCHARD VIEW ESTATES                          
+1989        |PLAT OF WESTCLIFFE HEIGHTS PHASE 4                          
+199         |BRANTINGHAM HEIGHTS PHASE 4                                 
+1990        |PLAT OF SUNRISE RIDGE NUMBER 3                              
+1991
+1991  |THE HEGHTS AT RED MOUNTAIN RANCH PHASE 3                    
+1992        |FINAL PLAT OF JERICHO RIDGE                                 
+1993
+1993  |SOUTHRIDGE ESTATES PHASE 4                                  
+1994        |SOUTHRIDGE PHASE 10                                         
+1995        |BMS 4 PLEX                                                  
+1996        |PLAT OF WEST VILLAGE PHASE 6                                
+1997        |FINAL PLAT OF BELLA VISTA PHASE 1                           
+1998
+1998  |PLAT OF WESTCLIFFE HEIGHTS PHASE 4                          
+1999        |THE HEIGHTS AT RED MOUNTAIN RANCH PHASE 3                   
+200         |Brantingham Heights Phase 5					                            
+2000        |SIENA HILLS PHASE 01                                        
+2001        |SOUTH HILL ESTATES PHASE 2                                  
+2002        |BELLA VISTA PHASE 2                                         
+2003        |MARCELLO ESTATES PHASE 2                                    
+2004        |APPLE VALLEY PHASE 5B                                       
+2005        |WHITE BLUFFS PHASE 7                                        
+2006        |SOUTHCLIFFE PHASE 6                                         
+2007        |BELLA VISTA PHASE 1                                         
+2008
+2008  |SOUTH HILL ESTATES PHASE 2                                  
+2009        |BELLA VISTA PHASE 2                                         
+201         |Brantingham Heights Phase 5                                 
+2010        |MARCELLO ESTATES PHASE 1                                    
+2011        |APPLE VALLEY PHASE 5B                                       
+2012        |WHITE BLUFFS PHASE 7                                        
+2013        |SOUTHCLIFFE PHASE 6                                         
+2014        |APPLE VALLEY PHASE 6A                                       
+2015        |THE HEIGHTS AT RED MOUNTAIN RANCH PHASE 4                   
+2016        |MUSTANG ESTATES PHASE 1                                     
+2017        |FINAL PLAT OF WASHINGTON MEADOWS                            
+2018        |FINAL PLAT OF WALNUT HEIGHTS                                
+2019        |LUXELOCKER CONDOMINIUM                                      
+202         |BREEZ'N-IN-ESTATES #1                                       
+2020        |FAT CAT NORTH A CONDOMINIUM                                 
+2021        |RANCHLAND TOWNHOMES                                         
+2022        |SIENA HILLS PHASE 2                                         
+2023        |SOUTHCLIFFE PHASE 7                                         
+2025        |CRIMSON HILLS                                               
+2026        |SHERMAN HEIGHTS PHASE 1                                     
+2027        |VALLEY VIEW                                                 
+2028        |WELLHOUSE HEIGHTS                                           
+2029        |SOUTHRIDGE TOWNHOME ESTATES PHASE 1                         
+203         |BREEZ'N-IN-ESTATES #2                                       
+2030        |QUAIL RIDGE NO 2 PHASE 1                                    
+2031        |THE VILLAGE AT SOUTHRIDGE PHASE 4                           
+204         |BREEZ'N-IN-ESTATES #3                                       
+205         |BREKENRIDGE                                                 
+206         |BREKENRIDGE PHASE II                                        
+207         |BREKENRIDGE PHASE III                                       
+208         |BRENDEN WEST                                                
+209         |BRIARWOOD, DIV 1                                            
+210         |BRIARWOOD, DIV. 2                                           
+211         |BRIDGE ACRE HEIGHTS                                         
+212         |BRIDGE ACRES LTS 1-10, 42-69 & TTS A, B, C                  
+213         |Bridge Acres LTS 1-10, 42-69, & TTS A, B, C                 
+214         |BRIDGE ACRES LTS 18-32, 37-38, 74-76, & TT D		              
+215         |BRIDGE ACRES LTS 18-32, 37-38, 74-76, & TT D                
+216         |Bridgewater Estates                                         
+217         |Bridgewater Park Pase 1                                     
+218         |BRIDGEWATER PARK PHASE 2                                    
+219         |BRIDGEWATER PARK PHASE 3                                    
+220         |BRIDGEWATER PARK PHASE 4                                    
+221         |BRIDGWATER PARK PHASE 2                                     
+222         |Brooklyn Court                                              
+223         |BROOKS SUB, REPLAT OF                                       
+224         |BROOKSHIRE EST DIV 1                                        
+225         |Brookshire Estates                                          
+226         |Brookshire Estates #4                                       
+227         |BROTHERHOOD SUBDIVISION                                     
+228         |BROWN'S ADDITION                                            
+229         |BROWN'S PLAT                                                
+230         |BROWN'S SECOND ADDITION                                     
+231         |BROWN'S TRACTS                                              
+232         |BROWNS TRAILER PARK                                         
+233         |BRUNEAU EAST                                                
+234         |BRYN MAWR SUBDIVISION                                       
+235         |BUGBEE'S ADDITION                                           
+236         |BUR-DRIG ADDITION                                           
+237         |BURCHETT'S ADDITION                                         
+238         |Byron Estates                                               
+239         |CALIENTE SANDS                                              
+240         |CAMPBELL'S ADDITION                                         
+241         |CAMPBELLS, R M REPLAT                                       
+242         |CANAL HEIGHTS                                               
+243         |CANAL HEIGHTS, REPLAT OF LOT 30                             
+244         |Candy Mountain Estates                                      
+245         |Candy Mountain Estates #2                                   
+246         |Candy Mtn Estates Phase 2                                   
+247         |CANYON CREST                                                
+248         |CANYON LAKE VILLAS                                          
+249         |CANYON LAKE VILLAS, PHASE THREE                             
+250         |CANYON LAKES #1                                             
+251         |CANYON LAKES #10                                            
+252         |Canyon Lakes #11                                            
+253         |CANYON LAKES #12, PHASE ONE                                 
+254         |CANYON LAKES #2                                             
+255         |CANYON LAKES #21                                            
+256         |Canyon Lakes #21, Phase 3                                   
+257         |CANYON LAKES #4                                             
+258         |CANYON LAKES #5                                             
+259         |CANYON LAKES #7, PHASE 2                                    
+260         |CANYON LAKES #7, PHASE ONE                                  
+261         |CANYON LAKES #9                                             
+262         |CANYON LAKES 12, PHASE 2                                    
+263         |CANYON LAKES NO 11, PHASE 1                                 
+264         |CANYON LAKES NO 11, PHASE TWO                               
+265         |CANYON LAKES NO 16 PHASE 1                                  
+266         |CANYON LAKES NO 16 PHASE 2                                  
+267         |CANYON LAKES NO 17 PHASE 1                                  
+268         |CANYON LAKES NO 17, PH 2                                    
+269         |CANYON LAKES NO 18 PHASE 1                                  
+270         |CANYON LAKES NO 18 PHASE II                                 
+271         |CANYON LAKES NO 19 PHASE 1                                  
+272         |CANYON LAKES NO 19, PH II                                   
+273         |CANYON LAKES NO 8 PHASE 2                                   
+274         |CANYON LAKES NO 8 PHASE 3                                   
+275         |CANYON LAKES NO 8 PHASE 4                                   
+276         |CANYON LAKES NO. 17 PHASE THREE                             
+277         |CANYON LAKES NO. 17, PHASE FOUR                             
+278         |CANYON LAKES NO. 18 PHASE 3, FINAL PLAT                     
+279         |CANYON LAKES NO. 18 PHASE FOUR                              
+280         |Canyon Lakes No. 21, Phase 3                                
+281         |CANYON LAKES NO. 8, PHASE ONE                               
+282         |CANYON LAKES PH 20                                          
+283         |CANYON LAKES SOUTH HILL PHASE 1                             
+284         |CANYON LAKES SOUTH HILL PHASE II                            
+285         |CANYON LAKES VILLAS PHASE TWO                               
+286         |CANYON PARK ADDITION                                        
+287         |CANYON PINE                                                 
+288         |Canyon Ranch                                                
+289         |CANYON RANCH 3 & 4                                          
+290         |Canyon Ranch Phase 1                                        
+291         |CANYON RANCH PHASE 2                                        
+292         |CANYON RANCH PHASE 3  4                                     
+293         |CANYON RANCH PHASE 3 & 4                                    
+294         |Canyon Ranch Phase 5 & 6                                    
+295         |Canyon Rim                                                  
+296         |CANYON TERRACE                                              
+297         |CANYON TERRACE II                                           
+298         |Capella Court                                               
+299         |CAPPS, E L ORCHARD TTS #1 TTS 1-4 & 13-16                   
+300         |CAPPS, E L ORCHARD TTS #1 TTS 5 THRU 10                     
+301         |CAPPS, E L ORCHARD TTS #2 TTS 1, 2, 11-14 & 23-24           
+302         |CAPPS, E L ORCHARD TTS #2 TTS 3-10 & 15-22                  
+303         |CARLSON'S ADDITION                                          
+304         |CAROL TERRACE                                               
+305         |CAROL TERRACE #2                                            
+306         |CAROL TERRACE #2, REPLAT OF LTS 2 & 3 BLK 2                 
+307         |CAROL'S PLAT                                                
+308         |CARPERS TERRACE                                             
+309         |CARR PLAT                                                   
+310         |CARRIAGE HILLS                                              
+311         |CASA DEL REY                                                
+312         |CASA DEL SOL PH 3                                           
+313         |CASA DEL SOL PH 4                                           
+314         |CASA DEL SOL, FINAL PLAT OF                                 
+315         |CASA SUENO                                                  
+316         |CASCADE HOUSING PLAT                                        
+317         |CASCADE HOUSING, REPLAT OF A PTN OF LT 11                   
+318         |CASCADE KNOLL                                               
+319         |CASCADE KNOLL #2                                            
+320         |CECIL'S ADDITION #1                                         
+321         |CECO-JAWEA                                                  
+322         |CHALCRAFT #1                                                
+323         |CHAPMAN ADDITION                                            
+324         |CHATEAU 42                                                  
+325         |Cherrwood Estates Phase 1                                   
+326         |CHERRWOOD ESTATES PHASE ONE                                 
+327         |CHERRY BLOSSOM  MEADOWS #2                                  
+328         |CHERRY BLOSSOM HEIGHTS                                      
+329         |Cherry Blossom Meadows #1                                   
+330         |Cherry Blossom Meadows #2                                   
+331         |CHERRY BLOSSOM MEADWOS #2                                   
+332         |CHERRY CREEK ESTATES PHASE 1                                
+333         |Cherry Creek Estates Phase 2                                
+334         |CHERRY GLEN                                                 
+335         |CHERRY GLEN SUBDIVISION                                     
+336         |CHERRY HILL                                                 
+337         |CHERRY VIEW HEIGHTS                                         
+338         |Cherrywood Estates                                          
+339         |Cherrywood Estates Phase 1                                  
+340         |CHERRYWOOD ESTATES PHASE ONE                                
+341         |CHICAGO TEN ACRE TTS 14 THRU 20 & 28 THRU 35                
+342         |CHICAGO TEN ACRES TTS 1-3, 12, 21-27 & 36-39                
+343         |CHICAGO TEN ACRES TTS 4 & 5                                 
+344         |CHICAGO TEN ACRES TTS 6 THRU 11                             
+345         |CHIEF JOSEPH 2ND ADDITION                                   
+346         |CHIEF JOSEPH 3RD ADDITION                                   
+347         |CHIEF JOSEPH ADDITION                                       
+348         |CHRISTENSEN'S ADDITION                                      
+349         |CHRISTY PLAT                                                
+350         |Ciottages at Hansen Park                                    
+351         |CITY HOME ADD TO KENNEWICK                                  
+352         |CITY OF KIONA, PLAT OF THE                                  
+353         |CITY VIEW ADD TO KENNEWICK                                  
+354         |CLARKE'S FIRST ADDITION                                     
+355         |CLARKE'S FOURTH ADDITION                                    
+356         |CLARKE'S SECOND ADDITION                                    
+357         |CLARKE'S THIRD ADDITION                                     
+358         |CLAYTON TRACTS                                              
+359         |CLEARWATER CREEK PHASE 1                                    
+360         |CLINEBELL ADDITION                                          
+361         |CLIPPER RIDGE #1                                            
+362         |CLIPPER RIDGE #2                                            
+363         |Clodfelter Heights                                          
+364         |COCHRAN COURT                                               
+365         |COFFIN BROS ACRE TRACTS                                     
+366         |COLE TERRACE ADDITION                                       
+367         |Collins Ridge                                               
+368         |Collins Ridge Phase 1                                       
+369         |Collins Ridge Phase 3                                       
+370         |Collins Ridge Phase One                                     
+371         |Collins Ridge Phase Two                                     
+372         |COLUMBIA ACRES                                              
+373         |COLUMBIA ADDITION                                           
+374         |COLUMBIA CENTER ESTATES #1, REPLAT OF                       
+375         |COLUMBIA CENTER ESTATES #2, PLAT ALTERATION OF              
+376         |COLUMBIA CENTER HEIGHTS                                     
+377         |COLUMBIA FALLS                                              
+378         |COLUMBIA GARDENS                                            
+379         |COLUMBIA GARDENS, REPLAT OF                                 
+380         |COLUMBIA HEIGHTS ADDITION                                   
+381         |COLUMBIA PLAZA                                              
+382         |COLUMBIA QUEST                                              
+383         |COLUMBIA RANCHO                                             
+384         |COLUMBIA RIVER HEIGHTS                                      
+385         |COLUMBIA SUNSET VILLAGE, FINAL PLAT                         
+386         |COLUMBIA SUNSET VILLAGE, SURVEY OF                          
+387         |COLUMBIA TERRACE SUBDIVISION                                
+388         |COLUMBIA VIEW                                               
+389         |COLUMBIA VISTA #1                                           
+390         |COLUMBIA VISTA #2                                           
+391         |CONCORD HEIGHTS                                             
+392         |CONCORD HEIGHTS #2                                          
+393         |Condominiums at Canyon Lakes                                
+394         |Conversion Value                                            
+395         |CONWAY PLAZA                                                
+396         |Copperleaf                                                  
+397         |COPPERLEAF PHASE 3                                          
+398         |Copperleaf, Phase 3                                         
+399         |CORTEZ ADDITION                                             
+400         |COSTA LOTTA                                                 
+401         |Cottages at Hansen Park                                     
+402         |Cottonwood Creek                                            
+403         |Cottonwood Estates                                          
+404         |Cottonwood Spring Phase 2                                   
+405         |Cottonwood Springs                                          
+406         |COTTONWOOD SPRINGS #3                                       
+407         |Cottonwood Springs Phase 1                                  
+408         |Cottonwood Springs Phase 2                                  
+409         |Cottonwood Springs, Phase 1                                 
+410         |Cottonwood Springs, Phase 2                                 
+411         |Cottonwood Springs, Phase 4                                 
+412         |Cottonwoode Springs, Phase 1                                
+413         |Cottonwoodsprings                                           
+414         |Country Estates                                             
+415         |Country Heights                                             
+416         |COUNTRY HOME ESTATES, FINAL PLAT                            
+417         |Country Meadows Phase 1                                     
+418         |Country Meadows Phase 2                                     
+419         |COUNTRY RIDGE                                               
+420         |COUNTRY RIDGE III                                           
+421         |COUNTRY RIDGE PHASE FIVE                                    
+422         |COUNTRY RIDGE PUD PHASE II                                  
+423         |COUNTRY RIDGE, PHASE IV                                     
+424         |COUNTRY SQUIRE CONDO                                        
+425         |COUNTRY SQUIRE CONDO PHASE II                               
+426         |COUNTRY VIEW ESTATES                                        
+427         |CRAYNE'S PLAT                                               
+428         |CREASON'S ADDITION                                          
+429         |Created from seg. Record values need manual inspection.     
+430         |Creekside Phase 5                                           
+431         |Creekston Phase 9                                           
+432         |Creekstone                                                  
+433         |Creekstone #19                                              
+434         |CREEKSTONE 1                                                
+435         |CREEKSTONE 2                                                
+436         |CREEKSTONE 3                                                
+437         |Creekstone Phaes 7                                          
+438         |Creekstone Phase 13                                         
+439         |Creekstone Phase 5                                          
+440         |Creekstone Phase 6                                          
+441         |Creekstone Phase 7                                          
+442         |Creekstone Phase 8                                          
+443         |Creekstone Phase 9                                          
+444         |CREEKSTONE PLANNING                                         
+445         |CREEKSTONE PLANNING UNIT 1 PH 1                             
+446         |Creekstone, Phase 14                                        
+447         |CRESTED HILL #3                                             
+448         |Crested Hills                                               
+449         |Crested Hills  #9                                           
+450         |Crested Hills #10                                           
+451         |CRESTED HILLS #3                                            
+452         |Crested Hills #6                                            
+453         |Crested Hills #7                                            
+454         |Crested Hills #8                                            
+455         |CRESTED HILLS PH 4                                          
+456         |CRESTED HILLS PH 5                                          
+457         |CRESTVIEW SUBDIVISION                                       
+458         |CROW'S PLAT                                                 
+459         |CROWN POINT ESTATES                                         
+460         |CROWN POINT ORCHARDS TTS 1-7, 9, 15, & 16                   
+461         |CROWN POINT ORCHARDS TTS 26, 29, & 30                       
+462         |CROWN POINT ORCHARDS TTS 3, 15, & 29                        
+463         |CROWN POINT ORCHARDS TTS 8-14, 18-25                        
+464         |CRUTCHER'S SUBDIVISION                                      
+465         |CRYSTAL TERRACE                                             
+466         |CURTIS ADDITION                                             
+467         |DAHLIN-SCHATZ REPLAT                                        
+468         |DAVE'S LAND VALUE FOR LESS THEN 20 ACRE.                    
+469         |DAVE'S LAND VALUE FOR LESS THEN 20 ACRES.                   
+470         |DAVENPORT PLAT                                              
+471         |DAVIS REPLAT                                                
+472         |DEAKEN HEIGHTS                                              
+473         |DEBRA'S                                                     
+474         |Del Mar                                                     
+475         |Dellacort                                                   
+476         |DELMAR'S ADDITION TO KENNEWICK                              
+477         |DESERET                                                     
+478         |DESERET II                                                  
+479         |DESERET III                                                 
+480         |Desert Cove                                                 
+481         |DESERT DOVE DIV 2                                           
+482         |DESERT DOVE PHASE 1, THE                                    
+483         |DESERT DOVE, DIV. 3                                         
+484         |Desert Glade                                                
+485         |Desert Glade Phase 1                                        
+486         |Desert Glade Phase 1 remaining portion of                   
+487         |Desert Glade Phase 2                                        
+488         |DESERT MEADOWS                                              
+489         |Desert Paradise                                             
+490         |Desert Paradise Phase 1                                     
+491         |Desert Paradise Phase Two                                   
+492         |DESGRANGES ADDITION                                         
+493         |DIAL'S ADDITION                                             
+494         |DIAMOND TERRACE ADDITION                                    
+495         |DILLON'S PLAT                                               
+496         |DONELSON'S PLAT, REPLAT OF                                  
+497         |DR ELY'S COLONY #1                                          
+498         |DR ELY'S COLONY #2                                          
+499         |DRAPER ADDITION                                             
+500         |DUDLEY'S Y I & I SUBDIVISION                                
+501         |DUNGANS ADDITION TO KENNEWICK                               
+502         |Eagle Ridge                                                 
+503         |EAGLE'S NEST ADDITION                                       
+504         |Eaglewatch                                                  
+505         |EASTGATE SUBDIVISION                                        
+506         |EASTGATE TO PROSSER                                         
+507         |EATON PARK                                                  
+508         |ED'S ACRES                                                  
+509         |EDGEWATER MANOR                                             
+510         |EDISON PROFESSIONAL BUILDING-A CONDOMINIUM                  
+511         |EL DORADO ESTATES #1                                        
+512         |EL RANCHO REATA #1                                          
+513         |EL RANCHO REATA #2, ALTERED PLAT OF                         
+514         |EL RANCHO REATA #3                                          
+515         |EL RANCHO REATA #4                                          
+516         |ELITE ESTATES                                               
+517         |Elliot Lake #1                                              
+518         |ELLIOTT LAKE #1                                             
+519         |Empire                                                      
+520         |EMPIRE LAKESIDE ESTATES                                     
+521         |ENGLISH ADDITION                                            
+522         |ENTRADA DE FERRO CONDO                                      
+523         |Estancia Estates                                            
+524         |Estates at Summer Lane                                      
+525         |ETHEL'S PLAT                                                
+526         |EVAN'S ADDITION                                             
+527         |EVAN'S SECOND ADDITION                                      
+528         |EVELYN'S ADDITION                                           
+529         |FAIRWAY FIVE                                                
+530         |FAIRWOOD, FINAL PLAT                                        
+531         |Falconcrest Phase 1		                                       
+532         |FERN HEIGHTS                                                
+533         |FILMORE NORTH CONDO                                         
+534         |FINLEY, TOWN OF                                             
+535         |FIRST ADD TO HIGHLAND ADD                                   
+536         |FLORAL HILL #1                                              
+537         |FLORAL HILL #2                                              
+538         |FLORAL HILL #3                                              
+539         |FOISY SUBDIVISION                                           
+540         |FOOTHILL ESTATES                                            
+541         |Fountain Hills                                              
+542         |FOUNTAIN HILLS #1                                           
+543         |Fountain Hills Condominiums                                 
+544         |Fountain Hills Phase 2                                      
+545         |FOUR RAVENS, THE                                            
+546         |FOX ADDITION                                                
+547         |FRANCILE HEIGHTS                                            
+548         |FRUITLAND OFFICE CENTER (A CONDO)                           
+549         |FRUITVALE TEN ACRE TTS - TTS 1, 2, & 10-16                  
+550         |FRUITVALE TEN ACRES TTS - TTS 3 THRU 9                      
+551         |FRYE & FINN TTS TO PROSSER HEIGHTS                          
+552         |FRYE AND FINN                                               
+553         |FYFE'S ADDITION                                             
+554         |GAFFORD ADDITION                                            
+555         |GAGE GALAXY                                                 
+556         |GAMBRIEL ESTATES                                            
+557         |GARBER'S ADDITION                                           
+558         |GARBER'S GARDEN TRACTS ADDITION                             
+559         |GARBER'S SECOND ADDITION                                    
+560         |GARBER'S THIRD ADDITION                                     
+561         |GARDEN PARK SUBDIVISION #1                                  
+562         |GARDEN PARK SUBDIVISION #2                                  
+563         |GARDEN PARK SUBDIVISION #3                                  
+564         |GARDEN VILLA CONDO                                          
+565         |GARFIELD HEIGHTS                                            
+566         |GARFIELD HEIGHTS #1                                         
+567         |GARNERS PLAT                                                
+568         |GARTIN TRACTS                                               
+569         |GEORGE ADDITION                                             
+570         |GIEZENTANNER'S SUBDIVISION                                  
+571         |GIL'S ADDITION                                              
+572         |GILBERT ADDITION                                            
+573         |GILES ADDITION                                              
+574         |GLASOW ADDITION                                             
+575         |Glenbrook                                                   
+576         |GLENEAGLE AT HORN RAPIDS                                    
+577         |GOLDEN ORCHARDS ADDITION                                    
+578         |GOODMAN'S SUBDIVISION                                       
+579         |GOODMAN'S SUBDIVISION, REPLAT OF                            
+580         |GRAND MEADOWS                                               
+581         |GRANDRIDGE COMMERICAL CENTER                                
+582         |Grandridge Meadows                                          
+583         |Grandridge Meadows #1                                       
+584         |GRANDRIDGE PROFESSIONAL CENTER, A CONDO                     
+585         |GRANDVIEW HEIGHTS                                           
+586         |GRANGE PARK                                                 
+587         |GREEN ACRES                                                 
+588         |GREEN MEADOWS                                               
+589         |GREEN RIDGE                                                 
+590         |GREEN TREE VILLA                                            
+591         |GREENBROOK PARK                                             
+592         |GREENBROOK PARK #2                                          
+593         |GREENBROOK PARK #3                                          
+594         |GREENBROOK PARK #4                                          
+595         |GREENBROOK PARK #4, REPLAT OF                               
+596         |GREENFIELD TERRACE #1                                       
+597         |GRENDING'S ADDITION                                         
+598         |GRETTA'S ADDITION                                           
+599         |GUTHRIE'S FIRST ADDITION                                    
+600         |HALL'S ADDITION                                             
+601         |HALMS ADDITION                                              
+602         |HAMPTON'S PLAT, REPLAT OF                                   
+603         |Hansen Park                                                 
+604         |Hansen Park #3                                              
+605         |Hansen Park div 1 Phase 2                                   
+606         |HANSEN PARK DIV 3 PH 1                                      
+607         |Hansen Park Division 1 Phase 1                              
+608         |Hansen Park Division 1 Phase 1`                             
+609         |HANSEN PARK DIVISION 3 PH 1                                 
+610         |HANSEN'S PLAT                                               
+611         |HANSEN'S PLAT NO 2                                          
+612         |HARLESS ADDITION                                            
+613         |HARRINGTON HEIGHTS                                          
+614         |HARRINGTON RANCHETTES                                       
+615         |HARRINGTON RANCHETTES #2                                    
+616         |HARRINGTON RANCHETTES #3                                    
+617         |HARRINGTON RANCHETTES #4                                    
+618         |HARRINGTON RANCHETTES #5                                    
+619         |HARVEST MEADOWS #1                                          
+620         |Harvest Meadows #2                                          
+621         |HARVET MEADOWS #2                                           
+622         |HARVEY'S ADDITION                                           
+623         |HAWTHORNE ADDITION                                          
+624         |HAWTHORNE HEIGHTS                                           
+625         |HAYDEN VILLAGE WEST                                         
+626         |HAYDEN VILLAGE WEST PH IV                                   
+627         |HAYDEN VILLAGE WEST PHASE II                                
+628         |HAYDEN VILLAGE WEST PHASE III                               
+629         |HAYDEN VILLAGE WEST PHASE VI                                
+630         |HAYDEN VILLAGE WEST, PHASE 7                                
+631         |HAYDEN VILLAGE WEST, PHASE V                                
+632         |Hazelwood Estates                                           
+633         |Hearthstone                                                 
+634         |HEARTHSTONE #2                                              
+635         |HEATHER PLAT                                                
+636         |HEDRICK REPLAT                                              
+637         |HEIGHTS AT MEADOW SPRINGS, PHASE 5                          
+638         |HEMMINGER'S ACRES                                           
+639         |HENNE'S ADDITION                                            
+640         |HENRY'S ADDITION                                            
+641         |Heritage Hills                                              
+642         |HERITAGE HILLS #1                                           
+643         |HERITAGE HILLS #3                                           
+644         |Heritage Hills #5                                           
+645         |HERITAGE HILLS NO 2                                         
+646         |Heritage Hills No. 5                                        
+647         |HESS SUBDIVISION                                            
+648         |HEWES SUBDIVISION                                           
+649         |HIDDEN ESTATES                                              
+650         |Hidden Hills                                                
+651         |HIDDEN HILLS PHASE 2                                        
+652         |Hidden Hills Phase 3                                        
+653         |HIDDEN MEADOWS                                              
+654         |HIDDEN VALLEY                                               
+655         |HIGGINS ADDITION TO KENNEWICK                               
+656         |HIGHLAND 1ST ADDITION TO PROSSER                            
+657         |HIGHLAND ADDITION TO PROSSER                                
+658         |HIGHLAND GARDENS                                            
+659         |HIGHLAND GREEN                                              
+660         |HIGHLAND HEIGHTS                                            
+661         |HIGHLAND HOME TRACTS                                        
+662         |HIGHLAND MEADOWS #1                                         
+663         |HIGHLAND MEADOWS #2                                         
+664         |HIGHLAND PARK                                               
+665         |HIGHLAND PARK, FIRST ADDITION TO                            
+666         |HIGHLAND PARK, SECOND ADDITION TO                           
+667         |HIGHLAND PLAT D LTS 30, 32, 35-38 & 47-50 & PTN OF TT B     
+668         |HIGHLAND TERRACE                                            
+669         |Highland Townhome Villas                                    
+670         |HIGHLAND TOWNHOMES PHASE 2A                                 
+671         |HIGHLAND VALLEY EST DIV #1                                  
+672         |HIGHLAND VALLEY EST DIV #2                                  
+673         |HIGHLAND VALLEY EST DIV #3                                  
+674         |HIGHLAND VISTA DIVISION #1                                  
+675         |HIGHLAND VISTA DIVISION #2                                  
+676         |HIGHLAND VISTA DIVISION #3                                  
+677         |HIGHLAND VISTA DIVISION #4                                  
+678         |HIGHLAND VISTA DIVISION #5                                  
+679         |HIGHLANDER PARK #1                                          
+680         |HIGHLANDER PARK #2                                          
+681         |HIGHLANDER PARK #3                                          
+682         |HIGHLANDS CENTER, THE                                       
+683         |HIGHLANDS METHODIST CHURCH PLAT, WEST                       
+684         |HIGHLANDS PLAT A TTS 10-16, 21-24, 26, & 27                 
+685         |HIGHLANDS PLAT A TTS 25-40 & 49-56                          
+686         |HIGHLANDS PLAT A TTS 31-24 & 41-48 & 57-60                  
+687         |HIGHLANDS PLAT A TTS 7, 8, 17-20, 29 & 30                   
+688         |HIGHLANDS PLAT B TTS 1-6 & 17-24                            
+689         |HIGHLANDS PLAT B TTS 22-40 & 49-56                          
+69          |	                                                           
+690         |HIGHLANDS PLAT B TTS 29-32 & 41-47 & 57-60                  
+691         |HIGHLANDS PLAT B TTS 7-16 & 25-28                           
+692         |HIGHLANDS PLAT C LTS 2-7 & 18-25 & 34-41 & 48-55            
+693         |HIGHLANDS PLAT C LTS 56-57 & 66-67                          
+694         |HIGHLANDS PLAT C LTS 8-17 & 26-33 & 42-47                   
+695         |HIGHLANDS PLAT D LTS 15 & 41-56 & PTN OF TT B               
+696         |HIGHLANDS PLAT D LTS 9-12 & 21-29 & PTN OF TT A             
+697         |HIGHLANDS PLAT E LTS 4-15                                   
+698         |HIGHLANDS PLAT E TTS A & B                                  
+699         |HIGHLANDS PLAT F LTS 1-4                                    
+70          | RICHLAND, PLAT OF BLKS 256 & ETC                           
+700         |HIGHLANDS PLAT F LTS 7-12                                   
+701         |HIGHLANDS PLAT M                                            
+702         |HIGHLANDS POINT                                             
+703         |HIGHLANDS VILLAGE CONDO                                     
+704         |HIGHLANDS WEST, THE                                         
+705         |HIGHLANDS, SEC 34                                           
+706         |HIGLANDS PLAT C LTS 58-65 & 68-75                           
+707         |HIGLANDS PLAT D LTS 1-8 & 16-20 & PTN OF TT A               
+708         |HILLCREST SUBDIVISION                                       
+709         |HILLS WEST #1                                               
+71          |$78,000 on 5/18/01.                                         
+710         |HILLS WEST #2                                               
+711         |HILLS WEST #3                                               
+712         |HILLS WEST #4                                               
+713         |HILLS WEST #5                                               
+714         |HILLS WEST #6                                               
+715         |HILLS WEST #7                                               
+716         |HILLS WEST #8                                               
+717         |HILLS WEST #9                                               
+718         |HILLSIDE SUBDIVISION                                        
+719         |HILLVIEW ACRES                                              
+72          |.//                                                         
+720         |HILLVIEW ESTATES                                            
+721         |HINCK'S PLAT                                                
+722         |HOLMQUIST ADDITION                                          
+723         |HOOD AVE HEIGHTS                                            
+724         |Horizon Heights                                             
+725         |Horn Creek                                                  
+726         |Horn Creek Phase 2                                          
+727         |Horn Creep Phase 2                                          
+728         |HORN RAPIDS DIVISION NO 1                                   
+729         |Horse Heave Heights                                         
+73          |///                                                         
+730         |Horse Heaven Heights                                        
+731         |Horse Heaven View                                           
+732         |HORT PLATS WITHIN SOUTHWEST QUARTER OF SECTION 23           
+733         |HOVER'S CENTRAL ADD                                         
+734         |HOVER'S FOUNTAIN PARK                                       
+735         |HOVER'S FOUNTAIN PARK & REPLAT OF TTS 5 & 6                 
+736         |HOVER'S PARK VILLA TRACTS                                   
+737         |HOVER'S SUBDIVISION OF TT 2 & PTN OF TT 1 AMON'S ADD        
+738         |HOVER'S VILLA TRACTS                                        
+739         |HOVERSON'S PLAT                                             
+74          |`                                                           
+740         |HUNT'S, CORRECTED PLAT OF                                   
+741         |Hunts                                                       
+742         |HYATT ADDITION                                              
+743         |HYDE PARK PHASE 1 & 2                                       
+744         |HYDE PARK PHASE 3                                           
+745         |Hyde Park Phase 4                                           
+746         |Hyde Park Phase 5                                           
+747         |IMPRESSIONS 1 AT MEADOW SPRINGS & REPLAT OF BLK 4           
+748         |IMPRESSIONS AT MEADOW SPRINGS                               
+749         |INDIAN VALLEY                                               
+75          |03/30/12 Listed $ 174,900. NLM                              
+750         |Inpiration Estates, Phase VII                               
+751         |Inspiration Estates                                         
+752         |Inspiration Estates #1                                      
+753         |Inspiration Estates, Phase 5                                
+754         |INSPIRATION ESTATES, PHASE III-A                            
+755         |Inspiration Estates, Phase V                                
+756         |Inspiration Estates, Phase VI                               
+757         |Inspiration Estates, Phase VII                              
+758         |Inspriation Estates #1                                      
+759         |ISLAND VIEW PLAT                                            
+76          |04/11/12 Listed $ 224,900. NLM                              
+760         |ISLAND VIEW, FIRST ADDITION TO                              
+761         |ISLAND VIEW, SECOND ADDITION TO                             
+762         |IVY CLUB CONDO                                              
+763         |JADE EAST ESTATES                                           
+764         |JAMES ADDITION TO PROSSER                                   
+765         |JAMESVILLE ADDITION                                         
+766         |JAN'S ADDITION                                              
+767         |JENNIE LEE ADDITION                                         
+768         |JENSEN'S ADDITION                                           
+769         |JOANIE'S ADDITION                                           
+77          |04/11/12 Listed $ 99,900. NLM                               
+770         |JOHN DAM PLAT                                               
+771         |JOHN DAM PLAT #2                                            
+772         |JOHN'S ADDITION                                             
+773         |JOHN-ANN ADDITION                                           
+774         |JOHNSON ADDITION                                            
+775         |JOHNSON NOW PROFESSIONAL CENTER A CONDO                     
+776         |JOHNSON NOW PROFESSIONAL CENTER, A CONDO                    
+777         |JOHNSON'S SUBDIVISION                                       
+778         |JONES' PLAT                                                 
+779         |JONES' PLAT TTS 10 THRU 21                                  
+78          |07/21/11 Listed $ 169,000. NLM                              
+780         |JUDKINS SUBDIVISION                                         
+781         |JUDY'S ADDITION                                             
+782         |KAAS ADDITION                                               
+783         |KATHY'S ADDITION                                            
+784         |KEENE VILLAGE                                               
+785         |KEEVER SUBDIVISION                                          
+786         |KEEVER SUBDIVISION NO 2                                     
+787         |KEEWAYDIN HEIGHTS                                           
+788         |KEEWAYDIN HEIGHTS, SECOND                                   
+789         |KEEWAYDIN HEIGHTS, THIRD                                    
+79          |08/01/16  Listed $ 230,000.  CRH                            
+790         |KELLER HEIGHTS                                              
+791         |KELLER HEIGHTS REPLAT OF S 1/2 LTS 27 & 28                  
+792         |KELLY ANN ADDITION                                          
+793         |KELSO BROS TTS TO KIONA                                     
+794         |KELSO'S FIRST ADDITION TO KIONA                             
+795         |KEN ACRES ADDITION                                          
+796         |Ken's Acres                                                 
+797         |Ken's Acres Addition                                        
+798         |Kendall Manor                                               
+799         |KENNEDY'S FIRST ADDITION TO KIONA                           
+80          |08/01/16  Listed $240,000.  CRH                             
+800         |KENNEWICK 1ST ADD'N TO, REPLAT BLK 1 LOTS 6 THRU 12         
+801         |KENNEWICK GARDEN COURT                                      
+802         |KENNEWICK GARDEN TTS ADDITION                               
+803         |KENNEWICK GARDEN TTS ADDITION #2                            
+804         |KENNEWICK GARDENS                                           
+805         |KENNEWICK HEIGHTS                                           
+806         |KENNEWICK IRRIG DIST PARCEL ONE                             
+807         |KENNEWICK MEDICAL-DENTAL CENTER CONDO                       
+808         |KENNEWICK PARK                                              
+809         |KENNEWICK PARK #2                                           
+81          |08/04/11 Listed $ 192,000. NLM                              
+810         |KENNEWICK PARK #3                                           
+811         |KENNEWICK PARK CHRUCH SITE                                  
+812         |KENNEWICK PARK WEST PHASE 2                                 
+813         |KENNEWICK PARK WEST PHASE 3                                 
+814         |KENNEWICK PARK WEST PHASE 4                                 
+815         |KENNEWICK PARK WEST, PHASE 1                                
+816         |KENNEWICK PLAZA                                             
+817         |KENNEWICK QUAIL RIDGE                                       
+818         |KENNEWICK SOUTH                                             
+819         |KENNEWICK SOUTH SECOND ADDITION                             
+82          |1/14/02-Roof average,metal windows, plywood sdg. Sold-      
+820         |KENNEWICK SOUTH THIRD ADDITION                              
+821         |KENNEWICK SOUTH, REPLAT OF LT 7, BLK 1                      
+822         |KENNEWICK, 1ST ADDITION TO                                  
+823         |KENNEWICK, 2ND ADDITION TO                                  
+824         |KENWOOD TERRACE #1                                          
+825         |KENWOOD TERRACE #2                                          
+826         |KENWOOD TERRACE #3                                          
+827         |KEYSTONE ACRES                                              
+828         |KIMBERLY ESTATES PHASE 1                                    
+829         |KIN-SLEY ADDITION TO KENNEWICK                              
+83          |10/4/05 sold $147,700                                       
+830         |KING VIEW                                                   
+831         |KING VIEW #2                                                
+832         |KING VIEW #4                                                
+833         |KING'S ACRES                                                
+834         |Kingview Addition #5                                        
+835         |Kingview Addition #5 Ph 2                                   
+836         |Kingview Addition #5, PH 2                                  
+837         |KINNEY'S SUBDIVISION                                        
+838         |Kiona Benton Highlands #1                                   
+839         |KIONA-BENTON HIGHLANDS DIV #1 TTS 1-3, 8-13 & 18-23         
+84          |11/18/04 Changed grade G to G+. CNC                         
+840         |KIONA-BENTON HIGHLANDS DIV #1 TTS 27-29, 36-45 & 52-58      
+841         |KIONA-BENTON HIGHLANDS DIV #1 TTS 30-35, 46-51 & 59-61      
+842         |KIONA-BENTON HIGHLANDS DIV #1 TTS 4-7, 14-17 & 24-26        
+843         |KIONA-BENTON HIGHLANDS DIV #2 TTS 1-9, 20-33 & 42-48        
+844         |KIONA-BENTON HIGHLANDS DIV #2 TTS 10-19, 34-41              
+845         |KIRBY KOVE HOMESITES                                        
+846         |KIRKPATRICK'S 1ST ADDITION                                  
+847         |KIRKPATRICK'S 2ND ADDITION                                  
+848         |Kirkwood Estates                                            
+849         |Klamath Street Cottages                                     
+85          |4/27/09 parcels 1-1089-100-0030-000 & 1-1089-102-0000-003 we
+850         |KNOLLS, THE                                                 
+851         |KOCH'S ESTATES                                              
+852         |KRAMER ADDITION                                             
+853         |KRAMER ADDITION, REPLAT OF                                  
+854         |LA FRANCQUE'S ADDITION                                      
+855         |LA VERDE #1                                                 
+856         |LA VERDE #2                                                 
+857         |LA VERDE #3                                                 
+858         |LAGUNA VISTA SUBDIVISION                                    
+859         |LAIRD'S PLAT                                                
+86          |5/28/15 Listed $135,000. BC                                 
+860         |LAKERIDGE ESTATES #1                                        
+861         |LAKERIDGE ESTATES #2                                        
+862         |LAKES, THE                                                  
+863         |LAKESIDE TRACTS                                             
+864         |LAKEVIEW RANCHETTES                                         
+865         |LAKEVIEW TERRACE                                            
+866         |LAKEVIEW TERRACE #1                                         
+867         |LAKEVIEW TERRACE #2                                         
+868         |LAKEVIEW TERRACE #3                                         
+869         |LAKEVIEW TERRACE #4                                         
+87          |7/13/15 Listed $148,500. BC                                 
+870         |LAMPSON ACRE TRACTS                                         
+871         |LAMPSON HOMESITES                                           
+872         |LAMPSON HOMESITES #2                                        
+873         |LAPIERRE ADDITION                                           
+874         |LARSEN'S PLAT                                               
+875         |LAUREL HILL ADDITION                                        
+876         |LAYTON'S ADDITION TO KENNEWICK                              
+877         |LECHELT'S ADDITION                                          
+878         |LEE ANN ADDITION                                            
+879         |LEGION HEIGHTS #2 BLKS 1-4 & TT A                           
+88          |7/20/00 sold $183,500                                       
+880         |LEGION HEIGHTS #2 BLKS 5 THRU 8                             
+881         |LEGION HEIGHTS #2 RPLT OF LTS 3-6 BLK 5                     
+882         |LEGION HEIGHTS #2, RPLT LTS 1-6 & PTN LT 7 BLK 3            
+883         |LEGION HEIGHTS #2, RPLT PTNS SPS 258, 259, 260 BLK 6        
+884         |LEGION HEIGHTS SUBDIVISION                                  
+885         |LEIBEE'S ADD TO KENNEWICK                                   
+886         |LENHARD AVENUE HEIGHTS                                      
+887         |LESLIE CANYON                                               
+888         |LESLIE CANYON II                                            
+889         |Lexington Heights                                           
+89          |8/17/05 sold $165,000                                       
+890         |LEXINGTON HEIGHTS PHASE 5						                             
+891         |LEXINGTON HEIGHTS PHASE 5                                   
+892         |Liberty Lane                                                
+893         |LINCOLN MEADOWS                                             
+894         |LINCOLN MEADOWS-PHASE 1, THE COURTYARD AT                   
+895         |LINCOLN MEADOWS-PHASE 2, THE PLAT OF THE COURTYARD AT       
+896         |LINK'S VIEW SUBDIVISION                                     
+897         |LO RAY ADDITION                                             
+898         |LO08                                                        
+899         |LORAYNE J RANCH #1                                          
+90          |ADAMS CONDO, A CONDOMINIUM                                  
+900         |LORAYNE J RANCH #2                                          
+901         |LORENCO ADDITION                                            
+902         |Losino West                                                 
+903         |LOTSA LOOKOUT                                               
+904         |LOUISE ADDITION                                             
+905         |LUANN ESTATES                                               
+906         |LUCILLE'S PLAT                                              
+907         |LUCUS ADDITION                                              
+908         |LUTHERPARK SUBDIVISION                                      
+909         |LUZON ORCHARD TRACTS                                        
+91          |Airway Heights                                              
+910         |LUZON TOWNSITE                                              
+911         |LYNNWOOD TERRACE                                            
+912         |LYNNWOOD TERRACE #2                                         
+913         |LYNNWOOD TERRACE #3                                         
+914         |LYNNWOOD TERRACE #4                                         
+915         |LYNNWOOD TERRACE #5                                         
+916         |M & M ENTERPRISES                                           
+917         |M-K PLAT                                                    
+918         |MACAULEY ADDITION                                           
+919         |MACINTOSH MANOR                                             
+92          |ALBEMARLE #1                                                
+920         |MACINTOSH MANOR PHASE TWO                                   
+921         |Madasyn Meadow Estates                                      
+922         |Madison Court                                               
+923         |MAIDSTONE AT HORN RAPIDS, FINAL PLAT OF                     
+924         |MARCIA'S ADDITION                                           
+925         |MARGARETS ADDITION                                          
+926         |MARILYN ESTATES                                             
+927         |MARION ESTATES                                              
+928         |MARJO HEIGHTS SUBDIVISION                                   
+929         |MARK'S ADDITION                                             
+93          |ALBEMARLE #2                                                
+930         |MARTIN MEADOWS                                              
+931         |MARTIN PLAT                                                 
+932         |MARY ELLEN HEIGHTS                                          
+933         |MARY'S PLAT                                                 
+934         |MARYANN ADDITION                                            
+935         |MC FADDEN SUBDIVISION, A L                                  
+936         |MC KNIGHT'S PLAT                                            
+937         |MC LEAN'S PLAT                                              
+938         |MC MILLIN SUBDIVISION                                       
+939         |MC MILLION SUBDIVISION #2                                   
+94          |ALBEMARLE #3                                                
+940         |MEADOW EAST TTS A & 1-4, THE                                
+941         |Meadow Hills                                                
+942         |MEADOW HILLS PHASE 1                                        
+943         |MEADOW NORTH                                                
+944         |Meadow Parke                                                
+945         |Meadow Parke Estates                                        
+946         |MEADOW SOUTH                                                
+947         |MEADOW SPRINGS #1                                           
+948         |MEADOW SPRINGS #2                                           
+949         |MEADOW SPRINGS #3                                           
+95          |ALBEMARLE #4                                                
+950         |MEADOW SPRINGS IV                                           
+951         |MEADOW SPRINGS RANCH #1                                     
+952         |MEADOW SPRINGS RANCH #2                                     
+953         |MEADOW SPRINGS SECOND NINE PHASE ONE                        
+954         |MEADOW SPRINGS SECOND NINE PHASE THREE                      
+955         |MEADOW SPRINGS SECOND NINE PHASE TWO                        
+956         |MEADOW VIEW ADDITION                                        
+957         |MEADOW WOOD ESTATES                                         
+958         |MEADOWBROOK                                                 
+959         |MENHINICK'S ADD TO KENNEWICK                                
+96          |ALBEMARLE #5                                                
+960         |Meridian Heights                                            
+961         |MERRILL'S FIFTH ADDITION                                    
+962         |MERRILL'S FIRST ADDITION                                    
+963         |MERRILL'S FOURTH ADDITION                                   
+964         |MERRILL'S SECOND ADDITION                                   
+965         |MERRILL'S SIXTH ADDITION                                    
+966         |MERRILL'S THIRD ADDITION                                    
+967         |MISTY MEADOWS                                               
+968         |MITCHELLS PLAT                                              
+969         |Montecito Estates                                           
+97          |ALDER TERRACE SUBDIVISION                                   
+970         |MOORE ORCHARD TRACTS TTS 1-5, 15-20, 27-30                  
+971         |MOORE ORCHARD TRACTS TTS 6-14, 21-26                        
+972         |MOORE PLAT                                                  
+973         |MOORE'S FIRST ADDITION                                      
+974         |MORAINS GARDEN TRACTS                                       
+975         |MORGAN'S PLAT                                               
+976         |MORNINGSIDE                                                 
+977         |MORTON'S PLAT                                               
+978         |MOUNTAIN VIEW                                               
+979         |Mountain View Estates                                       
+98          |ALHAMBRA ADDITION                                           
+980         |MOUNTAIN VIEW ESTATES I                                     
+981         |MOUNTAIN VIEW ESTATES II                                    
+982         |Mountain View Estates III                                   
+983         |Mountain View Estates IV                                    
+984         |MOUNTAIN VIEW ESTATES PHASE ONE                             
+985         |MOUNTAIN VIEW MEADOWS                                       
+986         |MOUNTAIN VIEW MEADOWS NO. 2, FINAL PLAT                     
+987         |MOWRY SQUARE                                                
+988         |MT VIEW TRACTS                                              
+989         |MURRAY PLAT                                                 
+99          |ALLGAIERS HOME TRACTS                                       
+990         |MYERS ADDITION                                              
+991         |MYERS REPLAT                                                
+992         |MYRTLEWOOD ADDITION                                         
+993         |N P I CO'S AMENDED PLAT TO KENNEWICK                        
+994         |NAGLEY GARDENS                                              
+995         |NAGLEY'S PLAT                                               
+996         |NEAL TRACTS, L C                                            
+997         |NEEL'S ADDITION                                             
+998         |NEWMAN'S SUBDIVISION                                        
+999         |NIELSEN'S PLAT                                              
+
+(2031 rows affected)

@@ -1,0 +1,36 @@
+{
+    "version": "1.0",
+    "alias": "sfa",
+    "browsable": "false",
+    "displayname": "$rc:title",
+    "description": "$rc:descr",
+    "helpcontext": "53000000",
+    "toolsets": {
+        "$rc:toolset2.name": {
+            "tools": [
+                "CalculateDensity",
+                "FindHotSpots",
+                "InterpolatePoints"
+            ]
+        },
+        "$rc:toolset4.name": {
+            "tools": [
+                "DissolveBoundaries",
+                "MergeLayers",
+                "OverlayLayers"
+            ]
+        },
+        "$rc:toolset1.name": {
+            "tools": [
+                "AggregatePoints",
+                "SummarizeNearby",
+                "SummarizeWithin"
+            ]
+        },
+        "$rc:toolset3.name": {
+            "tools": [
+                "CreateBuffers"
+            ]
+        }
+    }
+}

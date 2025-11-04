@@ -1,0 +1,186 @@
+/**
+ * ═══════════════════════════════════════════════════════════════
+ * COSTFORGE AI - COMPLETE TERRAFUSION STYLING
+ * Zero dependencies, maximum performance, revolutionary design
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+/* Tailwind CSS CDN - Complete framework in one line */
+@import url('https://cdn.tailwindcss.com');
+
+:root {
+  /* TerraFusion Core Colors */
+  --terra-cyan: #00FFFF;
+  --terra-blue: #0080FF;
+  --terra-midnight: #0A0E1A;
+  --terra-slate: #1E293B;
+  --terra-dark: #334155;
+  
+  /* CostForge AI Theme */
+  --costforge-accent: #FF6B35;
+  --costforge-success: #10B981;
+  --costforge-warning: #F59E0B;
+  --costforge-danger: #EF4444;
+  
+  /* Glass Effects */
+  --glass-bg: rgba(30, 41, 59, 0.4);
+  --glass-border: rgba(0, 255, 255, 0.2);
+  --shadow-glow: 0 0 20px rgba(0, 255, 255, 0.3);
+  --shadow-intense: 0 0 40px rgba(0, 255, 255, 0.5);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  background: var(--terra-midnight);
+  color: #FFFFFF;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* TerraFusion Glass Effects */
+.terra-glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+}
+
+.terra-glow {
+  box-shadow: var(--shadow-glow);
+}
+
+.terra-glow-hover:hover {
+  box-shadow: var(--shadow-intense);
+  transform: translateY(-2px);
+  transition: all 0.3s ease;
+}
+
+/* Quantum Pulse Animation */
+@keyframes quantum-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.quantum-pulse {
+  animation: quantum-pulse 2s ease-in-out infinite;
+}
+
+/* Revolutionary Gradient Text */
+.terra-gradient-text {
+  background: linear-gradient(135deg, var(--terra-cyan), var(--terra-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Perfect Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--terra-slate);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--terra-cyan);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--terra-blue);
+}
+
+/* TerraFusion Button Styles */
+.terra-button {
+  background: linear-gradient(135deg, var(--terra-cyan), var(--terra-blue));
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-glow);
+}
+
+.terra-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-intense);
+}
+
+.terra-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Form Elements */
+.terra-input, .terra-select {
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(100, 116, 139, 0.5);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: white;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.terra-input:focus, .terra-select:focus {
+  outline: none;
+  border-color: var(--terra-cyan);
+  box-shadow: 0 0 0 3px rgba(0, 255, 255, 0.1);
+}
+
+.terra-input::placeholder {
+  color: rgba(148, 163, 184, 0.7);
+}
+
+/* Card Components */
+.terra-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 24px;
+  transition: all 0.3s ease;
+}
+
+.terra-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-glow);
+}
+
+/* Progress Bars */
+.terra-progress {
+  background: var(--terra-slate);
+  border-radius: 8px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.terra-progress-fill {
+  background: linear-gradient(90deg, var(--terra-cyan), var(--terra-blue));
+  height: 100%;
+  border-radius: 8px;
+  transition: width 0.3s ease;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .terra-card {
+    padding: 16px;
+  }
+  
+  .terra-button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}

@@ -1,0 +1,50 @@
+{
+    "type": "FunctionTool",
+    "guid": "{f15eb6ba-6147-4327-b3da-39e3c66ee95b}",
+    "displayname": "$rc:title",
+    "helpcontent": "3220004",
+    "description": "$rc:description",
+    "product": "200",
+    "params": {
+        "in_geodatabase": {
+            "displayname": "$rc:in_geodatabase.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEWorkspace"
+                    },
+                    {
+                        "type": "DEGeoDataServer"
+                    }
+                ]
+            },
+            "description": "$rc:in_geodatabase.descr"
+        },
+        "out_acknowledgement_file": {
+            "direction": "out",
+            "displayname": "$rc:out_acknowledgement_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "xml"
+                ]
+            },
+            "description": "$rc:out_acknowledgement_file.descr"
+        },
+        "in_replica": {
+            "displayname": "$rc:in_replica.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:in_replica.descr"
+        }
+    },
+    "environments": [
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

@@ -1,0 +1,279 @@
+{
+    "type": "FunctionTool",
+    "guid": "{3254c180-5059-4ec7-9ad4-37137fed7cc5}",
+    "displayname": "$rc:title",
+    "helpcontent": "22010004",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "server_name": {
+            "display_order": "0",
+            "displayname": "$rc:server_name.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "object_name": {
+            "display_order": "1",
+            "displayname": "$rc:object_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            }
+        },
+        "data_frame": {
+            "display_order": "2",
+            "displayname": "$rc:data_frame.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            }
+        },
+        "out_folder": {
+            "display_order": "3",
+            "displayname": "$rc:out_folder.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "tiling_scheme_type": {
+            "display_order": "8",
+            "control_guid": "{485D3503-E739-42A0-B3FC-B71F393110A7}",
+            "displayname": "$rc:tiling_scheme_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NEW",
+                        "code": "$rc:tiling_scheme_type.domain.NEW"
+                    },
+                    {
+                        "value": "PREDEFINED",
+                        "code": "$rc:tiling_scheme_type.domain.PREDEFINED"
+                    }
+                ]
+            },
+            "value": "NEW"
+        },
+        "scales_type": {
+            "display_order": "11",
+            "displayname": "$rc:scales_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "STANDARD",
+                        "code": "$rc:scales_type.domain.STANDARD"
+                    },
+                    {
+                        "value": "CUSTOM",
+                        "code": "$rc:scales_type.domain.CUSTOM"
+                    }
+                ]
+            },
+            "value": "STANDARD"
+        },
+        "num_of_scales": {
+            "display_order": "12",
+            "displayname": "$rc:num_of_scales.title",
+            "datatype": {
+                "type": "GPLong"
+            }
+        },
+        "dpi": {
+            "display_order": "14",
+            "displayname": "$rc:dpi.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "96"
+        },
+        "tile_width": {
+            "display_order": "17",
+            "displayname": "$rc:tile_width.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "512"
+        },
+        "tile_height": {
+            "display_order": "18",
+            "displayname": "$rc:tile_height.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "512"
+        },
+        "map_or_layers": {
+            "type": "optional",
+            "display_order": "0",
+            "displayname": "$rc:map_or_layers.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "FUSED",
+                        "code": "$rc:map_or_layers.domain.FUSED"
+                    },
+                    {
+                        "value": "MULTI_LAYER",
+                        "code": "$rc:map_or_layers.domain.MULTI_LAYER"
+                    }
+                ]
+            },
+            "value": "FUSED"
+        },
+        "tiling_schema": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:tiling_schema.title",
+            "datatype": {
+                "type": "DEFile"
+            }
+        },
+        "tile_origin": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:tile_origin.title",
+            "datatype": {
+                "type": "GPPoint"
+            },
+            "value": "0 0"
+        },
+        "levels": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "13",
+            "displayname": "$rc:levels.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPDouble",
+                        "displayname": "$rc:levels.dt.title1"
+                    }
+                ]
+            },
+            "depends": [
+                "DataFrame"
+            ]
+        },
+        "Layer": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "1",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:layer.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            }
+        },
+        "thread_count": {
+            "type": "optional",
+            "display_order": "19",
+            "displayname": "$rc:thread_count.title",
+            "datatype": {
+                "type": "GPLong"
+            }
+        },
+        "Antialiasing": {
+            "type": "optional",
+            "display_order": "20",
+            "displayname": "$rc:antialiasing.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ANTIALIASING"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NONE"
+                    }
+                ]
+            },
+            "value": "false"
+        },
+        "cache_format": {
+            "type": "optional",
+            "display_order": "15",
+            "displayname": "$rc:cache_format.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PNG8",
+                        "code": "$rc:cache_format.domain.PNG8"
+                    },
+                    {
+                        "value": "PNG24",
+                        "code": "$rc:cache_format.domain.PNG24"
+                    },
+                    {
+                        "value": "PNG32",
+                        "code": "$rc:cache_format.domain.PNG32"
+                    },
+                    {
+                        "value": "JPEG",
+                        "code": "$rc:cache_format.domain.JPEG"
+                    }
+                ]
+            },
+            "value": "PNG24"
+        },
+        "tile_compression_quality": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "16",
+            "displayname": "$rc:tile_compression_quality.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "0"
+        },
+        "out_server_name": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_server_name.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "out_object_name": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_object_name.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        }
+    }
+}

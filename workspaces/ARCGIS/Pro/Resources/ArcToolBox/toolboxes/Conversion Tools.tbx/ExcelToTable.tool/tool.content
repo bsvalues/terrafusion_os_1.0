@@ -1,0 +1,65 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "2110001",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "Input_Excel_File": {
+            "displayname": "$rc:input_excel_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "xls",
+                    "xlsx"
+                ]
+            },
+            "description": "$rc:input_excel_file.descr"
+        },
+        "Output_Table": {
+            "direction": "out",
+            "displayname": "$rc:output_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:output_table.descr"
+        },
+        "Sheet": {
+            "type": "optional",
+            "displayname": "$rc:sheet.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:sheet.descr"
+        },
+        "field_names_row": {
+            "type": "optional",
+            "displayname": "$rc:field_names_row.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "1",
+            "description": "$rc:field_names_row.descr"
+        },
+        "cell_range": {
+            "type": "optional",
+            "displayname": "$rc:cell_range.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:cell_range.descr"
+        }
+    },
+    "environments": [
+        "configKeyword",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h5>Add Data Source</h5>
+                    <p class="text-sm">Add a new data source to the Assessment Data Integration Hub</p>
+                </div>
+                <div class="card-body">
+                    {% if error %}
+                    <div class="alert alert-danger text-white" role="alert">
+                        {{ error }}
+                    </div>
+                    {% endif %}
+                    
+                    <form method="post" action="{{ url_for('integration.add_source') }}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="source_id" class="form-control-label">Source ID</label>
+                                    <input class="form-control" type="text" id="source_id" name="source_id" required
+                                           placeholder="E.g., cama_prod, gis_server, sales_db">
+                                    <small class="form-text text-muted">
+                                        Unique identifier for this data source
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="source_type" class="form-control-label">Source Type</label>
+                                    <select class="form-control" id="source_type" name="source_type" required>
+                                        <option value="">Select a type...</option>
+                                        <option value="cama">CAMA System</option>
+                                        <option value="gis">GIS System</option>
+                                        <option value="sql_server">SQL Server</option>
+                                        <option value="postgresql">PostgreSQL</option>
+                                        <option value="sqlite">SQLite</option>
+                                        <option value="file">File (CSV, Excel, etc.)</option>
+                                    </select>
+                                    <small class="form-text text-muted">
+                                        Type of data source
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group" id="connectionStringGroup">
+                            <label for="connection_string" class="form-control-label">Connection String</label>
+                            <textarea class="form-control" id="connection_string" name="connection_string" rows="3" required></textarea>
+                            <small class="form-text text-muted" id="connectionHelp">
+                                Connection string for the data source
+                            </small>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="refresh_interval" class="form-control-label">Refresh Interval (minutes)</label>
+                                    <input class="form-control" type="number" id="refresh_interval" name="refresh_interval" value="60" min="1" max="10080">
+                                    <small class="form-text text-muted">
+                                        How often to refresh data from this source (in minutes)
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-control-label">Enabled</label>
+                                    <div class="form-check form-switch mt-2">
+                                        <input class="form-check-input" type="checkbox" id="enabled" name="enabled" checked>
+                                        <label class="form-check-label" for="enabled">Enable this data source</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="metadata" class="form-control-label">Metadata (JSON)</label>
+                            <textarea class="form-control" id="metadata" name="metadata" rows="5">{}</textarea>
+                            <small class="form-text text-muted">
+                                Additional metadata for the data source (JSON format)
+                            </small>
+                        </div>
+                        
+                        <div class="form-group d-flex justify-content-between mt-4">
+                            <a href="{{ url_for('integration.list_sources') }}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Add Data Source</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header pb-0">
+                    <h5>Connection String Examples</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Source Type</th>
+                                    <th>Connection String Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>SQL Server / CAMA</td>
+                                    <td><code>DRIVER={ODBC Driver 17 for SQL Server};SERVER=server_name;DATABASE=db_name;UID=username;PWD=password;</code></td>
+                                </tr>
+                                <tr>
+                                    <td>PostgreSQL / GIS</td>
+                                    <td><code>postgresql://username:password@hostname:5432/database_name</code></td>
+                                </tr>
+                                <tr>
+                                    <td>SQLite</td>
+                                    <td><code>sqlite:///path/to/database.db</code></td>
+                                </tr>
+                                <tr>
+                                    <td>File (CSV, Excel, etc.)</td>
+                                    <td><code>file:///path/to/file.csv</code> or <code>file:///path/to/file.xlsx</code></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="alert alert-info mt-3" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Note:</strong> Connection strings may contain sensitive information like passwords. 
+                        These are securely stored in the database, but use environment variables or a secure credential 
+                        store in production environments.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        // Update connection string help text based on source type
+        $('#source_type').change(function() {
+            const sourceType = $(this).val();
+            let helpText = 'Connection string for the data source';
+            let placeholder = '';
+            
+            if (sourceType === 'cama' || sourceType === 'sql_server') {
+                helpText = 'SQL Server connection string for the CAMA system';
+                placeholder = 'DRIVER={ODBC Driver 17 for SQL Server};SERVER=server_name;DATABASE=db_name;UID=username;PWD=password;';
+            } else if (sourceType === 'gis' || sourceType === 'postgresql') {
+                helpText = 'PostgreSQL connection string for the GIS system';
+                placeholder = 'postgresql://username:password@hostname:5432/database_name';
+            } else if (sourceType === 'sqlite') {
+                helpText = 'SQLite connection string';
+                placeholder = 'sqlite:///path/to/database.db';
+            } else if (sourceType === 'file') {
+                helpText = 'File path (prefix with file://)';
+                placeholder = 'file:///path/to/file.csv';
+            }
+            
+            $('#connectionHelp').text(helpText);
+            $('#connection_string').attr('placeholder', placeholder);
+        });
+        
+        // Initialize metadata JSON editor
+        const defaultMetadata = {
+            "description": "",
+            "owner": "",
+            "notes": ""
+        };
+        
+        $('#metadata').val(JSON.stringify(defaultMetadata, null, 2));
+    });
+</script>
+{% endblock %}

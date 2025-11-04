@@ -1,0 +1,385 @@
+{
+    "type": "FunctionTool",
+    "guid": "{5c6746ab-6e06-42ec-b1e5-379fc0a74133}",
+    "displayname": "$rc:title",
+    "helpcontent": "82000001",
+    "description": "$rc:description",
+    "product": "200",
+    "params": {
+        "in_mosaic_dataset": {
+            "display_order": "0",
+            "displayname": "$rc:in_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEMosaicDataset"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_mosaic_dataset.descr"
+        },
+        "recon_folder": {
+            "display_order": "1",
+            "control_guid": "{C49F778E-E3D8-4718-BE07-70A90AF336FE}",
+            "displayname": "$rc:recon_folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:recon_folder.descr"
+        },
+        "recon_options": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:recon_options.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFile"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "json"
+                        ]
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "description": "$rc:recon_options.descr"
+        },
+        "scenario": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:scenario.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DRONE",
+                        "code": "$rc:scenario.domain.DRONE"
+                    },
+                    {
+                        "value": "AERIAL_NADIR",
+                        "code": "$rc:scenario.domain.AERIAL_NADIR"
+                    },
+                    {
+                        "value": "AERIAL_OBLIQUE",
+                        "code": "$rc:scenario.domain.AERIAL_OBLIQUE"
+                    },
+                    {
+                        "value": "SATELLITE",
+                        "code": "$rc:scenario.domain.SATELLITE"
+                    }
+                ]
+            },
+            "description": "$rc:scenario.descr"
+        },
+        "fwd_overlap": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:fwd_overlap.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "60",
+                "max": "99"
+            },
+            "value": "60",
+            "description": "$rc:fwd_overlap.descr"
+        },
+        "swd_overlap": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:swd_overlap.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "30",
+                "max": "99"
+            },
+            "value": "30",
+            "description": "$rc:swd_overlap.descr"
+        },
+        "quality": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:quality.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ULTRA",
+                        "code": "$rc:quality.domain.ULTRA"
+                    },
+                    {
+                        "value": "HIGH",
+                        "code": "$rc:quality.domain.HIGH"
+                    }
+                ]
+            },
+            "description": "$rc:quality.descr"
+        },
+        "products": {
+            "type": "optional",
+            "display_order": "7",
+            "control_guid": "{AAB40D7F-3877-4034-B5D2-545327D2A956}",
+            "displayname": "$rc:products.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DSM",
+                        "code": "$rc:products.domain.DSM"
+                    },
+                    {
+                        "value": "TRUE_ORTHO",
+                        "code": "$rc:products.domain.TRUE_ORTHO"
+                    },
+                    {
+                        "value": "DSM_MESH",
+                        "code": "$rc:products.domain.DSM_MESH"
+                    },
+                    {
+                        "value": "POINT_CLOUD",
+                        "code": "$rc:products.domain.POINT_CLOUD"
+                    },
+                    {
+                        "value": "MESH",
+                        "code": "$rc:products.domain.MESH"
+                    }
+                ]
+            },
+            "description": "$rc:products.descr"
+        },
+        "cell_size": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:cell_size.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPDouble"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPNumericDomain",
+                        "allowempty": "true"
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "AUTO",
+                                "code": "$rc:cell_size.domain.item2.AUTO"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:cell_size.descr"
+        },
+        "aoi": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:aoi.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPFeatureLayer"
+                    },
+                    {
+                        "type": "DEFile"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Polygon"
+                        ],
+                        "featuretype": [
+                            "Simple"
+                        ]
+                    },
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "json"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "NONE",
+                                "code": "$rc:aoi.domain.item3.NONE"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:aoi.descr"
+        },
+        "waterbody_features": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:waterbody_features.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPFeatureLayer"
+                    },
+                    {
+                        "type": "DEFile"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Polygon"
+                        ],
+                        "featuretype": [
+                            "Simple"
+                        ]
+                    },
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "json"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "NONE",
+                                "code": "$rc:waterbody_features.domain.item3.NONE"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:waterbody_features.descr"
+        },
+        "correction_features": {
+            "type": "optional",
+            "display_order": "11",
+            "displayname": "$rc:correction_features.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPFeatureLayer"
+                    },
+                    {
+                        "type": "DEFile"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Polygon"
+                        ],
+                        "featuretype": [
+                            "Simple"
+                        ]
+                    },
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "json"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "NONE",
+                                "code": "$rc:correction_features.domain.item3.NONE"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:correction_features.descr"
+        },
+        "derived_recon_folder": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:derived_recon_folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "depends": [
+                "recon_folder"
+            ]
+        }
+    }
+}

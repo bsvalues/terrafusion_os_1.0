@@ -1,0 +1,11 @@
+{
+    "set": [
+        "block adjustment",
+        "fiducial coordinates",
+        "fiducial table",
+        "image space",
+        "interior orientation",
+        "map space",
+        "update interior orientation"
+    ]
+}

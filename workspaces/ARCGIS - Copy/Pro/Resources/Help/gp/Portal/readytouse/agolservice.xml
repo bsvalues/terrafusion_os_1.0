@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<toolbox alias="agolservices" displayname="Ready To Use Tools" galleryDisplayName="Ready To Use Tools" toolboxname="Ready To Use">
+ <description>Ready To Use tools are ArcGIS Online geoprocessing services that use the hosted data and analysis capabilities of ArcGIS Online. All you need to provide are input features; all the other data necessary for the analysis and the computation is hosted in ArcGIS Online.</description>
+ <toolset displayname="Hydrology">
+  <description>Hydrology</description>
+  <tool displayname="Watershed" icon="resources:///ArcToolBox/Images/GeoprocessingTool_Watershed_agolservices.png" name="Watershed" ref_uri="resources:///ArcToolBox/Toolboxes/ReadyToUseServiceTools.tbx/Watershed" type="function">
+   <description>Determines the contributing area above each input point. A watershed is the upslope area that contributes flow.</description>
+   <key/>
+  </tool>
+  <tool displayname="Trace Downstream" icon="resources:///ArcToolBox/Images/GeoprocessingTool_TraceDownstream_agolservices.png" name="TraceDownstream" ref_uri="resources:///ArcToolBox/Toolboxes/ReadyToUseServiceTools.tbx/TraceDownstream" type="function">
+   <description>Determines the path water will take from a particular location to its furthest downhill path.</description>
+   <key/>
+  </tool>
+ </toolset>
+ <toolset displayname="Elevation">
+  <description>Elevation</description>
+  <tool displayname="Profile" icon="resources:///ArcToolBox/Images/GeoprocessingTool_Profile_agolservices.png" name="Profile" ref_uri="resources:///ArcToolBox/Toolboxes/ReadyToUseServiceTools.tbx/Profile" type="function">
+   <description>Returns elevation profiles for the input line features.</description>
+   <key/>
+  </tool>
+  <tool displayname="Viewshed" icon="resources:///ArcToolBox/Images/GeoprocessingTool_Viewshed_agolservices.png" name="Viewshed" ref_uri="resources:///ArcToolBox/Toolboxes/ReadyToUseServiceTools.tbx/Viewshed" type="function">
+   <description>Returns polygons of visible areas for a given set of input observation points.</description>
+   <key/>
+  </tool>
+  <tool displayname="Summarize Elevation" icon="resources:///ArcToolBox/Images/GeoprocessingTool_SummarizeElevation_agolservices.png" name="SummarizeElevation" ref_uri="resources:///ArcToolBox/Toolboxes/ReadyToUseServiceTools.tbx/SummarizeElevation" type="function">
+   <description>Calculates summary statistics of elevation for each input feature.</description>
+   <key/>
+  </tool>
+ </toolset>
+</toolbox>

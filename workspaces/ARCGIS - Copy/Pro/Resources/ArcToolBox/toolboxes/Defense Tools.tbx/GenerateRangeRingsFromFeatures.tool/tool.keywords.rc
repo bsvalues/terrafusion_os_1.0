@@ -1,0 +1,8 @@
+{
+    "set": [
+        "circles",
+        "distance",
+        "maximum",
+        "minimum"
+    ]
+}

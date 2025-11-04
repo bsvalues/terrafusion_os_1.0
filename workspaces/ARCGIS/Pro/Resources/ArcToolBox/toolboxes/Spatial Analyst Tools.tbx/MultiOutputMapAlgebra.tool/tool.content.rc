@@ -1,0 +1,7 @@
+{
+    "map": {
+        "description": "Execute Grid's map algebra statements.",
+        "expression_string.title": "expression_string",
+        "title": "Multi Output Map Algebra"
+    }
+}

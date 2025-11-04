@@ -1,0 +1,23 @@
+{
+    "set": [
+        "access",
+        "alternative",
+        "change",
+        "description",
+        "edit",
+        "geodatabase",
+        "multiple",
+        "name",
+        "owner",
+        "permission",
+        "private",
+        "protect",
+        "public",
+        "read",
+        "sde",
+        "state",
+        "user",
+        "view",
+        "version"
+    ]
+}

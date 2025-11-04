@@ -1,0 +1,386 @@
+/* Base styles using Bootstrap dark theme */
+body {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    background-color: var(--bs-dark);
+    color: var(--bs-light);
+}
+
+/* Custom container styling */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    body {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+    
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    .chat-container {
+        height: 400px;
+    }
+    
+    h1 {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .chat-container {
+        height: 300px;
+    }
+    
+    .message {
+        max-width: 85%;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+    }
+}
+
+/* Header styling */
+.header {
+    border-bottom: 1px solid var(--bs-gray-700);
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+}
+
+/* Chat container styling */
+.chat-container {
+    height: 500px;
+    overflow-y: auto;
+    padding: 15px;
+    background-color: var(--bs-gray-900);
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+/* Message styling */
+.message {
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    max-width: 70%;
+}
+
+.user-message {
+    background-color: var(--bs-primary);
+    color: white;
+    margin-left: auto;
+}
+
+.assistant-message {
+    background-color: var(--bs-secondary);
+    color: white;
+}
+
+/* Input area styling */
+.input-area {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.input-area .form-control {
+    flex-grow: 1;
+    margin-right: 10px;
+}
+
+.input-area button {
+    min-width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 576px) {
+    .input-area {
+        flex-direction: column;
+    }
+    
+    .input-area .form-control {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+    
+    .input-area button {
+        width: 100%;
+    }
+}
+
+/* Dashboard panels */
+.dashboard-panel {
+    background-color: var(--bs-gray-800);
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.dashboard-panel h3 {
+    margin-top: 0;
+    color: var(--bs-info);
+}
+
+/* Query type selector styling */
+.query-type-selector {
+    margin-bottom: 15px;
+}
+
+/* Footer styling */
+.footer {
+    margin-top: 30px;
+    padding: 20px 0;
+    border-top: 1px solid var(--bs-gray-700);
+    color: var(--bs-gray-500);
+}
+
+/* Accessibility help panel */
+#accessibilityHelp {
+    text-align: left;
+}
+
+#accessibilityHelp .card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#accessibilityHelp h5 {
+    color: var(--bs-info);
+    margin-bottom: 15px;
+}
+
+#accessibilityHelp ul {
+    padding-left: 20px;
+    margin-bottom: 15px;
+}
+
+#accessibilityHelp kbd {
+    background-color: var(--bs-gray-700);
+    color: var(--bs-light);
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 0.8rem;
+}
+
+/* Loading indicator */
+.spinner-border {
+    width: 1rem;
+    height: 1rem;
+    margin-right: 10px;
+}
+
+/* Notification system styles */
+.notifications-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050;
+    max-width: 350px;
+}
+
+@media (max-width: 576px) {
+    .notifications-container {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+    
+    .notification {
+        width: 100%;
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+}
+
+.notification {
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: flex-start;
+    overflow: hidden;
+    animation: slideIn 0.3s ease-out forwards;
+    position: relative;
+}
+
+.notification.success {
+    background-color: var(--bs-success);
+    color: white;
+}
+
+.notification.error {
+    background-color: var(--bs-danger);
+    color: white;
+}
+
+.notification.info {
+    background-color: var(--bs-info);
+    color: white;
+}
+
+.notification.warning {
+    background-color: var(--bs-warning);
+    color: var(--bs-dark);
+}
+
+.notification-icon {
+    margin-right: 10px;
+    font-size: 1.2rem;
+}
+
+.notification-close {
+    cursor: pointer;
+    margin-left: 10px;
+    opacity: 0.7;
+}
+
+.notification-close:hover {
+    opacity: 1;
+}
+
+.notification-content {
+    flex-grow: 1;
+}
+
+.notification.hiding {
+    animation: slideOut 0.3s ease-in forwards;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(110%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(110%);
+        opacity: 0;
+    }
+}
+
+/* System status component styles */
+.system-status {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 10px;
+    font-size: 0.85rem;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: var(--bs-gray-900);
+    padding: 6px 10px;
+    border-radius: 4px;
+}
+
+@media (max-width: 576px) {
+    .system-status {
+        gap: 8px;
+        font-size: 0.8rem;
+    }
+    
+    .status-item {
+        padding: 4px 8px;
+        flex-basis: calc(50% - 4px);
+        justify-content: center;
+    }
+}
+
+.status-label {
+    color: var(--bs-gray-400);
+}
+
+.status-indicator {
+    font-size: 0.75rem;
+}
+
+.status-indicator.active {
+    color: var(--bs-success);
+}
+
+.status-indicator.inactive {
+    color: var(--bs-danger);
+}
+
+.status-indicator.unknown {
+    color: var(--bs-warning);
+}
+
+/* Error message styles */
+.assistant-message.error {
+    background-color: rgba(var(--bs-danger-rgb), 0.2);
+    border-left: 4px solid var(--bs-danger);
+}
+
+/* Accessibility styles */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Skip to content link */
+.skip-to-content {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    display: block;
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+    background-color: var(--bs-primary);
+    color: white;
+    text-decoration: none;
+    transition: top 0.3s;
+}
+
+.skip-to-content:focus {
+    top: 0;
+    outline: none;
+}
+
+/* Focus styles for keyboard navigation */
+a:focus, button:focus, input:focus, select:focus, textarea:focus {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 2px;
+}
+
+.message {
+    position: relative;
+}
+
+.message-content {
+    /* No special styling needed, this is where the formatted text goes */
+}

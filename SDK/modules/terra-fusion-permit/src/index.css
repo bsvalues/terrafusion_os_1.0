@@ -1,0 +1,301 @@
+/**
+ * TerraFusion Permit System - Styling
+ * Government. Transcended. - Elite Permit Management System CSS
+ *
+ * Quantum Factor: 949 | Terra-Cyan: #00FFFF | Golden Ratio: φ=1.618
+ */
+
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* TerraFusion Design System - Permit Management */
+:root {
+  /* TerraFusion Color Palette */
+  --terra-cyan: #00FFFF;
+  --terra-midnight: #0A0E1A;
+  --terra-blue: #0080FF;
+  --terra-slate: #1E293B;
+  --quantum-factor: 949;
+  --golden-ratio: 1.618;
+
+  /* Government Grade Typography */
+  --font-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Monaco', 'Consolas', monospace;
+}
+
+/* Base Application Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-system);
+  background: #0a0e1a;
+  color: #ffffff;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Permit Status Classes */
+.permit-status-draft {
+  @apply bg-slate-400/20 text-slate-400;
+}
+
+.permit-status-submitted {
+  @apply bg-blue-400/20 text-blue-400;
+}
+
+.permit-status-under-review {
+  @apply bg-yellow-400/20 text-yellow-400;
+}
+
+.permit-status-pending-payment {
+  @apply bg-orange-400/20 text-orange-400;
+}
+
+.permit-status-pending-documents {
+  @apply bg-orange-400/20 text-orange-400;
+}
+
+.permit-status-approved {
+  @apply bg-green-400/20 text-green-400;
+}
+
+.permit-status-rejected {
+  @apply bg-red-400/20 text-red-400;
+}
+
+.permit-status-expired {
+  @apply bg-gray-400/20 text-gray-400;
+}
+
+.permit-status-cancelled {
+  @apply bg-gray-400/20 text-gray-400;
+}
+
+.permit-status-on-hold {
+  @apply bg-purple-400/20 text-purple-400;
+}
+
+/* Permit Priority Classes */
+.permit-priority-low {
+  @apply bg-blue-400/20 text-blue-400;
+}
+
+.permit-priority-medium {
+  @apply bg-yellow-400/20 text-yellow-400;
+}
+
+.permit-priority-high {
+  @apply bg-orange-400/20 text-orange-400;
+}
+
+.permit-priority-urgent {
+  @apply bg-red-400/20 text-red-400;
+}
+
+.permit-priority-emergency {
+  @apply bg-red-500/30 text-red-300 animate-pulse;
+}
+
+/* Permit Type Classes */
+.permit-type-building {
+  @apply bg-cyan-400/20 text-cyan-400;
+}
+
+.permit-type-electrical {
+  @apply bg-yellow-400/20 text-yellow-400;
+}
+
+.permit-type-plumbing {
+  @apply bg-blue-400/20 text-blue-400;
+}
+
+.permit-type-mechanical {
+  @apply bg-green-400/20 text-green-400;
+}
+
+.permit-type-fire {
+  @apply bg-red-400/20 text-red-400;
+}
+
+.permit-type-business {
+  @apply bg-purple-400/20 text-purple-400;
+}
+
+/* Quantum Enhancement Effects */
+.quantum-glow {
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+.quantum-pulse {
+  animation: quantum-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes quantum-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .7;
+  }
+}
+
+.quantum-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+  animation: quantum-shimmer 2s ease-in-out infinite;
+}
+
+@keyframes quantum-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* TerraFusion Glass Morphism */
+.terra-glass {
+  background: rgba(30, 41, 59, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.terra-glass-hover:hover {
+  background: rgba(30, 41, 59, 0.4);
+  border-color: rgba(0, 255, 255, 0.3);
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+}
+
+/* Golden Ratio Spacing */
+.space-golden {
+  margin: calc(1rem * 1.618);
+}
+
+.space-golden-sm {
+  margin: calc(0.5rem * 1.618);
+}
+
+.space-golden-lg {
+  margin: calc(2rem * 1.618);
+}
+
+/* Government Typography */
+.gov-title {
+  font-family: var(--font-system);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.gov-subtitle {
+  font-family: var(--font-system);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+}
+
+.gov-body {
+  font-family: var(--font-system);
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.gov-mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(30, 41, 59, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 255, 0.3);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 255, 0.5);
+}
+
+/* Focus States for Accessibility */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--terra-cyan);
+  outline-offset: 2px;
+}
+
+/* Loading States */
+.loading-skeleton {
+  background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+  background-size: 200% 100%;
+  animation: loading-skeleton 1.5s ease-in-out infinite;
+}
+
+@keyframes loading-skeleton {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .mobile-hidden {
+    display: none;
+  }
+
+  .mobile-full {
+    width: 100%;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  :root {
+    --terra-cyan: #00FFFF;
+    --terra-midnight: #000000;
+  }
+
+  .terra-glass {
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #00FFFF;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .quantum-pulse,
+  .quantum-shimmer,
+  .loading-skeleton {
+    animation: none;
+  }
+
+  * {
+    transition: none !important;
+  }
+}

@@ -1,0 +1,9 @@
+{
+    "set": [
+        "convert",
+        "integer",
+        "round",
+        "truncate",
+        "whole"
+    ]
+}

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Template>
+    <PrimaryFields>
+        <Field>
+            <Index>0</Index>
+            <FriendlyName>Property Address</FriendlyName>
+            <DataType>String</DataType>
+            <Key>address</Key>
+        </Field>
+        <Field>
+            <Index>1</Index>
+            <FriendlyName>Sale Price</FriendlyName>
+            <DataType>Decimal</DataType>
+            <Key>price</Key>
+        </Field>
+        <Field>
+            <Index>2</Index>
+            <FriendlyName>Square Footage</FriendlyName>
+            <DataType>Integer</DataType>
+            <Key>sqft</Key>
+        </Field>
+        <Field>
+            <Index>3</Index>
+            <FriendlyName>Bedrooms</FriendlyName>
+            <DataType>Integer</DataType>
+            <Key>bedrooms</Key>
+        </Field>
+    </PrimaryFields>
+    <SecondaryFields>
+        <Field>
+            <Index>0</Index>
+            <FriendlyName>Property Location</FriendlyName>
+            <DataType>String</DataType>
+            <Key>property_address</Key>
+        </Field>
+        <Field>
+            <Index>1</Index>
+            <FriendlyName>Sale Amount</FriendlyName>
+            <DataType>Decimal</DataType>
+            <Key>sale_price</Key>
+        </Field>
+        <Field>
+            <Index>2</Index>
+            <FriendlyName>Living Area</FriendlyName>
+            <DataType>Integer</DataType>
+            <Key>living_area_sqft</Key>
+        </Field>
+        <Field>
+            <Index>3</Index>
+            <FriendlyName>Bedroom Count</FriendlyName>
+            <DataType>Integer</DataType>
+            <Key>bedroom_count</Key>
+        </Field>
+    </SecondaryFields>
+    <Direction>PrimaryToSecondary</Direction>
+    <MappingOption>DirectMapping</MappingOption>
+    <SplitOption></SplitOption>
+    <TemplateSettings>
+        <SourceFilePath>sample_data.csv</SourceFilePath>
+        <SourceDelimiter>,</SourceDelimiter>
+        <SourceHasHeader>true</SourceHasHeader>
+    </TemplateSettings>
+    <PrimaryConverterName>TerraFusion CSV Reader</PrimaryConverterName>
+    <SecondaryConverterName>TerraFusion Property Parser</SecondaryConverterName>
+    <CustomerNumber>TF001</CustomerNumber>
+    <TemplateName>Property Data Conversion</TemplateName>
+    <Description>Convert raw property CSV data to TerraFusion format</Description>
+</Template>

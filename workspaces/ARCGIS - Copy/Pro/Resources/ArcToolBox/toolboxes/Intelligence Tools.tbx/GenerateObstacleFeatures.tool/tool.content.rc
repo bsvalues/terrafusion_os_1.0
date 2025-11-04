@@ -1,0 +1,16 @@
+{
+    "map": {
+        "clip_features.descr": "<xdoc><p>An area to clip the <span class=\"esri_uicontrol\">Output Obstacle Features</span>. Only features within the <span class=\"esri_uicontrol\">Clip Features</span> will be processed.</p></xdoc>",
+        "clip_features.title": "Clip Features",
+        "description": "Converts features with a height field to a 3D obstacle feature and an obstacle restriction buffer for use in evaluating helicopter landing zones.",
+        "height_field.descr": "<xdoc><p>A field from the <span class=\"esri_uicontrol\">Input Features</span> parameter containing height values. The field type can be numeric or text. If a text field is used, the field values must be numeric.</p></xdoc>",
+        "height_field.title": "Height Field",
+        "in_features.descr": "The input source features used to create obstacle features.",
+        "in_features.title": "Input Features",
+        "out_obstacle_buffers.descr": "The output obstacle buffer features",
+        "out_obstacle_buffers.title": "Output Obstacle Buffers",
+        "out_obstacle_features.descr": "The output 3D obstacle features.",
+        "out_obstacle_features.title": "Output Obstacle Features",
+        "title": "Generate Obstacle Features"
+    }
+}

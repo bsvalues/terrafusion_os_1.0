@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "terrafusion-gateway.fullname" . }}-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "terrafusion-gateway.labels" . | nindent 4 }}
+data:
+  GATEWAY_NAME: "TerraFusion API Gateway"
+  GATEWAY_VERSION: {{ .Chart.AppVersion | quote }}
+  ENVIRONMENT: {{ .Values.global.environment | quote }}
+  REGION: {{ .Values.global.region | quote }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "terrafusion-gateway.fullname" . }}-ocelot
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "terrafusion-gateway.labels" . | nindent 4 }}
+data:
+  ocelot.json: |
+    {
+      "GlobalConfiguration": {
+        "BaseUrl": {{ .Values.ocelot.globalConfiguration.baseUrl | quote }},
+        "RequestIdKey": {{ .Values.ocelot.globalConfiguration.requestIdKey | quote }},
+        "RateLimitOptions": {{ .Values.ocelot.globalConfiguration.rateLimitOptions | toJson }},
+        "QoSOptions": {{ .Values.ocelot.globalConfiguration.qosOptions | toJson }},
+        "LoadBalancerOptions": {{ .Values.ocelot.globalConfiguration.loadBalancerOptions | toJson }}
+      },
+      "Routes": {{ .Values.ocelot.routes | toJson }}
+    }
+---
+{{- if .Values.logging.loki.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "terrafusion-gateway.fullname" . }}-promtail
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "terrafusion-gateway.labels" . | nindent 4 }}
+data:
+  promtail.yaml: |
+    server:
+      http_listen_port: 9080
+      grpc_listen_port: 0
+    
+    positions:
+      filename: /tmp/positions.yaml
+    
+    clients:
+      - url: {{ .Values.logging.loki.url }}/loki/api/v1/push
+    
+    scrape_configs:
+      - job_name: gateway-logs
+        static_configs:
+          - targets:
+              - localhost
+            labels:
+              job: terrafusion-gateway
+              environment: {{ .Values.global.environment }}
+              __path__: /app/logs/*.log
+        pipeline_stages:
+          - json:
+              expressions:
+                timestamp: timestamp
+                level: level
+                message: message
+          - labels:
+              level:
+          - timestamp:
+              source: timestamp
+              format: RFC3339
+{{- end }}

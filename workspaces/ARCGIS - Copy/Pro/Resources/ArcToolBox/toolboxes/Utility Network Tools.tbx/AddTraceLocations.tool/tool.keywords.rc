@@ -1,0 +1,12 @@
+{
+    "set": [
+        "add barriers",
+        "add locations",
+        "add starting points",
+        "administration",
+        "trace",
+        "trace automation",
+        "utility network",
+        "utility network analysis"
+    ]
+}

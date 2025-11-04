@@ -1,0 +1,347 @@
+{
+  "folders": [
+    {
+      "path": "../marketplace/shock-and-awe/rapid-deployment",
+      "name": "⚡ Rapid Deployment Engine"
+    },
+    {
+      "path": "../marketplace/shock-and-awe/emergency-response",
+      "name": "🚨 Emergency Response System"
+    },
+    {
+      "path": "../marketplace/shock-and-awe/crisis-management",
+      "name": "🎯 Crisis Management"
+    },
+    {
+      "path": "../marketplace/shock-and-awe/incident-handling",
+      "name": "📋 Automated Incident Handling"
+    },
+    {
+      "path": "../marketplace/shock-and-awe/alert-system",
+      "name": "🔔 Alert & Notification System"
+    },
+    {
+      "path": "../marketplace/shock-and-awe/recovery-tools",
+      "name": "🔧 Recovery & Restoration Tools"
+    },
+    {
+      "path": "../marketplace/shock-and-awe/testing",
+      "name": "🧪 Shock Tests"
+    },
+    {
+      "path": "../SDK",
+      "name": "📦 Platform SDK (read-only)"
+    },
+    {
+      "path": "../backend",
+      "name": "🔧 Shared Backend (read-only)"
+    },
+    {
+      "path": "../docs/shock-and-awe",
+      "name": "📚 Shock Docs"
+    },
+    {
+      "path": "../config",
+      "name": "⚙️ Config (shared)"
+    },
+    {
+      "path": "../docs/shock_and_awe",
+      "name": "📚 Shock-And-Awe Docs"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/out": true,
+      "**/.pytest_cache": true,
+      "../marketplace/*/": true,
+      "!../marketplace/shock-and-awe": false,
+      "../frontend": true,
+      "../backend": true,
+      "../os-platform": true,
+      "../terrafusion-cos": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/out": true,
+      "../frontend": true,
+      "../backend": true,
+      "../os-platform": true
+    },
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "python.defaultInterpreter": "./marketplace/shock-and-awe/.venv/bin/python",
+    "eslint.workingDirectories": [
+      "./marketplace/shock-and-awe/rapid-deployment",
+      "./marketplace/shock-and-awe/emergency-response"
+    ],
+    "terrafusion.sync": {
+      "autoSync": true,
+      "syncInterval": 5,
+      "conflictResolution": "emergency-override",
+      "sharedState": {
+        "backend": "read-only",
+        "sdk": "read-only",
+        "config": "shared-write"
+      },
+      "emergencyMode": true
+    },
+    "terrafusion.emergency": {
+      "rapidDeployment": true,
+      "emergencyResponse": true,
+      "crisisManagement": true,
+      "incidentHandling": "automated",
+      "alertSystem": "real-time",
+      "recoveryTools": true,
+      "emergencyOverride": true
+    },
+    "terrafusion.deployment": {
+      "speed": "maximum",
+      "reliability": "critical",
+      "rollback": "instant",
+      "monitoring": "real-time",
+      "alerting": "immediate"
+    },
+    "terrafusion.compliance": {
+      "fismaMode": "HIGH",
+      "nist80053": true,
+      "emergencyProtocols": true,
+      "incidentReporting": true,
+      "auditTrail": "comprehensive",
+      "continuityPlanning": true
+    },
+    "terrafusion.security": {
+      "emergencyAccess": "privileged",
+      "incidentIsolation": true,
+      "threatMitigation": "automated",
+      "securityOverride": "emergency-only"
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-python.debugpy",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-vscode.vscode-typescript-next",
+      "streetsidesoftware.code-spell-checker",
+      "ms-azuretools.vscode-docker",
+      "redhat.vscode-yaml",
+      "ms-vscode.vscode-json",
+      "usernamehw.errorlens",
+      "ms-kubernetes-tools.vscode-kubernetes-tools"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Emergency Deployment Engine",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/shock-and-awe/rapid-deployment",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": [
+          "run",
+          "emergency"
+        ],
+        "console": "integratedTerminal",
+        "env": {
+          "TERRAFUSION_SERVICE": "shock-and-awe",
+          "EMERGENCY_MODE": "active",
+          "DEPLOYMENT_SPEED": "maximum"
+        }
+      },
+      {
+        "name": "Debug Emergency Response",
+        "type": "debugpy",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/shock-and-awe/emergency-response",
+        "program": "emergency_coordinator.py",
+        "console": "integratedTerminal",
+        "env": {
+          "EMERGENCY_DEBUG": "true",
+          "RESPONSE_MODE": "active"
+        }
+      },
+      {
+        "name": "Debug Crisis Management",
+        "type": "debugpy",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/shock-and-awe/crisis-management",
+        "program": "crisis_orchestrator.py",
+        "console": "integratedTerminal",
+        "env": {
+          "CRISIS_DEBUG": "true",
+          "MANAGEMENT_MODE": "active"
+        }
+      },
+      {
+        "name": "Start Alert System",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/shock-and-awe/alert-system",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": [
+          "run",
+          "monitor"
+        ],
+        "console": "integratedTerminal",
+        "env": {
+          "ALERT_DEBUG": "true",
+          "MONITORING_MODE": "real-time"
+        }
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Emergency Build",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "build:emergency"
+        ],
+        "problemMatcher": [
+          "$tsc"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Emergency Test",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "test:emergency"
+        ],
+        "problemMatcher": [],
+        "group": {
+          "kind": "test",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Deploy Emergency Services",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "deploy:emergency"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/shock-and-awe/rapid-deployment"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Activate Emergency Response",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "activate_emergency.py"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/shock-and-awe/emergency-response"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Test Crisis Scenarios",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "test_crisis_scenarios.py"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/shock-and-awe/crisis-management"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Emergency Recovery",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "recovery:emergency"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/shock-and-awe/recovery-tools"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Test Alert System",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "test:alerts"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/shock-and-awe/alert-system"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Emergency Drill",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "emergency_drill.py",
+          "--scenario",
+          "${input:emergencyScenario}"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/shock-and-awe/testing"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Emergency Compliance Check",
+        "type": "shell",
+        "command": "./SDK/tools/compliance-check.sh",
+        "args": [
+          "--service=shock-and-awe",
+          "--emergency-protocols"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      }
+    ]
+  },
+  "inputs": [
+    {
+      "id": "emergencyScenario",
+      "description": "Select emergency scenario:",
+      "default": "system-outage",
+      "type": "pickString",
+      "options": [
+        "system-outage",
+        "security-breach",
+        "data-corruption",
+        "network-failure",
+        "service-overload"
+      ]
+    }
+  ]
+}

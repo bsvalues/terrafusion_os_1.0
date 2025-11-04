@@ -1,0 +1,14 @@
+{
+    "set": [
+        "boundary",
+        "center line",
+        "geographies",
+        "grid",
+        "multiple",
+        "overlap",
+        "remove",
+        "thiessen",
+        "trade area",
+        "weight"
+    ]
+}

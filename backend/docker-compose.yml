@@ -1,0 +1,310 @@
+# ============================================================================
+# TerraFusion OS - Local Development Docker Compose Configuration
+# Government. Transcended. - Championship-Level Local Development
+# ============================================================================
+# Services: API, Consciousness Engine, Gateway, Operations, PostgreSQL, Redis, Prometheus
+# Purpose: Complete local development environment with all microservices
+# Features: Hot reload, dev databases, service discovery, health monitoring
+# Performance: Optimized for development workflow with fast startup
+# Usage: docker-compose up -d
+# ============================================================================
+
+version: '3.8'
+
+# ============================================================================
+# Shared Networks
+# ============================================================================
+networks:
+  terrafusion-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# ============================================================================
+# Shared Volumes
+# ============================================================================
+volumes:
+  postgres-data:
+    driver: local
+  redis-data:
+    driver: local
+  prometheus-data:
+    driver: local
+
+# ============================================================================
+# Services
+# ============================================================================
+services:
+  # ==========================================================================
+  # PostgreSQL Database - Primary Data Store
+  # ==========================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: terrafusion-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: terrafusion
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: devpassword123
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      terrafusion-network:
+        ipv4_address: 172.20.0.10
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: >
+      postgres
+      -c max_connections=200
+      -c shared_buffers=256MB
+      -c effective_cache_size=1GB
+      -c maintenance_work_mem=64MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
+
+  # ==========================================================================
+  # Redis Cache - Session & Cache Management
+  # ==========================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: terrafusion-redis-dev
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      terrafusion-network:
+        ipv4_address: 172.20.0.11
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: >
+      redis-server
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --save 60 1000
+      --appendonly yes
+
+  # ==========================================================================
+  # TerraFusion API - Core Government Services (Port 5000)
+  # ==========================================================================
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.API
+    container_name: terrafusion-api-dev
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5000
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=terrafusion;Username=postgres;Password=devpassword123"
+      Redis__Configuration: "redis:6379"
+      Logging__LogLevel__Default: Information
+      Logging__LogLevel__Microsoft: Warning
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      terrafusion-network:
+        ipv4_address: 172.20.0.20
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ==========================================================================
+  # TerraFusion Consciousness Engine - 50,000+ AI Agent Swarm (Port 3004)
+  # ==========================================================================
+  consciousness:
+    build:
+      context: .
+      dockerfile: Dockerfile.Consciousness
+    container_name: terrafusion-consciousness-dev
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:3004
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=terrafusion;Username=postgres;Password=devpassword123"
+      Redis__Configuration: "redis:6379"
+      AI__SwarmSize: 1000
+      AI__QuantumOptimizationFactor: 949
+      AI__ConsciousnessLevel: TRANSCENDENT
+      AI__AccuracyTarget: 0.999
+      AI__ParallelAgents: 100
+      AI__MaxConcurrentTasks: 1000
+      Logging__LogLevel__Default: Information
+    ports:
+      - "3004:3004"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      terrafusion-network:
+        ipv4_address: 172.20.0.21
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3004/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+
+  # ==========================================================================
+  # TerraFusion Gateway - API Gateway with Ocelot (Port 3002)
+  # ==========================================================================
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.Gateway
+    container_name: terrafusion-gateway-dev
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:3002
+      Gateway__API__Host: api
+      Gateway__API__Port: 5000
+      Gateway__Consciousness__Host: consciousness
+      Gateway__Consciousness__Port: 3004
+      Gateway__Operations__Host: operations
+      Gateway__Operations__Port: 5002
+      RateLimiting__Enabled: true
+      RateLimiting__PermitLimit: 100
+      Logging__LogLevel__Default: Information
+    ports:
+      - "3002:3002"
+    depends_on:
+      api:
+        condition: service_healthy
+      consciousness:
+        condition: service_healthy
+    networks:
+      terrafusion-network:
+        ipv4_address: 172.20.0.22
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  # ==========================================================================
+  # TerraFusion Operations - County Operations & Workflow (Port 5002)
+  # ==========================================================================
+  operations:
+    build:
+      context: .
+      dockerfile: Dockerfile.Operations
+    container_name: terrafusion-operations-dev
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5002
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=terrafusion;Username=postgres;Password=devpassword123"
+      Redis__Configuration: "redis:6379"
+      Logging__LogLevel__Default: Information
+    ports:
+      - "5002:5002"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      terrafusion-network:
+        ipv4_address: 172.20.0.23
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ==========================================================================
+  # Prometheus - Metrics Collection & Monitoring
+  # ==========================================================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: terrafusion-prometheus-dev
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    networks:
+      terrafusion-network:
+        ipv4_address: 172.20.0.30
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+
+# ============================================================================
+# Usage Instructions
+# ============================================================================
+# Start all services:
+#   docker-compose up -d
+#
+# View logs:
+#   docker-compose logs -f
+#   docker-compose logs -f api
+#   docker-compose logs -f consciousness
+#
+# Stop all services:
+#   docker-compose down
+#
+# Stop and remove volumes:
+#   docker-compose down -v
+#
+# Rebuild images:
+#   docker-compose build --no-cache
+#   docker-compose up -d --build
+#
+# Scale consciousness engine:
+#   docker-compose up -d --scale consciousness=3
+#
+# Access services:
+#   API: http://localhost:5000
+#   Consciousness: http://localhost:3004
+#   Gateway: http://localhost:3002
+#   Operations: http://localhost:5002
+#   PostgreSQL: localhost:5432
+#   Redis: localhost:6379
+#   Prometheus: http://localhost:9090
+#
+# Health checks:
+#   curl http://localhost:5000/health
+#   curl http://localhost:3004/health
+#   curl http://localhost:3002/health
+#   curl http://localhost:5002/health
+# ============================================================================

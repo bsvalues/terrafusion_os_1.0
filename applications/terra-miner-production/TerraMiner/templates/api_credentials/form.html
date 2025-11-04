@@ -1,0 +1,210 @@
+{% extends "api_credentials/base.html" %}
+
+{% block title %}{{ 'Edit' if is_edit else 'Add' }} API Credentials{% endblock %}
+
+{% block api_credentials_content %}
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('api_credentials.index') }}">API Credentials</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ 'Edit' if is_edit else 'Add' }} {{ source_name | capitalize }}</li>
+        </ol>
+    </nav>
+</div>
+
+{% include 'partials/flash_messages.html' %}
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="mb-0">{{ 'Edit' if is_edit else 'Add' }} API Credentials for {{ source_name | capitalize }}</h3>
+    </div>
+    <div class="card-body">
+        <p class="text-muted mb-3">
+            {{ config.description }}
+        </p>
+        
+        <div class="alert alert-primary mb-4">
+            <h5 class="alert-heading"><i class="bi bi-info-circle-fill me-2"></i>Instructions</h5>
+            <p class="mb-0">{{ config.instructions }}</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('api_credentials.save') }}" id="credentials-form">
+            <input type="hidden" name="source_name" value="{{ source_name }}">
+            
+            <!-- Required Fields -->
+            {% if config.required|length > 0 %}
+            <div class="mb-4">
+                <h4 class="border-bottom pb-2 mb-3">Required Credentials</h4>
+                
+                {% for field in config.required %}
+                <div class="mb-3">
+                    <label for="{{ field }}" class="form-label text-capitalize fw-bold">{{ field | replace('_', ' ') }}</label>
+                    <div class="input-group">
+                        <input 
+                            type="password" 
+                            id="{{ field }}" 
+                            name="{{ field }}" 
+                            value="{{ getattr(credential, field) if credential else '' }}"
+                            class="form-control"
+                            required>
+                        <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('{{ field }}')">
+                            <i class="bi bi-eye" id="{{ field }}-icon"></i>
+                        </button>
+                    </div>
+                    <div class="form-text">
+                        This field is required for {{ source_name | capitalize }} API access.
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <!-- Optional Fields -->
+            {% if config.optional|length > 0 %}
+            <div class="mb-4">
+                <h4 class="border-bottom pb-2 mb-3">Optional Settings</h4>
+                
+                {% for field in config.optional %}
+                <div class="mb-3">
+                    <label for="{{ field }}" class="form-label text-capitalize fw-bold">{{ field | replace('_', ' ') }}</label>
+                    <div class="input-group">
+                        <input 
+                            type="{% if 'password' in field or 'secret' in field %}password{% else %}text{% endif %}" 
+                            id="{{ field }}" 
+                            name="{{ field }}" 
+                            value="{{ getattr(credential, field) if credential else '' }}"
+                            class="form-control">
+                        {% if 'password' in field or 'secret' in field %}
+                        <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('{{ field }}')">
+                            <i class="bi bi-eye" id="{{ field }}-icon"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                    <div class="form-text">
+                        {% if field == 'base_url' %}
+                        Override the default API endpoint URL (leave empty to use default)
+                        {% else %}
+                        Optional field for additional functionality
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <!-- Advanced Settings -->
+            <div class="mb-4">
+                <h4 class="border-bottom pb-2 mb-3">Advanced Settings</h4>
+                
+                <div class="mb-3">
+                    <label for="additional_credentials" class="form-label fw-bold">Additional Credentials (JSON)</label>
+                    <textarea 
+                        id="additional_credentials" 
+                        name="additional_credentials" 
+                        rows="4"
+                        class="form-control font-monospace"
+                    >{{ credential.additional_credentials if credential and credential.additional_credentials else '' }}</textarea>
+                    <div class="form-text">
+                        Optional JSON object with additional credential values. Must be valid JSON format.
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="form-check form-switch">
+                        <input type="hidden" name="is_enabled" value="false">
+                        <input 
+                            type="checkbox" 
+                            class="form-check-input" 
+                            id="is_enabled" 
+                            name="is_enabled" 
+                            value="true"
+                            {% if not credential or credential.is_enabled %}checked{% endif %}>
+                        <label class="form-check-label" for="is_enabled">
+                            Enable this data source (when disabled, connector will not be used)
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Submit Button -->
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('api_credentials.index') }}" class="btn btn-secondary">
+                    <i class="bi bi-x-lg me-1"></i> Cancel
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save me-1"></i> {{ 'Update' if is_edit else 'Add' }} Credentials
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="mb-0">Security Information</h3>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-warning">
+            <i class="bi bi-shield-lock-fill me-2"></i> All credentials are stored securely in the database.
+        </div>
+        <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> Never share your API keys or credentials with anyone.
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function togglePasswordVisibility(fieldId) {
+        const field = document.getElementById(fieldId);
+        const icon = document.getElementById(`${fieldId}-icon`);
+        
+        if (field.type === 'password') {
+            field.type = 'text';
+            icon.classList.remove('bi-eye');
+            icon.classList.add('bi-eye-slash');
+        } else {
+            field.type = 'password';
+            icon.classList.remove('bi-eye-slash');
+            icon.classList.add('bi-eye');
+        }
+    }
+
+    // Simple JSON validation for the additional_credentials field
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('credentials-form');
+        
+        form.addEventListener('submit', function(e) {
+            const additionalCredsField = document.getElementById('additional_credentials');
+            const value = additionalCredsField.value.trim();
+            
+            if (value) {
+                try {
+                    JSON.parse(value);
+                } catch (error) {
+                    e.preventDefault();
+                    
+                    // Create bootstrap alert
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+                    alertDiv.innerHTML = `
+                        <strong>Error!</strong> Additional credentials must be valid JSON. 
+                        <p class="mb-0 mt-1 font-monospace">${error.message}</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    `;
+                    
+                    // Insert at the top of the form
+                    form.insertBefore(alertDiv, form.firstChild);
+                    
+                    // Scroll to top
+                    window.scrollTo(0, form.offsetTop - 100);
+                    
+                    // Focus on field
+                    additionalCredsField.focus();
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

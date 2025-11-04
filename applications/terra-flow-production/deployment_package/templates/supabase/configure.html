@@ -1,0 +1,94 @@
+{% extends "layout.html" %}
+
+{% block title %}
+{{ title }} | GeoAssessmentPro
+{% endblock %}
+
+{% block main %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('supabase_config.index') }}">Supabase Configuration</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Configure Environment</li>
+                </ol>
+            </nav>
+            
+            <h2><i class="fas fa-cogs"></i> Configure Supabase Environment</h2>
+            <p class="lead">Set up or update a Supabase environment for the GeoAssessmentPro platform.</p>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Environment Configuration</h5>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('supabase_config.configure') }}" method="post">
+                        <div class="mb-3">
+                            <label for="environment" class="form-label">Environment</label>
+                            <select class="form-select" id="environment" name="environment" required>
+                                {% for env in environments %}
+                                <option value="{{ env }}" {% if env == current_env %}selected{% endif %}>{{ env }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text">Select which environment you want to configure.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="url" class="form-label">Supabase URL</label>
+                            <input type="url" class="form-control" id="url" name="url" required placeholder="https://your-project.supabase.co">
+                            <div class="form-text">The URL of your Supabase project.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="key" class="form-label">Supabase API Key</label>
+                            <input type="text" class="form-control" id="key" name="key" required placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+                            <div class="form-text">The anon/public API key for your Supabase project.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="service_key" class="form-label">Supabase Service Key (Optional)</label>
+                            <input type="text" class="form-control" id="service_key" name="service_key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+                            <div class="form-text">The service role key for administrative access (required for migrations).</div>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="set_active" name="set_active" checked>
+                            <label class="form-check-label" for="set_active">Set as active environment</label>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <strong>Note:</strong> These credentials will be stored securely in environment variables. The service key provides administrative access and should be kept secure.
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ url_for('supabase_config.index') }}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-success">Save Configuration</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Finding Your Supabase Credentials</h5>
+                </div>
+                <div class="card-body">
+                    <ol>
+                        <li>Log in to your <a href="https://app.supabase.io/" target="_blank">Supabase Dashboard</a>.</li>
+                        <li>Select your project.</li>
+                        <li>Go to Project Settings > API.</li>
+                        <li>Copy the "URL" for your Supabase URL.</li>
+                        <li>Copy the "anon public" key for your API Key.</li>
+                        <li>Copy the "service_role" key for your Service Key (if needed).</li>
+                    </ol>
+                    
+                    <div class="alert alert-warning">
+                        <strong>Important:</strong> Never share your service role key or commit it to version control.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

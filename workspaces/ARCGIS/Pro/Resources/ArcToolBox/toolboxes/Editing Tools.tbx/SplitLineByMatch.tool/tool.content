@@ -1,0 +1,196 @@
+{
+    "type": "FunctionTool",
+    "guid": "{d14a39eb-0ca3-4b03-ba70-2a173f25494a}",
+    "displayname": "$rc:title",
+    "helpcontent": "24010009",
+    "description": "$rc:description",
+    "product": "300",
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple",
+                    "SimpleJunction",
+                    "SimpleEdge",
+                    "ComplexEdge",
+                    "RasterCatalogItem"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "matched_features": {
+            "displayname": "$rc:matched_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple",
+                    "SimpleJunction",
+                    "SimpleEdge",
+                    "ComplexEdge",
+                    "RasterCatalogItem"
+                ]
+            },
+            "description": "$rc:matched_features.descr"
+        },
+        "in_match_table": {
+            "displayname": "$rc:in_match_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "domain": {
+                "type": "GPTablesDomain"
+            },
+            "description": "$rc:in_match_table.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "search_distance": {
+            "displayname": "$rc:search_distance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:search_distance.descr"
+        },
+        "in_features_as": {
+            "type": "optional",
+            "displayname": "$rc:in_features_as.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "AS_SOURCE",
+                        "code": "$rc:in_features_as.domain.AS_SOURCE"
+                    },
+                    {
+                        "value": "AS_TARGET",
+                        "code": "$rc:in_features_as.domain.AS_TARGET"
+                    }
+                ]
+            },
+            "value": "AS_SOURCE",
+            "description": "$rc:in_features_as.descr"
+        },
+        "out_point_feature_class": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_point_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:out_point_feature_class.descr"
+        },
+        "split_dangle": {
+            "type": "optional",
+            "displayname": "$rc:split_dangle.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "SPLIT_DANGLE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_SPLIT_DANGLE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:split_dangle.descr"
+        },
+        "min_match_group_length": {
+            "type": "optional",
+            "displayname": "$rc:min_match_group_length.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:min_match_group_length.descr"
+        },
+        "min_split_length": {
+            "type": "optional",
+            "displayname": "$rc:min_split_length.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:min_split_length.descr"
+        },
+        "split_fields": {
+            "type": "optional",
+            "control_guid": "{C15EC6FA-35EF-4204-90FB-01E7B4DD6862}",
+            "displayname": "$rc:split_fields.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double"
+                ],
+                "exclude.field": [
+                    "SHAPE_Length",
+                    "SHAPE_Area"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:split_fields.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "workspace"
+    ]
+}

@@ -1,0 +1,25 @@
+{
+    "set": [
+        "add",
+        "amount",
+        "attribute",
+        "count",
+        "duplicate",
+        "field",
+        "group",
+        "list",
+        "math",
+        "number",
+        "occurrence",
+        "often",
+        "quantify",
+        "statistical",
+        "sum",
+        "summarize",
+        "summary",
+        "table",
+        "times",
+        "total",
+        "unique"
+    ]
+}

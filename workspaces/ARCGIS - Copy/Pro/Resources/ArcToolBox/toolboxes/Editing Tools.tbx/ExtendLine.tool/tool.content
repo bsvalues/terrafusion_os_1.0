@@ -1,0 +1,77 @@
+{
+    "type": "FunctionTool",
+    "guid": "{482613dd-2f20-403a-8145-28f3fcf19383}",
+    "displayname": "$rc:title",
+    "helpcontent": "24000003",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "edit_session",
+        "input_data_change"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "length": {
+            "type": "optional",
+            "displayname": "$rc:length.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:length.descr"
+        },
+        "extend_to": {
+            "type": "optional",
+            "displayname": "$rc:extend_to.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "EXTENSION"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "FEATURE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:extend_to.descr"
+        },
+        "out_feature_class": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "in_features"
+            ]
+        }
+    },
+    "environments": [
+        "extent",
+        "workspace"
+    ]
+}

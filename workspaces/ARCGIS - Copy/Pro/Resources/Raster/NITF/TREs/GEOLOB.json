@@ -1,0 +1,75 @@
+{
+  "TRE": "GEOLOB",
+  "Source": [
+    "STDI-0002-1 v2021.1, Appendix P: GEOSDE"
+  ],
+  "Name": "Local Geographic (Lat/Long) Coordinate System",
+  "Description": "The Local Geographic (Lat/Long) Coordinate System (GEOLOB) TRE provides the description of the link between the local coordinate system (rows and columns) and the absolute geographic coordinate system (longitude and latitude) defined by GEOPS for rectified data (rows and columns are aligned with the coordinate system axis).",
+  "Size": 48,
+  "Fields": {
+    "ARV": {
+      "Name": "Longitude Density",
+      "Description": "This field shall contain the pixel ground spacing in E/W direction that is the number of pixels or elements intervals in 360 degrees.",
+      "Size": 9,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [
+        "pixels"
+      ],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 2,
+          "Max": 999999999
+        }
+      ]
+    },
+    "BRV": {
+      "Name": "Latitude Density",
+      "Description": "This field shall contain the pixel ground spacing in N/S direction that is the number of pixels or elements intervals in 360 degrees.",
+      "Size": 9,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [
+        "pixels"
+      ],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 2,
+          "Max": 999999999
+        }
+      ]
+    },
+    "LSO": {
+      "Name": "Longitude of Reference Origin",
+      "Description": "This field contains the longitude of the origin pixel (row number 0, column number 0) in the absolute coordinate system.",
+      "Size": 15,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [
+        "degrees"
+      ],
+      "Values": [
+        {
+          "Type": "Double"
+        }
+      ]
+    },
+    "PSO": {
+      "Name": "Latitude of Reference Origin",
+      "Description": "This field contains the latitude of the original pixel (row number 0, column number 0) in the absolute coordinate system.",
+      "Size": 15,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [
+        "degrees"
+      ],
+      "Values": [
+        {
+          "Type": "Double"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,5 @@
+GRANT EXECUTE TO [RSExecRole];
+
+
+GO
+

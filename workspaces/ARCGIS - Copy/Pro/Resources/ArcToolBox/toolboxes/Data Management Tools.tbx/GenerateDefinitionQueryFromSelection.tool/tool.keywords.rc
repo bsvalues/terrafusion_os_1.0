@@ -1,0 +1,10 @@
+{
+    "set": [
+        "sql",
+        "definition query",
+        "expression",
+        "query",
+        "query builder",
+        "selection"
+    ]
+}

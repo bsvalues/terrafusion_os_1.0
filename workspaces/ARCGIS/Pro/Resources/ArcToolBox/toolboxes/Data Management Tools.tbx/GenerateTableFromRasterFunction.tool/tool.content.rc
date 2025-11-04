@@ -1,0 +1,15 @@
+{
+    "map": {
+        "description": "Converts a raster function dataset to a table or feature class.  The input raster function should be a raster function designed to output a table or feature class.",
+        "out_table.descr": "The path, file name, and type (extension) of the output table or feature class.",
+        "out_table.title": "Output Table",
+        "raster_function.descr": "The function template or function JSON object that outputs a table or feature class.",
+        "raster_function.title": "Input Raster Function",
+        "raster_function_arguments.descr": "The function arguments and their values to be set. Each raster function has its own arguments and values, which are listed in the dialog of the tool.",
+        "raster_function_arguments.dt.title1": "Name",
+        "raster_function_arguments.dt.title2": "Value",
+        "raster_function_arguments.title": "Raster Function Arguments",
+        "summary": "Converts a raster function dataset to a table or feature class. The input raster function should be a raster function designed to output a table or feature class.",
+        "title": "Generate Table From Raster Function"
+    }
+}

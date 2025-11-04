@@ -1,0 +1,44 @@
+{
+    "type": "FunctionTool",
+    "guid": "{dbffbb88-f778-4fc0-9238-d913ce72075f}",
+    "displayname": "$rc:title",
+    "helpcontent": "71000002",
+    "description": "$rc:description",
+    "product": "200",
+    "params": {
+        "in_network_diagram_layer": {
+            "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}",
+            "displayname": "$rc:in_network_diagram_layer.title",
+            "datatype": {
+                "type": "GPDiagramLayer"
+            },
+            "description": "$rc:in_network_diagram_layer.descr"
+        },
+        "map": {
+            "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}",
+            "displayname": "$rc:map.title",
+            "datatype": {
+                "type": "GPMap"
+            },
+            "domain": {
+                "type": "GPMapDomain",
+                "maptype": [
+                    "0",
+                    "4"
+                ]
+            },
+            "description": "$rc:map.descr"
+        },
+        "out_network_diagram_layer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_network_diagram_layer.title",
+            "datatype": {
+                "type": "GPDiagramLayer"
+            },
+            "depends": [
+                "in_network_diagram_layer"
+            ]
+        }
+    }
+}

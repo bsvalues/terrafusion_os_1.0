@@ -67,27 +67,16 @@ function CostForgeAIPlugin({ context }: { context: any }) {
   return (
     <div className={styles.root}>
       <div className={styles.header}>
-
-
         <div className={styles.title}>CostForge AI</div>
-        <div
-
-className={styles.subtitle}>AI-Powered Construction Cost Analysis & Forecasting</div>
+        <div className={styles.subtitle}>AI-Powered Construction Cost Analysis & Forecasting</div>
       </div>
 
       <div className={styles.info}>
-
-
         <div>County: {context.countyConfig?.countyId ?? 'unknown'}</div>
-        <div
-
->Legacy: {context.countyConfig?.legacySystem ?? 'unknown'}</div>
-
+        <div>Legacy: {context.countyConfig?.legacySystem ?? 'unknown'}</div>
 
         <div>Session: {context.sessionId ?? 'none'}</div>
-        <div
-
-className={styles.mlStatus}>
+        <div className={styles.mlStatus}>
           <span className={styles.statusDot}></span>
           AI Engine: Active
         </div>
@@ -95,12 +84,9 @@ className={styles.mlStatus}>
 
       <div className={styles.controls}>
         <div className={styles.inputGroup}>
-
-
           <label className={styles.label}>Property ID:</label>
           <input
-
-type='text'
+            type='text'
             placeholder='Enter Property ID (optional)'
             value={propertyId}
             onChange={(e) => setPropertyId(e.target.value)}
@@ -109,63 +95,43 @@ type='text'
         </div>
 
         <div className={styles.inputGroup}>
-
-
           <label className={styles.label}>Project Type:</label>
           <select
-
-value={projectType}
+            value={projectType}
             onChange={(e) => setProjectType(e.target.value)}
             className={styles.select}
           >
-
-
             <option value='residential'>Residential</option>
-            <option
-
-value='commercial'>Commercial</option>
-
+            <option value='commercial'>Commercial</option>
 
             <option value='industrial'>Industrial</option>
-            <option
-
-value='agricultural'>Agricultural</option>
+            <option value='agricultural'>Agricultural</option>
             <option value='mixed-use'>Mixed Use</option>
           </select>
         </div>
 
         <div className={styles.inputGroup}>
-
-
           <label className={styles.label}>AI Model:</label>
           <select
-
-value={selectedModel}
+            value={selectedModel}
             onChange={(e) => setSelectedModel(e.target.value)}
-            title="Select AI model for cost analysis"
+            title='Select AI model for cost analysis'
             style={{
               padding: '8px 12px',
               border: '1px solid #ddd',
               borderRadius: '4px',
-              backgroundColor: '#fff'
+              backgroundColor: '#fff',
             }}
           >
-
-
             <option value='default'>Default Model</option>
-            <option
-
-value='custom'>Custom Model</option>
+            <option value='custom'>Custom Model</option>
           </select>
         </div>
 
         <div className={styles.inputGroup}>
-
-
           <label className={styles.label}>Square Footage:</label>
           <input
-
-type='number'
+            type='number'
             placeholder='Enter square footage'
             value={squareFootage}
             onChange={(e) => setSquareFootage(e.target.value)}
@@ -174,19 +140,19 @@ type='number'
         </div>
 
         <div className={styles.actions}>
-
-
           <button className={styles.button} onClick={handleRunCostAnalysis} disabled={loading}>
             {loading ? 'Analyzing...' : 'Run Cost Analysis'}
           </button>
 
-          <button
-
-className={styles.button} onClick={handleRunMLForecast} disabled={loading}>
+          <button className={styles.button} onClick={handleRunMLForecast} disabled={loading}>
             {loading ? 'Forecasting...' : 'ML Forecast'}
           </button>
 
-          <button className={styles.buttonSecondary} onClick={handleGenerateReport} disabled={loading}>
+          <button
+            className={styles.buttonSecondary}
+            onClick={handleGenerateReport}
+            disabled={loading}
+          >
             {loading ? 'Generating...' : 'Generate Report'}
           </button>
         </div>
@@ -195,16 +161,12 @@ className={styles.button} onClick={handleRunMLForecast} disabled={loading}>
       {costAnalysis && (
         <div className={styles.results}>
           <div className={styles.resultsTitle}>CostForge AI Results</div>
-          
+
           {costAnalysis.costBreakdown && (
             <div className={styles.costCard}>
               <div className={styles.costHeader}>
-
-
                 <span className={styles.costType}>Total Estimated Cost</span>
-                <span
-
-className={styles.costAmount}>
+                <span className={styles.costAmount}>
                   ${costAnalysis.costBreakdown.totalCost?.toLocaleString() || 'N/A'}
                 </span>
               </div>
@@ -214,12 +176,8 @@ className={styles.costAmount}>
 
           {costAnalysis.aiInsights && (
             <div className={styles.aiInsight}>
-
-
               <div className={styles.aiInsightTitle}>AI Insights</div>
-              <div
-
->{costAnalysis.aiInsights.summary || 'AI analysis complete'}</div>
+              <div>{costAnalysis.aiInsights.summary || 'AI analysis complete'}</div>
               <div className={styles.mlStatus}>
                 <span className={styles.statusDot}></span>
                 Confidence: {((costAnalysis.aiInsights.confidence || 0.85) * 100).toFixed(1)}%

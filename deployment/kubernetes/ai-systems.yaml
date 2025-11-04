@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terrafusion-ai-systems
+  namespace: terrafusion-os
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: terrafusion-ai
+      tier: ai-systems
+  template:
+    metadata:
+      labels:
+        app: terrafusion-ai
+        tier: ai-systems
+        ai-enhanced: quantum
+    spec:
+      containers:
+      - name: consciousness
+        image: terrafusion/consciousness:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: TERRAFUSION_SERVICE
+          value: "consciousness"
+        - name: AI_AGENT_COUNT
+          value: "1008"
+        - name: SWARM_COORDINATION
+          value: "enabled"
+        - name: QUANTUM_PROCESSING
+          value: "enabled"
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"

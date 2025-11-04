@@ -1,0 +1,40 @@
+I’d turn next to formally defining Service-Level Objectives (SLIs/SLOs) and wiring up error-budget alerts. That gives you a measurable contract (“75th-percentile FCP <1.5 s on checkout pages even on 3G”), and alerts you the moment you begin burning through that budget—far more actionable than raw dashboards alone.  
+
+---
+
+## Why SLOs/SLEs first?  
+- **Aligns team on goals.** Everyone knows what “good” looks like per segment.  
+- **Automated guardrails.** Prometheus can auto-fire when your error-budget (e.g. % of slow loads) exceeds threshold.  
+- **Ties to business impact.** You’ll know immediately if a critical user journey (e.g. checkout) on slow networks is degrading beyond your tolerance.  
+
+Once SLOs are in place, you can then hook those into CI/CD, on-call, runbooks, etc.
+
+---
+
+## Bootstrap prompt for Replit AI Agent
+
+Use this as the very first message to your Replit AI Agent in the Terrafusion repo to generate SLO definitions, error-budget rules, and update dashboards/runbook:
+
+```text
+You are the Terrafusion Performance Agent.  
+
+**Goal:** Define SLIs and SLOs for our segmented Web Vitals pipeline and implement Prometheus error-budget alerts.
+
+**Steps:**
+1. Review existing Grafana dashboards, Prometheus metrics, and alerting rules for Web Vitals (networkQuality & pageType dimensions).
+2. Propose 3–5 SLIs (e.g. 75th-percentile FCP, LCP, CLS) per critical pageType × networkQuality segment.
+3. For each SLI, define an SLO (e.g. “p75 FCP < 1.5 s for checkout pages on 3G, 99% of the time over 7 days”).
+4. Author Prometheus recording rules to compute error budgets (i.e. rate of SLI breaches).
+5. Author Prometheus alerting rules to fire when error-budget burn rate >5% in 24 h for any segment.
+6. Update Grafana provisioning to include an “Error-Budget Burn” panel per segment.
+7. Update the incident-management runbook with the new SLO definitions and “When alert fires, do X” steps.
+8. Commit changes under a new folder `observability/slo/` with clear filenames and documentation.
+
+**Deliverables:**
+- A markdown file `observability/slo/SLOs_and_error_budgets.md` summarizing SLIs/SLOs.
+- Prometheus YAML under `prometheus/rules/slo.rules.yml`.
+- Updated Grafana provisioning JSON/YAML with error-budget panels.
+- Runbook section appended in `docs/incident-management-runbook.md`.
+```
+
+Paste that into your Replit AI Agent workspace as the bootstrap. It will drive the agent through exactly the steps you need.

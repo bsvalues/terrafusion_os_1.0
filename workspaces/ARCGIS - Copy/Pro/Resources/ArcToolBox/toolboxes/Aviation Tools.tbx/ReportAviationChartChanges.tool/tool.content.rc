@@ -1,0 +1,22 @@
+{
+    "map": {
+        "aoi_features.descr": "The boundary within which the features will be processed.",
+        "aoi_features.title": "Area of Interest Features",
+        "aviation_workspace.descr": "The versioned enterprise ArcGIS Aviation Charting AIS geodatabase. The workspace cannot be a file geodatabase.",
+        "aviation_workspace.title": "Aviation Workspace",
+        "base_version.descr": "The version of the ArcGIS Aviation Charting AIS geodatabase that will be compared.",
+        "base_version.title": "Base Version",
+        "comparison_version.descr": "<xdoc><p>The version of the ArcGIS Aviation Charting AIS geodatabase that will be compared to the <span class=\"esri_uicontrol\">Base Version</span> parameter value.</p></xdoc>",
+        "comparison_version.title": "Comparison Version",
+        "description": "Compares feature classes in two enterprise geodatabase versions and returns the differences in a report. You can filter the reported changes to determine which charts are affected by the differing data sources. You can set  filters based on areas of interest (AOI), definition queries, and Report Chart Changes preferences.",
+        "pad_config_file.descr": "The .json files containing the evaluation criteria from the Prepare Aviation Data tool.",
+        "pad_config_file.title": "Prepare Aviation Data configuration file (.json)",
+        "report_id.title": "ID of Generated Report",
+        "report_name.descr": "The unique name of the report, containing changes between the geodatabase versions.",
+        "report_name.title": "Report Name",
+        "report_preference.descr": "The Report Chart Changes preference setting from the preference table. This preference will define which feature classes will be included in the report.",
+        "report_preference.title": "Report Preference",
+        "summary": "<xdoc><p>Compares feature classes in two enterprise geodatabase versions and returns the differences in a report. You can filter the reported changes to determine which charts are affected by the differing data sources. You can set filters based on areas of interest (AOI), definition queries, and Report Chart Changes preferences.</p><p>Once generated, the report will be written to the AIS_ChartChanges table in the ArcGIS Aviation Charting AIS geodatabase schema. You can name the report and reference it through the <span class=\"esri_fieldname\">SessionID</span> unique report identifier. You can use the Chart Changes tool to view the report.</p></xdoc>",
+        "title": "Report Aviation Chart Changes"
+    }
+}

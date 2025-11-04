@@ -1,0 +1,42 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "69000029",
+    "description": "$rc:description",
+    "product": "300",
+    "attributes": [
+        "spark"
+    ],
+    "params": {
+        "bdc_dataset": {
+            "displayname": "$rc:bdc_dataset.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:bdc_dataset.descr"
+        },
+        "duplicate_name": {
+            "type": "optional",
+            "displayname": "$rc:duplicate_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:duplicate_name.descr"
+        },
+        "updated_bdc": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_bdc.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "bdc",
+                    "mfc"
+                ]
+            }
+        }
+    }
+}

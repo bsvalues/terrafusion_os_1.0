@@ -1,0 +1,301 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('terra_fusion_ui.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('terra_fusion_ui.job_details', job_id=job.id) }}">Job Details</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Conflicts</li>
+                </ol>
+            </nav>
+            <h1 class="terrafusion-title">Conflict Resolution</h1>
+            <p class="lead">Job ID: {{ job.id }}</p>
+        </div>
+        <div class="col-auto">
+            {% if conflicts and conflicts|length > 0 and conflicts|selectattr('status', 'equalto', 'pending')|list|length > 0 %}
+                <form method="POST" action="{{ url_for('terra_fusion_ui.control_job', job_id=job.id, action='resolve_all') }}">
+                    <div class="input-group">
+                        <select class="form-select" name="resolution" required>
+                            <option value="" selected disabled>Select Resolution Strategy</option>
+                            <option value="source_wins">Source Wins</option>
+                            <option value="target_wins">Target Wins</option>
+                            <option value="newest_wins">Newest Wins</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary" 
+                                onclick="return confirm('Are you sure you want to apply this resolution to all conflicts?')">
+                            Resolve All
+                        </button>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Conflict Stats -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Resolved</h5>
+                    <h2 class="display-4">{{ conflicts|selectattr('status', 'equalto', 'resolved')|list|length }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Pending</h5>
+                    <h2 class="display-4">{{ conflicts|selectattr('status', 'equalto', 'pending')|list|length }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total</h5>
+                    <h2 class="display-4">{{ conflicts|length }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Filters</h5>
+        </div>
+        <div class="card-body">
+            <form id="filterForm" class="row">
+                <div class="col-md-3">
+                    <div class="form-group mb-3">
+                        <label for="tableFilter" class="form-label">Table</label>
+                        <select class="form-select" id="tableFilter">
+                            <option value="">All Tables</option>
+                            {% if conflicts %}
+                                {% set tables = conflicts|map(attribute='table')|unique|list %}
+                                {% for table in tables %}
+                                    <option value="{{ table }}">{{ table }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group mb-3">
+                        <label for="statusFilter" class="form-label">Status</label>
+                        <select class="form-select" id="statusFilter">
+                            <option value="">All Statuses</option>
+                            <option value="pending">Pending</option>
+                            <option value="resolved">Resolved</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group mb-3">
+                        <label for="typeFilter" class="form-label">Conflict Type</label>
+                        <select class="form-select" id="typeFilter">
+                            <option value="">All Types</option>
+                            <option value="data">Data Conflict</option>
+                            <option value="schema">Schema Conflict</option>
+                            <option value="constraint">Constraint Violation</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="button" class="btn btn-primary mb-3 w-100" onclick="applyFilters()">Apply Filters</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Conflicts List -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Conflicts</h5>
+        </div>
+        <div class="card-body p-0">
+            {% if conflicts and conflicts|length > 0 %}
+                <div class="accordion" id="conflictsAccordion">
+                    {% for conflict in conflicts %}
+                        <div class="accordion-item conflict-item"
+                             data-table="{{ conflict.table }}" 
+                             data-status="{{ conflict.status }}" 
+                             data-type="{{ conflict.type }}">
+                            <h2 class="accordion-header" id="heading{{ loop.index }}">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                        data-bs-target="#collapse{{ loop.index }}" aria-expanded="false" 
+                                        aria-controls="collapse{{ loop.index }}">
+                                    <div class="d-flex justify-content-between align-items-center w-100 me-3">
+                                        <div>
+                                            <span class="badge bg-secondary me-2">{{ conflict.table }}</span>
+                                            <span class="badge bg-{% if conflict.status == 'resolved' %}success{% else %}warning{% endif %} me-2">{{ conflict.status }}</span>
+                                            <span class="badge bg-info me-2">{{ conflict.type }}</span>
+                                            {{ conflict.description }}
+                                        </div>
+                                        <small class="text-muted">{{ conflict.detected_at|default('') }}</small>
+                                    </div>
+                                </button>
+                            </h2>
+                            <div id="collapse{{ loop.index }}" class="accordion-collapse collapse" 
+                                 aria-labelledby="heading{{ loop.index }}" data-bs-parent="#conflictsAccordion">
+                                <div class="accordion-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h5 class="mb-0">Source</h5>
+                                                </div>
+                                                <div class="card-body">
+                                                    <pre class="mb-0"><code>{{ conflict.source_value|tojson(indent=2) }}</code></pre>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h5 class="mb-0">Target</h5>
+                                                </div>
+                                                <div class="card-body">
+                                                    <pre class="mb-0"><code>{{ conflict.target_value|tojson(indent=2) }}</code></pre>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {% if conflict.status == 'pending' %}
+                                        <div class="mt-4">
+                                            <form method="POST" action="{{ url_for('terra_fusion_ui.control_job', job_id=job.id, action='resolve_conflict') }}">
+                                                <input type="hidden" name="conflict_id" value="{{ conflict.id }}">
+                                                <div class="form-group mb-3">
+                                                    <label for="resolution{{ loop.index }}" class="form-label">Resolution</label>
+                                                    <div class="input-group">
+                                                        <select class="form-select" id="resolution{{ loop.index }}" name="resolution" required>
+                                                            <option value="" selected disabled>Select Resolution Strategy</option>
+                                                            <option value="source_wins">Source Wins</option>
+                                                            <option value="target_wins">Target Wins</option>
+                                                            <option value="newest_wins">Newest Wins</option>
+                                                            <option value="manual">Manual Edit</option>
+                                                        </select>
+                                                        <button type="submit" class="btn btn-primary">Resolve</button>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div id="manualEdit{{ loop.index }}" class="form-group mb-3" style="display: none;">
+                                                    <label for="manualValue{{ loop.index }}" class="form-label">Manual Value</label>
+                                                    <textarea class="form-control" id="manualValue{{ loop.index }}" name="manual_value" rows="5"></textarea>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    {% else %}
+                                        <div class="mt-4">
+                                            <div class="alert alert-success">
+                                                <strong>Resolved:</strong> {{ conflict.resolution }} at {{ conflict.resolved_at|default('') }}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info m-3">
+                    No conflicts found for this job.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    // Show/hide manual edit field based on resolution selection
+    document.addEventListener('DOMContentLoaded', function() {
+        const selects = document.querySelectorAll('select[name="resolution"]');
+        selects.forEach(select => {
+            const index = select.id.replace('resolution', '');
+            const manualEdit = document.getElementById('manualEdit' + index);
+            
+            if (manualEdit) {
+                select.addEventListener('change', function() {
+                    if (this.value === 'manual') {
+                        manualEdit.style.display = 'block';
+                    } else {
+                        manualEdit.style.display = 'none';
+                    }
+                });
+            }
+        });
+    });
+    
+    // Filter functionality
+    function applyFilters() {
+        const tableFilter = document.getElementById('tableFilter').value;
+        const statusFilter = document.getElementById('statusFilter').value;
+        const typeFilter = document.getElementById('typeFilter').value;
+        
+        const items = document.querySelectorAll('.conflict-item');
+        
+        items.forEach(item => {
+            const table = item.dataset.table;
+            const status = item.dataset.status;
+            const type = item.dataset.type;
+            
+            const tableMatch = !tableFilter || table === tableFilter;
+            const statusMatch = !statusFilter || status === statusFilter;
+            const typeMatch = !typeFilter || type === typeFilter;
+            
+            if (tableMatch && statusMatch && typeMatch) {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+</script>
+{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    .terrafusion-title {
+        color: #3f51b5;
+        border-bottom: 2px solid #3f51b5;
+        padding-bottom: 8px;
+    }
+    
+    .card {
+        transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .accordion-button:not(.collapsed) {
+        color: #3f51b5;
+        background-color: #e8eaf6;
+    }
+    
+    .accordion-button:focus {
+        border-color: #3f51b5;
+        box-shadow: 0 0 0 0.25rem rgba(63, 81, 181, 0.25);
+    }
+    
+    pre {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.25rem;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+</style>
+{% endblock %}

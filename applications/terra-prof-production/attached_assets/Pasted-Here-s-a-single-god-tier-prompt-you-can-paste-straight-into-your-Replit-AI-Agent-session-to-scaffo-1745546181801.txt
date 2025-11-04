@@ -1,0 +1,48 @@
+Here’s a single “god-tier” prompt you can paste straight into your Replit AI Agent session to scaffold the entire TerraFusionPro monorepo:
+
+```
+You are an expert DevOps engineer and full-stack architect. In this workspace, bootstrap a new TerraFusionPro monorepo, exactly as follows:
+
+1. **Initialize**  
+   - Ensure we’re at the repo root.  
+   - Run `git init` if one doesn’t exist.  
+
+2. **Create directory structure**  
+   ```
+   packages/{api,field-app,web-client,shared,agents}
+   services/{property-service,analysis-service,user-service,form-service,report-service}
+   infrastructure/{kubernetes,terraform,docker,ci-cd}
+   docs/{architecture,api,development,user-guides}
+   scripts
+   tests
+   assets/{images,styles}
+   .github/{workflows,ISSUE_TEMPLATE}
+   ```
+   
+3. **Drop in key files**  
+   - **README.md** (use the content I provided in our last message)  
+   - **package.json** (root workspace with workspaces & scripts)  
+   - **lerna.json** (monorepo config)  
+   - **.gitignore** (standard node + env + editor + docker ignores)  
+   - **.github/workflows/ci.yml** (lint/test/build CI)  
+
+4. **Install & configure**  
+   - Run `npm install --save-dev lerna typescript eslint prettier husky lint-staged`  
+   - Run `npx lerna init` to wire up your workspaces  
+   - Commit everything:  
+     ```bash
+     git add .
+     git commit -m "feat: initial monorepo scaffold for TerraFusionPro"
+     ```  
+   
+5. **Verify**  
+   - Execute `npm run dev` and confirm no errors.  
+   - List directories to ensure everything is in place.  
+
+6. **Report back**  
+   - Print a brief summary of created directories and files.  
+   - Suggest the next logical component to implement (e.g. start shared types & CRDT).
+
+Proceed step by step, echoing each command with a short explanation, and only move on once the previous step succeeds. Once complete, give me a concise “all set” summary and proposed next task.```
+
+—paste that into Replit AI Agent, and it will scaffold everything for you.

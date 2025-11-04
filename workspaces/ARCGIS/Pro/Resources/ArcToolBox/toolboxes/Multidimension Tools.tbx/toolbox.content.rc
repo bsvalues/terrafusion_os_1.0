@@ -1,0 +1,7 @@
+{
+    "map": {
+        "descr": "The Multidimension toolbox contains tools that are used to create and manage  netCDF, GRIB, HDF,  OPeNDAP, Esri's CRF,  multidimensional mosaic datasets, and multidimensional image services. You can use these tools to generate multidimensional metadata; create a multidimensional raster or  feature layer (from netCDF files only), or  table view (from netCDF files only); select a specific slice from a multidimensional dataset; or create a subset of a multidimensional raster dataset.",
+        "title": "Multidimension Tools",
+        "toolset1.name": "NetCDF"
+    }
+}

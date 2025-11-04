@@ -1,0 +1,310 @@
+{
+  "TRE": "PIAPRD",
+  "Source": [
+    "STDI-0002-1 v2021.1, Appendix C: PIAE"
+  ],
+  "Name": "Profile for Imagery Access Product Support Version D",
+  "Description": "The data found in the Product Support Extension address information regarding the products derived from source imagery. This extension aligns the Standards Profile for Imagery Access (SPIA) and NITF for product information, and adds descriptive detail associated with products. This extension shall be present no more than once for each product.",
+  "Size": 201,
+  "Fields": {
+    "ACCESSID": {
+      "Name": "Access Identifier",
+      "Description": "This field contains an archive unique identifier. This could be the product filename, a record identifier, a reference number, the product id, or any other means to access the product from the archive.",
+      "Size": 64,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "FMCONTROL": {
+      "Name": "FM Control Number",
+      "Description": "This field identifies foreign material associated with the product.",
+      "Size": 32,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "SUBDET": {
+      "Name": "Subjective Detail",
+      "Description": "This field indicates a subjective rating of useful detail available in the product. P = Poor, F = Fair, G = Good, and E = Excellent.",
+      "Size": 1,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Value",
+          "Values": [ "P", "F", "G", "E" ]
+        }
+      ]
+    },
+    "PRODCODE": {
+      "Name": "Product Code",
+      "Description": "This field identifies the category of product data stored in the archive.",
+      "Size": 2,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "PRODUCERSE": {
+      "Name": "Producer Supplement",
+      "Description": "This field identifies the element within the producing organization that created the product.",
+      "Size": 6,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "PRODIDNO": {
+      "Name": "Product ID Number",
+      "Description": "This field identifies a product stored in the archive with a producer assigned number.",
+      "Size": 20,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "PRODSNME": {
+      "Name": "Product Short Name",
+      "Description": "This field identifies the abbreviated name of a product stored in the archive.",
+      "Size": 10,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "PRODUCERCD": {
+      "Name": "Producer Code",
+      "Description": "This field identifies the organization responsible for creating or modifying the product.",
+      "Size": 2,
+      "Format": "BCS-AN",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "PRODCRTIME": {
+      "Name": "Product Create Time",
+      "Description": "This field identifies the date or the date and time that the product was created or last modified, expressed in ZULU time.",
+      "Size": 14,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "DateTime"
+        }
+      ]
+    },
+    "MAPID": {
+      "Name": "Map Identifier",
+      "Description": "This field identifies a map associated with the product.",
+      "Size": 40,
+      "Format": "BCS-AN",
+      "Type": "O",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "SECTITLEREP": {
+      "Name": "SECTITLE Repetitions",
+      "Description": "This field identifies the number of times the SECTITLE, PPNUM, and TPP fields repeat per extension instance.",
+      "Size": 2,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 99
+        }
+      ]
+    },
+    "SECTITLE<SECTITLEREP>": {
+      "Name": "Section Title",
+      "Description": "This field identifies the nth user defined title of a section of a multi-section product.",
+      "Size": 40,
+      "Format": "BCS-AN",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "PPNUM<SECTITLEREP>": {
+      "Name": "Page/Part Number",
+      "Description": "This field identifies the nth page/part number of the section identified in SECTITLEn.",
+      "Size": 5,
+      "Format": "BCS-AN",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "TPP<SECTITLEREP>": {
+      "Name": "Total Pages/Parts",
+      "Description": "This field identifies the nth number of pages or parts associated with SECTITLEn and PPNUMn.",
+      "Size": 3,
+      "Format": "BCS-N",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 1,
+          "Max": 999
+        }
+      ]
+    },
+    "REQORGREP": {
+      "Name": "REQORG Repetitions",
+      "Description": "This field identifies the number of times the REQORG field repeats per extension instance.",
+      "Size": 2,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 99
+        }
+      ]
+    },
+    "REQORG<REQORGREP>": {
+      "Name": "Requesting Organization",
+      "Description": "This field identifies the nth organization requesting that an image be placed in an archive.",
+      "Size": 64,
+      "Format": "BCS-AN",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "KEYWORDREP": {
+      "Name": "KEYWORD Repetitions",
+      "Description": "This field identifies the number of times the KEYWORD field repeats per extension instance.",
+      "Size": 2,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 99
+        }
+      ]
+    },
+    "KEYWORD<KEYWORDREP>": {
+      "Name": "Keyword String",
+      "Description": "This field provides the nth block of freeform text description of the product.",
+      "Size": 255,
+      "Format": "BCS-AN",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "ASSRPTREP": {
+      "Name": "ASSRPT Repetitions",
+      "Description": "This field identifies the number of times the ASSRPT field repeats per extension instance.",
+      "Size": 2,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 99
+        }
+      ]
+    },
+    "ASSRPT<ASSRPTREP>": {
+      "Name": "Associated Report",
+      "Description": "This is the nth field of other known reports associated with the product.",
+      "Size": 20,
+      "Format": "BCS-AN",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    },
+    "ATEXTREP": {
+      "Name": "ATEXT Repetitions",
+      "Description": "This field identifies the number of times the ATEXT field repeats per extension instance.",
+      "Size": 2,
+      "Format": "BCS-N",
+      "Type": "R",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "Range",
+          "Min": 0,
+          "Max": 99
+        }
+      ]
+    },
+    "ATEXT<ATEXTREP>": {
+      "Name": "Associated Text",
+      "Description": "This field provides the nth text block further describing the imagery product.",
+      "Size": 255,
+      "Format": "BCS-AN",
+      "Type": "C",
+      "Units": [],
+      "Values": [
+        {
+          "Type": "AlphaNumeric"
+        }
+      ]
+    }
+  }
+}

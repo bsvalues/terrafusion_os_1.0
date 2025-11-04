@@ -1,0 +1,91 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: terrafusion-consciousness-prod
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"  # Deploy after API
+    notifications.argoproj.io/subscribe.on-deployed.slack: terrafusion-deployments
+    notifications.argoproj.io/subscribe.on-health-degraded.slack: terrafusion-critical
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: terrafusion
+  
+  source:
+    repoURL: https://github.com/terrafusion/terrafusion-os
+    targetRevision: main
+    path: backend/helm/terrafusion-consciousness
+    helm:
+      releaseName: terrafusion-consciousness
+      valueFiles:
+        - values.yaml
+      parameters:
+        - name: global.environment
+          value: production
+        - name: image.tag
+          value: "1.0.0"
+        - name: replicaCount
+          value: "5"
+        - name: aiAgent.totalAgents
+          value: "50000"
+        - name: aiAgent.agentsPerPod
+          value: "10000"
+        - name: aiAgent.quantumOptimizationFactor
+          value: "949"
+        - name: autoscaling.enabled
+          value: "true"
+        - name: autoscaling.minReplicas
+          value: "5"
+        - name: autoscaling.maxReplicas
+          value: "50"
+        - name: persistence.enabled
+          value: "true"
+        - name: persistence.size
+          value: "50Gi"
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: terrafusion
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 5m
+  
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
+    - group: autoscaling
+      kind: HorizontalPodAutoscaler
+      jsonPointers:
+        - /spec/minReplicas
+        - /spec/maxReplicas
+        - /status
+  
+  revisionHistoryLimit: 10
+  
+  info:
+    - name: 'Environment'
+      value: 'Production'
+    - name: 'Service'
+      value: 'TerraFusion Consciousness Engine'
+    - name: 'AI Agents'
+      value: '50,000'
+    - name: 'Quantum Factor'
+      value: '949'
+    - name: 'Port'
+      value: '3004'

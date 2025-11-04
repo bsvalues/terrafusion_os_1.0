@@ -1,0 +1,230 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "77020007",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_gtfs_folders": {
+            "displayname": "$rc:in_gtfs_folders.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "DEFolder"
+                }
+            },
+            "description": "$rc:in_gtfs_folders.descr"
+        },
+        "target_feature_dataset": {
+            "displayname": "$rc:target_feature_dataset.title",
+            "datatype": {
+                "type": "DEFeatureDataset"
+            },
+            "description": "$rc:target_feature_dataset.descr"
+        },
+        "updated_target_feature_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_target_feature_dataset.title",
+            "datatype": {
+                "type": "DEFeatureDataset"
+            },
+            "schema": {
+                "type": "GPContainerSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "output_stops": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_stops.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "output_line_variant_elements": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_line_variant_elements.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "output_calendars": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_calendars.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "output_calendar_exceptions": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_calendar_exceptions.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "output_lines": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_lines.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "output_line_variants": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_line_variants.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "output_runs": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_runs.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "output_schedule_elements": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_schedule_elements.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "output_schedules": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_schedules.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "interpolate": {
+            "type": "optional",
+            "displayname": "$rc:interpolate.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "INTERPOLATE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_INTERPOLATE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:interpolate.descr"
+        },
+        "append": {
+            "type": "optional",
+            "displayname": "$rc:append.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "APPEND"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_APPEND"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:append.descr"
+        },
+        "make_lve_shapes": {
+            "type": "optional",
+            "displayname": "$rc:make_lve_shapes.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "MAKE_LVESHAPES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_MAKE_LVESHAPES"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:make_lve_shapes.descr"
+        },
+        "output_lve_shapes": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_lve_shapes.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    }
+}

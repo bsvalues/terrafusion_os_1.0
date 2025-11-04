@@ -1,0 +1,139 @@
+{
+    "type": "FunctionTool",
+    "guid": "{F6243FE3-8552-4511-BBCE-F882B7099A58}/AviationLineBypass",
+    "displayname": "$rc:title",
+    "helpcontent": "64050001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "53",
+        "70"
+    ],
+    "params": {
+        "in_map": {
+            "displayname": "$rc:in_map.title",
+            "datatype": {
+                "type": "GPMap"
+            },
+            "description": "$rc:in_map.descr"
+        },
+        "target_line_features": {
+            "displayname": "$rc:target_line_features.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:target_line_features.descr"
+        },
+        "bypass_features": {
+            "type": "optional",
+            "displayname": "$rc:bypass_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "depends": [
+                "in_map"
+            ],
+            "description": "$rc:bypass_features.descr"
+        },
+        "tolerance": {
+            "type": "optional",
+            "displayname": "$rc:tolerance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "description": "$rc:tolerance.descr"
+        },
+        "radius_option": {
+            "type": "optional",
+            "displayname": "$rc:radius_option.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DYNAMIC_RADIUS",
+                        "code": "$rc:radius_option.domain.DYNAMIC_RADIUS"
+                    },
+                    {
+                        "value": "CONSTANT_RADIUS",
+                        "code": "$rc:radius_option.domain.CONSTANT_RADIUS"
+                    }
+                ]
+            },
+            "value": "DYNAMIC_RADIUS",
+            "description": "$rc:radius_option.descr"
+        },
+        "radius_scale": {
+            "type": "optional",
+            "displayname": "$rc:radius_scale.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "1",
+            "description": "$rc:radius_scale.descr"
+        },
+        "radius": {
+            "type": "optional",
+            "displayname": "$rc:radius.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "description": "$rc:radius.descr"
+        },
+        "merge_option": {
+            "type": "optional",
+            "displayname": "$rc:merge_option.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NO_MERGE_BYPASS",
+                        "code": "$rc:merge_option.domain.NO_MERGE_BYPASS"
+                    },
+                    {
+                        "value": "MERGE_BYPASS",
+                        "code": "$rc:merge_option.domain.MERGE_BYPASS"
+                    }
+                ]
+            },
+            "value": "NO_MERGE_BYPASS",
+            "description": "$rc:merge_option.descr"
+        },
+        "updated_line_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_line_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Polyline"
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "target_line_features"
+            ]
+        }
+    }
+}

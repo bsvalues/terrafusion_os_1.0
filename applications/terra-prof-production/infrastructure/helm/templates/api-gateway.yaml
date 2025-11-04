@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.apiGateway.name }}
+  labels:
+    app: {{ .Values.apiGateway.name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ .Values.apiGateway.name }}
+spec:
+  replicas: {{ .Values.apiGateway.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.apiGateway.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.apiGateway.name }}
+    spec:
+      {{- if .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range .Values.global.imagePullSecrets }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      containers:
+      - name: {{ .Values.apiGateway.name }}
+        image: "{{ .Values.global.imageRegistry }}{{ .Values.apiGateway.image.repository }}:{{ .Values.apiGateway.image.tag | default .Values.global.imageTag }}"
+        imagePullPolicy: {{ .Values.apiGateway.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.apiGateway.port }}
+        env:
+        - name: NODE_ENV
+          value: {{ .Values.global.environment }}
+        - name: PORT
+          value: "{{ .Values.apiGateway.port }}"
+        - name: USER_SERVICE_URL
+          value: "http://{{ .Values.userService.name }}:{{ .Values.userService.service.port }}"
+        - name: PROPERTY_SERVICE_URL
+          value: "http://{{ .Values.propertyService.name }}:{{ .Values.propertyService.service.port }}"
+        - name: FORM_SERVICE_URL
+          value: "http://{{ .Values.formService.name }}:{{ .Values.formService.service.port }}"
+        - name: ANALYSIS_SERVICE_URL
+          value: "http://{{ .Values.analysisService.name }}:{{ .Values.analysisService.service.port }}"
+        - name: REPORT_SERVICE_URL
+          value: "http://{{ .Values.reportService.name }}:{{ .Values.reportService.service.port }}"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-db-credentials
+              key: database-url
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-jwt-secret
+              key: jwt-secret
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: {{ .Values.apiGateway.port }}
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: {{ .Values.apiGateway.port }}
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        resources:
+          {{- toYaml .Values.apiGateway.resources | nindent 10 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.apiGateway.name }}
+  labels:
+    app: {{ .Values.apiGateway.name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ .Values.apiGateway.name }}
+spec:
+  type: {{ .Values.apiGateway.service.type }}
+  ports:
+  - port: {{ .Values.apiGateway.service.port }}
+    targetPort: {{ .Values.apiGateway.port }}
+    protocol: TCP
+    name: http
+  selector:
+    app: {{ .Values.apiGateway.name }}
+---
+{{- if .Values.apiGateway.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Values.apiGateway.name }}
+  labels:
+    app: {{ .Values.apiGateway.name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ .Values.apiGateway.name }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Values.apiGateway.name }}
+  minReplicas: {{ .Values.apiGateway.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.apiGateway.autoscaling.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.apiGateway.autoscaling.targetCPUUtilizationPercentage }}
+{{- end }}

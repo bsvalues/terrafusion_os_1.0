@@ -1,0 +1,435 @@
+{% extends 'mobile_layout.html' %}
+
+{% block title %}TerraFlow | Mobile Map{% endblock %}
+
+{% block additionalcss %}
+<style>
+    /* Map specific styles */
+    body {
+        padding-bottom: 0; /* Override padding for map view */
+    }
+    
+    .mobile-map-container {
+        position: fixed;
+        top: 60px; /* Header height */
+        left: 0;
+        right: 0;
+        bottom: 70px; /* Nav height */
+        z-index: 500;
+    }
+    
+    #mobileMap {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .map-controls {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .map-layers {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 1000;
+    }
+    
+    .map-control-button {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: white;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        font-size: 16px;
+    }
+    
+    .property-info-card {
+        position: fixed;
+        bottom: 70px; /* Nav height */
+        left: 0;
+        right: 0;
+        background-color: white;
+        z-index: 1001;
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+        box-shadow: 0 -4px 10px rgba(0,0,0,0.15);
+        transform: translateY(100%);
+        transition: transform 0.3s ease-out;
+        max-height: 60%;
+        overflow-y: auto;
+    }
+    
+    .property-info-card.show {
+        transform: translateY(0);
+    }
+    
+    .handle {
+        width: 40px;
+        height: 5px;
+        background-color: #ddd;
+        border-radius: 3px;
+        margin: 8px auto;
+    }
+    
+    .layer-control {
+        background-color: white;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    
+    .layer-toggle {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    
+    .layer-toggle:last-child {
+        margin-bottom: 0;
+    }
+    
+    .layer-toggle label {
+        margin-left: 8px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    
+    .layer-toggle input {
+        margin: 0;
+    }
+    
+    .search-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        padding: 10px;
+        background-color: rgba(255, 255, 255, 0.9);
+        z-index: 1002;
+        transform: translateY(-100%);
+        transition: transform 0.3s ease-out;
+    }
+    
+    .search-overlay.show {
+        transform: translateY(0);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Map Container -->
+<div class="mobile-map-container">
+    <div id="mobileMap"></div>
+    
+    <!-- Map Controls -->
+    <div class="map-controls">
+        <button class="map-control-button" id="zoomInBtn">
+            <i class="fas fa-plus"></i>
+        </button>
+        <button class="map-control-button" id="zoomOutBtn">
+            <i class="fas fa-minus"></i>
+        </button>
+        <button class="map-control-button" id="currentLocationBtn">
+            <i class="fas fa-location-arrow"></i>
+        </button>
+        <button class="map-control-button" id="searchBtn">
+            <i class="fas fa-search"></i>
+        </button>
+        <button class="map-control-button" id="layersBtn">
+            <i class="fas fa-layer-group"></i>
+        </button>
+    </div>
+    
+    <!-- Layer Controls (initially hidden) -->
+    <div class="map-layers" id="layerControls" style="display: none;">
+        <div class="layer-control">
+            <div class="layer-toggle">
+                <input type="checkbox" id="propertyLayer" checked>
+                <label for="propertyLayer">Properties</label>
+            </div>
+            <div class="layer-toggle">
+                <input type="checkbox" id="anomalyLayer">
+                <label for="anomalyLayer">Anomalies</label>
+            </div>
+            <div class="layer-toggle">
+                <input type="checkbox" id="satelliteLayer">
+                <label for="satelliteLayer">Satellite</label>
+            </div>
+            <div class="layer-toggle">
+                <input type="checkbox" id="boundariesLayer">
+                <label for="boundariesLayer">Boundaries</label>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Search Overlay (initially hidden) -->
+    <div class="search-overlay" id="searchOverlay">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Search properties..." id="propertySearch">
+            <button class="btn btn-primary" type="button" id="submitSearch">
+                <i class="fas fa-search"></i>
+            </button>
+            <button class="btn btn-outline-secondary" type="button" id="closeSearch">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Property Information Card (initially hidden) -->
+<div class="property-info-card" id="propertyInfoCard">
+    <div class="handle"></div>
+    <div class="p-3">
+        <h5 class="mb-3" id="propertyTitle">Property Details</h5>
+        <div class="row mb-3">
+            <div class="col-6">
+                <div class="fw-bold text-secondary">Address</div>
+                <div id="propertyAddress">123 Main Street</div>
+            </div>
+            <div class="col-6">
+                <div class="fw-bold text-secondary">ID</div>
+                <div id="propertyId">12345</div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-6">
+                <div class="fw-bold text-secondary">Type</div>
+                <div id="propertyType">Residential</div>
+            </div>
+            <div class="col-6">
+                <div class="fw-bold text-secondary">Value</div>
+                <div id="propertyValue">$350,000</div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <div class="fw-bold text-secondary">Features</div>
+            <div id="propertyFeatures">3 bed, 2 bath, 1,800 sqft</div>
+        </div>
+        <div class="mb-3">
+            <div class="fw-bold text-secondary">Last Assessment</div>
+            <div id="propertyAssessment">January 15, 2025</div>
+        </div>
+        <div class="mb-3">
+            <div class="fw-bold text-secondary">Status</div>
+            <div id="propertyStatus"><span class="badge bg-success">Normal</span></div>
+        </div>
+        <div class="d-grid gap-2">
+            <button class="btn btn-primary" id="viewDetailsBtn">View Full Details</button>
+            <button class="btn btn-outline-secondary" id="closePropertyCard">Close</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize map
+        var map = L.map('mobileMap').setView([47.5906, -120.6581], 7); // WA state center
+        
+        // Add base tile layer (OpenStreetMap)
+        var baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        // Satellite layer (not added by default)
+        var satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+        });
+        
+        // Sample property data (would be loaded from API)
+        var properties = [
+            {
+                id: 10001,
+                lat: 46.2085,
+                lng: -119.1372, // Kennewick, WA
+                address: "123 Main St, Kennewick, WA",
+                type: "Residential",
+                value: "$320,000",
+                features: "3 bed, 2 bath, 1,750 sqft",
+                assessment: "Feb 10, 2025",
+                status: "normal"
+            },
+            {
+                id: 10002,
+                lat: 46.2503,
+                lng: -119.2033, // Richland, WA
+                address: "456 Oak Ave, Richland, WA",
+                type: "Commercial",
+                value: "$750,000",
+                features: "Office space, 3,200 sqft",
+                assessment: "Jan 5, 2025",
+                status: "normal"
+            },
+            {
+                id: 10003,
+                lat: 46.2304, 
+                lng: -119.0871, // Pasco, WA
+                address: "789 Pine St, Pasco, WA",
+                type: "Residential",
+                value: "$285,000",
+                features: "2 bed, 1.5 bath, 1,450 sqft",
+                assessment: "Mar 1, 2025",
+                status: "anomaly"
+            }
+        ];
+        
+        // Property marker layer
+        var propertyMarkers = L.layerGroup().addTo(map);
+        
+        // Add property markers
+        properties.forEach(function(property) {
+            var markerIcon = L.divIcon({
+                className: 'property-marker',
+                html: '<i class="fas fa-home" style="color: ' + (property.status === 'anomaly' ? '#dc3545' : '#198754') + ';"></i>',
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+            });
+            
+            var marker = L.marker([property.lat, property.lng], {icon: markerIcon})
+                .bindTooltip(property.address)
+                .addTo(propertyMarkers);
+                
+            marker.on('click', function() {
+                showPropertyDetails(property);
+            });
+        });
+        
+        // Control button functionality
+        document.getElementById('zoomInBtn').addEventListener('click', function() {
+            map.zoomIn();
+        });
+        
+        document.getElementById('zoomOutBtn').addEventListener('click', function() {
+            map.zoomOut();
+        });
+        
+        document.getElementById('currentLocationBtn').addEventListener('click', function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    map.setView([position.coords.latitude, position.coords.longitude], 14);
+                }, function() {
+                    alert('Unable to get your location');
+                });
+            } else {
+                alert('Geolocation is not supported by your browser');
+            }
+        });
+        
+        // Layer controls
+        document.getElementById('layersBtn').addEventListener('click', function() {
+            var layerControls = document.getElementById('layerControls');
+            layerControls.style.display = layerControls.style.display === 'none' ? 'block' : 'none';
+        });
+        
+        // Layer toggles
+        document.getElementById('propertyLayer').addEventListener('change', function() {
+            if (this.checked) {
+                map.addLayer(propertyMarkers);
+            } else {
+                map.removeLayer(propertyMarkers);
+            }
+        });
+        
+        document.getElementById('satelliteLayer').addEventListener('change', function() {
+            if (this.checked) {
+                map.removeLayer(baseLayer);
+                map.addLayer(satelliteLayer);
+            } else {
+                map.removeLayer(satelliteLayer);
+                map.addLayer(baseLayer);
+            }
+        });
+        
+        // Search functionality
+        document.getElementById('searchBtn').addEventListener('click', function() {
+            var searchOverlay = document.getElementById('searchOverlay');
+            searchOverlay.classList.add('show');
+        });
+        
+        document.getElementById('closeSearch').addEventListener('click', function() {
+            var searchOverlay = document.getElementById('searchOverlay');
+            searchOverlay.classList.remove('show');
+        });
+        
+        document.getElementById('submitSearch').addEventListener('click', function() {
+            var searchTerm = document.getElementById('propertySearch').value.toLowerCase();
+            
+            // Simple search implementation
+            var found = false;
+            for (var i = 0; i < properties.length; i++) {
+                if (properties[i].address.toLowerCase().includes(searchTerm)) {
+                    map.setView([properties[i].lat, properties[i].lng], 15);
+                    showPropertyDetails(properties[i]);
+                    found = true;
+                    break;
+                }
+            }
+            
+            if (!found) {
+                alert('No properties found matching: ' + searchTerm);
+            }
+            
+            document.getElementById('searchOverlay').classList.remove('show');
+        });
+        
+        // Property info card functionality
+        function showPropertyDetails(property) {
+            // Set values in the property card
+            document.getElementById('propertyTitle').textContent = property.address.split(',')[0];
+            document.getElementById('propertyAddress').textContent = property.address;
+            document.getElementById('propertyId').textContent = property.id;
+            document.getElementById('propertyType').textContent = property.type;
+            document.getElementById('propertyValue').textContent = property.value;
+            document.getElementById('propertyFeatures').textContent = property.features;
+            document.getElementById('propertyAssessment').textContent = property.assessment;
+            
+            // Set status badge
+            var statusBadge = property.status === 'anomaly' 
+                ? '<span class="badge bg-danger">Anomaly Detected</span>' 
+                : '<span class="badge bg-success">Normal</span>';
+            document.getElementById('propertyStatus').innerHTML = statusBadge;
+            
+            // Show the card
+            document.getElementById('propertyInfoCard').classList.add('show');
+        }
+        
+        document.getElementById('closePropertyCard').addEventListener('click', function() {
+            document.getElementById('propertyInfoCard').classList.remove('show');
+        });
+        
+        document.getElementById('viewDetailsBtn').addEventListener('click', function() {
+            var propertyId = document.getElementById('propertyId').textContent;
+            window.location.href = '/property/' + propertyId;
+        });
+        
+        // Handle swipe to dismiss property card
+        var propertyCard = document.getElementById('propertyInfoCard');
+        var startY, endY;
+        
+        propertyCard.addEventListener('touchstart', function(e) {
+            startY = e.touches[0].clientY;
+        });
+        
+        propertyCard.addEventListener('touchend', function(e) {
+            endY = e.changedTouches[0].clientY;
+            if (endY - startY > 50) { // Swipe down detected
+                propertyCard.classList.remove('show');
+            }
+        });
+        
+        // Center on Benton County, WA
+        map.setView([46.2581, -119.2556], 10);
+    });
+</script>
+{% endblock %}

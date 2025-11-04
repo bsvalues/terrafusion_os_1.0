@@ -1,0 +1,68 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "80010001",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "block_add_to_map"
+    ],
+    "params": {
+        "in_workspace": {
+            "displayname": "$rc:in_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "domain": {
+                "type": "GPWorkspaceDomain",
+                "workspacetype": [
+                    "Local Database",
+                    "Remote Database"
+                ]
+            },
+            "description": "$rc:in_workspace.descr"
+        },
+        "in_template": {
+            "displayname": "$rc:in_template.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_template.descr"
+        },
+        "in_proxy_raster_location": {
+            "displayname": "$rc:in_proxy_raster_location.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:in_proxy_raster_location.descr"
+        },
+        "coordinate_system": {
+            "type": "optional",
+            "displayname": "$rc:coordinate_system.title",
+            "datatype": {
+                "type": "GPCoordinateSystem"
+            },
+            "description": "$rc:coordinate_system.descr"
+        },
+        "config_keyword": {
+            "type": "optional",
+            "displayname": "$rc:config_keyword.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:config_keyword.descr"
+        },
+        "out_bis": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_bis.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "schema": {
+                "type": "GPContainerSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    }
+}

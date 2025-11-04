@@ -1,0 +1,19 @@
+{
+    "set": [
+        "attribute",
+        "check",
+        "duplicate",
+        "feature",
+        "field",
+        "geometry",
+        "identical",
+        "record",
+        "redundant",
+        "report",
+        "row",
+        "same",
+        "search",
+        "shape",
+        "table"
+    ]
+}

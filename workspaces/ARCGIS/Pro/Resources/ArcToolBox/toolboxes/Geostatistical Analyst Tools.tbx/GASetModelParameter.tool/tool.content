@@ -1,0 +1,75 @@
+{
+    "type": "FunctionTool",
+    "guid": "{6fa3e0f5-0d3f-420a-aeec-87b647183a71}",
+    "displayname": "$rc:title",
+    "helpcontent": "11000004",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "6"
+    ],
+    "params": {
+        "in_ga_model_source": {
+            "displayname": "$rc:in_ga_model_source.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPGALayer"
+                    },
+                    {
+                        "type": "DEFile"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "xml",
+                            "lyr"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:in_ga_model_source.descr"
+        },
+        "model_param_xpath": {
+            "displayname": "$rc:model_param_xpath.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:model_param_xpath.descr"
+        },
+        "in_param_value": {
+            "displayname": "$rc:in_param_value.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:in_param_value.descr"
+        },
+        "out_ga_model": {
+            "direction": "out",
+            "displayname": "$rc:out_ga_model.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "xml"
+                ]
+            },
+            "description": "$rc:out_ga_model.descr"
+        }
+    },
+    "environments": [
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

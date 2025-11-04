@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Deletes the specified version from the input enterprise geodatabase.",
+        "in_workspace.descr": "<xdoc><p>The database connection file to the enterprise geodatabase containing the version to be deleted.</p><p>For branch versioning, use a feature service URL (that is, https://mysite.mydomain/server/rest/services/ElectricNetwork/FeatureServer) or a feature layer portal item.</p><p>You can also delete a branch version using a database connection file (connected to a branch versioned workspace) when connected as the geodatabase admin user.</p></xdoc>",
+        "in_workspace.title": "Input Workspace",
+        "out_workspace.title": "Updated Geodatabase",
+        "title": "Delete Version",
+        "version_name.descr": "<xdoc><p>The name of the version to be deleted.</p><p>For branch versioning, if the input workspace is a database connection file, the name of the branch version to delete should be fully qualified (for example, servicename.portaluser.versionname). If the input workspace is a feature service URL, the name of the branch version to delete should not include the service name (for example, portaluser.versionname).</p></xdoc>",
+        "version_name.title": "Version Name"
+    }
+}

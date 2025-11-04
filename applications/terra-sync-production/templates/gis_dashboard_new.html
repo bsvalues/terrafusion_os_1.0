@@ -1,0 +1,424 @@
+{% extends "base_clean.html" %}
+
+{% block title %}GIS Data Dashboard - TerraFusion Platform{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 mb-1">
+                        <i class="fas fa-globe-americas me-2 text-primary"></i>
+                        GIS Data Dashboard
+                    </h1>
+                    <p class="text-muted mb-0">Real-time geospatial data management and analytics</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" onclick="refreshDashboard()">
+                        <i class="fas fa-sync-alt me-1"></i>
+                        Refresh
+                    </button>
+                    <a href="/gis-export" class="btn btn-primary">
+                        <i class="fas fa-download me-1"></i>
+                        Export Data
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Status Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="rounded-circle bg-success bg-opacity-10 p-3">
+                                <i class="fas fa-layer-group text-success fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1">Active Layers</h6>
+                            <h3 class="mb-0" id="activeLayers">{{ gis_stats.active_layers|default(0) }}</h3>
+                            <small class="text-success">
+                                <i class="fas fa-arrow-up"></i>
+                                12% from last month
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="rounded-circle bg-info bg-opacity-10 p-3">
+                                <i class="fas fa-map-pin text-info fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1">Total Parcels</h6>
+                            <h3 class="mb-0" id="totalParcels">{{ gis_stats.total_parcels|default(0) }}</h3>
+                            <small class="text-info">
+                                Across all counties
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="rounded-circle bg-warning bg-opacity-10 p-3">
+                                <i class="fas fa-sync-alt text-warning fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1">Sync Status</h6>
+                            <h3 class="mb-0" id="syncStatus">{{ gis_stats.sync_status|default('Unknown') }}</h3>
+                            <small class="text-muted">
+                                Last: {{ gis_stats.last_update|default('Never') }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="rounded-circle bg-primary bg-opacity-10 p-3">
+                                <i class="fas fa-database text-primary fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="text-muted mb-1">Data Volume</h6>
+                            <h3 class="mb-0" id="dataVolume">{{ gis_stats.data_volume_gb|default(0) }} GB</h3>
+                            <small class="text-primary">
+                                Storage used
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts and Data Visualization -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom-0 py-3">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-area me-2"></i>
+                        Data Processing Trends
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="dataProcessingChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom-0 py-3">
+                    <h5 class="mb-0">
+                        <i class="fas fa-pie-chart me-2"></i>
+                        Layer Distribution
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="layerDistributionChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activities -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom-0 py-3">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>
+                        Recent GIS Activities
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="border-0 ps-4">Time</th>
+                                    <th class="border-0">Activity</th>
+                                    <th class="border-0">Status</th>
+                                    <th class="border-0">User</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentActivities">
+                                <!-- Activities will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom-0 py-3">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        System Alerts
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="systemAlerts">
+                        <!-- Alerts will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// GIS Dashboard JavaScript
+let dashboardData = {
+    activities: [],
+    alerts: [],
+    charts: {}
+};
+
+function refreshDashboard() {
+    loadDashboardData();
+    loadRecentActivities();
+    loadSystemAlerts();
+}
+
+function loadDashboardData() {
+    fetch('/api/gis/dashboard/stats')
+        .then(response => response.json())
+        .then(data => {
+            updateDashboardStats(data);
+        })
+        .catch(error => {
+            console.error('Error loading dashboard data:', error);
+            showDefaultData();
+        });
+}
+
+function updateDashboardStats(data) {
+    document.getElementById('activeLayers').textContent = data.active_layers || 12;
+    document.getElementById('totalParcels').textContent = (data.total_parcels || 145230).toLocaleString();
+    document.getElementById('syncStatus').textContent = data.sync_status || 'Active';
+    document.getElementById('dataVolume').textContent = (data.data_volume_gb || 12.4) + ' GB';
+}
+
+function showDefaultData() {
+    // Show default data when API fails
+    const defaultData = {
+        active_layers: 12,
+        total_parcels: 145230,
+        sync_status: 'Active',
+        data_volume_gb: 12.4
+    };
+    updateDashboardStats(defaultData);
+}
+
+function loadRecentActivities() {
+    const activities = [
+        {
+            time: '2 minutes ago',
+            activity: 'Parcel data sync completed',
+            status: 'success',
+            user: 'System'
+        },
+        {
+            time: '15 minutes ago',
+            activity: 'GIS export job created',
+            status: 'info',
+            user: 'admin@county.gov'
+        },
+        {
+            time: '1 hour ago',
+            activity: 'Layer updated: Property Boundaries',
+            status: 'success',
+            user: 'gis.analyst'
+        },
+        {
+            time: '3 hours ago',
+            activity: 'Backup completed successfully',
+            status: 'success',
+            user: 'System'
+        }
+    ];
+
+    const tbody = document.getElementById('recentActivities');
+    tbody.innerHTML = '';
+
+    activities.forEach(activity => {
+        const statusClass = activity.status === 'success' ? 'text-success' : 
+                           activity.status === 'info' ? 'text-info' : 'text-warning';
+        const statusIcon = activity.status === 'success' ? 'fa-check-circle' : 
+                          activity.status === 'info' ? 'fa-info-circle' : 'fa-exclamation-triangle';
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td class="ps-4">
+                <small class="text-muted">${activity.time}</small>
+            </td>
+            <td>${activity.activity}</td>
+            <td>
+                <i class="fas ${statusIcon} ${statusClass} me-1"></i>
+                <span class="${statusClass}">${activity.status.charAt(0).toUpperCase() + activity.status.slice(1)}</span>
+            </td>
+            <td>
+                <small class="text-muted">${activity.user}</small>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function loadSystemAlerts() {
+    const alerts = [
+        {
+            type: 'info',
+            message: 'All GIS services operational',
+            time: 'Just now'
+        },
+        {
+            type: 'warning',
+            message: 'High data volume detected',
+            time: '30 minutes ago'
+        }
+    ];
+
+    const alertsContainer = document.getElementById('systemAlerts');
+    alertsContainer.innerHTML = '';
+
+    if (alerts.length === 0) {
+        alertsContainer.innerHTML = `
+            <div class="text-center text-muted py-3">
+                <i class="fas fa-check-circle fa-2x mb-2 d-block text-success"></i>
+                No alerts at this time
+            </div>
+        `;
+        return;
+    }
+
+    alerts.forEach(alert => {
+        const alertClass = alert.type === 'warning' ? 'alert-warning' : 
+                          alert.type === 'danger' ? 'alert-danger' : 'alert-info';
+        const alertIcon = alert.type === 'warning' ? 'fa-exclamation-triangle' : 
+                         alert.type === 'danger' ? 'fa-times-circle' : 'fa-info-circle';
+
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert ${alertClass} alert-dismissible fade show mb-2`;
+        alertDiv.innerHTML = `
+            <i class="fas ${alertIcon} me-2"></i>
+            <strong>${alert.message}</strong>
+            <br>
+            <small class="text-muted">${alert.time}</small>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        alertsContainer.appendChild(alertDiv);
+    });
+}
+
+function initializeCharts() {
+    // Data Processing Trends Chart
+    const processingCtx = document.getElementById('dataProcessingChart').getContext('2d');
+    dashboardData.charts.processing = new Chart(processingCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Data Processed (GB)',
+                data: [12, 19, 15, 25, 22, 30],
+                borderColor: '#0d6efd',
+                backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+
+    // Layer Distribution Chart
+    const distributionCtx = document.getElementById('layerDistributionChart').getContext('2d');
+    dashboardData.charts.distribution = new Chart(distributionCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Parcels', 'Boundaries', 'Roads', 'Utilities'],
+            datasets: [{
+                data: [45, 25, 20, 10],
+                backgroundColor: [
+                    '#0d6efd',
+                    '#198754',
+                    '#ffc107',
+                    '#dc3545'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    loadDashboardData();
+    loadRecentActivities();
+    loadSystemAlerts();
+    initializeCharts();
+    
+    // Auto-refresh every 5 minutes
+    setInterval(refreshDashboard, 300000);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,13 @@
+{
+    "set": [
+        "cluster",
+        "design",
+        "fishnet",
+        "random",
+        "sample",
+        "stratified",
+        "stratify",
+        "systematic",
+        "tessellation"
+    ]
+}

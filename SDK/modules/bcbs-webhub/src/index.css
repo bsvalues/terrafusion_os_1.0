@@ -1,0 +1,548 @@
+/* TerraFusion Elite Government OS BCBS WebHub Styles */
+/* Business Correspondence & Building Services Interface */
+/* Government. Transcended. */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  /* TerraFusion Color Palette - Championship Excellence */
+  --terra-cyan: #00ffff;
+  --terra-cyan-50: rgba(0, 255, 255, 0.05);
+  --terra-cyan-100: rgba(0, 255, 255, 0.1);
+  --terra-cyan-200: rgba(0, 255, 255, 0.2);
+  --terra-cyan-300: rgba(0, 255, 255, 0.3);
+  --terra-cyan-500: rgba(0, 255, 255, 0.5);
+  --terra-cyan-700: rgba(0, 255, 255, 0.7);
+  --terra-cyan-900: rgba(0, 255, 255, 0.9);
+  
+  --terra-blue: #0099ff;
+  --terra-blue-50: rgba(0, 153, 255, 0.05);
+  --terra-blue-100: rgba(0, 153, 255, 0.1);
+  --terra-blue-300: rgba(0, 153, 255, 0.3);
+  --terra-blue-500: rgba(0, 153, 255, 0.5);
+  --terra-blue-700: rgba(0, 153, 255, 0.7);
+  
+  --terra-green: #00ffaa;
+  --terra-green-50: rgba(0, 255, 170, 0.05);
+  --terra-green-100: rgba(0, 255, 170, 0.1);
+  --terra-green-300: rgba(0, 255, 170, 0.3);
+  --terra-green-500: rgba(0, 255, 170, 0.5);
+  
+  --terra-midnight: #0a0e1a;
+  --terra-slate: #1e293b;
+  --terra-slate-light: #334155;
+  --terra-slate-lighter: #475569;
+  --terra-white: #ffffff;
+  --terra-gray-100: #f1f5f9;
+  --terra-gray-200: #e2e8f0;
+  --terra-gray-300: #cbd5e1;
+  --terra-gray-400: #94a3b8;
+  --terra-gray-500: #64748b;
+  --terra-gray-600: #475569;
+  --terra-gray-700: #334155;
+  --terra-gray-800: #1e293b;
+  --terra-gray-900: #0f172a;
+  
+  /* Status Colors */
+  --terra-success: var(--terra-green);
+  --terra-warning: #fbbf24;
+  --terra-error: #ef4444;
+  --terra-info: var(--terra-blue);
+  
+  /* Typography Scale (Golden Ratio φ = 1.618) */
+  --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-size-xs: 0.75rem;     /* 12px */
+  --font-size-sm: 0.875rem;    /* 14px */
+  --font-size-base: 1rem;      /* 16px */
+  --font-size-lg: 1.125rem;    /* 18px */
+  --font-size-xl: 1.25rem;     /* 20px */
+  --font-size-2xl: 1.5rem;     /* 24px */
+  --font-size-3xl: 1.875rem;   /* 30px */
+  --font-size-4xl: 2.25rem;    /* 36px */
+  --font-size-5xl: 3rem;       /* 48px */
+  --font-size-6xl: 3.75rem;    /* 60px */
+  
+  /* Spacing Scale (Base-8) */
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-5: 1.25rem;  /* 20px */
+  --space-6: 1.5rem;   /* 24px */
+  --space-8: 2rem;     /* 32px */
+  --space-10: 2.5rem;  /* 40px */
+  --space-12: 3rem;    /* 48px */
+  --space-16: 4rem;    /* 64px */
+  --space-golden: 1.618rem; /* Golden ratio spacing */
+  
+  /* Border Radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-full: 9999px;
+  
+  /* Shadows and Effects */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-glow: 0 0 20px var(--terra-cyan-300);
+  --shadow-glow-lg: 0 0 40px var(--terra-cyan-500);
+  
+  /* Glass Morphism */
+  --glass-bg: rgba(30, 41, 59, 0.3);
+  --glass-border: rgba(0, 255, 255, 0.2);
+  --glass-backdrop-filter: blur(20px) saturate(180%);
+  
+  /* Transitions */
+  --transition-fast: 150ms ease-in-out;
+  --transition-base: 200ms ease-in-out;
+  --transition-slow: 300ms ease-in-out;
+}
+
+/* Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: var(--font-family-base);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: linear-gradient(135deg, var(--terra-midnight) 0%, var(--terra-slate) 100%);
+  color: var(--terra-white);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Terra Card System */
+.terra-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  backdrop-filter: var(--glass-backdrop-filter);
+  -webkit-backdrop-filter: var(--glass-backdrop-filter);
+  box-shadow: var(--shadow-lg);
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.terra-card:hover {
+  border-color: var(--terra-cyan-500);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-2px);
+}
+
+.terra-card.terra-glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+}
+
+.terra-card-header {
+  padding: var(--space-6);
+  border-bottom: 1px solid var(--glass-border);
+  font-weight: 600;
+  font-size: var(--font-size-lg);
+  color: var(--terra-cyan);
+}
+
+.terra-card-body {
+  padding: var(--space-6);
+}
+
+.terra-card-footer {
+  padding: var(--space-6);
+  border-top: 1px solid var(--glass-border);
+  background: rgba(0, 255, 255, 0.02);
+}
+
+/* Terra Button System */
+.terra-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  border: none;
+  border-radius: var(--radius-lg);
+  font-family: var(--font-family-base);
+  font-weight: 500;
+  font-size: var(--font-size-sm);
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.terra-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.terra-button-primary {
+  background: linear-gradient(135deg, var(--terra-blue), var(--terra-cyan));
+  color: var(--terra-white);
+  box-shadow: var(--shadow-md);
+}
+
+.terra-button-primary:hover:not(:disabled) {
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-1px);
+}
+
+.terra-button-secondary {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--terra-cyan);
+  backdrop-filter: var(--glass-backdrop-filter);
+}
+
+.terra-button-secondary:hover:not(:disabled) {
+  border-color: var(--terra-cyan-500);
+  box-shadow: var(--shadow-glow);
+}
+
+/* Terra Badge System */
+.terra-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.terra-badge-success {
+  background: rgba(0, 255, 170, 0.2);
+  color: var(--terra-green);
+  border: 1px solid rgba(0, 255, 170, 0.3);
+}
+
+.terra-badge-warning {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.terra-badge-error {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.terra-badge-info {
+  background: var(--terra-blue-100);
+  color: var(--terra-blue);
+  border: 1px solid var(--terra-blue-300);
+}
+
+.terra-badge-default {
+  background: var(--terra-cyan-100);
+  color: var(--terra-cyan);
+  border: 1px solid var(--terra-cyan-300);
+}
+
+/* Terra Progress System */
+.terra-progress {
+  width: 100%;
+  height: 8px;
+  background: var(--terra-slate);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  position: relative;
+}
+
+.terra-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--terra-blue), var(--terra-cyan));
+  border-radius: var(--radius-full);
+  transition: width var(--transition-base);
+  position: relative;
+}
+
+.terra-progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: shimmer 2s infinite;
+}
+
+/* Terra Input System */
+.terra-input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  color: var(--terra-white);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  backdrop-filter: var(--glass-backdrop-filter);
+  transition: all var(--transition-base);
+}
+
+.terra-input:focus {
+  outline: none;
+  border-color: var(--terra-cyan-500);
+  box-shadow: 0 0 0 3px var(--terra-cyan-100);
+}
+
+.terra-input::placeholder {
+  color: var(--terra-gray-400);
+}
+
+/* BCBS Specific Styles */
+.bcbs-dashboard {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: var(--space-8);
+  min-height: 100vh;
+}
+
+.bcbs-header {
+  text-align: center;
+  margin-bottom: var(--space-12);
+}
+
+.bcbs-title {
+  font-size: var(--font-size-4xl);
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--terra-cyan), var(--terra-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--space-4);
+}
+
+.bcbs-subtitle {
+  font-size: var(--font-size-lg);
+  color: var(--terra-gray-300);
+  margin-bottom: var(--space-2);
+}
+
+.bcbs-tagline {
+  font-size: var(--font-size-sm);
+  color: var(--terra-cyan);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.bcbs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-8);
+  margin-bottom: var(--space-12);
+}
+
+.bcbs-widget {
+  min-height: 300px;
+}
+
+.bcbs-metric-value {
+  font-size: var(--font-size-3xl);
+  font-weight: 700;
+  color: var(--terra-cyan);
+  margin-bottom: var(--space-2);
+}
+
+.bcbs-metric-label {
+  font-size: var(--font-size-sm);
+  color: var(--terra-gray-300);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.bcbs-status-active {
+  color: var(--terra-green);
+}
+
+.bcbs-status-pending {
+  color: var(--terra-blue);
+}
+
+.bcbs-status-warning {
+  color: #fbbf24;
+}
+
+.bcbs-status-error {
+  color: #ef4444;
+}
+
+/* Permit Status Styles */
+.permit-status-pending {
+  background: rgba(0, 153, 255, 0.1);
+  color: var(--terra-blue);
+  border: 1px solid var(--terra-blue-300);
+}
+
+.permit-status-under-review {
+  background: rgba(251, 191, 36, 0.1);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.permit-status-approved {
+  background: rgba(0, 255, 170, 0.1);
+  color: var(--terra-green);
+  border: 1px solid rgba(0, 255, 170, 0.3);
+}
+
+.permit-status-issued {
+  background: rgba(0, 255, 255, 0.1);
+  color: var(--terra-cyan);
+  border: 1px solid var(--terra-cyan-300);
+}
+
+.permit-status-rejected {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.permit-status-expired {
+  background: rgba(107, 114, 128, 0.1);
+  color: var(--terra-gray-400);
+  border: 1px solid rgba(107, 114, 128, 0.3);
+}
+
+/* Inspection Status Styles */
+.inspection-status-scheduled {
+  background: rgba(0, 153, 255, 0.1);
+  color: var(--terra-blue);
+}
+
+.inspection-status-passed {
+  background: rgba(0, 255, 170, 0.1);
+  color: var(--terra-green);
+}
+
+.inspection-status-failed {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.inspection-status-in-progress {
+  background: rgba(251, 191, 36, 0.1);
+  color: #fbbf24;
+}
+
+/* Violation Severity Styles */
+.violation-severity-low {
+  background: rgba(0, 255, 170, 0.1);
+  color: var(--terra-green);
+}
+
+.violation-severity-medium {
+  background: rgba(251, 191, 36, 0.1);  
+  color: #fbbf24;
+}
+
+.violation-severity-high {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.violation-severity-critical {
+  background: rgba(220, 38, 127, 0.1);
+  color: #dc2626;
+}
+
+/* Building Compliance Styles */
+.compliance-compliant {
+  background: rgba(0, 255, 170, 0.1);
+  color: var(--terra-green);
+}
+
+.compliance-non-compliant {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.compliance-under-review {
+  background: rgba(251, 191, 36, 0.1);
+  color: #fbbf24;
+}
+
+/* Animations */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 20px var(--terra-cyan-300);
+  }
+  50% {
+    box-shadow: 0 0 40px var(--terra-cyan-500);
+  }
+}
+
+.terra-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.terra-glow {
+  animation: glow 3s ease-in-out infinite;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .bcbs-dashboard {
+    padding: var(--space-4);
+  }
+  
+  .bcbs-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  
+  .bcbs-title {
+    font-size: var(--font-size-3xl);
+  }
+}
+
+@media (max-width: 480px) {
+  .bcbs-dashboard {
+    padding: var(--space-2);
+  }
+  
+  .terra-card-header,
+  .terra-card-body {
+    padding: var(--space-4);
+  }
+}

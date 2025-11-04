@@ -1,0 +1,155 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\CoordinateTableToPolyline",
+    "displayname": "$rc:title",
+    "helpcontent": "74020006",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_table": {
+            "display_order": "0",
+            "displayname": "$rc:in_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_table.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "display_order": "4",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "x_or_lon_field": {
+            "display_order": "2",
+            "displayname": "$rc:x_or_lon_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:x_or_lon_field.descr"
+        },
+        "in_coordinate_format": {
+            "display_order": "1",
+            "displayname": "$rc:in_coordinate_format.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DD_1",
+                        "code": "$rc:in_coordinate_format.domain.DD_1"
+                    },
+                    {
+                        "value": "DD_2",
+                        "code": "$rc:in_coordinate_format.domain.DD_2"
+                    },
+                    {
+                        "value": "DDM_1",
+                        "code": "$rc:in_coordinate_format.domain.DDM_1"
+                    },
+                    {
+                        "value": "DDM_2",
+                        "code": "$rc:in_coordinate_format.domain.DDM_2"
+                    },
+                    {
+                        "value": "DMS_1",
+                        "code": "$rc:in_coordinate_format.domain.DMS_1"
+                    },
+                    {
+                        "value": "DMS_2",
+                        "code": "$rc:in_coordinate_format.domain.DMS_2"
+                    },
+                    {
+                        "value": "GARS",
+                        "code": "$rc:in_coordinate_format.domain.GARS"
+                    },
+                    {
+                        "value": "GEOREF",
+                        "code": "$rc:in_coordinate_format.domain.GEOREF"
+                    },
+                    {
+                        "value": "UTM_BANDS",
+                        "code": "$rc:in_coordinate_format.domain.UTM_BANDS"
+                    },
+                    {
+                        "value": "UTM_ZONES",
+                        "code": "$rc:in_coordinate_format.domain.UTM_ZONES"
+                    },
+                    {
+                        "value": "USNG",
+                        "code": "$rc:in_coordinate_format.domain.USNG"
+                    },
+                    {
+                        "value": "MGRS",
+                        "code": "$rc:in_coordinate_format.domain.MGRS"
+                    }
+                ]
+            },
+            "value": "DD_2",
+            "description": "$rc:in_coordinate_format.descr"
+        },
+        "y_or_lat_field": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:y_or_lat_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:y_or_lat_field.descr"
+        },
+        "line_group_field": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:line_group_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:line_group_field.descr"
+        },
+        "sort_field": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:sort_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "depends": [
+                "in_table"
+            ],
+            "description": "$rc:sort_field.descr"
+        },
+        "coordinate_system": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:coordinate_system.title",
+            "datatype": {
+                "type": "GPSpatialReference"
+            },
+            "description": "$rc:coordinate_system.descr"
+        }
+    },
+    "environments": [
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

@@ -1,0 +1,629 @@
+{% extends "layout.html" %}
+
+{% block title %}Files & Documents | {{ property.parcel_id }}{% endblock %}
+
+{% block additionalcss %}
+<style>
+    .property-header {
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .property-title {
+        margin-bottom: 5px;
+        font-weight: 600;
+    }
+    
+    .property-address {
+        font-size: 1.1rem;
+        color: #495057;
+    }
+    
+    .property-id {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    
+    .section-header {
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        margin-top: 30px;
+        font-weight: 600;
+    }
+    
+    .file-card {
+        border-radius: 10px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 20px;
+    }
+    
+    .file-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .file-icon {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+    
+    .file-pdf {
+        color: #dc3545;
+    }
+    
+    .file-image {
+        color: #198754;
+    }
+    
+    .file-excel {
+        color: #28a745;
+    }
+    
+    .file-word {
+        color: #0d6efd;
+    }
+    
+    .file-zip {
+        color: #6c757d;
+    }
+    
+    .file-other {
+        color: #6c757d;
+    }
+    
+    .file-meta {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+    
+    .file-category {
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        background-color: #f0f0f0;
+        color: #495057;
+    }
+    
+    .file-actions {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .file-card:hover .file-actions {
+        opacity: 1;
+    }
+    
+    .dropzone {
+        border: 2px dashed #dee2e6;
+        border-radius: 10px;
+        padding: 30px;
+        text-align: center;
+        background-color: #f8f9fa;
+        cursor: pointer;
+        transition: border-color 0.3s ease, background-color 0.3s ease;
+    }
+    
+    .dropzone:hover {
+        border-color: #6c757d;
+        background-color: #e9ecef;
+    }
+    
+    .dropzone.dragover {
+        border-color: #0d6efd;
+        background-color: #e7f1ff;
+    }
+    
+    .file-preview {
+        max-width: 100%;
+        max-height: 300px;
+        margin-top: 20px;
+        display: none;
+    }
+    
+    .progress {
+        height: 3px;
+        margin-top: 10px;
+        display: none;
+    }
+    
+    .empty-state {
+        padding: 30px;
+        text-align: center;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        margin: 20px 0;
+    }
+    
+    .category-filter {
+        margin-bottom: 20px;
+    }
+    
+    .category-filter .btn {
+        margin-right: 5px;
+        margin-bottom: 5px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('property.property_list') }}">Properties</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('property.property_detail', property_id=property.id) }}">{{ property.parcel_id }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Files & Documents</li>
+        </ol>
+    </nav>
+    
+    <!-- Property Header -->
+    <div class="property-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="property-title h2">
+                    {{ property.address }}{% if property.city %}, {{ property.city }}{% endif %}{% if property.state %}, {{ property.state }}{% endif %}{% if property.zip_code %} {{ property.zip_code }}{% endif %}
+                </h1>
+                <div class="property-id">
+                    <span class="text-muted">Parcel ID:</span> {{ property.parcel_id }}
+                    {% if property.account_number %}
+                    | <span class="text-muted">Account #:</span> {{ property.account_number }}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{{ url_for('property.property_detail', property_id=property.id) }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Property
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Left Column: Files List -->
+        <div class="col-md-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="h4 mb-0">Property Files & Documents</h2>
+                
+                <div class="btn-group btn-group-sm" role="group" aria-label="View options">
+                    <button type="button" class="btn btn-outline-secondary active" id="gridViewBtn">
+                        <i class="fas fa-th-large me-1"></i> Grid
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" id="listViewBtn">
+                        <i class="fas fa-list me-1"></i> List
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Category Filter Buttons -->
+            <div class="category-filter">
+                <button type="button" class="btn btn-sm btn-outline-primary active" data-category="all">
+                    All Files
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-primary" data-category="deed">
+                    Deeds
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-primary" data-category="tax">
+                    Tax Documents
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-primary" data-category="survey">
+                    Surveys
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-primary" data-category="photo">
+                    Photos
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-primary" data-category="other">
+                    Other
+                </button>
+            </div>
+            
+            {% if files %}
+                <!-- Grid View (default) -->
+                <div class="row" id="gridView">
+                    {% for file in files %}
+                    <div class="col-md-4 mb-4 file-item" data-category="{{ file.file_category }}">
+                        <div class="card file-card h-100 position-relative">
+                            <div class="card-body text-center">
+                                <div class="file-icon">
+                                    {% set ext = file.file_name.split('.')[-1]|lower %}
+                                    {% if ext in ['pdf'] %}
+                                        <i class="fas fa-file-pdf file-pdf"></i>
+                                    {% elif ext in ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'] %}
+                                        <i class="fas fa-file-image file-image"></i>
+                                    {% elif ext in ['xls', 'xlsx', 'csv'] %}
+                                        <i class="fas fa-file-excel file-excel"></i>
+                                    {% elif ext in ['doc', 'docx', 'rtf'] %}
+                                        <i class="fas fa-file-word file-word"></i>
+                                    {% elif ext in ['zip', 'rar', '7z'] %}
+                                        <i class="fas fa-file-archive file-zip"></i>
+                                    {% else %}
+                                        <i class="fas fa-file file-other"></i>
+                                    {% endif %}
+                                </div>
+                                
+                                <h3 class="h6 mb-1 text-truncate" title="{{ file.file_name }}">
+                                    {{ file.file_name }}
+                                </h3>
+                                
+                                <div class="mb-2">
+                                    <span class="file-category">{{ file.file_category|title }}</span>
+                                </div>
+                                
+                                <div class="file-meta">
+                                    {{ (file.file_size / 1024)|round(1) }} KB
+                                    {% if file.created_at %}
+                                    <span class="ms-2">{{ file.created_at|format_date }}</span>
+                                    {% endif %}
+                                </div>
+                                
+                                {% if file.description %}
+                                <div class="text-muted small mt-2">{{ file.description }}</div>
+                                {% endif %}
+                                
+                                <div class="mt-3">
+                                    <a href="{{ file.public_url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                        <i class="fas fa-download me-1"></i> Download
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            {% if has_permission('property.file.delete') %}
+                            <div class="file-actions">
+                                <button type="button" class="btn btn-sm btn-outline-danger rounded-circle" data-bs-toggle="modal" data-bs-target="#deleteFileModal{{ file.id }}">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- List View (hidden by default) -->
+                <div class="table-responsive" id="listView" style="display: none;">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>File Name</th>
+                                <th>Category</th>
+                                <th>Size</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for file in files %}
+                            <tr class="file-item" data-category="{{ file.file_category }}">
+                                <td>
+                                    {% set ext = file.file_name.split('.')[-1]|lower %}
+                                    {% if ext in ['pdf'] %}
+                                        <i class="fas fa-file-pdf file-pdf me-2"></i>
+                                    {% elif ext in ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'] %}
+                                        <i class="fas fa-file-image file-image me-2"></i>
+                                    {% elif ext in ['xls', 'xlsx', 'csv'] %}
+                                        <i class="fas fa-file-excel file-excel me-2"></i>
+                                    {% elif ext in ['doc', 'docx', 'rtf'] %}
+                                        <i class="fas fa-file-word file-word me-2"></i>
+                                    {% elif ext in ['zip', 'rar', '7z'] %}
+                                        <i class="fas fa-file-archive file-zip me-2"></i>
+                                    {% else %}
+                                        <i class="fas fa-file file-other me-2"></i>
+                                    {% endif %}
+                                    <span class="text-truncate" style="max-width: 200px; display: inline-block;" title="{{ file.file_name }}">
+                                        {{ file.file_name }}
+                                    </span>
+                                </td>
+                                <td><span class="file-category">{{ file.file_category|title }}</span></td>
+                                <td>{{ (file.file_size / 1024)|round(1) }} KB</td>
+                                <td>{{ file.created_at|format_date }}</td>
+                                <td>
+                                    <a href="{{ file.public_url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                    
+                                    {% if has_permission('property.file.delete') %}
+                                    <button type="button" class="btn btn-sm btn-outline-danger ms-1" data-bs-toggle="modal" data-bs-target="#deleteFileModal{{ file.id }}">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Delete File Modals -->
+                {% for file in files %}
+                {% if has_permission('property.file.delete') %}
+                <div class="modal fade" id="deleteFileModal{{ file.id }}" tabindex="-1" aria-labelledby="deleteFileModalLabel{{ file.id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteFileModalLabel{{ file.id }}">Delete File</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Are you sure you want to delete the file <strong>{{ file.file_name }}</strong>?</p>
+                                <p class="text-danger"><strong>Warning:</strong> This action cannot be undone.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <form action="{{ url_for('property.property_file_delete', property_id=property.id, file_id=file.id) }}" method="post">
+                                    <button type="submit" class="btn btn-danger">Delete File</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-file fa-3x text-muted mb-3"></i>
+                    <h3 class="h4">No Files Found</h3>
+                    <p class="text-muted">There are no files uploaded for this property yet.</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Right Column: Upload Panel -->
+        <div class="col-md-4">
+            {% if has_permission('property.file.upload') %}
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h3 class="h5 mb-0">Upload New File</h3>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('property.property_file_upload', property_id=property.id) }}" method="post" enctype="multipart/form-data" id="uploadForm">
+                        <div class="mb-3">
+                            <label for="file_category" class="form-label">File Category</label>
+                            <select class="form-select" id="file_category" name="file_category" required>
+                                <option value="deed">Deed</option>
+                                <option value="tax">Tax Document</option>
+                                <option value="survey">Survey</option>
+                                <option value="photo">Photo</option>
+                                <option value="inspection">Inspection</option>
+                                <option value="assessment">Assessment</option>
+                                <option value="correspondence">Correspondence</option>
+                                <option value="other" selected>Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description (Optional)</label>
+                            <textarea class="form-control" id="description" name="description" rows="2"></textarea>
+                        </div>
+                        
+                        <div class="dropzone" id="dropZone">
+                            <input type="file" id="file" name="file" class="d-none" required>
+                            <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                            <h4 class="h5">Drag & Drop File Here</h4>
+                            <p class="text-muted">or</p>
+                            <button type="button" class="btn btn-outline-primary" id="browseBtn">
+                                Browse Files
+                            </button>
+                            <p class="text-muted small mt-2">
+                                Max file size: 10MB<br>
+                                Accepted formats: PDF, DOC, XLS, JPG, PNG, ZIP
+                            </p>
+                            
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <img src="" alt="File preview" class="file-preview" id="imagePreview">
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3 text-end">
+                            <button type="submit" class="btn btn-primary" id="uploadBtn" disabled>
+                                <i class="fas fa-upload me-1"></i> Upload File
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Upload Guidelines -->
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h3 class="h5 mb-0">Upload Guidelines</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li class="mb-2">
+                            <strong>File types:</strong> PDF, DOC, XLS, JPG, PNG, ZIP
+                        </li>
+                        <li class="mb-2">
+                            <strong>Maximum size:</strong> 10MB per file
+                        </li>
+                        <li class="mb-2">
+                            <strong>Naming convention:</strong> Use descriptive names without special characters
+                        </li>
+                        <li class="mb-2">
+                            <strong>Categories:</strong> Select the appropriate category for easier organization
+                        </li>
+                        <li>
+                            <strong>Sensitive information:</strong> Ensure documents don't contain unnecessary personal information
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // View toggle
+        const gridViewBtn = document.getElementById('gridViewBtn');
+        const listViewBtn = document.getElementById('listViewBtn');
+        const gridView = document.getElementById('gridView');
+        const listView = document.getElementById('listView');
+        
+        gridViewBtn.addEventListener('click', function() {
+            gridView.style.display = 'flex';
+            listView.style.display = 'none';
+            gridViewBtn.classList.add('active');
+            listViewBtn.classList.remove('active');
+        });
+        
+        listViewBtn.addEventListener('click', function() {
+            gridView.style.display = 'none';
+            listView.style.display = 'block';
+            listViewBtn.classList.add('active');
+            gridViewBtn.classList.remove('active');
+        });
+        
+        // Category filter
+        const categoryButtons = document.querySelectorAll('.category-filter button');
+        const fileItems = document.querySelectorAll('.file-item');
+        
+        categoryButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const category = this.getAttribute('data-category');
+                
+                // Toggle active class
+                categoryButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Filter files
+                fileItems.forEach(item => {
+                    if (category === 'all' || item.getAttribute('data-category') === category) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+        
+        {% if has_permission('property.file.upload') %}
+        // File upload functionality
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('file');
+        const browseBtn = document.getElementById('browseBtn');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const imagePreview = document.getElementById('imagePreview');
+        const progressBar = document.querySelector('.progress');
+        const progressBarInner = document.querySelector('.progress-bar');
+        
+        // Browse button click
+        browseBtn.addEventListener('click', function() {
+            fileInput.click();
+        });
+        
+        // File selected
+        fileInput.addEventListener('change', function() {
+            handleFiles(this.files);
+        });
+        
+        // Drag and drop events
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            dropZone.classList.add('dragover');
+        }
+        
+        function unhighlight() {
+            dropZone.classList.remove('dragover');
+        }
+        
+        // Handle dropped files
+        dropZone.addEventListener('drop', function(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        });
+        
+        // Process files
+        function handleFiles(files) {
+            if (files.length > 0) {
+                const file = files[0];
+                
+                // Check file size (max 10MB)
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('File is too large. Maximum size is 10MB.');
+                    return;
+                }
+                
+                // Check file type
+                const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 
+                                     'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                                     'image/jpeg', 'image/png', 'image/gif', 'application/zip'];
+                
+                if (!allowedTypes.includes(file.type) && !file.name.endsWith('.pdf') && !file.name.endsWith('.doc') && 
+                    !file.name.endsWith('.docx') && !file.name.endsWith('.xls') && !file.name.endsWith('.xlsx') && 
+                    !file.name.endsWith('.jpg') && !file.name.endsWith('.jpeg') && !file.name.endsWith('.png') && 
+                    !file.name.endsWith('.zip')) {
+                    alert('File type not allowed. Please upload PDF, DOC, XLS, JPG, PNG or ZIP files.');
+                    return;
+                }
+                
+                // Update UI
+                uploadBtn.disabled = false;
+                
+                // Show preview for images
+                if (file.type.match('image.*')) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                    };
+                    
+                    reader.readAsDataURL(file);
+                } else {
+                    imagePreview.style.display = 'none';
+                }
+            }
+        }
+        
+        // Handle form submission
+        document.getElementById('uploadForm').addEventListener('submit', function() {
+            progressBar.style.display = 'block';
+            
+            // Simulate upload progress (in a real app, use XMLHttpRequest or Fetch API with progress event)
+            let progress = 0;
+            const interval = setInterval(function() {
+                progress += 5;
+                progressBarInner.style.width = progress + '%';
+                progressBarInner.setAttribute('aria-valuenow', progress);
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                }
+            }, 100);
+        });
+        {% endif %}
+    });
+</script>
+{% endblock %}

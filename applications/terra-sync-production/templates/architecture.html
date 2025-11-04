@@ -1,0 +1,818 @@
+{% extends "base_clean.html" %}
+
+{% block title %}TerraFusion - System Architecture{% endblock %}
+
+{% block head %}
+{{ super() }}
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .node {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .node:hover {
+            filter: brightness(1.1);
+        }
+        .node-active {
+            stroke: #198754;
+            stroke-width: 4px;
+        }
+        .link {
+            stroke: #adb5bd;
+            stroke-width: 2px;
+        }
+        .link-active {
+            stroke: #198754;
+            stroke-width: 3px;
+        }
+        .link-error {
+            stroke: #dc3545;
+            stroke-width: 3px;
+            stroke-dasharray: 5;
+        }
+        .component-title {
+            font-weight: bold;
+            font-size: 1.15rem;
+            margin-bottom: 0.5rem;
+        }
+        .component-status {
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+        .component-metrics {
+            font-size: 0.8rem;
+        }
+        .status-badge {
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+        }
+        .component-card {
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .component-card:hover {
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        .alert-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        .alert-normal {
+            background-color: #198754;
+        }
+        .alert-warning {
+            background-color: #ffc107;
+        }
+        .alert-critical {
+            background-color: #dc3545;
+        }
+        .connection-info {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-database-gear me-2"></i>
+                TerraFusion SyncService
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">
+                            <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/sync">
+                            <i class="bi bi-arrow-repeat me-1"></i> Sync Operations
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/metrics">
+                            <i class="bi bi-graph-up me-1"></i> Metrics
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/audit">
+                            <i class="bi bi-journal-check me-1"></i> Audit Trail
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/architecture">
+                            <i class="bi bi-diagram-3 me-1"></i> System Architecture
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="bi bi-diagram-3 me-2"></i> 
+                            System Architecture Visualization
+                        </div>
+                        <div>
+                            <button id="refresh-btn" class="btn btn-sm btn-outline-light ms-2">
+                                <i class="bi bi-arrow-clockwise"></i> Refresh
+                            </button>
+                            <div class="dropdown d-inline-block ms-2">
+                                <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" id="viewModeDropdown" data-bs-toggle="dropdown">
+                                    <i class="bi bi-display"></i> View Mode
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="viewModeDropdown">
+                                    <li><a class="dropdown-item view-mode active" data-mode="normal" href="#"><i class="bi bi-grid me-2"></i>Standard View</a></li>
+                                    <li><a class="dropdown-item view-mode" data-mode="logical" href="#"><i class="bi bi-diagram-2 me-2"></i>Logical View</a></li>
+                                    <li><a class="dropdown-item view-mode" data-mode="physical" href="#"><i class="bi bi-hdd-rack me-2"></i>Physical View</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item view-mode" data-mode="dataFlow" href="#"><i class="bi bi-arrow-left-right me-2"></i>Data Flow View</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div id="architecture-diagram" style="width: 100%; height: 600px; border: 1px solid #e0e0e0; border-radius: 4px;"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card mb-3 component-card" id="component-details">
+                                    <div class="card-header bg-light">
+                                        <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Component Details</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="text-center text-muted" id="details-placeholder">
+                                            <i class="bi bi-hand-index me-1"></i> Click on a component to view details
+                                        </p>
+                                        <div id="details-content" style="display: none;">
+                                            <h4 id="component-name" class="mb-3"></h4>
+                                            <p id="component-description" class="mb-3"></p>
+                                            
+                                            <div class="mb-3">
+                                                <div class="component-title"><i class="bi bi-radioactive me-1"></i> Status</div>
+                                                <div class="component-status" id="component-status"></div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <div class="component-title"><i class="bi bi-speedometer me-1"></i> Metrics</div>
+                                                <div class="component-metrics" id="component-metrics"></div>
+                                            </div>
+                                            
+                                            <div class="mb-3">
+                                                <div class="component-title"><i class="bi bi-diagram-2 me-1"></i> Connections</div>
+                                                <div id="component-connections"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card component-card">
+                                    <div class="card-header bg-light">
+                                        <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>System Status</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span>API Gateway:</span>
+                                                <span class="badge bg-success status-badge" id="api-gateway-status">
+                                                    <i class="bi bi-check-circle me-1"></i> Online
+                                                </span>
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span>SyncService:</span>
+                                                <span class="badge bg-success status-badge" id="sync-service-status">
+                                                    <i class="bi bi-check-circle me-1"></i> Online
+                                                </span>
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span>PostgreSQL:</span>
+                                                <span class="badge bg-success status-badge" id="database-status">
+                                                    <i class="bi bi-check-circle me-1"></i> Connected
+                                                </span>
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span>Authentication:</span>
+                                                <span class="badge bg-success status-badge" id="auth-status">
+                                                    <i class="bi bi-check-circle me-1"></i> Enabled
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        <hr>
+                                        
+                                        <div>
+                                            <h6>Legend</h6>
+                                            <div class="d-flex align-items-center mb-1">
+                                                <span class="alert-indicator alert-normal"></span> 
+                                                <span>Healthy/Normal</span>
+                                            </div>
+                                            <div class="d-flex align-items-center mb-1">
+                                                <span class="alert-indicator alert-warning"></span> 
+                                                <span>Warning/Degraded</span>
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <span class="alert-indicator alert-critical"></span> 
+                                                <span>Critical/Offline</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="architectureToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <i id="toast-icon" class="bi bi-info-circle me-1"></i>
+                <strong class="me-auto" id="toast-title">Notification</strong>
+                <small id="toast-time">just now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toast-message">
+                System architecture loaded successfully.
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.8.5/dist/d3.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let activeComponent = null;
+            let currentViewMode = 'normal';
+            let systemData = null;
+            
+            // Fetch system architecture data
+            function fetchArchitectureData() {
+                // Implement fetch with timeout using Promise race
+                const fetchWithTimeout = (url, options, timeout = 5000) => {
+                    return Promise.race([
+                        fetch(url, options),
+                        new Promise((_, reject) => 
+                            setTimeout(() => reject(new Error('Request timeout')), timeout)
+                        )
+                    ]);
+                };
+                
+                const diagramContainer = document.getElementById('architecture-diagram');
+                diagramContainer.innerHTML = '<div class="d-flex justify-content-center align-items-center h-100"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+                
+                fetchWithTimeout('/api/architecture', {})
+                .then(response => response.json())
+                .then(data => {
+                    systemData = data;
+                    renderArchitectureDiagram(data, currentViewMode);
+                    updateSystemStatus(data);
+                    showToast('success', 'Architecture Data Loaded', 'System architecture data loaded successfully.');
+                })
+                .catch(error => {
+                    console.error('Error fetching architecture data:', error);
+                    diagramContainer.innerHTML = '<div class="d-flex justify-content-center align-items-center h-100 text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>Error loading architecture data</div>';
+                    showToast('error', 'Data Loading Error', 'Failed to load system architecture data. Please try refreshing.');
+                });
+            }
+            
+            // Render architecture diagram using D3.js
+            function renderArchitectureDiagram(data, viewMode) {
+                const { nodes, links } = processDataForView(data, viewMode);
+                
+                // Clear previous diagram
+                const container = document.getElementById('architecture-diagram');
+                container.innerHTML = '';
+                
+                // Set up SVG
+                const width = container.clientWidth;
+                const height = container.clientHeight;
+                
+                const svg = d3.select('#architecture-diagram')
+                    .append('svg')
+                    .attr('width', width)
+                    .attr('height', height);
+                
+                // Define arrow marker for links
+                svg.append('defs').append('marker')
+                    .attr('id', 'arrow')
+                    .attr('viewBox', '0 -5 10 10')
+                    .attr('refX', 20)
+                    .attr('refY', 0)
+                    .attr('markerWidth', 6)
+                    .attr('markerHeight', 6)
+                    .attr('orient', 'auto')
+                    .append('path')
+                    .attr('d', 'M0,-5L10,0L0,5')
+                    .attr('fill', '#adb5bd');
+                
+                // Create simulation for force-directed layout
+                const simulation = d3.forceSimulation(nodes)
+                    .force('link', d3.forceLink(links).id(d => d.id).distance(150))
+                    .force('charge', d3.forceManyBody().strength(-800))
+                    .force('center', d3.forceCenter(width / 2, height / 2))
+                    .force('collision', d3.forceCollide().radius(60));
+                
+                // Create links
+                const link = svg.append('g')
+                    .selectAll('line')
+                    .data(links)
+                    .enter().append('line')
+                    .attr('class', d => `link ${d.status ? `link-${d.status}` : ''}`)
+                    .attr('marker-end', 'url(#arrow)');
+                
+                // Create groups for nodes
+                const node = svg.append('g')
+                    .selectAll('.node')
+                    .data(nodes)
+                    .enter().append('g')
+                    .attr('class', 'node')
+                    .on('click', handleNodeClick)
+                    .call(d3.drag()
+                        .on('start', dragStarted)
+                        .on('drag', dragging)
+                        .on('end', dragEnded));
+                
+                // Add circles for nodes
+                node.append('circle')
+                    .attr('r', 30)
+                    .attr('fill', d => getNodeColor(d.type, d.status))
+                    .attr('class', d => d.status ? `node-${d.status}` : '');
+                
+                // Add icons to nodes
+                node.append('text')
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'central')
+                    .attr('fill', 'white')
+                    .attr('font-family', 'bootstrap-icons')
+                    .attr('font-size', '18px')
+                    .text(d => getNodeIcon(d.type));
+                
+                // Add labels to nodes
+                node.append('text')
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'central')
+                    .attr('dy', '45px')
+                    .attr('fill', '#343a40')
+                    .attr('font-size', '12px')
+                    .attr('font-weight', 'bold')
+                    .text(d => d.name);
+                
+                // Update positions on simulation tick
+                simulation.on('tick', () => {
+                    link
+                        .attr('x1', d => d.source.x)
+                        .attr('y1', d => d.source.y)
+                        .attr('x2', d => d.target.x)
+                        .attr('y2', d => d.target.y);
+                    
+                    node.attr('transform', d => `translate(${d.x},${d.y})`);
+                });
+                
+                // Function to handle node click for details display
+                function handleNodeClick(event, d) {
+                    // Reset any previously active node
+                    if (activeComponent) {
+                        svg.selectAll('.node-active').classed('node-active', false);
+                        svg.selectAll('.link-active').classed('link-active', false);
+                    }
+                    
+                    // Show details for selected component
+                    showComponentDetails(d);
+                    
+                    // Highlight the selected node
+                    d3.select(this).select('circle').classed('node-active', true);
+                    
+                    // Highlight connected links
+                    svg.selectAll('line')
+                        .classed('link-active', link => 
+                            link.source.id === d.id || link.target.id === d.id
+                        );
+                    
+                    activeComponent = d.id;
+                }
+                
+                // Drag functions
+                function dragStarted(event) {
+                    if (!event.active) simulation.alphaTarget(0.3).restart();
+                    event.subject.fx = event.subject.x;
+                    event.subject.fy = event.subject.y;
+                }
+                
+                function dragging(event) {
+                    event.subject.fx = event.x;
+                    event.subject.fy = event.y;
+                }
+                
+                function dragEnded(event) {
+                    if (!event.active) simulation.alphaTarget(0);
+                    event.subject.fx = null;
+                    event.subject.fy = null;
+                }
+            }
+            
+            // Process data based on selected view mode
+            function processDataForView(data, viewMode) {
+                let filteredNodes = [...data.nodes];
+                let filteredLinks = [...data.links];
+                
+                switch(viewMode) {
+                    case 'logical':
+                        // Show only logical components (no hardware)
+                        filteredNodes = data.nodes.filter(node => 
+                            !['server', 'database_server', 'network'].includes(node.type)
+                        );
+                        
+                        // Update links to include only those between filtered nodes
+                        filteredLinks = data.links.filter(link => 
+                            filteredNodes.some(n => n.id === link.source) && 
+                            filteredNodes.some(n => n.id === link.target)
+                        );
+                        break;
+                        
+                    case 'physical':
+                        // Focus on physical infrastructure
+                        filteredNodes = data.nodes.filter(node => 
+                            ['service', 'server', 'database', 'database_server', 'network'].includes(node.type)
+                        );
+                        
+                        // Update links to include only those between filtered nodes
+                        filteredLinks = data.links.filter(link => 
+                            filteredNodes.some(n => n.id === link.source) && 
+                            filteredNodes.some(n => n.id === link.target)
+                        );
+                        break;
+                        
+                    case 'dataFlow':
+                        // Focus on data flow components
+                        filteredNodes = data.nodes.filter(node => 
+                            ['service', 'database', 'api', 'client'].includes(node.type)
+                        );
+                        
+                        // Update links to include only those between filtered nodes
+                        filteredLinks = data.links.filter(link => 
+                            filteredNodes.some(n => n.id === link.source) && 
+                            filteredNodes.some(n => n.id === link.target)
+                        );
+                        break;
+                        
+                    default:
+                        // Normal view, use all nodes and links
+                        break;
+                }
+                
+                // Resolve node references in links
+                const nodeMap = {};
+                filteredNodes.forEach(node => {
+                    nodeMap[node.id] = node;
+                });
+                
+                filteredLinks = filteredLinks.map(link => ({
+                    ...link,
+                    source: link.source,
+                    target: link.target
+                }));
+                
+                return { nodes: filteredNodes, links: filteredLinks };
+            }
+            
+            // Get node color based on type and status
+            function getNodeColor(type, status) {
+                // Status colors override type colors
+                if (status === 'error') return '#dc3545';
+                if (status === 'warning') return '#ffc107';
+                
+                // Type-based colors
+                switch(type) {
+                    case 'service':
+                        return '#0d6efd'; // bootstrap primary
+                    case 'database':
+                        return '#0dcaf0'; // bootstrap info
+                    case 'api':
+                        return '#198754'; // bootstrap success
+                    case 'client':
+                        return '#6f42c1'; // bootstrap purple
+                    case 'server':
+                        return '#6c757d'; // bootstrap secondary
+                    case 'database_server':
+                        return '#20c997'; // bootstrap teal
+                    case 'auth':
+                        return '#fd7e14'; // bootstrap orange
+                    case 'network':
+                        return '#adb5bd'; // bootstrap gray
+                    default:
+                        return '#6c757d'; // bootstrap secondary
+                }
+            }
+            
+            // Get node icon based on type
+            function getNodeIcon(type) {
+                switch(type) {
+                    case 'service':
+                        return '\uf085'; // bi-gear
+                    case 'database':
+                        return '\uf61e'; // bi-database
+                    case 'api':
+                        return '\uf6b0'; // bi-hdd-network
+                    case 'client':
+                        return '\uf5ef'; // bi-person
+                    case 'server':
+                        return '\uf492'; // bi-server
+                    case 'database_server':
+                        return '\uf620'; // bi-database-fill-gear
+                    case 'auth':
+                        return '\uf47d'; // bi-shield-lock
+                    case 'network':
+                        return '\uf6e6'; // bi-diagram-3
+                    default:
+                        return '\uf14a'; // bi-question-circle
+                }
+            }
+            
+            // Show component details in the sidebar
+            function showComponentDetails(component) {
+                const detailsPlaceholder = document.getElementById('details-placeholder');
+                const detailsContent = document.getElementById('details-content');
+                const componentName = document.getElementById('component-name');
+                const componentDescription = document.getElementById('component-description');
+                const componentStatus = document.getElementById('component-status');
+                const componentMetrics = document.getElementById('component-metrics');
+                const componentConnections = document.getElementById('component-connections');
+                
+                // Hide placeholder and show content
+                detailsPlaceholder.style.display = 'none';
+                detailsContent.style.display = 'block';
+                
+                // Set component name and description
+                componentName.textContent = component.name;
+                componentDescription.textContent = component.description || 'No description available.';
+                
+                // Set status information
+                let statusHtml = '';
+                if (component.status) {
+                    let statusClass = 'success';
+                    let statusText = 'Normal';
+                    
+                    if (component.status === 'warning') {
+                        statusClass = 'warning';
+                        statusText = 'Warning';
+                    } else if (component.status === 'error') {
+                        statusClass = 'danger';
+                        statusText = 'Critical';
+                    }
+                    
+                    statusHtml = `
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="badge bg-${statusClass} me-2">${statusText}</span>
+                            <span class="connection-info">${component.statusDetails || 'No issues reported'}</span>
+                        </div>
+                    `;
+                } else {
+                    statusHtml = `
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="badge bg-success me-2">Normal</span>
+                            <span class="connection-info">Component is operating normally</span>
+                        </div>
+                    `;
+                }
+                componentStatus.innerHTML = statusHtml;
+                
+                // Set metrics information
+                if (component.metrics && Object.keys(component.metrics).length > 0) {
+                    let metricsHtml = '<div class="row">';
+                    for (const [key, value] of Object.entries(component.metrics)) {
+                        const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                        metricsHtml += `
+                            <div class="col-6 mb-2">
+                                <div class="d-flex justify-content-between">
+                                    <small>${formattedKey}:</small>
+                                    <span class="badge ${getMetricBadgeClass(key, value)}">${value}</span>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    metricsHtml += '</div>';
+                    componentMetrics.innerHTML = metricsHtml;
+                } else {
+                    componentMetrics.innerHTML = '<p class="text-muted">No metrics available for this component.</p>';
+                }
+                
+                // Set connections information
+                if (systemData) {
+                    const incomingLinks = systemData.links.filter(link => link.target === component.id);
+                    const outgoingLinks = systemData.links.filter(link => link.source === component.id);
+                    
+                    let connectionsHtml = '';
+                    
+                    if (incomingLinks.length > 0) {
+                        connectionsHtml += '<div class="mb-2"><strong>Incoming:</strong></div>';
+                        incomingLinks.forEach(link => {
+                            const sourceNode = systemData.nodes.find(n => n.id === link.source);
+                            if (sourceNode) {
+                                let statusClass = link.status === 'error' ? 'text-danger' : 
+                                                (link.status === 'warning' ? 'text-warning' : 'text-success');
+                                
+                                connectionsHtml += `
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="alert-indicator ${link.status === 'error' ? 'alert-critical' : 
+                                                                    (link.status === 'warning' ? 'alert-warning' : 'alert-normal')}"></span>
+                                        <span class="${statusClass} me-2">${sourceNode.name}</span>
+                                        <span class="connection-info">${link.description || ''}</span>
+                                    </div>
+                                `;
+                            }
+                        });
+                    }
+                    
+                    if (outgoingLinks.length > 0) {
+                        connectionsHtml += '<div class="mb-2 mt-3"><strong>Outgoing:</strong></div>';
+                        outgoingLinks.forEach(link => {
+                            const targetNode = systemData.nodes.find(n => n.id === link.target);
+                            if (targetNode) {
+                                let statusClass = link.status === 'error' ? 'text-danger' : 
+                                                (link.status === 'warning' ? 'text-warning' : 'text-success');
+                                
+                                connectionsHtml += `
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="alert-indicator ${link.status === 'error' ? 'alert-critical' : 
+                                                                    (link.status === 'warning' ? 'alert-warning' : 'alert-normal')}"></span>
+                                        <span class="${statusClass} me-2">${targetNode.name}</span>
+                                        <span class="connection-info">${link.description || ''}</span>
+                                    </div>
+                                `;
+                            }
+                        });
+                    }
+                    
+                    if (!incomingLinks.length && !outgoingLinks.length) {
+                        connectionsHtml = '<p class="text-muted">No connections available for this component.</p>';
+                    }
+                    
+                    componentConnections.innerHTML = connectionsHtml;
+                } else {
+                    componentConnections.innerHTML = '<p class="text-muted">Connection data not available.</p>';
+                }
+            }
+            
+            // Get badge class for metrics based on value and key
+            function getMetricBadgeClass(key, value) {
+                // Define thresholds for different metric types
+                const thresholds = {
+                    cpu_usage: { warning: 70, critical: 90 },
+                    memory_usage: { warning: 80, critical: 95 },
+                    disk_usage: { warning: 80, critical: 90 },
+                    response_time: { warning: 300, critical: 1000 },
+                    error_rate: { warning: 1, critical: 5 },
+                    connections: { warning: 100, critical: 200 }
+                };
+                
+                // Check if the key includes any of our threshold keys
+                for (const [metricType, limits] of Object.entries(thresholds)) {
+                    if (key.includes(metricType)) {
+                        const numValue = parseFloat(value);
+                        if (isNaN(numValue)) return 'bg-secondary';
+                        
+                        if (numValue >= limits.critical) return 'bg-danger';
+                        if (numValue >= limits.warning) return 'bg-warning';
+                        return 'bg-success';
+                    }
+                }
+                
+                // Default badge class
+                return 'bg-secondary';
+            }
+            
+            // Update system status display
+            function updateSystemStatus(data) {
+                // Find key components
+                const apiGateway = data.nodes.find(n => n.id === 'api_gateway');
+                const syncService = data.nodes.find(n => n.id === 'sync_service');
+                const database = data.nodes.find(n => n.id === 'database');
+                const auth = data.nodes.find(n => n.id === 'auth_service');
+                
+                // Update API Gateway status
+                if (apiGateway) {
+                    updateStatusBadge('api-gateway-status', apiGateway.status);
+                }
+                
+                // Update SyncService status
+                if (syncService) {
+                    updateStatusBadge('sync-service-status', syncService.status);
+                }
+                
+                // Update Database status
+                if (database) {
+                    updateStatusBadge('database-status', database.status);
+                }
+                
+                // Update Auth status
+                if (auth) {
+                    updateStatusBadge('auth-status', auth.status);
+                }
+            }
+            
+            // Update status badge
+            function updateStatusBadge(elementId, status) {
+                const element = document.getElementById(elementId);
+                if (!element) return;
+                
+                let statusClass = 'bg-success';
+                let iconClass = 'bi-check-circle';
+                let statusText = 'Online';
+                
+                if (status === 'warning') {
+                    statusClass = 'bg-warning';
+                    iconClass = 'bi-exclamation-triangle';
+                    statusText = 'Degraded';
+                } else if (status === 'error') {
+                    statusClass = 'bg-danger';
+                    iconClass = 'bi-x-circle';
+                    statusText = 'Offline';
+                }
+                
+                element.className = `badge ${statusClass} status-badge`;
+                element.innerHTML = `<i class="bi ${iconClass} me-1"></i> ${statusText}`;
+            }
+            
+            // Toast notification function
+            function showToast(status, title, message) {
+                // Get toast elements
+                const toastElement = document.getElementById('architectureToast');
+                const toastIcon = document.getElementById('toast-icon');
+                const toastTitle = document.getElementById('toast-title');
+                const toastMessage = document.getElementById('toast-message');
+                const toastTime = document.getElementById('toast-time');
+                
+                // Update toast content
+                toastTitle.textContent = title;
+                toastMessage.textContent = message;
+                toastTime.textContent = new Date().toLocaleTimeString();
+                
+                // Set icon and color based on status
+                if (status === 'success') {
+                    toastIcon.className = 'bi bi-check-circle-fill me-1 text-success';
+                } else if (status === 'warning') {
+                    toastIcon.className = 'bi bi-exclamation-triangle-fill me-1 text-warning';
+                } else {
+                    toastIcon.className = 'bi bi-x-circle-fill me-1 text-danger';
+                }
+                
+                // Create Bootstrap Toast instance and show it
+                const toast = new bootstrap.Toast(toastElement);
+                toast.show();
+            }
+            
+            // Handle refresh button click
+            document.getElementById('refresh-btn').addEventListener('click', function() {
+                fetchArchitectureData();
+            });
+            
+            // Handle view mode switches
+            document.querySelectorAll('.view-mode').forEach(element => {
+                element.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Update active state in dropdown
+                    document.querySelectorAll('.view-mode').forEach(el => {
+                        el.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Update the view mode and re-render
+                    currentViewMode = this.getAttribute('data-mode');
+                    if (systemData) {
+                        renderArchitectureDiagram(systemData, currentViewMode);
+                    }
+                });
+            });
+            
+            // Initial data load
+            fetchArchitectureData();
+            
+            // Auto-refresh every 60 seconds
+            setInterval(fetchArchitectureData, 60000);
+        });
+    </script>
+</body>
+</html>

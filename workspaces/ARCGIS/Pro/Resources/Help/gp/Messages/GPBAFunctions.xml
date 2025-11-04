@@ -1,0 +1,842 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Messages STARTID="80000">
+  <Message>
+    <ID>80114</ID>
+    <Description>Required field is missing</Description>
+  </Message>
+  <Message>
+    <ID>80318</ID>
+    <Description>A Suitability Analysis layer is expected as input layer.</Description>
+  </Message>
+  <Message>
+    <ID>80319</ID>
+    <Description>Selected table is not editable.</Description>
+  </Message>
+  <Message>
+    <ID>80320</ID>
+    <Description>Cutoff must be a positive real number.</Description>
+  </Message>
+  <Message>
+    <ID>80322</ID>
+    <Description>You should sign in order to use online data.</Description>
+  </Message>
+  <Message>
+    <ID>80323</ID>
+    <Description>The number of input layer features exceeds the current service limit (%s).</Description>
+  </Message>
+  <Message>
+    <ID>80324</ID>
+    <Description>Layer with this name already exists.</Description>
+  </Message>
+  <Message>
+    <ID>80325</ID>
+    <Description>"Processing feature %1 has failed as it exceeds the maximum size of %2 bytes."</Description>
+  </Message>
+  <Message>
+    <ID>80326</ID>
+    <Description>No customers were assigned to stores.</Description>
+  </Message>
+  <Message>
+    <ID>80327</ID>
+    <Description>Enrich Layer supports point and line features only when Data Source is set to your Portal. Polygon features are supported when Data Source is set to your Portal or your installed dataset.</Description>
+  </Message>
+  <Message>
+    <ID>80328</ID>
+    <Description>Input layer intersects the country %1 while Business Analyst is set to use %2. Set your Business Analyst country dataset under Environments > Data Source.</Description>
+  </Message>
+  <Message>
+    <ID>80329</ID>
+    <Description>Resulting polygons are empty. Output cannot be generated.</Description>
+  </Message>
+  <Message>
+    <ID>80330</ID>
+    <Description>Data cannot be summarized. All features are outside of the coverage area or outside the country dataset. Set your Business Analyst country dataset under Environments > Data Source.</Description>
+  </Message>
+  <Message>
+    <ID>80331</ID>
+    <Description>Incorrect variable name.</Description>
+  </Message>
+  <Message>
+    <ID>80332</ID>
+    <Description>All polygons are empty. Reports cannot be generated.</Description>
+  </Message>
+  <Message>
+    <ID>80333</ID>
+    <Description>Some polygons are empty. Reports cannot be generated for those polygons.</Description>
+  </Message>
+  <Message>
+    <ID>80334</ID>
+    <Description>Business Analyst dataset not detected. Install a local Business Analyst dataset or sign in to ArcGIS before running Business Analyst tools.</Description>
+  </Message>
+  <Message>
+    <ID>80335</ID>
+    <Description>Map Service containing %s was not found or is unresponsive.</Description>
+  </Message>
+  <Message>
+    <ID>80336</ID>
+    <Description>Data cannot be summarized for any of the input features.</Description>
+  </Message>
+  <Message>
+    <ID>80337</ID>
+    <Description>No variables selected.</Description>
+  </Message>
+  <Message>
+    <ID>80338</ID>
+    <Description>No input features found.</Description>
+  </Message>  
+  <Message>
+    <ID>80339</ID>
+    <Description>The following variable(s) are already present in the Suitability Analysis criteria. Adding the identical variable(s) again will overwrite the existing criteria.
+%1</Description>
+  </Message>  
+  <Message>
+    <ID>80340</ID>
+    <Description>Criteria for the following fields already exist: %s.</Description>
+  </Message>
+  <Message>
+    <ID>80341</ID>
+    <Description>
+      Some of input standard geography IDs are not valid. Areas were not built for these IDs.
+    </Description>
+  </Message>
+  <Message>
+    <ID>80342</ID>
+    <Description>
+      Failed to build standard geography areas. All input standard geography IDs are not valid.
+    </Description>
+  </Message>
+  <Message>
+    <ID>80344</ID>
+    <Description>
+      Either Geography IDs Table or Geography IDs List must be specified.
+    </Description>
+  </Message>
+  <Message>
+    <ID>80345</ID>
+    <Description>%s for all criteria should be provided.</Description>
+  </Message>
+  <Message>
+    <ID>80346</ID>
+    <Description>Criterion with following %1 has not been added to the selected analysis layer: %2.</Description>
+  </Message>
+  <Message>
+    <ID>80347</ID>
+    <Description>%1 should be positive or zero. Fix it for the criteria having following %2 value: %3.</Description>
+  </Message>
+  <Message>
+    <ID>80348</ID>
+    <Description>%1 should be unique. Fix it for the criterion having following %2 value: %3.</Description>
+  </Message>
+  <Message>
+    <ID>80349</ID>
+    <Description>%1 must be set. Fix it for the criterion having following %2 value: %3.</Description>
+  </Message>
+  <Message>
+    <ID>80350</ID>
+    <Description>Cannot find criteria for this Suitability Analysis layer. Use one of corresponding tools for adding criteria.</Description>
+  </Message>
+  <Message>
+    <ID>80351</ID>
+    <Description>The following criterion has uninitialized properties: '%s'. Define it using Set Criteria Properties tool.</Description>
+  </Message>
+  <Message>
+    <ID>80352</ID>
+    <Description>No suitable variables to process</Description>
+  </Message>
+  <Message>
+    <ID>80353</ID>
+    <Description>Following variable does not exist and will be ignored: %s.</Description>
+  </Message>
+  <Message>
+    <ID>80354</ID>
+    <Description>Following selected variable has non-numeric data type and will be ignored: %s.</Description>
+  </Message>
+  <Message>
+    <ID>80355</ID>
+    <Description>The following field is partial score(result) field: %s.</Description>
+  </Message>
+  <Message>
+    <ID>80356</ID>
+    <Description>Dissolve can not be used without Group Field. Group Field must be specified.</Description>
+  </Message>
+  <Message>
+    <ID>80357</ID>
+    <Description>Summarize Duplicate IDs can not be used without Geography IDs Table. Geography IDs Table must be specified.</Description>
+  </Message>
+  <Message>
+    <ID>80358</ID>
+    <Description>Failed to calculate network distances.</Description>
+  </Message>
+  <Message>
+    <ID>80359</ID>
+    <Description>Failed to calculate some of the network distances.</Description>
+  </Message>
+  <Message>
+    <ID>80360</ID>
+    <Description>Failed to match store and customer records.</Description>
+  </Message>
+  <Message>
+    <ID>80361</ID>
+    <Description>Failed to match some store and customer records.</Description>
+  </Message>
+  <Message>
+    <ID>80362</ID>
+    <Description>Failed to create %1 report in %2 format.</Description>
+  </Message>
+  <Message>
+    <ID>80364</ID>
+    <Description>Custom field '%1' is invalid.</Description>
+  </Message>
+  <Message>
+    <ID>80365</ID>
+    <Description>Input features have no data.</Description>
+  </Message>
+  <Message>
+    <ID>80366</ID>
+    <Description>Business Analyst was not able to determine input feature country. Data may not be available.</Description>
+  </Message>
+  <Message>
+    <ID>80367</ID>
+    <Description>Insufficient credits. Contact your Portal Administator.</Description>
+  </Message>
+  <Message>
+    <ID>80368</ID>
+    <Description>Failed to create renderer.</Description>
+  </Message>
+  <Message>
+    <ID>80369</ID>
+    <Description>Using Enrich tool with a local Business Analyst dataset requires Business Analyst software license.</Description>
+  </Message>
+  <Message>
+    <ID>80370</ID>
+    <Description>Feature %1 failed to be enriched.</Description>
+  </Message>
+  <Message>
+    <ID>80371</ID>
+    <Description>Failed to enrich some features.</Description>
+  </Message>
+  <Message>
+    <ID>80372</ID>
+    <Description>The server took too long to answer. The client has timed out.</Description>
+  </Message>
+  <Message>
+    <ID>80373</ID>
+    <Description>The Geography Key Field must be data type Text to successfully join with the Geography Level table and create output.</Description>
+  </Message>
+  <Message>
+    <ID>80374</ID>
+    <Description>Exponent has been set to zero.</Description>
+  </Message>
+  <Message>
+    <ID>80375</ID>
+    <Description>Attractiveness value has been set to zero.</Description>
+  </Message>
+  <Message>
+    <ID>80376</ID>
+    <Description>There are no results for your search.</Description>
+  </Message>
+  <Message>
+    <ID>80377</ID>
+    <Description>Duplicate ID was found between Facility Layer and Candidate Layer.</Description>
+  </Message>
+  <Message>
+    <ID>80378</ID>
+    <Description>Failed to execute. The enrichment service is not available. Contact your Portal Administator.</Description>
+  </Message>
+  <Message>
+    <ID>80379</ID>
+    <Description>No candidate feature was found. Ensure candidate features are within the analysis extent.</Description>
+  </Message>
+  <Message>
+    <ID>80380</ID>
+    <Description>Business Analyst Network dataset is not available. Make sure it's installed and licensed.</Description>
+  </Message>
+  <Message>
+    <ID>80381</ID>
+    <Description>Trade Area(s) cannot be generated. Input features are outside the street network's coverage area or outside the country dataset. Set your Business Analyst country dataset under Environments > Data Source.</Description>
+  </Message>
+  <Message>
+    <ID>80382</ID>
+    <Description>Unable to create some of the requested trade areas. Some of the points were snapped to streets network that were not traversable.</Description>
+  </Message>
+  <Message>
+    <ID>80383</ID>
+    <Description>Remove Overlap option is ignored due to the complexity of the requested drive times.</Description>
+  </Message>
+  <Message>
+    <ID>80384</ID>
+    <Description>Using extent of the selection (layer) due to the number of (selected) features in your Search Area layer.</Description>
+  </Message>
+  <Message>
+    <ID>80385</ID>
+    <Description>Business Analyst Businesses and Facilities dataset is not available. Either sign in to ArcGIS or make sure that the local dataset is installed and licensed.</Description>
+  </Message>
+  <Message>
+    <ID>80386</ID>
+    <Description>Unable to save Target Marketing Customer Profile.</Description>
+  </Message>
+  <Message>
+    <ID>80387</ID>
+    <Description>Unable to save Target Marketing Customer Profile to the Project</Description>
+  </Message>
+  <Message>
+    <ID>80388</ID>
+    <Description>Selected datasource does not support Target Marketing functionality. Make sure that the local dataset is installed and licensed and set local Business Analyst dataset under Environments > Data Source.</Description>
+  </Message>
+  <Message>
+    <ID>80389</ID>
+    <Description>Performance index for %1 is not updated and will not be used.</Description>
+  </Message>
+  <Message>
+    <ID>80390</ID>
+    <Description>Performance index for %1 does not exist.</Description>
+  </Message>
+  <Message>
+    <ID>80391</ID>
+    <Description>Failed to validate the updated performance index for %1. It will not be used.</Description>
+  </Message>
+  <Message>
+    <ID>80392</ID>
+    <Description>Unable to proceed with more than %s features in input layer.</Description>
+  </Message>
+  <Message>
+    <ID>80393</ID>
+    <Description>The input Suitability Analysis layer and Site Centers do not match.</Description>
+  </Message>
+  <Message>
+    <ID>80394</ID>
+    <Description>The selected Target Group Segmentation System (%1) does not match the active segmentation dataset (%2).</Description>
+  </Message>
+  <Message>
+    <ID>80395</ID>
+    <Description>Statistical Data Collection (SDCX) Index cannot be created with apportionment method set only to Geometry. Edit the SDCX file and modify the apportionment method.</Description>
+  </Message>
+  <Message>
+    <ID>80396</ID>
+    <Description>No Statistical Data Collection (SDCX) features fall inside dataset %1. SDCX Index cannot be created.</Description>
+  </Message>
+  <Message>
+    <ID>80397</ID>
+    <Description>The tool is running on whole country extent. It may take significant time.</Description>
+  </Message>
+  <Message>
+    <ID>80398</ID>
+    <Description>A performance index could not be created for the SDCX file.</Description>
+  </Message>
+  <Message>
+    <ID>80399</ID>
+    <Description>Failed to calculate threshold value %1 radius for store %2.</Description>
+  </Message>
+  <Message>
+    <ID>80400</ID>
+    <Description>Failed to calculate threshold rings for store %s.</Description>
+  </Message>
+  <Message>
+    <ID>80401</ID>
+    <Description>Failed to find Site Centers Features.</Description>
+  </Message>
+  <Message>
+    <ID>80402</ID>
+    <Description>Attractiveness value is the same for all input facilities and will not affect the output of Huff Model.</Description>
+  </Message>
+  <Message>
+   <ID>80403</ID>
+   <Description>Remove Overlap option was ignored because Dissolve option was set to 'Split'.</Description> 
+  </Message>
+  <Message>
+    <ID>80404</ID>
+    <Description>No overlapping trade area boundaries were found.</Description>
+  </Message>      
+  <Message>
+    <ID>80405</ID>
+    <Description>Survey Profiles are not supported.</Description>
+  </Message>
+  <Message>
+   <ID>80406</ID>
+   <Description>Unable to import Survey Profiles.</Description> 
+  </Message>
+  <Message>
+   <ID>80407</ID>
+   <Description>Some of the selected Survey Profiles were not imported: %s</Description> 
+  </Message>
+  <Message>
+   <ID>80408</ID>
+   <Description>Failed to load to profile %s</Description> 
+  </Message>
+  <Message>
+   <ID>80409</ID>
+   <Description>Base and Target profiles should have same Segmentation Base</Description> 
+  </Message>
+  <Message>
+   <ID>80410</ID>
+   <Description>Base and Target profiles should have same Segmentation System</Description> 
+  </Message>
+  <Message>
+   <ID>80411</ID>
+   <Description>The selected profile does not match the current selected segmentation system.</Description> 
+  </Message>
+  <Message>
+    <ID>80412</ID>
+    <Description>The selected Profile Segmentation System (%1) does not match the active segmentation dataset (%2).</Description>
+  </Message>
+  <Message>
+    <ID>80413</ID>
+    <Description>Overlap could not be removed between the following features: '%s'.</Description>
+  </Message>
+  <Message>
+    <ID>80415</ID>
+    <Description>Negative weights will be ignored.</Description>
+  </Message>
+  <Message>  
+    <ID>80416</ID>
+    <Description>Z-coordinates will be ignored.</Description>
+  </Message>
+  <Message>
+    <ID>80417</ID>
+    <Description>Store ID '%s' is non-unique.</Description>
+  </Message>    
+  <Message>
+    <ID>80418</ID>
+    <Description>Store ID '%s' was not found, centroid will be used.</Description>
+  </Message>                                                                               
+  <Message>
+    <ID>80420</ID>
+    <Description>Failed to create target group file.</Description>
+  </Message>
+  <Message>
+    <ID>80421</ID>
+    <Description>Failed to create target group item.</Description>
+  </Message>
+  <Message>
+    <ID>80422</ID>
+    <Description>Segment: %s can not be found.</Description>
+  </Message>
+  <Message>
+    <ID>80423</ID>
+    <Description>Invalid color hex code %s.</Description>
+  </Message>
+  <Message>
+   <ID>80424</ID>
+   <Description>Failed to load target group %s.</Description> 
+  </Message>
+  <Message>
+   <ID>80425</ID>
+   <Description>Data cannot be summarized. All features are outside of the coverage area or outside the country dataset.</Description> 
+  </Message>
+  <Message>
+   <ID>80426</ID>
+   <Description>Variables selected as additional metrics must be numeric.</Description> 
+  </Message>
+  <Message>
+    <ID>80427</ID>
+    <Description>Failed to calculate %s distances.</Description>
+  </Message>  
+  <Message>
+   <ID>80428</ID>
+   <Description>Your segmentation dataset does not contain survey profiles, which are required input for this tool.</Description> 
+  </Message>
+  <Message>
+    <ID>80429</ID>
+    <Description>One or more threshold values could not be reached for the following input features: %s</Description>
+  </Message>  
+  <Message>
+   <ID>80430</ID>
+   <Description>Failed to evaluate expression for feature %s</Description>
+  </Message>  
+  <Message>
+   <ID>80431</ID>
+   <Description>Radius is out of range for feature %s</Description>
+  </Message>  
+  <Message>
+   <ID>80432</ID>
+   <Description>No radii calculated for feature %s</Description>
+  </Message>  
+  <Message>
+   <ID>80433</ID>
+   <Description>Failed to generate drive time %s</Description>
+  </Message>  
+  <Message>
+   <ID>80434</ID>
+   <Description>Iterations limit exceeded for feature %s</Description>
+  </Message>  
+  <Message>
+   <ID>80435</ID>
+   <Description>Failed to reach threshold values</Description>
+  </Message>
+  <Message>
+   <ID>80436</ID>
+   <Description>Custom network source is not supported.</Description>
+  </Message>
+  <Message>
+   <ID>80437</ID>
+   <Description>Only 'Individual features' option is supported for Infographic templates.</Description>
+  </Message>
+  <Message>
+   <ID>80438</ID>
+   <Description>Failed to create %1 report in %2 format. %2 format is not supported for the selected report.</Description>
+  </Message>
+  <Message>
+   <ID>80439</ID>
+   <Description>Failed to process point with OID %s. Geometry is invalid.</Description>
+  </Message>
+  <Message>
+   <ID>80440</ID>
+   <Description>One of Distance Limit, Number of Locations Limit or Percentage of Locations Limit optional parameters must be set.</Description>
+  </Message>
+  <Message>
+   <ID>80441</ID>
+   <Description>No locations were found for input feature with OID %s.</Description>
+  </Message>
+  <Message>
+   <ID>80442</ID>
+   <Description>Unable to find report template for selected datasource. Report cannot be generated.</Description>
+  </Message>
+  <Message>
+   <ID>80443</ID>
+   <Description>Business Analyst Network dataset is not licensed. Network Distance Types are not available.</Description>
+  </Message>
+  <Message>
+   <ID>80444</ID>
+   <Description>%s is not a member of Distance Type</Description>
+  </Message>
+  <Message>
+   <ID>80445</ID>
+   <Description>There are missing or invalid variables for the current data source in the list. They won't be processed or saved.</Description>
+  </Message>
+  <Message>
+   <ID>80446</ID>
+   <Description>At least one distance value should be provided.</Description>
+  </Message>
+  <Message>
+   <ID>80447</ID>
+   <Description>Failed to generate average drive time for feature with OID %s because the store point is not contained in the input polygon.</Description>
+  </Message>
+  <Message>
+   <ID>80448</ID>
+   <Description>The option %s is not supported.</Description>
+  </Message>
+  <Message>
+   <ID>80449</ID>
+   <Description>%1 variable was created for %2 and can't be used with current datasource (%3).</Description>
+  </Message>
+  <Message>
+   <ID>80450</ID>
+   <Description>This option can consume large amounts of ArcGIS credits. Review estimated credit consumption before executing the tool.</Description>
+  </Message>
+  <Message>
+   <ID>80451</ID>
+   <Description>Failed to create Business Search index</Description>
+  </Message>
+  <Message>
+   <ID>80452</ID>
+   <Description>Failed to calculate script variable for feature with ObjectID = %1: %2</Description>
+  </Message>
+  <Message>
+   <ID>80453</ID>
+   <Description>Color Coded Layer could not be created for selected variable.</Description>
+  </Message>
+  <Message>
+   <ID>80454</ID>
+   <Description>Exceeded the number of geographies that can be returned for the selected geography level</Description>
+  </Message>
+  <Message>
+   <ID>80455</ID>
+   <Description>Geoenrichment Server error: %1</Description>
+  </Message>
+  <Message>
+   <ID>80456</ID>
+   <Description>Block/Settlement points must be compressed: %s.</Description>
+  </Message>
+  <Message>
+   <ID>80457</ID>
+   <Description>Block/Settlement points 'filename' attribute must be specified.</Description>
+  </Message>
+  <Message>
+   <ID>80458</ID>
+   <Description>Data might not be summarized for selected cell size.</Description>
+  </Message>
+  <Message>
+   <ID>80459</ID>
+   <Description>Image rendering error.</Description>
+  </Message>
+  <Message>
+   <ID>80460</ID>
+   <Description>Unknown field type for Target Field '%1'.</Description>
+  </Message>
+  <Message>
+   <ID>80461</ID>
+   <Description>Duplicate Target Field %1.</Description>
+  </Message>
+  <Message>
+   <ID>80462</ID>
+   <Description>No target field specified.</Description>
+  </Message>
+  <Message>
+   <ID>80463</ID>
+   <Description>No target field specified for record %1.</Description>
+  </Message>
+  <Message>
+   <ID>80464</ID>
+   <Description>Cyclic reference detected for Target Field '%s'.</Description>
+  </Message>
+  <Message>
+   <ID>80465</ID>
+   <Description>Failed to change the data type for target field '%s' for some of the input features.</Description>
+  </Message>
+  <Message>
+   <ID>80466</ID>
+   <Description>Failed to change the data type for target field '%s'.</Description>
+  </Message>
+  <Message>
+   <ID>80467</ID>
+   <Description>Failed to project input data into the output coordinate system.</Description>
+  </Message>
+  <Message>
+   <ID>80468</ID>
+   <Description>A geographic datum transformation was performed.</Description>
+  </Message>
+  <Message>
+   <ID>80469</ID>
+   <Description>'%1' has a reference to a missing field(s): %2</Description>
+  </Message>
+  <Message>
+   <ID>80470</ID>
+   <Description>Failed to execute %1 script with error '%2'.</Description>
+  </Message>
+  <Message>
+   <ID>80471</ID>
+   <Description>Business Analyst dataset referenced by the .SDCX (or Statistical Data Collection) layer is not licensed.</Description>
+  </Message>
+  <Message>
+   <ID>80472</ID>
+   <Description>Unable to open %s</Description>
+  </Message>
+  <Message>
+   <ID>80473</ID>
+   <Description>Selected Business Analyst dataset is not licensed.</Description>
+  </Message>  
+  <Message>
+   <ID>80474</ID>
+   <Description>The field type returned by '%s' script is not supported.</Description>
+  </Message>
+  <Message>
+   <ID>80475</ID>
+   <Description>Class breaks are calculated using first 10,000 records of each of the layers due to server limitations.</Description>
+  </Message>
+  <Message>
+   <ID>80476</ID>
+   <Description>The value exceeds the GeoEnrichment service limit. Only the first %s records will be returned.</Description>
+  </Message>	
+  <Message>
+   <ID>80477</ID>
+   <Description>Apportionment method %s is not supported.</Description>
+  </Message>
+  <Message>
+   <ID>80478</ID>
+   <Description>More than %1 unique values were found for layer %2. The first %1 values were used.</Description>
+  </Message>
+  <Message>
+   <ID>80479</ID>
+   <Description>Unique values are calculated using first 10,000 records of each of the layers due to server limitations.</Description>
+  </Message>
+  <Message>
+   <ID>80480</ID>
+   <Description>Report template item &quot;%s&quot; does not exist.</Description>
+  </Message>
+  <Message>
+   <ID>80481</ID>
+   <Description>Failed to export report template's resources.</Description>
+  </Message>
+  <Message>
+   <ID>80482</ID>
+   <Description>Report template metadata was not found.</Description>
+  </Message>
+  <Message>
+   <ID>80483</ID>
+   <Description>Statistical data collection item &quot;%1&quot; does not exist.</Description>
+  </Message>
+  <Message>
+   <ID>80484</ID>
+   <Description>Failed to export statistical data collection's &quot;%1&quot; metadata.</Description>
+  </Message>
+  <Message>
+   <ID>80485</ID>
+   <Description>Failed to export statistical data collection &quot;%1&quot;.</Description>
+  </Message>
+  <Message>
+   <ID>80486</ID>
+   <Description>Failed to transorm report template metadata.</Description>
+  </Message>
+  <Message>
+   <ID>80487</ID>
+   <Description>Failed to download report template.</Description>
+  </Message>
+  <Message>
+   <ID>80488</ID>
+   <Description>Custom data (SDCX) referenced in the imported template is not accessible.</Description>
+  </Message>
+  <Message>
+   <ID>80489</ID>
+   <Description>Metadata XML cannot be parsed.</Description>
+  </Message>
+  <Message>
+   <ID>80490</ID>
+   <Description>Report XML cannot be parsed.</Description>
+  </Message>
+  <Message>
+   <ID>80491</ID>
+   <Description>Cannot write to the output folder.</Description>
+  </Message>
+  <Message>
+   <ID>80492</ID>
+   <Description>Input config JSON is missing necessary entities/flags.</Description>
+  </Message>
+  <Message>
+   <ID>80493</ID>
+   <Description>Input config JSON cannot be parsed.</Description>
+  </Message>
+  <Message>
+   <ID>80494</ID>
+   <Description>Report Template item is referencing a field that doesn't exist in the SDCX.</Description>
+  </Message>
+  <Message>
+   <ID>80495</ID>
+   <Description>Statistical data collection cannot be parsed.</Description>
+  </Message>
+  <Message>
+   <ID>80496</ID>
+   <Description>The report template is attempting to access a Points of Interest dataset %1 that is not present in the selected Business Analyst data source %2.</Description>
+  </Message>
+  <Message>
+   <ID>80497</ID>
+   <Description>%1: Same as %2 %3</Description>
+  </Message>
+  <Message>
+   <ID>80498</ID>
+   <Description>Failed to calculate exponents.</Description>
+  </Message>
+  <Message>
+   <ID>80499</ID>
+   <Description>There are problems to calculate exponents. Result will have only %1 true digits.</Description>
+  </Message>
+  <Message>
+   <ID>80500</ID>
+   <Description>No valid variables were selected.</Description>
+  </Message>
+  <Message> 
+   <ID>80501</ID>
+   <Description>Unable to proceed with more than %s features in input layer.</Description>
+  </Message>
+  <Message> 
+   <ID>80502</ID>
+   <Description>The weight value in the Apportionment Layer's %s field exceeds the allowed maximum value.</Description>
+  </Message>
+  <Message> 
+   <ID>80503</ID>
+   <Description>Failed to enrich the layer due to an invalid standard geography ID.</Description>
+  </Message>
+  <Message> 
+   <ID>80504</ID>
+   <Description>Failed to create the report due to an invalid standard geography ID.</Description>
+  </Message>
+  <Message> 
+   <ID>80505</ID>
+   <Description>Threshold drive times were processed with STANDARD polygon detail. Only STANDARD polygon detail is supported when the Business Analyst data source is set to an online dataset.</Description>
+  </Message>
+  <Message> 
+   <ID>80506</ID>
+   <Description>Failed to create output feature class due to complex boundaries of some standard geography trade areas.</Description>
+  </Message>
+  <Message>
+   <ID>80507</ID>
+   <Description>Failed to generate trade area rings.</Description>
+  </Message>
+  <Message> 
+   <ID>80508</ID>
+   <Description>Business Analyst Network dataset is not licensed.</Description>
+  </Message>	
+  <Message>
+   <ID>80509</ID>
+   <Description>Number of warnings exceeds %s; stopping display</Description>
+  </Message>
+  <Message> 
+   <ID>80510</ID>
+   <Description>Failed to parse python script.</Description>
+  </Message>
+  <Message>
+    <ID>80511</ID>
+    <Description>Find related POI option is not supported for this dataset.</Description>
+  </Message>
+  <Message>
+    <ID>80512</ID>
+    <Description>Failed to construct non-overlapping rings. The radius value should be set smaller.</Description>
+  </Message>
+  <Message>
+    <ID>80513</ID>
+    <Description>Area Of Interest: Online datasets are not supported.</Description>
+  </Message>
+  <Message>
+    <ID>80514</ID>
+    <Description>Find related POI option is not supported because Semantic Search AI Model is not installed.</Description>
+  </Message>
+  <Message>
+    <ID>80515</ID>
+    <Description>Null values in Volume field are treated as zeros.</Description>
+  </Message>
+  <Message>
+    <ID>80516</ID>
+    <Description>The Input Features parameter has features that are in different time zones. The Generate Drive Time Trade Areas tool does not support features in different time zones when removing overlap.</Description>
+  </Message>
+  <Message>
+    <ID>80517</ID>
+    <Description>Country doesn't have hexagon levels.</Description>
+  </Message>
+  <Message>
+    <ID>80518</ID>
+    <Description>Failed to create %1 report in %2 format due to timeout.</Description>
+  </Message>
+  <Message>
+    <ID>80519</ID>
+    <Description>There is no Target Site to remove. Select a Target Site Layer and choose a Target Site Feature ID.</Description>
+  </Message>
+  <Message>
+    <ID>80520</ID>
+    <Description>The Target Site will be removed.</Description>
+  </Message>
+  <Message>
+    <ID>80521</ID>
+    <Description>The Target Site already exists.</Description>
+  </Message>
+  <Message>
+    <ID>80522</ID>
+    <Description>The Target Site Feature ID is not selected.</Description>
+  </Message>
+  <Message>
+    <ID>80523</ID>
+    <Description>The Target Site feature class does not contain a field on the criterion is based.</Description>
+  </Message>
+  <Message>
+    <ID>80524</ID>
+    <Description>The '%1' datasource of the '%2' criterion is not available.</Description>
+  </Message>
+  <Message>
+    <ID>80525</ID>
+    <Description>The data source for some criteria is missing or invalid. These values have been converted into field-based criteria. Affected Criteria: %s</Description>
+  </Message>
+  <Message>
+    <ID>80526</ID>
+    <Description>There is no data in both script and source fields for '%s'.</Description>
+  </Message>
+  <Message>
+    <ID>80527</ID>
+    <Description>This is a legacy suitability analysis layer. To use new suitability analysis functionality, upgrade the layer using the Make Suitability Analysis tool.</Description>
+  </Message>
+  <Message>
+    <ID>80528</ID>
+    <Description>Input layer intersects %1 which is not part of %2.</Description>
+  </Message>
+  <Message>
+    <ID>80529</ID>
+    <Description>Some criteria scores are null and won't be used in final score calculation. The affected records have final score values of Null. Affected records (only includes first 30): %1 = %2</Description>
+  </Message>
+</Messages>

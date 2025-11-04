@@ -1,0 +1,14 @@
+{
+    "set": [
+        "abbreviate",
+        "clear",
+        "cut",
+        "drop",
+        "empty",
+        "erase",
+        "remove",
+        "shorten",
+        "trim",
+        "trun"
+    ]
+}

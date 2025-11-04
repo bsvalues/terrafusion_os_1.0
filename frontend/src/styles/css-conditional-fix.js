@@ -6,17 +6,17 @@
 // Performance-based CSS class assignment utility
 export const getPerformanceClass = (performanceIndex) => {
   if (performanceIndex > 0.8) return 'tf-high-performance';
-  if (performanceIndex > 0.5) return 'tf-medium-performance'; 
+  if (performanceIndex > 0.5) return 'tf-medium-performance';
   return 'tf-low-performance';
 };
 
 // Status-based CSS class assignment
 export const getStatusClass = (status) => {
   const statusMap = {
-    'active': 'tf-status-active',
-    'processing': 'tf-status-processing',
-    'idle': 'tf-status-idle',
-    'error': 'tf-status-error'
+    active: 'tf-status-active',
+    processing: 'tf-status-processing',
+    idle: 'tf-status-idle',
+    error: 'tf-status-error',
   };
   return statusMap[status] || 'tf-status-default';
 };
@@ -39,24 +39,27 @@ export const getFpsClass = (fps) => {
 // Dynamic CSS custom property setter
 export const setCSSVariables = (element, performance) => {
   if (!element) return;
-  
+
   const root = element.style;
-  
+
   // Set performance-based variables
   root.setProperty('--tf-scroll-behavior', performance.index > 0.8 ? 'smooth' : 'auto');
   root.setProperty('--tf-animation-duration', performance.index > 0.8 ? '0.3s' : '0.1s');
-  root.setProperty('--tf-transform-style', performance.index > 0.8 ? 'translate3d(0,0,0)' : 'translateZ(0)');
-  
+  root.setProperty(
+    '--tf-transform-style',
+    performance.index > 0.8 ? 'translate3d(0,0,0)' : 'translateZ(0)'
+  );
+
   // Set status-based colors
   const statusColors = {
     active: 'hsl(120 100% 60%)',
     processing: 'hsl(200 100% 60%)',
     idle: 'hsl(0 0% 60%)',
-    error: 'hsl(0 100% 60%)'
+    error: 'hsl(0 100% 60%)',
   };
-  
+
   root.setProperty('--tf-status-color', statusColors[performance.status] || statusColors.idle);
-  
+
   // Set memory-based pointer events
   root.setProperty('--tf-pointer-events', performance.memory > 0.8 ? 'none' : 'auto');
 };

@@ -1,0 +1,45 @@
+{
+    "type": "FunctionTool",
+    "guid": "{c2d6f98b-3828-4c4c-a10e-cad4f6c60ffc}",
+    "displayname": "$rc:title",
+    "helpcontent": "3010011",
+    "description": "$rc:description",
+    "product": "200",
+    "params": {
+        "input_database": {
+            "displayname": "$rc:input_database.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "domain": {
+                "type": "GPWorkspaceDomain",
+                "workspacetype": [
+                    "Remote Database"
+                ]
+            },
+            "description": "$rc:input_database.descr"
+        },
+        "authorization_file": {
+            "control_guid": "{F618CB52-29AE-49C8-BF32-9845F642276B}",
+            "displayname": "$rc:authorization_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "description": "$rc:authorization_file.descr"
+        },
+        "out_workspace": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_workspace.title",
+            "datatype": {
+                "type": "DEWorkspace"
+            },
+            "depends": [
+                "input_database"
+            ]
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

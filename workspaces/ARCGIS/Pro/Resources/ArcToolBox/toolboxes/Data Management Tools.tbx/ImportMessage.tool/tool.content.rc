@@ -1,0 +1,24 @@
+{
+    "map": {
+        "conflict_definition.descr": "<xdoc><p>Specifies whether the conditions required for a conflict to occur will be detected by object (row) or by attribute (column).</p><ul><li><span title=\"BY_OBJECT\">By object</span>—Conflicts will be detected by row.</li><li><span title=\"BY_ATTRIBUTE\">By attribute</span>—Conflicts will be detected by column.</li></ul></xdoc>",
+        "conflict_definition.domain.BY_ATTRIBUTE": "By attribute",
+        "conflict_definition.domain.BY_OBJECT": "By object",
+        "conflict_definition.title": "Conflict Definition",
+        "conflict_policy.descr": "<xdoc><p>Specifies how conflicts will be resolved when they are encountered while importing a data change message.</p><ul><li><span title=\"MANUAL\">Manually resolve conflicts</span>—Conflicts must be manually resolved in the versioning reconcile environment.</li><li><span title=\"IN_FAVOR_OF_DATABASE\">In favor of the database</span>—Conflicts will be automatically resolved in favor of the database receiving the changes.</li><li><span title=\"IN_FAVOR_OF_IMPORTED_CHANGES\">In favor of imported changes</span>—Conflicts will be automatically resolved in favor of the imported changes.</li></ul></xdoc>",
+        "conflict_policy.domain.IN_FAVOR_OF_DATABASE": "In favor of the database",
+        "conflict_policy.domain.IN_FAVOR_OF_IMPORTED_CHANGES": "In favor of imported changes",
+        "conflict_policy.domain.MANUAL": "Manually resolve conflicts",
+        "conflict_policy.title": "Conflict Resolution Policy",
+        "description": "Imports changes from a delta file into a replica geodatabase or imports an acknowledgment message into a replica geodatabase.",
+        "in_geodatabase.descr": "The replica geodatabase that will receive the imported message. The geodatabase can be local or remote.",
+        "in_geodatabase.title": "Import To Replica Geodatabase",
+        "out_geodatabase.title": "Output Replica Geodatabase",
+        "output_acknowledgement_file.descr": "The file that will contain the acknowledgement message. When importing data changes, you can also export a message to acknowledge the import of a data change message. This parameter is only supported for a data change message.",
+        "output_acknowledgement_file.title": "Output Acknowledgement File",
+        "reconcile_with_parent_version.descr": "<xdoc><p>Specifies whether data changes will be automatically reconciled once they are sent to the parent replica if no conflicts are present. This parameter is only active for check-out/check-in replicas.</p><ul><li>Unchecked—Changes will not be reconciled with the parent version. This is the default.</li><li>Checked—Changes will be reconciled with the parent version.</li></ul></xdoc>",
+        "reconcile_with_parent_version.title": "Reconcile with the Parent Version (Check-out replicas)",
+        "source_delta_file.descr": "The file from which the message will be imported.",
+        "source_delta_file.title": "Import from Delta file",
+        "title": "Import Message"
+    }
+}

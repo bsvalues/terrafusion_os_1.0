@@ -1,0 +1,509 @@
+{
+    "type": "FunctionTool",
+    "guid": "{46208874-f4dd-43ac-9b24-84c57b9ed560}",
+    "displayname": "$rc:title",
+    "helpcontent": "66080006",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10",
+        "58",
+        "86"
+    ],
+    "params": {
+        "in_raster": {
+            "display_order": "0",
+            "displayname": "$rc:in_raster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "DEMapServer"
+                    },
+                    {
+                        "type": "GPMapServerLayer"
+                    },
+                    {
+                        "type": "GPInternetTiledLayer"
+                    },
+                    {
+                        "type": "DEFolder"
+                    }
+                ]
+            },
+            "description": "$rc:in_raster.descr"
+        },
+        "out_folder": {
+            "direction": "out",
+            "display_order": "2",
+            "control_guid": "{C49F778E-E3D8-4718-BE07-70A90AF336FE}",
+            "displayname": "$rc:out_folder.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:out_folder.descr"
+        },
+        "in_class_data": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:in_class_data.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFeatureClass"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    },
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "DETable"
+                    },
+                    {
+                        "type": "DEFolder"
+                    }
+                ]
+            },
+            "description": "$rc:in_class_data.descr"
+        },
+        "image_chip_format": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:image_chip_format.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "TIFF",
+                        "code": "$rc:image_chip_format.domain.TIFF"
+                    },
+                    {
+                        "value": "MRF",
+                        "code": "$rc:image_chip_format.domain.MRF"
+                    },
+                    {
+                        "value": "PNG",
+                        "code": "$rc:image_chip_format.domain.PNG"
+                    },
+                    {
+                        "value": "JPEG",
+                        "code": "$rc:image_chip_format.domain.JPEG"
+                    }
+                ]
+            },
+            "value": "TIFF",
+            "description": "$rc:image_chip_format.descr"
+        },
+        "tile_size_x": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:tile_size_x.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "256",
+            "description": "$rc:tile_size_x.descr"
+        },
+        "tile_size_y": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:tile_size_y.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "256",
+            "description": "$rc:tile_size_y.descr"
+        },
+        "stride_x": {
+            "type": "optional",
+            "display_order": "10",
+            "displayname": "$rc:stride_x.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "128",
+            "description": "$rc:stride_x.descr"
+        },
+        "stride_y": {
+            "type": "optional",
+            "display_order": "11",
+            "displayname": "$rc:stride_y.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "128",
+            "description": "$rc:stride_y.descr"
+        },
+        "output_nofeature_tiles": {
+            "type": "optional",
+            "display_order": "15",
+            "displayname": "$rc:output_nofeature_tiles.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ALL_TILES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "ONLY_TILES_WITH_FEATURES"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:output_nofeature_tiles.descr"
+        },
+        "metadata_format": {
+            "type": "optional",
+            "display_order": "16",
+            "displayname": "$rc:metadata_format.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "KITTI_rectangles",
+                        "code": "$rc:metadata_format.domain.KITTI_rectangles"
+                    },
+                    {
+                        "value": "PASCAL_VOC_rectangles",
+                        "code": "$rc:metadata_format.domain.PASCAL_VOC_rectangles"
+                    },
+                    {
+                        "value": "Classified_Tiles",
+                        "code": "$rc:metadata_format.domain.Classified_Tiles"
+                    },
+                    {
+                        "value": "RCNN_Masks",
+                        "code": "$rc:metadata_format.domain.RCNN_Masks"
+                    },
+                    {
+                        "value": "Labeled_Tiles",
+                        "code": "$rc:metadata_format.domain.Labeled_Tiles"
+                    },
+                    {
+                        "value": "MultiLabeled_Tiles",
+                        "code": "$rc:metadata_format.domain.MultiLabeled_Tiles"
+                    },
+                    {
+                        "value": "Export_Tiles",
+                        "code": "$rc:metadata_format.domain.Export_Tiles"
+                    },
+                    {
+                        "value": "CycleGAN",
+                        "code": "$rc:metadata_format.domain.CycleGAN"
+                    },
+                    {
+                        "value": "Imagenet",
+                        "code": "$rc:metadata_format.domain.Imagenet"
+                    },
+                    {
+                        "value": "Panoptic_Segmentation",
+                        "code": "$rc:metadata_format.domain.Panoptic_Segmentation"
+                    }
+                ]
+            },
+            "value": "PASCAL_VOC_rectangles",
+            "description": "$rc:metadata_format.descr"
+        },
+        "start_index": {
+            "type": "optional",
+            "display_order": "19",
+            "displayname": "$rc:start_index.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "0",
+            "description": "$rc:start_index.descr"
+        },
+        "class_value_field": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:class_value_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long"
+                ]
+            },
+            "depends": [
+                "in_class_data"
+            ],
+            "description": "$rc:class_value_field.descr"
+        },
+        "buffer_radius": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:buffer_radius.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:buffer_radius.descr"
+        },
+        "in_mask_polygons": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:in_mask_polygons.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "description": "$rc:in_mask_polygons.descr"
+        },
+        "rotation_angle": {
+            "type": "optional",
+            "display_order": "12",
+            "displayname": "$rc:rotation_angle.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:rotation_angle.descr"
+        },
+        "reference_system": {
+            "type": "optional",
+            "display_order": "13",
+            "displayname": "$rc:reference_system.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MAP_SPACE",
+                        "code": "$rc:reference_system.domain.MAP_SPACE"
+                    },
+                    {
+                        "value": "PIXEL_SPACE",
+                        "code": "$rc:reference_system.domain.PIXEL_SPACE"
+                    }
+                ]
+            },
+            "value": "MAP_SPACE",
+            "description": "$rc:reference_system.descr"
+        },
+        "processing_mode": {
+            "type": "optional",
+            "display_order": "14",
+            "displayname": "$rc:processing_mode.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PROCESS_AS_MOSAICKED_IMAGE",
+                        "code": "$rc:processing_mode.domain.PROCESS_AS_MOSAICKED_IMAGE"
+                    },
+                    {
+                        "value": "PROCESS_ITEMS_SEPARATELY",
+                        "code": "$rc:processing_mode.domain.PROCESS_ITEMS_SEPARATELY"
+                    }
+                ]
+            },
+            "value": "PROCESS_AS_MOSAICKED_IMAGE",
+            "description": "$rc:processing_mode.descr"
+        },
+        "blacken_around_feature": {
+            "type": "optional",
+            "display_order": "17",
+            "displayname": "$rc:blacken_around_feature.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "BLACKEN_AROUND_FEATURE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_BLACKEN"
+                    }
+                ]
+            },
+            "depends": [
+                "metadata_format"
+            ],
+            "value": "false",
+            "description": "$rc:blacken_around_feature.descr"
+        },
+        "crop_mode": {
+            "type": "optional",
+            "display_order": "18",
+            "displayname": "$rc:crop_mode.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "FIXED_SIZE",
+                        "code": "$rc:crop_mode.domain.FIXED_SIZE"
+                    },
+                    {
+                        "value": "BOUNDING_BOX",
+                        "code": "$rc:crop_mode.domain.BOUNDING_BOX"
+                    }
+                ]
+            },
+            "depends": [
+                "metadata_format"
+            ],
+            "value": "FIXED_SIZE",
+            "description": "$rc:crop_mode.descr"
+        },
+        "in_raster2": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:in_raster2.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "DEMapServer"
+                    },
+                    {
+                        "type": "GPMapServerLayer"
+                    },
+                    {
+                        "type": "GPInternetTiledLayer"
+                    },
+                    {
+                        "type": "DEFolder"
+                    }
+                ]
+            },
+            "description": "$rc:in_raster2.descr"
+        },
+        "in_instance_data": {
+            "type": "optional",
+            "display_order": "20",
+            "displayname": "$rc:in_instance_data.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFeatureClass"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    },
+                    {
+                        "type": "DERasterDataset"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPMosaicLayer"
+                    },
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "DETable"
+                    },
+                    {
+                        "type": "DEFolder"
+                    }
+                ]
+            },
+            "description": "$rc:in_instance_data.descr"
+        },
+        "instance_class_value_field": {
+            "type": "optional",
+            "display_order": "21",
+            "displayname": "$rc:instance_class_value_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long"
+                ]
+            },
+            "depends": [
+                "in_instance_data"
+            ],
+            "description": "$rc:instance_class_value_field.descr"
+        },
+        "min_polygon_overlap_ratio": {
+            "type": "optional",
+            "display_order": "22",
+            "displayname": "$rc:min_polygon_overlap_ratio.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:min_polygon_overlap_ratio.descr"
+        }
+    },
+    "environments": [
+        "cellSize",
+        "extent",
+        "parallelProcessingFactor",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

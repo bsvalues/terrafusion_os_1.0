@@ -1,0 +1,18 @@
+{
+    "map": {
+        "angle_field.descr": "The existing field that will be populated with the true north calculation value in decimal degrees.",
+        "angle_field.title": "Angle Field",
+        "coordinate_sys_field.descr": "The field containing a projection engine string for a projected coordinate system to be used for angle calculation. The angle calculation for each feature will be based on the projected coordinate system projection engine string for the specific feature. In cases of an invalid value, the tool will use the cartographic coordinate system specified in the Cartography environment settings. The default is none, or no field specified. When no field is specified, the projected coordinate system used for calculation will be taken from the Cartography environment settings.",
+        "coordinate_sys_field.title": "Coordinate System Field",
+        "description": "Calculates the rotation angle for true north based on the center point of each feature in a feature class and populates this value in a specified field. This field can be used in conjunction with a spatial map series to rotate each map to true north.",
+        "in_features.descr": "The input feature class (points, multipoints, lines, and polygons).",
+        "in_features.title": "Input Features",
+        "out_features.title": "Output Features",
+        "rotation_method.descr": "<xdoc><p>Specifies the method used to calculate the rotation value.</p><ul><li><span title=\"GEOGRAPHIC\">Geographic</span>—The angle is calculated clockwise with 0 at the top. This is the default.</li><li><span title=\"ARITHMETIC\">Arithmetic</span>—The angle is calculated counterclockwise with 0 at the right.</li><li><span title=\"GRAPHIC\">Graphic</span>—The angle is calculated counterclockwise with 0 at the top.</li></ul></xdoc>",
+        "rotation_method.domain.ARITHMETIC": "Arithmetic",
+        "rotation_method.domain.GEOGRAPHIC": "Geographic",
+        "rotation_method.domain.GRAPHIC": "Graphic",
+        "rotation_method.title": "Rotation Method",
+        "title": "Calculate Grid Convergence Angle"
+    }
+}

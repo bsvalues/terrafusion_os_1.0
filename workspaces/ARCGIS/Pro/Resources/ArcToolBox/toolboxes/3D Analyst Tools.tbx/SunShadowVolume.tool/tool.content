@@ -1,0 +1,721 @@
+{
+    "type": "FunctionTool",
+    "guid": "{a8135871-868f-4b3c-bccc-eb203ac0bf6e}",
+    "displayname": "$rc:title",
+    "helpcontent": "5230010",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9"
+    ],
+    "params": {
+        "in_features": {
+            "display_order": "0",
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "MultiPatch"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "start_date_and_time": {
+            "display_order": "1",
+            "displayname": "$rc:start_date_and_time.title",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:start_date_and_time.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "display_order": "2",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "featuretype.rule": "AsSpecified",
+                "featuretype": "Simple",
+                "geometrytype.rule": "AsSpecified",
+                "geometrytype": "MultiPatch",
+                "extenttype.rule": "FirstDependency",
+                "fields.rule": "All",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "adjusted_for_dst": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:adjusted_for_dst.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ADJUSTED_FOR_DST"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NOT_ADJUSTED_FOR_DST"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:adjusted_for_dst.descr"
+        },
+        "time_zone": {
+            "type": "optional",
+            "display_order": "4",
+            "control_guid": "{B26D07E4-50E5-45EF-944A-3D7570226445}",
+            "displayname": "$rc:time_zone.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "UTC",
+                        "code": "$rc:time_zone.domain.UTC"
+                    },
+                    {
+                        "value": "Dateline_Standard_Time",
+                        "code": "$rc:time_zone.domain.Dateline_Standard_Time"
+                    },
+                    {
+                        "value": "UTC-11",
+                        "code": "$rc:time_zone.domain.UTC-11"
+                    },
+                    {
+                        "value": "Aleutian_Standard_Time",
+                        "code": "$rc:time_zone.domain.Aleutian_Standard_Time"
+                    },
+                    {
+                        "value": "Hawaiian_Standard_Time",
+                        "code": "$rc:time_zone.domain.Hawaiian_Standard_Time"
+                    },
+                    {
+                        "value": "Marquesas_Standard_Time",
+                        "code": "$rc:time_zone.domain.Marquesas_Standard_Time"
+                    },
+                    {
+                        "value": "Alaskan_Standard_Time",
+                        "code": "$rc:time_zone.domain.Alaskan_Standard_Time"
+                    },
+                    {
+                        "value": "UTC-09",
+                        "code": "$rc:time_zone.domain.UTC-09"
+                    },
+                    {
+                        "value": "Pacific_Standard_Time_(Mexico)",
+                        "code": "$rc:time_zone.domain.Pacific_Standard_Time_(Mexico)"
+                    },
+                    {
+                        "value": "UTC-08",
+                        "code": "$rc:time_zone.domain.UTC-08"
+                    },
+                    {
+                        "value": "Pacific_Standard_Time",
+                        "code": "$rc:time_zone.domain.Pacific_Standard_Time"
+                    },
+                    {
+                        "value": "US_Mountain_Standard_Time",
+                        "code": "$rc:time_zone.domain.US_Mountain_Standard_Time"
+                    },
+                    {
+                        "value": "Mountain_Standard_Time_(Mexico)",
+                        "code": "$rc:time_zone.domain.Mountain_Standard_Time_(Mexico)"
+                    },
+                    {
+                        "value": "Mountain_Standard_Time",
+                        "code": "$rc:time_zone.domain.Mountain_Standard_Time"
+                    },
+                    {
+                        "value": "Yukon_Standard_Time",
+                        "code": "$rc:time_zone.domain.Yukon_Standard_Time"
+                    },
+                    {
+                        "value": "Central_America_Standard_Time",
+                        "code": "$rc:time_zone.domain.Central_America_Standard_Time"
+                    },
+                    {
+                        "value": "Central_Standard_Time",
+                        "code": "$rc:time_zone.domain.Central_Standard_Time"
+                    },
+                    {
+                        "value": "Easter_Island_Standard_Time",
+                        "code": "$rc:time_zone.domain.Easter_Island_Standard_Time"
+                    },
+                    {
+                        "value": "Central_Standard_Time_(Mexico)",
+                        "code": "$rc:time_zone.domain.Central_Standard_Time_(Mexico)"
+                    },
+                    {
+                        "value": "Canada_Central_Standard_Time",
+                        "code": "$rc:time_zone.domain.Canada_Central_Standard_Time"
+                    },
+                    {
+                        "value": "SA_Pacific_Standard_Time",
+                        "code": "$rc:time_zone.domain.SA_Pacific_Standard_Time"
+                    },
+                    {
+                        "value": "Eastern_Standard_Time_(Mexico)",
+                        "code": "$rc:time_zone.domain.Eastern_Standard_Time_(Mexico)"
+                    },
+                    {
+                        "value": "Eastern_Standard_Time",
+                        "code": "$rc:time_zone.domain.Eastern_Standard_Time"
+                    },
+                    {
+                        "value": "Haiti_Standard_Time",
+                        "code": "$rc:time_zone.domain.Haiti_Standard_Time"
+                    },
+                    {
+                        "value": "Cuba_Standard_Time",
+                        "code": "$rc:time_zone.domain.Cuba_Standard_Time"
+                    },
+                    {
+                        "value": "US_Eastern_Standard_Time",
+                        "code": "$rc:time_zone.domain.US_Eastern_Standard_Time"
+                    },
+                    {
+                        "value": "Turks_And_Caicos_Standard_Time",
+                        "code": "$rc:time_zone.domain.Turks_And_Caicos_Standard_Time"
+                    },
+                    {
+                        "value": "Paraguay_Standard_Time",
+                        "code": "$rc:time_zone.domain.Paraguay_Standard_Time"
+                    },
+                    {
+                        "value": "Atlantic_Standard_Time",
+                        "code": "$rc:time_zone.domain.Atlantic_Standard_Time"
+                    },
+                    {
+                        "value": "Venezuela_Standard_Time",
+                        "code": "$rc:time_zone.domain.Venezuela_Standard_Time"
+                    },
+                    {
+                        "value": "Central_Brazilian_Standard_Time",
+                        "code": "$rc:time_zone.domain.Central_Brazilian_Standard_Time"
+                    },
+                    {
+                        "value": "SA_Western_Standard_Time",
+                        "code": "$rc:time_zone.domain.SA_Western_Standard_Time"
+                    },
+                    {
+                        "value": "Pacific_SA_Standard_Time",
+                        "code": "$rc:time_zone.domain.Pacific_SA_Standard_Time"
+                    },
+                    {
+                        "value": "Newfoundland_Standard_Time",
+                        "code": "$rc:time_zone.domain.Newfoundland_Standard_Time"
+                    },
+                    {
+                        "value": "Tocantins_Standard_Time",
+                        "code": "$rc:time_zone.domain.Tocantins_Standard_Time"
+                    },
+                    {
+                        "value": "E._South_America_Standard_Time",
+                        "code": "$rc:time_zone.domain.E._South_America_Standard_Time"
+                    },
+                    {
+                        "value": "SA_Eastern_Standard_Time",
+                        "code": "$rc:time_zone.domain.SA_Eastern_Standard_Time"
+                    },
+                    {
+                        "value": "Argentina_Standard_Time",
+                        "code": "$rc:time_zone.domain.Argentina_Standard_Time"
+                    },
+                    {
+                        "value": "Montevideo_Standard_Time",
+                        "code": "$rc:time_zone.domain.Montevideo_Standard_Time"
+                    },
+                    {
+                        "value": "Magallanes_Standard_Time",
+                        "code": "$rc:time_zone.domain.Magallanes_Standard_Time"
+                    },
+                    {
+                        "value": "Saint_Pierre_Standard_Time",
+                        "code": "$rc:time_zone.domain.Saint_Pierre_Standard_Time"
+                    },
+                    {
+                        "value": "Bahia_Standard_Time",
+                        "code": "$rc:time_zone.domain.Bahia_Standard_Time"
+                    },
+                    {
+                        "value": "UTC-02",
+                        "code": "$rc:time_zone.domain.UTC-02"
+                    },
+                    {
+                        "value": "Greenland_Standard_Time",
+                        "code": "$rc:time_zone.domain.Greenland_Standard_Time"
+                    },
+                    {
+                        "value": "Mid-Atlantic_Standard_Time",
+                        "code": "$rc:time_zone.domain.Mid-Atlantic_Standard_Time"
+                    },
+                    {
+                        "value": "Azores_Standard_Time",
+                        "code": "$rc:time_zone.domain.Azores_Standard_Time"
+                    },
+                    {
+                        "value": "Cape_Verde_Standard_Time",
+                        "code": "$rc:time_zone.domain.Cape_Verde_Standard_Time"
+                    },
+                    {
+                        "value": "GMT_Standard_Time",
+                        "code": "$rc:time_zone.domain.GMT_Standard_Time"
+                    },
+                    {
+                        "value": "Greenwich_Standard_Time",
+                        "code": "$rc:time_zone.domain.Greenwich_Standard_Time"
+                    },
+                    {
+                        "value": "Sao_Tome_Standard_Time",
+                        "code": "$rc:time_zone.domain.Sao_Tome_Standard_Time"
+                    },
+                    {
+                        "value": "Morocco_Standard_Time",
+                        "code": "$rc:time_zone.domain.Morocco_Standard_Time"
+                    },
+                    {
+                        "value": "W._Europe_Standard_Time",
+                        "code": "$rc:time_zone.domain.W._Europe_Standard_Time"
+                    },
+                    {
+                        "value": "Central_Europe_Standard_Time",
+                        "code": "$rc:time_zone.domain.Central_Europe_Standard_Time"
+                    },
+                    {
+                        "value": "Romance_Standard_Time",
+                        "code": "$rc:time_zone.domain.Romance_Standard_Time"
+                    },
+                    {
+                        "value": "Central_European_Standard_Time",
+                        "code": "$rc:time_zone.domain.Central_European_Standard_Time"
+                    },
+                    {
+                        "value": "W._Central_Africa_Standard_Time",
+                        "code": "$rc:time_zone.domain.W._Central_Africa_Standard_Time"
+                    },
+                    {
+                        "value": "GTB_Standard_Time",
+                        "code": "$rc:time_zone.domain.GTB_Standard_Time"
+                    },
+                    {
+                        "value": "Middle_East_Standard_Time",
+                        "code": "$rc:time_zone.domain.Middle_East_Standard_Time"
+                    },
+                    {
+                        "value": "Egypt_Standard_Time",
+                        "code": "$rc:time_zone.domain.Egypt_Standard_Time"
+                    },
+                    {
+                        "value": "E._Europe_Standard_Time",
+                        "code": "$rc:time_zone.domain.E._Europe_Standard_Time"
+                    },
+                    {
+                        "value": "West_Bank_Standard_Time",
+                        "code": "$rc:time_zone.domain.West_Bank_Standard_Time"
+                    },
+                    {
+                        "value": "South_Africa_Standard_Time",
+                        "code": "$rc:time_zone.domain.South_Africa_Standard_Time"
+                    },
+                    {
+                        "value": "FLE_Standard_Time",
+                        "code": "$rc:time_zone.domain.FLE_Standard_Time"
+                    },
+                    {
+                        "value": "Israel_Standard_Time",
+                        "code": "$rc:time_zone.domain.Israel_Standard_Time"
+                    },
+                    {
+                        "value": "South_Sudan_Standard_Time",
+                        "code": "$rc:time_zone.domain.South_Sudan_Standard_Time"
+                    },
+                    {
+                        "value": "Kaliningrad_Standard_Time",
+                        "code": "$rc:time_zone.domain.Kaliningrad_Standard_Time"
+                    },
+                    {
+                        "value": "Sudan_Standard_Time",
+                        "code": "$rc:time_zone.domain.Sudan_Standard_Time"
+                    },
+                    {
+                        "value": "Libya_Standard_Time",
+                        "code": "$rc:time_zone.domain.Libya_Standard_Time"
+                    },
+                    {
+                        "value": "Namibia_Standard_Time",
+                        "code": "$rc:time_zone.domain.Namibia_Standard_Time"
+                    },
+                    {
+                        "value": "Jordan_Standard_Time",
+                        "code": "$rc:time_zone.domain.Jordan_Standard_Time"
+                    },
+                    {
+                        "value": "Arabic_Standard_Time",
+                        "code": "$rc:time_zone.domain.Arabic_Standard_Time"
+                    },
+                    {
+                        "value": "Syria_Standard_Time",
+                        "code": "$rc:time_zone.domain.Syria_Standard_Time"
+                    },
+                    {
+                        "value": "Turkey_Standard_Time",
+                        "code": "$rc:time_zone.domain.Turkey_Standard_Time"
+                    },
+                    {
+                        "value": "Arab_Standard_Time",
+                        "code": "$rc:time_zone.domain.Arab_Standard_Time"
+                    },
+                    {
+                        "value": "Belarus_Standard_Time",
+                        "code": "$rc:time_zone.domain.Belarus_Standard_Time"
+                    },
+                    {
+                        "value": "Russian_Standard_Time",
+                        "code": "$rc:time_zone.domain.Russian_Standard_Time"
+                    },
+                    {
+                        "value": "E._Africa_Standard_Time",
+                        "code": "$rc:time_zone.domain.E._Africa_Standard_Time"
+                    },
+                    {
+                        "value": "Volgograd_Standard_Time",
+                        "code": "$rc:time_zone.domain.Volgograd_Standard_Time"
+                    },
+                    {
+                        "value": "Iran_Standard_Time",
+                        "code": "$rc:time_zone.domain.Iran_Standard_Time"
+                    },
+                    {
+                        "value": "Arabian_Standard_Time",
+                        "code": "$rc:time_zone.domain.Arabian_Standard_Time"
+                    },
+                    {
+                        "value": "Astrakhan_Standard_Time",
+                        "code": "$rc:time_zone.domain.Astrakhan_Standard_Time"
+                    },
+                    {
+                        "value": "Azerbaijan_Standard_Time",
+                        "code": "$rc:time_zone.domain.Azerbaijan_Standard_Time"
+                    },
+                    {
+                        "value": "Russia_Time_Zone_3",
+                        "code": "$rc:time_zone.domain.Russia_Time_Zone_3"
+                    },
+                    {
+                        "value": "Mauritius_Standard_Time",
+                        "code": "$rc:time_zone.domain.Mauritius_Standard_Time"
+                    },
+                    {
+                        "value": "Saratov_Standard_Time",
+                        "code": "$rc:time_zone.domain.Saratov_Standard_Time"
+                    },
+                    {
+                        "value": "Georgian_Standard_Time",
+                        "code": "$rc:time_zone.domain.Georgian_Standard_Time"
+                    },
+                    {
+                        "value": "Caucasus_Standard_Time",
+                        "code": "$rc:time_zone.domain.Caucasus_Standard_Time"
+                    },
+                    {
+                        "value": "Afghanistan_Standard_Time",
+                        "code": "$rc:time_zone.domain.Afghanistan_Standard_Time"
+                    },
+                    {
+                        "value": "West_Asia_Standard_Time",
+                        "code": "$rc:time_zone.domain.West_Asia_Standard_Time"
+                    },
+                    {
+                        "value": "Qyzylorda_Standard_Time",
+                        "code": "$rc:time_zone.domain.Qyzylorda_Standard_Time"
+                    },
+                    {
+                        "value": "Ekaterinburg_Standard_Time",
+                        "code": "$rc:time_zone.domain.Ekaterinburg_Standard_Time"
+                    },
+                    {
+                        "value": "Pakistan_Standard_Time",
+                        "code": "$rc:time_zone.domain.Pakistan_Standard_Time"
+                    },
+                    {
+                        "value": "India_Standard_Time",
+                        "code": "$rc:time_zone.domain.India_Standard_Time"
+                    },
+                    {
+                        "value": "Sri_Lanka_Standard_Time",
+                        "code": "$rc:time_zone.domain.Sri_Lanka_Standard_Time"
+                    },
+                    {
+                        "value": "Nepal_Standard_Time",
+                        "code": "$rc:time_zone.domain.Nepal_Standard_Time"
+                    },
+                    {
+                        "value": "Central_Asia_Standard_Time",
+                        "code": "$rc:time_zone.domain.Central_Asia_Standard_Time"
+                    },
+                    {
+                        "value": "Bangladesh_Standard_Time",
+                        "code": "$rc:time_zone.domain.Bangladesh_Standard_Time"
+                    },
+                    {
+                        "value": "Omsk_Standard_Time",
+                        "code": "$rc:time_zone.domain.Omsk_Standard_Time"
+                    },
+                    {
+                        "value": "Myanmar_Standard_Time",
+                        "code": "$rc:time_zone.domain.Myanmar_Standard_Time"
+                    },
+                    {
+                        "value": "SE_Asia_Standard_Time",
+                        "code": "$rc:time_zone.domain.SE_Asia_Standard_Time"
+                    },
+                    {
+                        "value": "Altai_Standard_Time",
+                        "code": "$rc:time_zone.domain.Altai_Standard_Time"
+                    },
+                    {
+                        "value": "W._Mongolia_Standard_Time",
+                        "code": "$rc:time_zone.domain.W._Mongolia_Standard_Time"
+                    },
+                    {
+                        "value": "North_Asia_Standard_Time",
+                        "code": "$rc:time_zone.domain.North_Asia_Standard_Time"
+                    },
+                    {
+                        "value": "N._Central_Asia_Standard_Time",
+                        "code": "$rc:time_zone.domain.N._Central_Asia_Standard_Time"
+                    },
+                    {
+                        "value": "Tomsk_Standard_Time",
+                        "code": "$rc:time_zone.domain.Tomsk_Standard_Time"
+                    },
+                    {
+                        "value": "China_Standard_Time",
+                        "code": "$rc:time_zone.domain.China_Standard_Time"
+                    },
+                    {
+                        "value": "North_Asia_East_Standard_Time",
+                        "code": "$rc:time_zone.domain.North_Asia_East_Standard_Time"
+                    },
+                    {
+                        "value": "Singapore_Standard_Time",
+                        "code": "$rc:time_zone.domain.Singapore_Standard_Time"
+                    },
+                    {
+                        "value": "W._Australia_Standard_Time",
+                        "code": "$rc:time_zone.domain.W._Australia_Standard_Time"
+                    },
+                    {
+                        "value": "Taipei_Standard_Time",
+                        "code": "$rc:time_zone.domain.Taipei_Standard_Time"
+                    },
+                    {
+                        "value": "Ulaanbaatar_Standard_Time",
+                        "code": "$rc:time_zone.domain.Ulaanbaatar_Standard_Time"
+                    },
+                    {
+                        "value": "Aus_Central_W._Standard_Time",
+                        "code": "$rc:time_zone.domain.Aus_Central_W._Standard_Time"
+                    },
+                    {
+                        "value": "Transbaikal_Standard_Time",
+                        "code": "$rc:time_zone.domain.Transbaikal_Standard_Time"
+                    },
+                    {
+                        "value": "Tokyo_Standard_Time",
+                        "code": "$rc:time_zone.domain.Tokyo_Standard_Time"
+                    },
+                    {
+                        "value": "North_Korea_Standard_Time",
+                        "code": "$rc:time_zone.domain.North_Korea_Standard_Time"
+                    },
+                    {
+                        "value": "Korea_Standard_Time",
+                        "code": "$rc:time_zone.domain.Korea_Standard_Time"
+                    },
+                    {
+                        "value": "Yakutsk_Standard_Time",
+                        "code": "$rc:time_zone.domain.Yakutsk_Standard_Time"
+                    },
+                    {
+                        "value": "Cen._Australia_Standard_Time",
+                        "code": "$rc:time_zone.domain.Cen._Australia_Standard_Time"
+                    },
+                    {
+                        "value": "AUS_Central_Standard_Time",
+                        "code": "$rc:time_zone.domain.AUS_Central_Standard_Time"
+                    },
+                    {
+                        "value": "E._Australia_Standard_Time",
+                        "code": "$rc:time_zone.domain.E._Australia_Standard_Time"
+                    },
+                    {
+                        "value": "AUS_Eastern_Standard_Time",
+                        "code": "$rc:time_zone.domain.AUS_Eastern_Standard_Time"
+                    },
+                    {
+                        "value": "West_Pacific_Standard_Time",
+                        "code": "$rc:time_zone.domain.West_Pacific_Standard_Time"
+                    },
+                    {
+                        "value": "Tasmania_Standard_Time",
+                        "code": "$rc:time_zone.domain.Tasmania_Standard_Time"
+                    },
+                    {
+                        "value": "Vladivostok_Standard_Time",
+                        "code": "$rc:time_zone.domain.Vladivostok_Standard_Time"
+                    },
+                    {
+                        "value": "Lord_Howe_Standard_Time",
+                        "code": "$rc:time_zone.domain.Lord_Howe_Standard_Time"
+                    },
+                    {
+                        "value": "Bougainville_Standard_Time",
+                        "code": "$rc:time_zone.domain.Bougainville_Standard_Time"
+                    },
+                    {
+                        "value": "Russia_Time_Zone_10",
+                        "code": "$rc:time_zone.domain.Russia_Time_Zone_10"
+                    },
+                    {
+                        "value": "Magadan_Standard_Time",
+                        "code": "$rc:time_zone.domain.Magadan_Standard_Time"
+                    },
+                    {
+                        "value": "Norfolk_Standard_Time",
+                        "code": "$rc:time_zone.domain.Norfolk_Standard_Time"
+                    },
+                    {
+                        "value": "Sakhalin_Standard_Time",
+                        "code": "$rc:time_zone.domain.Sakhalin_Standard_Time"
+                    },
+                    {
+                        "value": "Central_Pacific_Standard_Time",
+                        "code": "$rc:time_zone.domain.Central_Pacific_Standard_Time"
+                    },
+                    {
+                        "value": "Russia_Time_Zone_11",
+                        "code": "$rc:time_zone.domain.Russia_Time_Zone_11"
+                    },
+                    {
+                        "value": "New_Zealand_Standard_Time",
+                        "code": "$rc:time_zone.domain.New_Zealand_Standard_Time"
+                    },
+                    {
+                        "value": "UTC+12",
+                        "code": "$rc:time_zone.domain.UTC+12"
+                    },
+                    {
+                        "value": "Fiji_Standard_Time",
+                        "code": "$rc:time_zone.domain.Fiji_Standard_Time"
+                    },
+                    {
+                        "value": "Kamchatka_Standard_Time",
+                        "code": "$rc:time_zone.domain.Kamchatka_Standard_Time"
+                    },
+                    {
+                        "value": "Chatham_Islands_Standard_Time",
+                        "code": "$rc:time_zone.domain.Chatham_Islands_Standard_Time"
+                    },
+                    {
+                        "value": "UTC+13",
+                        "code": "$rc:time_zone.domain.UTC+13"
+                    },
+                    {
+                        "value": "Tonga_Standard_Time",
+                        "code": "$rc:time_zone.domain.Tonga_Standard_Time"
+                    },
+                    {
+                        "value": "Samoa_Standard_Time",
+                        "code": "$rc:time_zone.domain.Samoa_Standard_Time"
+                    },
+                    {
+                        "value": "Line_Islands_Standard_Time",
+                        "code": "$rc:time_zone.domain.Line_Islands_Standard_Time"
+                    }
+                ]
+            },
+            "value": "Pacific_Standard_Time",
+            "description": "$rc:time_zone.descr"
+        },
+        "end_date_and_time": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:end_date_and_time.title",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:end_date_and_time.descr"
+        },
+        "iteration_interval": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:iteration_interval.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:iteration_interval.descr"
+        },
+        "iteration_unit": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:iteration_unit.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DAYS",
+                        "code": "$rc:iteration_unit.domain.DAYS"
+                    },
+                    {
+                        "value": "HOURS",
+                        "code": "$rc:iteration_unit.domain.HOURS"
+                    },
+                    {
+                        "value": "MINUTES",
+                        "code": "$rc:iteration_unit.domain.MINUTES"
+                    }
+                ]
+            },
+            "value": "DAYS",
+            "description": "$rc:iteration_unit.descr"
+        }
+    },
+    "environments": [
+        "XYDomain",
+        "ZDomain",
+        "autoCommit",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "workspace"
+    ]
+}

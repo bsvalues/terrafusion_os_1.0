@@ -1,0 +1,29 @@
+{
+    "map": {
+        "description": "Creates bridge parapets and polygon masks at line intersections to indicate overpasses.",
+        "in_above_features.descr": "<xdoc><p>The input line feature layer containing lines that intersect—and will be symbolized as passing above—lines in the <span class=\"esri_uicontrol\">Input Below Features</span> parameter value.</p></xdoc>",
+        "in_above_features.title": "Input Above Features",
+        "in_below_features.descr": "<xdoc><p>The input line feature layer containing lines that intersect—and will be symbolized as passing below—lines in the <span class=\"esri_uicontrol\">Input Above Features</span> parameter value. These features will be masked by the polygons created in the <span class=\"esri_uicontrol\">Output Overpass Feature Class</span> parameter value.</p></xdoc>",
+        "in_below_features.title": "Input Below Features",
+        "margin_across.descr": "<xdoc><p>The width of the mask polygons across the <span class=\"esri_uicontrol\">Input Above Features</span> parameter value, which is the distance in page units that the mask will extend beyond the width of the stroke symbol of the <span class=\"esri_uicontrol\">Input Above Features</span>parameter value. This parameter value must be greater than or equal to zero. Choose a page unit (points, millimeters, and so on) for the margin; the default is points.</p></xdoc>",
+        "margin_across.title": "Margin Across",
+        "margin_along.descr": "<xdoc><p>The length of the mask polygons along the <span class=\"esri_uicontrol\">Input Above Features</span> parameter value, which is the distance in page units that the mask will extend beyond the width of the stroke symbol of the <span class=\"esri_uicontrol\">Input Below Features</span> parameter value. This parameter value must be greater than or equal to zero. Choose a page unit (points, millimeters, and so on) for the margin; the default is points.</p></xdoc>",
+        "margin_along.title": "Margin Along",
+        "out_decoration_feature_class.descr": "The output line feature class that will be created to store parapet features.",
+        "out_decoration_feature_class.title": "Output Decoration Feature Class",
+        "out_mask_relationship_class.descr": "<xdoc><p>The output relationship class that will be created to store links between overpass mask polygons and the lines of the <span class=\"esri_uicontrol\">Input Below Features</span> parameter value.</p></xdoc>",
+        "out_mask_relationship_class.title": "Output Mask Relationship Class",
+        "out_overpass_feature_class.descr": "<xdoc><p>The output feature class that will be created to store polygons to mask the <span class=\"esri_uicontrol\">Input Below Features</span> parameter value.</p></xdoc>",
+        "out_overpass_feature_class.title": "Output Overpass Feature Class",
+        "title": "Create Overpass",
+        "where_clause.descr": "<xdoc><p>An SQL expression that will be used to select a subset of features from the <span class=\"esri_uicontrol\">Input Above Features</span> parameter value.</p><p>Use quotation marks for field names, for example, &quot;MY_FIELD&quot;.</p><p>See SQL reference for query expressions used in ArcGIS for more information about SQL syntax.</p></xdoc>",
+        "where_clause.title": "Expression",
+        "wing_tick_length.descr": "<xdoc><p>The length of the parapet wings in page units. The length must be greater than or equal to zero; the default length is 1. Choose a page unit (points, millimeters, and so on) for the length; the default is points. This parameter does not apply when the <span class=\"esri_uicontrol\">Wing Type</span> parameter is set to <span class=\"esri_uicontrol\">No wing ticks created</span>.</p></xdoc>",
+        "wing_tick_length.title": "Wing Tick Length",
+        "wing_type.descr": "<xdoc><p>Specifies the wing style that will be used for the parapet features.</p><ul><li><span title=\"ANGLED\">Wing ticks angled between above and below features</span>—The wing tick of the parapet will be angled between the <span class=\"esri_uicontrol\">Input Above Features</span> parameter value and the <span class=\"esri_uicontrol\">Input Below Features</span> parameter value. This is the default.</li><li><span title=\"PARALLEL\">Wing ticks parallel to below features</span>—The wing tick of the overpass wing will be parallel to the <span class=\"esri_uicontrol\">Input Below Features</span> parameter value.</li><li><span title=\"NONE\">No wing ticks created</span>—No wing ticks will be created on the parapets.</li></ul></xdoc>",
+        "wing_type.domain.ANGLED": "Wing ticks angled between above and below features",
+        "wing_type.domain.NONE": "No wing ticks created",
+        "wing_type.domain.PARALLEL": "Wing ticks parallel to below features",
+        "wing_type.title": "Wing Type"
+    }
+}

@@ -1,0 +1,270 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1>
+                <i class="fas fa-file me-2"></i> GIS File Manager
+            </h1>
+            <p class="lead">Upload, download, and manage your GIS data files</p>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <!-- File Upload Form -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-upload me-2"></i> Upload New File
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="upload-form" action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data">
+                        <div class="upload-zone">
+                            <input type="file" id="file-input" name="file" class="d-none" required>
+                            <label for="file-input" class="file-input-label">
+                                <div class="mb-3">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted"></i>
+                                </div>
+                                <p class="mb-1">Drag files here or click to browse</p>
+                                <p class="text-muted small">Supported formats: SHP, DBF, XML, GeoJSON, KML, etc.</p>
+                                <p id="file-name" class="mt-2 mb-0 fw-bold">No file selected</p>
+                            </label>
+                        </div>
+                        
+                        <div id="upload-progress" class="progress mb-3 d-none">
+                            <div id="upload-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">0%</div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="project-name" class="form-label">Project Name</label>
+                                <input type="text" class="form-control" id="project-name" name="project_name" placeholder="e.g., Parcel Updates 2023">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="file-type" class="form-label">File Type</label>
+                                <select class="form-select" id="file-type" disabled>
+                                    <option value="">Will be detected automatically</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="2" placeholder="Enter a brief description of the file..."></textarea>
+                        </div>
+                        
+                        <div class="text-end">
+                            <button type="submit" id="upload-btn" class="btn btn-primary" disabled>
+                                <i class="fas fa-upload me-2"></i> Upload File
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <!-- File Format Info -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i> Supported Formats
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-file-code text-primary me-3 fa-lg"></i>
+                            <div>
+                                <strong>GeoJSON</strong>
+                                <small class="d-block text-muted">Open standard for GIS data</small>
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-file-alt text-success me-3 fa-lg"></i>
+                            <div>
+                                <strong>Shapefiles</strong>
+                                <small class="d-block text-muted">ESRI format (.shp, .dbf, .shx)</small>
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-file-code text-info me-3 fa-lg"></i>
+                            <div>
+                                <strong>XML</strong>
+                                <small class="d-block text-muted">GML and other XML-based formats</small>
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-database text-secondary me-3 fa-lg"></i>
+                            <div>
+                                <strong>DBF</strong>
+                                <small class="d-block text-muted">dBASE database files</small>
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-database text-primary me-3 fa-lg"></i>
+                            <div>
+                                <strong>Geodatabases</strong>
+                                <small class="d-block text-muted">GDB, SDF, SQLite Spatial</small>
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-file-archive text-warning me-3 fa-lg"></i>
+                            <div>
+                                <strong>KML/KMZ</strong>
+                                <small class="d-block text-muted">Google Earth format</small>
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-file-csv text-info me-3 fa-lg"></i>
+                            <div>
+                                <strong>CSV/Excel</strong>
+                                <small class="d-block text-muted">Tables with coordinates</small>
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-file-pdf text-danger me-3 fa-lg"></i>
+                            <div>
+                                <strong>Documents</strong>
+                                <small class="d-block text-muted">PDF, TXT (for RAG search)</small>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <h2><i class="fas fa-folder-open me-2"></i> Your Files</h2>
+            <p class="text-muted" id="file-count">{{ files|length }} files</p>
+        </div>
+        <div class="col-md-6">
+            <div class="d-flex justify-content-md-end mb-3">
+                <div class="input-group me-2" style="max-width: 300px;">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" id="file-search" class="form-control" placeholder="Search files...">
+                </div>
+                <select id="file-type-filter" class="form-select" style="max-width: 150px;">
+                    <option value="all">All Types</option>
+                    <option value="geojson">GeoJSON</option>
+                    <option value="shp">Shapefile</option>
+                    <option value="dbf">DBF</option>
+                    <option value="xml">XML</option>
+                    <option value="gdb">GDB/SDF</option>
+                    <option value="kml">KML/KMZ</option>
+                    <option value="xlsx">Excel/CSV</option>
+                    <option value="pdf">Documents</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        {% if files %}
+            {% for file in files %}
+                <div class="col-md-6 col-lg-4 mb-4 file-card">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                {% if file.filename.endswith('.geojson') or file.filename.endswith('.json') %}
+                                    <i class="fas fa-file-code file-icon text-primary"></i>
+                                {% elif file.filename.endswith('.shp') or file.filename.endswith('.zip') %}
+                                    <i class="fas fa-file-alt file-icon text-success"></i>
+                                {% elif file.filename.endswith('.xml') or file.filename.endswith('.gml') %}
+                                    <i class="fas fa-file-code file-icon text-info"></i>
+                                {% elif file.filename.endswith('.dbf') %}
+                                    <i class="fas fa-database file-icon text-secondary"></i>
+                                {% elif file.filename.endswith('.gdb') or file.filename.endswith('.mdb') %}
+                                    <i class="fas fa-database file-icon text-primary"></i>
+                                {% elif file.filename.endswith('.sdf') or file.filename.endswith('.sqlite') or file.filename.endswith('.db') %}
+                                    <i class="fas fa-server file-icon text-info"></i>
+                                {% elif file.filename.endswith('.kml') or file.filename.endswith('.kmz') %}
+                                    <i class="fas fa-map-marker-alt file-icon text-warning"></i>
+                                {% elif file.filename.endswith('.csv') or file.filename.endswith('.xlsx') %}
+                                    <i class="fas fa-table file-icon text-info"></i>
+                                {% elif file.filename.endswith('.pdf') %}
+                                    <i class="fas fa-file-pdf file-icon text-danger"></i>
+                                {% else %}
+                                    <i class="fas fa-file file-icon"></i>
+                                {% endif %}
+                                
+                                <div>
+                                    <h5 class="card-title mb-0 file-name">{{ file.filename }}</h5>
+                                    <div class="text-muted small">
+                                        <span class="file-type">{{ file.file_type }}</span> • 
+                                        {{ (file.file_size / 1024)|round(1) }} KB
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {% if file.description %}
+                                <p class="card-text small text-muted">{{ file.description }}</p>
+                            {% endif %}
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    Uploaded {{ file.upload_date.strftime('%Y-%m-%d') }}
+                                </small>
+                                
+                                <div class="file-actions">
+                                    <a href="{{ url_for('download_file', file_id=file.id) }}" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Download file">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                    
+                                    {% if file.file_metadata %}
+                                        <button class="btn btn-sm btn-outline-info view-metadata-btn" data-bs-toggle="tooltip" title="View metadata" data-metadata="{{ file.file_metadata|tojson }}">
+                                            <i class="fas fa-info-circle"></i>
+                                        </button>
+                                    {% endif %}
+                                    
+                                    <form action="{{ url_for('delete_file_route', file_id=file.id) }}" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger delete-file-btn" data-bs-toggle="tooltip" title="Delete file">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>
+                    You don't have any files yet. Upload your first GIS file using the form above.
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Metadata Modal -->
+<div class="modal fade" id="metadata-modal" tabindex="-1" aria-labelledby="metadataModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="metadataModalLabel">File Metadata</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body metadata-modal-body">
+                <div id="file-metadata-content">
+                    <!-- Metadata content will be inserted here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/file_manager.js') }}"></script>
+{% endblock %}

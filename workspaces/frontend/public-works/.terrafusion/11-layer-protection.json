@@ -1,0 +1,94 @@
+{
+  "workspace_protection_system": {
+    "workspace_name": "public-works",
+    "domain": "infrastructure_management",
+    "risk_level": "medium",
+    "customization_timestamp": "2025-10-16T10:16:02.423114",
+    "eleven_layer_protection": {
+      "L1_role_scope_confirmation": {
+        "workspace_role": "public-works specialized AI agent",
+        "scope_definition": "Optimize and protect infrastructure_management operations",
+        "success_criteria": "Maintain medium-level security for infrastructure_management",
+        "data_types_handled": [
+          "infrastructure_data",
+          "maintenance_records",
+          "project_data"
+        ],
+        "protection_priorities": [
+          "operational_continuity",
+          "safety_compliance",
+          "asset_management"
+        ]
+      },
+      "L2_input_sanitation_threat_modeling": {
+        "threat_model": "infrastructure_management_specific_threats",
+        "input_validation": "public-works_input_sanitization",
+        "injection_prevention": "infrastructure_management_injection_protection",
+        "risk_level_controls": "medium"
+      },
+      "L3_data_classification": {
+        "data_types": [
+          "infrastructure_data",
+          "maintenance_records",
+          "project_data"
+        ],
+        "classification_level": "medium",
+        "privacy_requirements": "infrastructure_management_privacy_rules",
+        "retention_policies": "public-works_data_retention",
+        "access_controls": "infrastructure_management_access_matrix"
+      },
+      "L4_secrets_hygiene": {
+        "vault_integration": "public-works_secret_vault",
+        "key_rotation": "infrastructure_management_key_management",
+        "credential_management": "public-works_credential_store",
+        "environment_separation": "medium_env_isolation"
+      },
+      "L5_environment_guardrails": {
+        "environment_controls": "public-works_env_controls",
+        "blast_radius_limits": "infrastructure_management_isolation",
+        "feature_flags": "public-works_feature_management",
+        "deployment_gates": "medium_deployment_controls"
+      },
+      "L6_policy_compliance": {
+        "domain_regulations": "infrastructure_management_compliance_framework",
+        "government_standards": [
+          "operational_continuity",
+          "safety_compliance",
+          "asset_management"
+        ],
+        "audit_requirements": "public-works_audit_trail",
+        "compliance_monitoring": "infrastructure_management_compliance_checks"
+      },
+      "L7_dependency_license_review": {
+        "sbom_generation": "public-works_software_bill_of_materials",
+        "vulnerability_scanning": "infrastructure_management_vuln_checks",
+        "license_compliance": "public-works_license_validation",
+        "dependency_monitoring": "medium_dependency_tracking"
+      },
+      "L8_reproducibility": {
+        "version_pinning": "public-works_version_control",
+        "build_determinism": "infrastructure_management_build_reproducibility",
+        "configuration_management": "public-works_config_management",
+        "deployment_consistency": "medium_deployment_standards"
+      },
+      "L9_observability_hooks": {
+        "metrics_collection": "public-works_domain_metrics",
+        "logging_framework": "infrastructure_management_specialized_logging",
+        "tracing_system": "public-works_distributed_tracing",
+        "alerting_rules": "infrastructure_management_alert_configuration"
+      },
+      "L10_human_in_loop_gates": {
+        "approval_workflows": "public-works_approval_matrix",
+        "review_requirements": "infrastructure_management_review_gates",
+        "escalation_procedures": "medium_escalation_rules",
+        "manual_override_controls": "public-works_override_procedures"
+      },
+      "L11_red_team_self_check": {
+        "adversarial_testing": "public-works_penetration_testing",
+        "failure_mode_analysis": "infrastructure_management_failure_scenarios",
+        "rollback_procedures": "public-works_disaster_recovery",
+        "security_validation": "medium_security_assessment"
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+    "set": [
+        "change",
+        "decrease",
+        "detail",
+        "douglas",
+        "exist",
+        "input",
+        "less",
+        "modify",
+        "peucker",
+        "point",
+        "remove",
+        "scale",
+        "simple",
+        "simplify",
+        "update",
+        "vertex",
+        "vertices",
+        "weed"
+    ]
+}

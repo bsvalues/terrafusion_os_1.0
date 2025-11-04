@@ -1,0 +1,32 @@
+{
+    "set": [
+        "alter",
+        "change",
+        "conformal",
+        "coordinate",
+        "datum",
+        "distance",
+        "equal area",
+        "equidistant",
+        "gcs",
+        "geographic",
+        "georeference",
+        "image",
+        "latitude",
+        "longitude",
+        "orient",
+        "origin",
+        "planar",
+        "projected",
+        "reference",
+        "registration",
+        "reorient",
+        "reproject",
+        "shape",
+        "size",
+        "spatial",
+        "system",
+        "utm",
+        "wgs"
+    ]
+}

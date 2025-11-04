@@ -1,0 +1,15 @@
+{
+    "map": {
+        "contingent_value_file.descr": "A .csv file with specific column names that contains information about the contingent values.",
+        "contingent_value_file.title": "Contingent Values Input File (.csv)",
+        "description": "Imports multiple contingent values and field groups from a comma-separated values file (.csv) to a dataset.",
+        "field_group_file.descr": "A .csv file with specific column names that contains information about the field groups.",
+        "field_group_file.title": "Field Groups Input File (.csv)",
+        "import_type.descr": "<xdoc><p>Specifies whether existing values will be replaced or merged when imported.<ul><li>Checked—Existing values for the target table will be replaced with the values in the input .csv files.</li><li>Unchecked—Existing values will be merged with the values in the input .csv files. Any duplicates will be excluded. This is the default.</li></ul></p></xdoc>",
+        "import_type.title": "Replace existing contingent values",
+        "target_table.descr": "The input geodatabase table or feature class to which the field groups and contingent values will be imported.",
+        "target_table.title": "Target Table",
+        "title": "Import Contingent Values",
+        "updated_table.title": "Updated Table"
+    }
+}

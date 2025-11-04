@@ -1,0 +1,12 @@
+{
+    "set": [
+        "aggregation",
+        "dimension",
+        "group",
+        "merge",
+        "mosaic dataset",
+        "multidimension",
+        "scientific data",
+        "netcdf"
+    ]
+}

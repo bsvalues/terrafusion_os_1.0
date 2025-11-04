@@ -1,0 +1,5 @@
+<DataType Name="GPSAGDBEnvTileSize">
+  <DisplayName>Tile Size</DisplayName>
+  <Description>Specifies the width and the height of data stored in a block.</Description>
+</DataType>
+

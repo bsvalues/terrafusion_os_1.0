@@ -1,0 +1,121 @@
+{
+    "type": "FunctionTool",
+    "guid": "{3adfa07d-cef6-4688-8c26-1fe8b0cbf613}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190516",
+    "description": "$rc:description",
+    "product": "200",
+    "categories": [
+        "{0a2ad811-7215-4a95-92f3-9c29de502e9b}"
+    ],
+    "attributes": [
+        "mCPU",
+        "no_data_change"
+    ],
+    "params": {
+        "in_mosaic_dataset": {
+            "display_order": "0",
+            "displayname": "$rc:in_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_mosaic_dataset.descr"
+        },
+        "where_clause": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:where_clause.title",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "in_mosaic_dataset"
+            ],
+            "description": "$rc:where_clause.descr"
+        },
+        "checker_keywords": {
+            "type": "optional",
+            "display_order": "2",
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:checker_keywords.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "FOOTPRINT",
+                        "code": "$rc:checker_keywords.domain.FOOTPRINT"
+                    },
+                    {
+                        "value": "FUNCTION",
+                        "code": "$rc:checker_keywords.domain.FUNCTION"
+                    },
+                    {
+                        "value": "RASTER",
+                        "code": "$rc:checker_keywords.domain.RASTER"
+                    },
+                    {
+                        "value": "PATHS",
+                        "code": "$rc:checker_keywords.domain.PATHS"
+                    },
+                    {
+                        "value": "SOURCE_VALIDITY",
+                        "code": "$rc:checker_keywords.domain.SOURCE_VALIDITY"
+                    },
+                    {
+                        "value": "STALE",
+                        "code": "$rc:checker_keywords.domain.STALE"
+                    },
+                    {
+                        "value": "PYRAMIDS",
+                        "code": "$rc:checker_keywords.domain.PYRAMIDS"
+                    },
+                    {
+                        "value": "STATISTICS",
+                        "code": "$rc:checker_keywords.domain.STATISTICS"
+                    },
+                    {
+                        "value": "PERFORMANCE",
+                        "code": "$rc:checker_keywords.domain.PERFORMANCE"
+                    },
+                    {
+                        "value": "INFORMATION",
+                        "code": "$rc:checker_keywords.domain.INFORMATION"
+                    }
+                ]
+            },
+            "description": "$rc:checker_keywords.descr"
+        },
+        "out_mosaic_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "3",
+            "displayname": "$rc:out_mosaic_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPMosaicLayer"
+                    }
+                ]
+            },
+            "depends": [
+                "in_mosaic_dataset"
+            ]
+        }
+    },
+    "environments": [
+        "parallelProcessingFactor"
+    ]
+}

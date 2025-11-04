@@ -1,0 +1,255 @@
+{
+    "type": "FunctionTool",
+    "guid": "{26B17338-CB00-45A9-AB9C-858C2E0122C9}/IdentifyContours",
+    "displayname": "$rc:title",
+    "helpcontent": "46080001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "46",
+        "49"
+    ],
+    "attributes": [
+        "input_data_change"
+    ],
+    "params": {
+        "in_contour_features": {
+            "displayname": "$rc:in_contour_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_contour_features.descr"
+        },
+        "in_rasters": {
+            "displayname": "$rc:in_rasters.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "GPRasterLayer"
+                        },
+                        {
+                            "type": "GPMosaicLayer"
+                        }
+                    ]
+                }
+            },
+            "description": "$rc:in_rasters.descr"
+        },
+        "contour_height_field": {
+            "displayname": "$rc:contour_height_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Double",
+                    "Long",
+                    "Short"
+                ]
+            },
+            "depends": [
+                "in_contour_features"
+            ],
+            "description": "$rc:contour_height_field.descr"
+        },
+        "contour_code_field": {
+            "displayname": "$rc:contour_code_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Long",
+                    "Short",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_contour_features"
+            ],
+            "description": "$rc:contour_code_field.descr"
+        },
+        "contour_index_interval": {
+            "type": "optional",
+            "displayname": "$rc:contour_index_interval.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "100",
+            "description": "$rc:contour_index_interval.descr"
+        },
+        "index_code": {
+            "type": "optional",
+            "displayname": "$rc:index_code.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "1",
+            "description": "$rc:index_code.descr"
+        },
+        "intermediate_code": {
+            "type": "optional",
+            "displayname": "$rc:intermediate_code.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "2",
+            "description": "$rc:intermediate_code.descr"
+        },
+        "depression_code": {
+            "type": "optional",
+            "displayname": "$rc:depression_code.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "5",
+            "description": "$rc:depression_code.descr"
+        },
+        "depression_intermediate_code": {
+            "type": "optional",
+            "displayname": "$rc:depression_intermediate_code.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "6",
+            "description": "$rc:depression_intermediate_code.descr"
+        },
+        "updated_contour_features": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_contour_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "in_contour_features"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "clonedependency": "true"
+            }
+        },
+        "depression_contours_count": {
+            "type": "optional",
+            "displayname": "$rc:depression_contours_count.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:depression_contours_count.descr"
+        },
+        "area_of_interest": {
+            "type": "optional",
+            "displayname": "$rc:area_of_interest.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPLayerDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:area_of_interest.descr"
+        },
+        "z_factor": {
+            "type": "optional",
+            "displayname": "$rc:z_factor.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "1",
+            "description": "$rc:z_factor.descr"
+        },
+        "supplemental_contours": {
+            "type": "optional",
+            "displayname": "$rc:supplemental_contours.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NONE",
+                        "code": "$rc:supplemental_contours.domain.NONE"
+                    },
+                    {
+                        "value": "HALF_AUXILIARY",
+                        "code": "$rc:supplemental_contours.domain.HALF_AUXILIARY"
+                    },
+                    {
+                        "value": "QUARTER_AUXILIARY",
+                        "code": "$rc:supplemental_contours.domain.QUARTER_AUXILIARY"
+                    }
+                ]
+            },
+            "value": "NONE",
+            "description": "$rc:supplemental_contours.descr"
+        },
+        "half_auxiliary_code": {
+            "type": "optional",
+            "displayname": "$rc:half_auxiliary_code.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "3",
+            "description": "$rc:half_auxiliary_code.descr"
+        },
+        "quarter_auxiliary_code": {
+            "type": "optional",
+            "displayname": "$rc:quarter_auxiliary_code.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "14",
+            "description": "$rc:quarter_auxiliary_code.descr"
+        },
+        "depression_auxiliary_code": {
+            "type": "optional",
+            "displayname": "$rc:depression_auxiliary_code.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "22",
+            "description": "$rc:depression_auxiliary_code.descr"
+        },
+        "contour_interval": {
+            "type": "optional",
+            "displayname": "$rc:contour_interval.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "20",
+            "description": "$rc:contour_interval.descr"
+        },
+        "base_contour": {
+            "type": "optional",
+            "displayname": "$rc:base_contour.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:base_contour.descr"
+        }
+    },
+    "environments": [
+        "extent"
+    ]
+}

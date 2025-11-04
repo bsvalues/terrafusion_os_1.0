@@ -1,0 +1,5 @@
+<DataType Name="GPSATopoFeatures">
+  <DisplayName>Topo Features</DisplayName>
+  <Description>Features that are input to the interpolation.</Description>
+</DataType>
+

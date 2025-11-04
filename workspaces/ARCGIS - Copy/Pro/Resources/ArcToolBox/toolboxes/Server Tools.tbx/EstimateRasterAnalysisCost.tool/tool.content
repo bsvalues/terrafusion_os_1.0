@@ -1,0 +1,46 @@
+{
+    "type": "FunctionTool",
+    "guid": "{b59a319e-f64d-4d02-92a5-c9a1a029fe93}",
+    "displayname": "$rc:title",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_task": {
+            "displayname": "$rc:in_task.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFile"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "json",
+                            "xml"
+                        ]
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            }
+        },
+        "out_cost": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_cost.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        }
+    }
+}

@@ -1,0 +1,268 @@
+/**
+ * TerraFusion Form Validation Styles
+ * Consistent styling for form validation across the application
+ */
+
+/* Validated fields */
+.was-validated .form-control:valid,
+.form-control.is-valid {
+  border-color: var(--success, #198754);
+  padding-right: calc(1.5em + 0.75rem);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right calc(0.375em + 0.1875rem) center;
+  background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+.was-validated textarea.form-control:valid,
+textarea.form-control.is-valid {
+  padding-right: calc(1.5em + 0.75rem);
+  background-position: top calc(0.375em + 0.1875rem) right calc(0.375em + 0.1875rem);
+}
+
+.was-validated .form-select:valid,
+.form-select.is-valid {
+  border-color: var(--success, #198754);
+  padding-right: 4.125rem;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e"), url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center, center right 2.25rem;
+  background-size: 16px 12px, calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+.was-validated .form-check-input:valid,
+.form-check-input.is-valid {
+  border-color: var(--success, #198754);
+}
+
+.was-validated .form-check-input:valid:checked,
+.form-check-input.is-valid:checked {
+  background-color: var(--success, #198754);
+}
+
+.was-validated .form-check-input:valid ~ .form-check-label,
+.form-check-input.is-valid ~ .form-check-label {
+  color: var(--success, #198754);
+}
+
+/* Invalid fields */
+.was-validated .form-control:invalid,
+.form-control.is-invalid {
+  border-color: var(--danger, #dc3545);
+  padding-right: calc(1.5em + 0.75rem);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right calc(0.375em + 0.1875rem) center;
+  background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+.was-validated textarea.form-control:invalid,
+textarea.form-control.is-invalid {
+  padding-right: calc(1.5em + 0.75rem);
+  background-position: top calc(0.375em + 0.1875rem) right calc(0.375em + 0.1875rem);
+}
+
+.was-validated .form-select:invalid,
+.form-select.is-invalid {
+  border-color: var(--danger, #dc3545);
+  padding-right: 4.125rem;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e"), url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center, center right 2.25rem;
+  background-size: 16px 12px, calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+.was-validated .form-check-input:invalid,
+.form-check-input.is-invalid {
+  border-color: var(--danger, #dc3545);
+}
+
+.was-validated .form-check-input:invalid:checked,
+.form-check-input.is-invalid:checked {
+  background-color: var(--danger, #dc3545);
+}
+
+.was-validated .form-check-input:invalid ~ .form-check-label,
+.form-check-input.is-invalid ~ .form-check-label {
+  color: var(--danger, #dc3545);
+}
+
+/* Feedback messages */
+.valid-feedback {
+  display: none;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875em;
+  color: var(--success, #198754);
+}
+
+.invalid-feedback {
+  display: none;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875em;
+  color: var(--danger, #dc3545);
+}
+
+.was-validated .form-control:valid ~ .valid-feedback,
+.was-validated .form-control:invalid ~ .invalid-feedback,
+.form-control.is-valid ~ .valid-feedback,
+.form-control.is-invalid ~ .invalid-feedback,
+.was-validated .form-select:valid ~ .valid-feedback,
+.was-validated .form-select:invalid ~ .invalid-feedback,
+.form-select.is-valid ~ .valid-feedback,
+.form-select.is-invalid ~ .invalid-feedback,
+.was-validated .form-check-input:valid ~ .valid-feedback,
+.was-validated .form-check-input:invalid ~ .invalid-feedback,
+.form-check-input.is-valid ~ .valid-feedback,
+.form-check-input.is-invalid ~ .invalid-feedback {
+  display: block;
+}
+
+/* Custom validation error list */
+.tf-validation-error-list {
+  list-style-type: none;
+  padding-left: 0;
+  margin-bottom: 1rem;
+}
+
+.tf-validation-error-list li {
+  padding: 0.5rem;
+  margin-bottom: 0.25rem;
+  background-color: rgba(220, 53, 69, 0.05);
+  border-left: 3px solid var(--danger, #dc3545);
+  border-radius: 0.25rem;
+}
+
+/* Custom validation error container */
+.tf-validation-error-container {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background-color: rgba(220, 53, 69, 0.05);
+  border: 1px solid rgba(220, 53, 69, 0.2);
+  border-radius: 0.25rem;
+}
+
+.tf-validation-error-container .tf-validation-error-heading {
+  color: var(--danger, #dc3545);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+/* Touch feedback */
+@media (hover: hover) {
+  .form-control:hover:not(:disabled):not([readonly]):not(.is-invalid):not(.is-valid) {
+    border-color: var(--gray-500, #adb5bd);
+  }
+  
+  .form-select:hover:not(:disabled):not([readonly]):not(.is-invalid):not(.is-valid) {
+    border-color: var(--gray-500, #adb5bd);
+  }
+}
+
+/* Focus styles */
+.form-control:focus:not(.is-invalid):not(.is-valid),
+.form-select:focus:not(.is-invalid):not(.is-valid) {
+  border-color: var(--primary, #0d6efd);
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.form-control.is-valid:focus,
+.form-select.is-valid:focus,
+.form-check-input.is-valid:focus {
+  border-color: var(--success, #198754);
+  box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+}
+
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus,
+.form-check-input.is-invalid:focus {
+  border-color: var(--danger, #dc3545);
+  box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+}
+
+/* Accessibility */
+.form-control:focus-visible,
+.form-select:focus-visible,
+.form-check-input:focus-visible {
+  outline: 2px solid var(--primary, #0d6efd);
+  outline-offset: 2px;
+}
+
+/* Floating labels with validation */
+.form-floating > .form-control.is-valid ~ label,
+.form-floating > .form-control.is-invalid ~ label {
+  color: inherit;
+}
+
+.form-floating > .form-control.is-valid:focus ~ label,
+.form-floating > .form-control.is-invalid:focus ~ label {
+  opacity: 0.65;
+}
+
+.form-floating > .form-control.is-invalid ~ label {
+  color: var(--danger, #dc3545);
+}
+
+.form-floating > .form-control.is-valid ~ label {
+  color: var(--success, #198754);
+}
+
+/* Dark mode support */
+.dark-mode .valid-feedback,
+.dark-theme .valid-feedback {
+  color: #57e589;
+}
+
+.dark-mode .invalid-feedback,
+.dark-theme .invalid-feedback {
+  color: #f27d88;
+}
+
+.dark-mode .tf-validation-error-list li,
+.dark-theme .tf-validation-error-list li {
+  background-color: rgba(220, 53, 69, 0.1);
+}
+
+.dark-mode .tf-validation-error-container,
+.dark-theme .tf-validation-error-container {
+  background-color: rgba(220, 53, 69, 0.1);
+  border-color: rgba(220, 53, 69, 0.3);
+}
+
+/* High contrast mode */
+.high-contrast-mode .form-control.is-invalid,
+.high-contrast-mode .form-select.is-invalid,
+.high-contrast-mode .form-check-input.is-invalid {
+  border: 2px solid #ffffff !important;
+  outline: 2px solid #dc3545 !important;
+}
+
+.high-contrast-mode .form-control.is-valid,
+.high-contrast-mode .form-select.is-valid,
+.high-contrast-mode .form-check-input.is-valid {
+  border: 2px solid #ffffff !important;
+  outline: 2px solid #198754 !important;
+}
+
+.high-contrast-mode .invalid-feedback {
+  color: #ffffff !important;
+  font-weight: bold;
+}
+
+.high-contrast-mode .tf-validation-error-list li {
+  background-color: #000000 !important;
+  border: 2px solid #ffffff !important;
+  color: #ffffff !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .tf-validation-error-list li {
+    padding: 0.375rem;
+    font-size: 0.875rem;
+  }
+  
+  .invalid-feedback,
+  .valid-feedback {
+    font-size: 0.8125rem;
+  }
+}

@@ -1,0 +1,23 @@
+{
+    "map": {
+        "description": "Generates a simplified hydrographic line network for display at a smaller scale. The resulting hydrographic network maintains the main arteries while thinning less significant features based on hierarchy, length, and spacing between features.",
+        "hierarchy_field.descr": "This field contains the hierarchical ranking of feature importance, where 1 is very important, and larger integers reflect decreasing importance. A value of 0 forces the feature to remain visible in the final results. It identifies the relative importance of features to help establish which features are significant. For optimal results, use no more than five levels of hierarchy. Input features with Hierarchy = 0 are considered locked and will remain visible, along with adjacent features necessary for connectivity.",
+        "hierarchy_field.title": "Hierarchy Field",
+        "in_features.descr": "The hydrography line feature to be thinned.",
+        "in_features.title": "Input Features",
+        "intersecting_features.descr": "<xdoc><p>If a segment is snapped to features in the provided layers, it will not be removed. An example would be a small river segment snapped to a lake. Even if the segment is under the <span class=\"esri_uicontrol\">Minimum Length</span>, it would need to remain to ensure that it remains connected to the water body into which it flows.</p></xdoc>",
+        "intersecting_features.title": "Intersecting Features",
+        "invisibility_field.descr": "Features that participate in the thinned hydrography collection will have a value of 0. Those that are extraneous have a value of 1. A layer definition query can be used to display the results.",
+        "invisibility_field.title": "Invisibility Field",
+        "min_length.descr": "An indication of the shortest hydrographic segment that is sensible to display at the output scale. It defines a sense of the resolution or granularity of the resulting thinned hydrography. It should correspond to a length that is visually significant to include at the final scale. The results of this tool are a balanced compromise between the requirements posed by hierarchy, minimum length, minimum spacing, angle of connecting features, and directionality of the hydro geometry. Therefore, the minimum length value cannot necessarily be measured directly in the resulting feature set.",
+        "min_length.title": "Minimum Length",
+        "min_spacing.descr": "<xdoc><p>An indication of the shortest distance between a hydrographic segment that is sensible to display at the output scale. If the spacing between two parallel trending features is smaller than this value, one of the features will be set as invisible. It defines a sense of the density of the resulting thinned hydrography. It should correspond to the distance between two parallel trending features that is visually significant to include at the final scale. When the density of features is too high (that is, the features are too closely spaced), at least one feature will be hidden. This can result in important features or features longer than the <span class=\"esri_uicontrol\">Minimum Length</span> being hidden.</p></xdoc>",
+        "min_spacing.title": "Minimum Spacing",
+        "title": "Thin Hydrology Lines",
+        "unsplit_lines.descr": "<xdoc><p>This will merge any split features in the <span class=\"esri_uicontrol\">Input Features</span> to help ensure that the main waterway is preserved. If unchecked, the ends of the waterway may be removed due to them being under the <span class=\"esri_uicontrol\">Minimum Length</span>.</p><ul><li>Checked—Features that are closed on both end points will be merged before thinning to preserve main hydrographic arteries that traverse a long distance. This is the default.</li><li>Unchecked—Features will remain split before the thinning process.</li></ul></xdoc>",
+        "unsplit_lines.title": "Unsplit Lines",
+        "updated_features.title": "Updated Features",
+        "use_angles.descr": "<xdoc><p>If checked, the angles between waterway branches will be used to help determine the main waterway; the highest angle will be used. If unchecked, the longest branch will be considered part of the main waterway.</p><ul><li>Checked—In junctions with 3 or more waterways, features that are closer together in angle will be kept.</li><li>Unchecked—In junctions with 3 or more waterways, features that are longer will be kept. This is the default.</li></ul></xdoc>",
+        "use_angles.title": "Use intersection angles to determine main waterway"
+    }
+}

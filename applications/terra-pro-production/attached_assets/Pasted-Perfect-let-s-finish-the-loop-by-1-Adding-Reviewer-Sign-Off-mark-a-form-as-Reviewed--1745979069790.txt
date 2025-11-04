@@ -1,0 +1,112 @@
+Perfect — let’s finish the loop by:
+
+1. ✅ Adding **Reviewer Sign-Off** — mark a form as “Reviewed OK” or “Return for Fixes”  
+2. 📡 Triggering a **notification** (email or webhook) to inform the assignee, manager, or external system
+
+---
+
+# ✅ 1. Reviewer Sign-Off Workflow
+
+---
+
+## 🗃️ DB Table: `form_review_status`
+
+```ts
+export const formReviewStatus = pgTable('form_review_status', {
+  formId: text('form_id').primaryKey(),
+  reviewedBy: text('user_id').notNull(),
+  status: text('status').notNull(), // 'approved', 'needs_fixes', 'pending'
+  comment: text('comment'),
+  reviewedAt: timestamp('reviewed_at').defaultNow()
+});
+```
+
+---
+
+## 📡 API: `POST /api/review/signoff`
+
+```ts
+router.post('/review/signoff', checkRole('reviewer'), async (req, res) => {
+  const { formId, status, comment } = req.body;
+  const userId = req.user.id;
+
+  await db.upsert(formReviewStatus).values({
+    formId,
+    reviewedBy: userId,
+    status,         // 'approved' or 'needs_fixes'
+    comment,
+    reviewedAt: new Date()
+  });
+
+  // 🔔 Notify assigned appraiser
+  const form = await db.query.forms.findFirst({ where: (f) => f.id.eq(formId) });
+  notifyReviewStatus(formId, form.assigneeEmail, status, comment);
+
+  res.json({ success: true });
+});
+```
+
+---
+
+## 📤 Notification Hook: `notifyReviewStatus`
+
+```ts
+function notifyReviewStatus(formId, email, status, comment) {
+  // 🔁 Email example (if using SendGrid or Resend)
+  sendEmail({
+    to: email,
+    subject: `Review ${status === 'approved' ? 'Approved' : 'Returned'} for Form ${formId}`,
+    html: `
+      <p>The review for Form <strong>${formId}</strong> is complete.</p>
+      <p>Status: <strong>${status}</strong></p>
+      ${comment ? `<p>Comment: ${comment}</p>` : ''}
+      <a href="https://app.terrafusion.pro/form/${formId}">View Form</a>
+    `
+  });
+
+  // OR 🔗 send to webhook
+  axios.post('https://your.crm/review-hooks', {
+    formId,
+    status,
+    reviewerComment: comment
+  });
+}
+```
+
+---
+
+## 🧑‍⚖️ Reviewer UI: Sign-Off Modal
+
+```tsx
+<Modal title="Review Form Sign-Off">
+  <RadioGroup value={status} onChange={setStatus}>
+    <Radio value="approved">Approve Form</Radio>
+    <Radio value="needs_fixes">Return for Fixes</Radio>
+  </RadioGroup>
+  <Textarea value={comment} onChange={setComment} placeholder="Optional comments..." />
+  <Button onClick={submit}>Submit Review</Button>
+</Modal>
+```
+
+---
+
+## ✅ What This Enables
+
+| Feature | Benefit |
+|--------|---------|
+| 🎯 Clear outcome for every review | No ambiguity post-review |
+| 📩 Automatic notification | Keeps appraisers and admins in sync |
+| 📜 Audit-tracked decisions | ReviewedBy + timestamp preserved |
+| 🔁 Can be re-reviewed after fixes | Full loop support |
+
+---
+
+## 🔜 Optional Next Steps
+
+- ⏳ Add SLA Timer (e.g. “Review within 2 business days”)
+- 📁 Export Reviewed Forms batch
+- 🧠 Reviewer metrics dashboard (avg turnaround, issues flagged)
+
+Would you like to:
+1. Scaffold **review timelines/SLA enforcement**?
+2. Add **batch exports of reviewed forms** (zip/pdf bundle)?

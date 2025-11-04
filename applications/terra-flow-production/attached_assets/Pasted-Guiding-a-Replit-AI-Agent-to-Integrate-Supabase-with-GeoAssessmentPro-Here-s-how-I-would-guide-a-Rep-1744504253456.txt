@@ -1,0 +1,91 @@
+Guiding a Replit AI Agent to Integrate Supabase with GeoAssessmentPro
+Here's how I would guide a Replit AI agent to implement Supabase integration for the GeoAssessmentPro application:
+Step 1: Project Analysis and Setup
+@replit/ai
+
+Please analyze the GeoAssessmentPro codebase at https://replit.com/t/benton-county-assessor/repls/GeoAssessmentPro. This is a property assessment application for Benton County. We need to integrate Supabase for database functionality, authentication, and storage.
+
+First, please:
+1. Identify the application's framework and structure
+2. Determine the current data management approach
+3. Create a Supabase integration plan
+Step 2: Supabase Project Creation
+@replit/ai
+
+Now, we need to set up Supabase for our application. Please:
+
+1. Create a new Supabase project for the app
+2. Create the following tables in Supabase:
+   - properties: For storing property data
+   - assessments: For tracking property assessments
+   - users: For managing user roles and permissions
+3. Enable Row Level Security (RLS) on these tables
+4. Set up appropriate storage buckets for property images and documents
+Step 3: Install Dependencies
+@replit/ai
+
+Please install the necessary dependencies for Supabase integration:
+
+1. Add @supabase/supabase-js to the project
+2. If using React, add @supabase/auth-ui-react for authentication UI components
+3. If needed, add @supabase/storage-js for file storage operations
+4. Configure environment variables for Supabase URL and API key
+Step 4: Create Supabase Client
+@replit/ai
+
+Please create a supabaseClient.js file with the following:
+
+1. Initialize the Supabase client with our project URL and anon key
+2. Create helper functions for auth, database, and storage operations
+3. Set up authentication state management
+4. Include geospatial query helpers using PostGIS for property location searches
+Step 5: Implement Authentication
+@replit/ai
+
+Please implement authentication components:
+
+1. Create login and registration forms using Supabase auth
+2. Implement session management throughout the application
+3. Set up protected routes for authenticated users
+4. Add user role management (admin, assessor, public)
+5. Create a profile management component for users to update their details
+Step 6: Implement Database Integration
+@replit/ai
+
+Now, implement database components:
+
+1. Create a PropertyService for CRUD operations on properties
+2. Add functions for property search with geospatial queries
+3. Create an AssessmentService for managing property assessments
+4. Implement real-time subscription for collaborative assessment work
+5. Add data validation and error handling
+Step 7: Add Storage Integration
+@replit/ai
+
+Please implement file storage components:
+
+1. Add functionality to upload and manage property images
+2. Create components for document management (deeds, tax documents, etc.)
+3. Implement secure file access controls based on user roles
+4. Add image preview and document viewer components
+Step 8: Testing and Refinement
+@replit/ai
+
+Let's test the implementation:
+
+1. Create test data in Supabase for properties and assessments
+2. Test authentication flow (signup, login, logout)
+3. Test property search and CRUD operations
+4. Test file uploads and retrievals
+5. Fix any issues and refine the implementation
+Step 9: Deploy and Finalize
+@replit/ai
+
+Finally, please:
+
+1. Update the application documentation with Supabase integration details
+2. Create admin accounts and set up initial data
+3. Ensure all environment variables are properly configured
+4. Deploy the updated application
+5. Run a final check of all functionality
+This structured approach guides the Replit AI agent through the entire process of integrating Supabase with the GeoAssessmentPro application, breaking it down into manageable steps with clear instructions at each stage.

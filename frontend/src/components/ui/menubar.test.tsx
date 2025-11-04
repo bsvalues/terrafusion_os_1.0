@@ -20,9 +20,9 @@ import {
 
 /**
  * Menubar Component Test Suite
- * 
+ *
  * Tests the desktop menu bar component with horizontal navigation.
- * 
+ *
  * Test Categories:
  * 1. Rendering - Triggers, items, labels, separators
  * 2. Horizontal Navigation - Left/Right arrow keys between menus
@@ -68,7 +68,7 @@ describe('Menubar', () => {
 
     it('renders menu items when trigger is clicked', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <Menubar>
           <MenubarMenu>
@@ -94,7 +94,7 @@ describe('Menubar', () => {
 
     it('renders menu labels for sections', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <Menubar>
           <MenubarMenu>
@@ -117,14 +117,14 @@ describe('Menubar', () => {
 
     it('renders separators between menu items', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <Menubar>
           <MenubarMenu>
             <MenubarTrigger>File</MenubarTrigger>
             <MenubarContent>
               <MenubarItem>New</MenubarItem>
-              <MenubarSeparator data-testid="menu-separator" />
+              <MenubarSeparator data-testid='menu-separator' />
               <MenubarItem>Quit</MenubarItem>
             </MenubarContent>
           </MenubarMenu>
@@ -140,7 +140,7 @@ describe('Menubar', () => {
 
     it('renders keyboard shortcuts', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <Menubar>
           <MenubarMenu>
@@ -169,7 +169,7 @@ describe('Menubar', () => {
   describe('Horizontal Navigation', () => {
     it('navigates to next menu with Right arrow key', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <Menubar>
           <MenubarMenu>
@@ -205,7 +205,7 @@ describe('Menubar', () => {
 
     it('navigates to previous menu with Left arrow key', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <Menubar>
           <MenubarMenu>
@@ -240,7 +240,7 @@ describe('Menubar', () => {
 
     it('wraps around to first menu when Right is pressed on last menu', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <Menubar>
           <MenubarMenu>
@@ -274,7 +274,7 @@ describe('Menubar', () => {
 
     it('wraps around to last menu when Left is pressed on first menu', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <Menubar>
           <MenubarMenu>
@@ -313,7 +313,7 @@ describe('Menubar', () => {
   describe('Vertical Navigation', () => {
     it('navigates down through menu items with Down arrow key', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <Menubar>
           <MenubarMenu>
@@ -350,7 +350,7 @@ describe('Menubar', () => {
 
     it('navigates up through menu items with Up arrow key', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <Menubar>
           <MenubarMenu>
@@ -386,7 +386,7 @@ describe('Menubar', () => {
 
     it('wraps to last item when Up is pressed on first item', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <Menubar>
           <MenubarMenu>
@@ -417,7 +417,7 @@ describe('Menubar', () => {
 
     it('wraps to first item when Down is pressed on last item', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <Menubar>
           <MenubarMenu>
@@ -456,7 +456,7 @@ describe('Menubar', () => {
   describe('Sub-menus', () => {
     it('renders sub-menu trigger', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <Menubar>
           <MenubarMenu>
@@ -482,7 +482,7 @@ describe('Menubar', () => {
 
     it('opens sub-menu with Right arrow key', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <Menubar>
           <MenubarMenu>
@@ -519,7 +519,7 @@ describe('Menubar', () => {
 
     it('closes sub-menu with Left arrow key', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <Menubar>
           <MenubarMenu>
@@ -557,7 +557,7 @@ describe('Menubar', () => {
 
     it('renders nested sub-menus', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <Menubar>
           <MenubarMenu>
@@ -608,7 +608,7 @@ describe('Menubar', () => {
     it('activates menu item with Enter key', async () => {
       const user = userEvent.setup();
       const onSelect = vi.fn();
-      
+
       render(
         <Menubar>
           <MenubarMenu>
@@ -634,7 +634,7 @@ describe('Menubar', () => {
 
     it('closes menu with Escape key', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <Menubar>
           <MenubarMenu>
@@ -661,7 +661,7 @@ describe('Menubar', () => {
 
     it('returns focus to trigger when menu closes', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <Menubar>
           <MenubarMenu>
@@ -710,7 +710,7 @@ describe('Menubar', () => {
 
     it('menu items have role="menuitem"', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <Menubar>
           <MenubarMenu>
@@ -748,7 +748,7 @@ describe('Menubar', () => {
 
     it('triggers have aria-expanded reflecting open state', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <Menubar>
           <MenubarMenu>
@@ -777,15 +777,13 @@ describe('Menubar', () => {
   describe('Checkboxes and Radio Items', () => {
     it('renders checkbox menu items', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <Menubar>
           <MenubarMenu>
             <MenubarTrigger>View</MenubarTrigger>
             <MenubarContent>
-              <MenubarCheckboxItem checked={true}>
-                Show Toolbar
-              </MenubarCheckboxItem>
+              <MenubarCheckboxItem checked={true}>Show Toolbar</MenubarCheckboxItem>
             </MenubarContent>
           </MenubarMenu>
         </Menubar>
@@ -804,7 +802,7 @@ describe('Menubar', () => {
       const onCheckedChange = vi.fn((value) => {
         checked = value;
       });
-      
+
       const { rerender } = render(
         <Menubar>
           <MenubarMenu>
@@ -828,15 +826,15 @@ describe('Menubar', () => {
 
     it('renders radio menu items in RadioGroup', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <Menubar>
           <MenubarMenu>
             <MenubarTrigger>View</MenubarTrigger>
             <MenubarContent>
-              <MenubarRadioGroup value="compact">
-                <MenubarRadioItem value="compact">Compact</MenubarRadioItem>
-                <MenubarRadioItem value="comfortable">Comfortable</MenubarRadioItem>
+              <MenubarRadioGroup value='compact'>
+                <MenubarRadioItem value='compact'>Compact</MenubarRadioItem>
+                <MenubarRadioItem value='comfortable'>Comfortable</MenubarRadioItem>
               </MenubarRadioGroup>
             </MenubarContent>
           </MenubarMenu>
@@ -854,15 +852,15 @@ describe('Menubar', () => {
     it('selects radio item on click', async () => {
       const user = userEvent.setup();
       const onValueChange = vi.fn();
-      
+
       render(
         <Menubar>
           <MenubarMenu>
             <MenubarTrigger>View</MenubarTrigger>
             <MenubarContent>
-              <MenubarRadioGroup value="compact" onValueChange={onValueChange}>
-                <MenubarRadioItem value="compact">Compact</MenubarRadioItem>
-                <MenubarRadioItem value="comfortable">Comfortable</MenubarRadioItem>
+              <MenubarRadioGroup value='compact' onValueChange={onValueChange}>
+                <MenubarRadioItem value='compact'>Compact</MenubarRadioItem>
+                <MenubarRadioItem value='comfortable'>Comfortable</MenubarRadioItem>
               </MenubarRadioGroup>
             </MenubarContent>
           </MenubarMenu>
@@ -884,7 +882,7 @@ describe('Menubar', () => {
   describe('Disabled States', () => {
     it('renders disabled menu items', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <Menubar>
           <MenubarMenu>
@@ -908,7 +906,7 @@ describe('Menubar', () => {
     it('does not trigger onSelect for disabled items', async () => {
       const user = userEvent.setup();
       const onSelect = vi.fn();
-      
+
       render(
         <Menubar>
           <MenubarMenu>
@@ -932,7 +930,7 @@ describe('Menubar', () => {
 
     it('skips disabled items during keyboard navigation', async () => {
       const user = userEvent.setup();
-      
+
       render(
         <Menubar>
           <MenubarMenu>

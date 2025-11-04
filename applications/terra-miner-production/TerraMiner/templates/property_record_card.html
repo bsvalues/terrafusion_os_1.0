@@ -1,0 +1,313 @@
+{% extends "base.html" %}
+
+{% block title %}Property Record: {{ property_id }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-5xl mx-auto">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold mb-2">Property Record Card</h1>
+            <p class="text-gray-600 dark:text-gray-400">
+                Parcel ID: {{ property_id }} | {{ county|title }} County, {{ property_data.address }}
+            </p>
+            
+            <!-- Navigation Links -->
+            <div class="mt-4 flex flex-wrap gap-2">
+                <a href="{{ url_for('property_views.property_search') }}" class="inline-flex items-center text-primary hover:underline">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Back to Search
+                </a>
+                <a href="{{ url_for('property_views.api_property_details', property_id=property_id, county=county) }}" 
+                   class="inline-flex items-center text-primary hover:underline ml-4" target="_blank">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                    </svg>
+                    View JSON Data
+                </a>
+            </div>
+        </div>
+        
+        <!-- IAAO/USPAP Compliance Notice -->
+        <div class="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 p-4 mb-8">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-blue-800 dark:text-blue-200">
+                        This property record complies with <span class="font-semibold">International Association of Assessing Officers (IAAO)</span> 
+                        standards and <span class="font-semibold">Uniform Standards of Professional Appraisal Practice (USPAP)</span>.
+                        Data is sourced directly from {{ data_source }}.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Property Summary Card -->
+        <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden mb-8">
+            <div class="p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+                <h2 class="text-xl font-semibold">Property Summary</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    Data source: {{ data_source }}
+                </p>
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Left Column: Property Details -->
+                    <div>
+                        <h3 class="text-lg font-medium mb-4 border-b pb-2">Property Information</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Parcel ID</div>
+                                <div class="col-span-2 font-medium">{{ property_id }}</div>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Site Address</div>
+                                <div class="col-span-2">{{ property_data.address }}</div>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Owner</div>
+                                <div class="col-span-2">{{ property_data.owner }}</div>
+                            </div>
+                            
+                            {% if property_data.parcel_data %}
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Property Class</div>
+                                <div class="col-span-2">{{ property_data.parcel_data.PROPCLASS|default('Residential') }}</div>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Land Area</div>
+                                <div class="col-span-2">{{ property_data.parcel_data.ACRES|default('0') }} acres</div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="text-sm font-medium text-gray-500 dark:text-gray-400">County</div>
+                                <div class="col-span-2">{{ county|title }} County, WA</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Legal Description -->
+                        <div class="mt-6">
+                            <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Legal Description</h4>
+                            <div class="border border-gray-200 dark:border-gray-700 rounded-md p-3 bg-gray-50 dark:bg-gray-900 text-sm">
+                                {{ property_data.legal_description }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Column: Assessment Values -->
+                    <div>
+                        <h3 class="text-lg font-medium mb-4 border-b pb-2">Assessment Information</h3>
+                        
+                        {% if property_data.property_values %}
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Assessment Year</div>
+                                <div class="col-span-2">{{ property_data.property_values.TAXYEAR|default('2025') }}</div>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Land Value</div>
+                                <div class="col-span-2">${{ '{:,.0f}'.format(property_data.property_values.LANDVAL|default(0)) }}</div>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Improvement Value</div>
+                                <div class="col-span-2">${{ '{:,.0f}'.format(property_data.property_values.IMPVAL|default(0)) }}</div>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-2 font-medium">
+                                <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Value</div>
+                                <div class="col-span-2">${{ '{:,.0f}'.format(property_data.property_values.TOTVAL|default(0)) }}</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Market Value History Card -->
+                        <div class="mt-6 border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden">
+                            <div class="bg-gray-50 dark:bg-gray-900 p-3 border-b border-gray-200 dark:border-gray-700">
+                                <h4 class="font-medium text-sm">Market Value History</h4>
+                            </div>
+                            <div class="p-3">
+                                <div class="text-sm">
+                                    <div class="grid grid-cols-4 gap-2 mb-2 font-medium">
+                                        <div>Year</div>
+                                        <div>Land</div>
+                                        <div>Improvements</div>
+                                        <div>Total</div>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-4 gap-2 mb-1">
+                                        <div>{{ property_data.property_values.TAXYEAR|default('2025') }}</div>
+                                        <div>${{ '{:,.0f}'.format(property_data.property_values.LANDVAL|default(0)) }}</div>
+                                        <div>${{ '{:,.0f}'.format(property_data.property_values.IMPVAL|default(0)) }}</div>
+                                        <div>${{ '{:,.0f}'.format(property_data.property_values.TOTVAL|default(0)) }}</div>
+                                    </div>
+                                    
+                                    {% if property_data.property_values.PREVYEAR %}
+                                    <div class="grid grid-cols-4 gap-2 mb-1">
+                                        <div>{{ property_data.property_values.PREVYEAR }}</div>
+                                        <div>${{ '{:,.0f}'.format(property_data.property_values.PREVLANDVAL|default(0)) }}</div>
+                                        <div>${{ '{:,.0f}'.format(property_data.property_values.PREVIMPVAL|default(0)) }}</div>
+                                        <div>${{ '{:,.0f}'.format(property_data.property_values.PREVTOTVAL|default(0)) }}</div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="bg-yellow-50 dark:bg-yellow-900/30 border-l-4 border-yellow-400 p-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-yellow-700 dark:text-yellow-200">
+                                        Assessment value information is not available from the selected data source.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Building Details Card (if property_details exists) -->
+        {% if property_data.property_details %}
+        <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden mb-8">
+            <div class="p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+                <h2 class="text-xl font-semibold">Building Details</h2>
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Building Attributes -->
+                    <div>
+                        <h3 class="text-lg font-medium mb-4 border-b pb-2">Building Attributes</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Building Type</div>
+                                <div class="col-span-2">{{ property_data.property_details.BLDGTYPE|default('Residential') }}</div>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Year Built</div>
+                                <div class="col-span-2">{{ property_data.property_details.YEARBUILT|default('N/A') }}</div>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Square Footage</div>
+                                <div class="col-span-2">{{ '{:,.0f}'.format(property_data.property_details.SQFT|default(0)) }} sq ft</div>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Bedrooms</div>
+                                <div class="col-span-2">{{ property_data.property_details.BEDROOMS|default('N/A') }}</div>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Bathrooms</div>
+                                <div class="col-span-2">{{ property_data.property_details.BATHROOMS|default('N/A') }}</div>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Stories</div>
+                                <div class="col-span-2">{{ property_data.property_details.STORIES|default('N/A') }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Building Features -->
+                    <div>
+                        <h3 class="text-lg font-medium mb-4 border-b pb-2">Additional Features</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Garage Type</div>
+                                <div class="col-span-2">{{ property_data.property_details.GARAGETYPE|default('N/A') }}</div>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Garage Size</div>
+                                <div class="col-span-2">{{ property_data.property_details.GARAGESIZE|default('N/A') }}</div>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Basement</div>
+                                <div class="col-span-2">{{ property_data.property_details.BASEMENT|default('N/A') }}</div>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Foundation</div>
+                                <div class="col-span-2">{{ property_data.property_details.FOUNDATION|default('N/A') }}</div>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Exterior</div>
+                                <div class="col-span-2">{{ property_data.property_details.EXTERIOR|default('N/A') }}</div>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="text-sm font-medium text-gray-500 dark:text-gray-400">Roof Type</div>
+                                <div class="col-span-2">{{ property_data.property_details.ROOFTYPE|default('N/A') }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Raw Data Preview (for developers) -->
+        <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden mb-8 collapse collapse-arrow">
+            <input type="checkbox" /> 
+            <div class="collapse-title p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+                <h2 class="text-xl font-semibold">Raw Property Data</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    Developer view - click to expand
+                </p>
+            </div>
+            <div class="collapse-content p-0">
+                <div class="overflow-x-auto">
+                    <pre class="bg-gray-100 dark:bg-gray-900 p-4 text-xs overflow-auto max-h-96">{{ property_data|tojson(indent=2) }}</pre>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Data Source Information -->
+        <div class="card bg-base-100 shadow-xl mb-8">
+            <div class="card-body">
+                <h3 class="text-lg font-semibold mb-2">About This Data</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    Property information is sourced directly from official county assessment databases
+                    in compliance with International Association of Assessing Officers (IAAO) standards
+                    and Uniform Standards of Professional Appraisal Practice (USPAP).
+                </p>
+                
+                <div class="bg-blue-50 dark:bg-blue-900/30 rounded p-3 text-sm">
+                    <p class="font-medium text-blue-700 dark:text-blue-300">Current Data Source</p>
+                    <p class="text-blue-600 dark:text-blue-400">{{ data_source }}</p>
+                    <p class="text-xs text-blue-500 dark:text-blue-400 mt-1">
+                        Last updated: {{ property_data.parcel_data.LASTUPDATE|default('Today') }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

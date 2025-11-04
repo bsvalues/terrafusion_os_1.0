@@ -1,0 +1,14 @@
+{
+    "set": [
+        "class",
+        "classification",
+        "compute covariance",
+        "image processing",
+        "multiband",
+        "multivariate statistics",
+        "remote sensing",
+        "signature file",
+        "supervised",
+        "training sample"
+    ]
+}

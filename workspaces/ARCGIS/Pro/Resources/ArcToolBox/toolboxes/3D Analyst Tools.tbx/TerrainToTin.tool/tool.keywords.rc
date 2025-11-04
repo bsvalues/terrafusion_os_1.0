@@ -1,0 +1,15 @@
+{
+    "set": [
+        "convert",
+        "edges",
+        "edit",
+        "lidar",
+        "mass points",
+        "nodes",
+        "points",
+        "terrain",
+        "terrain dataset",
+        "tin",
+        "triangles"
+    ]
+}

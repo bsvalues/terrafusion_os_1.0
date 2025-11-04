@@ -1,0 +1,258 @@
+{
+    "type": "FunctionTool",
+    "guid": "{2aaa21a4-8417-48d1-b63a-782abb9a4687}",
+    "displayname": "$rc:title",
+    "helpcontent": "71010017",
+    "description": "$rc:description",
+    "product": "200",
+    "params": {
+        "in_utility_network": {
+            "displayname": "$rc:in_utility_network.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    },
+                    {
+                        "type": "DETraceNetwork"
+                    }
+                ]
+            },
+            "description": "$rc:in_utility_network.descr"
+        },
+        "template_name": {
+            "displayname": "$rc:template_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:template_name.descr"
+        },
+        "is_active": {
+            "displayname": "$rc:is_active.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ACTIVE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "INACTIVE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:is_active.descr"
+        },
+        "network_source": {
+            "displayname": "$rc:network_source.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DETable"
+                    },
+                    {
+                        "type": "DEFeatureClass"
+                    }
+                ]
+            },
+            "depends": [
+                "in_utility_network"
+            ],
+            "description": "$rc:network_source.descr"
+        },
+        "where_clause": {
+            "displayname": "$rc:where_clause.title",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "network_source"
+            ],
+            "description": "$rc:where_clause.descr"
+        },
+        "capability": {
+            "displayname": "$rc:capability.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ALLOW_TO_COLLAPSE_CONTAINER",
+                        "code": "$rc:capability.domain.ALLOW_TO_COLLAPSE_CONTAINER"
+                    },
+                    {
+                        "value": "PREVENT_TO_COLLAPSE_CONTAINER",
+                        "code": "$rc:capability.domain.PREVENT_TO_COLLAPSE_CONTAINER"
+                    },
+                    {
+                        "value": "ALLOW_TO_REDUCE_JUNCTION",
+                        "code": "$rc:capability.domain.ALLOW_TO_REDUCE_JUNCTION"
+                    },
+                    {
+                        "value": "PREVENT_TO_REDUCE_JUNCTION",
+                        "code": "$rc:capability.domain.PREVENT_TO_REDUCE_JUNCTION"
+                    },
+                    {
+                        "value": "SAVE_EMPTY_CONTAINER_AS_POLYGON_IF_UNCONNECTED",
+                        "code": "$rc:capability.domain.SAVE_EMPTY_CONTAINER_AS_POLYGON_IF_UNCONNECTED"
+                    },
+                    {
+                        "value": "IGNORED_STARTING_POINT_FOR_UPSTREAM_TRACE",
+                        "code": "$rc:capability.domain.IGNORED_STARTING_POINT_FOR_UPSTREAM_TRACE"
+                    },
+                    {
+                        "value": "IGNORED_STARTING_POINT_FOR_DOWNSTREAM_TRACE",
+                        "code": "$rc:capability.domain.IGNORED_STARTING_POINT_FOR_DOWNSTREAM_TRACE"
+                    }
+                ]
+            },
+            "value": "PREVENT_TO_COLLAPSE_CONTAINER",
+            "description": "$rc:capability.descr"
+        },
+        "description": {
+            "type": "optional",
+            "control_guid": "{E5456E51-0C41-4797-9EE4-5269820C6F0E}",
+            "displayname": "$rc:description.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:description.descr"
+        },
+        "out_utility_network": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_utility_network.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEUtilityNetwork"
+                    },
+                    {
+                        "type": "DETraceNetwork"
+                    }
+                ]
+            },
+            "addtomap": "false"
+        },
+        "out_template_name": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_template_name.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        },
+        "valence_0": {
+            "type": "optional",
+            "displayname": "$rc:valence_0.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "APPLY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_APPLY"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:valence_0.descr"
+        },
+        "valence_1": {
+            "type": "optional",
+            "displayname": "$rc:valence_1.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "APPLY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_APPLY"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:valence_1.descr"
+        },
+        "valence_2": {
+            "type": "optional",
+            "displayname": "$rc:valence_2.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "APPLY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_APPLY"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:valence_2.descr"
+        },
+        "valence_3_plus": {
+            "type": "optional",
+            "displayname": "$rc:valence_3_plus.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "APPLY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_APPLY"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:valence_3_plus.descr"
+        }
+    }
+}

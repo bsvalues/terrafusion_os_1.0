@@ -1,0 +1,8 @@
+{
+    "set": [
+        "delta tables",
+        "geodatabase administration",
+        "sdegdbrepair",
+        "versioning"
+    ]
+}

@@ -1,0 +1,127 @@
+{
+    "type": "FunctionTool",
+    "guid": "{f86f6d00-6b93-480d-8ace-563e64b7a914}",
+    "displayname": "$rc:title",
+    "helpcontent": "3070005",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "inputs": {
+            "display_order": "0",
+            "displayname": "$rc:inputs.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPTableView"
+                }
+            },
+            "description": "$rc:inputs.descr"
+        },
+        "output": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:output.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFeatureClass"
+                    },
+                    {
+                        "type": "DETable"
+                    }
+                ]
+            },
+            "description": "$rc:output.descr"
+        },
+        "field_mappings": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:field_mappings.title",
+            "datatype": {
+                "type": "GPFieldMapping"
+            },
+            "depends": [
+                "inputs"
+            ],
+            "description": "$rc:field_mappings.descr"
+        },
+        "add_source": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:add_source.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ADD_SOURCE_INFO"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_SOURCE_INFO"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:add_source.descr"
+        },
+        "field_match_mode": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:field_match_mode.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "AUTOMATIC",
+                        "code": "$rc:field_match_mode.domain.AUTOMATIC"
+                    },
+                    {
+                        "value": "MANUAL_EDIT",
+                        "code": "$rc:field_match_mode.domain.MANUAL_EDIT"
+                    },
+                    {
+                        "value": "USE_FIRST_SCHEMA",
+                        "code": "$rc:field_match_mode.domain.USE_FIRST_SCHEMA"
+                    }
+                ]
+            },
+            "value": "AUTOMATIC",
+            "description": "$rc:field_match_mode.descr"
+        }
+    },
+    "environments": [
+        "MDomain",
+        "MResolution",
+        "MTolerance",
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "ZDomain",
+        "ZResolution",
+        "ZTolerance",
+        "extent",
+        "geographicTransformations",
+        "maintainAttachments",
+        "outputCoordinateSystem",
+        "outputMFlag",
+        "outputZFlag",
+        "outputZValue",
+        "preserveGlobalIds",
+        "scratchWorkspace",
+        "transferGDBAttributeProperties",
+        "workspace"
+    ]
+}

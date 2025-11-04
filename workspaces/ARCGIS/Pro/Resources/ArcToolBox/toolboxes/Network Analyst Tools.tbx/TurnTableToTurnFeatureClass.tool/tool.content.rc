@@ -1,0 +1,25 @@
+{
+    "map": {
+        "config_keyword.descr": "Specifies the configuration keyword that determines the storage parameters of the output turn feature class. This parameter is used only if the output turn feature class is created in a workgroup or enterprise geodatabase.",
+        "config_keyword.title": "Configuration Keyword",
+        "description": "Converts an ArcView turn table or ArcInfo Workstation coverage turn table to an ArcGIS turn feature class.",
+        "in_turn_table.descr": "The .dbf file or INFO turn table from which the new turn feature class will be created.",
+        "in_turn_table.title": "Input Turn Table",
+        "maximum_edges.descr": "The maximum number of edges per turn in the new turn feature class. The default value is 5. The maximum value is 50.",
+        "maximum_edges.title": "Maximum Edges",
+        "out_feature_class_name.descr": "The name of the new turn feature class to create.",
+        "out_feature_class_name.title": "Output Turn Feature Class Name",
+        "out_turn_features.title": "Output Turn Feature Class",
+        "reference_line_features.descr": "The line feature class to which the input turn table refers. The feature class must be a source in a network dataset.",
+        "reference_line_features.title": "Reference Line Features",
+        "reference_nodes_table.descr": "<xdoc><p>The nodes.dbf table in the .nws folder containing the original ArcView GIS network in which the input turn table participated.</p><p>This parameter is ignored if the input turn table is an INFO table.</p><p>If the input turn table is a .dbf table and this parameter is omitted, then U-turns and turns that traverse between edges connected to each other at both ends will not be created in the output turn feature class.</p><p>Errors will be reported in an error file written to the directory defined by the TEMP system variable. The full path name to the error file is reported as a warning message.</p></xdoc>",
+        "reference_nodes_table.title": "Reference Nodes Table",
+        "spatial_grid_1.descr": "This parameter has been deprecated in ArcGIS Pro. Any value you enter is ignored.",
+        "spatial_grid_1.title": "Output Spatial Grid 1",
+        "spatial_grid_2.descr": "This parameter has been deprecated in ArcGIS Pro. Any value you enter is ignored.",
+        "spatial_grid_2.title": "Output Spatial Grid 2",
+        "spatial_grid_3.descr": "This parameter has been deprecated in ArcGIS Pro. Any value you enter is ignored.",
+        "spatial_grid_3.title": "Output Spatial Grid 3",
+        "title": "Turn Table To Turn Feature Class"
+    }
+}

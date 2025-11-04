@@ -1,0 +1,14 @@
+{
+    "set": [
+        "bearing",
+        "general",
+        "movement",
+        "orientation",
+        "overall",
+        "pattern",
+        "point pattern analysis",
+        "summary",
+        "trend",
+        "vector"
+    ]
+}

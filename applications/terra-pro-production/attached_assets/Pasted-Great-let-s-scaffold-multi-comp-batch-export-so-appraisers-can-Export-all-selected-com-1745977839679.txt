@@ -1,0 +1,129 @@
+Great — let’s scaffold **multi-comp batch export** so appraisers can:
+
+- Export **all selected comps** from the grid as one PDF bundle  
+- Use for **report attachments**, **audits**, or **offline delivery**  
+- (Later) customize headers/branding per client or office
+
+---
+
+# 🗂️ Multi-Comp Batch Export — Scaffold
+
+---
+
+## 🧩 Route: `POST /api/export/pdf-batch`
+
+```ts
+exportRouter.post('/export/pdf-batch', async (req, res) => {
+  const { snapshotIds }: { snapshotIds: string[] } = req.body;
+
+  const snapshots = await db.query.comparableSnapshots.findMany({
+    where: (s) => s.id.in(snapshotIds),
+  });
+
+  if (!snapshots.length) return res.status(404).json({ error: 'No snapshots found' });
+
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+
+  const pdfBuffers: Buffer[] = [];
+
+  for (const snap of snapshots) {
+    const html = renderHTMLForSnapshot(snap); // same template logic as before
+    await page.setContent(html, { waitUntil: 'networkidle0' });
+    const pdf = await page.pdf({ format: 'A4', printBackground: true });
+    pdfBuffers.push(pdf);
+  }
+
+  await browser.close();
+
+  const merged = await mergePdfBuffers(pdfBuffers);
+
+  res.set({
+    'Content-Type': 'application/pdf',
+    'Content-Disposition': 'inline; filename=comp_bundle.pdf',
+  });
+
+  res.send(merged);
+});
+```
+
+---
+
+## 🧠 Helper: `mergePdfBuffers()`
+
+Use `pdf-lib` to merge individual buffers:
+
+```ts
+import { PDFDocument } from 'pdf-lib';
+
+async function mergePdfBuffers(buffers: Buffer[]): Promise<Buffer> {
+  const mergedPdf = await PDFDocument.create();
+
+  for (const buf of buffers) {
+    const doc = await PDFDocument.load(buf);
+    const copiedPages = await mergedPdf.copyPages(doc, doc.getPageIndices());
+    copiedPages.forEach((page) => mergedPdf.addPage(page));
+  }
+
+  const mergedBytes = await mergedPdf.save();
+  return Buffer.from(mergedBytes);
+}
+```
+
+---
+
+## 🧪 Frontend Usage (in CompsGrid)
+
+```tsx
+async function exportSelectedComps() {
+  const selectedIds = selectedRows.map(row => row.id);
+  const { data } = await axios.post('/api/export/pdf-batch', {
+    snapshotIds: selectedIds,
+  }, { responseType: 'blob' });
+
+  const url = window.URL.createObjectURL(new Blob([data]));
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', 'comps_bundle.pdf');
+  document.body.appendChild(link);
+  link.click();
+}
+```
+
+Add a button like:
+
+```tsx
+<Button onClick={exportSelectedComps}>
+  Export Selected Comps as PDF
+</Button>
+```
+
+---
+
+## ✅ Final Output
+
+- A single `.pdf` with one page per snapshot
+- Works with any number of comps
+- Ready to attach to reports, email, or print
+
+---
+
+## 🔜 Optional Enhancements
+
+- 🧾 Add table of contents
+- 📎 Add photo thumbnails
+- 🏢 Per-company branding (logo/footer)
+- 📦 Zip archive option with Excel + PDF
+
+---
+
+You’ve now got a full pipeline:
+→ Select comps  
+→ View diffs  
+→ Push to form  
+→ Export individually or in bulk
+
+Want to wire up:
+1. **Company-branded headers** next?
+2. **Team-wide mapping templates** for shared office presets?
+3. **PDF download via link-to-snapshot view** (QR-code embedded)?

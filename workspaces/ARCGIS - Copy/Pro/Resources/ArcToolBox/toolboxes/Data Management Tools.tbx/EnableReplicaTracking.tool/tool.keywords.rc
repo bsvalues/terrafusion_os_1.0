@@ -1,0 +1,15 @@
+{
+    "set": [
+        "bidirectional",
+        "collaboration",
+        "distributed",
+        "feature service",
+        "gdb",
+        "offline",
+        "replication",
+        "sde",
+        "sync",
+        "tracking",
+        "distributed geodatabase"
+    ]
+}

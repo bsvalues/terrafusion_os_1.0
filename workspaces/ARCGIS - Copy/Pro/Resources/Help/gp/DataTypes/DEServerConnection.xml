@@ -1,0 +1,5 @@
+<DataType Name="DEServerConnection">
+  <DisplayName>ServerConnection</DisplayName>
+  <Description>A server connection.</Description>
+</DataType>
+

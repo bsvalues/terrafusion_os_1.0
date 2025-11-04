@@ -1,0 +1,5 @@
+<DataType Name="DEGPServer">
+  <DisplayName>GPServer</DisplayName>
+  <Description>A geoprocessing server.</Description>
+</DataType>
+

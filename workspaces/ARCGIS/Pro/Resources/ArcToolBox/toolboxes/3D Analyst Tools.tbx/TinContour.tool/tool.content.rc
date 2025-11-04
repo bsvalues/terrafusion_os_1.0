@@ -1,0 +1,25 @@
+{
+    "map": {
+        "base_contour.descr": "Along with the index interval, the base height is used to determine what contours are produced. The base height is a starting point from which the index interval is either added or subtracted. By default, the base contour is 0.0.",
+        "base_contour.title": "Base Contour",
+        "contour_field.descr": "The field containing contour values.",
+        "contour_field.title": "Contour Field",
+        "contour_field_precision.descr": "The precision of the contour field. Zero specifies an integer, and the numbers 1–9 indicate how many decimal places the field will contain. By default, the field will be an integer (0).",
+        "contour_field_precision.title": "Contour Field Precision",
+        "description": "Generates contours from a TIN surface.",
+        "in_tin.descr": "The surface from which the contours will be interpolated.",
+        "in_tin.title": "Input TIN",
+        "index_interval.descr": "The difference, in Z units, between index contours. The value specified should be evenly divisible by the contour interval. Typically, it’s five times greater. Use of this parameter adds an attribute field to the output feature class that’s used to differentiate index contours from regular contours.",
+        "index_interval.title": "Index Interval",
+        "index_interval_field.descr": "The name of the field used to record whether a contour is a regular or an index contour. By default, the value is ‘Index’.",
+        "index_interval_field.title": "Index Interval Field",
+        "interval.descr": "The interval between the contours.",
+        "interval.title": "Contour Interval",
+        "out_feature_class.descr": "The output feature class.",
+        "out_feature_class.title": "Output Feature Class",
+        "summary": "<xdoc><p>Generates contours from a TIN surface.</p><note type=\"legacy\"/><p group=\"note\">This is a deprecated tool that has been superseded by the Surface Contour tool.</p></xdoc>",
+        "title": "TIN Contour",
+        "z_factor.descr": "Specifies a factor by which to multiply the surface heights. Used to convert z units to x and y units.",
+        "z_factor.title": "Z Factor"
+    }
+}

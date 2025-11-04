@@ -1,0 +1,36 @@
+{
+    "type": "FunctionTool",
+    "guid": "{d0991b81-2cd4-495b-857b-444ea5a526b9}",
+    "displayname": "$rc:title",
+    "helpcontent": "3170010",
+    "description": "$rc:description",
+    "product": "200",
+    "params": {
+        "in_dataset": {
+            "displayname": "$rc:in_dataset.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_dataset.descr"
+        },
+        "in_name": {
+            "type": "optional",
+            "displayname": "$rc:in_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:in_name.descr"
+        },
+        "out_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_dataset.title",
+            "datatype": {
+                "type": "GPTableView"
+            }
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

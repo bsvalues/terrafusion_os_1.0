@@ -1,0 +1,18 @@
+{
+    "set": [
+        "cluster",
+        "covariance",
+        "dependency",
+        "disperse",
+        "distribution",
+        "geographic",
+        "global",
+        "like",
+        "point pattern analysis",
+        "random",
+        "residual",
+        "similar",
+        "tobler",
+        "value"
+    ]
+}

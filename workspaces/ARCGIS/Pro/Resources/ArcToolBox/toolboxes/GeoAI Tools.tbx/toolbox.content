@@ -1,0 +1,37 @@
+{
+    "version": "1.0",
+    "alias": "geoai",
+    "displayname": "$rc:title",
+    "description": "$rc:descr",
+    "helpcontext": "79000000",
+    "toolsets": {
+        "$rc:toolset4.name": {
+            "tools": [
+                "PredictUsingAutoML",
+                "TrainUsingAutoML"
+            ]
+        },
+        "$rc:toolset2.name": {
+            "tools": [
+                "ExtractFeaturesUsingAIModels",
+                "TrainUsingAutoDL"
+            ]
+        },
+        "$rc:toolset1.name": {
+            "tools": [
+                "ClassifyTextUsingDeepLearning",
+                "ExtractEntitiesUsingDeepLearning",
+                "TrainEntityRecognitionModel",
+                "TrainTextClassificationModel",
+                "TrainTextTransformationModel",
+                "TransformTextUsingDeepLearning"
+            ]
+        },
+        "$rc:toolset3.name": {
+            "tools": [
+                "ForecastUsingTimeSeriesModel",
+                "TrainTimeSeriesForecastingModel"
+            ]
+        }
+    }
+}

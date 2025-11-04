@@ -1,0 +1,1889 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.TaskService.Domain</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.TaskService.Domain.Attachment">
+            <summary>
+            Represents a document attached to an item, such as a task.
+            </summary>
+            <remarks>TODO: maybe generalize this so that it's not
+            strictly associated with just tasks?</remarks>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Attachment.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Attachment.#ctor(TrueAutomation.TaskService.Domain.User,TrueAutomation.TaskService.Domain.Priority,System.DateTime,TrueAutomation.TaskService.Domain.Task)">
+            <summary>
+            Class constructor -- initializes an instance of the class
+            with valid data.
+            </summary>
+            <param name="author">The user who created the attachment.</param>
+            <param name="priority">The priority code associated with
+            this attachment.</param>
+            <param name="createdDate">The timestamp indicating when
+            this attachment was created.</param>
+            <param name="task">The task with which this attachment
+            is associated.</param>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Attachment.Author">
+            <summary>
+            The user who initially created the attachment.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Attachment.Priority">
+            <summary>
+            The priority code associated with this attachment.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Attachment.CreatedDate">
+            <summary>
+            The creation timestamp associated with this attachment.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Attachment.Task">
+            <summary>
+            A reference to the task with which this attachment is associated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Attachment.Uri">
+            <summary>
+            A URI indicating the location of the actual attachment file.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Attachment.ToDTO">
+            <summary>
+            Converts the Attachment to a DTO
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.ChecklistItem.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.ChecklistItem.#ctor(System.String,System.String,TrueAutomation.TaskService.Domain.TaskStep)">
+            <summary>
+            Class constructor -- creates a valid instance of the task
+            category class.
+            </summary>
+            <param name="name">The name of the checklist item.</param>
+            <param name="description">The text associated with the
+            checklist item.</param>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.ChecklistItem.Name">
+            <summary>
+            The name of the checklist item.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.ChecklistItem.Text">
+            <summary>
+            The full text associated with the checklist item.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.ChecklistItem.TaskStep">
+            <summary>
+            The task step with which this checklist item is associated.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.ChecklistItem.ToDTO">
+            <summary>
+            Converts the ChecklistItem to a DTO
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.Domain.CustomOrderedList">
+            <summary>
+            Represents a custom ordered list which defines a
+            specific configuration of custom ordered list items, normally associated
+            with a type defined in the customOrderedListType .
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.CustomOrderedList.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.CustomOrderedList.#ctor(System.String,System.String)">
+            <summary>
+             Class constructor -- initializes an instance of the class.
+            </summary>
+            <param name="customOrderedListName">The name of the custom ordered list</param>
+            <param name="customOrderedListType">The type of the custom ordered list</param>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.CustomOrderedList.Init">
+            <summary>
+            Initializer method to create the internal data members
+            for the custom ordered list class.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.CustomOrderedList.CustomOrderedListName">
+            <summary>
+            The name of the Custom Ordered List
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.CustomOrderedList.CustomOrderedListType">
+            <summary>
+            The type of the Custom Ordered List
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.CustomOrderedList.CustomOrderListItems">
+            <summary>
+            The list of Custom Ordered List items
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.CustomOrderedList.ToDTO">
+            <summary>
+            Converts the CustomOrderedList to a DTO
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.CustomOrderedList.AddCustomOrderedListItem(TrueAutomation.TaskService.Domain.CustomOrderedListItem)">
+            <summary>
+            Adds a Custom Ordered List Item to the Custom Ordered List
+            </summary>
+            <param name="item"></param>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.CustomOrderedList.RemoveCustomOrderedListItem(TrueAutomation.TaskService.Domain.CustomOrderedListItem)">
+            <summary>
+            Removes a Custom Ordered List Item from the Custom Ordered List
+            </summary>
+            <param name="item"></param>
+        </member>
+        <member name="T:TrueAutomation.TaskService.Domain.CustomOrderedListItem">
+            <summary>
+            Represents the custom ordered list Item
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.CustomOrderedListItem.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.CustomOrderedListItem.#ctor(System.String,System.String,System.Int32)">
+            <summary>
+             Class constructor -- initializes an instance of the class.
+            </summary>
+            <param name="itemId">Id of the custom ordered list Item</param>
+            <param name="displayText">The text to be displayed for this custom ordered list Item</param>
+            <param name="order">The order it needs to be in compared to the other items</param>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.CustomOrderedListItem.#ctor(System.String,System.String,System.Int32,TrueAutomation.TaskService.Domain.CustomOrderedList)">
+            <summary>
+             Class constructor -- initializes an instance of the class.
+            </summary>
+            <param name="itemId">Id of the custom ordered list Item</param>
+            <param name="displayText">The text to be displayed for this custom ordered list Item</param>
+            <param name="order">The order it needs to be in compared to the other items</param>
+            <param name="customOrderedList">The custom Ordered list of which this item is part of</param>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.CustomOrderedListItem.Init">
+            <summary>
+            Initializer method to create the internal data members
+            for the task category class.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.CustomOrderedListItem.ItemId">
+            <summary>
+            Id of the custom ordered list Item
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.CustomOrderedListItem.DisplayText">
+            <summary>
+            The text to be displayed for this custom ordered list Item
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.CustomOrderedListItem.Order">
+            <summary>
+            The order it needs to be in compared to the other items
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.CustomOrderedListItem.TaskProperty">
+            <summary>
+            The task property that this item is associated to
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.CustomOrderedListItem.CustomOrderedList">
+            <summary>
+            The custom Ordered list of which this item is part of
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.CustomOrderedListItem.ToDTO">
+            <summary>
+            Converts the CustomOrderedListItem to a DTO
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.CustomOrderedListItem.CompareTo(System.Object)">
+            <summary>
+            Comparer based on sorting defined by custom type
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.TaskService.Domain.ICustomOrderedList">
+            <summary>
+            The interface that would be implemented by the types that want to have custom ordered lists to be created.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.ICustomOrderedList.GetId">
+            <summary>
+            This returns the actual Item Id. This would be used to perform any activity on the type from any workflow
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.ICustomOrderedList.GetCustomOrderedListName">
+            <summary>
+            This displays the text for th eitem in Custom Ordered List screens
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.ICustomOrderedList.GetCustomOrderedListType">
+            <summary>
+            This returns the type  that has implemented the interface
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.ICustomOrderedList.GetTaskProperty">
+            <summary>
+            This returns the task property associated with this type. This generally would be the name of the type
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.ICustomOrderedList.GetActiveItemsList``1(System.Collections.Generic.IList{``0})">
+            <summary>
+            Returns a list of active items / un-deleted items from the list of items passed in
+            </summary>
+            <typeparam name="T">User Type</typeparam>
+            <param name="items">User List</param>
+            <returns>Active Items that are not deleted in PACS</returns>
+        </member>
+        <member name="T:TrueAutomation.TaskService.Domain.ICustomSortOrder">
+            <summary>
+            Interface to define the sort order of item defined in the custom ordered list
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.ICustomSortOrder.GetSortOrder">
+            <summary>
+            Method that would return the Sort order of the item
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.TaskService.Domain.SearchCriteriaGroup">
+            <summary>
+            Represents a comparitive Criteria Grouping used for searching
+            </summary>
+            <remarks>TODO: maybe generalize this so that it's not
+            strictly associated with just tasks?</remarks>
+        </member>
+        <member name="T:TrueAutomation.TaskService.Domain.ServiceProvider">
+            <summary>
+            Represents a Telephone Service Provider for sending Email and SMS.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.ServiceProvider.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.ServiceProvider.#ctor(System.String,System.String)">
+            <summary>
+            Class constructor -- initializes an instance of the ServiceProvider
+            class with valid data.
+            </summary>
+            <param name="description">The description text for the ServiceProvider
+            code associated with object.</param>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.ServiceProvider.Name">
+            <summary>
+            The name of the ServiceProvider.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.ServiceProvider.Description">
+            <summary>
+            The description of this ServiceProvider.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.ServiceProvider.SMSAddress">
+            <summary>
+            Indicates the Email Address of the Mobile Service 
+            Provider to which the SMS message will be sent to.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.ServiceProvider.Init">
+            <summary>
+            Initializer method to create the internal data members
+            for the task class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.ServiceProvider.ToDTO">
+            <summary>
+            Converts the Status to a DTO
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.UICustomizationCategory.#ctor">
+            <summary>
+            General constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.UICustomizationCategory.#ctor(System.String,System.String)">
+            <summary>
+            Constructor from values passed
+            </summary>
+            <param name="categoryName"></param>
+            <param name="categoryDescription"></param>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.UICustomizationCategory.#ctor(TrueAutomation.TaskService.DTOs.UICustomizationCategoryDTO)">
+            <summary>
+            Constructor from dto
+            </summary>
+            <param name="dto"></param>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.UICustomizationCategory.CategoryName">
+            <summary>
+            The Name of the category
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.UICustomizationCategory.CategoryDescription">
+            <summary>
+            The description of the category
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.UICustomizationCategory.ToDTO">
+            <summary>
+            Converts the entity to DTO
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.TaskService.Domain.UIElementContext">
+            <summary>
+            Represents a user interface element
+            context item
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.UIElementContext.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.UIElementContext.#ctor(System.String,System.String,System.String,TrueAutomation.TaskService.Domain.UIElement)">
+            <summary>
+            Class constructor -- initializes an instance of the context
+            class with valid data.
+            </summary>
+            <param name="description">The description text for the context
+            code associated with object.</param>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.UIElementContext.ClassFullName">
+            <summary>
+            The assembly associated with the UI Element
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.UIElementContext.Code">
+            <summary>
+            The code associated with the context
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.UIElementContext.Description">
+            <summary>
+            The description associated with the context
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.UIElementContext.UiElement">
+            <summary>
+            The UI element associated with the context
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.UIElementContext.DataRecordDefinition">
+            <summary>
+            The UI element associated with the context
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.UIElementContext.ToKeyValuePair">
+            <summary>
+            Converts the Context to a KeyValuePair
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.Domain.SavedSearch">
+            <summary>
+            Represents a Saved Search 
+            </summary>
+            <remarks>TODO: maybe generalize this so that it's not
+            strictly associated with just tasks?</remarks>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.SavedSearch.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.SavedSearch.#ctor(TrueAutomation.TaskService.DTOs.SearchDTO)">
+            <summary>
+            Copy constructor
+            <remarks>copy from a DTO</remarks>
+            </summary>
+            <param name="dto"></param>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.SavedSearch.Name">
+            <summary>
+            The Name of the field used for evaluting an expression
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.SavedSearch.Criteria">
+            <summary>
+            The criteria needed for searching
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.SavedSearch.creator">
+            <summary>
+            the user that created the saved search
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.SavedSearch.SecurityDescriptor">
+            <summary>
+            The Security Descriptor Id for this Queue
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.SavedSearch.ToDTO">
+            <summary>
+            Converts the current Expression Object to a DTO for transport purposes.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.SavedSearch.ToSimpleDTO">
+            <summary>
+            Converts the current Expression Object to a DTO for transport purposes.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.TaskService.Domain.SearchCriteria">
+            <summary>
+            Represents a comparitive Criteria used for searching
+            </summary>
+            <remarks>TODO: maybe generalize this so that it's not
+            strictly associated with just tasks?</remarks>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.SearchCriteria.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.SearchCriteria.#ctor(TrueAutomation.Core.DTO.CriteriaDTO)">
+            <summary>
+            Copy constructor
+            <remarks>copy from a DTO</remarks>
+            </summary>
+            <param name="dto"></param>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.SearchCriteria.LeftCriteria">
+            <summary>
+            Set of criteria used for the left hand side of a binary tree representation of search terms
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.SearchCriteria.RightCriteria">
+            <summary>
+            Set of criteria used for the right hand side of a binary tree representation of search terms
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.SearchCriteria.JoinType">
+            <summary>
+            The type of join for the binary tree
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.SearchCriteria.IsGroup">
+            <summary>
+            Indicates whether the Left Criteria and Right Criteria are being grouped in the binary tree
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.SearchCriteria.Expression">
+            <summary>
+            The expression to evaluate at the leaves of the binary tree.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.SearchCriteria.TopRange">
+            <summary>
+            The Row number where the join criteria begins
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.SearchCriteria.BottomRange">
+            <summary>
+             Row number where the join criteria ends
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.SearchCriteria.ToDTO">
+            <summary>
+            Converts the current Expression Object to a DTO for transport purposes.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.TaskService.Domain.SearchExpression">
+            <summary>
+            Represents a comparitive expression used for searching
+            </summary>
+            <remarks>TODO: maybe generalize this so that it's not
+            strictly associated with just tasks?</remarks>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.SearchExpression.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.SearchExpression.FieldName">
+            <summary>
+            The Name of the field used for evaluting an expression
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.SearchExpression.FieldSearchValues">
+            <summary>
+            The Name of the field used for evaluting an expression
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.SearchExpression.Operand">
+            <summary>
+            The type of operation to be done for the given expression
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.SearchExpression.RowNumber">
+            <summary>
+            The Row number of the expression
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.SearchExpression.JoinDisplay">
+            <summary>
+            The join type at the row of the expression
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.SearchExpression.AddFieldSearchValues(System.Object)">
+            <summary>
+            Serialize an object and add it to the list of fields being compared.
+            </summary>
+            <param name="val"></param>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.SearchExpression.ToDTO">
+            <summary>
+            Converts the current Expression Object to a DTO for transport purposes.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.TaskService.Domain.DataRecordReference">
+            <summary>
+            Represents the data record 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.DataRecordReference.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.DataRecordReference.Name">
+            <summary>
+            The Name of the DataRecord
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.DataRecordReference.Type">
+            <summary>
+            The Type of DataRecord
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.DataRecordReference.Definition">
+            <summary>
+            The Definition of the DataRecord in question
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.DataRecordReference.Parameters">
+            <summary>
+            A List of KeyValuePairs for the fields and types required in the DataRecord.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.DataRecordReference.Task">
+            <summary>
+            A reference to the task with which this item is associated.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.DataRecordReference.SetKeyValues(System.String,System.Object)">
+            <summary>
+            Treats the Paramenters more like a Key-Value Pair and set's their values.  If the key is not found, we add it along with a back reference.
+            </summary>
+            <remarks>Validation against the DataRecordDefinition is also performed within this method.</remarks>
+            <param name="key">String representing the key of the pair</param>
+            <param name="value">An object to be used for finding the data record.</param>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.DataRecordReference.RemoveKeyValues(System.String)">
+            <summary>
+            Removes an item from the list of KeyValues based on the key
+            </summary>
+            <param name="key">the key of the item to remove</param>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.DataRecordReference.ToDTO">
+            <summary>
+            Converts the DataRecord to a Data Transformation Object 
+            </summary>
+            <returns>DataRecordDTO of the current object</returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.DataRecordReference.LoadParameters">
+            <summary>
+            Populates the local variable dictionary used throughout the class.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.Domain.DataRecordKeyValueFields">
+            <summary>
+            Represents the data record fields.  The Key is handled via the Entity Id.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.DataRecordKeyValueFields.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.DataRecordKeyValueFields.Value">
+            <summary>
+            The object Required for the Key Value Pair
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.DataRecordKeyValueFields.DataRecord">
+            <summary>
+            A back reference to the <c>TrueAutomation.TaskService.Domain.DataRecordReference</c> 
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.DataRecordKeyValueFields.SetAssignedId(System.String)">
+            <summary>
+            Enables the developer to set the ID assigned to an object.
+            </summary>
+            <param name="id">The id value to set for the current object.</param>
+            <remarks>In general the use of assigned ID values is regrettable
+            but it makes sense for user-defined code file entries.</remarks>
+        </member>
+        <member name="T:TrueAutomation.TaskService.Domain.DataRecordDefinition">
+            <summary>
+            Represents the definition of a data record in terms of what is required
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.DataRecordDefinition.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.DataRecordDefinition.Name">
+            <summary>
+            The Name of the DataRecord
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.DataRecordDefinition.Type">
+            <summary>
+            The Type of DataRecord
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.DataRecordDefinition.Required">
+            <summary>
+            A flag to determine whether or not the particular Data Record is required
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.DataRecordDefinition.KeyFields">
+            <summary>
+            A List of KeyValuePairs for the fields and types required in the DataRecord.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.DataRecordDefinition.Tasktype">
+            <summary>
+            The task type with which this DataRecordDefinition is associated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.DataRecordDefinition.Taskstep">
+            <summary>
+            The task step with which this DataRecordDefinition is associated.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.DataRecordDefinition.SetKeyValues(System.String,System.String)">
+            <summary>
+            Treats the Keyfields more like a Key-Value Pair and set's their values.  If the key is not found, we add it along with a back reference.
+            </summary>
+            <param name="key">String representing the key of the pair</param>
+            <param name="value">A Fully Qualified Name of the Type of which the Datarecord should be of for that pair.</param>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.DataRecordDefinition.RemoveKeyValues(System.String)">
+            <summary>
+            Removes an item from the list of KeyValues based on the key
+            </summary>
+            <param name="key">the key of the item to remove</param>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.DataRecordDefinition.ClearKeyValues">
+            <summary>
+            Empty the list of keyvalue pairs.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.DataRecordDefinition.ToDTO">
+            <summary>
+            Converts the DataRecordDefinition to a Data Transformation Object 
+            </summary>
+            <returns>DataRecordDefinitionDTO of the current object</returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.DataRecordDefinition.LoadKeyFields">
+            <summary>
+            Populates the local variable dictionary used throughout the class.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.Domain.DataRecordDefinitionKeyValueFields">
+            <summary>
+            Represents the definition of a data record fields in terms of what is required.  The Key is handled via the Entity Id.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.DataRecordDefinitionKeyValueFields.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.DataRecordDefinitionKeyValueFields.Value">
+            <summary>
+            The Type Value Required for the Key Value Pair
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.DataRecordDefinitionKeyValueFields.RecordDefinition">
+            <summary>
+            A back reference to the <c>TrueAutomation.TaskService.Domain.DataRecordDefinition</c>
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.DataRecordDefinitionKeyValueFields.SetAssignedId(System.String)">
+            <summary>
+            Enables the developer to set the ID assigned to an object.
+            </summary>
+            <param name="id">The id value to set for the current object.</param>
+            <remarks>In general the use of assigned ID values is regrettable
+            but it makes sense for user-defined code file entries.</remarks>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.HistoryValue.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.HistoryValue.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+            <param name="fieldName">the field being changed</param>
+            <param name="previousValue">the previous value of the field</param>
+            <param name="newValue">the new value of the field</param>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.HistoryValue.FieldName">
+            <summary>
+            The name of the field that was updated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.HistoryValue.PreviousValue">
+            <summary>
+            The previous value of the field being updated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.HistoryValue.NewValue">
+            <summary>
+            The new value of the field being updated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.HistoryValue.HistoryItem">
+            <summary>
+            The history item to which this item belongs -- back reference
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.HistoryValue.Init">
+            <summary>
+            Initializer method to create the internal data members
+            for the TaskHistoryItem class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.HistoryValue.ToDTO">
+            <summary>
+            Converts the TaskHistoryItem to a DTO
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.Domain.Priority">
+            <summary>
+            Represents a user-defined priority from a code file.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Priority.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Priority.#ctor(System.String)">
+            <summary>
+            Class constructor -- initializes an instance of the priority
+            class with valid data.
+            </summary>
+            <param name="description">The description text for the priority
+            code associated with object.</param>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Priority.Description">
+            <summary>
+            The description associated with the priority code.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Priority.SortOrder">
+            <summary>
+            Sort order for this item
+            when displayed
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Priority.SetAssignedId(System.String)">
+            <summary>
+            Enables the developer to set the ID assigned to an object.
+            </summary>
+            <param name="id">The id value to set for the current object.</param>
+            <remarks>In general the use of assigned ID values is regrettable
+            but it makes sense for user-defined code file entries.</remarks>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Priority.ToDTO">
+            <summary>
+            Converts the Priority to a DTO
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Priority.GetId">
+            <summary>
+            Returns the actual id of this item
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Priority.GetCustomOrderedListName">
+            <summary>
+            Returns the text to be displayed on the Custom Ordered List
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Priority.GetCustomOrderedListType">
+            <summary>
+            Return sthe type of this item
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Priority.GetTaskProperty">
+            <summary>
+            Returns the task property this type is associated with (Priority)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Priority.GetSortOrder">
+            <summary>
+            Returns the custom sort order of the Priority
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Priority.GetActiveItemsList``1(System.Collections.Generic.IList{``0})">
+            <summary>
+            Returns a list of active items / un-deleted items from the list of items passed in
+            </summary>
+            <typeparam name="T">User Type</typeparam>
+            <param name="items">User List</param>
+            <returns>Active Items that are not deleted in PACS</returns>
+        </member>
+        <member name="T:TrueAutomation.TaskService.Domain.Status">
+            <summary>
+            Represents a user-defined status from a code file.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Status.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Status.#ctor(System.String)">
+            <summary>
+            Class constructor -- initializes an instance of the status
+            class with valid data.
+            </summary>
+            <param name="description">The description text for the status
+            code associated with object.</param>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Status.Description">
+            <summary>
+            The description associated with the status code.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Status.StatusType">
+            <summary>
+            Indicates the Status type that
+            this status is tied to
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Status.IsDefaultForThisStatusType">
+            <summary>
+            Flag indicating if this Status is 
+            the default for the Status type 
+            this Status belongs to
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Status.SetAssignedId(System.String)">
+            <summary>
+            Enables the developer to set the ID assigned to an object.
+            </summary>
+            <param name="id">The id value to set for the current object.</param>
+            <remarks>In general the use of assigned ID values is regrettable
+            but it makes sense for user-defined code file entries.</remarks>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Status.ToDTO">
+            <summary>
+            Converts the Status to a DTO
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Status.GetId">
+            <summary>
+            Returns the actual id of this item
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Status.GetCustomOrderedListName">
+            <summary>
+            Returns the text to be displayed on the Custom Ordered List
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Status.GetCustomOrderedListType">
+            <summary>
+            Return sthe type of this item
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Status.GetTaskProperty">
+            <summary>
+            Returns the task property this type is associated with (Status)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Status.GetActiveItemsList``1(System.Collections.Generic.IList{``0})">
+            <summary>
+            Returns a list of active items / un-deleted items from the list of items passed in
+            </summary>
+            <typeparam name="T">User Type</typeparam>
+            <param name="items">User List</param>
+            <returns>Active Items that are not deleted in PACS</returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Task.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Task.#ctor(System.String,System.String,TrueAutomation.TaskService.Domain.User,TrueAutomation.TaskService.Domain.User,System.DateTime,System.DateTime,System.DateTime,TrueAutomation.TaskService.Domain.TaskType,TrueAutomation.TaskService.Domain.Priority,TrueAutomation.TaskService.Domain.Status,System.TimeSpan,TrueAutomation.TaskService.Domain.TaskQueue)">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+            <param name="name">The name of this task.</param>
+            <param name="description">The description of this task.</param>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Task.Name">
+            <summary>
+            The name of the task queue.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Task.Description">
+            <summary>
+            The description of this task queue.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Task.CreationDate">
+            <summary>
+            The date the task was created.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Task.StartDate">
+            <summary>
+            The date that work started on the task.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Task.DueDate">
+            <summary>
+            The date the task is due to be completed.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Task.TaskType">
+            <summary>
+            The task type that serves as the template for this task instance.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Task.Priority">
+            <summary>
+            The user-defined priority of the task.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Task.Status">
+            <summary>
+            The user-defined status of the task.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Task.Owner">
+            <summary>
+            The owner of the task, i.e. the user who has taken ownership
+            of the task in order to perform the work associated with it.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Task.Creator">
+            <summary>
+            The name of the user who created the task.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Task.Queue">
+            <summary>
+            The task queue in which the task currently resides.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Task.Duration">
+            <summary>
+            The total duration spent working this task since it was
+            first opened for processing.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Task.Notes">
+            <summary>
+            A list of user-created notes associated with this task.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Task.Attachments">
+            <summary>
+            A list of attached documents associated with this task.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Task.History">
+            <summary>
+            A list of TaskHistoryItems associated with this task.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Task.SecurityDescriptor">
+            <summary>
+            The Security Descriptor for this Task
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Task.DataRecordReferences">
+            <summary>
+            The List of Data Record References for the Task
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Task.CurrentStep">
+            <summary>
+            The current step index
+            </summary>
+            <remarks>
+            0-based
+            </remarks>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Task.TaskCompletedMessages">
+            <summary>
+            The List of Task Completed Messages
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.Task.Metadata">
+            <summary>
+            The Metadata associated with a task.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Task.Init">
+            <summary>
+            Initializer method to create the internal data members
+            for the task class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Task.ToDTO">
+            <summary>
+            Converts the Task to a DTO
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Task.ToTaskListItemDTO">
+            <summary>
+            Converts a Task Item to a Task List Item DTO Object.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Task.AddAttachment(System.Guid)">
+            <summary>
+            Adds the specified attachment to this task.
+            </summary>
+            <param name="attachment">The attachment to add to this task.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified
+            attachment was null.</exception>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Task.RemoveAttachment(System.Guid)">
+            <summary>
+            Removes the specified attachment from this task.
+            </summary>
+            <param name="attachment">The attachment to remove from this task.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified
+            attachment was null.</exception>
+            <exception cref="T:System.ArgumentException">If the specified attachment
+            is not contained in this task.</exception>"
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Task.AddNote(TrueAutomation.TaskService.Domain.TaskNote)">
+            <summary>
+            Adds the specified task note to this task.
+            </summary>
+            <param name="taskNote">The task note to add to this task.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified
+            task note was null.</exception>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Task.RemoveNote(TrueAutomation.TaskService.Domain.TaskNote)">
+            <summary>
+            Removes the specified task note from this task.
+            </summary>
+            <param name="taskNote">The task note to remove from this task.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified
+            task note was null.</exception>
+            <exception cref="T:System.ArgumentException">If the specified task note
+            is not contained in this task.</exception>"
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Task.AddHistory(TrueAutomation.TaskService.Domain.TaskHistoryItem)">
+            <summary>
+            Adds the specified task history item to this task.
+            </summary>
+            <param name="history">The task history item to add to this task.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified
+            task history item was null.</exception>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Task.RemoveHistory(TrueAutomation.TaskService.Domain.TaskHistoryItem)">
+            <summary>
+            Removes the specified task history item from this task.
+            </summary>
+            <param name="taskNote">The task history item to remove from this task.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified
+            task history item was null.</exception>
+            <exception cref="T:System.ArgumentException">If the specified task history item
+            is not contained in this task.</exception>"
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Task.AddDataRecord(TrueAutomation.TaskService.Domain.DataRecordReference)">
+            <summary>
+            Adds the specified task dataRecord item to this task.
+            </summary>
+            <param name="dataRecord">The task dataRecord item to add to this task.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified
+            task dataRecord item was null.</exception>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.Task.RemoveDataRecord(TrueAutomation.TaskService.Domain.DataRecordReference)">
+            <summary>
+            Removes the specified task dataRecord item from this task.
+            </summary>
+            <param name="taskNote">The task dataRecord item to remove from this task.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified
+            task dataRecord item was null.</exception>
+            <exception cref="T:System.ArgumentException">If the specified task dataRecord item
+            is not contained in this task.</exception>"
+        </member>
+        <member name="T:TrueAutomation.TaskService.Domain.TaskCategory">
+            <summary>
+            Implements a class to represent a task category. A task
+            category is a logical grouping of related task types.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskCategory.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskCategory.#ctor(System.String,System.String)">
+            <summary>
+            Class constructor -- creates a valid instance of the task
+            category class.
+            </summary>
+            <param name="name">The name of the task category.</param>
+            <param name="description">The description of the task category.
+            </param>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskCategory.Name">
+            <summary>
+            The name of the task category.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskCategory.Description">
+            <summary>
+            The description text for the task category.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskCategory.TaskTypes">
+            <summary>
+            A list of task types associated with this task category.
+            </summary>
+            <remarks>This property has a protected setter so that only the
+            ORM will set it directly.</remarks>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskCategory.AddTaskType(TrueAutomation.TaskService.Domain.TaskType)">
+            <summary>
+            Adds a task type to this task category.
+            </summary>
+            <param name="tasktype">The task type to add to this
+            task category.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified
+            task type was null.</exception>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskCategory.RemoveTaskType(TrueAutomation.TaskService.Domain.TaskType)">
+            <summary>
+            Removes the specified task type from this task category.
+            </summary>
+            <param name="taskType">The task type to remove from this
+            category.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified
+            task type was null.</exception>
+            <exception cref="T:System.ArgumentException">If the specified task
+            type is not contained in this category.</exception>"
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskCategory.Init">
+            <summary>
+            Initializer method to create the internal data members
+            for the task category class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskCategory.ToDTO">
+            <summary>
+            Converts the TaskCategory to a DTO
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskHistoryItem.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskHistoryItem.#ctor(System.DateTime,System.String,TrueAutomation.TaskService.Domain.User)">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+            <param name="creationDate">Date the TaskHistoryItem was created</param>
+            <param name="eventDescription">Description of the event that occurred</param>
+            <param name="creator">Person who created the event</param>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskHistoryItem.CreationDate">
+            <summary>
+            The date the TaskHistoryItem event occurred.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskHistoryItem.EventDescription">
+            <summary>
+            The description of the event that triggered the TaskHistoryItem creation.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskHistoryItem.Creator">
+            <summary>
+            The name of the user who created the TaskHistoryItem event.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskHistoryItem.Values">
+            <summary>
+            The name of the user who created the TaskHistoryItem event.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskHistoryItem.Task">
+            <summary>
+            A reference to the task with which this history item is associated.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskHistoryItem.Init">
+            <summary>
+            Initializer method to create the internal data members
+            for the TaskHistoryItem class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskHistoryItem.ToDTO">
+            <summary>
+            Converts the TaskHistoryItem to a DTO
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.Domain.TaskNote">
+            <summary>
+            Represents a note or comment attached to a task.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskNote.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskNote.#ctor(TrueAutomation.TaskService.Domain.User,TrueAutomation.TaskService.Domain.Priority,System.DateTime,System.String,TrueAutomation.TaskService.Domain.Task)">
+            <summary>
+            Class constructor -- initializes an instance of the class
+            with valid data.
+            </summary>
+            <param name="author">The user who created the attachment.</param>
+            <param name="priority">The priority code associated with
+            this attachment.</param>
+            <param name="createdDate">The timestamp indicating when
+            this attachment was created.</param>
+            <param name="task">The task with which this attachment
+            is associated.</param>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskNote.Author">
+            <summary>
+            The user who authored the note.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskNote.Priority">
+            <summary>
+            The priority code associated with this task note.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskNote.CreatedDate">
+            <summary>
+            The creation timestamp associated with this task note.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskNote.Text">
+            <summary>
+            The text of the note.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskNote.Task">
+            <summary>
+            A reference to the task with which this note is associated.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskNote.ToDTO">
+            <summary>
+            Converts the TaskNote to a DTO
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.Domain.TaskQueue">
+            <summary>
+            Implements a class that represents a task queue, which
+            is essentially a list of tasks associated with a user or
+            a group (or a combination thereof).
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskQueue.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:TrueAutomation.TaskService.Domain.TaskQueue.#ctor(System.String,System.String)" -->
+        <member name="P:TrueAutomation.TaskService.Domain.TaskQueue.Name">
+            <summary>
+            The name of the task queue.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskQueue.Description">
+            <summary>
+            The description of this task queue.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskQueue.Tasks">
+            <summary>
+            The list of tasks associated with this task queue.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskQueue.SecurityDescriptor">
+            <summary>
+            The Security Descriptor Id for this Queue
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskQueue.UsersCount">
+            <summary>
+            The count of users with security
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskQueue.GroupsCount">
+            <summary>
+            The count of groups with security
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskQueue.AddTask(TrueAutomation.TaskService.Domain.Task)">
+            <summary>
+            Adds the specified task to this queue.
+            </summary>
+            <param name="task">The task to add to this queue.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified
+            task was null.</exception>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskQueue.RemoveTask(TrueAutomation.TaskService.Domain.Task)">
+            <summary>
+            Removes the specified task from this task queue.
+            </summary>
+            <param name="taskType">The task to remove from this queue.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified
+            task was null.</exception>
+            <exception cref="T:System.ArgumentException">If the specified task
+            is not contained in this queue.</exception>"
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskQueue.Init">
+            <summary>
+            Initializer method to create the internal data members
+            for the task queue class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskQueue.ToDTO">
+            <summary>
+            Converts the TaskQueue to a DTO
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskQueue.GetId">
+            <summary>
+            Returns the actual id of this item
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskQueue.GetCustomOrderedListName">
+            <summary>
+            Returns the text to be displayed on the Custom Ordered List
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskQueue.GetCustomOrderedListType">
+            <summary>
+            Returns the type of this item
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskQueue.GetTaskProperty">
+            <summary>
+            Returns the task property this type is associated with (Queue)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskQueue.GetActiveItemsList``1(System.Collections.Generic.IList{``0})">
+            <summary>
+            Returns a list of active items / un-deleted items from the list of items passed in
+            </summary>
+            <typeparam name="T">User Type</typeparam>
+            <param name="items">User List</param>
+            <returns>Active Items that are not deleted in PACS</returns>
+        </member>
+        <member name="T:TrueAutomation.TaskService.Domain.TaskStep">
+            <summary>
+            Defines a discrete step in a task step. Each step supports
+            a set of instructions and an optional custom
+            user interface definition.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskStep.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:TrueAutomation.TaskService.Domain.TaskStep.#ctor(System.String,System.String,System.String,System.Int32)" -->
+        <member name="M:TrueAutomation.TaskService.Domain.TaskStep.#ctor(System.String,System.String,System.String,System.Int32,TrueAutomation.TaskService.Domain.TaskType)">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+            <param name="name">The name of this task step.</param>
+            <param name="description">The description of this task step.</param>
+            <param name="type">The task type with which this
+            task step is associated.</param>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskStep.Name">
+            <summary>
+            The name of the task step.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskStep.Description">
+            <summary>
+            The description of this step in a task.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskStep.TaskType">
+            <summary>
+            The parent task type with which this step is associated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskStep.Instructions">
+            <summary>
+            Instructions associated with this task step.
+            Was previously a ChecklistItem list
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskStep.SortOrder">
+            <summary>
+            Order of this step
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskStep.UserInterface">
+            <summary>
+            The custom user interface definition associated
+            with this step in a task.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskStep.Init">
+            <summary>
+            Initializer method to create the internal data members
+            for the task category class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskStep.ToDTO">
+            <summary>
+            Converts the TaskStep to a DTO
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.Domain.TaskType">
+            <summary>
+            Defines a class representing a task type. A task type
+            is the generic representation of a particular type of task,
+            defining a list of distinct steps in tasks of this type as
+            well as a user interface definition.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskType.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:TrueAutomation.TaskService.Domain.TaskType.#ctor(System.String,System.String,System.String)" -->
+        <member name="M:TrueAutomation.TaskService.Domain.TaskType.#ctor(System.String,System.String,System.String,TrueAutomation.TaskService.Domain.TaskCategory)">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+            <param name="name">The name of this task type.</param>
+            <param name="description">The description of this task type.</param>
+            <param name="category">The task category with which this
+            task type is associated.</param>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskType.Name">
+            <summary>
+            The name of the task type.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskType.Description">
+            <summary>
+            The description of this task type.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskType.Instructions">
+            <summary>
+            Any instructions for this Task Type
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskType.Category">
+            <summary>
+            The task category with which this task type is associated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskType.RetiredDate">
+            <summary>
+            The date of which the task type was retired (taken out of service)
+            <remarks>Null implies the task type is still in service</remarks>
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskType.UserInterface">
+            <summary>
+            The top-level custom user interface definition associated
+            with this task type.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskType.Steps">
+            <summary>
+            The list of steps associated with this task type.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.TaskType.DataRecordDefinitions">
+            <summary>
+            The list of data record definitions needed to define the data records attached to a task
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskType.AddDataRecordDefinition(TrueAutomation.TaskService.Domain.DataRecordDefinition)">
+            <summary>
+            Adds a DataRecordDefinition to this task type.
+            </summary>
+            <param name="DataRecordDefinition">The DataRecordDefinition to add to this
+            task type.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified
+            task type was null.</exception>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskType.RemoveDataRecordDefinition(TrueAutomation.TaskService.Domain.DataRecordDefinition)">
+            <summary>
+            Removes the specified DataRecordDefinition from this task type.
+            </summary>
+            <param name="DataRecordDefinition">The DataRecordDefinition to remove from this
+            type.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified
+            DataRecordDefinition was null.</exception>
+            <exception cref="T:System.ArgumentException">If the specified DataRecordDefinition
+            is not contained in this task type.</exception>"
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskType.AddTaskStep(TrueAutomation.TaskService.Domain.TaskStep)">
+            <summary>
+            Adds a DataRecordDefinition to this task type.
+            </summary>
+            <param name="DataRecordDefinition">The DataRecordDefinition to add to this
+            task type.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified
+            task type was null.</exception>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskType.RemoveTaskStep(TrueAutomation.TaskService.Domain.TaskStep)">
+            <summary>
+            Removes the specified DataRecordDefinition from this task type.
+            </summary>
+            <param name="DataRecordDefinition">The DataRecordDefinition to remove from this
+            type.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified
+            DataRecordDefinition was null.</exception>
+            <exception cref="T:System.ArgumentException">If the specified DataRecordDefinition
+            is not contained in this task type.</exception>"
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskType.Init">
+            <summary>
+            Initializer method to create the internal data members
+            for the task category class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.TaskType.ToDTO">
+            <summary>
+            Converts the TaskType to a DTO
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.TaskService.Domain.UICustomization">
+            <summary>
+            Represents a user interface customization which defines a
+            specific configuration of UI elements, normally associated
+            with a <see cref="T:TrueAutomation.TaskService.Domain.TaskType"/>.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.UICustomization.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.UICustomization.#ctor(System.String,System.String)">
+            <summary>
+            Class constructor -- creates a valid instance of the UI
+            customization class.
+            </summary>
+            <param name="name">The name of the UI customization configuration.
+            </param>
+            <param name="description">The description of the UI customization
+            configuration.
+            </param>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.UICustomization.Name">
+            <summary>
+            The name of this UI customization configuration.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.UICustomization.Description">
+            <summary>
+            The description for this UI customization configuration.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.UICustomization.ClientKey">
+            <summary>
+            The client key for this UI customization configuration.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.UICustomization.UIElements">
+            <summary>
+            List of UI Elements associated with this UI Cusomization
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.UICustomization.ToDTO">
+            <summary>
+            Converts the UICustomization to a DTO
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.UICustomization.AddUIElement(TrueAutomation.TaskService.Domain.UIElement)">
+            <summary>
+            Adds the specified UI Element  to this UI Customization.
+            </summary>
+            <param name="uiElement">The UI Element to add to this UI Customization.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified
+            ui element was null.</exception>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.UICustomization.RemoveUIElement(TrueAutomation.TaskService.Domain.UIElement)">
+            <summary>
+            Removes the specified ui element from this customization.
+            </summary>
+            <param name="uiElement">The ui element to remove from this customization.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified
+            ui element was null.</exception>
+            <exception cref="T:System.ArgumentException">If the specified ui element
+            is not contained in this customization.</exception>"
+        </member>
+        <member name="T:TrueAutomation.TaskService.Domain.UIElement">
+            <summary>
+            Represents a user interface element
+            Groups of these are used to make a UI Customization
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.UIElement.#ctor">
+            <summary>
+            Default constructor
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.UIElement.#ctor(System.String,System.String)">
+            <summary>
+            Class constructor
+            </summary>
+            <param name="fullName">The fully qualified class name</param>
+            <param name="assembly">The assembly name</param>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.UIElement.FullName">
+            <summary>
+            The full name of the UI element
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.UIElement.Assembly">
+            <summary>
+            The assembly name of the UI element
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.UIElement.DataRecordDefinition">
+            <summary>
+            The data record definition associated with this UI element
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.UIElement.DataRecordDefinitionName">
+            <summary>
+            The unique name of the specific data record definition associated with this UI element
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.UIElement.DisplayOrder">
+            <summary>
+            Determines in what order this UI Element is displayed, relative to other UI Elements
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.UIElement.UICustomization">
+            <summary>
+            Back-reference to associated UI Customization
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.UIElement.PanelDisplayName">
+            <summary>
+            The name to display at the top of the panel.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.UIElement.UIContext">
+            <summary>
+            The context for which the UI Element is being used.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.UIElement.CustomDialogAssemblyName">
+            <summary>
+            The assembly name of the custom dialog that would be launched
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.UIElement.CustomDialogLauncherButtonText">
+            <summary>
+            The text of the button used to launch the custom dialog
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.UIElement.CustomDialogPayLoad">
+            <summary>
+            The payload or data that would be desrialized in the custom dialog
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.UIElement.Category">
+            <summary>
+            The Category to which the element belongs
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.UIElement.DisplayName">
+            <summary>
+            The friendly name which will displayed to the user
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.UIElement.AddContextOption(TrueAutomation.TaskService.Domain.UIElementContext)">
+            <summary>
+            Add a context to the list of contexts if it does not already exist.
+            </summary>
+            <param name="context"></param>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.UIElement.RemoveContextOption(System.String)">
+            <summary>
+            Remove a context from the list of Available Contexts based on its Id
+            </summary>
+            <param name="id"></param>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.UIElement.ToDTO">
+            <summary>
+            Converts the UIElement to a DTO
+            </summary>
+            <returns>The equivalent DTO</returns>
+        </member>
+        <member name="T:TrueAutomation.TaskService.Domain.User">
+            <summary>
+            Simple class to represent a user reference.
+            </summary>
+            <remarks>TODO: this class is mostly just a placeholder
+            for the eventual user management and authentication service
+            data.</remarks>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.User.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.User.#ctor(System.String,System.String)">
+            <summary>
+            Class constructor -- creates a valid instance of the user class.
+            </summary>
+            <param name="name">The name of the user.</param>
+            <param name="description">The description associated with the
+            user.</param>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.User.Name">
+            <summary>
+            The name of the user.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.User.Description">
+            <summary>
+            The description associated with the user.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.User.ExternalPartyId">
+            <summary>
+            Security service, Party Id
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.User.CreatorSearches">
+            <summary>
+            The Users searches
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.User.OwnerSearches">
+            <summary>
+            The Users searches
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.User.TasksCreated">
+            <summary>
+            The number of tasks the user has created.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.User.TasksAssigned">
+            <summary>
+            The number of Tasks the user has assigned
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.User.NoteCount">
+            <summary>
+            The Number of Notes the user has written
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.TaskService.Domain.User.IsDeleted">
+            <summary>
+            Flag to indicate whether this user is still an 
+            Active user in PACS or has been deleted.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.User.ToDTO">
+            <summary>
+            Converts the User to a DTO
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.User.GetId">
+            <summary>
+            Returns the actual id of this item
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.User.GetCustomOrderedListName">
+            <summary>
+            Returns the text to be displayed on the Custom Ordered List
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.User.GetCustomOrderedListType">
+            <summary>
+            Returns the type of this item
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.User.GetTaskProperty">
+            <summary>
+            Returns the task property this type is associated with (Owner)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.TaskService.Domain.User.GetActiveItemsList``1(System.Collections.Generic.IList{``0})">
+            <summary>
+            Returns a list of active items / un-deleted items from the list of items passed in
+            </summary>
+            <typeparam name="T">User Type</typeparam>
+            <param name="items">User List</param>
+            <returns>Active Users that are not deleted in PACS</returns>
+        </member>
+    </members>
+</doc>

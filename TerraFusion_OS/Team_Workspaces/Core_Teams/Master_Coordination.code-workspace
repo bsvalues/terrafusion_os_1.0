@@ -1,0 +1,68 @@
+{
+  "name": "TerraFusion Master Coordination",
+  "folders": [
+    {
+      "path": "../backend"
+    },
+    {
+      "path": "../frontend"
+    },
+    {
+      "path": "../config"
+    },
+    {
+      "path": "../docs"
+    },
+    {
+      "path": "../SDK"
+    },
+    {
+      "path": "../infrastructure"
+    }
+  ],
+  "settings": {
+    "azureML.showWelcomePage": false,
+    "azureML.enableWorkspaceCompletions": false,
+    "python.defaultInterpreterPath": "./venv/Scripts/python.exe",
+    "terrafusion.quantum_factor": 949,
+    "terrafusion.target_score": 12.0,
+    "terrafusion.sacred_mathematics": "OPERATIONAL",
+    "terrafusion.role": "master_coordination",
+    "terrafusion.responsibility": "39_county_deployment",
+    "powershell.cwd": "backend"
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Championship Status",
+        "type": "python",
+        "request": "launch",
+        "program": "${workspaceFolder}/scripts/mission-completion-report.py",
+        "console": "integratedTerminal"
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Deploy Production",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "scripts/execute-production-deployment.py"
+        ]
+      }
+    ]
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-dotnettools.csharp"
+    ],
+    "unwantedRecommendations": [
+      "ms-toolsai.vscode-ai"
+    ]
+  }
+}

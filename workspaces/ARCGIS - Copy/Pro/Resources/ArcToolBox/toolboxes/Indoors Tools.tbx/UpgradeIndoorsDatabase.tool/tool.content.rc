@@ -1,0 +1,15 @@
+{
+    "map": {
+        "description": "Upgrades an existing Indoors workspace by creating or updating schema items to conform to the latest ArcGIS Indoors Information Model schema.",
+        "in_workspace.descr": "The existing geodatabase that contains Indoors model schema items created by the Create Indoors Database or Create Indoors Dataset tools. This parameter accepts a file geodatabase or an enterprise geodatabase.",
+        "in_workspace.title": "Input Indoors Database",
+        "out_workspace.title": "Upgraded Indoors Database",
+        "title": "Upgrade Indoors Database",
+        "upgrade_attribute_rules.descr": "<xdoc><p>Specifies whether validation attribute rules will be created or updated for use in Indoors quality control workflows. If the input Indoors database is an enterprise geodatabase, branch versioning must be enabled.</p><ul><li>Checked—Validation attribute rules will be created or overwritten with the latest version of attribute rules from the Indoors model if the database has existing Indoors attribute rules. This is the default.</li><li>Unchecked—Validation attribute rules will not be created or updated.</li></ul></xdoc>",
+        "upgrade_attribute_rules.title": "Upgrade Attribute Rules",
+        "upgrade_indoors_database.descr": "<xdoc><p>Specifies whether the input Indoors database will be upgraded with schema changes or a report will be generated with potential schema changes that will be made to the input Indoors database.</p><ul><li><span title=\"UPGRADE_DATABASE\">Upgrade Database</span>—The input Indoors database will be upgraded. This is the default.</li><li><span title=\"GENERATE_REPORT\">Generate Schema Change Report</span>—A text file report will be generated with a list of schema changes that will be made to the input Indoors database during the upgrade process and any issues that would result in the schema not being updated. The input Indoors database will not be upgraded.</li></ul></xdoc>",
+        "upgrade_indoors_database.domain.GENERATE_REPORT": "Generate Schema Change Report",
+        "upgrade_indoors_database.domain.UPGRADE_DATABASE": "Upgrade Database",
+        "upgrade_indoors_database.title": "Upgrade Indoors Database"
+    }
+}

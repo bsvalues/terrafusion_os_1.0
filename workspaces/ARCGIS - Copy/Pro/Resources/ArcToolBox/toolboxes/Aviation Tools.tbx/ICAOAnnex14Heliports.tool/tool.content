@@ -1,0 +1,201 @@
+{
+    "type": "FunctionTool",
+    "guid": "{F6243FE3-8552-4511-BBCE-F882B7099A58}/ICAOAnnex14Heliports",
+    "displayname": "$rc:title",
+    "helpcontent": "64040002",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "53",
+        "70"
+    ],
+    "params": {
+        "input_safety_area_features": {
+            "displayname": "$rc:input_safety_area_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:input_safety_area_features.descr"
+        },
+        "target_ois_features": {
+            "displayname": "$rc:target_ois_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Polygon",
+                            "MultiPatch"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:target_ois_features.descr"
+        },
+        "surface_classification": {
+            "displayname": "$rc:surface_classification.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "CATEGORY_A",
+                        "code": "$rc:surface_classification.domain.CATEGORY_A"
+                    },
+                    {
+                        "value": "CATEGORY_B",
+                        "code": "$rc:surface_classification.domain.CATEGORY_B"
+                    },
+                    {
+                        "value": "CATEGORY_C",
+                        "code": "$rc:surface_classification.domain.CATEGORY_C"
+                    }
+                ]
+            },
+            "description": "$rc:surface_classification.descr"
+        },
+        "operation_type": {
+            "displayname": "$rc:operation_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DAY_OPERATION",
+                        "code": "$rc:operation_type.domain.DAY_OPERATION"
+                    },
+                    {
+                        "value": "NIGHT_OPERATION",
+                        "code": "$rc:operation_type.domain.NIGHT_OPERATION"
+                    }
+                ]
+            },
+            "value": "DAY_OPERATION",
+            "description": "$rc:operation_type.descr"
+        },
+        "rotor_diameter": {
+            "type": "optional",
+            "displayname": "$rc:rotor_diameter.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "16.5",
+            "description": "$rc:rotor_diameter.descr"
+        },
+        "clearway_length": {
+            "type": "optional",
+            "displayname": "$rc:clearway_length.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:clearway_length.descr"
+        },
+        "surface_shape": {
+            "type": "optional",
+            "displayname": "$rc:surface_shape.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "STRAIGHT_SURFACE",
+                        "code": "$rc:surface_shape.domain.STRAIGHT_SURFACE"
+                    },
+                    {
+                        "value": "CURVED_SURFACE",
+                        "code": "$rc:surface_shape.domain.CURVED_SURFACE"
+                    }
+                ]
+            },
+            "value": "STRAIGHT_SURFACE",
+            "description": "$rc:surface_shape.descr"
+        },
+        "approach_bearing": {
+            "type": "optional",
+            "displayname": "$rc:approach_bearing.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:approach_bearing.descr"
+        },
+        "in_flightpath_features": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:in_flightpath_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_flightpath_features.descr"
+        },
+        "heliport_elevation": {
+            "type": "optional",
+            "displayname": "$rc:heliport_elevation.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:heliport_elevation.descr"
+        },
+        "custom_json_file": {
+            "type": "optional",
+            "displayname": "$rc:custom_json_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "json"
+                ]
+            },
+            "description": "$rc:custom_json_file.descr"
+        },
+        "derived_outfeatureclass": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:derived_outfeatureclass.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Polygon",
+                            "MultiPatch"
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "target_ois_features"
+            ]
+        }
+    }
+}

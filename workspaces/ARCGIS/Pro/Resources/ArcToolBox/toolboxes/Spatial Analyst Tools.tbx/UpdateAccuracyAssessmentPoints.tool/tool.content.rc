@@ -1,0 +1,21 @@
+{
+    "map": {
+        "description": "Updates the Target field in the attribute table to compare reference points to the classified image.",
+        "in_class_data.descr": "<xdoc><p>The input classification image or other thematic GIS reference data. The input can be a raster or feature class.</p><p>Typical data is a classification image of a single band, integer data type.</p><p>If using polygons as input, only use those that are not used as training samples. You can also use land-cover data in shapefile or feature class format.</p></xdoc>",
+        "in_class_data.title": "Input Raster or Feature Class Data",
+        "in_points.descr": "<xdoc><p>The point feature class providing the accuracy assessment points to be updated.</p><p>All points from this input will be copied to the updated output feature class, and the <span class=\"esri_uicontrol\">Target Field</span> parameter value will be updated from the input raster or feature class data.</p></xdoc>",
+        "in_points.title": "Input Accuracy Assessment Points",
+        "out_points.descr": "The output point feature class that contains the updated random point field for accuracy assessment purposes.",
+        "out_points.title": "Output Accuracy Assessment Points",
+        "point_dimension_field.descr": "<xdoc><p>The dimension field in the <span class=\"esri_uicontrol\">Input Accuracy Assessment Points</span> parameter value. Input data with identical dimension values will be used to update corresponding points.</p><p>When the <span class=\"esri_uicontrol\">Input Raster or Feature Class Data</span> parameter value is a multidimensional raster, rasters with dimension values that match the dimension field in the test points will be used in updating. The multidimensional raster is expected to have one time dimension (<span class=\"esri_fieldname\">StdTime</span> field). Otherwise, the first dimension will be used to match the dimension field of the test points.</p></xdoc>",
+        "point_dimension_field.title": "Dimension Field for Test Points",
+        "polygon_dimension_field.descr": "<xdoc><p>The dimension field for the <span class=\"esri_uicontrol\">Input Accuracy Assessment Points</span> parameter value. The assessment points will be updated based on the matching dimension values with this field.</p></xdoc>",
+        "polygon_dimension_field.title": "Dimension Field for Feature Class",
+        "summary": "<xdoc><p>Updates the <span class=\"esri_fieldname\">Target</span> field in the attribute table to compare reference points to the classified image.</p><p>Accuracy assessment uses known points to assess the validity of the classification model.</p></xdoc>",
+        "target_field.descr": "<xdoc><p>Specifies whether the input data is a classified image or ground truth data.</p><ul><li><span title=\"CLASSIFIED\">Classified</span>—The input is a classified image. This is the default.</li><li><span title=\"GROUND_TRUTH\">Ground truth</span>—The input is reference data.</li></ul></xdoc>",
+        "target_field.domain.CLASSIFIED": "Classified",
+        "target_field.domain.GROUND_TRUTH": "Ground truth",
+        "target_field.title": "Target Field",
+        "title": "Update Accuracy Assessment Points"
+    }
+}

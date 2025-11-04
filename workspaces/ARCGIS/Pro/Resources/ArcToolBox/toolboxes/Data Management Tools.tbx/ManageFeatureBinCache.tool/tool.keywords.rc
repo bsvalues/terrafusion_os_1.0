@@ -1,0 +1,18 @@
+{
+    "set": [
+        "add statistic",
+        "aggregate",
+        "bin",
+        "bin type",
+        "bin-enabled",
+        "binning",
+        "delete statistic",
+        "feature binning",
+        "lod",
+        "level of detail",
+        "manage",
+        "manage cache",
+        "reduce",
+        "reduction"
+    ]
+}

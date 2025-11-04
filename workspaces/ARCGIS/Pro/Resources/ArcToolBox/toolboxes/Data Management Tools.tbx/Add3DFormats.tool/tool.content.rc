@@ -1,0 +1,13 @@
+{
+    "map": {
+        "description": "Converts a multipatch to a 3D object feature layer by linking the feature class with one or more 3D model formats.",
+        "formats.descr": "<xdoc><p>Specifies the 3D formats that will be associated with the multipatch features. Each input feature will be duplicated for each selected format. The available options depend on the codecs installed on the computer.</p><ul><li><span title=\"FMT3D_DAE\">Collada (.dae)</span>—The COLLADA format will be added.</li><li><span title=\"FMT3D_DWG\">Autodesk Drawing (.dwg)</span>—The DWG format will be added.</li><li><span title=\"FMT3D_FBX\">Autodesk (.fbx)</span>—The Autodesk FilmBox format will be added.</li><li><span title=\"FMT3D_GLB\">Khronos Group glTF binary (.glb)</span>—The binary Graphics Library Transmission format will be added.</li><li><span title=\"FMT3D_GLTF\">Khronos Group glTF json (.gltf)</span>—The JSON Graphics Library Transmission format will be added.</li><li><span title=\"FMT3D_IFC\">Industry Foundation Classes (.ifc)</span>—The Industry Foundation Classes format will be added.</li><li><span title=\"FMT3D_OBJ\">Wavefront (.obj)</span>—The Wavefront format will be added.</li><li><span title=\"FMT3D_USDC\">Universal Scene Description (.usdc)</span>— The Universal Scene Description format will be added.</li><li><span title=\"FMT3D_USDZ\">Compressed Universal Scene Description (.usdz)</span>— The compressed version of the Universal Scene Description format will be added.</li></ul></xdoc>",
+        "formats.title": "3D Formats to Add",
+        "in_features.descr": "The input geodatabase multipatch feature that will be converted to a 3D object feature layer.",
+        "in_features.title": "Input Features",
+        "multipatch_materials.descr": "<xdoc><note type=\"note\"/><p group=\"note\">This parameter is no longer supported. The option to control whether multipatch materials were used was removed to improve this tool&apos;s usability. Materials will always be used when they are available through the 3D object feature layer, and they will be automatically removed when the 3D object feature layer capabilities are removed from the multipatch. Additional parameters are available using the dedicated API for multipatches.</p></xdoc>",
+        "multipatch_materials.title": "Use multipatch materials",
+        "title": "Add 3D Formats To Multipatch",
+        "updated_features.title": "Updated Input Features"
+    }
+}

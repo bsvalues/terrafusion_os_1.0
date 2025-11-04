@@ -1,0 +1,17 @@
+{
+    "set": [
+        "building",
+        "create",
+        "door",
+        "egress",
+        "entrance",
+        "entry",
+        "entryway",
+        "exit",
+        "facility",
+        "generate",
+        "indoor",
+        "indoors",
+        "opening"
+    ]
+}

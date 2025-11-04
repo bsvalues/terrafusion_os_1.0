@@ -1,0 +1,8 @@
+{
+    "set": [
+        "extent",
+        "feature",
+        "feature class",
+        "rebox"
+    ]
+}

@@ -6,6 +6,9 @@ using System.Data.Common;
 using StackExchange.Redis;
 using System.Net.NetworkInformation;
 
+
+#pragma warning disable CS1998
+
 namespace TerraFusion.Core.HealthChecks;
 
 /// <summary>

@@ -1,0 +1,23 @@
+{
+    "map": {
+        "buffer_tolerance.descr": "The distance between features to determine adjacency. Features that are within the buffer tolerance are considered adjacent features.",
+        "buffer_tolerance.title": "Buffer Tolerance",
+        "compactness.descr": "A numeric value between 0 and 100 that defines the shape of territories.",
+        "compactness.title": "Compactness",
+        "description": "Sets options for how territory levels are created.",
+        "fill_extent.descr": "<xdoc><p>Specifies whether features are automatically assigned to the nearest territory.</p><ul><li>Checked—Features are automatically assigned to the nearest territory.</li><li>Unchecked—Features are not automatically assigned to the nearest territory. This is the default.</li></ul></xdoc>",
+        "fill_extent.title": "Fill Extent Automatically",
+        "in_territory_solution.descr": "The Territory Design solution layer that will be used in the analysis.",
+        "in_territory_solution.title": "Input Territory Solution",
+        "level.descr": "The level to which the options will be applied.",
+        "level.title": "Level",
+        "out_territory_solution.title": "Updated Territory Solution",
+        "params.category1": "Feature Adjacency Parameters",
+        "random_seed.descr": "An integer used for the seed value. The default is no value and uses a random generator.",
+        "random_seed.title": "Random Number Generator Seed",
+        "spatial_relationship.descr": "<xdoc><p>Specifies the spatial relationship of how features are related to determine adjacency.</p><ul><li><span title=\"CONTIGUITY_EDGES_ONLY\">Contiguity Edges Only</span>—Polygon features that share a boundary or share a node with neighboring features.</li></ul></xdoc>",
+        "spatial_relationship.domain.CONTIGUITY_EDGES_ONLY": "Contiguity Edges Only",
+        "spatial_relationship.title": "Spatial Relationship",
+        "title": "Set Territory Level Options"
+    }
+}

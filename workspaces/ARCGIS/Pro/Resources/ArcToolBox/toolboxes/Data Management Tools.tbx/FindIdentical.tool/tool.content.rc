@@ -1,0 +1,19 @@
+{
+    "map": {
+        "description": "Reports any records in a feature class or table that have identical values in a list of fields, and generates a table listing the identical records. If the Shape field is specified, feature geometries will be compared.",
+        "fields.descr": "The field or fields whose values will be compared to find identical records.",
+        "fields.title": "Field(s)",
+        "in_dataset.descr": "The table or feature class for which identical records will be found.",
+        "in_dataset.title": "Input Dataset",
+        "out_dataset.descr": "<xdoc><p>The output table reporting identical records. The <span class=\"esri_fieldname\">FEAT_SEQ</span> field in the output table will have the same value for identical records.</p></xdoc>",
+        "out_dataset.title": "Output Dataset",
+        "output_record_option.descr": "<xdoc><p>Specifies whether only duplicated records will be included in the output table.</p><ul><li>Unchecked—All input records will have corresponding records in the output table. This is the default.</li><li>Checked—Only duplicate records will have corresponding records in the output table. The output will be empty if no duplicate is found.</li></ul></xdoc>",
+        "output_record_option.title": "Output only duplicated records",
+        "summary": "<xdoc><p>Reports any records in a feature class or table that have identical values in a list of fields, and generates a table listing the identical records. If the <span class=\"esri_fieldname\">Shape</span> field is specified, feature geometries will be compared.</p><p>The Delete Identical tool can be used to find and delete identical records.</p></xdoc>",
+        "title": "Find Identical",
+        "xy_tolerance.descr": "<xdoc><p>The x,y tolerance that will be applied to each vertex when evaluating whether there is an identical vertex in another feature.</p><p>This parameter is active when the <span class=\"esri_uicontrol\">Field(s)</span> parameter value includes the <span class=\"esri_fieldname\">Shape</span> field.</p></xdoc>",
+        "xy_tolerance.title": "XY Tolerance",
+        "z_tolerance.descr": "<xdoc><p>The z-tolerance that will be applied to each vertex when evaluating whether there is an identical vertex in another feature.</p><p>This parameter is active when the <span class=\"esri_uicontrol\">Field(s)</span> parameter value includes the <span class=\"esri_fieldname\">Shape</span> field.</p></xdoc>",
+        "z_tolerance.title": "Z Tolerance"
+    }
+}

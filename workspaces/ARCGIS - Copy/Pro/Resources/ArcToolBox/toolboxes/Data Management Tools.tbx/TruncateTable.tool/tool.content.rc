@@ -1,0 +1,9 @@
+{
+    "map": {
+        "description": "Removes all rows from a database table or feature class using truncate procedures in the database.",
+        "in_table.descr": "The input database table or feature class that will be truncated.",
+        "in_table.title": "Input Table",
+        "out_table.title": "Truncated Table",
+        "title": "Truncate Table"
+    }
+}

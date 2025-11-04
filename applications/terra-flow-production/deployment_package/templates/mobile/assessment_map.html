@@ -1,0 +1,613 @@
+{% extends "base.html" %}
+
+{% block title %}Property Assessment Map (Mobile){% endblock %}
+
+{% block styles %}
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+
+<style>
+    /* Mobile-optimized map view */
+    body {
+        padding-bottom: 50px; /* Space for the bottom action bar */
+    }
+    
+    .mobile-map-container {
+        position: relative;
+        height: calc(100vh - 160px);
+        width: 100%;
+        z-index: 1;
+    }
+    
+    #mobile-map {
+        height: 100%;
+        width: 100%;
+    }
+    
+    .mobile-map-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: rgba(255, 255, 255, 0.9);
+        border-top: 2px solid #0d6efd;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+        padding: 10px 15px;
+        z-index: 500;
+        box-shadow: 0 -3px 10px rgba(0,0,0,0.1);
+        max-height: 60%;
+        overflow-y: auto;
+        transition: transform 0.3s ease-in-out;
+        transform: translateY(calc(100% - 50px));
+    }
+    
+    .mobile-map-overlay.expanded {
+        transform: translateY(0);
+    }
+    
+    .overlay-handle {
+        width: 40px;
+        height: 5px;
+        background-color: #ced4da;
+        border-radius: 10px;
+        margin: 0 auto 10px;
+    }
+    
+    .mobile-property-info {
+        padding-bottom: 10px;
+    }
+    
+    .property-detail {
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+    }
+    
+    .property-label {
+        font-weight: bold;
+        color: #495057;
+    }
+    
+    .mobile-action-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: #fff;
+        border-top: 1px solid #dee2e6;
+        padding: 8px;
+        display: flex;
+        justify-content: space-around;
+        z-index: 1000;
+    }
+    
+    .mobile-action-button {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none;
+        color: #495057;
+        font-size: 0.8rem;
+    }
+    
+    .mobile-action-button i {
+        font-size: 1.2rem;
+        margin-bottom: 3px;
+    }
+    
+    .mobile-action-button.active {
+        color: #0d6efd;
+    }
+    
+    .layer-control {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 400;
+        background-color: white;
+        border-radius: 4px;
+        box-shadow: 0 1px 5px rgba(0,0,0,0.2);
+        padding: 8px;
+    }
+    
+    .search-control {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        right: 70px;
+        z-index: 400;
+    }
+    
+    .search-control input {
+        width: 100%;
+        padding: 8px 12px;
+        border-radius: 4px;
+        border: 1px solid #ced4da;
+        box-shadow: 0 1px 5px rgba(0,0,0,0.2);
+    }
+    
+    .location-button {
+        position: absolute;
+        bottom: 70px;
+        right: 10px;
+        z-index: 400;
+        background-color: white;
+        border-radius: 4px;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 1px 5px rgba(0,0,0,0.2);
+        border: none;
+        font-size: 1.2rem;
+    }
+    
+    /* Property markers */
+    .property-marker {
+        border-radius: 50%;
+        width: 12px;
+        height: 12px;
+        border: 2px solid white;
+        box-shadow: 0 0 3px rgba(0,0,0,0.3);
+    }
+    
+    .property-marker.residential {
+        background-color: #28a745;
+    }
+    
+    .property-marker.commercial {
+        background-color: #007bff;
+    }
+    
+    .property-marker.industrial {
+        background-color: #6f42c1;
+    }
+    
+    .property-marker.agricultural {
+        background-color: #fd7e14;
+    }
+    
+    .property-marker.vacant {
+        background-color: #6c757d;
+    }
+    
+    /* Loading indicator */
+    .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(255,255,255,0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+    
+    .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #0d6efd;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <!-- Mobile Map Interface -->
+    <div class="mobile-map-container">
+        <!-- Map Container -->
+        <div id="mobile-map"></div>
+        
+        <!-- Search Control -->
+        <div class="search-control">
+            <input type="text" id="property-search" placeholder="Search by address or parcel ID" aria-label="Search properties">
+        </div>
+        
+        <!-- Layer Control -->
+        <div class="layer-control">
+            <button type="button" class="btn btn-sm btn-light" id="layer-toggle">
+                <i class="bi bi-layers"></i>
+            </button>
+        </div>
+        
+        <!-- Current Location Button -->
+        <button type="button" class="location-button" id="current-location">
+            <i class="bi bi-geo-alt"></i>
+        </button>
+        
+        <!-- Property Info Overlay -->
+        <div class="mobile-map-overlay" id="property-overlay">
+            <div class="overlay-handle" id="overlay-handle"></div>
+            <div class="mobile-property-info">
+                <h5 id="property-title">Select a property</h5>
+                <div id="property-details">
+                    <p class="text-muted">Tap on a property marker to view details</p>
+                </div>
+                <div id="property-actions" class="mt-3" style="display: none;">
+                    <div class="btn-group w-100" role="group">
+                        <button type="button" class="btn btn-primary" id="view-property">
+                            <i class="bi bi-info-circle"></i> View
+                        </button>
+                        <button type="button" class="btn btn-outline-primary" id="start-assessment">
+                            <i class="bi bi-clipboard-data"></i> Assess
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loading-overlay">
+            <div class="loading-spinner"></div>
+        </div>
+    </div>
+    
+    <!-- Mobile Action Bar -->
+    <div class="mobile-action-bar">
+        <a href="{{ url_for('index') }}" class="mobile-action-button">
+            <i class="bi bi-house-door"></i>
+            <span>Home</span>
+        </a>
+        <a href="{{ url_for('map_viewer') }}" class="mobile-action-button">
+            <i class="bi bi-map"></i>
+            <span>Map</span>
+        </a>
+        <a href="{{ url_for('assessment_map') }}" class="mobile-action-button active">
+            <i class="bi bi-geo-alt-fill"></i>
+            <span>Properties</span>
+        </a>
+        <a href="{{ url_for('search_page') }}" class="mobile-action-button">
+            <i class="bi bi-search"></i>
+            <span>Search</span>
+        </a>
+        <a href="#" class="mobile-action-button" id="toggle-field-mode">
+            <i class="bi bi-clipboard-check"></i>
+            <span>Field Mode</span>
+        </a>
+    </div>
+    
+    <!-- Layer Selection Modal -->
+    <div class="modal fade" id="layerModal" tabindex="-1" aria-labelledby="layerModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="layerModalLabel">Map Layers</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="layer-property-boundaries" checked>
+                        <label class="form-check-label" for="layer-property-boundaries">
+                            Property Boundaries
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="layer-zoning" checked>
+                        <label class="form-check-label" for="layer-zoning">
+                            Zoning Districts
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="layer-satellite">
+                        <label class="form-check-label" for="layer-satellite">
+                            Satellite Imagery
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="layer-tax-districts">
+                        <label class="form-check-label" for="layer-tax-districts">
+                            Tax Districts
+                        </label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="layer-recent-sales">
+                        <label class="form-check-label" for="layer-recent-sales">
+                            Recent Sales
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Apply</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+
+<!-- Mobile Map Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize the map
+    const map = L.map('mobile-map').setView([46.2087, -119.1190], 12);
+    
+    // Add base map layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+    }).addTo(map);
+    
+    // Property marker group
+    const markers = L.markerClusterGroup({
+        disableClusteringAtZoom: 17,
+        spiderfyOnMaxZoom: false,
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true
+    });
+    
+    // Load property data
+    fetch('/api/assessment-properties')
+        .then(response => response.json())
+        .then(data => {
+            // Hide loading overlay
+            document.getElementById('loading-overlay').style.display = 'none';
+            
+            // Add property markers
+            data.properties.forEach(property => {
+                if (property.location && property.location.coordinates) {
+                    const marker = createPropertyMarker(property);
+                    markers.addLayer(marker);
+                }
+            });
+            
+            // Add markers to map
+            map.addLayer(markers);
+        })
+        .catch(error => {
+            console.error('Error loading properties:', error);
+            document.getElementById('loading-overlay').style.display = 'none';
+            alert('Failed to load property data. Please try again later.');
+        });
+    
+    // Create property marker
+    function createPropertyMarker(property) {
+        // Create custom marker icon
+        const markerIcon = L.divIcon({
+            className: `property-marker ${property.property_type}`,
+            iconSize: [12, 12]
+        });
+        
+        // Create marker
+        const marker = L.marker([
+                property.location.coordinates[1], 
+                property.location.coordinates[0]
+            ], {
+                icon: markerIcon,
+                title: property.address
+        });
+        
+        // Add click handler
+        marker.on('click', () => {
+            displayPropertyInfo(property);
+        });
+        
+        return marker;
+    }
+    
+    // Display property information in overlay
+    function displayPropertyInfo(property) {
+        document.getElementById('property-title').textContent = property.address;
+        
+        const detailsContainer = document.getElementById('property-details');
+        
+        // Format property details
+        const details = `
+            <div class="property-detail">
+                <span class="property-label">Parcel ID:</span> ${property.parcel_id}
+            </div>
+            <div class="property-detail">
+                <span class="property-label">Type:</span> ${property.property_type.charAt(0).toUpperCase() + property.property_type.slice(1)}
+            </div>
+            <div class="property-detail">
+                <span class="property-label">Owner:</span> ${property.owner_name}
+            </div>
+            <div class="property-detail">
+                <span class="property-label">Year Built:</span> ${property.year_built || 'N/A'}
+            </div>
+            <div class="property-detail">
+                <span class="property-label">Lot Size:</span> ${property.lot_size ? property.lot_size.toLocaleString() + ' sq ft' : 'N/A'}
+            </div>
+            <div class="property-detail">
+                <span class="property-label">Total Area:</span> ${property.total_area ? property.total_area.toLocaleString() + ' sq ft' : 'N/A'}
+            </div>
+            <div class="property-detail">
+                <span class="property-label">Assessed Value:</span> ${property.total_value ? '$' + property.total_value.toLocaleString() : 'Not assessed'}
+            </div>
+        `;
+        
+        detailsContainer.innerHTML = details;
+        
+        // Show property actions
+        document.getElementById('property-actions').style.display = 'block';
+        
+        // Expand overlay
+        document.getElementById('property-overlay').classList.add('expanded');
+        
+        // Store selected property ID for actions
+        document.getElementById('view-property').dataset.id = property.id;
+        document.getElementById('start-assessment').dataset.id = property.id;
+    }
+    
+    // Set up overlay drag behavior
+    const overlayHandle = document.getElementById('overlay-handle');
+    const overlay = document.getElementById('property-overlay');
+    
+    let startY, startHeight, isDragging = false;
+    
+    overlayHandle.addEventListener('touchstart', function(e) {
+        startY = e.touches[0].clientY;
+        startHeight = overlay.getBoundingClientRect().height;
+        isDragging = true;
+    });
+    
+    document.addEventListener('touchmove', function(e) {
+        if (!isDragging) return;
+        
+        const deltaY = e.touches[0].clientY - startY;
+        const newHeight = startHeight - deltaY;
+        const maxHeight = window.innerHeight * 0.6;
+        const minHeight = 50;
+        
+        if (newHeight > minHeight && newHeight < maxHeight) {
+            overlay.style.transform = `translateY(calc(100% - ${newHeight}px))`;
+        }
+    });
+    
+    document.addEventListener('touchend', function() {
+        if (!isDragging) return;
+        
+        const currentHeight = overlay.getBoundingClientRect().height;
+        const isExpanded = currentHeight > 100;
+        
+        if (isExpanded) {
+            overlay.classList.add('expanded');
+        } else {
+            overlay.classList.remove('expanded');
+        }
+        
+        isDragging = false;
+    });
+    
+    // Current location button
+    document.getElementById('current-location').addEventListener('click', function() {
+        if ('geolocation' in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    map.setView([lat, lng], 17);
+                    
+                    // Add a marker for current location
+                    L.circleMarker([lat, lng], {
+                        radius: 8,
+                        fillColor: '#0d6efd',
+                        color: '#fff',
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    }).addTo(map);
+                },
+                error => {
+                    console.error('Error getting location:', error);
+                    alert('Could not get your current location. Please check your device settings.');
+                }
+            );
+        } else {
+            alert('Geolocation is not supported by your browser.');
+        }
+    });
+    
+    // Layer toggle button
+    document.getElementById('layer-toggle').addEventListener('click', function() {
+        const layerModal = new bootstrap.Modal(document.getElementById('layerModal'));
+        layerModal.show();
+    });
+    
+    // Property search
+    const searchInput = document.getElementById('property-search');
+    searchInput.addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') {
+            const query = searchInput.value.trim();
+            if (query.length < 3) return;
+            
+            // Show loading overlay
+            document.getElementById('loading-overlay').style.display = 'flex';
+            
+            fetch(`/api/properties/search?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('loading-overlay').style.display = 'none';
+                    
+                    if (data.properties.length === 0) {
+                        alert('No properties found matching your search.');
+                        return;
+                    }
+                    
+                    // Clear existing markers
+                    markers.clearLayers();
+                    
+                    // Add matched properties
+                    data.properties.forEach(property => {
+                        if (property.location && property.location.coordinates) {
+                            const marker = createPropertyMarker(property);
+                            markers.addLayer(marker);
+                        }
+                    });
+                    
+                    // Zoom to the first result
+                    const firstProperty = data.properties[0];
+                    if (firstProperty.location && firstProperty.location.coordinates) {
+                        map.setView([
+                            firstProperty.location.coordinates[1],
+                            firstProperty.location.coordinates[0]
+                        ], 17);
+                        
+                        // Display property info
+                        displayPropertyInfo(firstProperty);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error searching properties:', error);
+                    document.getElementById('loading-overlay').style.display = 'none';
+                    alert('Failed to search properties. Please try again.');
+                });
+        }
+    });
+    
+    // Property action buttons
+    document.getElementById('view-property').addEventListener('click', function() {
+        const propertyId = this.dataset.id;
+        window.location.href = `/property/${propertyId}`;
+    });
+    
+    document.getElementById('start-assessment').addEventListener('click', function() {
+        const propertyId = this.dataset.id;
+        window.location.href = `/property/${propertyId}/assessment`;
+    });
+    
+    // Field mode toggle
+    document.getElementById('toggle-field-mode').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.body.classList.toggle('field-assessment-mode');
+        
+        const icon = this.querySelector('i');
+        if (document.body.classList.contains('field-assessment-mode')) {
+            icon.classList.remove('bi-clipboard-check');
+            icon.classList.add('bi-clipboard-check-fill');
+            localStorage.setItem('field_mode', 'true');
+        } else {
+            icon.classList.remove('bi-clipboard-check-fill');
+            icon.classList.add('bi-clipboard-check');
+            localStorage.setItem('field_mode', 'false');
+        }
+    });
+    
+    // Initialize field mode from localStorage
+    if (localStorage.getItem('field_mode') === 'true') {
+        document.body.classList.add('field-assessment-mode');
+        const icon = document.querySelector('#toggle-field-mode i');
+        icon.classList.remove('bi-clipboard-check');
+        icon.classList.add('bi-clipboard-check-fill');
+    }
+});
+</script>
+{% endblock %}

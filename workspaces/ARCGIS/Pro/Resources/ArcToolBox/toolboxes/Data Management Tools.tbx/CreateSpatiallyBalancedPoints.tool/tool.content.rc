@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Creates a set of sample points based on inclusion probabilities, resulting in a spatially balanced sample design. This tool is typically used for designing a monitoring network by suggesting locations to take samples, and a preference for particular locations can be defined using an inclusion probability raster.",
+        "in_probability_raster.descr": "Defines the inclusion probabilities for each location in the area of interest. The location values must range from 0 (low inclusion probability) to 1 (high inclusion probability).",
+        "in_probability_raster.title": "Input Inclusion Probability Raster",
+        "number_output_points.descr": "The number of sample locations that will be created.",
+        "number_output_points.title": "Number of  Output Points",
+        "out_feature_class.descr": "The output feature class containing the selected sample locations and their inclusion probabilities.",
+        "out_feature_class.title": "Output Point Feature Class",
+        "title": "Create Spatially Balanced Points"
+    }
+}

@@ -1,0 +1,79 @@
+{
+  "name": "@terrafusion/ui-transcendent",
+  "version": "1.0.0",
+  "description": "TerraFusion Breathtaking UI Components - Government. Transcended.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook",
+    "type-check": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "terrafusion",
+    "ui",
+    "components",
+    "react",
+    "typescript",
+    "government",
+    "transcended",
+    "breathtaking",
+    "glass-morphism",
+    "quantum-effects"
+  ],
+  "author": "TerraFusion Elite Government OS Engineering Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/terrafusion/ui-transcendent"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "dependencies": {
+    "clsx": "^2.0.0",
+    "framer-motion": "^10.16.0",
+    "@radix-ui/react-slot": "^1.0.2",
+    "class-variance-authority": "^0.7.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "typescript": "^5.0.0",
+    "tsup": "^7.2.0",
+    "eslint": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "jest": "^29.0.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@storybook/react": "^7.0.0",
+    "@storybook/addon-essentials": "^7.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "terrafusion": {
+    "component": "ui-library",
+    "brandCompliance": "transcendent",
+    "excellenceLevel": "championship",
+    "quantumEffects": true,
+    "governmentTranscended": true,
+    "accessibility": "WCAG-AAA",
+    "performance": "championship-optimized"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

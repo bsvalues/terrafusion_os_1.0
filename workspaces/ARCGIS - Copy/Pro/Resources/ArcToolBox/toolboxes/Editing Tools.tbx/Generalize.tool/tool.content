@@ -1,0 +1,58 @@
+{
+    "type": "FunctionTool",
+    "guid": "{04583914-7d28-4422-af64-4e044fca56e1}",
+    "displayname": "$rc:title",
+    "helpcontent": "24000005",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "edit_session",
+        "input_data_change"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline",
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "tolerance": {
+            "type": "optional",
+            "displayname": "$rc:tolerance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:tolerance.descr"
+        },
+        "out_feature_class": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "clonedependency": "true"
+            }
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "workspace"
+    ]
+}

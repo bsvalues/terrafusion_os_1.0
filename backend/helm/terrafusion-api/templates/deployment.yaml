@@ -1,0 +1,247 @@
+{{/*
+============================================================================
+TerraFusion API - Deployment Template
+Government. Transcended. - High-Availability Kubernetes Deployment
+============================================================================
+This template creates a production-ready Deployment for the TerraFusion API
+microservice with FISMA-High compliance, health checks, and observability.
+============================================================================
+*/}}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "terrafusion-api.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "terrafusion-api.labels" . | nindent 4 }}
+    terrafusion.io/component: api
+    terrafusion.io/tier: core
+  annotations:
+    description: "TerraFusion OS Core API Service"
+    compliance: "FISMA-High"
+    counties: "39"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0  # Zero-downtime deployments
+  selector:
+    matchLabels:
+      {{- include "terrafusion-api.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.service.port }}"
+        prometheus.io/path: "/metrics"
+        {{- if .Values.monitoring.jaeger.enabled }}
+        jaeger.io/inject: "true"
+        {{- end }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+      labels:
+        {{- include "terrafusion-api.selectorLabels" . | nindent 8 }}
+        terrafusion.io/component: api
+        terrafusion.io/tier: core
+        version: {{ .Values.image.tag | default .Chart.AppVersion }}
+    spec:
+      {{- if .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.global.imagePullSecrets | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "terrafusion-api.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      
+      # Init container for database migrations
+      initContainers:
+        - name: db-migration
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "Running Entity Framework Core migrations..."
+              dotnet ef database update --no-build --verbose
+              echo "Migrations completed successfully"
+          envFrom:
+            - secretRef:
+                name: {{ include "terrafusion-api.fullname" . }}-secrets
+            - configMapRef:
+                name: {{ include "terrafusion-api.fullname" . }}-config
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+      
+      containers:
+        - name: api
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+          
+          # Environment variables
+          env:
+            {{- toYaml .Values.env | nindent 12 }}
+            
+            # Dynamic environment variables
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            
+            # Service URLs (from values)
+            - name: CONSCIOUSNESS_URL
+              value: {{ .Values.integrations.consciousness.url | quote }}
+            - name: GATEWAY_URL
+              value: {{ .Values.integrations.gateway.url | quote }}
+            - name: OPERATIONS_URL
+              value: {{ .Values.integrations.operations.url | quote }}
+            
+            # Database configuration
+            - name: DATABASE_HOST
+              value: {{ .Values.database.host | quote }}
+            - name: DATABASE_PORT
+              value: {{ .Values.database.port | quote }}
+            - name: DATABASE_NAME
+              value: {{ .Values.database.name | quote }}
+            - name: DATABASE_SSL
+              value: {{ .Values.database.ssl | quote }}
+            - name: DATABASE_POOL_SIZE
+              value: {{ .Values.database.poolSize | quote }}
+            
+            # Redis configuration
+            {{- if .Values.redis.enabled }}
+            - name: REDIS_HOST
+              value: {{ .Values.redis.host | quote }}
+            - name: REDIS_PORT
+              value: {{ .Values.redis.port | quote }}
+            - name: REDIS_DATABASE
+              value: {{ .Values.redis.database | quote }}
+            {{- end }}
+            
+            # Monitoring configuration
+            {{- if .Values.monitoring.jaeger.enabled }}
+            - name: JAEGER_AGENT_HOST
+              value: {{ .Values.monitoring.jaeger.agentHost | quote }}
+            - name: JAEGER_AGENT_PORT
+              value: {{ .Values.monitoring.jaeger.agentPort | quote }}
+            - name: JAEGER_SAMPLING_RATE
+              value: {{ .Values.monitoring.jaeger.samplingRate | quote }}
+            {{- end }}
+            
+            # Compliance configuration
+            - name: FISMA_LEVEL
+              value: {{ .Values.compliance.fisma.level | quote }}
+            - name: AUDIT_LOGGING_ENABLED
+              value: {{ .Values.compliance.fisma.auditLogging | quote }}
+            - name: DATA_ENCRYPTION_ENABLED
+              value: {{ .Values.compliance.fisma.dataEncryption | quote }}
+            
+            # Multi-tenancy configuration
+            - name: MULTI_TENANCY_ENABLED
+              value: {{ .Values.compliance.multiTenancy.enabled | quote }}
+            - name: TENANT_ID_HEADER
+              value: {{ .Values.compliance.multiTenancy.tenantIdHeader | quote }}
+          
+          # Environment from secrets and configmaps
+          envFrom:
+            {{- toYaml .Values.envFrom | nindent 12 }}
+          
+          # Health checks
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          
+          startupProbe:
+            {{- toYaml .Values.startupProbe | nindent 12 }}
+          
+          # Resource limits
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          
+          # Volume mounts
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: app-logs
+              mountPath: /app/logs
+            - name: config
+              mountPath: /app/config
+              readOnly: true
+        
+        # Sidecar: Log shipping to Loki
+        {{- if .Values.monitoring.loki.enabled }}
+        - name: promtail
+          image: grafana/promtail:2.9.0
+          args:
+            - -config.file=/etc/promtail/promtail.yaml
+          volumeMounts:
+            - name: app-logs
+              mountPath: /app/logs
+              readOnly: true
+            - name: promtail-config
+              mountPath: /etc/promtail
+              readOnly: true
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+        {{- end }}
+      
+      # Volumes
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: app-logs
+          emptyDir: {}
+        - name: config
+          configMap:
+            name: {{ include "terrafusion-api.fullname" . }}-config
+        {{- if .Values.monitoring.loki.enabled }}
+        - name: promtail-config
+          configMap:
+            name: promtail-config
+        {{- end }}
+      
+      # Affinity rules
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      
+      # Tolerations
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      
+      # Node selector
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

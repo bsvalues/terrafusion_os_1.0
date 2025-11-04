@@ -1,0 +1,36 @@
+name: TerraLevy Module Tests
+
+on:
+  push:
+    paths:
+      - 'SDK/modules/terra-levy/**'
+      - '.github/workflows/terra-levy-tests.yml'
+  pull_request:
+    paths:
+      - 'SDK/modules/terra-levy/**'
+      - '.github/workflows/terra-levy-tests.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: SDK/modules/terra-levy
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: |
+            SDK/modules/terra-levy/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+
+      - name: Run tests
+        run: npm test --silent

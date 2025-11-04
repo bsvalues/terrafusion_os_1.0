@@ -1,0 +1,19 @@
+{
+  "migration_id": "09088fe1-1052-43fc-aefd-88f5ffcce8c2",
+  "start_time": "2025-10-21T23:13:20.853660+00:00",
+  "end_time": "2025-10-21T23:13:21.000275+00:00",
+  "duration_seconds": 0.146615,
+  "duration_formatted": "0:00:00.146615",
+  "migrated_records": 6,
+  "validation_errors": [],
+  "county_id": "benton-county-wa",
+  "migration_agent": "TerraFusion_Elite_Government_OS",
+  "compliance_level": "FISMA-HIGH",
+  "security_classification": "Government-Grade",
+  "success": true,
+  "performance_metrics": {
+    "records_per_second": 40.92350714456229,
+    "batch_size": 1000,
+    "encryption_enabled": true
+  }
+}

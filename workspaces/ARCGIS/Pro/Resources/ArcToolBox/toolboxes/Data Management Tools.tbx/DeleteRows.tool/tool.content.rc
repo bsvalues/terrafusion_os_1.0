@@ -1,0 +1,10 @@
+{
+    "map": {
+        "description": "Deletes all or the selected subset of rows from the input.",
+        "in_rows.descr": "The feature class, layer, table, or table view whose rows will be deleted.",
+        "in_rows.title": "Input Rows",
+        "out_table.title": "Updated Input With Rows Removed",
+        "summary": "<xdoc><p>Deletes all or the selected subset of rows from the input.</p><p>The deletion of all rows or a subset of rows depends on the following:<ul><li>If the input is a feature class or table, all rows will be deleted.</li><li>If the input is a layer or table view with no selection, all rows will be deleted.</li><li>If the input is a layer or table view with a selection, only the selected rows will be deleted.</li></ul></p></xdoc>",
+        "title": "Delete Rows"
+    }
+}

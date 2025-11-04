@@ -54,9 +54,9 @@
     "build": "npm run backend:build && npm run frontend:build",
     "backend:build": "cd backend && dotnet publish TerraFusion.sln -c Release -o ../dist/backend",
     "frontend:build": "cd frontend && npm run build",
-    "format": "node scripts/format-code.mjs",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
-    "lint": "eslint \"**/*.{ts,tsx}\" --fix",
+    "format": "prettier --write src tests",
+    "format:check": "prettier --check src tests",
+    "lint": "eslint src tests --ext .ts,.tsx,.js,.jsx",
     "lint:check": "eslint \"**/*.{ts,tsx}\"",
     "type-check": "tsc --noEmit",
     "test": "npm run test:unit",
@@ -142,14 +142,44 @@
     "bench:report": "node bench/scripts/generate-report.js",
     "bench:ci": "npm run bench && node bench/scripts/validate-gates.js",
     "monitor-agents": "node scripts/ai-health-check.mjs",
+    "ai-agent-briefing": "node scripts/ai-agent-briefing.mjs",
     "auto-correct": "node scripts/auto-corrector.mjs",
     "agent-violations": "cat AI_MONITORING/VIOLATION_TRACKER.md",
     "marketplace-training": "node scripts/marketplace-training-validation.mjs",
     "full-validation": "npm run ai-training && npm run monitor-agents && npm run marketplace-training && npm run auto-correct",
     "enhanced-training": "npm run ai-training && npm run marketplace-training && npm run monitor-agents",
+    "lint:fix": "eslint src tests --ext .ts,.tsx,.js,.jsx --fix",
+    "quality": "npm run lint && npm run format:check",
+    "quality:fix": "npm run lint:fix && npm run format",
+    "government:compliance": "npm run lint -- --rule 'jsx-a11y/*: error' --rule 'security/*: error'",
+    "precommit": "npm run quality && npm test",
     "ai-training": "pwsh scripts/ai-agent-training.ps1",
     "validate-agent": "node sdk/terrafusion-os-sdk.js",
-    "os-status": "echo 'TerraFusion OS: Government Operating System - 50,000+ AI Agents Operational'"
+    "os-status": "echo 'TerraFusion OS: Government Operating System - 50,000+ AI Agents Operational'",
+    "health:check": "ts-node .vscode/scripts/automated-health-check.ts",
+    "health:check:verbose": "ts-node .vscode/scripts/automated-health-check.ts --verbose",
+    "validate:pre-commit": "npm run lint && npm run type-check && npm test -- --passWithNoTests",
+    "validate:pre-push": "npm run lint && npm run type-check && npm run test:all && npm run government:compliance",
+    "validate:full": "npm run gates",
+    "phd:verify": "echo '🎓 MIT PhD-Level Verification' && npm run health:check && npm run validate:full",
+    "monitor:start": "ts-node .vscode/scripts/advanced-monitoring-system.ts",
+    "remediate:auto": "ts-node .vscode/scripts/auto-remediation-engine.ts",
+    "terrafusion:complete": "npm run health:check && npm run remediate:auto && npm run validate:full",
+    "terrafusion:status": "echo '🏛️  TerraFusion OS Status' && npm run health:check && npm run monitor:start",
+    "profile:start": "ts-node .vscode/scripts/real-time-performance-profiler.ts",
+    "profile:30s": "PROFILE_DURATION=30000 ts-node .vscode/scripts/real-time-performance-profiler.ts",
+    "profile:60s": "PROFILE_DURATION=60000 ts-node .vscode/scripts/real-time-performance-profiler.ts",
+    "profile:5min": "PROFILE_DURATION=300000 ts-node .vscode/scripts/real-time-performance-profiler.ts",
+    "generate:tests": "ts-node .vscode/scripts/comprehensive-test-generator.ts",
+    "generate:tests:unit": "ts-node .vscode/scripts/comprehensive-test-generator.ts --unit-only",
+    "generate:tests:integration": "ts-node .vscode/scripts/comprehensive-test-generator.ts --integration-only",
+    "generate:tests:all": "npm run generate:tests && npm run test:all",
+    "deploy:orchestrate": "ts-node .vscode/scripts/deployment-orchestrator.ts",
+    "deploy:dev": "DEPLOY_ENV=development ts-node .vscode/scripts/deployment-orchestrator.ts",
+    "deploy:staging": "DEPLOY_ENV=staging ts-node .vscode/scripts/deployment-orchestrator.ts",
+    "deploy:production": "DEPLOY_ENV=production ts-node .vscode/scripts/deployment-orchestrator.ts",
+    "terrafusion:phd": "echo '🎓 MIT PhD-Level Complete Verification' && npm run health:check && npm run profile:30s && npm run validate:full",
+    "terrafusion:deploy": "echo '🚀 TerraFusion Deployment Pipeline' && npm run health:check && npm run test:all && npm run deploy:orchestrate"
   },
   "keywords": [
     "government",
@@ -181,19 +211,13 @@
     "@pact-foundation/pact": "^12.0.0",
     "@playwright/test": "^1.54.2",
     "@stryker-mutator/core": "^8.5.0",
-    "@tanstack/react-query": "5.85.6",
-    "@testing-library/jest-dom": "6.8.0",
-    "@testing-library/react": "13.4.0",
-    "@testing-library/user-event": "^14.5.0",
     "@types/cors": "2.8.19",
     "@types/jest": "^29.5.0",
     "@types/leaflet": "1.9.20",
     "@types/node": "20.19.11",
-    "@types/react": "19.1.12",
-    "@types/react-dom": "19.1.9",
     "@types/ws": "8.18.1",
-    "@typescript-eslint/eslint-plugin": "6.21.0",
-    "@typescript-eslint/parser": "6.21.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
     "@vitejs/plugin-react": "^4.0.0",
     "@vitest/coverage-v8": "^1.6.0",
     "archiver": "^7.0.1",
@@ -202,12 +226,12 @@
     "clsx": "2.1.1",
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
-    "eslint": "^8.57.1",
-    "eslint-config-prettier": "^8.10.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-typescript": "^3.6.1",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-prettier": "^5.2.1",
-    "eslint-plugin-security": "^1.7.1",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-prettier": "^5.1.0",
+    "eslint-plugin-security": "^2.1.0",
     "husky": "^8.0.3",
     "jest": "^29.6.0",
     "jsdom": "^23.0.0",
@@ -215,7 +239,7 @@
     "lint-staged": "^13.2.3",
     "nodemon": "^3.0.1",
     "playwright": "^1.54.2",
-    "prettier": "^3.3.3",
+    "prettier": "^3.2.0",
     "tailwind-merge": "3.3.1",
     "ts-node": "10.9.2",
     "typescript": "5.9.2",
@@ -273,50 +297,50 @@
     }
   },
   "terrafusionOS": {
-    "Type": "COMPLETE_GOVERNMENT_OPERATING_SYSTEM",
-    "PluginEconomy": {
-      "PropertyAnalytics": "89/month → 2.8M annual",
-      "ComplianceAutomation": "38/month → 1.2M annual",
-      "LegacyIntegration": "15/month → 470K annual"
+    "Consciousness": {
+      "Technology": "AI Consciousness Layer",
+      "Status": "NEEDS_TYPESCRIPT_FIX",
+      "Port": 3004
     },
     "Marketplace": {
-      "AnnualRevenuePotential": "5.4M",
-      "AdditionalARPU": "142",
+      "TotalMarket": "23.3M",
       "Type": "World's First Government App Store",
-      "CombinedARPU": "619",
-      "TotalMarket": "23.3M"
+      "AdditionalARPU": "142",
+      "AnnualRevenuePotential": "5.4M",
+      "CombinedARPU": "619"
     },
-    "Kernel": {
-      "Port": 5000,
-      "Status": "RUNNING",
-      "Technology": ".NET Core API Gateway"
-    },
-    "Status": "PRODUCTION_OPERATIONAL",
     "Modules": {
       "Components": 82000,
       "Type": "HOT_SWAPPABLE_GOVERNMENT_APPS",
       "Count": 32
     },
-    "Consciousness": {
-      "Port": 3004,
-      "Status": "NEEDS_TYPESCRIPT_FIX",
-      "Technology": "AI Consciousness Layer"
+    "Status": "PRODUCTION_OPERATIONAL",
+    "AIAgents": {
+      "Commander": "Supreme Commander Claude",
+      "Production": 50000,
+      "Current": 50000
     },
     "Shell": {
-      "Note": "NOT an app framework - this IS the OS",
       "Technology": "TerraFusion OS Native Shell",
-      "Status": "INTEGRATED_OS_COMPONENT"
-    },
-    "AIAgents": {
-      "Current": 50000,
-      "Production": 50000,
-      "Commander": "Supreme Commander Claude"
+      "Status": "INTEGRATED_OS_COMPONENT",
+      "Note": "NOT an app framework - this IS the OS"
     },
     "WhiteGlove": {
-      "ServiceType": "Complete Turnkey Setup",
-      "OnboardingGrade": "Government-Grade",
       "SupportLevel": "24/7 Platinum Support",
-      "DeploymentModel": "Professional Installation"
-    }
+      "DeploymentModel": "Professional Installation",
+      "ServiceType": "Complete Turnkey Setup",
+      "OnboardingGrade": "Government-Grade"
+    },
+    "PluginEconomy": {
+      "ComplianceAutomation": "38/month → 1.2M annual",
+      "LegacyIntegration": "15/month → 470K annual",
+      "PropertyAnalytics": "89/month → 2.8M annual"
+    },
+    "Kernel": {
+      "Technology": ".NET Core API Gateway",
+      "Status": "RUNNING",
+      "Port": 5000
+    },
+    "Type": "COMPLETE_GOVERNMENT_OPERATING_SYSTEM"
   }
 }

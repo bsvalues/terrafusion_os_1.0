@@ -1,0 +1,20 @@
+{
+    "set": [
+        "cartography",
+        "catalog",
+        "catalogue",
+        "cell",
+        "copy",
+        "export",
+        "features",
+        "import",
+        "load",
+        "s-100",
+        "s-101",
+        "s-57",
+        "s100",
+        "s101",
+        "s57",
+        "maritime"
+    ]
+}

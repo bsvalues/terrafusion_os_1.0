@@ -1,0 +1,39 @@
+{
+  "name": "@terrafusion/design-tokens",
+  "version": "1.0.0",
+  "description": "TerraFusion Design System - TerraSphere-derived design tokens for government-grade applications",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "tokens"
+  ],
+  "scripts": {
+    "build": "node scripts/build-tokens.js && tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "design-tokens",
+    "terrafusion",
+    "design-system",
+    "government",
+    "accessibility"
+  ],
+  "author": "TerraFusion Systems",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.6.2",
+    "@types/node": "^20.10.6"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./css": "./dist/tokens.css",
+    "./scss": "./dist/tokens.scss",
+    "./json": "./tokens/tokens.json"
+  }
+}

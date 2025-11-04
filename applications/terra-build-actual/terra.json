@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0",
+  "application": "Terrafusion",
+  "environment": "development",
+  "plugins": {
+    "CostFactorTables": {
+      "enabled": true,
+      "source": "data/costFactors.json",
+      "cache": true,
+      "refreshInterval": 3600000
+    }
+  },
+  "features": {
+    "useDataDrivenCostModeling": true
+  },
+  "ui": {
+    "showGuidedSetup": true,
+    "showInlineTooltips": true,
+    "accessibilityLevel": "high-contrast",
+    "showDebugInfo": false
+  },
+  "defaults": {
+    "costSource": "Benton County Building Cost Standards",
+    "region": "BENTON",
+    "year": 2025,
+    "qualityGrade": "MEDIUM"
+  }
+}

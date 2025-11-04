@@ -1,0 +1,9 @@
+{
+    "map": {
+        "copy_arcsde_locator.title": "Composite locator only: copy participating locators in ArcSDE database instead of referencing them",
+        "description": "Consolidate Locator",
+        "in_locator.title": "Input Locator",
+        "output_folder.title": "Output Folder",
+        "title": "Consolidate Locator"
+    }
+}

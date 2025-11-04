@@ -1,0 +1,11 @@
+{
+    "set": [
+        "configuration",
+        "diagram rule",
+        "diagram template",
+        "network",
+        "network diagram",
+        "structural attachments",
+        "template configuration"
+    ]
+}

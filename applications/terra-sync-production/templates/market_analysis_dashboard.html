@@ -1,0 +1,115 @@
+{% extends "base_clean.html" %}
+
+{% block title %}{{ title }} | TerraFusion{% endblock %}
+
+{% block head %}
+{{ super() }}
+  <!-- Include Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  
+  <!-- Include Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Include React (Development for now) -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  
+  <!-- Include Framer Motion for animations -->
+  <script src="https://unpkg.com/framer-motion@10.14.0/dist/framer-motion.js"></script>
+  
+  <style>
+    /* Custom styles for the dashboard */
+    .dashboard-header {
+      margin-bottom: 2rem;
+    }
+    
+    .kpi-card {
+      transition: all 0.3s ease;
+      height: 100%;
+    }
+    
+    .kpi-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .trend-up {
+      color: #198754;
+    }
+    
+    .trend-down {
+      color: #dc3545;
+    }
+    
+    .trend-neutral {
+      color: #6c757d;
+    }
+    
+    .chart-container {
+      position: relative;
+      height: 300px;
+      width: 100%;
+      margin-bottom: 2rem;
+    }
+    
+    /* Placeholder loading styles */
+    .placeholder-glow {
+      animation: placeholder-glow 2s ease-in-out infinite;
+    }
+    
+    @keyframes placeholder-glow {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col">
+      <h1 class="dashboard-header">Market Analysis Dashboard</h1>
+      <p class="lead">Interactive visualization of market trends with adaptive color schemes based on data analysis</p>
+    </div>
+  </div>
+  
+  <!-- County Selector -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">County Selection</h5>
+          <form action="{{ url_for('market_analysis_dashboard') }}" method="get" class="d-flex">
+            <select name="county_id" class="form-select me-2" onchange="this.form.submit()">
+              <option value="DEFAULT_COUNTY" {% if county_id == 'DEFAULT_COUNTY' %}selected{% endif %}>Default County</option>
+              <option value="SAMPLE_COUNTY" {% if county_id == 'SAMPLE_COUNTY' %}selected{% endif %}>Sample County</option>
+              <option value="DEMO_COUNTY" {% if county_id == 'DEMO_COUNTY' %}selected{% endif %}>Demo County</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Apply</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Feature Information</h5>
+          <p class="card-text">This dashboard demonstrates the Adaptive Color Scheme feature that changes colors based on data trends.</p>
+          <ul>
+            <li>Positive trends: Green to blue based on magnitude</li>
+            <li>Negative trends: Yellow to red based on magnitude</li>
+            <li>Charts adjust colors automatically based on data trends</li>
+            <li>KPI cards change border colors to reflect market conditions</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- React Dashboard Root -->
+  <div id="market-analysis-dashboard-root" data-county-id="{{ county_id }}"></div>
+  
+  <!-- Include compiled React bundle -->
+  <script src="{{ url_for('static', filename='frontend_dist/index.js') }}"></script>
+</div>
+{% endblock %}

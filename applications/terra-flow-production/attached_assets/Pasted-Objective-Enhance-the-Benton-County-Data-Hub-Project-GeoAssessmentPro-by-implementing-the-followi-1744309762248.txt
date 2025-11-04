@@ -1,0 +1,82 @@
+Objective:
+Enhance the Benton County Data Hub Project (GeoAssessmentPro) by implementing the following prioritized improvements to expand data synchronization, reporting, GIS visualization, CI/CD automation, and mobile responsiveness—all while ensuring robust testing, logging, and version control.
+
+Prioritized Enhancements:
+
+1. Enhanced Data Synchronization Pipeline:
+
+Design and implement a scheduled, incremental data synchronization process between the production database (web_internet_benton) and the training database (pacs_training) using Windows Authentication.
+
+Implement conflict resolution (e.g., timestamp comparison or last-write-wins strategies) and data sanitization for sensitive information before synchronizing to the training environment.
+
+Ensure comprehensive logging and automated notification/alerting on synchronization events.
+
+2. Advanced GIS Visualization Layer:
+
+Integrate an interactive mapping library (such as OpenLayers or extended Leaflet.js) to render property boundaries with dynamic attribute display and temporal visualization.
+
+Develop Flask API endpoints to serve spatial data in GeoJSON (or similar) format from the PostgreSQL GIS database.
+
+Enable export functionality for map data in formats like GeoJSON, Shapefile, and KML.
+
+3. Enhanced Reporting Infrastructure:
+
+Create new Flask API endpoints to generate parameterized, advanced property reports (e.g., trend analysis, value distribution, comparison reports).
+
+Develop corresponding frontend components (using Bootstrap/jQuery) with integrated charting libraries (Chart.js or D3.js) for interactive dashboards.
+
+Implement options for both scheduled and on-demand report generation with export options (PDF, Excel, CSV).
+
+4. CI/CD Pipeline Integration:
+
+Establish a robust CI/CD pipeline (using GitHub Actions, GitLab CI/CD, or Jenkins) that automates builds, runs a comprehensive test suite (unit, integration, performance, end-to-end), and deploys to staging/production environments.
+
+Implement environment-specific configuration management and automated rollback mechanisms if tests fail.
+
+5. Mobile Interface Optimization:
+
+Optimize the existing Bootstrap-based UI for improved responsiveness and usability on mobile devices.
+
+Integrate location-aware features and offline caching mechanisms to facilitate on-field assessments.
+
+Simplify workflows for mobile-specific tasks.
+
+6. Comprehensive Testing and Monitoring:
+
+Expand and refine the automated test suite to cover all new enhancements, including edge cases and failure scenarios.
+
+Integrate centralized logging (using ELK, Sentry, etc.) and establish real-time monitoring dashboards with automated alerts.
+
+7. Documentation and Versioning:
+
+Update and generate comprehensive documentation covering API endpoints, deployment configurations, and usage guidelines.
+
+Ensure all code changes are tracked using Git with semantic versioning, detailed commit messages, and clear release notes.
+
+Instructions:
+
+Implement the enhancements sequentially, running thorough pre-deployment and post-deployment tests after each phase.
+
+Use the existing MCP architecture to coordinate specialized tasks where applicable.
+
+After each phase, report detailed test results and log metrics; if any errors occur, trigger the automated rollback mechanisms and notify the development team.
+
+Ensure that all enhancements maintain or improve security controls (including Windows Authentication and role-based access) and do not disrupt current functionality.
+
+Outcome:
+The enhanced system should provide:
+
+A reliable and automated data synchronization pipeline ensuring real-time consistency between production and training databases.
+
+A next-generation GIS visualization interface with dynamic, exportable spatial data and temporal capabilities.
+
+Advanced and interactive reporting tools for insightful property assessment analytics.
+
+A CI/CD pipeline that guarantees smooth, automated deployments with comprehensive testing and rollback capabilities.
+
+A mobile-optimized UI that is responsive, intuitive, and robust for on-site field use.
+
+Detailed, up-to-date documentation and version control for ongoing maintenance and future upgrades.
+
+Action:
+Please begin by implementing the Enhanced Data Synchronization Pipeline, followed by the integration of Advanced GIS Visualization and Reporting capabilities, and then proceed with CI/CD and mobile interface enhancements. Report progress and test outcomes after each phase.

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TerraFusion Enterprise Geospatial Platform">
+    <title>{% block title %}TerraFusion Enterprise{% endblock %}</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* 🎯 OFFICIAL TERRAFUSION BRAND STANDARDS V2.0 */
+            --tf-cosmic-blue: #0891b2;
+            --tf-quantum-teal: #00d2ff;
+            --tf-stellar-white: #ffffff;
+            --tf-deep-space: #0a0f1c;
+            
+            /* 🎨 BRAND GRADIENTS */
+            --tf-primary-gradient: linear-gradient(135deg, var(--tf-cosmic-blue), var(--tf-quantum-teal));
+            --tf-background-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            
+            /* Supporting colors */
+            --tf-success: #059669;
+            --tf-warning: #d97706;
+            --tf-danger: #dc2626;
+            --tf-light: #f8fafc;
+            --tf-gray: #64748b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: var(--tf-background-gradient);
+            color: var(--tf-deep-space);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--tf-stellar-white) !important;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .navbar {
+            background: var(--tf-primary-gradient) !important;
+            box-shadow: 0 4px 20px rgba(0, 210, 255, 0.15);
+            border: none;
+        }
+
+        .card {
+            border: 2px solid rgba(0, 210, 255, 0.2);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: var(--tf-quantum-teal);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn {
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--tf-primary-gradient) !important;
+            border: none !important;
+            color: var(--tf-stellar-white) !important;
+            box-shadow: 0 4px 15px rgba(8, 145, 178, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(8, 145, 178, 0.4);
+        }
+
+        .footer {
+            background: var(--tf-deep-space);
+            color: white;
+            padding: 2rem 0;
+            margin-top: auto;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .status-healthy {
+            background: rgba(0, 210, 255, 0.1);
+            color: var(--tf-quantum-teal);
+            border: 1px solid var(--tf-quantum-teal);
+        }
+
+        .status-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .metric-card {
+            background: var(--tf-primary-gradient);
+            color: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 25px rgba(8, 145, 178, 0.3);
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .metric-label {
+            opacity: 0.9;
+            font-size: 0.875rem;
+        }
+
+        .sidebar {
+            background: white;
+            border: 2px solid rgba(0, 210, 255, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+
+        .nav-link {
+            color: var(--tf-gray);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: var(--tf-primary-gradient);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .table {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .table thead th {
+            background: var(--tf-light);
+            border: none;
+            font-weight: 600;
+            color: var(--tf-deep-space);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 210, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--tf-quantum-teal);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .alert {
+            border: none;
+            border-radius: 12px;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            border-left-color: var(--tf-success);
+            background: #f0fdf4;
+            color: #166534;
+        }
+
+        .alert-warning {
+            border-left-color: var(--tf-warning);
+            background: #fffbeb;
+            color: #92400e;
+        }
+
+        .alert-danger {
+            border-left-color: var(--tf-danger);
+            background: #fef2f2;
+            color: #991b1b;
+        }
+
+        .progress {
+            height: 8px;
+            border-radius: 4px;
+            background: #e2e8f0;
+        }
+
+        .progress-bar {
+            border-radius: 4px;
+            background: var(--tf-primary-gradient);
+        }
+
+        /* 🎯 TERRAFUSION LOGO STYLING */
+        .tf-logo {
+            filter: drop-shadow(0 0 10px rgba(0, 210, 255, 0.5));
+            transition: all 0.3s ease;
+            max-height: 32px;
+        }
+
+        .tf-logo:hover {
+            filter: drop-shadow(0 0 20px rgba(0, 210, 255, 0.8));
+            transform: scale(1.05);
+        }
+    </style>
+
+    {% block head %}{% endblock %}
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <svg class="tf-logo me-2" viewBox="0 0 32 32" width="32" height="32">
+                    <defs>
+                        <linearGradient id="tfGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#0891b2"/>
+                            <stop offset="100%" style="stop-color:#00d2ff"/>
+                        </linearGradient>
+                    </defs>
+                    <rect x="4" y="4" width="24" height="24" rx="6" fill="none" stroke="url(#tfGradient)" stroke-width="2"/>
+                    <path d="M8 12 L16 12 L16 20 M16 12 L24 12 M20 16 L24 20" stroke="url(#tfGradient)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                TerraFusion Enterprise
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('dashboard') }}">
+                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-cogs me-1"></i>Services
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('gis_dashboard') }}">GIS Export</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('pacs_sync_dashboard') }}">PACS Sync</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('district_lookup_dashboard') }}">District Lookup</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('ai_analysis_dashboard') }}">AI Analysis</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-project-diagram me-1"></i>Project
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('project_dashboard') }}">Overview</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('project_tasks') }}">Tasks</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('project_team') }}">Team</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('project_timeline') }}">Timeline</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('project_reports') }}">Reports</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('health_check') }}" target="_blank">
+                            <i class="fas fa-heartbeat me-1 text-success"></i>Health
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('settings') }}">
+                            <i class="fas fa-cog me-1"></i>Settings
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="text-white mb-3">TerraFusion Enterprise</h5>
+                    <p class="text-light">Advanced geospatial data synchronization platform for enterprise county operations.</p>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="text-white mb-3">Services</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('gis_dashboard') }}" class="text-light">GIS Export</a></li>
+                        <li><a href="{{ url_for('pacs_sync_dashboard') }}" class="text-light">PACS Sync</a></li>
+                        <li><a href="{{ url_for('district_lookup_dashboard') }}" class="text-light">District Lookup</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="text-white mb-3">Support</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="/health" class="text-light">System Health</a></li>
+                        <li><a href="/api/v1/system/health" class="text-light">API Status</a></li>
+                        <li><a href="/docs" class="text-light">Documentation</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4" style="border-color: rgba(255,255,255,0.2);">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="text-light mb-0">&copy; {{ current_year or 2025 }} TerraFusion Enterprise. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <span class="text-light">Version 1.0.0 | Build: Production</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            document.querySelectorAll('.nav-link').forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+
+            const healthCheck = async () => {
+                try {
+                    const response = await fetch('/health');
+                    const data = await response.json();
+                    const healthIcon = document.querySelector('.fa-heartbeat');
+                    if (healthIcon) {
+                        healthIcon.className = data.status === 'healthy' 
+                            ? 'fas fa-heartbeat me-1 text-success'
+                            : 'fas fa-heartbeat me-1 text-danger';
+                    }
+                } catch (error) {
+                    console.warn('Health check failed:', error);
+                }
+            };
+
+            healthCheck();
+            setInterval(healthCheck, 30000);
+        });
+
+        window.showToast = function(message, type = 'info') {
+            const toastContainer = document.getElementById('toast-container') || (() => {
+                const container = document.createElement('div');
+                container.id = 'toast-container';
+                container.className = 'position-fixed top-0 end-0 p-3';
+                container.style.zIndex = '1055';
+                document.body.appendChild(container);
+                return container;
+            })();
+
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type} border-0`;
+            toast.setAttribute('role', 'alert');
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+
+            toastContainer.appendChild(toast);
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+
+            toast.addEventListener('hidden.bs.toast', () => {
+                toast.remove();
+            });
+        };
+
+        window.formatBytes = function(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        };
+
+        window.formatDuration = function(seconds) {
+            if (seconds < 60) return `${seconds}s`;
+            if (seconds < 3600) return `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+            return `${Math.floor(seconds / 3600)}h ${Math.floor((seconds % 3600) / 60)}m`;
+        };
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

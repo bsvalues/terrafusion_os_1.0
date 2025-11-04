@@ -1,0 +1,757 @@
+{% extends "layout.html" %}
+
+{% block title %}ETL Dashboard{% endblock %}
+
+{% block styles %}
+<style>
+    .stat-card {
+        border-radius: 8px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .stat-icon {
+        font-size: 2.5rem;
+        opacity: 0.8;
+    }
+    .quick-link {
+        display: block;
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: #212529;
+        border-left: 4px solid transparent;
+    }
+    .quick-link:hover {
+        background-color: #e9ecef;
+        border-left-color: #0d6efd;
+        text-decoration: none;
+    }
+    .quick-link i {
+        margin-right: 10px;
+        color: #0d6efd;
+    }
+    .recent-activity {
+        margin-bottom: 15px;
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+        border-left: 4px solid #6c757d;
+    }
+    .recent-activity.success {
+        border-left-color: #198754;
+    }
+    .recent-activity.error {
+        border-left-color: #dc3545;
+    }
+    .recent-activity.warning {
+        border-left-color: #ffc107;
+    }
+    .activity-time {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+    .dashboard-header {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+    }
+    .dashboard-header h1 {
+        margin-bottom: 0;
+        color: #212529;
+    }
+    .dashboard-header p {
+        color: #6c757d;
+        margin-bottom: 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="dashboard-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1>ETL Dashboard</h1>
+                <p class="lead">Monitor, manage, and execute data integration processes</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <button class="btn btn-primary" id="refreshBtn">
+                    <i class="bi bi-arrow-clockwise"></i> Refresh
+                </button>
+                <a href="{{ url_for('etl.import_data') }}" class="btn btn-success ms-2">
+                    <i class="bi bi-upload"></i> Import Data
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card bg-primary text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Total Imports</h6>
+                            <h2 class="card-text" id="totalImports">--</h2>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="bi bi-cloud-upload"></i>
+                        </div>
+                    </div>
+                    <p class="card-text mt-2 mb-0"><small>Last 30 days</small></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card bg-success text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Success Rate</h6>
+                            <h2 class="card-text" id="successRate">--</h2>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                    </div>
+                    <p class="card-text mt-2 mb-0"><small>Average success rate</small></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card bg-info text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Records Processed</h6>
+                            <h2 class="card-text" id="recordsProcessed">--</h2>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="bi bi-database"></i>
+                        </div>
+                    </div>
+                    <p class="card-text mt-2 mb-0"><small>Last 30 days</small></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card bg-warning text-dark h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title">Scheduled Jobs</h6>
+                            <h2 class="card-text" id="scheduledJobs">--</h2>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="bi bi-clock"></i>
+                        </div>
+                    </div>
+                    <p class="card-text mt-2 mb-0"><small>Active scheduled jobs</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <!-- Quick Links -->
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <a href="{{ url_for('etl.import_data') }}" class="quick-link">
+                        <i class="bi bi-upload"></i> Import Data
+                    </a>
+                    <a href="{{ url_for('etl.export_data') }}" class="quick-link">
+                        <i class="bi bi-download"></i> Export Data
+                    </a>
+                    <a href="{{ url_for('etl.manage_mappings') }}" class="quick-link">
+                        <i class="bi bi-gear"></i> Manage Field Mappings
+                    </a>
+                    <a href="#" class="quick-link" data-bs-toggle="modal" data-bs-target="#scheduleModal">
+                        <i class="bi bi-calendar-plus"></i> Schedule Job
+                    </a>
+                    <a href="#" class="quick-link" id="validateFileBtn">
+                        <i class="bi bi-check-square"></i> Validate Data
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Log -->
+        <div class="col-md-8">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Recent Activity</h5>
+                </div>
+                <div class="card-body" id="activityLog">
+                    <div class="d-flex justify-content-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <span class="ms-2">Loading activity log...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <!-- Import Status -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Imports</h5>
+                    <button class="btn btn-sm btn-outline-secondary" id="refreshImportsBtn">
+                        <i class="bi bi-arrow-repeat"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Data Type</th>
+                                    <th>Date</th>
+                                    <th>Records</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentImportsTable">
+                                <tr>
+                                    <td colspan="4" class="text-center">No recent imports</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Quality Overview -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Data Quality Overview</h5>
+                    <a href="{{ url_for('data_quality.data_quality_dashboard') }}" class="btn btn-sm btn-outline-primary">Full Report</a>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">Quality Score</h6>
+                                    <div class="display-4" id="qualityScore">--</div>
+                                    <small class="text-muted">Overall data quality</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">Active Alerts</h6>
+                                    <div class="display-4" id="activeAlerts">--</div>
+                                    <small class="text-muted">Quality alerts</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <h6>Quality Checks</h6>
+                        <div class="progress mb-3" style="height: 20px;">
+                            <div class="progress-bar bg-success" id="completenessBar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">Completeness</div>
+                        </div>
+                        <div class="progress mb-3" style="height: 20px;">
+                            <div class="progress-bar bg-info" id="accuracyBar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">Accuracy</div>
+                        </div>
+                        <div class="progress mb-3" style="height: 20px;">
+                            <div class="progress-bar bg-warning" id="consistencyBar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">Consistency</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Schedule Modal -->
+<div class="modal fade" id="scheduleModal" tabindex="-1" aria-labelledby="scheduleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="scheduleModalLabel">Schedule ETL Job</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="scheduleForm">
+                    <div class="mb-3">
+                        <label for="jobName" class="form-label">Job Name</label>
+                        <input type="text" class="form-control" id="jobName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="jobType" class="form-label">Job Type</label>
+                        <select class="form-select" id="jobType" required>
+                            <option value="">Select job type</option>
+                            <option value="import">Import Data</option>
+                            <option value="export">Export Data</option>
+                            <option value="validate">Validate Data</option>
+                            <option value="quality_check">Quality Check</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="schedule" class="form-label">Schedule</label>
+                        <select class="form-select" id="schedule" required>
+                            <option value="">Select schedule</option>
+                            <option value="hourly">Hourly</option>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+                    <div class="mb-3 d-none" id="cronExpressionGroup">
+                        <label for="cronExpression" class="form-label">Cron Expression</label>
+                        <input type="text" class="form-control" id="cronExpression" placeholder="* * * * *">
+                        <div class="form-text">Format: minute hour day month day-of-week</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveScheduleBtn">Schedule Job</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Validate Data Modal -->
+<div class="modal fade" id="validateModal" tabindex="-1" aria-labelledby="validateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="validateModalLabel">Validate Data File</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="validateForm">
+                    <div class="mb-3">
+                        <label for="dataFile" class="form-label">Data File</label>
+                        <input class="form-control" type="file" id="dataFile" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="dataTypeValidate" class="form-label">Data Type</label>
+                        <select class="form-select" id="dataTypeValidate" required>
+                            <option value="">Select data type</option>
+                            <option value="property">Property</option>
+                            <option value="sales">Sales</option>
+                            <option value="valuation">Valuation</option>
+                            <option value="tax">Tax</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="mappingSelect" class="form-label">Field Mapping</label>
+                        <select class="form-select" id="mappingSelect">
+                            <option value="">Auto-detect mapping</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="runValidationBtn">Validate</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Load dashboard data
+        loadDashboardData();
+        
+        // Refresh button event
+        document.getElementById('refreshBtn').addEventListener('click', function() {
+            loadDashboardData();
+        });
+        
+        // Refresh imports button event
+        document.getElementById('refreshImportsBtn').addEventListener('click', function() {
+            loadRecentImports();
+        });
+        
+        // Schedule modal custom cron expression
+        document.getElementById('schedule').addEventListener('change', function() {
+            const cronGroup = document.getElementById('cronExpressionGroup');
+            if (this.value === 'custom') {
+                cronGroup.classList.remove('d-none');
+                document.getElementById('cronExpression').required = true;
+            } else {
+                cronGroup.classList.add('d-none');
+                document.getElementById('cronExpression').required = false;
+            }
+        });
+        
+        // Save schedule button
+        document.getElementById('saveScheduleBtn').addEventListener('click', function() {
+            const form = document.getElementById('scheduleForm');
+            if (form.checkValidity()) {
+                saveSchedule();
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('scheduleModal'));
+                modal.hide();
+            } else {
+                form.reportValidity();
+            }
+        });
+        
+        // Validate data button
+        document.getElementById('validateFileBtn').addEventListener('click', function() {
+            // Show validate modal
+            const modal = new bootstrap.Modal(document.getElementById('validateModal'));
+            modal.show();
+            
+            // Load mappings for data type
+            document.getElementById('dataTypeValidate').addEventListener('change', function() {
+                loadMappingsForDataType(this.value);
+            });
+        });
+        
+        // Run validation button
+        document.getElementById('runValidationBtn').addEventListener('click', function() {
+            const form = document.getElementById('validateForm');
+            if (form.checkValidity()) {
+                validateDataFile();
+            } else {
+                form.reportValidity();
+            }
+        });
+    });
+    
+    // Load dashboard data
+    function loadDashboardData() {
+        // Show loading indicators
+        document.getElementById('totalImports').textContent = '...';
+        document.getElementById('successRate').textContent = '...';
+        document.getElementById('recordsProcessed').textContent = '...';
+        document.getElementById('scheduledJobs').textContent = '...';
+        document.getElementById('activityLog').innerHTML = `
+            <div class="d-flex justify-content-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <span class="ms-2">Loading activity log...</span>
+            </div>
+        `;
+        
+        // Load data quality metrics
+        loadDataQualityMetrics();
+        
+        // Load recent imports
+        loadRecentImports();
+        
+        // Load activity log
+        loadActivityLog();
+        
+        // For demo purposes, we'll use mock data
+        // In production, these would be API calls
+        setTimeout(() => {
+            document.getElementById('totalImports').textContent = '42';
+            document.getElementById('successRate').textContent = '94%';
+            document.getElementById('recordsProcessed').textContent = '12,458';
+            document.getElementById('scheduledJobs').textContent = '3';
+        }, 500);
+    }
+    
+    // Load data quality metrics
+    function loadDataQualityMetrics() {
+        // Make API call to get quality metrics
+        fetch('/api/data_quality/dashboard/metrics')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('qualityScore').textContent = data.overall_score + '%';
+                    document.getElementById('activeAlerts').textContent = data.active_alerts;
+                    
+                    // Update progress bars
+                    const completenessBar = document.getElementById('completenessBar');
+                    completenessBar.style.width = data.completeness + '%';
+                    completenessBar.setAttribute('aria-valuenow', data.completeness);
+                    completenessBar.textContent = 'Completeness ' + data.completeness + '%';
+                    
+                    const accuracyBar = document.getElementById('accuracyBar');
+                    accuracyBar.style.width = data.accuracy + '%';
+                    accuracyBar.setAttribute('aria-valuenow', data.accuracy);
+                    accuracyBar.textContent = 'Accuracy ' + data.accuracy + '%';
+                    
+                    const consistencyBar = document.getElementById('consistencyBar');
+                    consistencyBar.style.width = data.consistency + '%';
+                    consistencyBar.setAttribute('aria-valuenow', data.consistency);
+                    consistencyBar.textContent = 'Consistency ' + data.consistency + '%';
+                } else {
+                    // Use default values if API fails
+                    document.getElementById('qualityScore').textContent = '85%';
+                    document.getElementById('activeAlerts').textContent = '2';
+                    
+                    // Default progress bars
+                    const completenessBar = document.getElementById('completenessBar');
+                    completenessBar.style.width = '92%';
+                    completenessBar.setAttribute('aria-valuenow', 92);
+                    completenessBar.textContent = 'Completeness 92%';
+                    
+                    const accuracyBar = document.getElementById('accuracyBar');
+                    accuracyBar.style.width = '87%';
+                    accuracyBar.setAttribute('aria-valuenow', 87);
+                    accuracyBar.textContent = 'Accuracy 87%';
+                    
+                    const consistencyBar = document.getElementById('consistencyBar');
+                    consistencyBar.style.width = '78%';
+                    consistencyBar.setAttribute('aria-valuenow', 78);
+                    consistencyBar.textContent = 'Consistency 78%';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading quality metrics:', error);
+                // Use default values
+                document.getElementById('qualityScore').textContent = '85%';
+                document.getElementById('activeAlerts').textContent = '2';
+                
+                // Default progress bars
+                const completenessBar = document.getElementById('completenessBar');
+                completenessBar.style.width = '92%';
+                completenessBar.setAttribute('aria-valuenow', 92);
+                completenessBar.textContent = 'Completeness 92%';
+                
+                const accuracyBar = document.getElementById('accuracyBar');
+                accuracyBar.style.width = '87%';
+                accuracyBar.setAttribute('aria-valuenow', 87);
+                accuracyBar.textContent = 'Accuracy 87%';
+                
+                const consistencyBar = document.getElementById('consistencyBar');
+                consistencyBar.style.width = '78%';
+                consistencyBar.setAttribute('aria-valuenow', 78);
+                consistencyBar.textContent = 'Consistency 78%';
+            });
+    }
+    
+    // Load recent imports
+    function loadRecentImports() {
+        // Mock data for demonstration
+        const recentImports = [
+            { data_type: 'Property', date: '2025-04-15 10:23', records: 857, status: 'success' },
+            { data_type: 'Sales', date: '2025-04-14 14:47', records: 124, status: 'success' },
+            { data_type: 'Valuation', date: '2025-04-13 09:12', records: 346, status: 'warning' },
+            { data_type: 'Property', date: '2025-04-10 16:30', records: 1293, status: 'success' }
+        ];
+        
+        const tableBody = document.getElementById('recentImportsTable');
+        tableBody.innerHTML = '';
+        
+        if (recentImports.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="4" class="text-center">No recent imports</td></tr>';
+            return;
+        }
+        
+        recentImports.forEach(item => {
+            const row = document.createElement('tr');
+            
+            const typeCell = document.createElement('td');
+            typeCell.textContent = item.data_type;
+            
+            const dateCell = document.createElement('td');
+            dateCell.textContent = item.date;
+            
+            const recordsCell = document.createElement('td');
+            recordsCell.textContent = item.records.toLocaleString();
+            
+            const statusCell = document.createElement('td');
+            let statusBadge = document.createElement('span');
+            statusBadge.classList.add('badge');
+            
+            if (item.status === 'success') {
+                statusBadge.classList.add('bg-success');
+                statusBadge.textContent = 'Success';
+            } else if (item.status === 'warning') {
+                statusBadge.classList.add('bg-warning', 'text-dark');
+                statusBadge.textContent = 'Warning';
+            } else if (item.status === 'error') {
+                statusBadge.classList.add('bg-danger');
+                statusBadge.textContent = 'Error';
+            }
+            
+            statusCell.appendChild(statusBadge);
+            
+            row.appendChild(typeCell);
+            row.appendChild(dateCell);
+            row.appendChild(recordsCell);
+            row.appendChild(statusCell);
+            
+            tableBody.appendChild(row);
+        });
+    }
+    
+    // Load activity log
+    function loadActivityLog() {
+        // Mock data for demonstration
+        const activities = [
+            { type: 'success', message: 'Property data import completed successfully', time: '10:23 AM', details: '857 records processed' },
+            { type: 'info', message: 'Field mapping "commercial_property" created', time: '09:45 AM', details: 'Created by admin' },
+            { type: 'success', message: 'Data quality check completed', time: 'Yesterday', details: 'All checks passed' },
+            { type: 'warning', message: 'Missing values detected in valuation data', time: 'Yesterday', details: '12 records affected' },
+            { type: 'error', message: 'Export job failed', time: '2 days ago', details: 'Database connection timeout' }
+        ];
+        
+        const activityLog = document.getElementById('activityLog');
+        activityLog.innerHTML = '';
+        
+        if (activities.length === 0) {
+            activityLog.innerHTML = '<div class="text-center py-3">No recent activity</div>';
+            return;
+        }
+        
+        activities.forEach(activity => {
+            const activityDiv = document.createElement('div');
+            activityDiv.classList.add('recent-activity', activity.type);
+            
+            const header = document.createElement('div');
+            header.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'mb-2');
+            
+            const title = document.createElement('h6');
+            title.classList.add('mb-0');
+            title.textContent = activity.message;
+            
+            const time = document.createElement('span');
+            time.classList.add('activity-time');
+            time.textContent = activity.time;
+            
+            header.appendChild(title);
+            header.appendChild(time);
+            
+            const details = document.createElement('p');
+            details.classList.add('mb-0', 'small');
+            details.textContent = activity.details;
+            
+            activityDiv.appendChild(header);
+            activityDiv.appendChild(details);
+            
+            activityLog.appendChild(activityDiv);
+        });
+    }
+    
+    // Save schedule
+    function saveSchedule() {
+        const jobName = document.getElementById('jobName').value;
+        const jobType = document.getElementById('jobType').value;
+        const schedule = document.getElementById('schedule').value;
+        const cronExpression = document.getElementById('cronExpression').value;
+        
+        console.log('Scheduling job:', {
+            name: jobName,
+            type: jobType,
+            schedule: schedule,
+            cronExpression: cronExpression
+        });
+        
+        // In a real implementation, this would make an API call
+        // For demo purposes, we'll just show an alert
+        alert(`Job '${jobName}' scheduled successfully!`);
+        
+        // Reset form
+        document.getElementById('scheduleForm').reset();
+    }
+    
+    // Load mappings for data type
+    function loadMappingsForDataType(dataType) {
+        if (!dataType) return;
+        
+        const mappingSelect = document.getElementById('mappingSelect');
+        mappingSelect.innerHTML = '<option value="">Auto-detect mapping</option>';
+        
+        // In a real implementation, this would fetch mappings from the API
+        fetch(`/api/etl/mappings/${dataType}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.mappings && data.mappings.length > 0) {
+                    data.mappings.forEach(mapping => {
+                        const option = document.createElement('option');
+                        option.value = mapping;
+                        option.textContent = mapping;
+                        mappingSelect.appendChild(option);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error loading mappings:', error);
+            });
+    }
+    
+    // Validate data file
+    function validateDataFile() {
+        const fileInput = document.getElementById('dataFile');
+        const dataType = document.getElementById('dataTypeValidate').value;
+        const mapping = document.getElementById('mappingSelect').value;
+        
+        if (!fileInput.files || fileInput.files.length === 0) {
+            alert('Please select a file to validate');
+            return;
+        }
+        
+        const file = fileInput.files[0];
+        
+        // Create form data
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('data_type', dataType);
+        if (mapping) {
+            formData.append('mapping_name', mapping);
+        }
+        
+        // Show loading state
+        const validateBtn = document.getElementById('runValidationBtn');
+        const originalText = validateBtn.innerHTML;
+        validateBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Validating...';
+        validateBtn.disabled = true;
+        
+        // In a real implementation, this would make an API call
+        fetch('/api/etl/validate', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Reset button
+                validateBtn.innerHTML = originalText;
+                validateBtn.disabled = false;
+                
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('validateModal'));
+                modal.hide();
+                
+                // Show results
+                if (data.status === 'success') {
+                    alert(`Validation complete:\n${data.validation.valid_records} valid records\n${data.validation.invalid_records} invalid records`);
+                } else {
+                    alert(`Validation failed: ${data.message}`);
+                }
+            })
+            .catch(error => {
+                console.error('Error validating file:', error);
+                // Reset button
+                validateBtn.innerHTML = originalText;
+                validateBtn.disabled = false;
+                
+                alert('Error validating file. Please try again.');
+            });
+    }
+</script>
+{% endblock %}

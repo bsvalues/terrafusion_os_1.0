@@ -1,0 +1,111 @@
+# ============================================================================
+# TerraFusion Platform - Sync Waves Configuration
+# Government. Transcended. - Ordered Deployment Strategy
+# ============================================================================
+
+# Sync waves control the order of resource deployment in ArgoCD
+# Lower wave numbers are deployed first, higher numbers later
+# Resources in the same wave are deployed in parallel
+
+# Wave -1: Pre-installation
+# - Namespaces
+# - CustomResourceDefinitions (CRDs)
+# - StorageClasses
+
+# Wave 0: Infrastructure
+# - Database (PostgreSQL)
+# - Cache (Redis)
+# - Message Queue (RabbitMQ)
+# - Service Mesh (Istio/Linkerd) - if enabled
+
+# Wave 1: API Gateway
+# - TerraFusion Gateway (Ocelot)
+# - Ingress Controllers
+# - Network Policies
+# Reason: Gateway routes traffic to all backend services
+
+# Wave 2: Core Services
+# - TerraFusion API
+# - Configuration Services
+# - Authentication Services
+# Reason: Core services must be available before AI components
+
+# Wave 3: AI Services
+# - TerraFusion Consciousness Engine (50,000 AI agents)
+# - ML Model Cache (50GB PVC)
+# - GPU Node Affinity
+# Reason: AI services depend on core API and require significant initialization time
+
+# Wave 4: County Operations
+# - TerraFusion Operations Service
+# - County-specific integrations (Harris PACS, Tyler, Aumentum)
+# - County data sync jobs
+# Reason: Operations depend on both core services and AI agents
+
+# Wave 5: Monitoring & Observability
+# - Prometheus ServiceMonitors
+# - Grafana Dashboards
+# - Jaeger Spans
+# - Loki Log Collectors
+# Reason: Monitoring should be available after all services are deployed
+
+# Wave 6: Background Jobs
+# - CronJobs (data sync, cleanup, reports)
+# - Scheduled tasks
+# Reason: Jobs depend on all services being operational
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrafusion
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+  labels:
+    terrafusion.io/platform: "complete"
+    terrafusion.io/environment: "production"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrafusion-dev
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+  labels:
+    terrafusion.io/platform: "complete"
+    terrafusion.io/environment: "development"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrafusion-staging
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+  labels:
+    terrafusion.io/platform: "complete"
+    terrafusion.io/environment: "staging"
+
+---
+# Example sync-wave annotation usage in Helm charts:
+#
+# Gateway Deployment (Wave 1):
+# metadata:
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "1"
+#
+# API Deployment (Wave 2):
+# metadata:
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "2"
+#
+# Consciousness Deployment (Wave 3):
+# metadata:
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "3"
+#
+# Operations Deployment (Wave 4):
+# metadata:
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "4"

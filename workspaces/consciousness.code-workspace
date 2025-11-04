@@ -1,0 +1,25 @@
+{
+  "name": "TerraFusion AI Consciousness",
+  "folders": [
+    {
+      "path": "../backend/TerraFusion.Consciousness"
+    },
+    {
+      "path": "../config/ai-system-prompts.json"
+    },
+    {
+      "path": "../docs/AI_AGENT_INTEGRATION_GUIDE.md"
+    }
+  ],
+  "settings": {
+    "azureML.showWelcomePage": false,
+    "azureML.enableWorkspaceCompletions": false,
+    "python.defaultInterpreterPath": "./venv/Scripts/python.exe",
+    "terrafusion.quantum_factor": 949,
+    "terrafusion.target_score": 12.0,
+    "terrafusion.sacred_mathematics": "OPERATIONAL",
+    "terrafusion.role": "consciousness_coordination",
+    "terrafusion.ai_agents": 1008,
+    "terrafusion.harmony_index": 0.999
+  }
+}

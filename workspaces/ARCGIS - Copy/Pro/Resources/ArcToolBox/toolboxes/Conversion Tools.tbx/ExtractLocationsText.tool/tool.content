@@ -1,0 +1,828 @@
+{
+    "type": "FunctionTool",
+    "guid": "{8a142982-5e90-4b51-bc73-0079eafcbb17}",
+    "displayname": "$rc:title",
+    "helpcontent": "2040012",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "87"
+    ],
+    "params": {
+        "in_text": {
+            "displayname": "$rc:in_text.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:in_text.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "in_template": {
+            "type": "optional",
+            "displayname": "$rc:in_template.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "lxttmpl"
+                ]
+            },
+            "description": "$rc:in_template.descr"
+        },
+        "coord_dd_latlon": {
+            "type": "optional",
+            "displayname": "$rc:coord_dd_latlon.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FIND_DD_LATLON"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DONT_FIND_DD_LATLON"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:coord_dd_latlon.descr"
+        },
+        "coord_dd_xydeg": {
+            "type": "optional",
+            "displayname": "$rc:coord_dd_xydeg.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FIND_DD_XYDEG"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DONT_FIND_DD_XYDEG"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:coord_dd_xydeg.descr"
+        },
+        "coord_dd_xyplain": {
+            "type": "optional",
+            "displayname": "$rc:coord_dd_xyplain.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FIND_DD_XYPLAIN"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DONT_FIND_DD_XYPLAIN"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:coord_dd_xyplain.descr"
+        },
+        "coord_dm_latlon": {
+            "type": "optional",
+            "displayname": "$rc:coord_dm_latlon.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FIND_DM_LATLON"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DONT_FIND_DM_LATLON"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:coord_dm_latlon.descr"
+        },
+        "coord_dm_xymin": {
+            "type": "optional",
+            "displayname": "$rc:coord_dm_xymin.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FIND_DM_XYMIN"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DONT_FIND_DM_XYMIN"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:coord_dm_xymin.descr"
+        },
+        "coord_dms_latlon": {
+            "type": "optional",
+            "displayname": "$rc:coord_dms_latlon.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FIND_DMS_LATLON"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DONT_FIND_DMS_LATLON"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:coord_dms_latlon.descr"
+        },
+        "coord_dms_xysec": {
+            "type": "optional",
+            "displayname": "$rc:coord_dms_xysec.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FIND_DMS_XYSEC"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DONT_FIND_DMS_XYSEC"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:coord_dms_xysec.descr"
+        },
+        "coord_dms_xysep": {
+            "type": "optional",
+            "displayname": "$rc:coord_dms_xysep.title",
+            "category": "$rc:params.category3",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FIND_DMS_XYSEP"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DONT_FIND_DMS_XYSEP"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:coord_dms_xysep.descr"
+        },
+        "coord_utm": {
+            "type": "optional",
+            "displayname": "$rc:coord_utm.title",
+            "category": "$rc:params.category4",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FIND_UTM_MAINWORLD"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DONT_FIND_UTM_MAINWORLD"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:coord_utm.descr"
+        },
+        "coord_ups_north": {
+            "type": "optional",
+            "displayname": "$rc:coord_ups_north.title",
+            "category": "$rc:params.category4",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FIND_UTM_NORTHPOLAR"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DONT_FIND_UTM_NORTHPOLAR"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:coord_ups_north.descr"
+        },
+        "coord_ups_south": {
+            "type": "optional",
+            "displayname": "$rc:coord_ups_south.title",
+            "category": "$rc:params.category4",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FIND_UTM_SOUTHPOLAR"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DONT_FIND_UTM_SOUTHPOLAR"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:coord_ups_south.descr"
+        },
+        "coord_mgrs": {
+            "type": "optional",
+            "displayname": "$rc:coord_mgrs.title",
+            "category": "$rc:params.category5",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FIND_MGRS_MAINWORLD"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DONT_FIND_MGRS_MAINWORLD"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:coord_mgrs.descr"
+        },
+        "coord_mgrs_northpolar": {
+            "type": "optional",
+            "displayname": "$rc:coord_mgrs_northpolar.title",
+            "category": "$rc:params.category5",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FIND_MGRS_NORTHPOLAR"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DONT_FIND_MGRS_NORTHPOLAR"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:coord_mgrs_northpolar.descr"
+        },
+        "coord_mgrs_southpolar": {
+            "type": "optional",
+            "displayname": "$rc:coord_mgrs_southpolar.title",
+            "category": "$rc:params.category5",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FIND_MGRS_SOUTHPOLAR"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DONT_FIND_MGRS_SOUTHPOLAR"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:coord_mgrs_southpolar.descr"
+        },
+        "comma_decimal": {
+            "type": "optional",
+            "displayname": "$rc:comma_decimal.title",
+            "category": "$rc:params.category6",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "USE_COMMA_DECIMAL_MARK"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "USE_DOT_DECIMAL_MARK"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:comma_decimal.descr"
+        },
+        "coord_use_lonlat": {
+            "type": "optional",
+            "displayname": "$rc:coord_use_lonlat.title",
+            "category": "$rc:params.category6",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "PREFER_LONLAT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "PREFER_LATLON"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:coord_use_lonlat.descr"
+        },
+        "in_coor_system": {
+            "type": "optional",
+            "displayname": "$rc:in_coor_system.title",
+            "category": "$rc:params.category6",
+            "datatype": {
+                "type": "GPSpatialReference"
+            },
+            "value": "GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]];-400 -400 11258999068426.2;-100000 10000;-100000 10000;8.98315284119521E-09;0.001;0.001;IsHighPrecision",
+            "description": "$rc:in_coor_system.descr"
+        },
+        "in_custom_locations": {
+            "type": "optional",
+            "displayname": "$rc:in_custom_locations.title",
+            "category": "$rc:params.category7",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "lxtgaz"
+                ]
+            },
+            "description": "$rc:in_custom_locations.descr"
+        },
+        "fuzzy_match": {
+            "type": "optional",
+            "displayname": "$rc:fuzzy_match.title",
+            "category": "$rc:params.category7",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "USE_FUZZY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DONT_USE_FUZZY"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:fuzzy_match.descr"
+        },
+        "max_features_extracted": {
+            "type": "optional",
+            "displayname": "$rc:max_features_extracted.title",
+            "category": "$rc:params.category8",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "2147483647"
+            },
+            "description": "$rc:max_features_extracted.descr"
+        },
+        "ignore_first_features": {
+            "type": "optional",
+            "displayname": "$rc:ignore_first_features.title",
+            "category": "$rc:params.category8",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "2147483647"
+            },
+            "description": "$rc:ignore_first_features.descr"
+        },
+        "date_monthname": {
+            "type": "optional",
+            "displayname": "$rc:date_monthname.title",
+            "category": "$rc:params.category9",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FIND_DATE_MONTHNAME"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DONT_FIND_DATE_MONTHNAME"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:date_monthname.descr"
+        },
+        "date_m_d_y": {
+            "type": "optional",
+            "displayname": "$rc:date_m_d_y.title",
+            "category": "$rc:params.category9",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FIND_DATE_M_D_Y"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DONT_FIND_DATE_M_D_Y"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:date_m_d_y.descr"
+        },
+        "date_yyyymmdd": {
+            "type": "optional",
+            "displayname": "$rc:date_yyyymmdd.title",
+            "category": "$rc:params.category9",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FIND_DATE_YYYYMMDD"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DONT_FIND_DATE_YYYYMMDD"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:date_yyyymmdd.descr"
+        },
+        "date_yymmdd": {
+            "type": "optional",
+            "displayname": "$rc:date_yymmdd.title",
+            "category": "$rc:params.category9",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FIND_DATE_YYMMDD"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DONT_FIND_DATE_YYMMDD"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:date_yymmdd.descr"
+        },
+        "date_yyjjj": {
+            "type": "optional",
+            "displayname": "$rc:date_yyjjj.title",
+            "category": "$rc:params.category9",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FIND_DATE_YYJJJ"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DONT_FIND_DATE_YYJJJ"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:date_yyjjj.descr"
+        },
+        "max_dates_extracted": {
+            "type": "optional",
+            "displayname": "$rc:max_dates_extracted.title",
+            "category": "$rc:params.category10",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "2147483647"
+            },
+            "description": "$rc:max_dates_extracted.descr"
+        },
+        "ignore_first_dates": {
+            "type": "optional",
+            "displayname": "$rc:ignore_first_dates.title",
+            "category": "$rc:params.category10",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "2147483647"
+            },
+            "description": "$rc:ignore_first_dates.descr"
+        },
+        "date_range_begin": {
+            "type": "optional",
+            "displayname": "$rc:date_range_begin.title",
+            "category": "$rc:params.category10",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:date_range_begin.descr"
+        },
+        "date_range_end": {
+            "type": "optional",
+            "displayname": "$rc:date_range_end.title",
+            "category": "$rc:params.category10",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:date_range_end.descr"
+        },
+        "in_custom_attributes": {
+            "type": "optional",
+            "displayname": "$rc:in_custom_attributes.title",
+            "category": "$rc:params.category11",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "lxtca"
+                ]
+            },
+            "description": "$rc:in_custom_attributes.descr"
+        },
+        "file_link": {
+            "type": "optional",
+            "displayname": "$rc:file_link.title",
+            "category": "$rc:params.category12",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:file_link.descr"
+        },
+        "file_mod_datetime": {
+            "type": "optional",
+            "displayname": "$rc:file_mod_datetime.title",
+            "category": "$rc:params.category12",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:file_mod_datetime.descr"
+        },
+        "pre_text_length": {
+            "type": "optional",
+            "displayname": "$rc:pre_text_length.title",
+            "category": "$rc:params.category8",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "2147483647"
+            },
+            "value": "254",
+            "description": "$rc:pre_text_length.descr"
+        },
+        "post_text_length": {
+            "type": "optional",
+            "displayname": "$rc:post_text_length.title",
+            "category": "$rc:params.category8",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "2147483647"
+            },
+            "value": "254",
+            "description": "$rc:post_text_length.descr"
+        },
+        "std_coord_fmt": {
+            "type": "optional",
+            "displayname": "$rc:std_coord_fmt.title",
+            "category": "$rc:params.category13",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "STD_COORD_FMT_DD",
+                        "code": "$rc:std_coord_fmt.domain.STD_COORD_FMT_DD"
+                    },
+                    {
+                        "value": "STD_COORD_FMT_DM",
+                        "code": "$rc:std_coord_fmt.domain.STD_COORD_FMT_DM"
+                    },
+                    {
+                        "value": "STD_COORD_FMT_DMS",
+                        "code": "$rc:std_coord_fmt.domain.STD_COORD_FMT_DMS"
+                    },
+                    {
+                        "value": "STD_COORD_FMT_UTM",
+                        "code": "$rc:std_coord_fmt.domain.STD_COORD_FMT_UTM"
+                    },
+                    {
+                        "value": "STD_COORD_FMT_MGRS",
+                        "code": "$rc:std_coord_fmt.domain.STD_COORD_FMT_MGRS"
+                    }
+                ]
+            },
+            "value": "STD_COORD_FMT_DD",
+            "description": "$rc:std_coord_fmt.descr"
+        },
+        "req_word_breaks": {
+            "type": "optional",
+            "displayname": "$rc:req_word_breaks.title",
+            "category": "$rc:params.category14",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "REQ_WORD_BREAKS"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DONT_REQ_WORD_BREAKS"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:req_word_breaks.descr"
+        }
+    },
+    "environments": [
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "workspace"
+    ]
+}

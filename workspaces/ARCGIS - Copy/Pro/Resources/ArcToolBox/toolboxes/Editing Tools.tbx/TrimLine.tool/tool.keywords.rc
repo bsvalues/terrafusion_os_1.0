@@ -1,0 +1,26 @@
+{
+    "set": [
+        "change",
+        "chop",
+        "clean",
+        "cut",
+        "dangle",
+        "decrease",
+        "exist",
+        "hang",
+        "input",
+        "intersection",
+        "length",
+        "magnet",
+        "modify",
+        "overshoot",
+        "past",
+        "reduce",
+        "shorter",
+        "snap",
+        "tolerance",
+        "update",
+        "vertex",
+        "vertices"
+    ]
+}

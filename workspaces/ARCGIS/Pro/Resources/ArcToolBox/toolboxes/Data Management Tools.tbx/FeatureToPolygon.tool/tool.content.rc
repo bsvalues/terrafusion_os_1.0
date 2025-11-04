@@ -1,0 +1,16 @@
+{
+    "map": {
+        "attributes.descr": "<xdoc><note type=\"note\"/><p group=\"note\">This parameter is no longer supported. The parameter remains for backward compatibility of scripts and models. See the <span class=\"esri_uicontrol\">Usage</span> section for more information.</p></xdoc>",
+        "attributes.title": "Preserve attributes",
+        "cluster_tolerance.descr": "<xdoc><p>The minimum distance separating all feature coordinates, and the distance a coordinate can move in X, Y, or both during spatial computation. The default XY tolerance is set to 0.001 meter or its equivalent in feature units.</p><note type=\"caution\"/><p group=\"note\">Changing this parameter&apos;s value may cause failure or unexpected results. It is recommended that you do not modify this parameter. It has been removed from view on the tool dialog box. By default, the input feature class&apos;s spatial reference x,y tolerance property is used.</p></xdoc>",
+        "cluster_tolerance.title": "XY Tolerance",
+        "description": "Creates a feature class containing polygons generated from areas enclosed by input line or polygon features.",
+        "in_features.descr": "The input features, which can be line, polygon, or both.",
+        "in_features.title": "Input Features",
+        "label_features.descr": "The optional input point features that contain the attributes to be transferred to the output polygon features.",
+        "label_features.title": "Label Features",
+        "out_feature_class.descr": "The output polygon feature class.",
+        "out_feature_class.title": "Output Feature Class",
+        "title": "Feature To Polygon"
+    }
+}

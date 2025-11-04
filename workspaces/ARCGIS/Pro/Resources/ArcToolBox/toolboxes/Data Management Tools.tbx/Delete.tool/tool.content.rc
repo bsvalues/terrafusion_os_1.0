@@ -1,0 +1,11 @@
+{
+    "map": {
+        "data_type.descr": "<xdoc><p>The type of data on disk to be deleted.</p><p>This parameter is only necessary in the event of a name conflict between two different data types. For example, a geodatabase can contain a relationship class with an identical name to a feature class. If that is the case, specify the relevant keyword.</p><ul><li>FeatureClass—In the event of duplicate names, the feature class will be used.</li><li>FeatureDataset—In the event of duplicate names, the feature dataset will be used.</li><li>MosaicDataset—In the event of duplicate names, the mosaic dataset will be used.</li><li>ParcelFabric—In the event of duplicate names, the parcel fabric will be used.</li><li>RelationshipClass—In the event of duplicate names, the relationship class will be used.</li><li>Topology—In the event of duplicate names, the topology will be used.</li></ul></xdoc>",
+        "data_type.title": "Data type",
+        "description": "Permanently deletes data. All types of geographic data supported by ArcGIS, as well as toolboxes and workspaces (folders and geodatabases), can be deleted. If the specified item is a workspace, all contained items will also be deleted.",
+        "in_data.descr": "The input data that will be deleted.",
+        "in_data.title": "Input Data Element",
+        "out_results.title": "Delete Succeeded",
+        "title": "Delete"
+    }
+}

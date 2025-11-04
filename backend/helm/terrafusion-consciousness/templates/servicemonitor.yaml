@@ -1,0 +1,55 @@
+{{/*
+============================================================================
+TerraFusion Consciousness Engine - ServiceMonitor Template
+Government. Transcended. - Prometheus AI Metrics Collection
+============================================================================
+*/}}
+
+{{- if .Values.monitoring.prometheus.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "terrafusion-consciousness.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "terrafusion-consciousness.labels" . | nindent 4 }}
+    terrafusion.io/component: consciousness
+    terrafusion.io/tier: ai
+    prometheus: terrafusion
+  annotations:
+    description: "TerraFusion Consciousness Engine Metrics"
+    compliance: "FISMA-High"
+    ai-agents: "50000"
+spec:
+  selector:
+    matchLabels:
+      {{- include "terrafusion-consciousness.selectorLabels" . | nindent 6 }}
+  endpoints:
+    # Main application metrics
+    - port: http
+      path: {{ .Values.monitoring.prometheus.path }}
+      interval: 15s
+      scrapeTimeout: 10s
+      scheme: http
+      relabelings:
+        - sourceLabels: [__meta_kubernetes_pod_label_county]
+          targetLabel: county
+        - sourceLabels: [__meta_kubernetes_namespace]
+          targetLabel: environment
+        - sourceLabels: [__meta_kubernetes_pod_name]
+          targetLabel: pod
+        - sourceLabels: [__meta_kubernetes_pod_label_version]
+          targetLabel: version
+      metricRelabelings:
+        # Keep only AI-specific metrics
+        - sourceLabels: [__name__]
+          regex: 'ai_agent_.*|quantum_.*|ml_.*|swarm_.*'
+          action: keep
+    
+    # Custom AI metrics from StatSD exporter
+    - port: metrics
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s
+      scheme: http
+{{- end }}

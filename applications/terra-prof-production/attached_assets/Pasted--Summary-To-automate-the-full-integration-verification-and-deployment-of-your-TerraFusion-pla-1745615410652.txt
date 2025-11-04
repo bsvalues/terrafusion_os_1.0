@@ -1,0 +1,87 @@
+## Summary  
+To automate the full integration, verification, and deployment of your Terrafusion platform in one uninterrupted flow, we’ll leverage:  
+- **`nx import`** to merge all existing repositories into your monorepo with history preserved  ([Import External Projects to Your Nx Monorepo With `nx import`](https://nx.dev/blog/nx-import?utm_source=chatgpt.com), [Import an Existing Project into an Nx Workspace](https://nx.dev/recipes/adopting-nx/import-project?utm_source=chatgpt.com)).  
+- **`npx nx init`** to bootstrap Nx in any project not yet configured  ([init - CLI command | Nx](https://nx.dev/nx-api/nx/documents/init?utm_source=chatgpt.com)).  
+- **`nx serve`** targets to spin up each app and confirm it runs on its assigned port  ([Intro to Nx](https://nx.dev/getting-started/intro?utm_source=chatgpt.com)).  
+- **Apollo Federation’s `buildService`** hook to wire all 18 subgraphs into your gateway with custom header propagation  ([API Reference: @apollo/gateway - Apollo GraphQL Docs](https://www.apollographql.com/docs/apollo-server/using-federation/api/apollo-gateway?utm_source=chatgpt.com), [Implementing a Gateway with Apollo Server - Apollo GraphQL Docs](https://www.apollographql.com/docs/apollo-server/using-federation/apollo-gateway-setup?utm_source=chatgpt.com)).  
+- **GitHub Actions matrix** builds to compile and test every project in parallel  ([Running variations of jobs in a workflow - GitHub Docs](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/running-variations-of-jobs-in-a-workflow?utm_source=chatgpt.com), [The matrix strategy in GitHub Actions - RunsOn](https://runs-on.com/github-actions/the-matrix-strategy/?utm_source=chatgpt.com)).  
+- **Automated smoke tests** (Go/No-Go health checks) post-deploy to validate critical endpoints  ([Best Practices for Testing Microservices in CD Pipeline - Medium](https://medium.com/%40teamofdd/best-practices-for-testing-microservices-in-a-continuous-delivery-pipeline-e8c2a20b41f8?utm_source=chatgpt.com)).  
+
+Below is a single prompt you can paste into **Replit AI Agent**. It instructs the agent to execute all steps sequentially—without pausing—and to surface errors immediately if any command fails.
+
+---
+
+## Replit AI Agent Bootstrap Prompt
+
+```
+You are a DevOps expert tasked with fully integrating, verifying, and deploying the Terrafusion monorepo without manual intervention. Execute the following steps in order. If any command errors, log the error and stop. Do not await approval.
+
+1. **Import External Repositories**  
+   For each repo in [TerraFusionSync, TerraFusionPro, TerraFlow, TerraMiner, TerraAgent, TerraF, TerraLegislativePulsePub, BCBSCOSTApp, BCBSGISPRO, BCBSLevy, BCBSWebhub, BSBCmaster, BSIncomeValuation, GeoAssessmentPro, BCBSGeoAssessmentPro, BCBSDataEngine, bcbspacsmapping, terrafusion_mock-up]:
+   ```bash
+   npx nx import https://github.com/bsvalues/$REPO --directory=apps/$(echo $REPO | tr '[:upper:]' '[:lower:]')
+   ```
+2. **Initialize Nx**  
+   ```bash
+   npx nx init
+   ```
+3. **Verify and Serve Applications**  
+   For each imported project `apps/<name>`:
+   ```bash
+   nx serve <name> --port=$(node -p "3000 + $(echo '<name>' | cksum | awk '{print $1}') % 1000")
+   ```
+4. **Configure Apollo Gateway**  
+   In `apps/core-gateway/src/index.ts`, replace serviceList with:
+   ```ts
+   import { ApolloGateway, RemoteGraphQLDataSource } from '@apollo/gateway';
+   class AuthDataSource extends RemoteGraphQLDataSource {
+     willSendRequest({ request, context }) {
+       if (context.token) request.http.headers.set('authorization', context.token);
+     }
+   }
+   const gateway = new ApolloGateway({
+     serviceList: [
+       // auto-generate name/url for each <name>
+       ...apps.map(name => ({ name, url: `http://localhost:${3000 + indexOf(name)}/graphql` }))
+     ],
+     buildService: ({ url }) => new AuthDataSource({ url }),
+   });
+   ```
+5. **Update CI Workflow**  
+   In `.github/workflows/ci.yml`, set:
+   ```yaml
+   strategy:
+     matrix:
+       project: [terrafusionsync, terrafusionpro, ..., terrafusionmock-up]
+   steps:
+     - uses: actions/checkout@v3
+     - uses: pnpm/action-setup@v2
+       with: version: 8
+     - run: pnpm install
+     - run: pnpm nx build ${{ matrix.project }}
+     - run: pnpm nx test ${{ matrix.project }}
+   ```
+6. **Create Smoke Test Script**  
+   ```bash
+   cat > smoke-test.sh << 'EOF'
+   #!/usr/bin/env bash
+   set -e
+   for name in terrafusionsync terrafusionpro terraflow terraminer terrraagent terraf terralegislativepulsepub bcbscostapp bcbsgeoassessmentpro bcbslevy bcbswebhub bcbsdataengine bcbspacsmapping geoassessmentpro bsbcmaster bsincomevaluation terrafusionmock-up; do
+     status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:$((3000 + indexOf(name)))/health)
+     [[ "$status" == "200" ]] || { echo "FAIL: $name ($status)"; exit 1; }
+   done
+   echo "ALL SERVICES HEALTHY"
+   EOF
+   chmod +x smoke-test.sh
+   ```
+7. **Execute Smoke Tests**  
+   ```bash
+   ./smoke-test.sh
+   ```
+8. **Final Report**  
+   Print “✅ Full integration, build, test, and health-check successful.” and list each app’s URL.
+
+Proceed through each step automatically and emit logs for success or failure. At the end, output the summary line with all service endpoints.
+```  
+
+This single prompt ensures **Replit AI Agent** runs through import, setup, verification, gateway wiring, CI update, and smoke testing in one continuous flow.

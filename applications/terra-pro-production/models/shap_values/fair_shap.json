@@ -1,0 +1,8 @@
+{
+  "condition": "fair",
+  "base_score": 1.8,
+  "final_score": 1.0,
+  "features": ["Exterior Doors", "Foundation", "Gutters", "Landscaping", "Driveway", "Windows"],
+  "values": [-0.8, -0.65, -0.62, 0.43, -0.3, -0.27],
+  "image_path": "/home/runner/workspace/data/sample_images/fair_condition.png"
+}

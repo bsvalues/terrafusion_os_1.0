@@ -1,0 +1,18 @@
+{
+    "set": [
+        "aggregate",
+        "big data",
+        "bin",
+        "binning",
+        "fishnet",
+        "grid",
+        "hexagon",
+        "raster",
+        "simplify",
+        "summarize",
+        "summary",
+        "time slice",
+        "time step",
+        "visualize"
+    ]
+}

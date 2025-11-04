@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Imports Vector Product Format (VPF) data in Digital Nautical Chart (DNC) and Tactical Ocean Data (TOD) formats into an ArcGIS Maritime geodatabase. Sources that can be imported include DNC and TOD0, TOD2, and TOD4.",
+        "in_vpf_features.descr": "The VPF data to be imported into the geodatabase from a folder that contains one or more libraries. Point, line, polygon, and Ecrtext annotation features can be imported.",
+        "in_vpf_features.title": "Input VPF Features",
+        "output_workspace.title": "Output Geodatabase",
+        "target_workspace.descr": "The geodatabase to which the VPF data will be imported. This can be an empty template or existing geodatabase.",
+        "target_workspace.title": "Target Workspace",
+        "title": "Import VPF To Geodatabase"
+    }
+}

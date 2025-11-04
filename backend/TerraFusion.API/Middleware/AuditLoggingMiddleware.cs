@@ -27,7 +27,7 @@ namespace TerraFusion.API.Middleware
             }
 
             var auditLogger = context.RequestServices.GetService<IAuditLogger>();
-            
+
             if (auditLogger == null)
             {
                 await _next(context);
@@ -46,8 +46,11 @@ namespace TerraFusion.API.Middleware
 
                 stopwatch.Stop();
 
+                // Reset the response stream position BEFORE copying it back
+                responseBody.Seek(0, SeekOrigin.Begin);
+
                 var userId = context.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-                
+
                 await auditLogger.LogApiCallAsync(
                     context.Request.Method,
                     context.Request.Path.ToString(),
@@ -57,8 +60,14 @@ namespace TerraFusion.API.Middleware
 
                 if (context.Response.StatusCode >= 400)
                 {
+                    // Ensure we can read again inside error logging
+                    responseBody.Seek(0, SeekOrigin.Begin);
                     await LogErrorDetails(context, auditLogger, responseBody);
+                    responseBody.Seek(0, SeekOrigin.Begin);
                 }
+
+                // Optionally set Content-Length to the captured length
+                context.Response.ContentLength = responseBody.Length;
 
                 await responseBody.CopyToAsync(originalBodyStream);
             }

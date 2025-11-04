@@ -1,0 +1,7 @@
+{
+    "set": [
+        "input database path",
+        "job id",
+        "workflow manager"
+    ]
+}

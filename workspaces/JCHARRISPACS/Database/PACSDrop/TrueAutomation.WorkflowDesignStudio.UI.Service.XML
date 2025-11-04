@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.WorkflowDesignStudio.UI.Service</name>
+    </assembly>
+    <members>
+        <member name="M:TrueAutomation.WorkflowDesignStudio.UI.Service.IWorkflowDesignStudioDialogService.ShowAboutDialog(System.Windows.Forms.Form)">
+            <summary>
+            Show the About dialog
+            </summary>
+            <param name="parent"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,14 @@
+{
+    "map": {
+        "access_right_type.domain.PRIVATE": "PRIVATE",
+        "access_right_type.domain.PROTECTED": "PROTECTED",
+        "access_right_type.domain.PUBLIC": "PUBLIC",
+        "access_right_type.title": "Network Diagram Access Rights",
+        "description": "Set the name, the location and the access rights of a network diagram",
+        "in_network_diagram_layer.title": "Input Network Diagram Layer",
+        "out_name.title": "Network Diagram Name",
+        "out_network_diagram_layer.title": "Altered Network Diagram Layer",
+        "tags.title": "Tags (optional)",
+        "title": "Alter Diagram Properties"
+    }
+}

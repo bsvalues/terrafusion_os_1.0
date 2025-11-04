@@ -1,0 +1,12 @@
+{
+    "set": [
+        "angle deviation",
+        "dash",
+        "dashed",
+        "direction change",
+        "symbol",
+        "symbology",
+        "vertex",
+        "vertices"
+    ]
+}

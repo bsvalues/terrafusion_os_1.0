@@ -1,0 +1,21 @@
+Cannot read properties of undefined (reading 'replace')
+The above error occurred in the <EnhancedSketchesPage> component:
+
+    at EnhancedSketchesPage (https://0a70841c-2a8a-41f9-be07-c9d0667751c9-00-35s1pv4wd80nb.picard.replit.dev/src/pages/SketchesPage.enhanced.tsx:62:18)
+    at Route (https://0a70841c-2a8a-41f9-be07-c9d0667751c9-00-35s1pv4wd80nb.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=18c89d49:323:16)
+    at main
+    at div
+    at div
+    at AppShell (https://0a70841c-2a8a-41f9-be07-c9d0667751c9-00-35s1pv4wd80nb.picard.replit.dev/src/components/layout/app-shell.tsx:216:28)
+    at TooltipProvider (https://0a70841c-2a8a-41f9-be07-c9d0667751c9-00-35s1pv4wd80nb.picard.replit.dev/src/contexts/TooltipContext.tsx:21:35)
+    at AppProvider (https://0a70841c-2a8a-41f9-be07-c9d0667751c9-00-35s1pv4wd80nb.picard.replit.dev/src/contexts/AppContext.tsx:115:31)
+    at EnhancedApp2
+    at AppProvider (https://0a70841c-2a8a-41f9-be07-c9d0667751c9-00-35s1pv4wd80nb.picard.replit.dev/src/contexts/AppContext.tsx?v=y-LWCQLnhpqxsZNtlRg-D:115:31)
+    at V (https://0a70841c-2a8a-41f9-be07-c9d0667751c9-00-35s1pv4wd80nb.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/next-themes.js?v=beac5898:44:25)
+    at J (https://0a70841c-2a8a-41f9-be07-c9d0667751c9-00-35s1pv4wd80nb.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/next-themes.js?v=beac5898:42:18)
+    at ThemeProvider (https://0a70841c-2a8a-41f9-be07-c9d0667751c9-00-35s1pv4wd80nb.picard.replit.dev/src/components/ui/theme-provider.tsx?v=y-LWCQLnhpqxsZNtlRg-D:20:3)
+    at QueryClientProvider (https://0a70841c-2a8a-41f9-be07-c9d0667751c9-00-35s1pv4wd80nb.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=ee0854eb:2805:3)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+Cannot read properties of undefined (reading 'replace')

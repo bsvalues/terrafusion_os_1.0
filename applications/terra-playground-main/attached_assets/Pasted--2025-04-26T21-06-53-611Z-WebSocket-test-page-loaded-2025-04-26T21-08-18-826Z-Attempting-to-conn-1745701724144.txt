@@ -1,0 +1,45 @@
+[2025-04-26T21:06:53.611Z] WebSocket test page loaded
+[2025-04-26T21:08:18.826Z] Attempting to connect to WebSocket server...
+[2025-04-26T21:08:18.830Z] Connecting to: wss://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev/ws
+[2025-04-26T21:08:19.084Z] WebSocket error: Unknown error
+[2025-04-26T21:08:19.088Z] Connection closed. Code: 1006.
+[2025-04-26T21:08:19.092Z] Reconnect attempt 1 of 3...
+[2025-04-26T21:08:20.095Z] Attempting to connect to WebSocket server...
+[2025-04-26T21:08:20.095Z] Connecting to: wss://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev/ws
+[2025-04-26T21:08:20.328Z] WebSocket error: Unknown error
+[2025-04-26T21:08:20.331Z] Connection closed. Code: 1006.
+[2025-04-26T21:08:20.331Z] Reconnect attempt 2 of 3...
+[2025-04-26T21:08:22.335Z] Attempting to connect to WebSocket server...
+[2025-04-26T21:08:22.336Z] Connecting to: wss://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev/ws
+[2025-04-26T21:08:22.586Z] WebSocket error: Unknown error
+[2025-04-26T21:08:22.589Z] Connection closed. Code: 1006.
+[2025-04-26T21:08:22.589Z] Reconnect attempt 3 of 3...
+[2025-04-26T21:08:26.591Z] Maximum reconnection attempts reached. Using fallback mode.
+[2025-04-26T21:08:26.594Z] Fallback mode initiated - using polling mechanism
+[2025-04-26T21:08:31.611Z] Received (fallback): {
+  "type": "fallback",
+  "message": "This is a simulated message via fallback polling",
+  "timestamp": "2025-04-26T21:08:31.610Z",
+  "pollingId": "qf5deiayhsb"
+}
+[2025-04-26T21:08:34.337Z] Attempting to connect to WebSocket server...
+[2025-04-26T21:08:34.337Z] Connecting to: wss://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev/ws
+[2025-04-26T21:08:34.583Z] WebSocket error: Unknown error
+[2025-04-26T21:08:34.584Z] Connection closed. Code: 1006.
+[2025-04-26T21:08:34.584Z] Reconnect attempt 1 of 3...
+[2025-04-26T21:08:35.591Z] Attempting to connect to WebSocket server...
+[2025-04-26T21:08:35.591Z] Connecting to: wss://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev/ws
+[2025-04-26T21:08:35.904Z] WebSocket error: Unknown error
+[2025-04-26T21:08:35.905Z] Connection closed. Code: 1006.
+[2025-04-26T21:08:35.905Z] Reconnect attempt 2 of 3...
+[2025-04-26T21:08:36.605Z] Received (fallback): {
+  "type": "fallback",
+  "message": "This is a simulated message via fallback polling",
+  "timestamp": "2025-04-26T21:08:36.605Z",
+  "pollingId": "piv98wqq4jb"
+}
+[2025-04-26T21:08:37.907Z] Attempting to connect to WebSocket server...
+[2025-04-26T21:08:37.907Z] Connecting to: wss://69340dc3-5f57-4cca-82d1-7ea6f9418cc4-00-1qhau0gno8lsl.picard.replit.dev/ws
+[2025-04-26T21:08:38.155Z] WebSocket error: Unknown error
+[2025-04-26T21:08:38.156Z] Connection closed. Code: 1006.
+[2025-04-26T21:08:38.156Z] Reconnect attempt 3 of 3...

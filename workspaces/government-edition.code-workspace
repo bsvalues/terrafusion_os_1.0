@@ -1,0 +1,335 @@
+{
+  "folders": [
+    {
+      "path": "../marketplace/government-edition/premium-services",
+      "name": "💎 Premium Government Services"
+    },
+    {
+      "path": "../marketplace/government-edition/advanced-analytics",
+      "name": "📈 Advanced Analytics"
+    },
+    {
+      "path": "../marketplace/government-edition/enterprise-integrations",
+      "name": "🔌 Enterprise Integrations"
+    },
+    {
+      "path": "../marketplace/government-edition/ai-enhanced",
+      "name": "🤖 AI Enhanced Features"
+    },
+    {
+      "path": "../marketplace/government-edition/multi-county",
+      "name": "🌐 Multi-County Management"
+    },
+    {
+      "path": "../marketplace/government-edition/security-suite",
+      "name": "🔒 Security Suite"
+    },
+    {
+      "path": "../marketplace/government-edition/testing",
+      "name": "🧪 Edition Tests"
+    },
+    {
+      "path": "../SDK",
+      "name": "📦 Platform SDK (read-only)"
+    },
+    {
+      "path": "../backend",
+      "name": "🔧 Shared Backend (read-only)"
+    },
+    {
+      "path": "../docs/government-edition",
+      "name": "📚 Edition Docs"
+    },
+    {
+      "path": "../config",
+      "name": "⚙️ Config (shared)"
+    },
+    {
+      "path": "../docs/government_edition",
+      "name": "📚 Government-Edition Docs"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/out": true,
+      "**/.pytest_cache": true,
+      "../marketplace/*/": true,
+      "!../marketplace/government-edition": false,
+      "../frontend": true,
+      "../backend": true,
+      "../os-platform": true,
+      "../terrafusion-cos": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/out": true,
+      "../frontend": true,
+      "../backend": true,
+      "../os-platform": true
+    },
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "python.defaultInterpreter": "./marketplace/government-edition/.venv/bin/python",
+    "eslint.workingDirectories": [
+      "./marketplace/government-edition/premium-services",
+      "./marketplace/government-edition/enterprise-integrations"
+    ],
+    "terrafusion.sync": {
+      "autoSync": true,
+      "syncInterval": 10,
+      "conflictResolution": "prompt",
+      "sharedState": {
+        "backend": "read-only",
+        "sdk": "read-only",
+        "config": "shared-write"
+      },
+      "premiumIntegration": true
+    },
+    "terrafusion.edition": {
+      "tier": "enterprise",
+      "premiumFeatures": true,
+      "advancedAnalytics": true,
+      "aiEnhanced": true,
+      "multiCountySupport": true,
+      "enterpriseIntegrations": true,
+      "securitySuite": true
+    },
+    "terrafusion.compliance": {
+      "fismaMode": "HIGH",
+      "nist80053": true,
+      "section508": true,
+      "fedrampReady": true,
+      "cisControls": true,
+      "auditTrail": "comprehensive",
+      "enterpriseCompliance": true
+    },
+    "terrafusion.security": {
+      "enhancedSecurity": true,
+      "zeroTrustArchitecture": true,
+      "advancedThreatProtection": true,
+      "enterpriseSSO": true,
+      "multiFactorAuth": "mandatory",
+      "encryption": "AES-256-GCM"
+    },
+    "terrafusion.ai": {
+      "aiSuite": "enterprise",
+      "predictiveAnalytics": true,
+      "mlModels": "advanced",
+      "nlpProcessing": true,
+      "automatedInsights": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-python.debugpy",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-vscode.vscode-typescript-next",
+      "streetsidesoftware.code-spell-checker",
+      "usernamehw.errorlens",
+      "eamodio.gitlens",
+      "ms-azuretools.vscode-docker",
+      "redhat.vscode-yaml",
+      "ms-toolsai.jupyter",
+      "ms-vscode.vscode-json"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Start Premium Services",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/government-edition/premium-services",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "console": "integratedTerminal",
+        "env": {
+          "TERRAFUSION_SERVICE": "government-edition",
+          "EDITION_MODE": "enterprise",
+          "PREMIUM_FEATURES": "true"
+        }
+      },
+      {
+        "name": "Debug Advanced Analytics",
+        "type": "debugpy",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/government-edition/advanced-analytics",
+        "program": "analytics_engine.py",
+        "console": "integratedTerminal",
+        "env": {
+          "ANALYTICS_DEBUG": "true",
+          "ML_MODELS_ENABLED": "true"
+        }
+      },
+      {
+        "name": "Debug AI Enhanced Features",
+        "type": "debugpy",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/government-edition/ai-enhanced",
+        "program": "ai_orchestrator.py",
+        "console": "integratedTerminal",
+        "env": {
+          "AI_DEBUG": "true",
+          "ENTERPRISE_AI": "true"
+        }
+      },
+      {
+        "name": "Start Multi-County Manager",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/marketplace/government-edition/multi-county",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "console": "integratedTerminal",
+        "env": {
+          "MULTI_COUNTY_DEBUG": "true",
+          "COUNTY_COORDINATION": "true"
+        }
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build Government Edition",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "build:enterprise"
+        ],
+        "problemMatcher": [
+          "$tsc"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Test Government Edition",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "test:enterprise"
+        ],
+        "problemMatcher": [],
+        "group": {
+          "kind": "test",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Deploy Enterprise Edition",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "deploy:enterprise"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/government-edition"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Train AI Models",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "train_enterprise_models.py"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/government-edition/ai-enhanced"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Run Advanced Analytics",
+        "type": "shell",
+        "command": "python",
+        "args": [
+          "run_analytics.py"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/government-edition/advanced-analytics"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Test Enterprise Integrations",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "test:integrations"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/government-edition/enterprise-integrations"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Security Suite Scan",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "security:scan"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/government-edition/security-suite"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "Multi-County Sync Test",
+        "type": "shell",
+        "command": "npm",
+        "args": [
+          "run",
+          "test:multi-county"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}/marketplace/government-edition/multi-county"
+        },
+        "problemMatcher": [],
+        "group": "none"
+      },
+      {
+        "label": "FedRAMP Compliance Check",
+        "type": "shell",
+        "command": "./SDK/tools/compliance-check.sh",
+        "args": [
+          "--service=government-edition",
+          "--fedramp-ready"
+        ],
+        "problemMatcher": [],
+        "group": "none"
+      }
+    ]
+  }
+}

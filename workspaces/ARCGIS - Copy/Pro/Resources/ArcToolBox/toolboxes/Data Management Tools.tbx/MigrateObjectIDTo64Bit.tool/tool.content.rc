@@ -1,0 +1,10 @@
+{
+    "map": {
+        "description": "Migrates a dataset's or multiple datasets' ObjectID field to 64-bit object IDs.",
+        "in_datasets.descr": "<xdoc><p>The datasets that will have their <span class=\"esri_fieldname\">ObjectID</span> field migrated to 64 bit.</p></xdoc>",
+        "in_datasets.title": "Input Datasets",
+        "out_datasets.title": "Updated Datasets",
+        "summary": "<xdoc><p>Migrates a dataset&apos;s or multiple datasets&apos; <span class=\"esri_fieldname\">ObjectID</span> field to 64-bit object IDs.</p></xdoc>",
+        "title": "Migrate Object ID To 64 Bit"
+    }
+}

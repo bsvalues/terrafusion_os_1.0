@@ -1,0 +1,16 @@
+{
+    "map": {
+        "description": "Calculates the percent change for features that correspond with point features representing two equal comparison time periods.",
+        "in_current_features.descr": "<xdoc><p>The point features filtered to the most recent comparison time period.</p><p>For example, you can filter for crimes from the previous 14 days.</p></xdoc>",
+        "in_current_features.title": "Input Current Period Point Features",
+        "in_features.descr": "The coincident features from which comparison time periods will be counted and compared.",
+        "in_features.title": "Input Features",
+        "in_previous_features.descr": "<xdoc><p>The point features filtered to the time period immediately preceding the current period. This time period must be of equal length to the current period to provide an accurate comparison.</p><p>For example, if the current period contains features from January 15 to January 28, the previous period contains features from January 1 to January 14.</p></xdoc>",
+        "in_previous_features.title": "Input Previous Period Point Features",
+        "out_feature_class.descr": "The output feature class containing difference counts and percent change calculations for the time period comparison.",
+        "out_feature_class.title": "Output Feature Class",
+        "search_radius.descr": "<xdoc><p>The maximum distance from the <span class=\"esri_uicontrol\">Input Features</span> parameter value that a point feature will be considered coincident.</p><p>This parameter is only active when point or line features are used as the input features.</p></xdoc>",
+        "search_radius.title": "Search Radius",
+        "title": "Summarize Percent Change"
+    }
+}

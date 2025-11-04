@@ -1,0 +1,14 @@
+{
+  "migration_date": "2025-11-04 02:45:56",
+  "tech_stack": "",
+  "target_path": "C:\\Users\\bsval\\terrafusion_os_1.0\\applications\\terra-miner-production",
+  "priority": "PRODUCTION",
+  "target_name": "terra-miner-production",
+  "size_mb": 933.05,
+  "status": "OPERATIONAL",
+  "file_count": 53726,
+  "agent": "TerraFusion Elite Government OS Engineering Agent",
+  "source_path": "MIGRATED",
+  "last_verified": "2025-11-04 02:45:56",
+  "system_name": "terra-miner-production"
+}

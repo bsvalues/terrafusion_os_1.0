@@ -1,0 +1,243 @@
+import os
+import zipfile
+
+# Define root output dir
+output_root = "/mnt/data/ICSF_Modular_Labs"
+
+# Define each lab with files
+labs = {
+    "LaunchWorkflowPoisonLab": {
+        "Models/LaunchWorkflowMessage.cs": '''
+namespace LaunchWorkflowPoisonLab.Models
+{
+    public class LaunchWorkflowMessage
+    {
+        public string WorkflowId { get; set; }
+        public string SourceUser { get; set; }
+        public DateTime Timestamp { get; set; }
+        public Dictionary<string, string> Parameters { get; set; }
+    }
+}
+''',
+        "Interfaces/IMessageBus.cs": '''
+namespace LaunchWorkflowPoisonLab.Interfaces
+{
+    public interface IMessageBus
+    {
+        void Publish<T>(T message);
+    }
+}
+''',
+        "Simulators/WorkflowInjector.cs": '''
+using LaunchWorkflowPoisonLab.Models;
+using LaunchWorkflowPoisonLab.Interfaces;
+
+namespace LaunchWorkflowPoisonLab.Simulators
+{
+    public class WorkflowInjector
+    {
+        private readonly IMessageBus _bus;
+
+        public WorkflowInjector(IMessageBus bus)
+        {
+            _bus = bus;
+        }
+
+        public LaunchWorkflowMessage SendPoisonPayload()
+        {
+            var message = new LaunchWorkflowMessage
+            {
+                WorkflowId = "' OR 1=1 --",
+                SourceUser = "admin@attacker.local",
+                Timestamp = DateTime.Now,
+                Parameters = new Dictionary<string, string>
+                {
+                    { "interval", "9999999999999999999" },
+                    { "task", "<script>alert('xss')</script>" }
+                }
+            };
+
+            _bus.Publish(message);
+            return message;
+        }
+    }
+}
+''',
+        "Mocks/ConsoleMessageBus.cs": '''
+using LaunchWorkflowPoisonLab.Interfaces;
+
+namespace LaunchWorkflowPoisonLab.Mocks
+{
+    public class ConsoleMessageBus : IMessageBus
+    {
+        public void Publish<T>(T message)
+        {
+            Console.WriteLine("Published Message:");
+            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(message, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
+        }
+    }
+}
+''',
+        "Consumers/LaunchWorkflowConsumer.cs": '''
+using LaunchWorkflowPoisonLab.Models;
+
+namespace LaunchWorkflowPoisonLab.Consumers
+{
+    public class LaunchWorkflowConsumer
+    {
+        public void Process(LaunchWorkflowMessage message)
+        {
+            Console.WriteLine("[Consumer] Received workflow request: " + message.WorkflowId);
+            if (message.WorkflowId.Contains("'") || message.Parameters.Values.Any(p => p.Contains("<script>")))
+            {
+                Console.WriteLine("[ALERT] Potential injection detected in workflow parameters!");
+            }
+            else
+            {
+                Console.WriteLine("[Consumer] Message appears safe.");
+            }
+        }
+    }
+}
+''',
+        "Program.cs": '''
+using LaunchWorkflowPoisonLab.Interfaces;
+using LaunchWorkflowPoisonLab.Mocks;
+using LaunchWorkflowPoisonLab.Simulators;
+using LaunchWorkflowPoisonLab.Consumers;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        IMessageBus messageBus = new ConsoleMessageBus();
+        var injector = new WorkflowInjector(messageBus);
+        var message = injector.SendPoisonPayload();
+
+        var consumer = new LaunchWorkflowConsumer();
+        consumer.Process(message);
+    }
+}
+'''
+    },
+    "MassRefundInjectionLab": {
+        "Models/PayImportedPaymentRunDTO.cs": '''
+namespace MassRefundInjectionLab.Models
+{
+    public class PayImportedPaymentRunDTO
+    {
+        public string RunId { get; set; }
+        public decimal AmountPaid { get; set; }
+        public int AcceptCount { get; set; }
+        public string ClerkId { get; set; }
+        public DateTime ExecutionTimestamp { get; set; }
+    }
+}
+''',
+        "Simulators/RefundInjector.cs": '''
+using MassRefundInjectionLab.Models;
+
+namespace MassRefundInjectionLab.Simulators
+{
+    public class RefundInjector
+    {
+        public static void Inject()
+        {
+            var refund = new PayImportedPaymentRunDTO
+            {
+                RunId = "MASS_REFUND_999",
+                AmountPaid = 9999999999.99M,
+                AcceptCount = 1,
+                ClerkId = "bypass_script",
+                ExecutionTimestamp = DateTime.Now
+            };
+
+            Console.WriteLine("Injected Refund DTO:");
+            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(refund, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
+        }
+    }
+}
+''',
+        "Program.cs": '''
+using MassRefundInjectionLab.Simulators;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        RefundInjector.Inject();
+    }
+}
+'''
+    },
+    "AppealTriggerInjectionLab": {
+        "Models/AppealWorkflowTriggerDTO.cs": '''
+namespace AppealTriggerInjectionLab.Models
+{
+    public class AppealWorkflowTriggerDTO
+    {
+        public string ParcelId { get; set; }
+        public string AppellantName { get; set; }
+        public DateTime AppealDate { get; set; }
+        public string Reason { get; set; }
+    }
+}
+''',
+        "Simulators/AppealInjector.cs": '''
+using AppealTriggerInjectionLab.Models;
+
+namespace AppealTriggerInjectionLab.Simulators
+{
+    public class AppealInjector
+    {
+        public static void Inject()
+        {
+            var appeal = new AppealWorkflowTriggerDTO
+            {
+                ParcelId = "000000",
+                AppellantName = "<img src=x onerror=alert('xss')>",
+                AppealDate = DateTime.MinValue,
+                Reason = "Automated appeal with suspicious payload."
+            };
+
+            Console.WriteLine("Injected Appeal Trigger:");
+            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(appeal, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
+        }
+    }
+}
+''',
+        "Program.cs": '''
+using AppealTriggerInjectionLab.Simulators;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        AppealInjector.Inject();
+    }
+}
+'''
+    }
+}
+
+# Generate each lab as its own zip
+zip_paths = []
+
+for lab_name, lab_files in labs.items():
+    lab_dir = os.path.join(output_root, lab_name)
+    for path, content in lab_files.items():
+        full_path = os.path.join(lab_dir, path)
+        os.makedirs(os.path.dirname(full_path), exist_ok=True)
+        with open(full_path, "w") as f:
+            f.write(content.strip())
+
+    zip_path = f"/mnt/data/{lab_name}.zip"
+    with zipfile.ZipFile(zip_path, 'w') as zipf:
+        for foldername, _, filenames in os.walk(lab_dir):
+            for filename in filenames:
+                filepath = os.path.join(foldername, filename)
+                arcname = os.path.relpath(filepath, lab_dir)
+                zipf.write(filepath, arcname)
+    zip_paths.append((lab_name, zip_path))
+
+zip_paths

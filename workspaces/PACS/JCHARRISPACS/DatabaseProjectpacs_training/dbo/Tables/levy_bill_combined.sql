@@ -1,0 +1,42 @@
+CREATE TABLE [dbo].[levy_bill_combined] (
+    [bill_id]              INT              NULL,
+    [rp_parcel]            VARCHAR (50)     NULL,
+    [rp_parcel_ext]        INT              NULL,
+    [tax_year]             INT              NULL,
+    [tax_code]             INT              NULL,
+    [srcit_code]           CHAR (1)         NULL,
+    [initial_taxdue]       NUMERIC (10, 2)  NULL,
+    [current_taxdue]       NUMERIC (10, 2)  NULL,
+    [taxreceived]          NUMERIC (9, 2)   NULL,
+    [FPBILLED]             NUMERIC (9, 2)   NULL,
+    [current_FP_due]       NUMERIC (10, 2)  NULL,
+    [FPRECEIVED]           NUMERIC (9, 2)   NULL,
+    [FP_FEEAMT]            NUMERIC (7, 2)   NULL,
+    [FP_FEERCVD]           NUMERIC (7, 2)   NULL,
+    [pendueest]            NUMERIC (9, 2)   NULL,
+    [penReceived]          NUMERIC (9, 2)   NULL,
+    [intreceived]          DECIMAL (18, 2)  NULL,
+    [tax_district_id]      INT              NULL,
+    [levy_cd]              VARCHAR (10)     NULL,
+    [levy_rate]            NUMERIC (13, 10) NULL,
+    [total_levy_rate]      NUMERIC (38, 10) NULL,
+    [initial_taxdue_SPLIT] NUMERIC (14, 2)  NULL,
+    [current_taxdue_SPLIT] NUMERIC (14, 2)  NULL,
+    [taxreceived_SPLIT]    NUMERIC (14, 2)  NULL,
+    [pendueest_SPLIT]      NUMERIC (14, 2)  NULL,
+    [penReceived_SPLIT]    NUMERIC (14, 2)  NULL,
+    [adj_flag]             BIT              NULL,
+    [other]                VARCHAR (6)      NULL,
+    [prop_type]            VARCHAR (1)      NULL,
+    [initial_LFP]          NUMERIC (9, 2)   NULL,
+    [current_LFP]          NUMERIC (10, 2)  NULL,
+    [fpenReceived]         NUMERIC (9, 2)   NULL,
+    [initial_LFP_SPLIT]    NUMERIC (14, 2)  NULL,
+    [current_LFP_SPLIT]    NUMERIC (14, 2)  NULL,
+    [fpenReceived_SPLIT]   NUMERIC (14, 2)  NULL,
+    [intreceived_split]    DECIMAL (18, 2)  NULL
+);
+
+
+GO
+

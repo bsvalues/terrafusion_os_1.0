@@ -1,0 +1,328 @@
+{
+    "type": "FunctionTool",
+    "guid": "{33724566-2738-4FE2-903A-A8C439127E50}/FindNearbyLocations",
+    "displayname": "$rc:title",
+    "helpcontent": "62010005",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "33",
+        "35"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "id_field": {
+            "displayname": "$rc:id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text",
+                    "Short",
+                    "BigInteger",
+                    "Long",
+                    "GUID",
+                    "GlobalID"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:id_field.descr"
+        },
+        "in_location_points": {
+            "displayname": "$rc:in_location_points.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:in_location_points.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "featuretype.rule": "AsSpecified",
+                "featuretype": "Simple",
+                "geometrytype.rule": "AsSpecified",
+                "geometrytype": "Polygon",
+                "extenttype.rule": "Union",
+                "fields.rule": "None",
+                "clonedependency": "true",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "distance_type": {
+            "type": "optional",
+            "displayname": "$rc:distance_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:distance_type.descr"
+        },
+        "units": {
+            "type": "optional",
+            "displayname": "$rc:units.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:units.descr"
+        },
+        "distance_limit": {
+            "type": "optional",
+            "displayname": "$rc:distance_limit.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "description": "$rc:distance_limit.descr"
+        },
+        "number_limit": {
+            "type": "optional",
+            "displayname": "$rc:number_limit.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "1"
+                }
+            },
+            "description": "$rc:number_limit.descr"
+        },
+        "percent_limit": {
+            "type": "optional",
+            "displayname": "$rc:percent_limit.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true"
+            },
+            "description": "$rc:percent_limit.descr"
+        },
+        "create_report": {
+            "type": "optional",
+            "displayname": "$rc:create_report.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "CREATE_REPORT"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_CREATE_REPORT"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:create_report.descr"
+        },
+        "report_title": {
+            "type": "optional",
+            "displayname": "$rc:report_title.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:report_title.descr"
+        },
+        "report_folder": {
+            "type": "optional",
+            "displayname": "$rc:report_folder.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:report_folder.descr"
+        },
+        "report_format": {
+            "type": "optional",
+            "displayname": "$rc:report_format.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "description": "$rc:report_format.descr"
+        },
+        "report_fields": {
+            "type": "optional",
+            "displayname": "$rc:report_fields.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Double",
+                    "Long",
+                    "Float",
+                    "Short",
+                    "BigInteger",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_location_points"
+            ],
+            "description": "$rc:report_fields.descr"
+        },
+        "travel_direction": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:travel_direction.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "TOWARD_STORES",
+                        "code": "$rc:travel_direction.domain.TOWARD_STORES"
+                    },
+                    {
+                        "value": "AWAY_FROM_STORES",
+                        "code": "$rc:travel_direction.domain.AWAY_FROM_STORES"
+                    }
+                ]
+            },
+            "description": "$rc:travel_direction.descr"
+        },
+        "time_of_day": {
+            "type": "optional",
+            "displayname": "$rc:time_of_day.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:time_of_day.descr"
+        },
+        "time_zone": {
+            "type": "optional",
+            "displayname": "$rc:time_zone.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "UTC",
+                        "code": "$rc:time_zone.domain.UTC"
+                    },
+                    {
+                        "value": "TIME_ZONE_AT_LOCATION",
+                        "code": "$rc:time_zone.domain.TIME_ZONE_AT_LOCATION"
+                    }
+                ]
+            },
+            "value": "TIME_ZONE_AT_LOCATION",
+            "description": "$rc:time_zone.descr"
+        },
+        "search_tolerance": {
+            "type": "optional",
+            "displayname": "$rc:search_tolerance.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "description": "$rc:search_tolerance.descr"
+        },
+        "output_report": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_report.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "DEFile"
+                }
+            }
+        },
+        "location_name": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:location_name.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text",
+                    "Short",
+                    "BigInteger",
+                    "Long",
+                    "GUID",
+                    "GlobalID"
+                ]
+            },
+            "depends": [
+                "in_location_points"
+            ],
+            "description": "$rc:location_name.descr"
+        }
+    },
+    "environments": [
+        "baDataSource",
+        "baNetworkSource",
+        "workspace"
+    ]
+}

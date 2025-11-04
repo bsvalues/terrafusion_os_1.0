@@ -1,0 +1,198 @@
+{% extends 'layout.html' %}
+
+{% block title %}API Tester{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">API Tester</h1>
+    
+    <div class="alert alert-info mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <i class="fas fa-info-circle me-2"></i>
+                Need test data? Import sample GeoJSON files for testing the API endpoints.
+            </div>
+            <a href="{{ url_for('api_test_setup') }}" class="btn btn-sm btn-primary">
+                <i class="fas fa-upload me-1"></i> Import Test Data
+            </a>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>API Documentation</h5>
+        </div>
+        <div class="card-body">
+            <p>
+                Test the Benton County Data Hub API endpoints. 
+                This interface allows you to make API calls and see the responses.
+            </p>
+            <div class="mb-3">
+                <h6>Available Endpoints:</h6>
+                <ul>
+                    <li><code>/api</code> - API Index</li>
+                    <li><code>/api/docs</code> - API Documentation</li>
+                    <li><code>/api/spatial/layers</code> - List GIS Layers</li>
+                    <li><code>/api/data/sources</code> - List Data Sources</li>
+                    <li><code>/api/auth/token</code> - Generate Auth Token (POST)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Request</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="endpoint" class="form-label">Endpoint</label>
+                        <div class="input-group">
+                            <span class="input-group-text">/api</span>
+                            <input type="text" class="form-control" id="endpoint" placeholder="e.g., /docs">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="method" class="form-label">Method</label>
+                        <select class="form-select" id="method">
+                            <option value="GET">GET</option>
+                            <option value="POST">POST</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="body" class="form-label">Request Body (JSON)</label>
+                        <textarea class="form-control" id="body" rows="6" placeholder='{
+  "key": "value"
+}'></textarea>
+                    </div>
+                    <button class="btn btn-primary" id="send-request">Send Request</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Response</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <div class="input-group">
+                            <span class="input-group-text">Status:</span>
+                            <input type="text" class="form-control" id="status" readonly>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="response" class="form-label">Response Body</label>
+                        <pre id="response" class="p-3 bg-light border rounded" style="max-height: 300px; overflow-y: auto;"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sendRequestBtn = document.getElementById('send-request');
+    const endpointInput = document.getElementById('endpoint');
+    const methodSelect = document.getElementById('method');
+    const bodyTextarea = document.getElementById('body');
+    const statusOutput = document.getElementById('status');
+    const responseOutput = document.getElementById('response');
+    
+    // Function to display response in a readable format
+    function displayResponse(response, status) {
+        try {
+            // Format JSON responses
+            const formattedResponse = JSON.stringify(response, null, 2);
+            responseOutput.textContent = formattedResponse;
+        } catch (e) {
+            // If not JSON, display as text
+            responseOutput.textContent = response;
+        }
+        
+        statusOutput.value = status;
+    }
+    
+    // Send request function
+    sendRequestBtn.addEventListener('click', function() {
+        const endpoint = '/api' + endpointInput.value;
+        const method = methodSelect.value;
+        
+        // Clear previous responses
+        statusOutput.value = 'Sending request...';
+        responseOutput.textContent = '';
+        
+        const options = {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
+        
+        // Add body if present and method is not GET
+        if (method !== 'GET' && bodyTextarea.value.trim() !== '') {
+            try {
+                options.body = JSON.parse(bodyTextarea.value);
+            } catch (e) {
+                statusOutput.value = 'Error parsing JSON body';
+                responseOutput.textContent = e.message;
+                return;
+            }
+        }
+        
+        // Make the request
+        fetch(endpoint, options)
+            .then(response => {
+                // Get status text and code
+                const status = `${response.status} ${response.statusText}`;
+                
+                // Parse response as JSON if possible
+                return response.json()
+                    .then(data => ({ data, status }))
+                    .catch(() => response.text().then(text => ({ data: text, status })));
+            })
+            .then(({ data, status }) => {
+                displayResponse(data, status);
+            })
+            .catch(error => {
+                statusOutput.value = 'Error';
+                responseOutput.textContent = error.message;
+            });
+    });
+    
+    // Example request templates
+    const examples = {
+        '/docs': { method: 'GET', body: '' },
+        '/spatial/layers': { method: 'GET', body: '' },
+        '/data/sources': { method: 'GET', body: '' },
+        '/auth/token': { 
+            method: 'POST', 
+            body: JSON.stringify({
+                username: 'dev_user',
+                password: 'password'
+            }, null, 2) 
+        },
+        '/search': { 
+            method: 'POST', 
+            body: JSON.stringify({
+                query: 'What GIS data is available?'
+            }, null, 2) 
+        }
+    };
+    
+    // Prefill examples when endpoint changes
+    endpointInput.addEventListener('change', function() {
+        const example = examples[endpointInput.value];
+        if (example) {
+            methodSelect.value = example.method;
+            bodyTextarea.value = example.body;
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,226 @@
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/terrafusion/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "terrafusion-api",
+          "Port": 5001
+        }
+      ],
+      "UpstreamPathTemplate": "/api/terrafusion/{everything}",
+      "UpstreamHttpMethod": ["GET", "POST", "PUT", "DELETE", "PATCH"],
+      "RouteClaimsRequirement": {},
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 5,
+        "DurationOfBreak": 30000,
+        "TimeoutValue": 10000
+      },
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
+      },
+      "RateLimitOptions": {
+        "ClientWhitelist": [],
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 1000
+      },
+      "HttpHandlerOptions": {
+        "AllowAutoRedirect": false,
+        "UseCookieContainer": false,
+        "UseTracing": true,
+        "MaxConnectionsPerServer": 100
+      },
+      "Key": "terrafusion-api-bulletproof",
+      "Priority": 1,
+      "Timeout": 10000,
+      "DangerousAcceptAnyServerCertificateValidator": false
+    },
+    {
+      "DownstreamPathTemplate": "/api/operations/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "terrafusion-operations",
+          "Port": 5002
+        }
+      ],
+      "UpstreamPathTemplate": "/api/operations/{everything}",
+      "UpstreamHttpMethod": ["GET", "POST", "PUT", "DELETE"],
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 3,
+        "DurationOfBreak": 45000,
+        "TimeoutValue": 15000
+      },
+      "LoadBalancerOptions": {
+        "Type": "LeastConnection"
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 500
+      },
+      "HttpHandlerOptions": {
+        "UseTracing": true,
+        "MaxConnectionsPerServer": 50
+      },
+      "Key": "elite-operations-bulletproof",
+      "Priority": 2,
+      "Timeout": 15000
+    },
+    {
+      "DownstreamPathTemplate": "/api/ai/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "terrafusion-ai",
+          "Port": 5003
+        }
+      ],
+      "UpstreamPathTemplate": "/api/ai/{everything}",
+      "UpstreamHttpMethod": ["GET", "POST", "PUT"],
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 8,
+        "DurationOfBreak": 60000,
+        "TimeoutValue": 30000
+      },
+      "LoadBalancerOptions": {
+        "Type": "WeightedRoundRobin"
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1m",
+        "PeriodTimespan": 60,
+        "Limit": 200
+      },
+      "HttpHandlerOptions": {
+        "UseTracing": true,
+        "MaxConnectionsPerServer": 25
+      },
+      "Key": "ai-intelligence-bulletproof",
+      "Priority": 3,
+      "Timeout": 30000
+    },
+    {
+      "DownstreamPathTemplate": "/health",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "terrafusion-api",
+          "Port": 5001
+        },
+        {
+          "Host": "terrafusion-operations",
+          "Port": 5002
+        },
+        {
+          "Host": "terrafusion-ai",
+          "Port": 5003
+        }
+      ],
+      "UpstreamPathTemplate": "/health",
+      "UpstreamHttpMethod": ["GET"],
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 2,
+        "DurationOfBreak": 10000,
+        "TimeoutValue": 5000
+      },
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
+      },
+      "HttpHandlerOptions": {
+        "UseTracing": false,
+        "MaxConnectionsPerServer": 10
+      },
+      "Key": "health-check-bulletproof",
+      "Priority": 0,
+      "Timeout": 5000
+    }
+  ],
+  "DynamicRoutes": [],
+  "Aggregates": [
+    {
+      "RouteKeys": [
+        "terrafusion-api-bulletproof",
+        "elite-operations-bulletproof",
+        "ai-intelligence-bulletproof"
+      ],
+      "UpstreamPathTemplate": "/api/status/comprehensive",
+      "UpstreamHttpMethod": ["GET"],
+      "Aggregator": "TerraFusion.Gateway.Aggregators.ComprehensiveStatusAggregator",
+      "Key": "comprehensive-status"
+    }
+  ],
+  "GlobalConfiguration": {
+    "RequestIdKey": "TerraFusion-Request-ID",
+    "ServiceDiscoveryProvider": {
+      "Host": "consul",
+      "Port": 8500,
+      "Type": "Consul",
+      "Token": "",
+      "ConfigurationKey": "terrafusion-bulletproof",
+      "PollingInterval": 5000,
+      "Namespace": "terrafusion-system"
+    },
+    "RateLimitOptions": {
+      "QuotaExceededMessage": "TerraFusion: Championship rate limit exceeded. Please reduce request frequency.",
+      "HttpStatusCode": 429,
+      "ClientIdHeader": "TerraFusion-Client-ID"
+    },
+    "QoSOptions": {
+      "ExceptionsAllowedBeforeBreaking": 5,
+      "DurationOfBreak": 30000,
+      "TimeoutValue": 10000
+    },
+    "LoadBalancerOptions": {
+      "Type": "RoundRobin",
+      "Key": "terrafusion-bulletproof",
+      "Expiry": 300000
+    },
+    "DownstreamScheme": "http",
+    "HttpHandlerOptions": {
+      "AllowAutoRedirect": false,
+      "UseCookieContainer": false,
+      "UseTracing": true,
+      "UseProxy": false,
+      "MaxConnectionsPerServer": 100,
+      "PooledConnectionLifetime": 300000,
+      "PooledConnectionIdleTimeout": 60000
+    }
+  },
+  "SwaggerEndPoints": [
+    {
+      "Key": "terrafusion-api",
+      "Config": [
+        {
+          "Name": "TerraFusion API Bulletproof",
+          "Version": "v1",
+          "Url": "http://terrafusion-api:5001/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "elite-operations",
+      "Config": [
+        {
+          "Name": "Elite Operations Bulletproof",
+          "Version": "v1",
+          "Url": "http://terrafusion-operations:5002/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "ai-intelligence",
+      "Config": [
+        {
+          "Name": "AI Intelligence Bulletproof",
+          "Version": "v1",
+          "Url": "http://terrafusion-ai:5003/swagger/v1/swagger.json"
+        }
+      ]
+    }
+  ]
+}

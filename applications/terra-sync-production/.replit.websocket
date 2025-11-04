@@ -1,0 +1,9 @@
+run = "python run_websocket_server.py"
+language = "python3"
+
+[nix]
+channel = "stable-23_05"
+
+[deployment]
+run = ["sh", "-c", "python run_websocket_server.py"]
+deploymentTarget = "cloudrun"

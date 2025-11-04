@@ -1,0 +1,683 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.DocumentManagement.Domain</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.DocumentManagement.Domain.Annotations.AnnotationDTOToDomainFactory">
+            <summary>
+            Domain factory to generate annotaion instance for the
+            DTO that is passes in as paramter
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Annotations.AnnotationDTOToDomainFactory.FromDTO(TrueAutomation.DocumentManagement.DTOs.Annotations.BaseAnnotationDTO)">
+            <summary>
+            Converts a DTO Object to a Domain Objects
+            </summary>
+            <param name="dto"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.Domain.Annotations.BaseAnnotation">
+            <summary>
+            Represents the base information for the Annotation data on the document.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.BaseAnnotation.Version">
+            <summary>
+            A reference to the DocumentVersion with which this Annotations File is associated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.BaseAnnotation.Page">
+            <summary>
+            The page number the annotation exists upon.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.BaseAnnotation.TransformMatrix">
+            <summary>
+            The transform data for all rotations on the Annotation Object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.BaseAnnotation.TextColor">
+            <summary>
+            The ARGB value of the color of the text for this Annotation Object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.BaseAnnotation.FontFamily">
+            <summary>
+            The name of the System font family for this Annotation Object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.BaseAnnotation.FontHeight">
+            <summary>
+            The height of the font associated with this Annotation Object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.BaseAnnotation.FontStyle">
+            <summary>
+            The System.Drawing.FontStyle associated with this Annotation Object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.BaseAnnotation.PenColor">
+            <summary>
+            The ARGB value of the System.Drawing.Color associated with the pen for the Annotation Object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.BaseAnnotation.PenDashCap">
+            <summary>
+            The integer representation of the System.Drawing.Drawing2D.DashCap value of the pen for the Annotation Object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.BaseAnnotation.PenDashOffset">
+            <summary>
+            The dash offset value of the pen for the Annotation Object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.BaseAnnotation.PenDashStyle">
+            <summary>
+            The integer representation of the System.Drawing.Drawing2D.DashStyle value of the pen for the Annotation Object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.BaseAnnotation.PenStartCap">
+            <summary>
+            The integer representation of the System.Drawing.Drawing2D.LineCap StartCap value of the pen for the Annotation Object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.BaseAnnotation.PenEndCap">
+            <summary>
+            The integer representation of the System.Drawing.Drawing2D.LineCap EndCap value of the pen for the Annotation Object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.BaseAnnotation.PenLineJoin">
+            <summary>
+            The integer representation of the System.Drawing.Drawing2D.LineJoin value of the pen for the Annotation Object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.BaseAnnotation.PenMiterLimit">
+            <summary>
+            The miter limit value of the pen for the Annotation Object.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.BaseAnnotation.PenWidth">
+            <summary>
+            The width value of the pen for the Annotation Object.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Annotations.BaseAnnotation.ToDTO">
+            <summary>
+            Assign the core property value based on the annotation type
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Annotations.BaseAnnotation.ToDTOCore">
+            <summary>
+            Converts the Annotation data to the appropriate DTO.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.Domain.Annotations.BoundedAnnotation">
+            <summary>
+            Base class for the Annotation Objects that require X and Y coordinates
+            and Width/Height in order to be displayed.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.BoundedAnnotation.X">
+            <summary>
+            The X Coordinate of the Annotation
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.BoundedAnnotation.Y">
+            <summary>
+            The Y Coordinate of the Annotation
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.BoundedAnnotation.Width">
+            <summary>
+            The Width of the Annotation
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.BoundedAnnotation.Height">
+            <summary>
+            The Height of the Annotation
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Annotations.BoundedAnnotation.ToDTO">
+            <summary>
+            Assign the core property value based on the annotation type
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.Domain.Annotations.BookmarkAnnotation">
+            <summary>
+            Domain Object describing the Note Annotation Object
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Annotations.BookmarkAnnotation.ToDTOCore">
+            <summary>
+            Assigns the basic core properties
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.Domain.Annotations.EllipseAnnotation">
+            <summary>
+            Class represents an ellipse annotation.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Annotations.EllipseAnnotation.ToDTOCore">
+            <summary>
+            Assign the core property value based on the annotation type
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.Domain.Annotations.HiliteAnnotation">
+            <summary>
+            Class represents a hilite annotation.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.HiliteAnnotation.Color">
+            <summary>
+            The ARGB value of the color for the hilite.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Annotations.HiliteAnnotation.ToDTOCore">
+            <summary>
+            Assign the core property value based on the annotation type
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.Domain.Annotations.LineAnnotation">
+            <summary>
+            Domain Object describing the Line Annotation Object
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Annotations.LineAnnotation.#ctor">
+            <summary>
+            Default Constructor
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.LineAnnotation.StartX">
+            <summary>
+            The Starting X coordinate for the Line Annotation
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.LineAnnotation.StartY">
+            <summary>
+            The Starting Y coordinate for the Line Annotation
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.LineAnnotation.EndX">
+            <summary>
+            The Ending X coordinate for the Line Annotation
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.LineAnnotation.EndY">
+            <summary>
+            The Ending Y coordinate for the Line Annotation
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Annotations.LineAnnotation.ToDTOCore">
+            <summary>
+            Create the LineAnnotationDTO for transport.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.Domain.Annotations.NoteAnnotation">
+            <summary>
+            Domain Object describing the Note Annotation Object
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.NoteAnnotation.ShadowBorderWidth">
+            <summary>
+            The ARGB value of the color for the hilite.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Annotations.NoteAnnotation.ToDTOCore">
+            <summary>
+            Assign the core property value based on the annotation type
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.Domain.Annotations.RectangleAnnotation">
+            <summary>
+            Domain Object describing the Rectangle Annotation Object
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Annotations.RectangleAnnotation.ToDTOCore">
+            <summary>
+            Assign the core property value based on the annotation type
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.Domain.Annotations.RedactionAnnotation">
+            <summary>
+            Domain Object describing the Redaction Annotation Object
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Annotations.RedactionAnnotation.ToDTOCore">
+            <summary>
+            Assigns the core property values for Redaction annotation
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.Domain.Annotations.RichTextAnnotation">
+            <summary>
+            Domain Object describing the RichText Annotation Object
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.RichTextAnnotation.Rtf">
+            <summary>
+            The Rich Text Format data and content for the Annotation Object.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Annotations.RichTextAnnotation.ToDTOCore">
+            <summary>
+            Assign the core property value based on the annotation type
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.Domain.Annotations.RubberStampAnnotation">
+            <summary>
+            Domain Object describing the Rubber Stamp Annotation Object
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.RubberStampAnnotation.Type">
+            <summary>
+            The ARGB value of the color for the hilite.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Annotations.RubberStampAnnotation.ToDTOCore">
+            <summary>
+            Assign the core property value based on the annotation type
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.Domain.Annotations.StampAnnotation">
+            <summary>
+            Domain Object describing the Stamp Annotation Object
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.StampAnnotation.Picture">
+            <summary>
+            The ARGB value of the color for the hilite.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Annotations.StampAnnotation.ToDTOCore">
+            <summary>
+            Assign the core property value based on the annotation type
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.Domain.Annotations.TextAnnotation">
+            <summary>
+            Domain Object describing the Text Annotation Object
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Annotations.TextAnnotation.Text">
+            <summary>
+            The ARGB value of the color for the hilite.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Annotations.TextAnnotation.ToDTOCore">
+            <summary>
+            Assign the core property value based on the annotation type
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.Domain.Document">
+            <summary>
+            Class represents a document file.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Document.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Document.#ctor(System.String,TrueAutomation.AccessControl.Domain.SecurityDescriptor)">
+            <summary>
+            Class constructor -- initializes an instance of the class
+            with valid data.
+            </summary>
+            <param name="name">Name of the document</param>
+            <param name="securityDescriptor">SecurityDescriptor associated with the document</param>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Document.Name">
+            <summary>
+            The name of the Document.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Document.Versions">
+            <summary>
+            A list of Versions associated with this Document.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Document.SecurityDescriptor">
+            <summary>
+            The SecurityDescriptor attached to this Document
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Document.MetadataFields">
+            <summary>
+            A List of KeyValuePairs representing the Metadata.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Document.LatestVersionNumber">
+            <summary>
+            The latest version number of the document.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.Document.RedactedDocumentFile">
+            <summary>
+            The Modified DocumentFile corresponding to this Version Number.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Document.AddDocumentVersion(TrueAutomation.DocumentManagement.Domain.DocumentVersion)">
+            <summary>
+            Adds the specified version to this Document.
+            </summary>
+            <param name="version">The version to add to this Document.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified
+            version was null.</exception>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Document.RemoveDocumentVersion(TrueAutomation.DocumentManagement.Domain.DocumentVersion)">
+            <summary>
+            Removes the specified version from this Document.
+            </summary>
+            <param name="version">The version to remove from this Document.</param>
+            <exception cref="T:System.ArgumentNullException">If the specified
+            version was null.</exception>
+            <exception cref="T:System.ArgumentException">If the specified version
+            is not contained in this Document.</exception>"
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Document.ToDTOWithThumbNailOnlyForLatestVersion">
+            <summary>
+            Returns a DocumentDTO object with only the latest version of
+            the document along with its Thumbnail and metadata information.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Document.ToDTOWithThumbNailOnlyForSpecificVersion(System.Int32)">
+            <summary>
+            Returns a DocumentDTO object with only the latest version of
+            the document along with its Thumbnail and metadata information.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Document.ToDTOWithThumbNailAndFileWithoutAnnotationsForSpecificVersion(System.Int32)">
+            <summary>
+            Returns a DocumentDTO object for the specified version of the document
+            along with its Thumbnail, File and metadata information without Annotations.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Document.ToDTOWithThumbNailAndFileWithAnnotationsForSpecificVersion(System.Int32)">
+            <summary>
+            Returns a DocumentDTO object for the specified version of the document
+            along with its Thumbnail, File, Annotations and metadata information.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Document.ToDTOWithThumbNailOnlyForAllVersions(System.Guid)">
+            <summary>
+            Returns a DocumentDTO object with only the Thumbnail and metadata 
+            information for all versions of the document for a specific user.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Document.ToDTOWithThumbNailOnlyForAllVersions">
+            <summary>
+            Returns a DocumentDTO object with only the Thumbnail and 
+            metadata information for all versions of the document.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Document.ToDTOWithNoThumbNailsOrFilesForAllVersions">
+            <summary>
+            Returns a DocumentDTO object with only the Thumbnail and 
+            metadata information for all versions of the document.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Document.ToDTOWithThumbNailsAndFilesWithoutAnnotationsForAllVersions">
+            <summary>
+            Returns a DocumentDTO object with the Thumbnail, File and metadata
+            information for all versions of the document without Annotations.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Document.ToDTOWithThumbNailsAndFilesWithAnnotationsForAllVersions">
+            <summary>
+            Returns a DocumentDTO object with the Thumbnail, File and metadata
+            information for all versions of the document with Annotations.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Document.SetKeyValues(System.String,System.String)">
+            <summary>
+            Treats the Keyfields more like a Key-Value Pair and set's their values.  
+            If the key is not found, we add it along with a back reference.
+            </summary>
+            <param name="key">String representing the key of the pair</param>
+            <param name="value">Value for that key representing some metadata about the document.</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Document.GetKeyValueDictionary">
+            <summary>
+            Gets the Key-Value dictionary data
+            </summary>
+            <returns>A Dictionary of Key-Value pairs</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Document.GetKeyValues(System.String)">
+            <summary>
+            Gets the Value corresponding to a Key in the dictionary
+            </summary>
+            <param name="key">key value</param>
+            <returns>Value corresponding to the key</returns>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Document.RemoveKeyValues(System.String)">
+            <summary>
+            Removes an item from the list of KeyValues based on the key
+            </summary>
+            <param name="key">the key of the item to remove</param>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Document.ClearKeyValues">
+            <summary>
+            Empty the list of keyvalue pairs.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.Document.LoadKeyFields">
+            <summary>
+            Populates the local variable dictionary used throughout the class.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.Domain.DocumentFileChunk">
+            <summary>
+            Class representsa chunk of the content of a document file chunk.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.DocumentFileChunk.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.DocumentFileChunk.#ctor(System.Byte[])">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+            <param name="content">A byte array of the file's content</param>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.DocumentFileChunk.Content">
+            <summary>
+            Byte array of the content of a document file.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.DocumentFileChunk.DocumentFile">
+            <summary>
+            The document file to which this chunk belongs to.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.DocumentFileChunk.ToDTO">
+            <summary>
+            Converts the File chunk to a DTO
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.Domain.DocumentVersion">
+            <summary>
+            Class represents the version of a document and associated information.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.DocumentVersion.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.DocumentVersion.#ctor(System.DateTime,System.Int32)">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+            <param name="creationDate">Date this Version was created</param>
+            <param name="versionNumber">Version number of the document</param>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.DocumentVersion.CreationDate">
+            <summary>
+            The date this version of the document was created.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.DocumentVersion.UpdatedDate">
+            <summary>
+            The date this version of the document was updated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.DocumentVersion.VersionNumber">
+            <summary>
+            The Version Number of the document.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.DocumentVersion.Document">
+            <summary>
+            The Document to which this Version Number is associated with.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.DocumentVersion.DocumentFile">
+            <summary>
+            The Original DocumentFile corresponding to this Version Number.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.DocumentVersion.Thumbnail">
+            <summary>
+            The Document Thumbnail corresponding to this Version Number.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.DocumentVersion.Annotations">
+            <summary>
+            This list of Annotations associated with the Version
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.DocumentVersion.ToDTOWithThumbnailOnly">
+            <summary>
+            Converts the DocumentVersion to a DTO with only Thumbnail information
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.DocumentVersion.ToDTOWithThumbnailAndFileWithoutAnnotations">
+            <summary>
+            Converts the DocumentVersion to a DTO with both File and Thumbnail information
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.DocumentVersion.ToDTOWithThumbnailAndFileWithAnnotations">
+            <summary>
+            Converts the DocumentVersion to a DTO with both File and Thumbnail information
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.DocumentVersion.ToDTOWithNoFileOrThumbnailInfo">
+            <summary>
+            Converts the DocumentVersion to a DTO with NO File or Thumbnail information
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.Domain.DocumentFile">
+            <summary>
+            Class represents the content of a document file.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.DocumentFile.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.DocumentFile.#ctor(System.Byte[])">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+            <param name="contents">A byte array of the file's content</param>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.DocumentFile.FileContents">
+            <summary>
+            Byte array of the content of a document file.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.DocumentFile.HashValue">
+            <summary>
+            MD5 Hash value of the file
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.DocumentFile.ToDTO">
+            <summary>
+            Converts the File to a DTO
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.Domain.DocumentMetadata">
+            <summary>
+            Represents the metadata information associated with a document file.
+            The Key is handled via the Entity Id.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.DocumentMetadata.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.DocumentMetadata.Value">
+            <summary>
+            The Type Value Required for the Key Value Pair
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.DocumentMetadata.Document">
+            <summary>
+            A back reference to the <c>TrueAutomation.DocumentManagement.Domain.Document</c>
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.DocumentMetadata.SetAssignedId(System.String)">
+            <summary>
+            Enables the developer to set the ID assigned to an object.
+            </summary>
+            <param name="assignedId">The id value to set for the current object.</param>
+            <remarks>In general the use of assigned ID values is regrettable
+            but it makes sense for user-defined code entries.</remarks>
+        </member>
+        <member name="T:TrueAutomation.DocumentManagement.Domain.DocumentThumbnail">
+            <summary>
+            Class represents the ThumbNail content of a document.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.DocumentThumbnail.#ctor">
+            <summary>
+            Default constructor -- initializes an instance of the class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.DocumentThumbnail.#ctor(System.Byte[])">
+            <summary>
+            Class constructor -- initializes an instance of the class.
+            </summary>
+            <param name="content">A byte array of the thumbnail's content</param>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.DocumentThumbnail.Content">
+            <summary>
+            Byte array of the ThumbNail content of a document.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.DocumentThumbnail.Version">
+            <summary>
+            A reference to the DocumentVersion with which this Thumbnail is associated.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.DocumentManagement.Domain.DocumentThumbnail.HashValue">
+            <summary>
+            MD5 Hash value of the thumbnail
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.DocumentManagement.Domain.DocumentThumbnail.ToDTO">
+            <summary>
+            Converts the ThumbNail to a DTO
+            </summary>
+        </member>
+    </members>
+</doc>

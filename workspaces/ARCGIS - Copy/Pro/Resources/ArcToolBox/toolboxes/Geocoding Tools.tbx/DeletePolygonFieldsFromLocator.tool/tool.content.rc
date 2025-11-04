@@ -1,0 +1,9 @@
+{
+    "map": {
+        "description": "Deletes all polygon fields from a locator that were added using the Add Polygon Fields To Locator tool.",
+        "in_locator.descr": "<xdoc><p>The locator (.loc file) containing the fields to be deleted.</p><p><note type=\"note\"/><p group=\"note\">Composite locators, locators published as a geocode service, and locators that do not contain a polygon layer are not supported.</p></p></xdoc>",
+        "in_locator.title": "Input Locator",
+        "out_locator.title": "Updated Locator",
+        "title": "Delete Polygon Fields From Locator"
+    }
+}

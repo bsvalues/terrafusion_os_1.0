@@ -1,0 +1,65 @@
+# 🛡️ BULLETPROOF DOCKERFILE - TERRAFUSION GATEWAY
+# Championship-Level Container with Service Mesh Integration
+# Government-Grade Security and Resilience Patterns
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+WORKDIR /app
+
+# Government security hardening
+RUN apt-get update && apt-get install -y \
+    curl \
+    jq \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd -r terrafusion && useradd -r -g terrafusion terrafusion
+
+# Install Envoy sidecar proxy
+RUN curl -L https://github.com/envoyproxy/envoy/releases/download/v1.28.0/envoy-1.28.0-linux-x86_64 \
+    -o /usr/local/bin/envoy && \
+    chmod +x /usr/local/bin/envoy
+
+EXPOSE 5000 15090
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copy project files for efficient caching
+COPY ["TerraFusion.Gateway/TerraFusion.Gateway.csproj", "TerraFusion.Gateway/"]
+COPY ["TerraFusion.Abstractions/TerraFusion.Abstractions.csproj", "TerraFusion.Abstractions/"]
+COPY ["TerraFusion.Core/TerraFusion.Core.csproj", "TerraFusion.Core/"]
+COPY ["TerraFusion.Resilience/TerraFusion.Resilience.csproj", "TerraFusion.Resilience/"]
+
+# Restore dependencies
+RUN dotnet restore "TerraFusion.Gateway/TerraFusion.Gateway.csproj"
+
+# Copy source code
+COPY . .
+
+# Build with optimizations
+WORKDIR "/src/TerraFusion.Gateway"
+RUN dotnet build "TerraFusion.Gateway.csproj" -c Release -o /app/build --no-restore
+
+FROM build AS publish
+RUN dotnet publish "TerraFusion.Gateway.csproj" -c Release -o /app/publish --no-restore
+
+FROM base AS final
+WORKDIR /app
+
+# Copy published application
+COPY --from=publish /app/publish .
+
+# Copy Envoy configuration
+COPY configs/envoy-sidecar.yaml /etc/envoy/envoy.yaml
+
+# Copy startup script
+COPY scripts/start-bulletproof-gateway.sh /app/start-bulletproof-gateway.sh
+RUN chmod +x /app/start-bulletproof-gateway.sh
+
+# Government security: run as non-root user
+USER terrafusion
+
+# Health check with circuit breaker awareness
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:5000/health || exit 1
+
+# Bulletproof startup with Envoy sidecar
+ENTRYPOINT ["/app/start-bulletproof-gateway.sh"]

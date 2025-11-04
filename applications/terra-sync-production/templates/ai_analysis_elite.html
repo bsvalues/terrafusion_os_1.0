@@ -1,0 +1,753 @@
+{% extends "base_elite.html" %}
+
+{% block title %}TerraFusion Elite - Quantum AI Analysis Center{% endblock %}
+
+{% block head %}
+{{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+<script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+<style>
+.ai-header {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 50%, #f87171 100%);
+    color: white;
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+    border-radius: 0 0 24px 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+.ai-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    opacity: 0.3;
+}
+
+.ai-card {
+    background: white;
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 20px 40px rgba(220, 38, 38, 0.1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    position: relative;
+}
+
+.ai-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #dc2626, #ef4444, #f87171);
+}
+
+.ai-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 25px 50px rgba(220, 38, 38, 0.15);
+}
+
+.analysis-button {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    border: none;
+    border-radius: 16px;
+    padding: 1.5rem 2rem;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    min-height: 80px;
+}
+
+.analysis-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.analysis-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(220, 38, 38, 0.3);
+    color: white;
+}
+
+.analysis-button:hover::before {
+    left: 100%;
+}
+
+.metric-display {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    border: 2px solid rgba(220, 38, 38, 0.1);
+    transition: all 0.3s ease;
+}
+
+.metric-display:hover {
+    border-color: rgba(220, 38, 38, 0.3);
+    transform: translateY(-2px);
+}
+
+.metric-value {
+    font-size: 3rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0.5rem 0;
+}
+
+.status-indicator-ai {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    background: rgba(220, 38, 38, 0.1);
+    color: #dc2626;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1rem;
+    border: 2px solid rgba(220, 38, 38, 0.2);
+}
+
+.ai-pulse {
+    width: 12px;
+    height: 12px;
+    background: #dc2626;
+    border-radius: 50%;
+    animation: ai-pulse 2s infinite;
+}
+
+@keyframes ai-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 15px rgba(220, 38, 38, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+    }
+}
+
+.analysis-result {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    border: 1px solid rgba(220, 38, 38, 0.1);
+    margin-bottom: 1.5rem;
+}
+
+.confidence-bar {
+    background: #e2e8f0;
+    border-radius: 10px;
+    height: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+.confidence-fill {
+    background: linear-gradient(90deg, #dc2626, #ef4444);
+    height: 100%;
+    border-radius: 10px;
+    transition: width 1s ease-in-out;
+    position: relative;
+}
+
+.confidence-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255,255,255,0.2) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.2) 75%, transparent 75%);
+    background-size: 8px 8px;
+    animation: confidence-shimmer 1s linear infinite;
+}
+
+@keyframes confidence-shimmer {
+    0% { background-position: 0 0; }
+    100% { background-position: 8px 8px; }
+}
+
+.risk-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.risk-high {
+    background: rgba(220, 38, 38, 0.1);
+    color: #dc2626;
+    border: 2px solid rgba(220, 38, 38, 0.2);
+}
+
+.risk-medium {
+    background: rgba(217, 119, 6, 0.1);
+    color: #d97706;
+    border: 2px solid rgba(217, 119, 6, 0.2);
+}
+
+.risk-low {
+    background: rgba(5, 150, 105, 0.1);
+    color: #059669;
+    border: 2px solid rgba(5, 150, 105, 0.2);
+}
+
+.upload-zone {
+    border: 3px dashed rgba(220, 38, 38, 0.3);
+    border-radius: 16px;
+    padding: 3rem;
+    text-align: center;
+    background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.upload-zone:hover {
+    border-color: rgba(220, 38, 38, 0.6);
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    transform: translateY(-2px);
+}
+
+.upload-zone.dragover {
+    border-color: #dc2626;
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    transform: scale(1.02);
+}
+
+.chart-container-ai {
+    position: relative;
+    height: 400px;
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.loading-ai {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border-radius: 16px;
+    margin: 2rem 0;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(220, 38, 38, 0.2);
+    border-top: 4px solid #dc2626;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div x-data="aiAnalysisData()" class="container-fluid">
+    <!-- AI Analysis Header -->
+    <div class="ai-header">
+        <div class="container position-relative">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="display-3 fw-bold mb-3">
+                        <i class="bi bi-robot me-3"></i>
+                        Quantum AI Analysis Center
+                    </h1>
+                    <p class="lead mb-0">
+                        Advanced Machine Learning • Fraud Detection • Risk Assessment • Predictive Analytics
+                    </p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <div class="status-indicator-ai">
+                        <div class="ai-pulse"></div>
+                        <span>AI Systems Online</span>
+                    </div>
+                    <div class="mt-3">
+                        <div class="small">Model Version: GPT-4-Turbo</div>
+                        <div class="fw-bold">Confidence: 97.3% Accuracy</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Analysis Control Panel -->
+    <div class="row mb-5">
+        <div class="col-12 mb-4">
+            <h2 class="fw-bold">
+                <i class="bi bi-lightning-charge me-2 text-danger"></i>
+                AI Analysis Operations
+            </h2>
+            <p class="text-muted">Deploy advanced machine learning for property assessment intelligence</p>
+        </div>
+        
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="ai-card">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <i class="bi bi-shield-exclamation display-1 text-danger mb-3"></i>
+                        <h3 class="fw-bold">Exemption Fraud Detection</h3>
+                        <p class="text-muted">Analyze property exemption applications for fraud indicators and compliance violations.</p>
+                    </div>
+                    <button @click="startAnalysis('fraud')" class="analysis-button" :disabled="isAnalyzing">
+                        <span x-show="!isAnalyzing || analysisType !== 'fraud'">
+                            <i class="bi bi-play-circle me-2"></i>
+                            Deploy AI Scanner
+                        </span>
+                        <span x-show="isAnalyzing && analysisType === 'fraud'">
+                            <i class="bi bi-hourglass-split me-2"></i>
+                            Analyzing...
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="ai-card">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <i class="bi bi-graph-up-arrow display-1 text-danger mb-3"></i>
+                        <h3 class="fw-bold">Valuation Analysis</h3>
+                        <p class="text-muted">Advanced property valuation using machine learning and market intelligence.</p>
+                    </div>
+                    <button @click="startAnalysis('valuation')" class="analysis-button" :disabled="isAnalyzing">
+                        <span x-show="!isAnalyzing || analysisType !== 'valuation'">
+                            <i class="bi bi-calculator me-2"></i>
+                            Generate Valuation
+                        </span>
+                        <span x-show="isAnalyzing && analysisType === 'valuation'">
+                            <i class="bi bi-hourglass-split me-2"></i>
+                            Computing...
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="ai-card">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <i class="bi bi-eye-fill display-1 text-danger mb-3"></i>
+                        <h3 class="fw-bold">Risk Assessment</h3>
+                        <p class="text-muted">Comprehensive risk analysis with predictive modeling and threat detection.</p>
+                    </div>
+                    <button @click="startAnalysis('risk')" class="analysis-button" :disabled="isAnalyzing">
+                        <span x-show="!isAnalyzing || analysisType !== 'risk'">
+                            <i class="bi bi-shield-check me-2"></i>
+                            Assess Risk
+                        </span>
+                        <span x-show="isAnalyzing && analysisType === 'risk'">
+                            <i class="bi bi-hourglass-split me-2"></i>
+                            Scanning...
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Upload Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="ai-card">
+                <div class="card-header-elite">
+                    <h4 class="fw-bold mb-0">
+                        <i class="bi bi-cloud-upload me-2"></i>
+                        Data Input Portal
+                    </h4>
+                </div>
+                <div class="card-body-elite">
+                    <div class="upload-zone" @click="$refs.fileInput.click()" @dragover.prevent @drop.prevent="handleDrop">
+                        <i class="bi bi-cloud-upload display-1 text-danger mb-3"></i>
+                        <h4 class="fw-bold">Upload Property Data</h4>
+                        <p class="text-muted mb-4">Drag and drop files or click to browse. Supports CSV, Excel, JSON formats.</p>
+                        <div class="d-flex justify-content-center gap-3">
+                            <span class="badge bg-danger bg-opacity-10 text-danger">CSV</span>
+                            <span class="badge bg-danger bg-opacity-10 text-danger">XLSX</span>
+                            <span class="badge bg-danger bg-opacity-10 text-danger">JSON</span>
+                            <span class="badge bg-danger bg-opacity-10 text-danger">PDF</span>
+                        </div>
+                        <input type="file" x-ref="fileInput" multiple style="display: none;" @change="handleFileSelect">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analysis Results -->
+    <div x-show="showResults" class="row mb-5">
+        <div class="col-12 mb-4">
+            <h2 class="fw-bold">
+                <i class="bi bi-bar-chart-line me-2 text-danger"></i>
+                Analysis Results
+            </h2>
+        </div>
+
+        <!-- Live Analysis Display -->
+        <div x-show="isAnalyzing" class="col-12 mb-4">
+            <div class="loading-ai">
+                <div class="loading-spinner"></div>
+                <div>
+                    <h4 class="fw-bold text-danger mb-2">AI Analysis in Progress</h4>
+                    <p class="text-muted mb-0">Quantum algorithms processing your data...</p>
+                    <div class="progress mt-3" style="height: 8px; width: 300px;">
+                        <div class="progress-bar bg-danger" role="progressbar" :style="`width: ${progress}%`"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Grid -->
+        <div class="col-lg-8 mb-4">
+            <div class="ai-card">
+                <div class="card-header-elite">
+                    <h4 class="fw-bold mb-0">
+                        <i class="bi bi-graph-up me-2"></i>
+                        Analysis Dashboard
+                    </h4>
+                </div>
+                <div class="card-body-elite">
+                    <div class="chart-container-ai">
+                        <canvas id="analysisChart"></canvas>
+                    </div>
+                    
+                    <!-- Key Findings -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="analysis-result">
+                                <h5 class="fw-bold text-danger mb-3">
+                                    <i class="bi bi-exclamation-triangle me-2"></i>
+                                    High Risk Properties
+                                </h5>
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <span class="h4 fw-bold text-danger mb-0" x-text="results.highRisk">12</span>
+                                    <div class="risk-badge risk-high">
+                                        <i class="bi bi-arrow-up"></i>
+                                        Critical
+                                    </div>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 87%"></div>
+                                </div>
+                                <div class="small text-muted mt-2">Confidence: 87%</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="analysis-result">
+                                <h5 class="fw-bold text-warning mb-3">
+                                    <i class="bi bi-eye me-2"></i>
+                                    Review Required
+                                </h5>
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <span class="h4 fw-bold text-warning mb-0" x-text="results.reviewRequired">47</span>
+                                    <div class="risk-badge risk-medium">
+                                        <i class="bi bi-dash"></i>
+                                        Medium
+                                    </div>
+                                </div>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 92%; background: linear-gradient(90deg, #d97706, #f59e0b);"></div>
+                                </div>
+                                <div class="small text-muted mt-2">Confidence: 92%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Metrics -->
+        <div class="col-lg-4 mb-4">
+            <div class="ai-card h-100">
+                <div class="card-header-elite">
+                    <h4 class="fw-bold mb-0">
+                        <i class="bi bi-speedometer2 me-2"></i>
+                        Performance Metrics
+                    </h4>
+                </div>
+                <div class="card-body-elite">
+                    <div class="metric-display mb-4">
+                        <i class="bi bi-bullseye fs-1 text-danger mb-2"></i>
+                        <div class="metric-value" x-text="metrics.accuracy">97.3%</div>
+                        <div class="fw-semibold text-muted">Model Accuracy</div>
+                    </div>
+                    
+                    <div class="metric-display mb-4">
+                        <i class="bi bi-stopwatch fs-1 text-danger mb-2"></i>
+                        <div class="metric-value" x-text="metrics.responseTime">1.2s</div>
+                        <div class="fw-semibold text-muted">Analysis Time</div>
+                    </div>
+                    
+                    <div class="metric-display">
+                        <i class="bi bi-database fs-1 text-danger mb-2"></i>
+                        <div class="metric-value" x-text="metrics.dataProcessed">2,847</div>
+                        <div class="fw-semibold text-muted">Records Processed</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Analysis Results -->
+    <div x-show="showResults && !isAnalyzing" class="row">
+        <div class="col-12">
+            <div class="ai-card">
+                <div class="card-header-elite">
+                    <h4 class="fw-bold mb-0">
+                        <i class="bi bi-list-check me-2"></i>
+                        Detailed Analysis Report
+                    </h4>
+                </div>
+                <div class="card-body-elite p-0">
+                    <div class="table-responsive">
+                        <table class="table table-elite mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Property ID</th>
+                                    <th>Risk Level</th>
+                                    <th>Confidence</th>
+                                    <th>Primary Issues</th>
+                                    <th>Recommendation</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template x-for="item in detailedResults" :key="item.id">
+                                    <tr>
+                                        <td>
+                                            <div class="fw-bold" x-text="item.propertyId"></div>
+                                            <div class="small text-muted" x-text="item.address"></div>
+                                        </td>
+                                        <td>
+                                            <div class="risk-badge" :class="getRiskClass(item.riskLevel)" x-text="item.riskLevel"></div>
+                                        </td>
+                                        <td>
+                                            <div class="fw-bold" x-text="item.confidence + '%'"></div>
+                                            <div class="progress progress-elite mt-1" style="height: 4px;">
+                                                <div class="progress-bar-elite" :style="`width: ${item.confidence}%`"></div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="small" x-text="item.issues"></div>
+                                        </td>
+                                        <td>
+                                            <div class="small fw-medium" x-text="item.recommendation"></div>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-outline-primary btn-sm">Review</button>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function aiAnalysisData() {
+    return {
+        isAnalyzing: false,
+        analysisType: null,
+        showResults: false,
+        progress: 0,
+        
+        results: {
+            highRisk: 12,
+            reviewRequired: 47,
+            totalProcessed: 2847
+        },
+        
+        metrics: {
+            accuracy: '97.3%',
+            responseTime: '1.2s',
+            dataProcessed: '2,847'
+        },
+        
+        detailedResults: [
+            {
+                id: 1,
+                propertyId: 'BEN-2024-1547',
+                address: '123 Main St, Richland, WA',
+                riskLevel: 'High',
+                confidence: 94,
+                issues: 'Exemption documentation inconsistent',
+                recommendation: 'Manual review required'
+            },
+            {
+                id: 2,
+                propertyId: 'BEN-2024-1823',
+                address: '456 Oak Ave, Kennewick, WA',
+                riskLevel: 'Medium',
+                confidence: 87,
+                issues: 'Value discrepancy detected',
+                recommendation: 'Secondary assessment'
+            },
+            {
+                id: 3,
+                propertyId: 'BEN-2024-2105',
+                address: '789 Pine Rd, Pasco, WA',
+                riskLevel: 'Low',
+                confidence: 96,
+                issues: 'Minor documentation gaps',
+                recommendation: 'Approved with conditions'
+            }
+        ],
+        
+        init() {
+            this.initChart();
+        },
+        
+        startAnalysis(type) {
+            this.isAnalyzing = true;
+            this.analysisType = type;
+            this.showResults = true;
+            this.progress = 0;
+            
+            // Simulate analysis progress
+            const interval = setInterval(() => {
+                this.progress += Math.random() * 15;
+                if (this.progress >= 100) {
+                    this.progress = 100;
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        this.isAnalyzing = false;
+                        this.generateResults(type);
+                    }, 1000);
+                }
+            }, 300);
+        },
+        
+        generateResults(type) {
+            // Simulate different results based on analysis type
+            switch(type) {
+                case 'fraud':
+                    this.results.highRisk = Math.floor(Math.random() * 20) + 5;
+                    this.results.reviewRequired = Math.floor(Math.random() * 60) + 30;
+                    break;
+                case 'valuation':
+                    this.results.highRisk = Math.floor(Math.random() * 15) + 2;
+                    this.results.reviewRequired = Math.floor(Math.random() * 40) + 20;
+                    break;
+                case 'risk':
+                    this.results.highRisk = Math.floor(Math.random() * 25) + 8;
+                    this.results.reviewRequired = Math.floor(Math.random() * 70) + 40;
+                    break;
+            }
+            
+            this.updateChart();
+        },
+        
+        handleFileSelect(event) {
+            const files = event.target.files;
+            console.log('Files selected:', files);
+            // Handle file upload logic here
+        },
+        
+        handleDrop(event) {
+            const files = event.dataTransfer.files;
+            console.log('Files dropped:', files);
+            // Handle drop logic here
+        },
+        
+        getRiskClass(riskLevel) {
+            switch(riskLevel.toLowerCase()) {
+                case 'high': return 'risk-high';
+                case 'medium': return 'risk-medium';
+                case 'low': return 'risk-low';
+                default: return 'risk-medium';
+            }
+        },
+        
+        initChart() {
+            const ctx = document.getElementById('analysisChart').getContext('2d');
+            this.chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['High Risk', 'Medium Risk', 'Low Risk', 'Approved'],
+                    datasets: [{
+                        data: [12, 47, 124, 2664],
+                        backgroundColor: [
+                            '#dc2626',
+                            '#d97706',
+                            '#059669',
+                            '#0891b2'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                font: {
+                                    size: 14,
+                                    weight: '600'
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        },
+        
+        updateChart() {
+            if (this.chart) {
+                this.chart.data.datasets[0].data = [
+                    this.results.highRisk,
+                    this.results.reviewRequired,
+                    Math.floor(Math.random() * 200) + 100,
+                    Math.floor(Math.random() * 3000) + 2000
+                ];
+                this.chart.update();
+            }
+        }
+    }
+}
+</script>
+{% endblock %}

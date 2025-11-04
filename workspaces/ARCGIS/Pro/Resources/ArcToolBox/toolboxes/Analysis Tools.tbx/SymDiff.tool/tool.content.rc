@@ -1,0 +1,19 @@
+{
+    "map": {
+        "cluster_tolerance.descr": "<xdoc><p>The minimum distance separating all feature coordinates (nodes and vertices) as well as the distance a coordinate can move in x or y (or both).</p><note type=\"caution\"/><p group=\"note\">Changing this parameter&apos;s value may cause failure or unexpected results. It is recommended that you do not modify this parameter. It has been removed from view on the tool dialog box. By default, the input feature class&apos;s spatial reference x,y tolerance property is used.</p></xdoc>",
+        "cluster_tolerance.title": "XY Tolerance",
+        "description": "Computes a geometric intersection of the input and update features, returning the input features and update features that do not overlap. Features or portions of features in the input and update features that do not overlap will be written to the output feature class.",
+        "in_features.descr": "The input feature class or layer.",
+        "in_features.title": "Input Features",
+        "join_attributes.descr": "<xdoc><p>Specifies the attributes that will be transferred to the output feature class.</p><ul><li><span title=\"ALL\">All attributes</span>—All the attributes from the input features will be transferred to the output feature class. This is the default.</li><li><span title=\"NO_FID\">All attributes except feature IDs</span>—All the attributes except the FID from the input features will be transferred to the output feature class.</li><li><span title=\"ONLY_FID\">Only feature IDs</span>—Only the FID field from the input features will be transferred to the output feature class.</li></ul></xdoc>",
+        "join_attributes.domain.ALL": "All attributes",
+        "join_attributes.domain.NO_FID": "All attributes except feature IDs",
+        "join_attributes.domain.ONLY_FID": "Only feature IDs",
+        "join_attributes.title": "Attributes to Join",
+        "out_feature_class.descr": "The feature class to which the results will be written.",
+        "out_feature_class.title": "Output Feature Class",
+        "title": "Symmetrical Difference",
+        "update_features.descr": "The update feature class or layer. The geometry type must be the same as that of the input feature class or layer.",
+        "update_features.title": "Update Features"
+    }
+}

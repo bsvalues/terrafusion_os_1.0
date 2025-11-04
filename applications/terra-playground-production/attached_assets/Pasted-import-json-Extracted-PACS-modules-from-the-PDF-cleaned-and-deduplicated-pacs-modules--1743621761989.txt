@@ -1,0 +1,40 @@
+import json
+
+# Extracted PACS modules from the PDF (cleaned and deduplicated)
+pacs_modules = [
+    "Accounting", "Accounting Event Mapping", "Annexation Management", "Appraisal Cards",
+    "Arc Reader10 and Published Map File", "Auditor Document Processing", "Auto Pay Processing",
+    "Balancing", "Bill Adjustments", "Building Permits", "Business Personal Property",
+    "Certification Procedures", "Code District Reports", "Collections Daily Functions",
+    "Comparable Sales", "Connections", "Current Use Properties", "Customer Service Alerts",
+    "Data Entry", "Debt Management", "Delinquent Notices", "Destroyed Property",
+    "Distribute Value", "DOR Reports", "Escrow", "Event Management", "Exemptions", "Exports",
+    "Fields", "GIS", "Holidays", "Image and Document Management", "Imports", "Improvement Schedules",
+    "Improvements", "Inbox Features", "Income", "Inquiry & Protest Configuration",
+    "Inquiry Processing", "International Addresses", "Land", "Land Schedules",
+    "Legal Descriptions", "Letter Processing", "Levy Certification - Assessor Functions",
+    "Levy Certification - Treasurer Function", "Litigation", "Marshall & Swift Commercial",
+    "Marshall & Swift Residential", "Mass Creation of Properties", "Mass Maintenance",
+    "Mobile Homes", "Mortgage Payment Processing", "Notice Processing", "Ownership",
+    "PACS 9.0 Installation", "PACS Database Guide", "PACS Query", "Panel Information",
+    "Payment Processing", "Payout Agreements", "Profiling", "Property Group Codes",
+    "Property Record Options", "Protest Processing", "Recalculation", "Recording Sales Confirmation",
+    "REET", "Multiple Tax areas", "Various Affidavit Processing Fee", "Refunds",
+    "Rendition Processing", "Rendition Penalty Processing", "Report Designer", "Reports",
+    "Rollback & Current Use Removal", "Rollback & Current Use Removal Report",
+    "Scanning Documents & Images", "Sketch Pad", "Special Assessments", "Splits & Merges",
+    "Supplement Processing", "Tax Statements", "Text", "User & Roles", "Valuation Methods",
+    "Year Layer"
+]
+
+# Convert into JSON Agent Module Map structure
+agent_module_map = {
+    "agent_modules": [
+        {"module_name": module, "source": "PACS WA", "integration": "pending", "description": ""} 
+        for module in pacs_modules
+    ]
+}
+
+# Save JSON structure to display
+json_output = json.dumps(agent_module_map, indent=2)
+json_output[:1000]  # preview the first 1000 characters only

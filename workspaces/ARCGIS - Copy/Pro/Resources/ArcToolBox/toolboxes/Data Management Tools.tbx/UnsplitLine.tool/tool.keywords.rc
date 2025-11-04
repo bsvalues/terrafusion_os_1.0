@@ -1,0 +1,13 @@
+{
+    "set": [
+        "attach",
+        "combine",
+        "connect",
+        "dissolve",
+        "geometry",
+        "join",
+        "merge",
+        "transform",
+        "vector"
+    ]
+}

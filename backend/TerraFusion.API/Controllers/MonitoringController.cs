@@ -302,7 +302,7 @@ public class MonitoringController : ControllerBase
                     break;
 
                 case "performance":
-                    await _observabilityService.RecordCustomMetricAsync($"test.performance.{request.Message}", 
+                    await _observabilityService.RecordCustomMetricAsync($"test.performance.{request.Message}",
                         Random.Shared.NextDouble() * 1000, new Dictionary<string, string> { ["type"] = "test" });
                     break;
 
@@ -346,7 +346,7 @@ public class MonitoringController : ControllerBase
             var startTime = DateTimeOffset.UtcNow;
             using var operation = _telemetryService.StartOperation("GetMonitoringStatus");
 
-            var status = new
+            var status = await Task.Run(() => new
             {
                 Application = "TerraFusion",
                 Version = GetApplicationVersion(),
@@ -368,7 +368,7 @@ public class MonitoringController : ControllerBase
                     Database = true,
                     PerformanceCounters = true
                 }
-            };
+            });
 
             var duration = DateTimeOffset.UtcNow - startTime;
             _structuredLogger.LogApiRequest("GET", "/api/monitoring/status", duration, 200);

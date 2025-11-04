@@ -48,7 +48,7 @@ const UserTable = ({ onRowClick }: { onRowClick?: (user: User) => void }) => {
     { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'User', status: 'inactive' },
     { id: 4, name: 'Alice Williams', email: 'alice@example.com', role: 'Editor', status: 'active' },
   ]);
-  
+
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
   const [sortField, setSortField] = useState<'name' | 'email' | 'role'>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
@@ -70,22 +70,18 @@ const UserTable = ({ onRowClick }: { onRowClick?: (user: User) => void }) => {
   });
 
   const toggleUserSelection = (userId: number) => {
-    setSelectedUsers(prev =>
-      prev.includes(userId)
-        ? prev.filter(id => id !== userId)
-        : [...prev, userId]
+    setSelectedUsers((prev) =>
+      prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId]
     );
   };
 
   const toggleSelectAll = () => {
-    setSelectedUsers(
-      selectedUsers.length === users.length ? [] : users.map(u => u.id)
-    );
+    setSelectedUsers(selectedUsers.length === users.length ? [] : users.map((u) => u.id));
   };
 
   return (
     <div>
-      <div className="mb-4">
+      <div className='mb-4'>
         <p>Selected: {selectedUsers.length} users</p>
         {selectedUsers.length > 0 && (
           <Button onClick={() => setSelectedUsers([])}>Clear Selection</Button>
@@ -95,25 +91,25 @@ const UserTable = ({ onRowClick }: { onRowClick?: (user: User) => void }) => {
         <TableCaption>List of users in the system</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-12">
+            <TableHead className='w-12'>
               <Checkbox
                 checked={selectedUsers.length === users.length}
                 onCheckedChange={toggleSelectAll}
-                aria-label="Select all users"
+                aria-label='Select all users'
               />
             </TableHead>
             <TableHead>
-              <Button variant="ghost" onClick={() => handleSort('name')}>
+              <Button variant='ghost' onClick={() => handleSort('name')}>
                 Name {sortField === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
               </Button>
             </TableHead>
             <TableHead>
-              <Button variant="ghost" onClick={() => handleSort('email')}>
+              <Button variant='ghost' onClick={() => handleSort('email')}>
                 Email {sortField === 'email' && (sortOrder === 'asc' ? '↑' : '↓')}
               </Button>
             </TableHead>
             <TableHead>
-              <Button variant="ghost" onClick={() => handleSort('role')}>
+              <Button variant='ghost' onClick={() => handleSort('role')}>
                 Role {sortField === 'role' && (sortOrder === 'asc' ? '↑' : '↓')}
               </Button>
             </TableHead>
@@ -156,21 +152,19 @@ const UserTable = ({ onRowClick }: { onRowClick?: (user: User) => void }) => {
 const UserCard = ({ user }: { user: User }) => {
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center gap-4">
+      <CardHeader className='flex flex-row items-center gap-4'>
         <Avatar>
           <AvatarImage src={`https://avatar.vercel.sh/${user.name}`} />
           <AvatarFallback>{user.name.slice(0, 2).toUpperCase()}</AvatarFallback>
         </Avatar>
-        <div className="flex-1">
+        <div className='flex-1'>
           <CardTitle>{user.name}</CardTitle>
           <CardDescription>{user.email}</CardDescription>
         </div>
-        <Badge variant={user.status === 'active' ? 'default' : 'secondary'}>
-          {user.status}
-        </Badge>
+        <Badge variant={user.status === 'active' ? 'default' : 'secondary'}>{user.status}</Badge>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2">
+        <div className='space-y-2'>
           <p>
             <strong>Role:</strong> {user.role}
           </p>
@@ -188,9 +182,9 @@ const UserCard = ({ user }: { user: User }) => {
  */
 const UserGrid = ({ users }: { users: User[] }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" role="list">
+    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4' role='list'>
       {users.map((user) => (
-        <div key={user.id} role="listitem">
+        <div key={user.id} role='listitem'>
           <UserCard user={user} />
         </div>
       ))}
@@ -205,16 +199,16 @@ const LoadingState = ({ progress }: { progress: number }) => {
   return (
     <Card>
       <CardHeader>
-        <Skeleton className="h-4 w-1/2" />
-        <Skeleton className="h-3 w-3/4 mt-2" />
+        <Skeleton className='h-4 w-1/2' />
+        <Skeleton className='h-3 w-3/4 mt-2' />
       </CardHeader>
       <CardContent>
-        <div className="space-y-3">
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-5/6" />
-          <Skeleton className="h-4 w-4/6" />
-          <div className="mt-4">
-            <p className="text-sm mb-2">Loading: {progress}%</p>
+        <div className='space-y-3'>
+          <Skeleton className='h-4 w-full' />
+          <Skeleton className='h-4 w-5/6' />
+          <Skeleton className='h-4 w-4/6' />
+          <div className='mt-4'>
+            <p className='text-sm mb-2'>Loading: {progress}%</p>
             <Progress value={progress} />
           </div>
         </div>
@@ -255,28 +249,28 @@ const DataDashboard = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       <Card>
         <CardHeader>
           <CardTitle>Dashboard Overview</CardTitle>
           <CardDescription>Your team members and statistics</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-3 gap-4">
+          <div className='grid grid-cols-3 gap-4'>
             <div>
-              <p className="text-sm text-gray-500">Total Users</p>
-              <p className="text-2xl font-bold">{users.length}</p>
+              <p className='text-sm text-gray-500'>Total Users</p>
+              <p className='text-2xl font-bold'>{users.length}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Active</p>
-              <p className="text-2xl font-bold">
-                {users.filter(u => u.status === 'active').length}
+              <p className='text-sm text-gray-500'>Active</p>
+              <p className='text-2xl font-bold'>
+                {users.filter((u) => u.status === 'active').length}
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Inactive</p>
-              <p className="text-2xl font-bold">
-                {users.filter(u => u.status === 'inactive').length}
+              <p className='text-sm text-gray-500'>Inactive</p>
+              <p className='text-2xl font-bold'>
+                {users.filter((u) => u.status === 'inactive').length}
               </p>
             </div>
           </div>
@@ -306,7 +300,7 @@ describe('Integration: Table + Sorting + Selection Workflow', () => {
 
       const activeBadges = screen.getAllByText(/active/i);
       const inactiveBadges = screen.getAllByText(/inactive/i);
-      
+
       expect(activeBadges.length).toBeGreaterThan(0);
       expect(inactiveBadges.length).toBeGreaterThan(0);
     });
@@ -347,7 +341,7 @@ describe('Integration: Table + Sorting + Selection Workflow', () => {
       render(<UserTable />);
 
       const johnCheckbox = screen.getByLabelText(/select john doe/i);
-      
+
       // Select
       await user.click(johnCheckbox);
       expect(screen.getByText(/selected: 1 users/i)).toBeInTheDocument();
@@ -391,7 +385,7 @@ describe('Integration: Table + Sorting + Selection Workflow', () => {
 
       const rows = screen.getAllByRole('row');
       const firstDataRow = within(rows[1]).getAllByRole('cell');
-      
+
       // First user should be Alice (alphabetically first)
       expect(firstDataRow[1]).toHaveTextContent(/alice williams/i);
     });
@@ -420,7 +414,7 @@ describe('Integration: Table + Sorting + Selection Workflow', () => {
 
       const rows = screen.getAllByRole('row');
       const firstDataRow = within(rows[1]).getAllByRole('cell');
-      
+
       // First role should be "Admin" (alphabetically first)
       expect(firstDataRow[3]).toHaveTextContent(/admin/i);
     });
@@ -435,9 +429,7 @@ describe('Integration: Table + Sorting + Selection Workflow', () => {
       const rows = screen.getAllByRole('row');
       await user.click(rows[1]); // Click first data row
 
-      expect(handleRowClick).toHaveBeenCalledWith(
-        expect.objectContaining({ name: 'John Doe' })
-      );
+      expect(handleRowClick).toHaveBeenCalledWith(expect.objectContaining({ name: 'John Doe' }));
     });
   });
 
@@ -531,7 +523,7 @@ describe('Integration: Card + Avatar + Badge Composition', () => {
 
       const activeBadges = screen.getAllByText(/active/i);
       const inactiveBadges = screen.getAllByText(/inactive/i);
-      
+
       expect(activeBadges).toHaveLength(2);
       expect(inactiveBadges).toHaveLength(1);
     });

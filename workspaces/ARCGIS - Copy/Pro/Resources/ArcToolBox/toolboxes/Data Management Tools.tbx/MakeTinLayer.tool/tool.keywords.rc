@@ -1,0 +1,11 @@
+{
+    "set": [
+        "3d",
+        "copy",
+        "create",
+        "memory",
+        "tin",
+        "temporary",
+        "triangulated irregular network"
+    ]
+}

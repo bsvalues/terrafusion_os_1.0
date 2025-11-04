@@ -1,6 +1,6 @@
 /**
  * NavigationMenu Component Tests
- * 
+ *
  * Tests for the NavigationMenu component and its sub-components.
  * NavigationMenu provides site-wide navigation with hover/focus triggers and mega menu support.
  * Built on @radix-ui/react-navigation-menu.
@@ -35,14 +35,10 @@ describe('NavigationMenu', () => {
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuLink href="/home">
-                Home
-              </NavigationMenuLink>
+              <NavigationMenuLink href='/home'>Home</NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink href="/about">
-                About
-              </NavigationMenuLink>
+              <NavigationMenuLink href='/about'>About</NavigationMenuLink>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
@@ -103,7 +99,7 @@ describe('NavigationMenu', () => {
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuLink href="/home">Home</NavigationMenuLink>
+              <NavigationMenuLink href='/home'>Home</NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuIndicator />
           </NavigationMenuList>
@@ -126,14 +122,10 @@ describe('NavigationMenu', () => {
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuLink href="/products">
-                Products
-              </NavigationMenuLink>
+              <NavigationMenuLink href='/products'>Products</NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink href="/pricing">
-                Pricing
-              </NavigationMenuLink>
+              <NavigationMenuLink href='/pricing'>Pricing</NavigationMenuLink>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
@@ -151,14 +143,12 @@ describe('NavigationMenu', () => {
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuLink href="/home" data-active>
+              <NavigationMenuLink href='/home' data-active>
                 Home
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink href="/about">
-                About
-              </NavigationMenuLink>
+              <NavigationMenuLink href='/about'>About</NavigationMenuLink>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
@@ -176,10 +166,7 @@ describe('NavigationMenu', () => {
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuLink 
-                href="/home" 
-                className={navigationMenuTriggerStyle()}
-              >
+              <NavigationMenuLink href='/home' className={navigationMenuTriggerStyle()}>
                 Home
               </NavigationMenuLink>
             </NavigationMenuItem>
@@ -198,10 +185,10 @@ describe('NavigationMenu', () => {
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuLink 
-                href="https://example.com" 
-                target="_blank"
-                rel="noopener noreferrer"
+              <NavigationMenuLink
+                href='https://example.com'
+                target='_blank'
+                rel='noopener noreferrer'
               >
                 External Link
               </NavigationMenuLink>
@@ -337,7 +324,7 @@ describe('NavigationMenu', () => {
 
       const trigger = screen.getByText('Solutions');
       const button = trigger.parentElement;
-      
+
       await user.click(trigger);
 
       await waitFor(() => {
@@ -429,14 +416,10 @@ describe('NavigationMenu', () => {
               <NavigationMenuContent>
                 <ul>
                   <li>
-                    <NavigationMenuLink href="/category1">
-                      Category 1
-                    </NavigationMenuLink>
+                    <NavigationMenuLink href='/category1'>Category 1</NavigationMenuLink>
                   </li>
                   <li>
-                    <NavigationMenuLink href="/category2">
-                      Category 2
-                    </NavigationMenuLink>
+                    <NavigationMenuLink href='/category2'>Category 2</NavigationMenuLink>
                   </li>
                 </ul>
               </NavigationMenuContent>
@@ -486,7 +469,7 @@ describe('NavigationMenu', () => {
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuLink href="/home">Home</NavigationMenuLink>
+              <NavigationMenuLink href='/home'>Home</NavigationMenuLink>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
@@ -498,10 +481,10 @@ describe('NavigationMenu', () => {
 
     it('has aria-label on navigation menu', () => {
       render(
-        <NavigationMenu aria-label="Main navigation">
+        <NavigationMenu aria-label='Main navigation'>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuLink href="/home">Home</NavigationMenuLink>
+              <NavigationMenuLink href='/home'>Home</NavigationMenuLink>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
@@ -558,17 +541,15 @@ describe('NavigationMenu', () => {
 
     it('has no accessibility violations', async () => {
       const { container } = render(
-        <NavigationMenu aria-label="Main navigation">
+        <NavigationMenu aria-label='Main navigation'>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuLink href="/home">Home</NavigationMenuLink>
+              <NavigationMenuLink href='/home'>Home</NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
               <NavigationMenuTrigger>Products</NavigationMenuTrigger>
               <NavigationMenuContent>
-                <NavigationMenuLink href="/product1">
-                  Product 1
-                </NavigationMenuLink>
+                <NavigationMenuLink href='/product1'>Product 1</NavigationMenuLink>
               </NavigationMenuContent>
             </NavigationMenuItem>
           </NavigationMenuList>
@@ -673,9 +654,7 @@ describe('NavigationMenu', () => {
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuTrigger disabled>
-                Disabled Menu
-              </NavigationMenuTrigger>
+              <NavigationMenuTrigger disabled>Disabled Menu</NavigationMenuTrigger>
               <NavigationMenuContent>
                 <div>Content</div>
               </NavigationMenuContent>
@@ -694,9 +673,7 @@ describe('NavigationMenu', () => {
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuTrigger disabled>
-                Disabled Menu
-              </NavigationMenuTrigger>
+              <NavigationMenuTrigger disabled>Disabled Menu</NavigationMenuTrigger>
               <NavigationMenuContent>
                 <div>Hidden Content</div>
               </NavigationMenuContent>
@@ -719,9 +696,7 @@ describe('NavigationMenu', () => {
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuTrigger disabled>
-                Disabled
-              </NavigationMenuTrigger>
+              <NavigationMenuTrigger disabled>Disabled</NavigationMenuTrigger>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>

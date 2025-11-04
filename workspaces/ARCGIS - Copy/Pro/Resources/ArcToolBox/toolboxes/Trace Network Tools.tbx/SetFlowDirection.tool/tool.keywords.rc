@@ -1,0 +1,11 @@
+{
+    "set": [
+        "digitized",
+        "direction",
+        "directionality",
+        "flow",
+        "network",
+        "trace",
+        "trace network"
+    ]
+}

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sync Pair Details - County Property Assessment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #003366;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .title-area {
+            display: flex;
+            align-items: center;
+        }
+        .logo {
+            height: 40px;
+            margin-right: 15px;
+        }
+        h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .user-info {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        .user-name {
+            margin-right: 15px;
+        }
+        .role-badge {
+            background-color: #005099;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .navbar {
+            background-color: #f0f0f0;
+            padding: 10px 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .navbar a {
+            color: #005099;
+            text-decoration: none;
+            margin-right: 20px;
+            font-weight: bold;
+        }
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+        .main {
+            padding: 20px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .data-table th {
+            background-color: #f0f0f0;
+            text-align: left;
+            padding: 10px;
+            border-bottom: 2px solid #ddd;
+        }
+        .data-table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .data-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .status-running {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+        .status-completed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-failed {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .button {
+            background-color: #005099;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .button:hover {
+            background-color: #003d73;
+        }
+        .button-secondary {
+            background-color: #6c757d;
+        }
+        .button-danger {
+            background-color: #dc3545;
+        }
+        .button-success {
+            background-color: #28a745;
+        }
+        .footer {
+            margin-top: 30px;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+            color: #666;
+            font-size: 12px;
+            text-align: center;
+        }
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .detail-card {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #eee;
+        }
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #003366;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .detail-row {
+            margin-bottom: 10px;
+            display: flex;
+        }
+        .detail-label {
+            font-weight: bold;
+            min-width: 150px;
+        }
+        .detail-value {
+            flex-grow: 1;
+        }
+        .detail-code {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .breadcrumb {
+            margin-bottom: 20px;
+            padding: 10px 0;
+        }
+        .breadcrumb a {
+            color: #005099;
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .breadcrumb span {
+            margin: 0 5px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title-area">
+            <img src="{{ url_for('static', filename='county_logo.svg') }}" alt="County Logo" class="logo">
+            <h1>County Property Assessment</h1>
+        </div>
+        <div class="user-info">
+            <span class="user-name">Welcome, {{ user.full_name }}</span>
+            <span class="role-badge">{{ user.roles[0] }}</span>
+        </div>
+    </div>
+    
+    <div class="navbar">
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        {% if check_county_permission('view_sync_operations') %}
+        <a href="{{ url_for('sync_dashboard') }}">Sync Operations</a>
+        {% endif %}
+        {% if check_county_permission('view_sync_pairs') %}
+        <a href="{{ url_for('sync_pairs') }}">Sync Pairs</a>
+        {% endif %}
+        {% if check_county_permission('view_reports') %}
+        <a href="{{ url_for('metrics_dashboard') }}">Reports</a>
+        {% endif %}
+        {% if check_county_permission('view_audit_logs') %}
+        <a href="{{ url_for('audit_dashboard') }}">Audit Logs</a>
+        {% endif %}
+        <a href="{{ url_for('county_auth_blueprint.logout') }}">Logout</a>
+    </div>
+    
+    <div class="container">
+        <div class="main">
+            <div class="breadcrumb">
+                <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                <span>›</span>
+                <a href="{{ url_for('sync_pairs') }}">Sync Pairs</a>
+                <span>›</span>
+                {{ pair.name }}
+            </div>
+            
+            <h2>Sync Pair Details: {{ pair.name }}</h2>
+            <p class="status status-{{ 'active' if pair.is_active else 'inactive' }}">
+                {{ 'Active' if pair.is_active else 'Inactive' }}
+            </p>
+            <p>{{ pair.description }}</p>
+            
+            <div class="action-buttons">
+                {% if check_county_permission('edit_sync_pairs') %}
+                <a href="{{ url_for('edit_sync_pair', pair_id=pair.id) }}" class="button button-secondary">Edit Sync Pair</a>
+                {% endif %}
+                
+                {% if check_county_permission('execute_sync') and pair.is_active %}
+                <form action="{{ url_for('run_sync_operation') }}" method="post">
+                    <input type="hidden" name="sync_pair_id" value="{{ pair.id }}">
+                    <button type="submit" class="button button-success">Run Sync</button>
+                </form>
+                {% endif %}
+                
+                {% if check_county_permission('manage_sync_pairs') %}
+                <form action="{{ url_for('toggle_sync_pair_status') }}" method="post">
+                    <input type="hidden" name="sync_pair_id" value="{{ pair.id }}">
+                    <input type="hidden" name="active" value="{{ '0' if pair.is_active else '1' }}">
+                    <button type="submit" class="button {{ 'button-danger' if pair.is_active else 'button-success' }}">
+                        {{ 'Disable' if pair.is_active else 'Enable' }}
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+            
+            <div class="section">
+                <h3>Configuration Details</h3>
+                <div class="detail-grid">
+                    <div class="detail-card">
+                        <div class="card-title">General Settings</div>
+                        <div class="detail-row">
+                            <div class="detail-label">ID:</div>
+                            <div class="detail-value">{{ pair.id }}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Name:</div>
+                            <div class="detail-value">{{ pair.name }}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Sync Schedule:</div>
+                            <div class="detail-value">{{ pair.sync_schedule or 'Manual' }}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Last Sync:</div>
+                            <div class="detail-value">{{ pair.last_sync_time or 'Never' }}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Created By:</div>
+                            <div class="detail-value">{{ pair.created_by or 'System' }}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Created At:</div>
+                            <div class="detail-value">{{ pair.created_at }}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Updated At:</div>
+                            <div class="detail-value">{{ pair.updated_at }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-card">
+                        <div class="card-title">Source System</div>
+                        <div class="detail-row">
+                            <div class="detail-label">System Type:</div>
+                            <div class="detail-value">{{ pair.source_type }}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Configuration:</div>
+                            <div class="detail-value">
+                                <div class="detail-code">{{ pair.source_config | tojson(indent=2) }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-card">
+                        <div class="card-title">Target System</div>
+                        <div class="detail-row">
+                            <div class="detail-label">System Type:</div>
+                            <div class="detail-value">{{ pair.target_type }}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Configuration:</div>
+                            <div class="detail-value">
+                                <div class="detail-code">{{ pair.target_config | tojson(indent=2) }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-card">
+                        <div class="card-title">Field Mappings</div>
+                        <div class="detail-row">
+                            <div class="detail-value">
+                                <div class="detail-code">{{ pair.field_mappings | tojson(indent=2) }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>Recent Sync Operations</h3>
+                {% if operations %}
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Started</th>
+                            <th>Completed</th>
+                            <th>Type</th>
+                            <th>Records</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for op in operations %}
+                        <tr>
+                            <td>{{ op.id }}</td>
+                            <td>{{ op.started_at.strftime('%Y-%m-%d %H:%M:%S') if op.started_at else 'N/A' }}</td>
+                            <td>{{ op.completed_at.strftime('%Y-%m-%d %H:%M:%S') if op.completed_at else 'N/A' }}</td>
+                            <td>{{ op.sync_type }}</td>
+                            <td>{{ op.processed_records }}/{{ op.total_records }}</td>
+                            <td>
+                                <span class="status status-{{ op.status.lower() }}">
+                                    {{ op.status.upper() }}
+                                </span>
+                            </td>
+                            <td class="action-buttons">
+                                {% if check_county_permission('view_sync_operations') %}
+                                <a href="{{ url_for('view_diff', operation_id=op.id) }}" class="button">View Diff</a>
+                                {% endif %}
+                                
+                                {% if op.status == 'APPROVED' and check_county_permission('rollback_operations') %}
+                                <form action="{{ url_for('rollback_sync_operation') }}" method="post">
+                                    <input type="hidden" name="operation_id" value="{{ op.id }}">
+                                    <button type="submit" class="button button-danger">Rollback</button>
+                                </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>No sync operations have been run for this pair yet.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="footer">
+            &copy; {{ current_year }} County Property Assessment Department | TerraFusion SyncService
+            <br>For technical support, contact IT Support at ext. 4357
+        </div>
+    </div>
+</body>
+</html>

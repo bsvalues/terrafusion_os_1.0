@@ -1,0 +1,18 @@
+{
+    "set": [
+        "analysis",
+        "area",
+        "clustering",
+        "concentration",
+        "geostatistics",
+        "magnitude per unit area",
+        "neighborhood",
+        "neighbourhood",
+        "simplify",
+        "spatial",
+        "spread",
+        "statistics",
+        "surface",
+        "visualize"
+    ]
+}

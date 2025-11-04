@@ -1,0 +1,152 @@
+{
+    "type": "FunctionTool",
+    "guid": "{d9231115-bdb4-4f8e-a257-b67c64b2bafa}",
+    "displayname": "$rc:title",
+    "helpcontent": "1020003",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPFeatureLayer",
+                        "displayname": "$rc:in_features.dt.title1"
+                    },
+                    {
+                        "type": "GPLong",
+                        "displayname": "$rc:in_features.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Polygon",
+                            "Polyline",
+                            "Point",
+                            "Multipoint"
+                        ],
+                        "featuretype": [
+                            "Simple",
+                            "SimpleJunction",
+                            "SimpleEdge",
+                            "ComplexEdge",
+                            "RasterCatalogItem"
+                        ]
+                    },
+                    {
+                        "type": "GPRangeDomain",
+                        "min": "0",
+                        "max": "50"
+                    }
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "join_attributes": {
+            "type": "optional",
+            "displayname": "$rc:join_attributes.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "NO_FID",
+                        "code": "$rc:join_attributes.domain.NO_FID"
+                    },
+                    {
+                        "value": "ONLY_FID",
+                        "code": "$rc:join_attributes.domain.ONLY_FID"
+                    },
+                    {
+                        "value": "ALL",
+                        "code": "$rc:join_attributes.domain.ALL"
+                    }
+                ]
+            },
+            "value": "ALL",
+            "description": "$rc:join_attributes.descr"
+        },
+        "cluster_tolerance": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:cluster_tolerance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:cluster_tolerance.descr"
+        },
+        "output_type": {
+            "type": "optional",
+            "displayname": "$rc:output_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "INPUT",
+                        "code": "$rc:output_type.domain.INPUT"
+                    },
+                    {
+                        "value": "LINE",
+                        "code": "$rc:output_type.domain.LINE"
+                    },
+                    {
+                        "value": "POINT",
+                        "code": "$rc:output_type.domain.POINT"
+                    }
+                ]
+            },
+            "value": "INPUT",
+            "description": "$rc:output_type.descr"
+        }
+    },
+    "environments": [
+        "MDomain",
+        "MResolution",
+        "MTolerance",
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "ZDomain",
+        "ZResolution",
+        "ZTolerance",
+        "autoCommit",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "outputMFlag",
+        "outputZFlag",
+        "outputZValue",
+        "parallelProcessingFactor",
+        "qualifiedFieldNames"
+    ]
+}

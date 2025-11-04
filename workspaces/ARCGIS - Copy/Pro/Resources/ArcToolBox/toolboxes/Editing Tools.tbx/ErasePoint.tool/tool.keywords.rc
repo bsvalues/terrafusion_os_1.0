@@ -1,0 +1,18 @@
+{
+    "set": [
+        "change",
+        "clip",
+        "cut",
+        "delete",
+        "erase",
+        "exist",
+        "input",
+        "inside",
+        "modify",
+        "outside",
+        "remove",
+        "update",
+        "vertex",
+        "vertices"
+    ]
+}

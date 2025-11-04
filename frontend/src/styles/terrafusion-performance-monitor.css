@@ -9,30 +9,30 @@ Real-Time Government-Grade System Reliability Metrics
 :root {
   /* Performance Metrics (Updated by JavaScript) */
   --tf-fps-current: 60;
-  --tf-memory-usage: 0.25;            /* 0-1 scale */
-  --tf-cpu-usage: 0.30;               /* 0-1 scale */
-  --tf-network-latency: 50;           /* milliseconds */
-  --tf-render-time: 16.67;            /* milliseconds */
-  --tf-dom-nodes: 1500;               /* total DOM elements */
-  --tf-css-rules: 2340;               /* total CSS rules */
-  
+  --tf-memory-usage: 0.25; /* 0-1 scale */
+  --tf-cpu-usage: 0.3; /* 0-1 scale */
+  --tf-network-latency: 50; /* milliseconds */
+  --tf-render-time: 16.67; /* milliseconds */
+  --tf-dom-nodes: 1500; /* total DOM elements */
+  --tf-css-rules: 2340; /* total CSS rules */
+
   /* Government Reliability Targets */
-  --tf-target-uptime: 99.99;          /* percentage */
-  --tf-target-response: 6;            /* milliseconds */
-  --tf-target-availability: 99.95;    /* percentage */
-  --tf-sla-compliance: 99.8;          /* percentage */
-  
+  --tf-target-uptime: 99.99; /* percentage */
+  --tf-target-response: 6; /* milliseconds */
+  --tf-target-availability: 99.95; /* percentage */
+  --tf-sla-compliance: 99.8; /* percentage */
+
   /* Performance Thresholds */
-  --tf-perf-excellent: 0.9;           /* >90% */
-  --tf-perf-good: 0.75;               /* 75-90% */
-  --tf-perf-degraded: 0.5;            /* 50-75% */
-  --tf-perf-critical: 0.3;            /* <50% */
-  
+  --tf-perf-excellent: 0.9; /* >90% */
+  --tf-perf-good: 0.75; /* 75-90% */
+  --tf-perf-degraded: 0.5; /* 50-75% */
+  --tf-perf-critical: 0.3; /* <50% */
+
   /* Optimization Triggers */
   --tf-optimization-threshold: 0.7;
   --tf-recovery-mode-threshold: 0.4;
   --tf-emergency-mode-threshold: 0.2;
-  
+
   /* Real-Time Monitoring Colors */
   --tf-status-optimal: hsl(120 70% 50%);
   --tf-status-good: hsl(80 70% 50%);
@@ -50,6 +50,7 @@ Real-Time Government-Grade System Reliability Metrics
   right: 20px;
   width: 280px;
   background: rgba(0, 0, 0, 0.9);
+  -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(0, 255, 238, 0.3);
   border-radius: 12px;
@@ -58,10 +59,10 @@ Real-Time Government-Grade System Reliability Metrics
   font-size: 11px;
   color: #00ffee;
   z-index: 10000;
-  
+
   /* Performance indicator based on overall system health */
   box-shadow: 0 0 20px var(--tf-current-status-color, var(--tf-status-optimal));
-  
+
   /* Hide in production unless debug mode */
   display: var(--tf-debug-mode, none);
 }
@@ -77,28 +78,28 @@ Real-Time Government-Grade System Reliability Metrics
   transition: background-color 0.3s ease;
 }
 
-.tf-performance-metric[data-status="optimal"] {
+.tf-performance-metric[data-status='optimal'] {
   background: rgba(0, 255, 0, 0.1);
   color: var(--tf-status-optimal);
 }
 
-.tf-performance-metric[data-status="good"] {
+.tf-performance-metric[data-status='good'] {
   background: rgba(128, 255, 0, 0.1);
   color: var(--tf-status-good);
 }
 
-.tf-performance-metric[data-status="warning"] {
+.tf-performance-metric[data-status='warning'] {
   background: rgba(255, 165, 0, 0.1);
   color: var(--tf-status-warning);
 }
 
-.tf-performance-metric[data-status="critical"] {
+.tf-performance-metric[data-status='critical'] {
   background: rgba(255, 0, 0, 0.1);
   color: var(--tf-status-critical);
   animation: critical-alert 1s ease-in-out infinite;
 }
 
-.tf-performance-metric[data-status="emergency"] {
+.tf-performance-metric[data-status='emergency'] {
   background: rgba(255, 0, 128, 0.1);
   color: var(--tf-status-emergency);
   animation: emergency-alert 0.5s ease-in-out infinite;
@@ -116,15 +117,17 @@ Real-Time Government-Grade System Reliability Metrics
 
 .tf-performance-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, 
-    var(--tf-status-optimal) 0%, 
-    var(--tf-status-good) 50%, 
-    var(--tf-status-warning) 75%, 
+  background: linear-gradient(
+    90deg,
+    var(--tf-status-optimal) 0%,
+    var(--tf-status-good) 50%,
+    var(--tf-status-warning) 75%,
     var(--tf-status-critical) 90%,
-    var(--tf-status-emergency) 100%);
+    var(--tf-status-emergency) 100%
+  );
   border-radius: 4px;
   transition: width 0.5s ease;
-  
+
   /* Width controlled by CSS custom property */
   width: calc(var(--fill-percentage, 0) * 1%);
 }
@@ -146,61 +149,64 @@ Real-Time Government-Grade System Reliability Metrics
   transition: all 0.3s ease;
 }
 
-.tf-health-indicator[data-component="api"] {
+.tf-health-indicator[data-component='api'] {
   border-color: var(--tf-api-status-color, var(--tf-status-optimal));
 }
 
-.tf-health-indicator[data-component="database"] {
+.tf-health-indicator[data-component='database'] {
   border-color: var(--tf-db-status-color, var(--tf-status-optimal));
 }
 
-.tf-health-indicator[data-component="ai-swarm"] {
+.tf-health-indicator[data-component='ai-swarm'] {
   border-color: var(--tf-ai-status-color, var(--tf-status-optimal));
 }
 
 /* ===== PERFORMANCE-BASED ADAPTIVE STYLES ===== */
 
 /* Excellent Performance (>90%) */
-.tf-perf-adaptive[data-performance="excellent"] {
+.tf-perf-adaptive[data-performance='excellent'] {
   /* Full visual enhancements */
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   backdrop-filter: blur(20px) saturate(180%);
-  box-shadow: 
+  box-shadow:
     0 8px 32px rgba(0, 255, 238, 0.2),
     0 0 60px rgba(0, 153, 255, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  
+
   /* Complex animations */
-  animation: 
+  animation:
     quantum-command-brain-pulse 2.5s ease infinite,
     neural-pathway-activation 1s ease-out,
     excellence-glow 4s ease-in-out infinite;
-  
+
   /* Maximum visual fidelity */
   transform: translate3d(0, 0, 0);
   will-change: transform, opacity, filter;
 }
 
 /* Good Performance (75-90%) */
-.tf-perf-adaptive[data-performance="good"] {
+.tf-perf-adaptive[data-performance='good'] {
+  -webkit-backdrop-filter: blur(15px) saturate(150%);
   backdrop-filter: blur(15px) saturate(150%);
-  box-shadow: 
+  box-shadow:
     0 6px 24px rgba(0, 255, 238, 0.15),
     0 0 40px rgba(0, 153, 255, 0.08);
-  
+
   /* Moderate animations */
   animation: good-performance-pulse 3s ease infinite;
-  
+
   transform: translateZ(0);
 }
 
 /* Degraded Performance (50-75%) */
-.tf-perf-adaptive[data-performance="degraded"] {
+.tf-perf-adaptive[data-performance='degraded'] {
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   box-shadow: 0 4px 16px rgba(0, 255, 238, 0.1);
-  
+
   /* Simplified animations */
   animation: degraded-performance-fade 4s ease infinite;
-  
+
   /* Reduce non-essential effects */
   .tf-decorative-element {
     opacity: 0.5;
@@ -209,27 +215,28 @@ Real-Time Government-Grade System Reliability Metrics
 }
 
 /* Critical Performance (<50%) */
-.tf-perf-adaptive[data-performance="critical"] {
+.tf-perf-adaptive[data-performance='critical'] {
   /* Minimal enhancements */
+  -webkit-backdrop-filter: none;
   backdrop-filter: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   background: var(--tf-fallback-background);
-  
+
   /* No animations */
   animation: none;
-  
+
   /* Hide non-essential elements */
   .tf-decorative-element,
   .tf-visual-enhancement {
     display: none;
   }
-  
+
   /* Emergency performance indicator */
   border-left: 4px solid var(--tf-status-critical);
 }
 
 /* Emergency Mode (<30%) */
-.tf-perf-adaptive[data-performance="emergency"] {
+.tf-perf-adaptive[data-performance='emergency'] {
   /* Absolute minimum styles */
   all: initial;
   display: block;
@@ -240,10 +247,10 @@ Real-Time Government-Grade System Reliability Metrics
   font-size: 16px;
   line-height: 1.4;
   border: 2px solid red;
-  
+
   /* Emergency message */
   &::before {
-    content: "EMERGENCY PERFORMANCE MODE - BASIC FUNCTIONALITY ONLY";
+    content: 'EMERGENCY PERFORMANCE MODE - BASIC FUNCTIONALITY ONLY';
     display: block;
     background: red;
     color: white;
@@ -257,9 +264,9 @@ Real-Time Government-Grade System Reliability Metrics
 
 /* FPS Counter */
 .tf-fps-monitor::before {
-  content: "FPS: " counter(fps-display);
+  content: 'FPS: ' counter(fps-display);
   counter-reset: fps-display var(--tf-fps-current);
-  
+
   color: var(--tf-status-optimal, hsl(120 100% 60%));
 }
 
@@ -269,14 +276,10 @@ Real-Time Government-Grade System Reliability Metrics
 }
 
 .tf-memory-monitor::after {
-  content: "MEM: " counter(memory-percent) "%";
+  content: 'MEM: ' counter(memory-percent) '%';
   counter-reset: memory-percent calc(var(--tf-memory-usage) * 100);
-  
-  background: 
-    var(--tf-memory-usage) < 0.7 ? var(--tf-status-optimal) :
-    var(--tf-memory-usage) < 0.85 ? var(--tf-status-warning) :
-    var(--tf-status-critical);
-  
+
+  background: var(--tf-status-optimal);
   color: white;
   padding: 2px 6px;
   border-radius: 3px;
@@ -285,14 +288,8 @@ Real-Time Government-Grade System Reliability Metrics
 
 /* Network Latency Indicator */
 .tf-network-monitor::before {
-  content: "NET: " counter(latency-display) "ms";
+  content: 'NET: ' counter(latency-display) 'ms';
   counter-reset: latency-display var(--tf-network-latency);
-  
-  color:
-    var(--tf-network-latency) <= 50 ? var(--tf-status-optimal) :
-    var(--tf-network-latency) <= 100 ? var(--tf-status-good) :
-    var(--tf-network-latency) <= 200 ? var(--tf-status-warning) :
-    var(--tf-status-critical);
 }
 
 /* ===== ADAPTIVE OPTIMIZATION TRIGGERS ===== */
@@ -301,11 +298,11 @@ Real-Time Government-Grade System Reliability Metrics
 .tf-auto-optimize[data-performance-score] {
   /* Trigger optimizations based on performance */
   --optimization-level: calc(1 - var(--tf-performance-score, 1));
-  
+
   /* Reduce visual complexity */
   filter: blur(calc(var(--optimization-level) * 1px));
   opacity: calc(1 - var(--optimization-level) * 0.3);
-  
+
   /* Simplify transforms */
   transform: scale(calc(1 - var(--optimization-level) * 0.05));
 }
@@ -314,7 +311,7 @@ Real-Time Government-Grade System Reliability Metrics
 .tf-memory-optimize {
   /* Optimize based on memory usage */
   --memory-optimization: calc(var(--tf-memory-usage) - 0.7);
-  
+
   /* Hide elements when memory is high */
   .tf-memory-expensive {
     opacity: calc(1 - var(--memory-optimization) * 3);
@@ -326,7 +323,7 @@ Real-Time Government-Grade System Reliability Metrics
 .tf-cpu-optimize {
   /* Reduce animations when CPU is stressed */
   --cpu-stress: calc(var(--tf-cpu-usage) - 0.6);
-  
+
   animation-duration: calc(1s + var(--cpu-stress) * 2s);
   animation-delay: calc(var(--cpu-stress) * 0.5s);
 }
@@ -345,40 +342,39 @@ Real-Time Government-Grade System Reliability Metrics
   font-family: monospace;
   font-size: 12px;
   z-index: 9999;
-  
+
   /* Visual indicator based on SLA compliance */
   border-left: 4px solid var(--tf-sla-status-color, var(--tf-status-optimal));
 }
 
 .tf-sla-monitor::before {
-  content: "SLA: " counter(sla-display) "%";
+  content: 'SLA: ' counter(sla-display) '%';
   counter-reset: sla-display var(--tf-sla-compliance);
-  
+
   color: var(--tf-sla-status-color);
 }
 
 /* Government Uptime Requirements */
 .tf-uptime-monitor {
-  --uptime-status-color: 
-    var(--tf-target-uptime) >= 99.9 ? var(--tf-status-optimal) :
-    var(--tf-target-uptime) >= 99.0 ? var(--tf-status-good) :
-    var(--tf-target-uptime) >= 95.0 ? var(--tf-status-warning) :
-    var(--tf-status-critical);
+  --uptime-status-color: var(--tf-target-uptime) >= 99.9 ?
+    var(--tf-status-optimal): var(--tf-target-uptime) >= 99 ?
+    var(--tf-status-good): var(--tf-target-uptime) >= 95 ?
+    var(--tf-status-warning): var(--tf-status-critical);
 }
 
 /* Response Time SLA Monitor */
 .tf-response-monitor {
-  --response-status-color:
-    var(--tf-target-response) <= 10 ? var(--tf-status-optimal) :
-    var(--tf-target-response) <= 50 ? var(--tf-status-good) :
-    var(--tf-target-response) <= 100 ? var(--tf-status-warning) :
-    var(--tf-status-critical);
+  --response-status-color: var(--tf-target-response) <= 10 ?
+    var(--tf-status-optimal): var(--tf-target-response) <= 50 ?
+    var(--tf-status-good): var(--tf-target-response) <= 100 ?
+    var(--tf-status-warning): var(--tf-status-critical);
 }
 
 /* ===== PERFORMANCE ALERT ANIMATIONS ===== */
 
 @keyframes critical-alert {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
@@ -389,7 +385,8 @@ Real-Time Government-Grade System Reliability Metrics
 }
 
 @keyframes emergency-alert {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     background-color: rgba(255, 0, 128, 0.1);
     transform: scale(1);
@@ -402,20 +399,22 @@ Real-Time Government-Grade System Reliability Metrics
 }
 
 @keyframes excellence-glow {
-  0%, 100% {
-    box-shadow: 
+  0%,
+  100% {
+    box-shadow:
       0 8px 32px rgba(0, 255, 238, 0.2),
       0 0 60px rgba(0, 153, 255, 0.1);
   }
   50% {
-    box-shadow: 
+    box-shadow:
       0 12px 48px rgba(0, 255, 238, 0.3),
       0 0 80px rgba(0, 153, 255, 0.2);
   }
 }
 
 @keyframes good-performance-pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.9;
     transform: scale(1);
   }
@@ -426,7 +425,8 @@ Real-Time Government-Grade System Reliability Metrics
 }
 
 @keyframes degraded-performance-fade {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.8;
   }
   50% {
@@ -450,25 +450,18 @@ Real-Time Government-Grade System Reliability Metrics
   font-size: 10px;
   max-width: 200px;
   z-index: 10001;
-  
+
   /* Only show in development */
   display: var(--tf-dev-mode, none);
 }
 
 .tf-css-profiler::before {
-  content: 
-    "CSS PROFILER\A"
-    "Rules: " counter(css-rules) "\A"
-    "Selectors: " counter(css-selectors) "\A"
-    "Repaints: " counter(repaints) "\A"
-    "Reflows: " counter(reflows);
-  
-  counter-reset: 
-    css-rules var(--tf-css-rules)
-    css-selectors calc(var(--tf-css-rules) * 1.3)
-    repaints var(--tf-repaints, 0)
-    reflows var(--tf-reflows, 0);
-  
+  content: 'CSS PROFILER\A' 'Rules: ' counter(css-rules) '\A' 'Selectors: ' counter(css-selectors)
+    '\A' 'Repaints: ' counter(repaints) '\A' 'Reflows: ' counter(reflows);
+
+  counter-reset: css-rules var(--tf-css-rules) css-selectors calc(var(--tf-css-rules) * 1.3)
+    repaints var(--tf-repaints, 0) reflows var(--tf-reflows, 0);
+
   white-space: pre;
   line-height: 1.4;
 }
@@ -479,7 +472,7 @@ Real-Time Government-Grade System Reliability Metrics
 }
 
 .tf-performance-budget-exceeded::after {
-  content: "⚠️ PERF BUDGET EXCEEDED";
+  content: '⚠️ PERF BUDGET EXCEEDED';
   position: absolute;
   top: -30px;
   left: 50%;
@@ -510,20 +503,9 @@ Real-Time Government-Grade System Reliability Metrics
 
 /* Focus performance optimization */
 .tf-focus-performance:focus-visible {
-  /* Optimize focus styles based on performance */
-  outline: 
-    var(--tf-fps-current) >= 55 ? 
-      3px solid var(--tf-primary) :
-      2px solid var(--tf-primary);
-  
-  outline-offset: 
-    var(--tf-fps-current) >= 55 ? 2px : 1px;
-  
-  /* Skip animations if performance is poor */
-  transition: 
-    var(--tf-fps-current) >= 30 ? 
-      all 0.2s ease : 
-      none;
+  outline: 2px solid var(--tf-primary);
+  outline-offset: 1px;
+  transition: all 0.2s ease;
 }
 
 /* Screen reader performance optimization */
@@ -531,9 +513,9 @@ Real-Time Government-Grade System Reliability Metrics
   .tf-performance-hud {
     animation: none;
   }
-  
-  .tf-performance-metric[data-status="critical"],
-  .tf-performance-metric[data-status="emergency"] {
+
+  .tf-performance-metric[data-status='critical'],
+  .tf-performance-metric[data-status='emergency'] {
     animation: none;
     background: rgba(255, 0, 0, 0.2);
   }
@@ -546,13 +528,13 @@ Real-Time Government-Grade System Reliability Metrics
     border: 2px solid white;
     color: white;
   }
-  
-  .tf-performance-metric[data-status="critical"] {
+
+  .tf-performance-metric[data-status='critical'] {
     background: red;
     color: white;
   }
-  
-  .tf-performance-metric[data-status="optimal"] {
+
+  .tf-performance-metric[data-status='optimal'] {
     background: green;
     color: white;
   }

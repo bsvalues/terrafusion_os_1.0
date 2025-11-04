@@ -1,0 +1,21 @@
+{
+    "map": {
+        "description": "Removes overlap between polygons contained in multiple input layers.",
+        "in_features.descr": "The input features containing the overlapping polygons.",
+        "in_features.dt.title1": "Input Features",
+        "in_features.title": "Input Features",
+        "join_attributes.descr": "<xdoc><p>Specifies the attributes of the input layers that will be transferred to the output.</p><ul><li><span title=\"ALL\">All attributes</span>—All attributes from the input features will be transferred to the output feature class. This is the default.</li><li><span title=\"NO_FID\">All attributes except feature IDs</span>—All attributes from the input features, except the FID field, will be transferred to the output feature class.</li><li><span title=\"ONLY_FID\">Only feature IDs</span>—Only the FID field from the input features will be transferred to the output feature class.</li></ul></xdoc>",
+        "join_attributes.domain.ALL": "All attributes",
+        "join_attributes.domain.NO_FID": "All attributes except feature IDs",
+        "join_attributes.domain.ONLY_FID": "Only feature IDs",
+        "join_attributes.title": "Attributes To Join",
+        "method.descr": "<xdoc><p>Specifies how the overlap between polygons will be removed.</p><ul><li><span title=\"CENTER_LINE\">Center Line</span>—Overlap will be removed by creating a border that evenly distributes the overlapping area between polygons. This is the simplest method. This is the default.<p><img src=\"GUID-1F784959-AB8B-4BC8-9B2B-372589D3613C-web.png\" alt=\"Center Line method\" /></p></li><li><span title=\"THIESSEN\">Thiessen</span>—Overlap will be removed using straight lines to divide the area of intersection. This method uses a series of geometric functions to create nonoverlapping trade areas.<p><img src=\"GUID-4A1BD892-FD1F-4DDE-A3A5-637D9D5E584D-web.png\" alt=\"Thiessen method\" /></p></li><li><span title=\"GRID\">Grid</span>—Overlap will be removed by creating a grid of parallel lines used to define a natural division between polygons.<p><img src=\"GUID-8AA262FD-1127-4ACB-A2B9-C31A91547B57-web.png\" alt=\"Grid method\" /></p></li></ul></xdoc>",
+        "method.domain.CENTER_LINE": "Center Line",
+        "method.domain.GRID": "Grid",
+        "method.domain.THIESSEN": "Thiessen",
+        "method.title": "Method",
+        "out_feature_class.descr": "The feature class containing the new polygon features.",
+        "out_feature_class.title": "Output Feature Class",
+        "title": "Remove Overlap (multiple)"
+    }
+}

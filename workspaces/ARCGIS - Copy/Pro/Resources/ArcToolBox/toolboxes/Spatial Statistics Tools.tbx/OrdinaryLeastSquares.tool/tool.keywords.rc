@@ -1,0 +1,24 @@
+{
+    "set": [
+        "cause",
+        "colinearity",
+        "correlation",
+        "dependent",
+        "effect",
+        "global",
+        "heteroskedasticity",
+        "linear",
+        "multiple",
+        "negative",
+        "ols",
+        "positive",
+        "predict",
+        "r squared",
+        "regression",
+        "relate",
+        "square",
+        "value",
+        "variable",
+        "vary"
+    ]
+}

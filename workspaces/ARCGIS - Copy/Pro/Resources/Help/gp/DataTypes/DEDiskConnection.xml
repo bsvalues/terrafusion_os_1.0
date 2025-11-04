@@ -1,0 +1,5 @@
+<DataType Name="DEDiskConnection">
+  <DisplayName>Disk Connection</DisplayName>
+  <Description>An access path to a data storage device.</Description>
+</DataType>
+

@@ -1,0 +1,95 @@
+{
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "node",
+        "cwd": "../../frontend/economic-development-portal",
+        "runtimeArgs": [
+          "run",
+          "dev"
+        ],
+        "name": "Start Economic Development Portal"
+      }
+    ]
+  },
+  "tasks": {
+    "tasks": [
+      {
+        "cwd": "../../frontend/economic-development-portal",
+        "args": [
+          "run",
+          "build"
+        ],
+        "command": "npm",
+        "label": "Build Portal"
+      },
+      {
+        "cwd": "../../frontend/economic-development-portal",
+        "args": [
+          "run",
+          "test"
+        ],
+        "command": "npm",
+        "label": "Test Portal"
+      }
+    ],
+    "version": "2.0.0"
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "bradlc.vscode-tailwindcss",
+      "dsznajder.es7-react-js-snippets"
+    ]
+  },
+  "folders": [
+    {
+      "name": "🏛️ Economic Development Portal",
+      "path": "../../frontend/economic-development-portal"
+    },
+    {
+      "name": "🎨 Design System (read-only)",
+      "path": "../../platform/design-system"
+    },
+    {
+      "name": "📦 Platform SDK (read-only)",
+      "path": "../../platform/sdk"
+    },
+    {
+      "name": "🧪 Tests",
+      "path": "../../tests/frontend/economic-development"
+    },
+    {
+      "name": "📚 Portal Docs",
+      "path": "../../docs/portals"
+    },
+    {
+      "name": "⚙️ Config (shared)",
+      "path": "../../config"
+    }
+  ],
+  "settings": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit",
+      "source.fixAll": "explicit"
+    },
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#10b981",
+      "titleBar.activeForeground": "#ffffff"
+    },
+    "files.exclude": {
+      "../../os-platform": true,
+      "**/node_modules": true,
+      "../../frontend/*-portal": true,
+      "../../marketplace": true,
+      "!../../frontend/economic-development-portal": true,
+      "../../backend": true,
+      "**/dist": true,
+      "../../terrafusion-cos": true
+    },
+    "editor.formatOnSave": true
+  }
+}
+

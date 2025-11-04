@@ -1,0 +1,382 @@
+<ChartTheme xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:typens="http://www.esri.com/schemas/ArcGIS/3.2.0">
+  <ThemeName>Light</ThemeName>
+  <TitleText>
+    <FontFillColor xsi:type="typens:CIMRGBColor">
+      <Values xsi:type="typens:ArrayOfDouble">
+        <Double>68</Double>
+        <Double>68</Double>
+        <Double>68</Double>
+        <Double>100</Double>
+      </Values>
+    </FontFillColor>
+    <FontFamilyName>Segoe UI</FontFamilyName>
+    <FontItalic>false</FontItalic>
+    <FontSize>16</FontSize>
+    <FontWeight>Normal</FontWeight>
+    <TextCase>Normal</TextCase>
+    <TextUnderline>false</TextUnderline>
+    <TextStrikethrough>false</TextStrikethrough>
+    <TextOverline>false</TextOverline>
+  </TitleText>
+  <DescriptionText>
+    <FontFillColor xsi:type="typens:CIMRGBColor">
+      <Values xsi:type="typens:ArrayOfDouble">
+        <Double>68</Double>
+        <Double>68</Double>
+        <Double>68</Double>
+        <Double>100</Double>
+      </Values>
+    </FontFillColor>
+    <FontFamilyName>Segoe UI</FontFamilyName>
+    <FontItalic>false</FontItalic>
+    <FontSize>10</FontSize>
+    <FontWeight>Normal</FontWeight>
+    <TextCase>Normal</TextCase>
+    <TextUnderline>false</TextUnderline>
+    <TextStrikethrough>false</TextStrikethrough>
+    <TextOverline>false</TextOverline>
+  </DescriptionText>
+  <LegendText>
+    <FontFillColor xsi:type="typens:CIMRGBColor">
+      <Values xsi:type="typens:ArrayOfDouble">
+        <Double>68</Double>
+        <Double>68</Double>
+        <Double>68</Double>
+        <Double>100</Double>
+      </Values>
+    </FontFillColor>
+    <FontFamilyName>Segoe UI</FontFamilyName>
+    <FontItalic>false</FontItalic>
+    <FontSize>10</FontSize>
+    <FontWeight>Normal</FontWeight>
+    <TextCase>Normal</TextCase>
+    <TextUnderline>false</TextUnderline>
+    <TextStrikethrough>false</TextStrikethrough>
+    <TextOverline>false</TextOverline>
+  </LegendText>
+  <AxisLabels>
+    <FontFillColor xsi:type="typens:CIMRGBColor">
+      <Values xsi:type="typens:ArrayOfDouble">
+        <Double>68</Double>
+        <Double>68</Double>
+        <Double>68</Double>
+        <Double>100</Double>
+      </Values>
+    </FontFillColor>
+    <FontFamilyName>Segoe UI</FontFamilyName>
+    <FontItalic>false</FontItalic>
+    <FontSize>10</FontSize>
+    <FontWeight>Normal</FontWeight>
+    <TextCase>Normal</TextCase>
+    <TextUnderline>false</TextUnderline>
+    <TextStrikethrough>false</TextStrikethrough>
+    <TextOverline>false</TextOverline>
+  </AxisLabels>
+  <AxisTitles>
+    <FontFillColor xsi:type="typens:CIMRGBColor">
+      <Values xsi:type="typens:ArrayOfDouble">
+        <Double>68</Double>
+        <Double>68</Double>
+        <Double>68</Double>
+        <Double>100</Double>
+      </Values>
+    </FontFillColor>
+    <FontFamilyName>Segoe UI</FontFamilyName>
+    <FontItalic>false</FontItalic>
+    <FontSize>12</FontSize>
+    <FontWeight>Normal</FontWeight>
+    <TextCase>Normal</TextCase>
+    <TextUnderline>false</TextUnderline>
+    <TextStrikethrough>false</TextStrikethrough>
+    <TextOverline>false</TextOverline>
+  </AxisTitles>
+  <LegendTitle>
+    <FontFillColor xsi:type="typens:CIMRGBColor">
+      <Values xsi:type="typens:ArrayOfDouble">
+        <Double>68</Double>
+        <Double>68</Double>
+        <Double>68</Double>
+        <Double>100</Double>
+      </Values>
+    </FontFillColor>
+    <FontFamilyName>Segoe UI</FontFamilyName>
+    <FontItalic>false</FontItalic>
+    <FontSize>10.8</FontSize>
+    <FontWeight>Normal</FontWeight>
+    <TextCase>Normal</TextCase>
+    <TextUnderline>false</TextUnderline>
+    <TextStrikethrough>false</TextStrikethrough>
+    <TextOverline>false</TextOverline>
+  </LegendTitle>
+  <DataLabels>
+    <FontFillColor xsi:type="typens:CIMRGBColor">
+      <Values xsi:type="typens:ArrayOfDouble">
+        <Double>68</Double>
+        <Double>68</Double>
+        <Double>68</Double>
+        <Double>100</Double>
+      </Values>
+    </FontFillColor>
+    <FontFamilyName>Segoe UI</FontFamilyName>
+    <FontItalic>false</FontItalic>
+    <FontSize>9</FontSize>
+    <FontWeight>Normal</FontWeight>
+    <TextCase>Normal</TextCase>
+    <TextUnderline>false</TextUnderline>
+    <TextStrikethrough>false</TextStrikethrough>
+    <TextOverline>false</TextOverline>
+  </DataLabels>
+  <GuideLabels>
+    <FontFillColor xsi:type="typens:CIMRGBColor">
+      <Values xsi:type="typens:ArrayOfDouble">
+        <Double>68</Double>
+        <Double>68</Double>
+        <Double>68</Double>
+        <Double>100</Double>
+      </Values>
+    </FontFillColor>
+    <FontFamilyName>Segoe UI</FontFamilyName>
+    <FontItalic>false</FontItalic>
+    <FontSize>9</FontSize>
+    <FontWeight>Normal</FontWeight>
+    <TextCase>Normal</TextCase>
+    <TextUnderline>false</TextUnderline>
+    <TextStrikethrough>false</TextStrikethrough>
+    <TextOverline>false</TextOverline>
+  </GuideLabels>
+  <WedgeLabels>
+    <FontFillColor xsi:type="typens:CIMRGBColor">
+      <Values xsi:type="typens:ArrayOfDouble">
+        <Double>68</Double>
+        <Double>68</Double>
+        <Double>68</Double>
+        <Double>100</Double>
+      </Values>
+    </FontFillColor>
+    <FontFamilyName>Segoe UI</FontFamilyName>
+    <FontItalic>false</FontItalic>
+    <FontSize>9</FontSize>
+    <FontWeight>Normal</FontWeight>
+    <TextCase>Normal</TextCase>
+    <TextUnderline>false</TextUnderline>
+    <TextStrikethrough>false</TextStrikethrough>
+    <TextOverline>false</TextOverline>
+  </WedgeLabels>
+  <RSquareText>
+    <FontFillColor xsi:type="typens:CIMRGBColor">
+      <Values xsi:type="typens:ArrayOfDouble">
+        <Double>0</Double>
+        <Double>0</Double>
+        <Double>0</Double>
+        <Double>100</Double>
+      </Values>
+    </FontFillColor>
+    <FontFamilyName>Segoe UI</FontFamilyName>
+    <FontItalic>false</FontItalic>
+    <FontSize>9</FontSize>
+    <FontWeight>Bold</FontWeight>
+    <TextCase>Normal</TextCase>
+    <TextUnderline>false</TextUnderline>
+    <TextStrikethrough>false</TextStrikethrough>
+    <TextOverline>false</TextOverline>
+  </RSquareText>
+  <MiniChartTitle>
+    <FontFillColor xsi:type="typens:CIMRGBColor">
+      <Values xsi:type="typens:ArrayOfDouble">
+        <Double>68</Double>
+        <Double>68</Double>
+        <Double>68</Double>
+        <Double>100</Double>
+      </Values>
+    </FontFillColor>
+    <FontFamilyName>Segoe UI</FontFamilyName>
+    <FontItalic>false</FontItalic>
+    <FontSize>10.8</FontSize>
+    <FontWeight>Normal</FontWeight>
+    <TextCase>Normal</TextCase>
+    <TextUnderline>false</TextUnderline>
+    <TextStrikethrough>false</TextStrikethrough>
+    <TextOverline>false</TextOverline>
+  </MiniChartTitle>
+  <Background>
+    <Color xsi:type="typens:CIMRGBColor">
+      <Values xsi:type="typens:ArrayOfDouble">
+        <Double>255</Double>
+        <Double>255</Double>
+        <Double>255</Double>
+        <Double>100</Double>
+      </Values>
+    </Color>
+    <Opacity>1</Opacity>
+  </Background>
+  <AxisLines>
+    <Visible>true</Visible>
+    <Width>1</Width>
+    <Style>Solid</Style>
+    <Color xsi:type="typens:CIMRGBColor">
+      <Values xsi:type="typens:ArrayOfDouble">
+        <Double>156</Double>
+        <Double>156</Double>
+        <Double>156</Double>
+        <Double>100</Double>
+      </Values>
+    </Color>
+  </AxisLines>
+  <XAxisLine>
+    <Visible>true</Visible>
+    <Width>1</Width>
+    <Style>Solid</Style>
+    <Color xsi:type="typens:CIMRGBColor">
+      <Values xsi:type="typens:ArrayOfDouble">
+        <Double>156</Double>
+        <Double>156</Double>
+        <Double>156</Double>
+        <Double>100</Double>
+      </Values>
+    </Color>
+  </XAxisLine>
+  <YAxisLine>
+    <Visible>true</Visible>
+    <Width>1</Width>
+    <Style>Solid</Style>
+    <Color xsi:type="typens:CIMRGBColor">
+      <Values xsi:type="typens:ArrayOfDouble">
+        <Double>156</Double>
+        <Double>156</Double>
+        <Double>156</Double>
+        <Double>0</Double>
+      </Values>
+    </Color>
+  </YAxisLine>
+  <YRightAxisLine>
+    <Visible>true</Visible>
+    <Width>1</Width>
+    <Style>Solid</Style>
+    <Color xsi:type="typens:CIMRGBColor">
+      <Values xsi:type="typens:ArrayOfDouble">
+        <Double>156</Double>
+        <Double>156</Double>
+        <Double>156</Double>
+        <Double>0</Double>
+      </Values>
+    </Color>
+  </YRightAxisLine>
+  <GridLines>
+    <Visible>true</Visible>
+    <Width>1</Width>
+    <Style>Solid</Style>
+    <Color xsi:type="typens:CIMRGBColor">
+      <Values xsi:type="typens:ArrayOfDouble">
+        <Double>225</Double>
+        <Double>225</Double>
+        <Double>225</Double>
+        <Double>100</Double>
+      </Values>
+    </Color>
+  </GridLines>
+  <HistoMeanLine>
+    <Visible>true</Visible>
+    <Width>2</Width>
+    <Style>Solid</Style>
+    <Color xsi:type="typens:CIMRGBColor">
+      <Values xsi:type="typens:ArrayOfDouble">
+        <Double>0</Double>
+        <Double>92</Double>
+        <Double>230</Double>
+        <Double>100</Double>
+      </Values>
+    </Color>
+  </HistoMeanLine>
+  <HistoMedianLine>
+    <Visible>true</Visible>
+    <Width>2</Width>
+    <Style>Solid</Style>
+    <Color xsi:type="typens:CIMRGBColor">
+      <Values xsi:type="typens:ArrayOfDouble">
+        <Double>132</Double>
+        <Double>0</Double>
+        <Double>168</Double>
+        <Double>100</Double>
+      </Values>
+    </Color>
+  </HistoMedianLine>
+  <HistoStdDevLine>
+    <Visible>true</Visible>
+    <Width>2</Width>
+    <Style>Solid</Style>
+    <Color xsi:type="typens:CIMRGBColor">
+      <Values xsi:type="typens:ArrayOfDouble">
+        <Double>156</Double>
+        <Double>156</Double>
+        <Double>156</Double>
+        <Double>100</Double>
+      </Values>
+    </Color>
+  </HistoStdDevLine>
+  <HistoDistributionLine>
+    <Visible>true</Visible>
+    <Width>2</Width>
+    <Style>Solid</Style>
+    <Color xsi:type="typens:CIMRGBColor">
+      <Values xsi:type="typens:ArrayOfDouble">
+        <Double>104</Double>
+        <Double>104</Double>
+        <Double>104</Double>
+        <Double>100</Double>
+      </Values>
+    </Color>
+  </HistoDistributionLine>
+  <ScatterTrendLine>
+    <Visible>true</Visible>
+    <Width>2</Width>
+    <Style>Solid</Style>
+    <Color xsi:type="typens:CIMRGBColor">
+      <Values xsi:type="typens:ArrayOfDouble">
+        <Double>104</Double>
+        <Double>104</Double>
+        <Double>104</Double>
+        <Double>100</Double>
+      </Values>
+    </Color>
+  </ScatterTrendLine>
+  <SelectionLine>
+    <Visible>true</Visible>
+    <Width>3</Width>
+    <Style>Solid</Style>
+    <Color xsi:type="typens:CIMRGBColor">
+      <Values xsi:type="typens:ArrayOfDouble">
+        <Double>255</Double>
+        <Double>115</Double>
+        <Double>223</Double>
+        <Double>100</Double>
+      </Values>
+    </Color>
+  </SelectionLine>
+  <MovingAverageLine>
+    <Visible>true</Visible>
+    <Width>2</Width>
+    <Style>Solid</Style>
+    <Color xsi:type="typens:CIMRGBColor">
+      <Values xsi:type="typens:ArrayOfDouble">
+        <Double>255</Double>
+        <Double>0</Double>
+        <Double>0</Double>
+        <Double>100</Double>
+      </Values>
+    </Color>
+  </MovingAverageLine>
+  <LegendVisible>true</LegendVisible>
+  <DataLabelVisible>false</DataLabelVisible>
+  <RingLabelVisible>true</RingLabelVisible>
+  <WedgeLabelVisible>true</WedgeLabelVisible>
+  <RelatedChartTypes>
+    <SeriesType>enumSeriesType_Scatter</SeriesType>
+    <SeriesType>enumSeriesType_ProbabilityPlot</SeriesType>
+    <SeriesType>enumSeriesType_DataClock</SeriesType>
+    <SeriesType>enumSeriesType_ScatterPlotMatrix</SeriesType>
+    <SeriesType>enumSeriesType_CalendarHeat</SeriesType>
+    <SeriesType>enumSeriesType_MatrixHeat</SeriesType>
+    <SeriesType>enumSeriesType_Pie</SeriesType>
+  </RelatedChartTypes>
+  <UseExclude>true</UseExclude>  
+</ChartTheme>

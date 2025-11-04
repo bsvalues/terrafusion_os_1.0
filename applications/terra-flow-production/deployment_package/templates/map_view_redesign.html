@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraFusion | TerraMap Viewer</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS for map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    
+    <!-- Leaflet measurement plugin CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-measure/dist/leaflet-measure.css">
+    
+    <style>
+        :root {
+            /* TerraFusion Module Colors - EXACT PER BRAND SPEC */
+            --tf-flow-aqua: #00BFD6;
+            --tf-flow-gradient: #00E3A1;
+            --tf-map-green: #2E7D32;
+            --tf-map-gradient: #5CD65C;
+            --tf-insight-violet: #7A1FFF;
+            --tf-insight-gradient: #C760FF;
+            --tf-sketch-orange: #FF7A29;
+            --tf-sketch-gradient: #FFB366;
+            --tf-levy-gold: #C49A00;
+            --tf-levy-gradient: #FFDA3B;
+            
+            /* Brand Colors */
+            --tf-dark-blue: #001828;
+            --tf-medium-blue: #002842;
+            --tf-accent-blue: #00556E;
+            --tf-glow-aqua: #7FFFEA;
+            
+            /* Text Colors */
+            --tf-text-white: #FFFFFF;
+            --tf-text-light: #E0E0E0;
+            --tf-text-muted: #A0A0A0;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--tf-dark-blue);
+            color: var(--tf-text-white);
+        }
+        
+        /* Navigation Styles */
+        .tf-navbar {
+            background-color: var(--tf-medium-blue);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0, 191, 214, 0.2);
+        }
+        
+        .tf-navbar .navbar-brand {
+            display: flex;
+            align-items: center;
+        }
+        
+        .tf-navbar .brand-icon {
+            font-size: 24px;
+            color: var(--tf-flow-aqua);
+            margin-right: 10px;
+            text-shadow: 0 0 10px rgba(0, 191, 214, 0.6);
+        }
+        
+        .tf-navbar .brand-text {
+            font-weight: 800;
+            font-size: 22px;
+            letter-spacing: -0.02em;
+        }
+        
+        .tf-navbar .brand-text .prefix {
+            color: var(--tf-text-white);
+            font-weight: 700;
+        }
+        
+        .tf-navbar .brand-text .name {
+            background: linear-gradient(90deg, var(--tf-flow-aqua), var(--tf-flow-gradient));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+        
+        .tf-navbar .nav-link {
+            color: var(--tf-text-light);
+            font-weight: 600;
+            padding: 8px 16px;
+            transition: all 0.2s ease;
+        }
+        
+        .tf-navbar .nav-link:hover,
+        .tf-navbar .nav-link.active {
+            color: var(--tf-flow-aqua);
+            text-shadow: 0 0 8px rgba(0, 191, 214, 0.4);
+        }
+        
+        .tf-navbar .nav-link .icon {
+            margin-right: 8px;
+            color: var(--tf-flow-aqua);
+        }
+        
+        /* Dropdown styles */
+        .dropdown-menu {
+            background-color: var(--tf-medium-blue);
+            border: 1px solid rgba(0, 191, 214, 0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .dropdown-item {
+            color: var(--tf-text-light);
+            font-weight: 500;
+        }
+        
+        .dropdown-item:hover {
+            background-color: var(--tf-accent-blue);
+            color: var(--tf-text-white);
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            padding: 30px 0;
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+        }
+        
+        .page-title {
+            color: var(--tf-text-white);
+            font-weight: 800;
+            font-size: 32px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .page-title .module-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--tf-map-green), var(--tf-map-gradient));
+            border-radius: 8px;
+            margin-right: 15px;
+            color: white;
+            font-size: 22px;
+            box-shadow: 0 0 15px rgba(46, 125, 50, 0.5);
+        }
+        
+        .page-title .text-part {
+            color: var(--tf-text-white);
+            font-weight: 700;
+        }
+        
+        .page-title .colored-part {
+            background: linear-gradient(90deg, var(--tf-map-green), var(--tf-map-gradient));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+        
+        .page-subtitle {
+            color: var(--tf-text-light);
+            font-weight: 500;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        
+        .gradient-divider {
+            height: 4px;
+            background: linear-gradient(to right, var(--tf-map-green), var(--tf-map-gradient));
+            border-radius: 2px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 10px rgba(92, 214, 92, 0.3);
+        }
+        
+        /* Map Styles */
+        .map-container {
+            height: 600px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid var(--tf-map-green);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        #map {
+            height: 100%;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar-container {
+            background-color: var(--tf-medium-blue);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            border: 1px solid rgba(46, 125, 50, 0.2);
+        }
+        
+        .sidebar-title {
+            color: var(--tf-text-white);
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid var(--tf-map-green);
+            padding-bottom: 10px;
+        }
+        
+        .sidebar-title .icon {
+            color: var(--tf-map-green);
+            margin-right: 10px;
+            text-shadow: 0 0 8px rgba(46, 125, 50, 0.5);
+        }
+        
+        /* File List Styles */
+        .file-list {
+            margin-bottom: 0;
+        }
+        
+        .file-item {
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border-left: 4px solid var(--tf-map-green);
+            background-color: var(--tf-accent-blue);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .file-item:hover {
+            background-color: rgba(0, 85, 110, 0.8);
+            transform: translateX(3px);
+            box-shadow: 0 0 12px rgba(46, 125, 50, 0.3);
+        }
+        
+        .file-item-name {
+            color: var(--tf-text-white);
+            font-weight: 600;
+            display: block;
+            margin-bottom: 3px;
+        }
+        
+        .file-item-name .icon {
+            color: var(--tf-map-gradient);
+            margin-right: 8px;
+        }
+        
+        .file-item-meta {
+            color: var(--tf-text-muted);
+            font-size: 12px;
+        }
+        
+        /* Layer Controls */
+        .layer-control {
+            margin-bottom: 10px;
+        }
+        
+        .layer-control .form-check-input {
+            cursor: pointer;
+            background-color: var(--tf-accent-blue);
+            border-color: var(--tf-map-green);
+        }
+        
+        .layer-control .form-check-input:checked {
+            background-color: var(--tf-map-green);
+            border-color: var(--tf-map-green);
+            box-shadow: 0 0 5px rgba(46, 125, 50, 0.5);
+        }
+        
+        .layer-label {
+            color: var(--tf-text-light);
+            font-weight: 500;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+        
+        /* Buttons */
+        .btn-terramap {
+            background: linear-gradient(135deg, var(--tf-map-green), var(--tf-map-gradient));
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-terramap:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+        
+        /* Info Cards */
+        .info-card {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            background-color: var(--tf-medium-blue);
+            border: 1px solid rgba(46, 125, 50, 0.2);
+        }
+        
+        .info-card-header {
+            background: linear-gradient(90deg, var(--tf-map-green), var(--tf-map-gradient));
+            color: white;
+            padding: 12px 15px;
+        }
+        
+        .info-card-title {
+            margin: 0;
+            font-weight: 700;
+            font-size: 16px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        
+        .info-card-body {
+            padding: 15px;
+            background-color: var(--tf-medium-blue);
+            color: var(--tf-text-light);
+        }
+        
+        /* No Files State */
+        .no-files-state {
+            text-align: center;
+            padding: 30px 0;
+        }
+        
+        .no-files-icon {
+            font-size: 48px;
+            color: var(--tf-map-gradient);
+            margin-bottom: 15px;
+            text-shadow: 0 0 15px rgba(92, 214, 92, 0.4);
+        }
+        
+        .no-files-text {
+            color: var(--tf-text-light);
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+        
+        /* Footer */
+        .tf-footer {
+            background-color: var(--tf-medium-blue);
+            border-top: 1px solid rgba(46, 125, 50, 0.2);
+            padding: 20px 0;
+            margin-top: 50px;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .footer-brand .icon {
+            font-size: 20px;
+            color: var(--tf-map-gradient);
+            margin-right: 8px;
+            text-shadow: 0 0 8px rgba(92, 214, 92, 0.4);
+        }
+        
+        .footer-brand .text .prefix {
+            color: var(--tf-text-white);
+            font-weight: 700;
+        }
+        
+        .footer-brand .text .name {
+            background: linear-gradient(90deg, var(--tf-map-green), var(--tf-map-gradient));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+        
+        .footer-text {
+            color: var(--tf-text-muted);
+            font-weight: 500;
+            font-size: 12px;
+            margin-bottom: 0;
+        }
+        
+        .footer-links {
+            text-align: right;
+        }
+        
+        .footer-links a {
+            color: var(--tf-map-gradient);
+            font-weight: 600;
+            margin-left: 15px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            text-shadow: 0 0 5px rgba(92, 214, 92, 0.2);
+        }
+        
+        .footer-links a:hover {
+            color: var(--tf-text-white);
+            text-shadow: 0 0 8px rgba(92, 214, 92, 0.5);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="tf-navbar navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <img src="/static/images/terrafusion-logo.svg" alt="TerraFusion Logo" width="36" height="36" class="me-2">
+                <div class="brand-text">
+                    <span class="prefix">Terra</span><span class="name">FUSION</span>
+                </div>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                    style="border-color: rgba(0, 191, 214, 0.5); background-color: rgba(0, 191, 214, 0.1);">
+                <i class="fas fa-bars" style="color: var(--tf-flow-aqua);"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="fas fa-home icon"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/file-manager">
+                            <i class="fas fa-file icon"></i> File Manager
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/map-viewer">
+                            <i class="fas fa-map icon"></i> Map Viewer
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search">
+                            <i class="fas fa-search icon"></i> Search
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle icon"></i> {{ session.user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/profile"><i class="fas fa-id-card me-2"></i> Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">
+                    <div class="module-icon">
+                        <i class="fas fa-map"></i>
+                    </div>
+                    <span class="text-part">Terra</span><span class="colored-part">MAP</span>
+                </h1>
+                <p class="page-subtitle">Geospatial Visualization & Property Assessment</p>
+                <div class="gradient-divider"></div>
+            </div>
+
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-md-3">
+                    <!-- Files Panel -->
+                    <div class="sidebar-container">
+                        <h2 class="sidebar-title">
+                            <i class="fas fa-file-code icon"></i> GIS Files
+                        </h2>
+                        {% if gis_files %}
+                            <div class="file-list">
+                                {% for file in gis_files %}
+                                    <div class="file-item" onclick="loadMapFile({{ file.id }})">
+                                        <span class="file-item-name">
+                                            <i class="fas fa-file-alt icon"></i>
+                                            {{ file.filename }}
+                                        </span>
+                                        <span class="file-item-meta">
+                                            {{ file.file_size|filesizeformat }} • {{ file.upload_date.strftime('%b %d, %Y') }}
+                                        </span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="no-files-state">
+                                <i class="fas fa-file-upload no-files-icon"></i>
+                                <p class="no-files-text">No GIS files found</p>
+                                <a href="/file-manager" class="btn-terramap">
+                                    <i class="fas fa-upload me-1"></i> Upload Files
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Layers Panel -->
+                    <div class="sidebar-container">
+                        <h3 class="sidebar-title">
+                            <i class="fas fa-layer-group icon"></i> Map Layers
+                        </h3>
+                        <div class="layer-control">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="baseMapToggle" checked onchange="toggleBaseMap(this.checked)">
+                                <label class="layer-label" for="baseMapToggle">Base Map</label>
+                            </div>
+                        </div>
+                        <div class="layer-control">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="propertyBoundariesToggle" checked onchange="togglePropertyBoundaries(this.checked)">
+                                <label class="layer-label" for="propertyBoundariesToggle">Property Boundaries</label>
+                            </div>
+                        </div>
+                        <div class="layer-control">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="parcelLabelsToggle" checked onchange="toggleParcelLabels(this.checked)">
+                                <label class="layer-label" for="parcelLabelsToggle">Parcel Labels</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Search Panel -->
+                    <div class="sidebar-container">
+                        <h3 class="sidebar-title">
+                            <i class="fas fa-search-location icon"></i> Search
+                        </h3>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control bg-dark text-light border-dark" id="parcelSearch" placeholder="Parcel ID or Address" style="background-color: rgba(255,255,255,0.1) !important; border: 1px solid rgba(46, 125, 50, 0.3);">
+                            <button class="btn-terramap" type="button" onclick="searchParcel()">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Map and Info Area -->
+                <div class="col-md-9">
+                    <!-- Map Container -->
+                    <div class="map-container mb-4">
+                        <div id="map"></div>
+                    </div>
+
+                    <!-- Info Cards Row -->
+                    <div class="row">
+                        <!-- Property Info Card -->
+                        <div class="col-md-6">
+                            <div class="info-card">
+                                <div class="info-card-header">
+                                    <h4 class="info-card-title">Property Information</h4>
+                                </div>
+                                <div class="info-card-body">
+                                    <div id="property-info">
+                                        Select a property on the map to see details.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions Card -->
+                        <div class="col-md-6">
+                            <div class="info-card">
+                                <div class="info-card-header">
+                                    <h4 class="info-card-title">Actions</h4>
+                                </div>
+                                <div class="info-card-body">
+                                    <div class="d-grid gap-2">
+                                        <button type="button" class="btn-terramap w-100 mb-2" onclick="exportMapData()">
+                                            <i class="fas fa-file-export me-1"></i> Export Map Data
+                                        </button>
+                                        <button type="button" class="btn-terramap w-100" onclick="printMap()">
+                                            <i class="fas fa-print me-1"></i> Print Map
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="tf-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="footer-brand">
+                        <img src="/static/images/terrafusion-logo.svg" alt="TerraFusion Logo" width="24" height="24" class="me-2">
+                        <div class="text">
+                            <span class="prefix">Terra</span><span class="name">MAP</span>
+                        </div>
+                    </div>
+                    <p class="footer-text">Geospatial Visualization & Property Assessment</p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <p class="footer-text">
+                        <strong>TerraFusion</strong> Platform
+                    </p>
+                    <p class="footer-text">&copy; 2025 TerraFusion Technologies</p>
+                </div>
+                <div class="col-md-4 footer-links">
+                    <a href="/">Home</a>
+                    <a href="/docs">Documentation</a>
+                    <a href="/support">Support</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Leaflet JS for maps -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Leaflet plugins -->
+    <script src="https://unpkg.com/leaflet-measure/dist/leaflet-measure.js"></script>
+    
+    <script>
+        // Initialize the map
+        var map;
+        var geojsonLayer;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeMap();
+        });
+        
+        function initializeMap() {
+            // Create map
+            map = L.map('map').setView([46.2062, -119.1686], 13);
+            
+            // Add base tile layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            
+            // Add measurement control
+            var measureControl = new L.Control.Measure({
+                position: 'topleft',
+                primaryLengthUnit: 'feet',
+                secondaryLengthUnit: 'miles',
+                primaryAreaUnit: 'acres',
+                secondaryAreaUnit: 'sqmiles'
+            });
+            measureControl.addTo(map);
+        }
+        
+        function loadMapFile(fileId) {
+            // Clear existing GeoJSON layer if it exists
+            if (geojsonLayer) {
+                map.removeLayer(geojsonLayer);
+            }
+            
+            // Fetch the GeoJSON data
+            fetch('/map-data/' + fileId)
+                .then(response => response.json())
+                .then(data => {
+                    // Add GeoJSON layer to map
+                    geojsonLayer = L.geoJSON(data, {
+                        style: function(feature) {
+                            return {
+                                color: '#2E7D32',
+                                weight: 2,
+                                opacity: 1,
+                                fillOpacity: 0.3,
+                                fillColor: '#5CD65C'
+                            };
+                        },
+                        onEachFeature: function(feature, layer) {
+                            if (feature.properties) {
+                                var popupContent = '<div style="font-weight: 600; color: black;">';
+                                
+                                for (var prop in feature.properties) {
+                                    popupContent += prop + ': ' + feature.properties[prop] + '<br>';
+                                }
+                                
+                                popupContent += '</div>';
+                                layer.bindPopup(popupContent);
+                                
+                                layer.on('click', function() {
+                                    showPropertyInfo(feature.properties);
+                                });
+                            }
+                        }
+                    }).addTo(map);
+                    
+                    // Zoom to layer extent
+                    map.fitBounds(geojsonLayer.getBounds());
+                })
+                .catch(error => {
+                    console.error('Error loading map data:', error);
+                    alert('Error loading map data. Please try again.');
+                });
+        }
+        
+        function showPropertyInfo(properties) {
+            var infoHtml = '<table class="table table-borderless table-sm">';
+            
+            for (var prop in properties) {
+                infoHtml += '<tr><th style="color: white; font-weight: 600;">' + prop + '</th><td style="color: #e0e0e0; font-weight: 400;">' + properties[prop] + '</td></tr>';
+            }
+            
+            infoHtml += '</table>';
+            document.getElementById('property-info').innerHTML = infoHtml;
+        }
+        
+        function toggleBaseMap(visible) {
+            // Implementation would vary based on map library
+            console.log('Base map visibility:', visible);
+        }
+        
+        function togglePropertyBoundaries(visible) {
+            if (geojsonLayer) {
+                if (visible) {
+                    geojsonLayer.addTo(map);
+                } else {
+                    map.removeLayer(geojsonLayer);
+                }
+            }
+        }
+        
+        function toggleParcelLabels(visible) {
+            // Implementation would vary based on map library
+            console.log('Parcel labels visibility:', visible);
+        }
+        
+        function searchParcel() {
+            var searchValue = document.getElementById('parcelSearch').value;
+            // Search implementation would be based on backend data
+            console.log('Searching for:', searchValue);
+            alert('Search functionality would locate parcel: ' + searchValue);
+        }
+        
+        function exportMapData() {
+            // Example export functionality
+            alert('Map data would be exported in various formats (GeoJSON, KML, Shapefile)');
+        }
+        
+        function printMap() {
+            // Example print functionality
+            window.print();
+        }
+    </script>
+</body>
+</html>

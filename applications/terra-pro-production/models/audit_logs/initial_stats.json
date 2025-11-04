@@ -1,0 +1,15 @@
+{
+  "total_inferences": 0,
+  "version_usage": {},
+  "fallback_rate": 0.0,
+  "average_score": 0.0,
+  "average_execution_time_ms": 0.0,
+  "score_distribution": {
+    "1.0-1.9": 0,
+    "2.0-2.9": 0,
+    "3.0-3.9": 0,
+    "4.0-5.0": 0
+  },
+  "export_timestamp": "2025-05-02T20:00:25.783769",
+  "export_period_days": "all"
+}

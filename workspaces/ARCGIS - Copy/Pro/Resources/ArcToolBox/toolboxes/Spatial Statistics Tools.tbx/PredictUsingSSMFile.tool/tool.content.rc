@@ -1,0 +1,32 @@
+{
+    "map": {
+        "description": "Predicts continuous or categorical values using a trained spatial statistics model (.ssm file).",
+        "explanatory_distance_matching.descr": "<xdoc><p>A list of the explanatory distance features of the input model and corresponding prediction distance features. For each explanatory distance feature in the <span class=\"esri_fieldname\">Training</span> column, provide the corresponding prediction distance feature in the <span class=\"esri_fieldname\">Prediction</span> column.</p></xdoc>",
+        "explanatory_distance_matching.dt.title1": "Prediction",
+        "explanatory_distance_matching.dt.title2": "Training",
+        "explanatory_distance_matching.title": "Match Distance Features",
+        "explanatory_rasters_matching.descr": "<xdoc><p>A list of the explanatory rasters of the input model and corresponding prediction rasters. For each explanatory raster in the <span class=\"esri_fieldname\">Training</span> column, provide the corresponding prediction raster in the <span class=\"esri_fieldname\">Prediction</span> column. The <span class=\"esri_fieldname\">Categorical</span> column specifies whether the raster is categorical or continuous.</p></xdoc>",
+        "explanatory_rasters_matching.dt.title1": "Prediction",
+        "explanatory_rasters_matching.dt.title2": "Training",
+        "explanatory_rasters_matching.dt.title3": "Categorical",
+        "explanatory_rasters_matching.title": "Match Explanatory Rasters",
+        "explanatory_variable_matching.descr": "<xdoc><p>A list of the explanatory variables of the input model and corresponding fields of the input prediction features. For each explanatory variable in the <span class=\"esri_fieldname\">Training</span> column, provide the corresponding prediction field in the <span class=\"esri_fieldname\">Prediction</span> column. The <span class=\"esri_fieldname\">Categorical</span> column specifies whether the variable is categorical or continuous.</p></xdoc>",
+        "explanatory_variable_matching.dt.title1": "Prediction",
+        "explanatory_variable_matching.dt.title2": "Training",
+        "explanatory_variable_matching.dt.title3": "Categorical",
+        "explanatory_variable_matching.title": "Match Explanatory Variables",
+        "features_to_predict.descr": "The feature class representing locations where predictions will be made. This feature class must also contain any explanatory variables provided as fields that correspond to those used to train the input model.",
+        "features_to_predict.title": "Input Prediction Features",
+        "input_model.descr": "The spatial statistics model file that will be used to make new predictions.",
+        "input_model.title": "Input Model File",
+        "output_features.descr": "The output feature class containing the prediction results.",
+        "output_features.title": "Output Predicted Features",
+        "output_raster.descr": "The output raster containing the prediction results. The default cell size will be the maximum cell size of the input rasters.",
+        "output_raster.title": "Output Predicted Raster",
+        "prediction_type.descr": "<xdoc><p>Specifies the operation mode that will be used. The tool can predict new features or create a prediction raster surface.</p><ul><li><span title=\"PREDICT_FEATURES\">Predict to features</span>—Predictions or classifications will be generated for features. Explanatory variables must be provided to match variables used to train the input model file. The output of this option will be a feature class and model diagnostics in the messages window.</li><li><span title=\"PREDICT_RASTER\">Predict to raster</span>—A prediction raster will be generated for the area where the explanatory rasters intersect. Explanatory rasters must be provided to match the rasters used to train the input model file. The output of this option will be a prediction surface and model diagnostics in the messages window</li></ul></xdoc>",
+        "prediction_type.domain.PREDICT_FEATURES": "Predict to features",
+        "prediction_type.domain.PREDICT_RASTER": "Predict to raster",
+        "prediction_type.title": "Prediction Type",
+        "title": "Predict Using Spatial Statistics Model File"
+    }
+}

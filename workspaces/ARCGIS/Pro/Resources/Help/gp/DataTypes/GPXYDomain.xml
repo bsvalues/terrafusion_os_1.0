@@ -1,0 +1,5 @@
+<DataType Name="GPXYDomain">
+  <DisplayName>XY Domain</DisplayName>
+  <Description>A range of lowest and highest possible values for x,y-coordinates.</Description>
+</DataType>
+

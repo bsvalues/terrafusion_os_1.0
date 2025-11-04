@@ -1,0 +1,10 @@
+{
+    "set": [
+        "geopdf",
+        "georeference",
+        "geotiff",
+        "iso",
+        "pdf",
+        "tiff"
+    ]
+}

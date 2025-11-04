@@ -1,0 +1,159 @@
+💥 Let’s *geo-infuse* TerraFusionPro with live MLS data + spatial intelligence.
+
+This bootstrap brings you:
+
+> 🧬 **MLS API ingestion + polygon queries**  
+> 🗺️ **Map overlays of risk zones, value bands, and comp density**
+
+---
+
+# 🧬 1. Merge with MLS API
+
+---
+
+## 📦 Data Ingest
+
+### MLS Feed Options:
+
+| Source | Method | Frequency |
+|--------|--------|-----------|
+| RETS (old) | XML over FTP | Daily |
+| RESO Web API | OAuth + JSON | Real-time |
+| Custom/CSV | SFTP or email drop | Nightly |
+
+---
+
+## 📁 ETL Job: `cron/ingestMLS.ts`
+
+```ts
+const mlsData = await fetchMLSListingsSince(lastRunTimestamp);
+
+for (const listing of mlsData) {
+  await db.insert(mlsListings).values({
+    mlsId: listing.id,
+    lat: listing.lat,
+    lng: listing.lng,
+    price: listing.price,
+    bedrooms: listing.beds,
+    bathrooms: listing.baths,
+    sqft: listing.gla,
+    status: listing.status,
+    closedDate: listing.closeDate,
+    sourceJson: listing
+  });
+}
+```
+
+---
+
+## 🗃️ Table: `mls_listings`
+
+```ts
+export const mlsListings = pgTable('mls_listings', {
+  mlsId: text('mls_id').primaryKey(),
+  lat: float('lat'),
+  lng: float('lng'),
+  price: integer('price'),
+  bedrooms: integer('bedrooms'),
+  bathrooms: integer('bathrooms'),
+  sqft: integer('sqft'),
+  status: text('status'), // 'Active', 'Sold'
+  closedDate: date('closed_date'),
+  sourceJson: jsonb('source_json')
+});
+```
+
+---
+
+## ✅ Output
+
+- Daily updated MLS data  
+- Fields auto-mapped to CRDT keys  
+- Used in search, comps, and map overlays
+
+---
+
+# 🗺️ 2. Map-Based Risk Overlays
+
+---
+
+## 💡 Goal
+
+Visualize:
+- 🔥 High-risk areas (manual or AI-tagged)
+- 🟦 Value band heatmaps (sold $/sqft)
+- 🧲 Comp density clusters
+
+---
+
+## 📦 Heatmap API: `GET /map/overlays`
+
+Returns:
+
+```json
+{
+  valueBands: [ { lat, lng, pricePerSqft } ],
+  riskZones: [ { polygon: [...], label: "Flood zone" } ],
+  compDensity: [ { lat, lng, count } ]
+}
+```
+
+---
+
+## 🗺️ Map Layer Loader (CompsMap.tsx)
+
+```tsx
+useEffect(() => {
+  fetch('/api/map/overlays').then(res => res.json()).then(data => {
+    setHeatmap(data.valueBands);
+    setPolygons(data.riskZones);
+    setDensityPoints(data.compDensity);
+  });
+}, []);
+```
+
+---
+
+## 🧠 Risk Scoring Hook + Overlay Sync
+
+```ts
+if (form.property.lat && form.property.lng) {
+  const zone = await spatialQueryRiskZone(form.property.lat, form.property.lng);
+
+  if (zone?.label === 'Flood zone') {
+    flags.push({ field: 'Location', reason: 'Located in Flood Risk Area' });
+    score -= 0.2;
+  }
+}
+```
+
+---
+
+## 🔎 Optional UX: “Map Pulse Mode”
+
+- Toggle → animate overlays (real-time risk)
+- Hover → show avg price, flagged listings
+- Click → drill into 30-day sales history
+
+---
+
+# ✅ What You Now Gain:
+
+| Feature | Benefit |
+|--------|---------|
+| 🧬 MLS Merged | Real-time comps & validation |
+| 🗺️ Risk Mapping | Location-aware alerts |
+| 🔥 Heatmaps | Pattern discovery & client visuals |
+| 📡 Spatial Score | Automatically lowers trust in flagged zones |
+
+---
+
+# 🧭 Want More?
+
+Would you like to:
+
+1. 🛰 Build a **GeoAlert system** (notify if new sale occurs near open report)?
+2. 🧪 Train a **GeoML model** to predict comp adjustments?
+3. 🖼 Generate **auto-map images** in exported PDFs?
+
+Or I can roll this into a **real-time field validation engine** next.

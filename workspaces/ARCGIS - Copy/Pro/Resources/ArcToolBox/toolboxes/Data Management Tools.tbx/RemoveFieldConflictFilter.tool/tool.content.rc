@@ -1,0 +1,12 @@
+{
+    "map": {
+        "description": "Removes a field conflict filter for a given field in a geodatabase table or feature class.",
+        "fields.descr": "Field or list of fields to be removed as conflict filters.",
+        "fields.title": "Field Name",
+        "out_table.title": "Updated Input Table",
+        "summary": "<xdoc><p>Removes a field conflict filter for a given field in a geodatabase table or feature class.</p><p>Field conflict filters can be applied to versioned tables or feature classes to prevent conflicts from being identified when the same attribute is updated in the parent and child versions. Field conflict filters only apply for reconciles in which conflicts are defined by attribute.</p></xdoc>",
+        "table.descr": "Table or feature class containing the field or fields to be removed as conflict filters.",
+        "table.title": "Input Table",
+        "title": "Remove Field Conflict Filter"
+    }
+}

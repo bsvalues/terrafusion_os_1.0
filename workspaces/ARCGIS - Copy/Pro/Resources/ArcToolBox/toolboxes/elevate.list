@@ -1,0 +1,65 @@
+# Content-type : text/yaml; charset=ASCII
+#
+#    Show banner in the tool dialog to use the updated tool
+#            old tool                 new tool
+# format <toolboxalias.ToolName>: <toolboxalias.ToolName>
+#            Tool name is case sensitive 
+#
+3d.Aspect: 3d.SurfaceParameters
+3d.Curvature: 3d.SurfaceParameters
+3d.Import3DFiles: management.Import3DObjects
+3d.Kriging: ga.EmpiricalBayesianKriging
+3d.ObserverPoints: 3d.Viewshed2
+3d.Slope: 3d.SurfaceParameters
+3d.Viewshed: 3d.Viewshed2
+3d.Visibility: 3d.Viewshed2
+analysis.Buffer: analysis.PairwiseBuffer
+analysis.Clip: analysis.PairwiseClip
+analysis.Erase: analysis.PairwiseErase
+analysis.Intersect: analysis.PairwiseIntersect
+conversion.FeatureClassToFeatureClass: conversion.ExportFeatures,depr
+conversion.TableToTable: conversion.ExportTable,depr
+indoorpositioning.EnableIndoorPositioning: indoorpositioning.CreateIPSDataModel
+indoorpositioning.GenerateIndoorPositioningFile: indoorpositioning.GenerateIndoorPositioningDataset
+indoorpositioning.GenerateIndoorPositioningFileWithoutSurvey: indoorpositioning.GenerateIndoorPositioningDataset
+management.Integrate: analysis.PairwiseIntegrate
+management.Dissolve: analysis.PairwiseDissolve
+management.MakeXYEventLayer: management.XYTableToPoint
+management.AddXY: management.CalculateGeometryAttributes
+management.AddGeometryAttributes: management.CalculateGeometryAttributes
+management.CreateRandomPoints: management.CreateSpatialSamplingLocations
+md.MakeNetCDFRasterLayer: md.MakeMultidimensionalRasterLayer
+ra.CalculateDistance: ra.DistanceAllocation,depr
+ra.CalculateTravelCost: ra.DistanceAllocation,depr
+ra.CostPathAsPolyline: ra.OptimalPathAsLine,depr
+ra.DetermineOptimumTravelCostNetwork: ra.OptimalRegionConnections,depr
+ra.DetermineTravelCostPathsToDestinations: ra.OptimalPathAsRaster,depr
+ra.DetermineTravelCostPathAsPolyline: ra.OptimalPathAsLine,depr
+sa.Aspect: sa.SurfaceParameters
+sa.AreaSolarRadiation: sa.RasterSolarRadiation,depr
+sa.CostDistance: sa.DistanceAccumulation,depr
+sa.CostBackLink: sa.DistanceAccumulation,depr
+sa.CostAllocation: sa.DistanceAllocation,depr
+sa.CostPath: sa.OptimalPathAsRaster,depr
+sa.CostPathAsPolyline: sa.OptimalPathAsLine,depr
+sa.CostConnectivity: sa.OptimalRegionConnections,depr
+sa.CreateRandomRaster: management.CreateRandomRaster
+sa.Curvature: sa.SurfaceParameters
+sa.EucDistance: sa.DistanceAccumulation,depr
+sa.EucDirection: sa.DistanceAccumulation,depr
+sa.EucBackDirection: sa.DistanceAccumulation,depr
+sa.EucAllocation: sa.DistanceAllocation,depr
+sa.ExtractValuesToPoints:  sa.ExtractMultiValuesToPoints
+sa.ExtractByPoints: sa.ExtractByMask,depr
+sa.ExtractByPolygon: sa.ExtractByMask,depr
+sa.Kriging: ga.EmpiricalBayesianKriging
+sa.ObserverPoints: sa.Viewshed2
+sa.PathDistance: sa.DistanceAccumulation,depr
+sa.PathBackLink: sa.DistanceAccumulation,depr
+sa.PathAllocation: sa.DistanceAllocation,depr
+sa.PointsSolarRadiation: sa.FeatureSolarRadiation,depr
+sa.Corridor: sa.LeastCostCorridor,depr
+sa.Slope: sa.SurfaceParameters
+sa.Visibility: sa.Viewshed2
+sa.Viewshed: sa.Viewshed2
+stats.OrdinaryLeastSquares: stats.GeneralizedLinearRegression

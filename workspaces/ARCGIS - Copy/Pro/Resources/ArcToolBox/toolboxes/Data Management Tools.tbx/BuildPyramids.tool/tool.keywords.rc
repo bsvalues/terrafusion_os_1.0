@@ -1,0 +1,17 @@
+{
+    "set": [
+        "create pyramids",
+        "delete pyramids",
+        "display",
+        "drop pyramids",
+        "overview",
+        "ovr",
+        "performance",
+        "properties",
+        "reduced resolution dataset",
+        "remove pyramids",
+        "resolution",
+        "rrd",
+        "speed"
+    ]
+}

@@ -1,0 +1,508 @@
+# ============================================================================
+# TerraFusion OS - Prometheus Alerting & Recording Rules
+# Government. Transcended. - Championship-Level Alert Management
+# ============================================================================
+# Purpose: Define alerting rules for critical system conditions
+# Features: Service health, AI agent monitoring, performance alerts
+# Targets: API, Consciousness (50,000 agents), Gateway, Operations
+# Severity Levels: critical, warning, info
+# Alert Routing: Slack, PagerDuty, email notifications
+# ============================================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-rules
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/component: rules
+data:
+  # ==========================================================================
+  # Recording Rules - Pre-computed Aggregations
+  # ==========================================================================
+  recording-rules.yml: |
+    groups:
+      - name: terrafusion_recording_rules
+        interval: 30s
+        rules:
+          # API Request Rate (5m average)
+          - record: terrafusion_api:http_requests:rate5m
+            expr: rate(http_requests_total{job="terrafusion-api"}[5m])
+          
+          # API Error Rate (5m average)
+          - record: terrafusion_api:http_errors:rate5m
+            expr: rate(http_requests_total{job="terrafusion-api",status=~"5.."}[5m])
+          
+          # API Request Duration P50
+          - record: terrafusion_api:http_request_duration:p50
+            expr: histogram_quantile(0.50, rate(http_request_duration_seconds_bucket{job="terrafusion-api"}[5m]))
+          
+          # API Request Duration P95
+          - record: terrafusion_api:http_request_duration:p95
+            expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="terrafusion-api"}[5m]))
+          
+          # API Request Duration P99
+          - record: terrafusion_api:http_request_duration:p99
+            expr: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{job="terrafusion-api"}[5m]))
+          
+          # Consciousness AI Agent Count
+          - record: terrafusion_consciousness:ai_agents:count
+            expr: terrafusion_ai_agent_count{job="terrafusion-consciousness"}
+          
+          # Consciousness AI Agent Utilization
+          - record: terrafusion_consciousness:ai_agents:utilization
+            expr: (terrafusion_ai_active_agents / terrafusion_ai_agent_count) * 100
+          
+          # Consciousness Quantum Factor
+          - record: terrafusion_consciousness:quantum_factor:current
+            expr: terrafusion_ai_quantum_factor{job="terrafusion-consciousness"}
+          
+          # Gateway Request Rate (5m average)
+          - record: terrafusion_gateway:http_requests:rate5m
+            expr: rate(http_requests_total{job="terrafusion-gateway"}[5m])
+          
+          # Gateway Error Rate (5m average)
+          - record: terrafusion_gateway:http_errors:rate5m
+            expr: rate(http_requests_total{job="terrafusion-gateway",status=~"5.."}[5m])
+          
+          # Operations Request Rate (5m average)
+          - record: terrafusion_operations:http_requests:rate5m
+            expr: rate(http_requests_total{job="terrafusion-operations"}[5m])
+          
+          # CPU Usage by Service
+          - record: terrafusion:cpu_usage:by_service
+            expr: sum(rate(container_cpu_usage_seconds_total{namespace="terrafusion"}[5m])) by (pod)
+          
+          # Memory Usage by Service
+          - record: terrafusion:memory_usage:by_service
+            expr: sum(container_memory_usage_bytes{namespace="terrafusion"}) by (pod)
+
+  # ==========================================================================
+  # Alerting Rules - Critical Conditions
+  # ==========================================================================
+  alerting-rules.yml: |
+    groups:
+      # ======================================================================
+      # Service Health Alerts
+      # ======================================================================
+      - name: service_health
+        interval: 30s
+        rules:
+          # API Service Down
+          - alert: TerraFusionAPIDown
+            expr: up{job="terrafusion-api"} == 0
+            for: 1m
+            labels:
+              severity: critical
+              service: api
+              component: backend
+            annotations:
+              summary: "TerraFusion API is down"
+              description: "TerraFusion API service has been down for more than 1 minute. Pod: {{ $labels.pod }}, Namespace: {{ $labels.namespace }}"
+              runbook_url: "https://docs.terrafusion.gov/runbooks/api-down"
+          
+          # Consciousness Service Down
+          - alert: TerraFusionConsciousnessDown
+            expr: up{job="terrafusion-consciousness"} == 0
+            for: 1m
+            labels:
+              severity: critical
+              service: consciousness
+              component: ai-engine
+            annotations:
+              summary: "TerraFusion Consciousness Engine is down"
+              description: "Consciousness Engine (50,000 AI agents) has been down for more than 1 minute. Pod: {{ $labels.pod }}, Namespace: {{ $labels.namespace }}"
+              runbook_url: "https://docs.terrafusion.gov/runbooks/consciousness-down"
+          
+          # Gateway Service Down
+          - alert: TerraFusionGatewayDown
+            expr: up{job="terrafusion-gateway"} == 0
+            for: 1m
+            labels:
+              severity: critical
+              service: gateway
+              component: ingress
+            annotations:
+              summary: "TerraFusion Gateway is down"
+              description: "API Gateway has been down for more than 1 minute. Pod: {{ $labels.pod }}, Namespace: {{ $labels.namespace }}"
+              runbook_url: "https://docs.terrafusion.gov/runbooks/gateway-down"
+          
+          # Operations Service Down
+          - alert: TerraFusionOperationsDown
+            expr: up{job="terrafusion-operations"} == 0
+            for: 1m
+            labels:
+              severity: critical
+              service: operations
+              component: backend
+            annotations:
+              summary: "TerraFusion Operations Service is down"
+              description: "Operations Service has been down for more than 1 minute. Pod: {{ $labels.pod }}, Namespace: {{ $labels.namespace }}"
+              runbook_url: "https://docs.terrafusion.gov/runbooks/operations-down"
+      
+      # ======================================================================
+      # Performance Alerts
+      # ======================================================================
+      - name: performance
+        interval: 30s
+        rules:
+          # High API Response Time (P95 > 100ms)
+          - alert: HighAPIResponseTime
+            expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="terrafusion-api"}[5m])) > 0.1
+            for: 5m
+            labels:
+              severity: warning
+              service: api
+              metric: latency
+            annotations:
+              summary: "High API response time detected"
+              description: "API P95 response time is {{ $value }}s (threshold: 100ms). Pod: {{ $labels.pod }}"
+              runbook_url: "https://docs.terrafusion.gov/runbooks/high-latency"
+          
+          # Very High API Response Time (P95 > 500ms)
+          - alert: VeryHighAPIResponseTime
+            expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="terrafusion-api"}[5m])) > 0.5
+            for: 2m
+            labels:
+              severity: critical
+              service: api
+              metric: latency
+            annotations:
+              summary: "Very high API response time detected"
+              description: "API P95 response time is {{ $value }}s (threshold: 500ms). Immediate action required. Pod: {{ $labels.pod }}"
+              runbook_url: "https://docs.terrafusion.gov/runbooks/very-high-latency"
+          
+          # High Error Rate (>1% errors)
+          - alert: HighAPIErrorRate
+            expr: (rate(http_requests_total{job="terrafusion-api",status=~"5.."}[5m]) / rate(http_requests_total{job="terrafusion-api"}[5m])) > 0.01
+            for: 5m
+            labels:
+              severity: warning
+              service: api
+              metric: errors
+            annotations:
+              summary: "High API error rate detected"
+              description: "API error rate is {{ $value | humanizePercentage }} (threshold: 1%). Pod: {{ $labels.pod }}"
+              runbook_url: "https://docs.terrafusion.gov/runbooks/high-error-rate"
+          
+          # Very High Error Rate (>5% errors)
+          - alert: VeryHighAPIErrorRate
+            expr: (rate(http_requests_total{job="terrafusion-api",status=~"5.."}[5m]) / rate(http_requests_total{job="terrafusion-api"}[5m])) > 0.05
+            for: 2m
+            labels:
+              severity: critical
+              service: api
+              metric: errors
+            annotations:
+              summary: "Very high API error rate detected"
+              description: "API error rate is {{ $value | humanizePercentage }} (threshold: 5%). Immediate action required. Pod: {{ $labels.pod }}"
+              runbook_url: "https://docs.terrafusion.gov/runbooks/very-high-error-rate"
+      
+      # ======================================================================
+      # AI Agent Alerts (Consciousness Engine)
+      # ======================================================================
+      - name: ai_agents
+        interval: 30s
+        rules:
+          # AI Agent Count Below Threshold (<45,000 of 50,000)
+          - alert: LowAIAgentCount
+            expr: terrafusion_ai_agent_count{job="terrafusion-consciousness"} < 45000
+            for: 5m
+            labels:
+              severity: warning
+              service: consciousness
+              metric: agent_count
+            annotations:
+              summary: "AI agent count below threshold"
+              description: "Only {{ $value }} AI agents active (threshold: 45,000 of 50,000). Pod: {{ $labels.pod }}"
+              runbook_url: "https://docs.terrafusion.gov/runbooks/low-agent-count"
+          
+          # AI Agent Count Critically Low (<40,000 of 50,000)
+          - alert: CriticallyLowAIAgentCount
+            expr: terrafusion_ai_agent_count{job="terrafusion-consciousness"} < 40000
+            for: 2m
+            labels:
+              severity: critical
+              service: consciousness
+              metric: agent_count
+            annotations:
+              summary: "AI agent count critically low"
+              description: "Only {{ $value }} AI agents active (threshold: 40,000 of 50,000). Immediate action required. Pod: {{ $labels.pod }}"
+              runbook_url: "https://docs.terrafusion.gov/runbooks/critically-low-agent-count"
+          
+          # Quantum Factor Degradation
+          - alert: QuantumFactorDegradation
+            expr: terrafusion_ai_quantum_factor{job="terrafusion-consciousness"} < 900
+            for: 5m
+            labels:
+              severity: warning
+              service: consciousness
+              metric: quantum_factor
+            annotations:
+              summary: "Quantum optimization factor degraded"
+              description: "Quantum factor is {{ $value }} (expected: 949). Performance may be impacted. Pod: {{ $labels.pod }}"
+              runbook_url: "https://docs.terrafusion.gov/runbooks/quantum-degradation"
+          
+          # High AI Agent Memory Usage (>90%)
+          - alert: HighAIAgentMemoryUsage
+            expr: (terrafusion_ai_memory_usage_bytes / terrafusion_ai_memory_limit_bytes) > 0.9
+            for: 5m
+            labels:
+              severity: warning
+              service: consciousness
+              metric: memory
+            annotations:
+              summary: "High AI agent memory usage"
+              description: "AI agent memory usage is {{ $value | humanizePercentage }} (threshold: 90%). Pod: {{ $labels.pod }}"
+              runbook_url: "https://docs.terrafusion.gov/runbooks/high-memory-usage"
+      
+      # ======================================================================
+      # Resource Alerts
+      # ======================================================================
+      - name: resources
+        interval: 30s
+        rules:
+          # High CPU Usage (>80%)
+          - alert: HighCPUUsage
+            expr: (sum(rate(container_cpu_usage_seconds_total{namespace="terrafusion"}[5m])) by (pod) / sum(container_spec_cpu_quota{namespace="terrafusion"} / container_spec_cpu_period{namespace="terrafusion"}) by (pod)) > 0.8
+            for: 5m
+            labels:
+              severity: warning
+              component: infrastructure
+              metric: cpu
+            annotations:
+              summary: "High CPU usage detected"
+              description: "Pod {{ $labels.pod }} CPU usage is {{ $value | humanizePercentage }} (threshold: 80%)"
+              runbook_url: "https://docs.terrafusion.gov/runbooks/high-cpu-usage"
+          
+          # Very High CPU Usage (>95%)
+          - alert: VeryHighCPUUsage
+            expr: (sum(rate(container_cpu_usage_seconds_total{namespace="terrafusion"}[5m])) by (pod) / sum(container_spec_cpu_quota{namespace="terrafusion"} / container_spec_cpu_period{namespace="terrafusion"}) by (pod)) > 0.95
+            for: 2m
+            labels:
+              severity: critical
+              component: infrastructure
+              metric: cpu
+            annotations:
+              summary: "Very high CPU usage detected"
+              description: "Pod {{ $labels.pod }} CPU usage is {{ $value | humanizePercentage }} (threshold: 95%). Immediate action required."
+              runbook_url: "https://docs.terrafusion.gov/runbooks/very-high-cpu-usage"
+          
+          # High Memory Usage (>85%)
+          - alert: HighMemoryUsage
+            expr: (container_memory_usage_bytes{namespace="terrafusion"} / container_spec_memory_limit_bytes{namespace="terrafusion"}) > 0.85
+            for: 5m
+            labels:
+              severity: warning
+              component: infrastructure
+              metric: memory
+            annotations:
+              summary: "High memory usage detected"
+              description: "Pod {{ $labels.pod }} memory usage is {{ $value | humanizePercentage }} (threshold: 85%)"
+              runbook_url: "https://docs.terrafusion.gov/runbooks/high-memory-usage"
+          
+          # Very High Memory Usage (>95%)
+          - alert: VeryHighMemoryUsage
+            expr: (container_memory_usage_bytes{namespace="terrafusion"} / container_spec_memory_limit_bytes{namespace="terrafusion"}) > 0.95
+            for: 2m
+            labels:
+              severity: critical
+              component: infrastructure
+              metric: memory
+            annotations:
+              summary: "Very high memory usage detected"
+              description: "Pod {{ $labels.pod }} memory usage is {{ $value | humanizePercentage }} (threshold: 95%). Immediate action required."
+              runbook_url: "https://docs.terrafusion.gov/runbooks/very-high-memory-usage"
+          
+          # Pod Restart Loop
+          - alert: PodRestartLoop
+            expr: rate(kube_pod_container_status_restarts_total{namespace="terrafusion"}[15m]) > 0
+            for: 5m
+            labels:
+              severity: warning
+              component: infrastructure
+              metric: restarts
+            annotations:
+              summary: "Pod restart loop detected"
+              description: "Pod {{ $labels.pod }} is restarting frequently ({{ $value }} restarts/min)"
+              runbook_url: "https://docs.terrafusion.gov/runbooks/pod-restart-loop"
+      
+      # ======================================================================
+      # Database Alerts
+      # ======================================================================
+      - name: database
+        interval: 30s
+        rules:
+          # Database Connection Pool Exhaustion
+          - alert: DatabaseConnectionPoolExhaustion
+            expr: (pg_stat_database_numbackends / pg_settings_max_connections) > 0.9
+            for: 5m
+            labels:
+              severity: warning
+              component: database
+              metric: connections
+            annotations:
+              summary: "Database connection pool near exhaustion"
+              description: "PostgreSQL connection usage is {{ $value | humanizePercentage }} (threshold: 90%)"
+              runbook_url: "https://docs.terrafusion.gov/runbooks/db-connection-exhaustion"
+          
+          # Slow Database Queries
+          - alert: SlowDatabaseQueries
+            expr: rate(pg_stat_statements_mean_exec_time[5m]) > 1000
+            for: 5m
+            labels:
+              severity: warning
+              component: database
+              metric: query_performance
+            annotations:
+              summary: "Slow database queries detected"
+              description: "Average query execution time is {{ $value }}ms (threshold: 1000ms)"
+              runbook_url: "https://docs.terrafusion.gov/runbooks/slow-queries"
+      
+      # ======================================================================
+      # Government Compliance Alerts
+      # ======================================================================
+      - name: compliance
+        interval: 60s
+        rules:
+          # Audit Log Ingestion Failure
+          - alert: AuditLogIngestionFailure
+            expr: rate(audit_log_errors_total[5m]) > 0
+            for: 2m
+            labels:
+              severity: critical
+              component: compliance
+              metric: audit_logs
+            annotations:
+              summary: "Audit log ingestion failure detected"
+              description: "Audit logs are failing to ingest. FISMA-High compliance at risk. Error rate: {{ $value }} errors/min"
+              runbook_url: "https://docs.terrafusion.gov/runbooks/audit-log-failure"
+          
+          # County Data Isolation Breach Attempt
+          - alert: CountyDataIsolationBreachAttempt
+            expr: rate(county_isolation_violations_total[5m]) > 0
+            for: 1m
+            labels:
+              severity: critical
+              component: compliance
+              metric: data_isolation
+            annotations:
+              summary: "County data isolation breach attempt detected"
+              description: "Attempted cross-county data access detected. Violation count: {{ $value }}"
+              runbook_url: "https://docs.terrafusion.gov/runbooks/isolation-breach"
+
+---
+# ============================================================================
+# Alertmanager Configuration
+# ============================================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alertmanager-config
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: alertmanager
+data:
+  alertmanager.yml: |
+    global:
+      resolve_timeout: 5m
+      slack_api_url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
+    
+    # Alert Routing
+    route:
+      receiver: 'default'
+      group_by: ['alertname', 'cluster', 'service']
+      group_wait: 10s
+      group_interval: 10s
+      repeat_interval: 12h
+      routes:
+        # Critical alerts go to PagerDuty + Slack
+        - match:
+            severity: critical
+          receiver: 'critical-alerts'
+          continue: true
+        
+        # Warning alerts go to Slack only
+        - match:
+            severity: warning
+          receiver: 'warning-alerts'
+        
+        # AI-specific alerts
+        - match:
+            service: consciousness
+          receiver: 'ai-team'
+        
+        # Compliance alerts (highest priority)
+        - match:
+            component: compliance
+          receiver: 'compliance-team'
+          group_wait: 0s
+          repeat_interval: 1h
+    
+    # Alert Receivers
+    receivers:
+      - name: 'default'
+        slack_configs:
+          - channel: '#terrafusion-alerts'
+            title: 'TerraFusion Alert'
+            text: '{{ range .Alerts }}{{ .Annotations.summary }}\n{{ .Annotations.description }}{{ end }}'
+      
+      - name: 'critical-alerts'
+        pagerduty_configs:
+          - service_key: 'YOUR_PAGERDUTY_SERVICE_KEY'
+            description: '{{ .GroupLabels.alertname }}: {{ .CommonAnnotations.summary }}'
+        slack_configs:
+          - channel: '#terrafusion-critical'
+            title: '🚨 CRITICAL ALERT'
+            text: '{{ range .Alerts }}{{ .Annotations.summary }}\n{{ .Annotations.description }}{{ end }}'
+            color: 'danger'
+      
+      - name: 'warning-alerts'
+        slack_configs:
+          - channel: '#terrafusion-warnings'
+            title: '⚠️ Warning Alert'
+            text: '{{ range .Alerts }}{{ .Annotations.summary }}\n{{ .Annotations.description }}{{ end }}'
+            color: 'warning'
+      
+      - name: 'ai-team'
+        slack_configs:
+          - channel: '#terrafusion-ai-alerts'
+            title: '🤖 AI Engine Alert'
+            text: '{{ range .Alerts }}{{ .Annotations.summary }}\n{{ .Annotations.description }}{{ end }}'
+      
+      - name: 'compliance-team'
+        email_configs:
+          - to: 'compliance@terrafusion.gov'
+            subject: '🔒 COMPLIANCE ALERT: {{ .GroupLabels.alertname }}'
+            body: '{{ range .Alerts }}{{ .Annotations.summary }}\n{{ .Annotations.description }}{{ end }}'
+        slack_configs:
+          - channel: '#terrafusion-compliance'
+            title: '🔒 COMPLIANCE ALERT'
+            text: '{{ range .Alerts }}{{ .Annotations.summary }}\n{{ .Annotations.description }}{{ end }}'
+            color: 'danger'
+
+# ============================================================================
+# Apply Instructions
+# ============================================================================
+# Apply Prometheus rules:
+#   kubectl apply -f prometheus-rules.yaml
+#
+# Reload Prometheus configuration:
+#   curl -X POST http://prometheus:9090/-/reload
+#
+# View active alerts:
+#   # In Prometheus UI: Alerts
+#   # http://localhost:9090/alerts
+#
+# Test alert firing:
+#   # Simulate high error rate
+#   for i in {1..1000}; do curl http://api.terrafusion.gov/error; done
+#
+# View Alertmanager:
+#   kubectl port-forward -n monitoring svc/alertmanager 9093:9093
+#   # Open browser: http://localhost:9093
+#
+# Silence an alert:
+#   # In Alertmanager UI: Create silence with matching labels
+# ============================================================================

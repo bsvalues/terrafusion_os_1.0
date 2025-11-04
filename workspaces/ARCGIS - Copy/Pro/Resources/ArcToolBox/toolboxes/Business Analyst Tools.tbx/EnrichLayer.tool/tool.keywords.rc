@@ -1,0 +1,11 @@
+{
+    "set": [
+        "apportionment",
+        "buffer",
+        "demographic",
+        "drive time",
+        "straight line",
+        "variables",
+        "walk time"
+    ]
+}

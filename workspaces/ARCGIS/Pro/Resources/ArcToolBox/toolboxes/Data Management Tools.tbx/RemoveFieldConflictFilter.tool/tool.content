@@ -1,0 +1,50 @@
+{
+    "type": "FunctionTool",
+    "guid": "{dd870422-e6a5-4ca2-8b92-13c830005a45}",
+    "displayname": "$rc:title",
+    "helpcontent": "3170012",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "block_add_to_map",
+        "input_data_change",
+        "param_nocount:table"
+    ],
+    "params": {
+        "table": {
+            "displayname": "$rc:table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:table.descr"
+        },
+        "fields": {
+            "enabled": "false",
+            "displayname": "$rc:fields.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "depends": [
+                "table"
+            ],
+            "description": "$rc:fields.descr"
+        },
+        "out_table": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "depends": [
+                "table"
+            ]
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

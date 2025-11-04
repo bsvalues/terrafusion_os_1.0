@@ -1,0 +1,22 @@
+{
+    "set": [
+        "atlas",
+        "coordinate",
+        "coordinate system",
+        "graticule",
+        "grid",
+        "index",
+        "index layer",
+        "layout",
+        "map book",
+        "map series",
+        "mapbook",
+        "multi-page layout",
+        "multiple page",
+        "pages",
+        "project",
+        "projection",
+        "projections",
+        "series"
+    ]
+}

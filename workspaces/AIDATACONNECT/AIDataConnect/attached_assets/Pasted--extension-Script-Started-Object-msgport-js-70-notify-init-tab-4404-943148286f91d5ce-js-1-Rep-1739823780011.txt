@@ -1,0 +1,244 @@
+[extension] Script Started Object
+msgport.js:70 {"notify":"init_tab"}
+4404-943148286f91d5ce.js:1 Replit version 92058498, pid2 version 0.0.980
+_app-d995c2353ddaf28b.js:16 
+      /////////////////////
+   ///////////////////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////        Curious and driven?
+  ///////////////@@@@@@@///////        Work with us!
+  ///////////////@@@@@@@///////
+  ///////////////@@@@@@@///////        https://join.replit.com/hack.with.us
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@#//////////////
+   ///////////////////////////
+      /////////////////////
+      
+_app-d995c2353ddaf28b.js:16 [LaunchDarkly] LaunchDarkly client initialized
+_app-d995c2353ddaf28b.js:16 Adding extension: CSS Gradient Generator Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Icon Generator Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Secrets Generator Object
+_app-d995c2353ddaf28b.js:16 Adding extension: portkiller Object
+_app-d995c2353ddaf28b.js:16  registerCommand: calling registerCommand with a single argument is deprecated. Pass a {commandId, contributions} object as the first command. Object
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16 Adding extension: Hex Editor Object
+_app-d995c2353ddaf28b.js:16  Command Random Secret uses deprecated contributions field Object
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16 Adding extension: Sanity Studio Toolkit Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Prettier - Code Formatter Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Magit Object
+_app-d995c2353ddaf28b.js:16 Adding extension: UI Sketcher Object
+_app-d995c2353ddaf28b.js:16  registerCommand: calling registerCommand with a single argument is deprecated. Pass a {commandId, contributions} object as the first command. Object
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Command Magit uses deprecated contributions field Object
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16 Adding extension: SnippetVault - Store Snippets Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Disk Usage Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Google Cloud Auth Object
+_app-d995c2353ddaf28b.js:16  registerCommand: calling registerCommand with a single argument is deprecated. Pass a {commandId, contributions} object as the first command. Object
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Command Disk Usage uses deprecated contributions field Object
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16 Adding extension: ZIP Extractor Object
+_app-d995c2353ddaf28b.js:16 Adding extension: repl.tv Object
+_app-d995c2353ddaf28b.js:16 Adding extension: JSON Editor Object
+_app-d995c2353ddaf28b.js:16 Adding extension: AI Playground Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Root Workbench Object
+_app-d995c2353ddaf28b.js:16 Adding extension: API Request Tester Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Javascript Commands Object
+_app-d995c2353ddaf28b.js:16 Adding extension: CSV Editor Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Perplexity Object
+_app-d995c2353ddaf28b.js:16  Command: javascript-root-command has unrecognized contributions: commandbar. Valid contributions are commandbar,filetree-context-menu,sidebar-search,editor-context-menu Object
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Command: hello has unrecognized contributions: editor-context-menu. Valid contributions are commandbar,filetree-context-menu,sidebar-search,editor-context-menu Object
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16 Adding extension: GPT-Replit - ChatGPT in your Repl. Object
+_app-d995c2353ddaf28b.js:16 Adding extension: ReplDB Export and Import Object
+3_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//pipelines' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//pipelines' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//pipelines' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//data-sources' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//files' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//files' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+2_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//pipelines' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//data-sources' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//files' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//pipelines' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+2_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//pipelines' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//data-sources' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//files' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+2_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//files' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//data-sources' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//pipelines' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//pipelines' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//pipelines' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//pipelines' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//pipelines' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//pipelines' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+3_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//pipelines' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//data-sources' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//files' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//data-sources' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//pipelines' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16 Adding extension: CSS Gradient Generator Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Icon Generator Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Secrets Generator Object
+_app-d995c2353ddaf28b.js:16 Adding extension: portkiller Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Hex Editor Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Sanity Studio Toolkit Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Prettier - Code Formatter Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Magit Object
+_app-d995c2353ddaf28b.js:16 Adding extension: UI Sketcher Object
+_app-d995c2353ddaf28b.js:16 Adding extension: SnippetVault - Store Snippets Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Disk Usage Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Google Cloud Auth Object
+_app-d995c2353ddaf28b.js:16 Adding extension: ZIP Extractor Object
+_app-d995c2353ddaf28b.js:16 Adding extension: repl.tv Object
+_app-d995c2353ddaf28b.js:16 Adding extension: JSON Editor Object
+_app-d995c2353ddaf28b.js:16  registerCommand: calling registerCommand with a single argument is deprecated. Pass a {commandId, contributions} object as the first command. Object
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Command Magit uses deprecated contributions field Object
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  registerCommand: calling registerCommand with a single argument is deprecated. Pass a {commandId, contributions} object as the first command. Object
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  registerCommand: calling registerCommand with a single argument is deprecated. Pass a {commandId, contributions} object as the first command. Object
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Command Disk Usage uses deprecated contributions field Object
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Command Random Secret uses deprecated contributions field Object
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16 Adding extension: AI Playground Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Root Workbench Object
+_app-d995c2353ddaf28b.js:16 Adding extension: API Request Tester Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Javascript Commands Object
+_app-d995c2353ddaf28b.js:16  Command: javascript-root-command has unrecognized contributions: commandbar. Valid contributions are commandbar,filetree-context-menu,sidebar-search,editor-context-menu Object
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16 Adding extension: CSV Editor Object
+_app-d995c2353ddaf28b.js:16 currenUser: Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Perplexity Object
+_app-d995c2353ddaf28b.js:16 Adding extension: GPT-Replit - ChatGPT in your Repl. Object
+_app-d995c2353ddaf28b.js:16 saved keys: Object
+_app-d995c2353ddaf28b.js:16 saved: Object
+_app-d995c2353ddaf28b.js:16  Command: hello has unrecognized contributions: editor-context-menu. Valid contributions are commandbar,filetree-context-menu,sidebar-search,editor-context-menu Object
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16 Adding extension: ReplDB Export and Import Object
+7_app-d995c2353ddaf28b.js:16  If you do not provide children, you must specify an aria-label for accessibility
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16 Adding extension: CSS Gradient Generator Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Icon Generator Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Secrets Generator Object
+_app-d995c2353ddaf28b.js:16 Adding extension: portkiller Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Hex Editor Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Sanity Studio Toolkit Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Prettier - Code Formatter Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Magit Object
+_app-d995c2353ddaf28b.js:16 Adding extension: UI Sketcher Object
+_app-d995c2353ddaf28b.js:16 Adding extension: SnippetVault - Store Snippets Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Disk Usage Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Google Cloud Auth Object
+_app-d995c2353ddaf28b.js:16 Adding extension: ZIP Extractor Object
+_app-d995c2353ddaf28b.js:16 Adding extension: repl.tv Object
+_app-d995c2353ddaf28b.js:16 Adding extension: JSON Editor Object
+_app-d995c2353ddaf28b.js:16 Adding extension: AI Playground Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Root Workbench Object
+_app-d995c2353ddaf28b.js:16  registerCommand: calling registerCommand with a single argument is deprecated. Pass a {commandId, contributions} object as the first command. Object
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Command Magit uses deprecated contributions field Object
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  registerCommand: calling registerCommand with a single argument is deprecated. Pass a {commandId, contributions} object as the first command. Object
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Command Disk Usage uses deprecated contributions field Object
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  registerCommand: calling registerCommand with a single argument is deprecated. Pass a {commandId, contributions} object as the first command. Object
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Command Random Secret uses deprecated contributions field Object
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16 Adding extension: API Request Tester Object
+_app-d995c2353ddaf28b.js:16 Adding extension: Javascript Commands Object
+_app-d995c2353ddaf28b.js:16 Adding extension: CSV Editor Object
+_app-d995c2353ddaf28b.js:16  Command: javascript-root-command has unrecognized contributions: commandbar. Valid contributions are commandbar,filetree-context-menu,sidebar-search,editor-context-menu Object
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16 Adding extension: Perplexity Object
+_app-d995c2353ddaf28b.js:16 Adding extension: GPT-Replit - ChatGPT in your Repl. Object
+_app-d995c2353ddaf28b.js:16  Command: hello has unrecognized contributions: editor-context-menu. Valid contributions are commandbar,filetree-context-menu,sidebar-search,editor-context-menu Object
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16 Adding extension: ReplDB Export and Import Object
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//files' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//files' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//pipelines' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//data-sources' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-d995c2353ddaf28b.js:16
+_app-d995c2353ddaf28b.js:16  Invalid href 'https://693b71d6-d34c-462c-85a3-52bd8b9a34bd-00-1o4v6n1mgxlla.kirk.replit.dev//pipelines' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.

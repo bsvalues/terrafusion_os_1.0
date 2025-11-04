@@ -1,0 +1,46 @@
+{
+    "type": "FunctionTool",
+    "guid": "{33724566-2738-4FE2-903A-A8C439127E50}/ExportSegmentationProfile",
+    "displayname": "$rc:title",
+    "helpcontent": "62070010",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "33",
+        "35"
+    ],
+    "params": {
+        "in_profile": {
+            "displayname": "$rc:in_profile.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "sgprofile"
+                ]
+            },
+            "description": "$rc:in_profile.descr"
+        },
+        "out_table_name": {
+            "direction": "out",
+            "displayname": "$rc:out_table_name.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "depends": [
+                "in_profile"
+            ],
+            "schema": {
+                "type": "GPTableSchema",
+                "fields.rule": "None"
+            },
+            "description": "$rc:out_table_name.descr"
+        }
+    },
+    "environments": [
+        "baDataSource",
+        "workspace"
+    ]
+}

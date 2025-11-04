@@ -1,0 +1,287 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "69000023",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "spark"
+    ],
+    "params": {
+        "input_features": {
+            "display_order": "0",
+            "displayname": "$rc:input_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:input_features.descr"
+        },
+        "output": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:output.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:output.descr"
+        },
+        "track_fields": {
+            "display_order": "2",
+            "displayname": "$rc:track_fields.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "BigInteger",
+                    "Float",
+                    "Double",
+                    "Text"
+                ]
+            },
+            "depends": [
+                "input_features"
+            ],
+            "description": "$rc:track_fields.descr"
+        },
+        "distance_method": {
+            "display_order": "3",
+            "displayname": "$rc:distance_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PLANAR",
+                        "code": "$rc:distance_method.domain.PLANAR"
+                    },
+                    {
+                        "value": "GEODESIC",
+                        "code": "$rc:distance_method.domain.GEODESIC"
+                    }
+                ]
+            },
+            "value": "PLANAR",
+            "description": "$rc:distance_method.descr"
+        },
+        "distance_tolerance": {
+            "display_order": "4",
+            "displayname": "$rc:distance_tolerance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPUnitDomain",
+                "items": [
+                    "Feet",
+                    "Yards",
+                    "Miles",
+                    "NauticalMiles",
+                    "Meters",
+                    "Kilometers",
+                    "FeetInt",
+                    "YardsInt",
+                    "MilesInt",
+                    "NauticalMilesInt"
+                ]
+            },
+            "description": "$rc:distance_tolerance.descr"
+        },
+        "time_tolerance": {
+            "display_order": "5",
+            "displayname": "$rc:time_tolerance.title",
+            "datatype": {
+                "type": "GPTimeUnit"
+            },
+            "domain": {
+                "type": "GPUnitDomain",
+                "items": [
+                    "Milliseconds",
+                    "Seconds",
+                    "Minutes",
+                    "Hours",
+                    "Days",
+                    "Weeks",
+                    "Months",
+                    "Years"
+                ]
+            },
+            "description": "$rc:time_tolerance.descr"
+        },
+        "output_type": {
+            "display_order": "8",
+            "displayname": "$rc:output_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "DWELL_MEAN_CENTERS",
+                        "code": "$rc:output_type.domain.DWELL_MEAN_CENTERS"
+                    },
+                    {
+                        "value": "DWELL_CONVEX_HULLS",
+                        "code": "$rc:output_type.domain.DWELL_CONVEX_HULLS"
+                    },
+                    {
+                        "value": "DWELL_FEATURES",
+                        "code": "$rc:output_type.domain.DWELL_FEATURES"
+                    },
+                    {
+                        "value": "ALL_FEATURES",
+                        "code": "$rc:output_type.domain.ALL_FEATURES"
+                    }
+                ]
+            },
+            "value": "DWELL_FEATURES",
+            "description": "$rc:output_type.descr"
+        },
+        "summary_statistics": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:summary_statistics.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "Field",
+                        "displayname": "$rc:summary_statistics.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:summary_statistics.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFieldDomain",
+                        "fieldtype": [
+                            "Short",
+                            "Long",
+                            "BigInteger",
+                            "Float",
+                            "Double",
+                            "Text",
+                            "Date"
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": "COUNT",
+                                "code": "$rc:summary_statistics.domain.item2.COUNT"
+                            },
+                            {
+                                "value": "SUM",
+                                "code": "$rc:summary_statistics.domain.item2.SUM"
+                            },
+                            {
+                                "value": "MEAN",
+                                "code": "$rc:summary_statistics.domain.item2.MEAN"
+                            },
+                            {
+                                "value": "MIN",
+                                "code": "$rc:summary_statistics.domain.item2.MIN"
+                            },
+                            {
+                                "value": "MAX",
+                                "code": "$rc:summary_statistics.domain.item2.MAX"
+                            },
+                            {
+                                "value": "STDDEV",
+                                "code": "$rc:summary_statistics.domain.item2.STDDEV"
+                            },
+                            {
+                                "value": "VAR",
+                                "code": "$rc:summary_statistics.domain.item2.VAR"
+                            },
+                            {
+                                "value": "RANGE",
+                                "code": "$rc:summary_statistics.domain.item2.RANGE"
+                            },
+                            {
+                                "value": "ANY",
+                                "code": "$rc:summary_statistics.domain.item2.ANY"
+                            },
+                            {
+                                "value": "FIRST",
+                                "code": "$rc:summary_statistics.domain.item2.FIRST"
+                            },
+                            {
+                                "value": "LAST",
+                                "code": "$rc:summary_statistics.domain.item2.LAST"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "input_features"
+            ],
+            "description": "$rc:summary_statistics.descr"
+        },
+        "time_boundary_split": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:time_boundary_split.title",
+            "datatype": {
+                "type": "GPTimeUnit"
+            },
+            "domain": {
+                "type": "GPUnitDomain",
+                "items": [
+                    "Milliseconds",
+                    "Seconds",
+                    "Minutes",
+                    "Hours",
+                    "Days",
+                    "Weeks",
+                    "Months",
+                    "Years"
+                ]
+            },
+            "description": "$rc:time_boundary_split.descr"
+        },
+        "time_boundary_reference": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:time_boundary_reference.title",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:time_boundary_reference.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "outputCoordinateSystem",
+        "workspace"
+    ]
+}

@@ -1,0 +1,19 @@
+{
+    "set": [
+        "add",
+        "basemap",
+        "bundle",
+        "bundles",
+        "cache",
+        "consolidate",
+        "level of detail",
+        "lod",
+        "multi-scale",
+        "multiscale",
+        "package",
+        "tile",
+        "tiles",
+        "vector",
+        "vtpk"
+    ]
+}

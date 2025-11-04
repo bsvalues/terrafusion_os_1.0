@@ -1,0 +1,16 @@
+{
+    "map": {
+        "attribute_field.descr": "Numeric field(s) for which the data median value will be computed.",
+        "attribute_field.title": "Attribute Field",
+        "case_field.descr": "Field used to group features for separate median center calculations. The case field can be of integer, date, or string type.",
+        "case_field.title": "Case Field",
+        "description": "Identifies the location that minimizes overall Euclidean distance to the features in a dataset.",
+        "input_feature_class.descr": "A feature class for which the median center will be calculated.",
+        "input_feature_class.title": "Input Feature Class",
+        "output_feature_class.descr": "A point feature class that will contain the features representing the median centers of the input feature class.",
+        "output_feature_class.title": "Output Feature Class",
+        "title": "Median Center",
+        "weight_field.descr": "The numeric field used to create a weighted median center.",
+        "weight_field.title": "Weight Field"
+    }
+}

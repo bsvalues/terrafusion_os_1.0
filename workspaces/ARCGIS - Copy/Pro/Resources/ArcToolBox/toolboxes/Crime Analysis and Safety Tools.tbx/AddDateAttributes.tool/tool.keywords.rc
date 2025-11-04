@@ -1,0 +1,9 @@
+{
+    "set": [
+        "annual",
+        "crime",
+        "days of month",
+        "days of week",
+        "parse dates"
+    ]
+}

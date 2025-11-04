@@ -1,0 +1,596 @@
+{% extends "base.html" %}
+
+{% block title %}AI Property Recommendations{% endblock %}
+
+{% block head %}
+{{ super() }}
+<style>
+    .property-card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .property-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .match-score-container {
+        position: relative;
+        width: 60px;
+        height: 60px;
+    }
+    
+    .match-score-ring {
+        stroke-dasharray: 100;
+        transition: stroke-dashoffset 1s ease-in-out;
+    }
+    
+    .match-score-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-weight: bold;
+    }
+    
+    .match-reasons {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+    }
+    
+    .match-reasons.expanded {
+        max-height: 500px;
+    }
+    
+    .match-tag {
+        display: inline-block;
+        padding: 3px 8px;
+        margin-right: 5px;
+        margin-bottom: 5px;
+        border-radius: 20px;
+        font-size: 12px;
+        background-color: #e2e8f0;
+        color: #4a5568;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mt-4 mb-5">
+        <div class="col-md-12">
+            <h1 class="display-4">AI Property Recommendations</h1>
+            <p class="lead">Personalized property recommendations based on your preferences and search history.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main content area -->
+        <div class="col-md-8">
+            <!-- Loading spinner -->
+            <div id="loading-spinner" class="text-center py-5 d-none">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <p class="mt-3">Finding the perfect properties for you...</p>
+            </div>
+            
+            <!-- Error message -->
+            <div id="error-message" class="alert alert-danger d-none"></div>
+            
+            <!-- No recommendations message -->
+            <div id="no-recommendations" class="text-center py-5 bg-light rounded d-none">
+                <i class="fas fa-home fa-3x mb-3 text-muted"></i>
+                <h3>No recommendations available</h3>
+                <p class="text-muted">
+                    We couldn't find any property recommendations matching your criteria. Try adjusting your preferences or come back later.
+                </p>
+            </div>
+            
+            <!-- Recommendations container -->
+            <div id="recommendations-container" class="row">
+                <!-- Recommendations will be loaded here -->
+            </div>
+        </div>
+        
+        <!-- Preferences sidebar -->
+        <div class="col-md-4">
+            <div class="card sticky-top" style="top: 20px">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Your Preferences</h5>
+                </div>
+                <div class="card-body">
+                    <form id="preferences-form">
+                        <div class="form-group">
+                            <label for="location">Location</label>
+                            <input type="text" class="form-control" id="location" name="location" placeholder="City, State, or ZIP" value="{{ location }}">
+                        </div>
+                        
+                        <div class="form-group mt-3">
+                            <label for="address">Address Search</label>
+                            <input type="text" class="form-control" id="address" name="address" placeholder="Enter specific address or street name" value="{{ address }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="property_type">Property Type</label>
+                            <select class="form-control" id="property_type" name="property_type">
+                                <option value="">Any</option>
+                                <option value="House" {% if property_type == 'House' %}selected{% endif %}>House</option>
+                                <option value="Condo" {% if property_type == 'Condo' %}selected{% endif %}>Condo</option>
+                                <option value="Townhouse" {% if property_type == 'Townhouse' %}selected{% endif %}>Townhouse</option>
+                                <option value="Apartment" {% if property_type == 'Apartment' %}selected{% endif %}>Apartment</option>
+                                <option value="Land" {% if property_type == 'Land' %}selected{% endif %}>Land</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="min_price">Min Price</label>
+                                <input type="number" class="form-control" id="min_price" name="min_price" placeholder="Min $" min="0" step="1000" value="{{ min_price }}">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="max_price">Max Price</label>
+                                <input type="number" class="form-control" id="max_price" name="max_price" placeholder="Max $" min="0" step="1000" value="{{ max_price }}">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="min_bedrooms">Bedrooms</label>
+                                <select class="form-control" id="min_bedrooms" name="min_bedrooms">
+                                    <option value="">Any</option>
+                                    <option value="1" {% if min_bedrooms == '1' %}selected{% endif %}>1+</option>
+                                    <option value="2" {% if min_bedrooms == '2' %}selected{% endif %}>2+</option>
+                                    <option value="3" {% if min_bedrooms == '3' %}selected{% endif %}>3+</option>
+                                    <option value="4" {% if min_bedrooms == '4' %}selected{% endif %}>4+</option>
+                                    <option value="5" {% if min_bedrooms == '5' %}selected{% endif %}>5+</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="min_bathrooms">Bathrooms</label>
+                                <select class="form-control" id="min_bathrooms" name="min_bathrooms">
+                                    <option value="">Any</option>
+                                    <option value="1">1+</option>
+                                    <option value="1.5">1.5+</option>
+                                    <option value="2">2+</option>
+                                    <option value="2.5">2.5+</option>
+                                    <option value="3">3+</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Must-Have Features</label>
+                            <div class="d-flex flex-wrap">
+                                <div class="feature-tag p-2 m-1 rounded bg-light text-dark cursor-pointer" data-feature="Garage">
+                                    Garage
+                                </div>
+                                <div class="feature-tag p-2 m-1 rounded bg-light text-dark cursor-pointer" data-feature="Pool">
+                                    Pool
+                                </div>
+                                <div class="feature-tag p-2 m-1 rounded bg-light text-dark cursor-pointer" data-feature="Fireplace">
+                                    Fireplace
+                                </div>
+                                <div class="feature-tag p-2 m-1 rounded bg-light text-dark cursor-pointer" data-feature="Central AC">
+                                    Central AC
+                                </div>
+                            </div>
+                            <input type="hidden" id="features" name="features" value="">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-block mt-4">
+                            <i class="fas fa-bolt mr-2"></i> Update Recommendations
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Property card template -->
+<template id="property-card-template">
+    <div class="col-md-6 mb-4">
+        <div class="property-card h-100">
+            <div class="position-relative">
+                <img src="" alt="Property" class="property-image w-100" style="height: 200px; object-fit: cover;">
+                <div class="position-absolute" style="top: 10px; right: 10px;">
+                    <div class="match-score-container bg-white rounded-circle shadow p-2">
+                        <svg class="match-score-ring" viewBox="0 0 36 36">
+                            <circle class="match-score-bg" cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#e2e8f0" stroke-width="2"></circle>
+                            <circle class="match-score-progress" cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#3182ce" stroke-width="2" stroke-dasharray="100" stroke-dashoffset="35"></circle>
+                        </svg>
+                        <span class="match-score-text"></span>
+                    </div>
+                </div>
+                <div class="position-absolute" style="bottom: 0; left: 0; right: 0; padding: 10px; background: linear-gradient(transparent, rgba(0,0,0,0.7));">
+                    <div class="property-price text-white font-weight-bold"></div>
+                </div>
+            </div>
+            
+            <div class="p-3">
+                <h5 class="property-address mb-2"></h5>
+                
+                <div class="property-specs d-flex justify-content-between text-muted small mb-2">
+                    <span class="property-type">
+                        <i class="fas fa-home mr-1"></i>
+                        <span></span>
+                    </span>
+                    <span class="property-beds-baths">
+                        <i class="fas fa-bed mr-1"></i>
+                        <span></span>
+                    </span>
+                    <span class="property-sqft">
+                        <i class="fas fa-ruler-combined mr-1"></i>
+                        <span></span>
+                    </span>
+                </div>
+                
+                <p class="property-description text-muted small mb-3"></p>
+                
+                <div class="match-tags mb-3">
+                    <!-- Match tags will be added here -->
+                </div>
+                
+                <div class="match-explanation mb-3">
+                    <button class="toggle-explanation btn btn-sm btn-outline-primary d-flex align-items-center">
+                        <i class="fas fa-chevron-right toggle-icon mr-1"></i>
+                        <span>Why this property matches you</span>
+                    </button>
+                    <div class="match-reasons mt-2 p-3 bg-light rounded">
+                        <ul class="pl-4 mb-0">
+                            <!-- Match reasons will be added here -->
+                        </ul>
+                    </div>
+                </div>
+                
+                <a href="#" class="property-link btn btn-primary btn-block">View Details</a>
+            </div>
+        </div>
+    </div>
+</template>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // DOM elements
+    const recommendationsContainer = document.getElementById('recommendations-container');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const errorMessage = document.getElementById('error-message');
+    const noRecommendations = document.getElementById('no-recommendations');
+    const preferencesForm = document.getElementById('preferences-form');
+    const featureTags = document.querySelectorAll('.feature-tag');
+    const featuresInput = document.getElementById('features');
+    
+    // Selected features
+    const selectedFeatures = new Set();
+    
+    // Initialize the feature tags
+    featureTags.forEach(tag => {
+        tag.addEventListener('click', () => {
+            const feature = tag.dataset.feature;
+            
+            if (selectedFeatures.has(feature)) {
+                selectedFeatures.delete(feature);
+                tag.classList.remove('bg-primary', 'text-white');
+                tag.classList.add('bg-light', 'text-dark');
+            } else {
+                selectedFeatures.add(feature);
+                tag.classList.remove('bg-light', 'text-dark');
+                tag.classList.add('bg-primary', 'text-white');
+            }
+            
+            // Update the hidden input
+            featuresInput.value = Array.from(selectedFeatures).join(',');
+        });
+    });
+    
+    // Load saved preferences
+    loadPreferences();
+    
+    // Load recommendations on page load
+    loadRecommendations();
+    
+    // Form submission
+    preferencesForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        savePreferences();
+        loadRecommendations();
+    });
+    
+    /**
+     * Load property recommendations from the API
+     */
+    function loadRecommendations() {
+        // Show loading state
+        recommendationsContainer.innerHTML = '';
+        loadingSpinner.classList.remove('d-none');
+        errorMessage.classList.add('d-none');
+        noRecommendations.classList.add('d-none');
+        
+        // Build the query parameters
+        const params = new URLSearchParams();
+        const formData = new FormData(preferencesForm);
+        
+        for (const [key, value] of formData.entries()) {
+            if (value) {
+                params.append(key, value);
+            }
+        }
+        
+        // Fetch recommendations
+        fetch(`/api/property-recommendations?${params.toString()}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Server responded with status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Hide loading state
+                loadingSpinner.classList.add('d-none');
+                
+                // Debug log the response
+                console.log('API Response:', data);
+                
+                if (data.error) {
+                    // Show error message
+                    errorMessage.textContent = data.error;
+                    errorMessage.classList.remove('d-none');
+                    console.error('API returned error:', data.error);
+                    return;
+                }
+                
+                const recommendations = data.recommendations || [];
+                console.log(`Found ${recommendations.length} recommendations`);
+                
+                if (recommendations.length === 0) {
+                    // Show no recommendations message
+                    noRecommendations.classList.remove('d-none');
+                    console.warn('No recommendations were found');
+                    return;
+                }
+                
+                // Render recommendations
+                renderRecommendations(recommendations);
+            })
+            .catch(error => {
+                // Hide loading state and show error
+                loadingSpinner.classList.add('d-none');
+                errorMessage.textContent = `Error loading recommendations: ${error.message}`;
+                errorMessage.classList.remove('d-none');
+                console.error('Error loading recommendations:', error);
+            });
+    }
+    
+    /**
+     * Render property recommendations in the container
+     */
+    function renderRecommendations(recommendations) {
+        recommendationsContainer.innerHTML = '';
+        
+        recommendations.forEach(property => {
+            const card = createPropertyCard(property);
+            recommendationsContainer.appendChild(card);
+        });
+        
+        // Add event listeners for expanding/collapsing match reasons
+        document.querySelectorAll('.toggle-explanation').forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                const reasonsElement = toggle.nextElementSibling;
+                const toggleIcon = toggle.querySelector('.toggle-icon');
+                
+                if (reasonsElement.classList.contains('expanded')) {
+                    reasonsElement.classList.remove('expanded');
+                    toggleIcon.style.transform = 'rotate(0deg)';
+                } else {
+                    reasonsElement.classList.add('expanded');
+                    toggleIcon.style.transform = 'rotate(90deg)';
+                }
+            });
+        });
+    }
+    
+    /**
+     * Create a property card element from the template
+     */
+    function createPropertyCard(property) {
+        const template = document.getElementById('property-card-template');
+        const card = template.content.cloneNode(true);
+        
+        // Set property image
+        const imageElement = card.querySelector('.property-image');
+        imageElement.src = property.image_url || '/static/images/property-placeholder.svg';
+        imageElement.alt = property.address || 'Property';
+        
+        // Set match score
+        const matchScore = property.match_score || 0;
+        const matchScoreText = card.querySelector('.match-score-text');
+        matchScoreText.textContent = `${Math.round(matchScore * 100)}%`;
+        
+        // Set match score ring
+        const matchScoreRing = card.querySelector('.match-score-progress');
+        matchScoreRing.style.strokeDashoffset = 100 - (matchScore * 100);
+        
+        // Set color based on score
+        if (matchScore >= 0.8) {
+            matchScoreRing.style.stroke = '#48bb78'; // Green
+        } else if (matchScore >= 0.6) {
+            matchScoreRing.style.stroke = '#3182ce'; // Blue
+        } else if (matchScore >= 0.4) {
+            matchScoreRing.style.stroke = '#ed8936'; // Orange
+        } else {
+            matchScoreRing.style.stroke = '#e53e3e'; // Red
+        }
+        
+        // Set property price
+        const priceElement = card.querySelector('.property-price');
+        priceElement.textContent = property.price ? `$${property.price.toLocaleString()}` : 'Price not available';
+        
+        // Set property address
+        const addressElement = card.querySelector('.property-address');
+        addressElement.textContent = property.address || 'Address not available';
+        
+        // Set property type
+        const typeElement = card.querySelector('.property-type span');
+        typeElement.textContent = property.property_type || 'Property';
+        
+        // Set beds/baths
+        const bedsElement = card.querySelector('.property-beds-baths span');
+        if (property.bedrooms && property.bathrooms) {
+            bedsElement.textContent = `${property.bedrooms} bd, ${property.bathrooms} ba`;
+        } else if (property.bedrooms) {
+            bedsElement.textContent = `${property.bedrooms} bd`;
+        } else if (property.bathrooms) {
+            bedsElement.textContent = `${property.bathrooms} ba`;
+        } else {
+            bedsElement.textContent = 'N/A';
+        }
+        
+        // Set square feet
+        const sqftElement = card.querySelector('.property-sqft span');
+        sqftElement.textContent = property.square_feet ? `${property.square_feet.toLocaleString()} sqft` : 'N/A';
+        
+        // Set description
+        const descriptionElement = card.querySelector('.property-description');
+        descriptionElement.textContent = property.description || '';
+        
+        // Set match tags
+        const matchTagsContainer = card.querySelector('.match-tags');
+        
+        // Generate tags from match reasons
+        if (property.match_reasons && property.match_reasons.length > 0) {
+            const tagColors = [
+                'bg-blue-100 text-blue-800',
+                'bg-green-100 text-green-800',
+                'bg-purple-100 text-purple-800',
+                'bg-yellow-100 text-yellow-800',
+                'bg-indigo-100 text-indigo-800',
+                'bg-pink-100 text-pink-800'
+            ];
+            
+            // Extract key phrases for tags (first 3-4 words of each reason)
+            const tags = property.match_reasons.map(reason => {
+                const words = reason.split(' ');
+                return words.length > 4 ? words.slice(0, 3).join(' ') + '...' : reason;
+            }).slice(0, 3); // Limit to 3 tags
+            
+            tags.forEach((tag, index) => {
+                const tagElement = document.createElement('span');
+                tagElement.className = `match-tag`;
+                tagElement.textContent = tag;
+                matchTagsContainer.appendChild(tagElement);
+            });
+        }
+        
+        // Set match reasons
+        const matchReasonsContainer = card.querySelector('.match-reasons ul');
+        
+        if (property.match_reasons && property.match_reasons.length > 0) {
+            property.match_reasons.forEach(reason => {
+                const reasonElement = document.createElement('li');
+                reasonElement.textContent = reason;
+                matchReasonsContainer.appendChild(reasonElement);
+            });
+        } else if (property.explanation) {
+            const reasonElement = document.createElement('li');
+            reasonElement.textContent = property.explanation;
+            matchReasonsContainer.appendChild(reasonElement);
+        } else {
+            const reasonElement = document.createElement('li');
+            reasonElement.textContent = 'This property matches your search criteria.';
+            matchReasonsContainer.appendChild(reasonElement);
+        }
+        
+        // Set property link
+        const linkElement = card.querySelector('.property-link');
+        linkElement.href = `/property/${property.id}`;
+        
+        return card;
+    }
+    
+    /**
+     * Save preferences to the session
+     */
+    function savePreferences() {
+        const formData = new FormData(preferencesForm);
+        const preferences = {};
+        
+        for (const [key, value] of formData.entries()) {
+            if (value) {
+                preferences[key] = value;
+            }
+        }
+        
+        // Save to local storage for demo purposes
+        localStorage.setItem('propertyPreferences', JSON.stringify(preferences));
+        
+        // Save to server
+        fetch('/api/save-preferences', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify(preferences)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Preferences saved:', data);
+        })
+        .catch(error => {
+            console.error('Error saving preferences:', error);
+        });
+    }
+    
+    /**
+     * Load saved preferences from session
+     */
+    function loadPreferences() {
+        // Load from local storage for demo purposes
+        const savedPreferences = localStorage.getItem('propertyPreferences');
+        
+        if (savedPreferences) {
+            try {
+                const preferences = JSON.parse(savedPreferences);
+                
+                // Set form values
+                for (const [key, value] of Object.entries(preferences)) {
+                    const input = document.getElementById(key);
+                    
+                    if (input) {
+                        input.value = value;
+                    }
+                }
+                
+                // Set features
+                if (preferences.features) {
+                    const features = preferences.features.split(',');
+                    
+                    features.forEach(feature => {
+                        const featureTag = document.querySelector(`.feature-tag[data-feature="${feature}"]`);
+                        
+                        if (featureTag) {
+                            selectedFeatures.add(feature);
+                            featureTag.classList.remove('bg-light', 'text-dark');
+                            featureTag.classList.add('bg-primary', 'text-white');
+                        }
+                    });
+                    
+                    featuresInput.value = Array.from(selectedFeatures).join(',');
+                }
+            } catch (error) {
+                console.error('Error parsing saved preferences:', error);
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

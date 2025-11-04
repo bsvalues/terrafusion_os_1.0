@@ -1,0 +1,234 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TrueAutomation.ServiceBus.MessageBus</name>
+    </assembly>
+    <members>
+        <member name="T:TrueAutomation.ServiceBus.MessageBus.Bootstrapper">
+            <summary>
+            Implements a bootstrapper type suitable for initialization
+            of the service bus.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.ServiceBus.MessageBus.Bootstrapper.IsTypeAcceptableForThisBootStrapper(System.Type)">
+            <summary>
+            Returns whether or not the specified type is applicable for
+            this bootstrapper type. We accept any types contained in the
+            TrueAutomation.ServiceBus.MessageBus namespace.
+            </summary>
+            <param name="t"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TrueAutomation.ServiceBus.MessageBus.AddInstanceSubscriptionConsumer">
+            <summary>
+            Implements a consumer of workflow launch events.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.ServiceBus.MessageBus.AddInstanceSubscriptionConsumer.serviceBus">
+            <summary>
+            The service bus with which this consumer is associated.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.ServiceBus.MessageBus.AddInstanceSubscriptionConsumer.logger">
+            <summary>
+            The logger instance used by this class for logging.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.ServiceBus.MessageBus.AddInstanceSubscriptionConsumer.Logger">
+            <summary>
+            The logger instance used by this class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.ServiceBus.MessageBus.AddInstanceSubscriptionConsumer.#ctor(Rhino.ServiceBus.IServiceBus)">
+            <summary>
+            Class constructor -- initializes an instance of the
+            <see cref="T:LaunchWorkflowConsumer"/> class.
+            </summary>
+            <param name="serviceBus">The <see cref="T:IServiceBus"/> with which
+            this message is associated. This bus may be used to publish any
+            replies back to the originator of the message.</param>
+        </member>
+        <member name="M:TrueAutomation.ServiceBus.MessageBus.AddInstanceSubscriptionConsumer.Consume(Rhino.ServiceBus.Messages.AddInstanceSubscription)">
+            <summary>
+            Method used to consume incoming messages on the workflow
+            message bus.
+            </summary>
+            <param name="message">The incoming launch-workflow message.</param>
+        </member>
+        <member name="T:TrueAutomation.ServiceBus.MessageBus.LaunchWorkflowConsumer">
+            <summary>
+            Implements a consumer of workflow launch events.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.ServiceBus.MessageBus.LaunchWorkflowConsumer.serviceBus">
+            <summary>
+            The service bus with which this consumer is associated.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.ServiceBus.MessageBus.LaunchWorkflowConsumer.logger">
+            <summary>
+            The logger instance used by this class for logging.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.ServiceBus.MessageBus.LaunchWorkflowConsumer.Logger">
+            <summary>
+            The logger instance used by this class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.ServiceBus.MessageBus.LaunchWorkflowConsumer.#ctor(Rhino.ServiceBus.IServiceBus)">
+            <summary>
+            Class constructor -- initializes an instance of the
+            <see cref="T:LaunchWorkflowConsumer"/> class.
+            </summary>
+            <param name="serviceBus">The <see cref="T:IServiceBus"/> with which
+            this message is associated. This bus may be used to publish any
+            replies back to the originator of the message.</param>
+        </member>
+        <member name="M:TrueAutomation.ServiceBus.MessageBus.LaunchWorkflowConsumer.Consume(TrueAutomation.WorkflowService.Messages.LaunchWorkflowMessage)">
+            <summary>
+            Method used to consume incoming messages on the workflow
+            message bus.
+            </summary>
+            <param name="message">The incoming launch-workflow message.</param>
+        </member>
+        <member name="M:TrueAutomation.ServiceBus.MessageBus.LaunchWorkflowConsumer.Consume(TrueAutomation.WorkflowService.Messages.LaunchActivityMessage)">
+            <summary>
+            Method used to consume incoming messages on the workflow
+            message bus.
+            </summary>
+            <param name="message">The incoming launch-activity message.</param>
+        </member>
+        <member name="M:TrueAutomation.ServiceBus.MessageBus.LaunchWorkflowConsumer.Consume(TrueAutomation.WorkflowService.Messages.AbortWorkflowMessage)">
+            <summary>
+            Method used to consume incoming messages on the workflow
+            message bus.
+            </summary>
+            <param name="message">The incoming abort-workflow message.</param>
+        </member>
+        <member name="T:TrueAutomation.ServiceBus.MessageBus.TaskUpdatedConsumer">
+            <summary>
+            Implements a consumer of task update events.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.ServiceBus.MessageBus.TaskUpdatedConsumer.serviceBus">
+            <summary>
+            The service bus with which this consumer is associated.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.ServiceBus.MessageBus.TaskUpdatedConsumer.logger">
+            <summary>
+            The logger instance used by this class for logging.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.ServiceBus.MessageBus.TaskUpdatedConsumer.Logger">
+            <summary>
+            The logger instance used by this class.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.ServiceBus.MessageBus.TaskUpdatedConsumer.#ctor(Rhino.ServiceBus.IServiceBus)">
+            <summary>
+            Class constructor -- initializes an instance of the
+            <see cref="T:TaskUpdatedConsumer"/> class.
+            </summary>
+            <param name="serviceBus">The <see cref="T:IServiceBus"/> with which
+            this message is associated. This bus may be used to publish any
+            replies back to the originator of the message.</param>
+        </member>
+        <member name="M:TrueAutomation.ServiceBus.MessageBus.TaskUpdatedConsumer.Consume(TrueAutomation.WorkflowService.Messages.TaskUpdatedMessage)">
+            <summary>
+            Method used to consume incoming messages on the workflow
+            message bus.
+            </summary>
+            <param name="message">The incoming task-updated message.</param>
+        </member>
+        <member name="T:TrueAutomation.ServiceBus.MessageBus.IMessageBusContainer">
+            <summary>
+            Defines the contract to be implemented by classes that implement
+            a container for enterprise service bus functionality.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.ServiceBus.MessageBus.IMessageBusContainer.Start">
+            <summary>
+            Starts any configured message queues.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.ServiceBus.MessageBus.IMessageBusContainer.Stop">
+            <summary>
+            Stops any configured message queues.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.ServiceBus.MessageBus.IMessageBusContainer.Bus">
+            <summary>
+            The Service Bus Property
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.ServiceBus.MessageBus.MessageBusContainer">
+            <summary>
+            Implements a simple container for the ESB Service message bus, which
+            enables the message bus functionality to be embedded easily inside
+            of an application host. This container includes functionality for
+            handling the communication back to clients of data changes.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.ServiceBus.MessageBus.MessageBusContainer.logger">
+            <summary>
+            The logger to use for this message bus container.
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.ServiceBus.MessageBus.MessageBusContainer.SequenceNumber">
+            <summary>
+            the number in which messages are sent;
+            </summary>
+        </member>
+        <member name="F:TrueAutomation.ServiceBus.MessageBus.MessageBusContainer.messageBus">
+            <summary>
+            The workflow message bus used for responding to any
+            incoming workflow-related messages.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.ServiceBus.MessageBus.MessageBusContainer.Logger">
+            <summary>
+            The logger associated with this workflow message bus container.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.ServiceBus.MessageBus.MessageBusContainer.Start">
+            <summary>
+            Starts any configured message queues.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.ServiceBus.MessageBus.MessageBusContainer.Stop">
+            <summary>
+            Stops any configured message queues.
+            </summary>
+        </member>
+        <member name="P:TrueAutomation.ServiceBus.MessageBus.MessageBusContainer.Bus">
+            <summary>
+            The Service Bus Property
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.ServiceBus.MessageBus.MessageBusContainer.InitializeQueue(System.String)">
+            <summary>
+            Utility method to create any necessary workflow-related
+            message queues. This method creates both load balancer and
+            worker message queues, even if both are not going to be
+            started on this host.
+            </summary>
+        </member>
+        <member name="T:TrueAutomation.ServiceBus.MessageBus.Windsor.Installer">
+            <summary>
+            Utility class to register any components and facilities implemented
+            by this assembly with our Windsor IoC container.
+            </summary>
+        </member>
+        <member name="M:TrueAutomation.ServiceBus.MessageBus.Windsor.Installer.Install(Castle.Windsor.IWindsorContainer,Castle.MicroKernel.SubSystems.Configuration.IConfigurationStore)">
+            <summary>
+            Registers all our service-related types with the
+            supplied Windsor IoC container.
+            </summary>
+            <param name="container">The container into which to register
+            the service types.</param>
+            <param name="store">Configuration store parameter -- unused in
+            this implementation.</param>
+        </member>
+    </members>
+</doc>

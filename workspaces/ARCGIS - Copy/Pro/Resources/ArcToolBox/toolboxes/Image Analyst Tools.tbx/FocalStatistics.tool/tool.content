@@ -1,0 +1,218 @@
+{
+    "type": "FunctionTool",
+    "guid": "{676b1f2f-2819-4c8c-8045-41ddbf914b36}",
+    "displayname": "$rc:title",
+    "helpcontent": "66090002",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10",
+        "86"
+    ],
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_raster": {
+            "display_order": "0",
+            "displayname": "$rc:in_raster.title",
+            "datatype": {
+                "type": "GPSAGeoData"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "true",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_raster.descr"
+        },
+        "out_raster": {
+            "direction": "out",
+            "display_order": "1",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_raster.descr"
+        },
+        "neighborhood": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:neighborhood.title",
+            "datatype": {
+                "type": "GPSANeighborhood"
+            },
+            "domain": {
+                "type": "GPSANeighborhoodDomain",
+                "neighbourtype": [
+                    "Rectangle",
+                    "Circle",
+                    "Annulus",
+                    "Wedge",
+                    "Irregular",
+                    "Weight"
+                ]
+            },
+            "depends": [
+                "in_raster"
+            ],
+            "value": "Rectangle 3 3 CELL",
+            "description": "$rc:neighborhood.descr"
+        },
+        "statistics_type": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:statistics_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "MEAN",
+                        "code": "$rc:statistics_type.domain.MEAN"
+                    },
+                    {
+                        "value": "MAJORITY",
+                        "code": "$rc:statistics_type.domain.MAJORITY"
+                    },
+                    {
+                        "value": "MAXIMUM",
+                        "code": "$rc:statistics_type.domain.MAXIMUM"
+                    },
+                    {
+                        "value": "MEDIAN",
+                        "code": "$rc:statistics_type.domain.MEDIAN"
+                    },
+                    {
+                        "value": "MINIMUM",
+                        "code": "$rc:statistics_type.domain.MINIMUM"
+                    },
+                    {
+                        "value": "MINORITY",
+                        "code": "$rc:statistics_type.domain.MINORITY"
+                    },
+                    {
+                        "value": "PERCENTILE",
+                        "code": "$rc:statistics_type.domain.PERCENTILE"
+                    },
+                    {
+                        "value": "RANGE",
+                        "code": "$rc:statistics_type.domain.RANGE"
+                    },
+                    {
+                        "value": "STD",
+                        "code": "$rc:statistics_type.domain.STD"
+                    },
+                    {
+                        "value": "SUM",
+                        "code": "$rc:statistics_type.domain.SUM"
+                    },
+                    {
+                        "value": "VARIETY",
+                        "code": "$rc:statistics_type.domain.VARIETY"
+                    }
+                ]
+            },
+            "depends": [
+                "in_raster"
+            ],
+            "value": "MEAN",
+            "description": "$rc:statistics_type.descr"
+        },
+        "ignore_nodata": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:ignore_nodata.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "DATA"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NODATA"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:ignore_nodata.descr"
+        },
+        "percentile_value": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:percentile_value.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                },
+                "high": {
+                    "allow": "true",
+                    "val": "100"
+                }
+            },
+            "depends": [
+                "statistics_type"
+            ],
+            "value": "90",
+            "description": "$rc:percentile_value.descr"
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "cellSize",
+        "cellSizeProjectionMethod",
+        "compression",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "mask",
+        "outputCoordinateSystem",
+        "parallelProcessingFactor",
+        "scratchWorkspace",
+        "snapRaster",
+        "tileSize",
+        "workspace"
+    ]
+}

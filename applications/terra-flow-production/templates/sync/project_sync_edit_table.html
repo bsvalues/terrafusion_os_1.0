@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Project Sync Table{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h6>Edit Project Table</h6>
+                    <p class="text-sm mb-0">Editing table: {{ table.name }}</p>
+                </div>
+                
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('project_sync.edit_table', table_id=table.id) }}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="name" class="form-control-label">Table Name</label>
+                                    <input class="form-control" type="text" id="name" name="name" value="{{ table.name }}" required>
+                                    <small class="form-text text-muted">The exact name of the database table.</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="sync_enabled" class="form-control-label d-block">Sync Enabled</label>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="sync_enabled" name="sync_enabled" {% if table.sync_enabled %}checked{% endif %}>
+                                        <label class="form-check-label" for="sync_enabled">Include this table in sync operations</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="description" class="form-control-label">Description</label>
+                                    <textarea class="form-control" id="description" name="description" rows="3">{{ table.description }}</textarea>
+                                    <small class="form-text text-muted">Describe the purpose of this table.</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ url_for('project_sync.table_config') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i> Back to Tables
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6>Field Configuration</h6>
+                        <p class="text-sm mb-0">Configure fields for table: {{ table.name }}</p>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Add Field Form -->
+                    <form method="POST" action="{{ url_for('project_sync.add_field', table_id=table.id) }}" class="border p-3 mb-4 rounded">
+                        <h6 class="mb-3">Add New Field</h6>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="name" class="form-control-label">Field Name</label>
+                                    <input class="form-control" type="text" id="name" name="name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="description" class="form-control-label">Description</label>
+                                    <input class="form-control" type="text" id="description" name="description">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group d-flex align-items-center mt-4">
+                                    <div class="form-check me-3">
+                                        <input class="form-check-input" type="checkbox" id="sync_enabled" name="sync_enabled" checked>
+                                        <label class="form-check-label" for="sync_enabled">Sync Enabled</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="is_pk" name="is_pk">
+                                        <label class="form-check-label" for="is_pk">Primary Key</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end mt-2">
+                            <button type="submit" class="btn btn-sm btn-primary">
+                                <i class="fas fa-plus me-2"></i> Add Field
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- Fields Table -->
+                    <div class="table-responsive p-0">
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Field Name</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Description</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Status</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Primary Key</th>
+                                    <th class="text-secondary opacity-7"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for field in fields %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex px-2 py-1">
+                                            <div class="d-flex flex-column justify-content-center">
+                                                <h6 class="mb-0 text-sm">{{ field.name }}</h6>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <p class="text-xs text-secondary mb-0">{{ field.description }}</p>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-sm bg-gradient-{{ 'success' if field.sync_enabled else 'secondary' }}">
+                                            {{ 'Enabled' if field.sync_enabled else 'Disabled' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-sm bg-gradient-{{ 'primary' if field.is_primary_key else 'light' }}">
+                                            {{ 'Yes' if field.is_primary_key else 'No' }}
+                                        </span>
+                                    </td>
+                                    <td class="align-middle">
+                                        <form method="POST" action="{{ url_for('project_sync.delete_field', field_id=field.id) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this field configuration?');">
+                                            <button type="submit" class="btn btn-link text-danger mb-0">
+                                                <i class="fas fa-trash text-xs"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-4">
+                                        <p class="text-secondary mb-0">No fields configured yet. Add fields above.</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

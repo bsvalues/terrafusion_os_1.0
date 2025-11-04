@@ -1,0 +1,24 @@
+{
+    "map": {
+        "description": "Generates trade areas from the features of an input standard geography level that has a specified spatial relationship with the input.",
+        "geography_level.descr": "The geography level that will be used to define the trade area.",
+        "geography_level.title": "Geography Level",
+        "id_field.descr": "<xdoc><p>The field that will be used to identify the <span class=\"esri_uicontrol\">Input Features</span> parameter value—for example, the IDs of drive time polygons.</p></xdoc>",
+        "id_field.title": "ID Field",
+        "in_features.descr": "The features that will be used to extract the standard geography level features by the specified spatial relationship. It can be either all features from the layer or only those selected once a selection is available.",
+        "in_features.title": "Input Features",
+        "out_feature_class.descr": "The output feature containing the trade area.",
+        "out_feature_class.title": "Output Feature Class",
+        "overlap_type.descr": "<xdoc><p>Specifies how the subgeography will be selected from the boundary layer.</p><ul><li><span title=\"INTERSECT\">Intersect</span>—If any of the subgeography features touch or intersect the boundary layer, they will be included in the output layer. This is the default.</li><li><span title=\"CENTROID_WITHIN\">Have their center in</span>—If the centroids of any of the subgeography features are contained within the boundary layer, they will be included in the output layer.</li><li><span title=\"COMPLETELY_WITHIN\">Completely within</span>—Only the features of the subgeography layer that are completely contained within the boundary layer will be included in the output layer.</li></ul></xdoc>",
+        "overlap_type.domain.CENTROID_WITHIN": "Have their center in",
+        "overlap_type.domain.COMPLETELY_WITHIN": "Completely within",
+        "overlap_type.domain.INTERSECT": "Intersect",
+        "overlap_type.title": "Relationship",
+        "ratios.descr": "<xdoc><p>Specifies the ratios that will be calculated.</p><ul><li><span title=\"NO_RATIOS\">No ratios</span>—No ratios will be calculated. This is the default.</li><li><span title=\"AREA_ONLY\">Area only</span>—Only the ratios within the portion (area) of the standard geography level that intersects an input feature will be calculated.</li><li><span title=\"ALL_RATIOS\">All ratios</span>—All available ratios will be calculated. This option is not available when using online data.</li></ul></xdoc>",
+        "ratios.domain.ALL_RATIOS": "All ratios",
+        "ratios.domain.AREA_ONLY": "Area only",
+        "ratios.domain.NO_RATIOS": "No ratios",
+        "ratios.title": "Ratios",
+        "title": "Generate Geographies From Overlay"
+    }
+}

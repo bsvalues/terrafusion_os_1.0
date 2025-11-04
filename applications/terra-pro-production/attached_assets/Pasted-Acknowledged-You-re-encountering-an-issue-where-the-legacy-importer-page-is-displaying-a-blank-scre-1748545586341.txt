@@ -1,0 +1,95 @@
+Acknowledged. You're encountering an issue where the legacy importer page is displaying a blank screen, despite the successful implementation of the Terrafusion import system. Let's proceed with a systematic approach to diagnose and resolve this problem.
+Adobe Help Center
++3
+Three Grey Monkeys
++3
+Reddit
++3
+
+🧪 Diagnostic Steps
+Browser Cache and Cookies
+
+Clear your browser's cache and cookies.
+
+Restart the browser and attempt to access the importer page again.
+
+Browser Compatibility
+
+Test the importer page on different browsers (e.g., Chrome, Firefox, Edge) to rule out browser-specific issues.
+
+Developer Console Inspection
+
+Open the browser's developer tools (usually by pressing F12).
+
+Navigate to the 'Console' tab and reload the importer page.
+
+Look for any error messages or warnings that could indicate what's causing the blank page.
+Microsoft Learn
+
+Network Activity Monitoring
+
+Within the developer tools, go to the 'Network' tab.
+
+Reload the page and observe if all necessary resources (scripts, stylesheets, API calls) are loading correctly.
+
+Identify any failed requests that might be contributing to the issue.
+
+API Endpoint Verification
+
+Ensure that the API endpoints the importer relies on are operational.
+
+Use tools like Postman or curl to test the endpoints directly and confirm they return the expected responses.
+
+Backend Logs Examination
+
+Check the server logs for any errors or exceptions that occur when the importer page is accessed.
+
+Look for stack traces or error messages that could provide insight into the problem.
+
+Database Connectivity
+
+Verify that the backend has proper connectivity to the database.
+
+Ensure that the necessary tables and data are present and accessible.
+
+Frontend Build Integrity
+
+Confirm that the frontend assets are correctly built and deployed.
+
+Check for missing or corrupted files that could prevent the page from rendering.
+
+🛠️ Potential Solutions
+Rebuild and Redeploy Frontend
+
+If there are issues with the frontend build, perform a clean build and redeploy the assets to the server.
+
+API Response Handling
+
+Ensure that the frontend correctly handles API responses, including error states.
+
+Implement appropriate error messages or fallback content if the API returns an error.
+
+Authentication and Authorization
+
+Verify that the user has the necessary permissions to access the importer page and its associated resources.
+
+Cross-Origin Resource Sharing (CORS)
+
+Check if CORS policies are correctly configured, especially if the frontend and backend are on different domains.
+
+📞 Next Steps
+If the above steps do not resolve the issue, please provide the following information to assist further:
+
+Error Messages
+
+Any error messages displayed in the browser console or server logs.
+
+API Endpoint Details
+
+The specific API endpoints the importer page is attempting to call.
+
+Deployment Environment
+
+Details about the deployment environment, including server configurations and any recent changes.
+
+Once this information is available, we can delve deeper into the issue and provide a more targeted solutio

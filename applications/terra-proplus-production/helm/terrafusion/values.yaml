@@ -1,0 +1,125 @@
+replicaCount: 2
+
+image:
+  repository: terrafusionpro/api
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets:
+  - name: docker-registry-secret
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/path: "/metrics"
+  prometheus.io/port: "5000"
+
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 5000
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - host: api.terrafusion.pro
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: terrafusion-api-tls
+      hosts:
+        - api.terrafusion.pro
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+env:
+  NODE_ENV: production
+  PORT: 5000
+  LOG_LEVEL: info
+  ENABLE_METRICS: "true"
+
+secrets:
+  database:
+    enabled: true
+    data:
+      DATABASE_URL: ""
+  
+  api:
+    enabled: true
+    data:
+      AI_SERVICE_API_KEY: ""
+
+configMaps:
+  app:
+    enabled: true
+    data:
+      CORS_ALLOWED_ORIGINS: "https://terrafusion.pro,https://app.terrafusion.pro"
+      API_VERSION: "v1"
+
+postgresql:
+  enabled: false
+  auth:
+    username: terrafusion
+    database: terrafusion
+  primary:
+    persistence:
+      size: 20Gi
+
+livenessProbe:
+  enabled: true
+  path: /api/health
+  initialDelaySeconds: 20
+  periodSeconds: 15
+  timeoutSeconds: 5
+  failureThreshold: 3
+  successThreshold: 1
+
+readinessProbe:
+  enabled: true
+  path: /api/health
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+  successThreshold: 1

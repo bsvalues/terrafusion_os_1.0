@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">Historic Property Special Valuation Calculator</h1>
+    <p class="lead">Calculate special valuations for historic properties under RCW 84.26.</p>
+    
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('valuation.valuation_dashboard') }}">Valuation</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Historic Property</li>
+        </ol>
+    </nav>
+    
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
+    
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Calculator</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{{ url_for('valuation.historic_property_calculator') }}">
+                        <div class="mb-3">
+                            <label for="property_value" class="form-label">Current Property Value</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="property_value" name="property_value" min="1" step="1" required value="{{ form_data.property_value if form_data else '' }}">
+                            </div>
+                            <div class="form-text">Current assessed value before rehabilitation.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="rehabilitation_costs" class="form-label">Rehabilitation Costs</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="rehabilitation_costs" name="rehabilitation_costs" min="1" step="1" required value="{{ form_data.rehabilitation_costs if form_data else '' }}">
+                            </div>
+                            <div class="form-text">Actual cost of approved rehabilitation work. Must be at least 25% of property value.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="rehabilitation_date" class="form-label">Rehabilitation Completion Date</label>
+                            <input type="date" class="form-control" id="rehabilitation_date" name="rehabilitation_date" required value="{{ form_data.rehabilitation_date if form_data else '' }}">
+                            <div class="form-text">Date when rehabilitation work was completed.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="historic_register" class="form-label">Historic Register Type</label>
+                            <select class="form-select" id="historic_register" name="historic_register" required>
+                                <option value="national_register" {% if form_data and form_data.historic_register == 'national_register' %}selected{% endif %}>National Register of Historic Places</option>
+                                <option value="washington_heritage_register" {% if form_data and form_data.historic_register == 'washington_heritage_register' %}selected{% endif %}>Washington Heritage Register</option>
+                                <option value="local_register" {% if form_data and form_data.historic_register == 'local_register' %}selected{% endif %}>Local Historic Register</option>
+                            </select>
+                            <div class="form-text">Type of historic designation for the property.</div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Calculate</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            {% if result and result.success %}
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Special Valuation Result</h5>
+                </div>
+                <div class="card-body">
+                    <h2 class="text-center mb-4">${{ '{:,.2f}'.format(result.value) }}</h2>
+                    
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th>Original Value:</th>
+                                <td>${{ '{:,.2f}'.format(result.original_value) }}</td>
+                            </tr>
+                            <tr>
+                                <th>Rehabilitation Costs:</th>
+                                <td>${{ '{:,.2f}'.format(result.rehabilitation_costs) }}</td>
+                            </tr>
+                            <tr>
+                                <th>Excluded Value:</th>
+                                <td>${{ '{:,.2f}'.format(result.excluded_value) }}</td>
+                            </tr>
+                            <tr>
+                                <th>Years Remaining:</th>
+                                <td>{{ result.years_remaining }} years</td>
+                            </tr>
+                            <tr>
+                                <th>Expiration Date:</th>
+                                <td>{{ result.expiration_date }}</td>
+                            </tr>
+                            <tr>
+                                <th>Valuation Method:</th>
+                                <td>Special Valuation per RCW 84.26</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="alert alert-info mt-3">
+                        <h6>Jurisdiction Requirements</h6>
+                        <ul class="mb-0">
+                            {% for key, value in result.jurisdiction_requirements.items() %}
+                            <li>{{ key|replace('_', ' ')|capitalize }}: {{ 'Yes' if value else 'No' }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% elif not result %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Information</h5>
+                </div>
+                <div class="card-body">
+                    <h5>Historic Property Special Valuation (RCW 84.26)</h5>
+                    <p>The special valuation program for historic properties allows certain rehabilitation costs to be excluded from the property's assessed value for up to 10 years.</p>
+                    
+                    <h5>Eligibility Requirements</h5>
+                    <ul>
+                        <li>Property must be listed on a historic register (national, state, or local)</li>
+                        <li>Rehabilitation costs must be at least 25% of the property's assessed value</li>
+                        <li>Rehabilitation work must be completed within 24 months</li>
+                        <li>Rehabilitation must be certified by local review board</li>
+                        <li>Owner must enter into an agreement with local jurisdiction</li>
+                    </ul>
+                    
+                    <h5>Special Valuation Period</h5>
+                    <p>The special valuation period is 10 years from the date of application approval. After this period expires, the property returns to standard valuation.</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

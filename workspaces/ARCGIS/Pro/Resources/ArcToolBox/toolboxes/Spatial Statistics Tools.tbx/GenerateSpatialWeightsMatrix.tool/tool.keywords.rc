@@ -1,0 +1,11 @@
+{
+    "set": [
+        "contiguity",
+        "delaunay",
+        "distance",
+        "feature",
+        "neighbor",
+        "swm",
+        "time"
+    ]
+}

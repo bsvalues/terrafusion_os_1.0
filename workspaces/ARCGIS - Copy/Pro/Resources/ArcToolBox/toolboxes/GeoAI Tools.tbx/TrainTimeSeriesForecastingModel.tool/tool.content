@@ -1,0 +1,252 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "79040001",
+    "description": "$rc:description",
+    "product": "300",
+    "attributes": [
+        "GPU",
+        "mCPU"
+    ],
+    "params": {
+        "in_cube": {
+            "displayname": "$rc:in_cube.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "nc"
+                ]
+            },
+            "description": "$rc:in_cube.descr"
+        },
+        "out_model": {
+            "direction": "out",
+            "displayname": "$rc:out_model.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "schema": {
+                "type": "GPContainerSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_model.descr"
+        },
+        "analysis_variable": {
+            "displayname": "$rc:analysis_variable.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "in_cube"
+            ],
+            "description": "$rc:analysis_variable.descr"
+        },
+        "sequence_length": {
+            "displayname": "$rc:sequence_length.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:sequence_length.descr"
+        },
+        "explanatory_variables": {
+            "type": "optional",
+            "displayname": "$rc:explanatory_variables.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:explanatory_variables.dt.title1"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "displayname": "$rc:explanatory_variables.dt.title2"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPCodedValueDomain",
+                        "items": [
+                            {
+                                "value": " ",
+                                "code": "$rc:explanatory_variables.domain.item1. "
+                            }
+                        ]
+                    },
+                    {
+                        "type": "GPCodedValueDomain"
+                    }
+                ]
+            },
+            "depends": [
+                "in_cube"
+            ],
+            "description": "$rc:explanatory_variables.descr"
+        },
+        "max_epochs": {
+            "type": "optional",
+            "displayname": "$rc:max_epochs.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "20",
+            "description": "$rc:max_epochs.descr"
+        },
+        "validation_timesteps": {
+            "type": "optional",
+            "displayname": "$rc:validation_timesteps.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "description": "$rc:validation_timesteps.descr"
+        },
+        "model_type": {
+            "type": "optional",
+            "displayname": "$rc:model_type.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "InceptionTime",
+                        "code": "$rc:model_type.domain.InceptionTime"
+                    },
+                    {
+                        "value": "ResNet",
+                        "code": "$rc:model_type.domain.ResNet"
+                    },
+                    {
+                        "value": "ResCNN",
+                        "code": "$rc:model_type.domain.ResCNN"
+                    },
+                    {
+                        "value": "FCN",
+                        "code": "$rc:model_type.domain.FCN"
+                    },
+                    {
+                        "value": "LSTM",
+                        "code": "$rc:model_type.domain.LSTM"
+                    },
+                    {
+                        "value": "TimeSeriesTransformer",
+                        "code": "$rc:model_type.domain.TimeSeriesTransformer"
+                    }
+                ]
+            },
+            "value": "InceptionTime",
+            "description": "$rc:model_type.descr"
+        },
+        "batch_size": {
+            "type": "optional",
+            "displayname": "$rc:batch_size.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "2",
+                "max": "999999999999999"
+            },
+            "value": "64",
+            "description": "$rc:batch_size.descr"
+        },
+        "arguments": {
+            "type": "optional",
+            "displayname": "$rc:arguments.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:arguments.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:arguments.dt.title2"
+                    }
+                ]
+            },
+            "description": "$rc:arguments.descr"
+        },
+        "early_stopping": {
+            "type": "optional",
+            "displayname": "$rc:early_stopping.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "value": "true",
+            "description": "$rc:early_stopping.descr"
+        },
+        "out_features": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_features.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_features.descr"
+        },
+        "out_cube": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_cube.title",
+            "category": "$rc:params.category2",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "nc"
+                ]
+            },
+            "description": "$rc:out_cube.descr"
+        },
+        "multistep": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:multistep.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "value": "false",
+            "description": "$rc:multistep.descr"
+        },
+        "out_model_file": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_model_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "depends": [
+                "out_model"
+            ]
+        }
+    },
+    "environments": [
+        "geographicTransformations",
+        "gpuID",
+        "outputCoordinateSystem",
+        "processorType",
+        "randomGenerator"
+    ]
+}

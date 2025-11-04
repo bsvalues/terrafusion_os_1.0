@@ -1,0 +1,18 @@
+{
+    "set": [
+        "aggregate",
+        "buffer",
+        "close",
+        "count",
+        "distance",
+        "drive",
+        "near",
+        "overlay",
+        "proximity",
+        "simplify",
+        "sum",
+        "summary",
+        "visualize",
+        "walking"
+    ]
+}

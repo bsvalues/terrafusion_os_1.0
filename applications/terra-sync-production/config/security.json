@@ -1,0 +1,23 @@
+{
+  "authentication": {
+    "session_timeout": 3600,
+    "password_policy": {
+      "min_length": 12,
+      "require_uppercase": true,
+      "require_lowercase": true,
+      "require_numbers": true,
+      "require_symbols": true
+    },
+    "mfa_enabled": true,
+    "lockout_threshold": 5
+  },
+  "authorization": {
+    "rbac_enabled": true,
+    "default_role": "viewer",
+    "admin_role": "admin"
+  },
+  "encryption": {
+    "algorithm": "AES-256-GCM",
+    "key_rotation_days": 90
+  }
+}

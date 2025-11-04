@@ -1,0 +1,22 @@
+{
+    "set": [
+        "cartography",
+        "catalog",
+        "catalogue",
+        "cell",
+        "dnc",
+        "export",
+        "geodatabase",
+        "import",
+        "import vpf",
+        "load",
+        "maritime",
+        "s-100",
+        "s-101",
+        "s-57",
+        "s100",
+        "s101",
+        "tod",
+        "vpf"
+    ]
+}

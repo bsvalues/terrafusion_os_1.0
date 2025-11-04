@@ -1,0 +1,218 @@
+{
+    "type": "FunctionTool",
+    "guid": "{73f95d6d-fc88-41cc-a97f-c884880a9d25}",
+    "displayname": "$rc:title",
+    "helpcontent": "8030005",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10"
+    ],
+    "categories": [
+        "{7479dc37-304a-4078-a72f-d5c89b85822a}"
+    ],
+    "params": {
+        "in_destination_data": {
+            "display_order": "0",
+            "displayname": "$rc:in_destination_data.title",
+            "datatype": {
+                "type": "GPSAGeoData"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "true",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "DEFeatureClass",
+                    "GPFeatureLayer",
+                    "DETin",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Text"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_destination_data.descr"
+        },
+        "in_cost_distance_raster": {
+            "display_order": "2",
+            "displayname": "$rc:in_cost_distance_raster.title",
+            "datatype": {
+                "type": "GPSAGeoData"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "true",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_cost_distance_raster.descr"
+        },
+        "in_cost_backlink_raster": {
+            "display_order": "3",
+            "displayname": "$rc:in_cost_backlink_raster.title",
+            "datatype": {
+                "type": "GPSAGeoData"
+            },
+            "domain": {
+                "type": "GPSAGeoDataDomain",
+                "checkfield": "true",
+                "singleband": "false",
+                "datatype": [
+                    "DERasterDataset",
+                    "DERasterBand",
+                    "GPRasterLayer",
+                    "DEMosaicDataset",
+                    "GPMosaicLayer",
+                    "GPRasterCalculatorExpression",
+                    "DETable",
+                    "DEImageServer",
+                    "DEFile"
+                ],
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Text"
+                ],
+                "geometrytype": [
+                    "Point",
+                    "Polygon",
+                    "Polyline",
+                    "Multipoint"
+                ]
+            },
+            "description": "$rc:in_cost_backlink_raster.descr"
+        },
+        "out_raster": {
+            "direction": "out",
+            "display_order": "4",
+            "displayname": "$rc:out_raster.title",
+            "datatype": {
+                "type": "DERasterDataset"
+            },
+            "description": "$rc:out_raster.descr"
+        },
+        "path_type": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:path_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "EACH_CELL",
+                        "code": "$rc:path_type.domain.EACH_CELL"
+                    },
+                    {
+                        "value": "EACH_ZONE",
+                        "code": "$rc:path_type.domain.EACH_ZONE"
+                    },
+                    {
+                        "value": "BEST_SINGLE",
+                        "code": "$rc:path_type.domain.BEST_SINGLE"
+                    }
+                ]
+            },
+            "value": "EACH_CELL",
+            "description": "$rc:path_type.descr"
+        },
+        "destination_field": {
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:destination_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "guid": "{4B6CA858-5716-4AC3-A2EE-70EE2D29C1BD}",
+                "userasterfields": "true",
+                "fieldtype": [
+                    "Short",
+                    "Long"
+                ]
+            },
+            "depends": [
+                "in_destination_data"
+            ],
+            "description": "$rc:destination_field.descr"
+        },
+        "force_flow_direction_convention": {
+            "type": "optional",
+            "displayname": "$rc:force_flow_direction_convention.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "INPUT_RANGE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "FLOW_DIRECTION"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:force_flow_direction_convention.descr"
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "compression",
+        "configKeyword",
+        "pyramid",
+        "scratchWorkspace",
+        "tileSize",
+        "workspace"
+    ]
+}

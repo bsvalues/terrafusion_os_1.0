@@ -1,0 +1,29 @@
+{
+    "map": {
+        "description": "Exports aeronautical data to an AIXM 5.1 message.",
+        "export_type.descr": "<xdoc><p>Specifies the AIXM temporality type the message represents.</p><ul><li><span title=\"BASELINE\">Baseline</span>— The message contains all features in a given message.</li><li><span title=\"SNAPSHOT\">Snapshot</span>—The message contains all features at a specific point in time.</li><li><span title=\"PERM_DELTA\">Permanent Delta</span>—The message contains updates in a given time slice in features as a result of a baseline update.</li><li><span title=\"TEMP_DELTA\">Temporary Delta</span>—The message contains changes for some features in a given time slice representing a temporary event.</li></ul></xdoc>",
+        "export_type.domain.BASELINE": "Baseline",
+        "export_type.domain.PERM_DELTA": "Permanent Delta",
+        "export_type.domain.SNAPSHOT": "Snapshot",
+        "export_type.domain.TEMP_DELTA": "Temporary Delta",
+        "export_type.title": "Export Type",
+        "from_time.descr": "<xdoc><p>The starting time that will be applied to the <span class=\"esri_fieldname\">validTime\\beginPosition</span> and <span class=\"esri_fieldname\">featureLifetime\\beginPosition</span> fields in the output message types for any missing <span class=\"esri_fieldname\">ValidFrom_Date</span> or <span class=\"esri_fieldname\">FeatureFrom_Date</span> field values in the features to export. The value will be converted to UTC. If a value is not specified, the current system date and time in UTC will be applied to the missing field values in the output message.</p><p>This parameter will be used differently depending on the <span class=\"esri_uicontrol\">Export Type</span> parameter value.</p><ul><li>Baseline—The parameter will be honored only when the actual database record does not have the <span class=\"esri_fieldname\">FromFeature_Date</span> or <span class=\"esri_fieldname\">ValidFrom_Date</span> attributes populated.</li><li>Snapshot—The parameter value provided will be exported regardless of the <span class=\"esri_fieldname\">FromFeature_Date</span> and <span class=\"esri_fieldname\">ValidFrom_Date</span> attributes in the database.</li><li>Permanent Delta—The parameter will be honored only when the actual database record does not have the <span class=\"esri_fieldname\">FromFeature_Date</span> or <span class=\"esri_fieldname\">ValidFrom_Date</span> attributes populated.</li><li>Temporary Delta—The parameter will be honored only when the actual database record does not have the <span class=\"esri_fieldname\">FromFeature_Date</span> or the <span class=\"esri_fieldname\">ValidFrom_Date</span> attributes populated.</li></ul></xdoc>",
+        "from_time.title": "From Time",
+        "in_aviation_workspace.descr": "The AIS schema workspace.",
+        "in_aviation_workspace.title": "Input Aviation Workspace",
+        "in_filter_layers.descr": "<xdoc><p>The layers that will filter output to a smaller spatial subset. The input layers should be AIXM 5.1 feature types. This value should be in the same AIS geodatabase as the <span class=\"esri_uicontrol\">Input Aviation Workspace</span> parameter value.</p></xdoc>",
+        "in_filter_layers.title": "Input Filter Layers",
+        "last_modified_time.descr": "The date that will be used to filter the output to only features modified after that date.",
+        "last_modified_time.title": "Last Modified Time",
+        "out_message_file.descr": "The exported AIXM 5.1 message as an .xml file.",
+        "out_message_file.title": "Output Message File",
+        "out_validation_log.descr": "The output XML validation log file.",
+        "out_validation_log.title": "Output Validation Log",
+        "summary": "<xdoc><p>Exports aeronautical data to an AIXM 5.1 message.</p><p>An AIXM message is a standard data exchange format for aeronautical data. AIXM is a well-established information exchange format in the aviation domain. Using aeronautical data in this format is an important step in the creation of an ArcGIS Aviation Charting product. This tool allows you to export data from an Aeronautical Information System (AIS) schema geodatabase as an AIXM message.</p></xdoc>",
+        "title": "Export AIXM 5.1 Message",
+        "to_time.descr": "<xdoc><p>The ending time that will be applied to the <span class=\"esri_fieldname\">validTime\\endPosition</span> and <span class=\"esri_fieldname\">featureLifetime\\endPosition</span> fields in the output message types for any missing <span class=\"esri_fieldname\">ValidTo_Date</span> or <span class=\"esri_fieldname\">FeatureTo_Date</span> field values in the features to export. The value will be converted to UTC. If a value is not specified, the current system date and time in UTC will be applied to the missing field values in the output message.</p><p>This parameter is only valid when the <span class=\"esri_uicontrol\">Export Type</span> parameter is set to <span class=\"esri_uicontrol\">Temporary Delta</span>.</p></xdoc>",
+        "to_time.title": "To Time",
+        "validate_output.descr": "<xdoc><p>Specifies whether the exported message will be validated for the XML format. You must be connected to the internet for validation to succeed.</p><ul><li>Checked—The exported message will be validated for the XML format.</li><li>Unchecked—The exported message will not be validated for the XML format. This is the default.</li></ul></xdoc>",
+        "validate_output.title": "Validate Output"
+    }
+}

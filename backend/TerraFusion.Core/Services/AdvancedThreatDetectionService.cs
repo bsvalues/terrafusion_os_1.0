@@ -9,6 +9,9 @@ using System.Text;
 using System.Collections.Concurrent;
 using System.Linq;
 
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators
+
 namespace TerraFusion.Core.Services
 {
     public interface IAdvancedThreatDetectionService
@@ -357,8 +360,8 @@ namespace TerraFusion.Core.Services
             // Location-based risk factors
             if (context.ContainsKey("ip_address"))
             {
-                var ipAddress = context["ip_address"].ToString();
-                if (await IsHighRiskLocationAsync(ipAddress))
+                var ipAddress = context["ip_address"]?.ToString();
+                if (!string.IsNullOrEmpty(ipAddress) && await IsHighRiskLocationAsync(ipAddress))
                 {
                     riskFactors.Add(new RiskFactor 
                     { 
@@ -534,7 +537,7 @@ namespace TerraFusion.Core.Services
                     var responseContent = await response.Content.ReadAsStringAsync();
                     var result = JsonSerializer.Deserialize<Dictionary<string, object>>(responseContent);
                     
-                    if (result.ContainsKey("threat_score"))
+                    if (result != null && result.ContainsKey("threat_score"))
                     {
                         return Convert.ToDouble(result["threat_score"]);
                     }

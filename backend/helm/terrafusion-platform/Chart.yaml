@@ -1,0 +1,80 @@
+apiVersion: v2
+name: terrafusion-platform
+description: |
+  TerraFusion OS - Complete Government AI Platform
+  Government. Transcended. - Unified deployment for 50,000+ AI agents across 39 Washington State counties
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+
+keywords:
+  - government
+  - ai-platform
+  - kubernetes
+  - microservices
+  - fisma-high
+  - quantum-optimization
+
+maintainers:
+  - name: TerraFusion Engineering
+    email: engineering@terrafusion.gov
+    url: https://terrafusion.gov
+
+sources:
+  - https://github.com/terrafusion/terrafusion-os
+
+home: https://terrafusion.gov
+
+icon: https://terrafusion.gov/assets/terrafusion-icon.svg
+
+annotations:
+  terrafusion.io/platform: "complete"
+  terrafusion.io/ai-agents: "50000"
+  terrafusion.io/counties: "39"
+  terrafusion.io/quantum-factor: "949"
+  terrafusion.io/compliance: "FISMA-High"
+
+# Dependencies - All TerraFusion microservices
+dependencies:
+  - name: terrafusion-api
+    version: 1.0.0
+    repository: file://../terrafusion-api
+    condition: api.enabled
+    tags:
+      - core
+    import-values:
+      - child: global
+        parent: global
+
+  - name: terrafusion-consciousness
+    version: 1.0.0
+    repository: file://../terrafusion-consciousness
+    condition: consciousness.enabled
+    tags:
+      - ai
+      - core
+    import-values:
+      - child: global
+        parent: global
+
+  - name: terrafusion-gateway
+    version: 1.0.0
+    repository: file://../terrafusion-gateway
+    condition: gateway.enabled
+    tags:
+      - core
+      - networking
+    import-values:
+      - child: global
+        parent: global
+
+  - name: terrafusion-operations
+    version: 1.0.0
+    repository: file://../terrafusion-operations
+    condition: operations.enabled
+    tags:
+      - core
+      - county-integration
+    import-values:
+      - child: global
+        parent: global

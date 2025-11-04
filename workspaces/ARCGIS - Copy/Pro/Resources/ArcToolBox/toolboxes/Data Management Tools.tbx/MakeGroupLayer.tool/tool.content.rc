@@ -1,0 +1,8 @@
+{
+    "map": {
+        "description": "Make Group Layer",
+        "layers.title": "FeatureClasses To Add",
+        "out_layer.title": "Output Layer",
+        "title": "Make Group Layer"
+    }
+}

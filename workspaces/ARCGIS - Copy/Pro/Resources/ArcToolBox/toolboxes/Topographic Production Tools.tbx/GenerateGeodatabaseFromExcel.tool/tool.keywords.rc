@@ -1,0 +1,15 @@
+{
+    "set": [
+        "data management",
+        "defense",
+        "defense mapping",
+        "excel",
+        "geodatabase",
+        "geodatabase management",
+        "production",
+        "production mapping",
+        "topo",
+        "topographic",
+        "topographic production"
+    ]
+}

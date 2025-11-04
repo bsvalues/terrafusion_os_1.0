@@ -1,0 +1,5 @@
+<DataType Name="GPSAExtractValues">
+  <DisplayName>Extract Values</DisplayName>
+  <Description>An extract values parameter.</Description>
+</DataType>
+

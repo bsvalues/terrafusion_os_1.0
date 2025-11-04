@@ -1,0 +1,87 @@
+Here’s a structured, multi‑phase set of natural‑language prompts you can feed to your Replit AI Agent to build the complete modular appraisal platform end‑to‑end. Each phase spells out exactly what to ask the Agent, leveraging best practices in prompt design and Replit’s built‑in AI tooling.
+
+In summary, you’ll:
+	1.	Initialize the project scaffold and dev environment.
+	2.	Build the core desktop form‑filler with embedded worksheets.
+	3.	Create the offline‑capable mobile inspection PWA.
+	4.	Develop the serverless reporting engine and standalone compliance microservice.
+	5.	Integrate MISMO® XML/API connectors, test suites, and CI/CD pipelines.
+
+All prompts are written in everyday language, as Replit Agent expects—be specific, attach any spec files, and iterate with “review and refine” calls.
+
+⸻
+
+Phase 1: Project Initialization & Dev Environment
+
+Prompt to Agent:
+
+“Create a new Replit project called AppraisalCore using Electron + React for the desktop form‑filler. Initialize Git, install React, Electron, and TypeScript, and set up ESLint and Prettier with sensible defaults. Generate a README with our architecture overview and coding standards.”
+
+	•	Replit Agent can scaffold entire projects from a single prompt—just describe your stack and naming conventions  ￼.
+	•	You can attach a high‑level architecture diagram or spec PDF, and Agent will ingest it as context  ￼.
+	•	Be explicit about tools: “install React, Electron, TypeScript, ESLint, Prettier” to avoid ambiguity  ￼.
+
+⸻
+
+Phase 2: Core Form‑Filler Module
+
+Prompt to Agent:
+
+“Within AppraisalCore, scaffold a form‑filler interface in React. Use Ant Design (or Material‑UI) for layouts and create embedded spreadsheet‑style worksheets that auto‑calculate adjustments and market values. Implement a side‑by‑side comparables table with sortable columns and inline charts. Include multi‑monitor support so users can drag panels across screens.”
+
+	•	Specificity is key: name your UI framework and desired features for reliable output  ￼.
+	•	Ask the Agent to generate sample data models (JSON schemas) for comparables, so you can iterate on the backend contracts  ￼.
+
+⸻
+
+Phase 3: Mobile Inspection PWA
+
+Prompt to Agent:
+
+“Create a new sub‑project AppraisalField as a PWA with offline support using Workbox. Expose a critical‑items editor where users select only the fields needed for a given report type. Add photo geotagging, camera capture, and local IndexedDB caching. Synchronize data back to AppraisalCore via a REST endpoint when online.”
+
+	•	Describe offline requirements and storage mechanisms plainly; Agent will configure service workers automatically  ￼.
+	•	Reference your existing React components by file path (e.g., src/components/CriticalItems.jsx) so Agent can integrate rather than reinvent  ￼.
+
+⸻
+
+Phase 4: Reporting Engine & Compliance Microservice
+
+Prompt to Agent:
+
+“Under a new folder services/, build two serverless functions on Replit’s Functions platform:
+	1.	Reporting Engine: generates PDF reports and emits MISMO® 2.6 XML. Use jsPDF for PDF and xmlbuilder2 for XML, following our MISMO schema.
+	2.	Compliance Service: standalone microservice that ingests report data and applies UAD and lender rule validations using a rules‑engine (e.g., JSON‑Drools). Expose a webhook to flag exceptions.”
+
+	•	Replit Agent can set up serverless endpoints and recommend libraries when you specify functionality in plain English  ￼.
+	•	Attach your MISMO XSD or JSON Schema, and Agent will generate the corresponding code to validate and serialize data  ￼.
+
+⸻
+
+Phase 5: Integrations, Testing & CI/CD
+
+Prompt to Agent:
+
+“Integrate the following:
+	•	A connector in AppraisalCore to fetch MLS data via an API key (we’ll store keys in GitHub Secrets).
+	•	A REST endpoint in services/reporting for one‑click XML export to lender portals.
+	•	Unit and integration tests with Jest and Playwright for key workflows: form filling, worksheet calcs, and mobile sync.
+	•	A CI/CD pipeline using GitHub Actions that lints, tests, builds Electron, and deploys the PWA to Netlify.”
+
+	•	Be explicit about each integration point; Agent will generate YAML for GitHub Actions based on your steps  ￼.
+	•	Use “review and refine” after initial generation to ask Agent to improve test coverage or optimize performance  ￼.
+
+⸻
+
+Ongoing Iteration & Rollback
+
+After each major deliverable, prompt:
+
+“Review the last commit. Identify any code smells, missing types, or unhandled edge cases. Refactor accordingly but keep functionality intact. If the changes introduce regressions, rollback to the previous stable state.”
+
+	•	Replit Agent supports “undo” operations and can refactor based on your guidance  ￼.
+	•	Use the Agent chat history to track context and iterate interactively  ￼.
+
+⸻
+
+By following this phased, highly specific prompting strategy—attaching your schemas and diagrams, naming frameworks and libraries, and leveraging Replit’s built‑in serverless and CI/CD features—you’ll guide the Replit AI Agent to autonomously assemble, test, and deploy your streamlined appraisal platform from start to finish.

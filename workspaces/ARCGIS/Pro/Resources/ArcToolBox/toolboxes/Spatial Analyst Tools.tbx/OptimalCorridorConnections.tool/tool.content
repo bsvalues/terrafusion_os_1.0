@@ -1,0 +1,182 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "8030022",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "10"
+    ],
+    "attributes": [
+        "mCPU"
+    ],
+    "params": {
+        "in_regions": {
+            "displayname": "$rc:in_regions.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_regions.descr"
+        },
+        "out_optimal_polygons": {
+            "direction": "out",
+            "displayname": "$rc:out_optimal_polygons.title",
+            "datatype": {
+                "type": "DEFeatureDataset"
+            },
+            "schema": {
+                "type": "GPContainerSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_optimal_polygons.descr"
+        },
+        "in_barriers": {
+            "type": "optional",
+            "displayname": "$rc:in_barriers.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_barriers.descr"
+        },
+        "in_cost_raster": {
+            "type": "optional",
+            "displayname": "$rc:in_cost_raster.title",
+            "datatype": {
+                "type": "GPRasterLayer"
+            },
+            "description": "$rc:in_cost_raster.descr"
+        },
+        "out_optimal_lines": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_optimal_lines.title",
+            "datatype": {
+                "type": "DEFeatureDataset"
+            },
+            "schema": {
+                "type": "GPContainerSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_optimal_lines.descr"
+        },
+        "out_neighbor_polygons": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_neighbor_polygons.title",
+            "datatype": {
+                "type": "DEFeatureDataset"
+            },
+            "schema": {
+                "type": "GPContainerSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_neighbor_polygons.descr"
+        },
+        "out_neighbor_lines": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_neighbor_lines.title",
+            "datatype": {
+                "type": "DEFeatureDataset"
+            },
+            "schema": {
+                "type": "GPContainerSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:out_neighbor_lines.descr"
+        },
+        "corridor_method": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:corridor_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "FIXED_WIDTH_CORRIDOR",
+                        "code": "$rc:corridor_method.domain.FIXED_WIDTH_CORRIDOR"
+                    }
+                ]
+            },
+            "value": "FIXED_WIDTH_CORRIDOR",
+            "description": "$rc:corridor_method.descr"
+        },
+        "corridor_width": {
+            "type": "optional",
+            "displayname": "$rc:corridor_width.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:corridor_width.descr"
+        },
+        "distance_method": {
+            "type": "optional",
+            "displayname": "$rc:distance_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "PLANAR",
+                        "code": "$rc:distance_method.domain.PLANAR"
+                    },
+                    {
+                        "value": "GEODESIC",
+                        "code": "$rc:distance_method.domain.GEODESIC"
+                    }
+                ]
+            },
+            "value": "PLANAR",
+            "description": "$rc:distance_method.descr"
+        }
+    },
+    "environments": [
+        "MDomain",
+        "MResolution",
+        "MTolerance",
+        "XYDomain",
+        "XYResolution",
+        "XYTolerance",
+        "ZDomain",
+        "ZResolution",
+        "ZTolerance",
+        "autoCommit",
+        "cellSize",
+        "cellSizeProjectionMethod",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "maintainSpatialIndex",
+        "mask",
+        "outputCoordinateSystem",
+        "outputMFlag",
+        "outputZFlag",
+        "outputZValue",
+        "parallelProcessingFactor",
+        "scratchWorkspace",
+        "snapRaster",
+        "workspace"
+    ]
+}

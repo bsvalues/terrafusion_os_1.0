@@ -1,0 +1,370 @@
+{% extends 'layout.html' %}
+
+{% block title %}TerraFusion | TerraMap Viewer{% endblock %}
+
+{% block additionalcss %}
+<style>
+  /* High contrast inline styles */
+  body {
+    color: black;
+  }
+  .map-container {
+    height: 600px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid var(--tf-map-green);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  #map {
+    height: 100%;
+  }
+  .files-sidebar {
+    border-radius: 8px;
+    padding: 15px;
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+  .file-list-title {
+    color: black;
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid var(--tf-map-green);
+    padding-bottom: 10px;
+  }
+  .file-item {
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    border-left: 4px solid var(--tf-map-green);
+    background-color: #f9f9f9;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .file-item:hover {
+    background-color: #f0f0f0;
+    transform: translateX(3px);
+  }
+  .file-item-name {
+    color: black;
+    font-weight: 600;
+    font-size: 1rem;
+    display: block;
+    margin-bottom: 3px;
+  }
+  .file-item-meta {
+    color: #555;
+    font-size: 0.8rem;
+  }
+  .btn-tf-map {
+    background-color: var(--tf-map-green);
+    color: white;
+    font-weight: 600;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .btn-tf-map:hover {
+    opacity: 0.9;
+    color: white;
+  }
+  .map-tools {
+    background-color: white;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #e0e0e0;
+  }
+  .map-tool-title {
+    color: black;
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: 15px;
+  }
+  .map-layers-toggle {
+    margin-bottom: 10px;
+  }
+  .layer-title {
+    color: black;
+    font-weight: 600;
+    margin-left: 8px;
+  }
+  /* Module branding */
+  .terramap-header {
+    margin-bottom: 30px;
+  }
+  .terramap-title {
+    color: black;
+    font-weight: 800;
+    font-size: 2rem;
+    margin-bottom: 5px;
+  }
+  .terramap-subtitle {
+    color: black;
+    font-weight: 500;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="terramap-header">
+    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+      <div style="height: 40px; width: 40px; background-color: var(--tf-map-green); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+        <i class="fas fa-map" style="color: white; font-size: 20px;"></i>
+      </div>
+      <div>
+        <h1 class="terramap-title">
+          <span style="color: black; font-weight: 700;">Terra</span><span style="color: var(--tf-map-green); font-weight: 800;">MAP</span>
+        </h1>
+        <p class="terramap-subtitle">Geospatial Visualization & Property Assessment</p>
+      </div>
+    </div>
+    <div style="height: 4px; background: linear-gradient(to right, var(--tf-map-green), var(--tf-map-gradient)); border-radius: 2px; width: 100%; margin-bottom: 30px;"></div>
+  </div>
+
+  <div class="row">
+    <!-- Map Sidebar -->
+    <div class="col-md-3">
+      <div class="files-sidebar mb-4">
+        <h2 class="file-list-title">
+          <i class="fas fa-file-code me-2" style="color: var(--tf-map-green);"></i>
+          GIS Files
+        </h2>
+        {% if gis_files %}
+          <div class="file-list">
+            {% for file in gis_files %}
+              <div class="file-item" onclick="loadMapFile({{ file.id }})">
+                <span class="file-item-name">
+                  <i class="fas fa-file-alt me-1" style="color: var(--tf-map-green);"></i>
+                  {{ file.filename }}
+                </span>
+                <span class="file-item-meta">
+                  {{ file.file_size|filesizeformat }} • {{ file.upload_date.strftime('%b %d, %Y') }}
+                </span>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div style="text-align: center; padding: 20px 0;">
+            <i class="fas fa-file-upload mb-3" style="color: var(--tf-map-green); font-size: 40px;"></i>
+            <p style="color: black; font-weight: 500;">No GIS files found</p>
+            <a href="{{ url_for('file_manager') }}" class="btn-tf-map">
+              <i class="fas fa-upload me-1"></i> Upload Files
+            </a>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="map-tools">
+        <h3 class="map-tool-title">
+          <i class="fas fa-layer-group me-2" style="color: var(--tf-map-green);"></i>
+          Map Layers
+        </h3>
+        <div class="map-layers-toggle">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="baseMapToggle" checked onchange="toggleBaseMap(this.checked)">
+            <label class="layer-title" for="baseMapToggle">Base Map</label>
+          </div>
+        </div>
+        <div class="map-layers-toggle">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="propertyBoundariesToggle" checked onchange="togglePropertyBoundaries(this.checked)">
+            <label class="layer-title" for="propertyBoundariesToggle">Property Boundaries</label>
+          </div>
+        </div>
+        <div class="map-layers-toggle">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="parcelLabelsToggle" checked onchange="toggleParcelLabels(this.checked)">
+            <label class="layer-title" for="parcelLabelsToggle">Parcel Labels</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="map-tools">
+        <h3 class="map-tool-title">
+          <i class="fas fa-search-location me-2" style="color: var(--tf-map-green);"></i>
+          Search
+        </h3>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" id="parcelSearch" placeholder="Parcel ID or Address">
+          <button class="btn-tf-map" type="button" onclick="searchParcel()">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Map Container -->
+    <div class="col-md-9">
+      <div class="map-container">
+        <div id="map"></div>
+      </div>
+      
+      <div class="row mt-4">
+        <div class="col-md-6">
+          <div class="card" style="border: 1px solid #e0e0e0; border-radius: 8px;">
+            <div class="card-header" style="background-color: var(--tf-map-green); color: white;">
+              <h4 style="margin: 0; color: white; font-weight: 700;">Property Information</h4>
+            </div>
+            <div class="card-body">
+              <div id="property-info" style="color: black; font-weight: 500;">
+                Select a property on the map to see details.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card" style="border: 1px solid #e0e0e0; border-radius: 8px;">
+            <div class="card-header" style="background-color: var(--tf-map-green); color: white;">
+              <h4 style="margin: 0; color: white; font-weight: 700;">Actions</h4>
+            </div>
+            <div class="card-body">
+              <div class="d-grid gap-2">
+                <button type="button" class="btn-tf-map btn-block" onclick="exportMapData()" style="width: 100%;">
+                  <i class="fas fa-file-export me-1"></i> Export Map Data
+                </button>
+                <button type="button" class="btn-tf-map btn-block" onclick="printMap()" style="width: 100%;">
+                  <i class="fas fa-print me-1"></i> Print Map
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Initialize the map
+  var map;
+  var geojsonLayer;
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    initializeMap();
+  });
+  
+  function initializeMap() {
+    // Create map
+    map = L.map('map').setView([46.2062, -119.1686], 13);
+    
+    // Add base tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    
+    // Add measurement control
+    var measureControl = new L.Control.Measure({
+      position: 'topleft',
+      primaryLengthUnit: 'feet',
+      secondaryLengthUnit: 'miles',
+      primaryAreaUnit: 'acres',
+      secondaryAreaUnit: 'sqmiles'
+    });
+    measureControl.addTo(map);
+  }
+  
+  function loadMapFile(fileId) {
+    // Clear existing GeoJSON layer if it exists
+    if (geojsonLayer) {
+      map.removeLayer(geojsonLayer);
+    }
+    
+    // Fetch the GeoJSON data
+    fetch('/map-data/' + fileId)
+      .then(response => response.json())
+      .then(data => {
+        // Add GeoJSON layer to map
+        geojsonLayer = L.geoJSON(data, {
+          style: function(feature) {
+            return {
+              color: '#2E7D32',
+              weight: 2,
+              opacity: 1,
+              fillOpacity: 0.3,
+              fillColor: '#5CD65C'
+            };
+          },
+          onEachFeature: function(feature, layer) {
+            if (feature.properties) {
+              var popupContent = '<div style="font-weight: 600; color: black;">';
+              
+              for (var prop in feature.properties) {
+                popupContent += prop + ': ' + feature.properties[prop] + '<br>';
+              }
+              
+              popupContent += '</div>';
+              layer.bindPopup(popupContent);
+              
+              layer.on('click', function() {
+                showPropertyInfo(feature.properties);
+              });
+            }
+          }
+        }).addTo(map);
+        
+        // Zoom to layer extent
+        map.fitBounds(geojsonLayer.getBounds());
+      })
+      .catch(error => {
+        console.error('Error loading map data:', error);
+        alert('Error loading map data. Please try again.');
+      });
+  }
+  
+  function showPropertyInfo(properties) {
+    var infoHtml = '<table class="table table-borderless table-sm">';
+    
+    for (var prop in properties) {
+      infoHtml += '<tr><th style="color: black; font-weight: 600;">' + prop + '</th><td style="color: black; font-weight: 500;">' + properties[prop] + '</td></tr>';
+    }
+    
+    infoHtml += '</table>';
+    document.getElementById('property-info').innerHTML = infoHtml;
+  }
+  
+  function toggleBaseMap(visible) {
+    // Implementation would vary based on map library
+    console.log('Base map visibility:', visible);
+  }
+  
+  function togglePropertyBoundaries(visible) {
+    if (geojsonLayer) {
+      if (visible) {
+        geojsonLayer.addTo(map);
+      } else {
+        map.removeLayer(geojsonLayer);
+      }
+    }
+  }
+  
+  function toggleParcelLabels(visible) {
+    // Implementation would vary based on map library
+    console.log('Parcel labels visibility:', visible);
+  }
+  
+  function searchParcel() {
+    var searchValue = document.getElementById('parcelSearch').value;
+    // Search implementation would be based on backend data
+    console.log('Searching for:', searchValue);
+    alert('Search functionality would locate parcel: ' + searchValue);
+  }
+  
+  function exportMapData() {
+    // Example export functionality
+    alert('Map data would be exported in various formats (GeoJSON, KML, Shapefile)');
+  }
+  
+  function printMap() {
+    // Example print functionality
+    window.print();
+  }
+</script>
+{% endblock %}

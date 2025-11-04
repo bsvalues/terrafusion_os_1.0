@@ -1,0 +1,17 @@
+{
+    "map": {
+        "are_containers_preserved.title": "Preserve container layout",
+        "description": "Add a compression layout to a diagram template",
+        "grouping_distance_absolute.title": "Maximum Distance for Grouping",
+        "in_utility_network.title": "Input Network",
+        "is_active.title": "Active",
+        "out_template_name.title": "Output Diagram Template",
+        "out_utility_network.title": "Output Network",
+        "template_name.title": "Input Diagram Template",
+        "title": "Add Compression Layout",
+        "vertices_removal_rule.domain.ALL": "ALL",
+        "vertices_removal_rule.domain.OUTER": "OUTER",
+        "vertices_removal_rule.domain.OUTER_EXCEPT_FIRST": "OUTER_EXCEPT_FIRST",
+        "vertices_removal_rule.title": "Vertex Removal Rule"
+    }
+}

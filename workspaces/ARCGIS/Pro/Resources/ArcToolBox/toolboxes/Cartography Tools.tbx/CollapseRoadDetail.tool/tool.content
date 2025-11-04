@@ -1,0 +1,69 @@
+{
+    "type": "FunctionTool",
+    "guid": "{6a633141-4c24-4d28-989c-4af11f98704f}",
+    "displayname": "$rc:title",
+    "helpcontent": "10060004",
+    "description": "$rc:description",
+    "product": "300",
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "collapse_distance": {
+            "displayname": "$rc:collapse_distance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:collapse_distance.descr"
+        },
+        "output_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:output_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:output_feature_class.descr"
+        },
+        "locking_field": {
+            "type": "optional",
+            "displayname": "$rc:locking_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long"
+                ]
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:locking_field.descr"
+        }
+    },
+    "environments": [
+        "cartographicPartitions",
+        "referenceScale"
+    ]
+}

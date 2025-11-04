@@ -1,0 +1,559 @@
+{% extends "base.html" %}
+
+{% block title %}MVP Progress Dashboard{% endblock %}
+
+{% block styles %}
+<style>
+    .progress {
+        height: 20px;
+    }
+    .progress-bar {
+        color: #fff;
+        font-weight: bold;
+    }
+    .status-complete {
+        color: #28a745;
+    }
+    .status-incomplete {
+        color: #dc3545;
+    }
+    .component-card {
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+    }
+    .component-card:hover {
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .subcomponent-list {
+        padding-left: 0;
+        list-style-type: none;
+    }
+    .subcomponent-item {
+        margin-bottom: 10px;
+        padding: 8px;
+        border-radius: 4px;
+    }
+    .subcomponent-item:hover {
+        background-color: #f8f9fa;
+    }
+    .dropdown-menu {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    .criterion-list {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    .remaining-work-list,
+    .critical-path-list {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    .update-form {
+        display: none;
+        margin-top: 10px;
+    }
+    .show-update-form {
+        cursor: pointer;
+        color: #007bff;
+    }
+    .show-update-form:hover {
+        text-decoration: underline;
+    }
+    #update-success-toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1>MVP Progress Dashboard</h1>
+                <div>
+                    <a href="{{ url_for('mcp_api.save_html_progress_report') }}" class="btn btn-success">
+                        <i class="fas fa-download"></i> Download Report
+                    </a>
+                    <button id="refresh-report" class="btn btn-primary ml-2">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overall Progress -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h4 mb-0">Overall Progress: {{ report.overall_progress }}%</h2>
+                </div>
+                <div class="card-body">
+                    <div class="progress">
+                        <div class="progress-bar bg-primary" role="progressbar" 
+                            style="width: {{ report.overall_progress }}%;" 
+                            aria-valuenow="{{ report.overall_progress }}" aria-valuemin="0" aria-valuemax="100">
+                            {{ report.overall_progress }}%
+                        </div>
+                    </div>
+                    <div class="text-muted mt-2">
+                        <small>Last updated: {{ report.date }}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Components Overview -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="h4 mb-3">Components</h2>
+            
+            <div class="row" id="components-container">
+                {% for component_id, component in report.components.items() %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card component-card">
+                        <div class="card-header">
+                            <h3 class="h5 mb-0">{{ component.name }}</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="progress mb-3">
+                                <div class="progress-bar {% if component.completion >= 90 %}bg-success{% elif component.completion >= 70 %}bg-info{% elif component.completion >= 40 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                    role="progressbar" 
+                                    style="width: {{ component.completion }}%;" 
+                                    aria-valuenow="{{ component.completion }}" 
+                                    aria-valuemin="0" 
+                                    aria-valuemax="100">
+                                    {{ component.completion }}%
+                                </div>
+                            </div>
+                            
+                            <div class="show-update-form" data-target="component-form-{{ component_id }}">
+                                Update progress
+                            </div>
+                            
+                            <form class="update-form" id="component-form-{{ component_id }}">
+                                <div class="form-group">
+                                    <label for="completion-{{ component_id }}">Completion percentage:</label>
+                                    <input type="number" class="form-control" id="completion-{{ component_id }}" 
+                                           name="completion_percentage" value="{{ component.completion }}" min="0" max="100">
+                                </div>
+                                <button type="button" class="btn btn-sm btn-primary update-component-btn" 
+                                        data-component-id="{{ component_id }}">
+                                    Update
+                                </button>
+                            </form>
+                            
+                            {% if component.subcomponents %}
+                            <hr>
+                            <h4 class="h6 mb-2">Subcomponents</h4>
+                            <ul class="subcomponent-list">
+                                {% for subcomponent_id, subcomponent in component.subcomponents.items() %}
+                                <li class="subcomponent-item">
+                                    <div>
+                                        <span class="font-weight-bold">{{ subcomponent.name }}:</span> 
+                                        <span class="{% if subcomponent.completion >= 80 %}text-success{% elif subcomponent.completion >= 50 %}text-warning{% else %}text-danger{% endif %}">
+                                            {{ subcomponent.completion }}%
+                                        </span>
+                                    </div>
+                                    <div class="progress mt-1 mb-2" style="height: 10px;">
+                                        <div class="progress-bar {% if subcomponent.completion >= 90 %}bg-success{% elif subcomponent.completion >= 70 %}bg-info{% elif subcomponent.completion >= 40 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                            role="progressbar" 
+                                            style="width: {{ subcomponent.completion }}%;" 
+                                            aria-valuenow="{{ subcomponent.completion }}" 
+                                            aria-valuemin="0" 
+                                            aria-valuemax="100">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="show-update-form" data-target="subcomponent-form-{{ component_id }}-{{ subcomponent_id }}">
+                                        Update
+                                    </div>
+                                    
+                                    <form class="update-form" id="subcomponent-form-{{ component_id }}-{{ subcomponent_id }}">
+                                        <div class="form-group">
+                                            <input type="number" class="form-control form-control-sm" 
+                                                   name="completion_percentage" value="{{ subcomponent.completion }}" min="0" max="100">
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-primary update-subcomponent-btn" 
+                                                data-component-id="{{ component_id }}" 
+                                                data-subcomponent-id="{{ subcomponent_id }}">
+                                            Update
+                                        </button>
+                                    </form>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Completion Criteria -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="h4 mb-3">Completion Criteria</h2>
+            
+            <div class="row">
+                {% for category, criteria in report.completion_criteria.items() %}
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="h5 mb-0">{{ category|replace('_', ' ')|title }}</h3>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="list-group criterion-list">
+                                {% for criterion_name, status in criteria.items() %}
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="{% if status %}status-complete{% else %}status-incomplete{% endif %}">
+                                            <i class="fas {% if status %}fa-check-circle{% else %}fa-times-circle{% endif %}"></i>
+                                        </span>
+                                        {{ criterion_name|replace('_', ' ')|title }}
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-sm {% if status %}btn-success{% else %}btn-outline-success{% endif %} update-criterion-btn" 
+                                                data-category="{{ category }}" 
+                                                data-criterion="{{ criterion_name }}" 
+                                                data-status="{{ status|lower }}">
+                                            {% if status %}Complete{% else %}Mark Complete{% endif %}
+                                        </button>
+                                        
+                                        {% if status %}
+                                        <button class="btn btn-sm btn-outline-danger update-criterion-btn" 
+                                                data-category="{{ category }}" 
+                                                data-criterion="{{ criterion_name }}" 
+                                                data-status="false">
+                                            Mark Incomplete
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Remaining Work -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h3 class="h5 mb-0">Remaining Work</h3>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive remaining-work-list">
+                        <table class="table table-striped mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Component</th>
+                                    <th>Progress</th>
+                                    <th>Remaining</th>
+                                    <th>Priority</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in report.remaining_work %}
+                                <tr>
+                                    <td>{{ item.component_name }}</td>
+                                    <td>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-primary" role="progressbar" 
+                                                style="width: {{ item.completion }}%;" 
+                                                aria-valuenow="{{ item.completion }}" aria-valuemin="0" aria-valuemax="100">
+                                                {{ item.completion }}%
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ item.remaining }}%</td>
+                                    <td>{{ "%.1f"|format(item.priority) }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Critical Path -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="h5 mb-0">Critical Path</h3>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive critical-path-list">
+                        <table class="table table-striped mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Component</th>
+                                    <th>Progress</th>
+                                    <th>Remaining</th>
+                                    <th>Priority</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in report.critical_path %}
+                                <tr>
+                                    <td>{{ item.component_name }}</td>
+                                    <td>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-primary" role="progressbar" 
+                                                style="width: {{ item.completion }}%;" 
+                                                aria-valuenow="{{ item.completion }}" aria-valuemin="0" aria-valuemax="100">
+                                                {{ item.completion }}%
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ item.remaining }}%</td>
+                                    <td>{{ "%.1f"|format(item.priority) }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blockers & Issues -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="h4 mb-3">Blockers & Issues</h2>
+            
+            {% if report.blockers %}
+            <div class="card mb-4">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="h5 mb-0">Current Blockers</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for blocker in report.blockers %}
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="mb-1">{{ blocker.title }}</h5>
+                                    <p class="mb-1">{{ blocker.description }}</p>
+                                    <small class="text-muted">Impact: {{ blocker.impact }}</small>
+                                </div>
+                                <span class="badge badge-danger">{{ blocker.severity }}</span>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% else %}
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i> No blockers reported.
+            </div>
+            {% endif %}
+            
+            {% if report.issues %}
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h3 class="h5 mb-0">Open Issues</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for issue in report.issues %}
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="mb-1">{{ issue.title }}</h5>
+                                    <p class="mb-1">{{ issue.description }}</p>
+                                    <small class="text-muted">Reported: {{ issue.reported_date }}</small>
+                                </div>
+                                <span class="badge badge-warning">{{ issue.status }}</span>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% else %}
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i> No open issues.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Toast for success notifications -->
+<div id="update-success-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+    <div class="toast-header bg-success text-white">
+        <strong class="mr-auto">Success</strong>
+        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="toast-body" id="toast-message">
+        Update successful!
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        // Toggle update forms
+        $('.show-update-form').click(function() {
+            var targetId = $(this).data('target');
+            $('#' + targetId).toggle();
+        });
+        
+        // Refresh report using AJAX
+        $('#refresh-report').click(function() {
+            var $btn = $(this);
+            $btn.html('<i class="fas fa-sync-alt fa-spin"></i> Refreshing...').prop('disabled', true);
+            
+            $.ajax({
+                url: '/mcp/progress/refresh',
+                method: 'GET',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        showToast('Report refreshed successfully');
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        alert('Error: ' + response.message);
+                        $btn.html('<i class="fas fa-sync-alt"></i> Refresh').prop('disabled', false);
+                    }
+                },
+                error: function(xhr) {
+                    alert('Error refreshing report: ' + xhr.statusText);
+                    $btn.html('<i class="fas fa-sync-alt"></i> Refresh').prop('disabled', false);
+                }
+            });
+        });
+        
+        // Update component progress
+        $('.update-component-btn').click(function() {
+            var componentId = $(this).data('component-id');
+            var completion = $('#completion-' + componentId).val();
+            
+            updateComponent(componentId, completion);
+        });
+        
+        // Update subcomponent progress
+        $('.update-subcomponent-btn').click(function() {
+            var componentId = $(this).data('component-id');
+            var subcomponentId = $(this).data('subcomponent-id');
+            var form = $('#subcomponent-form-' + componentId + '-' + subcomponentId);
+            var completion = form.find('input[name="completion_percentage"]').val();
+            
+            updateSubcomponent(componentId, subcomponentId, completion);
+        });
+        
+        // Update criterion status
+        $('.update-criterion-btn').click(function() {
+            var category = $(this).data('category');
+            var criterionName = $(this).data('criterion');
+            var status = $(this).data('status') === "true";
+            
+            updateCriterion(category, criterionName, status);
+        });
+        
+        function updateComponent(componentId, completion) {
+            $.ajax({
+                url: '/mcp/progress/update/component',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    component_id: componentId,
+                    completion_percentage: parseInt(completion)
+                }),
+                success: function(response) {
+                    if (response.status === 'success') {
+                        showToast(response.message);
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function(xhr) {
+                    alert('Error updating component: ' + xhr.statusText);
+                }
+            });
+        }
+        
+        function updateSubcomponent(componentId, subcomponentId, completion) {
+            $.ajax({
+                url: '/mcp/progress/update/subcomponent',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    component_id: componentId,
+                    subcomponent_id: subcomponentId,
+                    completion_percentage: parseInt(completion)
+                }),
+                success: function(response) {
+                    if (response.status === 'success') {
+                        showToast(response.message);
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function(xhr) {
+                    alert('Error updating subcomponent: ' + xhr.statusText);
+                }
+            });
+        }
+        
+        function updateCriterion(category, criterionName, complete) {
+            $.ajax({
+                url: '/mcp/progress/update/criterion',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    category: category,
+                    criterion_name: criterionName,
+                    complete: complete
+                }),
+                success: function(response) {
+                    if (response.status === 'success') {
+                        showToast(response.message);
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function(xhr) {
+                    alert('Error updating criterion: ' + xhr.statusText);
+                }
+            });
+        }
+        
+        function showToast(message) {
+            $('#toast-message').text(message);
+            $('#update-success-toast').toast('show');
+        }
+    });
+</script>
+{% endblock %}

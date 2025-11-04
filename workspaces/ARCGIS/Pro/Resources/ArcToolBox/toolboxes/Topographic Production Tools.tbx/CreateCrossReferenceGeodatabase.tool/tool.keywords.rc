@@ -1,0 +1,16 @@
+{
+    "set": [
+        "cross-reference",
+        "data management",
+        "defense",
+        "defense mapping",
+        "geodatabase",
+        "geodatabase management",
+        "production",
+        "production mapping",
+        "topo",
+        "topographic",
+        "topographic production",
+        "xref"
+    ]
+}

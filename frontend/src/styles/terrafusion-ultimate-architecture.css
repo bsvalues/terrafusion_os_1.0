@@ -20,11 +20,10 @@ ARCHITECTURE OVERVIEW:
 @import url('./terrafusion-quantum-animations.css');
 @import url('./terrafusion-self-healing.css');
 @import url('./terrafusion-ai-responsive.css');
-@import url('./terrafusion-performance-monitor.css');
+/* @import url('./terrafusion-performance-monitor.css'); */ /* Temporarily disabled due to CSS syntax errors */
 
 /* ===== ADVANCED CSS LAYERS ARCHITECTURE ===== */
-@layer 
-  reset,           /* CSS reset with performance optimization */
+@layer reset,           /* CSS reset with performance optimization */
   tokens,          /* Design tokens and CSS custom properties */
   foundation,      /* Base styles and typography */
   layout,          /* Grid systems and container queries */
@@ -33,18 +32,18 @@ ARCHITECTURE OVERVIEW:
   adaptive,        /* AI-responsive adaptations */
   performance,     /* Performance monitoring and optimization */
   accessibility,   /* Government accessibility compliance */
-  overrides;       /* Emergency overrides and critical fixes */
+  overrides; /* Emergency overrides and critical fixes */
 
 /* ===== MASTER SYSTEM ORCHESTRATION ===== */
 
 @layer foundation {
   :root {
     /* Master System Status */
-    --tf-system-status: "OPERATIONAL";
-    --tf-architecture-level: "PHD_MIT_ADVANCED";
-    --tf-reliability-grade: "GOVERNMENT_GRADE_A+";
-    --tf-innovation-index: 1.0;
-    
+    --tf-system-status: 'OPERATIONAL';
+    --tf-architecture-level: 'PHD_MIT_ADVANCED';
+    --tf-reliability-grade: 'GOVERNMENT_GRADE_A+';
+    --tf-innovation-index: 1;
+
     /* Complete System Integration */
     --tf-total-agents: 1008;
     --tf-active-modules: 33;
@@ -52,87 +51,78 @@ ARCHITECTURE OVERVIEW:
     --tf-system-reliability: 0.9999;
     --tf-performance-index: 0.95;
     --tf-user-satisfaction: 0.92;
-    
+
     /* Advanced Feature Flags */
-    --tf-quantum-animations: 1;      /* Enable quantum-inspired animations */
-    --tf-self-healing: 1;            /* Enable self-healing CSS */
-    --tf-ai-responsiveness: 1;       /* Enable AI-responsive design */
-    --tf-performance-monitoring: 1;   /* Enable real-time monitoring */
-    --tf-predictive-ui: 1;           /* Enable predictive interface */
-    --tf-government-compliance: 1;    /* Enable government-grade features */
-    
+    --tf-quantum-animations: 1; /* Enable quantum-inspired animations */
+    --tf-self-healing: 1; /* Enable self-healing CSS */
+    --tf-ai-responsiveness: 1; /* Enable AI-responsive design */
+    --tf-performance-monitoring: 1; /* Enable real-time monitoring */
+    --tf-predictive-ui: 1; /* Enable predictive interface */
+    --tf-government-compliance: 1; /* Enable government-grade features */
+
     /* Ultimate Color Harmony System */
-    --tf-primary-harmonic: 207;      /* Primary hue */
+    --tf-primary-harmonic: 207; /* Primary hue */
     --tf-secondary-harmonic: calc(var(--tf-primary-harmonic) + 120); /* Triadic */
-    --tf-tertiary-harmonic: calc(var(--tf-primary-harmonic) + 240);  /* Triadic */
-    --tf-quantum-phase: 0deg;        /* Animated hue rotation */
-    
+    --tf-tertiary-harmonic: calc(var(--tf-primary-harmonic) + 240); /* Triadic */
+    --tf-quantum-phase: 0deg; /* Animated hue rotation */
+
     /* Adaptive scaling based on system performance */
     --tf-scale-factor: calc(
-      var(--tf-performance-index) * 
-      var(--tf-quantum-coherence) * 
-      var(--tf-system-reliability)
+      var(--tf-performance-index) * var(--tf-quantum-coherence) * var(--tf-system-reliability)
     );
-    
+
     /* Neural network timing based on AI load */
-    --tf-neural-timing: calc(
-      var(--tf-duration-normal) * 
-      (2 - var(--tf-ai-processing-load))
-    );
-    
+    --tf-neural-timing: calc(var(--tf-duration-normal) * (2 - var(--tf-ai-processing-load)));
+
     /* Government reliability multiplier */
-    --tf-reliability-multiplier: calc(
-      var(--tf-system-reliability) * 2
-    );
+    --tf-reliability-multiplier: calc(var(--tf-system-reliability) * 2);
   }
 
   /* Ultimate responsive scaling */
   html {
     /* Advanced font scaling with system performance */
-    font-size: clamp(
-      14px,
-      calc(1rem * var(--tf-scale-factor)),
-      20px
-    );
-    
+    font-size: clamp(14px, calc(1rem * var(--tf-scale-factor)), 20px);
+
     /* Container query support with fallbacks */
     container-type: size;
     container-name: viewport;
-    
+
     /* Performance-optimized scroll behavior */
     scroll-behavior: smooth;
-    
+
     /* Advanced color scheme support */
     color-scheme: dark light;
   }
-  
+
   body {
     /* Ultimate background system */
-    background: 
+    background:
       var(--tf-gradient-dark),
       radial-gradient(
-        circle at calc(20% + var(--tf-quantum-phase)) 50%, 
-        hsla(var(--tf-primary-harmonic), 60%, 50%, 0.3) 0%, 
+        circle at calc(20% + var(--tf-quantum-phase)) 50%,
+        hsla(var(--tf-primary-harmonic), 60%, 50%, 0.3) 0%,
         transparent 50%
       ),
       radial-gradient(
-        circle at calc(80% - var(--tf-quantum-phase)) 50%, 
-        hsla(var(--tf-secondary-harmonic), 60%, 50%, 0.2) 0%, 
+        circle at calc(80% - var(--tf-quantum-phase)) 50%,
+        hsla(var(--tf-secondary-harmonic), 60%, 50%, 0.2) 0%,
         transparent 50%
       ),
       radial-gradient(
-        circle at 50% calc(100% + var(--tf-quantum-phase)), 
-        hsla(var(--tf-tertiary-harmonic), 60%, 50%, 0.2) 0%, 
+        circle at 50% calc(100% + var(--tf-quantum-phase)),
+        hsla(var(--tf-tertiary-harmonic), 60%, 50%, 0.2) 0%,
         transparent 50%
       );
-    
+
     /* Quantum phase animation */
     animation: quantum-background-phase 60s linear infinite;
-    
+
     /* Advanced font optimization */
     font-family: var(--tf-font-primary);
     font-optical-sizing: auto;
-    font-variation-settings: "wght" 400, "slnt" 0;
+    font-variation-settings:
+      'wght' 400,
+      'slnt' 0;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -148,62 +138,55 @@ ARCHITECTURE OVERVIEW:
     position: relative;
     container-type: inline-size;
     container-name: tf-component;
-    
+
     /* Advanced background with quantum effects */
     background: var(--tf-gradient-glass);
-    backdrop-filter: 
-      blur(calc(20px * var(--tf-scale-factor))) 
+    backdrop-filter: blur(calc(20px * var(--tf-scale-factor)))
       saturate(calc(180% * var(--tf-quantum-coherence)));
-    
+
     /* Self-healing border system */
     border: 1px solid var(--tf-glass-border);
     border-radius: calc(var(--tf-border-radius-lg) * var(--tf-scale-factor));
-    
+
     /* Quantum-inspired box shadow */
-    box-shadow: 
+    box-shadow:
       0 0 0 1px color-mix(in srgb, var(--tf-primary) 10%, transparent),
       0 4px 8px color-mix(in srgb, var(--tf-dark) 20%, transparent),
       0 8px 16px color-mix(in srgb, var(--tf-primary) 5%, transparent),
       inset 0 1px 0 color-mix(in srgb, var(--tf-light) 10%, transparent);
-    
+
     /* AI-responsive padding */
-    padding: calc(
-      var(--tf-space-4) * 
-      var(--tf-interface-complexity) * 
-      var(--tf-scale-factor)
-    );
-    
+    padding: calc(var(--tf-space-4) * var(--tf-interface-complexity) * var(--tf-scale-factor));
+
     /* Performance-optimized transitions */
-    transition: 
+    transition:
       transform var(--tf-neural-timing) var(--tf-timing-neural),
       box-shadow var(--tf-neural-timing) var(--tf-timing-quantum),
       background-color var(--tf-neural-timing) var(--tf-timing-transcend);
-    
+
     /* Advanced transform optimizations */
     transform: translateZ(0);
     will-change: transform, opacity, filter;
     contain: layout style paint;
-    
+
     /* Quantum coherence-based stability */
     filter: blur(calc((1 - var(--tf-quantum-coherence)) * 1px));
   }
 
   /* Ultimate hover states */
   .tf-ultimate-component:hover {
-    transform: 
-      translateY(calc(-4px * var(--tf-scale-factor))) 
-      scale(calc(1 + 0.02 * var(--tf-quantum-coherence)))
-      translateZ(0);
-    
-    box-shadow: 
+    transform: translateY(calc(-4px * var(--tf-scale-factor)))
+      scale(calc(1 + 0.02 * var(--tf-quantum-coherence))) translateZ(0);
+
+    box-shadow:
       0 0 0 1px color-mix(in srgb, var(--tf-transcend) 30%, transparent),
       0 8px 16px color-mix(in srgb, var(--tf-dark) 30%, transparent),
       0 16px 32px color-mix(in srgb, var(--tf-primary) 15%, transparent),
       0 0 60px color-mix(in srgb, var(--tf-transcend) 20%, transparent),
       inset 0 1px 0 color-mix(in srgb, var(--tf-light) 20%, transparent);
-    
+
     /* Quantum entanglement visual effect */
-    background: 
+    background:
       var(--tf-gradient-glass),
       radial-gradient(
         circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
@@ -217,17 +200,14 @@ ARCHITECTURE OVERVIEW:
     display: grid;
     container-type: inline-size;
     container-name: ai-grid;
-    
+
     /* Dynamic grid based on container size and agent count */
-    grid-template-columns: repeat(
-      calc(sqrt(var(--tf-total-agents, 1008))), 
-      1fr
-    );
+    grid-template-columns: repeat(calc(sqrt(var(--tf-total-agents, 1008))), 1fr);
     gap: calc(2px * var(--tf-scale-factor));
-    
+
     /* Quantum-inspired aspect ratio */
     aspect-ratio: var(--tf-quantum-entanglement);
-    
+
     /* Performance optimizations */
     contain: size layout style paint;
     will-change: grid-template-columns;
@@ -252,20 +232,22 @@ ARCHITECTURE OVERVIEW:
     width: calc(6px * var(--tf-scale-factor));
     height: calc(6px * var(--tf-scale-factor));
     border-radius: 50%;
-    
+
     /* AI status-based background - using CSS custom properties */
-    background: radial-gradient(circle, 
-      var(--tf-agent-primary, hsl(120 100% 60%)) 0%, 
-      var(--tf-agent-secondary, hsl(120 100% 40%)) 100%);
-    
+    background: radial-gradient(
+      circle,
+      var(--tf-agent-primary, hsl(120 100% 60%)) 0%,
+      var(--tf-agent-secondary, hsl(120 100% 40%)) 100%
+    );
+
     /* Quantum animations with performance awareness */
-    animation: quantum-agent-superposition var(--tf-agent-coherence-freq, 2s) 
+    animation: quantum-agent-superposition var(--tf-agent-coherence-freq, 2s)
       var(--tf-neural-activation, ease-in-out) infinite;
-    
+
     /* Neural network connections */
-    box-shadow: 0 0 calc(4px * var(--tf-quantum-coherence, 1)) 
+    box-shadow: 0 0 calc(4px * var(--tf-quantum-coherence, 1))
       var(--tf-agent-glow, hsl(120 100% 60%));
-    
+
     /* Performance optimizations */
     transform: translateZ(0);
     contain: layout style paint;
@@ -279,23 +261,23 @@ ARCHITECTURE OVERVIEW:
   .tf-government-interface {
     display: grid;
     grid-template-areas:
-      "header header header"
-      "nav main aside"
-      "footer footer footer";
-    
+      'header header header'
+      'nav main aside'
+      'footer footer footer';
+
     /* AI-responsive grid sizing */
-    grid-template-columns: 
+    grid-template-columns:
       minmax(200px, calc(250px * var(--tf-interface-complexity)))
       minmax(0, 1fr)
       minmax(200px, calc(200px * var(--tf-information-density)));
-    
+
     grid-template-rows: auto 1fr auto;
     min-height: 100dvh; /* Dynamic viewport height */
-    
+
     /* Container queries support */
     container-type: size;
     container-name: government-interface;
-    
+
     /* Performance optimization */
     contain: size layout;
   }
@@ -304,11 +286,11 @@ ARCHITECTURE OVERVIEW:
   @container government-interface (max-width: 768px) {
     .tf-government-interface {
       grid-template-areas:
-        "header"
-        "main"
-        "nav"
-        "aside"
-        "footer";
+        'header'
+        'main'
+        'nav'
+        'aside'
+        'footer';
       grid-template-columns: 1fr;
       grid-template-rows: auto 1fr auto auto auto;
     }
@@ -318,22 +300,19 @@ ARCHITECTURE OVERVIEW:
   .tf-ultimate-module-grid {
     display: grid;
     container-type: inline-size;
-    
+
     /* AI-optimized grid columns */
     grid-template-columns: repeat(
-      auto-fit, 
-      minmax(
-        calc(280px * var(--tf-interface-complexity)), 
-        1fr
-      )
+      auto-fit,
+      minmax(calc(280px * var(--tf-interface-complexity)), 1fr)
     );
-    
+
     gap: calc(var(--tf-space-4) * var(--tf-scale-factor));
-    
+
     /* Quantum-inspired grid alignment */
     align-items: start;
     justify-content: center;
-    
+
     /* Performance optimizations */
     contain: layout style;
   }
@@ -347,12 +326,11 @@ ARCHITECTURE OVERVIEW:
     outline: calc(3px * var(--tf-scale-factor)) solid var(--tf-primary);
     outline-offset: calc(2px * var(--tf-scale-factor));
     border-radius: var(--tf-border-radius-sm);
-    
+
     /* AI-responsive focus enhancement */
-    box-shadow: 
-      0 0 0 calc(4px * var(--tf-scale-factor)) 
+    box-shadow: 0 0 0 calc(4px * var(--tf-scale-factor))
       color-mix(in srgb, var(--tf-primary) 20%, transparent);
-    
+
     /* Performance-aware transitions */
     transition: all var(--tf-duration-fast, 0.2s) var(--tf-timing-neural, ease-out);
   }
@@ -377,7 +355,7 @@ ARCHITECTURE OVERVIEW:
       animation: none !important;
       transition: none !important;
     }
-    
+
     /* Provide instant feedback instead */
     .tf-ultimate-component:hover {
       border-color: var(--tf-transcend);
@@ -393,7 +371,7 @@ ARCHITECTURE OVERVIEW:
       border: 2px solid var(--tf-dark);
       backdrop-filter: none;
     }
-    
+
     .tf-ultimate-ai-node {
       border: 1px solid var(--tf-dark);
     }
@@ -407,10 +385,10 @@ ARCHITECTURE OVERVIEW:
   .tf-performance-adaptive {
     /* GPU acceleration for high-performance systems */
     transform: translate3d(0, 0, 0);
-    
+
     /* Conditional will-change optimization */
     will-change: transform, opacity;
-    
+
     /* Memory-conscious containment */
     contain: layout style paint;
   }
@@ -444,19 +422,20 @@ ARCHITECTURE OVERVIEW:
   }
 
   @keyframes ultimate-system-pulse {
-    0%, 100% {
+    0%,
+    100% {
       --tf-quantum-coherence: 0.95;
       --tf-system-reliability: 0.9999;
     }
     50% {
-      --tf-quantum-coherence: 1.0;
-      --tf-system-reliability: 1.0;
+      --tf-quantum-coherence: 1;
+      --tf-system-reliability: 1;
     }
   }
 
   /* Master system orchestration animation */
   :root {
-    animation: 
+    animation:
       ultimate-system-pulse calc(var(--tf-reliability-multiplier) * 5s) ease-in-out infinite,
       quantum-background-phase 60s linear infinite;
   }
@@ -480,10 +459,10 @@ ARCHITECTURE OVERVIEW:
     font-size: 14px;
     padding: 20px;
     z-index: 999999;
-    
+
     /* Emergency message */
     &::before {
-      content: "TERRAFUSION OS EMERGENCY MODE\ASYSTEM RECOVERY IN PROGRESS\AGOVERNMENT OPERATIONS CONTINUE";
+      content: 'TERRAFUSION OS EMERGENCY MODE\ASYSTEM RECOVERY IN PROGRESS\AGOVERNMENT OPERATIONS CONTINUE';
       white-space: pre;
       display: block;
       text-align: center;
@@ -516,15 +495,16 @@ ARCHITECTURE OVERVIEW:
     color: black !important;
     border: 1px solid black !important;
     box-shadow: none !important;
+    -webkit-backdrop-filter: none !important;
     backdrop-filter: none !important;
     animation: none !important;
     page-break-inside: avoid;
   }
-  
+
   .tf-ultimate-ai-grid {
     display: block !important;
   }
-  
+
   .tf-ultimate-ai-node {
     display: inline-block;
     width: 4px !important;
@@ -532,12 +512,12 @@ ARCHITECTURE OVERVIEW:
     background: black !important;
     margin: 1px;
   }
-  
+
   /* Print header */
   @page {
     margin: 1in;
     @top-center {
-      content: "TerraFusion OS - Government. Transcended.";
+      content: 'TerraFusion OS - Government. Transcended.';
       font-size: 12pt;
       font-weight: bold;
     }
@@ -559,26 +539,20 @@ ARCHITECTURE OVERVIEW:
     border-radius: 4px;
     z-index: 10000;
     opacity: 0.7;
-    
+
     /* Only show in development */
     display: var(--tf-dev-mode, none);
   }
-  
+
   .tf-dev-info::before {
-    content: 
-      "TERRAFUSION ULTIMATE ARCHITECTURE\A"
-      "Status: " var(--tf-system-status) "\A"
-      "Architecture: " var(--tf-architecture-level) "\A"
-      "Reliability: " var(--tf-reliability-grade) "\A"
-      "Agents: " counter(agents) "\A"
-      "Modules: " counter(modules) "\A"
-      "Performance: " counter(performance) "%";
-    
-    counter-reset: 
-      agents var(--tf-total-agents)
-      modules var(--tf-active-modules)
-      performance calc(var(--tf-performance-index) * 100);
-    
+    content: 'TERRAFUSION ULTIMATE ARCHITECTURE\A' 'Status: ' var(--tf-system-status) '\A'
+      'Architecture: ' var(--tf-architecture-level) '\A' 'Reliability: ' var(--tf-reliability-grade)
+      '\A' 'Agents: ' counter(agents) '\A' 'Modules: ' counter(modules) '\A' 'Performance: '
+      counter(performance) '%';
+
+    counter-reset: agents var(--tf-total-agents) modules var(--tf-active-modules) performance
+      calc(var(--tf-performance-index) * 100);
+
     white-space: pre;
     line-height: 1.3;
   }

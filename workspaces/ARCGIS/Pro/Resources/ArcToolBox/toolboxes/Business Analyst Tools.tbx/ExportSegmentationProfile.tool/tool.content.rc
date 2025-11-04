@@ -1,0 +1,10 @@
+{
+    "map": {
+        "description": "Exports a segmentation profile to a table.",
+        "in_profile.descr": "The segmentation file that will be exported.",
+        "in_profile.title": "Input Profile",
+        "out_table_name.descr": "The name of the table that will be created.",
+        "out_table_name.title": "Output Table",
+        "title": "Export Segmentation Profile"
+    }
+}

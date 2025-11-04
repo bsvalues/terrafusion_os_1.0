@@ -1,0 +1,27 @@
+{
+    "map": {
+        "bridge_subtype.descr": "<xdoc><p>The subtype of the feature class from the <span class=\"esri_uicontrol\">Input Bridge Features</span> parameter that will be modified by this operation.</p></xdoc>",
+        "bridge_subtype.title": "Bridge Features Subtype",
+        "description": "Calculates the offsets necessary to properly display bridges at a given location.",
+        "expand.descr": "<xdoc><p>Specifies whether marker layers on overpassing symbols will be included when analyzing widths.</p><ul><li>Checked—Marker layers on overpassing symbols will be included when analyzing widths.</li><li>Unchecked—Marker layers on overpassing symbols will not be included. This is the default.</li></ul></xdoc>",
+        "expand.title": "Expand to Markers",
+        "in_bridge_features.descr": "The feature layer that contains bridge features for which symbol offsets will be updated. Symbolize the bridge features layer with proper bridge features and enable attribute-driven symbology on it.",
+        "in_bridge_features.title": "Input Bridge Features",
+        "in_overpassing_features.descr": "The feature layer that contains the features overpassing the bridges.",
+        "in_overpassing_features.title": "Overpassing Features",
+        "min_length.descr": "<xdoc><p>The minimum length of a line bridge. The default is 1.35 millimeters.</p><p>If the length of the bridge is less than the minimum length, it will be expanded to minimum length.</p></xdoc>",
+        "min_length.title": "Minimum Length",
+        "offset.descr": "An offset added to the bridge width. The default is 0 points.",
+        "offset.title": "Additional Offset",
+        "overpassing_subtype.descr": "<xdoc><p>The subtype of the feature class in the <span class=\"esri_uicontrol\">Overpassing Features</span> parameter that will be used in this operation.</p></xdoc>",
+        "overpassing_subtype.title": "Overpassing Features Subtype",
+        "params.category1": "Subtypes (optional)",
+        "reference_scale.descr": "The scale at which symbols appear at their intended size.",
+        "reference_scale.title": "Reference Scale",
+        "search_distance.descr": "The distance, calculated in map units, by which this tool will buffer point bridge features when identifying the overpassing features. This parameter is only available for point bridges. The default is 0 meters.",
+        "search_distance.title": "Search Distance",
+        "summary": "<xdoc><p>Calculates the offsets necessary to properly display bridges at a given location.</p><p>Offsets can be calculated for either line or point bridge features. For a line bridge feature, an offset will be calculated for the width of a bridge based on the overpassing feature that runs through the bridge. For point bridges, offsets include the following:</p><ul><li>The rotation angle of a bridge based on its overpassing feature</li><li>The position of the bridge if the original position is not coincident with the overpassing feature</li></ul></xdoc>",
+        "title": "Calculate Bridge Offsets",
+        "updated_bridge_features.title": "Updated Bridge Features"
+    }
+}

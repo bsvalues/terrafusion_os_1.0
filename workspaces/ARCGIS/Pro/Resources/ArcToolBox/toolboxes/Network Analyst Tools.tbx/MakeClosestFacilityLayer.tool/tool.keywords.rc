@@ -1,0 +1,13 @@
+{
+    "set": [
+        "closest facility",
+        "closest facility layer",
+        "facility",
+        "facility layer",
+        "layer",
+        "navigation properties",
+        "near",
+        "network analyst layer",
+        "proximity"
+    ]
+}

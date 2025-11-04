@@ -1,0 +1,93 @@
+### 🔠 Styling the **Module Names** (TerraFlow, TerraMap, etc.)
+
+Below is a **mini‑brand spec** so every sub‑brand looks intentional and stays consistent across UI, decks, and docs.
+
+| Module | Accent Color Token | Gradient Stop (optional) | Icon Cue | Example Lock‑up |
+|--------|-------------------|--------------------------|----------|-----------------|
+| **TerraFlow** | `--tf-flow-aqua` `#00BFD6` | → `#00E3A1` | Wave / ETL pipe | **TF Flow** |
+| **TerraMap** | `--tf-map-green` `#2E7D32` | → `#5CD65C` | Pin / layers | **TF Map** |
+| **TerraInsight** | `--tf-insight-violet` `#7A1FFF` | → `#C760FF` | Light‑bulb | **TF Insight** |
+| **TerraSketch** | `--tf-sketch-orange` `#FF7A29` | → `#FFB366` | Pencil | **TF Sketch** |
+| **TerraLevy** | `--tf-levy-gold` `#C49A00` | → `#FFDA3B` | Calculator | **TF Levy** |
+
+#### Typography & Layout
+```scss
+/* shared */
+.module-lockup {
+  font-family: var(--font-head, 'Inter', sans-serif);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.module-lockup span.prefix { color: var(--gray-900); }
+.module-lockup span.name   { text-transform: uppercase; }
+
+/* module‑specific overrides */
+.module-flow  span.name { color: var(--tf-flow-aqua); }
+.module-map   span.name { color: var(--tf-map-green); }
+.module-insight span.name { color: var(--tf-insight-violet); }
+.module-sketch span.name { color: var(--tf-sketch-orange); }
+.module-levy  span.name { color: var(--tf-levy-gold); }
+```
+
+**Usage Example**
+```html
+<!-- TerraFlow -->
+<h2 class="module-lockup module-flow">
+  <span class="prefix">Terra</span><span class="name">Flow</span>
+</h2>
+```
+
+---
+
+### 🗃️ Design‑Token Add‑On (`tokens/modules.json`)
+```json
+{
+  "color": {
+    "module": {
+      "flow":   { "accent": "#00BFD6", "gradientEnd": "#00E3A1" },
+      "map":    { "accent": "#2E7D32", "gradientEnd": "#5CD65C" },
+      "insight":{ "accent": "#7A1FFF", "gradientEnd": "#C760FF" },
+      "sketch": { "accent": "#FF7A29", "gradientEnd": "#FFB366" },
+      "levy":   { "accent": "#C49A00", "gradientEnd": "#FFDA3B" }
+    }
+  }
+}
+```
+*Import this alongside `terrafusion.json`; Tailwind `theme.extend.colors.module` then exposes `module-flow`, etc.*
+
+---
+
+### 🔧 Replit AI Agent Snippet (drop into the earlier prompt)
+
+```yaml
+# Step: add module color tokens & classes
+- name: Append module tokens
+  run: |
+    curl -L https://cdn.terrafusion.ai/brand/v1/modules.json -o tokens/modules.json
+    node scripts/mergeTokens.js tokens/terrafusion.json tokens/modules.json > tokens/_temp.json \
+      && mv tokens/_temp.json tokens/terrafusion.json
+    # patch tailwind config again
+    npx ts-node scripts/patchTailwind.ts tokens/terrafusion.json
+
+# Step: inject lock‑up component
+- name: Add ModuleLockup component & CSS
+  run: |
+    mkdir -p src/components/brand
+    cp templates/ModuleLockup.tsx src/components/brand/
+    cp templates/module-lockup.css src/styles/
+```
+
+*(Helper scripts just merged the token JSON and re‑ran Style‑Dictionary.)*
+
+---
+
+### ✅ What’s Left
+
+1. **Pick / tweak accent colors** if any hue feels off.  
+2. Commit `tokens/modules.json` + CSS snippet.  
+3. Re‑run the Replit AI Agent “brand‑upgrade” prompt (it now pulls module tokens too).
+
+That’s the full styling layer—every module name will auto‑render with its accent and remain 100 % token‑driven for future tweaks.  Ping me with color tweaks or if you want icon SVGs generated next!

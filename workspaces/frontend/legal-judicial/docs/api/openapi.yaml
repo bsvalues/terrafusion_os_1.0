@@ -1,0 +1,220 @@
+openapi: 3.0.3
+info:
+  title: Legal Judicial API
+  description: Legal proceedings and judicial operations APIs
+  version: 1.0.0
+  contact:
+    name: TerraFusion Government OS API Support
+    email: legal-judicial-api@terrafusion.gov
+    url: https://docs.terrafusion.gov/frontend/legal-judicial
+  license:
+    name: Government Use License
+    url: https://terrafusion.gov/licenses/government-api
+  termsOfService: https://terrafusion.gov/terms/api-usage
+servers:
+- url: https://api.terrafusion.gov/api/v1/legal
+  description: Production TerraFusion Government API
+- url: https://staging-api.terrafusion.gov/api/v1/legal
+  description: Staging Environment
+- url: https://dev-api.terrafusion.gov/api/v1/legal
+  description: Development Environment
+paths:
+  /cases:
+    get:
+      tags:
+      - legal-judicial
+      summary: Case management
+      description: Case management - Legal proceedings and judicial operations APIs
+      operationId: get__cases
+      security:
+      - OAuth2:
+        - legal-judicial:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /documents:
+    post:
+      tags:
+      - legal-judicial
+      summary: Legal document filing
+      description: Legal document filing - Legal proceedings and judicial operations
+        APIs
+      operationId: post__documents
+      security:
+      - OAuth2:
+        - legal-judicial:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /hearings:
+    get:
+      tags:
+      - legal-judicial
+      summary: Court hearing schedule
+      description: Court hearing schedule - Legal proceedings and judicial operations
+        APIs
+      operationId: get__hearings
+      security:
+      - OAuth2:
+        - legal-judicial:read
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /judgments:
+    post:
+      tags:
+      - legal-judicial
+      summary: Record court judgments
+      description: Record court judgments - Legal proceedings and judicial operations
+        APIs
+      operationId: post__judgments
+      security:
+      - OAuth2:
+        - legal-judicial:write
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+      - code
+      - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: object
+    HealthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - healthy
+          - degraded
+          - unhealthy
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        dependencies:
+          type: object
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.terrafusion.gov/oauth/authorize
+          tokenUrl: https://auth.terrafusion.gov/oauth/token
+          scopes:
+            legal-judicial:read: Read access to legal-judicial resources
+            legal-judicial:write: Write access to legal-judicial resources
+            legal-judicial:admin: Administrative access to legal-judicial
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+security:
+- OAuth2:
+  - legal-judicial:read
+- ApiKey: []
+tags:
+- name: legal-judicial
+  description: Legal Judicial operations
+  externalDocs:
+    description: Find out more about legal-judicial
+    url: https://docs.terrafusion.gov/frontend/legal-judicial

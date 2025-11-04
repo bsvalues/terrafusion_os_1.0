@@ -1,0 +1,137 @@
+### **Building an Automated Login and Scraping Workflow for NARRPR**
+
+#### **1. Tools and Libraries**
+- **Python Libraries**:
+  - `selenium` for browser automation.
+  - `requests` for HTTP requests (if applicable).
+  - `BeautifulSoup` for parsing HTML content.
+- **Headless Browser**:
+  - Use ChromeDriver or GeckoDriver to control a browser in the background.
+
+---
+
+#### **2. Automating Login**
+Using `selenium`, you can log in to the website and maintain a session for subsequent scraping.
+
+##### **Code Example for Login**
+```python
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.keys import Keys
+from time import sleep
+from webdriver_manager.chrome import ChromeDriverManager
+
+# Initialize WebDriver
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+
+# Navigate to Login Page
+driver.get("https://www.narrpr.com/home")
+
+# Find Username and Password Fields
+username_field = driver.find_element(By.ID, "login-email")
+password_field = driver.find_element(By.ID, "login-password")
+login_button = driver.find_element(By.ID, "login-button")
+
+# Enter Credentials
+username_field.send_keys("billspencerappraisal@gmail.com")
+password_field.send_keys("Bspassword@1")
+login_button.click()
+
+# Wait for Login to Complete
+sleep(5)
+
+# Verify Login
+if "dashboard" in driver.current_url:
+    print("Login successful!")
+else:
+    print("Login failed!")
+
+# Proceed to scrape data
+```
+
+---
+
+#### **3. Navigate to Reports**
+Once logged in, navigate to the required report pages or areas of interest.
+
+##### **Example Navigation**
+```python
+# Navigate to Reports Section
+driver.get("https://www.narrpr.com/reports-v2")
+
+# Wait for the Page to Load
+sleep(5)
+
+# Scrape Report Data
+reports = driver.find_elements(By.CLASS_NAME, "report-item")
+for report in reports:
+    title = report.find_element(By.CLASS_NAME, "report-title").text
+    date = report.find_element(By.CLASS_NAME, "report-date").text
+    print(f"Title: {title}, Date: {date}")
+```
+
+---
+
+#### **4. Scraping Data**
+Locate and extract the data you need (e.g., property details, reports).
+
+##### **Example Scraping Property Data**
+```python
+# Extract Property Details
+property_data = {}
+property_data['address'] = driver.find_element(By.CLASS_NAME, "property-address").text
+property_data['price'] = driver.find_element(By.CLASS_NAME, "property-price").text
+
+print(property_data)
+```
+
+---
+
+#### **5. Save Scraped Data**
+Save the data into a structured format (e.g., JSON, CSV, or database).
+
+##### **Example Save to CSV**
+```python
+import pandas as pd
+
+# Example Data
+data = [{'address': '123 Elm St', 'price': '$250,000'}]
+
+# Save to CSV
+df = pd.DataFrame(data)
+df.to_csv("property_data.csv", index=False)
+```
+
+---
+
+#### **6. Handle Session Timeouts**
+If the session times out or logs out, re-login and maintain cookies for continuity.
+
+##### **Code Example for Cookies**
+```python
+# Save Cookies
+cookies = driver.get_cookies()
+
+# Load Cookies for a New Session
+for cookie in cookies:
+    driver.add_cookie(cookie)
+```
+
+---
+
+#### **7. Ethical Considerations**
+- Scrape responsibly: Avoid overwhelming the server with frequent requests.
+- Comply with NARRPR’s terms of service.
+- Secure your credentials (e.g., use environment variables to store them).
+
+---
+
+### **Next Steps**
+1. Test the login and scraping workflow to verify its functionality.
+2. Implement error handling for timeouts or unexpected page changes.
+3. Extend the workflow to include saving data into your database or triggering ETL pipelines.
+
+Would you like help setting up any additional features, such as:
+- **Scheduling the scraper** to run periodically.
+- **Expanding data extraction** for other sections of the website?

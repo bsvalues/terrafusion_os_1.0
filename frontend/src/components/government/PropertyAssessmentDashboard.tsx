@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Box,
+import {
+  Box,
   Grid,
   Card,
   CardContent,
@@ -23,8 +24,10 @@ import { Box,
   ListItem,
   ListItemText,
   ListItemIcon,
-  Divider } from '@mui/material';
-import { Search as SearchIcon,
+  Divider,
+} from '@mui/material';
+import {
+  Search as SearchIcon,
   Home as HomeIcon,
   AttachMoney as MoneyIcon,
   TrendingUp as TrendingUpIcon,
@@ -32,8 +35,10 @@ import { Search as SearchIcon,
   Speed as SpeedIcon,
   CheckCircle as CheckCircleIcon,
   Warning as WarningIcon,
-  Schedule as ScheduleIcon } from '@mui/icons-material';
-import { LineChart,
+  Schedule as ScheduleIcon,
+} from '@mui/icons-material';
+import {
+  LineChart,
   Line,
   XAxis,
   YAxis,
@@ -44,7 +49,8 @@ import { LineChart,
   Bar,
   PieChart,
   Pie,
-  Cell } from 'recharts';
+  Cell,
+} from 'recharts';
 
 interface Property {
   id: string;
@@ -189,13 +195,10 @@ export const PropertyAssessmentDashboard: React.FC = () => {
                 </Typography>
               </Box>
 
-
               <Typography variant='h4' color='primary'>
                 {stats.totalProperties.toLocaleString()}
               </Typography>
-              <Typography
-
-variant='body2' color='text.secondary'>
+              <Typography variant='body2' color='text.secondary'>
                 Active in system
               </Typography>
             </CardContent>
@@ -212,13 +215,10 @@ variant='body2' color='text.secondary'>
                 </Typography>
               </Box>
 
-
               <Typography variant='h4' color='success.main'>
                 {stats.completedAssessments.toLocaleString()}
               </Typography>
-              <Typography
-
-variant='body2' color='text.secondary'>
+              <Typography variant='body2' color='text.secondary'>
                 {((stats.completedAssessments / stats.totalProperties) * 100).toFixed(1)}%
                 completion rate
               </Typography>
@@ -242,13 +242,10 @@ variant='body2' color='text.secondary'>
                 </Typography>
               </Box>
 
-
               <Typography variant='h4' color='primary'>
                 {formatCurrency(stats.totalValue)}
               </Typography>
-              <Typography
-
-variant='body2' color='text.secondary'>
+              <Typography variant='body2' color='text.secondary'>
                 Combined assessed value
               </Typography>
             </CardContent>
@@ -265,13 +262,10 @@ variant='body2' color='text.secondary'>
                 </Typography>
               </Box>
 
-
               <Typography variant='h4' color='secondary.main'>
                 {stats.averageProcessingTime}ms
               </Typography>
-              <Typography
-
-variant='body2' color='text.secondary'>
+              <Typography variant='body2' color='text.secondary'>
                 379M× faster processing
               </Typography>
               <Chip
@@ -331,30 +325,17 @@ variant='body2' color='text.secondary'>
             <Table>
               <TableHead>
                 <TableRow>
-
-
                   <TableCell>Parcel ID</TableCell>
-                  <TableCell
-
->Address</TableCell>
-
+                  <TableCell>Address</TableCell>
 
                   <TableCell align='right'>Current Value</TableCell>
-                  <TableCell
-
-align='right'>Assessed Value</TableCell>
-
+                  <TableCell align='right'>Assessed Value</TableCell>
 
                   <TableCell>Status</TableCell>
-                  <TableCell
-
->Assessor</TableCell>
-
+                  <TableCell>Assessor</TableCell>
 
                   <TableCell align='center'>Confidence</TableCell>
-                  <TableCell
-
-align='center'>Actions</TableCell>
+                  <TableCell align='center'>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -379,17 +360,13 @@ align='center'>Actions</TableCell>
                       </Typography>
                     </TableCell>
                     <TableCell>
-
-
                       <Chip
                         label={property.status}
                         color={getStatusColor(property.status) as any}
                         size='small'
                       />
                     </TableCell>
-                    <TableCell
-
->
+                    <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         {property.aiProcessed && (
                           <SpeedIcon color='primary' sx={{ mr: 1, fontSize: 16 }} />
@@ -398,8 +375,6 @@ align='center'>Actions</TableCell>
                       </Box>
                     </TableCell>
                     <TableCell align='center'>
-
-
                       <Chip
                         label={`${property.confidence}%`}
                         color={
@@ -413,9 +388,7 @@ align='center'>Actions</TableCell>
                         variant='outlined'
                       />
                     </TableCell>
-                    <TableCell
-
-align='center'>
+                    <TableCell align='center'>
                       <Button size='small' variant='outlined'>
                         Review
                       </Button>
@@ -433,14 +406,10 @@ align='center'>
         <Grid container spacing={3}>
           <Grid item xs={12} md={8}>
             <Paper sx={{ p: 3 }}>
-
-
               <Typography variant='h6' gutterBottom>
                 Property Value Trends
               </Typography>
-              <ResponsiveContainer
-
-width='100%' height={300}>
+              <ResponsiveContainer width='100%' height={300}>
                 <LineChart data={VALUE_TREND_DATA}>
                   <CartesianGrid strokeDasharray='3 3' />
                   <XAxis dataKey='month' />
@@ -466,14 +435,10 @@ width='100%' height={300}>
           </Grid>
           <Grid item xs={12} md={4}>
             <Paper sx={{ p: 3 }}>
-
-
               <Typography variant='h6' gutterBottom>
                 Assessment Distribution
               </Typography>
-              <ResponsiveContainer
-
-width='100%' height={300}>
+              <ResponsiveContainer width='100%' height={300}>
                 <PieChart>
                   <Pie
                     data={ASSESSMENT_DISTRIBUTION}
@@ -484,14 +449,10 @@ width='100%' height={300}>
                     label={({ name, value }) => `${name}: ${value}%`}
                   >
                     {ASSESSMENT_DISTRIBUTION.map((entry, index) => (
-
-
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip
-
-/>
+                  <Tooltip />
                 </PieChart>
               </ResponsiveContainer>
             </Paper>
@@ -504,49 +465,36 @@ width='100%' height={300}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
             <Paper sx={{ p: 3 }}>
-
-
               <Typography variant='h6' gutterBottom>
                 Assessment Queue Status
               </Typography>
-              <List
-
->
+              <List>
                 <ListItem>
                   <ListItemIcon>
-
-
                     <CheckCircleIcon color='success' />
                   </ListItemIcon>
                   <ListItemText
-
-primary='Completed Assessments'
+                    primary='Completed Assessments'
                     secondary={`${stats.completedAssessments.toLocaleString()} properties`}
                   />
                 </ListItem>
                 <Divider />
                 <ListItem>
                   <ListItemIcon>
-
-
                     <ScheduleIcon color='warning' />
                   </ListItemIcon>
                   <ListItemText
-
-primary='Pending Reviews'
+                    primary='Pending Reviews'
                     secondary={`${stats.pendingReviews.toLocaleString()} properties`}
                   />
                 </ListItem>
                 <Divider />
                 <ListItem>
                   <ListItemIcon>
-
-
                     <WarningIcon color='error' />
                   </ListItemIcon>
                   <ListItemText
-
-primary='Appeals in Process'
+                    primary='Appeals in Process'
                     secondary='127 properties under review'
                   />
                 </ListItem>
@@ -555,39 +503,24 @@ primary='Appeals in Process'
           </Grid>
           <Grid item xs={12} md={6}>
             <Paper sx={{ p: 3 }}>
-
-
               <Typography variant='h6' gutterBottom>
                 Processing Performance
               </Typography>
-              <Box
-
-sx={{ mb: 2 }}>
-
-
+              <Box sx={{ mb: 2 }}>
                 <Typography variant='body2' color='text.secondary' gutterBottom>
                   Average Processing Time
                 </Typography>
-                <Typography
-
-variant='h4' color='primary'>
+                <Typography variant='h4' color='primary'>
                   {stats.averageProcessingTime}ms
                 </Typography>
 
-
                 <Chip label='379M× faster than traditional methods' color='success' size='small' />
               </Box>
-              <Box
-
-sx={{ mb: 2 }}>
-
-
+              <Box sx={{ mb: 2 }}>
                 <Typography variant='body2' color='text.secondary' gutterBottom>
                   AI Accuracy Rate
                 </Typography>
-                <Typography
-
-variant='h4' color='success.main'>
+                <Typography variant='h4' color='success.main'>
                   {stats.aiAccuracy}%
                 </Typography>
                 <LinearProgress
@@ -607,26 +540,19 @@ variant='h4' color='success.main'>
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <Paper sx={{ p: 3 }}>
-
-
               <Typography variant='h6' gutterBottom>
                 AI Agent Performance Metrics
               </Typography>
-              <Alert
-
-severity='info' sx={{ mb: 3 }}>
+              <Alert severity='info' sx={{ mb: 3 }}>
                 1,008 AI agents are currently active, processing property assessments with
                 quantum-enhanced algorithms.
               </Alert>
-
 
               <Typography variant='body1' paragraph>
                 The Terrafusion AI swarm has achieved unprecedented performance in property
                 assessment tasks:
               </Typography>
-              <ul
-
->
+              <ul>
                 <li>
                   <strong>Processing Speed:</strong> 379,000,000× faster than traditional methods
                 </li>

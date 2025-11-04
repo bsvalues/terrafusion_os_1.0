@@ -1,0 +1,23 @@
+{
+    "map": {
+        "cell_size.descr": "<xdoc><p>The cell size of the output raster that will be created.</p><p>This parameter can be defined by a numeric value or obtained from an existing raster dataset. If the cell size hasn&apos;t been explicitly specified as the parameter value, the environment cell size value will be used if specified; otherwise, additional rules will be used to calculate it from the other inputs. See the usage section for more detail.</p></xdoc>",
+        "cell_size.title": "Output cell size",
+        "description": "Interpolates a raster surface from points using a two-dimensional minimum curvature spline technique.",
+        "in_point_features.descr": "The input point features containing the z-values to be interpolated into a surface raster.",
+        "in_point_features.title": "Input point features",
+        "number_points.descr": "<xdoc><p>The number of points per region used for local approximation.</p><p>The default is 12.</p></xdoc>",
+        "number_points.title": "Number of points",
+        "out_raster.descr": "<xdoc><p>The output interpolated surface raster.</p><p>It is always a floating-point raster.</p></xdoc>",
+        "out_raster.title": "Output raster",
+        "spline_type.descr": "<xdoc><p>The type of spline to be used.</p><ul><li><span title=\"REGULARIZED\">Regularized</span>—Yields a smooth surface and smooth first derivatives.</li><li><span title=\"TENSION\">Tension</span>—Tunes the stiffness of the interpolant according to the character of the modeled phenomenon.</li></ul></xdoc>",
+        "spline_type.domain.REGULARIZED": "Regularized",
+        "spline_type.domain.TENSION": "Tension",
+        "spline_type.title": "Spline type",
+        "summary": "<xdoc><p>Interpolates a raster surface from points using a two-dimensional minimum curvature spline technique.</p><p>The resulting smooth surface passes exactly through the input points.</p></xdoc>",
+        "title": "Spline",
+        "weight.descr": "<xdoc><p>Parameter influencing the character of the surface interpolation.</p><p>When the <span class=\"esri_uicontrol\">Regularized</span> option is used, it defines the weight of the third derivatives of the surface in the curvature minimization expression. If the <span class=\"esri_uicontrol\">Tension</span> option is used, it defines the weight of tension.</p><p>The default weight is 0.1.</p></xdoc>",
+        "weight.title": "Weight",
+        "z_field.descr": "<xdoc><p>The field that holds a height or magnitude value for each point.</p><p>This can be a numeric field or the Shape field if the input point features contain z-values.</p></xdoc>",
+        "z_field.title": "Z value field"
+    }
+}

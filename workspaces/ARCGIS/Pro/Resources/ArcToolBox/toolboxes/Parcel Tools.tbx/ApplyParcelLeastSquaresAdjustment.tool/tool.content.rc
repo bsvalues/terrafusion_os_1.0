@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Applies the results of a least squares adjustment to parcel  fabric feature classes. Least squares adjustment results stored in the AdjustmentLines and AdjustmentPoints feature classes are applied to the corresponding parcel line, connection line, and parcel fabric point feature classes.",
+        "in_parcel_fabric.descr": "The parcel fabric to be updated.",
+        "in_parcel_fabric.title": "Input Parcel Fabric",
+        "movement_tolerance.descr": "The tolerance representing the minimum allowable coordinate shift when updating parcel fabric points. If the distance between the adjustment point and the parcel fabric point is greater than the specified tolerance, the parcel fabric point is updated to the location of the adjustment point. The default tolerance is 0.05 meters.",
+        "movement_tolerance.title": "Movement Tolerance",
+        "summary": "<xdoc><p>Applies the results of a least squares adjustment to parcel fabric feature classes. Least squares adjustment results stored in the AdjustmentLines and AdjustmentPoints feature classes are applied to the corresponding parcel line, connection line, and parcel fabric point feature classes.</p><p>Use the Analyze Parcels By Least Squares Adjustment tool to run a least-squares adjustment on parcels and store the results in adjustment feature classes.</p></xdoc>",
+        "title": "Apply Parcel Least Squares Adjustment",
+        "update_attributes.descr": "<xdoc><p>Specifies whether attribute fields in the parcel fabric Points feature class will be updated with statistical metadata. The <span class=\"esri_fieldname\">XY Uncertainty</span>, <span class=\"esri_fieldname\">Error Ellipse Semi Major</span>, <span class=\"esri_fieldname\">Error Ellipse Semi Minor</span>, and <span class=\"esri_fieldname\">Error Ellipse Direction</span> fields will be updated with the values stored in the same fields in the AdjustmentPoints feature class.</p><ul><li>Checked—Attribute fields in the parcel fabric Points feature class will be updated with statistical metadata.</li><li>Unchecked—Attribute fields will not be updated. This is the default.</li></ul></xdoc>",
+        "update_attributes.title": "Update Attribute Fields",
+        "updated_parcel_fabric.title": "Updated Parcel Fabric"
+    }
+}

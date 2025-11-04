@@ -1,0 +1,107 @@
+{
+    "type": "FunctionTool",
+    "guid": "{0A4A9218-07A4-497A-8506-CED528063FB9}/EnableDerivedMeasureFields",
+    "displayname": "$rc:title",
+    "helpcontent": "23000040",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "78"
+    ],
+    "params": {
+        "in_feature_class": {
+            "displayname": "$rc:in_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_feature_class.descr"
+        },
+        "derived_route_id_field": {
+            "type": "optional",
+            "displayname": "$rc:derived_route_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text",
+                    "GUID"
+                ]
+            },
+            "depends": [
+                "in_feature_class"
+            ],
+            "description": "$rc:derived_route_id_field.descr"
+        },
+        "derived_route_name_field": {
+            "type": "optional",
+            "displayname": "$rc:derived_route_name_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Text"
+                ]
+            },
+            "depends": [
+                "in_feature_class"
+            ],
+            "description": "$rc:derived_route_name_field.descr"
+        },
+        "derived_from_measure_field": {
+            "type": "optional",
+            "displayname": "$rc:derived_from_measure_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Double"
+                ]
+            },
+            "depends": [
+                "in_feature_class"
+            ],
+            "description": "$rc:derived_from_measure_field.descr"
+        },
+        "derived_to_measure_field": {
+            "type": "optional",
+            "displayname": "$rc:derived_to_measure_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Double"
+                ]
+            },
+            "depends": [
+                "in_feature_class"
+            ],
+            "description": "$rc:derived_to_measure_field.descr"
+        },
+        "out_feature_class": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "in_feature_class"
+            ]
+        }
+    }
+}

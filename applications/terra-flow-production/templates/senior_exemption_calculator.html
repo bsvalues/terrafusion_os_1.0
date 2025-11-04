@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">Senior and Disabled Persons Exemption Calculator</h1>
+    <p class="lead">Calculate property tax exemptions under RCW 84.36.381 for senior citizens and disabled persons.</p>
+    
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('valuation.valuation_dashboard') }}">Valuation</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Senior/Disabled Exemption</li>
+        </ol>
+    </nav>
+    
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
+    
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Calculator</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{{ url_for('valuation.senior_exemption_calculator') }}">
+                        <div class="mb-3">
+                            <label for="property_value" class="form-label">Property Value</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="property_value" name="property_value" min="1" step="1" required value="{{ form_data.property_value if form_data else '' }}">
+                            </div>
+                            <div class="form-text">Current assessed value of the property.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="income" class="form-label">Annual Household Income</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="income" name="income" min="0" step="1" required value="{{ form_data.income if form_data else '' }}">
+                            </div>
+                            <div class="form-text">Annual disposable income for the household.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="age" class="form-label">Age</label>
+                            <input type="number" class="form-control" id="age" name="age" min="0" max="120" step="1" value="{{ form_data.age if form_data else '' }}">
+                            <div class="form-text">Age of the applicant (must be 61 or older to qualify by age).</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="is_disabled" name="is_disabled" value="true" {% if form_data and form_data.is_disabled %}checked{% endif %}>
+                                <label class="form-check-label" for="is_disabled">
+                                    Disabled Person
+                                </label>
+                            </div>
+                            <div class="form-text">Check if the applicant is disabled.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="is_veteran" name="is_veteran" value="true" {% if form_data and form_data.is_veteran %}checked{% endif %}>
+                                <label class="form-check-label" for="is_veteran">
+                                    Disabled Veteran
+                                </label>
+                            </div>
+                            <div class="form-text">Check if the applicant is a disabled veteran.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="is_widow_widower" name="is_widow_widower" value="true" {% if form_data and form_data.is_widow_widower %}checked{% endif %}>
+                                <label class="form-check-label" for="is_widow_widower">
+                                    Widow/Widower of Veteran
+                                </label>
+                            </div>
+                            <div class="form-text">Check if the applicant is a widow or widower of a veteran.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="year" class="form-label">Assessment Year</label>
+                            <select class="form-select" id="year" name="year">
+                                <option value="2025" {% if form_data and form_data.year == 2025 %}selected{% endif %}>2025</option>
+                                <option value="2024" {% if form_data and form_data.year == 2024 %}selected{% endif %}>2024</option>
+                                <option value="2023" {% if form_data and form_data.year == 2023 %}selected{% endif %}>2023</option>
+                            </select>
+                            <div class="form-text">Year of assessment for income thresholds.</div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Calculate</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            {% if result and result.success %}
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Exemption Result</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-6">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6>Exemption Amount</h6>
+                                    <h3>${{ '{:,.2f}'.format(result.exemption_amount) }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6>Taxable Value</h6>
+                                    <h3>${{ '{:,.2f}'.format(result.taxable_value) }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th>Property Value:</th>
+                                <td>${{ '{:,.2f}'.format(result.property_value) }}</td>
+                            </tr>
+                            <tr>
+                                <th>Income Tier:</th>
+                                <td>{{ result.income_tier }}</td>
+                            </tr>
+                            <tr>
+                                <th>Income Threshold:</th>
+                                <td>${{ '{:,.2f}'.format(result.income_threshold) }}</td>
+                            </tr>
+                            <tr>
+                                <th>Exemption Percentage:</th>
+                                <td>{{ result.exemption_percentage }}%</td>
+                            </tr>
+                            <tr>
+                                <th>Exemption Cap:</th>
+                                <td>${{ '{:,.2f}'.format(result.exemption_cap) }}</td>
+                            </tr>
+                            <tr>
+                                <th>Qualification Type:</th>
+                                <td>{{ result.qualification_type|replace('_', ' ')|title }}</td>
+                            </tr>
+                            <tr>
+                                <th>Assessment Year:</th>
+                                <td>{{ result.assessment_year }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="alert alert-info mt-3">
+                        <h6>Tax Impact</h6>
+                        <p class="mb-0">This exemption reduces the property's taxable value, providing significant tax relief for qualifying homeowners.</p>
+                    </div>
+                </div>
+            </div>
+            {% elif not result %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Information</h5>
+                </div>
+                <div class="card-body">
+                    <h5>Senior and Disabled Exemption (RCW 84.36.381)</h5>
+                    <p>This program provides property tax relief for qualifying senior citizens, disabled persons, and veterans based on income thresholds.</p>
+                    
+                    <h5>Eligibility Requirements</h5>
+                    <ul>
+                        <li>Age 61 or older, disabled, a disabled veteran, or a widow/widower of a veteran</li>
+                        <li>Must own and occupy the home as a primary residence</li>
+                        <li>Annual household disposable income must be below program thresholds</li>
+                        <li>Must live in the home for at least 9 months of the year</li>
+                    </ul>
+                    
+                    <h5>Income Tiers for 2025</h5>
+                    <ul>
+                        <li><strong>Tier 1:</strong> Income up to $50,000 - Full exemption for taxes on value up to $100,000</li>
+                        <li><strong>Tier 2:</strong> Income $40,001-$50,000 - 65% exemption on value up to $75,000</li>
+                        <li><strong>Tier 3:</strong> Income $35,001-$40,000 - 35% exemption on value up to $60,000</li>
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

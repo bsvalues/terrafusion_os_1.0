@@ -1,0 +1,192 @@
+{
+    "type": "FunctionTool",
+    "guid": "{eb9e791e-2293-4d01-b3c5-a4580e75f828}",
+    "displayname": "$rc:title",
+    "helpcontent": "11000007",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "6"
+    ],
+    "params": {
+        "in_ga_model_source": {
+            "displayname": "$rc:in_ga_model_source.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPGALayer"
+                    },
+                    {
+                        "type": "DEFile"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "xml",
+                            "lyr"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:in_ga_model_source.descr"
+        },
+        "in_datasets": {
+            "displayname": "$rc:in_datasets.title",
+            "datatype": {
+                "type": "GPGAValueTable"
+            },
+            "depends": [
+                "in_ga_model_source"
+            ],
+            "description": "$rc:in_datasets.descr"
+        },
+        "in_locations": {
+            "displayname": "$rc:in_locations.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:in_locations.descr"
+        },
+        "nugget_span_percents": {
+            "type": "optional",
+            "displayname": "$rc:nugget_span_percents.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "100"
+            },
+            "value": "10",
+            "description": "$rc:nugget_span_percents.descr"
+        },
+        "nugget_calc_times": {
+            "type": "optional",
+            "displayname": "$rc:nugget_calc_times.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "2147483647"
+            },
+            "value": "3",
+            "description": "$rc:nugget_calc_times.descr"
+        },
+        "partialsill_span_percents": {
+            "type": "optional",
+            "displayname": "$rc:partialsill_span_percents.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "100"
+            },
+            "value": "0",
+            "description": "$rc:partialsill_span_percents.descr"
+        },
+        "partialsill_calc_times": {
+            "type": "optional",
+            "displayname": "$rc:partialsill_calc_times.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "2147483647"
+            },
+            "value": "0",
+            "description": "$rc:partialsill_calc_times.descr"
+        },
+        "range_span_percents": {
+            "type": "optional",
+            "displayname": "$rc:range_span_percents.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "100"
+            },
+            "value": "0",
+            "description": "$rc:range_span_percents.descr"
+        },
+        "range_calc_times": {
+            "type": "optional",
+            "displayname": "$rc:range_calc_times.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "2147483647"
+            },
+            "value": "0",
+            "description": "$rc:range_calc_times.descr"
+        },
+        "minrange_span_percents": {
+            "type": "optional",
+            "displayname": "$rc:minrange_span_percents.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "100"
+            },
+            "value": "0",
+            "description": "$rc:minrange_span_percents.descr"
+        },
+        "minrange_calc_times": {
+            "type": "optional",
+            "displayname": "$rc:minrange_calc_times.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "domain": {
+                "type": "GPRangeDomain",
+                "min": "0",
+                "max": "2147483647"
+            },
+            "value": "0",
+            "description": "$rc:minrange_calc_times.descr"
+        },
+        "out_table": {
+            "direction": "out",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "DETable"
+            },
+            "description": "$rc:out_table.descr"
+        }
+    },
+    "environments": [
+        "coincidentPoints",
+        "randomGenerator",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

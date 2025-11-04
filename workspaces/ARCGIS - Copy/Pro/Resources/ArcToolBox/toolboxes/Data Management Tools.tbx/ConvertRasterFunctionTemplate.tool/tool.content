@@ -1,0 +1,91 @@
+{
+    "type": "FunctionTool",
+    "guid": "{63d52a1d-bacb-4562-b5cc-d2a1893cf351}",
+    "displayname": "$rc:title",
+    "helpcontent": "3190214",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_raster_function_template": {
+            "displayname": "$rc:in_raster_function_template.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEFile"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFileDomain",
+                        "filetypes": [
+                            "rft.xml",
+                            "rft.json",
+                            "rft",
+                            "xml",
+                            "json"
+                        ]
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "description": "$rc:in_raster_function_template.descr"
+        },
+        "out_raster_function_template_file": {
+            "direction": "out",
+            "displayname": "$rc:out_raster_function_template_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "rft.xml",
+                    "rft.json",
+                    "rft",
+                    "xml",
+                    "json"
+                ]
+            },
+            "description": "$rc:out_raster_function_template_file.descr"
+        },
+        "format": {
+            "type": "optional",
+            "displayname": "$rc:format.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "XML",
+                        "code": "$rc:format.domain.XML"
+                    },
+                    {
+                        "value": "JSON",
+                        "code": "$rc:format.domain.JSON"
+                    },
+                    {
+                        "value": "BINARY",
+                        "code": "$rc:format.domain.BINARY"
+                    }
+                ]
+            },
+            "value": "JSON",
+            "description": "$rc:format.descr"
+        }
+    },
+    "environments": [
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

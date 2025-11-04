@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Exports the nodes of a triangulated irregular network (TIN) dataset to a point feature class.",
+        "in_tin.descr": "The TIN dataset that will be processed.",
+        "in_tin.title": "Input TIN",
+        "out_feature_class.descr": "The feature class that will be produced.",
+        "out_feature_class.title": "Output Feature Class",
+        "spot_field.descr": "The name of the elevation attribute field of the output feature class. If a name is given, the feature class will be 2D; otherwise, it will be 3D. No name is provided by default, which results in the creation of 3D point features.",
+        "spot_field.title": "Spot Field",
+        "tag_field.descr": "The name of the field storing the tag attribute in the output feature class. By default, no tag value field is created.",
+        "tag_field.title": "Tag Value Field",
+        "title": "TIN Node"
+    }
+}

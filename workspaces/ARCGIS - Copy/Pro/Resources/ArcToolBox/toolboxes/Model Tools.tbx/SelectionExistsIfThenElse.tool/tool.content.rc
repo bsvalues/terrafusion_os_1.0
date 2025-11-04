@@ -1,0 +1,26 @@
+{
+    "map": {
+        "count.descr": "The integer count value.",
+        "count.title": "Count",
+        "count_max.descr": "The maximum integer count value.",
+        "count_max.title": "Maximum Count",
+        "count_min.descr": "The minimum integer count value.",
+        "count_min.title": "Minimum Count",
+        "description": "Checks whether the input data includes a selection and whether a certain number of records are selected.",
+        "false.title": "False",
+        "in_layer_or_view.descr": "The input layer or table view to check.",
+        "in_layer_or_view.title": "Layer Name or Table View",
+        "selection_condition.descr": "<xdoc><p>Specifies the selection condition that will be used.</p><ul><li><span title=\"EXISTS\">Exists</span>—Checks whether any of the input&apos;s records are selected. This is the default.</li><li><span title=\"NO_SELECTION\">No Selection</span>—Checks whether none of the input&apos;s records are selected.</li><li><span title=\"ALL_SELECTED\">All Selected</span>—Checks whether all of the input&apos;s records are selected.</li><li><span title=\"IS_EQUAL_TO\">Is Equal to</span>—Checks whether the number of the input&apos;s selected records is equal to the <span class=\"esri_uicontrol\">Count</span> parameter value.</li><li><span title=\"IS_BETWEEN\">Is Between</span>—Checks whether the number of the input&apos;s selected records is between the <span class=\"esri_uicontrol\">Minimum Count</span> parameter value and <span class=\"esri_uicontrol\">Maximum Count</span> parameter value.</li><li><span title=\"IS_LESS_THAN\">Is Less Than</span>—Checks whether the number of the input&apos;s selected records is less than the <span class=\"esri_uicontrol\">Count</span> parameter value.</li><li><span title=\"IS_GREATER_THAN\">Is Greater Than</span>—Checks whether the number of the input&apos;s selected records is greater than the <span class=\"esri_uicontrol\">Count</span> parameter value.</li><li><span title=\"IS_NOT_EQUAL_TO\">Is Not Equal to</span>—Checks whether the number of the input&apos;s selected records is not equal to the <span class=\"esri_uicontrol\">Count</span> parameter value.</li></ul></xdoc>",
+        "selection_condition.domain.ALL_SELECTED": "All Selected",
+        "selection_condition.domain.EXISTS": "Exists",
+        "selection_condition.domain.IS_BETWEEN": "Is Between",
+        "selection_condition.domain.IS_EQUAL_TO": "Is Equal to",
+        "selection_condition.domain.IS_GREATER_THAN": "Is Greater Than",
+        "selection_condition.domain.IS_LESS_THAN": "Is Less Than",
+        "selection_condition.domain.IS_NOT_EQUAL_TO": "Is Not Equal to",
+        "selection_condition.domain.NO_SELECTION": "No Selection",
+        "selection_condition.title": "Selection Condition",
+        "title": "If Selection Exists",
+        "true.title": "True"
+    }
+}

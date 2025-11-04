@@ -1,0 +1,161 @@
+/**
+ * TerraFusion Unified Notification System Styles
+ * Consistent styling for toast notifications across the application
+ */
+
+#toast-notification-container {
+  z-index: 9999;
+}
+
+/* Base toast styles */
+.tf-toast {
+  border-radius: var(--radius-md, 0.375rem);
+  width: 350px;
+  max-width: 90vw;
+  box-shadow: var(--shadow-md, 0 4px 6px rgba(0, 0, 0, 0.1));
+  border-left: 4px solid transparent;
+  opacity: 0.95;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.tf-toast:hover {
+  opacity: 1;
+  box-shadow: var(--shadow-lg, 0 10px 15px rgba(0, 0, 0, 0.1));
+}
+
+/* Toast header styles */
+.tf-toast .toast-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background-color: rgba(255, 255, 255, 0.95);
+  border-top-left-radius: var(--radius-md, 0.375rem);
+  border-top-right-radius: var(--radius-md, 0.375rem);
+  padding: 0.5rem 0.75rem;
+}
+
+/* Toast body styles */
+.tf-toast .toast-body {
+  padding: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-bottom-left-radius: var(--radius-md, 0.375rem);
+  border-bottom-right-radius: var(--radius-md, 0.375rem);
+}
+
+/* Type-specific styles */
+.tf-toast-success {
+  border-left-color: var(--success, #28a745);
+}
+
+.tf-toast-error {
+  border-left-color: var(--danger, #dc3545);
+}
+
+.tf-toast-warning {
+  border-left-color: var(--warning, #ffc107);
+}
+
+.tf-toast-info {
+  border-left-color: var(--info, #17a2b8);
+}
+
+/* Dark mode support */
+.dark-mode .tf-toast .toast-header,
+.dark-theme .tf-toast .toast-header {
+  background-color: rgba(33, 37, 41, 0.95);
+  color: #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .tf-toast .toast-body,
+.dark-theme .tf-toast .toast-body {
+  background-color: rgba(33, 37, 41, 0.9);
+  color: #fff;
+}
+
+/* Animation */
+.tf-toast {
+  transition: all 0.3s ease;
+  transform-origin: right top;
+}
+
+.tf-toast.showing {
+  transform: translateX(20px);
+  opacity: 0;
+}
+
+.tf-toast.show {
+  transform: translateX(0);
+}
+
+.tf-toast.hiding {
+  transform: translateX(20px);
+  opacity: 0;
+}
+
+/* Screen reader announcer */
+#sr-announcer {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Mobile optimization */
+@media (max-width: 576px) {
+  .tf-toast {
+    width: calc(100vw - 2rem);
+    margin-right: -0.5rem;
+  }
+  
+  /* Increase touch target size for close button */
+  .tf-toast .btn-close {
+    padding: 0.75rem;
+    margin: -0.375rem -0.375rem -0.375rem auto;
+  }
+  
+  /* Move container to bottom for easier thumb access */
+  #toast-notification-container.mobile-bottom {
+    top: auto !important;
+    bottom: 0 !important;
+    right: 0 !important;
+  }
+}
+
+/* High contrast mode */
+.high-contrast-mode .tf-toast {
+  border-width: 3px;
+  box-shadow: 0 0 0 1px #000;
+}
+
+.high-contrast-mode .tf-toast-success {
+  border-color: #006600;
+}
+
+.high-contrast-mode .tf-toast-error {
+  border-color: #cc0000;
+}
+
+.high-contrast-mode .tf-toast-warning {
+  border-color: #cc6600;
+}
+
+.high-contrast-mode .tf-toast-info {
+  border-color: #006699;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .tf-toast {
+    transition: none;
+  }
+  
+  .tf-toast.showing,
+  .tf-toast.hiding {
+    transform: none;
+  }
+}

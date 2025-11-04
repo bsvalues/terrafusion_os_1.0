@@ -1,0 +1,17 @@
+{
+    "map": {
+        "description": "Alters the properties of a field group.",
+        "fields.descr": "The fields that participate in the field group. To modify the fields, enter new field names. Provided values will replace, not append, the current list of fields that participates in the field group. If no values are provided, the fields will not be altered.",
+        "fields.title": "New Fields",
+        "is_restrictive.descr": "<xdoc><p>Specifies whether the field group is restrictive. This parameter allows you to control the editing experience when using contingent values.</p><ul><li>Checked—The field group is restrictive. Values entered on a field in the field group are restricted to those specified as contingent values. This is the default.</li><li>Unchecked—The field group is not restrictive. Values can be committed to a field in a field group even if they are not specified as contingent values.</li></ul></xdoc>",
+        "is_restrictive.title": "Is Restrictive",
+        "name.descr": "The name of the field group to be altered.",
+        "name.title": "Field Group Name",
+        "new_name.descr": "The new, unique name for the field group.",
+        "new_name.title": "New Field Group Name",
+        "out_table.title": "Updated Table",
+        "target_table.descr": "The table containing the field group to be altered.",
+        "target_table.title": "Target Table",
+        "title": "Alter Field Group"
+    }
+}

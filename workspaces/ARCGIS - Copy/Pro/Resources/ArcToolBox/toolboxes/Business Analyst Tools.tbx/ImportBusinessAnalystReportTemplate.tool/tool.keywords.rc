@@ -1,0 +1,13 @@
+{
+    "set": [
+        "agol",
+        "customer",
+        "demographic",
+        "guid",
+        "import",
+        "json",
+        "local dataset",
+        "store",
+        "variable"
+    ]
+}

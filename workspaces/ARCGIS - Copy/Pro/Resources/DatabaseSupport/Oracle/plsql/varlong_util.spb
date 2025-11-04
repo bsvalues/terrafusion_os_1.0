@@ -1,0 +1,397 @@
+/* $Id: varlong_util.spb,v 1.6, 2006-05-03 19:04:01Z, Tom Gigler$ 
+$NoKeywords$ */ 
+
+CREATE OR REPLACE PACKAGE BODY varlong_util
+/***********************************************************************
+*
+*N  {varlong_util.spb}  --  Package to manipulate ESRI varlongs
+*
+*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+*
+*P  Purpose:
+*     This PL/SQL package body contains procedures to manipulate
+*   PL/SQL RAW variables containing ESRI format compressed varlong
+*   number strings.  A varlong is an endian-indepent compressed integer
+*   format.  The Oracle optional package UTL_RAW must be installed, and
+*   the compiling user must have EXECUTE access in order to compile this
+*   package.
+*   
+*E
+*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+*
+*X  Description of Varlong format:
+*
+*   Variable length integer encoding allows for maximum compression of an 
+*   array of integers into an RAW buffer.  The best compression ratio is
+*   achieved when the integer values to be compressed are numerically small.
+* 
+*   The following is a byte-level description of the variable length 
+*   encoding method:
+*
+*   Byte 1:
+* 
+*    Bit 1 -- Continuation bit
+*      0 = Next byte is a new (integer) value
+*      1 = Next byte is a continuation of this (integer) value
+*  
+*    Bit 2 -- Sign bit.
+*      0 = Positive
+*      1 = Negative
+*  
+*    Bits 3-8
+*      Low-order six bits of the (integer) value.
+*  
+*   Note: Bit 1 from byte 1 indicates whether the next byte is a continuation
+*   of the current value or if it is contained in the next value.
+*  
+*   Bytes 2-n:
+*  
+*    Bit 1 -- Continuation bit
+*      0 = Next byte is a new (integer) value
+*      1 = Next byte is a continuation of this (integer) value
+*  
+*    Bits 2-8
+*      Next seven high-order bits
+* 
+*E
+*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+*
+*X  Legalese:
+*
+*   COPYRIGHT 1992-2004 ESRI
+*
+*   TRADE SECRETS: ESRI PROPRIETARY AND CONFIDENTIAL
+*   Unpublished material - all rights reserved under the
+*   Copyright Laws of the United States.
+*
+*   For additional information, contact:
+*   Environmental Systems Research Institute, Inc.
+*   Attn: Contracts Dept
+*   380 New York Street
+*   Redlands, California, USA 92373
+*
+*   email: contracts@esri.com
+*   
+*E
+*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+*
+*H  History:
+*
+*    Peter Aronson             04/20/00               Original coding.
+*E
+***********************************************************************/
+IS
+
+  /* Type Definitions. */
+
+   SUBTYPE bitfield_t IS RAW;
+
+  /* Global Variables. */
+
+   Continue_Bit    CONSTANT bitfield_t(1) := HEXTORAW ('80');
+   Negative_Bit    CONSTANT bitfield_t(1) := HEXTORAW ('40');
+   Ones_Bit        CONSTANT bitfield_t(1) := HEXTORAW ('01');
+   Twos_Bit        CONSTANT bitfield_t(1) := HEXTORAW ('02');
+   Fours_Bit       CONSTANT bitfield_t(1) := HEXTORAW ('04');
+   Eights_Bit      CONSTANT bitfield_t(1) := HEXTORAW ('08');
+   Sixteens_Bit    CONSTANT bitfield_t(1) := HEXTORAW ('10');
+   ThirtyTwos_Bit  CONSTANT bitfield_t(1) := HEXTORAW ('20');
+   SixtyFours_Bit  CONSTANT bitfield_t(1) := HEXTORAW ('40');
+
+  /* Subprograms. */
+
+   FUNCTION unpack_varlong (varlong_buffer  IN      RAW,
+                            start_pos       IN OUT  PLS_INTEGER) 
+                           RETURN PLS_INTEGER
+  /***********************************************************************
+  *
+  *N  {unpack_varlong}  --  Unpack an integer from a varlong buffer
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *P  Purpose:
+  *     This function unpacks an integer from a varlong buffer.  The start
+  *   position indicates where to unpack from, and is updated to the 
+  *   beginning of the next integer.
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *A  Parameters:
+  *     varlong_buffer  <IN>  ==  (RAW) The buffer containging the compressed
+  *                                integer string.
+  *     start_pos   <IN OUT>  ==  (PLS_INTEGER) The position to start the 
+  *                                unpacking at on input, and the position
+  *                                to start the unpacking at for the next
+  *                                integer on output.  The first integer is
+  *                                found at position 1.  A VALUE_ERROR
+  *                                exception is raised if start_pos is 
+  *                                past the end of the varlong string.
+  *     RETURN                ==  (PLS_INTEGER) The unpacked integer.
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *H  History:
+  *
+  *    Peter Aronson                 04/20/00           Original coding.
+  *E
+  ***********************************************************************/
+   IS
+
+      working_byte    bitfield_t(1);
+      varlong         PLS_INTEGER := 0;
+      shift           PLS_INTEGER := 1;
+      shift_multiply  PLS_INTEGER;
+      negative        BOOLEAN;
+      continue        BOOLEAN;
+      first_byte      BOOLEAN := TRUE;
+
+   BEGIN
+
+      -- Get the first byte, and test for sign and continue bits.
+
+      working_byte := UTL_RAW.SUBSTR (varlong_buffer,start_pos,1);
+      IF working_byte IS NULL THEN
+         RAISE VALUE_ERROR;
+      END IF;
+      continue := UTL_RAW.BIT_AND (working_byte,Continue_Bit) = Continue_Bit;
+      negative := UTL_RAW.BIT_AND (working_byte,Negative_Bit) = Negative_Bit;
+      
+      -- Loop through the bytes in this varlong, converting them until after we
+      -- convert a byte without a continue flag.
+
+      LOOP
+         IF UTL_RAW.BIT_AND (working_byte,Ones_Bit) = Ones_Bit THEN
+            varlong := varlong + (1 * shift);
+         END IF;
+         IF UTL_RAW.BIT_AND (working_byte,Twos_Bit) = Twos_Bit THEN
+            varlong := varlong + (2 * shift);
+         END IF;
+         IF UTL_RAW.BIT_AND (working_byte,Fours_Bit) = Fours_Bit THEN
+            varlong := varlong + (4 * shift);
+         END IF;
+         IF UTL_RAW.BIT_AND (working_byte,Eights_Bit) = Eights_Bit THEN
+            varlong := varlong + (8 * shift);
+         END IF;
+         IF UTL_RAW.BIT_AND (working_byte,Sixteens_Bit) = Sixteens_Bit THEN
+            varlong := varlong + (16 * shift);
+         END IF;
+         IF UTL_RAW.BIT_AND (working_byte,ThirtyTwos_Bit) = ThirtyTwos_Bit THEN
+            varlong := varlong + (32 * shift);
+         END IF;
+         IF first_byte THEN
+            first_byte := FALSE;
+            shift_multiply := 64;
+         ELSE
+            IF UTL_RAW.BIT_AND (working_byte,SixtyFours_Bit) = 
+                                                             SixtyFours_Bit THEN
+               varlong := varlong + (64 * shift);   
+            END IF;
+            shift_multiply := 128;
+         END IF;
+
+         IF continue THEN
+            start_pos := start_pos + 1;
+            shift := shift * shift_multiply;
+            working_byte := UTL_RAW.SUBSTR (varlong_buffer,start_pos,1);
+            IF working_byte IS NULL THEN
+               RAISE VALUE_ERROR;
+            END IF;
+            continue := UTL_RAW.BIT_AND (working_byte,Continue_Bit) = 
+                        Continue_Bit;
+         ELSE
+            EXIT;
+         END IF;
+      END LOOP;
+      start_pos := start_pos + 1;
+
+      -- Return our value.
+
+      IF negative THEN
+         varlong := varlong * -1;
+      END IF;
+      RETURN varlong;     
+
+   END unpack_varlong;
+
+
+   PROCEDURE pack_varlong (varlong_value   IN      PLS_INTEGER,
+                           varlong_buffer  IN OUT  RAW)
+  /***********************************************************************
+  *
+  *N  {pack_varlong}  --  Pack an integer into a varlong buffer
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *P  Purpose:
+  *     This function packs an integer into a varlong buffer.  The packed
+  *   integer is appended to the end of the buffer.
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *A  Parameters:
+  *     varlong_value       <IN>  ==  (PLS_INTEGER) The integer to be packed
+  *                                    into the varlong buffer.
+  *     varlong_buffer  <IN OUT>  ==  (RAW) The buffer containging the
+  *                                    compressed integer string.
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *H  History:
+  *
+  *    Peter Aronson                 04/21/00           Original coding.
+  *E
+  ***********************************************************************/
+   IS
+      value         PLS_INTEGER;
+      value2        PLS_INTEGER;
+      negative      BOOLEAN;
+      byte_count    PLS_INTEGER;
+      bit_count     PLS_INTEGER;
+      working_byte  bitfield_t(1);
+      
+
+   BEGIN
+
+      -- Take the absolute value of the value, and set the sign flag.
+
+      IF varlong_value < 0 THEN
+         value := -varlong_value;
+         negative := TRUE;
+      ELSE
+         value := varlong_value;
+         negative := FALSE;
+      END IF;
+
+      -- Loop through each byte of output, encoding as we go.
+
+      byte_count := varlong_size (value);
+      bit_count := 6;
+      
+      FOR byte IN 1..byte_count LOOP
+
+         -- Initialize bytes, and set special bits.
+
+         working_byte := HEXTORAW ('00');
+         IF byte = 1 AND negative THEN
+            working_byte := UTL_RAW.BIT_OR (working_byte,Negative_Bit);
+         END IF;
+         IF byte < byte_count THEN
+            working_byte := UTL_RAW.BIT_OR (working_byte,Continue_Bit);
+         END IF;
+
+         -- For each bit, shift and test.
+
+         FOR bit IN 1..bit_count LOOP
+
+            value2 := FLOOR (value / 2);
+            IF value <> (value2 * 2) THEN
+               IF bit = 1 THEN
+                  working_byte := UTL_RAW.BIT_OR (working_byte,Ones_Bit);
+               ELSIF bit = 2 THEN
+                  working_byte := UTL_RAW.BIT_OR (working_byte,Twos_Bit);
+               ELSIF bit = 3 THEN
+                  working_byte := UTL_RAW.BIT_OR (working_byte,Fours_Bit);
+               ELSIF bit = 4 THEN
+                  working_byte := UTL_RAW.BIT_OR (working_byte,Eights_Bit);
+               ELSIF bit = 5 THEN
+                  working_byte := UTL_RAW.BIT_OR (working_byte,Sixteens_Bit);
+               ELSIF bit = 6 THEN
+                  working_byte := UTL_RAW.BIT_OR (working_byte,ThirtyTwos_Bit);
+               ELSE
+                  working_byte := UTL_RAW.BIT_OR (working_byte,SixtyFours_Bit);
+               END IF;
+            END IF;
+            value := value2;
+  
+         END LOOP;
+
+         -- We have finished a bit, append it to the varlong string and reset
+         -- variables.
+
+         varlong_buffer := UTL_RAW.CONCAT (varlong_buffer,working_byte);
+         bit_count := 7;
+      END LOOP;
+
+   END pack_varlong;
+
+
+   FUNCTION varlong_size  (varlong_value   IN      PLS_INTEGER)
+                           RETURN PLS_INTEGER
+  /***********************************************************************
+  *
+  *N  {varlong_size}  --  The # of bytes an integer will take as a varlong
+  *
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *P  Purpose:
+  *     This function determines the number of bytes an integer will 
+  *   occupy packed into a varlong buffer.
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *A  Parameters:
+  *     varlong_value  <IN>  ==  (PLS_INTEGER) The integer to be packed
+  *                               into the varlong buffer.
+  *     RETURN               ==  (PLS_INTEGER) The number of bytes the
+  *                               supplied value would occupy in a varlong
+  *                               buffer.
+  *E
+  *:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  *
+  *H  History:
+  *
+  *    Peter Aronson                 04/21/00           Original coding.
+  *E
+  ***********************************************************************/
+   IS
+
+      byte_count  PLS_INTEGER;
+      value       PLS_INTEGER;
+
+   BEGIN
+
+      -- Take the absolute value.
+ 
+      IF varlong_value < 0 THEN
+         value := -varlong_value;
+      ELSE
+         value := varlong_value;
+      END IF;
+
+      -- Any number uses at least one byte.
+
+      byte_count := 1;
+
+      -- Is it over 6 bits?
+
+      IF value > 63 THEN
+         byte_count := byte_count + 1;
+      END IF;
+
+      -- Is it over 13 bits?
+
+      IF value > 8191 THEN
+         byte_count := byte_count + 1;
+      END IF;
+
+       -- Is it over 20 bits?
+
+      IF value > 108575 THEN
+         byte_count := byte_count + 1;
+      END IF;
+
+      -- Is it over 27 bits?
+
+      IF value > 134217727 THEN
+         byte_count := byte_count + 1;
+      END IF;
+
+      -- Done (currently we only support 32-bit integers, if we wanted to 
+      -- support 64 bits, we'd have tests for over 34, 41, 48, 55 and 62 bits).
+
+      RETURN byte_count;
+
+   END varlong_size;
+
+END varlong_util;
+/

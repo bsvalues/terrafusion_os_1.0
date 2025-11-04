@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Removes a rule from a topology.",
+        "in_rule.descr": "The topology rule to remove from the topology.",
+        "in_rule.title": "Rule",
+        "in_topology.descr": "The topology from which to remove a rule.",
+        "in_topology.title": "Input Topology",
+        "out_topology.title": "Updated Input Topology",
+        "title": "Remove Rule From Topology"
+    }
+}

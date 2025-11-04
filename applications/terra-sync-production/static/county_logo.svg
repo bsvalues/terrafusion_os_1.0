@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="150" viewBox="0 0 200 150">
+  <!-- County emblem with government-style shield -->
+  <defs>
+    <linearGradient id="shield-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#003366;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#005099;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Shield background -->
+  <path d="M100,10 L160,30 L160,70 C160,110 135,130 100,140 C65,130 40,110 40,70 L40,30 Z" 
+        fill="url(#shield-gradient)" stroke="#002244" stroke-width="2" />
+  
+  <!-- County name banner -->
+  <rect x="50" y="35" width="100" height="25" fill="#005099" />
+  <path d="M50,35 L45,42.5 L50,50 L50,35 Z" fill="#005099" />
+  <path d="M150,35 L155,42.5 L150,50 L150,35 Z" fill="#005099" />
+  
+  <!-- County text -->
+  <text x="100" y="53" font-family="Arial, sans-serif" font-size="14" font-weight="bold" 
+        text-anchor="middle" fill="white">COUNTY</text>
+  
+  <!-- Property assessment imagery -->
+  <path d="M75,70 L125,70 L130,85 L70,85 Z" fill="#ffffff" />  <!-- Paper/document -->
+  
+  <!-- Simplified house icon -->
+  <path d="M100,88 L120,108 L120,130 L80,130 L80,108 Z" fill="#ffffff" />
+  <path d="M100,88 L80,108 L120,108 Z" fill="#ffffff" />
+  <rect x="90" y="115" width="20" height="15" fill="#003366" />
+  
+  <!-- Stars for government feel -->
+  <g fill="#ffffff">
+    <polygon points="70,65 72,60 74,65 80,65 75,68 77,73 72,70 67,73 69,68 64,65" />
+    <polygon points="130,65 132,60 134,65 140,65 135,68 137,73 132,70 127,73 129,68 124,65" />
+    <polygon points="100,60 102,55 104,60 110,60 105,63 107,68 102,65 97,68 99,63 94,60" />
+  </g>
+</svg>

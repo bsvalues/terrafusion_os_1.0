@@ -1,0 +1,107 @@
+{
+    "type": "FunctionTool",
+    "guid": "{a91a0486-6b86-44ce-bda2-9f8a66982bc8}",
+    "displayname": "$rc:title",
+    "helpcontent": "5040001",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "9"
+    ],
+    "params": {
+        "in_surface": {
+            "displayname": "$rc:in_surface.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPTinLayer"
+                    },
+                    {
+                        "type": "GPTerrainLayer"
+                    }
+                ]
+            },
+            "description": "$rc:in_surface.descr"
+        },
+        "in_feature_class": {
+            "displayname": "$rc:in_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ]
+            },
+            "description": "$rc:in_feature_class.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_feature_class.descr"
+        },
+        "max_strip_size": {
+            "type": "optional",
+            "displayname": "$rc:max_strip_size.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "1024",
+            "description": "$rc:max_strip_size.descr"
+        },
+        "z_factor": {
+            "type": "optional",
+            "displayname": "$rc:z_factor.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "1",
+            "description": "$rc:z_factor.descr"
+        },
+        "area_field": {
+            "type": "optional",
+            "displayname": "$rc:area_field.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "Area",
+            "description": "$rc:area_field.descr"
+        },
+        "surface_area_field": {
+            "type": "optional",
+            "displayname": "$rc:surface_area_field.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "value": "SArea",
+            "description": "$rc:surface_area_field.descr"
+        },
+        "pyramid_level_resolution": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:pyramid_level_resolution.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "0",
+            "description": "$rc:pyramid_level_resolution.descr"
+        }
+    },
+    "environments": [
+        "XYDomain",
+        "XYResolution",
+        "ZDomain",
+        "ZResolution",
+        "autoCommit",
+        "configKeyword",
+        "extent",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "workspace"
+    ]
+}

@@ -1,0 +1,27 @@
+<ArrayOfGPEnvironment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:typens="http://www.esri.com/schemas/ArcGIS/3.4.0" xsi:type="typens:ArrayOfGPEnvironment">
+  <GPEnvironment xsi:type="typens:GPEnvironment">
+    <Name>S100FeatureCatalogueFile</Name>
+    <DisplayName>S-100 Feature Catalogue File</DisplayName>
+    <Category>Maritime</Category>
+    <Value xsi:type="typens:DEFile"/>
+    <Domain xsi:type="typens:GPFileDomain">
+      <TypeArray xsi:type="typens:ArrayOfString">
+        <String>xml</String>
+      </TypeArray>
+    </Domain>
+    <DataTypeName xsi:type="typens:GPDataTypeName">
+      <Name>DEFile</Name>
+      <DisplayName>File</DisplayName>
+      <Description>File</Description>
+      <Category>Data Type</Category>
+      <FactoryCLSID xsi:type="typens:UID">
+        <UID xsi:type="xs:string">{44CD92B0-D549-4ED6-B891-3C58A71BDA14}</UID>
+      </FactoryCLSID>
+    </DataTypeName>
+    <DisplayOrder>1</DisplayOrder>
+    <ControlCLSID xsi:nil="true"/>
+    <ParamDependencyArray xsi:type="typens:ArrayOfString"/>
+    <Altered>false</Altered>
+  </GPEnvironment>
+</ArrayOfGPEnvironment>
+

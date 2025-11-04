@@ -1,0 +1,20 @@
+{
+    "map": {
+        "description": "Creates a trace network.",
+        "in_feature_dataset.descr": "The feature dataset that will contain the trace network.",
+        "in_feature_dataset.title": "Input Feature Dataset",
+        "in_trace_network_name.descr": "The name of the trace network that will be created.",
+        "in_trace_network_name.title": "Trace Network Name",
+        "input_edges.descr": "<xdoc><p>The line feature classes and associated connectivity policy that will be included in the trace network.</p><ul><li>Class Name—The name of the line feature class in the feature dataset that will be included in the trace network.</li><li>Connectivity Policy—The associated connectivity policy of the specified feature class.<ul><li>Simple edge—Resources will flow from one end of the edge and out the other end.</li><li>Complex edge—Resources will be siphoned off along the length of the edge.</li></ul></li></ul></xdoc>",
+        "input_edges.domain.item2.COMPLEX_EDGE": "Complex edge",
+        "input_edges.domain.item2.SIMPLE_EDGE": "Simple edge",
+        "input_edges.dt.title1": "Class Name",
+        "input_edges.dt.title2": "Connectivity Policy",
+        "input_edges.title": "Input Edges",
+        "input_junctions.descr": "The names of the point feature classes in the feature dataset that will be included in the trace network.",
+        "input_junctions.title": "Input Junctions",
+        "out_trace_network.title": "Output Trace Network",
+        "summary": "<xdoc><p>Creates a trace network.</p><p>A trace network dataset is created based on the input point and line feature classes from a feature dataset that are specified to participate in the trace network.</p></xdoc>",
+        "title": "Create Trace Network"
+    }
+}

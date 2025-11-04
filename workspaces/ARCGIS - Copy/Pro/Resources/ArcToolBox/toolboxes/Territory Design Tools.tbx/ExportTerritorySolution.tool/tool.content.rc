@@ -1,0 +1,14 @@
+{
+    "map": {
+        "description": "Exports a territory solution to a feature class. The export includes records from all levels (hierarchy) of the solution.",
+        "in_territory_solution.descr": "The Territory Design solution layer that will be exported.",
+        "in_territory_solution.title": "Input Territory Solution",
+        "out_feature_class.descr": "The feature class that will contain the exported territory solution.",
+        "out_feature_class.title": "Output Feature Class",
+        "output_geometry_type.descr": "<xdoc><p>Specifies the feature geometry type to export.</p><ul><li>Territory Boundaries—Polygon features that represent the territory boundaries will be exported.</li><li>Territory Centers—Point features that represent the territory centers will be exported.</li></ul></xdoc>",
+        "output_geometry_type.domain.TERRITORY_BOUNDARIES": "Territory Boundaries",
+        "output_geometry_type.domain.TERRITORY_CENTERS": "Territory Centers",
+        "output_geometry_type.title": "Output Shape Type",
+        "title": "Export Territory Solution"
+    }
+}

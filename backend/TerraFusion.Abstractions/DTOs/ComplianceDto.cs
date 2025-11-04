@@ -138,7 +138,7 @@ namespace TerraFusion.Abstractions.DTOs
         public DateTime GeneratedAt { get; set; }
         public DateTime PeriodStart { get; set; }
         public DateTime PeriodEnd { get; set; }
-        public ComplianceStatus OverallStatus { get; set; }
+        public ComplianceStatus OverallStatus { get; set; } = new();
         public List<ComplianceControl> Controls { get; set; } = new();
         public List<ComplianceViolation> Violations { get; set; } = new();
         public ComplianceMetrics Metrics { get; set; } = new();

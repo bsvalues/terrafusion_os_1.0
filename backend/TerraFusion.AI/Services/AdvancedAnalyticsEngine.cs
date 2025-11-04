@@ -19,7 +19,7 @@ namespace TerraFusion.AI.Services
         private readonly Dictionary<string, PredictiveModel> _models;
         private readonly List<string> _activeDomains;
         private readonly AnalyticsMetrics _metrics;
-        
+
         private System.Threading.Timer? _analysisTimer;
         private System.Threading.Timer? _patternDetectionTimer;
         private System.Threading.Timer? _forecastingTimer;
@@ -42,7 +42,7 @@ namespace TerraFusion.AI.Services
                 "ResourceUtilization",
                 "ComplianceMetrics"
             };
-            
+
             _metrics = new AnalyticsMetrics();
             _lastAnalysisRun = DateTime.UtcNow;
         }
@@ -50,14 +50,14 @@ namespace TerraFusion.AI.Services
         public async Task<bool> InitializeAnalyticsEngine()
         {
             _logger.LogInformation("🧠 Initializing Advanced Analytics Engine...");
-            
+
             try
             {
                 await InitializePredictiveModels();
                 await LoadHistoricalData();
                 StartBackgroundProcesses();
                 await GenerateInitialInsights();
-                
+
                 _logger.LogInformation("✅ Advanced Analytics Engine Successfully Initialized!");
                 return true;
             }
@@ -68,26 +68,26 @@ namespace TerraFusion.AI.Services
             }
         }
 
-        public async Task<PredictiveInsights> GeneratePredictiveInsights(AnalyticsRequest request)
+        public async Task<DTOs.PredictiveInsights> GeneratePredictiveInsights(DTOs.AnalyticsRequest request)
         {
             _logger.LogInformation("🔮 Generating predictive insights for domain: {Domain}", request.Domain);
-            
+
             try
             {
                 var insightId = Guid.NewGuid().ToString();
                 var predictions = new Dictionary<string, object>();
                 var recommendedActions = new List<string>();
-                
+
                 var model = GetBestModelForDomain(request.Domain);
                 if (model != null)
                 {
                     predictions = await model.GeneratePredictions(request.Parameters);
                     recommendedActions = GenerateActionRecommendations(predictions, request.Domain);
                 }
-                
+
                 var severity = DetermineInsightSeverity(predictions);
                 var insightType = MapDomainToInsightType(request.Domain);
-                
+
                 var insights = new PredictiveInsights
                 {
                     InsightId = insightId,
@@ -101,19 +101,19 @@ namespace TerraFusion.AI.Services
                     ValidUntil = DateTime.UtcNow.AddDays(7),
                     Severity = severity
                 };
-                
+
                 _insights[insightId] = insights;
                 _metrics.TotalAnalyses++;
-                
-                _logger.LogInformation("✅ Generated insights: {Title} (Confidence: {Confidence:P1})", 
+
+                _logger.LogInformation("✅ Generated insights: {Title} (Confidence: {Confidence:P1})",
                     insights.Title, insights.Confidence);
-                
+
                 return insights;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "❌ Error generating predictive insights for domain: {Domain}", request.Domain);
-                
+
                 return new PredictiveInsights
                 {
                     InsightId = Guid.NewGuid().ToString(),
@@ -129,9 +129,9 @@ namespace TerraFusion.AI.Services
         public async Task<List<AnalyticsPattern>> DetectPatterns(string domain)
         {
             _logger.LogInformation("🔍 Detecting patterns in domain: {Domain}", domain);
-            
+
             var detectedPatterns = new List<AnalyticsPattern>();
-            
+
             try
             {
                 if (!_historicalData.TryGetValue(domain, out var data) || !data.Any())
@@ -139,27 +139,27 @@ namespace TerraFusion.AI.Services
                     _logger.LogWarning("⚠️ No historical data available for domain: {Domain}", domain);
                     return detectedPatterns;
                 }
-                
+
                 var seasonalPatterns = await DetectSeasonalPatterns(data, domain);
                 var trendPatterns = await DetectTrendPatterns(data, domain);
                 var anomalyPatterns = await DetectAnomalyPatterns(data, domain);
                 var correlationPatterns = await DetectCorrelationPatterns(data, domain);
-                
+
                 detectedPatterns.AddRange(seasonalPatterns);
                 detectedPatterns.AddRange(trendPatterns);
                 detectedPatterns.AddRange(anomalyPatterns);
                 detectedPatterns.AddRange(correlationPatterns);
-                
+
                 foreach (var pattern in detectedPatterns)
                 {
                     _patterns[pattern.PatternId] = pattern;
                 }
-                
+
                 _metrics.PatternsDetected += detectedPatterns.Count;
-                
-                _logger.LogInformation("✅ Detected {Count} patterns in domain: {Domain}", 
+
+                _logger.LogInformation("✅ Detected {Count} patterns in domain: {Domain}",
                     detectedPatterns.Count, domain);
-                
+
                 return detectedPatterns;
             }
             catch (Exception ex)
@@ -171,9 +171,9 @@ namespace TerraFusion.AI.Services
 
         public async Task<PerformanceForecast> GeneratePerformanceForecast(string moduleId, int daysAhead)
         {
-            _logger.LogInformation("📊 Generating {Days} day performance forecast for module: {ModuleId}", 
+            _logger.LogInformation("📊 Generating {Days} day performance forecast for module: {ModuleId}",
                 daysAhead, moduleId);
-            
+
             try
             {
                 var forecast = new PerformanceForecast
@@ -182,30 +182,30 @@ namespace TerraFusion.AI.Services
                     ForecastDays = daysAhead,
                     GeneratedAt = DateTime.UtcNow
                 };
-                
+
                 var performanceData = await GetModulePerformanceHistory(moduleId);
-                
+
                 if (!performanceData.Any())
                 {
                     _logger.LogWarning("⚠️ No performance history for module: {ModuleId}", moduleId);
                     return forecast;
                 }
-                
+
                 var forecastPoints = new List<ForecastPoint>();
                 var baseDate = DateTime.UtcNow.Date;
                 var lastValue = performanceData.LastOrDefault()?.Value ?? 0.8;
-                
+
                 for (int day = 1; day <= daysAhead; day++)
                 {
                     var forecastDate = baseDate.AddDays(day);
                     var trend = CalculateTrend(performanceData);
                     var seasonality = CalculateSeasonality(forecastDate, performanceData);
-                    
-                    var predictedValue = Math.Max(0.1, Math.Min(1.0, 
+
+                    var predictedValue = Math.Max(0.1, Math.Min(1.0,
                         lastValue + (trend * day) + seasonality + (Random.Shared.NextDouble() - 0.5) * 0.1));
-                    
+
                     var confidence = Math.Max(0.5, 0.95 - (day * 0.02));
-                    
+
                     forecastPoints.Add(new ForecastPoint
                     {
                         Date = forecastDate,
@@ -219,14 +219,14 @@ namespace TerraFusion.AI.Services
                         }
                     });
                 }
-                
+
                 forecast.Forecast = forecastPoints;
                 forecast.Accuracy = CalculateForecastAccuracy(performanceData);
                 forecast.IdentifiedRisks = IdentifyForecastRisks(forecastPoints);
-                
-                _logger.LogInformation("✅ Generated forecast for {ModuleId}: {Accuracy:P1} accuracy", 
+
+                _logger.LogInformation("✅ Generated forecast for {ModuleId}: {Accuracy:P1} accuracy",
                     moduleId, forecast.Accuracy);
-                
+
                 return forecast;
             }
             catch (Exception ex)
@@ -239,7 +239,7 @@ namespace TerraFusion.AI.Services
         public async Task<RiskAssessment> AnalyzeRisks(string systemComponent)
         {
             _logger.LogInformation("🛡️ Analyzing risks for system component: {Component}", systemComponent);
-            
+
             try
             {
                 var assessment = new RiskAssessment
@@ -249,23 +249,23 @@ namespace TerraFusion.AI.Services
                     Risks = new List<IdentifiedRisk>(),
                     Mitigations = new List<Mitigation>()
                 };
-                
+
                 var performanceRisks = await AnalyzePerformanceRisks(systemComponent);
                 assessment.Risks.AddRange(performanceRisks);
-                
+
                 var securityRisks = await AnalyzeSecurityRisks(systemComponent);
                 assessment.Risks.AddRange(securityRisks);
-                
+
                 var complianceRisks = await AnalyzeComplianceRisks(systemComponent);
                 assessment.Risks.AddRange(complianceRisks);
-                
+
                 assessment.OverallRiskScore = CalculateOverallRiskScore(assessment.Risks);
                 assessment.Level = DetermineRiskLevel(assessment.OverallRiskScore);
                 assessment.Mitigations = GenerateRiskMitigations(assessment.Risks);
-                
-                _logger.LogInformation("✅ Risk assessment complete for {Component}: {Level} ({Score:F2})", 
+
+                _logger.LogInformation("✅ Risk assessment complete for {Component}: {Level} ({Score:F2})",
                     systemComponent, assessment.Level, assessment.OverallRiskScore);
-                
+
                 return assessment;
             }
             catch (Exception ex)
@@ -275,46 +275,46 @@ namespace TerraFusion.AI.Services
             }
         }
 
-        public async Task<AnalyticsDashboardData> GetDashboardData()
+        public async Task<DTOs.AnalyticsDashboardData> GetDashboardData()
         {
             _logger.LogInformation("📊 Generating analytics dashboard data");
-            
+
             try
             {
-                var dashboardData = new AnalyticsDashboardData
+                var dashboardData = new DTOs.AnalyticsDashboardData
                 {
                     LastUpdated = DateTime.UtcNow
                 };
-                
+
                 dashboardData.HealthMetrics = await GenerateHealthMetrics();
                 dashboardData.Trends = await GenerateTrendData();
                 dashboardData.Alerts = GetRecentAlerts(50);
                 dashboardData.Performance = await GeneratePerformanceOverview();
                 dashboardData.RecentInsights = GetRecentInsights(10);
                 dashboardData.KPIs = await GenerateKPIs();
-                
-                _logger.LogInformation("✅ Dashboard data generated with {Insights} insights and {Alerts} alerts", 
+
+                _logger.LogInformation("✅ Dashboard data generated with {Insights} insights and {Alerts} alerts",
                     dashboardData.RecentInsights.Count, dashboardData.Alerts.Count);
-                
+
                 return dashboardData;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "❌ Error generating dashboard data");
-                return new AnalyticsDashboardData { LastUpdated = DateTime.UtcNow };
+                return new DTOs.AnalyticsDashboardData { LastUpdated = DateTime.UtcNow };
             }
         }
 
         public async Task<List<Recommendation>> GenerateRecommendations(string context)
         {
             _logger.LogInformation("💡 Generating recommendations for context: {Context}", context);
-            
+
             var recommendations = new List<Recommendation>();
-            
+
             try
             {
                 var insights = _insights.Values.Where(i => i.AffectedSystems.Any(s => s.Contains(context))).ToList();
-                
+
                 foreach (var insight in insights.Take(5))
                 {
                     var recommendation = new Recommendation
@@ -334,18 +334,18 @@ namespace TerraFusion.AI.Services
                             ["context"] = context
                         }
                     };
-                    
+
                     recommendations.Add(recommendation);
                 }
-                
+
                 recommendations = recommendations
                     .OrderByDescending(r => r.PotentialImpact)
                     .ThenBy(r => r.Priority)
                     .ToList();
-                
-                _logger.LogInformation("✅ Generated {Count} recommendations for context: {Context}", 
+
+                _logger.LogInformation("✅ Generated {Count} recommendations for context: {Context}",
                     recommendations.Count, context);
-                
+
                 return recommendations;
             }
             catch (Exception ex)
@@ -358,7 +358,7 @@ namespace TerraFusion.AI.Services
         public async Task<bool> TrainPredictiveModel(string modelType, TrainingData data)
         {
             _logger.LogInformation("🎓 Training predictive model: {ModelType}", modelType);
-            
+
             try
             {
                 if (!data.Features.Any() || !data.Labels.Any())
@@ -366,18 +366,18 @@ namespace TerraFusion.AI.Services
                     _logger.LogWarning("⚠️ Insufficient training data for model: {ModelType}", modelType);
                     return false;
                 }
-                
+
                 var model = _models.GetValueOrDefault(modelType) ?? new PredictiveModel(modelType);
                 await model.Train(data.Features, data.Labels);
                 _models[modelType] = model;
-                
+
                 _metrics.ModelsActive = _models.Count;
                 _metrics.LastModelTraining = DateTime.UtcNow;
                 _metrics.AverageAccuracy = _models.Values.Average(m => m.Accuracy);
-                
-                _logger.LogInformation("✅ Model training complete: {ModelType} (Accuracy: {Accuracy:P1})", 
+
+                _logger.LogInformation("✅ Model training complete: {ModelType} (Accuracy: {Accuracy:P1})",
                     modelType, model.Accuracy);
-                
+
                 return true;
             }
             catch (Exception ex)
@@ -395,67 +395,67 @@ namespace TerraFusion.AI.Services
         }
 
         // Private implementation methods
-        
-        private async Task InitializePredictiveModels()
+
+        private async System.Threading.Tasks.Task InitializePredictiveModels()
         {
-            var modelTypes = new[] 
+            var modelTypes = new[]
             {
                 "PropertyValuation",
-                "PerformancePrediction", 
+                "PerformancePrediction",
                 "SecurityThreatDetection",
                 "ResourceUtilization",
                 "UserBehaviorAnalysis"
             };
-            
+
             foreach (var modelType in modelTypes)
             {
                 var model = new PredictiveModel(modelType);
                 await model.Initialize();
                 _models[modelType] = model;
             }
-            
+
             _logger.LogInformation($"✅ Initialized {_models.Count} predictive models");
         }
-        
-        private async Task LoadHistoricalData()
+
+        private async System.Threading.Tasks.Task LoadHistoricalData()
         {
             foreach (var domain in _activeDomains)
             {
                 var data = GenerateSimulatedHistoricalData(domain, 90);
                 _historicalData[domain] = data;
             }
-            
+
             var totalDataPoints = _historicalData.Values.Sum(v => v.Count);
             _logger.LogInformation($"✅ Loaded {totalDataPoints} historical data points across {_activeDomains.Count} domains");
         }
-        
+
         private void StartBackgroundProcesses()
         {
-            _analysisTimer = new System.Threading.Timer(async _ => await PerformPeriodicAnalysis(), 
+            _analysisTimer = new System.Threading.Timer(async _ => await PerformPeriodicAnalysis(),
                 null, TimeSpan.Zero, TimeSpan.FromMinutes(30));
-                
+
             _patternDetectionTimer = new System.Threading.Timer(async _ => await PerformPatternDetection(),
                 null, TimeSpan.FromMinutes(5), TimeSpan.FromHours(1));
-                
+
             _forecastingTimer = new System.Threading.Timer(async _ => await PerformForecastingUpdate(),
                 null, TimeSpan.FromMinutes(10), TimeSpan.FromHours(6));
-            
+
             _logger.LogInformation("⚙️ Background analysis processes started");
         }
-        
-        private async Task GenerateInitialInsights()
+
+        private async System.Threading.Tasks.Task GenerateInitialInsights()
         {
             foreach (var domain in _activeDomains.Take(3))
             {
                 try
                 {
-                    var request = new AnalyticsRequest
+                    var request = new DTOs.AnalyticsRequest
                     {
                         Domain = domain,
                         Type = AnalyticsType.Descriptive,
                         TimeRange = DateTime.UtcNow.AddDays(-7)
                     };
-                    
+
                     await GeneratePredictiveInsights(request);
                 }
                 catch (Exception ex)
@@ -466,18 +466,18 @@ namespace TerraFusion.AI.Services
         }
 
         // Helper methods with stub implementations
-        private PredictiveModel? GetBestModelForDomain(string domain) => 
+        private PredictiveModel? GetBestModelForDomain(string domain) =>
             _models.Values.OrderByDescending(m => m.Accuracy).FirstOrDefault();
-        
+
         private List<string> GenerateActionRecommendations(Dictionary<string, object> predictions, string domain) =>
             new List<string> { $"Monitor {domain} performance", "Consider resource optimization" };
-            
+
         private InsightSeverity DetermineInsightSeverity(Dictionary<string, object> predictions) =>
             predictions.Any() ? InsightSeverity.Medium : InsightSeverity.Low;
-            
+
         private InsightType MapDomainToInsightType(string domain) =>
             domain.Contains("Performance") ? InsightType.Performance : InsightType.Risk;
-            
+
         private List<string> DetermineAffectedSystems(string domain) =>
             new List<string> { domain, "unified-system" };
 
@@ -488,31 +488,31 @@ namespace TerraFusion.AI.Services
             $"Analysis completed for {domain} with {predictions.Count} prediction factors";
 
         // Stub implementations for missing methods
-        private async Task<List<AnalyticsPattern>> DetectSeasonalPatterns(List<object> data, string domain)
-        {
-            await Task.Delay(10);
-            return new List<AnalyticsPattern>();
-        }
-        
-        private async Task<List<AnalyticsPattern>> DetectTrendPatterns(List<object> data, string domain)
-        {
-            await Task.Delay(10);
-            return new List<AnalyticsPattern>();
-        }
-        
-        private async Task<List<AnalyticsPattern>> DetectAnomalyPatterns(List<object> data, string domain)
-        {
-            await Task.Delay(10);
-            return new List<AnalyticsPattern>();
-        }
-        
-        private async Task<List<AnalyticsPattern>> DetectCorrelationPatterns(List<object> data, string domain)
+        private async System.Threading.Tasks.Task<List<AnalyticsPattern>> DetectSeasonalPatterns(List<object> data, string domain)
         {
             await Task.Delay(10);
             return new List<AnalyticsPattern>();
         }
 
-        private async Task<List<PerformanceDataPoint>> GetModulePerformanceHistory(string moduleId)
+        private async System.Threading.Tasks.Task<List<AnalyticsPattern>> DetectTrendPatterns(List<object> data, string domain)
+        {
+            await Task.Delay(10);
+            return new List<AnalyticsPattern>();
+        }
+
+        private async System.Threading.Tasks.Task<List<AnalyticsPattern>> DetectAnomalyPatterns(List<object> data, string domain)
+        {
+            await Task.Delay(10);
+            return new List<AnalyticsPattern>();
+        }
+
+        private async System.Threading.Tasks.Task<List<AnalyticsPattern>> DetectCorrelationPatterns(List<object> data, string domain)
+        {
+            await Task.Delay(10);
+            return new List<AnalyticsPattern>();
+        }
+
+        private async System.Threading.Tasks.Task<List<PerformanceDataPoint>> GetModulePerformanceHistory(string moduleId)
         {
             await Task.Delay(10);
             return new List<PerformanceDataPoint>
@@ -547,7 +547,7 @@ namespace TerraFusion.AI.Services
             return risks;
         }
 
-        private async Task<List<IdentifiedRisk>> AnalyzePerformanceRisks(string systemComponent)
+        private async System.Threading.Tasks.Task<List<IdentifiedRisk>> AnalyzePerformanceRisks(string systemComponent)
         {
             await Task.Delay(10);
             return new List<IdentifiedRisk>
@@ -556,7 +556,7 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        private async Task<List<IdentifiedRisk>> AnalyzeSecurityRisks(string systemComponent)
+        private async System.Threading.Tasks.Task<List<IdentifiedRisk>> AnalyzeSecurityRisks(string systemComponent)
         {
             await Task.Delay(10);
             return new List<IdentifiedRisk>
@@ -565,7 +565,7 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        private async Task<List<IdentifiedRisk>> AnalyzeComplianceRisks(string systemComponent)
+        private async System.Threading.Tasks.Task<List<IdentifiedRisk>> AnalyzeComplianceRisks(string systemComponent)
         {
             await Task.Delay(10);
             return new List<IdentifiedRisk>
@@ -599,7 +599,7 @@ namespace TerraFusion.AI.Services
             }).ToList();
         }
 
-        private async Task<Dictionary<string, object>> GenerateHealthMetrics()
+        private async System.Threading.Tasks.Task<Dictionary<string, object>> GenerateHealthMetrics()
         {
             await Task.Delay(10);
             return new Dictionary<string, object>
@@ -610,7 +610,7 @@ namespace TerraFusion.AI.Services
             };
         }
 
-        private async Task<Dictionary<string, List<double>>> GenerateTrendData()
+        private async System.Threading.Tasks.Task<Dictionary<string, List<double>>> GenerateTrendData()
         {
             await Task.Delay(10);
             return new Dictionary<string, List<double>>
@@ -625,7 +625,7 @@ namespace TerraFusion.AI.Services
             return _recentAlerts.Take(count).ToList();
         }
 
-        private async Task<Dictionary<string, object>> GeneratePerformanceOverview()
+        private async System.Threading.Tasks.Task<Dictionary<string, object>> GeneratePerformanceOverview()
         {
             await Task.Delay(10);
             return new Dictionary<string, object>
@@ -641,7 +641,7 @@ namespace TerraFusion.AI.Services
             return _insights.Values.OrderByDescending(i => i.ValidUntil).Take(count).ToList();
         }
 
-        private async Task<Dictionary<string, double>> GenerateKPIs()
+        private async System.Threading.Tasks.Task<Dictionary<string, double>> GenerateKPIs()
         {
             await Task.Delay(10);
             return new Dictionary<string, double>
@@ -706,7 +706,7 @@ namespace TerraFusion.AI.Services
         {
             var data = new List<object>();
             var random = new Random();
-            
+
             for (int i = 0; i < days; i++)
             {
                 data.Add(new
@@ -716,12 +716,12 @@ namespace TerraFusion.AI.Services
                     Domain = domain
                 });
             }
-            
+
             return data;
         }
 
         // Background processing methods
-        private async Task PerformPeriodicAnalysis()
+        private async System.Threading.Tasks.Task PerformPeriodicAnalysis()
         {
             try
             {
@@ -735,8 +735,8 @@ namespace TerraFusion.AI.Services
                 _logger.LogError(ex, "Error in periodic analysis");
             }
         }
-        
-        private async Task PerformPatternDetection()
+
+        private async System.Threading.Tasks.Task PerformPatternDetection()
         {
             try
             {
@@ -751,8 +751,8 @@ namespace TerraFusion.AI.Services
                 _logger.LogError(ex, "Error in pattern detection");
             }
         }
-        
-        private async Task PerformForecastingUpdate()
+
+        private async System.Threading.Tasks.Task PerformForecastingUpdate()
         {
             try
             {
@@ -764,7 +764,7 @@ namespace TerraFusion.AI.Services
                 _logger.LogError(ex, "Error in forecasting update");
             }
         }
-        
+
         private void CleanupOldInsights()
         {
             var cutoffDate = DateTime.UtcNow.AddDays(-30);
@@ -772,65 +772,66 @@ namespace TerraFusion.AI.Services
                 .Where(i => i.ValidUntil < cutoffDate)
                 .Select(i => i.InsightId)
                 .ToList();
-                
+
             foreach (var insightId in expiredInsights)
             {
                 _insights.TryRemove(insightId, out _);
             }
         }
-        
-        private async Task GenerateSystemAlerts()
+
+        private async System.Threading.Tasks.Task GenerateSystemAlerts()
         {
             await Task.Delay(10);
             var alert = new AlertData
             {
                 AlertId = Guid.NewGuid().ToString(),
                 Message = "System analysis completed",
-                Severity = AlertSeverity.Info,
+                // Use centralized mapping to convert Services.AlertSeverity -> DTOs.AlertSeverity
+                Severity = AlertSeverityMapping.ToDtoSeverity(AlertSeverity.Info),
                 Timestamp = DateTime.UtcNow,
                 Source = "AnalyticsEngine"
             };
-            
+
             _recentAlerts.Enqueue(alert);
-            
+
             while (_recentAlerts.Count > 100)
             {
                 _recentAlerts.TryDequeue(out _);
             }
         }
-        
+
         public void Dispose()
         {
             _analysisTimer?.Dispose();
             _patternDetectionTimer?.Dispose();
             _forecastingTimer?.Dispose();
-            
+
             _logger.LogInformation("✅ Advanced Analytics Engine disposed");
         }
     }
-    
+
     public class PredictiveModel
     {
         public string ModelType { get; }
         public double Accuracy { get; private set; }
         public DateTime LastTrained { get; private set; }
-        
+
         public PredictiveModel(string modelType)
         {
             ModelType = modelType;
             Accuracy = 0.75 + (Random.Shared.NextDouble() * 0.2);
             LastTrained = DateTime.UtcNow;
         }
-        
+
         public async Task Initialize()
         {
             await Task.Delay(10);
         }
-        
+
         public async Task<Dictionary<string, object>> GeneratePredictions(Dictionary<string, object> parameters)
         {
             await Task.Delay(5);
-            
+
             return new Dictionary<string, object>
             {
                 ["prediction"] = Random.Shared.NextDouble(),
@@ -838,7 +839,7 @@ namespace TerraFusion.AI.Services
                 ["timestamp"] = DateTime.UtcNow
             };
         }
-        
+
         public async Task Train(List<Dictionary<string, object>> features, List<object> labels)
         {
             await Task.Delay(100);

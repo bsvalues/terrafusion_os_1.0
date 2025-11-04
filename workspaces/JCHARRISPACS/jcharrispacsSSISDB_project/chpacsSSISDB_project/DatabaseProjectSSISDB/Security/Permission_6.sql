@@ -1,0 +1,5 @@
+GRANT VIEW DATABASE STATE TO [AllSchemaOwner];
+
+
+GO
+

@@ -1,0 +1,144 @@
+{
+    "type": "FunctionTool",
+    "guid": "{8855db16-39fe-472c-9203-5df7375a9ed5}",
+    "displayname": "$rc:title",
+    "helpcontent": "3040007",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "input_features": {
+            "displayname": "$rc:input_features.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPFeatureLayer"
+                }
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "featuretype": [
+                    "Annotation"
+                ]
+            },
+            "description": "$rc:input_features.descr"
+        },
+        "output_featureclass": {
+            "direction": "out",
+            "displayname": "$rc:output_featureclass.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:output_featureclass.descr"
+        },
+        "reference_scale": {
+            "displayname": "$rc:reference_scale.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "description": "$rc:reference_scale.descr"
+        },
+        "create_single_class": {
+            "type": "optional",
+            "displayname": "$rc:create_single_class.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "ONE_CLASS_ONLY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "CREATE_CLASSES"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:create_single_class.descr"
+        },
+        "require_symbol_from_table": {
+            "type": "optional",
+            "displayname": "$rc:require_symbol_from_table.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "REQUIRE_SYMBOL"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_SYMBOL_REQUIRED"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:require_symbol_from_table.descr"
+        },
+        "create_annotation_when_feature_added": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:create_annotation_when_feature_added.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "AUTO_CREATE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_AUTO_CREATE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:create_annotation_when_feature_added.descr"
+        },
+        "update_annotation_when_feature_modified": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:update_annotation_when_feature_modified.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "AUTO_UPDATE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "NO_AUTO_UPDATE"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:update_annotation_when_feature_modified.descr"
+        }
+    },
+    "environments": [
+        "autoCommit",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

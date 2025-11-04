@@ -1,0 +1,12 @@
+{
+    "map": {
+        "category_name.descr": "The name of the category to be created.",
+        "category_name.title": "Category Name",
+        "description": "Adds a network category to an existing utility network.",
+        "in_utility_network.descr": "The input utility network where the network category will be added.",
+        "in_utility_network.title": "Input Utility Network",
+        "out_utility_network.title": "Updated Utility Network",
+        "summary": "<xdoc><p>Adds a network category to an existing utility network.</p><p>Categories are used to control analysis at the asset group and asset type levels; for example, you can define whether a particular asset group or asset type is a protective device. You can also define a category type to control how trace analysis is executed; for example, you can specify that a network trace ends at a user-defined category type of ProtectiveDevice.</p><p>This tool allows you to add a new network category to a utility network that can be later assigned to a feature class at the asset group or asset type level using the Set Network Category tool.</p></xdoc>",
+        "title": "Add Network Category"
+    }
+}

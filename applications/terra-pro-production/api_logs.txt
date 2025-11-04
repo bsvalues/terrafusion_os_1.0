@@ -1,0 +1,7 @@
+INFO:     Will watch for changes in these directories: ['/home/runner/workspace']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [5561] using StatReload
+Starting Terrafusion Core AI Valuator API...
+INFO:     Started server process [5569]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.

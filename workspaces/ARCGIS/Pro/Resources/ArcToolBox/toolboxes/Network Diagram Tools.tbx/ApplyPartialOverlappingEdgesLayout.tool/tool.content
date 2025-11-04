@@ -1,0 +1,95 @@
+{
+    "type": "FunctionTool",
+    "guid": "{b4ccecac-9063-4311-82c9-db8de9cbf777}",
+    "displayname": "$rc:title",
+    "helpcontent": "71020009",
+    "description": "$rc:description",
+    "product": "200",
+    "params": {
+        "in_network_diagram_layer": {
+            "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}",
+            "displayname": "$rc:in_network_diagram_layer.title",
+            "datatype": {
+                "type": "GPDiagramLayer"
+            },
+            "description": "$rc:in_network_diagram_layer.descr"
+        },
+        "buffer_width_absolute": {
+            "displayname": "$rc:buffer_width_absolute.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_network_diagram_layer"
+            ],
+            "description": "$rc:buffer_width_absolute.descr"
+        },
+        "offset_absolute": {
+            "displayname": "$rc:offset_absolute.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "depends": [
+                "in_network_diagram_layer"
+            ],
+            "description": "$rc:offset_absolute.descr"
+        },
+        "optimize_edges": {
+            "type": "optional",
+            "displayname": "$rc:optimize_edges.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "OPTIMIZE_EDGES"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_OPTIMIZE_EDGES"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:optimize_edges.descr"
+        },
+        "out_network_diagram_layer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_network_diagram_layer.title",
+            "datatype": {
+                "type": "GPDiagramLayer"
+            }
+        },
+        "run_async": {
+            "type": "optional",
+            "displayname": "$rc:run_async.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "RUN_ASYNCHRONOUSLY"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "RUN_SYNCHRONOUSLY"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:run_async.descr"
+        }
+    }
+}

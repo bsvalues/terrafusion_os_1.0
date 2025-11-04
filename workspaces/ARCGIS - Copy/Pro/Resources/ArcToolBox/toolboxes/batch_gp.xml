@@ -1,0 +1,268 @@
+<!--#  Disable the batch command for these tools, one line per tool, format - <tool id="<toolbox alias>.<tool name>" /> -->
+<batch>
+<tools>
+<tool id="analysis.Intersect"/>
+<tool id="analysis.Union"/>
+<tool id="ba.AddFieldBasedSuitabilityCriteria"/>
+<tool id="ba.AddPointLayerBasedSuitabilityCriteria"/>
+<tool id="ba.AddVariableBasedSuitabilityCriteria"/>
+<tool id="ba.CalculateSuitabilityScore"/>
+<tool id="ba.MakeSuitabilityAnalysisLayer"/>
+<tool id="ba.SetCriteriaProperties"/>
+<tool id="ba.ColorCodedLayer"/>
+<tool id="ba.DesireLines"/>
+<tool id="ba.CustomerDerivedTA"/>
+<tool id="ba.GeneratePointsFromBusinessListings"/>
+<tool id="cartography.CreateCartographicPartitions"/>
+<tool id="cartography.DelineateBuiltUpAreas"/>
+<tool id="cartography.ThinRoadNetwork"/>
+<tool id="cartography.ResolveRoadConflicts"/>
+<tool id="cartography.ResolveBuildingConflicts"/>
+<tool id="cartography.CreateOverpass"/>
+<tool id="cartography.CreateUnderpass"/>
+<tool id="cartography.SimplifySharedEdges"/>
+<tool id="cartography.SmoothSharedEdges"/>
+<tool id="conversion.GTFSStopsToFeatures"/>
+<tool id="conversion.GTFSShapesToFeatures"/>
+<tool id="conversion.TableToExcel"/>
+<tool id="conversion.FeaturesToGraphics"/>
+<tool id="conversion.WFSToFeatureClass"/>
+<tool id="edit.CalculateTransformationErrors"/>
+<tool id="edit.EdgematchFeatures"/>
+<tool id="edit.GenerateEdgematchLinks"/>
+<tool id="edit.GenerateRubbersheetLinks"/>
+<tool id="edit.RubbersheetFeatures"/>
+<tool id="edit.SplitLineByMatch"/>
+<tool id="edit.TransferAttributes"/>
+<tool id="ga.GACreateGeostatisticalLayer"/>
+<tool id="ga.GaussianGeostatisticalSimulations"/>
+<tool id="geocoding.CreateCompositeAddressLocator"/>
+<tool id="geocoding.CreateAddressLocator"/>
+<tool id="geocoding.CreateLocator"/>
+<tool id="geocoding.SplitAddressIntoComponents"/>
+<tool id="geocoding.StandardizeAddresses"/>
+<tool id="indoors.CreateIndoorsDatabase"/>
+<tool id="indoors.ImportFloorplansToIndoorsGDB"/>
+<tool id="indoors.GenerateOccupantFeatures"/>
+<tool id="indoors.GenerateIndoorsPathways"/>
+<tool id="indoors.GenerateBuildingEntryways"/>
+<tool id="indoors.ConfigureIndoorPositioning"/>
+<tool id="indoors.ThinIndoorPathways"/>
+<tool id="indoors.CreateIndoorDataset"/>
+<tool id="indoors.CreateIndoorNetworkDataset"/>
+<tool id="indoors.ImportCADToIndoorDataset"/>
+<tool id="indoors.UpgradeIndoorsDatabase"/>
+<tool id="indoors.ImportIFCToIndoorDataset"/>
+<tool id="indoors.GenerateFloorPlanFromPointCloud"/>
+<tool id="lr.MakeRouteEventLayer"/>
+<tool id="management.AlterField"/>
+<tool id="management.Integrate"/>
+<tool id="management.CheckGeometry"/>
+<tool id="management.Merge"/>
+<tool id="management.MakeFeatureLayer"/>
+<tool id="management.MakeImageServerLayer"/>
+<tool id="management.MakeLasDatasetLayer"/>
+<tool id="management.MakeMosaicLayer"/>
+<tool id="management.MakeQueryLayer"/>
+<tool id="management.MakeQueryTable"/>
+<tool id="management.MakeRasterLayer"/>
+<tool id="management.MakeTableView"/>
+<tool id="management.MakeWCSLayer"/>
+<tool id="management.MakeXYEventLayer"/>
+<tool id="management.DetectFeatureChanges"/>
+<tool id="management.BatchProject"/>
+<tool id="md.MakeNetCDFFeatureLayer"/>
+<tool id="md.MakeNetCDFRasterLayer"/>
+<tool id="md.MakeNetCDFTableView"/>
+<tool id="md.MakeOPeNDAPRasterLayer"/>
+<tool id="md.SelectByDimension"/>
+<tool id="na.MakeClosestFacilityAnalysisLayer"/>
+<tool id="na.MakeLocationAllocationAnalysisLayer"/>
+<tool id="na.MakeODCostMatrixAnalysisLayer"/>
+<tool id="na.MakeRouteAnalysisLayer"/>
+<tool id="na.MakeServiceAreaAnalysisLayer"/>
+<tool id="na.MakeNetworkDatasetLayer"/>
+<tool id="na.SolveVehicleRoutingProblem"/>
+<tool id="na.CreateNetworkDatasetFromTemplate"/>
+<tool id="na.DissolveNetwork"/>
+<tool id="na.CreateTurnFeatureClass"/>
+<tool id="na.TurnTableToTurnFeatureClass"/>
+<tool id="na.CopyTraversedSourceFeatures"/>
+<tool id="na.BuildOpenLRCache"/>
+<tool id="na.UpdateNetworkDatasetSchema"/>
+<tool id="Reviewer.WriteToReviewerTable"/>
+<tool id="Reviewer.DeleteReviewerSession"/>
+<tool id="sa.Combine"/>
+<tool id="sa.HighestPosition"/>
+<tool id="sa.LowestPosition"/>
+<tool id="sa.MultiOutputMapAlgebra"/>
+<tool id="sa.RasterCalculator"/>
+<tool id="ia.RasterCalculator"/>
+<tool id="sa.SingleOutputMapAlgebra"/>
+<tool id="sa.BandCollectionStats"/>
+<tool id="sa.WeightedOverlay"/>
+<tool id="sa.WeightedSum"/>
+<tool id="ia.WeightedSum"/>
+<tool id="topographic.MakeGridsAndGraticulesLayer"/>
+<tool id="td.AddLevelVariables"/>
+<tool id="td.SetBalanceVariables"/>
+<tool id="td.SolveTerritories"/>
+<tool id="td.AddTerritoryLevel"/>
+<tool id="td.CreateTerritorySolution"/>
+<tool id="td.ImportTerritorySolution"/>
+<tool id="td.LoadTerritoryRecords" />
+<tool id="td.SetTerritoryDistanceParameters" />
+<tool id="td.SetTerritoryLevelOptions" />
+<tool id="td.CreateTerritoryLevelFeatureClasses" />
+<tool id="td.ExportTerritorySolution" />
+<tool id="td.SetTerritoryAttributeConstraints" />
+<tool id="interop.QuickExport"/>
+<tool id="interop.QuickImport"/>
+<tool id="topographic.MergeLinesByPseudoNode"/>
+</tools>
+<!--#  Disable these tool specific batch parameters; one line per tool, format - <param tool="<toolbox alias>.<tool name>" id="<paramName>"/>-->
+<params>
+<param tool="analysis.Enrich" id="variables"/> 
+<param tool="analysis.Enrich" id="buffer_type"/> 
+<param tool="analysis.Enrich" id="distance"/>  
+<param tool="analysis.Enrich" id="unit"/> 
+<param tool="ba.EnrichLayer" id="variables"/> 
+<param tool="ba.EnrichLayer" id="buffer_type"/> 
+<param tool="ba.EnrichLayer" id="distance"/> 
+<param tool="ba.EnrichLayer" id="unit"/>  
+<param tool="ba.SummaryReports" id="report_templates"/> 
+<param tool="ba.SummaryReports" id="reports_folder"/> 
+<param tool="ba.SummaryReports" id="summarization_options"/> 
+<param tool="ba.SummaryReports" id="single_report"/> 
+<param tool="ba.SummaryReports" id="formats"/> 
+<param tool="ba.SummaryReports" id="store_id_field"/> 
+<param tool="ba.SummaryReports" id="store_name_field"/> 
+<param tool="ba.SummaryReports" id="store_address_field"/> 
+<param tool="ba.SummaryReports" id="store_latitude_field"/> 
+<param tool="ba.SummaryReports" id="store_longitude_field"/> 
+<param tool="ba.SummaryReports" id="ring_id_field"/> 
+<param tool="ba.SummaryReports" id="area_description_field"/> 
+<param tool="ba.SummaryReports" id="title"/> 
+<param tool="ba.SummaryReports" id="subtitle"/>  
+<param tool="ba.StandardGeographyTA" id="geography_level"/> 
+<param tool="ba.StandardGeographyTA" id="input_type"/> 
+<param tool="ba.StandardGeographyTA" id="geography_key_field"/> 
+<param tool="ba.StandardGeographyTA" id="summarize_duplicates"/> 
+<param tool="ba.StandardGeographyTA" id="group_field"/> 
+<param tool="ba.StandardGeographyTA" id="dissolve_output"/>
+<param tool="ba.GenerateDriveTimeTradeArea" id="out_feature_class"/>
+<param tool="ba.GenerateDriveTimeTradeArea" id="distances"/>
+<param tool="ba.GenerateDriveTimeTradeArea" id="id_field"/>
+<param tool="ba.GenerateDriveTimeTradeArea" id="remove_overlap"/>
+<param tool="ba.GenerateDriveTimeTradeArea" id="travel_direction"/>
+<param tool="ba.GenerateDriveTimeTradeArea" id="time_of_day"/>
+<param tool="ba.GenerateDriveTimeTradeArea" id="time_zone"/>
+<param tool="ba.GenerateDriveTimeTradeArea" id="search_tolerance"/>
+<param tool="ba.GenerateDriveTimeTradeArea" id="polygon_detail"/>
+<param tool="ba.GenerateDriveTimeTradeArea" id="distance_type"/>
+<param tool="ba.GenerateDriveTimeTradeArea" id="units"/>
+<param tool="ba.CalculateMarketPenetration" id="out_feature_class"/>
+<param tool="ba.CalculateMarketPenetration" id="id_field"/>
+<param tool="ba.CalculateMarketPenetration" id="area_description_field"/>
+<param tool="ba.CalculateMarketPenetration" id="create_report"/>
+<param tool="ba.CalculateMarketPenetration" id="store_id"/>
+<param tool="ba.CalculateMarketPenetration" id="link_field"/>
+<param tool="ba.CalculateMarketPenetration" id="report_title"/>
+<param tool="ba.CalculateMarketPenetration" id="report_folder"/>
+<param tool="ba.CalculateMarketPenetration" id="report_format"/>
+<param tool="ba.CalculateMarketPenetration" id="output_report"/>
+<param tool="ba.HuffModel" id="facility_id_field"/>
+<param tool="ba.HuffModel" id="candidate_id_field"/>
+<param tool="ba.HuffModel" id="sales_potential_id_field"/>
+<param tool="ba.HuffModel" id="sales_potential_field"/>
+<param tool="ba.HuffModel" id="out_feature_class"/>
+<param tool="ba.HuffModel" id="distance_exponent"/>
+<param tool="ba.HuffModel" id="distance_type"/>
+<param tool="ba.HuffModel" id="distance_units"/>
+<param tool="ba.HuffModel" id="out_predicted_sales"/>
+<param tool="ba.HuffModel" id="out_distance_matrix"/>
+<param tool="ba.HuffModel" id="travel_direction"/>
+<param tool="ba.HuffModel" id="time_of_day"/>
+<param tool="ba.HuffModel" id="time_zone"/>
+<param tool="ga.EBKRegressionPrediction" id="search_neighborhood"/>
+<param tool="ga.EmpiricalBayesianKriging" id="search_neighborhood"/>
+<param tool="ga.IDW" id="search_neighborhood"/>
+<param tool="ga.LocalPolynomialInterpolation" id="search_neighborhood"/>
+<param tool="ga.GAMovingWindowKriging" id="in_datasets"/>
+<param tool="ga.RadialBasisFunctions" id="search_neighborhood"/>
+<param tool="ga.GASemivariogramSensitivity" id="in_datasets"/>
+<param tool="management.AddField" id="field_type"/>
+<param tool="management.AddField" id="field_precision"/>
+<param tool="management.AddField" id="field_scale"/>
+<param tool="management.AddField" id="field_length"/>
+<param tool="management.AddField" id="field_alias"/>
+<param tool="management.AddField" id="field_is_nullable"/>
+<param tool="management.AddField" id="field_is_required"/>
+<param tool="management.AddField" id="field_domain"/>
+<param tool="management.Append" id="inputs"/> 
+<param tool="management.Append" id="schema_type"/>
+<param tool="management.Append" id="subtype"/>
+<param tool="management.CalculateField" id="expression"/>
+<param tool="management.CalculateField" id="expression_type"/>
+<param tool="management.CalculateField" id="code_block"/>
+<param tool="management.CalculateFields" id="expression_type"/>
+<param tool="management.CalculateFields" id="code_block"/>
+<param tool="management.AddJoin" id="in_field"/> 
+<param tool="management.AddJoin" id="join_field"/> 
+<param tool="management.DefineProjection" id="coor_system"/>  
+<param tool="management.RepairGeometry" id="validation_method"/> 
+<param tool="management.Copy" id="data_type"/> 
+<param tool="management.Rename" id="data_type"/> 
+<param tool="md.MakeNetCDFFeatureLayer" id="x_variable"/>
+<param tool="md.MakeNetCDFFeatureLayer" id="y_variable"/>
+<param tool="md.MakeNetCDFFeatureLayer" id="value_selection_method"/>
+<param tool="md.MakeNetCDFRasterLayer" id="x_dimension"/>
+<param tool="md.MakeNetCDFRasterLayer" id="y_dimension"/>
+<param tool="md.MakeNetCDFRasterLayer" id="value_selection_method"/>
+<param tool="md.MakeNetCDFTableView" id="value_selection_method"/>
+<param tool="md.RasterToNetCDF" id="variable_units"/>
+<param tool="md.RasterToNetCDF" id="x_dimension"/>
+<param tool="md.RasterToNetCDF" id="y_dimension"/>
+<param tool="md.RasterToNetCDF" id="variable"/>
+<param tool="md.RasterToNetCDF" id="band_dimension"/>
+<param tool="md.MakeOPeNDAPRasterLayer" id="x_dimension"/>
+<param tool="md.MakeOPeNDAPRasterLayer" id="y_dimension"/>
+<param tool="md.MakeOPeNDAPRasterLayer" id="value_selection_method"/>
+<param tool="md.SelectByDimension" id="value_selection_method"/>
+<param tool="sa.PointDensity" id="neighborhood"/>
+<param tool="sa.PathDistance" id="horizontal_factor"/>
+<param tool="sa.PathDistance" id="vertical_factor"/>
+<param tool="sa.PathAllocation" id="horizontal_factor"/>
+<param tool="sa.PathAllocation" id="vertical_factor"/>
+<param tool="sa.PathBackLink" id="horizontal_factor"/>
+<param tool="sa.PathBackLink" id="vertical_factor"/>
+<param tool="sa.ExtractByPoints" id="points"/>
+<param tool="sa.ExtractByPolygon" id="polygon"/>
+<param tool="sa.Idw" id="search_radius"/>
+<param tool="3d.Idw" id="search_radius"/>
+<param tool="sa.Kriging" id="semiVariogram_props"/>
+<param tool="3d.Kriging" id="semiVariogram_props"/>
+<param tool="sa.Kriging" id="search_radius"/>
+<param tool="3d.Kriging" id="search_radius"/>
+<param tool="sa.RasterCalculator" id="expression"/>
+<param tool="ia.RasterCalculator" id="expression"/>
+<param tool="sa.BlockStatistics" id="neighborhood"/>
+<param tool="sa.FocalStatistics" id="neighborhood"/>
+<param tool="ia.FocalStatistics" id="neighborhood"/>
+<param tool="sa.PointStatistics" id="neighborhood"/>
+<param tool="sa.FuzzyMembership" id="fuzzy_function"/>
+<param tool="sa.WeightedOverlay" id="in_weighted_overlay_table"/>
+<param tool="sa.Reclassify" id="remap"/>
+<param tool="3d.Reclassify" id="remap"/>
+<param tool="sa.RescaleByFunction" id="transformation_function"/>
+<param tool="sa.AreaSolarRadiation" id="time_configuration"/>
+<param tool="sa.PointsSolarRadiation" id="time_configuration"/>
+<param tool="sa.SolarRadiationGraphics" id="time_configuration"/>
+<param tool="na.AddLocations" id="in_network_analysis_layer"/>
+<param tool="na.AddLocations" id="sub_layer"/>
+<param tool="na.AddLocations" id="field_mappings"/>
+<param tool="na.AddLocations" id="search_tolerance"/>
+<param tool="na.AddLocations" id="sort_field"/>
+<param tool="na.AddLocations" id="snap_offset"/>
+</params>
+</batch>

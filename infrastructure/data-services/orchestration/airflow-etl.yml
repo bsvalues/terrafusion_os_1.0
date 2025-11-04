@@ -1,0 +1,842 @@
+# TerraFusion OS - Apache Airflow ETL Orchestration
+# ADVANCED WORKFLOW MANAGEMENT FOR GOVERNMENT OPERATIONS
+# Orchestrating 1,008 AI Agents + Multi-County Data Processing
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: terrafusion-airflow
+  labels:
+    security.level: high
+    compliance: fisma-high
+    tier: data-orchestration
+
+---
+# Airflow Database (PostgreSQL)
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: airflow-postgres
+  namespace: terrafusion-airflow
+spec:
+  serviceName: airflow-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: airflow-postgres
+  template:
+    metadata:
+      labels:
+        app: airflow-postgres
+    spec:
+      serviceAccountName: airflow-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        fsGroup: 999
+      containers:
+      - name: postgres
+        image: postgres:15.4-alpine
+        ports:
+        - containerPort: 5432
+          name: postgres
+        env:
+        - name: POSTGRES_DB
+          value: airflow
+        - name: POSTGRES_USER
+          value: airflow
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: postgres-password
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - CHOWN
+            - DAC_OVERRIDE
+            - SETGID
+            - SETUID
+        resources:
+          requests:
+            memory: 2Gi
+            cpu: 500m
+          limits:
+            memory: 4Gi
+            cpu: 1000m
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-storage
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: fast-ssd-encrypted
+      resources:
+        requests:
+          storage: 100Gi
+
+---
+# PostgreSQL Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: airflow-postgres
+  namespace: terrafusion-airflow
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5432
+    targetPort: 5432
+    protocol: TCP
+    name: postgres
+  selector:
+    app: airflow-postgres
+
+---
+# Redis for Celery Backend
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: airflow-redis
+  namespace: terrafusion-airflow
+spec:
+  serviceName: airflow-redis
+  replicas: 1
+  selector:
+    matchLabels:
+      app: airflow-redis
+  template:
+    metadata:
+      labels:
+        app: airflow-redis
+    spec:
+      serviceAccountName: airflow-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        fsGroup: 999
+      containers:
+      - name: redis
+        image: redis:7.2-alpine
+        ports:
+        - containerPort: 6379
+          name: redis
+        command:
+        - redis-server
+        - --requirepass
+        - $(REDIS_PASSWORD)
+        - --maxmemory
+        - 1gb
+        - --maxmemory-policy
+        - allkeys-lru
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: redis-password
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            memory: 1Gi
+            cpu: 200m
+          limits:
+            memory: 2Gi
+            cpu: 500m
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+        - name: tmp-volume
+          mountPath: /tmp
+      volumes:
+      - name: tmp-volume
+        emptyDir:
+          sizeLimit: 1Gi
+  volumeClaimTemplates:
+  - metadata:
+      name: redis-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: fast-ssd-encrypted
+      resources:
+        requests:
+          storage: 10Gi
+
+---
+# Redis Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: airflow-redis
+  namespace: terrafusion-airflow
+spec:
+  type: ClusterIP
+  ports:
+  - port: 6379
+    targetPort: 6379
+    protocol: TCP
+    name: redis
+  selector:
+    app: airflow-redis
+
+---
+# Airflow Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: airflow-config
+  namespace: terrafusion-airflow
+data:
+  airflow.cfg: |
+    [core]
+    dags_folder = /opt/airflow/dags
+    hostname_callable = airflow.utils.net.get_host_ip_address
+    default_timezone = America/Los_Angeles
+    executor = CeleryExecutor
+    sql_alchemy_conn = postgresql+psycopg2://airflow:${POSTGRES_PASSWORD}@airflow-postgres:5432/airflow
+    sql_alchemy_pool_size = 10
+    sql_alchemy_max_overflow = 20
+    sql_alchemy_pool_pre_ping = True
+    parallelism = 64
+    dag_concurrency = 32
+    dags_are_paused_at_creation = False
+    max_active_runs_per_dag = 16
+    load_examples = False
+    plugins_folder = /opt/airflow/plugins
+    fernet_key = ${AIRFLOW_FERNET_KEY}
+    donot_pickle = True
+    dagbag_import_timeout = 30
+    task_runner = BashTaskRunner
+    default_impersonation = 
+    security = 
+    unit_test_mode = False
+    enable_xcom_pickling = False
+    killed_task_cleanup_time = 60
+    dag_discovery_safe_mode = True
+    default_task_retries = 2
+    min_serialized_dag_update_interval = 30
+    min_serialized_dag_fetch_interval = 10
+    max_num_rendered_ti_fields_per_task = 30
+    
+    [logging]
+    base_log_folder = /opt/airflow/logs
+    remote_logging = False
+    remote_log_conn_id = 
+    remote_base_log_folder = 
+    encrypt_s3_logs = False
+    logging_level = INFO
+    fab_logging_level = WARN
+    logging_config_class = 
+    colored_console_log = True
+    colored_log_format = [%%(blue)s%%(asctime)s%%(reset)s] {%%(blue)s%%(filename)s:%%(reset)s%%(lineno)d} %%(log_color)s%%(levelname)s%%(reset)s - %%(log_color)s%%(message)s%%(reset)s
+    colored_formatter_class = airflow.utils.log.colored_log.CustomTTYColoredFormatter
+    log_format = [%%(asctime)s] {%%(filename)s:%%(lineno)d} %%(levelname)s - %%(message)s
+    simple_log_format = %%(asctime)s %%(levelname)s - %%(message)s
+    
+    [metrics]
+    statsd_on = True
+    statsd_host = prometheus-statsd-exporter
+    statsd_port = 9125
+    statsd_prefix = airflow
+    
+    [api]
+    auth_backend = airflow.api.auth.backend.basic_auth
+    enable_experimental_api = False
+    
+    [lineage]
+    backend = 
+    
+    [atlas]
+    sasl_enabled = False
+    host = 
+    port = 21000
+    username = 
+    password = 
+    
+    [operators]
+    default_owner = terrafusion-admin
+    default_cpus = 1
+    default_ram = 512
+    default_disk = 512
+    default_gpus = 0
+    
+    [hive]
+    default_hive_mapred_queue = 
+    
+    [webserver]
+    base_url = https://airflow.terrafusion.gov
+    web_server_host = 0.0.0.0
+    web_server_port = 8080
+    web_server_ssl_cert = /etc/ssl/certs/airflow.crt
+    web_server_ssl_key = /etc/ssl/private/airflow.key
+    web_server_worker_timeout = 120
+    worker_refresh_batch_size = 1
+    worker_refresh_interval = 30
+    secret_key = ${AIRFLOW_SECRET_KEY}
+    workers = 4
+    worker_class = sync
+    access_logfile = -
+    error_logfile = -
+    expose_config = True
+    authenticate = True
+    filter_by_owner = False
+    owner_mode = user
+    dag_default_view = tree
+    dag_orientation = LR
+    demo_mode = False
+    log_fetch_timeout_sec = 5
+    hide_paused_dags_by_default = False
+    page_size = 100
+    
+    [email]
+    email_backend = airflow.utils.email.send_email_smtp
+    
+    [smtp]
+    smtp_host = smtp.terrafusion.gov
+    smtp_starttls = True
+    smtp_ssl = False
+    smtp_port = 587
+    smtp_mail_from = airflow@terrafusion.gov
+    
+    [celery]
+    celery_app_name = airflow.executors.celery_executor
+    worker_concurrency = 16
+    worker_log_server_port = 8793
+    broker_url = redis://:${REDIS_PASSWORD}@airflow-redis:6379/0
+    result_backend = db+postgresql://airflow:${POSTGRES_PASSWORD}@airflow-postgres:5432/airflow
+    flower_host = 0.0.0.0
+    flower_url_prefix = 
+    flower_port = 5555
+    flower_basic_auth = 
+    default_queue = default
+    celery_config_options = airflow.config_templates.default_celery.DEFAULT_CELERY_CONFIG
+    ssl_active = False
+    ssl_key = 
+    ssl_cert = 
+    ssl_cacert = 
+    pool = prefork
+    operation_timeout = 2.0
+    task_track_started = True
+    worker_precheck = False
+    
+    [celery_kubernetes_executor]
+    kubernetes_queue = kubernetes
+    
+    [dask]
+    cluster_address = 127.0.0.1:8786
+    tls_ca = 
+    tls_cert = 
+    tls_key = 
+    
+    [scheduler]
+    job_heartbeat_sec = 5
+    scheduler_heartbeat_sec = 5
+    run_duration = -1
+    min_file_process_interval = 0
+    dag_dir_list_interval = 300
+    print_stats_interval = 30
+    child_process_log_directory = /opt/airflow/logs/scheduler
+    scheduler_zombie_task_threshold = 300
+    catchup_by_default = True
+    statsd_on = True
+    statsd_host = prometheus-statsd-exporter
+    statsd_port = 9125
+    statsd_prefix = airflow
+    max_threads = 2
+    authenticate = False
+    use_job_schedule = True
+    allow_trigger_in_future = False
+
+---
+# Airflow Secrets
+apiVersion: v1
+kind: Secret
+metadata:
+  name: airflow-secrets
+  namespace: terrafusion-airflow
+type: Opaque
+data:
+  postgres-password: dGVycmFmdXNpb25fcG9zdGdyZXNfcGFzcw== # terrafusion_postgres_pass
+  redis-password: dGVycmFmdXNpb25fcmVkaXNfcGFzcw== # terrafusion_redis_pass
+  fernet-key: Wm1GaU1HRmhORGRtWlRabE1qQXdNRFJtTmpGbU16QTNNVGd3TkRSbE16QT0= # Base64 encoded Fernet key
+  secret-key: dGVycmFmdXNpb25fc2VjcmV0X2tleV9mb3JfZ292ZXJubWVudF9vcw== # terrafusion_secret_key_for_government_os
+
+---
+# Airflow Webserver Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: airflow-webserver
+  namespace: terrafusion-airflow
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: airflow-webserver
+  template:
+    metadata:
+      labels:
+        app: airflow-webserver
+    spec:
+      serviceAccountName: airflow-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 50000
+        fsGroup: 50000
+      initContainers:
+      - name: wait-for-postgres
+        image: postgres:15.4-alpine
+        command:
+        - sh
+        - -c
+        - |
+          until pg_isready -h airflow-postgres -p 5432 -U airflow; do
+            echo "Waiting for postgres..."
+            sleep 2
+          done
+        env:
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: postgres-password
+      - name: airflow-init
+        image: apache/airflow:2.7.1-python3.11
+        command:
+        - airflow
+        - db
+        - init
+        env:
+        - name: AIRFLOW__CORE__SQL_ALCHEMY_CONN
+          value: postgresql+psycopg2://airflow:$(POSTGRES_PASSWORD)@airflow-postgres:5432/airflow
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: postgres-password
+        - name: AIRFLOW_FERNET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: fernet-key
+        - name: AIRFLOW_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: secret-key
+        volumeMounts:
+        - name: airflow-config
+          mountPath: /opt/airflow/airflow.cfg
+          subPath: airflow.cfg
+      containers:
+      - name: airflow-webserver
+        image: apache/airflow:2.7.1-python3.11
+        ports:
+        - containerPort: 8080
+          name: http
+        command:
+        - airflow
+        - webserver
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: postgres-password
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: redis-password
+        - name: AIRFLOW_FERNET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: fernet-key
+        - name: AIRFLOW_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: secret-key
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            memory: 2Gi
+            cpu: 1000m
+          limits:
+            memory: 4Gi
+            cpu: 2000m
+        volumeMounts:
+        - name: airflow-config
+          mountPath: /opt/airflow/airflow.cfg
+          subPath: airflow.cfg
+        - name: dags-volume
+          mountPath: /opt/airflow/dags
+        - name: logs-volume
+          mountPath: /opt/airflow/logs
+        - name: plugins-volume
+          mountPath: /opt/airflow/plugins
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+      volumes:
+      - name: airflow-config
+        configMap:
+          name: airflow-config
+      - name: dags-volume
+        persistentVolumeClaim:
+          claimName: airflow-dags-pvc
+      - name: logs-volume
+        persistentVolumeClaim:
+          claimName: airflow-logs-pvc
+      - name: plugins-volume
+        persistentVolumeClaim:
+          claimName: airflow-plugins-pvc
+
+---
+# Airflow Scheduler Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: airflow-scheduler
+  namespace: terrafusion-airflow
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: airflow-scheduler
+  template:
+    metadata:
+      labels:
+        app: airflow-scheduler
+    spec:
+      serviceAccountName: airflow-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 50000
+        fsGroup: 50000
+      containers:
+      - name: airflow-scheduler
+        image: apache/airflow:2.7.1-python3.11
+        command:
+        - airflow
+        - scheduler
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: postgres-password
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: redis-password
+        - name: AIRFLOW_FERNET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: fernet-key
+        - name: AIRFLOW_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: secret-key
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            memory: 2Gi
+            cpu: 1000m
+          limits:
+            memory: 4Gi
+            cpu: 2000m
+        volumeMounts:
+        - name: airflow-config
+          mountPath: /opt/airflow/airflow.cfg
+          subPath: airflow.cfg
+        - name: dags-volume
+          mountPath: /opt/airflow/dags
+        - name: logs-volume
+          mountPath: /opt/airflow/logs
+        - name: plugins-volume
+          mountPath: /opt/airflow/plugins
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "airflow jobs check --job-type SchedulerJob --hostname $(hostname)"
+          initialDelaySeconds: 60
+          periodSeconds: 60
+      volumes:
+      - name: airflow-config
+        configMap:
+          name: airflow-config
+      - name: dags-volume
+        persistentVolumeClaim:
+          claimName: airflow-dags-pvc
+      - name: logs-volume
+        persistentVolumeClaim:
+          claimName: airflow-logs-pvc
+      - name: plugins-volume
+        persistentVolumeClaim:
+          claimName: airflow-plugins-pvc
+
+---
+# Airflow Workers Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: airflow-worker
+  namespace: terrafusion-airflow
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: airflow-worker
+  template:
+    metadata:
+      labels:
+        app: airflow-worker
+    spec:
+      serviceAccountName: airflow-service-account
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 50000
+        fsGroup: 50000
+      containers:
+      - name: airflow-worker
+        image: apache/airflow:2.7.1-python3.11
+        command:
+        - airflow
+        - celery
+        - worker
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: postgres-password
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: redis-password
+        - name: AIRFLOW_FERNET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: fernet-key
+        - name: AIRFLOW_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: airflow-secrets
+              key: secret-key
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            memory: 3Gi
+            cpu: 1500m
+          limits:
+            memory: 6Gi
+            cpu: 3000m
+        volumeMounts:
+        - name: airflow-config
+          mountPath: /opt/airflow/airflow.cfg
+          subPath: airflow.cfg
+        - name: dags-volume
+          mountPath: /opt/airflow/dags
+        - name: logs-volume
+          mountPath: /opt/airflow/logs
+        - name: plugins-volume
+          mountPath: /opt/airflow/plugins
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "celery -A airflow.executors.celery_executor.app inspect ping -d celery@$(hostname)"
+          initialDelaySeconds: 60
+          periodSeconds: 60
+      volumes:
+      - name: airflow-config
+        configMap:
+          name: airflow-config
+      - name: dags-volume
+        persistentVolumeClaim:
+          claimName: airflow-dags-pvc
+      - name: logs-volume
+        persistentVolumeClaim:
+          claimName: airflow-logs-pvc
+      - name: plugins-volume
+        persistentVolumeClaim:
+          claimName: airflow-plugins-pvc
+
+---
+# Persistent Volume Claims
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: airflow-dags-pvc
+  namespace: terrafusion-airflow
+spec:
+  accessModes:
+  - ReadWriteMany
+  storageClassName: fast-ssd-shared
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: airflow-logs-pvc
+  namespace: terrafusion-airflow
+spec:
+  accessModes:
+  - ReadWriteMany
+  storageClassName: fast-ssd-shared
+  resources:
+    requests:
+      storage: 50Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: airflow-plugins-pvc
+  namespace: terrafusion-airflow
+spec:
+  accessModes:
+  - ReadWriteMany
+  storageClassName: fast-ssd-shared
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+# Services
+apiVersion: v1
+kind: Service
+metadata:
+  name: airflow-webserver
+  namespace: terrafusion-airflow
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+    app: airflow-webserver
+
+---
+# ServiceAccount
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: airflow-service-account
+  namespace: terrafusion-airflow
+
+---
+# Network Policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: airflow-network-policy
+  namespace: terrafusion-airflow
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow from TerraFusion services
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: terrafusion-system
+    ports:
+    - protocol: TCP
+      port: 8080
+  # Allow internal communication
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: terrafusion-airflow
+    ports:
+    - protocol: TCP
+      port: 8080
+    - protocol: TCP
+      port: 5432
+    - protocol: TCP
+      port: 6379
+  egress:
+  # Allow to external systems
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 80
+    - protocol: TCP
+      port: 5432
+  # Allow internal communication
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: terrafusion-airflow
+    ports:
+    - protocol: TCP
+      port: 5432
+    - protocol: TCP
+      port: 6379
+  # Allow to Kafka
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: terrafusion-streaming
+    ports:
+    - protocol: TCP
+      port: 9092
+    - protocol: TCP
+      port: 9093

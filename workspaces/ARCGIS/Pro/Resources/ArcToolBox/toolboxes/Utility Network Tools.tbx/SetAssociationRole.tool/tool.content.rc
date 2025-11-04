@@ -1,0 +1,32 @@
+{
+    "map": {
+        "assetgroup.descr": "The asset group that contains the asset type.",
+        "assetgroup.title": "Asset Group",
+        "assettype.descr": "The asset type that the association role will be set for.",
+        "assettype.title": "Asset Type",
+        "association_deletion_semantics.descr": "<xdoc><p>Specifies the deletion semantics for the network features, which defines how content or attachment network features will be managed when the container or structure is deleted. This applies to both container and structure association roles.</p><ul><li><span title=\"CASCADE\">Cascade</span>—When the container or structure is deleted, all content or attachment network features will be deleted.</li><li><span title=\"SET_TO_NONE\">Set to none</span>— When a container or structure is deleted, its content or attachment network features are not deleted, but are removed from the containment or structural attachment association.</li><li><span title=\"RESTRICTED\">Restricted</span>— If content or attachment network features exist, an error will be returned when attempting to delete the container or structure. The content or attachment network features must be removed before deleting the container or structure.</li></ul></xdoc>",
+        "association_deletion_semantics.domain.CASCADE": "Cascade",
+        "association_deletion_semantics.domain.RESTRICTED": "Restricted",
+        "association_deletion_semantics.domain.SET_TO_NONE": "Set to none",
+        "association_deletion_semantics.title": "Deletion Semantics",
+        "association_role_type.descr": "<xdoc><p>Specifies the type of association role that will be assigned to the asset type.</p><ul><li><span title=\"CONTAINER\">Container</span>—The container association role type will be assigned. Features or objects of this role type can contain other features and objects as content.</li><li><span title=\"STRUCTURE\">Structure</span>—The structure association role type will be assigned. Features or objects of this role type can have other features and objects attached to them.</li><li><span title=\"NONE\">None</span>—No role type will be assigned. These are features or objects that are neither a container nor a structure but do connect to other structures.</li></ul></xdoc>",
+        "association_role_type.domain.CONTAINER": "Container",
+        "association_role_type.domain.NONE": "None",
+        "association_role_type.domain.STRUCTURE": "Structure",
+        "association_role_type.title": "Role Type",
+        "description": "Alters the association role assigned to a network feature class or table  at the asset type level.",
+        "domain_network.descr": "The domain network that contains the asset type with an association role to set.",
+        "domain_network.title": "Domain Network",
+        "featureclass.descr": "The utility network feature class or table where the association role will be set.",
+        "featureclass.title": "Input Table",
+        "in_utility_network.descr": "The utility network that contains the asset type with an association role to set.",
+        "in_utility_network.title": "Input Utility Network",
+        "out_utility_network.title": "Updated Utility Network",
+        "split_content.descr": "<xdoc><p>Specifies whether the associated content of a container will be split if the container feature is split. This parameter is only active if the association role is container and is only applicable for line features.<ul><li>Checked—The container&apos;s content will be split if the container feature is split. If a parallel content line feature is found, the content is also split and each section will be contained by the closest container feature. If the content line is not parallel, the content will be contained by the container feature that is closest to it. When the content is a nonspatial junction object, the content is duplicated so that each container feature has a junction object as content. When the content is a nonspatial edge object, the content is split so that each container feature has an edge object as content.</li><li>Unchecked—The container&apos;s content will not be split if the container feature is split. If a parallel content line feature is found, the content will be contained by both sections of the container feature. If the content line is not parallel, the content will be contained by the container feature that is closest to it. When working with nonspatial junction object content, the content will be contained by the larger container. When working with nonspatial edge object content, the content is maintained as content to both parent containers. This is the default.</li></ul></p></xdoc>",
+        "split_content.title": "Split Content",
+        "summary": "<xdoc><p>Alters the association role assigned to a network feature class or table at the asset type level.</p><p>Association roles define how certain network features participate in a utility network. A utility network has existing system-provided association roles for structures and containers. For a network feature to be set as a container or structure using associations, it is necessary to first set an association role. This is assigned at the feature class or object level for specific asset groups and asset types.</p></xdoc>",
+        "title": "Set Association Role",
+        "view_scale.descr": "<xdoc><p>The scale at which containment mode will be entered to edit features participating in the container. For example, setting the view scale to 5 means that when you enter containment mode of the container feature, the scale will be 1:5. Units are based on the utility network units, which are located on the <span class=\"esri_uicontrol\">Source</span> tab of the utility network layer properties pane. This parameter does not apply to junction and edge objects.</p></xdoc>",
+        "view_scale.title": "View Scale"
+    }
+}

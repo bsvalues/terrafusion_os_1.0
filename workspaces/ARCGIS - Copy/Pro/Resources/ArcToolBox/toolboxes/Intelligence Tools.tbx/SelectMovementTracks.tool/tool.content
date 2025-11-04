@@ -1,0 +1,105 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\SelectMovementTracks",
+    "displayname": "$rc:title",
+    "helpcontent": "73060005",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "in_features": {
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "track_id_field": {
+            "displayname": "$rc:track_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "description": "$rc:track_id_field.descr"
+        },
+        "area_of_interest": {
+            "displayname": "$rc:area_of_interest.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polygon"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:area_of_interest.descr"
+        },
+        "time_relationship": {
+            "type": "optional",
+            "displayname": "$rc:time_relationship.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "BEFORE_AFTER",
+                        "code": "$rc:time_relationship.domain.BEFORE_AFTER"
+                    },
+                    {
+                        "value": "BEFORE",
+                        "code": "$rc:time_relationship.domain.BEFORE"
+                    },
+                    {
+                        "value": "AFTER",
+                        "code": "$rc:time_relationship.domain.AFTER"
+                    },
+                    {
+                        "value": "NONE",
+                        "code": "$rc:time_relationship.domain.NONE"
+                    }
+                ]
+            },
+            "value": "NONE",
+            "description": "$rc:time_relationship.descr"
+        },
+        "selection_time": {
+            "type": "optional",
+            "displayname": "$rc:selection_time.title",
+            "datatype": {
+                "type": "GPTimeUnit"
+            },
+            "description": "$rc:selection_time.descr"
+        },
+        "updated_featureclass": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:updated_featureclass.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "depends": [
+                "in_features"
+            ],
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    }
+}

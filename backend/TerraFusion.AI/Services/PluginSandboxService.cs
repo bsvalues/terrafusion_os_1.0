@@ -15,7 +15,7 @@ namespace TerraFusion.AI.Services
             _logger = logger;
         }
 
-        public async Task<(bool Success, string Output)> ExecutePluginAsync(byte[] wasmModule, string functionName, object[] parameters)
+        public async System.Threading.Tasks.Task<(bool Success, string Output)> ExecutePluginAsync(byte[] wasmModule, string functionName, object[] parameters)
         {
             try
             {

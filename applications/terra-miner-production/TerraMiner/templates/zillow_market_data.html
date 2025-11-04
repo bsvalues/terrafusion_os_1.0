@@ -1,0 +1,445 @@
+{% extends "base.html" %}
+
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+    .market-card {
+        transition: transform 0.2s ease-in-out;
+    }
+    .market-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .price-trend-chart-container {
+        height: 300px;
+    }
+</style>
+{% endblock %}
+
+{% block title %}Zillow Market Data{% endblock %}
+{% block page_title %}Zillow Market Data Explorer{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-search"></i> Search for Market Data</h5>
+            </div>
+            <div class="card-body">
+                <form id="marketDataForm" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="resourceId" class="form-label">Location Resource ID</label>
+                        <input type="text" class="form-control" id="resourceId" name="resource_id" placeholder="e.g., 32810">
+                        <small class="form-text text-muted">Zillow resource ID for a city, ZIP code, etc.</small>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="beds" class="form-label">Bedrooms</label>
+                        <select class="form-select" id="beds" name="beds">
+                            <option value="0" selected>Any</option>
+                            <option value="1">1+</option>
+                            <option value="2">2+</option>
+                            <option value="3">3+</option>
+                            <option value="4">4+</option>
+                            <option value="5">5+</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="propertyTypes" class="form-label">Property Types</label>
+                        <select class="form-select" id="propertyTypes" name="property_types">
+                            <option value="house" selected>House</option>
+                            <option value="condo">Condo</option>
+                            <option value="apartment">Apartment</option>
+                            <option value="townhouse">Townhouse</option>
+                            <option value="manufactured">Manufactured</option>
+                            <option value="land">Land</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search"></i> Get Market Data
+                        </button>
+                        <div class="form-check ms-3 mb-2">
+                            <input class="form-check-input" type="checkbox" id="refreshData" name="refresh" value="true">
+                            <label class="form-check-label" for="refreshData">
+                                Force refresh data
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="loadingIndicator" class="row mb-4" style="display: none;">
+    <div class="col-md-12 text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Loading market data...</p>
+    </div>
+</div>
+
+<div id="errorContainer" class="row mb-4" style="display: none;">
+    <div class="col-md-12">
+        <div class="alert alert-danger">
+            <h4 class="alert-heading">Error</h4>
+            <p id="errorMessage"></p>
+        </div>
+    </div>
+</div>
+
+<div id="marketDataContainer" style="display: none;">
+    <!-- Market Overview Cards -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h4 class="mb-3"><i class="bi bi-houses"></i> <span id="locationName"></span> Market Overview</h4>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card h-100 market-card border-primary">
+                <div class="card-body text-center">
+                    <h6 class="card-subtitle mb-2 text-muted">Median Price</h6>
+                    <h2 class="card-title mb-3" id="medianPrice">$0</h2>
+                    <p class="card-text">
+                        <span class="badge bg-light text-dark" id="medianPricePerSqft">$0/sqft</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card h-100 market-card border-success">
+                <div class="card-body text-center">
+                    <h6 class="card-subtitle mb-2 text-muted">Days on Market</h6>
+                    <h2 class="card-title mb-3" id="medianDaysOnMarket">0</h2>
+                    <p class="card-text">
+                        <span class="badge bg-light text-dark">Median</span>
+                        <span class="badge bg-light text-dark" id="avgDaysOnMarket">Avg: 0</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card h-100 market-card border-info">
+                <div class="card-body text-center">
+                    <h6 class="card-subtitle mb-2 text-muted">Active Listings</h6>
+                    <h2 class="card-title mb-3" id="totalActiveListings">0</h2>
+                    <p class="card-text">
+                        <span class="badge bg-light text-dark" id="propertyTypeLabel">Houses</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-3">
+            <div class="card h-100 market-card border-warning">
+                <div class="card-body text-center">
+                    <h6 class="card-subtitle mb-2 text-muted">Recently Sold</h6>
+                    <h2 class="card-title mb-3" id="homesSoldLastMonth">0</h2>
+                    <p class="card-text">
+                        <span class="badge bg-light text-dark">Last Month</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Price Trends Chart -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-graph-up"></i> Price Trends</h5>
+                    <div>
+                        <span class="badge bg-secondary" id="dataSourceBadge">Data Source: Cached</span>
+                        <span class="badge bg-light text-dark" id="lastUpdatedBadge">Last Updated: N/A</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="price-trend-chart-container">
+                        <canvas id="priceTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Property Search Button -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title mb-3">Want to see properties in this area?</h5>
+                    <button id="searchPropertiesBtn" class="btn btn-lg btn-primary">
+                        <i class="bi bi-house-door"></i> Search Properties
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let priceTrendChart;
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const marketDataForm = document.getElementById('marketDataForm');
+        
+        // Handle form submission
+        marketDataForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            fetchMarketData();
+        });
+        
+        // Handle property search button
+        document.getElementById('searchPropertiesBtn').addEventListener('click', function() {
+            const locationName = document.getElementById('locationName').textContent;
+            window.location.href = `/zillow/properties?location=${encodeURIComponent(locationName)}`;
+        });
+        
+        // Pre-populate form if URL has parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('resource_id')) {
+            document.getElementById('resourceId').value = urlParams.get('resource_id');
+            
+            if (urlParams.has('beds')) {
+                document.getElementById('beds').value = urlParams.get('beds');
+            }
+            
+            if (urlParams.has('property_types')) {
+                document.getElementById('propertyTypes').value = urlParams.get('property_types');
+            }
+            
+            // Auto-fetch if resource_id is provided
+            fetchMarketData();
+        }
+    });
+    
+    function fetchMarketData() {
+        // Show loading indicator and hide other content
+        document.getElementById('loadingIndicator').style.display = 'block';
+        document.getElementById('errorContainer').style.display = 'none';
+        document.getElementById('marketDataContainer').style.display = 'none';
+        
+        // Get form data
+        const resourceId = document.getElementById('resourceId').value;
+        const beds = document.getElementById('beds').value;
+        const propertyTypes = document.getElementById('propertyTypes').value;
+        const refresh = document.getElementById('refreshData').checked;
+        
+        if (!resourceId) {
+            showError('Resource ID is required');
+            return;
+        }
+        
+        // Build URL with query parameters
+        const url = `/api/zillow/market-data?resource_id=${encodeURIComponent(resourceId)}&beds=${beds}&property_types=${encodeURIComponent(propertyTypes)}${refresh ? '&refresh=true' : ''}`;
+        
+        // Fetch market data
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'error') {
+                    showError(data.message);
+                    return;
+                }
+                
+                // Update URL with parameters for bookmarking
+                const newUrl = `/zillow/market-data?resource_id=${encodeURIComponent(resourceId)}&beds=${beds}&property_types=${encodeURIComponent(propertyTypes)}`;
+                window.history.pushState({ path: newUrl }, '', newUrl);
+                
+                // Display the data
+                displayMarketData(data.data);
+            })
+            .catch(error => {
+                showError('Error fetching market data: ' + error.message);
+            })
+            .finally(() => {
+                // Hide loading indicator
+                document.getElementById('loadingIndicator').style.display = 'none';
+            });
+    }
+    
+    function displayMarketData(data) {
+        // Show market data container
+        document.getElementById('marketDataContainer').style.display = 'block';
+        
+        // Update location name
+        document.getElementById('locationName').textContent = data.location_name || 'Unknown Location';
+        
+        // Update market overview cards
+        document.getElementById('medianPrice').textContent = formatCurrency(data.median_price);
+        document.getElementById('medianPricePerSqft').textContent = formatCurrency(data.median_price_per_sqft) + '/sqft';
+        document.getElementById('medianDaysOnMarket').textContent = data.median_days_on_market || '0';
+        document.getElementById('avgDaysOnMarket').textContent = `Avg: ${data.avg_days_on_market ? data.avg_days_on_market.toFixed(1) : '0'}`;
+        document.getElementById('totalActiveListings').textContent = data.total_active_listings || '0';
+        document.getElementById('homesSoldLastMonth').textContent = data.homes_sold_last_month || '0';
+        
+        // Update property type label
+        document.getElementById('propertyTypeLabel').textContent = formatPropertyType(data.property_types);
+        
+        // Update data source badge
+        document.getElementById('dataSourceBadge').textContent = `Data Source: ${data.data_source === 'fresh' ? 'Fresh' : 'Cached'}`;
+        document.getElementById('dataSourceBadge').className = `badge ${data.data_source === 'fresh' ? 'bg-success' : 'bg-secondary'}`;
+        
+        // Update last updated badge
+        const lastUpdated = data.updated_at ? new Date(data.updated_at).toLocaleString() : 'N/A';
+        document.getElementById('lastUpdatedBadge').textContent = `Last Updated: ${lastUpdated}`;
+        
+        // Display price trends chart
+        displayPriceTrendChart(data.price_trends || []);
+    }
+    
+    function displayPriceTrendChart(trends) {
+        // Sort trends by date
+        trends.sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        // Prepare chart data
+        const labels = trends.map(trend => formatDate(trend.date));
+        const prices = trends.map(trend => trend.price);
+        const percentChanges = trends.map(trend => trend.percent_change);
+        
+        // Destroy previous chart if exists
+        if (priceTrendChart) {
+            priceTrendChart.destroy();
+        }
+        
+        // Create new chart
+        const ctx = document.getElementById('priceTrendChart').getContext('2d');
+        priceTrendChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Median Price',
+                        data: prices,
+                        borderColor: 'rgba(13, 110, 253, 1)',
+                        backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Percent Change',
+                        data: percentChanges,
+                        borderColor: 'rgba(25, 135, 84, 1)',
+                        backgroundColor: 'transparent',
+                        borderDash: [5, 5],
+                        tension: 0.4,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.dataset.yAxisID === 'y') {
+                                    label += formatCurrency(context.parsed.y);
+                                } else {
+                                    label += context.parsed.y.toFixed(2) + '%';
+                                }
+                                return label;
+                            }
+                        }
+                    },
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Median Price'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return formatCurrency(value);
+                            }
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Percent Change'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value.toFixed(1) + '%';
+                            }
+                        },
+                        grid: {
+                            drawOnChartArea: false
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    function showError(message) {
+        document.getElementById('loadingIndicator').style.display = 'none';
+        document.getElementById('errorContainer').style.display = 'block';
+        document.getElementById('errorMessage').textContent = message;
+    }
+    
+    function formatCurrency(value) {
+        if (!value) return '$0';
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
+    }
+    
+    function formatDate(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' }).format(date);
+    }
+    
+    function formatPropertyType(type) {
+        if (!type) return 'Properties';
+        
+        switch (type.toLowerCase()) {
+            case 'house':
+                return 'Houses';
+            case 'condo':
+                return 'Condos';
+            case 'apartment':
+                return 'Apartments';
+            case 'townhouse':
+                return 'Townhouses';
+            case 'manufactured':
+                return 'Manufactured Homes';
+            case 'land':
+                return 'Land Lots';
+            default:
+                return type.charAt(0).toUpperCase() + type.slice(1);
+        }
+    }
+</script>
+{% endblock %}

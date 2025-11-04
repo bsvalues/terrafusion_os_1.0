@@ -1,0 +1,14 @@
+{
+    "set": [
+        "coordinate",
+        "datum",
+        "gtf",
+        "latitude",
+        "longitude",
+        "reference",
+        "spatial",
+        "system",
+        "transformation",
+        "vertical"
+    ]
+}

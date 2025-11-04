@@ -1,0 +1,33 @@
+{
+    "map": {
+        "description": "Edits a multidimensional raster by adding or deleting variables or dimensions.",
+        "dimension_description.descr": "<xdoc><p>The description of the new dimension to be added to the raster properties for metadata purposes. This parameter is active when the <span class=\"esri_uicontrol\">Manage Mode</span> parameter is set to <span class=\"esri_uicontrol\">Add Dimension</span>.</p></xdoc>",
+        "dimension_description.title": "Dimension Description",
+        "dimension_name.descr": "<xdoc><p>The name of the dimension to be added to or removed from the raster properties. This parameter is required when the <span class=\"esri_uicontrol\">Manage Mode</span> parameter is set to <span class=\"esri_uicontrol\">Add Dimension</span>. If the <span class=\"esri_uicontrol\">Manage Mode</span> parameter is set to <span class=\"esri_uicontrol\">Remove Dimension</span>, the specified dimension can only contain a single value. If the <span class=\"esri_uicontrol\">Dimension Name</span> parameter is not specified and the input only contains a single slice, all dimensions will be removed.</p></xdoc>",
+        "dimension_name.title": "Dimension Name",
+        "dimension_unit.descr": "<xdoc><p>The unit of the new dimension to be added to the raster properties for metadata purposes. This parameter is active when the <span class=\"esri_uicontrol\">Manage Mode</span> parameter is set to <span class=\"esri_uicontrol\">Add Dimension</span>.</p></xdoc>",
+        "dimension_unit.title": "Dimension Unit",
+        "dimension_value.descr": "<xdoc><p>The value of the dimension to be added. The value can be a single value or a range of values. For a range of values, provide the minimum and maximum values separated by a comma. For example, for a new height dimension, enter 0,10 to generate a dimension in which the first slice contains information for the first 10 meters of height.</p><p>This parameter is required when the <span class=\"esri_uicontrol\">Manage Mode</span> parameter is set to <span class=\"esri_uicontrol\">Add Dimension</span>.</p></xdoc>",
+        "dimension_value.title": "Dimension Value",
+        "in_multidimensional_rasters.descr": "<xdoc><p>The multidimensional raster datasets that contain the slices or variables to be added to the target multidimensional raster. This parameter is required when the <span class=\"esri_uicontrol\">Manage Mode</span> parameter is set to <span class=\"esri_uicontrol\">Append Slices</span>, <span class=\"esri_uicontrol\">Replace Slices</span>, or <span class=\"esri_uicontrol\">Append Variables</span>.</p></xdoc>",
+        "in_multidimensional_rasters.title": "Input Multidimensional Rasters",
+        "manage_mode.descr": "<xdoc><p>Specifies the type of modification that will be performed on the target raster.</p><ul><li><span title=\"ADD_DIMENSION\">Add Dimension</span>—A dimension will be added to the input multidimensional raster.</li><li><span title=\"APPEND_SLICES\">Append Slices</span>—Slices from the input multidimensional rasters will be added to the end of the slices for a dimension. This is the default.</li><li><span title=\"APPEND_VARIABLES\">Append Variables</span>—The variables from the input multidimensional rasters will be added.</li><li><span title=\"REPLACE_SLICES\">Replace Slices</span>—Existing slices will be replaced by slices from another multidimensional raster, at specific dimension values.</li><li><span title=\"DELETE_VARIABLES\">Delete Variables</span>—One or more variables will be deleted from the multidimensional raster.</li><li><span title=\"REMOVE_DIMENSION\">Remove Dimension</span>—A single slice multidimensional raster will be converted to a dimensionless raster.</li></ul></xdoc>",
+        "manage_mode.domain.ADD_DIMENSION": "Add Dimension",
+        "manage_mode.domain.APPEND_SLICES": "Append Slices",
+        "manage_mode.domain.APPEND_VARIABLES": "Append Variables",
+        "manage_mode.domain.DELETE_VARIABLES": "Delete Variables",
+        "manage_mode.domain.REMOVE_DIMENSION": "Remove Dimension",
+        "manage_mode.domain.REPLACE_SLICES": "Replace Slices",
+        "manage_mode.title": "Manage Mode",
+        "target_multidimensional_raster.descr": "The multidimensional raster in CRF to modify.",
+        "target_multidimensional_raster.title": "Target Multidimensional Raster",
+        "title": "Manage Multidimensional Raster",
+        "update_statistics.descr": "<xdoc><p>Specifies whether the statistics will be recalculated for the multidimensional raster dataset.</p><ul><li>Checked—Statistics will be recalculated. This is the default.</li><li>Unchecked—Statistics will not be recalculated.</li></ul></xdoc>",
+        "update_statistics.title": "Update Statistics",
+        "update_transpose.descr": "<xdoc><p>Specifies whether the transpose will be rebuilt for the multidimensional raster dataset.</p><ul><li>Checked—The transpose will be rebuilt. If no transpose exists, a new transpose will be built. This is the default.</li><li>Unchecked—The transpose will not be rebuilt.</li></ul></xdoc>",
+        "update_transpose.title": "Update Transpose",
+        "updated_target_multidimensional_raster.title": "Target Multidimensional Raster",
+        "variables.descr": "<xdoc><p>The variable or variables that will be modified in the target multidimensional raster. This parameter is required if the operation being performed is a modification of an existing variable.</p><p>If no variable is specified, the first variable in the target multidimensional raster will be modified.</p></xdoc>",
+        "variables.title": "Variables"
+    }
+}

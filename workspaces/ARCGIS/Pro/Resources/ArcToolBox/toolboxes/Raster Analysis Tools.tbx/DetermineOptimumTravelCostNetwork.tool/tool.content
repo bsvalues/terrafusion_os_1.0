@@ -1,0 +1,126 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\DetermineOptimumTravelCostNetwork",
+    "displayname": "$rc:title",
+    "helpcontent": "54050003",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "inputRegionsRasterOrFeatures": {
+            "displayname": "$rc:inputregionsrasterorfeatures.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "GPFeatureLayer"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "description": "$rc:inputregionsrasterorfeatures.descr"
+        },
+        "inputCostRaster": {
+            "displayname": "$rc:inputcostraster.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "DEImageServer"
+                    },
+                    {
+                        "type": "GPRasterLayer"
+                    },
+                    {
+                        "type": "GPString"
+                    }
+                ]
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ]
+            },
+            "description": "$rc:inputcostraster.descr"
+        },
+        "outputOptimumNetworkName": {
+            "displayname": "$rc:outputoptimumnetworkname.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:outputoptimumnetworkname.descr"
+        },
+        "outputNeighborNetworkName": {
+            "type": "optional",
+            "displayname": "$rc:outputneighbornetworkname.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:outputneighbornetworkname.descr"
+        },
+        "outputOptimumNetworkFeatures": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:outputoptimumnetworkfeatures.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "outputNeighborNetworkFeatures": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:outputneighbornetworkfeatures.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        }
+    },
+    "environments": [
+        "cellSize",
+        "extent",
+        "mask",
+        "outputCoordinateSystem",
+        "snapRaster"
+    ]
+}

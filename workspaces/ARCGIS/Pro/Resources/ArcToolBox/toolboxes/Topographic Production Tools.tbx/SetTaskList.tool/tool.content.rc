@@ -1,0 +1,12 @@
+{
+    "map": {
+        "database_path.descr": "The Workflow Manager (Classic) database connection file (.jtc) that contains the job information. If no connection file is specified, the current default Workflow Manager (Classic) database will be used.",
+        "database_path.title": "Input Database Path",
+        "description": "Populates the list of expected tasks for a job based on the selected task group.",
+        "job_id.descr": "The ID of the Workflow Manager (Classic) job that will be updated.",
+        "job_id.title": "Job ID",
+        "summary": "<xdoc><p>Populates the list of expected tasks for a job based on the selected task group.</p><note type=\"caution\"/><p group=\"note\">This tool is designed to be run as a step in a Workflow Manager (Classic) workflow. Running this tool outside of Workflow Manager (Classic) does not honor all Workflow Manager (Classic) constraints such as job assignment, dependencies, or holds and may cause a job to enter an unusable state.</p><note type=\"caution\"/><p group=\"note\">This tool is intended for use with the Topographic Mapping production workflows and will not support an improperly configured Workflow Manager (Classic) repository. Sample workflows and instructions for configuring Topographic Mapping production workflows are available as part of the product file installer.</p><note type=\"tip\"/><p group=\"note\">It is recommended that current Workflow Manager (Classic) users begin new projects using the services-driven version of ArcGIS Workflow Manager for ArcGIS Pro.</p></xdoc>",
+        "title": "Set Task List",
+        "updated_job_id.title": "Updated Job ID"
+    }
+}

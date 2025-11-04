@@ -1,0 +1,38 @@
+{
+    "type": "FunctionTool",
+    "guid": "{8dd34583-fea7-4f09-bdef-8f1fd3e47ce5}",
+    "displayname": "$rc:title",
+    "helpcontent": "3150005",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "edit_session",
+        "input_data_change"
+    ],
+    "params": {
+        "in_rows": {
+            "displayname": "$rc:in_rows.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "description": "$rc:in_rows.descr"
+        },
+        "out_table": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_table.title",
+            "datatype": {
+                "type": "GPTableView"
+            },
+            "depends": [
+                "in_rows"
+            ]
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

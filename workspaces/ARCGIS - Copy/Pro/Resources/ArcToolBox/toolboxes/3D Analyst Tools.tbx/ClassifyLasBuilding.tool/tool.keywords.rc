@@ -1,0 +1,9 @@
+{
+    "set": [
+        "buildings",
+        "classification",
+        "feature extraction",
+        "lidar",
+        "point cloud"
+    ]
+}

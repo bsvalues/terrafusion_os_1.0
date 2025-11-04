@@ -1,0 +1,19 @@
+{
+    "set": [
+        "add",
+        "clear",
+        "criteria",
+        "expression",
+        "get",
+        "meet",
+        "memory",
+        "pick",
+        "query",
+        "remove",
+        "selection",
+        "sql",
+        "subset",
+        "switch",
+        "update"
+    ]
+}

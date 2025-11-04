@@ -1,0 +1,315 @@
+DROP DATABASE IF EXISTS benton_county_assessor;
+CREATE DATABASE benton_county_assessor;
+USE benton_county_assessor;
+
+CREATE TABLE counties (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    state VARCHAR(2) NOT NULL,
+    fips_code VARCHAR(5) UNIQUE NOT NULL,
+    assessor_name VARCHAR(100),
+    assessor_email VARCHAR(100),
+    tax_year INT NOT NULL,
+    assessment_date DATE,
+    tax_roll_deadline DATE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE property_parcels (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    county_id INT NOT NULL,
+    parcel_number VARCHAR(50) UNIQUE NOT NULL,
+    property_address TEXT,
+    owner_name VARCHAR(200),
+    owner_address TEXT,
+    legal_description TEXT,
+    property_type ENUM('residential', 'commercial', 'industrial', 'agricultural', 'exempt', 'other') NOT NULL,
+    land_use_code VARCHAR(10),
+    zoning VARCHAR(20),
+    latitude DECIMAL(10, 8),
+    longitude DECIMAL(11, 8),
+    lot_size_acres DECIMAL(10, 4),
+    lot_size_sqft INT,
+    year_built INT,
+    building_sqft INT,
+    bedrooms INT,
+    bathrooms DECIMAL(3,1),
+    stories DECIMAL(2,1),
+    garage_spaces INT,
+    basement BOOLEAN DEFAULT FALSE,
+    fireplace BOOLEAN DEFAULT FALSE,
+    pool BOOLEAN DEFAULT FALSE,
+    condition_rating ENUM('poor', 'fair', 'average', 'good', 'excellent'),
+    quality_rating ENUM('poor', 'fair', 'average', 'good', 'excellent'),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (county_id) REFERENCES counties(id) ON DELETE CASCADE,
+    INDEX idx_parcel_number (parcel_number),
+    INDEX idx_property_type (property_type),
+    INDEX idx_owner_name (owner_name),
+    INDEX idx_coordinates (latitude, longitude),
+    INDEX idx_address (property_address(100))
+);
+
+CREATE TABLE assessments (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    parcel_id BIGINT NOT NULL,
+    tax_year INT NOT NULL,
+    assessment_date DATE NOT NULL,
+    land_value DECIMAL(12, 2) NOT NULL,
+    improvement_value DECIMAL(12, 2) NOT NULL,
+    total_assessed_value DECIMAL(12, 2) NOT NULL,
+    market_value DECIMAL(12, 2),
+    assessment_method ENUM('cost', 'sales_comparison', 'income', 'mass_appraisal') NOT NULL,
+    assessor_id INT,
+    review_status ENUM('pending', 'reviewed', 'approved', 'appealed') DEFAULT 'pending',
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (parcel_id) REFERENCES property_parcels(id) ON DELETE CASCADE,
+    INDEX idx_parcel_tax_year (parcel_id, tax_year),
+    INDEX idx_tax_year (tax_year),
+    INDEX idx_assessment_date (assessment_date),
+    INDEX idx_total_value (total_assessed_value),
+    UNIQUE KEY unique_parcel_tax_year (parcel_id, tax_year)
+);
+
+CREATE TABLE property_sales (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    parcel_id BIGINT NOT NULL,
+    sale_date DATE NOT NULL,
+    sale_price DECIMAL(12, 2) NOT NULL,
+    buyer_name VARCHAR(200),
+    seller_name VARCHAR(200),
+    sale_type ENUM('arms_length', 'family_transfer', 'foreclosure', 'estate_sale', 'other') NOT NULL,
+    deed_type VARCHAR(50),
+    financing_type VARCHAR(50),
+    verified BOOLEAN DEFAULT FALSE,
+    verification_source VARCHAR(100),
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (parcel_id) REFERENCES property_parcels(id) ON DELETE CASCADE,
+    INDEX idx_parcel_id (parcel_id),
+    INDEX idx_sale_date (sale_date),
+    INDEX idx_sale_price (sale_price),
+    INDEX idx_sale_type (sale_type)
+);
+
+CREATE TABLE appeals (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    parcel_id BIGINT NOT NULL,
+    tax_year INT NOT NULL,
+    appeal_type ENUM('assessment', 'exemption', 'classification', 'other') NOT NULL,
+    filing_date DATE NOT NULL,
+    hearing_date DATE,
+    appellant_name VARCHAR(200) NOT NULL,
+    appellant_contact TEXT,
+    current_assessment DECIMAL(12, 2) NOT NULL,
+    requested_assessment DECIMAL(12, 2),
+    reason_for_appeal TEXT NOT NULL,
+    supporting_documents JSON,
+    status ENUM('filed', 'scheduled', 'heard', 'decided', 'withdrawn') DEFAULT 'filed',
+    decision ENUM('granted', 'denied', 'modified', 'pending') DEFAULT 'pending',
+    final_assessment DECIMAL(12, 2),
+    decision_date DATE,
+    decision_notes TEXT,
+    board_member VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (parcel_id) REFERENCES property_parcels(id) ON DELETE CASCADE,
+    INDEX idx_parcel_tax_year (parcel_id, tax_year),
+    INDEX idx_filing_date (filing_date),
+    INDEX idx_hearing_date (hearing_date),
+    INDEX idx_status (status)
+);
+
+CREATE TABLE exemptions (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    parcel_id BIGINT NOT NULL,
+    tax_year INT NOT NULL,
+    exemption_type ENUM('homestead', 'senior', 'disabled', 'veteran', 'nonprofit', 'religious', 'agricultural', 'other') NOT NULL,
+    exemption_amount DECIMAL(12, 2),
+    exemption_percentage DECIMAL(5, 2),
+    application_date DATE NOT NULL,
+    approval_date DATE,
+    expiration_date DATE,
+    status ENUM('pending', 'approved', 'denied', 'expired', 'revoked') DEFAULT 'pending',
+    applicant_name VARCHAR(200) NOT NULL,
+    applicant_contact TEXT,
+    supporting_documents JSON,
+    reviewer_id INT,
+    review_notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (parcel_id) REFERENCES property_parcels(id) ON DELETE CASCADE,
+    INDEX idx_parcel_tax_year (parcel_id, tax_year),
+    INDEX idx_exemption_type (exemption_type),
+    INDEX idx_application_date (application_date),
+    INDEX idx_status (status)
+);
+
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    county_id INT NOT NULL,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    role ENUM('assessor', 'appraiser', 'clerk', 'admin', 'viewer') NOT NULL,
+    department VARCHAR(100),
+    phone VARCHAR(20),
+    is_active BOOLEAN DEFAULT TRUE,
+    last_login TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (county_id) REFERENCES counties(id) ON DELETE CASCADE,
+    INDEX idx_username (username),
+    INDEX idx_email (email),
+    INDEX idx_role (role)
+);
+
+CREATE TABLE audit_logs (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
+    county_id INT NOT NULL,
+    action VARCHAR(100) NOT NULL,
+    table_name VARCHAR(50) NOT NULL,
+    record_id BIGINT,
+    old_values JSON,
+    new_values JSON,
+    ip_address VARCHAR(45),
+    user_agent TEXT,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (county_id) REFERENCES counties(id) ON DELETE CASCADE,
+    INDEX idx_user_timestamp (user_id, timestamp),
+    INDEX idx_county_timestamp (county_id, timestamp),
+    INDEX idx_action (action),
+    INDEX idx_table_record (table_name, record_id)
+);
+
+CREATE TABLE market_analysis (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    county_id INT NOT NULL,
+    analysis_date DATE NOT NULL,
+    property_type ENUM('residential', 'commercial', 'industrial', 'agricultural') NOT NULL,
+    neighborhood_code VARCHAR(20),
+    median_sale_price DECIMAL(12, 2),
+    average_sale_price DECIMAL(12, 2),
+    price_per_sqft DECIMAL(8, 2),
+    sales_volume INT,
+    days_on_market INT,
+    assessment_ratio DECIMAL(5, 4),
+    coefficient_of_dispersion DECIMAL(5, 2),
+    price_related_differential DECIMAL(5, 4),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (county_id) REFERENCES counties(id) ON DELETE CASCADE,
+    INDEX idx_county_date (county_id, analysis_date),
+    INDEX idx_property_type (property_type),
+    INDEX idx_neighborhood (neighborhood_code)
+);
+
+-- Washington Counties Expansion Schema
+CREATE TABLE IF NOT EXISTS county_implementations (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    county_name VARCHAR(100) NOT NULL,
+    state VARCHAR(2) NOT NULL DEFAULT 'WA',
+    fips_code VARCHAR(5) UNIQUE,
+    population INT,
+    total_parcels INT,
+    total_assessed_value DECIMAL(15,2),
+    implementation_status ENUM('planning', 'contract_signed', 'data_migration', 'configuration', 'training', 'testing', 'live', 'maintenance') NOT NULL,
+    implementation_progress DECIMAL(5,2) NOT NULL DEFAULT 0.00,
+    start_date DATE,
+    target_go_live DATE,
+    actual_go_live DATE,
+    assessor_name VARCHAR(100),
+    assessor_email VARCHAR(100),
+    assessor_phone VARCHAR(20),
+    primary_contact_name VARCHAR(100),
+    primary_contact_email VARCHAR(100),
+    primary_contact_phone VARCHAR(20),
+    contract_value DECIMAL(10,2),
+    annual_maintenance DECIMAL(10,2),
+    special_requirements TEXT,
+    data_migration_notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_county_name (county_name),
+    INDEX idx_implementation_status (implementation_status),
+    INDEX idx_target_go_live (target_go_live)
+);
+
+CREATE TABLE IF NOT EXISTS implementation_milestones (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    county_implementation_id INT NOT NULL,
+    milestone_name VARCHAR(100) NOT NULL,
+    description TEXT,
+    planned_date DATE,
+    actual_date DATE,
+    status ENUM('pending', 'in_progress', 'completed', 'delayed', 'blocked') NOT NULL DEFAULT 'pending',
+    completion_percentage DECIMAL(5,2) DEFAULT 0.00,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (county_implementation_id) REFERENCES county_implementations(id) ON DELETE CASCADE,
+    INDEX idx_county_milestone (county_implementation_id, milestone_name),
+    INDEX idx_status (status)
+);
+
+CREATE TABLE IF NOT EXISTS county_configurations (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    county_implementation_id INT NOT NULL,
+    tax_year INT NOT NULL,
+    assessment_date DATE,
+    tax_roll_deadline DATE,
+    property_types JSON,
+    exemption_types JSON,
+    appeal_workflow_config JSON,
+    assessment_workflow_config JSON,
+    integration_settings JSON,
+    branding_settings JSON,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (county_implementation_id) REFERENCES county_implementations(id) ON DELETE CASCADE,
+    INDEX idx_county_tax_year (county_implementation_id, tax_year)
+);
+
+CREATE TABLE IF NOT EXISTS implementation_team (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    county_implementation_id INT NOT NULL,
+    member_name VARCHAR(100) NOT NULL,
+    role ENUM('project_manager', 'data_migration_specialist', 'configuration_specialist', 'trainer', 'support_specialist', 'county_liaison') NOT NULL,
+    email VARCHAR(100),
+    phone VARCHAR(20),
+    start_date DATE,
+    end_date DATE,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (county_implementation_id) REFERENCES county_implementations(id) ON DELETE CASCADE,
+    INDEX idx_county_role (county_implementation_id, role)
+);
+
+CREATE TABLE IF NOT EXISTS implementation_issues (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    county_implementation_id INT NOT NULL,
+    issue_type ENUM('data', 'configuration', 'training', 'integration', 'performance', 'security', 'compliance', 'other') NOT NULL,
+    severity ENUM('low', 'medium', 'high', 'critical') NOT NULL,
+    title VARCHAR(200) NOT NULL,
+    description TEXT,
+    reported_date DATE NOT NULL,
+    status ENUM('open', 'in_progress', 'resolved', 'closed', 'deferred') NOT NULL DEFAULT 'open',
+    resolution TEXT,
+    resolved_date DATE,
+    assigned_to VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (county_implementation_id) REFERENCES county_implementations(id) ON DELETE CASCADE,
+    INDEX idx_county_status (county_implementation_id, status),
+    INDEX idx_severity (severity)
+);
+
+SELECT 'County assessor schema with Washington expansion created successfully' as status;

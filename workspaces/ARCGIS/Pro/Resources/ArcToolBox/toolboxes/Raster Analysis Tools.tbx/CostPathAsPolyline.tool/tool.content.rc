@@ -1,0 +1,23 @@
+{
+    "map": {
+        "description": "Calculates the least-cost path from a source to a destination as a line feature.",
+        "destinationfield.descr": "The field that will be used to obtain values for the destination locations.",
+        "destinationfield.title": "Destination Field",
+        "inputcostbacklinkraster.descr": "<xdoc><p>The name of the raster used to determine the path to return to a source via the least-cost path or the shortest path.</p><p>For each cell in the back link or direction raster, a value identifies the neighbor that is the next cell on the path from the cell to a source cell.</p></xdoc>",
+        "inputcostbacklinkraster.title": "Input Cost Backlink, Back Direction or Flow Direction Raster",
+        "inputcostdistanceraster.descr": "The cost distance or Euclidean distance raster to be used to determine the least-cost path from the sources to the destinations.",
+        "inputcostdistanceraster.title": "Input Cost Distance or Euclidean Distance Raster",
+        "inputdestinationrasterorfeatures.descr": "<xdoc><p>An image service or feature service that identifies those locations from which the least-cost path is determined to the least costly source.</p><p>If the input is an image service, the input consists of cells that have valid values (zero is a valid value), and the remaining cells must be assigned NoData.</p></xdoc>",
+        "inputdestinationrasterorfeatures.title": "Input Destination Raster or Features",
+        "outputpolylinefeatures.title": "Output Polyline Feature",
+        "outputpolylinename.descr": "The output feature service that will contain the least cost path.",
+        "outputpolylinename.title": "Output Polyline Name",
+        "pathtype.descr": "<xdoc><p>Specifies the manner in which the values and zones on the input destination data will be interpreted in the cost path calculations.</p><ul><li><span title=\"BEST_SINGLE\">Best single</span>—For all cells on the input destination data, the least-cost path will be derived from the cell with the minimum of the least-cost paths to source cells.</li><li><span title=\"EACH_ZONE\">Each zone</span>—For each zone on the input destination data, a least-cost path is determined and saved on the output raster. With this option, the least-cost path for each zone will begin at the cell with the lowest cost distance weighting in the zone.</li><li><span title=\"EACH_CELL\">Each cell</span>—For each cell with valid values on the input destination data, a least-cost path is determined and saved on the output raster. With this option, each cell of the input destination data will be treated separately, and a least-cost path will be determined for each from cell.</li></ul></xdoc>",
+        "pathtype.domain.BEST_SINGLE": "Best single",
+        "pathtype.domain.EACH_CELL": "Each cell",
+        "pathtype.domain.EACH_ZONE": "Each zone",
+        "pathtype.title": "Path type",
+        "summary": "<xdoc><p>Calculates the least-cost path from a source to a destination as a line feature.</p><note type=\"legacy\"/><p group=\"note\">This tool is deprecated and will be removed in a future release.</p><p group=\"note\">The Optimal Path As Line tool provides enhanced functionality or performance.</p></xdoc>",
+        "title": "Cost Path As Polyline"
+    }
+}

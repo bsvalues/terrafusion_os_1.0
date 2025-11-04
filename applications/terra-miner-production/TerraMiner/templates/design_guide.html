@@ -1,0 +1,691 @@
+{% extends "unified_base.html" %}
+
+{% block title %}UX & Design Principles Guide{% endblock %}
+
+{% block head_extras %}
+<style>
+    .section {
+        @apply mt-10 mb-16;
+    }
+    .section-title {
+        @apply text-2xl font-bold mb-4 text-primary-700 dark:text-primary-300 border-b border-primary-200 dark:border-primary-800 pb-2;
+    }
+    .subsection {
+        @apply mt-8 mb-6;
+    }
+    .subsection-title {
+        @apply text-xl font-semibold mb-3 text-primary-600 dark:text-primary-400;
+    }
+    .color-swatch {
+        @apply w-full h-20 rounded-md shadow-md mb-2;
+    }
+    .color-label {
+        @apply text-sm font-medium;
+    }
+    .card {
+        @apply bg-white dark:bg-secondary-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-secondary-700;
+    }
+    .card-header {
+        @apply px-6 py-4 bg-secondary-50 dark:bg-secondary-700 border-b border-secondary-200 dark:border-secondary-600;
+    }
+    .card-body {
+        @apply p-6;
+    }
+    .design-principle {
+        @apply mb-8 p-4 border-l-4 border-primary-500 bg-primary-50 dark:bg-primary-900/20 dark:border-primary-700 rounded;
+    }
+    .principle-title {
+        @apply font-bold text-lg mb-1 text-primary-700 dark:text-primary-300;
+    }
+    .principle-description {
+        @apply text-secondary-700 dark:text-secondary-300;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-6xl">
+    <header class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-primary-700 dark:text-primary-300 mb-4">Design & UX Principles Guide</h1>
+        <p class="text-xl text-secondary-600 dark:text-secondary-400 max-w-3xl mx-auto">
+            A comprehensive guide to the design principles and user experience concepts that power our real estate intelligence platform
+        </p>
+    </header>
+
+    <!-- User Experience (UX) Section -->
+    <section id="user-experience" class="section">
+        <h2 class="section-title">What is User Experience (UX)?</h2>
+        <p class="mb-6 text-secondary-700 dark:text-secondary-300">
+            User Experience (UX) refers to how a person feels when interacting with a product, website, or app. It focuses on making sure the product is easy to use, enjoyable, and meets the user's needs. Good UX design improves navigation, reduces frustration, and ensures that users can quickly find what they're looking for.
+        </p>
+
+        <div class="grid md:grid-cols-2 gap-8 mt-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-lg font-semibold">Key Elements of UX Design</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <span class="inline-flex items-center justify-center h-6 w-6 rounded-full bg-primary-100 text-primary-600 dark:bg-primary-900 dark:text-primary-300 mr-3 mt-0.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </span>
+                            <span class="text-secondary-700 dark:text-secondary-300">
+                                <strong class="font-medium text-secondary-900 dark:text-white">Usability:</strong> How easy and efficient it is for users to accomplish their goals
+                            </span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="inline-flex items-center justify-center h-6 w-6 rounded-full bg-primary-100 text-primary-600 dark:bg-primary-900 dark:text-primary-300 mr-3 mt-0.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </span>
+                            <span class="text-secondary-700 dark:text-secondary-300">
+                                <strong class="font-medium text-secondary-900 dark:text-white">Accessibility:</strong> Ensuring all users, including those with disabilities, can use the product
+                            </span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="inline-flex items-center justify-center h-6 w-6 rounded-full bg-primary-100 text-primary-600 dark:bg-primary-900 dark:text-primary-300 mr-3 mt-0.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </span>
+                            <span class="text-secondary-700 dark:text-secondary-300">
+                                <strong class="font-medium text-secondary-900 dark:text-white">Information Architecture:</strong> Organizing and structuring content in a logical way
+                            </span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="inline-flex items-center justify-center h-6 w-6 rounded-full bg-primary-100 text-primary-600 dark:bg-primary-900 dark:text-primary-300 mr-3 mt-0.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </span>
+                            <span class="text-secondary-700 dark:text-secondary-300">
+                                <strong class="font-medium text-secondary-900 dark:text-white">Interaction Design:</strong> How users interact with the product and receive feedback
+                            </span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="inline-flex items-center justify-center h-6 w-6 rounded-full bg-primary-100 text-primary-600 dark:bg-primary-900 dark:text-primary-300 mr-3 mt-0.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </span>
+                            <span class="text-secondary-700 dark:text-secondary-300">
+                                <strong class="font-medium text-secondary-900 dark:text-white">Visual Design:</strong> How the product looks, including colors, typography, and layout
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-lg font-semibold">Key Tips for Outstanding UX Design</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <span class="inline-flex items-center justify-center h-6 w-6 rounded-full bg-primary-100 text-primary-600 dark:bg-primary-900 dark:text-primary-300 mr-3 mt-0.5">1</span>
+                            <span class="text-secondary-700 dark:text-secondary-300">
+                                <strong class="font-medium text-secondary-900 dark:text-white">Concentrate on User Demand:</strong> Focus on users' needs rather than creating complex designs
+                            </span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="inline-flex items-center justify-center h-6 w-6 rounded-full bg-primary-100 text-primary-600 dark:bg-primary-900 dark:text-primary-300 mr-3 mt-0.5">2</span>
+                            <span class="text-secondary-700 dark:text-secondary-300">
+                                <strong class="font-medium text-secondary-900 dark:text-white">Be Consistent:</strong> Offer similar design patterns and features for easier user navigation
+                            </span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="inline-flex items-center justify-center h-6 w-6 rounded-full bg-primary-100 text-primary-600 dark:bg-primary-900 dark:text-primary-300 mr-3 mt-0.5">3</span>
+                            <span class="text-secondary-700 dark:text-secondary-300">
+                                <strong class="font-medium text-secondary-900 dark:text-white">Maintain a Logical Order:</strong> Follow a hierarchical structure to make navigation intuitive
+                            </span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="inline-flex items-center justify-center h-6 w-6 rounded-full bg-primary-100 text-primary-600 dark:bg-primary-900 dark:text-primary-300 mr-3 mt-0.5">4</span>
+                            <span class="text-secondary-700 dark:text-secondary-300">
+                                <strong class="font-medium text-secondary-900 dark:text-white">Create Attractive Visuals:</strong> Use colors, shapes, and typography to enhance the design
+                            </span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="inline-flex items-center justify-center h-6 w-6 rounded-full bg-primary-100 text-primary-600 dark:bg-primary-900 dark:text-primary-300 mr-3 mt-0.5">5</span>
+                            <span class="text-secondary-700 dark:text-secondary-300">
+                                <strong class="font-medium text-secondary-900 dark:text-white">Ensure Approachability:</strong> Make your design accessible to all users, including those with disabilities
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Visual Design Section -->
+    <section id="visual-design" class="section">
+        <h2 class="section-title">Visual Design in UX</h2>
+        <p class="mb-6 text-secondary-700 dark:text-secondary-300">
+            Visual design in UX focuses on making digital products like websites and apps look good and easy to use. It combines colors, fonts, shapes, and images to create attractive interfaces that enhance the user experience. The goal is to communicate information clearly and guide users smoothly through the product, while also ensuring a visually appealing layout.
+        </p>
+
+        <div class="subsection">
+            <h3 class="subsection-title">Elements of Visual Design</h3>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="font-semibold mb-2 text-secondary-900 dark:text-white">White Spaces</h4>
+                        <p class="text-secondary-700 dark:text-secondary-300 text-sm">
+                            Empty space between elements that prevents them from looking crowded and improves visibility and focus. White space promotes visual hierarchy and makes it easier for users to navigate through information.
+                        </p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="font-semibold mb-2 text-secondary-900 dark:text-white">Contrast</h4>
+                        <p class="text-secondary-700 dark:text-secondary-300 text-sm">
+                            Used to make specific content stand out against others, creating visual hierarchy and directing attention.
+                        </p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="font-semibold mb-2 text-secondary-900 dark:text-white">Texture</h4>
+                        <p class="text-secondary-700 dark:text-secondary-300 text-sm">
+                            Patterns and designs that add style and make interfaces more appealing by creating depth and dimension.
+                        </p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="font-semibold mb-2 text-secondary-900 dark:text-white">Lines</h4>
+                        <p class="text-secondary-700 dark:text-secondary-300 text-sm">
+                            Used to create shapes, make partitions, and help identify differences in content or sections.
+                        </p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="font-semibold mb-2 text-secondary-900 dark:text-white">Typography</h4>
+                        <p class="text-secondary-700 dark:text-secondary-300 text-sm">
+                            Selection of appropriate fonts, sizes, colors, and spacing to convey messages effectively and establish hierarchy.
+                        </p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="font-semibold mb-2 text-secondary-900 dark:text-white">Layout</h4>
+                        <p class="text-secondary-700 dark:text-secondary-300 text-sm">
+                            The foundation that determines how different elements are organized to create a good user experience.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="subsection">
+            <h3 class="subsection-title">Principles of Visual Design</h3>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="design-principle">
+                    <h4 class="principle-title">Unity</h4>
+                    <p class="principle-description">
+                        Creating consistency between design elements so they work together as a coherent whole rather than appearing chaotic.
+                    </p>
+                </div>
+                <div class="design-principle">
+                    <h4 class="principle-title">Hierarchy</h4>
+                    <p class="principle-description">
+                        Showing the importance of different elements to guide users through content in the intended order.
+                    </p>
+                </div>
+                <div class="design-principle">
+                    <h4 class="principle-title">Balance</h4>
+                    <p class="principle-description">
+                        Placing content wisely so every part of the design looks harmonious and not congested or lopsided.
+                    </p>
+                </div>
+                <div class="design-principle">
+                    <h4 class="principle-title">Contrast</h4>
+                    <p class="principle-description">
+                        Using differences in color, size, or shape to separate elements and create visual interest.
+                    </p>
+                </div>
+                <div class="design-principle">
+                    <h4 class="principle-title">Scale</h4>
+                    <p class="principle-description">
+                        Sizing elements accordingly to add depth and dimension to the design and establish importance.
+                    </p>
+                </div>
+                <div class="design-principle">
+                    <h4 class="principle-title">Dominance</h4>
+                    <p class="principle-description">
+                        Making certain content stand out through color, scale, or position to show its importance.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Color Psychology Section -->
+    <section id="color-psychology" class="section">
+        <h2 class="section-title">Color Psychology</h2>
+        <p class="mb-6 text-secondary-700 dark:text-secondary-300">
+            Colors have a significant psychological impact. They can influence our emotions and behaviors. Understanding color psychology is crucial for creating effective designs that communicate the right message and evoke the desired emotional response.
+        </p>
+
+        <div class="subsection">
+            <h3 class="subsection-title">Psychological Impact of Colors</h3>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="card overflow-hidden">
+                    <div class="color-swatch bg-blue-600"></div>
+                    <div class="p-4">
+                        <h4 class="font-semibold mb-1 text-secondary-900 dark:text-white">Blue</h4>
+                        <p class="text-secondary-700 dark:text-secondary-300 text-sm">
+                            Creates a sense of calm and trust. Ideal for financial institutions and tech companies.
+                        </p>
+                    </div>
+                </div>
+                <div class="card overflow-hidden">
+                    <div class="color-swatch bg-red-600"></div>
+                    <div class="p-4">
+                        <h4 class="font-semibold mb-1 text-secondary-900 dark:text-white">Red</h4>
+                        <p class="text-secondary-700 dark:text-secondary-300 text-sm">
+                            Grabs attention and creates urgency. Common in clearance sales and to stimulate appetite.
+                        </p>
+                    </div>
+                </div>
+                <div class="card overflow-hidden">
+                    <div class="color-swatch bg-green-600"></div>
+                    <div class="p-4">
+                        <h4 class="font-semibold mb-1 text-secondary-900 dark:text-white">Green</h4>
+                        <p class="text-secondary-700 dark:text-secondary-300 text-sm">
+                            Represents nature, health, and sustainability. Used by eco-friendly brands.
+                        </p>
+                    </div>
+                </div>
+                <div class="card overflow-hidden">
+                    <div class="color-swatch bg-yellow-500"></div>
+                    <div class="p-4">
+                        <h4 class="font-semibold mb-1 text-secondary-900 dark:text-white">Yellow</h4>
+                        <p class="text-secondary-700 dark:text-secondary-300 text-sm">
+                            Brightens spaces, creates a cheerful atmosphere. Can signify caution when used in certain contexts.
+                        </p>
+                    </div>
+                </div>
+                <div class="card overflow-hidden">
+                    <div class="color-swatch bg-purple-600"></div>
+                    <div class="p-4">
+                        <h4 class="font-semibold mb-1 text-secondary-900 dark:text-white">Purple</h4>
+                        <p class="text-secondary-700 dark:text-secondary-300 text-sm">
+                            Adds luxury and creativity. Ideal for spaces that inspire imagination and relaxation.
+                        </p>
+                    </div>
+                </div>
+                <div class="card overflow-hidden">
+                    <div class="color-swatch bg-orange-500"></div>
+                    <div class="p-4">
+                        <h4 class="font-semibold mb-1 text-secondary-900 dark:text-white">Orange</h4>
+                        <p class="text-secondary-700 dark:text-secondary-300 text-sm">
+                            Combines energy of red and happiness of yellow. Used for products related to fun and affordability.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="subsection">
+            <h3 class="subsection-title">TerraMiner Color Palette</h3>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div>
+                    <div class="color-swatch bg-primary-900 dark:bg-primary-900"></div>
+                    <p class="color-label text-secondary-900 dark:text-white">Primary 900</p>
+                    <p class="text-xs text-secondary-500 dark:text-secondary-400">#0c4a6e</p>
+                </div>
+                <div>
+                    <div class="color-swatch bg-primary-700 dark:bg-primary-700"></div>
+                    <p class="color-label text-secondary-900 dark:text-white">Primary 700</p>
+                    <p class="text-xs text-secondary-500 dark:text-secondary-400">#0369a1</p>
+                </div>
+                <div>
+                    <div class="color-swatch bg-primary-500 dark:bg-primary-500"></div>
+                    <p class="color-label text-secondary-900 dark:text-white">Primary 500</p>
+                    <p class="text-xs text-secondary-500 dark:text-secondary-400">#0ea5e9</p>
+                </div>
+                <div>
+                    <div class="color-swatch bg-primary-300 dark:bg-primary-300"></div>
+                    <p class="color-label text-secondary-900 dark:text-white">Primary 300</p>
+                    <p class="text-xs text-secondary-500 dark:text-secondary-400">#7dd3fc</p>
+                </div>
+                <div>
+                    <div class="color-swatch bg-primary-100 dark:bg-primary-100"></div>
+                    <p class="color-label text-secondary-900 dark:text-white">Primary 100</p>
+                    <p class="text-xs text-secondary-500 dark:text-secondary-400">#e0f2fe</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Responsive Design Section -->
+    <section id="responsive-design" class="section">
+        <h2 class="section-title">Responsive Web Design</h2>
+        <p class="mb-6 text-secondary-700 dark:text-secondary-300">
+            Responsive web design ensures that websites look good and function well on any device, from desktop computers to mobile phones. This approach has become essential as mobile usage continues to grow worldwide.
+        </p>
+
+        <div class="subsection">
+            <h3 class="subsection-title">Core Responsive Design Steps</h3>
+            <div class="grid md:grid-cols-2 gap-6 mb-8">
+                <div class="design-principle">
+                    <h4 class="principle-title">1. Use Fluid Grids</h4>
+                    <p class="principle-description">
+                        Instead of fixed-width layouts, use fluid grid systems. This means the layout will adjust smoothly based on screen size using percentages for widths.
+                    </p>
+                </div>
+                <div class="design-principle">
+                    <h4 class="principle-title">2. Use Flexible Images</h4>
+                    <p class="principle-description">
+                        Make sure images and other media can scale within their containers. Use CSS properties like max-width: 100% to prevent overflow.
+                    </p>
+                </div>
+                <div class="design-principle">
+                    <h4 class="principle-title">3. Apply Media Queries</h4>
+                    <p class="principle-description">
+                        Use media queries to apply different styles for different screen sizes and orientations. This allows changing layout, fonts, and other styles.
+                    </p>
+                </div>
+                <div class="design-principle">
+                    <h4 class="principle-title">4. Prioritize Touchscreens</h4>
+                    <p class="principle-description">
+                        Make interactive elements large enough for finger tapping and place navigation in easily accessible areas for mobile users.
+                    </p>
+                </div>
+                <div class="design-principle">
+                    <h4 class="principle-title">5. Test Responsiveness</h4>
+                    <p class="principle-description">
+                        Continuously test on different devices and browsers to ensure your site looks and functions well everywhere.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="subsection">
+            <h3 class="subsection-title">Key Principles of Responsive Design</h3>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="font-semibold mb-3 text-secondary-900 dark:text-white">Fluid Grids</h4>
+                        <p class="text-secondary-700 dark:text-secondary-300 mb-4">
+                            Instead of fixed-width layouts, use fluid grid systems that adjust smoothly based on screen size. Fluid grids use percentages for widths, so elements resize proportionally.
+                        </p>
+                        <div class="bg-secondary-100 dark:bg-secondary-800 p-3 rounded">
+                            <code class="text-sm text-secondary-800 dark:text-secondary-300">
+                                .container {<br>
+                                &nbsp;&nbsp;width: 100%;<br>
+                                &nbsp;&nbsp;max-width: 1200px;<br>
+                                }
+                            </code>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="font-semibold mb-3 text-secondary-900 dark:text-white">Flexible Images</h4>
+                        <p class="text-secondary-700 dark:text-secondary-300 mb-4">
+                            Make sure images and other media content can scale within their containers. Use CSS properties like max-width: 100% to ensure images adjust to the size of their containing elements.
+                        </p>
+                        <div class="bg-secondary-100 dark:bg-secondary-800 p-3 rounded">
+                            <code class="text-sm text-secondary-800 dark:text-secondary-300">
+                                img {<br>
+                                &nbsp;&nbsp;max-width: 100%;<br>
+                                &nbsp;&nbsp;height: auto;<br>
+                                }
+                            </code>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="font-semibold mb-3 text-secondary-900 dark:text-white">Media Queries</h4>
+                        <p class="text-secondary-700 dark:text-secondary-300 mb-4">
+                            Use media queries in your CSS to apply different styles for different screen sizes and orientations, allowing for responsive layout adjustments.
+                        </p>
+                        <div class="bg-secondary-100 dark:bg-secondary-800 p-3 rounded">
+                            <code class="text-sm text-secondary-800 dark:text-secondary-300">
+                                @media (max-width: 768px) {<br>
+                                &nbsp;&nbsp;.container {<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;flex-direction: column;<br>
+                                &nbsp;&nbsp;}<br>
+                                }
+                            </code>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="font-semibold mb-3 text-secondary-900 dark:text-white">Mobile-First Approach</h4>
+                        <p class="text-secondary-700 dark:text-secondary-300 mb-4">
+                            Design for the smallest screen first, then enhance the design for larger screens. This ensures your site is accessible for mobile users.
+                        </p>
+                        <div class="bg-secondary-100 dark:bg-secondary-800 p-3 rounded">
+                            <code class="text-sm text-secondary-800 dark:text-secondary-300">
+                                .card {<br>
+                                &nbsp;&nbsp;width: 100%; /* Mobile first */<br>
+                                }<br><br>
+                                @media (min-width: 768px) {<br>
+                                &nbsp;&nbsp;.card {<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;width: 50%; /* Tablet and up */<br>
+                                &nbsp;&nbsp;}<br>
+                                }
+                            </code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="subsection">
+            <h3 class="subsection-title">Benefits of Responsive Design</h3>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="font-semibold mb-2 text-secondary-900 dark:text-white">Reduces Bounce Rate</h4>
+                        <p class="text-secondary-700 dark:text-secondary-300 text-sm">
+                            Having a responsive website reduces bounce rates as it can be viewed effectively on any device.
+                        </p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="font-semibold mb-2 text-secondary-900 dark:text-white">Mobile Friendly</h4>
+                        <p class="text-secondary-700 dark:text-secondary-300 text-sm">
+                            Responsive websites are mobile friendly as their layout adapts to different screen sizes.
+                        </p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="font-semibold mb-2 text-secondary-900 dark:text-white">Increases Traffic</h4>
+                        <p class="text-secondary-700 dark:text-secondary-300 text-sm">
+                            Having responsive websites increases traffic as viewers can access the website from multiple devices.
+                        </p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="font-semibold mb-2 text-secondary-900 dark:text-white">Enhanced User Experience</h4>
+                        <p class="text-secondary-700 dark:text-secondary-300 text-sm">
+                            Users get a good experience using the website across different devices, improving brand perception.
+                        </p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="font-semibold mb-2 text-secondary-900 dark:text-white">Enhances SEO</h4>
+                        <p class="text-secondary-700 dark:text-secondary-300 text-sm">
+                            Responsive websites rank higher in search results due to better traffic and user experience.
+                        </p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="font-semibold mb-2 text-secondary-900 dark:text-white">Lower Maintenance</h4>
+                        <p class="text-secondary-700 dark:text-secondary-300 text-sm">
+                            No need to maintain separate desktop and mobile versions, reducing time and cost.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Logo Showcase Section -->
+    <section id="branding-examples" class="section">
+        <h2 class="section-title">Brand Design Examples</h2>
+        <p class="mb-6 text-secondary-700 dark:text-secondary-300">
+            Below are examples of effective brand design that incorporate the principles discussed above. Note how color psychology, visual design elements, and responsive principles are applied.
+        </p>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-8">
+            <div class="card overflow-hidden">
+                <img src="https://cdn.glitch.global/5adc1b56-5a61-4e74-81d6-af7e17d16af7/image_1746834005449.png?v=1716830505264" alt="TerraMiner Branding Example" class="w-full h-auto">
+                <div class="p-4">
+                    <h4 class="font-semibold mb-2 text-secondary-900 dark:text-white">Logo Design with Call to Action</h4>
+                    <p class="text-secondary-700 dark:text-secondary-300 text-sm">
+                        This example shows a consistent brand identity with a clear tagline and call-to-action button. The blue color psychology conveys trust and reliability.
+                    </p>
+                </div>
+            </div>
+            <div class="card overflow-hidden">
+                <img src="https://cdn.glitch.global/5adc1b56-5a61-4e74-81d6-af7e17d16af7/image_1746834016098.png?v=1716830505264" alt="TerraMiner Logo Variations" class="w-full h-auto">
+                <div class="p-4">
+                    <h4 class="font-semibold mb-2 text-secondary-900 dark:text-white">Brand Identity Consistency</h4>
+                    <p class="text-secondary-700 dark:text-secondary-300 text-sm">
+                        Multiple logo variations maintain visual consistency while adapting to different contexts. The logo design principles of simplicity and recognizability are maintained.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="card overflow-hidden">
+                <img src="https://cdn.glitch.global/5adc1b56-5a61-4e74-81d6-af7e17d16af7/image_1746834056186.png?v=1716830505264" alt="TerraMiner UI Applications" class="w-full h-auto">
+                <div class="p-4">
+                    <h4 class="font-semibold mb-2 text-secondary-900 dark:text-white">UI Applications</h4>
+                    <p class="text-secondary-700 dark:text-secondary-300 text-sm">
+                        Brand elements consistently applied across different UI components. The layout and typography maintain the brand's identity.
+                    </p>
+                </div>
+            </div>
+            <div class="card overflow-hidden">
+                <img src="https://cdn.glitch.global/5adc1b56-5a61-4e74-81d6-af7e17d16af7/image_1746834067210.png?v=1716830505264" alt="TerraMiner Brand Variations" class="w-full h-auto">
+                <div class="p-4">
+                    <h4 class="font-semibold mb-2 text-secondary-900 dark:text-white">Logo Style Variations</h4>
+                    <p class="text-secondary-700 dark:text-secondary-300 text-sm">
+                        Different style applications of the same logo concept, showing flexibility while maintaining brand recognition.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resources and Links -->
+    <section id="resources" class="section">
+        <h2 class="section-title">Resources and Tools</h2>
+        <div class="card">
+            <div class="card-body">
+                <h3 class="text-lg font-semibold mb-4 text-secondary-900 dark:text-white">Useful Resources for Design and UX</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-start">
+                        <span class="inline-flex items-center justify-center h-6 w-6 rounded-full bg-primary-100 text-primary-600 dark:bg-primary-900 dark:text-primary-300 mr-3 mt-0.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
+                            </svg>
+                        </span>
+                        <span class="text-secondary-700 dark:text-secondary-300">
+                            <a href="/ui/dev/patterns" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">TerraMiner UI Pattern Library</a>: Our comprehensive library of UI components and patterns.
+                        </span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="inline-flex items-center justify-center h-6 w-6 rounded-full bg-primary-100 text-primary-600 dark:bg-primary-900 dark:text-primary-300 mr-3 mt-0.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        <span class="text-secondary-700 dark:text-secondary-300">
+                            <a href="https://tailwindcss.com" target="_blank" rel="noopener noreferrer" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">Tailwind CSS</a>: The utility-first CSS framework used in our design system.
+                        </span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="inline-flex items-center justify-center h-6 w-6 rounded-full bg-primary-100 text-primary-600 dark:bg-primary-900 dark:text-primary-300 mr-3 mt-0.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M4 2a2 2 0 00-2 2v11a3 3 0 106 0V4a2 2 0 00-2-2H4zm1 14a1 1 0 100-2 1 1 0 000 2zm5-1.757l4.9-4.9a2 2 0 000-2.828L13.485 5.1a2 2 0 00-2.828 0L10 5.757v8.486zM16 18H9.071l6-6H16a2 2 0 012 2v2a2 2 0 01-2 2z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        <span class="text-secondary-700 dark:text-secondary-300">
+                            <a href="https://coolors.co" target="_blank" rel="noopener noreferrer" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">Coolors</a>: Color scheme generator for creating harmonious color palettes.
+                        </span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="inline-flex items-center justify-center h-6 w-6 rounded-full bg-primary-100 text-primary-600 dark:bg-primary-900 dark:text-primary-300 mr-3 mt-0.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7zm3 14a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        <span class="text-secondary-700 dark:text-secondary-300">
+                            <a href="https://fonts.google.com" target="_blank" rel="noopener noreferrer" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">Google Fonts</a>: Extensive library of free and open-source fonts.
+                        </span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="inline-flex items-center justify-center h-6 w-6 rounded-full bg-primary-100 text-primary-600 dark:bg-primary-900 dark:text-primary-300 mr-3 mt-0.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        <span class="text-secondary-700 dark:text-secondary-300">
+                            <a href="https://www.smashingmagazine.com/category/ux" target="_blank" rel="noopener noreferrer" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">Smashing Magazine</a>: Articles and resources on UX design and best practices.
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Dark Mode Toggle Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const themeToggle = document.getElementById('theme-toggle');
+        const lightIcon = document.getElementById('light-icon');
+        const darkIcon = document.getElementById('dark-icon');
+        
+        // Check user preference and system settings
+        const userTheme = localStorage.getItem('theme');
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        
+        // Set initial theme
+        if (userTheme === 'dark' || (!userTheme && systemTheme === 'dark')) {
+            document.documentElement.classList.add('dark');
+            lightIcon.classList.remove('hidden');
+        } else {
+            darkIcon.classList.remove('hidden');
+        }
+        
+        // Theme toggle click handler
+        themeToggle.addEventListener('click', function() {
+            if (document.documentElement.classList.contains('dark')) {
+                // Switch to light mode
+                document.documentElement.classList.remove('dark');
+                lightIcon.classList.add('hidden');
+                darkIcon.classList.remove('hidden');
+                localStorage.setItem('theme', 'light');
+            } else {
+                // Switch to dark mode
+                document.documentElement.classList.add('dark');
+                darkIcon.classList.add('hidden');
+                lightIcon.classList.remove('hidden');
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+    });
+</script>
+{% endblock %}

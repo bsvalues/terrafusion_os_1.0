@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0d6efd">
+    
+    <title>{% block title %}TerraFlow{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='img/icons/favicon.ico') }}">
+    
+    <!-- PWA manifest -->
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    
+    <!-- Apple specific PWA tags -->
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/icons/icon-192x192.svg') }}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{{ url_for('static', filename='img/icons/icon-152x152.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/icons/icon-180x180.png') }}">
+    <link rel="apple-touch-icon" sizes="167x167" href="{{ url_for('static', filename='img/icons/icon-167x167.png') }}">
+    
+    <!-- Apple launch screens -->
+    <link rel="apple-touch-startup-image" href="{{ url_for('static', filename='img/launch/iphone5_splash.png') }}" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="{{ url_for('static', filename='img/launch/iphone6_splash.png') }}" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="{{ url_for('static', filename='img/launch/iphoneplus_splash.png') }}" media="(device-width: 621px) and (device-height: 1104px) and (-webkit-device-pixel-ratio: 3)">
+    <link rel="apple-touch-startup-image" href="{{ url_for('static', filename='img/launch/iphonex_splash.png') }}" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
+    <link rel="apple-touch-startup-image" href="{{ url_for('static', filename='img/launch/ipad_splash.png') }}" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="{{ url_for('static', filename='img/launch/ipadpro1_splash.png') }}" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="{{ url_for('static', filename='img/launch/ipadpro2_splash.png') }}" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)">
+    
+    <!-- Core Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/mobile.css') }}" rel="stylesheet">
+    
+    <!-- Additional styles -->
+    {% block styles %}{% endblock %}
+    
+    <!-- Font preload -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    </noscript>
+</head>
+<body class="mobile-view">
+    <!-- Offline indicator -->
+    <div class="offline-indicator">
+        You are offline. Some features may be limited.
+    </div>
+    
+    <!-- Mobile navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
+                <i class="bi bi-geo-alt-fill me-2"></i>
+                TerraFlow
+                <span class="badge bg-light text-primary ms-2">Mobile</span>
+            </a>
+            
+            <!-- User info and menu -->
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="userMenuMobile" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-person-circle"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenuMobile">
+                    {% if current_user.is_authenticated %}
+                        <li><span class="dropdown-item-text">{{ current_user.username }}</span></li>
+                        <li><a class="dropdown-item" href="{{ url_for('profile') }}">Profile</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
+                    {% else %}
+                        <li><a class="dropdown-item" href="{{ url_for('login') }}">Login</a></li>
+                    {% endif %}
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" id="toggleFieldMode">
+                        <i class="bi bi-clipboard-check me-2"></i> Field Mode
+                    </a></li>
+                    <li><a class="dropdown-item" href="#" id="refreshApp">
+                        <i class="bi bi-arrow-clockwise me-2"></i> Refresh App
+                    </a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Mobile bottom navigation -->
+    <div class="field-navbar">
+        <a href="{{ url_for('index') }}" class="field-nav-item {% if request.endpoint == 'index' %}active{% endif %}">
+            <i class="bi bi-house-door field-nav-icon"></i>
+            <span>Home</span>
+        </a>
+        <a href="{{ url_for('map_viewer') }}" class="field-nav-item {% if request.endpoint == 'map_viewer' %}active{% endif %}">
+            <i class="bi bi-map field-nav-icon"></i>
+            <span>Map</span>
+        </a>
+        <a href="{{ url_for('assessment_map') }}" class="field-nav-item {% if request.endpoint == 'assessment_map' %}active{% endif %}">
+            <i class="bi bi-geo-alt field-nav-icon"></i>
+            <span>Properties</span>
+        </a>
+        <a href="{{ url_for('search_page') }}" class="field-nav-item {% if request.endpoint == 'search_page' %}active{% endif %}">
+            <i class="bi bi-search field-nav-icon"></i>
+            <span>Search</span>
+        </a>
+        <a href="{{ url_for('data_quality_dashboard') }}" class="field-nav-item {% if request.endpoint == 'data_quality_dashboard' %}active{% endif %}">
+            <i class="bi bi-clipboard-data field-nav-icon"></i>
+            <span>Data Quality</span>
+        </a>
+    </div>
+    
+    <!-- Bootstrap and jQuery JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Offline support -->
+    <script src="{{ url_for('static', filename='js/offline.js') }}"></script>
+    
+    <!-- Mobile specific scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Field mode toggle
+            const toggleFieldMode = document.getElementById('toggleFieldMode');
+            if (toggleFieldMode) {
+                toggleFieldMode.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.body.classList.toggle('field-assessment-mode');
+                    
+                    // Store preference
+                    if (document.body.classList.contains('field-assessment-mode')) {
+                        localStorage.setItem('field_mode', 'true');
+                        toggleFieldMode.innerHTML = '<i class="bi bi-clipboard-check-fill me-2"></i> Exit Field Mode';
+                    } else {
+                        localStorage.setItem('field_mode', 'false');
+                        toggleFieldMode.innerHTML = '<i class="bi bi-clipboard-check me-2"></i> Field Mode';
+                    }
+                });
+                
+                // Initialize field mode from localStorage
+                if (localStorage.getItem('field_mode') === 'true') {
+                    document.body.classList.add('field-assessment-mode');
+                    toggleFieldMode.innerHTML = '<i class="bi bi-clipboard-check-fill me-2"></i> Exit Field Mode';
+                }
+            }
+            
+            // Refresh app button
+            const refreshApp = document.getElementById('refreshApp');
+            if (refreshApp) {
+                refreshApp.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    window.location.reload();
+                });
+            }
+            
+            // Double tap to zoom prevention
+            document.addEventListener('touchend', function(event) {
+                const now = Date.now();
+                const DOUBLE_TAP_THRESHOLD = 300;
+                if (now - lastTap < DOUBLE_TAP_THRESHOLD) {
+                    event.preventDefault();
+                }
+                lastTap = now;
+            }, { passive: false });
+            
+            // Initialize offline detection
+            if (typeof setupOfflineDetection === 'function') {
+                setupOfflineDetection();
+            }
+        });
+        
+        // Variable to track last tap time for double tap prevention
+        let lastTap = 0;
+    </script>
+    
+    <!-- Additional scripts -->
+    {% block scripts %}{% endblock %}
+</body>
+</html>

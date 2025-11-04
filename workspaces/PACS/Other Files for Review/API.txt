@@ -1,0 +1,28 @@
+API
+
+Google Playground AI Studio: AIzaSyCBLXMObVoLMIaMhDRXQl2ECHJYm1H7NuA
+
+API Keys Open AI
+
+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
+
+org-7J8hm5hXRLIrjMRC1QlLPfA9
+
+vs_arekYX6G2lnyMszxxbXlM9Rf
+
+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
+
+ftp.spatialest.com user name:benton-wa Password: 8hKc7m6f
+
+GIT api: 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
+
+Fine grained Git:
+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
+
+Anthropic:
+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
+
+Code Rabbit API:
+cr-1d650c17878809e92a0ec045394ee637d12ab0536395f41060001b214e
+
+Google maps API: AIzaSyAiJmny5lhat7f0GTcd1SGCjIh_Z9EPzsU

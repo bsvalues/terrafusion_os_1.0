@@ -1,0 +1,83 @@
+{# This component library provides reusable UI elements for error handling, loading states, and empty states #}
+
+{# Loading Indicator Component #}
+{% macro loading_indicator(size="medium", text="Loading...") %}
+<div class="loading-container d-flex flex-column align-items-center justify-content-center my-4">
+    <div class="spinner-border text-primary {% if size == 'small' %}spinner-border-sm{% elif size == 'large' %}fs-1{% endif %}" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+    {% if text %}
+    <div class="mt-2 text-muted">{{ text }}</div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{# Error Message Component #}
+{% macro error_message(title="Error", message="An unexpected error occurred.", icon="exclamation-triangle", action_text=None, action_url=None) %}
+<div class="error-container text-center py-5">
+    <div class="error-icon mb-3">
+        <i class="bi bi-{{ icon }} text-danger" style="font-size: 3rem;"></i>
+    </div>
+    <h4 class="error-title mb-2">{{ title }}</h4>
+    <p class="error-message text-muted mb-4">{{ message }}</p>
+    {% if action_text and action_url %}
+    <a href="{{ action_url }}" class="btn btn-outline-primary">{{ action_text }}</a>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{# Empty State Component #}
+{% macro empty_state(title="No Data Available", message="There are no items to display at this time.", icon="folder", action_text=None, action_url=None) %}
+<div class="empty-state text-center py-5">
+    <div class="empty-state-icon mb-3">
+        <i class="bi bi-{{ icon }} text-muted" style="font-size: 3rem; opacity: 0.5;"></i>
+    </div>
+    <h5 class="empty-state-title mb-2">{{ title }}</h5>
+    <p class="empty-state-message text-muted mb-4">{{ message }}</p>
+    {% if action_text and action_url %}
+    <a href="{{ action_url }}" class="btn btn-outline-primary">{{ action_text }}</a>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{# Status Pill Component #}
+{% macro data_status_pill(status="success", text="Active", with_icon=true) %}
+{% set status_map = {
+    'success': {'color': 'success', 'icon': 'check-circle-fill'},
+    'warning': {'color': 'warning', 'icon': 'exclamation-triangle-fill'},
+    'error': {'color': 'danger', 'icon': 'x-circle-fill'},
+    'info': {'color': 'info', 'icon': 'info-circle-fill'},
+    'pending': {'color': 'secondary', 'icon': 'hourglass-split'},
+    'disabled': {'color': 'light text-dark', 'icon': 'dash-circle-fill'}
+} %}
+{% set data = status_map[status] if status in status_map else status_map['info'] %}
+<span class="badge bg-{{ data.color }} d-inline-flex align-items-center">
+    {% if with_icon %}<i class="bi bi-{{ data.icon }} me-1"></i>{% endif %}
+    {{ text }}
+</span>
+{% endmacro %}
+
+{# Metric Card Component #}
+{% macro metric_card(value, label, icon=None, trend=None, trend_value=None, color="primary", size="md") %}
+<div class="metric-card card border-0 shadow-sm h-100">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="text-{{ color }} {% if size == 'sm' %}fs-6{% elif size == 'lg' %}fs-4{% else %}fs-5{% endif %}">{{ label }}</div>
+            {% if icon %}
+            <div class="metric-icon">
+                <i class="bi bi-{{ icon }} {% if size == 'sm' %}fs-4{% elif size == 'lg' %}fs-2{% else %}fs-3{% endif %} text-{{ color }}" style="opacity: 0.8;"></i>
+            </div>
+            {% endif %}
+        </div>
+        <div class="metric-value {% if size == 'sm' %}fs-4{% elif size == 'lg' %}display-4{% else %}display-5{% endif %} fw-bold">{{ value }}</div>
+        {% if trend and trend_value %}
+        <div class="metric-trend mt-2">
+            <span class="badge {% if trend == 'up' %}bg-success{% elif trend == 'down' %}bg-danger{% else %}bg-secondary{% endif %}">
+                <i class="bi bi-{% if trend == 'up' %}arrow-up{% elif trend == 'down' %}arrow-down{% else %}dash{% endif %}"></i>
+                {{ trend_value }}
+            </span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endmacro %}

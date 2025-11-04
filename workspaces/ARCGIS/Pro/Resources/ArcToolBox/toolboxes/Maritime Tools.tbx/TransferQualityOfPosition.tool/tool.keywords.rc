@@ -1,0 +1,24 @@
+{
+    "set": [
+        "cartography",
+        "catalog",
+        "catalogue",
+        "cell",
+        "charting",
+        "export",
+        "features",
+        "geodatabase",
+        "import",
+        "load",
+        "quality of position",
+        "s-100",
+        "s-101",
+        "s-57",
+        "s100",
+        "s101",
+        "schema",
+        "symbology",
+        "transfer",
+        "update features"
+    ]
+}

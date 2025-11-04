@@ -1,0 +1,12 @@
+{
+    "set": [
+        "customer",
+        "demographic",
+        "individual features",
+        "pdf",
+        "report templates",
+        "store",
+        "variables",
+        "whole layer"
+    ]
+}

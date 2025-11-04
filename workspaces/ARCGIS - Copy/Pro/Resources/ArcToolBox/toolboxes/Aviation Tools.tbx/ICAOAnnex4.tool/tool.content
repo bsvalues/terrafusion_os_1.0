@@ -1,0 +1,152 @@
+{
+    "type": "FunctionTool",
+    "guid": "{F6243FE3-8552-4511-BBCE-F882B7099A58}/ICAOAnnex4",
+    "displayname": "$rc:title",
+    "helpcontent": "64010003",
+    "description": "$rc:description",
+    "product": "100",
+    "extensions": [
+        "53",
+        "70"
+    ],
+    "params": {
+        "in_features": {
+            "display_order": "0",
+            "displayname": "$rc:in_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_features.descr"
+        },
+        "target": {
+            "display_order": "1",
+            "displayname": "$rc:target.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Polygon",
+                            "MultiPatch"
+                        ]
+                    }
+                ]
+            },
+            "description": "$rc:target.descr"
+        },
+        "runway_direction": {
+            "type": "optional",
+            "display_order": "2",
+            "displayname": "$rc:runway_direction.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "HIGH_END_TO_LOW_END",
+                        "code": "$rc:runway_direction.domain.HIGH_END_TO_LOW_END"
+                    },
+                    {
+                        "value": "LOW_END_TO_HIGH_END",
+                        "code": "$rc:runway_direction.domain.LOW_END_TO_HIGH_END"
+                    }
+                ]
+            },
+            "description": "$rc:runway_direction.descr"
+        },
+        "length": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:length.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "900",
+            "description": "$rc:length.descr"
+        },
+        "width": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:width.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "120",
+            "description": "$rc:width.descr"
+        },
+        "slope": {
+            "type": "optional",
+            "display_order": "6",
+            "displayname": "$rc:slope.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "3",
+            "description": "$rc:slope.descr"
+        },
+        "height": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:height.title",
+            "datatype": {
+                "type": "GPDouble"
+            },
+            "value": "15.24",
+            "description": "$rc:height.descr"
+        },
+        "derived_outfeatureclass": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "8",
+            "displayname": "$rc:derived_outfeatureclass.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPCompositeDomain",
+                "items": [
+                    {
+                        "type": "GPFeatureClassDomain",
+                        "geometrytype": [
+                            "Polygon",
+                            "MultiPatch"
+                        ]
+                    }
+                ]
+            },
+            "depends": [
+                "target"
+            ]
+        },
+        "airport_control_point_feature_class": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:airport_control_point_feature_class.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:airport_control_point_feature_class.descr"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

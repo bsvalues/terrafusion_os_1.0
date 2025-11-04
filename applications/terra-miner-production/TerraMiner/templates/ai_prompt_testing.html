@@ -1,0 +1,215 @@
+{% extends "layout.html" %}
+
+{% block title %}TerraMiner - AI Prompt A/B Testing{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <h1>AI Prompt A/B Testing</h1>
+            <p class="text-muted">Compare different prompt formulations to see which performs better.</p>
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i> Try the <a href="{{ url_for('ai_prompt_testing') }}?ui=tailwind" class="alert-link">enhanced Tailwind UI version</a> of this interface for a better experience.
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Create New A/B Test</h5>
+                </div>
+                <div class="card-body">
+                    <form id="create-ab-test-form" method="POST" action="{{ url_for('ai_prompt_testing') }}">
+                        <div class="mb-3">
+                            <label for="agent-type" class="form-label">Agent Type</label>
+                            <select id="agent-type" name="agent_type" class="form-select">
+                                <option value="summarizer">Text Summarizer</option>
+                                <option value="market_analyzer">Market Analyzer</option>
+                                <option value="recommender">Property Recommender</option>
+                                <option value="nl_search">Natural Language Search</option>
+                            </select>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="original-prompt" class="form-label">Prompt A (Baseline)</label>
+                                    <textarea id="original-prompt" name="original_prompt" rows="5" class="form-control"></textarea>
+                                    <div class="form-text">Standard formulation</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="variant-prompt" class="form-label">Prompt B (Variant)</label>
+                                    <textarea id="variant-prompt" name="variant_prompt" rows="5" class="form-control"></textarea>
+                                    <div class="form-text">Alternative formulation</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="test-input" class="form-label">Test Input</label>
+                            <textarea id="test-input" name="test_input" rows="3" class="form-control"></textarea>
+                            <div class="form-text">Sample data to test the prompts against</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input id="use-gpt4" name="use_gpt4" type="checkbox" class="form-check-input">
+                                <label for="use-gpt4" class="form-check-label">Use GPT-4</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input id="save-results" name="save_results" type="checkbox" class="form-check-input" checked>
+                                <label for="save-results" class="form-check-label">Save Results</label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Run A/B Test</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if result_a or result_b %}
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Response A (Baseline)</h5>
+                </div>
+                <div class="card-body">
+                    {% if result_a %}
+                        {% if result_a.metadata %}
+                        <div class="mb-3">
+                            <span class="badge bg-info me-2">⏱️ {{ result_a.metadata.time_taken|default('?') }}ms</span>
+                            <span class="badge bg-success me-2">🔤 {{ result_a.metadata.token_count|default('?') }} tokens</span>
+                            <span class="badge bg-primary">📈 {{ result_a.metadata.quality_score|default('?') }}% quality</span>
+                        </div>
+                        {% endif %}
+                        <div class="border rounded p-3 bg-light">
+                            {{ result_a.content|safe if result_a.content else 'No response content available.' }}
+                        </div>
+                    {% else %}
+                        <p class="text-muted fst-italic">Awaiting execution...</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">Response B (Variant)</h5>
+                </div>
+                <div class="card-body">
+                    {% if result_b %}
+                        {% if result_b.metadata %}
+                        <div class="mb-3">
+                            <span class="badge bg-info me-2">⏱️ {{ result_b.metadata.time_taken|default('?') }}ms</span>
+                            <span class="badge bg-success me-2">🔤 {{ result_b.metadata.token_count|default('?') }} tokens</span>
+                            <span class="badge bg-primary">📈 {{ result_b.metadata.quality_score|default('?') }}% quality</span>
+                        </div>
+                        {% endif %}
+                        <div class="border rounded p-3 bg-light">
+                            {{ result_b.content|safe if result_b.content else 'No response content available.' }}
+                        </div>
+                    {% else %}
+                        <p class="text-muted fst-italic">Awaiting execution...</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if result_a and result_b %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="card-title mb-0">Comparison Analysis</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Key Differences</h6>
+                    <ul class="list-group mb-3">
+                        {% if result_a.metadata and result_a.metadata.differences %}
+                            {% for diff in result_a.metadata.differences %}
+                                <li class="list-group-item">{{ diff }}</li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="list-group-item text-muted fst-italic">No difference analysis available.</li>
+                        {% endif %}
+                    </ul>
+
+                    <div class="d-flex justify-content-end mt-3">
+                        <button type="button" class="btn btn-primary me-2">Save A as Winner</button>
+                        <button type="button" class="btn btn-success">Save B as Winner</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle agent type selection to show example prompts
+        const agentSelect = document.getElementById('agent-type');
+        const promptA = document.getElementById('original-prompt');
+        const promptB = document.getElementById('variant-prompt');
+        const testInput = document.getElementById('test-input');
+
+        // Example data for different agent types
+        const examplePrompts = {
+            summarizer: {
+                promptA: "Summarize the following property details into a concise single paragraph highlighting the key selling points.",
+                promptB: "Create a brief but comprehensive summary of this real estate listing, emphasizing unique features and neighborhood benefits.",
+                input: "4 bedroom, 3 bathroom single-family home in Westlake neighborhood. Built in 2005, recently renovated kitchen with granite countertops and stainless steel appliances. Hardwood floors throughout, large backyard with deck and built-in BBQ. Attached 2-car garage, zoned for top-rated Westlake Elementary. Walking distance to Westlake Village and major shopping center. Listed at $875,000."
+            },
+            market_analyzer: {
+                promptA: "Analyze these market trends and explain what they mean for property values in the area.",
+                promptB: "Interpret the following real estate market data and provide actionable insights for investors considering this market.",
+                input: "Q1 2023 data for Phoenix metro area: Median home price $425,000 (up 3.2% YoY but down 1.8% QoQ). Average days on market 45 (up from 22 last year). Housing inventory 2.3 months (up from 0.9 last year). New construction permits down 15% YoY. Mortgage rates currently at 6.5% for 30-year fixed. Rental vacancy rate 4.2% with average rents up 5.1% YoY."
+            },
+            recommender: {
+                promptA: "Based on the client's preferences, recommend 3 properties they might be interested in viewing.",
+                promptB: "Considering the client's needs and preferences, suggest 3 properties that would be good matches, explaining why each one would appeal to them.",
+                input: "Client profile: Couple in their mid-30s with one child (age 3) and another on the way. Budget $650K-$750K. Priorities: good school district, minimum 3 bedrooms, yard space for kids, relatively modern kitchen, prefer to avoid major renovations. Need home office space for remote work. Location preference for south side of town near the tech corridor. Would like community amenities like parks and pools."
+            }
+        };
+
+        // Update example prompts when agent type changes
+        if (agentSelect) {
+            agentSelect.addEventListener('change', function() {
+                const selected = this.value;
+                if (examplePrompts[selected]) {
+                    promptA.value = examplePrompts[selected].promptA;
+                    promptB.value = examplePrompts[selected].promptB;
+                    testInput.value = examplePrompts[selected].input;
+                }
+            });
+
+            // Initialize with default examples
+            if (agentSelect.value && examplePrompts[agentSelect.value]) {
+                const defaultExample = examplePrompts[agentSelect.value];
+                if (promptA.value === '') promptA.value = defaultExample.promptA;
+                if (promptB.value === '') promptB.value = defaultExample.promptB;
+                if (testInput.value === '') testInput.value = defaultExample.input;
+            } else if (examplePrompts['summarizer']) {
+                // Default to summarizer examples if nothing is selected
+                if (promptA.value === '') promptA.value = examplePrompts['summarizer'].promptA;
+                if (promptB.value === '') promptB.value = examplePrompts['summarizer'].promptB;
+                if (testInput.value === '') testInput.value = examplePrompts['summarizer'].input;
+            }
+        }
+    });
+</script>
+{% endblock %}

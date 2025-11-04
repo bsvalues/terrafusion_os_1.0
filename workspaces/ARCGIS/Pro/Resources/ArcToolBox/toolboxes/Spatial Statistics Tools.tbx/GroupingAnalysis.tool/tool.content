@@ -1,0 +1,297 @@
+{
+    "type": "PythonScriptTool",
+    "python_class": "..\\toolbox.module.py\\GroupingAnalysis",
+    "displayname": "$rc:title",
+    "helpcontent": "9030004",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "Input_Features": {
+            "displayname": "$rc:input_features.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point",
+                    "Multipoint",
+                    "Polygon",
+                    "Polyline"
+                ],
+                "featuretype": [
+                    "Simple"
+                ]
+            },
+            "description": "$rc:input_features.descr"
+        },
+        "Unique_ID_Field": {
+            "displayname": "$rc:unique_id_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long"
+                ]
+            },
+            "depends": [
+                "Input_Features"
+            ],
+            "description": "$rc:unique_id_field.descr"
+        },
+        "Output_Feature_Class": {
+            "direction": "out",
+            "displayname": "$rc:output_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            },
+            "description": "$rc:output_feature_class.descr"
+        },
+        "Number_of_Groups": {
+            "displayname": "$rc:number_of_groups.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "2",
+            "description": "$rc:number_of_groups.descr"
+        },
+        "Analysis_Fields": {
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:analysis_fields.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "Field"
+                }
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Float",
+                    "Double",
+                    "Date"
+                ]
+            },
+            "depends": [
+                "Input_Features"
+            ],
+            "description": "$rc:analysis_fields.descr"
+        },
+        "Spatial_Constraints": {
+            "displayname": "$rc:spatial_constraints.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "CONTIGUITY_EDGES_ONLY",
+                        "code": "$rc:spatial_constraints.domain.CONTIGUITY_EDGES_ONLY"
+                    },
+                    {
+                        "value": "CONTIGUITY_EDGES_CORNERS",
+                        "code": "$rc:spatial_constraints.domain.CONTIGUITY_EDGES_CORNERS"
+                    },
+                    {
+                        "value": "DELAUNAY_TRIANGULATION",
+                        "code": "$rc:spatial_constraints.domain.DELAUNAY_TRIANGULATION"
+                    },
+                    {
+                        "value": "K_NEAREST_NEIGHBORS",
+                        "code": "$rc:spatial_constraints.domain.K_NEAREST_NEIGHBORS"
+                    },
+                    {
+                        "value": "GET_SPATIAL_WEIGHTS_FROM_FILE",
+                        "code": "$rc:spatial_constraints.domain.GET_SPATIAL_WEIGHTS_FROM_FILE"
+                    },
+                    {
+                        "value": "NO_SPATIAL_CONSTRAINT",
+                        "code": "$rc:spatial_constraints.domain.NO_SPATIAL_CONSTRAINT"
+                    }
+                ]
+            },
+            "description": "$rc:spatial_constraints.descr"
+        },
+        "Distance_Method": {
+            "type": "optional",
+            "displayname": "$rc:distance_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "EUCLIDEAN",
+                        "code": "$rc:distance_method.domain.EUCLIDEAN"
+                    },
+                    {
+                        "value": "MANHATTAN",
+                        "code": "$rc:distance_method.domain.MANHATTAN"
+                    }
+                ]
+            },
+            "value": "EUCLIDEAN",
+            "description": "$rc:distance_method.descr"
+        },
+        "Number_of_Neighbors": {
+            "type": "optional",
+            "displayname": "$rc:number_of_neighbors.title",
+            "datatype": {
+                "type": "GPLong"
+            },
+            "value": "8",
+            "description": "$rc:number_of_neighbors.descr"
+        },
+        "Weights_Matrix_File": {
+            "type": "optional",
+            "displayname": "$rc:weights_matrix_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "swm",
+                    "gwt"
+                ]
+            },
+            "description": "$rc:weights_matrix_file.descr"
+        },
+        "Initialization_Method": {
+            "type": "optional",
+            "displayname": "$rc:initialization_method.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "FIND_SEED_LOCATIONS",
+                        "code": "$rc:initialization_method.domain.FIND_SEED_LOCATIONS"
+                    },
+                    {
+                        "value": "GET_SEEDS_FROM_FIELD",
+                        "code": "$rc:initialization_method.domain.GET_SEEDS_FROM_FIELD"
+                    },
+                    {
+                        "value": "USE_RANDOM_SEEDS",
+                        "code": "$rc:initialization_method.domain.USE_RANDOM_SEEDS"
+                    }
+                ]
+            },
+            "value": "FIND_SEED_LOCATIONS",
+            "description": "$rc:initialization_method.descr"
+        },
+        "Initialization_Field": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:initialization_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long"
+                ]
+            },
+            "depends": [
+                "Input_Features"
+            ],
+            "description": "$rc:initialization_field.descr"
+        },
+        "Output_Report_File": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:output_report_file.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "pdf"
+                ]
+            },
+            "description": "$rc:output_report_file.descr"
+        },
+        "Evaluate_Optimal_Number_of_Groups": {
+            "type": "optional",
+            "displayname": "$rc:evaluate_optimal_number_of_groups.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "EVALUATE"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "DO_NOT_EVALUATE"
+                    }
+                ]
+            },
+            "value": "false",
+            "description": "$rc:evaluate_optimal_number_of_groups.descr"
+        },
+        "Output_FStat": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_fstat.title",
+            "datatype": {
+                "type": "GPDouble"
+            }
+        },
+        "Max_FStat_Group": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:max_fstat_group.title",
+            "datatype": {
+                "type": "GPLong"
+            }
+        },
+        "Max_FStat": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:max_fstat.title",
+            "datatype": {
+                "type": "GPDouble"
+            }
+        }
+    },
+    "environments": [
+        "MResolution",
+        "MTolerance",
+        "XYResolution",
+        "XYTolerance",
+        "ZResolution",
+        "ZTolerance",
+        "geographicTransformations",
+        "outputCoordinateSystem",
+        "outputMFlag",
+        "outputZFlag",
+        "outputZValue",
+        "qualifiedFieldNames",
+        "randomGenerator",
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

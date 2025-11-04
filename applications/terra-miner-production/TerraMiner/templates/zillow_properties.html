@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+    .property-card {
+        transition: transform 0.2s;
+        height: 100%;
+    }
+    .property-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .property-img {
+        height: 200px;
+        object-fit: cover;
+        width: 100%;
+    }
+    .property-price {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    .property-address {
+        font-size: 1.1rem;
+        height: 2.5rem;
+        overflow: hidden;
+    }
+    .property-details {
+        font-size: 0.9rem;
+    }
+    .property-days {
+        font-size: 0.8rem;
+    }
+    .search-container {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 30px;
+    }
+</style>
+{% endblock %}
+
+{% block title %}Zillow Properties{% endblock %}
+{% block page_title %}Zillow Property Search{% endblock %}
+
+{% block content %}
+<div class="search-container">
+    <form id="propertySearchForm" class="row g-3">
+        <div class="col-md-6">
+            <label for="location" class="form-label">Location</label>
+            <input type="text" class="form-control" id="location" name="location" placeholder="City, ZIP code, neighborhood" value="{{ location }}">
+        </div>
+        <div class="col-md-3">
+            <label for="limit" class="form-label">Results Limit</label>
+            <select class="form-select" id="limit" name="limit">
+                <option value="10" selected>10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+            </select>
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-search"></i> Search Properties
+            </button>
+        </div>
+    </form>
+</div>
+
+<div id="loadingIndicator" style="display: none;">
+    <div class="row mb-4">
+        <div class="col-md-12 text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Searching for properties...</p>
+        </div>
+    </div>
+</div>
+
+<div id="errorContainer" style="display: none;">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="alert alert-danger">
+                <h4 class="alert-heading">Error</h4>
+                <p id="errorMessage"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="noResultsContainer" style="display: none;">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="alert alert-warning">
+                <h4 class="alert-heading">No Properties Found</h4>
+                <p>We couldn't find any properties in the specified location. Please try a different search.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="propertiesContainer">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h4 class="mb-3" id="searchResultsHeading" style="display: none;">
+                <i class="bi bi-house-door"></i> Search Results
+                <span class="badge bg-primary ms-2" id="resultCount">0</span>
+            </h4>
+        </div>
+    </div>
+    
+    <div class="row" id="propertiesList">
+        <!-- Property cards will be inserted here -->
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const propertySearchForm = document.getElementById('propertySearchForm');
+        const locationInput = document.getElementById('location');
+        
+        // Handle form submission
+        propertySearchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            searchProperties();
+        });
+        
+        // If location is provided, search automatically
+        if (locationInput.value.trim()) {
+            searchProperties();
+        }
+    });
+    
+    function searchProperties() {
+        // Show loading indicator and hide other content
+        document.getElementById('loadingIndicator').style.display = 'block';
+        document.getElementById('errorContainer').style.display = 'none';
+        document.getElementById('noResultsContainer').style.display = 'none';
+        document.getElementById('searchResultsHeading').style.display = 'none';
+        document.getElementById('propertiesList').innerHTML = '';
+        
+        // Get form data
+        const location = document.getElementById('location').value;
+        const limit = document.getElementById('limit').value;
+        
+        if (!location) {
+            showError('Please enter a location to search');
+            return;
+        }
+        
+        // Update URL for bookmarking
+        window.history.pushState(
+            { path: `/zillow/properties?location=${encodeURIComponent(location)}&limit=${limit}` }, 
+            '', 
+            `/zillow/properties?location=${encodeURIComponent(location)}&limit=${limit}`
+        );
+        
+        // Fetch properties
+        fetch(`/api/zillow/search?location=${encodeURIComponent(location)}&limit=${limit}`)
+            .then(response => response.json())
+            .then(data => {
+                // Hide loading indicator
+                document.getElementById('loadingIndicator').style.display = 'none';
+                
+                if (data.status === 'error') {
+                    showError(data.message);
+                    return;
+                }
+                
+                // Show search results heading
+                document.getElementById('searchResultsHeading').style.display = 'block';
+                document.getElementById('resultCount').textContent = data.count || 0;
+                
+                // Check if we have results
+                if (!data.data || data.data.length === 0) {
+                    document.getElementById('noResultsContainer').style.display = 'block';
+                    return;
+                }
+                
+                // Display properties
+                displayProperties(data.data);
+            })
+            .catch(error => {
+                showError('Error searching properties: ' + error.message);
+            });
+    }
+    
+    function displayProperties(properties) {
+        const propertiesList = document.getElementById('propertiesList');
+        propertiesList.innerHTML = '';
+        
+        properties.forEach(property => {
+            const propertyCard = createPropertyCard(property);
+            propertiesList.appendChild(propertyCard);
+        });
+    }
+    
+    function createPropertyCard(property) {
+        const col = document.createElement('div');
+        col.className = 'col-md-4 mb-4';
+        
+        // Format address and details
+        const address = property.address || 'No Address';
+        const cityStateZip = [
+            property.city || '',
+            property.state || '',
+            property.zip_code || ''
+        ].filter(Boolean).join(', ');
+        
+        const bedsBaths = `${property.beds || 0} bd | ${property.baths || 0} ba`;
+        const sqft = property.square_feet ? `${numberWithCommas(Math.round(property.square_feet))} sqft` : '';
+        const details = [bedsBaths, sqft].filter(Boolean).join(' | ');
+        
+        // Format price and days on market
+        const price = formatCurrency(property.price);
+        const daysOnMarket = property.days_on_market ? `${property.days_on_market} days on market` : '';
+        
+        // Property image with fallback
+        const imageUrl = property.image_url || '/static/img/house-placeholder.jpg';
+        
+        // Build card HTML
+        col.innerHTML = `
+            <div class="card property-card">
+                <img src="${imageUrl}" class="card-img-top property-img" alt="${address}" onerror="this.src='/static/img/house-placeholder.jpg'">
+                <div class="card-body">
+                    <div class="property-price mb-2">${price}</div>
+                    <h5 class="card-title property-address">${address}</h5>
+                    <p class="card-text text-muted mb-2">${cityStateZip}</p>
+                    <p class="card-text property-details mb-1">${details}</p>
+                    <p class="card-text property-days text-muted">${daysOnMarket}</p>
+                    <a href="${property.url || '#'}" class="btn btn-sm btn-outline-primary mt-2" target="_blank">View on Zillow</a>
+                    <a href="/api/zillow/property/${property.zpid}" class="btn btn-sm btn-outline-secondary mt-2">Property Details</a>
+                </div>
+            </div>
+        `;
+        
+        return col;
+    }
+    
+    function showError(message) {
+        document.getElementById('loadingIndicator').style.display = 'none';
+        document.getElementById('errorContainer').style.display = 'block';
+        document.getElementById('errorMessage').textContent = message;
+    }
+    
+    function formatCurrency(value) {
+        if (!value) return '$0';
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
+    }
+    
+    function numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+</script>
+{% endblock %}

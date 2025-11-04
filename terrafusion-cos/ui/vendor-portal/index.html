@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TerraFusion Substrate SDK - Vendor Portal</title>
+    <link rel="stylesheet" href="vendor-portal.css" />
+  </head>
+  <body>
+    <div class="vendor-container">
+      <!-- Header -->
+      <header class="vendor-header">
+        <div class="vendor-logo">
+          <h1>🏗️ TerraFusion Substrate SDK</h1>
+          <span class="vendor-badge">GOVERNMENT CONTRACTOR PORTAL</span>
+        </div>
+        <div class="vendor-user">
+          <span class="user-name" id="vendorName">Harris Computer Systems</span>
+          <span class="user-role">Platinum Partner</span>
+        </div>
+      </header>
+
+      <!-- Navigation -->
+      <nav class="vendor-nav">
+        <button class="nav-btn active" onclick="showSection('dashboard')">📊 Dashboard</button>
+        <button class="nav-btn" onclick="showSection('integrations')">🔌 Integrations</button>
+        <button class="nav-btn" onclick="showSection('data-sync')">🔄 Data Sync</button>
+        <button class="nav-btn" onclick="showSection('api-docs')">📚 API Documentation</button>
+        <button class="nav-btn" onclick="showSection('analytics')">📈 Analytics</button>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="vendor-main">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section active">
+          <h2 class="section-title">Vendor Integration Dashboard</h2>
+
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-icon">🏛️</div>
+              <div class="metric-content">
+                <div class="metric-label">Active Counties</div>
+                <div class="metric-value">39</div>
+                <div class="metric-change positive">+3 this month</div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon">🔄</div>
+              <div class="metric-content">
+                <div class="metric-label">API Calls Today</div>
+                <div class="metric-value">1.2M</div>
+                <div class="metric-change positive">+12% vs yesterday</div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon">⚡</div>
+              <div class="metric-content">
+                <div class="metric-label">Avg Response Time</div>
+                <div class="metric-value">18ms</div>
+                <div class="metric-change positive">Championship Grade</div>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon">✅</div>
+              <div class="metric-content">
+                <div class="metric-label">Success Rate</div>
+                <div class="metric-value">99.97%</div>
+                <div class="metric-change positive">Government Excellence</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="dashboard-card">
+              <h3>Recent Integration Activity</h3>
+              <div class="activity-list">
+                <div class="activity-item">
+                  <span class="activity-icon success">✓</span>
+                  <div class="activity-content">
+                    <div class="activity-title">Benton County PACS Sync Complete</div>
+                    <div class="activity-time">2 minutes ago</div>
+                  </div>
+                </div>
+                <div class="activity-item">
+                  <span class="activity-icon success">✓</span>
+                  <div class="activity-content">
+                    <div class="activity-title">King County Property Assessment Updated</div>
+                    <div class="activity-time">18 minutes ago</div>
+                  </div>
+                </div>
+                <div class="activity-item">
+                  <span class="activity-icon success">✓</span>
+                  <div class="activity-content">
+                    <div class="activity-title">Pierce County Tax Roll Synchronized</div>
+                    <div class="activity-time">1 hour ago</div>
+                  </div>
+                </div>
+                <div class="activity-item">
+                  <span class="activity-icon warning">⚠</span>
+                  <div class="activity-content">
+                    <div class="activity-title">Spokane County API Rate Limit Reached</div>
+                    <div class="activity-time">3 hours ago</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dashboard-card">
+              <h3>County System Health</h3>
+              <div class="health-list">
+                <div class="health-item">
+                  <span class="health-name">Benton County</span>
+                  <span class="health-status operational">Operational</span>
+                  <span class="health-uptime">99.98%</span>
+                </div>
+                <div class="health-item">
+                  <span class="health-name">King County</span>
+                  <span class="health-status operational">Operational</span>
+                  <span class="health-uptime">99.95%</span>
+                </div>
+                <div class="health-item">
+                  <span class="health-name">Pierce County</span>
+                  <span class="health-status operational">Operational</span>
+                  <span class="health-uptime">99.97%</span>
+                </div>
+                <div class="health-item">
+                  <span class="health-name">Spokane County</span>
+                  <span class="health-status degraded">Degraded</span>
+                  <span class="health-uptime">98.42%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Integrations Section -->
+        <section id="integrations" class="content-section">
+          <h2 class="section-title">Integration Management</h2>
+
+          <div class="integration-grid">
+            <div class="integration-card active">
+              <div class="integration-header">
+                <h3>Harris PACS v12.4.7</h3>
+                <span class="integration-status active">Active</span>
+              </div>
+              <p class="integration-desc">
+                Property Assessment & Collection System integration with real-time data
+                synchronization.
+              </p>
+              <div class="integration-stats">
+                <div class="stat">
+                  <span class="stat-label">Sync Interval:</span>
+                  <span class="stat-value">15 min</span>
+                </div>
+                <div class="stat">
+                  <span class="stat-label">Last Sync:</span>
+                  <span class="stat-value">2 min ago</span>
+                </div>
+                <div class="stat">
+                  <span class="stat-label">Properties:</span>
+                  <span class="stat-value">89,247</span>
+                </div>
+              </div>
+              <button class="integration-btn">Configure Integration</button>
+            </div>
+
+            <div class="integration-card active">
+              <div class="integration-header">
+                <h3>Tyler Technologies</h3>
+                <span class="integration-status active">Active</span>
+              </div>
+              <p class="integration-desc">
+                Enterprise government management software with workflow automation and document
+                management.
+              </p>
+              <div class="integration-stats">
+                <div class="stat">
+                  <span class="stat-label">Workflows:</span>
+                  <span class="stat-value">247</span>
+                </div>
+                <div class="stat">
+                  <span class="stat-label">Documents:</span>
+                  <span class="stat-value">12,849</span>
+                </div>
+                <div class="stat">
+                  <span class="stat-label">Users:</span>
+                  <span class="stat-value">1,203</span>
+                </div>
+              </div>
+              <button class="integration-btn">Configure Integration</button>
+            </div>
+
+            <div class="integration-card">
+              <div class="integration-header">
+                <h3>Esri ArcGIS</h3>
+                <span class="integration-status pending">Pending</span>
+              </div>
+              <p class="integration-desc">
+                Geographic Information System integration for spatial analysis and mapping
+                capabilities.
+              </p>
+              <div class="integration-stats">
+                <div class="stat">
+                  <span class="stat-label">Status:</span>
+                  <span class="stat-value">Setup Required</span>
+                </div>
+              </div>
+              <button class="integration-btn secondary">Setup Integration</button>
+            </div>
+
+            <div class="integration-card">
+              <div class="integration-header">
+                <h3>Woolpert Solutions</h3>
+                <span class="integration-status pending">Pending</span>
+              </div>
+              <p class="integration-desc">
+                Advanced assessment technology and consulting services integration.
+              </p>
+              <div class="integration-stats">
+                <div class="stat">
+                  <span class="stat-label">Status:</span>
+                  <span class="stat-value">Setup Required</span>
+                </div>
+              </div>
+              <button class="integration-btn secondary">Setup Integration</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Data Sync Section -->
+        <section id="data-sync" class="content-section">
+          <h2 class="section-title">Data Synchronization</h2>
+
+          <div class="sync-controls">
+            <button class="sync-btn primary">🔄 Sync All Counties</button>
+            <button class="sync-btn">📥 Import Data</button>
+            <button class="sync-btn">📤 Export Data</button>
+            <button class="sync-btn">⚙️ Sync Settings</button>
+          </div>
+
+          <div class="sync-table-container">
+            <table class="sync-table">
+              <thead>
+                <tr>
+                  <th>County</th>
+                  <th>System</th>
+                  <th>Last Sync</th>
+                  <th>Status</th>
+                  <th>Records</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Benton County</td>
+                  <td>Harris PACS</td>
+                  <td>2 min ago</td>
+                  <td><span class="status-badge success">Success</span></td>
+                  <td>89,247</td>
+                  <td><button class="action-btn">Sync Now</button></td>
+                </tr>
+                <tr>
+                  <td>King County</td>
+                  <td>Tyler Tech</td>
+                  <td>18 min ago</td>
+                  <td><span class="status-badge success">Success</span></td>
+                  <td>650,000</td>
+                  <td><button class="action-btn">Sync Now</button></td>
+                </tr>
+                <tr>
+                  <td>Pierce County</td>
+                  <td>Harris PACS</td>
+                  <td>1 hour ago</td>
+                  <td><span class="status-badge success">Success</span></td>
+                  <td>320,000</td>
+                  <td><button class="action-btn">Sync Now</button></td>
+                </tr>
+                <tr>
+                  <td>Spokane County</td>
+                  <td>Tyler Tech</td>
+                  <td>3 hours ago</td>
+                  <td><span class="status-badge warning">Rate Limited</span></td>
+                  <td>240,000</td>
+                  <td><button class="action-btn">Retry</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- API Documentation Section -->
+        <section id="api-docs" class="content-section">
+          <h2 class="section-title">API Documentation</h2>
+
+          <div class="api-docs">
+            <div class="api-section">
+              <h3>Authentication</h3>
+              <div class="code-block">
+                <code
+                  >POST /api/substrate/authenticate { "vendor_id": "harris_pacs", "api_key":
+                  "your_api_key_here", "secret": "your_secret_here" } Response: { "success": true,
+                  "token": "eyJ0eXAiOiJKV1QiLCJhbGc...", "expires_in": 3600 }</code
+                >
+              </div>
+            </div>
+
+            <div class="api-section">
+              <h3>Property Data Sync</h3>
+              <div class="code-block">
+                <code
+                  >GET /api/substrate/properties?county=benton&limit=100 Headers: Authorization:
+                  Bearer {token} Response: { "success": true, "properties": [...], "total": 89247,
+                  "page": 1 }</code
+                >
+              </div>
+            </div>
+
+            <div class="api-section">
+              <h3>AI Enhancement</h3>
+              <div class="code-block">
+                <code
+                  >POST /api/substrate/ai-enhance { "county": "benton", "operation":
+                  "property_valuation", "data": {...} } Response: { "success": true,
+                  "enhanced_value": 450000, "confidence": 0.87, "ai_factors": [...] }</code
+                >
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Analytics Section -->
+        <section id="analytics" class="content-section">
+          <h2 class="section-title">Performance Analytics</h2>
+
+          <div class="analytics-grid">
+            <div class="analytics-card">
+              <h3>API Usage (Last 30 Days)</h3>
+              <div class="chart-placeholder">
+                <div class="chart-bar" data-height="85">85%</div>
+                <div class="chart-bar" data-height="92">92%</div>
+                <div class="chart-bar" data-height="78">78%</div>
+                <div class="chart-bar" data-height="95">95%</div>
+                <div class="chart-bar" data-height="88">88%</div>
+              </div>
+            </div>
+
+            <div class="analytics-card">
+              <h3>Response Time Trends</h3>
+              <div class="trend-stats">
+                <div class="trend-item">
+                  <span class="trend-label">P50 Latency:</span>
+                  <span class="trend-value">12ms</span>
+                </div>
+                <div class="trend-item">
+                  <span class="trend-label">P95 Latency:</span>
+                  <span class="trend-value">34ms</span>
+                </div>
+                <div class="trend-item">
+                  <span class="trend-label">P99 Latency:</span>
+                  <span class="trend-value">67ms</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="analytics-card">
+              <h3>Top Counties by Volume</h3>
+              <div class="county-list">
+                <div class="county-item">
+                  <span class="county-rank">1</span>
+                  <span class="county-name">King County</span>
+                  <span class="county-volume">450K calls</span>
+                </div>
+                <div class="county-item">
+                  <span class="county-rank">2</span>
+                  <span class="county-name">Pierce County</span>
+                  <span class="county-volume">320K calls</span>
+                </div>
+                <div class="county-item">
+                  <span class="county-rank">3</span>
+                  <span class="county-name">Spokane County</span>
+                  <span class="county-volume">240K calls</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Footer -->
+      <footer class="vendor-footer">
+        <div class="footer-left">
+          <span>TerraFusion Substrate SDK v1.0.0</span>
+          <span>•</span>
+          <span>Connected to: cOS API (localhost:8090)</span>
+        </div>
+        <div class="footer-right">
+          <span>Government. Transcended. 🎖️</span>
+        </div>
+      </footer>
+    </div>
+
+    <script src="vendor-portal.js"></script>
+  </body>
+</html>

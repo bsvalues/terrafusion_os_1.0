@@ -1,0 +1,55 @@
+{
+    "version": "1.0",
+    "alias": "maritime",
+    "displayname": "$rc:title",
+    "description": "$rc:descr",
+    "helpcontext": "63000000",
+    "toolsets": {
+        "$rc:toolset1.name": {
+            "tools": [
+                "ApplyMaritimeSymbology",
+                "GenerateCartographicLimits",
+                "GenerateLightSector",
+                "TransferQualityOfPosition"
+            ]
+        },
+        "$rc:toolset4.name": {
+            "tools": [
+                "ExpandCollapsedContours",
+                "GenerateDepthAreas",
+                "GenerateLandAreas",
+                "ReducePointDensity",
+                "SmoothBathymetricTIN"
+            ]
+        },
+        "$rc:toolset2.name": {
+            "tools": [
+                "ConvertS57ToS101",
+                "ExportS101Cell",
+                "ImportS100Cell",
+                "ImportS100FeatureCatalogue"
+            ]
+        },
+        "$rc:toolset3.name": {
+            "tools": [
+                "CopyS57Features",
+                "CreateS57ExchangeSet",
+                "ExportGeodatabaseToS57",
+                "ImportS57ToGeodatabase"
+            ]
+        },
+        "$rc:toolset6.name": {
+            "tools": [
+                "ParseS58LogFile",
+                "RepairNauticalData",
+                "ValidateS57File"
+            ]
+        },
+        "$rc:toolset5.name": {
+            "tools": [
+                "ExportGeodatabaseToVPF",
+                "ImportVPFToGeodatabase"
+            ]
+        }
+    }
+}

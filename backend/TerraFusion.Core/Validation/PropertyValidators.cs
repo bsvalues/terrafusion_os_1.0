@@ -302,14 +302,16 @@ public class PropertySearchRequestValidator : AbstractValidator<PropertySearchRe
         return Regex.IsMatch(text, @"^[A-Za-z0-9\s,\.\-'#\*\?]+$");
     }
 
-    private bool BeValidPropertyType(string propertyType)
+    private bool BeValidPropertyType(string? propertyType)
     {
+        if (propertyType == null) return false;
         var validTypes = new[] { "Residential", "Commercial", "Agricultural", "Industrial" };
         return validTypes.Contains(propertyType, StringComparer.OrdinalIgnoreCase);
     }
 
-    private bool BeValidSortField(string sortField)
+    private bool BeValidSortField(string? sortField)
     {
+        if (sortField == null) return false;
         var validFields = new[] { "ParcelId", "Address", "AssessedValue", "YearBuilt", "PropertyType" };
         return validFields.Contains(sortField, StringComparer.OrdinalIgnoreCase);
     }

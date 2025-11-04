@@ -1,0 +1,212 @@
+{
+    "type": "ScriptTool",
+    "displayname": "$rc:title",
+    "helpcontent": "51030007",
+    "description": "$rc:description",
+    "product": "100",
+    "attributes": [
+        "spark"
+    ],
+    "params": {
+        "input_layer": {
+            "displayname": "$rc:input_layer.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "featuretype": [
+                    "Simple"
+                ],
+                "portaltype": [
+                    "DataStoreCatalogLayer"
+                ]
+            },
+            "description": "$rc:input_layer.descr"
+        },
+        "output_name": {
+            "displayname": "$rc:output_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "depends": [
+                "input_layer"
+            ],
+            "description": "$rc:output_name.descr"
+        },
+        "generate_types": {
+            "control_guid": "{38C34610-C7F7-11D5-A693-0008C711C8C1}",
+            "displayname": "$rc:generate_types.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPString"
+                }
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "CENTRAL_FEATURE",
+                        "code": "$rc:generate_types.domain.CENTRAL_FEATURE"
+                    },
+                    {
+                        "value": "MEAN_CENTER",
+                        "code": "$rc:generate_types.domain.MEAN_CENTER"
+                    },
+                    {
+                        "value": "MEDIAN_CENTER",
+                        "code": "$rc:generate_types.domain.MEDIAN_CENTER"
+                    },
+                    {
+                        "value": "ELLIPSE",
+                        "code": "$rc:generate_types.domain.ELLIPSE"
+                    }
+                ]
+            },
+            "description": "$rc:generate_types.descr"
+        },
+        "ellipse_size": {
+            "type": "optional",
+            "displayname": "$rc:ellipse_size.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "1_STANDARD_DEVIATION",
+                        "code": "$rc:ellipse_size.domain.1_STANDARD_DEVIATION"
+                    },
+                    {
+                        "value": "2_STANDARD_DEVIATIONS",
+                        "code": "$rc:ellipse_size.domain.2_STANDARD_DEVIATIONS"
+                    },
+                    {
+                        "value": "3_STANDARD_DEVIATIONS",
+                        "code": "$rc:ellipse_size.domain.3_STANDARD_DEVIATIONS"
+                    }
+                ]
+            },
+            "value": "1_STANDARD_DEVIATION",
+            "description": "$rc:ellipse_size.descr"
+        },
+        "weight_field": {
+            "type": "optional",
+            "displayname": "$rc:weight_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Double"
+                ]
+            },
+            "depends": [
+                "input_layer"
+            ],
+            "description": "$rc:weight_field.descr"
+        },
+        "group_by_field": {
+            "type": "optional",
+            "displayname": "$rc:group_by_field.title",
+            "datatype": {
+                "type": "Field"
+            },
+            "domain": {
+                "type": "GPFieldDomain",
+                "fieldtype": [
+                    "Short",
+                    "Long",
+                    "Text",
+                    "Date",
+                    "Double"
+                ]
+            },
+            "depends": [
+                "input_layer"
+            ],
+            "description": "$rc:group_by_field.descr"
+        },
+        "out_central_feature_layer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_central_feature_layer.title",
+            "datatype": {
+                "type": "GPFeatureRecordSetLayer"
+            },
+            "schema": {
+                "type": "GPFeatureSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "out_mean_center_layer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_mean_center_layer.title",
+            "datatype": {
+                "type": "GPRecordSet"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "out_median_center_layer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_median_center_layer.title",
+            "datatype": {
+                "type": "GPRecordSet"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "out_ellipse_layer": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_ellipse_layer.title",
+            "datatype": {
+                "type": "GPRecordSet"
+            },
+            "schema": {
+                "type": "GPTableSchema",
+                "generateoutputcatalogpath": "true"
+            }
+        },
+        "data_store": {
+            "type": "optional",
+            "displayname": "$rc:data_store.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SPATIOTEMPORAL_DATA_STORE",
+                        "code": "$rc:data_store.domain.SPATIOTEMPORAL_DATA_STORE"
+                    },
+                    {
+                        "value": "RELATIONAL_DATA_STORE",
+                        "code": "$rc:data_store.domain.RELATIONAL_DATA_STORE"
+                    }
+                ]
+            },
+            "value": "SPATIOTEMPORAL_DATA_STORE",
+            "description": "$rc:data_store.descr"
+        }
+    },
+    "environments": [
+        "extent",
+        "outputCoordinateSystem",
+        "workspace"
+    ]
+}

@@ -1,0 +1,148 @@
+{
+    "type": "FunctionTool",
+    "guid": "{d48077c6-91c0-48a9-b7b4-a5ea6ba85743}",
+    "displayname": "$rc:title",
+    "helpcontent": "10040007",
+    "description": "$rc:description",
+    "product": "300",
+    "params": {
+        "in_above_features": {
+            "displayname": "$rc:in_above_features.title",
+            "datatype": {
+                "type": "GPLayer"
+            },
+            "domain": {
+                "type": "GPLayerDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_above_features.descr"
+        },
+        "in_below_features": {
+            "displayname": "$rc:in_below_features.title",
+            "datatype": {
+                "type": "GPLayer"
+            },
+            "domain": {
+                "type": "GPLayerDomain",
+                "geometrytype": [
+                    "Polyline"
+                ]
+            },
+            "description": "$rc:in_below_features.descr"
+        },
+        "margin_along": {
+            "displayname": "$rc:margin_along.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                }
+            },
+            "description": "$rc:margin_along.descr"
+        },
+        "margin_across": {
+            "displayname": "$rc:margin_across.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                }
+            },
+            "description": "$rc:margin_across.descr"
+        },
+        "out_underpass_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_underpass_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_underpass_feature_class.descr"
+        },
+        "out_mask_relationship_class": {
+            "direction": "out",
+            "displayname": "$rc:out_mask_relationship_class.title",
+            "datatype": {
+                "type": "DERelationshipClass"
+            },
+            "description": "$rc:out_mask_relationship_class.descr"
+        },
+        "where_clause": {
+            "type": "optional",
+            "displayname": "$rc:where_clause.title",
+            "datatype": {
+                "type": "GPSQLExpression"
+            },
+            "depends": [
+                "in_below_features"
+            ],
+            "description": "$rc:where_clause.descr"
+        },
+        "out_decoration_feature_class": {
+            "type": "optional",
+            "direction": "out",
+            "displayname": "$rc:out_decoration_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "description": "$rc:out_decoration_feature_class.descr"
+        },
+        "wing_type": {
+            "type": "optional",
+            "displayname": "$rc:wing_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "ANGLED",
+                        "code": "$rc:wing_type.domain.ANGLED"
+                    },
+                    {
+                        "value": "PARALLEL",
+                        "code": "$rc:wing_type.domain.PARALLEL"
+                    },
+                    {
+                        "value": "NONE",
+                        "code": "$rc:wing_type.domain.NONE"
+                    }
+                ]
+            },
+            "value": "ANGLED",
+            "description": "$rc:wing_type.descr"
+        },
+        "wing_tick_length": {
+            "type": "optional",
+            "displayname": "$rc:wing_tick_length.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "domain": {
+                "type": "GPNumericDomain",
+                "allowempty": "true",
+                "low": {
+                    "inclusive": "true",
+                    "val": "0"
+                }
+            },
+            "description": "$rc:wing_tick_length.descr"
+        }
+    },
+    "environments": [
+        "cartographicCoordinateSystem",
+        "referenceScale"
+    ]
+}

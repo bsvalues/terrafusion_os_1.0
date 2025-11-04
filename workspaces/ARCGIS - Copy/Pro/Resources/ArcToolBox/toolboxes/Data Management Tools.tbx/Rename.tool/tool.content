@@ -1,0 +1,48 @@
+{
+    "type": "FunctionTool",
+    "guid": "{8dc95413-4b23-4739-8e92-f910bee26c3b}",
+    "displayname": "$rc:title",
+    "helpcontent": "3070003",
+    "description": "$rc:description",
+    "product": "100",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "attributes": [
+        "block_add_to_map"
+    ],
+    "params": {
+        "in_data": {
+            "display_order": "0",
+            "displayname": "$rc:in_data.title",
+            "datatype": {
+                "type": "DEType"
+            },
+            "description": "$rc:in_data.descr"
+        },
+        "out_data": {
+            "direction": "out",
+            "display_order": "2",
+            "control_guid": "{DA8EA072-AD53-11D5-A685-0008C711C8C1}",
+            "displayname": "$rc:out_data.title",
+            "datatype": {
+                "type": "DEType"
+            },
+            "description": "$rc:out_data.descr"
+        },
+        "data_type": {
+            "enabled": "false",
+            "type": "optional",
+            "display_order": "1",
+            "displayname": "$rc:data_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:data_type.descr"
+        }
+    },
+    "environments": [
+        "scratchWorkspace",
+        "workspace"
+    ]
+}

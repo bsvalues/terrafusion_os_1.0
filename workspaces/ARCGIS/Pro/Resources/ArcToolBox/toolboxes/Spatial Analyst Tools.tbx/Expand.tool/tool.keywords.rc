@@ -1,0 +1,12 @@
+{
+    "set": [
+        "clean",
+        "dilate",
+        "generalize",
+        "grow",
+        "image processing",
+        "simplify",
+        "smooth",
+        "zone"
+    ]
+}

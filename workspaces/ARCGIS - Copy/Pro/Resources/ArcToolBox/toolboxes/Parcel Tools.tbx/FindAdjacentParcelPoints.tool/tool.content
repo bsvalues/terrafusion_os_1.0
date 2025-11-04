@@ -1,0 +1,44 @@
+{
+    "type": "FunctionTool",
+    "guid": "{88fca698-bc3d-47ba-8880-2d86bd519c22}",
+    "displayname": "$rc:title",
+    "helpcontent": "52000015",
+    "description": "$rc:description",
+    "product": "200",
+    "categories": [
+        "{29f0df2a-0bfd-49be-90cf-5e74f3aae8d5}"
+    ],
+    "params": {
+        "in_parcel_points": {
+            "displayname": "$rc:in_parcel_points.title",
+            "datatype": {
+                "type": "GPFeatureLayer"
+            },
+            "domain": {
+                "type": "GPFeatureClassDomain",
+                "geometrytype": [
+                    "Point"
+                ]
+            },
+            "description": "$rc:in_parcel_points.descr"
+        },
+        "out_feature_class": {
+            "direction": "out",
+            "displayname": "$rc:out_feature_class.title",
+            "datatype": {
+                "type": "DEFeatureClass"
+            },
+            "symbologylayer": "ParcelFabricFindAdjacentParcelPoints.lyrx",
+            "description": "$rc:out_feature_class.descr"
+        },
+        "tolerance": {
+            "type": "optional",
+            "displayname": "$rc:tolerance.title",
+            "datatype": {
+                "type": "GPLinearUnit"
+            },
+            "value": "0 Meters",
+            "description": "$rc:tolerance.descr"
+        }
+    }
+}

@@ -1,0 +1,28 @@
+# Development files
+.DS_Store
+.git/
+.gitignore
+.vscode/
+.idea/
+
+# Documentation
+*.md
+!README.md
+
+# Test files
+test/
+tests/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+
+# Secrets
+*secret*
+*password*
+*.key
+*.pem
+
+# Helm
+charts/*.tgz

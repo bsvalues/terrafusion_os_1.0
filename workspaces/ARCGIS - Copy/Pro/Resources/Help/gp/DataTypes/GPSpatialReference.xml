@@ -1,0 +1,5 @@
+<DataType Name="GPSpatialReference">
+  <DisplayName>Spatial Reference</DisplayName>
+  <Description>The coordinate system used to store a spatial dataset, including the spatial domain.</Description>
+</DataType>
+

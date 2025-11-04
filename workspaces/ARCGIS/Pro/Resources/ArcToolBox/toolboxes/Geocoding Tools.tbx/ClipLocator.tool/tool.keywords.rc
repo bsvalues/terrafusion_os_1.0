@@ -1,0 +1,21 @@
+{
+    "set": [
+        "aoi",
+        "address locator",
+        "area of interest",
+        "clip",
+        "clip locator",
+        "display",
+        "display extent",
+        "extent",
+        "extract",
+        "feature class",
+        "folder",
+        "layer",
+        "locator",
+        "output folder",
+        "polygon",
+        "smaller",
+        "visible extent"
+    ]
+}

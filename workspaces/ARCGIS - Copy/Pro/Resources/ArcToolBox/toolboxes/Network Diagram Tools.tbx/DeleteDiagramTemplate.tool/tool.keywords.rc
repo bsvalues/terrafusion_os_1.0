@@ -1,0 +1,10 @@
+{
+    "set": [
+        "configuration",
+        "delete",
+        "diagram template",
+        "network",
+        "network diagram",
+        "template configuration"
+    ]
+}

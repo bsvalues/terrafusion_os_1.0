@@ -1,0 +1,9 @@
+{
+    "set": [
+        "event translation",
+        "integrity",
+        "pipeline",
+        "translate",
+        "translate event"
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "map": {
+        "component_type.domain.ALL": "ALL",
+        "component_type.domain.Circuit": "Circuit",
+        "component_type.domain.Circuit Section": "Circuit Section",
+        "component_type.domain.Subcircuit": "Subcircuit",
+        "component_type.title": "Component Type",
+        "description": "Export circuit definitions.",
+        "domain_network.title": "Domain Network",
+        "in_utility_network.title": "Input Utility Network",
+        "out_folder_path.title": "Output Folder",
+        "title": "Export Circuit Definitions"
+    }
+}

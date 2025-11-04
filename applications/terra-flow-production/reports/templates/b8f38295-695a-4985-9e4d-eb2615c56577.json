@@ -1,0 +1,109 @@
+{
+  "template_id": "b8f38295-695a-4985-9e4d-eb2615c56577",
+  "name": "Standard Property Assessment Report",
+  "description": "Default template for property assessment reports",
+  "template_type": "property_assessment",
+  "sections": [
+    {
+      "section_id": "948736f8-992d-47b6-a962-560f33b92305",
+      "section_type": "header",
+      "title": "Report Overview",
+      "content": {
+        "include_logo": true,
+        "include_date": true,
+        "include_page_numbers": true,
+        "subtitle": "Property Assessment Report"
+      },
+      "created_at": "2025-04-25T20:26:09.970629"
+    },
+    {
+      "section_id": "a3af28bb-cac2-48b1-991c-395043e33a49",
+      "section_type": "property_info",
+      "title": "Property Information",
+      "content": {
+        "fields": [
+          "property_id",
+          "address",
+          "owner_name",
+          "parcel_id",
+          "property_type",
+          "year_built",
+          "square_footage",
+          "lot_size"
+        ],
+        "include_photo": true,
+        "layout": "table"
+      },
+      "created_at": "2025-04-25T20:26:09.970642"
+    },
+    {
+      "section_id": "eef924b8-26a8-4175-847f-dd179deda8f3",
+      "section_type": "valuation",
+      "title": "Valuation Summary",
+      "content": {
+        "fields": [
+          "assessed_value",
+          "land_value",
+          "improvement_value",
+          "market_value",
+          "previous_value",
+          "value_change_percent"
+        ],
+        "include_chart": true,
+        "chart_type": "bar",
+        "chart_title": "Value Components"
+      },
+      "created_at": "2025-04-25T20:26:09.970648"
+    },
+    {
+      "section_id": "a68462e0-632c-4327-a30e-54dff149d507",
+      "section_type": "map",
+      "title": "Property Location",
+      "content": {
+        "map_type": "property_location",
+        "include_nearby_sales": true,
+        "show_parcel_boundaries": true,
+        "zoom_level": 16
+      },
+      "created_at": "2025-04-25T20:26:09.970659"
+    },
+    {
+      "section_id": "84d374b2-4f5b-4af8-95ec-3a15fa23eb0d",
+      "section_type": "comparable_properties",
+      "title": "Comparable Properties",
+      "content": {
+        "num_properties": 5,
+        "fields": [
+          "address",
+          "sale_date",
+          "sale_price",
+          "square_footage",
+          "price_per_sqft",
+          "year_built",
+          "distance"
+        ],
+        "sort_by": "sale_date",
+        "sort_direction": "desc"
+      },
+      "created_at": "2025-04-25T20:26:09.970670"
+    },
+    {
+      "section_id": "f0320b2d-5dc5-422c-bf9b-234bf327d242",
+      "section_type": "footer",
+      "title": "Report Footer",
+      "content": {
+        "include_disclaimer": true,
+        "include_contact": true,
+        "include_generated_date": true
+      },
+      "created_at": "2025-04-25T20:26:09.970676"
+    }
+  ],
+  "metadata": {
+    "created_at": "2025-04-25T20:26:09.970607",
+    "modified_at": "2025-04-25T20:26:09.970678",
+    "version": "1.0",
+    "created_by": "system",
+    "tags": []
+  }
+}

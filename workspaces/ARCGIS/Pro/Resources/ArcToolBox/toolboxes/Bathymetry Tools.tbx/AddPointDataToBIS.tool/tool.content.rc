@@ -1,0 +1,32 @@
+{
+    "map": {
+        "cell_size.descr": "<xdoc><p>The cell size of the proxy raster. The horizontal unit is the same as that of the input datasets.</p><p>If no cell size is specified, additional rules will be used to calculate it from the other inputs.</p></xdoc>",
+        "cell_size.title": "Cell Size",
+        "depth_field.descr": "<xdoc><p>The field where the depth is stored. It is either a numeric field or the shape field specified in the <span class=\"esri_uicontrol\">Input Data</span> parameter value.</p></xdoc>",
+        "depth_field.title": "Depth Field",
+        "description": "Registers point cloud or elevation point data to a Bathymetric Information System (BIS).",
+        "directionality.descr": "<xdoc><p>Specifies the directionality of the elevation data.</p><ul><li><span title=\"POSITIVE_UP\">Positive Up</span>—The directionality of the elevation data will be positive up.</li><li><span title=\"POSITIVE_DOWN\">Positive Down</span>—The directionality of the elevation data will be positive down.</li></ul></xdoc>",
+        "directionality.domain.POSITIVE_DOWN": "Positive Down",
+        "directionality.domain.POSITIVE_UP": "Positive Up",
+        "directionality.title": "Directionality",
+        "footprint_type.descr": "<xdoc><p>Specifies whether the footprint will be the full extent of the dataset, a convex hull representing the minimum bounding box for all features, or a precise domain representing the approximate boundary of the input dataset.</p><ul><li><span title=\"ENVELOPE\">Envelope</span>— The footprint will be the full extent of the dataset. This is the default.</li><li><span title=\"CONVEX_HULL\">Convex Hull</span>— The footprint will be a convex polygon representing the minimum bounding box for all features.</li><li><span title=\"PRECISE_DOMAIN\">Precise Domain</span>—The footprint will be a polygon that is the approximate boundary of the input dataset.</li></ul></xdoc>",
+        "footprint_type.domain.CONVEX_HULL": "Convex Hull",
+        "footprint_type.domain.ENVELOPE": "Envelope",
+        "footprint_type.domain.PRECISE_DOMAIN": "Precise Domain",
+        "footprint_type.title": "Footprint Type",
+        "in_data.descr": "The input LAS, LASD, point feature class (z-enabled and not z-enabled), shapefile, or multipoint features that will be added to the target workspace.",
+        "in_data.title": "Input Data",
+        "target_workspace.descr": "The enterprise or file geodatabase where the BIS is located.",
+        "target_workspace.title": "Target Workspace",
+        "title": "Add Point Data To BIS",
+        "update_overviews.descr": "<xdoc><p>Specifies whether overviews and statistics for a mosaic dataset will be calculated and updated.<ul><li>Checked—Overviews and statistics will be calculated and updated. This is the default.</li><li>Unchecked—Overviews and statistics will not be calculated and updated.</li></ul></p></xdoc>",
+        "update_overviews.title": "Update Overviews",
+        "updated_bis.title": "Updated BIS",
+        "vertical_units.descr": "<xdoc><p>Specifies the vertical units that will be used for the depth data.</p><ul><li><span title=\"METERS\">Meters</span>— The vertical units will be meters.</li><li><span title=\"FEET\">Feet</span>— The vertical units will be feet.</li><li><span title=\"FEET_US\">US Survey Feet</span>— The vertical units will be U.S. Survey feet.</li><li><span title=\"FATHOMS\">Fathoms</span>— The vertical units will be fathoms.</li></ul></xdoc>",
+        "vertical_units.domain.FATHOMS": "Fathoms",
+        "vertical_units.domain.FEET": "Feet",
+        "vertical_units.domain.FEET_US": "US Survey Feet",
+        "vertical_units.domain.METERS": "Meters",
+        "vertical_units.title": "Vertical Units"
+    }
+}

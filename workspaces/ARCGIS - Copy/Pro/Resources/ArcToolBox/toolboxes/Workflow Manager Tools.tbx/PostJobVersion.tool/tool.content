@@ -1,0 +1,42 @@
+{
+    "type": "FunctionTool",
+    "guid": "{33CA4A60-4D2E-4583-8844-3D0A75F6D305}/PostJobVersion",
+    "displayname": "$rc:title",
+    "helpcontent": "35000008",
+    "description": "$rc:description",
+    "product": "200",
+    "extensions": [
+        "40"
+    ],
+    "params": {
+        "Input_JobID": {
+            "displayname": "$rc:input_jobid.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:input_jobid.descr"
+        },
+        "Input_DatabasePath": {
+            "type": "optional",
+            "displayname": "$rc:input_databasepath.title",
+            "datatype": {
+                "type": "DEFile"
+            },
+            "domain": {
+                "type": "GPFileDomain",
+                "filetypes": [
+                    "jtc"
+                ]
+            },
+            "description": "$rc:input_databasepath.descr"
+        },
+        "Output_Status": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:output_status.title",
+            "datatype": {
+                "type": "GPLong"
+            }
+        }
+    }
+}

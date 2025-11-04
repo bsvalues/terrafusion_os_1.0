@@ -1,0 +1,74 @@
+{% macro tf_card(title, module_type='flow', header_content=None, footer_content=None) %}
+<div class="tf-card {{ module_type }}">
+    <div class="card-header">
+        <h5 class="card-title mb-0">{{ title }}</h5>
+        {% if header_content %}
+            {{ header_content }}
+        {% endif %}
+    </div>
+    <div class="card-body">
+        {{ caller() }}
+    </div>
+    {% if footer_content %}
+    <div class="card-footer">
+        {{ footer_content }}
+    </div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{% macro tf_button(text, type='primary', size='', icon=None, class='') %}
+{% set size_class = 'btn-sm' if size == 'sm' else 'btn-lg' if size == 'lg' else '' %}
+<button class="btn btn-{{ type }} {{ size_class }} {{ class }}">
+    {% if icon %}<i class="{{ icon }} me-1"></i>{% endif %}{{ text }}
+</button>
+{% endmacro %}
+
+{% macro tf_alert(content, type='primary', dismissible=False) %}
+<div class="tf-alert tf-alert-{{ type }} {% if dismissible %}alert-dismissible fade show{% endif %}" role="alert">
+    {{ content }}
+    {% if dismissible %}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{% macro tf_badge(text, type='primary') %}
+<span class="tf-badge tf-badge-{{ type }}">{{ text }}</span>
+{% endmacro %}
+
+{% macro tf_input(label, name, type='text', placeholder='', required=False, value='', help_text=None) %}
+<div class="mb-3">
+    <label for="{{ name }}" class="tf-form-label">{{ label }}</label>
+    <input type="{{ type }}" class="tf-form-control" id="{{ name }}" name="{{ name }}" 
+           placeholder="{{ placeholder }}" {% if required %}required{% endif %} value="{{ value }}">
+    {% if help_text %}
+    <div class="form-text text-muted">{{ help_text }}</div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{% macro tf_select(label, name, options, required=False, help_text=None) %}
+<div class="mb-3">
+    <label for="{{ name }}" class="tf-form-label">{{ label }}</label>
+    <select class="tf-form-control" id="{{ name }}" name="{{ name }}" {% if required %}required{% endif %}>
+        {% for value, text in options %}
+        <option value="{{ value }}">{{ text }}</option>
+        {% endfor %}
+    </select>
+    {% if help_text %}
+    <div class="form-text text-muted">{{ help_text }}</div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{% macro tf_textarea(label, name, rows=3, placeholder='', required=False, value='', help_text=None) %}
+<div class="mb-3">
+    <label for="{{ name }}" class="tf-form-label">{{ label }}</label>
+    <textarea class="tf-form-control" id="{{ name }}" name="{{ name }}" rows="{{ rows }}" 
+              placeholder="{{ placeholder }}" {% if required %}required{% endif %}>{{ value }}</textarea>
+    {% if help_text %}
+    <div class="form-text text-muted">{{ help_text }}</div>
+    {% endif %}
+</div>
+{% endmacro %}

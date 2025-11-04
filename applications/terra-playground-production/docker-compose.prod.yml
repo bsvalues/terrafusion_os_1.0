@@ -1,0 +1,235 @@
+version: '3.8'
+
+services:
+  # TerraFusion Application (Multiple instances for HA)
+  terrafusion-app-1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: terrafusion-app-1
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://terrafusion:${DB_PASSWORD}@postgres:5432/terrafusion_prod
+      - REDIS_URL=redis://redis:6379
+      - SESSION_SECRET=${SESSION_SECRET}
+      - JWT_SECRET=${JWT_SECRET}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - MAPBOX_ACCESS_TOKEN=${MAPBOX_ACCESS_TOKEN}
+      - INSTANCE_ID=app-1
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - app-logs:/app/logs
+      - app-uploads:/app/uploads
+      - app-backups:/app/backups
+    networks:
+      - terrafusion-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  terrafusion-app-2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: terrafusion-app-2
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://terrafusion:${DB_PASSWORD}@postgres:5432/terrafusion_prod
+      - REDIS_URL=redis://redis:6379
+      - SESSION_SECRET=${SESSION_SECRET}
+      - JWT_SECRET=${JWT_SECRET}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - MAPBOX_ACCESS_TOKEN=${MAPBOX_ACCESS_TOKEN}
+      - INSTANCE_ID=app-2
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - app-logs:/app/logs
+      - app-uploads:/app/uploads
+      - app-backups:/app/backups
+    networks:
+      - terrafusion-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # PostgreSQL Database with High Availability
+  postgres:
+    image: postgres:15-alpine
+    container_name: terrafusion-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=terrafusion_prod
+      - POSTGRES_USER=terrafusion
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./scripts/production/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+      - postgres-backups:/backups
+    networks:
+      - terrafusion-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U terrafusion -d terrafusion_prod"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    command: [
+      "postgres",
+      "-c", "shared_preload_libraries=pg_stat_statements",
+      "-c", "pg_stat_statements.max=10000",
+      "-c", "pg_stat_statements.track=all",
+      "-c", "max_connections=200",
+      "-c", "shared_buffers=256MB",
+      "-c", "effective_cache_size=1GB",
+      "-c", "work_mem=4MB",
+      "-c", "maintenance_work_mem=64MB",
+      "-c", "checkpoint_completion_target=0.9",
+      "-c", "wal_buffers=16MB",
+      "-c", "default_statistics_target=100"
+    ]
+
+  # Redis for Session Storage and Caching
+  redis:
+    image: redis:7-alpine
+    container_name: terrafusion-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis-data:/data
+    networks:
+      - terrafusion-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  # Nginx Load Balancer and Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: terrafusion-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./config/nginx/terrafusion.conf:/etc/nginx/conf.d/default.conf:ro
+      - nginx-logs:/var/log/nginx
+      - ssl-certs:/etc/nginx/ssl:ro
+    depends_on:
+      - terrafusion-app-1
+      - terrafusion-app-2
+    networks:
+      - terrafusion-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Prometheus for Metrics Collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: terrafusion-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus:/etc/prometheus:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - terrafusion-network
+
+  # Grafana for Monitoring Dashboard
+  grafana:
+    image: grafana/grafana:latest
+    container_name: terrafusion-grafana
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+    networks:
+      - terrafusion-network
+
+  # Backup Service
+  backup:
+    image: postgres:15-alpine
+    container_name: terrafusion-backup
+    restart: "no"
+    environment:
+      - POSTGRES_DB=terrafusion_prod
+      - POSTGRES_USER=terrafusion
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - PGPASSWORD=${DB_PASSWORD}
+    volumes:
+      - postgres-backups:/backups
+      - ./scripts/production/backup.sh:/backup.sh:ro
+    depends_on:
+      - postgres
+    networks:
+      - terrafusion-network
+    entrypoint: ["/backup.sh"]
+
+volumes:
+  postgres-data:
+    driver: local
+  postgres-backups:
+    driver: local
+  redis-data:
+    driver: local
+  app-logs:
+    driver: local
+  app-uploads:
+    driver: local
+  app-backups:
+    driver: local
+  nginx-logs:
+    driver: local
+  ssl-certs:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+networks:
+  terrafusion-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16 

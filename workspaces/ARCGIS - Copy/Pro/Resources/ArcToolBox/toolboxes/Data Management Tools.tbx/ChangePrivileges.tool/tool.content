@@ -1,0 +1,120 @@
+{
+    "type": "FunctionTool",
+    "guid": "{7d3a9b5c-9b32-4da2-a0ac-6c95e9f24d15}",
+    "displayname": "$rc:title",
+    "helpcontent": "3150002",
+    "description": "$rc:description",
+    "product": "200",
+    "attributes": [
+        "block_add_to_map"
+    ],
+    "params": {
+        "in_dataset": {
+            "displayname": "$rc:in_dataset.title",
+            "datatype": {
+                "type": "GPMultiValue",
+                "datatype": {
+                    "type": "GPComposite",
+                    "datatypes": [
+                        {
+                            "type": "GPLayer"
+                        },
+                        {
+                            "type": "GPTableView"
+                        },
+                        {
+                            "type": "DEDatasetType"
+                        },
+                        {
+                            "type": "DEAddressLocator"
+                        }
+                    ]
+                }
+            },
+            "description": "$rc:in_dataset.descr"
+        },
+        "user": {
+            "displayname": "$rc:user.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:user.descr"
+        },
+        "View": {
+            "type": "optional",
+            "displayname": "$rc:view.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "AS_IS",
+                        "code": "$rc:view.domain.AS_IS"
+                    },
+                    {
+                        "value": "GRANT",
+                        "code": "$rc:view.domain.GRANT"
+                    },
+                    {
+                        "value": "REVOKE",
+                        "code": "$rc:view.domain.REVOKE"
+                    }
+                ]
+            },
+            "description": "$rc:view.descr"
+        },
+        "Edit": {
+            "type": "optional",
+            "displayname": "$rc:edit.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "AS_IS",
+                        "code": "$rc:edit.domain.AS_IS"
+                    },
+                    {
+                        "value": "GRANT",
+                        "code": "$rc:edit.domain.GRANT"
+                    },
+                    {
+                        "value": "REVOKE",
+                        "code": "$rc:edit.domain.REVOKE"
+                    }
+                ]
+            },
+            "description": "$rc:edit.descr"
+        },
+        "out_dataset": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_dataset.title",
+            "datatype": {
+                "type": "GPComposite",
+                "datatypes": [
+                    {
+                        "type": "GPLayer"
+                    },
+                    {
+                        "type": "GPTableView"
+                    },
+                    {
+                        "type": "DEDatasetType"
+                    }
+                ]
+            },
+            "depends": [
+                "in_dataset"
+            ],
+            "addtomap": "false"
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

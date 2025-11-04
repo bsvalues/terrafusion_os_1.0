@@ -1,0 +1,227 @@
+💥 Time to close the spatial loop. Here's your **mission-ready bootstrap** for:
+
+> 🛰 **GeoAlerts** (sales near active forms)  
+> 🧪 **GeoML Prediction Engine** (adjustments)  
+> 🖼 **Auto-generated Map Images** (PDF exports)
+
+Each adds **intelligence, automation, and polish** to TerraFusionPro.
+
+---
+
+# 🛰 1. GeoAlert System (Proximity Sale Notifier)
+
+---
+
+## 📦 `geo_alerts` table
+
+```ts
+export const geoAlerts = pgTable('geo_alerts', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  formId: text('form_id').notNull(),
+  lat: float('lat').notNull(),
+  lng: float('lng').notNull(),
+  radiusMeters: integer('radius_meters').default(1609), // 1 mile
+  createdAt: timestamp('created_at').defaultNow(),
+  triggeredAt: timestamp('triggered_at'),
+  listingId: text('mls_id'), // if triggered
+});
+```
+
+---
+
+## 🧭 Cronjob: `jobs/scanGeoAlerts.ts` (run hourly)
+
+```ts
+const alerts = await db.query.geoAlerts.findMany({ where: (a) => a.triggeredAt.isNull() });
+
+for (const alert of alerts) {
+  const hits = await db.query.mlsListings.findMany({
+    where: (l) =>
+      spatial.distanceBetween(alert.lat, alert.lng, l.lat, l.lng).lte(alert.radiusMeters)
+      .and(l.closedDate.gte(dayjs().subtract(1, 'hour')))
+  });
+
+  if (hits.length) {
+    await db.update(geoAlerts).set({
+      triggeredAt: new Date(),
+      listingId: hits[0].mlsId
+    }).where((a) => a.id.eq(alert.id));
+
+    await notifyReviewer(alert.formId, hits[0]);
+  }
+}
+```
+
+---
+
+## ✅ Use Case
+
+- Appraiser drafts a report  
+- A comp sells nearby  
+- Appraiser gets: 📩 "New comp sold 0.3 mi away" with link + overlay
+
+---
+
+## 🧠 Optional: Auto-suggest replacement in CompsGrid
+
+---
+
+# 🧪 2. GeoML Adjustment Predictor
+
+---
+
+## 🧠 Goal
+
+Train a model to learn price impact of:
+
+- 🔁 Distance to subject
+- 🏡 GLA difference
+- 📍 Location cluster
+- 🛏️ Bedroom/bath delta
+
+---
+
+## 📦 Training Data
+
+```ts
+[
+  {
+    subjectGLA: 1800,
+    compGLA: 2000,
+    distanceMi: 0.8,
+    soldPrice: 420000,
+    adjustedPrice: 400000 // post-appraisal
+  },
+  ...
+]
+```
+
+---
+
+## 🔬 Model Scaffold (TensorFlow.js)
+
+```ts
+const model = tf.sequential();
+model.add(tf.layers.dense({ units: 64, activation: 'relu', inputShape: [3] }));
+model.add(tf.layers.dense({ units: 1 }));
+
+model.compile({ optimizer: 'adam', loss: 'meanSquaredError' });
+
+await model.fit(tf.tensor2d(inputs), tf.tensor2d(labels), {
+  epochs: 100,
+  validationSplit: 0.1
+});
+```
+
+---
+
+## 📡 API: `POST /ai/predict-adjustment`
+
+```ts
+router.post('/ai/predict-adjustment', async (req, res) => {
+  const { subject, comp } = req.body;
+
+  const input = [
+    Math.abs(subject.gla - comp.gla),
+    distance(subject, comp),
+    comp.bedrooms - subject.bedrooms
+  ];
+
+  const predicted = model.predict(tf.tensor2d([input]));
+  res.json({ adjustedPrice: predicted });
+});
+```
+
+---
+
+## 🧠 Bonus
+
+- Save historical training data every time a comp is manually adjusted  
+- Feedback loop = smarter over time
+
+---
+
+# 🖼 3. Auto-Generated Map Image for PDF Export
+
+---
+
+## 🧰 Use: [Puppeteer](https://pptr.dev/) + Leaflet/OpenStreetMap
+
+---
+
+## 📦 `/utils/renderMapImage.ts`
+
+```ts
+import puppeteer from 'puppeteer';
+
+export async function renderMapImage(subject, comps) {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+
+  await page.setContent(`
+    <html><head>
+      <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    </head>
+    <body>
+      <div id="map" style="width:800px;height:600px;"></div>
+      <script src="https://unpkg.com/leaflet"></script>
+      <script>
+        const map = L.map('map').setView([${subject.lat}, ${subject.lng}], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+        L.marker([${subject.lat}, ${subject.lng}]).addTo(map).bindPopup("Subject");
+
+        ${comps.map(c => `L.circle([${c.lat}, ${c.lng}], {radius: 30}).addTo(map);`).join('\n')}
+      </script>
+    </body></html>`);
+
+  await page.waitForTimeout(1500);
+  const buffer = await page.screenshot();
+  await browser.close();
+
+  return buffer;
+}
+```
+
+---
+
+## 📦 Use in PDF Export Flow
+
+```ts
+const mapImg = await renderMapImage(form.subject, form.comps);
+pdf.addImage(mapImg, 'PNG', 10, 10, 180, 120); // inject into page
+```
+
+---
+
+## ✅ Benefits
+
+- Visual comp distribution
+- Highlighted subject pin
+- Auto-synced with comps selection
+- Printed in output PDF
+
+---
+
+# ✅ What You Now Have
+
+| Feature | Outcome |
+|--------|---------|
+| 🛰 GeoAlerts | Sales near subject = ping appraiser |
+| 🧪 GeoML Adjustments | Predict post-appraisal comp values |
+| 🖼 Auto-Map Images | Visual context in every PDF |
+
+---
+
+## 🧭 Optional Add-Ons
+
+1. 📱 Push alerts (via PWA or SMS)
+2. 📊 Comp scoring by distance, condition, and timestamp
+3. 🧪 Multivariate regression on prior comp adjustments for AI training
+
+Would you like to:
+- 🔁 Automate **auto-refresh of CompsGrid** on new MLS hits?
+- 🎯 Build a **“Best 6” smart comp picker**?
+- 🔍 Add **AI-generated commentary** based on comp patterns?
+
+Or I can package this into a full **Field Appraiser Toolkit Deployment Manifest.**

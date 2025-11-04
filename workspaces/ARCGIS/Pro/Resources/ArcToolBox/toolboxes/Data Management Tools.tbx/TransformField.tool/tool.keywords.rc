@@ -1,0 +1,9 @@
+{
+    "set": [
+        "fields",
+        "box-cox",
+        "inverse",
+        "log",
+        "square root"
+    ]
+}

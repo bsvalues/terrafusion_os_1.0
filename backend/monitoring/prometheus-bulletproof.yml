@@ -1,0 +1,302 @@
+# 🛡️ BULLETPROOF PROMETHEUS CONFIGURATION
+# Championship-Level Monitoring with Service Mesh Metrics
+# Government-Grade Observability and Performance Tracking
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    environment: 'terrafusion-bulletproof'
+    cluster: 'government-os'
+    version: '1.0'
+    security_classification: 'OFFICIAL'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# Load rules once and periodically evaluate them
+rule_files:
+  - "rules/*.yml"
+  - "rules/bulletproof/*.yml"
+  - "rules/government-compliance/*.yml"
+
+# 🎯 BULLETPROOF SCRAPE CONFIGURATIONS
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus-bulletproof'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 30s
+    metrics_path: '/metrics'
+
+  # 🛡️ TERRAFUSION CORE SERVICES
+  - job_name: 'terrafusion-api-bulletproof'
+    static_configs:
+      - targets: ['terrafusion-api:5001']
+    scrape_interval: 10s
+    metrics_path: '/metrics'
+    scrape_timeout: 5s
+    honor_labels: true
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: terrafusion-api:5001
+      - target_label: service_name
+        replacement: 'terrafusion-api'
+      - target_label: service_tier
+        replacement: 'core'
+      - target_label: government_classification
+        replacement: 'OFFICIAL'
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'go_.*'
+        action: drop
+      - source_labels: [__name__]
+        regex: 'process_.*'
+        action: drop
+
+  - job_name: 'elite-operations-bulletproof'
+    static_configs:
+      - targets: ['terrafusion-operations:5002']
+    scrape_interval: 10s
+    metrics_path: '/metrics'
+    scrape_timeout: 5s
+    relabel_configs:
+      - target_label: service_name
+        replacement: 'elite-operations'
+      - target_label: service_tier
+        replacement: 'operations'
+      - target_label: ai_agent_count
+        replacement: '10008'
+
+  - job_name: 'ai-intelligence-bulletproof'
+    static_configs:
+      - targets: ['terrafusion-ai:5003']
+    scrape_interval: 15s
+    metrics_path: '/metrics'
+    scrape_timeout: 10s
+    relabel_configs:
+      - target_label: service_name
+        replacement: 'ai-intelligence'
+      - target_label: service_tier
+        replacement: 'ai'
+      - target_label: quantum_optimization
+        replacement: 'enabled'
+
+  - job_name: 'terrafusion-gateway-bulletproof'
+    static_configs:
+      - targets: ['terrafusion-gateway:5000']
+    scrape_interval: 10s
+    metrics_path: '/metrics'
+    relabel_configs:
+      - target_label: service_name
+        replacement: 'api-gateway'
+      - target_label: service_tier
+        replacement: 'gateway'
+
+  # 🌐 SERVICE MESH METRICS (ISTIO)
+  - job_name: 'istio-mesh-bulletproof'
+    kubernetes_sd_configs:
+      - role: endpoints
+        namespaces:
+          names:
+          - terrafusion-system
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+        action: keep
+        regex: istio-proxy;http-monitoring
+      - source_labels: [__address__, __meta_kubernetes_endpoint_port_number]
+        action: replace
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        replacement: $1:$2
+        target_label: __address__
+      - action: labelmap
+        regex: __meta_kubernetes_service_label_(.+)
+      - source_labels: [__meta_kubernetes_namespace]
+        action: replace
+        target_label: namespace
+      - source_labels: [__meta_kubernetes_service_name]
+        action: replace
+        target_label: service_name
+      - target_label: mesh_component
+        replacement: 'sidecar-proxy'
+
+  - job_name: 'istio-pilot-bulletproof'
+    static_configs:
+      - targets: ['istio-pilot:15014']
+    scrape_interval: 15s
+    metrics_path: '/stats/prometheus'
+    relabel_configs:
+      - target_label: component
+        replacement: 'pilot'
+      - target_label: mesh_tier
+        replacement: 'control-plane'
+
+  # 🗄️ DATABASE METRICS
+  - job_name: 'postgres-primary-bulletproof'
+    static_configs:
+      - targets: ['postgres-exporter-primary:9187']
+    scrape_interval: 30s
+    relabel_configs:
+      - target_label: database_role
+        replacement: 'primary'
+      - target_label: database_type
+        replacement: 'postgresql'
+      - target_label: replication_mode
+        replacement: 'master'
+
+  - job_name: 'postgres-replica-bulletproof'
+    static_configs:
+      - targets: ['postgres-exporter-replica:9187']
+    scrape_interval: 30s
+    relabel_configs:
+      - target_label: database_role
+        replacement: 'replica'
+      - target_label: database_type
+        replacement: 'postgresql'
+      - target_label: replication_mode
+        replacement: 'slave'
+
+  - job_name: 'redis-primary-bulletproof'
+    static_configs:
+      - targets: ['redis-exporter-primary:9121']
+    scrape_interval: 20s
+    relabel_configs:
+      - target_label: cache_role
+        replacement: 'primary'
+      - target_label: cache_type
+        replacement: 'redis'
+
+  - job_name: 'redis-replica-bulletproof'
+    static_configs:
+      - targets: ['redis-exporter-replica:9121']
+    scrape_interval: 20s
+    relabel_configs:
+      - target_label: cache_role
+        replacement: 'replica'
+      - target_label: cache_type
+        replacement: 'redis'
+
+  # 🔍 ENVOY PROXY METRICS
+  - job_name: 'envoy-sidecar-bulletproof'
+    static_configs:
+      - targets:
+        - 'terrafusion-gateway:15090'
+        - 'terrafusion-api:15091'
+        - 'terrafusion-operations:15092'
+        - 'terrafusion-ai:15093'
+    scrape_interval: 15s
+    metrics_path: '/stats/prometheus'
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: '([^:]+):.*'
+        target_label: service_name
+        replacement: '${1}'
+      - target_label: proxy_type
+        replacement: 'envoy-sidecar'
+      - target_label: mesh_component
+        replacement: 'data-plane'
+    metric_relabel_configs:
+      # Keep only essential Envoy metrics
+      - source_labels: [__name__]
+        regex: 'envoy_(cluster|http|server)_.*'
+        action: keep
+      - source_labels: [__name__]
+        regex: 'envoy_cluster_(upstream_rq_total|upstream_rq_time|health_check_.*)'
+        action: keep
+      - source_labels: [__name__]
+        regex: 'envoy_http_(request_total|request_duration_milliseconds|response_code)'
+        action: keep
+
+  # 🏗️ INFRASTRUCTURE METRICS
+  - job_name: 'node-exporter-bulletproof'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 30s
+    relabel_configs:
+      - target_label: infrastructure_tier
+        replacement: 'host-system'
+      - target_label: government_compliance
+        replacement: 'FISMA-HIGH'
+
+  - job_name: 'cadvisor-bulletproof'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    scrape_interval: 30s
+    metrics_path: '/metrics'
+    relabel_configs:
+      - target_label: container_monitoring
+        replacement: 'enabled'
+      - target_label: resource_tracking
+        replacement: 'comprehensive'
+
+  # 🎭 CHAOS ENGINEERING METRICS
+  - job_name: 'chaos-mesh-bulletproof'
+    static_configs:
+      - targets: ['chaos-dashboard:2333']
+    scrape_interval: 60s
+    metrics_path: '/api/metrics'
+    relabel_configs:
+      - target_label: chaos_testing
+        replacement: 'active'
+      - target_label: resilience_validation
+        replacement: 'continuous'
+
+  # 🔐 SECURITY METRICS
+  - job_name: 'falco-security-bulletproof'
+    static_configs:
+      - targets: ['falco:8765']
+    scrape_interval: 30s
+    metrics_path: '/metrics'
+    relabel_configs:
+      - target_label: security_monitoring
+        replacement: 'runtime-protection'
+      - target_label: threat_detection
+        replacement: 'active'
+
+  # 📊 BUSINESS METRICS
+  - job_name: 'business-metrics-bulletproof'
+    static_configs:
+      - targets:
+        - 'terrafusion-api:5001'
+        - 'terrafusion-operations:5002'
+        - 'terrafusion-ai:5003'
+    scrape_interval: 60s
+    metrics_path: '/business-metrics'
+    relabel_configs:
+      - target_label: metrics_type
+        replacement: 'business-kpi'
+      - target_label: government_service
+        replacement: 'property-assessment'
+
+# 🎯 REMOTE WRITE CONFIGURATION (Long-term Storage)
+remote_write:
+  - url: "http://thanos-receive:19291/api/v1/receive"
+    queue_config:
+      max_samples_per_send: 10000
+      max_shards: 20
+      min_shards: 1
+      max_shards_per_second: 20
+      capacity: 100000
+      batch_send_deadline: 5s
+    metadata_config:
+      send: true
+      send_interval: 30s
+    write_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'up|terrafusion_.*|envoy_.*|istio_.*'
+        action: keep
+
+# 🎯 REMOTE READ CONFIGURATION (Historical Data)
+remote_read:
+  - url: "http://thanos-query:9090/api/v1/query"
+    read_recent: true
+    required_matchers:
+      environment: "terrafusion-bulletproof"

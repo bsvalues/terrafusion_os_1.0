@@ -1,0 +1,200 @@
+{
+    "type": "FunctionTool",
+    "guid": "{efa47220-c416-4320-b730-174c69bdc249}",
+    "displayname": "$rc:title",
+    "helpcontent": "3180012",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "database_platform": {
+            "displayname": "$rc:database_platform.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "SQL_SERVER",
+                        "code": "$rc:database_platform.domain.SQL_SERVER"
+                    },
+                    {
+                        "value": "ORACLE",
+                        "code": "$rc:database_platform.domain.ORACLE"
+                    },
+                    {
+                        "value": "DB2",
+                        "code": "$rc:database_platform.domain.DB2"
+                    },
+                    {
+                        "value": "POSTGRESQL",
+                        "code": "$rc:database_platform.domain.POSTGRESQL"
+                    },
+                    {
+                        "value": "TERADATA",
+                        "code": "$rc:database_platform.domain.TERADATA"
+                    },
+                    {
+                        "value": "SAP HANA",
+                        "code": "$rc:database_platform.domain.SAP HANA"
+                    },
+                    {
+                        "value": "DAMENG",
+                        "code": "$rc:database_platform.domain.DAMENG"
+                    }
+                ]
+            },
+            "description": "$rc:database_platform.descr"
+        },
+        "instance": {
+            "displayname": "$rc:instance.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:instance.descr"
+        },
+        "account_authentication": {
+            "type": "optional",
+            "displayname": "$rc:account_authentication.title",
+            "datatype": {
+                "type": "GPBoolean"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "type": "GPBoolean",
+                        "value": "true",
+                        "code": "DATABASE_AUTH"
+                    },
+                    {
+                        "type": "GPBoolean",
+                        "value": "false",
+                        "code": "OPERATING_SYSTEM_AUTH"
+                    }
+                ]
+            },
+            "value": "true",
+            "description": "$rc:account_authentication.descr"
+        },
+        "username": {
+            "type": "optional",
+            "displayname": "$rc:username.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:username.descr"
+        },
+        "password": {
+            "type": "optional",
+            "displayname": "$rc:password.title",
+            "datatype": {
+                "type": "GPEncryptedString"
+            },
+            "description": "$rc:password.descr"
+        },
+        "database": {
+            "type": "optional",
+            "displayname": "$rc:database.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:database.descr"
+        },
+        "object_name": {
+            "type": "optional",
+            "displayname": "$rc:object_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:object_name.descr"
+        },
+        "data_type": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:data_type.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:data_type.descr"
+        },
+        "feature_dataset": {
+            "enabled": "false",
+            "type": "optional",
+            "displayname": "$rc:feature_dataset.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:feature_dataset.descr"
+        },
+        "schema": {
+            "type": "optional",
+            "displayname": "$rc:schema.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:schema.descr"
+        },
+        "version_type": {
+            "type": "optional",
+            "displayname": "$rc:version_type.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "TRANSACTIONAL",
+                        "code": "$rc:version_type.domain.TRANSACTIONAL"
+                    },
+                    {
+                        "value": "HISTORICAL",
+                        "code": "$rc:version_type.domain.HISTORICAL"
+                    },
+                    {
+                        "value": "POINT_IN_TIME",
+                        "code": "$rc:version_type.domain.POINT_IN_TIME"
+                    },
+                    {
+                        "value": "BRANCH",
+                        "code": "$rc:version_type.domain.BRANCH"
+                    }
+                ]
+            },
+            "value": "TRANSACTIONAL",
+            "description": "$rc:version_type.descr"
+        },
+        "version": {
+            "type": "optional",
+            "displayname": "$rc:version.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:version.descr"
+        },
+        "date": {
+            "type": "optional",
+            "displayname": "$rc:date.title",
+            "category": "$rc:params.category1",
+            "datatype": {
+                "type": "GPDate"
+            },
+            "description": "$rc:date.descr"
+        },
+        "out_connection_string": {
+            "type": "derived",
+            "direction": "out",
+            "displayname": "$rc:out_connection_string.title",
+            "datatype": {
+                "type": "GPString"
+            }
+        }
+    },
+    "environments": [
+        "workspace"
+    ]
+}

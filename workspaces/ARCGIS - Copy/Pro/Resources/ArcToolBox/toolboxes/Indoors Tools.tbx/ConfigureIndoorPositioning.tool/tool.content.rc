@@ -1,0 +1,16 @@
+{
+    "map": {
+        "api_key.descr": "A unique value in the form of a GUID used by Indoors mobile apps to enable Indoo.rs indoor positioning. The API key is provided by Indoo.rs.",
+        "api_key.title": "API Key",
+        "building_id.descr": "A unique alphanumerical value used by Indoors mobile apps to link the site in the mobile map package to the Indoo.rs indoor positioning survey. The building ID is provided by Indoo.rs.",
+        "building_id.title": "Building ID",
+        "description": "Writes indoor positioning system configuration information to an ArcGIS Indoors geodatabase. The values are used by ArcGIS Indoors for iOS and ArcGIS Indoors for Android.",
+        "encryption_key.descr": "<xdoc><p>The key used by the tool and Indoors mobile apps to encrypt or unencrypt the <span class=\"esri_uicontrol\">API Key</span> parameter (api_key in Python) value.</p></xdoc>",
+        "encryption_key.title": "Encryption Key",
+        "in_geodatabase.descr": "The Indoors file or enterprise geodatabase for which IPS configuration information will be generated.",
+        "in_geodatabase.title": "Input Geodatabase",
+        "summary": "<xdoc><p>Writes indoor positioning system configuration information to an ArcGIS Indoors geodatabase. The values are used by ArcGIS Indoors for iOS and ArcGIS Indoors for Android.</p><p>The tool is only necessary if your organization is using the Indoo.rs positioning system.<note type=\"legacy\"/><p group=\"note\">This is a deprecated tool. This functionality has been replaced by the Enable Indoor Positioning tool in the Indoor Positioning toolbox to configure an indoor positioning system instead.</p></p></xdoc>",
+        "title": "Configure Indoor Positioning",
+        "updated_gdb.title": "Updated Geodatabase"
+    }
+}

@@ -1,0 +1,171 @@
+{
+    "type": "FunctionTool",
+    "guid": "{f4036bce-1a88-4718-8255-8bc555c1ff41}",
+    "displayname": "$rc:title",
+    "helpcontent": "3180011",
+    "description": "$rc:description",
+    "product": "100",
+    "params": {
+        "out_folder_path": {
+            "display_order": "0",
+            "displayname": "$rc:out_folder_path.title",
+            "datatype": {
+                "type": "DEFolder"
+            },
+            "description": "$rc:out_folder_path.descr"
+        },
+        "out_name": {
+            "display_order": "1",
+            "displayname": "$rc:out_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:out_name.descr"
+        },
+        "service_provider": {
+            "display_order": "2",
+            "displayname": "$rc:service_provider.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain",
+                "items": [
+                    {
+                        "value": "AZURE",
+                        "code": "$rc:service_provider.domain.AZURE"
+                    },
+                    {
+                        "value": "AMAZON",
+                        "code": "$rc:service_provider.domain.AMAZON"
+                    },
+                    {
+                        "value": "GOOGLE",
+                        "code": "$rc:service_provider.domain.GOOGLE"
+                    },
+                    {
+                        "value": "ALIBABA",
+                        "code": "$rc:service_provider.domain.ALIBABA"
+                    },
+                    {
+                        "value": "WEBHDFS",
+                        "code": "$rc:service_provider.domain.WEBHDFS"
+                    },
+                    {
+                        "value": "MINIO",
+                        "code": "$rc:service_provider.domain.MINIO"
+                    },
+                    {
+                        "value": "AZUREDATALAKE",
+                        "code": "$rc:service_provider.domain.AZUREDATALAKE"
+                    },
+                    {
+                        "value": "OZONE",
+                        "code": "$rc:service_provider.domain.OZONE"
+                    }
+                ]
+            },
+            "description": "$rc:service_provider.descr"
+        },
+        "bucket_name": {
+            "display_order": "6",
+            "displayname": "$rc:bucket_name.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:bucket_name.descr"
+        },
+        "access_key_id": {
+            "type": "optional",
+            "display_order": "4",
+            "displayname": "$rc:access_key_id.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:access_key_id.descr"
+        },
+        "secret_access_key": {
+            "type": "optional",
+            "display_order": "5",
+            "displayname": "$rc:secret_access_key.title",
+            "datatype": {
+                "type": "GPEncryptedString"
+            },
+            "description": "$rc:secret_access_key.descr"
+        },
+        "region": {
+            "type": "optional",
+            "display_order": "8",
+            "displayname": "$rc:region.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:region.descr"
+        },
+        "end_point": {
+            "type": "optional",
+            "display_order": "9",
+            "displayname": "$rc:end_point.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:end_point.descr"
+        },
+        "config_options": {
+            "type": "optional",
+            "display_order": "10",
+            "control_guid": "{F604736F-06D8-47CD-AC15-7055F7FCDAC0}",
+            "displayname": "$rc:config_options.title",
+            "datatype": {
+                "type": "GPValueTable",
+                "datatypes": [
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:config_options.dt.title1"
+                    },
+                    {
+                        "type": "GPString",
+                        "displayname": "$rc:config_options.dt.title2"
+                    }
+                ]
+            },
+            "description": "$rc:config_options.descr"
+        },
+        "out_connection": {
+            "type": "derived",
+            "direction": "out",
+            "display_order": "11",
+            "displayname": "$rc:out_connection.title",
+            "datatype": {
+                "type": "DEFile"
+            }
+        },
+        "folder": {
+            "type": "optional",
+            "display_order": "7",
+            "displayname": "$rc:folder.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "description": "$rc:folder.descr"
+        },
+        "authentication": {
+            "type": "optional",
+            "display_order": "3",
+            "displayname": "$rc:authentication.title",
+            "datatype": {
+                "type": "GPString"
+            },
+            "domain": {
+                "type": "GPCodedValueDomain"
+            },
+            "description": "$rc:authentication.descr"
+        }
+    }
+}

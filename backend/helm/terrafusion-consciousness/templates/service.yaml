@@ -1,0 +1,38 @@
+{{/*
+============================================================================
+TerraFusion Consciousness Engine - Service Template
+Government. Transcended. - AI Agent Communication Service (Port 3004)
+============================================================================
+*/}}
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "terrafusion-consciousness.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "terrafusion-consciousness.labels" . | nindent 4 }}
+    terrafusion.io/component: consciousness
+    terrafusion.io/tier: ai
+  annotations:
+    {{- toYaml .Values.service.annotations | nindent 4 }}
+    description: "TerraFusion Consciousness Engine - 50,000 AI Agents"
+    compliance: "FISMA-High"
+    ai-agents: "50000"
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 8080
+      targetPort: websocket
+      protocol: TCP
+      name: websocket
+  selector:
+    {{- include "terrafusion-consciousness.selectorLabels" . | nindent 4 }}
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 3600  # 1 hour for AI agent sessions

@@ -1,0 +1,13 @@
+{
+    "set": [
+        "airports",
+        "clearance",
+        "generate",
+        "identification",
+        "intersection",
+        "ois",
+        "obstacles",
+        "papi",
+        "surface"
+    ]
+}

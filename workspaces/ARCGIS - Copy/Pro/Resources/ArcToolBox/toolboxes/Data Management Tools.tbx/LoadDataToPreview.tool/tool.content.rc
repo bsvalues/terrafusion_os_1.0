@@ -1,0 +1,11 @@
+{
+    "map": {
+        "description": "Uses a Data Loading Workspace to load data from a source to a preview geodatabase. Use this tool to preview the results before loading data to the target schema.",
+        "in_workbook.descr": "The path to the Data Reference Workbook defining the data source, target, and mapping workbook paths.",
+        "in_workbook.title": "Data Reference Workbook",
+        "out_datasets.title": "Output Datasets",
+        "out_folder.descr": "The output folder where the preview geodatabase will be created.",
+        "out_folder.title": "Preview Output Folder",
+        "title": "Load Data To Preview"
+    }
+}

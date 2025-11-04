@@ -1,0 +1,21 @@
+{
+    "map": {
+        "attribute_fields.descr": "<xdoc><p>Additional attribute fields from the input table to be included in the output table. If you want to output a feature class, add the <span class=\"esri_fieldname\">Shape</span> field.</p></xdoc>",
+        "attribute_fields.title": "Attribute Fields",
+        "description": "Switch  data stored in fields or columns to rows in a new table or feature class.",
+        "in_field.descr": "<xdoc><p>The fields or columns containing data values in the input table that need to be transposed.</p><p>Depending on your needs, you can select multiple fields to be transposed. The value here defines what the field name will be in the output. When not specified, the value is the same as the field name by default. However, you can also specify your own value. For example, if the field names to be transposed are <span class=\"esri_fieldname\">Pop1991</span>, <span class=\"esri_fieldname\">Pop1992</span>, and so on, by default, the values for these fields in the output will be the same (<span class=\"esri_fieldname\">Pop1991</span>, <span class=\"esri_fieldname\">Pop1992</span>, and so forth). However, you can choose to specify your own values such as 1991 and 1992.</p></xdoc>",
+        "in_field.dt.title1": "Field",
+        "in_field.dt.title2": "Value",
+        "in_field.title": "Fields To Transpose",
+        "in_table.descr": "The input feature class or table containing data value fields to be transposed.",
+        "in_table.title": "Input Table",
+        "in_transposed_field_name.descr": "The name of the field that will be created to store field names of the transposed fields. Any valid field name can be used.",
+        "in_transposed_field_name.title": "Transposed Field",
+        "in_value_field_name.descr": "The name of the field that will be created to store the corresponding values of the transposed fields. Any valid field name can be set, as long as it does not conflict with existing field names from the input table or feature class.",
+        "in_value_field_name.title": "Value Field",
+        "out_table.descr": "<xdoc><p>The output feature class or table. The output will contain a transposed field, a value field, and any number of specified attribute fields that need to be inherited from the input table.</p><p>By default the <span class=\"esri_uicontrol\">Output Table</span> is a table. The output will be a feature class when the <span class=\"esri_uicontrol\">Input Table</span> is a feature class and the <span class=\"esri_fieldname\">Shape</span> field is selected in the <span class=\"esri_uicontrol\">Attribute Fields</span> parameter.</p></xdoc>",
+        "out_table.title": "Output Table",
+        "summary": "<xdoc><p>Switch data stored in fields or columns to rows in a new table or feature class.</p><p>This tool is useful when your table or feature class stores values in field names (such as <span class=\"esri_fieldname\">Field1</span>, <span class=\"esri_fieldname\">Field2</span>, <span class=\"esri_fieldname\">Field3</span>) that you want to rotate so they&apos;re arranged in rows. It lets you switch the field names and the corresponding data values in the fields to rows.</p></xdoc>",
+        "title": "Transpose Fields"
+    }
+}

@@ -14,7 +14,7 @@ describe('Skeleton', () => {
     });
 
     it('applies custom className', () => {
-      const { container } = render(<Skeleton className="custom-skeleton" />);
+      const { container } = render(<Skeleton className='custom-skeleton' />);
 
       const skeleton = container.firstChild;
       expect(skeleton).toHaveClass('custom-skeleton');
@@ -30,11 +30,11 @@ describe('Skeleton', () => {
     });
 
     it('renders multiple skeletons', () => {
-      const { container} = render(
+      const { container } = render(
         <>
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-3/4" />
-          <Skeleton className="h-4 w-1/2" />
+          <Skeleton className='h-4 w-full' />
+          <Skeleton className='h-4 w-3/4' />
+          <Skeleton className='h-4 w-1/2' />
         </>
       );
 
@@ -43,7 +43,7 @@ describe('Skeleton', () => {
     });
 
     it('applies size classes correctly', () => {
-      const { container } = render(<Skeleton className="h-12 w-12" />);
+      const { container } = render(<Skeleton className='h-12 w-12' />);
 
       const skeleton = container.firstChild;
       expect(skeleton).toHaveClass('h-12');
@@ -53,21 +53,21 @@ describe('Skeleton', () => {
 
   describe('Shapes', () => {
     it('renders as rectangle by default', () => {
-      const { container } = render(<Skeleton className="h-4 w-32" />);
+      const { container } = render(<Skeleton className='h-4 w-32' />);
 
       const skeleton = container.firstChild;
       expect(skeleton).toHaveClass('rounded-md');
     });
 
     it('renders as circle with rounded-full', () => {
-      const { container } = render(<Skeleton className="h-12 w-12 rounded-full" />);
+      const { container } = render(<Skeleton className='h-12 w-12 rounded-full' />);
 
       const skeleton = container.firstChild;
       expect(skeleton).toHaveClass('rounded-full');
     });
 
     it('renders as square with equal dimensions', () => {
-      const { container } = render(<Skeleton className="h-16 w-16" />);
+      const { container } = render(<Skeleton className='h-16 w-16' />);
 
       const skeleton = container.firstChild;
       expect(skeleton).toHaveClass('h-16');
@@ -75,7 +75,7 @@ describe('Skeleton', () => {
     });
 
     it('renders with custom rounding', () => {
-      const { container } = render(<Skeleton className="rounded-lg" />);
+      const { container } = render(<Skeleton className='rounded-lg' />);
 
       const skeleton = container.firstChild;
       expect(skeleton).toHaveClass('rounded-lg');
@@ -84,9 +84,9 @@ describe('Skeleton', () => {
     it('renders text line shapes', () => {
       const { container } = render(
         <div>
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-5/6" />
-          <Skeleton className="h-4 w-3/4" />
+          <Skeleton className='h-4 w-full' />
+          <Skeleton className='h-4 w-5/6' />
+          <Skeleton className='h-4 w-3/4' />
         </div>
       );
 
@@ -95,7 +95,7 @@ describe('Skeleton', () => {
     });
 
     it('renders button shape', () => {
-      const { container } = render(<Skeleton className="h-10 w-24 rounded-md" />);
+      const { container } = render(<Skeleton className='h-10 w-24 rounded-md' />);
 
       const skeleton = container.firstChild;
       expect(skeleton).toHaveClass('h-10');
@@ -113,7 +113,7 @@ describe('Skeleton', () => {
     });
 
     it('animation can be customized via className', () => {
-      const { container } = render(<Skeleton className="animate-none" />);
+      const { container } = render(<Skeleton className='animate-none' />);
 
       const skeleton = container.firstChild;
       expect(skeleton).toHaveClass('animate-none');
@@ -122,9 +122,9 @@ describe('Skeleton', () => {
     it('maintains animation with multiple skeletons', () => {
       const { container } = render(
         <>
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-full" />
+          <Skeleton className='h-4 w-full' />
+          <Skeleton className='h-4 w-full' />
+          <Skeleton className='h-4 w-full' />
         </>
       );
 
@@ -138,11 +138,11 @@ describe('Skeleton', () => {
   describe('Composed Layouts', () => {
     it('renders card skeleton layout', () => {
       const { container } = render(
-        <div className="space-y-3">
-          <Skeleton className="h-48 w-full rounded-md" />
-          <Skeleton className="h-6 w-3/4" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-5/6" />
+        <div className='space-y-3'>
+          <Skeleton className='h-48 w-full rounded-md' />
+          <Skeleton className='h-6 w-3/4' />
+          <Skeleton className='h-4 w-full' />
+          <Skeleton className='h-4 w-5/6' />
         </div>
       );
 
@@ -152,11 +152,11 @@ describe('Skeleton', () => {
 
     it('renders list item skeleton layout', () => {
       const { container } = render(
-        <div className="flex gap-3">
-          <Skeleton className="h-12 w-12 rounded-full" />
-          <div className="flex-1 space-y-2">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-3 w-2/3" />
+        <div className='flex gap-3'>
+          <Skeleton className='h-12 w-12 rounded-full' />
+          <div className='flex-1 space-y-2'>
+            <Skeleton className='h-4 w-full' />
+            <Skeleton className='h-3 w-2/3' />
           </div>
         </div>
       );
@@ -167,11 +167,11 @@ describe('Skeleton', () => {
 
     it('renders header with avatar skeleton layout', () => {
       const { container } = render(
-        <div className="flex items-center gap-4">
-          <Skeleton className="h-12 w-12 rounded-full" />
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-32" />
-            <Skeleton className="h-3 w-24" />
+        <div className='flex items-center gap-4'>
+          <Skeleton className='h-12 w-12 rounded-full' />
+          <div className='space-y-2'>
+            <Skeleton className='h-4 w-32' />
+            <Skeleton className='h-3 w-24' />
           </div>
         </div>
       );
@@ -182,12 +182,12 @@ describe('Skeleton', () => {
 
     it('renders table row skeleton layout', () => {
       const { container } = render(
-        <div className="flex gap-4 items-center">
-          <Skeleton className="h-4 w-8" />
-          <Skeleton className="h-8 w-8 rounded-full" />
-          <Skeleton className="h-4 w-48" />
-          <Skeleton className="h-6 w-20" />
-          <Skeleton className="h-4 w-16" />
+        <div className='flex gap-4 items-center'>
+          <Skeleton className='h-4 w-8' />
+          <Skeleton className='h-8 w-8 rounded-full' />
+          <Skeleton className='h-4 w-48' />
+          <Skeleton className='h-6 w-20' />
+          <Skeleton className='h-4 w-16' />
         </div>
       );
 
@@ -197,19 +197,19 @@ describe('Skeleton', () => {
 
     it('renders profile skeleton layout', () => {
       const { container } = render(
-        <div className="space-y-6">
-          <Skeleton className="h-48 w-full rounded-none" />
-          <div className="flex items-start gap-4">
-            <Skeleton className="h-24 w-24 rounded-full" />
-            <div className="flex-1 space-y-2">
-              <Skeleton className="h-8 w-48" />
-              <Skeleton className="h-4 w-32" />
+        <div className='space-y-6'>
+          <Skeleton className='h-48 w-full rounded-none' />
+          <div className='flex items-start gap-4'>
+            <Skeleton className='h-24 w-24 rounded-full' />
+            <div className='flex-1 space-y-2'>
+              <Skeleton className='h-8 w-48' />
+              <Skeleton className='h-4 w-32' />
             </div>
           </div>
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-11/12" />
-            <Skeleton className="h-4 w-3/4" />
+          <div className='space-y-2'>
+            <Skeleton className='h-4 w-full' />
+            <Skeleton className='h-4 w-11/12' />
+            <Skeleton className='h-4 w-3/4' />
           </div>
         </div>
       );
@@ -220,12 +220,12 @@ describe('Skeleton', () => {
 
     it('renders grid of card skeletons', () => {
       const { container } = render(
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className='grid gap-4 md:grid-cols-3'>
           {[1, 2, 3].map((i) => (
-            <div key={i} className="space-y-3">
-              <Skeleton className="h-48 w-full" />
-              <Skeleton className="h-6 w-3/4" />
-              <Skeleton className="h-4 w-full" />
+            <div key={i} className='space-y-3'>
+              <Skeleton className='h-48 w-full' />
+              <Skeleton className='h-6 w-3/4' />
+              <Skeleton className='h-4 w-full' />
             </div>
           ))}
         </div>
@@ -238,14 +238,14 @@ describe('Skeleton', () => {
 
   describe('Styling and Customization', () => {
     it('accepts custom background color', () => {
-      const { container } = render(<Skeleton className="bg-slate-200" />);
+      const { container } = render(<Skeleton className='bg-slate-200' />);
 
       const skeleton = container.firstChild;
       expect(skeleton).toHaveClass('bg-slate-200');
     });
 
     it('accepts custom dimensions', () => {
-      const { container } = render(<Skeleton className="h-20 w-40" />);
+      const { container } = render(<Skeleton className='h-20 w-40' />);
 
       const skeleton = container.firstChild;
       expect(skeleton).toHaveClass('h-20');
@@ -253,7 +253,7 @@ describe('Skeleton', () => {
     });
 
     it('accepts custom spacing', () => {
-      const { container } = render(<Skeleton className="m-4 p-2" />);
+      const { container } = render(<Skeleton className='m-4 p-2' />);
 
       const skeleton = container.firstChild;
       expect(skeleton).toHaveClass('m-4');
@@ -261,7 +261,7 @@ describe('Skeleton', () => {
     });
 
     it('supports responsive sizing', () => {
-      const { container } = render(<Skeleton className="h-12 md:h-16 lg:h-20" />);
+      const { container } = render(<Skeleton className='h-12 md:h-16 lg:h-20' />);
 
       const skeleton = container.firstChild;
       expect(skeleton).toHaveClass('h-12');
@@ -282,7 +282,7 @@ describe('Skeleton', () => {
       render(
         <div>
           <span>Loading...</span>
-          <Skeleton className="h-4 w-full" />
+          <Skeleton className='h-4 w-full' />
         </div>
       );
 
@@ -291,9 +291,9 @@ describe('Skeleton', () => {
 
     it('can be wrapped with loading announcement', () => {
       render(
-        <div role="status" aria-live="polite" aria-label="Loading content">
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-3/4" />
+        <div role='status' aria-live='polite' aria-label='Loading content'>
+          <Skeleton className='h-4 w-full' />
+          <Skeleton className='h-4 w-3/4' />
         </div>
       );
 
@@ -302,7 +302,7 @@ describe('Skeleton', () => {
     });
 
     it('has no accessibility violations (single skeleton)', async () => {
-      const { container } = render(<Skeleton className="h-4 w-32" />);
+      const { container } = render(<Skeleton className='h-4 w-32' />);
 
       const results = await axe(container);
       expect(results).toHaveNoViolations();
@@ -311,9 +311,9 @@ describe('Skeleton', () => {
     it('has no accessibility violations (multiple skeletons)', async () => {
       const { container } = render(
         <div>
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-5/6" />
-          <Skeleton className="h-4 w-3/4" />
+          <Skeleton className='h-4 w-full' />
+          <Skeleton className='h-4 w-5/6' />
+          <Skeleton className='h-4 w-3/4' />
         </div>
       );
 
@@ -322,7 +322,7 @@ describe('Skeleton', () => {
     });
 
     it('has no accessibility violations (circle skeleton)', async () => {
-      const { container } = render(<Skeleton className="h-12 w-12 rounded-full" />);
+      const { container } = render(<Skeleton className='h-12 w-12 rounded-full' />);
 
       const results = await axe(container);
       expect(results).toHaveNoViolations();
@@ -330,11 +330,11 @@ describe('Skeleton', () => {
 
     it('has no accessibility violations (composed layout)', async () => {
       const { container } = render(
-        <div className="flex gap-3">
-          <Skeleton className="h-12 w-12 rounded-full" />
-          <div className="flex-1 space-y-2">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-3 w-2/3" />
+        <div className='flex gap-3'>
+          <Skeleton className='h-12 w-12 rounded-full' />
+          <div className='flex-1 space-y-2'>
+            <Skeleton className='h-4 w-full' />
+            <Skeleton className='h-3 w-2/3' />
           </div>
         </div>
       );
@@ -345,11 +345,11 @@ describe('Skeleton', () => {
 
     it('has no accessibility violations (card skeleton)', async () => {
       const { container } = render(
-        <div className="space-y-3">
-          <Skeleton className="h-48 w-full rounded-md" />
-          <Skeleton className="h-6 w-3/4" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-5/6" />
+        <div className='space-y-3'>
+          <Skeleton className='h-48 w-full rounded-md' />
+          <Skeleton className='h-6 w-3/4' />
+          <Skeleton className='h-4 w-full' />
+          <Skeleton className='h-4 w-5/6' />
         </div>
       );
 

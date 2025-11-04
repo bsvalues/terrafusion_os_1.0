@@ -1,0 +1,20 @@
+{
+    "map": {
+        "datasourceresolution.descr": "<xdoc><p>Specifies the source data resolution that will be used in the analysis. The values are an approximation of the spatial resolution of the digital elevation model used to build the foundation hydrologic database. Since many elevation sources are distributed in units of arc seconds, an approximation is provided in meters for easier understanding.</p><ul><li><span title=\"Blank\">Blank</span>—The hydrologic source, built from a 3-arc second data source, which is approximately 90-meter resolution elevation data, will be used.</li><li><span title=\"FINEST\">Finest</span>—The finest resolution available at each location from all possible data sources will be used. This is the default.</li><li><span title=\"10m\">10 meters</span>—The hydrologic source, built from a 1/3 arc second data source, which is approximately 10-meter resolution elevation data, will be used.</li><li><span title=\"30m\">30 meters</span>—The hydrologic source, built from a 1-arc second data source, which is approximately 30-meter resolution elevation data, will be used.</li><li><span title=\"90m\">90 meters</span>—The hydrologic source, built from a 3-arc second data source, which is approximately 90-meter resolution elevation data, will be used.</li></ul></xdoc>",
+        "datasourceresolution.domain. ": " ",
+        "datasourceresolution.domain.10m": "10 meters",
+        "datasourceresolution.domain.30m": "30 meters",
+        "datasourceresolution.domain.90m": "90 meters",
+        "datasourceresolution.domain.FINEST": "Finest",
+        "datasourceresolution.title": "Data Source Resolution",
+        "description": "Determines the path water will take from a particular location to its furthest downhill path.",
+        "generalize.descr": "<xdoc><p>Specifies whether the output downstream trace lines will be smoothed into simpler lines or conform to the cell centers of the original DEM.</p><ul><li>Unchecked—The lines will not be smoothed. Each trace line of output downstream trace have more vertices since they conform to the original DEM cell centers. This is the default.</li><li>Checked—The lines will be smoothed into simpler lines.</li></ul></xdoc>",
+        "generalize.title": "Generalize",
+        "inputpoints.descr": "The point features used for calculating downstream trace.",
+        "inputpoints.title": "Input Points",
+        "outputtraceline.title": "Output Trace Line",
+        "pointidfield.descr": "<xdoc><p>An integer or string field used to identify the input points.</p><p>The default is to use the unique ID field.</p></xdoc>",
+        "pointidfield.title": "Point ID Field",
+        "title": "Trace Downstream"
+    }
+}

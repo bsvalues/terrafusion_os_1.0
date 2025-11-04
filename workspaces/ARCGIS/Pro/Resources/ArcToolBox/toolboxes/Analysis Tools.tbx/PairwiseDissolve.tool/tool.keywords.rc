@@ -1,0 +1,11 @@
+{
+    "set": [
+        "aggregate",
+        "aggregate features",
+        "border",
+        "boundary",
+        "generalization",
+        "overlay",
+        "parallel processing"
+    ]
+}

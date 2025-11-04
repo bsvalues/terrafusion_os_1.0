@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Supabase Environment Setup Wizard{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Supabase Environment Setup Wizard</h1>
+            <p class="lead">Configure all Supabase environments for the TerraFlow application.</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Environment Setup</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <strong>Info:</strong> This wizard will guide you through setting up all your Supabase environments.
+                        You'll need your Supabase project credentials for each environment.
+                    </div>
+
+                    <div class="mb-4">
+                        <h5>Step 1: Development Environment</h5>
+                        <p>Set up your development environment for local testing and development.</p>
+                        <a href="{{ url_for('supabase_config.setup_environment', environment='development') }}" class="btn btn-primary">
+                            Set Up Development Environment
+                        </a>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5>Step 2: Training Environment</h5>
+                        <p>Set up your training environment for integration testing and user training.</p>
+                        <a href="{{ url_for('supabase_config.setup_environment', environment='training') }}" class="btn btn-primary">
+                            Set Up Training Environment
+                        </a>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5>Step 3: Production Environment</h5>
+                        <p>Set up your production environment for the live application.</p>
+                        <a href="{{ url_for('supabase_config.setup_environment', environment='production') }}" class="btn btn-primary">
+                            Set Up Production Environment
+                        </a>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('supabase_config.environments') }}" class="btn btn-secondary">Return to Environment Overview</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Environment Testing</h5>
+                </div>
+                <div class="card-body">
+                    <p>After setting up your environments, you should test the connections to make sure they're working properly.</p>
+                    
+                    <div class="list-group">
+                        <a href="{{ url_for('supabase_config.test_environment', environment='development') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            Test Development Environment
+                            <span class="badge bg-primary rounded-pill">→</span>
+                        </a>
+                        <a href="{{ url_for('supabase_config.test_environment', environment='training') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            Test Training Environment
+                            <span class="badge bg-primary rounded-pill">→</span>
+                        </a>
+                        <a href="{{ url_for('supabase_config.test_environment', environment='production') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            Test Production Environment
+                            <span class="badge bg-primary rounded-pill">→</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
